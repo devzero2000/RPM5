@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: tests: verify ref/* data using rpmdigest/rpmmtree.
+    - jbj: move rpmdigest/rpmmtree/rpmrepo back to tools/ for installation.
     - jbj: tests: verify rpmrepo XML spewage using popt-1.14.
     - jbj: tests: verify XML/YAML markup queries using popt-1.14.
     - jbj: tests: download popt-1.14 packages for use in tests.

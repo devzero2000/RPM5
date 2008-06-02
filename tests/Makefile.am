@@ -8,7 +8,9 @@ SUBDIRS =
 macros =	$(abs_top_builddir)/macros:@testdir@/macros
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
-rpmrepo =	$(abs_top_builddir)/rpmio/rpmrepo
+rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
+rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
+rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 cpio =		cpio
 
 POPTURI =	http://rpm5.org/files/popt/
@@ -22,11 +24,14 @@ $(POPTPKGS):
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
 	@mkdir -p tmp
+	@-${rpmdigest} --alldigests ref/[a-z]* > tmp/.alldigests
+	@diff -u {tmp,ref}/.alldigests
+	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
 	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@diff -u {tmp,ref}/popt.xml
-	${rpmrepo} --uncompressed .
+	@-${rpmrepo} --uncompressed .
 	@diff -u {repodata,ref}/primary.xml
 	@diff -u {repodata,ref}/filelists.xml
 	@diff -u {repodata,ref}/other.xml

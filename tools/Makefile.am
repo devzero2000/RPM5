@@ -20,48 +20,69 @@ EXTRA_DIST =	hashtab.h
 
 EXTRA_PROGRAMS = debugedit rpmkey txar
 
-myLDADD = \
-	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
+RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-bin_PROGRAMS =		rpm2cpio rpmcache
+RPMIO_LDADD_COMMON = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(RPMMISC_LDADD_COMMON)
+
+RPMDB_LDADD_COMMON = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD_COMMON)
+
+RPM_LDADD_COMMON = \
+	$(top_builddir)/lib/librpm.la \
+	$(RPMDB_LDADD_COMMON)
+
+RPMBUILD_LDADD_COMMON = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(RPM_LDADD_COMMON)
+
+bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmrepo
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmcmp rpmdeps @WITH_LIBELF_DEBUGEDIT@
 
 debugedit_SOURCES =	debugedit.c hashtab.c
-debugedit_LDADD =	$(myLDADD)
+debugedit_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmcache_SOURCES =	rpmcache.c
-rpmcache_LDADD =	$(myLDADD)
+rpmcache_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmcmp_SOURCES =	rpmcmp.c
-rpmcmp_LDADD =		$(myLDADD)
+rpmcmp_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmdeps_SOURCES =	rpmdeps.c
-rpmdeps_LDADD =		$(myLDADD)
+rpmdeps_LDADD =		$(RPM_LDADD_COMMON)
+
+rpmdigest_SOURCES =	rpmdigest.c
+rpmdigest_LDADD =	$(RPMIO_LDADD_COMMON)
+
+rpmmtree_SOURCES =	rpmmtree.c
+rpmmtree_LDADD =	$(RPM_LDADD_COMMON)
+
+rpmrepo_SOURCES =	rpmrepo.c
+rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
 
 ##
 ## Traditional rpm2cpio
 ##
 rpm2cpio_SOURCES =	rpm2cpio.c
-rpm2cpio_LDADD =	$(myLDADD)
+rpm2cpio_LDADD =	$(RPM_LDADD_COMMON)
 
 ##
 ##  keyctl(1) clone
 ##
 rpmkey_SOURCES =        rpmkey.c
-rpmkey_LDADD =          $(myLDADD) -lkeyutils
+rpmkey_LDADD =          $(RPM_LDADD_COMMON) -lkeyutils
 
 ##
 ## XAR <-> RPM package converter
 ##
 txar_SOURCES =		txar.c
-txar_LDADD =		$(myLDADD) @WITH_XAR_LDFLAGS@
+txar_LDADD =		$(RPM_LDADD_COMMON) @WITH_XAR_LDFLAGS@
 txar_LIBS =		@WITH_XAR_LIBS@
 
 ##
