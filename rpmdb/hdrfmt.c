@@ -929,7 +929,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
@@ -4498,7 +4498,7 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 if (_hdr_debug)
 fprintf(stderr, "\t*%p = *%p \"%s\"\n", dst, start, start);
 /*@=modfilesys@*/
-	    if (*start == '\\') {
+	    if (start[0] == '\\' && start[1] != '\0') {
 		start++;
 		*dst++ = escapedChar(*start);
 		*start++ = '\0';
