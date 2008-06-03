@@ -7,6 +7,7 @@
 	- jbj: tests: download popt-1.14 packages for use in tests.
 	- jbj: yaml: fix: single element string arrays had extra "- ".
 	- jbj: yaml: remove the hotwired hack for SRPM dirnames indentation.
+	- jbj: backport --queryformat pipeline syntax from HEAD.
 	- jbj: rpmsw: add rpmswPrint to display stopwtch results.
 	- jbj: rpmdigest: s/--all/--alldigests/ w rpmio "make check".
 	- jbj: rpmio: increase no. of digests from 4 => 32 for rpmdigest --all.

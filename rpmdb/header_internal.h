@@ -6,6 +6,7 @@
  */
 
 #include <header.h>
+#include <argv.h>
 
 #if !defined(__LCLINT__)
 #include <netinet/in.h>
@@ -84,7 +85,7 @@ typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
     HE_s he;
 /*@null@*/
-    headerTagFormatFunction fmt;
+    headerTagFormatFunction * fmtfuncs;
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
@@ -93,8 +94,9 @@ struct sprintfTag_s {
     int arrayCount;
 /*@kept@*/
     char * format;
-/*@kept@*/ /*@null@*/
-    char * type;
+/*@only@*/ /*@null@*/
+    ARGV_t av;
+    ARGV_t params;
     int pad;
 };
 
