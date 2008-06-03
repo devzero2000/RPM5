@@ -16,6 +16,7 @@
 #define	rpmioAllPoptTable	rpmcliAllPoptTable
 
 #define	tagClean(_p)
+#define	WITH_SQLITE
 
 #include "system.h"
 
@@ -496,7 +497,7 @@ INSERT into packages values (\
 ]}|\
 %|requirename?{[\
 \nINSERT into requires values (\
-%{requiressqlentry}\
+%{requiresqlentry}\
 );\
 ]}|\
 %|basenames?{[\

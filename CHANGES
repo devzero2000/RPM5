@@ -1,4 +1,8 @@
 4.4.9 -> 4.5:
+	- jbj: tests: disable *UUID tests, enable rpmrepo --database coverage.
+	- jbj: rpmrepo: correct requiressql tag name typo, enable WITH_SQLITE.
+	- jbj: add header tag extension to extract baseurl.
+	- jbj: generalize :utf8 to :iconv(UTF-8) iconv(3) conversions.
 	- jbj: fix: handle '%{arch}\' with \ at end-of-string correctly.
 	- jbj: fix: force string array return for RPMTAG_HEADERI18NTABLE.
 	- jbj: tests: verify ref/* data using rpmdigest/rpmmtree.

@@ -11,7 +11,7 @@
   <url></url>
   <time file="1212080682" build="1210165915"/>
   <size package="4894" installed="4894" archive="648"/>
-  <location href="devtool-sanity-1.0-1.src.rpm"/>
+  <location xml:base="(none)" href="devtool-sanity-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
     <rpm:vendor/>
@@ -46,7 +46,7 @@ shell-like rules.</description>
   <url></url>
   <time file="1207484927" build="1207158035"/>
   <size package="102588" installed="102588" archive="226620"/>
-  <location href="popt-1.14-1.i386.rpm"/>
+  <location xml:base="(none)" href="popt-1.14-1.i386.rpm"/>
   <format>
     <rpm:license>X Consortium</rpm:license>
     <rpm:vendor/>
@@ -93,7 +93,7 @@ shell-like rules.</description>
   <url></url>
   <time file="1207484942" build="1207158035"/>
   <size package="705199" installed="705199" archive="697748"/>
-  <location href="popt-1.14-1.src.rpm"/>
+  <location xml:base="(none)" href="popt-1.14-1.src.rpm"/>
   <format>
     <rpm:license>X Consortium</rpm:license>
     <rpm:vendor/>
