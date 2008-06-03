@@ -17,13 +17,13 @@ INCLUDES = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit convertdb1 rpmrepo
+EXTRA_PROGRAMS = debugedit convertdb1
 
 LDADD = $(top_builddir)/lib/librpm.la
 
 pkglibdir =		@USRLIBRPM@
 versionlibdir =		$(pkglibdir)/@VERSION@
-versionlib_PROGRAMS =	rpmdeps @WITH_LIBDWARF_DEBUGEDIT@
+versionlib_PROGRAMS =	rpmdeps rpmdigest rpmmtree rpmrepo @WITH_LIBDWARF_DEBUGEDIT@
 
 convertdb1_SOURCES =	convertdb1.c
 
@@ -34,6 +34,10 @@ debugedit_LDADD =	\
 	@WITH_POPT_LIB@
 
 rpmdeps_SOURCES =	rpmdeps.c
+
+rpmdigest_SOURCES =	rpmdigest.c
+
+rpmmtree_SOURCES =	rpmmtree.c
 
 rpmrepo_SOURCES =	rpmrepo.c
 rpmrepo_LDADD =		$(LDADD) -lsqlite3

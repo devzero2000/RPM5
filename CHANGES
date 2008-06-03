@@ -1,4 +1,12 @@
 4.4.9 -> 4.5:
+	- jbj: tests: verify ref/* data using rpmdigest/rpmmtree.
+	- jbj: move rpmdigest/rpmmtree/rpmrepo back to tools/ for installation.
+	- jbj: tests: verify rpmrepo XML spewage using popt-1.14.
+	- jbj: tests: verify XML/YAML markup queries using popt-1.14.
+	- jbj: tests: download popt-1.14 packages for use in tests.
+	- jbj: rpmsw: add rpmswPrint to display stopwtch results.
+	- jbj: rpmdigest: s/--all/--alldigests/ w rpmio "make check".
+	- jbj: rpmio: increase no. of digests from 4 => 32 for rpmdigest --all.
 	- jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
 	- jbj: backport assorted rpmio changes from HEAD to stay in sync.
 	- jbj: make sure the open path is set when using [bgl]zdOpen vector too.

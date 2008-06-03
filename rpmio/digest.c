@@ -752,5 +752,9 @@ struct poptOption rpmDigestPoptTable[] = {
 	NULL, NULL },
  { "jlu32",'\0', POPT_ARG_VAL,&rpmDigestHashAlgo, PGPHASHALGO_JLU32,
 	NULL, NULL },
+ { "nodigest",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmDigestHashAlgo, PGPHASHALGO_NONE,
+	N_("no hash algorithm"), NULL },
+ { "alldigests",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmDigestHashAlgo, 256,
+	N_("all hash algorithm(s)"), NULL },
     POPT_TABLEEND
 };

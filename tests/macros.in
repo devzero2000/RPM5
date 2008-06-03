@@ -13,3 +13,4 @@
 
 %_repackage_all_erasures	0
 %_rpmgio	.ufdio
+%track		exit 0

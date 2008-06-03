@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repomd xmlns="http://linux.duke.edu/metadata/repo">
+  <data type="other">
+    <checksum type="md5">e5fe234d8758c82db6e228de46100318</checksum>
+    <timestamp>1212500574</timestamp>
+    <open-checksum type="md5">137006cde05fd3035ab816c6fe015a7c</open-checksum>
+    <location href="repodata/other.xml"/>
+  </data>
+  <data type="filelists">
+    <checksum type="md5">9bc805c9d10ae25ac29d7b6fd0dd8980</checksum>
+    <timestamp>1212500574</timestamp>
+    <open-checksum type="md5">f02be57e23833dae835d8878ac15c20b</open-checksum>
+    <location href="repodata/filelists.xml"/>
+  </data>
+  <data type="primary">
+    <checksum type="md5">048c66b449d1efbbccee62a9d1c9437d</checksum>
+    <timestamp>1212500574</timestamp>
+    <open-checksum type="md5">8a4caeb6ecd16e44c25cf5215b12055f</open-checksum>
+    <location href="repodata/primary.xml"/>
+  </data>
+</repomd>
