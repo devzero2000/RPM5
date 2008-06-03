@@ -584,13 +584,13 @@ static size_t yamlstrlen(const char * s, int lvl)
     int indent = (lvl > 0);
     int c;
 
-    while ((c = *s++) != '\0')
+    while ((c = (int) *s++) != (int) '\0')
     {
 	if (indent) {
 	    len += 2 * lvl;
 	    indent = 0;
 	}
-	if (c == '\n')
+	if (c == (int) '\n')
 	    indent = (lvl > 0);
 	len++;
     }
@@ -611,7 +611,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
     int indent = (lvl > 0);
     int c;
 
-    while ((c = *s++) != '\0') {
+    while ((c = (int) *s++) != (int) '\0') {
 	if (indent) {
 	    int i;
 	    for (i = 0; i < lvl; i++) {
@@ -620,9 +620,9 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 	    }
 	    indent = 0;
 	}
-	if (c == '\n')
+	if (c == (int) '\n')
 	    indent = (lvl > 0);
-	*te++ = c;
+	*te++ = (char) c;
     }
     *te = '\0';
     return t;
@@ -631,17 +631,15 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
- * @param av		parameter array (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
-    const char * ytag = NULL;
     size_t nb;
     char * val;
     const char * s = NULL;
@@ -653,17 +651,17 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
     int c;
 
 assert(ix == 0);
-assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
+assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
+    xx = 0;
     switch (he->t) {
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
+    case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
     case RPM_STRING_TYPE:
-	xx = 0;
-	s = (he->t == RPM_STRING_ARRAY_TYPE ? data.argv[ix] : data.str);
+	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
-	while ((c = *s++) != '\0') {
+	while ((c = (int) *s++) != (int) '\0') {
 	    switch (c) {
 	    default:
 		continue;
@@ -686,13 +684,14 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 	    } else {
 		xtag = "|-\n";
 		lvl = 2;
+		if (he->ix < 0) lvl++;	/* XXX extra indent for array[1] */
 	    }
 	} else {
 	    xtag = (element >= 0 ? "- " : NULL);
 	}
 
 	/* XXX Force utf8 strings. */
-	s = xstrdup(data.str);
+	s = xstrdup(he->p.str);
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
@@ -712,17 +711,17 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     }	break;
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-	anint = data.i8p[ix];
+    case RPM_UINT8_TYPE:
+	anint = he->p.ui8p[ix];
 	break;
-    case RPM_INT16_TYPE:
-	anint = data.ui16p[ix];	/* XXX note unsigned */
+    case RPM_UINT16_TYPE:
+	anint = he->p.ui16p[ix];
 	break;
-    case RPM_INT32_TYPE:
-	anint = data.i32p[ix];
+    case RPM_UINT32_TYPE:
+	anint = he->p.ui32p[ix];
 	break;
-    case RPM_INT64_TYPE:
-	anint = data.i64p[ix];
+    case RPM_UINT64_TYPE:
+	anint = he->p.ui64p[ix];
 	break;
     case RPM_NULL_TYPE:
     default:
@@ -734,7 +733,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 	int tlen = 64;
 	t = memset(alloca(tlen+1), 0, tlen+1);
 /*@-duplicatequals@*/
-	xx = snprintf(t, tlen, "%llu", anint);
+	xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
 /*@=duplicatequals@*/
 	s = t;
 	xtag = (element >= 0 ? "- " : NULL);
@@ -755,8 +754,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 	    nb += sizeof("    ") - 1;
 	if (xtag)
 	    nb += strlen(xtag);
-	if (ytag)
-	    nb += strlen(ytag);
 	nb++;
 	te = t = alloca(nb);
 	if (element >= 0)
@@ -765,8 +762,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 	    te = stpcpy(te, xtag);
 	te = yamlstrcpy(te, s, lvl);
 	te += strlen(te);
-	if (ytag)
-	    te = stpcpy(te, ytag);
     }
 
     /* XXX s was malloc'd */

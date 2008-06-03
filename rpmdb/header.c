@@ -2687,6 +2687,16 @@ static const char * myTagName(headerTagTableEntry tbl, int val,
     return name;
 }
 
+/*@observer@*/ /*@null@*/
+static int myTagType(headerTagTableEntry tbl, int val)
+{
+    for (; tbl->name != NULL; tbl++) {
+	if (tbl->val == val)
+	    break;
+    }
+    return (tbl->name != NULL ? tbl->type : 0);
+}
+
 /**
  * Return tag value from name.
  * @todo bsearch on sorted name table.
@@ -3464,13 +3474,12 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	vhe->t = RPM_STRING_TYPE;
 	vhe->p.str = he->p.argv[element];
 	vhe->c = he->c;
-	/* XXX TODO: force array representation? */
-	vhe->ix = (he->c > 1 ? 0 : -1);
+	vhe->ix = (he->t == RPM_STRING_ARRAY_TYPE || he->c > 1 ? 0 : -1);
 	break;
     case RPM_STRING_TYPE:
 	vhe->p.str = he->p.str;
 	vhe->t = RPM_STRING_TYPE;
-	vhe->c = he->c;
+	vhe->c = 0;
 	vhe->ix = -1;
 	break;
     case RPM_CHAR_TYPE:
@@ -3499,8 +3508,9 @@ assert(0);	/* XXX keep gcc quiet. */
 	vhe->t = RPM_INT64_TYPE;
 	vhe->p.i64p = &ival;
 	vhe->c = he->c;
-	/* XXX TODO: force array representation? */
 	vhe->ix = (he->c > 1 ? 0 : -1);
+	if ((myTagType(hsa->tags, he->tag) & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+	    vhe->ix = 0;
 	break;
 
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
@@ -3732,13 +3742,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		*te++ = ':';
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
-		/* XXX Dirnames: in srpms need "    " indent */
-		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
-		 && numElements == 1) {
-		    te = stpcpy(te, "    ");
-		    if (tag->tagno != 1118)
-			te = stpcpy(te, "- ");
-		}
 		*te = '\0';
 		hsa->vallen += (te - t);
 	    }

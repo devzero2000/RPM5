@@ -1,5 +1,5 @@
 - !!omap
-  Headeri18ntable: C
+  Headeri18ntable:     - C
   Sigsize: 102220
   Pkgid:     !!binary 2qo2BWmmg1NwRaRd2pcXGg==
   Dsaheader:     !!binary iEYEABECAAYFAkfzxR0ACgkQuHNkGyA5spF6WgCfajA/r8qecEt+9aCtndKkCuquuxIAoIZ5QPUezNE683lnPZYw01rNt+gl
@@ -9,14 +9,14 @@
   Release: 1
   Summary: A C library for parsing command line parameters.
   Description: |-
-    Popt is a C library for parsing command line parameters. Popt was
-    heavily influenced by the getopt() and getopt_long() functions, but it
-    improves on them by allowing more powerful argument expansion. Popt
-    can parse arbitrary argv[] style arrays and automatically set
-    variables based on command line arguments. Popt allows command line
-    arguments to be aliased via configuration files and includes utility
-    functions for parsing arbitrary strings into argv[] arrays using
-    shell-like rules.
+      Popt is a C library for parsing command line parameters. Popt was
+      heavily influenced by the getopt() and getopt_long() functions, but it
+      improves on them by allowing more powerful argument expansion. Popt
+      can parse arbitrary argv[] style arrays and automatically set
+      variables based on command line arguments. Popt allows command line
+      arguments to be aliased via configuration files and includes utility
+      functions for parsing arbitrary strings into argv[] arrays using
+      shell-like rules.
   Buildtime: 1207158035
   Buildhost: wellfleet.jbj.org
   Size: 221078
@@ -920,7 +920,7 @@
   Tag_0x000004b1: 1380994357
 
 - !!omap
-  Headeri18ntable: C
+  Headeri18ntable:     - C
   Sigsize: 704831
   Pkgid:     !!binary pIJU/idO/XRcil9E/zWw8Q==
   Dsaheader:     !!binary iEYEABECAAYFAkfzxR0ACgkQuHNkGyA5spEkIQCfYHJtlLG1qhaNpZcwwIuRYXCqTQsAn302sbTjDiDjwafq3Q5wdu1WVqc6
@@ -930,14 +930,14 @@
   Release: 1
   Summary: A C library for parsing command line parameters.
   Description: |-
-    Popt is a C library for parsing command line parameters. Popt was
-    heavily influenced by the getopt() and getopt_long() functions, but it
-    improves on them by allowing more powerful argument expansion. Popt
-    can parse arbitrary argv[] style arrays and automatically set
-    variables based on command line arguments. Popt allows command line
-    arguments to be aliased via configuration files and includes utility
-    functions for parsing arbitrary strings into argv[] arrays using
-    shell-like rules.
+      Popt is a C library for parsing command line parameters. Popt was
+      heavily influenced by the getopt() and getopt_long() functions, but it
+      improves on them by allowing more powerful argument expansion. Popt
+      can parse arbitrary argv[] style arrays and automatically set
+      variables based on command line arguments. Popt allows command line
+      arguments to be aliased via configuration files and includes utility
+      functions for parsing arbitrary strings into argv[] arrays using
+      shell-like rules.
   Buildtime: 1207158035
   Buildhost: wellfleet.jbj.org
   Size: 697372
@@ -983,7 +983,7 @@
   Requirename:
     - gettext
   Requireversion:
-    - - ~
+    - ~
   Rpmversion: 5.1.DEVEL
   Changelogtime:
     - 1197410400
@@ -1210,11 +1210,11 @@
   Tag_0x000004b1: 1380994357
   Tag_0x46c39442: /usr/bin/perl /usr/lib/rpm/vcheck
   Tag_0x6d479aed: |-
-    prog popt = {
-        version   = 1.14
-        url       = http://rpm5.org/popt
-        regex     = popt-(\d+\.\d+\.\d+)\.tar\.gz
-    }
-    
+      prog popt = {
+          version   = 1.14
+          url       = http://rpm5.org/popt
+          regex     = popt-(\d+\.\d+\.\d+)\.tar\.gz
+      }
+      
 
 
