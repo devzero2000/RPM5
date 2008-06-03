@@ -24,8 +24,8 @@ $(POPTPKGS):
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
 	@mkdir -p tmp
-#	@-${rpmdigest} --alldigests ref/[a-z]* > tmp/.alldigests
-#	@diff -u {tmp,ref}/.alldigests
+	@-${rpmdigest} --alldigests ref/[a-z]* > tmp/.alldigests
+	@diff -u {tmp,ref}/.alldigests
 	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
 	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml

@@ -92,7 +92,7 @@ struct _FD_s {
     FDSTAT_t	stats;		/* I/O statistics */
 
     int		ndigests;
-#define	FDDIGEST_MAX	4
+#define	FDDIGEST_MAX	32
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
@@ -100,7 +100,7 @@ struct _FD_s {
 };
 /*@access FD_t@*/
 
-#define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
+#define	FDSANE(fd)	assert(fd != NULL && fd->magic == FDMAGIC)
 
 /*@-redecl@*/
 /*@unchecked@*/
@@ -363,7 +363,7 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-    if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
+    if (fd->nfps >= (int)(sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
 	return;
     fd->nfps++;
     fdSetIo(fd, io);
@@ -393,7 +393,7 @@ rpmop fdstat_op(/*@null@*/ FD_t fd, fdOpX opx)
 {
     rpmop op = NULL;
 
-    if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
+    if (fd != NULL && fd->stats != NULL && (int)opx >= 0 && opx < FDSTAT_MAX)
         op = fd->stats->ops + opx;
     return op;
 }
@@ -449,13 +449,13 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	if (op->count <= 0) continue;
 	switch (opx) {
 	case FDSTAT_READ:
-	    if (msg) fprintf(fp, "%s:", msg);
+	    if (msg != NULL) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d reads, %8lu total bytes in %d.%06d secs\n",
 		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
-	    if (msg) fprintf(fp, "%s:", msg);
+	    if (msg != NULL) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d writes, %8lu total bytes in %d.%06d secs\n",
 		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
@@ -590,8 +590,8 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	break;
     }
     if (i < 0) {
-	if (datap) *(void **)datap = NULL;
-	if (lenp) *lenp = 0;
+	if (datap != NULL) *(void **)datap = NULL;
+	if (lenp != NULL) *lenp = 0;
     }
 
     fd->ndigests = imax;

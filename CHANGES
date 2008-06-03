@@ -8,8 +8,8 @@
     - jbj: yaml: remove the hotwired hack for SRPM dirnames indentation.
     - jbj: backport --queryformat pipeline syntax from HEAD.
     - jbj: rpmsw: add rpmswPrint to display stopwtch results.
-    - jbj: rpmdigest: hmmm ... still needs work. todo++.
     - jbj: rpmdigest: s/--all/--alldigests/ w rpmio "make check".
+    - jbj: rpmio: increase no. of digests from 4 => 32 for rpmdigest --all.
     - jbj: upgrade to db-4.7.25.
     - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
     - jbj: backport assorted rpmio changes from HEAD to stay in sync.
