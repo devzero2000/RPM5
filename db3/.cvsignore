@@ -3,6 +3,8 @@
 Makefile
 Makefile.in
 .libs
+*.gcda
+*.gcno
 *.la
 *.lo
 db3lobjs
@@ -14,6 +16,7 @@ include.tcl
 berkeley_db_svc
 db_archive
 db_checkpoint
+db_codegen
 db_deadlock
 db_dump
 db_hotbackup

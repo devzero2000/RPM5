@@ -4,6 +4,8 @@ Makefile
 Makefile.in
 getdate.c
 .libs
+*.gcda
+*.gcno
 *.la
 *.lcd
 *.lo

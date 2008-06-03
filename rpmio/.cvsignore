@@ -4,6 +4,8 @@
 Makefile
 Makefile.in
 .libs
+*.gcda
+*.gcno
 *.la
 *.lcd
 *.lo
