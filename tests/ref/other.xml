@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<otherdata xmlns="http://linux.duke.edu/metadata/other" packages="3">
+<package pkgid="b0819863b432399166941275ec3044a88d974746" name="devtool-sanity" arch="noarch">
+  <version epoch="0" ver="1.0" rel="1"/>
+</package>
+<package pkgid="26c75af3071d9cd2a8efe9a1d2af9c3518791001" name="popt" arch="i386">
+  <version epoch="0" ver="1.14" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt;" date="1197410400">- release popt-1.13 through rpm5.org.</changelog>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt;" date="1184104800">- release popt-1.12 through rpm5.org.</changelog>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt;" date="1181426400">- release popt-1.11 through rpm5.org.</changelog>
+</package>
+<package pkgid="34d94d448f5cbd4e6caa13f95e6af8f541f2bade" name="popt" arch="i386">
+  <version epoch="0" ver="1.14" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt;" date="1197410400">- release popt-1.13 through rpm5.org.</changelog>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt;" date="1184104800">- release popt-1.12 through rpm5.org.</changelog>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt;" date="1181426400">- release popt-1.11 through rpm5.org.</changelog>
+</package>
+</otherdata>

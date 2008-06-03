@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="3">
+<package pkgid="b0819863b432399166941275ec3044a88d974746" name="devtool-sanity" arch="noarch">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <file>devtool-sanity.spec</file>
+</package>
+<package pkgid="26c75af3071d9cd2a8efe9a1d2af9c3518791001" name="popt" arch="i386">
+  <version epoch="0" ver="1.14" rel="1"/>
+  <file>/lib/libpopt.a</file>
+  <file>/lib/libpopt.la</file>
+  <file>/lib/libpopt.so</file>
+  <file>/lib/libpopt.so.0</file>
+  <file>/lib/libpopt.so.0.0.0</file>
+  <file>/usr/include/popt.h</file>
+  <file>/usr/share/locale/cs/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/da/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/de/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/es/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/fi/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/fr/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/ga/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/gl/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/hu/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/is/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/it/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/ja/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/ko/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/nb/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/nl/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/pl/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/pt/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/ro/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/ru/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/sk/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/sl/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/sv/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/th/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/tr/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/uk/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/vi/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/wa/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/zh_CN/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/locale/zh_TW/LC_MESSAGES/popt.mo</file>
+  <file>/usr/share/man/man3/popt.3.gz</file>
+</package>
+<package pkgid="34d94d448f5cbd4e6caa13f95e6af8f541f2bade" name="popt" arch="i386">
+  <version epoch="0" ver="1.14" rel="1"/>
+  <file>popt-1.14.tar.gz</file>
+  <file>popt.spec</file>
+</package>
+</filelists>
