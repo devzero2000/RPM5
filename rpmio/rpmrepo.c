@@ -483,7 +483,7 @@ INSERT into packages values (\
 ]}|\
 %|requirename?{[\
 \nINSERT into requires values (\
-%{requiressqlentry}\
+%{requiresqlentry}\
 );\
 ]}|\
 %|basenames?{[\
