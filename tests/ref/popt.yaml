@@ -985,7 +985,7 @@
   Requirename:
     - gettext
   Requireversion:
-    - - ~
+    - ~
   Rpmversion: 5.1.DEVEL
   Changelogtime:
     - 1197410400
