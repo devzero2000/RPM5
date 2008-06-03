@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmrepo: correct requiressqlentry tag name typo.
+    - jbj: fix: handle '%{arch}\' with \ at end-of-string correctly.
     - jbj: tests: verify ref/* data using rpmdigest/rpmmtree.
     - jbj: move rpmdigest/rpmmtree/rpmrepo back to tools/ for installation.
     - jbj: tests: verify rpmrepo XML spewage using popt-1.14.
