@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: fix: force string array return for RPMTAG_HEADERI18NTABLE.
 	- jbj: tests: verify ref/* data using rpmdigest/rpmmtree.
 	- jbj: move rpmdigest/rpmmtree/rpmrepo back to tools/ for installation.
 	- jbj: tests: verify rpmrepo XML spewage using popt-1.14.

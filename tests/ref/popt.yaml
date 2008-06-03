@@ -1,5 +1,6 @@
 - !!omap
-  Headeri18ntable:     - C
+  Headeri18ntable:
+    - C
   Sigsize: 102220
   Pkgid:     !!binary 2qo2BWmmg1NwRaRd2pcXGg==
   Dsaheader:     !!binary iEYEABECAAYFAkfzxR0ACgkQuHNkGyA5spF6WgCfajA/r8qecEt+9aCtndKkCuquuxIAoIZ5QPUezNE683lnPZYw01rNt+gl
@@ -920,7 +921,8 @@
   Tag_0x000004b1: 1380994357
 
 - !!omap
-  Headeri18ntable:     - C
+  Headeri18ntable:
+    - C
   Sigsize: 704831
   Pkgid:     !!binary pIJU/idO/XRcil9E/zWw8Q==
   Dsaheader:     !!binary iEYEABECAAYFAkfzxR0ACgkQuHNkGyA5spEkIQCfYHJtlLG1qhaNpZcwwIuRYXCqTQsAn302sbTjDiDjwafq3Q5wdu1WVqc6
