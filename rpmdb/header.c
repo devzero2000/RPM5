@@ -2316,6 +2316,10 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
  */
 static char escapedChar(const char ch)	/*@*/
 {
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "\t\t\\%c\n", ch);
+/*@=modfilesys@*/
     switch (ch) {
     case 'a': 	return '\a';
     case 'b': 	return '\b';
@@ -3332,7 +3336,7 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 if (_hdr_debug)
 fprintf(stderr, "\t*%p = *%p \"%s\"\n", dst, start, start);
 /*@=modfilesys@*/
-	    if (*start == '\\') {
+	    if (start[0] == '\\' && start[1] != '\0') {
 		start++;
 		*dst++ = escapedChar(*start);
 		*start++ = '\0';
@@ -3373,6 +3377,11 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 {
     char * chptr;
     char * end;
+
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "-->   parseExpression(%p, %p, \"%s\", %p)\n", hsa, token, str, endPtr);
+/*@=modfilesys@*/
 
     hsa->errmsg = NULL;
     chptr = str;
@@ -3987,6 +3996,11 @@ char * headerSprintf(Header h, const char * fmt,
     int isyaml;
     int need;
  
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, exts, errmsg);
+/*@=modfilesys@*/
+
     /* Set some reasonable defaults */
     if (tags == NULL)
         tags = rpmTagTable;
