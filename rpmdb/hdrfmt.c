@@ -68,7 +68,7 @@ extern int _hdr_debug;
 /**
  * Convert tag data representation.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
@@ -146,7 +146,7 @@ static char * intFormat(HE_t he, /*@null@*/ const char ** av,
 /**
  * Return octal formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static char * octFormat(HE_t he, /*@null@*/ const char ** av)
@@ -158,7 +158,7 @@ static char * octFormat(HE_t he, /*@null@*/ const char ** av)
 /**
  * Return hex formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static char * hexFormat(HE_t he, /*@null@*/ const char ** av)
@@ -170,7 +170,7 @@ static char * hexFormat(HE_t he, /*@null@*/ const char ** av)
 /**
  * Return decimal formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static char * decFormat(HE_t he, /*@null@*/ const char ** av)
@@ -182,7 +182,7 @@ static char * decFormat(HE_t he, /*@null@*/ const char ** av)
 /**
  * Return strftime formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
@@ -215,7 +215,7 @@ static char * realDateFormat(HE_t he, /*@null@*/ const char ** av,
 /**
  * Return date formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static char * dateFormat(HE_t he, /*@null@*/ const char ** av)
@@ -227,7 +227,7 @@ static char * dateFormat(HE_t he, /*@null@*/ const char ** av)
 /**
  * Return day formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
@@ -239,7 +239,7 @@ static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 /**
  * Return shell escape formatted data.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
@@ -367,7 +367,7 @@ static char * rpmPermsString(int mode)
 /**
  * Identify type of trigger.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * triggertypeFormat(HE_t he, /*@null@*/ const char ** av)
@@ -397,7 +397,7 @@ assert(ix == 0);
 /**
  * Format file permissions for display.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * permsFormat(HE_t he, /*@null@*/ const char ** av)
@@ -419,7 +419,7 @@ assert(ix == 0);
 /**
  * Format file flags for display.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * fflagsFormat(HE_t he, /*@null@*/ const char ** av)
@@ -460,7 +460,7 @@ assert(ix == 0);
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * armorFormat(HE_t he, /*@null@*/ const char ** av)
@@ -511,7 +511,7 @@ assert(ix == 0);
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * base64Format(HE_t he, /*@null@*/ const char ** av)
@@ -716,7 +716,7 @@ strdup_locale_convert (/*@null@*/ const char * buffer,
 /**
  * Encode string for use in XML CDATA.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * cdataFormat(HE_t he, /*@null@*/ const char ** av)
@@ -747,7 +747,7 @@ assert(ix == 0);
 /**
  * Convert string encoding.
  * @param he		tag container
- * @param av		paramater list (NULL assumes UTF-8)
+ * @param av		parameter list (NULL assumes UTF-8)
  * @return		formatted string
  */
 static /*@only@*/ char * iconvFormat(HE_t he, /*@null@*/ const char ** av)
@@ -771,7 +771,7 @@ assert(ix == 0);
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * xmlFormat(HE_t he, /*@null@*/ const char ** av)
@@ -929,7 +929,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
@@ -1070,7 +1070,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 /**
  * Display signature fingerprint and time.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * pgpsigFormat(HE_t he, /*@null@*/ const char ** av)
@@ -1176,7 +1176,7 @@ assert(ix == 0);
 /**
  * Format dependency flags for display.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * depflagsFormat(HE_t he, /*@null@*/ const char ** av)
@@ -1402,7 +1402,7 @@ static int uuid_version = 5;
 /**
  * Convert tag string to UUID.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @praram version	UUID version
  * @retval val		UUID string
  * @return		0 on success
@@ -2574,7 +2574,7 @@ static char * sqlstrcpy(/*@returned@*/ char * t, const char * s)
 /**
  * Encode string for use in SQL statements.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return		formatted string
  */
 static /*@only@*/ char * sqlescapeFormat(HE_t he, /*@null@*/ const char ** av)
@@ -3014,7 +3014,7 @@ static int F2sqlTag(Header h, HE_t he)
 /**
  * Encode the basename of a string for use in XML CDATA.
  * @param he            tag container
- * @param av		paramater list (or NULL)
+ * @param av		parameter list (or NULL)
  * @return              formatted string
  */
 static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
@@ -3221,7 +3221,7 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 /**
  * Return digest of tag data.
  * @param he		tag container
- * @param av		paramater list (NULL uses md5)
+ * @param av		parameter list (NULL uses md5)
  * @return		formatted string
  */
 static /*@only@*/ char * digestFormat(HE_t he, /*@null@*/ const char ** av)
@@ -3264,7 +3264,7 @@ exit:
 /**
  * Return file info.
  * @param he		tag container
- * @param av		paramater list (NULL uses sha1)
+ * @param av		parameter list (NULL uses sha1)
  * @return		formatted string
  */
 static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
@@ -3426,7 +3426,7 @@ exit:
 /**
  * Reformat tag string as a UUID.
  * @param he		tag container
- * @param av		paramater list (NULL uses UUIDv5)
+ * @param av		parameter list (NULL uses UUIDv5)
  * @return		formatted string
  */
 static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
@@ -3488,7 +3488,7 @@ exit:
 /**
  * Return arithmetic expressions of input.
  * @param he		tag container
- * @param av		paramater list (NULL uses sha1)
+ * @param av		parameter list (NULL uses sha1)
  * @return		formatted string
  */
 static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
