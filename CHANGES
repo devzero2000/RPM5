@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: add %_build_iconsize macro to permit configuration.
 	- jbj: trash-and-restore macro config for multiple CLI arg builds.
 	- jbj: tests: disable *UUID tests, enable rpmrepo --database coverage.
 	- jbj: rpmrepo: correct requiressql tag name typo, enable WITH_SQLITE.

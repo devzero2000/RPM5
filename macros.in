@@ -496,6 +496,10 @@ print (t)\
 # Path to magic file used for file classification.
 %_rpmfc_magic_path	%{_rpmhome}/magic
 
+#
+# Maximum Icon: graphic file size (undefined or < 2048 uses 2048).
+%_build_iconsize 2048
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.
