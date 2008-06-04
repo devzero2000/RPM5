@@ -596,6 +596,7 @@ int main(int argc, const char ** argv)
     case MODE_REBUILD:
     case MODE_RECOMPILE:
     {	const char * pkg;
+	int nbuilds = 0;
 
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
@@ -616,6 +617,11 @@ int main(int argc, const char ** argv)
 	while ((pkg = poptGetArg(optCon))) {
 	    const char * specFile = NULL;
 
+	    if (nbuilds++ > 0) {
+		rpmFreeMacros(NULL);
+		rpmFreeRpmrc();
+		(void) rpmReadConfigFiles(NULL, NULL);
+	    }
 	    ba->cookie = NULL;
 	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
 	    if (ec == 0) {
@@ -635,6 +641,8 @@ int main(int argc, const char ** argv)
     case MODE_BUILD:
     case MODE_TARBUILD:
     {	const char * pkg;
+	int nbuilds = 0;
+
         if (!quiet) while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
        
@@ -691,6 +699,11 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
+	    if (nbuilds++ > 0) {
+		rpmFreeMacros(NULL);
+		rpmFreeRpmrc();
+		(void) rpmReadConfigFiles(NULL, NULL);
+	    }
 	    ba->rootdir = rpmcliRootDir;
 	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
