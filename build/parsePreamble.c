@@ -384,16 +384,22 @@ static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
+    static size_t iconsize = 0;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
-    size_t iconsize = 2048;	/* XXX big enuf */
     size_t nb;
     uint8_t * icon = alloca(iconsize+1);
     FD_t fd = NULL;
     int rc = RPMRC_FAIL;	/* assume error */
     int urltype;
     int xx;
+
+    if (iconsize == 0) {
+	iconsize = rpmExpandNumeric("%{?_build_iconsize}");
+	if (iconsize < 2048)
+	    iconsize = 2048;
+    }
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if (sp->flags & RPMFILE_ICON)
