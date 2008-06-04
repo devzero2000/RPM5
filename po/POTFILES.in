@@ -99,4 +99,10 @@ rpmio/strtolocale.c
 rpmio/tiger.c
 rpmio/ugid.c
 rpmio/url.c
+tools/rpm2cpio.c
+tools/rpmcache.c
+tools/rpmcmp.c
 tools/rpmdeps.c
+tools/rpmdigest.c
+tools/rpmmtree.c
+tools/rpmrepo.c

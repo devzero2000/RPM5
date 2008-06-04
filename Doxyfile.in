@@ -633,7 +633,9 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/fts.h \
                          @top_srcdir@/rpmio/getpass.c \
                          @top_srcdir@/rpmio/lookup3.c \
+                         @top_srcdir@/rpmio/lzdio.c \
                          @top_srcdir@/rpmio/macro.c \
+                         @top_srcdir@/rpmio/mount.c \
                          @top_srcdir@/rpmio/rpmcb.h \
                          @top_srcdir@/rpmio/rpmlog.c \
                          @top_srcdir@/rpmio/rpmlog.h \
@@ -688,7 +690,13 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/python/rpmte-py.h \
                          @top_srcdir@/python/rpmts-py.c \
                          @top_srcdir@/python/rpmts-py.h \
-                         @top_srcdir@/tools/rpmdeps.c
+                         @top_srcdir@/tools/rpm2cpio.c \
+                         @top_srcdir@/tools/rpmcache.c \
+                         @top_srcdir@/tools/rpmcmp.c \
+                         @top_srcdir@/tools/rpmdeps.c \
+                         @top_srcdir@/tools/rpmdigest.c \
+                         @top_srcdir@/tools/rpmmtree.c \
+                         @top_srcdir@/tools/rpmrepo.c
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
