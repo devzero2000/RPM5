@@ -87,7 +87,6 @@ rpmio/rmd256.c
 rpmio/rmd320.c
 rpmio/rpmbc.c
 rpmio/rpmdav.c
-rpmio/rpmdigest.c
 rpmio/rpmgrep.c
 rpmio/rpmhash.c
 rpmio/rpmhook.c
@@ -96,10 +95,8 @@ rpmio/rpmlog.c
 rpmio/rpmlua.c
 rpmio/rpmmalloc.c
 rpmio/rpmmg.c
-rpmio/rpmmtree.c
 rpmio/rpmnss.c
 rpmio/rpmpgp.c
-rpmio/rpmrepo.c
 rpmio/rpmrpc.c
 rpmio/rpmsq.c
 rpmio/rpmssl.c
@@ -114,4 +111,10 @@ rpmio/tar.c
 rpmio/tiger.c
 rpmio/ugid.c
 rpmio/url.c
+tools/rpm2cpio.c
+tools/rpmcache.c
+tools/rpmcmp.c
 tools/rpmdeps.c
+tools/rpmdigest.c
+tools/rpmmtree.c
+tools/rpmrepo.c
