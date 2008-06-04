@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
-	librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
+	librpmio.vers testit.sh rpmgrep.1
 
 EXTRA_PROGRAMS = rpmcpio \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist \
@@ -21,7 +21,7 @@ EXTRA_PROGRAMS = rpmcpio \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
 bin_PROGRAMS = rpmdigest # rpmmtree
-man_MANS = # rpmmtree.8
+man_MANS = #
 
 TESTS =
 check_PROGRAMS =

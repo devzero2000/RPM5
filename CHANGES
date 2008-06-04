@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: install rpmmtree.8, update POTFILES.in & Doxyfiles.in.
     - jbj: add %_build_iconsize macro to permit configuration.
     - jbj: trash-and-restore macro config for multiple CLI arg builds.
     - rpm.org: use same code for creating the digest object on iteration and method call,
