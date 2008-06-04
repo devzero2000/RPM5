@@ -1,4 +1,5 @@
 5.1.2 -> 5.1.3:
+    - jbj: trash-and-restore macro config for multiple CLI arg builds.
     - jbj: rpmrepo: correct requiressqlentry tag name typo.
     - jbj: fix: handle '%{arch}\' with \ at end-of-string correctly.
     - jbj: tests: verify ref/* data using rpmdigest/rpmmtree.
