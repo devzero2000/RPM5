@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: use same code for creating the digest object on iteration and method call,
     - jbj: rpmrepo: correct requiressqlentry tag name typo.
     - jbj: fix: handle '%{arch}\' with \ at end-of-string correctly.
     - jbj: tests: verify ref/* data using rpmdigest/rpmmtree.

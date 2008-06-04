@@ -25,6 +25,10 @@ rpmfi_iter(rpmfiObject * s)
 }
 #endif
 
+/* forward ref */
+static PyObject * rpmfi_Digest(rpmfiObject * s)
+	/*@*/;
+
 /*@null@*/
 static PyObject *
 rpmfi_iternext(rpmfiObject * s)
@@ -53,26 +57,6 @@ rpmfi_iternext(rpmfiObject * s)
 	int VFlags = rpmfiVFlags(s->fi);
 	const char * FUser = rpmfiFUser(s->fi);
 	const char * FGroup = rpmfiFGroup(s->fi);
-/*@-shadow@*/
-	int dalgo = 0;
-	size_t dlen = 0;
-	const unsigned char * digest = rpmfiDigest(s->fi, &dalgo, &dlen);
-	const unsigned char * s = digest;
-/*@=shadow@*/
-	const char * fdigest;
-	char * t;
-	static const char hex[] = "0123456789abcdef";
-	int gotMD5, i;
-
-	fdigest = t = memset(alloca(dlen), 0, dlen);
-	gotMD5 = 0;
-	if (s)
-	for (i = 0; i < 16; i++) {
-	    gotMD5 |= *s;
-	    *t++ = hex[ (*s >> 4) & 0xf ];
-	    *t++ = hex[ (*s++   ) & 0xf ];
-	}
-	*t = '\0';
 
 	result = PyTuple_New(13);
 	if (FN == NULL) {
@@ -99,12 +83,7 @@ rpmfi_iternext(rpmfiObject * s)
 	    PyTuple_SET_ITEM(result, 11, Py_None);
 	} else
 	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
-	if (!gotMD5) {
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 12, Py_None);
-	} else
-	    PyTuple_SET_ITEM(result, 12, Py_BuildValue("s", fdigest));
-
+	PyTuple_SET_ITEM(result, 12, rpmfi_Digest(s));
     } else
 	s->active = 0;
 
@@ -257,10 +236,9 @@ rpmfi_FState(rpmfiObject * s)
     return Py_BuildValue("i", rpmfiFState(s->fi));
 }
 
-/* XXX rpmfiMD5 */
 /*@null@*/
 static PyObject *
-rpmfi_MD5(rpmfiObject * s)
+rpmfi_Digest(rpmfiObject * s)
 	/*@*/
 {
     int dalgo = 0;
@@ -271,8 +249,10 @@ rpmfi_MD5(rpmfiObject * s)
     size_t i;
 
     digest = rpmfiDigest(s->fi, &dalgo, &dlen);
-    if (digest == NULL || dlen == 0)
-	return NULL;
+    if (digest == NULL || dlen == 0) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
     fdigest = t = memset(alloca(dlen), 0, dlen);
     for (i = 0; i < dlen; i++, t += 2)
 	sprintf(t, "%02x", digest[i]);
@@ -377,7 +357,9 @@ static struct PyMethodDef rpmfi_methods[] = {
 	NULL},
  {"FState",	(PyCFunction)rpmfi_FState,	METH_NOARGS,
 	NULL},
- {"MD5",	(PyCFunction)rpmfi_MD5,		METH_NOARGS,
+ {"MD5",	(PyCFunction)rpmfi_Digest,	METH_NOARGS,
+	NULL},
+ {"Digest",	(PyCFunction)rpmfi_Digest,	METH_NOARGS,
 	NULL},
  {"FLink",	(PyCFunction)rpmfi_FLink,	METH_NOARGS,
 	NULL},
@@ -396,7 +378,7 @@ static struct PyMethodDef rpmfi_methods[] = {
  {"FClass",	(PyCFunction)rpmfi_FClass,	METH_NOARGS,
 	NULL},
  {"next",	(PyCFunction)rpmfi_Next,	METH_NOARGS,
-"fi.next() -> (FN, FSize, FMode, FMtime, FFlags, FRdev, FInode, FNlink, FState, VFlags, FUser, FGroup, FMD5))\n\
+"fi.next() -> (FN, FSize, FMode, FMtime, FFlags, FRdev, FInode, FNlink, FState, VFlags, FUser, FGroup, Digest))\n\
 - Retrieve next file info tuple.\n" },
 #ifdef	NOTYET
  {"NextD",	(PyCFunction)rpmfi_NextD,	METH_NOARGS,
