@@ -452,8 +452,22 @@ typedef enum rpmTag_e {
     RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
 
 /*@-enummemuse@*/
-    RPMTAG_FIRSTFREE_TAG	/*!< internal */
+    RPMTAG_FIRSTFREE_TAG,	/*!< internal */
 /*@=enummemuse@*/
+
+    /* XXX retrofit arbitrary tags */
+#define RPMTAG_Trackprog	0x46c39442 /* s internal arbitrary */
+#define RPMTAG_Buildprep	0x799c0b4d /* s internal arbitrary */
+#define RPMTAG_Buildprepprog	0x4ba37c9e /* s internal arbitrary */
+#define RPMTAG_Buildbuild	0x5bae1a5a /* s internal arbitrary */
+#define RPMTAG_Buildbuildprog	0x6fb46014 /* s internal arbitrary */
+#define RPMTAG_Buildinstall	0x567f5983 /* s internal arbitrary */
+#define RPMTAG_Buildinstallprog	0x70d4ab6f /* s internal arbitrary */
+#define RPMTAG_Buildcheck	0x7f3b97b5 /* s internal arbitrary */
+#define RPMTAG_Buildcheckprog	0x488a60ce /* s internal arbitrary */
+#define RPMTAG_Buildclean	0x566042bf /* s internal arbitrary */
+#define RPMTAG_Buildcleanprog	0x42c93d41 /* s internal arbitrary */
+
 } rpmTag;
 
 #define	RPMTAG_EXTERNAL_TAG		1000000

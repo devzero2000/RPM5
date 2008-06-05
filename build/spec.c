@@ -672,7 +672,6 @@ printNewSpecfile(Spec spec)
     /*@=branchstate@*/
     msgstr = _free(msgstr);
 
-/*@-boundsread@*/
     for (i = 0; i < sl->sl_nlines; i++) {
 	const char * s = sl->sl_lines[i];
 	if (s == NULL)
@@ -681,7 +680,60 @@ printNewSpecfile(Spec spec)
 	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
 	    printf("\n");
     }
-/*@=boundsread@*/
+}
+
+/**
+ * Add expanded build scriptlet to srpm header.
+ * @param h		srpm header
+ * @param progTag	interpreter tag (0 disables)
+ * @param scriptTag	script tag (0 disables)
+ * @param sb		script body sting buf (NULL disables)
+ * @return		0 always
+ */
+static int initSourceHeaderScriptlet(Header h,
+		rpmTag progTag, rpmTag scriptTag, StringBuf sb)
+	/*@modifies h @*/
+{
+    int xx;
+
+    if (progTag !=(rpmTag) 0) {
+	static const char prog[] = "/bin/sh";	/* XXX FIXME */
+	xx = headerAddEntry(h, progTag, RPM_STRING_TYPE, prog, 1);
+    }
+
+    if (scriptTag != (rpmTag)0 && sb != NULL) {
+	xx = headerAddEntry(h, scriptTag, RPM_STRING_TYPE, getStringBuf(sb), 1);
+    }
+    return 0;
+}
+
+/**
+ * Add expanded build scriptlets to srpm header.
+ * @param spec		spec file control structure
+ * @return		0 always
+ */
+static int initSourceHeaderScriptlets(Spec spec)
+	/*@modifies spec->sourceHeader @*/
+{
+    int xx;
+
+    if (spec->prep != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    RPMTAG_Buildprepprog, RPMTAG_Buildprep, spec->prep);
+    if (spec->build != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    RPMTAG_Buildbuildprog, RPMTAG_Buildbuild, spec->build);
+    if (spec->install != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    RPMTAG_Buildinstallprog, RPMTAG_Buildinstall, spec->install);
+    if (spec->check != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    RPMTAG_Buildcheckprog, RPMTAG_Buildcheck, spec->check);
+    if (spec->clean != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    RPMTAG_Buildcleanprog, RPMTAG_Buildclean, spec->clean);
+
+   return 0;
 }
 
 /**
@@ -708,7 +760,6 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     int verify = 0;
     int xx;
 
-/*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
     if (parseSpec(ts, specName, "/", recursing, passPhrase,
 		cookie, anyarch, force, verify)
@@ -720,7 +771,6 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 	goto exit;
     }
     /*@=mods@*/
-/*@=branchstate@*/
 
     res = 0;
     if (specedit) {
@@ -731,6 +781,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     switch (qva->qva_source) {
     case RPMQV_SPECSRPM:
 	xx = initSourceHeader(spec, NULL);
+	xx = initSourceHeaderScriptlets(spec);
 	xx = qva->qva_showPackage(qva, ts, spec->sourceHeader);
 	break;
     default:
