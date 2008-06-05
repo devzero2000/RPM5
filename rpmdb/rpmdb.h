@@ -1004,7 +1004,20 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
 /*@=exportlocal@*/
 
 /** \ingroup rpmdb
- * Return number of instances of package in rpm database.
+ * Return number of instances of key in a tag index.
+ * @param db		rpm database
+ * @param tag		rpm tag
+ * @param keyp		key data
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		number of instances
+ */
+int rpmdbCount(/*@null@*/ rpmdb db, rpmTag tag,
+		const void * keyp, size_t keylen)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmdb
+ * Return number of instances of package in Name index.
  * @param db		rpm database
  * @param name		rpm package name
  * @return		number of instances
