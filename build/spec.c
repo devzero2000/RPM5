@@ -757,6 +757,69 @@ printNewSpecfile(Spec spec)
 }
 
 /**
+ * Add expanded build scriptlet to srpm header.
+ * @param h		srpm header
+ * @param progTag	interpreter tag (0 disables)
+ * @param scriptTag	script tag (0 disables)
+ * @param sb		script body sting buf (NULL disables)
+ * @return		0 always
+ */
+static int initSourceHeaderScriptlet(Header h,
+		rpmTag progTag, rpmTag scriptTag, StringBuf sb)
+	/*@modifies h @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    int xx;
+
+    if (progTag !=(rpmTag) 0) {
+	static const char prog[] = "/bin/sh";	/* XXX FIXME */
+	he->tag = progTag;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = prog;
+	he->c = 1;
+	xx = headerPut(h, he, 0);
+    }
+
+    if (scriptTag != (rpmTag)0 && sb != NULL) {
+	he->tag = scriptTag;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = getStringBuf(sb);
+	he->c = 1;
+	xx = headerPut(h, he, 0);
+    }
+    return 0;
+}
+
+/**
+ * Add expanded build scriptlets to srpm header.
+ * @param spec		spec file control structure
+ * @return		0 always
+ */
+static int initSourceHeaderScriptlets(Spec spec)
+	/*@modifies spec->sourceHeader @*/
+{
+    int xx;
+
+    if (spec->prep != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    tagValue("Buildprepprog"), tagValue("Buildprep"), spec->prep);
+    if (spec->build != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    tagValue("Buildbuildprog"), tagValue("Buildbuild"), spec->build);
+    if (spec->install != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    tagValue("Buildinstallprog"), tagValue("Buildinstall"), spec->install);
+    if (spec->check != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    tagValue("Buildcheckprog"), tagValue("Buildcheck"), spec->check);
+    if (spec->clean != NULL)
+	xx = initSourceHeaderScriptlet(spec->sourceHeader,
+	    tagValue("Buildcleanprog"), tagValue("Buildclean"), spec->clean);
+
+   return 0;
+}
+
+/**
  * Parse a spec file, and query the resultant header.
  * @param ts		rpm transaction
  * @param qva		query args
@@ -800,6 +863,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     switch (qva->qva_source) {
     case RPMQV_SPECSRPM:
 	xx = initSourceHeader(spec, NULL);
+	xx = initSourceHeaderScriptlets(spec);
 	xx = qva->qva_showPackage(qva, ts, spec->sourceHeader);
 	break;
     default:

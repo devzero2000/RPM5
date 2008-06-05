@@ -17,6 +17,7 @@
     - jbj: tests: download popt-1.14 packages for use in tests.
     - jbj: yaml: fix: single element string arrays had extra "- ".
     - jbj: yaml: remove the hotwired hack for SRPM dirnames indentation.
+    - jbj: add expanded build scripts for --specsrpm --queryformat spewage.
     - jbj: backport --queryformat pipeline syntax from HEAD.
     - jbj: update Russian PO file (from Translation Project).
     - jbj: upgrade to db-4.7.25.
