@@ -1,4 +1,6 @@
 5.1.2 -> 5.1.3:
+    - jbj: debuginfo: refactor 2 existing upgrade policy rules before
+        adding a new contextually sensitive rule for -debuginfo packages.
     - jbj: add %_build_iconsize macro to permit configuration.
     - jbj: trash-and-restore macro config for multiple CLI arg builds.
     - jbj: rpmrepo: correct requiressqlentry tag name typo.
