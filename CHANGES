@@ -1,6 +1,5 @@
 4.4.9 -> 4.5:
 	- jbj: expose intFormat() for use by ":rpn()".
-	- jbj: hmmm, HDRUUID segfaults, todo++ ...
 	- jbj: backport remaining header ext tags/formats.
 	- jbj: hotwire -luuid and backport rpmuuid.[ch].
 	- jbj: add expanded build scripts for --specsrpm --queryformat

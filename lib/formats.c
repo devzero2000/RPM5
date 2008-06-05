@@ -1153,7 +1153,7 @@ assert(he->t == RPM_STRING_TYPE);
     case 4:
 	break;
     }
-    he->p.ptr = _free(he->p.ptr);
+    he->p.ptr = headerFreeData(he->p.ptr, he->t);
     he->t = RPM_BIN_TYPE;
     he->c = 128/8;
     he->p.ptr = xcalloc(1, he->c);
