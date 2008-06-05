@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+	- jbj: debuginfo: refactor 2 existing upgrade policy rules before
+	    adding a new contextually sensitive rule for -debuginfo packages.
+	- jbj: install rpmmtree.8, update POTFILES.in & Doxyfiles.in.
 	- jbj: add %_build_iconsize macro to permit configuration.
 	- jbj: trash-and-restore macro config for multiple CLI arg builds.
 	- jbj: tests: disable *UUID tests, enable rpmrepo --database coverage.
