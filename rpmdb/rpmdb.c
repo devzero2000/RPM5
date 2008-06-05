@@ -1534,8 +1534,7 @@ if (rc == 0)
     return 0;
 }
 
-/* XXX python/upgrade.c, install.c, uninstall.c */
-int rpmdbCountPackages(rpmdb db, const char * name)
+int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -1544,20 +1543,23 @@ DBT * data = alloca(sizeof(*data));
     int rc;
     int xx;
 
-    if (db == NULL)
+    if (db == NULL || keyp == NULL)
 	return 0;
 
 memset(key, 0, sizeof(*key));
 memset(data, 0, sizeof(*data));
 
-    dbi = dbiOpen(db, RPMTAG_NAME, 0);
+    dbi = dbiOpen(db, tag, 0);
     if (dbi == NULL)
 	return 0;
 
+     if (keylen == 0)
+	keylen = strlen(keyp);
+
 /*@-temptrans@*/
-key->data = (void *) name;
+key->data = (void *) keyp;
 /*@=temptrans@*/
-key->size = strlen(name);
+key->size = (u_int32_t) keylen;
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -1592,6 +1594,12 @@ key->size = strlen(name);
 #endif
 
     return rc;
+}
+
+/* XXX python/upgrade.c, install.c, uninstall.c */
+int rpmdbCountPackages(rpmdb db, const char * name)
+{
+    return rpmdbCount(db, RPMTAG_NAME, name, 0);
 }
 
 /**
@@ -3767,36 +3775,39 @@ static int rpmdbMoveDatabase(const char * prefix,
 	/*@modifies fileSystem, internalState @*/
 {
     int i;
-    char * ofilename, * nfilename;
+    char * ofn, * nfn;
     struct stat * nst = alloca(sizeof(*nst));
     int rc = 0;
     int xx;
+    int selinux = is_selinux_enabled() > 0 && (matchpathcon_init(NULL) != -1);
+    sigset_t sigMask;
  
     i = strlen(olddbpath);
     /*@-branchstate@*/
     if (olddbpath[i - 1] != '/') {
-	ofilename = alloca(i + 2);
-	strcpy(ofilename, olddbpath);
-	ofilename[i] = '/';
-	ofilename[i + 1] = '\0';
-	olddbpath = ofilename;
+	ofn = alloca(i + 2);
+	strcpy(ofn, olddbpath);
+	ofn[i] = '/';
+	ofn[i + 1] = '\0';
+	olddbpath = ofn;
     }
     /*@=branchstate@*/
     
     i = strlen(newdbpath);
     /*@-branchstate@*/
     if (newdbpath[i - 1] != '/') {
-	nfilename = alloca(i + 2);
-	strcpy(nfilename, newdbpath);
-	nfilename[i] = '/';
-	nfilename[i + 1] = '\0';
-	newdbpath = nfilename;
+	nfn = alloca(i + 2);
+	strcpy(nfn, newdbpath);
+	nfn[i] = '/';
+	nfn[i + 1] = '\0';
+	newdbpath = nfn;
     }
     /*@=branchstate@*/
     
-    ofilename = alloca(strlen(prefix) + strlen(olddbpath) + 40);
-    nfilename = alloca(strlen(prefix) + strlen(newdbpath) + 40);
+    ofn = alloca(strlen(prefix) + strlen(olddbpath) + 40);
+    nfn = alloca(strlen(prefix) + strlen(newdbpath) + 40);
 
+    blockSignals(NULL, &sigMask);
     switch (_olddbapi) {
     case 4:
         /* Fall through */
@@ -3819,42 +3830,51 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    }
 
 	    base = mapTagName(rpmtag);
-	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
-	    (void)rpmCleanPath(ofilename);
-	    if (!rpmioFileExists(ofilename))
+	    sprintf(ofn, "%s/%s/%s", prefix, olddbpath, base);
+	    (void)rpmCleanPath(ofn);
+	    if (!rpmioFileExists(ofn))
 		continue;
-	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
-	    (void)rpmCleanPath(nfilename);
+	    sprintf(nfn, "%s/%s/%s", prefix, newdbpath, base);
+	    (void)rpmCleanPath(nfn);
 
 	    /*
 	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
 	     * XXX Yes, the variable names are backwards.
 	     */
-	    if (stat(nfilename, nst) < 0)
-		if (stat(ofilename, nst) < 0)
+	    if (stat(nfn, nst) < 0)
+		if (stat(ofn, nst) < 0)
 		    continue;
 
-	    if ((xx = rename(ofilename, nfilename)) != 0) {
+	    if ((xx = rename(ofn, nfn)) != 0) {
 		rc = 1;
 		continue;
 	    }
-	    xx = chown(nfilename, nst->st_uid, nst->st_gid);
-	    xx = chmod(nfilename, (nst->st_mode & 07777));
+
+	    /* Restore uid/gid/mode/mtime/security context if possible. */
+	    xx = chown(nfn, nst->st_uid, nst->st_gid);
+	    xx = chmod(nfn, (nst->st_mode & 07777));
 	    {	struct utimbuf stamp;
 		stamp.actime = nst->st_atime;
 		stamp.modtime = nst->st_mtime;
-		xx = utime(nfilename, &stamp);
+		xx = utime(nfn, &stamp);
+	    }
+	    if (selinux) {
+		security_context_t scon = NULL;
+		if (matchpathcon(nfn, nst->st_mode, &scon) != -1)
+		    xx = setfilecon(nfn, scon);
+		if (scon != NULL)
+		    freecon(scon);
 	    }
 	}
 	for (i = 0; i < 16; i++) {
-	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
-	    (void)rpmCleanPath(ofilename);
-	    if (rpmioFileExists(ofilename))
-		xx = unlink(ofilename);
-	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
-	    (void)rpmCleanPath(nfilename);
-	    if (rpmioFileExists(nfilename))
-		xx = unlink(nfilename);
+	    sprintf(ofn, "%s/%s/__db.%03d", prefix, olddbpath, i);
+	    (void)rpmCleanPath(ofn);
+	    if (rpmioFileExists(ofn))
+		xx = unlink(ofn);
+	    sprintf(nfn, "%s/%s/__db.%03d", prefix, newdbpath, i);
+	    (void)rpmCleanPath(nfn);
+	    if (rpmioFileExists(nfn))
+		xx = unlink(nfn);
 	}
 	break;
     case 2:
@@ -3862,7 +3882,10 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 0:
 	break;
     }
+    unblockSignals(NULL, &sigMask);
 
+    if (selinux)
+	matchpathcon_fini();
     return rc;
 }
 

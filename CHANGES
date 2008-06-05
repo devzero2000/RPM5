@@ -1,6 +1,11 @@
 4.4.9 -> 4.5:
+	- jbj: fix: is_selinux_enbled() > 0 is the correct test.
+	- rpm.org: Mask signals while moving rebuilt rpmdb into place.
+	- rpm.org: Restore rpmdb selinux contexts to default after rebuild (#442149)
 	- jbj: debuginfo: refactor 2 existing upgrade policy rules before
 	    adding a new contextually sensitive rule for -debuginfo packages.
+	- jbj: debuginfo: add general rpmdbCount() to get number of items for
+	    any tag index, not just RPMTAG_NAME as was in rpmdbCountPackages().
 	- jbj: install rpmmtree.8, update POTFILES.in & Doxyfiles.in.
 	- jbj: add %_build_iconsize macro to permit configuration.
 	- jbj: trash-and-restore macro config for multiple CLI arg builds.

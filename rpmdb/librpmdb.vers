@@ -35,6 +35,7 @@ LIBRPMDB_0
     headerGetOrigin;
     headerSetOrigin;
     headerGetInstance;
+    headerSetInstance;
     headerGetEndOff;
     headerSetEndOff;
     headerGetStartOff;
@@ -62,6 +63,7 @@ LIBRPMDB_0
     rpmdbClose;
     rpmdbBlockDBI;
     rpmdbCloseDBI;
+    rpmdbCount;
     rpmdbCountPackages;
     rpmdbFindFpList;
     rpmdbFreeIterator;
