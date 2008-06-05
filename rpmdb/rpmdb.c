@@ -1568,8 +1568,7 @@ if (rc == 0)
     return 0;
 }
 
-/* XXX python/upgrade.c, install.c, uninstall.c */
-int rpmdbCountPackages(rpmdb db, const char * name)
+int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -1578,20 +1577,23 @@ DBT * data = alloca(sizeof(*data));
     int rc;
     int xx;
 
-    if (db == NULL)
+    if (db == NULL || keyp == NULL)
 	return 0;
 
 memset(key, 0, sizeof(*key));
 memset(data, 0, sizeof(*data));
 
-    dbi = dbiOpen(db, RPMTAG_NAME, 0);
+    dbi = dbiOpen(db, tag, 0);
     if (dbi == NULL)
 	return 0;
 
+     if (keylen == 0)
+	keylen = strlen(keyp);
+
 /*@-temptrans@*/
-key->data = (void *) name;
+key->data = (void *) keyp;
 /*@=temptrans@*/
-key->size = (u_int32_t) strlen(name);
+key->size = (u_int32_t) keylen;
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -1626,6 +1628,12 @@ key->size = (u_int32_t) strlen(name);
 #endif
 
     return rc;
+}
+
+/* XXX python/upgrade.c, install.c, uninstall.c */
+int rpmdbCountPackages(rpmdb db, const char * name)
+{
+    return rpmdbCount(db, RPMTAG_NAME, name, 0);
 }
 
 /**
@@ -3805,7 +3813,10 @@ static int rpmdbMoveDatabase(const char * prefix,
     const char * ofn, * nfn;
     int rc = 0;
     int xx;
+    int selinux = is_selinux_enabled() > 0 && (matchpathcon_init(NULL) != -1);
+    sigset_t sigMask;
  
+    blockSignals(NULL, &sigMask);
     switch (_olddbapi) {
     default:
     case 4:
@@ -3855,6 +3866,8 @@ static int rpmdbMoveDatabase(const char * prefix,
 		rc = 1;
 		goto bottom;
 	    }
+
+	    /* Restore uid/gid/mode/mtime/security context if possible. */
 	    xx = Chown(nfn, nst->st_uid, nst->st_gid);
 	    xx = Chmod(nfn, (nst->st_mode & 07777));
 	    {	struct utimbuf stamp;
@@ -3862,6 +3875,14 @@ static int rpmdbMoveDatabase(const char * prefix,
 		stamp.modtime = nst->st_mtime;
 		xx = Utime(nfn, &stamp);
 	    }
+	    if (selinux) {
+		security_context_t scon = NULL;
+		if (matchpathcon(nfn, nst->st_mode, &scon) != -1)
+		    xx = setfilecon(nfn, scon);
+		if (scon != NULL)
+		    freecon(scon);
+	    }
+
 bottom:
 	    ofn = _free(ofn);
 	    nfn = _free(nfn);
@@ -3892,6 +3913,10 @@ bottom:
     case 0:
 	break;
     }
+    unblockSignals(NULL, &sigMask);
+
+    if (selinux)
+	matchpathcon_fini();
     return rc;
 }
 
