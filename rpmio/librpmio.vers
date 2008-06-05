@@ -241,6 +241,7 @@ LIBRPMIO_0
     rpmswNow;
     rpmswPrint;
     rpmswSub;
+    rpmuuidMake;
     Stat;
     Symlink;
     ufdClose;

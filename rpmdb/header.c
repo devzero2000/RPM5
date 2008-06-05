@@ -2805,7 +2805,7 @@ bingo:
  * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
-static char * intFormat(HE_t he, /*@null@*/ const char ** av, const char * fmt)
+char * intFormat(HE_t he, /*@null@*/ const char ** av, const char * fmt)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     int_64 ival = 0;

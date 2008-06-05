@@ -641,6 +641,16 @@ uint32_t headerGetEndOff(/*@null@*/ Header h)
 uint32_t headerSetEndOff(/*@null@*/ Header h, uint32_t endoff)
 	/*@modifies h @*/;
 
+/**
+ * Convert tag data representation.
+ * @param he		tag container
+ * @param av		parameter array (or NULL)
+ * @param fmt		output radix (NULL or "" assumes %d)
+ * @return		formatted string
+ */
+char * intFormat(HE_t he, /*@null@*/ const char ** av, const char * fmt)
+	/*@*/;
+
 /*@=voidabstract =nullpass =mustmod =compdef =shadow =predboolothers @*/
 
 #ifdef __cplusplus

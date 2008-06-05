@@ -49,6 +49,7 @@ LIBRPMDB_0
     hGetColor;
     hGetNEVR;
     hGetNEVRA;
+    intFormat;
     _init;
     _tagcache;
     mergesort;

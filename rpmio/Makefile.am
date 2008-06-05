@@ -22,7 +22,7 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	argv.h envvar.h fts.h mire.h rpmdav.h rpmhash.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
-	rpmsq.h rpmsw.h ugid.h
+	rpmsq.h rpmsw.h ugid.h rpmuuid.h
 noinst_HEADERS = \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
@@ -40,7 +40,7 @@ librpmio_la_SOURCES = \
 	salsa10.c salsa20.c tiger.c \
 	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
-	stubs.c url.c ugid.c
+	stubs.c url.c ugid.c rpmuuid.c
 librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
@@ -50,7 +50,7 @@ librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFL
 	@WITH_KEYUTILS_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@LTLIBINTL@
-librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
+librpmio_la_LIBADD = -luuid -lossp-uuid # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 
 if HAVE_LD_VERSION_SCRIPT
