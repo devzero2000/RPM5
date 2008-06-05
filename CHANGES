@@ -1,4 +1,6 @@
 5.0.3 -> 5.0.4:
+    - jbj: devtool system: enable --with-pcre.
+    - jbj: devtool system: backport and enable --with-uuid (w/o lua for now).
     - jbj: add expanded build scripts for --specsrpm --queryformat spewage.
      - jbj: fix: is_selinux_enbled() > 0 is the correct test.
      - rpm.org: Mask signals while moving rebuilt rpmdb into place.
