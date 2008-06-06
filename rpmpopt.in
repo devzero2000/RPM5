@@ -16,6 +16,10 @@
 #
 
 rpm	alias --scripts --qf '\
+%|PRETRANS?{pretransinstall scriptlet\
+%|PRETRANSPROG?{ (using %{PRETRANSPROG})}|:\n%{PRETRANS}\n}:\
+{%|PRETRANSPROG?{pretransinstall program: %{PRETRANSPROG}\n}|}|\
+\
 %|PREIN?{preinstall scriptlet\
 %|PREINPROG?{ (using %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
@@ -31,10 +35,6 @@ rpm	alias --scripts --qf '\
 %|POSTUN?{postuninstall scriptlet\
 %|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
-\
-%|PRETRANS?{pretransinstall scriptlet\
-%|PRETRANSPROG?{ (using %{PRETRANSPROG})}|:\n%{PRETRANS}\n}:\
-{%|PRETRANSPROG?{pretransinstall program: %{PRETRANSPROG}\n}|}|\
 \
 %|POSTTRANS?{posttransinstall scriptlet\
 %|POSTTRANSPROG?{ (using %{POSTTRANSPROG})}|:\n%{POSTTRANS}\n}:\
@@ -56,7 +56,7 @@ rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILE
 
 rpm	alias --setugids -q --qf \
         '[ch %{FILEUSERNAME:shescape} %{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
-        --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh" \
+        --pipe "(echo 'ch() { chown -h -- \"$1\" \"$3\";chgrp -h -- \"$2\" \"$3\"; }';grep -v \(none\))|sh" \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
 rpm	alias --conflicts	--qf \
@@ -83,8 +83,8 @@ rpm	alias --enhances	--qf "[%{enhances}\n]" \
 rpm	alias --info --qf 'Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocatable)}|\n\
 Version     : %-27{VERSION}       Vendor: %{VENDOR}\n\
 Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\n\
-Install Date: %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)         }|      Build Host: %{BUILDHOST}\n\
-Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n\
+Install Date: %|INSTALLTIME?{%-27.27{INSTALLTIME:date}}:{(not installed)         }|   Build Host: %{BUILDHOST}\n\
+Group       : %-29.29{GROUP} Source RPM: %{SOURCERPM}\n\
 Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|\n\
 Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig}}:{%|SIGGPG?{%{SIGGPG:pgpsig}}:{%|SIGPGP?{%{SIGPGP:pgpsig}}:{(none)}|}|}|}|\n\
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
@@ -108,14 +108,14 @@ rpm	alias --yum:primary.xml --qf '\
 \n  <name>%{NAME:cdata}</name>\
 \n  <arch>%{ARCH:cdata}</arch>\
 \n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
-\n  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\
+\n  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}:{XXX}|</checksum>\
 \n  <summary>%{SUMMARY:cdata}</summary>\
 \n  <description>%{DESCRIPTION:cdata}</description>\
 \n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file="%{PACKAGETIME}" build="%{BUILDTIME}"/>\
-\n  <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
-\n  <location i%|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href="%{PACKAGEORIGIN:bncdata}"/>\
+\n  <size package="%{PACKAGESIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
+\n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href="%{PACKAGEORIGIN:bncdata}"/>\
 \n  <format>\
 %|license?{\
 \n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
@@ -244,6 +244,84 @@ INSERT into packages values (\
 \n"\
 	--POPTdesc=$"display yum primary.sqlite import"
 
+rpm	alias --yum:primary.yaml --qf '\
+Package:\
+\n  Id:          %|HDRID?{%{HDRID}}:{-}|\
+\n  Name:        %{NAME:yaml}\
+\n  Arch:        %{ARCH:yaml}\
+\n  Version:     %{VERSION:yaml}\
+\n  Epoch:       %|EPOCH?{%{EPOCH}}:{0}|\
+\n  Release:     %{RELEASE:yaml}\
+\n  Summary:     %{SUMMARY:yaml}\
+\n  Description: %{DESCRIPTION:yaml}\
+\n  Url:         %|URL?{%{URL:yaml}}:{-}|\
+\n  Filetime:    %{PACKAGETIME}\
+\n  Buildtime:   %{BUILDTIME}\
+\n  License:     %|license?{%{LICENSE:yaml}}:{-}|\
+\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{-}|\
+\n  Group:       %|group?{%{GROUP:yaml}}:{-}|\
+\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{-}|\
+\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{-}|\
+\n  Hdrstart:    %{HEADERSTARTOFF}\
+\n  Hdrend:      %{HEADERENDOFF}\
+\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
+\n  Packagesize: %{PACKAGESIZE}\
+\n  Size:        %{SIZE}\
+\n  Archivesize: %{ARCHIVESIZE}\
+\n  Location:    %{PACKAGEORIGIN:yaml}\
+\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
+\n  Idtype:      sha\
+\n  Rpm:\
+%|license?{\
+\n    License: 	 %{LICENSE:yaml}\
+}|\
+%|vendor?{\
+\n    Vendor:    %{VENDOR:yaml}\
+}|\
+%|group?{\
+\n    Group:     %{GROUP:yaml}\
+}|\
+%|buildhost?{\
+\n    Buildhost: %{BUILDHOST:yaml}\
+}|\
+%|sourcerpm?{\
+\n    Sourcerpm: %{SOURCERPM:yaml}\
+}|\
+\n    Hdrstart:  %{HEADERSTARTOFF}\
+\n    Hdrend:    %{HEADERENDOFF}\
+%|providexmlentry?{\
+\n    Provides:\
+[\
+\n      - %{providesqlentry}\
+]\
+}|\
+%|requirexmlentry?{\
+\n    Requires:\
+[\
+\n      - %{requiresqlentry}\
+]\
+}|\
+%|conflictxmlentry?{\
+\n    Conflicts:\
+[\
+\n      - %{conflictsqlentry}\
+]\
+}|\
+%|obsoletexmlentry?{\
+\n    Obsoletes:\
+[\
+\n      - %{obsoletesqlentry}\
+]\
+}|\
+%|filesxmlentry1?{\
+\n    Files:\
+[\
+\n      - %{filessqlentry1}\
+]\
+}|\
+\n'\
+	--POPTdesc=$"display yum primary.yaml markup"
+
 rpm	alias --yum:filelists.xml --qf '\
 <package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
 \n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
@@ -268,6 +346,23 @@ INSERT into packages values (\
 ]}|\
 \n" \
 	--POPTdesc=$"display yum filelists.sqlite import"
+
+rpm	alias --yum:filelists.yaml --qf '\
+Filelists:\
+\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Name:    %{NAME:yaml}\
+\n  Arch:    %{ARCH:yaml}\
+\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
+\n  Version: %{VERSION:yaml}\
+\n  Release: %{RELEASE:yaml}\
+\n  Files:\
+%|filesxmlentry2?{\
+[\
+\n    - %{filesxmlentry2}\
+]\
+}|\
+\n' \
+	--POPTdesc=$"display yum filelists.yaml markup"
 
 rpm	alias --yum:other.xml --qf '\
 <package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
@@ -300,6 +395,23 @@ INSERT into packages values (\
 }|\
 \n" \
 	--POPTdesc=$"display yum other.sqlite import"
+
+rpm	alias --yum:other.yaml --qf '\
+Other:\
+\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Name:    %{NAME:yaml}\
+\n  Arch:    %{ARCH:yaml}\
+\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
+\n  Version: %{VERSION:yaml}\
+\n  Release: %{RELEASE:yaml}\
+\n  Changelogs:\
+%|changelogname?{\
+[\
+\n    - <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\
+]\
+}|\
+\n' \
+	--POPTdesc=$"display yum other.yaml markup"
 
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
@@ -440,6 +552,11 @@ rpmbuild alias --without	--define "_without_!#:+  --without-!#:+" \
 rpmbuild alias --buildroot	--define '.buildroot !#:+' \
 	--POPTdesc=$"override build root" \
 	--POPTargs=$"DIRECTORY"
+
+# XXX unimplemented in rpm-4_5
+#rpmbuild alias --lsb --noautoreq --noautoprov \
+#	--define '_use_internal_dependency_generator 0' \
+#	--notinlsb
 
 # \endverbatim
 #*/
