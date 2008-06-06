@@ -1924,26 +1924,22 @@ zapRelation(rpmte q, rpmte p,
 	    continue;
 	/*@=abstractcompare@*/
 
-	requires = rpmteDS(p, tsi->tsi_tagn);
+	requires = rpmteDS((rpmteType(p) == TR_REMOVED ? q : p), tsi->tsi_tagn);
 	if (requires == NULL) continue;		/* XXX can't happen */
 
 	(void) rpmdsSetIx(requires, tsi->tsi_reqx);
 
 	Flags = rpmdsFlags(requires);
 
-#if 0
 	dp = rpmdsNewDNEVR( identifyDepend(Flags), requires);
-#endif
 
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	if (zap) {
-#if 0
 	    rpmlog(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
-#endif
 	    rpmteTSI(p)->tsi_count--;
 	    if (tsi_prev) tsi_prev->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
