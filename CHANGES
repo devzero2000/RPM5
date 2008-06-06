@@ -1,4 +1,8 @@
 5.0.3 -> 5.0.4:
+    - jbj: shorten debugging messages, --queryformat strings passed to
+	headerSprintf are getting huge.
+    - jbj: fix: NUL terminate dst on EXPR->ARRAY parser state transition
+	(see --yum:primary.yaml spew for reproducer)
     - jbj: devtool system: enable --with-pcre.
     - jbj: devtool system: backport and enable --with-uuid (w/o lua for now).
     - jbj: add expanded build scripts for --specsrpm --queryformat spewage.
