@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <otherdata xmlns="http://linux.duke.edu/metadata/other" packages="3">
-<package pkgid="b0819863b432399166941275ec3044a88d974746" name="devtool-sanity" arch="noarch">
+<package pkgid="c6714204145aa902a416f977fed1a2eaa8e295b2" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1212789600">- add some additional content</changelog>
 </package>
 <package pkgid="26c75af3071d9cd2a8efe9a1d2af9c3518791001" name="popt" arch="i386">
   <version epoch="0" ver="1.14" rel="1"/>

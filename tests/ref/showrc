@@ -73,6 +73,8 @@ else
 done 
   %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} --exec-prefix=%{_exec_prefix} --bindir=%{_bindir} --sbindir=%{_sbindir} --sysconfdir=%{_sysconfdir} --datadir=%{_datadir} --includedir=%{_includedir} --libdir=%{_libdir} --libexecdir=%{_libexecdir} --localstatedir=%{_localstatedir} --sharedstatedir=%{_sharedstatedir} --mandir=%{_mandir} --infodir=%{_infodir} %* ; 
   %{-C:cd "${_mydir}"; unset _mydir}
+-14: NVR	%{name}-%{version}-%{release}
+-14: NVRA	%{name}-%{version}-%{release}.%{_target_cpu}
 -14: ___NVRA	%%{NAME}-%%{VERSION}-%%{RELEASE}%%|ARCH?{.%%|SOURCERPM?{%%{ARCH}}:{src}|}:{}|
 -14: ___build_args	-e
 -14: ___build_cmd	%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
@@ -629,6 +631,18 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%
 -14: perl_vendorarch	%(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
 -14: perl_vendorlib	%(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
 -14: perl_version	%(eval "`%{__perl} -V:version`"; echo $version)
+-14: post	%%post
+  echo "--- post(%NVRA) arg $1 ..."
+%nil
+-14: postun	%%postun
+  echo "--- postun(%NVRA)        arg $1 ..."
+%nil
+-14: pre	%%pre
+  echo "--- pre(%NVRA)  arg $1 ..."
+%nil
+-14: preun	%%preun
+  echo "--- preun(%NVRA)         arg $1 ..."
+%nil
 -14: py_compile(O)	
 find %1 -name '*.pyc' -name '*.pyo' -exec rm -f {} \; 
 %{__python} %{?O:-O} -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1
@@ -647,11 +661,17 @@ if f then
     f:close()
 end
 }1}%{rpm_license_check}
+-14: sanity	%%sanity
+  echo "--- sanity(%NVRA)        arg $1 ..."
+%nil
 -15: sigtype	none
 -14: sources	%{lua: for i, s in ipairs(sources) do print(s.." ") end}
 -14: sparc	sun4 sun4m sun4c sun4d sun4u sparc sparcv8 sparcv9 sparc64 sparc64v sparcv9b sparcv9v sparcv9v2
 -14: tmpdir	%{_tmppath}
 -14: undefined	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
+-14: verifyscript	%%verifyscript
+  echo "--- verifyscript(%NVRA)  arg $1 ..."
+%nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 422 empty 0
+======================== active 430 empty 0
