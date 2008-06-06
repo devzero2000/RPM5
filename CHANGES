@@ -1,4 +1,8 @@
 5.1.2 -> 5.1.3:
+    - jbj: shorten debugging messages, --queryformat strings passed to
+	headerSprintf are getting huge.
+    - jbj: fix: NUL terminate dst on EXPR->ARRAY parser state transition
+	(see --yum:primary.yaml spew for reproducer).
     - jbj: fix: is_selinux_enbled() > 0 is the correct test.
     - rpm.org: Mask signals while moving rebuilt rpmdb into place.
     - rpm.org: Restore rpmdb selinux contexts to default after rebuild (#442149)
