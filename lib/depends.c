@@ -1813,7 +1813,7 @@ zapRelation(rpmte q, rpmte p,
 	    continue;
 	/*@=abstractcompare@*/
 
-	requires = rpmteDS(p, tsi->tsi_tagn);
+	requires = rpmteDS((rpmteType(p) == TR_REMOVED ? q : p), tsi->tsi_tagn);
 	if (requires == NULL) continue;		/* XXX can't happen */
 
 	(void) rpmdsSetIx(requires, tsi->tsi_reqx);

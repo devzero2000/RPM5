@@ -3,6 +3,7 @@
 	    headerSprintf are getting huge.
 	- jbj: fix: NUL terminate dst on EXPR->ARRAY parser state transition
 	    (see --yum:primary.yaml spew for reproducer)
+	- jbj: restore deploop diagnostic message (Kacper Kornet kornet@camk.edu.pl).
 	- jbj: expose intFormat() for use by ":rpn()".
 	- jbj: backport remaining header ext tags/formats.
 	- jbj: hotwire -luuid and backport rpmuuid.[ch].
