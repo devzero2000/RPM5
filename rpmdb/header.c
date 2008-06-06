@@ -3086,7 +3086,7 @@ static const char *pstates[] = {
 
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "-->     parseFormat(%p, \"%s\", %p, %p, %p, %s)\n", hsa, str, formatPtr, numTokensPtr, endPtr, pstates[(state & 0x3)]);
+fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, str, formatPtr, numTokensPtr, endPtr, pstates[(state & 0x3)]);
 /*@=modfilesys@*/
 
     /* upper limit on number of individual formats */
@@ -3334,7 +3334,7 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "\t*%p = *%p \"%s\"\n", dst, start, start);
+fprintf(stderr, "\t*%p = *%p \"%.30s\"\n", dst, start, start);
 /*@=modfilesys@*/
 	    if (start[0] == '\\' && start[1] != '\0') {
 		start++;
@@ -3343,6 +3343,7 @@ fprintf(stderr, "\t*%p = *%p \"%s\"\n", dst, start, start);
 	    } else {
 		*dst++ = *start++;
 	    }
+	    if (dst < start) *dst = '\0';
 	    /*@switchbreak@*/ break;
 	}
 	if (done)
@@ -3380,7 +3381,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "-->   parseExpression(%p, %p, \"%s\", %p)\n", hsa, token, str, endPtr);
+fprintf(stderr, "-->   parseExpression(%p, %p, \"%.20s...\", %p)\n", hsa, token, str, endPtr);
 /*@=modfilesys@*/
 
     hsa->errmsg = NULL;

@@ -1,4 +1,8 @@
 4.4.9 -> 4.5:
+	- jbj: shorten debugging messages, --queryformat strings passed to
+	    headerSprintf are getting huge.
+	- jbj: fix: NUL terminate dst on EXPR->ARRAY parser state transition
+	    (see --yum:primary.yaml spew for reproducer)
 	- jbj: expose intFormat() for use by ":rpn()".
 	- jbj: backport remaining header ext tags/formats.
 	- jbj: hotwire -luuid and backport rpmuuid.[ch].
