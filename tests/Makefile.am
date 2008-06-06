@@ -5,13 +5,23 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST =	ref/*
 SUBDIRS =
 
-macros =	$(abs_top_builddir)/macros:@testdir@/macros
+macros =	$(abs_top_builddir)/macros:$(testdir)/macros
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 cpio =		cpio
+
+.PHONY:	check-init
+check-init: macros
+	@mkdir -p tmp/repackage/
+	@${rpm} -v --version	> tmp/version
+	-@diff -u {tmp,ref}/version
+	@${rpm} -v --querytags	> tmp/querytags
+	-@diff -u {tmp,ref}/querytags
+	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
+	-@diff -u {tmp,ref}/showrc
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
@@ -23,7 +33,6 @@ $(POPTPKGS):
 
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
-	@mkdir -p tmp
 	@-${rpmdigest} --alldigests ref/[a-z]* > tmp/.alldigests
 	@diff -u {tmp,ref}/.alldigests
 	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
@@ -55,11 +64,7 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	${rpm} -i --nosignature --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec) > /dev/null
 
-check-local: check-markup $(BUILD_DIRS)
-	@${rpm} -v --version > /dev/null
-	@${rpm} -v --showrc > /dev/null
-	@${rpm} -v --querytags > /dev/null
-	@-rm -rf rpm
+check-local: check-init check-markup $(BUILD_DIRS)
 	@${rpm} --initdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -qW . > /dev/null 2>&1
