@@ -1,4 +1,9 @@
-%_topdir	@testdir@
+%track		exit 0
+
+%_testdir	@testdir@
+%_etcrpm	%{_testdir}
+%_topdir	%{_testdir}
+
 %_legion	%{expand:%%global ._legion %{name}}%{_legion}
 %_ntopdir	%{_topdir}/%{_legion}
 %_builddir	%{_ntopdir}
@@ -8,9 +13,11 @@
 %_srcrpmdir	%{_ntopdir}
 %_rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
-%_dbpath	%{_topdir}/rpm
-%_tmppath	%{_topdir}/tmp
-
-%_repackage_all_erasures	0
 %_rpmgio	.ufdio
-%track		exit 0
+
+%_rpmds_sysinfo_path	%{_topdir}/sysinfo/
+%_dbpath		%{_topdir}/tmp/rpmdb/
+
+%_tmppath		%{_topdir}/tmp/
+%_hrmib_path		%{_tmppath}/hrmib/%{___NVRA}
+%_repackage_dir		%{_tmppath}/repackage/

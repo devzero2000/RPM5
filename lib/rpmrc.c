@@ -2141,7 +2141,9 @@ int rpmShowRC(FILE * fp)
 	    ds = rpmdsFree(ds);
 	    fprintf(fp, "\n");
 	}
+    }
 
+    if (rpmIsDebug()) {
 	xx = rpmdsGetconf(&ds, NULL);
 	if (ds != NULL) {
 	    fprintf(fp,
