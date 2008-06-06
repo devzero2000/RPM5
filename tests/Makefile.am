@@ -17,11 +17,14 @@ cpio =		cpio
 check-init: macros
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
-	-@diff -u {tmp,ref}/version
+	@diff -u {tmp,ref}/version
 	@${rpm} -v --querytags	> tmp/querytags
-	-@diff -u {tmp,ref}/querytags
+	@diff -u {tmp,ref}/querytags
 	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
 	-@diff -u {tmp,ref}/showrc
+	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
+	@diff -u {tmp,ref}/.alldigests
+	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
@@ -31,11 +34,19 @@ POPTPKGS =	\
 $(POPTPKGS):
 	-wget $(POPTURI)$@
 
+.PHONY:	check-pubkeys
+check-pubkeys: $(POPTPKGS)
+	@rm -rf tmp/rpmdb
+	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
+#	-@${rpm} -Kv --usecrypto gcrypt $(POPTPKGS) > tmp/popt.Kv-gcrypt
+#	-@${rpm} -Kv --usecrypto ssl $(POPTPKGS) > tmp/popt.Kv-ssl
+#	-@${rpm} -Kv --usecrypto nss $(POPTPKGS) > tmp/popt.Kv-nss
+#	-@${rpm} -Kv --usecrypto beecrypt $(POPTPKGS) > tmp/popt.Kv-beecrypt
+	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
+	@diff -u {tmp,ref}/popt.Kv
+
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
-	@-${rpmdigest} --alldigests ref/[a-z]* > tmp/.alldigests
-	@diff -u {tmp,ref}/.alldigests
-	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
 	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
@@ -64,14 +75,12 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	${rpm} -i --nosignature --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec) > /dev/null
 
-check-local: check-init check-markup $(BUILD_DIRS)
-	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
-	@${rpm} -qW . > /dev/null 2>&1
+check-build: $(BUILD_DIRS)
 	@ls -1 */*.rpm > tmp/manifest
-	@${rpm} -Kv *.src.rpm */*.rpm > /dev/null
-	-@${rpm} -Kv --usecrypto beecrypt *.src.rpm */*.rpm > /dev/null
-	-@${rpm} -Kv --usecrypto nss *.src.rpm */*.rpm > /dev/null
-	-@${rpm} -Kv --usecrypto ssl *.src.rpm */*.rpm > /dev/null
+	-@diff -u {tmp,ref}/manifest
+
+check-local: check-init check-pubkeys check-markup check-build
+	@${rpm} -qW . > /dev/null 2>&1
 	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1
 	-@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
 	-@${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
@@ -111,5 +120,5 @@ check-local: check-init check-markup $(BUILD_DIRS)
 	-@${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
 
 clean-local:
-	rm -rf rpm tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
+	rm -rf tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
 	rm -rf $(POPTPKGS) repodata/

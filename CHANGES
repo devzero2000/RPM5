@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: tests: verify -Kv output using popt.
 	- jbj: tests: verify setup using --version/--querytags/--showrc.
 	- jbj: display noisy getconf()/uname() info with -vv --showrc instead.
 	- jbj: shorten debugging messages, --queryformat strings passed to
