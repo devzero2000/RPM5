@@ -15,7 +15,7 @@ cpio =		cpio
 
 .PHONY:	check-init
 check-init: macros
-	@mkdir -p tmp/repackage/
+	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
 	-@diff -u {tmp,ref}/version
 	@${rpm} -v --querytags	> tmp/querytags
