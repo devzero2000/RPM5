@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: shorten debugging messages, --queryformat strings passed to
+	headerSprintf are getting huge.
+    - jbj: fix: NUL terminate dst on EXPR->ARRAY parser state transition
+	(see --yum:primary.yaml spew for reproducer)
     - jbj: restore deploop diagnostic message (Kacper Kornet kornet@camk.edu.pl).
     - jbj: install rpmmtree.8, update POTFILES.in & Doxyfiles.in.
     - jbj: add %_build_iconsize macro to permit configuration.
