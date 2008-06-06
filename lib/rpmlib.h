@@ -456,17 +456,42 @@ typedef enum rpmTag_e {
 /*@=enummemuse@*/
 
     /* XXX retrofit arbitrary tags */
-#define RPMTAG_Trackprog	0x46c39442 /* s internal arbitrary */
-#define RPMTAG_Buildprep	0x799c0b4d /* s internal arbitrary */
-#define RPMTAG_Buildprepprog	0x4ba37c9e /* s internal arbitrary */
 #define RPMTAG_Buildbuild	0x5bae1a5a /* s internal arbitrary */
 #define RPMTAG_Buildbuildprog	0x6fb46014 /* s internal arbitrary */
-#define RPMTAG_Buildinstall	0x567f5983 /* s internal arbitrary */
-#define RPMTAG_Buildinstallprog	0x70d4ab6f /* s internal arbitrary */
 #define RPMTAG_Buildcheck	0x7f3b97b5 /* s internal arbitrary */
 #define RPMTAG_Buildcheckprog	0x488a60ce /* s internal arbitrary */
 #define RPMTAG_Buildclean	0x566042bf /* s internal arbitrary */
 #define RPMTAG_Buildcleanprog	0x42c93d41 /* s internal arbitrary */
+#define RPMTAG_Buildinstall	0x567f5983 /* s internal arbitrary */
+#define RPMTAG_Buildinstallprog	0x70d4ab6f /* s internal arbitrary */
+#define RPMTAG_Buildprep	0x799c0b4d /* s internal arbitrary */
+#define RPMTAG_Buildprepprog	0x4ba37c9e /* s internal arbitrary */
+#define RPMTAG_Buildtimeuuid	0x782eeb68 /* s internal arbitrary */
+#define RPMTAG_Conflictsqlentry	0x7efaed0d /* s internal arbitrary */
+#define RPMTAG_Conflictxmlentry	0x61333865 /* s internal arbitrary */
+#define RPMTAG_Filenames	0x54aafb71 /* s internal arbitrary */
+#define RPMTAG_Filessqlentry1	0x4493df20 /* s internal arbitrary */
+#define RPMTAG_Filessqlentry2	0x515aae25 /* s internal arbitrary */
+#define RPMTAG_Filesxmlentry1	0x42974275 /* s internal arbitrary */
+#define RPMTAG_Filesxmlentry2	0x7f69e738 /* s internal arbitrary */
+#define RPMTAG_Hdruuid		0x42cba9cf /* s internal arbitrary */
+#define RPMTAG_Installprefix	0x67b450ec /* s internal arbitrary */
+#define RPMTAG_Installtiduuid	0x59784ccd /* s internal arbitrary */
+#define RPMTAG_Installtimeuuid	0x51b2ff6a /* s internal arbitrary */
+#define RPMTAG_Obsoletesqlentry	0x4e0e61b0 /* s internal arbitrary */
+#define RPMTAG_Obsoletexmlentry	0x5a7ce878 /* s internal arbitrary */
+#define RPMTAG_Origintiduuid	0x5fde8cfd /* s internal arbitrary */
+#define RPMTAG_Origintimeuuid	0x66bb891b /* s internal arbitrary */
+#define RPMTAG_Pkguuid		0x44703c2c /* s internal arbitrary */
+#define RPMTAG_Providesqlentry	0x599f1b4a /* s internal arbitrary */
+#define RPMTAG_Providexmlentry	0x6569bce6 /* s internal arbitrary */
+#define RPMTAG_Removetiduuid	0x6a884e83 /* s internal arbitrary */
+#define RPMTAG_Requiresqlentry	0x723158aa /* s internal arbitrary */
+#define RPMTAG_Requirexmlentry	0x54b25cd7 /* s internal arbitrary */
+#define RPMTAG_Sourcepkguuid	0x4eedc6f9 /* s internal arbitrary */
+#define RPMTAG_Trackprog	0x46c39442 /* s internal arbitrary */
+#define RPMTAG_Triggerconds	0x46ced1cc /* s internal arbitrary */
+#define RPMTAG_Triggertype	0x562d6086 /* s internal arbitrary */
 
 } rpmTag;
 
