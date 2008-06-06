@@ -108,13 +108,13 @@ rpm	alias --yum:primary.xml --qf '\
 \n  <name>%{NAME:cdata}</name>\
 \n  <arch>%{ARCH:cdata}</arch>\
 \n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
-\n  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\
+\n  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}:{XXX}|</checksum>\
 \n  <summary>%{SUMMARY:cdata}</summary>\
 \n  <description>%{DESCRIPTION:cdata}</description>\
 \n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file="%{PACKAGETIME}" build="%{BUILDTIME}"/>\
-\n  <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
+\n  <size package="%{PACKAGESIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
 \n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href="%{PACKAGEORIGIN:bncdata}"/>\
 \n  <format>\
 %|license?{\
