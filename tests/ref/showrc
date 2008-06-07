@@ -333,10 +333,10 @@ print (t)
 -14: _autorelocate_dcolor	0
 -14: _autorelocate_path	%{nil}
 -14: _bhA	%{nil}
--14: _bhN	@(packages)
+-14: _bhN	%{nil}
 -14: _bhVR	%{nil}
--14: _bhcoll	@(updates)
--14: _bhpath	file:///var/cache/yum
+-14: _bhcoll	%{nil}
+-14: _bhpath	file://%{_topdir}/edos-test
 -14: _bindir	%{_exec_prefix}/bin
 -14: _build	%{_host}
 -14: _build_alias	%{_host_alias}
@@ -353,7 +353,7 @@ print (t)
 -14: _build_vendor	%{_host_vendor}
 -14: _builddir	%{_ntopdir}
 -14: _buildshell	/bin/sh
--14: _cache_dbpath	/var/cache/yum/rpmdb
+-14: _cache_dbpath	%{_tmppath}/cachedb/
 -14: _changelog_truncate	1 year ago
 -14: _datadir	%{_prefix}/share
 -14: _dbapi	3
@@ -455,8 +455,8 @@ print (t)
 -14: _exec_prefix	%{_prefix}
 -14: _filter_GLIBC_PRIVATE	0
 -14: _gnu	-gnu
--14: _hkp_keyserver	hkp://subkeys.pgp.net
--14: _hkp_keyserver_query	%{_hkp_keyserver}/pks/lookup?op=get&search=0x
+-14: _hkp_keyserver	%{nil}
+-14: _hkp_keyserver_query	%{nil}
 -14: _host	i686-pc-linux-gnu
 -14: _host_alias	%{nil}
 -14: _host_cpu	i686
@@ -510,7 +510,7 @@ print (t)
 -14: _rpmds_sysinfo_path	%{_topdir}/sysinfo/
 -14: _rpmfc_magic_path	%{_rpmhome}/magic
 -14: _rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
--14: _rpmgi_pattern_glob	%{_rpmdir}/*/
+-14: _rpmgi_pattern_glob	file://%{_testdir}/edos-test/
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
@@ -521,6 +521,9 @@ print (t)
 -14: _smp_mflags	%([ -z "$RPM_BUILD_NCPUS" ] \
 	&& RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \
 	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
+-14: _solve_dbpath	%{_tmppath}/cachedb/
+-14: _solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
+-14: _solve_pkgsdir	%{_topdir}/edos-test/
 -14: _sourcedir	%{_ntopdir}
 -14: _spec_line_buffer_size	100000
 -14: _specdir	%{_ntopdir}
@@ -674,4 +677,4 @@ end
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 430 empty 0
+======================== active 433 empty 0
