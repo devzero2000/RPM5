@@ -1,20 +1,18 @@
 Summary:	EDOS test case packages.
 Name:		edos-test
-Version:	1
-Release:	0
-License:	Public Domain		# <== NUKE
-Group:		Public Domain		# <== NUKE
+Version:	1		# <== permit E:V-R
+Release:	0		# <== NUKE
+License:	Public Domain	# <== NUKE
+Group:		Public Domain	# <== NUKE
 URL:		http://www.mancoosi.org/edos/manager.html
 BuildArch:	noarch
 
-%description
-NUKE
+%description			# <== NUKE
 
 %package -n car
 Summary:	car		# <== NUKE
 Group:		car		# <== NUKE
-%description -n	car
-NUKE
+%description -n	car		# <== NUKE
 Requires:	engine
 Requires:	wheel
 Requires:	door
@@ -22,52 +20,45 @@ Requires:	door
 %package -n	engine
 Summary:	engine		# <== NUKE
 Group:		engine		# <== NUKE
-%description -n	engine
-NUKE
+%description -n	engine		# <== NUKE
 Requires:	turbo
 
 %package -n	wheel
-Version:	3
+Version:	3		# <== permit E:V-R
 Summary:	wheel		# <== NUKE
 Group:		wheel		# <== NUKE
-%description -n	wheel
-NUKE
+%description -n	wheel		# <== NUKE
 Requires:	tyre
 
 %package -n	door
-Version:	2
+Version:	2		# <== permit E:V-R
 Summary:	door		# <== NUKE
 Group:		door		# <== NUKE
-%description -n	door
-NUKE
+%description -n	door		# <== NUKE
 Requires:	window
 
 %package -n	turbo
 Summary:	turbo		# <== NUKE
 Group:		turbo		# <== NUKE
 %description -n	turbo
-NUKE
 
 %package -n	tyre
 Summary:	tyre		# <== NUKE
 Group:		tyre		# <== NUKE
-%description -n	tyre
-NUKE
+%description -n	tyre		# <== NUKE
 
 %package -n	window
 Summary:	window		# <== NUKE
 Group:		window		# <== NUKE
-%description -n	window
-NUKE
+%description -n	window		# <== NUKE
 Requires:	glass
 
 %package -n	glass
-Version:	2
+Version:	2		# <== permit E:V-R
 Summary:	glass		# <== NUKE
 Group:		glass		# <== NUKE
+%description -n	glass		# <== NUKE
 Conflicts:	tyre = 2
-%description -n	glass
-NUKE
 
 %files -n	car
 %files -n	engine
