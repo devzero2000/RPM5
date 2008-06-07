@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="3">
+<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="4">
 <package type="rpm">
   <name>devtool-sanity</name>
   <arch>noarch</arch>
@@ -18,6 +18,34 @@
     <rpm:group>Development/Tools</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
     <rpm:header-range start="368" end="2967"/>
+    <rpm:provides>
+    </rpm:provides>
+    <rpm:requires>
+    </rpm:requires>
+    <rpm:conflicts>
+    </rpm:conflicts>
+    <rpm:obsoletes>
+    </rpm:obsoletes>
+  </format>
+</package>
+<package type="rpm">
+  <name>edos-test</name>
+  <arch>noarch</arch>
+  <version epoch="0" ver="1" rel="0"/>
+  <checksum type="sha" pkgid="YES">24c4bfb1dca88f5bcc4349429d9556406be558d4</checksum>
+  <summary>EDOS test case packages.</summary>
+  <description>NUKE</description>
+  <packager></packager>
+  <url>http://www.mancoosi.org/edos/manager.html</url>
+  <time file="1212855183" build="1212854835"/>
+  <size package="2761" installed="2761" archive="1632"/>
+  <location xml:base="(none)" href="edos-test-1-0.src.rpm"/>
+  <format>
+    <rpm:license>Public Domain</rpm:license>
+    <rpm:vendor/>
+    <rpm:group>Public Domain</rpm:group>
+    <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
+    <rpm:header-range start="368" end="2200"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>
