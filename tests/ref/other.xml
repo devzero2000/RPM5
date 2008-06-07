@@ -4,7 +4,7 @@
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1212789600">- add some additional content</changelog>
 </package>
-<package pkgid="24c4bfb1dca88f5bcc4349429d9556406be558d4" name="edos-test" arch="noarch">
+<package pkgid="776790c5a1fec78420016256209afafb6488ddbe" name="edos-test" arch="noarch">
   <version epoch="0" ver="1" rel="0"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1-0" date="1212876000">- create.</changelog>
 </package>

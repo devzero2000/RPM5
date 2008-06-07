@@ -32,20 +32,20 @@
   <name>edos-test</name>
   <arch>noarch</arch>
   <version epoch="0" ver="1" rel="0"/>
-  <checksum type="sha" pkgid="YES">24c4bfb1dca88f5bcc4349429d9556406be558d4</checksum>
+  <checksum type="sha" pkgid="YES">776790c5a1fec78420016256209afafb6488ddbe</checksum>
   <summary>EDOS test case packages.</summary>
-  <description>NUKE</description>
+  <description></description>
   <packager></packager>
   <url>http://www.mancoosi.org/edos/manager.html</url>
-  <time file="1212855183" build="1212854835"/>
-  <size package="2761" installed="2761" archive="1632"/>
+  <time file="1212868328" build="1212868296"/>
+  <size package="2653" installed="2653" archive="2284"/>
   <location xml:base="(none)" href="edos-test-1-0.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
     <rpm:vendor/>
     <rpm:group>Public Domain</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
-    <rpm:header-range start="368" end="2200"/>
+    <rpm:header-range start="368" end="2004"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>
