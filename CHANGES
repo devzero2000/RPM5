@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: parser: inherit group/summary/description if not specified in subpkg.
+    - jbj: parser: permit identically named sub-pkgs with different versions.
+    - jbj: parser: trim comments where it makes sense to do so.
     - jbj: tests: add check-install target to attempt --relocate install.
     - jbj: tests: enhance the devtool-sanity package with scripts and a file.
     - jbj: tests: verify -Kv output using popt.

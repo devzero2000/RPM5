@@ -23,6 +23,9 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
     RPMTAG_LICENSE,
+    RPMTAG_GROUP,		/* XXX permissive. */
+    RPMTAG_SUMMARY,		/* XXX permissive. */
+    RPMTAG_DESCRIPTION,		/* XXX permissive. */
     RPMTAG_PACKAGER,
     RPMTAG_DISTRIBUTION,
     RPMTAG_DISTURL,
@@ -86,24 +89,33 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 
 /**
  */
-static int parseSimplePart(char *line, /*@out@*/char **name,
+static int parseSimplePart(Spec spec, /*@out@*/char ** Np,
 		/*@out@*/rpmParseState *flag)
 	/*@globals internalState@*/
 	/*@modifies *name, *flag, internalState @*/
 {
-    char * linebuf = xstrdup(line);
-    char *tok;
+    char * s, * se;
     int rc = 0;		/* assume failure */
 
+    if (Np)
+	*Np = NULL;
+
+    se = strchr(spec->line, '#');
+    if (se) {
+	*se = '\0';
+	while (--se >= spec->line && strchr(" \t\n\r", *se) != NULL)
+	    *se = '\0';
+    }
+
+    s = xstrdup(spec->line);
     /* Throw away the first token (the %xxxx) */
-    (void)strtok(linebuf, " \t\n");
+    (void)strtok(s, " \t\n");
     
-    *name = NULL;
-    if (!(tok = strtok(NULL, " \t\n")))
+    if (!(se = strtok(NULL, " \t\n")))
 	goto exit;
     
-    if (!strcmp(tok, "-n")) {
-	if (!(tok = strtok(NULL, " \t\n"))) {
+    if (!strcmp(se, "-n")) {
+	if (!(se = strtok(NULL, " \t\n"))) {
 	    rc = 1;
 	    goto exit;
 	}
@@ -111,11 +123,13 @@ static int parseSimplePart(char *line, /*@out@*/char **name,
     } else
 	*flag = PART_SUBNAME;
 
-    *name = xstrdup(tok);
+    if (Np)
+	*Np = xstrdup(se);
+
     rc = (strtok(NULL, " \t\n") ? 1 : 0);
 
 exit:
-    linebuf = _free(linebuf);
+    s = _free(s);
     return rc;
 }
 
@@ -205,8 +219,15 @@ static inline char * findLastChar(char * s)
 {
     char *se = s + strlen(s);
 
+    /* Right trim white space. */
     while (--se > s && strchr(" \t\n\r", *se) != NULL)
 	*se = '\0';
+    /* Truncate comments. */
+    if ((se = strchr(s, '#')) != NULL) {
+	*se = '\0';
+	while (--se > s && strchr(" \t\n\r", *se) != NULL)
+	    *se = '\0';
+    }
 /*@-temptrans -retalias @*/
     return se;
 /*@=temptrans =retalias @*/
@@ -1024,24 +1045,32 @@ int parsePreamble(Spec spec, int initialPackage)
     strcpy(NVR, "(main package)");
 
     pkg = newPackage(spec);
-	
-    if (! initialPackage) {
+    if (spec->packages == NULL) {
+	spec->packages = pkg;
+assert(initialPackage);
+    } else if (! initialPackage) {
 	char *name = NULL;
 	rpmParseState flag;
+	Package lastpkg;
+
 	/* There is one option to %package: <pkg> or -n <pkg> */
 	flag = PART_NONE;
-	if (parseSimplePart(spec->line, &name, &flag)) {
+	if (parseSimplePart(spec, &name, &flag)) {
 	    rpmlog(RPMLOG_ERR, _("Bad package specification: %s\n"),
 			spec->line);
 	    return RPMRC_FAIL;
 	}
 	
-	if (lookupPackage(spec, name, flag, NULL) == RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"),
-			spec->line);
-	    name = _free(name);
-	    return RPMRC_FAIL;
+	lastpkg = NULL;
+	if (lookupPackage(spec, name, flag, &lastpkg) == RPMRC_OK) {
+	    pkg->next = lastpkg->next;
+	} else {
+	    /* Add package to end of list */
+	    for (lastpkg = spec->packages; lastpkg->next != NULL; lastpkg = lastpkg->next)
+	    {};
 	}
+assert(lastpkg != NULL);
+	lastpkg->next = pkg;
 	
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
