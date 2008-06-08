@@ -19,3 +19,5 @@ blib
 perl
 pm_to_blib
 MANIFEST
+*.gcda
+*.gcno

@@ -1,5 +1,7 @@
 .deps
 .libs
+*.gcda
+*.gcno
 Makefile
 Makefile.in
 librpmconstant.la

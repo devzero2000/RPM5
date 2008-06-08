@@ -2,6 +2,8 @@
 .depend
 .depend-done
 .libs
+*.gcdo
+*.gcno
 .devtool
 ABOUT-NLS
 Doxyfile
@@ -28,6 +30,7 @@ find-requires
 find-provides
 install-sh
 intl
+lcov
 lib-rpmrc
 libtool
 ltconfig
