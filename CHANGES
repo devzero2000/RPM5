@@ -1,4 +1,6 @@
 5.0.3 -> 5.0.4:
+    - jbj: tests: add coverage for %pretrans et al scriptlets.
+    - jbj: tests: verify upgrades using the edos-test packages.
     - jbj: merge "explicit-source-fetch-cli-option" patch from OpenPKG.
     - jbj: merge "download-source-files-from-original-location" patch from OpenPKG.
     - jbj: merge "support-external-download-command" patch from OpenPKG.

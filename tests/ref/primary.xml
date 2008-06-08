@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="3">
+<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="4">
 <package type="rpm">
   <name>devtool-sanity</name>
   <arch>noarch</arch>
   <version epoch="0" ver="1.0" rel="1"/>
-  <checksum type="sha" pkgid="YES">c6714204145aa902a416f977fed1a2eaa8e295b2</checksum>
+  <checksum type="sha" pkgid="YES">f4b34bce38c077a682f6a10e91bac4ac8dd6d905</checksum>
   <summary>devtool sanity test</summary>
   <description>Trivial standalone test package</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1212794352" build="1212791089"/>
-  <size package="4584" installed="4584" archive="2432"/>
+  <time file="1212942217" build="1212894237"/>
+  <size package="4573" installed="4573" archive="2580"/>
   <location xml:base="(none)" href="devtool-sanity-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
     <rpm:vendor/>
     <rpm:group>Development/Tools</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
-    <rpm:header-range start="368" end="2967"/>
+    <rpm:header-range start="368" end="2903"/>
+    <rpm:provides>
+    </rpm:provides>
+    <rpm:requires>
+    </rpm:requires>
+    <rpm:conflicts>
+    </rpm:conflicts>
+    <rpm:obsoletes>
+    </rpm:obsoletes>
+  </format>
+</package>
+<package type="rpm">
+  <name>edos-test</name>
+  <arch>noarch</arch>
+  <version epoch="0" ver="1" rel="0"/>
+  <checksum type="sha" pkgid="YES">776790c5a1fec78420016256209afafb6488ddbe</checksum>
+  <summary>EDOS test case packages.</summary>
+  <description></description>
+  <packager></packager>
+  <url>http://www.mancoosi.org/edos/manager.html</url>
+  <time file="1212942167" build="1212868296"/>
+  <size package="2653" installed="2653" archive="2284"/>
+  <location xml:base="(none)" href="edos-test-1-0.src.rpm"/>
+  <format>
+    <rpm:license>Public Domain</rpm:license>
+    <rpm:vendor/>
+    <rpm:group>Public Domain</rpm:group>
+    <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
+    <rpm:header-range start="368" end="2004"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>

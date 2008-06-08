@@ -2,16 +2,20 @@
 %_etcrpm	%{_testdir}
 %_topdir	%{_testdir}
 
-%_legion	%{expand:%%global ._legion %{name}}%{_legion}
-%_ntopdir	%{_topdir}/%{_legion}
-%_builddir	%{_ntopdir}
-%_sourcedir	%{_ntopdir}
-%_specdir	%{_ntopdir}
-%_rpmdir	%{_ntopdir}
-%_srcrpmdir	%{_ntopdir}
-%_rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%_legion		%{expand:%%global ._legion %{name}}%{_legion}
+%_ntopdir		%{_topdir}/%{_legion}
+%_builddir		%{_ntopdir}
+%_sourcedir		%{_ntopdir}
+%_specdir		%{_ntopdir}
+%_rpmdir		%{_ntopdir}
+%_srcrpmdir		%{_ntopdir}
+%_rpmfilename		%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
-%_rpmgio	.ufdio
+%_rpmgio		.ufdio
+%_rpmgi_pattern_glob	file://%{_testdir}/edos-test/
+
+%_hkp_keyserver		%{nil}
+%_hkp_keyserver_query	%{nil}
 
 %_rpmds_sysinfo_path	%{_topdir}/sysinfo/
 %_dbpath		%{_topdir}/tmp/rpmdb/
@@ -20,24 +24,54 @@
 %_hrmib_path		%{_tmppath}/hrmib/%{___NVRA}
 %_repackage_dir		%{_tmppath}/repackage/
 
+%_cache_dbpath		%{_tmppath}/cachedb/
+%_bhpath		file://%{_topdir}/edos-test
+%_bhcoll		%{nil}
+%_bhN			%{nil}
+%_bhVR			%{nil}
+%_bhA			%{nil}
+
+%_solve_dbpath		%{_tmppath}/cachedb/
+%_solve_pkgsdir		%{_topdir}/edos-test/
+%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
+
 %NVR		%{name}-%{version}-%{release}
 %NVRA		%{name}-%{version}-%{release}.%{_target_cpu}
 
-%pre    %%pre\
-  echo "--- pre(%NVRA)  arg $1 ..."\
+%pretrans()	%%pretrans %*\
+  echo "--- pretrans(%NVRA)      arg $1 ..."\
 %nil
-%post   %%post\
-  echo "--- post(%NVRA) arg $1 ..."\
+%posttrans()	%%posttrans %*\
+  echo "--- posttrans(%NVRA)     arg $1 ..."\
 %nil
-%preun  %%preun\
+%pre()		%%pre %*\
+  echo "--- pre(%NVRA)           arg $1 ..."\
+%nil
+%post()		%%post %*\
+  echo "--- post(%NVRA)          arg $1 ..."\
+%nil
+%preun()	%%preun %*\
   echo "--- preun(%NVRA)         arg $1 ..."\
 %nil
-%postun %%postun\
+%postun()	%%postun %*\
   echo "--- postun(%NVRA)        arg $1 ..."\
 %nil
-%verifyscript %%verifyscript\
+%verifyscript()	%%verifyscript %*\
   echo "--- verifyscript(%NVRA)  arg $1 ..."\
 %nil
-%sanity %%sanity\
-  echo "--- sanity(%NVRA)        arg $1 ..."\
+%sanitycheck()	%%sanitycheck %*\
+  echo "--- sanitycheck(%NVRA)   arg $1 ..."\
+%nil
+
+%triggerprein()	%%triggerprein -- %*\
+  echo "--- triggerprein(%NVRA)  arg $1 $2 ..."\
+%nil
+%triggerin()	%%triggerin -- %*\
+  echo "--- triggerin(%NVRA)     arg $1 $2 ..."\
+%nil
+%triggerun()	%%triggerun -- %*\
+  echo "--- triggerun(%NVRA)     arg $1 $2 ..."\
+%nil
+%triggerpostun() %%triggerpostun -- %*\
+  echo "--- triggerpostun(%NVRA) arg $1 $2 ..."\
 %nil

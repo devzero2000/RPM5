@@ -8,6 +8,7 @@ SUBDIRS =
 macros =	$(abs_top_builddir)/macros:$(testdir)/macros
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
+rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
@@ -78,6 +79,19 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 check-build: $(BUILD_DIRS)
 	@ls -1 */*.rpm > tmp/manifest
 	-@diff -u {tmp,ref}/manifest
+	@rm -rf tmp/cachedb
+	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb edos-test/*.rpm
+	@mkdir -p tmp/hrmib/ tmp/repackage/
+	@${rpm} -U -- edos-test/{car,engine-1,turbo,wheel-2,door-1}-*
+	@${rpm} -qa > tmp/edos.qa.1
+	-@diff -u {tmp,ref}/edos.qa.1
+	@${rpm} -e --nodeps turbo
+	@${rpm} -U -- edos-test/engine-2-*
+	@${rpm} -U -- edos-test/wheel-3-* edos-test/tyre-1-*
+	@${rpm} -U edos-test/door-2-* edos-test/window-1-* edos-test/glass-2-*
+	@${rpm} -qa > tmp/edos.qa.2
+	-@diff -u {tmp,ref}/edos.qa.2
+	@${rpm} -e car engine wheel door tyre window glass
 
 check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
@@ -100,10 +114,10 @@ check-local: check-init check-pubkeys check-markup check-build check-install
 	@${rpm} -qa --qf '%{INSTALLTIME} %{INSTALLTIME:date} %{INSTALLTIME:day} %{INSTALLTIME:dec} %{INSTALLTIME:hex} %{INSTALLTIME:oct}\n' > /dev/null
 	@${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{DBINSTANCE} %{HDRID} %{PKGID} %{SOURCEPKGID}\n' > /dev/null
-	-@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
-	-@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
-	-@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
-	-@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
+	@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
 	@${rpm} -qa --qf '[%{providesqlentry}\n] [%{requiresqlentry}\n] [%{conflictsqlentry}\n] [%{obsoletesqlentry}\n] [%{filessqlentry1}\n] [%{filessqlentry2}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES:shescape}: %{FILEMTIMES:shescape} %{FILEFLAGS:perms} %{FILEMODES:fflags}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILECLASS}\n]' > /dev/null
@@ -115,13 +129,13 @@ check-local: check-init check-pubkeys check-markup check-build check-install
 	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
 #	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
 	@${rpm} --rebuilddb
-	-@${rpm} -Va > /dev/null
-	-@${rpm} -Vp tmp/manifest > /dev/null
+	@-${rpm} -Va > /dev/null
+	@-${rpm} -Vp tmp/manifest > /dev/null
 	@${rpm} -e devtool-sanity
-	-@${rpm} -e --justdb `${rpm} -qa` --allmatches
-#	-@${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
-#	-@${rpm} -qW $(POPTURI) > /dev/null 2>&1
-#	-@${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
+#	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
+#	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
+#	@-${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
+	@${rpm} -e --justdb `${rpm} -qa` --allmatches
 
 clean-local:
 	rm -rf tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
