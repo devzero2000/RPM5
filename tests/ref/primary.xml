@@ -4,20 +4,20 @@
   <name>devtool-sanity</name>
   <arch>noarch</arch>
   <version epoch="0" ver="1.0" rel="1"/>
-  <checksum type="sha" pkgid="YES">c6714204145aa902a416f977fed1a2eaa8e295b2</checksum>
+  <checksum type="sha" pkgid="YES">f4b34bce38c077a682f6a10e91bac4ac8dd6d905</checksum>
   <summary>devtool sanity test</summary>
   <description>Trivial standalone test package</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1212791119" build="1212791089"/>
-  <size package="4584" installed="4584" archive="2432"/>
+  <time file="1212894279" build="1212894237"/>
+  <size package="4573" installed="4573" archive="2580"/>
   <location xml:base="(none)" href="devtool-sanity-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
     <rpm:vendor/>
     <rpm:group>Development/Tools</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
-    <rpm:header-range start="368" end="2967"/>
+    <rpm:header-range start="368" end="2903"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>

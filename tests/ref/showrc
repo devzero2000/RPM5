@@ -634,16 +634,22 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%
 -14: perl_vendorarch	%(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
 -14: perl_vendorlib	%(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
 -14: perl_version	%(eval "`%{__perl} -V:version`"; echo $version)
--14: post	%%post
-  echo "--- post(%NVRA) arg $1 ..."
+-14: post	%%post %*
+  echo "--- post(%NVRA)          arg $1 ..."
 %nil
--14: postun	%%postun
+-14: posttrans	%%posttrans %*
+  echo "--- posttrans(%NVRA)     arg $1 ..."
+%nil
+-14: postun	%%postun %*
   echo "--- postun(%NVRA)        arg $1 ..."
 %nil
--14: pre	%%pre
-  echo "--- pre(%NVRA)  arg $1 ..."
+-14: pre	%%pre %*
+  echo "--- pre(%NVRA)           arg $1 ..."
 %nil
--14: preun	%%preun
+-14: pretrans	%%pretrans %*
+  echo "--- pretrans(%NVRA)      arg $1 ..."
+%nil
+-14: preun	%%preun %*
   echo "--- preun(%NVRA)         arg $1 ..."
 %nil
 -14: py_compile(O)	
@@ -664,17 +670,29 @@ if f then
     f:close()
 end
 }1}%{rpm_license_check}
--14: sanity	%%sanity
-  echo "--- sanity(%NVRA)        arg $1 ..."
+-14: sanitycheck	%%sanitycheck %*
+  echo "--- sanitycheck(%NVRA)   arg $1 ..."
 %nil
 -15: sigtype	none
 -14: sources	%{lua: for i, s in ipairs(sources) do print(s.." ") end}
 -14: sparc	sun4 sun4m sun4c sun4d sun4u sparc sparcv8 sparcv9 sparc64 sparc64v sparcv9b sparcv9v sparcv9v2
 -14: tmpdir	%{_tmppath}
+-14: triggerin	%%triggerin -- %*
+  echo "--- triggerin(%NVRA)     arg $1 $2 ..."
+%nil
+-14: triggerpostun	%%triggerpostun -- %*
+  echo "--- triggerpostun(%NVRA) arg $1 $2 ..."
+%nil
+-14: triggerprein	%%triggerprein -- %*
+  echo "--- triggerprein(%NVRA)  arg $1 $2 ..."
+%nil
+-14: triggerun	%%triggerun -- %*
+  echo "--- triggerun(%NVRA)     arg $1 $2 ..."
+%nil
 -14: undefined	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
--14: verifyscript	%%verifyscript
+-14: verifyscript	%%verifyscript %*
   echo "--- verifyscript(%NVRA)  arg $1 ..."
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 433 empty 0
+======================== active 439 empty 0

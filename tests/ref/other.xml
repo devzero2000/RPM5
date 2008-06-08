@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <otherdata xmlns="http://linux.duke.edu/metadata/other" packages="4">
-<package pkgid="c6714204145aa902a416f977fed1a2eaa8e295b2" name="devtool-sanity" arch="noarch">
+<package pkgid="f4b34bce38c077a682f6a10e91bac4ac8dd6d905" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1212789600">- add some additional content</changelog>
 </package>

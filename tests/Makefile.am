@@ -78,7 +78,7 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 
 check-build: $(BUILD_DIRS)
 	@ls -1 */*.rpm > tmp/manifest
-	@diff -u {tmp,ref}/manifest
+	-@diff -u {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
 	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb edos-test/*.rpm
 	@mkdir -p tmp/hrmib/ tmp/repackage/

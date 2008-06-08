@@ -38,21 +38,40 @@
 %NVR		%{name}-%{version}-%{release}
 %NVRA		%{name}-%{version}-%{release}.%{_target_cpu}
 
-%pre    %%pre\
-  echo "--- pre(%NVRA)  arg $1 ..."\
+%pretrans()	%%pretrans %*\
+  echo "--- pretrans(%NVRA)      arg $1 ..."\
 %nil
-%post   %%post\
-  echo "--- post(%NVRA) arg $1 ..."\
+%posttrans()	%%posttrans %*\
+  echo "--- posttrans(%NVRA)     arg $1 ..."\
 %nil
-%preun  %%preun\
+%pre()		%%pre %*\
+  echo "--- pre(%NVRA)           arg $1 ..."\
+%nil
+%post()		%%post %*\
+  echo "--- post(%NVRA)          arg $1 ..."\
+%nil
+%preun()	%%preun %*\
   echo "--- preun(%NVRA)         arg $1 ..."\
 %nil
-%postun %%postun\
+%postun()	%%postun %*\
   echo "--- postun(%NVRA)        arg $1 ..."\
 %nil
-%verifyscript %%verifyscript\
+%verifyscript()	%%verifyscript %*\
   echo "--- verifyscript(%NVRA)  arg $1 ..."\
 %nil
-%sanity %%sanity\
-  echo "--- sanity(%NVRA)        arg $1 ..."\
+%sanitycheck()	%%sanitycheck %*\
+  echo "--- sanitycheck(%NVRA)   arg $1 ..."\
+%nil
+
+%triggerprein()	%%triggerprein -- %*\
+  echo "--- triggerprein(%NVRA)  arg $1 $2 ..."\
+%nil
+%triggerin()	%%triggerin -- %*\
+  echo "--- triggerin(%NVRA)     arg $1 $2 ..."\
+%nil
+%triggerun()	%%triggerun -- %*\
+  echo "--- triggerun(%NVRA)     arg $1 $2 ..."\
+%nil
+%triggerpostun() %%triggerpostun -- %*\
+  echo "--- triggerpostun(%NVRA) arg $1 $2 ..."\
 %nil
