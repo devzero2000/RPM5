@@ -18,14 +18,14 @@ Requires:	wheel
 Requires:	door
 
 %package -n	engine
-Version:	1
+Version:	1		# <== permit E:V-R
 #Summary:	engine		# <== NUKE
 #Group:		engine		# <== NUKE
 #%description -n	engine		# <== NUKE
 Requires:	turbo
 
 %package -n	engine		# <== multi-version
-Version:	2
+Version:	2		# <== permit E:V-R
 
 %package -n	wheel		# <== multi-version
 Version:	2		# <== permit E:V-R
@@ -53,26 +53,30 @@ Requires:	window
 #%description -n	turbo
 
 %package -n	tyre
+Version:	1		# <== permit E:V-R
 #Summary:	tyre		# <== NUKE
 #Group:		tyre		# <== NUKE
 #%description -n	tyre		# <== NUKE
 
-%package -n	window		# <== multi-version
-Version:	0
+%package -n	tyre
+Version:	2		# <== permit E:V-R
 
 %package -n	window		# <== multi-version
-Version:	1
+Version:	0		# <== permit E:V-R
+
+%package -n	window		# <== multi-version
+Version:	1		# <== permit E:V-R
 Requires:	glass
 
 %package -n	window
-Version:	2
+Version:	2		# <== permit E:V-R
 #Summary:	window		# <== NUKE
 #Group:		window		# <== NUKE
 #%description -n	window		# <== NUKE
 Requires:	glass
 
 %package -n	glass		# <== multi-version
-Version:	1
+Version:	1		# <== permit E:V-R
 
 %package -n	glass
 Version:	2		# <== permit E:V-R
@@ -89,11 +93,13 @@ Conflicts:	tyre = 2
 %files -n	door-1
 %files -n	door-2
 %files -n	turbo
-%files -n	tyre
+%files -n	tyre-1
+%files -n	tyre-2
 %files -n	window-0
 %files -n	window-1
 %files -n	window-2
-%files -n	glass
+%files -n	glass-1
+%files -n	glass-2
 
 %changelog
 * Sat Jun  7 2008 Jeff Johnson <jbj@rpm5.org> - 1-0

@@ -1,7 +1,4 @@
 Makefile
 Makefile.in
-rpmrc
 macros
-usr
-bin
-var
+tmp

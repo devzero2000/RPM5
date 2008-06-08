@@ -32,13 +32,13 @@
   <name>edos-test</name>
   <arch>noarch</arch>
   <version epoch="0" ver="1" rel="0"/>
-  <checksum type="sha" pkgid="YES">776790c5a1fec78420016256209afafb6488ddbe</checksum>
+  <checksum type="sha" pkgid="YES">567d8380ab37ff1a109df15b9a93e3d08cdbd3be</checksum>
   <summary>EDOS test case packages.</summary>
   <description></description>
   <packager></packager>
   <url>http://www.mancoosi.org/edos/manager.html</url>
-  <time file="1212868328" build="1212868296"/>
-  <size package="2653" installed="2653" archive="2284"/>
+  <time file="1212949522" build="1212949492"/>
+  <size package="2664" installed="2664" archive="2520"/>
   <location xml:base="(none)" href="edos-test-1-0.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>

@@ -5,7 +5,7 @@
   <file>JBJ-GPG-KEY</file>
   <file>devtool-sanity.spec</file>
 </package>
-<package pkgid="776790c5a1fec78420016256209afafb6488ddbe" name="edos-test" arch="noarch">
+<package pkgid="567d8380ab37ff1a109df15b9a93e3d08cdbd3be" name="edos-test" arch="noarch">
   <version epoch="0" ver="1" rel="0"/>
   <file>edos-test.spec</file>
 </package>
