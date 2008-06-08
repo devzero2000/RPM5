@@ -274,7 +274,7 @@ static void timeCheck(int tc, Header h)
     uint32_t currentTime = time(NULL);
     uint32_t * mtime;
     int xx;
-    int i;
+    size_t i;
 
     he->tag = RPMTAG_FILEMTIMES;
     xx = headerGet(h, he, 0);
@@ -344,7 +344,7 @@ static rpmRC parseForVerify(char * buf, FileList fl)
     } else
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
 
     SKIPSPACE(pe);
@@ -431,7 +431,7 @@ static rpmRC parseForDev(char * buf, FileList fl)
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
 
@@ -474,7 +474,7 @@ static rpmRC parseForDev(char * buf, FileList fl)
     if (*pe == '\0') {
 	fl->devmajor = atoi(p);
 	/*@-unsignedcompare @*/	/* LCL: ge is ok */
-	if (!(fl->devmajor >= 0 && fl->devmajor < 256)) {
+	if (!((int)fl->devmajor >= 0 && (int)fl->devmajor < 256)) {
 	    errstr = "devmajor";
 	    goto exit;
 	}
@@ -540,7 +540,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
     } else
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
 
     SKIPSPACE(pe);
@@ -662,7 +662,7 @@ static rpmRC parseForConfig(char * buf, FileList fl)
     fl->currentFlags |= RPMFILE_CONFIG;
 
     /* Erase "%config" token. */
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
     if (*pe != '(')
@@ -731,7 +731,7 @@ static rpmRC parseForLang(char * buf, FileList fl)
 
   while ((p = strstr(buf, (name = "%lang"))) != NULL) {
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
 
@@ -889,8 +889,8 @@ VFA_t virtualFileAttributes[] = {
  * @retval *fileName	file name
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
-			  FileList fl, /*@out@*/ const char ** fileName)
+static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
+		char * buf, FileList fl, /*@out@*/ const char ** fileName)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
@@ -1409,7 +1409,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui16 = flp->fl_mode;
+	ui16 = (uint16_t)flp->fl_mode;
 	he->tag = RPMTAG_FILEMODES;
 	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
@@ -1589,14 +1589,16 @@ if (!(_rpmbuildFlags & 4))
 	    he->append = 0;
 
 /*@-modobserver@*/	/* observer nocon not modified. */
-	    if (scon != nocon)
+	    if (scon != nocon) {
 		freecon(scon);
+	    }
 /*@=modobserver@*/
 	}
     }
 /*@-moduncon -noeffectuncon @*/
-    if (sxfn != NULL && *sxfn != '\0')
+    if (sxfn != NULL && *sxfn != '\0') {
 	matchpathcon_fini();
+    }
 /*@=moduncon =noeffectuncon @*/
     sxfn = _free(sxfn);
 
@@ -1608,7 +1610,7 @@ if (!(_rpmbuildFlags & 4))
     he->append = 1;
     xx = headerPut(h, he, 0);
     he->append = 0;
-	
+
 if (_rpmbuildFlags & 4) {
 (void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 (void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
@@ -1624,9 +1626,9 @@ if (_rpmbuildFlags & 4) {
     if (fi == NULL) return;		/* XXX can't happen */
 
 /*@-onlytrans@*/
-    fi->te = xcalloc(1, sizeof(*fi->te));
+    fi->te = xcalloc(1, sizeof(*((rpmte)fi->te)));
 /*@=onlytrans@*/
-    fi->te->type = TR_ADDED;
+    ((rpmte)fi->te)->type = TR_ADDED;
 
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
@@ -1661,7 +1663,7 @@ if (_rpmbuildFlags & 4) {
 
     /* Make the cpio list */
     if (fi->dil != NULL)	/* XXX can't happen */
-    for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
+    for (i = 0, flp = fl->fileList; (unsigned)i < fi->fc; i++, flp++) {
 	char * b;
 
 	/* Skip (possible) duplicate file entries, use last entry info. */
@@ -2498,7 +2500,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     struct Source *srcPtr;
     static rpmTag classTag = 0xffffffff;
     int xx;
-    int i;
+    size_t i;
 
     if (classTag == 0xffffffff)
 	classTag = tagValue("Class");
@@ -2677,27 +2679,21 @@ int processSourceFiles(Spec spec)
     struct FileList_s fl;
     char **files, **fp;
     int rc;
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
     /* srcdefattr: needed variables */
     char _srcdefattr_buf[BUFSIZ];
     char *_srcdefattr;
-#endif
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
     _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
-#endif
 
     *sfp = newStringBuf();
     x = initSourceHeader(spec, sfp);
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
     /* srcdefattr: initialize file list structure */
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr && *_srcdefattr) {
         snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
         parseForAttr(_srcdefattr_buf, &fl);
     }
-#endif
 
     /* Construct the SRPM file list. */
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));

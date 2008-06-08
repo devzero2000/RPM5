@@ -289,5 +289,5 @@ int parseChangelog(Spec spec)
     rc = addChangelog(spec->packages->header, sb);
     sb = freeStringBuf(sb);
 
-    return (rc != RPMRC_OK ? rc : nextPart);
+    return (rc != RPMRC_OK ? rc : (rpmRC)nextPart);
 }

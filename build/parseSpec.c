@@ -12,6 +12,7 @@
 #include "rpmts.h"
 #include "debug.h"
 
+/*@access headerTagIndices @*/
 /*@access FD_t @*/	/* compared with NULL */
 
 /**
@@ -123,7 +124,7 @@ static int matchTok(const char *token, const char *line)
 	SKIPNONSPACE(be);
 	if (be == b)
 	    break;
-	if (toklen != (be-b) || xstrncasecmp(token, b, (be-b)))
+	if (toklen != (size_t)(be-b) || xstrncasecmp(token, b, (be-b)))
 	    continue;
 	rc = 1;
 	break;
@@ -155,7 +156,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 /**
  */
 static int restoreFirstChar(Spec spec)
-	/*@*/
+	/*@modifies spec->nextline, spec->nextpeekc @*/
 {
     /* Restore 1st char in (possible) next line */
     if (spec->nextline != NULL && spec->nextpeekc != '\0') {
@@ -172,6 +173,7 @@ static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
 	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
+		spec->lbufPtr,
 		ofi->readPtr,
 		rpmGlobalMacroContext, fileSystem @*/
 {
@@ -244,6 +246,7 @@ static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
 /**
  */
 static int copyNextLineFinish(Spec spec, int strip)
+	/*@modifies spec->line, spec->nextline, spec->nextpeekc @*/
 {
     char *last;
     char ch;
@@ -275,7 +278,9 @@ static int copyNextLineFinish(Spec spec, int strip)
 /**
  */
 static int readLineFromOFI(Spec spec, OFI_t *ofi)
-	/*@modifies spec, ofi @*/
+	/*@globals h_errno, fileSystem @*/
+	/*@modifies ofi, spec->fileStack, spec->lineNum, spec->sl,
+ 		fileSystem @*/
 {
 retry:
     /* Make sure the current file is open */
@@ -306,7 +311,9 @@ retry:
 	    spec->fileStack = ofi->next;
 	    (void) Fclose(ofi->fd);
 	    ofi->fileName = _free(ofi->fileName);
+/*@-temptrans@*/
 	    ofi = _free(ofi);
+/*@=temptrans@*/
 
 	    /* only on last file do we signal EOF to caller */
 	    ofi = spec->fileStack;
@@ -354,7 +361,7 @@ int readLine(Spec spec, int strip)
       }
     }
 
-    copyNextLineFinish(spec, strip);
+    (void) copyNextLineFinish(spec, strip);
 
     s = spec->line;
     SKIPSPACE(s);
@@ -526,6 +533,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     spec->fileStack->fileName = xstrdup(spec->specFile);
 
     spec->recursing = recursing;
+    spec->toplevel = (!recursing ? 1 : 0);
     spec->anyarch = anyarch;
     spec->force = force;
 
@@ -548,6 +556,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     /*@-infloops@*/	/* LCL: parsePart is modified @*/
     while (parsePart > PART_NONE) {
 	int goterror = 0;
+
 	switch (parsePart) {
 	default:
 	    goterror = 1;
@@ -603,7 +612,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    return parsePart;
 	}
 
-	if (parsePart == PART_BUILDARCHITECTURES) {
+	/* Detect whether BuildArch: is toplevel or within %package. */
+	if (spec->toplevel && parsePart != PART_BUILDARCHITECTURES)
+	    spec->toplevel = 0;
+
+	/* Restart parse iff toplevel BuildArch: is encountered. */
+	if (spec->toplevel && parsePart == PART_BUILDARCHITECTURES) {
 	    int index;
 	    int x;
 
@@ -680,13 +694,14 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	he->tag = RPMTAG_OS;
 	he->t = RPM_STRING_TYPE;
+	/* XXX todo: really need "noos" like pkg->noarch somewhen. */
 	he->p.str = os;
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_ARCH;
 	he->t = RPM_STRING_TYPE;
-	he->p.str = arch;
+	he->p.str = (pkg->noarch ? "noarch" : arch);
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
@@ -703,6 +718,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	xx = headerPut(pkg->header, he, 0);
 
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
+	    char * t;
 	    he->tag = RPMTAG_NVRA;
 	    xx = headerGet(pkg->header, he, 0);
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),

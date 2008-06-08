@@ -11,6 +11,8 @@
 #include "rpmfi.h"
 #include "rpmts.h"
 
+#include "rpmlua.h"
+
 #include "debug.h"
 
 /*@-redecl@*/
@@ -20,8 +22,7 @@ extern int specedit;
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
-/*@access Header @*/	/* compared with NULL */
-/*@access rpmfi @*/	/* compared with NULL */
+/*@access rpmluav @*/
 
 /**
  * @param p		trigger entry chain
@@ -67,8 +68,10 @@ static inline
 rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char *fullName;
-    Package p;
+    char *NV = NULL;
+    char *N = NULL;
+    char *V = NULL;
+    Package p, lastp;
     int xx;
     
     /* "main" package */
@@ -79,43 +82,64 @@ rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg
     }
 
     /* Construct package name */
-  { char *n;
     if (flag == PART_SUBNAME) {
 	he->tag = RPMTAG_NAME;
 	xx = headerGet(spec->packages->header, he, 0);
-	fullName = n = alloca(strlen(he->p.str) + 1 + strlen(name) + 1);
-	n = stpcpy(n, he->p.str);
+assert(xx != 0 && he->p.str != NULL);
+	N = rpmExpand(he->p.str, "-", name, NULL);
 	he->p.ptr = _free(he->p.ptr);
-	*n++ = '-';
-	*n = '\0';
     } else {
-	fullName = n = alloca(strlen(name)+1);
+	N = xstrdup(name);
+	if ((V = strrchr(N, '-')) != NULL) {
+	    NV = xstrdup(N);
+	    *V++ = '\0';
+	}
     }
-    /*@-mayaliasunique@*/
-    strcpy(n, name);
-    /*@=mayaliasunique@*/
-  }
 
-    /* Locate package with fullName */
+    /* Match last package with same N or same {N,V} */
+    lastp = NULL;
     for (p = spec->packages; p != NULL; p = p->next) {
+	char *nv, *n, *v;
+	nv = n = v = NULL;
 	he->tag = RPMTAG_NAME;
 	xx = headerGet(p->header, he, 0);
-	if (he->p.str && !strcmp(fullName, he->p.str)) {
-	    he->p.ptr = _free(he->p.ptr);
-	    break;
+	if (xx && he->p.str != NULL) {
+	    n = (char *) he->p.str;
+	    he->p.str = NULL;
 	}
-	he->p.ptr = _free(he->p.ptr);
+	if (NV != NULL) {
+	    he->tag = RPMTAG_VERSION;
+	    xx = headerGet(p->header, he, 0);
+	    if (xx && he->p.str != NULL) {
+		v = (char *) he->p.str;
+		he->p.str = NULL;
+		nv = rpmExpand(n, "-", v, NULL);
+	    }
+	}
+
+	if (NV == NULL) {
+	    if (!strcmp(N, n))
+		lastp = p;
+	} else {
+	    if (!strcmp(NV, nv)
+	    || (!strcmp(N, n) && !strcmp(V, v)))
+		lastp = p;
+	}
+	n = _free(n);
+	v = _free(v);
+	nv = _free(nv);
     }
 
     if (pkg)
-	/*@-dependenttrans@*/ *pkg = p; /*@=dependenttrans@*/
-    return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
+	/*@-dependenttrans@*/ *pkg = lastp; /*@=dependenttrans@*/
+    NV = _free(NV);
+    N = _free(N);
+    return ((lastp == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
 Package newPackage(Spec spec)
 {
     Package p;
-    Package pp;
 
     p = xcalloc(1, sizeof(*p));
 
@@ -147,14 +171,6 @@ Package newPackage(Spec spec)
 
     p->specialDoc = NULL;
 
-    if (spec->packages == NULL) {
-	spec->packages = p;
-    } else {
-	/* Always add package to end of list */
-	for (pp = spec->packages; pp->next != NULL; pp = pp->next)
-	    {};
-	pp->next = p;
-    }
     p->next = NULL;
 
     return p;
@@ -175,7 +191,7 @@ Package freePackage(Package pkg)
     pkg->ds = rpmdsFree(pkg->ds);
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
-    if (pkg->cpioList) {
+    if (pkg->cpioList != NULL) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
 	fi = rpmfiFree(fi);
@@ -202,7 +218,7 @@ Package freePackages(Package packages)
 
 /**
  */
-static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
+static inline /*@owned@*/ struct Source *findSource(Spec spec, uint32_t num, int flag)
 	/*@*/
 {
     struct Source *p;
@@ -262,7 +278,7 @@ int specSourceFlags(SpecSource source)
     return source->flags;
 }
 
-int parseNoSource(Spec spec, const char * field, int tag)
+int parseNoSource(Spec spec, const char * field, rpmTag tag)
 {
     const char *f, *fe;
     const char *name;
@@ -303,12 +319,16 @@ int parseNoSource(Spec spec, const char * field, int tag)
 
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
-int addSource(Spec spec, /*@unused@*/ Package pkg, const char *field, int tag)
+int addSource(Spec spec, /*@unused@*/ Package pkg,
+		const char *field, rpmTag tag)
 {
     struct Source *p;
+#if defined(RPM_VENDOR_OPENPKG) /* regular-ordered-sources */
+    struct Source *p_last;
+#endif
     int flag = 0;
     const char *name = NULL;
     const char *mdir = NULL;
@@ -377,8 +397,19 @@ assert(mdir != NULL);
     else
 	p->source = p->fullSource;
 
+#if defined(RPM_VENDOR_OPENPKG) /* regular-ordered-sources */
+    p->next = NULL;
+    p_last = spec->sources;
+    while (p_last != NULL && p_last->next != NULL)
+        p_last = p_last->next;
+    if (p_last != NULL)
+        p_last->next = p;
+    else
+        spec->sources = p;
+#else
     p->next = spec->sources;
     spec->sources = p;
+#endif
 
     spec->numSources++;
 
@@ -395,10 +426,25 @@ assert(mdir != NULL);
 	sprintf(buf, "%sURL%d",
 		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+#ifdef WITH_LUA
+    {	rpmlua lua = NULL; /* global state */
+	const char * what = (flag & RPMFILE_PATCH) ? "patches" : "sources";
+	rpmluav var = rpmluavNew();
+
+	rpmluaPushTable(lua, what);
+	rpmluavSetListMode(var, 1);
+	rpmluavSetValue(var, RPMLUAV_STRING, body);
+	rpmluaSetVar(lua, var);
+/*@-moduncon@*/
+	var = (rpmluav) rpmluavFree(var);
+/*@=moduncon@*/
+	rpmluaPop(lua);
+    }
+#endif
 	body = _free(body);
     }
     
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
@@ -510,6 +556,7 @@ Spec newSpec(void)
     spec->BANames = NULL;
     spec->BACount = 0;
     spec->recursing = 0;
+    spec->toplevel = 1;
     spec->BASpecs = NULL;
 
     spec->force = 0;
@@ -545,19 +592,7 @@ Spec freeSpec(Spec spec)
     spec->rootURL = _free(spec->rootURL);
     spec->specFile = _free(spec->specFile);
 
-#ifdef	DEAD
-  { struct OpenFileInfo *ofi;
-    while (spec->fileStack) {
-	ofi = spec->fileStack;
-	spec->fileStack = ofi->next;
-	ofi->next = NULL;
-	ofi->fileName = _free(ofi->fileName);
-	ofi = _free(ofi);
-    }
-  }
-#else
     closeSpec(spec);
-#endif
 
     while (spec->readStack) {
 	rl = spec->readStack;
@@ -572,7 +607,7 @@ Spec freeSpec(Spec spec)
     spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
-    if (spec->sourceCpioList) {
+    if (spec->sourceCpioList != NULL) {
 	rpmfi fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
 	fi = rpmfiFree(fi);
@@ -594,6 +629,13 @@ Spec freeSpec(Spec spec)
 
     spec->passPhrase = _free(spec->passPhrase);
     spec->cookie = _free(spec->cookie);
+
+#ifdef WITH_LUA
+    {	rpmlua lua = NULL; /* global state */
+	rpmluaDelVar(lua, "patches");
+	rpmluaDelVar(lua, "sources");	
+    }
+#endif
 
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);

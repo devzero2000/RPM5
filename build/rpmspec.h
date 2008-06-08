@@ -117,6 +117,7 @@ struct Spec_s {
 
 /*@owned@*/
     struct OpenFileInfo * fileStack;
+/*@owned@*/
     char *lbuf;
     size_t lbuf_len;
 /*@dependent@*/
@@ -137,6 +138,7 @@ struct Spec_s {
     const char ** BANames;
     int BACount;
     int recursing;		/*!< parse is recursive? */
+    int toplevel;
 
     int force;
     int anyarch;
@@ -180,7 +182,7 @@ struct Spec_s {
     StringBuf clean;		/*!< %clean scriptlet. */
 
     size_t nfoo;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     tagStore_t foo;
 
 /*@owned@*/
@@ -200,6 +202,7 @@ struct Package_s {
 
     int autoReq;
     int autoProv;
+    int noarch;
 
 /*@only@*/
     const char * preInFile;	/*!< %pre scriptlet. */
@@ -242,7 +245,7 @@ extern "C" {
  * @return spec		spec file control structure
  */
 /*@only@*/ Spec newSpec(void)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
@@ -273,32 +276,38 @@ struct OpenFileInfo * newOpenFileInfo(void)
 	/*@*/;
 
 /** \ingroup rpmbuild
+ * stashSt.
  * @param spec		spec file control structure
  * @param h		header
  * @param tag		tag
  * @param lang		locale
+ * @return		ptr to saved entry
  */
-spectag stashSt(Spec spec, Header h, int tag, const char * lang)
+spectag stashSt(Spec spec, Header h, rpmTag tag, const char * lang)
 	/*@modifies spec->st @*/;
 
 /** \ingroup rpmbuild
+ * addSource.
  * @param spec		spec file control structure
  * @param pkg		package control
  * @param field		field to parse
  * @param tag		tag
+ * @return		0 on success
  */
-int addSource(Spec spec, Package pkg, const char * field, int tag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+int addSource(Spec spec, Package pkg, const char * field, rpmTag tag)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		rpmGlobalMacroContext @*/;
+		rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmbuild
+ * parseNoSource.
  * @param spec		spec file control structure
  * @param field		field to parse
  * @param tag		tag
+ * @return		0 on success
  */
-int parseNoSource(Spec spec, const char * field, int tag)
+int parseNoSource(Spec spec, const char * field, rpmTag tag)
 	/*@*/;
 
 /** \ingroup rpmbuild

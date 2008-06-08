@@ -65,13 +65,16 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     if (rc == RPMRC_OK && xx) rc = RPMRC_FAIL;
 
     if (rc) {
+	const char * msg = cpioStrerror(rc);
 	if (failedFile)
 	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
-		failedFile, cpioStrerror(rc));
+		failedFile, msg);
 	else
-	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
-		cpioStrerror(rc));
-      rc = RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"), msg);
+#if 0	/* XXX cpioStrerror() uses static buffer */
+	msg = _free(msg);
+#endif
+	rc = RPMRC_FAIL;
     }
 
     failedFile = _free(failedFile);
@@ -175,7 +178,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 
 /**
  */
-static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
+static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
@@ -622,6 +625,13 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		/* Add prereq on rpm version that understands tar payloads */
 		(void) rpmlibNeedsFeature(h, "PayloadIsUstar", "4.4.4-1");
 	    }
+#if defined(SUPPORT_AR_PAYLOADS)
+	    if (!strcmp(payload_format, "ar")) {
+		/* XXX addition to header is too late to be displayed/sorted. */
+		/* Add prereq on rpm version that understands tar payloads */
+		(void) rpmlibNeedsFeature(h, "PayloadIsAr", "5.1-1");
+	    }
+#endif
 
 	    he->tag = RPMTAG_PAYLOADFORMAT;
 	    he->t = RPM_STRING_TYPE;
@@ -963,7 +973,7 @@ if (!(_rpmbuildFlags & 4)) {
 }
 
 /*@unchecked@*/
-static uint32_t copyTags[] = {
+static rpmTag copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
