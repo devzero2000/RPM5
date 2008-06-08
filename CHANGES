@@ -1,4 +1,7 @@
 5.1.2 -> 5.1.3:
+    - jbj: parser: inherit group/summary/description if not specified in subpkg.
+    - jbj: parser: permit identically named sub-pkgs with different versions.
+    - jbj: parser: trim comments where it makes sense to do so.
     - rse: upgrade the embedded lrexlib Lua library from version 2.2.0 to 2.3.0
     - rse: apply upstream vendor patches from 2008-05-08 for Lua 5.1.3
     - jbj: tests: add check-install target to attempt --relocate install.

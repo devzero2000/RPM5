@@ -68,8 +68,10 @@ static inline
 rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char *fullName;
-    Package p;
+    char *NV = NULL;
+    char *N = NULL;
+    char *V = NULL;
+    Package p, lastp;
     int xx;
     
     /* "main" package */
@@ -80,43 +82,64 @@ rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg
     }
 
     /* Construct package name */
-  { char *n;
     if (flag == PART_SUBNAME) {
 	he->tag = RPMTAG_NAME;
 	xx = headerGet(spec->packages->header, he, 0);
-	fullName = n = alloca(strlen(he->p.str) + 1 + strlen(name) + 1);
-	n = stpcpy(n, he->p.str);
+assert(xx != 0 && he->p.str != NULL);
+	N = rpmExpand(he->p.str, "-", name, NULL);
 	he->p.ptr = _free(he->p.ptr);
-	*n++ = '-';
-	*n = '\0';
     } else {
-	fullName = n = alloca(strlen(name)+1);
+	N = xstrdup(name);
+	if ((V = strrchr(N, '-')) != NULL) {
+	    NV = xstrdup(N);
+	    *V++ = '\0';
+	}
     }
-    /*@-mayaliasunique@*/
-    strcpy(n, name);
-    /*@=mayaliasunique@*/
-  }
 
-    /* Locate package with fullName */
+    /* Match last package with same N or same {N,V} */
+    lastp = NULL;
     for (p = spec->packages; p != NULL; p = p->next) {
+	char *nv, *n, *v;
+	nv = n = v = NULL;
 	he->tag = RPMTAG_NAME;
 	xx = headerGet(p->header, he, 0);
-	if (he->p.str && !strcmp(fullName, he->p.str)) {
-	    he->p.ptr = _free(he->p.ptr);
-	    break;
+	if (xx && he->p.str != NULL) {
+	    n = (char *) he->p.str;
+	    he->p.str = NULL;
 	}
-	he->p.ptr = _free(he->p.ptr);
+	if (NV != NULL) {
+	    he->tag = RPMTAG_VERSION;
+	    xx = headerGet(p->header, he, 0);
+	    if (xx && he->p.str != NULL) {
+		v = (char *) he->p.str;
+		he->p.str = NULL;
+		nv = rpmExpand(n, "-", v, NULL);
+	    }
+	}
+
+	if (NV == NULL) {
+	    if (!strcmp(N, n))
+		lastp = p;
+	} else {
+	    if (!strcmp(NV, nv)
+	    || (!strcmp(N, n) && !strcmp(V, v)))
+		lastp = p;
+	}
+	n = _free(n);
+	v = _free(v);
+	nv = _free(nv);
     }
 
     if (pkg)
-	/*@-dependenttrans@*/ *pkg = p; /*@=dependenttrans@*/
-    return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
+	/*@-dependenttrans@*/ *pkg = lastp; /*@=dependenttrans@*/
+    NV = _free(NV);
+    N = _free(N);
+    return ((lastp == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
 Package newPackage(Spec spec)
 {
     Package p;
-    Package pp;
 
     p = xcalloc(1, sizeof(*p));
 
@@ -148,14 +171,6 @@ Package newPackage(Spec spec)
 
     p->specialDoc = NULL;
 
-    if (spec->packages == NULL) {
-	spec->packages = p;
-    } else {
-	/* Always add package to end of list */
-	for (pp = spec->packages; pp->next != NULL; pp = pp->next)
-	    {};
-	pp->next = p;
-    }
     p->next = NULL;
 
     return p;

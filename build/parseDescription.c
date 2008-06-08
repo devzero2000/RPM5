@@ -22,8 +22,8 @@ extern int noLang;
 
 /*@unchecked@*/
     static struct poptOption optionsTable[] = {
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
-	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l',	NULL, NULL},
+	{ NULL, 'n', POPT_ARG_STRING, &name, 0,	NULL, NULL},
+	{ NULL, 'l', POPT_ARG_STRING, &lang, 0,	NULL, NULL},
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
@@ -41,8 +41,13 @@ int parseDescription(Spec spec)
     poptContext optCon = NULL;
     spectag t = NULL;
 
-    name = NULL;
-    lang = RPMBUILD_DEFAULT_LANG;
+    {	char * se = strchr(spec->line, '#');
+	if (se) {
+	    *se = '\0';
+	    while (--se >= spec->line && strchr(" \t\n\r", *se) != NULL)
+		*se = '\0';
+	}
+    }
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%description: %s\n"),
@@ -50,12 +55,13 @@ int parseDescription(Spec spec)
 	return RPMRC_FAIL;
     }
 
+    name = NULL;
+    lang = RPMBUILD_DEFAULT_LANG;
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	if (arg == 'n') {
-	    flag = PART_NAME;
-	}
-    }
+    while ((arg = poptGetNextOpt(optCon)) > 0)
+	;
+    if (name != NULL)
+	flag = PART_NAME;
 
     if (arg < -1) {
 	rpmlog(RPMLOG_ERR, _("line %d: Bad option %s: %s\n"),
@@ -70,8 +76,7 @@ int parseDescription(Spec spec)
 	    name = poptGetArg(optCon);
 	if (poptPeekArg(optCon)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
-		     spec->lineNum,
-		     spec->line);
+		     spec->lineNum, spec->line);
 	    goto exit;
 	}
     }
