@@ -8,6 +8,7 @@ SUBDIRS =
 macros =	$(abs_top_builddir)/macros:$(testdir)/macros
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
+rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
@@ -39,7 +40,7 @@ check-pubkeys: $(POPTPKGS)
 	@rm -rf tmp/rpmdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 #	-@${rpm} -Kv --usecrypto gcrypt $(POPTPKGS) > tmp/popt.Kv-gcrypt
-#	-@${rpm} -Kv --usecrypto ssl $(POPTPKGS) > tmp/popt.Kv-ssl
+	-@${rpm} -Kv --usecrypto ssl $(POPTPKGS) > tmp/popt.Kv-ssl
 	-@${rpm} -Kv --usecrypto nss $(POPTPKGS) > tmp/popt.Kv-nss
 	-@${rpm} -Kv --usecrypto beecrypt $(POPTPKGS) > tmp/popt.Kv-beecrypt
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
@@ -78,6 +79,18 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 check-build: $(BUILD_DIRS)
 	@ls -1 */*.rpm > tmp/manifest
 	-@diff -u {tmp,ref}/manifest
+	@rm -rf tmp/cachedb
+	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb edos-test/*.rpm
+	@mkdir -p tmp/hrmib/ tmp/repackage/
+	@${rpm} -U -- +car +turbo +engine +wheel +glass +window +door
+	@${rpm} -qa > tmp/edos.qa.1
+	-@diff -u {tmp,ref}/edos.qa.1
+	@${rpm} -U -- edos-test/engine-2-* -turbo
+	@${rpm} -U -- edos-test/wheel-3-* +tyre
+	@${rpm} -U edos-test/door-2-* edos-test/window-1-* edos-test/glass-1-*
+	@${rpm} -qa > tmp/edos.qa.2
+	-@diff -u {tmp,ref}/edos.qa.2
+	@${rpm} -e car engine wheel door tyre window glass
 
 check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
@@ -118,10 +131,10 @@ check-local: check-init check-pubkeys check-markup check-build check-install
 	@-${rpm} -Va > /dev/null
 	@-${rpm} -Vp tmp/manifest > /dev/null
 	@${rpm} -e devtool-sanity
+	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
+	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
+	@-${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
 	@${rpm} -e --justdb `${rpm} -qa` --allmatches
-#	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
-#	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
-#	@-${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
 
 clean-local:
 	rm -rf tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
