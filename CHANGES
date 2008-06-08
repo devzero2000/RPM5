@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: apply upstream vendor patches from 2008-05-08 for Lua 5.1.3
     - jbj: tests: verify upgrades using the edos-test packages.
     - jbj: parser: inherit group/summary/description if not specified in subpkg.
     - jbj: parser: permit identically named sub-pkgs with different versions.
