@@ -3,6 +3,8 @@
 Makefile
 Makefile.in
 config.h.in
+*.gcda
+*.gcno
 *.la
 *.lo
 *.pyc

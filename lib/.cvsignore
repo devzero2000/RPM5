@@ -7,6 +7,8 @@ getdate.c
 rpmversion.h
 tpgp
 .libs
+*.gcda
+*.gcno
 *.la
 *.lcd
 *.lo
