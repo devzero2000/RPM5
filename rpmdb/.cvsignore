@@ -2,6 +2,11 @@
 .deps
 .depend
 .libs
+*.gcda
+*.gcno
+*.la
+*.lcd
+*.lo
 Makefile
 Makefile.in
 db_archive
@@ -18,6 +23,3 @@ db_upgrade
 db_verify
 tagtbl.c
 tjfn
-*.la
-*.lcd
-*.lo

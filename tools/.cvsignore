@@ -1,6 +1,8 @@
 .deps
 .depend
 .libs
+*.gcda
+*.gcno
 Makefile
 Makefile.in
 convertdb1
@@ -10,5 +12,7 @@ rpmcache
 rpmcmp
 rpmdeps
 rpmdigest
+rpmmtree
+rpmrepo
 db_tool
 txar
