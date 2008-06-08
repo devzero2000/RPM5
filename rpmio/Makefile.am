@@ -7,7 +7,7 @@ LINT = splint
 SUBDIRS = # tests
 
 EXTRA_DIST = \
-	getdate.y LzmaDecode.c rpmcpio.c rpmcpio.h \
+	getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
@@ -63,7 +63,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	ar.h cpio.h iosm.h md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tar.h tiger.h \
-	LzmaDecode.h rpmhook.h rpmio_internal.h rpmlua.h
+	rpmhook.h rpmio_internal.h rpmlua.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
