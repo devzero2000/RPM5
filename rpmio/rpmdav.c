@@ -9,7 +9,7 @@
 #include <pthread.h>
 #endif
 
-#if #USE_INTERNAL_NEON
+#if USE_INTERNAL_NEON
 #include "ne_alloc.h"
 #include "ne_auth.h"
 #include "ne_basic.h"
@@ -29,7 +29,7 @@
 #include "../neon/src/ne_private.h"
 #endif
 
-#if #USE_INTERNAL_NEON
+#if USE_INTERNAL_NEON
 #include "ne_props.h"
 #include "ne_request.h"
 #include "ne_socket.h"
