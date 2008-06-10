@@ -789,10 +789,8 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    xx = rpmfcHelper(fc, 'R', "php");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_JAVA) {
-	if (fc->findprov)
-	    xx = rpmfcHelper(fc, 'P', "java");
-	if (fc->findreq)
-	    xx = rpmfcHelper(fc, 'R', "java");
+	xx = rpmfcHelper(fc, 'P', "java");
+	xx = rpmfcHelper(fc, 'R', "java");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_DESKTOP_FILE) {
 	xx = rpmfcHelper(fc, 'P', "mimetype");
@@ -863,10 +861,8 @@ static int rpmfcMONO(rpmfc fc)
 
     (void) fclose(fp);
 
-    if (fc->findprov)
-	xx = rpmfcHelper(fc, 'P', "mono");
-    if (fc->findreq)
-	xx = rpmfcHelper(fc, 'R', "mono");
+    xx = rpmfcHelper(fc, 'P', "mono");
+    xx = rpmfcHelper(fc, 'R', "mono");
 
     return 0;
 }
