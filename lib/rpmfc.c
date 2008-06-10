@@ -784,6 +784,12 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "php");
     } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_JAVA) {
+	if (fc->findprov)
+	    xx = rpmfcHelper(fc, 'P', "java");
+	if (fc->findreq)
+	    xx = rpmfcHelper(fc, 'R', "java");
+    } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_DESKTOP_FILE) {
 	xx = rpmfcHelper(fc, 'P', "mimetype");
     }

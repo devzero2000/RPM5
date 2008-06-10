@@ -1414,8 +1414,8 @@ PreReq: python >= %{python_version}, python < %{maxver}
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-%__java_provides	%{_rpmhome}/javadeps.sh --provides
-%__java_requires	%{_rpmhome}/javadeps.sh --requires
+#%__java_provides	%{_rpmhome}/javadeps.sh --provides
+#%__java_requires	%{_rpmhome}/javadeps.sh --requires
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
