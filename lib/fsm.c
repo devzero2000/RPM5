@@ -1039,10 +1039,10 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	    xx = munmap(mapped, nmapped);
 /*@=noeffect@*/
 	    fsm->rdbuf = rdbuf;
-	}
+	} else
 /*@=branchstate@*/
 #endif
-
+	    xx = fsync(Fileno(fsm->rfd));
     }
 
     rc = fsmNext(fsm, FSM_PAD);
