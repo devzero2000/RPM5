@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: add mono deps from PLD
 	- glen: call %__java-{requires/provides} for java files (jars/classes)
 	- glen: hotwire only -lossp-uuid not both with -luuid
 	- glen: backport: perform fsync(2) before closing installed file (patchset#7657).

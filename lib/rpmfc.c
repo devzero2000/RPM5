@@ -478,6 +478,10 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { "Java ",			RPMFC_JAVA|RPMFC_INCLUDE },
 
+  /* .NET executables and libraries. file(1) cannot differ it from native win32 executables unfortunatelly */
+  { "PE executable",		RPMFC_MONO|RPMFC_INCLUDE },
+  { "executable PE",		RPMFC_MONO|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -839,6 +843,35 @@ fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsT
 }
 
 /**
+ * Extract .NET dependencies.
+ * @param fc		file classifier
+ * @return		0 on success
+ */
+static int rpmfcMONO(rpmfc fc)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    const char * fn = fc->fn[fc->ix];
+    FILE * fp;
+    int xx;
+
+    fp = fopen(fn, "r");
+    if (fp == NULL || ferror(fp)) {
+	if (fp) (void) fclose(fp);
+	return -1;
+    }
+
+    (void) fclose(fp);
+
+    if (fc->findprov)
+	xx = rpmfcHelper(fc, 'P', "mono");
+    if (fc->findreq)
+	xx = rpmfcHelper(fc, 'R', "mono");
+
+    return 0;
+}
+
+/**
  * Extract Elf dependencies.
  * @param fc		file classifier
  * @return		0 on success
@@ -870,6 +903,7 @@ typedef struct rpmfcApplyTbl_s {
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_DESKTOP_FILE) },
+    { rpmfcMONO,	RPMFC_MONO },
     { NULL, 0 }
 };
 

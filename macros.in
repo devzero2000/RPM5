@@ -1407,6 +1407,9 @@ PreReq: python >= %{python_version}, python < %{maxver}
 #%__php_provides		%{_rpmhome}/php.prov
 #%__php_requires		%{_rpmhome}/php.req
 
+%__mono_provides	%{nil}
+%__mono_requires	%{nil}
+
 #------------------------------------------------------------------------
 # java(...) configuration.
 #
