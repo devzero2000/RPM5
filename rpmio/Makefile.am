@@ -50,7 +50,7 @@ librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFL
 	@WITH_KEYUTILS_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@LTLIBINTL@
-librpmio_la_LIBADD = -luuid -lossp-uuid # $(BEECRYPTLOBJS)
+librpmio_la_LIBADD = -lossp-uuid # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 
 if HAVE_LD_VERSION_SCRIPT
