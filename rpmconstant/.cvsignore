@@ -1,10 +1,10 @@
 .deps
-.libs
 Makefile
 Makefile.in
-librpmconstant.la
 rpmconstant
-rpmconstant.lo
-rpmconstant_internal.lo
 rpmconstanttbl.c
-rpmconstanttbl.lo
+.libs
+*.gcda
+*.gcno
+*.la
+*.lo
