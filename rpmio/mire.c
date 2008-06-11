@@ -350,7 +350,6 @@ int mireRegcomp(miRE mire, const char * pattern)
     mire->pattern = xstrdup(pattern);
 
     switch (mire->mode) {
-    case RPMMIRE_DEFAULT:
     case RPMMIRE_STRCMP:
 	break;
     case RPMMIRE_PCRE:
@@ -372,6 +371,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 	rc = -99;
 #endif
 	break;
+    case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
 	mire->preg = xcalloc(1, sizeof(*mire->preg));
 	if (mire->cflags == 0)

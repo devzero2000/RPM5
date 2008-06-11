@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: reattach RPMMIRE_DEFAULT as posix regex, not strcmp, pattern.
     - jbj: lzdio: start using -llzma instead.
     - jbj: tests: add coverage for %pretrans et al scriptlets.
     - rse: upgrade the embedded lrexlib Lua library from version 2.2.0 to 2.3.0
