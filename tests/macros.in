@@ -21,3 +21,25 @@
 %_tmppath		%{_topdir}/tmp/
 %_hrmib_path		%{_tmppath}/hrmib/%{___NVRA}
 %_repackage_dir		%{_tmppath}/repackage/
+
+%NVR		%{name}-%{version}-%{release}
+%NVRA		%{name}-%{version}-%{release}.%{_target_cpu}
+
+%pre    %%pre\
+  echo "--- pre(%NVRA)  arg $1 ..."\
+%nil
+%post   %%post\
+  echo "--- post(%NVRA) arg $1 ..."\
+%nil
+%preun  %%preun\
+  echo "--- preun(%NVRA)         arg $1 ..."\
+%nil
+%postun %%postun\
+  echo "--- postun(%NVRA)        arg $1 ..."\
+%nil
+%verifyscript %%verifyscript\
+  echo "--- verifyscript(%NVRA)  arg $1 ..."\
+%nil
+%sanity %%sanity\
+  echo "--- sanity(%NVRA)        arg $1 ..."\
+%nil
