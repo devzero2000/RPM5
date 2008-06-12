@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: install rpmdeps, rpmdigest, rpmmtree, rpmrepo tools to bindir
 	- glen: add mono deps from PLD
 	- glen: call %__java-{requires/provides} for java files (jars/classes)
 	- glen: hotwire only -lossp-uuid not both with -luuid
