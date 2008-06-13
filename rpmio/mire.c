@@ -29,7 +29,7 @@ int _mireSTRINGoptions = 0;
 int _mireGLOBoptions = FNM_PATHNAME | FNM_PERIOD;
 
 /*@unchecked@*/
-int _mireREGEXoptions = REG_EXTENDED;
+int _mireREGEXoptions = REG_EXTENDED | REG_NEWLINE;
 
 /*@unchecked@*/
 int _mirePCREoptions = 0;

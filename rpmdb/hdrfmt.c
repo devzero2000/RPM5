@@ -20,7 +20,7 @@ extern size_t iconv(iconv_t __cd, /*@null@*/ char ** __inbuf,
 		*__inbuf, *__inbytesleft, *__outbuf, *__outbytesleft @*/;
 
 extern int iconv_close(/*@only@*/ iconv_t __cd)
-        /*@modifies __cd @*/;
+	/*@modifies __cd @*/;
 /*@=declundef =incondefs @*/
 #endif
 #endif
@@ -3595,6 +3595,8 @@ static /*@only@*/ char * strsubFormat(HE_t he, /*@null@*/ const char ** av)
 {
     char * val = NULL;
     int ac = argvCount(av);
+    miRE mires = NULL;
+    int nmires = 0;
     int xx;
     int i;
 
@@ -3613,66 +3615,71 @@ static /*@only@*/ char * strsubFormat(HE_t he, /*@null@*/ const char ** av)
     if (av == NULL)
 	goto noop;
 
+    /* Create the mire pattern array. */
+    for (i = 0; av[i] != NULL; i += 2)
+	xx = mireAppend(RPMMIRE_REGEX, 0, av[i], NULL, &mires, &nmires);
+
     /* Find-and-replace first pattern that matches. */
-    for (i = 0; av[i] != NULL; i += 2) {
-	int cflags = REG_EXTENDED | REG_NEWLINE;
-	regmatch_t rm[1];
+    if (mires != NULL) {
+	int noffsets = 3;
+	int offsets[3];
 	const char * s, * se;
 	char * t, * te;
 	char * nval;
+	size_t slen;
 	size_t nb;
-	regex_t reg;
 
-	xx = regcomp(&reg, av[i], cflags);
-	if (xx != 0)
-	    continue;
-	s = he->p.str;
-	if ((xx = regexec(&reg, s, 0, NULL, 0)) != 0) {
-	    regfree(&reg);
-	    continue;
-	}
+	for (i = 0; i < nmires; i++) {
+	    miRE mire = mires + i;
 
-	/* Replace the string(s). This is just s/find/replace/g */
-	val = xstrdup("");
-	while (*s != '\0') {
-	    nb = strlen(s);
-	    if ((se = strchr(s, '\n')) == NULL)
-		se = s + nb;
-	    else
-		se++;
-	    
-	    rm[0].rm_so = rm[0].rm_eo = -1;
-	    xx = regexec(&reg, s, 1, rm, 0);
+	    s = he->p.str;
+	    slen = strlen(s);
+	    if ((xx = mireRegexec(mire, s, slen)) < 0)
+		continue;
+	    xx = mireSetEOptions(mire, offsets, noffsets);
 
-	    nb = 1;
-	    /* On match, copy lead-in and match string. */
-	    if (rm[0].rm_so >= 0)
-		nb += rm[0].rm_so;
-	    if (xx == 0)
-		nb += rm[0].rm_so + strlen(av[i+1]);
-	    /* Copy up to EOL on nomatch or insertion. */
-	    if (xx != 0 || rm[0].rm_eo == rm[0].rm_so)
-		nb += (se - (s + rm[0].rm_eo));
+	    /* Replace the string(s). This is just s/find/replace/g */
+	    val = xstrdup("");
+	    while (*s != '\0') {
+		nb = strlen(s);
+		if ((se = strchr(s, '\n')) == NULL)
+		    se = s + nb;
+		else
+		    se++;
 
-	    te = t = xmalloc(nb);
-	    /* On match, copy lead-in and match string. */
-	    if (xx == 0) {
-		te = stpcpy( stpncpy(te, s, rm[0].rm_so), av[i+1]);
-		s += rm[0].rm_eo;
+		offsets[0] = offsets[1] = -1;
+		xx = mireRegexec(mire, s, nb);
+
+		nb = 1;
+		/* On match, copy lead-in and match string. */
+		if (xx == 0)
+		    nb += offsets[0] + strlen(av[2*i+1]);
+		/* Copy up to EOL on nomatch or insertion. */
+		if (xx != 0 || offsets[1] == offsets[0])
+		    nb += (se - (s + offsets[1]));
+
+		te = t = xmalloc(nb);
+
+		/* On match, copy lead-in and match string. */
+		if (xx == 0) {
+		    te = stpcpy( stpncpy(te, s, offsets[0]), av[2*i+1]);
+		    s += offsets[1];
+		}
+		/* Copy up to EOL on nomatch or insertion. */
+		if (xx != 0 || offsets[1] == offsets[0]) {
+		    s += offsets[1];
+		    te = stpncpy(te, s, (se - s));
+		    s = se;
+		}
+		*te = '\0';
+
+		nval = rpmExpand(val, t, NULL);
+		val = _free(val);
+		val = nval;
+		t = _free(t);
 	    }
-	    /* Copy up to EOL on nomatch or insertion. */
-	    if (xx != 0 || rm[0].rm_eo == rm[0].rm_so) {
-		te = stpncpy(te, s, (se - s));
-		s = se;
-	    }
-	    *te = '\0';
-
-	    nval = rpmExpand(val, t, NULL);
-	    val = _free(val);
-	    val = nval;
-	    t = _free(t);
 	}
-	regfree(&reg);
+	mires = mireFreeAll(mires, nmires);
     }
 
 noop:
@@ -3921,11 +3928,11 @@ typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
  */
 struct sprintfToken_s {
     enum {
-        PTOK_NONE       = 0,
-        PTOK_TAG        = 1,
-        PTOK_ARRAY      = 2,
-        PTOK_STRING     = 3,
-        PTOK_COND       = 4
+	PTOK_NONE       = 0,
+	PTOK_TAG        = 1,
+	PTOK_ARRAY      = 2,
+	PTOK_STRING     = 3,
+	PTOK_COND       = 4
     } type;
     union {
 	struct sprintfTag_s tag;	/*!< PTOK_TAG */
@@ -4617,7 +4624,7 @@ fprintf(stderr, "\t*%p = *%p \"%.30s\"\n", dst, start, start);
 /*@=infloops@*/
 
     if (dst != NULL)
-        *dst = '\0';
+	*dst = '\0';
 
     for (i = 0; i < (unsigned) numTokens; i++) {
 	token = format + i;
