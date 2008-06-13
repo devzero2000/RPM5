@@ -103,6 +103,94 @@ rpm	alias --yaml --qf '[%{*:yaml}\n]' \
 	--POPTdesc=$"list metadata in yaml"
 
 #==============================================================================
+rpm	alias --deb:control --qf '\
+Package: %{NAME}\
+\nVersion: %|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}\
+\nSection: %{GROUP}\
+%|Priority?{\
+\nPriority: %{Priority}\
+}:{\
+\nPriority: standard\
+}|\
+\nArchitecture: %{ARCH:strsub(noarch,all,src,source)}\
+%|Essential?{\
+\nEssential: %{Essential}\
+}|\
+%|REQUIRENAME?{\
+\nDepends:[ %{REQUIRENAME:contains(N)}]\
+}|\
+%|Predepends?{\
+\nPre-Depends:[ %{Predepends}]\
+}|\
+%|Recommends?{\
+\nRecommends:[ %{Recommends}]\
+}|\
+%|Suggests?{\
+\nSuggests:[ %{Suggests}]\
+}|\
+%|Enhances?{\
+\nEnhances:[ %{Enhances}]\
+}|\
+%|Breaks?{\
+\nBreaks:[ %{Breaks}]\
+}|\
+%|CONFLICTNAME?{\
+\nConflicts:[ %{CONFLICTNAME:contains(N)}]\
+}|\
+\nInstalled-Size: %{SIZE}\
+%|PACKAGER?{\
+\nMaintainer: %{PACKAGER}\
+}|\
+\nDescription: %{SUMMARY}\
+\n%{DESCRIPTION:strsub(^, )}\
+%|URL?{\
+\nHomepage: %{URL}\
+}|\
+\n' \
+	--POPTdesc=$"display binary debian/control file"
+
+rpm	alias --deb:preinst --qf '\
+%|PREIN?{\
+%|PREINPROG?{#!%{PREINPROG})}:{#!/bin/sh}|\
+\n%{PREIN}\
+}|\
+\n' \
+	--POPTdesc=$"display debian/preinst script"
+
+rpm	alias --deb:postinst --qf '\
+%|POSTIN?{\
+%|POSTINPROG?{#!%{POSTINPROG})}:{#!/bin/sh}|\
+\n%{POSTIN}\
+}|\
+\n' \
+	--POPTdesc=$"display debian/postinst script"
+
+rpm	alias --deb:prerm --qf '\
+%|PREUN?{\
+%|PREUNPROG?{#!%{PREUNPROG})}:{#!/bin/sh}|\
+\n%{PREUN}\
+}|\
+\n' \
+	--POPTdesc=$"display debian/prerm script"
+
+rpm	alias --deb:postrm --qf '\
+%|POSTUN?{\
+%|POSTUNPROG?{#!%{POSTUNPROG})}:{#!/bin/sh}|\
+\n%{POSTUN}\
+}|\
+\n' \
+	--POPTdesc=$"display debian/postrm script"
+
+rpm	alias --deb:md5sums --qf '\
+%|FILENAMES?{\
+[\
+%{Debmd5sums}\n\
+]\
+}|\
+' \
+	--POPTdesc=$"display debian/md5sums manifest"
+
+#==============================================================================
 rpm	alias --yum:primary.xml --qf '\
 <package type="rpm">\
 \n  <name>%{NAME:cdata}</name>\

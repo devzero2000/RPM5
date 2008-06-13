@@ -20,7 +20,7 @@ extern size_t iconv(iconv_t __cd, /*@null@*/ char ** __inbuf,
 		*__inbuf, *__inbytesleft, *__outbuf, *__outbytesleft @*/;
 
 extern int iconv_close(/*@only@*/ iconv_t __cd)
-	/*@modifies __cd @*/;
+        /*@modifies __cd @*/;
 /*@=declundef =incondefs @*/
 #endif
 #endif
@@ -2345,6 +2345,65 @@ static int origpathsTag(Header h, HE_t he)
     return _fnTag(h, he);
 }
 
+/**
+ * Retrieve digest/path pairs for --deb:md5sums.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int debmd5sumsTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+    HE_t dhe = memset(alloca(sizeof(*dhe)), 0, sizeof(*dhe));
+    char * t, * te;
+    size_t nb = 0;
+    int rc = 1;
+    int xx;
+    int i;
+
+    nhe->tag = RPMTAG_FILEPATHS;
+    if (!(xx = headerGet(h, nhe, 0)))
+	goto exit;
+    dhe->tag = RPMTAG_FILEDIGESTS;
+    if (!(xx = headerGet(h, dhe, 0)))
+	goto exit;
+
+    he->tag = tagValue("Debmd5sums");
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = 0;
+    he->freeData = 1;
+    for (i = 0; i < (int)dhe->c; i++) {
+	if (!(dhe->p.argv[i] && *dhe->p.argv[i]))
+	    continue;
+	nb += sizeof(*he->p.argv);
+	nb += strlen(dhe->p.argv[i]) + sizeof("  ") + strlen(nhe->p.argv[i]) - 1;
+	he->c++;
+    }
+    nb += sizeof(*he->p.argv);
+
+    he->p.argv = xmalloc(nb);
+    te = (char *) &he->p.argv[he->c+1];
+
+    he->c = 0;
+    for (i = 0; i < (int)dhe->c; i++) {
+	if (!(dhe->p.argv[i] && *dhe->p.argv[i]))
+	    continue;
+	he->p.argv[he->c++] = te;
+	t = rpmExpand(dhe->p.argv[i], "  ", nhe->p.argv[i]+1, NULL);
+	te = stpcpy(te, t);
+	te++;
+	t = _free(t);
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    nhe->p.ptr = _free(nhe->p.ptr);
+    dhe->p.ptr = _free(dhe->p.ptr);
+    return rc;
+}
+
 static int filestatTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
@@ -3777,6 +3836,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = F1sqlTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILESSQLENTRY2",
 	{ .tagFunction = F2sqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBMD5SUMS",
+	{ .tagFunction = debmd5sumsTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
@@ -3928,11 +3989,11 @@ typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
  */
 struct sprintfToken_s {
     enum {
-	PTOK_NONE       = 0,
-	PTOK_TAG        = 1,
-	PTOK_ARRAY      = 2,
-	PTOK_STRING     = 3,
-	PTOK_COND       = 4
+        PTOK_NONE       = 0,
+        PTOK_TAG        = 1,
+        PTOK_ARRAY      = 2,
+        PTOK_STRING     = 3,
+        PTOK_COND       = 4
     } type;
     union {
 	struct sprintfTag_s tag;	/*!< PTOK_TAG */
@@ -4624,7 +4685,7 @@ fprintf(stderr, "\t*%p = *%p \"%.30s\"\n", dst, start, start);
 /*@=infloops@*/
 
     if (dst != NULL)
-	*dst = '\0';
+        *dst = '\0';
 
     for (i = 0; i < (unsigned) numTokens; i++) {
 	token = format + i;
