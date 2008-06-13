@@ -34,6 +34,7 @@ extern char *nl_langinfo (nl_item __item)
 #endif
 #endif
 
+#define	_MIRE_INTERNAL
 #include "rpmio_internal.h"
 #include <rpmbc.h>	/* XXX beecrypt base64 */
 #include <rpmcb.h>	/* XXX rpmIsVerbose */
@@ -3583,6 +3584,106 @@ exit:
 /*@=globstate@*/
 }
 
+/**
+ * Replace string values.
+ * @param he		tag container
+ * @param av		parameter list (NULL is an error)
+ * @return		formatted string
+ */
+static /*@only@*/ char * strsubFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    char * val = NULL;
+    int ac = argvCount(av);
+    int xx;
+    int i;
+
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :strsub)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_STRING_TYPE:
+	if (ac < 2 || (ac % 2) != 0) {
+	    val = xstrdup(_("(invalid args :strsub)"));
+	    goto exit;
+	}
+	break;
+    }
+    if (av == NULL)
+	goto noop;
+
+    /* Find-and-replace first pattern that matches. */
+    for (i = 0; av[i] != NULL; i += 2) {
+	int cflags = REG_EXTENDED | REG_NEWLINE;
+	regmatch_t rm[1];
+	const char * s, * se;
+	char * t, * te;
+	char * nval;
+	size_t nb;
+	regex_t reg;
+
+	xx = regcomp(&reg, av[i], cflags);
+	if (xx != 0)
+	    continue;
+	s = he->p.str;
+	if ((xx = regexec(&reg, s, 0, NULL, 0)) != 0) {
+	    regfree(&reg);
+	    continue;
+	}
+
+	/* Replace the string(s). This is just s/find/replace/g */
+	val = xstrdup("");
+	while (*s != '\0') {
+	    nb = strlen(s);
+	    if ((se = strchr(s, '\n')) == NULL)
+		se = s + nb;
+	    else
+		se++;
+	    
+	    rm[0].rm_so = rm[0].rm_eo = -1;
+	    xx = regexec(&reg, s, 1, rm, 0);
+
+	    nb = 1;
+	    /* On match, copy lead-in and match string. */
+	    if (rm[0].rm_so >= 0)
+		nb += rm[0].rm_so;
+	    if (xx == 0)
+		nb += rm[0].rm_so + strlen(av[i+1]);
+	    /* Copy up to EOL on nomatch or insertion. */
+	    if (xx != 0 || rm[0].rm_eo == rm[0].rm_so)
+		nb += (se - (s + rm[0].rm_eo));
+
+	    te = t = xmalloc(nb);
+	    /* On match, copy lead-in and match string. */
+	    if (xx == 0) {
+		te = stpcpy( stpncpy(te, s, rm[0].rm_so), av[i+1]);
+		s += rm[0].rm_eo;
+	    }
+	    /* Copy up to EOL on nomatch or insertion. */
+	    if (xx != 0 || rm[0].rm_eo == rm[0].rm_so) {
+		te = stpncpy(te, s, (se - s));
+		s = se;
+	    }
+	    *te = '\0';
+
+	    nval = rpmExpand(val, t, NULL);
+	    val = _free(val);
+	    val = nval;
+	    t = _free(t);
+	}
+	regfree(&reg);
+    }
+
+noop:
+    if (val == NULL)
+	val = xstrdup(he->p.str);
+exit:
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_BUILDTIMEUUID",
@@ -3697,6 +3798,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = sqlescapeFormat } },
     { HEADER_EXT_FORMAT, "stat",
 	{ .fmtFunction = statFormat } },
+    { HEADER_EXT_FORMAT, "strsub",
+	{ .fmtFunction = strsubFormat } },
     { HEADER_EXT_FORMAT, "triggertype",	
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",

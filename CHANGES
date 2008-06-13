@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add :strsub format extension find-and-replace using posix RE's.
     - jbj: fix: reattach RPMMIRE_DEFAULT as posix regex, not strcmp, pattern.
     - jbj: lzdio: start using -llzma instead.
     - jbj: tests: add coverage for %pretrans et al scriptlets.
