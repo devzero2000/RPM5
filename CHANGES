@@ -1,4 +1,6 @@
 5.1.2 -> 5.1.3:
+    - rse: enhance RPM_CHECK_LIB to query pkg-config(1) --libs-only-L to get -L<dir> options, too.
+    - rse: add support for "lib<name>-config" and "lib<name>.pc" in RPM_CHECK_LIB
     - rse: unbreak building without LZMAUtils library
     - jbj: fix: reattach RPMMIRE_DEFAULT as posix regex, not strcmp, pattern.
     - jbj: lzdio: start using -llzma instead.
