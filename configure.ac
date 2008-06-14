@@ -957,6 +957,13 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [], [])
 
+dnl # LZMA Utils
+RPM_CHECK_LIB(
+    [LZMA Utils], [lzma],
+    [lzma], [lzma_init], [lzma.h],
+    [no,external:none], [],
+    [], [])
+
 dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
