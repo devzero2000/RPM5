@@ -180,7 +180,9 @@ static int rpmHeadersIdentical(Header first, Header second)
 /*@unchecked@*/
 static rpmTag _upgrade_tag;
 /*@unchecked@*/
+#if defined(SUPPORT_DEBUGINFO_UPGRADE_MODEL)
 static rpmTag _debuginfo_tag;
+#endif
 /*@unchecked@*/
 static rpmTag _obsolete_tag;
 
