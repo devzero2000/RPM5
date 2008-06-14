@@ -6,7 +6,9 @@
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
-#include <lzma.h>
+#if defined(HAVE_LZMA_H)
+
+#include "lzma.h"
 
 #include "debug.h"
 
@@ -357,3 +359,6 @@ static struct FDIO_s lzdio_s = {
 /*@=type@*/
 
 FDIO_t lzdio = /*@-compmempass@*/ &lzdio_s /*@=compmempass@*/ ;
+
+#endif
+

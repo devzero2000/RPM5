@@ -1,4 +1,5 @@
 5.1.2 -> 5.1.3:
+    - rse: unbreak building without LZMAUtils library
     - jbj: fix: reattach RPMMIRE_DEFAULT as posix regex, not strcmp, pattern.
     - jbj: lzdio: start using -llzma instead.
     - jbj: tests: add coverage for %pretrans et al scriptlets.
