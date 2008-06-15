@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: return 1 rather than assertion failing on Suggests: header ext
+	query of package with no Requires:.
     - rse: unbreak building without LZMAUtils library
     - jbj: add --deb:foo aliases for *.deb spewage.
     - jbj: rework :strsub find-and-replace to use mire patterns.

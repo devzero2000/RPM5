@@ -225,7 +225,9 @@ static int missingokTag(Header h, HE_t he)
     size_t nb = 0;
     int i;
 
-assert(ds != NULL);
+    if (ds == NULL)
+	return 1;
+
     /* Collect dependencies marked as hints. */
     ds = rpmdsInit(ds);
     if (ds != NULL)
@@ -253,8 +255,6 @@ assert(ds != NULL);
     }
     av = argvFree(av);
     ds = rpmdsFree(ds);
-
-    /* XXX perhaps return "(none)" inband if no suggests/enhances <shrug>. */
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = argv;
