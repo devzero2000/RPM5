@@ -302,7 +302,7 @@ extern int _tolower(int) __THROW	/*@*/;
 #else
 typedef	char * security_context_t;
 
-#define	freecon(_c)
+#define	freecon(_c)  do {} while(0)
 
 #define	getfilecon(_fn, _c)	(-1)
 #define	lgetfilecon(_fn, _c)	(-1)
@@ -320,7 +320,7 @@ typedef	char * security_context_t;
 
 #define matchpathcon_init(_fn)	(-1)
 #define matchpathcon(_fn, _fmode, _s)	(-1)
-#define	matchpathcon_fini()
+#define	matchpathcon_fini()  do {} while(0)
 #endif
 
 #if defined(WITH_SELINUX) && defined(__LCLINT__)
