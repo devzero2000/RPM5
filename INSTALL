@@ -14,7 +14,7 @@ Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.11  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.62    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.10    http://www.gnu.org/software/automake/
-GNU libtool     mandatory 1.5     2.2.2   http://www.gnu.org/software/libtool/
+GNU libtool     mandatory 1.5     2.2.4   http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
 --------------- --------- ------- ------- -------------------------------------
 
@@ -29,22 +29,22 @@ ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
 Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
 POPT            mandatory 1.9     1.14    http://rpm5.org/files/popt/
-BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/products/beecrypt/
+BeeCrypt        mandatory 4.0     4.1.2   http://beecrypt.sourceforge.net/
 Mozilla NSS     optional  3.11    3.11.7  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   0.9.8g  http://www.openssl.org/
 Neon            optional  0.26.0  0.28.1  http://www.webdav.org/neon/
-Berkeley-DB [1] optional  4.5     4.6.21  http://www.oracle.com/database/berkeley-db.html
-SQLite      [1] optional  3.3     3.5.7   http://www.sqlite.org/
+Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
+SQLite      [1] optional  3.3     3.5.9   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.3   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
-LZMA SDK    [4] internal  4.27    4.32/57 http://www.7-zip.org/sdk.html
-File/magic  [5] optional  4.0     4.23    ftp://ftp.astron.com/pub/file/
+LZMA Utils      optional  4.42.2  4.999.3 http://tukaani.org/lzma/
+File/magic  [4] optional  4.0     4.24    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
-PCRE            optional  7.0     7.6     http://www.pcre.org/
+PCRE            optional  7.0     7.7     http://www.pcre.org/
 OSSP uuid       optional  1.6.0   1.6.1   http://www.ossp.org/pkg/lib/uuid/
-XAR         [6] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
+XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
@@ -67,17 +67,12 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
                Building RPM against stock external Zlib not recommended
                as it reduces its RPM-specific functionality.
 
-[4] lzma:      RPM has a copy of the LZMA SDK 4.32 (which is identical to the version in
-               LZMA SDK 4.57 except for portability adjustments) decompression routines bundled,
-               but for compression the external command line interface lzma(1) is required.
-               You need either LZMA Utils (recommended) or LZMA SDK and the lzmash wrapper.
-
-[5] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
+[4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against this internal File/magic requires also internal Zlib.
                Building RPM against stock external File/magic supported, too.
                NOTICE: File 4.24 is unportable because uses asprintf(3) without fallbacks.
 
-[6] xar:       Modified XAR copy bundled with RPM.
+[5] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
                The 1.5 and 1.5.1 releases of XAR needs some patching, before they work.
 
