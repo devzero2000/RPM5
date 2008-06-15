@@ -2346,38 +2346,42 @@ static int origpathsTag(Header h, HE_t he)
 }
 
 /**
- * Retrieve digest/path pairs for --deb:md5sums.
+ * Retrieve Depends: and Conflicts: for --deb:control.
  * @param h		header
  * @retval *he		tag container
  * @return		0 on success
  */
-static int debmd5sumsTag(Header h, HE_t he)
+static int debevrTag(Header h, HE_t he, rpmTag tagN, rpmTag tagEVR, rpmTag tagF)
 	/*@modifies he @*/
 {
-    HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
-    HE_t dhe = memset(alloca(sizeof(*dhe)), 0, sizeof(*dhe));
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t EVRhe = memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
+    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     char * t, * te;
     size_t nb = 0;
     int rc = 1;
     int xx;
-    int i;
 
-    nhe->tag = RPMTAG_FILEPATHS;
-    if (!(xx = headerGet(h, nhe, 0)))
+    Nhe->tag = tagN;
+    if (!(xx = headerGet(h, Nhe, 0)))
 	goto exit;
-    dhe->tag = RPMTAG_FILEDIGESTS;
-    if (!(xx = headerGet(h, dhe, 0)))
+    EVRhe->tag = tagEVR;
+    if (!(xx = headerGet(h, EVRhe, 0)))
 	goto exit;
+assert(EVRhe->c == Nhe->c);
+    Fhe->tag = tagF;
+    if (!(xx = headerGet(h, Fhe, 0)))
+	goto exit;
+assert(Fhe->c == Nhe->c);
 
-    he->tag = tagValue("Debmd5sums");
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = 0;
     he->freeData = 1;
-    for (i = 0; i < (int)dhe->c; i++) {
-	if (!(dhe->p.argv[i] && *dhe->p.argv[i]))
-	    continue;
+    for (Nhe->ix = 0; Nhe->ix < (int)Nhe->c; Nhe->ix++) {
 	nb += sizeof(*he->p.argv);
-	nb += strlen(dhe->p.argv[i]) + sizeof("  ") + strlen(nhe->p.argv[i]) - 1;
+	nb += strlen(Nhe->p.argv[Nhe->ix]) + 1;
+	if (*EVRhe->p.argv[Nhe->ix] != '\0')
+	    nb += strlen(EVRhe->p.argv[Nhe->ix]) + (sizeof(" (== )")-1);
 	he->c++;
     }
     nb += sizeof(*he->p.argv);
@@ -2386,11 +2390,21 @@ static int debmd5sumsTag(Header h, HE_t he)
     te = (char *) &he->p.argv[he->c+1];
 
     he->c = 0;
-    for (i = 0; i < (int)dhe->c; i++) {
-	if (!(dhe->p.argv[i] && *dhe->p.argv[i]))
-	    continue;
+    for (Nhe->ix = 0; Nhe->ix < (int)Nhe->c; Nhe->ix++) {
 	he->p.argv[he->c++] = te;
-	t = rpmExpand(dhe->p.argv[i], "  ", nhe->p.argv[i]+1, NULL);
+	if (*EVRhe->p.argv[Nhe->ix] != '\0') {
+	    char opstr[4], * op = opstr;
+	    if (Fhe->p.ui32p[Nhe->ix] & RPMSENSE_LESS)
+		*op++ = '<';
+	    if (Fhe->p.ui32p[Nhe->ix] & RPMSENSE_GREATER)
+		*op++ = '>';
+	    if (Fhe->p.ui32p[Nhe->ix] & RPMSENSE_EQUAL)
+		*op++ = '=';
+	    *op = '\0';
+	    t = rpmExpand(Nhe->p.argv[Nhe->ix],
+			" (", opstr, " ", EVRhe->p.argv[Nhe->ix], ")", NULL);
+	} else
+	    t = rpmExpand(Nhe->p.argv[Nhe->ix], NULL);
 	te = stpcpy(te, t);
 	te++;
 	t = _free(t);
@@ -2399,8 +2413,106 @@ static int debmd5sumsTag(Header h, HE_t he)
     rc = 0;
 
 exit:
-    nhe->p.ptr = _free(nhe->p.ptr);
-    dhe->p.ptr = _free(dhe->p.ptr);
+    Nhe->p.ptr = _free(Nhe->p.ptr);
+    EVRhe->p.ptr = _free(EVRhe->p.ptr);
+    Fhe->p.ptr = _free(Fhe->p.ptr);
+    return rc;
+}
+
+/**
+ * Retrieve Depends: and Conflicts: for --deb:control.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int debconflictsTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = tagValue("Debconflicts");
+    return debevrTag(h, he,
+	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+}
+
+static int debdependsTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = tagValue("Debdepends");
+    return debevrTag(h, he,
+	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+}
+
+static int debobsoletesTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = tagValue("Debobsoletes");
+    return debevrTag(h, he,
+	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
+static int debprovidesTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = tagValue("Debprovides");
+    return debevrTag(h, he,
+	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+}
+
+/**
+ * Retrieve digest/path pairs for --deb:md5sums.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int debmd5sumsTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Dhe = memset(alloca(sizeof(*Dhe)), 0, sizeof(*Dhe));
+    char * t, * te;
+    size_t nb = 0;
+    int rc = 1;
+    int xx;
+
+    Nhe->tag = RPMTAG_FILEPATHS;
+    if (!(xx = headerGet(h, Nhe, 0)))
+	goto exit;
+    Dhe->tag = RPMTAG_FILEDIGESTS;
+    if (!(xx = headerGet(h, Dhe, 0)))
+	goto exit;
+assert(Dhe->c == Nhe->c);
+
+    he->tag = tagValue("Debmd5sums");
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = 0;
+    he->freeData = 1;
+    for (Dhe->ix = 0; Dhe->ix < (int)Dhe->c; Dhe->ix++) {
+	if (!(Dhe->p.argv[Dhe->ix] && *Dhe->p.argv[Dhe->ix]))
+	    continue;
+	nb += sizeof(*he->p.argv);
+	nb += strlen(Dhe->p.argv[Dhe->ix]) + sizeof("  ") + strlen(Nhe->p.argv[Dhe->ix]) - 1;
+	he->c++;
+    }
+    nb += sizeof(*he->p.argv);
+
+    he->p.argv = xmalloc(nb);
+    te = (char *) &he->p.argv[he->c+1];
+
+    he->c = 0;
+    for (Dhe->ix = 0; Dhe->ix < (int)Dhe->c; Dhe->ix++) {
+	if (!(Dhe->p.argv[Dhe->ix] && *Dhe->p.argv[Dhe->ix]))
+	    continue;
+	he->p.argv[he->c++] = te;
+	t = rpmExpand(Dhe->p.argv[Dhe->ix], "  ", Nhe->p.argv[Dhe->ix]+1, NULL);
+	te = stpcpy(te, t);
+	te++;
+	t = _free(t);
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    Nhe->p.ptr = _free(Nhe->p.ptr);
+    Dhe->p.ptr = _free(Dhe->p.ptr);
     return rc;
 }
 
@@ -3836,8 +3948,16 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = F1sqlTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILESSQLENTRY2",
 	{ .tagFunction = F2sqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBCONFLICTS",
+	{ .tagFunction = debconflictsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBDEPENDS",
+	{ .tagFunction = debdependsTag } },
     { HEADER_EXT_TAG, "RPMTAG_DEBMD5SUMS",
 	{ .tagFunction = debmd5sumsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBOBSOLETES",
+	{ .tagFunction = debobsoletesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBPROVIDES",
+	{ .tagFunction = debprovidesTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",

@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: Install-Size: spewage in Kb, not bytes. everone gotta be different.
+    - jbj: permit *.deb syntax as arbitrary tags.
+    - jbj: add *.deb format dependency tag header extensions.
     - jbj: fix: return 1 rather than assertion failing on Suggests: header ext
 	query of package with no Requires:.
     - rse: unbreak building without LZMAUtils library

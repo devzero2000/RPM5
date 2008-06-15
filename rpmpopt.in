@@ -117,7 +117,7 @@ Package: %{NAME}\
 \nEssential: %{Essential}\
 }|\
 %|REQUIRENAME?{\
-\nDepends:[ %{REQUIRENAME:contains(N)}]\
+\nDepends:[ %{Debdepends}]\
 }|\
 %|Predepends?{\
 \nPre-Depends:[ %{Predepends}]\
@@ -135,9 +135,9 @@ Package: %{NAME}\
 \nBreaks:[ %{Breaks}]\
 }|\
 %|CONFLICTNAME?{\
-\nConflicts:[ %{CONFLICTNAME:contains(N)}]\
+\nConflicts:[ %{Debconflicts}]\
 }|\
-\nInstalled-Size: %{SIZE}\
+\nInstalled-Size: %{SIZE:rpn(1023,+,1024,/)}\
 %|PACKAGER?{\
 \nMaintainer: %{PACKAGER}\
 }|\
