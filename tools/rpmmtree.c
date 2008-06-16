@@ -50,7 +50,6 @@ static const char copyright[] =
 #endif
 
 #if defined(__linux__)
-#include <sys/queue.h>		/* XXX LIST_ENTRY (needs to be removed) */
 #define	st_mtimespec	st_mtim
 #endif
 
@@ -69,6 +68,26 @@ static const char copyright[] =
 #include <rpmlib.h>		/* XXX for rpmts typedef */
 #include <rpmts.h>
 #endif
+
+#define	RPM_LIST_HEAD(name, type) \
+    struct name { struct type *lh_first; }
+#define	RPM_LIST_ENTRY(type) \
+    struct { struct type *le_next;struct type **le_prev; }
+#define RPM_LIST_EMPTY(head) \
+    ((head)->lh_first == NULL)
+#define RPM_LIST_FIRST(head) \
+    ((head)->lh_first)
+#define	RPM_LIST_NEXT(elm, field) \
+    ((elm)->field.le_next)
+#define	RPM_LIST_INIT(head) \
+    do { RPM_LIST_FIRST((head)) = NULL; } while (0)
+#define	RPM_LIST_INSERT_HEAD(head, elm, field) \
+    do { if ((RPM_LIST_NEXT((elm), field) = RPM_LIST_FIRST((head))) != NULL) \
+        RPM_LIST_FIRST((head))->field.le_prev = &RPM_LIST_NEXT((elm), field);\
+    RPM_LIST_FIRST((head)) = (elm); \
+    (elm)->field.le_prev = &RPM_LIST_FIRST((head)); } while (0)
+#define RPM_LIST_FOREACH(var, head, field) \
+    for ((var) = RPM_LIST_FIRST((head)); (var); (var) = RPM_LIST_NEXT((var), field))
 
 #define	_MTREE_INTERNAL
 /*==============================================================*/
@@ -265,15 +284,15 @@ static rpmfts _rpmfts = &__rpmfts;
 /*@unchecked@*/
 static enum mtreeFlags_e mtreeFlags = MTREE_FLAGS_NONE;
 
-/* XXX merge into _rpmfts, use mmiRE instead, get rid of goofy LIST_ENTRY */
+/* XXX merge into _rpmfts, use mmiRE instead */
 struct exclude {
-    LIST_ENTRY(exclude) link;
+    RPM_LIST_ENTRY(exclude) link;
     const char *glob;
     int pathname;
 };
 
 /*@unchecked@*/
-static LIST_HEAD(, exclude) excludes;
+static RPM_LIST_HEAD(, exclude) excludes;
 
 /*@unchecked@*/
 static struct rpmop_s dc_totalops;
@@ -2779,7 +2798,7 @@ mtreeReadExcludes(const char * fn)
 	e->glob = xstrdup(line);
 	e->pathname = (strchr(line, '/') != NULL ? 1 : 0);
 /*@-immediatetrans@*/
-	LIST_INSERT_HEAD(&excludes, e, link);
+	RPM_LIST_INSERT_HEAD(&excludes, e, link);
 /*@=immediatetrans@*/
     }
     if (fd != NULL)
@@ -2799,7 +2818,7 @@ mtreeCheckExcludes(const char *fname, const char *path)
 #define MATCH(g, n) (fnmatch((g), (n), FNM_PATHNAME) == 0)
 
 /*@-predboolptr@*/
-    LIST_FOREACH(e, &excludes, link) {
+    RPM_LIST_FOREACH(e, &excludes, link) {
 	if ((e->pathname && MATCH(e->glob, path)) || MATCH(e->glob, fname))
 	    return 1;
     }
@@ -3668,7 +3687,7 @@ main(int argc, char *argv[])
 
     __progname = "rpmmtree";
 
-    LIST_INIT(&excludes);
+    RPM_LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
     fts->maxg = 5000;
     fts->maxu = 5000;
