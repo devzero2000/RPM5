@@ -559,6 +559,10 @@ static int davConnect(urlinfo u)
     if (_dav_nooptions && u->allow & RPMURL_SERVER_OPTIONSDONE)
 	return 0;
 
+    u->allow &= ~(RPMURL_SERVER_HASDAVCLASS1 |
+		  RPMURL_SERVER_HASDAVCLASS2 |
+		  RPMURL_SERVER_HASDAVEXEC);
+
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
@@ -582,6 +586,12 @@ static int davConnect(urlinfo u)
 	    u->allow &= ~RPMURL_SERVER_HASDAVEXEC;
     }	break;
     case NE_ERROR:
+	/* HACK: "501 Not Implemented" if OPTIONS not permitted. */
+	if (!strncmp("501 ", ne_get_error(u->sess), sizeof("501 ")-1)) {
+	    u->allow |= RPMURL_SERVER_OPTIONSDONE;
+	    rc = NE_OK;
+	    break;
+	}
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;

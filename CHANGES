@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: tests: wire up plain HTTP manifest query.
+    - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
     - jbj: two copies of rpmrepo.c/rpmmtree.c is too many.
     - jbj: tests: add probes-test package to exercise dependency probes.
     - jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
