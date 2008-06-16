@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+	- jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
+	- jbj: fix: RPMTAG_SIZE is incorrect with %exclude and %ghost directives
+	    (Alexey Tourbin<at@altlinux.ru>).
 	- rse: fix portability by providing own RPM_LIST_XXX macros in rpmmtree.c
 	- jbj: tests: add check-install target to attempt --relocate install.
 	- jbj: tests: enhance the devtool-sanity package with scripts and a file.

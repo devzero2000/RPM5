@@ -1113,6 +1113,8 @@ static int checkHardLinks(FileList fl)
 	ilp = fl->fileList + i;
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
+	if (ilp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+	    continue;
 
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
@@ -1124,6 +1126,8 @@ static int checkHardLinks(FileList fl)
 		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
 		/*@innercontinue@*/ continue;
+	    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+		continue;
 	    return 1;
 	}
     }
@@ -1515,9 +1519,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     }
     sxfn = _free(sxfn);
 
-    (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
-		   &(fl->totalFileSize), 1);
-
     compressFilelist(h);
 
   { int scareMem = 0;
@@ -1615,7 +1616,35 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (isSrc)
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
 
+	if (S_ISREG(flp->fl_mode)) {
+	    int bingo = 1;
+	    /* Hard links need be tallied only once. */
+	    if (flp->fl_nlink > 1) {
+		FileListRec jlp = flp + 1;
+		int j = i + 1;
+		for (; (unsigned)j < fi->fc; j++, jlp++) {
+		    if (!S_ISREG(jlp->fl_mode))
+			continue;
+		    if (flp->fl_nlink != jlp->fl_nlink)
+			continue;
+		    if (flp->fl_ino != jlp->fl_ino)
+			continue;
+		    if (flp->fl_dev != jlp->fl_dev)
+			continue;
+		    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+		        continue;
+		    bingo = 0;	/* don't tally hardlink yet. */
+		    break;
+		}
+	    }
+	    if (bingo)
+		fl->totalFileSize += flp->fl_size;
+	}
     }
+
+    (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
+		   &(fl->totalFileSize), 1);
+
     /*@-branchstate -compdef@*/
     if (fip)
 	*fip = fi;
@@ -1847,27 +1876,6 @@ static int addFile(FileList fl, const char * diskURL,
 	flp->flags = fl->currentFlags;
 	flp->specdFlags = fl->currentSpecdFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
-
-	/* Hard links need be counted only once. */
-	if (S_ISREG(flp->fl_mode) && flp->fl_nlink > 1) {
-	    FileListRec ilp;
-	    for (i = 0;  i < fl->fileListRecsUsed; i++) {
-		ilp = fl->fileList + i;
-		if (!S_ISREG(ilp->fl_mode))
-		    continue;
-		if (flp->fl_nlink != ilp->fl_nlink)
-		    continue;
-		if (flp->fl_ino != ilp->fl_ino)
-		    continue;
-		if (flp->fl_dev != ilp->fl_dev)
-		    continue;
-		break;
-	    }
-	} else
-	    i = fl->fileListRecsUsed;
-
-	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) 
-	    fl->totalFileSize += flp->fl_size;
     }
 
     fl->fileListRecsUsed++;
@@ -2569,8 +2577,6 @@ int processSourceFiles(Spec spec)
 	    getGname(flp->fl_gid);
 
 	flp->langs = xstrdup("");
-	
-	fl.totalFileSize += flp->fl_size;
 	
 	if (! (flp->uname && flp->gname)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskURL);
