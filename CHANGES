@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: two copies of rpmrepo.c/rpmmtree.c is too many.
     - jbj: tests: add probes-test package to exercise dependency probes.
     - jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
     - rse: fix portability by providing own RPM_LIST_XXX macros in rpmmtree.c

@@ -313,8 +313,8 @@ static const char other_xml_qfmt[] = "\
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *primary_sql_init[] = {
-"PRAGMA synchronous = 0;",
-"pragma locking_mode = EXCLUSIVE;",
+"PRAGMA synchronous = \"OFF\";",
+"pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE conflicts (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
 "CREATE TABLE db_info (dbversion INTEGER,  checksum TEXT);",
 "CREATE TABLE files (  pkgKey INTEGER,  name TEXT,  type TEXT );",
@@ -346,8 +346,8 @@ static const char *primary_sql_init[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static const char *filelists_sql_init[] = {
-"PRAGMA synchronous = 0;",
-"pragma locking_mode = EXCLUSIVE;",
+"PRAGMA synchronous = \"OFF\";",
+"pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
 "CREATE TABLE filelist (  pkgKey INTEGER,  name TEXT,  type TEXT );",
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
@@ -365,8 +365,8 @@ static const char *filelists_sql_init[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static const char *other_sql_init[] = {
-"PRAGMA synchronous = 0;",
-"pragma locking_mode = EXCLUSIVE;",
+"PRAGMA synchronous = \"OFF\";",
+"pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE changelog (  pkgKey INTEGER,  author TEXT,  date INTEGER,  changelog TEXT);",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",

@@ -158,6 +158,14 @@ endif
 check-local:
 	-./rpmdeps --perl > /dev/null 2>&1
 
+.PHONY:	lint_rpmmtree
+lint_rpmmtree:
+	$(LINT) -f .splintrc_rpmmtree $(DEFS) $(INCLUDES) rpmmtree.c
+
+.PHONY:	lint_rpmrepo
+lint_rpmrepo:
+	$(LINT) -f .splintrc_rpmrepo $(DEFS) $(INCLUDES) rpmrepo.c
+
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:
 	make lcov-run

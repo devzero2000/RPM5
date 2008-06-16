@@ -9,14 +9,14 @@ SUBDIRS = # tests
 EXTRA_DIST = \
 	getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
-	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
+	rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh rpmgrep.1
 
 EXTRA_PROGRAMS = rpmcpio \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist \
-	rpmmtree rpmrepo rpmtar rpmz \
+	rpmtar rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
@@ -164,14 +164,6 @@ lint_rpmcpio:
 .PHONY:	lint_rpmgrep
 lint_rpmgrep:
 	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
-
-.PHONY:	lint_rpmmtree
-lint_rpmmtree:
-	$(LINT) -f .splintrc_rpmmtree $(DEFS) $(INCLUDES) rpmmtree.c
-
-.PHONY:	lint_rpmrepo
-lint_rpmrepo:
-	$(LINT) -f .splintrc_rpmrepo $(DEFS) $(INCLUDES) rpmrepo.c
 
 .PHONY:	lint_rpmtar
 lint_rpmtar:
