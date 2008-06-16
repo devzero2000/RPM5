@@ -1,4 +1,5 @@
 5.0.3 -> 5.0.4:
+    - rse: fix portability by providing own RPM_LIST_XXX macros in rpmmtree.c
     - jbj: fix: reattach RPMMIRE_DEFAULT as posix regex, not strcmp, pattern.
     - jbj: tests: add coverage for %pretrans et al scriptlets.
     - jbj: tests: verify upgrades using the edos-test packages.
