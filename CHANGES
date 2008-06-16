@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: RPMTAG_SIZE is incorrect with %exclude and %ghost directives
+	(Alexey Tourbin<at@altlinux.ru>).
     - jbj: fix: Install-Size: spewage in Kb, not bytes. everone gotta be different.
     - jbj: permit *.deb syntax as arbitrary tags.
     - jbj: add *.deb format dependency tag header extensions.
