@@ -1111,6 +1111,8 @@ static int checkHardLinks(FileList fl)
 	ilp = fl->fileList + i;
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
+	if (ilp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+	    continue;
 
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
@@ -1122,6 +1124,8 @@ static int checkHardLinks(FileList fl)
 		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
 		/*@innercontinue@*/ continue;
+	    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+		continue;
 	    return 1;
 	}
     }
@@ -1719,6 +1723,8 @@ if (_rpmbuildFlags & 4) {
 			continue;
 		    if (flp->fl_dev != jlp->fl_dev)
 			continue;
+		    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+		        continue;
 		    bingo = 0;	/* don't tally hardlink yet. */
 		    break;
 		}

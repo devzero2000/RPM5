@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
     - rse: fix portability by providing own RPM_LIST_XXX macros in rpmmtree.c
     - jbj: fix: RPMTAG_SIZE is incorrect with %exclude and %ghost directives
 	(Alexey Tourbin<at@altlinux.ru>).
