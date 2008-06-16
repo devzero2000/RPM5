@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+	- rse: fix portability by providing own RPM_LIST_XXX macros in rpmmtree.c
+	- jbj: tests: add check-install target to attempt --relocate install.
+	- jbj: tests: enhance the devtool-sanity package with scripts and a file.
 	- glen: install rpmdeps, rpmdigest, rpmmtree, rpmrepo tools to bindir
 	- glen: add mono deps from PLD
 	- glen: call %__java-{requires/provides} for java files (jars/classes)
