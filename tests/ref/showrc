@@ -328,7 +328,8 @@ print (t)
 -14: __vsflags	0xf0000
 -14: __wget	/usr/bin/wget
 -14: __xar	/usr/bin/xar
--14: _arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
+-14: _arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz:%{arbitrary_tags_debian}
+-14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
 -14: _arch	i386
 -14: _autorelocate_dcolor	0
 -14: _autorelocate_path	%{nil}
@@ -695,4 +696,4 @@ end
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 439 empty 0
+======================== active 440 empty 0
