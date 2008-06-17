@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add getter/setter methods to pass a rpmdb using a header argument.
     - jbj: tests: wire up plain HTTP manifest query.
     - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
     - jbj: two copies of rpmrepo.c/rpmmtree.c is too many.

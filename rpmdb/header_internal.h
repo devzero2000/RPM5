@@ -89,6 +89,7 @@ struct headerToken_s {
     const char * origin;	/*!< Header origin (e.g. path or URL). */
     const char * baseurl;	/*!< Header base URL (e.g. path or URL). */
     const char * digest;	/*!< Header digest (from origin *.rpm file) */
+    void * rpmdb;		/*!< rpmdb pointer (or NULL). */
     struct stat sb;		/*!< Header stat(2) (from origin *.rpm file) */
     uint32_t instance;		/*!< Header instance (if from rpmdb). */
     uint32_t startoff;		/*!< Header starting byte offset in package. */

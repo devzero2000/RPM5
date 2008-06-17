@@ -1021,6 +1021,25 @@ int headerSetDigest(/*@null@*/ Header h, const char * digest)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * Return rpmdb pointer.
+ * @param h		header
+ * @return		rpmdb pointer
+ */
+/*@null@*/
+void * headerGetRpmdb(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store rpmdb pointer.
+ * @param h		header
+ * @param rpmdb		new rpmdb pointer (or NULL to unset)
+ * @return		NULL always
+ */
+/*@null@*/
+void * headerSetRpmdb(/*@null@*/ Header h, /*@null@*/ void * rpmdb)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header instance (if from rpmdb).
  * @param h		header
  * @return		header instance

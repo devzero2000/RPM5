@@ -180,6 +180,7 @@ Header headerNew(void)
     h->origin = NULL;
     h->baseurl = NULL;
     h->digest = NULL;
+    h->rpmdb = NULL;
     h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
@@ -1250,6 +1251,18 @@ int headerSetDigest(Header h, const char * digest)
     return 0;
 }
 
+void * headerGetRpmdb(Header h)
+{
+    return (h != NULL ? h->rpmdb : NULL);
+}
+
+void * headerSetRpmdb(Header h, void * rpmdb)
+{
+    if (h != NULL)
+	h->rpmdb = rpmdb;
+    return NULL;
+}
+
 uint32_t headerGetInstance(Header h)
 {
     return (h != NULL ? h->instance : 0);
@@ -1294,6 +1307,7 @@ Header headerReload(Header h, int tag)
     const char * baseurl = (h->baseurl != NULL ? xstrdup(h->baseurl) : NULL);
     const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
     struct stat sb = h->sb;	/* structure assignment */
+    void * rpmdb = h->rpmdb;
     uint32_t instance = h->instance;
     int xx;
 
@@ -1328,6 +1342,7 @@ Header headerReload(Header h, int tag)
 	digest = _free(digest);
     }
     nh->sb = sb;	/* structure assignment */
+    (void) headerSetRpmdb(nh, rpmdb);
     xx = (int) headerSetInstance(nh, instance);
     return nh;
 }
