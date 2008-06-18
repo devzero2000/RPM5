@@ -401,6 +401,26 @@
                      the *.spec file).
      ________________________________________________________________________
 
+     Change:         always-strict-posix-option-parsing
+     Purpose:        Always use strict POSIX-style option parsing.
+     Reason:         OpenPKG wants RPM to always(!) use the
+                     POPT_CONTEXT_POSIXMEHARDER flag to (again)
+                     correctly parse macro arguments *without*
+                     option/argument permutations now that we are using
+                     POPT instead of getopt(3)!
+                     Broken behavior without POPT_CONTEXT_POSIXMEHARDER:
+                        $ rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
+                        error: Unknown option in macro foo(): -n: unknown option
+                        <%*>
+                     Fixed behavior with POPT_CONTEXT_POSIXMEHARDER:
+                        $ rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
+                        <bar quux baz>
+                     The explicit use of the POSIX "+" option is a
+                     now implemented possibility, but for backward
+                     compatibility OpenPKG wants that existing macros
+                     are not broken.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
