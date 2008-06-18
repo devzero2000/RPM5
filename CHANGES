@@ -1,4 +1,5 @@
 5.1.3 -> 5.1.4:
+    - jbj: fix: allocate Icon: buffer after iconsize is initialized.
     - jbj: permit configurable POSIX behavior for parameterized macros
 	(Marcin Kowalczyk<qrczak@knm.org.pl>).
     - jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
