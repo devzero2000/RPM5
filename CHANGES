@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: fix: allocate Icon: buffer after iconsize is initialized.
 	- jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
 	- jbj: fix: RPMTAG_SIZE is incorrect with %exclude and %ghost directives
 	    (Alexey Tourbin<at@altlinux.ru>).

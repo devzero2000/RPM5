@@ -362,7 +362,7 @@ static int doIcon(Spec spec, Header h)
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
     size_t nb;
-    char *icon = alloca(iconsize+1);
+    char *icon;
     FD_t fd = NULL;
     int rc = RPMERR_BADSPEC;	/* assume error */
     int urltype;
@@ -373,6 +373,7 @@ static int doIcon(Spec spec, Header h)
 	if (iconsize < 2048)
 	    iconsize = 2048;
     }
+    icon = alloca(iconsize+1);
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if (sp->flags & RPMFILE_ICON)
