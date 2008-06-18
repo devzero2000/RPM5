@@ -1053,6 +1053,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     argv = (const char **) alloca((argc + 1) * sizeof(*argv));
     be[-1] = ' '; /* assert((be - 1) == (b + strlen(b) == buf + strlen(buf))) */
     be[0] = '\0';
+
     b = buf;
     for (c = 0; c < argc; c++) {
 	argv[c] = b;
@@ -1066,7 +1067,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
      * only before positional arguments, as POSIX requires.
     */
     popt_flags = POPT_CONTEXT_NO_EXEC;
-#if defined(RPM_VENDOR_OPENPKG) /* XXX maintain compat w 5.0 behavior. */
+#if defined(RPM_VENDOR_OPENPKG) /* always-strict-posix-option-parsing */
     popt_flags |= POPT_CONTEXT_POSIXMEHARDER;
 #endif
     if (me->opts[0] == '+') popt_flags |= POPT_CONTEXT_POSIXMEHARDER;
