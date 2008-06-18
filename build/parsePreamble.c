@@ -482,25 +482,18 @@ static int doIcon(Spec spec, Header h)
 	goto exit;
     }
 
-    if (icon[0] == 'G' && icon[1] == 'I' && icon[2] == 'F') {
+    if (icon[0] == 'G' && icon[1] == 'I' && icon[2] == 'F')
 	he->tag = RPMTAG_GIF;
-	he->t = RPM_BIN_TYPE;
-	he->p.ui8p = icon;
-	he->c = nb;
-	xx = headerPut(h, he, 0);
-    } else
+    else
     if (icon[0] == '/' && icon[1] == '*' && icon[2] == ' '
      && icon[3] == 'X' && icon[4] == 'P' && icon[5] == 'M')
-    {
 	he->tag = RPMTAG_XPM;
+    else
+	he->tag = tagValue("Icon");
 	he->t = RPM_BIN_TYPE;
 	he->p.ui8p = icon;
 	he->c = nb;
 	xx = headerPut(h, he, 0);
-    } else {
-	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), fn);
-	goto exit;
-    }
     rc = 0;
     
 exit:
