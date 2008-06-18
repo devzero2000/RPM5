@@ -1001,6 +1001,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     int argc = 0;
     const char **argv;
     int c;
+    unsigned int popt_flags;
 
     /* Copy macro name as argv[0], save beginning of args.  */
     buf[0] = '\0';
@@ -1052,6 +1053,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     argv = (const char **) alloca((argc + 1) * sizeof(*argv));
     be[-1] = ' '; /* assert((be - 1) == (b + strlen(b) == buf + strlen(buf))) */
     be[0] = '\0';
+
     b = buf;
     for (c = 0; c < argc; c++) {
 	argv[c] = b;
@@ -1061,12 +1063,26 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     /* assert(b == be);  */
     argv[argc] = NULL;
 
+    /* '+' as the first character means that options are recognized
+     * only before positional arguments, as POSIX requires.
+    */
+    popt_flags = POPT_CONTEXT_NO_EXEC;
+#if defined(RPM_VENDOR_OPENPKG) /* XXX maintain compat w 5.0 behavior. */
+    popt_flags |= POPT_CONTEXT_POSIXMEHARDER;
+#endif
+    if (me->opts[0] == '+') popt_flags |= POPT_CONTEXT_POSIXMEHARDER;
+
     /* Count the number of short options. */
-    for (c = 0, opts = me->opts; *opts != '\0'; opts++)
+    opts = me->opts;
+    if (*opts == '+') opts++;
+    for (c = 0; *opts != '\0'; opts++)
 	if (*opts != ':') c++;
+
     /* Set up popt option table. */
     optTbl = xcalloc(sizeof(*optTbl), (c + 1));
-    for (c = 0, opts = me->opts; *opts != '\0'; opts++) {
+    opts = me->opts;
+    if (*opts == '+') opts++;
+    for (c = 0; *opts != '\0'; opts++) {
 	if (*opts == ':') continue;
 	optTbl[c].shortName = opts[0];
 	optTbl[c].val = (int) opts[0];
@@ -1077,7 +1093,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
     /* Parse the options, defining option macros. */
 /*@-nullstate@*/
-    optCon = poptGetContext(argv[0], argc, argv, optTbl, POPT_CONTEXT_NO_EXEC|POPT_CONTEXT_POSIXMEHARDER);
+    optCon = poptGetContext(argv[0], argc, argv, optTbl, popt_flags);
 /*@=nullstate@*/
     while ((c = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);

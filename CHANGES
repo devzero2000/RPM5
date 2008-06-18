@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: permit configurable POSIX behavior for parameterized macros
+	  (Marcin Kowalczyk<qrczak@knm.org.pl>).
     - jbj: add getter/setter methods to pass a rpmdb using a header argument.
     - jbj: tests: wire up plain HTTP manifest query.
     - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
