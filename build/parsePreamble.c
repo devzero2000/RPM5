@@ -410,7 +410,7 @@ static int doIcon(Spec spec, Header h)
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
     size_t nb;
-    uint8_t * icon = alloca(iconsize+1);
+    uint8_t * icon;
     FD_t fd = NULL;
     int rc = RPMRC_FAIL;	/* assume error */
     int urltype;
@@ -421,6 +421,7 @@ static int doIcon(Spec spec, Header h)
 	if (iconsize < 2048)
 	    iconsize = 2048;
     }
+    icon = alloca(iconsize+1);
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if (sp->flags & RPMFILE_ICON)
@@ -460,7 +461,7 @@ static int doIcon(Spec spec, Header h)
 	/*@notreached@*/ break;
     }
 
-    fd = Fopen(fn, "r.fdio");
+    fd = Fopen(fn, "r%{?_rpmgio}");
     if (fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open icon %s: %s\n"),
 		fn, Fstrerror(fd));

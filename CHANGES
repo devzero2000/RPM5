@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: allocate Icon: buffer after iconsize is initialized.
     - jbj: permit configurable POSIX behavior for parameterized macros
 	  (Marcin Kowalczyk<qrczak@knm.org.pl>).
     - jbj: add getter/setter methods to pass a rpmdb using a header argument.
