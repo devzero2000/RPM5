@@ -1073,7 +1073,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
      */
     /* 1003.2 says this must be 1 before any call.  */
 
-#ifdef __GLIBC__
+#ifdef	__GLIBC__
     /*@-mods@*/
     optind = 0;		/* XXX but posix != glibc */
     /*@=mods@*/
@@ -1083,7 +1083,8 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
     opts = me->opts;
 
-#ifdef __GLIBC__
+/* XXX maintain compat w 5.0 behavior. */
+#if defined(__GLIBC__) && defined(RPM_VENDOR_OPENPKG)
     /*
      *  Ensure option parsing is done without allowing option/argument permutations
      *  to avoid accidentally picking up and complaining about unknown options.
@@ -1132,7 +1133,8 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 	be = b; /* reuse the space */
     }
 
-#ifdef __GLIBC__
+/* XXX maintain compat w 5.0 behavior. */
+#if defined(__GLIBC__) && defined(RPM_VENDOR_OPENPKG)
     if (posixly_correct != NULL)
         setenv("POSIXLY_CORRECT", posixly_correct, 1);
     else
