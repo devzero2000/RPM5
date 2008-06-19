@@ -1,4 +1,5 @@
 5.1.3 -> 5.1.4:
+    - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
     - jbj: fix: "%description -n foo-bar" needs an additional comparison.
     - jbj: add non-{GIF,XPM} formats opaquely using arbitrary Icon: tagno.
     - jbj: fix: allocate Icon: buffer after iconsize is initialized.
