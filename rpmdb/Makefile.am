@@ -30,7 +30,7 @@ tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
-pkginc_HEADERS = pkgio.h rpmdb.h rpmtag.h signature.h rpmwf.h
+pkginc_HEADERS = pkgio.h rpmdb.h rpmdpkg.h rpmevr.h rpmtag.h rpmwf.h signature.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 pkglibdir =		@USRLIBRPM@
@@ -45,7 +45,7 @@ usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
-	pkgio.c poptDB.c rpmdb.c rpmwf.c \
+	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmwf.c \
 	signature.c tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT

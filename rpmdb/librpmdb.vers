@@ -13,6 +13,9 @@ LIBRPMDB_0
     dbiOpen;
     dbiStatsAccumulator;
     dodigest;
+    dpkgEVRcmp;
+    dpkgEVRcompare;
+    dpkgEVRparse;
     _fini;
     fpCacheCreate;
     fpCacheFree;
@@ -41,6 +44,8 @@ LIBRPMDB_0
     headerSetBaseURL;
     headerGetDigest;
     headerSetDigest;
+    headerGetRpmdb;
+    headerSetRpmdb;
     headerGetInstance;
     headerSetInstance;
     headerGetMagic;
@@ -113,6 +118,11 @@ LIBRPMDB_0
     rpmdbVerify;
     rpmdbVerifyAllDBI;
     rpmDisplayQueryTags;
+    _rpmevr_debug;
+    rpmEVRcmp;
+    rpmEVRcompare;
+    rpmEVRflags;
+    rpmEVRparse;
     rpmpkgCheck;
     rpmpkgClean;
     rpmpkgRead;
@@ -129,6 +139,8 @@ LIBRPMDB_0
     rpmtsGetRdb;
     rpmtsOp;
     rpmtsPubkey;
+    _rpmvercmp;
+    rpmvercmp;
     _rpmwf_debug;
     rdRPM;
     rdXAR;

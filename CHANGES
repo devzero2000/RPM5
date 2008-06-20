@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: move rpmevr.[ch] to -lrpmdb for use with header format extensions.
     - jbj: fix: "%description -n foo-bar" needs an additional comparison.
     - jbj: add non-{GIF,XPM} formats opaquely using arbitrary Icon: tagno.
     - jbj: fix: allocate Icon: buffer after iconsize is initialized.

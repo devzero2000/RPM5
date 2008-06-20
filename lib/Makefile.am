@@ -36,7 +36,7 @@ EXTRA_PROGRAMS = tevr tgi tpgp tsbt
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	fs.h misc.h rpmcli.h rpmlib.h rpmversion.h \
-	rpmal.h rpmdpkg.h rpmds.h rpmevr.h rpmfc.h rpmfi.h rpmgi.h \
+	rpmal.h rpmds.h rpmfc.h rpmfi.h rpmgi.h \
 	rpmns.h rpmps.h rpmsx.h rpmte.h rpmts.h rpm4compat.h
 noinst_HEADERS = \
 	fsm.h manifest.h psm.h rpmlock.h rpmluaext.h
@@ -47,7 +47,7 @@ librpm_la_SOURCES = \
 	depends.c formats.c fs.c fsm.c \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpmdpkg.c rpmds.c rpmevr.c rpmfc.c \
+	rpmal.c rpmchecksig.c rpmds.c rpmfc.c \
 	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c rpmversion.c \
 	rpmlock.c rpmns.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	transaction.c verify.c rpmluaext.c

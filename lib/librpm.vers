@@ -6,9 +6,6 @@ LIBRPM_0
     currentDirectory;
     doputenv;
     dosetenv;
-    dpkgEVRcmp;
-    dpkgEVRcompare;
-    dpkgEVRparse;
     fileActionString;
     fileStageString;
     _fini;
@@ -128,12 +125,7 @@ LIBRPM_0
     rpmdsUname;
     _rpmds_unspecified_epoch_noise;
     rpmErase;
-    _rpmevr_debug;
     rpmEVR;
-    rpmEVRcmp;
-    rpmEVRcompare;
-    rpmEVRflags;
-    rpmEVRparse;
     _rpmfc_debug;
     rpmfcApply;
     rpmfcClassify;
@@ -396,8 +388,6 @@ LIBRPM_0
     rpmtsUpdateDSI;
     rpmtsVerifyDB;
     rpmtsVSFlags;
-    _rpmvercmp;
-    rpmvercmp;
     rpmVerifyFile;
     rpmVerifyPoptTable;
     rpmVerifySignatures;
