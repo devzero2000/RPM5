@@ -210,10 +210,6 @@ LIBRPM_0
     rpmluaextActivate;
     rpmMkdirPath;
     rpmNAME;
-    _rpmns_debug;
-    rpmnsClassify;
-    rpmnsParse;
-    rpmnsProbeSignature;
     rpmPermsString;
     rpmPlatformScore;
     rpmProblemString;

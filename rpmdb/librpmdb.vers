@@ -123,6 +123,12 @@ LIBRPMDB_0
     rpmEVRcompare;
     rpmEVRflags;
     rpmEVRparse;
+    _rpmns_debug;
+    _rpmns_N_at_A;
+    rpmnsArch;
+    rpmnsClassify;
+    rpmnsParse;
+    rpmnsProbeSignature;
     rpmpkgCheck;
     rpmpkgClean;
     rpmpkgRead;
