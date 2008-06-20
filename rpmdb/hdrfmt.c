@@ -45,12 +45,13 @@ extern char *nl_langinfo (nl_item __item)
 
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
+#define _RPMEVR_INTERNAL
+#include <rpmevr.h>	/* XXX RPMSENSE_FOO */
+#include <rpmns.h>
+#include <rpmdb.h>
 
 #include <rpmlib.h>	/* XXX rpmfi, rpmMkdirPath */
 #include <rpmfi.h>	/* XXX RPMFILE_FOO */
-
-#define _RPMEVR_INTERNAL
-#include <rpmevr.h>	/* XXX RPMSENSE_FOO */
 
 #include "legacy.h"
 #include "misc.h"
@@ -2346,33 +2347,20 @@ static int origpathsTag(Header h, HE_t he)
 }
 
 /**
- * Retrieve Depends: and Conflicts: for --deb:control.
+ * Return Debian formatted dependencies as string array.
  * @param h		header
  * @retval *he		tag container
+ * @param Nhe		dependency name container
+ * @param EVRhe		dependency epoch:version-release container
+ * @param Fhe		dependency flags container
  * @return		0 on success
  */
-static int debevrTag(Header h, HE_t he, rpmTag tagN, rpmTag tagEVR, rpmTag tagF)
+static int debevrfmtTag(Header h, HE_t he, HE_t Nhe, HE_t EVRhe, HE_t Fhe)
 	/*@modifies he @*/
 {
-    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
-    HE_t EVRhe = memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
-    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     char * t, * te;
     size_t nb = 0;
     int rc = 1;
-    int xx;
-
-    Nhe->tag = tagN;
-    if (!(xx = headerGet(h, Nhe, 0)))
-	goto exit;
-    EVRhe->tag = tagEVR;
-    if (!(xx = headerGet(h, EVRhe, 0)))
-	goto exit;
-assert(EVRhe->c == Nhe->c);
-    Fhe->tag = tagF;
-    if (!(xx = headerGet(h, Fhe, 0)))
-	goto exit;
-assert(Fhe->c == Nhe->c);
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = 0;
@@ -2411,6 +2399,41 @@ assert(Fhe->c == Nhe->c);
     }
     he->p.argv[he->c] = NULL;
     rc = 0;
+
+    return rc;
+}
+
+/**
+ * Retrieve and return Debian formatted dependecies for --deb:control.
+ * @param h		header
+ * @retval *he		tag container
+ * @param tagN		dependency tag name
+ * @param tagEVR	dependency tag epoch:version-release
+ * @param tagF		dependency tag flags
+ * @return		0 on success
+ */
+static int debevrTag(Header h, HE_t he, rpmTag tagN, rpmTag tagEVR, rpmTag tagF)
+	/*@modifies he @*/
+{
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t EVRhe = memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
+    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+    int rc = 1;
+    int xx;
+
+    Nhe->tag = tagN;
+    if (!(xx = headerGet(h, Nhe, 0)))
+	goto exit;
+    EVRhe->tag = tagEVR;
+    if (!(xx = headerGet(h, EVRhe, 0)))
+	goto exit;
+assert(EVRhe->c == Nhe->c);
+    Fhe->tag = tagF;
+    if (!(xx = headerGet(h, Fhe, 0)))
+	goto exit;
+assert(Fhe->c == Nhe->c);
+
+    rc = debevrfmtTag(h, he, Nhe, EVRhe, Fhe);
 
 exit:
     Nhe->p.ptr = _free(Nhe->p.ptr);
@@ -2546,6 +2569,188 @@ exit:
     _rdev.ptr = _free(_rdev.ptr);
     _size.ptr = _free(_size.ptr);
     _mtime.ptr = _free(_mtime.ptr);
+    return rc;
+}
+
+static int rpmEVRoverlap(EVR_t a, EVR_t b)
+	/*@*/
+{
+    rpmsenseFlags aF = a->Flags;
+    rpmsenseFlags bF = b->Flags;
+    int sense;
+    int result;
+
+    if (a->E == NULL)	a->E = "0";
+    if (b->E == NULL)	b->E = "0";
+    if (a->V == NULL)	a->V = "";
+    if (b->V == NULL)	b->V = "";
+    if (a->R == NULL)	a->R = "";
+    if (b->R == NULL)	b->R = "";
+    sense = rpmEVRcompare(a, b);
+
+    /* Detect overlap of {A,B} range. */
+    if (aF == RPMSENSE_NOTEQUAL || bF == RPMSENSE_NOTEQUAL)
+        result = (sense != 0);
+    else if (sense < 0 && ((aF & RPMSENSE_GREATER) || (bF & RPMSENSE_LESS)))
+        result = 1;
+    else if (sense > 0 && ((aF & RPMSENSE_LESS) || (bF & RPMSENSE_GREATER)))
+        result = 1;
+    else if (sense == 0 &&
+        (((aF & RPMSENSE_EQUAL) && (bF & RPMSENSE_EQUAL)) ||
+         ((aF & RPMSENSE_LESS) && (bF & RPMSENSE_LESS)) ||
+         ((aF & RPMSENSE_GREATER) && (bF & RPMSENSE_GREATER))))
+        result = 1;
+    else
+        result = 0;
+    return result;
+}
+
+static int wnlookupTag(Header h, ARGV_t *avp,
+		HE_t PNhe, /*@null@*/ HE_t PEVRhe, /*@null@*/ HE_t PFhe)
+	/*@modifies he @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
+    HE_t REVRhe = memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
+    HE_t RFhe = memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
+    rpmdb rpmdb = headerGetRpmdb(h);
+    const char * key = PNhe->p.argv[PNhe->ix];
+    size_t keylen = 0;
+    rpmdbMatchIterator mi;
+    rpmTag tagN = RPMTAG_REQUIRENAME;
+    rpmTag tagEVR = RPMTAG_REQUIREVERSION;
+    rpmTag tagF = RPMTAG_REQUIREFLAGS;
+    EVR_t Pevr = memset(alloca(sizeof(*Pevr)), 0, sizeof(*Pevr));
+    EVR_t Revr = memset(alloca(sizeof(*Revr)), 0, sizeof(*Revr));
+    Header oh;
+    int xx;
+
+    if (PEVRhe != NULL)
+	xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
+    if (PFhe != NULL)
+	Pevr->Flags = (PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK);
+
+    RNhe->tag = tagN;
+    REVRhe->tag = tagEVR;
+    RFhe->tag = tagF;
+
+    mi = rpmdbInitIterator(rpmdb, tagN, key, keylen);
+    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+	if (!headerGet(oh, RNhe, 0))
+	    goto bottom;
+	if (PEVRhe != NULL) {
+	    if (!headerGet(oh, REVRhe, 0))
+		goto bottom;
+assert(REVRhe->c == RNhe->c);
+	    if (!headerGet(oh, RFhe, 0))
+		goto bottom;
+assert(RFhe->c == RNhe->c);
+	}
+
+	for (RNhe->ix = 0; RNhe->ix < (int)RNhe->c; RNhe->ix++) {
+	    if (strcmp(PNhe->p.argv[PNhe->ix], RNhe->p.argv[RNhe->ix]))
+		continue;
+	    if (PEVRhe == NULL)
+		goto bingo;
+	    Revr->Flags = RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK;
+	    if (!(Pevr->Flags && Revr->Flags))
+		goto bingo;
+	    xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
+	    xx = rpmEVRoverlap(Pevr, Revr);
+	    Revr->str = _free(Revr->str);
+	    memset(Revr, 0, sizeof(*Revr));
+	    if (xx)
+		goto bingo;
+	}
+	goto bottom;
+
+bingo:
+	NVRAhe->tag = RPMTAG_NVRA;
+	xx = headerGet(oh, NVRAhe, 0);
+	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
+	    xx = argvAdd(avp, NVRAhe->p.str);
+	    xx = argvSort(*avp, NULL);
+	}
+
+bottom:
+	RNhe->p.ptr = _free(RNhe->p.ptr);
+	REVRhe->p.ptr = _free(REVRhe->p.ptr);
+	RFhe->p.ptr = _free(RFhe->p.ptr);
+	NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    Pevr->str = _free(Pevr->str);
+
+    return 0;
+}
+
+static int whatneedsTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
+    HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
+    HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
+    HE_t FNhe = memset(alloca(sizeof(*FNhe)), 0, sizeof(*FNhe));
+    ARGV_t av = NULL;
+    int rc = 1;
+
+    PNhe->tag = RPMTAG_PROVIDENAME;
+    if (!headerGet(h, PNhe, 0))
+	goto exit;
+    PEVRhe->tag = RPMTAG_PROVIDEVERSION;
+    if (!headerGet(h, PEVRhe, 0))
+	goto exit;
+assert(PEVRhe->c == PNhe->c);
+    PFhe->tag = RPMTAG_PROVIDEFLAGS;
+    if (!headerGet(h, PFhe, 0))
+	goto exit;
+assert(PFhe->c == PNhe->c);
+
+    FNhe->tag = RPMTAG_FILEPATHS;
+    if (!headerGet(h, FNhe, 0))
+	goto exit;
+
+    for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++)
+	(void) wnlookupTag(h, &av, PNhe, PEVRhe, PFhe);
+    for (FNhe->ix = 0; FNhe->ix < (int)FNhe->c; FNhe->ix++)
+	(void) wnlookupTag(h, &av, FNhe, NULL, NULL);
+    if (av == NULL)
+	goto exit;
+
+    /* Convert package NVRA array to Header string array. */
+    {	size_t nb = 0;
+	char * te;
+	uint32_t i;
+
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->c = argvCount(av);
+	nb = 0;
+	for (i = 0; i < he->c; i++) {
+	    nb += sizeof(*he->p.argv);
+	    nb += strlen(av[i]) + 1;
+	}
+	nb += sizeof(*he->p.argv);
+
+	he->p.argv = xmalloc(nb);
+	te = (char *) &he->p.argv[he->c+1];
+
+	for (i = 0; i < he->c; i++) {
+	    he->p.argv[i] = te;
+	    te = stpcpy(te, av[i]);
+	    te++;
+	}
+	he->p.argv[he->c] = NULL;
+    }
+
+    av = argvFree(av);
+    rc = 0;
+
+exit:
+    PNhe->p.ptr = _free(PNhe->p.ptr);
+    PEVRhe->p.ptr = _free(PEVRhe->p.ptr);
+    PFhe->p.ptr = _free(PFhe->p.ptr);
+    FNhe->p.ptr = _free(FNhe->p.ptr);
     return rc;
 }
 
@@ -3958,6 +4163,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = debobsoletesTag } },
     { HEADER_EXT_TAG, "RPMTAG_DEBPROVIDES",
 	{ .tagFunction = debprovidesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_WHATNEEDS",
+	{ .tagFunction = whatneedsTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
