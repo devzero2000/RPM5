@@ -2605,7 +2605,7 @@ static int rpmEVRoverlap(EVR_t a, EVR_t b)
     return result;
 }
 
-static int wnlookupTag(Header h, ARGV_t *avp,
+static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 		HE_t PNhe, /*@null@*/ HE_t PEVRhe, /*@null@*/ HE_t PFhe)
 	/*@modifies he @*/
 {
@@ -2623,8 +2623,11 @@ static int wnlookupTag(Header h, ARGV_t *avp,
     EVR_t Pevr = memset(alloca(sizeof(*Pevr)), 0, sizeof(*Pevr));
     EVR_t Revr = memset(alloca(sizeof(*Revr)), 0, sizeof(*Revr));
     Header oh;
+    int rc = 0;
     int xx;
 
+    if (tagNVRA == 0)
+	tagNVRA = RPMTAG_NVRA;
     if (PEVRhe != NULL)
 	xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
     if (PFhe != NULL)
@@ -2635,6 +2638,8 @@ static int wnlookupTag(Header h, ARGV_t *avp,
     RFhe->tag = tagF;
 
     mi = rpmdbInitIterator(rpmdb, tagN, key, keylen);
+    if (hitp && *hitp)
+	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
     while ((oh = rpmdbNextIterator(mi)) != NULL) {
 	if (!headerGet(oh, RNhe, 0))
 	    goto bottom;
@@ -2665,11 +2670,14 @@ assert(RFhe->c == RNhe->c);
 	goto bottom;
 
 bingo:
-	NVRAhe->tag = RPMTAG_NVRA;
+	NVRAhe->tag = tagNVRA;
 	xx = headerGet(oh, NVRAhe, 0);
 	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
 	    xx = argvAdd(avp, NVRAhe->p.str);
 	    xx = argvSort(*avp, NULL);
+	    if (hitp != NULL)
+		xx = argiAdd(hitp, -1, rpmdbGetIteratorOffset(mi));
+	    rc++;
 	}
 
 bottom:
@@ -2682,17 +2690,20 @@ bottom:
 
     Pevr->str = _free(Pevr->str);
 
-    return 0;
+    return rc;
 }
 
 static int whatneedsTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
     HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
     HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
     HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
     HE_t FNhe = memset(alloca(sizeof(*FNhe)), 0, sizeof(*FNhe));
-    ARGV_t av = NULL;
+    rpmTag tagNVRA = RPMTAG_NVRA;
+    ARGV_t pkgs = NULL;
+    ARGI_t hits = NULL;
     int rc = 1;
 
     PNhe->tag = RPMTAG_PROVIDENAME;
@@ -2711,12 +2722,16 @@ assert(PFhe->c == PNhe->c);
     if (!headerGet(h, FNhe, 0))
 	goto exit;
 
-    for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++)
-	(void) wnlookupTag(h, &av, PNhe, PEVRhe, PFhe);
-    for (FNhe->ix = 0; FNhe->ix < (int)FNhe->c; FNhe->ix++)
-	(void) wnlookupTag(h, &av, FNhe, NULL, NULL);
-    if (av == NULL)
+    NVRAhe->tag = tagNVRA;;
+    if (!headerGet(h, NVRAhe, 0))
 	goto exit;
+
+    (void) argvAdd(&pkgs, NVRAhe->p.str);
+
+    for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++)
+	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, PNhe, PEVRhe, PFhe);
+    for (FNhe->ix = 0; FNhe->ix < (int)FNhe->c; FNhe->ix++)
+	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, FNhe, NULL, NULL);
 
     /* Convert package NVRA array to Header string array. */
     {	size_t nb = 0;
@@ -2724,11 +2739,11 @@ assert(PFhe->c == PNhe->c);
 	uint32_t i;
 
 	he->t = RPM_STRING_ARRAY_TYPE;
-	he->c = argvCount(av);
+	he->c = argvCount(pkgs);
 	nb = 0;
 	for (i = 0; i < he->c; i++) {
 	    nb += sizeof(*he->p.argv);
-	    nb += strlen(av[i]) + 1;
+	    nb += strlen(pkgs[i]) + 1;
 	}
 	nb += sizeof(*he->p.argv);
 
@@ -2737,16 +2752,18 @@ assert(PFhe->c == PNhe->c);
 
 	for (i = 0; i < he->c; i++) {
 	    he->p.argv[i] = te;
-	    te = stpcpy(te, av[i]);
+	    te = stpcpy(te, pkgs[i]);
 	    te++;
 	}
 	he->p.argv[he->c] = NULL;
     }
 
-    av = argvFree(av);
+    hits = argiFree(hits);
+    pkgs = argvFree(pkgs);
     rc = 0;
 
 exit:
+    NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
     PNhe->p.ptr = _free(PNhe->p.ptr);
     PEVRhe->p.ptr = _free(PEVRhe->p.ptr);
     PFhe->p.ptr = _free(PFhe->p.ptr);

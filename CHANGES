@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: don't revisit headers that RPMTAG_WHATNEEDS has already processed.
     - jbj: add RPMTAG_WHATNEEDS header extension.
     - jbj: move rpmns.[ch] to -lrpmdb for use with header format extensions.
     - jbj: pass rpmdb to header format extenensions with header.
