@@ -2771,6 +2771,169 @@ exit:
     return rc;
 }
 
+static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
+		HE_t RNhe, /*@null@*/ HE_t REVRhe, /*@null@*/ HE_t RFhe)
+	/*@modifies he @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
+    HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
+    HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
+    rpmdb rpmdb = headerGetRpmdb(h);
+    const char * key = RNhe->p.argv[RNhe->ix];
+    size_t keylen = 0;
+    rpmdbMatchIterator mi;
+    rpmTag tagN = tagN = (*RNhe->p.argv[RNhe->ix] == '/')
+	? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME;
+    rpmTag tagEVR = RPMTAG_PROVIDEVERSION;
+    rpmTag tagF = RPMTAG_PROVIDEFLAGS;
+    EVR_t Revr = memset(alloca(sizeof(*Revr)), 0, sizeof(*Revr));
+    EVR_t Pevr = memset(alloca(sizeof(*Pevr)), 0, sizeof(*Pevr));
+    Header oh;
+    int rc = 0;
+    int xx;
+
+    if (tagNVRA == 0)
+	tagNVRA = RPMTAG_NVRA;
+
+    if (REVRhe != NULL)
+	xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
+    if (RFhe != NULL)
+	Revr->Flags = (RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK);
+
+    PNhe->tag = tagN;
+    PEVRhe->tag = tagEVR;
+    PFhe->tag = tagF;
+
+    mi = rpmdbInitIterator(rpmdb, tagN, key, keylen);
+    if (hitp && *hitp)
+	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+	if (!headerGet(oh, PNhe, 0))
+	    goto bottom;
+	if (REVRhe != NULL) {
+	    if (!headerGet(oh, PEVRhe, 0))
+		goto bottom;
+assert(PEVRhe->c == PNhe->c);
+	    if (!headerGet(oh, PFhe, 0))
+		goto bottom;
+assert(PFhe->c == PNhe->c);
+	}
+
+	for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++) {
+	    if (strcmp(RNhe->p.argv[RNhe->ix], PNhe->p.argv[PNhe->ix]))
+		continue;
+	    if (REVRhe == NULL)
+		goto bingo;
+	    Pevr->Flags = PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK;
+	    if (!(Revr->Flags && Pevr->Flags))
+		goto bingo;
+	    xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
+	    xx = rpmEVRoverlap(Revr, Pevr);
+	    Pevr->str = _free(Pevr->str);
+	    memset(Pevr, 0, sizeof(*Pevr));
+	    if (xx)
+		goto bingo;
+	}
+	goto bottom;
+
+bingo:
+	NVRAhe->tag = tagNVRA;
+	xx = headerGet(oh, NVRAhe, 0);
+	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
+	    xx = argvAdd(avp, NVRAhe->p.str);
+	    xx = argvSort(*avp, NULL);
+	    if (hitp != NULL)
+		xx = argiAdd(hitp, -1, rpmdbGetIteratorOffset(mi));
+	    rc++;
+	}
+
+bottom:
+	PNhe->p.ptr = _free(PNhe->p.ptr);
+	PEVRhe->p.ptr = _free(PEVRhe->p.ptr);
+	PFhe->p.ptr = _free(PFhe->p.ptr);
+	NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    Revr->str = _free(Revr->str);
+
+    return rc;
+}
+
+static int needswhatTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
+    HE_t REVRhe = memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
+    HE_t RFhe = memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
+    rpmTag tagNVRA = RPMTAG_NVRA;
+    ARGV_t pkgs = NULL;
+    ARGI_t hits = NULL;
+    int rc = 1;
+
+    RNhe->tag = RPMTAG_REQUIRENAME;
+    if (!headerGet(h, RNhe, 0))
+	goto exit;
+    REVRhe->tag = RPMTAG_REQUIREVERSION;
+    if (!headerGet(h, REVRhe, 0))
+	goto exit;
+assert(REVRhe->c == RNhe->c);
+    RFhe->tag = RPMTAG_REQUIREFLAGS;
+    if (!headerGet(h, RFhe, 0))
+	goto exit;
+assert(RFhe->c == RNhe->c);
+
+    NVRAhe->tag = tagNVRA;;
+    if (!headerGet(h, NVRAhe, 0))
+	goto exit;
+
+    (void) argvAdd(&pkgs, NVRAhe->p.str);
+
+    for (RNhe->ix = 0; RNhe->ix < (int)RNhe->c; RNhe->ix++) {
+	if (*RNhe->p.argv[RNhe->ix] == '/' || *REVRhe->p.argv[RNhe->ix] == '\0')
+	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, NULL, NULL);
+	else
+	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, REVRhe, RFhe);
+    }
+
+    /* Convert package NVRA array to Header string array. */
+    {	size_t nb = 0;
+	char * te;
+	uint32_t i;
+
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->c = argvCount(pkgs);
+	nb = 0;
+	for (i = 0; i < he->c; i++) {
+	    nb += sizeof(*he->p.argv);
+	    nb += strlen(pkgs[i]) + 1;
+	}
+	nb += sizeof(*he->p.argv);
+
+	he->p.argv = xmalloc(nb);
+	te = (char *) &he->p.argv[he->c+1];
+
+	for (i = 0; i < he->c; i++) {
+	    he->p.argv[i] = te;
+	    te = stpcpy(te, pkgs[i]);
+	    te++;
+	}
+	he->p.argv[he->c] = NULL;
+    }
+
+    hits = argiFree(hits);
+    pkgs = argvFree(pkgs);
+    rc = 0;
+
+exit:
+    NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    RNhe->p.ptr = _free(RNhe->p.ptr);
+    REVRhe->p.ptr = _free(REVRhe->p.ptr);
+    RFhe->p.ptr = _free(RFhe->p.ptr);
+    return rc;
+}
 static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
 		uint32_t i)
 	/*@*/
@@ -4180,6 +4343,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = debobsoletesTag } },
     { HEADER_EXT_TAG, "RPMTAG_DEBPROVIDES",
 	{ .tagFunction = debprovidesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NEEDSWHAT",
+	{ .tagFunction = needswhatTag } },
     { HEADER_EXT_TAG, "RPMTAG_WHATNEEDS",
 	{ .tagFunction = whatneedsTag } },
     { HEADER_EXT_FORMAT, "armor",
