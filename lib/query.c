@@ -14,6 +14,7 @@
 #include <rpmio.h>
 #include <poptIO.h>
 #include <rpmtag.h>
+#define	_RPMTS_INTERNAL		/* XXX for ts->rdb */
 #include <rpmcli.h>
 
 #include "rpmdb.h"
@@ -180,7 +181,10 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     *te = '\0';
 
     if (qva->qva_queryFormat != NULL) {
-	const char * str = queryHeader(h, qva->qva_queryFormat);
+	const char * str;
+	(void) headerSetRpmdb(h, ts->rdb);
+	str = queryHeader(h, qva->qva_queryFormat);
+	(void) headerSetRpmdb(h, NULL);
 	if (str) {
 	    size_t tx = (te - t);
 
