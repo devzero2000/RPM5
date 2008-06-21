@@ -16,9 +16,12 @@
 #define	rpmioAllPoptTable	rpmcliAllPoptTable
 
 #define	tagClean(_p)
-#define	WITH_SQLITE
 
 #include "system.h"
+
+#ifdef HAVE_SQLITE3_H
+#define	WITH_SQLITE
+#endif
 
 #if defined(WITH_SQLITE)
 #include <sqlite3.h>

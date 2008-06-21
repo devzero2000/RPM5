@@ -38,6 +38,6 @@ rpmdigest_SOURCES =	rpmdigest.c
 rpmmtree_SOURCES =	rpmmtree.c
 
 rpmrepo_SOURCES =	rpmrepo.c
-rpmrepo_LDADD =		$(LDADD) -lsqlite3
+rpmrepo_LDADD =		$(LDADD) @WITH_SQLITE3_LIB@
 
 $(PROGRAMS): $(LDADD)
