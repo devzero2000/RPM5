@@ -62,6 +62,43 @@ static PyObject * expandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 }
 
 /**
+ *  */
+static PyObject * archScore(PyObject * s, PyObject * args,
+                PyObject * kwds)
+{
+    char * arch;
+    char * platform;
+    int score;
+    char * kwlist[] = {"arch", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
+	return NULL;
+
+    platform = rpmExpand(arch, "-", "%{_vendor}", "-", "%{_os}", NULL);
+    score = rpmPlatformScore(platform, NULL, 0);
+    platform = _free(platform);
+
+    return Py_BuildValue("i", score);
+}
+
+/**
+ *  */
+static PyObject * platformScore(PyObject * s, PyObject * args,
+                PyObject * kwds)
+{
+    char * platform;
+    int score;
+    char * kwlist[] = {"platform", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &platform))
+	return NULL;
+
+    score = rpmPlatformScore(platform, NULL, 0);
+
+    return Py_BuildValue("i", score);
+}
+
+/**
  */
 static PyObject * signalsCaught(PyObject * self, PyObject * check)
 {
@@ -191,6 +228,11 @@ static PyMethodDef rpmModuleMethods[] = {
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "expandMacro", (PyCFunction) expandMacro, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+
+    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "platformscore", (PyCFunction) platformScore, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "signalsCaught", (PyCFunction) signalsCaught, METH_O,

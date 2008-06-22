@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+	- robert: python: backport rpm.archscore() and rpm.platformscore()
+	    for smart depsolving usage
 	- robert: rpmrepo: enable/disable sqlite dependent on rest of rpm
 	- jbj: fix: allocate Icon: buffer after iconsize is initialized.
 	- jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
