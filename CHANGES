@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+	- jbj: fix: python ts.hdrFromFdno(fdno) segfault.
+	- jbj: use Realpath(3) so that RPMTAG_PACKAGEORIGIN has absolute path.
+	- jbj: rpmio: add Realpath(3).
 	- robert: python: backport rpm.archscore() and rpm.platformscore()
 	    for smart depsolving usage
 	- robert: rpmrepo: enable/disable sqlite dependent on rest of rpm

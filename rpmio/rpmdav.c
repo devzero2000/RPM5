@@ -1829,3 +1829,10 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 /*@=kepttrans@*/
 }
 /*@=modfilesys@*/
+
+char * davRealpath(const char * path, char * resolved_path)
+{
+assert(resolved_path == NULL);        /* XXX no POSIXly broken realpath(3) here. */
+    /* XXX TODO: handle redirects. For now, just dupe the path. */
+    return xstrdup(path);
+}

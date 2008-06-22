@@ -409,6 +409,13 @@ int Closedir(/*@only@*/ DIR * dir)
 	/*@modifies *dir, errno, fileSystem @*/;
 
 /**
+ * realpath(3) clone.
+ */
+char * Realpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *resolved_path, errno, fileSystem, internalState @*/;
+
+/**
  * lseek(2) clone.
  * @todo Implement SEEK_HOLE/SEEK_DATA.
  */

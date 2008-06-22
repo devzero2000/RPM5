@@ -3742,9 +3742,9 @@ main(int argc, char *argv[])
 	/* Convert to absolute/clean/malloc'd path. */
 	if (lpath[0] != '/') {
 	    /* XXX GLIBC: realpath(path, NULL) return malloc'd */
-	    rpath = realpath(lpath, NULL);
+	    rpath = Realpath(lpath, NULL);
 	    if (rpath == NULL)
-		rpath = realpath(lpath, fullpath);
+		rpath = Realpath(lpath, fullpath);
 	    if (rpath == NULL)
 		mtree_error("Realpath(%s): %s", lpath, strerror(errno));
 	    lpath = rpmGetPath(rpath, NULL);
