@@ -50,6 +50,7 @@ extern void (*_Globfree) (glob_t * pglob);
 extern DIR * (*_Opendir) (const char * path);
 extern struct dirent * (*_Readdir) (DIR * dir);
 extern int (*_Closedir) (DIR * dir);
+extern char * (*_Realpath) (const char * path, char * resolved_path);
 extern off_t (*_Lseek) (int fdno, off_t offset, int whence);
 
 #ifdef __cplusplus

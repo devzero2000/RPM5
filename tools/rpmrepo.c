@@ -2,8 +2,6 @@
  * \file rpmio/rpmrepo.c
  */
 
-#define	Realpath	realpath
-
 #define	rpmioInit	rpmcliInit
 #define	rpmioFini	rpmcliFini
 

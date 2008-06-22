@@ -67,6 +67,7 @@ DIR * (*_Opendir) (const char * path) = Opendir;
 struct dirent * (*_Readdir) (DIR * dir) = Readdir;
 /*@-type@*/
 int (*_Closedir) (DIR * dir) = Closedir;
+char * (*_Realpath) (const char * path, char * resolved_path) = Realpath;
 /*@=type@*/
 off_t (*_Lseek) (int fdno, off_t offset, int whence) = Lseek;
 /*@=redecl@*/

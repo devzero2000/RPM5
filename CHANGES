@@ -1,4 +1,7 @@
 5.0.3 -> 5.0.4:
+    - jbj: fix: python ts.hdrFromFdno(fdno) segfault.
+    - jbj: use Realpath(3) so that RPMTAG_PACKAGEORIGIN has absolute path.
+    - jbj: rpmio: add Realpath(3).
     - jbj: fix: "%description -n foo-bar" needs an additional comparison.
     - jbj: fix: allocate Icon: buffer after iconsize is initialized.
     - jbj: permit configurable POSIX behavior for parameterized macros

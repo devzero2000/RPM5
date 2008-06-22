@@ -1339,6 +1339,15 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 /*@=kepttrans@*/
 }
 
+
+static char * ftpRealpath(const char * path, /*@null@*/ char * resolved_path)
+	/*@*/
+{
+assert(resolved_path == NULL);	/* XXX no POSIXly broken realpath(3) here. */
+    /* XXX TODO: handle redirects. For now, just dupe the path. */
+    return xstrdup(path);
+}
+
 int Stat(const char * path, struct stat * st)
 {
     const char * lpath;
@@ -1842,6 +1851,88 @@ fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
 	return davClosedir(dir);
 #endif
     return closedir(dir);
+}
+
+char * Realpath(const char * path, /*@null@*/ char * resolved_path)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+    char * rpath;
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path : "NULL"));
+/*@-nullpass@*/
+    /* XXX if POSIXly broken realpath(3) is desired, do that. */
+    /* XXX note: preserves current rpmlib realpath(3) usage cases. */
+    if (path == NULL || resolved_path != NULL)
+	return realpath(path, resolved_path);
+/*@=nullpass@*/
+
+    switch (ut) {
+    case URL_IS_FTP:
+	return ftpRealpath(path, resolved_path);
+	/*@notreached@*/ break;
+    case URL_IS_HTTPS:	
+    case URL_IS_HTTP:
+    case URL_IS_HKP:
+#ifdef WITH_NEON
+	return davRealpath(path, resolved_path);
+	/*@notreached@*/ break;
+#endif
+	/*@fallthrough@*/
+    default:
+	return xstrdup(path);
+	/*@notreached@*/ break;
+    case URL_IS_DASH:
+	/* non-GLIBC systems => EINVAL. non-linux systems => EINVAL */
+#if defined(__linux__)
+	lpath = "/dev/stdin";
+#else
+	lpath = NULL;
+#endif
+	break;
+    case URL_IS_PATH:		/* XXX note: file:/// prefix is dropped. */
+    case URL_IS_UNKNOWN:
+	path = lpath;
+	break;
+    }
+
+    if (lpath == NULL || *lpath == '/')
+/*@-nullpass@*/	/* XXX glibc extension */
+	rpath = realpath(lpath, resolved_path);
+/*@=nullpass@*/
+    else {
+	char * t;
+#if defined(__GLIBC__)
+	char * dn = NULL;
+#else
+	char dn[PATH_MAX];
+	dn[0] = '\0';
+#endif
+	/*
+	 * Using realpath on lpath isn't correct if the lpath is a symlink,
+	 * especially if the symlink is a dangling link.  What we 
+	 * do instead is use realpath() on `.' and then append lpath to
+	 * the result.
+	 */
+	if ((t = realpath(".", dn)) != NULL) {
+/*@-mods@*/	/* XXX no rpmGlobalMacroContext mods please. */
+	    rpath = (char *) rpmGetPath(t, "/", lpath, NULL);
+	    /* XXX preserve the pesky trailing '/' */
+	    if (lpath[strlen(lpath)-1] == '/') {
+		char * s = rpath;
+		rpath = rpmExpand(s, "/", NULL);
+		s = _free(s);
+	    }
+/*@=mods@*/
+	} else
+	    rpath = NULL;
+#if defined(__GLIBC__)
+	t = _free(t);
+#endif
+    }
+
+    return rpath;
 }
 
 off_t Lseek(int fdno, off_t offset, int whence)
