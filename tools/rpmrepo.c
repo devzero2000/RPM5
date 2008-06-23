@@ -2203,7 +2203,10 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 
     repo->pkgcount = argvCount(repo->pkglist);
 
+    /* XXX enable --stats using transaction set. */
+    _rpmts_stats = _rpmsw_stats;
     repo->ts = rpmtsCreate();
+
     /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
     (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
 

@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmrepo: enable --stats display using transaction set.
     - jbj: add RPMTAG_NEEDSWHAT header extension.
     - jbj: don't revisit headers that RPMTAG_WHATNEEDS has already processed.
     - jbj: add RPMTAG_WHATNEEDS header extension.
