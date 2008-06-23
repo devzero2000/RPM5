@@ -959,6 +959,29 @@ static int rfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew
 }
 
 /**
+ * Close an I/O stream, accumulating uncompress/digest statistics.
+ * @param repo		repository
+ * @param fd		I/O stream
+ * @return		0 on success
+ */
+static int repoFclose(rpmrepo repo, FD_t fd)
+	/*@modifies repo, fd @*/
+{
+    int rc = 0;
+
+    if (fd != NULL) {
+	if (repo->ts != NULL) {
+	    (void) rpmswAdd(rpmtsOp(repo->ts, RPMTS_OP_UNCOMPRESS),
+			fdstat_op(fd, FDSTAT_READ));
+	    (void) rpmswAdd(rpmtsOp(repo->ts, RPMTS_OP_DIGEST),
+			fdstat_op(fd, FDSTAT_DIGEST));
+	}
+	rc = Fclose(fd);
+    }
+    return rc;
+}
+
+/**
  * Open a repository metadata file.
  * @param repo		repository
  * @param rfile		repository metadata file
@@ -1340,9 +1363,12 @@ static int repoRfileDigest(const rpmrepo repo, rpmrfile rfile,
 	if (st->st_size > 0)
 	    mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fd), 0);
 	if (mapped != (void *)-1) {
+	    rpmop op = rpmtsOp(repo->ts, RPMTS_OP_DIGEST);
+	    rpmtime_t tstamp = rpmswEnter(op, 0);
 	    DIGEST_CTX ctx = rpmDigestInit(repo->algo, RPMDIGEST_NONE);
 	    xx = rpmDigestUpdate(ctx, mapped, st->st_size);
 	    xx = rpmDigestFinal(ctx, digestp, NULL, asAscii);
+	    tstamp = rpmswExit(op, st->st_size);
 	    xx = munmap(mapped, st->st_size);
 	    break;
 	}
@@ -1366,7 +1392,7 @@ static int repoRfileDigest(const rpmrepo repo, rpmrfile rfile,
 
 exit:
     if (fd)
-	xx = Fclose(fd);
+	xx = repoFclose(repo, fd);
     fn = _free(fn);
     return rc;
 }
@@ -1396,7 +1422,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     else
 	rfile->digest = xstrdup("");
 
-    (void) Fclose(rfile->fd);
+    (void) repoFclose(repo, rfile->fd);
     rfile->fd = NULL;
 
     /* Compute the (usually compressed) ouput file digest too. */
@@ -1581,7 +1607,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
 	 || rfileXMLWrite(rfile, repoMDExpand(repo, &repo->primary))
 	 || rfileXMLWrite(rfile, xstrdup(rfile->xml_fini)))
 	    rc = 1;
-	(void) Fclose(rfile->fd);
+	(void) repoFclose(repo, rfile->fd);
 	rfile->fd = NULL;
     }
 
