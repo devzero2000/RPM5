@@ -19,7 +19,12 @@ enum dcFlags_e {
 };
 
 struct rpmdc_s {
-    enum dcFlags_e flags;
+    int ftsoptions;		/*!< Global Fts(3) traversal options. */
+    FTS * t;			/*!< Global Fts(3) traversal data. */
+    FTSENT * p;			/*!< Current node Fts(3) traversal data. */
+    struct stat sb;		/*!< Current node stat(2) data. */
+
+    enum dcFlags_e flags;	/*!< rpmdc control bits. */
     uint32_t algo;		/*!< default digest algorithm. */
     uint32_t dalgo;		/*!< digest algorithm. */
 /*@observer@*/ /*@null@*/
@@ -28,7 +33,6 @@ struct rpmdc_s {
     size_t digestlen;
     const char * fn;
     FD_t fd;
-    struct stat sb;
     int (*parse) (rpmdc dc);
     const char * (*print) (rpmdc dc, int rc);
     const char * ofn;		/*!< output file name */
@@ -42,6 +46,7 @@ struct rpmdc_s {
     unsigned char buf[BUFSIZ];
     ssize_t nb;
     int ix;
+
     size_t ncomputed;		/*!< no. of digests computed. */
     size_t nchecked;		/*!< no. of digests checked. */
     size_t nmatched;		/*!< no. of digests matched. */
@@ -211,6 +216,7 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     size_t nb = 0;
     char _mtime[32];
     char _size[32];
+    const struct stat * st = &dc->sb;
     const char * _bn;
 
     /* Don't bother formatting if noone cares. */
@@ -218,10 +224,10 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
 	return NULL;
 
     snprintf(_mtime, sizeof(_mtime), "%llu",
-		(unsigned long long) dc->sb.st_mtime);
+		(unsigned long long) st->st_mtime);
     _mtime[sizeof(_mtime)-1] = '\0';
     snprintf(_size, sizeof(_size), "%llu",
-		(unsigned long long)dc->sb.st_size);
+		(unsigned long long) st->st_size);
     _size[sizeof(_size)-1] = '\0';
     if ((_bn = strrchr(dc->fn, '/')) != NULL)
 	_bn++;
@@ -252,16 +258,29 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
 	}
 #endif
     } else {
-	*te++ = 'F';
-	*te++ = ' ';
-	te = stpcpy(te, dc->digest);
-	*te++ = ' ';
-	te = stpcpy(te, _mtime);
-	*te++ = ' ';
-	te = stpcpy(te, _size);
-	*te++ = ' ';
-	te = stpcpy(te, _bn);
-	*te++ = '\n';
+	if (S_ISDIR(st->st_mode)) {
+	    *te++ = 'D';
+	    *te++ = ' ';
+	    te = stpcpy(te, _mtime);
+	    *te++ = ' ';
+	    *te++ = '/';
+	    te = stpcpy(te, _bn);
+	    *te++ = '\n';
+	} else if (S_ISREG(st->st_mode) || S_ISLNK(st->st_mode)) {
+	    if (S_ISLNK(st->st_mode))
+		*te++ = 'S';
+	    else
+		*te++ = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) ? 'X' : 'F';
+	    *te++ = ' ';
+	    te = stpcpy(te, dc->digest);
+	    *te++ = ' ';
+	    te = stpcpy(te, _mtime);
+	    *te++ = ' ';
+	    te = stpcpy(te, _size);
+	    *te++ = ' ';
+	    te = stpcpy(te, _bn);
+	    *te++ = '\n';
+	}
     }
     *te = '\0';
 
@@ -401,6 +420,89 @@ static int rpmdcInitFile(rpmdc dc)
 exit:
     return rc;
 }
+
+static int
+rpmdcVisitF(rpmdc dc)
+	/*@modifies dc @*/
+{
+    int rc = 0;
+    int xx;
+
+    if ((xx = rpmdcInitFile(dc)) != 0)
+	rc = xx;
+    else {
+	if ((xx = rpmdcCalcFile(dc)) != 0)
+	    rc = xx;
+	if ((xx = rpmdcFiniFile(dc)) != 0)
+	    rc = xx;
+    }
+    return rc;
+}
+
+#ifdef	NOTYET
+static int
+rpmdcCWalk(rpmdc dc)
+{
+    char *const * paths = dc->paths;
+    int ftsoptions = dc->ftsoptions;
+    int rval = 0;
+
+    dc->t = Fts_open(paths, ftsoptions, dsort);
+    if (dc->t == NULL) {
+	fprintf(stderr, "Fts_open: %s", strerror(errno));
+	return -1;
+    }
+
+    while ((dc->p = Fts_read(dc->t)) != NULL) {
+#ifdef	NOTYET
+	int indent = 0;
+	if (MF_ISSET(INDENT))
+	    indent = dc->p->fts_level * 4;
+	if (rpmdcCheckExcludes(dc->p->fts_name, dc->p->fts_path)) {
+	    (void) Fts_set(dc->t, dc->p, FTS_SKIP);
+	    continue;
+	}
+#endif
+	switch(dc->p->fts_info) {
+	case FTS_D:
+#ifdef	NOTYET
+	    if (!MF_ISSET(DIRSONLY))
+		(void) printf("\n");
+	    if (!MF_ISSET(NOCOMMENT))
+		(void) printf("# %s\n", dc->p->fts_path);
+	    (void) rpmdcVisitD(dc);
+	    rpmdcVisitF(dc);
+	    /*@switchbreak@*/ break;
+#endif
+	case FTS_DP:
+#ifdef	NOTYET
+	    if (!MF_ISSET(NOCOMMENT) && (dc->p->fts_level > 0))
+		(void) printf("%*s# %s\n", indent, "", dc->p->fts_path);
+	    (void) printf("%*s..\n", indent, "");
+	    if (!MF_ISSET(DIRSONLY))
+		(void) printf("\n");
+	    /*@switchbreak@*/ break;
+#endif
+	case FTS_DNR:
+	case FTS_ERR:
+	case FTS_NS:
+	    (void) fprintf(stderr, "%s: %s: %s\n", __progname,
+			dc->p->fts_path, strerror(dc->p->fts_errno));
+	    /*@switchbreak@*/ break;
+	default:
+#ifdef	NOTYET
+	    if (!MF_ISSET(DIRSONLY))
+#endif
+		rpmdcVisitF(dc);
+	    /*@switchbreak@*/ break;
+	}
+    }
+    (void) Fts_close(dc->t);
+    dc->p = NULL;
+    dc->t = NULL;
+    return rval;
+}
+#endif
 
 static int rpmdcLoadManifests(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -557,19 +659,12 @@ main(int argc, char *argv[])
 	xx = rpmdcLoadManifests(dc);
 	av = dc->paths;
     }
-    dc->ix = 0;
 
+    dc->ix = 0;
     if (av != NULL)
     while ((dc->fn = *av++) != NULL) {
-	/* XXX TODO: instantiate verify digests for all identical paths. */
-	if ((xx = rpmdcInitFile(dc)) != 0) {
+	if ((xx = rpmdcVisitF(dc)) != 0)
 	    rc = xx;
-	} else {
-	    if ((xx = rpmdcCalcFile(dc)) != 0)
-		rc = xx;
-	    if ((xx = rpmdcFiniFile(dc)) != 0)
-		rc = xx;
-	}
 	dc->ix++;
     }
 
@@ -579,6 +674,7 @@ exit:
 		__progname, dc->nfailed, dc->ncomputed);
 
     if (dc->ofd) {
+	/* Print the output spewage digest for 0install format manifests. */
 	if (F_ISSET(dc, 0INSTALL)) {
 	    static int asAscii = 1;
 	    char *t;
