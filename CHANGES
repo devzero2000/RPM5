@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdigest: refactor to prepare for 0install manifest spewage.
+    - jbj: rpmrepo: put a --stats stopwatch on the mmap digest cost as well.
+    - jbj: rpmrepo: add repoFclose(), accumulate I/O stats into a ts.
     - jbj: rpmrepo: enable --stats display using transaction set.
     - jbj: add RPMTAG_NEEDSWHAT header extension.
     - jbj: don't revisit headers that RPMTAG_WHATNEEDS has already processed.
