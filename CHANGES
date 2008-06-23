@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdigest: achieve 0install manifest spewage for file args.
     - jbj: rpmdigest: refactor to prepare for 0install manifest spewage.
     - jbj: rpmrepo: put a --stats stopwatch on the mmap digest cost as well.
     - jbj: rpmrepo: add repoFclose(), accumulate I/O stats into a ts.

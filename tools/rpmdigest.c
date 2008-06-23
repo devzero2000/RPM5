@@ -14,16 +14,27 @@ typedef struct rpmdc_s * rpmdc;
 enum dcFlags_e {
     RPMDC_FLAGS_BINARY	= _DFB( 0),	/*!< -b,--binary ... */
     RPMDC_FLAGS_WARN	= _DFB( 1),	/*!< -w,--warn ... */
-    RPMDC_FLAGS_STATUS	= _DFB( 2)	/*!<    --status ... */
+    RPMDC_FLAGS_STATUS	= _DFB( 2),	/*!<    --status ... */
+    RPMDC_FLAGS_0INSTALL= _DFB( 3)	/*!< -0 --0install ... */
 };
 
 struct rpmdc_s {
     enum dcFlags_e flags;
     uint32_t algo;		/*!< default digest algorithm. */
+    uint32_t dalgo;		/*!< digest algorithm. */
+/*@observer@*/ /*@null@*/
+    const char * dalgoName;	/*!< digest algorithm name. */
     const char * digest;
     size_t digestlen;
     const char * fn;
     FD_t fd;
+    struct stat sb;
+    int (*parse) (rpmdc dc);
+    const char * (*print) (rpmdc dc, int rc);
+    const char * ofn;		/*!< output file name */
+    FD_t ofd;			/*!< output file handle */
+    uint32_t oalgo;		/*!< output digest algorithm. */
+    const char * oalgoName;	/*!< output digest algorithm name. */
     ARGV_t manifests;		/*!< array of file manifests to verify. */
     ARGI_t algos;		/*!< array of file digest algorithms. */
     ARGV_t digests;		/*!< array of file digests. */
@@ -31,131 +42,17 @@ struct rpmdc_s {
     unsigned char buf[BUFSIZ];
     ssize_t nb;
     int ix;
-    int nfails;
+    size_t ncomputed;		/*!< no. of digests computed. */
+    size_t nchecked;		/*!< no. of digests checked. */
+    size_t nmatched;		/*!< no. of digests matched. */
+    size_t nfailed;		/*!< no. of digests failed. */
+    struct rpmop_s totalops;
+    struct rpmop_s readops;
+    struct rpmop_s digestops;
 };
 
-static struct rpmdc_s _dc;
-static rpmdc dc = &_dc;
-
-static struct rpmop_s dc_totalops;
-static struct rpmop_s dc_readops;
-static struct rpmop_s dc_digestops;
-
-static int rpmdcPrintFile(rpmdc dc, int algo, const char * algoName)
-{
-    static int asAscii = 1;
-    int rc = 0;
-
-    fdFiniDigest(dc->fd, algo, &dc->digest, &dc->digestlen, asAscii);
-assert(dc->digest != NULL);
-    if (dc->manifests) {
-	const char * msg = "OK";
-	if ((rc = strcmp(dc->digest, dc->digests[dc->ix])) != 0) {
-	    msg = "FAILED";
-	    dc->nfails++;
-	}
-	if (rc || !F_ISSET(dc, STATUS))
-	    fprintf(stdout, "%s: %s\n", dc->fn, msg);
-    } else {
-	if (!F_ISSET(dc, STATUS)) {
-	    if (algoName) fprintf(stdout, "%s:", algoName);
-	    fprintf(stdout, "%s %c%s\n", dc->digest,
-		(F_ISSET(dc, BINARY) ? '*' : ' '), dc->fn);
-	    fflush(stdout);
-	}
-	dc->digest = _free(dc->digest);
-    }
-    return rc;
-}
-
-static int rpmdcFiniFile(rpmdc dc)
-{
-    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
-    int rc = 0;
-    int xx;
-
-    switch (algo) {
-    default:
-	xx = rpmdcPrintFile(dc, algo, NULL);
-	if (xx) rc = xx;
-	break;
-    case 256:		/* --all digests requested. */
-      {	struct poptOption * opt = rpmioDigestPoptTable;
-	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-		continue;
-	    if (opt->arg != (void *)&rpmioDigestHashAlgo)
-		continue;
-	    dc->algo = opt->val;
-	    if (!(dc->algo > 0 && dc->algo < 256))
-		continue;
-	    xx = rpmdcPrintFile(dc, dc->algo, opt->longName);
-	    if (xx) rc = xx;
-	}
-      }	break;
-    }
-    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-    Fclose(dc->fd);
-    dc->fd = NULL;
-    return rc;
-}
-
-static int rpmdcCalcFile(rpmdc dc)
-{
-    int rc = 0;
-
-    do {
-	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
-	if (Ferror(dc->fd)) {
-	    rc = 2;
-	    break;
-	}
-    } while (dc->nb > 0);
-
-    return rc;
-}
-
-static int rpmdcInitFile(rpmdc dc)
-{
-    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
-    int rc = 0;
-
-    /* XXX Stat(2) to insure files only? */
-    dc->fd = Fopen(dc->fn, "r.ufdio");
-    if (dc->fd == NULL || Ferror(dc->fd)) {
-	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
-	if (dc->fd != NULL) Fclose(dc->fd);
-	dc->fd = NULL;
-	rc = 2;
-	goto exit;
-    }
-
-    switch (dc->algo) {
-    default:
-	/* XXX TODO: instantiate verify digests for all identical paths. */
-	fdInitDigest(dc->fd, algo, 0);
-	break;
-    case 256:		/* --all digests requested. */
-      {	struct poptOption * opt = rpmioDigestPoptTable;
-	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-		continue;
-	    if (opt->longName == NULL)
-		continue;
-	    if (!(opt->val > 0 && opt->val < 256))
-		continue;
-	    algo = opt->val;
-	    fdInitDigest(dc->fd, algo, 0);
-	}
-      }	break;
-    }
-
-exit:
-    return rc;
-}
-
-static int rpmdcLoadManifests(rpmdc dc)
+/* ================================================= */
+static int rpmdcParseCoreutils(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies h_errno, fileSystem, internalState @*/
 {
@@ -185,7 +82,6 @@ static int rpmdcLoadManifests(rpmdc dc)
 	while (fgets(buf, sizeof(buf), fp) != NULL) {
 	    const char * dname, * digest, * path;
 	    char *se = buf + (int)strlen(buf);
-	    int algo;
 	    int c, xx;
 
 	    while (se > buf && xisspace((int)se[-1]))
@@ -197,6 +93,7 @@ static int rpmdcLoadManifests(rpmdc dc)
 	    /* Skip comment lines */
 	    if (buf[0] == '#')	/*@innercontinue@*/ continue;
 
+	    /* Parse "[algo:]digest [* ]path" line. */
 	    dname = NULL; path = NULL;
 	    for (digest = se = buf; (c = (int)*se) != 0; se++)
 	    switch (c) {
@@ -218,7 +115,8 @@ static int rpmdcLoadManifests(rpmdc dc)
 	    /* Map name to algorithm number. */
 	    if (dname) {
 		struct poptOption * opt = rpmioDigestPoptTable;
-		algo = -1;
+		dc->dalgo = 0xffffffff;
+		dc->dalgoName = NULL;
 		for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
 		    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
 			continue;
@@ -228,20 +126,21 @@ static int rpmdcLoadManifests(rpmdc dc)
 			continue;
 		    if (strcmp(opt->longName, dname))
 			continue;
-		    algo = opt->val;
+		    dc->dalgo = (uint32_t) opt->val;
+		    dc->dalgoName = opt->longName;
 		    break;
 		}
-		if (algo == -1) {
+		if (dc->dalgo == 0xffffffff) {
 		    fprintf(stderr, _("%s: Unknown digest name \"%s\"\n"),
 				__progname, dname);
 		    rc = 2;
 		    goto exit;
 		}
 	    } else
-		algo = dc->algo;
+		dc->dalgo = dc->algo;
 
 	    /* Save {algo, digest, path} for processing. */
-	    xx = argiAdd(&dc->algos, -1, algo);
+	    xx = argiAdd(&dc->algos, -1, dc->dalgo);
 	    xx = argvAdd(&dc->digests, digest);
 	    xx = argvAdd(&dc->paths, path);
 	}
@@ -255,6 +154,259 @@ static int rpmdcLoadManifests(rpmdc dc)
 
 exit:
     return rc;
+}
+
+/*@null@*/
+static const char * rpmdcPrintCoreutils(rpmdc dc, int rc)
+{
+    const char *msg = (rc ? "FAILED" : "OK");
+    char * t, * te;
+    size_t nb = 0;
+
+    /* Don't bother formatting if noone cares. */
+    if (rc == 0 && F_ISSET(dc, STATUS))
+	return NULL;
+
+    /* Calculate size of message. */
+    if (dc->dalgoName != NULL)
+	nb += strlen(dc->dalgoName) + sizeof(":") - 1;
+    if (dc->digest != NULL && dc->digestlen > 0)
+	nb += dc->digestlen;
+    nb += sizeof(" *") - 1;
+    if (dc->fn != NULL)
+	nb += strlen(dc->fn);
+    nb += strlen(msg);
+    nb += sizeof("\n");		/* XXX trailing NUL */
+
+    /* Compose the message. */
+    te = t = xmalloc(nb);
+    *te = '\0';
+
+    if (dc->manifests) {
+	if (rc || !F_ISSET(dc, STATUS)) {
+	    if (dc->fn)
+		te = stpcpy( stpcpy(te, dc->fn), ": ");
+	    te = stpcpy(te, msg);
+	    *te++ = '\n';
+	}
+    } else {
+	if (dc->dalgoName)
+	    te = stpcpy( stpcpy(te, dc->dalgoName), ":");
+	te = stpcpy(te, dc->digest);
+	*te++ = ' ';
+	*te++ = (F_ISSET(dc, BINARY) ? '*' : ' ');
+	te = stpcpy(te, dc->fn);
+	*te++ = '\n';
+    }
+    *te = '\0';
+
+    return t;
+}
+
+/* ================================================= */
+/*@null@*/
+static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
+{
+    char * t, * te;
+    size_t nb = 0;
+    char _mtime[32];
+    char _size[32];
+    const char * _bn;
+
+    /* Don't bother formatting if noone cares. */
+    if (rc == 0 && F_ISSET(dc, STATUS))
+	return NULL;
+
+    snprintf(_mtime, sizeof(_mtime), "%llu",
+		(unsigned long long) dc->sb.st_mtime);
+    _mtime[sizeof(_mtime)-1] = '\0';
+    snprintf(_size, sizeof(_size), "%llu",
+		(unsigned long long)dc->sb.st_size);
+    _size[sizeof(_size)-1] = '\0';
+    if ((_bn = strrchr(dc->fn, '/')) != NULL)
+	_bn++;
+    else
+	_bn = dc->fn;
+
+    /* Calculate size of message. */
+    nb += sizeof("F");
+    if (dc->digest != NULL && dc->digestlen > 0)
+	nb += 1 + dc->digestlen;
+    nb += 1 + strlen(_mtime);
+    nb += 1 + strlen(_size);
+    nb += 1 + strlen(_bn);
+    nb += sizeof("\n");		/* XXX trailing NUL */
+    
+    /* Compose the message. */
+    te = t = xmalloc(nb);
+    *te = '\0';
+
+    if (dc->manifests) {
+#ifdef NOTYET
+	const char *msg = (rc ? "FAILED" : "OK");
+	if (rc || !F_ISSET(dc, STATUS)) {
+	    if (dc->fn)
+		te = stpcpy( stpcpy(te, dc->fn), ": ");
+	    te = stpcpy(te, msg);
+	    *te++ = '\n';
+	}
+#endif
+    } else {
+	*te++ = 'F';
+	*te++ = ' ';
+	te = stpcpy(te, dc->digest);
+	*te++ = ' ';
+	te = stpcpy(te, _mtime);
+	*te++ = ' ';
+	te = stpcpy(te, _size);
+	*te++ = ' ';
+	te = stpcpy(te, _bn);
+	*te++ = '\n';
+    }
+    *te = '\0';
+
+    return t;
+}
+
+/* ================================================= */
+static struct rpmdc_s _dc = {
+	.parse = rpmdcParseCoreutils,
+	.print = rpmdcPrintCoreutils
+};
+
+static rpmdc dc = &_dc;
+
+static int rpmdcPrintFile(rpmdc dc)
+{
+    static int asAscii = 1;
+    int rc = 0;
+
+    fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
+assert(dc->digest != NULL);
+    dc->ncomputed++;
+
+    if (dc->manifests) {
+	dc->nchecked++;
+	if ((rc = strcmp(dc->digest, dc->digests[dc->ix])) != 0)
+	    dc->nfailed++;
+	else
+	    dc->nmatched++;
+    }
+
+    {	const char * t = (*dc->print) (dc, rc);
+	if (dc->ofd && t && *t) {
+	    size_t nb = strlen(t);
+	    nb = Fwrite(t, nb, sizeof(*t), dc->ofd);
+	    (void) Fflush(dc->ofd);
+	}
+	t = _free(t);
+    }
+
+    dc->digest = _free(dc->digest);
+    return rc;
+}
+
+static int rpmdcFiniFile(rpmdc dc)
+{
+    uint32_t dalgo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    int rc = 0;
+    int xx;
+
+    switch (dalgo) {
+    default:
+	dc->dalgo = dalgo;
+	dc->dalgoName = NULL;
+	xx = rpmdcPrintFile(dc);
+	if (xx) rc = xx;
+	break;
+    case 256:		/* --all digests requested. */
+      {	struct poptOption * opt = rpmioDigestPoptTable;
+	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+		continue;
+	    if (opt->arg != (void *)&rpmioDigestHashAlgo)
+		continue;
+	    dc->dalgo = opt->val;
+	    if (!(dc->dalgo > 0 && dc->dalgo < 256))
+		continue;
+	    dc->dalgoName = opt->longName;
+	    xx = rpmdcPrintFile(dc);
+	    if (xx) rc = xx;
+	}
+      }	break;
+    }
+    (void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
+    (void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+    Fclose(dc->fd);
+    dc->fd = NULL;
+    return rc;
+}
+
+static int rpmdcCalcFile(rpmdc dc)
+{
+    int rc = 0;
+
+    do {
+	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
+	if (Ferror(dc->fd)) {
+	    rc = 2;
+	    break;
+	}
+    } while (dc->nb > 0);
+
+    return rc;
+}
+
+static int rpmdcInitFile(rpmdc dc)
+{
+    int rc;
+
+    /* XXX Stat(2) to insure files only? */
+    if ((rc = Lstat(dc->fn, &dc->sb)) != 0) {
+	memset(&dc->sb, 0, sizeof(dc->sb));
+	goto exit;
+    }
+
+    dc->fd = Fopen(dc->fn, "r.ufdio");
+    if (dc->fd == NULL || Ferror(dc->fd)) {
+	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
+	if (dc->fd != NULL) Fclose(dc->fd);
+	dc->fd = NULL;
+	rc = 2;
+	goto exit;
+    }
+
+    switch (dc->algo) {
+    default:
+	/* XXX TODO: instantiate verify digests for all identical paths. */
+	dc->dalgo = dc->algo;
+	fdInitDigest(dc->fd, dc->dalgo, 0);
+	break;
+    case 256:		/* --all digests requested. */
+      {	struct poptOption * opt = rpmioDigestPoptTable;
+	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+		continue;
+	    if (opt->longName == NULL)
+		continue;
+	    if (!(opt->val > 0 && opt->val < 256))
+		continue;
+	    dc->dalgo = opt->val;
+	    dc->dalgoName = opt->longName;
+	    fdInitDigest(dc->fd, dc->dalgo, 0);
+	}
+      }	break;
+    }
+
+exit:
+    return rc;
+}
+
+static int rpmdcLoadManifests(rpmdc dc)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies dc, h_errno, fileSystem, internalState @*/
+{
+    return (dc->manifests != NULL ? (*dc->parse) (dc) : 0);
 }
 
 #if !defined(POPT_ARG_ARGV)
@@ -305,13 +457,16 @@ assert(arg != NULL);
 }
 #endif	/* POPT_ARG_ARGV */
 
-static struct poptOption optionsTable[] = {
+static struct poptOption _optionsTable[] = {
 #if !defined(POPT_ARG_ARGV)
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmdcArgCallback, 0, NULL, NULL },
 /*@=type@*/
 #endif	/* POPT_ARG_ARGV */
+
+  { "0install", '0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_dc.flags, RPMDC_FLAGS_0INSTALL,
+	N_("print 0install manifest"), NULL },
 
   { "binary", 'b', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_BINARY,
 	N_("read in binary mode"), NULL },
@@ -361,6 +516,8 @@ default mode is to print a line with digest, a character indicating type\n\
   POPT_TABLEEND
 };
 
+static struct poptOption *optionsTable = &_optionsTable[0];
+
 int
 main(int argc, char *argv[])
 {
@@ -370,12 +527,23 @@ main(int argc, char *argv[])
     int rc = 0;
     int xx;
 
-    rpmswEnter(&dc_totalops, -1);
+    rpmswEnter(&dc->totalops, -1);
 
     if ((int)rpmioDigestHashAlgo < 0)
 	rpmioDigestHashAlgo = PGPHASHALGO_MD5;
 
     dc->algo = rpmioDigestHashAlgo;
+    if (dc->ofn == NULL)
+	dc->ofn = "-";
+    dc->ofd = Fopen(dc->ofn, "w.ufdio");
+
+    if (F_ISSET(dc, 0INSTALL)) {
+	dc->print = rpmdcPrintZeroInstall;
+	dc->algo = PGPHASHALGO_SHA1;
+	dc->oalgo = PGPHASHALGO_SHA1;
+	dc->oalgoName = "sha1";
+	fdInitDigest(dc->ofd, dc->oalgo, 0);
+    }
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
@@ -406,9 +574,24 @@ main(int argc, char *argv[])
     }
 
 exit:
-    if (dc->nfails)
-	fprintf(stderr, "%s: WARNING: %d of %d computed checksums did NOT match\n",
-		__progname, dc->nfails, dc->ix);
+    if (dc->nfailed)
+	fprintf(stderr, "%s: WARNING: %u of %d computed checksums did NOT match\n",
+		__progname, dc->nfailed, dc->ncomputed);
+
+    if (dc->ofd) {
+	if (F_ISSET(dc, 0INSTALL)) {
+	    static int asAscii = 1;
+	    char *t;
+	    fdFiniDigest(dc->ofd, dc->oalgo, &dc->digest, &dc->digestlen, asAscii);
+assert(dc->digest != NULL);
+	    t = rpmExpand(dc->oalgoName, "=", dc->digest, "\n", NULL);
+	    (void) Fwrite(t, strlen(t), sizeof(*t), dc->ofd);
+	    t = _free(t);
+	    dc->digest = _free(dc->digest);
+	}
+	(void) Fclose(dc->ofd);
+	dc->ofd = NULL;
+    }
 
 #ifdef	NOTYET
     dc->manifests = argvFree(dc->manifests);
@@ -417,11 +600,11 @@ exit:
     dc->digests = argvFree(dc->digests);
     dc->paths = argvFree(dc->paths);
 
-    rpmswExit(&dc_totalops, 0);
+    rpmswExit(&dc->totalops, 0);
     if (_rpmsw_stats) {
-	rpmswPrint(" total:", &dc_totalops);
-	rpmswPrint("  read:", &dc_readops);
-	rpmswPrint("digest:", &dc_digestops);
+	rpmswPrint(" total:", &dc->totalops);
+	rpmswPrint("  read:", &dc->readops);
+	rpmswPrint("digest:", &dc->digestops);
     }
 
     optCon = rpmioFini(optCon);
