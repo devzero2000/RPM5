@@ -6,23 +6,43 @@ extern const char * __progname;
 #include <poptIO.h>
 #include "debug.h"
 
-typedef struct rpmdc_s * rpmdc;
+static int _rpmdc_debug = 0;
 
-#define _DFB(n) ((1 << (n)) | 0x40000000)
+/* XXX older 0install manifest format. */
+static int _old_0install = 0;
+
+#define _KFB(n) (1U << (n))
+#define _DFB(n) (_KFB(n) | 0x40000000)
+
 #define F_ISSET(_dc, _FLAG) ((_dc)->flags & ((RPMDC_FLAGS_##_FLAG) & ~0x40000000))
 
+/**
+ * Bit field enum for rpmdigest CLI options.
+ */
 enum dcFlags_e {
-    RPMDC_FLAGS_BINARY	= _DFB( 0),	/*!< -b,--binary ... */
-    RPMDC_FLAGS_WARN	= _DFB( 1),	/*!< -w,--warn ... */
-    RPMDC_FLAGS_STATUS	= _DFB( 2),	/*!<    --status ... */
-    RPMDC_FLAGS_0INSTALL= _DFB( 3)	/*!< -0 --0install ... */
+    RPMDC_FLAGS_NONE		= 0,
+	/* 0 reserved */
+    RPMDC_FLAGS_WARN		= _DFB( 1),	/*!< -w,--warn ... */
+    RPMDC_FLAGS_CREATE		= _DFB( 2),	/*!< -c,--create ... */
+    RPMDC_FLAGS_DIRSONLY	= _DFB( 3),	/*!< -d,--dirs ... */
+	/* 4-13 reserved */
+    RPMDC_FLAGS_BINARY		= _DFB(14),	/*!< -b,--binary ... */
+    RPMDC_FLAGS_STATUS		= _DFB(15),	/*!<    --status ... */
+    RPMDC_FLAGS_0INSTALL	= _DFB(16)	/*!< -0 --0install ... */
+	/* 17-31 unused */
 };
 
+/**
+ */
+typedef struct rpmdc_s * rpmdc;
+
+/**
+ */
 struct rpmdc_s {
-    int ftsoptions;		/*!< Global Fts(3) traversal options. */
-    FTS * t;			/*!< Global Fts(3) traversal data. */
-    FTSENT * p;			/*!< Current node Fts(3) traversal data. */
-    struct stat sb;		/*!< Current node stat(2) data. */
+    int ftsoptions;		/*!< global Fts(3) traversal options. */
+    FTS * t;			/*!< global Fts(3) traversal data. */
+    FTSENT * p;			/*!< current node Fts(3) traversal data. */
+    struct stat sb;		/*!< current node stat(2) data. */
 
     enum dcFlags_e flags;	/*!< rpmdc control bits. */
     uint32_t algo;		/*!< default digest algorithm. */
@@ -56,7 +76,19 @@ struct rpmdc_s {
     struct rpmop_s digestops;
 };
 
-/* ================================================= */
+/**
+ */
+static struct rpmdc_s _dc = {
+	.ftsoptions = FTS_PHYSICAL,
+	.flags = RPMDC_FLAGS_CREATE
+};
+
+/**
+ */
+static rpmdc dc = &_dc;
+
+/*==============================================================*/
+
 static int rpmdcParseCoreutils(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies h_errno, fileSystem, internalState @*/
@@ -208,7 +240,8 @@ static const char * rpmdcPrintCoreutils(rpmdc dc, int rc)
     return t;
 }
 
-/* ================================================= */
+/*==============================================================*/
+
 /*@null@*/
 static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
 {
@@ -260,8 +293,10 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     } else {
 	if (S_ISDIR(st->st_mode)) {
 	    *te++ = 'D';
-	    *te++ = ' ';
-	    te = stpcpy(te, _mtime);
+	    if (_old_0install) {
+		*te++ = ' ';
+		te = stpcpy(te, _mtime);
+	    }
 	    *te++ = ' ';
 	    *te++ = '/';
 	    te = stpcpy(te, _bn);
@@ -287,22 +322,21 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     return t;
 }
 
-/* ================================================= */
-static struct rpmdc_s _dc = {
-	.parse = rpmdcParseCoreutils,
-	.print = rpmdcPrintCoreutils
-};
-
-static rpmdc dc = &_dc;
+/*==============================================================*/
 
 static int rpmdcPrintFile(rpmdc dc)
 {
     static int asAscii = 1;
     int rc = 0;
 
-    fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
+if (_rpmdc_debug)
+fprintf(stderr, "\trpmdcPrintFile(%p) fn %s\n", dc, dc->fn);
+
+    if (dc->fd != NULL) {
+	fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
 assert(dc->digest != NULL);
-    dc->ncomputed++;
+	dc->ncomputed++;
+    }
 
     if (dc->manifests) {
 	dc->nchecked++;
@@ -322,6 +356,7 @@ assert(dc->digest != NULL);
     }
 
     dc->digest = _free(dc->digest);
+    dc->digestlen = 0;
     return rc;
 }
 
@@ -331,6 +366,8 @@ static int rpmdcFiniFile(rpmdc dc)
     int rc = 0;
     int xx;
 
+if (_rpmdc_debug)
+fprintf(stderr, "\trpmdcFiniFile(%p) fn %s\n", dc, dc->fn);
     switch (dalgo) {
     default:
 	dc->dalgo = dalgo;
@@ -354,10 +391,12 @@ static int rpmdcFiniFile(rpmdc dc)
 	}
       }	break;
     }
-    (void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
-    (void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-    Fclose(dc->fd);
-    dc->fd = NULL;
+    if (dc->fd != NULL) {
+	(void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
+	(void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	Fclose(dc->fd);
+	dc->fd = NULL;
+    }
     return rc;
 }
 
@@ -365,6 +404,10 @@ static int rpmdcCalcFile(rpmdc dc)
 {
     int rc = 0;
 
+if (_rpmdc_debug)
+fprintf(stderr, "\trpmdcCalcFile(%p) fn %s\n", dc, dc->fn);
+    /* Skip (unopened) non-files. */
+    if (dc->fd != NULL)
     do {
 	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
 	if (Ferror(dc->fd)) {
@@ -378,11 +421,13 @@ static int rpmdcCalcFile(rpmdc dc)
 
 static int rpmdcInitFile(rpmdc dc)
 {
-    int rc;
+    int rc = 0;
 
-    /* XXX Stat(2) to insure files only? */
-    if ((rc = Lstat(dc->fn, &dc->sb)) != 0) {
-	memset(&dc->sb, 0, sizeof(dc->sb));
+if (_rpmdc_debug)
+fprintf(stderr, "\trpmdcInitFile(%p) fn %s\n", dc, dc->fn);
+    /* Skip non-files. */
+    if (!S_ISREG(dc->sb.st_mode)) {
+	/* XXX not found return code? */
 	goto exit;
     }
 
@@ -428,6 +473,11 @@ rpmdcVisitF(rpmdc dc)
     int rc = 0;
     int xx;
 
+    dc->fn = dc->p->fts_path;	/* XXX eliminate dc->fn */
+    memcpy(&dc->sb, dc->p->fts_statp, sizeof(dc->sb));
+
+if (_rpmdc_debug)
+fprintf(stderr, "*** rpmdcVisitF(%p) fn %s\n", dc, dc->fn);
     if ((xx = rpmdcInitFile(dc)) != 0)
 	rc = xx;
     else {
@@ -439,15 +489,34 @@ rpmdcVisitF(rpmdc dc)
     return rc;
 }
 
-#ifdef	NOTYET
+static int
+rpmdcSortLexical(const FTSENT ** a, const FTSENT ** b)
+	/*@*/
+{
+    return strcmp((*a)->fts_name, (*b)->fts_name);
+}
+
+static int
+rpmdcSortDirsLast(const FTSENT ** a, const FTSENT ** b)
+	/*@*/
+{
+    if (S_ISDIR((*a)->fts_statp->st_mode)) {
+	if (!S_ISDIR((*b)->fts_statp->st_mode))
+	    return 1;
+    } else if (S_ISDIR((*b)->fts_statp->st_mode))
+	return -1;
+    return strcmp((*a)->fts_name, (*b)->fts_name);
+}
+
 static int
 rpmdcCWalk(rpmdc dc)
 {
-    char *const * paths = dc->paths;
+    char *const * paths = (char * const *) dc->paths;
     int ftsoptions = dc->ftsoptions;
     int rval = 0;
 
-    dc->t = Fts_open(paths, ftsoptions, dsort);
+    dc->t = Fts_open(paths, ftsoptions,
+	(F_ISSET(dc, 0INSTALL) && _old_0install ? rpmdcSortLexical : rpmdcSortDirsLast));
     if (dc->t == NULL) {
 	fprintf(stderr, "Fts_open: %s", strerror(errno));
 	return -1;
@@ -456,7 +525,7 @@ rpmdcCWalk(rpmdc dc)
     while ((dc->p = Fts_read(dc->t)) != NULL) {
 #ifdef	NOTYET
 	int indent = 0;
-	if (MF_ISSET(INDENT))
+	if (F_ISSET(dc, INDENT))
 	    indent = dc->p->fts_level * 4;
 	if (rpmdcCheckExcludes(dc->p->fts_name, dc->p->fts_path)) {
 	    (void) Fts_set(dc->t, dc->p, FTS_SKIP);
@@ -466,23 +535,25 @@ rpmdcCWalk(rpmdc dc)
 	switch(dc->p->fts_info) {
 	case FTS_D:
 #ifdef	NOTYET
-	    if (!MF_ISSET(DIRSONLY))
+	    if (!F_ISSET(dc, DIRSONLY))
 		(void) printf("\n");
-	    if (!MF_ISSET(NOCOMMENT))
+	    if (!F_ISSET(dc, NOCOMMENT))
 		(void) printf("# %s\n", dc->p->fts_path);
 	    (void) rpmdcVisitD(dc);
-	    rpmdcVisitF(dc);
-	    /*@switchbreak@*/ break;
 #endif
+	    /* XXX don't visit topdirs for 0install. */
+	    if (F_ISSET(dc, 0INSTALL) && dc->p->fts_level > 0)
+		rpmdcVisitF(dc);
+	    /*@switchbreak@*/ break;
 	case FTS_DP:
 #ifdef	NOTYET
-	    if (!MF_ISSET(NOCOMMENT) && (dc->p->fts_level > 0))
+	    if (!F_ISSET(dc, NOCOMMENT) && (dc->p->fts_level > 0))
 		(void) printf("%*s# %s\n", indent, "", dc->p->fts_path);
 	    (void) printf("%*s..\n", indent, "");
-	    if (!MF_ISSET(DIRSONLY))
+	    if (!F_ISSET(dc, DIRSONLY))
 		(void) printf("\n");
-	    /*@switchbreak@*/ break;
 #endif
+	    /*@switchbreak@*/ break;
 	case FTS_DNR:
 	case FTS_ERR:
 	case FTS_NS:
@@ -490,9 +561,7 @@ rpmdcCWalk(rpmdc dc)
 			dc->p->fts_path, strerror(dc->p->fts_errno));
 	    /*@switchbreak@*/ break;
 	default:
-#ifdef	NOTYET
-	    if (!MF_ISSET(DIRSONLY))
-#endif
+	    if (!F_ISSET(dc, DIRSONLY))
 		rpmdcVisitF(dc);
 	    /*@switchbreak@*/ break;
 	}
@@ -502,7 +571,6 @@ rpmdcCWalk(rpmdc dc)
     dc->t = NULL;
     return rval;
 }
-#endif
 
 static int rpmdcLoadManifests(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -567,21 +635,25 @@ static struct poptOption _optionsTable[] = {
 /*@=type@*/
 #endif	/* POPT_ARG_ARGV */
 
-  { "0install", '0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_dc.flags, RPMDC_FLAGS_0INSTALL,
-	N_("print 0install manifest"), NULL },
+  { "0install", '0', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_0INSTALL,
+	N_("Print 0install manifest"), NULL },
 
   { "binary", 'b', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_BINARY,
-	N_("read in binary mode"), NULL },
+	N_("Read in binary mode"), NULL },
 
 #if !defined(POPT_ARG_ARGV)
   { "check", 'c', POPT_ARG_STRING,	NULL, 'c',
-	N_("read digests from MANIFEST file and verify (may be used more than once)"),
+	N_("Read digests from MANIFEST file and verify (may be used more than once)"),
 	N_("MANIFEST") },
 #else
   { "check", 'c', POPT_ARG_ARGV,	&_dc.manifests, 0,
-	N_("read digests from MANIFEST file and verify (may be used more than once)"),
+	N_("Read digests from MANIFEST file and verify (may be used more than once)"),
 	N_("MANIFEST") },
 #endif
+  { "create",'c', POPT_BIT_SET,         &_dc.flags, RPMDC_FLAGS_CREATE,
+        N_("Print file tree specification to stdout"), NULL },
+  { "dirs",'d', POPT_BIT_SET,           &_dc.flags, RPMDC_FLAGS_DIRSONLY,
+        N_("Directories only"), NULL },
 
   { "text", 't', POPT_BIT_CLR,		&_dc.flags, RPMDC_FLAGS_BINARY,
 	N_("read in text mode (default)"), NULL },
@@ -637,8 +709,15 @@ main(int argc, char *argv[])
     dc->algo = rpmioDigestHashAlgo;
     if (dc->ofn == NULL)
 	dc->ofn = "-";
-    dc->ofd = Fopen(dc->ofn, "w.ufdio");
+    dc->ftsoptions = rpmioFtsOpts;
+    if (!(dc->ftsoptions & (FTS_LOGICAL|FTS_PHYSICAL)))
+	dc->ftsoptions |= FTS_PHYSICAL;
+    dc->ftsoptions |= FTS_NOCHDIR;
 
+    dc->parse = rpmdcParseCoreutils;
+    dc->print = rpmdcPrintCoreutils;
+
+    dc->ofd = Fopen(dc->ofn, "w.ufdio");
     if (F_ISSET(dc, 0INSTALL)) {
 	dc->print = rpmdcPrintZeroInstall;
 	dc->algo = PGPHASHALGO_SHA1;
@@ -657,9 +736,16 @@ main(int argc, char *argv[])
 	    goto exit;
 	}
 	xx = rpmdcLoadManifests(dc);
+#ifdef	DYIING
 	av = dc->paths;
+#endif
+    } else {
+	int i;
+	for (i = 0; i < ac; i++)
+	    xx = argvAdd(&dc->paths, av[i]);
     }
 
+#ifdef	DYING
     dc->ix = 0;
     if (av != NULL)
     while ((dc->fn = *av++) != NULL) {
@@ -667,6 +753,10 @@ main(int argc, char *argv[])
 	    rc = xx;
 	dc->ix++;
     }
+#else
+    if ((xx = rpmdcCWalk(dc)) != 0)
+	rc = xx;
+#endif
 
 exit:
     if (dc->nfailed)

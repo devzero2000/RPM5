@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdigest: achieve "sha1new" 0install manifest spewage for trees.
+    - jbj: rpmdigest: generalize to do multi-rooted Fts(3) traversal.
     - jbj: rpmdigest: pull in mtreeCwalk() for 0install dir args tree spewage.
     - jbj: rpmdigest: achieve 0install manifest spewage for file args.
     - jbj: rpmdigest: refactor to prepare for 0install manifest spewage.
