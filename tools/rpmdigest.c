@@ -88,6 +88,50 @@ static struct rpmdc_s _dc = {
 static rpmdc dc = &_dc;
 
 /*==============================================================*/
+static uint32_t rpmdcName2Algo(const char * dname)
+	/*@*/
+{
+    struct poptOption * opt = rpmioDigestPoptTable;
+    uint32_t dalgo = 0xffffffff;
+
+    for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+	    continue;
+	if (opt->longName == NULL)
+	    continue;
+	if (!(opt->val > 0 && opt->val < 256))
+	    continue;
+	if (strcmp(opt->longName, dname))
+	    continue;
+	dalgo = (uint32_t) opt->val;
+	break;
+    }
+    return dalgo;
+}
+
+/*@null@*/
+static const char * rpmdcAlgo2Name(uint32_t dalgo)
+	/*@*/
+{
+    struct poptOption * opt = rpmioDigestPoptTable;
+    const char * dalgoName = NULL;
+
+    for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+	    continue;
+	if (opt->longName == NULL)
+	    continue;
+	if (!(opt->val > 0 && opt->val < 256))
+	    continue;
+	if ((uint32_t)opt->val != dalgo)
+	    continue;
+	dalgoName = opt->longName;
+	break;
+    }
+    return dalgoName;
+}
+
+/*==============================================================*/
 
 static int rpmdcParseCoreutils(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -151,6 +195,7 @@ static int rpmdcParseCoreutils(rpmdc dc)
 
 	    /* Map name to algorithm number. */
 	    if (dname) {
+#ifdef	DYING
 		struct poptOption * opt = rpmioDigestPoptTable;
 		dc->dalgo = 0xffffffff;
 		dc->dalgoName = NULL;
@@ -167,6 +212,10 @@ static int rpmdcParseCoreutils(rpmdc dc)
 		    dc->dalgoName = opt->longName;
 		    break;
 		}
+#else
+		if ((dc->dalgo = rpmdcName2Algo(dname)) != 0xffffffff)
+		    dc->dalgoName = xstrdup(dname);
+#endif
 		if (dc->dalgo == 0xffffffff) {
 		    fprintf(stderr, _("%s: Unknown digest name \"%s\"\n"),
 				__progname, dname);
@@ -241,6 +290,118 @@ static const char * rpmdcPrintCoreutils(rpmdc dc, int rc)
 }
 
 /*==============================================================*/
+
+static int rpmdcParseZeroInstall(rpmdc dc)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies h_errno, fileSystem, internalState @*/
+{
+    int rc = -1;	/* assume failure */
+
+#ifdef	NOTYET
+    if (dc->manifests != NULL)	/* note rc=0 return with no files to load. */
+    while ((dc->fn = *dc->manifests++) != NULL) {
+	char buf[BUFSIZ];
+	FILE *fp;
+
+	if (strcmp(dc->fn, "-") == 0) {
+	    dc->fd = NULL;
+	    fp = stdin;
+	} else {
+	    /* XXX .fpio is needed because of fgets(3) usage. */
+	    dc->fd = Fopen(dc->fn, "r.fpio");
+	    if (dc->fd == NULL || Ferror(dc->fd) || (fp = fdGetFILE(dc->fd)) == NULL) {
+		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+				__progname, dc->fn, Fstrerror(dc->fd));
+		if (dc->fd != NULL) (void) Fclose(dc->fd);
+		dc->fd = NULL;
+		fp = NULL;
+		goto exit;
+	    }
+	}
+
+	while (fgets(buf, sizeof(buf), fp) != NULL) {
+	    const char * dname, * digest, * path;
+	    char *se = buf + (int)strlen(buf);
+	    int c, xx;
+
+	    while (se > buf && xisspace((int)se[-1]))
+		se--;
+	    *se = '\0';
+
+	    /* Skip blank lines */
+	    if (buf[0] == '\0')	/*@innercontinue@*/ continue;
+	    /* Skip comment lines */
+	    if (buf[0] == '#')	/*@innercontinue@*/ continue;
+
+	    /* Parse "[algo:]digest [* ]path" line. */
+	    dname = NULL; path = NULL;
+	    for (digest = se = buf; (c = (int)*se) != 0; se++)
+	    switch (c) {
+	    default:
+		/*@switchbreak@*/ break;
+	    case ':':
+		*se++ = '\0';
+		dname = digest;
+		digest = se;
+		/*@switchbreak@*/ break;
+	    case ' ':
+		se[0] = '\0';	/* loop will terminate */
+		if (se[1] == ' ' || se[1] == '*')
+		    se[1] = '\0';
+		path = se + 2;
+		/*@switchbreak@*/ break;
+	    }
+
+	    /* Map name to algorithm number. */
+	    if (dname) {
+#ifdef	DYING
+		struct poptOption * opt = rpmioDigestPoptTable;
+		dc->dalgo = 0xffffffff;
+		dc->dalgoName = NULL;
+		for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+		    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+			continue;
+		    if (opt->longName == NULL)
+			continue;
+		    if (!(opt->val > 0 && opt->val < 256))
+			continue;
+		    if (strcmp(opt->longName, dname))
+			continue;
+		    dc->dalgo = (uint32_t) opt->val;
+		    dc->dalgoName = opt->longName;
+		    break;
+		}
+#else
+		if ((dc->dalgo = rpmdcName2Algo(dname)) != 0xffffffff)
+		    dc->dalgoName = xstrdup(dname);
+#endif
+		if (dc->dalgo == 0xffffffff) {
+		    fprintf(stderr, _("%s: Unknown digest name \"%s\"\n"),
+				__progname, dname);
+		    rc = 2;
+		    goto exit;
+		}
+	    } else
+		dc->dalgo = dc->algo;
+
+	    /* Save {algo, digest, path} for processing. */
+	    xx = argiAdd(&dc->algos, -1, dc->dalgo);
+	    xx = argvAdd(&dc->digests, digest);
+	    xx = argvAdd(&dc->paths, path);
+	}
+
+	if (dc->fd != NULL) {
+	    (void) Fclose(dc->fd);
+	    dc->fd = NULL;
+	}
+    }
+    rc = 0;
+
+exit:
+#endif
+
+    return rc;
+}
 
 /*@null@*/
 static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
@@ -703,10 +864,24 @@ main(int argc, char *argv[])
 
     rpmswEnter(&dc->totalops, -1);
 
-    if ((int)rpmioDigestHashAlgo < 0)
-	rpmioDigestHashAlgo = PGPHASHALGO_MD5;
+    if (F_ISSET(dc, 0INSTALL)) {
+	dc->parse = rpmdcParseZeroInstall;
+	dc->print = rpmdcPrintZeroInstall;
+	if ((int)rpmioDigestHashAlgo < 0)
+	    rpmioDigestHashAlgo = PGPHASHALGO_SHA1;
+	dc->algo = rpmioDigestHashAlgo;
+	dc->oalgo = dc->algo;
+	dc->oalgoName = rpmdcAlgo2Name(dc->oalgo);
+	if (!strcmp(dc->oalgoName, "sha1"))
+	    dc->oalgoName = "sha1new";
+    } else {
+	dc->parse = rpmdcParseCoreutils;
+	dc->print = rpmdcPrintCoreutils;
+	if ((int)rpmioDigestHashAlgo < 0)
+	    rpmioDigestHashAlgo = PGPHASHALGO_MD5;
+	dc->algo = rpmioDigestHashAlgo;
+    }
 
-    dc->algo = rpmioDigestHashAlgo;
     if (dc->ofn == NULL)
 	dc->ofn = "-";
     dc->ftsoptions = rpmioFtsOpts;
@@ -714,17 +889,9 @@ main(int argc, char *argv[])
 	dc->ftsoptions |= FTS_PHYSICAL;
     dc->ftsoptions |= FTS_NOCHDIR;
 
-    dc->parse = rpmdcParseCoreutils;
-    dc->print = rpmdcPrintCoreutils;
-
     dc->ofd = Fopen(dc->ofn, "w.ufdio");
-    if (F_ISSET(dc, 0INSTALL)) {
-	dc->print = rpmdcPrintZeroInstall;
-	dc->algo = PGPHASHALGO_SHA1;
-	dc->oalgo = PGPHASHALGO_SHA1;
-	dc->oalgoName = "sha1";
+    if (F_ISSET(dc, 0INSTALL))
 	fdInitDigest(dc->ofd, dc->oalgo, 0);
-    }
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
