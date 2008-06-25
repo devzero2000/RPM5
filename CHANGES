@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdigest: resurrect rpmdigest -c manifest before attempting
+	0install manifest verification.
     - jbj: rpmdigest: add sha256 (and other) digests to 0install manifests.
     - jbj: rpmdigest: achieve "sha1new" 0install manifest spewage for trees.
     - jbj: rpmdigest: generalize to do multi-rooted Fts(3) traversal.

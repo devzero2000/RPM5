@@ -634,9 +634,6 @@ rpmdcVisitF(rpmdc dc)
     int rc = 0;
     int xx;
 
-    dc->fn = dc->p->fts_path;	/* XXX eliminate dc->fn */
-    memcpy(&dc->sb, dc->p->fts_statp, sizeof(dc->sb));
-
 if (_rpmdc_debug)
 fprintf(stderr, "*** rpmdcVisitF(%p) fn %s\n", dc, dc->fn);
     if ((xx = rpmdcInitFile(dc)) != 0)
@@ -693,6 +690,10 @@ rpmdcCWalk(rpmdc dc)
 	    continue;
 	}
 #endif
+
+	dc->fn = dc->p->fts_path;	/* XXX eliminate dc->fn */
+	memcpy(&dc->sb, dc->p->fts_statp, sizeof(dc->sb));
+
 	switch(dc->p->fts_info) {
 	case FTS_D:
 #ifdef	NOTYET
@@ -903,27 +904,26 @@ main(int argc, char *argv[])
 	    goto exit;
 	}
 	xx = rpmdcLoadManifests(dc);
-#ifdef	DYIING
-	av = dc->paths;
-#endif
     } else {
 	int i;
 	for (i = 0; i < ac; i++)
 	    xx = argvAdd(&dc->paths, av[i]);
     }
 
-#ifdef	DYING
-    dc->ix = 0;
-    if (av != NULL)
-    while ((dc->fn = *av++) != NULL) {
-	if ((xx = rpmdcVisitF(dc)) != 0)
+    if (dc->manifests != NULL) {
+	dc->ix = 0;
+	av = dc->paths;
+	if (av != NULL)
+	while ((dc->fn = *av++) != NULL) {
+	    if ((xx = Lstat(dc->fn, &dc->sb)) != 0
+	     || (xx = rpmdcVisitF(dc)) != 0)
+		rc = xx;
+	    dc->ix++;
+	}
+    } else {
+	if ((xx = rpmdcCWalk(dc)) != 0)
 	    rc = xx;
-	dc->ix++;
     }
-#else
-    if ((xx = rpmdcCWalk(dc)) != 0)
-	rc = xx;
-#endif
 
 exit:
     if (dc->nfailed)
