@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdigest: parse/verify 0install manifest format.
     - jbj: rpmdigest: resurrect rpmdigest -c manifest before attempting
 	0install manifest verification.
     - jbj: rpmdigest: add sha256 (and other) digests to 0install manifests.

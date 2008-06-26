@@ -94,6 +94,10 @@ static uint32_t rpmdcName2Algo(const char * dname)
     struct poptOption * opt = rpmioDigestPoptTable;
     uint32_t dalgo = 0xffffffff;
 
+    /* XXX compatible with 0install legacy derangement. bug imho. */
+    if (!strcmp(dname, "sha1new"))
+	dname = "sha1";
+
     for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
 	if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
 	    continue;
@@ -142,6 +146,7 @@ static int rpmdcParseCoreutils(rpmdc dc)
     if (dc->manifests != NULL)	/* note rc=0 return with no files to load. */
     while ((dc->fn = *dc->manifests++) != NULL) {
 	char buf[BUFSIZ];
+	unsigned lineno;
 	FILE *fp;
 
 	if (strcmp(dc->fn, "-") == 0) {
@@ -160,11 +165,13 @@ static int rpmdcParseCoreutils(rpmdc dc)
 	    }
 	}
 
+	lineno = 0;
 	while (fgets(buf, sizeof(buf), fp) != NULL) {
 	    const char * dname, * digest, * path;
 	    char *se = buf + (int)strlen(buf);
 	    int c, xx;
 
+	    lineno++;
 	    while (se > buf && xisspace((int)se[-1]))
 		se--;
 	    *se = '\0';
@@ -192,33 +199,20 @@ static int rpmdcParseCoreutils(rpmdc dc)
 		path = se + 2;
 		/*@switchbreak@*/ break;
 	    }
+	    if (path == NULL) {
+		fprintf(stderr, _("%s: %s line %u: No file path found.\n"),
+				__progname, dc->fn, lineno);
+		rc = 2;
+		goto exit;
+	    }
 
 	    /* Map name to algorithm number. */
 	    if (dname) {
-#ifdef	DYING
-		struct poptOption * opt = rpmioDigestPoptTable;
-		dc->dalgo = 0xffffffff;
-		dc->dalgoName = NULL;
-		for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-		    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-			continue;
-		    if (opt->longName == NULL)
-			continue;
-		    if (!(opt->val > 0 && opt->val < 256))
-			continue;
-		    if (strcmp(opt->longName, dname))
-			continue;
-		    dc->dalgo = (uint32_t) opt->val;
-		    dc->dalgoName = opt->longName;
-		    break;
-		}
-#else
 		if ((dc->dalgo = rpmdcName2Algo(dname)) != 0xffffffff)
 		    dc->dalgoName = xstrdup(dname);
-#endif
 		if (dc->dalgo == 0xffffffff) {
-		    fprintf(stderr, _("%s: Unknown digest name \"%s\"\n"),
-				__progname, dname);
+		    fprintf(stderr, _("%s: %s line %u: Unknown digest name \"%s\"\n"),
+				__progname, dc->fn, lineno, dname);
 		    rc = 2;
 		    goto exit;
 		}
@@ -295,111 +289,154 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies h_errno, fileSystem, internalState @*/
 {
-    int rc = -1;	/* assume failure */
+    int rc = 0;	/* assume success */
 
-#ifdef	NOTYET
     if (dc->manifests != NULL)	/* note rc=0 return with no files to load. */
     while ((dc->fn = *dc->manifests++) != NULL) {
-	char buf[BUFSIZ];
-	FILE *fp;
+	unsigned lineno;
+	char * b = NULL;
+	char * be = NULL;
+	ssize_t blen = 0;
+	int xx = rpmioSlurp(dc->fn, (uint8_t **) &b, &blen);
+	const char * digest;
+	char * f;
+	char * fe;
 
-	if (strcmp(dc->fn, "-") == 0) {
-	    dc->fd = NULL;
-	    fp = stdin;
-	} else {
-	    /* XXX .fpio is needed because of fgets(3) usage. */
-	    dc->fd = Fopen(dc->fn, "r.fpio");
-	    if (dc->fd == NULL || Ferror(dc->fd) || (fp = fdGetFILE(dc->fd)) == NULL) {
-		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
-				__progname, dc->fn, Fstrerror(dc->fd));
-		if (dc->fd != NULL) (void) Fclose(dc->fd);
-		dc->fd = NULL;
-		fp = NULL;
-		goto exit;
-	    }
+	if (!(xx == 0 && b != NULL && blen > 0)) {
+	    fprintf(stderr, _("%s: Failed to open %s\n"), __progname, dc->fn);
+	    rc = -1;
+	    goto bottom;
 	}
 
-	while (fgets(buf, sizeof(buf), fp) != NULL) {
-	    const char * dname, * digest, * path;
-	    char *se = buf + (int)strlen(buf);
-	    int c, xx;
+	be = b + strlen(b);
+	while (be > b && (be[-1] == '\n' || be[-1] == '\r')) {
+	  be--;
+	  *be = '\0';
+	}
 
-	    while (se > buf && xisspace((int)se[-1]))
-		se--;
-	    *se = '\0';
+	/* Parse "algo=digest" from last line. */
+	be = strrchr(b, '=');
+	if (be == NULL) {
+	    fprintf(stderr,
+		_("%s: %s: Manifest needs \"algo=digest\" as last line\n"),
+		__progname, dc->fn);
+	    rc = 2;
+	    goto bottom;
+	}
+	*be = '\0';
+	dc->digest = be + 1;
+	while (be > b && !(be[-1] == '\n' || be[-1] == '\r'))
+	    be--;
+	if (be <= b) {
+	    fprintf(stderr, _("%s: %s: Manifest is empty\n"),
+		__progname, dc->fn);
+	    rc = 2;
+	    goto bottom;
+	}
 
-	    /* Skip blank lines */
-	    if (buf[0] == '\0')	/*@innercontinue@*/ continue;
-	    /* Skip comment lines */
-	    if (buf[0] == '#')	/*@innercontinue@*/ continue;
+	/* Map name to algorithm number. */
+	if ((dc->dalgo = rpmdcName2Algo(be)) == 0xffffffff) {
+	    fprintf(stderr, _("%s: %s: Unknown digest algo name \"%s\"\n"),
+			__progname, dc->fn, be);
+	    rc = 2;
+	    goto bottom;
+	}
+	*be = '\0';
 
-	    /* Parse "[algo:]digest [* ]path" line. */
-	    dname = NULL; path = NULL;
-	    for (digest = se = buf; (c = (int)*se) != 0; se++)
-	    switch (c) {
-	    default:
-		/*@switchbreak@*/ break;
-	    case ':':
-		*se++ = '\0';
-		dname = digest;
-		digest = se;
-		/*@switchbreak@*/ break;
-	    case ' ':
-		se[0] = '\0';	/* loop will terminate */
-		if (se[1] == ' ' || se[1] == '*')
-		    se[1] = '\0';
-		path = se + 2;
-		/*@switchbreak@*/ break;
+	/* Verify the manifest digest. */
+	{   DIGEST_CTX ctx = rpmDigestInit(dc->dalgo, 0);
+
+	    (void) rpmDigestUpdate(ctx, b, (be - b));
+	    digest = NULL;
+	    (void) rpmDigestFinal(ctx, &digest, NULL, 1);
+	    if (strcmp(dc->digest, digest)) {
+		fprintf(stderr,
+			_("%s: %s: Manifest digest check: Expected(%s) != (%s)\n"),
+			__progname, dc->fn, dc->digest, digest);
+		rc = 2;
+		goto bottom;
 	    }
+	    digest = _free(digest);
+	}
 
-	    /* Map name to algorithm number. */
-	    if (dname) {
-#ifdef	DYING
-		struct poptOption * opt = rpmioDigestPoptTable;
-		dc->dalgo = 0xffffffff;
-		dc->dalgoName = NULL;
-		for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-		    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-			continue;
-		    if (opt->longName == NULL)
-			continue;
-		    if (!(opt->val > 0 && opt->val < 256))
-			continue;
-		    if (strcmp(opt->longName, dname))
-			continue;
-		    dc->dalgo = (uint32_t) opt->val;
-		    dc->dalgoName = opt->longName;
-		    break;
-		}
-#else
-		if ((dc->dalgo = rpmdcName2Algo(dname)) != 0xffffffff)
-		    dc->dalgoName = xstrdup(dname);
-#endif
-		if (dc->dalgo == 0xffffffff) {
-		    fprintf(stderr, _("%s: Unknown digest name \"%s\"\n"),
-				__progname, dname);
+	/* Parse and save manifest items. */
+	lineno = 0;
+	for (f = b; *f; f = fe) {
+	    static const char hexdigits[] = "0123456789ABCDEFabcdef";
+	    const char * _dn = NULL;
+	    const char * path;
+
+	    lineno++;
+	    fe = f;
+	    while (*fe && !(*fe == '\n' || *fe == '\r'))
+		fe++;
+	    while (*fe && (*fe == '\n' || *fe == '\r'))
+		*fe++ = '\0';
+	    switch ((int)*f) {
+	    case 'D':
+		_dn = f + 2;
+		continue;
+		/*@notreached@*/ break;
+	    case 'F':
+	    case 'S':
+	    case 'X':
+		digest = f + 2;
+		f += 2;
+		while (*f && strchr(hexdigits, *f) != NULL)
+		    f++;
+		if (*f != ' ') {
+		    fprintf(stderr, _("%s: %s line %u: Malformed digest field.\n"),
+			__progname, dc->fn, lineno);
 		    rc = 2;
-		    goto exit;
+		    goto bottom;
 		}
-	    } else
-		dc->dalgo = dc->algo;
+		*f++ = '\0';
+		while (*f && xisdigit(*f))
+		    f++;
+		if (*f != ' ') {
+		    fprintf(stderr, _("%s: %s line %u: Malformed mtime field.\n"),
+			__progname, dc->fn, lineno);
+		    rc = 2;
+		    goto bottom;
+		}
+		*f++ = '\0';
+		while (*f && xisdigit(*f))
+		    f++;
+		if (*f != ' ') {
+		    fprintf(stderr, _("%s: %s line %u: Malformed size field.\n"),
+			__progname, dc->fn, lineno);
+		    rc = 2;
+		    goto bottom;
+		}
+		*f++ = '\0';
+		if (*f == '\0') {
+		    fprintf(stderr, _("%s: %s line %u: No file path.\n"),
+			__progname, dc->fn, lineno);
+		    rc = 2;
+		    goto bottom;
+		}
 
-	    /* Save {algo, digest, path} for processing. */
-	    xx = argiAdd(&dc->algos, -1, dc->dalgo);
-	    xx = argvAdd(&dc->digests, digest);
-	    xx = argvAdd(&dc->paths, path);
+		if (_dn && *_dn == '/')
+		    path = rpmExpand(_dn+1, "/", f, NULL);
+		else
+		    path = xstrdup(f);
+
+		/* Save {algo, digest, path} for processing. */
+		xx = argiAdd(&dc->algos, -1, dc->dalgo);
+		xx = argvAdd(&dc->digests, digest);
+		xx = argvAdd(&dc->paths, path);
+		path = _free(path);
+		break;
+	    }
 	}
 
-	if (dc->fd != NULL) {
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	}
+bottom:
+	b = _free(b);
+	if (rc != 0)
+	    goto exit;
     }
-    rc = 0;
 
 exit:
-#endif
-
     return rc;
 }
 
@@ -442,7 +479,6 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     *te = '\0';
 
     if (dc->manifests) {
-#ifdef NOTYET
 	const char *msg = (rc ? "FAILED" : "OK");
 	if (rc || !F_ISSET(dc, STATUS)) {
 	    if (dc->fn)
@@ -450,7 +486,6 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
 	    te = stpcpy(te, msg);
 	    *te++ = '\n';
 	}
-#endif
     } else {
 	if (S_ISDIR(st->st_mode)) {
 	    *te++ = 'D';
@@ -896,19 +931,24 @@ main(int argc, char *argv[])
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
+    if ((ac == 0 && dc->manifests == NULL)
+     || (ac >  0 && dc->manifests != NULL))
+    {
+	poptPrintUsage(optCon, stderr, 0);
+	rc = 2;
+	goto exit;
+    }
 
     if (dc->manifests != NULL) {
-	if (ac != 0) {
-	    poptPrintUsage(optCon, stderr, 0);
-	    rc = 2;
-	    goto exit;
-	}
-	xx = rpmdcLoadManifests(dc);
+	if ((xx = rpmdcLoadManifests(dc)) != 0)
+	    rc = xx;
     } else {
 	int i;
 	for (i = 0; i < ac; i++)
 	    xx = argvAdd(&dc->paths, av[i]);
     }
+    if (rc)
+	goto exit;
 
     if (dc->manifests != NULL) {
 	dc->ix = 0;
@@ -932,7 +972,7 @@ exit:
 
     if (dc->ofd) {
 	/* Print the output spewage digest for 0install format manifests. */
-	if (F_ISSET(dc, 0INSTALL)) {
+	if (rc == 0 && F_ISSET(dc, 0INSTALL) && dc->manifests == NULL) {
 	    static int asAscii = 1;
 	    char *t;
 	    fdFiniDigest(dc->ofd, dc->oalgo, &dc->digest, &dc->digestlen, asAscii);
