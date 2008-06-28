@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: stub in rpmwget options using popt.
     - jbj: rpmio: stub in rpmcurl options using popt.
     - jbj: rpmio: delete rpmrepo/rpmmtree, they live in tools/ now.
     - jbj: rpmz: fix some typos.

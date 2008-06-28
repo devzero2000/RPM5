@@ -22,6 +22,7 @@ rpmgenpkglist
 rpmgensrclist
 rpmgrep
 rpmtar
+rpmwget
 rpmz
 teststderr
 testtry
