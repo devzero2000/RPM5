@@ -830,11 +830,11 @@ static struct poptOption optionsTable[] = {
   POPT_AUTOHELP
 
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-        "\
+        N_("\
 Usage: rpmz [OPTION]... [FILE]...\n\
 Compress or decompress FILEs.\n\
 \n\
-", NULL },
+"), NULL },
 
   POPT_TABLEEND
 
@@ -854,7 +854,7 @@ main(int argc, char *argv[])
     int i;
 
 /*@-observertrans -readonlytrans @*/
-    __progname = "rpmgenpkglist";
+    __progname = "rpmz";
 /*@=observertrans =readonlytrans @*/
 
     av = poptGetArgs(optCon);

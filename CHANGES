@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: stub in rpmcurl options using popt.
+    - jbj: rpmio: delete rpmrepo/rpmmtree, they live in tools/ now.
+    - jbj: rpmz: fix some typos.
     - jbj: rpmdigest: parse/verify 0install manifest format.
     - jbj: rpmdigest: resurrect rpmdigest -c manifest before attempting
 	0install manifest verification.

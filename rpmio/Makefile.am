@@ -14,14 +14,14 @@ EXTRA_DIST = \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh rpmgrep.1
 
-EXTRA_PROGRAMS = rpmcpio \
+EXTRA_PROGRAMS = rpmcpio rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist \
 	rpmtar rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
-bin_PROGRAMS = rpmdigest # rpmmtree
-man_MANS = #
+bin_PROGRAMS =
+man_MANS =
 
 TESTS =
 check_PROGRAMS =
@@ -241,8 +241,8 @@ EXTRA_DIST += \
 rpmcpio_SOURCES = rpmcpio.c
 rpmcpio_LDADD = $(RPM_LDADD_COMMON)
 
-rpmdigest_SOURCES = rpmdigest.c
-rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
+rpmcurl_SOURCES = rpmcurl.c
+rpmcurl_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmgenbasedir = rpmgenbasedir.c
 rpmgenbasedir_LDADD = $(RPMIO_LDADD_COMMON)
@@ -252,12 +252,6 @@ rpmgenpkglist_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmgensrclist = rpmgensrclist.c
 rpmgensrclist_LDADD = $(RPMIO_LDADD_COMMON)
-
-rpmmtree_SOURCES = rpmmtree.c
-rpmmtree_LDADD = $(RPM_LDADD_COMMON)
-
-rpmrepo_SOURCES = rpmrepo.c
-rpmrepo_LDADD = $(RPM_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)

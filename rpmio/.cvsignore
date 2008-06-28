@@ -16,12 +16,11 @@ getdate.c
 lcov
 lookup3
 rpmcpio
+rpmcurl
 rpmdigest
 rpmgenpkglist
 rpmgensrclist
 rpmgrep
-rpmmtree
-rpmrepo
 rpmtar
 rpmz
 teststderr
