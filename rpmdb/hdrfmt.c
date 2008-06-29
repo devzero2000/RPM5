@@ -1749,12 +1749,18 @@ static int i18nTag(Header h, HE_t he)
 	const char * msgid;
 
 	{   HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
-	    const char * tn = tagName(he->tag);
+	    const char * tn;
 	    char * mk;
 	    size_t nb = sizeof("()");
 	    int xx;
 	    nhe->tag = RPMTAG_NAME;
 	    xx = headerGet(h, nhe, 0);
+	    /*
+	     * XXX Ick, tagName() is called by headerGet(), and the tagName()
+	     * buffer is valid only until next tagName() call.
+	     * For now, do the tagName() lookup after headerGet().
+	     */
+	    tn = tagName(he->tag);
 	    if (tn)	nb += strlen(tn);
 	    if (nhe->p.str)	nb += strlen(nhe->p.str);
 	    mk = alloca(nb);
