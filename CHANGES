@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: refactor options into a static structure.
     - jbj: fix: specspo lookup broke because of 2nd tagName call side-effect.
     - jbj: rpmwget: parse all wget options.
     - jbj: rpmio: stub in rpmwget options using popt.

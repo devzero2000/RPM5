@@ -12,24 +12,8 @@
 
 /**
  */
-static void rpmwgetArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, const char * arg,
-                /*@unused@*/ void * data)
-	/*@*/
-{
-    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    if (opt->arg == NULL)
-    switch (opt->val) {
-    default:
-	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
-	poptPrintUsage(con, stderr, 0);
-	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-	/*@notreached@*/ break;
-    }
-}
+typedef struct rpmwget_s * rpmwget;
 
-/*==============================================================*/
 enum rpmioWCTLFlags_e {
     WCTL_FLAGS_NONE		= 0,
     WCTL_FLAGS_BACKGROUND	= _WFB( 0), /*!< -b,--background ... */
@@ -52,63 +36,6 @@ enum rpmioWCTLFlags_e {
 /*@unchecked@*/
 static enum rpmioWCTLFlags_e rpmioWCTLFlags = WCTL_FLAGS_NONE;
 
-/*@unchecked@*/
-static const char * _wctl_execute_cmd;
-/*@unchecked@*/
-static const char * _wctl_output_file;
-/*@unchecked@*/
-static const char * _wctl_append_file;
-/*@unchecked@*/
-static int _wctl_debug;
-/*@unchecked@*/
-static int _wctl_quiet;
-/*@unchecked@*/
-static int _wctl_verbose = -1;
-/*@unchecked@*/
-static const char * _wctl_input_file;
-/*@unchecked@*/
-static const char * _wctl_base_prefix;
-
-/*@unchecked@*/ /*@observer@*/
-static struct poptOption rpmioWCTLStartupPoptTable[] = {
-  { "version", 'V', POPT_ARG_NONE,	NULL, 'V',
-	N_("display the version of Wget and exit."), NULL },
-#ifdef	NOTYET	/* XXX FIXME: lt-rpmwget: option table misconfigured (104) */
-  { "help", 'h', POPT_ARG_NONE,	NULL, 'h',
-	N_("print this help."), NULL },
-#endif	/* NOTYET */
-  { "background", 'b', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_BACKGROUND,
-	N_("go to background after startup."), NULL },
-  { "execute", 'e', POPT_ARG_STRING,	&_wctl_execute_cmd, 0,
-	N_("execute a `.wgetrc'-style command."), N_("COMMAND") },
-  POPT_TABLEEND
-};
-
-/*@unchecked@*/ /*@observer@*/
-static struct poptOption rpmioWCTLLoggingPoptTable[] = {
-  { "output-file", 'o', POPT_ARG_STRING,	&_wctl_output_file, 0,
-	N_("log messages to FILE."), N_("FILE") },
-  { "append-output", 'a', POPT_ARG_STRING,	&_wctl_append_file, 0,
-	N_("append messages to FILE."), N_("FILE") },
-  { "debug", 'd', POPT_ARG_VAL,	&_wctl_debug, -1,
-	N_("print lots of debugging information."), NULL },
-  { "quiet", 'q', POPT_ARG_VAL,	&_wctl_quiet, -1,
-	N_("quiet (no output)."), NULL },
-  { "verbose", 'v', POPT_ARG_VAL,	&_wctl_verbose, -1,
-	N_("be verbose (this is the default)."), NULL },
-  { "no-verbose", '\0', POPT_ARG_VAL,	&_wctl_verbose, 0,
-	N_("turn off verboseness, without being quiet."), NULL },
-  { "nv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_wctl_verbose, 0,
-	N_("turn off verboseness, without being quiet."), NULL },
-  { "input-file", 'i', POPT_ARG_STRING,	&_wctl_input_file, 0,
-	N_("download URLs found in FILE."), N_("FILE") },
-  { "force-html", 'F', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_FORCEHTML,
-	N_("treat input file as HTML."), NULL },
-  { "base", 'B', POPT_ARG_STRING,	&_wctl_base_prefix, 0,
-	N_("prepends URL to relative links in -F -i file."), N_("URL") },
-  POPT_TABLEEND
-};
-
 enum rpmioWDLFlags_e {
     WDL_FLAGS_NONE		= 0,
     WDL_FLAGS_RETRYCONN		= _WFB( 0), /*!<    --retry-connrefused ... */
@@ -128,46 +55,203 @@ enum rpmioWDLFlags_e {
 /*@unchecked@*/
 static enum rpmioWDLFlags_e rpmioWDLFlags = WDL_FLAGS_NONE;
 
+enum rpmioWDirFlags_e {
+    WDIR_FLAGS_NONE		= 0,
+    WDIR_FLAGS_NOCREATE		= _WFB( 0), /*!<    --no-directories ... */
+    WDIR_FLAGS_FORCE		= _WFB( 1), /*!<    --force-directories ... */
+    WDIR_FLAGS_NOHOST		= _WFB( 2), /*!<    --no-host-directories ... */
+    WDIR_FLAGS_ADDPROTO		= _WFB( 3), /*!<    --protocol-directories ... */
+};
 /*@unchecked@*/
-static int _wdl_tries;
+static enum rpmioWDirFlags_e rpmioWDirFlags = WDIR_FLAGS_NONE;
+
+enum rpmioHttpFlags_e {
+    HTTP_FLAGS_NONE		= 0,
+    HTTP_FLAGS_NOCACHE		= _WFB( 0), /*!<    --no-cache ... */
+    HTTP_FLAGS_IGNORELENGTH	= _WFB( 1), /*!<    --ignore-length ... */
+    HTTP_FLAGS_NOKEEPALIVE	= _WFB( 2), /*!<    --no-http-keep-alive ... */
+    HTTP_FLAGS_NOCOOKIES	= _WFB( 3), /*!<    --no-cookies ... */
+    HTTP_FLAGS_KEEPCOOKIES	= _WFB( 4), /*!<    --keep-session-cookies ... */
+    HTTP_FLAGS_CONTENTDISPOSITION =_WFB( 5),/*!<    --content-dispostion ... */
+    HTTP_FLAGS_NOCHALLENGE	= _WFB( 6), /*!<    --auth-no-challenge ... */
+    HTTP_FLAGS_SAVEHEADERS	= _WFB( 7), /*!<    --save-headers ... */
+};
 /*@unchecked@*/
-static int _wdl_timeout_secs;
+static enum rpmioHttpFlags_e rpmioHttpFlags = HTTP_FLAGS_NONE;
+
+enum rpmioHttpsFlags_e {
+    HTTPS_FLAGS_NONE		= 0,
+    HTTPS_FLAGS_NOCHECK		= _WFB( 0), /*!<    --no-check-certificate ... */
+};
 /*@unchecked@*/
-static int _wdl_dns_timeout_secs;
+static enum rpmioHttpsFlags_e rpmioHttpsFlags = HTTPS_FLAGS_NONE;
+
+enum rpmioFtpFlags_e {
+    FTP_FLAGS_NONE		= 0,
+    FTP_FLAGS_KEEPLISTING	= _WFB( 0), /*!<    --no-remove-listing ... */
+    FTP_FLAGS_NOGLOB		= _WFB( 1), /*!<    --no-glob ... */
+    FTP_FLAGS_ACTIVE		= _WFB( 2), /*!<    --no-passive-ftp ... */
+    FTP_FLAGS_FOLLOW		= _WFB( 3), /*!<    --retr-symlinks ... */
+    FTP_FLAGS_PRESERVE		= _WFB( 4), /*!<    --preserve-permissions ... */
+};
 /*@unchecked@*/
-static int _wdl_connect_timeout_secs;
-/*@unchecked@*/
-static int _wdl_quota;
-/*@unchecked@*/
-static int _wdl_read_timeout_secs;
-/*@unchecked@*/
-static int _wdl_wait_secs;
-/*@unchecked@*/
-static int _wdl_waitretry_secs;
-/*@unchecked@*/
-static int _wdl_randomwaitretry_secs;
-/*@unchecked@*/
-static int _wdl_limit_rate;
-/*@unchecked@*/
-static int _wdl_bind_address;
+static enum rpmioFtpFlags_e rpmioFtpFlags = FTP_FLAGS_NONE;
+
+/**
+ */
+struct rpmwget_s {
+    /* --- Startup --- */
+    const char * execute_cmd;		/*!< -e,--execute ... */
+
+    /* --- Logging & Input --- */
+    const char * output_file;		/*!< -o,--output-file ... */
+    const char * append_file;		/*!< -a,--append-output ... */
+    int debug;				/*!< -d,--debug ... */
+    int quiet;				/*!< -q,--quiet ... */
+    int verbose;			/*!< -v,--verbose ... */
+    const char * input_file;		/*!< -i,--input-file ... */
+    const char * base_prefix;		/*!< -B,--base ... */
+
+    /* --- Download --- */
+    int tries;				/*!< -t,--tries ... */
+    int timeout_secs;			/*!< -T,--timeout ... */
+    int dns_timeout_secs;		/*!<    --dns-timeout ... */
+    int connect_timeout_secs;		/*!<    --connect-timeout ... */
+    int read_timeout_secs;		/*!<    --read-timeout ... */
+    int quota;				/*!< -Q,--quota ... */
+    int wait_secs;			/*!< -w,--wait ... */
+    int waitretry_secs;			/*!<    --waitretry ... */
+    int randomwaitretry_secs;		/*!<    --random-wait ... */
+    int limit_rate;			/*!<    --limit-rate ... */
+    int bind_address;			/*!<    --bind-address ... */
+    const char * prefer;		/*!<    --prefer-family ... */
+
+    const char * _Xwdl_output_file;	/*!< -O,--output-document ... */
+    const char * _Xwdl_user;		/*!<    --user ... */
+    const char * _Xwdl_password;	/*!<    --password ... */
+
+    /* --- Directories --- */
+    const char * dir_prefix;		/*!< -P,--directory-prefix ... */
+    int dir_cut;			/*!<    --cut-dirs ... */
+
+    /* --- HTTP --- */
+    const char * http_user;		/*!<    --http-user ... */
+    const char * http_password;		/*!<    --http-password ... */
+    const char * http_ext;		/*!< -E,--http-extension ... */
+    const char * http_header;		/*!<    --header ... */
+    int http_max_redirect;		/*!<    --max-redirect ... */
+    const char * http_proxy_user;	/*!<    --proxy-user ... */
+    const char * http_proxy_password;	/*!<    --proxy-password ... */
+    const char * http_referer;		/*!<    --referer ... */
+    const char * http_user_agent;	/*!< -U,--user-agent ... */
+    const char * http_load_cookies_file;/*!<    --load-cookies ... */
+    const char * http_save_cookies_file;/*!<    --save-cookies ... */
+    const char * http_post_data;	/*!<    --post-data ... */
+    const char * http_post_file;	/*!<    --post-file ... */
+
+    /* --- HTTPS --- */
+    const char * https_protocol;	/*!<    --secure-protocol ... */
+    const char * https_certificate_file;/*!<    --certificate ... */
+    const char * https_certificate_type;/*!<    --certificate-type ... */
+    const char * https_privatekey_file;	/*!<    --private-key ... */
+    const char * https_privatekey_type;	/*!<    --private-key-type ... */
+    const char * https_cacertificate_file;/*!<  --ca-certificate ... */
+    const char * https_cacertificate_dir;/*!<   --ca-directory ... */
+    const char * https_random_file;	/*!<    --random-file ... */
+    const char * https_egd_file;	/*!<    --egd-file ... */
+
+    /* --- FTP --- */
+    const char * ftp_user;		/*!<    --ftp-user ... */
+    const char * ftp_password;		/*!<    --ftp-password ... */
+
+    /* --- Recursive --- */
+    int recurse_max;			/*!< -l,--level ... */
+    const char * accept_exts;		/*!< -A,--accept ... */
+    const char * reject_exts;		/*!< -R,--reject ... */
+    const char * accept_domains;	/*!< -D,--domains ... */
+    const char * reject_domains;	/*!<    --exclude-domains ... */
+    const char * accept_tags;		/*!<    --follow-tags ... */
+    const char * reject_tags;		/*!<    --ignore-tags ... */
+    const char * accept_dirs;		/*!< -I,--include-directories ... */
+    const char * reject_dirs;		/*!< -X,--exclude-directories ... */
+};
 
 /*@unchecked@*/
-static const char * _wdl_output_file;
+static struct rpmwget_s __rpmwget = {
+    .verbose = -1,
+    .http_ext = ".html"
+};
 
 /*@unchecked@*/
-static const char * _wdl_prefer;
-/*@unchecked@*/
-static const char * _wdl_user;
-/*@unchecked@*/
-static const char * _wdl_password;
+static rpmwget _rpmwget = &__rpmwget;
+
+/**
+ */
+static void rpmwgetArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data)
+	/*@*/
+{
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
+    switch (opt->val) {
+    default:
+	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
+	poptPrintUsage(con, stderr, 0);
+	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+	/*@notreached@*/ break;
+    }
+}
+
+/*==============================================================*/
 /*@unchecked@*/ /*@observer@*/
+static struct poptOption rpmioWCTLStartupPoptTable[] = {
+  { "version", 'V', POPT_ARG_NONE,	NULL, 'V',
+	N_("display the version of Wget and exit."), NULL },
+#ifdef	NOTYET	/* XXX FIXME: lt-rpmwget: option table misconfigured (104) */
+  { "help", 'h', POPT_ARG_NONE,	NULL, 'h',
+	N_("print this help."), NULL },
+#endif	/* NOTYET */
+  { "background", 'b', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_BACKGROUND,
+	N_("go to background after startup."), NULL },
+  { "execute", 'e', POPT_ARG_STRING,	&__rpmwget.execute_cmd, 0,
+	N_("execute a `.wgetrc'-style command."), N_("COMMAND") },
+  POPT_TABLEEND
+};
 
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption rpmioWCTLLoggingPoptTable[] = {
+  { "output-file", 'o', POPT_ARG_STRING,	&__rpmwget.output_file, 0,
+	N_("log messages to FILE."), N_("FILE") },
+  { "append-output", 'a', POPT_ARG_STRING,	&__rpmwget.append_file, 0,
+	N_("append messages to FILE."), N_("FILE") },
+  { "debug", 'd', POPT_ARG_VAL,	&__rpmwget.debug, -1,
+	N_("print lots of debugging information."), NULL },
+  { "quiet", 'q', POPT_ARG_VAL,	&__rpmwget.quiet, -1,
+	N_("quiet (no output)."), NULL },
+  { "verbose", 'v', POPT_ARG_VAL,	&__rpmwget.verbose, -1,
+	N_("be verbose (this is the default)."), NULL },
+  { "no-verbose", '\0', POPT_ARG_VAL,	&__rpmwget.verbose, 0,
+	N_("turn off verboseness, without being quiet."), NULL },
+  { "nv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&__rpmwget.verbose, 0,
+	N_("turn off verboseness, without being quiet."), NULL },
+  { "input-file", 'i', POPT_ARG_STRING,	&__rpmwget.input_file, 0,
+	N_("download URLs found in FILE."), N_("FILE") },
+  { "force-html", 'F', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_FORCEHTML,
+	N_("treat input file as HTML."), NULL },
+  { "base", 'B', POPT_ARG_STRING,	&__rpmwget.base_prefix, 0,
+	N_("prepends URL to relative links in -F -i file."), N_("URL") },
+  POPT_TABLEEND
+};
+
+/*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWDLPoptTable[] = {
-  { "tries", 't', POPT_ARG_INT,	&_wdl_tries, 0,
+  { "tries", 't', POPT_ARG_INT,	&__rpmwget.tries, 0,
 	N_("set number of retries to NUMBER (0 unlimits)."), N_("NUMBER") },
   { "retry-connrefused", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_RETRYCONN,
 	N_("retry even if connection is refused."), NULL },
-  { "output-document", 'O', POPT_ARG_STRING,	&_wdl_output_file, 0,
+  { "output-document", 'O', POPT_ARG_STRING,	&__rpmwget._Xwdl_output_file, 0,
 	N_("write documents to FILE."), N_("FILE") },
   { "no-clobber", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NOCLOBBER,
 	N_("skip downloads that would download to existing files."), NULL },
@@ -183,33 +267,33 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("print server response."), NULL },
   { "spider", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_SPIDER,
 	N_("don't download anything."), NULL },
-  { "timeout", 'T', POPT_ARG_INT,	&_wdl_timeout_secs, 0,
+  { "timeout", 'T', POPT_ARG_INT,	&__rpmwget.timeout_secs, 0,
 	N_("set all timeout values to SECONDS."), N_("SECONDS") },
-  { "dns-timeout", '\0', POPT_ARG_INT,	&_wdl_dns_timeout_secs, 0,
+  { "dns-timeout", '\0', POPT_ARG_INT,	&__rpmwget.dns_timeout_secs, 0,
 	N_("set the DNS lookup timeout to SECS."), N_("SECONDS") },
-  { "connect-timeout", '\0', POPT_ARG_INT,	&_wdl_connect_timeout_secs, 0,
+  { "connect-timeout", '\0', POPT_ARG_INT,	&__rpmwget.connect_timeout_secs, 0,
 	N_("set the connect timeout to SECS."), N_("SECONDS") },
-  { "read-timeout", '\0', POPT_ARG_INT,	&_wdl_read_timeout_secs, 0,
+  { "read-timeout", '\0', POPT_ARG_INT,	&__rpmwget.read_timeout_secs, 0,
 	N_("set the read timeout to SECS."), N_("SECONDS") },
-  { "wait", 'w', POPT_ARG_INT,	&_wdl_wait_secs, 0,
+  { "wait", 'w', POPT_ARG_INT,	&__rpmwget.wait_secs, 0,
 	N_("wait SECONDS between retrievals."), N_("SECONDS") },
 /* XXX POPT_ARGFLAG_RANDOM? */
-  { "waitretry", '\0', POPT_ARG_INT,	&_wdl_waitretry_secs, 0,
+  { "waitretry", '\0', POPT_ARG_INT,	&__rpmwget.waitretry_secs, 0,
 	N_("wait 1..SECONDS between retries of a retrieval."), N_("SECONDS") },
 /* XXX POPT_ARGFLAG_RANDOM */
-  { "random-wait", '\0', POPT_ARG_INT,	&_wdl_randomwaitretry_secs, 0,
+  { "random-wait", '\0', POPT_ARG_INT,	&__rpmwget.randomwaitretry_secs, 0,
 	N_("wait from 0...2*WAIT secs between retrievals."), NULL },
   { "no-proxy", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NOPROXY,
 	N_("explicitly turn off proxy."), NULL },
-  { "quota", 'Q', POPT_ARG_INT,	&_wdl_quota, 0,
+  { "quota", 'Q', POPT_ARG_INT,	&__rpmwget.quota, 0,
 	N_("set retrieval quota to NUMBER."), N_("NUMBER") },
 
 /* XXX add IP addr parsing */
-  { "bind-address", '\0', POPT_ARG_INT,	&_wdl_bind_address, 0,
+  { "bind-address", '\0', POPT_ARG_INT,	&__rpmwget.bind_address, 0,
 	N_("bind to ADDRESS (hostname or IP) on local host."), N_("ADDRESS") },
 
 /* XXX double? */
-  { "limit-rate", '\0', POPT_ARG_INT,	&_wdl_limit_rate, 0,
+  { "limit-rate", '\0', POPT_ARG_INT,	&__rpmwget.limit_rate, 0,
 	N_("limit download rate to RATE."), N_("RATE") },
 
   { "no-dns-cache", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NODNSCACHE,
@@ -222,29 +306,14 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("connect only to IPv4 addresses."), NULL },
   { "inet6-only", '6', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_INET6,
 	N_("connect only to IPv6 addresses."), NULL },
-  { "prefer-family", '\0', POPT_ARG_STRING,	&_wdl_prefer, 0,
+  { "prefer-family", '\0', POPT_ARG_STRING,	&__rpmwget.prefer, 0,
 	N_("connect first to addresses of specified family, one of IPv6, IPv4, or none."), N_("FAMILY") },
-  { "user", '\0', POPT_ARG_STRING,	&_wdl_user, 0,
+  { "user", '\0', POPT_ARG_STRING,	&__rpmwget._Xwdl_user, 0,
 	N_("set both ftp and http user to USER."), N_("USER") },
-  { "password", '\0', POPT_ARG_STRING,	&_wdl_password, 0,
+  { "password", '\0', POPT_ARG_STRING,	&__rpmwget._Xwdl_password, 0,
 	N_("set both ftp and http password to PASS."), N_("PASS") },
   POPT_TABLEEND
 };
-
-enum rpmioWDirFlags_e {
-    WDIR_FLAGS_NONE		= 0,
-    WDIR_FLAGS_NOCREATE		= _WFB( 0), /*!<    --no-directories ... */
-    WDIR_FLAGS_FORCE		= _WFB( 1), /*!<    --force-directories ... */
-    WDIR_FLAGS_NOHOST		= _WFB( 2), /*!<    --no-host-directories ... */
-    WDIR_FLAGS_ADDPROTO		= _WFB( 3), /*!<    --protocol-directories ... */
-};
-/*@unchecked@*/
-static enum rpmioWDirFlags_e rpmioWDirFlags = WDIR_FLAGS_NONE;
-
-/*@unchecked@*/
-static const char * _wdir_prefix;
-/*@unchecked@*/
-static int _wdir_cut;
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWDirPoptTable[] = {
@@ -260,94 +329,53 @@ static struct poptOption rpmioWDirPoptTable[] = {
 	N_("don't create host directories."), NULL },
   { "protocol-directories", '\0', POPT_BIT_SET,	&rpmioWDirFlags, WDIR_FLAGS_ADDPROTO,
 	N_("use protocol name in directories."), NULL },
-  { "directory-prefix", 'P', POPT_ARG_STRING,	&_wdir_prefix, 0,
+  { "directory-prefix", 'P', POPT_ARG_STRING,	&__rpmwget.dir_prefix, 0,
 	N_("save files to PREFIX/..."), N_("PREFIX") },
-  { "cut-dirs", '\0', POPT_ARG_INT,	&_wdir_cut, 0,
+  { "cut-dirs", '\0', POPT_ARG_INT,	&__rpmwget.dir_cut, 0,
 	N_("ignore NUMBER remote directory components."), N_("NUMBER") },
   POPT_TABLEEND
 };
 
-enum rpmioHttpFlags_e {
-    HTTP_FLAGS_NONE		= 0,
-    HTTP_FLAGS_NOCACHE		= _WFB( 0), /*!<    --no-cache ... */
-    HTTP_FLAGS_IGNORELENGTH	= _WFB( 1), /*!<    --ignore-length ... */
-    HTTP_FLAGS_NOKEEPALIVE	= _WFB( 2), /*!<    --no-http-keep-alive ... */
-    HTTP_FLAGS_NOCOOKIES	= _WFB( 3), /*!<    --no-cookies ... */
-    HTTP_FLAGS_KEEPCOOKIES	= _WFB( 4), /*!<    --keep-session-cookies ... */
-    HTTP_FLAGS_CONTENTDISPOSITION = _WFB( 5), /*!<    --content-dispostion ... */
-    HTTP_FLAGS_NOCHALLENGE	= _WFB( 6), /*!<    --auth-no-challenge ... */
-    HTTP_FLAGS_SAVEHEADERS	= _WFB( 7), /*!<    --save-headers ... */
-};
-/*@unchecked@*/
-static enum rpmioHttpFlags_e rpmioHttpFlags = HTTP_FLAGS_NONE;
-
-/*@unchecked@*/
-static const char * _http_user;
-/*@unchecked@*/
-static const char * _http_password;
-/*@unchecked@*/
-static const char * _http_ext = ".html";
-/*@unchecked@*/
-static const char * _http_header;
-/*@unchecked@*/
-static int _http_max_redirect;
-/*@unchecked@*/
-static const char * _http_proxy_user;
-/*@unchecked@*/
-static const char * _http_proxy_password;
-/*@unchecked@*/
-static const char * _http_referer;
-/*@unchecked@*/
-static const char * _http_user_agent;
-/*@unchecked@*/
-static const char * _http_load_cookies_file;
-/*@unchecked@*/
-static const char * _http_save_cookies_file;
-/*@unchecked@*/
-static const char * _http_post_data;
-/*@unchecked@*/
-static const char * _http_post_file;
-
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioHttpPoptTable[] = {
-  { "http-user", '\0', POPT_ARG_STRING,	&_http_user, 0,
+  { "http-user", '\0', POPT_ARG_STRING,	&__rpmwget.http_user, 0,
 	N_("set http user to USER."), N_("USER") },
-  { "http-password", '\0', POPT_ARG_STRING,	&_http_password, 0,
+  { "http-password", '\0', POPT_ARG_STRING,	&__rpmwget.http_password, 0,
 	N_("set http password to PASS."), N_("PASS") },
   { "no-cache", '\0', POPT_BIT_SET,	&rpmioHttpFlags, HTTP_FLAGS_NOCACHE,
 	N_("disallow server-cached data."), NULL },
-  { "html-extension", 'E', POPT_ARG_STRING,	&_http_ext, 0,
+  { "html-extension", 'E', POPT_ARG_STRING,	&__rpmwget.http_ext, 0,
 	N_("save HTML documents with `.html' extension."), NULL },
   { "ignore-length", '\0', POPT_BIT_SET,&rpmioHttpFlags, HTTP_FLAGS_IGNORELENGTH,
 	N_("ignore `Content-Length' header field."), NULL },
 /* XXX ARGV */
-  { "header", '\0', POPT_ARG_STRING,	&_http_header, 0,
+  { "header", '\0', POPT_ARG_STRING,	&__rpmwget.http_header, 0,
 	N_("insert STRING among the headers."), N_("STRING") },
-  { "max-redirect", '\0', POPT_ARG_INT,	&_http_max_redirect, 0,
+  { "max-redirect", '\0', POPT_ARG_INT,	&__rpmwget.http_max_redirect, 0,
 	N_("maximum redirections allowed per page."), N_("NUM") },
-  { "proxy-user", '\0', POPT_ARG_STRING,	&_http_proxy_user, 0,
+  { "proxy-user", '\0', POPT_ARG_STRING,	&__rpmwget.http_proxy_user, 0,
 	N_("set USER as proxy username."), N_("USER") },
-  { "proxy-password", '\0', POPT_ARG_STRING,	&_http_proxy_password, 0,
+  { "proxy-password", '\0', POPT_ARG_STRING,	&__rpmwget.http_proxy_password, 0,
 	N_("set PASS as proxy password."), N_("PASS") },
-  { "referer", '\0', POPT_ARG_STRING,	&_http_referer, 0,
+  { "referer", '\0', POPT_ARG_STRING,	&__rpmwget.http_referer, 0,
 	N_("include `Referer: URL' header in HTTP request."), N_("URL") },
   { "save-headers", '\0', POPT_BIT_SET,	&rpmioHttpFlags, HTTP_FLAGS_SAVEHEADERS,
 	N_("save the HTTP headers to file."), NULL },
-  { "user-agent", 'U', POPT_ARG_STRING,	&_http_user_agent, 0,
+  { "user-agent", 'U', POPT_ARG_STRING,	&__rpmwget.http_user_agent, 0,
 	N_("identify as AGENT instead of Wget/VERSION."), N_("AGENT") },
   { "no-http-keep-alive", '\0', POPT_BIT_SET,	&rpmioHttpFlags, HTTP_FLAGS_NOKEEPALIVE,
 	N_("disable HTTP keep-alive (persistent connections)."), NULL },
   { "no-cookies", '\0', POPT_BIT_SET,	&rpmioHttpFlags, HTTP_FLAGS_NOCOOKIES,
 	N_("don't use cookies."), NULL },
-  { "load-cookies", '\0', POPT_ARG_STRING,	&_http_load_cookies_file, 0,
+  { "load-cookies", '\0', POPT_ARG_STRING,	&__rpmwget.http_load_cookies_file, 0,
 	N_("load cookies from FILE before session."), N_("FILE") },
-  { "save-cookies", '\0', POPT_ARG_STRING,	&_http_save_cookies_file, 0,
+  { "save-cookies", '\0', POPT_ARG_STRING,	&__rpmwget.http_save_cookies_file, 0,
 	N_("save cookies to FILE after session."), N_("FILE") },
   { "keep-session-cookies", '\0', POPT_BIT_SET,	&rpmioHttpFlags, HTTP_FLAGS_KEEPCOOKIES,
 	N_("load and save session (non-permanent) cookies."), NULL },
-  { "post-data", '\0', POPT_ARG_STRING,	&_http_post_data, 0,
+  { "post-data", '\0', POPT_ARG_STRING,	&__rpmwget.http_post_data, 0,
 	N_("use the POST method; send STRING as the data."), N_("STRING") },
-  { "post-file", '\0', POPT_ARG_STRING,	&_http_post_file, 0,
+  { "post-file", '\0', POPT_ARG_STRING,	&__rpmwget.http_post_file, 0,
 	N_("use the POST method; send contents of FILE."), N_("FILE") },
   { "content-disposition", '\0', POPT_BIT_SET,	&rpmioHttpFlags, 0,
 	N_("honor the Content-Disposition header when choosing local file names (EXPERIMENTAL)."), NULL },
@@ -356,78 +384,36 @@ static struct poptOption rpmioHttpPoptTable[] = {
   POPT_TABLEEND
 };
 
-enum rpmioHttpsFlags_e {
-    HTTPS_FLAGS_NONE		= 0,
-    HTTPS_FLAGS_NOCHECK		= _WFB( 0), /*!<    --no-check-certificate ... */
-};
-/*@unchecked@*/
-static enum rpmioHttpsFlags_e rpmioHttpsFlags = HTTPS_FLAGS_NONE;
-
-/*@unchecked@*/
-static const char * _https_protocol;
-/*@unchecked@*/
-static const char * _https_certificate_file;
-/*@unchecked@*/
-static const char * _https_certificate_type;
-/*@unchecked@*/
-static const char * _https_privatekey_file;
-/*@unchecked@*/
-static const char * _https_privatekey_type;
-/*@unchecked@*/
-static const char * _https_cacertificate_file;
-/*@unchecked@*/
-static const char * _https_cacertificate_dir;
-/*@unchecked@*/
-static const char * _https_random_file;
-/*@unchecked@*/
-static const char * _https_egd_file;
-
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioHttpsPoptTable[] = {
-  { "secure-protocol", '\0', POPT_ARG_STRING,	&_https_protocol, 0,
+  { "secure-protocol", '\0', POPT_ARG_STRING,	&__rpmwget.https_protocol, 0,
 	N_("choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."), N_("PR") },
   { "no-check-certificate", '\0', POPT_BIT_SET,	&rpmioHttpsFlags, HTTPS_FLAGS_NOCHECK,
 	N_("don't validate the server's certificate."), NULL },
-  { "certificate", '\0', POPT_ARG_STRING,	&_https_certificate_file, 0,
+  { "certificate", '\0', POPT_ARG_STRING,	&__rpmwget.https_certificate_file, 0,
 	N_("client certificate file."), N_("FILE") },
-  { "certificate-type", '\0', POPT_ARG_STRING,	&_https_certificate_type, 0,
+  { "certificate-type", '\0', POPT_ARG_STRING,	&__rpmwget.https_certificate_type, 0,
 	N_("client certificate type, PEM or DER."), N_("TYPE") },
-  { "private-key", '\0', POPT_ARG_STRING,	&_https_privatekey_file, 0,
+  { "private-key", '\0', POPT_ARG_STRING,	&__rpmwget.https_privatekey_file, 0,
 	N_("private key file."), N_("FILE") },
-  { "private-key-type", '\0', POPT_ARG_STRING,	&_https_privatekey_type, 0,
+  { "private-key-type", '\0', POPT_ARG_STRING,	&__rpmwget.https_privatekey_type, 0,
 	N_("private key type, PEM or DER."), N_("TYPE") },
-  { "ca-certificate", '\0', POPT_ARG_STRING,	&_https_cacertificate_file, 0,
+  { "ca-certificate", '\0', POPT_ARG_STRING,	&__rpmwget.https_cacertificate_file, 0,
 	N_("file with the bundle of CA's."), N_("FILE") },
-  { "ca-directory", '\0', POPT_ARG_STRING,	&_https_cacertificate_dir, 0,
+  { "ca-directory", '\0', POPT_ARG_STRING,	&__rpmwget.https_cacertificate_dir, 0,
 	N_("directory where hash list of CA's is stored."), N_("DIR") },
-  { "random-file", '\0', POPT_ARG_STRING,	&_https_random_file, 0,
+  { "random-file", '\0', POPT_ARG_STRING,	&__rpmwget.https_random_file, 0,
 	N_("file with random data for seeding the SSL PRNG."), N_("FILE") },
-  { "egd-file", '\0', POPT_ARG_NONE,		&_https_egd_file, 0,
+  { "egd-file", '\0', POPT_ARG_NONE,		&__rpmwget.https_egd_file, 0,
 	N_("file naming the EGD socket with random data."), N_("FILE") },
   POPT_TABLEEND
 };
 
-enum rpmioFtpFlags_e {
-    FTP_FLAGS_NONE		= 0,
-    FTP_FLAGS_KEEPLISTING	= _WFB( 0), /*!<    --no-remove-listing ... */
-    FTP_FLAGS_NOGLOB		= _WFB( 1), /*!<    --no-glob ... */
-    FTP_FLAGS_ACTIVE		= _WFB( 2), /*!<    --no-passive-ftp ... */
-    FTP_FLAGS_FOLLOW		= _WFB( 3), /*!<    --retr-symlinks ... */
-    FTP_FLAGS_PRESERVE		= _WFB( 4), /*!<    --preserve-permissions ... */
-};
-/*@unchecked@*/
-static enum rpmioFtpFlags_e rpmioFtpFlags = FTP_FLAGS_NONE;
-
-/*@unchecked@*/
-static const char * _ftp_user;
-/*@unchecked@*/
-static const char * _ftp_password;
-
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioFtpPoptTable[] = {
-  { "ftp-user", '\0', POPT_ARG_STRING,		&_ftp_user, 0,
+  { "ftp-user", '\0', POPT_ARG_STRING,		&__rpmwget.ftp_user, 0,
 	N_("set ftp user to USER."), N_("USER") },
-  { "ftp-password", '\0', POPT_ARG_STRING,	&_ftp_password, 0,
+  { "ftp-password", '\0', POPT_ARG_STRING,	&__rpmwget.ftp_password, 0,
 	N_("set ftp password to PASS."), N_("PASS") },
   { "no-remove-listing", '\0', POPT_BIT_SET,	&rpmioFtpFlags, FTP_FLAGS_KEEPLISTING,
 	N_("don't remove `.listing' files."), NULL },
@@ -442,14 +428,11 @@ static struct poptOption rpmioFtpPoptTable[] = {
   POPT_TABLEEND
 };
 
-/*@unchecked@*/
-static int _wctl_recurse_max;
-
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWCTLDownloadPoptTable[] = {
   { "recursive", 'r', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_RECURSE,
 	N_("specify recursive download."), NULL },
-  { "level", 'l', POPT_ARG_INT,	&_wctl_recurse_max, 0,
+  { "level", 'l', POPT_ARG_INT,	&__rpmwget.recurse_max, 0,
 	N_("maximum recursion depth (inf or 0 for infinite)."), N_("NUMBER") },
   { "delete-after", '\0', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_DELETEAFTER,
 	N_("delete files locally after downloading them."), NULL },
@@ -467,46 +450,29 @@ static struct poptOption rpmioWCTLDownloadPoptTable[] = {
   POPT_TABLEEND
 };
 
-/*@unchecked@*/
-static const char * _wctl_accept_exts;
-/*@unchecked@*/
-static const char * _wctl_reject_exts;
-/*@unchecked@*/
-static const char * _wctl_accept_domains;
-/*@unchecked@*/
-static const char * _wctl_reject_domains;
-/*@unchecked@*/
-static const char * _wctl_accept_tags;
-/*@unchecked@*/
-static const char * _wctl_reject_tags;
-/*@unchecked@*/
-static const char * _wctl_accept_dirs;
-/*@unchecked@*/
-static const char * _wctl_reject_dirs;
-
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWCTLAcceptPoptTable[] = {
-  { "accept", 'A', POPT_ARG_STRING,	&_wctl_accept_exts, 0,
+  { "accept", 'A', POPT_ARG_STRING,	&__rpmwget.accept_exts, 0,
 	N_("comma-separated list of accepted extensions."), N_("LIST") },
-  { "reject", 'R', POPT_ARG_STRING,	&_wctl_reject_exts, 0,
+  { "reject", 'R', POPT_ARG_STRING,	&__rpmwget.reject_exts, 0,
 	N_("comma-separated list of rejected extensions."), N_("LIST") },
-  { "domains", 'D', POPT_ARG_STRING,	&_wctl_accept_domains, 0,
+  { "domains", 'D', POPT_ARG_STRING,	&__rpmwget.accept_domains, 0,
 	N_("comma-separated list of accepted domains."), N_("LIST") },
-  { "exclude-domains", '\0', POPT_ARG_STRING,	&_wctl_reject_domains, 0,
+  { "exclude-domains", '\0', POPT_ARG_STRING,	&__rpmwget.reject_domains, 0,
 	N_("comma-separated list of rejected domains."), N_("LIST") },
   { "follow-ftp", '\0', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_FOLLOWFTP,
 	N_("follow FTP links from HTML documents."), NULL },
-  { "follow-tags", '\0', POPT_ARG_STRING,	&_wctl_accept_tags, 0,
+  { "follow-tags", '\0', POPT_ARG_STRING,	&__rpmwget.accept_tags, 0,
 	N_("comma-separated list of followed HTML tags."), N_("LIST") },
-  { "ignore-tags", '\0', POPT_ARG_STRING,	&_wctl_reject_tags, 0,
+  { "ignore-tags", '\0', POPT_ARG_STRING,	&__rpmwget.reject_tags, 0,
 	N_("comma-separated list of ignored HTML tags."), N_("LIST") },
   { "span-hosts", 'H', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_SPANHOSTS,
 	N_("go to foreign hosts when recursive."), NULL },
   { "relative", 'L', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_RELATIVEONLY,
 	N_("follow relative links only."), NULL },
-  { "include-directories", 'I', POPT_ARG_STRING,	&_wctl_accept_dirs, 0,
+  { "include-directories", 'I', POPT_ARG_STRING,	&__rpmwget.accept_dirs, 0,
 	N_("list of allowed directories."), N_("LIST") },
-  { "exclude-directories", 'X', POPT_ARG_STRING,	&_wctl_reject_dirs, 0,
+  { "exclude-directories", 'X', POPT_ARG_STRING,	&__rpmwget.reject_dirs, 0,
 	N_("list of excluded directories."), N_("LIST") },
   { "no-parent", '\0', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_NOPARENT,
 	N_("don't ascend to the parent directory."), NULL },
