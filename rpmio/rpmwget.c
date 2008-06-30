@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio_internal.h>
 #include <poptIO.h>
 
 #include "debug.h"
@@ -117,12 +117,17 @@ struct rpmwget_s {
     enum wgetFlags_e flags;		/*!< Control bits. */
     enum wgetRFlags_e rflags;		/*!< Ouput path Control bits. */
 
+    ARGV_t argv;			/*!< URI's to process. */
+
     char * b;				/*!< I/O buffer */
     size_t blen;			/*!< I/O buffer size (bytes) */
+    const char * lfn;			/*!< Logging file name. */
+    FD_t lfd;				/*!< Logging file handle. */
     const char * ifn;			/*!< Input file name. */
     FD_t ifd;				/*!< Input file handle. */
     const char * ofn;			/*!< Output file name. */
     FD_t ofd;				/*!< Output file handle. */
+    struct stat * st;			/*!< Ouput file stat(2) */
 
     int ntry;				/*!< Retry counter. */
    
@@ -130,12 +135,12 @@ struct rpmwget_s {
     const char * execute_cmd;		/*!< -e,--execute ... */
 
     /* --- Logging & Input --- */
-    const char * output_file;		/*!< -o,--output-file ... */
-    const char * append_file;		/*!< -a,--append-output ... */
+    const char * logoutput_file;	/*!< -o,--output-file ... */
+    const char * logappend_file;	/*!< -a,--append-output ... */
     int debug;				/*!< -d,--debug ... */
     int quiet;				/*!< -q,--quiet ... */
     int verbose;			/*!< -v,--verbose ... */
-    const char * input_file;		/*!< -i,--input-file ... */
+    ARGV_t manifests;			/*!< -i,--input-file ... */
     const char * base_prefix;		/*!< -B,--base ... */
 
     /* --- Download --- */
@@ -220,10 +225,22 @@ static struct rpmwget_s __rpmwget = {
 static rpmwget _rpmwget = &__rpmwget;
 
 /*==============================================================*/
+#ifdef	NOTYET	/* XXX rpmio needs to capture Content-Type: */
+static const char * wgetSuffix(const char * s)
+	/*@*/
+{
+    const char * se = s + strlen(s);
+
+    while (se > s && !(se[-1] == '/' || se[-1] == '.'))
+	se--;
+    return (se > s && *se && se[-1] == '.' ? se : NULL);
+}
+#endif
 
 static const char * wgetOPath(rpmwget wget)
 {
     const char * s = wget->document_file;
+    const char * sext = NULL;
     char * t = NULL;
 
     if (s == NULL) {
@@ -236,12 +253,30 @@ static const char * wgetOPath(rpmwget wget)
 	    s = "index.html";
     }
 
-    /* XXX add wget->http_ext (if necessary). */
+#ifdef	NOTYET	/* XXX rpmio needs to capture Content-Type: */
+    /* Add the .html extension (if requested). */
+    switch (urlPath(wget->ifn, NULL)) {
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+	/* XXX Check Content-Type: ( text/html | application/xhtml+xml ) */
+    	if (wget->http_ext != NULL) {
+	    const char * f = wgetSuffix(s);
+	    if (f == NULL 
+	     || !(!strcasecmp(f, "html") || !strcasecmp(f, "htm") || !strcasecmp(f+1, "html")))
+		sext = wget->http_ext;
+	}
+	break;
+    default:
+	break;
+    }
+#endif
 
-    {	size_t nb = strlen(s) + 1;	/* XXX include extra control escaping */
+    {	const char * ofn = rpmExpand(s, sext, NULL);
+	size_t nb = strlen(ofn) + 1;	/* XXX include extra control escaping */
 	char * te = xmalloc(nb);
 	int c;
 
+	s = ofn;
 	t = te;
 	while ((c = (int)*s++) != 0) {
 	    if (wget->rflags & WGET_RFLAGS_TOLOWER)
@@ -254,6 +289,7 @@ static const char * wgetOPath(rpmwget wget)
 		*te++ = (char) c;
 	}
 	*te = '\0';
+	ofn = _free(ofn);
     }
 
 fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, wget->rflags, t);
@@ -268,23 +304,37 @@ static int wgetCopyFile(rpmwget wget)
     size_t nw, wlen = 0;
     size_t nr, rlen = 0;
     int rc = 1;		/* assume failure */
+    time_t ifn_mtime = 0;
 
     wget->ofn = wgetOPath(wget);
 
 if (wget->debug < 0)
 fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
 
-#ifdef	NOTYET
-    /* Download content iff newer. */
-    if (WF_ISSET(NEWERONLY) && "input is not newer than ouput")) {
-	rc = 0;
+    /* Verify that input URI exists. */
+    if (Stat(wget->ifn, wget->st) != 0)
 	goto exit;
+    ifn_mtime = wget->st->st_mtime;
+
+    if ((WF_ISSET(NOCLOBBER) || WF_ISSET(NEWERONLY))
+     && !Stat(wget->ofn, wget->st))
+    {
+	/* Don't clobber pre-existing output files. */
+	if (WF_ISSET(NOCLOBBER)) {
+fprintf(stderr, "Ouptut file \"%s\" exists, skipping retrieve.\n", wget->ofn);
+	    rc = 0;
+	    goto exit;
+	}
+
+	/* Download content iff newer. */
+	if (WF_ISSET(NEWERONLY) && ifn_mtime > 0
+	 && ifn_mtime <= wget->st->st_mtime)
+	{
+fprintf(stderr, "Input file \"%s\" is not newer, skipping retrieve.\n", wget->ofn);
+	    rc = 0;
+	    goto exit;
+	}
     }
-
-    /* Don't clobber pre-existing output files. */
-    if (WF_ISSET(NOCLOBBER) && "output file exists")
-
-#endif
 
     wget->ntry = 0;
     do {
@@ -323,6 +373,7 @@ fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
 	    if ((nw = Fwrite(wget->b, 1, nr, wget->ofd)) != nr)
 		/*@innerbreak@*/ break;
 	    wlen += nw;
+if (wget->debug < 0)
 fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
 	}
 
@@ -340,10 +391,83 @@ fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
 
     } while (rc != 0 && (wget->ntries <= 0 || ++wget->ntry < wget->ntries));
 
-#ifdef	NOTYET
 exit:
-#endif
     wget->ofn = _free(wget->ofn);
+    return rc;
+}
+
+static int wgetLoadManifests(rpmwget wget)
+	/*@modifies wget @*/
+{
+    ARGV_t manifests;
+    const char * fn;
+    int rc = 0;	/* assume success */
+
+    if ((manifests = wget->manifests) != NULL)	/* note rc=0 return with no files to load. */
+    while ((fn = *manifests++) != NULL) {
+	unsigned lineno;
+	char * b = NULL;
+	char * be = NULL;
+	ssize_t blen = 0;
+	int xx = rpmioSlurp(fn, (uint8_t **) &b, &blen);
+	char * f;
+	char * fe;
+
+	if (!(xx == 0 && b != NULL && blen > 0)) {
+	    fprintf(stderr, _("%s: Failed to open %s\n"), __progname, fn);
+	    rc = -1;
+	    goto bottom;
+	}
+
+	be = b + strlen(b);
+	while (be > b && (be[-1] == '\n' || be[-1] == '\r')) {
+	  be--;
+	  *be = '\0';
+	}
+
+	/* Parse and save manifest items. */
+	lineno = 0;
+	for (f = b; *f; f = fe) {
+	    const char * path;
+	    char * g, * ge;
+	    lineno++;
+
+	    fe = f;
+	    while (*fe && !(*fe == '\n' || *fe == '\r'))
+		fe++;
+	    g = f;
+	    ge = fe;
+	    while (*fe && (*fe == '\n' || *fe == '\r'))
+		*fe++ = '\0';
+
+	    while (*g && xisspace((int)*g))
+		*g++ = '\0';
+	    /* Skip comment lines. */
+	    if (*g == '#')
+		continue;
+
+	    while (ge > g && xisspace(ge[-1]))
+		*--ge = '\0';
+	    /* Skip empty lines. */
+	    if (ge == g)
+		continue;
+
+	    /* Prepend wget->base_prefix if specified. */
+	    if (wget->base_prefix)
+		path = rpmExpand(wget->base_prefix, g, NULL);
+	    else
+		path = rpmExpand(g, NULL);
+	    (void) argvAdd(&wget->argv, path);
+	    path = _free(path);
+	}
+
+bottom:
+	b = _free(b);
+	if (rc != 0)
+	    goto exit;
+    }
+
+exit:
     return rc;
 }
 
@@ -413,10 +537,10 @@ static struct poptOption rpmioWCTLStartupPoptTable[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWCTLLoggingPoptTable[] = {
-  { "output-file", 'o', POPT_ARG_STRING,	&__rpmwget.output_file, 0,
+  { "output-file", 'o', POPT_ARG_STRING,	&__rpmwget.logoutput_file, 0,
 	N_("log messages to FILE."), N_("FILE") },
-  { "append-output", 'a', POPT_ARG_STRING,	&__rpmwget.append_file, 0,
-	N_("append messages to FILE."), N_("FILE") },
+  { "append-output", 'a', POPT_ARG_STRING,	&__rpmwget.logappend_file, 0,
+	N_("append log messages to FILE."), N_("FILE") },
   { "debug", 'd', POPT_ARG_VAL,	&__rpmwget.debug, -1,
 	N_("print lots of debugging information."), NULL },
   { "quiet", 'q', POPT_ARG_VAL,	&__rpmwget.quiet, -1,
@@ -427,7 +551,7 @@ static struct poptOption rpmioWCTLLoggingPoptTable[] = {
 	N_("turn off verboseness, without being quiet."), NULL },
   { "nv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&__rpmwget.verbose, 0,
 	N_("turn off verboseness, without being quiet."), NULL },
-  { "input-file", 'i', POPT_ARG_STRING,	&__rpmwget.input_file, 0,
+  { "input-file", 'i', POPT_ARG_ARGV,	&__rpmwget.manifests, 0,
 	N_("download URLs found in FILE."), N_("FILE") },
   { "force-html", 'F', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_FORCEHTML,
 	N_("treat input file as HTML."), NULL },
@@ -742,7 +866,6 @@ main(int argc, char *argv[])
     rpmwget wget = _rpmwget;
     poptContext optCon;
     const char ** av = NULL;
-    int ac;
     int rc = 0;		/* assume success. */
     int xx;
     int i;
@@ -756,6 +879,7 @@ main(int argc, char *argv[])
     wget->blen = 16 * BUFSIZ;
     wget->b = xmalloc(wget->blen);
     wget->b[0] = '\0';
+    wget->st = xmalloc(sizeof(*wget->st));
 
     optCon = rpmioInit(argc, argv, optionsTable);
     if (wget->debug < 0) {
@@ -770,23 +894,34 @@ main(int argc, char *argv[])
 
     /* Sanity check configuration. */
 
-    /* Process arguments. */
+    /* Gather arguments. */
     av = poptGetArgs(optCon);
-    if (av == NULL || av[0] == NULL) {
+    if (av != NULL)
+	xx = argvAppend(&wget->argv, av);
+    if (wget->manifests != NULL)
+	xx = wgetLoadManifests(wget);
+
+    if (wget->argv == NULL || wget->argv[0] == NULL) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
     }
-    ac = argvCount(av);
 
-    if (av != NULL)
-    for (i = 0; i < ac; i++) {
-	wget->ifn = av[i];
+    if (wget->argv != NULL)
+    for (i = 0; wget->argv[i] != NULL; i++) {
+	wget->ifn = xstrdup(wget->argv[i]);
 	if ((xx = wgetCopyFile(_rpmwget)) != 0)
 	    rc = 256;
+	wget->ifn = _free(wget->ifn);
     }
 
 exit:
     wget->b = _free(wget->b);
+    wget->st = _free(wget->st);
+    wget->ifn = _free(wget->ifn);
+    wget->ofn = _free(wget->ofn);
+
+    wget->argv = argvFree(wget->argv);
+    wget->manifests = argvFree(wget->manifests);
 
     optCon = rpmioFini(optCon);
 

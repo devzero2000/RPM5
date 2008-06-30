@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: wire up -i,--input-file URI manifests.
     - jbj: rpmwget: handle lower/UPPER ofn transforms, stub in retry logic.
     - jbj: rpmwget: stub in a minimal (but functional) URI copy.
     - jbj: rpmwget: refactor options into a static structure.
