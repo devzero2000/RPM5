@@ -8,7 +8,9 @@
 #define _KFB(n) (1U << (n))
 #define _WFB(n) (_KFB(n) | 0x40000000)
 
+#ifdef	NOTYET	/* XXX XXX identify useful global bits first. */
 #define F_ISSET(_f, _F, _FLAG) (((_f) & ((_F##_FLAGS_##_FLAG) & ~0x40000000)) != _F##_FLAGS_NONE)
+#endif
 
 /**
  */
@@ -100,6 +102,13 @@ static enum rpmioFtpFlags_e rpmioFtpFlags = FTP_FLAGS_NONE;
 /**
  */
 struct rpmwget_s {
+    char * b;
+    size_t blen;
+    const char * ifn;
+    FD_t ifd;
+    const char * ofn;
+    FD_t ofd;
+   
     /* --- Startup --- */
     const char * execute_cmd;		/*!< -e,--execute ... */
 
@@ -125,10 +134,9 @@ struct rpmwget_s {
     int limit_rate;			/*!<    --limit-rate ... */
     int bind_address;			/*!<    --bind-address ... */
     const char * prefer;		/*!<    --prefer-family ... */
-
-    const char * _Xwdl_output_file;	/*!< -O,--output-document ... */
-    const char * _Xwdl_user;		/*!<    --user ... */
-    const char * _Xwdl_password;	/*!<    --password ... */
+    const char * document_file;		/*!< -O,--output-document ... */
+    const char * user;			/*!<    --user ... */
+    const char * password;		/*!<    --password ... */
 
     /* --- Directories --- */
     const char * dir_prefix;		/*!< -P,--directory-prefix ... */
@@ -178,6 +186,7 @@ struct rpmwget_s {
 
 /*@unchecked@*/
 static struct rpmwget_s __rpmwget = {
+    .debug = -1,
     .verbose = -1,
     .http_ext = ".html"
 };
@@ -185,6 +194,56 @@ static struct rpmwget_s __rpmwget = {
 /*@unchecked@*/
 static rpmwget _rpmwget = &__rpmwget;
 
+/*==============================================================*/
+static int wgetCopy(rpmwget wget)
+{
+    const char * ibn;
+    size_t nw, wlen = 0;
+    size_t nr, rlen = 0;
+    int rc = 1;		/* assume failure */
+
+    if ((ibn = strrchr(wget->ifn, '/')) != NULL)
+	ibn++;
+    else
+	ibn = wget->ifn;
+    if (*ibn == '\0')
+	ibn = "index.html";
+    wget->ofn = (wget->document_file ? wget->document_file : ibn);
+
+if (wget->debug < 0)
+fprintf(stderr, "--> wgetCopy(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
+
+    wget->ifd = Fopen(wget->ifn, "r.ufdio");
+    if (wget->ifd == NULL || Ferror(wget->ifd))
+	goto exit;
+    wget->ofd = Fopen(wget->ofn, "o.ufdio");
+    if (wget->ofd == NULL || Ferror(wget->ofd))
+	goto exit;
+
+    while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0
+	&& !Ferror(wget->ifd))
+    {
+	rlen += nr;
+	if ((nw = Fwrite(wget->b, 1, nr, wget->ofd) != nr) || Ferror(wget->ofd))
+	    break;
+	wlen += nw;
+    }
+    if (nr == 0)
+	rc = 0;
+
+exit:
+    if (wget->ifd != NULL) {
+	(void) Fclose(wget->ifd);
+	wget->ifd = NULL;
+    }
+    if (wget->ofd != NULL) {
+	(void) Fclose(wget->ofd);
+	wget->ofd = NULL;
+    }
+    return rc;
+}
+
+/*==============================================================*/
 /**
  */
 static void rpmwgetArgCallback(poptContext con,
@@ -251,7 +310,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("set number of retries to NUMBER (0 unlimits)."), N_("NUMBER") },
   { "retry-connrefused", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_RETRYCONN,
 	N_("retry even if connection is refused."), NULL },
-  { "output-document", 'O', POPT_ARG_STRING,	&__rpmwget._Xwdl_output_file, 0,
+  { "output-document", 'O', POPT_ARG_STRING,	&__rpmwget.document_file, 0,
 	N_("write documents to FILE."), N_("FILE") },
   { "no-clobber", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NOCLOBBER,
 	N_("skip downloads that would download to existing files."), NULL },
@@ -308,9 +367,9 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("connect only to IPv6 addresses."), NULL },
   { "prefer-family", '\0', POPT_ARG_STRING,	&__rpmwget.prefer, 0,
 	N_("connect first to addresses of specified family, one of IPv6, IPv4, or none."), N_("FAMILY") },
-  { "user", '\0', POPT_ARG_STRING,	&__rpmwget._Xwdl_user, 0,
+  { "user", '\0', POPT_ARG_STRING,	&__rpmwget.user, 0,
 	N_("set both ftp and http user to USER."), N_("USER") },
-  { "password", '\0', POPT_ARG_STRING,	&__rpmwget._Xwdl_password, 0,
+  { "password", '\0', POPT_ARG_STRING,	&__rpmwget.password, 0,
 	N_("set both ftp and http password to PASS."), N_("PASS") },
   POPT_TABLEEND
 };
@@ -378,6 +437,9 @@ static struct poptOption rpmioHttpPoptTable[] = {
   { "post-file", '\0', POPT_ARG_STRING,	&__rpmwget.http_post_file, 0,
 	N_("use the POST method; send contents of FILE."), N_("FILE") },
   { "content-disposition", '\0', POPT_BIT_SET,	&rpmioHttpFlags, 0,
+	N_("honor the Content-Disposition header when choosing local file names (EXPERIMENTAL)."), NULL },
+/* XXX negated options */
+  { "no-content-disposition", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &rpmioHttpFlags, 0,
 	N_("honor the Content-Disposition header when choosing local file names (EXPERIMENTAL)."), NULL },
   { "auth-no-challenge", '\0', POPT_BIT_SET,	&rpmioHttpFlags, HTTP_FLAGS_NOCHALLENGE,
 	N_("Send Basic HTTP authentication information without first waiting for the server's challenge."), NULL },
@@ -538,15 +600,30 @@ main(int argc, char *argv[])
 	/*@modifies __assert_program_name, _rpmrepo,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    rpmwget wget = _rpmwget;
+    poptContext optCon;
     const char ** av = NULL;
     int ac;
-    int rc = 1;		/* assume failure. */
+    int rc = 0;		/* assume success. */
+    int xx;
     int i;
 
 /*@-observertrans -readonlytrans @*/
-    __progname = "rpmgenpkglist";
+    __progname = "rpmwget";
 /*@=observertrans =readonlytrans @*/
+
+    wget->blen = 16 * BUFSIZ;
+    wget->b = xmalloc(wget->blen);
+    wget->b[0] = '\0';
+
+    optCon = rpmioInit(argc, argv, optionsTable);
+    if (wget->debug < 0) {
+	fprintf(stderr, "==> %s", __progname);
+	for (i = 1; argv[i] != NULL; i++) {
+	    fprintf(stderr, " %s", argv[i]);
+	}
+	fprintf(stderr, "\n");
+    }
 
     av = poptGetArgs(optCon);
     if (av == NULL || av[0] == NULL) {
@@ -557,10 +634,14 @@ main(int argc, char *argv[])
 
     if (av != NULL)
     for (i = 0; i < ac; i++) {
+	wget->ifn = av[i];
+	if ((xx = wgetCopy(_rpmwget)) != 0)
+	    rc = 256;
     }
-    rc = 0;
 
 exit:
+    wget->b = _free(wget->b);
+
     optCon = rpmioFini(optCon);
 
     return rc;

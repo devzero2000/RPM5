@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: stub in a minimal (but functional) URI copy.
     - jbj: rpmwget: refactor options into a static structure.
     - jbj: fix: specspo lookup broke because of 2nd tagName call side-effect.
     - jbj: rpmwget: parse all wget options.
