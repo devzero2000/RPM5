@@ -8,13 +8,31 @@
 #define _KFB(n) (1U << (n))
 #define _WFB(n) (_KFB(n) | 0x40000000)
 
-#ifdef	NOTYET	/* XXX XXX identify useful global bits first. */
-#define F_ISSET(_f, _F, _FLAG) (((_f) & ((_F##_FLAGS_##_FLAG) & ~0x40000000)) != _F##_FLAGS_NONE)
-#endif
-
 /**
  */
 typedef struct rpmwget_s * rpmwget;
+
+#define F_ISSET(_f, _FLAG) (((_f) & ((WGET_FLAGS_##_FLAG) & ~0x40000000)) != WGET_FLAGS_NONE)
+#define WF_ISSET(_FLAG) F_ISSET(wget->flags, _FLAG)
+
+enum wgetFlags_e {
+    WGET_FLAGS_NONE		= 0,
+    /* --- Download --- */
+    WGET_FLAGS_RETRYCONN	= _WFB( 0), /*!<    --retry-connrefused ... */
+    WGET_FLAGS_NOCLOBBER	= _WFB( 1), /*!<    --no-clobber ... */
+    WGET_FLAGS_RESUME		= _WFB( 2), /*!<    --continue ... */
+    WGET_FLAGS_PROGRESS		= _WFB( 3), /*!<    --progress ... */
+    WGET_FLAGS_NEWERONLY	= _WFB( 4), /*!<    --timestamping ... */
+};
+
+enum wgetRFlags_e {
+    WGET_RFLAGS_NONE		= 0,
+    WGET_RFLAGS_TOLOWER		= _KFB( 0), /*!<    --restrict...=lowercase */
+    WGET_RFLAGS_TOUPPER		= _KFB( 1), /*!<    --restrict...=uppercase */
+    WGET_RFLAGS_NOCONTROL	= _KFB( 2), /*!<    --restrict...=nocontrol */
+    WGET_RFLAGS_UNIX		= _KFB( 3), /*!<    --restrict...=unix */
+    WGET_RFLAGS_WINDOWS		= _KFB( 4), /*!<    --restrict...=windows */
+};
 
 enum rpmioWCTLFlags_e {
     WCTL_FLAGS_NONE		= 0,
@@ -40,16 +58,10 @@ static enum rpmioWCTLFlags_e rpmioWCTLFlags = WCTL_FLAGS_NONE;
 
 enum rpmioWDLFlags_e {
     WDL_FLAGS_NONE		= 0,
-    WDL_FLAGS_RETRYCONN		= _WFB( 0), /*!<    --retry-connrefused ... */
-    WDL_FLAGS_NOCLOBBER		= _WFB( 1), /*!<    --no-clobber ... */
-    WDL_FLAGS_RESUME		= _WFB( 2), /*!<    --continue ... */
-    WDL_FLAGS_PROGRESS		= _WFB( 3), /*!<    --progress ... */
-    WDL_FLAGS_NEWERONLY		= _WFB( 4), /*!<    --timestamping ... */
     WDL_FLAGS_SERVERRESPONSE	= _WFB( 5), /*!<    --server-response ... */
     WDL_FLAGS_SPIDER		= _WFB( 6), /*!<    --spider ... */
     WDL_FLAGS_NOPROXY		= _WFB( 7), /*!<    --no-proxy ... */
     WDL_FLAGS_NODNSCACHE	= _WFB( 8), /*!<    --no-dns-cache ... */
-    WDL_FLAGS_RESTRICTFILENAMES	= _WFB( 9), /*!<    --restrict-file-names ... */
     WDL_FLAGS_IGNORECASE	= _WFB(10), /*!<    --ignore-case ... */
     WDL_FLAGS_INET4		= _WFB(11), /*!<    --inet4-only ... */
     WDL_FLAGS_INET6		= _WFB(12), /*!<    --inet6-only ... */
@@ -102,12 +114,17 @@ static enum rpmioFtpFlags_e rpmioFtpFlags = FTP_FLAGS_NONE;
 /**
  */
 struct rpmwget_s {
-    char * b;
-    size_t blen;
-    const char * ifn;
-    FD_t ifd;
-    const char * ofn;
-    FD_t ofd;
+    enum wgetFlags_e flags;		/*!< Control bits. */
+    enum wgetRFlags_e rflags;		/*!< Ouput path Control bits. */
+
+    char * b;				/*!< I/O buffer */
+    size_t blen;			/*!< I/O buffer size (bytes) */
+    const char * ifn;			/*!< Input file name. */
+    FD_t ifd;				/*!< Input file handle. */
+    const char * ofn;			/*!< Output file name. */
+    FD_t ofd;				/*!< Output file handle. */
+
+    int ntry;				/*!< Retry counter. */
    
     /* --- Startup --- */
     const char * execute_cmd;		/*!< -e,--execute ... */
@@ -122,7 +139,7 @@ struct rpmwget_s {
     const char * base_prefix;		/*!< -B,--base ... */
 
     /* --- Download --- */
-    int tries;				/*!< -t,--tries ... */
+    int ntries;				/*!< -t,--tries ... */
     int timeout_secs;			/*!< -T,--timeout ... */
     int dns_timeout_secs;		/*!<    --dns-timeout ... */
     int connect_timeout_secs;		/*!<    --connect-timeout ... */
@@ -188,6 +205,14 @@ struct rpmwget_s {
 static struct rpmwget_s __rpmwget = {
     .debug = -1,
     .verbose = -1,
+#ifdef	NOTYET
+    .ntries = 20,
+#else
+    .ntries = 1,
+#endif
+    .recurse_max = 5,
+    .read_timeout_secs = 900,
+    .http_max_redirect = 20,
     .http_ext = ".html"
 };
 
@@ -195,66 +220,173 @@ static struct rpmwget_s __rpmwget = {
 static rpmwget _rpmwget = &__rpmwget;
 
 /*==============================================================*/
-static int wgetCopy(rpmwget wget)
+
+static const char * wgetOPath(rpmwget wget)
 {
-    const char * ibn;
+    const char * s = wget->document_file;
+    char * t = NULL;
+
+    if (s == NULL) {
+	if ((s = strrchr(wget->ifn, '/')) != NULL)
+	    s++;
+	else
+	    s = wget->ifn;
+
+	if (*s == '\0')
+	    s = "index.html";
+    }
+
+    /* XXX add wget->http_ext (if necessary). */
+
+    {	size_t nb = strlen(s) + 1;	/* XXX include extra control escaping */
+	char * te = xmalloc(nb);
+	int c;
+
+	t = te;
+	while ((c = (int)*s++) != 0) {
+	    if (wget->rflags & WGET_RFLAGS_TOLOWER)
+		*te++ = (char) xtolower(c);
+	    else if (wget->rflags & WGET_RFLAGS_TOUPPER)
+		*te++ = (char) xtoupper(c);
+	    else if (wget->rflags & WGET_RFLAGS_NOCONTROL) {
+		*te++ = (char) c;	/* XXX unimplemented */
+	    } else
+		*te++ = (char) c;
+	}
+	*te = '\0';
+    }
+
+fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, wget->rflags, t);
+
+    return t;
+}
+
+/**
+ */
+static int wgetCopyFile(rpmwget wget)
+{
     size_t nw, wlen = 0;
     size_t nr, rlen = 0;
     int rc = 1;		/* assume failure */
 
-    if ((ibn = strrchr(wget->ifn, '/')) != NULL)
-	ibn++;
-    else
-	ibn = wget->ifn;
-    if (*ibn == '\0')
-	ibn = "index.html";
-    wget->ofn = (wget->document_file ? wget->document_file : ibn);
+    wget->ofn = wgetOPath(wget);
 
 if (wget->debug < 0)
-fprintf(stderr, "--> wgetCopy(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
+fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
 
-    wget->ifd = Fopen(wget->ifn, "r.ufdio");
-    if (wget->ifd == NULL || Ferror(wget->ifd))
-	goto exit;
-    wget->ofd = Fopen(wget->ofn, "o.ufdio");
-    if (wget->ofd == NULL || Ferror(wget->ofd))
-	goto exit;
-
-    while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0
-	&& !Ferror(wget->ifd))
-    {
-	rlen += nr;
-	if ((nw = Fwrite(wget->b, 1, nr, wget->ofd) != nr) || Ferror(wget->ofd))
-	    break;
-	wlen += nw;
-    }
-    if (nr == 0)
+#ifdef	NOTYET
+    /* Download content iff newer. */
+    if (WF_ISSET(NEWERONLY) && "input is not newer than ouput")) {
 	rc = 0;
+	goto exit;
+    }
 
-exit:
-    if (wget->ifd != NULL) {
-	(void) Fclose(wget->ifd);
+    /* Don't clobber pre-existing output files. */
+    if (WF_ISSET(NOCLOBBER) && "output file exists")
+
+#endif
+
+    wget->ntry = 0;
+    do {
+	wget->ifd = Fopen(wget->ifn, "r.ufdio");
+	if (wget->ifd == NULL || Ferror(wget->ifd)) {
+
+#ifdef	NOTYET
+	    if (!WF_ISSET(RETRYCONN) && "connection refused")
+		break;
+#endif
+
+	    continue;
+	}
+	wget->ofd = Fopen(wget->ofn, "w.ufdio");
+	if (wget->ofd == NULL || Ferror(wget->ofd)) {
+	    (void) Fclose(wget->ifd);	/* XXX is stdin closed here? */
+	    wget->ifd = NULL;
+	    continue;
+	}
+
+#ifdef	NOTYET
+	/* Reposition I/O handles if resuming. */
+	if (WF_ISSET(RESUME) && "partially downloaded")
+#endif
+
+	/* XXX Ferror(wget->ifd) ? */
+	while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0) {
+	    rlen += nr;
+
+#ifdef	NOTYET
+	    /* Update progress display. */
+	    if (WF_ISSET(PROGRESS))
+#endif
+
+	    /* XXX Ferror(wget->ofd) ? */
+	    if ((nw = Fwrite(wget->b, 1, nr, wget->ofd)) != nr)
+		/*@innerbreak@*/ break;
+	    wlen += nw;
+fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
+	}
+
+	/* XXX dereference from _url_cache needed? */
+	if (strcmp(wget->ifn, "-"))
+	    (void) Fclose(wget->ifd);	/* XXX is stdin closed here? */
 	wget->ifd = NULL;
-    }
-    if (wget->ofd != NULL) {
-	(void) Fclose(wget->ofd);
+
+	if (strcmp(wget->ofn, "-"))
+	    (void) Fclose(wget->ofd);	/* XXX is stdout closed here? */
 	wget->ofd = NULL;
-    }
+
+	if (nr == 0)
+	    rc = 0;
+
+    } while (rc != 0 && (wget->ntries <= 0 || ++wget->ntry < wget->ntries));
+
+#ifdef	NOTYET
+exit:
+#endif
+    wget->ofn = _free(wget->ofn);
     return rc;
 }
 
 /*==============================================================*/
+enum {
+    POPTWGET_RESTRICT	= 1,	/* --restrict-file-names */
+};
+
 /**
  */
 static void rpmwgetArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
-                /*@unused@*/ void * data)
-	/*@*/
+                void * data)
+	/*@modifies data @*/
 {
+    /* XXX make sure wget!=NULL even if popt table callback item doesn't set */
+    rpmwget wget = (rpmwget) (data ? data : _rpmwget);
+    ARGV_t av = NULL;
+    int i;
+
+fprintf(stderr, "--> rpmwgetCallback(%p): arg %s\n", wget, arg);
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case POPTWGET_RESTRICT:	/* --restrict-file-names */
+	(void) argvSplit(&av, arg, ",");
+	for (i = 0; av[i] != NULL; i++) {
+	   if (!strcmp(av[i], "lowercase"))
+		wget->rflags |= WGET_RFLAGS_TOLOWER;
+	   else if (!strcmp(av[i], "uppercase"))
+		wget->rflags |= WGET_RFLAGS_TOUPPER;
+	   else if (!strcmp(av[i], "nocontrol"))
+		wget->rflags |= WGET_RFLAGS_NOCONTROL;
+	   else if (!strcmp(av[i], "unix"))
+		wget->rflags |= WGET_RFLAGS_UNIX;
+	   else if (!strcmp(av[i], "windows"))
+		wget->rflags |= WGET_RFLAGS_WINDOWS;
+	   else
+fprintf(stderr, "Invalid --restrict-file-names item ignored: %s\n", av[i]);
+	}
+	av = argvFree(av);
+	break;
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -306,21 +438,26 @@ static struct poptOption rpmioWCTLLoggingPoptTable[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWDLPoptTable[] = {
-  { "tries", 't', POPT_ARG_INT,	&__rpmwget.tries, 0,
+
+ /* XXX popt sub-tables should inherit callback from parent? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+        rpmwgetArgCallback, 0, (const char *)&__rpmwget, NULL },
+
+  { "tries", 't', POPT_ARG_INT,	&__rpmwget.ntries, 0,
 	N_("set number of retries to NUMBER (0 unlimits)."), N_("NUMBER") },
-  { "retry-connrefused", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_RETRYCONN,
+  { "retry-connrefused", '\0', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_RETRYCONN,
 	N_("retry even if connection is refused."), NULL },
   { "output-document", 'O', POPT_ARG_STRING,	&__rpmwget.document_file, 0,
 	N_("write documents to FILE."), N_("FILE") },
-  { "no-clobber", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NOCLOBBER,
+  { "no-clobber", '\0', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_NOCLOBBER,
 	N_("skip downloads that would download to existing files."), NULL },
-  { "nc", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&rpmioWDLFlags, WDL_FLAGS_NOCLOBBER,
+  { "nc", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&__rpmwget.flags, WGET_FLAGS_NOCLOBBER,
 	N_("skip downloads that would download to existing files."), NULL },
-  { "continue", 'c', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_RESUME,
+  { "continue", 'c', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_RESUME,
 	N_("resume getting a partially-downloaded file."), NULL },
-  { "progress", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_PROGRESS,
+  { "progress", '\0', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_PROGRESS,
 	N_("select progress gauge type."), N_("TYPE") },
-  { "timestamping", 'N', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NEWERONLY,
+  { "timestamping", 'N', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_NEWERONLY,
 	N_("don't re-retrieve files unless newer than local."), NULL },
   { "server-response", 'S', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_SERVERRESPONSE,
 	N_("print server response."), NULL },
@@ -357,7 +494,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
 
   { "no-dns-cache", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NODNSCACHE,
 	N_("disable caching DNS lookups."), NULL },
-  { "restrict-file-names", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_RESTRICTFILENAMES,
+  { "restrict-file-names", '\0', POPT_ARG_STRING,	NULL, POPTWGET_RESTRICT,
 	N_("restrict chars in file names to ones OS allows."), N_("OS") },
   { "ignore-case", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_IGNORECASE,
 	N_("ignore case when matching files/directories."), NULL },
@@ -545,10 +682,12 @@ static struct poptOption rpmioWCTLAcceptPoptTable[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption optionsTable[] = {
+#ifdef	NOTYET /* XXX popt sub-tables should inherit callback from parent? */
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmwgetArgCallback, 0, NULL, NULL },
+        rpmwgetArgCallback, 0, (const char *)&__rpmwget, NULL },
 /*@=type@*/
+#endif
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioWCTLStartupPoptTable, 0,
 	N_("Startup:"), NULL },
@@ -612,6 +751,8 @@ main(int argc, char *argv[])
     __progname = "rpmwget";
 /*@=observertrans =readonlytrans @*/
 
+    /* Initialize configuration. */
+    /* XXX read system/user wgetrc */
     wget->blen = 16 * BUFSIZ;
     wget->b = xmalloc(wget->blen);
     wget->b[0] = '\0';
@@ -625,6 +766,11 @@ main(int argc, char *argv[])
 	fprintf(stderr, "\n");
     }
 
+    /* Set default configuration (if not already specified). */
+
+    /* Sanity check configuration. */
+
+    /* Process arguments. */
     av = poptGetArgs(optCon);
     if (av == NULL || av[0] == NULL) {
 	poptPrintUsage(optCon, stderr, 0);
@@ -635,7 +781,7 @@ main(int argc, char *argv[])
     if (av != NULL)
     for (i = 0; i < ac; i++) {
 	wget->ifn = av[i];
-	if ((xx = wgetCopy(_rpmwget)) != 0)
+	if ((xx = wgetCopyFile(_rpmwget)) != 0)
 	    rc = 256;
     }
 
