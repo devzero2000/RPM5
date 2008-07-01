@@ -225,7 +225,6 @@ static struct rpmwget_s __rpmwget = {
 static rpmwget _rpmwget = &__rpmwget;
 
 /*==============================================================*/
-#ifdef	NOTYET	/* XXX rpmio needs to capture Content-Type: */
 static const char * wgetSuffix(const char * s)
 	/*@*/
 {
@@ -235,13 +234,33 @@ static const char * wgetSuffix(const char * s)
 	se--;
     return (se > s && *se && se[-1] == '.' ? se : NULL);
 }
-#endif
 
-static const char * wgetOPath(rpmwget wget)
+static char * wgetStpcpy(rpmwget wget, char * te, const char * s)
+{
+    int c;
+
+    if (s != NULL)
+    while ((c = (int)*s++) != 0) {
+	if (wget->rflags & WGET_RFLAGS_TOLOWER)
+	    *te++ = (char) xtolower(c);
+	else if (wget->rflags & WGET_RFLAGS_TOUPPER)
+	    *te++ = (char) xtoupper(c);
+	else if (wget->rflags & WGET_RFLAGS_NOCONTROL) {
+	    *te++ = (char) c;	/* XXX unimplemented */
+	} else
+	    *te++ = (char) c;
+    }
+    *te = '\0';
+    return te;
+}
+
+static const char * wgetOPath(rpmwget wget, int ishtml)
 {
     const char * s = wget->document_file;
     const char * sext = NULL;
     char * t = NULL;
+    char * te;
+    size_t nb;
 
     if (s == NULL) {
 	if ((s = strrchr(wget->ifn, '/')) != NULL)
@@ -253,13 +272,12 @@ static const char * wgetOPath(rpmwget wget)
 	    s = "index.html";
     }
 
-#ifdef	NOTYET	/* XXX rpmio needs to capture Content-Type: */
     /* Add the .html extension (if requested). */
     switch (urlPath(wget->ifn, NULL)) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	/* XXX Check Content-Type: ( text/html | application/xhtml+xml ) */
-    	if (wget->http_ext != NULL) {
+	/* ishtml = 1 iff Content-Type: ( text/html | application/xhtml+xml ) */
+    	if (wget->http_ext != NULL && ishtml) {
 	    const char * f = wgetSuffix(s);
 	    if (f == NULL 
 	     || !(!strcasecmp(f, "html") || !strcasecmp(f, "htm") || !strcasecmp(f+1, "html")))
@@ -269,28 +287,21 @@ static const char * wgetOPath(rpmwget wget)
     default:
 	break;
     }
-#endif
 
-    {	const char * ofn = rpmExpand(s, sext, NULL);
-	size_t nb = strlen(ofn) + 1;	/* XXX include extra control escaping */
-	char * te = xmalloc(nb);
-	int c;
+    nb = 0;
+    if (wget->dir_prefix)
+	nb += strlen(wget->dir_prefix) + sizeof("/") - 1;;
+    nb += strlen(s);
+    if (sext)
+	nb += strlen(sext);
+    nb++;
+	
+    te = t = xmalloc(nb);
 
-	s = ofn;
-	t = te;
-	while ((c = (int)*s++) != 0) {
-	    if (wget->rflags & WGET_RFLAGS_TOLOWER)
-		*te++ = (char) xtolower(c);
-	    else if (wget->rflags & WGET_RFLAGS_TOUPPER)
-		*te++ = (char) xtoupper(c);
-	    else if (wget->rflags & WGET_RFLAGS_NOCONTROL) {
-		*te++ = (char) c;	/* XXX unimplemented */
-	    } else
-		*te++ = (char) c;
-	}
-	*te = '\0';
-	ofn = _free(ofn);
-    }
+    if (wget->dir_prefix)
+	te = stpcpy( stpcpy(te, wget->dir_prefix), "/");
+
+    te = wgetStpcpy(wget, wgetStpcpy(wget, te, s), sext);
 
 fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, wget->rflags, t);
 
@@ -305,16 +316,18 @@ static int wgetCopyFile(rpmwget wget)
     size_t nr, rlen = 0;
     int rc = 1;		/* assume failure */
     time_t ifn_mtime = 0;
-
-    wget->ofn = wgetOPath(wget);
-
-if (wget->debug < 0)
-fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
+    int ishtml = 0;
 
     /* Verify that input URI exists. */
     if (Stat(wget->ifn, wget->st) != 0)
 	goto exit;
     ifn_mtime = wget->st->st_mtime;
+    /* XXX Stat(2) runs HEAD, st->st_blksize = 2048 for HTML Content-Type: */
+    ishtml = (wget->st->st_blksize == 2048);
+
+    wget->ofn = wgetOPath(wget, ishtml);
+if (wget->debug < 0)
+fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
 
     if ((WF_ISSET(NOCLOBBER) || WF_ISSET(NEWERONLY))
      && !Stat(wget->ofn, wget->st))
@@ -348,6 +361,10 @@ fprintf(stderr, "Input file \"%s\" is not newer, skipping retrieve.\n", wget->of
 
 	    continue;
 	}
+if (wget->debug < 0) {
+fprintf(stderr, "--> Content-Type: %s\n", wget->ifd->contentType);
+fprintf(stderr, "--> Last-Modified: %s", ctime(&wget->ifd->lastModified));
+}
 	wget->ofd = Fopen(wget->ofn, "w.ufdio");
 	if (wget->ofd == NULL || Ferror(wget->ofd)) {
 	    (void) Fclose(wget->ifd);	/* XXX is stdin closed here? */
@@ -876,7 +893,7 @@ main(int argc, char *argv[])
 
     /* Initialize configuration. */
     /* XXX read system/user wgetrc */
-    wget->blen = 16 * BUFSIZ;
+    wget->blen = 32 * BUFSIZ;
     wget->b = xmalloc(wget->blen);
     wget->b[0] = '\0';
     wget->st = xmalloc(sizeof(*wget->st));

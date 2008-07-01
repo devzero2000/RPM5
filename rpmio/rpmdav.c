@@ -1084,6 +1084,17 @@ static int davHEAD(urlinfo u, struct stat *st)
 	st->st_blocks = (st->st_size + 511)/512;
     }
 
+    htag = "Content-Type";
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
+    value = ne_get_response_header(req, htag); 
+#endif
+    if (value) {
+	if (!strcmp(value, "text/html")
+	 || !strcmp(value, "application/xhtml+xml"))
+	    st->st_blksize = 2 * 1024;
+    }
+
+
     htag = "Last-Modified";
 #if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     value = ne_get_response_header(req, htag); 
@@ -1224,6 +1235,36 @@ fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, value);
 /*@=mustmod@*/
 
 /*@-mustmod@*/
+static void davContentType(void * userdata, /*@null@*/ const char * value)
+	/*@modifies userdata @*/
+{
+    FD_t ctrl = userdata;
+
+    if (!(ctrl != NULL && value != NULL)) return;
+if (_dav_debug < 0)
+fprintf(stderr, "*** fd %p Content-Type: %s\n", ctrl, value);
+/*@-unrecog@*/
+   ctrl->contentType = xstrdup(value);
+/*@=unrecog@*/
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
+static void davLastModified(void * userdata, /*@null@*/ const char * value)
+	/*@modifies userdata @*/
+{
+    FD_t ctrl = userdata;
+
+    if (!(ctrl != NULL && value != NULL)) return;
+if (_dav_debug < 0)
+fprintf(stderr, "*** fd %p Last-Modified: %s\n", ctrl, value);
+/*@-unrecog@*/
+   ctrl->lastModified = ne_httpdate_parse(value);
+/*@=unrecog@*/
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
 static void davConnection(void * userdata, /*@null@*/ const char * value)
 	/*@modifies userdata @*/
 {
@@ -1289,6 +1330,10 @@ assert(ctrl->req != NULL);
 
     ne_add_response_header_handler(ctrl->req, "Content-Length",
 		davContentLength, ctrl);
+    ne_add_response_header_handler(ctrl->req, "Content-Type",
+		davContentType, ctrl);
+    ne_add_response_header_handler(ctrl->req, "Last-Modified",
+		davLastModified, ctrl);
     ne_add_response_header_handler(ctrl->req, "Connection",
 		davConnection, ctrl);
 #endif
@@ -1304,7 +1349,6 @@ assert(ctrl->req != NULL);
 	rc = FTPERR_SERVER_IO_ERROR;
 #endif
     } else {
-	/* HACK: possible Last-Modified: Tue, 02 Nov 2004 14:29:36 GMT */
 	/* HACK: possible ETag: "inode-size-mtime" */
 #if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 	ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
@@ -1328,6 +1372,10 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") exit sess %p req %p rc %d\n", ctrl, ht
 #if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     davContentLength(ctrl,
 		ne_get_response_header(ctrl->req, "Content-Length"));
+    davContentType(ctrl,
+		ne_get_response_header(ctrl->req, "Content-Type"));
+    davLastModified(ctrl,
+		ne_get_response_header(ctrl->req, "Last-Modified"));
     davConnection(ctrl,
 		ne_get_response_header(ctrl->req, "Connection"));
     if (strcmp(httpCmd, "PUT"))

@@ -334,6 +334,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	    fddig->hashctx = NULL;
 	}
 	fd->ndigests = 0;
+	fd->contentType = _free(fd->contentType);
 /*@-onlytrans@*/
 #ifdef WITH_XAR
 	fd->xar = rpmxarFree(fd->xar);
@@ -372,6 +373,8 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->url = NULL;
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->contentLength = fd->bytesRemain = -1;
+    fd->contentType = NULL;
+    fd->lastModified = 0;
     fd->wr_chunked = 0;
     fd->syserrno = 0;
     fd->errcookie = NULL;
