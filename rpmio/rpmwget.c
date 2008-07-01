@@ -225,6 +225,8 @@ static struct rpmwget_s __rpmwget = {
 static rpmwget _rpmwget = &__rpmwget;
 
 /*==============================================================*/
+/**
+ */
 static const char * wgetSuffix(const char * s)
 	/*@*/
 {
@@ -235,6 +237,8 @@ static const char * wgetSuffix(const char * s)
     return (se > s && *se && se[-1] == '.' ? se : NULL);
 }
 
+/**
+ */
 static char * wgetStpcpy(rpmwget wget, char * te, const char * s)
 {
     int c;
@@ -254,6 +258,8 @@ static char * wgetStpcpy(rpmwget wget, char * te, const char * s)
     return te;
 }
 
+/**
+ */
 static const char * wgetOPath(rpmwget wget, int ishtml)
 {
     const char * s = wget->document_file;
@@ -310,109 +316,150 @@ fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, w
 
 /**
  */
+static int isHtml(const char * contentType)
+{
+    int ishtml = 0;
+
+    if (contentType) {
+	char * t = xstrdup(contentType);
+	char * te = strchr(t, ';');
+	if (te) *te = '\0';
+	if (!strcmp(t, "text/html") || !strcmp(t, "application/xhtml+xml"))
+	    ishtml = 1;
+	t = _free(t);
+    }
+    return ishtml;
+}
+
+/**
+ */
 static int wgetCopyFile(rpmwget wget)
 {
     size_t nw, wlen = 0;
     size_t nr, rlen = 0;
+    struct stat * st = wget->st;
+    const char * contentType;
+    time_t lastModified;
     int rc = 1;		/* assume failure */
-    time_t ifn_mtime = 0;
-    int ishtml = 0;
 
     /* Verify that input URI exists. */
-    if (Stat(wget->ifn, wget->st) != 0)
+    wget->ifd = Fopen(wget->ifn, "r.ufdio");
+    if (wget->ifd == NULL || Ferror(wget->ifd)) {
+
+#ifdef	NOTYET
+	if (!WF_ISSET(RETRYCONN) && "connection refused")
+	    break;
+#endif
+
 	goto exit;
-    ifn_mtime = wget->st->st_mtime;
-    /* XXX Stat(2) runs HEAD, st->st_blksize = 2048 for HTML Content-Type: */
-    ishtml = (wget->st->st_blksize == 2048);
+    }
 
-    wget->ofn = wgetOPath(wget, ishtml);
-if (wget->debug < 0)
-fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
+    if (wget->read_timeout_secs > 0)
+	wget->ifd->rd_timeoutsecs = wget->read_timeout_secs;
 
-    if ((WF_ISSET(NOCLOBBER) || WF_ISSET(NEWERONLY))
-     && !Stat(wget->ofn, wget->st))
-    {
+    contentType = wget->ifd->contentType;
+    lastModified = wget->ifd->lastModified;
+
+if (wget->debug < 0) {
+fprintf(stderr, "--> Content-Type: %s\n", contentType);
+fprintf(stderr, "--> Last-Modified: %s", ctime(&lastModified));
+}
+
+    wget->ofn = wgetOPath(wget, isHtml(contentType));
+
+    if ((WF_ISSET(NOCLOBBER) || WF_ISSET(NEWERONLY)) && !Stat(wget->ofn, st)) {
 	/* Don't clobber pre-existing output files. */
 	if (WF_ISSET(NOCLOBBER)) {
 fprintf(stderr, "Ouptut file \"%s\" exists, skipping retrieve.\n", wget->ofn);
+	    lastModified = 0;	/* XXX disable timestamping. */
 	    rc = 0;
 	    goto exit;
 	}
 
 	/* Download content iff newer. */
-	if (WF_ISSET(NEWERONLY) && ifn_mtime > 0
-	 && ifn_mtime <= wget->st->st_mtime)
+	if (WF_ISSET(NEWERONLY)
+	 && lastModified > 0 && lastModified <= st->st_mtime)
 	{
 fprintf(stderr, "Input file \"%s\" is not newer, skipping retrieve.\n", wget->ofn);
+	    lastModified = 0;	/* XXX disable timestamping. */
 	    rc = 0;
 	    goto exit;
 	}
     }
 
-    wget->ntry = 0;
-    do {
-	wget->ifd = Fopen(wget->ifn, "r.ufdio");
-	if (wget->ifd == NULL || Ferror(wget->ifd)) {
+if (wget->debug < 0)
+fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
+
+    wget->ofd = Fopen(wget->ofn, "w.ufdio");
+    if (wget->ofd == NULL || Ferror(wget->ofd))
+	goto exit;
 
 #ifdef	NOTYET
-	    if (!WF_ISSET(RETRYCONN) && "connection refused")
-		break;
+    /* Reposition I/O handles if resuming. */
+    if (WF_ISSET(RESUME) && "partially downloaded")
 #endif
 
-	    continue;
-	}
-if (wget->debug < 0) {
-fprintf(stderr, "--> Content-Type: %s\n", wget->ifd->contentType);
-fprintf(stderr, "--> Last-Modified: %s", ctime(&wget->ifd->lastModified));
-}
-	wget->ofd = Fopen(wget->ofn, "w.ufdio");
-	if (wget->ofd == NULL || Ferror(wget->ofd)) {
-	    (void) Fclose(wget->ifd);	/* XXX is stdin closed here? */
-	    wget->ifd = NULL;
-	    continue;
-	}
+    /* XXX Ferror(wget->ifd) ? */
+    while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0) {
+	rlen += nr;
+
+	/* XXX Ferror(wget->ofd) ? */
+	if ((nw = Fwrite(wget->b, 1, nr, wget->ofd)) != nr)
+	    break;
+	wlen += nw;
 
 #ifdef	NOTYET
-	/* Reposition I/O handles if resuming. */
-	if (WF_ISSET(RESUME) && "partially downloaded")
-#endif
-
-	/* XXX Ferror(wget->ifd) ? */
-	while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0) {
-	    rlen += nr;
-
-#ifdef	NOTYET
-	    /* Update progress display. */
-	    if (WF_ISSET(PROGRESS))
-#endif
-
-	    /* XXX Ferror(wget->ofd) ? */
-	    if ((nw = Fwrite(wget->b, 1, nr, wget->ofd)) != nr)
-		/*@innerbreak@*/ break;
-	    wlen += nw;
+	/* Update progress display. */
+	if (WF_ISSET(PROGRESS))
+#else
 if (wget->debug < 0)
 fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
-	}
+#endif
+    }
 
-	/* XXX dereference from _url_cache needed? */
-	if (strcmp(wget->ifn, "-"))
-	    (void) Fclose(wget->ifd);	/* XXX is stdin closed here? */
-	wget->ifd = NULL;
-
-	if (strcmp(wget->ofn, "-"))
-	    (void) Fclose(wget->ofd);	/* XXX is stdout closed here? */
-	wget->ofd = NULL;
-
-	if (nr == 0)
-	    rc = 0;
-
-    } while (rc != 0 && (wget->ntries <= 0 || ++wget->ntry < wget->ntries));
+    if (nr == 0)
+	rc = 0;
 
 exit:
+
+    /* XXX dereference from _url_cache needed? */
+    if (wget->ifd != NULL && strcmp(wget->ifn, "-"))
+	(void) Fclose(wget->ifd);	/* XXX is stdin closed here? */
+    wget->ifd = NULL;
+
+    if (wget->ofd != NULL && strcmp(wget->ofn, "-"))
+	(void) Fclose(wget->ofd);	/* XXX is stdout closed here? */
+    wget->ofd = NULL;
+
+    /* Timestamp the output file on success. */
+    if (lastModified > 0 && rc == 0) {
+	struct utimbuf stamp;
+	stamp.actime = lastModified;
+	stamp.modtime = lastModified;
+	(void) Utime(wget->ofn, &stamp);
+    }
+
+    /* XXX if (rc) Unlink(wget->ofn); */
+
     wget->ofn = _free(wget->ofn);
     return rc;
 }
 
+/**
+ */
+static int wgetCopyRetry(rpmwget wget)
+{
+    int rc;
+
+    wget->ntry = 0;
+    do {
+	rc = wgetCopyFile(wget);
+    } while (rc != 0 && (wget->ntries <= 0 || ++wget->ntry < wget->ntries));
+    return rc;
+}
+
+/**
+ */
 static int wgetLoadManifests(rpmwget wget)
 	/*@modifies wget @*/
 {
@@ -926,7 +973,7 @@ main(int argc, char *argv[])
     if (wget->argv != NULL)
     for (i = 0; wget->argv[i] != NULL; i++) {
 	wget->ifn = xstrdup(wget->argv[i]);
-	if ((xx = wgetCopyFile(_rpmwget)) != 0)
+	if ((xx = wgetCopyRetry(_rpmwget)) != 0)
 	    rc = 256;
 	wget->ifn = _free(wget->ifn);
     }
