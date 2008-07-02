@@ -16,7 +16,7 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
 
-#include "legacy.h"	/* XXX for mdbinfile() */
+#include "legacy.h"	/* XXX for dodogest() */
 #include <pkgio.h>
 #include "signature.h"
 #include "debug.h"
