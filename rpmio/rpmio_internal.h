@@ -97,6 +97,8 @@ struct _FD_s {
 
 /*null@*/
     const char *contentType;	/* ufdio: (HTTP) */
+/*null@*/
+    const char *contentDisposition;	/* ufdio: (HTTP) */
     time_t	lastModified;	/* ufdio: (HTTP) */
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
     unsigned long long	fd_cpioPos;	/* cpio: */

@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: add Content-Disposition: handling (for rpmwget eventually).
     - jbj: rpmwget: rework logic to avoid Stat(2) running HEAD.
     - jbj: rpmio: set st_blksize = 2048 iff html with Stat(http://) 
     - jbj: rpmio: add Content-Type/Last-Modified to FD_t.

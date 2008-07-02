@@ -1243,9 +1243,22 @@ static void davContentType(void * userdata, /*@null@*/ const char * value)
     if (!(ctrl != NULL && value != NULL)) return;
 if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Content-Type: %s\n", ctrl, value);
-/*@-unrecog@*/
+   ctrl->contentType = _free(ctrl->contentType);
    ctrl->contentType = xstrdup(value);
-/*@=unrecog@*/
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
+static void davContentDisposition(void * userdata, /*@null@*/ const char * value)
+	/*@modifies userdata @*/
+{
+    FD_t ctrl = userdata;
+
+    if (!(ctrl != NULL && value != NULL)) return;
+if (_dav_debug < 0)
+fprintf(stderr, "*** fd %p Content-Disposition: %s\n", ctrl, value);
+   ctrl->contentDisposition = _free(ctrl->contentDisposition);
+   ctrl->contentDisposition = xstrdup(value);
 }
 /*@=mustmod@*/
 
@@ -1332,6 +1345,8 @@ assert(ctrl->req != NULL);
 		davContentLength, ctrl);
     ne_add_response_header_handler(ctrl->req, "Content-Type",
 		davContentType, ctrl);
+    ne_add_response_header_handler(ctrl->req, "Content-Disposition",
+		davContentDisposition, ctrl);
     ne_add_response_header_handler(ctrl->req, "Last-Modified",
 		davLastModified, ctrl);
     ne_add_response_header_handler(ctrl->req, "Connection",
@@ -1374,6 +1389,8 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") exit sess %p req %p rc %d\n", ctrl, ht
 		ne_get_response_header(ctrl->req, "Content-Length"));
     davContentType(ctrl,
 		ne_get_response_header(ctrl->req, "Content-Type"));
+    davContentDisposition(ctrl,
+		ne_get_response_header(ctrl->req, "Content-Disposition"));
     davLastModified(ctrl,
 		ne_get_response_header(ctrl->req, "Last-Modified"));
     davConnection(ctrl,

@@ -260,11 +260,29 @@ static char * wgetStpcpy(rpmwget wget, char * te, const char * s)
 
 /**
  */
-static const char * wgetOPath(rpmwget wget, int ishtml)
+static int isHtml(const char * contentType)
+{
+    int ishtml = 0;
+
+    if (contentType) {
+	char * t = xstrdup(contentType);
+	char * te = strchr(t, ';');
+	if (te) *te = '\0';
+	if (!strcmp(t, "text/html") || !strcmp(t, "application/xhtml+xml"))
+	    ishtml = 1;
+	t = _free(t);
+    }
+    return ishtml;
+}
+
+/**
+ */
+static const char * wgetOPath(rpmwget wget)
 {
     const char * s = wget->document_file;
     const char * sext = NULL;
     char * t = NULL;
+    int ishtml = isHtml(wget->ifd->contentType);
     char * te;
     size_t nb;
 
@@ -316,29 +334,13 @@ fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, w
 
 /**
  */
-static int isHtml(const char * contentType)
-{
-    int ishtml = 0;
-
-    if (contentType) {
-	char * t = xstrdup(contentType);
-	char * te = strchr(t, ';');
-	if (te) *te = '\0';
-	if (!strcmp(t, "text/html") || !strcmp(t, "application/xhtml+xml"))
-	    ishtml = 1;
-	t = _free(t);
-    }
-    return ishtml;
-}
-
-/**
- */
 static int wgetCopyFile(rpmwget wget)
 {
     size_t nw, wlen = 0;
     size_t nr, rlen = 0;
     struct stat * st = wget->st;
     const char * contentType;
+    const char * contentDisposition;
     time_t lastModified;
     int rc = 1;		/* assume failure */
 
@@ -358,14 +360,16 @@ static int wgetCopyFile(rpmwget wget)
 	wget->ifd->rd_timeoutsecs = wget->read_timeout_secs;
 
     contentType = wget->ifd->contentType;
+    contentDisposition = wget->ifd->contentDisposition;
     lastModified = wget->ifd->lastModified;
 
 if (wget->debug < 0) {
 fprintf(stderr, "--> Content-Type: %s\n", contentType);
+fprintf(stderr, "--> Content-Disposition: %s\n", contentDisposition);
 fprintf(stderr, "--> Last-Modified: %s", ctime(&lastModified));
 }
 
-    wget->ofn = wgetOPath(wget, isHtml(contentType));
+    wget->ofn = wgetOPath(wget);
 
     if ((WF_ISSET(NOCLOBBER) || WF_ISSET(NEWERONLY)) && !Stat(wget->ofn, st)) {
 	/* Don't clobber pre-existing output files. */
@@ -380,7 +384,7 @@ fprintf(stderr, "Ouptut file \"%s\" exists, skipping retrieve.\n", wget->ofn);
 	if (WF_ISSET(NEWERONLY)
 	 && lastModified > 0 && lastModified <= st->st_mtime)
 	{
-fprintf(stderr, "Input file \"%s\" is not newer, skipping retrieve.\n", wget->ofn);
+fprintf(stderr, "Input for file \"%s\" is not newer, skipping retrieve.\n", wget->ofn);
 	    lastModified = 0;	/* XXX disable timestamping. */
 	    rc = 0;
 	    goto exit;
@@ -944,6 +948,16 @@ main(int argc, char *argv[])
     wget->b = xmalloc(wget->blen);
     wget->b[0] = '\0';
     wget->st = xmalloc(sizeof(*wget->st));
+
+#if 0
+if (wget->debug < 0) {
+_av_debug = -1;
+_dav_debug = -1;
+_ftp_debug = -1;
+_url_debug = -1;
+_rpmio_debug = -1;
+}
+#endif
 
     optCon = rpmioInit(argc, argv, optionsTable);
     if (wget->debug < 0) {
