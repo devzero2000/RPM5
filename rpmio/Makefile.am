@@ -15,7 +15,7 @@ EXTRA_DIST = \
 	librpmio.vers testit.sh rpmgrep.1
 
 EXTRA_PROGRAMS = rpmcpio rpmcurl \
-	rpmgenbasedir rpmgenpkglist rpmgensrclist \
+	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmtar rpmwget rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
@@ -252,6 +252,9 @@ rpmgenpkglist_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmgensrclist = rpmgensrclist.c
 rpmgensrclist_LDADD = $(RPMIO_LDADD_COMMON)
+
+rpmgpg_SOURCES = rpmgpg.c
+rpmgpg_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)
