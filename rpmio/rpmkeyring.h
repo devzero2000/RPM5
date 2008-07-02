@@ -5,8 +5,13 @@
  * \file rpmio/rpmkeyring.h
  */
 
-#include <rpm/rpmtypes.h>
-#include <rpm/rpmpgp.h>
+/** \ingroup rpmkeyring
+ */
+typedef struct rpmPubkey_s * rpmPubkey;
+
+/** \ingroup rpmkeyring
+ */
+typedef struct rpmKeyring_s * rpmKeyring;
 
 /** \ingroup rpmkeyring
  * Create a new, empty keyring

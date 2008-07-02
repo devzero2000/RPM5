@@ -1,13 +1,7 @@
 #include "system.h"
 
-#include <rpm/rpmstring.h>
-#include <rpm/rpmpgp.h>
-#include <rpm/rpmfileutil.h>
-#include <rpm/rpmlog.h>
-#include <rpm/rpmkeyring.h>
-
-#include "rpmio/base64.h"
-#include "rpmio/digest.h"
+#include "rpmio_internal.h"
+#include "rpmkeyring.h"
 
 #include "debug.h"
 
@@ -40,8 +34,9 @@ rpmKeyring rpmKeyringNew(void)
 
 rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 {
+    int i;
     if (keyring && keyring->keys) {
-	for (int i = 0; i < keyring->numkeys; i++) {
+	for (i = 0; i < (int)keyring->numkeys; i++) {
 	    keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
 	}
 	free(keyring->keys);

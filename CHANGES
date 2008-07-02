@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: add rpmkeyring API.
     - rpm.org: swipe the abstract keyring API.
     - jbj: rpmio: add Content-Disposition: handling (for rpmwget eventually).
     - jbj: rpmwget: rework logic to avoid Stat(2) running HEAD.

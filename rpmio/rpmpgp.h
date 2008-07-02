@@ -30,6 +30,14 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
 typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
 
 /** \ingroup rpmpgp
+ */
+typedef uint8_t pgpKeyID_t[8];
+
+/** \ingroup rpmpgp
+ */
+typedef uint8_t pgpTime_t[4];
+
+/** \ingroup rpmpgp
  * Bit(s) to control digest and signature verification.
  */
 typedef enum pgpVSFlags_e {
@@ -1418,7 +1426,7 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
  * @return		type of armor found
  */
 pgpArmor pgpReadPkts(const char * fn,
-		/*@out@*/ const uint8_t ** pkt, /*@out@*/ size_t * pktlen)
+		/*@out@*/ uint8_t ** pkt, /*@out@*/ size_t * pktlen)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
 

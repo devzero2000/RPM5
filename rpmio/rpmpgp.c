@@ -1279,7 +1279,7 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 }
 /*@=globstate =incondefs =nullderef @*/
 
-pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
+pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 {
     uint8_t * b = NULL;
     ssize_t blen;

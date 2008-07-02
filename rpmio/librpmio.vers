@@ -295,6 +295,14 @@ LIBRPMIO_0
     rpmioPipeOutput;
     rpmioRootDir;
     rpmioSlurp;
+    rpmKeyringAddKey;
+    rpmKeyringFindKeyid;
+    rpmKeyringFree;
+    rpmKeyringLookup;
+    rpmKeyringNew;
+    rpmPubkeyFree;
+    rpmPubkeyNew;
+    rpmPubkeyRead;
     rpmLoadMacroFile;
     rpmLoadMacros;
     rpmlog;
