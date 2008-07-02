@@ -666,6 +666,7 @@ rpmts rpmtsFree(rpmts ts)
 /*@=type =voidabstract @*/
     ts->orderAlloced = 0;
 
+    ts->keyring = rpmKeyringFree(ts->keyring);
     ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
@@ -687,6 +688,21 @@ rpmts rpmtsFree(rpmts ts)
     /*@=refcounttrans =usereleased @*/
 
     return NULL;
+}
+
+void * rpmtsGetKeyring(rpmts ts)
+{
+    return (ts ? ts->keyring : NULL);
+}
+
+int rpmtsSetKeyring(rpmts ts, void * keyring)
+{
+    if (ts == NULL)
+       return -1;
+
+    ts->keyring = rpmKeyringFree(ts->keyring);
+    ts->keyring = keyring;
+    return 0;
 }
 
 rpmVSFlags rpmtsVSFlags(/*@unused@*/ rpmts ts)
@@ -1361,6 +1377,7 @@ rpmts rpmtsCreate(void)
 
     ts->probs = NULL;
 
+    ts->keyring = NULL;
     ts->pkpkt = NULL;
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));

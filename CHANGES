@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: get/set transaction keyring methods.
     - jbj: rpmio: add rpmkeyring API.
     - rpm.org: swipe the abstract keyring API.
     - jbj: rpmio: add Content-Disposition: handling (for rpmwget eventually).

@@ -335,6 +335,7 @@ LIBRPM_0
     rpmtsFlags;
     rpmtsFree;
     rpmtsFreeLock;
+    rpmtsGetKeyring;
     rpmtsGetTid;
     rpmtsGetType;
     rpmtsGoal;
@@ -365,6 +366,7 @@ LIBRPM_0
     rpmtsSetDFlags;
     rpmtsSetFlags;
     rpmtsSetGoal;
+    rpmtsSetKeyring;
     rpmtsSetNotifyCallback;
     rpmtsSetREContext;
     rpmtsSetRelocateElement;

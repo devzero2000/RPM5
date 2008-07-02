@@ -157,6 +157,7 @@ typedef enum tsStage_e {
 #if defined(_RPMTS_INTERNAL)
 
 #include "rpmhash.h"	/* XXX hashTable */
+#include "rpmkeyring.h"
 #include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
 
 /*@unchecked@*/
@@ -298,6 +299,7 @@ struct rpmts_s {
     const char * fn;		/*!< Current package fn. */
 
 /*@only@*/ /*@relnull@*/
+    rpmKeyring keyring;		/*!< Keyring in use. */
     const unsigned char * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
@@ -637,6 +639,23 @@ void rpmtsEmpty(rpmts ts)
 rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Get transaction keyring.
+ * @param ts		transaction set
+ * @return		transaction keyring
+ */
+void * rpmtsGetKeyring(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set transaction keyring.
+ * @param ts		transaction set
+ * @param keyrin	new transaction keyring
+ * @return		0 on success
+ */
+int rpmtsSetKeyring(rpmts ts, void * keyring)
+	/*modifies ts @*/;
 
 /** \ingroup rpmts
  * Get verify signatures flag(s).
