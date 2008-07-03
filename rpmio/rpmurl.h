@@ -23,6 +23,8 @@ typedef enum urltype_e {
 #define	URLMAGIC	0xd00b1ed0U
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
+/**
+ */
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
 
 /**
@@ -119,7 +121,9 @@ extern int _url_debug;		/*!< URL debugging? */
  * @param msg		debugging identifier (unused)
  * @return		new instance
  */
-/*@unused@*/ urlinfo	urlNew(const char * msg)	/*@*/;
+/*@unused@*/
+urlinfo	urlNew(const char * msg)
+	/*@*/;
 
 /** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
@@ -131,7 +135,8 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
  * @param msg		debugging identifier (unused)
  * @return		referenced instance
  */
-/*@unused@*/ urlinfo	urlLink(urlinfo u, const char * msg)
+/*@unused@*/
+urlinfo	urlLink(urlinfo u, const char * msg)
 	/*@modifies u @*/;
 
 /** @todo Remove debugging entry from the ABI. */
@@ -145,7 +150,8 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
  * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-/*@unused@*/ urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
+/*@unused@*/
+urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/;
 

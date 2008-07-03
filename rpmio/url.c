@@ -107,13 +107,13 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	xx = Fclose(u->ctrl);
 #endif
 
+/*@-usereleased@*/
 	u->ctrl = XfdFree(u->ctrl, "persist ctrl (urlFree)", file, line);
-	/*@-usereleased@*/
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
-	/*@=usereleased@*/
+/*@=usereleased@*/
     }
     if (u->data) {
 #ifndef	NOTYET
@@ -127,13 +127,13 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	xx = Fclose(u->ctrl);
 #endif
 
+/*@-usereleased@*/
 	u->data = XfdFree(u->data, "persist data (urlFree)", file, line);
-	/*@-usereleased@*/
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
-	/*@=usereleased@*/
+/*@=usereleased@*/
     }
 #ifdef WITH_NEON
     xx = davFree(u);
@@ -549,6 +549,7 @@ int urlGetFile(const char * url, const char * dest)
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
 
+/*@-mods@*/	/* XXX avoid including <rpmmacro.h> everywhere for now */
     if (rpmExpandNumeric("%{?__urlgetfile:1}%{!?__urlgetfile:0}")) {
         result = rpmExpand("%{__urlgetfile ", url, " ", dest, "}", NULL);
         if (result != NULL && strcmp(result, "OK") == 0)
@@ -560,6 +561,7 @@ int urlGetFile(const char * url, const char * dest)
         result = _free(result);
         goto exit;
     }
+/*@=mods@*/
 
     sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {

@@ -386,7 +386,8 @@ void * rpmnssFree(/*@only@*/ void * impl)
 
 static
 void * rpmnssInit(void)
-	/*@*/
+	/*@globals _rpmnss_init @*/
+	/*@modifies _rpmnss_init @*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = xcalloc(1, sizeof(*nss));

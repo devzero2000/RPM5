@@ -168,7 +168,7 @@ static void rpmioAllArgCallback(poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
 	/*@globals pgpImplVecs,
- 		rpmGlobalMacroContext, h_errno,
+ 		rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies con, pgpImplVecs,
  		rpmGlobalMacroContext,

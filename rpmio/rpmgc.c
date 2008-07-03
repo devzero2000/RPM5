@@ -33,9 +33,13 @@ void rpmgcDump(const char * msg, gcry_sexp_t sexp)
     char buf[BUFSIZ];
     size_t nb;
 
+/*@-modunconnomods @*/
     nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, sizeof(buf));
+/*@=modunconnomods @*/
+/*@-modfilesys@*/
 if (_pgp_debug)
 fprintf(stderr, "========== %s:\n%s", msg, buf);
+/*@=modfilesys@*/
     return;
 }
 #endif
@@ -128,7 +132,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     xx = gcry_mpi_scan(&c, GCRYMPI_FMT_HEX, hexstr, strlen(hexstr), NULL);
     rc = gcry_sexp_build(&gc->hash, NULL,
 		"(data (flags pkcs1) (hash %s %m))",
-		gcry_pk_algo_name(sigp->hash_algo), c);
+		gcry_pk_algo_name((int)sigp->hash_algo), c);
     gcry_mpi_release(c);
 if (_pgp_debug)
 rpmgcDump("gc->hash", gc->hash);
@@ -251,6 +255,7 @@ rpmgcDump("gc->pkey", gc->pkey);
 #endif
 }
 
+/*@-globuse -mustmod @*/
 static
 int rpmgcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
@@ -327,6 +332,7 @@ assert(0);
     return 1;
 #endif
 }
+/*@=globuse =mustmod @*/
 
 static
 void rpmgcClean(void * impl)

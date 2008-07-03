@@ -27,7 +27,7 @@
 #include "ne_utils.h"
 #if !defined(HEADER_ERR_H)
 /* cheats to avoid having to explicitly build against OpenSSL */
-/*@-exportheader@*/
+/*@-exportheader -redecl @*/
 extern void ERR_remove_state(int foo);
 extern void ENGINE_cleanup(void);
 extern void CONF_modules_unload(int foo);
@@ -35,7 +35,7 @@ extern void ERR_free_strings(void);
 extern void EVP_cleanup(void);
 extern void CRYPTO_cleanup_all_ex_data(void);
 extern void CRYPTO_mem_leaks(void * ptr);
-/*@=exportheader@*/
+/*@=exportheader =redecl @*/
 #endif
 
 #include "ne_md5.h" /* for version detection only */
@@ -1330,7 +1330,9 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd
     ctrl = fdLink(ctrl, "open ctrl (davReq)");
 
 assert(u->sess != NULL);
+/*@-nullderef@*/
 assert(ctrl->req == NULL);
+/*@=nullderef@*/
 /*@-nullpass@*/
     ctrl->req = ne_request_create(u->sess, httpCmd, httpArg);
 /*@=nullpass@*/
@@ -1439,9 +1441,9 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, ure
 	u->data = fdNew("persist data (davOpen)");
 
     if (u->ctrl->url == NULL)
-	fd = fdLink(u->ctrl, "grab ctrl (davOpen persist ctrl)");
+	fd = u->ctrl = fdLink(u->ctrl, "grab ctrl (davOpen persist ctrl)");
     else if (u->data->url == NULL)
-	fd = fdLink(u->data, "grab ctrl (davOpen persist data)");
+	fd = u->data = fdLink(u->data, "grab ctrl (davOpen persist data)");
     else
 	fd = fdNew("grab ctrl (davOpen)");
 
@@ -1452,10 +1454,10 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, ure
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = httpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
-	fd->url = urlLink(u, "url (davOpen)");
-	fd = fdLink(fd, "grab data (davOpen)");
 assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP || urlType == URL_IS_HKP);
 	fd->urlType = urlType;
+	fd->url = urlLink(u, "url (davOpen)");
+	fd = fdLink(fd, "grab data (davOpen)");
     }
 
 exit:

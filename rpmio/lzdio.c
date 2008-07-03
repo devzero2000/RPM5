@@ -12,24 +12,27 @@
 
 #include "debug.h"
 
+/*@access FD_t @*/
+
 #define	LZDONLY(fd)	assert(fdGetIo(fd) == lzdio)
 
 #define kBufferSize (1 << 15)
 
 typedef struct lzfile {
-  /* IO buffer */
-    uint8_t buf[kBufferSize];
-
-    lzma_stream strm;
-
-    FILE *fp;
-
+/*@only@*/
+    uint8_t buf[kBufferSize];	/*!< IO buffer */
+    lzma_stream strm;		/*!< LZMA stream */
+/*@dependent@*/
+    FILE * fp;
     int encoding;
     int eof;
-
 } LZFILE;
 
+/*@-globstate@*/
+/*@null@*/
 static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     int level = 5;
     int encoding = 0;
@@ -37,24 +40,24 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
     LZFILE *lzfile;
     lzma_ret ret;
 
-    for (; *mode; mode++) {
+    for (; *mode != '\0'; mode++) {
 	if (*mode == 'w')
 	    encoding = 1;
 	else if (*mode == 'r')
 	    encoding = 0;
 	else if (*mode >= '1' && *mode <= '9')
-	    level = *mode - '0';
+	    level = (int)(*mode - '0');
     }
     if (fd != -1)
 	fp = fdopen(fd, encoding ? "w" : "r");
     else
 	fp = fopen(path, encoding ? "w" : "r");
     if (!fp)
-	return 0;
+	return NULL;
     lzfile = calloc(1, sizeof(*lzfile));
     if (!lzfile) {
-	fclose(fp);
-	return 0;
+	(void) fclose(fp);
+	return NULL;
     }
     lzfile->fp = fp;
     lzfile->encoding = encoding;
@@ -62,43 +65,57 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
     lzfile->strm = LZMA_STREAM_INIT_VAR;
     if (encoding) {
 	lzma_options_alone alone;
+/*@-unrecog@*/
 	alone.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
+/*@=unrecog@*/
 	memcpy(&alone.lzma, &lzma_preset_lzma[level - 1], sizeof(alone.lzma));
 	ret = lzma_alone_encoder(&lzfile->strm, &alone);
     } else {
 	ret = lzma_auto_decoder(&lzfile->strm, 0, 0);
     }
     if (ret != LZMA_OK) {
-	fclose(fp);
+	(void) fclose(fp);
+	memset(lzfile, 0, sizeof(*lzfile));
 	free(lzfile);
-	return 0;
+	return NULL;
     }
     return lzfile;
 }
+/*@=globstate@*/
 
+/*@null@*/
 static LZFILE *lzopen(const char *path, const char *mode)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     return lzopen_internal(path, mode, -1);
 }
 
+/*@null@*/
 static LZFILE *lzdopen(int fd, const char *mode)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     if (fd < 0)
-	return 0;
+	return NULL;
     return lzopen_internal(0, mode, fd);
 }
 
 #ifdef	UNUSED
 static int lzflush(LZFILE *lzfile)
+	/*@modifies lzfile @*/
 {
     return fflush(lzfile->fp);
 }
 #endif
 
-static int lzclose(LZFILE *lzfile)
+static int lzclose(/*@only@*/ LZFILE *lzfile)
+	/*@globals fileSystem @*/
+	/*@modifies *lzfile, fileSystem @*/
 {
     lzma_ret ret;
     size_t n;
+    int rc;
 
     if (!lzfile)
 	return -1;
@@ -117,11 +134,15 @@ static int lzclose(LZFILE *lzfile)
 	}
     }
     lzma_end(&lzfile->strm);
-    return fclose(lzfile->fp);
+    rc = fclose(lzfile->fp);
+    memset(lzfile, 0, sizeof(*lzfile));
     free(lzfile);
+    return rc;
 }
 
 static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
+	/*@globals fileSystem @*/
+	/*@modifies lzfile, *buf, fileSystem @*/
 {
     lzma_ret ret;
     int eof = 0;
@@ -130,7 +151,9 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
       return -1;
     if (lzfile->eof)
       return 0;
+/*@-temptrans@*/
     lzfile->strm.next_out = buf;
+/*@=temptrans@*/
     lzfile->strm.avail_out = len;
     for (;;) {
 	if (!lzfile->strm.avail_in) {
@@ -151,9 +174,12 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
 	if (eof)
 	    return -1;
       }
+    /*@notreached@*/
 }
 
 static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
+	/*@globals fileSystem @*/
+	/*@modifies lzfile, fileSystem @*/
 {
     lzma_ret ret;
     size_t n;
@@ -162,7 +188,9 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 	return -1;
     if (!len)
 	return 0;
+/*@-temptrans@*/
     lzfile->strm.next_in = buf;
+/*@=temptrans@*/
     lzfile->strm.avail_in = len;
     for (;;) {
 	lzfile->strm.next_out = lzfile->buf;
@@ -176,6 +204,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 	if (!lzfile->strm.avail_in)
 	    return len;
     }
+    /*@notreached@*/
 }
 
 /* =============================================================== */
@@ -259,6 +288,7 @@ static ssize_t lzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     LZFILE *lzfile;
     ssize_t rc = -1;
 
+assert(fd != NULL);
     if (fd->bytesRemain == 0) return 0; /* XXX simulate EOF */
     lzfile = lzdFileno(fd);
 assert(lzfile != NULL);
@@ -322,25 +352,22 @@ static int lzdClose( /*@only@*/ void * cookie)
 {
     FD_t fd = c2f(cookie);
     LZFILE *lzfile;
+    const char * errcookie;
     int rc;
 
     lzfile = lzdFileno(fd);
 
     if (lzfile == NULL) return -2;
+    errcookie = strerror(ferror(lzfile->fp));
+
     fdstat_enter(fd, FDSTAT_CLOSE);
     /*@-dependenttrans@*/
     rc = lzclose(lzfile);
     /*@=dependenttrans@*/
+    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
-    /* XXX TODO: preserve fd if errors */
-
-    if (fd) {
-	if (rc == -1) {
-	    fd->errcookie = strerror(ferror(lzfile->fp));
-	} else if (rc >= 0) {
-	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
-	}
-    }
+    if (fd && rc == -1)
+	fd->errcookie = errcookie;
 
 DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 

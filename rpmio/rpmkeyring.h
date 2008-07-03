@@ -24,8 +24,8 @@ rpmKeyring rpmKeyringNew(void)
  * Free keyring and the keys within it
  * @return	NULL always
  */
-rpmKeyring rpmKeyringFree(rpmKeyring keyring)
-	/*@*/;
+rpmKeyring rpmKeyringFree(/*@only@*/ rpmKeyring keyring)
+	/*@modifies keyring @*/;
 
 /** \ingroup rpmkeyring
  * Add a public key to keyring.
@@ -34,7 +34,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
  * @return		0 on success, -1 on error, 1 if key already present
  */
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
-	/*@*/;
+	/*@modifies keyring, key @*/;
 
 /** \ingroup rpmkeyring
  * Perform keyring lookup for a key matching a signature
@@ -43,7 +43,8 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
  * @return		RPMRC_OK if found, RPMRC_NOKEY otherwise
  */
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies sig, fileSystem, internalState @*/;
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from OpenPGP packet
@@ -60,14 +61,15 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
  * @return		new pubkey handle
  */
 rpmPubkey rpmPubkeyRead(const char *filename)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmkeyring
  * Free a pubkey.
  * @param key		Pubkey to free
  * @return		NULL always
  */
-rpmPubkey rpmPubkeyFree(rpmPubkey key)
-	/*@*/;
+rpmPubkey rpmPubkeyFree(/*@only@*/ rpmPubkey key)
+	/*@modifies key @*/;
 
 #endif /* _RPMKEYDB_H */

@@ -7,7 +7,7 @@
 #include <rpmlog.h>
 
 #define	_RPMPGP_INTERNAL
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 #else
@@ -27,7 +27,7 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
 /**
  * Convert hex to binary nibble.
  * @param c            hex character
@@ -51,7 +51,7 @@ static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = dig->impl;
     unsigned int nbits = BN_num_bits(ssl->c);
     unsigned int nb = (nbits + 7) >> 3;
@@ -136,7 +136,7 @@ static
 int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = dig->impl;
     unsigned char * rsahm;
     unsigned char * dbuf;
@@ -208,7 +208,7 @@ static
 int rpmsslVerifyDSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = dig->impl;
     int rc;
 
@@ -228,7 +228,7 @@ int rpmsslMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
 	/*@modifies dig @*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = dig->impl;
     unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
     int rc = 0;
@@ -285,7 +285,7 @@ static
 void rpmsslClean(void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = impl;
     if (ssl != NULL) {
 	if (ssl->dsa) {
@@ -312,7 +312,7 @@ static
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = impl;
     if (ssl != NULL) {
 	ssl = _free(ssl);
@@ -325,7 +325,7 @@ static
 void * rpmsslInit(void)
 	/*@*/
 {
-#if defined(WITH_SSL)
+#if defined(WITH_SSL) && !defined(__LCLINT__)
     rpmssl ssl = xcalloc(1, sizeof(*ssl));
     ERR_load_crypto_strings();
     return (void *) ssl;

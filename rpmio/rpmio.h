@@ -516,6 +516,7 @@ int fdClose( /*@only@*/ void * cookie)
 	/*@modifies errno, fileSystem, internalState @*/;
 #define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
 
+/*@-incondefs @*/
 /**
  */
 /*@unused@*/
@@ -529,7 +530,9 @@ FD_t XfdLink (/*@only@*/ void * cookie, const char * msg, const char * fn, unsig
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 #define	fdLink(_fd, _msg)	XfdLink(_fd, _msg, __FILE__, __LINE__)
+/*@=incondefs@*/
 
+/*@-incondefs @*/
 /**
  */
 /*@unused@*/
@@ -543,7 +546,9 @@ FD_t XfdFree(/*@only@*/ FD_t fd, const char * msg, const char * fn, unsigned ln)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 #define	fdFree(_fd, _msg)	XfdFree(_fd, _msg, __FILE__, __LINE__)
+/*@=incondefs@*/
 
+/*@-incondefs@*/
 /**
  */
 /*@unused@*/
@@ -557,6 +562,7 @@ FD_t XfdNew (const char * msg, const char * fn, unsigned ln)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 #define	fdNew(_msg)		XfdNew(_msg, __FILE__, __LINE__)
+/*@=incondefs@*/
 
 /**
  */

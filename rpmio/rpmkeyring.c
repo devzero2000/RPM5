@@ -5,14 +5,17 @@
 
 #include "debug.h"
 
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
+
 struct rpmPubkey_s {
-    uint8_t *pkt;
+    uint8_t * pkt;
     size_t pktlen;
     pgpKeyID_t keyid;
 };
 
 struct rpmKeyring_s {
-    struct rpmPubkey_s **keys;
+    rpmPubkey * keys;
     size_t numkeys;
 };
 
@@ -20,7 +23,6 @@ static int keyidcmp(const void *k1, const void *k2)
 {
     const struct rpmPubkey_s *key1 = *(const struct rpmPubkey_s **) k1;
     const struct rpmPubkey_s *key2 = *(const struct rpmPubkey_s **) k2;
-    
     return memcmp(key1->keyid, key2->keyid, sizeof(key1->keyid));
 }
 
@@ -34,18 +36,21 @@ rpmKeyring rpmKeyringNew(void)
 
 rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 {
-    int i;
     if (keyring && keyring->keys) {
-	for (i = 0; i < (int)keyring->numkeys; i++) {
+	int i;
+/*@-unqualifiedtrans @*/
+	for (i = 0; i < (int)keyring->numkeys; i++)
 	    keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
-	}
-	free(keyring->keys);
+/*@=unqualifiedtrans @*/
+	keyring->keys = _free(keyring->keys);
     }
-    free(keyring);
+    keyring = _free(keyring);
     return NULL;
 }
 
+/*@owned@*/
 static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
+	/*@*/
 {
     rpmPubkey *found = NULL;
     found = bsearch(&key, keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
@@ -58,12 +63,13 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 	return -1;
 
     /* check if we already have this key */
-    if (rpmKeyringFindKeyid(keyring, key)) {
+    if (rpmKeyringFindKeyid(keyring, key))
 	return 1;
-    }
-    
-    keyring->keys = xrealloc(keyring->keys, (keyring->numkeys + 1) * sizeof(rpmPubkey));
+
+    keyring->keys = xrealloc(keyring->keys, (keyring->numkeys + 1) * sizeof(*keyring->keys));
+/*@-assignexpose @*/
     keyring->keys[keyring->numkeys] = key;
+/*@=assignexpose @*/
     keyring->numkeys++;
     qsort(keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
 
@@ -73,14 +79,13 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 rpmPubkey rpmPubkeyRead(const char *filename)
 {
     uint8_t *pkt = NULL;
-    size_t pktlen;
+    size_t pktlen = 0;
     rpmPubkey key = NULL;
 
-    if (pgpReadPkts(filename, &pkt, &pktlen) <= 0) {
-	goto exit;
+    if (pgpReadPkts(filename, &pkt, &pktlen) > 0) {
+	key = rpmPubkeyNew(pkt, pktlen);
+	pkt = _free(pkt);
     }
-    key = rpmPubkeyNew(pkt, pktlen);
-    free(pkt);
 
 exit:
     return key;
@@ -89,27 +94,23 @@ exit:
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
 {
     rpmPubkey key = NULL;
-    
-    if (pkt == NULL || pktlen == 0)
-	goto exit;
 
-    key = xcalloc(1, sizeof(*key));
-    pgpPubkeyFingerprint(pkt, pktlen, key->keyid);
-    key->pkt = xmalloc(pktlen);
-    key->pktlen = pktlen;
-    memcpy(key->pkt, pkt, pktlen);
-
-exit:
+    if (pkt != NULL && pktlen > 0) {
+	key = xcalloc(1, sizeof(*key));
+	(void) pgpPubkeyFingerprint(pkt, pktlen, key->keyid);
+	key->pkt = xmalloc(pktlen);
+	key->pktlen = pktlen;
+	memcpy(key->pkt, pkt, pktlen);
+    }
     return key;
 }
 
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
 {
-    if (key == NULL)
-	return NULL;
-
-    free(key->pkt);
-    free(key);
+    if (key != NULL) {
+	key->pkt = _free(key->pkt);
+	key = _free(key);
+    }
     return NULL;
 }
 

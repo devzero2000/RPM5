@@ -369,7 +369,7 @@ int iosmSetup(IOSM_t iosm, iosmFileStage goal, /*@null@*/ const char * afmt,
 		/*@out@*/ /*@null@*/ unsigned int * archiveSize,
 		/*@out@*/ /*@null@*/ const char ** failedFile)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies iosm, _ts, _fi, *archiveSize, *failedFile,
+	/*@modifies iosm, _ts, _fi, cfd, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
 /**

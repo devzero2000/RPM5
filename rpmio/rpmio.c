@@ -290,6 +290,7 @@ int fdSeekNot(void * cookie,
 }
 
 /* =============================================================== */
+/*@-incondefs@*/
 /*@-mustmod@*/ /* FIX: cookie is modified */
 /*@null@*/
 FD_t XfdLink(void * cookie, const char * msg,
@@ -309,7 +310,9 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     return fd;
 }
 /*@=mustmod@*/
+/*@=incondefs@*/
 
+/*@-incondefs@*/
 /*@null@*/
 FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *file, unsigned line)
@@ -347,11 +350,11 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     }
     return NULL;
 }
+/*@=incondefs@*/
 
+/*@-incondefs@*/
 /*@null@*/
 FD_t XfdNew(const char * msg, const char * file, unsigned line)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -392,6 +395,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
 
     return XfdLink(fd, msg, file, line);
 }
+/*@=incondefs@*/
 
 static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals errno, fileSystem, internalState @*/
@@ -534,6 +538,7 @@ static /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
     fd = fdNew("open (fdOpen)");
     fdSetOpen(fd, path, flags, mode);
     fdSetFdno(fd, fdno);
+assert(fd != NULL);
     fd->flags = flags;
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
@@ -1598,10 +1603,13 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 
 	if ((fd = u->ctrl) == NULL) {
 	    fd = u->ctrl = fdNew("persist ctrl (urlConnect FTP)");
+/*@-usereleased@*/
 	    fdSetOpen(u->ctrl, url, 0, 0);
 	    fdSetIo(u->ctrl, ufdio);
+/*@=usereleased@*/
 	}
 	
+assert(fd != NULL);
 	fd->rd_timeoutsecs = ftpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
 	fd->url = NULL;		/* XXX FTP ctrl has not */
@@ -1720,6 +1728,7 @@ static int ftpAbort(urlinfo u, FD_t data)
     }
 
     /* XXX shorten ctrl drain time wait */
+assert(u->ctrl != NULL);
     tosecs = u->ctrl->rd_timeoutsecs;
     u->ctrl->rd_timeoutsecs = 10;
     if ((rc = ftpCheckResponse(u, NULL)) == FTPERR_NIC_ABORT_IN_PROGRESS) {
@@ -2064,13 +2073,16 @@ int ufdClose( /*@only@*/ void * cookie)
     if (fd->url) {
 	urlinfo u = fd->url;
 
+/*@-evalorder @*/
 	if (fd == u->data)
-		fd = u->data = fdFree(fd, "grab data (ufdClose persist)");
+	    fd = u->data = fdFree(fd, "grab data (ufdClose persist)");
 	else
-		fd = fdFree(fd, "grab data (ufdClose)");
+	    fd = fdFree(fd, "grab data (ufdClose)");
+assert(fd != NULL);
 	(void) urlFree(fd->url, "url (ufdClose)");
 	fd->url = NULL;
 	u->ctrl = fdFree(u->ctrl, "grab ctrl (ufdClose)");
+/*@=evalorder @*/
 
 	if (u->urltype == URL_IS_FTP) {
 
@@ -2136,12 +2148,14 @@ int ufdClose( /*@only@*/ void * cookie)
 	     *	"open data (httpReq)"			ftp.c:435
 	     */
 
+/*@-evalorder @*/
 	    if (fd == u->ctrl)
 		fd = u->ctrl = fdFree(fd, "open data (ufdClose HTTP persist ctrl)");
 	    else if (fd == u->data)
 		fd = u->data = fdFree(fd, "open data (ufdClose HTTP persist data)");
 	    else
 		fd = fdFree(fd, "open data (ufdClose HTTP)");
+/*@=evalorder @*/
 
 	    /* XXX if not using libio, lose the fp from fpio */
 	    {   FILE * fp;
@@ -2153,6 +2167,7 @@ int ufdClose( /*@only@*/ void * cookie)
 	    }
 
 	    /* If content remains, then don't persist. */
+assert(fd != NULL);
 	    if (fd->bytesRemain > 0)
 		fd->persist = 0;
 	    fd->contentLength = fd->bytesRemain = -1;
@@ -2183,18 +2198,23 @@ int ufdClose( /*@only@*/ void * cookie)
     if (u->data == NULL)
 	u->data = fdNew("persist data (ftpOpen)");
 
+assert(u->data != NULL);
+/*@-unqualifiedtrans@*/
     if (u->data->url == NULL)
-	fd = fdLink(u->data, "grab data (ftpOpen persist data)");
+	fd = u->data = fdLink(u->data, "grab data (ftpOpen persist data)");
     else
 	fd = fdNew("grab data (ftpOpen)");
+/*@=unqualifiedtrans@*/
 
-    if (fd) {
+    if (fd != NULL) {
 	fdSetOpen(fd, url, flags, mode);
 	fdSetIo(fd, ufdio);
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = ftpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
+/*@-usereleased@*/
 	fd->url = urlLink(u, "url (ufdOpen FTP)");
+/*@=usereleased@*/
 	fd->urlType = URL_IS_FTP;
     }
 
@@ -2570,11 +2590,11 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 
 /*@-globuse@*/
 static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd;
-    BZFILE *bzfile;;
+    BZFILE *bzfile;
     mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
 
     if ((bzfile = BZ2_bzopen(path, fmode)) == NULL)
@@ -2863,6 +2883,7 @@ int Fclose(FD_t fd)
 DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 
     fd = fdLink(fd, "Fclose");
+    if (fd != NULL)
     while (fd->nfps >= 0) {
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
 	
@@ -2930,7 +2951,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    /*@=nullderef@*/
 	    rc = _close(fd);
 	}
-	if (fd->nfps == 0)
+	if (fd == NULL || fd->nfps == 0)	/* XXX fd != NULL ever */
 	    break;
 	if (ec == 0 && rc)
 	    ec = rc;
@@ -3139,8 +3160,10 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	}
     }
 
+/*@-refcounttrans -retalias -usereleased @*/
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
-    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
+    return fd;
+/*@=refcounttrans =retalias =usereleased @*/
 }
 
 FD_t Fopen(const char *path, const char *_fmode)
