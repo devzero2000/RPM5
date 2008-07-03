@@ -655,7 +655,9 @@ rpmts rpmtsFree(rpmts ts)
     ts->dsi = _free(ts->dsi);
 
     if (ts->scriptFd != NULL) {
+/*@-refcounttrans@*/	/* FIX: XfdFree annotation */
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
+/*@=refcounttrans@*/
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
@@ -701,7 +703,9 @@ int rpmtsSetKeyring(rpmts ts, void * keyring)
        return -1;
 
     ts->keyring = rpmKeyringFree(ts->keyring);
+/*@-assignexpose@*/
     ts->keyring = keyring;
+/*@=assignexpose@*/
     return 0;
 }
 
@@ -849,13 +853,15 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 
     if (ts != NULL) {
 	if (ts->scriptFd != NULL) {
+/*@-refcounttrans@*/	/* FIX: XfdFree annotation */
 	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
+/*@=refcounttrans@*/
 	    ts->scriptFd = NULL;
 	}
-/*@+voidabstract@*/
+/*@-refcounttrans@*/	/* FIX: XfdLink annotation */
 	if (scriptFd != NULL)
 	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
-/*@=voidabstract@*/
+/*@=refcounttrans@*/
     }
 }
 

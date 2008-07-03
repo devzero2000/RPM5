@@ -1135,6 +1135,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int numRemoved;
     int rollbackFailures = 0;
     void * lock = NULL;
+    void * ptr;
     int xx;
 
     /* XXX programmer error segfault avoidance. */
@@ -1445,7 +1446,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
     }
     pi = rpmtsiFree(pi);
 
-    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1466,7 +1467,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	(void) rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
+	ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
 			ts->orderCount);
 
 	if (fc == 0) continue;
@@ -1613,7 +1614,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    xx = Chdir(currDir);
     }
 
-    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
+    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1648,9 +1649,8 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
      * Save removed files before erasing.
      */
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	int progress;
+	int progress = 0;
 
-	progress = 0;
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 
@@ -1666,10 +1666,10 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
 		    /*@switchbreak@*/ break;
 		if (!progress)
-		    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_START,
+		    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_START,
 				7, numRemoved);
 
-		(void) rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_PROGRESS,
+		ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_PROGRESS,
 				progress, numRemoved);
 		progress++;
 
@@ -1694,7 +1694,7 @@ assert(psm != NULL);
 	}
 	pi = rpmtsiFree(pi);
 	if (progress)
-	    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_STOP,
+	    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_STOP,
 				7, numRemoved);
     }
 

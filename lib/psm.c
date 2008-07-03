@@ -249,7 +249,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 assert(fi->h != NULL);
 assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     (void) rpmteSetHeader(fi->te, fi->h);
+/*@-refcounttrans@*/	/* FIX: XfdLink annotation */
     ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
+/*@=refcounttrans@*/
 
     (void) headerMacrosLoad(fi->h);
 
@@ -1547,7 +1549,8 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
  * @return		0 always
  */
 static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
-	/*@modifies fi @*/
+	/*@globals fileSystem @*/
+	/*@modifies fi, fileSystem @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tscolor = rpmtsColor(ts);

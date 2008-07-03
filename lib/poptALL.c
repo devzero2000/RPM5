@@ -218,7 +218,7 @@ static void rpmcliAllArgCallback(poptContext con,
             size_t val_len;
             val_len = strlen(val);
             if (val[val_len - 1] == '\n')
-                fwrite(val, val_len, 1, stdout);
+                val_len = fwrite(val, val_len, 1, stdout);
             else
 		fprintf(stdout, "%s\n", val);
 	    val = _free(val);
@@ -469,6 +469,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     poptContext optCon;
     char *path_buf, *path, *path_next;
     int rc;
+    int xx;
     int i;
 
 #if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
@@ -531,7 +532,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     path_buf = xstrdup(rpmpoptfiles);
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
-        int ac, i;
+        int ac;
 
         /* locate start of next path element */
         path_next = strchr(path, ':');
@@ -543,7 +544,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
         /* glob-expand the path element */
         ac = 0;
         av = NULL;
-        if ((i = rpmGlob(path, &ac, &av)) != 0)
+        if ((xx = rpmGlob(path, &ac, &av)) != 0)
             continue;
 
         /* work-off each resulting file from the path element */
@@ -553,7 +554,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 		fn++;
 		if (!rpmSecuritySaneFile(fn)) {
 		    rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", fn);
-		    continue;
+		    /*@innercontinue@*/ continue;
 		}
 	    }
 	    (void) poptReadConfigFile(optCon, fn);

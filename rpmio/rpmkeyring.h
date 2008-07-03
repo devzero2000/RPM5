@@ -7,23 +7,25 @@
 
 /** \ingroup rpmkeyring
  */
-typedef struct rpmPubkey_s * rpmPubkey;
+typedef /*@abstract@*/ struct rpmPubkey_s * rpmPubkey;
 
 /** \ingroup rpmkeyring
  */
-typedef struct rpmKeyring_s * rpmKeyring;
+typedef /*@abstract@*/ struct rpmKeyring_s * rpmKeyring;
 
 /** \ingroup rpmkeyring
  * Create a new, empty keyring
  * @return	new keyring handle
  */
-rpmKeyring rpmKeyringNew(void);
+rpmKeyring rpmKeyringNew(void)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Free keyring and the keys within it
  * @return	NULL always
  */
-rpmKeyring rpmKeyringFree(rpmKeyring keyring);
+rpmKeyring rpmKeyringFree(rpmKeyring keyring)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Add a public key to keyring.
@@ -31,7 +33,8 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring);
  * @param key		pubkey handle
  * @return		0 on success, -1 on error, 1 if key already present
  */
-int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
+int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Perform keyring lookup for a key matching a signature
@@ -39,7 +42,8 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
  * @param sig		OpenPGP packet container of signature
  * @return		RPMRC_OK if found, RPMRC_NOKEY otherwise
  */
-rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
+rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from OpenPGP packet
@@ -47,20 +51,23 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
  * @param pktlen	Data length
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
+rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from ASCII-armored pubkey file
  * @param filename	Path to pubkey file
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyRead(const char *filename);
+rpmPubkey rpmPubkeyRead(const char *filename)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Free a pubkey.
  * @param key		Pubkey to free
  * @return		NULL always
  */
-rpmPubkey rpmPubkeyFree(rpmPubkey key);
+rpmPubkey rpmPubkeyFree(rpmPubkey key)
+	/*@*/;
 
 #endif /* _RPMKEYDB_H */

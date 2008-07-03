@@ -50,8 +50,10 @@ static void delTE(rpmte p)
 
     p->fi = rpmfiFree(p->fi);
 
+/*@-refcounttrans@*/	/* FIX: XfdFree annotation */
     if (p->fd != NULL)
         p->fd = fdFree(p->fd, "delTE");
+/*@=refcounttrans@*/
 
     p->os = _free(p->os);
     p->arch = _free(p->arch);

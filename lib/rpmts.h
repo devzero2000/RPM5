@@ -732,7 +732,8 @@ FD_t rpmtsScriptFd(rpmts ts)
  * @param scriptFd	new script file handle (or NULL)
  */
 void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
-	/*@modifies ts, scriptFd @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, scriptFd, fileSystem @*/;
 
 /** \ingroup rpmts
  * Get selinuxEnabled flag, i.e. is SE linux enabled?
@@ -829,7 +830,8 @@ rpmdb rpmtsGetRdb(rpmts ts)
  */
 /*@null@*/
 rpmPRCO rpmtsPRCO(rpmts ts)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmts
  * Initialize disk space info for each and every mounted file systems.

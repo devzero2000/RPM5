@@ -193,6 +193,8 @@ static rpmTag _obsolete_tag;
  * @return		0 on success
  */
 static int rpmtsAddUpgrades(rpmts ts, rpmte p, uint32_t hcolor, Header h)
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tscolor = rpmtsColor(ts);
@@ -290,6 +292,8 @@ static inline int chkSuffix(const char * fn, const char * suffix)
  * @return		no. of references from build set
  */
 static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h, alKey pkgKey)
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const void *keyval = NULL;
@@ -374,6 +378,8 @@ assert(lastx >= 0 && lastx < ts->orderCount);
  * @return		0 on success
  */
 static int rpmtsAddObsoletes(rpmts ts, rpmte p, uint32_t hcolor)
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
 {
     uint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);

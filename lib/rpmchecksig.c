@@ -75,8 +75,10 @@ static int manageFile(/*@out@*/ FD_t *fdp,
 	}
 	if (fnp != NULL)
 	    *fnp = fn;
+/*@-refcounttrans@*/	/* FIX: XfdLink/XfdFree annotation */
 	*fdp = fdLink(fd, "manageFile return");
 	fd = fdFree(fd, "manageFile return");
+/*@=refcounttrans@*/
 	return 0;
     }
 
@@ -310,7 +312,7 @@ if (sigh != NULL) {
 	    for (i = 0; i < nsigs; i++) {
 		he->tag = (rpmTag)sigs[i];
 		xx = headerDel(sigh, he, 0);
-		xx = rpmAddSignature(sigh, sigtarget, he->tag, qva->passPhrase);
+		xx = rpmAddSignature(sigh, sigtarget, (rpmSigTag) he->tag, qva->passPhrase);
 		if (xx)
 		    goto exit;
 	    }

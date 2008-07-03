@@ -668,7 +668,9 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     fsm->goal = goal;
     if (cfd != NULL) {
+/*@-refcounttrans@*/	/* FIX: XfdLink annotation */
 	fsm->cfd = fdLink(cfd, "persist (fsm)");
+/*@=refcounttrans@*/
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
@@ -741,7 +743,9 @@ fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
     fsm->iter->ts = rpmtsFree(fsm->iter->ts);
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
+/*@-refcounttrans@*/	/* FIX: XfdFree annotation */
 	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
+/*@=refcounttrans@*/
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;

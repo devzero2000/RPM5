@@ -182,7 +182,9 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str;
+/*@-type@*/	/* FIX rpmtsGetRDB()? */
 	(void) headerSetRpmdb(h, ts->rdb);
+/*@=type@*/
 	str = queryHeader(h, qva->qva_queryFormat);
 	(void) headerSetRpmdb(h, NULL);
 	if (str) {

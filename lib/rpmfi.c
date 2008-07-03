@@ -1631,8 +1631,10 @@ int rpmfiStat(rpmfi fi, const char * path, struct stat * st)
 	break;
     }
 
+/*@-modfilesys@*/
 if (_rpmfi_debug)
 fprintf(stderr, "*** rpmfiStat(%p, %s, %p) rc %d\n", fi, path, st, rc);
+/*@=modfilesys@*/
 
     return rc;
 }
@@ -1673,8 +1675,10 @@ DIR * rpmfiOpendir(rpmfi fi, const char * name)
     fnames = argvFree(fnames);
     fmodes = _free(fmodes);
 
+/*@-modfilesys@*/
 if (_rpmfi_debug)
 fprintf(stderr, "*** rpmfiOpendir(%p, %s) dir %p\n", fi, name, dir);
+/*@=modfilesys@*/
 
     return dir;
 }
