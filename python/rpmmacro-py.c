@@ -67,13 +67,17 @@ PyObject *
 rpmmacro_ExpandMacro(/*@unused@*/ PyObject * s, PyObject * args,
 		PyObject * kwds)
 {
-    char * macro;
+    char * macro, * str;
     char * kwlist[] = {"macro", NULL};
+    PyObject *res;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:ExpandMacro", kwlist, &macro))
 	return NULL;
 
-    return Py_BuildValue("s", rpmExpand(macro, NULL));
+    str = rpmExpand(macro, NULL);
+    res = Py_BuildValue("s", str);
+    str = _free(str);
+    return res;
 }
 
 /**
