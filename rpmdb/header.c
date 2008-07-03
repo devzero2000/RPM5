@@ -28,9 +28,11 @@ int _hdr_debug = 0;
 /*@access indexEntry @*/
 
 /* Compute tag data store size using offsets? */
+/*@unchecked@*/
 int _hdr_fastdatalength = 0;
 
 /* Swab tag data only when accessed through headerGet()? */
+/*@unchecked@*/
 int _hdr_lazytagswab = 0;
 
 /** \ingroup header
@@ -371,7 +373,8 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
  * Swab uint64_t/uint32_t/uint16_t arrays within header region.
  *
  */
-static unsigned char * tagSwab(unsigned char * t, const HE_t he, size_t nb)
+static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
+		const HE_t he, size_t nb)
 	/*@modifies *t @*/
 {
     uint32_t i;
@@ -402,7 +405,9 @@ static unsigned char * tagSwab(unsigned char * t, const HE_t he, size_t nb)
 	t += nb;
 	break;
     }
+/*@-compdef@*/
     return t;
+/*@=compdef@*/
 }
 
 /**
@@ -594,7 +599,9 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	else {
 	    he->tag = ie.info.tag;
 	    he->t = ie.info.type;
+/*@-kepttrans@*/
 	    he->p.ptr = t;
+/*@=kepttrans@*/
 	    he->c = ie.info.count;
 	    if ((t = tagSwab(t, he, ie.length)) == NULL)
 		return 0;
@@ -1213,7 +1220,9 @@ int headerSetOrigin(Header h, const char * origin)
 
 const char * headerGetBaseURL(Header h)
 {
+/*@-retexpose@*/
     return (h != NULL ? h->baseurl : NULL);
+/*@=retexpose@*/
 }
 
 int headerSetBaseURL(Header h, const char * baseurl)
@@ -1227,7 +1236,9 @@ int headerSetBaseURL(Header h, const char * baseurl)
 
 struct stat * headerGetStatbuf(Header h)
 {
-    return &h->sb;
+/*@-immediatetrans -retexpose@*/
+    return (h != NULL ? &h->sb : NULL);
+/*@=immediatetrans =retexpose@*/
 }
 
 int headerSetStatbuf(Header h, struct stat * st)
@@ -1239,7 +1250,9 @@ int headerSetStatbuf(Header h, struct stat * st)
 
 const char * headerGetDigest(Header h)
 {
+/*@-compdef -retexpose -usereleased @*/
     return (h != NULL ? h->digest : NULL);
+/*@=compdef =retexpose =usereleased @*/
 }
 
 int headerSetDigest(Header h, const char * digest)
@@ -1253,13 +1266,17 @@ int headerSetDigest(Header h, const char * digest)
 
 void * headerGetRpmdb(Header h)
 {
+/*@-compdef -retexpose -usereleased @*/
     return (h != NULL ? h->rpmdb : NULL);
+/*@=compdef =retexpose =usereleased @*/
 }
 
 void * headerSetRpmdb(Header h, void * rpmdb)
 {
+/*@-assignexpose -temptrans @*/
     if (h != NULL)
 	h->rpmdb = rpmdb;
+/*@=assignexpose =temptrans @*/
     return NULL;
 }
 
@@ -1341,7 +1358,9 @@ Header headerReload(Header h, int tag)
 	xx = headerSetDigest(nh, digest);
 	digest = _free(digest);
     }
+/*@-assignexpose@*/
     nh->sb = sb;	/* structure assignment */
+/*@=assignexpose@*/
     (void) headerSetRpmdb(nh, rpmdb);
     xx = (int) headerSetInstance(nh, instance);
     return nh;

@@ -51,8 +51,8 @@ int rpmEVRcmp(const char * a, const char * b)
     for (; *a && *b && rc == 0; a = ae, b = be) {
 
 	/* Skip leading non-alpha, non-digit characters. */
-	while (*a && !(xisdigit(*a) || xisrpmalpha(*a))) a++;
-	while (*b && !(xisdigit(*b) || xisrpmalpha(*b))) b++;
+	while (*a && !(xisdigit((int)*a) || xisrpmalpha((int)*a))) a++;
+	while (*b && !(xisdigit((int)*b) || xisrpmalpha((int)*b))) b++;
 
 	/* Digit string comparison? */
 #if defined(RPM_VENDOR_OPENPKG) /* support-wildcards-in-EVR-comparison */
@@ -68,18 +68,18 @@ int rpmEVRcmp(const char * a, const char * b)
         }
         else
 #endif
-	if (xisdigit(*a) || xisdigit(*b)) {
+	if (xisdigit((int)*a) || xisdigit((int)*b)) {
 	    /* Discard leading zeroes. */
-	    while (a[0] == '0' && xisdigit(a[1])) a++;
-	    while (b[0] == '0' && xisdigit(b[1])) b++;
+	    while (a[0] == '0' && xisdigit((int)a[1])) a++;
+	    while (b[0] == '0' && xisdigit((int)b[1])) b++;
 
 	    /* Find end of digit strings. */
-	    ae = a; while (xisdigit(*ae)) ae++;
-	    be = b; while (xisdigit(*be)) be++;
+	    ae = a; while (xisdigit((int)*ae)) ae++;
+	    be = b; while (xisdigit((int)*be)) be++;
 
 	    /* Calculate digit comparison return code. */
 	    if (a == ae || b == be)
-		rc = (*b - *a) * _invert_digits_alphas_comparison;
+		rc = (int)(*b - *a) * _invert_digits_alphas_comparison;
 	    else {
 		rc = (ae - a) - (be - b);
 		if (!rc)
@@ -87,8 +87,8 @@ int rpmEVRcmp(const char * a, const char * b)
 	    }
 	} else {
 	    /* Find end of alpha strings. */
-	    ae = a; while (xisrpmalpha(*ae)) ae++;
-	    be = b; while (xisrpmalpha(*be)) be++;
+	    ae = a; while (xisrpmalpha((int)*ae)) ae++;
+	    be = b; while (xisrpmalpha((int)*be)) be++;
 
 	    /* Calculate alpha comparison return code. */
 	    rc = strncmp(a, b, MAX((ae - a), (be - b)));
@@ -97,7 +97,7 @@ int rpmEVRcmp(const char * a, const char * b)
 
     /* Longer string wins. */
     if (!rc)
-	rc = (*a - *b);
+	rc = (int)(*a - *b);
 
     /* Force strict -1, 0, 1 return. */
     rc = (rc > 0 ? 1
@@ -113,7 +113,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     char *se;
 
     evr->str = se = s;
-    while (*se && xisdigit(*se)) se++;	/* se points to epoch terminator */
+    while (*se && xisdigit((int)*se)) se++;	/* se points to epoch terminator */
 
     if (*se == ':') {
 	evr->E = s;
@@ -161,7 +161,9 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
     return rc;
 }
 
+/*@-redecl@*/
 int (*rpmvercmp) (const char *a, const char *b) = rpmEVRcmp;
+/*@=redecl@*/
 
 /**
  */

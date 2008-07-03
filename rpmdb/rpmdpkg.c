@@ -19,12 +19,13 @@ int _rpmdpkg_debug = 0;
 static inline int dpkgEVRctype(char x)
 	/*@*/
 {
+    int c = (int)x;
     return (
 	  x == '~' ? -1 
-	: xisdigit(x) ? 0
-	: !x ? 0 \
-	: xisalpha(x) ? x
-	: x + 256
+	: xisdigit(c) ? 0
+	: x == '\0' ? 0 \
+	: xisalpha(c) ? c
+	: c + 256
     );
 }
 
@@ -36,7 +37,7 @@ int dpkgEVRcmp(const char *a, const char *b)
     while (*a || *b) {
 	int first_diff= 0;
 
-	while ( (*a && !xisdigit(*a)) || (*b && !xisdigit(*b)) ) {
+	while ( (*a && !xisdigit((int)*a)) || (*b && !xisdigit((int)*b)) ) {
 	    int vc = dpkgEVRctype(*a);
 	    int rc = dpkgEVRctype(*b);
 	    if (vc != rc) return vc - rc;
@@ -45,12 +46,12 @@ int dpkgEVRcmp(const char *a, const char *b)
 
 	while (*a == '0') a++;
 	while (*b == '0') b++;
-	while (xisdigit(*a) && xisdigit(*b)) {
-	    if (!first_diff) first_diff = *a - *b;
+	while (xisdigit((int)*a) && xisdigit((int)*b)) {
+	    if (!first_diff) first_diff = (int)(*a - *b);
 	    a++; b++;
 	}
-	if (xisdigit(*a)) return 1;
-	if (xisdigit(*b)) return -1;
+	if (xisdigit((int)*a)) return 1;
+	if (xisdigit((int)*b)) return -1;
 	if (first_diff) return first_diff;
     }
     return 0;

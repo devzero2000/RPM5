@@ -40,7 +40,8 @@
 /*@access Header @*/            /* XXX compared with NULL */
 /*@access entryInfo @*/
 /*@access indexEntry @*/
-/*@access FD_t @*/              /* XXX stealing digests */
+/*@access FD_t @*/		/* XXX stealing digests */
+/*@access FDSTAT_t @*/		/* XXX stealing digests */
 
 /*@unchecked@*/
 int _pkgio_debug = 0;
@@ -240,7 +241,9 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	/* Retrieve the pubkey that matches the signature. */
 	he->tag = RPMTAG_PUBKEYS;
+/*@-nullstate@*/
 	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
+/*@=nullstate@*/
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (!headerGet(h, he, 0))
 		continue;
@@ -357,7 +360,9 @@ exit:
 	ts->pkpkt = _free(ts->pkpkt);
 	ts->pkpktlen = 0;
     }
+/*@-nullstate@*/
     return res;
+/*@=nullstate@*/
 }
 
 pgpDig rpmtsDig(rpmts ts)
@@ -1362,11 +1367,13 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	} else
 	    (void) headerSetOrigin(h, origin);
     }
+/*@-mods@*/
     {	struct stat * st = headerGetStatbuf(h);
 	int saveno = errno;
 	(void) fstat(Fileno(fd), st);
 	errno = saveno;
     }
+/*@=mods@*/
     (void) headerSetStartOff(h, startoff);
     (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);
     
