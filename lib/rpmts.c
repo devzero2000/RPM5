@@ -1150,12 +1150,20 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 		rpmCallbackType what, uint64_t amount, uint64_t total)
 {
     void * ptr = NULL;
-    if (ts && ts->notify && te) {
-assert(!(te->type == TR_ADDED && te->h == NULL));
+    if (ts && ts->notify) {
+	Header h;
+	fnpyKey cbkey;
 	/*@-type@*/ /* FIX: cast? */
 	/*@-noeffectuncon @*/ /* FIX: check rc */
-	ptr = ts->notify(te->h, what, amount, total,
-			rpmteKey(te), ts->notifyData);
+	if (te) {
+	    h = headerLink(te->h);
+	    cbkey = rpmteKey(te);
+	} else {
+	    h = NULL;
+	    cbkey = NULL;
+	}
+	ptr = ts->notify(h, what, amount, total, cbkey, ts->notifyData);
+	h = headerFree(h);
 	/*@=noeffectuncon @*/
 	/*@=type@*/
     }

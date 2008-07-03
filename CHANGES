@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: single point to control how callbacks are made.
     - rpm.org: Don't leak memory on python expandMacro().
     - jbj: rpmgpg: stub in gpg options using popt.
     - rpm.org: get/set transaction keyring methods.

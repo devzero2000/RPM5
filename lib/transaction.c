@@ -33,7 +33,6 @@
 
 #include "debug.h"
 
-/*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet @*/
 
@@ -1117,8 +1116,6 @@ static int markLinkedFailed(rpmts ts, rpmte p)
     return 0;
 }
 
-#define	NOTIFY(_ts, _al) /*@i@*/ if ((_ts)->notify) (void) (_ts)->notify _al
-
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     uint32_t tscolor = rpmtsColor(ts);
@@ -1309,9 +1306,8 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	    if (fi->pretrans == NULL)
 		continue;
 
-	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-			    rpmteKey(p), ts->notifyData);
 	    p->h = NULL;
+	    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
 	    if (rpmteFd(p) != NULL) {
 		rpmVSFlags ovsflags = rpmtsVSFlags(ts);
 		rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
@@ -1322,11 +1318,7 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 		vsflags = rpmtsSetVSFlags(ts, ovsflags);
 		switch (rpmrc) {
 		default:
-		    /*@-noeffectuncon@*/ /* FIX: notify annotations */
-		    p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-				    0, 0,
-				    rpmteKey(p), ts->notifyData);
-		    /*@=noeffectuncon@*/
+		    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 		    p->fd = NULL;
 		    /*@switchbreak@*/ break;
 		case RPMRC_NOTTRUSTED:
@@ -1353,10 +1345,9 @@ assert(psm != NULL);
 		xx = rpmpsmStage(psm, PSM_SCRIPT);
 		psm = rpmpsmFree(psm);
 
-/*@-noeffectuncon -compdef -usereleased @*/
-		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-				  rpmteKey(p), ts->notifyData);
-/*@=noeffectuncon =compdef =usereleased @*/
+/*@-compdef -usereleased @*/
+		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+/*@=compdef =usereleased @*/
 		p->fd = NULL;
 		p->h = headerFree(p->h);
 	    }
@@ -1454,8 +1445,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
     }
     pi = rpmtsiFree(pi);
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount,
-	NULL, ts->notifyData));
+    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1476,8 +1466,8 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
-			ts->orderCount, NULL, ts->notifyData));
+	(void) rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
+			ts->orderCount);
 
 	if (fc == 0) continue;
 
@@ -1623,8 +1613,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    xx = Chdir(currDir);
     }
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
-	NULL, ts->notifyData));
+    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1677,11 +1666,11 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
 		    /*@switchbreak@*/ break;
 		if (!progress)
-		    NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_START,
-				7, numRemoved, NULL, ts->notifyData));
+		    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_START,
+				7, numRemoved);
 
-		NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_PROGRESS, progress,
-			numRemoved, NULL, ts->notifyData));
+		(void) rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_PROGRESS,
+				progress, numRemoved);
 		progress++;
 
 		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
@@ -1704,10 +1693,9 @@ assert(psm != NULL);
 	    }
 	}
 	pi = rpmtsiFree(pi);
-	if (progress) {
-	    NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_STOP, 7, numRemoved,
-			NULL, ts->notifyData));
-	}
+	if (progress)
+	    (void) rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_STOP,
+				7, numRemoved);
     }
 
     /* ===============================================
@@ -1742,10 +1730,7 @@ assert(psm != NULL);
 	    p->h = NULL;
 	    /*@-type@*/ /* FIX: rpmte not opaque */
 	    {
-		/*@-noeffectuncon@*/ /* FIX: notify annotations */
-		p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-				rpmteKey(p), ts->notifyData);
-		/*@=noeffectuncon@*/
+		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
 		if (rpmteFd(p) != NULL) {
 		    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
 		    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
@@ -1758,11 +1743,8 @@ assert(psm != NULL);
 
 		    switch (rpmrc) {
 		    default:
-			/*@-noeffectuncon@*/ /* FIX: notify annotations */
-			p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-					0, 0,
-					rpmteKey(p), ts->notifyData);
-			/*@=noeffectuncon@*/
+			p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
+					0, 0);
 			p->fd = NULL;
 			ourrc++;
 			/*@innerbreak@*/ break;
@@ -1823,13 +1805,8 @@ assert(psm != NULL);
 	    }
 
 	    if (gotfd) {
-		/*@-noeffectuncon @*/ /* FIX: check rc */
-		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-			rpmteKey(p), ts->notifyData);
-		/*@=noeffectuncon @*/
-		/*@-type@*/
+		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 		p->fd = NULL;
-		/*@=type@*/
 	    }
 
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
@@ -1895,9 +1872,8 @@ assert(psm != NULL);
 	    if (!haspostscript)
 	    	continue;
 
-	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-	    	    	rpmteKey(p), ts->notifyData);
 	    p->h = NULL;
+	    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
 	    if (rpmteFd(p) != NULL) {
 	    	rpmVSFlags ovsflags = rpmtsVSFlags(ts);
 	    	rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
@@ -1908,8 +1884,8 @@ assert(psm != NULL);
 	    	vsflags = rpmtsSetVSFlags(ts, ovsflags);
 	    	switch (rpmrc) {
 	    	default:
-	    	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-	    	    		0, 0, rpmteKey(p), ts->notifyData);
+		    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
+					0, 0);
 	    	    p->fd = NULL;
 	    	    /*@switchbreak@*/ break;
 	    	case RPMRC_NOTTRUSTED:
@@ -1935,10 +1911,9 @@ assert(psm != NULL);
 	    	xx = rpmpsmStage(psm, PSM_SCRIPT);
 	    	psm = rpmpsmFree(psm);
 
-/*@-noeffectuncon -compdef -usereleased @*/
-	    	(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-	    	    	      rpmteKey(p), ts->notifyData);
-/*@=noeffectuncon =compdef =usereleased @*/
+/*@-compdef -usereleased @*/
+		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+/*@=compdef =usereleased @*/
 	    	p->fd = NULL;
 	    	p->fi = rpmfiFree(p->fi);
 	    	p->h = headerFree(p->h);
