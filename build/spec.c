@@ -122,7 +122,7 @@ assert(xx != 0 && he->p.str != NULL);
 		lastp = p;
 	} else {
 	    if (!strcmp(NV, nv) ||  !strcmp(NV, n)
-	    || (!strcmp(N, n) && !strcmp(V, v)))
+	    || (!strcmp(N, n) && (V == NULL || !strcmp(V, v))))
 		lastp = p;
 	}
 	n = _free(n);
@@ -137,7 +137,7 @@ assert(xx != 0 && he->p.str != NULL);
     return ((lastp == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
-Package newPackage(Spec spec)
+Package newPackage(/*@unused@*/ Spec spec)
 {
     Package p;
 

@@ -1125,7 +1125,7 @@ static int checkHardLinks(FileList fl)
 	    if (ilp->fl_dev != jlp->fl_dev)
 		/*@innercontinue@*/ continue;
 	    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
-		continue;
+		/*@innercontinue@*/ continue;
 	    return 1;
 	}
     }
@@ -1266,6 +1266,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * fip, Header h, int isSrc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
+		fl->totalFileSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1613,7 +1614,7 @@ if (_rpmbuildFlags & 4) {
     compressFilelist(h);
 
   { int scareMem = 0;
-    rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
+    void * ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     char * a, * d;
 
@@ -1716,17 +1717,17 @@ if (_rpmbuildFlags & 4) {
 		int j = i + 1;
 		for (; (unsigned)j < fi->fc; j++, jlp++) {
 		    if (!S_ISREG(jlp->fl_mode))
-			continue;
+			/*@innercontinue@*/ continue;
 		    if (flp->fl_nlink != jlp->fl_nlink)
-			continue;
+			/*@innercontinue@*/ continue;
 		    if (flp->fl_ino != jlp->fl_ino)
-			continue;
+			/*@innercontinue@*/ continue;
 		    if (flp->fl_dev != jlp->fl_dev)
-			continue;
+			/*@innercontinue@*/ continue;
 		    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
-		        continue;
+		        /*@innercontinue@*/ continue;
 		    bingo = 0;	/* don't tally hardlink yet. */
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 	    }
 	    if (bingo)
@@ -2687,6 +2688,7 @@ int processSourceFiles(Spec spec)
     /* srcdefattr: needed variables */
     char _srcdefattr_buf[BUFSIZ];
     char *_srcdefattr;
+    int xx;
 
     _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
 
@@ -2696,8 +2698,8 @@ int processSourceFiles(Spec spec)
     /* srcdefattr: initialize file list structure */
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr && *_srcdefattr) {
-        snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
-        parseForAttr(_srcdefattr_buf, &fl);
+        xx = snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
+        xx = parseForAttr(_srcdefattr_buf, &fl);
     }
 
     /* Construct the SRPM file list. */

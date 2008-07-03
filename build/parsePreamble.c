@@ -92,7 +92,7 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 static int parseSimplePart(Spec spec, /*@out@*/char ** Np,
 		/*@out@*/rpmParseState *flag)
 	/*@globals internalState@*/
-	/*@modifies *name, *flag, internalState @*/
+	/*@modifies *Np, *flag, internalState, spec->line @*/
 {
     char * s, * se;
     int rc = 0;		/* assume failure */
@@ -214,6 +214,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 
 /**
  */
+/*@null@*/
 static inline char * findLastChar(char * s)
 	/*@modifies *s @*/
 {
@@ -559,7 +560,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->sourceHeader, spec->BANames, spec->BACount,
 		spec->line,
-		pkg->header, pkg->autoProv, pkg->autoReq,
+		pkg->header, pkg->autoProv, pkg->autoReq, pkg->noarch,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));

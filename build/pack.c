@@ -1064,7 +1064,9 @@ if (!(_rpmbuildFlags & 4)) {
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
+/*@-onlytrans@*/
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
+/*@=onlytrans@*/
 /*@-assignexpose -newreftrans@*/
 	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
 /*@=assignexpose =newreftrans@*/
@@ -1077,7 +1079,9 @@ assert(csa->cpioList != NULL);
 	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
 /*@=onlytrans@*/
 	csa->cpioList = rpmfiFree(csa->cpioList);
+/*@-nullpass -onlytrans -refcounttrans @*/
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
+/*@=nullpass =onlytrans =refcounttrans @*/
 	/*@=type@*/
 	fn = _free(fn);
 	if (rc)
@@ -1131,7 +1135,9 @@ rpmRC packageSources(Spec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
+/*@-onlytrans@*/
 	csa->cpioFdIn = fdNew("init (packageSources)");
+/*@=onlytrans@*/
 /*@-assignexpose -newreftrans@*/
 	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
 /*@=assignexpose =newreftrans@*/
@@ -1145,7 +1151,9 @@ assert(csa->cpioList != NULL);
 	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
 /*@=onlytrans@*/
 	csa->cpioList = rpmfiFree(csa->cpioList);
+/*@-nullpass -onlytrans -refcounttrans @*/
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
+/*@=nullpass =onlytrans =refcounttrans @*/
 	/*@=type@*/
 	fn = _free(fn);
     }

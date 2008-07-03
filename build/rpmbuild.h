@@ -396,7 +396,8 @@ rpmRC doScript(Spec spec, int what, /*@null@*/ const char * name,
  */
 rpmRC lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
 		/*@out@*/ Package * pkg)
-	/*@modifies spec->packages, *pkg @*/;
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies spec->packages, *pkg, rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * Create and initialize package control structure.

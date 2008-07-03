@@ -647,6 +647,7 @@ static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
 {
     char *buf;
     size_t buf_len;
+    int xx;
     int i;
 
     if (!(rpmIsVerbose() && !quietly && (rpmBTArgs.buildAmount & RPMBUILD_FETCHSOURCE)))
@@ -654,15 +655,15 @@ static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
     buf_len = 2*80;
     if ((buf = (char *)malloc(buf_len)) == NULL)
         return;
-    snprintf(buf, buf_len, "%s%d:", (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num);
+    xx = snprintf(buf, buf_len, "%s%d:", (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num);
     for (i = strlen(buf); i <= 11; i++)
         buf[i] = ' ';
-    snprintf(buf+i, buf_len-i, "%-52.52s", sp->source);
+    xx = snprintf(buf+i, buf_len-i, "%-52.52s", sp->source);
     i = strlen(buf);
     if (st != NULL)
-        snprintf(buf+i, buf_len-i, " %9lu Bytes\n", (unsigned long)st->st_size);
+        xx = snprintf(buf+i, buf_len-i, " %9lu Bytes\n", (unsigned long)st->st_size);
     else
-        snprintf(buf+i, buf_len-i, "      ...MISSING\n");
+        xx = snprintf(buf+i, buf_len-i, "      ...MISSING\n");
     rpmlog(RPMLOG_NOTICE, "%s", buf);
     buf = _free(buf);
     return;
