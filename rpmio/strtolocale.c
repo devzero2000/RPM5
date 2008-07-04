@@ -47,7 +47,7 @@ const char * xstrtolocale(const char *str)
     src = str;
     dest = result;
     for(;;) {
-	size_t status = iconv(cd, &src, &src_size, &dest, &dest_size);
+	size_t status = iconv(cd, (char **)&src, &src_size, &dest, &dest_size);
 	if (status == (size_t)-1) {
 	    size_t dest_offset;
 	    if (errno != E2BIG) {
