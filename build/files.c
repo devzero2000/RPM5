@@ -2853,7 +2853,6 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     rpmRC res = RPMRC_OK;
-    int xx;
     
     check_fileList = newStringBuf();
     
@@ -2866,19 +2865,28 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosLoad(pkg->header);
 
 	he->tag = RPMTAG_NVRA;
-	xx = headerGet(pkg->header, he, 0);
+	rc = headerGet(pkg->header, he, 0);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he->p.str);
 	he->p.ptr = _free(he->p.ptr);
 		   
-	if ((xx = processPackageFiles(spec, pkg, installSpecialDoc, test)))
+	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test))) {
 	    res = RPMRC_FAIL;
+	    (void) headerMacrosUnload(pkg->header);
+	    break;
+	}
 
 	/* Finalize package scriptlets before extracting dependencies. */
-	if ((rc = processScriptFiles(spec, pkg)))
+	if ((rc = processScriptFiles(spec, pkg))) {
 	    res = rc;
+	    (void) headerMacrosUnload(pkg->header);
+	    break;
+	}
 
-	if ((xx = rpmfcGenerateDepends(spec, pkg)))
+	if ((rc = rpmfcGenerateDepends(spec, pkg))) {
 	    res = RPMRC_FAIL;
+	    (void) headerMacrosUnload(pkg->header);
+	    break;
+	}
 
 	/* XXX this should be earlier for deps to be entirely sorted. */
 	providePackageNVR(pkg->header);
@@ -2886,13 +2894,12 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosUnload(pkg->header);
     }
 
-    /* Now we have in fileList list of files from all packages.
-     * We pass it to a script which does the work of finding missing
-     * and duplicated files.
-     */
-    
-    if (checkFiles(check_fileList) > 0) {
-	if (res == RPMRC_OK)
+    if (res == RPMRC_OK) {
+	/* Now we have in fileList list of files from all packages.
+	 * We pass it to a script which does the work of finding missing
+	 * and duplicated files.
+	 */
+	if (checkFiles(check_fileList) > 0)
 	    res = RPMRC_FAIL;
     }
     
