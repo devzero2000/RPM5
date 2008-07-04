@@ -290,6 +290,9 @@ LIBRPMIO_0
     rpmioFini;
     rpmioFtsOpts;
     rpmioFtsPoptTable;
+    rpmioHttpAccept;
+    rpmioHttpReadTimeoutSecs;
+    rpmioHttpUserAgent;
     rpmioInit;
     rpmioMkpath;
     rpmioPipeOutput;

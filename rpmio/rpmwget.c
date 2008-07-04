@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#include <rpmdav.h>
 #include <poptIO.h>
 
 #include "debug.h"
@@ -23,6 +24,7 @@ enum wgetFlags_e {
     WGET_FLAGS_RESUME		= _WFB( 2), /*!<    --continue ... */
     WGET_FLAGS_PROGRESS		= _WFB( 3), /*!<    --progress ... */
     WGET_FLAGS_NEWERONLY	= _WFB( 4), /*!<    --timestamping ... */
+    WGET_FLAGS_NODOWNLOAD	= _WFB( 5), /*!<    --spider ... */
 };
 
 enum wgetRFlags_e {
@@ -59,7 +61,6 @@ static enum rpmioWCTLFlags_e rpmioWCTLFlags = WCTL_FLAGS_NONE;
 enum rpmioWDLFlags_e {
     WDL_FLAGS_NONE		= 0,
     WDL_FLAGS_SERVERRESPONSE	= _WFB( 5), /*!<    --server-response ... */
-    WDL_FLAGS_SPIDER		= _WFB( 6), /*!<    --spider ... */
     WDL_FLAGS_NOPROXY		= _WFB( 7), /*!<    --no-proxy ... */
     WDL_FLAGS_NODNSCACHE	= _WFB( 8), /*!<    --no-dns-cache ... */
     WDL_FLAGS_IGNORECASE	= _WFB(10), /*!<    --ignore-case ... */
@@ -341,18 +342,42 @@ static int wgetCopyFile(rpmwget wget)
     struct stat * st = wget->st;
     const char * contentType;
     const char * contentDisposition;
-    time_t lastModified;
-    int rc = 1;		/* assume failure */
+    time_t lastModified = 0;
+    int rc;
 
-    /* Verify that input URI exists. */
+    /* Verify input URI exists, don't transfer content. */
+    if (WF_ISSET(NODOWNLOAD)) {
+if (wget->debug < 0) {
+fprintf(stderr, "Spider mode enabled. Check if remote file exists.\n");
+}
+if (wget->debug < 0) {
+#ifdef	DYING	/* XXX move to rpmio debugging? */
+char tstamp[32];
+static const char tfmt[] = "%Y-%m-%d %H:%M:%S";
+time_t now = time(NULL);
+struct tm * tm = localtime(&now);
+(void) strftime(tstamp, sizeof(tstamp), tfmt, tm);
+fprintf(stderr, "--%s--  %s\n", tstamp, wget->ifn);
+}
+	rc = Stat(wget->ifn, st);
+if (rc == 0) {
+#ifdef	DYING	/* XXX rely on rpmio debugging? */
+fprintf(stderr, "Length: %lu %s", (unsigned long)st->st_size, ctime(&st->st_mtime));
+#endif
+fprintf(stderr, "Remote file exists.\n");
+} else {
+fprintf(stderr, "Remote file does not exist -- broken link!!!\n");
+}
+	goto exit;
+    }
+
+    /* Open input URI for content transfer. */
     wget->ifd = Fopen(wget->ifn, "r.ufdio");
-    if (wget->ifd == NULL || Ferror(wget->ifd)) {
-
+    rc = (wget->ifd == NULL || Ferror(wget->ifd)) ? 1 : 0;
+    if (rc) {
 #ifdef	NOTYET
 	if (!WF_ISSET(RETRYCONN) && "connection refused")
-	    break;
 #endif
-
 	goto exit;
     }
 
@@ -395,8 +420,10 @@ if (wget->debug < 0)
 fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
 
     wget->ofd = Fopen(wget->ofn, "w.ufdio");
-    if (wget->ofd == NULL || Ferror(wget->ofd))
+    if (wget->ofd == NULL || Ferror(wget->ofd)) {
+	rc = 1;
 	goto exit;
+    }
 
 #ifdef	NOTYET
     /* Reposition I/O handles if resuming. */
@@ -421,8 +448,8 @@ fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
 #endif
     }
 
-    if (nr == 0)
-	rc = 0;
+    /* OK iff EOF was read. */
+    rc = (nr != 0 ? 1 : 0);
 
 exit:
 
@@ -653,7 +680,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("don't re-retrieve files unless newer than local."), NULL },
   { "server-response", 'S', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_SERVERRESPONSE,
 	N_("print server response."), NULL },
-  { "spider", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_SPIDER,
+  { "spider", '\0', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_NODOWNLOAD,
 	N_("don't download anything."), NULL },
   { "timeout", 'T', POPT_ARG_INT,	&__rpmwget.timeout_secs, 0,
 	N_("set all timeout values to SECONDS."), N_("SECONDS") },
@@ -949,15 +976,16 @@ main(int argc, char *argv[])
     wget->b[0] = '\0';
     wget->st = xmalloc(sizeof(*wget->st));
 
-#if 0
+rpmioHttpAccept = "*/*";	/* XXX wget compatible. */
 if (wget->debug < 0) {
 _av_debug = -1;
-_dav_debug = -1;
 _ftp_debug = -1;
+_dav_debug = 1;
+#if 0
 _url_debug = -1;
 _rpmio_debug = -1;
-}
 #endif
+}
 
     optCon = rpmioInit(argc, argv, optionsTable);
     if (wget->debug < 0) {

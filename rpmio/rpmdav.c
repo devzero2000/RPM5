@@ -51,7 +51,6 @@ extern void CRYPTO_mem_leaks(void * ptr);
 
 /* XXX API changes for NEON 0.26 */
 #if WITH_NEON_MIN_VERSION >= 0x002600
-#define	ne_set_persist(_sess, _flag)
 #define	ne_propfind_set_private(_pfh, _create_item, NULL) \
 	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
 #endif
@@ -69,21 +68,34 @@ extern void CRYPTO_mem_leaks(void * ptr);
 
 #include "debug.h"
 
-/* Should http OPTIONS be run only once? */
-/* XXX TODO: determine precisely when OPTIONS need to be run. */
-int _dav_nooptions = 0;
-
 /*@access DIR @*/
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
-#if 0	/* HACK: reasonable value needed. */
+/* HACK: reasonable value needed (wget uses 900 as default). */
+#if 0
 #define TIMEOUT_SECS 60
 #else
 #define TIMEOUT_SECS 5
 #endif
+
+/*@unchecked@*/ /*@observer@*/
+static const char _rpmioHttpUserAgent[] = PACKAGE "/" PACKAGE_VERSION;
+
 /*@unchecked@*/
-static int httpTimeoutSecs = TIMEOUT_SECS;
+static int rpmioHttpPersist = 1;
+/*@unchecked@*/
+int rpmioHttpReadTimeoutSecs = TIMEOUT_SECS;
+#ifdef	NOTYET
+int rpmioHttpRetries = 20;
+int rpmioHttpRecurseMax = 5;
+int rpmioHttpMaxRedirect = 20;
+#endif
+
+/*@unchecked@*/ /*@null@*/
+const char * rpmioHttpAccept;
+/*@unchecked@*/ /*@null@*/
+const char * rpmioHttpUserAgent;
 
 /* =============================================================== */
 void * avContextDestroy(avContext ctx)
@@ -556,15 +568,19 @@ static int davConnect(urlinfo u)
     if (!(u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS))
 	return 0;
 
-    if (_dav_nooptions && u->allow & RPMURL_SERVER_OPTIONSDONE)
+    /* HACK: where should server capabilities be read? */
+    (void) urlPath(u->url, &path);
+
+    /* Run OPTIONS once, repeat for every directory. */
+    if (path != NULL && path[strlen(path)-1] == '/')
+	u->allow &= ~RPMURL_SERVER_OPTIONSDONE;
+    if (u->allow & RPMURL_SERVER_OPTIONSDONE)
 	return 0;
 
     u->allow &= ~(RPMURL_SERVER_HASDAVCLASS1 |
 		  RPMURL_SERVER_HASDAVCLASS2 |
 		  RPMURL_SERVER_HASDAVEXEC);
 
-    /* HACK: where should server capabilities be read? */
-    (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
     /* XXX [hdr] Allow: GET,HEAD,POST,OPTIONS,TRACE */
     rc = ne_options(u->sess, path, u->capabilities);
@@ -670,9 +686,14 @@ static int davInit(const char * url, urlinfo * uret)
 	ne_set_status(u->sess, davNotify, u);
 #endif
 
-	ne_set_persist(u->sess, 1);
-	ne_set_read_timeout(u->sess, httpTimeoutSecs);
-	ne_set_useragent(u->sess, PACKAGE "/" PACKAGE_VERSION);
+#if WITH_NEON_MIN_VERSION >= 0x002600
+	ne_set_session_flag(u->sess, NE_SESSFLAG_PERSIST, rpmioHttpPersist);
+#else
+	ne_set_persist(u->sess, rpmioHttpPersist);
+#endif
+	ne_set_read_timeout(u->sess, rpmioHttpReadTimeoutSecs);
+	ne_set_useragent(u->sess,
+	    (rpmioHttpUserAgent ? rpmioHttpUserAgent : _rpmioHttpUserAgent));
 
 	/* XXX check that neon is ssl enabled. */
 	if (!strcasecmp(u->scheme, "https"))
@@ -1039,6 +1060,7 @@ static int davHEAD(urlinfo u, struct stat *st)
     const char *htag;
     const char *value = NULL;
     int rc;
+int printing = 0;
 
     /* XXX HACK: URI's with pesky trailing '/' are directories. */
     {	size_t nb = strlen(u->url);
@@ -1051,6 +1073,10 @@ static int davHEAD(urlinfo u, struct stat *st)
     st->st_ctime = -1;
 
     req = ne_request_create(u->sess, "HEAD", u->url);
+    if (rpmioHttpAccept != NULL)
+	ne_add_request_header(req, "Accept", rpmioHttpAccept);
+
+    /* XXX if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER) handlers? */
 
     rc = ne_request_dispatch(req);
     switch (rc) {
@@ -1065,6 +1091,7 @@ static int davHEAD(urlinfo u, struct stat *st)
 	break;
     }
 
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 #ifdef	NOTYET
     htag = "ETag";
     value = ne_get_response_header(req, htag); 
@@ -1074,10 +1101,13 @@ static int davHEAD(urlinfo u, struct stat *st)
 #endif
 
     htag = "Content-Length";
-#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     value = ne_get_response_header(req, htag); 
-#endif
     if (value) {
+printing++;
+/* XXX should wget's "... (1.2K)..." be added? */
+if (_dav_debug)
+fprintf(stderr, "Length: %s", value);
+
 /*@-unrecog@*/	/* XXX LCLINT needs stdlib.h update. */
 	st->st_size = strtoll(value, NULL, 10);
 /*@=unrecog@*/
@@ -1085,24 +1115,27 @@ static int davHEAD(urlinfo u, struct stat *st)
     }
 
     htag = "Content-Type";
-#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     value = ne_get_response_header(req, htag); 
-#endif
     if (value) {
+if (_dav_debug && printing++)
+fprintf(stderr, " [%s]", value);
 	if (!strcmp(value, "text/html")
 	 || !strcmp(value, "application/xhtml+xml"))
 	    st->st_blksize = 2 * 1024;
     }
 
-
     htag = "Last-Modified";
-#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     value = ne_get_response_header(req, htag); 
-#endif
     if (value) {
+if (_dav_debug && printing++)
+fprintf(stderr, " [%s]", value);
 	st->st_mtime = ne_httpdate_parse(value);
 	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     }
+
+if (_dav_debug && printing)
+fprintf(stderr, "\n");
+#endif
 
 exit:
     ne_request_destroy(req);
@@ -1452,7 +1485,7 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, ure
 	fdSetIo(fd, ufdio);
 
 	fd->ftpFileDoneNeeded = 0;
-	fd->rd_timeoutsecs = httpTimeoutSecs;
+	fd->rd_timeoutsecs = rpmioHttpReadTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
 assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP || urlType == URL_IS_HKP);
 	fd->urlType = urlType;
@@ -1834,7 +1867,7 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
     if (fd) {
         fdSetIo(fd, ufdio);
         fd->ftpFileDoneNeeded = 0;
-        fd->rd_timeoutsecs = httpTimeoutSecs;
+        fd->rd_timeoutsecs = rpmioHttpReadTimeoutSecs;
         fd->contentLength = fd->bytesRemain = -1;
         fd->url = urlLink(u, "url (httpOpen)");
         fd = fdLink(fd, "grab data (httpOpen)");

@@ -7,6 +7,15 @@
 
 #include <argv.h>
 
+/**
+*/
+/*@unchecked@*/
+extern int rpmioHttpReadTimeoutSecs;
+/*@unchecked@*/ /*@null@*/
+extern const char * rpmioHttpAccept;
+/*@unchecked@*/ /*@null@*/
+extern const char * rpmioHttpUserAgent;
+
 #if defined(_RPMDAV_INTERNAL)
 struct __dirstream {
     int fd;			/* File descriptor.  */
