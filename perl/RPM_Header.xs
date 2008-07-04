@@ -359,7 +359,7 @@ tag(h, sv_tag)
 
                         EXTEND(SP, he->c);
         
-                        for (i = 0; i < he->c; i++) {
+                        for (i = 0; i < (int)he->c; i++) {
                             PUSHs(sv_2mortal(newSVpv(he->p.argv[i], 0)));
                         }
                     }
@@ -375,7 +375,7 @@ tag(h, sv_tag)
 
                         EXTEND(SP, he->c);
 
-                        for (i = 0; i < he->c; i++) {
+                        for (i = 0; i < (int)he->c; i++) {
                             PUSHs(sv_2mortal(newSViv(he->p.ui32p[i])));
                         }
                     }

@@ -300,9 +300,9 @@ struct rpmts_s {
 
 /*@only@*/ /*@relnull@*/
     rpmKeyring keyring;		/*!< Keyring in use. */
-    const unsigned char * pkpkt;/*!< Current pubkey packet. */
+    uint8_t * pkpkt;		/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
-    unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
+    uint8_t pksignid[8];	/*!< Current pubkey fingerprint. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 

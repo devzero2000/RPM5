@@ -200,12 +200,13 @@ static struct {
 int main(int argc, char *argv[])
 {
     int i, j, k, l;
+    int nitems = (int)sizeof(main_dispatch)/sizeof(main_dispatch[0]);
     char *arg;
 
     /* 1. try to dispatch over program name ("db_load [...]") */
     arg = argv[0];
     l = strlen(arg);
-    for (i = 0; i < sizeof(main_dispatch)/sizeof(main_dispatch[0]); i++) {
+    for (i = 0; i < nitems; i++) {
         k = strlen(main_dispatch[i].name);
         if (   strcmp(arg, main_dispatch[i].name) == 0
             || (l > k && arg[l-k-1] == '/' && strcmp(arg+l-k, main_dispatch[i].name) == 0)) {
@@ -218,7 +219,7 @@ int main(int argc, char *argv[])
     if (argc >= 2) {
         arg = argv[1];
         l = strlen(arg);
-        for (i = 0; i < sizeof(main_dispatch)/sizeof(main_dispatch[0]); i++) {
+        for (i = 0; i < nitems; i++) {
             k = strlen(main_dispatch[i].name);
             if (   strcmp(argv[1], main_dispatch[i].name) == 0
                 || (l == k-3 && strcmp(arg, main_dispatch[i].name+3) == 0)) {
@@ -237,7 +238,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "db_tool:USAGE: db_tool db_<command> <options>\n");
     fprintf(stderr, "db_tool:USAGE: db_tool <command> <options>\n");
     fprintf(stderr, "db_tool:HINT: <command> is one of:");
-    for (i = 0; i < sizeof(main_dispatch)/sizeof(main_dispatch[0]); i++)
+    for (i = 0; i < nitems; i++)
         fprintf(stderr, " %s", main_dispatch[i].name+3);
     fprintf(stderr, "\n");
     return 1;

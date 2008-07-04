@@ -276,7 +276,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	xx = 0;
 	if (fn && *fn != '%') {
-	    xx = (pgpReadPkts(fn, (const uint8_t **)&ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY);
+	    xx = (pgpReadPkts(fn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY);
 	}
 	fn = _free(fn);
 	if (xx) {

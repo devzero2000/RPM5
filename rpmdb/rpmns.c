@@ -269,7 +269,7 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp;
     pgpDigParams pubp;
-    const uint8_t * sigpkt = NULL;
+    uint8_t * sigpkt = NULL;
     size_t sigpktlen = 0;
     DIGEST_CTX ctx = NULL;
     int printing = 0;
