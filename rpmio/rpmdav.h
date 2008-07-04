@@ -11,6 +11,8 @@
 */
 /*@unchecked@*/
 extern int rpmioHttpReadTimeoutSecs;
+/*@unchecked@*/
+extern int rpmioHttpConnectTimeoutSecs;
 /*@unchecked@*/ /*@null@*/
 extern const char * rpmioHttpAccept;
 /*@unchecked@*/ /*@null@*/

@@ -86,6 +86,8 @@ static const char _rpmioHttpUserAgent[] = PACKAGE "/" PACKAGE_VERSION;
 static int rpmioHttpPersist = 1;
 /*@unchecked@*/
 int rpmioHttpReadTimeoutSecs = TIMEOUT_SECS;
+/*@unchecked@*/
+int rpmioHttpConnectTimeoutSecs = TIMEOUT_SECS;
 #ifdef	NOTYET
 int rpmioHttpRetries = 20;
 int rpmioHttpRecurseMax = 5;
@@ -386,15 +388,6 @@ static void davNotify(void * userdata,
 {
     urlinfo u = userdata;
     ne_session * sess;
-    /*@observer@*/
-    static const char * connstates[] = {
-	"namelookup",
-	"connecting",
-	"connected",
-	"secure",
-	"unknown"
-    };
-
 assert(u != NULL);
     sess = u->sess;
 assert(sess != NULL);
@@ -402,6 +395,54 @@ assert(sess != NULL);
 assert(u == ne_get_session_private(sess, "urlinfo"));
 /*@=sefuncon@*/
 
+#if WITH_NEON_MIN_VERSION >= 0x002700
+#ifdef	REFERENCE
+typedef enum {
+    ne_status_lookup = 0, /* looking up hostname */
+    ne_status_connecting, /* connecting to host */
+    ne_status_connected, /* connected to host */
+    ne_status_sending, /* sending a request body */
+    ne_status_recving, /* receiving a response body */
+    ne_status_disconnected /* disconnected from host */
+} ne_session_status;
+#endif
+    if (_dav_debug)
+    switch (connstatus) {
+    default:
+	break;
+    case ne_status_lookup:	/* looking up hostname */
+	fprintf(stderr, "Resolving %s...", info->lu.hostname);
+	break;
+    case ne_status_connecting:	/* connecting to host */
+    {	char buf[64];
+	(void) ne_iaddr_print(info->ci.address, buf, sizeof(buf));
+	buf[sizeof(buf)-1] = '\0';
+	/* Finish the lookup -> connecting state transition. */
+	if (u->connstatus == ne_status_lookup)
+	    fprintf(stderr, " %s\n", buf);
+	fprintf(stderr, "Connecting to %s|%s|:%u...",
+			   info->ci.hostname, buf, u->port);
+    }	break;
+    case ne_status_connected:	/* connected to host */
+	/* Finish the connecting -> connected state transition. */
+	if (u->connstatus == ne_status_connecting)
+	    fprintf(stderr, " connected.\n");
+	break;
+    case ne_status_sending:	/* sending a request body */
+	if (_dav_debug < 0)	/* XXX noisy, wait for progress bar ... */
+	fprintf(stderr, "Sending ... (%ld:%ld)\n",
+		(long) info->sr.progress, (long) info->sr.total);
+	break;
+    case ne_status_recving:	/* receiving a response body */
+	if (_dav_debug < 0)	/* XXX noisy, wait for progress bar ... */
+	fprintf(stderr, "Recving ... (%ld:%ld)\n",
+		(long) info->sr.progress, (long) info->sr.total);
+	break;
+    case ne_status_disconnected:
+	fprintf(stderr, "Disconnected from %s:%u\n", info->ci.hostname, u->port);
+	break;
+    }
+#else
 #ifdef	REFERENCE
 typedef enum {
     ne_conn_namelookup, /* lookup up hostname (info = hostname) */
@@ -411,12 +452,21 @@ typedef enum {
 } ne_conn_status;
 #endif
 
-#if WITH_NEON_MIN_VERSION < 0x002700
-    u->connstatus = connstatus;
+if (_dav_debug < 0) {
+/*@observer@*/
+    static const char * connstates[] = {
+	"namelookup",
+	"connecting",
+	"connected",
+	"secure",
+	"unknown"
+    };
+
+fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
+}
 #endif
 
-if (_dav_debug < 0)
-fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
+    u->connstatus = connstatus;
 
 }
 
@@ -569,7 +619,10 @@ static int davConnect(urlinfo u)
 	return 0;
 
     /* HACK: where should server capabilities be read? */
+    /* XXX paste on the pesky trailing '/' */
     (void) urlPath(u->url, &path);
+    if (path == NULL || *path == '\0')
+	path = "/";
 
     /* Run OPTIONS once, repeat for every directory. */
     if (path != NULL && path[strlen(path)-1] == '/')
@@ -1057,6 +1110,7 @@ static int davHEAD(urlinfo u, struct stat *st)
 	/*@modifies *st @*/
 {
     ne_request *req;
+    const ne_status *status = NULL;
     const char *htag;
     const char *value = NULL;
     int rc;
@@ -1079,12 +1133,19 @@ int printing = 0;
     /* XXX if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER) handlers? */
 
     rc = ne_request_dispatch(req);
+    status = ne_get_status(req);
+
+/* XXX somewhere else instead? */
+if (_dav_debug) {
+fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
+}
+
     switch (rc) {
     default:
 	goto exit;
 	/*@notreached@*/ break;
     case NE_OK:
-	if (ne_get_status(req)->klass != 2) {
+	if (status->klass != 2) {
 	    rc = NE_ERROR;
 	    goto exit;
 	}
@@ -1413,6 +1474,13 @@ assert(ctrl->req != NULL);
 	    rc = davResp(u, ctrl, NULL);
 	} while (rc == NE_RETRY);
     }
+
+/* XXX somwhere else instead? */
+if (_dav_debug > 0) {
+    const ne_status *status = ne_get_status(ctrl->req);
+fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
+}
+
     if (rc)
 	goto errxit;
 

@@ -291,6 +291,7 @@ LIBRPMIO_0
     rpmioFtsOpts;
     rpmioFtsPoptTable;
     rpmioHttpAccept;
+    rpmioHttpConnectTimeoutSecs;
     rpmioHttpReadTimeoutSecs;
     rpmioHttpUserAgent;
     rpmioInit;

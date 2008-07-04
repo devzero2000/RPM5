@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: add --foodebug options, more wget-style spewage.
+    - jbj: rpmdav: capture connection state transitions w wget-style spewage.
+    - jbj: rpmdav: add global rpmioHttpConnectTimeoutSecs (unused) for now.
     - jbj: rpmdav: run OPTIONS once, repeat for every directory, through a URI.
     - jbj: rpmdav: add global rpmioHttp{Accept,ReadTimeoutSecs,UserAgent} for now.
     - jbj: rpmwget: wire up --spider to Stat(2) running HEAD.

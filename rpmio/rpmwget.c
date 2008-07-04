@@ -261,6 +261,17 @@ static char * wgetStpcpy(rpmwget wget, char * te, const char * s)
 
 /**
  */
+static const char * wgetTstamp(rpmwget wget, time_t t)
+{
+    static const char tfmt[] = "%Y-%m-%d %H:%M:%S";
+    static char tstamp[32];
+    struct tm * tm = localtime(&t);
+    (void) strftime(tstamp, sizeof(tstamp), tfmt, tm);
+    return tstamp;
+}
+
+/**
+ */
 static int isHtml(const char * contentType)
 {
     int ishtml = 0;
@@ -340,8 +351,6 @@ static int wgetCopyFile(rpmwget wget)
     size_t nw, wlen = 0;
     size_t nr, rlen = 0;
     struct stat * st = wget->st;
-    const char * contentType;
-    const char * contentDisposition;
     time_t lastModified = 0;
     int rc;
 
@@ -351,13 +360,7 @@ if (wget->debug < 0) {
 fprintf(stderr, "Spider mode enabled. Check if remote file exists.\n");
 }
 if (wget->debug < 0) {
-#ifdef	DYING	/* XXX move to rpmio debugging? */
-char tstamp[32];
-static const char tfmt[] = "%Y-%m-%d %H:%M:%S";
-time_t now = time(NULL);
-struct tm * tm = localtime(&now);
-(void) strftime(tstamp, sizeof(tstamp), tfmt, tm);
-fprintf(stderr, "--%s--  %s\n", tstamp, wget->ifn);
+fprintf(stderr, "--%s--  %s\n", wgetTstamp(wget, time(NULL)), wget->ifn);
 }
 	rc = Stat(wget->ifn, st);
 if (rc == 0) {
@@ -384,14 +387,26 @@ fprintf(stderr, "Remote file does not exist -- broken link!!!\n");
     if (wget->read_timeout_secs > 0)
 	wget->ifd->rd_timeoutsecs = wget->read_timeout_secs;
 
-    contentType = wget->ifd->contentType;
-    contentDisposition = wget->ifd->contentDisposition;
     lastModified = wget->ifd->lastModified;
 
 if (wget->debug < 0) {
-fprintf(stderr, "--> Content-Type: %s\n", contentType);
-fprintf(stderr, "--> Content-Disposition: %s\n", contentDisposition);
-fprintf(stderr, "--> Last-Modified: %s", ctime(&lastModified));
+    ssize_t contentLength = wget->ifd->contentLength;
+    const char * contentType = wget->ifd->contentType;
+    const char * contentDisposition = wget->ifd->contentDisposition;
+
+    /* XXX rely on rpmio debugging? */
+    fprintf(stderr, "Length:");
+    if (contentLength < 0)
+	fprintf(stderr, " unspecified");
+    else
+	fprintf(stderr, " %lu", (unsigned long)contentLength);
+    if (contentType)
+	fprintf(stderr, " [%s]", contentType);
+    if (lastModified > 0)
+	fprintf(stderr, " [%24.24s]", ctime(&lastModified));
+    fprintf(stderr, "\n");
+    if (contentDisposition)
+	fprintf(stderr, "Content-Disposition: %s\n", contentDisposition);
 }
 
     wget->ofn = wgetOPath(wget);
@@ -419,6 +434,9 @@ fprintf(stderr, "Input for file \"%s\" is not newer, skipping retrieve.\n", wget
 if (wget->debug < 0)
 fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
 
+if (wget->debug < 0) {
+    fprintf(stderr, "Saving to: `%s'\n", wget->ofn);
+}
     wget->ofd = Fopen(wget->ofn, "w.ufdio");
     if (wget->ofd == NULL || Ferror(wget->ofd)) {
 	rc = 1;
@@ -449,7 +467,14 @@ fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
     }
 
     /* OK iff EOF was read. */
-    rc = (nr != 0 ? 1 : 0);
+    if (nr == 0) {
+if (wget->debug < 0) {
+    fprintf(stderr, "--%s-- (?.? KB/s) - `%s' saved [%lu]\n",
+	wgetTstamp(wget, time(NULL)), wget->ofn, (unsigned long)nw);
+}
+	rc = 0;
+    } else
+	rc = 1;
 
 exit:
 
@@ -934,6 +959,9 @@ static struct poptOption optionsTable[] = {
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioWCTLAcceptPoptTable, 0,
 	N_("Recursive accept/reject:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"), NULL },
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
