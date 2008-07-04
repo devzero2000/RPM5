@@ -944,6 +944,9 @@ print (t)\
 #	and that both p and q are package names (i.e. no version/release).
 #
 %_dependency_whiteout_caos_core		\
+	perl>perl-Filter		\
+	pam>coreutils			\
+	pam>initscripts			\
 	glibc-common>glibc		\
 	glibc>nscd
 
