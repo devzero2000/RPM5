@@ -1716,6 +1716,16 @@ if (_rpmbuildFlags & 4) {
 		FileListRec jlp = flp + 1;
 		int j = i + 1;
 		for (; (unsigned)j < fi->fc; j++, jlp++) {
+		    /* follow outer loop logic */
+		    while (((jlp - fl->fileList) < (fl->fileListRecsUsed - 1)) &&
+			    !strcmp(jlp->fileURL, jlp[1].fileURL))
+			jlp++;
+		    if (jlp->flags & RPMFILE_EXCLUDE) {
+			j--;
+			/*@innercontinue@*/ continue;
+		    }
+		    if (jlp->flags & RPMFILE_GHOST)
+		        /*@innercontinue@*/ continue;
 		    if (!S_ISREG(jlp->fl_mode))
 			/*@innercontinue@*/ continue;
 		    if (flp->fl_nlink != jlp->fl_nlink)
@@ -1724,8 +1734,6 @@ if (_rpmbuildFlags & 4) {
 			/*@innercontinue@*/ continue;
 		    if (flp->fl_dev != jlp->fl_dev)
 			/*@innercontinue@*/ continue;
-		    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
-		        /*@innercontinue@*/ continue;
 		    bingo = 0;	/* don't tally hardlink yet. */
 		    /*@innerbreak@*/ break;
 		}
