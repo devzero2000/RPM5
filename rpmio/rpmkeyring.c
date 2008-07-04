@@ -86,8 +86,6 @@ rpmPubkey rpmPubkeyRead(const char *filename)
 	key = rpmPubkeyNew(pkt, pktlen);
 	pkt = _free(pkt);
     }
-
-exit:
     return key;
 }
 
