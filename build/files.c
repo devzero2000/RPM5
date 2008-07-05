@@ -2850,6 +2850,60 @@ exit:
     return rc;
 }
 
+/* auxiliary function for checkDuplicateFiles() */
+/* XXX need to pass Header because fi->h is NULL */
+static int fiIntersect(rpmfi fi1, rpmfi fi2, Header h1, Header h2)
+{
+    int n = 0;
+    int i1, i2;
+    const char *fn1, *fn2;
+    const char *N1 = NULL, *N2 = NULL;
+
+    fi1 = rpmfiInit(fi1, 0);
+    while ((i1 = rpmfiNext(fi1)) >= 0) {
+	if (S_ISDIR(rpmfiFMode(fi1)))
+	    continue;
+	fn1 = rpmfiFN(fi1);
+	fi2 = rpmfiInit(fi2, 0);
+	while ((i2 = rpmfiNext(fi2)) >= 0) {
+	    if (S_ISDIR(rpmfiFMode(fi2)))
+		/*@innercontinue@*/ continue;
+	    fn2 = rpmfiFN(fi2);
+	    if (strcmp(fn1, fn2))
+		/*@innercontinue@*/ continue;
+	    if (!N1) headerNEVRA(h1, &N1, NULL, NULL, NULL, NULL);
+	    if (!N2) headerNEVRA(h2, &N2, NULL, NULL, NULL, NULL);
+	    rpmlog(RPMLOG_WARNING,
+		   _("file %s is packaged into both %s and %s\n"),
+		   fn1, N1, N2);
+	    n++;
+	}
+    }
+    return n;
+}
+
+/**
+ * Check if the same files are packaged into a few sub-packages.
+ * @param spec		spec file control structure
+ * @return		number of duplicate files
+ */
+static int checkDuplicateFiles(Spec spec)
+{
+    int n = 0;
+    Package pkg1, pkg2;
+
+    for (pkg1 = spec->packages; pkg1->next; pkg1 = pkg1->next) {
+	rpmfi fi1 = rpmfiNew(NULL, pkg1->header, RPMTAG_BASENAMES, 0);
+	for (pkg2 = pkg1->next; pkg2; pkg2 = pkg2->next) {
+	    rpmfi fi2 = rpmfiNew(NULL, pkg2->header, RPMTAG_BASENAMES, 0);
+	    n += fiIntersect(fi1, fi2, pkg1->header, pkg2->header);
+	    fi2 = rpmfiFree(fi2);
+	}
+	fi1 = rpmfiFree(fi1);
+    }
+    return n;
+}
+
 /*@-incondefs@*/
 rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
@@ -2898,6 +2952,7 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     if (res == RPMRC_OK) {
 	if (checkUnpackagedFiles(spec) > 0)
 	    res = RPMRC_FAIL;
+	(void) checkDuplicateFiles(spec);
     }
     
     return res;

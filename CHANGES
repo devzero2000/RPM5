@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - at: rpmbuild: check if the same files are packaged into a few sub-packages.
     - jbj: rpmwget: add --foodebug options, more wget-style spewage.
     - jbj: rpmdav: capture connection state transitions w wget-style spewage.
     - jbj: rpmdav: add global rpmioHttpConnectTimeoutSecs (unused) for now.
