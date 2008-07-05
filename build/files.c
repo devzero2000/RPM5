@@ -2881,7 +2881,6 @@ static int fiIntersect(rpmfi fi1, rpmfi fi2, Header h1, Header h2)
     }
 
     if (n > 0) {
-	int i;
 	const char *N1, *N2;
 	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
