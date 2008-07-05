@@ -43,7 +43,7 @@ http://mirror.caoslinux.org/cAos-2/core/i386/findutils-4.1.7-9.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/flex-2.5.4a-29.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/gawk-3.1.1-9.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/gcc-3.4.3-4.caos.i386.rpm
-http://mirror.caoslinux.org/cAos-2/core/i386/gcc-c%2b%2b-3.4.3-4.caos.i386.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/gcc-c++-3.4.3-4.caos.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/gcc-g77-3.4.3-4.caos.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/gcc-java-3.4.3-4.caos.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/gcc-objc-3.4.3-4.caos.i386.rpm
@@ -88,8 +88,8 @@ http://mirror.caoslinux.org/cAos-2/core/i386/libselinux-1.19.1-4.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/libselinux-devel-1.19.1-4.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/libsepol-1.1.1-1.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/libsepol-devel-1.1.1-1.i386.rpm
-http://mirror.caoslinux.org/cAos-2/core/i386/libstdc%2b%2b-3.4.3-4.caos.i386.rpm
-http://mirror.caoslinux.org/cAos-2/core/i386/libstdc%2b%2b-devel-3.4.3-4.caos.i386.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/libstdc++-3.4.3-4.caos.i386.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/libstdc++-devel-3.4.3-4.caos.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/libtermcap-2.0.8-35.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/libtermcap-devel-2.0.8-35.i386.rpm
 http://mirror.caoslinux.org/cAos-2/core/i386/libtool-1.5.10-1.i386.rpm
