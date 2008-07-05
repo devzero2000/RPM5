@@ -31,6 +31,7 @@ extern int (*_Link) (const char * oldpath, const char * newpath);
 extern int (*_Unlink) (const char * path);
 extern int (*_Stat) (const char * path, struct stat * st);
 extern int (*_Lstat) (const char * path, struct stat * st);
+extern int (*_Fstat) (void * fd, struct stat * st);
 extern int (*_Chown) (const char * path, uid_t owner, gid_t group);
 extern int (*_Lchown) (const char * path, uid_t owner, gid_t group);
 extern int (*_Chmod) (const char * path, mode_t mode);

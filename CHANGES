@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: install: retry callback reopen URI once to handle timeouts.
+    - jbj: pkgio: use Fstat(2) for size check. more to do still ...
+    - jbj: psm: fix: avoid lazy Stat(2) on active URI request.
+    - jbj: rpmrpc: add Fstat(2) to map URI info into header statbuf early.
     - at: rpmbuild: check if the same files are packaged into a few sub-packages.
     - jbj: rpmwget: add --foodebug options, more wget-style spewage.
     - jbj: rpmdav: capture connection state transitions w wget-style spewage.

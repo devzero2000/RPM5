@@ -42,6 +42,8 @@ int (*_Unlink) (const char * path) = Unlink;
 /*@-type@*/
 int (*_Stat) (const char * path, struct stat * st) = Stat;
 int (*_Lstat) (const char * path, struct stat * st) = Lstat;
+int (*_Fstat) (void * fd, struct stat * st)
+	= (int (*) (void *, struct stat * st))Fstat;
 /*@=type@*/
 int (*_Chown) (const char * path, uid_t owner, gid_t group) = Chown;
 int (*_Lchown) (const char * path, uid_t owner, gid_t group) = Lchown;

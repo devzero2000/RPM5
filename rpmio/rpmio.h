@@ -287,6 +287,13 @@ int Lstat(const char * path, /*@out@*/ struct stat * st)
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
+ * fstat(2) clone.
+ */
+int Fstat(FD_t fd, /*@out@*/ struct stat * st)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies *st, errno, fileSystem, internalState @*/;
+
+/**
  * chown(2) clone.
  * @todo Implement remotely.
  */

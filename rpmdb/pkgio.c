@@ -625,7 +625,6 @@ fprintf(stderr, "--> wrSignature(%p, %p, %p)\n", fd, ptr, msg);
 
 /**
  * Print package size.
- * @todo rpmio: use fdSize rather than fstat(2) to get file size.
  * @param fd			package file handle
  * @param siglen		signature header size
  * @param pad			signature padding
@@ -636,17 +635,19 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    int fdno = Fileno(fd);
     struct stat sb, * st = &sb;
     size_t expected;
     size_t nl = rpmpkgSizeof("Lead", NULL);
 
+#ifndef	DYING	/* XXX Fstat(2) contentLength not gud enuf yet. */
+    int fdno = Fileno(fd);
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
 	st->st_size = 0;
 	st->st_size -= nl + siglen + pad + datalen;
     } else
-    if (fstat(fdno, st) < 0)
+#endif
+    if (Fstat(fd, st) < 0)
 	return RPMRC_FAIL;
 
     expected = nl + siglen + pad + datalen;
@@ -867,7 +868,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	    rc = printSize(fd, sigSize, pad, datasize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
-			_("sigh sigSize(%u): BAD, fstat(2) failed"), (unsigned) sigSize);
+			_("sigh sigSize(%u): BAD, Fstat(2) failed"), (unsigned) sigSize);
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
@@ -1370,7 +1371,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 /*@-mods@*/
     {	struct stat * st = headerGetStatbuf(h);
 	int saveno = errno;
-	(void) fstat(Fileno(fd), st);
+	(void) Fstat(fd, st);
 	errno = saveno;
     }
 /*@=mods@*/

@@ -119,6 +119,16 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
 	fd = Fopen(filename, "r%{?_rpmgio}");
+
+	/* XXX Retry once to handle http:// server timeout reopen's. */
+	if (Ferror(fd)) {
+	    int ut = urlPath(filename, NULL);
+	    if (ut == URL_IS_HTTP || ut == URL_IS_HTTPS) {
+		/* XXX HACK: Fclose(fd) no workie here. */
+		fd = Fopen(filename, "r%{?_rpmgio}");
+	    }
+	}
+
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,

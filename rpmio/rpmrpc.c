@@ -1349,7 +1349,7 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
-	errno = EINVAL;		/* XXX W2DO? */
+	errno = ENOENT;	
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -1381,11 +1381,61 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
-	errno = EINVAL;		/* XXX W2DO? */
+	errno = ENOENT;	
 	return -2;
 	/*@notreached@*/ break;
     }
     return lstat(path, st);
+}
+
+int Fstat(FD_t fd, struct stat * st)
+{
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Fstat(%p,%p) path %s\n", fd, st, path);
+    if (fd == NULL || path == NULL || *path == '\0' || st == NULL) {
+	errno = ENOENT;
+	return -2;
+    }
+
+    switch (ut) {
+    case URL_IS_DASH:
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_HKP:
+	if (fd->contentLength < 0) {
+	    errno = ENOENT;
+	   return -2;
+	}
+	memset(st, 0, sizeof(*st));
+	if (path[strlen(path)-1] == '/') {
+	    st->st_nlink = 2;
+	    st->st_mode = (S_IFDIR | 0755);
+	} else {
+	    st->st_nlink = 1;
+	    st->st_mode = (S_IFREG | 0644);
+	}
+	st->st_ino = hashFunctionString(0, path, 0);;
+	st->st_size = fd->contentLength;
+	st->st_mtime = fd->lastModified;
+
+	st->st_atime = st->st_ctime = st->st_mtime;
+	st->st_blksize = 4 * 1024;  /* HACK correct for linux ext */
+	st->st_blocks = (st->st_size + 511)/512;
+	break;
+    default:
+	errno = ENOENT;	
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return fstat(Fileno(fd), st);
 }
 
 int Chown(const char * path, uid_t owner, gid_t group)

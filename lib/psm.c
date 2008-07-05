@@ -1628,8 +1628,14 @@ assert(fi->h != NULL);
 		xx = headerPut(fi->h, he, 0);
 	    }
 	    if (st != NULL) {
+/* XXX Fstat(2) in pkgio.c should set *st. Verify st->st_mode w assert(3). */
+#ifndef	DYING
+		int ut = urlPath(fn, NULL);
+		/* XXX URI is active, so avoid the lazy Stat(2) for now. */
+		if (!(ut == URL_IS_HTTP || ut == URL_IS_HTTPS))
 		if (st->st_mode == 0 && st->st_mtime == 0 && st->st_size == 0)
 		    xx = Stat(fn, st);
+#endif
 		if (st->st_mode != 0) {
 		    he->tag = RPMTAG_PACKAGESTAT;
 		    he->t = RPM_BIN_TYPE;
