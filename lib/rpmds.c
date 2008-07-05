@@ -1189,6 +1189,7 @@ static struct cpuinfo_s ctags[] = {
     { "wp",		0,  3 },
     { "flags",		0,  4 },
     { "bogomips",	0,  1 },
+    { "clflush_size",	0,  1 },
     { NULL,		0, -1 }
 };
 
@@ -1245,7 +1246,7 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
 /**
  */
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
-static const char * _cpuinfo_path = NULL;
+const char * _cpuinfo_path = NULL;
 
 int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 	/*@globals _cpuinfo_path, ctags @*/
@@ -1253,13 +1254,13 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 {
     struct cpuinfo_s * ct;
     const char * NS = "cpuinfo";
-    char buf[BUFSIZ];
-    char * f, * fe;
+    char * b;
+    ssize_t blen;
+    char * f, * fe, * fend;
     char * g, * ge;
     char * t;
-    FD_t fd = NULL;
-    FILE * fp;
     int rc = -1;
+    int xx;
 
 /*@-modobserver@*/
     if (_cpuinfo_path == NULL) {
@@ -1281,15 +1282,23 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     for (ct = ctags; ct->name != NULL; ct++)
 	ct->done = 0;
 
-    fd = Fopen(fn, "r.fpio");
-    if (fd == NULL || Ferror(fd))
+    b = NULL;
+    blen = 0;
+    xx = rpmioSlurp(fn, (uint8_t **)&b, &blen);
+    if (!(xx == 0 && b != NULL && blen > 0))
 	goto exit;
-    fp = fdGetFILE(fd);
 
-    if (fp != NULL)
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    for (f = b; *f != '\0'; f = fend) {
+	/* find EOL */
+	fe = f;
+	while (*fe != '\0' && !(*fe == '\n' || *fe == '\r'))
+	    fe++;
+	ge = fe;
+	while (*fe != '\0' && (*fe == '\n' || *fe == '\r'))
+	    *fe++ = '\0';
+	fend = fe;
+
 	/* rtrim on line. */
-	ge = f + strlen(f);
 	while (--ge > f && _isspace(*ge))
 	    *ge = '\0';
 
@@ -1362,7 +1371,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     }
 
 exit:
-    if (fd != NULL) (void) Fclose(fd);
+    b = _free(b);
     return rc;
 }
 

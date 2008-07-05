@@ -3,6 +3,7 @@ LIBRPM_0
   global:
     __assert_program_name;
     _cacheDependsRC;
+    _cpuinfo_path;
     currentDirectory;
     doputenv;
     dosetenv;

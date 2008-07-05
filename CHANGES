@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: resurrect cpuinfo() probe, hack-o-rounds for both /proc & libio.
+    - jbj: rpmio: remove fdSize, rewrite rpmioSlurp to use Fstat(2) instead.
     - jbj: rpmdav: display connection state transitions while debugging.
     - jbj: rpmdav: add davDisconnect() to clean active requests before caching.
     - jbj: rpmwget: add a progress bar. no I/O rates or ETA yet.

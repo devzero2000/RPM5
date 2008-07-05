@@ -233,33 +233,6 @@ const char * fdbg(FD_t fd)
 }
 
 /* =============================================================== */
-off_t fdSize(FD_t fd)
-{
-    struct stat sb;
-    off_t rc = -1;
-
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
-#endif
-    FDSANE(fd);
-    if (fd->contentLength >= 0)
-	rc = fd->contentLength;
-    else switch (fd->urlType) {
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	if (fstat(Fileno(fd), &sb) == 0)
-	    rc = sb.st_size;
-	/*@fallthrough@*/
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_HKP:
-    case URL_IS_FTP:
-    case URL_IS_DASH:
-	break;
-    }
-    return rc;
-}
-
 FD_t fdDup(int fdno)
 {
     FD_t fd;
@@ -3533,49 +3506,59 @@ exit:
 int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);
-    ssize_t blen = 0;
     uint8_t * b = NULL;
-    ssize_t size;
+    size_t nb;
+    struct stat sb;
     FD_t fd;
     int rc = 0;
+    int xx;
 
     fd = Fopen(fn, "r%{?_rpmgio}");
     if (fd == NULL || Ferror(fd)) {
 	rc = 2;
 	goto exit;
     }
-
-    size = fdSize(fd);
-    blen = (size >= 0 ? size : blenmax);
-    if (blen) {
-	size_t nb;
-	b = xmalloc(blen+1);
+    sb.st_size = 0;
+    if ((xx = Fstat(fd, &sb)) < 0)
+	sb.st_size = blenmax;
+#if defined(__linux__)
+    /* XXX st->st_size = 0 for /proc files on linux, see stat(2). */
+    /* XXX glibc mmap'd libio no workie for /proc files on linux?!? */
+    if (sb.st_size == 0 && !strncmp(fn, "/proc/", sizeof("/proc/")-1)) {
+	nb = blenmax;
+	b = xmalloc(nb+1);
 	b[0] = (uint8_t) '\0';
-	nb = Fread(b, sizeof(*b), blen, fd);
-	if (Ferror(fd) || (size > 0 && (ssize_t)nb != blen)) {
+
+	xx = read(Fileno(fd), b, nb);
+	nb = (size_t) (xx >= 0 ? xx : 0); 
+    } else
+#endif
+    {
+	nb = sb.st_size;
+	b = xmalloc(nb+1);
+	b[0] = (uint8_t) '\0';
+
+	nb = Fread(b, sizeof(*b), nb, fd);
+	if (Ferror(fd)) {
 	    rc = 1;
 	    goto exit;
 	}
-	if (blen == blenmax && (ssize_t)nb < blen) {
-	    blen = nb;
-	    b = xrealloc(b, blen+1);
-	}
-	b[blen] = (uint8_t) '\0';
     }
+    if (nb < sb.st_size)
+	b = xrealloc(b, nb+1);
+    b[nb] = '\0';
 
 exit:
     if (fd) (void) Fclose(fd);
-	
     if (rc) {
-	if (b) free(b);
-	b = NULL;
-	blen = 0;
+	b = _free(b);
+	nb = 0;
     }
 
     if (bp) *bp = b;
-    else if (b) free(b);
+    else b = _free(b);
 
-    if (blenp) *blenp = blen;
+    if (blenp) *blenp = nb;
 
     return rc;
 }

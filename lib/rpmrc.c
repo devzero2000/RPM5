@@ -1000,8 +1000,9 @@ int rpmShowRC(FILE * fp)
 
 	xx = rpmdsCpuinfo(&ds, NULL);
 	if (ds != NULL) {
+	    const char * fn = (_cpuinfo_path ? _cpuinfo_path : "/proc/cpuinfo");
 	    fprintf(fp,
-		_("Features provided by current cpuinfo (from /proc/cpuinfo):\n"));
+		_("Features provided by current cpuinfo (from %s):\n"), fn);
 	    ds = rpmdsInit(ds);
 	    while (rpmdsNext(ds) >= 0) {
 		const char * DNEVR = rpmdsDNEVR(ds);

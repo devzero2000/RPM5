@@ -480,12 +480,6 @@ off_t Lseek(int fdno, off_t offset, int whence)
 
 /**
  */
-off_t	fdSize(FD_t fd)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem@*/;
-
-/**
- */
 /*@null@*/ FD_t fdDup(int fdno)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

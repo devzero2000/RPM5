@@ -474,6 +474,11 @@ int rpmdsMerge(/*@null@*/ /*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ rpmds ods)
 	/*@modifies ds, ods @*/;
 
+/**
+ */
+/*@unchecked@*/
+extern const char * _cpuinfo_path;
+
 /** \ingroup rpmds
  * Load /proc/cpuinfo provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
