@@ -272,6 +272,68 @@ static const char * wgetTstamp(rpmwget wget, time_t t)
 
 /**
  */
+static const char * wgetProgress(rpmwget wget, int64_t current, int64_t total)
+{
+    size_t nb;
+    static char * tbuf = NULL;
+    char * t, * te;
+    int64_t cur = (current >= 0 ? current : 0);
+    int64_t tot = (total > 0 ? total : 0);
+    double pct = (tot > 0 ? (double)cur/tot : 0.0);
+    int ipct = (int)((100 * pct) + 0.5);
+    int i;
+
+    nb = 100;
+    if (tbuf == NULL)
+	tbuf = xmalloc(nb+1);
+
+    te = t = tbuf;
+    *t = '\0';
+    te += nb;
+
+  /* The progress bar should look like this:
+     xx% [=======>             ] nn,nnn 12.34K/s  eta 36m 51s
+
+     Calculate the geometry.  The idea is to assign as much room as
+     possible to the progress bar.  The other idea is to never let
+     things "jitter", i.e. pad elements that vary in size so that
+     their variance does not affect the placement of other elements.
+     It would be especially bad for the progress bar to be resized
+     randomly.
+
+     "xx% " or "100%"  - percentage               - 4 chars
+     "[]"              - progress bar decorations - 2 chars
+     " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
+     " 12.5K/s"        - download rate             - 8 chars
+     "  eta 36m 51s"   - ETA                      - 14 chars
+
+     "=====>..."       - progress bar             - the rest
+  */
+
+    t += sprintf(t, "%3d", ipct);
+    t = stpcpy(t, "% [");
+    for (i = 0; i < 50; i++) {
+	int ix = 2*i;
+	char c = (ix <= ipct ? '=' : ' ');
+        if (ix-1 <= ipct && ix+1 > ipct)
+	    c = '>';
+	*t++ = c;
+    }
+    t = stpcpy(t, "] ");
+
+    t += sprintf(t, "%12ld", (long)cur);
+
+#ifdef	NOTYET
+    t = stpcpy(t, " 12.34K/s  eta 36m 51s");
+#endif
+
+    *t = '\0';
+
+    return tbuf;
+}
+
+/**
+ */
 static int isHtml(const char * contentType)
 {
     int ishtml = 0;
@@ -351,6 +413,7 @@ static int wgetCopyFile(rpmwget wget)
     size_t nw, wlen = 0;
     size_t nr, rlen = 0;
     struct stat * st = wget->st;
+    ssize_t contentLength = 0;
     time_t lastModified = 0;
     int rc;
 
@@ -387,10 +450,10 @@ fprintf(stderr, "Remote file does not exist -- broken link!!!\n");
     if (wget->read_timeout_secs > 0)
 	wget->ifd->rd_timeoutsecs = wget->read_timeout_secs;
 
+    contentLength = wget->ifd->contentLength;
     lastModified = wget->ifd->lastModified;
 
 if (wget->debug < 0) {
-    ssize_t contentLength = wget->ifd->contentLength;
     const char * contentType = wget->ifd->contentType;
     const char * contentDisposition = wget->ifd->contentDisposition;
 
@@ -462,9 +525,11 @@ if (wget->debug < 0) {
 	if (WF_ISSET(PROGRESS))
 #else
 if (wget->debug < 0)
-fprintf(stderr, "\tnr %u nw %u\n", (unsigned)nr, (unsigned)nw);
+fprintf(stderr, "\r%s", wgetProgress(wget, rlen, contentLength));
 #endif
     }
+if (wget->debug < 0)
+fprintf(stderr, "\n");
 
     /* OK iff EOF was read. */
     if (nr == 0) {

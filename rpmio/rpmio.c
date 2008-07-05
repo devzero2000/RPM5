@@ -2919,6 +2919,10 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 		if (fp) {
 		    /* HACK: flimsy Keepalive wiring. */
 		    if (hadreqpersist) {
+#ifdef	NOTYET	/* XXX not quite right yet. */
+			(void) davDisconnect(fd);
+			fd->req = NULL;
+#endif
 			fd->nfps--;
 /*@-exposetrans@*/
 			fdSetFp(fd, fp);

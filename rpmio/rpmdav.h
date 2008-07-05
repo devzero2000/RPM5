@@ -143,12 +143,25 @@ DIR * avOpendir(const char * path,
 #endif
 
 /**
+ * Close active neon transfer(s) (if any).
+ * @param _u		URL container
+ * @return		0 on sucess
+ */
+int davDisconnect(void * _u)
+	/*@globals internalState @*/
+	/*@modifies u, internalState @*/;
+
+/**
+ * Free persistent neon session state.
+ * @param u		URL container
+ * @return		0 on success
  */
 int davFree(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies u, internalState @*/;
 
 /**
+ * Free global neon+openSSL state memory.
  */
 void davDestroy(void)
 	/*@globals internalState @*/

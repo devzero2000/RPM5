@@ -315,25 +315,35 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
 
 #ifdef WITH_NEON
 /* =============================================================== */
-void davDestroy(void)
+int davDisconnect(void * _u)
 {
-#ifdef NE_FEATURE_SSL
-    if (ne_has_support(NE_FEATURE_SSL)) {
-/* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
-	ENGINE_cleanup();
-	CRYPTO_cleanup_all_ex_data();
-	ERR_free_strings();
-	ERR_remove_state(0);
-	EVP_cleanup();
-	CRYPTO_mem_leaks(NULL);
-	CONF_modules_unload(1);
-    }
+    urlinfo u = (urlinfo)_u;
+    int rc;
+
+#if WITH_NEON_MIN_VERSION >= 0x002700
+    rc = (u->connstatus == ne_status_sending || u->connstatus == ne_status_recving);
+#else
+    rc = 0;	/* XXX W2DO? */
 #endif
+    if (u != NULL && rc != 0) {
+	if (u->ctrl->req != NULL) {
+	    if (u->ctrl && u->ctrl->req) {
+		ne_request_destroy(u->ctrl->req);
+		u->ctrl->req = NULL;
+	    }
+	    if (u->data && u->data->req) {
+		ne_request_destroy(u->data->req);
+		u->data->req = NULL;
+	    }
+	}
+    }
+if (_dav_debug < 0)
+fprintf(stderr, "*** davDisconnect(%p) active %d\n", u, rc);
+    /* XXX return active state? */
+    return 0;
 }
 
 int davFree(urlinfo u)
-	/*@globals internalState @*/
-	/*@modifies u, internalState @*/
 {
     if (u != NULL) {
 	if (u->sess != NULL) {
@@ -350,11 +360,32 @@ int davFree(urlinfo u)
 	    if (u->lockstore != NULL)
 		ne_lockstore_destroy(u->lockstore);
 	    u->lockstore = NULL;
+	    u->connstatus = 0;
 	    ne_sock_exit();
 	    break;
 	}
     }
+if (_dav_debug < 0)
+fprintf(stderr, "*** davFree(%p)\n", u);
     return 0;
+}
+
+void davDestroy(void)
+{
+#ifdef NE_FEATURE_SSL
+    if (ne_has_support(NE_FEATURE_SSL)) {
+/* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
+	ENGINE_cleanup();
+	CRYPTO_cleanup_all_ex_data();
+	ERR_free_strings();
+	ERR_remove_state(0);
+	EVP_cleanup();
+	CRYPTO_mem_leaks(NULL);
+	CONF_modules_unload(1);
+    }
+#endif
+if (_dav_debug < 0)
+fprintf(stderr, "*** davDestroy()\n");
 }
 
 static void davProgress(void * userdata, off_t current, off_t total)
@@ -406,7 +437,13 @@ typedef enum {
     ne_status_disconnected /* disconnected from host */
 } ne_session_status;
 #endif
-    if (_dav_debug)
+    if (_dav_debug) {
+    static const char * connstates[] = {
+	"LU", "CI", "CD", "SI", "RI", "DD", "?6", "?7"
+    };
+
+if (connstatus == ne_status_disconnected || (unsigned)u->connstatus != connstatus)
+fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
     switch (connstatus) {
     default:
 	break;
@@ -441,6 +478,7 @@ typedef enum {
     case ne_status_disconnected:
 	fprintf(stderr, "Disconnected from %s:%u\n", info->ci.hostname, u->port);
 	break;
+    }
     }
 #else
 #ifdef	REFERENCE
@@ -1476,7 +1514,7 @@ assert(ctrl->req != NULL);
     }
 
 /* XXX somwhere else instead? */
-if (_dav_debug > 0) {
+if (_dav_debug) {
     const ne_status *status = ne_get_status(ctrl->req);
 fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
 }

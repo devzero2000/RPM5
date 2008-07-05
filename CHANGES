@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdav: display connection state transitions while debugging.
+    - jbj: rpmdav: add davDisconnect() to clean active requests before caching.
+    - jbj: rpmwget: add a progress bar. no I/O rates or ETA yet.
     - jbj: install: retry callback reopen URI once to handle timeouts.
     - jbj: pkgio: use Fstat(2) for size check. more to do still ...
     - jbj: psm: fix: avoid lazy Stat(2) on active URI request.
