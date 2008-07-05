@@ -2857,7 +2857,7 @@ static int fiIntersect(rpmfi fi1, rpmfi fi2, Header h1, Header h2)
     int n = 0;
     int i1, i2;
     const char *fn1, *fn2;
-    const char *N1 = NULL, *N2 = NULL;
+    StringBuf dups = NULL;
 
     fi1 = rpmfiInit(fi1, 0);
     while ((i1 = rpmfiNext(fi1)) >= 0) {
@@ -2871,14 +2871,34 @@ static int fiIntersect(rpmfi fi1, rpmfi fi2, Header h1, Header h2)
 	    fn2 = rpmfiFN(fi2);
 	    if (strcmp(fn1, fn2))
 		/*@innercontinue@*/ continue;
-	    if (!N1) headerNEVRA(h1, &N1, NULL, NULL, NULL, NULL);
-	    if (!N2) headerNEVRA(h2, &N2, NULL, NULL, NULL, NULL);
-	    rpmlog(RPMLOG_WARNING,
-		   _("file %s is packaged into both %s and %s\n"),
-		   fn1, N1, N2);
+	    if (!dups)
+		dups = newStringBuf();
+	    appendStringBuf(dups, "\t");
+	    appendStringBuf(dups, fn1);
+	    appendStringBuf(dups, "\n");
 	    n++;
 	}
     }
+
+    if (n > 0) {
+	int i;
+	const char *N1, *N2;
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+
+	he->tag = RPMTAG_NVRA;
+	N1 = (headerGet(h1, he, 0) ? he->p.str : NULL);
+	he->tag = RPMTAG_NVRA;
+	N2 = (headerGet(h2, he, 0) ? he->p.str : NULL);
+
+	rpmlog(RPMLOG_WARNING,
+	       _("File(s) packaged into both %s and %s:\n%s"),
+	       N1, N2, getStringBuf(dups));
+
+	N1 = _free(N1);
+	N2 = _free(N2);
+	dups = freeStringBuf(dups);
+    }
+
     return n;
 }
 
