@@ -108,10 +108,6 @@ typedef struct AttrRec_s {
 static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
 /*@=readonlytrans@*/
 
-/* list of files */
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-static StringBuf check_fileList = NULL;
-
 /**
  * Package file tree walk data.
  */
@@ -1776,12 +1772,12 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 
 /* forward ref */
 static rpmRC recurseDir(FileList fl, const char * diskURL)
-	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		check_fileList, rpmGlobalMacroContext,
+		rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /**
@@ -1793,12 +1789,12 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  */
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
-		check_fileList, rpmGlobalMacroContext,
+		rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     const char *fn = xstrdup(diskURL);
@@ -1930,14 +1926,6 @@ static int addFile(FileList fl, const char * diskURL,
     if (fileGname == NULL)
 	fileGname = getGname(getgid());
     
-    /* S_XXX macro must be consistent with type in find call at check-files script */
-    if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
-	const char * diskfn = NULL;
-	(void) urlPath(diskURL, &diskfn);
-	appendStringBuf(check_fileList, diskfn);
-	appendStringBuf(check_fileList, "\n");
-    }
-
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
 	fl->fileListRecsAlloced += 128;
@@ -2057,12 +2045,12 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  */
 static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		rpmTag tag)
-	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies pkg->header, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
-		check_fileList, rpmGlobalMacroContext,
+		rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -2798,11 +2786,11 @@ exit:
 }
 
 /**
- * Check packaged file list against what's in the build root.
- * @param fileList	packaged file list
+ * Check for unpackaged files against what's in the build root.
+ * @param spec		spec file control structure
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
-static int checkFiles(StringBuf fileList)
+static int checkUnpackagedFiles(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -2812,6 +2800,8 @@ static int checkFiles(StringBuf fileList)
     StringBuf sb_stdout = NULL;
     const char * s;
     int rc;
+    StringBuf fileList = NULL;
+    Package pkg;
     
     s = rpmExpand(av_ckfile[0], NULL);
     if (!(s && *s)) {
@@ -2819,6 +2809,20 @@ static int checkFiles(StringBuf fileList)
 	goto exit;
     }
     rc = 0;
+
+    /* initialize fileList */
+    fileList = newStringBuf();
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	int i;
+	rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
+	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    const char *fn = rpmfiFN(fi);
+	    appendStringBuf(fileList, fn);
+	    appendStringBuf(fileList, "\n");
+	}
+	fi = rpmfiFree(fi);
+    }
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
@@ -2840,6 +2844,7 @@ static int checkFiles(StringBuf fileList)
     }
     
 exit:
+    fileList = freeStringBuf(fileList);
     sb_stdout = freeStringBuf(sb_stdout);
     s = _free(s);
     return rc;
@@ -2847,14 +2852,10 @@ exit:
 
 /*@-incondefs@*/
 rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
-	/*@globals check_fileList @*/
-	/*@modifies check_fileList @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     rpmRC res = RPMRC_OK;
-    
-    check_fileList = newStringBuf();
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	int rc;
@@ -2895,15 +2896,9 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     }
 
     if (res == RPMRC_OK) {
-	/* Now we have in fileList list of files from all packages.
-	 * We pass it to a script which does the work of finding missing
-	 * and duplicated files.
-	 */
-	if (checkFiles(check_fileList) > 0)
+	if (checkUnpackagedFiles(spec) > 0)
 	    res = RPMRC_FAIL;
     }
-    
-    check_fileList = freeStringBuf(check_fileList);
     
     return res;
 }

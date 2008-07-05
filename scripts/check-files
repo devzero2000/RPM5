@@ -5,22 +5,18 @@
 # Returns it's output on standard output.
 #
 # filon@pld.org.pl
+# at@altlinux.org
 
-RPM_BUILD_ROOT=`echo $1 | sed 's://*:/:g'`
-
-if [ ! -d "$RPM_BUILD_ROOT" ] ; then
-	cat > /dev/null
+RPM_BUILD_ROOT=$1
+if ! cd "${RPM_BUILD_ROOT:?}"; then
+	cat >/dev/null
 	exit 1
 fi
 
 [ "$TMPDIR" ] || TMPDIR=/tmp
 FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
-FILES_RPM=`mktemp $TMPDIR/rpmXXXXXX`
 
-find $RPM_BUILD_ROOT -type f -o -type l | sed 's://*:/:g' | LC_ALL=C sort > $FILES_DISK
-sed 's://*:/:g' | LC_ALL=C sort -u > $FILES_RPM
+find . ! -type d -print | sed -e 's:^./:/:' | LC_ALL=C sort > "$FILES_DISK"
+LC_ALL=C sort -u | LC_ALL=C comm -23 "$FILES_DISK" - | sed -e 's:^:   :'
 
-diff "$FILES_DISK" "$FILES_RPM" | grep "^< " | cut -c3- | sed -e "s#^$RPM_BUILD_ROOT#   #g"
-
-rm -f $FILES_DISK
-rm -f $FILES_RPM
+rm -f "$FILES_DISK"
