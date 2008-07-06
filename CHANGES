@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - at: rpmfi: new function: size_t rpmfiFMaxLen(rpmfi).
     - at: rpmbuild: check for unpackaged subdirectories.
     - jbj: fix: resurrect cpuinfo() probe, hack-o-rounds for both /proc & libio.
     - jbj: rpmio: remove fdSize, rewrite rpmioSlurp to use Fstat(2) instead.

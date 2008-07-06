@@ -143,7 +143,7 @@ const char * rpmfiFN(rpmfi fi)
 	const char *dn;
 	char * t;
 	if (fi->fn == NULL)
-	    fi->fn = xmalloc(fi->fnlen);
+	    fi->fn = xmalloc(fi->fnlen + 1);
 	FN = t = fi->fn;
 	(void) urlPath(fi->dnl[fi->dil[fi->i]], &dn);
 	*t = '\0';
@@ -151,6 +151,13 @@ const char * rpmfiFN(rpmfi fi)
 	t = stpcpy(t, fi->bnl[fi->i]);
     }
     return FN;
+}
+
+size_t rpmfiFMaxLen(rpmfi fi)
+{
+    if (fi != NULL)
+	return fi->fnlen;
+    return 0;
 }
 
 uint32_t rpmfiFFlags(rpmfi fi)
@@ -1278,9 +1285,7 @@ rpmfi rpmfiNew(const void * _ts, Header h, rpmTag tagN, int flags)
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
-    int dnlmax, bnlmax;
     unsigned char * t;
-    int len;
     int xx;
     int i;
 
@@ -1554,18 +1559,13 @@ if (fi->actions == NULL)
     if (!scareMem)
 	fi->h = headerFree(fi->h);
 
-    dnlmax = -1;
-    for (i = 0; i < (int)fi->dc; i++) {
-	if ((len = strlen(fi->dnl[i])) > dnlmax)
-	    dnlmax = len;
-    }
-    bnlmax = -1;
-    for (i = 0; i < (int)fi->fc; i++) {
-	if ((len = strlen(fi->bnl[i])) > bnlmax)
-	    bnlmax = len;
-    }
-    fi->fnlen = dnlmax + bnlmax + 1;
     fi->fn = NULL;
+    fi->fnlen = 0;
+    for (i = 0; i < (int)fi->fc; i++) {
+	size_t fnlen = strlen(fi->dnl[fi->dil[i]]) + strlen(fi->bnl[i]);
+	if (fnlen > fi->fnlen)
+	    fi->fnlen = fnlen;
+    }
 
     fi->dperms = 0755;
     fi->fperms = 0644;

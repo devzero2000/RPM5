@@ -393,6 +393,14 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
 	/*@modifies fi @*/;
 
 /**
+ * Return maximum file name length from file info set.
+ * @param fi		file info set
+ * @return		maximum file name length (not including '\0')
+ */
+/*@observer@*/
+extern size_t rpmfiFMaxLen(/*@null@*/ rpmfi fi);
+
+/**
  * Return current file flags from file info set.
  * @param fi		file info set
  * @return		current file flags, 0 on invalid

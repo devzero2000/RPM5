@@ -1275,7 +1275,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     int skipLen = 0;
     security_context_t scon = NULL;
     const char * sxfn;
-    size_t fnlen;
     FileListRec flp;
     char buf[BUFSIZ];
     int i, xx;
@@ -1667,8 +1666,15 @@ if (_rpmbuildFlags & 4) {
 	    continue;
 	}
 
-	if ((fnlen = strlen(flp->diskURL) + 1) > fi->fnlen)
-	    fi->fnlen = fnlen;
+	{
+	    size_t fnlen = strlen(flp->fileURL);
+	    if (fnlen > fi->fnlen) {
+		/* fnlen-sized buffer must not be allocated yet */
+		assert(fi->fn == NULL);
+		fi->fnlen = fnlen;
+	    }
+	}
+
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
@@ -2964,7 +2970,7 @@ static int pkgUnpackagedSubdirs(Package pkg)
 	fi = rpmfiFree(fi);
 	return 0;
     }
-    fn = alloca(fi->fnlen);
+    fn = alloca(rpmfiFMaxLen(fi) + 1);
 
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
