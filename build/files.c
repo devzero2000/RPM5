@@ -3001,6 +3001,7 @@ static int pkgUnpackagedSubdirs(Package pkg)
 	    *p = '/';
 	}
     }
+    fi = rpmfiFree(fi);
 
     if (n > 0) {
 	const char *N;
