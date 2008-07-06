@@ -428,3 +428,20 @@
      Characteristic: standalone installation of RPM that installs into /usr/local
      ________________________________________________________________________
 
+  o  Name:           FEDORA
+     Vendor:         Fedora Project <http://fedoraproject.org/>
+     Representative: Robert Scheck <robert@fedoraproject.org> <robert@rpm5.org>
+     Application:    RPM-based Linux software distribution (> 7000 packages)
+     Characteristic: Optional replacement of RPM 4 with RPM 5 for users
+     ________________________________________________________________________
+
+     Change:         backward-compat-rpmtag-sourcepackage
+     Purpose:        Still mark SRPMS with RPMTAG_SOURCEPACKAGE
+     Reason:         For backward compatibility with RPM < 4.4.6 for all the
+                     Fedora releases which are using RPM 4. RPM 5 will still
+                     mark SRPMS with the RPMTAG_SOURCEPACKAGE. This especially
+                     allows to switch between RPM 4 and 5 on Fedora. Without
+                     this the mixture would involve manual "rpm2cpio" plus the
+                     "rpm -bb" operation.
+     ________________________________________________________________________
+
