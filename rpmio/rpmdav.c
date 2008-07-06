@@ -442,8 +442,6 @@ typedef enum {
 	"LU", "CI", "CD", "SI", "RI", "DD", "?6", "?7"
     };
 
-if (connstatus == ne_status_disconnected || (unsigned)u->connstatus != connstatus)
-fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
     switch (connstatus) {
     default:
 	break;
@@ -457,6 +455,8 @@ fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstat
 	/* Finish the lookup -> connecting state transition. */
 	if (u->connstatus == ne_status_lookup)
 	    fprintf(stderr, " %s\n", buf);
+	else if (u->connstatus != ne_status_disconnected)
+fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
 	fprintf(stderr, "Connecting to %s|%s|:%u...",
 			   info->ci.hostname, buf, u->port);
     }	break;
@@ -464,18 +464,29 @@ fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstat
 	/* Finish the connecting -> connected state transition. */
 	if (u->connstatus == ne_status_connecting)
 	    fprintf(stderr, " connected.\n");
+	else
+fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
 	break;
     case ne_status_sending:	/* sending a request body */
+	if (u->connstatus != connstatus)
+	if (u->connstatus != ne_status_connected)
+fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
 	if (_dav_debug < 0)	/* XXX noisy, wait for progress bar ... */
 	fprintf(stderr, "Sending ... (%ld:%ld)\n",
 		(long) info->sr.progress, (long) info->sr.total);
 	break;
     case ne_status_recving:	/* receiving a response body */
+	if (u->connstatus != connstatus)
+	if (u->connstatus != ne_status_connected)
+	if (u->connstatus != ne_status_sending)
+fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
 	if (_dav_debug < 0)	/* XXX noisy, wait for progress bar ... */
 	fprintf(stderr, "Recving ... (%ld:%ld)\n",
 		(long) info->sr.progress, (long) info->sr.total);
 	break;
     case ne_status_disconnected:
+	if (u->connstatus != ne_status_recving)
+fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
 	fprintf(stderr, "Disconnected from %s:%u\n", info->ci.hostname, u->port);
 	break;
     }

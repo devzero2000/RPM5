@@ -22,9 +22,8 @@ enum wgetFlags_e {
     WGET_FLAGS_RETRYCONN	= _WFB( 0), /*!<    --retry-connrefused ... */
     WGET_FLAGS_NOCLOBBER	= _WFB( 1), /*!<    --no-clobber ... */
     WGET_FLAGS_RESUME		= _WFB( 2), /*!<    --continue ... */
-    WGET_FLAGS_PROGRESS		= _WFB( 3), /*!<    --progress ... */
-    WGET_FLAGS_NEWERONLY	= _WFB( 4), /*!<    --timestamping ... */
-    WGET_FLAGS_NODOWNLOAD	= _WFB( 5), /*!<    --spider ... */
+    WGET_FLAGS_NEWERONLY	= _WFB( 3), /*!<    --timestamping ... */
+    WGET_FLAGS_NODOWNLOAD	= _WFB( 4), /*!<    --spider ... */
 };
 
 enum wgetRFlags_e {
@@ -130,6 +129,13 @@ struct rpmwget_s {
     FD_t ofd;				/*!< Output file handle. */
     struct stat * st;			/*!< Ouput file stat(2) */
 
+/*@null@*/
+    const char * bartype;		/*!< Progress bar display type. */
+    int maxcols;			/*!< Display width. */
+    struct rpmop_s top;			/*!< Stats accumulator */
+    double rate;			/*!< Download rate. */
+    struct timespec tv;			/*!< Per-operation delay. */
+
     int ntry;				/*!< Retry counter. */
    
     /* --- Startup --- */
@@ -154,7 +160,7 @@ struct rpmwget_s {
     int wait_secs;			/*!< -w,--wait ... */
     int waitretry_secs;			/*!<    --waitretry ... */
     int randomwaitretry_secs;		/*!<    --random-wait ... */
-    int limit_rate;			/*!<    --limit-rate ... */
+    double limit_rate;			/*!<    --limit-rate ... */
     int bind_address;			/*!<    --bind-address ... */
     const char * prefer;		/*!<    --prefer-family ... */
     const char * document_file;		/*!< -O,--output-document ... */
@@ -211,6 +217,9 @@ struct rpmwget_s {
 static struct rpmwget_s __rpmwget = {
     .debug = -1,
     .verbose = -1,
+
+    .maxcols = 80,
+
 #ifdef	NOTYET
     .ntries = 20,
 #else
@@ -272,15 +281,21 @@ static const char * wgetTstamp(rpmwget wget, time_t t)
 
 /**
  */
-static const char * wgetProgress(rpmwget wget, int64_t current, int64_t total)
+static const char * wgetProgress(rpmwget wget, rpmop fop, int64_t total)
 {
-    size_t nb;
     static char * tbuf = NULL;
-    char * t, * te;
-    int64_t cur = (current >= 0 ? current : 0);
+    static struct rpmsw_s end;
+    int64_t cur = fop->bytes;
+    rpmtime_t usecs = rpmswDiff(rpmswNow(&end), &fop->begin);
+    rpmtime_t msecs = usecs/1000;
+    double rate = (msecs > 0 ? (double) cur / msecs : 0.0);
     int64_t tot = (total > 0 ? total : 0);
+    double etamsecs = (tot > 0 && rate > 0.0 ? (tot - cur) / rate : 0.0);
     double pct = (tot > 0 ? (double)cur/tot : 0.0);
     int ipct = (int)((100 * pct) + 0.5);
+    char * t, * te;
+    size_t nb;
+    int barcols;
     int i;
 
     nb = 100;
@@ -310,22 +325,60 @@ static const char * wgetProgress(rpmwget wget, int64_t current, int64_t total)
      "=====>..."       - progress bar             - the rest
   */
 
+    barcols = wget->maxcols;
+    barcols -= sizeof("100%") - 1;
+    barcols -= sizeof("[]") - 1;
+    barcols -= sizeof(" nnn,nnn,nnn") - 1;
+    barcols -= sizeof(" 12.5K/s") - 1;
+    barcols -= sizeof("  eta 36m 51s") - 1;
+
     t += sprintf(t, "%3d", ipct);
+
     t = stpcpy(t, "% [");
-    for (i = 0; i < 50; i++) {
-	int ix = 2*i;
+    for (i = 0; i < barcols; i++) {
+	int ix = (100 * i) / barcols;
 	char c = (ix <= ipct ? '=' : ' ');
-        if (ix-1 <= ipct && ix+1 > ipct)
+        if (ix-1 <= ipct && ix >= ipct)
 	    c = '>';
 	*t++ = c;
     }
-    t = stpcpy(t, "] ");
+    t = stpcpy(t, "]");
 
-    t += sprintf(t, "%12ld", (long)cur);
+    if (cur >= (1000 * 1000 * 1000) || cur < 1000)
+	t += sprintf(t, "%12ld", (long)cur);
+    else if (cur > (1000 * 1000))
+	t += sprintf(t, " %3d,%03d,%03d", (int)(cur/(1000*1000)),
+			(int)((cur % (1000*1000))/1000), (int)(cur % 1000));
+    else
+	t += sprintf(t, "     %3d,%03d", (int)(cur/1000), (int)(cur % 1000));
 
-#ifdef	NOTYET
-    t = stpcpy(t, " 12.34K/s  eta 36m 51s");
-#endif
+    if (rate > 0.0) {
+	if (rate >= 100000.)
+	    t += sprintf(t, "%4.0fM/s", (rate/1024));
+	else if (rate >= 10000.)
+	    t += sprintf(t, "%4.1fM/s", (rate/1024));
+	else if (rate >= 1000.)
+	    t += sprintf(t, "%4.2fM/s", (rate/1024));
+	else if (rate >= 100.)
+	    t += sprintf(t, "%4.0fK/s", rate);
+	else if (rate >= 10.)
+	    t += sprintf(t, "%4.1fK/s", rate);
+	else
+	    t += sprintf(t, "%4.2fK/s", rate);
+    } else
+	t = stpcpy(t, " __._K/s");
+
+    if (etamsecs > 0.0) {
+	int secs = (int) (etamsecs/1000);
+	int mins = secs/60;
+	int hours = mins/60;
+	if (hours > 0)
+	    t += sprintf(t, "  eta %2dh %2dm", hours, (mins % 60));
+	else if (mins > 0)
+	    t += sprintf(t, "  eta %2dm %2ds", mins, (secs % 60));
+	else if (secs > 0)
+	    t += sprintf(t, "  eta %2ds", (secs % 60));
+    }
 
     *t = '\0';
 
@@ -401,8 +454,6 @@ static const char * wgetOPath(rpmwget wget)
 
     te = wgetStpcpy(wget, wgetStpcpy(wget, te, s), sext);
 
-fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, wget->rflags, t);
-
     return t;
 }
 
@@ -410,12 +461,15 @@ fprintf(stderr, "--> wgetOPath(%s) rflags 0x%x ret %s\n", wget->document_file, w
  */
 static int wgetCopyFile(rpmwget wget)
 {
-    size_t nw, wlen = 0;
-    size_t nr, rlen = 0;
+    rpmop top = &wget->top;
+    rpmop fop = memset(alloca(sizeof(*fop)), 0, sizeof(*fop));
+    size_t nw;
+    size_t nr;
     struct stat * st = wget->st;
     ssize_t contentLength = 0;
     time_t lastModified = 0;
     int rc;
+    int xx;
 
     /* Verify input URI exists, don't transfer content. */
     if (WF_ISSET(NODOWNLOAD)) {
@@ -449,6 +503,20 @@ fprintf(stderr, "Remote file does not exist -- broken link!!!\n");
 
     if (wget->read_timeout_secs > 0)
 	wget->ifd->rd_timeoutsecs = wget->read_timeout_secs;
+
+#ifdef	NOTYET
+#ifdef SO_RCVBUF
+    if (wget->limit_rate > 0.0) {
+	int bufsiz = (int) (wget->limit_rate * 1024);
+	if (bufsiz < 512)
+	    bufsiz = 512;
+	if (bufsiz > 8192)
+	    bufsiz = 8192;
+	setsockopt (sock, SOL_SOCKET, SO_RCVBUF,
+                  (void *)&bufsize, (socklen_t)sizeof (bufsize));
+    }
+#endif
+#endif
 
     contentLength = wget->ifd->contentLength;
     lastModified = wget->ifd->lastModified;
@@ -494,9 +562,6 @@ fprintf(stderr, "Input for file \"%s\" is not newer, skipping retrieve.\n", wget
 	}
     }
 
-if (wget->debug < 0)
-fprintf(stderr, "--> wgetCopyFile(%p) %s => %s\n", wget, wget->ifn, wget->ofn);
-
 if (wget->debug < 0) {
     fprintf(stderr, "Saving to: `%s'\n", wget->ofn);
 }
@@ -507,39 +572,102 @@ if (wget->debug < 0) {
     }
 
 #ifdef	NOTYET
+#ifdef SO_SNDBUF
+    if (wget->limit_rate > 0.0) {
+	int bufsiz = (int) (wget->limit_rate * 1024);
+	if (bufsiz < 512)
+	    bufsiz = 512;
+	if (bufsiz > 8192)
+	    bufsiz = 8192;
+	setsockopt (sock, SOL_SOCKET, SO_SNDBUF,
+                  (void *)&bufsize, (socklen_t)sizeof (bufsize));
+    }
+#endif
+#endif
+
+#ifdef	NOTYET
     /* Reposition I/O handles if resuming. */
     if (WF_ISSET(RESUME) && "partially downloaded")
 #endif
 
+    xx = rpmswEnter(fop, 0);
     /* XXX Ferror(wget->ifd) ? */
     while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0) {
-	rlen += nr;
-
+	
 	/* XXX Ferror(wget->ofd) ? */
 	if ((nw = Fwrite(wget->b, 1, nr, wget->ofd)) != nr)
 	    break;
-	wlen += nw;
+
+	/* Accumulate statistics. */
+	fop->count++;
+	fop->bytes += nr;
+
+	/* Display progress. */
+	if (wget->bartype != NULL && strcmp(wget->bartype, "none"))
+	    fprintf(stderr, "\r%s", wgetProgress(wget, fop, contentLength));
+
+	/* Delay if over limit rate. */
+	if (wget->tv.tv_sec || wget->tv.tv_nsec) {
+	    xx = nanosleep(&wget->tv, NULL);
+	}
 
 #ifdef	NOTYET
-	/* Update progress display. */
-	if (WF_ISSET(PROGRESS))
-#else
-if (wget->debug < 0)
-fprintf(stderr, "\r%s", wgetProgress(wget, rlen, contentLength));
+	/* Update per-operation delay estimate if rate limiting. */
+	if (wget->limit_rate > 0.0 && wget->rate > 0.0) {
+	    static int fac = 2;
+	    int64_t usecs = (top->usecs + fop->usecs);
+	    size_t kbytes = (top->bytes + fop->bytes) / 1024;
+	    double rate = ((double)kbytes/usecs) * (1000 * 1000);
+	    int opcount = (top->count + fop->count);
+	    double d = kbytes - (usecs * wget->limit_rate)/(1000 * 1000);
+	    d /= opcount;
+	    /* d now has correction delta to total #kbytes per operation */
+	    usecs = (int64_t) ((d / rate) * 1000 * 1000);
+	    /* EWMA: new = ((10 - fac) * old + (fac * delta)) / 10 */
+	    if (fac >= 0 && fac <= 10) {
+		usecs *= fac;
+		wget->tv.tv_sec *= (10 - fac); wget->tv.tv_nsec *= (10 - fac);
+	    }
+	    wget->tv.tv_sec += usecs/(1000*1000);
+	    wget->tv.tv_nsec += (usecs % (1000 * 1000)) * 1000;
+	    if (fac >= 0 && fac <= 10) {
+		wget->tv.tv_sec /= 10; wget->tv.tv_nsec /= 10;
+	    }
+	    while (wget->tv.tv_nsec < 0) {
+		wget->tv.tv_nsec += (1000 * 1000 * 1000);
+		wget->tv.tv_sec--;
+	    }
+	    while (wget->tv.tv_nsec >= (1000 * 1000 * 1000)) {
+		wget->tv.tv_nsec -= (1000 * 1000 * 1000);
+		wget->tv.tv_sec++;
+	    }
+	    if (wget->tv.tv_sec < 0)
+		wget->tv.tv_sec = 0;
+	}
 #endif
+
     }
 if (wget->debug < 0)
 fprintf(stderr, "\n");
 
+    xx = rpmswExit(fop, 0);
+    xx = rpmswAdd(top, fop);	/* XXX acumulate only on success? */
+    {
+	rpmtime_t msecs = top->usecs/1000;
+	wget->rate = (msecs > 0 ? (double) top->bytes / msecs : 0.0);
+    }
+
     /* OK iff EOF was read. */
     if (nr == 0) {
 if (wget->debug < 0) {
-    fprintf(stderr, "--%s-- (?.? KB/s) - `%s' saved [%lu]\n",
-	wgetTstamp(wget, time(NULL)), wget->ofn, (unsigned long)nw);
+	fprintf(stderr, "--%s-- (%3.1f KB/s) - `%s' saved [%lu]\n",
+		wgetTstamp(wget, time(NULL)), wget->rate,
+		wget->ofn, (unsigned long)nw);
 }
 	rc = 0;
-    } else
+    } else {
 	rc = 1;
+    }
 
 exit:
 
@@ -576,6 +704,7 @@ static int wgetCopyRetry(rpmwget wget)
     do {
 	rc = wgetCopyFile(wget);
     } while (rc != 0 && (wget->ntries <= 0 || ++wget->ntry < wget->ntries));
+
     return rc;
 }
 
@@ -658,7 +787,9 @@ exit:
 
 /*==============================================================*/
 enum {
-    POPTWGET_RESTRICT	= 1,	/* --restrict-file-names */
+    POPTWGET_RESTRICT	= -2048,	/* --restrict-file-names */
+    POPTWGET_PROGRESS	= -2049,	/* --progress */
+    POPTWGET_LIMITRATE	= -2050,	/* --limit-rate */
 };
 
 /**
@@ -678,6 +809,36 @@ fprintf(stderr, "--> rpmwgetCallback(%p): arg %s\n", wget, arg);
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case POPTWGET_LIMITRATE:
+    {
+	char * end = NULL;
+	double d = strtod(arg, &end);
+	if (*end == 'k' || *end == 'K') {
+	    d *= 1024;
+	    end++;
+	}
+	if (*end == '\0')
+	    wget->limit_rate = d / 1024;
+	else
+fprintf(stderr, "Invalid --limit-rate arg ignored: %s\n", arg);
+    }	break;
+    case POPTWGET_PROGRESS:
+	if (arg == NULL || !strcmp(arg, "none")) {
+	    wget->bartype = _free(wget->bartype);
+	    wget->bartype = xstrdup("none");
+	} else if (!strcmp(arg, "bar")) {
+	    wget->bartype = _free(wget->bartype);
+	    wget->bartype = xstrdup(arg);
+	} else if (!strcmp(arg, "dot") 
+	 || !strcmp(arg, "dot:default") 
+	 || !strcmp(arg, "dot:binary") 
+	 || !strcmp(arg, "dot:mega"))
+	{
+	    wget->bartype = _free(wget->bartype);
+	    wget->bartype = xstrdup(arg);
+	} else
+fprintf(stderr, "Invalid --progress arg ignored: %s\n", arg);
+	break;
     case POPTWGET_RESTRICT:	/* --restrict-file-names */
 	(void) argvSplit(&av, arg, ",");
 	for (i = 0; av[i] != NULL; i++) {
@@ -764,7 +925,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("skip downloads that would download to existing files."), NULL },
   { "continue", 'c', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_RESUME,
 	N_("resume getting a partially-downloaded file."), NULL },
-  { "progress", '\0', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_PROGRESS,
+  { "progress", '\0', POPT_ARG_STRING,		NULL, POPTWGET_PROGRESS,
 	N_("select progress gauge type."), N_("TYPE") },
   { "timestamping", 'N', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_NEWERONLY,
 	N_("don't re-retrieve files unless newer than local."), NULL },
@@ -797,8 +958,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
   { "bind-address", '\0', POPT_ARG_INT,	&__rpmwget.bind_address, 0,
 	N_("bind to ADDRESS (hostname or IP) on local host."), N_("ADDRESS") },
 
-/* XXX double? */
-  { "limit-rate", '\0', POPT_ARG_INT,	&__rpmwget.limit_rate, 0,
+  { "limit-rate", '\0', POPT_ARG_STRING,	NULL, POPTWGET_LIMITRATE,
 	N_("limit download rate to RATE."), N_("RATE") },
 
   { "no-dns-cache", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NODNSCACHE,
@@ -1080,6 +1240,8 @@ _rpmio_debug = -1;
 #endif
 }
 
+    /* Set default configuration (if not already specified). */
+
     optCon = rpmioInit(argc, argv, optionsTable);
     if (wget->debug < 0) {
 	fprintf(stderr, "==> %s", __progname);
@@ -1089,9 +1251,9 @@ _rpmio_debug = -1;
 	fprintf(stderr, "\n");
     }
 
-    /* Set default configuration (if not already specified). */
-
     /* Sanity check configuration. */
+    if (wget->bartype == NULL)
+	wget->bartype = xstrdup("bar");
 
     /* Gather arguments. */
     av = poptGetArgs(optCon);
@@ -1105,6 +1267,7 @@ _rpmio_debug = -1;
 	goto exit;
     }
 
+    xx = rpmswEnter(&wget->top, 1);
     if (wget->argv != NULL)
     for (i = 0; wget->argv[i] != NULL; i++) {
 	wget->ifn = xstrdup(wget->argv[i]);
@@ -1112,6 +1275,7 @@ _rpmio_debug = -1;
 	    rc = 256;
 	wget->ifn = _free(wget->ifn);
     }
+    xx = rpmswExit(&wget->top, 1);
 
 exit:
     wget->b = _free(wget->b);
@@ -1121,6 +1285,7 @@ exit:
 
     wget->argv = argvFree(wget->argv);
     wget->manifests = argvFree(wget->manifests);
+    wget->bartype = _free(wget->bartype);
 
     optCon = rpmioFini(optCon);
 

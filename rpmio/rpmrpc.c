@@ -1411,7 +1411,7 @@ fprintf(stderr, "*** Fstat(%p,%p) path %s\n", fd, st, path);
     case URL_IS_HTTP:
     case URL_IS_HKP:
 	if (fd->contentLength < 0) {
-	    errno = ENOENT;
+	   errno = ENOENT;
 	   return -2;
 	}
 	memset(st, 0, sizeof(*st));
