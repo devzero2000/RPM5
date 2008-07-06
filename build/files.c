@@ -2961,7 +2961,7 @@ static int pkgUnpackagedSubdirs(Package pkg)
     rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
 
     if (rpmfiFC(fi) <= 1) {
-	rpmfiFree(fi);
+	fi = rpmfiFree(fi);
 	return 0;
     }
     fn = alloca(fi->fnlen);
