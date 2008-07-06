@@ -215,8 +215,8 @@ struct rpmfi_s {
     const char * verifyscriptprog;
 
 /*@only@*/ /*@null@*/
-    char * fn;			/*!< File name buffer. */
-    size_t fnlen;		/*!< File name buffer length. */
+    char * fn;			/*!< File name buffer, fnlen + 1 bytes. */
+    size_t fnlen;		/*!< Maximum file name length (without '\0'). */
 
     size_t astriplen;
     size_t striplen;
