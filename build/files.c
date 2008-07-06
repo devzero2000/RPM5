@@ -2923,6 +2923,127 @@ static int checkDuplicateFiles(Spec spec)
     return n;
 }
 
+/* auxiliary function: check if directory d is packaged */
+static int packagedDir(Package pkg, const char *d)
+{
+    int i;
+    int found = 0;
+    const char *fn;
+    rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
+
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0) {
+	if (!S_ISDIR(rpmfiFMode(fi)))
+	    continue;
+	fn = rpmfiFN(fi);
+	if (strcmp(fn, d) == 0) {
+	    found = 1;
+	    break;
+	}
+    }
+    fi = rpmfiFree(fi);
+    return found;
+}
+
+/* auxiliary function: find unpackaged subdirectories
+ *
+ * E.g. consider this %files section:
+ *       %dir /A
+ *       /A/B/C/D
+ * Now directories "/A/B" and "/A/B/C" should also be packaged.
+ */
+static int pkgUnpackagedSubdirs(Package pkg)
+{
+    int n = 0;
+    int i, j;
+    char **unpackaged = NULL;
+    rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
+
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0) {
+	int found = 0;
+	/* make local copy of file name */
+	const char *fn_ = rpmfiFN(fi);
+	size_t fn_len = strlen(fn_);
+	char *fn = alloca(fn_len + 1);
+	char *p = fn;
+	strcpy(fn, fn_);
+	/* find the first path component that is packaged */
+	while ((p = strchr(p + 1, '/'))) {
+	    *p = '\0';
+	    found = packagedDir(pkg, fn);
+	    *p = '/';
+	    if (found)
+		break;
+	}
+	if (!found)
+	    continue;
+	/* other path components should be packaged, too */
+	while ((p = strchr(p + 1, '/'))) {
+	    *p = '\0';
+	    if (packagedDir(pkg, fn)) {
+		*p = '/';
+		continue;
+	    }
+	    /* might be already added */
+	    found = 0;
+	    for (j = 0; j < n; j++)
+		if (strcmp(fn, unpackaged[j]) == 0) {
+		    found = 1;
+		    break;
+		}
+	    if (found) {
+		*p = '/';
+		continue;
+	    }
+	    unpackaged = xrealloc(unpackaged, sizeof(*unpackaged) * (n + 1));
+	    unpackaged[n++] = xstrdup(fn);
+	    *p = '/';
+	}
+    }
+
+    if (n > 0) {
+	const char *N;
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	StringBuf list = newStringBuf();
+
+	he->tag = RPMTAG_NVRA;
+	N = (headerGet(pkg->header, he, 0) ? he->p.str : NULL);
+
+	for (i = 0; i < n; i++) {
+	    appendStringBuf(list, "\t");
+	    appendStringBuf(list, unpackaged[i]);
+	    appendStringBuf(list, "\n");
+	    unpackaged[i] = _free(unpackaged[i]);
+	}
+	unpackaged = _free(unpackaged);
+
+	rpmlog(RPMLOG_WARNING,
+	       _("Unpackaged subdir(s) in %s:\n%s"),
+	       N, getStringBuf(list));
+
+	N = _free(N);
+	list = freeStringBuf(list);
+    }	
+
+    return n;
+}
+
+/**
+ * Check for unpackaged subdirectories.
+ * @param spec		spec file control structure
+ * @return		number of unpackaged subdirectories
+ */
+static int checkUnpackagedSubdirs(Spec spec)
+{
+    int n = 0;
+    Package pkg;
+
+    for (pkg = spec->packages; pkg; pkg = pkg->next)
+	n += pkgUnpackagedSubdirs(pkg);
+    return n;
+}
+
 /*@-incondefs@*/
 rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
@@ -2972,6 +3093,7 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if (checkUnpackagedFiles(spec) > 0)
 	    res = RPMRC_FAIL;
 	(void) checkDuplicateFiles(spec);
+	(void) checkUnpackagedSubdirs(spec);
     }
     
     return res;
