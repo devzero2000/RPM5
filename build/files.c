@@ -2957,17 +2957,19 @@ static int pkgUnpackagedSubdirs(Package pkg)
     int n = 0;
     int i, j;
     char **unpackaged = NULL;
+    char *fn;
     rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
+
+    if (rpmfiFC(fi) <= 1)
+	return 0;
+    fn = alloca(fi->fnlen);
 
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
 	int found = 0;
 	/* make local copy of file name */
-	const char *fn_ = rpmfiFN(fi);
-	size_t fn_len = strlen(fn_);
-	char *fn = alloca(fn_len + 1);
 	char *p = fn;
-	strcpy(fn, fn_);
+	strcpy(fn, rpmfiFN(fi));
 	/* find the first path component that is packaged */
 	while ((p = strchr(p + 1, '/'))) {
 	    *p = '\0';
