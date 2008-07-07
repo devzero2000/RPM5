@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: preliminaries for -o/-a output file logging.
     - jbj: rpmwget: wire up --quota.
     - jbj: rpmsw: change bytes accumulator to unsigned long long.
     - jbj: rpmwget: wire up --limit-rate. more to do ...

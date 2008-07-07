@@ -1,4 +1,5 @@
 #include "system.h"
+#include <stdarg.h>
 
 #include <rpmio_internal.h>
 #include <rpmdav.h>
@@ -122,6 +123,7 @@ struct rpmwget_s {
     char * b;				/*!< I/O buffer */
     size_t blen;			/*!< I/O buffer size (bytes) */
     const char * lfn;			/*!< Logging file name. */
+    const char * lfmode;		/*!< Logging file mode. */
     FD_t lfd;				/*!< Logging file handle. */
     const char * ifn;			/*!< Input file name. */
     FD_t ifd;				/*!< Input file handle. */
@@ -142,8 +144,6 @@ struct rpmwget_s {
     const char * execute_cmd;		/*!< -e,--execute ... */
 
     /* --- Logging & Input --- */
-    const char * logoutput_file;	/*!< -o,--output-file ... */
-    const char * logappend_file;	/*!< -a,--append-output ... */
     int debug;				/*!< -d,--debug ... */
     int quiet;				/*!< -q,--quiet ... */
     int verbose;			/*!< -v,--verbose ... */
@@ -277,6 +277,19 @@ static const char * wgetTstamp(rpmwget wget, time_t t)
     struct tm * tm = localtime(&t);
     (void) strftime(tstamp, sizeof(tstamp), tfmt, tm);
     return tstamp;
+}
+
+/*==============================================================*/
+static int wgetLog(rpmwget wget, const char * fmt, ...)
+{
+    int rc;
+    va_list ap;
+
+    va_start(ap, fmt);
+    rc = vfprintf(stderr, fmt, ap);
+    va_end(ap);
+
+    return rc;
 }
 
 /**
@@ -473,24 +486,22 @@ static int wgetCopyFile(rpmwget wget)
 
     /* Verify input URI exists, don't transfer content. */
     if (WF_ISSET(NODOWNLOAD)) {
-if (wget->debug < 0) {
-fprintf(stderr, "Spider mode enabled. Check if remote file exists.\n");
-}
-if (wget->debug < 0) {
-fprintf(stderr, "--%s--  %s\n", wgetTstamp(wget, time(NULL)), wget->ifn);
-}
+	wgetLog(wget, _("Spider mode enabled. Check if remote file exists.\n"));
+	wgetLog(wget, "--%s--  %s\n", wgetTstamp(wget, time(NULL)), wget->ifn);
 	rc = Stat(wget->ifn, st);
-if (rc == 0) {
-#ifdef	DYING	/* XXX rely on rpmio debugging? */
-fprintf(stderr, "Length: %lu %s", (unsigned long)st->st_size, ctime(&st->st_mtime));
-#endif
-fprintf(stderr, "Remote file exists.\n");
-} else {
-fprintf(stderr, "Remote file does not exist -- broken link!!!\n");
-}
+	if (rc == 0) {
+	    wgetLog(wget, "Length: %lu (%luK) [content/type] [%24.24s]\n",
+		(unsigned long)st->st_size,
+		(unsigned long)(st->st_size + 1023)/1024,
+		ctime(&st->st_mtime));
+	    wgetLog(wget, _("Remote file exists.\n"));
+	} else {
+	    wgetLog(wget, _("Remote file does not exist -- broken link!!!\n"));
+	}
 	goto exit;
     }
 
+    wgetLog(wget, "--%s--  %s\n", wgetTstamp(wget, time(NULL)), wget->ifn);
     /* Open input URI for content transfer. */
     wget->ifd = Fopen(wget->ifn, "r.ufdio");
     rc = (wget->ifd == NULL || Ferror(wget->ifd)) ? 1 : 0;
@@ -545,7 +556,9 @@ if (wget->debug < 0) {
     if ((WF_ISSET(NOCLOBBER) || WF_ISSET(NEWERONLY)) && !Stat(wget->ofn, st)) {
 	/* Don't clobber pre-existing output files. */
 	if (WF_ISSET(NOCLOBBER)) {
-fprintf(stderr, "Ouptut file \"%s\" exists, skipping retrieve.\n", wget->ofn);
+	    wgetLog(wget,
+		_("Ouptut file \"%s\" exists, skipping retrieve.\n"),
+		wget->ofn);
 	    lastModified = 0;	/* XXX disable timestamping. */
 	    rc = 0;
 	    goto exit;
@@ -555,16 +568,16 @@ fprintf(stderr, "Ouptut file \"%s\" exists, skipping retrieve.\n", wget->ofn);
 	if (WF_ISSET(NEWERONLY)
 	 && lastModified > 0 && lastModified <= st->st_mtime)
 	{
-fprintf(stderr, "Input for file \"%s\" is not newer, skipping retrieve.\n", wget->ofn);
+	    wgetLog(wget,
+		_("Input for file \"%s\" is not newer, skipping retrieve.\n"),
+		wget->ofn);
 	    lastModified = 0;	/* XXX disable timestamping. */
 	    rc = 0;
 	    goto exit;
 	}
     }
 
-if (wget->debug < 0) {
-    fprintf(stderr, "Saving to: `%s'\n", wget->ofn);
-}
+    wgetLog(wget, "Saving to: `%s'\n", wget->ofn);
     wget->ofd = Fopen(wget->ofn, "w.ufdio");
     if (wget->ofd == NULL || Ferror(wget->ofd)) {
 	rc = 1;
@@ -659,11 +672,9 @@ fprintf(stderr, "\n");
 
     /* OK iff EOF was read. */
     if (nr == 0) {
-if (wget->debug < 0) {
-	fprintf(stderr, "--%s-- (%3.1f KB/s) - `%s' saved [%lu]\n",
+	wgetLog(wget, _("--%s-- (%3.1f KB/s) - `%s' saved [%lu]\n"),
 		wgetTstamp(wget, time(NULL)), wget->rate,
 		wget->ofn, (unsigned long)nw);
-}
 	rc = 0;
     } else {
 	rc = 1;
@@ -709,7 +720,7 @@ static int wgetCopyRetry(rpmwget wget)
     if (wget->quota > 0) {
 	rpmop top = &wget->top;
 	if ((top->bytes/1024) > wget->quota) {
-fprintf(stderr, "Download quota of %lluK EXCEEDED!\n",
+	    wgetLog(wget, _("Download quota of %lluK EXCEEDED!\n"),
 		(unsigned long long) wget->quota);
 	    rc = 1;
 	}
@@ -801,6 +812,8 @@ enum {
     POPTWGET_PROGRESS	= -2049,	/*    --progress */
     POPTWGET_LIMITRATE	= -2050,	/*    --limit-rate */
     POPTWGET_QUOTA	= -2051,	/* -Q,--quota */
+    POPTWGET_LOGFILE	= -2052,	/* -o,--output-file */
+    POPTWGET_LOGAPPEND	= -2053,	/* -a,--append-output */
 };
 
 /**
@@ -816,10 +829,17 @@ static void rpmwgetArgCallback(poptContext con,
     ARGV_t av = NULL;
     int i;
 
-fprintf(stderr, "--> rpmwgetCallback(%p): arg %s\n", wget, arg);
+fprintf(stderr, "--> rpmwgetCallback(%p): val %d/0x%x arg %s\n", wget, opt->val, (unsigned)opt->val, arg);
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case POPTWGET_LOGAPPEND:
+	wget->lfmode = "w+";
+	/*@fallthrough@*/
+    case POPTWGET_LOGFILE:
+	wget->lfn = _free(wget->lfn);
+	wget->lfn = xstrdup(arg);
+	break;
     case POPTWGET_QUOTA:
     {
 	char * end = NULL;
@@ -916,9 +936,9 @@ static struct poptOption rpmioWCTLStartupPoptTable[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWCTLLoggingPoptTable[] = {
-  { "output-file", 'o', POPT_ARG_STRING,	&__rpmwget.logoutput_file, 0,
+  { "output-file", 'o', POPT_ARG_STRING,	0, POPTWGET_LOGFILE,
 	N_("log messages to FILE."), N_("FILE") },
-  { "append-output", 'a', POPT_ARG_STRING,	&__rpmwget.logappend_file, 0,
+  { "append-output", 'a', POPT_ARG_STRING,	0, POPTWGET_LOGAPPEND,
 	N_("append log messages to FILE."), N_("FILE") },
   { "debug", 'd', POPT_ARG_VAL,	&__rpmwget.debug, -1,
 	N_("print lots of debugging information."), NULL },
@@ -1288,6 +1308,17 @@ _rpmio_debug = -1;
     if (wget->bartype == NULL)
 	wget->bartype = xstrdup("bar");
 
+    /* Open log file (if requested). */
+    if (wget->lfn != NULL) {
+	if (wget->lfmode == NULL)
+	    wget->lfmode = "w";
+	wget->lfd = Fopen(wget->lfn, wget->lfmode);
+	if (wget->lfd == NULL || Ferror(wget->lfd)) {
+fprintf(stderr, "%s: %s: %s\n", __progname, wget->lfn, Fstrerror(wget->lfd));
+	    goto exit;
+	}
+    }
+
     /* Gather arguments. */
     av = poptGetArgs(optCon);
     if (av != NULL)
@@ -1311,8 +1342,13 @@ _rpmio_debug = -1;
     xx = rpmswExit(&wget->top, 1);
 
 exit:
+    if (wget->lfd !=NULL) {
+	(void) Fclose(wget->lfd);
+	wget->lfd = NULL;
+    }
     wget->b = _free(wget->b);
     wget->st = _free(wget->st);
+    wget->lfn = _free(wget->lfn);
     wget->ifn = _free(wget->ifn);
     wget->ofn = _free(wget->ofn);
 
