@@ -1667,7 +1667,8 @@ if (_rpmbuildFlags & 4) {
 	}
 
 	{
-	    size_t fnlen = strlen(flp->fileURL);
+	    /* this fi uses diskURL (with buildroot), not fileURL */
+	    size_t fnlen = strlen(flp->diskURL);
 	    if (fnlen > fi->fnlen) {
 		/* fnlen-sized buffer must not be allocated yet */
 		assert(fi->fn == NULL);
