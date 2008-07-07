@@ -156,11 +156,11 @@ struct rpmwget_s {
     int dns_timeout_secs;		/*!<    --dns-timeout ... */
     int connect_timeout_secs;		/*!<    --connect-timeout ... */
     int read_timeout_secs;		/*!<    --read-timeout ... */
-    int quota;				/*!< -Q,--quota ... */
+    unsigned long long quota;		/*!< -Q,--quota ... (in kB) */
     int wait_secs;			/*!< -w,--wait ... */
     int waitretry_secs;			/*!<    --waitretry ... */
     int randomwaitretry_secs;		/*!<    --random-wait ... */
-    double limit_rate;			/*!<    --limit-rate ... */
+    double limit_rate;			/*!<    --limit-rate ... (in kB/s) */
     int bind_address;			/*!<    --bind-address ... */
     const char * prefer;		/*!<    --prefer-family ... */
     const char * document_file;		/*!< -O,--output-document ... */
@@ -681,7 +681,7 @@ exit:
     wget->ofd = NULL;
 
     /* Timestamp the output file on success. */
-    if (lastModified > 0 && rc == 0) {
+    if (rc == 0 && lastModified > 0) {
 	struct utimbuf stamp;
 	stamp.actime = lastModified;
 	stamp.modtime = lastModified;
@@ -704,6 +704,16 @@ static int wgetCopyRetry(rpmwget wget)
     do {
 	rc = wgetCopyFile(wget);
     } while (rc != 0 && (wget->ntries <= 0 || ++wget->ntry < wget->ntries));
+
+    /* Quota check (if requested) */
+    if (wget->quota > 0) {
+	rpmop top = &wget->top;
+	if ((top->bytes/1024) > wget->quota) {
+fprintf(stderr, "Download quota of %lluK EXCEEDED!\n",
+		(unsigned long long) wget->quota);
+	    rc = 1;
+	}
+    }
 
     return rc;
 }
@@ -787,9 +797,10 @@ exit:
 
 /*==============================================================*/
 enum {
-    POPTWGET_RESTRICT	= -2048,	/* --restrict-file-names */
-    POPTWGET_PROGRESS	= -2049,	/* --progress */
-    POPTWGET_LIMITRATE	= -2050,	/* --limit-rate */
+    POPTWGET_RESTRICT	= -2048,	/*    --restrict-file-names */
+    POPTWGET_PROGRESS	= -2049,	/*    --progress */
+    POPTWGET_LIMITRATE	= -2050,	/*    --limit-rate */
+    POPTWGET_QUOTA	= -2051,	/* -Q,--quota */
 };
 
 /**
@@ -809,6 +820,28 @@ fprintf(stderr, "--> rpmwgetCallback(%p): arg %s\n", wget, arg);
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case POPTWGET_QUOTA:
+    {
+	char * end = NULL;
+	unsigned long long d = strtoll(arg, &end, 0);
+
+	if (*end == 'g' || *end == 'G') {
+	    d *= (1024 * 1024 * 1024); end++;
+	} else
+	if (*end == 'm' || *end == 'M') {
+	    d *= (1024 * 1024); end++;
+	} else
+	if (*end == 'k' || *end == 'K') {
+	    d *= 1024; end++;
+	} else {
+	    d += 1023;	/* round up to next kB */
+	}
+	 
+	if (*end == '\0')
+	    wget->quota = d / 1024;
+	else
+fprintf(stderr, "Invalid --quota arg ignored: %s\n", arg);
+    }	break;
     case POPTWGET_LIMITRATE:
     {
 	char * end = NULL;
@@ -951,7 +984,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("wait from 0...2*WAIT secs between retrievals."), NULL },
   { "no-proxy", '\0', POPT_BIT_SET,	&rpmioWDLFlags, WDL_FLAGS_NOPROXY,
 	N_("explicitly turn off proxy."), NULL },
-  { "quota", 'Q', POPT_ARG_INT,	&__rpmwget.quota, 0,
+  { "quota", 'Q', POPT_ARG_STRING,	0, POPTWGET_QUOTA,
 	N_("set retrieval quota to NUMBER."), N_("NUMBER") },
 
 /* XXX add IP addr parsing */

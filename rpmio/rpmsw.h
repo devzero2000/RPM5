@@ -33,7 +33,7 @@ struct rpmsw_s {
 struct rpmop_s {
     struct rpmsw_s	begin;	/*!< Starting time stamp. */
     int			count;	/*!< Number of operations. */
-    size_t		bytes;	/*!< Number of bytes transferred. */
+    unsigned long long	bytes;	/*!< Number of bytes transferred. */
     rpmtime_t		usecs;	/*!< Number of ticks. */
 };
 
