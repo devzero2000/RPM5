@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: Make verifyAttrs and virtualFileAttributes static.
     - rpm.org: Teach Fflush about lzdio.
     - jbj: add _flush to FDIO_t, make bzdio.c standalone.
     - jbj: rpmio: start deconstructing the ancient URL callback.
