@@ -28,6 +28,16 @@ typedef enum urltype_e {
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
 
 /**
+ */
+int (*urlNotify) (const urlinfo u, unsigned status)
+	/*@*/;
+
+/**
+ */
+/*@unchecked@*/ /*@null@*/
+extern void * urlNotifyArg;
+
+/**
  * URL control structure.
  */
 struct urlinfo_s {
@@ -66,17 +76,18 @@ struct urlinfo_s {
     void * lockstore;		/*!< neon: ne_lock_store ptr */
 /*@relnull@*/
     void * sess;		/*!< neon: ne_session ptr */
-    off_t current;		/*!< neon: current body offset. */
-    off_t total;		/*!< neon: total body length. */
-    int connstatus;		/*!< neon: connection status. */
-#ifdef  REFERENCE
-typedef enum {
-    ne_conn_namelookup,	/* lookup up hostname (info = hostname) */
-    ne_conn_connecting,	/* connecting to host (info = hostname) */
-    ne_conn_connected,	/* connected to host (info = hostname) */
-    ne_conn_secure	/* connection now secure (info = crypto level) */
-} ne_conn_status;
-#endif
+
+    int (*notify) (const urlinfo u, unsigned status);
+    void * arg;
+    struct fdNotify_s {
+	unsigned status;
+/*@null@*/
+	const char * hostname;
+/*@null@*/
+	const char * address;
+	int64_t progress;
+	int64_t total;
+    } info;
 
     int bufAlloced;		/*!< sizeof I/O buffer */
 /*@owned@*/

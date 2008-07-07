@@ -33,6 +33,16 @@
 
 /**
  */
+int (*urlNotify) (const urlinfo u, unsigned status)
+        /*@*/;
+
+/**
+ */
+/*@unchecked@*/ /*@null@*/
+void * urlNotifyArg;
+
+/**
+ */
 /*@unchecked@*/
 int _url_iobuf_size = RPMURL_IOBUF_SIZE;
 
@@ -70,7 +80,7 @@ URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file,
 urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 {
     urlinfo u;
-    if ((u = xmalloc(sizeof(*u))) == NULL)
+    if ((u = xcalloc(1, sizeof(*u))) == NULL)
 	return NULL;
     memset(u, 0, sizeof(*u));
     u->proxyp = -1;
@@ -78,6 +88,8 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->urltype = URL_IS_UNKNOWN;
     u->ctrl = NULL;
     u->data = NULL;
+    u->notify = urlNotify;
+    u->arg = urlNotifyArg;
     u->bufAlloced = 0;
     u->buf = NULL;
     u->allow = RPMURL_SERVER_HASRANGE;

@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: start deconstructing the ancient URL callback.
+    - jbj: rpmwget: ... display connection state in wgetNotify.
+    - jbj: rpmdav: pass the neon callback thru (*u->notify) to ...
+    - jbj: rpmurl: devise a passthru connection progress callback.
     - jbj: rpmwget: preliminaries for -o/-a output file logging.
     - jbj: rpmwget: wire up --quota.
     - jbj: rpmsw: change bytes accumulator to unsigned long long.

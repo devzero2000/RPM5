@@ -280,6 +280,9 @@ static const char * wgetTstamp(rpmwget wget, time_t t)
 }
 
 /*==============================================================*/
+
+/**
+ */
 static int wgetLog(rpmwget wget, const char * fmt, ...)
 {
     int rc;
@@ -397,6 +400,80 @@ static const char * wgetProgress(rpmwget wget, rpmop fop, int64_t total)
 
     return tbuf;
 }
+
+/* XXX must agree with ne_session_status enum values. */
+typedef enum {
+    wget_status_lookup = 0,	/* looking up hostname */
+    wget_status_connecting = 1,	/* connecting to host */
+    wget_status_connected = 2,	/* connected to host */
+    wget_status_sending = 3,	/* sending a request body */
+    wget_status_recving = 4,	/* receiving a response body */
+    wget_status_disconnected = 5/* disconnected from host */
+} wget_session_status;
+
+static int wgetNotify(const urlinfo u, unsigned _status)
+{
+    static const char * cstates[] = {
+	"LU", "CI", "CD", "SI", "RI", "DD", "?6", "?7"
+    };
+    wget_session_status status = _status;
+    rpmwget wget;
+
+assert(u != NULL);
+assert(u->arg != NULL);
+    wget = (rpmwget) u->arg;
+
+    switch (status) {
+    default:
+	break;
+    case wget_status_lookup:		/* looking up hostname */
+	wgetLog(wget, "Resolving %s...", u->info.hostname);
+	break;
+    case wget_status_connecting:	/* connecting to host */
+	/* Finish the lookup -> connecting state transition. */
+	if (u->info.status == wget_status_lookup)
+	    wgetLog(wget, " %s\n", u->info.address);
+	else if (u->info.status != wget_status_disconnected)
+fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+	wgetLog(wget, "Connecting to %s|%s|:%u...",
+			   u->info.hostname, u->info.address, u->port);
+	break;
+    case wget_status_connected:		/* connected to host */
+	/* Finish the connecting -> connected state transition. */
+	if (u->info.status == wget_status_connecting)
+	    wgetLog(wget, " connected.\n");
+	else
+fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+	break;
+    case wget_status_sending:		/* sending a request body */
+	if (u->info.status != status)
+	if (u->info.status != wget_status_connected)
+fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+#ifdef	NOTYET	/* XXX noisy, wait for progress bar ... */
+	wgetLog(wget, "Sending ... (%ld:%ld)\n",
+		(long) info->sr.progress, (long) info->sr.total);
+#endif
+	break;
+    case wget_status_recving:		/* receiving a response body */
+	if (u->info.status != status)
+	if (u->info.status != wget_status_connected)
+	if (u->info.status != wget_status_sending)
+fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+#ifdef	NOTYET	/* XXX noisy, wait for progress bar ... */
+	wgetLog(wget, "Recving ... (%ld:%ld)\n",
+		(long) u->info.progress, (long) u->info.total);
+#endif
+	break;
+    case wget_status_disconnected:
+	if (u->info.status != wget_status_recving)
+fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+	wgetLog(wget, "Disconnected from %s:%u\n", u->info.hostname, u->port);
+	break;
+    }
+    return 0;
+}
+
+/*==============================================================*/
 
 /**
  */
@@ -1318,6 +1395,10 @@ fprintf(stderr, "%s: %s: %s\n", __progname, wget->lfn, Fstrerror(wget->lfd));
 	    goto exit;
 	}
     }
+
+    /* Initialize the progress callback. */
+    urlNotify = wgetNotify;
+    urlNotifyArg = wget;
 
     /* Gather arguments. */
     av = poptGetArgs(optCon);

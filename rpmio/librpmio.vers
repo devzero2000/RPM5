@@ -421,6 +421,8 @@ LIBRPMIO_0
     urlGetFile;
     _url_iobuf_size;
     urlIsURL;
+    urlNotify;
+    urlNotifyArg;
     urlPath;
     urlSetCallback;
     urlSplit;

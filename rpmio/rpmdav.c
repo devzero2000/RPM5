@@ -321,7 +321,7 @@ int davDisconnect(void * _u)
     int rc;
 
 #if WITH_NEON_MIN_VERSION >= 0x002700
-    rc = (u->connstatus == ne_status_sending || u->connstatus == ne_status_recving);
+    rc = (u->info.status == ne_status_sending || u->info.status == ne_status_recving);
 #else
     rc = 0;	/* XXX W2DO? */
 #endif
@@ -360,7 +360,7 @@ int davFree(urlinfo u)
 	    if (u->lockstore != NULL)
 		ne_lockstore_destroy(u->lockstore);
 	    u->lockstore = NULL;
-	    u->connstatus = 0;
+	    u->info.status = 0;
 	    ne_sock_exit();
 	    break;
 	}
@@ -388,7 +388,7 @@ if (_dav_debug < 0)
 fprintf(stderr, "*** davDestroy()\n");
 }
 
-static void davProgress(void * userdata, off_t current, off_t total)
+static void davProgress(void * userdata, off_t progress, off_t total)
 	/*@*/
 {
     urlinfo u = userdata;
@@ -401,22 +401,23 @@ assert(sess != NULL);
 assert(u == ne_get_session_private(sess, "urlinfo"));
 /*@=sefuncon@*/
 
-    u->current = current;
-    u->total = total;
+    u->info.progress = progress;
+    u->info.total = total;
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsigned int)current, (unsigned int)total, sess, u);
+fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsigned int)progress, (unsigned int)total, sess, u);
 }
 
 #if WITH_NEON_MIN_VERSION >= 0x002700
 static void davNotify(void * userdata,
-		ne_session_status connstatus, const ne_session_status_info *info)
+		ne_session_status status, const ne_session_status_info *info)
 #else
 static void davNotify(void * userdata,
-		ne_conn_status connstatus, const char * info)
+		ne_conn_status status, const char * info)
 #endif
 	/*@*/
 {
+    char buf[64];
     urlinfo u = userdata;
     ne_session * sess;
 assert(u != NULL);
@@ -425,6 +426,11 @@ assert(sess != NULL);
 /*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
 /*@=sefuncon@*/
+
+    u->info.hostname = NULL;
+    u->info.address = NULL;
+    u->info.progress = 0;
+    u->info.total = 0;
 
 #if WITH_NEON_MIN_VERSION >= 0x002700
 #ifdef	REFERENCE
@@ -437,60 +443,37 @@ typedef enum {
     ne_status_disconnected /* disconnected from host */
 } ne_session_status;
 #endif
-    if (_dav_debug) {
-    static const char * connstates[] = {
-	"LU", "CI", "CD", "SI", "RI", "DD", "?6", "?7"
-    };
-
-    switch (connstatus) {
+    switch (status) {
     default:
 	break;
     case ne_status_lookup:	/* looking up hostname */
-	fprintf(stderr, "Resolving %s...", info->lu.hostname);
+	u->info.hostname = info->ci.hostname;
 	break;
     case ne_status_connecting:	/* connecting to host */
-    {	char buf[64];
+	u->info.hostname = info->ci.hostname;
 	(void) ne_iaddr_print(info->ci.address, buf, sizeof(buf));
 	buf[sizeof(buf)-1] = '\0';
-	/* Finish the lookup -> connecting state transition. */
-	if (u->connstatus == ne_status_lookup)
-	    fprintf(stderr, " %s\n", buf);
-	else if (u->connstatus != ne_status_disconnected)
-fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
-	fprintf(stderr, "Connecting to %s|%s|:%u...",
-			   info->ci.hostname, buf, u->port);
-    }	break;
+	u->info.address = buf;
+    	break;
     case ne_status_connected:	/* connected to host */
-	/* Finish the connecting -> connected state transition. */
-	if (u->connstatus == ne_status_connecting)
-	    fprintf(stderr, " connected.\n");
-	else
-fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
+	u->info.hostname = info->ci.hostname;
 	break;
     case ne_status_sending:	/* sending a request body */
-	if (u->connstatus != connstatus)
-	if (u->connstatus != ne_status_connected)
-fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
-	if (_dav_debug < 0)	/* XXX noisy, wait for progress bar ... */
-	fprintf(stderr, "Sending ... (%ld:%ld)\n",
-		(long) info->sr.progress, (long) info->sr.total);
+	u->info.progress = info->sr.progress;
+	u->info.total = info->sr.total;
 	break;
     case ne_status_recving:	/* receiving a response body */
-	if (u->connstatus != connstatus)
-	if (u->connstatus != ne_status_connected)
-	if (u->connstatus != ne_status_sending)
-fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
-	if (_dav_debug < 0)	/* XXX noisy, wait for progress bar ... */
-	fprintf(stderr, "Recving ... (%ld:%ld)\n",
-		(long) info->sr.progress, (long) info->sr.total);
+	u->info.progress = info->sr.progress;
+	u->info.total = info->sr.total;
 	break;
     case ne_status_disconnected:
-	if (u->connstatus != ne_status_recving)
-fprintf(stderr, "**TODO** %s => %s\n", connstates[u->connstatus & 0x7], connstates[connstatus & 0x7]);
-	fprintf(stderr, "Disconnected from %s:%u\n", info->ci.hostname, u->port);
+	u->info.hostname = info->ci.hostname;
 	break;
     }
-    }
+
+    if (u->notify != NULL)
+	(void) (*u->notify) (u, status);
+
 #else
 #ifdef	REFERENCE
 typedef enum {
@@ -511,12 +494,15 @@ if (_dav_debug < 0) {
 	"unknown"
     };
 
-fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
+fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, status, info, sess, u, connstates[ (status < 4 ? status : 4)]);
 }
 #endif
 
-    u->connstatus = connstatus;
-
+    u->info.status = status;
+    u->info.hostname = NULL;
+    u->info.address = NULL;
+    u->info.progress = 0;
+    u->info.total = 0;
 }
 
 static void davCreateRequest(ne_request * req, void * userdata,
