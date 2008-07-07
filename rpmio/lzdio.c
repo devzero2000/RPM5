@@ -101,13 +101,11 @@ static LZFILE *lzdopen(int fd, const char *mode)
     return lzopen_internal(0, mode, fd);
 }
 
-#ifdef	UNUSED
 static int lzflush(LZFILE *lzfile)
 	/*@modifies lzfile @*/
 {
     return fflush(lzfile->fp);
 }
-#endif
 
 static int lzclose(/*@only@*/ LZFILE *lzfile)
 	/*@globals fileSystem @*/
@@ -266,16 +264,15 @@ assert(fmode != NULL);
 }
 /*@=globuse@*/
 
-#ifdef	UNUSED
 /*@-globuse@*/
-static int lzdFlush(FD_t fd)
+static int lzdFlush(void * cookie)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
+    FD_t fd = c2f(cookie);
     return lzflush(lzdFileno(fd));
 }
 /*@=globuse@*/
-#endif
 
 /* =============================================================== */
 /*@-globuse@*/
@@ -381,7 +378,7 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s lzdio_s = {
-  lzdRead, lzdWrite, lzdSeek, lzdClose, lzdOpen, lzdFdopen,
+  lzdRead, lzdWrite, lzdSeek, lzdClose, lzdOpen, lzdFdopen, lzdFlush,
 };
 /*@=type@*/
 

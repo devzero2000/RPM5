@@ -69,7 +69,7 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	ar.c argv.c cpio.c digest.c fts.c getdate.c getpass.c \
+	ar.c argv.c bzdio.c cpio.c digest.c fts.c getdate.c getpass.c \
 	iosm.c lzdio.c macro.c mire.c mount.c \
 	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \

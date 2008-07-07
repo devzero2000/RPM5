@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: Teach Fflush about lzdio.
+    - jbj: add _flush to FDIO_t, make bzdio.c standalone.
     - jbj: rpmio: start deconstructing the ancient URL callback.
     - jbj: rpmwget: ... display connection state in wgetNotify.
     - jbj: rpmdav: pass the neon callback thru (*u->notify) to ...

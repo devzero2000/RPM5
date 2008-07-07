@@ -29,7 +29,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
 
 /**
  */
-int (*urlNotify) (const urlinfo u, unsigned status)
+extern int (*urlNotify) (const urlinfo u, unsigned status)
 	/*@*/;
 
 /**

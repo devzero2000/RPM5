@@ -70,6 +70,7 @@ rpmdb/sqlite.c
 rpmdb/tagname.c
 rpmio/ar.c
 rpmio/argv.c
+rpmio/bzdio.c
 rpmio/cpio.c
 rpmio/digest.c
 rpmio/fts.c
