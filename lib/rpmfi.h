@@ -398,7 +398,7 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
  * @return		maximum file name length (not including '\0')
  */
 /*@observer@*/
-extern size_t rpmfiFMaxLen(/*@null@*/ rpmfi fi);
+extern size_t rpmfiFNMaxLen(/*@null@*/ rpmfi fi);
 
 /**
  * Return current file flags from file info set.

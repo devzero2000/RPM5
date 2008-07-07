@@ -153,7 +153,7 @@ const char * rpmfiFN(rpmfi fi)
     return FN;
 }
 
-size_t rpmfiFMaxLen(rpmfi fi)
+size_t rpmfiFNMaxLen(rpmfi fi)
 {
     if (fi != NULL)
 	return fi->fnlen;

@@ -2971,7 +2971,7 @@ static int pkgUnpackagedSubdirs(Package pkg)
 	fi = rpmfiFree(fi);
 	return 0;
     }
-    fn = alloca(rpmfiFMaxLen(fi) + 1);
+    fn = alloca(rpmfiFNMaxLen(fi) + 1);
 
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {

@@ -4,7 +4,7 @@
     - jbj: rpmwget: wire up --progress; only "bar|none" args implemented.
     - jbj: rpmwget: add rate/eta calculation to progress bar and logging.
     - jbj: rpmdav: prepare to tie wget logging into davNotify transitions.
-    - at: rpmfi: new function: size_t rpmfiFMaxLen(rpmfi).
+    - at: rpmfi: new function: size_t rpmfiFNMaxLen(rpmfi).
     - at: rpmbuild: check for unpackaged subdirectories.
     - jbj: fix: resurrect cpuinfo() probe, hack-o-rounds for both /proc & libio.
     - jbj: rpmio: remove fdSize, rewrite rpmioSlurp to use Fstat(2) instead.
