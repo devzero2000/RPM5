@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add --whatneeds/--needswhat popt aliases.
     - jbj: make gzdio.c standalone.
     - rpm.org: Make verifyAttrs and virtualFileAttributes static.
     - rpm.org: Teach Fflush about lzdio.
