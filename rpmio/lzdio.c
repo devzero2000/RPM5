@@ -1,4 +1,6 @@
-/* Support for LZMA library.
+/** \ingroup rpmio
+ * \file rpmio/lzdio.c
+ * Support for LZMA compression library.
  */
 
 #include "system.h"

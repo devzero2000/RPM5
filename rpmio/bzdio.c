@@ -1,4 +1,6 @@
-/* Support for BZIP2 compression library.
+/** \ingroup rpmio
+ * \file rpmio/bzdio.c
+ * Support for BZIP2 compression library.
  */
 
 #include "system.h"
