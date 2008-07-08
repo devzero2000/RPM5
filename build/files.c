@@ -2809,6 +2809,7 @@ static int checkUnpackagedFiles(Spec spec)
     int rc;
     StringBuf fileList = NULL;
     Package pkg;
+    int n = 0;
     
     s = rpmExpand(av_ckfile[0], NULL);
     if (!(s && *s)) {
@@ -2827,8 +2828,15 @@ static int checkUnpackagedFiles(Spec spec)
 	    const char *fn = rpmfiFN(fi);
 	    appendStringBuf(fileList, fn);
 	    appendStringBuf(fileList, "\n");
+	    n++;
 	}
 	fi = rpmfiFree(fi);
+    }
+    if (n == 0) {
+	/* no packaged files, and buildroot may not exist -
+	 * no need to run check */
+	rc = -1;
+	goto exit;
     }
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
