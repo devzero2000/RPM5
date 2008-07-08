@@ -134,7 +134,13 @@ struct rpmwget_s {
 /*@null@*/
     const char * bartype;		/*!< Progress bar display type. */
     int maxcols;			/*!< Display width. */
-    struct rpmop_s top;			/*!< Stats accumulator */
+    rpmop rop;				/*!< URI Recieve accumulator. */
+    rpmop sop;				/*!< URI Send accumulator. */
+    rpmop top;				/*!< URI Total accumulator. */
+    double rate_kbps;			/*!< URI Transfer rate. */
+    double eta_msecs;			/*!< URI ETA. */
+    double pct;				/*!< URI Transfer percentage. */
+    struct rpmop_s Top;			/*!< WGET Total accumulator. */
     double rate;			/*!< Download rate. */
     struct timespec tv;			/*!< Per-operation delay. */
 
@@ -297,17 +303,13 @@ static int wgetLog(rpmwget wget, const char * fmt, ...)
 
 /**
  */
-static const char * wgetProgress(rpmwget wget, rpmop fop, int64_t total)
+static const char * wgetProgress(rpmwget wget, /*@null@*/ rpmop op)
 {
+    unsigned long long cur = (op ? op->bytes : 0);
     static char * tbuf = NULL;
-    static struct rpmsw_s end;
-    int64_t cur = fop->bytes;
-    rpmtime_t usecs = rpmswDiff(rpmswNow(&end), &fop->begin);
-    rpmtime_t msecs = usecs/1000;
-    double rate = (msecs > 0 ? (double) cur / msecs : 0.0);
-    int64_t tot = (total > 0 ? total : 0);
-    double etamsecs = (tot > 0 && rate > 0.0 ? (tot - cur) / rate : 0.0);
-    double pct = (tot > 0 ? (double)cur/tot : 0.0);
+    double rate = wget->rate_kbps;
+    double etamsecs = wget->eta_msecs;
+    double pct = wget->pct;
     int ipct = (int)((100 * pct) + 0.5);
     char * t, * te;
     size_t nb;
@@ -370,17 +372,17 @@ static const char * wgetProgress(rpmwget wget, rpmop fop, int64_t total)
 
     if (rate > 0.0) {
 	if (rate >= 100000.)
-	    t += sprintf(t, "%4.0fM/s", (rate/1024));
+	    t += sprintf(t, "%5.0fM/s", (rate/1024));
 	else if (rate >= 10000.)
-	    t += sprintf(t, "%4.1fM/s", (rate/1024));
+	    t += sprintf(t, "%5.1fM/s", (rate/1024));
 	else if (rate >= 1000.)
-	    t += sprintf(t, "%4.2fM/s", (rate/1024));
+	    t += sprintf(t, "%5.2fM/s", (rate/1024));
 	else if (rate >= 100.)
-	    t += sprintf(t, "%4.0fK/s", rate);
+	    t += sprintf(t, "%5.0fK/s", rate);
 	else if (rate >= 10.)
-	    t += sprintf(t, "%4.1fK/s", rate);
+	    t += sprintf(t, "%5.1fK/s", rate);
 	else
-	    t += sprintf(t, "%4.2fK/s", rate);
+	    t += sprintf(t, "%5.2fK/s", rate);
     } else
 	t = stpcpy(t, " __._K/s");
 
@@ -389,16 +391,121 @@ static const char * wgetProgress(rpmwget wget, rpmop fop, int64_t total)
 	int mins = secs/60;
 	int hours = mins/60;
 	if (hours > 0)
-	    t += sprintf(t, "  eta %2dh %2dm", hours, (mins % 60));
+	    t += sprintf(t, " eta %2dh %2dm", hours, (mins % 60));
 	else if (mins > 0)
-	    t += sprintf(t, "  eta %2dm %2ds", mins, (secs % 60));
+	    t += sprintf(t, " eta %2dm %2ds", mins, (secs % 60));
 	else if (secs > 0)
-	    t += sprintf(t, "  eta %2ds", (secs % 60));
+	    t += sprintf(t, " eta %2ds", (secs % 60));
     }
 
     *t = '\0';
 
     return tbuf;
+}
+
+/**
+ */
+static int wgetSetRate(rpmwget wget, /*@null@*/ const urlinfo u, rpmop op)
+	/*@modifies wget, op @*/
+{
+    unsigned long long progress;
+    unsigned long long total;
+    rpmtime_t usecs;
+
+    if (op == NULL)
+	return 0;
+
+    if (u != NULL) {
+	struct rpmsw_s end;
+	if (op->count == 0)
+	    rpmswEnter(op, -1);
+	else
+	    op->count++;
+	op->bytes = u->info.progress;
+	progress = u->info.progress;
+	total = u->info.total;
+	usecs = rpmswDiff(rpmswNow(&end), &op->begin);
+    } else {
+	progress = op->bytes;
+	total = op->bytes;
+	usecs = op->usecs;
+    }
+    
+    if (usecs > 0) {
+	wget->rate_kbps = (double) progress / usecs;
+	wget->rate_kbps *= (double) (1000 * 1000)/1024;
+	if (total > 0) {
+	    wget->eta_msecs = (wget->rate_kbps > 0.0)
+		? (total - progress) / (1024 * wget->rate_kbps)
+		: 0.0;
+	    wget->eta_msecs *= (double) 1000;
+	    wget->pct = (double) progress / total;
+	} else {
+	    wget->eta_msecs = 0.0;
+	    wget->pct = 0.0;
+	}
+    } else {
+	wget->rate_kbps = 0.0;
+	wget->eta_msecs = 0.0;
+	wget->pct = 0.0;
+    }
+    return 0;
+}
+
+/**
+ */
+static int wgetSetDelay(rpmwget wget, /*@null@*/ const urlinfo u,
+		const rpmop op)
+	/*@modifies wget @*/
+{
+    static int fac = 9;
+    rpmop top;
+    long long dusecs, ousecs, nusecs;
+    unsigned long long kbytes;
+    int opcount;
+    double d;
+    int xx;
+
+    /* Update per-operation delay estimate if rate limiting. */
+    if (!(wget->limit_rate > 0.0 && wget->rate_kbps > 0.0))
+	return 0;
+
+    /* Delay if over limit rate. */
+    if (wget->tv.tv_sec || wget->tv.tv_nsec)
+	xx = nanosleep(&wget->tv, NULL);
+
+    top = wget->top;
+    dusecs = (top->usecs + op->usecs);
+    kbytes = (top->bytes + op->bytes) / 1024;
+    opcount = (top->count + op->count);
+
+    if (opcount < 10 || kbytes < 32)
+	return 0;
+    if ((opcount % 5) != 0)
+	return 0;
+
+    d = kbytes - (dusecs * wget->limit_rate)/(1000 * 1000);
+    d /= wget->limit_rate;
+    d /= opcount;	/* d = time correction delta per operation in seconds */
+
+    dusecs = (long long)(d * 1000 * 1000);
+    ousecs = (long long)(wget->tv.tv_sec * 1000 * 1000) + wget->tv.tv_nsec/1000;
+    nusecs = ousecs + dusecs;
+    if (nusecs < 0)
+	nusecs = ousecs/2;
+
+    if (fac >= 0 && fac <= 10) {
+	/* EWMA: new = ((10 - fac) * old + (fac * delta)) / 10 */
+	ousecs *= (10 - fac);
+	ousecs += nusecs * fac;
+	ousecs /= 10;
+    } else
+	ousecs = nusecs;
+
+    wget->tv.tv_sec = ousecs/(1000*1000);
+    wget->tv.tv_nsec = (ousecs % (1000 * 1000)) * 1000;
+
+    return 0;
 }
 
 /* XXX must agree with ne_session_status enum values. */
@@ -411,6 +518,8 @@ typedef enum {
     wget_status_disconnected = 5/* disconnected from host */
 } wget_session_status;
 
+/**
+ */
 static int wgetNotify(const urlinfo u, unsigned _status)
 {
     static const char * cstates[] = {
@@ -418,10 +527,16 @@ static int wgetNotify(const urlinfo u, unsigned _status)
     };
     wget_session_status status = _status;
     rpmwget wget;
+    rpmop rop;
+    rpmop sop;
+    rpmop top;
 
 assert(u != NULL);
 assert(u->arg != NULL);
     wget = (rpmwget) u->arg;
+    wget->rop = rop = u->rop;
+    wget->sop = sop = u->sop;
+    wget->top = top = u->top;
 
     switch (status) {
     default:
@@ -446,25 +561,42 @@ fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[st
 fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
 	break;
     case wget_status_sending:		/* sending a request body */
+	(void) wgetSetRate(wget, u, sop);
 	if (u->info.status != status)
 	if (u->info.status != wget_status_connected)
 fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
-#ifdef	NOTYET	/* XXX noisy, wait for progress bar ... */
+#ifdef NOTYET	/* XXX noisy, wait for progress bar ... */
 	wgetLog(wget, "Sending ... (%ld:%ld)\n",
-		(long) info->sr.progress, (long) info->sr.total);
+		(long) u->info.progress, (long) u->info.total);
 #endif
+	/* Delay if over limit rate. */
+	(void) wgetSetDelay(wget, u, sop);
 	break;
     case wget_status_recving:		/* receiving a response body */
+	(void) wgetSetRate(wget, u, rop);
 	if (u->info.status != status)
 	if (u->info.status != wget_status_connected)
 	if (u->info.status != wget_status_sending)
 fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
-#ifdef	NOTYET	/* XXX noisy, wait for progress bar ... */
+#ifdef NOTYET	/* XXX noisy, wait for progress bar ... */
 	wgetLog(wget, "Recving ... (%ld:%ld)\n",
 		(long) u->info.progress, (long) u->info.total);
 #endif
+	/* Delay if over limit rate. */
+	(void) wgetSetDelay(wget, u, rop);
 	break;
     case wget_status_disconnected:
+	if (rop && rop->count > 0) {
+	    rpmswExit(rop, 0);
+	    rpmswAdd(top, rop);
+	    rop->count = 0;
+	}
+	if (sop && sop->count > 0) {
+	    rpmswExit(sop, 0);
+	    rpmswAdd(top, sop);
+	    sop->count = 0;
+	}
+	(void) wgetSetRate(wget, NULL, top);
 	if (u->info.status != wget_status_recving)
 fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
 	wgetLog(wget, "Disconnected from %s:%u\n", u->info.hostname, u->port);
@@ -551,15 +683,12 @@ static const char * wgetOPath(rpmwget wget)
  */
 static int wgetCopyFile(rpmwget wget)
 {
-    rpmop top = &wget->top;
-    rpmop fop = memset(alloca(sizeof(*fop)), 0, sizeof(*fop));
     size_t nw;
     size_t nr;
     struct stat * st = wget->st;
     ssize_t contentLength = 0;
     time_t lastModified = 0;
     int rc;
-    int xx;
 
     /* Verify input URI exists, don't transfer content. */
     if (WF_ISSET(NODOWNLOAD)) {
@@ -680,7 +809,6 @@ if (wget->debug < 0) {
     if (WF_ISSET(RESUME) && "partially downloaded")
 #endif
 
-    xx = rpmswEnter(fop, 0);
     /* XXX Ferror(wget->ifd) ? */
     while ((nr = Fread(wget->b, 1, wget->blen, wget->ifd)) > 0) {
 	
@@ -688,64 +816,16 @@ if (wget->debug < 0) {
 	if ((nw = Fwrite(wget->b, 1, nr, wget->ofd)) != nr)
 	    break;
 
-	/* Accumulate statistics. */
-	fop->count++;
-	fop->bytes += nr;
-
 	/* Display progress. */
 	if (wget->bartype != NULL && strcmp(wget->bartype, "none"))
-	    fprintf(stderr, "\r%s", wgetProgress(wget, fop, contentLength));
-
-	/* Delay if over limit rate. */
-	if (wget->tv.tv_sec || wget->tv.tv_nsec) {
-	    xx = nanosleep(&wget->tv, NULL);
-	}
-
-#ifdef	NOTYET
-	/* Update per-operation delay estimate if rate limiting. */
-	if (wget->limit_rate > 0.0 && wget->rate > 0.0) {
-	    static int fac = 2;
-	    int64_t usecs = (top->usecs + fop->usecs);
-	    size_t kbytes = (top->bytes + fop->bytes) / 1024;
-	    double rate = ((double)kbytes/usecs) * (1000 * 1000);
-	    int opcount = (top->count + fop->count);
-	    double d = kbytes - (usecs * wget->limit_rate)/(1000 * 1000);
-	    d /= opcount;
-	    /* d now has correction delta to total #kbytes per operation */
-	    usecs = (int64_t) ((d / rate) * 1000 * 1000);
-	    /* EWMA: new = ((10 - fac) * old + (fac * delta)) / 10 */
-	    if (fac >= 0 && fac <= 10) {
-		usecs *= fac;
-		wget->tv.tv_sec *= (10 - fac); wget->tv.tv_nsec *= (10 - fac);
-	    }
-	    wget->tv.tv_sec += usecs/(1000*1000);
-	    wget->tv.tv_nsec += (usecs % (1000 * 1000)) * 1000;
-	    if (fac >= 0 && fac <= 10) {
-		wget->tv.tv_sec /= 10; wget->tv.tv_nsec /= 10;
-	    }
-	    while (wget->tv.tv_nsec < 0) {
-		wget->tv.tv_nsec += (1000 * 1000 * 1000);
-		wget->tv.tv_sec--;
-	    }
-	    while (wget->tv.tv_nsec >= (1000 * 1000 * 1000)) {
-		wget->tv.tv_nsec -= (1000 * 1000 * 1000);
-		wget->tv.tv_sec++;
-	    }
-	    if (wget->tv.tv_sec < 0)
-		wget->tv.tv_sec = 0;
-	}
-#endif
+	    fprintf(stderr, "\r%s", wgetProgress(wget, wget->rop));
 
     }
 if (wget->debug < 0)
 fprintf(stderr, "\n");
 
-    xx = rpmswExit(fop, 0);
-    xx = rpmswAdd(top, fop);	/* XXX acumulate only on success? */
-    {
-	rpmtime_t msecs = top->usecs/1000;
-	wget->rate = (msecs > 0 ? (double) top->bytes / msecs : 0.0);
-    }
+    /* Save the total rate (calculated when returning to disconnected state) */
+    wget->rate = wget->rate_kbps;
 
     /* OK iff EOF was read. */
     if (nr == 0) {
@@ -795,8 +875,8 @@ static int wgetCopyRetry(rpmwget wget)
 
     /* Quota check (if requested) */
     if (wget->quota > 0) {
-	rpmop top = &wget->top;
-	if ((top->bytes/1024) > wget->quota) {
+	rpmop top = wget->top;
+	if (top && (top->bytes/1024) > wget->quota) {
 	    wgetLog(wget, _("Download quota of %lluK EXCEEDED!\n"),
 		(unsigned long long) wget->quota);
 	    rc = 1;
@@ -1412,7 +1492,7 @@ fprintf(stderr, "%s: %s: %s\n", __progname, wget->lfn, Fstrerror(wget->lfd));
 	goto exit;
     }
 
-    xx = rpmswEnter(&wget->top, 1);
+    xx = rpmswEnter(&wget->Top, 1);
     if (wget->argv != NULL)
     for (i = 0; wget->argv[i] != NULL; i++) {
 	wget->ifn = xstrdup(wget->argv[i]);
@@ -1420,7 +1500,7 @@ fprintf(stderr, "%s: %s: %s\n", __progname, wget->lfn, Fstrerror(wget->lfd));
 	    rc = 256;
 	wget->ifn = _free(wget->ifn);
     }
-    xx = rpmswExit(&wget->top, 1);
+    xx = rpmswExit(&wget->Top, 1);
 
 exit:
     if (wget->lfd !=NULL) {

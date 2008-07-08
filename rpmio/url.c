@@ -90,6 +90,9 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->data = NULL;
     u->notify = urlNotify;
     u->arg = urlNotifyArg;
+    u->rop = xcalloc(1, sizeof(*u->rop));
+    u->sop = xcalloc(1, sizeof(*u->sop));
+    u->top = xcalloc(1, sizeof(*u->top));
     u->bufAlloced = 0;
     u->buf = NULL;
     u->allow = RPMURL_SERVER_HASRANGE;
@@ -150,6 +153,9 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 #ifdef WITH_NEON
     xx = davFree(u);
 #endif
+    u->rop = _free(u->rop);
+    u->sop = _free(u->sop);
+    u->top = _free(u->top);
     u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);

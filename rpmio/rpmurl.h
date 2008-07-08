@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <rpmsw.h>
 
 /**
  * Supported URL types.
@@ -88,6 +89,10 @@ struct urlinfo_s {
 	int64_t progress;
 	int64_t total;
     } info;
+/*@null@*/
+    rpmop rop;			/*!< Receive accumulator. */
+    rpmop sop;			/*!< Send accumulator. */
+    rpmop top;			/*!< Total accumulator. */
 
     int bufAlloced;		/*!< sizeof I/O buffer */
 /*@owned@*/

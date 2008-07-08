@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: turn on --limit-rate. overdamped afaict, todo++ ...
+    - jbj: rpmwget: move most of the calculations into the notify callback.
+    - jbj: rpmurl: add send/recv/total accumulators.
     - jbj: add --whatneeds/--needswhat popt aliases.
     - jbj: make gzdio.c standalone.
     - rpm.org: Make verifyAttrs and virtualFileAttributes static.
