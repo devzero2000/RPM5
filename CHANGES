@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: mark "server awol" disconnected state for graceful error
+	handling.
     - jbj: rpmrepo: avoid double'd error message.
     - jbj: rpmrepo: terminate immediately, rather than "best-effort" continue,
 	on I/O error.

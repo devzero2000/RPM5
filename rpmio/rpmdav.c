@@ -317,6 +317,7 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
 /* =============================================================== */
 int davDisconnect(void * _u)
 {
+#ifdef	NOTYET	/* XXX not quite right yet. */
     urlinfo u = (urlinfo)_u;
     int rc;
 
@@ -340,6 +341,7 @@ int davDisconnect(void * _u)
 if (_dav_debug < 0)
 fprintf(stderr, "*** davDisconnect(%p) active %d\n", u, rc);
     /* XXX return active state? */
+#endif	/* NOTYET */
     return 0;
 }
 
@@ -1257,6 +1259,7 @@ static int davNLST(avContext ctx)
 /*@-nullpass@*/	/* XXX annotate ctx->st correctly */
 	   rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
 /*@=nullpass@*/
+
     }
 
     switch (rc) {
@@ -1304,22 +1307,6 @@ static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
 #endif
     return ret;
 }
-
-#ifdef	DYING
-static void hexdump(const unsigned char * buf, ssize_t len)
-	/*@*/
-{
-    int i;
-    if (len <= 0)
-	return;
-    for (i = 0; i < len; i++) {
-	if (i != 0 && (i%16) == 0)
-	    fprintf(stderr, "\n");
-	fprintf(stderr, " %02X", buf[i]);
-    }
-    fprintf(stderr, "\n");
-}
-#endif
 
 /*@-mustmod@*/
 static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
@@ -1459,6 +1446,9 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd
     ctrl = fdLink(ctrl, "open ctrl (davReq)");
 
 assert(u->sess != NULL);
+    /* XXX reset disconnected handle to NULL. should never happen ... */
+    if (ctrl->req == (void *)-1)
+	ctrl->req = NULL;
 /*@-nullderef@*/
 assert(ctrl->req == NULL);
 /*@=nullderef@*/
@@ -1609,16 +1599,31 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
     FD_t fd = cookie;
     ssize_t rc;
 
-#if 0
-assert(count >= 128);	/* HACK: see ne_request.h comment */
-#endif
+#if WITH_NEON_MIN_VERSION >= 0x002700
+  { urlinfo u = NULL;
+    u = urlLink(fd->url, "url (davRead)");
+    if (u->info.status == ne_status_recving)
+	rc = ne_read_response_block(fd->req, buf, count);
+    else {
+	/* If server has disconnected, then tear down the neon request. */
+	if (u->info.status == ne_status_disconnected) {
+	    int xx;
+	    xx = ne_end_request(fd->req);
+	    xx = my_result("davRead: ne_end_request(req)", xx, NULL);
+	    ne_request_destroy(fd->req);
+	    fd->req = (void *)-1;
+	}
+	errno = EIO;       /* XXX what to do? */
+	rc = -1;
+    }
+    u = urlFree(u, "url (davRead)");
+  }
+#else
     rc = ne_read_response_block(fd->req, buf, count);
+#endif
 
 if (_dav_debug < 0) {
 fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
-#ifdef	DYING
-hexdump(buf, rc);
-#endif
     }
 
     return rc;
@@ -1658,10 +1663,6 @@ assert(fd->req != NULL);
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
-#ifdef	DYING
-if (count > 0)
-hexdump(buf, count);
-#endif
 
     return rc;
 }
@@ -1682,10 +1683,12 @@ int davClose(void * cookie)
     int rc;
 
 assert(fd->req != NULL);
-    rc = ne_end_request(fd->req);
-    rc = my_result("ne_end_request(req)", rc, NULL);
+    if (fd->req != (void *)-1) {
+	rc = ne_end_request(fd->req);
+	rc = my_result("ne_end_request(req)", rc, NULL);
 
-    ne_request_destroy(fd->req);
+	ne_request_destroy(fd->req);
+    }
     fd->req = NULL;
 
 if (_dav_debug < 0)

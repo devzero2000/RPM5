@@ -383,7 +383,10 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL) {
 #ifdef WITH_NEON
-	rc = davRead(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	if (fd->req != (void *)-1)
+	    rc = davRead(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	else
+	    rc = -1;
 #else
 	rc = -1;
 #endif
@@ -426,7 +429,10 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     /* HACK: flimsy wiring for davWrite */
     if (fd->req != NULL)
 #ifdef WITH_NEON
-	rc = davWrite(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	if (fd->req != (void *)-1)
+	    rc = davWrite(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	else
+	    rc = -1;
 #else
 	rc = -1;
 #endif
@@ -555,7 +561,7 @@ int fdWritable(FD_t fd, int secs)
 	
     /* HACK: flimsy wiring for davWrite */
     if (fd->req != NULL)
-	return 1;
+	return (fd->req == (void *)-1 ? -1 : 1);
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
@@ -610,7 +616,7 @@ int fdReadable(FD_t fd, int secs)
 
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL)
-	return 1;
+	return (fd->req == (void *)-1 ? -1 : 1);
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
@@ -2834,7 +2840,7 @@ int Ferror(FD_t fd)
     if (fd == NULL) return -1;
     if (fd->req != NULL) {
 	/* HACK: flimsy wiring for neon errors. */
-	rc = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	rc = (fd->req == (void *)-1 || fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
     } else
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
