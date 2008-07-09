@@ -1070,8 +1070,10 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	/* XXX what if path needs expansion? */
 	rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
 	if (algo != PGPHASHALGO_NONE) {
-	    char buffer[128 * 1024];
-	    while (Fread(buffer, sizeof(buffer[0]), sizeof(buffer), fd) > 0)
+	    char buffer[32 * BUFSIZ];
+	    size_t nb = sizeof(buffer);
+	    size_t nr;
+	    while ((nr = Fread(buffer, sizeof(buffer[0]), nb, fd)) == nb)
 		{};
 	    if (Ferror(fd)) {
 		fprintf(stderr, _("%s: Fread(%s) failed: %s\n"),
@@ -1300,8 +1302,13 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 
 	repo->current++;
 	if (h == NULL) {
+#ifdef	DYING	/* XXX repoReadHeader() displays error. Continuing is foolish */
 	    repo_error(0, _("\nError %s: %s\n"), pkg, strerror(errno));
 	    continue;
+#else
+	    rc = 1;
+	    break;
+#endif
 	}
 	(void) headerSetInstance(h, (uint32_t)repo->current);
 

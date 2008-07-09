@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmrepo: avoid double'd error message.
+    - jbj: rpmrepo: terminate immediately, rather than "best-effort" continue,
+	on I/O error.
+    - jbj: rpmrepo: terminate on short read, don't bother with extra EOF read.
     - jbj: rpmwget: turn on --limit-rate. overdamped afaict, todo++ ...
     - jbj: rpmwget: move most of the calculations into the notify callback.
     - jbj: rpmurl: add send/recv/total accumulators.
