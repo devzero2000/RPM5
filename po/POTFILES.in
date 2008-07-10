@@ -36,15 +36,12 @@ lib/psm.c
 lib/query.c
 lib/rpmal.c
 lib/rpmchecksig.c
-lib/rpmdpkg.c
 lib/rpmds.c
-lib/rpmevr.c
 lib/rpmfc.c
 lib/rpmfi.c
 lib/rpmgi.c
 lib/rpminstall.c
 lib/rpmlock.c
-lib/rpmns.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmrollback.c
@@ -65,6 +62,9 @@ rpmdb/merge.c
 rpmdb/poptDB.c
 rpmdb/pkgio.c
 rpmdb/rpmdb.c
+rpmdb/rpmdpkg.c
+rpmdb/rpmevr.c
+rpmdb/rpmns.c
 rpmdb/signature.c
 rpmdb/sqlite.c
 rpmdb/tagname.c
