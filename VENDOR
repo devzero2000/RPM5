@@ -460,4 +460,13 @@
                      newer treated as older and vice versa.
      ________________________________________________________________________
 
+     Change:         backward-compat-rpmtag-sourcepackage
+     Purpose:        Still mark SRPMS with RPMTAG_SOURCEPACKAGE
+     Reason:         For backward compatibility with RPM < 4.4.6 for all the
+                     Fedora releases which are using RPM 4. RPM 5 will still
+                     mark SRPMS with the RPMTAG_SOURCEPACKAGE. This especially
+                     allows to switch between RPM 4 and 5 on Fedora. Without
+                     this the mixture would involve manual "rpm2cpio" plus the
+                     "rpm -bb" operation.
+     ________________________________________________________________________
 
