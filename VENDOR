@@ -445,3 +445,19 @@
                      "rpm -bb" operation.
      ________________________________________________________________________
 
+  o  Name:           MANDRIVA
+     Vendor:         Mandriva Linux <http://wiki.mandriva.com/>
+     Representative: Per Øyvind Karlsen <pkarlsen@rpm5.org>
+     Application:    RPM-based Linux software distribution (> 10000 packages)
+     Characteristic: Optional replacement of RPM 4 with RPM 5 for users
+     ________________________________________________________________________
+
+     Change:         old-comparision-behaviour
+     Purpose:        Keep old behaviour of comparision.
+     Reason:         Since release tags like 0.beta1.1 etc. are very common in
+                     Mandriva, new comparision behaviour will result in
+                     comparision of these packages' EVR to be incorrect, with
+                     newer treated as older and vice versa.
+     ________________________________________________________________________
+
+
