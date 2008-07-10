@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - at: gzdio: do gzflush only after RSYNC_WIN boundaries.
     - at: gzdio: push gzFile into a private container.
     - jbj: rpmio: mark "server awol" disconnected state for graceful error
 	handling.

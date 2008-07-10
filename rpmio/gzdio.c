@@ -4,6 +4,13 @@
  */
 
 #include "system.h"
+
+#ifdef	NOTYET		/* XXX C99 may have portability issues, dunno */
+#include <stdbool.h>
+#else
+typedef	enum { true = 1, false = 0 } bool;
+#endif
+
 #include "rpmio_internal.h"
 #include <rpmmacro.h>
 #include <rpmcb.h>
@@ -20,9 +27,75 @@
 
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
 
+#define RSYNC_WIN 4096
+
+typedef struct rsync_state_s {
+    uint32_t n;				/* number of elements in the window */
+    uint32_t sum;			/* current sum */
+    unsigned char win[RSYNC_WIN];	/* window elements */
+} * rsync_state;
+
 typedef struct rpmGZFILE_s {
-    gzFile gz;			/* gzFile is a pointer */
-} * rpmGZFILE;			/* like FILE, to use with star */
+    gzFile gz;				/* gzFile is a pointer */
+    struct rsync_state_s rs;
+} * rpmGZFILE;				/* like FILE, to use with star */
+
+/* Should gzflush be called only after RSYNC_WIN boundaries? */
+static int enable_rsync = 1;
+
+/* =============================================================== */
+static inline
+bool rsync_next(rsync_state s, unsigned char c)
+	/*@modifies s @*/
+{
+    if (s->n < RSYNC_WIN) {		/* not enough elements */
+	s->sum += c;			/* update the sum */
+	s->win[s->n++] = c;		/* remember the element */
+	return false;			/* no match */
+    }
+    int i = s->n++ % RSYNC_WIN;		/* wrap up */
+    s->sum -= s->win[i];		/* move the window on */
+    s->sum += c;
+    s->win[i] = c;
+    if (s->sum % RSYNC_WIN == 0) {	/* match */
+	s->n = 0;			/* reset */
+	s->sum = 0;
+	return true;
+    }
+    return false;
+}
+
+static ssize_t
+rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t len)
+{
+    ssize_t rc;
+    size_t n;
+    ssize_t n_written = 0;
+    const unsigned char *begin = buf;
+    size_t i;
+
+    for (i = 0; i < len; i++) {
+	if (!rsync_next(&rpmgz->rs, buf[i]))
+	    continue;
+	n = i + 1 - (begin - buf);
+	rc = gzwrite(rpmgz->gz, begin, n);
+	if (rc < 0)
+	    return rc;
+	n_written += rc;
+	begin += n;
+	rc = gzflush(rpmgz->gz, Z_SYNC_FLUSH);
+	if (rc < 0)
+	    return rc;
+    }
+    if (begin < buf + len) {
+	n = len - (begin - buf);
+	rc = gzwrite(rpmgz->gz, begin, n);
+	if (rc < 0)
+	    return rc;
+	n_written += rc;
+    }
+    return n_written;
+}
 
 /* =============================================================== */
 /*@-moduncon@*/
@@ -154,7 +227,10 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
     if (rpmgz == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
+    if (enable_rsync)
+	rc = rsyncable_gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
+    else
+	rc = gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
