@@ -5,6 +5,7 @@
 #undef Fflush
 #undef Mkdir
 #undef Stat
+#undef Fstat
 
 #include "../config.h"
 /* XXX artifacts needed to include "rpmio_internal.h" w/o "system.h" */

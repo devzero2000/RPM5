@@ -7,6 +7,7 @@
 #undef Fflush
 #undef Mkdir
 #undef Stat
+#undef Fstat
 
 #include <stdio.h>
 #include <string.h>
