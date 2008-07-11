@@ -16,7 +16,8 @@ EXTRA_DIST = \
 	RPM_Dependencies.xs RPM/Dependencies.pm t/08.dependencies.t \
 	RPM_Spec.xs RPM/Spec.pm t/09.spec.t \
 	t/00.pod.coverage.t t/00.pod.t \
-	hdlist-test.hdr test-rpm-1.0-1.noarch.rpm test-rpm-1.0-1.src.rpm
+	hdlist-test.hdr test-rpm-1.0-1.noarch.rpm test-rpm-1.0-1.src.rpm \
+	test-rpm.spec
 
 noinst_DATA = .made_mod
 
