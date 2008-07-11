@@ -232,7 +232,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
     else
 	rc = gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
-    if (rc < count) {
+    if (rc < (ssize_t)count) {
 	int zerror = 0;
 	fd->errcookie = gzerror(rpmgz->gz, &zerror);
 	if (zerror == Z_ERRNO) {
