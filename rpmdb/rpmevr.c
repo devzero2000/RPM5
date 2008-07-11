@@ -21,6 +21,8 @@ int _rpmevr_debug = 0;
 /*@unchecked@*/
 #if defined(RPM_VENDOR_MANDRIVA) /* old-comparision-behaviour */
 static int _invert_digits_alphas_comparison = 1;
+else
+static int _invert_digits_alphas_comparison = -1;
 #endif
 
 /* XXX Punctuation characters that are not treated as alphas */
