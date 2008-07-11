@@ -21,7 +21,9 @@ static int mgNFiles = 0;
 static int mgNMatches = 0;
 static int mgNFails = 0;
 
+#ifdef	DYING
 extern int _dav_nooptions;
+#endif
 
 static int ndirs = 0;
 static int nfiles = 0;
@@ -151,10 +153,12 @@ static struct poptOption optionsTable[] = {
  { "pattern", '\0', POPT_ARG_STRING,	&mirePattern, 0,	NULL, NULL },
  { "magic", '\0', POPT_ARG_STRING,	&mgFile, 0,	NULL, NULL },
 
+#ifdef	DYING
  { "options", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, 0,
 	N_("always send http OPTIONS"), NULL},
  { "nooptions", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, -1,
 	N_("use cached http OPTIONS"), NULL},
+#endif
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
 	N_("Options for Fts(3):"),
