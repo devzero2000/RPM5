@@ -65,6 +65,7 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #define _RPMAV_INTERNAL
 #define _RPMDAV_INTERNAL
 #include <rpmdav.h>
+#include <mire.h>
 
 #include "debug.h"
 
@@ -1142,7 +1143,7 @@ static int davFetch(const urlinfo u, avContext ctx)
     return rc;
 }
 
-/* HACK this should be rewritten to use davReq/davResp w callbacks. */
+/* HACK davHEAD() should be rewritten to use davReq/davResp w callbacks. */
 static int davHEAD(urlinfo u, struct stat *st) 
 	/*@modifies *st @*/
 {
@@ -1240,6 +1241,235 @@ exit:
     return rc;
 }
 
+static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
+	/*@modifies *fp @*/
+{
+    /* HACK: don't print unless debugging. */
+    if (_dav_debug >= 0)
+	return ret;
+    if (fp == NULL)
+	fp = stderr;
+    if (msg != NULL)
+	fprintf(fp, "*** %s: ", msg);
+
+    /* HACK FTPERR_NE_FOO == -NE_FOO error impedance match */
+#ifdef	HACK
+    fprintf(fp, "%s: %s\n", ftpStrerror(-ret), ne_get_error(sess));
+#else
+    fprintf(fp, "%s\n", ftpStrerror(-ret));
+#endif
+    return ret;
+}
+
+/* XXX TODO move to rpmhtml.c */
+/**
+ */
+typedef struct rpmhtml_s * rpmhtml;
+
+/**
+ */
+struct rpmhtml_s {
+    avContext ctx;
+    ne_request *req;
+
+    const char * pattern;
+    miRE mires;
+    int nmires;
+
+    char * buf;
+    size_t nbuf;
+    char * b;
+    size_t nb;
+};
+
+/**
+ */
+static /*@null@*/
+rpmhtml htmlFree(/*@only@*/ rpmhtml html)
+	/*@modifies html @*/
+{
+    if (html != NULL) {
+	if (html->req != NULL) {
+	    ne_request_destroy(html->req);
+	    html->req = NULL;
+	}
+	html->buf = _free(html->buf);
+	html->nbuf = 0;
+	html->ctx = NULL;
+    }
+    return NULL;
+}
+
+/**
+ */
+static
+rpmhtml htmlNew(urlinfo u, avContext ctx) 
+	/*@*/
+{
+    rpmhtml html = xcalloc(1, sizeof(*html));
+    html->ctx = ctx;
+    html->nbuf = BUFSIZ;	/* XXX larger buffer? */
+    html->buf = xmalloc(html->nbuf + 1 + 1);
+    html->req = ne_request_create(u->sess, "GET", u->url);
+    return html;
+}
+
+/**
+ */
+static ssize_t htmlFill(rpmhtml html)
+	/*@*/
+{
+    char * b = html->buf;
+    size_t nb = html->nbuf;
+    ssize_t rc;
+
+if (_dav_debug < 0)
+fprintf(stderr, "*** htmlFill(%p) %p[%u]\n", html, b, (unsigned)nb);
+    if (html->b != NULL && html->nb > 0 && html->b > html->buf) {
+	memmove(html->buf, html->b, html->nb);
+	b += html->nb;
+	nb -= html->nb;
+    }
+
+    /* XXX FIXME: "server awol" segfaults here. gud enuf atm ... */
+    rc = ne_read_response_block(html->req, b, nb) ;
+    if (rc > 0)
+	html->nb += rc;
+    html->b = html->buf;
+
+    return rc;
+}
+
+/*@unchecked@*/
+static const char * hrefpat = "(?i)<a(?:\\s+[a-z][a-z0-9_]*(?:=(?:\"[^\"]*\"|\\S+))?)*?\\s+href=(?:\"([^\"]*)\"|(\\S+))";
+
+/**
+ */
+static int htmlParse(rpmhtml html)
+	/*@*/
+{
+    miRE mire;
+    int noffsets = 3;
+    int offsets[3];
+    ssize_t nr = (html->b != NULL ? (ssize_t)html->nb : htmlFill(html));
+    int rc = 0;
+    int xx;
+
+if (_dav_debug < 0)
+fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->nbuf);
+    html->pattern = hrefpat;
+    xx = mireAppend(RPMMIRE_PCRE, 0, html->pattern, NULL, &html->mires, &html->nmires);
+    mire = html->mires;
+
+    xx = mireSetEOptions(mire, offsets, noffsets);
+
+    while (html->nb > 0) {
+	char * gbn, * hbn;
+	char * f, * fe;
+	char * g, * ge;
+	char * h, * he;
+	char * t;
+	mode_t st_mode;
+	size_t nb;
+
+	offsets[0] = offsets[1] = -1;
+	xx = mireRegexec(mire, html->b, html->nb);
+	if (xx == 0 && offsets[0] != -1 && offsets[1] != -1) {
+
+	    /* [f:fe) contains |<a href="..."| match. */
+	    f = html->b + offsets[0];
+	    fe = html->b + offsets[1];
+
+	    /* [h:he) contains the href basename. */
+	    he = fe;
+	    if (he[-1] == '"') he--;
+	    if (he[-1] == '/') {
+		st_mode = S_IFDIR | 0755;
+		he--;
+	    } else
+		st_mode = S_IFREG | 0644;
+	    h = he;
+	    while (h > f && (h[-1] != '"' && h[-1] != '/'))
+		h--;
+	    nb = (size_t)(he - h);
+	    hbn = t = xmalloc(nb + 1 + 1);
+	    while (h < he)
+		*t++ = *h++;
+	    *t = '\0';
+
+	    /* [g:ge) contains the URI basename. */
+	    g = fe;
+	    while (*g != '>')
+		g++;
+	    ge = ++g;
+	    while (*ge != '<')
+		ge++;
+	    nb = (size_t)(ge - g);
+	    gbn = t = xmalloc(nb + 1 + 1);
+	    while (g < ge)
+		*t++ = *g++;
+	    *t = '\0';
+
+	    /* Filter out weirdos and "." and "..". */
+	    if (!strcmp(gbn, hbn) && strcmp(hbn, ".") && strcmp(hbn, "..")) {
+		size_t _st_size = (size_t)0;	/* XXX HACK */
+		time_t _st_mtime = (time_t)0;	/* XXX HACK */
+		xx = avContextAdd(html->ctx, gbn, st_mode, _st_size, _st_mtime);
+	    }
+
+	    gbn = _free(gbn);
+	    hbn = _free(hbn);
+
+	    offsets[1] += (ge - fe);
+	    html->b += offsets[1];
+	    html->nb -= offsets[1];
+	} else {
+	    size_t nb = html->nb;
+	    if (nr > 0) nb -= 128;	/* XXX overlap a bit if filling. */
+	    html->b += nb;
+	    html->nb -= nb;
+	}
+
+	if (nr > 0)
+	    nr = htmlFill(html);
+    }
+
+    xx = mireSetEOptions(mire, NULL, 0);
+
+    html->mires = mireFreeAll(html->mires, html->nmires);
+    html->nmires = 0;
+
+if (_dav_debug < 0)
+fprintf(stderr, "*** htmlParse(%p) rc %d\n", html, rc);
+    return rc;
+}
+
+/* HACK htmlNLST() should be rewritten to use davReq/davResp w callbacks. */
+static int htmlNLST(urlinfo u, avContext ctx) 
+	/*@modifies ctx @*/
+{
+    rpmhtml html = htmlNew(u, ctx);
+    int rc = 0;
+
+if (_dav_debug < 0)
+fprintf(stderr, "*** htmlNLST(%p, %p) html %p\n", u, ctx, html);
+
+    do {
+	rc = ne_begin_request(html->req);
+	rc = my_result("ne_begin_req(html->req)", rc, NULL);
+	if (rc != NE_OK) goto exit;
+
+	(void) htmlParse(html);		/* XXX error code needs handling. */
+
+	rc = ne_end_request(html->req);
+	rc = my_result("ne_end_req(html->req)", rc, NULL);
+    } while (rc == NE_RETRY);
+
+exit:
+    html = htmlFree(html);
+    return rc;
+}
+
 static int davNLST(avContext ctx)
 	/*@globals internalState @*/
 	/*@modifies ctx, internalState @*/
@@ -1252,18 +1482,24 @@ static int davNLST(avContext ctx)
     if (rc || u == NULL)
 	goto exit;
 
-/* HACK do PROPFIND through davFetch iff enabled, otherwise HEAD Content-length/ETag/Last-Modified */
+    /*
+     * Do PROPFIND through davFetch iff server supports.
+     * Otherwise, do HEAD to get Content-length/ETag/Last-Modified,
+     * followed by GET through htmlNLST() to find the contained href's.
+     */
     if (u->allow & RPMURL_SERVER_HASDAV)
 	   rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
     else {
 /*@-nullpass@*/	/* XXX annotate ctx->st correctly */
 	   rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
 /*@=nullpass@*/
-
     }
 
     switch (rc) {
     case NE_OK:
+	if (!(u->allow & RPMURL_SERVER_HASDAV)) {
+	    rc = htmlNLST(u, ctx);
+	}
         break;
     case NE_ERROR:
 	/* HACK: "405 Method Not Allowed" for PROPFIND on non-DAV servers. */
@@ -1288,26 +1524,6 @@ exit:
 }
 
 /* =============================================================== */
-static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
-	/*@modifies *fp @*/
-{
-    /* HACK: don't print unless debugging. */
-    if (_dav_debug >= 0)
-	return ret;
-    if (fp == NULL)
-	fp = stderr;
-    if (msg != NULL)
-	fprintf(fp, "*** %s: ", msg);
-
-    /* HACK FTPERR_NE_FOO == -NE_FOO error impedance match */
-#ifdef	HACK
-    fprintf(fp, "%s: %s\n", ftpStrerror(-ret), ne_get_error(sess));
-#else
-    fprintf(fp, "%s\n", ftpStrerror(-ret));
-#endif
-    return ret;
-}
-
 /*@-mustmod@*/
 static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
 	/*@modifies userdata @*/
