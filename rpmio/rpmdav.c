@@ -60,6 +60,7 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #include <rpmio_internal.h>
 
 #include <rpmhash.h>
+#include <rpmmacro.h>		/* XXX rpmExpand */
 #include <ugid.h>
 
 #define _RPMAV_INTERNAL
@@ -227,7 +228,7 @@ struct dirent * avReaddir(DIR * dir)
 
     strncpy(dp->d_name, av[i], sizeof(dp->d_name));
 if (_av_debug)
-fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
+fprintf(stderr, "*** avReaddir(%p) %p %s\n", (void *)avdir, dp, dp->d_name);
 
     return dp;
 }
@@ -657,14 +658,16 @@ static int davConnect(urlinfo u)
 	return 0;
 
     /* HACK: where should server capabilities be read? */
-    /* XXX paste on the pesky trailing '/' */
     (void) urlPath(u->url, &path);
     if (path == NULL || *path == '\0')
 	path = "/";
 
-    /* Run OPTIONS once, repeat for every directory. */
+#ifdef NOTYET	/* XXX too many new directories while recursing. */
+    /* Repeat OPTIONS for new directories. */
     if (path != NULL && path[strlen(path)-1] == '/')
 	u->allow &= ~RPMURL_SERVER_OPTIONSDONE;
+#endif
+    /* Have options been run? */
     if (u->allow & RPMURL_SERVER_OPTIONSDONE)
 	return 0;
 
@@ -702,6 +705,15 @@ static int davConnect(urlinfo u)
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
+#ifdef	HACK	/* XXX need davHEAD changes here? */
+	/* HACK: "302 Found" if URI is missing pesky trailing '/'. */
+	if (!strncmp("302 ", ne_get_error(u->sess), sizeof("302 ")-1)) {
+	    char * t;
+	    if ((t = strchr(u->url, '\0') != NULL)
+		*t = '/';
+	    break;
+	}
+#endif
 	errno = EIO;		/* HACK: more precise errno. */
 	goto bottom;
     case NE_LOOKUP:
@@ -1183,28 +1195,33 @@ fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code,
 	goto exit;
 	/*@notreached@*/ break;
     case NE_OK:
-	if (status->klass != 2) {
+	if (status->klass != 2)		/* XXX is this necessary? */
 	    rc = NE_ERROR;
-	    goto exit;
-	}
 	break;
     }
 
 #if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
-#ifdef	NOTYET
     htag = "ETag";
     value = ne_get_response_header(req, htag); 
     if (value) {
 	/* inode-size-mtime */
+	u->etag = _free(u->etag);
+	u->etag = xstrdup(value);
     }
-#endif
+
+    /* XXX limit to 3xx returns? */
+    htag = "Location";
+    value = ne_get_response_header(req, htag); 
+    if (value) {
+	u->location = _free(u->location);
+	u->location = xstrdup(value);
+    }
 
     htag = "Content-Length";
     value = ne_get_response_header(req, htag); 
     if (value) {
-printing++;
 /* XXX should wget's "... (1.2K)..." be added? */
-if (_dav_debug)
+if (_dav_debug && ++printing)
 fprintf(stderr, "Length: %s", value);
 
 /*@-unrecog@*/	/* XXX LCLINT needs stdlib.h update. */
@@ -1216,7 +1233,7 @@ fprintf(stderr, "Length: %s", value);
     htag = "Content-Type";
     value = ne_get_response_header(req, htag); 
     if (value) {
-if (_dav_debug && printing++)
+if (_dav_debug && printing)
 fprintf(stderr, " [%s]", value);
 	if (!strcmp(value, "text/html")
 	 || !strcmp(value, "application/xhtml+xml"))
@@ -1226,7 +1243,7 @@ fprintf(stderr, " [%s]", value);
     htag = "Last-Modified";
     value = ne_get_response_header(req, htag); 
     if (value) {
-if (_dav_debug && printing++)
+if (_dav_debug && printing)
 fprintf(stderr, " [%s]", value);
 	st->st_mtime = ne_httpdate_parse(value);
 	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
@@ -1340,6 +1357,24 @@ fprintf(stderr, "*** htmlFill(%p) %p[%u]\n", html, b, (unsigned)nb);
     return rc;
 }
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static
+unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char) (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
+}
+
 /*@unchecked@*/
 static const char * hrefpat = "(?i)<a(?:\\s+[a-z][a-z0-9_]*(?:=(?:\"[^\"]*\"|\\S+))?)*?\\s+href=(?:\"([^\"]*)\"|(\\S+))";
 
@@ -1391,8 +1426,20 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 	    /* [h:he) contains the href. */
 	    nh = (size_t)(he - h);
 	    href = t = xmalloc(nh + 1 + 1);
-	    while (h < he)
-		*t++ = *h++;
+	    while (h < he) {
+		char c = *h++;
+		switch (c) {
+		default:
+		    break;
+		case '%':
+		    if (isxdigit((int)h[0]) && isxdigit((int)h[1])) {
+			c = (char) (nibble(h[0]) << 4) | nibble(h[1]);
+			h += 2;
+		    }
+		    break;
+		}
+		*t++ = c;
+	    }
 	    *t = '\0';
 
 	    /* Determine type of href. */
@@ -1519,6 +1566,7 @@ static int davNLST(avContext ctx)
     int rc;
     int xx;
 
+retry:
     rc = davInit(ctx->uri, &u);
     if (rc || u == NULL)
 	goto exit;
@@ -1546,9 +1594,34 @@ static int davNLST(avContext ctx)
 	/* HACK: "405 Method Not Allowed" for PROPFIND on non-DAV servers. */
 	/* XXX #206066 OPTIONS is ok, but PROPFIND from Stat() fails. */
 	/* rpm -qp --rpmiodebug --davdebug http://people.freedesktop.org/~sandmann/metacity-2.16.0-2.fc6/i386/metacity-2.16.0-2.fc6.i386.rpm */
+
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
+
+	/* HACK: "302 Found" if URI is missing pesky trailing '/'. */
+	if (!strncmp("302 ", ne_get_error(u->sess), sizeof("302 ")-1)) {
+	    const char * path = NULL;
+	    int ut = urlPath(u->url, &path);
+	    size_t nb = strlen(path);
+	    ut = ut;	/* XXX keep gcc happy */
+	    if (u->location != NULL && !strncmp(path, u->location, nb)
+	     && u->location[nb] == '/' && u->location[nb+1] == '\0')
+	    {
+		char * te = strchr(u->url, '\0');
+		/* Append the pesky trailing '/'. */
+		if (te != NULL && te[-1] != '/') {
+		    /* XXX u->uri malloc'd w room for +1b */
+		    *te++ = '/';
+		    *te = '\0';
+		    u->location = _free(u->location);
+		    /* XXX retry here needed iff ContentLength:. */
+		    xx = davFree(u);
+		    goto retry;
+		    /*@notreached@*/ break;
+		}
+	    }
+	}
 	/*@fallthrough@*/
     default:
 /*@-evalorderuncon@*/
@@ -2275,7 +2348,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 	goto exit;
     }
 
-    /* Note: all URI's need pesky trailing '/' */
+    /* Note: all Opendir(3) URI's need pesky trailing '/' */
     if (path[strlen(path)-1] != '/')
 	uri = rpmExpand(path, "/", NULL);
     else

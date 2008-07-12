@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdav: OPTIONS on every new dir needs thought. per-session for now.
+    - jbj: rpmdav: on 302, append the trailing '/' and retry. wotta pita.
+    - jbj: rpmdav: grep Location: and ETag: if available.
+    - jbj: rpmhtml: convert %2A et al in href's while parsing.
     - jbj: rpmwget: wire up --output-file/--append-output options.
     - jbj: rpmdav: add html parser to extract plain http href's.
     - at: gzdio: return partial "best effort" bytes written with gzfoo errors.

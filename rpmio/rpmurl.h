@@ -78,7 +78,13 @@ struct urlinfo_s {
 /*@relnull@*/
     void * sess;		/*!< neon: ne_session ptr */
 
+/*@null@*/
+    const char * location;	/*!< Location: tag. */
+/*@null@*/
+    const char * etag;		/*!< ETag: tag. */
+/*@null@*/
     int (*notify) (const urlinfo u, unsigned status);
+/*@null@*/
     void * arg;
     struct fdNotify_s {
 	unsigned status;
@@ -91,7 +97,9 @@ struct urlinfo_s {
     } info;
 /*@null@*/
     rpmop rop;			/*!< Receive accumulator. */
+/*@null@*/
     rpmop sop;			/*!< Send accumulator. */
+/*@null@*/
     rpmop top;			/*!< Total accumulator. */
 
     int bufAlloced;		/*!< sizeof I/O buffer */

@@ -88,6 +88,8 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->urltype = URL_IS_UNKNOWN;
     u->ctrl = NULL;
     u->data = NULL;
+    u->location = NULL;
+    u->etag = NULL;
     u->notify = urlNotify;
     u->arg = urlNotifyArg;
     u->rop = xcalloc(1, sizeof(*u->rop));
@@ -153,6 +155,8 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 #ifdef WITH_NEON
     xx = davFree(u);
 #endif
+    u->etag = _free(u->etag);
+    u->location = _free(u->location);
     u->rop = _free(u->rop);
     u->sop = _free(u->sop);
     u->top = _free(u->top);
@@ -425,6 +429,22 @@ urltype urlPath(const char * url, const char ** pathp)
     return urltype;
 }
 
+/**
+ * Copy a URL, adding extra byte for the pesky trailing '/'.
+ *
+ */
+static const char * urlStrdup(const char * url)
+	/*@*/
+{
+    size_t nb = strlen(url);
+    char * t = xmalloc(nb + 1 + 1);
+    const char * nurl = t;
+    while (*url != '\0')
+	*t++ = *url++;
+    *t = '\0';
+    return nurl;
+}
+
 /*
  * Split URL into components. The URL can look like
  *	scheme://user:password@host:port/path
@@ -443,14 +463,7 @@ int urlSplit(const char * url, urlinfo *uret)
     if ((u = urlNew("urlSplit")) == NULL)
 	return -1;
 
-    if ((myurl = xstrdup(url)) == NULL) {
-	u = urlFree(u, "urlSplit (error #1)");
-	return -1;
-    }
-
-    u->url = xstrdup(url);
-    u->urltype = urlIsURL(url);
-
+    myurl = xstrdup(url);
     if ((se = strrchr(myurl, '#')) != NULL) {
 	*se++ = '\0';
 	u->fragment = xstrdup(se);
@@ -459,6 +472,9 @@ int urlSplit(const char * url, urlinfo *uret)
 	*se++ = '\0';
 	u->query = xstrdup(se);
     }
+
+    u->url = urlStrdup(myurl);		/* XXX +1 byte for pesky trailing '/' */
+    u->urltype = urlIsURL(myurl);
 
     se = s = myurl;
     while (1) {

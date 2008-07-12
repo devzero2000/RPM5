@@ -84,13 +84,17 @@ _rpmio_debug = -1;
 	goto exit;
     }
 
-    /* XXX Add pesky trailing '/' to http:// URI's */
     rc = 0;
     while (rc == 0 && (dn = *av++) != NULL) {
+#ifdef	DYING	/* XXX davOpendir() is adding pesky trailing '/'. */
+	/* XXX Add pesky trailing '/' to http:// URI's */
 	size_t nb = strlen(dn);
 	dn = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
 	rc = dirWalk(dn);
 	dn = _free(dn);
+#else
+	rc = dirWalk(dn);
+#endif
     }
 
 exit:
