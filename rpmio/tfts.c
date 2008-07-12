@@ -175,7 +175,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     ARGV_t av = NULL;
     int ac = 0;
     ARGV_t dav;
