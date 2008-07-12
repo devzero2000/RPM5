@@ -1364,13 +1364,16 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
     xx = mireSetEOptions(mire, offsets, noffsets);
 
     while (html->nb > 0) {
-	char * gbn, * hbn;
+	char * gbn, * href;
+	const char * hbn, * lpath;
 	char * f, * fe;
 	char * g, * ge;
+	size_t ng;
 	char * h, * he;
+	size_t nh;
 	char * t;
 	mode_t st_mode;
-	size_t nb;
+	int ut;
 
 	offsets[0] = offsets[1] = -1;
 	xx = mireRegexec(mire, html->b, html->nb);
@@ -1380,45 +1383,83 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 	    f = html->b + offsets[0];
 	    fe = html->b + offsets[1];
 
-	    /* [h:he) contains the href basename. */
 	    he = fe;
 	    if (he[-1] == '"') he--;
-	    if (he[-1] == '/') {
-		st_mode = S_IFDIR | 0755;
-		he--;
-	    } else
-		st_mode = S_IFREG | 0644;
 	    h = he;
-	    while (h > f && (h[-1] != '"' && h[-1] != '/'))
+	    while (h > f && h[-1] != '"')
 		h--;
-	    nb = (size_t)(he - h);
-	    hbn = t = xmalloc(nb + 1 + 1);
+	    /* [h:he) contains the href. */
+	    nh = (size_t)(he - h);
+	    href = t = xmalloc(nh + 1 + 1);
 	    while (h < he)
 		*t++ = *h++;
 	    *t = '\0';
 
-	    /* [g:ge) contains the URI basename. */
+	    /* Determine type of href. */
+	    switch ((ut = urlPath(href, &lpath))) {
+	    case URL_IS_UNKNOWN:
+	    default:
+		/* XXX verify "same tree" as root URI. */
+		if (href[nh-1] == '/') {
+		    st_mode = S_IFDIR | 0755;
+		    href[nh-1] = '\0';
+		} else
+		    st_mode = S_IFREG | 0644;
+		break;
+	    case URL_IS_FTP:
+	    case URL_IS_HTTPS:
+	    case URL_IS_HTTP:
+#ifdef	NOTYET	/* XXX avContext needs to save linktos first. */
+		st_mode = S_IFLNK | 0755;
+		break;
+#endif
+	    case URL_IS_PATH:
+	    case URL_IS_DASH:
+	    case URL_IS_HKP:
+		href[0] = '\0';
+		break;
+	    }
+	    if ((hbn = strchr(href, '/')) != NULL)
+		hbn++;
+	    else
+		hbn = href;
+
+	    /* Parse the URI path. */
 	    g = fe;
 	    while (*g != '>')
 		g++;
 	    ge = ++g;
 	    while (*ge != '<')
 		ge++;
-	    nb = (size_t)(ge - g);
-	    gbn = t = xmalloc(nb + 1 + 1);
-	    while (g < ge)
+	    /* [g:ge) contains the URI basename. */
+	    ng = (size_t)(ge - g);
+	    gbn = t = xmalloc(ng + 1 + 1);
+	    while (g < ge && *g != '/')		/* XXX prohibit '/' in gbn. */
 		*t++ = *g++;
 	    *t = '\0';
 
-	    /* Filter out weirdos and "." and "..". */
-	    if (!strcmp(gbn, hbn) && strcmp(hbn, ".") && strcmp(hbn, "..")) {
+if (_dav_debug)
+if (*hbn != '\0' && *gbn != '\0' && strcasecmp(hbn, gbn))
+fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
+
+	    /*
+	     * Heuristics to identify HTML sub-directories:
+	     *   Avoid empty strings.
+	     *   Both "." and ".." will be added by avContext.
+	     *
+	     * Assume (case insensitive) basename(href) == basename(URI) is
+	     * a subdirectory.
+	     */
+	    if (*hbn != '\0' && *gbn != '\0')
+	    if (strcmp(hbn, ".") && strcmp(hbn, ".."))
+	    if (!strcasecmp(hbn, gbn)) {
 		size_t _st_size = (size_t)0;	/* XXX HACK */
 		time_t _st_mtime = (time_t)0;	/* XXX HACK */
 		xx = avContextAdd(html->ctx, gbn, st_mode, _st_size, _st_mtime);
 	    }
 
 	    gbn = _free(gbn);
-	    hbn = _free(hbn);
+	    href = _free(href);
 
 	    offsets[1] += (ge - fe);
 	    html->b += offsets[1];
