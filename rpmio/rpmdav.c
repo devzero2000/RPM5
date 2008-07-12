@@ -1419,7 +1419,7 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 		href[0] = '\0';
 		break;
 	    }
-	    if ((hbn = strchr(href, '/')) != NULL)
+	    if ((hbn = strrchr(href, '/')) != NULL)
 		hbn++;
 	    else
 		hbn = href;
@@ -2261,37 +2261,45 @@ struct dirent * davReaddir(DIR * dir)
 
 DIR * davOpendir(const char * path)
 {
-    AVDIR avdir;
-    avContext ctx;
+    AVDIR avdir = NULL;
+    avContext ctx = NULL;
     struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs ctx->st. */
+    const char * uri = NULL;
     int rc;
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
 
-    /* Note: all URI's need pesky trailing '/' */
-    if (path == NULL || *path == '\0' || path[strlen(path)-1] != '/') {
+    if (path == NULL || *path == '\0') {
 	errno = ENOENT;
-	return NULL;
+	goto exit;
     }
 
+    /* Note: all URI's need pesky trailing '/' */
+    if (path[strlen(path)-1] != '/')
+	uri = rpmExpand(path, "/", NULL);
+    else
+	uri = path;
+	
     /* Load DAV collection into argv. */
     /* XXX HACK: davHEAD needs ctx->st. */
-    ctx = avContextCreate(path, st);
+    ctx = avContextCreate(uri, st);
     if (ctx == NULL) {
 	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
-	return NULL;
+	goto exit;
     }
+
     rc = davNLST(ctx);
     if (rc) {
 /* HACK: errno = ??? */
-	return NULL;
-    }
+	goto exit;
+    } else
+	avdir = (AVDIR) avOpendir(uri, ctx->av, ctx->modes);
 
-    avdir = (AVDIR) avOpendir(path, ctx->av, ctx->modes);
-
+exit:
+    if (uri != NULL && uri != path)
+	uri = _free(uri);
     ctx = avContextDestroy(ctx);
-
 /*@-kepttrans@*/
     return (DIR *) avdir;
 /*@=kepttrans@*/

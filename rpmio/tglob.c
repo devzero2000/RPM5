@@ -29,7 +29,7 @@ fprintf(stderr, "*** Glob rc %d\n", rc);
     } else
     if (rpmIsVerbose()) {
 	int i;
-	for (i = 0; i < gl.gl_pathc; i++)
+	for (i = 0; i < (int)gl.gl_pathc; i++)
 	    fprintf(stderr, "%5d %s\n", i, gl.gl_pathv[i]);
     }
     Globfree(&gl);
