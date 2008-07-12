@@ -294,9 +294,34 @@ static int wgetLog(rpmwget wget, const char * fmt, ...)
     int rc;
     va_list ap;
 
-    va_start(ap, fmt);
-    rc = vfprintf(stderr, fmt, ap);
-    va_end(ap);
+    if (wget->lfd == NULL) {
+	va_start(ap, fmt);
+	rc = vfprintf(stderr, fmt, ap);
+	va_end(ap);
+    } else {
+	size_t msgnb = 256;
+	char *msgbuf = xmalloc(msgnb);
+	int nb;
+
+	/* Loop to size the output buffer. */
+	va_start(ap, fmt);
+	while (1) {
+	    nb = vsnprintf(msgbuf, msgnb, fmt, ap);
+	    if (nb > -1 && (size_t)nb < msgnb)
+		break;
+	    if (nb > -1)            /* glibc 2.1 (and later) */
+		msgnb = nb+1;
+	    else                    /* glibc 2.0 */
+		msgnb *= 2;
+	}
+	va_end(ap);
+
+	if (nb > 0) {
+	    msgnb = (size_t) nb;
+	    (void) Fwrite(msgbuf, 1, (size_t)nb, wget->lfd);
+	}
+        msgbuf = _free(msgbuf);
+    }
 
     return rc;
 }
@@ -1093,6 +1118,13 @@ static struct poptOption rpmioWCTLStartupPoptTable[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmioWCTLLoggingPoptTable[] = {
+#ifndef	NOTYET /* XXX popt sub-tables should inherit callback from parent? */
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+        rpmwgetArgCallback, 0, (const char *)&__rpmwget, NULL },
+/*@=type@*/
+#endif
+
   { "output-file", 'o', POPT_ARG_STRING,	0, POPTWGET_LOGFILE,
 	N_("log messages to FILE."), N_("FILE") },
   { "append-output", 'a', POPT_ARG_STRING,	0, POPTWGET_LOGAPPEND,
@@ -1105,7 +1137,7 @@ static struct poptOption rpmioWCTLLoggingPoptTable[] = {
 	N_("be verbose (this is the default)."), NULL },
   { "no-verbose", '\0', POPT_ARG_VAL,	&__rpmwget.verbose, 0,
 	N_("turn off verboseness, without being quiet."), NULL },
-  { "nv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&__rpmwget.verbose, 0,
+  { "nv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmwget.verbose, 0,
 	N_("turn off verboseness, without being quiet."), NULL },
   { "input-file", 'i', POPT_ARG_ARGV,	&__rpmwget.manifests, 0,
 	N_("download URLs found in FILE."), N_("FILE") },
@@ -1131,7 +1163,7 @@ static struct poptOption rpmioWDLPoptTable[] = {
 	N_("write documents to FILE."), N_("FILE") },
   { "no-clobber", '\0', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_NOCLOBBER,
 	N_("skip downloads that would download to existing files."), NULL },
-  { "nc", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&__rpmwget.flags, WGET_FLAGS_NOCLOBBER,
+  { "nc", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmwget.flags, WGET_FLAGS_NOCLOBBER,
 	N_("skip downloads that would download to existing files."), NULL },
   { "continue", 'c', POPT_BIT_SET,	&__rpmwget.flags, WGET_FLAGS_RESUME,
 	N_("resume getting a partially-downloaded file."), NULL },
@@ -1194,13 +1226,13 @@ static struct poptOption rpmioWDLPoptTable[] = {
 static struct poptOption rpmioWDirPoptTable[] = {
   { "no-directories", '\0', POPT_BIT_SET,	&rpmioWDirFlags, WDIR_FLAGS_NOCREATE,
 	N_("don't create directories."), NULL },
-  { "nd", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&rpmioWDirFlags, WDIR_FLAGS_NOCREATE,
+  { "nd", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN,	&rpmioWDirFlags, WDIR_FLAGS_NOCREATE,
 	N_("don't create directories."), NULL },
   { "force-directories", 'x', POPT_BIT_SET,	&rpmioWDirFlags, WDIR_FLAGS_FORCE,
 	N_("force creation of directories."), NULL },
   { "no-host-directories", '\0', POPT_BIT_SET,	&rpmioWDirFlags, WDIR_FLAGS_NOHOST,
 	N_("don't create host directories."), NULL },
-  { "nH", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH, &rpmioWDirFlags, WDIR_FLAGS_NOHOST,
+  { "nH", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN, &rpmioWDirFlags, WDIR_FLAGS_NOHOST,
 	N_("don't create host directories."), NULL },
   { "protocol-directories", '\0', POPT_BIT_SET,	&rpmioWDirFlags, WDIR_FLAGS_ADDPROTO,
 	N_("use protocol name in directories."), NULL },
@@ -1354,7 +1386,7 @@ static struct poptOption rpmioWCTLAcceptPoptTable[] = {
 	N_("list of excluded directories."), N_("LIST") },
   { "no-parent", '\0', POPT_BIT_SET,	&rpmioWCTLFlags, WCTL_FLAGS_NOPARENT,
 	N_("don't ascend to the parent directory."), NULL },
-  { "np", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&rpmioWCTLFlags, WCTL_FLAGS_NOPARENT,
+  { "np", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN,	&rpmioWCTLFlags, WCTL_FLAGS_NOPARENT,
 	N_("don't ascend to the parent directory."), NULL },
   POPT_TABLEEND
 };

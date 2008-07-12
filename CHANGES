@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmwget: wire up --output-file/--append-output options.
     - jbj: rpmdav: add html parser to extract plain http href's.
     - at: gzdio: return partial "best effort" bytes written with gzfoo errors.
     - at: gzdio: do gzflush only after RSYNC_WIN boundaries.
