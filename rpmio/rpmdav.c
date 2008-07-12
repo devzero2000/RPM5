@@ -1488,18 +1488,18 @@ static int davNLST(avContext ctx)
      * followed by GET through htmlNLST() to find the contained href's.
      */
     if (u->allow & RPMURL_SERVER_HASDAV)
-	   rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
+	rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
     else {
 /*@-nullpass@*/	/* XXX annotate ctx->st correctly */
-	   rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
+	rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
 /*@=nullpass@*/
+	/* Parse directory elements. */
+	if (rc == NE_OK && S_ISDIR(ctx->st->st_mode))
+	    rc = htmlNLST(u, ctx);
     }
 
     switch (rc) {
     case NE_OK:
-	if (!(u->allow & RPMURL_SERVER_HASDAV)) {
-	    rc = htmlNLST(u, ctx);
-	}
         break;
     case NE_ERROR:
 	/* HACK: "405 Method Not Allowed" for PROPFIND on non-DAV servers. */
