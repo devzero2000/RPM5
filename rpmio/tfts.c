@@ -6,27 +6,50 @@
 
 #include "debug.h"
 
-static int mireMode = RPMMIRE_REGEX;
-static int mireTag = 0;
-static const char * mirePattern = NULL;
-static miRE mire = NULL;
-static int mireNExecs = 0;
-static int mireNMatches = 0;
-static int mireNFails = 0;
+/**
+ */
+typedef struct rpmfts_s * rpmfts;
 
-static const char * mgFile = NULL;
-static int mgFlags = 0;
-static rpmmg mg = NULL;
-static int mgNFiles = 0;
-static int mgNMatches = 0;
-static int mgNFails = 0;
+/**
+ */
+struct rpmfts_s {
+    FTS * t;
+    FTSENT * p;
+    struct stat sb;
+
+    ARGV_t paths;
+    int ftsoptions;
+
+    int ndirs;
+    int nfiles;
+
+    int mireMode;
+    int mireTag;
+    const char * mirePattern;
+    miRE mire;
+    int mireNExecs;
+    int mireNMatches;
+    int mireNFails;
+
+    const char * mgFile;
+    int mgFlags;
+    rpmmg mg;
+    int mgNFiles;
+    int mgNMatches;
+    int mgNFails;
+};
+
+/*@unchecked@*/
+static struct rpmfts_s __rpmfts = {
+    .mireMode = RPMMIRE_REGEX,
+};
+
+/*@unchecked@*/
+static rpmfts _rpmfts = &__rpmfts;
 
 #ifdef	DYING
 extern int _dav_nooptions;
 #endif
-
-static int ndirs = 0;
-static int nfiles = 0;
 
 static int indent = 2;
 
@@ -48,55 +71,56 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
-static const char * ftsInfoStr(int fts_info) {
+static const char * ftsInfoStr(int fts_info)
+{
     if (!(fts_info >= 1 && fts_info <= 14))
 	fts_info = 0;
     return ftsInfoStrings[ fts_info ];
 }
 
-static int ftsPrint(FTS * ftsp, FTSENT * fts)
+static int ftsPrint(rpmfts fts)
 {
     int xx;
 
     if (rpmIsDebug())
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
-		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
-		fts->fts_name);
+	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->p->fts_info),
+		indent * (fts->p->fts_level < 0 ? 0 : fts->p->fts_level), "",
+		fts->p->fts_name);
 
-    switch (fts->fts_info) {
+    switch (fts->p->fts_info) {
     case FTS_D:		/* preorder directory */
-	ndirs++;
+	fts->ndirs++;
 	if (rpmIsVerbose() && !rpmIsDebug()) {
-	    size_t nb = strlen(fts->fts_path);
+	    size_t nb = strlen(fts->p->fts_path);
 	    /* Add trailing '/' if not present. */
-	    fprintf(stderr, "%s%s\n", fts->fts_path,
-		(fts->fts_path[nb-1] != '/' ? "/" : ""));
+	    fprintf(stderr, "%s%s\n", fts->p->fts_path,
+		(fts->p->fts_path[nb-1] != '/' ? "/" : ""));
 	}
 	break;
     case FTS_DP:	/* postorder directory */
 	break;
     case FTS_F:		/* regular file */
-	nfiles++;
+	fts->nfiles++;
 	if (rpmIsVerbose() && !rpmIsDebug())
-	    fprintf(stderr, "%s\n", fts->fts_path);
-	if (mire) {
-	    mireNExecs++;
-	    xx = mireRegexec(mire, fts->fts_path, 0);
+	    fprintf(stderr, "%s\n", fts->p->fts_path);
+	if (fts->mire) {
+	    fts->mireNExecs++;
+	    xx = mireRegexec(fts->mire, fts->p->fts_path, 0);
 	    if (xx >= 0) {
-		fprintf(stdout, " mire: %s\n", fts->fts_path);
-		mireNMatches++;
+		fprintf(stdout, " mire: %s\n", fts->p->fts_path);
+		fts->mireNMatches++;
 	    } else {
-		mireNFails++;
+		fts->mireNFails++;
 	    }
 	}
-	if (mg) {
-	    const char * s = rpmmgFile(mg, fts->fts_accpath);
-	    mgNFiles++;
+	if (fts->mg) {
+	    const char * s = rpmmgFile(fts->mg, fts->p->fts_accpath);
+	    fts->mgNFiles++;
 	    if (s != NULL) {
-		fprintf(stdout, "magic: %s: %s\n", fts->fts_path, s);
-		mgNMatches++;
+		fprintf(stdout, "magic: %s: %s\n", fts->p->fts_path, s);
+		fts->mgNMatches++;
 	    } else {
-		mgNFails++;
+		fts->mgNFails++;
 	    }
 	    s = _free(s);
 	}
@@ -120,38 +144,96 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
     return 0;
 }
 
-extern int rpmioFtsOpts;
-
-static int ftsWalk(ARGV_t av)
+static int ftsWalk(rpmfts fts)
 {
     rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
-    FTS * ftsp;
-    FTSENT * fts;
     int rc = 1;
     int xx;
 
+    fts->ndirs = 0;
+    fts->nfiles = 0;
     xx = rpmswEnter(op, 0);
-    ndirs = nfiles = 0;
-    if ((ftsp = Fts_open((char *const *)av, rpmioFtsOpts, NULL)) == NULL)
+    fts->t = Fts_open((char *const *)fts->paths, fts->ftsoptions, NULL);
+    if (fts->t == NULL)
 	goto exit;
-    while((fts = Fts_read(ftsp)) != NULL)
-	xx = ftsPrint(ftsp, fts);
-    rc = Fts_close(ftsp);
+    while((fts->p = Fts_read(fts->t)) != NULL)
+	xx = ftsPrint(fts);
+    rc = Fts_close(fts->t);
 
 exit:
-    xx = rpmswExit(op, ndirs);
+    xx = rpmswExit(op, fts->ndirs);
 
-fprintf(stderr, "===== (%d/%d) dirs/files in:\n", ndirs, nfiles);
-    argvPrint(NULL, av, NULL);
+fprintf(stderr, "===== (%d/%d) dirs/files in:\n", fts->ndirs, fts->nfiles);
+    argvPrint(NULL, fts->paths, NULL);
     if (_rpmsw_stats)
 	rpmswPrint("fts:", op);
 
     return rc;
 }
 
+
+/**
+ * Use absolute paths since Chdir(2) is problematic with remote URI's.
+ */
+static int ftsAbsPaths(rpmfts fts)
+{
+    struct stat * st = &fts->sb;
+    char fullpath[MAXPATHLEN];
+    int i;
+
+    if (fts->paths)
+    for (i = 0; fts->paths[i] != NULL; i++) {
+	const char * rpath;
+	const char * lpath = NULL;
+	int ut = urlPath(fts->paths[i], &lpath);
+	size_t nb = (size_t)(lpath - fts->paths[i]);
+	int isdir = (lpath[strlen(lpath)-1] == '/');
+	
+	/* Convert to absolute/clean/malloc'd path. */
+	if (lpath[0] != '/') {
+	    /* XXX GLIBC: realpath(path, NULL) return malloc'd */
+	    rpath = Realpath(lpath, NULL);
+	    if (rpath == NULL)
+		rpath = Realpath(lpath, fullpath);
+assert(rpath != NULL);
+	    lpath = rpmGetPath(rpath, NULL);
+	    if (rpath != fullpath)	/* XXX GLIBC extension malloc's */
+		rpath = _free(rpath);
+	} else
+	    lpath = rpmGetPath(lpath, NULL);
+
+	/* Reattach the URI to the absolute/clean path. */
+	/* XXX todo: rpmGenPath was confused by file:///path/file URI's. */
+	switch (ut) {
+	case URL_IS_DASH:
+	case URL_IS_UNKNOWN:
+	    rpath = lpath;
+	    lpath = NULL;
+	    /*@switchbreak@*/ break;
+	default:
+	    strncpy(fullpath, fts->paths[i], nb);
+	    fullpath[nb] = '\0';
+	    rpath = rpmGenPath(fullpath, lpath, NULL);
+	    lpath = _free(lpath);
+	    /*@switchbreak@*/ break;
+	}
+
+	/* Add a trailing '/' on directories. */
+	lpath = (isdir || (!Stat(rpath, st) && S_ISDIR(st->st_mode))
+		? "/" : NULL);
+	fts->paths[i] = _free(fts->paths[i]);
+	fts->paths[i] = rpmExpand(rpath, lpath, NULL);
+	rpath = _free(rpath);
+    }
+
+    return 0;
+}
+
 static struct poptOption optionsTable[] = {
- { "pattern", '\0', POPT_ARG_STRING,	&mirePattern, 0,	NULL, NULL },
- { "magic", '\0', POPT_ARG_STRING,	&mgFile, 0,	NULL, NULL },
+ { "pattern", '\0', POPT_ARG_STRING,	&__rpmfts.mirePattern, 0,
+	NULL, NULL },
+ { "magic", '\0', POPT_ARG_STRING,	&__rpmfts.mgFile, 0,
+	NULL, NULL },
 
 #ifdef	DYING
  { "options", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, 0,
@@ -175,15 +257,20 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    ARGV_t av = NULL;
+    rpmfts fts = _rpmfts;
+    poptContext optCon;
     int ac = 0;
     ARGV_t dav;
     const char * dn;
     int rc;
+    int xx;
+
+    /* Process options. */
+    optCon = rpmioInit(argc, argv, optionsTable);
 
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    fts->ftsoptions = rpmioFtsOpts;
 
     if (__debug) {
 _av_debug = -1;
@@ -203,31 +290,28 @@ _mire_debug = 1;
 	goto exit;
     }
 
-    if (mirePattern) {
-	mire = mireNew(mireMode, mireTag);
-	if ((rc = mireRegcomp(mire, mirePattern)) != 0)
-	    goto exit;;
+    if (fts->mirePattern) {
+	fts->mire = mireNew(fts->mireMode, fts->mireTag);
+	if ((rc = mireRegcomp(fts->mire, fts->mirePattern)) != 0)
+	    goto exit;
     }
 
-    if (mgFile) {
-	mg = rpmmgNew(mgFile, mgFlags);
+    if (fts->mgFile) {
+	fts->mg = rpmmgNew(fts->mgFile, fts->mgFlags);
     }
 
     /* XXX Add pesky trailing '/' to http:// URI's */
-    while ((dn = *dav++) != NULL) {
-	size_t nb = strlen(dn);
-	dn = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
-	argvAdd(&av, dn);
-	dn = _free(dn);
-    }
+    while ((dn = *dav++) != NULL)
+	xx = argvAdd(&fts->paths, dn);
+    xx = ftsAbsPaths(fts);
 
-    rc = ftsWalk(av);
+    rc = ftsWalk(fts);
 
 exit:
-    mg = rpmmgFree(mg);
-    mire = mireFree(mire);
+    fts->mg = rpmmgFree(fts->mg);
+    fts->mire = mireFree(fts->mire);
 
-    av = argvFree(av);
+    fts->paths = argvFree(fts->paths);
 
     optCon = rpmioFini(optCon);
 
