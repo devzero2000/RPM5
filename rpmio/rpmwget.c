@@ -1016,7 +1016,7 @@ fprintf(stderr, "--> rpmwgetCallback(%p): val %d/0x%x arg %s\n", wget, opt->val,
     if (opt->arg == NULL)
     switch (opt->val) {
     case POPTWGET_LOGAPPEND:
-	wget->lfmode = "w+";
+	wget->lfmode = "a";
 	/*@fallthrough@*/
     case POPTWGET_LOGFILE:
 	wget->lfn = _free(wget->lfn);
