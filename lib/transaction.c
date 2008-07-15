@@ -31,6 +31,8 @@
 
 #include "misc.h" /* XXX (free)splitString, currentDirectory */
 
+#include "filetriggers.h" /* XXX mayAddToFilesAwaitingFiletriggers, rpmRunFileTriggers */
+
 #include "debug.h"
 
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
@@ -1797,8 +1799,10 @@ assert(psm != NULL);
 		if ((xx = rpmpsmStage(psm, PSM_PKGINSTALL)) != 0) {
 		    ourrc++;
 		    xx = markLinkedFailed(ts, p);
-		} else
+		} else {
+		    mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
 		    p->done = 1;
+		}
 
 	    } else {
 		ourrc++;
@@ -1824,7 +1828,10 @@ assert(psm != NULL);
 		if ((xx = rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
 		    ourrc++;
 		} else
+		{
+		    mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
 		    p->done = 1;
+		}
 	    } else
 		ourrc++;
 
@@ -1857,6 +1864,10 @@ assert(psm != NULL);
     pi = rpmtsiFree(pi);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+
+	if ((rpmtsFlags(ts) & _noTransTriggers) != _noTransTriggers)
+	    rpmRunFileTriggers(rpmtsRootDir(ts));
+
 	rpmlog(RPMLOG_DEBUG, D_("running post-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {

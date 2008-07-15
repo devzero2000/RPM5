@@ -5,6 +5,7 @@ EXTRA_DIST	= \
 	buildroot \
 	conditionalbuilds \
 	dependencies \
+	filetriggers \
 	format \
 	hregions \
 	macros \

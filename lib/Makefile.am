@@ -39,12 +39,12 @@ pkginc_HEADERS = \
 	rpmal.h rpmds.h rpmfc.h rpmfi.h rpmgi.h \
 	rpmps.h rpmsx.h rpmte.h rpmts.h rpm4compat.h
 noinst_HEADERS = \
-	fsm.h manifest.h psm.h rpmlock.h rpmluaext.h
+	filetriggers.h fsm.h manifest.h psm.h rpmlock.h rpmluaext.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	depends.c formats.c fs.c fsm.c \
+	depends.c filetriggers.c formats.c fs.c fsm.c \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfc.c \
