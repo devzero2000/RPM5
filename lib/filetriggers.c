@@ -6,7 +6,7 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "rpmfi.h"
-#include "misc.h" /* mayAddToFilesAwaitingFiletriggers rpmRunFileTriggers */
+#include "filetriggers.h" /* mayAddToFilesAwaitingFiletriggers rpmRunFileTriggers */
 
 #include "argv.h"
 
