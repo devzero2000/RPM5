@@ -472,7 +472,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { "Java ",			RPMFC_JAVA|RPMFC_INCLUDE },
 
-  { "PE executable",            RPMFC_MONO|RPMFC_INCLUDE },
+  { "Mono/.Net assembly",	RPMFC_MONO|RPMFC_INCLUDE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
