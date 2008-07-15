@@ -26,7 +26,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	perl/RPM_Files.xs perl/RPM/Files.pm perl/t/07.files.t \
 	perl/RPM_Dependencies.xs perl/RPM/Dependencies.pm perl/t/08.dependencies.t \
 	perl/RPM_Spec.xs perl/RPM/Spec.pm perl/t/09.spec.t \
-	perl/hdlist-test.hdr perl/test-rpm-1.0-1.noarch.rpm perl/test-rpm-1.0-1.src.rpm \
+	perl/hdlist-test.hdr perl/test-rpm-1.0-1.noarch.rpm perl/test-rpm-1.0-1.src.rpm test-rpm.spec\
 	perl/META.yml perl/Makefile.PL.in perl/Makefile.am perl/Makefile.in \
 	perl/README \
 	pubkeys/JBJ-GPG-KEY \
