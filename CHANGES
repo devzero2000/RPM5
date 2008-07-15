@@ -62,7 +62,7 @@
     - rpm.org: swipe the abstract keyring API.
     - jbj: rpmio: add Content-Disposition: handling (for rpmwget eventually).
     - jbj: rpmwget: rework logic to avoid Stat(2) running HEAD.
-    - jbj: rpmio: set st_blksize = 2048 iff html with Stat(http://) 
+    - jbj: rpmio: set st_blksize = 2048 iff html with Stat(http://)
     - jbj: rpmio: add Content-Type/Last-Modified to FD_t.
     - jbj: rpmwget: wire up -i,--input-file URI manifests.
     - jbj: rpmwget: handle lower/UPPER ofn transforms, stub in retry logic.
@@ -694,7 +694,7 @@
     - rse: allow to compile without <langinfo.h> and its nl_langinfo(3)
     - rse: provide RPM Lua function posix.glob(<pattern>)
     - rse: make older C compiler happy by not declaring a variable in the middle of a block in rpmconstant/constant.c
-    - rse: let RPM Lua init procedure load all init scripts configured with new Autoconf option --with-path-rpmlua 
+    - rse: let RPM Lua init procedure load all init scripts configured with new Autoconf option --with-path-rpmlua
     - rse: fix Autoconf procedure by running python(1) based checks only under --with-python
     - rse: provide RPM Lua function rpm.realpath(<path>) to complement RPM macro %{realpath:<path>}
     - rse: unconditionally provide RPM Lua functions posix.{setenv,unsetenv}
@@ -743,7 +743,7 @@
     - jbj: refactor rpmcliErase to use same code as rpmtsInstall.
     - jbj: fix: rpmtsCheck non-zero return prevents --erase.
     - jbj: fix: avoid {pre,post}trans scrareMem assert failure.
-    - rpm.org: make find-lang --with-gnome picks up omf files (rhbz#251400) 
+    - rpm.org: make find-lang --with-gnome picks up omf files (rhbz#251400)
     - proyvind: python: add back RPMSENSE_FIND_REQUIRES, needed by rpmlint
     - proyvind: trim multiple slashes from buildroot for check-files script (from Nanar/Olivier Thauvin)
     - proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
@@ -1589,7 +1589,7 @@
     - jbj: fixup %patchNN rewrite.
     - jbj: add osgi automagic dependency extractors <klee@redhat.com>.
     - jbj: debugedit warning removal <pmatlai@redhat.com>.
-    - jbj: free 5 bits in FCOLOR_e for future use. 
+    - jbj: free 5 bits in FCOLOR_e for future use.
     - jbj: add arbitrary tag strings to header metadata.
     - mgh: transform %patchNN to %patch -P NN
     - jbj: add mono automagic dependency extractors.
@@ -1633,7 +1633,7 @@
     - mgh: allow rpm to be built w/o neon
     - rse: remove unused rpmio/sexp/ sub-library
     - rse: add "errno" information to be more informative in error message when lstat(2) on verification fails.
-    - rse: correctly restore SIGILL signal handler in machine detection code. 
+    - rse: correctly restore SIGILL signal handler in machine detection code.
     - pmatilaj: nuke antique Red Hat Linux "reference" "baddeps" list (in lib/depends.c)
     - rse: allow one to explicitly select the RPM DB API with --with-dbapi={db,sqlite}
     - rse: provide automatically Autoconf chosen RPM DB API selection and configuration
@@ -4108,7 +4108,7 @@
 	  and RPM_INSTALL_PREFIXn environment variables
 	- fixed memory leak in install code which occured when net shared paths
 	  were used
-	- don't pass net shared path to rpmInstallPackage() -- it looks 
+	- don't pass net shared path to rpmInstallPackage() -- it looks
 	  directly in the rpmrc entries
 	- don't remove files in netsharedpath, even for files whose states
 	  are not net shared
@@ -4125,7 +4125,7 @@
 	  used for build scripts (default is /bin/sh)
 	- fix bug where macros were being improperly set for
 	  Patch: and Source: lines
-	- may use "instchangelog" in rpmrc to limit the maxmium number of 
+	- may use "instchangelog" in rpmrc to limit the maxmium number of
 	  changelog entries that are stored in the database for each package
 	  (-1 means store all of them)
 	- default instchangelog is set to 5
@@ -4156,14 +4156,14 @@
 	  changes:
 	    - new option --rmsource
 	    - all scripts can now take -p <prog>
-	    - more strict about %package placement and use of main package 
+	    - more strict about %package placement and use of main package
 	      preamble
 	    - %attr(mode, user, group [, dirmode])
 	    - %defattr()
 	    - %defverify()
 	    - Root: is depricated.  Use BuildRoot: instead
 	    - "nosrc" sources arn't deleted when sources are removed
-	    - New tag DocDir: <dir> to set alternate doc dir (default is 
+	    - New tag DocDir: <dir> to set alternate doc dir (default is
 	      /usr/doc)
 	    - %doc should work as expected with buildroot, prefix, DocDir:
 	    - all file processing is done before any packaging
@@ -4171,8 +4171,8 @@
 	    - %patch -z <arg> same as %patch -b <arg>
 	    - %define only defines a macro if it starts a line
 	    - script prog entries are now arrays (ie with arguments)
-	    - standard macros: tag names, buildarch, buildos, buildarch_lc, 
-	      buildos_lc, PATCHn, SOURCEn, PATCHURLn, SOURCEURLn, sourcedir, 
+	    - standard macros: tag names, buildarch, buildos, buildarch_lc,
+	      buildos_lc, PATCHn, SOURCEn, PATCHURLn, SOURCEURLn, sourcedir,
 	      builddir, optflags
 	    - deprecate require_distribution, require_icon, require_vendor
 	    - add RPMTAG_FILEDEVICES and RPMTAG_FILEINODES to header
@@ -4271,7 +4271,7 @@
 	- prerequisites may not specify versions
 
 2.4.4 -> 2.4.5:
-	- call getpwnam()/endpwent() once before a chroot(), forcing name 
+	- call getpwnam()/endpwent() once before a chroot(), forcing name
 	  service shared libs to be loaded from outside of the root path
 	- added vesrion stamp to lib/misc.o (and librpm.a by extension)
 	- fixed config.sub, config.guess to recognize i686
@@ -4281,7 +4281,7 @@
 2.4.3 -> 2.4.4:
 	- restore working directory after installing a package w/ a chroot
 	- dump the package stack when a dependency loop is encountered
-	- when a user/group lookup fails, end*ent() and retry 
+	- when a user/group lookup fails, end*ent() and retry
 	- fixed broken --scripts argument (it was --s2)
 	- only display the packager and url in -qi output if they have defined
 	  values
@@ -4293,11 +4293,11 @@
 	  in --showrc
 	- added cpio archive building code; GNU cpio is no longer used!
 	  packages created w/ rpm 2.4.4 and later cannot be installed with
-	  rpm 2.4 - rpm 2.4.3 however (version of RPM before 2.4 will 
+	  rpm 2.4 - rpm 2.4.3 however (version of RPM before 2.4 will
 	  work fine, however). An "error -2 reading header" happens when
 	  this is attempted
 	- removed cpiobin from rpmrc
-	- added rpmrc "provides" tag to allow easy fulfillment of 
+	- added rpmrc "provides" tag to allow easy fulfillment of
 	  automatically generated dependencies
 	- look for random() in libm if it can't be found be default
 	- fixed problems in Solaris's autodeps stuff (Eric Mumpower)
@@ -4331,7 +4331,7 @@
 	- added -p to %post (etc) to specify the program which a script
 	  is run through
 	- if -p is used w/ an empty script, the specified program is
-	  executed directly 
+	  executed directly
 	- the -p argument (or /bin/sh) is automaticall added as a prereq
 
 2.4.1 -> 2.4.2:
@@ -4370,7 +4370,7 @@
 	- more header file changes for AIX
 	- added :shescape query format type for strings, which prints strings
 	  which will survive a single level of shell expansion
-	- fixed --setperms and --setugids to handle empty packages and 
+	- fixed --setperms and --setugids to handle empty packages and
 	  packages with odd filenames
 	- include <sys/time.h> before <sys/resource.h>
 	- include "miscfn.h" first in every file which needs it
@@ -4382,7 +4382,7 @@
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better
 	  conform with autoconf
-	- set RPM_INSTALL_PREFIX environment variable when running 
+	- set RPM_INSTALL_PREFIX environment variable when running
 	  verify scripts
 	- beginnings of SCO support (though I suspect it will take one
 	  or two more iterations to get it right)
@@ -4404,9 +4404,9 @@
 	- requirements which begin with a leading / require files (in
 	  the database!) instead of packages
 	- clean up conflictsindex during --rebuilddb
-	- get path to gzip from /usr/lib/rpmrc rather then just hoping it's 
+	- get path to gzip from /usr/lib/rpmrc rather then just hoping it's
 	  in the path
-	- use dbpath for error messages with include database path in 
+	- use dbpath for error messages with include database path in
 	  their text
 	- don't set owner/group if binaries installed by "make install"
 	- include <strings.h> on SCO
@@ -4486,7 +4486,7 @@
 	- -Vf uses realpath() now
 	- -Vp lets you use --ftpproxy, --ftpport
 	- changed popt format, breaking all popt alises :-(
-	- added ability to alias character arguments to popt 
+	- added ability to alias character arguments to popt
 	- moved --requires, --info to /usr/lib/rpmpopt
 	- RPM is more forgiving of blank user names (dumb)
 	- popt searches for aliases in the correct order now
@@ -4504,7 +4504,7 @@
 	- added default optflags for powerpc
 	- run shell for post/pre scripts in debug mode with -sx for
 	  some silly shells
-	- installing source packages with --root checked for the 
+	- installing source packages with --root checked for the
 	  sources/specs directory to exist outside of the root -- fixed
 	- modified toplevel Makefile to run dependency generation only
 	  against referenced sources
@@ -4523,7 +4523,7 @@
 	  enough to keep this on the front burner for me)
 	- removed FILEUIDS and FILEGIDS from the header in the database --
 	  we never used it and it jsut wasted room
-	- convert uid/gid lists in v1 headers to symbolic names 
+	- convert uid/gid lists in v1 headers to symbolic names
 
 2.3.3 -> 2.3.4:
 	- %changelog processing
@@ -4540,8 +4540,8 @@
 	- --resign/--addsign was broken in 2.3.3 from popt conversion
 
 2.3.2 -> 2.3.3:
-	- Ripped out header internals and redid them. Any compatibility 
-	  problems this causes are *bugs* as it should be completley 
+	- Ripped out header internals and redid them. Any compatibility
+	  problems this causes are *bugs* as it should be completley
 	  transparent. If this works the devil better buy some Prestone (TM).
 	- Use "cp -pr" instead of "cp -ar" for %doc expansion
 	- use <string.h> instead of (non standard) <strings.h> in some places
@@ -4652,7 +4652,7 @@
 	  write behavior
 	- added -E option for %patch
 	- added UltraSPARC support to lib-rpmrc
-	- moved default topdir and optflags settings to lib-rpmrc from 
+	- moved default topdir and optflags settings to lib-rpmrc from
 	  /etc/rpmrc
 	- removed /etc/rpmrc from standard distribution
 	- use separate chgrp/chown commands in %setup macro
@@ -4811,10 +4811,10 @@
 	  being installed at the same time quite right
 
 2.1 -> 2.1.1:
-	- fixed -qi query format 
+	- fixed -qi query format
 
 2.0.11 -> 2.1:
-	- added --requires, --whatrequires, --provides and 
+	- added --requires, --whatrequires, --provides and
 	  --whatprovides queries
 	- using a string array tag in a queryformat results in every
 	  item in the string being printed out with spaces in between
@@ -4896,9 +4896,9 @@
 
 2.0.7 -> 2.0.8:
 	- explicitly turn off ASCII armor when running PGP
-	- fixed --noscripts logic, which was on by default and 
+	- fixed --noscripts logic, which was on by default and
 	  off if you specified it!
-	- uses a temp file to pass filenames to cpio in case when 
+	- uses a temp file to pass filenames to cpio in case when
 	  their are more then 500 filenames in a package
 	- added --rcfile
 	- fixed problem with $HOME/.rcfile not being read
@@ -4912,7 +4912,7 @@
 	- don't add NULL entry to group index for packages that don't
 	  have group information, add it to the "Unknown" group instead
 	- added --scripts query option
-	- added --noscripts for installing and uninstall without using 
+	- added --noscripts for installing and uninstall without using
 	  the pre/post scripts
 	- "rpm -qd" and "rpm -qc" work properly now (they didn't imply
 	   -l before)
@@ -4961,7 +4961,7 @@
 2.0	- everything done :-)
 
 2.0b -> 2.0c:
-	- an incredible number of changes - I won't bother trying to 
+	- an incredible number of changes - I won't bother trying to
 	  list them
 
 2.0a -> 2.0b:
@@ -4988,7 +4988,7 @@
 
 1.4.5 -> 1.4.6:
 	- fixed rpmq problem with packages w/o groups (old RPM's would do this)
-	- fixed uninstalling with --root 
+	- fixed uninstalling with --root
 
 1.4.4 -> 1.4.5:
 	- added support for mips processors
