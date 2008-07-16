@@ -3,6 +3,7 @@
 #include <rpmlib.h>
 #include <rpmlog.h>
 
+#define	_MIRE_INTERNAL
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "rpmfi.h"
@@ -10,7 +11,6 @@
 
 #include "argv.h"
 
-#include <regex.h>
 
 static const char *files_awaiting_filetriggers = "/var/lib/rpm/files-awaiting-filetriggers";
 
@@ -65,7 +65,7 @@ struct filetrigger_raw {
      char *name;
 };
 struct filetrigger {
-     regex_t regexp;
+     miRE mire;
      char *name;
      int command_pipe;
      int command_pid;
@@ -126,15 +126,18 @@ static char *computeMatchesAnyFilter(int nb, struct filetrigger_raw *list_raw)
      return matches_any;
 }
 
-static void compileFiletriggersRegexp(char *raw, regex_t *regexp)
+static void compileFiletriggersRegexp(char *raw, miRE mire)
 {
-     if (regcomp(regexp, raw, REG_NOSUB | REG_EXTENDED | REG_NEWLINE) != 0) {
+     mireSetCOptions(mire, RPMMIRE_DEFAULT, 0, REG_NOSUB | REG_EXTENDED | REG_NEWLINE, NULL);
+
+     if (mireRegcomp(mire, raw) != 0) {
 	  rpmlog(RPMLOG_ERR, "failed to compile filetrigger filter: %s\n", raw);
+	  mireFree(mire);
      }
      free(raw);
 }
 
-static void getFiletriggers(const char *rootDir, regex_t *matches_any, int *nb, struct filetrigger **list)
+static void getFiletriggers(const char *rootDir, miRE matches_any, int *nb, struct filetrigger **list)
 {
      struct filetrigger_raw *list_raw;
 
@@ -147,25 +150,26 @@ static void getFiletriggers(const char *rootDir, regex_t *matches_any, int *nb, 
      int i;
      for (i = 0; i < *nb; i++) {
 	  (*list)[i].name = list_raw[i].name;
-	  compileFiletriggersRegexp(list_raw[i].regexp, &(*list)[i].regexp);
+	  (*list)[i].mire = mireNew(0, 0);
+	  compileFiletriggersRegexp(list_raw[i].regexp, (*list)[i].mire);
      }
      free(list_raw);
 }
 
-static void freeFiletriggers(regex_t *matches_any, int nb, struct filetrigger *list)
+static void freeFiletriggers(miRE matches_any, int nb, struct filetrigger *list)
 {
-     regfree(matches_any);
+     mireFree(matches_any);
      int i;
      for (i = 0; i < nb; i++) {
-	  regfree(&list[i].regexp);
+	  mireFree(list[i].mire);
 	  free(list[i].name);
      }
      free(list);
 }
 
-static int is_regexp_matching(regex_t *re, const char *s)
+static int is_regexp_matching(miRE re, const char *s)
 {
-     return regexec(re, s, (size_t) 0, NULL, 0) == 0;
+     return mireRegexec(re, s, (size_t) 0) == 0;
 }
 
 static int popen_with_root(const char *rootDir, const char *cmd, int *pid)
@@ -213,14 +217,14 @@ static void mayStartFiletrigger(const char *rootDir, struct filetrigger *trigger
 
 void rpmRunFileTriggers(const char *rootDir)
 {
-     regex_t matches_any;
+     miRE matches_any = mireNew(RPMMIRE_DEFAULT, 0);
      int nb = 0;
      struct filetrigger *list = NULL;
 
      if (!filetriggers_dir()) return;
      rpmlog(RPMLOG_DEBUG, _("[filetriggers] starting\n"));
      
-     getFiletriggers(rootDir, &matches_any, &nb, &list);
+     getFiletriggers(rootDir, matches_any, &nb, &list);
 
      const char *file = rpmGenPath(rootDir, files_awaiting_filetriggers, NULL);
 
@@ -233,11 +237,11 @@ void rpmRunFileTriggers(const char *rootDir)
 	  void *oldhandler = signal(SIGPIPE, SIG_IGN);
 
 	  while (fgets(tmp, sizeof(tmp), awaiting))
-	       if (is_regexp_matching(&matches_any, tmp)) {
+	       if (is_regexp_matching(matches_any, tmp)) {
 		    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp found %s", tmp);
 		    int i;
 		    for (i = 0; i < nb; i++)
-			 if (is_regexp_matching(&list[i].regexp, tmp)) {
+			 if (is_regexp_matching(list[i].mire, tmp)) {
 			      mayStartFiletrigger(rootDir, &list[i]);
 			      write(list[i].command_pipe, tmp, strlen(tmp));
 			 }
@@ -252,7 +256,7 @@ void rpmRunFileTriggers(const char *rootDir)
 		    rpmlog(RPMLOG_DEBUG, "[filetriggers] waiting for %s to end\n", list[i].name);
 		    waitpid(list[i].command_pid, &status, 0);
 	       }
-	  freeFiletriggers(&matches_any, nb, list);
+	  freeFiletriggers(matches_any, nb, list);
 
 	  signal(SIGPIPE, oldhandler);
      }
