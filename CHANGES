@@ -1,7 +1,5 @@
 
 5.1.0 -> 5.2a0:
-    - proyvind: add %{_check_symlink_deps} & %{_check_dirname_deps} to optionally enable/disable
-      directory & symlink dependencies.
     - proyvind: disable filetriggers for src.rpms.
     - jbj: band-aid test for tag->tagno != NULL for now. better needs doing.
     - jbj: fix: --changelog segfault from rpmpopt.in typo.
