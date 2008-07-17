@@ -1800,7 +1800,8 @@ assert(psm != NULL);
 		    ourrc++;
 		    xx = markLinkedFailed(ts, p);
 		} else {
-		    mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
+			if(!rpmteIsSource(fi->te))
+	    			mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
 		    p->done = 1;
 		}
 
@@ -1827,9 +1828,9 @@ assert(psm != NULL);
 	    if (p->linkFailed == 0) {
 		if ((xx = rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
 		    ourrc++;
-		} else
-		{
-		    mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
+		} else {
+		    if(!rpmteIsSource(fi->te))
+			mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
 		    p->done = 1;
 		}
 	    } else
