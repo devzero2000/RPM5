@@ -202,6 +202,8 @@ rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t 
 	if (rc < 0)
 	    return (n_written ? n_written : rc);
 	n_written += rc;
+	if (rc < (ssize_t)n)
+	    return n_written;
 	begin += n;
 	rc = gzflush(rpmgz->gz, Z_SYNC_FLUSH);
 	if (rc < 0)
@@ -247,9 +249,7 @@ FD_t gzdOpen(const char * path, const char * fmode)
     rpmGZFILE rpmgz;
     mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
 
-    rpmgz = calloc(1, sizeof(*rpmgz));
-    if (rpmgz == NULL)
-	return NULL;
+    rpmgz = xcalloc(1, sizeof(*rpmgz));
     rpmgz->gz = gzopen(path, fmode);
     if (rpmgz->gz == NULL) {
 	rpmgz = _free(rpmgz);
@@ -275,9 +275,7 @@ static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
-    rpmgz = calloc(1, sizeof(*rpmgz));
-    if (rpmgz == NULL)
-	return NULL;
+    rpmgz = xcalloc(1, sizeof(*rpmgz));
     rpmgz->gz = gzdopen(fdno, fmode);
     if (rpmgz->gz == NULL) {
 	rpmgz = _free(rpmgz);
@@ -360,7 +358,8 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 	    fd->errcookie = strerror(fd->syserrno);
 	}
     }
-    fdstat_exit(fd, FDSTAT_WRITE, (rc > 0 ? rc : 0));
+    if (rc > 0)
+	fdstat_exit(fd, FDSTAT_WRITE, rc);
     return rc;
 }
 
@@ -397,7 +396,8 @@ DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whenc
 	    fd->errcookie = strerror(fd->syserrno);
 	}
     }
-    fdstat_exit(fd, FDSTAT_SEEK, (rc > 0 ? rc : 0));
+    if (rc > 0)
+	fdstat_exit(fd, FDSTAT_SEEK, rc);
 #else
     rc = -2;
 #endif
@@ -419,6 +419,7 @@ static int gzdClose( /*@only@*/ void * cookie)
     /*@-dependenttrans@*/
     rc = gzclose(rpmgz->gz);
     /*@=dependenttrans@*/
+    rpmgz->gz = NULL;
     rpmgz = _free(rpmgz);
 
     /* XXX TODO: preserve fd if errors */
