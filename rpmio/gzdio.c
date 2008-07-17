@@ -41,19 +41,21 @@ typedef struct rpmGZFILE_s {
 } * rpmGZFILE;				/* like FILE, to use with star */
 
 /* Should gzflush be called only after RSYNC_WIN boundaries? */
-static int enable_rsync = 1;
+static int enable_rsync = 0;
 
 /* =============================================================== */
 static inline
 bool rsync_next(rsync_state s, unsigned char c)
 	/*@modifies s @*/
 {
+    int i;
+
     if (s->n < RSYNC_WIN) {		/* not enough elements */
 	s->sum += c;			/* update the sum */
 	s->win[s->n++] = c;		/* remember the element */
 	return false;			/* no match */
     }
-    int i = s->n++ % RSYNC_WIN;		/* wrap up */
+    i = s->n++ % RSYNC_WIN;		/* wrap up */
     s->sum -= s->win[i];		/* move the window on */
     s->sum += c;
     s->win[i] = c;

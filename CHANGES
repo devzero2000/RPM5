@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: gzdio: disable rsync flushing until a fix can be attempted.
+    - jbj: gzdio: remove c99'ism.
     - proyvind: disable filetriggers for src.rpms.
     - jbj: band-aid test for tag->tagno != NULL for now. better needs doing.
     - jbj: fix: --changelog segfault from rpmpopt.in typo.
