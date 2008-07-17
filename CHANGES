@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: gzdio: integrate the cpio tracking patch (needs to be done elsewhere)
     - jbj: gzdio: disable rsync flushing until a fix can be attempted.
     - jbj: gzdio: remove c99'ism.
     - proyvind: disable filetriggers for src.rpms.
