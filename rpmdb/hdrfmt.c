@@ -5741,7 +5741,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isxml) {
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno[0] & 0x40000000) {
+		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
@@ -5757,7 +5757,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		rpmTag tagT = 0;
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno[0] & 0x40000000) {
+		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
@@ -5915,9 +5915,9 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	NULL));
 
     /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
-    isxml = (tag != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
+    isxml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
 		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
-    isyaml = (tag != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
+    isyaml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
 		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
 
     if (isxml) {
