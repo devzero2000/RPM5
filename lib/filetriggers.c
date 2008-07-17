@@ -25,7 +25,19 @@ static char *filetriggers_dir(void)
 
 static char *get_filter_name(const char *filter_filename) {
      char *p = strrchr(filter_filename, '/');
-     return p ? strndup(p+1, strlen(p+1) - strlen(FILTER_EXTENSION)) : NULL;
+     if (p != NULL) {
+#ifdef HAVE_STRNDUP
+         p = strndup(p+1, strlen(p+1) - strlen(FILTER_EXTENSION));
+#else
+         char *p_src;
+         size_t p_len;
+         p_src = p;
+         p_len = strlen(p_src+1) - strlen(FILTER_EXTENSION);
+         p = xmalloc(p_len+1);
+         strncpy(p, p_src+1, p_len);
+#endif
+     }
+     return p;
 }
 
 int mayAddToFilesAwaitingFiletriggers(const char *rootDir, rpmfi fi, int install_or_erase)

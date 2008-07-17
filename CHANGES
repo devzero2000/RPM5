@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: fallback to xmalloc+strncpy if strndup is not available in filetriggers code
     - pixel: add filetriggers support.
     - rse: configure: do not complain with "python: file not found" on platforms without python(1) in PATH
     - rpm.org: use "Mono/.Net assembly" for mono magic.
