@@ -144,7 +144,7 @@ static void compileFiletriggersRegexp(char *raw, miRE mire)
 
      if (mireRegcomp(mire, raw) != 0) {
 	  rpmlog(RPMLOG_ERR, "failed to compile filetrigger filter: %s\n", raw);
-	  mireFree(mire);
+	  free(mire);
      }
      free(raw);
 }
