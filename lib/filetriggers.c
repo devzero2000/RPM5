@@ -79,6 +79,7 @@ struct filetrigger_raw {
 struct filetrigger {
      miRE mire;
      char *name;
+     char *filename;
      int command_pipe;
      int command_pid;
 };
@@ -184,7 +185,7 @@ static int is_regexp_matching(miRE re, const char *s)
      return mireRegexec(re, s, (size_t) 0) == 0;
 }
 
-static int popen_with_root(const char *rootDir, const char *cmd, int *pid)
+static int popen_with_root(const char *rootDir, const char *cmd, const char *filename, int *pid)
 {
      int pipes[2];
 
@@ -203,9 +204,10 @@ static int popen_with_root(const char *rootDir, const char *cmd, int *pid)
 	       }
 	       chdir("/");
 	  }
-	  const char *argv[2];
+	  const char *argv[3];
 	  argv[0] = cmd;
-	  argv[1] = NULL;
+	  argv[1] = filename;
+	  argv[2] = NULL;
 	  execv(argv[0], (char *const *) argv);
 	  _exit(-1);
      }
@@ -220,8 +222,8 @@ static void mayStartFiletrigger(const char *rootDir, struct filetrigger *trigger
      if (!trigger->command_pipe) {
 	  char *cmd = NULL;
 	  if (asprintf(&cmd, "%s/%s.script", filetriggers_dir(), trigger->name) != -1) {
-	    rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s\n", cmd);
-	    trigger->command_pipe = popen_with_root(rootDir, cmd, &trigger->command_pid);
+	    rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s %s\n", cmd, trigger->filename);
+	    trigger->command_pipe = popen_with_root(rootDir, cmd, trigger->filename, &trigger->command_pid);
 	    _free(cmd);
 	  }
      }
@@ -253,9 +255,13 @@ void rpmRunFileTriggers(const char *rootDir)
 		    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp found %s", tmp);
 		    int i;
 		    for (i = 0; i < nb; i++)
-			 if (is_regexp_matching(list[i].mire, tmp)) {
-			      mayStartFiletrigger(rootDir, &list[i]);
-			      write(list[i].command_pipe, tmp, strlen(tmp));
+			  if (is_regexp_matching(list[i].mire, tmp)) {
+				int tmplen = strlen(tmp);
+				list[i].filename = malloc(tmplen - 1);
+				int j;
+				for (j = 1; j < tmplen; j++) list[i].filename[j-1] = tmp[j];
+				mayStartFiletrigger(rootDir, &list[i]);
+				write(list[i].command_pipe, tmp, tmplen);
 			 }
 	       }
 	  fclose(awaiting);
