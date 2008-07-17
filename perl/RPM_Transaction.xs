@@ -30,8 +30,8 @@
 static void * _null_callback(
 	const void * arg, 
 	const rpmCallbackType what, 
-	const unsigned long long amount, 
-	const unsigned long long total, 
+	const uint64_t amount, 
+	const uint64_t total, 
 	fnpyKey key, 
 	rpmCallbackData data)
 {
