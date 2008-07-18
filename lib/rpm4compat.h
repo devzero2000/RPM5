@@ -48,6 +48,7 @@
 #include <rpm/rpmevr.h>
 #include <rpm/pkgio.h>
 #include <rpm/rpmcb.h>
+#include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmpgp.h>
