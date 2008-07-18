@@ -370,7 +370,7 @@ static void rpmfts_free(/*@only@*/ PyObject * s)
     _PyObject_GC_Del(s);
 }
 
-static PyObject * rpmfts_alloc(PyTypeObject * type, int nitems)
+static PyObject * rpmfts_alloc(PyTypeObject * type, Py_ssize_t nitems)
 	/*@*/
 {
     return PyType_GenericAlloc(type, nitems);

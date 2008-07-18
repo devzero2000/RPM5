@@ -272,7 +272,7 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
 #endif
 
 static PyMappingMethods rpmps_as_mapping = {
-        (inquiry) rpmps_length,		/* mp_length */
+        (lenfunc) rpmps_length,		/* mp_length */
         (binaryfunc) rpmps_subscript,	/* mp_subscript */
 #if defined(PERMIT_RPMPS_SUBSCRIPT)
         (objobjargproc) rpmps_ass_sub,	/* mp_ass_subscript */
