@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - bero: Fix hang when using rpmdsSingle and rpm4compat.h from C++
     - proyvind: clean out all build warnings for perl & python bindings.
     - jbj: gzdio: quadruple check with external -lz. still no fix => disabled.
     - jbj: gzdio: integrate the cpio tracking patch (needs to be done elsewhere)
