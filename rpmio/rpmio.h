@@ -118,6 +118,7 @@ struct FDIO_s {
   fdio_close_function_t		close;
   fdio_fopen_function_t		_fopen;
   fdio_fdopen_function_t	_fdopen;
+/*@null@*/
   fdio_flush_function_t		_flush;
 };
 
@@ -297,7 +298,7 @@ int Lstat(const char * path, /*@out@*/ struct stat * st)
  * fstat(2) clone.
  */
 int Fstat(FD_t fd, /*@out@*/ struct stat * st)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**

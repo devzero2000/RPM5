@@ -104,7 +104,8 @@ static LZFILE *lzdopen(int fd, const char *mode)
 }
 
 static int lzflush(LZFILE *lzfile)
-	/*@modifies lzfile @*/
+	/*@globals fileSystem @*/
+	/*@modifies lzfile, fileSystem @*/
 {
     return fflush(lzfile->fp);
 }

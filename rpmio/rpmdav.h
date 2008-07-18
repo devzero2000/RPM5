@@ -81,7 +81,7 @@ struct avContext_s {
     int ac;
     int nalloced;
     ARGV_t av;
-/*@null@*/ /*@shared@*/
+/*@relnull@*/ /*@shared@*/
     struct stat *st;
     uint16_t * modes;	/* XXX sizeof(mode_t) != sizeof(rpmmode_t) */
     size_t * sizes;
@@ -149,7 +149,7 @@ DIR * avOpendir(const char * path,
  */
 int davDisconnect(void * _u)
 	/*@globals internalState @*/
-	/*@modifies u, internalState @*/;
+	/*@modifies _u, internalState @*/;
 
 /**
  * Free persistent neon session state.
@@ -215,8 +215,8 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
  */
 /*@-incondefs@*/
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies buf, fileSystem, internalState @*/
+        /*@globals errno, fileSystem, internalState @*/
+        /*@modifies buf, errno, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
 	/*@ensures maxRead(buf) == result @*/;
 /*@=incondefs@*/

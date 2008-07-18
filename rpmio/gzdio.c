@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#ifdef	NOTYET		/* XXX C99 may have portability issues, dunno */
+#if	defined(NOTYET) || defined(__LCLINT__)
 #include <stdbool.h>
 #else
 typedef	enum { true = 1, false = 0 } bool;
@@ -62,14 +62,14 @@ static int enable_rsync = 0;
 #define OFFSET_SIZE (sizeof(CPIO_NEWC_MAGIC)-1 + 6*8)
 
 static inline
-int hex(unsigned char c)
+int hex(char c)
 {
     if (c >= '0' && c <= '9')
-	return c - '0';
+	return (int)(c - '0');
     else if (c >= 'a' && c <= 'f')
-	return c - 'a' + 10;
+	return (int)(c - 'a') + 10;
     else if (c >= 'A' && c <= 'F')
-	return c - 'A' + 10;
+	return (int)(c - 'A') + 10;
     return -1;
 }
 
@@ -83,7 +83,7 @@ bool cpio_next(cpio_state s, unsigned char c)
 	    s->n = 0;
 	    return false;
 	}
-	if (0); /* indent */
+	if (0){} /* indent */
 	else if (s->n >= OFFSET_MODE && s->n < OFFSET_MODE+8) {
 	    if (s->n == OFFSET_MODE)
 		s->mode = 0;
@@ -128,16 +128,16 @@ static inline
 bool rsync_next(rsync_state s, unsigned char c)
 	/*@modifies s @*/
 {
-    int i;
+    uint32_t i;
 
     if (s->n < RSYNC_WIN) {		/* not enough elements */
-	s->sum += c;			/* update the sum */
+	s->sum += (uint32_t)c;		/* update the sum */
 	s->win[s->n++] = c;		/* remember the element */
 	return false;			/* no match */
     }
     i = s->n++ % RSYNC_WIN;		/* wrap up */
-    s->sum -= s->win[i];		/* move the window on */
-    s->sum += c;
+    s->sum -= (uint32_t)s->win[i];	/* move the window on */
+    s->sum += (uint32_t)c;
     s->win[i] = c;
     if (s->sum % RSYNC_WIN == 0) {	/* match */
 	s->n = 0;			/* reset */
@@ -186,7 +186,8 @@ bool sync_hint(rpmGZFILE rpmgz, unsigned char c)
 
 static ssize_t
 rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t len)
-	/*@modifies rpmgz @*/
+	/*@globals fileSystem @*/
+	/*@modifies rpmgz, fileSystem @*/
 {
     ssize_t rc;
     size_t n;
@@ -198,7 +199,7 @@ rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t 
 	if (!sync_hint(rpmgz, buf[i]))
 	    continue;
 	n = i + 1 - (begin - buf);
-	rc = gzwrite(rpmgz->gz, begin, n);
+	rc = gzwrite(rpmgz->gz, begin, (unsigned)n);
 	if (rc < 0)
 	    return (n_written ? n_written : rc);
 	n_written += rc;
@@ -211,7 +212,7 @@ rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t 
     }
     if (begin < buf + len) {
 	n = len - (begin - buf);
-	rc = gzwrite(rpmgz->gz, begin, n);
+	rc = gzwrite(rpmgz->gz, begin, (unsigned)n);
 	if (rc < 0)
 	    return (n_written ? n_written : rc);
 	n_written += rc;
@@ -256,7 +257,7 @@ FD_t gzdOpen(const char * path, const char * fmode)
 	return NULL;
     }
     fd = fdNew("open (gzdOpen)");
-    fdPop(fd); fdPush(fd, gzdio, rpmgz, mode);
+    fdPop(fd); fdPush(fd, gzdio, rpmgz, -1);
     fdSetOpen(fd, path, -1, mode);
 
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
@@ -420,7 +421,9 @@ static int gzdClose( /*@only@*/ void * cookie)
     rc = gzclose(rpmgz->gz);
     /*@=dependenttrans@*/
     rpmgz->gz = NULL;
+/*@-dependenttrans@*/
     rpmgz = _free(rpmgz);
+/*@=dependenttrans@*/
 
     /* XXX TODO: preserve fd if errors */
 

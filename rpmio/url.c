@@ -33,8 +33,10 @@
 
 /**
  */
+/*@-redecl@*/
 int (*urlNotify) (const urlinfo u, unsigned status)
         /*@*/;
+/*@=redecl@*/
 
 /**
  */
@@ -91,7 +93,9 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->location = NULL;
     u->etag = NULL;
     u->notify = urlNotify;
+/*@-assignexpose@*/
     u->arg = urlNotifyArg;
+/*@=assignexpose@*/
     u->rop = xcalloc(1, sizeof(*u->rop));
     u->sop = xcalloc(1, sizeof(*u->sop));
     u->top = xcalloc(1, sizeof(*u->top));
@@ -516,6 +520,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	*f++ = '\0';
 	*fe++ = '\0';
     }
+assert(fe != NULL);	/* XXX can't happen */
     while (*fe && *fe != ':') fe++;
     if (*fe == ':') {
 	*fe++ = '\0';

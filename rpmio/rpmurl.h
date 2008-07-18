@@ -35,7 +35,7 @@ extern int (*urlNotify) (const urlinfo u, unsigned status)
 
 /**
  */
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@null@*/ /*@shared@*/
 extern void * urlNotifyArg;
 
 /**
@@ -84,7 +84,7 @@ struct urlinfo_s {
     const char * etag;		/*!< ETag: tag. */
 /*@null@*/
     int (*notify) (const urlinfo u, unsigned status);
-/*@null@*/
+/*@null@*/ /*@shared@*/
     void * arg;
     struct fdNotify_s {
 	unsigned status;

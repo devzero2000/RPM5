@@ -2615,7 +2615,7 @@ typedef _IO_cookie_io_functions_t cookie_io_functions_t;
 
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
-    char stdio[20], other[20], zstdio[20];
+    char stdio[20], other[20], zstdio[40+1];
     const char *end = NULL;
     FDIO_t iof = NULL;
     FD_t fd = ofd;
@@ -2631,8 +2631,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (stdio[0] == '\0')
 	return NULL;
     zstdio[0] = '\0';
-    strncat(zstdio, stdio, sizeof(zstdio) - strlen(zstdio));
-    strncat(zstdio, other, sizeof(zstdio) - strlen(zstdio));
+    (void) stpcpy( stpcpy(zstdio, stdio), other);
 
     if (end == NULL && other[0] == '\0')
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
@@ -3133,7 +3132,7 @@ int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
     }
     if (nb < sb.st_size)
 	b = xrealloc(b, nb+1);
-    b[nb] = '\0';
+    b[nb] = (uint8_t) '\0';
 
 exit:
     if (fd) (void) Fclose(fd);

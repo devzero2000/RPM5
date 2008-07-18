@@ -73,6 +73,7 @@ extern void CRYPTO_mem_leaks(void * ptr);
 /*@access DIR @*/
 /*@access FD_t @*/
 /*@access urlinfo @*/
+/*@access miRE @*/
 
 /* HACK: reasonable value needed (wget uses 900 as default). */
 #if 0
@@ -1157,7 +1158,7 @@ static int davFetch(const urlinfo u, avContext ctx)
 
 /* HACK davHEAD() should be rewritten to use davReq/davResp w callbacks. */
 static int davHEAD(urlinfo u, struct stat *st) 
-	/*@modifies *st @*/
+	/*@modifies u, *st @*/
 {
     ne_request *req;
     const ne_status *status = NULL;
@@ -1286,15 +1287,19 @@ typedef struct rpmhtml_s * rpmhtml;
 /**
  */
 struct rpmhtml_s {
+/*@kept@*/
     avContext ctx;
     ne_request *req;
 
+/*@observer@*/
     const char * pattern;
+/*@relnull@*/
     miRE mires;
     int nmires;
 
     char * buf;
     size_t nbuf;
+/*@null@*/
     char * b;
     size_t nb;
 };
@@ -1320,7 +1325,7 @@ rpmhtml htmlFree(/*@only@*/ rpmhtml html)
 /**
  */
 static
-rpmhtml htmlNew(urlinfo u, avContext ctx) 
+rpmhtml htmlNew(urlinfo u, /*@kept@*/ avContext ctx) 
 	/*@*/
 {
     rpmhtml html = xcalloc(1, sizeof(*html));
@@ -1334,7 +1339,7 @@ rpmhtml htmlNew(urlinfo u, avContext ctx)
 /**
  */
 static ssize_t htmlFill(rpmhtml html)
-	/*@*/
+	/*@modifies html @*/
 {
     char * b = html->buf;
     size_t nb = html->nbuf;
@@ -1381,7 +1386,8 @@ static const char * hrefpat = "(?i)<a(?:\\s+[a-z][a-z0-9_]*(?:=(?:\"[^\"]*\"|\\S
 /**
  */
 static int htmlParse(rpmhtml html)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies html, internalState @*/
 {
     miRE mire;
     int noffsets = 3;
@@ -1430,13 +1436,13 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 		char c = *h++;
 		switch (c) {
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		case '%':
 		    if (isxdigit((int)h[0]) && isxdigit((int)h[1])) {
 			c = (char) (nibble(h[0]) << 4) | nibble(h[1]);
 			h += 2;
 		    }
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 		*t++ = c;
 	    }
@@ -1452,24 +1458,25 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 		    href[nh-1] = '\0';
 		} else
 		    st_mode = S_IFREG | 0644;
-		break;
+		/*@switchbreak@*/ break;
 	    case URL_IS_FTP:
 	    case URL_IS_HTTPS:
 	    case URL_IS_HTTP:
 #ifdef	NOTYET	/* XXX avContext needs to save linktos first. */
 		st_mode = S_IFLNK | 0755;
-		break;
+		/*@switchbreak@*/ break;
 #endif
 	    case URL_IS_PATH:
 	    case URL_IS_DASH:
 	    case URL_IS_HKP:
 		href[0] = '\0';
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    if ((hbn = strrchr(href, '/')) != NULL)
 		hbn++;
 	    else
 		hbn = href;
+assert(hbn != NULL);
 
 	    /* Parse the URI path. */
 	    g = fe;
@@ -1534,7 +1541,8 @@ fprintf(stderr, "*** htmlParse(%p) rc %d\n", html, rc);
 
 /* HACK htmlNLST() should be rewritten to use davReq/davResp w callbacks. */
 static int htmlNLST(urlinfo u, avContext ctx) 
-	/*@modifies ctx @*/
+	/*@globals internalState @*/
+	/*@modifies ctx, internalState @*/
 {
     rpmhtml html = htmlNew(u, ctx);
     int rc = 0;
@@ -1774,6 +1782,7 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd
 
     ctrl->persist = (u->httpVersion > 0 ? 1 : 0);
     ctrl = fdLink(ctrl, "open ctrl (davReq)");
+assert(ctrl != NULL);
 
 assert(u->sess != NULL);
     /* XXX reset disconnected handle to NULL. should never happen ... */
@@ -1893,7 +1902,7 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, ure
 
     if (u->ctrl == NULL)
 	u->ctrl = fdNew("persist ctrl (davOpen)");
-    if (u->ctrl->nrefs > 2 && u->data == NULL)
+    else if (u->ctrl->nrefs > 2 && u->data == NULL)
 	u->data = fdNew("persist data (davOpen)");
 
     if (u->ctrl->url == NULL)
@@ -2349,10 +2358,12 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     }
 
     /* Note: all Opendir(3) URI's need pesky trailing '/' */
+/*@-mods@*/
     if (path[strlen(path)-1] != '/')
 	uri = rpmExpand(path, "/", NULL);
     else
-	uri = path;
+	uri = xstrdup(path);
+/*@=mods@*/
 	
     /* Load DAV collection into argv. */
     /* XXX HACK: davHEAD needs ctx->st. */
@@ -2370,8 +2381,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 	avdir = (AVDIR) avOpendir(uri, ctx->av, ctx->modes);
 
 exit:
-    if (uri != NULL && uri != path)
-	uri = _free(uri);
+    uri = _free(uri);
     ctx = avContextDestroy(ctx);
 /*@-kepttrans@*/
     return (DIR *) avdir;
