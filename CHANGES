@@ -298,6 +298,18 @@
 
 =============================================================================
 
+5.1.3 -> 5.1.4:
+    - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
+    - jbj: fix: "%description -n foo-bar" needs an additional comparison.
+    - jbj: add non-{GIF,XPM} formats opaquely using arbitrary Icon: tagno.
+    - jbj: fix: allocate Icon: buffer after iconsize is initialized.
+    - jbj: permit configurable POSIX behavior for parameterized macros
+	(Marcin Kowalczyk<qrczak@knm.org.pl>).
+    - jbj: fix: skip %exclude/%ghost files to get more accurate RPMTAG_SIZE.
+    - jbj: fix: RPMTAG_SIZE is incorrect with %exclude and %ghost directives
+        (Alexey Tourbin<at@altlinux.ru>).
+    - rse: fix portability by providing own RPM_LIST_XXX macros in rpmmtree.c
+
 5.1.2 -> 5.1.3:
     - rse: enhance RPM_CHECK_LIB to query pkg-config(1) --libs-only-L to get -L<dir> options, too.
     - rse: add support for "lib<name>-config" and "lib<name>.pc" in RPM_CHECK_LIB
