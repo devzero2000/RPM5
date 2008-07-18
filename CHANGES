@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - rse: configure: do not complain with "python: file not found" on platforms without python(1) in PATH
 
 5.1.3 -> 5.1.4:
     - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
