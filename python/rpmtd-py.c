@@ -2,11 +2,23 @@
  * \file python/rpmtd-py.c
  */
 
-#include <rpm/rpmtd.h>
+#include "system.h"
 
+#include <rpmio.h>	/* XXX header-py.h needs FD_t typedef */
+
+#define RPM_NULL_TYPE           0
+#define RPM_INT8_TYPE           RPM_UINT8_TYPE
+#define RPM_INT16_TYPE          RPM_UINT16_TYPE
+#define RPM_INT32_TYPE          RPM_UINT32_TYPE
+#define RPM_INT64_TYPE          RPM_UINT64_TYPE
+
+#define rpmTagGetType(_tag)     tagType(_tag)
+
+#define	_RPMTD_INTERNAL
 #include "rpmtd-py.h"
 #include "header-py.h"
-#include "rpmdebug-py.h"
+
+#include "debug.h"
 
 /** \ingroup python
  * \class Rpmtd
@@ -84,7 +96,7 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td)
 PyObject *rpmtd_AsPyobj(rpmtd td)
 {
     PyObject *res = NULL;
-    rpmTagType type = rpmTagGetType(td->tag);
+    rpmTagType type = rpmTagGetType(rpmtdTag(td));
     int array = ((type & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE);
 
     if (!array && rpmtdCount(td) < 1) {
@@ -128,10 +140,12 @@ static PyObject *rpmtd_setTag(rpmtdObject *self, PyObject *args, PyObject *kwds)
 	return NULL;
 
     tag = tagNumFromPyObject(pytag);
+#ifdef	DYING	/* XXX with arbitrary tags, all tags are found. */
     if (tag == RPMTAG_NOT_FOUND) {
 	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return NULL;
     }
+#endif
     
     /* tag got just validated, so settag failure must be from type mismatch */
     if (!rpmtdSetTag(self->td, tag)) {
@@ -180,11 +194,13 @@ static PyObject *rpmtd_new(PyTypeObject *subtype,
 	return NULL;
 
     tag = tagNumFromPyObject(pytag);
+#ifdef	DYING	/* XXX with arbitrary tags, all tags are found. */
     if (tag == RPMTAG_NOT_FOUND) {
 	PyErr_SetString(PyExc_TypeError, 
 			"can't create container for unknown tag");
 	return NULL;
     }
+#endif
 
     td = rpmtdNew();
     td->tag = tag;

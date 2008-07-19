@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: python: add rpm.td subtype methods for rpmtd.
+    - jbj: rpmtd: expose symbols needed by python rpm.td.
+    - jbj: rpmtd: rework rpmtdFormats lookup. more todo++.
     - jbj: rpmtd: initial port.
     - rpm.org: steal rpmtd.[ch] modules for porting.
     - rpm.org: steal rpmkeyring/rpmtd modules for porting work.

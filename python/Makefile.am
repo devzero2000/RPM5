@@ -51,7 +51,7 @@ _rpmmodule_la_LIBADD =
 _rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
 			rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c\
 			rpmfi-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c \
-			rpmte-py.c rpmts-py.c spec-py.c
+			rpmtd-py.c rpmte-py.c rpmts-py.c spec-py.c
 
 # rpmmodule.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
@@ -59,8 +59,8 @@ _rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
 # rpmmodule.c header-py.c
 splint_srcs = \
  	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c rpmte-py.c rpmts-py.c \
-	spec-py.c
+	rpmfi-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c rpmtd-py.c \
+	rpmte-py.c rpmts-py.c spec-py.c
 
 .PHONY:	lint
 lint:

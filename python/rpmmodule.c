@@ -25,6 +25,7 @@
 #include "rpmmacro-py.h"
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
+#include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 #include "spec-py.h"
@@ -268,6 +269,73 @@ static void rpm_exithook(void)
    rpmdbCheckTerminate(1);
 }
 
+/*
+ * Add rpm tag dictionaries to the module
+ */
+static void addRpmTags(PyObject *module)
+{
+    PyObject * dict = PyDict_New();
+
+#ifdef	NOTYET
+
+    PyObject *pyval, *pyname;
+    rpmtd names = rpmtdNew();
+    rpmTagGetNames(names, 1);
+    const char *tagname, *shortname;
+    rpmTag tagval;
+
+    while ((tagname = rpmtdNextString(names))) {
+	shortname = tagname + strlen("RPMTAG_");
+	tagval = rpmTagGetValue(shortname);
+
+	PyModule_AddIntConstant(module, tagname, tagval);
+	pyval = PyInt_FromLong(tagval);
+	pyname = PyString_FromString(shortname);
+	PyDict_SetItem(dict, pyval, pyname);
+	Py_DECREF(pyval);
+	Py_DECREF(pyname);
+    }
+    PyModule_AddObject(module, "tagnames", dict);
+    rpmtdFreeData(names);
+    rpmtdFree(names);
+
+#else
+
+    PyObject * d = PyModule_GetDict(module);
+    PyObject * o;
+
+ {  const struct headerTagTableEntry_s * t;
+    PyObject * to;
+    for (t = rpmTagTable; t && t->name; t++) {
+	PyDict_SetItemString(d, (char *) t->name, to=PyInt_FromLong(t->val));
+	Py_DECREF(to);
+        PyDict_SetItem(dict, to, o=PyString_FromString(t->name + 7));
+	Py_DECREF(o);
+    }
+ }
+
+ {  headerSprintfExtension exts = rpmHeaderFormats;
+    headerSprintfExtension ext;
+    PyObject * to;
+    int extNum;
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+        ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	PyDict_SetItemString(d, (char *) ext->name, to=PyCObject_FromVoidPtr((void *)ext, NULL));
+	Py_DECREF(to);
+        PyDict_SetItem(dict, to, o=PyString_FromString(ext->name + 7));
+	Py_DECREF(o);
+    }
+ }
+
+    PyDict_SetItemString(d, "tagnames", dict);
+    Py_DECREF(dict);
+
+#endif
+}
+
 /**
  */
 static char rpm__doc__[] =
@@ -278,8 +346,7 @@ void init_rpm(void);	/* XXX eliminate gcc warning */
  */
 void init_rpm(void)
 {
-    PyObject * d, *o, * dict;
-    PyObject * m;
+    PyObject * d, * o, * m;
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
@@ -290,6 +357,8 @@ void init_rpm(void)
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
+
+    if (PyType_Ready(&rpmtd_Type) < 0) return;
 
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
@@ -346,6 +415,9 @@ void init_rpm(void)
     Py_INCREF(&rpmps_Type);
     PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
 
+    Py_INCREF(&rpmtd_Type);
+    PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
+
     Py_INCREF(&rpmte_Type);
     PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
 
@@ -368,36 +440,7 @@ void init_rpm(void)
     spec_Type.ob_type =  &PyType_Type;
 #endif
 
-    dict = PyDict_New();
-
- {  const struct headerTagTableEntry_s * t;
-    PyObject * to;
-    for (t = rpmTagTable; t && t->name; t++) {
-	PyDict_SetItemString(d, (char *) t->name, to=PyInt_FromLong(t->val));
-	Py_DECREF(to);
-        PyDict_SetItem(dict, to, o=PyString_FromString(t->name + 7));
-	Py_DECREF(o);
-    }
- }
-
- {  headerSprintfExtension exts = rpmHeaderFormats;
-    headerSprintfExtension ext;
-    PyObject * to;
-    int extNum;
-    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-        ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
-    {
-	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
-	    continue;
-	PyDict_SetItemString(d, (char *) ext->name, to=PyCObject_FromVoidPtr((void *)ext, NULL));
-	Py_DECREF(to);
-        PyDict_SetItem(dict, to, o=PyString_FromString(ext->name + 7));
-	Py_DECREF(o);
-    }
- }
-
-    PyDict_SetItemString(d, "tagnames", dict);
-    Py_DECREF(dict);
+    addRpmTags(m);
 
 #define REGISTER_ENUM(val) \
     PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \

@@ -1,6 +1,7 @@
 #include "system.h"
 
 #define	_RPMTD_INTERNAL
+#define _RPMTAG_INTERNAL	/* XXX rpmHeaderFormatFuncByValue() */
 #include <rpmtd.h>
 #include <rpmpgp.h>
 
@@ -14,9 +15,70 @@
 
 #define	rpmTagGetType(_tag)	tagType(_tag)
 
-typedef char * (*headerTagFormatFunction) (rpmtd td, char *formatPrefix);
+#define	rpmHeaderFormats	headerCompoundFormats
 
-extern void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
+static void *rpmHeaderFormatFuncByName(const char *fmt)
+{
+    headerSprintfExtension ext;
+    void *func = NULL;
+
+    for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
+	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
+	    continue;
+        if (!strcmp(ext->name, fmt)) {
+            func = ext->u.fmtFunction;
+            break;
+        }
+    }
+    return func;
+}
+
+struct key_s {
+    const char * str;
+    rpmtdFormats fmt;
+} keyFormats[] = {
+    { "armor",		RPMTD_FORMAT_ARMOR },
+#ifdef	NOTYET
+    { "arraysize",	RPMTD_FORMAT_ARRAYSIZE },
+#endif
+    { "base64",		RPMTD_FORMAT_BASE64 },
+    { "date",		RPMTD_FORMAT_DATE },
+    { "day",		RPMTD_FORMAT_DAY },
+    { "depflags",	RPMTD_FORMAT_DEPFLAGS },
+    { "fflags",		RPMTD_FORMAT_FFLAGS },
+    { "hex",		RPMTD_FORMAT_HEX },
+    { "octal",		RPMTD_FORMAT_OCTAL },
+    { "permissions",	RPMTD_FORMAT_PERMS },
+    { "perms",		RPMTD_FORMAT_PERMS },
+    { "pgpsig",		RPMTD_FORMAT_PGPSIG },
+    { "shescape",	RPMTD_FORMAT_SHESCAPE },
+#ifdef	NOTYET
+    { "string",		RPMTD_FORMAT_STRING },
+#endif
+    { "triggertype",	RPMTD_FORMAT_TRIGGERTYPE },
+    { "xml",		RPMTD_FORMAT_XML },
+};
+/*@unchecked@*/
+static size_t nKeyFormats = sizeof(keyFormats) / sizeof(keyFormats[0]);
+
+static const char * fmt2name(rpmtdFormats fmt)
+{
+    const char * str = NULL;
+    int i;
+
+    for (i = 0; i < (int)nKeyFormats; i++) {
+	if (fmt != keyFormats[i].fmt)
+	    continue;
+	str = keyFormats[i].str;
+	break;
+    }
+    return str;
+}
+
+static void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
+{
+    return rpmHeaderFormatFuncByName(fmt2name(fmt));
+}
 
 rpmtd rpmtdNew(void)
 {
@@ -37,7 +99,7 @@ rpmtd rpmtdFree(rpmtd td)
 
 void rpmtdReset(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
 
     memset(td, 0, sizeof(*td));
     td->ix = -1;
@@ -45,14 +107,14 @@ void rpmtdReset(rpmtd td)
 
 void rpmtdFreeData(rpmtd td)
 {
-    uint32_t i;
-    assert(td != NULL);
+    int i;
+assert(td != NULL);
 
     if (td->flags & RPMTD_ALLOCED) {
 	if (td->flags & RPMTD_PTR_ALLOCED) {
 	    assert(td->data != NULL);
 	    char **data = td->data;
-	    for (i = 0; i < td->count; i++) {
+	    for (i = 0; i < (int)td->count; i++) {
 		free(data[i]);
 	    }
 	}
@@ -63,32 +125,32 @@ void rpmtdFreeData(rpmtd td)
 
 rpm_count_t rpmtdCount(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
     /* fix up for binary type abusing count as data length */
     return (td->type == RPM_BIN_TYPE) ? 1 : td->count;
 }
 
 rpmTag rpmtdTag(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
     return td->tag;
 }
 
 rpmTagType rpmtdType(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
     return td->type;
 }
 
 int rpmtdGetIndex(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
     return td->ix;
 }
 
 int rpmtdSetIndex(rpmtd td, int index)
 {
-    assert(td != NULL);
+assert(td != NULL);
 
     if (index < 0 || index >= (int)rpmtdCount(td)) {
 	return -1;
@@ -99,7 +161,7 @@ int rpmtdSetIndex(rpmtd td, int index)
 
 int rpmtdInit(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
 
     /* XXX check that this is an array type? */
     td->ix = -1;
@@ -108,7 +170,7 @@ int rpmtdInit(rpmtd td)
 
 int rpmtdNext(rpmtd td)
 {
-    assert(td != NULL);
+assert(td != NULL);
 
     int i = -1;
     
@@ -124,8 +186,8 @@ int rpmtdNext(rpmtd td)
 
 uint32_t *rpmtdNextUint32(rpmtd td)
 {
-    assert(td != NULL);
     uint32_t *res = NULL;
+assert(td != NULL);
     if (rpmtdNext(td) >= 0) {
 	res = rpmtdGetUint32(td);
     }
@@ -134,8 +196,8 @@ uint32_t *rpmtdNextUint32(rpmtd td)
 
 uint64_t *rpmtdNextUint64(rpmtd td)
 {
-    assert(td != NULL);
     uint64_t *res = NULL;
+assert(td != NULL);
     if (rpmtdNext(td) >= 0) {
 	res = rpmtdGetUint64(td);
     }
@@ -144,8 +206,8 @@ uint64_t *rpmtdNextUint64(rpmtd td)
 
 const char *rpmtdNextString(rpmtd td)
 {
-    assert(td != NULL);
     const char *res = NULL;
+assert(td != NULL);
     if (rpmtdNext(td) >= 0) {
 	res = rpmtdGetString(td);
     }
@@ -156,8 +218,7 @@ char * rpmtdGetChar(rpmtd td)
 {
     char *res = NULL;
 
-    assert(td != NULL);
-
+assert(td != NULL);
     if (td->type == RPM_INT8_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	res = (char *) td->data + ix;
@@ -169,8 +230,7 @@ uint16_t * rpmtdGetUint16(rpmtd td)
 {
     uint16_t *res = NULL;
 
-    assert(td != NULL);
-
+assert(td != NULL);
     if (td->type == RPM_INT16_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	res = (uint16_t *) td->data + ix;
@@ -182,8 +242,7 @@ uint32_t * rpmtdGetUint32(rpmtd td)
 {
     uint32_t *res = NULL;
 
-    assert(td != NULL);
-
+assert(td != NULL);
     if (td->type == RPM_INT32_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	res = (uint32_t *) td->data + ix;
@@ -195,8 +254,7 @@ uint64_t * rpmtdGetUint64(rpmtd td)
 {
     uint64_t *res = NULL;
 
-    assert(td != NULL);
-
+assert(td != NULL);
     if (td->type == RPM_INT64_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	res = (uint64_t *) td->data + ix;
@@ -208,8 +266,7 @@ const char * rpmtdGetString(rpmtd td)
 {
     const char *str = NULL;
 
-    assert(td != NULL);
-
+assert(td != NULL);
     if (td->type == RPM_STRING_TYPE) {
 	str = (const char *) td->data;
     } else if (td->type == RPM_STRING_ARRAY_TYPE ||
@@ -228,9 +285,13 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
     char *str = NULL;
 
     if (func) {
+#ifdef	NOTYET	/* XXX different prototypes, wait for rpmhe coercion. */
 	char fmtbuf[50]; /* yuck, get rid of this */
 	strcpy(fmtbuf, "%");
 	str = func(td, fmtbuf);
+#else
+	err = _("Unknown format");
+#endif
     } else {
 	err = _("Unknown format");
     }
@@ -244,9 +305,10 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
 
 int rpmtdSetTag(rpmtd td, rpmTag tag)
 {
-    assert(td != NULL);
     rpmTagType newtype = rpmTagGetType(tag);
     int rc = 0;
+
+assert(td != NULL);
 
     /* 
      * Sanity checks: 
@@ -402,7 +464,7 @@ rpmtd rpmtdDup(rpmtd td)
     char **data = NULL;
     int i;
     
-    assert(td != NULL);
+assert(td != NULL);
     /* TODO: permit other types too */
     if (td->type != RPM_STRING_ARRAY_TYPE && td->type != RPM_I18NSTRING_TYPE) {
 	return NULL;

@@ -1,8 +1,7 @@
 #ifndef _RPMTD_PY_H
 #define _RPMTD_PY_H
 
-#include <Python.h>
-#include <rpm/rpmtypes.h>
+#include "rpmtd.h"
 
 /** \ingroup py_c
  * \file python/rpmtd-py.h
