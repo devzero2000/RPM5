@@ -1,28 +1,34 @@
 #include "system.h"
 
-#include "rpmio_internal.h"
-#include "rpmkeyring.h"
+#include <rpm/rpmstring.h>
+#include <rpm/rpmpgp.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmkeyring.h>
+
+#include "rpmio/base64.h"
+#include "rpmio/digest.h"
 
 #include "debug.h"
 
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
-
 struct rpmPubkey_s {
-    uint8_t * pkt;
+    uint8_t *pkt;
     size_t pktlen;
     pgpKeyID_t keyid;
+    int nrefs;
 };
 
 struct rpmKeyring_s {
-    rpmPubkey * keys;
+    struct rpmPubkey_s **keys;
     size_t numkeys;
+    int nrefs;
 };
 
 static int keyidcmp(const void *k1, const void *k2)
 {
     const struct rpmPubkey_s *key1 = *(const struct rpmPubkey_s **) k1;
     const struct rpmPubkey_s *key2 = *(const struct rpmPubkey_s **) k2;
+    
     return memcmp(key1->keyid, key2->keyid, sizeof(key1->keyid));
 }
 
@@ -31,26 +37,31 @@ rpmKeyring rpmKeyringNew(void)
     rpmKeyring keyring = xcalloc(1, sizeof(*keyring));
     keyring->keys = NULL;
     keyring->numkeys = 0;
-    return keyring;
+    keyring->nrefs = 0;
+    return rpmKeyringLink(keyring);
 }
 
 rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 {
-    if (keyring && keyring->keys) {
-	int i;
-/*@-unqualifiedtrans @*/
-	for (i = 0; i < (int)keyring->numkeys; i++)
-	    keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
-/*@=unqualifiedtrans @*/
-	keyring->keys = _free(keyring->keys);
+    if (keyring == NULL) {
+	return NULL;
     }
-    keyring = _free(keyring);
+
+    if (keyring->nrefs > 1) {
+	return rpmKeyringUnlink(keyring);
+    }
+
+    if (keyring->keys) {
+	for (int i = 0; i < keyring->numkeys; i++) {
+	    keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
+	}
+	free(keyring->keys);
+    }
+    free(keyring);
     return NULL;
 }
 
-/*@owned@*/
 static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
-	/*@*/
 {
     rpmPubkey *found = NULL;
     found = bsearch(&key, keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
@@ -63,51 +74,93 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 	return -1;
 
     /* check if we already have this key */
-    if (rpmKeyringFindKeyid(keyring, key))
+    if (rpmKeyringFindKeyid(keyring, key)) {
 	return 1;
-
-    keyring->keys = xrealloc(keyring->keys, (keyring->numkeys + 1) * sizeof(*keyring->keys));
-/*@-assignexpose @*/
-    keyring->keys[keyring->numkeys] = key;
-/*@=assignexpose @*/
+    }
+    
+    keyring->keys = xrealloc(keyring->keys, (keyring->numkeys + 1) * sizeof(rpmPubkey));
+    keyring->keys[keyring->numkeys] = rpmPubkeyLink(key);
     keyring->numkeys++;
     qsort(keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
 
     return 0;
 }
 
+rpmKeyring rpmKeyringLink(rpmKeyring keyring)
+{
+    if (keyring) {
+	keyring->nrefs++;
+    }
+    return keyring;
+}
+
+rpmKeyring rpmKeyringUnlink(rpmKeyring keyring)
+{
+    if (keyring) {
+	keyring->nrefs--;
+    }
+    return NULL;
+}
+
 rpmPubkey rpmPubkeyRead(const char *filename)
 {
     uint8_t *pkt = NULL;
-    size_t pktlen = 0;
+    size_t pktlen;
     rpmPubkey key = NULL;
 
-    if (pgpReadPkts(filename, &pkt, &pktlen) > 0) {
-	key = rpmPubkeyNew(pkt, pktlen);
-	pkt = _free(pkt);
+    if (pgpReadPkts(filename, &pkt, &pktlen) <= 0) {
+	goto exit;
     }
+    key = rpmPubkeyNew(pkt, pktlen);
+    free(pkt);
+
+exit:
     return key;
 }
 
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
 {
     rpmPubkey key = NULL;
+    
+    if (pkt == NULL || pktlen == 0)
+	goto exit;
 
-    if (pkt != NULL && pktlen > 0) {
-	key = xcalloc(1, sizeof(*key));
-	(void) pgpPubkeyFingerprint(pkt, pktlen, key->keyid);
-	key->pkt = xmalloc(pktlen);
-	key->pktlen = pktlen;
-	memcpy(key->pkt, pkt, pktlen);
-    }
-    return key;
+    key = xcalloc(1, sizeof(*key));
+    pgpPubkeyFingerprint(pkt, pktlen, key->keyid);
+    key->pkt = xmalloc(pktlen);
+    key->pktlen = pktlen;
+    key->nrefs = 0;
+    memcpy(key->pkt, pkt, pktlen);
+
+exit:
+    return rpmPubkeyLink(key);
 }
 
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
 {
-    if (key != NULL) {
-	key->pkt = _free(key->pkt);
-	key = _free(key);
+    if (key == NULL)
+	return NULL;
+
+    if (key->nrefs > 1)
+	return rpmPubkeyUnlink(key);
+
+    free(key->pkt);
+    free(key);
+    return NULL;
+}
+
+rpmPubkey rpmPubkeyLink(rpmPubkey key)
+{
+    if (key) {
+	key->nrefs++;
+    }
+    return key;
+}
+
+rpmPubkey rpmPubkeyUnlink(rpmPubkey key)
+{
+    if (key) {
+	key->nrefs--;
     }
     return NULL;
 }

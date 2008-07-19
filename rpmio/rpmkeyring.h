@@ -5,27 +5,20 @@
  * \file rpmio/rpmkeyring.h
  */
 
-/** \ingroup rpmkeyring
- */
-typedef /*@abstract@*/ struct rpmPubkey_s * rpmPubkey;
-
-/** \ingroup rpmkeyring
- */
-typedef /*@abstract@*/ struct rpmKeyring_s * rpmKeyring;
+#include <rpm/rpmtypes.h>
+#include <rpm/rpmpgp.h>
 
 /** \ingroup rpmkeyring
  * Create a new, empty keyring
  * @return	new keyring handle
  */
-rpmKeyring rpmKeyringNew(void)
-	/*@*/;
+rpmKeyring rpmKeyringNew(void);
 
 /** \ingroup rpmkeyring
  * Free keyring and the keys within it
  * @return	NULL always
  */
-rpmKeyring rpmKeyringFree(/*@only@*/ rpmKeyring keyring)
-	/*@modifies keyring @*/;
+rpmKeyring rpmKeyringFree(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
  * Add a public key to keyring.
@@ -33,8 +26,7 @@ rpmKeyring rpmKeyringFree(/*@only@*/ rpmKeyring keyring)
  * @param key		pubkey handle
  * @return		0 on success, -1 on error, 1 if key already present
  */
-int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
-	/*@modifies keyring, key @*/;
+int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
 
 /** \ingroup rpmkeyring
  * Perform keyring lookup for a key matching a signature
@@ -42,9 +34,21 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
  * @param sig		OpenPGP packet container of signature
  * @return		RPMRC_OK if found, RPMRC_NOKEY otherwise
  */
-rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies sig, fileSystem, internalState @*/;
+rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
+
+/** \ingroup rpmkeyring
+ * Reference a keyring.
+ * @param keyring	keyring handle
+ * @return		new keyring reference
+ */
+rpmKeyring rpmKeyringLink(rpmKeyring keyring);
+
+/** \ingroup rpmkeyring
+ * Unreference a keyring.
+ * @param keyring	keyring handle
+ * @return		NULL always
+ */
+rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from OpenPGP packet
@@ -52,24 +56,34 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
  * @param pktlen	Data length
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
-	/*@*/;
+rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from ASCII-armored pubkey file
  * @param filename	Path to pubkey file
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyRead(const char *filename)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+rpmPubkey rpmPubkeyRead(const char *filename);
 
 /** \ingroup rpmkeyring
  * Free a pubkey.
  * @param key		Pubkey to free
  * @return		NULL always
  */
-rpmPubkey rpmPubkeyFree(/*@only@*/ rpmPubkey key)
-	/*@modifies key @*/;
+rpmPubkey rpmPubkeyFree(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Reference a pubkey.
+ * @param key		Pubkey
+ * @return		new pubkey reference
+ */
+rpmPubkey rpmPubkeyLink(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Unreference a pubkey.
+ * @param key		Pubkey
+ * @return		NULL always
+ */
+rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
 
 #endif /* _RPMKEYDB_H */

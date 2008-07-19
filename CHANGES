@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: (re-)steal rpmkeyring.[ch] with added refcounts.
     - jbj: python: add rpm.td subtype methods for rpmtd.
     - jbj: rpmtd: expose symbols needed by python rpm.td.
     - jbj: rpmtd: rework rpmtdFormats lookup. more todo++.
