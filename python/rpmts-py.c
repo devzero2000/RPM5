@@ -225,8 +225,6 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     PyObject * oh = NULL;
     const char * origin = NULL;
     PyObject * args, * result;
-    unsigned long oamount = amount;
-    unsigned long ototal = total;
     static FD_t fd;
 
     if (cbInfo->pythonError) return NULL;
@@ -260,7 +258,7 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    args = Py_BuildValue("(iLLOO)", what, oamount, ototal, pkgObj, cbInfo->data);
+    args = Py_BuildValue("(iLLOO)", what, amount, total, pkgObj, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
     Py_DECREF(pkgObj);
@@ -299,7 +297,7 @@ fprintf(stderr, "\tFclose(%p)\n", fd);
 	Fclose (fd);
     } else {
 if (_rpmts_debug)
-fprintf(stderr, "\t%lu:%lu key %p\n", oamount, ototal, pkgKey);
+fprintf(stderr, "\t%llu:%llu key %p\n", (unsigned long long)amount, (unsigned long long)total, pkgKey);
     }
 
     Py_DECREF(result);
@@ -1281,11 +1279,10 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     psi = rpmpsInitIterator(ps);
     while (rpmpsNextIterator(psi) >= 0) {
 	rpmProblem p = rpmpsProblem(psi);
-	unsigned long ulong1 = p->ulong1;
 	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
 			     rpmProblemGetType(p),
-			     p->str1,
-			     PyLong_FromLongLong(ulong1));
+			     rpmProblemGetStr(p),
+			     PyLong_FromLongLong(rpmProblemGetDiskNeed(p)));
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }

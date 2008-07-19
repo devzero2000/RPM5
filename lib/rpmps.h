@@ -299,9 +299,8 @@ char * rpmProblemGetStr(rpmProblem prob)
  * Return generic pointer/long attribute from a problem
  * @param prob		rpm problem
  * @return		a generic pointer/long attribute
- * @todo		needs a better name
  */
-uint64_t rpmProblemGetLong(rpmProblem prob)
+uint64_t rpmProblemGetDiskNeed(rpmProblem prob)
 	/*@*/;
 
 /**

@@ -231,7 +231,7 @@ LIBRPM_0
     rpmpsTrim;
     rpmpsGetProblem;
     rpmProblemGetAltNEVR;
-    rpmProblemGetLong;
+    rpmProblemGetDiskNeed;
     rpmProblemGetStr;
     rpmProblemGetType;
     rpmProblemGetPkgNEVR;

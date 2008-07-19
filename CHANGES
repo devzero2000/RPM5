@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: use the uint64_t callback args, not the legacy compat copies.
+    - rpm.org: Adjust for rpmps interface change.
     - rpm.org: Adjust callback for amount+total type change.
     - rse: upgrade "devtool" build environment to GNU shtool 2.0.8
     - bero: Fix hang when using rpmdsSingle and rpm4compat.h from C++

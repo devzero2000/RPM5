@@ -408,7 +408,7 @@ char * rpmProblemGetStr(rpmProblem prob)
     return(prob->str1);
 }
 
-uint64_t rpmProblemGetLong(rpmProblem prob)
+uint64_t rpmProblemGetDiskNeed(rpmProblem prob)
 {
     return(prob->ulong1);
 }
