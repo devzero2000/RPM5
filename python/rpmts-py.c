@@ -260,7 +260,7 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    args = Py_BuildValue("(illOO)", what, oamount, ototal, pkgObj, cbInfo->data);
+    args = Py_BuildValue("(iLLOO)", what, oamount, ototal, pkgObj, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
     Py_DECREF(pkgObj);

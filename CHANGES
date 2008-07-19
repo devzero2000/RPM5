@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: Adjust callback for amount+total type change.
     - rse: upgrade "devtool" build environment to GNU shtool 2.0.8
     - bero: Fix hang when using rpmdsSingle and rpm4compat.h from C++
     - proyvind: clean out all build warnings for perl & python bindings.
