@@ -298,7 +298,7 @@ struct rpmts_s {
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
 
-/*@only@*/ /*@relnull@*/
+/*@refcounted@*/ /*@relnull@*/
     rpmKeyring keyring;		/*!< Keyring in use. */
     uint8_t * pkpkt;		/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
@@ -643,19 +643,20 @@ rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
 /** \ingroup rpmts
  * Get transaction keyring.
  * @param ts		transaction set
+ * @param autoload	Should keyring be loaded? (unimplmented)
  * @return		transaction keyring
  */
-void * rpmtsGetKeyring(rpmts ts)
+void * rpmtsGetKeyring(rpmts ts, int autoload)
 	/*@*/;
 
 /** \ingroup rpmts
  * Set transaction keyring.
  * @param ts		transaction set
- * @param keyrin	new transaction keyring
+ * @param _keyring	new transaction keyring
  * @return		0 on success
  */
-int rpmtsSetKeyring(rpmts ts, void * keyring)
-	/*modifies ts @*/;
+int rpmtsSetKeyring(rpmts ts, void * _keyring)
+	/*modifies ts, _keyring @*/;
 
 /** \ingroup rpmts
  * Get verify signatures flag(s).

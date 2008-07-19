@@ -5,20 +5,28 @@
  * \file rpmio/rpmkeyring.h
  */
 
-#include <rpm/rpmtypes.h>
-#include <rpm/rpmpgp.h>
+/** \ingroup rpmkeyring
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmPubkey_s * rpmPubkey;
+
+/** \ingroup rpmkeyring
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmKeyring_s * rpmKeyring;
 
 /** \ingroup rpmkeyring
  * Create a new, empty keyring
- * @return	new keyring handle
+ * @return		new keyring handle
  */
-rpmKeyring rpmKeyringNew(void);
+rpmKeyring rpmKeyringNew(void)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Free keyring and the keys within it
- * @return	NULL always
+ * @return		NULL always
  */
-rpmKeyring rpmKeyringFree(rpmKeyring keyring);
+/*@null@*/
+rpmKeyring rpmKeyringFree(/*@killref@*/ rpmKeyring keyring)
+	/*@modifies keyring @*/;
 
 /** \ingroup rpmkeyring
  * Add a public key to keyring.
@@ -26,7 +34,8 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring);
  * @param key		pubkey handle
  * @return		0 on success, -1 on error, 1 if key already present
  */
-int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
+int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
+	/*@modifies keyring, key @*/;
 
 /** \ingroup rpmkeyring
  * Perform keyring lookup for a key matching a signature
@@ -34,21 +43,26 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
  * @param sig		OpenPGP packet container of signature
  * @return		RPMRC_OK if found, RPMRC_NOKEY otherwise
  */
-rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
+rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies sig, fileSystem, internalState @*/;
 
 /** \ingroup rpmkeyring
  * Reference a keyring.
  * @param keyring	keyring handle
  * @return		new keyring reference
  */
-rpmKeyring rpmKeyringLink(rpmKeyring keyring);
+/*@newref@*/
+rpmKeyring rpmKeyringLink(/*@returned@*/ rpmKeyring keyring)
+	/*@modifies keyring @*/;
 
 /** \ingroup rpmkeyring
  * Unreference a keyring.
  * @param keyring	keyring handle
  * @return		NULL always
  */
-rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
+rpmKeyring rpmKeyringUnlink(/*@killref@*/ rpmKeyring keyring)
+	/*@modifies keyring @*/;
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from OpenPGP packet
@@ -56,34 +70,41 @@ rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
  * @param pktlen	Data length
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
+rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
+	/*@*/;
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from ASCII-armored pubkey file
  * @param filename	Path to pubkey file
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyRead(const char *filename);
+rpmPubkey rpmPubkeyRead(const char *filename)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmkeyring
  * Free a pubkey.
  * @param key		Pubkey to free
  * @return		NULL always
  */
-rpmPubkey rpmPubkeyFree(rpmPubkey key);
+rpmPubkey rpmPubkeyFree(/*@killref@*/ rpmPubkey key)
+	/*@modifies key @*/;
 
 /** \ingroup rpmkeyring
  * Reference a pubkey.
  * @param key		Pubkey
  * @return		new pubkey reference
  */
-rpmPubkey rpmPubkeyLink(rpmPubkey key);
+/*@newref@*/
+rpmPubkey rpmPubkeyLink(/*@returned@*/ rpmPubkey key)
+	/*@modifies key @*/;
 
 /** \ingroup rpmkeyring
  * Unreference a pubkey.
  * @param key		Pubkey
  * @return		NULL always
  */
-rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
+rpmPubkey rpmPubkeyUnlink(/*@killref@*/ rpmPubkey key)
+	/*@modifies key @*/;
 
 #endif /* _RPMKEYDB_H */

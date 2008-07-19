@@ -9,6 +9,7 @@
 #include <rpmpgp.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
+#include <rpmkeyring.h>
 #include <rpmlib.h>
 
 #define	_RPMDB_INTERNAL		/* XXX almost opaque sigh */
@@ -692,20 +693,51 @@ rpmts rpmtsFree(rpmts ts)
     return NULL;
 }
 
-void * rpmtsGetKeyring(rpmts ts)
+void * rpmtsGetKeyring(rpmts ts, /*@unused@*/ int autoload)
 {
-    return (ts ? ts->keyring : NULL);
+    rpmKeyring keyring = NULL;
+    if (ts) {
+#ifdef	NOTYET
+	if (ts->keyring == NULL && autoload)
+	    loadKeyring(ts);
+	keyring = rpmKeyringLink(ts->keyring);
+#else
+	keyring = ts->keyring;
+#endif
+    }
+/*@-refcounttrans@*/
+    return (void *)keyring;
+/*@=refcounttrans@*/
 }
 
-int rpmtsSetKeyring(rpmts ts, void * keyring)
+int rpmtsSetKeyring(rpmts ts, void * _keyring)
 {
+    rpmKeyring keyring = _keyring;
+
     if (ts == NULL)
        return -1;
 
+#ifdef	NOTYET
+    /*
+     * Should we permit switching keyring on the fly? For now, require
+     * rpmdb isn't open yet (fairly arbitrary limitation)...
+     */
+    if (rpmtsGetRdb(ts) != NULL)
+	return -1;
+#endif
+
+/*@-modnomods@*/
     ts->keyring = rpmKeyringFree(ts->keyring);
-/*@-assignexpose@*/
-    ts->keyring = keyring;
-/*@=assignexpose@*/
+/*@=modnomods@*/
+
+#ifdef	NOTYET
+    ts->keyring = rpmKeyringLink(keyring);
+#else
+/*@-assignexpose -newreftrans @*/
+/*@i@*/    ts->keyring = keyring;
+/*@=assignexpose =newreftrans @*/
+#endif
+
     return 0;
 }
 

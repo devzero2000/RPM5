@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: filetriggers: rewite w splint annotations. much more todo++ here.
+    - jbj: keyring: (re-)port keyring.[ch] w refcounts.
     - rpm.org: (re-)steal rpmkeyring.[ch] with added refcounts.
     - jbj: python: add rpm.td subtype methods for rpmtd.
     - jbj: rpmtd: expose symbols needed by python rpm.td.

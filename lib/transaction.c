@@ -1800,8 +1800,8 @@ assert(psm != NULL);
 		    ourrc++;
 		    xx = markLinkedFailed(ts, p);
 		} else {
-			if(!rpmteIsSource(fi->te))
-	    			mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
+		    if(!rpmteIsSource(fi->te))
+	    		xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
 		    p->done = 1;
 		}
 
@@ -1830,7 +1830,7 @@ assert(psm != NULL);
 		    ourrc++;
 		} else {
 		    if(!rpmteIsSource(fi->te))
-			mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
+			xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
 		    p->done = 1;
 		}
 	    } else
