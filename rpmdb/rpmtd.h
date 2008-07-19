@@ -1,12 +1,15 @@
 #ifndef _RPMTD_H
 #define _RPMTD_H
 
-#include <rpm/rpmtypes.h>
-#include <rpm/argv.h>
+#include <argv.h>
+#include <rpmtag.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef uint32_t	rpm_count_t;
+
+typedef void *		rpm_data_t;
+typedef const void *	rpm_constdata_t;
+
+typedef /*@abstract@*/ struct rpmtd_s * rpmtd;
 
 typedef enum rpmtdFlags_e {
     RPMTD_NONE		= 0,
@@ -15,6 +18,7 @@ typedef enum rpmtdFlags_e {
     RPMTD_IMMUTABLE	= (1 << 2),	/* header data or modifiable? */
 } rpmtdFlags;
 
+#if defined(_RPMTD_INTERNAL)
 /** \ingroup rpmtd
  * Container for rpm tag data (from headers or extensions).
  * @todo		Make this opaque (at least outside rpm itself)
@@ -27,6 +31,11 @@ struct rpmtd_s {
     rpmtdFlags flags;	/* flags on memory allocation etc */
     int ix;		/* iteration index */
 };
+#endif	/* _RPMTD_INTERNAL */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** \ingroup rpmtd
  * Create new tag data container

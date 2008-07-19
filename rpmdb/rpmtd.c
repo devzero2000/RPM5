@@ -1,10 +1,18 @@
 #include "system.h"
 
-#include <rpm/rpmtd.h>
-#include <rpm/rpmstring.h>
-#include <rpm/rpmpgp.h>
+#define	_RPMTD_INTERNAL
+#include <rpmtd.h>
+#include <rpmpgp.h>
 
 #include "debug.h"
+
+#define RPM_NULL_TYPE		0
+#define RPM_INT8_TYPE		RPM_UINT8_TYPE
+#define RPM_INT16_TYPE		RPM_UINT16_TYPE
+#define RPM_INT32_TYPE		RPM_UINT32_TYPE
+#define RPM_INT64_TYPE		RPM_UINT64_TYPE
+
+#define	rpmTagGetType(_tag)	tagType(_tag)
 
 typedef char * (*headerTagFormatFunction) (rpmtd td, char *formatPrefix);
 
@@ -37,13 +45,14 @@ void rpmtdReset(rpmtd td)
 
 void rpmtdFreeData(rpmtd td)
 {
+    uint32_t i;
     assert(td != NULL);
 
     if (td->flags & RPMTD_ALLOCED) {
 	if (td->flags & RPMTD_PTR_ALLOCED) {
 	    assert(td->data != NULL);
 	    char **data = td->data;
-	    for (int i = 0; i < td->count; i++) {
+	    for (i = 0; i < td->count; i++) {
 		free(data[i]);
 	    }
 	}
@@ -81,7 +90,7 @@ int rpmtdSetIndex(rpmtd td, int index)
 {
     assert(td != NULL);
 
-    if (index < 0 || index >= rpmtdCount(td)) {
+    if (index < 0 || index >= (int)rpmtdCount(td)) {
 	return -1;
     }
     td->ix = index;
@@ -104,7 +113,7 @@ int rpmtdNext(rpmtd td)
     int i = -1;
     
     if (++td->ix >= 0) {
-	if (td->ix < rpmtdCount(td)) {
+	if (td->ix < (int)rpmtdCount(td)) {
 	    i = td->ix;
 	} else {
 	    td->ix = i;
@@ -149,12 +158,13 @@ char * rpmtdGetChar(rpmtd td)
 
     assert(td != NULL);
 
-    if (td->type == RPM_CHAR_TYPE) {
+    if (td->type == RPM_INT8_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	res = (char *) td->data + ix;
     } 
     return res;
 }
+
 uint16_t * rpmtdGetUint16(rpmtd td)
 {
     uint16_t *res = NULL;
@@ -289,7 +299,6 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
      * treated specially otherwise.
      */
     switch (type) {
-    case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
 	if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
 	    return 0;
