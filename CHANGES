@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: steal rpmtd.[ch] modules for porting.
     - rpm.org: steal rpmkeyring/rpmtd modules for porting work.
     - jbj: fix: use the uint64_t callback args, not the legacy compat copies.
     - rpm.org: Adjust for rpmps interface change.
