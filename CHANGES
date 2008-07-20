@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add alternative %{sparcx} macro shorthand (bz #455972).
+    - jbj: rpmio: add new link/unlink methods to loader map.
+    - jbj: python: add rpm.Keyring/rpm.Pubkey subtype methods for rpmkeyring.
+    - jbj: python: convert rpmtd-py to rpm style includes.
     - jbj: filetriggers: rewite w splint annotations. much more todo++ here.
     - jbj: keyring: (re-)port keyring.[ch] w refcounts.
     - rpm.org: (re-)steal rpmkeyring.[ch] with added refcounts.
