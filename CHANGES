@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: QNX: use strtouq() instead of strtoul() in rpmmtree.
+    - jbj: QNX: retrofit asprintf.h (from XAR) for the deprived. rpmmtree uses
+	(rewrite to eliminate asprintf is an alternative).
+    - jbj: QNX: supply missing typedef's for uint32_t.
     - jbj: add alternative %{sparcx} macro shorthand (bz #455972).
     - jbj: rpmio: add new link/unlink methods to loader map.
     - jbj: python: add rpm.Keyring/rpm.Pubkey subtype methods for rpmkeyring.

@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)
 
 EXTRA_DIST = \
-	librpmmisc.vers \
+	librpmmisc.vers asprintf.h \
 	alloca.c	basename.c	err.c		error.c		\
 	fakefork.c	fnmatch.c	getcwd.c	getmntent.c	\
 	getwd.c		glob.c				memcmp.c	\
