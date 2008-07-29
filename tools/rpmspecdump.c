@@ -64,10 +64,6 @@
 
 #define _GNU_SOURCE
 
-// macros from kernel
-#define RPM_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
-#define	RPM_VERSION_CODE RPM_VERSION(RPM_FORMAT_VERSION, RPM_MAJOR_VERSION, RPM_MINOR_VERSION)
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -83,9 +79,6 @@
 
 #include <rpmbuild.h>
 #include <rpmlib.h>
-#if RPM_VERSION_CODE < RPM_VERSION(5,0,0)
-#include <header.h>
-#endif
 #include <rpmts.h>
 
 #define ARG_WITH	1024
@@ -96,11 +89,6 @@
 #define ARG_CHROOT	1029
 #define ARG_UID		1030
 #define ARG_GID		1031
-
-// RPM 4.4.2
-#if RPM_VERSION_CODE < RPM_VERSION(4,4,9)
-#	define RPMFILE_SOURCE RPMBUILD_ISSOURCE
-#endif
 
 static struct option const
 CMDLINE_OPTIONS[] = {
@@ -274,11 +262,7 @@ Spec s;
 	setMacros(args.macros.values, args.macros.cnt);
 
 	rpmts ts = rpmtsCreate();
-#if RPM_VERSION_CODE >= RPM_VERSION(4,4,9)
 	if (parseSpec(ts, args.specfile, NULL, 0, NULL, NULL, 1, 1, 0) != 0) {
-#else
-	if (parseSpec(ts, args.specfile, NULL, NULL, 1, NULL, NULL, 1, 1) != 0) {
-#endif
 		return EXIT_FAILURE;
 	}
   
@@ -287,56 +271,38 @@ Spec s;
 	// here starts the code for builder
 	const char *name = NULL, *version = NULL, *release = NULL;
 
-#if RPM_VERSION_CODE >= RPM_VERSION(4,4,9)
 	initSourceHeader(s, NULL);
-#else
-	initSourceHeader(s);
-#endif
 	Header h = s->sourceHeader;
 
-#if RPM_VERSION_CODE < RPM_VERSION(5,0,0)
-	if (
-		headerGetEntryMinMemory(h, RPMTAG_NAME, NULL, (void *)&name, NULL) == 0 ||
-		headerGetEntryMinMemory(h, RPMTAG_VERSION, NULL, (void *)&version, NULL) == 0 ||
-		headerGetEntryMinMemory(h, RPMTAG_RELEASE, NULL, (void *)&release, NULL) == 0
-		) {
-		fprintf(stderr, "NVR query failed\n");
+	HE_t he;
+	int rc;
+
+	he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	he->tag = (rpmTag) RPMTAG_NAME;
+	rc = headerGet(h, he, 0);
+	if (!rc) {
+		fprintf(stderr, "Name (NVR) query failed\n");
 		return EXIT_FAILURE;
 	}
+	name = (char *)he->p.ptr;
 
-#else
-	{
-		HE_t he;
-		int rc;
-	       
-		he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
-		he->tag = (rpmTag) RPMTAG_NAME;
-		rc = headerGet(h, he, 0);
-		if (!rc) {
-			fprintf(stderr, "Name (NVR) query failed\n");
-			return EXIT_FAILURE;
-		}
-		name = (char *)he->p.ptr;
-
-		he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
-		he->tag = (rpmTag) RPMTAG_VERSION;
-		rc = headerGet(h, he, 0);
-		if (!rc) {
-			fprintf(stderr, "Version (NVR) query failed\n");
-			return EXIT_FAILURE;
-		}
-		version = (char *)he->p.ptr;
-
-		he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
-		he->tag = (rpmTag) RPMTAG_RELEASE;
-		rc = headerGet(h, he, 0);
-		if (!rc) {
-			fprintf(stderr, "Release (NVR) query failed\n");
-			return EXIT_FAILURE;
-		}
-		release = (char *)he->p.ptr;
+	he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	he->tag = (rpmTag) RPMTAG_VERSION;
+	rc = headerGet(h, he, 0);
+	if (!rc) {
+		fprintf(stderr, "Version (NVR) query failed\n");
+		return EXIT_FAILURE;
 	}
-#endif
+	version = (char *)he->p.ptr;
+
+	he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	he->tag = (rpmTag) RPMTAG_RELEASE;
+	rc = headerGet(h, he, 0);
+	if (!rc) {
+		fprintf(stderr, "Release (NVR) query failed\n");
+		return EXIT_FAILURE;
+	}
+	release = (char *)he->p.ptr;
 
 	printf("h PACKAGE_NAME %s\n", name);
 	printf("h PACKAGE_VERSION %s\n", version);
