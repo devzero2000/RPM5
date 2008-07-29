@@ -105,7 +105,10 @@ tagtbl.c: Makefile $(top_srcdir)/rpmdb/rpmtag.h
 if WITH_DB_INTERNAL
 my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h
 else
-my_DB_HEADER = $(srcdir)/db_emu.h
+my_DB_HEADER = $(srcdir)/db.h
+
+$(my_DB_HEADER): $(srcdir)/db_emu.h
+	$(pkgincHEADERS_INSTALL) $(srcdir)/db_emu.h $(srcdir)/db.h
 endif
 
 install-data-local:

@@ -10,11 +10,7 @@
 #include <assert.h>
 #include <rpmlib.h>
 #include <mire.h>
-#if defined(WITH_DB)
-#include "db.h"
-#else
-#include "db_emu.h"
-#endif
+#include <db.h>
 
 /*@-exportlocal@*/
 /*@unchecked@*/
