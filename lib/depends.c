@@ -13,11 +13,7 @@
 #include <envvar.h>
 #include <ugid.h>		/* XXX user()/group() probes */
 
-/* XXX CACHE_DEPENDENCY_RESULT deprecated, functionality being reimplemented */
-#undef	CACHE_DEPENDENCY_RESULT
-#if defined(CACHE_DEPNDENCY_RESULT)
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
-#endif
 #include "rpmdb.h"
 
 #define	_RPMEVR_INTERNAL
