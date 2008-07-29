@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <rpmio.h>
 #include <rpmsw.h>
 
 /**
