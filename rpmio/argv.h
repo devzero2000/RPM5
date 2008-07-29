@@ -5,6 +5,8 @@
  * \file rpmio/argv.h
  */
 
+#include <stdint.h>
+
 typedef	const char * ARGstr_t;
 typedef ARGstr_t * ARGV_t;
 
