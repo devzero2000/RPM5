@@ -40,7 +40,7 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmrepo
+bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmrepo rpmspecdump
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmcmp rpmdeps @WITH_LIBELF_DEBUGEDIT@
@@ -65,6 +65,9 @@ rpmmtree_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmrepo_SOURCES =	rpmrepo.c
 rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
+
+rpmspecdump_SOURCES =	rpmspecdump.c
+rpmspecdump_LDADD =	$(RPM_LDADD_COMMON)
 
 ##
 ## Traditional rpm2cpio
