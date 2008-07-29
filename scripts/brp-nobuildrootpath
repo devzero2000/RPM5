@@ -14,8 +14,8 @@ fi
 #
 for f in `find $RPM_BUILD_ROOT -type f -name \*.pc -o -name \*.la` ; do
     # -c to count the occurances, only proceed if >= 1
-    if [ `grep -c "${RPM_BUILD_ROOT}\/" "$f"` -ge 1 ]; then
-        sed -e "s|${RPM_BUILD_ROOT}/|/|g" "$f" > "$f.out"
+    if [ "`grep -c "${RPM_BUILD_ROOT}\/" "$f"`" -ge 1 ]; then
+        sed -e "s|${RPM_BUILD_ROOT}/|/|g" "$f" > "$f.out" && \
         mv -f "$f.out" "$f"
     fi
 done
