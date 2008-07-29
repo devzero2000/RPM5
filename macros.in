@@ -1115,9 +1115,14 @@ print (t)\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
   export CLASSPATH}\
   unset PERL_MM_OPT || :\
+  LC_ALL=C\
+  export LC_ALL\
   LANG=C\
   export LANG\
   unset DISPLAY || :\
+  unset LINGUAS || :\
+  unset LANGUAGE || :\
+  unset LC_MESSAGES || :\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
