@@ -29,7 +29,6 @@ typedef long long loff_t;
 #endif
 
 #include "rpmio_internal.h"
-#include <rpmlib.h>	/* XXX rpmMkdirPath */
 #include <rpmmacro.h>
 #include "misc.h"
 #include "legacy.h"

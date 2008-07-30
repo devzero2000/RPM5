@@ -12,17 +12,22 @@
 #include <utime.h>
 
 #include <rpmio.h>
-#include "rpmdb.h"
-#include "rpmcli.h"
-#include <pkgio.h>
+#include <rpmcb.h>
 
-#include "rpmts.h"
-#include "rpmte.h"
+#include <rpmtypes.h>
+#include <rpmtag.h>
+#include <rpmevr.h>
+#include <pkgio.h>
+#include "rpmdb.h"
 
 #include "rpmds.h"
 #include "rpmfi.h"
+#include "rpmts.h"
+#include "rpmte.h"
 
 #include "misc.h"
+
+#include "rpmcli.h"
 
 #include "rpmxs.h"
 

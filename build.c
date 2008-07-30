@@ -7,7 +7,10 @@
 #include <rpmio.h>
 #include <rpmcb.h>
 #include <rpmurl.h>
-#include <rpmcli.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
 #include <rpmbuild.h>
 
 #include "rpmps.h"
@@ -15,6 +18,9 @@
 #include "rpmts.h"
 
 #include "build.h"
+
+#include <rpmcli.h>
+
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX compared with NULL @*/

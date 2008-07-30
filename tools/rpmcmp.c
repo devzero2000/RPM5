@@ -1,13 +1,16 @@
 #include "system.h"
 
+#include <popt.h>
 #include <rpmio_internal.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
+#include <argv.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
 #define	_RPMDS_INTERNAL
 #define	_RPMEVR_INTERNAL
 #include <rpmds.h>
-#include <argv.h>
-#include <popt.h>
+
 #include "debug.h"
 
 const char *__progname;
@@ -16,7 +19,7 @@ const char *__progname;
 static int pointRpmEVR(ARGV_t av)
 {
     EVR_t a = memset(alloca(sizeof(*a)), 0, sizeof(*a));
-    EVR_t b = memset(alloca(sizeof(*b)), 0, sizeof(*a));
+    EVR_t b = memset(alloca(sizeof(*b)), 0, sizeof(*b));
     int rc;
 
     (void) rpmEVRparse(av[0], a);

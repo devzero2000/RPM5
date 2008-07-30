@@ -49,8 +49,9 @@ extern int sqlite3_close(sqlite3 * db)
 #include <mire.h>
 #include <poptIO.h>
 
+#include <rpmtypes.h>
 #include <rpmtag.h>
-#include <rpmlib.h>		/* XXX for rpmts typedef */
+#include <pkgio.h>
 #include <rpmts.h>
 
 #include "debug.h"

@@ -9,11 +9,13 @@
 #include <ugid.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>	/* XXX urlGetPath */
+#include <rpmmacro.h>	/* XXX rpmCleanPath */
 
 #define	_RPMAV_INTERNAL	/* XXX avOpendir */
 #include <rpmdav.h>
 
-#include <rpmlib.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #define	_IOSM_INTERNAL
 #define	_RPMFI_INTERNAL
@@ -27,12 +29,22 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar */
-#include "rpmmacro.h"	/* XXX rpmCleanPath */
+#include <rpmcli.h>	/* XXX rpmHeaderFormats */
 
 #include "debug.h"
 
+
 /*@access rpmte @*/
 /*@access FSM_t @*/	/* XXX fsm->repackaged */
+
+/**
+ */
+struct rpmRelocation_s {
+/*@only@*/ /*@null@*/
+    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
+/*@only@*/ /*@null@*/
+    const char * newPath;	/*!< NULL means to omit the file completely! */
+};
 
 /*@unchecked@*/
 int _rpmfi_debug = 0;
@@ -1579,6 +1591,54 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     /*@-compdef -nullstate@*/ /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
     /*@=compdef =nullstate@*/
+}
+
+int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
+		const char * oldPath, const char * newPath)
+{
+    *relp = xrealloc(*relp, sizeof(**relp) * ((*nrelp) + 1));
+    (*relp)[*nrelp].oldPath = (oldPath ? xstrdup(oldPath) : NULL);
+    (*relp)[*nrelp].newPath = (newPath ? xstrdup(newPath) : NULL);
+    (*nrelp)++;
+    return 0;
+}
+
+rpmRelocation rpmfiFreeRelocations(rpmRelocation relocs)
+{
+    if (relocs) {
+	rpmRelocation r;
+        for (r = relocs; (r->oldPath || r->newPath); r++) {
+            r->oldPath = _free(r->oldPath);
+            r->newPath = _free(r->newPath);
+        }
+        relocs = _free(relocs);
+    }
+    return NULL;
+}
+
+rpmRelocation rpmfiDupeRelocations(rpmRelocation relocs, int * nrelocsp)
+{
+    rpmRelocation newr = NULL;
+    int nrelocs = 0;
+
+    if (relocs) {
+	rpmRelocation r;
+	int i;
+
+	for (r = relocs; r->oldPath || r->newPath; r++)
+	    nrelocs++;
+	newr = xmalloc((nrelocs + 1) * sizeof(*relocs));
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
+	    newr[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
+	    newr[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
+	}
+	newr[i].oldPath = NULL;
+	newr[i].newPath = NULL;
+    }
+    if (nrelocsp)
+	*nrelocsp = nrelocs;
+    return newr;
 }
 
 int rpmfiFStat(rpmfi fi, struct stat * st)

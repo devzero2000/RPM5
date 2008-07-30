@@ -8,8 +8,8 @@
 #include <dirent.h>	/* XXX rpmio.h */
 #include <rpmio_internal.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-
-#include <rpmlib.h>	/* XXX _free */
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #include "header-py.h"	/* XXX pyrpmError */
 #include "rpmfd-py.h"

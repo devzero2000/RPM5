@@ -13,10 +13,13 @@
 #include <utime.h>
 
 #include "rpmio.h"
-#include "rpmlog.h"
+#include "rpmcb.h"
 #include "rpmmacro.h"
+#include "rpmtypes.h"
+#include "rpmtag.h"
 #include "rpmdb.h"
-#include "rpmcli.h"
+#include "rpmversion.h"
+#include "rpmrc.h"
 #include "rpmts.h"
 #include "rpmte.h"
 #include "rpmevr.h"
@@ -29,7 +32,7 @@ SV * log_callback_function = NULL;
  * is set for for the logging system.
  * If the callback is set, rpm does not print any message,
  * and let the callback to do it */
-int logcallback(rpmlogRec rec, rpmlogCallbackData data) {
+static int logcallback(rpmlogRec rec, rpmlogCallbackData data) {
     dSP;
     if (log_callback_function) {
         int logcode = rpmlogCode();

@@ -15,7 +15,10 @@
 #include <utime.h>
 
 #include "rpmio.h"
-#include "rpmlib.h"
+#include "rpmcb.h"
+#include "rpmtypes.h"
+#include "rpmtag.h"
+#include "pkgio.h"
 #include "rpmbuild.h"
 #include "rpmconstant.h"
 

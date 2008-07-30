@@ -8,13 +8,20 @@
 #undef Fstat
 
 #include "rpmio.h"
-#include "rpmlib.h"
-#include "rpmcli.h"
+#include "rpmcb.h"
 #include "stringbuf.h"
 #include "rpmmacro.h"
+
+#include "rpmtypes.h"
+#include "rpmtag.h"
+
+#include "rpmfi.h"
+#include "rpmts.h"
+
+#include "rpmcli.h"
+
 #include "rpmspec.h"
 #include "rpmbuild.h"
-#include "rpmts.h"
 
 MODULE = RPM::Spec		PACKAGE = RPM::Spec
 

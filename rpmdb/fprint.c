@@ -6,6 +6,7 @@
 
 #include <rpmio.h>	/* XXX rpmRC codes. */
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
+#include <rpmtag.h>
 #include <rpmdb.h>
 
 #include "fprint.h"

@@ -7,14 +7,21 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
-#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
-#include <rpmcli.h>
+#include "ugid.h"
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
+#include <rpmfi.h>
 
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
 
 #include "legacy.h"	/* XXX dodigest(), uidToUname(), gnameToGid */
-#include "ugid.h"
+
+#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
+#include <rpmcli.h>
+
 #include "debug.h"
 
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
@@ -24,8 +31,20 @@
 /*@unchecked@*/
 extern int _rpmds_unspecified_epoch_noise;
 
-int rpmVerifyFile(const rpmts ts, const rpmfi fi,
-		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+/** \ingroup rpmcli
+ * Verify file attributes (including file digest).
+ * @todo gnorpm and python bindings prevent this from being static.
+ * @param ts		transaction set
+ * @param fi		file info (with linked header and current file index)
+ * @retval *res		bit(s) returned to indicate failure
+ * @param omitMask	bit(s) to disable verify checks
+ * @return		0 on success (or not installed), 1 on error
+ */
+static int rpmVerifyFile(const rpmts ts, const rpmfi fi,
+		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies ts, fi, *res, fileSystem, internalState @*/
+	/*@requires maxSet(res) >= 0 @*/
 {
     unsigned short fmode = rpmfiFMode(fi);
     rpmfileAttrs fileAttrs = rpmfiFFlags(fi);

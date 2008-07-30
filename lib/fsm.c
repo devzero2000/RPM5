@@ -8,7 +8,7 @@
 #include <rpmio_internal.h>	/* XXX urlPath, fdGetCpioPos */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmtag.h>
-#include <rpmlib.h>
+#include <rpmtypes.h>
 
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"

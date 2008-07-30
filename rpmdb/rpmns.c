@@ -5,18 +5,19 @@
 
 #include <rpmio_internal.h>	/* XXX rpmioSlurp */
 #include <rpmmacro.h>
+#include <rpmcb.h>
 
 #define	_RPMPGP_INTERNAL
 #include <rpmpgp.h>
 
-#include <rpmlib.h>		/* XXX RPMRC_OK */
+#include <rpmtypes.h>
+#include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
-
-#include <rpmcb.h>
 #include <rpmdb.h>
+
 #include <rpmps.h>
 #define	_RPMTS_INTERNAL		/* XXX ts->pkpkt, ts->pkpktlen */
 #include <rpmts.h>

@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <argv.h>
+
 #define	_RPMTD_INTERNAL
 #define _RPMTAG_INTERNAL	/* XXX rpmHeaderFormatFuncByValue() */
 #include <rpmtd.h>

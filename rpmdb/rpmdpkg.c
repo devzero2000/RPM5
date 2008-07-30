@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmtag.h>
 
 #define	_RPMEVR_INTERNAL
 #include <rpmdpkg.h>

@@ -11,6 +11,7 @@
 #include <rpmurl.h>
 #include <rpmlua.h>
 #include <rpmtag.h>
+#include <rpmtypes.h>
 #include <rpmlib.h>
 
 #define	_RPMFI_INTERNAL
@@ -32,6 +33,9 @@
 #include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "signature.h"		/* signature constants */
+
+#include <rpmcli.h>
+
 #include "debug.h"
 
 #define	_PSM_DEBUG	0
@@ -50,53 +54,6 @@ int _psm_threads = 0;
 /*@access rpmts @*/	/* XXX ts->notify */
 
 /*@access rpmluav @*/
-
-int rpmVersionCompare(Header first, Header second)
-{
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char * one, * two;
-    uint32_t Eone, Etwo;
-    int rc;
-    int xx;
-
-    he->tag = RPMTAG_EPOCH;
-    xx = headerGet(first, he, 0);
-    Eone = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
-    he->p.ptr = _free(he->p.ptr);
-    he->tag = RPMTAG_EPOCH;
-    xx = headerGet(second, he, 0);
-    Etwo = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
-    he->p.ptr = _free(he->p.ptr);
-
-    if (Eone < Etwo)
-	return -1;
-    else if (Eone > Etwo)
-	return 1;
-
-    he->tag = RPMTAG_VERSION;
-    xx = headerGet(first, he, 0);
-    one = he->p.str;
-    he->tag = RPMTAG_VERSION;
-    xx = headerGet(second, he, 0);
-    two = he->p.str;
-    rc = rpmvercmp(one, two);
-    one = _free(one);
-    two = _free(two);
-    if (rc)
-	return rc;
-
-    he->tag = RPMTAG_RELEASE;
-    xx = headerGet(first, he, 0);
-    one = he->p.str;
-    he->tag = RPMTAG_RELEASE;
-    xx = headerGet(second, he, 0);
-    two = he->p.str;
-    rc = rpmvercmp(one, two);
-    one = _free(one);
-    two = _free(two);
-
-    return rc;
-}
 
 /**
  * Mark files in database shared with this package as "replaced".

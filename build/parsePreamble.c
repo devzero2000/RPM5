@@ -8,6 +8,7 @@
 #include <rpmio.h>
 #include <rpmcb.h>
 #include <rpmurl.h>
+#include <argv.h>
 
 #define	_RPMEVR_INTERNAL
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */

@@ -8,7 +8,7 @@
  */
 
 #include <assert.h>
-#include <rpmlib.h>
+#include <rpmtypes.h>
 #include <mire.h>
 #if defined(_RPMDB_INTERNAL)
 #if defined(WITH_DB)

@@ -8,11 +8,17 @@
 #include <rpmcb.h>
 
 #define	_RPMPS_INTERNAL	/* XXX almost (but not quite) opaque. */
-#include <rpmcli.h>
 #include <rpmpgp.h>
-#include <rpmdb.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
 #include <pkgio.h>		/* XXX headerCheck() */
+#include <rpmdb.h>
+
 #include <rpmbuild.h>
+
+#include <rpmlib.h>	/* XXX rpmReadPackageFile */
+#include <rpmcli.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */

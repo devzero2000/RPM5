@@ -6,20 +6,22 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
-#define	_RPMTE_INTERNAL
-#define	_RPMTS_INTERNAL
-#include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
-
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 #include <envvar.h>
 #include <ugid.h>		/* XXX user()/group() probes */
 
+#include <rpmtag.h>
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
-#include "rpmdb.h"
+#include <rpmdb.h>
+
+#define	_RPMTE_INTERNAL
+#include <rpmte.h>
+#define	_RPMTS_INTERNAL
+#include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #define	_RPMEVR_INTERNAL
-#include "rpmds.h"
-#include "rpmfi.h"
+#include <rpmds.h>
+#include <rpmfi.h>
 
 #include "debug.h"
 

@@ -6,9 +6,9 @@
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmlog.h>
-#include <rpmlib.h>
 #include <rpmmacro.h>
 
+#include <rpmtypes.h>
 #include "stringbuf.h"
 #include "manifest.h"
 #include "debug.h"

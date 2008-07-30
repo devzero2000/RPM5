@@ -19,21 +19,29 @@ extern const char *__progname;
 
 #include <rpmio.h>
 #include <poptIO.h>
-#include <rpmcli.h>
-#include <rpmbuild.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+#include "rpmdb.h"
+
+#if defined(IAM_RPMBT) || defined(IAM_RPMK)
+#include "signature.h"
+#endif
 
 #if defined(RPM_VENDOR_OPENPKG) /* integrity-checking */
-#include "rpmns.h"
 #define _RPMLUA_INTERNAL
 #include "rpmlua.h"
 #include "rpmluaext.h"
+#include "rpmns.h"
 #endif
 
-#include "rpmdb.h"
+#include "rpmversion.h"
 #include "rpmps.h"
 #include "rpmts.h"
 
 #include "fs.h"		/* XXX for rpmFreeFilesystems() */
+
+#include <rpmbuild.h>
 
 #ifdef	IAM_RPMBT
 #include "build.h"
@@ -41,9 +49,7 @@ extern const char *__progname;
 #define GETOPT_RECOMPILE	1004
 #endif
 
-#if defined(IAM_RPMBT) || defined(IAM_RPMK)
-#include "signature.h"
-#endif
+#include <rpmcli.h>
 
 #include "debug.h"
 
@@ -408,7 +414,7 @@ int main(int argc, const char ** argv)
     int status;
     int p[2];
 #ifdef	IAM_RPMEIU
-    int i;
+    int xx;
 #endif
 	
 #if !defined(__GLIBC__) && !defined(__LCLINT__)
@@ -924,16 +930,13 @@ ia->rbRun = rpmcliInstallRun;
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
 	if (ia->qva_prefix) {
-	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
-	    ia->relocations[0].oldPath = NULL;   /* special case magic */
-	    ia->relocations[0].newPath = ia->qva_prefix;
-	    ia->relocations[1].oldPath = NULL;
-	    ia->relocations[1].newPath = NULL;
+	    xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			NULL, ia->qva_prefix);
+	    xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			NULL, NULL);
 	} else if (ia->relocations) {
-	    ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-	    ia->relocations[ia->numRelocations].oldPath = NULL;
-	    ia->relocations[ia->numRelocations].newPath = NULL;
+	    xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			NULL, NULL);
 	}
 	/*@=branchstate@*/
 
@@ -1048,10 +1051,7 @@ exit:
 #endif
 
 #ifdef	IAM_RPMEIU
-    if (ia->relocations != NULL)
-    for (i = 0; i < ia->numRelocations; i++)
-	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
-    ia->relocations = _free(ia->relocations);
+    ia->relocations = rpmfiFreeRelocations(ia->relocations);
 #endif
 
     optCon = rpmcliFini(optCon);

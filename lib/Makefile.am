@@ -37,7 +37,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	fs.h misc.h rpmcli.h rpmlib.h rpmversion.h \
 	rpmal.h rpmds.h rpmfc.h rpmfi.h rpmgi.h \
-	rpmps.h rpmsx.h rpmte.h rpmts.h rpm4compat.h
+	rpmps.h rpmrc.h rpmsx.h rpmte.h rpmts.h rpm4compat.h
 noinst_HEADERS = \
 	filetriggers.h fsm.h manifest.h psm.h rpmlock.h rpmluaext.h
 

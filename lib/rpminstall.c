@@ -6,20 +6,25 @@
 
 #include <rpmio.h>
 #include <poptIO.h>
-#include <rpmtag.h>
-#define	_RPMTS_INTERNAL		/* XXX ts->suggests */
-#include <rpmcli.h>
 
+#include <rpmtag.h>
+#include <rpmevr.h>
 #include "rpmdb.h"
 #ifdef	NOTYET
 #include "rpmds.h"		/* XXX ts->suggests, +foo -foo =foo args */
 #endif
 
 #include "rpmte.h"		/* XXX rpmtsPrint() */
+#define	_RPMTS_INTERNAL		/* XXX ts->suggests */
+#include <rpmts.h>
 
 #include "manifest.h"
 #define	_RPMGI_INTERNAL		/* XXX "+bing" args need gi->h. */
 #include "rpmgi.h"
+
+#include <rpmlib.h>
+#include <rpmcli.h>
+
 #include "debug.h"
 
 /*@access FD_t @*/	/* XXX void * arg */
@@ -472,6 +477,15 @@ exit:
 
     return fn;
 }
+
+/** @todo Add rpmfi methods to make rpmRelocation opaque.
+ */
+struct rpmRelocation_s {
+/*@only@*/ /*@null@*/
+    const char * oldPath;       /*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
+/*@only@*/ /*@null@*/
+    const char * newPath;       /*!< NULL means to omit the file completely! */
+};
 
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)

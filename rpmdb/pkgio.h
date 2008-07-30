@@ -31,6 +31,20 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc,
 	/*@modifies dig, *msg, fileSystem, internalState @*/;
 
 /**
+ * Return package header from file handle, verifying digests/signatures.
+ * @param ts		transaction set
+ * @param _fd		file handle
+ * @param fn		file name
+ * @retval hdrp		address of header (or NULL)
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmReadPackageFile(rpmts ts, void * _fd,
+		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, *_fd, *hdrp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/**
  * Return size of item in bytes.
  * @param fn		item name
  * @param ptr		item buffer

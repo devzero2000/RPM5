@@ -6,11 +6,14 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
+
+#define	_RPMTE_INTERNAL	/* XXX rpmteAddedKey */
 #include "rpmte-py.h"
 
 #include "debug.h"

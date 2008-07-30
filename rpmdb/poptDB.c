@@ -7,8 +7,11 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmfi.h>
+#include <rpmts.h>
 #include <rpmcli.h>
-
 
 #include "debug.h"
 

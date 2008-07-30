@@ -6,7 +6,8 @@
 
 #include <rpmio.h>		/* XXX rpmRC returns */
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #include "rpmal-py.h"
 #include "rpmds-py.h"

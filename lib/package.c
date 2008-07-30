@@ -8,13 +8,13 @@
 
 #include <rpmio_internal.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
+
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <pkgio.h>
+#include "signature.h"		/* XXX rpmVerifySignature */
 
 #include "rpmts.h"
-
-#include <pkgio.h>
-
-#include "signature.h"		/* XXX rpmVerifySignature */
 
 #include "debug.h"
 

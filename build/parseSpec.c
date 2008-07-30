@@ -7,6 +7,8 @@
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
+#include <argv.h>
+
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
 #include <rpmbuild.h>
 #include "rpmds.h"

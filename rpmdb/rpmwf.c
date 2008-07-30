@@ -2,7 +2,7 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmlib.h>
+#include <rpmtypes.h>
 
 #include <rpmxar.h>
 #define	_RPMWF_INTERNAL

@@ -81,14 +81,15 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
-#include <rpmlib.h>
+#include <argv.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #define	_RPMDS_INTERNAL
 #define	_RPMEVR_INTERNAL
 #define	_RPMPRCO_INTERNAL
 #include <rpmds.h>
-
-#include <argv.h>
 
 #include "debug.h"
 

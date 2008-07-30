@@ -8,7 +8,11 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
+#include <argv.h>
 #include <rpmmacro.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #include "rpmdebug-py.c"
 #include "rpmmacro-py.h"

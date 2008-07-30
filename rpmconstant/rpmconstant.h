@@ -20,16 +20,19 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmpgp.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
 #include <rpmdb.h>
+
 #include <rpmts.h>
 #include <rpmte.h>
 #include <rpmps.h>
 #include <rpmds.h>
 #include <rpmfi.h>
-#include <rpmpgp.h>
 #include <misc.h>
 #include <rpmbuild.h>
-#include <rpmlib.h>
 
 /**
  * A constant pair name/value

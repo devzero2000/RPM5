@@ -7,6 +7,8 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
+
+#include <rpmtag.h>
 #include <rpmcli.h>
 
 #include "debug.h"
@@ -57,6 +59,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	/*@modifies rpmIArgs, stderr, fileSystem @*/
 {
     QVA_t ia = &rpmIArgs;
+    int xx;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -69,13 +72,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
     case POPT_EXCLUDEPATH:
 	if (arg == NULL || *arg != '/') 
 	    argerror(_("exclude paths must begin with a /"));
-	ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-/*@-temptrans@*/
-	ia->relocations[ia->numRelocations].oldPath = xstrdup(arg);
-/*@=temptrans@*/
-	ia->relocations[ia->numRelocations].newPath = NULL;
-	ia->numRelocations++;
+	xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations, arg, NULL);
 	break;
     case POPT_RELOCATE:
       { char * oldPath = NULL;
@@ -91,15 +88,9 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	*newPath++ = '\0';
 	if (*newPath != '/') 
 	    argerror(_("relocations must have a / following the ="));
-	ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-/*@-temptrans@*/
-	ia->relocations[ia->numRelocations].oldPath = oldPath;
-/*@=temptrans@*/
-/*@-kepttrans -usereleased @*/
-	ia->relocations[ia->numRelocations].newPath = newPath;
-/*@=kepttrans =usereleased @*/
-	ia->numRelocations++;
+	xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			oldPath, newPath);
+	oldPath = _free(oldPath);
       }	break;
 
     case POPT_ROLLBACK_EXCLUDE:

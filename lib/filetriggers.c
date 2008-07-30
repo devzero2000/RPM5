@@ -6,8 +6,8 @@
 #define	_MIRE_INTERNAL
 #include <mire.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
-
-#include <rpmlib.h>
+#include <rpmtag.h>
+#include <rpmtypes.h>
 #include <rpmfi.h>
 
 #include "filetriggers.h" /* mayAddToFilesAwaitingFiletriggers rpmRunFileTriggers */

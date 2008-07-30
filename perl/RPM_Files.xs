@@ -13,7 +13,8 @@ void * vmefail(size_t size);
 #define xstrdup(_str)   (strcpy((malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
 
 #include "rpmio_internal.h"
-#include "rpmlib.h"
+#include "rpmtypes.h"
+#include "rpmtag.h"
 #include "rpmfi.h"
 
 MODULE = RPM::Files		PACKAGE = RPM::Files

@@ -11,11 +11,20 @@ const char *__progname;
 #include <mire.h>
 #include <poptIO.h>
 
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmrc.h>
+#include <rpmversion.h>
 #include <rpmcli.h>
-#include <fs.h>			/* XXX rpmFreeFilesystems() */
+
 #include <rpmns.h>		/* XXX rpmnsClean() */
 
+#include <fs.h>			/* XXX rpmFreeFilesystems() */
+
 #include "debug.h"
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+extern unsigned int * keyids;
 
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998

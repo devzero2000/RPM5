@@ -6,8 +6,9 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmtypes.h>
+#include <rpmtag.h>
 #include <rpmdb.h>
-#include <rpmlib.h>
 
 #include "rpmmi-py.h"
 #include "header-py.h"

@@ -5,7 +5,6 @@
  * \file lib/rpmte.h
  * Structures used for an "rpmte" transaction element.
  */
-#include <argv.h>
 #include <rpmfi.h>
 
 /**
@@ -34,6 +33,9 @@ typedef enum rpmElementType_e {
 } rpmElementType;
 
 #if	defined(_RPMTE_INTERNAL)
+#include <argv.h>
+#include <rpmal.h>
+
 /** \ingroup rpmte
  * Dependncy ordering information.
  */
@@ -186,6 +188,7 @@ struct rpmtsi_s {
 extern "C" {
 #endif
 
+#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  * Destroy a transaction element.
  * @param te		transaction element
@@ -215,6 +218,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#endif	/* _RPMTE_INTERNAL */
 
 /** \ingroup rpmte
  * Retrieve header from transaction element.
@@ -496,6 +500,7 @@ void rpmteNewTSI(rpmte te)
 void rpmteCleanDS(rpmte te)
 	/*@modifies te @*/;
 
+#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  * Retrieve pkgKey of TR_ADDED transaction element.
  * @param te		transaction element
@@ -515,6 +520,7 @@ alKey rpmteAddedKey(rpmte te)
 alKey rpmteSetAddedKey(rpmte te,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey npkgKey)
 	/*@modifies te @*/;
+#endif	/* _RPMTE_INTERNAL */
 
 /** \ingroup rpmte
  * Retrieve rpmdb instance of TR_REMOVED transaction element.
@@ -699,8 +705,8 @@ rpmtsi XrpmtsiInit(rpmts ts,
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
         /*@modifies tsi @*/;
 
+#if	defined(DYING)
 #if !defined(SWIG)
-#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  */
 static inline void rpmtePrintID(rpmte p)

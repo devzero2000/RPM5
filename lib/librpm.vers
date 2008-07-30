@@ -136,6 +136,7 @@ LIBRPM_0
     rpmfcGenerateDepends;
     rpmfcNew;
     rpmfcPrint;
+    rpmfiAddRelocation;
     rpmfiBN;
     rpmfiBuildFClasses;
     rpmfiBuildFContexts;
@@ -167,6 +168,7 @@ LIBRPM_0
     rpmfiFNlink;
     rpmfiFRdev;
     rpmfiFree;
+    rpmfiFreeRelocations;
     rpmfiFSize;
     rpmfiFState;
     rpmfiSetFState;
@@ -388,11 +390,9 @@ LIBRPM_0
     rpmtsUpdateDSI;
     rpmtsVerifyDB;
     rpmtsVSFlags;
-    rpmVerifyFile;
     rpmVerifyPoptTable;
     rpmVerifySignatures;
     RPMVERSION;
-    rpmVersionCompare;
     showQueryPackage;
     showVerifyPackage;
     specedit;

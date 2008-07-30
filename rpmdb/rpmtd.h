@@ -1,7 +1,6 @@
 #ifndef _RPMTD_H
 #define _RPMTD_H
 
-#include <argv.h>
 #include <rpmtag.h>
 
 typedef uint32_t	rpm_count_t;

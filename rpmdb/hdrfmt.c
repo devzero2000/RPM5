@@ -50,7 +50,8 @@ extern char *nl_langinfo (nl_item __item)
 #include <rpmns.h>
 #include <rpmdb.h>
 
-#include <rpmlib.h>	/* XXX rpmfi, rpmMkdirPath */
+#include <rpmtypes.h>	/* XXX rpmfi */
+#include "misc.h"	/* XXX rpmMkdirPath */
 #include <rpmfi.h>	/* XXX RPMFILE_FOO */
 
 #include "legacy.h"

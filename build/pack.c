@@ -7,19 +7,25 @@
 
 #include <rpmio_internal.h>	/* XXX fdGetFp, fdInitDigest, fdFiniDigest */
 #include <rpmcb.h>
+#include <argv.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
+#include <pkgio.h>
+#include "signature.h"		/* XXX rpmTempFile */
+
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_ANY */
 #define _RPMTAG_INTERNAL
 #include <rpmbuild.h>
-#include "signature.h"		/* XXX rpmTempFile */
 
 #include "rpmfi.h"
 #include "fsm.h"
 
+#include <rpmversion.h>
 #include "buildio.h"
 
-#include "signature.h"
-#include <pkgio.h>
 #include "debug.h"
 
 /*@access rpmts @*/

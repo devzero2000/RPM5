@@ -10,7 +10,7 @@
 
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
-#include <rpmlib.h>
+#include <rpmtypes.h>
 
 #define	_RPMEVR_INTERNAL
 #include <rpmds.h>

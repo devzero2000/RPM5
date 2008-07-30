@@ -5,12 +5,15 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>
 #include <rpmpgp.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 #include <rpmkeyring.h>
-#include <rpmlib.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+#include <pkgio.h>
 
 #define	_RPMDB_INTERNAL		/* XXX almost opaque sigh */
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */
@@ -26,6 +29,8 @@
 
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
+
+#include <rpmcli.h>
 
 #include "fs.h"
 

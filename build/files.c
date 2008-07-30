@@ -17,14 +17,16 @@
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
 #include <fts.h>
+#include "argv.h"
 
 #include "iosm.h"
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
 #define	_RPMFI_INTERNAL
-#define	_RPMTE_INTERNAL
 #include <rpmbuild.h>
 
-#include "argv.h"
+#define	_RPMTE_INTERNAL
+#include <rpmte.h>
+
 #include "rpmfc.h"
 
 #include "buildio.h"

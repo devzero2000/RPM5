@@ -166,6 +166,17 @@ extern int (*rpmvercmp)(const char *a, const char *b)
 rpmsenseFlags rpmEVRflags(/*@null@*/const char *op, /*@null@*/const char **end)
 	/*@modifies *end @*/;
 
+/**
+ * Compare headers to determine which header is "newer".
+ * @deprecated Use rpmdsCompare instead.
+ * @todo	Eliminate in rpm-5.1.
+ * @param first		1st header
+ * @param second	2nd header
+ * @return		result of comparison
+ */
+int rpmVersionCompare(Header first, Header second)
+	/*@*/;
+
 #ifdef __cplusplus
 }
 #endif

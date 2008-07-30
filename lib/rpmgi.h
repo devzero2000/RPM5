@@ -5,12 +5,12 @@
  * \file lib/rpmgi.h
  */
 
-#include <rpmlib.h>
+#include <fts.h>
+#include <argv.h>
+#include <rpmtypes.h>
 #include <rpmds.h>
 #include <rpmte.h>
 #include <rpmts.h>
-#include <fts.h>
-#include <argv.h>
 
 /**
  */

@@ -160,6 +160,7 @@ LIBRPMDB_0
     rpmtsPubkey;
     _rpmvercmp;
     rpmvercmp;
+    rpmVersionCompare;
     _rpmwf_debug;
     rdRPM;
     rdXAR;

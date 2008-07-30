@@ -9,19 +9,22 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 #include "fprint.h"
 
+#include <rpmtypes.h>
+#include <rpmtag.h>
+#include <pkgio.h>
+
 #define	_RPMDB_INTERNAL	/* XXX for dbiIndexFoo() */
 #include <rpmdb.h>
-#include <rpmtag.h>
 #include "legacy.h"	/* XXX dodigest */
 
-#include <rpmlib.h>
 #define	_RPMFI_INTERNAL
 #include <rpmfi.h>
 #include "fsm.h"
 
-#define	_RPMTS_INTERNAL
 #define	_RPMTE_INTERNAL
-#include "rpmcli.h"	/* IDTX prototypes */
+#include "rpmte.h"
+#define	_RPMTS_INTERNAL
+#include "rpmts.h"
 
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
@@ -33,6 +36,8 @@
 #include "misc.h" /* XXX (free)splitString, currentDirectory */
 
 #include "filetriggers.h" /* XXX mayAddToFilesAwaitingFiletriggers, rpmRunFileTriggers */
+
+#include "rpmcli.h"	/* IDTX prototypes */
 
 #include "debug.h"
 

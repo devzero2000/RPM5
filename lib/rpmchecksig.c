@@ -9,19 +9,21 @@
 #include <poptIO.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
 #include <rpmtag.h>
-#include <rpmcli.h>
+#include <rpmtypes.h>
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
 #include <rpmevr.h>
+#include <rpmdb.h>
+#include <rpmxar.h>
+#include <pkgio.h>
+#include "signature.h"
 
 #include <rpmts.h>
 
-#include "rpmdb.h"
 #include "rpmgi.h"
 
-#include <rpmxar.h>
-#include <pkgio.h>
+#include <rpmversion.h>
+#include <rpmcli.h>
 
-#include "signature.h"
 #include "debug.h"
 
 /*@access FD_t @*/		/* XXX stealing digests */

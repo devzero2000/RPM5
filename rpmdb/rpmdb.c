@@ -16,6 +16,8 @@
 #include <rpmmacro.h>
 #include <rpmsq.h>
 
+#include <rpmtypes.h>
+
 #define	_RPMTAG_INTERNAL
 #include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 

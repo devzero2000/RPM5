@@ -5,12 +5,24 @@
  * \file lib/rpmcli.h
  */
 
-#include "popt.h"
-#include "rpmmacro.h"
-#include "rpmlib.h"
+#include <rpmtypes.h>
+
+#include <popt.h>
+#include <rpmmacro.h>
+#include <rpmtypes.h>
 #include "rpmps.h"
-#include "rpmte.h"
-#include "rpmts.h"
+#include "rpmrc.h"
+#include "rpmfi.h"	/* XXX rpmfileAttrs */
+#include "rpmts.h"	/* XXX rpmdepFlags */
+
+/**
+ * Table of query format extensions.
+ * @note Chains *headerCompoundFormats -> *headerDefaultFormats.
+ */
+/*@-redecl@*/
+/*@unchecked@*/
+extern headerSprintfExtension rpmHeaderFormats;
+/*@=redecl@*/
 
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
@@ -352,23 +364,6 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
- * Verify file attributes (including file digest).
- * @todo gnorpm and python bindings prevent this from being static.
- * @param ts		transaction set
- * @param fi		file info (with linked header and current file index)
- * @retval *res		bit(s) returned to indicate failure
- * @param omitMask	bit(s) to disable verify checks
- * @return		0 on success (or not installed), 1 on error
- */
-/*@-incondefs@*/
-int rpmVerifyFile(const rpmts ts, rpmfi fi,
-		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, *res, fileSystem, internalState @*/
-	/*@requires maxSet(res) >= 0 @*/;
-/*@=incondefs@*/
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -796,12 +791,12 @@ struct rpmQVKArguments_s {
     uint32_t rbtid;		/*!< from --rollback */
     uint32_t *rbtidExcludes;	/*!< from --rollback */
     int numrbtidExcludes;	/*!< from --rollback */
-    int numRelocations;
     int noDeps;
     int incldocs;
     int no_rollback_links;
 /*@owned@*/ /*@null@*/
     rpmRelocation relocations;
+    int nrelocations;
 
     /* database mode arguments */
     int init;			/*!< from --initdb */

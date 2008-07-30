@@ -13,6 +13,19 @@
 extern int _rpmal_debug;
 /*@=exportlocal@*/
 
+/** \ingroup rpmts
+ * An added/available package retrieval key.
+ */
+typedef /*@abstract@*/ void * alKey;
+#define	RPMAL_NOMATCH	((alKey)-1L)
+
+/** \ingroup rpmts
+ * An added/available package retrieval index.
+ */
+/*@-mutrep@*/
+typedef /*@abstract@*/ int alNum;
+/*@=mutrep@*/
+
 /**
  */
 typedef /*@abstract@*/ struct rpmal_s *		rpmal;

@@ -7,8 +7,9 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmtypes.h>
+#include <rpmtag.h>
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator */
-#include <rpmlib.h>
 
 #include "rpmdebug-py.c"
 

@@ -10,12 +10,14 @@
 #include "legacy.h"
 #define	_RPMTAG_INTERNAL
 #include "header_internal.h"	/* XXX HEADERFLAG_ALLOCATED */
-#include "rpmcli.h"	/* XXX for rpmCheckSig */
+#include "rpmtypes.h"
+#define	_RPMEVR_INTERNAL
+#include "rpmevr.h"
 #include "pkgio.h"		/* XXX rpmpkgRead */
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
-#define	_RPMEVR_INTERNAL
-#include "rpmevr.h"
+
+#include "rpmcli.h"
 
 #include "header-py.h"
 #include "rpmds-py.h"

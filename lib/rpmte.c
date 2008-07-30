@@ -6,7 +6,9 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -36,15 +38,8 @@ static void delTE(rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
-    rpmRelocation r;
 
-    if (p->relocs) {
-	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-	    r->oldPath = _free(r->oldPath);
-	    r->newPath = _free(r->newPath);
-	}
-	p->relocs = _free(p->relocs);
-    }
+    p->relocs = rpmfiFreeRelocations(p->relocs);
 
     rpmteCleanDS(p);
 
@@ -170,23 +165,7 @@ assert(he->p.str != NULL);
 
     p->installed = 0;
 
-    p->nrelocs = 0;
-    p->relocs = NULL;
-    if (relocs != NULL) {
-	rpmRelocation r;
-	int i;
-
-	for (r = relocs; r->oldPath || r->newPath; r++)
-	    p->nrelocs++;
-	p->relocs = xmalloc((p->nrelocs + 1) * sizeof(*p->relocs));
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
-	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
-	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
-	}
-	p->relocs[i].oldPath = NULL;
-	p->relocs[i].newPath = NULL;
-    }
+    p->relocs = rpmfiDupeRelocations(relocs, &p->nrelocs);
     p->autorelocatex = -1;
 
     p->key = key;

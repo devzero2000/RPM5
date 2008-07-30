@@ -7,7 +7,10 @@
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmExpand */
-#include <rpmlib.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
+#include <rpmdb.h>
+
 #include <rpmte.h>		/* XXX rpmElementType */
 #include <pkgio.h>		/* XXX rpmElementType */
 
@@ -15,8 +18,9 @@
 #define	_RPMTS_INTERNAL		/* XXX ts->probs et al */
 #include <rpmgi.h>
 
-#include <rpmdb.h>
 #include "manifest.h"
+
+#include <rpmlib.h>
 
 #include "debug.h"
 

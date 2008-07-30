@@ -4,8 +4,9 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmlib.h>
 #include <rpmmacro.h>	/* for rpmGetPath() */
+
+#include <rpmtypes.h>
 
 #define	_RPMSX_INTERNAL
 #include "rpmsx.h"

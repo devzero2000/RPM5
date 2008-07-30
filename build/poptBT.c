@@ -7,10 +7,16 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
-#include <rpmcli.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
 #include <rpmbuild.h>
 
 #include "build.h"
+
+#include <rpmcli.h>
+
 #include "debug.h"
 
 /*@unchecked@*/

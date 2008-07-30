@@ -3,7 +3,8 @@
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
-#include <rpmlib.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
 
 #include "rpmts.h"
 #include "rpmlock.h"

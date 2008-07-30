@@ -6,7 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
+#include <rpmtypes.h>
 
 #define	_RPMPS_INTERNAL
 #include "rpmps.h"

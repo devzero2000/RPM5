@@ -12,11 +12,17 @@
 #include <utime.h>
 
 #include "rpmio.h"
-#include "rpmcli.h"
+#include "rpmcb.h"
+
+#include "rpmtypes.h"
+#include "rpmtag.h"
+#include "rpmdb.h"
+
 #include "rpmts.h"
 #include "rpmte.h"
-#include "rpmdb.h"
 #include "misc.h"
+
+#include "rpmcli.h"
 
 
 /* Chip, this is somewhat stripped down from the default callback used by
@@ -125,7 +131,7 @@ static void * _null_callback(
 	return rc;	
 }
 
-void *
+static void *
     transCallback(const void *h,
        const rpmCallbackType what,
        const unsigned long long amount,

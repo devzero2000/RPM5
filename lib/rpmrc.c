@@ -15,8 +15,13 @@
 #include <rpmlua.h>
 #include <rpmluaext.h>
 #include <rpmmacro.h>
-#include <rpmcli.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
 #include <rpmds.h>
+
+#include <rpmcli.h>
 
 #include "debug.h"
 

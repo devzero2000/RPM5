@@ -10,8 +10,10 @@
 #include "rpmio.h"
 #include "rpmcb.h"		/* XXX fnpyKey */
 
+#include "rpmtypes.h"
+#include "rpmtag.h"
+
 #define _RPMEVR_INTERNAL
-#include "rpmlib.h"
 #include "rpmds.h"
 #include "rpmevr.h"
 
