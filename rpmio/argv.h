@@ -5,20 +5,11 @@
  * \file rpmio/argv.h
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#if defined(HAVE_STDINT_H) || (defined(__STDC_VERSION__) && __STDC_VERSION__+0 >= 199901L)
-#include <stdint.h>
-#endif
-#if defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#endif
-
 typedef	const char * ARGstr_t;
 typedef ARGstr_t * ARGV_t;
 
-typedef	uint32_t * ARGint_t;
+typedef	unsigned int * ARGint_t;
+
 struct ARGI_s {
     unsigned nvals;
     ARGint_t vals;
