@@ -2,18 +2,23 @@
  * \file python/rpmkeyring-py.c
  */
 
-#include <rpm/rpmkeyring.h>
+#include "system.h"
+
+#include <rpmio.h>
+#include <rpmpgp.h>
 
 #include "rpmkeyring-py.h"
-#include "rpmdebug-py.h"
+
+#include "debug.h"
 
 /** \ingroup python
  * \class RpmKeyring
- *
  */
+
 /** \ingroup py_c
  */
 static void rpmPubkey_dealloc(rpmPubkeyObject * self)
+	/*@*/
 {
     if (self) {
 	self->pubkey = rpmPubkeyFree(self->pubkey);
@@ -23,6 +28,7 @@ static void rpmPubkey_dealloc(rpmPubkeyObject * self)
 
 static PyObject *rpmPubkey_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
+	/*@*/
 {
     PyObject *arg;
     char *kwlist[] = { "keypath", NULL };
@@ -49,15 +55,18 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
 }
 
 
+/*@unchecked@*/
 static struct PyMethodDef rpmPubkey_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
+/*@unchecked@*/
 static char rpmPubkey_doc[] = "";
 
 /** \ingroup py_c
  */
 static void rpmKeyring_dealloc(rpmKeyringObject * self)
+	/*@*/
 {
     if (self) {
 	rpmKeyringFree(self->keyring);
@@ -67,6 +76,7 @@ static void rpmKeyring_dealloc(rpmKeyringObject * self)
 
 static PyObject *rpmKeyring_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
+	/*@*/
 {
     rpmKeyringObject *self = PyObject_New(rpmKeyringObject, subtype);
     rpmKeyring keyring;
@@ -79,6 +89,7 @@ static PyObject *rpmKeyring_new(PyTypeObject *subtype,
 
 static PyObject *rpmKeyring_addKey(rpmKeyringObject *self, 
 				   PyObject *args, PyObject *kwds)
+	/*@*/
 {
     int rc = -1;
     rpmPubkeyObject *pubkey;
@@ -99,6 +110,7 @@ static PyObject *rpmKeyring_addKey(rpmKeyringObject *self,
 
 /** \ingroup py_c
  */
+/*@unchecked@*/
 static struct PyMethodDef rpmKeyring_methods[] = {
     { "addKey", (PyCFunction) rpmKeyring_addKey, METH_VARARGS|METH_KEYWORDS,
         NULL },
@@ -107,9 +119,11 @@ static struct PyMethodDef rpmKeyring_methods[] = {
 };
 /**
  */
+/*@unchecked@*/
 static char rpmKeyring_doc[] =
 "";
 
+/*@unchecked@*/
 PyTypeObject rpmPubkey_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -156,6 +170,7 @@ PyTypeObject rpmPubkey_Type = {
 
 /** \ingroup py_c
  */
+/*@unchecked@*/
 PyTypeObject rpmKeyring_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -211,4 +226,3 @@ rpmKeyringObject * rpmKeyring_Wrap(rpmKeyring keyring)
     }
     return ko;
 }
-
