@@ -303,11 +303,15 @@ LIBRPMIO_0
     rpmKeyringAddKey;
     rpmKeyringFindKeyid;
     rpmKeyringFree;
+    rpmKeyringLink;
     rpmKeyringLookup;
     rpmKeyringNew;
+    rpmKeyringUnlink;
     rpmPubkeyFree;
+    rpmPubkeyLink;
     rpmPubkeyNew;
     rpmPubkeyRead;
+    rpmPubkeyUnlink;
     rpmLoadMacroFile;
     rpmLoadMacros;
     rpmlog;
