@@ -6,6 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
+#include <rpmurl.h>
 #include <rpmcli.h>
 #include <rpmbuild.h>
 

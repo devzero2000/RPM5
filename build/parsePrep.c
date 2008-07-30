@@ -7,6 +7,7 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>
+#include <rpmurl.h>
 #ifdef	NOTYET
 #include <rpmmg.h>
 #endif

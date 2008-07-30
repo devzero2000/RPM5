@@ -7,7 +7,6 @@
 
 #include "popt.h"
 #include "rpmmacro.h"
-#include "rpmurl.h"
 #include "rpmlib.h"
 #include "rpmps.h"
 #include "rpmte.h"
