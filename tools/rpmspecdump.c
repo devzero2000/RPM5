@@ -62,10 +62,10 @@
  * - initial version, based on getdeps.c
  */
 
-#define _GNU_SOURCE
+#include "system.h"
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
+#if defined(__linux__)
+#define _GNU_SOURCE
 #endif
 
 #include <getopt.h>
