@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Prints out following information in same format as %dump for builder:
  * $ rpmbuild --nodigest --nosignature --nobuild -bp --define 'prep %{echo:dummy: PACKAGE_NAME %{name} }%dump' qemu.spec 2>&1 | awk '$2 ~ /^SOURCEURL/ {print} $2 ~ /^PATCHURL/  {print} $2 ~ /^nosource/ {print} $2 ~ /^PACKAGE_/ {print}'
  * dummy: PACKAGE_NAME qemu ========================
@@ -54,12 +52,6 @@
  *  s nosource 1
  *  s SOURCEURL0 http://downloads.zend.com/pdt/server-debugger/ZendDebugger-5.2.10-linux-glibc21-i386.tar.gz
  *  s nosource 0
- *
- * Compile with:
- * gcc -lrpm -I/usr/include/rpm -lrpmbuild rpm-specdump.c -o rpm-specdump
- *
- * Version 0.1, 2008-01-23
- * - initial version, based on getdeps.c
  */
 
 #include "system.h"
