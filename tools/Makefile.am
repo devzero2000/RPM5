@@ -13,6 +13,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	-I$(top_srcdir)/build \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
@@ -67,7 +68,7 @@ rpmrepo_SOURCES =	rpmrepo.c
 rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmspecdump_SOURCES =	rpmspecdump.c
-rpmspecdump_LDADD =	$(RPM_LDADD_COMMON)
+rpmspecdump_LDADD =	$(RPMBUILD_LDADD_COMMON)
 
 ##
 ## Traditional rpm2cpio
