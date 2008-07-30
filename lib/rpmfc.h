@@ -120,7 +120,7 @@ extern "C" {
  * @retval *sb_stdoutp	helper output
  * @param failnonzero	Is non-zero helper exit status a failure?
  */
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
+int rpmfcExec(const char ** av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		int failnonzero)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *sb_stdoutp, rpmGlobalMacroContext,
@@ -178,7 +178,7 @@ rpmfc rpmfcNew(void)
  * @return		RPMRC_OK on success
  */
 /*@-exportlocal@*/
-rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ uint16_t * fmode)
+rpmRC rpmfcClassify(rpmfc fc, const char ** argv, /*@null@*/ uint16_t * fmode)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/

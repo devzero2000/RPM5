@@ -435,7 +435,7 @@ int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t co
     return rpmtdSet(td, tag, type, data, count);
 }
 
-int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
+int rpmtdFromArgv(rpmtd td, rpmTag tag, const char ** argv)
 {
     int count = argvCount(argv);
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;

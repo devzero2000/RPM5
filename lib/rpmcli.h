@@ -336,7 +336,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
  * @param argv		query argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliArgIter(rpmts ts, QVA_t qva, /*@null@*/ ARGV_t argv)
+int rpmcliArgIter(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,

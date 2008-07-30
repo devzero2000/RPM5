@@ -300,15 +300,15 @@ int rpmtdFromString(rpmtd td, rpmTag tag, const char *data);
 int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t count);
 
 /** \ingroup rpmtd
- * Construct tag container from ARGV_t array.
+ * Construct tag container from const char ** array.
  * Tag type is checked to be of string array type and array is checked
  * to be non-empty.
  * @param td		Tag data container
  * @param tag		Rpm tag to construct
- * @param argv		ARGV array
+ * @param argv		const char ** array
  * @return		1 on success, 0 on error (eg wrong type)
  */
-int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv);
+int rpmtdFromArgv(rpmtd td, rpmTag tag, const char ** argv);
 
 /** \ingroup rpmtd
  * Construct tag container from ARGI_t array.
