@@ -12,6 +12,7 @@ rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
+rpmwget =	wget
 cpio =		cpio
 
 .PHONY:	check-init
@@ -33,7 +34,7 @@ POPTPKGS =	\
 	popt-1.14-1.i386.rpm
 
 $(POPTPKGS):
-	-wget $(POPTURI)$@
+	-${rpmwget} $(POPTURI)$@
 
 .PHONY:	check-pubkeys
 check-pubkeys: $(POPTPKGS)
@@ -98,7 +99,7 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
-check-local: check-init check-pubkeys check-markup check-build check-install
+check-query:
 	@${rpm} -qW . > /dev/null 2>&1
 	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1
 	-@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
@@ -135,11 +136,16 @@ check-local: check-init check-pubkeys check-markup check-build check-install
 	@-${rpm} -Vp tmp/manifest > /dev/null
 	@${rpm} -e probes
 	@${rpm} -e devtool-sanity
-	@-${rpm} -qp ref/cAos.i386.manifest > /dev/null
+#	@${rpm} -e --justdb `${rpm} -qa` --allmatches
+
+check-jbj:
+	@${rpm} -qp ref/cAos.i386.manifest > /dev/null
 	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
 	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
 	@-${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
-	@${rpm} -e --justdb `${rpm} -qa` --allmatches
+
+check-local: check-init check-pubkeys check-markup \
+	check-build check-install check-query check-jbj
 
 clean-local:
 	rm -rf tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))

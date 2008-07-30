@@ -27,6 +27,50 @@ Features provided by rpmlib installer:
     rpmlib(ScriptletInterpreterArgs) = 4.0.3-1
     rpmlib(VersionedDependencies) = 3.0.3-1
 
+Features provided by current cpuinfo (from /proc/cpuinfo):
+    cpuinfo(acpi)
+    cpuinfo(apic)
+    cpuinfo(bogomips) = 4792.95
+    cpuinfo(bts)
+    cpuinfo(cache_size) = 512_KB
+    cpuinfo(cid)
+    cpuinfo(clflush)
+    cpuinfo(clflush_size) = 64
+    cpuinfo(cmov)
+    cpuinfo(cpu_MHz) = 2394.274
+    cpuinfo(cpu_family) = 15
+    cpuinfo(cx8)
+    cpuinfo(de)
+    cpuinfo(dts)
+    cpuinfo(fpu)
+    cpuinfo(fpu_exception)
+    cpuinfo(fxsr)
+    cpuinfo(ht)
+    cpuinfo(mca)
+    cpuinfo(mce)
+    cpuinfo(mmx)
+    cpuinfo(model) = 2
+    cpuinfo(msr)
+    cpuinfo(mtrr)
+    cpuinfo(pae)
+    cpuinfo(pat)
+    cpuinfo(pbe)
+    cpuinfo(pebs)
+    cpuinfo(pge)
+    cpuinfo(pse)
+    cpuinfo(pse36)
+    cpuinfo(ss)
+    cpuinfo(sse)
+    cpuinfo(sse2)
+    cpuinfo(stepping) = 9
+    cpuinfo(sync_rdtsc)
+    cpuinfo(tm)
+    cpuinfo(tsc)
+    cpuinfo(up)
+    cpuinfo(vme)
+    cpuinfo(wp)
+    cpuinfo(xtpr)
+
 ========================
 -14: GNUconfigure(MCs:)	
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; 
@@ -449,6 +493,9 @@ print (t)
 	%{?_dependency_whiteout_system} 
 	%{nil}
 -14: _dependency_whiteout_caos_core	
+	perl>perl-Filter		
+	pam>coreutils			
+	pam>initscripts			
 	glibc-common>glibc		
 	glibc>nscd
 -14: _disable_shell_interpreter_deps	0
