@@ -62,6 +62,7 @@ const char * rpmMacrofiles = MACROFILES;
 
 #include <rpmio_internal.h>
 #include <rpmlog.h>
+#include <mire.h>
 
 #ifdef	WITH_LUA
 #define	_RPMLUA_INTERNAL	/* XXX lua->printbuf access */
@@ -277,10 +278,12 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
 		nactive, nempty);
 }
 
+#if !defined(DEBUG_MACROS)
 int
-rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
+rpmGetMacroEntries(MacroContext mc, void * _mire, int used,
 		const char *** avp)
 {
+    miRE mire = (miRE) _mire;
     const char ** av;
     int ac = 0;
     int i;
@@ -311,6 +314,7 @@ rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
     
     return ac;
 }
+#endif
 
 /**
  * Find entry in macro table.

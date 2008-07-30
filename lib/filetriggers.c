@@ -4,6 +4,7 @@
 #include <argv.h>
 #include <rpmlog.h>
 #define	_MIRE_INTERNAL
+#include <mire.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include <rpmlib.h>

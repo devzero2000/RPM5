@@ -1,8 +1,6 @@
 #ifndef _H_MACRO_
 #define	_H_MACRO_
 
-#include <mire.h>
-
 /** \ingroup rpmio
  * \file rpmio/rpmmacro.h
  */
@@ -75,16 +73,16 @@ void rpmDumpMacroTable(/*@null@*/ MacroContext mc, /*@null@*/ FILE * fp)
 /**
  * Return macro entries as string array.
  * @param mc		macro context (NULL uses global context)
- * @param mire		pattern to match (NULL disables)
+ * @param _mire		pattern to match (NULL disables)
  * @param used		macro usage (<0 all, =0 unused, >=1 used count)
  * @retval *avp		macro definitions
  * @return		no. of entries
  */
 int
-rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ miRE mire,
+rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ void * _mire,
 		int used, /*@null@*/ const char *** avp)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies mire, *avp @*/;
+	/*@modifies _mire, *avp @*/;
 
 /**
  * Check whether configuration file is moderately secure to load.
