@@ -10,6 +10,7 @@
 
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h> /* for rpmioSlurp() */
+#include <rpmcb.h>
 #include <rpmlua.h>
 #include <rpmluaext.h>
 #include <rpmmacro.h>

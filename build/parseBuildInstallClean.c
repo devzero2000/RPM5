@@ -4,8 +4,9 @@
  */
 #include "system.h"
 
-#define	_RPMTAG_INTERNAL
 #include <rpmio.h>
+#include <rpmcb.h>
+#define	_RPMTAG_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"
 

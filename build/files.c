@@ -15,6 +15,7 @@
 #endif
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
+#include <rpmcb.h>
 #include <fts.h>
 
 #include "iosm.h"

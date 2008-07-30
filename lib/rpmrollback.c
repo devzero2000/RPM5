@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>
 #define	_RPMTE_INTERNAL		/* XXX findErases needs rpmte internals. */
 #define	_RPMTS_INTERNAL		/* XXX ts->teErase, ts->probs */
 #define _RPMTS_PRINT

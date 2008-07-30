@@ -6,7 +6,6 @@
  */
 
 #include "popt.h"
-#include "rpmcb.h"
 #include "rpmmacro.h"
 #include "rpmurl.h"
 #include "rpmlib.h"

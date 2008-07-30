@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
+#include <rpmcb.h>
 #define	_RPMTAG_INTERNAL
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */

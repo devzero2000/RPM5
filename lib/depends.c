@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>
 #define	_RPMTE_INTERNAL
 #define	_RPMTS_INTERNAL
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */

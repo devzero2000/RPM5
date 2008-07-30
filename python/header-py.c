@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
+#include <rpmcb.h>
 
 #include "legacy.h"
 #define	_RPMTAG_INTERNAL

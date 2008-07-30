@@ -56,10 +56,6 @@
 
 #include "system.h"
 
-#if defined(__linux__)
-#define _GNU_SOURCE
-#endif
-
 #include <getopt.h>
 #include <stdbool.h>
 #include <string.h>
@@ -69,6 +65,8 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include <rpmio.h>
+#include <rpmcb.h>
 #include <rpmbuild.h>
 #include <rpmlib.h>
 #include <rpmts.h>

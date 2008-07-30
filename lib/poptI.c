@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>
 #include <rpmcli.h>
 
 #include "debug.h"

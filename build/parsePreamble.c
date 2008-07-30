@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>
 
 #define	_RPMEVR_INTERNAL
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */

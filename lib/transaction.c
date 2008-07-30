@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 #include "fprint.h"
 

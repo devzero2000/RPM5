@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX fdGetFp, fdInitDigest, fdFiniDigest */
+#include <rpmcb.h>
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_ANY */
 #define _RPMTAG_INTERNAL
