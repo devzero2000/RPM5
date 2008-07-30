@@ -57,12 +57,13 @@ RPM_LDADD_COMMON = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmgc.h \
+	envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmgc.h \
 	rpmhash.h rpmio.h rpmio-stub.h rpmkeyring.h rpmlog.h rpmmacro.h \
 	rpmmg.h rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h \
 	stringbuf.h ugid.h rpmuuid.h
 noinst_HEADERS = \
-	ar.h cpio.h iosm.h md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	argv.h ar.h cpio.h iosm.h md2.h md4.h poptIO.h \
+	rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tar.h tiger.h \
 	rpmhook.h rpmio_internal.h rpmlua.h
 
