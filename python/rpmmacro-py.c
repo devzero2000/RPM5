@@ -7,7 +7,7 @@
 #include "structmember.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>
+#include <rpmiotypes.h>
 #include <argv.h>
 #include <rpmmacro.h>
 

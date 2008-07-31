@@ -6,10 +6,11 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <ugid.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmiotypes.h>	/* XXX fnpyKey */
+#include <rpmlog.h>
 #include <rpmurl.h>	/* XXX urlGetPath */
 #include <rpmmacro.h>	/* XXX rpmCleanPath */
+#include <ugid.h>
 
 #define	_RPMAV_INTERNAL	/* XXX avOpendir */
 #include <rpmdav.h>
@@ -32,7 +33,6 @@
 #include <rpmcli.h>	/* XXX rpmHeaderFormats */
 
 #include "debug.h"
-
 
 /*@access rpmte @*/
 /*@access FSM_t @*/	/* XXX fsm->repackaged */

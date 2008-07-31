@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmcb.h>
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 #include <envvar.h>

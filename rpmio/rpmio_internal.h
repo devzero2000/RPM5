@@ -5,6 +5,8 @@
  * \file rpmio/rpmio_internal.h
  */
 
+#include <rpmiotypes.h>
+#include <rpmlog.h>
 #include <rpmio.h>
 #include <rpmurl.h>
 

@@ -5,7 +5,8 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmiotypes.h>		/* XXX fnpyKey */
+#include <rpmlog.h>
 #include <rpmurl.h>
 #include <rpmpgp.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */

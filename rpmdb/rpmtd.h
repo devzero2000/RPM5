@@ -315,10 +315,10 @@ int rpmtdFromArgv(rpmtd td, rpmTag tag, const char ** argv);
  * to be non-empty.
  * @param td		Tag data container
  * @param tag		Rpm tag to construct
- * @param argi		ARGI array
+ * @param _argi		ARGI array
  * @return		1 on success, 0 on error (eg wrong type)
  */
-int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi);
+int rpmtdFromArgi(rpmtd td, rpmTag tag, const void * _argi);
 
 /* \ingroup rpmtd
  * Perform deep copy of container.

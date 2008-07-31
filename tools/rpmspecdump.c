@@ -66,9 +66,8 @@
 #include <sys/types.h>
 
 #include <rpmio.h>
-#include <rpmcb.h>
+#include <rpmiotypes.h>
 #include <rpmbuild.h>
-#include <rpmlib.h>
 #include <rpmts.h>
 
 #define ARG_WITH	1024

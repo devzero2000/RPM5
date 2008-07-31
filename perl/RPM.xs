@@ -13,6 +13,7 @@
 #include <utime.h>
 
 #include "rpmio.h"
+#include "rpmiotypes.h"
 #include "rpmcb.h"
 #include "rpmmacro.h"
 #include "rpmtypes.h"

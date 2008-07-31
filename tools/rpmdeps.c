@@ -2,6 +2,7 @@
 const char *__progname;
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmcb.h>
 #include <argv.h>
 #include <rpmtypes.h>

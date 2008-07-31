@@ -16,8 +16,8 @@
 #endif
 
 #include <rpmio_internal.h>
+#include <rpmcb.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
-#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 
 #define	_RPMTAG_INTERNAL

@@ -448,8 +448,9 @@ int rpmtdFromArgv(rpmtd td, rpmTag tag, const char ** argv)
     return rpmtdSet(td, tag, type, argv, count);
 }
 
-int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi)
+int rpmtdFromArgi(rpmtd td, rpmTag tag, const void * _argi)
 {
+    ARGI_t argi = (ARGI_t) _argi;
     int count = argiCount(argi);
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;

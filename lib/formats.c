@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX for %_i18ndomains */
 
 #define	_RPMTAG_INTERNAL

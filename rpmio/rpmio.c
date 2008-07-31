@@ -58,6 +58,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 # include <netinet/in_systm.h>
 #endif
 
+#include <rpmiotypes.h>
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
 
@@ -1492,6 +1493,7 @@ errxit:
     return rc;
 }
 
+#ifdef	DYING
 /*@unchecked@*/ /*@null@*/
 static rpmCallbackFunction	_urlNotify = NULL;
 
@@ -1501,11 +1503,12 @@ static void *			_urlNotifyData = NULL;
 /*@unchecked@*/
 static int			_urlNotifyCount = -1;
 
-void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount) {
+static void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount) {
     _urlNotify = notify;
     _urlNotifyData = notifyData;
     _urlNotifyCount = (notifyCount >= 0) ? notifyCount : 4096;
 }
+#endif
 
 int ufdCopy(FD_t sfd, FD_t tfd)
 {
@@ -1513,6 +1516,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     int itemsRead;
     int itemsCopied = 0;
     int rc = 0;
+#ifdef	DYING
     int notifier = -1;
 
     if (_urlNotify) {
@@ -1521,6 +1525,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 		0, 0, NULL, _urlNotifyData);
 	/*@=noeffectuncon @*/
     }
+#endif
 
     while (1) {
 	rc = (int) Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
@@ -1540,6 +1545,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	}
 
 	itemsCopied += itemsRead;
+#ifdef	DYING
 	if (_urlNotify && _urlNotifyCount > 0) {
 	    int n = itemsCopied/_urlNotifyCount;
 	    if (n != notifier) {
@@ -1550,17 +1556,20 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 		notifier = n;
 	    }
 	}
+#endif
     }
 
     DBGIO(sfd, (stderr, "++ copied %d bytes: %s\n", itemsCopied,
 	ftpStrerror(rc)));
 
+#ifdef	DYING
     if (_urlNotify) {
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*_urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		itemsCopied, itemsCopied, NULL, _urlNotifyData);
 	/*@=noeffectuncon @*/
     }
+#endif
 
     return rc;
 }

@@ -5,7 +5,8 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmiotypes.h>		/* XXX fnpyKey */
+#include <rpmcb.h>
 #include <rpmmacro.h>		/* XXX rpmExpand */
 #include <rpmtypes.h>
 #include <rpmtag.h>

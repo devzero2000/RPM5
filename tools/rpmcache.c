@@ -9,18 +9,20 @@ const char *__progname;
 #include <fts.h>
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <poptIO.h>
+
 #include <rpmtypes.h>
 #include <rpmtag.h>
-
-#define	_RPMGI_INTERNAL
-#include <rpmgi.h>
 
 #include "rpmdb.h"
 
 #include "rpmps.h"
 
 #include "misc.h"	/* XXX rpmMkdirPath */
+
+#define	_RPMGI_INTERNAL
+#include <rpmgi.h>
 
 #include <rpmcli.h>
 

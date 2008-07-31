@@ -7,6 +7,7 @@
 const char *__progname;
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <fts.h>
 #include <mire.h>
 #include <poptIO.h>

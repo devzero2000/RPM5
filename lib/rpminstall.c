@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <poptIO.h>
 
 #include <rpmtag.h>

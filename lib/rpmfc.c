@@ -3,20 +3,21 @@
 #include <signal.h>	/* getOutputFrom() */
 
 #include <rpmio.h>
+#include <rpmiotypes.h>		/* XXX fnpyKey */
+#include <rpmlog.h>
 #include <rpmurl.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
+#include <argv.h>
+#include <rpmmg.h>
 
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
-#include <argv.h>
-#include <rpmmg.h>
-
-#define	_RPMFC_INTERNAL
-#include <rpmfc.h>
 
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
+
+#define	_RPMFC_INTERNAL
+#include <rpmfc.h>
 
 #define	_RPMDS_INTERNAL
 #include <rpmds.h>

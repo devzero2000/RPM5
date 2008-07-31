@@ -12,19 +12,21 @@
 #endif
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <poptIO.h>
+
 #include <rpmtag.h>
-#define	_RPMTS_INTERNAL		/* XXX for ts->rdb */
-#include <rpmcli.h>
-
 #include "rpmdb.h"
-#include "rpmfi.h"
 
-#include "rpmgi.h"
+#include "rpmfi.h"
+#define	_RPMTS_INTERNAL		/* XXX for ts->rdb */
 #include "rpmts.h"
+#include "rpmgi.h"
 
 #include "manifest.h"
 #include "misc.h"	/* XXX for currentDirectory() */
+
+#include <rpmcli.h>
 
 #include "debug.h"
 

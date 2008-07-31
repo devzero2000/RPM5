@@ -19,7 +19,7 @@
  */
 
 #include <rpmio.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmpgp.h>
 
 #include <rpmtypes.h>

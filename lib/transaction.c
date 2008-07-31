@@ -5,7 +5,8 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>
+#include <rpmiotypes.h>
+#include <rpmlog.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 #include "fprint.h"
 

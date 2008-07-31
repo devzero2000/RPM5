@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>
+#include <rpmiotypes.h>
 #include "spec-py.h"
 
 /** \ingroup python

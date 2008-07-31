@@ -6,7 +6,8 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmcb.h>
+#include <rpmiotypes.h>
+#include <rpmlog.h>
 
 #include <rpmtag.h>
 #include <rpmcli.h>

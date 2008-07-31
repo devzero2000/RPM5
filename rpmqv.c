@@ -18,6 +18,7 @@ extern const char *__progname;
 #endif
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <poptIO.h>
 
 #include <rpmtypes.h>

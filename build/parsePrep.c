@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmcb.h>
 #include <rpmurl.h>
 #ifdef	NOTYET

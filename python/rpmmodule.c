@@ -7,6 +7,8 @@
 #include <rpmio_internal.h>
 #include <rpmcb.h>
 #include <rpmsq.h>
+#include <argv.h>
+
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
 #define _RPMEVR_INTERNAL

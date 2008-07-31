@@ -8,7 +8,7 @@
 #undef Fstat
 
 #include "rpmio.h"
-#include "rpmcb.h"
+#include "rpmiotypes.h"
 #include "stringbuf.h"
 #include "rpmmacro.h"
 

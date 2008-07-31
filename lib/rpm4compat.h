@@ -36,23 +36,25 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdint.h>
 #include <stdio.h>
 
-#define	WITH_DB
-#define _RPMPS_INTERNAL
-#define _RPMEVR_INTERNAL
-#define _RPMTAG_INTERNAL
 #include <rpm/rpmio.h>
-#include <rpm/rpmlib.h>
-#include <rpm/rpmevr.h>
-#include <rpm/pkgio.h>
 #include <rpm/rpmcb.h>
-#include <rpm/rpmds.h>
-#include <rpm/rpmts.h>
+#include <rpm/rpmiotypes.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmpgp.h>
-#include <rpm/rpmurl.h>
+
+#include <rpm/rpmtypes.h>
+#define _RPMTAG_INTERNAL
+#include <rpm/rpmtag.h>
+#define _RPMEVR_INTERNAL
+#include <rpm/rpmevr.h>
+#include <rpm/pkgio.h>
+
+#include <rpm/rpmds.h>
+#define _RPMPS_INTERNAL
+#include <rpm/rpmts.h>
+
 #include <rpm/rpmcli.h>
 
 enum hMagic {
@@ -60,27 +62,26 @@ enum hMagic {
 	HEADER_MAGIC_YES            = 1
 };
 
-
-typedef	uint32_t *	hTAG_t;
-typedef	uint32_t *	hTYP_t;
+typedef	rpmuint32_t *	hTAG_t;
+typedef	rpmuint32_t *	hTYP_t;
 typedef	const void *	hPTR_t;
-typedef	uint32_t *	hCNT_t;
-typedef	uint32_t	int_32;
-typedef	uint32_t	uint_32;
-typedef	uint16_t	uint_16;
-typedef	uint16_t	int_16;
-typedef	uint8_t		int_8;
-typedef	uint8_t		byte;
+typedef	rpmuint32_t *	hCNT_t;
+typedef	rpmuint32_t	int_32;
+typedef	rpmuint32_t	uint_32;
+typedef	rpmuint16_t	uint_16;
+typedef	rpmuint16_t	int_16;
+typedef	rpmuint8_t	int_8;
+typedef	rpmuint8_t	byte;
 
 typedef	union hRET_s {
 	const void * ptr;
 	const char ** argv;
 	const char * str;
-	uint32_t * ui32p;
-	uint16_t * ui16p;
-	uint32_t * i32p;
-	uint16_t * i16p;
-	uint8_t * i8p;
+	rpmuint32_t * ui32p;
+	rpmuint16_t * ui16p;
+	rpmuint32_t * i32p;
+	rpmuint16_t * i16p;
+	rpmuint8_t * i8p;
 } * hRET_t;
 
 typedef enum pgpVSFlags_e rpmVSFlags_e;
