@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>	/* XXX xisspace, _free */
+#include <rpmiotypes.h>
 #include "stringbuf.h"
 #include "debug.h"
 

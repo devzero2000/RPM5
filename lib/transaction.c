@@ -38,7 +38,8 @@
 
 #include "filetriggers.h" /* XXX mayAddToFilesAwaitingFiletriggers, rpmRunFileTriggers */
 
-#include "rpmcli.h"	/* IDTX prototypes */
+#include <rpmcli.h>	/* XXX QVA_t INSTALL_FOO flags */
+#include <rpmrollback.h>	/* IDTX prototypes */
 
 #include "debug.h"
 

@@ -24,6 +24,8 @@
 #include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
 
 #include <rpmcli.h>
+#define	_RPMROLLBACK_INTERNAL
+#include <rpmrollback.h>
 
 #include "debug.h"
 

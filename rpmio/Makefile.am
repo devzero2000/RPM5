@@ -57,25 +57,29 @@ RPM_LDADD_COMMON = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	rpmcb.h rpmio.h rpmiotypes.h rpmkeyring.h rpmlog.h rpmmacro.h rpmpgp.h
+	rpmcb.h rpmio.h rpmiotypes.h rpmmacro.h rpmpgp.h
 noinst_HEADERS = \
-	argv.h ar.h cpio.h envvar.h fts.h iosm.h md2.h md4.h mire.h poptIO.h \
-	rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
-	salsa10.h salsa20.h tar.h tiger.h rpmbc.h rpmdav.h rpmgc.h rpmhash.h \
-	rpmhook.h rpmio_internal.h rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
-	rpmio-stub.h rpmsw.h rpmurl.h rpmuuid.h rpmxar.h stringbuf.h ugid.h
+	argv.h ar.h cpio.h envvar.h fnmatch.h fts.h glob.h iosm.h \
+	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	salsa10.h salsa20.h tiger.h \
+	mire.h poptIO.h rpmbc.h rpmdav.h \
+	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h \
+	rpmlog.h rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
+	rpmio-stub.h rpmsw.h rpmurl.h rpmuuid.h rpmxar.h \
+	stringbuf.h tar.h ugid.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	ar.c argv.c bzdio.c cpio.c digest.c fts.c getdate.c getpass.c \
-	gzdio.c iosm.c lzdio.c macro.c mire.c mount.c \
-	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
+	ar.c argv.c bzdio.c cpio.c digest.c fnmatch.c fts.c \
+	getdate.c getpass.c gzdio.c glob.c iosm.c lzdio.c \
+	macro.c mire.c mount.c poptIO.c \
+	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmkeyring.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
-	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmxar.c \
-	strcasecmp.c stringbuf.c strtolocale.c tar.c url.c ugid.c rpmuuid.c
+	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c \
+	strcasecmp.c stringbuf.c strtolocale.c tar.c url.c ugid.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers

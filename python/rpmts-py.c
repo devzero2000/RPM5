@@ -15,10 +15,12 @@
 #include <pkgio.h>		/* XXX headerCheck() */
 #include <rpmdb.h>
 
+#define	_RPMTS_INTERNAL		/* XXX expose rpmtsSetScriptFd */
 #include <rpmbuild.h>
 
-#include <rpmlib.h>	/* XXX rpmReadPackageFile */
 #include <rpmcli.h>
+#define	_RPMROLLBACK_INTERNAL	/* XXX IDTX et al */
+#include <rpmrollback.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */

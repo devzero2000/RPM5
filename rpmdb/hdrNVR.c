@@ -3,7 +3,8 @@
  */
 
 #include "system.h"
-#include <rpmio.h>
+
+#include <rpmiotypes.h>
 #include <rpmmacro.h>
 
 #define	_RPMTAG_INTERNAL

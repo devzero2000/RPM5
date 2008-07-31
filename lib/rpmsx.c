@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmmacro.h>	/* for rpmGetPath() */
 
 #include <rpmtypes.h>

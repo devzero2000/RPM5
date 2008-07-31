@@ -718,6 +718,7 @@ extern const char * rpmtsCurrDir(rpmts ts)
 void rpmtsSetCurrDir(rpmts ts, /*@null@*/ const char * currDir)
 	/*@modifies ts @*/;
 
+#if defined(_RPMTS_INTERNAL)	/* XXX avoid FD_t in API. */
 /** \ingroup rpmts
  * Get transaction script file handle, i.e. stdout/stderr on scriptlet execution
  * @param ts		transaction set
@@ -735,6 +736,7 @@ FD_t rpmtsScriptFd(rpmts ts)
 void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
 	/*@globals fileSystem @*/
 	/*@modifies ts, scriptFd, fileSystem @*/;
+#endif
 
 /** \ingroup rpmts
  * Get selinuxEnabled flag, i.e. is SE linux enabled?

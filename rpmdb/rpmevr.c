@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmiotypes.h>
 
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL

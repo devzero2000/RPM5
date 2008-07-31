@@ -21,6 +21,7 @@
 #include "legacy.h"	/* XXX dodigest(), uidToUname(), gnameToGid */
 
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
+#define	_RPMTS_INTERNAL	/* XXX expose rpmtsSetScriptFd */
 #include <rpmcli.h>
 
 #include "debug.h"

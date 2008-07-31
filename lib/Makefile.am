@@ -39,7 +39,7 @@ pkginc_HEADERS = \
 	rpmrc.h rpmte.h rpmts.h rpm4compat.h
 noinst_HEADERS = \
 	filetriggers.h fs.h fsm.h manifest.h misc.h psm.h rpmal.h \
-	rpmfc.h rpmlib.h rpmlock.h rpmluaext.h rpmgi.h rpmsx.h
+	rpmfc.h rpmgi.h rpmlib.h rpmlock.h rpmluaext.h rpmrollback.h rpmsx.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la

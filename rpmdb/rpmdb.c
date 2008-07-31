@@ -8,7 +8,7 @@
 
 #include <sys/file.h>
 
-#include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmpgp.h>
 #include <rpmurl.h>

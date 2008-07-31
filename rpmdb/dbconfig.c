@@ -5,11 +5,10 @@
 #include "system.h"
 
 #include <popt.h>
-#include <rpmtag.h>
-#include <rpmio.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
 
+#include <rpmtag.h>
 #define	_RPMDB_INTERNAL
 #include "rpmdb.h"
 #include "debug.h"

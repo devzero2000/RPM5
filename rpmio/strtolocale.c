@@ -9,7 +9,7 @@
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
-#include "rpmio.h"
+#include <rpmiotypes.h>
 #include "debug.h"
 
 const char * xstrtolocale(const char *str)

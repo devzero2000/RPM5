@@ -7,7 +7,7 @@
 /* just to put a marker in librpm.a */
 const char * RPMVERSION = VERSION;
 
-#include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */

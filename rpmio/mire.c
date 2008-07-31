@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmio.h>	/* XXX _free */
+#include <rpmiotypes.h>
 #include <rpmlog.h>
 
 #define	_MIRE_INTERNAL

@@ -10,7 +10,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmiotypes.h>
 #define	_RPMTAG_INTERNAL
 #include <header_internal.h>
 

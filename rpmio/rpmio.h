@@ -46,17 +46,6 @@ typedef /*@observer@*/ struct FDIO_s * FDIO_t;
 extern "C" {
 #endif
 
-/**
- * RPM return codes.
- */
-typedef	enum rpmRC_e {
-    RPMRC_OK		= 0,	/*!< Generic success code */
-    RPMRC_NOTFOUND	= 1,	/*!< Generic not found code. */
-    RPMRC_FAIL		= 2,	/*!< Generic failure code. */
-    RPMRC_NOTTRUSTED	= 3,	/*!< Signature is OK, but key is not trusted. */
-    RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
-} rpmRC;
-
 /** \ingroup rpmio
  * \name RPMIO Vectors.
  */
@@ -714,86 +703,6 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 
 /*@=exportlocal@*/
 /*@}*/
-
-/*@unused@*/ static inline int xislower(int c) /*@*/ {
-    return (c >= (int)'a' && c <= (int)'z');
-}
-/*@unused@*/ static inline int xisupper(int c) /*@*/ {
-    return (c >= (int)'A' && c <= (int)'Z');
-}
-/*@unused@*/ static inline int xisalpha(int c) /*@*/ {
-    return (xislower(c) || xisupper(c));
-}
-/*@unused@*/ static inline int xisdigit(int c) /*@*/ {
-    return (c >= (int)'0' && c <= (int)'9');
-}
-/*@unused@*/ static inline int xisalnum(int c) /*@*/ {
-    return (xisalpha(c) || xisdigit(c));
-}
-/*@unused@*/ static inline int xisblank(int c) /*@*/ {
-    return (c == (int)' ' || c == (int)'\t');
-}
-/*@unused@*/ static inline int xisspace(int c) /*@*/ {
-    return (xisblank(c) || c == (int)'\n' || c == (int)'\r' || c == (int)'\f' || c == (int)'\v');
-}
-/*@unused@*/ static inline int xiscntrl(int c) /*@*/ {
-    return (c < (int)' ');
-}
-/*@unused@*/ static inline int xisascii(int c) /*@*/ {
-    return ((c & 0x80) != 0x80);
-}
-/*@unused@*/ static inline int xisprint(int c) /*@*/ {
-    return (c >= (int)' ' && xisascii(c));
-}
-/*@unused@*/ static inline int xisgraph(int c) /*@*/ {
-    return (c > (int)' ' && xisascii(c));
-}
-/*@unused@*/ static inline int xispunct(int c) /*@*/ {
-    return (xisgraph(c) && !xisalnum(c));
-}
-
-/*@unused@*/ static inline int xtolower(int c) /*@*/ {
-    return ((xisupper(c)) ? (c | ('a' - 'A')) : c);
-}
-/*@unused@*/ static inline int xtoupper(int c) /*@*/ {
-    return ((xislower(c)) ? (c & ~('a' - 'A')) : c);
-}
-
-/** \ingroup rpmio
- * Locale insensitive strcasecmp(3).
- */
-int xstrcasecmp(const char * s1, const char * s2)		/*@*/;
-
-/** \ingroup rpmio
- * Locale insensitive strncasecmp(3).
- */
-int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
-
-/** \ingroup rpmio
- * Force encoding of string.
- */
-/*@only@*/ /*@null@*/
-const char * xstrtolocale(/*@only@*/ const char *str)
-	/*@modifies *str @*/;
-
-#if !defined(SWIG)
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-#if defined(WITH_DMALLOC)
-#define _free(p) ((p) != NULL ? free((void *)(p)) : (void)0, NULL)
-#else
-/*@unused@*/ static inline /*@null@*/
-void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p @*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-#endif
-#endif
 
 /**
  * Free all memory allocated by rpmio usage.

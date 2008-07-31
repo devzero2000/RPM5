@@ -24,7 +24,10 @@
 #include "rpmgi.h"
 
 #include <rpmlib.h>
+
 #include <rpmcli.h>
+#define	_RPMROLLBACK_INTERNAL
+#include <rpmrollback.h>
 
 #include "debug.h"
 

@@ -858,11 +858,11 @@ exit:
     return rc;
 }
 
-int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
-		const char * fn)
+int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
+    FD_t fd = (FD_t)_fd;
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;

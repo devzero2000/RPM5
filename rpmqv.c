@@ -51,6 +51,7 @@ extern const char *__progname;
 #endif
 
 #include <rpmcli.h>
+#include <rpmrollback.h>
 
 #include "debug.h"
 

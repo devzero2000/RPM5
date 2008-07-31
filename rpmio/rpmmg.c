@@ -8,7 +8,7 @@
 #include "magic.h"
 #endif
 
-#include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmlog.h>
 #define	_RPMMG_INTERNAL
 #include <rpmmg.h>

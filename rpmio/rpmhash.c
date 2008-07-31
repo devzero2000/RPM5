@@ -32,18 +32,6 @@ struct hashTable_s {
 };
 
 /**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
-/**
  * Find entry in hash table.
  * @param ht            pointer to hash table
  * @param key           pointer to key value
