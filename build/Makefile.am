@@ -24,8 +24,8 @@ AM_CPPFLAGS = \
 	@WITH_XAR_CPPFLAGS@
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
-pkginc_HEADERS = rpmbuild.h rpmspec.h
-noinst_HEADERS = buildio.h
+pkginc_HEADERS =
+noinst_HEADERS = buildio.h rpmbuild.h rpmspec.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmbuild.la
