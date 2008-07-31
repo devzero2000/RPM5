@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST =	ref/*
+EXTRA_DIST =	ref/* ref/.alldigests
 SUBDIRS =
 
 macros =	$(abs_top_builddir)/macros:$(testdir)/macros
