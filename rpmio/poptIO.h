@@ -6,8 +6,9 @@
  */
 
 #include <rpmio.h>
-#include <rpmmacro.h>
+#include <rpmiotypes.h>
 #include <rpmcb.h>
+#include <rpmmacro.h>
 #include <rpmmg.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>

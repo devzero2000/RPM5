@@ -79,10 +79,10 @@ typedef struct sharedFileInfo_s *		sharedFileInfo;
  * Replaced file cross reference.
  */
 struct sharedFileInfo_s {
-    uint32_t pkgFileNum;
-    uint32_t otherFileNum;
-    uint32_t otherPkg;
-    uint32_t isRemoved;
+    rpmuint32_t pkgFileNum;
+    rpmuint32_t otherFileNum;
+    rpmuint32_t otherPkg;
+    rpmuint32_t isRemoved;
 };
 
 /** \ingroup rpmte
@@ -133,8 +133,8 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
-    uint32_t color;		/*!< Color bit(s) from package dependencies. */
-    uint32_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
+    rpmuint32_t color;		/*!< Color bit(s) from package dependencies. */
+    rpmuint32_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
@@ -153,8 +153,8 @@ struct rpmte_s {
     struct rpmChainLink_s flink;/*!< Forward link info to installed element. */
     int linkFailed;		/*!< Did the linked element upgrade succeed? */
     int done;			/*!< Has the element been installed/erased? */
-    uint32_t originTid[2];	/*!< Transaction id of first install. */
-    uint32_t originTime[2];	/*!< Time that package was first installed. */
+    rpmuint32_t originTid[2];	/*!< Transaction id of first install. */
+    rpmuint32_t originTime[2];	/*!< Time that package was first installed. */
 
     int installed;		/*!< Was the header installed? */
     int downgrade;		/*!< Adjust package count on downgrades. */
@@ -312,7 +312,7 @@ extern int rpmteIsSource(rpmte te)
  * @param te		transaction element
  * @return		color bits
  */
-uint32_t rpmteColor(rpmte te)
+rpmuint32_t rpmteColor(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte
@@ -321,7 +321,7 @@ uint32_t rpmteColor(rpmte te)
  * @param color		new color bits
  * @return		previous color bits
  */
-uint32_t rpmteSetColor(rpmte te, uint32_t color)
+rpmuint32_t rpmteSetColor(rpmte te, rpmuint32_t color)
 	/*@modifies te @*/;
 
 /** \ingroup rpmte
@@ -347,7 +347,7 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance)
  * @param te		transaction element
  * @return		size in bytes of package file.
  */
-uint32_t rpmtePkgFileSize(rpmte te)
+rpmuint32_t rpmtePkgFileSize(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte
@@ -355,7 +355,7 @@ uint32_t rpmtePkgFileSize(rpmte te)
  * @param te		transaction element
  * @return		origin time
  */
-uint32_t * rpmteOriginTid(rpmte te)
+rpmuint32_t * rpmteOriginTid(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte
@@ -363,7 +363,7 @@ uint32_t * rpmteOriginTid(rpmte te)
  * @param te		transaction element
  * @return		origin time
  */
-uint32_t * rpmteOriginTime(rpmte te)
+rpmuint32_t * rpmteOriginTime(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte

@@ -121,26 +121,26 @@ struct rpmfi_s {
 /*@only@*/ /*@relnull@*/
     const char ** fdigests;	/*!< File digest(s) (from header) */
 /*@only@*/ /*@null@*/
-    uint32_t * fdigestalgos;	/*!< File digest algorithm(s) (from header) */
+    rpmuint32_t * fdigestalgos;	/*!< File digest algorithm(s) (from header) */
 /*@only@*/ /*@relnull@*/
     const char ** flinks;	/*!< File link(s) (from header) */
 /*@only@*/ /*@null@*/
     const char ** flangs;	/*!< File lang(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
-          uint32_t * dil;	/*!< Directory indice(s) (from header) */
+          rpmuint32_t * dil;	/*!< Directory indice(s) (from header) */
 /*@only@*/ /*?null?*/
-    const uint32_t * fflags;	/*!< File flag(s) (from header) */
+    const rpmuint32_t * fflags;	/*!< File flag(s) (from header) */
 /*@only@*/ /*?null?*/
-    const uint32_t * fsizes;	/*!< File size(s) (from header) */
+    const rpmuint32_t * fsizes;	/*!< File size(s) (from header) */
 /*@only@*/ /*?null?*/
-    const uint32_t * fmtimes;	/*!< File modification time(s) (from header) */
+    const rpmuint32_t * fmtimes;/*!< File modification time(s) (from header) */
 /*@only@*/ /*?null?*/
-          uint16_t * fmodes;	/*!< File mode(s) (from header) */
+          rpmuint16_t * fmodes;	/*!< File mode(s) (from header) */
 /*@only@*/ /*?null?*/
-    const uint16_t * frdevs;	/*!< File rdev(s) (from header) */
+    const rpmuint16_t * frdevs;	/*!< File rdev(s) (from header) */
 /*@only@*/ /*?null?*/
-    const uint32_t * finodes;	/*!< File inodes(s) (from header) */
+    const rpmuint32_t * finodes;/*!< File inodes(s) (from header) */
 
 /*@only@*/ /*@null@*/
     const char ** fuser;	/*!< File owner(s) (from header) */
@@ -148,33 +148,33 @@ struct rpmfi_s {
     const char ** fgroup;	/*!< File group(s) (from header) */
 
 /*@only@*/ /*@null@*/
-    uint8_t * fstates;		/*!< File state(s) (from header) */
+    rpmuint8_t * fstates;	/*!< File state(s) (from header) */
 
 /*@only@*/ /*@null@*/
-    const uint32_t * fcolors;	/*!< File color bits (header) */
+    const rpmuint32_t * fcolors;/*!< File color bits (header) */
 
 /*@only@*/ /*@null@*/
     const char ** fcontexts;	/*! FIle security contexts. */
 
 /*@only@*/ /*@null@*/
     const char ** cdict;	/*!< File class dictionary (header) */
-    uint32_t ncdict;		/*!< No. of class entries. */
+    rpmuint32_t ncdict;		/*!< No. of class entries. */
 /*@only@*/ /*@null@*/
-    const uint32_t * fcdictx;	/*!< File class dictionary index (header) */
+    const rpmuint32_t * fcdictx;/*!< File class dictionary index (header) */
 
 /*@only@*/ /*@null@*/
-    const uint32_t * ddict;	/*!< File depends dictionary (header) */
-    uint32_t nddict;		/*!< No. of depends entries. */
+    const rpmuint32_t * ddict;	/*!< File depends dictionary (header) */
+    rpmuint32_t nddict;		/*!< No. of depends entries. */
 /*@only@*/ /*@null@*/
-    const uint32_t * fddictx;	/*!< File depends dictionary start (header) */
+    const rpmuint32_t * fddictx;/*!< File depends dictionary start (header) */
 /*@only@*/ /*@null@*/
-    const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
+    const rpmuint32_t * fddictn;/*!< File depends dictionary count (header) */
 
 /*@only@*/ /*?null?*/
-    const uint32_t * vflags;	/*!< File verify flag(s) (from header) */
+    const rpmuint32_t * vflags;	/*!< File verify flag(s) (from header) */
 
-    uint32_t dc;		/*!< No. of directories. */
-    uint32_t fc;		/*!< No. of files. */
+    rpmuint32_t dc;		/*!< No. of directories. */
+    rpmuint32_t fc;		/*!< No. of files. */
 
 /*=============================*/
 /*@dependent@*/ /*@relnull@*/
@@ -183,7 +183,7 @@ struct rpmfi_s {
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */
-    uint32_t flags;		/*!< File flags (default). */
+    rpmuint32_t flags;		/*!< File flags (default). */
     fileAction action;		/*!< File disposition (default). */
 /*@owned@*/ /*@relnull@*/
     fileAction * actions;	/*!< File disposition(s). */
@@ -194,12 +194,12 @@ struct rpmfi_s {
 /*@owned@*/
     const char ** odnl;		/*!< Original dirname(s) (from header) */
 /*@unused@*/
-    uint32_t * odil;		/*!< Original dirindex(s) (from header) */
+    rpmuint32_t * odil;		/*!< Original dirindex(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
     unsigned char * digests;	/*!< File digest(s) in binary. */
-    uint32_t digestalgo;	/*!< File digest algorithm. */
-    uint32_t digestlen;		/*!< No. bytes in binary digest. */
+    rpmuint32_t digestalgo;	/*!< File digest algorithm. */
+    rpmuint32_t digestlen;	/*!< No. bytes in binary digest. */
 
 /*@only@*/ /*@relnull@*/
     const char * pretrans;
@@ -231,12 +231,12 @@ struct rpmfi_s {
     int * fmapflags;
 /*@owned@*/
     void * fsm;			/*!< File state machine data. */
-    uint32_t color;		/*!< Color bit(s) from file color union. */
+    rpmuint32_t color;		/*!< Color bit(s) from file color union. */
 
     int isSource;		/*!< Is this a SRPM? */
 
 /*@owned@*/
-    uint32_t * replacedSizes;	/*!< (TR_ADDED) */
+    rpmuint32_t * replacedSizes;/*!< (TR_ADDED) */
 
     unsigned int record;	/*!< (TR_REMOVED) */
     int magic;

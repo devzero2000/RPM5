@@ -450,14 +450,14 @@ void providePackageNVR(Header h)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
-    uint32_t E;
+    rpmuint32_t E;
     int gotE;
     const char *pEVR;
     char *p;
-    uint32_t pFlags = RPMSENSE_EQUAL;
+    rpmuint32_t pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
-    uint32_t * provideFlags = NULL;
+    rpmuint32_t * provideFlags = NULL;
     int providesCount;
     int i, xx;
     int bingo = 1;
@@ -512,7 +512,7 @@ void providePackageNVR(Header h)
 
 	    he->tag = RPMTAG_PROVIDEFLAGS;
 	    he->t = RPM_UINT32_TYPE;
-	    he->p.ui32p = (uint32_t *) &fdummy;
+	    he->p.ui32p = (rpmuint32_t *) &fdummy;
 	    he->c = 1;
 	    he->append = 1;
 	    xx = headerPut(h, he, 0);
@@ -577,8 +577,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    uint32_t count;
-    uint32_t sigtag;
+    rpmuint32_t count;
+    rpmuint32_t sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
     const char * payload_format = NULL;
@@ -765,7 +765,7 @@ assert(0);
 	SHA1 = _free(SHA1);
     }
 
-    {	uint32_t payloadSize = csa->cpioArchiveSize;
+    {	rpmuint32_t payloadSize = csa->cpioArchiveSize;
 	he->tag = (rpmTag) RPMSIGTAG_PAYLOADSIZE;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &payloadSize;
@@ -881,9 +881,9 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	count = (uint32_t) xx;
+	count = (rpmuint32_t) xx;
 	xx = Fwrite(buf, sizeof(buf[0]), count, fd);
-	if ((uint32_t)xx != count || Ferror(fd)) {
+	if ((rpmuint32_t)xx != count || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
@@ -930,7 +930,7 @@ static int rpmlibMarkers(Header h)
 	/*@modifies h @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t val;
+    rpmuint32_t val;
     int xx;
 
     he->tag = RPMTAG_RPMVERSION;
@@ -1106,7 +1106,7 @@ rpmRC packageSources(Spec spec)
     rpmRC rc;
     int xx;
 #if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) /* backward-compat-rpmtag-sourcepackage */
-    uint32_t val;
+    rpmuint32_t val;
 #endif
 
     /* Add rpmlib markers for tracking. */

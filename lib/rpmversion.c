@@ -3,23 +3,24 @@
  */
 
 #include "system.h"
+#include "rpmiotypes.h"
 #include "rpmversion.h"
 #include "debug.h"
 
 /*@-shiftimplementation @*/
-uint32_t rpmlibVersion(void)
+rpmuint32_t rpmlibVersion(void)
 {
-    return (uint32_t)RPMLIB_VERSION;
+    return (rpmuint32_t)RPMLIB_VERSION;
 }
 
-uint32_t rpmlibTimestamp(void)
+rpmuint32_t rpmlibTimestamp(void)
 {
-    return (uint32_t)RPMLIB_TIMESTAMP;
+    return (rpmuint32_t)RPMLIB_TIMESTAMP;
 }
 
-uint32_t rpmlibVendor(void)
+rpmuint32_t rpmlibVendor(void)
 {
-    return (uint32_t)RPMLIB_VENDOR;
+    return (rpmuint32_t)RPMLIB_VENDOR;
 }
 /*@=shiftimplementation @*/
 

@@ -10,12 +10,6 @@
 #endif
 
 #include <sys/types.h>
-#if defined(HAVE_STDINT_H)
-#include <stdint.h>
-#endif
-#if defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#endif
 
 #if defined(__LCLINT__)
 /*@-redef@*/

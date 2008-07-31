@@ -95,7 +95,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
       }	break;
 
     case POPT_ROLLBACK_EXCLUDE:
-    {	uint32_t tid;
+    {	rpmuint32_t tid;
 	char *t, *te;
 
 	/* Make sure we were given the proper number of args */
@@ -114,7 +114,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 
 	    /* Convert arg to TID which happens to be time_t */
 	    /* XXX: Need check for arg to be an integer      */
-	    tid = (uint32_t) strtol(t, NULL, 0);
+	    tid = (rpmuint32_t) strtol(t, NULL, 0);
 
 	    /* Allocate space for new exclude tid */
 	    ia->rbtidExcludes = xrealloc(ia->rbtidExcludes, 

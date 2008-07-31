@@ -926,7 +926,7 @@ static int wgetLoadManifests(rpmwget wget)
 	char * b = NULL;
 	char * be = NULL;
 	ssize_t blen = 0;
-	int xx = rpmioSlurp(fn, (uint8_t **) &b, &blen);
+	int xx = rpmioSlurp(fn, (rpmuint8_t **) &b, &blen);
 	char * f;
 	char * fe;
 

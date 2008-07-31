@@ -2,6 +2,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmtypes.h>
 
 #include <rpmxar.h>
@@ -100,7 +101,7 @@ fprintf(stderr, "==> rpmwfFini(%p)\n", wf);
     return RPMRC_OK;
 }
 
-static size_t hSize(uint32_t *p)
+static size_t hSize(rpmuint32_t *p)
 	/*@*/
 {
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));

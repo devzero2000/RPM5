@@ -48,7 +48,7 @@ int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     const char * prefix;
     const char * hexstr;
     const char * s;
-    uint8_t signhash16[2];
+    rpmuint8_t signhash16[2];
     char * tt;
     int xx;
 
@@ -107,8 +107,8 @@ int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     /* Compare leading 16 bits of digest for quick check. */
     s = dig->md5;
 /*@-type@*/
-    signhash16[0] = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-    signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
+    signhash16[0] = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+    signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
@@ -136,7 +136,7 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
     rpmbc bc = dig->impl;
-    uint8_t signhash16[2];
+    rpmuint8_t signhash16[2];
     int xx;
 
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
@@ -168,7 +168,7 @@ int rpmbcVerifyDSA(pgpDig dig)
 /**
  */
 static /*@observer@*/
-const char * pgpMpiHex(const uint8_t *p)
+const char * pgpMpiHex(const rpmuint8_t *p)
         /*@*/
 {
     static char prbuf[2048];
@@ -182,8 +182,8 @@ const char * pgpMpiHex(const uint8_t *p)
  */
 static
 int pgpMpiSet(const char * pre, unsigned int lbits,
-		/*@out@*/ void * dest, const uint8_t * p,
-		/*@null@*/ const uint8_t * pend)
+		/*@out@*/ void * dest, const rpmuint8_t * p,
+		/*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
 	/*@modifies *dest, fileSystem @*/
 {
@@ -220,7 +220,7 @@ fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
 
 static
 int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
-		const uint8_t * p, /*@null@*/ const uint8_t * pend)
+		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {

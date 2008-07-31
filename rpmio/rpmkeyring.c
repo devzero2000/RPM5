@@ -9,7 +9,7 @@
 /*@access pgpDigParams @*/
 
 struct rpmPubkey_s {
-    uint8_t *pkt;
+    rpmuint8_t *pkt;
     size_t pktlen;
     pgpKeyID_t keyid;
 /*@refs@*/
@@ -105,7 +105,7 @@ rpmKeyring rpmKeyringUnlink(rpmKeyring keyring)
 
 rpmPubkey rpmPubkeyRead(const char *filename)
 {
-    uint8_t *pkt = NULL;
+    rpmuint8_t *pkt = NULL;
     size_t pktlen;
     rpmPubkey key = NULL;
 
@@ -118,7 +118,7 @@ exit:
     return key;
 }
 
-rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
+rpmPubkey rpmPubkeyNew(const rpmuint8_t *pkt, size_t pktlen)
 {
     rpmPubkey key = NULL;
     

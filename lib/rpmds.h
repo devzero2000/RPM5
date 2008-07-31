@@ -48,20 +48,20 @@ struct rpmds_s {
 /*@only@*/ /*@relnull@*/
     evrFlags * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
-    uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
+    rpmuint32_t * Color;	/*!< Bit(s) calculated from file color(s). */
 /*@only@*/ /*@null@*/
-    uint32_t * Refs;		/*!< No. of file refs. */
+    rpmuint32_t * Refs;		/*!< No. of file refs. */
 /*@only@*/ /*@null@*/
-    int32_t * Result;		/*!< Dependency check result. */
+    rpmint32_t * Result;		/*!< Dependency check result. */
 /*@null@*/
     int (*EVRparse) (const char *evrstr, EVR_t evr);	 /* EVR parsing. */
     int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
     struct rpmns_s ns;		/*!< Name (split). */
 /*@only@*/ /*@null@*/
     const char * A;		/*!< Arch (from containing package). */
-    uint32_t BT;		/*!< Package build time tie breaker. */
+    rpmuint32_t BT;		/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
-    uint32_t Count;		/*!< No. of elements */
+    rpmuint32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
@@ -370,7 +370,7 @@ void * rpmdsSetEVRcmp(/*@null@*/ rpmds ds,
  * @param ds		dependency set
  * @return		current dependency color (0 if not set)
  */
-uint32_t rpmdsColor(/*@null@*/ const rpmds ds)
+rpmuint32_t rpmdsColor(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /** \ingroup rpmds
@@ -379,7 +379,7 @@ uint32_t rpmdsColor(/*@null@*/ const rpmds ds)
  * @param color		new dependency color
  * @return		previous dependency color
  */
-uint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, uint32_t color)
+rpmuint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, rpmuint32_t color)
 	/*@modifies ds @*/;
 
 /** \ingroup rpmds
@@ -387,7 +387,7 @@ uint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, uint32_t color)
  * @param ds		dependency set
  * @return		current dependency file refs (0 if not set)
  */
-uint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
+rpmuint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /** \ingroup rpmds
@@ -396,7 +396,7 @@ uint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
  * @param refs		new dependency refs
  * @return		previous dependency refs
  */
-uint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, uint32_t refs)
+rpmuint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, rpmuint32_t refs)
 	/*@modifies ds @*/;
 
 /** \ingroup rpmds
@@ -413,7 +413,7 @@ int32_t rpmdsResult(/*@null@*/ const rpmds ds)
  * @param result	new dependency result
  * @return		previous dependency result
  */
-int32_t rpmdsSetResult(/*@null@*/ const rpmds ds, int32_t result)
+rpmint32_t rpmdsSetResult(/*@null@*/ const rpmds ds, rpmint32_t result)
 	/*@modifies ds @*/;
 
 /** \ingroup rpmds

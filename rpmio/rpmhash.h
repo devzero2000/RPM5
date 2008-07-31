@@ -6,6 +6,8 @@
  * Hash table implemenation.
  */
 
+#include <rpmiotypes.h>
+
 /**
  */
 typedef /*@abstract@*/ struct hashTable_s * hashTable;
@@ -39,7 +41,8 @@ int hashEqualityString(const void * key1, const void * key2)
  * @param size		size of data in bytes
  * @return		hash value
  */
-typedef uint32_t (*hashFunctionType) (uint32_t h, const void * data, size_t size)
+typedef rpmuint32_t (*hashFunctionType) (rpmuint32_t h, const void * data,
+		size_t size)
 	/*@*/;
 
 /**
@@ -49,7 +52,7 @@ typedef uint32_t (*hashFunctionType) (uint32_t h, const void * data, size_t size
  * @param size		size of data in bytes (0 will use strlen(data))
  * @return		hash value
  */
-uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
+rpmuint32_t hashFunctionString(rpmuint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**

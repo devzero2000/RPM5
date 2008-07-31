@@ -311,7 +311,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	goto exit;
 
     /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts((uint8_t *)ts->pkpkt, ts->pkpktlen, dig, 0);
+    xx = pgpPrtPkts((rpmuint8_t *)ts->pkpkt, ts->pkpktlen, dig, 0);
 
     /* Do the parameters match the signature? */
     if (sigp->pubkey_algo == pubp->pubkey_algo
@@ -678,14 +678,14 @@ rpmxar xar = fdGetXAR(fd);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
     char buf[BUFSIZ];
-    uint32_t block[4];
-    uint32_t il;
-    uint32_t dl;
-    uint32_t * ei = NULL;
+    rpmuint32_t block[4];
+    rpmuint32_t il;
+    rpmuint32_t dl;
+    rpmuint32_t * ei = NULL;
     entryInfo pe;
     size_t startoff;
     size_t nb;
-    uint32_t ril = 0;
+    rpmuint32_t ril = 0;
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     unsigned char * dataStart;
@@ -693,7 +693,7 @@ rpmxar xar = fdGetXAR(fd);
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
-    uint32_t i;
+    rpmuint32_t i;
 
 if (_pkgio_debug)
 fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
@@ -732,13 +732,13 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	    goto exit;
 	}
     }
-    il = (uint32_t) ntohl(block[2]);
+    il = (rpmuint32_t) ntohl(block[2]);
     if (il > 32) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh tags: BAD, no. of tags(%u) out of range"), (unsigned) il);
 	goto exit;
     }
-    dl = (uint32_t) ntohl(block[3]);
+    dl = (rpmuint32_t) ntohl(block[3]);
     if (dl > 8192) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh data: BAD, no. of bytes(%u) out of range"), (unsigned) dl);
@@ -782,7 +782,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
  * built by rpm-4.3.3 (from REL4) has entry->info.offset == 0.
  */
 assert(entry->info.offset >= 0);	/* XXX insurance */
-	if (entry->info.offset >= (int32_t)dl) {
+	if (entry->info.offset >= (rpmint32_t)dl) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
@@ -795,8 +795,8 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 /*@-sizeoftype@*/
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
-	if (info->tag == (uint32_t) htonl(RPMTAG_HEADERIMAGE)) {
-	    uint32_t stag = (uint32_t) htonl(RPMTAG_HEADERSIGNATURES);
+	if (info->tag == (rpmuint32_t) htonl(RPMTAG_HEADERIMAGE)) {
+	    rpmuint32_t stag = (rpmuint32_t) htonl(RPMTAG_HEADERSIGNATURES);
 	    info->tag = stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
@@ -818,7 +818,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	memset(info, 0, sizeof(*info));
 
 	/* Is the no. of tags in the region less than the total no. of tags? */
-	ril = (uint32_t) entry->info.offset/sizeof(*pe);
+	ril = (rpmuint32_t) entry->info.offset/sizeof(*pe);
 	if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region size: BAD, ril(%u) > il(%u)"), (unsigned) ril, (unsigned) il);
@@ -906,13 +906,13 @@ exit:
 rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 {
     char buf[8*BUFSIZ];
-    uint32_t * ei = (uint32_t *) uh;
-    uint32_t il = (uint32_t) ntohl(ei[0]);
-    uint32_t dl = (uint32_t) ntohl(ei[1]);
+    rpmuint32_t * ei = (rpmuint32_t *) uh;
+    rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);
+    rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);
 /*@-castexpose@*/
     entryInfo pe = (entryInfo) &ei[2];
 /*@=castexpose@*/
-    uint32_t ildl[2];
+    rpmuint32_t ildl[2];
     size_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
@@ -924,11 +924,11 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     size_t siglen = 0;
     int blen;
     size_t nb;
-    uint32_t ril = 0;
+    rpmuint32_t ril = 0;
     unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
-    uint32_t i;
+    rpmuint32_t i;
 
 if (_pkgio_debug)
 fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg);
@@ -995,7 +995,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
     memset(info, 0, sizeof(*info));
 
     /* Is the no. of tags in the region less than the total no. of tags? */
-    ril = (uint32_t) entry->info.offset/sizeof(*pe);
+    ril = (rpmuint32_t) entry->info.offset/sizeof(*pe);
     if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	(void) snprintf(buf, sizeof(buf),
 		_("region size: BAD, ril(%u) > il(%u)"), (unsigned) ril, (unsigned)il);
@@ -1110,9 +1110,9 @@ assert(dig != NULL);
 	    goto exit;
 	}
 
-	ildl[0] = (uint32_t) htonl(ril);
-	ildl[1] = (uint32_t) (regionEnd - dataStart);
-	ildl[1] = (uint32_t) htonl(ildl[1]);
+	ildl[0] = (rpmuint32_t) htonl(ril);
+	ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
+	ildl[1] = (rpmuint32_t) htonl(ildl[1]);
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
@@ -1154,9 +1154,9 @@ assert(dig != NULL);
 	}
 	/*@fallthrough@*/
     case RPMTAG_SHA1HEADER:
-	ildl[0] = (uint32_t) htonl(ril);
-	ildl[1] = (uint32_t) (regionEnd - dataStart);
-	ildl[1] = (uint32_t) htonl(ildl[1]);
+	ildl[0] = (rpmuint32_t) htonl(ril);
+	ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
+	ildl[1] = (rpmuint32_t) htonl(ildl[1]);
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
@@ -1208,7 +1208,7 @@ assert(dig != NULL);
 static size_t szHeader(/*@null@*/ const void * ptr)
 	/*@*/
 {
-    uint32_t p[4];
+    rpmuint32_t p[4];
 assert(ptr != NULL);
     memcpy(p, ptr, sizeof(p));
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));
@@ -1253,10 +1253,10 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
 rpmxar xar = fdGetXAR(fd);
     pgpDig dig = pgpDigLink(fdGetDig(fd), "rpmReadHeader");
     char buf[BUFSIZ];
-    uint32_t block[4];
-    uint32_t il;
-    uint32_t dl;
-    uint32_t * ei = NULL;
+    rpmuint32_t block[4];
+    rpmuint32_t il;
+    rpmuint32_t dl;
+    rpmuint32_t * ei = NULL;
     size_t uc;
     unsigned char * b;
     size_t startoff;
@@ -1331,7 +1331,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
-    ei = (uint32_t *) xmalloc(uc);
+    ei = (rpmuint32_t *) xmalloc(uc);
     if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr blob(%u): BAD, read returned %d"), (unsigned)nb, xx);

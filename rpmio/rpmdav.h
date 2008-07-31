@@ -83,7 +83,7 @@ struct avContext_s {
     ARGV_t av;
 /*@relnull@*/ /*@shared@*/
     struct stat *st;
-    uint16_t * modes;	/* XXX sizeof(mode_t) != sizeof(rpmmode_t) */
+    rpmuint16_t * modes;	/* XXX sizeof(mode_t) != sizeof(rpmmode_t) */
     size_t * sizes;
     time_t * mtimes;
 };
@@ -137,7 +137,7 @@ struct dirent * avReaddir(DIR * dir)
  */
 /*@null@*/
 DIR * avOpendir(const char * path,
-		/*@null@*/ const char ** av, /*@null@*/ uint16_t * modes)
+		/*@null@*/ const char ** av, /*@null@*/ rpmuint16_t * modes)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 #endif

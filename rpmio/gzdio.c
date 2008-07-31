@@ -28,17 +28,17 @@ typedef	enum { true = 1, false = 0 } bool;
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
 
 typedef struct cpio_state_s {
-    uint32_t n;			/* byte progress in cpio header */
-    uint32_t mode;			/* file attributes */
-    uint32_t nlnk;
-    uint32_t size;
+    rpmuint32_t n;			/* byte progress in cpio header */
+    rpmuint32_t mode;			/* file attributes */
+    rpmuint32_t nlnk;
+    rpmuint32_t size;
 } * cpio_state;
 
 #define RSYNC_WIN 4096
 
 typedef struct rsync_state_s {
-    uint32_t n;				/* number of elements in the window */
-    uint32_t sum;			/* current sum */
+    rpmuint32_t n;			/* number of elements in the window */
+    rpmuint32_t sum;			/* current sum */
     unsigned char win[RSYNC_WIN];	/* window elements */
 } * rsync_state;
 
@@ -46,7 +46,7 @@ typedef struct rpmGZFILE_s {
     gzFile gz;				/* gzFile is a pointer */
     struct rsync_state_s rs;
     struct cpio_state_s cs;
-    uint32_t nb;			/* bytes pending for sync */
+    rpmuint32_t nb;			/* bytes pending for sync */
 } * rpmGZFILE;				/* like FILE, to use with star */
 
 /* Should gzflush be called only after RSYNC_WIN boundaries? */
@@ -128,16 +128,16 @@ static inline
 bool rsync_next(rsync_state s, unsigned char c)
 	/*@modifies s @*/
 {
-    uint32_t i;
+    rpmuint32_t i;
 
     if (s->n < RSYNC_WIN) {		/* not enough elements */
-	s->sum += (uint32_t)c;		/* update the sum */
+	s->sum += (rpmuint32_t)c;	/* update the sum */
 	s->win[s->n++] = c;		/* remember the element */
 	return false;			/* no match */
     }
     i = s->n++ % RSYNC_WIN;		/* wrap up */
-    s->sum -= (uint32_t)s->win[i];	/* move the window on */
-    s->sum += (uint32_t)c;
+    s->sum -= (rpmuint32_t)s->win[i];	/* move the window on */
+    s->sum += (rpmuint32_t)c;
     s->win[i] = c;
     if (s->sum % RSYNC_WIN == 0) {	/* match */
 	s->n = 0;			/* reset */

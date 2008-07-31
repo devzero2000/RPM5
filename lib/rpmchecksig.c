@@ -202,7 +202,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
     if (argv)
  {       /* start-of-arg-iteration */
-    uint32_t tag = (qva->qva_source == RPMQV_FTSWALK)
+    rpmuint32_t tag = (qva->qva_source == RPMQV_FTSWALK)
 	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
     rpmgiFlags _giFlags = RPMGI_NONE;
 
@@ -308,7 +308,7 @@ if (sigh != NULL) {
 	xx = headerDel(sigh, he, 0);
 
 	/* Toss and recalculate header+payload size and digests. */
-	{   static const uint32_t sigs[] =
+	{   static const rpmuint32_t sigs[] =
 		{ RPMSIGTAG_SIZE, RPMSIGTAG_MD5, RPMSIGTAG_SHA1 };
 	    int nsigs = sizeof(sigs) / sizeof(sigs[0]);
 	    for (i = 0; i < nsigs; i++) {
@@ -322,7 +322,7 @@ if (sigh != NULL) {
 
 	if (deleting) {
 	    /* Nuke all the signature tags. */
-	    static const uint32_t sigs[] =
+	    static const rpmuint32_t sigs[] =
 		{ RPMSIGTAG_GPG, RPMSIGTAG_PGP5, RPMSIGTAG_PGP,
 		  RPMSIGTAG_DSA, RPMSIGTAG_RSA };
 	    int nsigs = sizeof(sigs) / sizeof(sigs[0]);
@@ -479,8 +479,8 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     const char * group = "Public Keys";
     const char * license = "pubkey";
     const char * buildhost = "localhost";
-    uint32_t pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
-    uint32_t zero = 0;
+    rpmuint32_t pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    rpmuint32_t zero = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
     const char * d = NULL;
@@ -656,7 +656,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->p.str = buildhost;
     he->c = 1;
     xx = headerPut(h, he, 0);
-    {   uint32_t tid = rpmtsGetTid(ts);
+    {   rpmuint32_t tid = rpmtsGetTid(ts);
 	he->tag = RPMTAG_INSTALLTIME;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
@@ -717,7 +717,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 		fileSystem, internalState @*/
 {
     const char * fn;
-    uint8_t * pkt = NULL;
+    rpmuint8_t * pkt = NULL;
     size_t pktlen = 0;
     char * t = NULL;
     int res = 0;

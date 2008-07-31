@@ -270,7 +270,7 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp;
     pgpDigParams pubp;
-    uint8_t * sigpkt = NULL;
+    rpmuint8_t * sigpkt = NULL;
     size_t sigpktlen = 0;
     DIGEST_CTX ctx = NULL;
     int printing = 0;
@@ -302,7 +302,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsi
 	}
 	_sigfn = _free(_sigfn);
     }
-    xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
+    xx = pgpPrtPkts((rpmuint8_t *)sigpkt, sigpktlen, dig, printing);
     if (xx) {
 if (_rpmns_debug)
 fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, (unsigned)sigpktlen, xx);
@@ -330,7 +330,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, (u
 	    goto exit;
 	}
 	_pubfn = _free(_pubfn);
-	xx = pgpPrtPkts((uint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
+	xx = pgpPrtPkts((rpmuint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
 	if (xx) {
 if (_rpmns_debug)
 fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, (unsigned int)ts->pkpktlen, xx);
@@ -410,7 +410,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
 	static const char clrtxt[] = "-----BEGIN PGP SIGNED MESSAGE-----";
 	static const char sigtxt[] = "-----BEGIN PGP SIGNATURE-----";
 	const char * _fn = rpmExpand(fn, NULL);
-	uint8_t * b = NULL;
+	rpmuint8_t * b = NULL;
 	ssize_t blen = 0;
 	int _rc = rpmioSlurp(_fn, &b, &blen);
 
@@ -460,8 +460,8 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, (unsigned int)
     if (sigp->hash != NULL)
 	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
     if (sigp->version == 4) {
-	uint32_t nb = sigp->hashlen;
-	uint8_t trailer[6];
+	rpmuint32_t nb = sigp->hashlen;
+	rpmuint8_t trailer[6];
 	nb = htonl(nb);
 	trailer[0] = sigp->version;
 	trailer[1] = 0xff;

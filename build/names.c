@@ -194,12 +194,12 @@ gid_t getGidS(const char *gname)
     return gids[gid_used++];
 }
 
-uint32_t * getBuildTime(void)
+rpmuint32_t * getBuildTime(void)
 {
-    static uint32_t buildTime[1];
+    static rpmuint32_t buildTime[1];
 
     if (buildTime[0] == 0)
-	buildTime[0] = (uint32_t) time(NULL);
+	buildTime[0] = (rpmuint32_t) time(NULL);
     return buildTime;
 }
 

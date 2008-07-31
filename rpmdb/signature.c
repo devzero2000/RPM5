@@ -145,7 +145,7 @@ errxit:
  * @return		0 on success, 1 on failure
  */
 static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
-		/*@out@*/ uint8_t ** pktp, /*@out@*/ uint32_t * pktlenp,
+		/*@out@*/ rpmuint8_t ** pktp, /*@out@*/ rpmuint32_t * pktlenp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -256,7 +256,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	    if (sigfile) (void) Unlink(sigfile);
 	    (void) Fclose(fd);
 	}
-	if ((uint32_t)rc != *pktlenp) {
+	if ((rpmuint32_t)rc != *pktlenp) {
 	    *pktp = _free(*pktp);
 	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
@@ -313,8 +313,8 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;
     FD_t fd = NULL;
-    uint8_t * pkt;
-    uint32_t pktlen;
+    rpmuint8_t * pkt;
+    rpmuint32_t pktlen;
     const char * fn = NULL;
     const char * msg;
     rpmRC rc;
@@ -441,8 +441,8 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct stat st;
-    uint8_t * pkt;
-    uint32_t pktlen;
+    rpmuint8_t * pkt;
+    rpmuint32_t pktlen;
     int ret = -1;	/* assume failure. */
     int xx;
 
@@ -598,7 +598,7 @@ verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
 {
     const void * sig = pgpGetSig(dig);
     rpmRC res;
-    uint32_t size = 0xffffffff;
+    rpmuint32_t size = 0xffffffff;
 
     *t = '\0';
     t = stpcpy(t, _("Header+Payload size: "));
@@ -632,9 +632,9 @@ verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
 	/*@modifies *t, internalState @*/
 {
     const void * sig = pgpGetSig(dig);
-    uint32_t siglen = pgpGetSiglen(dig);
+    rpmuint32_t siglen = pgpGetSiglen(dig);
     rpmRC res;
-    uint8_t * md5sum = NULL;
+    rpmuint8_t * md5sum = NULL;
     size_t md5len = 0;
 
     *t = '\0';
@@ -689,7 +689,7 @@ verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
-    uint32_t siglen = pgpGetSiglen(dig);
+    rpmuint32_t siglen = pgpGetSiglen(dig);
 #endif
     rpmRC res;
     const char * SHA1 = NULL;
@@ -744,7 +744,7 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
-    uint32_t siglen = pgpGetSiglen(dig);
+    rpmuint32_t siglen = pgpGetSiglen(dig);
 #endif
     rpmSigTag sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -870,7 +870,7 @@ verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
-    uint32_t siglen = pgpGetSiglen(dig);
+    rpmuint32_t siglen = pgpGetSiglen(dig);
 #endif
     rpmSigTag sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -912,8 +912,8 @@ assert(sigp != NULL);
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
 	if (sigp->version == 4) {
-	    uint32_t nb = sigp->hashlen;
-	    uint8_t trailer[6];
+	    rpmuint32_t nb = sigp->hashlen;
+	    rpmuint8_t trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = sigp->version;
 	    trailer[1] = 0xff;
@@ -957,7 +957,7 @@ rpmVerifySignature(void * _dig, char * result)
 {
     pgpDig dig = _dig;
     const void * sig = pgpGetSig(dig);
-    uint32_t siglen = pgpGetSiglen(dig);
+    rpmuint32_t siglen = pgpGetSiglen(dig);
     rpmSigTag sigtag = pgpGetSigtag(dig);
     rpmRC res;
 

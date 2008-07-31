@@ -201,15 +201,15 @@ static int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	{
 	    *res |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
-	    uint16_t st_rdev = (sb.st_rdev & 0xffff);
-	    uint16_t frdev = (uint16_t)(rpmfiFRdev(fi) & 0xffff);
+	    rpmuint16_t st_rdev = (sb.st_rdev & 0xffff);
+	    rpmuint16_t frdev = (rpmuint16_t)(rpmfiFRdev(fi) & 0xffff);
 	    if (st_rdev != frdev)
 		*res |= RPMVERIFY_RDEV;
 	}
     }
 
     if (flags & RPMVERIFY_MTIME) {
-	if ((uint32_t)sb.st_mtime != rpmfiFMtime(fi))
+	if ((rpmuint32_t)sb.st_mtime != rpmfiFMtime(fi))
 	    *res |= RPMVERIFY_MTIME;
     }
 

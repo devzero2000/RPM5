@@ -80,7 +80,7 @@ alKey rpmalAdd(rpmal * alistp,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmds provides, /*@null@*/ rpmfi fi,
-		uint32_t tscolor)
+		rpmuint32_t tscolor)
 	/*@globals fileSystem @*/
 	/*@modifies *alistp, provides, fi, fileSystem @*/;
 
@@ -94,7 +94,7 @@ alKey rpmalAdd(rpmal * alistp,
 /*@-exportlocal@*/
 void rpmalAddProvides(rpmal al,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
-		/*@null@*/ rpmds provides, uint32_t tscolor)
+		/*@null@*/ rpmds provides, rpmuint32_t tscolor)
 	/*@modifies al, provides @*/;
 /*@=exportlocal@*/
 

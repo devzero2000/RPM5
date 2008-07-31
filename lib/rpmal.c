@@ -38,7 +38,7 @@ struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File info set. */
 
-    uint32_t tscolor;		/*!< Transaction color bits. */
+    rpmuint32_t tscolor;	/*!< Transaction color bits. */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< Associated file name/python object */
@@ -87,7 +87,7 @@ struct fileIndexEntry_s {
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
-    uint32_t ficolor;
+    rpmuint32_t ficolor;
 };
 
 typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
@@ -115,7 +115,7 @@ struct rpmal_s {
     int delta;			/*!< Delta for pkg list reallocation. */
     int size;			/*!< No. of pkgs in list. */
     int alloced;		/*!< No. of pkgs allocated for list. */
-    uint32_t tscolor;		/*!< Transaction color. */
+    rpmuint32_t tscolor;	/*!< Transaction color. */
     int numDirs;		/*!< No. of directories. */
 /*@owned@*/ /*@null@*/
     dirInfo dirs;		/*!< Set of directories. */
@@ -417,7 +417,7 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->
 }
 
 alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
-		rpmds provides, rpmfi fi, uint32_t tscolor)
+		rpmds provides, rpmfi fi, rpmuint32_t tscolor)
 {
     alNum pkgNum;
     rpmal al;
@@ -612,9 +612,9 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint32_t tscolor)
+void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, rpmuint32_t tscolor)
 {
-    uint32_t dscolor;
+    rpmuint32_t dscolor;
     const char * Name;
     alNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
@@ -687,8 +687,8 @@ void rpmalMakeIndex(rpmal al)
 fnpyKey *
 rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
-    uint32_t tscolor;
-    uint32_t ficolor;
+    rpmuint32_t tscolor;
+    rpmuint32_t ficolor;
     int found = 0;
     const char * dirName;
     const char * baseName;

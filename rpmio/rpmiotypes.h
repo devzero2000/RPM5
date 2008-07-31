@@ -13,6 +13,8 @@ typedef unsigned short		rpmuint16_t;
 typedef unsigned int		rpmuint32_t;
 typedef unsigned long long	rpmuint64_t;
 
+typedef int			rpmint32_t;
+
 /*@-redef@*/ /* LCL: ??? */
 typedef /*@abstract@*/ const void * fnpyKey;
 /*@=redef@*/

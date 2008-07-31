@@ -786,12 +786,12 @@ void rpmtsSetType(rpmts ts, rpmTSType type)
 	ts->type = type;
 }
 
-uint32_t rpmtsARBGoal(rpmts ts)
+rpmuint32_t rpmtsARBGoal(rpmts ts)
 {
     return ((ts != NULL) ?  ts->arbgoal : 0);
 }
 
-void rpmtsSetARBGoal(rpmts ts, uint32_t goal)
+void rpmtsSetARBGoal(rpmts ts, rpmuint32_t goal)
 {
     if (ts != NULL)
 	ts->arbgoal = goal;
@@ -942,18 +942,18 @@ int rpmtsSetREContext(rpmts ts, rpmsx sx)
     return rc;
 }
 
-uint32_t rpmtsGetTid(rpmts ts)
+rpmuint32_t rpmtsGetTid(rpmts ts)
 {
-    uint32_t tid = 0;	/* XXX -1 is time(2) error return. */
+    rpmuint32_t tid = 0;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	tid = ts->tid[0];
     }
     return tid;
 }
 
-uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
+rpmuint32_t rpmtsSetTid(rpmts ts, rpmuint32_t tid)
 {
-    uint32_t otid = 0;	/* XXX -1 is time(2) error return. */
+    rpmuint32_t otid = 0;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	otid = ts->tid[0];
 	ts->tid[0] = tid;
@@ -1097,12 +1097,12 @@ int rpmtsInitDSI(const rpmts ts)
 }
 
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
+		rpmuint32_t fileSize, rpmuint32_t prevSize, rpmuint32_t fixupSize,
 		int _action)
 {
     fileAction action = _action;
     rpmDiskSpaceInfo dsi;
-    uint64_t bneeded;
+    rpmuint64_t bneeded;
 
     dsi = ts->dsi;
     if (dsi) {
@@ -1191,7 +1191,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 }
 
 void * rpmtsNotify(rpmts ts, rpmte te,
-		rpmCallbackType what, uint64_t amount, uint64_t total)
+		rpmCallbackType what, rpmuint64_t amount, rpmuint64_t total)
 {
     void * ptr = NULL;
     if (ts && ts->notify) {
@@ -1332,14 +1332,14 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
     return odbmode;
 }
 
-uint32_t rpmtsColor(rpmts ts)
+rpmuint32_t rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);
 }
 
-uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
+rpmuint32_t rpmtsSetColor(rpmts ts, rpmuint32_t color)
 {
-    uint32_t ocolor = 0;
+    rpmuint32_t ocolor = 0;
     if (ts != NULL) {
 	ocolor = ts->color;
 	ts->color = color;
@@ -1347,7 +1347,7 @@ uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
     return ocolor;
 }
 
-uint32_t rpmtsPrefColor(rpmts ts)
+rpmuint32_t rpmtsPrefColor(rpmts ts)
 {
     return (ts != NULL ? ts->prefcolor : 0);
 }
@@ -1392,8 +1392,8 @@ rpmts rpmtsCreate(void)
     ts->scriptFd = NULL;
     {   struct timeval tv;
 	xx = gettimeofday(&tv, NULL);
-	ts->tid[0] = (uint32_t) tv.tv_sec;
-        ts->tid[1] = (uint32_t) tv.tv_usec;
+	ts->tid[0] = (rpmuint32_t) tv.tv_sec;
+        ts->tid[1] = (rpmuint32_t) tv.tv_usec;
     }
     ts->delta = 5;
 

@@ -143,7 +143,7 @@ Header headerFree(Header h)
 	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
-		    uint32_t * ei = entry->data;
+		    rpmuint32_t * ei = entry->data;
 		    if ((ei - 2) == h->blob)
 			h->blob = _free(h->blob);
 		    entry->data = NULL;
@@ -268,7 +268,7 @@ size_t headerSizeof(Header h)
     size += sizeof(header_magic);	/* XXX HEADER_MAGIC_YES */
 
     /*@-sizeoftype@*/
-    size += 2 * sizeof(uint32_t);	/* count of index entries */
+    size += 2 * sizeof(rpmuint32_t);	/* count of index entries */
     /*@=sizeoftype@*/
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
@@ -370,34 +370,34 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 }
 
 /** \ingroup header
- * Swab uint64_t/uint32_t/uint16_t arrays within header region.
+ * Swab rpmuint64_t/rpmuint32_t/rpmuint16_t arrays within header region.
  *
  */
 static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
 		const HE_t he, size_t nb)
 	/*@modifies *t @*/
 {
-    uint32_t i;
+    rpmuint32_t i;
 
     switch (he->t) {
     case RPM_UINT64_TYPE:
-    {	uint32_t * tt = (uint32_t *)t;
+    {	rpmuint32_t * tt = (rpmuint32_t *)t;
 	for (i = 0; i < he->c; i++) {
-	    uint32_t j = 2 * i;
-	    uint32_t b = (uint32_t) htonl(he->p.ui32p[j]);
-	    tt[j  ] = (uint32_t) htonl(he->p.ui32p[j+1]);
+	    rpmuint32_t j = 2 * i;
+	    rpmuint32_t b = (rpmuint32_t) htonl(he->p.ui32p[j]);
+	    tt[j  ] = (rpmuint32_t) htonl(he->p.ui32p[j+1]);
 	    tt[j+1] = b;
 	}
     }   break;
     case RPM_UINT32_TYPE:
-    {	uint32_t * tt = (uint32_t *)t;
+    {	rpmuint32_t * tt = (rpmuint32_t *)t;
 	for (i = 0; i < he->c; i++)
-	    tt[i] = (uint32_t) htonl(he->p.ui32p[i]);
+	    tt[i] = (rpmuint32_t) htonl(he->p.ui32p[i]);
     }   break;
     case RPM_UINT16_TYPE:
-    {	uint16_t * tt = (uint16_t *)t;
+    {	rpmuint16_t * tt = (rpmuint16_t *)t;
 	for (i = 0; i < he->c; i++)
-	    tt[i] = (uint16_t) htons(he->p.ui16p[i]);
+	    tt[i] = (rpmuint16_t) htons(he->p.ui16p[i]);
     }   break;
     default:
 	if ((void *)t != he->p.ptr && nb)
@@ -473,7 +473,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
 }
 
 /** \ingroup header
- * Swab uint64_t/uint32_t/uint16_t arrays within header region.
+ * Swab rpmuint64_t/rpmuint32_t/rpmuint16_t arrays within header region.
  *
  * This code is way more twisty than I would like.
  *
@@ -499,11 +499,11 @@ assert(0);	/* XXX stop unimplemented oversights. */
  * @return		no. bytes of data in region, 0 on error
  */
 /*@-globs@*/	/* XXX rpm_typeAlign usage */
-static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl,
+static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmuint32_t dl,
 		entryInfo pe,
 		unsigned char * dataStart,
 		/*@null@*/ const unsigned char * dataEnd,
-		int32_t regionid)
+		rpmint32_t regionid)
 	/*@modifies *entry, *dataStart @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -520,10 +520,10 @@ static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl
 	struct indexEntry_s ie;
 	rpmTagType type;
 
-	ie.info.tag = (uint32_t) ntohl(pe->tag);
-	ie.info.type = (uint32_t) ntohl(pe->type);
-	ie.info.count = (uint32_t) ntohl(pe->count);
-	ie.info.offset = (int32_t) ntohl(pe->offset);
+	ie.info.tag = (rpmuint32_t) ntohl(pe->tag);
+	ie.info.type = (rpmuint32_t) ntohl(pe->type);
+	ie.info.count = (rpmuint32_t) ntohl(pe->count);
+	ie.info.offset = (rpmint32_t) ntohl(pe->offset);
 assert(ie.info.offset >= 0);	/* XXX insurance */
 
 	if (hdrchkType(ie.info.type))
@@ -540,13 +540,13 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	    return 0;
 
 	p.ptr = ie.data;
-	pend.ui8p = (uint8_t *) dataEnd;
+	pend.ui8p = (rpmuint8_t *) dataEnd;
 
 	/* Find the length of the tag data store. */
 	if (dataEnd && _hdr_fastdatalength) {
 	    /* Compute the tag data store length using offsets. */
 	    if (il > 1)
-		ie.length = ((uint32_t) ntohl(pe[1].offset) - ie.info.offset);
+		ie.length = ((rpmuint32_t) ntohl(pe[1].offset) - ie.info.offset);
 	    else
 		ie.length = (dataEnd - t);
 	} else {
@@ -633,14 +633,14 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 void * headerUnload(Header h, size_t * lenp)
 {
     void * sw;
-    uint32_t * ei = NULL;
+    rpmuint32_t * ei = NULL;
     entryInfo pe;
     unsigned char * dataStart;
     unsigned char * te;
     unsigned pad;
     size_t len = 0;
-    uint32_t il = 0;
-    uint32_t dl = 0;
+    rpmuint32_t il = 0;
+    rpmuint32_t dl = 0;
     indexEntry entry; 
     rpmTagType type;
     size_t i;
@@ -661,9 +661,9 @@ void * headerUnload(Header h, size_t * lenp)
     drlen = ndribbles = driplen = ndrips = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
-	    uint32_t rdl;
-	    uint32_t ril;
-	    int32_t rid;
+	    rpmuint32_t rdl;
+	    rpmuint32_t ril;
+	    rpmint32_t rid;
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
 	    rdl = -entry->info.offset;	/* negative offset */
@@ -731,8 +731,8 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
     len = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
 
     ei = xmalloc(len);
-    ei[0] = (uint32_t) htonl(il);
-    ei[1] = (uint32_t) htonl(dl);
+    ei[0] = (rpmuint32_t) htonl(il);
+    ei[1] = (rpmuint32_t) htonl(dl);
 
     pe = (entryInfo) &ei[2];
     dataStart = te = (unsigned char *) (pe + il);
@@ -741,21 +741,21 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
 	unsigned char *t;
-	uint32_t count;
-	uint32_t rdlen;
+	rpmuint32_t count;
+	rpmuint32_t rdlen;
 
 	if (entry->data == NULL || entry->length == 0)
 	    continue;
 
 	t = te;
-	pe->tag = (uint32_t) htonl(entry->info.tag);
-	pe->type = (uint32_t) htonl(entry->info.type);
-	pe->count = (uint32_t) htonl(entry->info.count);
+	pe->tag = (rpmuint32_t) htonl(entry->info.tag);
+	pe->type = (rpmuint32_t) htonl(entry->info.type);
+	pe->count = (rpmuint32_t) htonl(entry->info.count);
 
 	if (ENTRY_IS_REGION(entry)) {
-	    uint32_t rdl;
-	    uint32_t ril;
-	    int32_t rid;
+	    rpmuint32_t rdl;
+	    rpmuint32_t ril;
+	    rpmint32_t rid;
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
 
@@ -768,18 +768,18 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY)) {
-		uint32_t stei[4];
+		rpmuint32_t stei[4];
 
 		legacy = 1;
 		memcpy(pe+1, src, rdl);
 		memcpy(te, src + rdl, rdlen);
 		te += rdlen;
 
-		pe->offset = (int32_t) htonl(te - dataStart);
-		stei[0] = (uint32_t) pe->tag;
-		stei[1] = (uint32_t) pe->type;
-		stei[2] = (uint32_t) htonl(-rdl-entry->info.count);
-		stei[3] = (uint32_t) pe->count;
+		pe->offset = (rpmint32_t) htonl(te - dataStart);
+		stei[0] = (rpmuint32_t) pe->tag;
+		stei[1] = (rpmuint32_t) pe->type;
+		stei[2] = (rpmuint32_t) htonl(-rdl-entry->info.count);
+		stei[3] = (rpmuint32_t) pe->count;
 		memcpy(te, stei, entry->info.count);
 		te += entry->info.count;
 		ril++;
@@ -797,8 +797,8 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		{   /*@-castexpose@*/
 		    entryInfo se = (entryInfo)src;
 		    /*@=castexpose@*/
-		    int32_t off = (int32_t) ntohl(se->offset);
-		    pe->offset = (int32_t)((off)
+		    rpmint32_t off = (rpmint32_t) ntohl(se->offset);
+		    pe->offset = (rpmint32_t)((off)
 			? htonl(te - dataStart) : htonl(off));
 		}
 		te += entry->info.count + drlen;
@@ -835,18 +835,18 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	    }
 	}
 
-	pe->offset = (int32_t) htonl(te - dataStart);
+	pe->offset = (rpmint32_t) htonl(te - dataStart);
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
 	case RPM_UINT64_TYPE:
-	{   uint32_t b[2];
+	{   rpmuint32_t b[2];
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		b[1] = (uint32_t) htonl(((uint32_t *)src)[0]);
-		b[0] = (uint32_t) htonl(((uint32_t *)src)[1]);
-		if (b[1] == ((uint32_t *)src)[0])
+		b[1] = (rpmuint32_t) htonl(((rpmuint32_t *)src)[0]);
+		b[0] = (rpmuint32_t) htonl(((rpmuint32_t *)src)[1]);
+		if (b[1] == ((rpmuint32_t *)src)[0])
 		    memcpy(te, src, sizeof(b));
 		else
 		    memcpy(te, b, sizeof(b));
@@ -859,10 +859,10 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((uint32_t *)te) = (uint32_t) htonl(*((uint32_t *)src));
+		*((rpmuint32_t *)te) = (rpmuint32_t) htonl(*((rpmuint32_t *)src));
 		/*@-sizeoftype@*/
-		te += sizeof(uint32_t);
-		src += sizeof(uint32_t);
+		te += sizeof(rpmuint32_t);
+		src += sizeof(rpmuint32_t);
 		/*@=sizeoftype@*/
 	    }
 	    /*@switchbreak@*/ break;
@@ -871,10 +871,10 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((uint16_t *)te) = (uint16_t) htons(*((uint16_t *)src));
+		*((rpmuint16_t *)te) = (rpmuint16_t) htons(*((rpmuint16_t *)src));
 		/*@-sizeoftype@*/
-		te += sizeof(uint16_t);
-		src += sizeof(uint16_t);
+		te += sizeof(rpmuint16_t);
+		src += sizeof(rpmuint16_t);
 		/*@=sizeoftype@*/
 	    }
 	    /*@switchbreak@*/ break;
@@ -1008,9 +1008,9 @@ int headerRemoveEntry(Header h, rpmTag tag)
 Header headerLoad(void * uh)
 {
     void * sw = NULL;
-    uint32_t * ei = (uint32_t *) uh;
-    uint32_t il = (uint32_t) ntohl(ei[0]);		/* index length */
-    uint32_t dl = (uint32_t) ntohl(ei[1]);		/* data length */
+    rpmuint32_t * ei = (rpmuint32_t *) uh;
+    rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);		/* index length */
+    rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);		/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo_s)) + dl;
@@ -1021,14 +1021,14 @@ Header headerLoad(void * uh)
     unsigned char * dataStart;
     unsigned char * dataEnd;
     indexEntry entry; 
-    uint32_t rdlen;
+    rpmuint32_t rdlen;
     int i;
 
     /* Sanity checks on header intro. */
     if (hdrchkTags(il) || hdrchkData(dl))
 	goto errxit;
 
-    ei = (uint32_t *) pv;
+    ei = (rpmuint32_t *) pv;
     /*@-castexpose@*/
     pe = (entryInfo) &ei[2];
     /*@=castexpose@*/
@@ -1050,7 +1050,7 @@ Header headerLoad(void * uh)
     h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
     h->startoff = 0;
-    h->endoff = (uint32_t) pvlen;
+    h->endoff = (rpmuint32_t) pvlen;
     h = headerLink(h);
 
     entry = h->index;
@@ -1077,20 +1077,20 @@ Header headerLoad(void * uh)
 	entry++;
 	h->indexUsed++;
     } else {
-	uint32_t rdl;
-	uint32_t ril;
+	rpmuint32_t rdl;
+	rpmuint32_t ril;
 
 	h->flags &= ~HEADERFLAG_LEGACY;
 
-	entry->info.type = (uint32_t) htonl(pe->type);
-	entry->info.count = (uint32_t) htonl(pe->count);
+	entry->info.type = (rpmuint32_t) htonl(pe->type);
+	entry->info.count = (rpmuint32_t) htonl(pe->count);
 
 	if (hdrchkType(entry->info.type))
 	    goto errxit;
 	if (hdrchkTags(entry->info.count))
 	    goto errxit;
 
-	{   int32_t off = (int32_t) ntohl(pe->offset);
+	{   rpmint32_t off = (rpmint32_t) ntohl(pe->offset);
 
 	    if (hdrchkData(off))
 		goto errxit;
@@ -1098,13 +1098,13 @@ Header headerLoad(void * uh)
 /*@-sizeoftype@*/
 		size_t nb = REGION_TAG_COUNT;
 /*@=sizeoftype@*/
-		uint32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
+		rpmuint32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
-assert((int32_t)rdl >= 0);	/* XXX insurance */
+assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
 		ril = rdl/sizeof(*pe);
 		if (hdrchkTags(ril) || hdrchkData(rdl))
 		    goto errxit;
-		entry->info.tag = (uint32_t) htonl(pe->tag);
+		entry->info.tag = (rpmuint32_t) htonl(pe->tag);
 	    } else {
 		ril = il;
 		/*@-sizeoftype@*/
@@ -1113,7 +1113,7 @@ assert((int32_t)rdl >= 0);	/* XXX insurance */
 		entry->info.tag = HEADER_IMAGE;
 	    }
 	}
-	entry->info.offset = (int32_t) -rdl;	/* negative offset */
+	entry->info.offset = (rpmint32_t) -rdl;	/* negative offset */
 
 	/*@-assignexpose@*/
 	entry->data = pe;
@@ -1127,8 +1127,8 @@ assert((int32_t)rdl >= 0);	/* XXX insurance */
 	if (ril < h->indexUsed) {
 	    indexEntry newEntry = entry + ril;
 	    size_t ne = (h->indexUsed - ril);
-	    int32_t rid = entry->info.offset+1;
-	    uint32_t rc;
+	    rpmint32_t rid = entry->info.offset+1;
+	    rpmuint32_t rc;
 
 	    /* Load dribble entries from region. */
 	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, dataEnd, rid);
@@ -1280,36 +1280,36 @@ void * headerSetRpmdb(Header h, void * rpmdb)
     return NULL;
 }
 
-uint32_t headerGetInstance(Header h)
+rpmuint32_t headerGetInstance(Header h)
 {
     return (h != NULL ? h->instance : 0);
 }
 
-uint32_t headerSetInstance(Header h, uint32_t instance)
+rpmuint32_t headerSetInstance(Header h, rpmuint32_t instance)
 {
     if (h != NULL)
 	h->instance = instance;
     return 0;
 }
 
-uint32_t headerGetStartOff(Header h)
+rpmuint32_t headerGetStartOff(Header h)
 {
     return (h != NULL ? h->startoff : 0);
 }
 
-uint32_t headerSetStartOff(Header h, uint32_t startoff)
+rpmuint32_t headerSetStartOff(Header h, rpmuint32_t startoff)
 {
     if (h != NULL)
 	h->startoff = startoff;
     return 0;
 }
 
-uint32_t headerGetEndOff(Header h)
+rpmuint32_t headerGetEndOff(Header h)
 {
     return (h != NULL ? h->endoff : 0);
 }
 
-uint32_t headerSetEndOff(Header h, uint32_t endoff)
+rpmuint32_t headerSetEndOff(Header h, rpmuint32_t endoff)
 {
     if (h != NULL)
 	h->endoff = endoff;
@@ -1325,7 +1325,7 @@ Header headerReload(Header h, int tag)
     const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
     struct stat sb = h->sb;	/* structure assignment */
     void * rpmdb = h->rpmdb;
-    uint32_t instance = h->instance;
+    rpmuint32_t instance = h->instance;
     int xx;
 
 /*@-onlytrans@*/
@@ -1368,9 +1368,9 @@ Header headerReload(Header h, int tag)
 
 Header headerCopyLoad(const void * uh)
 {
-    uint32_t * ei = (uint32_t *) uh;
-    uint32_t il = (uint32_t) ntohl(ei[0]);		/* index length */
-    uint32_t dl = (uint32_t) ntohl(ei[1]);		/* data length */
+    rpmuint32_t * ei = (rpmuint32_t *) uh;
+    rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);		/* index length */
+    rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);		/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
 			(il * sizeof(struct entryInfo_s)) + dl;
@@ -1408,7 +1408,7 @@ static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 	/*@modifies he @*/
 {
     rpmTagCount count = entry->info.count;
-    uint32_t rdlen;
+    rpmuint32_t rdlen;
     int rc = 1;		/* XXX 1 on success. */
 
     switch (entry->info.type) {
@@ -1420,14 +1420,14 @@ static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 	 * XXX a legacy header freshly read, but not yet unloaded to the rpmdb).
 	 */
 	if (ENTRY_IS_REGION(entry)) {
-	    uint32_t * ei = ((uint32_t *)entry->data) - 2;
+	    rpmuint32_t * ei = ((rpmuint32_t *)entry->data) - 2;
 	    /*@-castexpose@*/
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    /*@=castexpose@*/
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
 	    unsigned char * dataEnd;
-	    uint32_t rdl;
-	    uint32_t ril;
+	    rpmuint32_t rdl;
+	    rpmuint32_t ril;
 
 assert(entry->info.offset <= 0);		/* XXX insurance */
 	    rdl = -entry->info.offset;	/* negative offset */
@@ -1618,7 +1618,7 @@ headerFindI18NString(Header h, indexEntry entry)
     for (l = lang; *l != '\0'; l = le) {
 	const char *td;
 	char *ed, *ed_weak = NULL;
-	uint32_t langNum;
+	rpmuint32_t langNum;
 
 	while (*l && *l == ':')			/* skip leading colons */
 	    l++;
@@ -1872,8 +1872,8 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     rpmTagData p;
     size_t length;
     size_t ghosts;
-    uint32_t i;
-    uint32_t langNum;
+    rpmuint32_t i;
+    rpmuint32_t langNum;
     char * buf;
     int xx;
 

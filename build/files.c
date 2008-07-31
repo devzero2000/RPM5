@@ -269,8 +269,8 @@ static void timeCheck(int tc, Header h)
 	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t currentTime = time(NULL);
-    uint32_t * mtime;
+    rpmuint32_t currentTime = time(NULL);
+    rpmuint32_t * mtime;
     int xx;
     size_t i;
 
@@ -1155,7 +1155,7 @@ static void compressFilelist(Header h)
     const char * fn;
     const char ** dirNames;
     const char ** baseNames;
-    uint32_t * dirIndexes;
+    rpmuint32_t * dirIndexes;
     int count;
     int dirIndex = -1;
     int xx;
@@ -1270,8 +1270,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * apath;
-    uint16_t ui16;
-    uint32_t ui32;
+    rpmuint16_t ui16;
+    rpmuint32_t ui32;
     int _addDotSlash = !isSrc;
     int apathlen = 0;
     int dpathlen = 0;
@@ -1411,7 +1411,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui16 = (uint16_t)flp->fl_mode;
+	ui16 = (rpmuint16_t)flp->fl_mode;
 	he->tag = RPMTAG_FILEMODES;
 	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
@@ -1457,10 +1457,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-      { static uint32_t source_file_dalgo = 0;
-	static uint32_t binary_file_dalgo = 0;
+      { static rpmuint32_t source_file_dalgo = 0;
+	static rpmuint32_t binary_file_dalgo = 0;
 	static int oneshot = 0;
-	uint32_t dalgo = 0;
+	rpmuint32_t dalgo = 0;
 
 	if (!oneshot) {
 	    source_file_dalgo =
@@ -1636,7 +1636,7 @@ if (_rpmbuildFlags & 4) {
 /*@-dependenttrans@*/ /* FIX: artifact of spoofing header tag store */
     fi->dil = (!scareMem)
 	? xcalloc(sizeof(*fi->dil), fi->fc)
-	: (uint32_t *)(fi->bnl + fi->fc);
+	: (rpmuint32_t *)(fi->bnl + fi->fc);
 /*@=dependenttrans@*/
 
     /* XXX Insure at least 1 byte is always allocated. */
@@ -2067,7 +2067,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
     const char * apkt = NULL;
-    uint8_t * pkt = NULL;
+    rpmuint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
     rpmRC rc = RPMRC_FAIL;

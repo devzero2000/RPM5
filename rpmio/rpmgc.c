@@ -75,7 +75,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     const char * prefix;
     const char * hexstr;
     const char * s;
-    uint8_t signhash16[2];
+    rpmuint8_t signhash16[2];
     char * tt;
     gcry_mpi_t c = NULL;
     gcry_error_t rc;
@@ -143,8 +143,8 @@ rpmgcDump("gc->hash", gc->hash);
     /* Compare leading 16 bits of digest for quick check. */
     s = dig->md5;
 /*@-type@*/
-    signhash16[0] = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-    signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
+    signhash16[0] = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+    signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
 #else
@@ -258,7 +258,7 @@ rpmgcDump("gc->pkey", gc->pkey);
 /*@-globuse -mustmod @*/
 static
 int rpmgcMpiItem(const char * pre, pgpDig dig, int itemno,
-		const uint8_t * p, /*@null@*/ const uint8_t * pend)
+		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {

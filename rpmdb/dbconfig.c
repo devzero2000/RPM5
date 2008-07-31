@@ -806,10 +806,10 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     switch (rpmtag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
-	dbi->dbi_jlen = 1 * sizeof(uint32_t);
+	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
 	break;
     default:
-	dbi->dbi_jlen = 2 * sizeof(uint32_t);
+	dbi->dbi_jlen = 2 * sizeof(rpmuint32_t);
 	break;
     }
     /*@=sizeoftype@*/

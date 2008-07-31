@@ -435,9 +435,9 @@ extern int rpmcliHashesCurrent;
 /*@unchecked@*/
 extern int rpmcliHashesTotal;
 /*@unchecked@*/
-extern uint64_t rpmcliProgressCurrent;
+extern rpmuint64_t rpmcliProgressCurrent;
 /*@unchecked@*/
-extern uint64_t rpmcliProgressTotal;
+extern rpmuint64_t rpmcliProgressTotal;
 
 /** \ingroup rpmcli
  * The rpm CLI generic transaction callback handler.
@@ -458,8 +458,8 @@ extern uint64_t rpmcliProgressTotal;
 /*@null@*/
 void * rpmShowProgress(/*@null@*/ const void * arg,
 		const rpmCallbackType what,
-		const uint64_t amount,
-		const uint64_t total,
+		const rpmuint64_t amount,
+		const rpmuint64_t total,
 		/*@null@*/ fnpyKey key,
 		/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent,
@@ -573,7 +573,7 @@ struct IDT_s {
     const char * key;		/*! removed package file name. */
     Header h;			/*!< removed package header. */
     union {
-	uint32_t u32;		/*!< install/remove transaction id */
+	rpmuint32_t u32;	/*!< install/remove transaction id */
     } val;
 };
 #endif
@@ -638,7 +638,7 @@ IDTX IDTXsort(/*@only@*/ /*@null@*/ IDTX idtx)
  * @return 		id index
  */
 /*@only@*/ /*@null@*/
-IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
+IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
@@ -651,7 +651,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
  * @return 		id index
  */
 /*@only@*/ /*@null@*/
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint32_t rbtid)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, rpmuint32_t rbtid)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -787,9 +787,9 @@ struct rpmQVKArguments_s {
     rpmtransFlags transFlags;
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
-    uint32_t arbtid;		/*!< from --arbgoal */
-    uint32_t rbtid;		/*!< from --rollback */
-    uint32_t *rbtidExcludes;	/*!< from --rollback */
+    rpmuint32_t arbtid;		/*!< from --arbgoal */
+    rpmuint32_t rbtid;		/*!< from --rollback */
+    rpmuint32_t *rbtidExcludes;	/*!< from --rollback */
     int numrbtidExcludes;	/*!< from --rollback */
     int noDeps;
     int incldocs;

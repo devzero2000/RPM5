@@ -123,7 +123,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
  * @param size		size of fingerprint entry
  * @return		hash value
  */
-uint32_t fpHashFunction(uint32_t h, const void * data, size_t size)
+rpmuint32_t fpHashFunction(rpmuint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**
@@ -147,8 +147,8 @@ int fpEqual(const void * key1, const void * key2)
  * @retval *fpList	array of finger prints
  */
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const uint32_t * dirIndexes, 
-		  uint32_t fileCount, fingerPrint * fpList)
+		  const char ** baseNames, const rpmuint32_t * dirIndexes, 
+		  rpmuint32_t fileCount, fingerPrint * fpList)
 	/*@modifies cache, *fpList @*/;
 
 #ifdef __cplusplus

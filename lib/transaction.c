@@ -97,11 +97,11 @@ static int handleInstInstalledFiles(const rpmts ts,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * altNVRA = NULL;
-    uint32_t tscolor = rpmtsColor(ts);
-    uint32_t prefcolor = rpmtsPrefColor(ts);
-    uint32_t otecolor, tecolor;
-    uint32_t oFColor, FColor;
-    uint32_t oFFlags, FFlags;
+    rpmuint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t prefcolor = rpmtsPrefColor(ts);
+    rpmuint32_t otecolor, tecolor;
+    rpmuint32_t oFColor, FColor;
+    rpmuint32_t oFFlags, FFlags;
     rpmfi otherFi = NULL;
     rpmps ps;
     int xx;
@@ -169,7 +169,7 @@ assert(he->p.str != NULL);
 
 	/* Remove setuid/setgid bits on other (possibly hardlinked) files. */
 	if (!(fi->mapflags & IOSM_SBIT_CHECK)) {
-	    uint16_t omode = rpmfiFMode(otherFi);
+	    rpmuint16_t omode = rpmfiFMode(otherFi);
 	    if (S_ISREG(omode) && (omode & 06000) != 0)
 		fi->mapflags |= IOSM_SBIT_CHECK;
 	}
@@ -374,7 +374,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState @*/
 {
-    uint32_t fixupSize = 0;
+    rpmuint32_t fixupSize = 0;
     rpmps ps;
     const char * fn;
     int i, j;
@@ -383,14 +383,14 @@ static void handleOverlappedFiles(const rpmts ts,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
-	uint32_t tscolor = rpmtsColor(ts);
-	uint32_t prefcolor = rpmtsPrefColor(ts);
-	uint32_t oFColor, FColor;
+	rpmuint32_t tscolor = rpmtsColor(ts);
+	rpmuint32_t prefcolor = rpmtsPrefColor(ts);
+	rpmuint32_t oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
-	uint32_t FFlags;
-	uint16_t FMode;
+	rpmuint32_t FFlags;
+	rpmuint16_t FMode;
 	const rpmfi * recs;
 	int numRecs;
 
@@ -604,7 +604,7 @@ static int ensureOlder(rpmts ts,
 	/*@modifies ts @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
+    rpmuint32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
     rpmds req;
     char * t;
@@ -658,8 +658,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies fi, rpmGlobalMacroContext, internalState @*/
 {
-    uint32_t tscolor = rpmtsColor(ts);
-    uint32_t FColor;
+    rpmuint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -847,7 +847,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    const char * fdn, * fbn;
-	    uint16_t fFMode;
+	    rpmuint16_t fFMode;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
@@ -949,7 +949,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 {
     const char * semfn = NULL;
     rpmRC rc = 0;
-    uint32_t arbgoal = rpmtsARBGoal(rbts);
+    rpmuint32_t arbgoal = rpmtsARBGoal(rbts);
     QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
     time_t ttid;
     int xx;
@@ -1127,7 +1127,7 @@ static int markLinkedFailed(rpmts ts, rpmte p)
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    uint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t tscolor = rpmtsColor(ts);
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;
@@ -1215,7 +1215,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     (void) rpmtsSetChrootDone(ts, 0);
 
     /* XXX rpmtsCreate() sets the transaction id, but apps may not honor. */
-    {	uint32_t tid = (uint32_t) time(NULL);
+    {	rpmuint32_t tid = (rpmuint32_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 
@@ -1504,7 +1504,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
  	fi = rpmfiInit(fi, 0);
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    struct stat sb, *st = &sb;
-	    uint32_t FFlags = rpmfiFFlags(fi);
+	    rpmuint32_t FFlags = rpmfiFFlags(fi);
 	    numShared += dbiIndexSetCount(matches[i]);
 	    if (!(FFlags & RPMFILE_CONFIG))
 		/*@innercontinue@*/ continue;

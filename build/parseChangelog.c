@@ -17,7 +17,7 @@
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t mytime = time;	/* XXX convert to uint32_t for header */
+    rpmuint32_t mytime = time;	/* XXX convert to rpmuint32_t for header */
     int xx;
 
     he->tag = RPMTAG_CHANGELOGTIME;

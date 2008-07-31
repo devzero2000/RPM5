@@ -214,14 +214,14 @@ static rpmRC file_uncompress(const char *file)
 
 typedef struct {
 	const char *name;
-	uint64_t id;
+	rpmuint64_t id;
 } name_id_map;
 
 typedef struct {
 	const char *name;
 	const name_id_map *map;
-	uint64_t min;
-	uint64_t max;
+	rpmuint64_t min;
+	rpmuint64_t max;
 } option_map;
 
 
@@ -248,7 +248,7 @@ typedef struct {
 static void
 parse_options(const char *str, const option_map *opts,
 		void (*set)(void *filter_options,
-			uint32_t key, uint64_t value),
+			rpmuint32_t key, rpmuint64_t value),
 		void *filter_options)
 	/*@*/
 {
@@ -289,7 +289,7 @@ parse_options(const char *str, const option_map *opts,
 
 			if (opts[i].map == NULL) {
 				// value is an integer.
-				uint64_t v;
+				rpmuint64_t v;
 #ifdef NOTYET
 				v = str_to_uint64(name, value,
 						opts[i].min, opts[i].max);
@@ -343,7 +343,7 @@ enum {
 };
 
 static void
-set_subblock(void *options, uint32_t key, uint64_t value)
+set_subblock(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
 {
 	lzma_options_subblock *opt = options;
@@ -397,7 +397,7 @@ enum {
 
 
 static void
-set_delta(void *options, uint32_t key, uint64_t value)
+set_delta(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
 {
 	lzma_options_delta *opt = options;
@@ -439,7 +439,7 @@ enum {
 };
 
 static void
-set_lzma(void *options, uint32_t key, uint64_t value)
+set_lzma(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
 {
 	lzma_options_lzma *opt = options;

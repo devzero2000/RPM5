@@ -22,7 +22,7 @@
 
 typedef struct lzfile {
 /*@only@*/
-    uint8_t buf[kBufferSize];	/*!< IO buffer */
+    rpmuint8_t buf[kBufferSize];	/*!< IO buffer */
     lzma_stream strm;		/*!< LZMA stream */
 /*@dependent@*/
     FILE * fp;

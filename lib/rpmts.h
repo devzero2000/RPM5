@@ -231,7 +231,7 @@ struct rpmts_s {
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
-    uint32_t filesystemCount;	/*!< No. of mounted filesystems. */
+    rpmuint32_t filesystemCount;/*!< No. of mounted filesystems. */
 /*@dependent@*/ /*@null@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
 /*@only@*/ /*@relnull@*/
@@ -290,19 +290,19 @@ struct rpmts_s {
 /*@null@*/
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    uint32_t tid[2];			/*!< Transaction id. */
+    rpmuint32_t tid[2];		/*!< Transaction id. */
 
-    uint32_t color;		/*!< Transaction color bits. */
-    uint32_t prefcolor;		/*!< Preferred file color. */
+    rpmuint32_t color;		/*!< Transaction color bits. */
+    rpmuint32_t prefcolor;	/*!< Preferred file color. */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
 
 /*@refcounted@*/ /*@relnull@*/
     rpmKeyring keyring;		/*!< Keyring in use. */
-    uint8_t * pkpkt;		/*!< Current pubkey packet. */
+    rpmuint8_t * pkpkt;		/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
-    uint8_t pksignid[8];	/*!< Current pubkey fingerprint. */
+    rpmuint8_t pksignid[8];	/*!< Current pubkey fingerprint. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
@@ -312,7 +312,7 @@ struct rpmts_s {
 /*@null@*/
     Spec spec;			/*!< Spec file control structure. */
 
-    uint32_t arbgoal;		/*!< Autorollback goal */
+    rpmuint32_t arbgoal;	/*!< Autorollback goal */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -587,7 +587,7 @@ void rpmtsSetType(rpmts ts, rpmTSType type)
  * @param ts		transaction set
  * @return		autorollback goal
  */
-uint32_t rpmtsARBGoal(rpmts ts)
+rpmuint32_t rpmtsARBGoal(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -595,7 +595,7 @@ uint32_t rpmtsARBGoal(rpmts ts)
  * @param ts		transaction set
  * @param goal		autorollback goal
  */
-void rpmtsSetARBGoal(rpmts ts, uint32_t goal)
+void rpmtsSetARBGoal(rpmts ts, rpmuint32_t goal)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -784,7 +784,7 @@ int rpmtsSetREContext(rpmts ts, rpmsx sx)
  * @param ts		transaction set
  * @return		transaction id
  */
-uint32_t rpmtsGetTid(rpmts ts)
+rpmuint32_t rpmtsGetTid(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -793,7 +793,7 @@ uint32_t rpmtsGetTid(rpmts ts)
  * @param tid		new transaction id
  * @return		previous transaction id
  */
-uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
+rpmuint32_t rpmtsSetTid(rpmts ts, rpmuint32_t tid)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -853,7 +853,7 @@ int rpmtsInitDSI(const rpmts ts)
  * @param _action	file disposition
  */
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
+		rpmuint32_t fileSize, rpmuint32_t prevSize, rpmuint32_t fixupSize,
 		int _action)
 	/*@modifies ts @*/;
 
@@ -878,7 +878,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
  */
 /*@null@*/
 void * rpmtsNotify(rpmts ts, rpmte te,
-                rpmCallbackType what, uint64_t amount, uint64_t total)
+                rpmCallbackType what, rpmuint64_t amount, rpmuint64_t total)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1018,7 +1018,7 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
  * @param ts		transaction set
  * @return		color bits
  */
-uint32_t rpmtsColor(rpmts ts)
+rpmuint32_t rpmtsColor(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1026,7 +1026,7 @@ uint32_t rpmtsColor(rpmts ts)
  * @param ts		transaction set
  * @return		color bits
  */
-uint32_t rpmtsPrefColor(rpmts ts)
+rpmuint32_t rpmtsPrefColor(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1035,7 +1035,7 @@ uint32_t rpmtsPrefColor(rpmts ts)
  * @param color		new color bits
  * @return		previous color bits
  */
-uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
+rpmuint32_t rpmtsSetColor(rpmts ts, rpmuint32_t color)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -1123,7 +1123,7 @@ int rpmtsPrint(/*@null@*/ rpmts ts, /*@null@*/ FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies ts, *fp, fileSystem @*/
 {
-    uint32_t tid = rpmtsGetTid(ts);
+    rpmuint32_t tid = rpmtsGetTid(ts);
     time_t ttid = tid;
     rpmtsi tsi;
     rpmte te;

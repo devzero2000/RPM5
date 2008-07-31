@@ -39,7 +39,7 @@ int headerMacrosLoad(Header h)
     struct tagMacro * tagm;
     char numbuf[64];
     const char * val;
-    uint64_t ival;
+    rpmuint64_t ival;
     int xx;
 
     numbuf[0] = '\0';
@@ -212,10 +212,10 @@ int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
     return 0;
 }
 
-uint32_t hGetColor(Header h)
+rpmuint32_t hGetColor(Header h)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t hcolor = 0;
+    rpmuint32_t hcolor = 0;
     int xx;
 
     he->tag = RPMTAG_FILECOLORS;

@@ -43,12 +43,12 @@ extern void rpmtsCleanDig(void * ts)
 #if defined(__LCLINT__)
 #define	UINT32_T	u_int32_t
 #else
-#define	UINT32_T	uint32_t
+#define	UINT32_T	rpmuint32_t
 #endif
 
 /* XXX retrofit the *BSD typedef for the deprived. */
 #if defined(__QNXNTO__)
-typedef	uint32_t	u_int32_t;
+typedef	rpmuint32_t	u_int32_t;
 #endif
 
 /*@access dbiIndexSet@*/
@@ -461,7 +461,7 @@ static dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
 }
 
 union _dbswap {
-    uint32_t ui;
+    rpmuint32_t ui;
     unsigned char uc[4];
 };
 
@@ -502,7 +502,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 /*@-sizeoftype @*/
     switch (dbi->dbi_jlen) {
     default:
-    case 2*sizeof(uint32_t):
+    case 2*sizeof(rpmuint32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -519,7 +519,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	    set->recs[i].fpNum = 0;
 	}
 	break;
-    case 1*sizeof(uint32_t):
+    case 1*sizeof(rpmuint32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 
@@ -569,7 +569,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 /*@-sizeoftype@*/
     switch (dbi->dbi_jlen) {
     default:
-    case 2*sizeof(uint32_t):
+    case 2*sizeof(rpmuint32_t):
 	for (i = 0; i < (unsigned)set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -587,7 +587,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	    tdbir += sizeof(tagNum.ui);
 	}
 	break;
-    case 1*sizeof(uint32_t):
+    case 1*sizeof(rpmuint32_t):
 	for (i = 0; i < (unsigned)set->count; i++) {
 	    union _dbswap hdrNum;
 
@@ -1508,7 +1508,7 @@ if (rc == 0)
     while (i < allMatches->count) {
 	const char ** baseNames;
 	const char ** dirNames;
-	uint32_t * dirIndexes;
+	rpmuint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h;
@@ -1885,7 +1885,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	{   size_t len;
 	    len = 0;
 	    data->data = headerUnload(mi->mi_h, &len);
-	    data->size = (UINT32_T) len;	/* XXX data->size is uint32_t */
+	    data->size = (UINT32_T) len;	/* XXX data->size is rpmuint32_t */
 #ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
 	    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 #endif
@@ -2861,7 +2861,7 @@ memset(data, 0, sizeof(*data));
 #ifdef	DYING
     /* Add remove transaction id to header. */
     if (rid != 0 && rid != -1) {
-	uint32_t tid[2];
+	rpmuint32_t tid[2];
 	tid[0] = rid;
 	tid[1] = 0;
 	he->tag = RPMTAG_REMOVETID;
@@ -2890,7 +2890,7 @@ memset(data, 0, sizeof(*data));
 	    const char * dbiBN = (dbiTag->str != NULL
 		? dbiTag->str : tagName(rpmtag));
 	    dbiIndex dbi;
-	    uint8_t * bin = NULL;
+	    rpmuint8_t * bin = NULL;
 	    int i;
 
 	    dbi = NULL;
@@ -3009,14 +3009,14 @@ if (dbiByteSwapped(dbi) == 1)
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
 			const char * s = he->p.argv[i];
 			size_t dlen = strlen(s);
-			uint8_t * t;
+			rpmuint8_t * t;
 			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
 /*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 /*@=type@*/
 			key->data = bin;
 			key->size = (UINT32_T) dlen;
@@ -3151,7 +3151,7 @@ DBT * data = alloca(sizeof(*data));
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
     const char ** dirNames;
-    uint32_t * dirIndexes;
+    rpmuint32_t * dirIndexes;
     dbiIndex dbi;
     size_t dbix;
     union _dbswap mi_offset;
@@ -3175,7 +3175,7 @@ memset(data, 0, sizeof(*data));
     xx = headerDel(h, he, 0);
 #endif
     if (iid != 0 && iid != -1) {
-	uint32_t tid[2];
+	rpmuint32_t tid[2];
 	tid[0] = iid;
 	tid[1] = 0;
 	he->tag = RPMTAG_INSTALLTID;
@@ -3190,7 +3190,7 @@ memset(data, 0, sizeof(*data));
 
     /* Add the package color if not present. */
     if (!headerIsEntry(h, RPMTAG_PACKAGECOLOR)) {
-	uint32_t hcolor = hGetColor(h);
+	rpmuint32_t hcolor = hGetColor(h);
 	he->tag = RPMTAG_PACKAGECOLOR;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &hcolor;
@@ -3301,7 +3301,7 @@ memset(data, 0, sizeof(*data));
 	    tagStore_t dbiTags = db->db_tags + dbix;
 	    const char * dbiBN = (dbiTags->str != NULL
 			? dbiTags->str : tagName(dbiTags->tag));
-	    uint8_t * bin = NULL;
+	    rpmuint8_t * bin = NULL;
 	    rpmTagData requireFlags;
 	    rpmRC rpmrc;
 	    int i;
@@ -3342,7 +3342,7 @@ key->size = (UINT32_T) sizeof(mi_offset.ui);
     (void) headerGetMagic(h, NULL, &nb);
     len = 0;
     data->data = headerUnload(h, &len);
-    data->size = (UINT32_T) len;	/* XXX data->size is uint32_t */
+    data->size = (UINT32_T) len;	/* XXX data->size is rpmuint32_t */
 #ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
     data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 #endif
@@ -3494,14 +3494,14 @@ data->size = 0;
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
 			const char * s = he->p.argv[i];
 			size_t dlen = strlen(s);
-			uint8_t * t;
+			rpmuint8_t * t;
 			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
 /*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 /*@=type@*/
 			key->data = bin;
 			key->size = (UINT32_T) dlen;
@@ -3669,8 +3669,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
-	uint32_t * dirIndexes;
-	uint32_t * fullDirIndexes;
+	rpmuint32_t * dirIndexes;
+	rpmuint32_t * fullDirIndexes;
 	fingerPrint * fps;
 	dbiIndexItem im;
 	int start;

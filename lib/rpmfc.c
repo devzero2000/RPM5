@@ -973,7 +973,7 @@ assert(dix >= 0);
     return RPMRC_OK;
 }
 
-rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, uint16_t * fmode)
+rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpmuint16_t * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
@@ -1006,7 +1006,7 @@ assert(mg != NULL);	/* XXX figger a proper return path. */
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
 	int freeftype;
-	uint16_t mode = (fmode ? fmode[fc->ix] : 0);
+	rpmuint16_t mode = (fmode ? fmode[fc->ix] : 0);
 	int urltype;
 
 	ftype = "";	freeftype = 0;
@@ -1408,7 +1408,7 @@ rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
     rpmds ds;
     int flags = 0x2;	/* XXX no filtering, !scareMem */
     ARGV_t av;
-    uint16_t * fmode;
+    rpmuint16_t * fmode;
     int ac = rpmfiFC(fi);
     char buf[BUFSIZ];
     const char * N;
@@ -1537,7 +1537,7 @@ assert(EVR != NULL);
     he->c = argiCount(fc->fcolor);
 assert(ac == (int)he->c);
     if (he->p.ptr != NULL && he->c > 0) {
-	uint32_t * fcolors = he->p.ui32p;
+	rpmuint32_t * fcolors = he->p.ui32p;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
 	for (i = 0; i < (int)he->c; i++)
@@ -1584,7 +1584,7 @@ assert(he->p.ptr != NULL);
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = (uint32_t *) fc->provides->Flags;
+	he->p.ui32p = (rpmuint32_t *) fc->provides->Flags;
 assert(he->p.ptr != NULL);
 	xx = headerPut(pkg->header, he, 0);
 /*@=nullpass@*/
@@ -1610,7 +1610,7 @@ assert(he->p.ptr != NULL);
 
 	he->tag = RPMTAG_REQUIREFLAGS;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = (uint32_t *) fc->requires->Flags;
+	he->p.ui32p = (rpmuint32_t *) fc->requires->Flags;
 assert(he->p.ptr != NULL);
 	xx = headerPut(pkg->header, he, 0);
 /*@=nullpass@*/

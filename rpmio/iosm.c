@@ -354,7 +354,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	for (i = 0; i < (int)fi->fc; i++)
 #endif
 	{
-	    uint32_t dil;
+	    rpmuint32_t dil;
 	    size_t dnlen, bnlen;
 
 	    if (!S_ISDIR(fi->fmodes[i]))
@@ -767,13 +767,13 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     memset(iosm->sufbuf, 0, sizeof(iosm->sufbuf));
     if (iosm->goal == IOSM_PKGINSTALL) {
-	uint32_t tid;
+	rpmuint32_t tid;
 #if defined(_USE_RPMTS)
 	tid = (ts != NULL ? rpmtsGetTid(ts) : 0);
 #else
 	static time_t now = 0;
 	if (now == 0) now = time(NULL);
-	tid = (uint32_t) now;
+	tid = (rpmuint32_t) now;
 #endif
 	if (tid > 0 && tid < 0xffffffff)
 	    sprintf(iosm->sufbuf, ";%08x", (unsigned)tid);
@@ -953,7 +953,7 @@ int iosmMapAttrs(IOSM_t iosm)
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
 	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
-	uint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
+	rpmuint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;
 
@@ -2073,7 +2073,7 @@ assert(iosm->lpath != NULL);
     case IOSM_NOTIFY:		/* XXX move from iosm to psm -> tsm */
 	if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	    rpmfi fi = iosmGetFi(iosm);
-	    uint64_t archivePos = fdGetCpioPos(iosm->cfd);
+	    rpmuint64_t archivePos = fdGetCpioPos(iosm->cfd);
 	    if (archivePos > fi->archivePos) {
 		fi->archivePos = (unsigned long long) archivePos;
 #if defined(_USE_RPMTS)

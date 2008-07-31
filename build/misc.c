@@ -8,7 +8,7 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int parseNum(const char * line, uint32_t * res)
+int parseNum(const char * line, rpmuint32_t * res)
 {
     char * s1 = NULL;
     unsigned long rc;

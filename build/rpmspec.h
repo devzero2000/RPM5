@@ -40,7 +40,7 @@ struct Source {
 /*@dependent@*/
     const char * source;	/* Pointer into fullSource */
     int flags;
-    uint32_t num;
+    rpmuint32_t num;
 /*@owned@*/
     struct Source * next;
 };
@@ -168,7 +168,7 @@ struct Spec_s {
     MacroContext macros;
 
     rpmRC (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
-               uint32_t index, rpmsenseFlags tagflags);
+               rpmuint32_t index, rpmsenseFlags tagflags);
 
 /*@only@*/
     StringBuf prep;		/*!< %prep scriptlet. */

@@ -57,9 +57,9 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
  * and was identical to the "data saved" structure below.
  */
 struct _dbiIndexItem {
-    uint32_t hdrNum;			/*!< header instance in db */
-    uint32_t tagNum;			/*!< tag index in header */
-    uint32_t fpNum;			/*!< finger print index */
+    rpmuint32_t hdrNum;			/*!< header instance in db */
+    rpmuint32_t tagNum;			/*!< tag index in header */
+    rpmuint32_t fpNum;			/*!< finger print index */
 };
 
 /** \ingroup dbi

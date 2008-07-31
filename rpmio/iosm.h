@@ -6,6 +6,7 @@
  * File state machine to handle archive I/O and system call's.
  */
 
+#include <rpmiotypes.h>
 #include <rpmsw.h>
 
 /** \ingroup payload
@@ -266,8 +267,8 @@ struct iosm_s {
     int nofdigests;		/*!< Disable file digests? */
     int nofcontexts;		/*!< Disable file conexts? */
     iosmMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
-    uint32_t fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
-    uint32_t digestlen;		/*!< No. of bytes in binary digest (~= 16) */
+    rpmuint32_t fdigestalgo;	/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
+    rpmuint32_t digestlen;	/*!< No. of bytes in binary digest (~= 16) */
 /*@shared@*/ /*@relnull@*/
     const char * dirName;	/*!< File directory name. */
 /*@shared@*/ /*@relnull@*/
@@ -279,7 +280,7 @@ struct iosm_s {
 /*@dependent@*/ /*@observer@*/ /*@null@*/
     const char * fcontext;	/*!< File security context (NULL disables). */
     
-    uint32_t fflags;		/*!< File flags. */
+    rpmuint32_t fflags;		/*!< File flags. */
     iosmFileAction action;	/*!< File disposition. */
     iosmFileStage goal;		/*!< Package state machine goal. */
     iosmFileStage stage;	/*!< External file stage. */

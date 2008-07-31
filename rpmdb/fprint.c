@@ -185,7 +185,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
     return doLookup(cache, dirName, baseName, scareMem);
 }
 
-uint32_t fpHashFunction(uint32_t h, const void * data,
+rpmuint32_t fpHashFunction(rpmuint32_t h, const void * data,
 		/*@unused@*/ size_t size)
 {
     const fingerPrint * fp = data;
@@ -220,8 +220,8 @@ int fpEqual(const void * key1, const void * key2)
 }
 
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const uint32_t * dirIndexes, 
-		  uint32_t fileCount, fingerPrint * fpList)
+		  const char ** baseNames, const rpmuint32_t * dirIndexes, 
+		  rpmuint32_t fileCount, fingerPrint * fpList)
 {
     unsigned i;
 
@@ -256,7 +256,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     HE_t he = &he_s;
     const char ** baseNames;
     const char ** dirNames;
-    uint32_t * dirIndexes;
+    rpmuint32_t * dirIndexes;
     rpmTagCount fileCount;
     int xx;
 

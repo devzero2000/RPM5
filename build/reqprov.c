@@ -14,7 +14,7 @@
 int addReqProv(/*@unused@*/ Spec spec, Header h,
 		/*@unused@*/ rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
-		uint32_t index)
+		rpmuint32_t index)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** names;
@@ -64,8 +64,8 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     len = he->c;
     if (xx) {
 	const char ** versions = NULL;
-	uint32_t * flags = NULL;
-	uint32_t * indexes = NULL;
+	rpmuint32_t * flags = NULL;
+	rpmuint32_t * indexes = NULL;
 	int duplicate = 0;
 
 	if (flagtag) {
@@ -125,7 +125,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
 	he->tag = flagtag;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = (uint32_t *) &Flags;
+	he->p.ui32p = (rpmuint32_t *) &Flags;
 	he->c = 1;
 	he->append = 1;
 	xx = headerPut(h, he, 0);

@@ -33,19 +33,19 @@
 /**
  */
 /*@-shadow@*/
-static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
+static rpmuint32_t crc32(rpmuint32_t crc, const byte * data, size_t size)
 	/*@*/
 {
-    static uint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
-    static uint32_t xorout = 0xffffffff;
-    static uint32_t table[256];
+    static rpmuint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
+    static rpmuint32_t xorout = 0xffffffff;
+    static rpmuint32_t table[256];
 
     crc ^= xorout;
 
     if (data == NULL) {
 	/* generate the table of CRC remainders for all possible bytes */
-	uint32_t c;
-	uint32_t i, j;
+	rpmuint32_t c;
+	rpmuint32_t i, j;
 	for (i = 0;  i < 256;  i++) {
 	    c = i;
 	    for (j = 0;  j < 8;  j++) {
@@ -78,9 +78,9 @@ static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
 /**
  */
 typedef struct {
-	uint32_t crc;
-	uint32_t (*update)  (uint32_t crc, const byte * data, size_t size);
-	uint32_t (*combine) (uint32_t crc1, uint32_t crc2, size_t len2);
+	rpmuint32_t crc;
+	rpmuint32_t (*update)  (rpmuint32_t crc, const byte * data, size_t size);
+	rpmuint32_t (*combine) (rpmuint32_t crc1, rpmuint32_t crc2, size_t len2);
 } sum32Param;
 
 /**
@@ -108,7 +108,7 @@ static int sum32Update(sum32Param* mp, const byte* data, size_t size)
 static int sum32Digest(sum32Param* mp, byte* data)
 	/*@modifies *mp, data @*/
 {
-	uint32_t c = mp->crc;
+	rpmuint32_t c = mp->crc;
 
 	data[ 0] = (byte)(c >> 24);
 	data[ 1] = (byte)(c >> 16);
@@ -126,20 +126,20 @@ static int sum32Digest(sum32Param* mp, byte* data)
  */
 /**
  */
-static uint64_t crc64(uint64_t crc, const byte * data, size_t size)
+static rpmuint64_t crc64(rpmuint64_t crc, const byte * data, size_t size)
 	/*@*/
 {
-    static uint64_t polynomial =
+    static rpmuint64_t polynomial =
 	0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
-    static uint64_t xorout = 0xffffffffffffffffULL;
-    static uint64_t table[256];
+    static rpmuint64_t xorout = 0xffffffffffffffffULL;
+    static rpmuint64_t table[256];
 
     crc ^= xorout;
 
     if (data == NULL) {
 	/* generate the table of CRC remainders for all possible bytes */
-	uint64_t c;
-	uint32_t i, j;
+	rpmuint64_t c;
+	rpmuint32_t i, j;
 	for (i = 0;  i < 256;  i++) {
 	    c = i;
 	    for (j = 0;  j < 8;  j++) {
@@ -164,17 +164,17 @@ static uint64_t crc64(uint64_t crc, const byte * data, size_t size)
 }
 
 /*
- * Swiped from zlib, using uint64_t rather than unsigned long computation.
- * Use at your own risk, uint64_t problems with compilers may exist.
+ * Swiped from zlib, using rpmuint64_t rather than unsigned long computation.
+ * Use at your own risk, rpmuint64_t problems with compilers may exist.
  */
 #define	GF2_DIM	64
 
 /**
  */
-static uint64_t gf2_matrix_times(uint64_t *mat, uint64_t vec)
+static rpmuint64_t gf2_matrix_times(rpmuint64_t *mat, rpmuint64_t vec)
 	/*@*/
 {
-    uint64_t sum;
+    rpmuint64_t sum;
 
     sum = 0;
     while (vec) {
@@ -188,7 +188,7 @@ static uint64_t gf2_matrix_times(uint64_t *mat, uint64_t vec)
 
 /**
  */
-static void gf2_matrix_square(/*@out@*/ uint64_t *square, uint64_t *mat)
+static void gf2_matrix_square(/*@out@*/ rpmuint64_t *square, rpmuint64_t *mat)
 	/*@modifies square @*/
 {
     int n;
@@ -199,13 +199,13 @@ static void gf2_matrix_square(/*@out@*/ uint64_t *square, uint64_t *mat)
 
 /**
  */
-static uint64_t crc64_combine(uint64_t crc1, uint64_t crc2, size_t len2)
+static rpmuint64_t crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2)
 	/*@*/
 {
     int n;
-    uint64_t row;
-    uint64_t even[GF2_DIM];    /* even-power-of-two zeros operator */
-    uint64_t odd[GF2_DIM];     /* odd-power-of-two zeros operator */
+    rpmuint64_t row;
+    rpmuint64_t even[GF2_DIM];    /* even-power-of-two zeros operator */
+    rpmuint64_t odd[GF2_DIM];     /* odd-power-of-two zeros operator */
 
     /* degenerate case */
     if (len2 == 0)
@@ -255,9 +255,9 @@ static uint64_t crc64_combine(uint64_t crc1, uint64_t crc2, size_t len2)
 /**
  */
 typedef struct {
-	uint64_t crc;
-	uint64_t (*update)  (uint64_t crc, const byte * data, size_t size);
-	uint64_t (*combine) (uint64_t crc1, uint64_t crc2, size_t len2);
+	rpmuint64_t crc;
+	rpmuint64_t (*update)  (rpmuint64_t crc, const byte * data, size_t size);
+	rpmuint64_t (*combine) (rpmuint64_t crc1, rpmuint64_t crc2, size_t len2);
 } sum64Param;
 
 /**
@@ -285,7 +285,7 @@ static int sum64Update(sum64Param* mp, const byte* data, size_t size)
 static int sum64Digest(sum64Param* mp, byte* data)
 	/*@modifies *mp, data @*/
 {
-	uint64_t c = mp->crc;
+	rpmuint64_t c = mp->crc;
 
 	data[ 0] = (byte)(c >> 56);
 	data[ 1] = (byte)(c >> 48);
@@ -500,9 +500,9 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) crc32;
+	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) crc32;
 #if defined(ZLIB_H)
-	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) crc32_combine;
+	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) crc32_combine;
 #endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
@@ -521,8 +521,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 #if defined(ZLIB_H)
-	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) adler32;
-	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) adler32_combine;
+	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) adler32;
+	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) adler32_combine;
 #endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
@@ -540,7 +540,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) jlu32l;
+	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) jlu32l;
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
@@ -557,8 +557,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type@*/
-	    mp->update = (uint64_t (*)(uint64_t, const byte *, size_t)) crc64;
-	    mp->combine = (uint64_t (*)(uint64_t, uint64_t, size_t)) crc64_combine;
+	    mp->update = (rpmuint64_t (*)(rpmuint64_t, const byte *, size_t)) crc64;
+	    mp->combine = (rpmuint64_t (*)(rpmuint64_t, rpmuint64_t, size_t)) crc64_combine;
 /*@=type@*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;

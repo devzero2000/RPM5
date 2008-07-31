@@ -192,14 +192,14 @@ static rpmTag _obsolete_tag;
  * @param h		header
  * @return		0 on success
  */
-static int rpmtsAddUpgrades(rpmts ts, rpmte p, uint32_t hcolor, Header h)
+static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 	/*@globals rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);
-    uint32_t ohcolor;
+    rpmuint32_t ohcolor;
     rpmdbMatchIterator mi;
     Header oh;
     int xx;
@@ -299,7 +299,7 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h, alKey pkgKey)
     const void *keyval = NULL;
     size_t keylen = 0;
     size_t nrefs = 0;
-    uint32_t debuginfoInstance = 0;
+    rpmuint32_t debuginfoInstance = 0;
     Header debuginfoHeader = NULL;
     rpmdbMatchIterator mi;
     Header oh;
@@ -377,15 +377,15 @@ assert(lastx >= 0 && lastx < ts->orderCount);
  * @param hcolor	header color
  * @return		0 on success
  */
-static int rpmtsAddObsoletes(rpmts ts, rpmte p, uint32_t hcolor)
+static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
 	/*@globals rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
 {
-    uint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);
-    uint32_t ohcolor;
+    rpmuint32_t ohcolor;
     rpmds obsoletes;
-    uint32_t dscolor;
+    rpmuint32_t dscolor;
     rpmdbMatchIterator mi;
     Header oh;
     int xx;
@@ -476,8 +476,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
-    uint32_t tscolor = rpmtsColor(ts);
-    uint32_t hcolor;
+    rpmuint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t hcolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
@@ -775,7 +775,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     rpmdbMatchIterator mi;
     nsType NSType;
     const char * Name;
-    uint32_t Flags;
+    rpmuint32_t Flags;
     Header h;
 #if defined(CACHE_DEPENDENCY_RESULT)
     int _cacheThisRC = 1;
@@ -948,7 +948,7 @@ retry:
 	else {
 	    char * end = NULL;
 /*@-unrecog@*/
-	    uint64_t needed = strtoll(rpmdsEVR(dep), &end, 0);
+	    rpmuint64_t needed = strtoll(rpmdsEVR(dep), &end, 0);
 /*@=unrecog@*/
 
 	    if (end && *end) {
@@ -1450,14 +1450,14 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ rpmds conflicts,
 		/*@null@*/ rpmds dirnames,
 		/*@null@*/ rpmds linktos,
-		/*@null@*/ const char * depName, uint32_t tscolor, int adding)
+		/*@null@*/ const char * depName, rpmuint32_t tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, requires, conflicts, dirnames, linktos,
 		rpmGlobalMacroContext, fileSystem, internalState */
 {
     rpmps ps = rpmtsProblems(ts);
-    uint32_t dscolor;
+    rpmuint32_t dscolor;
     const char * Name;
     int terminate = 2;		/* XXX terminate if rc >= terminate */
     int rc;
@@ -1642,7 +1642,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
-    uint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t tscolor = rpmtsColor(ts);
     int scareMem = 0;
     Header h;
     int terminate = 2;		/* XXX terminate if rc >= terminate */
@@ -1873,7 +1873,7 @@ static void markLoop(/*@special@*/ tsortInfo tsi, rpmte q)
  * @param f		dependency flags
  * @return		display string
  */
-static inline /*@observer@*/ const char * identifyDepend(uint32_t f)
+static inline /*@observer@*/ const char * identifyDepend(rpmuint32_t f)
 	/*@*/
 {
     f = _notpre(f);
@@ -1925,7 +1925,7 @@ zapRelation(rpmte q, rpmte p,
 	 tsi_prev = tsi, tsi = tsi->tsi_next)
 	/*@=nullderef@*/
     {
-	uint32_t Flags;
+	rpmuint32_t Flags;
 
 	/*@-abstractcompare@*/
 	if (tsi->tsi_suc != p)
@@ -2108,7 +2108,7 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 static void addQ(/*@dependent@*/ rpmte p,
 		/*@in@*/ /*@out@*/ rpmte * qp,
 		/*@in@*/ /*@out@*/ rpmte * rp,
-		uint32_t prefcolor)
+		rpmuint32_t prefcolor)
 	/*@modifies p, *qp, *rp @*/
 {
     rpmte q, qprev;
@@ -2158,19 +2158,19 @@ static void addQ(/*@dependent@*/ rpmte p,
 
 /*@unchecked@*/
 #ifdef	NOTYET
-static uint32_t _autobits = _notpre(_ALL_REQUIRES_MASK);
+static rpmuint32_t _autobits = _notpre(_ALL_REQUIRES_MASK);
 #define isAuto(_x)	((_x) & _autobits)
 #else
-static uint32_t _autobits = 0xffffffff;
+static rpmuint32_t _autobits = 0xffffffff;
 #define	isAuto(_x)	(1)
 #endif
 
 int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
-    uint32_t Flags;
+    rpmuint32_t Flags;
     int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
-    uint32_t prefcolor = rpmtsPrefColor(ts);
+    rpmuint32_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -2206,7 +2206,7 @@ int rpmtsOrder(rpmts ts)
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	alKey pkgKey;
 	fnpyKey key;
-	uint32_t tscolor = rpmtsColor(ts);
+	rpmuint32_t tscolor = rpmtsColor(ts);
 	pkgKey = RPMAL_NOMATCH;
 /*@-abstract@*/
 	key = (fnpyKey) p;
@@ -2644,7 +2644,7 @@ int rpmtsCheck(rpmts ts)
 {
     const char * depName = NULL;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
-    uint32_t tscolor = rpmtsColor(ts);
+    rpmuint32_t tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;

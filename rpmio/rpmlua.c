@@ -1000,7 +1000,7 @@ static int rpm_slurp(lua_State *L)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies L, fileSystem, internalState @*/
 {
-    uint8_t *b;
+    rpmuint8_t *b;
     ssize_t blen;
     int rc;
     const char *fn;

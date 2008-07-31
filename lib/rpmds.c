@@ -254,7 +254,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     rpmds ds = NULL;
     const char * Type;
     const char ** N;
-    uint32_t Count;
+    rpmuint32_t Count;
     int xx;
 
 assert(scareMem == 0);		/* XXX always allocate memory */
@@ -498,7 +498,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     rpmds ds = NULL;
     const char * Type;
     const char * Name, * V, * R;
-    uint32_t E;
+    rpmuint32_t E;
     const char ** N, ** EVR;
     char * t;
     int xx;
@@ -799,9 +799,9 @@ void * rpmdsSetEVRcmp(rpmds ds, int (*EVRcmp)(const char *a, const char *b))
     return oEVRcmp;
 }
 
-uint32_t rpmdsColor(const rpmds ds)
+rpmuint32_t rpmdsColor(const rpmds ds)
 {
-    uint32_t Color = 0;
+    rpmuint32_t Color = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Color != NULL)
@@ -810,9 +810,9 @@ uint32_t rpmdsColor(const rpmds ds)
     return Color;
 }
 
-uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
+rpmuint32_t rpmdsSetColor(const rpmds ds, rpmuint32_t color)
 {
-    uint32_t ocolor = 0;
+    rpmuint32_t ocolor = 0;
 
     if (ds == NULL)
 	return ocolor;
@@ -829,9 +829,9 @@ uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
     return ocolor;
 }
 
-uint32_t rpmdsRefs(const rpmds ds)
+rpmuint32_t rpmdsRefs(const rpmds ds)
 {
-    uint32_t Refs = 0;
+    rpmuint32_t Refs = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Refs != NULL)
@@ -840,9 +840,9 @@ uint32_t rpmdsRefs(const rpmds ds)
     return Refs;
 }
 
-uint32_t rpmdsSetRefs(const rpmds ds, uint32_t refs)
+rpmuint32_t rpmdsSetRefs(const rpmds ds, rpmuint32_t refs)
 {
-    uint32_t orefs = 0;
+    rpmuint32_t orefs = 0;
 
     if (ds == NULL)
 	return orefs;
@@ -859,9 +859,9 @@ uint32_t rpmdsSetRefs(const rpmds ds, uint32_t refs)
     return orefs;
 }
 
-int32_t rpmdsResult(const rpmds ds)
+rpmint32_t rpmdsResult(const rpmds ds)
 {
-    int32_t result = 0;
+    rpmint32_t result = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Result != NULL)
@@ -870,9 +870,9 @@ int32_t rpmdsResult(const rpmds ds)
     return result;
 }
 
-int32_t rpmdsSetResult(const rpmds ds, int32_t result)
+rpmint32_t rpmdsSetResult(const rpmds ds, rpmint32_t result)
 {
-    int32_t oresult = 0;
+    rpmint32_t oresult = 0;
 
     if (ds == NULL)
 	return oresult;
@@ -1285,7 +1285,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 
     b = NULL;
     blen = 0;
-    xx = rpmioSlurp(fn, (uint8_t **)&b, &blen);
+    xx = rpmioSlurp(fn, (rpmuint8_t **)&b, &blen);
     if (!(xx == 0 && b != NULL && blen > 0))
 	goto exit;
 
@@ -3762,7 +3762,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * pkgN, * V, * R;
-    uint32_t E;
+    rpmuint32_t E;
     int gotE = 0;
     const char * pkgEVR;
     char * t;

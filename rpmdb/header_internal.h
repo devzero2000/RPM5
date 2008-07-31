@@ -94,16 +94,16 @@ struct headerToken_s {
 /*@null@*/
     void * rpmdb;		/*!< rpmdb pointer (or NULL). */
     struct stat sb;		/*!< Header stat(2) (from origin *.rpm file) */
-    uint32_t instance;		/*!< Header instance (if from rpmdb). */
-    uint32_t startoff;		/*!< Header starting byte offset in package. */
-    uint32_t endoff;		/*!< Header ending byte offset in package. */
+    rpmuint32_t instance;	/*!< Header instance (if from rpmdb). */
+    rpmuint32_t startoff;	/*!< Header starting byte offset in package. */
+    rpmuint32_t endoff;		/*!< Header ending byte offset in package. */
     struct rpmop_s h_loadops;
     struct rpmop_s h_getops;
 /*@owned@*/
     indexEntry index;		/*!< Array of tags. */
     size_t indexUsed;		/*!< Current size of tag array. */
     size_t indexAlloced;	/*!< Allocated size of tag array. */
-    uint32_t flags;
+    rpmuint32_t flags;
 #define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
@@ -126,7 +126,7 @@ extern "C" {
  * @param negate	negative offset expected?
  * @return		-1 on success, otherwise failing tag element index
  */
-int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int negate)
+int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv, int negate)
 	/*@modifies *iv @*/;
 
 /** \ingroup header

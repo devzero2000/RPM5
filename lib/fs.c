@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <rpmio.h>
+#include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
@@ -268,7 +269,7 @@ static int getFilesystemList(void)
 }
 #endif	/* HAVE_MNTCTL */
 
-int rpmGetFilesystemList(const char *** listptr, uint32_t * num)
+int rpmGetFilesystemList(const char *** listptr, rpmuint32_t * num)
 {
     if (!fsnames) 
 	if (getFilesystemList())
@@ -280,11 +281,11 @@ int rpmGetFilesystemList(const char *** listptr, uint32_t * num)
     return 0;
 }
 
-int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
-		int numFiles, uint64_t ** usagesPtr,
+int rpmGetFilesystemUsage(const char ** fileList, rpmuint32_t * fssizes,
+		int numFiles, rpmuint64_t ** usagesPtr,
 		/*@unused@*/ int flags)
 {
-    uint64_t * usages;
+    rpmuint64_t * usages;
     int i, len, j;
     char * buf, * dirName;
     char * chptr;

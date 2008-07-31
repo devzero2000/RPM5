@@ -126,7 +126,7 @@ rpmps rpmpsFree(rpmps ps)
 void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
-		const char * altNEVR, uint64_t ulong1)
+		const char * altNEVR, rpmuint64_t ulong1)
 {
     rpmProblem p;
     char *t;
@@ -408,7 +408,7 @@ char * rpmProblemGetStr(rpmProblem prob)
     return(prob->str1);
 }
 
-uint64_t rpmProblemGetDiskNeed(rpmProblem prob)
+rpmuint64_t rpmProblemGetDiskNeed(rpmProblem prob)
 {
     return(prob->ulong1);
 }

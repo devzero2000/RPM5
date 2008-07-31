@@ -397,7 +397,7 @@ static rpmRC rpmPlatform(const char * platform)
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     CVOG_t cvog = NULL;
-    uint8_t * b = NULL;
+    rpmuint8_t * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
     miRE mi_re = NULL;

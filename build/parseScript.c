@@ -19,14 +19,14 @@
 
 /**
  */
-static uint32_t addTriggerIndex(Package pkg, const char *file,
+static rpmuint32_t addTriggerIndex(Package pkg, const char *file,
 	const char *script, const char *prog)
 	/*@modifies pkg->triggerFiles @*/
 {
     struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list = pkg->triggerFiles;
     struct TriggerFileEntry *last = NULL;
-    uint32_t index = 0;
+    rpmuint32_t index = 0;
 
     while (list) {
 	last = list;
@@ -333,7 +333,7 @@ int parseScript(Spec spec, int parsePart)
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* Add file/index/prog triple to the trigger file list */
-	uint32_t index = addTriggerIndex(pkg, file, p, progArgv[0]);
+	rpmuint32_t index = addTriggerIndex(pkg, file, p, progArgv[0]);
 
 	/* Generate the trigger tags */
 	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))

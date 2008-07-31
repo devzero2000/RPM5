@@ -70,7 +70,7 @@ rpmKeyring rpmKeyringUnlink(/*@killref@*/ rpmKeyring keyring)
  * @param pktlen	Data length
  * @return		new pubkey handle
  */
-rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
+rpmPubkey rpmPubkeyNew(const rpmuint8_t *pkt, size_t pktlen)
 	/*@*/;
 
 /** \ingroup rpmkeyring

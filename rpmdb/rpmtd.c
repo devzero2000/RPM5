@@ -186,9 +186,9 @@ assert(td != NULL);
     return i;
 }
 
-uint32_t *rpmtdNextUint32(rpmtd td)
+rpmuint32_t *rpmtdNextUint32(rpmtd td)
 {
-    uint32_t *res = NULL;
+    rpmuint32_t *res = NULL;
 assert(td != NULL);
     if (rpmtdNext(td) >= 0) {
 	res = rpmtdGetUint32(td);
@@ -196,9 +196,9 @@ assert(td != NULL);
     return res;
 }
 
-uint64_t *rpmtdNextUint64(rpmtd td)
+rpmuint64_t *rpmtdNextUint64(rpmtd td)
 {
-    uint64_t *res = NULL;
+    rpmuint64_t *res = NULL;
 assert(td != NULL);
     if (rpmtdNext(td) >= 0) {
 	res = rpmtdGetUint64(td);
@@ -228,38 +228,38 @@ assert(td != NULL);
     return res;
 }
 
-uint16_t * rpmtdGetUint16(rpmtd td)
+rpmuint16_t * rpmtdGetUint16(rpmtd td)
 {
-    uint16_t *res = NULL;
+    rpmuint16_t *res = NULL;
 
 assert(td != NULL);
     if (td->type == RPM_INT16_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
-	res = (uint16_t *) td->data + ix;
+	res = (rpmuint16_t *) td->data + ix;
     } 
     return res;
 }
 
-uint32_t * rpmtdGetUint32(rpmtd td)
+rpmuint32_t * rpmtdGetUint32(rpmtd td)
 {
-    uint32_t *res = NULL;
+    rpmuint32_t *res = NULL;
 
 assert(td != NULL);
     if (td->type == RPM_INT32_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
-	res = (uint32_t *) td->data + ix;
+	res = (rpmuint32_t *) td->data + ix;
     } 
     return res;
 }
 
-uint64_t * rpmtdGetUint64(rpmtd td)
+rpmuint64_t * rpmtdGetUint64(rpmtd td)
 {
-    uint64_t *res = NULL;
+    rpmuint64_t *res = NULL;
 
 assert(td != NULL);
     if (td->type == RPM_INT64_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
-	res = (uint64_t *) td->data + ix;
+	res = (rpmuint64_t *) td->data + ix;
     } 
     return res;
 }
@@ -350,7 +350,7 @@ static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
     return 1;
 }
 
-int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
+int rpmtdFromUint8(rpmtd td, rpmTag tag, rpmuint8_t *data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
@@ -359,7 +359,7 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
 	return 0;
 
     /*
-     * BIN type is really just an uint8_t array internally, it's just
+     * BIN type is really just an rpmuint8_t array internally, it's just
      * treated specially otherwise.
      */
     switch (type) {
@@ -376,7 +376,7 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
     return rpmtdSet(td, tag, type, data, count);
 }
 
-int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, rpm_count_t count)
+int rpmtdFromUint16(rpmtd td, rpmTag tag, rpmuint16_t *data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
@@ -388,7 +388,7 @@ int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, rpm_count_t count)
     return rpmtdSet(td, tag, type, data, count);
 }
 
-int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count)
+int rpmtdFromUint32(rpmtd td, rpmTag tag, rpmuint32_t *data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
@@ -400,7 +400,7 @@ int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count)
     return rpmtdSet(td, tag, type, data, count);
 }
 
-int rpmtdFromUint64(rpmtd td, rpmTag tag, uint64_t *data, rpm_count_t count)
+int rpmtdFromUint64(rpmtd td, rpmTag tag, rpmuint64_t *data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;

@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <popt.h>
+#include <rpmiotypes.h>
 
 /** \ingroup rpmpgp
  */
@@ -31,7 +32,7 @@ typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
 
 /** \ingroup rpmpgp
  */
-typedef uint8_t pgpKeyID_t[8];
+typedef rpmuint8_t pgpKeyID_t[8];
 
 /** \ingroup rpmpgp
  */

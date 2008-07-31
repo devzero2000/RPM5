@@ -217,7 +217,7 @@ int rpmVersionCompare(Header first, Header second)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
-    uint32_t Eone, Etwo;
+    rpmuint32_t Eone, Etwo;
     int rc;
     int xx;
 

@@ -234,7 +234,7 @@ fprintf(stderr, "*** avReaddir(%p) %p %s\n", (void *)avdir, dp, dp->d_name);
     return dp;
 }
 
-DIR * avOpendir(const char * path, const char ** av, uint16_t * modes)
+DIR * avOpendir(const char * path, const char ** av, rpmuint16_t * modes)
 {
     AVDIR avdir;
     struct dirent * dp;

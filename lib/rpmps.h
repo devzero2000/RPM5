@@ -233,7 +233,7 @@ void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
 		/*@exposed@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ const char * dn, /*@null@*/ const char * bn,
 		/*@null@*/ const char * altNEVR,
-		uint64_t ulong1)
+		rpmuint64_t ulong1)
 	/*@modifies ps @*/;
 
 /**
@@ -300,7 +300,7 @@ char * rpmProblemGetStr(rpmProblem prob)
  * @param prob		rpm problem
  * @return		a generic pointer/long attribute
  */
-uint64_t rpmProblemGetDiskNeed(rpmProblem prob)
+rpmuint64_t rpmProblemGetDiskNeed(rpmProblem prob)
 	/*@*/;
 
 /**

@@ -177,7 +177,7 @@ extern const char * buildHost(void)
  * @return		build time stamp
  */
 /*@observer@*/
-extern uint32_t * getBuildTime(void)
+extern rpmuint32_t * getBuildTime(void)
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -222,7 +222,7 @@ rpmParseState isPart(Spec spec)
  * @retval res		pointer to int
  * @return		0 on success, 1 on failure
  */
-int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/uint32_t * res)
+int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/rpmuint32_t * res)
 	/*@modifies *res @*/;
 
 /** \ingroup rpmbuild
@@ -336,7 +336,7 @@ int parsePrep(Spec spec, int verify)
  * @return		RPMRC_OK on success
  */
 rpmRC parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
-		uint32_t index, rpmsenseFlags tagflags)
+		rpmuint32_t index, rpmsenseFlags tagflags)
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -446,7 +446,7 @@ Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
  */
 int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
-		uint32_t index)
+		rpmuint32_t index)
 	/*@modifies h @*/;
 
 /**

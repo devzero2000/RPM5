@@ -47,7 +47,7 @@
 /*@-redef@*/
 /*@unchecked@*/
 static const union _dbswap {
-    const uint32_t ui;
+    const rpmuint32_t ui;
     const unsigned char uc[4];
 } endian = { .ui = 0x11223344 };
 # define HASH_LITTLE_ENDIAN	(endian.uc[0] == (unsigned char) 0x44)
@@ -59,7 +59,7 @@ static const union _dbswap {
 #endif
 
 /* NOTE: The _size parameter should be in bytes. */
-#define	_JLU3_INIT(_h, _size)	(0xdeadbeef + ((uint32_t)(_size)) + (_h))
+#define	_JLU3_INIT(_h, _size)	(0xdeadbeef + ((rpmuint32_t)(_size)) + (_h))
 
 /* -------------------------------------------------------------------- */
 /*
@@ -152,31 +152,31 @@ static const union _dbswap {
 }
 
 #if defined(_JLU3_jlu32w)
-uint32_t jlu32w(uint32_t h, /*@null@*/ const uint32_t *k, size_t size)
+rpmuint32_t jlu32w(rpmuint32_t h, /*@null@*/ const rpmuint32_t *k, size_t size)
 	/*@*/;
 /* -------------------------------------------------------------------- */
 /**
  *  This works on all machines.  To be useful, it requires
- *  -- that the key be an array of uint32_t's, and
- *  -- that the size be the number of uint32_t's in the key
+ *  -- that the key be an array of rpmuint32_t's, and
+ *  -- that the size be the number of rpmuint32_t's in the key
  * 
  *  The function jlu32w() is identical to jlu32l() on little-endian
  *  machines, and identical to jlu32b() on big-endian machines,
- *  except that the size has to be measured in uint32_ts rather than in
+ *  except that the size has to be measured in rpmuint32_ts rather than in
  *  bytes.  jlu32l() is more complicated than jlu32w() only because
  *  jlu32l() has to dance around fitting the key bytes into registers.
  *
  * @param h		the previous hash, or an arbitrary value
- * @param *k		the key, an array of uint32_t values
- * @param size		the size of the key, in uint32_ts
+ * @param *k		the key, an array of rpmuint32_t values
+ * @param size		the size of the key, in rpmuint32_ts
  * @return		the lookup3 hash
  */
 /* -------------------------------------------------------------------- */
-uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
+rpmuint32_t jlu32w(rpmuint32_t h, const rpmuint32_t *k, size_t size)
 {
-    uint32_t a = _JLU3_INIT(h, (size * sizeof(*k)));
-    uint32_t b = a;
-    uint32_t c = a;
+    rpmuint32_t a = _JLU3_INIT(h, (size * sizeof(*k)));
+    rpmuint32_t b = a;
+    rpmuint32_t c = a;
 
     if (k == NULL)
 	goto exit;
@@ -191,7 +191,7 @@ uint32_t jlu32w(uint32_t h, const uint32_t *k, size_t size)
 	k += 3;
     }
 
-    /*----------------------------------------- handle the last 3 uint32_t's */
+    /*----------------------------------------- handle the last 3 rpmuint32_t's */
     switch (size) {
     case 3 : c+=k[2];
     case 2 : b+=k[1];
@@ -208,7 +208,7 @@ exit:
 #endif	/* defined(_JLU3_jlu32w) */
 
 #if defined(_JLU3_jlu32l)
-uint32_t jlu32l(uint32_t h, const void *key, size_t size)
+rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	/*@*/;
 /* -------------------------------------------------------------------- */
 /*
@@ -226,7 +226,7 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
  *   h = (h & hashmask(10));
  * In which case, the hash table should have hashsize(10) elements.
  * 
- * If you are hashing n strings (uint8_t **)k, do it like this:
+ * If you are hashing n strings (rpmuint8_t **)k, do it like this:
  *   for (i=0, h=0; i<n; ++i) h = jlu32l(h, k[i], len[i]);
  * 
  * By Bob Jenkins, 2006.  bob_jenkins@burtleburtle.net.  You may use this
@@ -236,26 +236,26 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
  * acceptable.  Do NOT use for cryptographic purposes.
  *
  * @param h		the previous hash, or an arbitrary value
- * @param *k		the key, an array of uint8_t values
+ * @param *k		the key, an array of rpmuint8_t values
  * @param size		the size of the key
  * @return		the lookup3 hash
  */
 /* -------------------------------------------------------------------- */
-uint32_t jlu32l(uint32_t h, const void *key, size_t size)
+rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 {
     union { const void *ptr; size_t i; } u;
-    uint32_t a = _JLU3_INIT(h, size);
-    uint32_t b = a;
-    uint32_t c = a;
+    rpmuint32_t a = _JLU3_INIT(h, size);
+    rpmuint32_t b = a;
+    rpmuint32_t c = a;
 
     if (key == NULL)
 	goto exit;
 
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
-	const uint32_t *k = (const uint32_t *)key;	/* read 32-bit chunks */
+	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
 #ifdef	VALGRIND
-	const uint8_t  *k8;
+	const rpmuint8_t  *k8;
 #endif
 
     /*------ all but last block: aligned reads and affect 32 bits of (a,b,c) */
@@ -298,19 +298,19 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 
 #else /* make valgrind happy */
 
-	k8 = (const uint8_t *)k;
+	k8 = (const rpmuint8_t *)k;
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0]	break;
-	case 11:	c += ((uint32_t)k8[10])<<16;	/*@fallthrough@*/
-	case 10:	c += ((uint32_t)k8[9])<<8;	/*@fallthrough@*/
+	case 11:	c += ((rpmuint32_t)k8[10])<<16;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k8[9])<<8;	/*@fallthrough@*/
 	case  9:	c += k8[8];			/*@fallthrough@*/
 	case  8:	b += k[1]; a+=k[0];		break;
-	case  7:	b += ((uint32_t)k8[6])<<16;	/*@fallthrough@*/
-	case  6:	b += ((uint32_t)k8[5])<<8;	/*@fallthrough@*/
+	case  7:	b += ((rpmuint32_t)k8[6])<<16;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k8[5])<<8;	/*@fallthrough@*/
 	case  5:	b += k8[4];			/*@fallthrough@*/
 	case  4:	a += k[0];			break;
-	case  3:	a += ((uint32_t)k8[2])<<16;	/*@fallthrough@*/
-	case  2:	a += ((uint32_t)k8[1])<<8;	/*@fallthrough@*/
+	case  3:	a += ((rpmuint32_t)k8[2])<<16;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k8[1])<<8;	/*@fallthrough@*/
 	case  1:	a += k8[0];			break;
 	case  0:	goto exit;
 	}
@@ -318,57 +318,57 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 #endif /* !valgrind */
 
     } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
-	const uint16_t *k = (const uint16_t *)key;	/* read 16-bit chunks */
-	const uint8_t  *k8;
+	const rpmuint16_t *k = (const rpmuint16_t *)key;	/* read 16-bit chunks */
+	const rpmuint8_t  *k8;
 
 	/*----------- all but last block: aligned reads and different mixing */
 	while (size > 12) {
-	    a += k[0] + (((uint32_t)k[1])<<16);
-	    b += k[2] + (((uint32_t)k[3])<<16);
-	    c += k[4] + (((uint32_t)k[5])<<16);
+	    a += k[0] + (((rpmuint32_t)k[1])<<16);
+	    b += k[2] + (((rpmuint32_t)k[3])<<16);
+	    c += k[4] + (((rpmuint32_t)k[5])<<16);
 	    _JLU3_MIX(a,b,c);
 	    size -= 12;
 	    k += 6;
 	}
 
 	/*------------------------- handle the last (probably partial) block */
-	k8 = (const uint8_t *)k;
+	k8 = (const rpmuint8_t *)k;
 	switch (size) {
 	case 12:
-	    c += k[4]+(((uint32_t)k[5])<<16);
-	    b += k[2]+(((uint32_t)k[3])<<16);
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    c += k[4]+(((rpmuint32_t)k[5])<<16);
+	    b += k[2]+(((rpmuint32_t)k[3])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case 11:
-	    c += ((uint32_t)k8[10])<<16;
+	    c += ((rpmuint32_t)k8[10])<<16;
 	    /*@fallthrough@*/
 	case 10:
 	    c += k[4];
-	    b += k[2]+(((uint32_t)k[3])<<16);
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    b += k[2]+(((rpmuint32_t)k[3])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  9:
 	    c += k8[8];
 	    /*@fallthrough@*/
 	case  8:
-	    b += k[2]+(((uint32_t)k[3])<<16);
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    b += k[2]+(((rpmuint32_t)k[3])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  7:
-	    b += ((uint32_t)k8[6])<<16;
+	    b += ((rpmuint32_t)k8[6])<<16;
 	    /*@fallthrough@*/
 	case  6:
 	    b += k[2];
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  5:
 	    b += k8[4];
 	    /*@fallthrough@*/
 	case  4:
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  3:
-	    a += ((uint32_t)k8[2])<<16;
+	    a += ((rpmuint32_t)k8[2])<<16;
 	    /*@fallthrough@*/
 	case  2:
 	    a += k[0];
@@ -381,22 +381,22 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 	}
 
     } else {		/* need to read the key one byte at a time */
-	const uint8_t *k = (const uint8_t *)key;
+	const rpmuint8_t *k = (const rpmuint8_t *)key;
 
 	/*----------- all but the last block: affect some 32 bits of (a,b,c) */
 	while (size > 12) {
 	    a += k[0];
-	    a += ((uint32_t)k[1])<<8;
-	    a += ((uint32_t)k[2])<<16;
-	    a += ((uint32_t)k[3])<<24;
+	    a += ((rpmuint32_t)k[1])<<8;
+	    a += ((rpmuint32_t)k[2])<<16;
+	    a += ((rpmuint32_t)k[3])<<24;
 	    b += k[4];
-	    b += ((uint32_t)k[5])<<8;
-	    b += ((uint32_t)k[6])<<16;
-	    b += ((uint32_t)k[7])<<24;
+	    b += ((rpmuint32_t)k[5])<<8;
+	    b += ((rpmuint32_t)k[6])<<16;
+	    b += ((rpmuint32_t)k[7])<<24;
 	    c += k[8];
-	    c += ((uint32_t)k[9])<<8;
-	    c += ((uint32_t)k[10])<<16;
-	    c += ((uint32_t)k[11])<<24;
+	    c += ((rpmuint32_t)k[9])<<8;
+	    c += ((rpmuint32_t)k[10])<<16;
+	    c += ((rpmuint32_t)k[11])<<24;
 	    _JLU3_MIX(a,b,c);
 	    size -= 12;
 	    k += 12;
@@ -404,17 +404,17 @@ uint32_t jlu32l(uint32_t h, const void *key, size_t size)
 
 	/*---------------------------- last block: affect all 32 bits of (c) */
 	switch (size) {
-	case 12:	c += ((uint32_t)k[11])<<24;	/*@fallthrough@*/
-	case 11:	c += ((uint32_t)k[10])<<16;	/*@fallthrough@*/
-	case 10:	c += ((uint32_t)k[9])<<8;	/*@fallthrough@*/
+	case 12:	c += ((rpmuint32_t)k[11])<<24;	/*@fallthrough@*/
+	case 11:	c += ((rpmuint32_t)k[10])<<16;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k[9])<<8;	/*@fallthrough@*/
 	case  9:	c += k[8];			/*@fallthrough@*/
-	case  8:	b += ((uint32_t)k[7])<<24;	/*@fallthrough@*/
-	case  7:	b += ((uint32_t)k[6])<<16;	/*@fallthrough@*/
-	case  6:	b += ((uint32_t)k[5])<<8;	/*@fallthrough@*/
+	case  8:	b += ((rpmuint32_t)k[7])<<24;	/*@fallthrough@*/
+	case  7:	b += ((rpmuint32_t)k[6])<<16;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k[5])<<8;	/*@fallthrough@*/
 	case  5:	b += k[4];			/*@fallthrough@*/
-	case  4:	a += ((uint32_t)k[3])<<24;	/*@fallthrough@*/
-	case  3:	a += ((uint32_t)k[2])<<16;	/*@fallthrough@*/
-	case  2:	a += ((uint32_t)k[1])<<8;	/*@fallthrough@*/
+	case  4:	a += ((rpmuint32_t)k[3])<<24;	/*@fallthrough@*/
+	case  3:	a += ((rpmuint32_t)k[2])<<16;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k[1])<<8;	/*@fallthrough@*/
 	case  1:	a += k[0];
 	    break;
 	case  0:
@@ -431,7 +431,7 @@ exit:
 
 #if defined(_JLU3_jlu32lpair)
 void jlu32lpair(/*@null@*/ const void *key, size_t size,
-		uint32_t *pc, uint32_t *pb)
+		rpmuint32_t *pc, rpmuint32_t *pb)
 	/*@modifies *pc, *pb@*/;
 /**
  * jlu32lpair: return 2 32-bit hash values.
@@ -441,20 +441,20 @@ void jlu32lpair(/*@null@*/ const void *key, size_t size,
  * lookup with 2^^64 buckets, or if you want a second hash if you're not
  * happy with the first, or if you want a probably-unique 64-bit ID for
  * the key.  *pc is better mixed than *pb, so use *pc first.  If you want
- * a 64-bit value do something like "*pc + (((uint64_t)*pb)<<32)".
+ * a 64-bit value do something like "*pc + (((rpmuint64_t)*pb)<<32)".
  *
  * @param h		the previous hash, or an arbitrary value
- * @param *key		the key, an array of uint8_t values
+ * @param *key		the key, an array of rpmuint8_t values
  * @param size		the size of the key in bytes
  * @retval *pc,		IN: primary initval, OUT: primary hash
  * *retval *pb		IN: secondary initval, OUT: secondary hash
  */
-void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
+void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 {
     union { const void *ptr; size_t i; } u;
-    uint32_t a = _JLU3_INIT(*pc, size);
-    uint32_t b = a;
-    uint32_t c = a;
+    rpmuint32_t a = _JLU3_INIT(*pc, size);
+    rpmuint32_t b = a;
+    rpmuint32_t c = a;
 
     if (key == NULL)
 	goto exit;
@@ -463,9 +463,9 @@ void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
 
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
-	const uint32_t *k = (const uint32_t *)key;	/* read 32-bit chunks */
+	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
 #ifdef	VALGRIND
-	const uint8_t  *k8;
+	const rpmuint8_t  *k8;
 #endif
 
 	/*-- all but last block: aligned reads and affect 32 bits of (a,b,c) */
@@ -507,19 +507,19 @@ void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
 
 #else /* make valgrind happy */
 
-	k8 = (const uint8_t *)k;
+	k8 = (const rpmuint8_t *)k;
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0];	break;
-	case 11:	c += ((uint32_t)k8[10])<<16;	/*@fallthrough@*/
-	case 10:	c += ((uint32_t)k8[9])<<8;	/*@fallthrough@*/
+	case 11:	c += ((rpmuint32_t)k8[10])<<16;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k8[9])<<8;	/*@fallthrough@*/
 	case  9:	c += k8[8];			/*@fallthrough@*/
 	case  8:	b += k[1]; a+=k[0];		break;
-	case  7:	b += ((uint32_t)k8[6])<<16;	/*@fallthrough@*/
-	case  6:	b += ((uint32_t)k8[5])<<8;	/*@fallthrough@*/
+	case  7:	b += ((rpmuint32_t)k8[6])<<16;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k8[5])<<8;	/*@fallthrough@*/
 	case  5:	b += k8[4];			/*@fallthrough@*/
 	case  4:	a += k[0];			break;
-	case  3:	a += ((uint32_t)k8[2])<<16;	/*@fallthrough@*/
-	case  2:	a += ((uint32_t)k8[1])<<8;	/*@fallthrough@*/
+	case  3:	a += ((rpmuint32_t)k8[2])<<16;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k8[1])<<8;	/*@fallthrough@*/
 	case  1:	a += k8[0];			break;
 	case  0:	goto exit;
 	}
@@ -527,57 +527,57 @@ void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
 #endif /* !valgrind */
 
     } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
-	const uint16_t *k = (const uint16_t *)key;	/* read 16-bit chunks */
-	const uint8_t  *k8;
+	const rpmuint16_t *k = (const rpmuint16_t *)key;	/* read 16-bit chunks */
+	const rpmuint8_t  *k8;
 
 	/*----------- all but last block: aligned reads and different mixing */
 	while (size > 12) {
-	    a += k[0] + (((uint32_t)k[1])<<16);
-	    b += k[2] + (((uint32_t)k[3])<<16);
-	    c += k[4] + (((uint32_t)k[5])<<16);
+	    a += k[0] + (((rpmuint32_t)k[1])<<16);
+	    b += k[2] + (((rpmuint32_t)k[3])<<16);
+	    c += k[4] + (((rpmuint32_t)k[5])<<16);
 	    _JLU3_MIX(a,b,c);
 	    size -= 12;
 	    k += 6;
 	}
 
 	/*------------------------- handle the last (probably partial) block */
-	k8 = (const uint8_t *)k;
+	k8 = (const rpmuint8_t *)k;
 	switch (size) {
 	case 12:
-	    c += k[4]+(((uint32_t)k[5])<<16);
-	    b += k[2]+(((uint32_t)k[3])<<16);
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    c += k[4]+(((rpmuint32_t)k[5])<<16);
+	    b += k[2]+(((rpmuint32_t)k[3])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case 11:
-	    c += ((uint32_t)k8[10])<<16;
+	    c += ((rpmuint32_t)k8[10])<<16;
 	    /*@fallthrough@*/
 	case 10:
 	    c += k[4];
-	    b += k[2]+(((uint32_t)k[3])<<16);
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    b += k[2]+(((rpmuint32_t)k[3])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  9:
 	    c += k8[8];
 	    /*@fallthrough@*/
 	case  8:
-	    b += k[2]+(((uint32_t)k[3])<<16);
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    b += k[2]+(((rpmuint32_t)k[3])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  7:
-	    b += ((uint32_t)k8[6])<<16;
+	    b += ((rpmuint32_t)k8[6])<<16;
 	    /*@fallthrough@*/
 	case  6:
 	    b += k[2];
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  5:
 	    b += k8[4];
 	    /*@fallthrough@*/
 	case  4:
-	    a += k[0]+(((uint32_t)k[1])<<16);
+	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  3:
-	    a += ((uint32_t)k8[2])<<16;
+	    a += ((rpmuint32_t)k8[2])<<16;
 	    /*@fallthrough@*/
 	case  2:
 	    a += k[0];
@@ -590,22 +590,22 @@ void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
 	}
 
     } else {		/* need to read the key one byte at a time */
-	const uint8_t *k = (const uint8_t *)key;
+	const rpmuint8_t *k = (const rpmuint8_t *)key;
 
 	/*----------- all but the last block: affect some 32 bits of (a,b,c) */
 	while (size > 12) {
 	    a += k[0];
-	    a += ((uint32_t)k[1])<<8;
-	    a += ((uint32_t)k[2])<<16;
-	    a += ((uint32_t)k[3])<<24;
+	    a += ((rpmuint32_t)k[1])<<8;
+	    a += ((rpmuint32_t)k[2])<<16;
+	    a += ((rpmuint32_t)k[3])<<24;
 	    b += k[4];
-	    b += ((uint32_t)k[5])<<8;
-	    b += ((uint32_t)k[6])<<16;
-	    b += ((uint32_t)k[7])<<24;
+	    b += ((rpmuint32_t)k[5])<<8;
+	    b += ((rpmuint32_t)k[6])<<16;
+	    b += ((rpmuint32_t)k[7])<<24;
 	    c += k[8];
-	    c += ((uint32_t)k[9])<<8;
-	    c += ((uint32_t)k[10])<<16;
-	    c += ((uint32_t)k[11])<<24;
+	    c += ((rpmuint32_t)k[9])<<8;
+	    c += ((rpmuint32_t)k[10])<<16;
+	    c += ((rpmuint32_t)k[11])<<24;
 	    _JLU3_MIX(a,b,c);
 	    size -= 12;
 	    k += 12;
@@ -613,17 +613,17 @@ void jlu32lpair(const void *key, size_t size, uint32_t *pc, uint32_t *pb)
 
 	/*---------------------------- last block: affect all 32 bits of (c) */
 	switch (size) {
-	case 12:	c += ((uint32_t)k[11])<<24;	/*@fallthrough@*/
-	case 11:	c += ((uint32_t)k[10])<<16;	/*@fallthrough@*/
-	case 10:	c += ((uint32_t)k[9])<<8;	/*@fallthrough@*/
+	case 12:	c += ((rpmuint32_t)k[11])<<24;	/*@fallthrough@*/
+	case 11:	c += ((rpmuint32_t)k[10])<<16;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k[9])<<8;	/*@fallthrough@*/
 	case  9:	c += k[8];			/*@fallthrough@*/
-	case  8:	b += ((uint32_t)k[7])<<24;	/*@fallthrough@*/
-	case  7:	b += ((uint32_t)k[6])<<16;	/*@fallthrough@*/
-	case  6:	b += ((uint32_t)k[5])<<8;	/*@fallthrough@*/
+	case  8:	b += ((rpmuint32_t)k[7])<<24;	/*@fallthrough@*/
+	case  7:	b += ((rpmuint32_t)k[6])<<16;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k[5])<<8;	/*@fallthrough@*/
 	case  5:	b += k[4];			/*@fallthrough@*/
-	case  4:	a += ((uint32_t)k[3])<<24;	/*@fallthrough@*/
-	case  3:	a += ((uint32_t)k[2])<<16;	/*@fallthrough@*/
-	case  2:	a += ((uint32_t)k[1])<<8;	/*@fallthrough@*/
+	case  4:	a += ((rpmuint32_t)k[3])<<24;	/*@fallthrough@*/
+	case  3:	a += ((rpmuint32_t)k[2])<<16;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k[1])<<8;	/*@fallthrough@*/
 	case  1:	a += k[0];			/*@fallthrough@*/
 	    break;
 	case  0:
@@ -641,7 +641,7 @@ exit:
 #endif	/* defined(_JLU3_jlu32lpair) */
 
 #if defined(_JLU3_jlu32b)
-uint32_t jlu32b(uint32_t h, /*@null@*/ const void *key, size_t size)
+rpmuint32_t jlu32b(rpmuint32_t h, /*@null@*/ const void *key, size_t size)
 	/*@*/;
 /*
  * jlu32b():
@@ -650,25 +650,25 @@ uint32_t jlu32b(uint32_t h, /*@null@*/ const void *key, size_t size)
  * big-endian byte ordering. 
  *
  * @param h		the previous hash, or an arbitrary value
- * @param *k		the key, an array of uint8_t values
+ * @param *k		the key, an array of rpmuint8_t values
  * @param size		the size of the key
  * @return		the lookup3 hash
  */
-uint32_t jlu32b(uint32_t h, const void *key, size_t size)
+rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
 {
     union { const void *ptr; size_t i; } u;
-    uint32_t a = _JLU3_INIT(h, size);
-    uint32_t b = a;
-    uint32_t c = a;
+    rpmuint32_t a = _JLU3_INIT(h, size);
+    rpmuint32_t b = a;
+    rpmuint32_t c = a;
 
     if (key == NULL)
 	return h;
 
     u.ptr = key;
     if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0)) {
-	const uint32_t *k = (const uint32_t *)key;	/* read 32-bit chunks */
+	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
 #ifdef	VALGRIND
-	const uint8_t  *k8;
+	const rpmuint8_t  *k8;
 #endif
 
 	/*-- all but last block: aligned reads and affect 32 bits of (a,b,c) */
@@ -711,42 +711,42 @@ uint32_t jlu32b(uint32_t h, const void *key, size_t size)
 
 #else  /* make valgrind happy */
 
-	k8 = (const uint8_t *)k;
+	k8 = (const rpmuint8_t *)k;
 	switch (size) {	/* all the case statements fall through */
 	case 12:	c += k[2]; b+=k[1]; a+=k[0];	break;
-	case 11:	c += ((uint32_t)k8[10])<<8;	/*@fallthrough@*/
-	case 10:	c += ((uint32_t)k8[9])<<16;	/*@fallthrough@*/
-	case  9:	c += ((uint32_t)k8[8])<<24;	/*@fallthrough@*/
+	case 11:	c += ((rpmuint32_t)k8[10])<<8;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k8[9])<<16;	/*@fallthrough@*/
+	case  9:	c += ((rpmuint32_t)k8[8])<<24;	/*@fallthrough@*/
 	case  8:	b += k[1]; a+=k[0];		break;
-	case  7:	b += ((uint32_t)k8[6])<<8;	/*@fallthrough@*/
-	case  6:	b += ((uint32_t)k8[5])<<16;	/*@fallthrough@*/
-	case  5:	b += ((uint32_t)k8[4])<<24;	/*@fallthrough@*/
+	case  7:	b += ((rpmuint32_t)k8[6])<<8;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k8[5])<<16;	/*@fallthrough@*/
+	case  5:	b += ((rpmuint32_t)k8[4])<<24;	/*@fallthrough@*/
 	case  4:	a += k[0];			break;
-	case  3:	a += ((uint32_t)k8[2])<<8;	/*@fallthrough@*/
-	case  2:	a += ((uint32_t)k8[1])<<16;	/*@fallthrough@*/
-	case  1:	a += ((uint32_t)k8[0])<<24;	break;
+	case  3:	a += ((rpmuint32_t)k8[2])<<8;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k8[1])<<16;	/*@fallthrough@*/
+	case  1:	a += ((rpmuint32_t)k8[0])<<24;	break;
 	case  0:	goto exit;
     }
 
 #endif /* !VALGRIND */
 
     } else {                        /* need to read the key one byte at a time */
-	const uint8_t *k = (const uint8_t *)key;
+	const rpmuint8_t *k = (const rpmuint8_t *)key;
 
 	/*----------- all but the last block: affect some 32 bits of (a,b,c) */
 	while (size > 12) {
-	    a += ((uint32_t)k[0])<<24;
-	    a += ((uint32_t)k[1])<<16;
-	    a += ((uint32_t)k[2])<<8;
-	    a += ((uint32_t)k[3]);
-	    b += ((uint32_t)k[4])<<24;
-	    b += ((uint32_t)k[5])<<16;
-	    b += ((uint32_t)k[6])<<8;
-	    b += ((uint32_t)k[7]);
-	    c += ((uint32_t)k[8])<<24;
-	    c += ((uint32_t)k[9])<<16;
-	    c += ((uint32_t)k[10])<<8;
-	    c += ((uint32_t)k[11]);
+	    a += ((rpmuint32_t)k[0])<<24;
+	    a += ((rpmuint32_t)k[1])<<16;
+	    a += ((rpmuint32_t)k[2])<<8;
+	    a += ((rpmuint32_t)k[3]);
+	    b += ((rpmuint32_t)k[4])<<24;
+	    b += ((rpmuint32_t)k[5])<<16;
+	    b += ((rpmuint32_t)k[6])<<8;
+	    b += ((rpmuint32_t)k[7]);
+	    c += ((rpmuint32_t)k[8])<<24;
+	    c += ((rpmuint32_t)k[9])<<16;
+	    c += ((rpmuint32_t)k[10])<<8;
+	    c += ((rpmuint32_t)k[11]);
 	    _JLU3_MIX(a,b,c);
 	    size -= 12;
 	    k += 12;
@@ -755,17 +755,17 @@ uint32_t jlu32b(uint32_t h, const void *key, size_t size)
 	/*---------------------------- last block: affect all 32 bits of (c) */
 	switch (size) {	/* all the case statements fall through */
 	case 12:	c += k[11];			/*@fallthrough@*/
-	case 11:	c += ((uint32_t)k[10])<<8;	/*@fallthrough@*/
-	case 10:	c += ((uint32_t)k[9])<<16;	/*@fallthrough@*/
-	case  9:	c += ((uint32_t)k[8])<<24;	/*@fallthrough@*/
+	case 11:	c += ((rpmuint32_t)k[10])<<8;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k[9])<<16;	/*@fallthrough@*/
+	case  9:	c += ((rpmuint32_t)k[8])<<24;	/*@fallthrough@*/
 	case  8:	b += k[7];			/*@fallthrough@*/
-	case  7:	b += ((uint32_t)k[6])<<8;	/*@fallthrough@*/
-	case  6:	b += ((uint32_t)k[5])<<16;	/*@fallthrough@*/
-	case  5:	b += ((uint32_t)k[4])<<24;	/*@fallthrough@*/
+	case  7:	b += ((rpmuint32_t)k[6])<<8;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k[5])<<16;	/*@fallthrough@*/
+	case  5:	b += ((rpmuint32_t)k[4])<<24;	/*@fallthrough@*/
 	case  4:	a += k[3];			/*@fallthrough@*/
-	case  3:	a += ((uint32_t)k[2])<<8;	/*@fallthrough@*/
-	case  2:	a += ((uint32_t)k[1])<<16;	/*@fallthrough@*/
-	case  1:	a += ((uint32_t)k[0])<<24;	/*@fallthrough@*/
+	case  3:	a += ((rpmuint32_t)k[2])<<8;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k[1])<<16;	/*@fallthrough@*/
+	case  1:	a += ((rpmuint32_t)k[0])<<24;	/*@fallthrough@*/
 	    break;
 	case  0:
 	    goto exit;
@@ -785,9 +785,9 @@ exit:
 static void driver1(void)
 	/*@*/
 {
-    uint8_t buf[256];
-    uint32_t i;
-    uint32_t h=0;
+    rpmuint8_t buf[256];
+    rpmuint32_t i;
+    rpmuint32_t h=0;
     time_t a,z;
 
     time(&a);
@@ -807,11 +807,11 @@ static void driver1(void)
 static void driver2(void)
 	/*@*/
 {
-    uint8_t qa[MAXLEN+1], qb[MAXLEN+2], *a = &qa[0], *b = &qb[1];
-    uint32_t c[HASHSTATE], d[HASHSTATE], i=0, j=0, k, l, m=0, z;
-    uint32_t e[HASHSTATE],f[HASHSTATE],g[HASHSTATE],h[HASHSTATE];
-    uint32_t x[HASHSTATE],y[HASHSTATE];
-    uint32_t hlen;
+    rpmuint8_t qa[MAXLEN+1], qb[MAXLEN+2], *a = &qa[0], *b = &qb[1];
+    rpmuint32_t c[HASHSTATE], d[HASHSTATE], i=0, j=0, k, l, m=0, z;
+    rpmuint32_t e[HASHSTATE],f[HASHSTATE],g[HASHSTATE],h[HASHSTATE];
+    rpmuint32_t x[HASHSTATE],y[HASHSTATE];
+    rpmuint32_t hlen;
 
     printf("No more than %d trials should ever be needed \n",MAXPAIR/2);
     for (hlen=0; hlen < MAXLEN; ++hlen) {
@@ -820,13 +820,13 @@ static void driver2(void)
 	    for (j=0; j<8; ++j) {	/*--------------- for each input bit, */
 		for (m=1; m<8; ++m) {	/*--- for serveral possible initvals, */
 		    for (l=0; l<HASHSTATE; ++l)
-			e[l]=f[l]=g[l]=h[l]=x[l]=y[l]=~((uint32_t)0);
+			e[l]=f[l]=g[l]=h[l]=x[l]=y[l]=~((rpmuint32_t)0);
 
 		    /* check that every output bit is affected by that input bit */
 		    for (k=0; k<MAXPAIR; k+=2) { 
-			uint32_t finished=1;
+			rpmuint32_t finished=1;
 			/* keys have one bit different */
-			for (l=0; l<hlen+1; ++l) {a[l] = b[l] = (uint8_t)0;}
+			for (l=0; l<hlen+1; ++l) {a[l] = b[l] = (rpmuint8_t)0;}
 			/* have a and b be two keys differing in only one bit */
 			a[i] ^= (k<<j);
 			a[i] ^= (k>>(8-j));
@@ -870,24 +870,24 @@ static void driver2(void)
 static void driver3(void)
 	/*@*/
 {
-    uint8_t buf[MAXLEN+20], *b;
-    uint32_t len;
-    uint8_t q[] = "This is the time for all good men to come to the aid of their country...";
-    uint32_t h;
-    uint8_t qq[] = "xThis is the time for all good men to come to the aid of their country...";
-    uint32_t i;
-    uint8_t qqq[] = "xxThis is the time for all good men to come to the aid of their country...";
-    uint32_t j;
-    uint8_t qqqq[] = "xxxThis is the time for all good men to come to the aid of their country...";
-    uint32_t ref,x,y;
-    uint8_t *p;
-    uint32_t m = 13;
+    rpmuint8_t buf[MAXLEN+20], *b;
+    rpmuint32_t len;
+    rpmuint8_t q[] = "This is the time for all good men to come to the aid of their country...";
+    rpmuint32_t h;
+    rpmuint8_t qq[] = "xThis is the time for all good men to come to the aid of their country...";
+    rpmuint32_t i;
+    rpmuint8_t qqq[] = "xxThis is the time for all good men to come to the aid of their country...";
+    rpmuint32_t j;
+    rpmuint8_t qqqq[] = "xxxThis is the time for all good men to come to the aid of their country...";
+    rpmuint32_t ref,x,y;
+    rpmuint8_t *p;
+    rpmuint32_t m = 13;
 
     printf("Endianness.  These lines should all be the same (for values filled in):\n");
     printf("%.8x                            %.8x                            %.8x\n",
-	jlu32w(m, (const uint32_t *)q, (sizeof(q)-1)/4),
-	jlu32w(m, (const uint32_t *)q, (sizeof(q)-5)/4),
-	jlu32w(m, (const uint32_t *)q, (sizeof(q)-9)/4));
+	jlu32w(m, (const rpmuint32_t *)q, (sizeof(q)-1)/4),
+	jlu32w(m, (const rpmuint32_t *)q, (sizeof(q)-5)/4),
+	jlu32w(m, (const rpmuint32_t *)q, (sizeof(q)-9)/4));
     p = q;
     printf("%.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x\n",
 	jlu32l(m, p, sizeof(q)-1), jlu32l(m, p, sizeof(q)-2),
@@ -930,8 +930,8 @@ static void driver3(void)
 	    /* these should all be equal */
 	    m = 1;
 	    ref = jlu32l(m, b, len);
-	    *(b+i)=(uint8_t)~0;
-	    *(b-1)=(uint8_t)~0;
+	    *(b+i)=(rpmuint8_t)~0;
+	    *(b-1)=(rpmuint8_t)~0;
 	    x = jlu32l(m, b, len);
 	    y = jlu32l(m, b, len);
 	    if ((ref != x) || (ref != y)) 
@@ -944,10 +944,10 @@ static void driver3(void)
 static void driver4(void)
 	/*@*/
 {
-    uint8_t buf[1];
-    uint32_t h;
-    uint32_t i;
-    uint32_t state[HASHSTATE];
+    rpmuint8_t buf[1];
+    rpmuint32_t h;
+    rpmuint32_t i;
+    rpmuint32_t state[HASHSTATE];
 
     buf[0] = ~0;
     for (i=0; i<HASHSTATE; ++i)

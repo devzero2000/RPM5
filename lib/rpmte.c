@@ -120,7 +120,7 @@ assert(he->p.str != NULL);
     if (he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
-	uint32_t i;
+	rpmuint32_t i;
 
 	p->pkgid = t = xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {
@@ -302,12 +302,12 @@ int rpmteIsSource(rpmte te)
     return (te != NULL ? te->isSource : 0);
 }
 
-uint32_t rpmteColor(rpmte te)
+rpmuint32_t rpmteColor(rpmte te)
 {
     return (te != NULL ? te->color : 0);
 }
 
-uint32_t rpmteSetColor(rpmte te, uint32_t color)
+rpmuint32_t rpmteSetColor(rpmte te, rpmuint32_t color)
 {
     int ocolor = 0;
     if (te != NULL) {
@@ -317,17 +317,17 @@ uint32_t rpmteSetColor(rpmte te, uint32_t color)
     return ocolor;
 }
 
-uint32_t rpmtePkgFileSize(rpmte te)
+rpmuint32_t rpmtePkgFileSize(rpmte te)
 {
     return (te != NULL ? te->pkgFileSize : 0);
 }
 
-uint32_t * rpmteOriginTid(rpmte te)
+rpmuint32_t * rpmteOriginTid(rpmte te)
 {
     return te->originTid;
 }
 
-uint32_t * rpmteOriginTime(rpmte te)
+rpmuint32_t * rpmteOriginTime(rpmte te)
 {
     return te->originTime;
 }
@@ -539,10 +539,10 @@ void rpmteColorDS(rpmte te, rpmTag tag)
     rpmds ds = rpmteDS(te, tag);
     char deptype = 'R';
     char mydt;
-    const uint32_t * ddict;
-    uint32_t * colors;
-    uint32_t * refs;
-    uint32_t val;
+    const rpmuint32_t * ddict;
+    rpmuint32_t * colors;
+    rpmuint32_t * refs;
+    rpmuint32_t val;
     int Count;
     size_t nb;
     unsigned ix;
@@ -627,7 +627,7 @@ assert(he->p.str != NULL);
     if (xx && he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
-	uint32_t i;
+	rpmuint32_t i;
 
 	blinkPkgid = t = xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {

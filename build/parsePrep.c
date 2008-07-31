@@ -74,7 +74,7 @@ static rpmRC checkOwners(const char * urlfn)
  * @return		expanded %patch macro (NULL on error)
  */
 /*@observer@*/
-static char *doPatch(Spec spec, uint32_t c, int strip, const char *db,
+static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *subdir)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -204,7 +204,7 @@ static char *doPatch(Spec spec, uint32_t c, int strip, const char *db,
  * @return		expanded %setup macro (NULL on error)
  */
 /*@observer@*/
-static const char *doUntar(Spec spec, uint32_t c, int quietly)
+static const char *doUntar(Spec spec, rpmuint32_t c, int quietly)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -362,7 +362,7 @@ static int doSetupMacro(Spec spec, char *line)
     int arg;
     const char * optArg;
     int rc;
-    uint32_t num;
+    rpmuint32_t num;
 
     /*@-mods@*/
     leaveDirs = skipDefaultAction = 0;
@@ -519,9 +519,9 @@ static rpmRC doPatchMacro(Spec spec, char *line)
     char *s;
     char *opt_b;
     char *opt_d;
-    uint32_t opt_P, opt_p, opt_R, opt_E, opt_F;
+    rpmuint32_t opt_P, opt_p, opt_R, opt_E, opt_F;
     char buf[BUFSIZ], *bp;
-    uint32_t patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
+    rpmuint32_t patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
 
     memset(patch_nums, 0, sizeof(patch_nums));

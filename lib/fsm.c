@@ -326,7 +326,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t fsm,
 	/* Exclude parent directories that are explicitly included. */
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
 	while ((i = rpmfiNext(fi)) >= 0) {
-	    uint32_t dil;
+	    rpmuint32_t dil;
 	    size_t dnlen, bnlen;
 
 	    if (!S_ISDIR(fi->fmodes[i]))
@@ -706,7 +706,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
     if (fsm->goal == IOSM_PKGINSTALL) {
-	if (ts && rpmtsGetTid(ts) != (uint32_t)-1)
+	if (ts && rpmtsGetTid(ts) != (rpmuint32_t)-1)
 	    sprintf(fsm->sufbuf, ";%08x", (unsigned)rpmtsGetTid(ts));
     }
 
@@ -880,7 +880,7 @@ int fsmMapAttrs(IOSM_t fsm)
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
 	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
-	uint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
+	rpmuint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;
 
@@ -1997,7 +1997,7 @@ assert(fsm->lpath != NULL);
 	    rpmts ts = fsmGetTs(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
-	    uint64_t archivePos = fdGetCpioPos(fsm->cfd);
+	    rpmuint64_t archivePos = fdGetCpioPos(fsm->cfd);
 	    if (archivePos > fi->archivePos) {
 		fi->archivePos = (unsigned long long) archivePos;
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,

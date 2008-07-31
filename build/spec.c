@@ -220,7 +220,7 @@ Package freePackages(Package packages)
 
 /**
  */
-static inline /*@owned@*/ struct Source *findSource(Spec spec, uint32_t num, int flag)
+static inline /*@owned@*/ struct Source *findSource(Spec spec, rpmuint32_t num, int flag)
 	/*@*/
 {
     struct Source *p;
@@ -284,7 +284,7 @@ int parseNoSource(Spec spec, const char * field, rpmTag tag)
 {
     const char *f, *fe;
     const char *name;
-    uint32_t num, flag;
+    rpmuint32_t num, flag;
 
     if (tag == RPMTAG_NOSOURCE) {
 	flag = RPMFILE_SOURCE;
@@ -337,7 +337,7 @@ int addSource(Spec spec, /*@unused@*/ Package pkg,
     char *nump;
     const char *fieldp = NULL;
     char buf[BUFSIZ];
-    uint32_t num = 0;
+    rpmuint32_t num = 0;
 
     buf[0] = '\0';
     switch (tag) {

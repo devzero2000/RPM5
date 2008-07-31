@@ -33,33 +33,33 @@ int rpm_typeAlign[16] =  {
     0
 };
 
-int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int negate)
+int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv, int negate)
 {
 /*@-castexpose@*/
     entryInfo pe = (entryInfo) pev;
 /*@=castexpose@*/
     entryInfo info = iv;
-    uint32_t i;
+    rpmuint32_t i;
 
     for (i = 0; i < il; i++) {
-	info->tag = (uint32_t) ntohl(pe[i].tag);
-	info->type = (uint32_t) ntohl(pe[i].type);
+	info->tag = (rpmuint32_t) ntohl(pe[i].tag);
+	info->type = (rpmuint32_t) ntohl(pe[i].type);
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
 	if (info->tag == 1029 && info->type == 1) {
 	    info->type = RPM_UINT8_TYPE;
-	    pe[i].type = (uint32_t) htonl(info->type);
+	    pe[i].type = (rpmuint32_t) htonl(info->type);
 	}
-	info->offset = (int32_t) ntohl(pe[i].offset);
+	info->offset = (rpmint32_t) ntohl(pe[i].offset);
 assert(negate || info->offset >= 0);	/* XXX insurance */
 	if (negate)
 	    info->offset = -info->offset;
-	info->count = (uint32_t) ntohl(pe[i].count);
+	info->count = (rpmuint32_t) ntohl(pe[i].count);
 
 	if (hdrchkType(info->type))
 	    return (int)i;
 	if (hdrchkAlign(info->type, info->offset))
 	    return (int)i;
-	if (!negate && hdrchkRange((int32_t)dl, info->offset))
+	if (!negate && hdrchkRange((rpmint32_t)dl, info->offset))
 	    return (int)i;
 	if (hdrchkData(info->count))
 	    return (int)i;

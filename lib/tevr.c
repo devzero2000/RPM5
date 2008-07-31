@@ -48,14 +48,14 @@ static rpmdict rpmdictFree(/*@only@*/ rpmdict dict)
 
 static void rpmdictAdd(rpmdict dict, const char * key)
 {
-    uint64_t * val = NULL;
+    rpmuint64_t * val = NULL;
     void ** data = (void **)&val;
     if (htGetEntry(dict->ht, key, &data, NULL, NULL)) {
 	(void) argvAdd(&dict->av, key);
 	val = xcalloc(1, sizeof(*val));
 	htAddEntry(dict->ht, dict->av[dict->ac++], val);
     } else
-	val = (uint64_t *)data[0];
+	val = (rpmuint64_t *)data[0];
     val[0]++;
 }
 

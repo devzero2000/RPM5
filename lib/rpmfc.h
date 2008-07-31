@@ -178,7 +178,7 @@ rpmfc rpmfcNew(void)
  * @return		RPMRC_OK on success
  */
 /*@-exportlocal@*/
-rpmRC rpmfcClassify(rpmfc fc, const char ** argv, /*@null@*/ uint16_t * fmode)
+rpmRC rpmfcClassify(rpmfc fc, const char ** argv, /*@null@*/ rpmuint16_t * fmode)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/

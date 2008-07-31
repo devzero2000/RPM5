@@ -33,7 +33,7 @@ static int
 db_init(const char * home, DB_ENV ** dbenvp)
 {
     DB_ENV * dbenv;
-    uint32_t flags;
+    rpmuint32_t flags;
     int ret;
 
     if ((ret = db_env_create(&dbenv, 0)) != 0)

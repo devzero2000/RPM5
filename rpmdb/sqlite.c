@@ -51,7 +51,7 @@
 #if defined(__LCLINT__)
 #define	UINT32_T	u_int32_t
 #else
-#define	UINT32_T	uint32_t
+#define	UINT32_T	rpmuint32_t
 #endif
 
 /*@access rpmdb @*/
@@ -59,7 +59,7 @@
 
 /* XXX retrofit the *BSD typedef for the deprived. */
 #if defined(__QNXNTO__)
-typedef uint32_t       u_int32_t;
+typedef rpmuint32_t       u_int32_t;
 #endif
 
 /*@unchecked@*/
@@ -110,7 +110,7 @@ struct _sql_dbcursor_s {
 
 /*@-redef@*/
 union _dbswap {
-    uint32_t ui;
+    rpmuint32_t ui;
     unsigned char uc[4];
 };
 /*@=redef@*/
@@ -439,7 +439,7 @@ assert(swapped == 0); /* Byte swap?! */
 		    }
 		} else
 		if (!strcmp(vtype, "int")) {
-		    int32_t v = sqlite3_column_int(scp->pStmt, i);
+		    rpmint32_t v = sqlite3_column_int(scp->pStmt, i);
 		    nb = sizeof(v);
 if (_debug)
 fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, (int) v);
@@ -523,7 +523,7 @@ assert(key->data != NULL);
     switch (dbi->dbi_rpmtag) {
     case RPMDBI_PACKAGES:
 	{   unsigned int hnum;
-/*@i@*/ assert(key->size == sizeof(uint32_t));
+/*@i@*/ assert(key->size == sizeof(rpmuint32_t));
 	    memcpy(&hnum, key->data, sizeof(hnum));
 
 if (swapped == 1) {
@@ -549,7 +549,7 @@ assert(swapped == 0); /* Byte swap?! */
 	} /*@innerbreak@*/ break;
 	case RPM_UINT16_TYPE:
 	{	unsigned short i;
-/*@i@*/ assert(key->size == sizeof(uint16_t));
+/*@i@*/ assert(key->size == sizeof(rpmuint16_t));
 assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
 	    rc = sqlite3_bind_int(scp->pStmt, pos, (int) i);
@@ -560,7 +560,7 @@ assert(0);	/* borken */
         case RPM_UINT32_TYPE:
 	default:
 	{   unsigned int i;
-/*@i@*/ assert(key->size == sizeof(uint32_t));
+/*@i@*/ assert(key->size == sizeof(rpmuint32_t));
 	    memcpy(&i, key->data, sizeof(i));
 
 if (swapped == 1)

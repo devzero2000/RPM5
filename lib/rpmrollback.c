@@ -94,13 +94,13 @@ IDTX IDTXsort(IDTX idtx)
     return idtx;
 }
 
-IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
+IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
     Header h;
-    uint32_t tid;
+    rpmuint32_t tid;
     int xx;
 
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
@@ -143,12 +143,12 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
     return IDTXsort(idtx);
 }
 
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint32_t rbtid)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, rpmuint32_t rbtid)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     Header h;
-    uint32_t tid;
+    rpmuint32_t tid;
     FD_t fd;
     const char ** av = NULL;
     const char * fn;
@@ -306,7 +306,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    const char ** flinkPkgid = NULL;
 	    const char ** flinkHdrid = NULL;
 	    const char ** flinkNEVRA = NULL;
-	    uint32_t pn, hn, nn;
+	    rpmuint32_t pn, hn, nn;
 	    int bingo;
 
 	    he->tag = RPMTAG_BLINKPKGID;
@@ -497,7 +497,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	/* Is this transaction excluded from the rollback? */
 	if (ia->rbtidExcludes != NULL && ia->numrbtidExcludes > 0)
 	{
-	    uint32_t *excludedTID;
+	    rpmuint32_t *excludedTID;
 	    int excluded = 0;
 	    for(excludedTID = ia->rbtidExcludes; 
 		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;

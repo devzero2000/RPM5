@@ -5,6 +5,7 @@
  * \file rpmdb/rpmtag.h
  */
 
+#include <rpmiotypes.h>
 #include <rpmsw.h>
 #include <stringbuf.h>
 
@@ -51,7 +52,7 @@ typedef union rpmDataType_u rpmTagData;	/*!< tag data. */
 
 /** \ingroup header
  */
-typedef uint32_t rpmTagCount;	/*!< tag data element count. */
+typedef rpmuint32_t rpmTagCount;	/*!< tag data element count. */
 
 /** \ingroup header
  */
@@ -64,10 +65,10 @@ typedef struct _HE_s * HE_t;	/*!< tag container. */
 union rpmDataType_u {
 /*@null@*/
     void * ptr;
-    uint8_t * ui8p;		/*!< RPM_UINT8_TYPE | RPM_CHAR_TYPE */
-    uint16_t * ui16p;		/*!< RPM_UINT16_TYPE */
-    uint32_t * ui32p;		/*!< RPM_UINT32_TYPE */
-    uint64_t * ui64p;		/*!< RPM_UINT64_TYPE */
+    rpmuint8_t * ui8p;		/*!< RPM_UINT8_TYPE | RPM_CHAR_TYPE */
+    rpmuint16_t * ui16p;	/*!< RPM_UINT16_TYPE */
+    rpmuint32_t * ui32p;	/*!< RPM_UINT32_TYPE */
+    rpmuint64_t * ui64p;	/*!< RPM_UINT64_TYPE */
 /*@relnull@*/
     const char * str;		/*!< RPM_STRING_TYPE */
     unsigned char * blob;	/*!< RPM_BIN_TYPE */
@@ -1044,7 +1045,7 @@ void * headerSetRpmdb(/*@null@*/ Header h, /*@null@*/ void * rpmdb)
  * @param h		header
  * @return		header instance
  */
-uint32_t headerGetInstance(/*@null@*/ Header h)
+rpmuint32_t headerGetInstance(/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -1053,7 +1054,7 @@ uint32_t headerGetInstance(/*@null@*/ Header h)
  * @param instance	new header instance
  * @return		0 always
  */
-uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
+rpmuint32_t headerSetInstance(/*@null@*/ Header h, rpmuint32_t instance)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -1061,7 +1062,7 @@ uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
  * @param h		header
  * @return		header starting byte offset 
  */
-uint32_t headerGetStartOff(/*@null@*/ Header h)
+rpmuint32_t headerGetStartOff(/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -1070,7 +1071,7 @@ uint32_t headerGetStartOff(/*@null@*/ Header h)
  * @param startoff	new header starting byte offset
  * @return		0 always
  */
-uint32_t headerSetStartOff(/*@null@*/ Header h, uint32_t startoff)
+rpmuint32_t headerSetStartOff(/*@null@*/ Header h, rpmuint32_t startoff)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -1078,7 +1079,7 @@ uint32_t headerSetStartOff(/*@null@*/ Header h, uint32_t startoff)
  * @param h		header
  * @return		header ending byte offset 
  */
-uint32_t headerGetEndOff(/*@null@*/ Header h)
+rpmuint32_t headerGetEndOff(/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -1087,7 +1088,7 @@ uint32_t headerGetEndOff(/*@null@*/ Header h)
  * @param startoff	new header ending byte offset
  * @return		0 always
  */
-uint32_t headerSetEndOff(/*@null@*/ Header h, uint32_t endoff)
+rpmuint32_t headerSetEndOff(/*@null@*/ Header h, rpmuint32_t endoff)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -1141,7 +1142,7 @@ int headerNEVRA(Header h,
  * @param h		header
  * @return		header color
  */
-uint32_t hGetColor(Header h)
+rpmuint32_t hGetColor(Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header

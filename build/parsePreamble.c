@@ -415,7 +415,7 @@ static int doIcon(Spec spec, Header h)
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
     size_t nb;
-    uint8_t * icon;
+    rpmuint8_t * icon;
     FD_t fd = NULL;
     int rc = RPMRC_FAIL;	/* assume error */
     int urltype;
@@ -573,7 +573,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     int multiToken = 0;
     rpmsenseFlags tagflags;
     int len;
-    uint32_t num;
+    rpmuint32_t num;
     int rc;
     int xx;
     
@@ -1134,7 +1134,7 @@ assert(lastpkg != NULL);
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
-			(uint32_t *)copyTagsDuringParse);
+			(rpmuint32_t *)copyTagsDuringParse);
 
     if (checkForRequired(pkg->header, NVR) != RPMRC_OK)
 	return RPMRC_FAIL;
