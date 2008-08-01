@@ -10,19 +10,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmrc
- * Build and install arch/os table identifiers.
- * @deprecated Eliminate from API.
- * @todo	Eliminate in rpm-5.1.
- */
-enum rpm_machtable_e {
-    RPM_MACHTABLE_INSTARCH	= 0,	/*!< Install platform architecture. */
-    RPM_MACHTABLE_INSTOS	= 1,	/*!< Install platform operating system. */
-    RPM_MACHTABLE_BUILDARCH	= 2,	/*!< Build platform architecture. */
-    RPM_MACHTABLE_BUILDOS	= 3	/*!< Build platform operating system. */
-};
-#define	RPM_MACHTABLE_COUNT	4	/*!< No. of arch/os tables. */
-
-/** \ingroup rpmrc
  * Read macro configuration file(s) for a target.
  * @param file		NULL always
  * @param target	target platform (NULL uses default)
@@ -62,17 +49,6 @@ int rpmPlatformScore(const char * platform, /*@null@*/ void * mi_re, int mi_nre)
 int rpmShowRC(FILE * fp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fp, rpmGlobalMacroContext, fileSystem, internalState  @*/;
-
-/** \ingroup rpmrc
- * @deprecated Use addMacro to set _target_* macros.
- * @todo	Eliminate in rpm-5.1.
- # @note Only used by build code.
- * @param archTable
- * @param osTable
- */
-void rpmSetTables(int archTable, int osTable)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * @todo	Eliminate in rpm-5.1.

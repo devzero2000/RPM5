@@ -37,6 +37,20 @@ void * platpat = NULL;
 /*@unchecked@*/
 int nplatpat = 0;
 
+
+/** \ingroup rpmrc
+ * Build and install arch/os table identifiers.
+ * @deprecated Eliminate from API.
+ * @todo	Eliminate in rpm-5.1.
+ */
+enum rpm_machtable_e {
+    RPM_MACHTABLE_INSTARCH	= 0,	/*!< Install platform architecture. */
+    RPM_MACHTABLE_INSTOS	= 1,	/*!< Install platform operating system. */
+    RPM_MACHTABLE_BUILDARCH	= 2,	/*!< Build platform architecture. */
+    RPM_MACHTABLE_BUILDOS	= 3	/*!< Build platform operating system. */
+};
+#define	RPM_MACHTABLE_COUNT	4	/*!< No. of arch/os tables. */
+
 typedef /*@owned@*/ const char * cptr_t;
 
 typedef struct machCacheEntry_s {
@@ -619,9 +633,18 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     if (os) *os = un.sysname;
 }
 
-void rpmSetTables(int archTable, int osTable)
-	/*@globals currTables @*/
-	/*@modifies currTables @*/
+/** \ingroup rpmrc
+ * @deprecated Use addMacro to set _target_* macros.
+ * @todo	Eliminate in rpm-5.1.
+ # @note Only used by build code.
+ * @param archTable
+ * @param osTable
+ */
+static void rpmSetTables(int archTable, int osTable)
+	/*@globals currTables, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies currTables, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const char * arch, * os;
 

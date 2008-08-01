@@ -118,10 +118,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int xx;
     int rc;
 
-#ifndef	DYING
-    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
-#endif
-
     if (ba->buildMode == 't') {
 	static const char * sfpats[] = { "Specfile", "\\*.spec", NULL };
 	static const char _specfn[] = "%{mkstemp:%{_specdir}/rpm-spec.XXXXXX}";

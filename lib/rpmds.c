@@ -3281,7 +3281,7 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) P %p R %p C %p O %p\n", PRCO, rldp, PR
 if (_rpmds_debug > 0)
 fprintf(stderr, "*** rpmdsRldpath(%p, %s) globbing %s\n", PRCO, rldp, buf);
 
-	xx = glob(buf, 0, NULL, &gl);
+	xx = Glob(buf, 0, NULL, &gl);
 	if (xx)		/* glob error, probably GLOB_NOMATCH */
 	    continue;
 
@@ -3311,7 +3311,7 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, 
 	    xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
 	}
 /*@-immediatetrans@*/
-	globfree(&gl);
+	Globfree(&gl);
 /*@=immediatetrans@*/
     }
     rc = 0;
