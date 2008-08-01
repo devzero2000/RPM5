@@ -10,12 +10,15 @@
 
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h>
-#include <rpmmacro.h>
-#include <rpmcli.h>
-#include <rpmds.h>
-#include <rpmcb.h>
+#include <rpmiotypes.h>
 #include <rpmlog.h>
+#include <rpmmacro.h>
 #include <argv.h>
+
+#include <rpmtag.h>
+#include <rpmtypes.h>
+
+#include <rpmds.h>
 
 #define _RPMLUA_INTERNAL
 #include <rpmlua.h>
@@ -24,6 +27,8 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+
+#include <rpmcli.h>
 
 #include "debug.h"
 
