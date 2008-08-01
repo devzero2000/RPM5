@@ -227,12 +227,12 @@ assert(td != NULL);
 
 rpmuint8_t * rpmtdGetUint8(rpmtd td)
 {
-    char *res = NULL;
+    rpmuint8_t *res = NULL;
 
 assert(td != NULL);
     if (td->type == RPM_INT8_TYPE) {
 	int ix = (td->ix >= 0 ? td->ix : 0);
-	res = (char *) td->data + ix;
+	res = (rpmuint8_t *) td->data + ix;
     } 
     return res;
 }
