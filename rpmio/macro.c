@@ -83,9 +83,10 @@ extern const unsigned short int **__ctype_b_loc (void) /*@*/;
 /*@=exportheader@*/
 #endif
 
-/*@access FD_t@*/		/* XXX compared with NULL */
-/*@access MacroContext@*/
-/*@access MacroEntry@*/
+/*@access FD_t @*/		/* XXX compared with NULL */
+/*@access miRE @*/		/* XXX cast */
+/*@access MacroContext @*/
+/*@access MacroEntry@ */
 /*@access rpmlua @*/
 
 static struct MacroContext_s rpmGlobalMacroContext_s;
@@ -283,7 +284,9 @@ int
 rpmGetMacroEntries(MacroContext mc, void * _mire, int used,
 		const char *** avp)
 {
+/*@-assignexpose -castexpose @*/
     miRE mire = (miRE) _mire;
+/*@=assignexpose =castexpose @*/
     const char ** av;
     int ac = 0;
     int i;

@@ -146,8 +146,8 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 /*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    signhash16[0] = (*bc->hm.data >> 24) & 0xff;
-    signhash16[1] = (*bc->hm.data >> 16) & 0xff;
+    signhash16[0] = (rpmuint8_t)((*bc->hm.data >> 24) & 0xff);
+    signhash16[1] = (rpmuint8_t)((*bc->hm.data >> 16) & 0xff);
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
 

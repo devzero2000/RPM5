@@ -343,12 +343,12 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	    c += ((rpmuint32_t)k8[10])<<16;
 	    /*@fallthrough@*/
 	case 10:
-	    c += k[4];
+	    c += (rpmuint32_t)k[4];
 	    b += k[2]+(((rpmuint32_t)k[3])<<16);
 	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  9:
-	    c += k8[8];
+	    c += (rpmuint32_t)k8[8];
 	    /*@fallthrough@*/
 	case  8:
 	    b += k[2]+(((rpmuint32_t)k[3])<<16);
@@ -358,11 +358,11 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	    b += ((rpmuint32_t)k8[6])<<16;
 	    /*@fallthrough@*/
 	case  6:
-	    b += k[2];
+	    b += (rpmuint32_t)k[2];
 	    a += k[0]+(((rpmuint32_t)k[1])<<16);
 	    break;
 	case  5:
-	    b += k8[4];
+	    b += (rpmuint32_t)k8[4];
 	    /*@fallthrough@*/
 	case  4:
 	    a += k[0]+(((rpmuint32_t)k[1])<<16);
@@ -371,10 +371,10 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	    a += ((rpmuint32_t)k8[2])<<16;
 	    /*@fallthrough@*/
 	case  2:
-	    a += k[0];
+	    a += (rpmuint32_t)k[0];
 	    break;
 	case  1:
-	    a += k8[0];
+	    a += (rpmuint32_t)k8[0];
 	    break;
 	case  0:
 	    goto exit;
@@ -385,15 +385,15 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 
 	/*----------- all but the last block: affect some 32 bits of (a,b,c) */
 	while (size > 12) {
-	    a += k[0];
+	    a += (rpmuint32_t)k[0];
 	    a += ((rpmuint32_t)k[1])<<8;
 	    a += ((rpmuint32_t)k[2])<<16;
 	    a += ((rpmuint32_t)k[3])<<24;
-	    b += k[4];
+	    b += (rpmuint32_t)k[4];
 	    b += ((rpmuint32_t)k[5])<<8;
 	    b += ((rpmuint32_t)k[6])<<16;
 	    b += ((rpmuint32_t)k[7])<<24;
-	    c += k[8];
+	    c += (rpmuint32_t)k[8];
 	    c += ((rpmuint32_t)k[9])<<8;
 	    c += ((rpmuint32_t)k[10])<<16;
 	    c += ((rpmuint32_t)k[11])<<24;
@@ -407,15 +407,15 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	case 12:	c += ((rpmuint32_t)k[11])<<24;	/*@fallthrough@*/
 	case 11:	c += ((rpmuint32_t)k[10])<<16;	/*@fallthrough@*/
 	case 10:	c += ((rpmuint32_t)k[9])<<8;	/*@fallthrough@*/
-	case  9:	c += k[8];			/*@fallthrough@*/
+	case  9:	c += (rpmuint32_t)k[8];		/*@fallthrough@*/
 	case  8:	b += ((rpmuint32_t)k[7])<<24;	/*@fallthrough@*/
 	case  7:	b += ((rpmuint32_t)k[6])<<16;	/*@fallthrough@*/
 	case  6:	b += ((rpmuint32_t)k[5])<<8;	/*@fallthrough@*/
-	case  5:	b += k[4];			/*@fallthrough@*/
+	case  5:	b += (rpmuint32_t)k[4];		/*@fallthrough@*/
 	case  4:	a += ((rpmuint32_t)k[3])<<24;	/*@fallthrough@*/
 	case  3:	a += ((rpmuint32_t)k[2])<<16;	/*@fallthrough@*/
 	case  2:	a += ((rpmuint32_t)k[1])<<8;	/*@fallthrough@*/
-	case  1:	a += k[0];
+	case  1:	a += (rpmuint32_t)k[0];
 	    break;
 	case  0:
 	    goto exit;

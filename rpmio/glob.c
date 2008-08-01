@@ -17,6 +17,7 @@
 /*@-shadow@*/
 /*@-sizeoftype@*/
 /*@-temptrans@*/
+/*@-type@*/
 /*@-unqualifiedtrans@*/
 /*@-unrecog@*/
 
@@ -1185,6 +1186,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 }
 /*@=unrecog@*/
 /*@=unqualifiedtrans@*/
+/*@=type@*/
 /*@=temptrans@*/
 /*@=sizeoftype@*/
 /*@=shadow@*/

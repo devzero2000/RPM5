@@ -891,17 +891,17 @@ assert(teAdding);
 
 	case FA_SKIPNSTATE:
 	    if (fi->fstates && teAdding)
-		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
+		fi->fstates[i] = (rpmuint8_t)RPMFILE_STATE_NOTINSTALLED;
 	    break;
 
 	case FA_SKIPNETSHARED:
 	    if (fi->fstates && teAdding)
-		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
+		fi->fstates[i] = (rpmuint8_t)RPMFILE_STATE_NETSHARED;
 	    break;
 
 	case FA_SKIPCOLOR:
 	    if (fi->fstates && teAdding)
-		fi->fstates[i] = RPMFILE_STATE_WRONGCOLOR;
+		fi->fstates[i] = (rpmuint8_t)RPMFILE_STATE_WRONGCOLOR;
 	    break;
 
 	case FA_BACKUP:
@@ -951,7 +951,7 @@ int iosmMapAttrs(IOSM_t iosm)
 
     if (fi && i >= 0 && i < (int)fi->fc) {
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
-	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
+	mode_t finalMode = (fi->fmodes ? (mode_t)fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
 	rpmuint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;

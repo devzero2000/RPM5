@@ -19,12 +19,82 @@ typedef	enum rpmRC_e {
 /**
  * Private int typedefs to avoid C99 portability issues.
  */
-typedef	unsigned char		rpmuint8_t;
-typedef unsigned short		rpmuint16_t;
-typedef unsigned int		rpmuint32_t;
-typedef unsigned long long	rpmuint64_t;
+typedef	/*@unsignedintegraltype@*/	unsigned char		rpmuint8_t;
+typedef /*@unsignedintegraltype@*/	unsigned short		rpmuint16_t;
+typedef /*@unsignedintegraltype@*/	unsigned int		rpmuint32_t;
+typedef /*@unsignedintegraltype@*/	unsigned long long	rpmuint64_t;
 
-typedef int			rpmint32_t;
+/**
+ */
+typedef /*@signedintegraltype@*/	int			rpmint32_t;
+
+/** \ingroup rpmpgp
+ */
+typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+
+/** \ingroup rpmpgp
+ */
+typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
+
+/** \ingroup rpmpgp
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
+
+/** \ingroup rpmpgp
+ */
+typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
+
+/** \ingroup rpmpgp
+ */
+typedef rpmuint8_t pgpKeyID_t[8];
+
+/** \ingroup rpmpgp
+ */
+typedef rpmuint8_t pgpTime_t[4];
+
+/** \ingroup rpmpgp
+ * Bit(s) to control digest and signature verification.
+ */
+typedef enum pgpVSFlags_e {
+    RPMVSF_DEFAULT	= 0,
+    RPMVSF_NOHDRCHK	= (1 <<  0),
+    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
+    /* bit(s) 2-7 unused */
+    RPMVSF_NOSHA1HEADER	= (1 <<  8),
+    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
+    RPMVSF_NODSAHEADER	= (1 << 10),
+    RPMVSF_NORSAHEADER	= (1 << 11),
+    /* bit(s) 12-15 unused */
+    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
+    RPMVSF_NOMD5	= (1 << 17),
+    RPMVSF_NODSA	= (1 << 18),
+    RPMVSF_NORSA	= (1 << 19)
+    /* bit(s) 20-31 unused */
+} pgpVSFlags;
+
+#define	_RPMVSF_NODIGESTS	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 )
+
+#define	_RPMVSF_NOSIGNATURES	\
+  ( RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER |	\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+#define	_RPMVSF_NOHEADER	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER )
+
+#define	_RPMVSF_NOPAYLOAD	\
+  ( RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 |		\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
 
 /*@-redef@*/ /* LCL: ??? */
 typedef /*@abstract@*/ const void * fnpyKey;
@@ -57,9 +127,110 @@ typedef enum rpmCallbackType_e {
  */
 typedef void * rpmCallbackData;
 
+/** \ingroup rpmpgp
+ * 9.4. Hash Algorithms
+ *
+\verbatim
+       ID           Algorithm                              Text Name
+       --           ---------                              ---- ----
+       1          - MD5                                    "MD5"
+       2          - SHA-1                                  "SHA1"
+       3          - RIPE-MD/160                            "RIPEMD160"
+       4          - Reserved for double-width SHA (experimental)
+       5          - MD2                                    "MD2"
+       6          - Reserved for TIGER/192                 "TIGER192"
+       7          - Reserved for HAVAL (5 pass, 160-bit)   "HAVAL-5-160"
+       100 to 110 - Private/Experimental algorithm.
+\endverbatim
+ *
+ * Implementations MUST implement SHA-1. Implementations SHOULD
+ * implement MD5.
+ * @todo Add SHA256.
+ */
+typedef enum pgpHashAlgo_e {
+    PGPHASHALGO_ERROR		=  -1,
+    PGPHASHALGO_NONE		=  0,
+    PGPHASHALGO_MD5		=  1,	/*!< MD5 */
+    PGPHASHALGO_SHA1		=  2,	/*!< SHA-1 */
+    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD-160 */
+    PGPHASHALGO_MD2		=  5,	/*!< MD2 */
+    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER-192 */
+    PGPHASHALGO_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
+    PGPHASHALGO_SHA256		=  8,	/*!< SHA-256 */
+    PGPHASHALGO_SHA384		=  9,	/*!< SHA-384 */
+    PGPHASHALGO_SHA512		= 10,	/*!< SHA-512 */
+
+    PGPHASHALGO_MD4		= 104,	/*!< (private) MD4 */
+    PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
+    PGPHASHALGO_CRC32		= 106,	/*!< (private) CRC-32 */
+    PGPHASHALGO_ADLER32		= 107,	/*!< (private) ADLER-32 */
+    PGPHASHALGO_CRC64		= 108,	/*!< (private) CRC-64 */
+    PGPHASHALGO_JLU32		= 109,	/*!< (private) Jenkins lookup3.c */
+    PGPHASHALGO_SHA224		= 110,	/*!< (private) SHA-224 */
+    PGPHASHALGO_RIPEMD256	= 111,	/*!< (private) RIPEMD-256 */
+    PGPHASHALGO_RIPEMD320	= 112,	/*!< (private) RIPEMD-320 */
+    PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */
+    PGPHASHALGO_SALSA20		= 114,	/*!< (private) SALSA-20 */
+
+} pgpHashAlgo;
+
+/** \ingroup rpmpgp
+ * Bit(s) to control digest operation.
+ */
+typedef enum rpmDigestFlags_e {
+    RPMDIGEST_NONE	= 0
+} rpmDigestFlags;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \ingroup rpmpgp
+ * Duplicate a digest context.
+ * @param octx		existing digest context
+ * @return		duplicated digest context
+ */
+/*@only@*/
+DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
+	/*@*/;
+
+/** \ingroup rpmpgp
+ * Initialize digest.
+ * Set bit count to 0 and buffer to mysterious initialization constants.
+ * @param hashalgo	type of digest
+ * @param flags		bit(s) to control digest operation
+ * @return		digest context
+ */
+/*@only@*/ /*@null@*/
+DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
+	/*@*/;
+
+/** \ingroup rpmpgp
+ * Update context with next plain text buffer.
+ * @param ctx		digest context
+ * @param data		next data buffer
+ * @param len		no. bytes of data
+ * @return		0 on success
+ */
+int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
+	/*@modifies ctx @*/;
+
+/** \ingroup rpmpgp
+ * Return digest and destroy context.
+ * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * 1 0* (64-bit count of bits processed, MSB-first)
+ *
+ * @param ctx		digest context
+ * @retval *datap	digest
+ * @retval *lenp	no. bytes of digest
+ * @param asAscii	return digest as ascii string?
+ * @return		0 on success
+ */
+int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
+	/*@null@*/ /*@out@*/ void * datap,
+	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
+		/*@modifies *datap, *lenp @*/;
+
 
 /**
  */

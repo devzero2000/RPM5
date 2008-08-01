@@ -145,7 +145,7 @@ static int lzclose(/*@only@*/ LZFILE *lzfile)
     if (lzfile->encoding) {
 	for (;;) {
 	    lzfile->strm.avail_out = kBufferSize;
-	    lzfile->strm.next_out = lzfile->buf;
+	    lzfile->strm.next_out = (uint8_t *)lzfile->buf;
 	    ret = lzma_code(&lzfile->strm, LZMA_FINISH);
 	    if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 		return -1;
@@ -180,7 +180,7 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
     lzfile->strm.avail_out = len;
     for (;;) {
 	if (!lzfile->strm.avail_in) {
-	    lzfile->strm.next_in = lzfile->buf;
+	    lzfile->strm.next_in = (uint8_t *)lzfile->buf;
 	    lzfile->strm.avail_in = fread(lzfile->buf, 1, kBufferSize, lzfile->fp);
 	    if (!lzfile->strm.avail_in)
 		eof = 1;
@@ -216,7 +216,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 /*@=temptrans@*/
     lzfile->strm.avail_in = len;
     for (;;) {
-	lzfile->strm.next_out = lzfile->buf;
+	lzfile->strm.next_out = (uint8_t *)lzfile->buf;
 	lzfile->strm.avail_out = kBufferSize;
 	ret = lzma_code(&lzfile->strm, LZMA_RUN);
 	if (ret != LZMA_OK)

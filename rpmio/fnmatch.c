@@ -31,14 +31,16 @@ internal__strchrnul (const char *s, int c)
   const unsigned long int *longword_ptr;
   unsigned long int longword, magic_bits, charmask;
 
+/*@+charint@*/
   c = (unsigned char) c;
+/*@=charint@*/
 
   /* Handle the first few characters by reading one character at a time.
      Do this until CHAR_PTR is aligned on a longword boundary.  */
   for (char_ptr = (const unsigned char *)s; ((unsigned long int) char_ptr
 		      & (sizeof (longword) - 1)) != 0;
        ++char_ptr)
-    if (*char_ptr == c || *char_ptr == '\0')
+    if ((int)*char_ptr == c || *char_ptr == '\0')
       return (void *) char_ptr;
 
   /* All these elucidatory comments refer to 4-byte longwords,
@@ -133,23 +135,23 @@ internal__strchrnul (const char *s, int c)
 
 	  const unsigned char *cp = (const unsigned char *) (longword_ptr - 1);
 
-	  if (*cp == c || *cp == '\0')
+	  if ((int)*cp == c || *cp == '\0')
 	    return (char *) cp;
-	  if (*++cp == c || *cp == '\0')
+	  if ((int)*++cp == c || *cp == '\0')
 	    return (char *) cp;
-	  if (*++cp == c || *cp == '\0')
+	  if ((int)*++cp == c || *cp == '\0')
 	    return (char *) cp;
-	  if (*++cp == c || *cp == '\0')
+	  if ((int)*++cp == c || *cp == '\0')
 	    return (char *) cp;
 	  if (sizeof (longword) > 4)
 	    {
-	      if (*++cp == c || *cp == '\0')
+	      if ((int)*++cp == c || *cp == '\0')
 		return (char *) cp;
-	      if (*++cp == c || *cp == '\0')
+	      if ((int)*++cp == c || *cp == '\0')
 		return (char *) cp;
-	      if (*++cp == c || *cp == '\0')
+	      if ((int)*++cp == c || *cp == '\0')
 		return (char *) cp;
-	      if (*++cp == c || *cp == '\0')
+	      if ((int)*++cp == c || *cp == '\0')
 		return (char *) cp;
 	    }
 	}

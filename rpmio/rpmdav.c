@@ -161,7 +161,7 @@ fprintf(stderr, "*** avContextAdd(%p,\"%s\", %06o, 0x%x, 0x%x)\n", ctx, path, (u
 				(sizeof(*ctx->mtimes) * ctx->nalloced));
     }
 
-    ctx->modes[ctx->ac] = mode;
+    ctx->modes[ctx->ac] = (rpmuint16_t)mode;
     ctx->sizes[ctx->ac] = size;
     ctx->mtimes[ctx->ac] = mtime;
     ctx->ac++;
