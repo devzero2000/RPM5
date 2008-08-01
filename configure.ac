@@ -680,6 +680,19 @@ AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
+dnl check size of built-in types
+AC_CHECK_TYPES([long long, long double])
+AC_CHECK_SIZEOF(char, 1)
+AC_CHECK_SIZEOF(unsigned char, 1)
+AC_CHECK_SIZEOF(short, 2)
+AC_CHECK_SIZEOF(unsigned short, 2)
+AC_CHECK_SIZEOF(int, 4)
+AC_CHECK_SIZEOF(unsigned int, 4)
+AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF(unsigned long, 4)
+AC_CHECK_SIZEOF(long long, 8)
+AC_CHECK_SIZEOF(unsigned long long, 8)
+
 dnl checks for library functions (specific)
 AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF

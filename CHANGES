@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: fix building under --with-lzma by providing the necessary 64-bit defines for inclusion of <lzma.h>
     - jbj: QNX: use strtouq() instead of strtoul() in rpmmtree.
     - jbj: QNX: retrofit asprintf.h (from XAR) for the deprived. rpmmtree uses
 	(rewrite to eliminate asprintf is an alternative).

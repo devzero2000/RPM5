@@ -10,6 +10,28 @@
 
 #if defined(HAVE_LZMA_H)
 
+/* provide necessary defines for inclusion of <lzma.h>
+   similar to LZMAUtils's internal <common.h> and as
+   explicitly stated in the top-level comment of <lzma.h> */
+#ifndef UINT32_C
+#	define UINT32_C(n) n ## U
+#endif
+#ifndef UINT32_MAX
+#	define UINT32_MAX UINT32_C(4294967295)
+#endif
+#if SIZEOF_UNSIGNED_LONG == 4
+#	ifndef UINT64_C
+#		define UINT64_C(n) n ## ULL
+#	endif
+#else
+#	ifndef UINT64_C
+#		define UINT64_C(n) n ## UL
+#	endif
+#endif
+#ifndef UINT64_MAX
+#	define UINT64_MAX UINT64_C(18446744073709551615)
+#endif
+
 #include "lzma.h"
 
 #include "debug.h"
