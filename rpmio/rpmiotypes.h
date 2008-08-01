@@ -231,7 +231,6 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
 
-
 /**
  */
 typedef void * (*rpmCallbackFunction)
