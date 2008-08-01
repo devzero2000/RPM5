@@ -243,7 +243,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	return 1;
     }
 
-    *pktlenp = st.st_size;
+    *pktlenp = (rpmuint32_t)st.st_size;
     rpmlog(RPMLOG_DEBUG, D_("GPG sig size: %u\n"), (unsigned)*pktlenp);
     *pktp = xmalloc(*pktlenp);
 
@@ -282,11 +282,11 @@ assert(0);	/* XXX never happens. */
 	break;
     case RPMSIGTAG_DSA:
 	/* XXX check hash algorithm too? */
-	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA)
+	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA)
 	    *sigTagp = RPMSIGTAG_RSA;
 	break;
     case RPMSIGTAG_RSA:
-	if (sigp->pubkey_algo == PGPPUBKEYALGO_DSA)
+	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA)
 	    *sigTagp = RPMSIGTAG_DSA;
 	break;
     }
@@ -453,7 +453,7 @@ assert(0);	/* XXX never happens. */
     case RPMSIGTAG_SIZE:
 	if (Stat(file, &st) != 0)
 	    break;
-	pktlen = st.st_size;
+	pktlen = (rpmuint32_t)st.st_size;
 	he->tag = (rpmTag) sigTag;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pktlen;
@@ -611,7 +611,7 @@ verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
 
     memcpy(&size, sig, sizeof(size));
 
-    if (size != dig->nbytes) {
+    if (size !=(rpmuint32_t) dig->nbytes) {
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
 	sprintf(t, " Expected(%u) != (%u)\n", (unsigned)size, (unsigned)dig->nbytes);
@@ -896,8 +896,8 @@ assert(sigp != NULL);
 
     /* XXX sanity check on sigtag and signature agreement. */
     if (!(sigtag == RPMSIGTAG_DSA
-    	&& sigp->pubkey_algo == PGPPUBKEYALGO_DSA
-    	&& sigp->hash_algo == PGPHASHALGO_SHA1))
+    	&& sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA
+    	&& sigp->hash_algo == (rpmuint8_t)PGPHASHALGO_SHA1))
     {
 	res = RPMRC_NOKEY;
 	goto exit;
@@ -911,12 +911,12 @@ assert(sigp != NULL);
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-	if (sigp->version == 4) {
-	    rpmuint32_t nb = sigp->hashlen;
+	if (sigp->version == (rpmuint8_t) 4) {
+	    rpmuint32_t nb = (rpmuint32_t) sigp->hashlen;
 	    rpmuint8_t trailer[6];
-	    nb = htonl(nb);
+	    nb = (rpmuint32_t) htonl(nb);
 	    trailer[0] = sigp->version;
-	    trailer[1] = 0xff;
+	    trailer[1] = (rpmuint8_t)0xff;
 	    memcpy(trailer+2, &nb, sizeof(nb));
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}

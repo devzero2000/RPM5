@@ -311,7 +311,7 @@ fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, (unsigned)sigpktle
 
     sigp = pgpGetSignature(dig);
 
-    if (sigp->version != 3 && sigp->version != 4) {
+    if (sigp->version != (rpmuint8_t)3 && sigp->version != (rpmuint8_t)4) {
 if (_rpmns_debug)
 fprintf(stderr, "==> unverifiable V%u\n", (unsigned)sigp->version);
 	goto exit;
@@ -375,7 +375,7 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	xx = memcmp(t, s + (8 - ns), ns);
 
 	/* XXX HACK: V4 RSA key id's are wonky atm. */
-	if (pubp->pubkey_algo == PGPPUBKEYALGO_RSA)
+	if (pubp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA)
 	    xx = 0;
 
 	if (xx) {
@@ -392,7 +392,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4), pubid);
      && sigp->hash_algo == pubp->hash_algo
 #endif
     /* XXX HACK: V4 RSA key id's are wonky atm. */
-     && (pubp->pubkey_algo == PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) ) {
+     && (pubp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) ) {
 if (_rpmns_debug) {
 fprintf(stderr, "==> mismatch between signature and pubkey\n");
 fprintf(stderr, "\tpubkey_algo: %u  %u\n", (unsigned)sigp->pubkey_algo, (unsigned)pubp->pubkey_algo);
@@ -404,7 +404,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
     }
 
     /* Compute the message digest. */
-    ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+    ctx = rpmDigestInit((pgpHashAlgo)sigp->hash_algo, RPMDIGEST_NONE);
 
     {	
 	static const char clrtxt[] = "-----BEGIN PGP SIGNED MESSAGE-----";
@@ -459,12 +459,12 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, (unsigned int)
 
     if (sigp->hash != NULL)
 	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-    if (sigp->version == 4) {
-	rpmuint32_t nb = sigp->hashlen;
+    if (sigp->version == (rpmuint8_t)4) {
+	rpmuint32_t nb = (rpmuint32_t)sigp->hashlen;
 	rpmuint8_t trailer[6];
-	nb = htonl(nb);
+	nb = (rpmuint32_t)htonl(nb);
 	trailer[0] = sigp->version;
-	trailer[1] = 0xff;
+	trailer[1] = (rpmuint8_t)0xff;
 	memcpy(trailer+2, &nb, sizeof(nb));
 	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
     }

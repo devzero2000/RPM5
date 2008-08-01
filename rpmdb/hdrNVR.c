@@ -65,15 +65,15 @@ int headerMacrosLoad(Header h)
 	ival = 0;
 	switch (he->t) {
 	case RPM_UINT8_TYPE:
-	    ival = he->p.ui8p[0];
+	    ival = (rpmuint64_t)he->p.ui8p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
 	case RPM_UINT16_TYPE:
-	    ival = he->p.ui16p[0];
+	    ival = (rpmuint64_t)he->p.ui16p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
 	case RPM_UINT32_TYPE:
-	    ival = he->p.ui32p[0];
+	    ival = (rpmuint64_t)he->p.ui32p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
 	case RPM_UINT64_TYPE:

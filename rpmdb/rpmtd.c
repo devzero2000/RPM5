@@ -9,6 +9,9 @@
 
 #include "debug.h"
 
+/*@access rpmtd @*/
+/*@access headerSprintfExtension @*/
+
 #define RPM_NULL_TYPE		0
 #define RPM_INT8_TYPE		RPM_UINT8_TYPE
 #define RPM_INT16_TYPE		RPM_UINT16_TYPE
@@ -19,23 +22,29 @@
 
 #define	rpmHeaderFormats	headerCompoundFormats
 
-static void *rpmHeaderFormatFuncByName(const char *fmt)
+/*@observer@*/
+static void * rpmHeaderFormatFuncByName(const char *fmt)
+	/*@*/
 {
     headerSprintfExtension ext;
-    void *func = NULL;
+    void * func = NULL;
 
     for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 	    continue;
         if (!strcmp(ext->name, fmt)) {
-            func = ext->u.fmtFunction;
+/*@-castfcnptr @*/
+            func = (void *) ext->u.fmtFunction;
+/*@=castfcnptr @*/
             break;
         }
     }
     return func;
 }
 
-struct key_s {
+/*@unchecked@*/
+static struct rpmtdkey_s {
+/*@observer@*/
     const char * str;
     rpmtdFormats fmt;
 } keyFormats[] = {
@@ -63,7 +72,9 @@ struct key_s {
 /*@unchecked@*/
 static size_t nKeyFormats = sizeof(keyFormats) / sizeof(keyFormats[0]);
 
+/*@observer@*/ /*@null@*/
 static const char * fmt2name(rpmtdFormats fmt)
+	/*@*/
 {
     const char * str = NULL;
     int i;
@@ -77,34 +88,33 @@ static const char * fmt2name(rpmtdFormats fmt)
     return str;
 }
 
-static void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
+/*@observer@*/ /*@null@*/
+static void * rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
+	/*@*/
 {
     return rpmHeaderFormatFuncByName(fmt2name(fmt));
 }
 
 rpmtd rpmtdNew(void)
 {
-    rpmtd td = xmalloc(sizeof(*td));
-    rpmtdReset(td);
-    return td;
+    rpmtd td = xcalloc(1, sizeof(*td));
+    return rpmtdReset(td);
 }
 
 rpmtd rpmtdFree(rpmtd td)
 {
-    /* permit free on NULL td */
-    if (td != NULL) {
-	/* XXX should we free data too - a flag maybe? */
-	free(td);
-    }
+    /* XXX should we free data too - a flag maybe? */
+    td = _free(td);
     return NULL;
 }
 
-void rpmtdReset(rpmtd td)
+rpmtd rpmtdReset(rpmtd td)
 {
 assert(td != NULL);
 
     memset(td, 0, sizeof(*td));
     td->ix = -1;
+    return td;
 }
 
 void rpmtdFreeData(rpmtd td)
@@ -114,15 +124,14 @@ assert(td != NULL);
 
     if (td->flags & RPMTD_ALLOCED) {
 	if (td->flags & RPMTD_PTR_ALLOCED) {
+	    char ** data = td->data;
 	    assert(td->data != NULL);
-	    char **data = td->data;
-	    for (i = 0; i < (int)td->count; i++) {
-		free(data[i]);
-	    }
+	    for (i = 0; i < (int)td->count; i++)
+		data[i] = _free(data[i]);
 	}
-	free(td->data);
+	td->data = _free(td->data);
     }
-    rpmtdReset(td);
+    td = rpmtdReset(td);
 }
 
 rpm_count_t rpmtdCount(rpmtd td)
@@ -172,10 +181,10 @@ assert(td != NULL);
 
 int rpmtdNext(rpmtd td)
 {
-assert(td != NULL);
-
     int i = -1;
     
+assert(td != NULL);
+
     if (++td->ix >= 0) {
 	if (td->ix < (int)rpmtdCount(td)) {
 	    i = td->ix;
@@ -216,7 +225,7 @@ assert(td != NULL);
     return res;
 }
 
-char * rpmtdGetChar(rpmtd td)
+rpmuint8_t * rpmtdGetUint8(rpmtd td)
 {
     char *res = NULL;
 
@@ -280,9 +289,11 @@ assert(td != NULL);
     return str;
 }
 
-char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
+char * rpmtdFormat(/*@unused@*/ rpmtd td, rpmtdFormats fmt, const char * errmsg)
 {
-    headerTagFormatFunction func = rpmHeaderFormatFuncByValue(fmt);
+/*@-castfcnptr@*/
+    headerTagFormatFunction func = (headerTagFormatFunction) rpmHeaderFormatFuncByValue(fmt);
+/*@=castfcnptr@*/
     const char *err = NULL;
     char *str = NULL;
 
@@ -336,8 +347,9 @@ exit:
 
 static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type, 
 			    rpm_constdata_t data, rpm_count_t count)
+	/*@modifies td @*/
 {
-    rpmtdReset(td);
+    td = rpmtdReset(td);
     td->tag = tag;
     td->type = type;
     td->count = count;
@@ -346,7 +358,9 @@ static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
      * wont free it as allocation flags aren't set) so it's "ok". 
      * XXX: Should there be a separate RPMTD_FOO flag for "user data"?
      */
+/*@-assignexpose -temptrans @*/
     td->data = (void *) data;
+/*@=assignexpose =temptrans @*/
     return 1;
 }
 
@@ -366,7 +380,7 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, rpmuint8_t *data, rpm_count_t count)
     case RPM_INT8_TYPE:
 	if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
 	    return 0;
-	/* fallthrough */
+	/*@fallthrough@*/
     case RPM_BIN_TYPE:
 	break;
     default:
@@ -484,5 +498,7 @@ assert(td != NULL);
 	data[i] = xstrdup(rpmtdGetString(td));
     }
 
+/*@-compdef@*/
     return newtd;
+/*@=compdef@*/
 }

@@ -242,10 +242,8 @@ int rpmVersionCompare(Header first, Header second)
     xx = headerGet(second, he, 0);
     two = he->p.str;
     rc = rpmvercmp(one, two);
-    one = _free(one);
-    two = _free(two);
     if (rc)
-	return rc;
+	goto exit;
 
     he->tag = RPMTAG_RELEASE;
     xx = headerGet(first, he, 0);
@@ -254,8 +252,11 @@ int rpmVersionCompare(Header first, Header second)
     xx = headerGet(second, he, 0);
     two = he->p.str;
     rc = rpmvercmp(one, two);
-    one = _free(one);
-    two = _free(two);
 
+exit:
+    one = _free(one);
+/*@-usereleased@*/
+    two = _free(two);
+/*@=usereleased@*/
     return rc;
 }

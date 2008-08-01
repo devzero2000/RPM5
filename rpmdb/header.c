@@ -666,9 +666,9 @@ void * headerUnload(Header h, size_t * lenp)
 	    rpmint32_t rid;
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
-	    rdl = -entry->info.offset;	/* negative offset */
-	    ril = rdl/sizeof(*pe);
-	    rid = entry->info.offset;
+	    rdl = (rpmuint32_t)-entry->info.offset;	/* negative offset */
+	    ril = (rpmuint32_t)(rdl/sizeof(*pe));
+	    rid = (rpmuint32_t)entry->info.offset;
 
 	    il += ril;
 	    dl += entry->rdlen + entry->info.count;
@@ -742,7 +742,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	const char * src;
 	unsigned char *t;
 	rpmuint32_t count;
-	rpmuint32_t rdlen;
+	size_t rdlen;
 
 	if (entry->data == NULL || entry->length == 0)
 	    continue;
@@ -759,9 +759,9 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
 
-	    rdl = -entry->info.offset;	/* negative offset */
-	    ril = rdl/sizeof(*pe) + ndribbles;
-	    rid = entry->info.offset;
+	    rdl = (rpmuint32_t)-entry->info.offset;	/* negative offset */
+	    ril = (rpmuint32_t)(rdl/sizeof(*pe) + ndribbles);
+	    rid = (rpmuint32_t)entry->info.offset;
 
 	    src = (char *)entry->data;
 	    rdlen = entry->rdlen;
@@ -786,7 +786,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		rdlen += entry->info.count;
 
 		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
-		if (count != rdlen)
+		if (count != (rpmuint32_t)rdlen)
 		    goto errxit;
 
 	    } else {
@@ -804,7 +804,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		te += entry->info.count + drlen;
 
 		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
-		if (count != (rdlen + entry->info.count + drlen))
+		if (count != (rpmuint32_t)(rdlen + entry->info.count + drlen))
 		    goto errxit;
 	    }
 
@@ -1060,7 +1060,7 @@ Header headerLoad(void * uh)
 	entry->info.type = REGION_TAG_TYPE;
 	entry->info.tag = HEADER_IMAGE;
 	/*@-sizeoftype@*/
-	entry->info.count = REGION_TAG_COUNT;
+	entry->info.count = (rpmTagCount)REGION_TAG_COUNT;
 	/*@=sizeoftype@*/
 	entry->info.offset = ((unsigned char *)pe - dataStart); /* negative offset */
 
@@ -1099,16 +1099,16 @@ Header headerLoad(void * uh)
 		size_t nb = REGION_TAG_COUNT;
 /*@=sizeoftype@*/
 		rpmuint32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
-		rdl = -ntohl(stei[2]);	/* negative offset */
+		rdl = (rpmuint32_t)-ntohl(stei[2]);	/* negative offset */
 assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
-		ril = rdl/sizeof(*pe);
+		ril = (rpmuint32_t)(rdl/sizeof(*pe));
 		if (hdrchkTags(ril) || hdrchkData(rdl))
 		    goto errxit;
 		entry->info.tag = (rpmuint32_t) htonl(pe->tag);
 	    } else {
 		ril = il;
 		/*@-sizeoftype@*/
-		rdl = (ril * sizeof(struct entryInfo_s));
+		rdl = (rpmuint32_t)(ril * sizeof(struct entryInfo_s));
 		/*@=sizeoftype@*/
 		entry->info.tag = HEADER_IMAGE;
 	    }
@@ -1124,14 +1124,14 @@ assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
 	    goto errxit;
 	entry->rdlen = rdlen;
 
-	if (ril < h->indexUsed) {
+	if (ril < (rpmuint32_t)h->indexUsed) {
 	    indexEntry newEntry = entry + ril;
 	    size_t ne = (h->indexUsed - ril);
 	    rpmint32_t rid = entry->info.offset+1;
 	    rpmuint32_t rc;
 
 	    /* Load dribble entries from region. */
-	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, dataEnd, rid);
+	    rc = regionSwab(newEntry, (rpmuint32_t)ne, 0, pe+ril, dataStart, dataEnd, rid);
 	    if (rc == 0)
 		goto errxit;
 	    rdlen += rc;
@@ -1430,10 +1430,10 @@ static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 	    rpmuint32_t ril;
 
 assert(entry->info.offset <= 0);		/* XXX insurance */
-	    rdl = -entry->info.offset;	/* negative offset */
-	    ril = rdl/sizeof(*pe);
+	    rdl = (rpmuint32_t)-entry->info.offset;	/* negative offset */
+	    ril = (rpmuint32_t)(rdl/sizeof(*pe));
 	    /*@-sizeoftype@*/
-	    rdl = entry->rdlen;
+	    rdl = (rpmuint32_t)entry->rdlen;
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
 	    if (entry->info.tag == HEADER_IMAGE) {
 		ril -= 1;
@@ -1444,8 +1444,8 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    }
 
 	    he->p.ui32p = ei = xmalloc(count);
-	    ei[0] = htonl(ril);
-	    ei[1] = htonl(rdl);
+	    ei[0] = (rpmuint32_t)htonl(ril);
+	    ei[1] = (rpmuint32_t)htonl(rdl);
 
 	    /*@-castexpose@*/
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
@@ -1461,7 +1461,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    if (rc == 0)
 		he->p.ptr = _free(he->p.ptr);
 	} else {
-	    count = entry->length;
+	    count = (rpmTagCount)entry->length;
 	    he->p.ptr = (!minMem
 		? memcpy(xmalloc(count), entry->data, count)
 		: entry->data);

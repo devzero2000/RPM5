@@ -476,7 +476,7 @@ static /*@only@*/ char * armorFormat(HE_t he, /*@unused@*/ /*@null@*/ const char
     const char * enc;
     const unsigned char * s;
     size_t ns;
-    int atype;
+    rpmuint8_t atype;
     char * val;
 
 assert(ix == 0);
@@ -484,7 +484,7 @@ assert(ix == 0);
     case RPM_BIN_TYPE:
 	s = (unsigned char *) he->p.ui8p;
 	ns = he->c;
-	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
+	atype = (rpmuint8_t)PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
@@ -495,7 +495,7 @@ assert(ix == 0);
 	if (b64decode(enc, (void **)&s, &ns))
 	    return xstrdup(_("(not base64)"));
 /*@=moduncon@*/
-	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
+	atype = (rpmuint8_t)PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
     case RPM_UINT8_TYPE:
     case RPM_UINT16_TYPE:
@@ -508,7 +508,7 @@ assert(ix == 0);
     }
 
     val = pgpArmorWrap(atype, s, ns);
-    if (atype == PGPARMOR_PUBKEY)
+    if (atype == (rpmuint8_t)PGPARMOR_PUBKEY)
 	s = _free(s);
     return val;
 }
@@ -825,13 +825,13 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = he->p.ui8p[ix];
+	anint = (rpmuint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = he->p.ui16p[ix];
+	anint = (rpmuint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = he->p.ui32p[ix];
+	anint = (rpmuint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
@@ -1012,13 +1012,13 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = he->p.ui8p[ix];
+	anint = (rpmuint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = he->p.ui16p[ix];
+	anint = (rpmuint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = he->p.ui32p[ix];
+	anint = (rpmuint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
@@ -1089,7 +1089,7 @@ assert(ix == 0);
     if (!(he->t == RPM_BIN_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	unsigned char * pkt = (unsigned char *) he->p.ui8p;
+	rpmuint8_t * pkt = he->p.ui8p;
 	unsigned int pktlen = 0;
 	unsigned int v = (unsigned int) *pkt;
 	pgpTag tag = 0;
@@ -1099,11 +1099,11 @@ assert(ix == 0);
 	if (v & 0x80) {
 	    if (v & 0x40) {
 		tag = (v & 0x3f);
-		plen = pgpLen((byte *)pkt+1, &hlen);
+		plen = pgpLen(pkt+1, &hlen);
 	    } else {
 		tag = (v >> 2) & 0xf;
 		plen = (1 << (v & 0x3));
-		hlen = pgpGrab((byte *)pkt+1, plen);
+		hlen = pgpGrab(pkt+1, plen);
 	    }
 	
 	    pktlen = 1 + plen + hlen;
@@ -1117,7 +1117,7 @@ assert(ix == 0);
 	    size_t nb = 0;
 	    const char *tempstr;
 
-	    (void) pgpPrtPkts((byte *)pkt, pktlen, dig, 0);
+	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
 
 	    val = NULL;
 	again:
@@ -1281,13 +1281,13 @@ static int tv2uuidv1(/*@unused@*/ Header h, HE_t he, struct timeval *tv)
     he->p.ui8p[8] &= 0x3f;	/* preserve reserved, clear clock */
     he->p.ui8p[9] &= 0x00;
 
-    he->p.ui8p[3] = (uuid_time >>  0);
-    he->p.ui8p[2] = (uuid_time >>  8);
-    he->p.ui8p[1] = (uuid_time >> 16);
-    he->p.ui8p[0] = (uuid_time >> 24);
-    he->p.ui8p[5] = (uuid_time >> 32);
-    he->p.ui8p[4] = (uuid_time >> 40);
-    he->p.ui8p[6] |= (uuid_time >> 56) & 0x0f;
+    he->p.ui8p[3] = (rpmuint8_t)(uuid_time >>  0);
+    he->p.ui8p[2] = (rpmuint8_t)(uuid_time >>  8);
+    he->p.ui8p[1] = (rpmuint8_t)(uuid_time >> 16);
+    he->p.ui8p[0] = (rpmuint8_t)(uuid_time >> 24);
+    he->p.ui8p[5] = (rpmuint8_t)(uuid_time >> 32);
+    he->p.ui8p[4] = (rpmuint8_t)(uuid_time >> 40);
+    he->p.ui8p[6] |= (rpmuint8_t)(uuid_time >> 56) & 0x0f;
 
 #ifdef	NOTYET
     /* XXX Jigger up a non-zero (but constant) clock value. Is this needed? */
@@ -1480,8 +1480,8 @@ assert(0);
 
 	t = te = xmalloc (2*he->c + 1);
 	for (i = 0; i < he->c; i++) {
-	    *te++ = hex[ ((he->p.ui8p[i] >> 4) & 0x0f) ];
-	    *te++ = hex[ ((he->p.ui8p[i]     ) & 0x0f) ];
+	    *te++ = hex[ (int)((he->p.ui8p[i] >> 4) & 0x0f) ];
+	    *te++ = hex[ (int)((he->p.ui8p[i]     ) & 0x0f) ];
 	}
 	*te = '\0';
 	he->p.ptr = _free(he->p.ptr);
@@ -2121,7 +2121,7 @@ static int pkgmtimeTag(Header h, HE_t he)
     he->tag = RPMTAG_PACKAGETIME;
     he->t = RPM_UINT64_TYPE;
     he->p.ui64p = xmalloc(sizeof(*he->p.ui64p));
-    he->p.ui64p[0] = st->st_mtime;
+    he->p.ui64p[0] = (rpmuint64_t)st->st_mtime;
     he->freeData = 1;
     he->c = 1;
     return 0;
@@ -2145,7 +2145,7 @@ static int pkgsizeTag(Header h, HE_t he)
     he->tag = RPMTAG_PACKAGESIZE;
     he->t = RPM_UINT64_TYPE;
     he->p.ui64p = xmalloc(sizeof(*he->p.ui64p));
-    he->p.ui64p[0] = st->st_size;
+    he->p.ui64p[0] = (rpmuint64_t)st->st_size;
     he->freeData = 1;
     he->c = 1;
     return 0;
@@ -3895,7 +3895,7 @@ assert(ix == 0);
     case RPM_BIN_TYPE:
 	/* XXX limit to RPMTAG_PACKAGESTAT ... */
 	if (he->tag == RPMTAG_PACKAGESTAT)
-	if (he->c == sizeof(*st)) {
+	if ((size_t)he->c == sizeof(*st)) {
 	    st = (struct stat *)he->p.ptr;
 	    break;
 	}
@@ -5425,7 +5425,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
  */
 /*@observer@*/ /*@null@*/
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
-		rpmuint32_t element)
+		size_t element)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies hsa, tag, rpmGlobalMacroContext @*/
 {
@@ -5495,13 +5495,13 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 assert(0);	/* XXX keep gcc quiet. */
 	    /*@innerbreak@*/ break;
 	case RPM_UINT8_TYPE:
-	    ival = he->p.ui8p[element];
+	    ival = (rpmuint64_t)he->p.ui8p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_UINT16_TYPE:
-	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
+	    ival = (rpmuint64_t)he->p.ui16p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_UINT32_TYPE:
-	    ival = he->p.ui32p[element];
+	    ival = (rpmuint64_t)he->p.ui32p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_UINT64_TYPE:
 	    ival = he->p.ui64p[element];
@@ -5609,18 +5609,18 @@ exit:
  */
 /*@observer@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
-		rpmuint32_t element)
+		size_t element)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies hsa, token, rpmGlobalMacroContext @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
-    rpmuint32_t i, j;
-    rpmuint32_t numElements;
+    size_t i, j;
+    size_t numElements;
     sprintfToken spft;
     sprintfTag tag = NULL;
     HE_t he = NULL;
-    rpmuint32_t condNumFormats;
+    size_t condNumFormats;
     size_t need;
     int xx;
 
@@ -5701,7 +5701,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    numElements = he->c;
 		    /*@switchbreak@*/ break;
 		}
-		if (he->c == numElements)
+		if ((size_t)he->c == numElements)
 		    /*@switchbreak@*/ break;
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");

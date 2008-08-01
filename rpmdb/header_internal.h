@@ -55,7 +55,7 @@ typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
 struct entryInfo_s {
     rpmTag tag;		/*!< Tag identifier. */
     rpmTagType type;		/*!< Tag data type. */
-    int32_t offset;		/*!< Offset into data segment (ondisk only). */
+    rpmint32_t offset;		/*!< Offset into data segment (ondisk only). */
     rpmTagCount count;		/*!< Number of tag elements. */
 };
 

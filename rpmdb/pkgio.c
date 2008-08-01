@@ -346,8 +346,9 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	if (pubkeysource)
 	    rpmlog(RPMLOG_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
-		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
-		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
+		(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA ? "DSA" :
+		(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA ? "RSA" :
+			"???")),
 		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
 		pubkeysource);
 
@@ -773,7 +774,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 /*@-sizeoftype@*/
     if (entry->info.tag == RPMTAG_HEADERSIGNATURES
        && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == REGION_TAG_COUNT)
+       && entry->info.count == (rpmTagCount)REGION_TAG_COUNT)
     {
 /*@=sizeoftype@*/
 
@@ -806,7 +807,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	if (xx != -1 ||
 	    !(entry->info.tag == RPMTAG_HEADERSIGNATURES
 	   && entry->info.type == RPM_BIN_TYPE
-	   && entry->info.count == REGION_TAG_COUNT))
+	   && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
 	{
 	    (void) snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %u type %u offset %d count %u"),
@@ -818,7 +819,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	memset(info, 0, sizeof(*info));
 
 	/* Is the no. of tags in the region less than the total no. of tags? */
-	ril = (rpmuint32_t) entry->info.offset/sizeof(*pe);
+	ril = (rpmuint32_t) (entry->info.offset/sizeof(*pe));
 	if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region size: BAD, ril(%u) > il(%u)"), (unsigned) ril, (unsigned) il);
@@ -872,7 +873,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
-    (void) headerSetStartOff(sigh, startoff);
+    (void) headerSetStartOff(sigh, (rpmuint32_t)startoff);
     (void) headerSetEndOff(sigh, fd->stats->ops[FDSTAT_READ].bytes);
 
 exit:
@@ -957,7 +958,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 /*@-sizeoftype@*/
     if (!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
        && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == REGION_TAG_COUNT))
+       && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
     {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
@@ -983,7 +984,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
     if (xx != -1 ||
 	!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
        && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == REGION_TAG_COUNT))
+       && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
     {
 	(void) snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %u type %u offset %d count %u"),
@@ -995,7 +996,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
     memset(info, 0, sizeof(*info));
 
     /* Is the no. of tags in the region less than the total no. of tags? */
-    ril = (rpmuint32_t) entry->info.offset/sizeof(*pe);
+    ril = (rpmuint32_t) (entry->info.offset/sizeof(*pe));
     if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	(void) snprintf(buf, sizeof(buf),
 		_("region size: BAD, ril(%u) > il(%u)"), (unsigned) ril, (unsigned)il);
@@ -1102,7 +1103,9 @@ assert(dig != NULL);
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
+	if (dig->signature.version != (rpmuint8_t)3
+	 && dig->signature.version != (rpmuint8_t)4)
+	{
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		(unsigned) dig->signature.version);
@@ -1116,7 +1119,7 @@ assert(dig != NULL);
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
-	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	dig->hdrmd5ctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
 
 	b = NULL; nb = 0;
 	(void) headerGetMagic(NULL, &b, &nb);
@@ -1145,7 +1148,9 @@ assert(dig != NULL);
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
+	if (dig->signature.version != (rpmuint8_t)3
+	 && dig->signature.version != (rpmuint8_t)4)
+	{
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		(unsigned) dig->signature.version);
@@ -1313,14 +1318,14 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	goto exit;
     }
 
-    il = ntohl(block[2]);
+    il = (rpmuint32_t)ntohl(block[2]);
     if (hdrchkTags(il)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr tags: BAD, no. of tags(%u) out of range"), (unsigned) il);
 
 	goto exit;
     }
-    dl = ntohl(block[3]);
+    dl = (rpmuint32_t)ntohl(block[3]);
     if (hdrchkData(dl)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr data: BAD, no. of bytes(%u) out of range\n"), (unsigned) dl);
@@ -1375,7 +1380,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	errno = saveno;
     }
 /*@=mods@*/
-    (void) headerSetStartOff(h, startoff);
+    (void) headerSetStartOff(h, (rpmuint32_t)startoff);
     (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);
     
 exit:
