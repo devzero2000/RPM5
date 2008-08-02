@@ -14,6 +14,7 @@
  */
 typedef /*@abstract@*/ struct cpioSourceArchive_s {
     rpmuint32_t	cpioArchiveSize;
+/*@relnull@*/
     FD_t	cpioFdIn;
 /*@refcounted@*/ /*@relnull@*/
     rpmfi	cpioList;

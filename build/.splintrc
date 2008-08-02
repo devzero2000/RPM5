@@ -17,15 +17,9 @@
 
 -compdef		# 4
 -compmempass		# 55
--incondefs		# 4 rpmFooMacroContext typedef
--internalglobs		# 32
--mustmod
--nullstate		# 3
--usereleased		# 7
 
--dependenttrans		# 7
--observertrans		# 16
--readonlytrans		# 8
+-dependenttrans		# 8
+-observertrans		# 10
 
 # --- +partial artifacts
 -declundef
@@ -69,4 +63,3 @@
 +boolint
 +charint
 +ignorequals
-+matchanyintegral

@@ -174,11 +174,10 @@ static int restoreFirstChar(Spec spec)
  */
 static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
 	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem @*/
-	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
-		spec->lbufPtr,
+		fileSystem, internalState @*/
+	/*@modifies spec->nextline, spec->lbuf, spec->lbufPtr,
 		ofi->readPtr,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char ch;
 
@@ -281,9 +280,9 @@ static int copyNextLineFinish(Spec spec, int strip)
 /**
  */
 static int readLineFromOFI(Spec spec, OFI_t *ofi)
-	/*@globals h_errno, fileSystem @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ofi, spec->fileStack, spec->lineNum, spec->sl,
- 		fileSystem @*/
+ 		fileSystem, internalState @*/
 {
 retry:
     /* Make sure the current file is open */
@@ -303,7 +302,7 @@ retry:
 	/*@-type@*/ /* FIX: cast? */
 	FILE * f = fdGetFp(ofi->fd);
 	/*@=type@*/
-	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
+	if (f == NULL || !fgets(ofi->readBuf, (int)sizeof(ofi->readBuf), f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));
@@ -485,7 +484,9 @@ void closeSpec(Spec spec)
 /**
  */
 static inline int genSourceRpmName(Spec spec)
-	/*@modifies spec->sourceRpmName, spec->packages->header @*/
+	/*@globals internalState @*/
+	/*@modifies spec->sourceRpmName, spec->packages->header,
+		internalState @*/
 {
     if (spec->sourceRpmName == NULL) {
 	const char *N, *V, *R;

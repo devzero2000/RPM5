@@ -97,10 +97,12 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
 	    break;
 	}
+/*@-usereleased@*/
 	names = _free(names);
 	versions = _free(versions);
 	flags = _free(flags);
 	indexes = _free(indexes);
+/*@=usereleased@*/
 	if (duplicate)
 	    return 0;
     }

@@ -17,7 +17,7 @@
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmuint32_t mytime = time;	/* XXX convert to rpmuint32_t for header */
+    rpmuint32_t mytime = (rpmuint32_t)time;	/* XXX convert to rpmuint32_t for header */
     int xx;
 
     he->tag = RPMTAG_CHANGELOGTIME;
@@ -133,8 +133,8 @@ extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
  * @return		RPMRC_OK on success
  */
 static rpmRC addChangelog(Header h, StringBuf sb)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies h, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, internalState @*/
 {
     char * s = getStringBuf(sb);
     char * se;
@@ -156,7 +156,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 		last = res;		/* truncate to no. of entries. */
 	    } else {
 /*@-moduncon@*/
-		res = get_date (t, NULL);
+		res = (long)get_date (t, NULL);
 /*@=moduncon@*/
 		/* XXX malformed date string silently ignored. */
 		if (res > 0) {
@@ -249,7 +249,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 	nentries++;
 
 	if (last <= 0
-	 || (last < 1000 && nentries < last)
+	 || (last < 1000 && nentries < (int)last)
 	 || (last > 1000 && time >= last))
 	    addChangelogEntry(h, time, name, text);
 

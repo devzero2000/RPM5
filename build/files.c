@@ -269,7 +269,7 @@ static void timeCheck(int tc, Header h)
 	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmuint32_t currentTime = time(NULL);
+    rpmuint32_t currentTime = (rpmuint32_t) time(NULL);
     rpmuint32_t * mtime;
     int xx;
     size_t i;
@@ -810,8 +810,8 @@ static rpmRC parseForLang(char * buf, FileList fl)
 /**
  */
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *lang, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies *lang, rpmGlobalMacroContext, internalState @*/
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -841,7 +841,7 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 
     /* Got match */
     s = fileName + matches[1].rm_eo - 1;
-    x = matches[1].rm_eo - matches[1].rm_so;
+    x = (int)matches[1].rm_eo - (int)matches[1].rm_so;
     buf[x] = '\0';
     while (x) {
 	buf[--x] = *s--;
@@ -889,12 +889,13 @@ static VFA_t virtualFileAttributes[] = {
  */
 static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		char * buf, FileList fl, /*@out@*/ const char ** fileName)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
 		fl->passedSpecialDoc, fl->isSpecialDoc,
-		pkg->header, pkg->specialDoc, rpmGlobalMacroContext @*/
+		pkg->header, pkg->specialDoc,
+		rpmGlobalMacroContext, internalState @*/
 {
     char *s, *t;
     int specialDoc = 0;
@@ -1148,7 +1149,8 @@ static int dncmp(const void * a, const void * b)
  * @param h             header
  */
 static void compressFilelist(Header h)
-	/*@modifies h @*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
@@ -1377,7 +1379,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->append = 0;
 
 /*@-sizeoftype@*/
-	ui32 = flp->fl_size;
+	ui32 = (rpmuint32_t) flp->fl_size;
 	he->tag = RPMTAG_FILESIZES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1402,7 +1404,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = flp->fl_mtime;
+	ui32 = (rpmuint32_t) flp->fl_mtime;
 	he->tag = RPMTAG_FILEMTIMES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1420,7 +1422,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui16 = flp->fl_rdev;
+	ui16 = (rpmuint16_t) flp->fl_rdev;
 	he->tag = RPMTAG_FILERDEVS;
 	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
@@ -1429,7 +1431,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = flp->fl_dev;
+	ui32 = (rpmuint32_t) flp->fl_dev;
 	he->tag = RPMTAG_FILEDEVICES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1438,7 +1440,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = flp->fl_ino;
+	ui32 = (rpmuint32_t) flp->fl_ino;
 	he->tag = RPMTAG_FILEINODES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1574,8 +1576,9 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 	
 	/* Add file security context to package. */
-if (!(_rpmbuildFlags & 4))
+	if (!(_rpmbuildFlags & 4))
 	{
+	    /*@observer@*/
 	    static char *nocon = "";
 /*@-moduncon@*/
 	    if (matchpathcon(flp->fileURL, flp->fl_mode, &scon) || scon == NULL)
@@ -2270,7 +2273,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 
 	    /*@+voidabstract@*/ f = fdGetFp(fd); /*@=voidabstract@*/
 	    if (f != NULL) {
-		while (fgets(buf, sizeof(buf), f)) {
+		while (fgets(buf, (int)sizeof(buf), f)) {
 		    handleComments(buf);
 		    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 			rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
@@ -2345,7 +2348,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
     fl.fileListRecsUsed = 0;
 
     s = getStringBuf(pkg->fileList);
-    files = splitString(s, strlen(s), '\n');
+    files = splitString(s, (int)strlen(s), '\n');
 
     for (fp = files; *fp != NULL; fp++) {
 	s = *fp;
@@ -2681,7 +2684,9 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 
     spec->sourceHdrInit = 1;
 
+/*@-usereleased@*/
     return 0;
+/*@=usereleased@*/
 }
 
 int processSourceFiles(Spec spec)
@@ -2717,7 +2722,7 @@ int processSourceFiles(Spec spec)
     fl.buildRootURL = NULL;
 
     {	const char *s = getStringBuf(*sfp);
-	files = splitString(s, strlen(s), '\n');
+	files = splitString(s, (int)strlen(s), '\n');
     }
 
     /* The first source file is the spec file */
@@ -2802,7 +2807,8 @@ exit:
  */
 static int checkUnpackagedFiles(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *spec->packages,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 /*@-readonlytrans@*/
     static const char * av_ckfile[] = { "%{?__check_files}", NULL };
@@ -2870,19 +2876,21 @@ exit:
 
 /* auxiliary function for checkDuplicateFiles() */
 /* XXX need to pass Header because fi->h is NULL */
-static int fiIntersect(rpmfi fi1, rpmfi fi2, Header h1, Header h2)
+static int fiIntersect(/*@null@*/ rpmfi fi1, /*@null@*/ rpmfi fi2, Header h1, Header h2)
+	/*@globals internalState @*/
+	/*@modifies fi1, fi2, internalState @*/
 {
     int n = 0;
     int i1, i2;
     const char *fn1, *fn2;
     StringBuf dups = NULL;
 
-    fi1 = rpmfiInit(fi1, 0);
+    if ((fi1 = rpmfiInit(fi1, 0)) != NULL)
     while ((i1 = rpmfiNext(fi1)) >= 0) {
 	if (S_ISDIR(rpmfiFMode(fi1)))
 	    continue;
 	fn1 = rpmfiFN(fi1);
-	fi2 = rpmfiInit(fi2, 0);
+	if ((fi2 = rpmfiInit(fi2, 0)) != NULL)
 	while ((i2 = rpmfiNext(fi2)) >= 0) {
 	    if (S_ISDIR(rpmfiFMode(fi2)))
 		/*@innercontinue@*/ continue;
@@ -2925,6 +2933,9 @@ static int fiIntersect(rpmfi fi1, rpmfi fi2, Header h1, Header h2)
  * @return		number of duplicate files
  */
 static int checkDuplicateFiles(Spec spec)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *spec->packages,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int n = 0;
     Package pkg1, pkg2;
@@ -2943,6 +2954,9 @@ static int checkDuplicateFiles(Spec spec)
 
 /* auxiliary function: check if directory d is packaged */
 static int packagedDir(Package pkg, const char *d)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies pkg->header,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int i;
     int found = 0;
@@ -2971,6 +2985,9 @@ static int packagedDir(Package pkg, const char *d)
  * Now directories "/A/B" and "/A/B/C" should also be packaged.
  */
 static int pkgUnpackagedSubdirs(Package pkg)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies pkg->header,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int n = 0;
     int i, j;
@@ -2996,27 +3013,28 @@ static int pkgUnpackagedSubdirs(Package pkg)
 	    found = packagedDir(pkg, fn);
 	    *p = '/';
 	    if (found)
-		break;
+		/*@innerbreak@*/ break;
 	}
 	if (!found)
 	    continue;
 	/* other path components should be packaged, too */
+	if (p != NULL)
 	while ((p = strchr(p + 1, '/'))) {
 	    *p = '\0';
 	    if (packagedDir(pkg, fn)) {
 		*p = '/';
-		continue;
+		/*@innercontinue@*/ continue;
 	    }
 	    /* might be already added */
 	    found = 0;
 	    for (j = 0; j < n; j++)
 		if (strcmp(fn, unpackaged[j]) == 0) {
 		    found = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 	    if (found) {
 		*p = '/';
-		continue;
+		/*@innercontinue@*/ continue;
 	    }
 	    unpackaged = xrealloc(unpackaged, sizeof(*unpackaged) * (n + 1));
 	    unpackaged[n++] = xstrdup(fn);
@@ -3058,6 +3076,9 @@ static int pkgUnpackagedSubdirs(Package pkg)
  * @return		number of unpackaged subdirectories
  */
 static int checkUnpackagedSubdirs(Spec spec)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *spec->packages,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int n = 0;
     Package pkg;

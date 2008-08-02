@@ -646,7 +646,8 @@ static rpmRC doPatchMacro(Spec spec, char *line)
 
 static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
 		/*@unused@*/ struct stat *st)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     char *buf;
     size_t buf_len;
@@ -659,10 +660,10 @@ static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
     if ((buf = (char *)malloc(buf_len)) == NULL)
         return;
     xx = snprintf(buf, buf_len, "%s%d:", (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num);
-    for (i = strlen(buf); i <= 11; i++)
+    for (i = (int)strlen(buf); i <= 11; i++)
         buf[i] = ' ';
     xx = snprintf(buf+i, buf_len-i, "%-52.52s", sp->source);
-    i = strlen(buf);
+    i = (int)strlen(buf);
     if (st != NULL)
         xx = snprintf(buf+i, buf_len-i, " %9lu Bytes\n", (unsigned long)st->st_size);
     else
@@ -860,7 +861,7 @@ int parsePrep(Spec spec, int verify)
 	    return rc;
     }
 
-    saveLines = splitString(getStringBuf(sb), strlen(getStringBuf(sb)), '\n');
+    saveLines = splitString(getStringBuf(sb), (int)strlen(getStringBuf(sb)), '\n');
     /*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;

@@ -127,9 +127,11 @@ assert(xx != 0 && he->p.str != NULL);
 	    || (!strcmp(N, n) && (V == NULL || !strcmp(V, v))))
 		lastp = p;
 	}
+/*@-usereleased@*/
 	n = _free(n);
 	v = _free(v);
 	nv = _free(nv);
+/*@=usereleased@*/
     }
 
     if (pkg)
@@ -249,7 +251,9 @@ SpecSource getSource(Spec spec, int num)
     for (i = 0; i < num; i++)
 	if ((p = p->next) == NULL) return NULL;
 
+/*@-usereleased@*/
     return p;
+/*@=usereleased@*/
 }
 
 /**
@@ -669,8 +673,9 @@ struct OpenFileInfo * newOpenFileInfo(void)
  */
 static void
 printNewSpecfile(Spec spec)
-	/*@globals fileSystem @*/
-	/*@modifies spec->sl->sl_lines[], spec->packages->header, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies spec->sl->sl_lines[], spec->packages->header,
+		fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;

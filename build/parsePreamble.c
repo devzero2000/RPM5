@@ -241,7 +241,8 @@ static inline char * findLastChar(char * s)
 /**
  */
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = -1;
@@ -266,8 +267,8 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 /**
  */
 static int checkForValidArchitectures(Spec spec)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
@@ -303,7 +304,7 @@ exit:
  * @return		RPMRC_OK if OK
  */
 static rpmRC checkForRequired(Header h, const char * NVR)
-	/*@modifies h @*/
+	/*@*/
 {
     rpmTag * p;
     rpmRC rc = RPMRC_OK;
@@ -327,7 +328,8 @@ static rpmRC checkForRequired(Header h, const char * NVR)
  * @return		RPMRC_OK if OK
  */
 static rpmRC checkForDuplicates(Header h, const char * NVR)
-	/*@modifies h @*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
@@ -370,8 +372,8 @@ static struct optionalTag {
 /**
  */
 static void fillOutMainPackage(Header h)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies h, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct optionalTag *ot;
@@ -497,7 +499,7 @@ static int doIcon(Spec spec, Header h)
 	he->tag = tagValue("Icon");
     he->t = RPM_BIN_TYPE;
     he->p.ui8p = icon;
-    he->c = nb;
+    he->c = (rpmTagCount)nb;
     xx = headerPut(h, he, 0);
     rc = 0;
     
@@ -686,7 +688,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		he->p.ptr = _free(he->p.ptr);
 		return RPMRC_FAIL;
 	    }
-	    len = strlen(he->p.argv[he->c]);
+	    len = (int)strlen(he->p.argv[he->c]);
 	    if (he->p.argv[he->c][len - 1] == '/' && len > 1) {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
@@ -852,8 +854,10 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
     }
 
+/*@-usereleased@*/
     if (macro)
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
+/*@=usereleased@*/
     
     return RPMRC_OK;
 }

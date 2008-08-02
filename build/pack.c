@@ -136,7 +136,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     /*@-type@*/ /* FIX: cast? */
     if ((f = fdGetFp(fd)) != NULL)
     /*@=type@*/
-    while (fgets(buf, sizeof(buf), f)) {
+    while (fgets(buf, (int)sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
@@ -301,6 +301,7 @@ rpmRC processScriptFiles(Spec spec, Package pkg)
 		return RPMRC_FAIL;
 	    }
 	} else {
+	    /*@observer@*/
 	    static const char *bull = "";
 	    he->tag = RPMTAG_TRIGGERSCRIPTS;
 	    he->t = RPM_STRING_ARRAY_TYPE;
@@ -485,7 +486,9 @@ void providePackageNVR(Header h)
      * If no provides at all are available, we can just add.
      */
     he->tag = RPMTAG_PROVIDENAME;
+/*@-nullstate@*/
     xx = headerGet(h, he, 0);
+/*@=nullstate@*/
     provides = he->p.argv;
     providesCount = he->c;
     if (!xx)
@@ -495,10 +498,13 @@ void providePackageNVR(Header h)
      * Otherwise, fill in entries on legacy packages.
      */
     he->tag = RPMTAG_PROVIDEVERSION;
+/*@-nullstate@*/
     xx = headerGet(h, he, 0);
+/*@=nullstate@*/
     providesEVR = he->p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
+	    /*@observer@*/
 	    static const char * vdummy = "";
 	    static rpmsenseFlags fdummy = RPMSENSE_ANY;
 
@@ -507,7 +513,9 @@ void providePackageNVR(Header h)
 	    he->p.argv = &vdummy;
 	    he->c = 1;
 	    he->append = 1;
+/*@-nullstate@*/
 	    xx = headerPut(h, he, 0);
+/*@=nullstate@*/
 	    he->append = 0;
 
 	    he->tag = RPMTAG_PROVIDEFLAGS;
@@ -515,14 +523,18 @@ void providePackageNVR(Header h)
 	    he->p.ui32p = (rpmuint32_t *) &fdummy;
 	    he->c = 1;
 	    he->append = 1;
+/*@-nullstate@*/
 	    xx = headerPut(h, he, 0);
+/*@=nullstate@*/
 	    he->append = 0;
 	}
 	goto exit;
     }
 
     he->tag = RPMTAG_PROVIDEFLAGS;
+/*@-nullstate@*/
     xx = headerGet(h, he, 0);
+/*@=nullstate@*/
     provideFlags = he->p.ui32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
@@ -539,9 +551,11 @@ void providePackageNVR(Header h)
     /*@=nullderef@*/
 
 exit:
+/*@-usereleased@*/
     provides = _free(provides);
     providesEVR = _free(providesEVR);
     provideFlags = _free(provideFlags);
+/*@=usereleased@*/
 
     if (bingo) {
 	he->tag = RPMTAG_PROVIDENAME;
@@ -549,7 +563,9 @@ exit:
 	he->p.argv = &N;
 	he->c = 1;
 	he->append = 1;
+/*@-nullstate@*/
 	xx = headerPut(h, he, 0);
+/*@=nullstate@*/
 	he->append = 0;
 
 	he->tag = RPMTAG_PROVIDEVERSION;
@@ -557,7 +573,9 @@ exit:
 	he->p.argv = &pEVR;
 	he->c = 1;
 	he->append = 1;
+/*@-nullstate@*/
 	xx = headerPut(h, he, 0);
+/*@=nullstate@*/
 	he->append = 0;
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
@@ -565,7 +583,9 @@ exit:
 	he->p.ui32p = &pFlags;
 	he->c = 1;
 	he->append = 1;
+/*@-nullstate@*/
 	xx = headerPut(h, he, 0);
+/*@=nullstate@*/
 	he->append = 0;
     }
     N = _free(N);
@@ -591,6 +611,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     int addsig = 0;
     int isSource;
     rpmRC rc = RPMRC_OK;
+    size_t nbr;
+    size_t nbw;
     int xx;
 
     /* Transfer header reference form *hdrp to h. */
@@ -649,21 +671,24 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	if (s[1] == 'g' && s[2] == 'z') {
 	    he->tag = RPMTAG_PAYLOADCOMPRESSOR;
 	    he->t = RPM_STRING_TYPE;
-	    he->p.str = "gzip";
+	    he->p.str = xstrdup("gzip");
 	    he->c = 1;
 	    xx = headerPut(h, he, 0);
+	    he->p.ptr = _free(he->p.ptr);
 	} else if (s[1] == 'b' && s[2] == 'z') {
 	    he->tag = RPMTAG_PAYLOADCOMPRESSOR;
 	    he->t = RPM_STRING_TYPE;
-	    he->p.str = "bzip2";
+	    he->p.str = xstrdup("bzip2");
 	    he->c = 1;
 	    xx = headerPut(h, he, 0);
+	    he->p.ptr = _free(he->p.ptr);
 	} else if (s[1] == 'l' && s[2] == 'z') {
 	    he->tag = RPMTAG_PAYLOADCOMPRESSOR;
 	    he->t = RPM_STRING_TYPE;
-	    he->p.str = "lzma";
+	    he->p.str = xstrdup("lzma");
 	    he->c = 1;
 	    xx = headerPut(h, he, 0);
+	    he->p.ptr = _free(he->p.ptr);
 	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
 	}
 	strcpy(buf, rpmio_flags);
@@ -874,16 +899,15 @@ assert(0);
     }
 	
     /* Write the payload into the package. */
-    while ((xx = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
-	if (xx <= -1 || Ferror(ifd)) {
+    while ((nbr = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
+	if (Ferror(ifd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	count = (rpmuint32_t) xx;
-	xx = Fwrite(buf, sizeof(buf[0]), count, fd);
-	if ((rpmuint32_t)xx != count || Ferror(fd)) {
+	nbw = (int)Fwrite(buf, sizeof(buf[0]), nbr, fd);
+	if (nbr != nbw || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
@@ -935,32 +959,33 @@ static int rpmlibMarkers(Header h)
 
     he->tag = RPMTAG_RPMVERSION;
     he->t = RPM_STRING_TYPE;
-    he->p.str = VERSION;
+    he->p.str = xstrdup(VERSION);
     he->c = 1;
     xx = headerPut(h, he, 0);
+    he->p.ptr = _free(he->p.ptr);
 
-if (!(_rpmbuildFlags & 4)) {
-    val = rpmlibTimestamp();
+  if (!(_rpmbuildFlags & 4)) {
+    val = (rpmuint32_t)rpmlibTimestamp();
     he->tag = RPMTAG_RPMLIBTIMESTAMP;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &val;
     he->c = 1;
     xx = headerPut(h, he, 0);
 
-    val = rpmlibVendor();
+    val = (rpmuint32_t)rpmlibVendor();
     he->tag = RPMTAG_RPMLIBVENDOR;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &val;
     he->c = 1;
     xx = headerPut(h, he, 0);
 
-    val = rpmlibVersion();
+    val = (rpmuint32_t)rpmlibVersion();
     he->tag = RPMTAG_RPMLIBVERSION;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &val;
     he->c = 1;
     xx = headerPut(h, he, 0);
-}
+  }
 
     he->tag = RPMTAG_BUILDHOST;
     he->t = RPM_STRING_TYPE;
@@ -1043,7 +1068,9 @@ if (!(_rpmbuildFlags & 4)) {
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), he->p.str, errorString);
 		he->p.ptr = _free(he->p.ptr);
+/*@-usereleased@*/
 		return RPMRC_FAIL;
+/*@=usereleased@*/
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	    if ((binDir = strchr(binRpm, '/')) != NULL) {
@@ -1131,7 +1158,9 @@ rpmRC packageSources(Spec spec)
 	    he->c = argvCount(av);
 	    xx = headerPut(spec->sourceHeader, he, 0);
 	}
+/*@-nullstate@*/
 	av = argvFree(av);
+/*@=nullstate@*/
     }
 
     spec->cookie = _free(spec->cookie);
