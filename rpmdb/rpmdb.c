@@ -210,8 +210,8 @@ static size_t dbiTagToDbix(rpmdb db, rpmTag rpmtag)
 /*@-exportheader@*/
 static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 		/*@null@*/ size_t * dbiNTagsP)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *dbiTagsP, *dbiNTagsP, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies *dbiTagsP, *dbiNTagsP, rpmGlobalMacroContext, internalState @*/
 {
 /*@observer@*/
     static const char * const _dbiTagStr_default =
@@ -850,8 +850,8 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
  * @return		header query string
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@globals headerCompoundFormats @*/
-	/*@modifies h @*/
+	/*@globals headerCompoundFormats, internalState @*/
+	/*@modifies h, internalState @*/
 {
     const char * errstr = "(unkown error)";
     const char * str;
@@ -1093,8 +1093,8 @@ int rpmdbSync(rpmdb db)
  * @return		macro expanded absolute path
  */
 static const char * rpmdbURIPath(const char *uri)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     const char * s = rpmGetPath(uri, NULL);
     const char * fn = NULL;
@@ -2178,7 +2178,8 @@ exit:
  */
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 static int mireSkip (const rpmdbMatchIterator mi)
-	/*@modifies mi->mi_re @*/
+	/*@globals internalState @*/
+	/*@modifies mi->mi_re, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char numbuf[32];
@@ -2266,7 +2267,9 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		}
 		/*@switchbreak@*/ break;
 	    case RPM_BIN_TYPE:
-	    {   const char * s = bin2hex(he->p.ptr, he->c);
+	    {	const char * s;
+assert(he->p.ptr != NULL);
+		s = bin2hex(he->p.ptr, he->c);
 		rc = mireRegexec(mire, s, 0);
 		if ((rc >= 0 && !mire->notmatch) || (rc < 0 && mire->notmatch))
 		    anymatch++;

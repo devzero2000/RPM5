@@ -695,7 +695,8 @@ static int sql_busy_handler(void * dbi_void, int time)
  * Create the table.. create the db_info
  */
 static int sql_initDB(dbiIndex dbi)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies internalState @*/
 {
     SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew(dbi->dbi_db);

@@ -175,7 +175,8 @@ rpmsenseFlags rpmEVRflags(/*@null@*/const char *op, /*@null@*/const char **end)
  * @return		result of comparison
  */
 int rpmVersionCompare(Header first, Header second)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 #ifdef __cplusplus
 }

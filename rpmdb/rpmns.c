@@ -278,7 +278,10 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     int xx;
 
 if (_rpmns_debug)
-fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubid);
+fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn,
+(sigfn ? sigfn : "(null)"),
+(pubfn ? pubfn : "(null)"),
+(pubid ? pubid : "(null)"));
 
     /* Load the signature. Use sigfn if specified, otherwise clearsign. */
     if (sigfn && *sigfn) {

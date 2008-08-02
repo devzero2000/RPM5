@@ -400,6 +400,7 @@ static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
 	    tt[i] = (rpmuint16_t) htons(he->p.ui16p[i]);
     }   break;
     default:
+assert(he->p.ptr != NULL);
 	if ((void *)t != he->p.ptr && nb)
 	    memcpy(t, he->p.ptr, nb);
 	t += nb;
@@ -1710,6 +1711,8 @@ static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
 	}
     }	break;
     default:
+assert((*dest).ptr != NULL);
+assert((*src).ptr != NULL);
 	memmove((*dest).ptr, (*src).ptr, len);
 	break;
     }

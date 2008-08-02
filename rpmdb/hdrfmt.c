@@ -24,6 +24,7 @@ extern int iconv_close(/*@only@*/ iconv_t __cd)
 /*@=declundef =exportheader =incondefs @*/
 #endif
 #endif
+
 #if defined(HAVE_LANGINFO_H)
 #include <langinfo.h>
 #if defined(__LCLINT__)
@@ -40,8 +41,8 @@ extern char *nl_langinfo (nl_item __item)
 #include <rpmcb.h>	/* XXX rpmIsVerbose */
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 #include <rpmuuid.h>
-#include "argv.h"
-#include "ugid.h"
+#include <argv.h>
+#include <ugid.h>
 
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
@@ -298,7 +299,6 @@ static char * shescapeFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
     return val;
 }
 
-/*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal",
 	{ .fmtFunction = octFormat } },
@@ -318,9 +318,9 @@ static struct headerSprintfExtension_s _headerDefaultFormats[] = {
 	{ .fmtFunction = shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
-/*@=type@*/
 
 headerSprintfExtension headerDefaultFormats = &_headerDefaultFormats[0];
+
 /* XXX FIXME: static for now, refactor from manifest.c later. */
 static char * rpmPermsString(int mode)
 	/*@*/
@@ -335,10 +335,10 @@ static char * rpmPermsString(int mode)
 	perms[0] = 'l';
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
-    /*@-unrecog@*/
+/*@-unrecog@*/
     else if (S_ISSOCK(mode)) 
 	perms[0] = 's';
-    /*@=unrecog@*/
+/*@=unrecog@*/
     else if (S_ISCHR(mode))
 	perms[0] = 'c';
     else if (S_ISBLK(mode))
@@ -377,6 +377,7 @@ static char * rpmPermsString(int mode)
  * @return		formatted string
  */
 static /*@only@*/ char * triggertypeFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -407,6 +408,7 @@ assert(ix == 0);
  * @return		formatted string
  */
 static /*@only@*/ char * permsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -429,6 +431,7 @@ assert(ix == 0);
  * @return		formatted string
  */
 static /*@only@*/ char * fflagsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
 {
     int ix = (he->ix >= 0 ? he->ix : 0);
     char * val;
@@ -565,6 +568,7 @@ assert(ix == 0);
 
     /* XXX b64encode accesses uninitialized memory. */
     { 	unsigned char * _data = xcalloc(1, ns+1);
+assert(he->p.ptr != NULL);
 	memcpy(_data, he->p.ptr, ns);
 /*@-moduncon@*/
 	if ((enc = b64encode(_data, ns)) != NULL) {
@@ -576,7 +580,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
+/*@-globstate@*/	/* b64encode_eolstr annotation */
     return val;
 /*@=globstate@*/
 }
@@ -592,8 +596,7 @@ static size_t xmlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-    while ((c = (int) *s++) != (int) '\0')
-    {
+    while ((c = (int) *s++) != (int) '\0') {
 	switch (c) {
 	case '<':
 	case '>':	len += sizeof("&lt;") - 1;	/*@switchbreak@*/ break;
@@ -645,9 +648,7 @@ strdup_locale_convert (/*@null@*/ const char * buffer,
 	tocode = "UTF-8";
 
 #ifdef HAVE_LANGINFO_H
-/*@-type@*/
     fromcode = nl_langinfo (CODESET);
-/*@=type@*/
 #endif
 
     if (fromcode != NULL && strcmp(tocode, fromcode) != 0
@@ -736,18 +737,23 @@ assert(ix == 0);
 	val = xstrdup(_("(not a string)"));
     } else {
 	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb = xmlstrlen(s);
+	size_t nb;
 	char * t;
 
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+	nb = xmlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = xmlstrcpy(t, s);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-/*@-globstate@*/
+exit:
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -768,9 +774,7 @@ assert(ix == 0);
     if (val == NULL)
 	val = xstrdup(_("(not a string)"));
 
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -813,7 +817,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
-/*@-globs -mods@*/
+/*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
@@ -999,7 +1003,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
-/*@-globs -mods@*/
+/*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
@@ -1235,7 +1239,8 @@ assert(ix == 0);
  * @return		0 on success
  */
 static int instprefixTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_INSTALLPREFIX;
     if (headerGet(h, he, 0))
@@ -1305,7 +1310,8 @@ static int tv2uuidv1(/*@unused@*/ Header h, HE_t he, struct timeval *tv)
  * @return		0 on success
  */
 static int tag2uuidv1(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     struct timeval tv;
 
@@ -1324,7 +1330,8 @@ static int tag2uuidv1(Header h, HE_t he)
  * @return		0 on success
  */
 static int installtime_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_INSTALLTIME;
     return tag2uuidv1(h, he);
@@ -1337,7 +1344,8 @@ static int installtime_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int buildtime_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BUILDTIME;
     return tag2uuidv1(h, he);
@@ -1350,7 +1358,8 @@ static int buildtime_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int origintime_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_ORIGINTIME;
     return tag2uuidv1(h, he);
@@ -1363,7 +1372,8 @@ static int origintime_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int installtid_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_INSTALLTID;
     return tag2uuidv1(h, he);
@@ -1376,7 +1386,8 @@ static int installtid_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int removetid_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REMOVETID;
     return tag2uuidv1(h, he);
@@ -1389,7 +1400,8 @@ static int removetid_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int origintid_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_ORIGINTID;
     return tag2uuidv1(h, he);
@@ -1413,9 +1425,9 @@ static rpmuint32_t uuid_version = 5;
  * @return		0 on success
  */
 static int str2uuid(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
-		rpmuint32_t version, /*@null@*/ char * val)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+		rpmuint32_t version, char * val)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     const char * ns = NULL;
     const char * tagn = tagName(he->tag);
@@ -1463,8 +1475,8 @@ assert(he->t == RPM_STRING_TYPE);
  * @return		0 on success
  */
 static int tag2uuidv5(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     if (!headerGet(h, he, 0))
 	return 1;
@@ -1503,8 +1515,8 @@ assert(0);
  * @return		0 on success
  */
 static int pkguuidTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_PKGID;
     return tag2uuidv5(h, he);
@@ -1517,8 +1529,8 @@ static int pkguuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int sourcepkguuidTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_SOURCEPKGID;
     return tag2uuidv5(h, he);
@@ -1531,8 +1543,8 @@ static int sourcepkguuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int hdruuidTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_HDRID;
     return tag2uuidv5(h, he);
@@ -1545,7 +1557,8 @@ static int hdruuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int triggercondsTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
     rpmTagData flags = { .ptr = NULL };
@@ -1561,7 +1574,7 @@ static int triggercondsTag(Header h, HE_t he)
 
     he->freeData = 0;
 
-/*@-compmempass@*/
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     _he->tag = RPMTAG_TRIGGERNAME;
     xx = headerGet(h, _he, 0);
     names.argv = _he->p.argv;
@@ -1615,7 +1628,7 @@ static int triggercondsTag(Header h, HE_t he)
 		/*@innercontinue@*/ continue;
 
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
-/*@-compmempass@*/
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
 	    if (flags.ui32p[j] & RPMSENSE_SENSEMASK) {
 		_he->p.ui32p = &flags.ui32p[j];
 		flagsStr = depflagsFormat(_he, NULL);
@@ -1652,7 +1665,8 @@ exit:
  * @return		0 on success
  */
 static int triggertypeTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
     rpmTagData indices = { .ptr = NULL };
@@ -1666,7 +1680,7 @@ static int triggertypeTag(Header h, HE_t he)
 
     he->freeData = 0;
 
-/*@-compmempass@*/
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     _he->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(h, _he, 0);
     if (!xx) goto exit;
@@ -1739,8 +1753,8 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @return		0 on success
  */
 static int i18nTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc = 1;		/* assume failure */
@@ -1791,7 +1805,9 @@ static int i18nTag(Header h, HE_t he)
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
-	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
+/*@-unrecog@*/
+	    msgid = dgettext(domain, msgkey);
+/*@=unrecog@*/
 	    if (msgid != msgkey) break;
 	}
 
@@ -1805,7 +1821,9 @@ static int i18nTag(Header h, HE_t he)
 #endif
 
 	if (domain && msgid) {
-	    const char * s = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
+/*@-unrecog@*/
+	    const char * s = dgettext(domain, msgid);
+/*@=unrecog@*/
 	    if (s) {
 		rc = 0;
 		he->p.str = xstrdup(s);
@@ -1826,9 +1844,7 @@ static int i18nTag(Header h, HE_t he)
 	rc = 0;
 	he->p.str = xstrtolocale(he->p.str);
 	he->freeData = 1;
-/*@-nullstate@*/
 	return rc;
-/*@=nullstate@*/
     }
 
     he->t = RPM_STRING_TYPE;
@@ -1843,7 +1859,8 @@ static int i18nTag(Header h, HE_t he)
  * Retrieve text and convert to locale.
  */
 static int localeTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     int rc;
 
@@ -1897,8 +1914,8 @@ assert(he->p.argv[i] != NULL);
  * @return		0 on success
  */
 static int summaryTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_SUMMARY;
     return i18nTag(h, he);
@@ -1911,22 +1928,24 @@ static int summaryTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int descriptionTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_DESCRIPTION;
     return i18nTag(h, he);
 }
 
 static int changelognameTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CHANGELOGNAME;
     return localeTag(h, he);
 }
 
 static int changelogtextTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CHANGELOGTEXT;
     return localeTag(h, he);
@@ -1939,8 +1958,8 @@ static int changelogtextTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int groupTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_GROUP;
     return i18nTag(h, he);
@@ -1952,12 +1971,8 @@ static int groupTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int dbinstanceTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     he->tag = RPMTAG_DBINSTANCE;
     he->t = RPM_UINT32_TYPE;
@@ -1967,7 +1982,6 @@ static int dbinstanceTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve starting byte offset of header.
@@ -1975,12 +1989,8 @@ static int dbinstanceTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int headerstartoffTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     he->tag = RPMTAG_HEADERSTARTOFF;
     he->t = RPM_UINT64_TYPE;
@@ -1990,7 +2000,6 @@ static int headerstartoffTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve ending byte offset of header.
@@ -1998,12 +2007,8 @@ static int headerstartoffTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int headerendoffTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     he->tag = RPMTAG_HEADERENDOFF;
     he->t = RPM_UINT64_TYPE;
@@ -2013,7 +2018,6 @@ static int headerendoffTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve package origin from header.
@@ -2021,12 +2025,9 @@ static int headerendoffTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgoriginTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     const char * origin;
     int rc = 1;
@@ -2043,7 +2044,6 @@ static int pkgoriginTag(Header h, HE_t he)
     }
     return rc;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve package baseurl from header.
@@ -2051,12 +2051,9 @@ static int pkgoriginTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgbaseurlTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     const char * baseurl;
     int rc = 1;
@@ -2073,7 +2070,6 @@ static int pkgbaseurlTag(Header h, HE_t he)
     }
     return rc;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve package digest from header.
@@ -2081,12 +2077,8 @@ static int pkgbaseurlTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgdigestTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     const char * digest;
     int rc = 1;
@@ -2102,7 +2094,6 @@ static int pkgdigestTag(Header h, HE_t he)
     }
     return rc;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve *.rpm package st->st_mtime from header.
@@ -2110,12 +2101,8 @@ static int pkgdigestTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgmtimeTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     struct stat * st = headerGetStatbuf(h);
     he->tag = RPMTAG_PACKAGETIME;
@@ -2126,7 +2113,6 @@ static int pkgmtimeTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve *.rpm package st->st_size from header.
@@ -2134,12 +2120,8 @@ static int pkgmtimeTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgsizeTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     struct stat * st = headerGetStatbuf(h);
     he->tag = RPMTAG_PACKAGESIZE;
@@ -2150,7 +2132,6 @@ static int pkgsizeTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Return (malloc'd) header name-version-release.arch string.
@@ -2159,7 +2140,8 @@ static int pkgsizeTag(Header h, HE_t he)
  */
 /*@only@*/
 static char * hGetNVRA(Header h)
-	/*@modifies h @*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     const char * N = NULL;
     const char * V = NULL;
@@ -2209,12 +2191,9 @@ static char * hGetNVRA(Header h)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int nvraTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies h, he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies h, he, internalState @*/
 {
     he->t = RPM_STRING_TYPE;
     he->p.str = hGetNVRA(h);
@@ -2222,7 +2201,6 @@ static int nvraTag(Header h, HE_t he)
     he->freeData = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve file names from header.
@@ -2244,7 +2222,8 @@ static int nvraTag(Header h, HE_t he)
 static void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@null@*/ /*@out@*/ const char *** fnp,
 		/*@null@*/ /*@out@*/ rpmTagCount * fcp)
-	/*@modifies *fnp, *fcp @*/
+	/*@globals internalState @*/
+	/*@modifies *fnp, *fcp, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag dirNameTag = 0;
@@ -2274,7 +2253,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	return;		/* programmer error */
     }
 
-/*@-compmempass@*/
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = tagN;
     xx = headerGet(h, he, 0);
     /* XXX 3.0.x SRPM's can be used, relative fn's at RPMTAG_OLDFILENAMES. */
@@ -2341,7 +2320,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
  * @return		0 on success
  */
 static int _fnTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->t = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, he->tag, &he->p.argv, &he->c);
@@ -2350,14 +2330,16 @@ static int _fnTag(Header h, HE_t he)
 }
 
 static int filepathsTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return _fnTag(h, he);
 }
 
 static int origpathsTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_ORIGBASENAMES;
     return _fnTag(h, he);
@@ -2374,8 +2356,8 @@ static int origpathsTag(Header h, HE_t he)
  */
 static int debevrfmtTag(/*@unused@*/ Header h, HE_t he,
 		HE_t Nhe, HE_t EVRhe, HE_t Fhe)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, Nhe, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, Nhe, rpmGlobalMacroContext, internalState @*/
 {
     char * t, * te;
     size_t nb = 0;
@@ -2432,8 +2414,8 @@ static int debevrfmtTag(/*@unused@*/ Header h, HE_t he,
  * @return		0 on success
  */
 static int debevrTag(Header h, HE_t he, rpmTag tagN, rpmTag tagEVR, rpmTag tagF)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
     HE_t EVRhe = memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
@@ -2469,8 +2451,8 @@ exit:
  * @return		0 on success
  */
 static int debconflictsTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = tagValue("Debconflicts");
     return debevrTag(h, he,
@@ -2478,8 +2460,8 @@ static int debconflictsTag(Header h, HE_t he)
 }
 
 static int debdependsTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = tagValue("Debdepends");
     return debevrTag(h, he,
@@ -2487,8 +2469,8 @@ static int debdependsTag(Header h, HE_t he)
 }
 
 static int debobsoletesTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = tagValue("Debobsoletes");
     return debevrTag(h, he,
@@ -2496,8 +2478,8 @@ static int debobsoletesTag(Header h, HE_t he)
 }
 
 static int debprovidesTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = tagValue("Debprovides");
     return debevrTag(h, he,
@@ -2511,8 +2493,8 @@ static int debprovidesTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int debmd5sumsTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
     HE_t Dhe = memset(alloca(sizeof(*Dhe)), 0, sizeof(*Dhe));
@@ -2565,7 +2547,8 @@ exit:
 }
 
 static int filestatTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTagData paths = { .ptr = NULL };
     /* _dev */
@@ -2632,8 +2615,10 @@ static int rpmEVRoverlap(EVR_t a, EVR_t b)
 
 static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 		HE_t PNhe, /*@null@*/ HE_t PEVRhe, /*@null@*/ HE_t PFhe)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies he, *avp, *hitp, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *avp, *hitp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
     HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
@@ -2719,10 +2704,9 @@ bottom:
     return rc;
 }
 
-/*@-globuse -mods @*/	/* XXX LCL bug */
 static int whatneedsTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
     HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
@@ -2756,12 +2740,10 @@ assert(PFhe->c == PNhe->c);
 
     (void) argvAdd(&pkgs, NVRAhe->p.str);
 
-#if !defined(__LCLINT__)	/* XXX LCL bug */
     for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++)
 	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, PNhe, PEVRhe, PFhe);
     for (FNhe->ix = 0; FNhe->ix < (int)FNhe->c; FNhe->ix++)
 	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, FNhe, NULL, NULL);
-#endif
 
     /* Convert package NVRA array to Header string array. */
     {	size_t nb = 0;
@@ -2800,13 +2782,13 @@ exit:
     FNhe->p.ptr = _free(FNhe->p.ptr);
     return rc;
 }
-/*@=globuse =mods @*/	/* XXX LCL bug */
 
-/*@-globuse -mods @*/	/* XXX LCL bug */
 static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 		HE_t RNhe, /*@null@*/ HE_t REVRhe, /*@null@*/ HE_t RFhe)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies he, *avp, *hitp, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *avp, *hitp, REVRhe, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
     HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
@@ -2893,10 +2875,10 @@ bottom:
 
     return rc;
 }
-/*@=globuse =mods @*/	/* XXX LCL bug */
 
 static int needswhatTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
     HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
@@ -2925,14 +2907,12 @@ assert(RFhe->c == RNhe->c);
 
     (void) argvAdd(&pkgs, NVRAhe->p.str);
 
-#if !defined(__LCLINT__)	/* XXX LCL bug */
     for (RNhe->ix = 0; RNhe->ix < (int)RNhe->c; RNhe->ix++) {
 	if (*RNhe->p.argv[RNhe->ix] == '/' || *REVRhe->p.argv[RNhe->ix] == '\0')
 	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, NULL, NULL);
 	else
 	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, REVRhe, RFhe);
     }
-#endif
 
     /* Convert package NVRA array to Header string array. */
     {	size_t nb = 0;
@@ -2986,9 +2966,9 @@ static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
     return 0;
 }
 
-/*@-compmempass -kepttrans -nullstate -usereleased @*/
 static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTag tag = he->tag;
     rpmTagData N = { .ptr = NULL };
@@ -3002,6 +2982,7 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
     N.argv = he->p.argv;
@@ -3020,8 +3001,10 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	ac++;
 	nb += sizeof(*he->p.argv);
 	nb += sizeof("<rpm:entry name=\"\"/>");
@@ -3050,8 +3033,10 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     t = (char *) &he->p.argv[he->c + 1];
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "<rpm:entry");
 	t = stpcpy(t, " name=\"");
@@ -3089,39 +3074,47 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	*t++ = '\0';
     }
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* N.argv may be kept. */
     N.argv = _free(N.argv);
+/*@=kepttrans@*/
+/*@-usereleased@*/	/* EVR.argv may be dead. */
     EVR.argv = _free(EVR.argv);
+/*@=usereleased@*/
     F.ui32p = _free(F.ui32p);
     return rc;
 }
-/*@=compmempass =kepttrans =nullstate =usereleased @*/
 
 static int PxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_PROVIDENAME;
     return PRCOxmlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
 }
 
 static int RxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REQUIRENAME;
     return PRCOxmlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
 }
 
 static int CxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CONFLICTNAME;
     return PRCOxmlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
 }
 
 static int OxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_OBSOLETENAME;
     return PRCOxmlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
@@ -3138,8 +3131,7 @@ static size_t sqlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-    while ((c = (int) *s++) != (int) '\0')
-    {
+    while ((c = (int) *s++) != (int) '\0') {
 	switch (c) {
 	case '\'':	len += 1;			/*@fallthrough@*/
 	default:	len += 1;			/*@switchbreak@*/ break;
@@ -3187,23 +3179,30 @@ assert(ix == 0);
 	val = xstrdup(_("(not a string)"));
     } else {
 	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb = sqlstrlen(s);
+	size_t nb;
 	char * t;
 
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+
+	nb = sqlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = sqlstrcpy(t, s);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-/*@-globstate@*/
+exit:
     return val;
-/*@=globstate@*/
 }
 
 /*@-compmempass -kepttrans -nullstate -usereleased @*/
 static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTag tag = he->tag;
     rpmTagData N = { .ptr = NULL };
@@ -3218,6 +3217,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
     N.argv = he->p.argv;
@@ -3237,8 +3237,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	ac++;
 	nb += sizeof(*he->p.argv);
 	nb += strlen(instance) + sizeof(", '', '', '', '', ''");
@@ -3262,8 +3264,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     t = (char *) &he->p.argv[he->c + 1];
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, instance);
 	t = stpcpy( stpcpy( stpcpy(t, ", '"), N.argv[i]), "'");
@@ -3295,39 +3299,47 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	*t++ = '\0';
     }
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* N.argv may be kept. */
     N.argv = _free(N.argv);
+/*@=kepttrans@*/
+/*@-usereleased@*/	/* EVR.argv may be dead. */
     EVR.argv = _free(EVR.argv);
+/*@=usereleased@*/
     F.ui32p = _free(F.ui32p);
     return rc;
 }
-/*@=compmempass =kepttrans =nullstate =usereleased @*/
 
 static int PsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_PROVIDENAME;
     return PRCOsqlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
 }
 
 static int RsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REQUIRENAME;
     return PRCOsqlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
 }
 
 static int CsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CONFLICTNAME;
     return PRCOsqlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
 }
 
 static int OsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_OBSOLETENAME;
     return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
@@ -3339,6 +3351,7 @@ static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, rpmuint32_t i)
     const char * dn = DN.argv[DI.ui32p[i]];
     size_t dnlen = strlen(dn);
 
+assert(dn != NULL);
     if (strstr(dn, "bin/") != NULL)
 	return 1;
     if (dnlen >= sizeof("/etc/")-1 && !strncmp(dn, "/etc/", dnlen))
@@ -3348,9 +3361,9 @@ static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, rpmuint32_t i)
     return 2;
 }
 
-/*@-compmempass -kepttrans -nullstate -usereleased @*/
 static int FDGxmlTag(Header h, HE_t he, int lvl)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTagData BN = { .ptr = NULL };
     rpmTagData DN = { .ptr = NULL };
@@ -3365,6 +3378,7 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = RPMTAG_BASENAMES;
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
@@ -3456,35 +3470,43 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
     }
 
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* {BN,DN,DI}.argv may be kept. */
     BN.argv = _free(BN.argv);
+/*@-usereleased@*/	/* DN.argv may be dead. */
     DN.argv = _free(DN.argv);
+/*@=usereleased@*/
     DI.ui32p = _free(DI.ui32p);
+/*@=kepttrans@*/
     FMODES.ui16p = _free(FMODES.ui16p);
+/*@-usereleased@*/	/* FFLAGS.argv may be dead. */
     FFLAGS.ui32p = _free(FFLAGS.ui32p);
+/*@=usereleased@*/
     return rc;
 }
-/*@=compmempass =kepttrans =nullstate =usereleased @*/
 
 static int F1xmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGxmlTag(h, he, 1);
 }
 
 static int F2xmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGxmlTag(h, he, 2);
 }
 
-/*@-compmempass -kepttrans -nullstate -usereleased @*/
 static int FDGsqlTag(Header h, HE_t he, int lvl)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTagData BN = { .ptr = NULL };
     rpmTagData DN = { .ptr = NULL };
@@ -3500,6 +3522,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = RPMTAG_BASENAMES;
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
@@ -3594,27 +3617,35 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     }
 
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* {BN,DN,DI}.argv may be kept. */
     BN.argv = _free(BN.argv);
+/*@-usereleased@*/	/* DN.argv may be dead. */
     DN.argv = _free(DN.argv);
+/*@=usereleased@*/
     DI.ui32p = _free(DI.ui32p);
+/*@=kepttrans@*/
     FMODES.ui16p = _free(FMODES.ui16p);
+/*@-usereleased@*/	/* FFLAGS.argv may be dead. */
     FFLAGS.ui32p = _free(FFLAGS.ui32p);
+/*@=usereleased@*/
     return rc;
 }
-/*@=compmempass =kepttrans =nullstate =usereleased @*/
 
 static int F1sqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGsqlTag(h, he, 1);
 }
 
 static int F2sqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGsqlTag(h, he, 2);
@@ -3639,6 +3670,7 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	size_t nb;
 	char * t;
 
+assert(he->p.str != NULL);
 	/* Get rightmost '/' in string (i.e. basename(3) behavior). */
 	if ((bn = strrchr(he->p.str, '/')) != NULL)
 	    bn++;
@@ -3647,6 +3679,12 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 
 	/* Convert to utf8, escape for XML CDATA. */
 	s = strdup_locale_convert(bn, (av ? av[0] : NULL));
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+
 	nb = xmlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = xmlstrcpy(t, s);	t += strlen(t);
@@ -3654,9 +3692,8 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	s = _free(s);
     }
 
-/*@-globstate@*/
+exit:
     return val;
-/*@=globstate@*/
 }
 
 typedef struct key_s {
@@ -3857,6 +3894,7 @@ assert(ix == 0);
 	break;
     }
 
+assert(he->p.ptr != NULL);
     {	rpmuint32_t keyval = keyValue(keyDigests, nkeyDigests, (av ? av[0] : NULL));
 	rpmuint32_t algo = (keyval ? keyval : PGPHASHALGO_SHA1);
 	DIGEST_CTX ctx = rpmDigestInit(algo, 0);
@@ -3865,9 +3903,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -3877,8 +3913,8 @@ exit:
  * @return		formatted string
  */
 static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "mode", NULL };
@@ -4011,11 +4047,19 @@ assert(ix == 0);
 	    }
 	    /*@switchbreak@*/ break;
 	case STAT_KEYS_UNAME:
-	    (void) stpcpy(b, uidToUname(st->st_uid));
-	    /*@switchbreak@*/ break;
+	{   const char * uname = uidToUname(st->st_uid);
+	    if (uname != NULL)
+		(void) stpcpy(b, uname);
+	    else
+		xx = snprintf(b, nb, "%u", (unsigned)st->st_uid);
+	}   /*@switchbreak@*/ break;
 	case STAT_KEYS_GNAME:
-	    (void) stpcpy(b, gidToGname(st->st_gid));
-	    /*@switchbreak@*/ break;
+	{   const char * gname = gidToGname(st->st_gid);
+	    if (gname != NULL)
+		(void) stpcpy(b, gname);
+	    else
+		xx = snprintf(b, nb, "%u", (unsigned)st->st_gid);
+	}   /*@switchbreak@*/ break;
 	}
 	if (b[0] == '\0')
 	    continue;
@@ -4031,9 +4075,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -4043,8 +4085,8 @@ exit:
  * @return		formatted string
  */
 static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "v5", NULL };
@@ -4095,9 +4137,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -4126,7 +4166,9 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	break;
     case RPM_STRING_TYPE:
 	end = NULL;
+/*@-unrecog@*/	/* Add annotated prototype. */
 	stack[ix] = strtoll(he->p.str, &end, 0);
+/*@=unrecog@*/
 	if (*end != '\0') {
 	    val = xstrdup(_("(invalid string :rpn)"));
 	    goto exit;
@@ -4193,9 +4235,7 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -4205,8 +4245,8 @@ exit:
  * @return		formatted string
  */
 static /*@only@*/ char * strsubFormat(HE_t he, /*@null@*/ const char ** av)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     char * val = NULL;
     int ac = argvCount(av);
@@ -4301,12 +4341,9 @@ noop:
     if (val == NULL)
 	val = xstrdup(he->p.str);
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
-/*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_BUILDTIMEUUID",
 	{ .tagFunction = buildtime_uuidTag } },
@@ -4448,7 +4485,6 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = yamlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) &headerDefaultFormats } }
 } ;
-/*@=type@*/
 
 headerSprintfExtension headerCompoundFormats = &_headerCompoundFormats[0];
 
@@ -4623,7 +4659,8 @@ struct headerSprintfArgs_s {
 
 /**
  */
-static char escapedChar(const char ch)	/*@*/
+static char escapedChar(const char ch)
+	/*@*/
 {
 /*@-modfilesys@*/
 if (_hdr_debug)
@@ -4744,7 +4781,8 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
  */
 /*@null@*/
 static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
-	/*@modifies hsa */
+	/*@globals internalState @*/
+	/*@modifies hsa, internalState @*/
 {
     sprintfToken fmt = NULL;
     sprintfTag tag =
@@ -4978,7 +5016,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * @param state
  * @return		0 on success
  */
-static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
+static int parseFormat(headerSprintfArgs hsa, char * str,
 		/*@out@*/ sprintfToken * formatPtr,
 		/*@out@*/ size_t * numTokensPtr,
 		/*@null@*/ /*@out@*/ char ** endPtr, int state)
@@ -5013,7 +5051,7 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
     format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
-/*@-infloops@*/ /* LCL: can't detect done termination */
+/*@-infloops@*/ /* LCL: can't detect (start, *start) termination */
     dst = start = str;
     numTokens = 0;
     token = NULL;
@@ -5026,9 +5064,9 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
 		if (token == NULL || token->type != PTOK_STRING) {
 		    token = format + numTokens++;
 		    token->type = PTOK_STRING;
-		    /*@-temptrans -assignexpose@*/
+/*@-temptrans -assignexpose@*/
 		    dst = token->u.string.string = start;
-		    /*@=temptrans =assignexpose@*/
+/*@=temptrans =assignexpose@*/
 		}
 		start++;
 		*dst++ = *start++;
@@ -5052,9 +5090,9 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
 		/*@switchbreak@*/ break;
 	    }
 
-	    /*@-assignexpose@*/
+/*@-assignexpose@*/
 	    token->u.tag.format = start;
-	    /*@=assignexpose@*/
+/*@=assignexpose@*/
 	    token->u.tag.pad = 0;
 	    token->u.tag.justOne = 0;
 	    token->u.tag.arrayCount = 0;
@@ -5241,9 +5279,9 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 	    if (token == NULL || token->type != PTOK_STRING) {
 		token = format + numTokens++;
 		token->type = PTOK_STRING;
-		/*@-temptrans -assignexpose@*/
+/*@-temptrans -assignexpose@*/
 		dst = token->u.string.string = start;
-		/*@=temptrans =assignexpose@*/
+/*@=temptrans =assignexpose@*/
 	    }
 
 /*@-modfilesys@*/
@@ -5426,8 +5464,8 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 /*@observer@*/ /*@null@*/
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 		size_t element)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies hsa, tag, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies hsa, tag, rpmGlobalMacroContext, internalState @*/
 {
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     HE_t he = &tag->he;
@@ -5551,7 +5589,7 @@ assert(0);	/* XXX keep gcc quiet. */
 
 /*@-castfcnptr -modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], (tag->params ? tag->params[i] : NULL), (void *)fmt, (void *)vhe, (void *)(av ? av : NULL), val);
+fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], (tag->params ? tag->params[i] : NULL), (void *)fmt, (void *)vhe, (void *)(av ? av : NULL), (val ? val : "(null)"));
 /*@=castfcnptr =modfilesys@*/
 
 	    /* Accumulate (by appending) next formmatter's return string. */
@@ -5610,8 +5648,8 @@ exit:
 /*@observer@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		size_t element)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies hsa, token, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies hsa, token, rpmGlobalMacroContext, internalState @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
@@ -5749,13 +5787,14 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    tagN = numbuf;
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
+assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
-		rpmTag tagT = 0;
+		rpmTagReturnType tagT = 0;
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
@@ -5763,22 +5802,19 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
-/*@-type@*/
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
-/*@=type@*/
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
+assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		*te++ = ' ';
 		*te++ = ' ';
 		te = stpcpy(te, tagN);
 		*te++ = ':';
-/*@-type@*/
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
-/*@=type@*/
 		*te = '\0';
 		hsa->vallen += (te - t);
 	    }
@@ -5867,7 +5903,6 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     return NULL;
 }
 
-/*@-globs -mods@*/	/* XXX rpmGlobalMacroContext @*/
 char * headerSprintf(Header h, const char * fmt,
 		headerTagTableEntry tags,
 		headerSprintfExtension exts,
@@ -5936,9 +5971,9 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 
     hsa = hsaInit(hsa);
     while ((nextfmt = hsaNext(hsa)) != NULL) {
-/*@-modobserver@*/	/* headerCompoundFormats not modified. */
+/*@-globs -mods@*/	/* XXX rpmGlobalMacroContext @*/
 	te = singleSprintf(hsa, nextfmt, 0);
-/*@=modobserver@*/
+/*@=globs =mods @*/
 	if (te == NULL) {
 	    hsa->val = _free(hsa->val);
 	    break;
@@ -5977,4 +6012,3 @@ exit:
     return hsa->val;
 /*@=retexpose@*/
 }
-/*@=globs =mods @*/

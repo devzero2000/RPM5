@@ -92,7 +92,8 @@ static const char * fmt2name(rpmtdFormats fmt)
 static void * rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
 	/*@*/
 {
-    return rpmHeaderFormatFuncByName(fmt2name(fmt));
+    const char * name = fmt2name(fmt);
+    return (name != NULL ? rpmHeaderFormatFuncByName(name) : NULL);
 }
 
 rpmtd rpmtdNew(void)
@@ -465,14 +466,17 @@ int rpmtdFromArgv(rpmtd td, rpmTag tag, const char ** argv)
 int rpmtdFromArgi(rpmtd td, rpmTag tag, const void * _argi)
 {
     ARGI_t argi = (ARGI_t) _argi;
+    ARGint_t data = argiData(argi);
     int count = argiCount(argi);
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
 
-    if (type != RPM_INT32_TYPE || retype != RPM_ARRAY_RETURN_TYPE || count < 1)
+    if (type != RPM_INT32_TYPE || retype != RPM_ARRAY_RETURN_TYPE)
+	return 0;
+    if (count < 1 || data == NULL)
 	return 0;
 
-    return rpmtdSet(td, tag, type, argiData(argi), count);
+    return rpmtdSet(td, tag, type, data, count);
 }
 
 rpmtd rpmtdDup(rpmtd td)

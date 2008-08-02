@@ -528,8 +528,8 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
  */
 /*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, rpmTag rpmtag,
 		unsigned int flags)
-	/*@globals rpmGlobalMacroContext, errno, h_errno @*/
-	/*@modifies db, rpmGlobalMacroContext, errno @*/;
+	/*@globals rpmGlobalMacroContext, errno, h_errno, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, errno, internalState @*/;
 
 /**
  * Return dbiStats accumulator structure.
@@ -1001,8 +1001,8 @@ int rpmdbSync (/*@null@*/ rpmdb db)
  */
 /*@-exportlocal@*/
 int rpmdbOpenAll (/*@null@*/ rpmdb db)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies db, rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, internalState @*/;
 /*@=exportlocal@*/
 
 /** \ingroup rpmdb
@@ -1085,8 +1085,8 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
  */
 int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, /*@null@*/ const char * pattern)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies mi, mode, rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies mi, mode, rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmdb
  * Prepare iterator for lazy writes.

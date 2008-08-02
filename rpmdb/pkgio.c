@@ -68,8 +68,8 @@ static int _print_pkts = 0;
  */
 static
 rpmRC rpmWriteHeader(FD_t fd, /*@null@*/ Header h, /*@null@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, h, *msg, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, h, *msg, fileSystem, internalState @*/
 {
     const void * uh = NULL;
     size_t nb;
@@ -432,7 +432,7 @@ static unsigned char lead_magic[] = {
  * @param *msg		name to include in lead (or NULL)
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
+static rpmRC wrLead(FD_t fd, const void * ptr, /*@null@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/
 {
@@ -471,7 +471,7 @@ fprintf(stderr, "--> wrLead(%p, %p, %p)\n", fd, ptr, msg);
  * @return		rpmRC return code
  */
 static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
-		const char ** msg)
+		/*@null@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
@@ -509,6 +509,7 @@ fprintf(stderr, "--> rdLead(%p, %p, %p)\n", fd, ptr, msg);
 	unsigned char * bh = (unsigned char *)l;
 	if (bh[0] == 'x' && bh[1] == 'a' && bh[2] == 'r' && bh[3] == '!') {
 	    const char * fn = fdGetOPath(fd);
+assert(fn != NULL);
 	    xar = rpmxarNew(fn, "r");
 	    fdSetXAR(fd, xar);
 	    (void) rpmxarFree(xar);
@@ -596,9 +597,10 @@ exit:
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, *msg, fileSystem @*/
+static rpmRC wrSignature(FD_t fd, void * ptr,
+		/*@unused@*/ /*@null@*/ const char ** msg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/
 {
     Header sigh = ptr;
     static unsigned char zero[8]
@@ -633,8 +635,8 @@ fprintf(stderr, "--> wrSignature(%p, %p, %p)\n", fd, ptr, msg);
  * @return 			rpmRC return code
  */
 static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     struct stat sb, * st = &sb;
     size_t expected;
@@ -671,9 +673,9 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen
  * @return		rpmRC return code
  */
 static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
-		const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies *ptr, *msg, fileSystem @*/
+		/*@null@*/ const char ** msg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *ptr, *msg, fileSystem, internalState @*/
 {
 rpmxar xar = fdGetXAR(fd);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1228,9 +1230,9 @@ assert(ptr != NULL);
  * @return		rpmRC return code
  */
 static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
-		/*@unused@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies ptr, fileSystem @*/
+		/*@unused@*/ /*@null@*/ const char ** msg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ptr, fileSystem, internalState @*/
 {
     rpmRC rc = RPMRC_OK;
     Header h;
@@ -1406,9 +1408,9 @@ exit:
  * @return		rpmRC return code
  */
 static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
-		const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *ptr, *msg, fileSystem @*/
+		/*@null@*/ const char ** msg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, *ptr, *msg, fileSystem, internalState @*/
 {
     Header * hdrp = ptr;
 /*@-compdef@*/
@@ -1423,9 +1425,10 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC wrHeader(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, *msg, fileSystem @*/
+static rpmRC wrHeader(FD_t fd, void * ptr,
+		/*@unused@*/ /*@null@*/ const char ** msg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/
 {
     Header h = ptr;
     return rpmWriteHeader(fd, h, msg);

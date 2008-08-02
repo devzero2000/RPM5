@@ -157,6 +157,13 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 {
     int rc = 0;
 
+assert(a->E != NULL);
+assert(a->V != NULL);
+assert(a->R != NULL);
+assert(b->E != NULL);
+assert(b->V != NULL);
+assert(b->R != NULL);
+
     if (!rc)
 	rc = compare_values(a->E, b->E);
     if (!rc)

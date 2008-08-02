@@ -32,8 +32,8 @@ static inline int dpkgEVRctype(char x)
 
 int dpkgEVRcmp(const char *a, const char *b)
 {
-    if (!a) a = "";
-    if (!b) b = "";
+    if (a == NULL) a = "";
+    if (b == NULL) b = "";
 
     while (*a || *b) {
 	int first_diff= 0;

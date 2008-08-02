@@ -57,12 +57,12 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
 	/*@modifies wf, fileSystem @*/;
 
 rpmRC rpmwfFini(rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 rpmRC rpmwfInit(rpmwf wf, const char * fn, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
 	/*@globals fileSystem @*/
@@ -107,29 +107,29 @@ rpmwf XrpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg,
 
 /*@null@*/
 rpmwf rpmwfFree(/*@only@*/ rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 /*@relnull@*/
 rpmwf rpmwfNew(const char * fn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 rpmwf rdRPM(const char * rpmfn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 rpmwf rdXAR(const char * xarfn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 rpmRC wrXAR(const char * xarfn, rpmwf wf)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
 
 rpmRC wrRPM(const char * rpmfn, rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 
 #ifdef __cplusplus

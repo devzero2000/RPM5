@@ -21,8 +21,8 @@
  */
 static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
 		int (*cmp) (const void * avp, const void * bvp))
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *argvp, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies *argvp, rpmGlobalMacroContext, internalState @*/
 {
     ARGV_t aTags = NULL;
     char * s = rpmExpand("%{?_arbitrary_tags}", NULL);
@@ -157,14 +157,14 @@ static rpmTag _tagGenerate(const char *s)
 
 /* forward refs */
 static const char * _tagName(rpmTag tag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 static unsigned int _tagType(rpmTag tag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 static rpmTag _tagValue(const char * tagstr)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /*@unchecked@*/
 static struct headerTagIndices_s _rpmTags = {

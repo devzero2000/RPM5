@@ -32,16 +32,17 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc,
 
 /**
  * Return package header from file handle, verifying digests/signatures.
+ * @todo The rpmts either needs to become void *, or changed to -lrpmdb scope.
  * @param ts		transaction set
- * @param _fd		file handle
+ * @param fd		file handle
  * @param fn		file name
  * @retval hdrp		address of header (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadPackageFile(rpmts ts, void * _fd,
+rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, *hdrp, fileSystem, internalState @*/;
+	/*@modifies ts, fd, *hdrp, fileSystem, internalState @*/;
 
 /**
  * Return size of item in bytes.
@@ -61,8 +62,8 @@ size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, *msg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/;
 
 /**
  * Read item from file descriptor.
@@ -74,8 +75,8 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
  */
 rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
 		const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *ptr, *msg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, *ptr, *msg, fileSystem, internalState @*/;
 
 /**
  * Verify item integrity.
@@ -86,8 +87,8 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies ptr, *msg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ptr, *msg, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

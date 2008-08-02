@@ -281,8 +281,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
 		/*@out@*/ DB_ENV ** dbenvp)
 	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem @*/
-	/*@modifies dbi, *dbenvp, fileSystem @*/
+		fileSystem, internalState @*/
+	/*@modifies dbi, *dbenvp, fileSystem, internalState @*/
 {
     static int oneshot = 0;
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -933,8 +933,8 @@ assert(db != NULL);
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+		fileSystem, internalState @*/
+	/*@modifies dbi, fileSystem, internalState @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * urlfn = NULL;

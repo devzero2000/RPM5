@@ -132,8 +132,8 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn,
 		/*@null@*/ const char * pubfn,
 		/*@null@*/ const char * pubid,
 		int flags)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies _ts, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies _ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
