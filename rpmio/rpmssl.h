@@ -5,6 +5,7 @@
  * \file rpmio/rpmssl.h
  */
 
+#include <rpmiotypes.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>
 

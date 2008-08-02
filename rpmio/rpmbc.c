@@ -3,7 +3,6 @@
  */
 
 #include "system.h"
-#include <rpmio.h>
 #define	_RPMBC_INTERNAL
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>
@@ -40,7 +39,7 @@ unsigned char nibble(char c)
 
 static
 int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
     rpmbc bc = dig->impl;
     unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(bc->c.size);
@@ -133,7 +132,7 @@ int rpmbcVerifyRSA(pgpDig dig)
 
 static
 int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
     rpmbc bc = dig->impl;
     rpmuint8_t signhash16[2];
@@ -185,7 +184,7 @@ int pgpMpiSet(const char * pre, unsigned int lbits,
 		/*@out@*/ void * dest, const rpmuint8_t * p,
 		/*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
-	/*@modifies *dest, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     mpnumber * mpn = dest;
     unsigned int mbits = pgpMpiBits(p);
@@ -222,7 +221,7 @@ static
 int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
-	/*@modifies dig, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmbc bc = dig->impl;
     int rc = 0;
@@ -276,6 +275,7 @@ fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);
     return rc;
 }
 
+/*@-mustmod@*/
 static
 void rpmbcClean(void * impl)
 	/*@modifies impl @*/
@@ -291,6 +291,7 @@ void rpmbcClean(void * impl)
 	mpnfree(&bc->rsahm);
     }
 }
+/*@=mustmod@*/
 
 static
 void * rpmbcFree(/*@only@*/ void * impl)

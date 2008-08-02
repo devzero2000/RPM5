@@ -158,6 +158,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  * @param reverse	iterate in reverse order?
  * @return		file info iterator
  */
+/*@-mustmod@*/
 static void *
 mapInitIterator(rpmfi fi, int reverse)
 	/*@modifies fi @*/
@@ -175,6 +176,7 @@ mapInitIterator(rpmfi fi, int reverse)
     iter->isave = iter->i;
     return iter;
 }
+/*@=mustmod@*/
 
 /** \ingroup payload
  * Return next index into file info.

@@ -50,6 +50,7 @@ typedef struct rpmGZFILE_s {
 } * rpmGZFILE;				/* like FILE, to use with star */
 
 /* Should gzflush be called only after RSYNC_WIN boundaries? */
+/*@unchecked@*/
 static int enable_rsync = 0;
 
 /* =============================================================== */

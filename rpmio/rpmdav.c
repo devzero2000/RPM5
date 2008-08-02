@@ -318,7 +318,8 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
 
 #ifdef WITH_NEON
 /* =============================================================== */
-int davDisconnect(void * _u)
+/*@-mustmod@*/
+int davDisconnect(/*@unused@*/ void * _u)
 {
 #ifdef	NOTYET	/* XXX not quite right yet. */
     urlinfo u = (urlinfo)_u;
@@ -347,6 +348,7 @@ fprintf(stderr, "*** davDisconnect(%p) active %d\n", u, rc);
 #endif	/* NOTYET */
     return 0;
 }
+/*@=mustmod@*/
 
 int davFree(urlinfo u)
 {
@@ -1416,6 +1418,7 @@ fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 	mode_t st_mode;
 	int ut;
 
+assert(html->b != NULL);
 	offsets[0] = offsets[1] = -1;
 	xx = mireRegexec(mire, html->b, html->nb);
 	if (xx == 0 && offsets[0] != -1 && offsets[1] != -1) {
@@ -1540,6 +1543,7 @@ fprintf(stderr, "*** htmlParse(%p) rc %d\n", html, rc);
 }
 
 /* HACK htmlNLST() should be rewritten to use davReq/davResp w callbacks. */
+/*@-mustmod@*/
 static int htmlNLST(urlinfo u, avContext ctx) 
 	/*@globals internalState @*/
 	/*@modifies ctx, internalState @*/
@@ -1565,6 +1569,7 @@ exit:
     html = htmlFree(html);
     return rc;
 }
+/*@=mustmod@*/
 
 static int davNLST(avContext ctx)
 	/*@globals internalState @*/
@@ -1933,6 +1938,7 @@ exit:
     /*@=refcounttrans@*/
 }
 
+/*@-mustmod@*/
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
 {
     FD_t fd = cookie;
@@ -1967,6 +1973,7 @@ fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)coun
 
     return rc;
 }
+/*@=mustmod@*/
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
@@ -2358,12 +2365,12 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     }
 
     /* Note: all Opendir(3) URI's need pesky trailing '/' */
-/*@-mods@*/
+/*@-globs -mods@*/
     if (path[strlen(path)-1] != '/')
 	uri = rpmExpand(path, "/", NULL);
     else
 	uri = xstrdup(path);
-/*@=mods@*/
+/*@=globs =mods@*/
 	
     /* Load DAV collection into argv. */
     /* XXX HACK: davHEAD needs ctx->st. */
@@ -2389,11 +2396,13 @@ exit:
 }
 /*@=modfilesys@*/
 
+/*@-mustmod@*/
 char * davRealpath(const char * path, char * resolved_path)
 {
 assert(resolved_path == NULL);	/* XXX no POSIXly broken realpath(3) here. */
     /* XXX TODO: handle redirects. For now, just dupe the path. */
     return xstrdup(path);
 }
+/*@=mustmod@*/
 
 #endif /* WITH_NEON */

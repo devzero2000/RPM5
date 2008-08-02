@@ -163,6 +163,7 @@ static int lzclose(/*@only@*/ LZFILE *lzfile)
     return rc;
 }
 
+/*@-mustmod@*/
 static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
 	/*@globals fileSystem @*/
 	/*@modifies lzfile, *buf, fileSystem @*/
@@ -199,6 +200,7 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
       }
     /*@notreached@*/
 }
+/*@=mustmod@*/
 
 static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 	/*@globals fileSystem @*/

@@ -14,36 +14,27 @@
 # --- in progress
 -branchstate
 -bufferoverflowhigh
--shiftnegative		# 1 lzdReadOpen
 
 -compdef		# 16
--compmempass		# 2 LZMA
--globs			# 19
--moduncon		# 323
--mustmod		# 16
--noeffectuncon		# 183
--nullpass
--paramuse
--protoparammatch	# 1 LZMA
+-compmempass		# 15
+-moduncon		# 247
+-noeffectuncon		# 263
+-nullpass		# 38
+-protoparammatch	# 16
 
--onlytrans
--readonlytrans		# 10 digest names
--refcounttrans
-
--forempty
--looploopbreak		# 2 LZMA
--nullptrarith		# 16 LZMA
--shadow			# 3 LZMA
+-onlytrans		# 15
+-readonlytrans		# 12 digest names
+-refcounttrans		# 19
 
 # --- +partial artifacts
--declundef
--exportheadervar
--exportlocal
+-declundef		# 442
+-exportheadervar	# 5
+-exportlocal		# 62
 
--enummemuse
--fcnuse
--typeuse
--varuse
+-enummemuse		# 327
+-fcnuse			# 305
+-typeuse		# 22
+-varuse			# 10
 
 # --- not-yet at strict level
 -bitwisesigned		# 236

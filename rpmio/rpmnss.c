@@ -3,14 +3,11 @@
  */
 
 #include "system.h"
-#include <rpmio.h>
 
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_NSS)
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
-#else
-#include <rpmpgp.h>		/* XXX DIGEST_CTX */
 #endif
 
 #include "debug.h"
@@ -31,7 +28,7 @@ extern int _rpmnss_init;
 
 static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = dig->impl;
@@ -105,7 +102,7 @@ int rpmnssVerifyRSA(pgpDig dig)
 
 static
 int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = dig->impl;
@@ -192,6 +189,7 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 {
     unsigned int nbytes = pgpMpiLen(p)-2;
 
+/*@-moduncon@*/
     if (item == NULL) {
 	if ((item = SECITEM_AllocItem(arena, item, nbytes)) == NULL)
 	    return item;
@@ -207,6 +205,7 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 	    return NULL;
 	}
     }
+/*@=moduncon@*/
 
     memcpy(item->data, p+2, nbytes);
     item->len = nbytes;
@@ -222,6 +221,7 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
     PRArenaPool *arena;
     SECKEYPublicKey *key;
 
+/*@-moduncon@*/
     arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
     if (arena == NULL)
 	return NULL;
@@ -232,6 +232,7 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
 	PORT_FreeArena(arena, PR_FALSE);
 	return NULL;
     }
+/*@=moduncon@*/
     
     key->keyType = type;
     key->pkcs11ID = CK_INVALID_HANDLE;
@@ -258,12 +259,13 @@ SECKEYPublicKey * rpmnssNewDSAKey(void)
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
-	/*@modifies dig @*/
+	/*@*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc = 0;
 
+/*@-moduncon@*/
     switch (itemno) {
     default:
 assert(0);
@@ -337,18 +339,21 @@ assert(0);
 	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.publicValue, p);
 	break;
     }
+/*@=moduncon@*/
     return rc;
 #else
     return 1;
 #endif	/* WITH_NSS */
 }
 
+/*@-mustmod@*/
 static
 void rpmnssClean(void * impl)
 	/*@modifies impl @*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = impl;
+/*@-moduncon@*/
     if (nss != NULL) {
 	if (nss->dsa != NULL) {
 	    SECKEY_DestroyPublicKey(nss->dsa);
@@ -366,13 +371,15 @@ void rpmnssClean(void * impl)
 	    SECITEM_ZfreeItem(nss->rsasig, PR_TRUE);
 	    nss->rsasig = NULL;
 	}
+/*@=moduncon@*/
     }
 #endif	/* WITH_NSS */
 }
+/*@=mustmod@*/
 
 static
 void * rpmnssFree(/*@only@*/ void * impl)
-	/*@modifies impl @*/
+	/*@*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = impl;
@@ -392,7 +399,9 @@ void * rpmnssInit(void)
 #if defined(WITH_NSS)
     rpmnss nss = xcalloc(1, sizeof(*nss));
 
+/*@-moduncon@*/
     (void) NSS_NoDB_Init(NULL);
+/*@=moduncon@*/
     _rpmnss_init = 1;
 
     return (void *) nss;

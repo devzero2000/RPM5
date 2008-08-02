@@ -3,14 +3,11 @@
  */
 
 #include "system.h"
-#include <rpmio.h>
 
 #define	_RPMGC_INTERNAL
 #if defined(WITH_GCRYPT)
 #define	_RPMPGP_INTERNAL
 #include <rpmgc.h>
-#else
-#include <rpmpgp.h>		/* XXX DIGEST_CTX */
 #endif
 
 #include "debug.h"
@@ -66,7 +63,7 @@ unsigned char nibble(char c)
 
 static
 int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
 #if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
@@ -192,7 +189,7 @@ rpmgcDump("gc->pkey", gc->pkey);
 
 static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
 #if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
@@ -225,30 +222,25 @@ int rpmgcVerifyDSA(pgpDig dig)
     rpmgc gc = dig->impl;
     gcry_error_t rc;
 
-/*@-moduncon@*/
+/*@-moduncon -noeffectuncon @*/
     rc = gcry_sexp_build(&gc->sig, NULL,
 		"(sig-val (DSA (r %m) (s %m)))",
 		gc->r, gc->s);
-/*@=moduncon@*/
 if (_pgp_debug)
 rpmgcDump("gc->sig", gc->sig);
-/*@-moduncon@*/
     rc = gcry_sexp_build(&gc->pkey, NULL,
 		"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
 		gc->p, gc->q, gc->g, gc->y);
-/*@=moduncon@*/
 if (_pgp_debug)
 rpmgcDump("gc->pkey", gc->pkey);
 
     /* Verify DSA signature. */
-/*@-moduncon@*/
     rc = gcry_pk_verify (gc->sig, gc->hash, gc->pkey);
-/*@=moduncon@*/
 
     gcry_sexp_release(gc->pkey);	gc->pkey = NULL;
     gcry_sexp_release(gc->hash);	gc->hash = NULL;
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
-
+/*@=moduncon -noeffectuncon @*/
     return (rc ? 0 : 1);
 #else
     return 0;
@@ -257,8 +249,9 @@ rpmgcDump("gc->pkey", gc->pkey);
 
 /*@-globuse -mustmod @*/
 static
-int rpmgcMpiItem(const char * pre, pgpDig dig, int itemno,
-		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
+int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
+		const rpmuint8_t * p,
+		/*@unused@*/ /*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {
@@ -268,65 +261,49 @@ int rpmgcMpiItem(const char * pre, pgpDig dig, int itemno,
     int rc = 0;
     int xx;
 
+/*@-moduncon -noeffectuncon @*/
     switch (itemno) {
     default:
 assert(0);
 	break;
     case 10:		/* RSA m**d */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->c, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 20:		/* DSA r */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->r, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 21:		/* DSA s */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->s, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 30:		/* RSA n */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->n, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 31:		/* RSA e */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->e, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 40:		/* DSA p */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->p, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 41:		/* DSA q */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->q, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 42:		/* DSA g */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->g, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     case 43:		/* DSA y */
 	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-/*@-moduncon@*/
 	xx = gcry_mpi_scan(&gc->y, GCRYMPI_FMT_PGP, p, nb, NULL);
-/*@=moduncon@*/
 	break;
     }
+/*@=moduncon =noeffectuncon @*/
     return rc;
 #else
     return 1;
@@ -334,12 +311,14 @@ assert(0);
 }
 /*@=globuse =mustmod @*/
 
+/*@-mustmod@*/
 static
 void rpmgcClean(void * impl)
 	/*@modifies impl @*/
 {
 #if defined(WITH_GCRYPT)
     rpmgc gc = impl;
+/*@-moduncon -noeffectuncon @*/
     if (gc != NULL) {
 	if (gc->sig) {
 	    gcry_sexp_release(gc->sig);
@@ -390,8 +369,10 @@ void rpmgcClean(void * impl)
 	    gc->y = NULL;
 	}
     }
+/*@=moduncon =noeffectuncon @*/
 #endif
 }
+/*@=mustmod@*/
 
 static
 void * rpmgcFree(/*@only@*/ void * impl)
@@ -399,10 +380,8 @@ void * rpmgcFree(/*@only@*/ void * impl)
 {
 #if defined(WITH_GCRYPT)
     rpmgc gc = impl;
-    if (gc != NULL) {
-	rpmgcClean(impl);
-	gc = _free(gc);
-    }
+    rpmgcClean(impl);
+    gc = _free(gc);
 #endif
     return NULL;
 }

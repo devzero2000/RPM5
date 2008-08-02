@@ -1,4 +1,4 @@
-/*@-realcompare -sizeoftype @*/
+/*@-moduncon -mustmod -realcompare -sizeoftype @*/
 #include "system.h"
 
 #ifdef	WITH_LUA
@@ -64,7 +64,7 @@ rpmlua rpmluaGetGlobalState(void)
 /*@=globstate@*/
 }
 
-/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
+/*@-globs -mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
@@ -160,7 +160,7 @@ rpmlua rpmluaNew()
 
     return lua;
 }
-/*@=mods@*/
+/*@=globs =mods@*/
 
 void *rpmluaFree(rpmlua lua)
 	/*@globals globalLuaState @*/
@@ -683,7 +683,9 @@ static int rpm_macros(lua_State *L)
     lua_newtable(L);
 /*@=modunconnomods@*/
 
+/*@-globs@*/
     ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
+/*@=globs@*/
 
     if (av != NULL)
     for (i = 0; i < ac; i++) {
@@ -975,7 +977,9 @@ static int rpm_load(lua_State *L)
 	(void)luaL_argerror(L, 1, "filename expected");
     } else {
 	const char *filename = lua_tostring(L, 1);
+/*@-globs@*/
 	(void)rpmLoadMacroFile(NULL, filename);
+/*@=globs@*/
     }
     return 0;
 }
@@ -1011,7 +1015,9 @@ static int rpm_slurp(lua_State *L)
         (void)luaL_argerror(L, 1, "filename");
         return 0;
     }
+/*@-globs@*/
     rc = rpmioSlurp(fn, &b, &blen);
+/*@=globs@*/
     if (rc || b == NULL || blen <= 0) {
         (void)luaL_error(L, "failed to slurp data");
         return 0;
@@ -1089,4 +1095,4 @@ static int luaopen_rpm(lua_State *L)
 }
 #endif	/* WITH_LUA */
 
-/*@=realcompare =sizeoftype @*/
+/*@=moduncon =mustmod =realcompare =sizeoftype @*/

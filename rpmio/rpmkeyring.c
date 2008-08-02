@@ -62,6 +62,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 }
 
 static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
+	/*@*/
 {
     rpmPubkey *found = NULL;
     found = bsearch(&key, keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
@@ -109,8 +110,10 @@ rpmPubkey rpmPubkeyRead(const char *filename)
     size_t pktlen;
     rpmPubkey key = NULL;
 
+/*@-globs@*/
     if (pgpReadPkts(filename, &pkt, &pktlen) <= 0)
 	goto exit;
+/*@=globs@*/
     key = rpmPubkeyNew(pkt, pktlen);
     pkt = _free(pkt);
 

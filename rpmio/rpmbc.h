@@ -9,6 +9,7 @@
 #include <beecrypt/api.h>
 #endif
 
+#include <rpmiotypes.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>
 

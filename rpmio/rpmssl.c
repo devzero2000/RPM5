@@ -3,15 +3,17 @@
  */
 
 #include "system.h"
-#include <rpmio.h>
 #include <rpmlog.h>
 
 #define	_RPMPGP_INTERNAL
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
+
+#if defined(__LCLINT__) && !defined(__i386__)
+#define	__i386__
+#endif
+
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
-#else
-#include <rpmpgp.h>		/* XXX DIGEXT_CTX */
 #endif
 
 #include "debug.h"
@@ -27,7 +29,7 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
 /**
  * Convert hex to binary nibble.
  * @param c            hex character
@@ -49,9 +51,9 @@ unsigned char nibble(char c)
 
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned int nbits = BN_num_bits(ssl->c);
     unsigned int nb = (nbits + 7) >> 3;
@@ -136,7 +138,7 @@ static
 int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned char * rsahm;
     unsigned char * dbuf;
@@ -169,12 +171,14 @@ int rpmsslVerifyRSA(pgpDig dig)
     rsahm = xmalloc(nb);
     xx = BN_bn2bin(ssl->rsahm, rsahm);
     ll = BN_num_bytes(ssl->rsa->n);
-    xx = ll;	/* WRONG WRONG WRONG */
+    xx = (int)ll;	/* WRONG WRONG WRONG */
     dbuf = xcalloc(1, ll);
     /* XXX FIXME: what parameter goes into dbuf? */
+/*@-type@*/
     while (xx < (int)ll)
 	memmove(&dbuf[1], dbuf, xx++), dbuf[0] = 0;
-    xx = RSA_public_decrypt(ll, dbuf, dbuf, ssl->rsa, RSA_PKCS1_PADDING);
+/*@=type@*/
+    xx = RSA_public_decrypt((int)ll, dbuf, dbuf, ssl->rsa, RSA_PKCS1_PADDING);
 /*@=moduncon@*/
     rc = (xx == (int)nb && (memcmp(rsahm, dbuf, nb) == 0));
     dbuf = _free(dbuf);
@@ -193,7 +197,7 @@ int rpmsslVerifyRSA(pgpDig dig)
 
 static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
     int xx;
 
@@ -208,13 +212,13 @@ static
 int rpmsslVerifyDSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     int rc;
 
     /* Verify DSA signature. */
 /*@-moduncon@*/
-    rc = (DSA_do_verify(dig->sha1, dig->sha1len, ssl->dsasig, ssl->dsa) == 1);
+    rc = (DSA_do_verify(dig->sha1, (int)dig->sha1len, ssl->dsasig, ssl->dsa) == 1);
 /*@=moduncon@*/
 
     return rc;
@@ -224,11 +228,12 @@ int rpmsslVerifyDSA(pgpDig dig)
 }
 
 static
-int rpmsslMpiItem(const char * pre, pgpDig dig, int itemno,
-		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
-	/*@modifies dig @*/
+int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
+		const rpmuint8_t * p,
+		/*@unused@*/ /*@null@*/ const rpmuint8_t * pend)
+	/*@*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
     int rc = 0;
@@ -281,12 +286,14 @@ assert(0);
 #endif	/* WITH_SSL */
 }
 
+/*@-mustmod@*/
 static
 void rpmsslClean(void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = impl;
+/*@-moduncon@*/
     if (ssl != NULL) {
 	if (ssl->dsa) {
 	    DSA_free(ssl->dsa);
@@ -305,18 +312,19 @@ void rpmsslClean(void * impl)
 	    ssl->c = NULL;
 	}
     }
+/*@=moduncon@*/
 #endif	/* WITH_SSL */
 }
+/*@=mustmod@*/
 
 static
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = impl;
-    if (ssl != NULL) {
-	ssl = _free(ssl);
-    }
+    rpmsslClean(impl);
+    ssl = _free(ssl);
 #endif	/* WITH_SSL */
     return NULL;
 }
@@ -325,9 +333,11 @@ static
 void * rpmsslInit(void)
 	/*@*/
 {
-#if defined(WITH_SSL) && !defined(__LCLINT__)
+#if defined(WITH_SSL)
     rpmssl ssl = xcalloc(1, sizeof(*ssl));
+/*@-moduncon@*/
     ERR_load_crypto_strings();
+/*@=moduncon@*/
     return (void *) ssl;
 #else
     return NULL;

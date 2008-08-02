@@ -169,7 +169,6 @@ fprintf(stderr, "*** Rmdir(%s)\n", path);
 /*@unchecked@*/
 const char * _chroot_prefix = NULL;
 
-/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 int Chroot(const char * path)
 {
     const char * lpath;
@@ -197,8 +196,10 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 /*@-dependenttrans -modobserver -observertrans @*/
     _chroot_prefix = _free(_chroot_prefix);
 /*@=dependenttrans =modobserver =observertrans @*/
+/*@-globs -mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
     if (strcmp(path, "."))
 	_chroot_prefix = rpmGetPath(path, NULL);
+/*@=globs =mods@*/
 
 /*@-superuser@*/
     return chroot(path);
@@ -667,9 +668,9 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 
 	/* Here just this special case with MM-DD-YY */
         if (is_dos_date(p)){
-	    /*@-mods@*/
+/*@-mods@*/
             p[2] = p[5] = '-';
-	    /*@=mods@*/
+/*@=mods@*/
 
 	    memset(d, 0, sizeof(d));
 	    if (sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
@@ -1935,7 +1936,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 	 * the result.
 	 */
 	if ((t = realpath(".", dn)) != NULL) {
-/*@-mods@*/	/* XXX no rpmGlobalMacroContext mods please. */
+/*@-globs -mods@*/	/* XXX no rpmGlobalMacroContext mods please. */
 	    rpath = (char *) rpmGetPath(t, "/", lpath, NULL);
 	    /* XXX preserve the pesky trailing '/' */
 	    if (lpath[strlen(lpath)-1] == '/') {
@@ -1943,7 +1944,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 		rpath = rpmExpand(s, "/", NULL);
 		s = _free(s);
 	    }
-/*@=mods@*/
+/*@=globs =mods@*/
 	} else
 	    rpath = NULL;
 #if defined(__GLIBC__)

@@ -588,7 +588,7 @@ int urlGetFile(const char * url, const char * dest)
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
 
-/*@-mods@*/	/* XXX avoid including <rpmmacro.h> everywhere for now */
+/*@-globs -mods@*/	/* Avoid including <rpmmacro.h> everywhere for now */
     if (rpmExpandNumeric("%{?__urlgetfile:1}%{!?__urlgetfile:0}")) {
         result = rpmExpand("%{__urlgetfile ", url, " ", dest, "}", NULL);
         if (result != NULL && strcmp(result, "OK") == 0)
@@ -600,7 +600,7 @@ int urlGetFile(const char * url, const char * dest)
         result = _free(result);
         goto exit;
     }
-/*@=mods@*/
+/*@=globs =mods@*/
 
     sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {

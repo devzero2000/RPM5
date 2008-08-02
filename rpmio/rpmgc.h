@@ -5,6 +5,7 @@
  * \file rpmio/rpmgc.h
  */
 
+#include <rpmiotypes.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>
 

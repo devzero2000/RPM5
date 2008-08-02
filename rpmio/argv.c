@@ -264,6 +264,7 @@ char * argvJoin(ARGV_t argv)
     return t;
 }
 
+/*@-mustmod@*/
 int argvFgets(ARGV_t * argvp, void * fd)
 {
     FILE * fp = (fd ? fdGetFILE(fd) : stdin);
@@ -296,3 +297,4 @@ int argvFgets(ARGV_t * argvp, void * fd)
     return rc;
 /*@=nullstate@*/
 }
+/*@=mustmod@*/

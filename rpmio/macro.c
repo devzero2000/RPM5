@@ -137,6 +137,7 @@ int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* Size of expansion buffers. */
+/*@unchecked@*/
 static size_t _macro_BUFSIZ = 16 * 1024;
 
 /* forward ref */
@@ -1391,7 +1392,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 }
 
 static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int rc = 0;
