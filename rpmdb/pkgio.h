@@ -40,9 +40,8 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc,
  */
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *_fd, *hdrp, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, *hdrp, fileSystem, internalState @*/;
 
 /**
  * Return size of item in bytes.
