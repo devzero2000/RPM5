@@ -4,9 +4,7 @@
 
 #include "system.h"
 
-/* just to put a marker in librpm.a */
-const char * RPMVERSION = VERSION;
-
+#include <rpmversion.h>
 #include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmurl.h>
@@ -14,6 +12,9 @@ const char * RPMVERSION = VERSION;
 #include <rpmtypes.h>
 #include "misc.h"
 #include "debug.h"
+
+/*@unchecked@*/ /*@observer@*/
+const char * RPMVERSION = VERSION;
 
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 {

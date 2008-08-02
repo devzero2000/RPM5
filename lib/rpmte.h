@@ -103,13 +103,13 @@ struct rpmte_s {
     const char * hdrid;		/*!< Package header identifier (header sha1). */
 /*@only@*/ /*@null@*/
     const char * sourcerpm;	/*!< Source package. */
-/*@owned@*/
+/*@only@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
     char * epoch;
-/*@dependent@*/ /*@null@*/
+/*@only@*/ /*@null@*/
     char * version;		/*!< Version: */
-/*@dependent@*/ /*@null@*/
+/*@only@*/ /*@null@*/
     char * release;		/*!< Release: */
 /*@only@*/ /*@null@*/
     const char * arch;		/*!< Architecture hint. */

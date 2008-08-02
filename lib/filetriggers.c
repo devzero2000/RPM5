@@ -16,7 +16,7 @@
 
 #define	_FILES_AWAITING_FILETRIGGERS "/var/lib/rpm/files-awaiting-filetriggers"
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static const char * files_awaiting_filetriggers = _FILES_AWAITING_FILETRIGGERS;
 
 #define FILTER_EXTENSION ".filter"
@@ -90,6 +90,7 @@ exit:
 
 struct filetrigger_raw {
     char * regexp;
+/*@relnull@*/
     char * name;
 };
 

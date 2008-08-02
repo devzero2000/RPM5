@@ -556,37 +556,44 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->t = RPM_STRING_TYPE;
     he->c = 1;
     he->tag = RPMTAG_NAME;
-    he->p.str = "gpg-pubkey";
+    he->p.str = xstrdup("gpg-pubkey");
     xx = headerPut(h, he, 0);
+    he->p.ptr = _free(he->p.ptr);
     he->tag = RPMTAG_VERSION;
     he->p.str = v+8;
     xx = headerPut(h, he, 0);
     he->tag = RPMTAG_RELEASE;
-    he->p.str = r;
+    he->p.str = xstrdup(r);
     xx = headerPut(h, he, 0);
+    he->p.ptr = _free(he->p.ptr);
 
     /* Add Summary/Description/Group. */
     he->tag = RPMTAG_DESCRIPTION;
-    he->p.str = d;
+    he->p.str = xstrdup(d);
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
 #else
     xx = headerPut(h, he, 0);
 #endif
+    he->p.ptr = _free(he->p.ptr);
+
     he->tag = RPMTAG_GROUP;
-    he->p.str = group;
+    he->p.str = xstrdup(group);
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
 #else
     xx = headerPut(h, he, 0);
 #endif
+    he->p.ptr = _free(he->p.ptr);
+
     he->tag = RPMTAG_SUMMARY;
-    he->p.str = u;
+    he->p.str = xstrdup(u);
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
 #else
     xx = headerPut(h, he, 0);
 #endif
+    he->p.ptr = _free(he->p.ptr);
 
 #ifdef	NOTYET	/* XXX can't erase pubkeys with "pubkey" arch. */
     /* Add a "pubkey" arch/os to avoid missing value NULL ptrs. */
@@ -599,8 +606,9 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 #endif
 
     he->tag = RPMTAG_LICENSE;
-    he->p.str = license;
+    he->p.str = xstrdup(license);
     xx = headerPut(h, he, 0);
+    he->p.ptr = _free(he->p.ptr);
 
     he->tag = RPMTAG_SIZE;
     he->t = RPM_UINT32_TYPE;
@@ -654,9 +662,11 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     /* XXX W2DO: tag value inheirited from parent? */
     he->tag = RPMTAG_BUILDHOST;
     he->t = RPM_STRING_TYPE;
-    he->p.str = buildhost;
+    he->p.str = xstrdup(buildhost);
     he->c = 1;
     xx = headerPut(h, he, 0);
+    he->p.ptr = _free(he->p.ptr);
+
     {   rpmuint32_t tid = rpmtsGetTid(ts);
 	he->tag = RPMTAG_INSTALLTIME;
 	he->t = RPM_UINT32_TYPE;

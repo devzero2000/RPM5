@@ -757,7 +757,9 @@ void rpmnsClean(void)
     getconfP = rpmdsFree(getconfP);
     unameP = rpmdsFree(unameP);
 /*@=refcounttrans@*/
+/*@-observertrans@*/
     _sysinfo_path = _free(_sysinfo_path);
+/*@=observertrans@*/
     sysinfo_path = _free(sysinfo_path);
 }
 

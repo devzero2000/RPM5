@@ -1583,9 +1583,11 @@ assert(fi->h != NULL);
 	if (fn != NULL) {
 	    he->tag = RPMTAG_PACKAGEORIGIN;
 	    he->t = RPM_STRING_TYPE;
-	    he->p.str = fn;
+	    he->p.str = xstrdup(fn);
 	    he->c = 1;
 	    xx = headerPut(fi->h, he, 0);
+	    he->p.ptr = _free(he->p.ptr);
+
 	    if (digest != NULL) {
 		he->tag = RPMTAG_PACKAGEDIGEST;
 		he->t = RPM_STRING_TYPE;

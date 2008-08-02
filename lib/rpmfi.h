@@ -113,9 +113,9 @@ struct rpmfi_s {
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for file info set (or NULL) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const char ** bnl;		/*!< Base name(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
@@ -129,17 +129,17 @@ struct rpmfi_s {
 
 /*@only@*/ /*@relnull@*/
           rpmuint32_t * dil;	/*!< Directory indice(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const rpmuint32_t * fflags;	/*!< File flag(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const rpmuint32_t * fsizes;	/*!< File size(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const rpmuint32_t * fmtimes;/*!< File modification time(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
           rpmuint16_t * fmodes;	/*!< File mode(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const rpmuint16_t * frdevs;	/*!< File rdev(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const rpmuint32_t * finodes;/*!< File inodes(s) (from header) */
 
 /*@only@*/ /*@null@*/
@@ -170,7 +170,7 @@ struct rpmfi_s {
 /*@only@*/ /*@null@*/
     const rpmuint32_t * fddictn;/*!< File depends dictionary count (header) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const rpmuint32_t * vflags;	/*!< File verify flag(s) (from header) */
 
     rpmuint32_t dc;		/*!< No. of directories. */

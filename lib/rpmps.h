@@ -187,6 +187,7 @@ int rpmpsNextIterator(rpmpsi psi)
  * @param psi		problem set iterator
  * @return		current rpmProblem 
  */
+/*@observer@*/
 rpmProblem rpmpsProblem(rpmpsi psi)
 	/*@*/;
 

@@ -1144,7 +1144,9 @@ dColors[j] |= fColors[i];
 	xx = headerMod(h, he, 0);
 	fi->bnl = _free(fi->bnl);
 	xx = headerGet(h, he, 0);
+/*@-dependenttrans@*/
 	fi->bnl = he->p.argv;
+/*@=dependenttrans@*/
 	fi->fc = he->c;
 
 	he->tag = RPMTAG_DIRNAMES;
@@ -1164,7 +1166,9 @@ dColors[j] |= fColors[i];
 	xx = headerMod(h, he, 0);
 	fi->dil = _free(fi->dil);
 	xx = headerGet(h, he, 0);
+/*@-dependenttrans@*/
 	fi->dil = he->p.ui32p;
+/*@=dependenttrans@*/
     }
 
     baseNames = _free(baseNames);

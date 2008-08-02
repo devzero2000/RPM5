@@ -276,9 +276,9 @@ struct rpmts_s {
     int ntrees;			/*!< No. of dependency trees. */
     int maxDepth;		/*!< Maximum depth of dependency tree(s). */
 
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     rpmte teInstall;		/*!< current rpmtsAddInstallElement element. */
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     rpmte teErase;		/*!< current rpmtsAddEraseElement element. */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
@@ -300,6 +300,7 @@ struct rpmts_s {
 
 /*@refcounted@*/ /*@relnull@*/
     rpmKeyring keyring;		/*!< Keyring in use. */
+/*@relnull@*/
     rpmuint8_t * pkpkt;		/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     rpmuint8_t pksignid[8];	/*!< Current pubkey fingerprint. */

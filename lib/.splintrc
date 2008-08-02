@@ -16,24 +16,20 @@
 +slovak-fcns
 -bufferoverflowhigh
 
--warnlintcomments	# 1 ARGSUSED in getdate.y
-
 -branchstate
+
 -compdef
 -compmempass
--incondefs	# 11
--modobserver	# 6
+-incondefs	# 12
+-modobserver	# 7
 -nullderef	# 18
 -nullpass	# 31
--nullstate	# 9
+-nullstate	# 23	HE_t needs null annotations
 -redecl		# 38
--usereleased
+-usereleased	# 26
 
--dependenttrans	# 10
 -kepttrans	# 37
--observertrans	# 8
 -onlytrans	# 29
--readonlytrans	# 4
 
 # --- +partial artifacts
 -declundef

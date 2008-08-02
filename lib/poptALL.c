@@ -131,8 +131,10 @@ static int rpmcliInitialized = -1;
 extern const char *rpmluaFiles;
 #endif
 
+/*@-readonlytrans@*/	/* argv loading prevents observer, xstrdup needed. */
 /*@unchecked@*/
 static char *rpmpoptfiles = RPMPOPTFILES;
+/*@=readonlytrans@*/
 
 /**
  * Display rpm version.
@@ -586,7 +588,9 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
+/*@-dependenttrans -observertrans@*/	/* Avoid popt memory leaks. */
 	optArg = _free(optArg);
+/*@=dependenttrans =observertrans @*/
 	switch (rc) {
 	default:
 /*@-nullpass@*/
