@@ -135,7 +135,8 @@ static void printFileInfo(char * te, const char * name,
 /**
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@modifies h @*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     const char * errstr = "(unkown error)";
     const char * str;

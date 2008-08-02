@@ -639,7 +639,8 @@ void rpmteColorDS(rpmte te, rpmTag tag)
  * @return		0 on success
  */
 int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
-	/*@modifies p, q, oh @*/;
+	/*@globals internalState @*/
+	/*@modifies p, q, oh, internalState @*/;
 
 #define	RPMTE_CHAIN_END	"CHAIN END"	/*!< End of chain marker. */
 

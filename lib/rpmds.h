@@ -201,7 +201,8 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
  */
 /*@null@*/
 rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmds
  * Create, load and initialize a dependency set of size 1.
@@ -675,7 +676,8 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
  * @return		1 if dependency overlaps, 0 otherwise
  */
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmds
  * Negate return code for negated comparisons.

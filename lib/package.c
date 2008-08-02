@@ -77,12 +77,11 @@ static int pgpStashKeyid(pgpDig dig)
 }
 
 /*@-mods@*/
-rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
+rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     pgpDig dig = rpmtsDig(ts);
-    FD_t fd = _fd;
     char buf[8*BUFSIZ];
     ssize_t count;
     Header sigh = NULL;

@@ -603,7 +603,8 @@ assert(digest != NULL);
 /*@-nullpass@*/
 static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
-	/*@modifies ts @*/
+	/*@globals internalState @*/
+	/*@modifies ts, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);

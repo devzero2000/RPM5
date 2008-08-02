@@ -144,7 +144,8 @@ static int removePackage(rpmts ts, Header h, int dboffset,
  * @return		1 if headers are identical, 0 otherwise
  */
 static int rpmHeadersIdentical(Header first, Header second)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;

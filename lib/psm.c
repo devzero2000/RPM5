@@ -159,7 +159,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     memset(psm, 0, sizeof(*psm));
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
 
+/*@-mods@*/	/* Avoid void * _fd annotations for now. */
     rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+/*@=mods@*/
     switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
@@ -1349,7 +1351,8 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
  * @return		tag value (0 on failure)
  */
 static rpmuint32_t hLoadTID(Header h, rpmTag tag)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t val;
@@ -1370,7 +1373,8 @@ static rpmuint32_t hLoadTID(Header h, rpmTag tag)
  * @return		0 always
  */
 static int hCopyTag(Header sh, Header th, rpmTag tag)
-	/*@modifies th @*/
+	/*@globals internalState @*/
+	/*@modifies th, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx = 1;
