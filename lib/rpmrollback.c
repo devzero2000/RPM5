@@ -68,7 +68,7 @@ IDTX IDTXnew(void)
 {
     IDTX idtx = xcalloc(1, sizeof(*idtx));
     idtx->delta = 10;
-    idtx->size = sizeof(*((IDT)0));
+    idtx->size = (int)sizeof(*((IDT)0));
     return idtx;
 }
 

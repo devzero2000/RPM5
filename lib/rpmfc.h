@@ -201,8 +201,7 @@ rpmRC rpmfcApply(rpmfc fc)
  */
 rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *pkgp,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

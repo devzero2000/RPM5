@@ -383,9 +383,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  * @return		0 on success, 1 on failure
  */
 int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies qva, ts, _fd, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies qva, ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Verify package install.
@@ -462,10 +461,10 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 		/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent,
 		rpmcliProgressCurrent, rpmcliProgressTotal,
-		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmcliHashesCurrent,
+		h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies arg, rpmcliHashesCurrent,
 		rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem, internalState @*/;
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Install source rpm package.
@@ -491,8 +490,8 @@ int rpmInstallSource(rpmts ts, const char * arg,
  * @return		no. of (added) packages
  */
 int rpmcliInstallProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Report packages(if any) that satisfy unresolved dependencies.
@@ -500,8 +499,8 @@ int rpmcliInstallProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
  * @return		0 always
  */
 int rpmcliInstallSuggests(rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies ts, internalState @*/;
 
 /** \ingroup rpmcli
  * Check package element dependencies in a transaction set, reporting problems.
@@ -588,7 +587,7 @@ extern struct poptOption rpmDatabasePoptTable[];
  */
 rpmRC rpmcliImportPubkey(const rpmts ts,
 		const unsigned char * pkt, ssize_t pktlen)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -622,7 +621,7 @@ extern struct poptOption rpmSignPoptTable[];
  * @return		0 on success
  */
 int rpmcliSign(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

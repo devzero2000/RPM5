@@ -263,7 +263,7 @@ static void addMacroDefault(const char * macroname,
 }
 
 static void setPathDefault(const char * macroname, const char * subdir)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     if (macroname != NULL) {
@@ -295,7 +295,7 @@ export RPM_BUILD_ROOT\n}\
 ";
 
 static void setDefaults(void)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 

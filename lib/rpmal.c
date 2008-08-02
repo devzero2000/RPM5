@@ -85,7 +85,7 @@ typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
 struct fileIndexEntry_s {
 /*@dependent@*/ /*@relnull@*/
     const char * baseName;	/*!< File basename. */
-    int baseNameLen;
+    size_t baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
     rpmuint32_t ficolor;
 };
@@ -99,7 +99,7 @@ typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
 struct dirInfo_s {
 /*@owned@*/ /*@relnull@*/
     const char * dirName;	/*!< Directory path (+ trailing '/'). */
-    int dirNameLen;		/*!< No. bytes in directory path. */
+    size_t dirNameLen;		/*!< No. bytes in directory path. */
 /*@owned@*/
     fileIndexEntry files;	/*!< Array of files in directory. */
     int numFiles;		/*!< No. files in directory. */
@@ -254,7 +254,7 @@ static int dieCompare(const void * one, const void * two)
     const dirInfo a = (const dirInfo) one;
     const dirInfo b = (const dirInfo) two;
     /*@=castexpose@*/
-    int lenchk = a->dirNameLen - b->dirNameLen;
+    int lenchk = (int)a->dirNameLen - (int)b->dirNameLen;
 
     if (lenchk || a->dirNameLen == 0)
 	return lenchk;
@@ -279,7 +279,7 @@ static int fieCompare(const void * one, const void * two)
     const fileIndexEntry a = (const fileIndexEntry) one;
     const fileIndexEntry b = (const fileIndexEntry) two;
     /*@=castexpose@*/
-    int lenchk = a->baseNameLen - b->baseNameLen;
+    int lenchk = (int)a->baseNameLen - (int)b->baseNameLen;
 
     if (lenchk)
 	return lenchk;
@@ -351,7 +351,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (int)(die - al->dirs), die, die->dirNameLen, die->dirName);
+fprintf(stderr, "--- die[%5d] %p [%3u] %s\n", (int)(die - al->dirs), die, (unsigned)die->dirNameLen, die->dirName);
 /*@=modfilesys@*/
 
 	    last = die->numFiles;
@@ -371,7 +371,7 @@ fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, di
 		}
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, (unsigned)sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
+fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3u] %s\n", die->files, die->numFiles, die->files + die->numFiles, (unsigned)sizeof(*fie), fie->baseName, (unsigned)fie->baseNameLen, fie->baseName);
 /*@=modfilesys@*/
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
@@ -525,7 +525,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 		die->numFiles = 0;
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "+++ die[%5d] %p [%3d] %s\n", al->numDirs, die, die->dirNameLen, die->dirName);
+fprintf(stderr, "+++ die[%5d] %p [%3u] %s\n", al->numDirs, die, (unsigned)die->dirNameLen, die->dirName);
 /*@=modfilesys@*/
 
 		al->numDirs++;
@@ -568,7 +568,7 @@ fie, (next - first), fie + (next - first));
 		fie->ficolor = rpmfiFColor(fi);
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie->baseName, fie->baseNameLen, rpmfiFN(fi));
+fprintf(stderr, "\t%p[%3d] %p:%p[%2u] %s\n", die->files, die->numFiles, fie, fie->baseName, (unsigned)fie->baseNameLen, rpmfiFN(fi));
 /*@=modfilesys@*/
 
 		die->numFiles++;
@@ -644,7 +644,7 @@ void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, rpmuint32_t tscolo
 /*@-assignexpose@*/
 	aie->entry = Name;
 /*@=assignexpose@*/
-	aie->entryLen = strlen(Name);
+	aie->entryLen = (unsigned short)strlen(Name);
 	ix = rpmdsIx(provides);
 
 /* XXX make sure that element index fits in unsigned short */
@@ -817,7 +817,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     /*@-assignexpose -temptrans@*/
     needle->entry = KName;
     /*@=assignexpose =temptrans@*/
-    needle->entryLen = strlen(needle->entry);
+    needle->entryLen = (unsigned short)strlen(needle->entry);
 
     match = bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
     if (match == NULL)

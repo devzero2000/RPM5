@@ -30,7 +30,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, _fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
+	/*@modifies ts, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /*@}*/

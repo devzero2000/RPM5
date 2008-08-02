@@ -138,13 +138,13 @@ static char *rpmpoptfiles = RPMPOPTFILES;
  * Display rpm version.
  */
 static void printVersion(FILE * fp)
-	/*@globals rpmEVR, fileSystem @*/
-	/*@modifies *fp, fileSystem @*/
+	/*@globals rpmEVR, fileSystem, internalState @*/
+	/*@modifies *fp, fileSystem, internalState @*/
 {
     fprintf(fp, _("%s (" RPM_NAME ") %s\n"), __progname, rpmEVR);
     if (rpmIsVerbose())
-	fprintf(fp, "rpmlib 0x%08x,0x%08x,0x%08x\n",
-	    rpmlibVersion(), rpmlibTimestamp(), rpmlibVendor());
+	fprintf(fp, "rpmlib 0x%08x,0x%08x,0x%08x\n", (unsigned)rpmlibVersion(),
+		(unsigned)rpmlibTimestamp(), (unsigned)rpmlibVendor());
 }
 
 void rpmcliConfigured(void)
@@ -175,9 +175,9 @@ static void rpmcliAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+	/*@globals pgpDigVSFlags, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies con, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+	/*@modifies con, pgpDigVSFlags, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 
@@ -432,6 +432,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 
 poptContext
 rpmcliFini(poptContext optCon)
+	/*@globals keyids @*/
+	/*@modifies keyids @*/
 {
     /* XXX this should be done in the rpmioClean() wrapper. */
     /* keeps memory leak checkers quiet */
@@ -475,6 +477,8 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
 /*@-globstate@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
+	/*@globals rpmpoptfiles @*/
+	/*@modifies rpmpoptfiles @*/
 {
     poptContext optCon;
     char *path_buf, *path, *path_next;

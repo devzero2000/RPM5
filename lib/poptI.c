@@ -140,7 +140,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 
 	if (tid == (time_t)-1 || tid == (time_t)0)
 	    argerror(_("malformed rollback time/date stamp argument"));
-	ia->rbtid = tid;
+	ia->rbtid = (rpmuint32_t)tid;
       }	break;
     
     case POPT_AUTOROLLBACK_GOAL:
@@ -154,7 +154,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 
 	if (tid == (time_t)-1 || tid == (time_t)0)
 	    argerror(_("malformed arbgoal time/date stamp argument"));
-	ia->arbtid = tid;
+	ia->arbtid = (rpmuint32_t)tid;
       }	break;
 
     case RPMCLI_POPT_NODIGEST:

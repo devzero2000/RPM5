@@ -26,6 +26,7 @@
 
 #include "debug.h"
 
+/*@access rpmts @*/	/* XXX cast */
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
@@ -45,7 +46,7 @@ extern int _rpmds_unspecified_epoch_noise;
 static int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, *res, fileSystem, internalState @*/
+	/*@modifies fi, *res, fileSystem, internalState @*/
 	/*@requires maxSet(res) >= 0 @*/
 {
     unsigned short fmode = rpmfiFMode(fi);
@@ -202,7 +203,7 @@ static int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	{
 	    *res |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
-	    rpmuint16_t st_rdev = (sb.st_rdev & 0xffff);
+	    rpmuint16_t st_rdev = (rpmuint16_t)(sb.st_rdev & 0xffff);
 	    rpmuint16_t frdev = (rpmuint16_t)(rpmfiFRdev(fi) & 0xffff);
 	    if (st_rdev != frdev)
 		*res |= RPMVERIFY_RDEV;
@@ -282,7 +283,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
  */
 static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, fileSystem, internalState  @*/
+	/*@modifies fi, fileSystem, internalState  @*/
 {
     rpmVerifyAttrs verifyResult = 0;
     /*@-type@*/ /* FIX: union? */
@@ -441,6 +442,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		pkgNEVR = rpmProblemGetPkgNEVR(prob);
 
 	    altNEVR = rpmProblemGetAltNEVR(prob);
+assert(altNEVR != NULL);
 	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
 		nb += sizeof("\tRequires: ")-1;
 	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')

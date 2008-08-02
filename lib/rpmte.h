@@ -355,6 +355,7 @@ rpmuint32_t rpmtePkgFileSize(rpmte te)
  * @param te		transaction element
  * @return		origin time
  */
+/*@observer@*/
 rpmuint32_t * rpmteOriginTid(rpmte te)
 	/*@*/;
 
@@ -363,6 +364,7 @@ rpmuint32_t * rpmteOriginTid(rpmte te)
  * @param te		transaction element
  * @return		origin time
  */
+/*@observer@*/
 rpmuint32_t * rpmteOriginTime(rpmte te)
 	/*@*/;
 

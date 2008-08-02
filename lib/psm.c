@@ -206,9 +206,11 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 assert(fi->h != NULL);
 assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     (void) rpmteSetHeader(fi->te, fi->h);
-/*@-refcounttrans@*/	/* FIX: XfdLink annotation */
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
+/*@-refcounttrans -temptrans @*/	/* FIX: XfdLink annotation */
     ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
-/*@=refcounttrans@*/
+/*@=refcounttrans =temptrans @*/
+/*@=mods@*/
 
     (void) headerMacrosLoad(fi->h);
 
@@ -633,6 +635,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     const char * NVRA;
     const char * body = NULL;
     int * ssp = NULL;
+    pid_t pid;
     int xx;
     int i;
 
@@ -730,6 +733,7 @@ assert(he->p.str != NULL);
     if (script) {
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
+	size_t nw;
 
 	if (rpmTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd))
 	    goto exit;
@@ -738,13 +742,13 @@ assert(he->p.str != NULL);
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
 	{
 	    static const char set_x[] = "set -x\n";
-	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
+	    nw = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
 	}
 
 	if (ldconfig_path && strstr(body, ldconfig_path) != NULL)
 	    ldconfig_done = 1;
 
-	xx = Fwrite(body, sizeof(body[0]), strlen(body), fd);
+	nw = Fwrite(body, sizeof(body[0]), strlen(body), fd);
 	xx = Fclose(fd);
 
 	{   const char * sn = fn;
@@ -786,7 +790,7 @@ assert(he->p.str != NULL);
     if (out == NULL)	/* XXX can't happen */
 	goto exit;
 
-    xx = rpmsqFork(&psm->sq);
+    pid = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
 	int pipes[2];
 	int flag;
@@ -903,7 +907,8 @@ assert(he->p.str != NULL);
     if (psm->sq.reaped < 0) {
 	rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, NVRA, psm->sq.child, psm->sq.reaped, strerror(errno));
+		 sln, NVRA, (int)psm->sq.child, (int)psm->sq.reaped,
+		strerror(errno));
 	goto exit;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
@@ -1506,8 +1511,8 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
  * @return		0 always
  */
 static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
-	/*@globals fileSystem @*/
-	/*@modifies fi, fileSystem @*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fi, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t tscolor = rpmtsColor(ts);
@@ -1597,7 +1602,7 @@ assert(fi->h != NULL);
 		    he->tag = RPMTAG_PACKAGESTAT;
 		    he->t = RPM_BIN_TYPE;
 		    he->p.ptr = (void *)st;
-		    he->c = sizeof(*st);
+		    he->c = (rpmTagCount) sizeof(*st);
 		    xx = headerPut(fi->h, he, 0);
 		}
 	    }
@@ -1678,7 +1683,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int xx;
 
 /* XXX hackery to assert(!scaremem) in rpmfiNew. */
+/*@-castexpose@*/
 if (fi->h == NULL && fi->te && ((rpmte)fi->te)->h != NULL) fi->h = headerLink(((rpmte)fi->te)->h);
+/*@=castexpose@*/
 
     switch (stage) {
     case PSM_UNKNOWN:
@@ -1921,7 +1928,7 @@ psm->te->h = headerLink(fi->h);
 		    digest = he->p.str;
 		he->tag = RPMTAG_PACKAGESTAT;
 		xx = headerGet(fi->h, he, 0);
-		if (xx && he->p.ptr != NULL && he->c == sizeof(*st)) {
+		if (xx && he->p.ptr != NULL && (size_t)he->c == sizeof(*st)) {
 		    st = he->p.ptr;
 		    nstbytes = he->c;
 		}
@@ -2037,7 +2044,7 @@ psm->te->h = headerLink(fi->h);
 		    he->tag = RPMTAG_PACKAGESTAT;
 		    he->t = RPM_BIN_TYPE;
 		    he->p.ptr = (void *)st;
-		    he->c = nstbytes;
+		    he->c = (rpmTagCount)nstbytes;
 		    xx = headerPut(psm->oh, he, 0);
 		    st = _free(st);
 		}

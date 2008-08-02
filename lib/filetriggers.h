@@ -14,14 +14,14 @@ extern "C" {
 __attribute__ ((visibility("hidden")))
 int mayAddToFilesAwaitingFiletriggers(const char *rootDir, rpmfi fi,
 		int install_or_erase)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  */
 void rpmRunFileTriggers(const char *rootDir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

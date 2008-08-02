@@ -213,9 +213,9 @@ assert(dig != NULL);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-/*@-noeffect@*/
+/*@-ownedtrans -noeffect@*/
     xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
-/*@=noeffect@*/
+/*@=ownedtrans =noeffect@*/
 
     switch ((rpmSigTag)she->tag) {
     default:	/* XXX keep gcc quiet. */

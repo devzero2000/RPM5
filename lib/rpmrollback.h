@@ -110,8 +110,8 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
  */
 /*@only@*/ /*@null@*/
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, rpmuint32_t rbtid)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).

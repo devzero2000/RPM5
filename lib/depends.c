@@ -193,8 +193,8 @@ static rpmTag _obsolete_tag;
  * @return		0 on success
  */
 static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t tscolor = rpmtsColor(ts);
@@ -291,9 +291,10 @@ static inline int chkSuffix(const char * fn, const char * suffix)
  * @param pkgKey	added package key (erasure uses RPMAL_NOKEY)
  * @return		no. of references from build set
  */
-static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h, alKey pkgKey)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
+static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
+		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const void *keyval = NULL;
@@ -367,7 +368,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     }
     debuginfoHeader = headerFree(debuginfoHeader);
 
-    return nrefs;
+    return (int)nrefs;
 }
 
 /**
@@ -378,8 +379,8 @@ assert(lastx >= 0 && lastx < ts->orderCount);
  * @return		0 on success
  */
 static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmuint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);
@@ -746,6 +747,8 @@ static rpmds getconfP = NULL;
 static rpmds unameP = NULL;
 
 void rpmnsClean(void)
+	/*@globals sysinfo_path, _sysinfo_path, rpmlibP, cpuinfoP, getconfP, unameP @*/
+	/*@modifies sysinfo_path, _sysinfo_path, rpmlibP, cpuinfoP, getconfP, unameP @*/
 {
 /*@-refcounttrans@*/
     rpmlibP = rpmdsFree(rpmlibP);
@@ -765,10 +768,10 @@ void rpmnsClean(void)
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
-	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, dep, _cacheDependsRC, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		sysinfo_path, fileSystem, internalState @*/
+	/*@modifies ts, dep, rpmGlobalMacroContext,
+		sysinfo_path, fileSystem, internalState @*/
 {
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));

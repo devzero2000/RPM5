@@ -62,7 +62,7 @@ int fsmSetup(void * _fsm, iosmFileStage goal, /*@null@*/ const char * afmt,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, _ts, _fi, *archiveSize, *failedFile,
+	/*@modifies cfd, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
 /**

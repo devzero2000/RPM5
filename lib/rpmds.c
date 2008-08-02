@@ -375,7 +375,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    }
 	    av[Count] = NULL;
 
+/*@-unqualifiedtrans@*/
 	    N = ds->N = _free(ds->N);
+/*@=unqualifiedtrans@*/
 	    N = ds->N = rpmdsDupArgv(av, Count);
 	    av = argvFree(av);
 	    ds->EVR = _free(ds->EVR);
@@ -628,7 +630,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     ds->tagN = tagN;
     ds->A = NULL;
     {	time_t now = time(NULL);
-	ds->BT = now;
+	ds->BT = (rpmuint32_t)now;
     }
     ds->Count = 1;
     /*@-assignexpose@*/
@@ -742,8 +744,8 @@ time_t rpmdsSetBT(const rpmds ds, time_t BT)
 {
     time_t oBT = 0;
     if (ds != NULL) {
-	oBT = ds->BT;
-	ds->BT = BT;
+	oBT = (time_t)ds->BT;
+	ds->BT = (rpmuint32_t)BT;
     }
     return oBT;
 }
@@ -1501,7 +1503,7 @@ assert(fn != NULL);
 
     ln = 0;
     if (fp != NULL)
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while((f = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	ln++;
 
 	/* insure a terminator. */
@@ -2848,7 +2850,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
     {	struct stat sb, * st = &sb;
 	if (stat(fn, st) != 0)
 	    return -1;
-	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+	is_executable = (int)(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
     }
 
     fdno = open(fn, O_RDONLY);
@@ -2886,13 +2888,13 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	    if (!skipP)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
+		for (cnt = (int)shdr->sh_info; --cnt >= 0; ) {
 		
 		    def = gelf_getverdef (data, offset, &def_mem);
 		    if (def == NULL)
 			/*@innerbreak@*/ break;
-		    auxoffset = offset + def->vd_aux;
-		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
+		    auxoffset = (unsigned)(offset + def->vd_aux);
+		    for (cnt2 = (int)def->vd_cnt; --cnt2 >= 0; ) {
 			GElf_Verdaux aux_mem, * aux;
 
 			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
@@ -2936,7 +2938,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	    if (!skipR && is_executable)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
+		for (cnt = (int)shdr->sh_info; --cnt >= 0; ) {
 		    need = gelf_getverneed (data, offset, &need_mem);
 		    if (need == NULL)
 			/*@innerbreak@*/ break;
@@ -2946,8 +2948,8 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 			/*@innerbreak@*/ break;
 		    soname = _free(soname);
 		    soname = xstrdup(s);
-		    auxoffset = offset + need->vn_aux;
-		    for (cnt2 = need->vn_cnt; --cnt2 >= 0; ) {
+		    auxoffset = (unsigned)(offset + need->vn_aux);
+		    for (cnt2 = (int)need->vn_cnt; --cnt2 >= 0; ) {
 			GElf_Vernaux aux_mem, * aux;
 
 			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
@@ -3137,7 +3139,7 @@ fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n"
     if (fp == NULL)
 	goto exit;
 
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while((f = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	EVR = NULL;
 	/* rtrim on line. */
 	ge = f + strlen(f);
@@ -3472,7 +3474,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 
     ln = 0;
     cmdprinted = 0;
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while((f = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	ln++;
 
 	/* insure a terminator. */

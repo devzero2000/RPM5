@@ -59,7 +59,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  */     
 /*@null@*/
 static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
-                        const char * writePtr, int writeBytesLeft,
+                        const char * writePtr, size_t writeBytesLeft,
                         int failNonZero)
         /*@globals h_errno, fileSystem, internalState@*/
         /*@modifies fileSystem, internalState@*/
@@ -123,7 +123,9 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     do {
 	fd_set ibits, obits;
 	struct timeval tv;
-	int nfd, nbw, nbr;
+	int nfd;
+	ssize_t nbr;
+	ssize_t nbw;
 	int rc;
 
 	done = 0;
@@ -150,7 +152,8 @@ top:
 	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
           if (writePtr && writeBytesLeft > 0) {
 	    if ((nbw = write(toProg[1], writePtr,
-		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
+		    ((size_t)1024<writeBytesLeft) ? (size_t)1024 : writeBytesLeft)) < 0)
+	    {
 	        if (errno != EAGAIN) {
 		    perror("getOutputFrom()");
 	            exit(EXIT_FAILURE);
@@ -217,7 +220,7 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     int ec = -1;
     StringBuf sb = NULL;
     const char * buf_stdin = NULL;
-    int buf_stdin_len = 0;
+    size_t buf_stdin_len = 0;
     int xx;
 
     if (sb_stdoutp)
@@ -282,10 +285,10 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
 
 /**
  */
-static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
+static char * rpmfcFileDep(/*@returned@*/ char * buf, size_t ix,
 		/*@null@*/ rpmds ds)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies buf, fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies buf, internalState @*/
 	/*@requires maxSet(buf) >= 0 @*/
 	/*@ensures maxRead(buf) == 0 @*/
 {
@@ -306,7 +309,7 @@ assert(0);
     }
 /*@-nullpass@*/
     if (ds != NULL)
-	sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
+	sprintf(buf, "%08u%c %s %s 0x%08x", (unsigned)ix, deptype,
 		rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
 /*@=nullpass@*/
     return buf;
@@ -680,7 +683,7 @@ static int rpmfcSCRIPT(rpmfc fc)
     {	struct stat sb, * st = &sb;
 	if (stat(fn, st) != 0)
 	    return -1;
-	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+	is_executable = (int)(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
     }
 
     fp = fopen(fn, "r");
@@ -1079,7 +1082,7 @@ assert(ftype != NULL);	/* XXX never happens, rpmmgFile() returns "" */
 
 	/* Add (filtered) entry to sorted class dictionary. */
 	fcolor = rpmfcColoring(se);
-	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
+	xx = argiAdd(&fc->fcolor, (int)fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    xx = rpmfcSaveArg(&fc->cdict, se);
@@ -1098,10 +1101,10 @@ assert(se != NULL);
 
 	dav = argvSearch(fc->cdict, se, NULL);
 	if (dav) {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
+	    xx = argiAdd(&fc->fcdictx, (int)fc->ix, (dav - fc->cdict));
 	    fc->fknown++;
 	} else {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, 0);
+	    xx = argiAdd(&fc->fcdictx, (int)fc->ix, 0);
 	    fc->fwhite++;
 	}
     }

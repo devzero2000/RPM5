@@ -310,8 +310,8 @@ if (sigh != NULL) {
 	/* Toss and recalculate header+payload size and digests. */
 	{   static const rpmuint32_t sigs[] =
 		{ RPMSIGTAG_SIZE, RPMSIGTAG_MD5, RPMSIGTAG_SHA1 };
-	    int nsigs = sizeof(sigs) / sizeof(sigs[0]);
-	    for (i = 0; i < nsigs; i++) {
+	    size_t nsigs = sizeof(sigs) / sizeof(sigs[0]);
+	    for (i = 0; i < (int)nsigs; i++) {
 		he->tag = (rpmTag)sigs[i];
 		xx = headerDel(sigh, he, 0);
 		xx = rpmAddSignature(sigh, sigtarget, (rpmSigTag) he->tag, qva->passPhrase);
@@ -325,8 +325,8 @@ if (sigh != NULL) {
 	    static const rpmuint32_t sigs[] =
 		{ RPMSIGTAG_GPG, RPMSIGTAG_PGP5, RPMSIGTAG_PGP,
 		  RPMSIGTAG_DSA, RPMSIGTAG_RSA };
-	    int nsigs = sizeof(sigs) / sizeof(sigs[0]);
-	    for (i = 0; i < nsigs; i++) {
+	    size_t nsigs = sizeof(sigs) / sizeof(sigs[0]);
+	    for (i = 0; i < (int)nsigs; i++) {
 		he->tag = (rpmTag)sigs[i];
 		xx = headerDel(sigh, he, 0);
 	    }
@@ -646,9 +646,10 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
     he->tag = RPMTAG_RPMVERSION;
     he->t = RPM_STRING_TYPE;
-    he->p.str = RPMVERSION;
+    he->p.str = xstrdup(RPMVERSION);
     he->c = 1;
     xx = headerPut(h, he, 0);
+    he->p.ptr = _free(he->p.ptr);
 
     /* XXX W2DO: tag value inheirited from parent? */
     he->tag = RPMTAG_BUILDHOST;
@@ -711,7 +712,7 @@ exit:
 static int rpmcliImportPubkeys(const rpmts ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -862,7 +863,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
+/*@-castexpose@*/
     FD_t fd = (FD_t)_fd;
+/*@=castexpose@*/
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
@@ -882,7 +885,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
     {
 	{   const char item[] = "Lead";
 	    msg = NULL;
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
 	    rc = rpmpkgRead(item, fd, NULL, &msg);
+/*@=mods@*/
 	    if (rc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 		msg = _free(msg);
@@ -894,7 +899,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 
 	{   const char item[] = "Signature";
 	    msg = NULL;
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
 	    rc = rpmpkgRead(item, fd, &sigh, &msg);
+/*@=mods@*/
 	    switch (rc) {
 	    default:
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
@@ -930,7 +937,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 	}
 
 	dig = rpmtsDig(ts);
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
 	(void) fdSetDig(fd, dig);
+/*@=mods@*/
 	sigp = pgpGetSignature(dig);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
@@ -941,16 +950,20 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 	    he->p.ptr = _free(he->p.ptr);
 	}
 
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
 	if (headerIsEntry(sigh, (rpmTag)RPMSIGTAG_MD5))
 	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+/*@=mods@*/
 
 	/* Read the file, generating digest(s) on the fly. */
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
 	if (dig == NULL || sigp == NULL
 	 || readFile(fd, fn) != RPMRC_OK)
 	{
 	    res++;
 	    goto exit;
 	}
+/*@=mods@*/
 
 	failed = 0;
 	b = buf;		*b = '\0';
@@ -970,9 +983,9 @@ assert(she->p.ptr != NULL);
 	    /* Clean up parameters from previous she->tag. */
 	    pgpDigClean(dig);
 
-/*@-noeffect@*/
+/*@-ownedtrans -noeffect@*/
 	    xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
-/*@=noeffect@*/
+/*@=ownedtrans =noeffect@*/
 
 	    switch ((rpmSigTag)she->tag) {
 	    case RPMSIGTAG_RSA:
@@ -1105,6 +1118,8 @@ exit:
 }
 
 int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
+	/*@globals rpmioFtsOpts @*/
+	/*@modifies rpmioFtsOpts @*/
 {
     int res = 0;
 
@@ -1135,10 +1150,8 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     rpmgiFlags _giFlags = RPMGI_NONE;
     rpmRC rc;
 
-/*@-mods@*/
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
-/*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);

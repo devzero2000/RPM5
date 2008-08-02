@@ -286,14 +286,15 @@ int rpmGetFilesystemUsage(const char ** fileList, rpmuint32_t * fssizes,
 		/*@unused@*/ int flags)
 {
     rpmuint64_t * usages;
-    int i, len, j;
+    int i, j;
     char * buf, * dirName;
     char * chptr;
-    int maxLen;
+    size_t maxLen;
+    size_t len;
     char * lastDir;
     const char * sourceDir;
     int lastfs = 0;
-    int lastDev = -1;		/* I hope nobody uses -1 for a st_dev */
+    dev_t lastDev = (dev_t)-1;		/* I hope nobody uses -1 for a st_dev */
     struct stat sb;
 
     if (!fsnames) 
@@ -351,7 +352,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpmuint32_t * fssizes,
 		    *chptr-- = '\0';
 	    }
 
-	    if (lastDev != (int)sb.st_dev) {
+	    if (lastDev != sb.st_dev) {
 		for (j = 0; j < numFilesystems; j++)
 		    if (filesystems && filesystems[j].dev == sb.st_dev)
 			/*@innerbreak@*/ break;

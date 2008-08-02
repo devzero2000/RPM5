@@ -21,35 +21,19 @@
 -branchstate
 -compdef
 -compmempass
--globs
--globstate
--globuse
--incondefs
--infloops
--internalglobs
--modobserver
--mods
--mustmod
--nullderef	# 11
+-incondefs	# 11
+-modobserver	# 6
+-nullderef	# 18
 -nullpass	# 31
--nullptrarith	# 1
 -nullstate	# 9
--predboolothers
 -redecl		# 38
 -usereleased
 
--abstract
--castexpose
-+voidabstract
-
--dependenttrans
--kepttrans
--observertrans
--onlytrans
--ownedtrans
--readonlytrans
--temptrans
--unqualifiedtrans
+-dependenttrans	# 10
+-kepttrans	# 37
+-observertrans	# 8
+-onlytrans	# 29
+-readonlytrans	# 4
 
 # --- +partial artifacts
 -declundef
@@ -93,4 +77,3 @@
 +boolint		# 106
 +charint		# 173
 +ignorequals		# 397
-+matchanyintegral	# 115

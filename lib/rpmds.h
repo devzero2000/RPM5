@@ -20,7 +20,7 @@ extern int _rpmds_debug;
 
 /** \ingroup rpmds
  */
-/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@null@*/
 extern const char *_sysinfo_path;
 
 /** \ingroup rpmds
@@ -404,7 +404,7 @@ rpmuint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, rpmuint32_t refs)
  * @param ds		dependency set
  * @return		current dependency result (0 if not set)
  */
-int32_t rpmdsResult(/*@null@*/ const rpmds ds)
+rpmint32_t rpmdsResult(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /** \ingroup rpmds
@@ -476,7 +476,7 @@ int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ rpmds ods)
 
 /**
  */
-/*@unchecked@*/
+/*@unchecked@*/ /*@null@*/
 extern const char * _cpuinfo_path;
 
 /** \ingroup rpmds
@@ -744,7 +744,7 @@ int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
 	fp = stderr;
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0) {
-	int rc = rpmdsResult(ds);
+	rpmint32_t rc = rpmdsResult(ds);
 	if (rc > 0)
 	    continue;
         fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);

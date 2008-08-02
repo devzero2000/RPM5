@@ -833,8 +833,8 @@ rpmdb rpmtsGetRdb(rpmts ts)
  */
 /*@null@*/
 rpmPRCO rpmtsPRCO(rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Initialize disk space info for each and every mounted file systems.
@@ -1072,8 +1072,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /*@-redecl@*/
 /*@unchecked@*/

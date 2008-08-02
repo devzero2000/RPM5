@@ -164,15 +164,15 @@ int rpmpsNumProblems(/*@null@*/ rpmps ps)
  * @return		problem set iterator
  */
 rpmpsi rpmpsInitIterator(rpmps ps)
-	/*@*/;
+	/*@modifies ps @*/;
 
 /**
  * Destroy problem set iterator.
  * @param psi		problem set iterator
  * @return		problem set iterator (NULL)
  */
-rpmpsi rpmpsFreeIterator(rpmpsi psi)
-	/*@*/;
+rpmpsi rpmpsFreeIterator(/*@only@*/ rpmpsi psi)
+	/*@modifies psi @*/;
 
 /**
  * Return next problem set iterator index
@@ -180,7 +180,7 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi)
  * @return		iterator index, -1 on termination
  */
 int rpmpsNextIterator(rpmpsi psi)
-	/*@*/;
+	/*@modifies psi @*/;
 
 /**
  * Return current problem from problem set

@@ -26,7 +26,8 @@ static const char * _filetriggers_dir;
 
 /*@null@*/ /*@observer@*/
 static const char * filetriggers_dir(void)
-	/*@*/
+	/*@globals _filetriggers_dir, rpmGlobalMacroContext, h_errno, internalState  @*/
+	/*@modifies _filetriggers_dir, rpmGlobalMacroContext, internalState @*/
 {
     if (_filetriggers_dir == NULL)
 	_filetriggers_dir = rpmExpand("%{?_filetriggers_dir}", NULL);
@@ -102,8 +103,8 @@ struct filetrigger {
 
 static int getFiletriggers_raw(const char * rootDir, int * nftp,
 		struct filetrigger_raw ** list_raw)
-	/*@globals fileSystem @*/
-	/*@modifies *nftp, *list_raw, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *nftp, *list_raw, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * dn = filetriggers_dir();
     const char * globstr = NULL;
@@ -201,8 +202,8 @@ static void compileFiletriggersRegexp(/*@only@*/ char * raw, miRE mire)
 
 static void getFiletriggers(const char * rootDir, miRE matches_any,
 		int * nftp, struct filetrigger ** list)
-	/*@globals fileSystem @*/
-	/*@modifies *nftp, *list, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies matches_any, *nftp, *list, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     struct filetrigger_raw * list_raw;
     int xx;
@@ -237,15 +238,15 @@ static void freeFiletriggers(/*@only@*/ miRE matches_any,
 }
 
 static int is_regexp_matching(miRE mire, const char * s)
-	/*@*/
+	/*@modifies mire @*/
 {
     return mireRegexec(mire, s, (size_t) 0) == 0;
 }
 
 static int popen_with_root(const char * rootDir, const char * cmd,
 		const char * fn, pid_t * pidp)
-	/*@globals fileSystem @*/
-	/*@modifies *pidp, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *pidp, fileSystem, internalState @*/
 {
     int pipes[2];
     int xx;
@@ -284,8 +285,8 @@ static int popen_with_root(const char * rootDir, const char * cmd,
 
 static void mayStartFiletrigger(const char * rootDir,
 		struct filetrigger * trigger)
-	/*@globals fileSystem @*/
-	/*@modifies trigger, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies trigger, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     if (!trigger->command_pipe) {
 	const char * dn = filetriggers_dir();
@@ -331,7 +332,7 @@ void rpmRunFileTriggers(const char * rootDir)
 	char tmp[BUFSIZ];
 	int i;
 
-	while (fgets(tmp, sizeof(tmp), fp)) {
+	while (fgets(tmp, (int)sizeof(tmp), fp)) {
 	    size_t tmplen = strlen(tmp);
 	    int j;
 
@@ -340,13 +341,14 @@ void rpmRunFileTriggers(const char * rootDir)
 	    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp found %s",
 			tmp);
 	    for (i = 0; i < nft; i++) {
+		ssize_t nw;
 		if (!is_regexp_matching(list[i].mire, tmp))
 		    /*@innercontinue@*/ continue;
 		list[i].filename = xmalloc(tmplen - 1);
 		for (j = 1; j < (int)tmplen; j++)
 		    list[i].filename[j-1] = tmp[j];
 		mayStartFiletrigger(rootDir, &list[i]);
-		xx = write(list[i].command_pipe, tmp, tmplen);
+		nw = write(list[i].command_pipe, tmp, tmplen);
 	    }
 	}
 
@@ -357,10 +359,11 @@ void rpmRunFileTriggers(const char * rootDir)
 	for (i = 0; i < nft; i++) {
 	    int status;
 	    if (list[i].command_pipe) {
+		pid_t pid;
 		xx = close(list[i].command_pipe);
 		rpmlog(RPMLOG_DEBUG, "[filetriggers] waiting for %s to end\n",
 			list[i].name);
-		xx = waitpid(list[i].command_pid, &status, 0);
+		pid = waitpid(list[i].command_pid, &status, 0);
 	    }
 	}
 	freeFiletriggers(matches_any, nft, list);

@@ -41,6 +41,10 @@
 
 /*@access rpmfi @*/
 
+/*@access rpmsx @*/	/* XXX cast */
+/*@access rpmte @*/	/* XXX cast */
+/*@access rpmts @*/	/* XXX cast */
+
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 #define	_FSM_DEBUG	0
@@ -613,8 +617,10 @@ int fsmSetup(void * _fsm, iosmFileStage goal, const char * afmt,
 		unsigned int * archiveSize, const char ** failedFile)
 {
     IOSM_t fsm = _fsm;
+/*@-castexpose@*/
     const rpmts ts = (const rpmts) _ts;
     const rpmfi fi = (const rpmfi) _fi;
+/*@=castexpose@*/
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
     int adding = (rpmteType(fi->te) == TR_ADDED);
@@ -674,12 +680,14 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
+/*@-mods@*/	/* LCL: avoid void * _ts/_fi annotations for now. */
     fsm->iter = mapInitIterator(fi, reverse);
     fsm->iter->ts = rpmtsLink(ts, "mapIterator");
     fsm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
 	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS));
     /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
     fsm->iter->sx = (!fsm->nofcontexts ? rpmtsREContext(ts) : NULL);
+/*@=mods@*/
     fsm->nofdigests =
 	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
 			? 0 : 1;
@@ -711,10 +719,14 @@ fprintf(stderr, "\tcpio vectors set\n");
     }
 
     ec = fsm->rc = 0;
+/*@-mods@*/	/* LCL: avoid void * _fsm annotation for now. */
     rc = fsmUNSAFE(fsm, IOSM_CREATE);
+/*@=mods@*/
     if (rc && !ec) ec = rc;
 
+/*@-mods@*/	/* LCL: avoid void * _fsm annotation for now. */
     rc = fsmUNSAFE(fsm, fsm->goal);
+/*@=mods@*/
     if (rc && !ec) ec = rc;
 
     if (fsm->archiveSize && ec == 0)
@@ -878,8 +890,8 @@ int fsmMapAttrs(IOSM_t fsm)
 
     if (fi && i >= 0 && i < (int) fi->fc) {
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
-	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
-	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
+	mode_t finalMode = (fi->fmodes ? (mode_t)fi->fmodes[i] : perms);
+	dev_t finalRdev = (dev_t)(fi->frdevs ? fi->frdevs[i] : 0);
 	rpmuint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;

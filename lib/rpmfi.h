@@ -404,7 +404,7 @@ extern size_t rpmfiFNMaxLen(/*@null@*/ rpmfi fi);
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-uint32_t rpmfiFFlags(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiFFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -413,7 +413,7 @@ uint32_t rpmfiFFlags(/*@null@*/ rpmfi fi)
  * @param FFlags	new file flags
  * @return		previous file flags, 0 on invalid
  */
-uint32_t rpmfiSetFFlags(/*@null@*/ rpmfi fi, uint32_t FFlags)
+rpmuint32_t rpmfiSetFFlags(/*@null@*/ rpmfi fi, rpmuint32_t FFlags)
 	/*@modifies fi @*/;
 
 /**
@@ -421,7 +421,7 @@ uint32_t rpmfiSetFFlags(/*@null@*/ rpmfi fi, uint32_t FFlags)
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-uint32_t rpmfiVFlags(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiVFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -430,7 +430,7 @@ uint32_t rpmfiVFlags(/*@null@*/ rpmfi fi)
  * @param VFlags	new file verify flags
  * @return		previous file verify flags, 0 on invalid
  */
-uint32_t rpmfiSetVFlags(/*@null@*/ rpmfi fi, uint32_t VFlags)
+rpmuint32_t rpmfiSetVFlags(/*@null@*/ rpmfi fi, rpmuint32_t VFlags)
 	/*@modifies fi @*/;
 
 /**
@@ -438,7 +438,7 @@ uint32_t rpmfiSetVFlags(/*@null@*/ rpmfi fi, uint32_t VFlags)
  * @param fi		file info set
  * @return		current file mode, 0 on invalid
  */
-uint16_t rpmfiFMode(/*@null@*/ rpmfi fi)
+rpmuint16_t rpmfiFMode(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -485,7 +485,7 @@ extern const char * rpmfiFLink(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file size, 0 on invalid
  */
-uint32_t rpmfiFSize(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiFSize(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -493,7 +493,7 @@ uint32_t rpmfiFSize(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file rdev, 0 on invalid
  */
-uint16_t rpmfiFRdev(/*@null@*/ rpmfi fi)
+rpmuint16_t rpmfiFRdev(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -501,7 +501,7 @@ uint16_t rpmfiFRdev(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file inode, 0 on invalid
  */
-uint32_t rpmfiFInode(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiFInode(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -509,7 +509,7 @@ uint32_t rpmfiFInode(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current color
  */
-uint32_t rpmfiColor(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiColor(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -517,7 +517,7 @@ uint32_t rpmfiColor(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file color
  */
-uint32_t rpmfiFColor(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiFColor(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -548,8 +548,8 @@ extern const char * rpmfiFContext(/*@null@*/ rpmfi fi)
  * @retval *fddictp	file depends dictionary array (or NULL)
  * @return		no. of file depends entries, 0 on invalid
  */
-uint32_t rpmfiFDepends(/*@null@*/ rpmfi fi,
-		/*@out@*/ /*@null@*/ const uint32_t ** fddictp)
+rpmuint32_t rpmfiFDepends(/*@null@*/ rpmfi fi,
+		/*@out@*/ /*@null@*/ const rpmuint32_t ** fddictp)
 	/*@modifies *fddictp @*/;
 
 /**
@@ -557,7 +557,7 @@ uint32_t rpmfiFDepends(/*@null@*/ rpmfi fi,
  * @param fi		file info set
  * @return		current file nlink count, 0 on invalid
  */
-uint32_t rpmfiFNlink(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiFNlink(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -565,7 +565,7 @@ uint32_t rpmfiFNlink(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file modify time, 0 on invalid
  */
-uint32_t rpmfiFMtime(/*@null@*/ rpmfi fi)
+rpmuint32_t rpmfiFMtime(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -630,7 +630,7 @@ rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
  * @return		0 always
  */
 int rpmfiSetHeader(rpmfi fi, /*@null@*/ Header h)
-	/*@modifies fi @*/;
+	/*@modifies fi, h @*/;
 
 /**
  * Destroy a file info set.
@@ -662,7 +662,7 @@ rpmfi rpmfiNew(/*@null@*/ const void * _ts, Header h, rpmTag tagN, int flags)
  * @return		-1 on error, 0 on success
  */
 int rpmfiFStat(rpmfi fi, /*@out@*/ struct stat * st)
-	/*@*/;
+	/*@modifies *st @*/;
 
 /**
  * Return lstat(2) data of path from file info set.
@@ -672,7 +672,7 @@ int rpmfiFStat(rpmfi fi, /*@out@*/ struct stat * st)
  * @return		-1 on error, 0 on success
  */
 int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
-	/*@modifies fi @*/;
+	/*@modifies fi, *st @*/;
 
 /**
  * Return directory stream onto file info set.
@@ -682,8 +682,8 @@ int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
  */
 /*@null@*/
 DIR * rpmfiOpendir(rpmfi fi, const char * name)
-	/*@globals fileSystem @*/
-	/*@modifies fi, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fi, fileSystem, internalState @*/;
 
 /**
  * Retrieve file classes from header.
@@ -695,7 +695,7 @@ DIR * rpmfiOpendir(rpmfi fi, const char * name)
  * @retval *fcp		number of files
  */
 void rpmfiBuildFClasses(Header h,
-		/*@out@*/ const char *** fclassp, /*@out@*/ uint32_t * fcp)
+		/*@out@*/ const char *** fclassp, /*@out@*/ rpmuint32_t * fcp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -710,7 +710,7 @@ void rpmfiBuildFClasses(Header h,
  * @retval *fcp		number of files
  */
 void rpmfiBuildFContexts(Header h,
-		/*@out@*/ const char *** fcontextp, /*@out@*/ uint32_t * fcp)
+		/*@out@*/ const char *** fcontextp, /*@out@*/ rpmuint32_t * fcp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -725,7 +725,7 @@ void rpmfiBuildFContexts(Header h,
  * @retval *fcp		number of files
  */
 void rpmfiBuildFSContexts(Header h,
-		/*@out@*/ const char *** fcontextp, /*@out@*/ uint32_t * fcp)
+		/*@out@*/ const char *** fcontextp, /*@out@*/ rpmuint32_t * fcp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -740,7 +740,7 @@ void rpmfiBuildFSContexts(Header h,
  * @retval *fcp		number of files
  */
 void rpmfiBuildREContexts(Header h,
-		/*@out@*/ const char *** fcontextp, /*@out@*/ uint32_t * fcp)
+		/*@out@*/ const char *** fcontextp, /*@out@*/ rpmuint32_t * fcp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -756,7 +756,7 @@ void rpmfiBuildREContexts(Header h,
  * @retval *fcp		number of files
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
-		/*@out@*/ const char *** fdepsp, /*@out@*/ uint32_t * fcp)
+		/*@out@*/ const char *** fdepsp, /*@out@*/ rpmuint32_t * fcp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fdepsp, *fcp,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

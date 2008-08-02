@@ -23,6 +23,7 @@
 int _rpmte_debug = 0;
 
 /*@access alKey @*/
+/*@access rpmts @*/	/* XXX cast */
 /*@access rpmtsi @*/
 
 void rpmteCleanDS(rpmte te)

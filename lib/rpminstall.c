@@ -107,9 +107,9 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 {
 /*@-abstract -castexpose @*/
     Header h = (Header) arg;
@@ -330,8 +330,8 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 }
 
 static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmdbMatchIterator mi;
     Header h;
@@ -357,8 +357,8 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 }
 
 static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies mire, fileSystem, internalState @*/
 {
     /* XXX use global ftsOpts? */
     /* XXX changing FTS_LOGICAL to FTS_PHYSICAL prevents symlink follow. */
@@ -417,8 +417,8 @@ exit:
 
 static const char * rpmcliInstallElementPath(/*@unused@*/ rpmts ts,
 		const char * arg)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     /* A glob pattern list to match repository directories. */
     const char * fn = rpmExpand(
@@ -482,14 +482,14 @@ exit:
     return fn;
 }
 
-/** @todo Add rpmfi methods to make rpmRelocation opaque.
- */
+/*@-redef@*/	/* XXX Add rpmfi methods to make rpmRelocation opaque. */
 struct rpmRelocation_s {
 /*@only@*/ /*@null@*/
     const char * oldPath;       /*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
 /*@only@*/ /*@null@*/
     const char * newPath;       /*!< NULL means to omit the file completely! */
 };
+/*@=redef@*/
 
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
@@ -593,7 +593,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    fn = nfn;
 	    /* XXX hack into rpmgi innards for now ... */
 	    h = rpmgiReadHeader(gi, fn);
-	    if (h)
+	    if (h != NULL)
 		gi->h = headerLink(h);
 	    h = headerFree(h);
         }

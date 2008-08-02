@@ -30,10 +30,12 @@
 
 #include "debug.h"
 
+/*@access rpmts @*/	/* XXX cast */
+
 /**
  */
 static void printFileInfo(char * te, const char * name,
-			  unsigned int size, unsigned short mode,
+			  size_t size, unsigned short mode,
 			  unsigned int mtime,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
@@ -75,9 +77,9 @@ static void printFileInfo(char * te, const char * name,
     /* In verbose file listing output, give the owner and group fields
        more width and at the same time reduce the nlink and size fields
        more to typical sizes within OpenPKG. */
-    sprintf(sizefield, "%8u", size);
+    sprintf(sizefield, "%8u", (unsigned)size);
 #else
-    sprintf(sizefield, "%12u", size);
+    sprintf(sizefield, "%12u", (unsigned)size);
 #endif
 
     /* this knows too much about dev_t */
@@ -133,7 +135,7 @@ static void printFileInfo(char * te, const char * name,
 /**
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@*/
+	/*@modifies h @*/
 {
     const char * errstr = "(unkown error)";
     const char * str;
@@ -708,6 +710,8 @@ assert(fn != NULL);
 }
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
+	/*@globals rpmioFtsOpts @*/
+	/*@modifies rpmioFtsOpts @*/
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;

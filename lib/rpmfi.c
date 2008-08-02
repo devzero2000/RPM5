@@ -34,8 +34,13 @@
 
 #include "debug.h"
 
+/*@access IOSM_t @*/	/* XXX cast */
+
 /*@access rpmte @*/
+/*@access rpmts @*/	/* XXX cast */
+
 /*@access FSM_t @*/	/* XXX fsm->repackaged */
+/*@access DIR @*/
 
 /**
  */
@@ -818,7 +823,7 @@ assert(p != NULL);
 		ps = rpmpsFree(ps);
 	    }
 	    del =
-		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
+		(int)strlen(relocations[i].newPath) - (int)strlen(relocations[i].oldPath);
 	    /*@=nullpass@*/
 
 	    if (del > reldel)
@@ -1237,7 +1242,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->fddictn = _free(fi->fddictn);
     }
 
+/*@-globs@*/	/* Avoid rpmGlobalMacroContext */
     fi->fsm = freeFSM(fi->fsm);
+/*@=globs@*/
 
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
@@ -1291,7 +1298,9 @@ static inline unsigned char nibble(char c)
 
 rpmfi rpmfiNew(const void * _ts, Header h, rpmTag tagN, int flags)
 {
+/*@-castexpose@*/
     const rpmts ts = (const rpmts) _ts;
+/*@=castexpose@*/
     int scareMem = (flags & 0x1);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p;
@@ -1596,7 +1605,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
 		const char * oldPath, const char * newPath)
 {
+/*@-unqualifiedtrans@*/
     *relp = xrealloc(*relp, sizeof(**relp) * ((*nrelp) + 1));
+/*@=unqualifiedtrans@*/
     (*relp)[*nrelp].oldPath = (oldPath ? xstrdup(oldPath) : NULL);
     (*relp)[*nrelp].newPath = (newPath ? xstrdup(newPath) : NULL);
     (*nrelp)++;
@@ -1735,10 +1746,10 @@ DIR * rpmfiOpendir(rpmfi fi, const char * name)
     fnames = argvFree(fnames);
     fmodes = _free(fmodes);
 
-/*@-modfilesys@*/
+/*@-modfilesys +voidabstract @*/
 if (_rpmfi_debug)
 fprintf(stderr, "*** rpmfiOpendir(%p, %s) dir %p\n", fi, name, dir);
-/*@=modfilesys@*/
+/*@=modfilesys =voidabstract @*/
 
     return dir;
 }

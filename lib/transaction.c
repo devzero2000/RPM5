@@ -43,15 +43,16 @@
 
 #include "debug.h"
 
-/*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet @*/
 
-/*@access rpmpsm @*/
-
-/*@access alKey @*/
 /*@access fnpyKey @*/
 
+/*@access alKey @*/
+/*@access rpmdb @*/	/* XXX cast */
+
 /*@access rpmfi @*/
+/*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
+/*@access rpmpsm @*/
 
 /*@access rpmte @*/
 /*@access rpmtsi @*/
@@ -687,7 +688,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
     {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
 	if (tmpPath && *tmpPath != '%')
-	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+	    netsharedPaths = splitString(tmpPath, (int)strlen(tmpPath), ':');
 	tmpPath = _free(tmpPath);
     }
 
@@ -695,7 +696,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (!(s && *s != '%'))
 	s = _free(s);
     if (s) {
-	languages = (const char **) splitString(s, strlen(s), ':');
+	languages = (const char **) splitString(s, (int)strlen(s), ':');
 	s = _free(s);
     } else
 	languages = NULL;
@@ -1775,7 +1776,7 @@ assert(psm != NULL);
 		 */
 		psm->fi = rpmfiFree(psm->fi);
 		{
-		    uint8_t * fstates = fi->fstates;
+		    rpmuint8_t * fstates = fi->fstates;
 		    fileAction * actions = fi->actions;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;
