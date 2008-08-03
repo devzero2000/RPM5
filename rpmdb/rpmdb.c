@@ -234,7 +234,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
     dbiTags = xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
     dbiTags[dbiNTags].tag = RPMDBI_PACKAGES;
-    dbiTags[dbiNTags].val = NULL;
+    dbiTags[dbiNTags].iob = NULL;
     dbiNTags++;
 
     for (o = dbiTagStr; o && *o; o = oe) {
@@ -266,7 +266,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	dbiTags = xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = rpmtag;
-	dbiTags[dbiNTags].val = NULL;
+	dbiTags[dbiNTags].iob = NULL;
 	dbiNTags++;
     }
 

@@ -7,15 +7,17 @@
 
 #include <rpmio.h>
 #include <rpmiotypes.h>
+#include <argv.h>
 #include <rpmcb.h>
 #include <rpmurl.h>
 #ifdef	NOTYET
 #include <rpmmg.h>
 #endif
-#include <rpmbuild.h>
-#include "debug.h"
 
-/*@access StringBuf @*/	/* compared with NULL */
+#include <rpmbuild.h>
+
+#include "misc.h"	/* XXX rpmMkdirPath */
+#include "debug.h"
 
 /* These have to be global to make up for stupid compilers */
 /*@unchecked@*/
@@ -347,15 +349,15 @@ _rpmmg_debug = 0;
  * @param line		current line from spec file
  * @return		0 on success
  */
-static int doSetupMacro(Spec spec, char *line)
+static int doSetupMacro(Spec spec, const char * line)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
 		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
-    StringBuf before;
-    StringBuf after;
+    rpmiob before;
+    rpmiob after;
     poptContext optCon;
     int argc;
     const char ** argv;
@@ -376,8 +378,8 @@ static int doSetupMacro(Spec spec, char *line)
 	return RPMRC_FAIL;
     }
 
-    before = newStringBuf();
-    after = newStringBuf();
+    before = rpmiobNew(0);
+    after = rpmiobNew(0);
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
@@ -388,8 +390,8 @@ static int doSetupMacro(Spec spec, char *line)
 	if (parseNum(optArg, &num)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
-	    before = freeStringBuf(before);
-	    after = freeStringBuf(after);
+	    before = rpmiobFree(before);
+	    after = rpmiobFree(after);
 	    optCon = poptFreeContext(optCon);
 	    argv = _free(argv);
 	    return RPMRC_FAIL;
@@ -399,7 +401,7 @@ static int doSetupMacro(Spec spec, char *line)
 	    if (chptr == NULL)
 		return RPMRC_FAIL;
 
-	    appendLineStringBuf((arg == 'a' ? after : before), chptr);
+	    (void) rpmiobAppend((arg == 'a' ? after : before), chptr, 1);
 	}
     }
 
@@ -408,8 +410,8 @@ static int doSetupMacro(Spec spec, char *line)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		 poptStrerror(arg));
-	before = freeStringBuf(before);
-	after = freeStringBuf(after);
+	before = rpmiobFree(before);
+	after = rpmiobFree(after);
 	optCon = poptFreeContext(optCon);
 	argv = _free(argv);
 	return RPMRC_FAIL;
@@ -437,14 +439,14 @@ static int doSetupMacro(Spec spec, char *line)
 
 	(void) urlPath(buildDirURL, &buildDir);
 	sprintf(buf, "cd '%s'", buildDir);
-	appendLineStringBuf(spec->prep, buf);
+	spec->prep = rpmiobAppend(spec->prep, buf, 1);
 	buildDirURL = _free(buildDirURL);
     }
 
     /* delete any old sources */
     if (!leaveDirs) {
 	sprintf(buf, "rm -rf '%s'", spec->buildSubdir);
-	appendLineStringBuf(spec->prep, buf);
+	spec->prep = rpmiobAppend(spec->prep, buf, 1);
     }
 
     /* if necessary, create and cd into the proper dir */
@@ -456,7 +458,7 @@ static int doSetupMacro(Spec spec, char *line)
 	sprintf(buf, "%s '%s'\ncd '%s'",
 		mkdir_p, spec->buildSubdir, spec->buildSubdir);
 	mkdir_p = _free(mkdir_p);
-	appendLineStringBuf(spec->prep, buf);
+	spec->prep = rpmiobAppend(spec->prep, buf, 1);
     }
 
     /* do the default action */
@@ -464,26 +466,26 @@ static int doSetupMacro(Spec spec, char *line)
 	const char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
 	    return RPMRC_FAIL;
-	appendLineStringBuf(spec->prep, chptr);
+	spec->prep = rpmiobAppend(spec->prep, chptr, 1);
     }
 
-    appendStringBuf(spec->prep, getStringBuf(before));
-    before = freeStringBuf(before);
+    spec->prep = rpmiobAppend(spec->prep, rpmiobStr(before), 0);
+    before = rpmiobFree(before);
 
     if (!createDir) {
 	sprintf(buf, "cd '%s'", spec->buildSubdir);
-	appendLineStringBuf(spec->prep, buf);
+	spec->prep = rpmiobAppend(spec->prep, buf, 1);
     }
 
     if (createDir && !skipDefaultAction) {
 	const char * chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
 	    return RPMRC_FAIL;
-	appendLineStringBuf(spec->prep, chptr);
+	spec->prep = rpmiobAppend(spec->prep, chptr, 1);
     }
 
-    appendStringBuf(spec->prep, getStringBuf(after));
-    after = freeStringBuf(after);
+    spec->prep = rpmiobAppend(spec->prep, rpmiobStr(after), 0);
+    after = rpmiobFree(after);
 
     /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
     /* Fix the owner, group, and permissions of the setup build tree */
@@ -495,7 +497,7 @@ static int doSetupMacro(Spec spec, char *line)
 	    const char *fix;
 	    fix = rpmExpand(*fm, " .", NULL);
 	    if (fix && *fix != '%')
-		appendLineStringBuf(spec->prep, fix);
+		spec->prep = rpmiobAppend(spec->prep, fix, 1);
 	    fix = _free(fix);
 	}
     }
@@ -510,7 +512,7 @@ static int doSetupMacro(Spec spec, char *line)
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
  */
-static rpmRC doPatchMacro(Spec spec, char *line)
+static rpmRC doPatchMacro(Spec spec, const char * line)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->prep, rpmGlobalMacroContext,
@@ -630,14 +632,14 @@ static rpmRC doPatchMacro(Spec spec, char *line)
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F, opt_d);
 	if (s == NULL)
 	    return RPMRC_FAIL;
-	appendLineStringBuf(spec->prep, s);
+	spec->prep = rpmiobAppend(spec->prep, s, 1);
     }
 
     for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F, opt_d);
 	if (s == NULL)
 	    return RPMRC_FAIL;
-	appendLineStringBuf(spec->prep, s);
+	spec->prep = rpmiobAppend(spec->prep, s, 1);
     }
 
     return RPMRC_OK;
@@ -823,16 +825,18 @@ int parsePrep(Spec spec, int verify)
 {
     rpmParseState nextPart;
     int res, rc;
-    StringBuf sb;
-    char **lines, **saveLines;
-    char *cp;
+    rpmiob iob;
+    ARGV_t saveLines = NULL;
+    ARGV_t lines;
+    const char * cp;
+    int xx;
 
     if (spec->prep != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
 	return RPMRC_FAIL;
     }
 
-    spec->prep = newStringBuf();
+    spec->prep = rpmiobNew(0);
 
     /* There are no options to %prep */
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
@@ -847,12 +851,12 @@ int parsePrep(Spec spec, int verify)
 	    return RPMRC_FAIL;
     }
 
-    sb = newStringBuf();
+    iob = rpmiobNew(0);
 
     while ((nextPart = isPart(spec)) == PART_NONE) {
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */
-	appendStringBuf(sb, spec->line);
+	iob = rpmiobAppend(iob, spec->line, 0);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
@@ -861,31 +865,32 @@ int parsePrep(Spec spec, int verify)
 	    return rc;
     }
 
-    saveLines = splitString(getStringBuf(sb), (int)strlen(getStringBuf(sb)), '\n');
-    /*@-usereleased@*/
+    xx = argvSplit(&saveLines, rpmiobStr(iob), "\n");
+
+/*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	for (cp = *lines; *cp == ' ' || *cp == '\t'; cp++)
 	    {};
-	if (! strncmp(cp, "%setup", sizeof("%setup")-1)) {
+	if (!strncmp(cp, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, cp);
 #ifndef	DYING
 	} else if (! strncmp(cp, "%patch", sizeof("%patch")-1)) {
 	    res = doPatchMacro(spec, cp);
 #endif
 	} else {
-	    appendLineStringBuf(spec->prep, *lines);
+	    spec->prep = rpmiobAppend(spec->prep, *lines, 1);
 	}
 	if (res && !spec->force) {
-	    freeSplitString(saveLines);
-	    sb = freeStringBuf(sb);
+	    saveLines = argvFree(saveLines);
+	    iob = rpmiobFree(iob);
 	    return res;
 	}
     }
-    /*@=usereleased@*/
+/*@=usereleased@*/
 
-    freeSplitString(saveLines);
-    sb = freeStringBuf(sb);
+    saveLines = argvFree(saveLines);
+    iob = rpmiobFree(iob);
 
     return nextPart;
 }

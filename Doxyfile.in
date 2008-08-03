@@ -529,8 +529,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmdpkg.h \
                          @top_srcdir@/lib/rpmds.c \
                          @top_srcdir@/lib/rpmds.h \
-                         @top_srcdir@/lib/rpmevr.c \
-                         @top_srcdir@/lib/rpmevr.h \
                          @top_srcdir@/lib/rpmfc.c \
                          @top_srcdir@/lib/rpmfc.h \
                          @top_srcdir@/lib/rpmfi.c \
@@ -539,8 +537,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmgi.h \
                          @top_srcdir@/lib/rpminstall.c \
                          @top_srcdir@/lib/rpmlib.h \
-                         @top_srcdir@/lib/rpmns.c \
-                         @top_srcdir@/lib/rpmns.h \
                          @top_srcdir@/lib/rpmps.c \
                          @top_srcdir@/lib/rpmps.h \
                          @top_srcdir@/lib/rpmrc.c \
@@ -573,7 +569,12 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/poptDB.c \
                          @top_srcdir@/rpmdb/rpmdb.c \
                          @top_srcdir@/rpmdb/rpmdb.h \
+                         @top_srcdir@/rpmdb/rpmevr.c \
+                         @top_srcdir@/rpmdb/rpmevr.h \
+                         @top_srcdir@/rpmdb/rpmns.c \
+                         @top_srcdir@/rpmdb/rpmns.h \
                          @top_srcdir@/rpmdb/rpmtag.h \
+                         @top_srcdir@/rpmdb/rpmtypes.h \
                          @top_srcdir@/rpmdb/signature.c \
                          @top_srcdir@/rpmdb/signature.h \
                          @top_srcdir@/rpmdb/sqlite.c \
@@ -617,6 +618,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmio.c \
                          @top_srcdir@/rpmio/rpmio.h \
                          @top_srcdir@/rpmio/rpmio_internal.h \
+                         @top_srcdir@/rpmio/rpmiob.c \
+                         @top_srcdir@/rpmio/rpmiotypes.h \
                          @top_srcdir@/rpmio/rpmlog.c \
                          @top_srcdir@/rpmio/rpmlog.h \
                          @top_srcdir@/rpmio/rpmlua.c \
@@ -642,8 +645,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmxar.c \
                          @top_srcdir@/rpmio/rpmxar.h \
                          @top_srcdir@/rpmio/strcasecmp.c \
-                         @top_srcdir@/rpmio/stringbuf.c \
-                         @top_srcdir@/rpmio/stringbuf.h \
                          @top_srcdir@/rpmio/strtolocale.c \
                          @top_srcdir@/rpmio/tar.c \
                          @top_srcdir@/rpmio/tar.h \

@@ -5,7 +5,7 @@
  * \file rpmio/rpmiotypes.h
  */
 
-/**
+/** \ingroup rpmio
  * RPM return codes.
  */
 typedef	enum rpmRC_e {
@@ -16,7 +16,7 @@ typedef	enum rpmRC_e {
     RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
 } rpmRC;
 
-/**
+/** \ingroup rpmio
  * Private int typedefs to avoid C99 portability issues.
  */
 typedef	/*@unsignedintegraltype@*/	unsigned char		rpmuint8_t;
@@ -24,9 +24,18 @@ typedef /*@unsignedintegraltype@*/	unsigned short		rpmuint16_t;
 typedef /*@unsignedintegraltype@*/	unsigned int		rpmuint32_t;
 typedef /*@unsignedintegraltype@*/	unsigned long long	rpmuint64_t;
 
-/**
+/** \ingroup rpmio
  */
 typedef /*@signedintegraltype@*/	int			rpmint32_t;
+
+/** \ingroup rpmio
+ */
+typedef /*@abstract@*/ struct rpmiob_s * rpmiob;
+
+/** \ingroup rpmio
+ */
+/*@unchecked@*/
+extern size_t _rpmiob_chunk;
 
 /** \ingroup rpmpgp
  */
@@ -231,7 +240,7 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
 
-/**
+/** \ingroup rpmio
  */
 typedef void * (*rpmCallbackFunction)
                 (/*@null@*/ const void * h,
@@ -244,7 +253,7 @@ typedef void * (*rpmCallbackFunction)
         /*@modifies internalState@*/;
 
 #if !defined(SWIG)
-/**
+/** \ingroup rpmio
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
  * @return		NULL always
@@ -322,6 +331,74 @@ int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
 /*@only@*/ /*@null@*/
 const char * xstrtolocale(/*@only@*/ const char *str)
 	/*@modifies *str @*/;
+
+/**
+ * Destroy an I/O buffer.
+ * @param iob		I/O buffer
+ * @return		NULL always
+ */
+/*@null@*/
+rpmiob rpmiobFree(/*@only@*/ /*@null@*/ rpmiob iob)
+	/*@modifies iob @*/;
+
+/**
+ * Create an I/O buffer.
+ * @param len		no. of octets to allocate
+ * @return		new I/O buffer
+ */
+/*@only@*/
+rpmiob rpmiobNew(size_t len)
+	/*@*/;
+
+/**
+ * Empty an I/O buffer.
+ * @param iob		I/O buffer
+ * @return		I/O buffer
+ */
+rpmiob rpmiobEmpty(/*@returned@*/ rpmiob iob)
+	/*@modifies iob @*/;
+
+/**
+ * Trim trailing white space.
+ * @param iob		I/O buffer
+ * @return		I/O buffer
+ */
+rpmiob rpmiobRTrim(/*@returned@*/ rpmiob iob)
+	/*@modifies iob @*/;
+
+/**
+ * Append string to I/O buffer.
+ * @param iob		I/O buffer
+ * @param s		string
+ * @param nl		append NL?
+ * @return		I/O buffer
+ */
+rpmiob rpmiobAppend(/*@returned@*/ rpmiob iob, const char * s, size_t nl)
+	/*@modifies iob @*/;
+
+/**
+ * Return I/O buffer.
+ * @param iob		I/O buffer
+ * @return		I/O buffer (as string)
+ */
+rpmuint8_t * rpmiobBuf(rpmiob iob)
+	/*@*/;
+
+/**
+ * Return I/O buffer (as string).
+ * @param iob		I/O buffer
+ * @return		I/O buffer (as string)
+ */
+char * rpmiobStr(rpmiob iob)
+	/*@*/;
+
+/**
+ * Return I/O buffer len.
+ * @param iob		I/O buffer
+ * @return		I/O buffer length
+ */
+size_t rpmiobLen(rpmiob iob)
+	/*@*/;
 
 #ifdef __cplusplus
 }

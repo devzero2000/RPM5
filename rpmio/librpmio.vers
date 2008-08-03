@@ -5,7 +5,6 @@ LIBRPMIO_0
     Access;
     _Access;
     addMacro;
-    appendStringBufAux;
     _ar_debug;
     arHeaderRead;
     arHeaderWrite;
@@ -96,7 +95,6 @@ LIBRPMIO_0
     fpio;
     Fread;
     _Fread;
-    freeStringBuf;
     Fseek;
     _Fseek;
     Fstat;
@@ -119,7 +117,6 @@ LIBRPMIO_0
     get_date;
     Getpass;
     _GetPass;
-    getStringBuf;
     gidToGname;
     Glob;
     _Glob;
@@ -187,7 +184,6 @@ LIBRPMIO_0
     Mknod;
     _Mknod;
     Mount;
-    newStringBuf;
     noLibio;
     Open;
     _Open;
@@ -282,6 +278,15 @@ LIBRPMIO_0
     rpmhookUnregisterAny;
     rpmInitMacros;
     _rpmio_debug;
+    _rpmiob_chunk;
+    rpmiobAppend;
+    rpmiobBuf;
+    rpmiobEmpty;
+    rpmiobFree;
+    rpmiobLen;
+    rpmiobNew;
+    rpmiobRTrim;
+    rpmiobStr;
     rpmioAccess;
     rpmioAllPoptTable;
     rpmioClean;
@@ -399,8 +404,6 @@ LIBRPMIO_0
     rpmuuidMake;
     Stat;
     _Stat;
-    stripTrailingBlanksStringBuf;
-    truncStringBuf;
     Symlink;
     _Symlink;
     _tar_debug;

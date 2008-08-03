@@ -15,11 +15,6 @@
 
 #include <rpmcli.h>
 
-/* and it shouldn't need these :-( */
-#include "stringbuf.h"
-#include "misc.h"
-
-/* but this will be needed */
 #include "rpmspec.h"
 
 /** \ingroup rpmbuild
@@ -383,12 +378,12 @@ char * parseExpressionString(Spec spec, const char * expr)
  * @param spec		spec file control structure
  * @param what		type of script
  * @param name		name of scriptlet section
- * @param sb		lines that compose script body
+ * @param iob		lines that compose script body
  * @param test		don't execute scripts or package if testing
  * @return		RPMRC_OK on success, RPMRC_FAIL on failure
  */
 rpmRC doScript(Spec spec, int what, /*@null@*/ const char * name,
-		/*@null@*/ StringBuf sb, int test)
+		/*@null@*/ rpmiob iob, int test)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->macros,
@@ -505,7 +500,7 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
  * @retval *sfp		srpm file list (may be NULL)
  * @return		0 always
  */
-int initSourceHeader(Spec spec, /*@null@*/ StringBuf *sfp)
+int initSourceHeader(Spec spec, /*@null@*/ rpmiob *sfp)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceHdrInit,
 		spec->BANames, *sfp,

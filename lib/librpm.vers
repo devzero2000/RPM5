@@ -12,7 +12,6 @@ LIBRPM_0
     _fini;
     _fps_debug;
     freeFSM;
-    freeSplitString;
     _fsm_debug;
     fsmGetFi;
     fsmGetTs;
@@ -395,7 +394,6 @@ LIBRPM_0
     showQueryPackage;
     showVerifyPackage;
     specedit;
-    splitString;
     strict_erasures;
     _tar_debug;
     tarHeaderRead;

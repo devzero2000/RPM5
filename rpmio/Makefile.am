@@ -66,7 +66,7 @@ noinst_HEADERS = \
 	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h \
 	rpmlog.h rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
 	rpmio-stub.h rpmsw.h rpmurl.h rpmuuid.h rpmxar.h \
-	stringbuf.h tar.h ugid.h
+	tar.h ugid.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
@@ -76,10 +76,10 @@ librpmio_la_SOURCES = \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
-	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
+	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmkeyring.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c \
-	strcasecmp.c stringbuf.c strtolocale.c tar.c url.c ugid.c
+	strcasecmp.c strtolocale.c tar.c url.c ugid.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers

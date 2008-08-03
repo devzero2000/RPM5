@@ -172,15 +172,15 @@ struct Spec_s {
                rpmuint32_t index, rpmsenseFlags tagflags);
 
 /*@only@*/
-    StringBuf prep;		/*!< %prep scriptlet. */
+    rpmiob prep;		/*!< %prep scriptlet. */
 /*@only@*/
-    StringBuf build;		/*!< %build scriptlet. */
+    rpmiob build;		/*!< %build scriptlet. */
 /*@only@*/
-    StringBuf install;		/*!< %install scriptlet. */
+    rpmiob install;		/*!< %install scriptlet. */
 /*@only@*/
-    StringBuf check;		/*!< %check scriptlet. */
+    rpmiob check;		/*!< %check scriptlet. */
 /*@only@*/
-    StringBuf clean;		/*!< %clean scriptlet. */
+    rpmiob clean;		/*!< %clean scriptlet. */
 
     size_t nfoo;
 /*@only@*/ /*@relnull@*/
@@ -223,7 +223,7 @@ struct Package_s {
     const char * sanityCheckFile;/*!< %sanitycheck scriptlet. */
 
 /*@only@*/
-    StringBuf specialDoc;
+    rpmiob specialDoc;
 
 /*@only@*/
     struct TriggerFileEntry * triggerFiles;
@@ -231,7 +231,7 @@ struct Package_s {
 /*@only@*/
     const char * fileFile;
 /*@only@*/
-    StringBuf fileList;		/* If NULL, package will not be written */
+    rpmiob fileList;		/* If NULL, package will not be written */
 
 /*@dependent@*/
     Package next;

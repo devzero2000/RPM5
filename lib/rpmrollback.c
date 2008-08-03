@@ -12,16 +12,16 @@
 #include <rpmtypes.h>
 #include <rpmtag.h>
 #include <pkgio.h>
-#include "rpmdb.h"
+#include <rpmdb.h>
 
-#include "rpmds.h"
+#include <rpmds.h>
 #include "manifest.h"
 #include "misc.h"		/* XXX rpmGlob() */
 
 #define	_RPMTE_INTERNAL		/* XXX findErases needs rpmte internals. */
 #define	_RPMTS_INTERNAL		/* XXX ts->teErase, ts->probs */
 #define _RPMTS_PRINT
-#include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
+#include <rpmgi.h>		/* XXX rpmgiEscapeSpaces */
 
 #include <rpmcli.h>
 #define	_RPMROLLBACK_INTERNAL

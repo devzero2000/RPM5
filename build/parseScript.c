@@ -14,7 +14,6 @@
 
 #include <rpmlua.h>
 
-/*@access StringBuf@*/	/* XXX compared with NULL */
 /*@access poptContext @*/	/* compared with NULL */
 
 /**
@@ -94,7 +93,7 @@ int parseScript(Spec spec, int parsePart)
     rpmTag progtag = 0;
     int flag = PART_SUBNAME;
     Package pkg;
-    StringBuf sb = NULL;
+    rpmiob iob = NULL;
     rpmParseState nextPart;
     char reqargs[BUFSIZ];
 
@@ -284,14 +283,14 @@ int parseScript(Spec spec, int parsePart)
 	goto exit;
     }
 
-    sb = newStringBuf();
+    iob = rpmiobNew(0);
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	nextPart = PART_NONE;
     } else {
 	if (rc)
 	    goto exit;
 	while ((nextPart = isPart(spec)) == PART_NONE) {
-	    appendStringBuf(sb, spec->line);
+	    iob = rpmiobAppend(iob, spec->line, 0);
 	    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 		nextPart = PART_NONE;
 		break;
@@ -300,8 +299,8 @@ int parseScript(Spec spec, int parsePart)
 		goto exit;
 	}
     }
-    stripTrailingBlanksStringBuf(sb);
-    p = getStringBuf(sb);
+    iob = rpmiobRTrim(iob);
+    p = rpmiobStr(iob);
 
 #ifdef WITH_LUA
     if (!strcmp(progArgv[0], "<lua>")) {
@@ -395,7 +394,7 @@ int parseScript(Spec spec, int parsePart)
     rc = (rpmRC) nextPart;
     
 exit:
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
     progArgv = _free(progArgv);
     argv = _free(argv);
     optCon = poptFreeContext(optCon);

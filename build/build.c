@@ -51,7 +51,6 @@ const char * getSourceDir(rpmfileAttrs attr)
     return dir;
 }
 
-/*@access StringBuf @*/
 /*@access urlinfo @*/		/* XXX compared with NULL */
 /*@access FD_t @*/
 
@@ -87,11 +86,11 @@ static void doRmSource(Spec spec)
 /*
  * @todo Single use by %%doc in files.c prevents static.
  */
-rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
+rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 {
     const char * rootURL = spec->rootURL;
     const char * rootDir;
-    const char *scriptName = NULL;
+    const char * scriptName = NULL;
     const char * buildDirURL = rpmGenPath(rootURL, "%{_builddir}", "");
     const char * buildScript;
     const char * buildCmd = NULL;
@@ -116,35 +115,35 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     switch (what) {
     case RPMBUILD_PREP:
 	name = "%prep";
-	sb = spec->prep;
+	iob = spec->prep;
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
 	break;
     case RPMBUILD_BUILD:
 	name = "%build";
-	sb = spec->build;
+	iob = spec->build;
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
 	mCmd = "%{__spec_build_cmd}";
 	break;
     case RPMBUILD_INSTALL:
 	name = "%install";
-	sb = spec->install;
+	iob = spec->install;
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	mCmd = "%{__spec_install_cmd}";
 	break;
     case RPMBUILD_CHECK:
 	name = "%check";
-	sb = spec->check;
+	iob = spec->check;
 	mTemplate = "%{__spec_check_template}";
 	mPost = "%{__spec_check_post}";
 	mCmd = "%{__spec_check_cmd}";
 	break;
     case RPMBUILD_CLEAN:
 	name = "%clean";
-	sb = spec->clean;
+	iob = spec->clean;
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
@@ -158,14 +157,14 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     /* support "%track" script/section */
     case RPMBUILD_TRACK:
 	name = "%track";
-	sb = NULL;
+	iob = NULL;
 	if (spec->foo)
 	for (i = 0; i < spec->nfoo; i++) {
-	    if (spec->foo[i].str == NULL || spec->foo[i].val == NULL)
+	    if (spec->foo[i].str == NULL || spec->foo[i].iob == NULL)
 		continue;
 	    if (xstrcasecmp(spec->foo[i].str, "track"))
 		continue;
-	    sb = spec->foo[i].val;
+	    iob = spec->foo[i].iob;
 	    /*@loopbreak@*/ break;
 	}
 	mTemplate = "%{__spec_track_template}";
@@ -182,7 +181,7 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     if (name == NULL)	/* XXX shouldn't happen */
 	name = "???";
 
-    if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
+    if ((what != RPMBUILD_RMBUILD) && iob == NULL) {
 	rc = RPMRC_OK;
 	goto exit;
     }
@@ -222,8 +221,8 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
 	    fprintf(fp, "rm -rf '%s'\n", spec->buildSubdir);
-    } else if (sb != NULL)
-	fprintf(fp, "%s", getStringBuf(sb));
+    } else if (iob != NULL)
+	fprintf(fp, "%s", rpmiobStr(iob));
 
     (void) fputs(buildPost, fp);
     

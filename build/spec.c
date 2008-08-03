@@ -193,7 +193,7 @@ Package freePackage(Package pkg)
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
-    pkg->fileList = freeStringBuf(pkg->fileList);
+    pkg->fileList = rpmiobFree(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList != NULL) {
 	rpmfi fi = pkg->cpioList;
@@ -201,7 +201,7 @@ Package freePackage(Package pkg)
 	fi = rpmfiFree(fi);
     }
 
-    pkg->specialDoc = freeStringBuf(pkg->specialDoc);
+    pkg->specialDoc = rpmiobFree(pkg->specialDoc);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
     pkg = _free(pkg);
@@ -586,11 +586,11 @@ Spec freeSpec(Spec spec)
     spec->sl = freeSl(spec->sl);
     spec->st = freeSt(spec->st);
 
-    spec->prep = freeStringBuf(spec->prep);
-    spec->build = freeStringBuf(spec->build);
-    spec->install = freeStringBuf(spec->install);
-    spec->check = freeStringBuf(spec->check);
-    spec->clean = freeStringBuf(spec->clean);
+    spec->prep = rpmiobFree(spec->prep);
+    spec->build = rpmiobFree(spec->build);
+    spec->install = rpmiobFree(spec->install);
+    spec->check = rpmiobFree(spec->check);
+    spec->clean = rpmiobFree(spec->clean);
     spec->foo = tagStoreFree(spec->foo, spec->nfoo);
     spec->nfoo = 0;
 
@@ -783,11 +783,11 @@ printNewSpecfile(Spec spec)
  * @param h		srpm header
  * @param progTag	interpreter tag (0 disables)
  * @param scriptTag	script tag (0 disables)
- * @param sb		script body sting buf (NULL disables)
+ * @param iob		script body sting buf (NULL disables)
  * @return		0 always
  */
 static int initSourceHeaderScriptlet(Header h,
-		rpmTag progTag, rpmTag scriptTag, StringBuf sb)
+		rpmTag progTag, rpmTag scriptTag, rpmiob iob)
 	/*@modifies h @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -802,10 +802,10 @@ static int initSourceHeaderScriptlet(Header h,
 	xx = headerPut(h, he, 0);
     }
 
-    if (scriptTag != (rpmTag)0 && sb != NULL) {
+    if (scriptTag != (rpmTag)0 && iob != NULL) {
 	he->tag = scriptTag;
 	he->t = RPM_STRING_TYPE;
-	he->p.str = getStringBuf(sb);
+	he->p.str = rpmiobStr(iob);
 	he->c = 1;
 	xx = headerPut(h, he, 0);
     }

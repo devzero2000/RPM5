@@ -9,7 +9,6 @@ const char *__progname;
 #include <rpmtag.h>
 
 #include <rpmds.h>
-#include <stringbuf.h>
 #define	_RPMFC_INTERNAL		/* XXX for debugging */
 #include <rpmfc.h>
 

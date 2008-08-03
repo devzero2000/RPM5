@@ -95,6 +95,7 @@ rpmio/rpmgrep.c
 rpmio/rpmhash.c
 rpmio/rpmhook.c
 rpmio/rpmio.c
+rpmio/rpmiob.c
 rpmio/rpmlog.c
 rpmio/rpmlua.c
 rpmio/rpmmalloc.c
@@ -109,7 +110,6 @@ rpmio/rpmuuid.c
 rpmio/rpmxar.c
 rpmio/sha224.c
 rpmio/strcasecmp.c
-rpmio/stringbuf.c
 rpmio/strtolocale.c
 rpmio/tar.c
 rpmio/tiger.c

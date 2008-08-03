@@ -129,14 +129,14 @@ extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
 /**
  * Add %changelog section to header.
  * @param h		header
- * @param sb		changelog strings
+ * @param iob		changelog strings
  * @return		RPMRC_OK on success
  */
-static rpmRC addChangelog(Header h, StringBuf sb)
+static rpmRC addChangelog(Header h, rpmiob iob)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, internalState @*/
 {
-    char * s = getStringBuf(sb);
+    char * s = rpmiobStr(iob);
     char * se;
     char *date, *name, *text;
     int i;
@@ -263,12 +263,12 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 int parseChangelog(Spec spec)
 {
     rpmParseState nextPart;
-    StringBuf sb = newStringBuf();
+    rpmiob iob = rpmiobNew(0);
     rpmRC rc;
     
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	sb = freeStringBuf(sb);
+	iob = rpmiobFree(iob);
 	return PART_NONE;
     }
     if (rc != RPMRC_OK)
@@ -278,7 +278,7 @@ int parseChangelog(Spec spec)
 	const char * line;
 	line = xstrdup(spec->line);
 	line = xstrtolocale(line);
-	appendStringBuf(sb, spec->line);
+	iob = rpmiobAppend(iob, spec->line, 0);
 	line = _free(line);
 	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	    nextPart = PART_NONE;
@@ -288,8 +288,8 @@ int parseChangelog(Spec spec)
 	    return rc;
     }
 
-    rc = addChangelog(spec->packages->header, sb);
-    sb = freeStringBuf(sb);
+    rc = addChangelog(spec->packages->header, iob);
+    iob = rpmiobFree(iob);
 
     return (rc != RPMRC_OK ? rc : (rpmRC)nextPart);
 }

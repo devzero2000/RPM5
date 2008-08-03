@@ -436,7 +436,7 @@ tagStore_t tagStoreFree(tagStore_t dbiTags, size_t dbiNTags)
 	size_t i;
 	for (i = 0; i < dbiNTags; i++) {
 	    dbiTags[i].str = _free(dbiTags[i].str);
-	    dbiTags[i].val = freeStringBuf(dbiTags[i].val);
+	    dbiTags[i].iob = rpmiobFree(dbiTags[i].iob);
 	}
 	dbiTags = _free(dbiTags);
     }

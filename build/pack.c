@@ -32,7 +32,6 @@
 /*@access rpmfi @*/	/* compared with NULL */
 /*@access Header @*/	/* compared with NULL */
 /*@access FD_t @*/	/* compared with NULL */
-/*@access StringBuf @*/	/* compared with NULL */
 /*@access CSA_t @*/
 
 /**
@@ -115,8 +114,8 @@ static rpmRC cpio_copy(FD_t fdo, CSA_t csa)
 
 /**
  */
-static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
-		const char * file, /*@only@*/ StringBuf sb)
+static /*@only@*/ /*@null@*/ rpmiob addFileToTagAux(Spec spec,
+		const char * file, /*@only@*/ rpmiob iob)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -130,7 +129,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     fd = Fopen(fn, "r.fdio");
     if (fn != buf) fn = _free(fn);
     if (fd == NULL || Ferror(fd)) {
-	sb = freeStringBuf(sb);
+	iob = rpmiobFree(iob);
 	return NULL;
     }
     /*@-type@*/ /* FIX: cast? */
@@ -140,14 +139,14 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
-	    sb = freeStringBuf(sb);
+	    iob = rpmiobFree(iob);
 	    break;
 	}
-	appendStringBuf(sb, buf);
+	iob = rpmiobAppend(iob, buf, 0);
     }
     (void) Fclose(fd);
 
-    return sb;
+    return iob;
 }
 
 /**
@@ -157,27 +156,27 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    StringBuf sb = newStringBuf();
+    rpmiob iob = rpmiobNew(0);
     int xx;
 
     he->tag = tag;
     xx = headerGet(h, he, 0);
     if (xx) {
-	appendLineStringBuf(sb, he->p.str);
+	iob = rpmiobAppend(iob, he->p.str, 1);
 	xx = headerDel(h, he, 0);
     }
     he->p.ptr = _free(he->p.ptr);
 
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
+    if ((iob = addFileToTagAux(spec, file, iob)) == NULL)
 	return 1;
     
     he->tag = tag;
     he->t = RPM_STRING_TYPE;
-    he->p.str = getStringBuf(sb);
+    he->p.str = rpmiobStr(iob);
     he->c = 1;
     xx = headerPut(h, he, 0);
 
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
     return 0;
 }
 
@@ -188,14 +187,14 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    StringBuf sb = newStringBuf();
+    rpmiob iob = rpmiobNew(0);
     const char *s;
     int xx;
 
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
+    if ((iob = addFileToTagAux(spec, file, iob)) == NULL)
 	return 1;
 
-    s = getStringBuf(sb);
+    s = rpmiobStr(iob);
 
     he->tag = tag;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -205,7 +204,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
     xx = headerPut(h, he, 0);
     he->append = 0;
 
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
     return 0;
 }
 
@@ -597,7 +596,6 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    rpmuint32_t count;
     rpmuint32_t sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;

@@ -9,7 +9,6 @@
 
 #include "rpmio.h"
 #include "rpmiotypes.h"
-#include "stringbuf.h"
 #include "rpmmacro.h"
 
 #include "rpmtypes.h"
