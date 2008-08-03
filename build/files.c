@@ -14,6 +14,8 @@
 #include <regex.h>
 #endif
 
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
 #include <fts.h>
@@ -2068,6 +2070,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
     const char * apkt = NULL;
+    rpmiob iob = NULL;
     rpmuint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
@@ -2099,12 +2102,15 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
 	break;
     case RPMTAG_POLICIES:
-	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
+	xx = rpmiobSlurp(fn, &iob);
+	if (!(xx == 0 && iob != NULL)) {
 	    rpmlog(RPMLOG_ERR, _("%s: *.te policy read failed.\n"), fn);
 	    goto exit;
 	}
-	apkt = (const char *) pkt;	/* XXX unsigned char */
-	pkt = NULL;
+	apkt = (const char *) iob->b;	/* XXX unsigned char */
+	/* XXX steal the I/O buffer */
+	iob->b = (rpmuint8_t *)xcalloc(1, sizeof(*iob->b));
+	iob->blen = 0;
 	break;
     }
 
@@ -2123,6 +2129,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 exit:
     apkt = _free(apkt);
     pkt = _free(pkt);
+    iob = rpmiobFree(iob);
     fn = _free(fn);
     if (rc != RPMRC_OK)
 	fl->processingFailed = 1;

@@ -1,6 +1,8 @@
 #include "system.h"
 #include <stdarg.h>
 
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
 #include <rpmio_internal.h>
 #include <rpmdav.h>
 #include <poptIO.h>
@@ -923,28 +925,27 @@ static int wgetLoadManifests(rpmwget wget)
     if ((manifests = wget->manifests) != NULL)	/* note rc=0 return with no files to load. */
     while ((fn = *manifests++) != NULL) {
 	unsigned lineno;
-	char * b = NULL;
 	char * be = NULL;
-	ssize_t blen = 0;
-	int xx = rpmioSlurp(fn, (rpmuint8_t **) &b, &blen);
+	rpmiob iob = NULL;
+	int xx = rpmiobSlurp(fn, &iob);
 	char * f;
 	char * fe;
 
-	if (!(xx == 0 && b != NULL && blen > 0)) {
+	if (!(xx == 0 && iob != NULL)) {
 	    fprintf(stderr, _("%s: Failed to open %s\n"), __progname, fn);
 	    rc = -1;
 	    goto bottom;
 	}
 
-	be = b + strlen(b);
-	while (be > b && (be[-1] == '\n' || be[-1] == '\r')) {
+	be = (char *)(iob->b + iob->blen);
+	while (be > (char *)iob->b && (be[-1] == '\n' || be[-1] == '\r')) {
 	  be--;
 	  *be = '\0';
 	}
 
 	/* Parse and save manifest items. */
 	lineno = 0;
-	for (f = b; *f; f = fe) {
+	for (f = (char *)iob->b; *f; f = fe) {
 	    const char * path;
 	    char * g, * ge;
 	    lineno++;
@@ -979,7 +980,7 @@ static int wgetLoadManifests(rpmwget wget)
 	}
 
 bottom:
-	b = _free(b);
+	iob = rpmiobFree(iob);
 	if (rc != 0)
 	    goto exit;
     }

@@ -30,7 +30,7 @@ typedef /*@signedintegraltype@*/	int			rpmint32_t;
 
 /** \ingroup rpmio
  */
-typedef /*@abstract@*/ struct rpmiob_s * rpmiob;
+typedef struct rpmiob_s * rpmiob;
 
 /** \ingroup rpmio
  */
@@ -189,6 +189,17 @@ typedef enum pgpHashAlgo_e {
 typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
+
+
+#if defined(_RPMIOB_INTERNAL)
+/** \ingroup rpmio
+ */
+struct rpmiob_s{
+    rpmuint8_t * b;	/*!< data octects. */
+    size_t blen;	/*!< no. of octets used. */
+    size_t allocated;	/*!< no. of octets allocated. */
+};
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -399,6 +410,18 @@ char * rpmiobStr(rpmiob iob)
  */
 size_t rpmiobLen(rpmiob iob)
 	/*@*/;
+
+#if defined(_RPMIOB_INTERNAL)
+/**
+ * Read an entire file into a buffer.
+ * @param fn		file name to read
+ * @retval *iobp	I/O buffer
+ * @return		0 on success
+ */
+int rpmiobSlurp(const char * fn, rpmiob * iobp)
+        /*@globals h_errno, fileSystem, internalState @*/
+        /*@modifies *iobp, fileSystem, internalState @*/;
+#endif
 
 #ifdef __cplusplus
 }

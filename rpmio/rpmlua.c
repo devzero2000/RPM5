@@ -2,7 +2,8 @@
 #include "system.h"
 
 #ifdef	WITH_LUA
-#include <rpmio_internal.h>
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmlog.h>
@@ -1004,10 +1005,9 @@ static int rpm_slurp(lua_State *L)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies L, fileSystem, internalState @*/
 {
-    rpmuint8_t *b;
-    ssize_t blen;
-    int rc;
+    rpmiob iob = NULL;
     const char *fn;
+    int rc;
 
     if (lua_isstring(L, 1))
         fn = lua_tostring(L, 1);
@@ -1016,13 +1016,14 @@ static int rpm_slurp(lua_State *L)
         return 0;
     }
 /*@-globs@*/
-    rc = rpmioSlurp(fn, &b, &blen);
+    rc = rpmiobSlurp(fn, &iob);
 /*@=globs@*/
-    if (rc || b == NULL || blen <= 0) {
+    if (rc || iob == NULL) {
         (void)luaL_error(L, "failed to slurp data");
         return 0;
     }
-    lua_pushlstring(L, (const char *)b, (size_t)blen);
+    lua_pushlstring(L, (const char *)rpmiobStr(iob), rpmiobLen(iob));
+    iob = rpmiobFree(iob);
     return 1;
 }
 

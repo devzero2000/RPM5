@@ -286,6 +286,7 @@ LIBRPMIO_0
     rpmiobLen;
     rpmiobNew;
     rpmiobRTrim;
+    rpmiobSlurp;
     rpmiobStr;
     rpmioAccess;
     rpmioAllPoptTable;
@@ -304,7 +305,6 @@ LIBRPMIO_0
     rpmioMkpath;
     rpmioPipeOutput;
     rpmioRootDir;
-    rpmioSlurp;
     rpmKeyringAddKey;
     rpmKeyringFindKeyid;
     rpmKeyringFree;

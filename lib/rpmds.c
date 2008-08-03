@@ -78,6 +78,8 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #define	DT_GNU_HASH	0x6ffffef5
 #endif
 
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
@@ -1257,8 +1259,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 {
     struct cpuinfo_s * ct;
     const char * NS = "cpuinfo";
-    char * b;
-    ssize_t blen;
+    rpmiob iob = NULL;
     char * f, * fe, * fend;
     char * g, * ge;
     char * t;
@@ -1285,13 +1286,11 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     for (ct = ctags; ct->name != NULL; ct++)
 	ct->done = 0;
 
-    b = NULL;
-    blen = 0;
-    xx = rpmioSlurp(fn, (rpmuint8_t **)&b, &blen);
-    if (!(xx == 0 && b != NULL && blen > 0))
+    xx = rpmiobSlurp(fn, &iob);
+    if (!(xx == 0 && iob != NULL))
 	goto exit;
 
-    for (f = b; *f != '\0'; f = fend) {
+    for (f = (char *)iob->b; *f != '\0'; f = fend) {
 	/* find EOL */
 	fe = f;
 	while (*fe != '\0' && !(*fe == '\n' || *fe == '\r'))
@@ -1374,7 +1373,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     }
 
 exit:
-    b = _free(b);
+    iob = rpmiobFree(iob);
     return rc;
 }
 

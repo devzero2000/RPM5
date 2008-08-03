@@ -3098,66 +3098,6 @@ exit:
     return rc;
 }
 
-int rpmioSlurp(const char * fn, rpmuint8_t ** bp, ssize_t * blenp)
-{
-    static ssize_t blenmax = (32 * BUFSIZ);
-    rpmuint8_t * b = NULL;
-    size_t nb;
-    struct stat sb;
-    FD_t fd;
-    int rc = 0;
-    int xx;
-
-    fd = Fopen(fn, "r%{?_rpmgio}");
-    if (fd == NULL || Ferror(fd)) {
-	rc = 2;
-	goto exit;
-    }
-    sb.st_size = 0;
-    if ((xx = Fstat(fd, &sb)) < 0)
-	sb.st_size = blenmax;
-#if defined(__linux__)
-    /* XXX st->st_size = 0 for /proc files on linux, see stat(2). */
-    /* XXX glibc mmap'd libio no workie for /proc files on linux?!? */
-    if (sb.st_size == 0 && !strncmp(fn, "/proc/", sizeof("/proc/")-1)) {
-	nb = blenmax;
-	b = xmalloc(nb+1);
-	b[0] = (rpmuint8_t) '\0';
-
-	xx = read(Fileno(fd), b, nb);
-	nb = (size_t) (xx >= 0 ? xx : 0); 
-    } else
-#endif
-    {
-	nb = sb.st_size;
-	b = xmalloc(nb+1);
-	b[0] = (rpmuint8_t) '\0';
-
-	nb = Fread(b, sizeof(*b), nb, fd);
-	if (Ferror(fd)) {
-	    rc = 1;
-	    goto exit;
-	}
-    }
-    if (nb < sb.st_size)
-	b = xrealloc(b, nb+1);
-    b[nb] = (rpmuint8_t) '\0';
-
-exit:
-    if (fd) (void) Fclose(fd);
-    if (rc) {
-	b = _free(b);
-	nb = 0;
-    }
-
-    if (bp) *bp = b;
-    else b = _free(b);
-
-    if (blenp) *blenp = nb;
-
-    return rc;
-}
-
 #if defined(WITH_NSS) && !defined(__LCLINT__)	/* XXX TODO: add nssDestroy */
 /*@-exportheader@*/
 extern void NSS_Shutdown(void);

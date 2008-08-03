@@ -4,7 +4,12 @@
  */
 
 #include "system.h"
-#include "rpmio_internal.h"
+
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
+
+#include <rpmio.h>
+
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>	/* XXX still needs base64 goop */
 #if defined(WITH_NSS)
@@ -1281,8 +1286,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 
 pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
 {
-    rpmuint8_t * b = NULL;
-    ssize_t blen;
+    rpmiob iob = NULL;
     const char * enc = NULL;
     const char * crcenc = NULL;
     rpmuint8_t * dec;
@@ -1297,13 +1301,12 @@ pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
     pgpTag tag = 0;
     int rc;
 
-    rc = rpmioSlurp(fn, &b, &blen);
-    if (rc || b == NULL || blen <= 0) {
+    rc = rpmiobSlurp(fn, &iob);
+    if (rc || iob == NULL)
 	goto exit;
-    }
 
     /* Read unarmored packets. */
-    if (pgpIsPkt(b, &tag)) {
+    if (pgpIsPkt(iob->b, &tag)) {
 	switch (tag) {
 	default:		ec = PGPARMOR_NONE;	break;
 	case PGPTAG_PUBLIC_KEY:	ec = PGPARMOR_PUBKEY;	break;
@@ -1319,7 +1322,7 @@ pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
 	/* Truncate blen to actual no. of octets in packet. */
 	if (ec != PGPARMOR_NONE) {
 	    pgpPkt pp = alloca(sizeof(*pp));
-	    blen = pgpPktLen(b, blen, pp);
+	    iob->blen = pgpPktLen(iob->b, iob->blen, pp);
 	}
 	goto exit;
     }
@@ -1327,7 +1330,7 @@ pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
 #define	TOKEQ(_s, _tok)	(!strncmp((_s), (_tok), sizeof(_tok)-1))
 
     /* Read armored packets, converting to binary. */
-    for (t = (char *)b; t && *t; t = te) {
+    for (t = (char *)iob->b; t && *t; t = te) {
 	if ((te = strchr(t, '\n')) == NULL)
 	    te = t + strlen(t);
 	else
@@ -1429,9 +1432,9 @@ pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
 		ec = PGPARMOR_ERR_CRC_CHECK;
 		goto exit;
 	    }
-	    b = _free(b);
-	    b = dec;
-	    blen = declen;
+	    iob->b = _free(iob->b);
+	    iob->b = dec;
+	    iob->blen = declen;
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
@@ -1439,12 +1442,15 @@ pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
     ec = PGPARMOR_NONE;
 
 exit:
-    if (ec > PGPARMOR_NONE && pkt)
-	*pkt = b;
-    else if (b != NULL)
-	b = _free(b);
-    if (pktlen)
-	*pktlen = blen;
+    if (ec > PGPARMOR_NONE) {
+	if (pkt)	*pkt = iob->b;
+	if (pktlen)	*pktlen = iob->blen;
+	iob = _free(iob);	/* XXX iob->b has been stolen */
+    } else {
+	if (pkt)	*pkt = NULL;
+	if (pktlen)	*pktlen = 0;
+    }
+    iob = rpmiobFree(iob);
     return ec;
 }
 

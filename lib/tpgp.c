@@ -8,7 +8,7 @@ extern int _pgp_debug;
 extern int _pgp_print;
 
 #include "system.h"
-#include <rpmio_internal.h>	/* XXX rpmioSlurp */
+#include <rpmio.h>
 #include <rpmmacro.h>
 
 #define	_RPMPGP_INTERNAL

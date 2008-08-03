@@ -661,18 +661,6 @@ int fdFileno(/*@null@*/ void * cookie)
 }
 /*@=shadow@*/
 
-/**
- * Read an entire file into a buffer.
- * @param fn		file name to read
- * @retval *bp		(malloc'd) buffer address
- * @retval *blenp	(malloc'd) buffer length
- * @return		0 on success
- */
-int rpmioSlurp(const char * fn,
-                /*@out@*/ rpmuint8_t ** bp, /*@out@*/ ssize_t * blenp)
-        /*@globals h_errno, fileSystem, internalState @*/
-        /*@modifies *bp, *blenp, fileSystem, internalState @*/;
-
 #ifdef __cplusplus
 }
 #endif
