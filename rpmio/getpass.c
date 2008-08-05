@@ -3,18 +3,24 @@
  */
 
 #include "system.h"
+#define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <rpmio.h>
 #if defined(HAVE_KEYUTILS_H)
 #include <rpmmacro.h>
 #include <argv.h>
 #include <keyutils.h>
+#define _RPMPGP_INTERNAL
+#include <rpmpgp.h>
 #endif
 #include "debug.h"
 
 #if defined(HAVE_KEYUTILS_H)
 /*@unchecked@*/
 rpmint32_t _kuKeyring;
+
+/*@unchecked@*/
+static int _kuCache = 1;
 
 typedef struct _kuItem_s {
 /*@observer@*/
@@ -130,3 +136,124 @@ assert(password != NULL);
 /*@-redecl@*/
 char * (*Getpass) (const char * prompt) = _GetPass;
 /*@=redecl@*/
+
+/**
+ * Lookup pubkey in keyutils keyring.
+ * @param sigp		signature packet
+ * @retval *iobp	pubkey I/O buffer
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
+	/*@modifies *iobp @*/;
+rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
+{
+    if (iobp != NULL)
+	*iobp = NULL;
+#if defined(HAVE_KEYUTILS_H)
+    if (_kuCache) {
+/*@observer@*/
+	static const char krprefix[] = "rpm:gpg:pubkey:";
+	key_serial_t keyring = (key_serial_t) _kuKeyring;
+	char krfp[32];
+	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
+	long key;
+	int xx;
+
+	(void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
+	krfp[sizeof(krfp)-1] = '\0';
+	*krn = '\0';
+	(void) stpcpy( stpcpy(krn, krprefix), krfp);
+
+	key = keyctl_search(keyring, "user", krn, 0);
+	xx = keyctl_read(key, NULL, 0);
+	if (xx > 0) {
+	    rpmiob iob = xcalloc(1, sizeof(*iob));
+	    iob->blen = xx;
+	    xx = keyctl_read_alloc(key, (void **)&iob->b);
+	    if (xx > 0) {
+#ifdef	NOTYET
+		pubkeysource = xstrdup(krn);
+		_kuCache = 0;	/* XXX don't bother caching. */
+#endif
+	    } else
+		iob = rpmiobFree(iob);
+
+	    if (iob != NULL && iobp != NULL) {
+		*iobp = iob;
+		return RPMRC_OK;
+	    } else
+		return RPMRC_NOTFOUND;
+	} else
+	    return RPMRC_NOTFOUND;
+    } else
+#endif
+    return RPMRC_NOTFOUND;
+}
+
+/**
+ * Store pubkey in keyutils keyring.
+ * @param sigp		signature packet
+ * @param iob		pubkey I/O buffer
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
+	/*@modifies iob @*/;
+rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
+{
+#if defined(HAVE_KEYUTILS_H)
+    if (_kuCache) {
+/*@observer@*/
+	static const char krprefix[] = "rpm:gpg:pubkey:";
+	key_serial_t keyring = (key_serial_t) _kuKeyring;
+	char krfp[32];
+	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
+
+	(void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
+	krfp[sizeof(krfp)-1] = '\0';
+	*krn = '\0';
+	(void) stpcpy( stpcpy(krn, krprefix), krfp);
+/*@-moduncon -noeffectuncon @*/
+	(void) add_key("user", krn, iob->b, iob->blen, keyring);
+/*@=moduncon =noeffectuncon @*/
+    }
+#endif
+    iob = rpmiobFree(iob);
+    return RPMRC_OK;
+}
+
+/**
+ * Return pass phrase from keyutils keyring.
+ * @param passPhrase	pass phrase
+ * @return		pass phrase
+ */
+/*@null@*/
+const char * rpmkuPassPhrase(const char * passPhrase)
+	/*@modifies iob @*/;
+const char * rpmkuPassPhrase(const char * passPhrase)
+{
+    const char * pw;
+
+#if defined(HAVE_KEYUTILS_H)
+    if (passPhrase && !strcmp(passPhrase, "@u user rpm:passwd")) {
+	key_serial_t keyring = (key_serial_t) _kuKeyring;
+	long key;
+	int xx;
+
+/*@-moduncon@*/
+	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
+	pw = NULL;
+	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
+#ifdef	NOTYET
+	    rpmlog(RPMLOG_ERR, _("Failed %s(%d) key(0x%lx): %s\n"),
+			"keyctl_read_alloc of key", xx, key, strerror(errno));
+	    return 1;
+#else
+	    pw = NULL;
+#endif
+	}
+/*@=moduncon@*/
+    } else
+#endif
+	pw = xstrdup(passPhrase);
+    return pw;
+}
