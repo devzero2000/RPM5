@@ -14,6 +14,7 @@ extern const char *__progname;
 #endif
 
 #if defined(RPM_VENDOR_OPENPKG) /* integrity-checking */
+#define _RPMIOB_INTERNAL /* XXX rpmiobSlurp */
 #include "rpmio_internal.h"
 #endif
 
@@ -220,6 +221,8 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     char *pkey_fn = NULL;
     char *spec = NULL;
     char *proc = NULL;
+    rpmiob spec_iob = NULL;
+    rpmiob proc_iob = NULL;
     const char *result = NULL;
     const char *error = NULL;
     int xx;
@@ -265,22 +268,22 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     }
 
     /* load integrity configuration specification file */
-    spec = NULL;
-	xx = rpmioSlurp(spec_fn, (uint8_t **)&spec, NULL);
-	if (!(xx == 0 && spec != NULL)) {
+    xx = rpmiobSlurp(spec_fn, &spec_iob);
+    if (!(xx == 0 && spec_iob != NULL)) {
         integrity_check_message("ERROR: Unable to load Integrity Configuration Specification file.\n"
             "rpm: HINT: Check file \"%s\".\n", spec_fn);
         goto failure;
     }
+    spec = rpmiobStr(spec_iob);
 
     /* load integrity validation processor file */
-    proc = NULL;
-	xx = rpmioSlurp(proc_fn, (uint8_t **)&proc, NULL);
-	if (!(xx == 0 && proc != NULL)) {
+    xx = rpmiobSlurp(proc_fn, &proc_iob);
+    if (!(xx == 0 && proc_iob != NULL)) {
         integrity_check_message("ERROR: Unable to load Integrity Validation Processor file.\n"
             "rpm: HINT: Check file \"%s\".\n", proc_fn);
         goto failure;
     }
+    proc = rpmiobStr(proc_iob);
 
     /* provision program name and mode */
     if (progname == NULL || progname[0] == '\0')
@@ -354,10 +357,10 @@ static void integrity_check(const char *progname, enum modes progmode_num)
         rpmluaFree(lua);
     if (ts != NULL)
         ts = rpmtsFree(ts);
-    if (spec != NULL)
-        spec = _free(spec);
-    if (proc != NULL)
-        proc = _free(proc);
+    if (spec_iob != NULL)
+        spec_iob = rpmiobFree(spec_iob);
+    if (proc_iob != NULL)
+        proc_iob = rpmiobFree(proc_iob);
 
     /* final result handling */
     if (rc != INTEGRITY_OK) {
