@@ -934,6 +934,17 @@ print (t)\
 %_vsflags_rebuilddb	%{__vsflags}
 %_vsflags_verify	%{__vsflags}
 
+#	Choose keyutils keyring type:
+#
+#	group		KEY_SPEC_GROUP_KEYRING
+#	process		KEY_SPEC_PROCESS_KEYRING
+#	session		KEY_SPEC_SESSION_KEYRING
+#	thread		KEY_SPEC_THREAD_KEYRING
+#	user		KEY_SPEC_USER_KEYRING
+#	user_session	KEY_SPEC_USER_SESSION_KEYRING
+#
+%_keyutils_keyring	process
+
 #	Relations between package names that cause dependency loops
 #	with legacy packages that cannot be fixed. Relations are
 #	specified as

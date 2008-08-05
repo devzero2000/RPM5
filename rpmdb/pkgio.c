@@ -191,7 +191,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 #if defined(HAVE_KEYUTILS_H)
 	/* Try keyutils keyring lookup. */
     if (krcache && ts->pkpkt == NULL) {
-	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	key_serial_t keyring = (key_serial_t) _kuKeyring;
 	const char * krprefix = "rpm:gpg:pubkey:";
 	char krfp[32];
 	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
@@ -326,7 +326,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 #if defined(HAVE_KEYUTILS_H)
 	/* Save the pubkey in the keyutils keyring. */
 	if (krcache) {
-	    key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	    key_serial_t keyring = (key_serial_t) _kuKeyring;
 	    const char * krprefix = "rpm:gpg:pubkey:";
 	    char krfp[32];
 	    char * krn = alloca(strlen(krprefix) + sizeof("12345678"));

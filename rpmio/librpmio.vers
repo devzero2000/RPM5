@@ -146,6 +146,7 @@ LIBRPMIO_0
     iosmStrerror;
     iosmTeardown;
     isCompressed;
+    _kuKeyring;
     Lchown;
     _Lchown;
     Link;

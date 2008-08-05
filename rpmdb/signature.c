@@ -198,7 +198,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 
 #if defined(HAVE_KEYUTILS_H)
     if (passPhrase && !strcmp(passPhrase, "@u user rpm:passwd")) {
-	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	key_serial_t keyring = (key_serial_t) _kuKeyring;
 	long key;
 	int xx;
 
@@ -543,7 +543,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 #if defined(HAVE_KEYUTILS_H)
     if (!strcmp(passPhrase, "@u user rpm:passwd")) {
 	long key;
-	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	key_serial_t keyring = (key_serial_t) _kuKeyring;
 
 /*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
