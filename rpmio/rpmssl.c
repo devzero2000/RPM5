@@ -5,6 +5,7 @@
 #include "system.h"
 #include <rpmlog.h>
 
+#include <rpmiotypes.h>
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_SSL)
 
@@ -199,6 +200,7 @@ static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
+#if defined(WITH_SSL)
     int xx;
 
     /* Set DSA hash. */
@@ -206,6 +208,9 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
+#else
+    return 1;
+#endif	/* WITH_SSL */
 }
 
 static
@@ -344,9 +349,11 @@ void * rpmsslInit(void)
 #endif	/* WITH_SSL */
 }
 
+#if defined(WITH_SSL)
 struct pgpImplVecs_s rpmsslImplVecs = {
 	rpmsslSetRSA, rpmsslVerifyRSA,
 	rpmsslSetDSA, rpmsslVerifyDSA,
 	rpmsslMpiItem, rpmsslClean,
 	rpmsslFree, rpmsslInit
 };
+#endif
