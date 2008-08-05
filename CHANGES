@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmku: create opaque keyutils keyring.
     - jbj: keyutils: permit configurable keyring.
     - rse: fix building under --with-lzma by providing the necessary 64-bit defines for inclusion of <lzma.h>
     - jbj: QNX: use strtouq() instead of strtoul() in rpmmtree.

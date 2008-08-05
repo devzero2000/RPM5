@@ -3,22 +3,21 @@
  */
 
 #include "system.h"
-#if defined(HAVE_KEYUTILS_H)
-#include <keyutils.h>
-#endif
 
 #include <rpmio.h>
 #include <rpmurl.h>
 #include <rpmcb.h>	/* XXX rpmIsVerbose() */
 #define	_RPMPGP_INTERNAL
 #include <rpmpgp.h>
-#include <rpmtag.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
-#include "rpmdb.h"
+#include <rpmku.h>
 
+#include <rpmtag.h>
+#include "rpmdb.h"
+#include <pkgio.h>	/* XXX expects <rpmts.h> */
 #include "legacy.h"	/* XXX for dodogest() */
-#include <pkgio.h>
 #include "signature.h"
+
 #include "debug.h"
 
 /*@access FD_t@*/		/* XXX ufdio->read arg1 is void ptr */
@@ -196,24 +195,12 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     delMacro(NULL, "__plaintext_filename");
     delMacro(NULL, "__signature_filename");
 
-#if defined(HAVE_KEYUTILS_H)
-    if (passPhrase && !strcmp(passPhrase, "@u user rpm:passwd")) {
-	key_serial_t keyring = (key_serial_t) _kuKeyring;
-	long key;
-	int xx;
-
-/*@-moduncon@*/
-	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
-	pw = NULL;
-	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-	    rpmlog(RPMLOG_ERR, _("Failed %s(%d) key(0x%lx): %s\n"),
-			"keyctl_read_alloc of key", xx, key, strerror(errno));
-	    return 1;
-	}
-/*@=moduncon@*/
-    } else
-#endif
-	pw = passPhrase;
+    pw = rpmkuPassPhrase(passPhrase);
+    if (pw == NULL) {
+	rpmlog(RPMLOG_ERR, _("Failed rpmkuPassPhrase(passPhrase): %s\n"),
+			strerror(errno));
+	return 1;
+    }
 
     fpipe = fdopen(inpipe[1], "w");
     (void) close(inpipe[0]);
@@ -221,14 +208,11 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	fprintf(fpipe, "%s\n", (pw ? pw : ""));
 	(void) fclose(fpipe);
     }
-/*@-mods@*/
-    if (pw && pw != passPhrase) {
+
+    if (pw != NULL) {
 	(void) memset((void *)pw, 0, strlen(pw));
-/*@-temptrans@*/	/* XXX mixed use in variable */
 	pw = _free(pw);
-/*@=temptrans@*/
     }
-/*@=mods@*/
 
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
@@ -540,37 +524,22 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	}
     }
 
-#if defined(HAVE_KEYUTILS_H)
-    if (!strcmp(passPhrase, "@u user rpm:passwd")) {
-	long key;
-	key_serial_t keyring = (key_serial_t) _kuKeyring;
-
-/*@-moduncon@*/
-	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
-	pw = NULL;
-	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-	    rpmlog(RPMLOG_ERR, _("Failed %s(%d) key(0x%lx): %s\n"),
-			"keyctl_read_alloc of key", xx, key, strerror(errno));
-	    return 1;
-	}
-/*@=moduncon@*/
-    } else
-#endif
-	pw = passPhrase;
+    pw = rpmkuPassPhrase(passPhrase);
+    if (pw == NULL) {
+	rpmlog(RPMLOG_ERR, _("Failed rpmkuPassPhrase(passPhrase): %s\n"),
+			strerror(errno));
+	return 1;
+    }
 
     xx = close(p[0]);
     xx = (int) write(p[1], pw, strlen(pw));
     xx = (int) write(p[1], "\n", 1);
     xx = close(p[1]);
 
-/*@-mods@*/
-    if (pw && pw != passPhrase) {
+    if (pw != NULL) {
 	(void) memset((void *)pw, 0, strlen(pw));
-/*@-temptrans@*/	/* XXX mixed use in variable */
 	pw = _free(pw);
-/*@=temptrans@*/
     }
-/*@=mods@*/
 
     (void) waitpid(pid, &status, 0);
 

@@ -11,14 +11,13 @@
 
 #include <netinet/in.h>
 
-#if defined(HAVE_KEYUTILS_H)
-#include <keyutils.h>
-#endif
-
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
 #include <rpmio_internal.h>
 #include <rpmcb.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
 #include <rpmmacro.h>
+#include <rpmku.h>
 
 #define	_RPMTAG_INTERNAL
 #include "header_internal.h"
@@ -162,9 +161,8 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
-#if defined(HAVE_KEYUTILS_H)
+    rpmiob iob = NULL;
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
-#endif
     int xx;
 
 assert(dig != NULL);
@@ -188,38 +186,23 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	memset(ts->pksignid, 0, sizeof(ts->pksignid));
     }
 
-#if defined(HAVE_KEYUTILS_H)
-	/* Try keyutils keyring lookup. */
-    if (krcache && ts->pkpkt == NULL) {
-	key_serial_t keyring = (key_serial_t) _kuKeyring;
-	const char * krprefix = "rpm:gpg:pubkey:";
-	char krfp[32];
-	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
-	long key;
-
-	(void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
-	krfp[sizeof(krfp)-1] = '\0';
-	*krn = '\0';
-	(void) stpcpy( stpcpy(krn, krprefix), krfp);
-
-/*@-moduncon@*/
-	key = keyctl_search(keyring, "user", krn, 0);
-	xx = keyctl_read(key, NULL, 0);
-	if (xx > 0) {
-	    ts->pkpktlen = xx;
-	    ts->pkpkt = NULL;
-	    xx = keyctl_read_alloc(key, (void **)&ts->pkpkt);
-	    if (xx > 0) {
-		pubkeysource = xstrdup(krn);
-		krcache = 0;	/* XXX don't bother caching. */
-	    } else {
-		ts->pkpkt = _free(ts->pkpkt);
-		ts->pkpktlen = 0;
-	    }
+    /* Try keyutils keyring lookup. */
+    if (ts->pkpkt == NULL) {
+	iob = NULL;
+	switch (rpmkuFindPubkey(sigp, &iob)) {
+	case RPMRC_NOTFOUND:
+	case RPMRC_FAIL:
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	    break;
+	case RPMRC_OK:
+	    pubkeysource = xstrdup("keyutils");
+	    krcache = 0;	/* XXX don't bother caching. */
+	    ts->pkpkt = memcpy(xmalloc(iob->blen), iob->b, iob->blen);
+	    ts->pkpktlen = iob->blen;
+	    break;
 	}
-/*@=moduncon@*/
     }
-#endif
 
     /* Try rpmdb keyring lookup. */
     if (ts->pkpkt == NULL) {
@@ -323,23 +306,16 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	/* XXX Verify any pubkey signatures. */
 
-#if defined(HAVE_KEYUTILS_H)
 	/* Save the pubkey in the keyutils keyring. */
 	if (krcache) {
-	    key_serial_t keyring = (key_serial_t) _kuKeyring;
-	    const char * krprefix = "rpm:gpg:pubkey:";
-	    char krfp[32];
-	    char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
-
-	    (void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
-	    krfp[sizeof(krfp)-1] = '\0';
-	    *krn = '\0';
-	    (void) stpcpy( stpcpy(krn, krprefix), krfp);
-/*@-moduncon -noeffectuncon @*/
-	    (void) add_key("user", krn, ts->pkpkt, ts->pkpktlen, keyring);
-/*@=moduncon =noeffectuncon @*/
+	    if (iob == NULL) {
+		iob = xcalloc(1, sizeof(*iob));
+		iob->b = memcpy(xmalloc(ts->pkpktlen), ts->pkpkt, ts->pkpktlen);
+		iob->blen = ts->pkpktlen;
+		iob->allocated = ts->pkpktlen;
+	    }
+	    (void) rpmkuStorePubkey(sigp, iob);
 	}
-#endif
 
 	/* Pubkey packet looks good, save the signer id. */
 	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));

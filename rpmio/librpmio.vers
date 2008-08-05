@@ -146,7 +146,6 @@ LIBRPMIO_0
     iosmStrerror;
     iosmTeardown;
     isCompressed;
-    _kuKeyring;
     Lchown;
     _Lchown;
     Link;
@@ -313,6 +312,10 @@ LIBRPMIO_0
     rpmKeyringLookup;
     rpmKeyringNew;
     rpmKeyringUnlink;
+    _kuKeyring;
+    rpmkuFindPubkey;
+    rpmkuStorePubkey;
+    rpmkuPassPhrase;
     rpmPubkeyFree;
     rpmPubkeyLink;
     rpmPubkeyNew;

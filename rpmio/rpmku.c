@@ -1,8 +1,9 @@
 /** \ingroup rpmio
- * \file rpmio/getpass.c
+ * \file rpmio/rpmku.c
  */
 
 #include "system.h"
+
 #define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <rpmio.h>
@@ -13,6 +14,8 @@
 #define _RPMPGP_INTERNAL
 #include <rpmpgp.h>
 #endif
+#include <rpmku.h>
+
 #include "debug.h"
 
 #if defined(HAVE_KEYUTILS_H)
@@ -137,18 +140,11 @@ assert(password != NULL);
 char * (*Getpass) (const char * prompt) = _GetPass;
 /*@=redecl@*/
 
-/**
- * Lookup pubkey in keyutils keyring.
- * @param sigp		signature packet
- * @retval *iobp	pubkey I/O buffer
- * @return		RPMRC_OK on success
- */
-rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
-	/*@modifies *iobp @*/;
 rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 {
     if (iobp != NULL)
 	*iobp = NULL;
+
 #if defined(HAVE_KEYUTILS_H)
     if (_kuCache) {
 /*@observer@*/
@@ -168,7 +164,7 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 	xx = keyctl_read(key, NULL, 0);
 	if (xx > 0) {
 	    rpmiob iob = xcalloc(1, sizeof(*iob));
-	    iob->blen = xx;
+	    iob->allocated = iob->blen = xx;
 	    xx = keyctl_read_alloc(key, (void **)&iob->b);
 	    if (xx > 0) {
 #ifdef	NOTYET
@@ -190,14 +186,6 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
     return RPMRC_NOTFOUND;
 }
 
-/**
- * Store pubkey in keyutils keyring.
- * @param sigp		signature packet
- * @param iob		pubkey I/O buffer
- * @return		RPMRC_OK on success
- */
-rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
-	/*@modifies iob @*/;
 rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
 {
 #if defined(HAVE_KEYUTILS_H)
@@ -221,14 +209,6 @@ rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
     return RPMRC_OK;
 }
 
-/**
- * Return pass phrase from keyutils keyring.
- * @param passPhrase	pass phrase
- * @return		pass phrase
- */
-/*@null@*/
-const char * rpmkuPassPhrase(const char * passPhrase)
-	/*@modifies iob @*/;
 const char * rpmkuPassPhrase(const char * passPhrase)
 {
     const char * pw;
@@ -242,16 +222,10 @@ const char * rpmkuPassPhrase(const char * passPhrase)
 /*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	pw = NULL;
-	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-#ifdef	NOTYET
-	    rpmlog(RPMLOG_ERR, _("Failed %s(%d) key(0x%lx): %s\n"),
-			"keyctl_read_alloc of key", xx, key, strerror(errno));
-	    return 1;
-#else
-	    pw = NULL;
-#endif
-	}
+	xx = keyctl_read_alloc(key, (void **)&pw);
 /*@=moduncon@*/
+	if (xx < 0)
+	    pw = NULL;
     } else
 #endif
 	pw = xstrdup(passPhrase);

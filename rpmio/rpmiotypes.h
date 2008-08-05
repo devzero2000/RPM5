@@ -201,12 +201,6 @@ struct rpmiob_s{
 };
 #endif
 
-/**
- * Keyutils keyring to use.
- */
-/*@unchecked@*/
-extern rpmint32_t _kuKeyring;
-
 #ifdef __cplusplus
 extern "C" {
 #endif

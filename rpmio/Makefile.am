@@ -63,7 +63,7 @@ noinst_HEADERS = \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
 	mire.h poptIO.h rpmbc.h rpmdav.h \
-	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h \
+	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
 	rpmio-stub.h rpmsw.h rpmurl.h rpmuuid.h rpmxar.h \
 	tar.h ugid.h
@@ -72,12 +72,12 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	ar.c argv.c bzdio.c cpio.c digest.c fnmatch.c fts.c \
-	getdate.c getpass.c gzdio.c glob.c iosm.c lzdio.c \
+	getdate.c gzdio.c glob.c iosm.c lzdio.c \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
-	rpmkeyring.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
+	rpmkeyring.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
