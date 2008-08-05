@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmiotypes.h>
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_NSS)
 #define	_RPMNSS_INTERNAL
@@ -410,9 +411,11 @@ void * rpmnssInit(void)
 #endif	/* WITH_NSS */
 }
 
+#if defined(WITH_NSS)
 struct pgpImplVecs_s rpmnssImplVecs = {
 	rpmnssSetRSA, rpmnssVerifyRSA,
 	rpmnssSetDSA, rpmnssVerifyDSA,
 	rpmnssMpiItem, rpmnssClean,
 	rpmnssFree, rpmnssInit
 };
+#endif
