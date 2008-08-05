@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmiotypes.h>
 #define	_RPMGC_INTERNAL
 #if defined(WITH_GCRYPT)
 #define	_RPMPGP_INTERNAL
@@ -398,9 +399,11 @@ void * rpmgcInit(void)
 #endif
 }
 
+#if defined(WITH_GCRYPT)
 struct pgpImplVecs_s rpmgcImplVecs = {
 	rpmgcSetRSA, rpmgcVerifyRSA,
 	rpmgcSetDSA, rpmgcVerifyDSA,
 	rpmgcMpiItem, rpmgcClean,
 	rpmgcFree, rpmgcInit
 };
+#endif
