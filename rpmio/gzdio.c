@@ -51,7 +51,7 @@ typedef struct rpmGZFILE_s {
 
 /* Should gzflush be called only after RSYNC_WIN boundaries? */
 /*@unchecked@*/
-static int enable_rsync = 0;
+static int enable_rsync = 1;
 
 /* =============================================================== */
 /* from ../lib/cpio.h */
@@ -348,7 +348,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     fdstat_enter(fd, FDSTAT_WRITE);
     if (enable_rsync)
-	rc = rsyncable_gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
+	rc = rsyncable_gzwrite(rpmgz, (void *)buf, (unsigned)count);
     else
 	rc = gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
