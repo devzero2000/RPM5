@@ -2827,10 +2827,6 @@ assert(keylen == sizeof(k->ui));		/* xxx programmer error */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 		/*@unused@*/ rpmts ts)
 {
-DBC * dbcursor = NULL;
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
-union _dbswap mi_offset;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     sigset_t signalMask;
@@ -2840,9 +2836,6 @@ union _dbswap mi_offset;
 
     if (db == NULL)
 	return 0;
-
-memset(key, 0, sizeof(*key));
-memset(data, 0, sizeof(*data));
 
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
@@ -2885,6 +2878,11 @@ memset(data, 0, sizeof(*data));
 
 	if (db->db_tags != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	    DBC * dbcursor = NULL;
+	    DBT k = DBT_INIT;
+	    DBT v = DBT_INIT;
+	    union _dbswap mi_offset;
+
 	    tagStore_t dbiTag = db->db_tags + dbix;
 	    rpmTag rpmtag = dbiTag->tag;
 	    const char * dbiBN = (dbiTag->str != NULL
@@ -2918,18 +2916,18 @@ memset(data, 0, sizeof(*data));
 mi_offset.ui = hdrNum;
 if (dbiByteSwapped(dbi) == 1)
     _DBSWAP(mi_offset);
-		key->data = &mi_offset;
+		k.data = &mi_offset;
 /*@=immediatetrans@*/
-		key->size = (UINT32_T) sizeof(mi_offset.ui);
+		k.size = (UINT32_T) sizeof(mi_offset.ui);
 
 		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		if (rc) {
 		    rpmlog(RPMLOG_ERR,
 			_("error(%d) setting header #%d record for %s removal\n"),
 			rc, hdrNum, dbiBN);
 		} else
-		    rc = dbiDel(dbi, dbcursor, key, data, 0);
+		    rc = dbiDel(dbi, dbcursor, &k, &v, 0);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
@@ -2980,24 +2978,24 @@ if (dbiByteSwapped(dbi) == 1)
 		stringvalued = 0;
 		switch (he->t) {
 		case RPM_UINT8_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui8p);
-/*@i@*/		    key->data = he->p.ui8p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui8p);
+/*@i@*/		    k.data = he->p.ui8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT16_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui16p);
-/*@i@*/		    key->data = he->p.ui16p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui16p);
+/*@i@*/		    k.data = he->p.ui16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT32_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui32p);
-/*@i@*/		    key->data = he->p.ui32p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui32p);
+/*@i@*/		    k.data = he->p.ui32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT64_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui64p);
-/*@i@*/		    key->data = he->p.ui64p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui64p);
+/*@i@*/		    k.data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_BIN_TYPE:
-		    key->size = (UINT32_T) he->c;
-/*@i@*/		    key->data = he->p.ptr;
+		    k.size = (UINT32_T) he->c;
+/*@i@*/		    k.data = he->p.ptr;
 		    he->c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
 		case RPM_I18NSTRING_TYPE:	/* XXX never occurs. */
@@ -3018,8 +3016,8 @@ assert((dlen & 1) == 0);
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
 			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 /*@=type@*/
-			key->data = bin;
-			key->size = (UINT32_T) dlen;
+			k.data = bin;
+			k.size = (UINT32_T) dlen;
 			/*@switchbreak@*/ break;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
@@ -3029,14 +3027,14 @@ assert((dlen & 1) == 0);
 			nbin = pgpExtractPubkeyFingerprint(he->p.argv[i], bin);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
-			key->data = bin;
-			key->size = (UINT32_T) nbin;
+			k.data = bin;
+			k.size = (UINT32_T) nbin;
 			/*@switchbreak@*/ break;
 		    }
 		    /*@fallthrough@*/
 		default:
-/*@i@*/		    key->data = (void *) he->p.argv[i];
-		    key->size = (UINT32_T) strlen(he->p.argv[i]);
+/*@i@*/		    k.data = (void *) he->p.argv[i];
+		    k.size = (UINT32_T) strlen(he->p.argv[i]);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
@@ -3045,7 +3043,7 @@ assert((dlen & 1) == 0);
 		    if (he->c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
 				D_("removing \"%s\" from %s index.\n"),
-				(char *)key->data, dbiBN);
+				(char *)k.data, dbiBN);
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				D_("removing %u entries from %s index.\n"),
@@ -3065,13 +3063,13 @@ assert((dlen & 1) == 0);
 
 		set = NULL;
 
-if (key->size == 0) key->size = (UINT32_T) strlen((char *)key->data);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+if (k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
+if (k.size == 0) k.size++;	/* XXX "/" fixup. */
  
 /*@-compmempass@*/
-		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		if (rc == 0) {			/* success */
-		    (void) dbt2set(dbi, data, &set);
+		    (void) dbt2set(dbi, &v, &set);
 		} else if (rc == DB_NOTFOUND) {	/* not found */
 		    /*@innercontinue@*/ continue;
 		} else {			/* error */
@@ -3093,18 +3091,18 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 /*@-compmempass@*/
 		if (set->count > 0) {
-		    (void) set2dbt(dbi, data, set);
-		    rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
+		    (void) set2dbt(dbi, &v, set);
+		    rc = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 		    if (rc) {
 			rpmlog(RPMLOG_ERR,
 				_("error(%d) storing record into %s\n"),
 				rc, dbiBN);
 			ret += 1;
 		    }
-		    data->data = _free(data->data);
-		    data->size = 0;
+		    v.data = _free(v.data);
+		    v.size = 0;
 		} else {
-		    rc = dbiDel(dbi, dbcursor, key, data, 0);
+		    rc = dbiDel(dbi, dbcursor, &k, &v, 0);
 		    if (rc) {
 			rpmlog(RPMLOG_ERR,
 				_("error(%d) removing record from %s\n"),
