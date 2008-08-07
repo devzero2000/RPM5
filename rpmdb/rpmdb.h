@@ -18,6 +18,10 @@
 #endif
 #endif
 
+#if defined(_RPMDB_INTERNAL)
+#define DBT_INIT {0}	/* -Wno-missing-field-initializers */
+#endif
+
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmdb_debug;

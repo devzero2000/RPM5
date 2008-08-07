@@ -1578,18 +1578,15 @@ if (rc == 0)
 
 int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
-DBC * dbcursor = NULL;
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
+    DBC * dbcursor = NULL;
+    DBT k = DBT_INIT;
+    DBT v = DBT_INIT;
     dbiIndex dbi;
     int rc;
     int xx;
 
     if (db == NULL || keyp == NULL)
 	return 0;
-
-memset(key, 0, sizeof(*key));
-memset(data, 0, sizeof(*data));
 
     dbi = dbiOpen(db, tag, 0);
     if (dbi == NULL)
@@ -1599,12 +1596,12 @@ memset(data, 0, sizeof(*data));
 	keylen = strlen(keyp);
 
 /*@-temptrans@*/
-key->data = (void *) keyp;
+    k.data = (void *) keyp;
 /*@=temptrans@*/
-key->size = (UINT32_T) keylen;
+    k.size = (UINT32_T) keylen;
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+    rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 #ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
@@ -1614,7 +1611,7 @@ key->size = (UINT32_T) keylen;
 	dbiIndexSet matches;
 	/*@-nullpass@*/ /* FIX: matches might be NULL */
 	matches = NULL;
-	(void) dbt2set(dbi, data, &matches);
+	(void) dbt2set(dbi, &v, &matches);
 	if (matches) {
 	    rc = dbiIndexSetCount(matches);
 	    matches = dbiFreeIndexSet(matches);
