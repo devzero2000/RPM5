@@ -3143,9 +3143,6 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 /* XXX install.c */
 int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 {
-DBC * dbcursor = NULL;
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
     const char ** dirNames;
@@ -3154,7 +3151,6 @@ DBT * data = alloca(sizeof(*data));
     size_t dbix;
     union _dbswap mi_offset;
     unsigned int hdrNum = 0;
-    size_t nb;
     int ret = 0;
     int rc;
     int xx;
@@ -3164,9 +3160,6 @@ DBT * data = alloca(sizeof(*data));
 
     if (db == NULL)
 	return 0;
-
-memset(key, 0, sizeof(*key));
-memset(data, 0, sizeof(*data));
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     he->tag = RPMTAG_REMOVETID;
@@ -3211,35 +3204,27 @@ memset(data, 0, sizeof(*data));
 
     (void) blockSignals(db, &signalMask);
 
-    {
-	unsigned int firstkey = 0;
-	void * keyp = &firstkey;
-	size_t keylen = sizeof(firstkey);
-	void * datap = NULL;
-	size_t datalen = 0;
+    dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
+    if (dbi != NULL) {
+	/* Header indices are monotonically increasing integer instances
+	 * starting with 1.  Header instance #0 is where the monotonically
+	 * increasing integer is stored.  */
+	unsigned int idx0 = 0;
 
-      dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
-      if (dbi != NULL) {
+	DBC * dbcursor = NULL;
+	DBT k = DBT_INIT;
+	DBT v = DBT_INIT;
 
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
-
-/*@-compmempass@*/
-	key->data = keyp;
-	key->size = (UINT32_T) keylen;
-/*@i@*/	data->data = datap;
-	data->size = (UINT32_T) datalen;
-	ret = dbiGet(dbi, dbcursor, key, data, DB_SET);
-	keyp = key->data;
-	keylen = key->size;
-	datap = data->data;
-	datalen = data->size;
-/*@=compmempass@*/
+	k.data = &idx0;
+	k.size = sizeof(idx0);
+	ret = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 
 	hdrNum = 0;
-	if (ret == 0 && datap) {
-	    memcpy(&mi_offset, datap, sizeof(mi_offset.ui));
+	if (ret == 0 && v.data) {
+	    memcpy(&mi_offset, v.data, sizeof(mi_offset.ui));
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
 	    hdrNum = (unsigned) mi_offset.ui;
@@ -3248,28 +3233,19 @@ memset(data, 0, sizeof(*data));
 	mi_offset.ui = hdrNum;
 	if (dbiByteSwapped(dbi) == 1)
 	    _DBSWAP(mi_offset);
-	if (ret == 0 && datap) {
-	    memcpy(datap, &mi_offset, sizeof(mi_offset.ui));
+	if (ret == 0 && v.data) {
+	    memcpy(v.data, &mi_offset, sizeof(mi_offset.ui));
 	} else {
-	    datap = &mi_offset;
-	    datalen = sizeof(mi_offset.ui);
+	    v.data = &mi_offset;
+	    v.size = sizeof(mi_offset.ui);
 	}
 
-	key->data = keyp;
-	key->size = (UINT32_T) keylen;
-/*@-kepttrans@*/
-	data->data = datap;
-/*@=kepttrans@*/
-	data->size = (UINT32_T) datalen;
-
 /*@-compmempass@*/
-	ret = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
+	ret = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 /*@=compmempass@*/
 	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	dbcursor = NULL;
-      }
 
     }
 
@@ -3289,6 +3265,10 @@ memset(data, 0, sizeof(*data));
 	
 	if (db->db_tags != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	    DBC * dbcursor = NULL;
+	    DBT k = DBT_INIT;
+	    DBT v = DBT_INIT;
+
 	    tagStore_t dbiTags = db->db_tags + dbix;
 	    const char * dbiBN = (dbiTags->str != NULL
 			? dbiTags->str : tagName(dbiTags->tag));
@@ -3321,31 +3301,25 @@ memset(data, 0, sizeof(*data));
 		    continue;
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-mi_offset.ui = hdrNum;
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
-/*@-immediatetrans@*/
-key->data = (void *) &mi_offset;
-/*@=immediatetrans@*/
-key->size = (UINT32_T) sizeof(mi_offset.ui);
- {  size_t len;
-    nb = 0;
-    (void) headerGetMagic(h, NULL, &nb);
-    len = 0;
-    data->data = headerUnload(h, &len);
-    data->size = (UINT32_T) len;	/* XXX data->size is rpmuint32_t */
-#ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
-    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
-#endif
- }
+		mi_offset.ui = hdrNum;
+		if (dbiByteSwapped(dbi) == 1)
+		    _DBSWAP(mi_offset);
+		/*@-immediatetrans@*/
+		k.data = (void *) &mi_offset;
+		/*@=immediatetrans@*/
+		k.size = (UINT32_T) sizeof(mi_offset.ui);
+		{   size_t len = 0;
+		    v.data = headerUnload(h, &len);
+		    v.size = (UINT32_T) len;
+		}
 
 		/* Check header digest/signature on blob export. */
 		if (ts) {
 		    const char * msg = NULL;
 		    int lvl;
 
-assert(data->data != NULL);
-		    rpmrc = headerCheck(rpmtsDig(ts), data->data, data->size, &msg);
+assert(v.data != NULL);
+		    rpmrc = headerCheck(rpmtsDig(ts), v.data, v.size, &msg);
 		    rpmtsCleanDig(ts);
 		    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 		    rpmlog(lvl, "%s h#%8u %s\n",
@@ -3354,16 +3328,15 @@ assert(data->data != NULL);
 		    msg = _free(msg);
 		}
 
-		if (data->data != NULL && rpmrc != RPMRC_FAIL) {
+		if (v.data != NULL && rpmrc != RPMRC_FAIL) {
 /*@-compmempass@*/
-		    xx = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
+		    xx = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 /*@=compmempass@*/
 		    xx = dbiSync(dbi, 0);
 		}
-data->data = _free(data->data);
-data->size = 0;
+v.data = _free(v.data);
+v.size = 0;
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		continue;
@@ -3456,24 +3429,24 @@ data->size = 0;
 		stringvalued = 0;
 		switch (he->t) {
 		case RPM_UINT8_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui8p);
-/*@i@*/		    key->data = he->p.ui8p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui8p);
+/*@i@*/		    k.data = he->p.ui8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT16_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui16p);
-/*@i@*/		    key->data = he->p.ui16p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui16p);
+/*@i@*/		    k.data = he->p.ui16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT32_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui32p);
-/*@i@*/		    key->data = he->p.ui32p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui32p);
+/*@i@*/		    k.data = he->p.ui32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT64_TYPE:
-		    key->size = (UINT32_T) sizeof(*he->p.ui64p);
-/*@i@*/		    key->data = he->p.ui64p + i;
+		    k.size = (UINT32_T) sizeof(*he->p.ui64p);
+/*@i@*/		    k.data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_BIN_TYPE:
-		    key->size = (UINT32_T) he->c;
-/*@i@*/		    key->data = he->p.ptr;
+		    k.size = (UINT32_T) he->c;
+/*@i@*/		    k.data = he->p.ptr;
 		    he->c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
 		case RPM_I18NSTRING_TYPE:	/* XXX never occurs */
@@ -3494,8 +3467,8 @@ assert((dlen & 1) == 0);
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
 			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 /*@=type@*/
-			key->data = bin;
-			key->size = (UINT32_T) dlen;
+			k.data = bin;
+			k.size = (UINT32_T) dlen;
 			/*@switchbreak@*/ break;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
@@ -3505,14 +3478,14 @@ assert((dlen & 1) == 0);
 			nbin = pgpExtractPubkeyFingerprint(he->p.argv[i], bin);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
-			key->data = bin;
-			key->size = (UINT32_T) nbin;
+			k.data = bin;
+			k.size = (UINT32_T) nbin;
 			/*@switchbreak@*/ break;
 		    }
 		    /*@fallthrough@*/
 		default:
-/*@i@*/		    key->data = (void *) he->p.argv[i];
-		    key->size = (UINT32_T) strlen(he->p.argv[i]);
+/*@i@*/		    k.data = (void *) he->p.argv[i];
+		    k.size = (UINT32_T) strlen(he->p.argv[i]);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
@@ -3521,7 +3494,7 @@ assert((dlen & 1) == 0);
 		    if (he->c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
 				D_("adding \"%s\" to %s index.\n"),
-				(char *)key->data, dbiBN);
+				(char *)k.data, dbiBN);
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				D_("adding %u entries to %s index.\n"),
@@ -3534,15 +3507,15 @@ assert((dlen & 1) == 0);
 
 		set = NULL;
 
-if (key->size == 0) key->size = (UINT32_T) strlen((char *)key->data);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+if (k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
+if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 
 /*@-compmempass@*/
-		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		if (rc == 0) {			/* success */
 		/* With duplicates, cursor is positioned, discard the record. */
 		    if (!dbi->dbi_permit_dups)
-			(void) dbt2set(dbi, data, &set);
+			(void) dbt2set(dbi, &v, &set);
 		} else if (rc != DB_NOTFOUND) {	/* error */
 		    rpmlog(RPMLOG_ERR,
 			_("error(%d) getting records from %s index\n"),
@@ -3558,8 +3531,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		(void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
 
 /*@-compmempass@*/
-		(void) set2dbt(dbi, data, set);
-		rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
+		(void) set2dbt(dbi, &v, set);
+		rc = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 /*@=compmempass@*/
 
 		if (rc) {
@@ -3569,14 +3542,13 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    ret += 1;
 		}
 /*@-unqualifiedtrans@*/
-		data->data = _free(data->data);
+		v.data = _free(v.data);
 /*@=unqualifiedtrans@*/
-		data->size = 0;
+		v.size = 0;
 		set = dbiFreeIndexSet(set);
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	    dbcursor = NULL;
 
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
