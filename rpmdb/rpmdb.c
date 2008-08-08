@@ -3221,13 +3221,6 @@ memset(data, 0, sizeof(*data));
       dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
       if (dbi != NULL) {
 
-	nb = 0;
-	(void) headerGetMagic(h, NULL, &nb);
-	/* XXX db0: hack to pass sizeof header to fadAlloc */
-	datap = h;
-	datalen = headerSizeof(h);
-	datalen -= nb;	/* XXX HEADER_MAGIC_NO */
-
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
