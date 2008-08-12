@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: rescusitate "make check".
     - jbj: permit building with older libtool-1.5.26 (back port from HEAD).
     - bero: Fix hang when using rpmdsSingle and rpm4compat.h from C++
     - rse: configure: do not complain with "python: file not found" on platforms without python(1) in PATH

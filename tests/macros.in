@@ -1,3 +1,13 @@
+# retrofit paths, AutoFu defaults use "/use/bin" if not found in PATH
+%__hg			%{_bindir}/hg
+%__lzop			%{_bindir}/lzop
+%__pgp			%{_bindir}/pgp
+
+# use internal magic, rpm-4.5.90 doesn't supply
+%_rpmfc_magic_path	@abs_top_builddir@/file/magic/magic
+# use internal check-files, rpm-4.5.90 is different
+%__check_files		@abs_top_builddir@/scripts/check-files %{buildroot}
+
 %_testdir	@testdir@
 %_etcrpm	%{_testdir}
 %_topdir	%{_testdir}
@@ -20,7 +30,7 @@
 %_rpmds_sysinfo_path	%{_topdir}/sysinfo/
 %_dbpath		%{_topdir}/tmp/rpmdb/
 
-%_tmppath		%{_topdir}/tmp/
+%_tmppath		%{_topdir}/tmp
 %_hrmib_path		%{_tmppath}/hrmib/%{___NVRA}
 %_repackage_dir		%{_tmppath}/repackage/
 

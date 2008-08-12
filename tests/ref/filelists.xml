@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="4">
+<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="5">
 <package pkgid="f4b34bce38c077a682f6a10e91bac4ac8dd6d905" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <file>JBJ-GPG-KEY</file>
   <file>devtool-sanity.spec</file>
 </package>
-<package pkgid="776790c5a1fec78420016256209afafb6488ddbe" name="edos-test" arch="noarch">
+<package pkgid="567d8380ab37ff1a109df15b9a93e3d08cdbd3be" name="edos-test" arch="noarch">
   <version epoch="0" ver="1" rel="0"/>
   <file>edos-test.spec</file>
 </package>
@@ -52,5 +52,20 @@
   <version epoch="0" ver="1.14" rel="1"/>
   <file>popt-1.14.tar.gz</file>
   <file>popt.spec</file>
+</package>
+<package pkgid="b2e1fd2756b27bcf888c990c02be7912074cd096" name="probes-test" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+  <file>key1.pgp</file>
+  <file>key2.pgp</file>
+  <file>probes-test.spec</file>
+  <file>test1.asc</file>
+  <file>test1.sig</file>
+  <file>test1.txt</file>
+  <file>test2.asc</file>
+  <file>test2.sig</file>
+  <file>test2.txt</file>
+  <file>test3.asc</file>
+  <file>test3.sig</file>
+  <file>test3.txt</file>
 </package>
 </filelists>
