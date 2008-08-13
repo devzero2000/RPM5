@@ -3,6 +3,8 @@
 #include "system.h"
 #include "xar.h"
 #include <rpmio.h>
+#include <rpmiotypes.h>
+#include <rpmtag.h>
 #include <rpmcli.h>
 
 #define	_RPMWF_INTERNAL
