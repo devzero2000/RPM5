@@ -504,8 +504,8 @@ extern const char *__progname;
 /* ============== from misc/miscfn.h */
 
 /*@-noparams@*/
-#include "misc/glob.h"
-#include "misc/fnmatch.h"
+#include "rpmio/glob.h"
+#include "rpmio/fnmatch.h"
 /*@=noparams@*/
 
 #if defined(__LCLINT__)
