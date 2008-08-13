@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: lua: don't exit chroot if already within running script.
     - jbj: rescusitate "make check".
     - jbj: permit building with older libtool-1.5.26 (back port from HEAD).
     - bero: Fix hang when using rpmdsSingle and rpm4compat.h from C++
