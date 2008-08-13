@@ -494,6 +494,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
     int * ssp = NULL;
+    int inChroot = 0; /* Are we already in a chroot? */
 
     if (psm->sstates != NULL)
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
@@ -511,6 +512,7 @@ assert(he->p.str != NULL);
 
     /* Get into the chroot. */
     if (!rpmtsChrootDone(ts)) {
+       inChroot = 0;
 	const char *rootDir = rpmtsRootDir(ts);
 	/*@-modobserver @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
@@ -518,7 +520,8 @@ assert(he->p.str != NULL);
 	/*@=modobserver @*/
 	    xx = rpmtsSetChrootDone(ts, 1);
 	}
-    }
+    } else
+       inChroot = 1;
 
     /* All lua scripts run with CWD == "/". */
     xx = Chdir("/");
@@ -568,7 +571,7 @@ assert(he->p.str != NULL);
     rpmluaDelVar(lua, "arg");
 
     /* Get out of chroot. */
-    if (rpmtsChrootDone(ts)) {
+    if (rpmtsChrootDone(ts) && !inChroot) {
 	const char *rootDir = rpmtsRootDir(ts);
 	xx = fchdir(rootFdno);
 	/*@-modobserver@*/

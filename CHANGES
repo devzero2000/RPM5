@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: lua: don't exit chroot if already within running script.
     - at: gzdio: fixed and re-enabled rsyncable_gzwrite()
     - jbj: rpmku: create opaque keyutils keyring.
     - jbj: keyutils: permit configurable keyring.
