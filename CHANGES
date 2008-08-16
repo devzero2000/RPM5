@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: db_tool: remove gcc whinings.
     - jbj: include misc/asprintf.h for use by rpmmtree on QNX.
     - jbj: move glob/fnmatch into -lrpmio from -lrpmmisc.
     - jbj: lua: don't exit chroot if already within running script.
