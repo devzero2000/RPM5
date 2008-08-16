@@ -18,7 +18,7 @@ EXTRA_DIST = \
 	strtoul.c
 
 noinst_HEADERS = \
-	err.h		error.h	
+	asprintf.h	err.h		error.h	
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmmisc.la

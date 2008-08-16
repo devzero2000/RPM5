@@ -43,6 +43,10 @@ static const char copyright[] =
 #include <signal.h>
 #include <stdarg.h>
 
+#if !defined(HAVE_ASPRINTF)
+#include "asprintf.h"
+#endif
+
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || defined(__APPLE__)
 #define	HAVE_ST_FLAGS	1	/* XXX TODO: should be AutoFu test */
 #else
@@ -51,6 +55,10 @@ static const char copyright[] =
 
 #if defined(__linux__)
 #define	st_mtimespec	st_mtim
+#endif
+
+#if defined(__QNXNTO__)
+#define	st_mtimespec	st_mtime
 #endif
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
@@ -1015,7 +1023,7 @@ strunvis(char * dst, const char * src)
 /*==============================================================*/
 
 /* XXX *BSD systems already have getmode(3) and setmode(3) */
-#if defined(__linux__) || defined(__LCLINT__)
+#if defined(__linux__) || defined(__LCLINT__) || defined(__QNXNTO__)
 #if !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE)
 
 #define	SET_LEN	6		/* initial # of bitcmd struct to malloc */
@@ -1500,7 +1508,7 @@ set(char * t, NODE * ip)
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SIZE:
 /*@-unrecog@*/
-	    ip->sb.st_size = strtouq(val, &ep, 10);
+	    ip->sb.st_size = strtoul(val, &ep, 10);
 /*@=unrecog@*/
 	    if (*ep != '\0')
 		mtree_error("invalid size %s", val);
