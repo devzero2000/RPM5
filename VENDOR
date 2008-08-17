@@ -428,3 +428,57 @@
      Characteristic: standalone installation of RPM that installs into /usr/local
      ________________________________________________________________________
 
+  o  Name:           FEDORA
+     Vendor:         Fedora Project <http://fedoraproject.org/>
+     Representative: Robert Scheck <robert@fedoraproject.org> <robert@rpm5.org>
+     Application:    RPM-based Linux software distribution (> 7000 packages)
+     Characteristic: Optional replacement of RPM 4 with RPM 5 for users
+     ________________________________________________________________________
+
+  o  Name:           MANDRIVA
+     Vendor:         Mandriva Linux <http://wiki.mandriva.com/>
+     Representative: Per Øyvind Karlsen <pkarlsen@rpm5.org>
+     Application:    RPM-based Linux software distribution (> 10000 packages)
+     Characteristic: Optional replacement of RPM 4 with RPM 5 for users
+     ________________________________________________________________________
+
+  o  Name:           WINDRIVER
+     Vendor:         Wind River <http://windriver.com/>
+     Representative: Jeff Johnson <jbj@rpm5.org>
+     Application:    Wind River Linux
+     Characteristic: cross-packaging build system
+     ________________________________________________________________________
+
+     Change:         rpm-python-archscore.patch
+     Purpose:        Use %{_host_vendor} and %{_host_os} for platform.
+     Reason:         Different conventions for retrofitting platform string.
+     ________________________________________________________________________
+
+     Change:         rpm-white-color-upgrade.patch
+     Purpose:        Color affinity while upgrading on multilib platforms.
+     Reason:         When performing an upgrade, if we are capable of
+                     installing multiple colors (elf32/elf64), we need to
+                     verify that a white (color 0) package should be upgraded. 
+
+                     The upgrade rules are:
+                       If the package is white, and is noarch, it can always
+                       be upgraded.
+
+                       If the package is white, and not noarch, we only
+                       upgrade if the arch is the same (or in the compatible
+                       list).
+         
+                     Compatible arch's are stored in: _<arch>_compat_arch
+
+                     Example of x86_32 and i686:
+                       _i686_compat_arch i686 x86_32
+                       _x86_32_compat_arch i686 x86_32
+                     Order does not mean anything in this list.. one is not
+                     "more compatible" then another.
+     ________________________________________________________________________
+
+     Change:         wrs-rpm-variants.patch
+     Purpose:        Permit configurable arch strings.
+     Reason:         Allow additional architectures to be added via a
+                     "_known_arch" list. This is useful to allow for new
+                     variants w/o having to modify RPM each time.
