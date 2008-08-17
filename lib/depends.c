@@ -247,6 +247,28 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 	    he->p.ptr = _free(he->p.ptr);
 	}
 
+#if defined(RPM_VENDOR_WINDRIVER)
+	/*
+	 * If we're capable of installing multiple colors
+	 * but at least one of the packages are white (0), we
+	 * further verify the arch is the same (or compatible) to trigger an upgrade
+	 * we do have a special case to allow upgrades of noarch w/ a arch package
+	 */
+	if (tscolor && (!hcolor || !ohcolor)) {
+	    he->tag = RPMTAG_ARCH;
+	    xx = headerGet(oh, he, 0);
+	    if (arch != NULL && he->p.str != NULL) {
+	        if (strcmp("noarch", arch) || strcmp("noarch", he->p.str)) {
+		    if (!_isCompatibleArch(arch, he->p.str)) {
+			he->p.ptr = _free(he->p.ptr);
+			continue;
+		    }
+		}
+	    }
+	    he->p.ptr = _free(he->p.ptr);
+	}
+#endif
+
 	/* Skip identical packages. */
 	if (rpmHeadersIdentical(h, oh))
 	    continue;
@@ -473,6 +495,42 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     return 0;
 }
 
+#if defined(RPM_VENDOR_WINDRIVER)
+/* Is "compat" compatible w/ arch? */
+int _isCompatibleArch(const char * arch, const char * compat)
+{
+    const char * compatArch = rpmExpand(compat, " %{?_", compat, "_compat_arch}", NULL);
+    const char * p, * pe, * t;
+    int match = 0;
+
+    /* Hack to ensure iX86 being automatically compatible */
+    if (arch[0] == 'i' && arch[2] == '8' && arch[3] == '6') {
+	if ((arch[0] == compat[0]) &&
+	    (arch[2] == compat[2]) &&
+	    (arch[3] == compat[3]))
+	    match = 1;
+
+        if (!strcmp(compat, "x86_32"))
+	    match = 1;
+    }
+
+    for ( p = pe = compatArch ; *pe && match == 0 ; ) {
+	while (*p && xisspace(*p)) p++;
+	pe = p ; while (*pe && !xisspace(*pe)) pe++;
+	if (p == pe)
+	    break;
+	t = strndup(p, (pe - p));
+	p = pe; /* Advance to next chunk */
+rpmMessage(RPMMESS_DEBUG, _("   Comparing compat archs %s ? %s\n"), arch, t);
+	if (!strcmp(arch, t))
+	    match = 1;
+	t = _free(t);
+    }
+    compatArch = _free(compatArch);
+    return match;
+}
+#endif
+
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
@@ -572,12 +630,19 @@ assert(he->p.str != NULL);
 
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
+#if defined(RPM_VENDOR_WINDRIVER)
+	    /* XXX hackery for alias matching. */
+	    if (!_isCompatibleArch(arch, parch))
+		continue;
+#else
 	    /* XXX hackery for i[3456]86 alias matching. */
 	    if (arch[0] == 'i' && arch[2] == '8' && arch[3] == '6') {
 		if (arch[0] != parch[0]) continue;
 		if (arch[2] != parch[2]) continue;
 		if (arch[3] != parch[3]) continue;
-	    } else if (strcmp(arch, parch))
+	    }
+#endif
+	    else if (strcmp(arch, parch))
 		continue;
 	    if (os == NULL || (pos = rpmteO(p)) == NULL)
 		continue;
