@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: add shadow/chkconfig internal lua modules.
     - jbj: WR: Color/arch affinity while upgrading on multilib platforms.
     - jbj: WR: Permit configurable arch strings.
     - jbj: WR: Use %{_host_vendor} and %{_host_os} for platform.
