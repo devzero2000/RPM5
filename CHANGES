@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: WR: Use %{_host_vendor} and %{_host_os} for platform.
     - jbj: WR: fakeroot maps devices to files. avoid /dev/* in checkfiles.
     - jbj: db_tool: remove gcc whinings.
     - jbj: QNX: use strtouq() instead of strtoul() in rpmmtree.
