@@ -6,6 +6,14 @@
 #include "system.h"
 const char *__progname;
 
+#if defined(RPM_VENDOR_WINDRIVER)
+const char *__usrlibrpm = USRLIBRPM;
+const char *__etcrpm = SYSCONFIGDIR;
+#endif
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
+const char *__localedir = LOCALEDIR;
+#endif
+
 #include <rpmio.h>
 #include <rpmiotypes.h>
 #include <fts.h>
@@ -476,6 +484,37 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
     return ret;
 }
 
+#if defined(RPM_VENDOR_WINDRIVER)
+void setRuntimeRelocPaths(void)
+{
+    /* 
+     * This is just an example of setting the values using env
+     * variables....  if they're not set, we make sure they get set
+     * for helper apps...  We probably want to escape "%" in the path
+     * to avoid macro expansion.. someone might have a % in a path...
+     */
+
+    __usrlibrpm = getenv("RPM_USRLIBRPM");
+    __etcrpm = getenv("RPM_ETCRPM");
+    __localedir = getenv("RPM_LOCALEDIR");
+
+    if ( __usrlibrpm == NULL ) {
+	__usrlibrpm = USRLIBRPM ;
+	setenv("RPM_USRLIBRPM", USRLIBRPM, 0);
+    }
+
+    if ( __etcrpm == NULL ) {
+	__etcrpm = SYSCONFIGDIR ;
+	setenv("RPM_ETCRPM", SYSCONFIGDIR, 0);
+    }
+
+    if ( __localedir == NULL ) {
+	__localedir = LOCALEDIR ;
+	setenv("RPM_LOCALEDIR", LOCALEDIR, 0);
+    }
+}
+#endif
+
 /*@-globstate@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
@@ -516,9 +555,13 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 #endif
    }
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    (void) setRuntimeRelocPaths();
+#endif
+
 #if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );
-    (void) bindtextdomain(PACKAGE, LOCALEDIR);
+    (void) bindtextdomain(PACKAGE, __localedir);
     (void) textdomain(PACKAGE);
 #endif
 
@@ -580,10 +623,24 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
     path_buf = _free(path_buf);
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    {	char * poptAliasFn = rpmGetPath(__usrlibrpm, "/", VERSION, "/rpmpopt", NULL);
+	(void) poptReadConfigFile(optCon, poptAliasFn);
+	poptAliasFn = _free(poptAliasFn);
+    }
+#endif
+
     /* read standard POPT configuration files */
     (void) poptReadDefaultConfig(optCon, 1);
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    {	char * poptExecPath = rpmGetPath(__usrlibrpm, "/", VERSION, NULL);
+	poptSetExecPath(optCon, poptExecPath, 1);
+	poptExecPath = _free(poptExecPath);
+    }
+#else
     poptSetExecPath(optCon, USRLIBRPM, 1);
+#endif
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {

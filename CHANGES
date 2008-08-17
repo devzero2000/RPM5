@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: run-time discovered configuration goopiness, take 1.
     - jbj: WR: rely on PATH to find pkg-config.
     - jbj: WR: don't spew error messages with internal lua shadow module.
     - jbj: WR: add shadow/chkconfig internal lua modules.
