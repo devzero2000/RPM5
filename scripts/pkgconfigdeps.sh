@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pkgconfig=/usr/bin/pkg-config
+pkgconfig=`which pkg-config`
 test -x $pkgconfig || {
     cat > /dev/null
     exit 0
