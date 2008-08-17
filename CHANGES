@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: don't spew error messages with internal lua shadow module.
     - jbj: WR: add shadow/chkconfig internal lua modules.
     - jbj: WR: Color/arch affinity while upgrading on multilib platforms.
     - jbj: WR: Permit configurable arch strings.
