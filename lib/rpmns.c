@@ -59,12 +59,35 @@ static const char *rpmnsArches[] = {
 
 nsType rpmnsArch(const char * str)
 {
+    nsType rc = RPMNS_TYPE_UNKNOWN;
     const char ** av;
-    for (av = rpmnsArches; *av != NULL; av++) {
-	if (!strcmp(str, *av))
-	    return RPMNS_TYPE_ARCH;
+
+#if defined(RPM_VENDOR_WINDRIVER)
+    const char * known_arch = rpmExpand("%{?_known_arch}", NULL);
+    const char *p, *pe, *t;
+    for (p = pe = known_arch ; rc == RPMNS_TYPE_UNKNOWN && pe && *pe ; ) {
+	while (*p && xisspace(*p)) p++;
+	pe = p ; while (*pe && !xisspace(*pe)) pe++;
+	if (p == pe)
+	    break;
+	t = strndup(p, (pe - p));
+	p = pe;
+	if (!strcmp(str, t))
+	    rc = RPMNS_TYPE_ARCH;
+	t = _free(t);
     }
-    return RPMNS_TYPE_UNKNOWN;
+    known_arch = _free(known_arch);
+#endif
+
+    if (rc == RPMNS_TYPE_UNKNOWN)
+    for (av = rpmnsArches; *av != NULL; av++) {
+	if (strcmp(str, *av))
+	    continue;
+	rc = RPMNS_TYPE_ARCH;
+	break;
+    }
+
+    return rc;
 }
 
 /**
