@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: Use %{_host_vendor} and %{_host_os} for platform.
     - jbj: WR: fakeroot maps devices to files. avoid /dev/* in checkfiles.
     - jbj: lua: don't exit chroot if already within running script.
     - at: gzdio: fixed and re-enabled rsyncable_gzwrite()
