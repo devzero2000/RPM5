@@ -1113,6 +1113,8 @@ AC_SUBST(DBAPI)
 dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
 WITH_LUA_SUBDIR_LIB=""
+USE_LUA_SHADOW=no
+USE_LUA_CHKCONFIG=no
 RPM_CHECK_LIB(
     [Lua], [lua],
     [lua], [lua_newstate], [lua.h],
@@ -1122,6 +1124,9 @@ RPM_CHECK_LIB(
           AC_CHECK_LIB(dl, dlopen)
           AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_DLOPEN" ])
           AC_CHECK_FUNC(regcomp, [ WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_POSIX" ])
+          case "$host" in
+              *-*-linux* ) USE_LUA_SHADOW=yes; USE_LUA_CHKCONFIG=yes; ;;
+          esac
           AC_DEFINE(WITH_LUA_INTERNAL, 1, [Define if building with internal Lua])
           AC_CONFIG_FILES([lua/Makefile])
       else
@@ -1132,6 +1137,8 @@ RPM_CHECK_LIB(
     ], [])
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)
+AM_CONDITIONAL(USE_LUA_SHADOW, [ test ".$USE_LUA_SHADOW" = .yes ])
+AM_CONDITIONAL(USE_LUA_CHKCONFIG, [ test ".$USE_LUA_CHKCONFIG" = .yes ])
 
 dnl # PCRE
 RPM_CHECK_LIB(
