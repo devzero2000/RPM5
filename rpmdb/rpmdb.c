@@ -1017,13 +1017,13 @@ int rpmdbClose(rpmdb db)
     int rc = 0;
 
     if (db == NULL)
-	goto exit;
+	return rc;
 
     (void) rpmdbUnlink(db, "rpmdbClose");
 
     /*@-usereleased@*/
     if (db->nrefs > 0)
-	goto exit;
+	return rc;
 
     if (db->_dbi)
     for (dbix = db->db_ndbi; dbix;) {
@@ -1055,15 +1055,20 @@ int rpmdbClose(rpmdb db)
     }
 /*@=newreftrans@*/
 
+    if (rpmdbRock == NULL && rpmmiRock == NULL) {
+	/* Last close uninstalls special signal handling. */
+	(void) rpmsqEnable(-SIGHUP,	NULL);
+	(void) rpmsqEnable(-SIGINT,	NULL);
+	(void) rpmsqEnable(-SIGTERM,	NULL);
+	(void) rpmsqEnable(-SIGQUIT,	NULL);
+	(void) rpmsqEnable(-SIGPIPE,	NULL);
+	/* Pending signals strike here. */
+	(void) rpmdbCheckSignals();
+    }
+
     /*@-refcounttrans@*/ db = _free(db); /*@=refcounttrans@*/
     /*@=usereleased@*/
 
-exit:
-    (void) rpmsqEnable(-SIGHUP,	NULL);
-    (void) rpmsqEnable(-SIGINT,	NULL);
-    (void) rpmsqEnable(-SIGTERM,NULL);
-    (void) rpmsqEnable(-SIGQUIT,NULL);
-    (void) rpmsqEnable(-SIGPIPE,NULL);
     return rc;
 }
 /*@=incondefs@*/
@@ -1229,11 +1234,19 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
     if (db == NULL)
 	return 1;
 
-    (void) rpmsqEnable(SIGHUP,	NULL);
-    (void) rpmsqEnable(SIGINT,	NULL);
-    (void) rpmsqEnable(SIGTERM,	NULL);
-    (void) rpmsqEnable(SIGQUIT,	NULL);
-    (void) rpmsqEnable(SIGPIPE,	NULL);
+    if (rpmdbRock == NULL && rpmmiRock == NULL) {
+	/* First open installs special signal handling. */
+	(void) rpmsqEnable(SIGHUP,	NULL);
+	(void) rpmsqEnable(SIGINT,	NULL);
+	(void) rpmsqEnable(SIGTERM,	NULL);
+	(void) rpmsqEnable(SIGQUIT,	NULL);
+	(void) rpmsqEnable(SIGPIPE,	NULL);
+    }
+
+/*@-assignexpose -newreftrans@*/
+/*@i@*/	db->db_next = rpmdbRock;
+	rpmdbRock = db;
+/*@=assignexpose =newreftrans@*/
 
     db->db_api = _dbapi;
 
@@ -1289,8 +1302,6 @@ exit:
 	xx = rpmdbClose(db);
     else {
 /*@-assignexpose -newreftrans@*/
-/*@i@*/	db->db_next = rpmdbRock;
-	rpmdbRock = db;
 /*@i@*/	*dbp = db;
 /*@=assignexpose =newreftrans@*/
     }
@@ -1962,7 +1973,10 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
-    mi->mi_db = rpmdbUnlink(mi->mi_db, "matchIterator");
+    /* XXX rpmdbUnlink will not do.
+     * NB: must be called after rpmmiRock cleanup. */
+    (void) rpmdbClose(mi->mi_db);
+    mi->mi_db = NULL;
 
     mi = _free(mi);
 
