@@ -36,7 +36,7 @@ int rpmconstNextC(rpmconst c)
     c->constant = c->constant == NULL ?
         rpmConstantListC(c->list) :
         rpmConstantNext(c->constant);
-    return c->constant == NULL ? 0 : 1;
+    return c->constant != NULL && rpmConstantName(c->constant) != NULL ? 1 : 0;
 }
 
 
