@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: eliminate xmalloc.c, use system.h defines instead.
+    - jbj: WR: rename config.h to shadow_config.h, include "system.h" instead.
     - at: rpmdb.c: enable/disable rpmsq signal handlers with respect to rpmdbRock
     - jbj: WR: run-time discovered configuration goopiness, take 1.
     - jbj: WR: rely on PATH to find pkg-config.
