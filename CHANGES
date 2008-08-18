@@ -1,4 +1,11 @@
 5.1.4 -> 5.1.5:
+    - jbj: WR: eliminate most compiler warnings.
+    - jbj: WR: eliminate duplicated AutoFu boilerplate, use system.h instead.
+    - jbj: WR: eliminate getdate.[ch], use same from rpmio instead.
+    - jbj: WR: eliminate dueling AutoFu defines from shadow_config.h, use RPM's
+        config.h (through system.h) instead.
+    - jbj: WR: eliminate xmalloc.c, use system.h defines instead.
+    - jbj: WR: rename config.h to shadow_config.h, include "system.h" instead.
     - jbj: WR: rely on PATH to find pkg-config.
     - jbj: WR: don't spew error messages with internal lua shadow module.
     - jbj: WR: add shadow/chkconfig internal lua modules.
