@@ -13,18 +13,6 @@ LIBRPMMISC_0
     magic_file;
     magic_load;
     magic_open;
-    rpmz_gzclose;
-    rpmz_adler32;
-    rpmz_adler32_combine;
-    rpmz_crc32;
-    rpmz_crc32_combine;
-    rpmz_gzdopen;
-    rpmz_gzerror;
-    rpmz_gzflush;
-    rpmz_gzopen;
-    rpmz_gzread;
-    rpmz_gzseek;
-    rpmz_gzwrite;
     xar_add_frombuffer;
     xar_close;
     xar_extract_tobuffersz;

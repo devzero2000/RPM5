@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: remove internal zlib.
     - jbj: WR: add %windriver target to devtool.conf.
     - jbj: WR: eliminate most compiler warnings.
     - jbj: WR: eliminate duplicated AutoFu boilerplate, use system.h instead.
