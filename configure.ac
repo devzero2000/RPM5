@@ -959,7 +959,7 @@ RPM_CHECK_LIB(
     [rpmz z gz], [gzread], [zlib.h],
     [yes,external:none], [zlib],
     [ AC_CHECK_FUNC(gzseek)
-      if test ".$RPM_CHECK_LIB_LOCATION" = .external; then
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have <zlib.h>])
       fi
     ], [])
