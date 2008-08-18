@@ -15,10 +15,22 @@
     - jbj: WR: Use %{_host_vendor} and %{_host_os} for platform.
     - jbj: WR: fakeroot maps devices to files. avoid /dev/* in checkfiles.
     - jbj: db_tool: remove gcc whinings.
+    - at: gzdio: fixed and re-enabled rsyncable_gzwrite()
+    - rse: fix building under --with-lzma by providing the necessary 64-bit defines for inclusion of <lzma.h>
+    - jbj: gzdio: quadruple check with external -lz. still no fix => disabled.
+    - jbj: gzdio: integrate the cpio tracking patch (needs to be done elsewhere)
+    - jbj: gzdio: disable rsync flushing until a fix can be attempted.
+    - jbj: gzdio: remove c99'ism.
     - jbj: QNX: use strtouq() instead of strtoul() in rpmmtree.
     - jbj: QNX: retrofit asprintf.h (from XAR) for the deprived. rpmmtree uses
         (rewrite to eliminate asprintf is an alternative).
     - jbj: QNX: supply missing typedef's for uint32_t.
+    - at: gzdio: return partial "best effort" bytes written with gzfoo errors.
+    - at: gzdio: do gzflush only after RSYNC_WIN boundaries.
+    - at: gzdio: push gzFile into a private container.
+    - jbj: make gzdio.c standalone.
+    - rpm.org: Teach Fflush about lzdio.
+    - jbj: add _flush to FDIO_t, make bzdio.c standalone.
     - jbj: move glob/fnmatch into -lrpmio from -lrpmmisc.
     - jbj: lua: don't exit chroot if already within running script.
     - jbj: rescusitate "make check".

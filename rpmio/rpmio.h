@@ -100,6 +100,12 @@ typedef FD_t (*fdio_fdopen_function_t) (void * cookie, const char * fmode)
 	/*@globals errno, fileSystem @*/
 	/*@modifies errno, fileSystem @*/;
 
+/**
+ */
+typedef int (*fdio_flush_function_t) (void * cookie)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
+
 /*@}*/
 
 
@@ -112,6 +118,8 @@ struct FDIO_s {
   fdio_close_function_t		close;
   fdio_fopen_function_t		_fopen;
   fdio_fdopen_function_t	_fdopen;
+/*@null@*/
+  fdio_flush_function_t		_flush;
 };
 
 
