@@ -40,9 +40,6 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-echo "===> zlib"
-( cd zlib && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== zlib"
 echo "===> lzma"
 ( cd lzma && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== lzma"

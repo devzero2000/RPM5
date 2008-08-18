@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: remove internal zlib.
     - jbj: WR: eliminate most compiler warnings.
     - jbj: WR: eliminate duplicated AutoFu boilerplate, use system.h instead.
     - jbj: WR: eliminate getdate.[ch], use same from rpmio instead.
