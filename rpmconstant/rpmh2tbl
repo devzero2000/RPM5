@@ -154,6 +154,7 @@ sub parseconst {
 /* From $hbasename
  * prefix tag: $tableprefix{$tbl}
  * table: $tbl */
+#include "$hbasename"
 EOF
         printf $ch "static const struct rpmconstant_s %sctbl[] = {\n",
             $tbl;
