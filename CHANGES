@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: eliminate getdate.[ch], use same from rpmio instead.
+    - jbj: WR: eliminate dueling AutoFu defines from shadow_config.h, use RPM's
+	config.h (through system.h) instead.
     - jbj: WR: eliminate xmalloc.c, use system.h defines instead.
     - jbj: WR: rename config.h to shadow_config.h, include "system.h" instead.
     - at: rpmdb.c: enable/disable rpmsq signal handlers with respect to rpmdbRock
