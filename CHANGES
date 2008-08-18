@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: eliminate duplicated AutoFu boilerplate, use system.h instead.
     - jbj: WR: eliminate getdate.[ch], use same from rpmio instead.
     - jbj: WR: eliminate dueling AutoFu defines from shadow_config.h, use RPM's
 	config.h (through system.h) instead.
