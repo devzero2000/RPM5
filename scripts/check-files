@@ -17,8 +17,7 @@ fi
 FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
 
 find . ! -type d -print | \
-	sed -e 's:^./:/:' | \
-	sed "s,$RPM_BUILD_ROOT/dev/.*,," | \
+	sed -e 's:^./:/:' -e '/^\/dev\//d' |
 	LC_ALL=C sort > "$FILES_DISK"
 LC_ALL=C sort -u | LC_ALL=C comm -23 "$FILES_DISK" - | sed -e 's:^:	:'
 
