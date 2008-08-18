@@ -505,7 +505,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = dbenv->set_tx_max(dbenv, dbi->dbi_tx_max);
 	xx = cvtdberr(dbi, "dbenv->set_tx_max", xx, _debug);
     }
-/* XXX dbenv->txn_checkpoint */        
+/* XXX dbenv->txn_checkpoint */
 /* XXX dbenv->txn_recover */
 /* XXX dbenv->txn_stat */
  /* 4.1 dbenv->set_timeout(???) */
@@ -839,7 +839,7 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
     int rc = 0;
 
     if (db != NULL) {
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH >= 11) \
  || (DB_VERSION_MAJOR == 4)
 	int isswapped = 0;
 	rc = db->get_byteswapped(db, &isswapped);
@@ -1062,7 +1062,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 			(dbhome ? dbhome : ""),
 			(dbfile ? dbfile : dbiBN));
 
-	        /*
+		/*
 		 * The DB handle may not be accessed again after
 		 * DB->verify is called, regardless of its return.
 		 */
@@ -1564,7 +1564,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 #endif
 
 		if (rc == 0 && dbi_type == DB_UNKNOWN) {
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH >= 11) \
  || (DB_VERSION_MAJOR == 4)
 		    xx = db->get_type(db, &dbi_type);
 		    if (xx == 0)

@@ -1158,7 +1158,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 /*@=modfilesys@*/ /*@=nullpass@*/
 
     if (!oneshot) {
-	_db_filter_dups = rpmExpandNumeric("%{_filterdbdups}");
+	_db_filter_dups = rpmExpandNumeric("%{?_filterdbdups}");
 	oneshot = 1;
     }
 
@@ -1177,7 +1177,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_root = rpmdbURIPath( (root && *root ? root : _DB_ROOT) );
     db->db_home = rpmdbURIPath( (home && *home ? home : _DB_HOME) );
 
-    if (!(db->db_home && db->db_home[0])) {
+    if (!(db->db_home && db->db_home[0] && db->db_home[0] != '%')) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
 	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
@@ -1322,7 +1322,7 @@ fprintf(stderr, "--> db %p ++ %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
 /* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    int _dbapi = rpmExpandNumeric("%{?_dbapi}");
     return rpmdbOpenDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 }
 
@@ -2878,6 +2878,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 
 	if (db->db_tags != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	    dbiIndex dbi;
 	    DBC * dbcursor = NULL;
 	    DBT k = DBT_INIT;
 	    DBT v = DBT_INIT;
@@ -2887,7 +2888,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	    rpmTag rpmtag = dbiTag->tag;
 	    const char * dbiBN = (dbiTag->str != NULL
 		? dbiTag->str : tagName(rpmtag));
-	    dbiIndex dbi;
 	    rpmuint8_t * bin = NULL;
 	    int i;
 
@@ -2939,7 +2939,6 @@ if (dbiByteSwapped(dbi) == 1)
 		if (!xx)
 		    continue;
 		/*@switchbreak@*/ break;
-
 	    }
 	
 	  dbi = dbiOpen(db, he->tag, 0);
@@ -3065,7 +3064,7 @@ assert((dlen & 1) == 0);
 
 if (k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.size == 0) k.size++;	/* XXX "/" fixup. */
- 
+
 /*@-compmempass@*/
 		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		if (rc == 0) {			/* success */
@@ -3269,9 +3268,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	    DBT k = DBT_INIT;
 	    DBT v = DBT_INIT;
 
-	    tagStore_t dbiTags = db->db_tags + dbix;
-	    const char * dbiBN = (dbiTags->str != NULL
-			? dbiTags->str : tagName(dbiTags->tag));
+	    tagStore_t dbiTag = db->db_tags + dbix;
+	    const char * dbiBN = (dbiTag->str != NULL
+			? dbiTag->str : tagName(dbiTag->tag));
 	    rpmuint8_t * bin = NULL;
 	    rpmTagData requireFlags;
 	    rpmRC rpmrc;
@@ -3280,7 +3279,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	    rpmrc = RPMRC_NOTFOUND;
 	    requireFlags.ptr = NULL;
 	    dbi = NULL;
-	    he->tag = dbiTags->tag;
+	    he->tag = dbiTag->tag;
 	    he->t = 0;
 	    he->p.ptr = NULL;
 	    he->c = 0;
@@ -4006,7 +4005,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
     rpmlog(RPMLOG_DEBUG, D_("opening old database with dbapi %d\n"),
 		_dbapi);
-    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
+    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644,
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
