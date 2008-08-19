@@ -502,7 +502,9 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) crc32;
 #if defined(ZLIB_H)
+#if defined(HAVE_ZLIB_CRC32_COMBINE)
 	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) crc32_combine;
+#endif
 #endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
@@ -522,7 +524,9 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-type @*/
 #if defined(ZLIB_H)
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) adler32;
+#if defined(HAVE_ZLIB_ADLER32_COMBINE)
 	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) adler32_combine;
+#endif
 #endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
