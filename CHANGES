@@ -1,4 +1,6 @@
 5.1.4 -> 5.1.5:
+    - afb: check that crc32_combine/adler32_combine really exist, for murky old
+	zlib.
     - jbj: WR: run-time discovered configuration goopiness, take 1.
     - jbj: display cpuinfo path with --showrc.
     - jbj: display sysinfo path with --showrc.
