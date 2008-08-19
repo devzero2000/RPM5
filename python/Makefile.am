@@ -4,12 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-pylibdir = @WITH_PYTHON_LIBDIR@
-pyincdir = @WITH_PYTHON_INCDIR@
-
-SUBDIRS = rpm
-
-EXTRA_DIST = system.h rpmdebug-py.c
+EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -24,7 +19,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
-	-I$(pyincdir)
+	-I@WITH_PYTHON_INCDIR@
 
 noinst_HEADERS = header-py.h \
 	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \
@@ -32,22 +27,18 @@ noinst_HEADERS = header-py.h \
 	rpmps-py.h rpmte-py.h rpmts-py.h \
 	spec-py.h
 
-mylibs = \
+pkgpyexecdir = @WITH_PYTHON_LIBDIR@/rpm
+pkgpyexec_LTLIBRARIES = _rpmmodule.la
+pkgpyexec_SCRIPTS = rpm/__init__.py
+
+_rpmmodule_la_LDFLAGS = -module -avoid-version
+_rpmmodule_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
-
-#LDADD =
-#LIBS =
-
-rpmdir = $(pylibdir)/rpm
-rpm_LTLIBRARIES = _rpmmodule.la
-
-_rpmmodule_la_LDFLAGS = $(mylibs) -module -avoid-version
-_rpmmodule_la_LIBADD =
 
 _rpmmodule_la_SOURCES = \
 	rpmmodule.c header-py.c \
