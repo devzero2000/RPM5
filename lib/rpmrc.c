@@ -1016,7 +1016,8 @@ int rpmShowRC(FILE * fp)
 	xx = rpmdsSysinfo(PRCO, NULL);
 	ds = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
 	if (ds != NULL) {
-	    fprintf(fp, _("Configured system provides (from /etc/rpm/sysinfo):\n"));
+	    const char * fn = (_sysinfo_path ? _sysinfo_path : "/etc/rpm/sysinfo");
+	    fprintf(fp, _("Configured system provides (from %s):\n"), fn);
 	    ds = rpmdsInit(ds);
 	    while (rpmdsNext(ds) >= 0) {
 		const char * DNEVR = rpmdsDNEVR(ds);

@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: display sysinfo path with --showrc.
     - jbj: remove internal zlib.
     - jbj: WR: eliminate most compiler warnings.
     - jbj: WR: eliminate duplicated AutoFu boilerplate, use system.h instead.
