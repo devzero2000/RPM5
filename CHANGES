@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: python: simplify Makefile.am
     - afb: check that crc32_combine/adler32_combine really exist, for murky old
 	zlib.
     - afb: remove undefined references too
