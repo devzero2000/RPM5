@@ -278,6 +278,12 @@ static void setDefaults(void)
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    addMacro(NULL, "_usrlibrpm", NULL, __usrlibrpm, RMIL_DEFAULT);
+    addMacro(NULL, "_etcrpm", NULL, __etcrpm, RMIL_DEFAULT);
+    addMacro(NULL, "_vendor", NULL, "%{?_host_vendor}%{!?_host_vendor:" RPMCANONVENDOR "}", RMIL_DEFAULT);
+#endif
+
     addMacro(NULL, "_usr", NULL, USRPREFIX, RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, VARPREFIX, RMIL_DEFAULT);
     addMacro(NULL, "_prefix", NULL, "%{_usr}", RMIL_DEFAULT);
@@ -510,6 +516,11 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     int rc;
 
     while (!gotDefaults) {
+#if defined(RPM_VENDOR_WINDRIVER)
+	const char * _platform = rpmGetPath(__etcrpm, "/platform", NULL);
+#else
+	const char * _platform = platform;
+#endif
 	CVOG_t cvog = NULL;
 #if defined(RPM_VENDOR_OPENPKG) /* larger-utsname */
 	const char *cp;
@@ -562,10 +573,10 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	/* allow the path to the "platforms" file be overridden under run-time */
 	cp = rpmExpand("%{?__platform}", NULL);
 	if (cp == NULL || cp[0] == '\0')
-	    cp = platform;
+	    cp = _platform;
 	if (rpmPlatform(cp) == RPMRC_OK) {
 #else
-	if (rpmPlatform(platform) == RPMRC_OK) {
+	if (rpmPlatform(_platform) == RPMRC_OK) {
 #endif
 	    const char * s;
 	    gotDefaults = 1;
@@ -585,8 +596,11 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
 #if defined(RPM_VENDOR_OPENPKG) /* explicit-platform */
 	/* cleanup after above processing */
-	if (cp != NULL && cp != platform)
+	if (cp != NULL && cp != _platform)
 	    cp = _free(cp);
+#endif
+#if defined(RPM_VENDOR_WINDRIVER)
+	_platform = _free(_platform);
 #endif
 
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
@@ -973,7 +987,8 @@ int rpmShowRC(FILE * fp)
 	xx = rpmdsSysinfo(PRCO, NULL);
 	ds = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
 	if (ds != NULL) {
-	    fprintf(fp, _("Configured system provides (from /etc/rpm/sysinfo):\n"));
+	    const char * fn = (_sysinfo_path ? _sysinfo_path : "/etc/rpm/sysinfo");
+	    fprintf(fp, _("Configured system provides (from %s):\n"), fn);
 	    ds = rpmdsInit(ds);
 	    while (rpmdsNext(ds) >= 0) {
 		const char * DNEVR = rpmdsDNEVR(ds);
@@ -1000,8 +1015,9 @@ int rpmShowRC(FILE * fp)
 
 	xx = rpmdsCpuinfo(&ds, NULL);
 	if (ds != NULL) {
+	    const char * fn = (_cpuinfo_path ? _cpuinfo_path : "/proc/cpuinfo");
 	    fprintf(fp,
-		_("Features provided by current cpuinfo (from /proc/cpuinfo):\n"));
+		_("Features provided by current cpuinfo (from %s):\n"), fn);
 	    ds = rpmdsInit(ds);
 	    while (rpmdsNext(ds) >= 0) {
 		const char * DNEVR = rpmdsDNEVR(ds);

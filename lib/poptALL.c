@@ -6,16 +6,29 @@
 #include "system.h"
 const char *__progname;
 
+#if defined(RPM_VENDOR_WINDRIVER)
+const char *__usrlibrpm = USRLIBRPM;
+const char *__etcrpm = SYSCONFIGDIR;
+#endif
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
+const char *__localedir = LOCALEDIR;
+#endif
+
 #include <rpmio.h>
 #include <fts.h>
 #include <mire.h>
 #include <poptIO.h>
 
 #include <rpmcli.h>
-#include <fs.h>			/* XXX rpmFreeFilesystems() */
+
 #include <rpmns.h>		/* XXX rpmnsClean() */
 
+#include <fs.h>			/* XXX rpmFreeFilesystems() */
+
 #include "debug.h"
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+extern unsigned int * keyids;
 
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
@@ -117,20 +130,22 @@ static int rpmcliInitialized = -1;
 extern const char *rpmluaFiles;
 #endif
 
+/*@-readonlytrans@*/	/* argv loading prevents observer, xstrdup needed. */
 /*@unchecked@*/
 static char *rpmpoptfiles = RPMPOPTFILES;
+/*@=readonlytrans@*/
 
 /**
  * Display rpm version.
  */
 static void printVersion(FILE * fp)
-	/*@globals rpmEVR, fileSystem @*/
-	/*@modifies *fp, fileSystem @*/
+	/*@globals rpmEVR, fileSystem, internalState @*/
+	/*@modifies *fp, fileSystem, internalState @*/
 {
     fprintf(fp, _("%s (" RPM_NAME ") %s\n"), __progname, rpmEVR);
     if (rpmIsVerbose())
-	fprintf(fp, "rpmlib 0x%08x,0x%08x,0x%08x\n",
-	    rpmlibVersion(), rpmlibTimestamp(), rpmlibVendor());
+	fprintf(fp, "rpmlib 0x%08x,0x%08x,0x%08x\n", (unsigned)rpmlibVersion(),
+		(unsigned)rpmlibTimestamp(), (unsigned)rpmlibVendor());
 }
 
 void rpmcliConfigured(void)
@@ -161,9 +176,9 @@ static void rpmcliAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+	/*@globals pgpDigVSFlags, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies con, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+	/*@modifies con, pgpDigVSFlags, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 
@@ -214,7 +229,7 @@ static void rpmcliAllArgCallback(poptContext con,
             size_t val_len;
             val_len = strlen(val);
             if (val[val_len - 1] == '\n')
-                fwrite(val, val_len, 1, stdout);
+                val_len = fwrite(val, val_len, 1, stdout);
             else
 		fprintf(stdout, "%s\n", val);
 	    val = _free(val);
@@ -414,6 +429,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 
 poptContext
 rpmcliFini(poptContext optCon)
+	/*@globals keyids @*/
+	/*@modifies keyids @*/
 {
     /* XXX this should be done in the rpmioClean() wrapper. */
     /* keeps memory leak checkers quiet */
@@ -454,13 +471,47 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
     return ret;
 }
 
+#if defined(RPM_VENDOR_WINDRIVER)
+void setRuntimeRelocPaths(void)
+{
+    /* 
+     * This is just an example of setting the values using env
+     * variables....  if they're not set, we make sure they get set
+     * for helper apps...  We probably want to escape "%" in the path
+     * to avoid macro expansion.. someone might have a % in a path...
+     */
+
+    __usrlibrpm = getenv("RPM_USRLIBRPM");
+    __etcrpm = getenv("RPM_ETCRPM");
+    __localedir = getenv("RPM_LOCALEDIR");
+
+    if ( __usrlibrpm == NULL ) {
+	__usrlibrpm = USRLIBRPM ;
+	setenv("RPM_USRLIBRPM", USRLIBRPM, 0);
+    }
+
+    if ( __etcrpm == NULL ) {
+	__etcrpm = SYSCONFIGDIR ;
+	setenv("RPM_ETCRPM", SYSCONFIGDIR, 0);
+    }
+
+    if ( __localedir == NULL ) {
+	__localedir = LOCALEDIR ;
+	setenv("RPM_LOCALEDIR", LOCALEDIR, 0);
+    }
+}
+#endif
+
 /*@-globstate@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
+	/*@globals rpmpoptfiles @*/
+	/*@modifies rpmpoptfiles @*/
 {
     poptContext optCon;
     char *path_buf, *path, *path_next;
     int rc;
+    int xx;
     int i;
 
 #if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
@@ -491,9 +542,13 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 #endif
    }
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    (void) setRuntimeRelocPaths();
+#endif
+
 #if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );
-    (void) bindtextdomain(PACKAGE, LOCALEDIR);
+    (void) bindtextdomain(PACKAGE, __localedir);
     (void) textdomain(PACKAGE);
 #endif
 
@@ -523,7 +578,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     path_buf = xstrdup(rpmpoptfiles);
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
-        int ac, i;
+        int ac;
 
         /* locate start of next path element */
         path_next = strchr(path, ':');
@@ -535,7 +590,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
         /* glob-expand the path element */
         ac = 0;
         av = NULL;
-        if ((i = rpmGlob(path, &ac, &av)) != 0)
+        if ((xx = rpmGlob(path, &ac, &av)) != 0)
             continue;
 
         /* work-off each resulting file from the path element */
@@ -545,7 +600,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 		fn++;
 		if (!rpmSecuritySaneFile(fn)) {
 		    rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", fn);
-		    continue;
+		    /*@innercontinue@*/ continue;
 		}
 	    }
 	    (void) poptReadConfigFile(optCon, fn);
@@ -555,15 +610,31 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
     path_buf = _free(path_buf);
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    {	char * poptAliasFn = rpmGetPath(__usrlibrpm, "/", VERSION, "/rpmpopt", NULL);
+	(void) poptReadConfigFile(optCon, poptAliasFn);
+	poptAliasFn = _free(poptAliasFn);
+    }
+#endif
+
     /* read standard POPT configuration files */
     (void) poptReadDefaultConfig(optCon, 1);
 
+#if defined(RPM_VENDOR_WINDRIVER)
+    {	char * poptExecPath = rpmGetPath(__usrlibrpm, "/", VERSION, NULL);
+	poptSetExecPath(optCon, poptExecPath, 1);
+	poptExecPath = _free(poptExecPath);
+    }
+#else
     poptSetExecPath(optCon, USRLIBRPM, 1);
+#endif
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
+/*@-dependenttrans -observertrans@*/	/* Avoid popt memory leaks. */
 	optArg = _free(optArg);
+/*@=dependenttrans =observertrans @*/
 	switch (rc) {
 	default:
 /*@-nullpass@*/

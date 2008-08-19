@@ -1245,7 +1245,7 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
 /**
  */
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
-static const char * _cpuinfo_path = NULL;
+const char * _cpuinfo_path = NULL;
 
 int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 	/*@globals _cpuinfo_path, ctags @*/

@@ -1,4 +1,7 @@
 5.1.4 -> 5.1.5:
+    - jbj: WR: run-time discovered configuration goopiness, take 1.
+    - jbj: display cpuinfo path with --showrc.
+    - jbj: display sysinfo path with --showrc.
     - jbj: remove internal zlib.
     - jbj: WR: add %windriver target to devtool.conf.
     - jbj: WR: eliminate most compiler warnings.
