@@ -13,6 +13,8 @@
 
 #include "debug.h"
 
+#if defined(WITH_NSS)
+
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
@@ -31,7 +33,6 @@ static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int xx;
 
@@ -74,16 +75,12 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
-#else
-    return 1;
-#endif	/* WITH_NSS */
 }
 
 static
 int rpmnssVerifyRSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc;
 
@@ -96,16 +93,12 @@ int rpmnssVerifyRSA(pgpDig dig)
 /*@=moduncon =nullstate @*/
 
     return rc;
-#else
-    return 0;
-#endif	/* WITH_NSS */
 }
 
 static
 int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int xx;
 
@@ -115,16 +108,12 @@ int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
-#else
-    return 1;
-#endif	/* WITH_NSS */
 }
 
 static
 int rpmnssVerifyDSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc;
 
@@ -137,12 +126,8 @@ int rpmnssVerifyDSA(pgpDig dig)
 /*@=moduncon =nullstate @*/
 
     return rc;
-#else
-    return 0;
-#endif	/* WITH_NSS */
 }
 
-#if defined(WITH_NSS)
 /**
  * @return		0 on success
  */
@@ -255,14 +240,12 @@ SECKEYPublicKey * rpmnssNewDSAKey(void)
 {
     return rpmnssNewPublicKey(dsaKey);
 }
-#endif	/* WITH_NSS */
 
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
 	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc = 0;
 
@@ -342,9 +325,6 @@ assert(0);
     }
 /*@=moduncon@*/
     return rc;
-#else
-    return 1;
-#endif	/* WITH_NSS */
 }
 
 /*@-mustmod@*/
@@ -352,7 +332,6 @@ static
 void rpmnssClean(void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = impl;
 /*@-moduncon@*/
     if (nss != NULL) {
@@ -374,7 +353,6 @@ void rpmnssClean(void * impl)
 	}
 /*@=moduncon@*/
     }
-#endif	/* WITH_NSS */
 }
 /*@=mustmod@*/
 
@@ -382,13 +360,11 @@ static
 void * rpmnssFree(/*@only@*/ void * impl)
 	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = impl;
     if (nss != NULL) {
 	rpmnssClean(impl);
 	nss = _free(nss);
     }
-#endif	/* WITH_NSS */
     return NULL;
 }
 
@@ -397,7 +373,6 @@ void * rpmnssInit(void)
 	/*@globals _rpmnss_init @*/
 	/*@modifies _rpmnss_init @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = xcalloc(1, sizeof(*nss));
 
 /*@-moduncon@*/
@@ -406,16 +381,14 @@ void * rpmnssInit(void)
     _rpmnss_init = 1;
 
     return (void *) nss;
-#else
-    return NULL;
-#endif	/* WITH_NSS */
 }
 
-#if defined(WITH_NSS)
 struct pgpImplVecs_s rpmnssImplVecs = {
 	rpmnssSetRSA, rpmnssVerifyRSA,
 	rpmnssSetDSA, rpmnssVerifyDSA,
 	rpmnssMpiItem, rpmnssClean,
 	rpmnssFree, rpmnssInit
 };
+
 #endif
+

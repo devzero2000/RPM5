@@ -19,6 +19,8 @@
 
 #include "debug.h"
 
+#if defined(WITH_SSL)
+
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
@@ -30,7 +32,6 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-#if defined(WITH_SSL)
 /**
  * Convert hex to binary nibble.
  * @param c            hex character
@@ -48,13 +49,11 @@ unsigned char nibble(char c)
 	return (unsigned char)((int)(c - 'a') + 10);
     return (unsigned char) '\0';
 }
-#endif	/* WITH_SSL */
 
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned int nbits = BN_num_bits(ssl->c);
     unsigned int nb = (nbits + 7) >> 3;
@@ -130,16 +129,12 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
-#else
-    return 1;
-#endif	/* WITH_SSL */
 }
 
 static
 int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned char * rsahm;
     unsigned char * dbuf;
@@ -191,16 +186,12 @@ int rpmsslVerifyRSA(pgpDig dig)
     }
 
     return rc;
-#else
-    return 0;
-#endif	/* WITH_SSL */
 }
 
 static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-#if defined(WITH_SSL)
     int xx;
 
     /* Set DSA hash. */
@@ -208,16 +199,12 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
-#else
-    return 1;
-#endif	/* WITH_SSL */
 }
 
 static
 int rpmsslVerifyDSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     int rc;
 
@@ -227,9 +214,6 @@ int rpmsslVerifyDSA(pgpDig dig)
 /*@=moduncon@*/
 
     return rc;
-#else
-    return 0;
-#endif	/* WITH_SSL */
 }
 
 static
@@ -238,7 +222,6 @@ int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 		/*@unused@*/ /*@null@*/ const rpmuint8_t * pend)
 	/*@*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
     int rc = 0;
@@ -286,9 +269,6 @@ assert(0);
     }
 /*@=moduncon@*/
     return rc;
-#else
-    return 1;
-#endif	/* WITH_SSL */
 }
 
 /*@-mustmod@*/
@@ -296,7 +276,6 @@ static
 void rpmsslClean(void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = impl;
 /*@-moduncon@*/
     if (ssl != NULL) {
@@ -318,7 +297,6 @@ void rpmsslClean(void * impl)
 	}
     }
 /*@=moduncon@*/
-#endif	/* WITH_SSL */
 }
 /*@=mustmod@*/
 
@@ -326,11 +304,9 @@ static
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = impl;
     rpmsslClean(impl);
     ssl = _free(ssl);
-#endif	/* WITH_SSL */
     return NULL;
 }
 
@@ -338,22 +314,19 @@ static
 void * rpmsslInit(void)
 	/*@*/
 {
-#if defined(WITH_SSL)
     rpmssl ssl = xcalloc(1, sizeof(*ssl));
 /*@-moduncon@*/
     ERR_load_crypto_strings();
 /*@=moduncon@*/
     return (void *) ssl;
-#else
-    return NULL;
-#endif	/* WITH_SSL */
 }
 
-#if defined(WITH_SSL)
 struct pgpImplVecs_s rpmsslImplVecs = {
 	rpmsslSetRSA, rpmsslVerifyRSA,
 	rpmsslSetDSA, rpmsslVerifyDSA,
 	rpmsslMpiItem, rpmsslClean,
 	rpmsslFree, rpmsslInit
 };
+
 #endif
+
