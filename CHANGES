@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: adopt AM_PATH_PYTHON AutoFu variables. AM_PATH_PYTHON will be used eventually.
     - rse: simplify conditional code and remove compile-time warnings in rpmio/rpm{nss,gc,ssl}.c
     - jbj: python: simplify Makefile.am
     - jbj: display sysinfo path with --showrc.
