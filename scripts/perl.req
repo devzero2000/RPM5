@@ -131,7 +131,29 @@ sub process_file {
       }
     }
 
-    if ( 
+    # handle "use base qw/ foo::bar baz::blah /;" and variations
+    if (
+        m/^ \s*
+           use \s+ base
+           (?:  \s+ q[wq]? \s* ( [!@#\$%^&*'"\/+=`~,.?-] ) \s* ( \S+? (?: \s+\S+? )*? ) \s* \1
+               |
+                \s* ( ["'] ) ( \S+? ) \3
+               |
+                # qw[], qw(), qw<>, qw{} are handled here; lax, but who gives
+                \s+ q[wq]? \s* [\[({<] \s* ( \S+? (?: \s+\S+? )*? ) \s* [\])}>]
+           )
+           \s* ;
+       /x
+      )
+    {
+        my @deps = ( $1 ? split /\s+/, $2 : $3 ? split /\s+/, $4 : $5 );
+        for my $mod ( grep !exists $require{$_}, @deps ) {
+            $require{$mod} = '';
+            $line{$mod}    = $_;
+        }
+    }
+
+    elsif ( 
 
 # ouch could be in a eval, perhaps we do not want these since we catch
 # an exception they must not be required
