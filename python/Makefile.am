@@ -23,11 +23,10 @@ AM_CPPFLAGS = -I. \
 
 noinst_HEADERS = header-py.h \
 	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \
-	rpmfi-py.h rpmkeyring-py.h rpmmacro-py.h rpmmi-py.h \
+	rpmfi-py.h rpmmacro-py.h rpmmi-py.h \
 	rpmps-py.h rpmte-py.h rpmts-py.h \
 	spec-py.h
 
-pkgpyexecdir = @WITH_PYTHON_LIBDIR@/rpm
 pkgpyexec_LTLIBRARIES = _rpmmodule.la
 pkgpyexec_SCRIPTS = rpm/__init__.py
 
@@ -43,8 +42,8 @@ _rpmmodule_la_LIBADD = \
 _rpmmodule_la_SOURCES = \
 	rpmmodule.c header-py.c \
 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c\
-	rpmfi-py.c rpmkeyring-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c \
-	rpmtd-py.c rpmte-py.c rpmts-py.c spec-py.c
+	rpmfi-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c \
+	rpmte-py.c rpmts-py.c spec-py.c
 
 # rpmmodule.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
