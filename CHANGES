@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rescusitate w make distcheck.
+    - jbj: update po files.
     - jbj: adopt AM_PATH_PYTHON AutoFu variables. AM_PATH_PYTHON will be used eventually.
     - rse: simplify conditional code and remove compile-time warnings in rpmio/rpm{nss,gc,ssl}.c
     - jbj: python: simplify Makefile.am
