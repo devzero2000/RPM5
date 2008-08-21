@@ -432,6 +432,9 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%
 
 #
 # Use internal dependency generator rather than external helpers?
+# 0 - Use external generator
+# 1 - Use internal generator if available
+# 2 - Use __scriptlet_requires to process scriptlet dependencies
 %_use_internal_dependency_generator	2
 
 #
