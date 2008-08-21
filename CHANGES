@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: adopt AM_PATH_PYTHON AutoFu variables. AM_PATH_PYTHON will be used eventually.
     - jbj: python: simplify Makefile.am
     - afb: check that crc32_combine/adler32_combine really exist, for murky old
 	zlib.

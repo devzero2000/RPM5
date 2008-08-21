@@ -27,9 +27,8 @@ noinst_HEADERS = header-py.h \
 	rpmps-py.h rpmte-py.h rpmts-py.h \
 	spec-py.h
 
-rpmdir = @pkgpyexecdir@/rpm
-rpm_LTLIBRARIES = _rpmmodule.la
-rpm_SCRIPTS = rpm/__init__.py
+pkgpyexec_LTLIBRARIES = _rpmmodule.la
+pkgpyexec_SCRIPTS = rpm/__init__.py
 
 _rpmmodule_la_LDFLAGS = -module -avoid-version
 _rpmmodule_la_LIBADD = \
