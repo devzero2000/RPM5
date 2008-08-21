@@ -838,10 +838,18 @@ AC_SUBST(WITH_PERL_SUBPACKAGE)
 dnl # optional Python language bindings
 WITH_PYTHON_SUBDIR=""
 WITH_PYTHON_SUBPACKAGE=0
-WITH_PYTHON_VERSION=""
 WITH_PYTHON_INCDIR=""
-WITH_PYTHON_LIBDIR=""
-WITH_PYTHON_PREFIX="\${prefix}"
+
+PYTHON=""
+PYTHON_VERSION=""
+PYTHON_PREFIX=""
+PYTHON_EXEC_PREFIX=""
+#PYTHON_PLATFORM=""
+pythondir=""
+pkgpythondir=""
+pyexecdir=""
+pkgpyexecdir=""
+
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]), [
     if test ".$withval" != .no; then
         case "$withval" in
@@ -859,47 +867,47 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
 	for python_ver in $python_version ; do
              if test "$python_ver" != "2.x" ; then
                   AC_MSG_CHECKING([for Python ${python_ver} API])
-                  OLD_CFLAGS="${CFLAGS}"
+                  save_CFLAGS="${CFLAGS}"
                   for i in "$prefix" "/usr/local" "/usr"; do
-                  CFLAGS="${OLD_CFLAGS} -I$i/include/python${python_ver}"
+                  CFLAGS="${save_CFLAGS} -I$i/include/python${python_ver}"
                   AC_RUN_IFELSE([AC_LANG_SOURCE(
                   [[#include "Python.h"
                      main() { exit(strncmp("${python_ver}", PY_VERSION, 3)); } ]])
                   ], [
-                     WITH_PYTHON_VERSION="${python_ver}"
+                     PYTHON_VERSION="${python_ver}"
                      AC_MSG_RESULT(yes)
-                     WITH_PYTHON_PREFIX="${i}"
+                     PYTHON_PREFIX="${i}"
                      break
                   ], [ 
                   ], [
                      dnl if we're cross compiling, assume the user has a clue
                      if test "$withval" = "$python_ver"; then
-                         WITH_PYTHON_VERSION="${python_ver}"
+                         PYTHON_VERSION="${python_ver}"
                          AC_MSG_RESULT(yes)
                          break
                      fi
                   ])
                   done
-                  CFLAGS="${OLD_CFLAGS}"
-                  if test ".$WITH_PYTHON_VERSION" == "."; then
+                  CFLAGS="${save_CFLAGS}"
+                  if test ".$PYTHON_VERSION" == "."; then
                      dnl check Mac OS X framework
-                     OLD_CFLAGS="${CFLAGS}"
+                     save_CFLAGS="${CFLAGS}"
                      for f in "~" "" "/System" "/Network"; do
-                     CFLAGS="${OLD_CFLAGS} -I$f/Library/Frameworks/Python.framework/Versions/${python_ver}/include/python${python_ver}"
+                     CFLAGS="${save_CFLAGS} -I$f/Library/Frameworks/Python.framework/Versions/${python_ver}/include/python${python_ver}"
                      AC_RUN_IFELSE([AC_LANG_SOURCE(
                      [[#include "Python.h"
                         main() { exit(strncmp("${python_ver}", PY_VERSION, 3)); } ]])
                      ], [
-                        WITH_PYTHON_VERSION="${python_ver}"
+                        PYTHON_VERSION="${python_ver}"
                         AC_MSG_RESULT([yes (using Python.framework)])
-                        WITH_PYTHON_PREFIX="$f/Library/Frameworks/Python.framework/Versions/${python_ver}"
+                        PYTHON_PREFIX="$f/Library/Frameworks/Python.framework/Versions/${python_ver}"
                         break
                      ], [
                      ])
                      done
-                     CFLAGS="${OLD_CFLAGS}"
+                     CFLAGS="${save_CFLAGS}"
                   fi
-                  if test ".$WITH_PYTHON_VERSION" == "."; then
+                  if test ".$PYTHON_VERSION" == "."; then
                      AC_MSG_RESULT(no)
                   fi
              else
@@ -908,21 +916,21 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
                   [[#include <python/Python.h>
                      main() { exit(strncmp("2.", PY_VERSION, 2)); } ]])
                   ], [
-                     WITH_PYTHON_VERSION=""
+                     PYTHON_VERSION=""
                      AC_MSG_RESULT(yes)
                   ], [ 
                      AC_MSG_RESULT(no)
                   ], [
                      dnl if we're cross compiling, assume the user has a clue
                      if test "$withval" = "$python_ver"; then
-                         WITH_PYTHON_VERSION="${python_ver}"
+                         PYTHON_VERSION="${python_ver}"
                          AC_MSG_RESULT(yes)
                      else
                          AC_MSG_RESULT(no)
                      fi
                   ])
              fi
-             if test ".$WITH_PYTHON_VERSION" != "."; then
+             if test ".$PYTHON_VERSION" != "."; then
                   WITH_PYTHON_SUBDIR=python
                   WITH_PYTHON_SUBPACKAGE=1
                   break
@@ -932,13 +940,31 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
     AC_ARG_WITH(python-inc-dir, AS_HELP_STRING([--with-python-inc-dir=DIR], [directory with Python include files]),
 	    [WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="`(python -c 'from distutils.sysconfig import get_python_inc; print get_python_inc()') 2>/dev/null`"])
     AC_ARG_WITH(python-lib-dir, AS_HELP_STRING([--with-python-lib-dir=DIR], [directory with Python library]),
-	    [WITH_PYTHON_LIBDIR="$withval"], [WITH_PYTHON_LIBDIR="`(python -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)') 2>/dev/null`"])
+	    [pythondir="$withval"], [pythondir="`(python -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)') 2>/dev/null`"])
 ])
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
-AC_SUBST(WITH_PYTHON_VERSION)
 AC_SUBST(WITH_PYTHON_INCDIR)
-AC_SUBST(WITH_PYTHON_LIBDIR)
+
+if test ".$pythondir" != "."; then
+    PYTHON="${__PYTHON}"
+    PYTHON_PREFIX="\${prefix}"
+    PYTHON_EXEC_PREFIX="\${exec_prefix}"
+#   PYTHON_PLATFORM="???"
+    pkgpythondir="\${pythondir}/\${PACKAGE}"
+    pyexecdir="\${pythondir}"
+    pkgpyexecdir="\${pyexecdir}/\${PACKAGE}"
+fi
+
+AC_SUBST(PYTHON)
+AC_SUBST(PYTHON_VERSION)
+AC_SUBST(PYTHON_PREFIX)
+AC_SUBST(PYTHON_EXEC_PREFIX)
+#AC_SUBST(PYTHON_PLATFORM)
+AC_SUBST(pythondir)
+AC_SUBST(pkgpythondir)
+AC_SUBST(pyexecdir)
+AC_SUBST(pkgpyexecdir)
 
 dnl ##
 dnl ## ==== THIRD-PARTY LIBRARIES (2/2) ====
