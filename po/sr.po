@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-05-31 18:19-0400\n"
+"POT-Creation-Date: 2008-01-05 10:42+0100\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: Serbian <gnu@prevod.org>\n"
@@ -12,258 +12,248 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: build.c:36
+#: build.c:41
 #, fuzzy
-msgid "Failed build dependencies"
+msgid "Failed build dependencies:\n"
 msgstr "лоше међузависности:\n"
 
-#: build.c:63
+#: build.c:72
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Не могу да отворим %s за читање: %s"
 
-#: build.c:140
+#: build.c:149
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build.c:154
+#: build.c:163
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build.c:195
+#: build.c:204
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build.c:200
+#: build.c:209
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s не личи на RPM пакет\n"
 
-#: build.c:209
+#: build.c:218
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s не личи на RPM пакет\n"
 
-#: build.c:283
+#: build.c:292
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:298 build/spec.c:854
+#: build.c:307 build/spec.c:827
 #, c-format
 msgid "    target platform: %s\n"
 msgstr ""
 
-#: rpmqv.c:90
+#: rpmqv.c:89
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:93
+#: rpmqv.c:92
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:97
+#: rpmqv.c:96
 msgid "Source options (with --query or --verify):"
 msgstr ""
 
-#: rpmqv.c:104
+#: rpmqv.c:103
 msgid "Dependency check/order options:"
 msgstr ""
 
-#: rpmqv.c:110
+#: rpmqv.c:109
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:116
+#: rpmqv.c:115
 msgid "Signature options:"
 msgstr ""
 
-#: rpmqv.c:122
+#: rpmqv.c:121
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:128
+#: rpmqv.c:127
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:134
+#: rpmqv.c:133
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:139 tools/rpmdeps.c:155
+#: rpmqv.c:138 tools/rpmdeps.c:155
 msgid "Common options:"
 msgstr ""
 
-#: rpmqv.c:156 lib/poptI.c:44
+#: rpmqv.c:155 lib/poptI.c:44
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "%s : %s\n"
 
-#: rpmqv.c:484 rpmqv.c:490 rpmqv.c:496 rpmqv.c:533
+#: rpmqv.c:163 lib/poptALL.c:179
+#, c-format
+msgid "%s ("
+msgstr "%s ("
+
+#: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
 msgstr "само један главни режим може бити наведен"
 
-#: rpmqv.c:512
+#: rpmqv.c:510
 msgid "one type of query/verify may be performed at a time"
 msgstr "само један тип упита/провере може бити урађен одједном"
 
-#: rpmqv.c:516
+#: rpmqv.c:514
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "неочекиван извор упита"
 
-#: rpmqv.c:519
+#: rpmqv.c:517
 #, fuzzy
 msgid "unexpected query format"
 msgstr "неочекиван извор упита"
 
-#: rpmqv.c:522
+#: rpmqv.c:520
 msgid "unexpected query source"
 msgstr "неочекиван извор упита"
 
-#: rpmqv.c:565
+#: rpmqv.c:563
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "само инсталација и ажурирање могу бити форсиране"
 
-#: rpmqv.c:567
+#: rpmqv.c:565
 msgid "files may only be relocated during package installation"
 msgstr "датотеке могу бити премештене само током инсталације пакета"
 
-#: rpmqv.c:570
+#: rpmqv.c:568
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:573
+#: rpmqv.c:571
 #, fuzzy
-msgid ""
-"--relocate and --excludepath may only be used when installing new packages"
+msgid "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate можете користити само кад инсталирате нови пакет"
 
-#: rpmqv.c:576
+#: rpmqv.c:574
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix можете користити само код инсталације новог пакета"
 
-#: rpmqv.c:579
+#: rpmqv.c:577
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументи за --prefix морају почети знаком /"
 
-#: rpmqv.c:582
+#: rpmqv.c:580
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) можете користити само код инсталације пакета"
 
-#: rpmqv.c:586
+#: rpmqv.c:584
 msgid "--percent may only be specified during package installation"
 msgstr "--percent можете користити само код инсталације пакета"
 
-#: rpmqv.c:590
+#: rpmqv.c:588
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs можете користити само код инсталације пакета"
 
-#: rpmqv.c:594
+#: rpmqv.c:592
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs можете користити само код инсталације пакета"
 
-#: rpmqv.c:598
+#: rpmqv.c:596
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs можете користити само код инсталације пакета"
 
-#: rpmqv.c:602
+#: rpmqv.c:600
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "само једно можете да наведете: --excludedocs или --includedocs"
 
-#: rpmqv.c:606
+#: rpmqv.c:604
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch можете користити само код инсталације пакета"
 
-#: rpmqv.c:610
+#: rpmqv.c:608
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos можете користити само код инсталације пакета"
 
-#: rpmqv.c:614
+#: rpmqv.c:612
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches можете користити само код брисања пакета"
 
-#: rpmqv.c:618
+#: rpmqv.c:616
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles можете користити само код инсталације пакета"
 
-#: rpmqv.c:623
+#: rpmqv.c:621
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb можете користити само код инсталације и брисања пакета"
 
-#: rpmqv.c:628
-msgid ""
-"script disabling options may only be specified during package installation "
-"and erasure"
+#: rpmqv.c:626
+msgid "script disabling options may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:633
-msgid ""
-"trigger disabling options may only be specified during package installation "
-"and erasure"
+#: rpmqv.c:631
+msgid "trigger disabling options may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:637
+#: rpmqv.c:635
 #, fuzzy
-msgid ""
-"--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation, erasure, and verification"
-msgstr ""
-"--nodeps можете користити само код инсталације, уклањања или провере пакета"
+msgid "--nodeps may only be specified during package building, rebuilding, recompilation, installation,erasure, and verification"
+msgstr "--nodeps можете користити само код инсталације, уклањања или провере пакета"
 
-#: rpmqv.c:642
-msgid ""
-"--test may only be specified during package installation, erasure, and "
-"building"
-msgstr ""
-"--test можете користити само код инсталације, уклањања или креирања пакета"
+#: rpmqv.c:640
+msgid "--test may only be specified during package installation, erasure, and building"
+msgstr "--test можете користити само код инсталације, уклањања или креирања пакета"
 
-#: rpmqv.c:647
-msgid ""
-"--root (-r) may only be specified during installation, erasure, querying, "
-"and database rebuilds"
-msgstr ""
-"--root (-r) можете навести само код инсталације, уклањања, упита или "
-"рекреирања базе података"
+#: rpmqv.c:645
+msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
+msgstr "--root (-r) можете навести само код инсталације, уклањања, упита или рекреирања базе података"
 
-#: rpmqv.c:659
+#: rpmqv.c:657
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи за --root (-r) морају почети знаком /"
 
-#: rpmqv.c:687
+#: rpmqv.c:685
 #, c-format
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:692
+#: rpmqv.c:690
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "Не могу да отворим датотеку %s: "
 
-#: rpmqv.c:704
+#: rpmqv.c:702
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:706
+#: rpmqv.c:704
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неуспела провера лозинке\n"
 
-#: rpmqv.c:710
+#: rpmqv.c:708
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Лозинка је добра.\n"
 
-#: rpmqv.c:727
+#: rpmqv.c:725
 #, fuzzy, c-format
 msgid "exec failed\n"
 msgstr "%s: Неуспело отварање\n"
 
-#: rpmqv.c:771
+#: rpmqv.c:769
 msgid "no packages files given for rebuild"
 msgstr "недосатаје пакет за рекреирање"
 
@@ -297,7 +287,7 @@ msgstr "недостају аргументи за проверу"
 msgid "no arguments given"
 msgstr "недостају аргументи за упит"
 
-#: build/build.c:190 build/pack.c:699
+#: build/build.c:190 build/pack.c:713
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "Не могу да отворим %s за читање: %s"
@@ -378,189 +368,189 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr "очекиван знак ? у изразу"
 
-#: build/files.c:288
+#: build/files.c:289
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:352 build/files.c:548 build/files.c:738
+#: build/files.c:353 build/files.c:549 build/files.c:739
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "недостаје '(' на %s %s"
 
-#: build/files.c:363 build/files.c:676 build/files.c:749
+#: build/files.c:364 build/files.c:677 build/files.c:750
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "недостаје ')' на %s(%s\n"
 
-#: build/files.c:401 build/files.c:701
+#: build/files.c:402 build/files.c:702
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/files.c:509
+#: build/files.c:510
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "недостаје %s после %s\n"
 
-#: build/files.c:564
+#: build/files.c:565
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:602
+#: build/files.c:603
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/files.c:612
+#: build/files.c:613
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/files.c:624
+#: build/files.c:625
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/files.c:776
+#: build/files.c:777
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:787
+#: build/files.c:788
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:914
+#: build/files.c:915
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:922
+#: build/files.c:923
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
-#: build/files.c:956
+#: build/files.c:957
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/files.c:977
+#: build/files.c:978
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "премештања морају почети знаком '/'"
 
-#: build/files.c:994
+#: build/files.c:995
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1015
+#: build/files.c:1016
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1313
+#: build/files.c:1314
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/files.c:1530
+#: build/files.c:1529
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1825
+#: build/files.c:1816
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/files.c:1851
+#: build/files.c:1842
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Датотека није пронађена на серверу"
 
-#: build/files.c:1854
+#: build/files.c:1845
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Датотека није пронађена на серверу"
 
-#: build/files.c:2072
+#: build/files.c:2063
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2078
+#: build/files.c:2069
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr ""
 
-#: build/files.c:2082 lib/rpmchecksig.c:747
+#: build/files.c:2073 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2089
+#: build/files.c:2080
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr ""
 
-#: build/files.c:2145
+#: build/files.c:2136
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "премештања морају почети знаком '/'"
 
-#: build/files.c:2169
+#: build/files.c:2160
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "пакет %s није наведен у %s"
 
-#: build/files.c:2184
+#: build/files.c:2175
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Датотека није пронађена на серверу"
 
-#: build/files.c:2188
+#: build/files.c:2179
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Датотека није пронађена на серверу"
 
-#: build/files.c:2252
+#: build/files.c:2243
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/files.c:2263 build/pack.c:135
+#: build/files.c:2254 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/files.c:2742
+#: build/files.c:2739
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/files.c:2764 build/parsePrep.c:53
+#: build/files.c:2761 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2809
+#: build/files.c:2806
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "грешка потраге за пакетом %s\n"
 
-#: build/files.c:2824
+#: build/files.c:2821
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2856
+#: build/files.c:2853
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "неуспело отварање %s: %s"
@@ -594,137 +584,137 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:70
+#: build/pack.c:91
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/pack.c:73
+#: build/pack.c:94
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/pack.c:95
+#: build/pack.c:116
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "неуспело читање: %s"
 
-#: build/pack.c:102
+#: build/pack.c:123
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "неуспело читање: %s"
 
-#: build/pack.c:217 build/pack.c:231
+#: build/pack.c:238 build/pack.c:252
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:224
+#: build/pack.c:245
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:238
+#: build/pack.c:259
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:245 build/pack.c:252
+#: build/pack.c:266 build/pack.c:273
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:260
+#: build/pack.c:281
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:267
+#: build/pack.c:288
 #, fuzzy, c-format
 msgid "Could not open Test file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:292
+#: build/pack.c:313
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "грешка: не могу да отворим датотеку %s\n"
 
-#: build/pack.c:325
+#: build/pack.c:346
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/pack.c:346
+#: build/pack.c:367
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/pack.c:356
+#: build/pack.c:377
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Неуспео 'readLead'\n"
 
-#: build/pack.c:388
+#: build/pack.c:409
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "грешка: чини се да %s није RPM пакет\n"
 
-#: build/pack.c:393
+#: build/pack.c:414
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "грешка код узимања слога %s из %s"
 
-#: build/pack.c:686
+#: build/pack.c:700
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Не могу да упишем %s"
 
-#: build/pack.c:748
+#: build/pack.c:762
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "направи PGP потпис"
 
-#: build/pack.c:772
+#: build/pack.c:786
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Не могу да упишем %s"
 
-#: build/pack.c:780
+#: build/pack.c:794
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "неуспело отварање %s\n"
 
-#: build/pack.c:806 lib/psm.c:2019
+#: build/pack.c:820 lib/psm.c:1935
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не могу да упишем %s"
 
-#: build/pack.c:831
+#: build/pack.c:845
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Не могу да упишем %s"
 
-#: build/pack.c:872
+#: build/pack.c:886
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Не могу да упишем %s"
 
-#: build/pack.c:880
+#: build/pack.c:894
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Не могу да упишем %s"
 
-#: build/pack.c:915 lib/psm.c:2334
+#: build/pack.c:929 lib/psm.c:2229
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:1036
+#: build/pack.c:1053
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:1054
+#: build/pack.c:1071
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Не могу да отворим датотеку %s: "
@@ -799,141 +789,136 @@ msgstr "неуспело отварање %s: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/parsePreamble.c:251
+#: build/parsePreamble.c:250
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:254
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:258
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Прибављам %s\n"
 
-#: build/parsePreamble.c:263
+#: build/parsePreamble.c:262
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "%s: Неуспело отварање\n"
 
-#: build/parsePreamble.c:288
+#: build/parsePreamble.c:287
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "\"%s\" одређује више пакета\n"
 
-#: build/parsePreamble.c:319
+#: build/parsePreamble.c:318
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "грешка: не могу да отворим %s%s/пацкагес.рпм\n"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:402
 msgid "No icon file in sources\n"
 msgstr ""
 
-#: build/parsePreamble.c:431
+#: build/parsePreamble.c:430
 #, fuzzy, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/parsePreamble.c:438
+#: build/parsePreamble.c:437
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Не могу да упишем %s"
 
-#: build/parsePreamble.c:447
+#: build/parsePreamble.c:446
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Не могу да упишем %s"
 
-#: build/parsePreamble.c:452
+#: build/parsePreamble.c:451
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr ""
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "(непознат тип)"
 
-#: build/parsePreamble.c:523
+#: build/parsePreamble.c:522
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePreamble.c:559
+#: build/parsePreamble.c:558
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:566
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePreamble.c:591 build/parsePreamble.c:598
+#: build/parsePreamble.c:590 build/parsePreamble.c:597
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePreamble.c:641
+#: build/parsePreamble.c:640
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:658
+#: build/parsePreamble.c:657
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "премештања морају почети знаком '/'"
 
-#: build/parsePreamble.c:666
+#: build/parsePreamble.c:665
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "премештања морају почети знаком '/'"
 
-#: build/parsePreamble.c:678
+#: build/parsePreamble.c:677
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "премештања морају почети знаком '/'"
 
-#: build/parsePreamble.c:692
+#: build/parsePreamble.c:691
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePreamble.c:738 build/parsePreamble.c:749
+#: build/parsePreamble.c:737 build/parsePreamble.c:748
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/parsePreamble.c:794
+#: build/parsePreamble.c:792
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "недостаје архитектура за %s на %s:%д"
 
-#: build/parsePreamble.c:807
-#, c-format
-msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
-msgstr ""
-
-#: build/parsePreamble.c:931
+#: build/parsePreamble.c:914
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1028
+#: build/parsePreamble.c:1010
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Опције одреднице пакета:"
 
-#: build/parsePreamble.c:1034
+#: build/parsePreamble.c:1016
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "привремена база података %s већ постоји"
 
-#: build/parsePreamble.c:1070
+#: build/parsePreamble.c:1050
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "погрешан број пакета: %s\n"
@@ -943,99 +928,98 @@ msgstr "погрешан број пакета: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: build/parsePrep.c:112
+#: build/parsePrep.c:111
 #, fuzzy, c-format
 msgid "No patch number %d\n"
 msgstr "(није број)"
 
-#: build/parsePrep.c:223
+#: build/parsePrep.c:222
 #, fuzzy, c-format
 msgid "No source number %d\n"
 msgstr "(није број)"
 
-#: build/parsePrep.c:371
+#: build/parsePrep.c:366
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:386
+#: build/parsePrep.c:381
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:404
+#: build/parsePrep.c:399
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:554
+#: build/parsePrep.c:549
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:563
+#: build/parsePrep.c:558
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:571
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:585
+#: build/parsePrep.c:580
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:597
+#: build/parsePrep.c:592
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:604
+#: build/parsePrep.c:599
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:606
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:615
+#: build/parsePrep.c:610
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parsePrep.c:766
+#: build/parsePrep.c:759
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "недостаје { после %"
 
-#: build/parsePrep.c:778 build/parsePrep.c:793
+#: build/parsePrep.c:771 build/parsePrep.c:787
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "PGP омануо"
 
-#: build/parsePrep.c:784 build/parsePrep.c:799
+#: build/parsePrep.c:777 build/parsePrep.c:793
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "PGP омануо"
 
-#: build/parsePrep.c:804
+#: build/parsePrep.c:799
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "недостаје { после %"
 
-#: build/parsePrep.c:826
+#: build/parsePrep.c:821
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
 
 #: build/parseReqs.c:101
 #, fuzzy, c-format
-msgid ""
-"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
+msgid "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr "премештања морају почети знаком '/'"
 
 #: build/parseReqs.c:127
@@ -1078,263 +1062,300 @@ msgstr "неуспело отварање %s: %s"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "пакет %s није наведен у %s"
 
-#: build/parseSpec.c:237
+#: build/parseSpec.c:235
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: build/parseSpec.c:291
+#: build/parseSpec.c:286
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "неуспело отварање %s\n"
 
-#: build/parseSpec.c:306
+#: build/parseSpec.c:301
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:397
+#: build/parseSpec.c:390
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:399
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:418
+#: build/parseSpec.c:411
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:432 build/parseSpec.c:441
+#: build/parseSpec.c:425 build/parseSpec.c:434
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:656
+#: build/parseSpec.c:620
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "немој проверавати архитектуру пакета"
 
-#: build/parseSpec.c:724
+#: build/parseSpec.c:659
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "пакет %s није наведен у %s"
 
-#: build/poptBT.c:136
+#: build/poptBT.c:142
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "припрема (распакуј изворне датотеке и примени закрпе)"
 
-#: build/poptBT.c:137 build/poptBT.c:140 build/poptBT.c:143 build/poptBT.c:146
-#: build/poptBT.c:149 build/poptBT.c:152 build/poptBT.c:155 build/poptBT.c:159
-#: build/poptBT.c:162
+#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
+#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
+#: build/poptBT.c:169
 msgid "<specfile>"
 msgstr ""
 
-#: build/poptBT.c:139
+#: build/poptBT.c:145
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:142
+#: build/poptBT.c:148
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "инсталирај пакет"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:151
 #, fuzzy, c-format
 msgid "verify %files section from <specfile>"
 msgstr "упит над пакетом који има <specfile>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:154
 #, fuzzy
 msgid "build source and binary packages from <specfile>"
 msgstr "група %s не садржи ниједан пакет\n"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:157
 #, fuzzy
 msgid "build binary package only from <specfile>"
 msgstr "упит над пакетом који има <specfile>"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:160
 #, fuzzy
 msgid "build source package only from <specfile>"
 msgstr "упит над пакетом који има <specfile>"
 
-#: build/poptBT.c:158
+#: build/poptBT.c:164
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "упит над пакетом који има <specfile>"
 
-#: build/poptBT.c:161
+#: build/poptBT.c:168
 #, fuzzy
 msgid "fetch missing source and patch files"
 msgstr "уклони изворне датотеке и датотеку спецификације"
 
-#: build/poptBT.c:165
+#: build/poptBT.c:173
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "припрема (распакуј изворне датотеке и примени закрпе)"
 
-#: build/poptBT.c:166 build/poptBT.c:169 build/poptBT.c:172 build/poptBT.c:175
-#: build/poptBT.c:178 build/poptBT.c:181 build/poptBT.c:184
+#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
+#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
 msgid "<tarball>"
 msgstr ""
 
-#: build/poptBT.c:168
+#: build/poptBT.c:176
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:171
+#: build/poptBT.c:179
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:174
+#: build/poptBT.c:182
 #, fuzzy, c-format
 msgid "verify %files section from <tarball>"
 msgstr "упит над пакетом који има <tarball>"
 
-#: build/poptBT.c:177
+#: build/poptBT.c:185
 #, fuzzy
 msgid "build source and binary packages from <tarball>"
 msgstr "група %s не садржи ниједан пакет\n"
 
-#: build/poptBT.c:180
+#: build/poptBT.c:188
 #, fuzzy
 msgid "build binary package only from <tarball>"
 msgstr "група %s не садржи ниједан пакет\n"
 
-#: build/poptBT.c:183
+#: build/poptBT.c:191
 #, fuzzy
 msgid "build source package only from <tarball>"
 msgstr "направи пакете за оперативни систем <tarball>"
 
-#: build/poptBT.c:187
+#: build/poptBT.c:195
 #, fuzzy
 msgid "build binary package from <source package>"
 msgstr "бинарни пакет (припрема, компилација, инсталација, паковање)"
 
-#: build/poptBT.c:188 build/poptBT.c:191
+#: build/poptBT.c:196 build/poptBT.c:199
 #, fuzzy
 msgid "<source package>"
 msgstr "упит над свим пакетима"
 
-#: build/poptBT.c:190
+#: build/poptBT.c:198
 #, fuzzy
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
+msgid "build through %install (%prep, %build, then install) from <source package>"
 msgstr "инсталирај пакет"
 
-#: build/poptBT.c:194
+#: build/poptBT.c:202
 msgid "remove build tree when done"
 msgstr "уклони стабло директоријума по завршетку"
 
-#: build/poptBT.c:196
+#: build/poptBT.c:204
+#, fuzzy
+msgid "debug file state machine"
+msgstr "неуспело отварање %s: %s"
+
+#: build/poptBT.c:206
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "немој извршити ниједну фазу"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:208
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "немој проверавати зависности пакета"
 
-#: build/poptBT.c:200
-msgid "disable automagic Provides: extraction"
-msgstr ""
-
-#: build/poptBT.c:202
-msgid "disable automagic Requires: extraction"
-msgstr ""
-
-#: build/poptBT.c:204
-msgid "disable tags forbidden by LSB"
-msgstr ""
-
-#: build/poptBT.c:207 lib/poptALL.c:347 lib/poptI.c:342 lib/poptQV.c:407
-#: lib/poptQV.c:416 lib/poptQV.c:458
+#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: lib/poptQV.c:415 lib/poptQV.c:457
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "немој проверавати зависности пакета"
 
-#: build/poptBT.c:209 lib/poptALL.c:349 lib/poptI.c:344 lib/poptQV.c:410
-#: lib/poptQV.c:418 lib/poptQV.c:461
+#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: lib/poptQV.c:417 lib/poptQV.c:460
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "немој проверавати архитектуру пакета"
 
-#: build/poptBT.c:211 lib/poptALL.c:351 lib/poptI.c:346 lib/poptQV.c:413
-#: lib/poptQV.c:420 lib/poptQV.c:463
+#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: lib/poptQV.c:419 lib/poptQV.c:462
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "провери потпис у пакету"
 
-#: build/poptBT.c:214
-msgid "do not accept i18n msgstr's from specfile"
+#: build/poptBT.c:218
+msgid "do not accept i18N msgstr's from specfile"
 msgstr ""
 
-#: build/poptBT.c:216
+#: build/poptBT.c:220
 #, fuzzy
 msgid "remove sources when done"
 msgstr "уклони изворне датотеке и датотеку спецификације по завршетку"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:222
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "уклони изворне датотеке и датотеку спецификације по завршетку"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:224
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "иди право до одређене фазе (само за 'c,i')"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:226
 #, fuzzy
 msgid "generate PGP/GPG signature"
 msgstr "направи PGP потпис"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:228
 msgid "override target platform"
 msgstr ""
 
-#: build/poptBT.c:224 lib/poptALL.c:344 lib/poptQV.c:318
+#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:226
-msgid "look up i18n strings in specfile catalog"
+#: build/poptBT.c:230
+msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:292
+#: build/spec.c:291
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/spec.c:298
+#: build/spec.c:297
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/spec.c:368
+#: build/spec.c:363
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/spec.c:711
+#: build/spec.c:684
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "грешка: не могу да отворим %s\n"
 
-#: build/spec.c:788
+#: build/spec.c:761
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "упит над %s неуспео\n"
 
-#: build/spec.c:842
+#: build/spec.c:815
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
+
+#: lib/cpio.c:230
+#, fuzzy, c-format
+msgid "(error 0x%x)"
+msgstr "грешка: "
+
+#: lib/cpio.c:233
+msgid "Bad magic"
+msgstr ""
+
+#: lib/cpio.c:234
+msgid "Bad/unreadable  header"
+msgstr ""
+
+#: lib/cpio.c:256
+msgid "Header size too big"
+msgstr ""
+
+#: lib/cpio.c:257
+#, fuzzy
+msgid "Unknown file type"
+msgstr "(непознат тип)"
+
+#: lib/cpio.c:258
+#, fuzzy
+msgid "Missing hard link(s)"
+msgstr "недостаје ':' на %s:%д"
+
+#: lib/cpio.c:259
+msgid "File digest mismatch"
+msgstr ""
+
+#: lib/cpio.c:260
+#, fuzzy
+msgid "Internal error"
+msgstr "фатална грешка: "
+
+#: lib/cpio.c:261
+msgid "Archive file not in header"
+msgstr ""
+
+#: lib/cpio.c:272
+#, fuzzy
+msgid " failed - "
+msgstr "PGP омануо"
 
 #: lib/depends.c:314
 #, fuzzy, c-format
@@ -1346,139 +1367,134 @@ msgstr "пакет %s није инсталиран\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s није инсталиран\n"
 
-#: lib/depends.c:662
+#: lib/depends.c:638
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:678
+#: lib/depends.c:654
 #, fuzzy
 msgid "(function probe)"
 msgstr "(непознат тип)"
 
-#: lib/depends.c:697
+#: lib/depends.c:673
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:714
+#: lib/depends.c:690
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:723
+#: lib/depends.c:699
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:745
+#: lib/depends.c:721
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:802
+#: lib/depends.c:778
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:844
+#: lib/depends.c:820
 #, fuzzy
 msgid "(digest probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:868
+#: lib/depends.c:844
 #, fuzzy
 msgid "(signature probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:898
-#, fuzzy
-msgid "(verify probe)"
-msgstr "датотека %s не припада ниједном пакету\n"
-
-#: lib/depends.c:920
+#: lib/depends.c:866
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:933
+#: lib/depends.c:879
 #, fuzzy
 msgid "(macro probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:961
+#: lib/depends.c:907
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:988
+#: lib/depends.c:934
 #, fuzzy
 msgid "(running probe)"
 msgstr "(непознат тип)"
 
-#: lib/depends.c:1010
+#: lib/depends.c:956
 #, fuzzy
 msgid "(sanity probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1031
+#: lib/depends.c:977
 #, fuzzy
 msgid "(vcheck probe)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1052
+#: lib/depends.c:998
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1071
+#: lib/depends.c:1017
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1086
+#: lib/depends.c:1032
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1101
+#: lib/depends.c:1047
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1116
+#: lib/depends.c:1062
 #, fuzzy
 msgid "(uname provides)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1148
+#: lib/depends.c:1094
 #, fuzzy
 msgid "(soname provides)"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/depends.c:1176
+#: lib/depends.c:1122
 #, fuzzy
 msgid "(db files)"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/depends.c:1188
+#: lib/depends.c:1134
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1218
+#: lib/depends.c:1164
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1655
+#: lib/depends.c:1591
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1781
+#: lib/depends.c:1714
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "грешка уклањања слога %s у %s"
 
-#: lib/depends.c:2366
+#: lib/depends.c:2288
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2402
+#: lib/depends.c:2324
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1493,7 +1509,7 @@ msgstr "мнтцтл() није вратио 'фуггер' величину: %s
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "мнтцтл() није вратио 'фуггер' величину: %s"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:336
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "неуспело отварање %s: %s"
@@ -1508,47 +1524,47 @@ msgstr "неуспело отварање %s: %s"
 msgid "%5d 0x%04x %s %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/fs.c:360
+#: lib/fs.c:359
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:897
+#: lib/fsm.c:780
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:911
+#: lib/fsm.c:794
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "група %s не садржи ниједан пакет\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1689
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1929 lib/fsm.c:2049
+#: lib/fsm.c:1833 lib/fsm.c:1953
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "Не могу да отворим датотеку %s: "
 
-#: lib/fsm.c:2076
+#: lib/fsm.c:1980
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "не могу да уклоним %s - директоријум није празан"
 
-#: lib/fsm.c:2082
+#: lib/fsm.c:1986
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "неуспела команда рмдир %s: %s"
 
-#: lib/fsm.c:2097
+#: lib/fsm.c:2001
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "неуспело отварање %s: %s\n"
 
-#: lib/fsm.c:2122
+#: lib/fsm.c:2026
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "Не могу да отворим датотеку %s: "
@@ -1558,160 +1574,246 @@ msgstr "Не могу да отворим датотеку %s: "
 msgid "cannot create %%%s %s\n"
 msgstr "Не могу да отворим датотеку %s: "
 
-#: lib/package.c:130
+#: lib/package.c:142
 #, fuzzy
 msgid "read failed\n"
 msgstr "%s: Неуспело отварање\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:900
+#: lib/package.c:148 lib/rpmchecksig.c:244 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Потпис није на располагању\n"
 
-#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:979
+#: lib/package.c:241 lib/package.c:278 lib/rpmchecksig.c:984
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:311 lib/rpmchecksig.c:119
+#: lib/package.c:323 lib/rpmchecksig.c:118
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/poptALL.c:130 rpmio/poptIO.c:148
-#, c-format
-msgid "%s ("
-msgstr "%s ("
+#: lib/poptALL.c:359
+msgid "FTS_COMFOLLOW: follow command line symlinks"
+msgstr ""
 
-#: lib/poptALL.c:276 lib/poptI.c:210 lib/poptQV.c:288 lib/poptQV.c:335
+#: lib/poptALL.c:361
+msgid "FTS_LOGICAL: logical walk"
+msgstr ""
+
+#: lib/poptALL.c:363
+#, fuzzy
+msgid "FTS_NOCHDIR: don't change directories"
+msgstr "грешка код креирања директоријума %s: %s"
+
+#: lib/poptALL.c:365
+msgid "FTS_NOSTAT: don't get stat info"
+msgstr ""
+
+#: lib/poptALL.c:367
+msgid "FTS_PHYSICAL: physical walk"
+msgstr ""
+
+#: lib/poptALL.c:369
+msgid "FTS_SEEDOT: return dot and dot-dot"
+msgstr ""
+
+#: lib/poptALL.c:371
+msgid "FTS_XDEV: don't cross devices"
+msgstr ""
+
+#: lib/poptALL.c:373
+msgid "FTS_WHITEOUT: return whiteout information"
+msgstr ""
+
+#: lib/poptALL.c:383 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "пакет нема имена"
 
-#: lib/poptALL.c:279 lib/poptI.c:213
+#: lib/poptALL.c:386 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:282 lib/poptI.c:216
+#: lib/poptALL.c:389 lib/poptI.c:216
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:285 lib/poptI.c:219
+#: lib/poptALL.c:392 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptALL.c:288 lib/poptI.c:222
+#: lib/poptALL.c:395 lib/poptI.c:222
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "немој извршити ниједан скрипт из пакета"
 
-#: lib/poptALL.c:291 lib/poptI.c:225
+#: lib/poptALL.c:398 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:294 lib/poptI.c:228
+#: lib/poptALL.c:401 lib/poptI.c:228
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:297 lib/poptI.c:231
+#: lib/poptALL.c:404 lib/poptI.c:231
 msgid "ignore added package requires on file parent directory"
 msgstr ""
 
-#: lib/poptALL.c:300 lib/poptI.c:234
+#: lib/poptALL.c:407 lib/poptI.c:234
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "немој извршити ниједан скрипт из пакета"
 
-#: lib/poptALL.c:303 lib/poptI.c:237
+#: lib/poptALL.c:410 lib/poptI.c:237
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "ниједан пакет не обезбеђује %s\n"
 
-#: lib/poptALL.c:319
+#: lib/poptALL.c:426
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:320 lib/poptALL.c:324 rpmio/poptIO.c:329
+#: lib/poptALL.c:427 lib/poptALL.c:430
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:323 rpmio/poptIO.c:328
+#: lib/poptALL.c:429
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:326 rpmio/poptIO.c:331
+#: lib/poptALL.c:432
 msgid "undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:327 rpmio/poptIO.c:332
+#: lib/poptALL.c:433
 msgid "'MACRO'"
 msgstr ""
 
-#: lib/poptALL.c:329 rpmio/poptIO.c:334
+#: lib/poptALL.c:435
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "напиши верзију 'rpm'-а која се користи"
 
-#: lib/poptALL.c:330 rpmio/poptIO.c:335
+#: lib/poptALL.c:436
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:332 rpmio/poptIO.c:338
+#: lib/poptALL.c:438
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:333 lib/poptALL.c:337 lib/poptALL.c:341 rpmio/poptIO.c:339
-#: rpmio/poptIO.c:343 rpmio/poptIO.c:347
+#: lib/poptALL.c:439
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:336 rpmio/poptIO.c:342
-msgid "read <FILE:...> instead of default RPM Lua file(s)"
-msgstr ""
-
-#: lib/poptALL.c:340 rpmio/poptIO.c:346
-msgid "read <FILE:...> instead of default POPT file(s)"
-msgstr ""
-
-#: lib/poptALL.c:344 lib/poptQV.c:318
+#: lib/poptALL.c:441 lib/poptQV.c:317
 msgid "specify target platform"
 msgstr ""
 
-#: lib/poptALL.c:354
+#: lib/poptALL.c:449 lib/poptALL.c:474
+msgid "disable use of libio(3) API"
+msgstr ""
+
+#: lib/poptALL.c:455
+msgid "send stdout to CMD"
+msgstr ""
+
+#: lib/poptALL.c:456
+msgid "CMD"
+msgstr ""
+
+#: lib/poptALL.c:458
+#, fuzzy
+msgid "use ROOT as top level directory"
+msgstr "користи <dir> као директоријум највишег нивоа"
+
+#: lib/poptALL.c:459
+msgid "ROOT"
+msgstr ""
+
+#: lib/poptALL.c:462
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:356
-#, fuzzy
-msgid "display macro and configuration values"
-msgstr "прикажи само конфигурационе датотеке (повлачи -и)"
+#: lib/poptALL.c:464
+msgid "provide less detailed output"
+msgstr ""
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:367 rpmio/rpmrepo.c:2013
-#, fuzzy
-msgid "print the version"
+#: lib/poptALL.c:466
+msgid "display final rpmrc and macro configuration"
+msgstr ""
+
+#: lib/poptALL.c:468
+msgid "provide more detailed output"
+msgstr ""
+
+#: lib/poptALL.c:470
+msgid "print the version of rpm being used"
 msgstr "напиши верзију 'rpm'-а која се користи"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:481
+msgid "select cryptography implementation"
+msgstr ""
+
+#: lib/poptALL.c:482
+msgid "CRYPTO"
+msgstr ""
+
+#: lib/poptALL.c:485
+msgid "debug argv collections"
+msgstr ""
+
+#: lib/poptALL.c:487
+msgid "debug cpio payloads"
+msgstr ""
+
+#: lib/poptALL.c:489
+msgid "debug WebDAV data stream"
+msgstr ""
+
+#: lib/poptALL.c:493
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/poptALL.c:368
+#: lib/poptALL.c:495
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:497
+msgid "debug FTP/HTTP data stream"
+msgstr ""
+
+#: lib/poptALL.c:506
+msgid "debug option/argument processing"
+msgstr ""
+
+#: lib/poptALL.c:511
 #, fuzzy
 msgid "debug package state machine"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/poptALL.c:380
+#: lib/poptALL.c:513
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/poptALL.c:570 rpmio/poptIO.c:567
+#: lib/poptALL.c:527
+msgid "debug rpmio I/O"
+msgstr ""
+
+#: lib/poptALL.c:547
+msgid "debug tar payloads"
+msgstr ""
+
+#: lib/poptALL.c:551
+msgid "debug URL cache handling"
+msgstr ""
+
+#: lib/poptALL.c:703
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -1764,16 +1866,11 @@ msgstr ""
 
 #: lib/poptI.c:242
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
-"инсталирај све датотеке, чак и конфигурације које би иначе биле прескочене"
+msgstr "инсталирај све датотеке, чак и конфигурације које би иначе биле прескочене"
 
 #: lib/poptI.c:246
-msgid ""
-"remove all packages which match <package> (normally an error is generated if "
-"<package> specified multiple packages)"
-msgstr ""
-"уклони све пакете који одговарају <package> (нормално, јавља се грешка ако "
-"<package> означава више пакета)"
+msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
+msgstr "уклони све пакете који одговарају <package> (нормално, јавља се грешка ако <package> означава више пакета)"
 
 #: lib/poptI.c:252 lib/poptI.c:326
 #, fuzzy
@@ -1811,7 +1908,7 @@ msgstr "немој да инсталираш документацију"
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:272 rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
+#: lib/poptI.c:272
 msgid "<path>"
 msgstr ""
 
@@ -1862,8 +1959,8 @@ msgstr "ажурирај базу података, али немој мењат
 msgid "do not verify package dependencies"
 msgstr "немој проверавати зависности пакета"
 
-#: lib/poptI.c:314 lib/poptI.c:316 lib/poptQV.c:349 lib/poptQV.c:352
-#: lib/poptQV.c:354
+#: lib/poptI.c:314 lib/poptI.c:316 lib/poptQV.c:348 lib/poptQV.c:351
+#: lib/poptQV.c:353
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "немој проверавати зависности пакета"
@@ -1875,8 +1972,7 @@ msgstr "прикажи само конфигурационе датотеке (�
 
 #: lib/poptI.c:322
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
-"немој преуредити редослед инсталације пакета како би задовољио зависности"
+msgstr "немој преуредити редослед инсталације пакета како би задовољио зависности"
 
 #: lib/poptI.c:330
 #, fuzzy, c-format
@@ -1923,11 +2019,8 @@ msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "немој извршити ниједан инсталациони скрипт"
 
 #: lib/poptI.c:365
-msgid ""
-"upgrade to an old version of the package (--force on upgrades does this "
-"automatically)"
-msgstr ""
-"ажурирај на стару верзију пакета (--force код ажурирања ово ради аутоматски)"
+msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
+msgstr "ажурирај на стару верзију пакета (--force код ажурирања ово ради аутоматски)"
 
 #: lib/poptI.c:369
 msgid "print percentages as package installs"
@@ -1992,278 +2085,278 @@ msgstr "немој инсталирати, али реци да ли ће да �
 msgid "upgrade package(s)"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:118
 #, fuzzy
 msgid "query/verify all packages"
 msgstr "упит над свим пакетима"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:120
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "режим упита"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:122
 msgid "query/verify package(s) owning file"
 msgstr ""
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:124
 #, fuzzy
 msgid "query/verify package(s) in group"
 msgstr "пакет нема имена"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:126
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "упит над свим пакетима"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "пакет нема имена"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:131
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "пакет нема имена"
 
-#: lib/poptQV.c:135
+#: lib/poptQV.c:134
 msgid "query/verify package(s) with source package identifier"
 msgstr ""
 
-#: lib/poptQV.c:137
+#: lib/poptQV.c:136
 msgid "query/verify package(s) with package identifier"
 msgstr ""
 
-#: lib/poptQV.c:139
+#: lib/poptQV.c:138
 msgid "query/verify package(s) with header identifier"
 msgstr ""
 
-#: lib/poptQV.c:141
+#: lib/poptQV.c:140
 msgid "query/verify package(s) with file identifier"
 msgstr ""
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:143
 #, fuzzy
 msgid "rpm query mode"
 msgstr "режим упита"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:145
 msgid "query/verify a header instance"
 msgstr ""
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:147
 #, fuzzy
 msgid "query a spec file"
 msgstr "упит над %s неуспео\n"
 
-#: lib/poptQV.c:148 lib/poptQV.c:150 rpmio/rpmmtree.c:3565
+#: lib/poptQV.c:147 lib/poptQV.c:149
 msgid "<spec>"
 msgstr ""
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:149
 msgid "query source metadata from spec file parse"
 msgstr ""
 
-#: lib/poptQV.c:152
+#: lib/poptQV.c:151
 #, fuzzy
 msgid "query/verify package(s) from install transaction"
 msgstr "пакет нема имена"
 
-#: lib/poptQV.c:154
+#: lib/poptQV.c:153
 msgid "query the package(s) triggered by the package"
 msgstr ""
 
-#: lib/poptQV.c:156
+#: lib/poptQV.c:155
 #, fuzzy
 msgid "rpm verify mode"
 msgstr "режим упита"
 
-#: lib/poptQV.c:158
+#: lib/poptQV.c:157
 #, fuzzy
 msgid "query/verify the package(s) which require a dependency"
 msgstr "упит за пакете који захтевају <и> својство"
 
-#: lib/poptQV.c:160
+#: lib/poptQV.c:159
 #, fuzzy
 msgid "query/verify the package(s) which require any contained provide"
 msgstr "упит за пакете који захтевају <и> својство"
 
-#: lib/poptQV.c:164
+#: lib/poptQV.c:163
 #, fuzzy
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "упит за пакете који омогућавају <и> својство"
 
-#: lib/poptQV.c:167
+#: lib/poptQV.c:166
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:169
+#: lib/poptQV.c:168
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:171
+#: lib/poptQV.c:170
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "недостају аргументи за упит"
 
-#: lib/poptQV.c:173
+#: lib/poptQV.c:172
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:175
+#: lib/poptQV.c:174
 #, fuzzy
 msgid "do not read headers"
 msgstr "не могу да прочитам заглавље на %д за проверу"
 
-#: lib/poptQV.c:276
+#: lib/poptQV.c:275
 #, fuzzy
 msgid "list all configuration files"
 msgstr "прикажи само конфигурационе датотеке (повлачи -и)"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:277
 #, fuzzy
 msgid "list all documentation files"
 msgstr "инсталирај документацију"
 
-#: lib/poptQV.c:280
+#: lib/poptQV.c:279
 #, fuzzy
 msgid "dump basic file information"
 msgstr "прикажи информације о пакету"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:283
 #, fuzzy
 msgid "list files in package"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:293 lib/poptQV.c:340
+#: lib/poptQV.c:292 lib/poptQV.c:339
 #, c-format
 msgid "skip %%config files"
 msgstr ""
 
-#: lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptQV.c:295 lib/poptQV.c:342
 #, c-format
 msgid "skip %%doc files"
 msgstr ""
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:298
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:302
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:306
+#: lib/poptQV.c:305
 #, c-format
 msgid "skip %%readme files"
 msgstr ""
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:311
 #, fuzzy
 msgid "use the following query format"
 msgstr "неочекиван извор упита"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:311
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:313
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/poptQV.c:316
+#: lib/poptQV.c:315
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:358
+#: lib/poptQV.c:357
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:361
+#: lib/poptQV.c:360
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:364
+#: lib/poptQV.c:363
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:366
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:370
+#: lib/poptQV.c:369
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:373 lib/poptQV.c:376
+#: lib/poptQV.c:372 lib/poptQV.c:375
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:378
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:381
+#: lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "инсталирај пакет"
 
-#: lib/poptQV.c:384 lib/poptQV.c:387
+#: lib/poptQV.c:383 lib/poptQV.c:386
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "немој проверавати зависности пакета"
 
-#: lib/poptQV.c:392 lib/poptQV.c:396 lib/poptQV.c:399 lib/poptQV.c:402
+#: lib/poptQV.c:391 lib/poptQV.c:395 lib/poptQV.c:398 lib/poptQV.c:401
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "немој извршити ниједну фазу"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:435
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "потпиши пакет (уклони текући потпис)"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:437
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "провери потпис у пакету"
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:439
 #, fuzzy
 msgid "delete package signatures"
 msgstr "провери потпис у пакету"
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:441
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:443
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "потпиши пакет (уклони текући потпис)"
 
-#: lib/poptQV.c:446
+#: lib/poptQV.c:445
 #, fuzzy
 msgid "generate signature"
 msgstr "направи PGP потпис"
 
-#: lib/poptQV.c:449
+#: lib/poptQV.c:448
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:452
+#: lib/poptQV.c:451
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:455
+#: lib/poptQV.c:454
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
@@ -2281,345 +2374,341 @@ msgstr "Не могу да отворим датотеку %s: "
 msgid "source package contains no .spec file\n"
 msgstr "упит над пакетом који има <датотеку>"
 
-#: lib/psm.c:935 lib/rpmfc.c:106
+#: lib/psm.c:933 lib/rpmfc.c:106
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Не могу да прочитам 'сигтаргет'"
 
-#: lib/psm.c:946
+#: lib/psm.c:944
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "грешка: прескачем %s - неуспело преношење - %s\n"
 
-#: lib/psm.c:955
+#: lib/psm.c:953
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "неуспело извршавање скрипта"
 
-#: lib/psm.c:961
+#: lib/psm.c:959
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "неуспело извршавање скрипта"
 
-#: lib/psm.c:1911
+#: lib/psm.c:1840
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2032
+#: lib/psm.c:1948
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Не могу да упишем %s"
 
-#: lib/psm.c:2159
+#: lib/psm.c:2058
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "неуспело отварање %s: %s\n"
 
-#: lib/psm.c:2160
+#: lib/psm.c:2059
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2343
+#: lib/psm.c:2237
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/psm.c:2346
+#: lib/psm.c:2240
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "PGP омануо"
 
-#: lib/query.c:142
+#: lib/query.c:144
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "грешка у формату: %s\n"
 
-#: lib/query.c:206
+#: lib/query.c:208
 msgid "(contains no files)"
 msgstr "(нема датотека)"
 
-#: lib/query.c:294
+#: lib/query.c:296
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:297
+#: lib/query.c:299
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:300
+#: lib/query.c:302
 #, fuzzy
 msgid "not installed "
 msgstr "пакет %s није инсталиран\n"
 
-#: lib/query.c:303
+#: lib/query.c:305
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:306
+#: lib/query.c:308
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:309
+#: lib/query.c:311
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:312
+#: lib/query.c:314
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(непознат тип)"
 
-#: lib/query.c:329 lib/query.c:359
+#: lib/query.c:331 lib/query.c:361
 #, fuzzy
 msgid "package without owner/group tags\n"
 msgstr "пакет нема имена"
 
-#: lib/query.c:476
+#: lib/query.c:478
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "група %s не садржи ниједан пакет\n"
 
-#: lib/query.c:485
+#: lib/query.c:487
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ниједан пакет не активира %s\n"
 
-#: lib/query.c:500 lib/query.c:523 lib/query.c:545 lib/query.c:580
+#: lib/query.c:502 lib/query.c:525 lib/query.c:547 lib/query.c:582
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: lib/query.c:512 lib/query.c:529 lib/query.c:556 lib/query.c:585
+#: lib/query.c:514 lib/query.c:531 lib/query.c:558 lib/query.c:587
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ниједан пакет не активира %s\n"
 
-#: lib/query.c:596
+#: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ниједан пакет не захтева %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ниједан пакет не обезбеђује %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:643
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/query.c:644
+#: lib/query.c:646
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/query.c:669
+#: lib/query.c:671
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: lib/query.c:676
+#: lib/query.c:678
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "не могу да прочитам слог %д\n"
 
-#: lib/query.c:686 lib/query.c:692 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:574
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s није инсталиран\n"
 
-#: lib/rpmal.c:767
+#: lib/rpmal.c:768
 #, fuzzy
 msgid "(added files)"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/rpmal.c:845
+#: lib/rpmal.c:846
 msgid "(added provide)"
 msgstr ""
 
-#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1142
+#: lib/rpmchecksig.c:60 lib/rpmchecksig.c:1155
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: Неуспело отварање\n"
 
-#: lib/rpmchecksig.c:73
+#: lib/rpmchecksig.c:72
 #, fuzzy
 msgid "rpmTempFile failed\n"
 msgstr "%s: Неуспело отварање\n"
 
-#: lib/rpmchecksig.c:113
+#: lib/rpmchecksig.c:112
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:123
+#: lib/rpmchecksig.c:122
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:376
+#: lib/rpmchecksig.c:375
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:742
+#: lib/rpmchecksig.c:741
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:754
+#: lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: import failed.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:806
+#: lib/rpmchecksig.c:805
 msgid "headerGet failed"
 msgstr ""
 
-#: lib/rpmchecksig.c:807
+#: lib/rpmchecksig.c:806
 #, fuzzy
 msgid "failed to retrieve original header\n"
 msgstr "Не могу да упишем %s"
 
-#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
-#: rpmdb/pkgio.c:1282
+#: lib/rpmchecksig.c:828 rpmdb/pkgio.c:508 rpmdb/pkgio.c:691
+#: rpmdb/pkgio.c:1262
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Датотека није пронађена на серверу"
 
-#: lib/rpmchecksig.c:839
+#: lib/rpmchecksig.c:838
 msgid "Fread failed"
 msgstr ""
 
-#: lib/rpmchecksig.c:1067
-msgid "NOT_OK"
+#: lib/rpmchecksig.c:1080
+msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1068 lib/rpmchecksig.c:1082
+#: lib/rpmchecksig.c:1081 lib/rpmchecksig.c:1095
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (НЕДОСТАЈУЋИ КЉУЧЕВИ)"
 
-#: lib/rpmchecksig.c:1070 lib/rpmchecksig.c:1084
+#: lib/rpmchecksig.c:1083 lib/rpmchecksig.c:1097
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1071 lib/rpmchecksig.c:1085
+#: lib/rpmchecksig.c:1084 lib/rpmchecksig.c:1098
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1073 lib/rpmchecksig.c:1087
+#: lib/rpmchecksig.c:1086 lib/rpmchecksig.c:1100
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1081
+#: lib/rpmchecksig.c:1094
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:900 lib/rpmds.c:3665
+#: lib/rpmds.c:867 lib/rpmds.c:3627
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:900 lib/rpmds.c:3665
+#: lib/rpmds.c:867 lib/rpmds.c:3627
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1383
+#: lib/rpmds.c:1350
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1386
+#: lib/rpmds.c:1353
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1390
+#: lib/rpmds.c:1357
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1394
+#: lib/rpmds.c:1361
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1397
+#: lib/rpmds.c:1364
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1400
+#: lib/rpmds.c:1367
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1403
+#: lib/rpmds.c:1370
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1406
+#: lib/rpmds.c:1373
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1409
+#: lib/rpmds.c:1376
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1413
+#: lib/rpmds.c:1380
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1417
+#: lib/rpmds.c:1384
 msgid "header tag data can be of type uint64_t."
 msgstr ""
 
-#: lib/rpmds.c:1420
+#: lib/rpmds.c:1387
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1423
+#: lib/rpmds.c:1390
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:1426
+#: lib/rpmds.c:1393
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1430
-msgid "package payload can be in ar archive format."
-msgstr ""
-
-#: lib/rpmds.c:1521 lib/rpmds.c:3495
+#: lib/rpmds.c:1483 lib/rpmds.c:3457
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1544 lib/rpmds.c:3512
+#: lib/rpmds.c:1506 lib/rpmds.c:3474
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1555 lib/rpmds.c:3527
+#: lib/rpmds.c:1517 lib/rpmds.c:3489
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3494 lib/rpmds.c:3511 lib/rpmds.c:3523
+#: lib/rpmds.c:3456 lib/rpmds.c:3473 lib/rpmds.c:3485
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3525
+#: lib/rpmds.c:3487
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3630
+#: lib/rpmds.c:3592
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3664
+#: lib/rpmds.c:3626
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
@@ -2639,116 +2728,105 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "неуспело креирање %s\n"
 
-#: lib/rpmfc.c:1277
+#: lib/rpmfc.c:1273
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/rpmfc.c:1282 lib/rpmfc.c:1294
+#: lib/rpmfc.c:1278 lib/rpmfc.c:1290
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "неуспело креирање %s\n"
 
-#: lib/rpmgi.c:99 lib/rpminstall.c:124 lib/rpmrollback.c:162 lib/rpmts.c:412
-#: rpmio/rpmdigest.c:127
+#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "неуспело отварање %s: %s\n"
 
-#: lib/rpmgi.c:424
+#: lib/rpmgi.c:430
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "непознат таг: \"%s\"\n"
 
-#: lib/rpmgi.c:772
+#: lib/rpmgi.c:778 lib/rpminstall.c:608
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "лоше међузависности:\n"
 
-#: lib/rpmgi.c:777 lib/rpminstall.c:280
+#: lib/rpmgi.c:783 lib/rpminstall.c:276
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:188
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:190
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "недостаје пакет за инсталацију"
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:208
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:210
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:229
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:231
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "инсталирај пакет"
 
-#: lib/rpminstall.c:294
+#: lib/rpminstall.c:290
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "лоше међузависности:\n"
 
-#: lib/rpminstall.c:301
+#: lib/rpminstall.c:297
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:304
 msgid "Install/Erase problems"
 msgstr ""
 
-#: lib/rpminstall.c:560
-#, fuzzy, c-format
-msgid "package \"%s\" cannot be found\n"
-msgstr "пакет %s није инсталиран\n"
-
-#: lib/rpminstall.c:581
-#, fuzzy, c-format
-msgid "package \"%s\" cannot be erased\n"
-msgstr "пакет %s није инсталиран\n"
-
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:436
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s није инсталиран\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:583
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" одређује више пакета\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:652
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "грешка: не могу да отворим %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:658
 #, c-format
 msgid "Installing %s\n"
 msgstr "Инсталирам %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:668
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "грешка: %s се не може инсталирати\n"
 
-#: lib/rpmlock.c:150 lib/rpmlock.c:160
+#: lib/rpmlock.c:150 lib/rpmlock.c:159
 #, fuzzy, c-format
-msgid "can't create transaction lock on %s (%s)\n"
+msgid "can't create transaction lock on %s\n"
 msgstr "не могу да добијем %s закључавање базе података"
 
-#: lib/rpmlock.c:156
+#: lib/rpmlock.c:155
 #, c-format
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
@@ -2832,27 +2910,27 @@ msgstr "пакет %s-%s-%s садржи дељене датотеке\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:976
+#: lib/rpmrc.c:1025
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:990
+#: lib/rpmrc.c:1039
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1004
+#: lib/rpmrc.c:1053
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1018
+#: lib/rpmrc.c:1067
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1032
+#: lib/rpmrc.c:1081
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -2886,27 +2964,27 @@ msgstr "Прибављам %s\n"
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:392
+#: lib/rpmsx.c:385
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:425
+#: lib/rpmsx.c:418
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:440 lib/rpmsx.c:455
+#: lib/rpmsx.c:433 lib/rpmsx.c:448
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:468
+#: lib/rpmsx.c:461
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:133 rpmdb/pkgio.c:236
+#: lib/rpmts.c:133
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "грешка: не могу да отворим %s%s/пацкагес.рпм\n"
@@ -2936,58 +3014,54 @@ msgstr "грешка: не могу да отворим %s%s/пацкагес.р
 msgid "incorrect solve path format: %s\n"
 msgstr "грешка у формату: %s\n"
 
-#: lib/transaction.c:981
+#: lib/transaction.c:979
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "неуспела команда рмдир %s: %s"
 
-#: lib/transaction.c:999
+#: lib/transaction.c:997
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1146
+#: lib/transaction.c:1144
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:303
+#: lib/verify.c:305
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "недостаје   %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:431
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадовољене међузависности за %s-%s-%s: "
 
-#: rpmdb/db3.c:166
+#: rpmdb/db3.c:165
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:169
+#: rpmdb/db3.c:168
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1315
-msgid "RUNRECOVERY failed, exiting ...\n"
-msgstr ""
-
-#: rpmdb/db3.c:1318
+#: rpmdb/db3.c:1304
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1629
+#: rpmdb/db3.c:1615
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "не могу да добијем %s закључавање базе података"
 
-#: rpmdb/db3.c:1631
+#: rpmdb/db3.c:1617
 msgid "exclusive"
 msgstr "ексклузивно"
 
-#: rpmdb/db3.c:1631
+#: rpmdb/db3.c:1617
 msgid "shared"
 msgstr "дељено"
 
@@ -3011,163 +3085,110 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
+#: rpmdb/hdrfmt.c:57 rpmdb/hdrfmt.c:157
 msgid "(not a number)"
 msgstr "(није број)"
 
-#: rpmdb/hdrfmt.c:224
+#: rpmdb/hdrfmt.c:184
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:236
+#: rpmdb/hdrfmt.c:195
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:290
+#: rpmdb/hdrfmt.c:248
 msgid "invalid type"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
-#: rpmdb/hdrfmt.c:1190
+#: rpmdb/hdrfmt.c:337 rpmdb/hdrfmt.c:366 rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:454
+#: rpmdb/hdrfmt.c:979
 msgid "(invalid type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:490
+#: rpmdb/hdrfmt.c:444
 #, fuzzy
 msgid "(not base64)"
 msgstr "(није број)"
 
-#: rpmdb/hdrfmt.c:531
-#, fuzzy
-msgid "(invalid type :base64)"
-msgstr "(није број)"
-
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
-#: rpmdb/hdrfmt.c:3026
-#, fuzzy
-msgid "(not a string)"
-msgstr "(није број)"
-
-#: rpmdb/hdrfmt.c:835
-msgid "(invalid xml type)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:1022
-msgid "(invalid yaml type)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:1085
+#: rpmdb/hdrfmt.c:478 rpmdb/hdrfmt.c:875
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(није број)"
 
-#: rpmdb/hdrfmt.c:1108
+#: rpmdb/hdrfmt.c:627
+msgid "(invalid xml type)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:813
+msgid "(invalid yaml type)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:898
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "прескочи све PGP потписе"
 
-#: rpmdb/hdrfmt.c:3237
-msgid "(invalid type :digest)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3293
-msgid "(invalid type :stat)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3445
-msgid "(invalid type :uuid)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3506
-msgid "(invalid type :rpn)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3516
-msgid "(invalid string :rpn)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3532
-#, fuzzy
-msgid "(expected number :rpn)"
-msgstr "неочекиван извор упита"
-
-#: rpmdb/hdrfmt.c:3536
-msgid "(stack overflow :rpn)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3542
-#, fuzzy
-msgid "(invalid number :rpn)"
-msgstr "(није број)"
-
-#: rpmdb/hdrfmt.c:3547
-msgid "(stack underflow :rpn)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:3560
-msgid "(divide by zero :rpn)"
-msgstr ""
-
-#: rpmdb/hdrfmt.c:4312
+#: rpmdb/hdrfmt.c:2300
 msgid "missing { after %"
 msgstr "недостаје { после %"
 
-#: rpmdb/hdrfmt.c:4346
+#: rpmdb/hdrfmt.c:2334
 msgid "missing } after %{"
 msgstr "недостаје } после %{"
 
-#: rpmdb/hdrfmt.c:4362
+#: rpmdb/hdrfmt.c:2350
 msgid "empty tag format"
 msgstr "празан таг формат'"
 
-#: rpmdb/hdrfmt.c:4371
+#: rpmdb/hdrfmt.c:2362
 msgid "empty tag name"
 msgstr "празно име таг-а"
 
-#: rpmdb/hdrfmt.c:4380
+#: rpmdb/hdrfmt.c:2371
 msgid "unknown tag"
 msgstr "непознат таг"
 
-#: rpmdb/hdrfmt.c:4410
+#: rpmdb/hdrfmt.c:2401
 msgid "] expected at end of array"
 msgstr "] очекивано на крају низа"
 
-#: rpmdb/hdrfmt.c:4427
+#: rpmdb/hdrfmt.c:2418
 msgid "unexpected ]"
 msgstr "неочекивано ]"
 
-#: rpmdb/hdrfmt.c:4442
+#: rpmdb/hdrfmt.c:2433
 msgid "unexpected }"
 msgstr "неочекивано }"
 
-#: rpmdb/hdrfmt.c:4520
+#: rpmdb/hdrfmt.c:2511
 msgid "? expected in expression"
 msgstr "очекиван знак ? у изразу"
 
-#: rpmdb/hdrfmt.c:4527
+#: rpmdb/hdrfmt.c:2518
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ очекивано после ? у изразу"
 
-#: rpmdb/hdrfmt.c:4539 rpmdb/hdrfmt.c:4579
+#: rpmdb/hdrfmt.c:2530 rpmdb/hdrfmt.c:2570
 msgid "} expected in expression"
 msgstr "} очекивано у изразу"
 
-#: rpmdb/hdrfmt.c:4547
+#: rpmdb/hdrfmt.c:2538
 msgid ": expected following ? subexpression"
 msgstr "очекивано : праћено ? подизразом"
 
-#: rpmdb/hdrfmt.c:4565
+#: rpmdb/hdrfmt.c:2556
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ очекивано после : у изразу"
 
-#: rpmdb/hdrfmt.c:4587
+#: rpmdb/hdrfmt.c:2578
 msgid "| expected at end of expression"
 msgstr "| очекивано на крају израза"
 
-#: rpmdb/hdrfmt.c:4886
+#: rpmdb/hdrfmt.c:2871
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3185,1148 +3206,549 @@ msgstr "рекреирај базу података из постојеће б�
 msgid "verify database files"
 msgstr "упит над %s неуспео\n"
 
-#: rpmdb/pkgio.c:83
+#: rpmdb/pkgio.c:82
 msgid "write of NULL header"
 msgstr ""
 
-#: rpmdb/pkgio.c:90
+#: rpmdb/pkgio.c:89
 msgid "headerUnload failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:102
+#: rpmdb/pkgio.c:101
 msgid "short write of header magic"
 msgstr ""
 
-#: rpmdb/pkgio.c:114
+#: rpmdb/pkgio.c:113
 #, fuzzy
 msgid "short write of header"
 msgstr "Не могу да упишем %s"
 
-#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
+#: rpmdb/pkgio.c:477 rpmdb/pkgio.c:482
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr ""
 
-#: rpmdb/pkgio.c:527
+#: rpmdb/pkgio.c:515
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:544
+#: rpmdb/pkgio.c:532
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:553
+#: rpmdb/pkgio.c:541
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:564
+#: rpmdb/pkgio.c:552
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:712
+#: rpmdb/pkgio.c:698
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:724
+#: rpmdb/pkgio.c:710
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:732
+#: rpmdb/pkgio.c:718
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:738
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:748
+#: rpmdb/pkgio.c:734
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
+#: rpmdb/pkgio.c:746 rpmdb/pkgio.c:924 rpmdb/pkgio.c:1049
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
+#: rpmdb/pkgio.c:763 rpmdb/pkgio.c:944
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
+#: rpmdb/pkgio.c:788 rpmdb/pkgio.c:963
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
+#: rpmdb/pkgio.c:800 rpmdb/pkgio.c:975
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:829
+#: rpmdb/pkgio.c:811
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:839
+#: rpmdb/pkgio.c:821
 #, c-format
 msgid "sigh load: BAD"
 msgstr ""
 
-#: rpmdb/pkgio.c:852
+#: rpmdb/pkgio.c:834
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr ""
 
-#: rpmdb/pkgio.c:865
+#: rpmdb/pkgio.c:847
 #, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:935
+#: rpmdb/pkgio.c:915
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:1004
+#: rpmdb/pkgio.c:984
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:1022
+#: rpmdb/pkgio.c:1002
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr ""
 
-#: rpmdb/pkgio.c:1034
+#: rpmdb/pkgio.c:1014
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1044
+#: rpmdb/pkgio.c:1024
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
+#: rpmdb/pkgio.c:1081 rpmdb/pkgio.c:1124
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1295
+#: rpmdb/pkgio.c:1274
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1305
+#: rpmdb/pkgio.c:1284
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1313
+#: rpmdb/pkgio.c:1292
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:1320
+#: rpmdb/pkgio.c:1299
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1331
+#: rpmdb/pkgio.c:1310
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1345
+#: rpmdb/pkgio.c:1324
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:390
+#: rpmdb/rpmdb.c:379
 #, fuzzy, c-format
 msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
 msgstr "Не могу да отворим датотеку %s: "
 
-#: rpmdb/rpmdb.c:410
+#: rpmdb/rpmdb.c:399
 #, fuzzy, c-format
 msgid "cannot open %s(%u) index\n"
 msgstr "не могу да отворим %s(%u)\n"
 
-#: rpmdb/rpmdb.c:861
+#: rpmdb/rpmdb.c:850
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "грешка у формату: %s\n"
 
-#: rpmdb/rpmdb.c:1179
+#: rpmdb/rpmdb.c:1168
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath није одређен"
 
-#: rpmdb/rpmdb.c:1477 rpmdb/rpmdb.c:1624 rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2597
-#: rpmdb/rpmdb.c:2747 rpmdb/rpmdb.c:3069 rpmdb/rpmdb.c:3547
+#: rpmdb/rpmdb.c:1466 rpmdb/rpmdb.c:1613 rpmdb/rpmdb.c:1669 rpmdb/rpmdb.c:2576
+#: rpmdb/rpmdb.c:2726 rpmdb/rpmdb.c:3522
 #, fuzzy, c-format
-msgid "error(%d) getting records from %s index\n"
+msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "грешка код узимања слога %s из %s"
 
-#: rpmdb/rpmdb.c:1894
+#: rpmdb/rpmdb.c:1883
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1904
+#: rpmdb/rpmdb.c:1893
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "грешка записивања слога %s у %s"
 
-#: rpmdb/rpmdb.c:2475
+#: rpmdb/rpmdb.c:2454
 msgid "rpmdb: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2475
+#: rpmdb/rpmdb.c:2454
 msgid "rpmdb: read"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2510
+#: rpmdb/rpmdb.c:2489
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2846
+#: rpmdb/rpmdb.c:2825
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "не могу да прочитам заглавље на %д за проверу"
 
-#: rpmdb/rpmdb.c:2919
+#: rpmdb/rpmdb.c:2896
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "грешка код узимања слога %s из %s"
 
-#: rpmdb/rpmdb.c:3090 rpmdb/rpmdb.c:3566
+#: rpmdb/rpmdb.c:3046
 #, fuzzy, c-format
-msgid "error(%d) storing record into %s\n"
+msgid "error(%d) setting \"%s\" records from %s index\n"
+msgstr "грешка код узимања слога %s из %s"
+
+#: rpmdb/rpmdb.c:3067
+#, fuzzy, c-format
+msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "грешка записивања слога %s у %s"
 
-#: rpmdb/rpmdb.c:3100
+#: rpmdb/rpmdb.c:3077
 #, fuzzy, c-format
-msgid "error(%d) removing record from %s\n"
+msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "грешка уклањања слога %s у %s"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3252
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "грешка код потраге за пакетом %s\n"
 
-#: rpmdb/rpmdb.c:3351
+#: rpmdb/rpmdb.c:3326
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3994
+#: rpmdb/rpmdb.c:3541
+#, fuzzy, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr "грешка записивања слога %s у %s"
+
+#: rpmdb/rpmdb.c:3967
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "привремена база података %s већ постоји"
 
-#: rpmdb/rpmdb.c:4002
+#: rpmdb/rpmdb.c:3975
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "грешка код креирања директоријума %s: %s"
 
-#: rpmdb/rpmdb.c:4049
+#: rpmdb/rpmdb.c:4022
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "слог број %д у бази података је неисправан -- прескачем га"
 
-#: rpmdb/rpmdb.c:4057
+#: rpmdb/rpmdb.c:4030
 #, fuzzy, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "слог број %д у бази података је неисправан -- прескачем га"
 
-#: rpmdb/rpmdb.c:4097
+#: rpmdb/rpmdb.c:4070
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "не могу да додам слог оригинално на %д"
 
-#: rpmdb/rpmdb.c:4111
+#: rpmdb/rpmdb.c:4084
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4123
+#: rpmdb/rpmdb.c:4096
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4125
+#: rpmdb/rpmdb.c:4098
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4137
+#: rpmdb/rpmdb.c:4110
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
-#: rpmdb/signature.c:109
+#: rpmdb/signature.c:97 rpmdb/signature.c:102 rpmdb/signature.c:108
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "грешка код креирања директоријума %s: %s"
 
-#: rpmdb/signature.c:191 rpmdb/signature.c:538
+#: rpmdb/signature.c:190 rpmdb/signature.c:534
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Не могу да извршим PGP"
 
-#: rpmdb/signature.c:209 rpmdb/signature.c:552
+#: rpmdb/signature.c:208 rpmdb/signature.c:548
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:235
+#: rpmdb/signature.c:234
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "%s: Неуспело отварање\n"
 
-#: rpmdb/signature.c:242
+#: rpmdb/signature.c:241
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "PGP није успео да запише потпис"
 
-#: rpmdb/signature.c:261
+#: rpmdb/signature.c:260
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "не могу да прочитам потпис"
 
-#: rpmdb/signature.c:604
+#: rpmdb/signature.c:600
 msgid "Header+Payload size: "
 msgstr ""
 
-#: rpmdb/signature.c:641
+#: rpmdb/signature.c:637
 msgid "MD5 digest: "
 msgstr ""
 
-#: rpmdb/signature.c:698
+#: rpmdb/signature.c:694
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "инсталирај пакет"
 
-#: rpmdb/signature.c:758 rpmdb/signature.c:884
+#: rpmdb/signature.c:754 rpmdb/signature.c:880
 msgid "Header "
 msgstr ""
 
-#: rpmdb/signature.c:814
+#: rpmdb/signature.c:810
 #, fuzzy
 msgid " signature: "
 msgstr "%s: Потпис није на располагању\n"
 
-#: rpmdb/signature.c:890
+#: rpmdb/signature.c:886
 #, fuzzy
 msgid " DSA signature: "
 msgstr "%s: Потпис није на располагању\n"
 
-#: rpmdb/signature.c:965
+#: rpmdb/signature.c:961
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: rpmdb/signature.c:986
+#: rpmdb/signature.c:982
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr ""
 
-#: rpmdb/sqlite.c:682
+#: rpmdb/sqlite.c:670
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:276
+#: rpmio/macro.c:271
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
-#: rpmio/macro.c:461
+#: rpmio/macro.c:454
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:504
+#: rpmio/macro.c:497
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:733 rpmio/macro.c:771
+#: rpmio/macro.c:726 rpmio/macro.c:764
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:792
+#: rpmio/macro.c:785
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:798
+#: rpmio/macro.c:791
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:803
+#: rpmio/macro.c:796
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:809
+#: rpmio/macro.c:802
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:849
+#: rpmio/macro.c:842
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:965
+#: rpmio/macro.c:958
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:1103
+#: rpmio/macro.c:1086
 #, fuzzy, c-format
-msgid "Unknown option in macro %s(%s): %s: %s\n"
+msgid "Unknown option %c in %s(%s)\n"
 msgstr "(непознат тип)"
 
-#: rpmio/macro.c:1417
+#: rpmio/macro.c:1341
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1491 rpmio/macro.c:1508
+#: rpmio/macro.c:1415 rpmio/macro.c:1432
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Не могу да отворим датотеку %s: "
 
-#: rpmio/macro.c:1553
+#: rpmio/macro.c:1477
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1571
-#, fuzzy, c-format
-msgid "%s: load macros failed\n"
-msgstr "неуспело отварање %s: %s\n"
-
-#: rpmio/macro.c:1757
+#: rpmio/macro.c:1662
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "пакет %s није нађен у %s"
 
-#: rpmio/macro.c:2114
+#: rpmio/macro.c:2020
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2148
+#: rpmio/macro.c:2054
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2432 rpmio/macro.c:2438
+#: rpmio/macro.c:2303 rpmio/macro.c:2309
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: rpmio/macro.c:2441
+#: rpmio/macro.c:2312
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/mire.c:325
-#, fuzzy, c-format
-msgid "%s: Failed to set locale %s (obtained from %s)\n"
-msgstr "Неуспело читање %s: %s."
-
-#: rpmio/mire.c:366
-#, c-format
-msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
-msgstr ""
-
-#: rpmio/mire.c:384
-#, fuzzy, c-format
-msgid "%s: regcomp failed: %s\n"
-msgstr "%s: Неуспело отварање\n"
-
-#: rpmio/mire.c:442
-#, fuzzy, c-format
-msgid "%s: regexec failed: %s(%d)\n"
-msgstr "%s: Неуспео 'readLead'\n"
-
-#: rpmio/mire.c:460
-#, fuzzy, c-format
-msgid "pcre_exec failed: return %d\n"
-msgstr "%s: Неуспело отварање\n"
-
-#: rpmio/mire.c:474
-#, fuzzy, c-format
-msgid "fnmatch failed: return %d\n"
-msgstr "мнтцтл() није вратио 'фуггер' величину: %s"
-
-#: rpmio/mire.c:570
-#, fuzzy, c-format
-msgid "%s: Error while studying regex%s: %s\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/poptIO.c:97
-msgid "MD2 digest (RFC-1319)"
-msgstr ""
-
-#: rpmio/poptIO.c:99
-msgid "MD4 digest"
-msgstr ""
-
-#: rpmio/poptIO.c:101
-msgid "MD5 digest (RFC-1321)"
-msgstr ""
-
-#: rpmio/poptIO.c:103
-msgid "SHA-1 digest (FIPS-180-1)"
-msgstr ""
-
-#: rpmio/poptIO.c:105
-msgid "SHA-224 digest (FIPS-180-2)"
-msgstr ""
-
-#: rpmio/poptIO.c:107
-msgid "SHA-256 digest (FIPS-180-2)"
-msgstr ""
-
-#: rpmio/poptIO.c:109
-msgid "SHA-384 digest (FIPS-180-2)"
-msgstr ""
-
-#: rpmio/poptIO.c:111
-msgid "SHA-512 digest (FIPS-180-2)"
-msgstr ""
-
-#: rpmio/poptIO.c:113
-msgid "SALSA-10 hash"
-msgstr ""
-
-#: rpmio/poptIO.c:115
-msgid "SALSA-20 hash"
-msgstr ""
-
-#: rpmio/poptIO.c:117
-msgid "RIPEMD-128 digest"
-msgstr ""
-
-#: rpmio/poptIO.c:119
-msgid "RIPEMD-160 digest"
-msgstr ""
-
-#: rpmio/poptIO.c:121
-msgid "RIPEMD-256 digest"
-msgstr ""
-
-#: rpmio/poptIO.c:123
-msgid "RIPEMD-320 digest"
-msgstr ""
-
-#: rpmio/poptIO.c:125
-msgid "TIGER digest"
-msgstr ""
-
-#: rpmio/poptIO.c:127
-msgid "CRC-32 checksum"
-msgstr ""
-
-#: rpmio/poptIO.c:129
-msgid "CRC-64 checksum"
-msgstr ""
-
-#: rpmio/poptIO.c:131
-msgid "ADLER-32 checksum"
-msgstr ""
-
-#: rpmio/poptIO.c:133
-msgid "lookup3 hash"
-msgstr ""
-
-#: rpmio/poptIO.c:135
-msgid "no hash algorithm"
-msgstr ""
-
-#: rpmio/poptIO.c:137
-msgid "all hash algorithm(s)"
-msgstr ""
-
-#: rpmio/poptIO.c:297
-msgid "FTS_COMFOLLOW: follow command line symlinks"
-msgstr ""
-
-#: rpmio/poptIO.c:299
-msgid "FTS_LOGICAL: logical walk"
-msgstr ""
-
-#: rpmio/poptIO.c:301
-#, fuzzy
-msgid "FTS_NOCHDIR: don't change directories"
-msgstr "грешка код креирања директоријума %s: %s"
-
-#: rpmio/poptIO.c:303
-msgid "FTS_NOSTAT: don't get stat info"
-msgstr ""
-
-#: rpmio/poptIO.c:305
-msgid "FTS_PHYSICAL: physical walk"
-msgstr ""
-
-#: rpmio/poptIO.c:307
-msgid "FTS_SEEDOT: return dot and dot-dot"
-msgstr ""
-
-#: rpmio/poptIO.c:309
-msgid "FTS_XDEV: don't cross devices"
-msgstr ""
-
-#: rpmio/poptIO.c:311
-msgid "FTS_WHITEOUT: return whiteout information"
-msgstr ""
-
-#: rpmio/poptIO.c:352 rpmio/poptIO.c:371
-msgid "disable use of libio(3) API"
-msgstr ""
-
-#: rpmio/poptIO.c:356
-msgid "send stdout to CMD"
-msgstr ""
-
-#: rpmio/poptIO.c:357
-msgid "CMD"
-msgstr ""
-
-#: rpmio/poptIO.c:359
-#, fuzzy
-msgid "use ROOT as top level directory"
-msgstr "користи <dir> као директоријум највишег нивоа"
-
-#: rpmio/poptIO.c:360
-msgid "ROOT"
-msgstr ""
-
-#: rpmio/poptIO.c:363
-msgid "provide less detailed output"
-msgstr ""
-
-#: rpmio/poptIO.c:365
-msgid "provide more detailed output"
-msgstr ""
-
-#: rpmio/poptIO.c:375
-msgid "select cryptography implementation"
-msgstr ""
-
-#: rpmio/poptIO.c:376
-msgid "CRYPTO"
-msgstr ""
-
-#: rpmio/poptIO.c:379
-#, fuzzy
-msgid "debug ar archives"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/poptIO.c:381
-msgid "debug argv collections"
-msgstr ""
-
-#: rpmio/poptIO.c:383
-#, fuzzy
-msgid "debug cpio archives"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/poptIO.c:385
-msgid "debug WebDAV data stream"
-msgstr ""
-
-#: rpmio/poptIO.c:387
-msgid "debug FTP/HTTP data stream"
-msgstr ""
-
-#: rpmio/poptIO.c:389
-msgid "debug Fts(3) traverse"
-msgstr ""
-
-#: rpmio/poptIO.c:391
-#, fuzzy
-msgid "debug I/O state machine"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/poptIO.c:395
-msgid "debug rpmio I/O"
-msgstr ""
-
-#: rpmio/poptIO.c:401
-#, fuzzy
-msgid "debug xar archives"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/poptIO.c:403
-#, fuzzy
-msgid "debug tar archives"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/poptIO.c:405
-msgid "display operation statistics"
-msgstr ""
-
-#: rpmio/poptIO.c:407
-msgid "debug URL cache handling"
-msgstr ""
-
-#: rpmio/rpmdav.c:890
+#: rpmio/rpmdav.c:729
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:892
+#: rpmio/rpmdav.c:731
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:894
+#: rpmio/rpmdav.c:733
 #, fuzzy
 msgid "Server Error"
 msgstr "Улазно/излазна FTP грешка"
 
-#: rpmio/rpmdav.c:896
+#: rpmio/rpmdav.c:735
 #, fuzzy
 msgid "Unknown Error"
 msgstr "грешка: "
 
-#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1187
-#, fuzzy, c-format
-msgid "%s: Failed to open %s: %s\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmdigest.c:235
-#, fuzzy, c-format
-msgid "%s: Unknown digest name \"%s\"\n"
-msgstr "непознат таг: \"%s\"\n"
-
-#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1316 rpmio/rpmmtree.c:3535
-#: rpmio/rpmrepo.c:1923
-#, fuzzy, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr "(непознат тип)"
-
-#: rpmio/rpmdigest.c:317
-msgid "read in binary mode"
-msgstr ""
-
-#: rpmio/rpmdigest.c:321 rpmio/rpmdigest.c:325
-msgid "read digests from MANIFEST file and verify (may be used more than once)"
-msgstr ""
-
-#: rpmio/rpmdigest.c:322 rpmio/rpmdigest.c:326
-msgid "MANIFEST"
-msgstr ""
-
-#: rpmio/rpmdigest.c:330
-msgid "read in text mode (default)"
-msgstr ""
-
-#: rpmio/rpmdigest.c:334
-msgid "The following two options are useful only when verifying digests:"
-msgstr ""
-
-#: rpmio/rpmdigest.c:340
-msgid "no output when verifying"
-msgstr ""
-
-#: rpmio/rpmdigest.c:342
-msgid "warn about improperly formatted checksum lines"
-msgstr ""
-
-#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:2020
-msgid "Available digests:"
-msgstr ""
-
-#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1435 rpmio/rpmmtree.c:3609
-#: rpmio/rpmrepo.c:2023
-msgid "Common options for all rpmio executables:"
-msgstr ""
-
-#: rpmio/rpmdigest.c:355
-msgid ""
-"When checking, the input should be a former output of this program.  The\n"
-"default mode is to print a line with digest, a character indicating type\n"
-"(`*' for binary, ` ' for text), and name for each FILE.\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:595
-#, c-format
-msgid "%s: pcre_exec() error %d while matching "
-msgstr ""
-
-#: rpmio/rpmgrep.c:596
-#, fuzzy, c-format
-msgid "pattern number %d to "
-msgstr "(није број)"
-
-#: rpmio/rpmgrep.c:597
-#, fuzzy, c-format
-msgid "this line:\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmgrep.c:605
-#, c-format
-msgid "%s: error %d means that a resource limit was exceeded\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:608
-#, c-format
-msgid "%s: check your regex for nested unlimited loops\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:613
-#, c-format
-msgid "%s: too many errors - abandoned\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:985
-#, fuzzy, c-format
-msgid "%s: Failed to open directory %s: %s\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmgrep.c:1093
-#, fuzzy, c-format
-msgid "%s: Too many patterns (max %d)\n"
-msgstr "погрешан број пакета: %s\n"
-
-#: rpmio/rpmgrep.c:1118
-#, c-format
-msgid "%s: Error in"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1120
-#, c-format
-msgid " command-line %d"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1122
-#, fuzzy, c-format
-msgid " file:line %s:%d"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmgrep.c:1123
-#, c-format
-msgid " regex at offset %d: %s\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1265
-#, c-format
-msgid "%s: Invalid value \"%s\" for -d\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1275
-#, c-format
-msgid "%s: Invalid value \"%s\" for -D\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1292
-#, fuzzy, c-format
-msgid "%s: Unknown color setting \"%s\"\n"
-msgstr "непознат таг: \"%s\"\n"
-
-#: rpmio/rpmgrep.c:1308
-#, c-format
-msgid "%s %s (PCRE version %s)\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1311
-#, c-format
-msgid "%s %s (without PCRE)\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1334
-msgid "set number of following context lines"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1334 rpmio/rpmgrep.c:1336 rpmio/rpmgrep.c:1338
-msgid "=number"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1336
-msgid "set number of prior context lines"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1338
-msgid "set number of context lines, before & after"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1340
-msgid "print only a count of matching lines per FILE"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1342
-msgid "matched text color option (auto|always|never)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1342 rpmio/rpmgrep.c:1344
-msgid "=option"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1344
-msgid "matched text colour option (auto|always|never)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1347
-msgid "device, FIFO, or socket action (read|skip)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1347 rpmio/rpmgrep.c:1349
-msgid "=action"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1349
-msgid "directory action (read|skip|recurse)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355
-msgid "specify pattern (may be used more than once)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355 rpmio/rpmgrep.c:1428
-#: rpmio/rpmgrep.c:1430
-msgid "(p)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1358
-msgid "patterns are sets of newline-separated strings"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1361 rpmio/rpmgrep.c:1365
-msgid "read patterns from file (may be used more than once)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1366
-msgid "=path"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1369
-msgid "output file offsets, not text"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1371
-msgid "force the prefixing filename on output"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1373
-msgid "suppress the prefixing filename on output"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1375
-msgid "ignore case distinctions"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1377
-msgid "print only FILE names containing matches"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1379
-msgid "print only FILE names not containing matches"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1381
-msgid "set name for standard input"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1381
-msgid "=name"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1383
-msgid "output line numbers and offsets, not text"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1386
-msgid "use the named locale"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1386
-msgid "=locale"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1388
-msgid "run in multiline mode"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1390
-msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1390
-msgid "=type"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1392
-msgid "print line number with output lines"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1394
-msgid "show only the part of the line that matched"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1397
-msgid "suppress output, just set return code"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1399
-msgid "recursively scan sub-directories"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1402 rpmio/rpmgrep.c:1409
-msgid "exclude matching files when recursing (may be used more than once)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1403 rpmio/rpmgrep.c:1406 rpmio/rpmgrep.c:1410
-#: rpmio/rpmgrep.c:1413
-msgid "=pattern"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1405 rpmio/rpmgrep.c:1412
-msgid "include matching files when recursing (may be used more than once)"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1416 rpmio/rpmgrep.c:1418
-msgid "suppress error messages"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1420
-msgid "use UTF-8 mode"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1423
-#, fuzzy
-msgid "print version information and exit"
-msgstr "напиши верзију 'rpm'-а која се користи"
-
-#: rpmio/rpmgrep.c:1426
-msgid "select non-matching lines"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1428
-msgid "force patterns to match only as words"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1430
-msgid "force patterns to match only whole lines"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1441
-msgid ""
-"Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
-"\n"
-"  Search for PATTERN in each FILE or standard input.\n"
-"  PATTERN must be present if neither -e nor -f is used.\n"
-"  \"-\" can be used as a file name to mean STDIN.\n"
-"  All files are read as plain files, without any interpretation.\n"
-"\n"
-"Example: rpmgrep -i 'hello.*world' menu.h main.c"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1451
-msgid ""
-"  When reading patterns from a file instead of using a command line option,\n"
-"  trailing white space is removed and blank lines are ignored.\n"
-"\n"
-"  With no FILEs, read standard input. If fewer than two FILEs given, assume -"
-"h.\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1518
-#, c-format
-msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1538
-#, c-format
-msgid "%s: Invalid newline specifier \"%s\"\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1600
-#, c-format
-msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1612
-#, c-format
-msgid "%s: Error in 'include' regex at offset %d: %s\n"
-msgstr ""
-
-#: rpmio/rpmio.c:737
+#: rpmio/rpmio.c:736
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:759
 #, fuzzy
 msgid "Bad server response"
 msgstr "Лош одговор FTP сервера"
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:761
 #, fuzzy
 msgid "Server I/O error"
 msgstr "Улазно/излазна FTP грешка"
 
-#: rpmio/rpmio.c:764
+#: rpmio/rpmio.c:763
 #, fuzzy
 msgid "Server timeout"
 msgstr "Тајм-аут FTP сервера"
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:765
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Не могу да одредим хост адресу FTP сервера"
 
-#: rpmio/rpmio.c:768
+#: rpmio/rpmio.c:767
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Не могу да одредим име FTP хоста"
 
-#: rpmio/rpmio.c:770
+#: rpmio/rpmio.c:769
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Не могу да се повежем са FTP сервером"
 
-#: rpmio/rpmio.c:772
+#: rpmio/rpmio.c:771
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Не могу да успоставим везу података са FTP сервером"
 
-#: rpmio/rpmio.c:774
+#: rpmio/rpmio.c:773
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Улазно/излазна грешка код локалне датотеке"
 
-#: rpmio/rpmio.c:776
+#: rpmio/rpmio.c:775
 msgid "Error setting remote server to passive mode"
 msgstr "Грешка код стављања удаљеног сервера у пасивни режим"
 
-#: rpmio/rpmio.c:778
+#: rpmio/rpmio.c:777
 msgid "File not found on server"
 msgstr "Датотека није пронађена на серверу"
 
-#: rpmio/rpmio.c:780
+#: rpmio/rpmio.c:779
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:783
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Неочекивана или непозната FTP грешка"
 
-#: rpmio/rpmio.c:801
+#: rpmio/rpmio.c:800
 #, fuzzy
 msgid "Malformed URL"
 msgstr "Неуспело читање %s: %s."
@@ -4336,39 +3758,39 @@ msgstr "Неуспело читање %s: %s."
 msgid "(no error)"
 msgstr "(није грешка)"
 
-#: rpmio/rpmlog.c:186 rpmio/rpmlog.c:187 rpmio/rpmlog.c:188
+#: rpmio/rpmlog.c:185 rpmio/rpmlog.c:186 rpmio/rpmlog.c:187
 msgid "fatal error: "
 msgstr "фатална грешка: "
 
-#: rpmio/rpmlog.c:189
+#: rpmio/rpmlog.c:188
 msgid "error: "
 msgstr "грешка: "
 
-#: rpmio/rpmlog.c:190
+#: rpmio/rpmlog.c:189
 msgid "warning: "
 msgstr "упозорење: "
 
-#: rpmio/rpmlua.c:553
+#: rpmio/rpmlua.c:512
 #, fuzzy, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: rpmio/rpmlua.c:569
+#: rpmio/rpmlua.c:528
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: rpmio/rpmlua.c:574 rpmio/rpmlua.c:593
+#: rpmio/rpmlua.c:533 rpmio/rpmlua.c:552
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:588
+#: rpmio/rpmlua.c:547
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: rpmio/rpmlua.c:803
+#: rpmio/rpmlua.c:762
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "PGP омануо"
@@ -4388,607 +3810,15 @@ msgstr "неуспело отварање %s: %s\n"
 msgid "magic_load(ms, %s) failed: %s\n"
 msgstr "уклањање %s није успело: %s"
 
-#: rpmio/rpmmg.c:77
+#: rpmio/rpmmg.c:74
 #, fuzzy, c-format
 msgid "magic_file(ms, %s) failed: %s\n"
 msgstr "уклањање %s није успело: %s"
 
-#: rpmio/rpmmg.c:102
+#: rpmio/rpmmg.c:96
 #, fuzzy, c-format
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "уклањање %s није успело: %s"
-
-#: rpmio/rpmmtree.c:332
-#, c-format
-msgid "%s: failed at line %d of the specification\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:1492 rpmio/rpmmtree.c:1681
-#, c-format
-msgid "%s: filename (%s) encoded incorrectly\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2042
-#, c-format
-msgid "%s changed\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2122
-#, c-format
-msgid "\ttype expected %s found %s)\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2132 rpmio/rpmmtree.c:2145
-#, c-format
-msgid "%s%s expected %lu found %lu"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2136 rpmio/rpmmtree.c:2149 rpmio/rpmmtree.c:2176
-#: rpmio/rpmmtree.c:2233
-#, fuzzy, c-format
-msgid " not modified: %s)\n"
-msgstr "пакет %s није наведен у %s"
-
-#: rpmio/rpmmtree.c:2138 rpmio/rpmmtree.c:2151 rpmio/rpmmtree.c:2178
-#, c-format
-msgid " modified)\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2172
-#, c-format
-msgid "%s%s expected %#o found %#o"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2189
-#, c-format
-msgid "%s%s expected %lu found %lu)\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2196
-#, c-format
-msgid "%s%s expected %llu found %llu\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2228
-#, c-format
-msgid "%s%s expected %.24s "
-msgstr ""
-
-#: rpmio/rpmmtree.c:2229
-#, c-format
-msgid "found %.24s"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2235
-#, c-format
-msgid " modified\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2278
-#, c-format
-msgid "%s%s expected %lu found %lu\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2296 rpmio/rpmmtree.c:2316
-#, fuzzy, c-format
-msgid "%s%s expected %s found %s\n"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmmtree.c:2325
-#, fuzzy, c-format
-msgid "%s%s expected \"%s\""
-msgstr "неочекивано ]"
-
-#: rpmio/rpmmtree.c:2329
-#, fuzzy, c-format
-msgid " found \"%s\""
-msgstr "Датотека није пронађена на серверу"
-
-#: rpmio/rpmmtree.c:2451 rpmio/rpmmtree.c:2558
-#, c-format
-msgid "%s: Could not get uname for uid=%lu\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2464 rpmio/rpmmtree.c:2573
-#, c-format
-msgid "%s: Could not get gname for gid=%lu\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:2612 rpmio/rpmmtree.c:2637
-#, fuzzy, c-format
-msgid "%s: %s: cksum: %s\n"
-msgstr "недостаје { после %"
-
-#: rpmio/rpmmtree.c:2757
-#, fuzzy, c-format
-msgid "%s: open of %s failed: %s\n"
-msgstr "неуспело отварање %s: %s\n"
-
-#: rpmio/rpmmtree.c:3257
-#, fuzzy, c-format
-msgid "missing: %s"
-msgstr "недостаје   %c %s"
-
-#: rpmio/rpmmtree.c:3268
-#, c-format
-msgid " (%s not created: user not specified)"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3270
-#, c-format
-msgid " (%s not created: group not specified))"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3273
-#, fuzzy, c-format
-msgid " (%s not created: %s)\n"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmmtree.c:3276
-#, fuzzy, c-format
-msgid " (%s created)\n"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmmtree.c:3289 rpmio/rpmmtree.c:3325
-#, fuzzy, c-format
-msgid "%s: %s not modified: %s\n"
-msgstr "%s: Неуспело отварање\n"
-
-#: rpmio/rpmmtree.c:3294
-#, c-format
-msgid " (%s not created: mode not specified)"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3296
-#, fuzzy, c-format
-msgid " (%s not created: %s)"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmmtree.c:3299
-#, fuzzy, c-format
-msgid " (%s created)"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmmtree.c:3330
-#, c-format
-msgid "%s: permissions not set: %s\n"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3335
-#, fuzzy, c-format
-msgid "%s: file flags not set: %s\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmmtree.c:3447
-#, fuzzy, c-format
-msgid ", not removed: %s"
-msgstr "пакет %s није наведен у %s"
-
-#: rpmio/rpmmtree.c:3449
-#, c-format
-msgid ", removed"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3551
-msgid "Follow symlinks"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3554
-msgid "Don't follow symlinks"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3556
-msgid "Read fnmatch(3) exclude patterns from <file>"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3556
-msgid "<file>"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3559
-msgid "Print file tree specification to stdout"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3561
-msgid "Directories only"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3563
-msgid "Don't complain about files not in the specification"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3565
-msgid "Read file tree <spec>"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3567
-msgid "Indent sub-directories"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3569
-#, fuzzy
-msgid "Add <key> to specification"
-msgstr "      Опције одреднице пакета:"
-
-#: rpmio/rpmmtree.c:3569 rpmio/rpmmtree.c:3571
-msgid "<key>"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3571
-msgid "Use \"type\" keywords instead"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3573
-msgid "Loose permissions check"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3575
-msgid "Don't include sub-directory comments"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
-msgid "Use <path> rather than current directory"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3585
-msgid "Quiet mode"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3587
-msgid "Remove files not in specification"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3589
-msgid "Display crc for file(s) with <seed>"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3589
-msgid "<seed>"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3591
-msgid "Touch files iff timestamp differs"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3593
-msgid "Update owner/group/permissions to match specification"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3595
-msgid "Same as -u, but ignore match status on exit"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3597
-msgid "Treat missing uid/gid as warning"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3600
-msgid "Don't cross mount points"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:2009
-msgid "Fts(3) traversal options:"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3638
-#, c-format
-msgid "(no controlling terminal) %s"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3643
-#, c-format
-msgid "(no controlling terminal) #%d"
-msgstr ""
-
-#: rpmio/rpmmtree.c:3784 rpmio/rpmmtree.c:3799
-#, c-format
-msgid "%s: %s checksum: %u\n"
-msgstr ""
-
-#: rpmio/rpmrepo.c:718
-#, fuzzy, c-format
-msgid "Cannot create/verify %s: %s"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmrepo.c:760
-#, c-format
-msgid "Directory %s must exist"
-msgstr ""
-
-#: rpmio/rpmrepo.c:767
-#, fuzzy, c-format
-msgid "Directory %s does not exist."
-msgstr "група %s не садржи ниједан пакет\n"
-
-#: rpmio/rpmrepo.c:771
-#, fuzzy, c-format
-msgid "Directory %s must be writable."
-msgstr "премештања морају почети знаком '/'"
-
-#: rpmio/rpmrepo.c:781
-#, c-format
-msgid "Old data directory exists, please remove: %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:797
-#, c-format
-msgid "Path must be writable: %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:817
-#, c-format
-msgid "groupfile %s cannot be found."
-msgstr ""
-
-#: rpmio/rpmrepo.c:858
-#, c-format
-msgid "Fts_open: %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:926
-#, fuzzy, c-format
-msgid "cannot get to file: %s"
-msgstr "Не могу да отворим датотеку %s: "
-
-#: rpmio/rpmrepo.c:953 rpmio/rpmrepo.c:997
-#, c-format
-msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1054
-#, fuzzy, c-format
-msgid "%s: Fread(%s) failed: %s\n"
-msgstr "%s: Неуспео 'readLead'\n"
-
-#: rpmio/rpmrepo.c:1098 rpmio/rpmrepo.c:1170
-#, c-format
-msgid "headerSprintf(%s): %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1280
-#, fuzzy, c-format
-msgid ""
-"\n"
-"Error %s: %s\n"
-msgstr "%s : %s\n"
-
-#: rpmio/rpmrepo.c:1389
-#, c-format
-msgid "Saving %s metadata"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1606
-#, fuzzy
-msgid "Generating sqlite DBs"
-msgstr "направи PGP потпис"
-
-#: rpmio/rpmrepo.c:1633
-#, c-format
-msgid "Starting %s db creation: %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1699
-#, c-format
-msgid "Ending %s db creation: %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1733
-msgid "Sqlite DBs complete"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1744
-#, fuzzy, c-format
-msgid "Error saving temp file for %s%s%s: %s"
-msgstr "грешка код креирања директоријума %s: %s"
-
-#: rpmio/rpmrepo.c:1749
-#, fuzzy, c-format
-msgid "Could not save temp file: %s"
-msgstr "грешка: не могу да отворим датотеку %s\n"
-
-#: rpmio/rpmrepo.c:1776
-#, c-format
-msgid "Error moving final %s to old dir %s"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1784
-msgid "Error moving final metadata into place"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1801 rpmio/rpmrepo.c:1833
-#, fuzzy, c-format
-msgid "Could not remove old metadata file: %s: %s"
-msgstr "грешка: не могу да отворим датотеку %s\n"
-
-#: rpmio/rpmrepo.c:1843
-#, fuzzy, c-format
-msgid "Could not restore old non-metadata file: %s -> %s: %s"
-msgstr "грешка: не могу да отворим датотеку %s\n"
-
-#: rpmio/rpmrepo.c:1855
-#, fuzzy, c-format
-msgid "Could not remove old metadata dir: %s: %s"
-msgstr "грешка: не могу да отворим датотеку %s\n"
-
-#: rpmio/rpmrepo.c:1936
-msgid "don't compress"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1938
-msgid "use gzip compression"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1940
-msgid "use bzip2 compression"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1942
-msgid "use lzma compression"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1954
-msgid "debug repo handling"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1957
-msgid "output nothing except for serious errors"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1959
-msgid "output more debugging info."
-msgstr ""
-
-#: rpmio/rpmrepo.c:1961
-msgid "sanity check arguments, don't create metadata"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967
-msgid "glob PATTERN(s) to exclude"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967 rpmio/rpmrepo.c:1971
-#: rpmio/rpmrepo.c:1974
-msgid "PATTERN"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1971 rpmio/rpmrepo.c:1974
-msgid "glob PATTERN(s) to include"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1977
-#, fuzzy
-msgid "top level directory"
-msgstr "користи <dir> као директоријум највишег нивоа"
-
-#: rpmio/rpmrepo.c:1977 rpmio/rpmrepo.c:2002
-msgid "DIR"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1979
-msgid "baseurl to append on all files"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1979
-msgid "BASEURL"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1982
-msgid "path to groupfile to include in metadata"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1982 rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
-msgid "FILE"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1985
-msgid "make sure all xml generated is formatted"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1987
-msgid "check timestamps on files vs the metadata to see if we need to update"
-msgstr ""
-
-#: rpmio/rpmrepo.c:1990
-#, fuzzy
-msgid "create sqlite3 database files"
-msgstr "упит над %s неуспео\n"
-
-#: rpmio/rpmrepo.c:1993
-#, fuzzy
-msgid "generate split media"
-msgstr "направи PGP потпис"
-
-#: rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
-msgid "use only the files listed in this file from the directory specified"
-msgstr ""
-
-#: rpmio/rpmrepo.c:2002
-msgid "<dir> = optional directory to output to"
-msgstr ""
-
-#: rpmio/rpmrepo.c:2004
-msgid "ignore symlinks of packages"
-msgstr ""
-
-#: rpmio/rpmrepo.c:2006
-msgid "include the file's checksum in the filename, helps with proxies"
-msgstr ""
-
-#: rpmio/rpmrepo.c:2017
-msgid "Available compressions:"
-msgstr ""
-
-#: rpmio/rpmrepo.c:2091
-msgid "Must specify path(s) to index."
-msgstr ""
-
-#: rpmio/rpmrepo.c:2109 rpmio/rpmrepo.c:2161
-#, fuzzy, c-format
-msgid "Realpath(%s): %s"
-msgstr "PGP омануо"
-
-#: rpmio/rpmrepo.c:2166
-msgid "--split and --checkts options are mutually exclusive"
-msgstr ""
-
-#: rpmio/rpmrepo.c:2186
-msgid "Error loading exclude glob patterns."
-msgstr ""
-
-#: rpmio/rpmrepo.c:2189
-msgid "Error loading include glob patterns."
-msgstr ""
-
-#: rpmio/rpmrepo.c:2218
-#, c-format
-msgid "repo is up to date\n"
-msgstr ""
-
-#: rpmio/rpmuuid.c:34
-msgid "invalid UUID version number"
-msgstr ""
-
-#: rpmio/rpmuuid.c:38
-msgid "namespace or data required for requested UUID version\n"
-msgstr ""
-
-#: rpmio/rpmuuid.c:42
-msgid "either string or binary result buffer required\n"
-msgstr ""
-
-#: rpmio/rpmuuid.c:48
-#, fuzzy, c-format
-msgid "failed to create UUID object: %s\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmuuid.c:55
-#, fuzzy, c-format
-msgid "failed to create UUID namespace object: %s\n"
-msgstr "неуспело креирање %s\n"
-
-#: rpmio/rpmuuid.c:60
-#, c-format
-msgid "failed to import UUID namespace object: %s\n"
-msgstr ""
-
-#: rpmio/rpmuuid.c:79
-#, fuzzy, c-format
-msgid "failed to make UUID object: %s\n"
-msgstr "неуспело отварање %s: %s"
-
-#: rpmio/rpmuuid.c:91
-#, c-format
-msgid "failed to export UUID object as string representation: %s\n"
-msgstr ""
-
-#: rpmio/rpmuuid.c:102
-#, c-format
-msgid "failed to export UUID object as binary representation: %s\n"
-msgstr ""
-
-#: rpmio/rpmuuid.c:115
-msgid "UUID generator not available!\n"
-msgstr ""
 
 #: rpmio/url.c:113
 #, c-format
@@ -5000,22 +3830,22 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:166
+#: rpmio/url.c:164
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:260
+#: rpmio/url.c:258
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Лозинка за %s@%s: "
 
-#: rpmio/url.c:289 rpmio/url.c:315
+#: rpmio/url.c:287 rpmio/url.c:313
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "грешка: FTP порт мора бити број\n"
 
-#: rpmio/url.c:493
+#: rpmio/url.c:482
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "грешка: FTP порт мора бити број\n"
@@ -5120,31 +3950,3 @@ msgstr ""
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
-
-#, fuzzy
-#~ msgid "(error 0x%x)"
-#~ msgstr "грешка: "
-
-#, fuzzy
-#~ msgid "Unknown file type"
-#~ msgstr "(непознат тип)"
-
-#, fuzzy
-#~ msgid "Missing hard link(s)"
-#~ msgstr "недостаје ':' на %s:%д"
-
-#, fuzzy
-#~ msgid "Internal error"
-#~ msgstr "фатална грешка: "
-
-#, fuzzy
-#~ msgid " failed - "
-#~ msgstr "PGP омануо"
-
-#, fuzzy
-#~ msgid "error(%d) setting \"%s\" records from %s index\n"
-#~ msgstr "грешка код узимања слога %s из %s"
-
-#, fuzzy
-#~ msgid "error(%d) storing record \"%s\" into %s\n"
-#~ msgstr "грешка записивања слога %s у %s"

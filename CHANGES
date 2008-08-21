@@ -1,4 +1,6 @@
 5.1.4 -> 5.1.5:
+    - jbj: rescusitate w make distcheck.
+    - jbj: update po files.
     - jbj: don't attempt openssl memleak cleanup w/o openssl.
     - jbj: WR: add devtool windriver-{host,target} configuration targets.
     - jbj: adopt AM_PATH_PYTHON AutoFu variables. AM_PATH_PYTHON will be used eventually.
