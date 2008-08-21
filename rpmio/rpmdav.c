@@ -26,6 +26,7 @@
 
 #include "ne_utils.h"
 #if !defined(HEADER_ERR_H)
+#if defined(WITH_OPENSSL)
 /* cheats to avoid having to explicitly build against OpenSSL */
 /*@-exportheader@*/
 extern void ERR_remove_state(int foo);
@@ -36,6 +37,7 @@ extern void EVP_cleanup(void);
 extern void CRYPTO_cleanup_all_ex_data(void);
 extern void CRYPTO_mem_leaks(void * ptr);
 /*@=exportheader@*/
+#endif
 #endif
 
 #include "ne_md5.h" /* for version detection only */
@@ -304,6 +306,7 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
 void davDestroy(void)
 {
 #ifdef NE_FEATURE_SSL
+#if defined(WITH_OPENSSL)
     if (ne_has_support(NE_FEATURE_SSL)) {
 /* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
 	ENGINE_cleanup();
@@ -314,6 +317,7 @@ void davDestroy(void)
 	CRYPTO_mem_leaks(NULL);
 	CONF_modules_unload(1);
     }
+#endif
 #endif
 }
 
