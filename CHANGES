@@ -1,4 +1,6 @@
 5.1.4 -> 5.1.5:
+    - jbj: WR: remove --with-path-versioned in devtool targets.
+    - jbj: WR: remove $(VERION) from macros paths in devtool targets.
     - jbj: WR: fix: cleanup patch integration thinkos.
     - jbj: WR: mark wrs-rpm-enable-macro-validation.patch (but leave disabled).
     - jbj: WR: fix: add rt-reloc-wrapper.sh to EXTRAS_DIST.
