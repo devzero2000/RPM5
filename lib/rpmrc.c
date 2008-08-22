@@ -296,10 +296,12 @@ export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\n\
 export RPM_BUILD_ROOT\n}\
 ";
 
+#if defined(RPM_VENDOR_WINDRIVER)
 /*@unchecked@*/
 extern const char * __usrlibrpm;
 /*@unchecked@*/
 extern const char * __etcrpm;
+#endif
 
 static void setDefaults(void)
 	/*@globals rpmGlobalMacroContext, internalState @*/
