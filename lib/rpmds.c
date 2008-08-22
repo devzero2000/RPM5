@@ -1583,7 +1583,12 @@ exit:
     return rc;
 }
 
+#if defined(RPM_VENDOR_WINDRIVER)
+#define	_ETC_RPM_SYSINFO	"%{_etcrpm}/sysinfo"
+#else
 #define	_ETC_RPM_SYSINFO	SYSCONFIGDIR "/sysinfo"
+#endif
+
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 const char *_sysinfo_path = NULL;
 
