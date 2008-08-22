@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: remove --with-path-versioned in devtool targets.
+    - jbj: WR: remove $(VERION) from macros paths in devtool targets.
     - jbj: WR: add devtool windriver-{host,target} configuration targets.
     - jbj: WR: fix: cleanup patch integration thinkos.
     - jbj: WR: mark wrs-rpm-enable-macro-validation.patch (but leave disabled).
