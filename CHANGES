@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: WR: fix: add rt-reloc-wrapper.sh to EXTRAS_DIST.
     - jbj: rescusitate w make distcheck.
     - jbj: update po files.
     - jbj: don't attempt openssl memleak cleanup w/o openssl.
