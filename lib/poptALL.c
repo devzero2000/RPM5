@@ -496,7 +496,9 @@ void setRuntimeRelocPaths(void)
 
     __usrlibrpm = getenv("RPM_USRLIBRPM");
     __etcrpm = getenv("RPM_ETCRPM");
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
     __localedir = getenv("RPM_LOCALEDIR");
+#endif
 
     if ( __usrlibrpm == NULL ) {
 	__usrlibrpm = USRLIBRPM ;
@@ -508,10 +510,12 @@ void setRuntimeRelocPaths(void)
 	setenv("RPM_ETCRPM", SYSCONFIGDIR, 0);
     }
 
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
     if ( __localedir == NULL ) {
 	__localedir = LOCALEDIR ;
 	setenv("RPM_LOCALEDIR", LOCALEDIR, 0);
     }
+#endif
 }
 #endif
 
@@ -624,7 +628,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     path_buf = _free(path_buf);
 
 #if defined(RPM_VENDOR_WINDRIVER)
-    {	char * poptAliasFn = rpmGetPath(__usrlibrpm, "/", VERSION, "/rpmpopt", NULL);
+    {	const char * poptAliasFn = rpmGetPath(__usrlibrpm, "/", VERSION, "/rpmpopt", NULL);
 	(void) poptReadConfigFile(optCon, poptAliasFn);
 	poptAliasFn = _free(poptAliasFn);
     }
@@ -634,7 +638,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     (void) poptReadDefaultConfig(optCon, 1);
 
 #if defined(RPM_VENDOR_WINDRIVER)
-    {	char * poptExecPath = rpmGetPath(__usrlibrpm, "/", VERSION, NULL);
+    {	const char * poptExecPath = rpmGetPath(__usrlibrpm, "/", VERSION, NULL);
 	poptSetExecPath(optCon, poptExecPath, 1);
 	poptExecPath = _free(poptExecPath);
     }

@@ -296,6 +296,11 @@ export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\n\
 export RPM_BUILD_ROOT\n}\
 ";
 
+/*@unchecked@*/
+extern const char * __usrlibrpm;
+/*@unchecked@*/
+extern const char * __etcrpm;
+
 static void setDefaults(void)
 	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
@@ -304,7 +309,7 @@ static void setDefaults(void)
 #if defined(RPM_VENDOR_WINDRIVER)
     addMacro(NULL, "_usrlibrpm", NULL, __usrlibrpm, RMIL_DEFAULT);
     addMacro(NULL, "_etcrpm", NULL, __etcrpm, RMIL_DEFAULT);
-    addMacro(NULL, "_vendor", NULL, "%{?_host_vendor}%{!?_host_vendor:" RPMCANONVENDOR "}", RMIL_DEFAULT);
+    addMacro(NULL, "_vendor", NULL, "%{?_host_vendor}%{!?_host_vendor:wrs}", RMIL_DEFAULT);
 #endif
 
     addMacro(NULL, "_usr", NULL, USRPREFIX, RMIL_DEFAULT);

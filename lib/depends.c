@@ -255,17 +255,25 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 	 * we do have a special case to allow upgrades of noarch w/ a arch package
 	 */
 	if (tscolor && (!hcolor || !ohcolor)) {
+	    const char * arch;
+	    const char * oharch;
+	    he->tag = RPMTAG_ARCH;
+	    xx = headerGet(h, he, 0);
+	    arch = (xx && he->p.str != NULL ? he->p.str : NULL)
 	    he->tag = RPMTAG_ARCH;
 	    xx = headerGet(oh, he, 0);
-	    if (arch != NULL && he->p.str != NULL) {
-	        if (strcmp("noarch", arch) || strcmp("noarch", he->p.str)) {
-		    if (!_isCompatibleArch(arch, he->p.str)) {
-			he->p.ptr = _free(he->p.ptr);
+	    oharch = (xx && he->p.str != NULL ? he->p.str : NULL)
+	    if (arch != NULL && oharch != NULL) {
+	        if (strcmp("noarch", arch) || strcmp("noarch", oharch)) {
+		    if (!_isCompatibleArch(arch, oharch)) {
+			arch = _free(arch);
+			oharch = _free(oharch);
 			continue;
 		    }
 		}
 	    }
-	    he->p.ptr = _free(he->p.ptr);
+	    arch = _free(arch);
+	    oharch = _free(oharch);
 	}
 #endif
 
@@ -521,7 +529,7 @@ int _isCompatibleArch(const char * arch, const char * compat)
 	    break;
 	t = strndup(p, (pe - p));
 	p = pe; /* Advance to next chunk */
-rpmMessage(RPMMESS_DEBUG, _("   Comparing compat archs %s ? %s\n"), arch, t);
+rpmlog(RPMLOG_DEBUG, D_("   Comparing compat archs %s ? %s\n"), arch, t);
 	if (!strcmp(arch, t))
 	    match = 1;
 	t = _free(t);
