@@ -1751,7 +1751,7 @@ expandMacro(MacroBuf mb)
 	}
 
 	if (me == NULL) {	/* leave unknown %... as is */
-#ifndef HACK
+#if !defined(RPM_VENDOR_WINDRIVER_DEBUG)	/* XXX usually disabled */
 #if DEAD
 		/* XXX hack to skip over empty arg list */
 		if (fn == 1 && *f == '*') {
