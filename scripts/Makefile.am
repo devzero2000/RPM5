@@ -20,7 +20,7 @@ EXTRA_DIST = \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
-	rpmsort symset-table \
+	rpmsort rt-reloc-wrapper.sh symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \

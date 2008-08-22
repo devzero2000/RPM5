@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: fix: add rt-reloc-wrapper.sh to EXTRAS_DIST.
     - jbj: rescusitate w make distcheck.
     - jbj: update po files.
     - jbj: adopt AM_PATH_PYTHON AutoFu variables. AM_PATH_PYTHON will be used eventually.
