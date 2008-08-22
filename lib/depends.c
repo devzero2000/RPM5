@@ -256,10 +256,10 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, uint32_t hcolor, Header h)
 	    const char * oharch;
 	    he->tag = RPMTAG_ARCH;
 	    xx = headerGet(h, he, 0);
-	    arch = (xx && he->p.str != NULL ? he->p.str : NULL)
+	    arch = (xx && he->p.str != NULL ? he->p.str : NULL);
 	    he->tag = RPMTAG_ARCH;
 	    xx = headerGet(oh, he, 0);
-	    oharch = (xx && he->p.str != NULL ? he->p.str : NULL)
+	    oharch = (xx && he->p.str != NULL ? he->p.str : NULL);
 	    if (arch != NULL && oharch != NULL) {
 	        if (strcmp("noarch", arch) || strcmp("noarch", oharch)) {
 		    if (!_isCompatibleArch(arch, oharch)) {
