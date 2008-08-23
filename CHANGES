@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - rse: upgrade embedded Lua from version 5.1.3 to 5.1.4
     - jbj: WR: remove --with-path-versioned in devtool targets.
     - jbj: WR: remove $(VERION) from macros paths in devtool targets.
     - jbj: WR: fix: cleanup patch integration thinkos.

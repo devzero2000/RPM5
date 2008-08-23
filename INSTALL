@@ -35,7 +35,7 @@ OpenSSL         optional  0.9.8   0.9.8g  http://www.openssl.org/
 Neon            optional  0.26.0  0.28.1  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.5.9   http://www.sqlite.org/
-Lua         [2] optional  5.1     5.1.3   http://www.lua.org/
+Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 LZMA Utils      optional  4.42.2  4.999.3 http://tukaani.org/lzma/
