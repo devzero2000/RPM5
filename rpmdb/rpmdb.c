@@ -1877,23 +1877,16 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
-	DBT * key = &mi->mi_key;
-	DBT * data = &mi->mi_data;
-	sigset_t signalMask;
+	DBT k = DBT_INIT;
+	DBT v = DBT_INIT;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
-	size_t nb = 0;
 	int xx;
 
-	(void) headerGetMagic(mi->mi_h, NULL, &nb);
-/*@i@*/	key->data = (void *) &mi->mi_prevoffset;
-	key->size = (UINT32_T) sizeof(mi->mi_prevoffset);
-	{   size_t len;
-	    len = 0;
-	    data->data = headerUnload(mi->mi_h, &len);
-	    data->size = (UINT32_T) len;	/* XXX data->size is rpmuint32_t */
-#ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
-	    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
-#endif
+/*@i@*/	k.data = (void *) &mi->mi_prevoffset;
+	k.size = (UINT32_T) sizeof(mi->mi_prevoffset);
+	{   size_t len = 0;
+	    v.data = headerUnload(mi->mi_h, &len);
+	    v.size = (UINT32_T) len;
 	}
 
 	/* Check header digest/signature on blob export (if requested). */
@@ -1901,8 +1894,8 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    const char * msg = NULL;
 	    int lvl;
 
-assert(data->data != NULL);
-	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), data->data, data->size, &msg);
+assert(v.data != NULL);
+	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), v.data, v.size, &msg);
 	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
@@ -1911,9 +1904,10 @@ assert(data->data != NULL);
 	    msg = _free(msg);
 	}
 
-	if (data->data != NULL && rpmrc != RPMRC_FAIL) {
+	if (v.data != NULL && rpmrc != RPMRC_FAIL) {
+	    sigset_t signalMask;
 	    (void) blockSignals(dbi->dbi_rpmdb, &signalMask);
-	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
+	    rc = dbiPut(dbi, mi->mi_dbc, &k, &v, DB_KEYLAST);
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
 			_("error(%d) storing record #%d into %s\n"),
@@ -1922,8 +1916,8 @@ assert(data->data != NULL);
 	    xx = dbiSync(dbi, 0);
 	    (void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
 	}
-	data->data = _free(data->data);
-	data->size = 0;
+	v.data = _free(v.data); /* headerUnload */
+	v.size = 0;
     }
 
     mi->mi_h = headerFree(mi->mi_h);
