@@ -146,7 +146,7 @@ sub process_file {
        /x
       )
     {
-        my @deps = ( $1 ? split /\s+/, $2 : $3 ? split /\s+/, $4 : $5 );
+	my @deps = ( $1 ? split /\s+/, $2 : $3 ? $4 : split /\s+/, $5 );
         for my $mod ( grep !exists $require{$_}, @deps ) {
             $require{$mod} = '';
             $line{$mod}    = $_;
