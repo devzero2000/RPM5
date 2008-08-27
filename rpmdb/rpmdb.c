@@ -2636,11 +2636,18 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     rpmdbMatchIterator mi;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
+    int isLabel = 0;
 
     if (db == NULL)
 	return NULL;
 
     (void) rpmdbCheckSignals();
+
+    /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
+    if (rpmtag == RPMDBI_LABEL) {
+	rpmtag = RPMTAG_NAME;
+	isLabel = 1;
+    }
 
     dbi = dbiOpen(db, rpmtag, 0);
     if (dbi == NULL)
@@ -2681,9 +2688,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	int rc;
 	int xx;
 
-	/* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
-	if (rpmtag == RPMDBI_LABEL) {
-	    rpmtag = RPMTAG_NAME;
+	if (isLabel) {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	    rc = dbiFindByLabel(dbi, dbcursor, &k, &v, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
