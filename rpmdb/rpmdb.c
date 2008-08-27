@@ -2409,6 +2409,9 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (uh == NULL)
 	return NULL;
 
+    /* Rewrite current header (if necessary) and unlink. */
+    xx = miFreeHeader(mi, dbi);
+
     /* Check header digest/signature once (if requested). */
     if (mi->mi_ts) {
 	rpmRC rpmrc = RPMRC_NOTFOUND;
