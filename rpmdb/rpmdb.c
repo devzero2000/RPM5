@@ -2668,6 +2668,11 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	set->recs = xcalloc(1, sizeof(set->recs[0]));
 	set->recs[0].hdrNum = hdrNum.ui;
     }
+    else if (keyp == NULL) {
+	/* XXX Special case #3: they want empty iterator,
+	 * for use with rpmdbAppendIterator(). */
+	assert(keylen == 0);
+    }
     else {
 	/* Common case: retrieve join keys. */
 	DBC * dbcursor = NULL;
@@ -2675,20 +2680,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	DBT v = DBT_INIT;
 	int rc;
 	int xx;
-	int isLabel = 0;
 
 	/* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
 	if (rpmtag == RPMDBI_LABEL) {
 	    rpmtag = RPMTAG_NAME;
-	    isLabel = 1;
-	}
-
-	if (keyp == NULL) {
-	    /* XXX HACK keyp should not be NULL here, but rpmdbFindFpList
-	     * has rpmdbInitIterator(db, RPMTAG_BASENAMES, NULL, 0) call */
-	    if (rpmtag != RPMTAG_BASENAMES)
-		rc = 1;
-	} else if (isLabel) {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	    rc = dbiFindByLabel(dbi, dbcursor, &k, &v, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
