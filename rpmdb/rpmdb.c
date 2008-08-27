@@ -2333,15 +2333,14 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts)
     return rc;
 }
 
-
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
-    void * uh;
-    size_t uhlen;
     DBT k = DBT_INIT;
     DBT v = DBT_INIT;
     union _dbswap mi_offset;
+    void * uh;
+    size_t uhlen;
     int rc;
     int xx;
 
@@ -3262,8 +3261,8 @@ assert(v.data != NULL);
 /*@=compmempass@*/
 		    xx = dbiSync(dbi, 0);
 		}
-v.data = _free(v.data);
-v.size = 0;
+		v.data = _free(v.data); /* headerUnload */
+		v.size = 0;
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
