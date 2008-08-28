@@ -95,10 +95,8 @@ sub process_file {
     # marker, such as occurs right here. Draw the line somewhere.
     if ( m/^.*\Wq[qxwr]?\s*([\{\(\[#|\/])[^})\]#|\/]*$/ && ! m/^\s*(require|use)\s/ ) {
       $tag = $1;
-      $tag =~ tr/{\(\[\#|\//})]#|\//;
-      while (<FILE>) {
-        ( $_ =~ m/\}/ ) && last;
-      }
+      $tag =~ tr/{([/})]/;
+      $_ = <FILE> until m/\Q$tag\E/;
     }
 
     # skip the documentation
