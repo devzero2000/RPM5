@@ -2360,6 +2360,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi->mi_dbc == NULL)
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
 
+next:
     if (mi->mi_set) {
 	/* The set of header instances is known in advance. */
 	if (!(mi->mi_setx < mi->mi_set->count))
@@ -2449,7 +2450,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 
 	    /* Skip damaged and inconsistent headers. */
 	    if (rpmrc == RPMRC_FAIL)
-		return rpmdbNextIterator(mi); /* tail call */
+		goto next;
 	}
     }
 
@@ -2467,12 +2468,12 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),
 		mi->mi_offset);
-	return rpmdbNextIterator(mi); /* tail call */
+	goto next;
     }
 
     /* Skip this header if iterator selector (if any) doesn't match. */
     if (mireSkip(mi))
-	return rpmdbNextIterator(mi); /* tail call */
+	goto next;
 
     /* Mark header with its instance number. */
     {	char origin[32];
