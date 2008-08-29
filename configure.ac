@@ -1595,7 +1595,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
-    python/rpm/Makefile scripts/rpm.pc lib/rpmversion.h
+    scripts/rpm.pc lib/rpmversion.h
     rpmconstant/Makefile tests/Makefile tests/macros
 ])
 
