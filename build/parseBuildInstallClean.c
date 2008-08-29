@@ -51,7 +51,6 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	if (s && *s)
 	    appendStringBuf(*sbp, s);
 	s = _free(s);
-	sbp = NULL;	/* XXX skip %clean from spec file. */
     }
 
     /* There are no options to %build, %install, %check, or %clean */
