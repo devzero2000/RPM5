@@ -34,12 +34,12 @@ Mozilla NSS     optional  3.11    3.11.7  http://www.mozilla.org/projects/securi
 OpenSSL         optional  0.9.8   0.9.8g  http://www.openssl.org/
 Neon            optional  0.26.0  0.28.1  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
-SQLite      [1] optional  3.3     3.6.1   http://www.sqlite.org/
+SQLite      [1] optional  3.3     3.6.2   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 LZMA Utils  [3] optional  4.42.2  4.999.3 http://tukaani.org/lzma/
-File/magic  [4] optional  4.0     4.25    ftp://ftp.astron.com/pub/file/
+File/magic  [4] optional  4.0     4.26    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            optional  7.0     7.7     http://www.pcre.org/
