@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: macosx: avoid multiple definitions of _program_name.
     - rse: upgrade embedded Lua from version 5.1.3 to 5.1.4
     - jbj: WR: remove --with-path-versioned in devtool targets.
     - jbj: WR: remove $(VERION) from macros paths in devtool targets.

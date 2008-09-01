@@ -4,7 +4,7 @@
  */
 
 #include "system.h"
-const char *__progname;
+extern const char *__progname;
 
 #if defined(RPM_VENDOR_WINDRIVER)
 const char *__usrlibrpm = USRLIBRPM;
