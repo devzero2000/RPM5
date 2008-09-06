@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: WR: remove version from config paths.
     - jbj: lua: fix: don't close dup'd stdout running lua scripts.
     - jbj: macosx: avoid multiple definitions of _program_name.
     - rse: upgrade embedded Lua from version 5.1.3 to 5.1.4

@@ -628,7 +628,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     path_buf = _free(path_buf);
 
 #if defined(RPM_VENDOR_WINDRIVER)
-    {	const char * poptAliasFn = rpmGetPath(__usrlibrpm, "/", VERSION, "/rpmpopt", NULL);
+    {	const char * poptAliasFn = rpmGetPath(__usrlibrpm, "/rpmpopt", NULL);
 	(void) poptReadConfigFile(optCon, poptAliasFn);
 	poptAliasFn = _free(poptAliasFn);
     }
@@ -638,7 +638,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     (void) poptReadDefaultConfig(optCon, 1);
 
 #if defined(RPM_VENDOR_WINDRIVER)
-    {	const char * poptExecPath = rpmGetPath(__usrlibrpm, "/", VERSION, NULL);
+    {	const char * poptExecPath = rpmGetPath(__usrlibrpm, NULL);
 	poptSetExecPath(optCon, poptExecPath, 1);
 	poptExecPath = _free(poptExecPath);
     }
