@@ -92,7 +92,9 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	/* Read next line. */
 	s = fgets(line, sizeof(line) - 1, f);
 	if (s == NULL) {
-	    /* XXX Ferror check needed */
+	    if (Ferror(xfd))
+		rpmlog(RPMLOG_ERR, _("reading %s manifest failed: %s\n"),
+			fdGetOPath(xfd), Fstrerror(xfd));
 	    break;
 	}
 
@@ -116,6 +118,9 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
 	/* Insure that file contains only ASCII */
 	if (*s < 32) {
+	    rpmlog(RPMLOG_ERR, _("reading %s manifest, non-printable characters found\n"),
+		fdGetOPath(xfd), Fstrerror(xfd));
+
 	    rpmrc = RPMRC_FAIL;	/* XXX reject non-printable manifests. */
 	    goto exit;
 	}
