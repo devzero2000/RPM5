@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: lua: fix: don't close dup'd stdout running lua scripts.
     - jbj: macosx: avoid multiple definitions of _program_name.
     - jbj: merge po files.
     - jbj: don't expand removed python/rpm/Makefile.in.

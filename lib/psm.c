@@ -671,8 +671,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     size_t len;
     char * prefixBuf = NULL;
     const char * fn = NULL;
-    FD_t scriptFd;
-    FD_t out;
+    FD_t scriptFd = NULL;
+    FD_t out = NULL;		/* exit: expects this to be initialized. */
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     const char * NVRA;
     const char * body = NULL;
