@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: display error msg for lusers attempting "rpm -qp /bin" (#461362).
     - jbj: WR: remove version from config paths.
     - jbj: lua: fix: don't close dup'd stdout running lua scripts.
     - jbj: macosx: avoid multiple definitions of _program_name.
