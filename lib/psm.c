@@ -943,7 +943,7 @@ exit:
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
     if (script) {
-	if (!rpmIsDebug())
+	if (!rpmIsDebug() && fn != NULL)
 	    xx = Unlink(fn);
 	fn = _free(fn);
     }
