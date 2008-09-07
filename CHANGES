@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: upgrade build environment to GNU libtool 2.2.6
     - jbj: lua: fix: don't unlink a non-existent scriptlet file.
     - jbj: display error msg for lusers attempting "rpm -qp /bin" (#461362).
     - jbj: WR: remove version from config paths.
