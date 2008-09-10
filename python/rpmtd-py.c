@@ -238,7 +238,7 @@ PyTypeObject rpmtd_Type = {
 	&rpmtd_as_mapping,		/* tp_as_mapping */
 	0,				/* tp_hash */
 	0,				/* tp_call */
-	rpmtd_str,			/* tp_str */
+	(reprfunc)rpmtd_str,		/* tp_str */
 	PyObject_GenericGetAttr,	/* tp_getattro */
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */

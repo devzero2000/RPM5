@@ -221,8 +221,8 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
 /*@null@*/
 static void *
 rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
-		         const uint64_t amount, const uint64_t total,
-	                 const void * pkgKey, rpmCallbackData data)
+		         const rpmuint64_t amount, const rpmuint64_t total,
+	                 fnpyKey pkgKey, rpmCallbackData data)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
