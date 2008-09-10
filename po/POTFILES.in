@@ -74,7 +74,6 @@ rpmio/bzdio.c
 rpmio/cpio.c
 rpmio/digest.c
 rpmio/fts.c
-rpmio/getpass.c
 rpmio/gzdio.c
 rpmio/iosm.c
 rpmio/lookup3.c
