@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: unbreak rpm4compat.h wrt c++ function overrides.
+    - proyvind: fix pointer type mismatch with 64 bit in glob.c.
+    - proyvind: fix a couple of compile warnings in python bindings.
+    - proyvind: remove references in autotools to removed files.
     - rse: upgrade build environment to GNU libtool 2.2.6
     - jbj: lua: fix: don't unlink a non-existent scriptlet file.
     - jbj: display error msg for lusers attempting "rpm -qp /bin" (#461362).

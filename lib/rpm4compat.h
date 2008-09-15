@@ -317,11 +317,11 @@ static inline rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt,
 	return rpmcliImportPubkey(ts, pkt, pktlen);
 }
 
+#ifdef __cplusplus
 static inline rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags){
 	return rpmdsSingle(tagN, N, EVR, (evrFlags)Flags);
 }
 
-#ifdef __cplusplus
 }
 #endif
 
