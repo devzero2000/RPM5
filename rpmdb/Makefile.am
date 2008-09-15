@@ -30,9 +30,9 @@ tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
-pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmtag.h rpmtypes.h
+pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
 noinst_HEADERS = \
-	fprint.h header_internal.h legacy.h rpmdpkg.h rpmns.h \
+	fprint.h header_internal.h legacy.h rpmdpkg.h \
 	rpmtd.h rpmwf.h signature.h
 
 pkglibdir =		@USRLIBRPM@

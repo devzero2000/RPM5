@@ -36,10 +36,10 @@ EXTRA_PROGRAMS = tevr tgi tpgp tsbt
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	rpmcli.h rpmversion.h rpmds.h rpmfi.h rpmps.h \
-	rpmrc.h rpmte.h rpmts.h rpm4compat.h
+	rpmrc.h rpmte.h rpmsx.h rpmts.h rpm4compat.h
 noinst_HEADERS = \
 	filetriggers.h fs.h fsm.h manifest.h misc.h psm.h rpmal.h \
-	rpmfc.h rpmgi.h rpmlib.h rpmlock.h rpmluaext.h rpmrollback.h rpmsx.h
+	rpmfc.h rpmgi.h rpmlib.h rpmlock.h rpmluaext.h rpmrollback.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la

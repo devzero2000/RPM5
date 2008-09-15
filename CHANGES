@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: install headers required by other installed headers. (FIXME!)
     - proyvind: unbreak rpm4compat.h wrt c++ function overrides.
     - proyvind: fix pointer type mismatch with 64 bit in glob.c.
     - proyvind: fix a couple of compile warnings in python bindings.
