@@ -947,6 +947,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
+    int freetag = 0;
     size_t nb;
     char * val;
     const char * s = NULL;
@@ -955,11 +956,13 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
     int freeit = 0;
     int lvl = 0;
     int xx;
+    int ls;
     int c;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     xx = 0;
+    ls = 0;
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
@@ -974,7 +977,9 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 		continue;
 	    case '\n':	/* multiline */
 		xx = 1;
-		/*@switchbreak@*/ break;
+		if (s[0] == ' ' || s[0] == '\t') /* leading space */
+		    ls = 1;
+		continue;
 	    case '-':	/* leading "- \"" */
 	    case ':':	/* embedded ": " or ":" at EOL */
 		if (s[0] != ' ' && s[0] != '\0' && s[1] != '"')
@@ -985,13 +990,26 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    /*@loopbreak@*/ break;
 	}
 	if (xx) {
-	    if (element >= 0) {
-		xtag = "- |-\n";
-		lvl = 3;
+	    if (ls) { /* leading spaces means we need to specify the indent */
+		xtag = xmalloc(strlen("- |##-\n") + 1);
+		freetag = 1;
+		if (element >= 0) {
+		    lvl = 3;
+		    sprintf((char *)xtag, "- |%d-\n", lvl);
+		} else {
+		    lvl = 2;
+		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		    sprintf((char *)xtag, "|%d-\n", lvl);
+		}
 	    } else {
-		xtag = "|-\n";
-		lvl = 2;
-		if (he->ix < 0) lvl++;	/* XXX extra indent for array[1] */
+		if (element >= 0) {
+		    xtag = "- |-\n";
+		    lvl = 3;
+		} else {
+		    xtag = "|-\n";
+		    lvl = 2;
+		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		}
 	    }
 	} else {
 	    xtag = (element >= 0 ? "- " : NULL);
@@ -1063,6 +1081,8 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    te = stpcpy(te, "    ");
 	if (xtag)
 	    te = stpcpy(te, xtag);
+	    if (freetag)
+		xtag = _free(xtag);
 	te = yamlstrcpy(te, s, lvl);
 	te += strlen(te);
     }
