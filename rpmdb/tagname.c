@@ -261,9 +261,8 @@ static const char * _tagName(rpmTag tag)
 		/* Make sure that the bsearch retrieve is stable. */
 		while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
 		    i--;
-		    t--;
-		}
 		t = _rpmTags.byValue[i];
+		}
 		s = (*_rpmTags.tagCanonicalize) (t->name);
 		strncpy(nameBuf, s, nameBufLen);
 		s = _free(s);
@@ -322,7 +321,7 @@ static unsigned int _tagType(rpmTag tag)
 		/* Make sure that the bsearch retrieve is stable. */
 		while (i > 0 && t->val == _rpmTags.byValue[i-1]->val) {
 		    i--;
-		    t--;
+		    t = _rpmTags.byValue[i];
 		}
 		return t->type;
 	    }
