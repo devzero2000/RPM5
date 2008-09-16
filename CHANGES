@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: tagType() with multiple aliases returned the wrong type.
     - rpm.org: don't allow multiple definition of PatchX or SourceX
     - proyvind: install headers required by other installed headers. (FIXME!)
     - proyvind: unbreak rpm4compat.h wrt c++ function overrides.
