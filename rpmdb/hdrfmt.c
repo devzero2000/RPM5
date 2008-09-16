@@ -4766,7 +4766,7 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
 
     if (hsa != NULL) {
 	hsa->i = 0;
-	if (tag != NULL && tag->tagno[0] == (rpmTag)-2)
+	if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2)
 	    hsa->hi = headerInit(hsa->h);
     }
 /*@-nullret@*/
