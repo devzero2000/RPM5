@@ -56,6 +56,7 @@
 #include <rpm/rpmts.h>
 
 #include <rpm/rpmcli.h>
+#include <rpm/rpmps.h>
 
 enum hMagic {
 	HEADER_MAGIC_NO             = 0,
@@ -315,6 +316,10 @@ static inline int rpmMachineScore(int type, const char * name) {
 
 static inline rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen) {
 	return rpmcliImportPubkey(ts, pkt, pktlen);
+}
+
+static inline rpmuint64_t rpmProblemGetLong(rpmProblem prob){
+	return rpmProblemGetDiskNeed(prob);
 }
 
 #ifdef __cplusplus
