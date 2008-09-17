@@ -1922,8 +1922,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	iosm->postpone = XFA_SKIPPING(iosm->action);
 	if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	    /*@-evalorder@*/ /* FIX: saveHardLink can modify iosm */
-	    if (!(S_ISDIR(st->st_mode) || S_ISLNK(st->st_mode))
-	     && (st->st_nlink > 1 || iosm->lpath != NULL))
+	    if (S_ISREG(st->st_mode) && st->st_nlink > 1)
 		iosm->postpone = saveHardLink(iosm);
 	    /*@=evalorder@*/
 	}
@@ -1956,7 +1955,7 @@ if (fi->mapflags & IOSM_PAYLOAD_LIST) iosm->postpone = 1;
 	if (iosm->goal == IOSM_PKGBUILD) {
 	    if (iosm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
 		break;
-	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
+	    if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 		struct hardLink_s * li, * prev;
 
 if (!(iosm->mapFlags & IOSM_ALL_HARDLINKS)) break;
@@ -2060,7 +2059,7 @@ assert(iosm->lpath != NULL);
 	    if (!IS_DEV_LOG(iosm->path))
 		rc = IOSMERR_UNKNOWN_FILETYPE;
 	}
-	if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
+	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 	    iosm->li->createdPath = iosm->li->linkIndex;
 	    rc = iosmMakeLinks(iosm);
 	}
@@ -2104,7 +2103,7 @@ assert(iosm->lpath != NULL);
     case IOSM_FINI:
 	if (!iosm->postpone && iosm->commit) {
 	    if (iosm->goal == IOSM_PKGINSTALL)
-		rc = ((!S_ISDIR(st->st_mode) && st->st_nlink > 1)
+		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
 			? iosmCommitLinks(iosm) : iosmNext(iosm, IOSM_COMMIT));
 	    if (iosm->goal == IOSM_PKGCOMMIT)
 		rc = iosmNext(iosm, IOSM_COMMIT);
