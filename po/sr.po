@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-10 11:34+0200\n"
+"POT-Creation-Date: 2008-09-18 14:30-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: Serbian <gnu@prevod.org>\n"
@@ -52,7 +52,7 @@ msgstr "%s не личи на RPM пакет\n"
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:303 build/spec.c:940
+#: build.c:303 build/spec.c:950
 #, c-format
 msgid "    target platform: %s\n"
 msgstr ""
@@ -1325,17 +1325,22 @@ msgstr "погрешан број пакета: %s\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: build/spec.c:733
+#: build/spec.c:400
+#, fuzzy, c-format
+msgid "%s %d defined multiple times\n"
+msgstr "\"%s\" одређује више пакета\n"
+
+#: build/spec.c:743
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "грешка: не могу да отворим %s\n"
 
-#: build/spec.c:873
+#: build/spec.c:883
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "упит над %s неуспео\n"
 
-#: build/spec.c:928
+#: build/spec.c:938
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
@@ -1532,27 +1537,27 @@ msgstr "група %s не садржи ниједан пакет\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1945 lib/fsm.c:2065 rpmio/iosm.c:2014 rpmio/iosm.c:2133
+#: lib/fsm.c:1944 lib/fsm.c:2064 rpmio/iosm.c:2013 rpmio/iosm.c:2132
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "Не могу да отворим датотеку %s: "
 
-#: lib/fsm.c:2092
+#: lib/fsm.c:2091
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "не могу да уклоним %s - директоријум није празан"
 
-#: lib/fsm.c:2098
+#: lib/fsm.c:2097
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "неуспела команда рмдир %s: %s"
 
-#: lib/fsm.c:2113
+#: lib/fsm.c:2112
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "неуспело отварање %s: %s\n"
 
-#: lib/fsm.c:2138 rpmio/iosm.c:2206
+#: lib/fsm.c:2137 rpmio/iosm.c:2205
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "Не могу да отворим датотеку %s: "
@@ -2388,57 +2393,57 @@ msgstr "(непознат тип)"
 msgid "package without owner/group tags\n"
 msgstr "пакет нема имена"
 
-#: lib/query.c:487
+#: lib/query.c:489
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "група %s не садржи ниједан пакет\n"
 
-#: lib/query.c:496
+#: lib/query.c:498
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ниједан пакет не активира %s\n"
 
-#: lib/query.c:511 lib/query.c:534 lib/query.c:556 lib/query.c:591
+#: lib/query.c:513 lib/query.c:536 lib/query.c:558 lib/query.c:593
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Неуспело читање %s: %s."
 
-#: lib/query.c:523 lib/query.c:540 lib/query.c:567 lib/query.c:596
+#: lib/query.c:525 lib/query.c:542 lib/query.c:569 lib/query.c:598
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ниједан пакет не активира %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ниједан пакет не захтева %s\n"
 
-#: lib/query.c:618
+#: lib/query.c:620
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ниједан пакет не обезбеђује %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:654
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "неуспело отварање %s: %s"
 
-#: lib/query.c:655
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "датотека %s не припада ниједном пакету\n"
 
-#: lib/query.c:680
+#: lib/query.c:682
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "погрешан број пакета: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:689
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "не могу да прочитам слог %д\n"
 
-#: lib/query.c:697 lib/query.c:703 lib/rpminstall.c:773
+#: lib/query.c:699 lib/query.c:705 lib/rpminstall.c:773
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s није инсталиран\n"
@@ -3043,7 +3048,7 @@ msgid "invalid type"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:418 rpmdb/hdrfmt.c:441 rpmdb/hdrfmt.c:509
-#: rpmdb/hdrfmt.c:1199
+#: rpmdb/hdrfmt.c:1219
 msgid "(invalid type)"
 msgstr ""
 
@@ -3058,8 +3063,8 @@ msgid "(invalid type :base64)"
 msgstr "(није број)"
 
 #: rpmdb/hdrfmt.c:737 rpmdb/hdrfmt.c:745 rpmdb/hdrfmt.c:775
-#: rpmdb/hdrfmt.c:3179 rpmdb/hdrfmt.c:3187 rpmdb/hdrfmt.c:3666
-#: rpmdb/hdrfmt.c:3684
+#: rpmdb/hdrfmt.c:3199 rpmdb/hdrfmt.c:3207 rpmdb/hdrfmt.c:3686
+#: rpmdb/hdrfmt.c:3704
 #, fuzzy
 msgid "(not a string)"
 msgstr "(није број)"
@@ -3068,133 +3073,133 @@ msgstr "(није број)"
 msgid "(invalid xml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1031
+#: rpmdb/hdrfmt.c:1049
 msgid "(invalid yaml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1094
+#: rpmdb/hdrfmt.c:1114
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(није број)"
 
-#: rpmdb/hdrfmt.c:1117
+#: rpmdb/hdrfmt.c:1137
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "прескочи све PGP потписе"
 
-#: rpmdb/hdrfmt.c:3883
+#: rpmdb/hdrfmt.c:3903
 msgid "(invalid type :digest)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3940
+#: rpmdb/hdrfmt.c:3960
 msgid "(invalid type :stat)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4101
+#: rpmdb/hdrfmt.c:4121
 msgid "(invalid type :uuid)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4161
+#: rpmdb/hdrfmt.c:4181
 msgid "(invalid type :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4173
+#: rpmdb/hdrfmt.c:4193
 msgid "(invalid string :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4189
+#: rpmdb/hdrfmt.c:4209
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "неочекиван извор упита"
 
-#: rpmdb/hdrfmt.c:4193
+#: rpmdb/hdrfmt.c:4213
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4199
+#: rpmdb/hdrfmt.c:4219
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(није број)"
 
-#: rpmdb/hdrfmt.c:4204
+#: rpmdb/hdrfmt.c:4224
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4217
+#: rpmdb/hdrfmt.c:4237
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4260
+#: rpmdb/hdrfmt.c:4280
 msgid "(invalid type :strsub)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4265
+#: rpmdb/hdrfmt.c:4285
 msgid "(invalid args :strsub)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5103
+#: rpmdb/hdrfmt.c:5123
 msgid "missing { after %"
 msgstr "недостаје { после %"
 
-#: rpmdb/hdrfmt.c:5137
+#: rpmdb/hdrfmt.c:5157
 msgid "missing } after %{"
 msgstr "недостаје } после %{"
 
-#: rpmdb/hdrfmt.c:5153
+#: rpmdb/hdrfmt.c:5173
 msgid "empty tag format"
 msgstr "празан таг формат'"
 
-#: rpmdb/hdrfmt.c:5173
+#: rpmdb/hdrfmt.c:5193
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5194
+#: rpmdb/hdrfmt.c:5214
 msgid "empty tag name"
 msgstr "празно име таг-а"
 
-#: rpmdb/hdrfmt.c:5203
+#: rpmdb/hdrfmt.c:5223
 msgid "unknown tag"
 msgstr "непознат таг"
 
-#: rpmdb/hdrfmt.c:5233
+#: rpmdb/hdrfmt.c:5253
 msgid "] expected at end of array"
 msgstr "] очекивано на крају низа"
 
-#: rpmdb/hdrfmt.c:5250
+#: rpmdb/hdrfmt.c:5270
 msgid "unexpected ]"
 msgstr "неочекивано ]"
 
-#: rpmdb/hdrfmt.c:5265
+#: rpmdb/hdrfmt.c:5285
 msgid "unexpected }"
 msgstr "неочекивано }"
 
-#: rpmdb/hdrfmt.c:5344
+#: rpmdb/hdrfmt.c:5364
 msgid "? expected in expression"
 msgstr "очекиван знак ? у изразу"
 
-#: rpmdb/hdrfmt.c:5351
+#: rpmdb/hdrfmt.c:5371
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ очекивано после ? у изразу"
 
-#: rpmdb/hdrfmt.c:5363 rpmdb/hdrfmt.c:5403
+#: rpmdb/hdrfmt.c:5383 rpmdb/hdrfmt.c:5423
 msgid "} expected in expression"
 msgstr "} очекивано у изразу"
 
-#: rpmdb/hdrfmt.c:5371
+#: rpmdb/hdrfmt.c:5391
 msgid ": expected following ? subexpression"
 msgstr "очекивано : праћено ? подизразом"
 
-#: rpmdb/hdrfmt.c:5389
+#: rpmdb/hdrfmt.c:5409
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ очекивано после : у изразу"
 
-#: rpmdb/hdrfmt.c:5411
+#: rpmdb/hdrfmt.c:5431
 msgid "| expected at end of expression"
 msgstr "| очекивано на крају израза"
 
-#: rpmdb/hdrfmt.c:5745
+#: rpmdb/hdrfmt.c:5765
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3572,63 +3577,63 @@ msgstr ""
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2158
 #, fuzzy, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "не могу да уклоним %s - директоријум није празан"
 
-#: rpmio/iosm.c:2165
+#: rpmio/iosm.c:2164
 #, fuzzy, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "неуспела команда рмдир %s: %s"
 
-#: rpmio/iosm.c:2180
+#: rpmio/iosm.c:2179
 #, fuzzy, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "неуспело отварање %s: %s\n"
 
-#: rpmio/iosm.c:2766
+#: rpmio/iosm.c:2765
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "грешка: "
 
-#: rpmio/iosm.c:2769
+#: rpmio/iosm.c:2768
 msgid "Bad magic"
 msgstr ""
 
-#: rpmio/iosm.c:2770
+#: rpmio/iosm.c:2769
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "не могу да прочитам заглавље на %д за проверу"
 
-#: rpmio/iosm.c:2792
+#: rpmio/iosm.c:2791
 msgid "Header size too big"
 msgstr ""
 
-#: rpmio/iosm.c:2793
+#: rpmio/iosm.c:2792
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(непознат тип)"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2793
 #, fuzzy
 msgid "Missing hard link(s)"
 msgstr "недостаје ':' на %s:%д"
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2794
 msgid "File digest mismatch"
 msgstr ""
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2795
 #, fuzzy
 msgid "Internal error"
 msgstr "фатална грешка: "
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2796
 msgid "Archive file not in header"
 msgstr ""
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2807
 #, fuzzy
 msgid " failed - "
 msgstr "PGP омануо"

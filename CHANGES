@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: update nl.po (Translation Project).
     - rpm.org: permit hardlinks only with regular files.
     - jbj: fix: tagType() with multiple aliases returned the wrong type.
     - rpm.org: don't allow multiple definition of PatchX or SourceX

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-10 11:34+0200\n"
+"POT-Creation-Date: 2008-09-18 14:30-0400\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -58,7 +58,7 @@ msgstr "Il file %s non sembra essere un file spec.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Costruzione piattaforme target: %s\n"
 
-#: build.c:303 build/spec.c:940
+#: build.c:303 build/spec.c:950
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "Costruzione piattaforme target: %s\n"
@@ -1356,17 +1356,22 @@ msgstr "no n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "n"
 
-#: build/spec.c:733
+#: build/spec.c:400
+#, fuzzy, c-format
+msgid "%s %d defined multiple times\n"
+msgstr "n"
+
+#: build/spec.c:743
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "impossibile interrogare %s: %s\n"
 
-#: build/spec.c:873
+#: build/spec.c:883
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "l'interrogazione dello specfile %s fallita, impossibile parse\n"
 
-#: build/spec.c:928
+#: build/spec.c:938
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Costruzione piattaforme target: %s\n"
@@ -1550,27 +1555,27 @@ msgstr "root n"
 msgid "archive file %s was not found in header file list\n"
 msgstr "archivio file file lista n"
 
-#: lib/fsm.c:1945 lib/fsm.c:2065 rpmio/iosm.c:2014 rpmio/iosm.c:2133
+#: lib/fsm.c:1944 lib/fsm.c:2064 rpmio/iosm.c:2013 rpmio/iosm.c:2132
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "salvato n"
 
-#: lib/fsm.c:2092
+#: lib/fsm.c:2091
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "Directory vuoto n"
 
-#: lib/fsm.c:2098
+#: lib/fsm.c:2097
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "n"
 
-#: lib/fsm.c:2113
+#: lib/fsm.c:2112
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "n"
 
-#: lib/fsm.c:2138 rpmio/iosm.c:2206
+#: lib/fsm.c:2137 rpmio/iosm.c:2205
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "n"
@@ -2409,57 +2414,57 @@ msgstr "sconosciuto "
 msgid "package without owner/group tags\n"
 msgstr "file proprietario n"
 
-#: lib/query.c:487
+#: lib/query.c:489
 #, fuzzy, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "n"
 
-#: lib/query.c:496
+#: lib/query.c:498
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "no n"
 
-#: lib/query.c:511 lib/query.c:534 lib/query.c:556 lib/query.c:591
+#: lib/query.c:513 lib/query.c:536 lib/query.c:558 lib/query.c:593
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "n"
 
-#: lib/query.c:523 lib/query.c:540 lib/query.c:567 lib/query.c:596
+#: lib/query.c:525 lib/query.c:542 lib/query.c:569 lib/query.c:598
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "no n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, fuzzy, c-format
 msgid "no package requires %s\n"
 msgstr "no n"
 
-#: lib/query.c:618
+#: lib/query.c:620
 #, fuzzy, c-format
 msgid "no package provides %s\n"
 msgstr "no n"
 
-#: lib/query.c:652
+#: lib/query.c:654
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "file n"
 
-#: lib/query.c:655
+#: lib/query.c:657
 #, fuzzy, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "file è n"
 
-#: lib/query.c:680
+#: lib/query.c:682
 #, fuzzy, c-format
 msgid "invalid package number: %s\n"
 msgstr "n"
 
-#: lib/query.c:687
+#: lib/query.c:689
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "leggi n"
 
-#: lib/query.c:697 lib/query.c:703 lib/rpminstall.c:773
+#: lib/query.c:699 lib/query.c:705 lib/rpminstall.c:773
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "è n"
@@ -3075,7 +3080,7 @@ msgid "invalid type"
 msgstr "tipo"
 
 #: rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:418 rpmdb/hdrfmt.c:441 rpmdb/hdrfmt.c:509
-#: rpmdb/hdrfmt.c:1199
+#: rpmdb/hdrfmt.c:1219
 #, fuzzy
 msgid "(invalid type)"
 msgstr "tipo"
@@ -3090,8 +3095,8 @@ msgid "(invalid type :base64)"
 msgstr "tipo"
 
 #: rpmdb/hdrfmt.c:737 rpmdb/hdrfmt.c:745 rpmdb/hdrfmt.c:775
-#: rpmdb/hdrfmt.c:3179 rpmdb/hdrfmt.c:3187 rpmdb/hdrfmt.c:3666
-#: rpmdb/hdrfmt.c:3684
+#: rpmdb/hdrfmt.c:3199 rpmdb/hdrfmt.c:3207 rpmdb/hdrfmt.c:3686
+#: rpmdb/hdrfmt.c:3704
 msgid "(not a string)"
 msgstr ""
 
@@ -3100,142 +3105,142 @@ msgstr ""
 msgid "(invalid xml type)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:1031
+#: rpmdb/hdrfmt.c:1049
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:1094
+#: rpmdb/hdrfmt.c:1114
 msgid "(not a blob)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1117
+#: rpmdb/hdrfmt.c:1137
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3883
+#: rpmdb/hdrfmt.c:3903
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3940
+#: rpmdb/hdrfmt.c:3960
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:4101
+#: rpmdb/hdrfmt.c:4121
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:4161
+#: rpmdb/hdrfmt.c:4181
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:4173
+#: rpmdb/hdrfmt.c:4193
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:4189
+#: rpmdb/hdrfmt.c:4209
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "formato di interrogazione inaspettato"
 
-#: rpmdb/hdrfmt.c:4193
+#: rpmdb/hdrfmt.c:4213
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4199
+#: rpmdb/hdrfmt.c:4219
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:4204
+#: rpmdb/hdrfmt.c:4224
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4217
+#: rpmdb/hdrfmt.c:4237
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4260
+#: rpmdb/hdrfmt.c:4280
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:4265
+#: rpmdb/hdrfmt.c:4285
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:5103
+#: rpmdb/hdrfmt.c:5123
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5137
+#: rpmdb/hdrfmt.c:5157
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5153
+#: rpmdb/hdrfmt.c:5173
 #, fuzzy
 msgid "empty tag format"
 msgstr "vuoto"
 
-#: rpmdb/hdrfmt.c:5173
+#: rpmdb/hdrfmt.c:5193
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5194
+#: rpmdb/hdrfmt.c:5214
 #, fuzzy
 msgid "empty tag name"
 msgstr "vuoto nome"
 
-#: rpmdb/hdrfmt.c:5203
+#: rpmdb/hdrfmt.c:5223
 #, fuzzy
 msgid "unknown tag"
 msgstr "sconosciuto"
 
-#: rpmdb/hdrfmt.c:5233
+#: rpmdb/hdrfmt.c:5253
 #, fuzzy
 msgid "] expected at end of array"
 msgstr "fine"
 
-#: rpmdb/hdrfmt.c:5250
+#: rpmdb/hdrfmt.c:5270
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5265
+#: rpmdb/hdrfmt.c:5285
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5344
+#: rpmdb/hdrfmt.c:5364
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5351
+#: rpmdb/hdrfmt.c:5371
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5363 rpmdb/hdrfmt.c:5403
+#: rpmdb/hdrfmt.c:5383 rpmdb/hdrfmt.c:5423
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5371
+#: rpmdb/hdrfmt.c:5391
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5389
+#: rpmdb/hdrfmt.c:5409
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5411
+#: rpmdb/hdrfmt.c:5431
 #, fuzzy
 msgid "| expected at end of expression"
 msgstr "fine"
 
-#: rpmdb/hdrfmt.c:5745
+#: rpmdb/hdrfmt.c:5765
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3615,63 +3620,63 @@ msgstr "n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2158
 #, fuzzy, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "Directory vuoto n"
 
-#: rpmio/iosm.c:2165
+#: rpmio/iosm.c:2164
 #, fuzzy, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "n"
 
-#: rpmio/iosm.c:2180
+#: rpmio/iosm.c:2179
 #, fuzzy, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "n"
 
-#: rpmio/iosm.c:2766
+#: rpmio/iosm.c:2765
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "x"
 
-#: rpmio/iosm.c:2769
+#: rpmio/iosm.c:2768
 msgid "Bad magic"
 msgstr ""
 
-#: rpmio/iosm.c:2770
+#: rpmio/iosm.c:2769
 msgid "Bad/unreadable header"
 msgstr ""
 
-#: rpmio/iosm.c:2792
+#: rpmio/iosm.c:2791
 msgid "Header size too big"
 msgstr ""
 
-#: rpmio/iosm.c:2793
+#: rpmio/iosm.c:2792
 #, fuzzy
 msgid "Unknown file type"
 msgstr "Sconosciuto file tipo"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2793
 msgid "Missing hard link(s)"
 msgstr ""
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2794
 #, fuzzy
 msgid "File digest mismatch"
 msgstr "somma"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2795
 #, fuzzy
 msgid "Internal error"
 msgstr "Interno"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2796
 #, fuzzy
 msgid "Archive file not in header"
 msgstr "file"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2807
 msgid " failed - "
 msgstr ""
 

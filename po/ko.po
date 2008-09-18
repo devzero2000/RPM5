@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-10 11:34+0200\n"
+"POT-Creation-Date: 2008-09-18 14:30-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -50,7 +50,7 @@ msgstr "%s 파일은 spec 파일이 아닌 것 같습니다.\n"
 msgid "Building target platforms: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
-#: build.c:303 build/spec.c:940
+#: build.c:303 build/spec.c:950
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
@@ -1306,18 +1306,23 @@ msgstr "%d 번째 행: no%s(은)는 잘못된 숫자입니다: %d\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 번째 행: %s(은)는 잘못된 숫자입니다: %s\n"
 
-#: build/spec.c:733
+#: build/spec.c:400
+#, fuzzy, c-format
+msgid "%s %d defined multiple times\n"
+msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
+
+#: build/spec.c:743
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
-#: build/spec.c:873
+#: build/spec.c:883
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 "%s spec 파일을 질의하는데 실패했습니다, 파일을 처리(parse)할 수 없습니다\n"
 
-#: build/spec.c:928
+#: build/spec.c:938
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
@@ -1512,27 +1517,27 @@ msgstr "%s 그룹이 존재하지 않습니다 - root를 이용합니다\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s(을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1945 lib/fsm.c:2065 rpmio/iosm.c:2014 rpmio/iosm.c:2133
+#: lib/fsm.c:1944 lib/fsm.c:2064 rpmio/iosm.c:2013 rpmio/iosm.c:2132
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
 
-#: lib/fsm.c:2092
+#: lib/fsm.c:2091
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:2098
+#: lib/fsm.c:2097
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:2113
+#: lib/fsm.c:2112
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s 링크 해제에 실패함: %s\n"
 
-#: lib/fsm.c:2138 rpmio/iosm.c:2206
+#: lib/fsm.c:2137 rpmio/iosm.c:2205
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
@@ -2362,57 +2367,57 @@ msgstr "(알 수 없는 %3d)    "
 msgid "package without owner/group tags\n"
 msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 
-#: lib/query.c:487
+#: lib/query.c:489
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s 그룹은 어떤 패키지에도 포함되어 있지 않습니다\n"
 
-#: lib/query.c:496
+#: lib/query.c:498
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s(을)를 생성하는(trigger) 패키지가 없습니다\n"
 
-#: lib/query.c:511 lib/query.c:534 lib/query.c:556 lib/query.c:591
+#: lib/query.c:513 lib/query.c:536 lib/query.c:558 lib/query.c:593
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s(이)가 잘못됨: %s\n"
 
-#: lib/query.c:523 lib/query.c:540 lib/query.c:567 lib/query.c:596
+#: lib/query.c:525 lib/query.c:542 lib/query.c:569 lib/query.c:598
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s(을)를 필요로 하는 패키지가 없습니다\n"
 
-#: lib/query.c:618
+#: lib/query.c:620
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s(을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:652
+#: lib/query.c:654
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:655
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 들어있지 않습니다\n"
 
-#: lib/query.c:680
+#: lib/query.c:682
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:689
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:697 lib/query.c:703 lib/rpminstall.c:773
+#: lib/query.c:699 lib/query.c:705 lib/rpminstall.c:773
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -3034,7 +3039,7 @@ msgid "invalid type"
 msgstr "(부적합한 타입)"
 
 #: rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:418 rpmdb/hdrfmt.c:441 rpmdb/hdrfmt.c:509
-#: rpmdb/hdrfmt.c:1199
+#: rpmdb/hdrfmt.c:1219
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
@@ -3048,8 +3053,8 @@ msgid "(invalid type :base64)"
 msgstr "(부적합한 타입)"
 
 #: rpmdb/hdrfmt.c:737 rpmdb/hdrfmt.c:745 rpmdb/hdrfmt.c:775
-#: rpmdb/hdrfmt.c:3179 rpmdb/hdrfmt.c:3187 rpmdb/hdrfmt.c:3666
-#: rpmdb/hdrfmt.c:3684
+#: rpmdb/hdrfmt.c:3199 rpmdb/hdrfmt.c:3207 rpmdb/hdrfmt.c:3686
+#: rpmdb/hdrfmt.c:3704
 #, fuzzy
 msgid "(not a string)"
 msgstr "(숫자가 아닙니다)"
@@ -3059,138 +3064,138 @@ msgstr "(숫자가 아닙니다)"
 msgid "(invalid xml type)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:1031
+#: rpmdb/hdrfmt.c:1049
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:1094
+#: rpmdb/hdrfmt.c:1114
 msgid "(not a blob)"
 msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
 
-#: rpmdb/hdrfmt.c:1117
+#: rpmdb/hdrfmt.c:1137
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "어떠한 PGP 서명도 검사하지 않습니다"
 
-#: rpmdb/hdrfmt.c:3883
+#: rpmdb/hdrfmt.c:3903
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:3940
+#: rpmdb/hdrfmt.c:3960
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:4101
+#: rpmdb/hdrfmt.c:4121
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:4161
+#: rpmdb/hdrfmt.c:4181
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:4173
+#: rpmdb/hdrfmt.c:4193
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:4189
+#: rpmdb/hdrfmt.c:4209
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "부적절한 질의 형식 입니다"
 
-#: rpmdb/hdrfmt.c:4193
+#: rpmdb/hdrfmt.c:4213
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4199
+#: rpmdb/hdrfmt.c:4219
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(숫자가 아닙니다)"
 
-#: rpmdb/hdrfmt.c:4204
+#: rpmdb/hdrfmt.c:4224
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4217
+#: rpmdb/hdrfmt.c:4237
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4260
+#: rpmdb/hdrfmt.c:4280
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:4265
+#: rpmdb/hdrfmt.c:4285
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:5103
+#: rpmdb/hdrfmt.c:5123
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
-#: rpmdb/hdrfmt.c:5137
+#: rpmdb/hdrfmt.c:5157
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
-#: rpmdb/hdrfmt.c:5153
+#: rpmdb/hdrfmt.c:5173
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
-#: rpmdb/hdrfmt.c:5173
+#: rpmdb/hdrfmt.c:5193
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5194
+#: rpmdb/hdrfmt.c:5214
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
-#: rpmdb/hdrfmt.c:5203
+#: rpmdb/hdrfmt.c:5223
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
-#: rpmdb/hdrfmt.c:5233
+#: rpmdb/hdrfmt.c:5253
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:5250
+#: rpmdb/hdrfmt.c:5270
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
-#: rpmdb/hdrfmt.c:5265
+#: rpmdb/hdrfmt.c:5285
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
-#: rpmdb/hdrfmt.c:5344
+#: rpmdb/hdrfmt.c:5364
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:5351
+#: rpmdb/hdrfmt.c:5371
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:5363 rpmdb/hdrfmt.c:5403
+#: rpmdb/hdrfmt.c:5383 rpmdb/hdrfmt.c:5423
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:5371
+#: rpmdb/hdrfmt.c:5391
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
-#: rpmdb/hdrfmt.c:5389
+#: rpmdb/hdrfmt.c:5409
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:5411
+#: rpmdb/hdrfmt.c:5431
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:5745
+#: rpmdb/hdrfmt.c:5765
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3572,61 +3577,61 @@ msgstr "서명: size(%d)+pad(%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2158
 #, fuzzy, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: rpmio/iosm.c:2165
+#: rpmio/iosm.c:2164
 #, fuzzy, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: rpmio/iosm.c:2180
+#: rpmio/iosm.c:2179
 #, fuzzy, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "%s %s 링크 해제에 실패함: %s\n"
 
-#: rpmio/iosm.c:2766
+#: rpmio/iosm.c:2765
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(오류 0x%x)"
 
-#: rpmio/iosm.c:2769
+#: rpmio/iosm.c:2768
 msgid "Bad magic"
 msgstr "잘못된 magic 입니다"
 
-#: rpmio/iosm.c:2770
+#: rpmio/iosm.c:2769
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "잘못된/읽을 수 없는 헤더입니다"
 
-#: rpmio/iosm.c:2792
+#: rpmio/iosm.c:2791
 msgid "Header size too big"
 msgstr "헤더의 크기가 너무 큽니다"
 
-#: rpmio/iosm.c:2793
+#: rpmio/iosm.c:2792
 msgid "Unknown file type"
 msgstr "알 수 없는 파일 유형입니다"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2793
 msgid "Missing hard link(s)"
 msgstr "하드 링크를 찾을 수 없습니다"
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2794
 #, fuzzy
 msgid "File digest mismatch"
 msgstr "MD5 합계가 일치하지 않습니다"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2795
 msgid "Internal error"
 msgstr "내부 오류"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2796
 msgid "Archive file not in header"
 msgstr "헤더에 아카이브 파일이 없습니다"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2807
 msgid " failed - "
 msgstr " 실패함 - "
 

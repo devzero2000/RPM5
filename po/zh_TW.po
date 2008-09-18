@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-10 11:34+0200\n"
+"POT-Creation-Date: 2008-09-18 14:30-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -57,7 +57,7 @@ msgstr "%s 似乎不是一個規格檔案。\n"
 msgid "Building target platforms: %s\n"
 msgstr "組建目標平臺：%s\n"
 
-#: build.c:303 build/spec.c:940
+#: build.c:303 build/spec.c:950
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    目標平臺：%s\n"
@@ -1298,17 +1298,22 @@ msgstr "列 %d: 不當的 no%s 數字：%d\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "列 %d: 不當的 %s 數字：%s\n"
 
-#: build/spec.c:733
+#: build/spec.c:400
+#, fuzzy, c-format
+msgid "%s %d defined multiple times\n"
+msgstr "「%s」指定了多個套件\n"
+
+#: build/spec.c:743
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "無法查詢 %s：%s\n"
 
-#: build/spec.c:873
+#: build/spec.c:883
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "規格檔 %s 的查詢失敗，無法剖析\n"
 
-#: build/spec.c:928
+#: build/spec.c:938
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "查詢的規格檔用於平臺：%s\n"
@@ -1488,27 +1493,27 @@ msgstr "使用者群組 %s 不存在 - 現使用 root 代替\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr "保存檔案 %s 在檔案清單表頭中找不到\n"
 
-#: lib/fsm.c:1945 lib/fsm.c:2065 rpmio/iosm.c:2014 rpmio/iosm.c:2133
+#: lib/fsm.c:1944 lib/fsm.c:2064 rpmio/iosm.c:2013 rpmio/iosm.c:2132
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s 已被另存為 %s\n"
 
-#: lib/fsm.c:2092
+#: lib/fsm.c:2091
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s 移除目錄 %s 失敗：目錄非空\n"
 
-#: lib/fsm.c:2098
+#: lib/fsm.c:2097
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: lib/fsm.c:2113
+#: lib/fsm.c:2112
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s：取消 %s 的連結時失敗：%s\n"
 
-#: lib/fsm.c:2138 rpmio/iosm.c:2206
+#: lib/fsm.c:2137 rpmio/iosm.c:2205
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s 如同 %s 而建立\n"
@@ -2281,57 +2286,57 @@ msgstr "(不明的 %3d) "
 msgid "package without owner/group tags\n"
 msgstr "套件內沒有檔案擁有者/群組記錄\n"
 
-#: lib/query.c:487
+#: lib/query.c:489
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "群組 %s 內還沒有任何套件\n"
 
-#: lib/query.c:496
+#: lib/query.c:498
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "沒有套件內建觸發器 %s\n"
 
-#: lib/query.c:511 lib/query.c:534 lib/query.c:556 lib/query.c:591
+#: lib/query.c:513 lib/query.c:536 lib/query.c:558 lib/query.c:593
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "異常的 %s：%s\n"
 
-#: lib/query.c:523 lib/query.c:540 lib/query.c:567 lib/query.c:596
+#: lib/query.c:525 lib/query.c:542 lib/query.c:569 lib/query.c:598
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "沒有套件匹配：%s：%s\n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, c-format
 msgid "no package requires %s\n"
 msgstr "沒有套件需要 %s\n"
 
-#: lib/query.c:618
+#: lib/query.c:620
 #, c-format
 msgid "no package provides %s\n"
 msgstr "沒有套件提供 %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:654
 #, c-format
 msgid "file %s: %s\n"
 msgstr "檔案 %s：%s\n"
 
-#: lib/query.c:655
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "檔案 %s 不屬於任何套件\n"
 
-#: lib/query.c:680
+#: lib/query.c:682
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "不正確的套件編號：%s\n"
 
-#: lib/query.c:687
+#: lib/query.c:689
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:697 lib/query.c:703 lib/rpminstall.c:773
+#: lib/query.c:699 lib/query.c:705 lib/rpminstall.c:773
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2932,7 +2937,7 @@ msgid "invalid type"
 msgstr "無效型態"
 
 #: rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:418 rpmdb/hdrfmt.c:441 rpmdb/hdrfmt.c:509
-#: rpmdb/hdrfmt.c:1199
+#: rpmdb/hdrfmt.c:1219
 msgid "(invalid type)"
 msgstr "(無效型態)"
 
@@ -2946,8 +2951,8 @@ msgid "(invalid type :base64)"
 msgstr "(無效型態)"
 
 #: rpmdb/hdrfmt.c:737 rpmdb/hdrfmt.c:745 rpmdb/hdrfmt.c:775
-#: rpmdb/hdrfmt.c:3179 rpmdb/hdrfmt.c:3187 rpmdb/hdrfmt.c:3666
-#: rpmdb/hdrfmt.c:3684
+#: rpmdb/hdrfmt.c:3199 rpmdb/hdrfmt.c:3207 rpmdb/hdrfmt.c:3686
+#: rpmdb/hdrfmt.c:3704
 #, fuzzy
 msgid "(not a string)"
 msgstr "(不是數字)"
@@ -2956,137 +2961,137 @@ msgstr "(不是數字)"
 msgid "(invalid xml type)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:1031
+#: rpmdb/hdrfmt.c:1049
 msgid "(invalid yaml type)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:1094
+#: rpmdb/hdrfmt.c:1114
 msgid "(not a blob)"
 msgstr "(不是 blob)"
 
-#: rpmdb/hdrfmt.c:1117
+#: rpmdb/hdrfmt.c:1137
 msgid "(not an OpenPGP signature)"
 msgstr "(不是一個 OpenPGP 簽章)"
 
-#: rpmdb/hdrfmt.c:3883
+#: rpmdb/hdrfmt.c:3903
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:3940
+#: rpmdb/hdrfmt.c:3960
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4101
+#: rpmdb/hdrfmt.c:4121
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4161
+#: rpmdb/hdrfmt.c:4181
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4173
+#: rpmdb/hdrfmt.c:4193
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4189
+#: rpmdb/hdrfmt.c:4209
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "不可預料的查詢格式"
 
-#: rpmdb/hdrfmt.c:4193
+#: rpmdb/hdrfmt.c:4213
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4199
+#: rpmdb/hdrfmt.c:4219
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:4204
+#: rpmdb/hdrfmt.c:4224
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4217
+#: rpmdb/hdrfmt.c:4237
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4260
+#: rpmdb/hdrfmt.c:4280
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4265
+#: rpmdb/hdrfmt.c:4285
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:5103
+#: rpmdb/hdrfmt.c:5123
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/hdrfmt.c:5137
+#: rpmdb/hdrfmt.c:5157
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/hdrfmt.c:5153
+#: rpmdb/hdrfmt.c:5173
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/hdrfmt.c:5173
+#: rpmdb/hdrfmt.c:5193
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "異常的 arbgoal 時間/日期戳記引數"
 
-#: rpmdb/hdrfmt.c:5194
+#: rpmdb/hdrfmt.c:5214
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/hdrfmt.c:5203
+#: rpmdb/hdrfmt.c:5223
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/hdrfmt.c:5233
+#: rpmdb/hdrfmt.c:5253
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/hdrfmt.c:5250
+#: rpmdb/hdrfmt.c:5270
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/hdrfmt.c:5265
+#: rpmdb/hdrfmt.c:5285
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/hdrfmt.c:5344
+#: rpmdb/hdrfmt.c:5364
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:5351
+#: rpmdb/hdrfmt.c:5371
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/hdrfmt.c:5363 rpmdb/hdrfmt.c:5403
+#: rpmdb/hdrfmt.c:5383 rpmdb/hdrfmt.c:5423
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:5371
+#: rpmdb/hdrfmt.c:5391
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/hdrfmt.c:5389
+#: rpmdb/hdrfmt.c:5409
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/hdrfmt.c:5411
+#: rpmdb/hdrfmt.c:5431
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: rpmdb/hdrfmt.c:5745
+#: rpmdb/hdrfmt.c:5765
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
@@ -3455,60 +3460,60 @@ msgstr "簽章：不明 (%u)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "無法取得資料庫 %s 的鎖定，重試中…(%d)\n"
 
-#: rpmio/iosm.c:2159
+#: rpmio/iosm.c:2158
 #, fuzzy, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "%s 移除目錄 %s 失敗：目錄非空\n"
 
-#: rpmio/iosm.c:2165
+#: rpmio/iosm.c:2164
 #, fuzzy, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: rpmio/iosm.c:2180
+#: rpmio/iosm.c:2179
 #, fuzzy, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr " %s：取消 %s 的連結時失敗：%s\n"
 
-#: rpmio/iosm.c:2766
+#: rpmio/iosm.c:2765
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(錯誤 0x%x)"
 
-#: rpmio/iosm.c:2769
+#: rpmio/iosm.c:2768
 msgid "Bad magic"
 msgstr "不當的魔法數字"
 
-#: rpmio/iosm.c:2770
+#: rpmio/iosm.c:2769
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "損壞或無法讀取的表頭"
 
-#: rpmio/iosm.c:2792
+#: rpmio/iosm.c:2791
 msgid "Header size too big"
 msgstr "表頭尺寸過大"
 
-#: rpmio/iosm.c:2793
+#: rpmio/iosm.c:2792
 msgid "Unknown file type"
 msgstr "不明的檔案類型"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2793
 msgid "Missing hard link(s)"
 msgstr "丟失的硬式鏈結"
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2794
 msgid "File digest mismatch"
 msgstr "檔案摘要不符合"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2795
 msgid "Internal error"
 msgstr "內部錯誤"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2796
 msgid "Archive file not in header"
 msgstr "在檔頭中沒有歸檔檔案"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2807
 msgid " failed - "
 msgstr " 失敗 - "
 
