@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-08-21 08:53-0400\n"
+"POT-Creation-Date: 2008-09-18 14:18-0400\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -1348,147 +1348,142 @@ msgstr "requête du fichier de spécification %s a échoué, ne peut analyser\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Génération des plateformes cibles: %s\n"
 
-#: lib/depends.c:518
-#, fuzzy, c-format
-msgid "   Comparing compat archs %s ? %s\n"
-msgstr "aucune concordance de package %s: %s\n"
-
-#: lib/depends.c:659
+#: lib/depends.c:667
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "package %s a déjà été ajouté, remplaçant avec %s\n"
 
-#: lib/depends.c:673
+#: lib/depends.c:681
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "package %s a déjà été ajouté, remplaçant avec %s\n"
 
-#: lib/depends.c:890
+#: lib/depends.c:898
 msgid "(cached)"
 msgstr "(caché)"
 
-#: lib/depends.c:906
+#: lib/depends.c:914
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:925
+#: lib/depends.c:933
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:942
+#: lib/depends.c:950
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:951
+#: lib/depends.c:959
 #, fuzzy
 msgid "(access probe)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:973
+#: lib/depends.c:981
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1030
+#: lib/depends.c:1038
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1072
+#: lib/depends.c:1080
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1096
+#: lib/depends.c:1104
 #, fuzzy
 msgid "(signature probe)"
 msgstr "Options de signatures:"
 
-#: lib/depends.c:1126
+#: lib/depends.c:1134
 #, fuzzy
 msgid "(verify probe)"
 msgstr "mode de vérification RPM"
 
-#: lib/depends.c:1148
+#: lib/depends.c:1156
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1161
+#: lib/depends.c:1169
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(fournisseurs rpmrc)"
 
-#: lib/depends.c:1189
+#: lib/depends.c:1197
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1216
+#: lib/depends.c:1224
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1238
+#: lib/depends.c:1246
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1259
+#: lib/depends.c:1267
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1280
+#: lib/depends.c:1288
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1299
+#: lib/depends.c:1307
 msgid "(rpmlib provides)"
 msgstr "(fournisseurs rpmlib)"
 
-#: lib/depends.c:1314
+#: lib/depends.c:1322
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(fournisseurs rpmlib)"
 
-#: lib/depends.c:1329
+#: lib/depends.c:1337
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1344
+#: lib/depends.c:1352
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1376
+#: lib/depends.c:1384
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1404
+#: lib/depends.c:1412
 msgid "(db files)"
 msgstr "(fichier db)"
 
-#: lib/depends.c:1416
+#: lib/depends.c:1424
 msgid "(db provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1446
+#: lib/depends.c:1454
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1883
+#: lib/depends.c:1891
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorer le nom des relations du package [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2006
+#: lib/depends.c:2014
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "e nlever %s \"%s\" à partir des relations tsort.\n"
 
-#: lib/depends.c:2590
+#: lib/depends.c:2598
 msgid "LOOP:\n"
 msgstr "BOUCLE:\n"
 
-#: lib/depends.c:2626
+#: lib/depends.c:2634
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder a échoue, %d éléments restent à traiter\n"
@@ -1540,30 +1535,40 @@ msgstr ""
 "fichier d'archive %s n'a pas été repéré dans l'en-tête du fichier de la "
 "liste\n"
 
-#: lib/fsm.c:1929 lib/fsm.c:2049
+#: lib/fsm.c:1928 lib/fsm.c:2048
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sauvegardé sous %s\n"
 
-#: lib/fsm.c:2076
+#: lib/fsm.c:2075
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s a échoué: le répertoire n'est pas vide\n"
 
-#: lib/fsm.c:2082
+#: lib/fsm.c:2081
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s a échoué: %s\n"
 
-#: lib/fsm.c:2097
+#: lib/fsm.c:2096
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink de %s a échoué: %s\n"
 
-#: lib/fsm.c:2122
+#: lib/fsm.c:2121
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s a été créé sous %s\n"
+
+#: lib/manifest.c:99
+#, fuzzy, c-format
+msgid "reading %s manifest failed: %s\n"
+msgstr "%s: lecture manifeste a échoué: %s\n"
+
+#: lib/manifest.c:124
+#, c-format
+msgid "reading %s manifest, non-printable characters found\n"
+msgstr ""
 
 #: lib/misc.c:41
 #, c-format
@@ -1726,7 +1731,7 @@ msgstr "mettre au point le package de la machines à états"
 msgid "use threads for package state machine"
 msgstr "mettre au point le package de la machines à états"
 
-#: lib/poptALL.c:641 rpmio/poptIO.c:567
+#: lib/poptALL.c:645 rpmio/poptIO.c:567
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "la table d'option %s est mal configurée (%d)\n"
@@ -2368,57 +2373,57 @@ msgstr "(%3d inconnu)"
 msgid "package without owner/group tags\n"
 msgstr "package n'a pas de liste de propriétaire/groupe\n"
 
-#: lib/query.c:476
+#: lib/query.c:478
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "groupe %s ne contient aucun package\n"
 
-#: lib/query.c:485
+#: lib/query.c:487
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "pas d'aiguilleurs « triggers » de package %s\n"
 
-#: lib/query.c:500 lib/query.c:523 lib/query.c:545 lib/query.c:580
+#: lib/query.c:502 lib/query.c:525 lib/query.c:547 lib/query.c:582
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "mal composé %s: %s\n"
 
-#: lib/query.c:512 lib/query.c:529 lib/query.c:556 lib/query.c:585
+#: lib/query.c:514 lib/query.c:531 lib/query.c:558 lib/query.c:587
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "aucune concordance de package %s: %s\n"
 
-#: lib/query.c:596
+#: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
 msgstr "aucun package ne nécessite %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
 msgstr "aucun package ne fournit %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:643
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fichier %s: %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:646
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fichier %s ne fait parti d'aucun package\n"
 
-#: lib/query.c:669
+#: lib/query.c:671
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "numéro de package invalide: %s\n"
 
-#: lib/query.c:676
+#: lib/query.c:678
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "enregistrement %u ne peut être lu\n"
 
-#: lib/query.c:686 lib/query.c:692 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "package %s n'est pas installé\n"
@@ -2512,11 +2517,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:900 lib/rpmds.c:3665
+#: lib/rpmds.c:900 lib/rpmds.c:3670
 msgid "NO "
 msgstr "NON "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3665
+#: lib/rpmds.c:900 lib/rpmds.c:3670
 msgid "YES"
 msgstr "OUI"
 
@@ -2591,34 +2596,34 @@ msgstr ""
 msgid "package payload can be in ar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1521 lib/rpmds.c:3495
+#: lib/rpmds.c:1521 lib/rpmds.c:3500
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s a une valeur numérique invalide, escamoté\n"
 
-#: lib/rpmds.c:1544 lib/rpmds.c:3512
+#: lib/rpmds.c:1544 lib/rpmds.c:3517
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1555 lib/rpmds.c:3527
+#: lib/rpmds.c:1555 lib/rpmds.c:3532
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3494 lib/rpmds.c:3511 lib/rpmds.c:3523
+#: lib/rpmds.c:3499 lib/rpmds.c:3516 lib/rpmds.c:3528
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3525
+#: lib/rpmds.c:3530
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3630
+#: lib/rpmds.c:3635
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2628,7 +2633,7 @@ msgstr ""
 "\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3664
+#: lib/rpmds.c:3669
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -2845,27 +2850,27 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erreur %d rencontrée inconnu lors de la manipulation du package %s"
 
-#: lib/rpmrc.c:991
+#: lib/rpmrc.c:998
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1005
+#: lib/rpmrc.c:1012
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1020
+#: lib/rpmrc.c:1027
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1036
+#: lib/rpmrc.c:1043
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1050
+#: lib/rpmrc.c:1057
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""

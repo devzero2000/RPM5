@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-06 10:21+0200\n"
+"POT-Creation-Date: 2008-09-18 14:18-0400\n"
 "PO-Revision-Date: 2008-04-11 21:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -56,7 +56,7 @@ msgstr "Tập tin %s không hình như tập tin đặc tả.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Đang xây dựng các nền tảng đích: %s\n"
 
-#: build.c:298 build/spec.c:840
+#: build.c:298 build/spec.c:933
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    nền tảng đích: %s\n"
@@ -128,7 +128,9 @@ msgstr "gặp nguồn truy vấn bất thường"
 
 #: rpmqv.c:565
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr "chỉ có thể ép buộc thao tác kiểu cài đặt, nâng cấp, gỡ bỏ nguồn (rmsource) và gỡ bỏ đặc tả (rmspec)"
+msgstr ""
+"chỉ có thể ép buộc thao tác kiểu cài đặt, nâng cấp, gỡ bỏ nguồn (rmsource) "
+"và gỡ bỏ đặc tả (rmspec)"
 
 #: rpmqv.c:567
 msgid "files may only be relocated during package installation"
@@ -136,15 +138,21 @@ msgstr "chỉ có thể định vị lại tập tin trong khi cài đặt gói"
 
 #: rpmqv.c:570
 msgid "cannot use --prefix with --relocate or --excludepath"
-msgstr "không cho phép dùng tùy chọn « --prefix » (tiền tố) với « --relocate » (định vị lại) hoặc « --excludepath » (loại trừ đường dẫn)"
+msgstr ""
+"không cho phép dùng tùy chọn « --prefix » (tiền tố) với « --relocate » (định "
+"vị lại) hoặc « --excludepath » (loại trừ đường dẫn)"
 
 #: rpmqv.c:573
-msgid "--relocate and --excludepath may only be used when installing new packages"
-msgstr "tùy chọn « --relocate » (định vị lại) và --excludepath (loại trừ đường dẫn) chỉ có thể được dùng khi cài đặt gói mới"
+msgid ""
+"--relocate and --excludepath may only be used when installing new packages"
+msgstr ""
+"tùy chọn « --relocate » (định vị lại) và --excludepath (loại trừ đường dẫn) "
+"chỉ có thể được dùng khi cài đặt gói mới"
 
 #: rpmqv.c:576
 msgid "--prefix may only be used when installing new packages"
-msgstr "tùy chọn « --prefix » (tiền tố) chỉ có thể được dùng khi cài đặt gói mới"
+msgstr ""
+"tùy chọn « --prefix » (tiền tố) chỉ có thể được dùng khi cài đặt gói mới"
 
 #: rpmqv.c:579
 msgid "arguments to --prefix must begin with a /"
@@ -156,63 +164,103 @@ msgstr "tùy chọn « --hash » (-h) chỉ có thể được ghi rõ trong khi
 
 #: rpmqv.c:586
 msgid "--percent may only be specified during package installation"
-msgstr "tùy chọn « --percent » (phần trăm) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --percent » (phần trăm) chỉ có thể được ghi rõ trong khi cài đặt "
+"gói"
 
 #: rpmqv.c:590
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "tùy chọn « --replacepkgs » (thay thế các gói) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --replacepkgs » (thay thế các gói) chỉ có thể được ghi rõ trong "
+"khi cài đặt gói"
 
 #: rpmqv.c:594
 msgid "--excludedocs may only be specified during package installation"
-msgstr "tùy chọn « --excludedocs » (loại trừ các tài liệu) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --excludedocs » (loại trừ các tài liệu) chỉ có thể được ghi rõ "
+"trong khi cài đặt gói"
 
 #: rpmqv.c:598
 msgid "--includedocs may only be specified during package installation"
-msgstr "tùy chọn « --includedocs » (bao gồm các tài liệu) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --includedocs » (bao gồm các tài liệu) chỉ có thể được ghi rõ "
+"trong khi cài đặt gói"
 
 #: rpmqv.c:602
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "có thể ghi rõ chỉ một của hai tùy chọn « -excludedocs » (loại trừ các tài liệu)  và « -includedocs » (bao gồm các tài liệu)"
+msgstr ""
+"có thể ghi rõ chỉ một của hai tùy chọn « -excludedocs » (loại trừ các tài "
+"liệu)  và « -includedocs » (bao gồm các tài liệu)"
 
 #: rpmqv.c:606
 msgid "--ignorearch may only be specified during package installation"
-msgstr "tùy chọn « --ignorearch » (bỏ qua kiến trúc) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --ignorearch » (bỏ qua kiến trúc) chỉ có thể được ghi rõ trong khi "
+"cài đặt gói"
 
 #: rpmqv.c:610
 msgid "--ignoreos may only be specified during package installation"
-msgstr "tùy chọn « --ignoreos » (bỏ qua hệ điều hành) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --ignoreos » (bỏ qua hệ điều hành) chỉ có thể được ghi rõ trong "
+"khi cài đặt gói"
 
 #: rpmqv.c:614
 msgid "--allmatches may only be specified during package erasure"
-msgstr "tùy chọn « --allmatches » (mọi sự tương ứng) chỉ có thể được ghi rõ trong khi xoá gói"
+msgstr ""
+"tùy chọn « --allmatches » (mọi sự tương ứng) chỉ có thể được ghi rõ trong khi "
+"xoá gói"
 
 #: rpmqv.c:618
 msgid "--allfiles may only be specified during package installation"
-msgstr "tùy chọn « --allfiles » (mọi tập tin) chỉ có thể được ghi rõ trong khi cài đặt gói"
+msgstr ""
+"tùy chọn « --allfiles » (mọi tập tin) chỉ có thể được ghi rõ trong khi cài "
+"đặt gói"
 
 #: rpmqv.c:623
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "tùy chọn « --justdb » (chỉ cơ sở dữ liệu) chỉ có thể được ghi rõ trong khi cài đặt và xoá gói"
+msgstr ""
+"tùy chọn « --justdb » (chỉ cơ sở dữ liệu) chỉ có thể được ghi rõ trong khi "
+"cài đặt và xoá gói"
 
 #: rpmqv.c:628
-msgid "script disabling options may only be specified during package installation and erasure"
-msgstr "các tùy chọn vô hiệu hoá văn lệnh chỉ có thể được ghi rõ trong khi cài đặt và xoá gói"
+msgid ""
+"script disabling options may only be specified during package installation "
+"and erasure"
+msgstr ""
+"các tùy chọn vô hiệu hoá văn lệnh chỉ có thể được ghi rõ trong khi cài đặt "
+"và xoá gói"
 
 #: rpmqv.c:633
-msgid "trigger disabling options may only be specified during package installation and erasure"
-msgstr "các tùy chọn vô hiệu hoá bộ gây nên chỉ có thể được ghi rõ trong khi cài đặt và xoá gói"
+msgid ""
+"trigger disabling options may only be specified during package installation "
+"and erasure"
+msgstr ""
+"các tùy chọn vô hiệu hoá bộ gây nên chỉ có thể được ghi rõ trong khi cài đặt "
+"và xoá gói"
 
 #: rpmqv.c:637
-msgid "--nodeps may only be specified during package building, rebuilding, recompilation, installation, erasure, and verification"
-msgstr "tùy chọn « --nodeps » (không có quan hệ phụ thuộc) chỉ có thể được ghi rõ trong khi xây dựng, xây dựng lại, biên dịch lại, cài đặt, xoá và xác nhận gói"
+msgid ""
+"--nodeps may only be specified during package building, rebuilding, "
+"recompilation, installation, erasure, and verification"
+msgstr ""
+"tùy chọn « --nodeps » (không có quan hệ phụ thuộc) chỉ có thể được ghi rõ "
+"trong khi xây dựng, xây dựng lại, biên dịch lại, cài đặt, xoá và xác nhận gói"
 
 #: rpmqv.c:642
-msgid "--test may only be specified during package installation, erasure, and building"
-msgstr "tùy chọn « --test » (thử) chỉ có thể được ghi rõ trong khi cài đặt, xoá và xây dựng gói"
+msgid ""
+"--test may only be specified during package installation, erasure, and "
+"building"
+msgstr ""
+"tùy chọn « --test » (thử) chỉ có thể được ghi rõ trong khi cài đặt, xoá và "
+"xây dựng gói"
 
 #: rpmqv.c:647
-msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
-msgstr "tùy chọn « --root » (-r) chỉ có thể được ghi rõ trong khi cài đặt, xoá, truy vấn và xây dựng lại cơ sở dữ liệu"
+msgid ""
+"--root (-r) may only be specified during installation, erasure, querying, "
+"and database rebuilds"
+msgstr ""
+"tùy chọn « --root » (-r) chỉ có thể được ghi rõ trong khi cài đặt, xoá, truy "
+"vấn và xây dựng lại cơ sở dữ liệu"
 
 #: rpmqv.c:659
 msgid "arguments to --root (-r) must begin with a /"
@@ -247,39 +295,39 @@ msgstr "Cụm từ mật khẩu đúng.\n"
 msgid "exec failed\n"
 msgstr "exec (thực hiện) bị lỗi\n"
 
-#: rpmqv.c:771
+#: rpmqv.c:772
 msgid "no packages files given for rebuild"
 msgstr "chưa đưa ra tập tin gói cần xây dựng lại"
 
-#: rpmqv.c:862
+#: rpmqv.c:870
 msgid "no spec files given for build"
 msgstr "chưa đưa ra tập tin đặc tả cần xây dựng"
 
-#: rpmqv.c:864
+#: rpmqv.c:872
 msgid "no tar files given for build"
 msgstr "chưa đưa ra tập tin tar cần xây dựng"
 
-#: rpmqv.c:885
+#: rpmqv.c:898
 msgid "no packages given for erase"
 msgstr "chưa đưa ra gói cần xoá"
 
-#: rpmqv.c:929
+#: rpmqv.c:942
 msgid "no packages given for install"
 msgstr "chưa đưa ra gói cần cài đặt"
 
-#: rpmqv.c:949
+#: rpmqv.c:962
 msgid "no arguments given for query"
 msgstr "chưa đưa ra đối số để truy vấn"
 
-#: rpmqv.c:966
+#: rpmqv.c:979
 msgid "no arguments given for verify"
 msgstr "chưa đưa ra đối số để xác nhận"
 
-#: rpmqv.c:981
+#: rpmqv.c:994
 msgid "no arguments given"
 msgstr "chưa đưa ra đối số"
 
-#: build/build.c:190 build/pack.c:721
+#: build/build.c:190 build/pack.c:699
 msgid "Unable to open temp file.\n"
 msgstr "Không thể mở tập tin tạm thời.\n"
 
@@ -405,7 +453,8 @@ msgstr "Đặc tả dirmode (chế độ thư mục) sai: %s(%s)\n"
 #: build/files.c:776
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
-msgstr "Chiều dài miền địa phương không thông thường « %.*s » trong %%lang(%s)\n"
+msgstr ""
+"Chiều dài miền địa phương không thông thường « %.*s » trong %%lang(%s)\n"
 
 #: build/files.c:787
 #, c-format
@@ -442,97 +491,99 @@ msgstr "Không thể trộn lẫn tài liệu đặc biệt %%doc với dạng k
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "illegal _docdir_fmt: %s\n"
 
-#: build/files.c:1313
+#: build/files.c:1317
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Tập tin được liệt kê hai lần: %s\n"
 
-#: build/files.c:1530
+#: build/files.c:1534
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Liên kết tượng trưng chỉ tới BuildRoot (gốc xây dựng): %s -> %s\n"
 
-#: build/files.c:1825
+#: build/files.c:1852
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Tập tin không tương ứng với tiền tố (%s): %s\n"
 
-#: build/files.c:1851
+#: build/files.c:1878
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "không tìm thấy tập tin tùy chọn: %s\n"
 
-#: build/files.c:1854
+#: build/files.c:1881
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Không tìm thấy tập tin: %s\n"
 
-#: build/files.c:2072
+#: build/files.c:2078
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: không thể nạp thẻ bất thường (%d).\n"
 
-#: build/files.c:2078
+#: build/files.c:2084
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: lỗi đọc khoá công.\n"
 
-#: build/files.c:2082 lib/rpmchecksig.c:747
+#: build/files.c:2088 lib/rpmchecksig.c:747
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: không phải là khoá công bọc sắt.\n"
 
-#: build/files.c:2089
+#: build/files.c:2095
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: lỗi đọc chính sách *.te.\n"
 
-#: build/files.c:2145
+#: build/files.c:2151
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Tập tin cần có dấu sổ chéo « / » đi trước: %s\n"
 
-#: build/files.c:2169
+#: build/files.c:2175
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Không cho phép glob (mở rộng mẫu khi tìm kiếm): %s\n"
 
-#: build/files.c:2184
+#: build/files.c:2190
 #, c-format
 msgid "Optional file not found by glob: %s\n"
-msgstr "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin tùy chọn: %s\n"
+msgstr ""
+"Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin tùy chọn: %"
+"s\n"
 
-#: build/files.c:2188
+#: build/files.c:2194
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin: %s\n"
 
-#: build/files.c:2252
+#: build/files.c:2258
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Không thể mở tập tin %%files %s: %s\n"
 
-#: build/files.c:2263 build/pack.c:157
+#: build/files.c:2269 build/pack.c:135
 #, c-format
 msgid "line: %s\n"
 msgstr "dòng: %s\n"
 
-#: build/files.c:2742
+#: build/files.c:2748
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Tập tin sai: %s: %s\n"
 
-#: build/files.c:2764 build/parsePrep.c:53
+#: build/files.c:2768 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chủ/nhóm sai: %s\n"
 
-#: build/files.c:2809
+#: build/files.c:2813
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Đang kiểm tra có tập tin chưa đóng gói: %s\n"
 
-#: build/files.c:2824
+#: build/files.c:2828
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -541,7 +592,7 @@ msgstr ""
 "Tìm thấy tập tin đã cài đặt (nhưng chưa đóng gói):\n"
 "%s"
 
-#: build/files.c:2856
+#: build/files.c:2860
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Đang xử lý tập tin: %s\n"
@@ -575,135 +626,135 @@ msgstr "getGidS: quá nhiều GID\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Không thể làm hợp quy tắc tên máy: %s\n"
 
-#: build/pack.c:92
+#: build/pack.c:70
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "tiến trình tạo kho nén bị lỗi với tập tin %s: %s\n"
 
-#: build/pack.c:95
+#: build/pack.c:73
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "tiến trình tạo kho nén bị lỗi: %s\n"
 
-#: build/pack.c:117
+#: build/pack.c:95
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy: lỗi ghi: %s\n"
 
-#: build/pack.c:124
+#: build/pack.c:102
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy: lỗi đọc: %s\n"
 
-#: build/pack.c:239 build/pack.c:253
+#: build/pack.c:217 build/pack.c:231
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Không thể mở tập tin PreIn (cài đặt sẵn): %s\n"
 
-#: build/pack.c:246
+#: build/pack.c:224
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Không thể mở tập tin PreUn (xoá sẵn): %s\n"
 
-#: build/pack.c:260
+#: build/pack.c:238
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Không thể mở tập tin PostIn (cài đặt cuối): %s\n"
 
-#: build/pack.c:267 build/pack.c:274
+#: build/pack.c:245 build/pack.c:252
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Không thể mở tập tin PostUn (xoá cuối): %s\n"
 
-#: build/pack.c:282
+#: build/pack.c:260
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Không thể mở tập tin Verify/Script (xác nhận/văn lệnh): %s\n"
 
-#: build/pack.c:289
+#: build/pack.c:267
 #, c-format
 msgid "Could not open Test file: %s\n"
 msgstr "Không thể mở tập tin Test (thử): %s\n"
 
-#: build/pack.c:314
+#: build/pack.c:292
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Không thể mở tập tin văn lệnh Trigger (bộ gây nên): %s\n"
 
-#: build/pack.c:347
+#: build/pack.c:325
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: mở %s: %s\n"
 
-#: build/pack.c:368
+#: build/pack.c:346
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: đọc %s: %s\n"
 
-#: build/pack.c:378
+#: build/pack.c:356
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek bị lỗi: %s\n"
 
-#: build/pack.c:410
+#: build/pack.c:388
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s không phải là gói RPM\n"
 
-#: build/pack.c:415
+#: build/pack.c:393
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: đang đọc phần đầu từ %s\n"
 
-#: build/pack.c:708
+#: build/pack.c:686
 msgid "Unable to create immutable header region.\n"
 msgstr "Không thể tạo vùng đầu không thể thay đổi được.\n"
 
-#: build/pack.c:770
+#: build/pack.c:748
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Đang tạo chữ ký: %d\n"
 
-#: build/pack.c:794
+#: build/pack.c:772
 msgid "Unable to reload signature header.\n"
 msgstr "Không thể nạp lại phần đầu chữ ký.\n"
 
-#: build/pack.c:802
+#: build/pack.c:780
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Không thể mở %s: %s\n"
 
-#: build/pack.c:828 lib/psm.c:1982
+#: build/pack.c:806 lib/psm.c:2022
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Không thể ghi gói: %s\n"
 
-#: build/pack.c:853
+#: build/pack.c:831
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Không thể mở sigtarget (đích chữ ký) %s: %s\n"
 
-#: build/pack.c:894
+#: build/pack.c:872
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Không thể đọc trọng tải từ %s: %s\n"
 
-#: build/pack.c:902
+#: build/pack.c:880
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Không thể ghi trọng tải vào %s: %s\n"
 
-#: build/pack.c:937 lib/psm.c:2281
+#: build/pack.c:915 lib/psm.c:2337
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Đã ghi: %s\n"
 
-#: build/pack.c:1065
+#: build/pack.c:1036
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Không thể tạo tên tập tin kết xuất cho gói %s: %s\n"
 
-#: build/pack.c:1083
+#: build/pack.c:1054
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "không thể tạo %s: %s\n"
@@ -743,27 +794,27 @@ msgstr "thiếu tên trong bản ghi thay đổi (%%changelog)\n"
 msgid "no description in %%changelog\n"
 msgstr "không có mô tả trong bản ghi thay đổi (%%changelog)\n"
 
-#: build/parseDescription.c:48
+#: build/parseDescription.c:53
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "dòng %d: Gặp lỗi khi phân tích mô tả (%%description): %s\n"
 
-#: build/parseDescription.c:61 build/parseFiles.c:57 build/parseScript.c:240
+#: build/parseDescription.c:67 build/parseFiles.c:57 build/parseScript.c:240
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "dòng %d: Tùy chọn sai %s: %s\n"
 
-#: build/parseDescription.c:72 build/parseFiles.c:71 build/parseScript.c:254
+#: build/parseDescription.c:78 build/parseFiles.c:71 build/parseScript.c:254
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "dòng %d: Quá nhiều tên: %s\n"
 
-#: build/parseDescription.c:80 build/parseFiles.c:80 build/parseScript.c:263
+#: build/parseDescription.c:85 build/parseFiles.c:80 build/parseScript.c:263
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "dòng %d: Gói không tồn tại: %s\n"
 
-#: build/parseDescription.c:90
+#: build/parseDescription.c:95
 #, c-format
 msgid "line %d: Second description\n"
 msgstr "dòng %d: Mô tả thứ hai\n"
@@ -778,141 +829,132 @@ msgstr "dòng %d: Gặp lỗi khi phân tích tập tin (%%files): %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "dòng %d: Danh sách tập tin (%%files) thứ hai\n"
 
-#: build/parsePreamble.c:251
+#: build/parsePreamble.c:272
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Kiến trúc bị loại trừ : %s\n"
 
-#: build/parsePreamble.c:255
+#: build/parsePreamble.c:276
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Kiến trúc không được bao gồm: %s\n"
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:280
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Hệ điều hành bị loại trừ : %s\n"
 
-#: build/parsePreamble.c:263
+#: build/parsePreamble.c:284
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "Hệ điều hành không được bao gồm: %s\n"
 
-#: build/parsePreamble.c:288
+#: build/parsePreamble.c:309
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Trường %s phải nằm trong gói: %s\n"
 
-#: build/parsePreamble.c:319
+#: build/parsePreamble.c:340
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Mục nhập %s trùng trong gói: %s\n"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:431
 msgid "No icon file in sources\n"
 msgstr "Không có tập tin biểu tượng trong nguồn\n"
 
-#: build/parsePreamble.c:431
+#: build/parsePreamble.c:459
 #, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr "Địa chỉ URL biểu tượng không hợp lệ: %s\n"
 
-#: build/parsePreamble.c:438
+#: build/parsePreamble.c:466
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Không thể mở biểu tượng %s: %s\n"
 
-#: build/parsePreamble.c:447
+#: build/parsePreamble.c:475
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Không thể đọc biểu tượng %s: %s\n"
 
-#: build/parsePreamble.c:452
+#: build/parsePreamble.c:480
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr "Biểu tượng %s quá lớn (%d byte tối đa)\n"
 
-#: build/parsePreamble.c:473
-#, c-format
-msgid "Unknown icon type: %s\n"
-msgstr "Không rõ kiểu biểu tượng: %s\n"
-
-#: build/parsePreamble.c:523
+#: build/parsePreamble.c:544
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "dòng %d: Thẻ chấp nhận chỉ một hiệu bài: %s\n"
 
-#: build/parsePreamble.c:559
+#: build/parsePreamble.c:580
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "dòng %d: Thẻ dạng sai: %s\n"
 
-#: build/parsePreamble.c:567
+#: build/parsePreamble.c:588
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "dòng %d: Thẻ rỗng: %s\n"
 
-#: build/parsePreamble.c:591 build/parsePreamble.c:598
+#: build/parsePreamble.c:612 build/parsePreamble.c:619
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "dòng %d: Ký tự cấm « - » trong %s: %s\n"
 
-#: build/parsePreamble.c:641
+#: build/parsePreamble.c:662
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot (gốc xây dựng) không thể là thư mục « / »: %s\n"
 
-#: build/parsePreamble.c:658
+#: build/parsePreamble.c:679
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "dòng %d: Tiền tố phải bắt đầu với dấu sổ chéo « / »: %s\n"
 
-#: build/parsePreamble.c:666
+#: build/parsePreamble.c:687
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "dòng %d: Tiền tố không nên kết thúc với dấu sổ chéo « / »: %s\n"
 
-#: build/parsePreamble.c:678
+#: build/parsePreamble.c:699
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr "dòng %d: Docdir (thư mục tài liệu) phải bắt đầu với dấu sổ chéo « / »: %s\n"
+msgstr ""
+"dòng %d: Docdir (thư mục tài liệu) phải bắt đầu với dấu sổ chéo « / »: %s\n"
 
-#: build/parsePreamble.c:692
+#: build/parsePreamble.c:713
 #, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "dòng %d: %s chấp nhận giá trị số nguyên: %s\n"
 
-#: build/parsePreamble.c:738 build/parsePreamble.c:749
+#: build/parsePreamble.c:759 build/parsePreamble.c:770
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "dòng %d: %s sai: điều kiện: %s\n"
 
-#: build/parsePreamble.c:794
+#: build/parsePreamble.c:815
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "dòng %d: định dạng BuildArchitecture (kiến trúc xây dựng) sai: %s\n"
 
-#: build/parsePreamble.c:807
+#: build/parsePreamble.c:828
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr "dòng %d: Chỉ hỗ trợ gói phụ kiểu « noarch » (không có kiến trúc): %s\n"
 
-#: build/parsePreamble.c:931
+#: build/parsePreamble.c:952
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Không hỗ trợ cú pháp thừa tự : %s\n"
 
-#: build/parsePreamble.c:1028
+#: build/parsePreamble.c:1053
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Đặc tả gói sai: %s\n"
 
-#: build/parsePreamble.c:1034
-#, c-format
-msgid "Package already exists: %s\n"
-msgstr "Gói đã có : %s\n"
-
-#: build/parsePreamble.c:1070
+#: build/parsePreamble.c:1099
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "dòng %d: Không rõ thẻ: %s\n"
@@ -1013,8 +1055,11 @@ msgstr "dòng %d: chuẩn bị (%%prep) thứ hai\n"
 
 #: build/parseReqs.c:101
 #, c-format
-msgid "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
-msgstr "dòng %d: Quan hệ phụ thuộc « %s » phải bắt đầu với chữ cái, chữ số, dấu gạch dưới « _ » hoặc dấu sổ chéo « / »: %s\n"
+msgid ""
+"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
+msgstr ""
+"dòng %d: Quan hệ phụ thuộc « %s » phải bắt đầu với chữ cái, chữ số, dấu gạch "
+"dưới « _ » hoặc dấu sổ chéo « / »: %s\n"
 
 #: build/parseReqs.c:127
 #, c-format
@@ -1039,12 +1084,14 @@ msgstr "dòng %d: Lỗi phân tích %s: %s\n"
 #: build/parseScript.c:218
 #, c-format
 msgid "line %d: internal script must end with '>': %s\n"
-msgstr "dòng %d: Văn lệnh nội bộ phải kết thúc bằng dấu ngoặc nhọn đóng « > »: %s\n"
+msgstr ""
+"dòng %d: Văn lệnh nội bộ phải kết thúc bằng dấu ngoặc nhọn đóng « > »: %s\n"
 
 #: build/parseScript.c:227
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "dòng %d: Chương trình đặt văn lệnh phải bắt đầu với dấu sổ chéo « / »: %s\n"
+msgstr ""
+"dòng %d: Chương trình đặt văn lệnh phải bắt đầu với dấu sổ chéo « / »: %s\n"
 
 #: build/parseScript.c:271
 #, c-format
@@ -1074,7 +1121,8 @@ msgstr "Mệnh đề Nếu (%%if) chưa đóng\n"
 #: build/parseSpec.c:397
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
-msgstr "%s:%d: parseExpressionBoolean (phân tích biểu thức luận lý) trả về %d\n"
+msgstr ""
+"%s:%d: parseExpressionBoolean (phân tích biểu thức luận lý) trả về %d\n"
 
 #: build/parseSpec.c:406
 #, c-format
@@ -1091,11 +1139,11 @@ msgstr "%s:%d: Có một toán tử %%endif (kết thúc nếu) mà không có %
 msgid "malformed %%include statement\n"
 msgstr "câu lệnh bao gồm (%%include) dạng sai\n"
 
-#: build/parseSpec.c:634
+#: build/parseSpec.c:656
 msgid "No compatible architectures found for build\n"
 msgstr "Không tìm thấy kiến trúc tương thích để xây dựng\n"
 
-#: build/parseSpec.c:696
+#: build/parseSpec.c:723
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Gói không có mô tả (%%description): %s\n"
@@ -1103,7 +1151,9 @@ msgstr "Gói không có mô tả (%%description): %s\n"
 #: build/poptBT.c:136
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "xây dựng qua %prep (chuẩn bị: mở gói nguồn và áp dụng những đắp vá) từ <tập tin đặc tả>"
+msgstr ""
+"xây dựng qua %prep (chuẩn bị: mở gói nguồn và áp dụng những đắp vá) từ <tập "
+"tin đặc tả>"
 
 #: build/poptBT.c:137 build/poptBT.c:140 build/poptBT.c:143 build/poptBT.c:146
 #: build/poptBT.c:149 build/poptBT.c:152 build/poptBT.c:155 build/poptBT.c:159
@@ -1113,11 +1163,15 @@ msgstr "<tập tin đặc tả>"
 
 #: build/poptBT.c:139
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "xây dựng qua %build (xây dựng: %prep [chuẳn bị], sau đó biên dịch) từ <tập tin đặc tả>"
+msgstr ""
+"xây dựng qua %build (xây dựng: %prep [chuẳn bị], sau đó biên dịch) từ <tập "
+"tin đặc tả>"
 
 #: build/poptBT.c:142
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó cài đặt) từ <tập tin đặc tả>"
+msgstr ""
+"xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó "
+"cài đặt) từ <tập tin đặc tả>"
 
 #: build/poptBT.c:145
 #, c-format
@@ -1147,7 +1201,9 @@ msgstr "lấy các tập tin kiểu nguồn và đắp vá còn thiếu"
 #: build/poptBT.c:165
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "xây dựng qua %prep (chuẩn bị: giải nén các nguồn và áp dụng các đắp vá) từ <kho nén>"
+msgstr ""
+"xây dựng qua %prep (chuẩn bị: giải nén các nguồn và áp dụng các đắp vá) từ "
+"<kho nén>"
 
 #: build/poptBT.c:166 build/poptBT.c:169 build/poptBT.c:172 build/poptBT.c:175
 #: build/poptBT.c:178 build/poptBT.c:181 build/poptBT.c:184
@@ -1156,11 +1212,15 @@ msgstr "<kho nén>"
 
 #: build/poptBT.c:168
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "xây dựng qua %build (xây dựng: %prep [chuẩn bị], sau đó biên dịch) từ <kho nén>"
+msgstr ""
+"xây dựng qua %build (xây dựng: %prep [chuẩn bị], sau đó biên dịch) từ <kho "
+"nén>"
 
 #: build/poptBT.c:171
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó cài đặt) từ <kho nén>"
+msgstr ""
+"xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó "
+"cài đặt) từ <kho nén>"
 
 #: build/poptBT.c:174
 #, c-format
@@ -1188,8 +1248,11 @@ msgid "<source package>"
 msgstr "<gói nguồn>"
 
 #: build/poptBT.c:190
-msgid "build through %install (%prep, %build, then install) from <source package>"
-msgstr "xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó cài đặt) từ <gói nguồn>"
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó "
+"cài đặt) từ <gói nguồn>"
 
 #: build/poptBT.c:194
 msgid "remove build tree when done"
@@ -1215,17 +1278,17 @@ msgstr "tắt khả năng tự động giải nén Requires: (cần thiết)"
 msgid "disable tags forbidden by LSB"
 msgstr "tất các thẻ bị LSB cấm"
 
-#: build/poptBT.c:207 lib/poptALL.c:347 lib/poptI.c:342 lib/poptQV.c:407
+#: build/poptBT.c:207 lib/poptALL.c:362 lib/poptI.c:342 lib/poptQV.c:407
 #: lib/poptQV.c:416 lib/poptQV.c:458
 msgid "don't verify package digest(s)"
 msgstr "đừng thẩm tra bản tóm tắt gói"
 
-#: build/poptBT.c:209 lib/poptALL.c:349 lib/poptI.c:344 lib/poptQV.c:410
+#: build/poptBT.c:209 lib/poptALL.c:364 lib/poptI.c:344 lib/poptQV.c:410
 #: lib/poptQV.c:418 lib/poptQV.c:461
 msgid "don't verify database header(s) when retrieved"
 msgstr "đừng thẩm tra phần đầu cơ sở dữ liệu khi tìm được"
 
-#: build/poptBT.c:211 lib/poptALL.c:351 lib/poptI.c:346 lib/poptQV.c:413
+#: build/poptBT.c:211 lib/poptALL.c:366 lib/poptI.c:346 lib/poptQV.c:413
 #: lib/poptQV.c:420 lib/poptQV.c:463
 msgid "don't verify package signature(s)"
 msgstr "đừng thẩm tra chữ ký gói"
@@ -1254,7 +1317,7 @@ msgstr "tạo chữ ký PGP/GPG"
 msgid "override target platform"
 msgstr "có quyền cao hơn nền tảng đích"
 
-#: build/poptBT.c:224 lib/poptALL.c:344 lib/poptQV.c:318
+#: build/poptBT.c:224 lib/poptALL.c:359 lib/poptQV.c:318
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-NHÀ-SẢN-XUẤT-HĐH"
 
@@ -1262,161 +1325,161 @@ msgstr "CPU-NHÀ-SẢN-XUẤT-HĐH"
 msgid "look up i18n strings in specfile catalog"
 msgstr "tra cứu các chuỗi i18n trong danh bạ tập tin đặc tả"
 
-#: build/spec.c:292
+#: build/spec.c:307
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "dòng %d: Số sai: %s\n"
 
-#: build/spec.c:298
+#: build/spec.c:313
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "dòng %d: Số no%s sai: %d\n"
 
-#: build/spec.c:365
+#: build/spec.c:383
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "dòng %d: Số %s sai: %s\n"
 
-#: build/spec.c:697
+#: build/spec.c:726
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "không thể truy vấn %s: %s\n"
 
-#: build/spec.c:774
+#: build/spec.c:866
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "lỗi truy vấn tập tin đặc tả %s nên không phân tích được\n"
 
-#: build/spec.c:828
+#: build/spec.c:921
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Truy vấn tập tin đặc tả cho (các) nền tảng: %s\n"
 
-#: lib/depends.c:314
+#: lib/depends.c:667
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "gói %s đã được thêm vào nên bỏ qua %s\n"
 
-#: lib/depends.c:328
+#: lib/depends.c:681
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "gói %s đã được thêm vào nên thay thế bằng %s\n"
 
-#: lib/depends.c:662
+#: lib/depends.c:898
 msgid "(cached)"
 msgstr "(đã nhớ tạm)"
 
-#: lib/depends.c:678
+#: lib/depends.c:914
 msgid "(function probe)"
 msgstr "(dò hàm)"
 
-#: lib/depends.c:697
+#: lib/depends.c:933
 msgid "(user lookup)"
 msgstr "(tra cứu người dùng)"
 
-#: lib/depends.c:714
+#: lib/depends.c:950
 msgid "(group lookup)"
 msgstr "(tra cứu nhóm)"
 
-#: lib/depends.c:723
+#: lib/depends.c:959
 msgid "(access probe)"
 msgstr "(dò truy cập)"
 
-#: lib/depends.c:745
+#: lib/depends.c:981
 msgid "(mtab probe)"
 msgstr "(dò mtab)"
 
-#: lib/depends.c:802
+#: lib/depends.c:1038
 msgid "(diskspace probe)"
 msgstr "(dò sức chứa trên đĩa)"
 
-#: lib/depends.c:844
+#: lib/depends.c:1080
 msgid "(digest probe)"
 msgstr "(dò bản tóm tắt)"
 
-#: lib/depends.c:868
+#: lib/depends.c:1104
 msgid "(signature probe)"
 msgstr "(dò chữ ký)"
 
-#: lib/depends.c:898
+#: lib/depends.c:1134
 msgid "(verify probe)"
 msgstr "(dò thẩm tra)"
 
-#: lib/depends.c:920
+#: lib/depends.c:1156
 msgid "(gnupg probe)"
 msgstr "(dò gnupg)"
 
-#: lib/depends.c:933
+#: lib/depends.c:1169
 msgid "(macro probe)"
 msgstr "(dò vĩ lệnh)"
 
-#: lib/depends.c:961
+#: lib/depends.c:1197
 msgid "(envvar probe)"
 msgstr "(dò envvar [biến môi trường])"
 
-#: lib/depends.c:988
+#: lib/depends.c:1224
 msgid "(running probe)"
 msgstr "(dò chạy)"
 
-#: lib/depends.c:1010
+#: lib/depends.c:1246
 msgid "(sanity probe)"
 msgstr "(dò ôn hoà)"
 
-#: lib/depends.c:1031
+#: lib/depends.c:1267
 msgid "(vcheck probe)"
 msgstr "(dò vcheck)"
 
-#: lib/depends.c:1052
+#: lib/depends.c:1288
 msgid "(sysinfo provides)"
 msgstr "(cung cấp sysinfo [thông tin hệ thống])"
 
-#: lib/depends.c:1071
+#: lib/depends.c:1307
 msgid "(rpmlib provides)"
 msgstr "(cung cấp rpmlib [thư viện RPM])"
 
-#: lib/depends.c:1086
+#: lib/depends.c:1322
 msgid "(cpuinfo provides)"
 msgstr "(cung cấp cpuinfo [thông tin về CPU])"
 
-#: lib/depends.c:1101
+#: lib/depends.c:1337
 msgid "(getconf provides)"
 msgstr "(cung cấp getconf [lấy cấu hình])"
 
-#: lib/depends.c:1116
+#: lib/depends.c:1352
 msgid "(uname provides)"
 msgstr "(cung cấp uname)"
 
-#: lib/depends.c:1148
+#: lib/depends.c:1384
 msgid "(soname provides)"
 msgstr "(cung cấp soname)"
 
-#: lib/depends.c:1176
+#: lib/depends.c:1412
 msgid "(db files)"
 msgstr "(tập tin CDSL)"
 
-#: lib/depends.c:1188
+#: lib/depends.c:1424
 msgid "(db provides)"
 msgstr "(cung cấp CDSL)"
 
-#: lib/depends.c:1218
+#: lib/depends.c:1454
 msgid "(hint skipped)"
 msgstr "(bỏ qua lời gợi ý)"
 
-#: lib/depends.c:1655
+#: lib/depends.c:1891
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "bỏ qua quan hệ giữa các tên gói [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1778
+#: lib/depends.c:2014
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "đang gỡ bỏ %s « %s » khỏi quan hệ sắp xếp tsort.\n"
 
-#: lib/depends.c:2360
+#: lib/depends.c:2598
 msgid "LOOP:\n"
 msgstr "VÒNG LẶP:\n"
 
-#: lib/depends.c:2394
+#: lib/depends.c:2634
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder bị lỗi, %d phần tử còn lại\n"
@@ -1464,32 +1527,43 @@ msgstr "nhóm %s không tồn tại nên dùng người chủ (root)\n"
 #: lib/fsm.c:1785
 #, c-format
 msgid "archive file %s was not found in header file list\n"
-msgstr "không tìm thấy tập tin kho nén %s trong danh sách các tập tin phần đầu\n"
+msgstr ""
+"không tìm thấy tập tin kho nén %s trong danh sách các tập tin phần đầu\n"
 
-#: lib/fsm.c:1929 lib/fsm.c:2049
+#: lib/fsm.c:1928 lib/fsm.c:2048
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s được lưu dạng %s\n"
 
-#: lib/fsm.c:2076
+#: lib/fsm.c:2075
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "Lỗi rmdir (gỡ bỏ thư mục) %s %s: thư mục chưa rỗng\n"
 
-#: lib/fsm.c:2082
+#: lib/fsm.c:2081
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Lỗi rmdir (gỡ bỏ thư mục) %s %s: %s\n"
 
-#: lib/fsm.c:2097
+#: lib/fsm.c:2096
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: lỗi bỏ liên kết %s: %s\n"
 
-#: lib/fsm.c:2122
+#: lib/fsm.c:2121
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s được tạo dạng %s\n"
+
+#: lib/manifest.c:99
+#, fuzzy, c-format
+msgid "reading %s manifest failed: %s\n"
+msgstr "Lỗi lấy %s%d: %s\n"
+
+#: lib/manifest.c:124
+#, c-format
+msgid "reading %s manifest, non-printable characters found\n"
+msgstr ""
 
 #: lib/misc.c:41
 #, c-format
@@ -1500,12 +1574,12 @@ msgstr "không thể tạo %%%s %s\n"
 msgid "read failed\n"
 msgstr "lỗi đọc\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:906
+#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Không có sẵn chữ ký\n"
 
-#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:985
+#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:979
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "đang bỏ qua gói %s với chữ ký V%u không thể thầm tra được\n"
@@ -1515,129 +1589,129 @@ msgstr "đang bỏ qua gói %s với chữ ký V%u không thể thầm tra đư�
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread bị lỗi: %s\n"
 
-#: lib/poptALL.c:130 rpmio/poptIO.c:148
+#: lib/poptALL.c:145 rpmio/poptIO.c:148
 #, c-format
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:276 lib/poptI.c:210 lib/poptQV.c:288 lib/poptQV.c:335
+#: lib/poptALL.c:291 lib/poptI.c:210 lib/poptQV.c:288 lib/poptQV.c:335
 msgid "add suggested packages to transaction"
 msgstr "thêm vào giao dịch các gói đã đề nghị"
 
-#: lib/poptALL.c:279 lib/poptI.c:213
+#: lib/poptALL.c:294 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
 msgstr "dùng « thứ tự trình bày » của anaconda"
 
-#: lib/poptALL.c:282 lib/poptI.c:216
+#: lib/poptALL.c:297 lib/poptI.c:216
 msgid "print dependency loops as warning"
 msgstr "in dạng cảnh báo các vòng lặp của quan hệ phụ thuộc"
 
-#: lib/poptALL.c:285 lib/poptI.c:219
+#: lib/poptALL.c:300 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "đừng đề nghị cách giải quyết quan hệ phụ thuộc còn thiếu"
 
-#: lib/poptALL.c:288 lib/poptI.c:222
+#: lib/poptALL.c:303 lib/poptI.c:222
 msgid "do not check added package conflicts"
 msgstr "đừng kiểm tra sự xung đột gói đã thêm"
 
-#: lib/poptALL.c:291 lib/poptI.c:225
+#: lib/poptALL.c:306 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
 msgstr "bỏ qua các sự cần thiết gói đã thêm ở đích của liên kết tượng trưng"
 
-#: lib/poptALL.c:294 lib/poptI.c:228
+#: lib/poptALL.c:309 lib/poptI.c:228
 msgid "ignore added package obsoletes"
 msgstr "bỏ qua các sự làm cũ gói đã thêm"
 
-#: lib/poptALL.c:297 lib/poptI.c:231
+#: lib/poptALL.c:312 lib/poptI.c:231
 msgid "ignore added package requires on file parent directory"
 msgstr "bỏ qua các sự cần thiết gói đã thêm ở thư mục cha"
 
-#: lib/poptALL.c:300 lib/poptI.c:234
+#: lib/poptALL.c:315 lib/poptI.c:234
 msgid "do not check added package requires"
 msgstr "đừng kiểm tra các sự cần thiết gói đã thêm"
 
-#: lib/poptALL.c:303 lib/poptI.c:237
+#: lib/poptALL.c:318 lib/poptI.c:237
 msgid "ignore added package upgrades"
 msgstr "bỏ qua các sự nâng cấp gói đã thêm"
 
-#: lib/poptALL.c:319
+#: lib/poptALL.c:334
 msgid "predefine MACRO with value EXPR"
 msgstr "xác định sẵn VĨ_LỆNH với giá trị B_THỨC"
 
-#: lib/poptALL.c:320 lib/poptALL.c:324 rpmio/poptIO.c:309
+#: lib/poptALL.c:335 lib/poptALL.c:339 rpmio/poptIO.c:329
 msgid "'MACRO EXPR'"
 msgstr "'VĨ_LỆNH B_THỨC"
 
-#: lib/poptALL.c:323 rpmio/poptIO.c:308
+#: lib/poptALL.c:338 rpmio/poptIO.c:328
 msgid "define MACRO with value EXPR"
 msgstr "xác định VĨ_LỆNH với giá trị B_THỨC"
 
-#: lib/poptALL.c:326 rpmio/poptIO.c:311
+#: lib/poptALL.c:341 rpmio/poptIO.c:331
 msgid "undefine MACRO"
 msgstr "hủy xác định VĨ_LỆNH"
 
-#: lib/poptALL.c:327 rpmio/poptIO.c:312
+#: lib/poptALL.c:342 rpmio/poptIO.c:332
 msgid "'MACRO'"
 msgstr "'VĨ_LỆNH'"
 
-#: lib/poptALL.c:329 rpmio/poptIO.c:314
+#: lib/poptALL.c:344 rpmio/poptIO.c:334
 msgid "print macro expansion of EXPR"
 msgstr "in sự mở rộng vĩ lệnh của B_THỨC"
 
-#: lib/poptALL.c:330 rpmio/poptIO.c:315
+#: lib/poptALL.c:345 rpmio/poptIO.c:335
 msgid "'EXPR'"
 msgstr "'B_THỨC'"
 
-#: lib/poptALL.c:332 rpmio/poptIO.c:318
+#: lib/poptALL.c:347 rpmio/poptIO.c:338
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "đọc <TẬP TIN:...> thay cho các tập tin mặc định"
 
-#: lib/poptALL.c:333 lib/poptALL.c:337 lib/poptALL.c:341 rpmio/poptIO.c:319
-#: rpmio/poptIO.c:323 rpmio/poptIO.c:327
+#: lib/poptALL.c:348 lib/poptALL.c:352 lib/poptALL.c:356 rpmio/poptIO.c:339
+#: rpmio/poptIO.c:343 rpmio/poptIO.c:347
 msgid "<FILE:...>"
 msgstr "<TẬP_TIN...>"
 
-#: lib/poptALL.c:336 rpmio/poptIO.c:322
+#: lib/poptALL.c:351 rpmio/poptIO.c:342
 msgid "read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "đọc <TẬP_TIN:...> thay cho các tập tin Lua RPM"
 
-#: lib/poptALL.c:340 rpmio/poptIO.c:326
+#: lib/poptALL.c:355 rpmio/poptIO.c:346
 msgid "read <FILE:...> instead of default POPT file(s)"
 msgstr "đọc <TẬP_TIN:...> thay cho các tập tin POPT mặc định"
 
-#: lib/poptALL.c:344 lib/poptQV.c:318
+#: lib/poptALL.c:359 lib/poptQV.c:318
 msgid "specify target platform"
 msgstr "ghi rõ nền tảng đích"
 
-#: lib/poptALL.c:354
+#: lib/poptALL.c:369
 msgid "display known query tags"
 msgstr "hiển thị các thẻ truy vấn đã biết"
 
-#: lib/poptALL.c:356
+#: lib/poptALL.c:371
 msgid "display macro and configuration values"
 msgstr "hiển thị các giá trị kiểu vĩ lệnh và cấu hình"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347
+#: lib/poptALL.c:373 rpmio/poptIO.c:367 tools/rpmrepo.c:2013
 msgid "print the version"
 msgstr "in ra phiên bản"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:381
 msgid "debug payload file state machine"
 msgstr "gỡ lỗi cơ chế tình trạng tập tin trọng tải"
 
-#: lib/poptALL.c:368
+#: lib/poptALL.c:383
 msgid "use threads for file state machine"
 msgstr "dùng mạch cho cơ chế tình trạng tập tin"
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:393
 msgid "debug package state machine"
 msgstr "gỡ lỗi cơ chế tình trạng gói"
 
-#: lib/poptALL.c:380
+#: lib/poptALL.c:395
 msgid "use threads for package state machine"
 msgstr "dùng mạch cho cơ chế tình trạng gói"
 
-#: lib/poptALL.c:570 rpmio/poptIO.c:547
+#: lib/poptALL.c:645 rpmio/poptIO.c:567
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: sai cấu hình bảng tùy chọn (%d)\n"
@@ -1648,7 +1722,9 @@ msgstr "đường dẫn loại trừ phải bắt đầu với dấu sổ chéo 
 
 #: lib/poptI.c:84
 msgid "Option --relocate needs /old/path=/new/path argument"
-msgstr "Tùy chọn « --relocate » (định vị lại) cần đối số « /đường/dẫn/cũ=/đường/dẫn/mới »"
+msgstr ""
+"Tùy chọn « --relocate » (định vị lại) cần đối số « /đường/dẫn/cũ=/đường/dẫn/"
+"mới »"
 
 #: lib/poptI.c:86
 msgid "relocations must begin with a /"
@@ -1689,11 +1765,17 @@ msgstr "đối số ghi ngày/giờ mục đích arbgoal dạng sai"
 
 #: lib/poptI.c:242
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "cài đặt tất cả các tập tin, ngay cả cấu hình mà có thể bị bỏ qua bằng cách khác"
+msgstr ""
+"cài đặt tất cả các tập tin, ngay cả cấu hình mà có thể bị bỏ qua bằng cách "
+"khác"
 
 #: lib/poptI.c:246
-msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
-msgstr "gỡ bỏ tất cả các gói tương ứng với <gói> (thường thì một lỗi phát sinh nếu <gói> định rõ nhiều gói)"
+msgid ""
+"remove all packages which match <package> (normally an error is generated if "
+"<package> specified multiple packages)"
+msgstr ""
+"gỡ bỏ tất cả các gói tương ứng với <gói> (thường thì một lỗi phát sinh nếu "
+"<gói> định rõ nhiều gói)"
 
 #: lib/poptI.c:252 lib/poptI.c:326
 msgid "do not execute package scriptlet(s)"
@@ -1727,7 +1809,7 @@ msgstr "đừng cài đặt tài liệu hướng dẫn"
 msgid "skip files with leading component <path> "
 msgstr "bỏ qua các tập tin với bộ phận hướng dẫn <đường dẫn>"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:272 tools/rpmmtree.c:3605 tools/rpmmtree.c:3608
 msgid "<path>"
 msgstr "<đường dẫn>"
 
@@ -1815,7 +1897,8 @@ msgstr "đừng chạy bất kỳ văn lệnh nhỏ nào được gói này kíc
 #: lib/poptI.c:352
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr "đừng chạy bất kỳ văn lệnh nhỏ cài đặt sẵn đã kích hoạt (%%triggerprein)"
+msgstr ""
+"đừng chạy bất kỳ văn lệnh nhỏ cài đặt sẵn đã kích hoạt (%%triggerprein)"
 
 #: lib/poptI.c:355
 #, c-format
@@ -1833,8 +1916,12 @@ msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "đừng chạy bất kỳ vi văn lệnh xoá cuối đã kích hoạt (%%triggerpostun)"
 
 #: lib/poptI.c:365
-msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
-msgstr "hạ cấp xuống một phiên bản cũ của gói (tùy chọn « --force » khi nâng cấp thì tự động làm)"
+msgid ""
+"upgrade to an old version of the package (--force on upgrades does this "
+"automatically)"
+msgstr ""
+"hạ cấp xuống một phiên bản cũ của gói (tùy chọn « --force » khi nâng cấp thì "
+"tự động làm)"
 
 #: lib/poptI.c:369
 msgid "print percentages as package installs"
@@ -1952,7 +2039,7 @@ msgstr "truy vấn/thẩm tra một phần đầu cụ thể"
 msgid "query a spec file"
 msgstr "truy vấn một tập tin đặc tả"
 
-#: lib/poptQV.c:148 lib/poptQV.c:150
+#: lib/poptQV.c:148 lib/poptQV.c:150 tools/rpmmtree.c:3592
 msgid "<spec>"
 msgstr "<đặc tả>"
 
@@ -2150,50 +2237,50 @@ msgstr "không thể ghi vào  %%%s %s\n"
 msgid "source package contains no .spec file\n"
 msgstr "gói nguồn không chứa tập tin đặc tả\n"
 
-#: lib/psm.c:935 lib/rpmfc.c:106
+#: lib/psm.c:938 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Không thể tạo tiến trình con %s: %s\n"
 
-#: lib/psm.c:946
+#: lib/psm.c:949
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:955
+#: lib/psm.c:958
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi, tín hiệu %d\n"
 
-#: lib/psm.c:961
+#: lib/psm.c:964
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi, trạng thái thoát %d\n"
 
-#: lib/psm.c:1887
+#: lib/psm.c:1914
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi (%d) nên bỏ qua %s\n"
 
-#: lib/psm.c:1995
+#: lib/psm.c:2035
 msgid "Unable to reload signature header\n"
 msgstr "Không thể nạp lại phần đầu chữ ký\n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2162
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "lỗi giải nén kho %s%s: %s\n"
 
-#: lib/psm.c:2107
+#: lib/psm.c:2163
 msgid " on file "
 msgstr " ở tập tin"
 
-#: lib/psm.c:2290
+#: lib/psm.c:2346
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s bị lỗi ở tập tin %s: %s\n"
 
-#: lib/psm.c:2293
+#: lib/psm.c:2349
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s bị lỗi: %s\n"
@@ -2240,57 +2327,57 @@ msgstr "(không rõ %3d) "
 msgid "package without owner/group tags\n"
 msgstr "gói không có thẻ người chủ/nhóm\n"
 
-#: lib/query.c:476
+#: lib/query.c:478
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "nhóm %s không chứa gói\n"
 
-#: lib/query.c:485
+#: lib/query.c:487
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "không có bộ gây nên gói %s\n"
 
-#: lib/query.c:500 lib/query.c:523 lib/query.c:545 lib/query.c:580
+#: lib/query.c:502 lib/query.c:525 lib/query.c:547 lib/query.c:582
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "dạng sai %s: %s\n"
 
-#: lib/query.c:512 lib/query.c:529 lib/query.c:556 lib/query.c:585
+#: lib/query.c:514 lib/query.c:531 lib/query.c:558 lib/query.c:587
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "không có gói tương ứng với %s: %s\n"
 
-#: lib/query.c:596
+#: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
 msgstr "không có gói cần thiết %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
 msgstr "không có gói cung cấp %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:643
 #, c-format
 msgid "file %s: %s\n"
 msgstr "tập tin %s: %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:646
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tập tin %s không được bất kỳ gói sở hưu\n"
 
-#: lib/query.c:669
+#: lib/query.c:671
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "số thứ tự gói không hợp lệ: %s\n"
 
-#: lib/query.c:676
+#: lib/query.c:678
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "không thể đọc mục ghi %u\n"
 
-#: lib/query.c:686 lib/query.c:692 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "chưa cài đặt gói %s\n"
@@ -2303,7 +2390,7 @@ msgstr "(tập tin đã thêm)"
 msgid "(added provide)"
 msgstr "(sự cung cấp đã thêm)"
 
-#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1148
+#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1142
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: lỗi mở : %s\n"
@@ -2345,8 +2432,8 @@ msgstr "headerGet (lấy phần đầu) bị lỗi"
 msgid "failed to retrieve original header\n"
 msgstr "lỗi lấy phần đầu gốc\n"
 
-#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:509 rpmdb/pkgio.c:693
-#: rpmdb/pkgio.c:1271
+#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
+#: rpmdb/pkgio.c:1282
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Không tìm thấy tập tin XAR (hoặc không hỗ trợ XAR)"
@@ -2355,45 +2442,49 @@ msgstr "Không tìm thấy tập tin XAR (hoặc không hỗ trợ XAR)"
 msgid "Fread failed"
 msgstr "Fread bị lỗi"
 
-#: lib/rpmchecksig.c:1073
+#: lib/rpmchecksig.c:1067
 msgid "NOT_OK"
 msgstr "KHÔNG_ĐƯỢC"
 
-#: lib/rpmchecksig.c:1074 lib/rpmchecksig.c:1088
+#: lib/rpmchecksig.c:1068 lib/rpmchecksig.c:1082
 msgid " (MISSING KEYS:"
 msgstr " (KHOÁ BỊ THIẾU:"
 
-#: lib/rpmchecksig.c:1076 lib/rpmchecksig.c:1090
+#: lib/rpmchecksig.c:1070 lib/rpmchecksig.c:1084
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
+#: lib/rpmchecksig.c:1071 lib/rpmchecksig.c:1085
 msgid " (UNTRUSTED KEYS:"
 msgstr " (KHOÁ KHÔNG TIN CẬY:"
 
-#: lib/rpmchecksig.c:1079 lib/rpmchecksig.c:1093
+#: lib/rpmchecksig.c:1073 lib/rpmchecksig.c:1087
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1087
+#: lib/rpmchecksig.c:1081
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:900 lib/rpmds.c:3665
+#: lib/rpmds.c:900 lib/rpmds.c:3670
 msgid "NO "
 msgstr "KHÔNG "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3665
+#: lib/rpmds.c:900 lib/rpmds.c:3670
 msgid "YES"
 msgstr "CÓ"
 
 #: lib/rpmds.c:1383
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "Cả kiểu quan hệ phụ thuộc PreReq: (điều kiện tiên quyết), Provides: (cung cấp) và Obsoletes: (làm cũ) đều hỗ trợ phiên bản."
+msgstr ""
+"Cả kiểu quan hệ phụ thuộc PreReq: (điều kiện tiên quyết), Provides: (cung "
+"cấp) và Obsoletes: (làm cũ) đều hỗ trợ phiên bản."
 
 #: lib/rpmds.c:1386
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr "tên tập tin được cất giữ dạng một đối tượng dữ liệu đa thành phần (dirName,baseName,dirIndex), không phải dạng đường dẫn."
+msgstr ""
+"tên tập tin được cất giữ dạng một đối tượng dữ liệu đa thành phần (dirName,"
+"baseName,dirIndex), không phải dạng đường dẫn."
 
 #: lib/rpmds.c:1390
 msgid "package payload can be compressed using bzip2."
@@ -2417,11 +2508,13 @@ msgstr "bộ phiên dịch vi văn lệnh có thể sử dụng các đối số
 
 #: lib/rpmds.c:1406
 msgid "a hardlink file set may be installed without being complete."
-msgstr "một bộ tập tin đường liên kết cứng chưa hoàn toàn cũng có thể được cài đặt"
+msgstr ""
+"một bộ tập tin đường liên kết cứng chưa hoàn toàn cũng có thể được cài đặt"
 
 #: lib/rpmds.c:1409
 msgid "package scriptlets may access the rpm database while installing."
-msgstr "vi văn lệnh của gói cũng có thể truy cập cơ sở dữ liệu RPM trong khi cài đặt."
+msgstr ""
+"vi văn lệnh của gói cũng có thể truy cập cơ sở dữ liệu RPM trong khi cài đặt."
 
 #: lib/rpmds.c:1413
 msgid "internal support for lua scripts."
@@ -2447,27 +2540,27 @@ msgstr "bản tóm tắt tập tin có thể khác với MD5."
 msgid "package payload can be in ar archive format."
 msgstr "trọng tải gói cũng có thể theo định dạng kho nén ar."
 
-#: lib/rpmds.c:1521 lib/rpmds.c:3495
+#: lib/rpmds.c:1521 lib/rpmds.c:3500
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" có tên sai nên bỏ qua ...\n"
 
-#: lib/rpmds.c:1544 lib/rpmds.c:3512
+#: lib/rpmds.c:1544 lib/rpmds.c:3517
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" không có toán tử so sánh nên bỏ qua ...\n"
 
-#: lib/rpmds.c:1555 lib/rpmds.c:3527
+#: lib/rpmds.c:1555 lib/rpmds.c:3532
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" không có chuỗi EVR nên bỏ qua ...\n"
 
-#: lib/rpmds.c:3494 lib/rpmds.c:3511 lib/rpmds.c:3523
+#: lib/rpmds.c:3499 lib/rpmds.c:3516 lib/rpmds.c:3528
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "đang chạy câu lệnh ống dẫn « %s »\n"
 
-#: lib/rpmds.c:3525
+#: lib/rpmds.c:3530
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2476,7 +2569,7 @@ msgstr ""
 "\tdòng %d: Không tìm thấy giá trị so sánh EVR\n"
 " nên bỏ qua ..."
 
-#: lib/rpmds.c:3630
+#: lib/rpmds.c:3635
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2485,7 +2578,7 @@ msgstr ""
 "Quan hệ phụ thuộc « B » cần một khởi đầu (giả sử cùng một khởi đầu với « A »)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3664
+#: lib/rpmds.c:3669
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -2516,6 +2609,7 @@ msgid "Failed to find %s:\n"
 msgstr "Lỗi tìm %s:\n"
 
 #: lib/rpmgi.c:99 lib/rpminstall.c:124 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: tools/rpmdigest.c:127
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "lỗi mở %s: %s\n"
@@ -2661,7 +2755,9 @@ msgstr "gói đang được cài đặt %s cần thiết %lu%cB trên hệ thố
 #: lib/rpmps.c:294
 #, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
-msgstr "gói đang được cài đặt %s cần thiết %lu inode (nút thông tin) trên hệ thống tập tin %s"
+msgstr ""
+"gói đang được cài đặt %s cần thiết %lu inode (nút thông tin) trên hệ thống "
+"tập tin %s"
 
 #: lib/rpmps.c:299
 #, c-format
@@ -2692,30 +2788,33 @@ msgstr "đang cài đặt gói %s vào hệ thống tập tin chỉ đọc %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "gặp lỗi không rõ %d trong khi thao tác gói %s"
 
-#: lib/rpmrc.c:976
-#, c-format
-msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
+#: lib/rpmrc.c:998
+#, fuzzy, c-format
+msgid "Configured system provides (from %s):\n"
 msgstr "Các sự cung cấp của hệ thống đã cấu hình (từ « /etc/rpm/sysinfo »):\n"
 
-#: lib/rpmrc.c:990
+#: lib/rpmrc.c:1012
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Tính năng được cung cấp bởi bộ cài đặt thư viện rpmlib:\n"
 
-#: lib/rpmrc.c:1004
-#, c-format
-msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
-msgstr "Tính năng được cung cấp bởi thông tin CPU cpuinfo (từ « /proc/cpuinfo »):\n"
+#: lib/rpmrc.c:1027
+#, fuzzy, c-format
+msgid "Features provided by current cpuinfo (from %s):\n"
+msgstr ""
+"Tính năng được cung cấp bởi thông tin CPU cpuinfo (từ « /proc/cpuinfo »):\n"
 
-#: lib/rpmrc.c:1018
+#: lib/rpmrc.c:1043
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Tính năng được cung cấp bởi hàm lấy cấu hình (getconf) hiện thời:\n"
 
-#: lib/rpmrc.c:1032
+#: lib/rpmrc.c:1057
 #, c-format
 msgid "Features provided by current uname:\n"
-msgstr "Tính năng được cung cấp bởi hàm uname (lấy thông tin về hệ điều hành) hiện thời:\n"
+msgstr ""
+"Tính năng được cung cấp bởi hàm uname (lấy thông tin về hệ điều hành) hiện "
+"thời:\n"
 
 #: lib/rpmrollback.c:499
 #, c-format
@@ -2765,7 +2864,7 @@ msgstr "%s: chỉ thị kiểu không hợp lệ %s trên dòng số %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s: ngữ cảnh không hợp lệ %s trên dòng số %d\n"
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:133 rpmdb/pkgio.c:236
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "không thể mở cơ sở dữ liệu Gói trong %s\n"
@@ -2829,20 +2928,24 @@ msgstr "db%d lỗi (%d) từ %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d lỗi (%d): %s\n"
 
-#: rpmdb/db3.c:1313
+#: rpmdb/db3.c:1315
+msgid "RUNRECOVERY failed, exiting ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:1318
 msgid "Runnning db->verify ...\n"
 msgstr "Đang chạy db->verify (thẩm tra cơ sở dữ liệu ?) ...\n"
 
-#: rpmdb/db3.c:1624
+#: rpmdb/db3.c:1629
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "không thể lấy khoá %s ở %s/%s\n"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "exclusive"
 msgstr "dành riêng"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "shared"
 msgstr "chung"
 
@@ -2866,109 +2969,167 @@ msgstr "%s có giá trị dài quá lớn hoặc quá nhỏ nên bỏ qua\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s có giá trị nguyên quá lớn hoặc quá nhỏ nên bỏ qua\n"
 
-#: rpmdb/hdrfmt.c:87 rpmdb/hdrfmt.c:187
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
 msgid "(not a number)"
 msgstr "(không phải con số)"
 
-#: rpmdb/hdrfmt.c:214
+#: rpmdb/hdrfmt.c:224
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:225
+#: rpmdb/hdrfmt.c:236
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
-#: rpmdb/hdrfmt.c:278
+#: rpmdb/hdrfmt.c:290
 msgid "invalid type"
 msgstr "kiểu không hợp lệ"
 
-#: rpmdb/hdrfmt.c:367 rpmdb/hdrfmt.c:396 rpmdb/hdrfmt.c:417 rpmdb/hdrfmt.c:484
-#: rpmdb/hdrfmt.c:1149
+#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:1190
 msgid "(invalid type)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:474
+#: rpmdb/hdrfmt.c:490
 msgid "(not base64)"
 msgstr "(không phải base64)"
 
-#: rpmdb/hdrfmt.c:508 rpmdb/hdrfmt.c:1045
-msgid "(not a blob)"
-msgstr "(không phải blob)"
+#: rpmdb/hdrfmt.c:531
+#, fuzzy
+msgid "(invalid type :base64)"
+msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:724 rpmdb/hdrfmt.c:2191
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
+#: rpmdb/hdrfmt.c:3026
 msgid "(not a string)"
 msgstr "(không phải chuỗi)"
 
-#: rpmdb/hdrfmt.c:797
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid xml type)"
 msgstr "(kiểu XML không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:983
+#: rpmdb/hdrfmt.c:1022
 msgid "(invalid yaml type)"
 msgstr "(kiểu YAML không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:1068
+#: rpmdb/hdrfmt.c:1085
+msgid "(not a blob)"
+msgstr "(không phải blob)"
+
+#: rpmdb/hdrfmt.c:1108
 msgid "(not an OpenPGP signature)"
 msgstr "(không phải chữ ký OpenPGP)"
 
-#: rpmdb/hdrfmt.c:3297
+#: rpmdb/hdrfmt.c:3237
+#, fuzzy
+msgid "(invalid type :digest)"
+msgstr "(kiểu không hợp lệ)"
+
+#: rpmdb/hdrfmt.c:3293
+#, fuzzy
+msgid "(invalid type :stat)"
+msgstr "(kiểu không hợp lệ)"
+
+#: rpmdb/hdrfmt.c:3445
+#, fuzzy
+msgid "(invalid type :uuid)"
+msgstr "(kiểu không hợp lệ)"
+
+#: rpmdb/hdrfmt.c:3506
+#, fuzzy
+msgid "(invalid type :rpn)"
+msgstr "(kiểu không hợp lệ)"
+
+#: rpmdb/hdrfmt.c:3516
+#, fuzzy
+msgid "(invalid string :rpn)"
+msgstr "(kiểu không hợp lệ)"
+
+#: rpmdb/hdrfmt.c:3532
+#, fuzzy
+msgid "(expected number :rpn)"
+msgstr "gặp định dạng truy vấn bất thường"
+
+#: rpmdb/hdrfmt.c:3536
+msgid "(stack overflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3542
+#, fuzzy
+msgid "(invalid number :rpn)"
+msgstr "(kiểu XML không hợp lệ)"
+
+#: rpmdb/hdrfmt.c:3547
+msgid "(stack underflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3560
+msgid "(divide by zero :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4313
 msgid "missing { after %"
 msgstr "thiếu dấu ngoặc móc mở « { » sau %"
 
-#: rpmdb/hdrfmt.c:3331
+#: rpmdb/hdrfmt.c:4347
 msgid "missing } after %{"
 msgstr "thiếu dấu ngoặc móc đóng « } » sau %("
 
-#: rpmdb/hdrfmt.c:3347
+#: rpmdb/hdrfmt.c:4363
 msgid "empty tag format"
 msgstr "định dạng thẻ rỗng"
 
-#: rpmdb/hdrfmt.c:3359
+#: rpmdb/hdrfmt.c:4383
+#, fuzzy
+msgid "malformed parameter list"
+msgstr "đối số ghi ngày/giờ mục đích arbgoal dạng sai"
+
+#: rpmdb/hdrfmt.c:4404
 msgid "empty tag name"
 msgstr "tên thẻ rỗng"
 
-#: rpmdb/hdrfmt.c:3368
+#: rpmdb/hdrfmt.c:4413
 msgid "unknown tag"
 msgstr "thẻ lạ"
 
-#: rpmdb/hdrfmt.c:3398
+#: rpmdb/hdrfmt.c:4443
 msgid "] expected at end of array"
 msgstr "đợi dấu ngoặc vu đóng « ] » ở kết thúc của mảng"
 
-#: rpmdb/hdrfmt.c:3415
+#: rpmdb/hdrfmt.c:4460
 msgid "unexpected ]"
 msgstr "gặp dấu ngoặc vu đóng « ] » bất thường"
 
-#: rpmdb/hdrfmt.c:3430
+#: rpmdb/hdrfmt.c:4475
 msgid "unexpected }"
 msgstr "gặp dấu ngoặc móc đóng « } » bất thường"
 
-#: rpmdb/hdrfmt.c:3508
+#: rpmdb/hdrfmt.c:4554
 msgid "? expected in expression"
 msgstr "đợi dấu hỏi « ? » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:3515
+#: rpmdb/hdrfmt.c:4561
 msgid "{ expected after ? in expression"
 msgstr "đợi dấu ngoặc móc mở « { » sau dấu hỏi « ? » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:3527 rpmdb/hdrfmt.c:3567
+#: rpmdb/hdrfmt.c:4573 rpmdb/hdrfmt.c:4613
 msgid "} expected in expression"
 msgstr "đợi dấu ngoặc móc đóng « } » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:3535
+#: rpmdb/hdrfmt.c:4581
 msgid ": expected following ? subexpression"
 msgstr "đợi dấu hai chấm « : » theo sau biểu thức phụ dấu hỏi « ? »"
 
-#: rpmdb/hdrfmt.c:3553
+#: rpmdb/hdrfmt.c:4599
 msgid "{ expected after : in expression"
 msgstr "đợi dấu ngoặc móc mở « { » sau dấu hai chấm « : » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:3575
+#: rpmdb/hdrfmt.c:4621
 msgid "| expected at end of expression"
 msgstr "đợi ký hiệu ống dẫn « | » ở kết thúc của biểu thức"
 
-#: rpmdb/hdrfmt.c:3868
+#: rpmdb/hdrfmt.c:4953
 msgid "array iterator used with different sized arrays"
 msgstr "đồ lặp lại mảng được sử dụng với các mảng có kích cỡ khác nhau"
 
@@ -2978,7 +3139,9 @@ msgstr "sơ khởi cơ sở dữ liệu"
 
 #: rpmdb/poptDB.c:25
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "xây dựng lại các danh sách nghịch chuyển cơ sở dữ liệu từ các phần đầu gói được cài đặt"
+msgstr ""
+"xây dựng lại các danh sách nghịch chuyển cơ sở dữ liệu từ các phần đầu gói "
+"được cài đặt"
 
 #: rpmdb/poptDB.c:29
 msgid "verify database files"
@@ -3000,152 +3163,152 @@ msgstr "ghi ngắn ma thuật của phần đầu"
 msgid "short write of header"
 msgstr "ghi ngắn phần đầu"
 
-#: rpmdb/pkgio.c:478 rpmdb/pkgio.c:483
+#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "kích cỡ trước (%u): SAI, đọc (%d), %s(%d)"
 
-#: rpmdb/pkgio.c:516
+#: rpmdb/pkgio.c:527
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "kích cỡ trước (%u): SAI, xar đọc (%u)"
 
-#: rpmdb/pkgio.c:533
+#: rpmdb/pkgio.c:544
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "ma thuật trước: SAI, đọc %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:542
+#: rpmdb/pkgio.c:553
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "phiên bản trước (%u): KHÔNG ĐƯỢC HỖ TRỢ"
 
-#: rpmdb/pkgio.c:553
+#: rpmdb/pkgio.c:564
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "kiểu sigh (%u): KHÔNG ĐƯỢC HỖ TRỢ"
 
-#: rpmdb/pkgio.c:701
+#: rpmdb/pkgio.c:712
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "kích cỡ sigh (%d): SAI, hàm đọc đã trả về %d"
 
-#: rpmdb/pkgio.c:713
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "ma thuật sigh: SAI, đọc %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:721
+#: rpmdb/pkgio.c:732
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "thẻ sigh: SAI, tổng số thẻ (%u) ở ngoại phạm vi"
 
-#: rpmdb/pkgio.c:727
+#: rpmdb/pkgio.c:738
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "dữ liệu sigh: XẤU, tổng số byte (%u) ở ngoại phạm vi"
 
-#: rpmdb/pkgio.c:737
+#: rpmdb/pkgio.c:748
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh blob(%u): XẤU, hàm đọc đã trả về %d"
 
-#: rpmdb/pkgio.c:749 rpmdb/pkgio.c:933 rpmdb/pkgio.c:1058
+#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "thẻ [%d]: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:770 rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "bù vùng: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:795 rpmdb/pkgio.c:972
+#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "vùng theo đuôi: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:807 rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "kích cỡ vùng: XẤU, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:818
+#: rpmdb/pkgio.c:829
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "thẻ sigh [%u]: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:828
+#: rpmdb/pkgio.c:839
 #, c-format
 msgid "sigh load: BAD"
 msgstr "nạp sigh: XẤU"
 
-#: rpmdb/pkgio.c:841
+#: rpmdb/pkgio.c:852
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "đệm sigh (%u): XẤU, đọc %d byte"
 
-#: rpmdb/pkgio.c:854
+#: rpmdb/pkgio.c:865
 #, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr "sigh sigSize(%u): XẤU, fstat(2) bị lỗi"
 
-#: rpmdb/pkgio.c:924
+#: rpmdb/pkgio.c:935
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "kích cỡ blob (%d): XẤU, 8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:993
+#: rpmdb/pkgio.c:1004
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "thẻ [%u]: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:1011
+#: rpmdb/pkgio.c:1022
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: XẤU, không phải thập lục"
 
-#: rpmdb/pkgio.c:1023
+#: rpmdb/pkgio.c:1034
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr RSA: XẤU, không phải nhị phân"
 
-#: rpmdb/pkgio.c:1033
+#: rpmdb/pkgio.c:1044
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: XẤU, không phải nhị phân"
 
-#: rpmdb/pkgio.c:1090 rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "đang bỏ qua phần đầu có chữ ký V%u không thể thẩm tra được\n"
 
-#: rpmdb/pkgio.c:1284
+#: rpmdb/pkgio.c:1295
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "kích cỡ hdr (%u): XẤU, hàm đọc đã trà về %d"
 
-#: rpmdb/pkgio.c:1294
+#: rpmdb/pkgio.c:1305
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "ma thuật hdr: XẤU, đọc %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1302
+#: rpmdb/pkgio.c:1313
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "thẻ hdr: XẤU, tổng số thẻ (%u) ở ngoại phạm vi"
 
-#: rpmdb/pkgio.c:1309
+#: rpmdb/pkgio.c:1320
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "dữ liệu hdr: XẤU, tổng số byte (%u) ở ngoại phạm vi\n"
 
-#: rpmdb/pkgio.c:1320
+#: rpmdb/pkgio.c:1331
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hdr blob(%u): XẤU, hàm đọc đã trà về %d"
 
-#: rpmdb/pkgio.c:1334
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "nạp hdr: XẤU\n"
@@ -3169,164 +3332,165 @@ msgstr "định dạng không đúng: « %s »: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "chưa đặt đường dẫn cơ sở dữ liệu (dbpath)\n"
 
-#: rpmdb/rpmdb.c:1477 rpmdb/rpmdb.c:1624 rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2597
-#: rpmdb/rpmdb.c:2747 rpmdb/rpmdb.c:3069 rpmdb/rpmdb.c:3547
+#: rpmdb/rpmdb.c:1477 rpmdb/rpmdb.c:1626 rpmdb/rpmdb.c:1688 rpmdb/rpmdb.c:2605
+#: rpmdb/rpmdb.c:2755 rpmdb/rpmdb.c:3077 rpmdb/rpmdb.c:3555
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "gặp lỗi (%d) khi lấy mục ghi từ chỉ mục %s\n"
 
-#: rpmdb/rpmdb.c:1894
+#: rpmdb/rpmdb.c:1902
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: đang bỏ qua"
 
-#: rpmdb/rpmdb.c:1904
+#: rpmdb/rpmdb.c:1912
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "gặp lỗi (%d) khi lưu mục ghi số %d vào %s\n"
 
-#: rpmdb/rpmdb.c:2475
+#: rpmdb/rpmdb.c:2483
 msgid "rpmdb: skipping"
 msgstr "rpmdb: đang bỏ qua"
 
-#: rpmdb/rpmdb.c:2475
+#: rpmdb/rpmdb.c:2483
 msgid "rpmdb: read"
 msgstr "rpmdb: đọc"
 
-#: rpmdb/rpmdb.c:2510
+#: rpmdb/rpmdb.c:2518
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: lấy được phần đầu bị hỏng số %u nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2846
+#: rpmdb/rpmdb.c:2854
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"
 
-#: rpmdb/rpmdb.c:2919
+#: rpmdb/rpmdb.c:2927
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "gặp lỗi (%d) khi đặt mục ghi phần đầu số %d để gỡ bỏ %s\n"
 
-#: rpmdb/rpmdb.c:3090 rpmdb/rpmdb.c:3566
+#: rpmdb/rpmdb.c:3098 rpmdb/rpmdb.c:3574
 #, c-format
 msgid "error(%d) storing record into %s\n"
 msgstr "gặp lỗi (%d) khi lưu mục ghi vào %s\n"
 
-#: rpmdb/rpmdb.c:3100
+#: rpmdb/rpmdb.c:3108
 #, c-format
 msgid "error(%d) removing record from %s\n"
 msgstr "gặp lỗi (%d) khi gỡ bỏ mục ghi khỏi %s\n"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3285
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "gặp lỗi (%d) khi cấp phát gói mới cụ thể\n"
 
-#: rpmdb/rpmdb.c:3351
+#: rpmdb/rpmdb.c:3359
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: đang bỏ qua"
 
-#: rpmdb/rpmdb.c:3994
+#: rpmdb/rpmdb.c:4019
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "cơ sở dữ liệu tạm thời %s đã có\n"
 
-#: rpmdb/rpmdb.c:4002
+#: rpmdb/rpmdb.c:4027
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "đang tạo thư mục %s: %s\n"
 
-#: rpmdb/rpmdb.c:4049
+#: rpmdb/rpmdb.c:4074
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "cơ sở dữ liệu chứa một phần đầu sai (số %u) nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:4057
+#: rpmdb/rpmdb.c:4082
 #, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "cơ sở dữ liệu chứa một phần đầu SRPM (số %u) nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:4097
+#: rpmdb/rpmdb.c:4122
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "không thể thêm mục ghi nằm đầu tiên ở %u\n"
 
-#: rpmdb/rpmdb.c:4111
+#: rpmdb/rpmdb.c:4136
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "lỗi xây dựng lại cơ sở dữ liệu : cơ sở dữ liệu gốc còn lại tại chỗ\n"
 
-#: rpmdb/rpmdb.c:4123
+#: rpmdb/rpmdb.c:4148
 msgid "failed to replace old database with new database!\n"
 msgstr "lỗi thay thế cơ sở dữ liệu cũ bằng cơ sở dữ liệu mới.\n"
 
-#: rpmdb/rpmdb.c:4125
+#: rpmdb/rpmdb.c:4150
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "để phục hồi thì thay thế các tập tin trong %s bằng các tập tin từ %s"
 
-#: rpmdb/rpmdb.c:4137
+#: rpmdb/rpmdb.c:4162
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "lỗi gỡ bỏ thư mục %s: %s\n"
 
-#: rpmdb/signature.c:96 rpmdb/signature.c:101 rpmdb/signature.c:107
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "gặp lỗi khi tạo tập tin tạm thời %s\n"
 
-#: rpmdb/signature.c:189 rpmdb/signature.c:536
+#: rpmdb/signature.c:191 rpmdb/signature.c:538
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Không thể thực hiện %s: %s\n"
 
-#: rpmdb/signature.c:207 rpmdb/signature.c:550
+#: rpmdb/signature.c:209 rpmdb/signature.c:552
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr "Lỗi %s(%d) khoá (0x%lx): %s\n"
 
-#: rpmdb/signature.c:233
+#: rpmdb/signature.c:235
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "lỗi thực hiện gpg (%d)\n"
 
-#: rpmdb/signature.c:240
+#: rpmdb/signature.c:242
 msgid "gpg failed to write signature\n"
 msgstr "gpg không ghi được chữ ký\n"
 
-#: rpmdb/signature.c:259
+#: rpmdb/signature.c:261
 msgid "unable to read the signature\n"
 msgstr "không thể đọc chữ ký\n"
 
-#: rpmdb/signature.c:602
+#: rpmdb/signature.c:604
 msgid "Header+Payload size: "
 msgstr "Kích cỡ Phần đầu+Trọng tải: "
 
-#: rpmdb/signature.c:639
+#: rpmdb/signature.c:641
 msgid "MD5 digest: "
 msgstr "Bản tóm tắt MD5: "
 
-#: rpmdb/signature.c:696
+#: rpmdb/signature.c:698
 msgid "Header SHA1 digest: "
 msgstr "Bản tóm tắt phần đầu SHA1: "
 
-#: rpmdb/signature.c:756 rpmdb/signature.c:882
+#: rpmdb/signature.c:758 rpmdb/signature.c:884
 msgid "Header "
 msgstr "Phần đầu"
 
-#: rpmdb/signature.c:812
+#: rpmdb/signature.c:814
 msgid " signature: "
 msgstr " chữ ký: "
 
-#: rpmdb/signature.c:888
+#: rpmdb/signature.c:890
 msgid " DSA signature: "
 msgstr " Chữ ký DSA: "
 
-#: rpmdb/signature.c:963
+#: rpmdb/signature.c:965
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Thẩm tra chữ ký: THAM SỐ SAI\n"
 
-#: rpmdb/signature.c:984
+#: rpmdb/signature.c:986
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Chữ ký: KHÔNG RÕ (%u)\n"
@@ -3386,54 +3550,89 @@ msgstr "Vĩ lệnh %%%s có tên cấm (%% hủy xác định)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Vĩ lệnh %%%s (%s) không sử dụng được dưới mức %d\n"
 
-#: rpmio/macro.c:1103
+#: rpmio/macro.c:1119
 #, c-format
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "Không rõ tùy chọn trong vĩ lệnh %s(%s): %s: %s\n"
 
-#: rpmio/macro.c:1417
+#: rpmio/macro.c:1433
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Đệ qui sâu (%d) hơn tối đa (%d)\n"
 
-#: rpmio/macro.c:1491 rpmio/macro.c:1508
+#: rpmio/macro.c:1507 rpmio/macro.c:1524
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c chưa chấm dứt: %s\n"
 
-#: rpmio/macro.c:1553
+#: rpmio/macro.c:1569
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Một dấu %% đi trước vĩ lệnh không thể phân tích được\n"
 
-#: rpmio/macro.c:1571
+#: rpmio/macro.c:1587
 #, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s: lỗi nạp các vĩ lệnh\n"
 
-#: rpmio/macro.c:1757
+#: rpmio/macro.c:1773
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Không tìm thấy vĩ lệnh %%%.*s nên bỏ qua\n"
 
-#: rpmio/macro.c:2114
+#: rpmio/macro.c:2130
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Vĩ lệnh mở rộng vượt quá vùng đệm đích\n"
 
-#: rpmio/macro.c:2148
+#: rpmio/macro.c:2164
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Vĩ lệnh « %s » chỉ cho phép đọc nên không thể thay đổi.\n"
 
-#: rpmio/macro.c:2397 rpmio/macro.c:2403
+#: rpmio/macro.c:2448 rpmio/macro.c:2454
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Tập tin %s: %s\n"
 
-#: rpmio/macro.c:2406
+#: rpmio/macro.c:2457
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Tập tin %s nhỏ hơn %u byte\n"
+
+#: rpmio/mire.c:325
+#, fuzzy, c-format
+msgid "%s: Failed to set locale %s (obtained from %s)\n"
+msgstr "Lỗi đọc tập tin đặc tả từ %s\n"
+
+#: rpmio/mire.c:365
+#, c-format
+msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
+msgstr ""
+
+#: rpmio/mire.c:384
+#, fuzzy, c-format
+msgid "%s: regcomp failed: %s\n"
+msgstr "%s: lỗi mở : %s\n"
+
+#: rpmio/mire.c:442
+#, fuzzy, c-format
+msgid "%s: regexec failed: %s(%d)\n"
+msgstr "%s: Fseek bị lỗi: %s\n"
+
+#: rpmio/mire.c:460
+#, fuzzy, c-format
+msgid "pcre_exec failed: return %d\n"
+msgstr "lỗi thực hiện gpg (%d)\n"
+
+#: rpmio/mire.c:474
+#, fuzzy, c-format
+msgid "fnmatch failed: return %d\n"
+msgstr "mntctl() không trả về được kích cỡ : %s\n"
+
+#: rpmio/mire.c:570
+#, fuzzy, c-format
+msgid "%s: Error while studying regex%s: %s\n"
+msgstr "dòng %d: Lỗi phân tích %s: %s\n"
 
 #: rpmio/poptIO.c:97
 msgid "MD2 digest (RFC-1319)"
@@ -3519,135 +3718,135 @@ msgstr "không có thuật toán lộn xộn"
 msgid "all hash algorithm(s)"
 msgstr "mọi thuật toán lộn xộn"
 
-#: rpmio/poptIO.c:277
+#: rpmio/poptIO.c:297
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: theo các liên kết tượng trưng trên dòng lệnh"
 
-#: rpmio/poptIO.c:279
+#: rpmio/poptIO.c:299
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: đường đi hợp lý"
 
-#: rpmio/poptIO.c:281
+#: rpmio/poptIO.c:301
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: đừng chuyển đổi thư mục"
 
-#: rpmio/poptIO.c:283
+#: rpmio/poptIO.c:303
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: đừng lấy trạng thái"
 
-#: rpmio/poptIO.c:285
+#: rpmio/poptIO.c:305
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: đường đi vật lý"
 
-#: rpmio/poptIO.c:287
+#: rpmio/poptIO.c:307
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: trở về chấm (.) và chấm chấm (..)"
 
-#: rpmio/poptIO.c:289
+#: rpmio/poptIO.c:309
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: đừng để các thiết bị giao nhau"
 
-#: rpmio/poptIO.c:291
+#: rpmio/poptIO.c:311
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: trả về thông tin xoá trắng"
 
-#: rpmio/poptIO.c:332 rpmio/poptIO.c:351
+#: rpmio/poptIO.c:352 rpmio/poptIO.c:371
 msgid "disable use of libio(3) API"
 msgstr "tắt khả năng sử dụng giao diện phát triển chương trình (API) libio(3)"
 
-#: rpmio/poptIO.c:336
+#: rpmio/poptIO.c:356
 msgid "send stdout to CMD"
 msgstr "gửi đầu ra tiêu chuẩn tới LỆNH"
 
-#: rpmio/poptIO.c:337
+#: rpmio/poptIO.c:357
 msgid "CMD"
 msgstr "LỆNH"
 
-#: rpmio/poptIO.c:339
+#: rpmio/poptIO.c:359
 msgid "use ROOT as top level directory"
 msgstr "dùng GỐC là thư mục cấp đầu"
 
-#: rpmio/poptIO.c:340
+#: rpmio/poptIO.c:360
 msgid "ROOT"
 msgstr "GỐC"
 
-#: rpmio/poptIO.c:343
+#: rpmio/poptIO.c:363
 msgid "provide less detailed output"
 msgstr "cung cấp kết xuất ít chi tiết hơn"
 
-#: rpmio/poptIO.c:345
+#: rpmio/poptIO.c:365
 msgid "provide more detailed output"
 msgstr "cung cấp kết xuất nhiều chi tiết hơn"
 
-#: rpmio/poptIO.c:355
+#: rpmio/poptIO.c:375
 msgid "select cryptography implementation"
 msgstr "chọn bản thực hiện mã hoá"
 
-#: rpmio/poptIO.c:356
+#: rpmio/poptIO.c:376
 msgid "CRYPTO"
 msgstr "MÃ_HOÁ"
 
-#: rpmio/poptIO.c:359
+#: rpmio/poptIO.c:379
 msgid "debug ar archives"
 msgstr "gỡ lỗi các kho nén ar"
 
-#: rpmio/poptIO.c:361
+#: rpmio/poptIO.c:381
 msgid "debug argv collections"
 msgstr "gỡ lỗi các tập hợp argv"
 
-#: rpmio/poptIO.c:363
+#: rpmio/poptIO.c:383
 msgid "debug cpio archives"
 msgstr "gỡ lỗi các kho nén cpio"
 
-#: rpmio/poptIO.c:365
+#: rpmio/poptIO.c:385
 msgid "debug WebDAV data stream"
 msgstr "gỡ lỗi luồng dữ liệu WebDAV"
 
-#: rpmio/poptIO.c:367
+#: rpmio/poptIO.c:387
 msgid "debug FTP/HTTP data stream"
 msgstr "gỡ lỗi luồng dữ liệu FTP/HTTP"
 
-#: rpmio/poptIO.c:369
+#: rpmio/poptIO.c:389
 msgid "debug Fts(3) traverse"
 msgstr "gỡ lỗi sự đi qua Fts(3)"
 
-#: rpmio/poptIO.c:371
+#: rpmio/poptIO.c:391
 msgid "debug I/O state machine"
 msgstr "gỡ lỗi cơ chế tình trạng V/R"
 
-#: rpmio/poptIO.c:375
+#: rpmio/poptIO.c:395
 msgid "debug rpmio I/O"
 msgstr "gỡ lỗi V/R rpmio"
 
-#: rpmio/poptIO.c:381
+#: rpmio/poptIO.c:401
 msgid "debug xar archives"
 msgstr "gỡ lỗi các kho nén xar"
 
-#: rpmio/poptIO.c:383
+#: rpmio/poptIO.c:403
 msgid "debug tar archives"
 msgstr "gỡ lỗi các kho nén tar"
 
-#: rpmio/poptIO.c:385
+#: rpmio/poptIO.c:405
 msgid "display operation statistics"
 msgstr "hiển thị thống kê thao tác"
 
-#: rpmio/poptIO.c:387
+#: rpmio/poptIO.c:407
 msgid "debug URL cache handling"
 msgstr "gỡ lỗi cách xử lý bộ nhớ tạm địa chỉ URL"
 
-#: rpmio/rpmdav.c:890
+#: rpmio/rpmdav.c:904
 msgid "Authorization Required"
 msgstr "Yêu cầu xác thực"
 
-#: rpmio/rpmdav.c:892
+#: rpmio/rpmdav.c:906
 msgid "Redirect"
 msgstr "Chuyển hướng"
 
-#: rpmio/rpmdav.c:894
+#: rpmio/rpmdav.c:908
 msgid "Server Error"
 msgstr "Lỗi máy phục vụ"
 
-#: rpmio/rpmdav.c:896
+#: rpmio/rpmdav.c:910
 msgid "Unknown Error"
 msgstr "Lỗi không rõ"
 
@@ -3686,87 +3885,88 @@ msgstr "%s: quá nhiều lỗi nên hủy bỏ\n"
 msgid "%s: Failed to open directory %s: %s\n"
 msgstr "%s: Lỗi mở thư mục %s: %s\n"
 
-#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
+#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1187 tools/rpmdigest.c:176
 #, c-format
 msgid "%s: Failed to open %s: %s\n"
 msgstr "%s: Lỗi mở %s: %s\n"
 
-#: rpmio/rpmgrep.c:1121
-#, c-format
-msgid "%s: Too many %spatterns (max %d)\n"
+#: rpmio/rpmgrep.c:1093
+#, fuzzy, c-format
+msgid "%s: Too many patterns (max %d)\n"
 msgstr "%s: Quá nhiều mẫu %s (tối đa %d)\n"
 
-#: rpmio/rpmgrep.c:1146
+#: rpmio/rpmgrep.c:1118
 #, c-format
 msgid "%s: Error in"
 msgstr "%s: Lỗi trong"
 
-#: rpmio/rpmgrep.c:1148
-#, c-format
-msgid "%s command-line"
+#: rpmio/rpmgrep.c:1120
+#, fuzzy, c-format
+msgid " command-line %d"
 msgstr "dòng lệnh %s"
 
-#: rpmio/rpmgrep.c:1150
+#: rpmio/rpmgrep.c:1122
 #, c-format
 msgid " file:line %s:%d"
 msgstr " tập tin: dòng %s:%d"
 
-#: rpmio/rpmgrep.c:1151
+#: rpmio/rpmgrep.c:1123
 #, c-format
 msgid " regex at offset %d: %s\n"
 msgstr " biểu thức chính quy ở khoảng bù %d: %s\n"
 
-#: rpmio/rpmgrep.c:1293
+#: rpmio/rpmgrep.c:1265
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
 msgstr "%s: Giá trị không hợp lệ « %s » cho « -d »\n"
 
-#: rpmio/rpmgrep.c:1303
+#: rpmio/rpmgrep.c:1275
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
 msgstr "%s: Giá trị không hợp lệ « %s » cho « -D »\n"
 
-#: rpmio/rpmgrep.c:1320
+#: rpmio/rpmgrep.c:1292
 #, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
 msgstr "%s: Không rõ thiết lập màu « %s »\n"
 
-#: rpmio/rpmgrep.c:1336
+#: rpmio/rpmgrep.c:1308
 #, c-format
 msgid "%s %s (PCRE version %s)\n"
 msgstr "%s %s (PCRE phiên bản %s)\n"
 
-#: rpmio/rpmgrep.c:1339
+#: rpmio/rpmgrep.c:1311
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr "%s %s (không có PCRE)\n"
 
-#: rpmio/rpmgrep.c:1344
+#: rpmio/rpmgrep.c:1316 tools/rpmdigest.c:298 tools/rpmmtree.c:3562
+#: tools/rpmrepo.c:1923
 #, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "%s: Không rõ tùy chọn « -%c »\n"
 
-#: rpmio/rpmgrep.c:1362
+#: rpmio/rpmgrep.c:1334
 msgid "set number of following context lines"
 msgstr "đặt số dòng ngữ cảnh theo sau"
 
-#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1364 rpmio/rpmgrep.c:1366
+#: rpmio/rpmgrep.c:1334 rpmio/rpmgrep.c:1336 rpmio/rpmgrep.c:1338
 msgid "=number"
 msgstr "=số"
 
-#: rpmio/rpmgrep.c:1364
+#: rpmio/rpmgrep.c:1336
 msgid "set number of prior context lines"
 msgstr "đặt số dòng ngữ cảnh đi trước"
 
-#: rpmio/rpmgrep.c:1366
+#: rpmio/rpmgrep.c:1338
 msgid "set number of context lines, before & after"
 msgstr "đặt số dòng ngữ cảnh đi trước và theo sau"
 
-#: rpmio/rpmgrep.c:1368
+#: rpmio/rpmgrep.c:1340
 msgid "print only a count of matching lines per FILE"
 msgstr "hiển thị chỉ số đếm các dòng tương ứng trong mỗi TẬP_TIN"
 
-#: rpmio/rpmgrep.c:1370
+#: rpmio/rpmgrep.c:1342
 msgid "matched text color option (auto|always|never)"
 msgstr ""
 "tùy chọn màu chữ tương ứng:\n"
@@ -3774,11 +3974,11 @@ msgstr ""
 " • always\tluôn luôn\n"
 " • never\tkhông bao giờ"
 
-#: rpmio/rpmgrep.c:1370 rpmio/rpmgrep.c:1372
+#: rpmio/rpmgrep.c:1342 rpmio/rpmgrep.c:1344
 msgid "=option"
 msgstr "=tùy chọn"
 
-#: rpmio/rpmgrep.c:1372
+#: rpmio/rpmgrep.c:1344
 msgid "matched text colour option (auto|always|never)"
 msgstr ""
 "tùy chọn màu chữ tương ứng:\n"
@@ -3786,18 +3986,18 @@ msgstr ""
 " • always\tluôn luôn\n"
 " • never\tkhông bao giờ"
 
-#: rpmio/rpmgrep.c:1375
+#: rpmio/rpmgrep.c:1347
 msgid "device, FIFO, or socket action (read|skip)"
 msgstr ""
 "hành vi cho thiết bị, FIFO hoặc ổ cắm:\n"
 " • read\tđọc\n"
 " • skip\tbỏ qua"
 
-#: rpmio/rpmgrep.c:1375 rpmio/rpmgrep.c:1377
+#: rpmio/rpmgrep.c:1347 rpmio/rpmgrep.c:1349
 msgid "=action"
 msgstr "=hành vi"
 
-#: rpmio/rpmgrep.c:1377
+#: rpmio/rpmgrep.c:1349
 msgid "directory action (read|skip|recurse)"
 msgstr ""
 "hành vi ở thư mục:\n"
@@ -3805,76 +4005,76 @@ msgstr ""
 " • skip\t\tbỏ qua\n"
 " • recurse\tđệ qui"
 
-#: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383
+#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355
 msgid "specify pattern (may be used more than once)"
 msgstr "ghi rõ mẫu (có thể dùng nhiều lần)"
 
-#: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383 rpmio/rpmgrep.c:1456
-#: rpmio/rpmgrep.c:1458
+#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355 rpmio/rpmgrep.c:1428
+#: rpmio/rpmgrep.c:1430
 msgid "(p)"
 msgstr "(p)"
 
-#: rpmio/rpmgrep.c:1386
+#: rpmio/rpmgrep.c:1358
 msgid "patterns are sets of newline-separated strings"
 msgstr "mẫu là một tập hợp các chuỗi định giới bằng ký tự dòng mới"
 
-#: rpmio/rpmgrep.c:1389 rpmio/rpmgrep.c:1393
+#: rpmio/rpmgrep.c:1361 rpmio/rpmgrep.c:1365
 msgid "read patterns from file (may be used more than once)"
 msgstr "đọc các mẫu từ tập tin (có thể dùng nhiều lần)"
 
-#: rpmio/rpmgrep.c:1390 rpmio/rpmgrep.c:1394
+#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1366
 msgid "=path"
 msgstr "=đường dẫn"
 
-#: rpmio/rpmgrep.c:1397
+#: rpmio/rpmgrep.c:1369
 msgid "output file offsets, not text"
 msgstr "xuất các khoảng bù tập tin, không phải văn bản"
 
-#: rpmio/rpmgrep.c:1399
+#: rpmio/rpmgrep.c:1371
 msgid "force the prefixing filename on output"
 msgstr "ép buộc tên tập tin đặt tiền tố khi xuất"
 
-#: rpmio/rpmgrep.c:1401
+#: rpmio/rpmgrep.c:1373
 msgid "suppress the prefixing filename on output"
 msgstr "thu hồi tên tập tin đặt tiền tố khi xuất"
 
-#: rpmio/rpmgrep.c:1403
+#: rpmio/rpmgrep.c:1375
 msgid "ignore case distinctions"
 msgstr "bỏ qua chữ hoa/thường"
 
-#: rpmio/rpmgrep.c:1405
+#: rpmio/rpmgrep.c:1377
 msgid "print only FILE names containing matches"
 msgstr "in ra chỉ tên TẬP_TIN mà chứa kết quả tương ứng"
 
-#: rpmio/rpmgrep.c:1407
+#: rpmio/rpmgrep.c:1379
 msgid "print only FILE names not containing matches"
 msgstr "in ra chỉ tên TẬP_TIN mà không chứa kết quả tương ứng"
 
-#: rpmio/rpmgrep.c:1409
+#: rpmio/rpmgrep.c:1381
 msgid "set name for standard input"
 msgstr "đặt tên cho đầu vào tiêu chuẩn"
 
-#: rpmio/rpmgrep.c:1409
+#: rpmio/rpmgrep.c:1381
 msgid "=name"
 msgstr "=tên"
 
-#: rpmio/rpmgrep.c:1411
+#: rpmio/rpmgrep.c:1383
 msgid "output line numbers and offsets, not text"
 msgstr "xuất các số thứ tự dòng và khoảng bù, không phải văn bản"
 
-#: rpmio/rpmgrep.c:1414
+#: rpmio/rpmgrep.c:1386
 msgid "use the named locale"
 msgstr "dùng miền địa phương đã đặt tên"
 
-#: rpmio/rpmgrep.c:1414
+#: rpmio/rpmgrep.c:1386
 msgid "=locale"
 msgstr "=miền địa phương"
 
-#: rpmio/rpmgrep.c:1416
+#: rpmio/rpmgrep.c:1388
 msgid "run in multiline mode"
 msgstr "chạy ở chế độ đa dòng"
 
-#: rpmio/rpmgrep.c:1418
+#: rpmio/rpmgrep.c:1390
 msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
 msgstr ""
 "đặt kiểu ký tự dòng mới:\n"
@@ -3884,68 +4084,70 @@ msgstr ""
 " • ANYCRLF \tbất kỳ CRLF\n"
 " • ANY\t\tbất cứ ký tự nào"
 
-#: rpmio/rpmgrep.c:1418
+#: rpmio/rpmgrep.c:1390
 msgid "=type"
 msgstr "=kiểu"
 
-#: rpmio/rpmgrep.c:1420
+#: rpmio/rpmgrep.c:1392
 msgid "print line number with output lines"
 msgstr "in ra số thứ tự dòng trong kết xuất"
 
-#: rpmio/rpmgrep.c:1422
+#: rpmio/rpmgrep.c:1394
 msgid "show only the part of the line that matched"
 msgstr "hiển thị chỉ phần dòng mà tương ứng"
 
-#: rpmio/rpmgrep.c:1425
+#: rpmio/rpmgrep.c:1397
 msgid "suppress output, just set return code"
 msgstr "thu hồi kết xuất, chỉ đặt mã trả về"
 
-#: rpmio/rpmgrep.c:1427
+#: rpmio/rpmgrep.c:1399
 msgid "recursively scan sub-directories"
 msgstr "quét đệ qui vào các thư mục con"
 
-#: rpmio/rpmgrep.c:1430 rpmio/rpmgrep.c:1437
+#: rpmio/rpmgrep.c:1402 rpmio/rpmgrep.c:1409
 msgid "exclude matching files when recursing (may be used more than once)"
-msgstr "loại trừ các tập tin tương ứng khi duyệt đệ qui (có thể dùng nhiều lần)"
+msgstr ""
+"loại trừ các tập tin tương ứng khi duyệt đệ qui (có thể dùng nhiều lần)"
 
-#: rpmio/rpmgrep.c:1431 rpmio/rpmgrep.c:1434 rpmio/rpmgrep.c:1438
-#: rpmio/rpmgrep.c:1441
+#: rpmio/rpmgrep.c:1403 rpmio/rpmgrep.c:1406 rpmio/rpmgrep.c:1410
+#: rpmio/rpmgrep.c:1413
 msgid "=pattern"
 msgstr "=mẫu"
 
-#: rpmio/rpmgrep.c:1433 rpmio/rpmgrep.c:1440
+#: rpmio/rpmgrep.c:1405 rpmio/rpmgrep.c:1412
 msgid "include matching files when recursing (may be used more than once)"
 msgstr "bao gồm các tập tin tương ứng khi duyệt đệ qui (có thể dùng nhiều lần)"
 
-#: rpmio/rpmgrep.c:1444 rpmio/rpmgrep.c:1446
+#: rpmio/rpmgrep.c:1416 rpmio/rpmgrep.c:1418
 msgid "suppress error messages"
 msgstr "thu hồi thông điệp lỗi"
 
-#: rpmio/rpmgrep.c:1448
+#: rpmio/rpmgrep.c:1420
 msgid "use UTF-8 mode"
 msgstr "dùng chế độ UTF-8"
 
-#: rpmio/rpmgrep.c:1451
+#: rpmio/rpmgrep.c:1423
 msgid "print version information and exit"
 msgstr "in ra thông tin phiên bản rồi thoát"
 
-#: rpmio/rpmgrep.c:1454
+#: rpmio/rpmgrep.c:1426
 msgid "select non-matching lines"
 msgstr "chọn các dòng không khớp"
 
-#: rpmio/rpmgrep.c:1456
+#: rpmio/rpmgrep.c:1428
 msgid "force patterns to match only as words"
 msgstr "ép buộc mẫu khớp chỉ dạng từ"
 
-#: rpmio/rpmgrep.c:1458
+#: rpmio/rpmgrep.c:1430
 msgid "force patterns to match only whole lines"
 msgstr "ép buộc mẫu khớp chỉ nguyên dòng"
 
-#: rpmio/rpmgrep.c:1463
+#: rpmio/rpmgrep.c:1435 tools/rpmdigest.c:348 tools/rpmmtree.c:3636
+#: tools/rpmrepo.c:2023
 msgid "Common options for all rpmio executables:"
 msgstr "Các tùy chọn chung với mọi tập tin thực hiện được rpmio:"
 
-#: rpmio/rpmgrep.c:1469
+#: rpmio/rpmgrep.c:1441
 msgid ""
 "Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
 "\n"
@@ -3965,12 +4167,13 @@ msgstr ""
 "\n"
 "  Ví dụ : rpmgrep -i 'hello.*world' menu.h main.c"
 
-#: rpmio/rpmgrep.c:1479
+#: rpmio/rpmgrep.c:1451
 msgid ""
 "  When reading patterns from a file instead of using a command line option,\n"
 "  trailing white space is removed and blank lines are ignored.\n"
 "\n"
-"  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n"
+"  With no FILEs, read standard input. If fewer than two FILEs given, assume -"
+"h.\n"
 msgstr ""
 "  Khi đọc các mẫu từ tập tin thay vào dùng tùy chọn dòng lệnh,\n"
 "  khoảng trắng theo sau bị gỡ bỏ và các dòng rỗng bị bỏ qua.\n"
@@ -3978,79 +4181,81 @@ msgstr ""
 "  Không có TẬP_TIN thì đọc đầu vào tiêu chuẩn.\n"
 "  Có ít hơn hai TẬP_TIN thì giả sử « -h ».\n"
 
-#: rpmio/rpmgrep.c:1546
+#: rpmio/rpmgrep.c:1518
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
-msgstr "%s: Không thể tổ hợp các tùy chọn « --only-matching », « --file-offsets » và/hoặc « --line-offsets »\n"
+msgstr ""
+"%s: Không thể tổ hợp các tùy chọn « --only-matching », « --file-offsets » và/"
+"hoặc « --line-offsets »\n"
 
-#: rpmio/rpmgrep.c:1566
+#: rpmio/rpmgrep.c:1538
 #, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
 msgstr "%s: Chỉ thị dòng mới không hợp lệ « %s »\n"
 
-#: rpmio/rpmgrep.c:1628
+#: rpmio/rpmgrep.c:1600
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
 msgstr "%s: Gặp lỗi trong biểu thức chính quy « loại trừ » ở khoảng bù %d: %s\n"
 
-#: rpmio/rpmgrep.c:1640
+#: rpmio/rpmgrep.c:1612
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr "%s: Gặp lỗi trong biểu thức chính quy « bao gồm » ở khoảng bù %d: %s\n"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:737
 msgid "Success"
 msgstr "Thành công"
 
-#: rpmio/rpmio.c:761
+#: rpmio/rpmio.c:760
 msgid "Bad server response"
 msgstr "Đáp ứng máy phục vụ sai"
 
-#: rpmio/rpmio.c:763
+#: rpmio/rpmio.c:762
 msgid "Server I/O error"
 msgstr "Lỗi V/R máy phục vụ"
 
-#: rpmio/rpmio.c:765
+#: rpmio/rpmio.c:764
 msgid "Server timeout"
 msgstr "Quá hạn ở máy phục vụ"
 
-#: rpmio/rpmio.c:767
+#: rpmio/rpmio.c:766
 msgid "Unable to lookup server host address"
 msgstr "Không thể tra cứu địa chỉ máy của máy phục vụ"
 
-#: rpmio/rpmio.c:769
+#: rpmio/rpmio.c:768
 msgid "Unable to lookup server host name"
 msgstr "Không thể tra cứu tên máy của máy phục vụ"
 
-#: rpmio/rpmio.c:771
+#: rpmio/rpmio.c:770
 msgid "Failed to connect to server"
 msgstr "Không kết nối được với máy phục vụ"
 
-#: rpmio/rpmio.c:773
+#: rpmio/rpmio.c:772
 msgid "Failed to establish data connection to server"
 msgstr "Không thiết lập được kết nối dữ liệu tới máy phục vụ"
 
-#: rpmio/rpmio.c:775
+#: rpmio/rpmio.c:774
 msgid "I/O error to local file"
 msgstr "Lỗi V/R tới tập tin cục bộ"
 
-#: rpmio/rpmio.c:777
+#: rpmio/rpmio.c:776
 msgid "Error setting remote server to passive mode"
 msgstr "Gặp lỗi khi đặt máy phục vụ từ xa thành chế độ bị động"
 
-#: rpmio/rpmio.c:779
+#: rpmio/rpmio.c:778
 msgid "File not found on server"
 msgstr "Không tìm thấy tập tin trên máy phục vụ"
 
-#: rpmio/rpmio.c:781
+#: rpmio/rpmio.c:780
 msgid "Abort in progress"
 msgstr "Đang hủy bỏ"
 
-#: rpmio/rpmio.c:785
+#: rpmio/rpmio.c:784
 msgid "Unknown or unexpected error"
 msgstr "Lỗi không rõ hoặc bất thường"
 
-#: rpmio/rpmio.c:802
+#: rpmio/rpmio.c:801
 msgid "Malformed URL"
 msgstr "Địa chỉ URL dạng sai"
 
@@ -4070,27 +4275,27 @@ msgstr "lỗi: "
 msgid "warning: "
 msgstr "cảnh báo : "
 
-#: rpmio/rpmlua.c:553
+#: rpmio/rpmlua.c:555
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "gặp cú pháp không hợp lệ trong vi văn lệnh Lua: %s\n"
 
-#: rpmio/rpmlua.c:569
+#: rpmio/rpmlua.c:571
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "gặp cú pháp không hợp lệ trong văn lệnh Lua: %s\n"
 
-#: rpmio/rpmlua.c:574 rpmio/rpmlua.c:593
+#: rpmio/rpmlua.c:576 rpmio/rpmlua.c:595
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr "Văn lệnh Lua bị lỗi: %s\n"
 
-#: rpmio/rpmlua.c:588
+#: rpmio/rpmlua.c:590
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "gặp cú pháp không hợp lệ trong tập tin Lua: %s\n"
 
-#: rpmio/rpmlua.c:803
+#: rpmio/rpmlua.c:805
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "Lỗi kích hoạt khả năng Lua: %s\n"
@@ -4120,6 +4325,52 @@ msgstr "magic_file(ms, %s) bị lỗi: %s\n"
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "magic_buffer(ms, %p[%u]) bị lỗi: %s\n"
 
+#: rpmio/rpmuuid.c:34
+msgid "invalid UUID version number"
+msgstr ""
+
+#: rpmio/rpmuuid.c:38
+msgid "namespace or data required for requested UUID version\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:42
+msgid "either string or binary result buffer required\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:48
+#, fuzzy, c-format
+msgid "failed to create UUID object: %s\n"
+msgstr "lỗi gỡ bỏ thư mục %s: %s\n"
+
+#: rpmio/rpmuuid.c:55
+#, fuzzy, c-format
+msgid "failed to create UUID namespace object: %s\n"
+msgstr "lỗi ghi tất cả các dữ liệu vào %s\n"
+
+#: rpmio/rpmuuid.c:60
+#, c-format
+msgid "failed to import UUID namespace object: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:79
+#, fuzzy, c-format
+msgid "failed to make UUID object: %s\n"
+msgstr "lỗi gỡ bỏ thư mục %s: %s\n"
+
+#: rpmio/rpmuuid.c:91
+#, c-format
+msgid "failed to export UUID object as string representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:102
+#, c-format
+msgid "failed to export UUID object as binary representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:115
+msgid "UUID generator not available!\n"
+msgstr ""
+
 #: rpmio/url.c:113
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
@@ -4148,6 +4399,60 @@ msgstr "lỗi: cổng %s phải là con số\n"
 #: rpmio/url.c:493
 msgid "url port must be a number\n"
 msgstr "cổng URL phải là con số\n"
+
+#: tools/rpm2cpio.c:64
+#, fuzzy, c-format
+msgid "argument is not an RPM package\n"
+msgstr "readRPM: %s không phải là gói RPM\n"
+
+#: tools/rpm2cpio.c:69
+#, fuzzy, c-format
+msgid "error reading header from package\n"
+msgstr "readRPM: đang đọc phần đầu từ %s\n"
+
+#: tools/rpm2cpio.c:97
+#, fuzzy, c-format
+msgid "cannot re-open payload: %s\n"
+msgstr "không thể mở %s: %s\n"
+
+#: tools/rpmcache.c:522
+#, fuzzy
+msgid "don't verify header+payload signature"
+msgstr "đừng thẩm tra chữ ký gói"
+
+#: tools/rpmcache.c:525
+#, fuzzy
+msgid "update cache database"
+msgstr "sơ khởi cơ sở dữ liệu"
+
+#: tools/rpmcache.c:527
+msgid "don't update cache database, only print package paths"
+msgstr "đừng cập nhật cơ sở dữ liệu nhớ tạm, chỉ in ra đường dẫn gói"
+
+#: tools/rpmcache.c:530
+#, fuzzy
+msgid "File tree walk options:"
+msgstr "Tùy chọn duyệt cây tập tin (với --ftswalk):"
+
+#: tools/rpmcache.c:534
+#, fuzzy
+msgid "Common options for all rpm modes and executables:"
+msgstr "Các tùy chọn chung với mọi tập tin thực hiện được rpmio:"
+
+#: tools/rpmcache.c:566
+#, c-format
+msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
+msgstr "%s: %%{_cache_dbpath} sai cấu hình vĩ lệnh.\n"
+
+#: tools/rpmcache.c:609
+#, fuzzy, c-format
+msgid "%s: cache operation failed: ec %d.\n"
+msgstr "%s: lỗi mở : %s\n"
+
+#: tools/rpmcmp.c:79
+#, fuzzy, c-format
+msgid "skipping malformed comparison: \"%s\"\n"
+msgstr "dạng sai %s: %s\n"
 
 #: tools/rpmdeps.c:159
 msgid "print cpuinfo(...) dependency set"
@@ -4247,16 +4552,625 @@ msgstr "in ra tập hợp quan hệ phụ thuộc getconf(...)"
 
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
-msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để thỏa quan hệ phụ thuộc"
+msgstr ""
+"so sánh các gói Cần thiết: với các gói Cung cấp: để thỏa quan hệ phụ thuộc"
+
+#: tools/rpmdigest.c:235
+#, fuzzy, c-format
+msgid "%s: Unknown digest name \"%s\"\n"
+msgstr "%s: Không rõ thiết lập màu « %s »\n"
+
+#: tools/rpmdigest.c:317
+#, fuzzy
+msgid "read in binary mode"
+msgstr "chạy ở chế độ đa dòng"
+
+#: tools/rpmdigest.c:321 tools/rpmdigest.c:325
+#, fuzzy
+msgid "read digests from MANIFEST file and verify (may be used more than once)"
+msgstr "đọc các mẫu từ tập tin (có thể dùng nhiều lần)"
+
+#: tools/rpmdigest.c:322 tools/rpmdigest.c:326
+msgid "MANIFEST"
+msgstr ""
+
+#: tools/rpmdigest.c:330
+msgid "read in text mode (default)"
+msgstr ""
+
+#: tools/rpmdigest.c:334
+msgid "The following two options are useful only when verifying digests:"
+msgstr ""
+
+#: tools/rpmdigest.c:340
+msgid "no output when verifying"
+msgstr ""
+
+#: tools/rpmdigest.c:342
+msgid "warn about improperly formatted checksum lines"
+msgstr ""
+
+#: tools/rpmdigest.c:345 tools/rpmmtree.c:3633 tools/rpmrepo.c:2020
+msgid "Available digests:"
+msgstr ""
+
+#: tools/rpmdigest.c:355
+msgid ""
+"When checking, the input should be a former output of this program.  The\n"
+"default mode is to print a line with digest, a character indicating type\n"
+"(`*' for binary, ` ' for text), and name for each FILE.\n"
+msgstr ""
+
+#: tools/rpmmtree.c:359
+#, c-format
+msgid "%s: failed at line %d of the specification\n"
+msgstr ""
+
+#: tools/rpmmtree.c:1519 tools/rpmmtree.c:1708
+#, c-format
+msgid "%s: filename (%s) encoded incorrectly\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2069
+#, c-format
+msgid "%s changed\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2149
+#, c-format
+msgid "\ttype expected %s found %s)\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2159 tools/rpmmtree.c:2172
+#, c-format
+msgid "%s%s expected %lu found %lu"
+msgstr ""
+
+#: tools/rpmmtree.c:2163 tools/rpmmtree.c:2176 tools/rpmmtree.c:2203
+#: tools/rpmmtree.c:2260
+#, fuzzy, c-format
+msgid " not modified: %s)\n"
+msgstr "Không cho phép glob (mở rộng mẫu khi tìm kiếm): %s\n"
+
+#: tools/rpmmtree.c:2165 tools/rpmmtree.c:2178 tools/rpmmtree.c:2205
+#, c-format
+msgid " modified)\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2199
+#, c-format
+msgid "%s%s expected %#o found %#o"
+msgstr ""
+
+#: tools/rpmmtree.c:2216
+#, c-format
+msgid "%s%s expected %lu found %lu)\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2223
+#, c-format
+msgid "%s%s expected %llu found %llu\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2255
+#, c-format
+msgid "%s%s expected %.24s "
+msgstr ""
+
+#: tools/rpmmtree.c:2256
+#, c-format
+msgid "found %.24s"
+msgstr ""
+
+#: tools/rpmmtree.c:2262
+#, c-format
+msgid " modified\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2305
+#, c-format
+msgid "%s%s expected %lu found %lu\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2323 tools/rpmmtree.c:2343
+#, fuzzy, c-format
+msgid "%s%s expected %s found %s\n"
+msgstr "%s được tạo dạng %s\n"
+
+#: tools/rpmmtree.c:2352
+#, fuzzy, c-format
+msgid "%s%s expected \"%s\""
+msgstr "gặp dấu ngoặc vu đóng « ] » bất thường"
+
+#: tools/rpmmtree.c:2356
+#, fuzzy, c-format
+msgid " found \"%s\""
+msgstr "Không tìm thấy tập tin: %s\n"
+
+#: tools/rpmmtree.c:2478 tools/rpmmtree.c:2585
+#, c-format
+msgid "%s: Could not get uname for uid=%lu\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2491 tools/rpmmtree.c:2600
+#, c-format
+msgid "%s: Could not get gname for gid=%lu\n"
+msgstr ""
+
+#: tools/rpmmtree.c:2639 tools/rpmmtree.c:2664
+#, fuzzy, c-format
+msgid "%s: %s: cksum: %s\n"
+msgstr "Thiếu %s%d: %s: %s\n"
+
+#: tools/rpmmtree.c:2784
+#, fuzzy, c-format
+msgid "%s: open of %s failed: %s\n"
+msgstr "lỗi mở %s: %s\n"
+
+#: tools/rpmmtree.c:3284
+#, fuzzy, c-format
+msgid "missing: %s"
+msgstr "thiếu   %c %s"
+
+#: tools/rpmmtree.c:3295
+#, c-format
+msgid " (%s not created: user not specified)"
+msgstr ""
+
+#: tools/rpmmtree.c:3297
+#, c-format
+msgid " (%s not created: group not specified))"
+msgstr ""
+
+#: tools/rpmmtree.c:3300
+#, fuzzy, c-format
+msgid " (%s not created: %s)\n"
+msgstr "%s được tạo dạng %s\n"
+
+#: tools/rpmmtree.c:3303
+#, fuzzy, c-format
+msgid " (%s created)\n"
+msgstr "%s được tạo dạng %s\n"
+
+#: tools/rpmmtree.c:3316 tools/rpmmtree.c:3352
+#, fuzzy, c-format
+msgid "%s: %s not modified: %s\n"
+msgstr "%s: lỗi mở : %s\n"
+
+#: tools/rpmmtree.c:3321
+#, c-format
+msgid " (%s not created: mode not specified)"
+msgstr ""
+
+#: tools/rpmmtree.c:3323
+#, fuzzy, c-format
+msgid " (%s not created: %s)"
+msgstr "%s được tạo dạng %s\n"
+
+#: tools/rpmmtree.c:3326
+#, fuzzy, c-format
+msgid " (%s created)"
+msgstr "%s được tạo dạng %s\n"
+
+#: tools/rpmmtree.c:3357
+#, c-format
+msgid "%s: permissions not set: %s\n"
+msgstr ""
+
+#: tools/rpmmtree.c:3362
+#, fuzzy, c-format
+msgid "%s: file flags not set: %s\n"
+msgstr "%s bị lỗi ở tập tin %s: %s\n"
+
+#: tools/rpmmtree.c:3474
+#, fuzzy, c-format
+msgid ", not removed: %s"
+msgstr "Không cho phép glob (mở rộng mẫu khi tìm kiếm): %s\n"
+
+#: tools/rpmmtree.c:3476
+#, c-format
+msgid ", removed"
+msgstr ""
+
+#: tools/rpmmtree.c:3578
+msgid "Follow symlinks"
+msgstr ""
+
+#: tools/rpmmtree.c:3581
+msgid "Don't follow symlinks"
+msgstr ""
+
+#: tools/rpmmtree.c:3583
+msgid "Read fnmatch(3) exclude patterns from <file>"
+msgstr ""
+
+#: tools/rpmmtree.c:3583
+#, fuzzy
+msgid "<file>"
+msgstr "<tập tin đặc tả>"
+
+#: tools/rpmmtree.c:3586
+msgid "Print file tree specification to stdout"
+msgstr ""
+
+#: tools/rpmmtree.c:3588
+msgid "Directories only"
+msgstr ""
+
+#: tools/rpmmtree.c:3590
+msgid "Don't complain about files not in the specification"
+msgstr ""
+
+#: tools/rpmmtree.c:3592
+msgid "Read file tree <spec>"
+msgstr ""
+
+#: tools/rpmmtree.c:3594
+#, fuzzy
+msgid "Indent sub-directories"
+msgstr "quét đệ qui vào các thư mục con"
+
+#: tools/rpmmtree.c:3596
+#, fuzzy
+msgid "Add <key> to specification"
+msgstr "Đặc tả gói sai: %s\n"
+
+#: tools/rpmmtree.c:3596 tools/rpmmtree.c:3598
+msgid "<key>"
+msgstr ""
+
+#: tools/rpmmtree.c:3598
+msgid "Use \"type\" keywords instead"
+msgstr ""
+
+#: tools/rpmmtree.c:3600
+msgid "Loose permissions check"
+msgstr ""
+
+#: tools/rpmmtree.c:3602
+msgid "Don't include sub-directory comments"
+msgstr ""
+
+#: tools/rpmmtree.c:3605 tools/rpmmtree.c:3608
+msgid "Use <path> rather than current directory"
+msgstr ""
+
+#: tools/rpmmtree.c:3612
+msgid "Quiet mode"
+msgstr ""
+
+#: tools/rpmmtree.c:3614
+msgid "Remove files not in specification"
+msgstr ""
+
+#: tools/rpmmtree.c:3616
+msgid "Display crc for file(s) with <seed>"
+msgstr ""
+
+#: tools/rpmmtree.c:3616
+#, fuzzy
+msgid "<seed>"
+msgstr "<đặc tả>"
+
+#: tools/rpmmtree.c:3618
+msgid "Touch files iff timestamp differs"
+msgstr ""
+
+#: tools/rpmmtree.c:3620
+msgid "Update owner/group/permissions to match specification"
+msgstr ""
+
+#: tools/rpmmtree.c:3622
+msgid "Same as -u, but ignore match status on exit"
+msgstr ""
+
+#: tools/rpmmtree.c:3624
+msgid "Treat missing uid/gid as warning"
+msgstr ""
+
+#: tools/rpmmtree.c:3627
+msgid "Don't cross mount points"
+msgstr ""
+
+#: tools/rpmmtree.c:3630 tools/rpmrepo.c:2009
+#, fuzzy
+msgid "Fts(3) traversal options:"
+msgstr "gỡ lỗi sự đi qua Fts(3)"
+
+#: tools/rpmmtree.c:3665
+#, c-format
+msgid "(no controlling terminal) %s"
+msgstr ""
+
+#: tools/rpmmtree.c:3670
+#, c-format
+msgid "(no controlling terminal) #%d"
+msgstr ""
+
+#: tools/rpmmtree.c:3811 tools/rpmmtree.c:3826
+#, c-format
+msgid "%s: %s checksum: %u\n"
+msgstr ""
+
+#: tools/rpmrepo.c:718
+#, fuzzy, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "không thể tạo %s: %s\n"
+
+#: tools/rpmrepo.c:760
+#, c-format
+msgid "Directory %s must exist"
+msgstr ""
+
+#: tools/rpmrepo.c:767
+#, fuzzy, c-format
+msgid "Directory %s does not exist."
+msgstr "người dùng %s không tồn tại nên dùng người chủ (root)\n"
+
+#: tools/rpmrepo.c:771
+#, fuzzy, c-format
+msgid "Directory %s must be writable."
+msgstr "sự định vị lại phải bắt đầu với dấu sổ chéo « / »"
+
+#: tools/rpmrepo.c:781
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr ""
+
+#: tools/rpmrepo.c:797
+#, c-format
+msgid "Path must be writable: %s"
+msgstr ""
+
+#: tools/rpmrepo.c:817
+#, fuzzy, c-format
+msgid "groupfile %s cannot be found."
+msgstr "không thể tìm thấy gói « %s »\n"
+
+#: tools/rpmrepo.c:858
+#, c-format
+msgid "Fts_open: %s"
+msgstr ""
+
+#: tools/rpmrepo.c:926
+#, fuzzy, c-format
+msgid "cannot get to file: %s"
+msgstr "không thể truy cập tập tin %s\n"
+
+#: tools/rpmrepo.c:953 tools/rpmrepo.c:997
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr ""
+
+#: tools/rpmrepo.c:1054
+#, fuzzy, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread bị lỗi: %s\n"
+
+#: tools/rpmrepo.c:1098 tools/rpmrepo.c:1170
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr ""
+
+#: tools/rpmrepo.c:1280
+#, fuzzy, c-format
+msgid ""
+"\n"
+"Error %s: %s\n"
+msgstr "%s: %s\n"
+
+#: tools/rpmrepo.c:1389
+#, c-format
+msgid "Saving %s metadata"
+msgstr ""
+
+#: tools/rpmrepo.c:1606
+#, fuzzy
+msgid "Generating sqlite DBs"
+msgstr "Đang tạo chữ ký: %d\n"
+
+#: tools/rpmrepo.c:1633
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr ""
+
+#: tools/rpmrepo.c:1699
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr ""
+
+#: tools/rpmrepo.c:1733
+msgid "Sqlite DBs complete"
+msgstr ""
+
+#: tools/rpmrepo.c:1744
+#, fuzzy, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "gặp lỗi khi tạo tập tin tạm thời %s\n"
+
+#: tools/rpmrepo.c:1749
+#, fuzzy, c-format
+msgid "Could not save temp file: %s"
+msgstr "Không thể mở tập tin Test (thử): %s\n"
+
+#: tools/rpmrepo.c:1776
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr ""
+
+#: tools/rpmrepo.c:1784
+msgid "Error moving final metadata into place"
+msgstr ""
+
+#: tools/rpmrepo.c:1801 tools/rpmrepo.c:1833
+#, fuzzy, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Không thể mở tập tin %%files %s: %s\n"
+
+#: tools/rpmrepo.c:1843
+#, fuzzy, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Không thể mở tập tin %%files %s: %s\n"
+
+#: tools/rpmrepo.c:1855
+#, fuzzy, c-format
+msgid "Could not remove old metadata dir: %s: %s"
+msgstr "Không thể mở tập tin %%files %s: %s\n"
+
+#: tools/rpmrepo.c:1936
+msgid "don't compress"
+msgstr ""
+
+#: tools/rpmrepo.c:1938
+msgid "use gzip compression"
+msgstr ""
+
+#: tools/rpmrepo.c:1940
+msgid "use bzip2 compression"
+msgstr ""
+
+#: tools/rpmrepo.c:1942
+msgid "use lzma compression"
+msgstr ""
+
+#: tools/rpmrepo.c:1954
+#, fuzzy
+msgid "debug repo handling"
+msgstr "gỡ lỗi cách xử lý bộ nhớ tạm địa chỉ URL"
+
+#: tools/rpmrepo.c:1957
+msgid "output nothing except for serious errors"
+msgstr ""
+
+#: tools/rpmrepo.c:1959
+msgid "output more debugging info."
+msgstr ""
+
+#: tools/rpmrepo.c:1961
+msgid "sanity check arguments, don't create metadata"
+msgstr ""
+
+#: tools/rpmrepo.c:1964 tools/rpmrepo.c:1967
+msgid "glob PATTERN(s) to exclude"
+msgstr ""
+
+#: tools/rpmrepo.c:1964 tools/rpmrepo.c:1967 tools/rpmrepo.c:1971
+#: tools/rpmrepo.c:1974
+msgid "PATTERN"
+msgstr ""
+
+#: tools/rpmrepo.c:1971 tools/rpmrepo.c:1974
+msgid "glob PATTERN(s) to include"
+msgstr ""
+
+#: tools/rpmrepo.c:1977
+#, fuzzy
+msgid "top level directory"
+msgstr "dùng GỐC là thư mục cấp đầu"
+
+#: tools/rpmrepo.c:1977 tools/rpmrepo.c:2002
+msgid "DIR"
+msgstr ""
+
+#: tools/rpmrepo.c:1979
+msgid "baseurl to append on all files"
+msgstr ""
+
+#: tools/rpmrepo.c:1979
+msgid "BASEURL"
+msgstr ""
+
+#: tools/rpmrepo.c:1982
+msgid "path to groupfile to include in metadata"
+msgstr ""
+
+#: tools/rpmrepo.c:1982 tools/rpmrepo.c:1996 tools/rpmrepo.c:1999
+msgid "FILE"
+msgstr ""
+
+#: tools/rpmrepo.c:1985
+msgid "make sure all xml generated is formatted"
+msgstr ""
+
+#: tools/rpmrepo.c:1987
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+
+#: tools/rpmrepo.c:1990
+#, fuzzy
+msgid "create sqlite3 database files"
+msgstr "thẩm tra các tập tin cơ sở dữ liệu"
+
+#: tools/rpmrepo.c:1993
+#, fuzzy
+msgid "generate split media"
+msgstr "tạo chữ ký"
+
+#: tools/rpmrepo.c:1996 tools/rpmrepo.c:1999
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+
+#: tools/rpmrepo.c:2002
+msgid "<dir> = optional directory to output to"
+msgstr ""
+
+#: tools/rpmrepo.c:2004
+#, fuzzy
+msgid "ignore symlinks of packages"
+msgstr "bỏ qua tập tin xung đột giữa các gói"
+
+#: tools/rpmrepo.c:2006
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr ""
+
+#: tools/rpmrepo.c:2017
+#, fuzzy
+msgid "Available compressions:"
+msgstr "Tùy chọn cơ sở dữ liệu :"
+
+#: tools/rpmrepo.c:2091
+msgid "Must specify path(s) to index."
+msgstr ""
+
+#: tools/rpmrepo.c:2109 tools/rpmrepo.c:2161
+#, fuzzy, c-format
+msgid "Realpath(%s): %s"
+msgstr "Đang lấy (%s%d): %s\n"
+
+#: tools/rpmrepo.c:2166
+msgid "--split and --checkts options are mutually exclusive"
+msgstr ""
+
+#: tools/rpmrepo.c:2186
+msgid "Error loading exclude glob patterns."
+msgstr ""
+
+#: tools/rpmrepo.c:2189
+msgid "Error loading include glob patterns."
+msgstr ""
+
+#: tools/rpmrepo.c:2218
+#, c-format
+msgid "repo is up to date\n"
+msgstr ""
+
+#~ msgid "Unknown icon type: %s\n"
+#~ msgstr "Không rõ kiểu biểu tượng: %s\n"
+
+#~ msgid "Package already exists: %s\n"
+#~ msgstr "Gói đã có : %s\n"
 
 #~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "« --replacefiles » (thay thế các tập tin) chỉ có thể được định rõ trong khi cài đặt gói"
+#~ msgstr ""
+#~ "« --replacefiles » (thay thế các tập tin) chỉ có thể được định rõ trong "
+#~ "khi cài đặt gói"
 
 #~ msgid "--sign may only be used during package building"
 #~ msgstr "« --sign » (ký tên) chỉ có thể được dùng trong khi xây dựng gói"
 
 #~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
-#~ msgstr "dòng %d: trường Epoch/Serial (Khởi đầu/Số sản xuất) phải là một số: %s\n"
+#~ msgstr ""
+#~ "dòng %d: trường Epoch/Serial (Khởi đầu/Số sản xuất) phải là một số: %s\n"
 
 #~ msgid "Spec file can't use BuildRoot\n"
 #~ msgstr "Tập tin đặc tả không thể sử dụng Gốc Xây Dựng (BuildRoot)\n"
@@ -4267,14 +5181,19 @@ msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để th�
 #~ msgid "ignore ExcludeArch: directives from spec file"
 #~ msgstr "bỏ qua chỉ dẫn loại trừ kiến trúc (ExcludeArch:) từ tập tin đặc tả"
 
-#~ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
+#~ msgid ""
+#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
 #~ msgstr "phát sinh phần đầu gói thích hợp với gói rpm[23] (thừa tự)"
 
 #~ msgid "========== recording tsort relations\n"
 #~ msgstr "========== đang ghi lưu các quan hệ sắp xếp tsort\n"
 
-#~ msgid "========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n"
-#~ msgstr "========== đang sắp xếp tsort các gói (thứ tự, số gói đi trước, số gói theo sau, cây, độ sâu)\n"
+#~ msgid ""
+#~ "========== tsorting packages (order, #predecessors, #succesors, tree, "
+#~ "depth)\n"
+#~ msgstr ""
+#~ "========== đang sắp xếp tsort các gói (thứ tự, số gói đi trước, số gói "
+#~ "theo sau, cây, độ sâu)\n"
 
 #~ msgid "========== successors only (%d bytes)\n"
 #~ msgstr "========== chỉ các gói theo sau (%d byte)\n"
@@ -4291,7 +5210,9 @@ msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để th�
 #~ msgid "hdr magic: BAD\n"
 #~ msgstr "ma thuật hdr: XẤU\n"
 
-#~ msgid "only packaging with major numbers <= 4 is supported by this version of RPM\n"
+#~ msgid ""
+#~ "only packaging with major numbers <= 4 is supported by this version of "
+#~ "RPM\n"
 #~ msgstr "phiên bản RPM này chỉ hỗ trợ gói có số chính ≤4\n"
 
 #~ msgid "short hand for --replacepkgs --replacefiles"
@@ -4340,7 +5261,8 @@ msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để th�
 #~ msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
 #~ msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
-#~ msgstr "Kích cỡ được mong đợi: %12d = chỉ dẫn(%d)+chữ ký(%d)+đệm(%d)+dữ liệu(%d)\n"
+#~ msgstr ""
+#~ "Kích cỡ được mong đợi: %12d = chỉ dẫn(%d)+chữ ký(%d)+đệm(%d)+dữ liệu(%d)\n"
 
 #~ msgid "sigh magic: BAD\n"
 #~ msgstr "ma thuật sigh: XẤU\n"
@@ -4360,8 +5282,11 @@ msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để th�
 #~ msgid "closed   db index       %s/%s\n"
 #~ msgstr "đã đóng  chỉ mục CDSL      %s/%s\n"
 
-#~ msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-#~ msgstr "tìm thấy nguồn giao diện hệ thống hoạt động di động không dùng chung (%d), đang thêm DB_PRIVATE, sử dụng khoá fcntl\n"
+#~ msgid ""
+#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
+#~ msgstr ""
+#~ "tìm thấy nguồn giao diện hệ thống hoạt động di động không dùng chung (%"
+#~ "d), đang thêm DB_PRIVATE, sử dụng khoá fcntl\n"
 
 #~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
 #~ msgstr "đang mở  chỉ mục CDSL      %s/%s %s chế độ=0x%x\n"
@@ -4377,12 +5302,6 @@ msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để th�
 
 #~ msgid "opening new database with dbapi %d\n"
 #~ msgstr "đang mở cơ sở dữ liệu mới với dbapi %d\n"
-
-#~ msgid "don't update cache database, only print package paths"
-#~ msgstr "đừng cập nhật cơ sở dữ liệu nhớ tạm, chỉ in ra đường dẫn gói"
-
-#~ msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-#~ msgstr "%s: %%{_cache_dbpath} sai cấu hình vĩ lệnh.\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "liệt các vi văn lệnh cài đặt/xoá từ gói"
@@ -4402,8 +5321,11 @@ msgstr "so sánh các gói Cần thiết: với các gói Cung cấp: để th�
 #~ msgid "list package(s) by install time, most recent first"
 #~ msgstr "liệt kê các gói theo thời gian cài đặt, từ mới đến cũ"
 
-#~ msgid "find package name that contains a provided capability (needs rpmdb-redhat package installed)"
-#~ msgstr "tìm tên gói mà chứa năng lực cung cấp (cần gói rpmdb-redhat đã cài đặt)"
+#~ msgid ""
+#~ "find package name that contains a provided capability (needs rpmdb-redhat "
+#~ "package installed)"
+#~ msgstr ""
+#~ "tìm tên gói mà chứa năng lực cung cấp (cần gói rpmdb-redhat đã cài đặt)"
 
 #~ msgid "set buildroot <policy> (e.g. compress man pages)"
 #~ msgstr "đặt <chính sách> gốc xây dựng (ví dụ nén các trang hướng dẫn)"

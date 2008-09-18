@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: update nl.po (Translation Project).
     - rpm.org: permit hardlinks only with regular files.
     - jbj: fix: tagType() with multiple aliases returned the wrong type.
     - jbj: sqlite: fix: insure that tagType() returns result from stable sort.
