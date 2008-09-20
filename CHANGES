@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: check added file names against installed conflicts.
     - jbj: update nl.po (Translation Project).
     - rpm.org: permit hardlinks only with regular files.
     - jbj: fix: tagType() with multiple aliases returned the wrong type.
