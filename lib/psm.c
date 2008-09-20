@@ -1013,35 +1013,35 @@ exit:
  * @param sourceH
  * @param triggeredH
  * @param arg2
- * @param triggersAlreadyRun
+ * @param done
  * @return
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH,
-			int arg2, unsigned char * triggersAlreadyRun)
+			int arg2, /*@null@*/ unsigned char * done)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
+    HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
     const rpmts ts = psm->ts;
     rpmds trigger = NULL;
-    const char ** triggerScripts;
-    const char ** triggerProgs;
-    rpmuint32_t * triggerIndices;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
     int xx;
     int i;
 
-    he->tag = RPMTAG_NAME;
-    xx = headerGet(sourceH, he, 0);
-    sourceName = he->p.str;
-    he->tag = RPMTAG_NAME;
-    xx = headerGet(triggeredH, he, 0);
-    triggerName = he->p.str;
+    Nhe->tag = RPMTAG_NAME;
+    xx = headerGet(sourceH, Nhe, 0);
+    sourceName = Nhe->p.str;
+    Nhe->tag = RPMTAG_NAME;
+    xx = headerGet(triggeredH, Nhe, 0);
+    triggerName = Nhe->p.str;
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger == NULL)
@@ -1052,63 +1052,54 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     while ((i = rpmdsNext(trigger)) >= 0) {
 	const char * Name;
 	rpmuint32_t Flags = rpmdsFlags(trigger);
+	int arg1;
+	int index;
 
-	if ((Name = rpmdsN(trigger)) == NULL)
-	    continue;   /* XXX can't happen */
-
-	if (strcmp(Name, sourceName))
-	    continue;
 	if (!(Flags & psm->sense))
 	    continue;
 
-	/*
-	 * XXX Trigger on any provided dependency, not just the package NEVR.
-	 */
+	if ((Name = rpmdsN(trigger)) == NULL)
+	    continue;   /* XXX can't happen */
+	if (strcmp(Name, sourceName))
+	    continue;
+	/* XXX Trigger on any provided dependency, not just the package NEVR. */
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
+	if (done && done[i])
+	    continue;
 
-	he->tag = RPMTAG_TRIGGERINDEX;
-	xx = headerGet(triggeredH, he, 0);
-	triggerIndices = he->p.ui32p;
-	he->tag = RPMTAG_TRIGGERSCRIPTS;
-	xx = headerGet(triggeredH, he, 0);
-	triggerScripts = he->p.argv;
-	he->tag = RPMTAG_TRIGGERSCRIPTPROG;
-	xx = headerGet(triggeredH, he, 0);
-	triggerProgs = he->p.argv;
+	Ihe->tag = RPMTAG_TRIGGERINDEX;
+	xx = headerGet(triggeredH, Ihe, 0);
+	if (!(xx && Ihe->p.ui32p && Ihe->c)) goto bottom;
 
-	if (triggerIndices && triggerScripts && triggerProgs) {
-	    int arg1;
-	    int index;
+	She->tag = RPMTAG_TRIGGERSCRIPTS;
+	xx = headerGet(triggeredH, She, 0);
+	if (!(xx && She->p.argv && She->c)) goto bottom;
 
-	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
-	    if (arg1 < 0) {
-		/* XXX W2DO? fails as "execution of script failed" */
-		rc = RPMRC_FAIL;
-	    } else {
-		arg1 += psm->countCorrection;
-		index = triggerIndices[i];
-		if (triggersAlreadyRun == NULL ||
-		    triggersAlreadyRun[index] == 0)
-		{
-		    rc = runScript(psm, triggeredH, "%trigger", 1,
-			    triggerProgs + index, triggerScripts[index],
-			    arg1, arg2);
-		    if (triggersAlreadyRun != NULL)
-			triggersAlreadyRun[index] = 1;
-		}
-	    }
+	Phe->tag = RPMTAG_TRIGGERSCRIPTPROG;
+	xx = headerGet(triggeredH, Phe, 0);
+	if (!(xx && Phe->p.argv && Phe->c)) goto bottom;
+
+	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
+	if (arg1 < 0) {
+	    /* XXX W2DO? fails as "execution of script failed" */
+	    rc = RPMRC_FAIL;
+	    goto bottom;
 	}
 
-	triggerIndices = _free(triggerIndices);
-	triggerScripts = _free(triggerScripts);
-	triggerProgs = _free(triggerProgs);
+	arg1 += psm->countCorrection;
+	index = Ihe->p.ui32p[i];
+	/* XXX FIXME: permit trigger scripts with arguments. */
+	rc = runScript(psm, triggeredH, "%trigger", 1,
+			    Phe->p.argv + index, She->p.argv[index],
+			    arg1, arg2);
+	if (done)
+	    done[i] = 1;
 
-	/*
-	 * Each target/source header pair can only result in a single
-	 * script being run.
-	 */
-	break;
+bottom:
+	Ihe->p.ptr = _free(Ihe->p.ptr);
+	She->p.ptr = _free(She->p.ptr);
+	Phe->p.ptr = _free(Phe->p.ptr);
     }
 
     trigger = rpmdsFree(trigger);
@@ -1173,59 +1164,53 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    const char ** triggerNames;
-    int numTriggers;
-    rpmuint32_t * triggerIndices;
-    int numTriggerIndices;
-    unsigned char * triggersRun;
+    unsigned char * done = NULL;
+    Header sourceH = NULL;
+    unsigned i;
     rpmRC rc = RPMRC_OK;
-    size_t nb;
     int xx;
 
 assert(fi->h != NULL);
     if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
-    he->tag = RPMTAG_TRIGGERNAME;
-    xx = headerGet(fi->h, he, 0);
-    triggerNames = he->p.argv;
-    numTriggers = he->c;
-    he->tag = RPMTAG_TRIGGERINDEX;
-    xx = headerGet(fi->h, he, 0);
-    triggerIndices = he->p.ui32p;
-    numTriggerIndices = he->c;
+    Nhe->tag = RPMTAG_TRIGGERNAME;
+    xx = headerGet(fi->h, Nhe, 0);
+    if (!(xx && Nhe->p.argv && Nhe->c)) goto exit;
+    Ihe->tag = RPMTAG_TRIGGERINDEX;
+    xx = headerGet(fi->h, Ihe, 0);
+    if (!(xx && Ihe->p.ui32p && Ihe->c)) goto exit;
+    Fhe->tag = RPMTAG_TRIGGERFLAGS;
+    xx = headerGet(fi->h, Fhe, 0);
+    if (!(xx && Fhe->p.ui32p && Fhe->c)) goto exit;
 
-    if (!(triggerNames && numTriggers > 0 && triggerIndices && numTriggerIndices > 0))
-	goto exit;
+    done = xcalloc(Ihe->c, sizeof(*done));
 
-    nb = sizeof(*triggersRun) * numTriggerIndices;
-    triggersRun = memset(alloca(nb), 0, nb);
+    for (i = 0; i < Nhe->c; i++) {
+	rpmdbMatchIterator mi;
 
-    {	Header sourceH = NULL;
-	int i;
-
-	for (i = 0; i < numTriggers; i++) {
-	    rpmdbMatchIterator mi;
-
-	    if (triggersRun[triggerIndices[i]] != 0) continue;
+	if (!(Fhe->p.ui32p[i] & psm->sense))
+		continue;
 	
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, triggerNames[i], 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Nhe->p.argv[i], 0);
 
-	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		rc |= handleOneTrigger(psm, sourceH, fi->h,
-				rpmdbGetIteratorCount(mi),
-				triggersRun);
-	    }
-
-	    mi = rpmdbFreeIterator(mi);
+				rpmdbGetIteratorCount(mi), done);
 	}
+
+	mi = rpmdbFreeIterator(mi);
     }
 
 exit:
-    triggerIndices = _free(triggerIndices);
-    triggerNames = _free(triggerNames);
+    done = _free(done);
+    Fhe->p.ptr = _free(Fhe->p.ptr);
+    Ihe->p.ptr = _free(Ihe->p.ptr);
+    Nhe->p.ptr = _free(Nhe->p.ptr);
     return rc;
 }
 
