@@ -1515,7 +1515,8 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ rpmds conflicts,
 		/*@null@*/ rpmds dirnames,
 		/*@null@*/ rpmds linktos,
-		/*@null@*/ const char * depName, uint32_t tscolor, int adding)
+		/*@null@*/ const char * depName,
+		uint32_t tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, requires, conflicts, dirnames, linktos,
@@ -2740,6 +2741,7 @@ int rpmtsCheck(rpmts ts)
     pi = rpmtsiInit(ts);
     while (ourrc < terminate && (p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmds provides, requires, conflicts, dirnames, linktos;
+	rpmfi fi;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
@@ -2784,6 +2786,18 @@ int rpmtsCheck(rpmts ts)
 #endif
 
 	    /* Adding: check provides key against conflicts matches. */
+	    if (checkDependentConflicts(ts, depName))
+		rc = 1;
+	}
+	if (rc && (ourrc = rc) >= terminate)
+	    break;
+
+	fi = rpmteFI(p, RPMTAG_BASENAMES);
+	fi = rpmfiInit(fi, 0);
+	while (ourrc < terminate && rpmfiNext(fi) >= 0) {
+	    depName = _free(depName);
+	    depName = xstrdup(rpmfiFN(fi));
+	    /* Adding: check filename against conflicts matches. */
 	    if (checkDependentConflicts(ts, depName))
 		rc = 1;
 	}
