@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: don't install symclash.* to avoid picking up a dependency on python.
     - jbj: fix: check added file names against installed conflicts.
     - jbj: update nl.po (Translation Project).
     - rpm.org: permit hardlinks only with regular files.
