@@ -46,7 +46,7 @@ pkglib_SCRIPTS = \
 	php.prov php.req \
 	rpm2cpio rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd \
-	symclash.py symclash.sh tgpg u_pkg.sh \
+	tgpg u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
 
 pkgconfigdir = $(libdir)/pkgconfig
