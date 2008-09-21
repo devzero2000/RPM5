@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: loop over 1 element NEVRA dependency set when firing triggers.
     - jbj: permit rpmdsNew() to create RPMTAG_NAME rpmds, simplify ds->Type.
     - jbj: permit multiple triggers to fire from packages.
     - jbj: don't install symclash.* to avoid picking up a dependency on python.

@@ -1006,6 +1006,12 @@ exit:
     return rc;
 }
 
+/*@unchecked@*/
+static int _jbj = 0;
+
+/*@unchecked@*/
+static rpmTag _trigger_tag = RPMTAG_NAME;
+
 /**
  * Execute triggers.
  * @todo Trigger on any provides, not just package NVR.
@@ -1023,7 +1029,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int scareMem = 0;
+    static int scareMem = 0;
     HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
     HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
     HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
@@ -1042,6 +1048,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     Nhe->tag = RPMTAG_NAME;
     xx = headerGet(triggeredH, Nhe, 0);
     triggerName = Nhe->p.str;
+if (_jbj)
+fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceName, triggerName);
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger == NULL)
@@ -1055,6 +1063,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	int arg1;
 	int index;
 
+	/* Skip triggers that are not in this context. */
 	if (!(Flags & psm->sense))
 	    continue;
 
@@ -1122,33 +1131,63 @@ static rpmRC runTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    static int scareMem = 0;
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    int numPackage = -1;
-    rpmRC rc = RPMRC_OK;
     const char * N = NULL;
+    const char * depName = NULL;
+    int numPackage = -1;
+    int countCorrection = psm->countCorrection;
+    Header triggeredH;
+    rpmdbMatchIterator mi;
+    rpmds ds;
+    rpmTag tagno;
+    rpmRC rc = RPMRC_OK;
+    int i;
 
-    if (psm->te) 	/* XXX can't happen */
-	N = rpmteN(psm->te);
-/* XXX: Might need to adjust instance counts for autorollback. */
-    if (N) 		/* XXX can't happen */
-	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N)
-				+ psm->countCorrection;
+    /* Select RPMTAG_NAME or RPMTAG_PROVIDENAME index for triggering. */
+    if (_trigger_tag == 0) {
+	const char * t = rpmExpand("%{?_trigger_tag}", NULL);
+/*@-mods@*/
+	_trigger_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+/*@=mods@*/
+	t = _free(t);
+    }
+    tagno = _trigger_tag;
+
+assert(psm->te != NULL);
+    N = rpmteN(psm->te);
+assert(N != NULL);
+    numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N) + psm->countCorrection;
     if (numPackage < 0)
 	return RPMRC_NOTFOUND;
 
-    if (fi != NULL && fi->h != NULL)	/* XXX can't happen */
-    {	Header triggeredH;
-	rpmdbMatchIterator mi;
-	int countCorrection = psm->countCorrection;
+assert(fi != NULL);
+assert(fi->h != NULL);
 
-	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, N, 0);
+    psm->countCorrection = 0;
+    ds = rpmdsNew(fi->h, tagno, scareMem);
+
+    if ((ds = rpmdsInit(ds)) != NULL)
+    while ((i = rpmdsNext(ds)) >= 0) {
+
+	depName = _free(depName);
+	depName = xstrdup(rpmdsN(ds));
+
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
+if (_jbj)
+fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s mi %p\n", psm, psm->sense, N, mi);
+
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
+
 	mi = rpmdbFreeIterator(mi);
-	psm->countCorrection = countCorrection;
+
     }
+
+    depName = _free(depName);
+    ds = rpmdsFree(ds);
+    psm->countCorrection = countCorrection;
 
     return rc;
 }
@@ -1170,13 +1209,24 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     unsigned char * done = NULL;
+    rpmdbMatchIterator mi;
     Header sourceH = NULL;
     unsigned i;
+    rpmTag tagno;
     rpmRC rc = RPMRC_OK;
     int xx;
 
 assert(fi->h != NULL);
-    if (fi->h == NULL)	return rc;	/* XXX can't happen */
+
+    /* Select RPMTAG_NAME or RPMTAG_PROVIDENAME index for triggering. */
+    if (_trigger_tag == 0) {
+	const char * t = rpmExpand("%{?_trigger_tag}", NULL);
+/*@-mods@*/
+	_trigger_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+/*@=mods@*/
+	t = _free(t);
+    }
+    tagno = _trigger_tag;
 
     Nhe->tag = RPMTAG_TRIGGERNAME;
     xx = headerGet(fi->h, Nhe, 0);
@@ -1191,12 +1241,14 @@ assert(fi->h != NULL);
     done = xcalloc(Ihe->c, sizeof(*done));
 
     for (i = 0; i < Nhe->c; i++) {
-	rpmdbMatchIterator mi;
 
+	/* Skip triggers that are not in this context. */
 	if (!(Fhe->p.ui32p[i] & psm->sense))
 		continue;
 	
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Nhe->p.argv[i], 0);
+	mi = rpmtsInitIterator(ts, tagno, Nhe->p.argv[i], 0);
+if (_jbj)
+fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, Nhe->p.argv[i], mi);
 
 	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		rc |= handleOneTrigger(psm, sourceH, fi->h,
