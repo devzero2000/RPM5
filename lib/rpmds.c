@@ -144,8 +144,6 @@ fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
 
 rpmds rpmdsFree(rpmds ds)
 {
-    rpmTag tagEVR, tagF;
-
     if (ds == NULL)
 	return NULL;
 
@@ -156,44 +154,6 @@ rpmds rpmdsFree(rpmds ds)
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesys@*/
-
-    if (ds->tagN == RPMTAG_PROVIDENAME) {
-	tagEVR = RPMTAG_PROVIDEVERSION;
-	tagF = RPMTAG_PROVIDEFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_REQUIRENAME) {
-	tagEVR = RPMTAG_REQUIREVERSION;
-	tagF = RPMTAG_REQUIREFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_CONFLICTNAME) {
-	tagEVR = RPMTAG_CONFLICTVERSION;
-	tagF = RPMTAG_CONFLICTFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_OBSOLETENAME) {
-	tagEVR = RPMTAG_OBSOLETEVERSION;
-	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_TRIGGERNAME) {
-	tagEVR = RPMTAG_TRIGGERVERSION;
-	tagF = RPMTAG_TRIGGERFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_SUGGESTSNAME) {
-	tagEVR = RPMTAG_SUGGESTSVERSION;
-	tagF = RPMTAG_SUGGESTSFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_ENHANCESNAME) {
-	tagEVR = RPMTAG_ENHANCESVERSION;
-	tagF = RPMTAG_ENHANCESFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_DIRNAMES) {
-	tagEVR = 0;
-	tagF = 0;
-    } else
-    if (ds->tagN == RPMTAG_FILELINKTOS) {
-	tagEVR = 0;
-	tagF = 0;
-    } else
-	return NULL;
 
     if (ds->Count > 0) {
 	ds->N = _free(ds->N);
@@ -251,7 +211,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
@@ -260,52 +219,53 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     int xx;
 
 assert(scareMem == 0);		/* XXX always allocate memory */
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
+
+    if (tagN == RPMTAG_NAME)
+	return rpmdsThis(h, tagN, RPMSENSE_EQUAL);
+
+    switch (tagN) {
+    default:
+	goto exit;
+	/*@notreached@*/ break;
+    case RPMTAG_PROVIDENAME:
 	tagEVR = RPMTAG_PROVIDEVERSION;
 	tagF = RPMTAG_PROVIDEFLAGS;
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
+	break;
+    case RPMTAG_REQUIRENAME:
 	tagEVR = RPMTAG_REQUIREVERSION;
 	tagF = RPMTAG_REQUIREFLAGS;
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
+	break;
+    case RPMTAG_CONFLICTNAME:
 	tagEVR = RPMTAG_CONFLICTVERSION;
 	tagF = RPMTAG_CONFLICTFLAGS;
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
+	break;
+    case RPMTAG_OBSOLETENAME:
 	tagEVR = RPMTAG_OBSOLETEVERSION;
 	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Triggers";
+	break;
+    case RPMTAG_TRIGGERNAME:
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
-    } else
-    if (tagN == RPMTAG_SUGGESTSNAME) {
-	Type = "Suggests";
+	break;
+    case RPMTAG_SUGGESTSNAME:
 	tagEVR = RPMTAG_SUGGESTSVERSION;
 	tagF = RPMTAG_SUGGESTSFLAGS;
-    } else
-    if (tagN == RPMTAG_ENHANCESNAME) {
-	Type = "Enhances";
+	break;
+    case RPMTAG_ENHANCESNAME:
 	tagEVR = RPMTAG_ENHANCESVERSION;
 	tagF = RPMTAG_ENHANCESFLAGS;
-    } else
-    if (tagN == RPMTAG_DIRNAMES) {
-	Type = "Dirnames";
+	break;
+    case RPMTAG_DIRNAMES:
 	tagEVR = 0;
 	tagF = 0;
-    } else
-    if (tagN == RPMTAG_FILELINKTOS) {
-	Type = "Filelinktos";
+	break;
+    case RPMTAG_FILELINKTOS:
 	tagEVR = RPMTAG_DIRNAMES;
 	tagF = RPMTAG_DIRINDEXES;
-    } else
-	goto exit;
+	break;
+    }
+
+    Type = tagName(tagN);
 
     he->tag = tagN;
     xx = headerGet(h, he, 0);
@@ -507,34 +467,10 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     char * t;
     int xx;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Triggers";
-    } else
-    if (tagN == RPMTAG_SUGGESTSNAME) {
-    Type = "Suggests";
-    } else
-    if (tagN == RPMTAG_ENHANCESNAME) {
-    Type = "Enhances";
-    } else
-    if (tagN == RPMTAG_DIRNAMES) {
-	Type = "Dirnames";
-    } else
-    if (tagN == RPMTAG_FILELINKTOS) {
-	Type = "Filelinktos";
-    } else
-	goto exit;
+    if (tagN == RPMTAG_NAME)
+	tagN = RPMTAG_PROVIDENAME;
+
+    Type = tagName(tagN);
 
     he->tag = RPMTAG_EPOCH;
     xx = headerGet(h, he, 0);
@@ -589,7 +525,6 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 	/*@=nullstate@*/
     }
 
-exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
@@ -598,34 +533,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     rpmds ds = NULL;
     const char * Type;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Triggers";
-    } else
-    if (tagN == RPMTAG_SUGGESTSNAME) {
-    Type = "Suggests";
-    } else
-    if (tagN == RPMTAG_ENHANCESNAME) {
-    Type = "Enhances";
-    } else
-    if (tagN == RPMTAG_DIRNAMES) {
-	Type = "Dirnames";
-    } else
-    if (tagN == RPMTAG_FILELINKTOS) {
-	Type = "Filelinktos";
-    } else
-	goto exit;
+    Type = tagName(tagN);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
@@ -646,7 +554,6 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 /*@i@*/	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
 
-exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
@@ -895,10 +802,24 @@ rpmint32_t rpmdsSetResult(const rpmds ds, rpmint32_t result)
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
+    const char * Type;
+
     if (!(ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count))
 	return;
     if (!(ds->Type != NULL && ds->DNEVR != NULL))
 	return;
+
+    /* XXX Preserve existing names in debugging messages. */
+    switch (ds->tagN) {
+    default:			Type = tagName(ds->tagN);	break;
+    case RPMTAG_PROVIDENAME:	Type = "Provides";		break;
+    case RPMTAG_REQUIRENAME:	Type = "Requires";		break;
+    case RPMTAG_CONFLICTNAME:	Type = "Conflicts";		break;
+    case RPMTAG_OBSOLETENAME:	Type = "Obsoletes";		break;
+    case RPMTAG_TRIGGERNAME:	Type = "Triggers";		break;
+    case RPMTAG_SUGGESTSNAME:	Type = "Suggests";		break;
+    case RPMTAG_ENHANCESNAME:	Type = "Enhances";		break;
+    }
 
     rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
 		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
@@ -2719,13 +2640,7 @@ rpmPRCO rpmdsFreePRCO(rpmPRCO PRCO)
 	PRCO->T = rpmdsFree(PRCO->T);
 	PRCO->D = rpmdsFree(PRCO->D);
 	PRCO->L = rpmdsFree(PRCO->L);
-	PRCO->Pdsp = NULL;
-	PRCO->Rdsp = NULL;
-	PRCO->Cdsp = NULL;
-	PRCO->Odsp = NULL;
-	PRCO->Tdsp = NULL;
-	PRCO->Ddsp = NULL;
-	PRCO->Ldsp = NULL;
+	memset(PRCO, 0, sizeof(*PRCO));
 	PRCO = _free(PRCO);
     }
     return NULL;
@@ -2736,8 +2651,8 @@ rpmPRCO rpmdsNewPRCO(Header h)
     rpmPRCO PRCO = xcalloc(1, sizeof(*PRCO));
 
     if (h != NULL) {
-	int scareMem = 0;
-	PRCO->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	static int scareMem = 0;
+	PRCO->this = rpmdsNew(h, RPMTAG_NAME, scareMem);
 	PRCO->P = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
 	PRCO->R = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	PRCO->C = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
@@ -2758,25 +2673,19 @@ rpmPRCO rpmdsNewPRCO(Header h)
 
 rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
 {
-    if (PRCO == NULL)
-	return NULL;
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
-    if (tagN == RPMTAG_NAME)
-	return PRCO->this;
-    if (tagN == RPMTAG_PROVIDENAME)
-	return *PRCO->Pdsp;
-    if (tagN == RPMTAG_REQUIRENAME)
-	return *PRCO->Rdsp;
-    if (tagN == RPMTAG_CONFLICTNAME)
-	return *PRCO->Cdsp;
-    if (tagN == RPMTAG_OBSOLETENAME)
-	return *PRCO->Odsp;
-    if (tagN == RPMTAG_TRIGGERNAME)
-	return *PRCO->Tdsp;
-    if (tagN == RPMTAG_DIRNAMES)
-	return *PRCO->Ddsp;
-    if (tagN == RPMTAG_FILELINKTOS)
-	return *PRCO->Ldsp;
+    if (PRCO != NULL)
+    switch (tagN) {
+    default:	break;
+    case RPMTAG_NAME:		return PRCO->this;	/*@notreached@*/ break;
+    case RPMTAG_PROVIDENAME:	return *PRCO->Pdsp;	/*@notreached@*/ break;
+    case RPMTAG_REQUIRENAME:	return *PRCO->Rdsp;	/*@notreached@*/ break;
+    case RPMTAG_CONFLICTNAME:	return *PRCO->Cdsp;	/*@notreached@*/ break;
+    case RPMTAG_OBSOLETENAME:	return *PRCO->Odsp;	/*@notreached@*/ break;
+    case RPMTAG_TRIGGERNAME:	return *PRCO->Tdsp;	/*@notreached@*/ break;
+    case RPMTAG_DIRNAMES:	return *PRCO->Ddsp;	/*@notreached@*/ break;
+    case RPMTAG_FILELINKTOS:	return *PRCO->Ldsp;	/*@notreached@*/ break;
+    }
     return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
