@@ -147,7 +147,8 @@ fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
  * @param tagN		dependency set tag
  * @return		dependency set type string
  */
-static const char * rpmdsType(rpmTag tagN)
+/*@observer@*/
+static const char * rpmdsTagName(rpmTag tagN)
 	/*@*/
 {
     const char * Type;
@@ -162,8 +163,14 @@ static const char * rpmdsType(rpmTag tagN)
     case RPMTAG_TRIGGERNAME:	Type = "Triggers";	break;
     case RPMTAG_SUGGESTSNAME:	Type = "Suggests";	break;
     case RPMTAG_ENHANCESNAME:	Type = "Enhances";	break;
+    case 0:			Type = "Unknown";	break;
     }
     return Type;
+}
+
+const char * rpmdsType(const rpmds ds)
+{
+    return rpmdsTagName(rpmdsTagN(ds));
 }
 
 rpmds rpmdsFree(rpmds ds)
@@ -290,7 +297,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     }
 
     if (Type == NULL)
-	Type = rpmdsType(tagN);
+	Type = rpmdsTagName(tagN);
 
     he->tag = tagN;
     xx = headerGet(h, he, 0);
@@ -495,7 +502,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     if (tagN == RPMTAG_NAME)
 	tagN = RPMTAG_PROVIDENAME;
 
-    Type = rpmdsType(tagN);
+    Type = rpmdsTagName(tagN);
 
     he->tag = RPMTAG_EPOCH;
     xx = headerGet(h, he, 0);
@@ -558,7 +565,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     rpmds ds = NULL;
     const char * Type;
 
-    Type = rpmdsType(tagN);
+    Type = rpmdsTagName(tagN);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
@@ -832,7 +839,7 @@ void rpmdsNotify(rpmds ds, const char * where, int rc)
     if (ds->DNEVR == NULL)
 	return;
 
-    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", rpmdsType(ds->tagN),
+    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", rpmdsTagName(ds->tagN),
 		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
 		(rc ? _("NO ") : _("YES")),
 		(where != NULL ? where : ""));
@@ -2610,7 +2617,7 @@ int rpmdsMergePRCO(void * context, rpmds ds)
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, rpmdsType(rpmdsTagN(ds)));
+fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, rpmdsTagName(rpmdsTagN(ds)));
 /*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:

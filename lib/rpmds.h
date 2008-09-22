@@ -688,30 +688,16 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 int rpmdsNegateRC(const rpmds ds, int rc)
 	/*@*/;
 
-#if !defined(SWIG)
 /** \ingroup rpmds
  * Return current dependency type name.
  * @param ds		dependency set
  * @return		current dependency type name
  */
-/*@unused@*/ static inline /*@observer@*/
-const char * rpmdsTagName(/*@null@*/ const rpmds ds)
-	/*@*/
-{
-    rpmTag tagN = rpmdsTagN(ds);
+/*@observer@*/
+const char * rpmdsType(/*@null@*/ const rpmds ds)
+	/*@*/;
 
-    switch (tagN) {
-    case RPMTAG_PROVIDENAME:	return "Provides";	/*@notreached@*/ break;
-    case RPMTAG_REQUIRENAME:	return "Requires";	/*@notreached@*/ break;
-    case RPMTAG_CONFLICTNAME:	return "Conflicts";	/*@notreached@*/ break;
-    case RPMTAG_OBSOLETENAME:	return "Obsoletes";	/*@notreached@*/ break;
-    case RPMTAG_TRIGGERNAME:	return "Triggers";	/*@notreached@*/ break;
-    case RPMTAG_DIRNAMES:	return "Dirnames";	/*@notreached@*/ break;
-    default:	break;
-    }
-    return tagName(tagN);
-}
-
+#if !defined(SWIG)
 /** \ingroup rpmds
  * Print current dependency set contents.
  * @param ds		dependency set
@@ -727,7 +713,7 @@ int rpmdsPrint(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
 	fp = stderr;
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0)
-        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);
+        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsType(ds), rpmdsDNEVR(ds)+2);
     return 0;
 }
 
@@ -749,7 +735,7 @@ int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
 	rpmint32_t rc = rpmdsResult(ds);
 	if (rc > 0)
 	    continue;
-        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);
+        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsType(ds), rpmdsDNEVR(ds)+2);
     }
     return 0;
 }
