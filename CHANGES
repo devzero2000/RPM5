@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: hdrfmt: triggerconds header extension display was incorrect.
     - jbj: expose rpmdsType() in rpmds ABI.
     - jbj: add rpmdsType() to name dependency sets status quo ante.
     - jbj: common approach to ensure triggers fire only once.
