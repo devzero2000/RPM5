@@ -10,9 +10,11 @@ LIBRPMIO_0
     arHeaderWrite;
     arTrailerWrite;
     argiAdd;
+    argiCmp;
     argiCount;
     argiData;
     argiFree;
+    argiSort;
     argvAdd;
     argvAppend;
     argvCmp;

@@ -1010,7 +1010,7 @@ exit:
 static int _jbj = 0;
 
 /*@unchecked@*/
-static rpmTag _trigger_tag = RPMTAG_NAME;
+static rpmTag _trigger_tag;
 
 /**
  * Execute triggers.
@@ -1058,7 +1058,6 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	const char * Name;
 	rpmuint32_t Flags = rpmdsFlags(trigger);
 	int arg1;
 	int index;
@@ -1067,10 +1066,6 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	if (!(Flags & psm->sense))
 	    continue;
 
-	if ((Name = rpmdsN(trigger)) == NULL)
-	    continue;   /* XXX can't happen */
-	if (strcmp(Name, sourceName))
-	    continue;
 	/* XXX Trigger on any provided dependency, not just the package NEVR. */
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
@@ -1140,6 +1135,7 @@ static rpmRC runTriggers(rpmpsm psm)
     int countCorrection = psm->countCorrection;
     Header triggeredH;
     rpmdbMatchIterator mi;
+    ARGI_t instances = NULL;
     rpmds ds;
     rpmTag tagno;
     rpmRC rc = RPMRC_OK;
@@ -1170,6 +1166,9 @@ assert(fi->h != NULL);
 
     if ((ds = rpmdsInit(ds)) != NULL)
     while ((i = rpmdsNext(ds)) >= 0) {
+	unsigned prev, instance;
+	unsigned nvals;
+	ARGint_t vals;
 
 	depName = _free(depName);
 	depName = xstrdup(rpmdsN(ds));
@@ -1177,14 +1176,27 @@ assert(fi->h != NULL);
 	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
 if (_jbj)
 fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s mi %p\n", psm, psm->sense, N, mi);
+	nvals = argiCount(instances);
+	vals = argiData(instances);
+	if (nvals > 0)
+	    (void) rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
 
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
+	prev = 0;
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    instance = rpmdbGetIteratorOffset(mi);
+	    if (prev == instance)
+		continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
+	    prev = instance;
+	    (void) argiAdd(&instances, -1, instance);
+	    (void) argiSort(instances, NULL);
+	}
 
 	mi = rpmdbFreeIterator(mi);
 
     }
 
+    instances = argiFree(instances);
     depName = _free(depName);
     ds = rpmdsFree(ds);
     psm->countCorrection = countCorrection;

@@ -79,6 +79,14 @@ ARGV_t argvData(ARGV_t argv)
 /*@=retalias =temptrans @*/
 }
 
+int argiCmp(const void * a, const void * b)
+{
+    unsigned aint = *(ARGint_t)a;
+    unsigned bint = *(ARGint_t)b;
+    return ((aint < bint) ? -1 :
+	    (aint > bint) ? +1 : 0);
+}
+
 int argvCmp(const void * a, const void * b)
 {
     ARGstr_t astr = *(ARGV_t)a;
@@ -108,6 +116,17 @@ int argvFnmatchCasefold(const void * a, const void * b)
     return (fnmatch(astr, bstr, FNM_CASEFOLD) == 0 ? 0 : 1);
 }
 #endif
+
+int argiSort(ARGI_t argi, int (*compar)(const void *, const void *))
+{
+    unsigned nvals = argiCount(argi);
+    ARGint_t vals = argiData(argi);
+    if (compar == NULL)
+	compar = argiCmp;
+    if (nvals > 1)
+	qsort(vals, nvals, sizeof(*vals), compar);
+    return 0;
+}
 
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 {
