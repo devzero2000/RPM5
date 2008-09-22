@@ -1019,12 +1019,11 @@ static rpmTag _trigger_tag;
  * @param sourceH
  * @param triggeredH
  * @param arg2
- * @param done
  * @return
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH,
-			int arg2, /*@null@*/ unsigned char * done)
+			int arg2)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1069,8 +1068,6 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	/* XXX Trigger on any provided dependency, not just the package NEVR. */
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
-	if (done && done[i])
-	    continue;
 
 	Ihe->tag = RPMTAG_TRIGGERINDEX;
 	xx = headerGet(triggeredH, Ihe, 0);
@@ -1097,8 +1094,6 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	rc = runScript(psm, triggeredH, "%trigger", 1,
 			    Phe->p.argv + index, She->p.argv[index],
 			    arg1, arg2);
-	if (done)
-	    done[i] = 1;
 
 bottom:
 	Ihe->p.ptr = _free(Ihe->p.ptr);
@@ -1186,14 +1181,13 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s mi %p\n", psm, psm->sense, 
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
 		continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage);
 	    prev = instance;
 	    (void) argiAdd(&instances, -1, instance);
 	    (void) argiSort(instances, NULL);
 	}
 
 	mi = rpmdbFreeIterator(mi);
-
     }
 
     instances = argiFree(instances);
@@ -1220,8 +1214,8 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    unsigned char * done = NULL;
     rpmdbMatchIterator mi;
+    ARGI_t instances = NULL;
     Header sourceH = NULL;
     unsigned i;
     rpmTag tagno;
@@ -1250,9 +1244,10 @@ assert(fi->h != NULL);
     xx = headerGet(fi->h, Fhe, 0);
     if (!(xx && Fhe->p.ui32p && Fhe->c)) goto exit;
 
-    done = xcalloc(Ihe->c, sizeof(*done));
-
     for (i = 0; i < Nhe->c; i++) {
+	unsigned prev, instance;
+	unsigned nvals;
+	ARGint_t vals;
 
 	/* Skip triggers that are not in this context. */
 	if (!(Fhe->p.ui32p[i] & psm->sense))
@@ -1262,16 +1257,28 @@ assert(fi->h != NULL);
 if (_jbj)
 fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, Nhe->p.argv[i], mi);
 
+	nvals = argiCount(instances);
+	vals = argiData(instances);
+	if (nvals > 0)
+	    (void) rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+
+	prev = 0;
 	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(psm, sourceH, fi->h,
-				rpmdbGetIteratorCount(mi), done);
+	    instance = rpmdbGetIteratorOffset(mi);
+	    if (prev == instance)
+		continue;
+	    rc |= handleOneTrigger(psm, sourceH, fi->h,
+				rpmdbGetIteratorCount(mi));
+	    prev = instance;
+	    (void) argiAdd(&instances, -1, instance);
+	    (void) argiSort(instances, NULL);
 	}
 
 	mi = rpmdbFreeIterator(mi);
     }
 
 exit:
-    done = _free(done);
+    instances = argiFree(instances);
     Fhe->p.ptr = _free(Fhe->p.ptr);
     Ihe->p.ptr = _free(Ihe->p.ptr);
     Nhe->p.ptr = _free(Nhe->p.ptr);

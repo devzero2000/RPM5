@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: common approach to ensure triggers fire only once.
     - jbj: fire triggers from Provides: dependency set.
     - jbj: rpmio: add argiCmp and argiSort.
     - jbj: loop over 1 element NEVRA dependency set when firing triggers.
