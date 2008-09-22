@@ -1058,15 +1058,21 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 
     while ((i = rpmdsNext(trigger)) >= 0) {
 	rpmuint32_t Flags = rpmdsFlags(trigger);
+	const char * Name;
 	int arg1;
 	int index;
+	int rc;
 
 	/* Skip triggers that are not in this context. */
 	if (!(Flags & psm->sense))
 	    continue;
 
-	/* XXX Trigger on any provided dependency, not just the package NEVR. */
-	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
+	Name = rpmdsN(trigger);
+	Name = Name;
+
+	/* Trigger on any provided dependency. */
+	rc = rpmdsNegateRC(trigger, rpmdsAnyMatchesDep(sourceH, trigger, 1));
+	if (!rc)
 	    continue;
 
 	Ihe->tag = RPMTAG_TRIGGERINDEX;
@@ -1170,7 +1176,7 @@ assert(fi->h != NULL);
 
 	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
 if (_jbj)
-fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s mi %p\n", psm, psm->sense, N, mi);
+fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, psm->sense, N, depName, mi);
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
@@ -1209,15 +1215,14 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
     HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
-    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
+    rpmds trigger = NULL;
     rpmdbMatchIterator mi;
     ARGI_t instances = NULL;
     Header sourceH = NULL;
-    unsigned i;
+    int i;
     rpmTag tagno;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -1234,28 +1239,30 @@ assert(fi->h != NULL);
     }
     tagno = _trigger_tag;
 
-    Nhe->tag = RPMTAG_TRIGGERNAME;
-    xx = headerGet(fi->h, Nhe, 0);
-    if (!(xx && Nhe->p.argv && Nhe->c)) goto exit;
+    trigger = rpmdsNew(fi->h, RPMTAG_TRIGGERNAME, 0);
+    if (trigger == NULL)
+	goto exit;
+
     Ihe->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(fi->h, Ihe, 0);
     if (!(xx && Ihe->p.ui32p && Ihe->c)) goto exit;
-    Fhe->tag = RPMTAG_TRIGGERFLAGS;
-    xx = headerGet(fi->h, Fhe, 0);
-    if (!(xx && Fhe->p.ui32p && Fhe->c)) goto exit;
 
-    for (i = 0; i < Nhe->c; i++) {
+    trigger = rpmdsInit(trigger);
+    if (trigger != NULL)
+    while ((i = rpmdsNext(trigger)) >= 0) {
+	evrFlags Flags = rpmdsFlags(trigger);
+	const char * Name = rpmdsN(trigger);
 	unsigned prev, instance;
 	unsigned nvals;
 	ARGint_t vals;
 
 	/* Skip triggers that are not in this context. */
-	if (!(Fhe->p.ui32p[i] & psm->sense))
+	if (!(Flags & psm->sense))
 		continue;
 	
-	mi = rpmtsInitIterator(ts, tagno, Nhe->p.argv[i], 0);
+	mi = rpmtsInitIterator(ts, tagno, Name, 0);
 if (_jbj)
-fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, Nhe->p.argv[i], mi);
+fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, Name, mi);
 
 	nvals = argiCount(instances);
 	vals = argiData(instances);
@@ -1279,9 +1286,8 @@ fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n
 
 exit:
     instances = argiFree(instances);
-    Fhe->p.ptr = _free(Fhe->p.ptr);
     Ihe->p.ptr = _free(Ihe->p.ptr);
-    Nhe->p.ptr = _free(Nhe->p.ptr);
+    trigger = rpmdsFree(trigger);
     return rc;
 }
 
