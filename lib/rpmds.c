@@ -142,6 +142,30 @@ fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
 
+/**
+ * Return dependency set type string.
+ * @param tagN		dependency set tag
+ * @return		dependency set type string
+ */
+static const char * rpmdsType(rpmTag tagN)
+	/*@*/
+{
+    const char * Type;
+
+    /* XXX Preserve existing names in debugging messages. */
+    switch (tagN) {
+    default:			Type = tagName(tagN);	break;
+    case RPMTAG_PROVIDENAME:	Type = "Provides";	break;
+    case RPMTAG_REQUIRENAME:	Type = "Requires";	break;
+    case RPMTAG_CONFLICTNAME:	Type = "Conflicts";	break;
+    case RPMTAG_OBSOLETENAME:	Type = "Obsoletes";	break;
+    case RPMTAG_TRIGGERNAME:	Type = "Triggers";	break;
+    case RPMTAG_SUGGESTSNAME:	Type = "Suggests";	break;
+    case RPMTAG_ENHANCESNAME:	Type = "Enhances";	break;
+    }
+    return Type;
+}
+
 rpmds rpmdsFree(rpmds ds)
 {
     if (ds == NULL)
@@ -213,7 +237,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
-    const char * Type;
+    const char * Type = NULL;
     const char ** N;
     rpmuint32_t Count;
     int xx;
@@ -265,7 +289,8 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	break;
     }
 
-    Type = tagName(tagN);
+    if (Type == NULL)
+	Type = rpmdsType(tagN);
 
     he->tag = tagN;
     xx = headerGet(h, he, 0);
@@ -470,7 +495,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     if (tagN == RPMTAG_NAME)
 	tagN = RPMTAG_PROVIDENAME;
 
-    Type = tagName(tagN);
+    Type = rpmdsType(tagN);
 
     he->tag = RPMTAG_EPOCH;
     xx = headerGet(h, he, 0);
@@ -533,7 +558,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     rpmds ds = NULL;
     const char * Type;
 
-    Type = tagName(tagN);
+    Type = rpmdsType(tagN);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
@@ -802,26 +827,12 @@ rpmint32_t rpmdsSetResult(const rpmds ds, rpmint32_t result)
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
-    const char * Type;
-
     if (!(ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count))
 	return;
-    if (!(ds->Type != NULL && ds->DNEVR != NULL))
+    if (ds->DNEVR == NULL)
 	return;
 
-    /* XXX Preserve existing names in debugging messages. */
-    switch (ds->tagN) {
-    default:			Type = tagName(ds->tagN);	break;
-    case RPMTAG_PROVIDENAME:	Type = "Provides";		break;
-    case RPMTAG_REQUIRENAME:	Type = "Requires";		break;
-    case RPMTAG_CONFLICTNAME:	Type = "Conflicts";		break;
-    case RPMTAG_OBSOLETENAME:	Type = "Obsoletes";		break;
-    case RPMTAG_TRIGGERNAME:	Type = "Triggers";		break;
-    case RPMTAG_SUGGESTSNAME:	Type = "Suggests";		break;
-    case RPMTAG_ENHANCESNAME:	Type = "Enhances";		break;
-    }
-
-    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
+    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", rpmdsType(ds->tagN),
 		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
 		(rc ? _("NO ") : _("YES")),
 		(where != NULL ? where : ""));
@@ -2599,7 +2610,7 @@ int rpmdsMergePRCO(void * context, rpmds ds)
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(ds)));
+fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, rpmdsType(rpmdsTagN(ds)));
 /*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:
