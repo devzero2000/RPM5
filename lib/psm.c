@@ -1163,8 +1163,46 @@ assert(fi != NULL);
 assert(fi->h != NULL);
 
     psm->countCorrection = 0;
-    ds = rpmdsNew(fi->h, tagno, scareMem);
 
+    ds = rpmdsNew(fi->h, tagno, scareMem);
+    if ((ds = rpmdsInit(ds)) != NULL)
+    while ((i = rpmdsNext(ds)) >= 0) {
+	unsigned prev, instance;
+	unsigned nvals;
+	ARGint_t vals;
+
+	depName = _free(depName);
+	depName = xstrdup(rpmdsN(ds));
+
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
+if (_jbj)
+fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, psm->sense, N, depName, mi);
+	nvals = argiCount(instances);
+	vals = argiData(instances);
+	if (nvals > 0)
+	    (void) rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+
+	prev = 0;
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    instance = rpmdbGetIteratorOffset(mi);
+	    if (prev == instance)
+		continue;
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage);
+	    prev = instance;
+	    (void) argiAdd(&instances, -1, instance);
+	    (void) argiSort(instances, NULL);
+	}
+
+	mi = rpmdbFreeIterator(mi);
+    }
+    instances = argiFree(instances);
+    depName = _free(depName);
+    ds = rpmdsFree(ds);
+
+    /* If not limited to NEVRA triggers, try dirnames index. */
+  if (tagno != RPMTAG_NAME) {
+    tagno = RPMTAG_DIRNAMES;
+    ds = rpmdsNew(fi->h, tagno, scareMem);
     if ((ds = rpmdsInit(ds)) != NULL)
     while ((i = rpmdsNext(ds)) >= 0) {
 	unsigned prev, instance;
@@ -1199,6 +1237,8 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, p
     instances = argiFree(instances);
     depName = _free(depName);
     ds = rpmdsFree(ds);
+  }
+
     psm->countCorrection = countCorrection;
 
     return rc;
@@ -1260,6 +1300,12 @@ assert(fi->h != NULL);
 	if (!(Flags & psm->sense))
 		continue;
 	
+	/* If not limited to NEVRA triggers, use dirnames index for paths. */
+	if (tagno != RPMTAG_NAME) {
+	    if (Name[0] == '/') 
+		tagno = RPMTAG_BASENAMES;
+	}
+
 	mi = rpmtsInitIterator(ts, tagno, Name, 0);
 if (_jbj)
 fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, Name, mi);
