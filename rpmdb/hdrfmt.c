@@ -1535,62 +1535,53 @@ static int hdruuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int triggercondsTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
-    rpmTagData flags = { .ptr = NULL };
-    rpmTagData indices = { .ptr = NULL };
-    rpmTagData names = { .ptr = NULL };
-    rpmTagData versions = { .ptr = NULL };
-    rpmTagData s = { .ptr = NULL };
-    rpmTagCount numNames;
-    rpmTagCount numScripts;
+    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Vhe = memset(alloca(sizeof(*Vhe)), 0, sizeof(*Vhe));
+    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
+    uint64_t anint;
     unsigned i, j;
     int rc = 1;		/* assume failure */
     int xx;
 
     he->freeData = 0;
 
-/*@-compmempass@*/
-    _he->tag = RPMTAG_TRIGGERNAME;
-    xx = headerGet(h, _he, 0);
-    names.argv = _he->p.argv;
-    numNames = _he->c;
+    Nhe->tag = RPMTAG_TRIGGERNAME;
+    xx = headerGet(h, Nhe, 0);
     if (!xx) {		/* no triggers, succeed anyways */
 	rc = 0;
 	goto exit;
     }
 
-    _he->tag = RPMTAG_TRIGGERINDEX;
-    xx = headerGet(h, _he, 0);
+    Ihe->tag = RPMTAG_TRIGGERINDEX;
+    xx = headerGet(h, Ihe, 0);
     if (!xx) goto exit;
-    indices.ui32p = _he->p.ui32p;
 
-    _he->tag = RPMTAG_TRIGGERFLAGS;
-    xx = headerGet(h, _he, 0);
+    Fhe->tag = RPMTAG_TRIGGERFLAGS;
+    xx = headerGet(h, Fhe, 0);
     if (!xx) goto exit;
-    flags.ui32p = _he->p.ui32p;
 
-    _he->tag = RPMTAG_TRIGGERVERSION;
-    xx = headerGet(h, _he, 0);
+    Vhe->tag = RPMTAG_TRIGGERVERSION;
+    xx = headerGet(h, Vhe, 0);
     if (!xx) goto exit;
-    versions.argv = _he->p.argv;
 
-    _he->tag = RPMTAG_TRIGGERSCRIPTS;
-    xx = headerGet(h, _he, 0);
+    She->tag = RPMTAG_TRIGGERSCRIPTS;
+    xx = headerGet(h, She, 0);
     if (!xx) goto exit;
-    s.argv = _he->p.argv;
-    numScripts = _he->c;
-/*@=compmempass@*/
 
     _he->tag = he->tag;
-    _he->t = RPM_UINT32_TYPE;
-    _he->p.ui32p = NULL;
+    _he->t = RPM_UINT64_TYPE;
+    _he->p.ui64p = &anint;
     _he->c = 1;
     _he->freeData = 0;
 
     he->t = RPM_STRING_ARRAY_TYPE;
-    he->c = numScripts;
+    he->c = She->c;
 
     he->freeData = 1;
     he->p.argv = xmalloc(sizeof(*he->p.argv) * he->c);
@@ -1600,19 +1591,19 @@ static int triggercondsTag(Header h, HE_t he)
 
 	chptr = xstrdup("");
 
-	for (j = 0; j < (unsigned) numNames; j++) {
-	    if (indices.ui32p[j] != i)
+	for (j = 0; j < Nhe->c; j++) {
+	    if (Ihe->p.ui32p[j] != i)
 		/*@innercontinue@*/ continue;
 
-	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
-/*@-compmempass@*/
-	    if (flags.ui32p[j] & RPMSENSE_SENSEMASK) {
-		_he->p.ui32p = &flags.ui32p[j];
+	    item = xmalloc(strlen(Nhe->p.argv[j]) + strlen(Vhe->p.argv[j]) + 20);
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
+	    if (Fhe->p.ui32p[j] & RPMSENSE_SENSEMASK) {
+		anint = Fhe->p.ui32p[j];
 		flagsStr = depflagsFormat(_he, NULL);
-		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
+		sprintf(item, "%s%s%s", Nhe->p.argv[j], flagsStr, Vhe->p.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else
-		strcpy(item, names.argv[j]);
+		strcpy(item, Nhe->p.argv[j]);
 /*@=compmempass@*/
 
 	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
@@ -1626,11 +1617,11 @@ static int triggercondsTag(Header h, HE_t he)
     rc = 0;
 
 exit:
-    indices.ptr = _free(indices.ptr);
-    flags.ptr = _free(flags.ptr);
-    names.ptr = _free(names.ptr);
-    versions.ptr = _free(versions.ptr);
-    s.ptr = _free(s.ptr);
+    Ihe->p.ptr = _free(Ihe->p.ptr);
+    Fhe->p.ptr = _free(Fhe->p.ptr);
+    Nhe->p.ptr = _free(Nhe->p.ptr);
+    Vhe->p.ptr = _free(Vhe->p.ptr);
+    She->p.ptr = _free(She->p.ptr);
 
     return rc;
 }
