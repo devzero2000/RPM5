@@ -102,6 +102,7 @@ LIBRPMDB_0
     rpmdbGetIteratorOffset;
     rpmdbInit;
     rpmdbInitIterator;
+    rpmdbMireApply;
     rpmdbNextIterator;
     rpmdbNew;
     rpmdbOpen;

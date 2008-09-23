@@ -85,10 +85,10 @@ struct _dbiVec {
 /** \ingroup dbi
  * Return handle for an index database.
  * @param rpmdb		rpm database
- * @param rpmtag	rpm tag
+ * @param tag		rpm tag
  * @return		0 on success
  */
-    int (*open) (rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
+    int (*open) (rpmdb rpmdb, rpmTag tag, /*@out@*/ dbiIndex * dbip)
 	/*@globals fileSystem @*/
 	/*@modifies *dbip, fileSystem @*/;
 
@@ -493,11 +493,11 @@ extern "C" {
 /** \ingroup db3
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
- * @param rpmtag	rpm tag
+ * @param tag		rpm tag
  * @return		index database handle
  */
 /*@unused@*/ /*@only@*/ /*@null@*/
-dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
+dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
@@ -526,11 +526,11 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 /** \ingroup dbi
  * Return handle for an index database.
  * @param db		rpm database
- * @param rpmtag	rpm tag
+ * @param tag		rpm tag
  * @param flags		(unused)
  * @return		index database handle
  */
-/*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, rpmTag rpmtag,
+/*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, rpmTag tag,
 		unsigned int flags)
 	/*@globals rpmGlobalMacroContext, errno, h_errno, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, errno, internalState @*/;
@@ -964,19 +964,19 @@ int rpmdbVerify(/*@null@*/ const char * prefix)
 /**
  * Block access to a single database index.
  * @param db		rpm database
- * @param rpmtag	rpm tag (negative to block)
+ * @param tag		rpm tag (negative to block)
  * @return              0 on success
  */
-int rpmdbBlockDBI(/*@null@*/ rpmdb db, int rpmtag)
+int rpmdbBlockDBI(/*@null@*/ rpmdb db, int tag)
 	/*@modifies db @*/;
 
 /**
  * Close a single database index.
  * @param db		rpm database
- * @param rpmtag	rpm tag
+ * @param tag		rpm tag
  * @return              0 on success
  */
-int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
+int rpmdbCloseDBI(/*@null@*/ rpmdb db, int tag)
 	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
@@ -1123,13 +1123,13 @@ int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts)
 /** \ingroup rpmdb
  * Return database iterator.
  * @param db		rpm database
- * @param rpmtag	rpm tag
+ * @param tag		rpm tag
  * @param keyp		key data (NULL for sequential access)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag tag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -1175,6 +1175,19 @@ int rpmdbCheckSignals(void)
 rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmdb
+ * Return array of keys matching a pattern.
+ * @param db		rpm database
+ * @param tag		rpm tag
+ * @param mode		type of pattern match
+ * @param pat		pattern to match
+ * @retval *argvp	array of keys that match
+ * @return		0 on success
+ */
+int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
+		const char *** argvp)
+	/*@modifies db, *argvp */;
 
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.

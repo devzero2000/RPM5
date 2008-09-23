@@ -187,17 +187,17 @@ static int printable(const void * ptr, size_t len)	/*@*/
 /**
  * Return dbi index used for rpm tag.
  * @param db		rpm database
- * @param rpmtag	rpm header tag
+ * @param tag		rpm tag
  * @return		dbi index, 0xffffffff on error
  */
-static size_t dbiTagToDbix(rpmdb db, rpmTag rpmtag)
+static size_t dbiTagToDbix(rpmdb db, rpmTag tag)
 	/*@*/
 {
     size_t dbix;
 
     if (db->db_tags != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	if (rpmtag != db->db_tags[dbix].tag)
+	if (tag != db->db_tags[dbix].tag)
 	    continue;
 	return dbix;
     }
@@ -220,7 +220,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
     size_t dbiNTags = 0;
     char * dbiTagStr = NULL;
     char * o, * oe;
-    rpmTag rpmtag;
+    rpmTag tag;
     size_t dbix;
     int bingo;
 
@@ -250,12 +250,12 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	}
 	if (oe && *oe)
 	    *oe++ = '\0';
-	rpmtag = tagValue(o);
+	tag = tagValue(o);
 
 	bingo = 0;
 	if (dbiTags != NULL)
 	for (dbix = 0; dbix < dbiNTags; dbix++) {
-	    if (rpmtag == dbiTags[dbix].tag) {
+	    if (tag == dbiTags[dbix].tag) {
 		bingo = 1;
 		/*@innerbreak@*/ break;
 	    }
@@ -265,7 +265,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 
 	dbiTags = xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
 	dbiTags[dbiNTags].str = xstrdup(o);
-	dbiTags[dbiNTags].tag = rpmtag;
+	dbiTags[dbiNTags].tag = tag;
 	dbiTags[dbiNTags].iob = NULL;
 	dbiNTags++;
     }
@@ -324,7 +324,7 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
     return ret;
 }
 
-dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
+dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 {
     static int _oneshot = 0;
     size_t dbix;
@@ -351,17 +351,17 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "==> dbiOpen(%p, %u, 0x%x)\n", db, rpmtag, flags);
+fprintf(stderr, "==> dbiOpen(%p, %u, 0x%x)\n", db, tag, flags);
 /*@=modfilesys@*/
 
     if (db == NULL)
 	return NULL;
 
-    dbix = dbiTagToDbix(db, rpmtag);
+    dbix = dbiTagToDbix(db, tag);
     if (dbix >= db->db_ndbi)
 	return NULL;
     dbiTag = db->db_tags + dbix;
-    dbiBN = (dbiTag->str != NULL ? dbiTag->str : tagName(rpmtag));
+    dbiBN = (dbiTag->str != NULL ? dbiTag->str : tagName(tag));
 
     /* Is this index already open ? */
 /*@-compdef@*/ /* FIX: db->_dbi may be NULL */
@@ -384,13 +384,13 @@ fprintf(stderr, "==> dbiOpen(%p, %u, 0x%x)\n", db, rpmtag, flags);
 	}
 	errno = 0;
 	dbi = NULL;
-	rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
+	rc = (*mydbvecs[_dbapi]->open) (db, tag, &dbi);
 	if (rc) {
 	    static int _printed[32];
 	    if (!_printed[dbix & 0x1f]++)
 		rpmlog(RPMLOG_ERR,
 			_("cannot open %s(%u) index using db%d - %s (%d)\n"),
-			dbiBN, rpmtag, _dbapi,
+			dbiBN, tag, _dbapi,
 			(rc > 0 ? strerror(rc) : ""), rc);
 	    _dbapi = -1;
 	}
@@ -402,7 +402,7 @@ fprintf(stderr, "==> dbiOpen(%p, %u, 0x%x)\n", db, rpmtag, flags);
 		continue;
 	    errno = 0;
 	    dbi = NULL;
-	    rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
+	    rc = (*mydbvecs[_dbapi]->open) (db, tag, &dbi);
 	    if (rc == 0 && dbi)
 		/*@loopbreak@*/ break;
 	}
@@ -410,7 +410,7 @@ fprintf(stderr, "==> dbiOpen(%p, %u, 0x%x)\n", db, rpmtag, flags);
 	    static int _printed[32];
 	    if (!_printed[dbix & 0x1f]++)
 		rpmlog(RPMLOG_ERR, _("cannot open %s(%u) index\n"),
-			dbiBN, rpmtag);
+			dbiBN, tag);
 	    rc = 1;
 	    goto exit;
 	}
@@ -424,7 +424,7 @@ exit:
 	if (db->_dbi != NULL)
 	    db->_dbi[dbix] = dbi;
 /*@-sizeoftype@*/
-	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
+	if (tag == RPMDBI_PACKAGES && db->db_bits == NULL) {
 	    db->db_nbits = 1024;
 	    if (!dbiStat(dbi, DB_FAST_STAT)) {
 		DB_HASH_STAT * hash = (DB_HASH_STAT *)dbi->dbi_stats;
@@ -940,12 +940,12 @@ int rpmdbOpenAll(rpmdb db)
     if (db->db_tags != NULL && db->_dbi != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	tagStore_t dbiTag = db->db_tags + dbix;
-	int rpmtag = dbiTag->tag;
-	if (rpmtag < 0)
+	int tag = dbiTag->tag;
+	if (tag < 0)
 	    continue;
 	if (db->_dbi[dbix] != NULL)
 	    continue;
-	switch (rpmtag) {
+	switch (tag) {
 	case RPMDBI_AVAILABLE:
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
@@ -955,14 +955,14 @@ int rpmdbOpenAll(rpmdb db)
 	default:
 	    /*@switchbreak@*/ break;
 	}
-	(void) dbiOpen(db, rpmtag, db->db_flags);
+	(void) dbiOpen(db, tag, db->db_flags);
     }
     return rc;
 }
 
-int rpmdbBlockDBI(rpmdb db, int rpmtag)
+int rpmdbBlockDBI(rpmdb db, int tag)
 {
-    rpmTag tagn = (rpmTag)(rpmtag >= 0 ? rpmtag : -rpmtag);
+    rpmTag tagn = (rpmTag)(tag >= 0 ? tag : -tag);
     size_t dbix;
 
     if (db == NULL || db->_dbi == NULL)
@@ -972,13 +972,13 @@ int rpmdbBlockDBI(rpmdb db, int rpmtag)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	if (db->db_tags[dbix].tag != tagn)
 	    continue;
-	db->db_tags[dbix].tag = rpmtag;
+	db->db_tags[dbix].tag = tag;
 	return 0;
     }
     return 0;
 }
 
-int rpmdbCloseDBI(rpmdb db, int rpmtag)
+int rpmdbCloseDBI(rpmdb db, int tag)
 {
     size_t dbix;
     int rc = 0;
@@ -988,7 +988,7 @@ int rpmdbCloseDBI(rpmdb db, int rpmtag)
 
     if (db->db_tags != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	if (db->db_tags[dbix].tag != (rpmTag)rpmtag)
+	if (db->db_tags[dbix].tag != (rpmTag)tag)
 	    continue;
 	if (db->_dbi[dbix] != NULL) {
 	    int xx;
@@ -1253,11 +1253,11 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 	if (db->db_tags != NULL)
 	for (dbix = 0; rc == 0 && dbix < db->db_ndbi; dbix++) {
 	    tagStore_t dbiTag = db->db_tags + dbix;
-	    rpmTag rpmtag = dbiTag->tag;
+	    rpmTag tag = dbiTag->tag;
 	    dbiIndex dbi;
 
 	    /* Filter out temporary databases */
-	    switch (rpmtag) {
+	    switch (tag) {
 	    case RPMDBI_AVAILABLE:
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
@@ -1268,13 +1268,13 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		/*@switchbreak@*/ break;
 	    }
 
-	    dbi = dbiOpen(db, rpmtag, 0);
+	    dbi = dbiOpen(db, tag, 0);
 	    if (dbi == NULL) {
 		rc = -2;
 		break;
 	    }
 
-	    switch (rpmtag) {
+	    switch (tag) {
 	    case RPMDBI_PACKAGES:
 		if (dbi == NULL) rc |= 1;
 #if 0
@@ -2629,7 +2629,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag tag,
 		const void * keyp, size_t keylen)
 	/*@globals rpmmiRock @*/
 	/*@modifies rpmmiRock @*/
@@ -2645,12 +2645,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     (void) rpmdbCheckSignals();
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
-    if (rpmtag == RPMDBI_LABEL) {
-	rpmtag = RPMTAG_NAME;
+    if (tag == RPMDBI_LABEL) {
+	tag = RPMTAG_NAME;
 	isLabel = 1;
     }
 
-    dbi = dbiOpen(db, rpmtag, 0);
+    dbi = dbiOpen(db, tag, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -2660,12 +2660,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
 
-    if (rpmtag == RPMDBI_PACKAGES && keyp == NULL) {
+    if (tag == RPMDBI_PACKAGES && keyp == NULL) {
 	/* Special case #1: will iterate Packages database. */
 	assert(keylen == 0);
 	/* This should be the only case when (set == NULL). */
     }
-    else if (rpmtag == RPMDBI_PACKAGES) {
+    else if (tag == RPMDBI_PACKAGES) {
 	/* Special case #2: will fetch header instance. */
 	union _dbswap hdrNum;
 	assert(keylen == sizeof(hdrNum.ui));
@@ -2694,7 +2694,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	    rc = dbiFindByLabel(dbi, dbcursor, &k, &v, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
-	} else if (rpmtag == RPMTAG_BASENAMES) {
+	} else if (tag == RPMTAG_BASENAMES) {
 	    rc = rpmdbFindByFile(db, keyp, &k, &v, &set);
 	} else {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
@@ -2732,7 +2732,7 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
     }
 
     mi->mi_db = rpmdbLink(db, "matchIterator");
-    mi->mi_rpmtag = rpmtag;
+    mi->mi_rpmtag = tag;
 
     mi->mi_dbc = NULL;
     mi->mi_set = set;
@@ -2750,6 +2750,12 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
     mi->mi_ts = NULL;
 
 /*@i@*/ return mi;
+}
+
+int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
+		const char *** argvp)
+{
+    return 1;
 }
 
 /* XXX psm.c */
@@ -2814,14 +2820,14 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	    union _dbswap mi_offset;
 
 	    tagStore_t dbiTag = db->db_tags + dbix;
-	    rpmTag rpmtag = dbiTag->tag;
+	    rpmTag tag = dbiTag->tag;
 	    const char * dbiBN = (dbiTag->str != NULL
-		? dbiTag->str : tagName(rpmtag));
+		? dbiTag->str : tagName(tag));
 	    rpmuint8_t * bin = NULL;
 	    int i;
 
 	    dbi = NULL;
-	    he->tag = rpmtag;
+	    he->tag = tag;
 	    he->t = 0;
 	    he->p.ptr = NULL;
 	    he->c = 0;
@@ -3638,33 +3644,29 @@ static int rpmioFileExists(const char * urlfn)
         /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/
 {
-    const char *fn;
+    struct stat sb;
+    const char * fn;
     int urltype = urlPath(urlfn, &fn);
+    int rc = 0;		/* assume failure. */
 
     if (*fn == '\0') fn = "/";
     switch (urltype) {
-    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+    case URL_IS_HKP:
+	rc = Stat(urlfn, &sb) == 0;
+	break;
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-    {	struct stat sb;
-	if (Stat(fn, &sb) < 0) {
-	    switch(errno) {
-	    case ENOENT:
-	    case EINVAL:
-		return 0;
-	    }
-	}
-    }	break;
+	rc = Stat(fn, &sb) == 0;
+	break;
     case URL_IS_DASH:
     default:
-	return 0;
-	/*@notreached@*/ break;
+	break;
     }
 
-    return 1;
+    return rc;
 }
 
 static int rpmdbRemoveDatabase(const char * prefix,
@@ -3743,12 +3745,12 @@ static int rpmdbMoveDatabase(const char * prefix,
 	size_t i;
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiNTags; i++) {
-	    rpmTag rpmtag = dbiTags[i].tag;
+	    rpmTag tag = dbiTags[i].tag;
 	    const char * dbiBN = (dbiTags[i].str != NULL
-                        ? dbiTags[i].str : tagName(rpmtag));
+                        ? dbiTags[i].str : tagName(tag));
 
 	    /* Filter out temporary databases */
-	    switch (rpmtag) {
+	    switch (tag) {
 	    case RPMDBI_AVAILABLE:
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
