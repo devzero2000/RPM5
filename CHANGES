@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fire dirname triggers from glob patterns (pig slow, fixing todo++).
     - jbj: rpmfi: add storage and getters for exclude/include patterns.
     - jbj: rpmds: add storage and getters for exclude/include patterns.
     - jbj: rpmpsm: retrieve triggers lazily.

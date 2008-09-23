@@ -1063,7 +1063,6 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
     while ((i = rpmdsNext(trigger)) >= 0) {
 	rpmuint32_t Flags = rpmdsFlags(trigger);
 	char * depName;
-	size_t nb;
 	int arg1;
 	int index;
 	int rc;
@@ -1072,14 +1071,36 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	if (!(Flags & psm->sense))
 	    continue;
 
+	rc = 0;
 	/* XXX if trigger name ends with '/', use dirnames instead. */
 	depName = (char *)rpmdsN(trigger);
-	nb = strlen(depName);
-	if (delslash && depName[0] == '/' && depName[nb-1] == '/')
-	    depName[nb-1] = '\0';
+	if (depName[0] == '/') {
+	    if (Glob_pattern_p(depName, 0)) {
+		rpmds FNds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		miRE mire = mireNew(RPMMIRE_GLOB, 0);
+		int j;
+
+		xx = mireRegcomp(mire, depName);
+		if ((FNds = rpmdsInit(FNds)) != NULL)
+		while ((j = rpmdsNext(FNds)) >= 0) {
+		    const char * fn = rpmdsN(FNds);
+		    if (mireRegexec(mire, fn, 0) < 0)
+			continue;
+		    rc = 1;
+		    break;
+		}
+		FNds = rpmdsFree(FNds);
+		mire = mireFree(mire);
+	    } else {
+		size_t nb = strlen(depName);
+		if (delslash && depName[nb-1] == '/')
+		    depName[nb-1] = '\0';
+	    }
+	}
 
 	/* Trigger on any provided dependency. */
-	rc = rpmdsNegateRC(trigger, rpmdsAnyMatchesDep(sourceH, trigger, 1));
+	if (!rc)
+	    rc = rpmdsNegateRC(trigger, rpmdsAnyMatchesDep(sourceH, trigger,1));
 	if (!rc)
 	    continue;
 
@@ -1318,9 +1339,15 @@ assert(fi->h != NULL);
 	}
 	delslash = (tagno == RPMTAG_DIRNAMES);
 
-	mi = rpmtsInitIterator(ts, tagno, Name, 0);
+	if (Glob_pattern_p(Name, 0)) {
+	    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+	    xx = rpmdbSetIteratorRE(mi, tagno, RPMMIRE_GLOB, Name);
+	} else {
+	    mi = rpmtsInitIterator(ts, tagno, Name, 0);
+	}
+
 if (_jbj)
-fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, Name, mi);
+fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x %s N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, tagName(tagno), Name, mi);
 
 	nvals = argiCount(instances);
 	vals = argiData(instances);
