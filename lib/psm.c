@@ -1199,9 +1199,9 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, p
     depName = _free(depName);
     ds = rpmdsFree(ds);
 
-    /* If not limited to NEVRA triggers, try dirnames index. */
+    /* If not limited to NEVRA triggers, try filenames index. */
   if (tagno != RPMTAG_NAME) {
-    tagno = RPMTAG_DIRNAMES;
+    tagno = RPMTAG_BASENAMES;
     ds = rpmdsNew(fi->h, tagno, scareMem);
     if ((ds = rpmdsInit(ds)) != NULL)
     while ((i = rpmdsNext(ds)) >= 0) {

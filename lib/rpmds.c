@@ -163,6 +163,9 @@ static const char * rpmdsTagName(rpmTag tagN)
     case RPMTAG_TRIGGERNAME:	Type = "Triggers";	break;
     case RPMTAG_SUGGESTSNAME:	Type = "Suggests";	break;
     case RPMTAG_ENHANCESNAME:	Type = "Enhances";	break;
+    case RPMTAG_DIRNAMES:	Type = "Dirs";		break;
+    case RPMTAG_BASENAMES:	Type = "Files";		break;
+    case RPMTAG_FILELINKTOS:	Type = "Linktos";	break;
     case 0:			Type = "Unknown";	break;
     }
     return Type;
@@ -290,6 +293,10 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	tagEVR = 0;
 	tagF = 0;
 	break;
+    case RPMTAG_BASENAMES:
+	tagEVR = RPMTAG_DIRNAMES;
+	tagF = RPMTAG_DIRINDEXES;
+	break;
     case RPMTAG_FILELINKTOS:
 	tagEVR = RPMTAG_DIRNAMES;
 	tagF = RPMTAG_DIRINDEXES;
@@ -337,20 +344,39 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	}
 
 	if (tagN == RPMTAG_DIRNAMES) {
-	    char * t;
+	    char * dn;
 	    size_t len;
 	    unsigned i;
 	    /* XXX Dirnames always have trailing '/', trim that here. */
 	    for (i = 0; i < Count; i++) {
-		(void) urlPath(N[i], (const char **)&t);
-		if (t > N[i])
-		    N[i] = t;
-		t = (char *)N[i];
-		len = strlen(t);
+		(void) urlPath(N[i], (const char **)&dn);
+		if (dn > N[i])
+		    N[i] = dn;
+		dn = (char *)N[i];
+		len = strlen(dn);
 		/* XXX don't truncate if parent is / */
-		if (len > 1 && t[len-1] == '/')
-		    t[len-1] = '\0';
+		if (len > 1 && dn[len-1] == '/')
+		    dn[len-1] = '\0';
 	    }
+	} else
+	if (tagN == RPMTAG_BASENAMES) {
+	    const char ** av = xcalloc(Count+1, sizeof(*av));
+	    char * dn;
+	    unsigned i;
+
+	    for (i = 0; i < Count; i++) {
+		(void) urlPath(ds->EVR[ds->Flags[i]], (const char **)&dn);
+		av[i] = rpmGenPath(NULL, dn, N[i]);
+	    }
+	    av[Count] = NULL;
+
+/*@-unqualifiedtrans@*/
+	    N = ds->N = _free(ds->N);
+/*@=unqualifiedtrans@*/
+	    N = ds->N = rpmdsDupArgv(av, Count);
+	    av = argvFree(av);
+	    ds->EVR = _free(ds->EVR);
+	    ds->Flags = _free(ds->Flags);
 	} else
 	if (tagN == RPMTAG_FILELINKTOS) {
 	    /* XXX Construct the absolute path of the target symlink(s). */
