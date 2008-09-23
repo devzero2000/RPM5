@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: use rpmio Readlink everywhere consistently.
     - rpm.org: fix error messages in processScriptFiles().
     - jbj: fire triggers on directory paths.
     - jbj: use rpmds iterator and getters for trigger->N parse side effects.

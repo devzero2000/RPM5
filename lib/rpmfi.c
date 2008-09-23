@@ -660,7 +660,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLink(ofi);
 	if (diskWhat == LINK) {
-	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+	    if (Readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 		return FA_CREATE;	/* assume file has been removed */
 	    buffer[sizeof(buffer)-1] = '\0';
 	    if (oFLink && !strcmp(oFLink, buffer))
