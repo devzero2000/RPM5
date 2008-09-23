@@ -1072,7 +1072,7 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	/* XXX if trigger name ends with '/', use dirnames instead. */
 	depName = (char *)rpmdsN(trigger);
 	nb = strlen(depName);
-	if (delslash && depName[nb-1] == '/')
+	if (delslash && depnName[0] == '/' && depName[nb-1] == '/')
 	    depName[nb-1] = '\0';
 
 	/* Trigger on any provided dependency. */
