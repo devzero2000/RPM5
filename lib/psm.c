@@ -1072,7 +1072,7 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	/* XXX if trigger name ends with '/', use dirnames instead. */
 	depName = (char *)rpmdsN(trigger);
 	nb = strlen(depName);
-	if (delslash && depnName[0] == '/' && depName[nb-1] == '/')
+	if (delslash && depName[0] == '/' && depName[nb-1] == '/')
 	    depName[nb-1] = '\0';
 
 	/* Trigger on any provided dependency. */
@@ -1432,6 +1432,8 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 /*@=internalglobs@*/
 
     psm->sstates = _free(psm->sstates);
+    psm->he = _free(psm->he);
+    psm->triggers = rpmdsFree(psm->triggers);
 
     (void) rpmpsmUnlink(psm, msg);
 
@@ -1459,6 +1461,8 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 #endif
     if (fi)	psm->fi = rpmfiLink(fi, msg);
 
+    psm->triggers = NULL;
+    psm->he = xcalloc(1, sizeof(*psm->he));
     psm->sstates = xcalloc(RPMSCRIPT_MAX, sizeof(*psm->sstates));
 
     return rpmpsmLink(psm, msg);

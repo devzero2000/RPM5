@@ -110,6 +110,10 @@ struct rpmpsm_s {
     rpmte te;			/*!< current transaction element */
 /*@refcounted@*/ /*@relnull@*/
     rpmfi fi;			/*!< transaction element file info */
+/*@refcounted@*/ /*@relnull@*/
+    rpmds triggers;		/*!< transaction element triggers */
+/*@only@*/
+    HE_t he;			/*!< transaction element tag data */
 /*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
 /*@relnull@*/
