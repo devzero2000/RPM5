@@ -96,6 +96,8 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 
 #if defined(_RPMFI_INTERNAL)
 
+#include "mire.h"
+
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
@@ -179,6 +181,13 @@ struct rpmfi_s {
 /*=============================*/
 /*@dependent@*/ /*@relnull@*/
     void * te;
+
+/*@only@*/ /*@null@*/
+    miRE exclude;		/*!< Iterator exclude patterns. */
+    int nexclude;		/*!< No. of exclude patterns. */
+/*@only@*/ /*@null@*/
+    miRE include;		/*!< Iterator include patterns. */
+    int ninclude;		/*!< No. of include patterns. */
 
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
@@ -587,6 +596,39 @@ extern const char * rpmfiFUser(/*@null@*/ rpmfi fi)
 extern const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
 	/*@*/;
 
+/** \ingroup rpmfi
+ * Return file info exclude patterns.
+ * @param fi		file info set
+ * @return		file info exclude patterns (NULL if not set)
+ */
+/*@null@*/
+void * rpmfiExclude(/*@null@*/ const rpmfi fi)
+	/*@*/;
+
+/** \ingroup rpmfi
+ * Return no. of file info exclude patterns.
+ * @param fi		file info set
+ * @return		file info exclude patterns (0 if not set)
+ */
+int rpmfiNExclude(/*@null@*/ const rpmfi fi)
+	/*@*/;
+
+/** \ingroup rpmfi
+ * Return file info include patterns.
+ * @param fi		file info set
+ * @return		file info include patterns (NULL if not set)
+ */
+/*@null@*/
+void * rpmfiInclude(/*@null@*/ const rpmfi fi)
+	/*@*/;
+
+/** \ingroup rpmfi
+ * Return no. of file info include patterns.
+ * @param fi		file info set
+ * @return		file info include patterns (0 if not set)
+ */
+int rpmfiNInclude(/*@null@*/ const rpmfi fi)
+	/*@*/;
 /**
  * Return next file iterator index.
  * @param fi		file info set

@@ -31,6 +31,8 @@ extern int _rpmds_nopromote;
 /*@=exportlocal@*/
 
 #if defined(_RPMDS_INTERNAL)
+#include "mire.h"
+
 /** \ingroup rpmds
  * A dependency set.
  */
@@ -52,11 +54,17 @@ struct rpmds_s {
 /*@only@*/ /*@null@*/
     rpmuint32_t * Refs;		/*!< No. of file refs. */
 /*@only@*/ /*@null@*/
-    rpmint32_t * Result;		/*!< Dependency check result. */
+    rpmint32_t * Result;	/*!< Dependency check result. */
 /*@null@*/
     int (*EVRparse) (const char *evrstr, EVR_t evr);	 /* EVR parsing. */
     int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
     struct rpmns_s ns;		/*!< Name (split). */
+/*@only@*/ /*@null@*/
+    miRE exclude;		/*!< Iterator exclude patterns. */
+    int nexclude;		/*!< No. of exclude patterns. */
+/*@only@*/ /*@null@*/
+    miRE include;		/*!< Iterator include patterns. */
+    int ninclude;		/*!< No. of include patterns. */
 /*@only@*/ /*@null@*/
     const char * A;		/*!< Arch (from containing package). */
     rpmuint32_t BT;		/*!< Package build time tie breaker. */
@@ -382,6 +390,40 @@ rpmuint32_t rpmdsColor(/*@null@*/ const rpmds ds)
  */
 rpmuint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, rpmuint32_t color)
 	/*@modifies ds @*/;
+
+/** \ingroup rpmds
+ * Return dependency exclude patterns.
+ * @param ds		dependency set
+ * @return		dependency exclude patterns (NULL if not set)
+ */
+/*@null@*/
+void * rpmdsExclude(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Return no. of dependency exclude patterns.
+ * @param ds		dependency set
+ * @return		dependency exclude patterns (0 if not set)
+ */
+int rpmdsNExclude(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Return dependency include patterns.
+ * @param ds		dependency set
+ * @return		dependency include patterns (NULL if not set)
+ */
+/*@null@*/
+void * rpmdsInclude(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Return no. of dependency include patterns.
+ * @param ds		dependency set
+ * @return		dependency include patterns (0 if not set)
+ */
+int rpmdsNInclude(/*@null@*/ const rpmds ds)
+	/*@*/;
 
 /** \ingroup rpmds
  * Return current dependency file refs.

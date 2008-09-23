@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmfi: add storage and getters for exclude/include patterns.
+    - jbj: rpmds: add storage and getters for exclude/include patterns.
     - jbj: rpmpsm: retrieve triggers lazily.
     - jbj: use parent dirnames index if triggername ends with '/'.
     - jbj: fire triggers on package file paths.

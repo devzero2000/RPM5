@@ -85,12 +85,14 @@ LIBRPM_0
     rpmdsDNEVR;
     rpmdsELF;
     rpmdsEVR;
+    rpmdsExclude;
     rpmdsFind;
     rpmdsFlags;
     rpmdsFree;
     rpmdsFreePRCO;
     rpmdsFromPRCO;
     rpmdsGetconf;
+    rpmdsInclude;
     rpmdsInit;
     rpmdsIx;
     rpmdsLdconfig;
@@ -101,7 +103,9 @@ LIBRPM_0
     rpmdsNew;
     rpmdsNewDNEVR;
     rpmdsNewPRCO;
+    rpmdsNExclude;
     rpmdsNext;
+    rpmdsNInclude;
     _rpmds_nopromote;
     rpmdsNoPromote;
     rpmdsNotify;
@@ -151,6 +155,7 @@ LIBRPM_0
     rpmfiDigest;
     rpmfiDN;
     rpmfiDX;
+    rpmfiExclude;
     rpmfiFC;
     rpmfiFClass;
     rpmfiFColor;
@@ -174,11 +179,14 @@ LIBRPM_0
     rpmfiSetFState;
     rpmfiFUser;
     rpmfiFX;
+    rpmfiInclude;
     rpmfiInit;
     rpmfiInitD;
     rpmfiNew;
+    rpmfiNExclude;
     rpmfiNext;
     rpmfiNextD;
+    rpmfiNInclude;
     rpmfiSetDX;
     rpmfiSetFX;
     rpmfiTypeString;

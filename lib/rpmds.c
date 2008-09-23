@@ -203,6 +203,8 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
     ds->Result = _free(ds->Result);
+    ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
+    ds->include = mireFreeAll(ds->include, ds->ninclude);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
@@ -796,6 +798,26 @@ rpmuint32_t rpmdsSetColor(const rpmds ds, rpmuint32_t color)
 	}
     }
     return ocolor;
+}
+
+void * rpmdsExclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->exclude : NULL);
+}
+
+int rpmdsNExclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->nexclude : 0);
+}
+
+void * rpmdsInclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->include : NULL);
+}
+
+int rpmdsNInclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->ninclude : 0);
 }
 
 rpmuint32_t rpmdsRefs(const rpmds ds)

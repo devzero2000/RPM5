@@ -442,6 +442,26 @@ const char * rpmfiFGroup(rpmfi fi)
     return fgroup;
 }
 
+void * rpmfiExclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->exclude : NULL);
+}
+
+int rpmfiNExclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->nexclude : 0);
+}
+
+void * rpmfiInclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->include : NULL);
+}
+
+int rpmfiNInclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->ninclude : 0);
+}
+
 int rpmfiNext(rpmfi fi)
 {
     int i = -1;
@@ -1249,6 +1269,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 /*@-globs@*/	/* Avoid rpmGlobalMacroContext */
     fi->fsm = freeFSM(fi->fsm);
 /*@=globs@*/
+
+    fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
+    fi->include = mireFreeAll(fi->include, fi->ninclude);
 
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
