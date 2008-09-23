@@ -1019,11 +1019,12 @@ static rpmTag _trigger_tag;
  * @param sourceH
  * @param triggeredH
  * @param arg2
+ * @param delslash	delete trailing slash?
  * @return
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH,
-			int arg2)
+			int arg2, int delslash)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1058,7 +1059,8 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 
     while ((i = rpmdsNext(trigger)) >= 0) {
 	rpmuint32_t Flags = rpmdsFlags(trigger);
-	const char * Name;
+	char * depName;
+	size_t nb;
 	int arg1;
 	int index;
 	int rc;
@@ -1067,8 +1069,11 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	if (!(Flags & psm->sense))
 	    continue;
 
-	Name = rpmdsN(trigger);
-	Name = Name;
+	/* XXX if trigger name ends with '/', use dirnames instead. */
+	depName = (char *)rpmdsN(trigger);
+	nb = strlen(depName);
+	if (delslash && depName[nb-1] == '/')
+	    depName[nb-1] = '\0';
 
 	/* Trigger on any provided dependency. */
 	rc = rpmdsNegateRC(trigger, rpmdsAnyMatchesDep(sourceH, trigger, 1));
@@ -1187,7 +1192,7 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, p
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
 		continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage);
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, 0);
 	    prev = instance;
 	    (void) argiAdd(&instances, -1, instance);
 	    (void) argiSort(instances, NULL);
@@ -1225,7 +1230,7 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, p
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
 		continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage);
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, 0);
 	    prev = instance;
 	    (void) argiAdd(&instances, -1, instance);
 	    (void) argiSort(instances, NULL);
@@ -1294,17 +1299,21 @@ assert(fi->h != NULL);
 	const char * Name = rpmdsN(trigger);
 	unsigned prev, instance;
 	unsigned nvals;
+	int delslash;
 	ARGint_t vals;
 
 	/* Skip triggers that are not in this context. */
 	if (!(Flags & psm->sense))
 		continue;
 	
-	/* If not limited to NEVRA triggers, use dirnames index for paths. */
+	/* If not limited to NEVRA triggers, use file/dir index. */
 	if (tagno != RPMTAG_NAME) {
+	    /* XXX if trigger name ends with '/', use dirnames instead. */
 	    if (Name[0] == '/') 
-		tagno = RPMTAG_BASENAMES;
+		tagno = (Name[strlen(Name)-1] == '/')
+			? RPMTAG_DIRNAMES : RPMTAG_BASENAMES;
 	}
+	delslash = (tagno == RPMTAG_DIRNAMES);
 
 	mi = rpmtsInitIterator(ts, tagno, Name, 0);
 if (_jbj)
@@ -1321,7 +1330,7 @@ fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n
 	    if (prev == instance)
 		continue;
 	    rc |= handleOneTrigger(psm, sourceH, fi->h,
-				rpmdbGetIteratorCount(mi));
+				rpmdbGetIteratorCount(mi), delslash);
 	    prev = instance;
 	    (void) argiAdd(&instances, -1, instance);
 	    (void) argiSort(instances, NULL);
