@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmpsm: retrieve triggers lazily.
     - jbj: use parent dirnames index if triggername ends with '/'.
     - jbj: fire triggers on package file paths.
     - jbj: use rpmio Readlink everywhere consistently.

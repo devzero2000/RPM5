@@ -19,6 +19,9 @@
 #include "fsm.h"		/* XXX CPIO_FOO/IOSM_FOO constants */
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
+#define F_ISSET(_psm, _FLAG)	((_psm)->flags & (RPMPSM_FLAGS_##_FLAG))
+#define F_SET(_psm, _FLAG)	((_psm)->flags |=  (RPMPSM_FLAGS_##_FLAG))
+#define F_CLR(_psm, _FLAG)	((_psm)->flags &= ~(RPMPSM_FLAGS_##_FLAG))
 
 #define	_RPMEVR_INTERNAL
 #include "rpmds.h"
@@ -676,7 +679,7 @@ assert(he->p.str != NULL);
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
-    if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
+    if (ldconfig_path && progArgv != NULL && F_ISSET(psm, UNORDERED)) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) skipping redundant \"%s\".\n"),
@@ -690,7 +693,7 @@ assert(he->p.str != NULL);
     rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) %ssynchronous scriptlet start\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
-		(psm->unorderedSuccessor ? "a" : ""));
+		(F_ISSET(psm, UNORDERED) ? "a" : ""));
 
     if (!progArgv) {
 	argv = alloca(5 * sizeof(*argv));
@@ -1263,7 +1266,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    rpmds trigger = NULL;
+    rpmds triggers = NULL;
     rpmdbMatchIterator mi;
     ARGI_t instances = NULL;
     Header sourceH = NULL;
@@ -1284,19 +1287,19 @@ assert(fi->h != NULL);
     }
     tagno = _trigger_tag;
 
-    trigger = rpmdsNew(fi->h, RPMTAG_TRIGGERNAME, 0);
-    if (trigger == NULL)
+    triggers = rpmdsLink(psm->triggers, "ImmedTriggers");
+    if (triggers == NULL)
 	goto exit;
 
     Ihe->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(fi->h, Ihe, 0);
     if (!(xx && Ihe->p.ui32p && Ihe->c)) goto exit;
 
-    trigger = rpmdsInit(trigger);
-    if (trigger != NULL)
-    while ((i = rpmdsNext(trigger)) >= 0) {
-	evrFlags Flags = rpmdsFlags(trigger);
-	const char * Name = rpmdsN(trigger);
+    triggers = rpmdsInit(triggers);
+    if (triggers != NULL)
+    while ((i = rpmdsNext(triggers)) >= 0) {
+	evrFlags Flags = rpmdsFlags(triggers);
+	const char * Name = rpmdsN(triggers);
 	unsigned prev, instance;
 	unsigned nvals;
 	int delslash;
@@ -1342,7 +1345,7 @@ fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x N %s mi %p\n
 exit:
     instances = argiFree(instances);
     Ihe->p.ptr = _free(Ihe->p.ptr);
-    trigger = rpmdsFree(trigger);
+    triggers = rpmdsFree(triggers);
     return rc;
 }
 
@@ -2522,7 +2525,7 @@ psm->te->h = headerFree(psm->te->h);
     {	const char * rootDir = rpmtsRootDir(ts);
 	/* Change root directory if requested and not already done. */
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
-	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
+	 && !rpmtsChrootDone(ts) && !F_ISSET(psm, CHROOTDONE))
 	{
 	    static int _pw_loaded = 0;
 	    static int _gr_loaded = 0;
@@ -2543,20 +2546,20 @@ psm->te->h = headerFree(psm->te->h);
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = Chroot(rootDir);
 	    /*@=modobserver@*/
-	    psm->chrootDone = 1;
+	    F_SET(psm, CHROOTDONE);
 	    (void) rpmtsSetChrootDone(ts, 1);
 	}
     }	break;
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
-	if (psm->chrootDone) {
+	if (F_ISSET(psm, CHROOTDONE)) {
 	    const char * rootDir = rpmtsRootDir(ts);
 	    const char * currDir = rpmtsCurrDir(ts);
 	    /*@-modobserver@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = Chroot(".");
 	    /*@=modobserver@*/
-	    psm->chrootDone = 0;
+	    F_CLR(psm, CHROOTDONE);
 	    (void) rpmtsSetChrootDone(ts, 0);
 	    if (currDir != NULL)	/* XXX can't happen */
 		xx = Chdir(currDir);
@@ -2573,7 +2576,12 @@ psm->te->h = headerFree(psm->te->h);
     case PSM_IMMED_TRIGGERS:
 	/* Run triggers in this package other package(s) set off. */
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	rc = runImmedTriggers(psm);
+	if (!F_ISSET(psm, GOTTRIGGERS)) {
+	    psm->triggers = rpmdsNew(fi->h, RPMTAG_TRIGGERNAME, 0);
+	    F_SET(psm, GOTTRIGGERS);
+	}
+	if (psm->triggers != NULL)
+	    rc = runImmedTriggers(psm);
 	break;
 
     case PSM_RPMIO_FLAGS:

@@ -99,11 +99,23 @@ typedef enum rpmScriptState_e {
     RPMSCRIPT_STATE_EMULATOR	= (1 << 25), /*!< scriptlet exec in emulator */
     RPMSCRIPT_STATE_LUA		= (1 << 26)  /*!< scriptlet exec with lua */
 } rpmScriptState;
+
+/**
+ * PSM control bits.
+ */
+typedef enum rpmpsmFlags_e {
+    RPMPSM_FLAGS_DEBUG		= (1 << 0), /*!< (unimplemented) */
+    RPMPSM_FLAGS_CHROOTDONE	= (1 << 1), /*!< Was chroot(2) done? */
+    RPMPSM_FLAGS_UNORDERED	= (1 << 2), /*!< Are all pre-requsites done? */
+    RPMPSM_FLAGS_GOTTRIGGERS	= (1 << 3), /*!< Triggers were retrieved? */
+} rpmpsmFlags;
+
 /**
  */
 struct rpmpsm_s {
     struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
 
+    rpmpsmFlags flags;		/*!< PSM control bits. */
 /*@refcounted@*/
     rpmts ts;			/*!< transaction set */
 /*@dependent@*/ /*@null@*/
@@ -141,8 +153,6 @@ struct rpmpsm_s {
     int scriptArg;		/*!< Scriptlet package arg. */
     int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
-    int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
-    int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
     rpmCallbackType what;	/*!< Callback type. */
     unsigned long long amount;	/*!< Callback amount. */
     unsigned long long total;	/*!< Callback total. */
