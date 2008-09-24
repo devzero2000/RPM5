@@ -1022,7 +1022,7 @@ static rpmTag _trigger_tag;
  * @param sourceH
  * @param triggeredH
  * @param arg2
- * @param delslash	delete trailing slash?
+ * @param delslash	delete trailing slash in trigger names?
  * @return
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
@@ -1037,8 +1037,10 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
     HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
     HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
+    miRE mire = NULL;
     const rpmts ts = psm->ts;
-    rpmds trigger = NULL;
+    rpmds Tds = NULL;
+    rpmds Fds = NULL;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
@@ -1054,14 +1056,15 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 if (_jbj)
 fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceName, triggerName);
 
-    trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
-    if (trigger == NULL)
+    Tds = rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem);
+    if (Tds == NULL)
 	goto exit;
 
-    (void) rpmdsSetNoPromote(trigger, 1);
+    (void) rpmdsSetNoPromote(Tds, 1);
 
-    while ((i = rpmdsNext(trigger)) >= 0) {
-	rpmuint32_t Flags = rpmdsFlags(trigger);
+    if ((Tds = rpmdsInit(Tds)) != NULL)
+    while ((i = rpmdsNext(Tds)) >= 0) {
+	rpmuint32_t Flags = rpmdsFlags(Tds);
 	char * depName;
 	int arg1;
 	int index;
@@ -1071,26 +1074,26 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	if (!(Flags & psm->sense))
 	    continue;
 
-	rc = 0;
+	rc = 0;		/* no trigger to fire. */
 	/* XXX if trigger name ends with '/', use dirnames instead. */
-	depName = (char *)rpmdsN(trigger);
+	depName = (char *) rpmdsN(Tds);
 	if (depName[0] == '/') {
 	    if (Glob_pattern_p(depName, 0)) {
-		rpmds FNds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
-		miRE mire = mireNew(RPMMIRE_GLOB, 0);
-		int j;
+
+		/* Initialize file names and pattern containers. */
+		if (Fds == NULL) {
+		    Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		    mire = mireNew(RPMMIRE_GLOB, 0);
+		}
 
 		xx = mireRegcomp(mire, depName);
-		if ((FNds = rpmdsInit(FNds)) != NULL)
-		while ((j = rpmdsNext(FNds)) >= 0) {
-		    const char * fn = rpmdsN(FNds);
-		    if (mireRegexec(mire, fn, 0) < 0)
+		if ((Fds = rpmdsInit(Fds)) != NULL)
+		while (rpmdsNext(Fds) >= 0) {
+		    if (mireRegexec(mire, rpmdsN(Fds), 0) < 0)
 			continue;
 		    rc = 1;
 		    break;
 		}
-		FNds = rpmdsFree(FNds);
-		mire = mireFree(mire);
 	    } else {
 		size_t nb = strlen(depName);
 		if (delslash && depName[nb-1] == '/')
@@ -1098,23 +1101,23 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	    }
 	}
 
-	/* Trigger on any provided dependency. */
+	/* If trigger not fired yet, try provided dependency match. */
 	if (!rc)
-	    rc = rpmdsNegateRC(trigger, rpmdsAnyMatchesDep(sourceH, trigger,1));
+	    rc = rpmdsNegateRC(Tds, rpmdsAnyMatchesDep(sourceH, Tds, 1));
 	if (!rc)
 	    continue;
 
 	Ihe->tag = RPMTAG_TRIGGERINDEX;
-	xx = headerGet(triggeredH, Ihe, 0);
-	if (!(xx && Ihe->p.ui32p && Ihe->c)) goto bottom;
+	if (!headerGet(triggeredH, Ihe, 0))
+	    goto bottom;
 
 	She->tag = RPMTAG_TRIGGERSCRIPTS;
-	xx = headerGet(triggeredH, She, 0);
-	if (!(xx && She->p.argv && She->c)) goto bottom;
+	if (!headerGet(triggeredH, She, 0))
+	    goto bottom;
 
 	Phe->tag = RPMTAG_TRIGGERSCRIPTPROG;
-	xx = headerGet(triggeredH, Phe, 0);
-	if (!(xx && Phe->p.argv && Phe->c)) goto bottom;
+	if (!headerGet(triggeredH, Phe, 0))
+	    goto bottom;
 
 	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 	if (arg1 < 0) {
@@ -1136,7 +1139,9 @@ bottom:
 	Phe->p.ptr = _free(Phe->p.ptr);
     }
 
-    trigger = rpmdsFree(trigger);
+    mire = mireFree(mire);
+    Fds = rpmdsFree(Fds);
+    Tds = rpmdsFree(Tds);
 
 exit:
     sourceName = _free(sourceName);
@@ -1170,6 +1175,7 @@ static rpmRC runTriggers(rpmpsm psm)
     rpmTag tagno;
     rpmRC rc = RPMRC_OK;
     int i;
+    int xx;
 
     /* Select RPMTAG_NAME or RPMTAG_PROVIDENAME index for triggering. */
     if (_trigger_tag == 0) {
@@ -1209,7 +1215,7 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, p
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
-	    (void) rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
 
 	prev = 0;
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
@@ -1218,8 +1224,8 @@ fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, p
 		continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, 0);
 	    prev = instance;
-	    (void) argiAdd(&instances, -1, instance);
-	    (void) argiSort(instances, NULL);
+	    xx = argiAdd(&instances, -1, instance);
+	    xx = argiSort(instances, NULL);
 	}
 
 	mi = rpmdbFreeIterator(mi);
