@@ -1289,11 +1289,13 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     rpmfi fi = psm->fi;
     rpmds triggers = NULL;
     rpmdbMatchIterator mi;
+    ARGV_t keys = NULL;
     ARGI_t instances = NULL;
     Header sourceH = NULL;
-    int i;
+    const char * Name;
     rpmTag tagno;
     rpmRC rc = RPMRC_OK;
+    int i;
     int xx;
 
 assert(fi->h != NULL);
@@ -1316,20 +1318,18 @@ assert(fi->h != NULL);
     xx = headerGet(fi->h, Ihe, 0);
     if (!(xx && Ihe->p.ui32p && Ihe->c)) goto exit;
 
+    /* Collect primary trigger keys, expanding globs as needed. */
     triggers = rpmdsInit(triggers);
     if (triggers != NULL)
     while ((i = rpmdsNext(triggers)) >= 0) {
 	evrFlags Flags = rpmdsFlags(triggers);
 	const char * Name = rpmdsN(triggers);
-	unsigned prev, instance;
-	unsigned nvals;
-	int delslash;
-	ARGint_t vals;
+	const char * EVR = rpmdsEVR(triggers);
 
 	/* Skip triggers that are not in this context. */
 	if (!(Flags & psm->sense))
-		continue;
-	
+	    continue;
+
 	/* If not limited to NEVRA triggers, use file/dir index. */
 	if (tagno != RPMTAG_NAME) {
 	    /* XXX if trigger name ends with '/', use dirnames instead. */
@@ -1337,33 +1337,58 @@ assert(fi->h != NULL);
 		tagno = (Name[strlen(Name)-1] == '/')
 			? RPMTAG_DIRNAMES : RPMTAG_BASENAMES;
 	}
+	/* XXX For now, permit globs only in unversioned triggers. */
+	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(Name, 0))
+	    xx = rpmdbMireApply(rpmtsGetRdb(ts), tagno, RPMMIRE_GLOB, Name, &keys);
+	else
+	    xx = argvAdd(&keys, Name);
+    }
+    triggers = rpmdsFree(triggers);
+
+    /* For all primary keys, retrieve headers and fire triggers. */
+    if (keys != NULL)
+    for (i = 0; (Name = keys[i]) != NULL; i++) {
+	unsigned prev, instance;
+	unsigned nvals;
+	int delslash;
+	ARGint_t vals;
+
+	/* If not limited to NEVRA triggers, use file/dir index. */
+	if (tagno != RPMTAG_NAME) {
+	    /* XXX if trigger name ends with '/', use dirnames instead. */
+	    if (Name[0] == '/') 
+		tagno = (Name[strlen(Name)-1] == '/')
+			? RPMTAG_DIRNAMES : RPMTAG_BASENAMES;
+	}
+
 	delslash = (tagno == RPMTAG_DIRNAMES);
 
-	if (Glob_pattern_p(Name, 0)) {
-	    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-	    xx = rpmdbSetIteratorRE(mi, tagno, RPMMIRE_GLOB, Name);
-	} else {
-	    mi = rpmtsInitIterator(ts, tagno, Name, 0);
-	}
+	mi = rpmtsInitIterator(ts, tagno, Name, 0);
 
 if (_jbj)
 fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x %s N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, tagName(tagno), Name, mi);
 
+	/* Don't retrieve headers that have already been processed. */
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
-	    (void) rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
 
 	prev = 0;
 	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+
+	    /* Skip headers that have already been processed. */
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
 		continue;
+
 	    rc |= handleOneTrigger(psm, sourceH, fi->h,
 				rpmdbGetIteratorCount(mi), delslash);
+
+	    /* Mark header instance as processed. */
 	    prev = instance;
-	    (void) argiAdd(&instances, -1, instance);
-	    (void) argiSort(instances, NULL);
+	    xx = argiAdd(&instances, -1, instance);
+	    xx = argiSort(instances, NULL);
 	}
 
 	mi = rpmdbFreeIterator(mi);
@@ -1371,8 +1396,8 @@ fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x %s N %s mi %
 
 exit:
     instances = argiFree(instances);
+    keys = argvFree(keys);
     Ihe->p.ptr = _free(Ihe->p.ptr);
-    triggers = rpmdsFree(triggers);
     return rc;
 }
 

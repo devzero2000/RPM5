@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: speed up dirname triggers from glob patterns. almost spiffy ...
     - jbj: rpmdb: add rpmdbMireApply to retrieve primary keys from index.
     - jbj: fire dirname triggers from glob patterns (pig slow, fixing todo++).
     - jbj: rpmfi: add storage and getters for exclude/include patterns.
