@@ -119,7 +119,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	/* Insure that file contains only ASCII */
 	if (*s < 32) {
 	    rpmlog(RPMLOG_ERR, _("reading %s manifest, non-printable characters found\n"),
-		fdGetOPath(xfd), Fstrerror(xfd));
+		fdGetOPath(xfd));
 
 	    rpmrc = RPMRC_FAIL;	/* XXX reject non-printable manifests. */
 	    goto exit;
