@@ -15,6 +15,7 @@
 #define	_MIRE_INTERNAL
 #include <rpmmacro.h>
 #include <rpmsq.h>
+#include <argv.h>
 
 #include <rpmtypes.h>
 
@@ -2755,7 +2756,55 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 		const char *** argvp)
 {
-    return 1;
+    DBC * dbcursor = NULL;
+    DBT * key = memset(alloca(sizeof(*key)), 0, sizeof(*key));
+    DBT * data = memset(alloca(sizeof(*data)), 0, sizeof(*data));
+    dbiIndex dbi;
+    miRE mire = NULL;
+    ARGV_t av = NULL;
+    int ac = 0;
+    int ret = 1;		/* assume error */
+    int rc;
+    int xx;
+
+    dbi = dbiOpen(db, tag, 0);
+    if (dbi == NULL)
+	goto exit;
+
+    if (pat) {
+	mire = mireNew(mode, 0);
+	xx = mireRegcomp(mire, pat);
+    }
+
+    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
+    while ((rc = dbiGet(dbi, dbcursor, key, data, DB_NEXT)) == 0) {
+	size_t ns = key->size;
+	char * s = memcpy(xmalloc(ns+1), key->data, ns);
+
+	s[ns] = '\0';
+	if (mire == NULL || mireRegexec(mire, s, ns) >= 0)
+	    xx = argvAdd(&av, s);
+	s = _free(s);
+    }
+
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+
+    if (rc > 0) {
+	rpmlog(RPMLOG_ERR, _("error(%d) getting keys from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
+	goto exit;
+    }
+
+    ret = 0;
+
+exit:
+    if (argvp != NULL)
+	xx = argvAppend(argvp, av);
+    av = argvFree(av);
+    mire = mireFree(mire);
+    return ret;
 }
 
 /* XXX psm.c */
