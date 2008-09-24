@@ -488,8 +488,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
+    const char * NVRA = psm->NVRA;
     int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
     int i;
@@ -503,10 +503,6 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
     if (ssp != NULL)
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
-
-    he->tag = RPMTAG_NVRA;
-    xx = headerGet(h, he, 0);
-assert(he->p.str != NULL);
 
     /* Save the current working directory. */
 /*@-nullpass@*/
@@ -556,7 +552,7 @@ assert(he->p.str != NULL);
 
     {
 	char buf[BUFSIZ];
-	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, he->p.str);
+	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, NVRA);
 	xx = rpmluaRunScript(lua, script, buf);
 	if (xx == -1) {
 	    void * ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
@@ -587,7 +583,6 @@ assert(he->p.str != NULL);
 	xx = fchdir(rootFdno);
 
     xx = close(rootFdno);
-    he->p.ptr = _free(he->p.ptr);
 
     return rc;
 }
@@ -627,12 +622,13 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	/*@modifies psm, ldconfig_done, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
+    const char * NVRA = psm->NVRA;
+    HE_t IPhe = psm->IPhe;
     const char ** argv = NULL;
     int argc = 0;
-    const char ** prefixes = NULL;
-    int numPrefixes;
+    const char ** IP = NULL;
+    int nIP;
     size_t maxPrefixLength;
     size_t len;
     char * prefixBuf = NULL;
@@ -640,7 +636,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t scriptFd = NULL;
     FD_t out = NULL;		/* exit: expects this to be initialized. */
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    const char * NVRA;
     const char * body = NULL;
     int * ssp = NULL;
     pid_t pid;
@@ -658,10 +653,14 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     /* Macro expand all scriptlets. */
     body = rpmExpand(script, NULL);
 
-    he->tag = RPMTAG_NVRA;
-    xx = headerGet(h, he, 0);
+    /* XXX Load NVRA lazily. This should be done elsewhere ... */
+    if (NVRA == NULL) {
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	he->tag = RPMTAG_NVRA;
+	xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
-    NVRA = he->p.str;
+	psm->NVRA = NVRA = he->p.str;
+    }
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
@@ -708,32 +707,39 @@ assert(he->p.str != NULL);
 		? 1 : 0);
     }
 
-    he->tag = RPMTAG_INSTPREFIXES;
-    xx = headerGet(h, he, 0);
-    prefixes = he->p.argv;
-    numPrefixes = he->c;
-    if (!xx) {
-	he->p.ptr = _free(he->p.ptr);
-	he->tag = RPMTAG_INSTALLPREFIX;
-	xx = headerGet(h, he, 0);
-	if (xx) {
-	    char * t;
-	    prefixes = xmalloc(sizeof(*prefixes) + strlen(he->p.argv[0]) + 1);
-	    prefixes[0] = t = (char *) &prefixes[1];
-	    t = stpcpy(t, he->p.argv[0]);
-	    *t = '\0';
-	    he->p.ptr = _free(he->p.ptr);
-	    numPrefixes = 1;
-	} else {
-	    prefixes = NULL;
-	    numPrefixes = 0;
+    /* XXX Load INSTPREFIXES lazily. This should be done elsewhere ... */
+    if (IPhe->tag == 0) {
+	IPhe->tag = RPMTAG_INSTPREFIXES;
+	xx = headerGet(h, IPhe, 0);
+	if (!xx) {
+	    IPhe->p.ptr = _free(IPhe->p.ptr);
+	    IPhe->tag = RPMTAG_INSTALLPREFIX;
+	    xx = headerGet(h, IPhe, 0);
+	    if (xx) {
+		const char ** av =
+			xmalloc(sizeof(*av) + strlen(IPhe->p.argv[0]) + 1);
+		char * t = (char *) &av[1];
+
+		av[0] = t;
+		t = stpcpy(t, IPhe->p.argv[0]);
+		*t = '\0';
+		IPhe->p.ptr = _free(IPhe->p.ptr);
+		IPhe->t = RPM_STRING_ARRAY_TYPE;
+		IPhe->p.argv = av;
+		IPhe->c = 1;
+	    } else {
+		IPhe->p.argv = NULL;
+		IPhe->c = 0;
+	    }
 	}
     }
+    IP = IPhe->p.argv;
+    nIP = IPhe->c;
 
     maxPrefixLength = 0;
-    if (prefixes != NULL)
-    for (i = 0; i < numPrefixes; i++) {
-	len = strlen(prefixes[i]);
+    if (IP != NULL)
+    for (i = 0; i < nIP; i++) {
+	len = strlen(IP[i]);
 	if (len > maxPrefixLength) maxPrefixLength = len;
     }
     prefixBuf = alloca(maxPrefixLength + 50);
@@ -850,14 +856,14 @@ assert(he->p.str != NULL);
 	    /*@=modobserver@*/
 	}
 
-	if (prefixes != NULL)
-	for (i = 0; i < numPrefixes; i++) {
-	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	if (IP != NULL)
+	for (i = 0; i < nIP; i++) {
+	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, IP[i]);
 	    xx = doputenv(prefixBuf);
 
 	    /* backwards compatibility */
 	    if (i == 0) {
-		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
+		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", IP[i]);
 		xx = doputenv(prefixBuf);
 	    }
 	}
@@ -940,8 +946,6 @@ assert(he->p.str != NULL);
     rc = RPMRC_OK;
 
 exit:
-    prefixes = _free(prefixes);
-
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
@@ -952,7 +956,6 @@ exit:
     }
 
     body = _free(body);
-    NVRA = _free(NVRA);
 
     return rc;
 }
@@ -1493,7 +1496,9 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 /*@=internalglobs@*/
 
     psm->sstates = _free(psm->sstates);
-    psm->he = _free(psm->he);
+    psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
+    psm->IPhe = _free(psm->IPhe);
+    psm->NVRA = _free(psm->NVRA);
     psm->triggers = rpmdsFree(psm->triggers);
 
     (void) rpmpsmUnlink(psm, msg);
@@ -1523,7 +1528,8 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
     if (fi)	psm->fi = rpmfiLink(fi, msg);
 
     psm->triggers = NULL;
-    psm->he = xcalloc(1, sizeof(*psm->he));
+    psm->NVRA = NULL;
+    psm->IPhe = xcalloc(1, sizeof(*psm->IPhe));
     psm->sstates = xcalloc(RPMSCRIPT_MAX, sizeof(*psm->sstates));
 
     return rpmpsmLink(psm, msg);

@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmpsm: extract NVRA and INSTALLPREFIXES lazily & persistently.
     - jbj: speed up dirname triggers from glob patterns. almost spiffy ...
     - jbj: rpmdb: add rpmdbMireApply to retrieve primary keys from index.
     - jbj: fire dirname triggers from glob patterns (pig slow, fixing todo++).
