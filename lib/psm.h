@@ -115,17 +115,19 @@ typedef enum rpmpsmFlags_e {
 struct rpmpsm_s {
     struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
 
-    rpmpsmFlags flags;		/*!< PSM control bits. */
+/*@only@*/ /*@null@*/
+    const char * NVRA;		/*!< NVRA identifier (for debugging) */
+    rpmpsmFlags flags;		/*!< PSM control bit(s). */
 /*@refcounted@*/
     rpmts ts;			/*!< transaction set */
 /*@dependent@*/ /*@null@*/
     rpmte te;			/*!< current transaction element */
 /*@refcounted@*/ /*@relnull@*/
-    rpmfi fi;			/*!< transaction element file info */
+    rpmfi fi;			/*!< file info */
 /*@refcounted@*/ /*@relnull@*/
-    rpmds triggers;		/*!< transaction element triggers */
+    rpmds triggers;		/*!< trigger dependency set */
 /*@only@*/
-    HE_t he;			/*!< transaction element tag data */
+    HE_t IPhe;			/*!< Install prefixes */
 /*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
 /*@relnull@*/
