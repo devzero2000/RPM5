@@ -2762,7 +2762,6 @@ int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
     dbiIndex dbi;
     miRE mire = NULL;
     ARGV_t av = NULL;
-    int ac = 0;
     int ret = 1;		/* assume error */
     int rc;
     int xx;
