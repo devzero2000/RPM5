@@ -1021,13 +1021,12 @@ static rpmTag _trigger_tag;
 
 /**
  * Execute triggers.
- * @todo Trigger on any provides, not just package NVR.
  * @param psm		package state machine data
  * @param sourceH
  * @param triggeredH
  * @param arg2
  * @param delslash	delete trailing slash in trigger names?
- * @return
+ * @return		RPMRC_OK on success
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH,
@@ -1167,6 +1166,69 @@ exit:
 }
 
 /**
+ * Run a dependency set loop against rpmdb triggers.
+ * @param psm		package state machine data
+ * @param tagno		dependency set to run against rpmdb
+ * @param arg2		scriptlet arg2
+ * @return		RPMRC_OK on success
+ */
+static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    static int scareMem = 0;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
+    rpmds ds = rpmdsNew(fi->h, tagno, scareMem);
+    const char * depName = NULL;
+    ARGI_t instances = NULL;
+    rpmdbMatchIterator mi;
+    Header triggeredH;
+    rpmRC rc = RPMRC_OK;
+    int i;
+    int xx;
+
+    if ((ds = rpmdsInit(ds)) != NULL)
+    while ((i = rpmdsNext(ds)) >= 0) {
+	unsigned prev, instance;
+	unsigned nvals;
+	ARGint_t vals;
+
+	depName = _free(depName);
+	depName = xstrdup(rpmdsN(ds));
+
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
+if (_jbj)
+fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x depName %s mi %p\n", psm, psm->sense, depName, mi);
+
+	nvals = argiCount(instances);
+	vals = argiData(instances);
+	if (nvals > 0)
+	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+
+	prev = 0;
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    instance = rpmdbGetIteratorOffset(mi);
+	    if (prev == instance)
+		continue;
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2, 0);
+	    prev = instance;
+	    xx = argiAdd(&instances, -1, instance);
+	    xx = argiSort(instances, NULL);
+	}
+
+	mi = rpmdbFreeIterator(mi);
+    }
+    instances = argiFree(instances);
+    depName = _free(depName);
+    ds = rpmdsFree(ds);
+
+    return rc;
+}
+
+/**
  * Run trigger scripts in the database that are fired by this header.
  * @param psm		package state machine data
  * @return		0 on success
@@ -1177,21 +1239,11 @@ static rpmRC runTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    static int scareMem = 0;
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    const char * N = NULL;
-    const char * depName = NULL;
-    int numPackage = -1;
-    int countCorrection = psm->countCorrection;
-    Header triggeredH;
-    rpmdbMatchIterator mi;
-    ARGI_t instances = NULL;
-    rpmds ds;
+    int numPackage;
     rpmTag tagno;
     rpmRC rc = RPMRC_OK;
-    int i;
-    int xx;
 
     /* Select RPMTAG_NAME or RPMTAG_PROVIDENAME index for triggering. */
     if (_trigger_tag == 0) {
@@ -1204,93 +1256,30 @@ static rpmRC runTriggers(rpmpsm psm)
     tagno = _trigger_tag;
 
 assert(psm->te != NULL);
-    N = rpmteN(psm->te);
+    {	const char * N = rpmteN(psm->te);
 assert(N != NULL);
-    numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N) + psm->countCorrection;
-    if (numPackage < 0)
-	return RPMRC_NOTFOUND;
-
+	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N);
+	numPackage += psm->countCorrection;
+	if (numPackage < 0)
+	    return RPMRC_NOTFOUND;
+    }
 assert(fi != NULL);
 assert(fi->h != NULL);
 
-    psm->countCorrection = 0;
+    /* XXX Save/restore count correction. */
+    {	int countCorrection = psm->countCorrection;
 
-    ds = rpmdsNew(fi->h, tagno, scareMem);
-    if ((ds = rpmdsInit(ds)) != NULL)
-    while ((i = rpmdsNext(ds)) >= 0) {
-	unsigned prev, instance;
-	unsigned nvals;
-	ARGint_t vals;
+	psm->countCorrection = 0;
 
-	depName = _free(depName);
-	depName = xstrdup(rpmdsN(ds));
+	/* Try name/providename triggers first. */
+	rc |= runTriggersLoop(psm, tagno, numPackage);
 
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
-if (_jbj)
-fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, psm->sense, N, depName, mi);
-	nvals = argiCount(instances);
-	vals = argiData(instances);
-	if (nvals > 0)
-	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+	/* If not limited to NEVRA triggers, also try file path triggers. */
+	if (tagno != RPMTAG_NAME)
+	    rc |= runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage);
 
-	prev = 0;
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    instance = rpmdbGetIteratorOffset(mi);
-	    if (prev == instance)
-		continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, 0);
-	    prev = instance;
-	    xx = argiAdd(&instances, -1, instance);
-	    xx = argiSort(instances, NULL);
-	}
-
-	mi = rpmdbFreeIterator(mi);
+	psm->countCorrection = countCorrection;
     }
-    instances = argiFree(instances);
-    depName = _free(depName);
-    ds = rpmdsFree(ds);
-
-    /* If not limited to NEVRA triggers, try filenames index. */
-  if (tagno != RPMTAG_NAME) {
-    tagno = RPMTAG_BASENAMES;
-    ds = rpmdsNew(fi->h, tagno, scareMem);
-    if ((ds = rpmdsInit(ds)) != NULL)
-    while ((i = rpmdsNext(ds)) >= 0) {
-	unsigned prev, instance;
-	unsigned nvals;
-	ARGint_t vals;
-
-	depName = _free(depName);
-	depName = xstrdup(rpmdsN(ds));
-
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
-if (_jbj)
-fprintf(stderr, "=== runTriggers(%p) sense 0x%x N %s depName %s mi %p\n", psm, psm->sense, N, depName, mi);
-	nvals = argiCount(instances);
-	vals = argiData(instances);
-	if (nvals > 0)
-	    (void) rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
-
-	prev = 0;
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    instance = rpmdbGetIteratorOffset(mi);
-	    if (prev == instance)
-		continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, 0);
-	    prev = instance;
-	    (void) argiAdd(&instances, -1, instance);
-	    (void) argiSort(instances, NULL);
-	}
-
-	mi = rpmdbFreeIterator(mi);
-    }
-
-    instances = argiFree(instances);
-    depName = _free(depName);
-    ds = rpmdsFree(ds);
-  }
-
-    psm->countCorrection = countCorrection;
 
     return rc;
 }
