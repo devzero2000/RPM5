@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: upgrade  fnmatch to version that implements FNM_EXTMATCH.
     - jbj: rpmpsm: simplify runTriggers() by adding rpmTriggersLoop().
     - jbj: rpmpsm: extract trigger tags once, simplify code, consistent naming.
     - jbj: rpmpsm: extract NVRA and INSTALLPREFIXES lazily & persistently.
