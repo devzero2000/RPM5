@@ -481,9 +481,17 @@ static pid_t psmWait(rpmpsm psm)
 #ifdef WITH_LUA
 /**
  * Run internal Lua script.
+ * @param psm		package state machine data
+ * @param h		header
+ * @param sln		name of scriptlet section
+ * @param Phe		scriptlet args, Phe->p.argv[0] is interpreter to use
+ * @param script	scriptlet body
+ * @param arg1		no. instances of package installed after scriptlet exec
+ *			(-1 is no arg)
+ * @param arg2		ditto, but for the target package
+ * @return		RPMRC_OK on success
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
-		   int progArgc, const char **progArgv,
+static rpmRC runLuaScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
@@ -530,9 +538,9 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     var = rpmluavNew();
     rpmluavSetListMode(var, 1);
 /*@+relaxtypes@*/
-    if (progArgv) {
-	for (i = 0; i < progArgc && progArgv[i]; i++) {
-	    rpmluavSetValue(var, RPMLUAV_STRING, progArgv[i]);
+    if (Phe->p.argv) {
+	for (i = 0; i < (int)Phe->c && Phe->p.argv[i]; i++) {
+	    rpmluavSetValue(var, RPMLUAV_STRING, Phe->p.argv[i]);
 	    rpmluaSetVar(lua, var);
 	}
     }
@@ -600,22 +608,19 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * Run scriptlet with args.
  *
  * Run a script with an interpreter. If the interpreter is not specified,
- * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
- * the header will be ignored, passing instead arg1 and arg2.
+ * /bin/sh will be used.
  *
  * @param psm		package state machine data
  * @param h		header
  * @param sln		name of scriptlet section
- * @param progArgc	no. of args from header
- * @param progArgv	args from header, progArgv[0] is the interpreter to use
- * @param script	scriptlet from header
+ * @param Phe		scriptlet args, Phe->p.argv[0] is interpreter to use
+ * @param script	scriptlet body
  * @param arg1		no. instances of package installed after scriptlet exec
  *			(-1 is no arg)
  * @param arg2		ditto, but for the target package
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
-		int progArgc, const char ** progArgv,
+static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
 		const char * script, int arg1, int arg2)
 	/*@globals ldconfig_done, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
@@ -647,7 +652,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (ssp != NULL)
 	*ssp = RPMSCRIPT_STATE_UNKNOWN;
 
-    if (progArgv == NULL && script == NULL)
+    if (Phe->p.argv == NULL && script == NULL)
 	return RPMRC_OK;
 
     /* Macro expand all scriptlets. */
@@ -662,13 +667,12 @@ assert(he->p.str != NULL);
 	psm->NVRA = NVRA = he->p.str;
     }
 
-    if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
+    if (Phe->p.argv && strcmp(Phe->p.argv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA);
-	rc = runLuaScript(psm, h, sln, progArgc, progArgv,
-			    body, arg1, arg2);
+	rc = runLuaScript(psm, h, sln, Phe, body, arg1, arg2);
 #endif
 	goto exit;
     }
@@ -678,12 +682,12 @@ assert(he->p.str != NULL);
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
-    if (ldconfig_path && progArgv != NULL && F_ISSET(psm, UNORDERED)) {
- 	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
+    if (ldconfig_path && Phe->p.argv != NULL && F_ISSET(psm, UNORDERED)) {
+ 	if (ldconfig_done && !strcmp(Phe->p.argv[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) skipping redundant \"%s\".\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
-		progArgv[0]);
+		Phe->p.argv[0]);
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
@@ -694,15 +698,15 @@ assert(he->p.str != NULL);
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
 		(F_ISSET(psm, UNORDERED) ? "a" : ""));
 
-    if (!progArgv) {
+    if (Phe->p.argv == NULL) {
 	argv = alloca(5 * sizeof(*argv));
 	argv[0] = "/bin/sh";
 	argc = 1;
 	ldconfig_done = 0;
     } else {
-	argv = alloca((progArgc + 4) * sizeof(*argv));
-	memcpy(argv, progArgv, progArgc * sizeof(*argv));
-	argc = progArgc;
+	argv = alloca((Phe->c + 4) * sizeof(*argv));
+	memcpy(argv, Phe->p.argv, Phe->c * sizeof(*argv));
+	argc = Phe->c;
 	ldconfig_done = (ldconfig_path && !strcmp(argv[0], ldconfig_path)
 		? 1 : 0);
     }
@@ -969,46 +973,43 @@ static rpmRC runInstScript(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
+    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
     rpmfi fi = psm->fi;
     const char * argv0 = NULL;
-    const char * script;
     rpmRC rc = RPMRC_OK;
-    int xx;
 
 assert(fi->h != NULL);
-    he->tag = psm->scriptTag;
-    xx = headerGet(fi->h, he, 0);
-    script = he->p.str;
-    if (script == NULL)
+    She->tag = psm->scriptTag;
+    if (!headerGet(fi->h, She, 0))
 	goto exit;
-    he->tag = psm->progTag;
-    xx = headerGet(fi->h, he, 0);
-    if (he->p.ptr == NULL)
+
+    Phe->tag = psm->progTag;
+    if (!headerGet(fi->h, Phe, 0))
 	goto exit;
 
     /* Coerce strings into header argv return. */
-    if (he->t == RPM_STRING_TYPE) {
-	const char * s = he->p.str;
+    if (Phe->t == RPM_STRING_TYPE) {
+	const char * s = Phe->p.str;
 	char * t;
-	he->p.argv = xmalloc(sizeof(*he->p.argv)+strlen(s)+1);
-	he->p.argv[0] = t = (char *) &he->p.argv[1];
+	Phe->p.argv = xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
+	Phe->p.argv[0] = t = (char *) &Phe->p.argv[1];
 	t = stpcpy(t, s);
 	*t = '\0';
 	s = _free(s);
     }
 
     /* Expand "%script -p %%{interpreter}" macros. */
-    if (he->p.argv[0][0] == '%')
-	he->p.argv[0] = argv0 = rpmExpand(he->p.argv[0], NULL);
+    if (Phe->p.argv[0][0] == '%')
+	Phe->p.argv[0] = argv0 = rpmExpand(Phe->p.argv[0], NULL);
 
-    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), he->c, he->p.argv,
-		script, psm->scriptArg, -1);
+    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), Phe,
+		She->p.str, psm->scriptArg, -1);
 
 exit:
     argv0 = _free(argv0);
-    he->p.ptr = _free(he->p.ptr);
-    script = _free(script);
+    Phe->p.ptr = _free(Phe->p.ptr);
+    She->p.ptr = _free(She->p.ptr);
     return rc;
 }
 
@@ -1036,7 +1037,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int scareMem = 0;
-    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
     HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
     HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
@@ -1047,37 +1048,57 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
+    int arg1;
     int xx;
     int i;
 
-    Nhe->tag = RPMTAG_NAME;
-    xx = headerGet(sourceH, Nhe, 0);
-    sourceName = Nhe->p.str;
-    Nhe->tag = RPMTAG_NAME;
-    xx = headerGet(triggeredH, Nhe, 0);
-    triggerName = Nhe->p.str;
+    he->tag = RPMTAG_NAME;
+    xx = headerGet(sourceH, he, 0);
+    sourceName = he->p.str;
+
+    he->tag = RPMTAG_NAME;
+    xx = headerGet(triggeredH, he, 0);
+    triggerName = he->p.str;
+
+    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
+    if (arg1 < 0) {
+	/* XXX W2DO? fails as "execution of script failed" */
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+    arg1 += psm->countCorrection;
+
 if (_jbj)
 fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceName, triggerName);
 
     Tds = rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem);
     if (Tds == NULL)
 	goto exit;
+    xx = rpmdsSetNoPromote(Tds, 1);
 
-    (void) rpmdsSetNoPromote(Tds, 1);
+    Ihe->tag = RPMTAG_TRIGGERINDEX;
+    if (!headerGet(triggeredH, Ihe, 0))
+	goto exit;
+
+    She->tag = RPMTAG_TRIGGERSCRIPTS;
+    if (!headerGet(triggeredH, She, 0))
+	goto exit;
+
+    Phe->tag = RPMTAG_TRIGGERSCRIPTPROG;
+    if (!headerGet(triggeredH, Phe, 0))
+	goto exit;
 
     if ((Tds = rpmdsInit(Tds)) != NULL)
     while ((i = rpmdsNext(Tds)) >= 0) {
 	rpmuint32_t Flags = rpmdsFlags(Tds);
 	char * depName;
-	int arg1;
-	int index;
-	int rc;
+	int bingo;
 
 	/* Skip triggers that are not in this context. */
 	if (!(Flags & psm->sense))
 	    continue;
 
-	rc = 0;		/* no trigger to fire. */
+	bingo = 0;		/* no trigger to fire. */
 	/* XXX if trigger name ends with '/', use dirnames instead. */
 	depName = (char *) rpmdsN(Tds);
 	if (depName[0] == '/') {
@@ -1094,7 +1115,7 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 		while (rpmdsNext(Fds) >= 0) {
 		    if (mireRegexec(mire, rpmdsN(Fds), 0) < 0)
 			continue;
-		    rc = 1;
+		    bingo = 1;
 		    break;
 		}
 	    } else {
@@ -1105,41 +1126,30 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	}
 
 	/* If trigger not fired yet, try provided dependency match. */
-	if (!rc)
-	    rc = rpmdsNegateRC(Tds, rpmdsAnyMatchesDep(sourceH, Tds, 1));
-	if (!rc)
+	if (!bingo)
+	    bingo = rpmdsNegateRC(Tds, rpmdsAnyMatchesDep(sourceH, Tds, 1));
+	if (!bingo)
 	    continue;
 
-	Ihe->tag = RPMTAG_TRIGGERINDEX;
-	if (!headerGet(triggeredH, Ihe, 0))
-	    goto bottom;
-
-	She->tag = RPMTAG_TRIGGERSCRIPTS;
-	if (!headerGet(triggeredH, She, 0))
-	    goto bottom;
-
-	Phe->tag = RPMTAG_TRIGGERSCRIPTPROG;
-	if (!headerGet(triggeredH, Phe, 0))
-	    goto bottom;
-
-	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
-	if (arg1 < 0) {
-	    /* XXX W2DO? fails as "execution of script failed" */
-	    rc = RPMRC_FAIL;
-	    goto bottom;
-	}
-
-	arg1 += psm->countCorrection;
-	index = Ihe->p.ui32p[i];
+	/* Coerce strings into header argv return. */
 	/* XXX FIXME: permit trigger scripts with arguments. */
-	rc = runScript(psm, triggeredH, "%trigger", 1,
-			    Phe->p.argv + index, She->p.argv[index],
-			    arg1, arg2);
+	{   int index = Ihe->p.ui32p[i];
+	    const char * s = Phe->p.argv[index];
+	    char * t;
+	    
+	    he->tag = Phe->tag;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->c = 1;
+	    he->p.argv = xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
+	    he->p.argv[0] = t = (char *) &he->p.argv[1];
+	    t = stpcpy(t, s);
+	    *t = '\0';
 
-bottom:
-	Ihe->p.ptr = _free(Ihe->p.ptr);
-	She->p.ptr = _free(She->p.ptr);
-	Phe->p.ptr = _free(Phe->p.ptr);
+	    rc |= runScript(psm, triggeredH, "%trigger", he,
+			She->p.argv[index], arg1, arg2);
+
+	    he->p.ptr = _free(he->p.ptr);
+	}
     }
 
     mire = mireFree(mire);
@@ -1147,8 +1157,11 @@ bottom:
     Tds = rpmdsFree(Tds);
 
 exit:
-    sourceName = _free(sourceName);
+    Ihe->p.ptr = _free(Ihe->p.ptr);
+    She->p.ptr = _free(She->p.ptr);
+    Phe->p.ptr = _free(Phe->p.ptr);
     triggerName = _free(triggerName);
+    sourceName = _free(sourceName);
 
     return rc;
 }
