@@ -24,6 +24,8 @@
 
 #include "system.h"
 
+#include <string.h>
+
 #include "debug.h"
 
 /* XXX Don't bother with wide and multibyte characters ... */
@@ -120,7 +122,7 @@
 /* Avoid depending on library functions or files
    whose names are inconsistent.  */
 
-# if !defined _LIBC && !defined getenv
+# if defined __linux__ && (!defined _LIBC && !defined getenv)
 extern char *getenv ();
 # endif
 
@@ -130,34 +132,6 @@ extern int errno;
 
 /* Global variable.  */
 static int posixly_correct;
-
-/* This function doesn't exist on most systems.  */
-
-# if !defined HAVE___STRCHRNUL && !defined _LIBC
-static char *
-__strchrnul (s, c)
-     const char *s;
-     int c;
-{
-  char *result = strchr (s, c);
-  if (result == NULL)
-    result = strchr (s, '\0');
-  return result;
-}
-# endif
-
-# if HANDLE_MULTIBYTE && !defined HAVE___STRCHRNUL && !defined _LIBC
-static wchar_t *
-__wcschrnul (s, c)
-     const wchar_t *s;
-     wint_t c;
-{
-  wchar_t *result = wcschr (s, c);
-  if (result == NULL)
-    result = wcschr (s, '\0');
-  return result;
-}
-# endif
 
 # ifndef internal_function
 /* Inside GNU libc we mark some function in a special way.  In other
@@ -186,7 +160,16 @@ __wcschrnul (s, c)
 # endif
 # define STRLEN(S) strlen (S)
 # define STRCAT(D, S) strcat (D, S)
-# define MEMPCPY(D, S, N) __mempcpy (D, S, N)
+# if defined HAVE_MEMPCPY
+# define MEMPCPY(D, S, N) mempcpy (D, S, N)
+#else
+# define MEMPCPY(D, S, N) __fnmatch_mempcpy (D, S, N)
+static void *__fnmatch_mempcpy(void *, const void *, size_t);
+static void *__fnmatch_mempcpy(void *dest, const void *src, size_t n)
+{
+    return (void *)((char *)memcpy(dest, src, n) + n);
+}
+#endif
 # define MEMCHR(S, C, N) memchr (S, C, N)
 # define STRCOLL(S1, S2) strcoll (S1, S2)
 # include "fnmatch_loop.c"

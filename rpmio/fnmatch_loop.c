@@ -452,9 +452,9 @@ FCT (pattern, string, string_end, no_leading_period, flags, ends)
 		else
 		  {
 		    int is_range = 0;
+		    int is_seqval = 0;
 
 #ifdef _LIBC
-		    int is_seqval = 0;
 
 		    if (c == L('[') && *p == L('.'))
 		      {
