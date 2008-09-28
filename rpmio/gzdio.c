@@ -15,7 +15,7 @@ typedef	enum { true = 1, false = 0 } bool;
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
-#ifdef	HAVE_ZLIB_H
+#if defined(WITH_ZLIB)
 
 /*@-noparams@*/
 #include <zlib.h>
@@ -458,4 +458,4 @@ static struct FDIO_s gzdio_s = {
 FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
 /*@=moduncon@*/
-#endif	/* HAVE_ZLIB_H */
+#endif	/* WITH_ZLIB */

@@ -203,7 +203,7 @@ const char * fdbg(FD_t fd)
 	    sprintf(be, "FD %d fp %p", fps->fdno, fps->fp);
 	} else if (fps->io == ufdio) {
 	    sprintf(be, "UFD %d fp %p", fps->fdno, fps->fp);
-#ifdef	HAVE_ZLIB_H
+#if defined(WITH_ZLIB)
 	} else if (fps->io == gzdio) {
 	    sprintf(be, "GZD %p fdno %d", fps->fp, fps->fdno);
 #endif
@@ -2325,11 +2325,11 @@ static const char * getFdErrstr (FD_t fd)
 {
     const char *errstr = NULL;
 
-#ifdef	HAVE_ZLIB_H
+#if defined(WITH_ZLIB)
     if (fdGetIo(fd) == gzdio) {
 	errstr = fd->errcookie;
     } else
-#endif	/* HAVE_ZLIB_H */
+#endif	/* WITH_ZLIB */
 
 #ifdef	HAVE_BZLIB_H
     if (fdGetIo(fd) == bzdio) {
@@ -2648,7 +2648,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end && *end) {
 	if (!strcmp(end, "fdio")) {
 	    iof = fdio;
-#if defined(HAVE_ZLIB_H)
+#if defined(WITH_ZLIB)
 	} else if (!strcmp(end, "gzdio")) {
 	    iof = gzdio;
 	    /*@-internalglobs@*/
@@ -2692,7 +2692,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
 	    {};
 	if (*end == '\0') {
-#if defined(HAVE_ZLIB_H)
+#if defined(WITH_ZLIB)
 	    iof = gzdio;
 	    /*@-internalglobs@*/
 	    fd = iof->_fdopen(fd, zstdio);
@@ -2825,7 +2825,7 @@ int Fflush(FD_t fd)
 	/*@=voidabstract =nullpass@*/
 
     vh = fdGetFp(fd);
-#if defined(HAVE_ZLIB_H)
+#if defined(WITH_ZLIB)
     if (vh && fdGetIo(fd) == gzdio && gzdio->_flush != NULL)
 	return (*gzdio->_flush) ((void *)fd);
 #endif
@@ -2858,7 +2858,7 @@ int Ferror(FD_t fd)
 	    /*@+voidabstract -nullpass@*/
 	    ec = ferror(fdGetFILE(fd));
 	    /*@=voidabstract =nullpass@*/
-#if defined(HAVE_ZLIB_H)
+#if defined(WITH_ZLIB)
 	} else if (fps->io == gzdio) {
 	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under gzdio always has fdno == -1 */

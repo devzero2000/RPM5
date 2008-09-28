@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmio: permit adler32/crc32/crc64 in spite of --without-zlib.
+    - jbj: rpmio: eliminate HAVE_ZLIB_H tests, use WITH_ZLIB tests instead.
     - rse: rpmio: allow newer fnmatch to build on non-Linux platforms, too.
     - jbj: rpmio: upgrade  fnmatch to version that implements FNM_EXTMATCH.
     - jbj: rpmpsm: simplify runTriggers() by adding rpmTriggersLoop().

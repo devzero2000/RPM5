@@ -4,7 +4,9 @@
 
 #include "system.h"
 
+#if defined(WITH_ZLIB)
 #include <zlib.h>
+#endif
 
 #include "rpmio_internal.h"
 
@@ -29,7 +31,11 @@
 #define	DPRINTF(_a)
 #endif
 
-#if !defined(ZLIB_H) || defined(__LCLINT__)
+#if !defined(WITH_ZLIB) || defined(__LCLINT__)
+
+/* XXX Make sure that --adler32 is in rpmio even if --without-zlib is used. */
+#include "adler32.c"
+
 /**
  */
 /*@-shadow@*/
@@ -69,7 +75,97 @@ static rpmuint32_t crc32(rpmuint32_t crc, const byte * data, size_t size)
 
 }
 /*@=shadow@*/
-#endif
+
+/*
+ * Swiped from zlib, using rpmuint32_t rather than unsigned long computation.
+ */
+static int gf2_dim32 = 32;
+
+/**
+ */
+static rpmuint32_t gf2_matrix_times32(rpmuint32_t *mat, rpmuint32_t vec)
+	/*@*/
+{
+    rpmuint32_t sum;
+
+    sum = 0;
+    while (vec) {
+        if (vec & 1)
+            sum ^= *mat;
+        vec >>= 1;
+        mat++;
+    }
+    return sum;
+}
+
+/**
+ */
+static void gf2_matrix_square32(/*@out@*/ rpmuint32_t *square, rpmuint32_t *mat)
+	/*@modifies square @*/
+{
+    int n;
+
+    for (n = 0; n < gf2_dim32; n++)
+        square[n] = gf2_matrix_times32(mat, mat[n]);
+}
+
+/**
+ */
+static rpmuint32_t crc32_combine(rpmuint32_t crc1, rpmuint32_t crc2, size_t len2)
+	/*@*/
+{
+    int n;
+    rpmuint32_t row;
+    size_t nb = gf2_dim32 * sizeof(rpmuint32_t);
+    rpmuint32_t * even = alloca(nb);	/* even-power-of-two zeros operator */
+    rpmuint32_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
+
+    /* degenerate case */
+    if (len2 == 0)
+        return crc1;
+
+    /* put operator for one zero bit in odd */
+    odd[0] = 0xedb88320UL;	/* CRC-32 polynomial */
+    row = 1;
+    for (n = 1; n < gf2_dim32; n++) {
+        odd[n] = row;
+        row <<= 1;
+    }
+
+    /* put operator for two zero bits in even */
+    gf2_matrix_square32(even, odd);
+
+    /* put operator for four zero bits in odd */
+    gf2_matrix_square32(odd, even);
+
+    /* apply len2 zeros to crc1 (first square will put the operator for one
+       zero byte, eight zero bits, in even) */
+    do {
+        /* apply zeros operator for this bit of len2 */
+        gf2_matrix_square32(even, odd);
+        if (len2 & 1)
+            crc1 = gf2_matrix_times32(even, crc1);
+        len2 >>= 1;
+
+        /* if no more bits set, then done */
+        if (len2 == 0)
+            break;
+
+        /* another iteration of the loop with odd and even swapped */
+        gf2_matrix_square32(odd, even);
+        if (len2 & 1)
+            crc1 = gf2_matrix_times32(odd, crc1);
+        len2 >>= 1;
+
+        /* if no more bits set, then done */
+    } while (len2 != 0);
+
+    /* return combined crc */
+    crc1 ^= crc2;
+    return crc1;
+}
+
+#endif	/* !defined(WITH_ZLIB) */
 
 /* Include Bob Jenkins lookup3 hash */
 #define	_JLU3_jlu32l
@@ -165,13 +261,12 @@ static rpmuint64_t crc64(rpmuint64_t crc, const byte * data, size_t size)
 
 /*
  * Swiped from zlib, using rpmuint64_t rather than unsigned long computation.
- * Use at your own risk, rpmuint64_t problems with compilers may exist.
  */
-#define	GF2_DIM	64
+static int gf2_dim64 = 64;
 
 /**
  */
-static rpmuint64_t gf2_matrix_times(rpmuint64_t *mat, rpmuint64_t vec)
+static rpmuint64_t gf2_matrix_times64(rpmuint64_t *mat, rpmuint64_t vec)
 	/*@*/
 {
     rpmuint64_t sum;
@@ -188,13 +283,13 @@ static rpmuint64_t gf2_matrix_times(rpmuint64_t *mat, rpmuint64_t vec)
 
 /**
  */
-static void gf2_matrix_square(/*@out@*/ rpmuint64_t *square, rpmuint64_t *mat)
+static void gf2_matrix_square64(/*@out@*/ rpmuint64_t *square, rpmuint64_t *mat)
 	/*@modifies square @*/
 {
     int n;
 
-    for (n = 0; n < GF2_DIM; n++)
-        square[n] = gf2_matrix_times(mat, mat[n]);
+    for (n = 0; n < gf2_dim64; n++)
+        square[n] = gf2_matrix_times64(mat, mat[n]);
 }
 
 /**
@@ -204,8 +299,9 @@ static rpmuint64_t crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2
 {
     int n;
     rpmuint64_t row;
-    rpmuint64_t even[GF2_DIM];    /* even-power-of-two zeros operator */
-    rpmuint64_t odd[GF2_DIM];     /* odd-power-of-two zeros operator */
+    size_t nb = gf2_dim64 * sizeof(rpmuint64_t);
+    rpmuint64_t * even = alloca(nb);	/* even-power-of-two zeros operator */
+    rpmuint64_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
 
     /* degenerate case */
     if (len2 == 0)
@@ -214,24 +310,24 @@ static rpmuint64_t crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2
     /* put operator for one zero bit in odd */
     odd[0] = 0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
     row = 1;
-    for (n = 1; n < GF2_DIM; n++) {
+    for (n = 1; n < gf2_dim64; n++) {
         odd[n] = row;
         row <<= 1;
     }
 
     /* put operator for two zero bits in even */
-    gf2_matrix_square(even, odd);
+    gf2_matrix_square64(even, odd);
 
     /* put operator for four zero bits in odd */
-    gf2_matrix_square(odd, even);
+    gf2_matrix_square64(odd, even);
 
     /* apply len2 zeros to crc1 (first square will put the operator for one
        zero byte, eight zero bits, in even) */
     do {
         /* apply zeros operator for this bit of len2 */
-        gf2_matrix_square(even, odd);
+        gf2_matrix_square64(even, odd);
         if (len2 & 1)
-            crc1 = gf2_matrix_times(even, crc1);
+            crc1 = gf2_matrix_times64(even, crc1);
         len2 >>= 1;
 
         /* if no more bits set, then done */
@@ -239,9 +335,9 @@ static rpmuint64_t crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2
             break;
 
         /* another iteration of the loop with odd and even swapped */
-        gf2_matrix_square(odd, even);
+        gf2_matrix_square64(odd, even);
         if (len2 & 1)
-            crc1 = gf2_matrix_times(odd, crc1);
+            crc1 = gf2_matrix_times64(odd, crc1);
         len2 >>= 1;
 
         /* if no more bits set, then done */
@@ -501,11 +597,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) crc32;
-#if defined(ZLIB_H)
-#if defined(HAVE_ZLIB_CRC32_COMBINE)
 	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) crc32_combine;
-#endif
-#endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
@@ -522,12 +614,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-#if defined(ZLIB_H)
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) adler32;
-#if defined(HAVE_ZLIB_ADLER32_COMBINE)
 	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) adler32_combine;
-#endif
-#endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
