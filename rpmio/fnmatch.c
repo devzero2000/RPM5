@@ -3,171 +3,40 @@
 /*@-shiftimplementation@*/
 /*@-temptrans@*/
 /*@-unreachable@*/
-/* Copyright (C) 1991-1993, 1996-1999, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1991,1992,1993,1996,1997,1998,1999,2000,2001,2002,2003,2007
+	Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
 
-   This library is distributed in the hope that it will be useful,
+   The GNU C Library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, write to the Free
+   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+   02111-1307 USA.  */
 
-# include "system.h"
+#include "system.h"
 
-/* Find the first occurrence of C in S or the final NUL byte.  */
-static inline char *
-internal__strchrnul (const char *s, int c)
-{
-  const unsigned char *char_ptr;
-  const unsigned long int *longword_ptr;
-  unsigned long int longword, magic_bits, charmask;
+#include <string.h>
 
-/*@+charint@*/
-  c = (unsigned char) c;
-/*@=charint@*/
+#include "debug.h"
 
-  /* Handle the first few characters by reading one character at a time.
-     Do this until CHAR_PTR is aligned on a longword boundary.  */
-  for (char_ptr = (const unsigned char *)s; ((unsigned long int) char_ptr
-		      & (sizeof (longword) - 1)) != 0;
-       ++char_ptr)
-    if ((int)*char_ptr == c || *char_ptr == '\0')
-      return (void *) char_ptr;
+/* XXX Don't bother with wide and multibyte characters ... */
+#undef	HAVE_WCTYPE_H
+#undef	HAVE_WCHAR_H
+#undef	HAVE_MBSTATE_T
+#undef	HAVE_MBSRTOWCS
 
-  /* All these elucidatory comments refer to 4-byte longwords,
-     but the theory applies equally well to 8-byte longwords.  */
-
-  longword_ptr = (unsigned long int *) char_ptr;
-
-  /* Bits 31, 24, 16, and 8 of this number are zero.  Call these bits
-     the "holes."  Note that there is a hole just to the left of
-     each byte, with an extra at the end:
-
-     bits:  01111110 11111110 11111110 11111111
-     bytes: AAAAAAAA BBBBBBBB CCCCCCCC DDDDDDDD
-
-     The 1-bits make sure that carries propagate to the next 0-bit.
-     The 0-bits provide holes for carries to fall into.  */
-  switch (sizeof (longword))
-    {
-    case 4: magic_bits = 0x7efefeffL; break;
-    case 8: magic_bits = ((0x7efefefeL << 16) << 16) | 0xfefefeffL; break;
-    default:
-      abort ();
-    }
-
-  /* Set up a longword, each of whose bytes is C.  */
-  charmask = c | (c << 8);
-  charmask |= charmask << 16;
-  if (sizeof (longword) > 4)
-    /* Do the shift in two steps to avoid a warning if long has 32 bits.  */
-    charmask |= (charmask << 16) << 16;
-  if (sizeof (longword) > 8)
-    abort ();
-
-  /* Instead of the traditional loop which tests each character,
-     we will test a longword at a time.  The tricky part is testing
-     if *any of the four* bytes in the longword in question are zero.  */
-  for (;;)
-    {
-      /* We tentatively exit the loop if adding MAGIC_BITS to
-	 LONGWORD fails to change any of the hole bits of LONGWORD.
-
-	 1) Is this safe?  Will it catch all the zero bytes?
-	 Suppose there is a byte with all zeros.  Any carry bits
-	 propagating from its left will fall into the hole at its
-	 least significant bit and stop.  Since there will be no
-	 carry from its most significant bit, the LSB of the
-	 byte to the left will be unchanged, and the zero will be
-	 detected.
-
-	 2) Is this worthwhile?  Will it ignore everything except
-	 zero bytes?  Suppose every byte of LONGWORD has a bit set
-	 somewhere.  There will be a carry into bit 8.  If bit 8
-	 is set, this will carry into bit 16.  If bit 8 is clear,
-	 one of bits 9-15 must be set, so there will be a carry
-	 into bit 16.  Similarly, there will be a carry into bit
-	 24.  If one of bits 24-30 is set, there will be a carry
-	 into bit 31, so all of the hole bits will be changed.
-
-	 The one misfire occurs when bits 24-30 are clear and bit
-	 31 is set; in this case, the hole at bit 31 is not
-	 changed.  If we had access to the processor carry flag,
-	 we could close this loophole by putting the fourth hole
-	 at bit 32!
-
-	 So it ignores everything except 128's, when they're aligned
-	 properly.
-
-	 3) But wait!  Aren't we looking for C as well as zero?
-	 Good point.  So what we do is XOR LONGWORD with a longword,
-	 each of whose bytes is C.  This turns each byte that is C
-	 into a zero.  */
-
-      longword = *longword_ptr++;
-
-      /* Add MAGIC_BITS to LONGWORD.  */
-      if ((((longword + magic_bits)
-
-	    /* Set those bits that were unchanged by the addition.  */
-	    ^ ~longword)
-
-	   /* Look at only the hole bits.  If any of the hole bits
-	      are unchanged, most likely one of the bytes was a
-	      zero.  */
-	   & ~magic_bits) != 0 ||
-
-	  /* That caught zeroes.  Now test for C.  */
-	  ((((longword ^ charmask) + magic_bits) ^ ~(longword ^ charmask))
-	   & ~magic_bits) != 0)
-	{
-	  /* Which of the bytes was C or zero?
-	     If none of them were, it was a misfire; continue the search.  */
-
-	  const unsigned char *cp = (const unsigned char *) (longword_ptr - 1);
-
-	  if ((int)*cp == c || *cp == '\0')
-	    return (char *) cp;
-	  if ((int)*++cp == c || *cp == '\0')
-	    return (char *) cp;
-	  if ((int)*++cp == c || *cp == '\0')
-	    return (char *) cp;
-	  if ((int)*++cp == c || *cp == '\0')
-	    return (char *) cp;
-	  if (sizeof (longword) > 4)
-	    {
-	      if ((int)*++cp == c || *cp == '\0')
-		return (char *) cp;
-	      if ((int)*++cp == c || *cp == '\0')
-		return (char *) cp;
-	      if ((int)*++cp == c || *cp == '\0')
-		return (char *) cp;
-	      if ((int)*++cp == c || *cp == '\0')
-		return (char *) cp;
-	    }
-	}
-    }
-
-  /* This should never happen.  */
-  return NULL;
-}
-
-/* For platform which support the ISO C amendement 1 functionality we
-   support user defined character classes.  */
-#if defined _LIBC || (defined HAVE_WCTYPE_H && defined HAVE_WCHAR_H)
-/* Solaris 2.5 has a bug: <wchar.h> must be included before <wctype.h>.  */
-# include <wchar.h>
-# include <wctype.h>
-#endif
+/* We often have to test for FNM_FILE_NAME and FNM_PERIOD being both set.  */
+#define NO_LEADING_PERIOD(flags) \
+  ((flags & (FNM_FILE_NAME | FNM_PERIOD)) == (FNM_FILE_NAME | FNM_PERIOD))
 
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C
@@ -186,27 +55,27 @@ internal__strchrnul (const char *s, int c)
 #  define ISASCII(c) isascii(c)
 # endif
 
-#ifdef isblank
-# define ISBLANK(c) (ISASCII (c) && isblank (c))
-#else
-# define ISBLANK(c) ((c) == ' ' || (c) == '\t')
-#endif
-#ifdef isgraph
-# define ISGRAPH(c) (ISASCII (c) && isgraph (c))
-#else
-# define ISGRAPH(c) (ISASCII (c) && isprint (c) && !isspace (c))
-#endif
+# ifdef isblank
+#  define ISBLANK(c) (ISASCII (c) && isblank (c))
+# else
+#  define ISBLANK(c) ((c) == ' ' || (c) == '\t')
+# endif
+# ifdef isgraph
+#  define ISGRAPH(c) (ISASCII (c) && isgraph (c))
+# else
+#  define ISGRAPH(c) (ISASCII (c) && isprint (c) && !isspace (c))
+# endif
 
-#define ISPRINT(c) (ISASCII (c) && isprint (c))
-#define ISDIGIT(c) (ISASCII (c) && isdigit (c))
-#define ISALNUM(c) (ISASCII (c) && isalnum (c))
-#define ISALPHA(c) (ISASCII (c) && isalpha (c))
-#define ISCNTRL(c) (ISASCII (c) && iscntrl (c))
-#define ISLOWER(c) (ISASCII (c) && islower (c))
-#define ISPUNCT(c) (ISASCII (c) && ispunct (c))
-#define ISSPACE(c) (ISASCII (c) && isspace (c))
-#define ISUPPER(c) (ISASCII (c) && isupper (c))
-#define ISXDIGIT(c) (ISASCII (c) && isxdigit (c))
+# define ISPRINT(c) (ISASCII (c) && isprint (c))
+# define ISDIGIT(c) (ISASCII (c) && isdigit (c))
+# define ISALNUM(c) (ISASCII (c) && isalnum (c))
+# define ISALPHA(c) (ISASCII (c) && isalpha (c))
+# define ISCNTRL(c) (ISASCII (c) && iscntrl (c))
+# define ISLOWER(c) (ISASCII (c) && islower (c))
+# define ISPUNCT(c) (ISASCII (c) && ispunct (c))
+# define ISSPACE(c) (ISASCII (c) && isspace (c))
+# define ISUPPER(c) (ISASCII (c) && isupper (c))
+# define ISXDIGIT(c) (ISASCII (c) && isxdigit (c))
 
 # define STREQ(s1, s2) ((strcmp (s1, s2) == 0))
 
@@ -226,6 +95,18 @@ internal__strchrnul (const char *s, int c)
 #  else
 #   define IS_CHAR_CLASS(string) wctype (string)
 #  endif
+
+#  ifdef _LIBC
+#   define ISWCTYPE(WC, WT)	__iswctype (WC, WT)
+#  else
+#   define ISWCTYPE(WC, WT)	iswctype (WC, WT)
+#  endif
+
+#  if (HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || _LIBC
+/* In this case we are implementing the multibyte character handling.  */
+#   define HANDLE_MULTIBYTE	1
+#  endif
+
 # else
 #  define CHAR_CLASS_MAX_LENGTH  6 /* Namely, `xdigit'.  */
 
@@ -238,17 +119,25 @@ internal__strchrnul (const char *s, int c)
     || STREQ (string, "cntrl") || STREQ (string, "blank"))
 # endif
 
-/* Match STRING against the filename pattern PATTERN, returning zero if
-   it matches, nonzero if not.  */
-static int
-#ifdef _LIBC
-internal_function
-#endif
-internal_fnmatch (const char *pattern, const char *string,
-		  int no_leading_period, int flags)
-{
-  register const char *p = pattern, *n = string;
-  register unsigned char c;
+/* Avoid depending on library functions or files
+   whose names are inconsistent.  */
+
+# if defined __linux__ && (!defined _LIBC && !defined getenv)
+extern char *getenv ();
+# endif
+
+# ifndef errno
+extern int errno;
+# endif
+
+/* Global variable.  */
+static int posixly_correct;
+
+# ifndef internal_function
+/* Inside GNU libc we mark some function in a special way.  In other
+   environments simply ignore the marking.  */
+#  define internal_function
+# endif
 
 /* Note that this evaluates C many times.  */
 # ifdef _LIBC
@@ -256,352 +145,236 @@ internal_fnmatch (const char *pattern, const char *string,
 # else
 #  define FOLD(c) ((flags & FNM_CASEFOLD) && ISUPPER (c) ? tolower (c) : (c))
 # endif
-
-  while ((c = *p++) != '\0')
-    {
-      c = FOLD (c);
-
-      switch (c)
-	{
-	case '?':
-	  if (*n == '\0')
-	    return FNM_NOMATCH;
-	  else if (*n == '/' && (flags & FNM_FILE_NAME))
-	    return FNM_NOMATCH;
-	  else if (*n == '.' && no_leading_period
-		   && (n == string
-		       || (n[-1] == '/' && (flags & FNM_FILE_NAME))))
-	    return FNM_NOMATCH;
-	  break;
-
-	case '\\':
-	  if (!(flags & FNM_NOESCAPE))
-	    {
-	      c = *p++;
-	      if (c == '\0')
-		/* Trailing \ loses.  */
-		return FNM_NOMATCH;
-	      c = FOLD (c);
-	    }
-	  if (FOLD ((unsigned char) *n) != c)
-	    return FNM_NOMATCH;
-	  break;
-
-	case '*':
-	  if (*n == '.' && no_leading_period
-	      && (n == string
-		  || (n[-1] == '/' && (flags & FNM_FILE_NAME))))
-	    return FNM_NOMATCH;
-
-	  for (c = *p++; c == '?' || c == '*'; c = *p++)
-	    {
-	      if (*n == '/' && (flags & FNM_FILE_NAME))
-		/* A slash does not match a wildcard under FNM_FILE_NAME.  */
-		return FNM_NOMATCH;
-	      else if (c == '?')
-		{
-		  /* A ? needs to match one character.  */
-		  if (*n == '\0')
-		    /* There isn't another character; no match.  */
-		    return FNM_NOMATCH;
-		  else
-		    /* One character of the string is consumed in matching
-		       this ? wildcard, so *??? won't match if there are
-		       less than three characters.  */
-		    ++n;
-		}
-	    }
-
-	  if (c == '\0')
-	    /* The wildcard(s) is/are the last element of the pattern.
-	       If the name is a file name and contains another slash
-	       this does mean it cannot match.  If the FNM_LEADING_DIR
-	       flag is set and exactly one slash is following, we have
-	       a match.  */
-	    {
-	      int result = (flags & FNM_FILE_NAME) == 0 ? 0 : FNM_NOMATCH;
-
-	      if (flags & FNM_FILE_NAME)
-		{
-		  const char *slashp = strchr (n, '/');
-
-		  if (flags & FNM_LEADING_DIR)
-		    {
-		      if (slashp != NULL
-			  && strchr (slashp + 1, '/') == NULL)
-			result = 0;
-		    }
-		  else
-		    {
-		      if (slashp == NULL)
-			result = 0;
-		    }
-		}
-
-	      return result;
-	    }
-	  else
-	    {
-	      const char *endp;
-
-	      endp = internal__strchrnul (n, (flags & FNM_FILE_NAME) ? '/' : '\0');
-
-	      if (c == '[')
-		{
-		  int flags2 = ((flags & FNM_FILE_NAME)
-				? flags : (flags & ~FNM_PERIOD));
-
-		  for (--p; n < endp; ++n)
-		    if (internal_fnmatch (p, n,
-					  (no_leading_period
-					   && (n == string
-					       || (n[-1] == '/'
-						   && (flags
-						       & FNM_FILE_NAME)))),
-					  flags2)
-			== 0)
-		      return 0;
-		}
-	      else if (c == '/' && (flags & FNM_FILE_NAME))
-		{
-		  while (*n != '\0' && *n != '/')
-		    ++n;
-		  if (*n == '/'
-		      && (internal_fnmatch (p, n + 1, flags & FNM_PERIOD,
-					    flags) == 0))
-		    return 0;
-		}
-	      else
-		{
-		  int flags2 = ((flags & FNM_FILE_NAME)
-				? flags : (flags & ~FNM_PERIOD));
-
-		  if (c == '\\' && !(flags & FNM_NOESCAPE))
-		    c = *p;
-		  c = FOLD (c);
-		  for (--p; n < endp; ++n)
-		    if (FOLD ((unsigned char) *n) == c
-			&& (internal_fnmatch (p, n,
-					      (no_leading_period
-					       && (n == string
-						   || (n[-1] == '/'
-						       && (flags
-							   & FNM_FILE_NAME)))),
-					      flags2) == 0))
-		      return 0;
-		}
-	    }
-
-	  /* If we come here no match is possible with the wildcard.  */
-	  return FNM_NOMATCH;
-
-	case '[':
-	  {
-	    /* Nonzero if the sense of the character class is inverted.  */
-	    static int posixly_correct;
-	    register int not;
-	    char cold;
-
-	    if (posixly_correct == 0)
-	      posixly_correct = getenv ("POSIXLY_CORRECT") != NULL ? 1 : -1;
-
-	    if (*n == '\0')
-	      return FNM_NOMATCH;
-
-	    if (*n == '.' && no_leading_period && (n == string
-						   || (n[-1] == '/'
-						       && (flags
-							   & FNM_FILE_NAME))))
-	      return FNM_NOMATCH;
-
-	    if (*n == '/' && (flags & FNM_FILE_NAME))
-	      /* `/' cannot be matched.  */
-	      return FNM_NOMATCH;
-
-	    not = (*p == '!' || (posixly_correct < 0 && *p == '^'));
-	    if (not)
-	      ++p;
-
-	    c = *p++;
-	    for (;;)
-	      {
-		unsigned char fn = FOLD ((unsigned char) *n);
-
-		if (!(flags & FNM_NOESCAPE) && c == '\\')
-		  {
-		    if (*p == '\0')
-		      return FNM_NOMATCH;
-		    c = FOLD ((unsigned char) *p);
-		    ++p;
-
-		    if (c == fn)
-		      goto matched;
-		  }
-		else if (c == '[' && *p == ':')
-		  {
-		    /* Leave room for the null.  */
-		    char str[CHAR_CLASS_MAX_LENGTH + 1];
-		    size_t c1 = 0;
-# if defined _LIBC || (defined HAVE_WCTYPE_H && defined HAVE_WCHAR_H)
-		    wctype_t wt;
-# endif
-		    const char *startp = p;
-
-		    for (;;)
-		      {
-			if (c1 == CHAR_CLASS_MAX_LENGTH)
-			  /* The name is too long and therefore the pattern
-			     is ill-formed.  */
-			  return FNM_NOMATCH;
-
-			c = *++p;
-			if (c == ':' && p[1] == ']')
-			  {
-			    p += 2;
-			    break;
-			  }
-			if (c < 'a' || c >= 'z')
-			  {
-			    /* This cannot possibly be a character class name.
-			       Match it as a normal range.  */
-			    p = startp;
-			    c = '[';
-			    goto normal_bracket;
-			  }
-			str[c1++] = c;
-		      }
-		    str[c1] = '\0';
-
-# if defined _LIBC || (defined HAVE_WCTYPE_H && defined HAVE_WCHAR_H)
-		    wt = IS_CHAR_CLASS (str);
-		    if (wt == 0)
-		      /* Invalid character class name.  */
-		      return FNM_NOMATCH;
-
-		    if (__iswctype (__btowc ((unsigned char) *n), wt))
-		      goto matched;
+# define CHAR	char
+# define UCHAR	unsigned char
+# define INT	int
+# define FCT	internal_fnmatch
+# define EXT	ext_match
+# define END	end_pattern
+# define STRUCT	fnmatch_struct
+# define L(CS)	CS
+# ifdef _LIBC
+#  define BTOWC(C)	__btowc (C)
 # else
-		    if ((STREQ (str, "alnum") && ISALNUM ((unsigned char) *n))
-			|| (STREQ (str, "alpha") && ISALPHA ((unsigned char) *n))
-			|| (STREQ (str, "blank") && ISBLANK ((unsigned char) *n))
-			|| (STREQ (str, "cntrl") && ISCNTRL ((unsigned char) *n))
-			|| (STREQ (str, "digit") && ISDIGIT ((unsigned char) *n))
-			|| (STREQ (str, "graph") && ISGRAPH ((unsigned char) *n))
-			|| (STREQ (str, "lower") && ISLOWER ((unsigned char) *n))
-			|| (STREQ (str, "print") && ISPRINT ((unsigned char) *n))
-			|| (STREQ (str, "punct") && ISPUNCT ((unsigned char) *n))
-			|| (STREQ (str, "space") && ISSPACE ((unsigned char) *n))
-			|| (STREQ (str, "upper") && ISUPPER ((unsigned char) *n))
-			|| (STREQ (str, "xdigit") && ISXDIGIT ((unsigned char) *n)))
-		      goto matched;
+#  define BTOWC(C)	btowc (C)
 # endif
-		  }
-		else if (c == '\0')
-		  /* [ (unterminated) loses.  */
-		  return FNM_NOMATCH;
-		else
-		  {
-		    c = FOLD (c);
-		  normal_bracket:
-		    if (c == fn)
-		      goto matched;
-
-		    cold = c;
-		    c = *p++;
-
-		    if (c == '-' && *p != ']')
-		      {
-			/* It is a range.  */
-			char lo[2];
-			char fc[2];
-			unsigned char cend = *p++;
-			if (!(flags & FNM_NOESCAPE) && cend == '\\')
-			  cend = *p++;
-			if (cend == '\0')
-			  return FNM_NOMATCH;
-
-			lo[0] = cold;
-			lo[1] = '\0';
-			fc[0] = fn;
-			fc[1] = '\0';
-			if (strcoll (lo, fc) <= 0)
-			  {
-			    char hi[2];
-			    hi[0] = FOLD (cend);
-			    hi[1] = '\0';
-			    if (strcoll (fc, hi) <= 0)
-			      goto matched;
-			  }
-
-			c = *p++;
-		      }
-		  }
-
-		if (c == ']')
-		  break;
-	      }
-
-	    if (!not)
-	      return FNM_NOMATCH;
-	    break;
-
-	  matched:
-	    /* Skip the rest of the [...] that already matched.  */
-	    while (c != ']')
-	      {
-		if (c == '\0')
-		  /* [... (unterminated) loses.  */
-		  return FNM_NOMATCH;
-
-		c = *p++;
-		if (!(flags & FNM_NOESCAPE) && c == '\\')
-		  {
-		    if (*p == '\0')
-		      return FNM_NOMATCH;
-		    /* XXX 1003.2d11 is unclear if this is right.  */
-		    ++p;
-		  }
-		else if (c == '[' && *p == ':')
-		  {
-		    do
-		      if (*++p == '\0')
-			return FNM_NOMATCH;
-		    while (*p != ':' || p[1] == ']');
-		    p += 2;
-		    c = *p;
-		  }
-	      }
-	    if (not)
-	      return FNM_NOMATCH;
-	  }
-	  break;
-
-	default:
-	  if (c != FOLD ((unsigned char) *n))
-	    return FNM_NOMATCH;
-	}
-
-      ++n;
-    }
-
-  if (*n == '\0')
-    return 0;
-
-  if ((flags & FNM_LEADING_DIR) && *n == '/')
-    /* The FNM_LEADING_DIR flag says that "foo*" matches "foobar/frobozz".  */
-    return 0;
-
-  return FNM_NOMATCH;
-
-# undef FOLD
+# define STRLEN(S) strlen (S)
+# define STRCAT(D, S) strcat (D, S)
+# if defined HAVE_MEMPCPY
+# define MEMPCPY(D, S, N) mempcpy (D, S, N)
+#else
+# define MEMPCPY(D, S, N) __fnmatch_mempcpy (D, S, N)
+static void *__fnmatch_mempcpy(void *, const void *, size_t);
+static void *__fnmatch_mempcpy(void *dest, const void *src, size_t n)
+{
+    return (void *)((char *)memcpy(dest, src, n) + n);
 }
+#endif
+# define MEMCHR(S, C, N) memchr (S, C, N)
+# define STRCOLL(S1, S2) strcoll (S1, S2)
+# include "fnmatch_loop.c"
+
+
+# if HANDLE_MULTIBYTE
+/* Note that this evaluates C many times.  */
+#  ifdef _LIBC
+#   define FOLD(c) ((flags & FNM_CASEFOLD) ? towlower (c) : (c))
+#  else
+#   define FOLD(c) ((flags & FNM_CASEFOLD) && ISUPPER (c) ? towlower (c) : (c))
+#  endif
+#  define CHAR	wchar_t
+#  define UCHAR	wint_t
+#  define INT	wint_t
+#  define FCT	internal_fnwmatch
+#  define EXT	ext_wmatch
+#  define END	end_wpattern
+#  define STRUCT fnwmatch_struct
+#  define L(CS)	L##CS
+#  define BTOWC(C)	(C)
+#  define STRLEN(S) __wcslen (S)
+#  define STRCAT(D, S) __wcscat (D, S)
+#  define MEMPCPY(D, S, N) __wmempcpy (D, S, N)
+#  define MEMCHR(S, C, N) wmemchr (S, C, N)
+#  define STRCOLL(S1, S2) wcscoll (S1, S2)
+#  define WIDE_CHAR_VERSION 1
+
+#  undef IS_CHAR_CLASS
+/* We have to convert the wide character string in a multibyte string.  But
+   we know that the character class names consist of alphanumeric characters
+   from the portable character set, and since the wide character encoding
+   for a member of the portable character set is the same code point as
+   its single-byte encoding, we can use a simplified method to convert the
+   string to a multibyte character string.  */
+static wctype_t
+is_char_class (const wchar_t *wcs)
+{
+  char s[CHAR_CLASS_MAX_LENGTH + 1];
+  char *cp = s;
+
+  do
+    {
+      /* Test for a printable character from the portable character set.  */
+#  ifdef _LIBC
+      if (*wcs < 0x20 || *wcs > 0x7e
+	  || *wcs == 0x24 || *wcs == 0x40 || *wcs == 0x60)
+	return (wctype_t) 0;
+#  else
+      switch (*wcs)
+	{
+	case L' ': case L'!': case L'"': case L'#': case L'%':
+	case L'&': case L'\'': case L'(': case L')': case L'*':
+	case L'+': case L',': case L'-': case L'.': case L'/':
+	case L'0': case L'1': case L'2': case L'3': case L'4':
+	case L'5': case L'6': case L'7': case L'8': case L'9':
+	case L':': case L';': case L'<': case L'=': case L'>':
+	case L'?':
+	case L'A': case L'B': case L'C': case L'D': case L'E':
+	case L'F': case L'G': case L'H': case L'I': case L'J':
+	case L'K': case L'L': case L'M': case L'N': case L'O':
+	case L'P': case L'Q': case L'R': case L'S': case L'T':
+	case L'U': case L'V': case L'W': case L'X': case L'Y':
+	case L'Z':
+	case L'[': case L'\\': case L']': case L'^': case L'_':
+	case L'a': case L'b': case L'c': case L'd': case L'e':
+	case L'f': case L'g': case L'h': case L'i': case L'j':
+	case L'k': case L'l': case L'm': case L'n': case L'o':
+	case L'p': case L'q': case L'r': case L's': case L't':
+	case L'u': case L'v': case L'w': case L'x': case L'y':
+	case L'z': case L'{': case L'|': case L'}': case L'~':
+	  break;
+	default:
+	  return (wctype_t) 0;
+	}
+#  endif
+
+      /* Avoid overrunning the buffer.  */
+      if (cp == s + CHAR_CLASS_MAX_LENGTH)
+	return (wctype_t) 0;
+
+      *cp++ = (char) *wcs++;
+    }
+  while (*wcs != L'\0');
+
+  *cp = '\0';
+
+#  ifdef _LIBC
+  return __wctype (s);
+#  else
+  return wctype (s);
+#  endif
+}
+#  define IS_CHAR_CLASS(string) is_char_class (string)
+
+#  include "fnmatch_loop.c"
+# endif
 
 
 int
-fnmatch (const char *pattern, const char *string, int flags)
+fnmatch (pattern, string, flags)
+     const char *pattern;
+     const char *string;
+     int flags;
 {
-  return internal_fnmatch (pattern, string, flags & FNM_PERIOD, flags);
+# if HANDLE_MULTIBYTE
+  if (__builtin_expect (MB_CUR_MAX, 1) != 1)
+    {
+      mbstate_t ps;
+      size_t n;
+      const char *p;
+      wchar_t *wpattern;
+      wchar_t *wstring;
+
+      /* Convert the strings into wide characters.  */
+      memset (&ps, '\0', sizeof (ps));
+      p = pattern;
+#ifdef _LIBC
+      n = strnlen (pattern, 1024);
+#else
+      n = strlen (pattern);
+#endif
+      if (__builtin_expect (n < 1024, 1))
+	{
+	  wpattern = (wchar_t *) alloca ((n + 1) * sizeof (wchar_t));
+	  n = mbsrtowcs (wpattern, &p, n + 1, &ps);
+	  if (__builtin_expect (n == (size_t) -1, 0))
+	    /* Something wrong.
+	       XXX Do we have to set `errno' to something which mbsrtows hasn't
+	       already done?  */
+	    return -1;
+	  if (p)
+	    {
+	      memset (&ps, '\0', sizeof (ps));
+	      goto prepare_wpattern;
+	    }
+	}
+      else
+	{
+	prepare_wpattern:
+	  n = mbsrtowcs (NULL, &pattern, 0, &ps);
+	  if (__builtin_expect (n == (size_t) -1, 0))
+	    /* Something wrong.
+	       XXX Do we have to set `errno' to something which mbsrtows hasn't
+	       already done?  */
+	    return -1;
+	  wpattern = (wchar_t *) alloca ((n + 1) * sizeof (wchar_t));
+	  assert (mbsinit (&ps));
+	  (void) mbsrtowcs (wpattern, &pattern, n + 1, &ps);
+	}
+
+      assert (mbsinit (&ps));
+#ifdef _LIBC
+      n = strnlen (string, 1024);
+#else
+      n = strlen (string);
+#endif
+      p = string;
+      if (__builtin_expect (n < 1024, 1))
+	{
+	  wstring = (wchar_t *) alloca ((n + 1) * sizeof (wchar_t));
+	  n = mbsrtowcs (wstring, &p, n + 1, &ps);
+	  if (__builtin_expect (n == (size_t) -1, 0))
+	    /* Something wrong.
+	       XXX Do we have to set `errno' to something which mbsrtows hasn't
+	       already done?  */
+	    return -1;
+	  if (p)
+	    {
+	      memset (&ps, '\0', sizeof (ps));
+	      goto prepare_wstring;
+	    }
+	}
+      else
+	{
+	prepare_wstring:
+	  n = mbsrtowcs (NULL, &string, 0, &ps);
+	  if (__builtin_expect (n == (size_t) -1, 0))
+	    /* Something wrong.
+	       XXX Do we have to set `errno' to something which mbsrtows hasn't
+	       already done?  */
+	    return -1;
+	  wstring = (wchar_t *) alloca ((n + 1) * sizeof (wchar_t));
+	  assert (mbsinit (&ps));
+	  (void) mbsrtowcs (wstring, &string, n + 1, &ps);
+	}
+
+      return internal_fnwmatch (wpattern, wstring, wstring + n,
+				flags & FNM_PERIOD, flags, NULL);
+    }
+# endif  /* mbstate_t and mbsrtowcs or _LIBC.  */
+
+  return internal_fnmatch (pattern, string, string + strlen (string),
+			   flags & FNM_PERIOD, flags, NULL);
 }
+
+# ifdef _LIBC
+#  undef fnmatch
+versioned_symbol (libc, __fnmatch, fnmatch, GLIBC_2_2_3);
+#  if SHLIB_COMPAT(libc, GLIBC_2_0, GLIBC_2_2_3)
+strong_alias (__fnmatch, __fnmatch_old)
+compat_symbol (libc, __fnmatch_old, fnmatch, GLIBC_2_0);
+#  endif
+libc_hidden_ver (__fnmatch, fnmatch)
+# endif
 
 #endif	/* _LIBC or not __GNU_LIBRARY__.  */
 /*@=unreachable@*/
