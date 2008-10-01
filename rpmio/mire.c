@@ -26,7 +26,7 @@ mireEL_t _mireEL = EL_LF;
 int _mireSTRINGoptions = 0;
 
 /*@unchecked@*/
-int _mireGLOBoptions = FNM_PATHNAME | FNM_PERIOD;
+int _mireGLOBoptions = FNM_EXTMATCH | FNM_PATHNAME | FNM_PERIOD;
 
 /*@unchecked@*/
 int _mireREGEXoptions = REG_EXTENDED | REG_NEWLINE;
