@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-18 14:30-0400\n"
+"POT-Creation-Date: 2008-10-01 11:05-0400\n"
 "PO-Revision-Date: 2008-04-11 21:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -660,7 +660,7 @@ msgstr "cpio_copy: lỗi ghi: %s\n"
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy: lỗi đọc: %s\n"
 
-#: build/pack.c:223 build/pack.c:237
+#: build/pack.c:223
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Không thể mở tập tin PreIn (cài đặt sẵn): %s\n"
@@ -670,15 +670,25 @@ msgstr "Không thể mở tập tin PreIn (cài đặt sẵn): %s\n"
 msgid "Could not open PreUn file: %s\n"
 msgstr "Không thể mở tập tin PreUn (xoá sẵn): %s\n"
 
+#: build/pack.c:237
+#, fuzzy, c-format
+msgid "Could not open PreTrans file: %s\n"
+msgstr "Không thể mở tập tin PreIn (cài đặt sẵn): %s\n"
+
 #: build/pack.c:244
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Không thể mở tập tin PostIn (cài đặt cuối): %s\n"
 
-#: build/pack.c:251 build/pack.c:258
+#: build/pack.c:251
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Không thể mở tập tin PostUn (xoá cuối): %s\n"
+
+#: build/pack.c:258
+#, fuzzy, c-format
+msgid "Could not open PostTrans file: %s\n"
+msgstr "Không thể mở tập tin PostIn (cài đặt cuối): %s\n"
 
 #: build/pack.c:266
 #, c-format
@@ -738,7 +748,7 @@ msgstr "Không thể nạp lại phần đầu chữ ký.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Không thể mở %s: %s\n"
 
-#: build/pack.c:836 lib/psm.c:2001
+#: build/pack.c:836 lib/psm.c:2191
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Không thể ghi gói: %s\n"
@@ -758,7 +768,7 @@ msgstr "Không thể đọc trọng tải từ %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Không thể ghi trọng tải vào %s: %s\n"
 
-#: build/pack.c:944 lib/psm.c:2316
+#: build/pack.c:944 lib/psm.c:2506
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Đã ghi: %s\n"
@@ -1484,21 +1494,21 @@ msgstr "(cung cấp CDSL)"
 msgid "(hint skipped)"
 msgstr "(bỏ qua lời gợi ý)"
 
-#: lib/depends.c:1905
+#: lib/depends.c:1906
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "bỏ qua quan hệ giữa các tên gói [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2028
+#: lib/depends.c:2029
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "đang gỡ bỏ %s « %s » khỏi quan hệ sắp xếp tsort.\n"
 
-#: lib/depends.c:2612
+#: lib/depends.c:2613
 msgid "LOOP:\n"
 msgstr "VÒNG LẶP:\n"
 
-#: lib/depends.c:2648
+#: lib/depends.c:2649
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder bị lỗi, %d phần tử còn lại\n"
@@ -1533,43 +1543,43 @@ msgstr "%5d 0x%04x %s %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "tập tin %s nằm trên thiết bị không rõ\n"
 
-#: lib/fsm.c:913 rpmio/iosm.c:976
+#: lib/fsm.c:915 rpmio/iosm.c:976
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "người dùng %s không tồn tại nên dùng người chủ (root)\n"
 
-#: lib/fsm.c:927 rpmio/iosm.c:990
+#: lib/fsm.c:929 rpmio/iosm.c:990
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "nhóm %s không tồn tại nên dùng người chủ (root)\n"
 
-#: lib/fsm.c:1801 rpmio/iosm.c:1868
+#: lib/fsm.c:1803 rpmio/iosm.c:1868
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "không tìm thấy tập tin kho nén %s trong danh sách các tập tin phần đầu\n"
 
-#: lib/fsm.c:1944 lib/fsm.c:2064 rpmio/iosm.c:2013 rpmio/iosm.c:2132
+#: lib/fsm.c:1946 lib/fsm.c:2066 rpmio/iosm.c:2013 rpmio/iosm.c:2132
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s được lưu dạng %s\n"
 
-#: lib/fsm.c:2091
+#: lib/fsm.c:2093
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "Lỗi rmdir (gỡ bỏ thư mục) %s %s: thư mục chưa rỗng\n"
 
-#: lib/fsm.c:2097
+#: lib/fsm.c:2099
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Lỗi rmdir (gỡ bỏ thư mục) %s %s: %s\n"
 
-#: lib/fsm.c:2112
+#: lib/fsm.c:2114
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: lỗi bỏ liên kết %s: %s\n"
 
-#: lib/fsm.c:2137 rpmio/iosm.c:2205
+#: lib/fsm.c:2139 rpmio/iosm.c:2205
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s được tạo dạng %s\n"
@@ -2243,63 +2253,63 @@ msgstr "đặt mức tin cậy cuối cùng khi nhập khoá công"
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "hủy đặt mức tin cậy cuối cùng khi nhập khoá công"
 
-#: lib/psm.c:184
+#: lib/psm.c:187
 msgid "source package expected, binary found\n"
 msgstr "đợi gói nguồn còn tìm thấy gói nhị phân\n"
 
-#: lib/psm.c:291 lib/psm.c:307
+#: lib/psm.c:294 lib/psm.c:310
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "không thể ghi vào  %%%s %s\n"
 
-#: lib/psm.c:343
+#: lib/psm.c:346
 msgid "source package contains no .spec file\n"
 msgstr "gói nguồn không chứa tập tin đặc tả\n"
 
-#: lib/psm.c:903 lib/rpmfc.c:109
+#: lib/psm.c:916 lib/rpmfc.c:109
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Không thể tạo tiến trình con %s: %s\n"
 
-#: lib/psm.c:914
+#: lib/psm.c:927
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:924
+#: lib/psm.c:937
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi, tín hiệu %d\n"
 
-#: lib/psm.c:930
+#: lib/psm.c:943
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi, trạng thái thoát %d\n"
 
-#: lib/psm.c:1893
+#: lib/psm.c:2083
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s(%s): vi văn lệnh bị lỗi (%d) nên bỏ qua %s\n"
 
-#: lib/psm.c:2014
+#: lib/psm.c:2204
 msgid "Unable to reload signature header\n"
 msgstr "Không thể nạp lại phần đầu chữ ký\n"
 
-#: lib/psm.c:2141
+#: lib/psm.c:2331
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "lỗi giải nén kho %s%s: %s\n"
 
-#: lib/psm.c:2142
+#: lib/psm.c:2332
 msgid " on file "
 msgstr " ở tập tin"
 
-#: lib/psm.c:2325
+#: lib/psm.c:2515
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s bị lỗi ở tập tin %s: %s\n"
 
-#: lib/psm.c:2328
+#: lib/psm.c:2518
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s bị lỗi: %s\n"
@@ -2485,101 +2495,101 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:905 lib/rpmds.c:3681
+#: lib/rpmds.c:892 lib/rpmds.c:3656
 msgid "NO "
 msgstr "KHÔNG "
 
-#: lib/rpmds.c:905 lib/rpmds.c:3681
+#: lib/rpmds.c:892 lib/rpmds.c:3656
 msgid "YES"
 msgstr "CÓ"
 
-#: lib/rpmds.c:1394
+#: lib/rpmds.c:1381
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Cả kiểu quan hệ phụ thuộc PreReq: (điều kiện tiên quyết), Provides: (cung "
 "cấp) và Obsoletes: (làm cũ) đều hỗ trợ phiên bản."
 
-#: lib/rpmds.c:1397
+#: lib/rpmds.c:1384
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "tên tập tin được cất giữ dạng một đối tượng dữ liệu đa thành phần (dirName,"
 "baseName,dirIndex), không phải dạng đường dẫn."
 
-#: lib/rpmds.c:1401
+#: lib/rpmds.c:1388
 msgid "package payload can be compressed using bzip2."
 msgstr "trọng tải của gói có thể được nén bằng bzip2."
 
-#: lib/rpmds.c:1405
+#: lib/rpmds.c:1392
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "tập tin trọng tải gói có tiền tố « ./ »."
 
-#: lib/rpmds.c:1408
+#: lib/rpmds.c:1395
 msgid "package name-version-release is not implicitly provided."
 msgstr "không cung cấp dứt khoát tên-phiên_bản-bản_phát_hành của gói."
 
-#: lib/rpmds.c:1411
+#: lib/rpmds.c:1398
 msgid "header tags are always sorted after being loaded."
 msgstr "các thẻ của phần đầu luôn được sắp xếp sau khi được nạp."
 
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1401
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "bộ phiên dịch vi văn lệnh có thể sử dụng các đối số từ phần đầu."
 
-#: lib/rpmds.c:1417
+#: lib/rpmds.c:1404
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "một bộ tập tin đường liên kết cứng chưa hoàn toàn cũng có thể được cài đặt"
 
-#: lib/rpmds.c:1420
+#: lib/rpmds.c:1407
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "vi văn lệnh của gói cũng có thể truy cập cơ sở dữ liệu RPM trong khi cài đặt."
 
-#: lib/rpmds.c:1424
+#: lib/rpmds.c:1411
 msgid "internal support for lua scripts."
 msgstr "hỗ trợ nội bộ văn lệnh lua."
 
-#: lib/rpmds.c:1428
+#: lib/rpmds.c:1415
 msgid "header tag data can be of type uint64_t."
 msgstr "cũng có thể dùng dữ liệu thẻ phần đầu kiểu uint64_t."
 
-#: lib/rpmds.c:1431
+#: lib/rpmds.c:1418
 msgid "package payload can be in ustar tar archive format."
 msgstr "trọng tải gói cũng có thể theo định dạng kho nén tar ustar."
 
-#: lib/rpmds.c:1434
+#: lib/rpmds.c:1421
 msgid "package payload can be compressed using lzma."
 msgstr "trọng tải gói cũng có thể được nén bằng lzma."
 
-#: lib/rpmds.c:1437
+#: lib/rpmds.c:1424
 msgid "file digests can be other than MD5."
 msgstr "bản tóm tắt tập tin có thể khác với MD5."
 
-#: lib/rpmds.c:1441
+#: lib/rpmds.c:1428
 msgid "package payload can be in ar archive format."
 msgstr "trọng tải gói cũng có thể theo định dạng kho nén ar."
 
-#: lib/rpmds.c:1532 lib/rpmds.c:3511
+#: lib/rpmds.c:1519 lib/rpmds.c:3486
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" có tên sai nên bỏ qua ...\n"
 
-#: lib/rpmds.c:1555 lib/rpmds.c:3528
+#: lib/rpmds.c:1542 lib/rpmds.c:3503
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" không có toán tử so sánh nên bỏ qua ...\n"
 
-#: lib/rpmds.c:1566 lib/rpmds.c:3543
+#: lib/rpmds.c:1553 lib/rpmds.c:3518
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" không có chuỗi EVR nên bỏ qua ...\n"
 
-#: lib/rpmds.c:3510 lib/rpmds.c:3527 lib/rpmds.c:3539
+#: lib/rpmds.c:3485 lib/rpmds.c:3502 lib/rpmds.c:3514
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "đang chạy câu lệnh ống dẫn « %s »\n"
 
-#: lib/rpmds.c:3541
+#: lib/rpmds.c:3516
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2588,7 +2598,7 @@ msgstr ""
 "\tdòng %d: Không tìm thấy giá trị so sánh EVR\n"
 " nên bỏ qua ..."
 
-#: lib/rpmds.c:3646
+#: lib/rpmds.c:3621
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2597,7 +2607,7 @@ msgstr ""
 "Quan hệ phụ thuộc « B » cần một khởi đầu (giả sử cùng một khởi đầu với « A »)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:3680
+#: lib/rpmds.c:3655
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
@@ -3020,8 +3030,8 @@ msgid "(invalid type :base64)"
 msgstr "(kiểu không hợp lệ)"
 
 #: rpmdb/hdrfmt.c:737 rpmdb/hdrfmt.c:745 rpmdb/hdrfmt.c:775
-#: rpmdb/hdrfmt.c:3199 rpmdb/hdrfmt.c:3207 rpmdb/hdrfmt.c:3686
-#: rpmdb/hdrfmt.c:3704
+#: rpmdb/hdrfmt.c:3189 rpmdb/hdrfmt.c:3197 rpmdb/hdrfmt.c:3676
+#: rpmdb/hdrfmt.c:3694
 msgid "(not a string)"
 msgstr "(không phải chuỗi)"
 
@@ -3041,125 +3051,125 @@ msgstr "(không phải blob)"
 msgid "(not an OpenPGP signature)"
 msgstr "(không phải chữ ký OpenPGP)"
 
-#: rpmdb/hdrfmt.c:3903
+#: rpmdb/hdrfmt.c:3893
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:3960
+#: rpmdb/hdrfmt.c:3950
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:4121
+#: rpmdb/hdrfmt.c:4111
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:4181
+#: rpmdb/hdrfmt.c:4171
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:4193
+#: rpmdb/hdrfmt.c:4183
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:4209
+#: rpmdb/hdrfmt.c:4199
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "gặp định dạng truy vấn bất thường"
 
-#: rpmdb/hdrfmt.c:4213
+#: rpmdb/hdrfmt.c:4203
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4219
+#: rpmdb/hdrfmt.c:4209
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(kiểu XML không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:4224
+#: rpmdb/hdrfmt.c:4214
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4237
+#: rpmdb/hdrfmt.c:4227
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4280
+#: rpmdb/hdrfmt.c:4270
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:4285
+#: rpmdb/hdrfmt.c:4275
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(kiểu YAML không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:5123
+#: rpmdb/hdrfmt.c:5113
 msgid "missing { after %"
 msgstr "thiếu dấu ngoặc móc mở « { » sau %"
 
-#: rpmdb/hdrfmt.c:5157
+#: rpmdb/hdrfmt.c:5147
 msgid "missing } after %{"
 msgstr "thiếu dấu ngoặc móc đóng « } » sau %("
 
-#: rpmdb/hdrfmt.c:5173
+#: rpmdb/hdrfmt.c:5163
 msgid "empty tag format"
 msgstr "định dạng thẻ rỗng"
 
-#: rpmdb/hdrfmt.c:5193
+#: rpmdb/hdrfmt.c:5183
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "đối số ghi ngày/giờ mục đích arbgoal dạng sai"
 
-#: rpmdb/hdrfmt.c:5214
+#: rpmdb/hdrfmt.c:5204
 msgid "empty tag name"
 msgstr "tên thẻ rỗng"
 
-#: rpmdb/hdrfmt.c:5223
+#: rpmdb/hdrfmt.c:5213
 msgid "unknown tag"
 msgstr "thẻ lạ"
 
-#: rpmdb/hdrfmt.c:5253
+#: rpmdb/hdrfmt.c:5243
 msgid "] expected at end of array"
 msgstr "đợi dấu ngoặc vu đóng « ] » ở kết thúc của mảng"
 
-#: rpmdb/hdrfmt.c:5270
+#: rpmdb/hdrfmt.c:5260
 msgid "unexpected ]"
 msgstr "gặp dấu ngoặc vu đóng « ] » bất thường"
 
-#: rpmdb/hdrfmt.c:5285
+#: rpmdb/hdrfmt.c:5275
 msgid "unexpected }"
 msgstr "gặp dấu ngoặc móc đóng « } » bất thường"
 
-#: rpmdb/hdrfmt.c:5364
+#: rpmdb/hdrfmt.c:5354
 msgid "? expected in expression"
 msgstr "đợi dấu hỏi « ? » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:5371
+#: rpmdb/hdrfmt.c:5361
 msgid "{ expected after ? in expression"
 msgstr "đợi dấu ngoặc móc mở « { » sau dấu hỏi « ? » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:5383 rpmdb/hdrfmt.c:5423
+#: rpmdb/hdrfmt.c:5373 rpmdb/hdrfmt.c:5413
 msgid "} expected in expression"
 msgstr "đợi dấu ngoặc móc đóng « } » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:5391
+#: rpmdb/hdrfmt.c:5381
 msgid ": expected following ? subexpression"
 msgstr "đợi dấu hai chấm « : » theo sau biểu thức phụ dấu hỏi « ? »"
 
-#: rpmdb/hdrfmt.c:5409
+#: rpmdb/hdrfmt.c:5399
 msgid "{ expected after : in expression"
 msgstr "đợi dấu ngoặc móc mở « { » sau dấu hai chấm « : » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:5431
+#: rpmdb/hdrfmt.c:5421
 msgid "| expected at end of expression"
 msgstr "đợi ký hiệu ống dẫn « | » ở kết thúc của biểu thức"
 
-#: rpmdb/hdrfmt.c:5765
+#: rpmdb/hdrfmt.c:5755
 msgid "array iterator used with different sized arrays"
 msgstr "đồ lặp lại mảng được sử dụng với các mảng có kích cỡ khác nhau"
 
@@ -3343,121 +3353,126 @@ msgstr "hdr blob(%u): XẤU, hàm đọc đã trà về %d"
 msgid "hdr load: BAD\n"
 msgstr "nạp hdr: XẤU\n"
 
-#: rpmdb/rpmdb.c:392
+#: rpmdb/rpmdb.c:393
 #, c-format
 msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
 msgstr "không thể mở chỉ mục %s(%u) dùng db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:412
+#: rpmdb/rpmdb.c:413
 #, c-format
 msgid "cannot open %s(%u) index\n"
 msgstr "không thể mở chỉ mục %s(%u)\n"
 
-#: rpmdb/rpmdb.c:860
+#: rpmdb/rpmdb.c:861
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "định dạng không đúng: « %s »: %s\n"
 
-#: rpmdb/rpmdb.c:1183
+#: rpmdb/rpmdb.c:1184
 msgid "no dbpath has been set\n"
 msgstr "chưa đặt đường dẫn cơ sở dữ liệu (dbpath)\n"
 
-#: rpmdb/rpmdb.c:1487 rpmdb/rpmdb.c:1633 rpmdb/rpmdb.c:1695 rpmdb/rpmdb.c:2549
-#: rpmdb/rpmdb.c:2714 rpmdb/rpmdb.c:3005 rpmdb/rpmdb.c:3449
+#: rpmdb/rpmdb.c:1488 rpmdb/rpmdb.c:1634 rpmdb/rpmdb.c:1696 rpmdb/rpmdb.c:2550
+#: rpmdb/rpmdb.c:2715 rpmdb/rpmdb.c:3059 rpmdb/rpmdb.c:3503
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "gặp lỗi (%d) khi lấy mục ghi từ chỉ mục %s\n"
 
-#: rpmdb/rpmdb.c:1902
+#: rpmdb/rpmdb.c:1903
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: đang bỏ qua"
 
-#: rpmdb/rpmdb.c:1913
+#: rpmdb/rpmdb.c:1914
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "gặp lỗi (%d) khi lưu mục ghi số %d vào %s\n"
 
-#: rpmdb/rpmdb.c:2438
+#: rpmdb/rpmdb.c:2439
 msgid "rpmdb: skipping"
 msgstr "rpmdb: đang bỏ qua"
 
-#: rpmdb/rpmdb.c:2438
+#: rpmdb/rpmdb.c:2439
 msgid "rpmdb: read"
 msgstr "rpmdb: đọc"
 
-#: rpmdb/rpmdb.c:2469
+#: rpmdb/rpmdb.c:2470
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: lấy được phần đầu bị hỏng số %u nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2778
+#: rpmdb/rpmdb.c:2794
+#, fuzzy, c-format
+msgid "error(%d) getting keys from %s index\n"
+msgstr "gặp lỗi (%d) khi lấy mục ghi từ chỉ mục %s\n"
+
+#: rpmdb/rpmdb.c:2832
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"
 
-#: rpmdb/rpmdb.c:2856
+#: rpmdb/rpmdb.c:2910
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "gặp lỗi (%d) khi đặt mục ghi phần đầu số %d để gỡ bỏ %s\n"
 
-#: rpmdb/rpmdb.c:3026 rpmdb/rpmdb.c:3468
+#: rpmdb/rpmdb.c:3080 rpmdb/rpmdb.c:3522
 #, c-format
 msgid "error(%d) storing record into %s\n"
 msgstr "gặp lỗi (%d) khi lưu mục ghi vào %s\n"
 
-#: rpmdb/rpmdb.c:3036
+#: rpmdb/rpmdb.c:3090
 #, c-format
 msgid "error(%d) removing record from %s\n"
 msgstr "gặp lỗi (%d) khi gỡ bỏ mục ghi khỏi %s\n"
 
-#: rpmdb/rpmdb.c:3182
+#: rpmdb/rpmdb.c:3236
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "gặp lỗi (%d) khi cấp phát gói mới cụ thể\n"
 
-#: rpmdb/rpmdb.c:3254
+#: rpmdb/rpmdb.c:3308
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: đang bỏ qua"
 
-#: rpmdb/rpmdb.c:3918
+#: rpmdb/rpmdb.c:3968
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "cơ sở dữ liệu tạm thời %s đã có\n"
 
-#: rpmdb/rpmdb.c:3926
+#: rpmdb/rpmdb.c:3976
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "đang tạo thư mục %s: %s\n"
 
-#: rpmdb/rpmdb.c:3973
+#: rpmdb/rpmdb.c:4023
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "cơ sở dữ liệu chứa một phần đầu sai (số %u) nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:3981
+#: rpmdb/rpmdb.c:4031
 #, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "cơ sở dữ liệu chứa một phần đầu SRPM (số %u) nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:4021
+#: rpmdb/rpmdb.c:4071
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "không thể thêm mục ghi nằm đầu tiên ở %u\n"
 
-#: rpmdb/rpmdb.c:4035
+#: rpmdb/rpmdb.c:4085
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "lỗi xây dựng lại cơ sở dữ liệu : cơ sở dữ liệu gốc còn lại tại chỗ\n"
 
-#: rpmdb/rpmdb.c:4047
+#: rpmdb/rpmdb.c:4097
 msgid "failed to replace old database with new database!\n"
 msgstr "lỗi thay thế cơ sở dữ liệu cũ bằng cơ sở dữ liệu mới.\n"
 
-#: rpmdb/rpmdb.c:4049
+#: rpmdb/rpmdb.c:4099
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "để phục hồi thì thay thế các tập tin trong %s bằng các tập tin từ %s"
 
-#: rpmdb/rpmdb.c:4061
+#: rpmdb/rpmdb.c:4111
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "lỗi gỡ bỏ thư mục %s: %s\n"
