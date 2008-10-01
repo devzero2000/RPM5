@@ -141,7 +141,7 @@ int argvFnmatchCasefold(const void * a, const void * b)
  * @return		0 always
  */
 int argiSort(ARGI_t argi, int (*compar)(const void *, const void *))
-	/*@modifies *argi @*/;
+	/*@*/;
 
 /**
  * Sort an argv array.

@@ -79,6 +79,7 @@ static rpmuint32_t crc32(rpmuint32_t crc, const byte * data, size_t size)
 /*
  * Swiped from zlib, using rpmuint32_t rather than unsigned long computation.
  */
+/*@unchecked@*/
 static int gf2_dim32 = 32;
 
 /**
@@ -111,12 +112,13 @@ static void gf2_matrix_square32(/*@out@*/ rpmuint32_t *square, rpmuint32_t *mat)
 
 /**
  */
+/*@-shadow@*/
 static rpmuint32_t crc32_combine(rpmuint32_t crc1, rpmuint32_t crc2, size_t len2)
 	/*@*/
 {
     int n;
     rpmuint32_t row;
-    size_t nb = gf2_dim32 * sizeof(rpmuint32_t);
+    size_t nb = gf2_dim32 * sizeof(row);
     rpmuint32_t * even = alloca(nb);	/* even-power-of-two zeros operator */
     rpmuint32_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
 
@@ -164,6 +166,7 @@ static rpmuint32_t crc32_combine(rpmuint32_t crc1, rpmuint32_t crc2, size_t len2
     crc1 ^= crc2;
     return crc1;
 }
+/*@=shadow@*/
 
 #endif	/* !defined(WITH_ZLIB) */
 
@@ -262,6 +265,7 @@ static rpmuint64_t crc64(rpmuint64_t crc, const byte * data, size_t size)
 /*
  * Swiped from zlib, using rpmuint64_t rather than unsigned long computation.
  */
+/*@unchecked@*/
 static int gf2_dim64 = 64;
 
 /**
@@ -299,7 +303,7 @@ static rpmuint64_t crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2
 {
     int n;
     rpmuint64_t row;
-    size_t nb = gf2_dim64 * sizeof(rpmuint64_t);
+    size_t nb = gf2_dim64 * sizeof(row);
     rpmuint64_t * even = alloca(nb);	/* even-power-of-two zeros operator */
     rpmuint64_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
 

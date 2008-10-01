@@ -18,6 +18,8 @@
 
 #include "debug.h"
 
+/*@access pgpDigParams@ */
+
 #if defined(HAVE_KEYUTILS_H)
 /*@unchecked@*/
 rpmint32_t _kuKeyring;
@@ -57,20 +59,22 @@ kuCmp(const void * a, const void * b)
 
 static key_serial_t
 kuValue(const char * name)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     _kuItem k = NULL;
 
     if (name != NULL && *name != '\0') {
 	_kuItem tmp = memset(alloca(sizeof(*tmp)), 0, sizeof(*tmp));
+/*@-temptrans@*/
 	tmp->name = name;
+/*@=temptrans@*/
 	k = (_kuItem)bsearch(tmp, kuTable, nkuTable, sizeof(kuTable[0]), kuCmp);
     }
     return (k != NULL ? k->val :  0);
 }
 #endif
 
+/*@-globs -internalglobs -mods @*/
 char * _GetPass(const char * prompt)
 {
     char * pw;
@@ -83,7 +87,7 @@ char * _GetPass(const char * prompt)
     if (_kuKeyring == 0) {
 	const char * _keyutils_keyring
 		= rpmExpand("%{?_keyutils_keyring}", NULL);
-	_kuKeyring = kuValue(_keyutils_keyring);
+	_kuKeyring = (rpmuint32_t) kuValue(_keyutils_keyring);
 	if (_kuKeyring == 0)
 	    _kuKeyring = KEY_SPEC_PROCESS_KEYRING;
 	_keyutils_keyring = _free(_keyutils_keyring);
@@ -103,6 +107,7 @@ assert(pw != NULL);
     return pw;
 /*@=observertrans =statictrans@*/
 }
+/*@=globs =internalglobs =mods @*/
 
 char * _RequestPass(/*@unused@*/ const char * prompt)
 {

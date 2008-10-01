@@ -40,7 +40,7 @@ rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
  */
 /*@null@*/
 const char * rpmkuPassPhrase(const char * passPhrase)
-	/*@modifies iob @*/;
+	/*@*/;
 
 #ifdef __cplusplus
 }
