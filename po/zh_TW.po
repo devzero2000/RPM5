@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-18 14:18-0400\n"
+"POT-Creation-Date: 2008-10-01 11:20-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1410,21 +1410,21 @@ msgstr "(資料庫提供)"
 msgid "(hint skipped)"
 msgstr "(提示略過)"
 
-#: lib/depends.c:1891
+#: lib/depends.c:1892
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "忽略套件名稱關聯 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2014
+#: lib/depends.c:2015
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "從樹狀排列關係移除 %s「%s」。\n"
 
-#: lib/depends.c:2598
+#: lib/depends.c:2599
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:2634
+#: lib/depends.c:2635
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
@@ -2931,8 +2931,8 @@ msgstr "(不是 base64)"
 msgid "(invalid type :base64)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
-#: rpmdb/hdrfmt.c:3026
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2579
+#: rpmdb/hdrfmt.c:3017
 #, fuzzy
 msgid "(not a string)"
 msgstr "(不是數字)"
@@ -2953,115 +2953,115 @@ msgstr "(不是 blob)"
 msgid "(not an OpenPGP signature)"
 msgstr "(不是一個 OpenPGP 簽章)"
 
-#: rpmdb/hdrfmt.c:3237
+#: rpmdb/hdrfmt.c:3228
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:3293
+#: rpmdb/hdrfmt.c:3284
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:3445
+#: rpmdb/hdrfmt.c:3436
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:3506
+#: rpmdb/hdrfmt.c:3497
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:3516
+#: rpmdb/hdrfmt.c:3507
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:3532
+#: rpmdb/hdrfmt.c:3523
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "不可預料的查詢格式"
 
-#: rpmdb/hdrfmt.c:3536
+#: rpmdb/hdrfmt.c:3527
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3542
+#: rpmdb/hdrfmt.c:3533
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:3547
+#: rpmdb/hdrfmt.c:3538
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3560
+#: rpmdb/hdrfmt.c:3551
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4313
+#: rpmdb/hdrfmt.c:4304
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/hdrfmt.c:4347
+#: rpmdb/hdrfmt.c:4338
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/hdrfmt.c:4363
+#: rpmdb/hdrfmt.c:4354
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/hdrfmt.c:4383
+#: rpmdb/hdrfmt.c:4374
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "異常的 arbgoal 時間/日期戳記引數"
 
-#: rpmdb/hdrfmt.c:4404
+#: rpmdb/hdrfmt.c:4395
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/hdrfmt.c:4413
+#: rpmdb/hdrfmt.c:4404
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/hdrfmt.c:4443
+#: rpmdb/hdrfmt.c:4434
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/hdrfmt.c:4460
+#: rpmdb/hdrfmt.c:4451
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/hdrfmt.c:4475
+#: rpmdb/hdrfmt.c:4466
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/hdrfmt.c:4554
+#: rpmdb/hdrfmt.c:4545
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:4561
+#: rpmdb/hdrfmt.c:4552
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/hdrfmt.c:4573 rpmdb/hdrfmt.c:4613
+#: rpmdb/hdrfmt.c:4564 rpmdb/hdrfmt.c:4604
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:4581
+#: rpmdb/hdrfmt.c:4572
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/hdrfmt.c:4599
+#: rpmdb/hdrfmt.c:4590
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/hdrfmt.c:4621
+#: rpmdb/hdrfmt.c:4612
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: rpmdb/hdrfmt.c:4953
+#: rpmdb/hdrfmt.c:4944
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 

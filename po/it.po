@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-18 14:18-0400\n"
+"POT-Creation-Date: 2008-10-01 11:20-0400\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -1471,22 +1471,22 @@ msgstr ""
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1891
+#: lib/depends.c:1892
 #, fuzzy, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "nome n"
 
-#: lib/depends.c:2014
+#: lib/depends.c:2015
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "n"
 
-#: lib/depends.c:2598
+#: lib/depends.c:2599
 #, fuzzy
 msgid "LOOP:\n"
 msgstr "n"
 
-#: lib/depends.c:2634
+#: lib/depends.c:2635
 #, fuzzy, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "n"
@@ -3075,8 +3075,8 @@ msgstr ""
 msgid "(invalid type :base64)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
-#: rpmdb/hdrfmt.c:3026
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2579
+#: rpmdb/hdrfmt.c:3017
 msgid "(not a string)"
 msgstr ""
 
@@ -3098,119 +3098,119 @@ msgstr ""
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3237
+#: rpmdb/hdrfmt.c:3228
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3293
+#: rpmdb/hdrfmt.c:3284
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3445
+#: rpmdb/hdrfmt.c:3436
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3506
+#: rpmdb/hdrfmt.c:3497
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3516
+#: rpmdb/hdrfmt.c:3507
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3532
+#: rpmdb/hdrfmt.c:3523
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "formato di interrogazione inaspettato"
 
-#: rpmdb/hdrfmt.c:3536
+#: rpmdb/hdrfmt.c:3527
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3542
+#: rpmdb/hdrfmt.c:3533
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "tipo"
 
-#: rpmdb/hdrfmt.c:3547
+#: rpmdb/hdrfmt.c:3538
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3560
+#: rpmdb/hdrfmt.c:3551
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4313
+#: rpmdb/hdrfmt.c:4304
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4347
+#: rpmdb/hdrfmt.c:4338
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4363
+#: rpmdb/hdrfmt.c:4354
 #, fuzzy
 msgid "empty tag format"
 msgstr "vuoto"
 
-#: rpmdb/hdrfmt.c:4383
+#: rpmdb/hdrfmt.c:4374
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4404
+#: rpmdb/hdrfmt.c:4395
 #, fuzzy
 msgid "empty tag name"
 msgstr "vuoto nome"
 
-#: rpmdb/hdrfmt.c:4413
+#: rpmdb/hdrfmt.c:4404
 #, fuzzy
 msgid "unknown tag"
 msgstr "sconosciuto"
 
-#: rpmdb/hdrfmt.c:4443
+#: rpmdb/hdrfmt.c:4434
 #, fuzzy
 msgid "] expected at end of array"
 msgstr "fine"
 
-#: rpmdb/hdrfmt.c:4460
+#: rpmdb/hdrfmt.c:4451
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4475
+#: rpmdb/hdrfmt.c:4466
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4554
+#: rpmdb/hdrfmt.c:4545
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4561
+#: rpmdb/hdrfmt.c:4552
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4573 rpmdb/hdrfmt.c:4613
+#: rpmdb/hdrfmt.c:4564 rpmdb/hdrfmt.c:4604
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4581
+#: rpmdb/hdrfmt.c:4572
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4599
+#: rpmdb/hdrfmt.c:4590
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4621
+#: rpmdb/hdrfmt.c:4612
 #, fuzzy
 msgid "| expected at end of expression"
 msgstr "fine"
 
-#: rpmdb/hdrfmt.c:4953
+#: rpmdb/hdrfmt.c:4944
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

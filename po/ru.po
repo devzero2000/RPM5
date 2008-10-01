@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-09-18 14:18-0400\n"
+"POT-Creation-Date: 2008-10-01 11:20-0400\n"
 "PO-Revision-Date: 2008-05-30 11:01+0300\n"
 "Last-Translator: Peter Astakhov <astakhovp@mail.ru>\n"
 "Language-Team: Russian <gnu@mx.ru>\n"
@@ -1447,21 +1447,21 @@ msgstr "(db provides)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1891
+#: lib/depends.c:1892
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "игнорировать зависимост(и) имён пакета(ов) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2014
+#: lib/depends.c:2015
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s \"%s\" из сортированных связей.\n"
 
-#: lib/depends.c:2598
+#: lib/depends.c:2599
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2634
+#: lib/depends.c:2635
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "ошибка rpmtsOrder, осталось %d элементов\n"
@@ -3009,8 +3009,8 @@ msgstr "(не base64)"
 msgid "(invalid type :base64)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
-#: rpmdb/hdrfmt.c:3026
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2579
+#: rpmdb/hdrfmt.c:3017
 msgid "(not a string)"
 msgstr "(не строка)"
 
@@ -3032,115 +3032,115 @@ msgstr "(not a blob)"
 msgid "(not an OpenPGP signature)"
 msgstr "(не подпись формата OpenPGP)"
 
-#: rpmdb/hdrfmt.c:3237
+#: rpmdb/hdrfmt.c:3228
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:3293
+#: rpmdb/hdrfmt.c:3284
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:3445
+#: rpmdb/hdrfmt.c:3436
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:3506
+#: rpmdb/hdrfmt.c:3497
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:3516
+#: rpmdb/hdrfmt.c:3507
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:3532
+#: rpmdb/hdrfmt.c:3523
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "неожиданный формат запроса"
 
-#: rpmdb/hdrfmt.c:3536
+#: rpmdb/hdrfmt.c:3527
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3542
+#: rpmdb/hdrfmt.c:3533
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(неправильный тип)"
 
-#: rpmdb/hdrfmt.c:3547
+#: rpmdb/hdrfmt.c:3538
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3560
+#: rpmdb/hdrfmt.c:3551
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4313
+#: rpmdb/hdrfmt.c:4304
 msgid "missing { after %"
 msgstr "отсутствует \"{\" после \"%\""
 
-#: rpmdb/hdrfmt.c:4347
+#: rpmdb/hdrfmt.c:4338
 msgid "missing } after %{"
 msgstr "отсутствует \"}\" после \"%{\""
 
-#: rpmdb/hdrfmt.c:4363
+#: rpmdb/hdrfmt.c:4354
 msgid "empty tag format"
 msgstr "пустой формат тэга"
 
-#: rpmdb/hdrfmt.c:4383
+#: rpmdb/hdrfmt.c:4374
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "неправильный формат времени отката"
 
-#: rpmdb/hdrfmt.c:4404
+#: rpmdb/hdrfmt.c:4395
 msgid "empty tag name"
 msgstr "пустое имя тэга"
 
-#: rpmdb/hdrfmt.c:4413
+#: rpmdb/hdrfmt.c:4404
 msgid "unknown tag"
 msgstr "неизвестный тэг"
 
-#: rpmdb/hdrfmt.c:4443
+#: rpmdb/hdrfmt.c:4434
 msgid "] expected at end of array"
 msgstr "в конце массива ожидалась \"]\""
 
-#: rpmdb/hdrfmt.c:4460
+#: rpmdb/hdrfmt.c:4451
 msgid "unexpected ]"
 msgstr "неожиданная \"]\""
 
-#: rpmdb/hdrfmt.c:4475
+#: rpmdb/hdrfmt.c:4466
 msgid "unexpected }"
 msgstr "неожиданная \"}\""
 
-#: rpmdb/hdrfmt.c:4554
+#: rpmdb/hdrfmt.c:4545
 msgid "? expected in expression"
 msgstr "в выражении ожидалось \"?\""
 
-#: rpmdb/hdrfmt.c:4561
+#: rpmdb/hdrfmt.c:4552
 msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
-#: rpmdb/hdrfmt.c:4573 rpmdb/hdrfmt.c:4613
+#: rpmdb/hdrfmt.c:4564 rpmdb/hdrfmt.c:4604
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
-#: rpmdb/hdrfmt.c:4581
+#: rpmdb/hdrfmt.c:4572
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
-#: rpmdb/hdrfmt.c:4599
+#: rpmdb/hdrfmt.c:4590
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
-#: rpmdb/hdrfmt.c:4621
+#: rpmdb/hdrfmt.c:4612
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: rpmdb/hdrfmt.c:4953
+#: rpmdb/hdrfmt.c:4944
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

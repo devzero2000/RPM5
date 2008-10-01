@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: update {nl,id,pl}.po (Translation Project).
     - rse: rpmio: allow newer fnmatch to build on non-Linux platforms, too.
     - jbj: rpmio: upgrade fnmatch to version that implements FNM_EXTMATCH.
     - jbj: hdrfmt: triggerconds header extension display was incorrect.
