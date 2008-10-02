@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: python: cleanup & exit callback immediately on error.
     - jbj: add FNM_EXTMATCH to default flags w RPMMIRE_GLOB.
     - jbj: update {nl,id,pl}.po (Translation Project).
     - jbj: rpmio: permit adler32/crc32/crc64 in spite of --without-zlib.

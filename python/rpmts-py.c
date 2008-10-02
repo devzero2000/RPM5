@@ -173,9 +173,24 @@ struct rpmtsCallbackType_s {
     PyObject * data;
     rpmtsObject * tso;
     rpmdsObject * dso;
-    int pythonError;
     PyThreadState *_save;
 };
+
+/**
+ */
+/*@exits@*/
+static void rpmts_Die(PyObject *cb)
+	/*@*/
+{
+    PyObject * r = PyObject_Repr(cb);
+    char *pyfn = (r != NULL ? PyString_AsString(r) : "???");
+
+    if (PyErr_Occurred())
+	PyErr_Print();
+    rpmlog(RPMLOG_ERR, _("python callback %s failed, aborting!\n"), pyfn);
+    rpmdbCheckTerminate(1);
+    exit(EXIT_FAILURE);
+}
 
 /**
  */
@@ -191,7 +206,6 @@ if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmdsDNEVR(ds));
 
     if (cbInfo->tso == NULL) return res;
-    if (cbInfo->pythonError) return res;
     if (cbInfo->cb == Py_None) return res;
 
     PyEval_RestoreThread(cbInfo->_save);
@@ -204,7 +218,8 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
     Py_DECREF(args);
 
     if (!result) {
-	cbInfo->pythonError = 1;
+	rpmts_Die(cbInfo->cb);
+	/*@notreached@*/
     } else {
 	if (PyInt_Check(result))
 	    res = PyInt_AsLong(result);
@@ -236,7 +251,6 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     PyObject * args, * result;
     static FD_t fd;
 
-    if (cbInfo->pythonError) return NULL;
     if (cbInfo->cb == Py_None) return NULL;
 
     /* Synthesize a python object for callback (if necessary). */
@@ -273,18 +287,16 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     Py_DECREF(pkgObj);
 
     if (!result) {
-	cbInfo->pythonError = 1;
-	cbInfo->_save = PyEval_SaveThread();
-	return NULL;
+	rpmts_Die(cbInfo->cb);
+	/*@notreached@*/
     }
 
     if (what == RPMCALLBACK_INST_OPEN_FILE) {
 	int fdno;
 
         if (!PyArg_Parse(result, "i", &fdno)) {
-	    cbInfo->pythonError = 1;
-	    cbInfo->_save = PyEval_SaveThread();
-	    return NULL;
+	    rpmts_Die(cbInfo->cb);
+	    /*@notreached@*/
 	}
 	Py_DECREF(result);
 	cbInfo->_save = PyEval_SaveThread();
@@ -532,7 +544,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
     cbInfo.tso = s;
     cbInfo.dso = NULL;		/* XXX perhaps persistent? */
-    cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 
     xx = rpmtsCheck(s->ts);
@@ -1239,7 +1250,6 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
     cbInfo.tso = s;
     cbInfo.dso = NULL;
-    cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 
     if (cbInfo.cb != NULL) {
@@ -1270,11 +1280,6 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 	(void) rpmtsSetNotifyCallback(s->ts, NULL, NULL);
 
     PyEval_RestoreThread(cbInfo._save);
-
-    if (cbInfo.pythonError) {
-	ps = rpmpsFree(ps);
-	return NULL;
-    }
 
     if (rc < 0) {
 	list = PyList_New(0);
