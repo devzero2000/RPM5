@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: initialize next element of rpmlog store correctly.
     - rpm.org: python: cleanup & exit callback immediately on error.
     - jbj: add FNM_EXTMATCH to default flags w RPMMIRE_GLOB.
     - jbj: update {nl,id,pl}.po (Translation Project).
