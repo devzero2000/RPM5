@@ -590,8 +590,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    he->tag = RPMTAG_NVRA;
 	    xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
+
 	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, he->p.str, key,
                         platform, NULL, NULL, 0);
+
+	    /* XXX this should be done elsewhere. */
+	    if (rpmIsVerbose())
+		rpmlog(RPMLOG_WARNING,
+			_("package %s is intended for a %s platform\n"),
+			he->p.str, platform);
+
 	    ps = rpmpsFree(ps);
 	    he->p.ptr = _free(he->p.ptr);
 	    ec = 1;

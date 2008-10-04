@@ -258,7 +258,7 @@ int rpmpsTrim(/*@null@*/ rpmps ps, /*@null@*/ rpmps filter)
  * Return a problem from problem set
  *
  * @param ps        problem set
- * @param num       problem number
+ * @param num       problem number (<0 is last problem)
  * @return          rpmProblem, or NULL if error
  */
 /*@exposed@*/

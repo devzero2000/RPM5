@@ -670,7 +670,8 @@ assert(xx != 0 && he->p.str != NULL);
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
-	if (numFailed == 0
+	/* XXX Avoid empty transaction msg, run iff there are elements. */
+	if (numFailed == 0 && rpmtsNElements(ts) > 0
 	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter)) != 0)
 	    numFailed += (rc < 0 ? numRPMS : rc);
     }

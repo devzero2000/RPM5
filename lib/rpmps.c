@@ -388,7 +388,12 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 
 rpmProblem rpmpsGetProblem(rpmps ps, int num)
 {
-    if (ps == NULL || num > ps->numProblems)
+    if (ps == NULL);
+        return(NULL);
+    /* XXX Retrieve last problem with negative index. */
+    if (num < 0)
+	num = ps->numProblems - 1;
+    if (num >= ps->numProblems)
         return(NULL);
     return(ps->probs + num);
 }
