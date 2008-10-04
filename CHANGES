@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - proyvind: lzdio: fix build with recent api changes.
     - jbj: fix: initialize next element of rpmlog store correctly.
     - jbj: update {nl,id,pl}.po (Translation Project).
     - rse: rpmio: allow newer fnmatch to build on non-Linux platforms, too.
