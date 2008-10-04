@@ -388,14 +388,19 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 
 rpmProblem rpmpsGetProblem(rpmps ps, int num)
 {
-    if (ps == NULL || num > ps->numProblems)
+    if (ps == NULL);
         return(NULL);
-    return(ps->probs + num);
+    /* XXX Retrieve last problem with negative index. */
+    if (num < 0)
+	num = ps->numProblems - 1;
+    if (num >= ps->numProblems)
+        return(NULL);
+    return (ps->probs + num);
 }
 
 char * rpmProblemGetPkgNEVR(rpmProblem prob)
 {
-    return(prob->pkgNEVR);
+    return (prob->pkgNEVR);
 }
 
 char * rpmProblemGetAltNEVR(rpmProblem prob)
@@ -405,17 +410,17 @@ char * rpmProblemGetAltNEVR(rpmProblem prob)
 
 char * rpmProblemGetStr(rpmProblem prob)
 {
-    return(prob->str1);
+    return (prob->str1);
 }
 
 rpmuint64_t rpmProblemGetDiskNeed(rpmProblem prob)
 {
-    return(prob->ulong1);
+    return (prob->ulong1);
 }
 
 rpmProblemType rpmProblemGetType(rpmProblem prob)
 {
-    return(prob->type);
+    return (prob->type);
 }
 
 fnpyKey rpmProblemKey(rpmProblem prob)

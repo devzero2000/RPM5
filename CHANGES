@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: don't run empty transactions, avoiding obscure error msg.
+    - jbj: permit a negative index as alias for the last problem added to set.
+    - jbj: warn if package is not added because of platform affinity patterns.
     - proyvind: lzdio: fix build with recent api changes.
     - jbj: fix: initialize next element of rpmlog store correctly.
     - rpm.org: python: cleanup & exit callback immediately on error.
