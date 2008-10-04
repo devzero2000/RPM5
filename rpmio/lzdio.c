@@ -106,19 +106,17 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 #endif
 	ret = lzma_alone_encoder(&lzfile->strm, &options);
     } else {
-	ret = lzma_auto_decoder(&lzfile->strm,
 #if LZMA_VERSION == 49990030
-			NULL
+	ret = lzma_auto_decoder(&lzfile->strm, NULL, 0);
 #else
-			/* FIXME: second argument now sets memory limit, setting it to
-			 * '-1' means unlimited and isn't really recommended. A sane
-			 *  default value when setting it to '0' will probably be
-			 *  implemented in liblzma soon, so then we should switch
-			 *  back to '0'.
-			 */
-			-1
+	/* FIXME: second argument now sets memory limit, setting it to
+	 * '-1' means unlimited and isn't really recommended. A sane
+	 * default value when setting it to '0' will probably be
+	 * implemented in liblzma soon, so then we should switch
+	 * back to '0'.
+	 */
+	ret = lzma_auto_decoder(&lzfile->strm, -1, 0);
 #endif
-			, 0);
     }
     if (ret != LZMA_OK) {
 	(void) fclose(fp);
