@@ -363,7 +363,6 @@ LIBRPM_0
     rpmtsPRCO;
     rpmtsProblems;
     rpmtsRebuildDB;
-    rpmtsREContext;
     rpmtsRelocateElement;
     rpmtsRootDir;
     rpmtsRun;
@@ -377,7 +376,6 @@ LIBRPM_0
     rpmtsSetFlags;
     rpmtsSetGoal;
     rpmtsSetNotifyCallback;
-    rpmtsSetREContext;
     rpmtsSetRelocateElement;
     rpmtsSetRootDir;
     rpmtsSetScriptFd;
