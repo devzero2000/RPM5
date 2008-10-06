@@ -826,9 +826,8 @@ static int iosmMapFContext(IOSM_t iosm)
      */
     iosm->fcontext = NULL;
     if (!iosm->nofcontexts) {
-	struct stat * st = &iosm->sb;
 	security_context_t scon = NULL;
-	int xx = matchpathcon(iosm->path, st->st_mode, &scon);
+	int xx = matchpathcon(iosm->path, iosm->sb.st_mode, &scon);
 
 /*@-moduncon@*/
 	if (!xx && scon != NULL)
