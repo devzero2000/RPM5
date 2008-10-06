@@ -512,16 +512,6 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
 	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
-    /* Initialize security context patterns (if not already done). */
-    if (rpmtsSELinuxEnabled(ts) && !(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS))
-    {
-	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-/*@-moduncon@*/
-	if (fn != NULL && *fn != '\0')
-	    xx = matchpathcon_init(fn);
-/*@=moduncon@*/
-	fn = _free(fn);
-    }
     (void) rpmtsSetFlags(ts, ia->transFlags);
     (void) rpmtsSetDFlags(ts, ia->depFlags);
 

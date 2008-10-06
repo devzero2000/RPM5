@@ -725,14 +725,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 /*@=mods@*/
 #if defined(_USE_RPMTS)
     iosm->iter->ts = rpmtsLink(ts, "mapIterator");
-    iosm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS));
-#if defined(_USE_RPMSX)
-    /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
-    iosm->iter->sx = (!iosm->nofcontexts ? rpmtsREContext(ts) : NULL);
-#else
-    iosm->iter->sx = NULL;
-#endif
+    iosm->nofcontexts = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS);
     iosm->nofdigests =
 	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
 			? 0 : 1;
@@ -744,7 +737,6 @@ fprintf(stderr, "\tcpio vectors set\n");
 /*@-assignexpose -temptrans @*/
     iosm->iter->ts = (void *)_ts;
 /*@=assignexpose =temptrans @*/
-    iosm->iter->sx = NULL;
     iosm->nofcontexts = 1;
     iosm->nofdigests = 1;
     iosm->commit = 1;
@@ -808,14 +800,10 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
     iosm->lmtab = _free(iosm->lmtab);
 
 #if defined(_USE_RPMTS)
-#if defined(_USE_RPMSX)
-    iosm->iter->sx = rpmsxFree(sx);
-#endif
     (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			&iosm->op_digest);
     iosm->iter->ts = rpmtsFree(iter->ts);
 #else
-    iosm->iter->sx = NULL;
     iosm->iter->ts = NULL;
 #endif
     iosm->iter = mapFreeIterator(iosm->iter);
@@ -827,28 +815,36 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
     return rc;
 }
 
+/*
+ * Set file security context (if not disabled).
+ * @param iosm		file state machine data
+ * @return		0 always
+ */
 static int iosmMapFContext(IOSM_t iosm)
 	/*@modifies iosm @*/
 {
-    rpmfi fi = iosmGetFi(iosm);
-
     /*
      * Find file security context (if not disabled).
      */
     iosm->fcontext = NULL;
     if (!iosm->nofcontexts) {
+	struct stat * st = &iosm->sb;
 	security_context_t scon = NULL;
+	int xx = matchpathcon(iosm->path, st->st_mode, &scon);
 
 /*@-moduncon@*/
-	if (matchpathcon(iosm->path, iosm->sb.st_mode, &scon) == 0 && scon != NULL)
+	if (!xx && scon != NULL)
 	    iosm->fcontext = scon;
+#ifdef	DYING	/* XXX SELinux file contexts not set from package content. */
 	else {
+	    rpmfi fi = iosmGetFi(iosm);
 	    int i = iosm->ix;
 
 	    /* Get file security context from package. */
 	    if (fi && i >= 0 && i < (int)fi->fc)
 		iosm->fcontext = (fi->fcontexts ? fi->fcontexts[i] : NULL);
 	}
+#endif
 /*@=moduncon@*/
     }
     return 0;
@@ -1553,24 +1549,32 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 		rc = iosmNext(iosm, IOSM_MKDIR);
 		if (!rc) {
 #if defined(_USE_RPMSX)
+		    security_context_t scon = NULL;
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (iosm->iter->sx != NULL) {
-			iosm->fcontext = rpmsxFContext(iosm->iter->sx,
-				iosm->path, st->st_mode);
+		    if (!fsm->nofcontexts
+		     && !matchpathcon(iosm->path, st->st_mode, &scon)
+		     && scon != NULL)
+		    {
+			iosm->fcontext = scon;
 			rc = iosmNext(iosm, IOSM_LSETFCON);
-		    }
+		    } else
 #endif
+			iosm->fcontext = NULL;
 		    if (iosm->fcontext == NULL)
 			rpmlog(RPMLOG_DEBUG,
 			    D_("%s directory created with perms %04o, no context.\n"),
 			    iosm->path, (unsigned)(st->st_mode & 07777));
-		    else
+		    else {
 			rpmlog(RPMLOG_DEBUG,
 			    D_("%s directory created with perms %04o, context %s.\n"),
 			    iosm->path, (unsigned)(st->st_mode & 07777),
 			    iosm->fcontext);
-		    iosm->fcontext = NULL;
+#if defined(_USE_RPMSX)
+			iosm->fcontext = NULL;
+			scon = _free(scon);
+#endif
+		    }
 		}
 		*te = '/';
 	    }

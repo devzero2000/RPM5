@@ -189,7 +189,6 @@ struct hardLink_s {
 struct iosmIterator_s {
     void * ts;			/*!< transaction set. */
     void * fi;			/*!< transaction element file info. */
-    void * sx;			/*!< SELinux file context container. */
     int reverse;		/*!< reversed traversal? */
     int isave;			/*!< last returned iterator index. */
     int i;			/*!< iterator index. */

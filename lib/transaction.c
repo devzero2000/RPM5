@@ -1187,6 +1187,18 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
+    /* if SELinux isn't enabled or init fails, don't bother... */
+    if (!rpmtsSELinuxEnabled(ts))
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+	const char * fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	int xx = matchpathcon_init(fn);
+        if (xx == -1)
+	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+	fn = _free(fn);
+    }
+
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();
 
@@ -1947,6 +1959,9 @@ assert(psm != NULL);
 	}
 	pi = rpmtsiFree(pi);
     }
+
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
+	matchpathcon_fini();
 
     lock = rpmtsFreeLock(lock);
 
