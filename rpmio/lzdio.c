@@ -102,7 +102,7 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 	memcpy(&options.lzma, &lzma_preset_lzma[level - 1], sizeof(options.lzma));
 #else
 	lzma_options_lzma options;
-	lzma_lzma_preset(&options, level - 1);
+	lzma_lzma_preset(&options, level);
 #endif
 	ret = lzma_alone_encoder(&lzfile->strm, &options);
     } else {
