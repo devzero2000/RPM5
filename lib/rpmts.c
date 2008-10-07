@@ -520,8 +520,9 @@ rpmps rpmtsProblems(rpmts ts)
 {
     rpmps ps = NULL;
     if (ts) {
-	if (ts->probs)
-	    ps = rpmpsLink(ts->probs, "rpmtsProblems");
+	if (ts->probs == NULL)
+	    ts->probs = rpmpsCreate();
+	ps = rpmpsLink(ts->probs, "rpmtsProblems");
     }
     return ps;
 }
@@ -1235,7 +1236,15 @@ rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
 
 rpmtransFlags rpmtsFlags(rpmts ts)
 {
-    return (ts != NULL ? ts->transFlags : 0);
+    rpmtransFlags transFlags = 0;
+    if (ts != NULL) {
+	transFlags = ts->transFlags;
+	if (rpmtsSELinuxEnabled(ts) > 0)
+	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	else
+	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
+    }
+    return transFlags;
 }
 
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
@@ -1243,6 +1252,10 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     rpmtransFlags otransFlags = 0;
     if (ts != NULL) {
 	otransFlags = ts->transFlags;
+	if (rpmtsSELinuxEnabled(ts) > 0)
+	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	else
+	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
 	ts->transFlags = transFlags;
     }
     return otransFlags;

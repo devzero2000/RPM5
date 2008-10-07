@@ -600,11 +600,12 @@ assert(he->p.str != NULL);
 	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, he->p.str, key,
                         platform, NULL, NULL, 0);
 
-	    /* XXX this should be done elsewhere. */
-	    if (rpmIsVerbose())
-		rpmlog(RPMLOG_WARNING,
-			_("package %s is intended for a %s platform\n"),
-			he->p.str, platform);
+	    /* XXX problem string should be printed by caller instead. */
+	    if (rpmIsVerbose()) {
+		const char * msg = rpmProblemString(rpmpsGetProblem(ps, -1));
+		rpmlog(RPMLOG_WARNING, "%s\n", msg);
+		msg = _free(msg);
+	    }
 
 	    ps = rpmpsFree(ps);
 	    he->p.ptr = _free(he->p.ptr);

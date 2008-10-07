@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: print last problem added w platform affinity failure.
+    - jbj: lazily create ts problem set.
     - jbj: selinux: resurrect lsetfilecon using libselinux API.
     - jbj: use macro, not /bin/bash, in scriptlet_requires.
     - jbj: don't run empty transactions, avoiding obscure error msg.
