@@ -38,6 +38,10 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#define _RPMTAG_INTERNAL
+#define _RPMEVR_INTERNAL
+#define _RPMPS_INTERNAL
+
 #include <rpm/rpmio.h>
 #include <rpm/rpmcb.h>
 #include <rpm/rpmiotypes.h>
@@ -45,14 +49,11 @@
 #include <rpm/rpmpgp.h>
 
 #include <rpm/rpmtypes.h>
-#define _RPMTAG_INTERNAL
 #include <rpm/rpmtag.h>
-#define _RPMEVR_INTERNAL
 #include <rpm/rpmevr.h>
 #include <rpm/pkgio.h>
 
 #include <rpm/rpmds.h>
-#define _RPMPS_INTERNAL
 #include <rpm/rpmts.h>
 
 #include <rpm/rpmcli.h>
