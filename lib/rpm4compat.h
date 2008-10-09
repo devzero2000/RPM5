@@ -343,6 +343,12 @@ static inline rpmuint64_t rpmProblemGetLong(rpmProblem prob){
 	return rpmProblemGetDiskNeed(prob);
 }
 
+static inline off_t fdSize(FD_t fd){
+	struct stat sb;
+	Fstat(fd, &sb);
+	return sb.st_size;
+}
+
 #ifdef __cplusplus
 }
 

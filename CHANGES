@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: rpm4compat: add a fdSize() wrapper which uses Fstat().
     - proyvind: rpm4compat: add urltype & prototype for urlPath() since it's
       used by rpmfiBuildFNames. (Why does only C++ complaint about this???)
     - proyvind: rpm4compat: add rpm_machtable_e since it's been moved out of
