@@ -34,8 +34,6 @@
 
 #define buildRestrictions       sourceHeader
 
-#define	RPM_MACHTABLE_INSTARCH	0
-
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -89,6 +87,14 @@ typedef	union hRET_s {
 } * hRET_t;
 
 typedef enum pgpVSFlags_e rpmVSFlags_e;
+
+enum rpm_machtable_e {
+    RPM_MACHTABLE_INSTARCH      = 0,    /*!< Install platform architecture. */
+    RPM_MACHTABLE_INSTOS        = 1,    /*!< Install platform operating system. */
+    RPM_MACHTABLE_BUILDARCH     = 2,    /*!< Build platform architecture. */
+    RPM_MACHTABLE_BUILDOS       = 3     /*!< Build platform operating system. */
+};
+#define RPM_MACHTABLE_COUNT     4       /*!< No. of arch/os tables. */
 
 #ifdef __cplusplus
 extern "C" {

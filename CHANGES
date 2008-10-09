@@ -1,10 +1,10 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: rpm4compat: add rpm_machtable_e since it's been moved out of
+      the api.
     - proyvind: rpm4compat: explicitly cast to HE_t (C++ compatibility).
-    - proyvind: define RPM_MACHTABLE_INSTARCH in rpm4compat.h since it's been
-      moved from rpmlib.h to rpmrc.c.
-    - proyvind: define all _RPM*_INTERNALs before inclusion of any rpm headers
-      at all in rpm4compat.h to ensure that these actually has any effect.
+    - proyvind: rpm4compat: define all _RPM*_INTERNALs before inclusion of any
+      rpm headers at all to ensure that these actually has any effect.
     - jbj: print last problem added w platform affinity failure.
     - jbj: lazily create ts problem set.
     - jbj: selinux: resurrect lsetfilecon using libselinux API.
