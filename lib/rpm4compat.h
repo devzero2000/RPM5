@@ -95,7 +95,7 @@ extern "C" {
 #endif
 
 static inline int headerGetEntry(Header h, int_32 tag, hTYP_t type, void ** p, hCNT_t c) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int rc;
 	
 	/* Always ensure to initialize */
@@ -113,7 +113,7 @@ static inline int headerGetEntry(Header h, int_32 tag, hTYP_t type, void ** p, h
 
 
 static inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t c) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int rc;
 
 	he->tag = (rpmTag)tag;
@@ -133,7 +133,7 @@ static inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p,
 }
 
 static inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	rpmTag dirNameTag = (rpmTag)0;
 	rpmTag dirIndexesTag = (rpmTag)0;
@@ -207,7 +207,7 @@ static inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, r
 }
 
 static inline int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = (rpmTag)tag;
 	he->t = (rpmTagType)type;
@@ -217,7 +217,7 @@ static inline int headerAddEntry(Header h, int_32 tag, int_32 type, const void *
 }
 
 static inline int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = (rpmTag)tag;
 	he->t = (rpmTagType)type;
@@ -233,14 +233,14 @@ static inline int headerAppendEntry(Header h, int_32 tag, int_32 type, const voi
 }
 
 static inline int headerRemoveEntry(Header h, int_32 tag) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = (rpmTag)tag;
 	return headerDel(h, he, 0);
 }
 
 static inline int headerModifyEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = (rpmTag)tag;
 	he->t = (rpmTagType)type;
@@ -251,7 +251,7 @@ static inline int headerModifyEntry(Header h, int_32 tag, int_32 type, const voi
 }
 
 static inline int headerNextIterator(HeaderIterator hi, hTAG_t tag, hTYP_t type, hPTR_t * p, hCNT_t c) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int rc = headerNext(hi, he, 0);
 
 	if (rc) {
