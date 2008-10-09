@@ -96,6 +96,18 @@ enum rpm_machtable_e {
 };
 #define RPM_MACHTABLE_COUNT     4       /*!< No. of arch/os tables. */
 
+typedef enum urltype_e {
+    URL_IS_UNKNOWN      = 0,    /*!< unknown (aka a file) */
+    URL_IS_DASH         = 1,    /*!< stdin/stdout */
+    URL_IS_PATH         = 2,    /*!< file://... */
+    URL_IS_FTP          = 3,    /*!< ftp://... */
+    URL_IS_HTTP         = 4,    /*!< http://... */
+    URL_IS_HTTPS        = 5,    /*!< https://... */
+    URL_IS_HKP          = 6     /*!< hkp://... */
+} urltype;
+
+urltype urlPath(const char * url, /*@out@*/ const char ** pathp);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
