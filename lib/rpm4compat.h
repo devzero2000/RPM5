@@ -34,6 +34,8 @@
 
 #define buildRestrictions       sourceHeader
 
+#define	RPM_MACHTABLE_INSTARCH	0
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>

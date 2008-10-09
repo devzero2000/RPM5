@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: define RPM_MACHTABLE_INSTARCH in rpm4compat.h since it's been
+      moved from rpmlib.h to rpmrc.c.
     - proyvind: define all _RPM*_INTERNALs before inclusion of any rpm headers
       at all in rpm4compat.h to ensure that these actually has any effect.
     - jbj: print last problem added w platform affinity failure.
