@@ -304,13 +304,13 @@ typedef	char * security_context_t;
 
 #define	freecon(_c)  do {} while(0)
 
-#define	getfilecon(_fn, _c)	(-1)
-#define	lgetfilecon(_fn, _c)	(-1)
-#define	fgetfilecon(_fd, _c)	(-1)
+#define	getfilecon(_fn, _c)	(0)
+#define	lgetfilecon(_fn, _c)	(0)
+#define	fgetfilecon(_fd, _c)	(0)
 
-#define	setfilecon(_fn, _c)	(-1)
-#define	lsetfilecon(_fn, _c)	(-1)
-#define	fsetfilecon(_fd, _c)	(-1)
+#define	setfilecon(_fn, _c)	(0)
+#define	lsetfilecon(_fn, _c)	(0)
+#define	fsetfilecon(_fd, _c)	(0)
 
 #define	security_check_context(_c)	(0)
 
