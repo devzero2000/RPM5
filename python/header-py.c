@@ -683,8 +683,12 @@ PyObject * rpmReadHeaders (FD_t fd)
     {   const char item[] = "Header";
 	const char * msg = NULL;
 	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
-	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
+	if(rc == RPMRC_NOTFOUND) {
+		Py_INCREF(Py_None);
+		list = Py_None;
+	}
+	else if (rc != RPMRC_OK)
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s : error code: %d\n", "rpmpkgRead", item, msg, rc);
 	msg = _free(msg);
     }
     Py_END_ALLOW_THREADS
@@ -704,8 +708,12 @@ PyObject * rpmReadHeaders (FD_t fd)
 	{   const char item[] = "Header";
 	    const char * msg = NULL;
 	    rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
-	    if (rc != RPMRC_OK && rc != RPMRC_NOTFOUND)
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
+	    if(rc == RPMRC_NOTFOUND) {
+		    Py_INCREF(Py_None);
+		    list = Py_None;
+	    }
+	    else if (rc != RPMRC_OK)
+		rpmlog(RPMLOG_ERR, "%s: %s: %s : error code: %d\n", "rpmpkgRead", item, msg, rc);
 	    msg = _free(msg);
 	}
 	Py_END_ALLOW_THREADS
@@ -790,8 +798,12 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args,
     {   const char item[] = "Header";
 	const char * msg = NULL;
 	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
-	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
+	if(rc == RPMRC_NOTFOUND) {
+		Py_INCREF(Py_None);
+		tuple = Py_None;
+	}
+	else if (rc != RPMRC_OK)
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s : error code: %d\n", "rpmpkgRead", item, msg, rc);
 	msg = _free(msg);
     }
     Py_END_ALLOW_THREADS

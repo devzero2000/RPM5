@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: python: in case of RPMRC_NOTFOUND, return Py_None without
+      rpmlog printing error.
     - proyvind: rpm4compat: add a fdSize() wrapper which uses Fstat().
     - proyvind: rpm4compat: add urltype & prototype for urlPath() since it's
       used by rpmfiBuildFNames. (Why does only C++ complaint about this???)
