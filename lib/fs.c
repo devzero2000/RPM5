@@ -111,6 +111,9 @@ static int getFilesystemList(void)
 
 	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
+#if defined(RPM_VENDOR_OPENPKG) /* always-skip-proc-filesystem */
+	if (!(strcmp(filesystems[i].mntPoint, "/proc") == 0)) {
+#endif
 	if (stat(filesystems[i].mntPoint, &sb)) {
 	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
@@ -121,6 +124,9 @@ static int getFilesystemList(void)
 	
 	filesystems[i].dev = sb.st_dev;
 	filesystems[i].rdonly = rdonly;
+#if defined(RPM_VENDOR_OPENPKG) /* always-skip-proc-filesystem */
+        }
+#endif
 
 	/* goto the next vmount structure: */
 	vm = (struct vmount *)((char *)vm + vm->vmt_length);
@@ -213,6 +219,11 @@ static int getFilesystemList(void)
 	    if (nextMount == mntCount) break;
 	    mntdir = mounts[nextMount++].f_mntonname;
 #	endif
+
+#if defined(RPM_VENDOR_OPENPKG) /* always-skip-proc-filesystem */
+	if (strcmp(mntdir, "/proc") == 0)
+		continue;
+#endif
 
 	if (stat(mntdir, &sb)) {
 	    switch(errno) {
