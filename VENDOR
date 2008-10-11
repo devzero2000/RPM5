@@ -421,6 +421,22 @@
                      are not broken.
      ________________________________________________________________________
 
+     Change:         always-skip-proc-filesystem
+     Purpose:        Always skip the /proc filesystem
+     Reason:         OpenPKG never does anything with the virtual filesystem
+                     /proc which exists on some platforms. Sometimes
+                     (e.g. in a FreeBSD Jail) the problem even exists
+                     that RPM discovers that /proc might be available
+                     (because the FreeBSD host leaks this information
+                     to the Jail) but /proc cannot be actually accessed
+                     from within the Jail. As a result, RPM complains
+                     with "error: failed to stat /proc: No such file
+                     or directory" all the time.. As OpenPKG never
+                     fiddles around with /proc from within RPM, in this
+                     particular vendor environment /proc safely can be
+                     just ignored.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
