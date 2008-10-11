@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: install rpmbuild.h & rpmspec.h on system again (needed by urpmi).
     - jbj: avoid mtab info leakage problems (#457940).
     - proyvind: perl: add back installsrpm() function from old RPM4 bindings.
     - proyvind: python: in case of RPMRC_NOTFOUND, return Py_None without
