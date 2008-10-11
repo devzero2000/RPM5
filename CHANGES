@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - proyvind: perl: add back installsrpm() function from old RPM4 bindings.
     - proyvind: python: in case of RPMRC_NOTFOUND, return Py_None without
       rpmlog printing error.
     - proyvind: rpm4compat: add a fdSize() wrapper which uses Fstat().

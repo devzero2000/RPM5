@@ -206,3 +206,19 @@ rpmlog(svcode, msg)
     char * msg
     CODE:
     rpmlog(sv2constant(svcode, "rpmlog"), "%s", msg);
+
+void
+installsrpm(filename, sv_vsflags = NULL)
+    char * filename
+    SV * sv_vsflags
+    PREINIT:
+    rpmts ts = rpmtsCreate();
+    rpmVSFlags vsflags = RPMVSF_DEFAULT;
+    PPCODE:
+    vsflags = sv2constant((sv_vsflags), "rpmvsflags");
+    rpmtsSetVSFlags(ts, vsflags);
+    PUTBACK;
+    _installsrpms(ts, filename);
+    SPAGAIN;
+    ts = rpmtsFree(ts);
+

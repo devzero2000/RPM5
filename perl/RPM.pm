@@ -24,6 +24,7 @@ use vars qw/@ISA @EXPORT/;
     reset_macros
     dump_macros
     platformscore
+    installsrpm
 );
 
 bootstrap RPM;
@@ -47,6 +48,13 @@ The RPM module provides an object-oriented interface to querying both
 the installed RPM database as well as files on the filesystem.
 
 =head1 FUNCTIONS
+
+=head2 installsrpm($filename)
+
+Install a source rpm and return spec file path and its cookies.
+Returns undef if install is impossible.
+
+see L<RPM::Spec>->new() for more information about cookies.
 
 =head2 GENERICS FUNCTIONS
 
@@ -142,6 +150,7 @@ DEPRECATED ?
 =head3 setlogfile
 
 DEPRECATED ?
+
 
 =head1 TODO
 
