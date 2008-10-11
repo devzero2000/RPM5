@@ -232,6 +232,7 @@ static int getFilesystemList(void)
 		rpmFreeFilesystems();
 		return 1;
 		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case ENOENT:	/* XXX avoid /proc if leaked into *BSD jails. */
 	    case EACCES:	/* XXX fuse fs #220991 */
 	    case ESTALE:
 		continue;

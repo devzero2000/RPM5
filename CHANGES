@@ -1,4 +1,5 @@
 5.1.4 -> 5.1.5:
+    - jbj: avoid mtab info leakage problems (#457940).
     - jbj: selinux: resurrect lsetfilecon using libselinux API.
     - jbj: use macro, not /bin/bash, in scriptlet_requires.
     - jbj: don't run empty transactions, avoiding obscure error msg.
