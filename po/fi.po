@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1332,143 +1332,148 @@ msgstr "%s:n kysely ei onnistunut\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
+
+#: lib/depends.c:675
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 #, fuzzy
 msgid "(function probe)"
 msgstr "(tuntematon tyyppi)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 msgid "(digest probe)"
 msgstr ""
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 #, fuzzy
 msgid "(signature probe)"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy
 msgid "(verify probe)"
 msgstr "kyselymoodi"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 #, fuzzy
 msgid "(running probe)"
 msgstr "(tuntematon tyyppi)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 #, fuzzy
 msgid "(uname provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 #, fuzzy
 msgid "(soname provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(db files)"
 msgstr "en voinut avata %s: %s"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1483,62 +1488,62 @@ msgstr "%s:n luonti ep‰onnistui\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "en voi poistaa %s -hakemisto ei ole tyhj‰"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s:n rmdir ep‰onnistui: %s"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -2436,7 +2441,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2722,37 +2727,37 @@ msgstr ""
 msgid "Install/Erase problems"
 msgstr ""
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
@@ -2846,27 +2851,27 @@ msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 2008-04-11 21:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -1355,131 +1355,136 @@ msgstr "lỗi truy vấn tập tin đặc tả %s nên không phân tích đư�
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Truy vấn tập tin đặc tả cho (các) nền tảng: %s\n"
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "gói %s dự định cho nền tảng %s"
+
+#: lib/depends.c:675
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "gói %s đã được thêm vào nên bỏ qua %s\n"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "gói %s đã được thêm vào nên thay thế bằng %s\n"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr "(đã nhớ tạm)"
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 msgid "(function probe)"
 msgstr "(dò hàm)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr "(tra cứu người dùng)"
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr "(tra cứu nhóm)"
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 msgid "(access probe)"
 msgstr "(dò truy cập)"
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 msgid "(mtab probe)"
 msgstr "(dò mtab)"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr "(dò sức chứa trên đĩa)"
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 msgid "(digest probe)"
 msgstr "(dò bản tóm tắt)"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 msgid "(signature probe)"
 msgstr "(dò chữ ký)"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 msgid "(verify probe)"
 msgstr "(dò thẩm tra)"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr "(dò gnupg)"
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 msgid "(macro probe)"
 msgstr "(dò vĩ lệnh)"
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr "(dò envvar [biến môi trường])"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 msgid "(running probe)"
 msgstr "(dò chạy)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr "(dò ôn hoà)"
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr "(dò vcheck)"
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 msgid "(sysinfo provides)"
 msgstr "(cung cấp sysinfo [thông tin hệ thống])"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 msgid "(rpmlib provides)"
 msgstr "(cung cấp rpmlib [thư viện RPM])"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 msgid "(cpuinfo provides)"
 msgstr "(cung cấp cpuinfo [thông tin về CPU])"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 msgid "(getconf provides)"
 msgstr "(cung cấp getconf [lấy cấu hình])"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 msgid "(uname provides)"
 msgstr "(cung cấp uname)"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 msgid "(soname provides)"
 msgstr "(cung cấp soname)"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 msgid "(db files)"
 msgstr "(tập tin CDSL)"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 msgid "(db provides)"
 msgstr "(cung cấp CDSL)"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr "(bỏ qua lời gợi ý)"
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "bỏ qua quan hệ giữa các tên gói [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "đang gỡ bỏ %s « %s » khỏi quan hệ sắp xếp tsort.\n"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr "VÒNG LẶP:\n"
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder bị lỗi, %d phần tử còn lại\n"
@@ -1494,63 +1499,63 @@ msgstr "mntctl() không trả về được kích cỡ : %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() không trả về được các điểm lắp: %s\n"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "lỗi lấy trạng thái về %s: %s\n"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "lỗi mở %s: %s\n"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "tập tin %s nằm trên thiết bị không rõ\n"
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "người dùng %s không tồn tại nên dùng người chủ (root)\n"
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "nhóm %s không tồn tại nên dùng người chủ (root)\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "không tìm thấy tập tin kho nén %s trong danh sách các tập tin phần đầu\n"
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s được lưu dạng %s\n"
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "Lỗi rmdir (gỡ bỏ thư mục) %s %s: thư mục chưa rỗng\n"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Lỗi rmdir (gỡ bỏ thư mục) %s %s: %s\n"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: lỗi bỏ liên kết %s: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s được tạo dạng %s\n"
@@ -2377,7 +2382,7 @@ msgstr "số thứ tự gói không hợp lệ: %s\n"
 msgid "record %u could not be read\n"
 msgstr "không thể đọc mục ghi %u\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "chưa cài đặt gói %s\n"
@@ -2663,37 +2668,37 @@ msgstr "Vấn đề sắp xếp"
 msgid "Install/Erase problems"
 msgstr "Vấn đề Cài đặt/Xoá"
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "không thể tìm thấy gói « %s »\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "không thể xoá gói « %s »\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "không thể định vị lại gói %s\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "« %s » định rõ nhiều gói\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "không thể mở %s: %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "Đang cài đặt %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s không thể được cài đặt\n"
@@ -2788,28 +2793,28 @@ msgstr "đang cài đặt gói %s vào hệ thống tập tin chỉ đọc %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "gặp lỗi không rõ %d trong khi thao tác gói %s"
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, fuzzy, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Các sự cung cấp của hệ thống đã cấu hình (từ « /etc/rpm/sysinfo »):\n"
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Tính năng được cung cấp bởi bộ cài đặt thư viện rpmlib:\n"
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, fuzzy, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 "Tính năng được cung cấp bởi thông tin CPU cpuinfo (từ « /proc/cpuinfo »):\n"
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Tính năng được cung cấp bởi hàm lấy cấu hình (getconf) hiện thời:\n"
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.1.5pre1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 2008-09-25 17:09+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -1324,131 +1324,136 @@ msgstr "bevragen .spec-bestand %s is mislukt, kan niet worden ontleed\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Bevragen van .spec-bestand voor platform(en): %s\n"
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "pakket %s is bedoeld voor een %s-platform"
+
+#: lib/depends.c:675
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "pakket %s was al toegevoegd, overslaan van %s\n"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakket %s was al toegevoegd en wordt vervangen door %s\n"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr "(gebufferd)"
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 msgid "(function probe)"
 msgstr "(functie opvragen)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr "(gebruiker opzoeken)"
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr "(groep opzoeken)"
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 msgid "(access probe)"
 msgstr "(toegang opvragen)"
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 msgid "(mtab probe)"
 msgstr "(mtab opvragen)"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr "(schijfruimte opvragen)"
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 msgid "(digest probe)"
 msgstr "(controlegetal opvragen)"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 msgid "(signature probe)"
 msgstr "(handtekening opvragen)"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 msgid "(verify probe)"
 msgstr "(controle opvragen)"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr "(gnupg opvragen)"
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 msgid "(macro probe)"
 msgstr "(macro opvragen)"
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr "(omgevingsvariabelen opvragen)"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 msgid "(running probe)"
 msgstr "(uitvoering opvragen)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr "(fitheid opvragen)"
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr "(vcheck opvragen)"
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 msgid "(sysinfo provides)"
 msgstr "(sysinfo levert)"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 msgid "(rpmlib provides)"
 msgstr "(rpmlib levert)"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 msgid "(cpuinfo provides)"
 msgstr "(cpuinfo levert)"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 msgid "(getconf provides)"
 msgstr "(getconf levert)"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 msgid "(uname provides)"
 msgstr "(uname levert)"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 msgid "(soname provides)"
 msgstr "(soname levert)"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 msgid "(db files)"
 msgstr "(databankbestanden)"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 msgid "(db provides)"
 msgstr "(databank levert)"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr "(hint overgeslagen)"
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "pakketnaamrelatie(s) negeren [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "%s \"%s\" uit de tsort-relaties verwijderen.\n"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr "LUS:\n"
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder mislukt, %d elementen blijven over\n"
@@ -1463,62 +1468,62 @@ msgstr "mntclt() geeft geen grootte terug: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() geeft geen aankoppelpunten terug: %s\n"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "kan status van %s niet bepalen: %s\n"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kan %s niet openen: %s\n"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "bestand %s staat op een onbekend apparaat\n"
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "gebruiker %s bestaat niet - root wordt gebruikt\n"
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "groep %s bestaat niet - root wordt gebruikt\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "archiefbestand %s staat niet in kop bestandslijst\n"
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s opgeslagen als %s\n"
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir van %s is mislukt: Map is niet leeg\n"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir van %s is mislukt: %s\n"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: ontkoppelen van %s is mislukt: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s aangemaakt als %s\n"
@@ -2354,7 +2359,7 @@ msgstr "ongeldig pakketnummer: %s\n"
 msgid "record %u could not be read\n"
 msgstr "kan record %u niet lezen\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakket %s is niet geïnstalleerd\n"
@@ -2640,37 +2645,37 @@ msgstr "Sorteerproblemen"
 msgid "Install/Erase problems"
 msgstr "Installatie- of verwijderingsproblemen"
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "pakket \"%s\" is niet gevonden\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "pakket \"%s\" kan niet worden verwijderd\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakket %s is niet verplaatsbaar\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" geeft meerdere pakketten op\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan %s niet openen: %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installeren van %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan niet worden geïnstalleerd\n"
@@ -2765,27 +2770,27 @@ msgstr "pakket %s installeren op alleen-lezenbestandssysteem %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "onbekende fout %d tijdens het bewerken van pakket %s"
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Geconfigureerde systeem levert (uit %s):\n"
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Functies van het installatieprogramma van rpmlib:\n"
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "Functies van het huidige cpuinfo (uit %s):\n"
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Functies van het huidige getconf:\n"
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Functies van het huidige uname:\n"

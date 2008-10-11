@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1308,147 +1308,152 @@ msgstr ""
 msgid "Query specfile for platform(s): %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "%s(은)는 다른 아키텍쳐를 위한 패키지입니다"
+
+#: lib/depends.c:675
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 #, fuzzy
 msgid "(function probe)"
 msgstr "(알 수 없는 유형)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 #, fuzzy
 msgid "(digest probe)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 #, fuzzy
 msgid "(signature probe)"
 msgstr "서명 옵션:"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy
 msgid "(verify probe)"
 msgstr "rpm 검증 모드"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 #, fuzzy
 msgid "(running probe)"
 msgstr "(알 수 없는 유형)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1463,62 +1468,62 @@ msgstr "mntctl()에서 크기를 반환하는데 실패함: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl()에서 마운트할 지점을 반환하는데 실패함: %s\n"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "%s 파일은 알 수 없는 장치 상에 있습니다\n"
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "%s 사용자가 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "%s 그룹이 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s(을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s 링크 해제에 실패함: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
@@ -2398,7 +2403,7 @@ msgstr "부적합한 패키지 번호: %s\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2690,37 +2695,37 @@ msgstr ""
 msgid "Install/Erase problems"
 msgstr "설치/업그레이드/삭제 옵션:"
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
@@ -2822,27 +2827,27 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 "%2$s 패키지를 처리하는 과정에서 알 수 없는 오류 %1$d(이)가 발생했습니다"
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""

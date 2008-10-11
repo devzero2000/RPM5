@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1.5pre1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 2008-09-27 09:46+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -1315,131 +1315,136 @@ msgstr "query dari specfile %s gagal, tidak dapat mem-parse\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Menanyakan specfile untuk platform(s): %s\n"
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "package %s tidak ditujukan untuk platform %s"
+
+#: lib/depends.c:675
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "package %s sudah ditambahkan, melewatkan %s\n"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "package %s sudah ditambahkan, digantikan dengan %s\n"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr "(cached)"
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 msgid "(function probe)"
 msgstr "(mengecheck fungsi)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr "(mencari user)"
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr "(mencari group)"
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 msgid "(access probe)"
 msgstr "(mengecheck akses)"
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 msgid "(mtab probe)"
 msgstr "(mengecheck mtab)"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr "(mengecheck ruang kosong)"
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 msgid "(digest probe)"
 msgstr "(mengecheck digest)"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 msgid "(signature probe)"
 msgstr "(mengecheck tanda tangan)"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 msgid "(verify probe)"
 msgstr "(verifikasi probe)"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr "(mengecheck gnupg)"
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 msgid "(macro probe)"
 msgstr "(mengecheck macro)"
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr "(mengecheck envvar)"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 msgid "(running probe)"
 msgstr "(menjalankan pengecheckan)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr "(mengecheck keadaan)"
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr "(mengecheck vcheck)"
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 msgid "(sysinfo provides)"
 msgstr "(disediakan oleh sysinfo)"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 msgid "(rpmlib provides)"
 msgstr "(disediakan oleh rpmlib)"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 msgid "(cpuinfo provides)"
 msgstr "(disediakan oleh cpuinfo)"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 msgid "(getconf provides)"
 msgstr "(disediakan oleh getconf)"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 msgid "(uname provides)"
 msgstr "(disediakan oleh uname)"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 msgid "(soname provides)"
 msgstr "(disediakan oleh soname)"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 msgid "(db files)"
 msgstr "(db files)"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 msgid "(db provides)"
 msgstr "(disediakan oleh db)"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr "(hint dilewatkan)"
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "menghiraukan nama package relasi [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "menghilangkan %s \"%s\" dari relasi tsort.\n"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder gagal, %d elemen tersisa\n"
@@ -1454,62 +1459,62 @@ msgstr "mntctl() gagal untuk memberikan ukuran: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() gagal untuk memberitahukan mount points: %s\n"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "gagal untuk melihat statistik %s: %s\n"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "gagal untuk membuka %s: %s\n"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "file %s adalah sebuah device yang tidak diketahui\n"
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "pengguna %s tidak ada - menggunakan root\n"
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "group %s tidak ada - menggunakan root\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "file archive %s tidak ditemukan dalam list file header\n"
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s disimpan sebagai %s\n"
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir dari %s gagal: Direktori tidak kosong\n"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir dari %s gagal: %s\n"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink dari %s gagal: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s dibuat sebagai %s\n"
@@ -2334,7 +2339,7 @@ msgstr "nomor package tidak valid: %s\n"
 msgid "record %u could not be read\n"
 msgstr "rekaman %u tidak dapat dibaca\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "package %s tidak terinstall\n"
@@ -2618,37 +2623,37 @@ msgstr "Masalah pengurutan"
 msgid "Install/Erase problems"
 msgstr "masalah di Install/Erase"
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "package \"%s\" tidak dapat ditemukan\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "package \"%s\" tidak dapat dihapus\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "package %s tidak dapat direlokasikan\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" menspesifikasikan beberapa packages\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "tidak dapat membuka %s: %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "Menginstall %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s tidak dapat diinstall\n"
@@ -2741,27 +2746,27 @@ msgstr "menginstall package %s pada %s filesystem read-only"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "kesalahan tidak diketahui %d ditemui ketikan memanipulasi package %s"
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Pada sistem yang terkonfigurasi menyediakan (dari %s):\n"
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Feature disediakan oleh installer rpmlib:\n"
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "Feature disediakan oleh informasi saat ini dari cpuinfo (dari %s):\n"
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Feature disediakan oleh getconf:\n"
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Feature disediakan oleh uname:\n"

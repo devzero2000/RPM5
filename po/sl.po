@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1342,147 +1342,152 @@ msgstr "poizvedba po datoteki spec. %s je bila neuspe¹na, razèlemba ni mo¾na\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "paket %s-%s-%s je za drug tip arhitekture"
+
+#: lib/depends.c:675
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 #, fuzzy
 msgid "(function probe)"
 msgstr "(neznan tip)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 #, fuzzy
 msgid "(digest probe)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 #, fuzzy
 msgid "(signature probe)"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy
 msgid "(verify probe)"
 msgstr "poizvedbeni naèin"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 #, fuzzy
 msgid "(running probe)"
 msgstr "(neznan tip)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1497,62 +1502,62 @@ msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "status %s ni na voljo: %s"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, fuzzy, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "datoteka %s se nahaja na neznani napravi"
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "uporabnik %s ne obstaja - uporabljam root"
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s ne obstaja - uporabljam root"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ni mo¾no odstraniti %s - imenik ni prazen"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
@@ -2443,7 +2448,7 @@ msgstr "neveljavna ¹tevilka paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2735,37 +2740,37 @@ msgstr ""
 msgid "Install/Erase problems"
 msgstr ""
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "paket %s ni naveden v %s"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
@@ -2860,27 +2865,27 @@ msgstr "namestitev paketa %s-%s-%s zahteva %ld%cb na datoteènem sistemu %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznana napaka %d ob rokovanju s paketom %s-%s-%s"
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""

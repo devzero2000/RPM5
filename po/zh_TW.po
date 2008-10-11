@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-10-01 11:20-0400\n"
+"POT-Creation-Date: 2008-10-11 15:26-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1299,132 +1299,137 @@ msgstr "規格檔 %s 的查詢失敗，無法剖析\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "查詢的規格檔用於平臺：%s\n"
 
-#: lib/depends.c:667
+#: lib/depends.c:600
+#, fuzzy, c-format
+msgid "package %s is intended for a %s platform\n"
+msgstr "套件 %s 是適用於用於 %s 平臺"
+
+#: lib/depends.c:675
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "套件 %s 已被加入，忽略 %s\n"
 
-#: lib/depends.c:681
+#: lib/depends.c:689
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "套件 %s 已被加入，替換 %s\n"
 
-#: lib/depends.c:898
+#: lib/depends.c:906
 msgid "(cached)"
 msgstr "(快取)"
 
-#: lib/depends.c:914
+#: lib/depends.c:922
 msgid "(function probe)"
 msgstr "(函式探查)"
 
-#: lib/depends.c:933
+#: lib/depends.c:941
 msgid "(user lookup)"
 msgstr "(使用者查找)"
 
-#: lib/depends.c:950
+#: lib/depends.c:958
 msgid "(group lookup)"
 msgstr "(群組查找)"
 
-#: lib/depends.c:959
+#: lib/depends.c:967
 msgid "(access probe)"
 msgstr "(存取探查)"
 
-#: lib/depends.c:981
+#: lib/depends.c:989
 msgid "(mtab probe)"
 msgstr "(mtab 探查)"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1046
 msgid "(diskspace probe)"
 msgstr "(磁碟空間探查)"
 
-#: lib/depends.c:1080
+#: lib/depends.c:1088
 msgid "(digest probe)"
 msgstr "(摘要探查)"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1112
 msgid "(signature probe)"
 msgstr "(簽章探查)"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy
 msgid "(verify probe)"
 msgstr "(環境變數探查)"
 
-#: lib/depends.c:1156
+#: lib/depends.c:1164
 msgid "(gnupg probe)"
 msgstr "(gnupg 探查)"
 
-#: lib/depends.c:1169
+#: lib/depends.c:1177
 msgid "(macro probe)"
 msgstr "(巨集探查)"
 
-#: lib/depends.c:1197
+#: lib/depends.c:1205
 msgid "(envvar probe)"
 msgstr "(環境變數探查)"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1232
 msgid "(running probe)"
 msgstr "(運行探查)"
 
-#: lib/depends.c:1246
+#: lib/depends.c:1254
 msgid "(sanity probe)"
 msgstr "(明智探查)"
 
-#: lib/depends.c:1267
+#: lib/depends.c:1275
 msgid "(vcheck probe)"
 msgstr "(存取探查)"
 
-#: lib/depends.c:1288
+#: lib/depends.c:1296
 msgid "(sysinfo provides)"
 msgstr "(系統資訊提供)"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1315
 msgid "(rpmlib provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:1322
+#: lib/depends.c:1330
 msgid "(cpuinfo provides)"
 msgstr "(cpuinfo 提供)"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1345
 msgid "(getconf provides)"
 msgstr "(getconf 提供)"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1360
 msgid "(uname provides)"
 msgstr "(uname 提供)"
 
-#: lib/depends.c:1384
+#: lib/depends.c:1392
 msgid "(soname provides)"
 msgstr "(soname 提供)"
 
-#: lib/depends.c:1412
+#: lib/depends.c:1420
 msgid "(db files)"
 msgstr "(資料庫檔案)"
 
-#: lib/depends.c:1424
+#: lib/depends.c:1432
 msgid "(db provides)"
 msgstr "(資料庫提供)"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1462
 msgid "(hint skipped)"
 msgstr "(提示略過)"
 
-#: lib/depends.c:1892
+#: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "忽略套件名稱關聯 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:2015
+#: lib/depends.c:2023
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "從樹狀排列關係移除 %s「%s」。\n"
 
-#: lib/depends.c:2599
+#: lib/depends.c:2607
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:2635
+#: lib/depends.c:2643
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
@@ -1439,62 +1444,62 @@ msgstr "mntctl() 回傳大小失敗：%s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() 回傳掛載點失敗：%s\n"
 
-#: lib/fs.c:114 lib/fs.c:219 lib/fs.c:337
+#: lib/fs.c:117 lib/fs.c:230 lib/fs.c:349
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "無法檢驗狀態：%s：%s\n"
 
-#: lib/fs.c:159
+#: lib/fs.c:165
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: lib/fs.c:241
+#: lib/fs.c:253
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:360
+#: lib/fs.c:372
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "檔案 %s 位於一個不明的裝置上\n"
 
-#: lib/fsm.c:897
+#: lib/fsm.c:896
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "使用者 %s 不存在 - 現使用 root 代替\n"
 
-#: lib/fsm.c:911
+#: lib/fsm.c:910
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "使用者群組 %s 不存在 - 現使用 root 代替\n"
 
-#: lib/fsm.c:1785
+#: lib/fsm.c:1790
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "保存檔案 %s 在檔案清單表頭中找不到\n"
 
-#: lib/fsm.c:1928 lib/fsm.c:2048
+#: lib/fsm.c:1933 lib/fsm.c:2053
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s 已被另存為 %s\n"
 
-#: lib/fsm.c:2075
+#: lib/fsm.c:2080
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s 移除目錄 %s 失敗：目錄非空\n"
 
-#: lib/fsm.c:2081
+#: lib/fsm.c:2086
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2101
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s：取消 %s 的連結時失敗：%s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2126
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s 如同 %s 而建立\n"
@@ -2317,7 +2322,7 @@ msgstr "不正確的套件編號：%s\n"
 msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:745
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2599,37 +2604,37 @@ msgstr "定序問題"
 msgid "Install/Erase problems"
 msgstr "安裝/清除問題"
 
-#: lib/rpminstall.c:560
+#: lib/rpminstall.c:550
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "套件 %s 尚未安裝\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:571
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "套件 %s 尚未安裝\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:597
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不可重新部署\n"
 
-#: lib/rpminstall.c:754
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "「%s」指定了多個套件\n"
 
-#: lib/rpminstall.c:800
+#: lib/rpminstall.c:791
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:806
+#: lib/rpminstall.c:797
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:807
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
@@ -2722,27 +2727,27 @@ msgstr "安裝套件 %s 於 %s 唯讀檔案系統"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明錯誤 %d 發生在處理套件 %s 的程序中"
 
-#: lib/rpmrc.c:998
+#: lib/rpmrc.c:999
 #, fuzzy, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "已組配的系統提供 (來自 /etc/rpm/sysinfo)：\n"
 
-#: lib/rpmrc.c:1012
+#: lib/rpmrc.c:1013
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "由 rpmlib 安裝程式提供的功能：\n"
 
-#: lib/rpmrc.c:1027
+#: lib/rpmrc.c:1028
 #, fuzzy, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "由目前 cpuinfo 提供的功能 (來自 /proc/cpuinfo)：\n"
 
-#: lib/rpmrc.c:1043
+#: lib/rpmrc.c:1044
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "由目前 getconf 提供的功能：\n"
 
-#: lib/rpmrc.c:1057
+#: lib/rpmrc.c:1058
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "由目前 uname 提供的功能：\n"
