@@ -1,5 +1,6 @@
 
 5.2a1 -> 5.2a2:
+    - bero: Python 2.6 support in configure.ac
 
 5.1.0 -> 5.2a1:
     - jbj: update osgideps.pl (#466111).
