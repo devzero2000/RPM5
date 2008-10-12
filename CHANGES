@@ -428,6 +428,92 @@
 
 =============================================================================
 
+5.1.4 -> 5.1.5:
+    - jbj: update sk.po (Translation Project).
+    - jbj: avoid mtab info leakage problems (#457940).
+    - jbj: selinux: resurrect lsetfilecon using libselinux API.
+    - jbj: use macro, not /bin/bash, in scriptlet_requires.
+    - jbj: don't run empty transactions, avoiding obscure error msg.
+    - jbj: permit a negative index as alias for the last problem added to set.
+    - jbj: warn if package is not added because of platform affinity patterns.
+    - proyvind: lzdio: fix build with recent api changes.
+    - jbj: fix: initialize next element of rpmlog store correctly.
+    - jbj: update {nl,id,pl}.po (Translation Project).
+    - rse: rpmio: allow newer fnmatch to build on non-Linux platforms, too.
+    - jbj: rpmio: upgrade fnmatch to version that implements FNM_EXTMATCH.
+    - jbj: hdrfmt: triggerconds header extension display was incorrect.
+    - jbj: don't install symclash.* to avoid picking up a dependency on python.
+    - jbj: fix: check added file names against installed conflicts.
+    - jbj: update nl.po (Translation Project).
+    - rpm.org: permit hardlinks only with regular files.
+    - jbj: fix: tagType() with multiple aliases returned the wrong type.
+    - jbj: sqlite: fix: insure that tagType() returns result from stable sort.
+    - rse: upgrade build environment to GNU libtool 2.2.6
+    - jbj: lua: fix: don't unlink a non-existent scriptlet file.
+    - jbj: display error msg for lusers attempting "rpm -qp /bin" (#461362).
+    - jbj: WR: remove version from config paths.
+    - jbj: lua: fix: don't close dup'd stdout running lua scripts.
+    - jbj: macosx: avoid multiple definitions of _program_name.
+    - jbj: merge po files.
+    - jbj: don't expand removed python/rpm/Makefile.in.
+    - rse: upgrade embedded Lua from version 5.1.3 to 5.1.4
+    - jbj: WR: remove --with-path-versioned in devtool targets.
+    - jbj: WR: remove $(VERION) from macros paths in devtool targets.
+    - jbj: WR: fix: cleanup patch integration thinkos.
+    - jbj: WR: mark wrs-rpm-enable-macro-validation.patch (but leave disabled).
+    - jbj: WR: fix: add rt-reloc-wrapper.sh to EXTRAS_DIST.
+    - jbj: rescusitate w make distcheck.
+    - jbj: update po files.
+    - jbj: don't attempt openssl memleak cleanup w/o openssl.
+    - jbj: WR: add devtool windriver-{host,target} configuration targets.
+    - jbj: adopt AM_PATH_PYTHON AutoFu variables. AM_PATH_PYTHON will be used eventually.
+    - jbj: python: simplify Makefile.am
+    - afb: check that crc32_combine/adler32_combine really exist, for murky old
+	zlib.
+    - afb: remove undefined references too
+    - jbj: WR: run-time discovered configuration goopiness, take 1.
+    - jbj: display cpuinfo path with --showrc.
+    - jbj: display sysinfo path with --showrc.
+    - jbj: remove internal zlib.
+    - jbj: WR: add %windriver target to devtool.conf.
+    - jbj: WR: eliminate most compiler warnings.
+    - jbj: WR: eliminate duplicated AutoFu boilerplate, use system.h instead.
+    - jbj: WR: eliminate getdate.[ch], use same from rpmio instead.
+    - jbj: WR: eliminate dueling AutoFu defines from shadow_config.h, use RPM's
+        config.h (through system.h) instead.
+    - jbj: WR: eliminate xmalloc.c, use system.h defines instead.
+    - jbj: WR: rename config.h to shadow_config.h, include "system.h" instead.
+    - jbj: WR: rely on PATH to find pkg-config.
+    - jbj: WR: don't spew error messages with internal lua shadow module.
+    - jbj: WR: add shadow/chkconfig internal lua modules.
+    - jbj: WR: Color/arch affinity while upgrading on multilib platforms.
+    - jbj: WR: Permit configurable arch strings.
+    - jbj: WR: Use %{_host_vendor} and %{_host_os} for platform.
+    - jbj: WR: fakeroot maps devices to files. avoid /dev/* in checkfiles.
+    - jbj: db_tool: remove gcc whinings.
+    - at: gzdio: fixed and re-enabled rsyncable_gzwrite()
+    - rse: fix building under --with-lzma by providing the necessary 64-bit defines for inclusion of <lzma.h>
+    - jbj: gzdio: quadruple check with external -lz. still no fix => disabled.
+    - jbj: gzdio: integrate the cpio tracking patch (needs to be done elsewhere)
+    - jbj: gzdio: disable rsync flushing until a fix can be attempted.
+    - jbj: gzdio: remove c99'ism.
+    - jbj: QNX: use strtouq() instead of strtoul() in rpmmtree.
+    - jbj: QNX: retrofit asprintf.h (from XAR) for the deprived. rpmmtree uses
+        (rewrite to eliminate asprintf is an alternative).
+    - jbj: QNX: supply missing typedef's for uint32_t.
+    - at: gzdio: return partial "best effort" bytes written with gzfoo errors.
+    - at: gzdio: do gzflush only after RSYNC_WIN boundaries.
+    - at: gzdio: push gzFile into a private container.
+    - jbj: make gzdio.c standalone.
+    - rpm.org: Teach Fflush about lzdio.
+    - jbj: add _flush to FDIO_t, make bzdio.c standalone.
+    - jbj: move glob/fnmatch into -lrpmio from -lrpmmisc.
+    - jbj: lua: don't exit chroot if already within running script.
+    - jbj: rescusitate "make check".
+    - jbj: permit building with older libtool-1.5.26 (back port from HEAD).
+    - bero: Fix hang when using rpmdsSingle and rpm4compat.h from C++
+    - rse: configure: do not complain with "python: file not found" on platforms without python(1) in PATH
+
 5.1.3 -> 5.1.4:
     - jbj: http: ignore 501 from OPTIONS attempt to non-DAV server.
     - jbj: fix: "%description -n foo-bar" needs an additional comparison.
