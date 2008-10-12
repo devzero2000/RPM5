@@ -225,3 +225,31 @@ sources_url(spec, is = 0)
         XPUSHs(sv_2mortal(newSVpv(srcPtr->fullSource, 0)));
     }
 
+void
+icon(spec)
+    Spec spec
+    PPCODE:
+    if (spec->sources->flags & RPMFILE_ICON) {
+        char * dest = NULL;
+        int len;
+        len = strlen(spec->sources->source);
+        dest = malloc(len);
+        memcpy(dest, spec->sources->source, len);
+        XPUSHs(sv_2mortal(newSVpv(dest, len)));
+
+    }
+
+void
+icon_url(spec)
+    Spec spec
+    PPCODE:
+    if (spec->sources->flags & RPMFILE_ICON) {
+        char * dest = NULL;
+        int len;
+        len = strlen(spec->sources->fullSource);
+        dest = malloc(len);
+        memcpy(dest, spec->sources->fullSource, len);
+        XPUSHs(sv_2mortal(newSVpv(dest, len)));
+
+    }
+
