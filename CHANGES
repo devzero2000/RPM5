@@ -1,5 +1,7 @@
 
-5.1.0 -> 5.2a0:
+5.2a1 -> 5.2a2:
+
+5.1.0 -> 5.2a1:
     - jbj: update osgideps.pl (#466111).
     - jbj: create absoluabsolute file paths index in rpmdb.
     - jbj: fix: he->tag was returning RPMTAG_BASENAMES, not RPMTAG_FILEPATHS.
