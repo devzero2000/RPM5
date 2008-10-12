@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: create absoluabsolute file paths index in rpmdb.
+    - jbj: fix: he->tag was returning RPMTAG_BASENAMES, not RPMTAG_FILEPATHS.
     - proyvind: install rpmbuild.h & rpmspec.h on system again (needed by urpmi).
     - jbj: avoid mtab info leakage problems (#457940).
     - proyvind: perl: add back installsrpm() function from old RPM4 bindings.

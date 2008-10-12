@@ -686,8 +686,8 @@ print (t)\
 
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
-%_dbi_tags_3                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid
-%_dbi_tags_4                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid
+%_dbi_tags_3                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
+%_dbi_tags_4                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3                  %{_dbi_btconfig}
@@ -712,6 +712,7 @@ print (t)\
 %_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
 %_dbi_config_3_Nvra             %{_dbi_btconfig} noload
 %_dbi_config_3_Sourcepkgid      %{_dbi_btconfig}
+%_dbi_config_3_Filepaths	%{_dbi_btconfig}
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
@@ -736,6 +737,7 @@ print (t)\
 %_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
 %_dbi_config_4_Nvra             %{_dbi_sqlconfig} noload
 %_dbi_config_4_Sourcepkgid      %{_dbi_sqlconfig}
+%_dbi_config_4_Filepaths	%{_dbi_sqlconfig}
 
 # database configuration [code entry hooks]
 %_dbi_config                    %{expand:%%{_dbi_config_%{_dbapi_used}}}
@@ -760,6 +762,7 @@ print (t)\
 %_dbi_config_Depends            %{expand:%%{_dbi_config_%{_dbapi_used}_Depends}}
 %_dbi_config_Nvra               %{expand:%%{_dbi_config_%{_dbapi_used}_Nvra}}
 %_dbi_config_Sourcepkgid        %{expand:%%{_dbi_config_%{_dbapi_used}_Sourcepkgid}}
+%_dbi_config_Filepaths		%{expand:%%{_dbi_config_%{_dbapi_used}_Filepaths}}
 
 # Database API configuration:
 #

@@ -352,7 +352,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "==> dbiOpen(%p, %u, 0x%x)\n", db, tag, flags);
+fprintf(stderr, "==> dbiOpen(%p, %s(%u), 0x%x)\n", db, tagName(tag), tag, flags);
 /*@=modfilesys@*/
 
     if (db == NULL)
