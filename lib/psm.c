@@ -1346,7 +1346,7 @@ assert(fi->h != NULL);
 	    /* XXX if trigger name ends with '/', use dirnames instead. */
 	    if (Name[0] == '/') 
 		tagno = (Name[strlen(Name)-1] == '/')
-			? RPMTAG_DIRNAMES : RPMTAG_BASENAMES;
+			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
 	}
 	/* XXX For now, permit globs only in unversioned triggers. */
 	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(Name, 0))
@@ -1369,7 +1369,7 @@ assert(fi->h != NULL);
 	    /* XXX if trigger name ends with '/', use dirnames instead. */
 	    if (Name[0] == '/') 
 		tagno = (Name[strlen(Name)-1] == '/')
-			? RPMTAG_DIRNAMES : RPMTAG_BASENAMES;
+			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
 	}
 
 	delslash = (tagno == RPMTAG_DIRNAMES);
