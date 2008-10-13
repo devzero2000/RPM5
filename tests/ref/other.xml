@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <otherdata xmlns="http://linux.duke.edu/metadata/other" packages="6">
-<package pkgid="f4b34bce38c077a682f6a10e91bac4ac8dd6d905" name="devtool-sanity" arch="noarch">
+<package pkgid="b041a71594a3bf628883ea514861ce0bdec828f1" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1212789600">- add some additional content</changelog>
 </package>
@@ -23,7 +23,7 @@
 <package pkgid="b2e1fd2756b27bcf888c990c02be7912074cd096" name="probes-test" arch="noarch">
   <version epoch="0" ver="1" rel="0"/>
 </package>
-<package pkgid="6a936e2baba685af736e5166150c0a2ee4d89a16" name="triggers-N" arch="i386">
+<package pkgid="6e6849792e60bb2d685cd7051d7e25c9385f2875" name="triggers-N" arch="i386">
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on N functional tests.</changelog>
 </package>

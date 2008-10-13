@@ -63,15 +63,15 @@
   echo "--- sanitycheck(%NVRA)   arg $1 ..."\
 %nil
 
-%triggerprein()	%%triggerprein -- %*\
-  echo "--- triggerprein(%NVRA)  arg $1 $2 ..."\
+%triggerprein()	%%triggerprein %1 -- %2 %3 %4\
+  echo "--- triggerprein(%1) -- %2 %3 %4	arg $1 $2 ..."\
 %nil
-%triggerin()	%%triggerin -- %*\
-  echo "--- triggerin(%NVRA)     arg $1 $2 ..."\
+%triggerin()	%%triggerin %1 -- %2 %3 %4\
+  echo "--- triggerin(%1) -- %2 %3 %4	arg $1 $2 ..."\
 %nil
-%triggerun()	%%triggerun -- %*\
-  echo "--- triggerun(%NVRA)     arg $1 $2 ..."\
+%triggerun()	%%triggerun %1 -- %2 %3 %4\
+  echo "--- triggerun(%1) -- %2 %3 %4	arg $1 $2 ..."\
 %nil
-%triggerpostun() %%triggerpostun -- %*\
-  echo "--- triggerpostun(%NVRA) arg $1 $2 ..."\
+%triggerpostun() %%triggerpostun %1 -- %2 %3 %4\
+  echo "--- triggerpostun(%1) -- %2 %3 %4	arg $1 $2 ..."\
 %nil

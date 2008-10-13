@@ -734,17 +734,17 @@ end
 -14: sparc	sun4 sun4m sun4c sun4d sun4u sparcv9b sparcv9v2 %{sparcx}
 -14: sparcx	sparc sparcv8 sparcv9 sparcv9v sparc64 sparc64v
 -14: tmpdir	%{_tmppath}
--14: triggerin	%%triggerin -- %*
-  echo "--- triggerin(%NVRA)     arg $1 $2 ..."
+-14: triggerin	%%triggerin %1 -- %2 %3 %4
+  echo "--- triggerin(%1) -- %2 %3 %4	arg $1 $2 ..."
 %nil
--14: triggerpostun	%%triggerpostun -- %*
-  echo "--- triggerpostun(%NVRA) arg $1 $2 ..."
+-14: triggerpostun	%%triggerpostun %1 -- %2 %3 %4
+  echo "--- triggerpostun(%1) -- %2 %3 %4	arg $1 $2 ..."
 %nil
--14: triggerprein	%%triggerprein -- %*
-  echo "--- triggerprein(%NVRA)  arg $1 $2 ..."
+-14: triggerprein	%%triggerprein %1 -- %2 %3 %4
+  echo "--- triggerprein(%1) -- %2 %3 %4	arg $1 $2 ..."
 %nil
--14: triggerun	%%triggerun -- %*
-  echo "--- triggerun(%NVRA)     arg $1 $2 ..."
+-14: triggerun	%%triggerun %1 -- %2 %3 %4
+  echo "--- triggerun(%1) -- %2 %3 %4	arg $1 $2 ..."
 %nil
 -14: undefined	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
 -14: verifyscript	%%verifyscript %*

@@ -99,6 +99,10 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
+check-triggers:
+	${rpm} -Uv --noparentdirs --nodeps triggers-N/triggers-N*.rpm
+	${rpm} -ev --noparentdirs --nodeps triggers-N-a triggers-N-b
+
 check-query:
 	@${rpm} -qW . > /dev/null 2>&1
 	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1

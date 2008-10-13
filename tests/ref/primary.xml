@@ -4,20 +4,20 @@
   <name>devtool-sanity</name>
   <arch>noarch</arch>
   <version epoch="0" ver="1.0" rel="1"/>
-  <checksum type="sha" pkgid="YES">f4b34bce38c077a682f6a10e91bac4ac8dd6d905</checksum>
+  <checksum type="sha" pkgid="YES">b041a71594a3bf628883ea514861ce0bdec828f1</checksum>
   <summary>devtool sanity test</summary>
   <description>Trivial standalone test package</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1212894279" build="1212894237"/>
-  <size package="4573" installed="4573" archive="2580"/>
+  <time file="1223910684" build="1223910429"/>
+  <size package="6783" installed="6783" archive="2460"/>
   <location xml:base="(none)" href="devtool-sanity-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
     <rpm:vendor/>
     <rpm:group>Development/Tools</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
-    <rpm:header-range start="368" end="2903"/>
+    <rpm:header-range start="368" end="5155"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>
@@ -191,20 +191,20 @@ shell-like rules.</description>
   <name>triggers-N</name>
   <arch>i386</arch>
   <version epoch="0" ver="1.0" rel="1"/>
-  <checksum type="sha" pkgid="YES">6a936e2baba685af736e5166150c0a2ee4d89a16</checksum>
+  <checksum type="sha" pkgid="YES">6e6849792e60bb2d685cd7051d7e25c9385f2875</checksum>
   <summary>Triggers on N functional tests.</summary>
   <description></description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1223908896" build="1223908808"/>
-  <size package="4616" installed="4616" archive="2312"/>
+  <time file="1223911246" build="1223911215"/>
+  <size package="4603" installed="4603" archive="1560"/>
   <location xml:base="(none)" href="triggers-N-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
     <rpm:vendor/>
     <rpm:group>Development/Tools</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
-    <rpm:header-range start="280" end="3992"/>
+    <rpm:header-range start="368" end="4080"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>
