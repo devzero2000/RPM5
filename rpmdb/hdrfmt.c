@@ -2310,29 +2310,40 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
  * Retrieve file paths.
  * @param h		header
  * @retval *he		tag container
+ * @param tag		RPMTAG_BASENAMES or RPMTAG_ORIGBASENAMES
  * @return		0 on success
  */
-static int _fnTag(Header h, HE_t he)
+static int _fnTag(Header h, HE_t he, rpmTag tag)
 	/*@modifies he @*/
 {
     he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, he->tag, &he->p.argv, &he->c);
+    rpmfiBuildFNames(h, tag, &he->p.argv, &he->c);
     he->freeData = 1;
     return 0;
 }
 
-static int filepathsTag(Header h, HE_t he)
-	/*@modifies he @*/
+static int filenamesTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
-    he->tag = RPMTAG_BASENAMES;
-    return _fnTag(h, he);
+    he->tag = tagValue("Filenames");
+    return _fnTag(h, he, RPMTAG_BASENAMES);
+}
+
+static int filepathsTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_FILEPATHS;
+    return _fnTag(h, he, RPMTAG_BASENAMES);
 }
 
 static int origpathsTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
-    he->tag = RPMTAG_ORIGBASENAMES;
-    return _fnTag(h, he);
+    he->tag = RPMTAG_ORIGPATHS;
+    return _fnTag(h, he, RPMTAG_ORIGBASENAMES);
 }
 
 static int filestatTag(Header h, HE_t he)
@@ -2354,8 +2365,8 @@ static int filestatTag(Header h, HE_t he)
     /* st_ctime */
     int rc;
 
-    he->tag = RPMTAG_BASENAMES;
-    if ((rc = _fnTag(h, he)) != 0 || he->c == 0)
+    he->tag = RPMTAG_FILEPATHS;
+    if ((rc = _fnTag(h, he, RPMTAG_BASENAMES)) != 0 || he->c == 0)
 	goto exit;
 
 exit:
@@ -3629,7 +3640,7 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_NVRA",
 	{ .tagFunction = nvraTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES",
-	{ .tagFunction = filepathsTag } },
+	{ .tagFunction = filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILEPATHS",
 	{ .tagFunction = filepathsTag } },
     { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",

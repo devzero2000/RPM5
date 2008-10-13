@@ -1,4 +1,5 @@
 5.1.5 -> 5.1.6:
+    - jbj: fix: he->tag was returning RPMTAG_BASENAMES, not RPMTAG_FILEPATHS.
 
 5.1.4 -> 5.1.5:
     - jbj: update sk.po (Translation Project).
