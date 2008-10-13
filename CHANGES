@@ -1,4 +1,6 @@
 5.1.5 -> 5.1.6:
+    - jbj: use a switch on errno to make leakage pathology filtering easier.
+    - jbj: use Stat(2) for --rpmiodebug tracing.
     - jbj: fix: resurrect cpuinfo() probe, hack-o-rounds for both /proc & libio.
     - jbj: rpmio: rewrite rpmioSlurp to use Fstat(2) instead.
     - jbj: rpmrpc: add Fstat(2).

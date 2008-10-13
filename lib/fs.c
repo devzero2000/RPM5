@@ -111,14 +111,19 @@ static int getFilesystemList(void)
 	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
 #if defined(RPM_VENDOR_OPENPKG) /* always-skip-proc-filesystem */
-	if (!(strcmp(filesystems[i].mntPoint, "/proc") == 0)) {
+	if (!(strcmp(fsn, "/proc") == 0)) {
 #endif
-	if (stat(filesystems[i].mntPoint, &sb)) {
-	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), fsnames[i],
+	if (Stat(fsn, &sb) < 0) {
+	    switch(errno) {
+	    default:
+		rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), fsn,
 			strerror(errno));
-
-	    rpmFreeFilesystems();
-	    return 1;
+		rpmFreeFilesystems();
+		return 1;
+	    case ENOENT:	/* XXX avoid /proc if leaked into *BSD jails. */
+		sb.st_dev = 0;	/* XXXX make sure st_dev is initialized. */
+		/*@switchbreak@*/ break;
+	    }
 	}
 	
 	filesystems[i].dev = sb.st_dev;
@@ -224,7 +229,7 @@ static int getFilesystemList(void)
 		continue;
 #endif
 
-	if (stat(mntdir, &sb)) {
+	if (Stat(mntdir, &sb) < 0) {
 	    switch(errno) {
 	    default:
 		rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), mntdir,
@@ -297,19 +302,21 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
 		/*@unused@*/ int flags)
 {
     uint64_t * usages;
-    int i, len, j;
+    int i, j;
     char * buf, * dirName;
     char * chptr;
-    int maxLen;
+    size_t maxLen;
+    size_t len;
     char * lastDir;
     const char * sourceDir;
     int lastfs = 0;
-    int lastDev = -1;		/* I hope nobody uses -1 for a st_dev */
+    dev_t lastDev = (dev_t)-1;		/* I hope nobody uses -1 for a st_dev */
     struct stat sb;
+    int rc = 1;		/* assume failure */
 
     if (!fsnames) 
 	if (getFilesystemList())
-	    return 1;
+	    return rc;
 
     usages = xcalloc(numFilesystems, sizeof(*usages));
 
@@ -344,13 +351,15 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
 	if (strcmp(lastDir, buf)) {
 	    strcpy(dirName, buf);
 	    chptr = dirName + strlen(dirName) - 1;
-	    while (stat(dirName, &sb)) {
-		if (errno != ENOENT) {
+	    while (Stat(dirName, &sb) < 0) {
+		switch(errno) {
+		default:
 		    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), buf,
 				strerror(errno));
-		    sourceDir = _free(sourceDir);
-		    usages = _free(usages);
-		    return 1;
+		    goto exit;
+		    /*@notreached@*/ /*@switchbreak@*/ break;
+		case ENOENT:	/* XXX paths in empty chroot's don't exist. */
+		    /*@switchbreak@*/ break;
 		}
 
 		/* cut off last directory part, because it was not found. */
@@ -362,7 +371,7 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
 		    *chptr-- = '\0';
 	    }
 
-	    if (lastDev != (int)sb.st_dev) {
+	    if (lastDev != sb.st_dev) {
 		for (j = 0; j < numFilesystems; j++)
 		    if (filesystems && filesystems[j].dev == sb.st_dev)
 			/*@innerbreak@*/ break;
@@ -370,9 +379,7 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
 		if (j == numFilesystems) {
 		    rpmlog(RPMLOG_ERR, 
 				_("file %s is on an unknown device\n"), buf);
-		    sourceDir = _free(sourceDir);
-		    usages = _free(usages);
-		    return 1;
+		    goto exit;
 		}
 
 		lastfs = j;
@@ -383,14 +390,16 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
 	strcpy(lastDir, buf);
 	usages[lastfs] += fssizes[i];
     }
+    rc = 0;
 
+exit:
     sourceDir = _free(sourceDir);
 
-    if (usagesPtr)
+    if (rc == 0 && usagesPtr)
 	*usagesPtr = usages;
     else
 	usages = _free(usages);
 
-    return 0;
+    return rc;
 }
 /*@=usereleased =onlytrans@*/
