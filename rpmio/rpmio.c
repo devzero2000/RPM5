@@ -3084,33 +3084,45 @@ int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
     static ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
     uint8_t * b = NULL;
-    ssize_t size;
+    struct stat sb;
     FD_t fd;
     int rc = 0;
+    int xx;
 
     fd = Fopen(fn, "r%{?_rpmgio}");
     if (fd == NULL || Ferror(fd)) {
 	rc = 2;
 	goto exit;
     }
-
-    size = fdSize(fd);
-    blen = (size >= 0 ? size : blenmax);
-    if (blen) {
-	size_t nb;
+    sb.st_size = 0;
+    if ((xx = Fstat(fd, &sb)) < 0)
+	sb.st_size = blenmax;
+#if defined(__linux__)
+    /* XXX st->st_size = 0 for /proc files on linux, see stat(2). */
+    /* XXX glibc mmap'd libio no workie for /proc files on linux?!? */
+    if (sb.st_size == 0 && !strncmp(fn, "/proc/", sizeof("/proc/")-1)) {
+	blen = blenmax;
 	b = xmalloc(blen+1);
 	b[0] = (uint8_t) '\0';
-	nb = Fread(b, sizeof(*b), blen, fd);
-	if (Ferror(fd) || (size > 0 && (ssize_t)nb != blen)) {
+
+	xx = read(Fileno(fd), b, blen);
+	blen = (size_t) (xx >= 0 ? xx : 0); 
+    } else
+#endif
+    {
+	blen = sb.st_size;
+	b = xmalloc(blen+1);
+	b[0] = (uint8_t) '\0';
+
+	blen = Fread(b, sizeof(*b), blen, fd);
+	if (Ferror(fd)) {
 	    rc = 1;
 	    goto exit;
 	}
-	if (blen == blenmax && (ssize_t)nb < blen) {
-	    blen = nb;
-	    b = xrealloc(b, blen+1);
-	}
-	b[blen] = (uint8_t) '\0';
     }
+    if (blen < sb.st_size)
+	b = xrealloc(b, blen+1);
+    b[blen] = (uint8_t) '\0';
 
 exit:
     if (fd) (void) Fclose(fd);

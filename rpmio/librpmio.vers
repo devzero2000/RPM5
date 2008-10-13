@@ -100,6 +100,8 @@ LIBRPMIO_0
     freeStringBuf;
     Fseek;
     _Fseek;
+    Fstat;
+    _Fstat;
     Fstrerror;
     _Fstrerror;
     ftpCmd;

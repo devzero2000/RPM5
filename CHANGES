@@ -1,4 +1,7 @@
 5.1.5 -> 5.1.6:
+    - jbj: fix: resurrect cpuinfo() probe, hack-o-rounds for both /proc & libio.
+    - jbj: rpmio: rewrite rpmioSlurp to use Fstat(2) instead.
+    - jbj: rpmrpc: add Fstat(2).
     - jbj: fix: he->tag was returning RPMTAG_BASENAMES, not RPMTAG_FILEPATHS.
 
 5.1.4 -> 5.1.5:
