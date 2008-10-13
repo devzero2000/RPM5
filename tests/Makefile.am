@@ -102,6 +102,8 @@ check-install:
 check-triggers:
 	${rpm} -Uv --noparentdirs --nodeps triggers-N/triggers-N*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-N-a triggers-N-b
+	${rpm} -Uv --noparentdirs --nodeps triggers-P/triggers-P*.rpm
+	${rpm} -ev --noparentdirs --nodeps triggers-P-a triggers-P-b
 
 check-query:
 	@${rpm} -qW . > /dev/null 2>&1
