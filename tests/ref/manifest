@@ -16,6 +16,10 @@ edos-test/window-1-0.noarch.rpm
 edos-test/window-2-0.noarch.rpm
 probes-test/probes-1-0.noarch.rpm
 probes-test/probes-2-0.noarch.rpm
+triggers-D/triggers-D-a-1.0-1.noarch.rpm
+triggers-D/triggers-D-b-1.0-1.i386.rpm
+triggers-F/triggers-F-a-1.0-1.noarch.rpm
+triggers-F/triggers-F-b-1.0-1.i386.rpm
 triggers-N/triggers-N-a-1.0-1.noarch.rpm
 triggers-N/triggers-N-b-1.0-1.i386.rpm
 triggers-P/triggers-P-a-1.0-1.noarch.rpm

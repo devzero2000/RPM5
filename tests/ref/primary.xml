@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="7">
+<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="9">
 <package type="rpm">
   <name>devtool-sanity</name>
   <arch>noarch</arch>
@@ -188,6 +188,62 @@ shell-like rules.</description>
   </format>
 </package>
 <package type="rpm">
+  <name>triggers-D</name>
+  <arch>i386</arch>
+  <version epoch="0" ver="1.0" rel="1"/>
+  <checksum type="sha" pkgid="YES">c2fc0cea2a2f453f20cb80419b2fd33addd2f52a</checksum>
+  <summary>Triggers on D functional tests.</summary>
+  <description></description>
+  <packager></packager>
+  <url>http://rpm5.org/</url>
+  <time file="1223913304" build="1223913285"/>
+  <size package="4604" installed="4604" archive="1584"/>
+  <location xml:base="(none)" href="triggers-D-1.0-1.src.rpm"/>
+  <format>
+    <rpm:license>Public Domain</rpm:license>
+    <rpm:vendor/>
+    <rpm:group>Development/Tools</rpm:group>
+    <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
+    <rpm:header-range start="368" end="4080"/>
+    <rpm:provides>
+    </rpm:provides>
+    <rpm:requires>
+    </rpm:requires>
+    <rpm:conflicts>
+    </rpm:conflicts>
+    <rpm:obsoletes>
+    </rpm:obsoletes>
+  </format>
+</package>
+<package type="rpm">
+  <name>triggers-F</name>
+  <arch>i386</arch>
+  <version epoch="0" ver="1.0" rel="1"/>
+  <checksum type="sha" pkgid="YES">3295b197089d5e0c4ef7c80ce0833757f1527ad4</checksum>
+  <summary>Triggers on F functional tests.</summary>
+  <description></description>
+  <packager></packager>
+  <url>http://rpm5.org/</url>
+  <time file="1223913545" build="1223913521"/>
+  <size package="4606" installed="4606" archive="1600"/>
+  <location xml:base="(none)" href="triggers-F-1.0-1.src.rpm"/>
+  <format>
+    <rpm:license>Public Domain</rpm:license>
+    <rpm:vendor/>
+    <rpm:group>Development/Tools</rpm:group>
+    <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
+    <rpm:header-range start="368" end="4080"/>
+    <rpm:provides>
+    </rpm:provides>
+    <rpm:requires>
+    </rpm:requires>
+    <rpm:conflicts>
+    </rpm:conflicts>
+    <rpm:obsoletes>
+    </rpm:obsoletes>
+  </format>
+</package>
+<package type="rpm">
   <name>triggers-N</name>
   <arch>i386</arch>
   <version epoch="0" ver="1.0" rel="1"/>
@@ -196,7 +252,7 @@ shell-like rules.</description>
   <description></description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1223911246" build="1223911215"/>
+  <time file="1223911947" build="1223911215"/>
   <size package="4603" installed="4603" archive="1560"/>
   <location xml:base="(none)" href="triggers-N-1.0-1.src.rpm"/>
   <format>
@@ -224,7 +280,7 @@ shell-like rules.</description>
   <description></description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1223911700" build="1223911669"/>
+  <time file="1223911947" build="1223911669"/>
   <size package="4599" installed="4599" archive="1432"/>
   <location xml:base="(none)" href="triggers-P-1.0-1.src.rpm"/>
   <format>

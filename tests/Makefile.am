@@ -104,6 +104,10 @@ check-triggers:
 	${rpm} -ev --noparentdirs --nodeps triggers-N-a triggers-N-b
 	${rpm} -Uv --noparentdirs --nodeps triggers-P/triggers-P*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-P-a triggers-P-b
+	${rpm} -Uv --noparentdirs --nodeps triggers-D/triggers-D*.rpm
+	${rpm} -ev --noparentdirs --nodeps triggers-D-a triggers-D-b
+	${rpm} -Uv --noparentdirs --nodeps triggers-F/triggers-F*.rpm
+	${rpm} -ev --noparentdirs --nodeps triggers-F-a triggers-F-b
 
 check-query:
 	@${rpm} -qW . > /dev/null 2>&1

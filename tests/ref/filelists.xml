@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="7">
+<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="9">
 <package pkgid="b041a71594a3bf628883ea514861ce0bdec828f1" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <file>JBJ-GPG-KEY</file>
@@ -67,6 +67,14 @@
   <file>test3.asc</file>
   <file>test3.sig</file>
   <file>test3.txt</file>
+</package>
+<package pkgid="c2fc0cea2a2f453f20cb80419b2fd33addd2f52a" name="triggers-D" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <file>triggers-D.spec</file>
+</package>
+<package pkgid="3295b197089d5e0c4ef7c80ce0833757f1527ad4" name="triggers-F" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <file>triggers-F.spec</file>
 </package>
 <package pkgid="6e6849792e60bb2d685cd7051d7e25c9385f2875" name="triggers-N" arch="i386">
   <version epoch="0" ver="1.0" rel="1"/>
