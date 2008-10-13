@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#define	_MIRE_INTERNAL	/* XXX mireApply doesn't tell which pattern matched. */
+
 #include <rpmio_internal.h>	/* XXX FDSTAT_READ */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
@@ -1098,7 +1100,6 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	    continue;
 
 	bingo = 0;		/* no trigger to fire. */
-	/* XXX if trigger name ends with '/', use dirnames instead. */
 	depName = (char *) rpmdsN(Tds);
 	if (depName[0] == '/') {
 	    if (Glob_pattern_p(depName, 0)) {
@@ -1182,7 +1183,10 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     rpmds ds = rpmdsNew(fi->h, tagno, scareMem);
-    const char * depName = NULL;
+    char * depName = NULL;
+    int nmires = 0;
+    miRE mires = NULL;
+    ARGV_t patterns = NULL;
     ARGI_t instances = NULL;
     rpmdbMatchIterator mi;
     Header triggeredH;
@@ -1190,15 +1194,71 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
     int i;
     int xx;
 
+    /* Retrieve trigger patterns from rpmdb. */
+if (tagno == RPMTAG_BASENAMES) {
+    ARGV_t keys = NULL;
+    int nkeys = 0;
+    rpmTag ttagno = RPMTAG_TRIGGERNAME;
+    
+    xx = rpmdbMireApply(rpmtsGetRdb(ts), ttagno, RPMMIRE_STRCMP, NULL, &keys);
+    nkeys = argvCount(keys);
+    if (keys)
+    for (i = 0; i < nkeys; i++) {
+	char * t = (char *) keys[i];
+	if (!Glob_pattern_p(t, 0))
+	    continue;
+	xx = mireAppend(RPMMIRE_GLOB, ttagno, t, NULL, &mires, &nmires);
+	xx = argvAdd(&patterns, t);
+    }
+    keys = argvFree(keys);
+
+if (_jbj && patterns != NULL) argvPrint("trigger patterns", patterns, NULL);
+}
+
+    /* Fire elements against rpmdb trigger strings. */
     if ((ds = rpmdsInit(ds)) != NULL)
     while ((i = rpmdsNext(ds)) >= 0) {
+	const char * Name = rpmdsN(ds);
+	size_t nName = strlen(Name);
 	unsigned prev, instance;
 	unsigned nvals;
 	ARGint_t vals;
 
 	depName = _free(depName);
-	depName = xstrdup(rpmdsN(ds));
+	depName = xmalloc(nName + 1 + 1);
+	(void) stpcpy(depName, Name);
+	depName[nName+1] = depName[nName] = '\0';
 
+	if (depName[0] == '/') {
+
+	    /* XXX Skip pattern <-> pattern match false triggers. */
+	    if (Glob_pattern_p(depName, 0))
+		continue;
+
+	    if (mires) {
+		miRE mire;
+		int j;
+
+		/* XXX mireApply doesn't tell which pattern matched. */
+		for (j = 0, mire = mires; j < nmires; j++, mire++) {
+		    const char * pattern = patterns[j];
+		    if (depName[nName-1] != '/') {
+			size_t npattern = strlen(pattern);
+			depName[nName] = (pattern[npattern-1] == '/')
+				? '/' : '\0';
+		    }
+		    if (mireRegexec(mire, depName, 0) < 0)
+			continue;
+if (_jbj)
+fprintf(stderr, "=== %p[%d] %s matched %s\n", patterns, j, pattern, depName);
+		    depName = _free(depName);
+		    depName = xstrdup(pattern);
+		    break;
+		}
+	    }
+	}
+
+	/* Retrieve triggered header(s) by key. */
 	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
 if (_jbj)
 fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x depName %s mi %p\n", psm, psm->sense, depName, mi);
@@ -1221,6 +1281,9 @@ fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x depName %s mi %p\n", psm, ps
 
 	mi = rpmdbFreeIterator(mi);
     }
+
+    patterns = argvFree(patterns);
+    mires = mireFreeAll(mires, nmires);
     instances = argiFree(instances);
     depName = _free(depName);
     ds = rpmdsFree(ds);
