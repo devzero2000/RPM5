@@ -1016,7 +1016,7 @@
     - %___build_args	-e
     - %___build_cmd	%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
     - %___build_post	exit 0
-    - |-
+    - |3-
       %___build_pre	
         RPM_SOURCE_DIR="%{u2p:%{_sourcedir}}"
         RPM_BUILD_DIR="%{u2p:%{_builddir}}"
@@ -1049,7 +1049,7 @@
     - %__chmod	/bin/chmod
     - %__chown	/bin/chown
     - %__chown_Rhf	%{__chown} -Rhf
-    - |-
+    - |3-
       %__dbi_btconfig	
         btree		
         %{__dbi_other}
@@ -1062,7 +1062,7 @@
     - %__id	/usr/bin/id
     - %__id_u	%{__id} -u
     - %__mkdir_p	/bin/mkdir -p
-    - |-
+    - |3-
       %__os_install_post	
           /usr/lib/rpm/brp-compress 
           /usr/lib/rpm/brp-strip 
@@ -1080,7 +1080,7 @@
       %{__spec_build_pre}
       %{nil}
     - %__spec_install_cmd	%{___build_cmd}
-    - |-
+    - |3-
       %__spec_install_post	
           %{?__debug_package:%{__debug_install_post}}
           %{__arch_install_post}
@@ -1114,7 +1114,7 @@
     - %_dbapi	3
     - %_dbapi_rebuild	3
     - %_dbapi_used	%{?_rpmdb_rebuild:%{_dbapi_rebuild}}%{!?_rpmdb_rebuild:%{_dbapi}}
-    - |-
+    - |3-
       %_dbi_btconfig	
         %{?_rpmdb_rebuild:%{__dbi_btconfig_rebuild}}
         %{!?_rpmdb_rebuild:%{__dbi_btconfig_current}}
@@ -1163,7 +1163,7 @@
     - %_vendor	redhat
     - %_vsflags_build	%{__vsflags}
     - %buildroot	%{_tmppath}/%{name}-root
-    - |-
+    - |3-
       %configure	
         CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
         CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
@@ -1211,7 +1211,7 @@
   Rpmlibtimestamp: 2105540608
   Rpmlibvendor: 1380994357
   Tag_0x46c39442: /usr/bin/perl /usr/lib/rpm/vcheck
-  Tag_0x6d479aed: |-
+  Tag_0x6d479aed: |3-
       prog popt = {
           version   = 1.14
           url       = http://rpm5.org/popt

@@ -10,6 +10,7 @@ BUILDHOST              1007 string
 BUILDMACROS            1111 argv array
 BUILDPLATFORMS         1183 argv array
 BUILDTIME              1006 uint32
+C                      1054 argv array
 CACHECTIME             1136 uint32
 CACHEPKGMTIME          1139 uint32
 CACHEPKGPATH           1137 string
@@ -26,7 +27,6 @@ CONFLICTNAME           1054 argv array
 CONFLICTS              1054 argv array
 CONFLICTVERSION        1055 argv array
 COOKIE                 1094 string
-C                      1054 argv array
 CVSID                  1163 string
 DBINSTANCE             1195 uint32
 DEPATTRSDICT           1188 argv array
@@ -38,12 +38,12 @@ DISTRIBUTION           1010 string
 DISTTAG                1155 string
 DISTURL                1123 string
 DSAHEADER               267 octets
+E                      1003 uint32
+ENHANCES               1159 argv array
 ENHANCESFLAGS          1161 uint32 array
 ENHANCESNAME           1159 argv array
-ENHANCES               1159 argv array
 ENHANCESVERSION        1160 argv array
 EPOCH                  1003 uint32
-E                      1003 uint32
 EXCLUDEARCH            1059 argv array
 EXCLUDEOS              1060 argv array
 EXCLUSIVEARCH          1061 argv array
@@ -90,9 +90,10 @@ INSTALLTIME            1008 uint32 array
 INSTPREFIXES           1099 argv array
 KEYWORDS               1182 argv array
 LICENSE                1014 string
-NAME                   1000 string
 N                      1000 string
+NAME                   1000 string
 NVRA                   1196 string
+O                      1090 argv array
 OBSOLETEATTRSX         1190 uint32 array
 OBSOLETEFLAGS          1114 uint32 array
 OBSOLETENAME           1090 argv array
@@ -106,8 +107,8 @@ ORIGDIRNAMES           1121 argv array
 ORIGINTID              1209 uint32 array
 ORIGINTIME             1210 uint32 array
 ORIGPATHS              1198 argv array
-O                      1090 argv array
 OS                     1021 string
+P                      1047 argv array
 PACKAGEBASEURL         1217 string
 PACKAGECOLOR           1184 uint32
 PACKAGEDIGEST          1215 string
@@ -146,8 +147,8 @@ PROVIDEFLAGS           1112 uint32 array
 PROVIDENAME            1047 argv array
 PROVIDES               1047 argv array
 PROVIDEVERSION         1113 argv array
-P                      1047 argv array
 PUBKEYS                 266 argv array
+R                      1002 string
 RECONTEXTS             1149 argv array
 RELEASE                1002 string
 REMOVETID              1129 uint32 array
@@ -162,7 +163,6 @@ RPMLIBTIMESTAMP        1200 uint32
 RPMLIBVENDOR           1201 uint32
 RPMLIBVERSION          1199 uint32
 RPMVERSION             1064 string
-R                      1002 string
 RSAHEADER               268 octets
 SANITYCHECK            1205 string
 SANITYCHECKPROG        1206 string
@@ -179,9 +179,9 @@ SOURCEPACKAGE          1106 uint32
 SOURCEPKGID            1146 octets
 SOURCERPM              1044 string
 STAT                   1208 argv array
+SUGGESTS               1156 argv array
 SUGGESTSFLAGS          1158 uint32 array
 SUGGESTSNAME           1156 argv array
-SUGGESTS               1156 argv array
 SUGGESTSVERSION        1157 argv array
 SUMMARY                1004 i18nstring
 SVNID                  1163 string
@@ -192,12 +192,12 @@ TRIGGERSCRIPTPROG      1092 argv array
 TRIGGERSCRIPTS         1065 argv array
 TRIGGERVERSION         1067 argv array
 URL                    1020 string
+V                      1001 string
 VARIANTS               1178 argv array
 VENDOR                 1011 string
 VERIFYSCRIPT           1079 string
 VERIFYSCRIPTPROG       1091 string
 VERSION                1001 string
-V                      1001 string
 XATTRSDICT             1186 argv array
 XMAJOR                 1179 uint32
 XMINOR                 1180 uint32

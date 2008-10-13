@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="5">
+<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="6">
 <package type="rpm">
   <name>devtool-sanity</name>
   <arch>noarch</arch>
@@ -180,6 +180,34 @@ shell-like rules.</description>
       <rpm:entry name="!diskspace(/tmp)" flags="LT" epoch="0" ver="1Mb"/>
       <rpm:entry name="executable(/bin/sh)"/>
       <rpm:entry name="executable(cat)"/>
+    </rpm:requires>
+    <rpm:conflicts>
+    </rpm:conflicts>
+    <rpm:obsoletes>
+    </rpm:obsoletes>
+  </format>
+</package>
+<package type="rpm">
+  <name>triggers-N</name>
+  <arch>i386</arch>
+  <version epoch="0" ver="1.0" rel="1"/>
+  <checksum type="sha" pkgid="YES">6a936e2baba685af736e5166150c0a2ee4d89a16</checksum>
+  <summary>Triggers on N functional tests.</summary>
+  <description></description>
+  <packager></packager>
+  <url>http://rpm5.org/</url>
+  <time file="1223908896" build="1223908808"/>
+  <size package="4616" installed="4616" archive="2312"/>
+  <location xml:base="(none)" href="triggers-N-1.0-1.src.rpm"/>
+  <format>
+    <rpm:license>Public Domain</rpm:license>
+    <rpm:vendor/>
+    <rpm:group>Development/Tools</rpm:group>
+    <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
+    <rpm:header-range start="280" end="3992"/>
+    <rpm:provides>
+    </rpm:provides>
+    <rpm:requires>
     </rpm:requires>
     <rpm:conflicts>
     </rpm:conflicts>

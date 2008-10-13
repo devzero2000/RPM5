@@ -1,4 +1,11 @@
 Makefile
 Makefile.in
 macros
+popt*.rpm
+repodata
 tmp
+devtool-sanity
+edos-test
+popt
+probes-test
+triggers-N
