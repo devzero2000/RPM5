@@ -396,6 +396,10 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	Header h;
 	int rc;
 
+#ifdef	NOTYET	/* XXX exiting here will leave stale locks. */
+	(void) rpmdbCheckSignals();
+#endif
+
 	h = rpmgiHeader(gi);
 	if (h == NULL)		/* XXX perhaps stricter break instead? */
 	    continue;
@@ -605,6 +609,24 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package requires %s\n"), arg);
+	    res = 1;
+	} else
+	    res = rpmcliShowMatches(qva, ts);
+	break;
+
+    case RPMQV_WHATCONFLICTS:
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, arg, 0);
+	if (qva->qva_mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package conflicts with %s\n"), arg);
+	    res = 1;
+	} else
+	    res = rpmcliShowMatches(qva, ts);
+	break;
+
+    case RPMQV_WHATOBSOLETES:
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_OBSOLETENAME, arg, 0);
+	if (qva->qva_mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package obsoletes %s\n"), arg);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
