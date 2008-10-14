@@ -1,4 +1,5 @@
 5.1.5 -> 5.1.6:
+    - bero: Python 2.6 support in configure.ac
     - jbj: refactor the sumNN wrappers out of digest.c too.
     - jbj: include crc routines in a standalone file.
     - jbj: use a switch on errno to make leakage pathology filtering easier.
