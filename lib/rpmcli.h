@@ -8,6 +8,7 @@
 #include <popt.h>
 #include <rpmmacro.h>
 #include <rpmtypes.h>
+#include <rpmtag.h>
 #include <rpmps.h>
 #include <rpmrc.h>
 #include <rpmfi.h>	/* XXX rpmfileAttrs */
@@ -128,8 +129,8 @@ typedef enum rpmQVSources_e {
     RPMQV_WHATNEEDS,	/*!< ... from requires using contained provides. */
     RPMQV_SPECSRPM,	/*!< ... srpm from spec file parse (query only). */
     RPMQV_SOURCEPKGID,	/*!< ... from source package id (header+payload MD5). */
-    RPMQV_WHATCONFLICTS,/*!< ... from conflicts db search. */
-    RPMQV_WHATOBSOLETES	/*!< ... from obsoletes db search. */
+    RPMQV_WHATCONFLICTS	= RPMTAG_CONFLICTNAME,
+    RPMQV_WHATOBSOLETES	= RPMTAG_OBSOLETENAME
 } rpmQVSources;
 
 /** \ingroup rpmcli

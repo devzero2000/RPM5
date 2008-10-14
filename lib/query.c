@@ -462,6 +462,20 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	return 1;
 
     switch (qva->qva_source) {
+#ifdef	NOTYET
+    default:
+#endif
+    case RPMQV_WHATCONFLICTS:
+    case RPMQV_WHATOBSOLETES:
+	qva->qva_mi = rpmtsInitIterator(ts, qva->qva_source, arg, 0);
+	if (qva->qva_mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("key \"%s\" not found in %s table\n"),
+			arg, tagName((rpmTag)qva->qva_source));
+	    res = 1;
+	} else
+	    res = rpmcliShowMatches(qva, ts);
+	break;
+
     case RPMQV_RPM:
 	res = rpmgiShowMatches(qva, ts);
 	break;
@@ -609,24 +623,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package requires %s\n"), arg);
-	    res = 1;
-	} else
-	    res = rpmcliShowMatches(qva, ts);
-	break;
-
-    case RPMQV_WHATCONFLICTS:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, arg, 0);
-	if (qva->qva_mi == NULL) {
-	    rpmlog(RPMLOG_NOTICE, _("no package conflicts with %s\n"), arg);
-	    res = 1;
-	} else
-	    res = rpmcliShowMatches(qva, ts);
-	break;
-
-    case RPMQV_WHATOBSOLETES:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_OBSOLETENAME, arg, 0);
-	if (qva->qva_mi == NULL) {
-	    rpmlog(RPMLOG_NOTICE, _("no package obsoletes %s\n"), arg);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
