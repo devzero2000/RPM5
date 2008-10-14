@@ -3659,6 +3659,18 @@ exit:
     return result;
 }
 
+int rpmdsMatch(rpmds A, const rpmds B)
+{
+    int result = 0;
+
+    /* If any A dependency matches the B, we're done. */
+    if ((A = rpmdsInit(A)) != NULL)
+    while (rpmdsNext(A) >= 0)
+	if ((result = rpmdsCompare(A, B)))
+	    break;
+    return result;
+}
+
 void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
 	const fnpyKey * suggestedKeys, int adding)
 {

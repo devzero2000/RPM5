@@ -1,5 +1,7 @@
 
 5.2a1 -> 5.2a2:
+    - jbj: use rpmdsMatch to detect rpmdb trigger firing.
+    - jbj: add rpmdsMatch to match dependency against set.
     - jbj: refactor the sumNN wrappers out of digest.c too.
     - jbj: include crc routines in a standalone file.
     - jbj: fix: unmatched file/dir path triggers were firing.

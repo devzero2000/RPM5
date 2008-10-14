@@ -686,6 +686,15 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	/*@*/;
 
 /** \ingroup rpmds
+ * Compare B against every member of A, looking for a match.
+ * @param A		1st dependency
+ * @param B		2nd dependency
+ * @return		1 if some dependency overlaps, 0 otherwise
+ */
+int rpmdsMatch(rpmds A, const rpmds B)
+	/*@*/;
+
+/** \ingroup rpmds
  * Report a Requires: or Conflicts: dependency problem.
  * @param ps		transaction set problems
  * @param pkgNEVR	package name/epoch/version/release

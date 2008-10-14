@@ -1129,25 +1129,13 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	    if (!bingo && depName[nb-1] == '/') {
 		if (Dds == NULL)
 		    Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0);
-		if ((Dds = rpmdsInit(Dds)) != NULL)
-		while (rpmdsNext(Dds) >= 0) {
-		    if (!rpmdsCompare(Dds, Tds))
-			continue;
-		    bingo = 1;
-		    break;
-		}
+		bingo = rpmdsMatch(Dds, Tds);
 	    }
 	    /* If not matched, try file paths. */
 	    if (!bingo) {
 		if (Fds == NULL)
 		    Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
-		if ((Fds = rpmdsInit(Fds)) != NULL)
-		while (rpmdsNext(Fds) >= 0) {
-		    if (!rpmdsCompare(Fds, Tds))
-			continue;
-		    bingo = 1;
-		    break;
-		}
+		bingo = rpmdsMatch(Fds, Tds);
 	    }
 	}
 
@@ -1155,13 +1143,7 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	if (!bingo) {
 	    if (Pds == NULL)
 		Pds = rpmdsNew(sourceH, RPMTAG_PROVIDENAME, 0);
-	    if ((Pds = rpmdsInit(Pds)) != NULL)
-	    while (rpmdsNext(Pds) >= 0) {
-		if (!rpmdsCompare(Pds, Tds))
-		    continue;
-		bingo = 1;
-		break;
-	    }
+	    bingo = rpmdsMatch(Pds, Tds);
 	    bingo = rpmdsNegateRC(Tds, bingo);
 	}
 	if (!bingo)

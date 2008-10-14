@@ -96,6 +96,7 @@ LIBRPM_0
     rpmdsInit;
     rpmdsIx;
     rpmdsLdconfig;
+    rpmdsMatch;
     rpmdsMerge;
     rpmdsMergePRCO;
     rpmdsN;
