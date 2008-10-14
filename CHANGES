@@ -1,5 +1,6 @@
 
 5.2a1 -> 5.2a2:
+    - jbj: use generic retrieval code for --group and --triggerdby too.
     - jbj: attempt generic retrieval code using --whatconflicts/--whatobsoletes.
     - jbj: add --whatconflicts/--whatobsoletes, hidden for now.
     - jbj: generate Obsoletename index.

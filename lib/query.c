@@ -465,6 +465,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 #ifdef	NOTYET
     default:
 #endif
+    case RPMQV_GROUP:
+    case RPMQV_TRIGGEREDBY:
     case RPMQV_WHATCONFLICTS:
     case RPMQV_WHATOBSOLETES:
 	qva->qva_mi = rpmtsInitIterator(ts, qva->qva_source, arg, 0);
@@ -498,6 +500,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		? qva->qva_specQuery(ts, qva, arg) : 1);
 	break;
 
+#ifdef	DYING
     case RPMQV_GROUP:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (qva->qva_mi == NULL) {
@@ -516,6 +519,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	} else
 	    res = rpmcliShowMatches(qva, ts);
 	break;
+#endif
 
     case RPMQV_SOURCEPKGID:
     case RPMQV_PKGID:

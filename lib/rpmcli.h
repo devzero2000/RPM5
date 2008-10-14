@@ -114,10 +114,10 @@ typedef enum rpmQVSources_e {
     RPMQV_PATH,		/*!< ... from file path db search. */
     RPMQV_ALL,		/*!< ... from each installed package. */
     RPMQV_RPM, 		/*!< ... from reading binary rpm package. */
-    RPMQV_GROUP,	/*!< ... from group db search. */
+    RPMQV_GROUP		= RPMTAG_GROUP,
     RPMQV_WHATPROVIDES,	/*!< ... from provides db search. */
     RPMQV_WHATREQUIRES,	/*!< ... from requires db search. */
-    RPMQV_TRIGGEREDBY,	/*!< ... from trigger db search. */
+    RPMQV_TRIGGEREDBY	= RPMTAG_TRIGGERNAME,
     RPMQV_DBOFFSET,	/*!< ... from database header instance. */
     RPMQV_SPECFILE,	/*!< ... from spec file parse (query only). */
     RPMQV_PKGID,	/*!< ... from package id (header+payload MD5). */
