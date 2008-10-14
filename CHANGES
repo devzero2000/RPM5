@@ -1,4 +1,5 @@
 5.1.5 -> 5.1.6:
+    - jbj: refactor the sumNN wrappers out of digest.c too.
     - jbj: include crc routines in a standalone file.
     - jbj: use a switch on errno to make leakage pathology filtering easier.
     - jbj: use Stat(2) for --rpmiodebug tracing.

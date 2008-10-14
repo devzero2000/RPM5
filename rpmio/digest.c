@@ -4,8 +4,6 @@
 
 #include "system.h"
 
-#include <zlib.h>
-
 #include "rpmio_internal.h"
 
 #include <rpmbc.h>
@@ -33,100 +31,6 @@
 /* Include Bob Jenkins lookup3 hash */
 #define	_JLU3_jlu32l
 #include "lookup3.c"
-
-/**
- */
-typedef struct {
-	uint32_t crc;
-	uint32_t (*update)  (uint32_t crc, const byte * data, size_t size);
-	uint32_t (*combine) (uint32_t crc1, uint32_t crc2, size_t len2);
-} sum32Param;
-
-/**
- */
-static int sum32Reset(register sum32Param* mp)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (0, NULL, 0);
-    return 0;
-}
-
-/**
- */
-static int sum32Update(sum32Param* mp, const byte* data, size_t size)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (mp->crc, data, size);
-    return 0;
-}
-
-/**
- */
-static int sum32Digest(sum32Param* mp, byte* data)
-	/*@modifies *mp, data @*/
-{
-	uint32_t c = mp->crc;
-
-	data[ 0] = (byte)(c >> 24);
-	data[ 1] = (byte)(c >> 16);
-	data[ 2] = (byte)(c >>  8);
-	data[ 3] = (byte)(c      );
-
-	(void) sum32Reset(mp);
-
-	return 0;
-}
-
-/**
- */
-typedef struct {
-	uint64_t crc;
-	uint64_t (*update)  (uint64_t crc, const byte * data, size_t size);
-	uint64_t (*combine) (uint64_t crc1, uint64_t crc2, size_t len2);
-} sum64Param;
-
-/**
- */
-static int sum64Reset(register sum64Param* mp)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (0, NULL, 0);
-    return 0;
-}
-
-/**
- */
-static int sum64Update(sum64Param* mp, const byte* data, size_t size)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (mp->crc, data, size);
-    return 0;
-}
-
-/**
- */
-static int sum64Digest(sum64Param* mp, byte* data)
-	/*@modifies *mp, data @*/
-{
-	uint64_t c = mp->crc;
-
-	data[ 0] = (byte)(c >> 56);
-	data[ 1] = (byte)(c >> 48);
-	data[ 2] = (byte)(c >> 40);
-	data[ 3] = (byte)(c >> 32);
-	data[ 4] = (byte)(c >> 24);
-	data[ 5] = (byte)(c >> 16);
-	data[ 6] = (byte)(c >>  8);
-	data[ 7] = (byte)(c      );
-
-	(void) sum64Reset(mp);
-
-	return 0;
-}
 
 /*@access DIGEST_CTX@*/
 

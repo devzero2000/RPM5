@@ -395,3 +395,63 @@ uint32_t __adler32_combine(uint32_t adler1, uint32_t adler2, size_t len2)
     if (sum2 > BASE) sum2 -= BASE;
     return sum1 | (sum2 << 16);
 }
+
+int sum32Reset(register sum32Param * mp)
+{
+    if (mp->update)
+	mp->crc = (*mp->update) (0, NULL, 0);
+    return 0;
+}
+
+int sum32Update(sum32Param * mp, const uint8_t * data, size_t size)
+{
+    if (mp->update)
+	mp->crc = (*mp->update) (mp->crc, data, size);
+    return 0;
+}
+
+int sum32Digest(sum32Param * mp, uint8_t * data)
+{
+	uint32_t c = mp->crc;
+
+	data[ 0] = (uint8_t)(c >> 24);
+	data[ 1] = (uint8_t)(c >> 16);
+	data[ 2] = (uint8_t)(c >>  8);
+	data[ 3] = (uint8_t)(c      );
+
+	(void) sum32Reset(mp);
+
+	return 0;
+}
+
+int sum64Reset(register sum64Param * mp)
+{
+    if (mp->update)
+	mp->crc = (*mp->update) (0, NULL, 0);
+    return 0;
+}
+
+int sum64Update(sum64Param * mp, const uint8_t * data, size_t size)
+{
+    if (mp->update)
+	mp->crc = (*mp->update) (mp->crc, data, size);
+    return 0;
+}
+
+int sum64Digest(sum64Param * mp, uint8_t * data)
+{
+	uint64_t c = mp->crc;
+
+	data[ 0] = (uint8_t)(c >> 56);
+	data[ 1] = (uint8_t)(c >> 48);
+	data[ 2] = (uint8_t)(c >> 40);
+	data[ 3] = (uint8_t)(c >> 32);
+	data[ 4] = (uint8_t)(c >> 24);
+	data[ 5] = (uint8_t)(c >> 16);
+	data[ 6] = (uint8_t)(c >>  8);
+	data[ 7] = (uint8_t)(c      );
+
+	(void) sum64Reset(mp);
+
+	return 0;
+}
