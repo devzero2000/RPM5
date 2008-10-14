@@ -3659,13 +3659,13 @@ exit:
     return result;
 }
 
-int rpmdsMatch(rpmds A, const rpmds B)
+int rpmdsMatch(const rpmds A, rpmds B)
 {
     int result = 0;
 
-    /* If any A dependency matches the B, we're done. */
-    if ((A = rpmdsInit(A)) != NULL)
-    while (rpmdsNext(A) >= 0)
+    /* If A dependency matches any in B, we're done. */
+    if ((B = rpmdsInit(B)) != NULL)
+    while (rpmdsNext(B) >= 0)
 	if ((result = rpmdsCompare(A, B)))
 	    break;
     return result;
