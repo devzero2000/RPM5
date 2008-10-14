@@ -10,6 +10,7 @@
 
 #include <rpmbc.h>
 
+#include "crc.h"
 #include "md2.h"
 #include "md4.h"
 #include "sha224.h"
@@ -27,48 +28,6 @@
 #define	DPRINTF(_a)	fprintf _a
 #else
 #define	DPRINTF(_a)
-#endif
-
-#if !defined(ZLIB_H) || defined(__LCLINT__)
-/**
- */
-/*@-shadow@*/
-static uint32_t crc32(uint32_t crc, const byte * data, size_t size)
-	/*@*/
-{
-    static uint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
-    static uint32_t xorout = 0xffffffff;
-    static uint32_t table[256];
-
-    crc ^= xorout;
-
-    if (data == NULL) {
-	/* generate the table of CRC remainders for all possible bytes */
-	uint32_t c;
-	uint32_t i, j;
-	for (i = 0;  i < 256;  i++) {
-	    c = i;
-	    for (j = 0;  j < 8;  j++) {
-		if (c & 1)
-		    c = polynomial ^ (c >> 1);
-		else
-		    c = (c >> 1);
-	    }
-	    table[i] = c;
-	}
-    } else
-    while (size) {
-	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
-	size--;
-	data++;
-    }
-
-    crc ^= xorout;
-
-    return crc;
-
-}
-/*@=shadow@*/
 #endif
 
 /* Include Bob Jenkins lookup3 hash */
@@ -118,138 +77,6 @@ static int sum32Digest(sum32Param* mp, byte* data)
 	(void) sum32Reset(mp);
 
 	return 0;
-}
-
-/*
- * ECMA-182 polynomial, see
- *     http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-182.pdf
- */
-/**
- */
-static uint64_t crc64(uint64_t crc, const byte * data, size_t size)
-	/*@*/
-{
-    static uint64_t polynomial =
-	0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
-    static uint64_t xorout = 0xffffffffffffffffULL;
-    static uint64_t table[256];
-
-    crc ^= xorout;
-
-    if (data == NULL) {
-	/* generate the table of CRC remainders for all possible bytes */
-	uint64_t c;
-	uint32_t i, j;
-	for (i = 0;  i < 256;  i++) {
-	    c = i;
-	    for (j = 0;  j < 8;  j++) {
-		if (c & 1)
-		    c = polynomial ^ (c >> 1);
-		else
-		    c = (c >> 1);
-	    }
-	    table[i] = c;
-	}
-    } else
-    while (size) {
-	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
-	size--;
-	data++;
-    }
-
-    crc ^= xorout;
-
-    return crc;
-
-}
-
-/*
- * Swiped from zlib, using uint64_t rather than unsigned long computation.
- * Use at your own risk, uint64_t problems with compilers may exist.
- */
-#define	GF2_DIM	64
-
-/**
- */
-static uint64_t gf2_matrix_times(uint64_t *mat, uint64_t vec)
-	/*@*/
-{
-    uint64_t sum;
-
-    sum = 0;
-    while (vec) {
-        if (vec & 1)
-            sum ^= *mat;
-        vec >>= 1;
-        mat++;
-    }
-    return sum;
-}
-
-/**
- */
-static void gf2_matrix_square(/*@out@*/ uint64_t *square, uint64_t *mat)
-	/*@modifies square @*/
-{
-    int n;
-
-    for (n = 0; n < GF2_DIM; n++)
-        square[n] = gf2_matrix_times(mat, mat[n]);
-}
-
-/**
- */
-static uint64_t crc64_combine(uint64_t crc1, uint64_t crc2, size_t len2)
-	/*@*/
-{
-    int n;
-    uint64_t row;
-    uint64_t even[GF2_DIM];    /* even-power-of-two zeros operator */
-    uint64_t odd[GF2_DIM];     /* odd-power-of-two zeros operator */
-
-    /* degenerate case */
-    if (len2 == 0)
-        return crc1;
-
-    /* put operator for one zero bit in odd */
-    odd[0] = 0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
-    row = 1;
-    for (n = 1; n < GF2_DIM; n++) {
-        odd[n] = row;
-        row <<= 1;
-    }
-
-    /* put operator for two zero bits in even */
-    gf2_matrix_square(even, odd);
-
-    /* put operator for four zero bits in odd */
-    gf2_matrix_square(odd, even);
-
-    /* apply len2 zeros to crc1 (first square will put the operator for one
-       zero byte, eight zero bits, in even) */
-    do {
-        /* apply zeros operator for this bit of len2 */
-        gf2_matrix_square(even, odd);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times(even, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-        if (len2 == 0)
-            break;
-
-        /* another iteration of the loop with odd and even swapped */
-        gf2_matrix_square(odd, even);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times(odd, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-    } while (len2 != 0);
-
-    /* return combined crc */
-    crc1 ^= crc2;
-    return crc1;
 }
 
 /**
@@ -500,10 +327,10 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) crc32;
+	    mp->update = (uint32_t (*)(uint32_t, const uint8_t *, size_t)) __crc32;
 #if defined(ZLIB_H)
 #if defined(HAVE_ZLIB_CRC32_COMBINE)
-	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) crc32_combine;
+	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) __crc32_combine;
 #endif
 #endif
 /*@=type @*/
@@ -523,9 +350,9 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 #if defined(ZLIB_H)
-	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) adler32;
+	    mp->update = (uint32_t (*)(uint32_t, const uint8_t *, size_t)) __adler32;
 #if defined(HAVE_ZLIB_ADLER32_COMBINE)
-	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) adler32_combine;
+	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) __adler32_combine;
 #endif
 #endif
 /*@=type @*/
@@ -561,8 +388,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type@*/
-	    mp->update = (uint64_t (*)(uint64_t, const byte *, size_t)) crc64;
-	    mp->combine = (uint64_t (*)(uint64_t, uint64_t, size_t)) crc64_combine;
+	    mp->update = (uint64_t (*)(uint64_t, const uint8_t *, size_t)) __crc64;
+	    mp->combine = (uint64_t (*)(uint64_t, uint64_t, size_t)) __crc64_combine;
 /*@=type@*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
