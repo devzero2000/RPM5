@@ -1046,6 +1046,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     const rpmts ts = psm->ts;
     rpmds Tds = NULL;
     rpmds Fds = NULL;
+    rpmds Dds = NULL;
+    rpmds Pds = NULL;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
@@ -1102,13 +1104,14 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	bingo = 0;		/* no trigger to fire. */
 	depName = (char *) rpmdsN(Tds);
 	if (depName[0] == '/') {
+	    size_t nb = strlen(depName);
 	    if (Glob_pattern_p(depName, 0)) {
 
 		/* Initialize file names and pattern containers. */
-		if (Fds == NULL) {
+		if (Fds == NULL)
 		    Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		if (mire == NULL)
 		    mire = mireNew(RPMMIRE_GLOB, 0);
-		}
 
 		xx = mireRegcomp(mire, depName);
 		if ((Fds = rpmdsInit(Fds)) != NULL)
@@ -1119,15 +1122,48 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 		    break;
 		}
 	    } else {
-		size_t nb = strlen(depName);
 		if (delslash && depName[nb-1] == '/')
 		    depName[nb-1] = '\0';
+	    }
+	    /* If not matched, and directory trigger, try dir names. */
+	    if (!bingo && depName[nb-1] == '/') {
+		if (Dds == NULL)
+		    Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0);
+		if ((Dds = rpmdsInit(Dds)) != NULL)
+		while (rpmdsNext(Dds) >= 0) {
+		    if (!rpmdsCompare(Dds, Tds))
+			continue;
+		    bingo = 1;
+		    break;
+		}
+	    }
+	    /* If not matched, try file paths. */
+	    if (!bingo) {
+		if (Fds == NULL)
+		    Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		if ((Fds = rpmdsInit(Fds)) != NULL)
+		while (rpmdsNext(Fds) >= 0) {
+		    if (!rpmdsCompare(Fds, Tds))
+			continue;
+		    bingo = 1;
+		    break;
+		}
 	    }
 	}
 
 	/* If trigger not fired yet, try provided dependency match. */
-	if (!bingo)
-	    bingo = rpmdsNegateRC(Tds, rpmdsAnyMatchesDep(sourceH, Tds, 1));
+	if (!bingo) {
+	    if (Pds == NULL)
+		Pds = rpmdsNew(sourceH, RPMTAG_PROVIDENAME, 0);
+	    if ((Pds = rpmdsInit(Pds)) != NULL)
+	    while (rpmdsNext(Pds) >= 0) {
+		if (!rpmdsCompare(Pds, Tds))
+		    continue;
+		bingo = 1;
+		break;
+	    }
+	    bingo = rpmdsNegateRC(Tds, bingo);
+	}
 	if (!bingo)
 	    continue;
 
@@ -1153,6 +1189,8 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
     }
 
     mire = mireFree(mire);
+    Pds = rpmdsFree(Pds);
+    Dds = rpmdsFree(Dds);
     Fds = rpmdsFree(Fds);
     Tds = rpmdsFree(Tds);
 
@@ -1195,7 +1233,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
     int xx;
 
     /* Retrieve trigger patterns from rpmdb. */
-if (tagno == RPMTAG_BASENAMES) {
+if (tagno == RPMTAG_BASENAMES || tagno == RPMTAG_DIRNAMES) {
     ARGV_t keys = NULL;
     int nkeys = 0;
     rpmTag ttagno = RPMTAG_TRIGGERNAME;
@@ -1227,7 +1265,8 @@ if (_jbj && patterns != NULL) argvPrint("trigger patterns", patterns, NULL);
 	depName = _free(depName);
 	depName = xmalloc(nName + 1 + 1);
 	(void) stpcpy(depName, Name);
-	depName[nName+1] = depName[nName] = '\0';
+	depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
+	depName[nName+1] = '\0';
 
 	if (depName[0] == '/') {
 
@@ -1261,7 +1300,7 @@ fprintf(stderr, "=== %p[%d] %s matched %s\n", patterns, j, pattern, depName);
 	/* Retrieve triggered header(s) by key. */
 	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
 if (_jbj)
-fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x depName %s mi %p\n", psm, psm->sense, depName, mi);
+fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x %s depName %s mi %p\n", psm, psm->sense, tagName(tagno),depName, mi);
 
 	nvals = argiCount(instances);
 	vals = argiData(instances);
@@ -1337,9 +1376,11 @@ assert(fi->h != NULL);
 	/* Try name/providename triggers first. */
 	rc |= runTriggersLoop(psm, tagno, numPackage);
 
-	/* If not limited to NEVRA triggers, also try file path triggers. */
-	if (tagno != RPMTAG_NAME)
+	/* If not limited to NEVRA triggers, also try file/dir path triggers. */
+	if (tagno != RPMTAG_NAME) {
 	    rc |= runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage);
+	    rc |= runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage);
+	}
 
 	psm->countCorrection = countCorrection;
     }
