@@ -137,7 +137,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
     b[blen] = (rpmuint8_t) '\0';
 
 exit:
-    if (fd!= NULL) (void) Fclose(fd);
+    if (fd != NULL) (void) Fclose(fd);
 
     if (rc == 0) {
 	if (iobp != NULL) {

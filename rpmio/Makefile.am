@@ -7,7 +7,7 @@ LINT = splint
 SUBDIRS = # tests
 
 EXTRA_DIST = \
-	adler32.c fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
+	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
@@ -59,7 +59,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	mire.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
-	argv.h ar.h cpio.h envvar.h fnmatch.h fts.h glob.h iosm.h \
+	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
 	poptIO.h rpmbc.h rpmdav.h \
@@ -71,7 +71,7 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	ar.c argv.c bzdio.c cpio.c digest.c fnmatch.c fts.c \
+	ar.c argv.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
 	getdate.c gzdio.c glob.c iosm.c lzdio.c \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \

@@ -12,6 +12,7 @@
 
 #include <rpmbc.h>
 
+#include "crc.h"
 #include "md2.h"
 #include "md4.h"
 #include "sha224.h"
@@ -31,375 +32,9 @@
 #define	DPRINTF(_a)
 #endif
 
-#if !defined(WITH_ZLIB) || defined(__LCLINT__)
-
-/* XXX Make sure that --adler32 is in rpmio even if --without-zlib is used. */
-#include "adler32.c"
-
-/**
- */
-/*@-shadow@*/
-static rpmuint32_t crc32(rpmuint32_t crc, const byte * data, size_t size)
-	/*@*/
-{
-    static rpmuint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
-    static rpmuint32_t xorout = 0xffffffff;
-    static rpmuint32_t table[256];
-
-    crc ^= xorout;
-
-    if (data == NULL) {
-	/* generate the table of CRC remainders for all possible bytes */
-	rpmuint32_t c;
-	rpmuint32_t i, j;
-	for (i = 0;  i < 256;  i++) {
-	    c = i;
-	    for (j = 0;  j < 8;  j++) {
-		if (c & 1)
-		    c = polynomial ^ (c >> 1);
-		else
-		    c = (c >> 1);
-	    }
-	    table[i] = c;
-	}
-    } else
-    while (size) {
-	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
-	size--;
-	data++;
-    }
-
-    crc ^= xorout;
-
-    return crc;
-
-}
-/*@=shadow@*/
-
-/*
- * Swiped from zlib, using rpmuint32_t rather than unsigned long computation.
- */
-/*@unchecked@*/
-static int gf2_dim32 = 32;
-
-/**
- */
-static rpmuint32_t gf2_matrix_times32(rpmuint32_t *mat, rpmuint32_t vec)
-	/*@*/
-{
-    rpmuint32_t sum;
-
-    sum = 0;
-    while (vec) {
-        if (vec & 1)
-            sum ^= *mat;
-        vec >>= 1;
-        mat++;
-    }
-    return sum;
-}
-
-/**
- */
-static void gf2_matrix_square32(/*@out@*/ rpmuint32_t *square, rpmuint32_t *mat)
-	/*@modifies square @*/
-{
-    int n;
-
-    for (n = 0; n < gf2_dim32; n++)
-        square[n] = gf2_matrix_times32(mat, mat[n]);
-}
-
-/**
- */
-/*@-shadow@*/
-static rpmuint32_t crc32_combine(rpmuint32_t crc1, rpmuint32_t crc2, size_t len2)
-	/*@*/
-{
-    int n;
-    rpmuint32_t row;
-    size_t nb = gf2_dim32 * sizeof(row);
-    rpmuint32_t * even = alloca(nb);	/* even-power-of-two zeros operator */
-    rpmuint32_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
-
-    /* degenerate case */
-    if (len2 == 0)
-        return crc1;
-
-    /* put operator for one zero bit in odd */
-    odd[0] = 0xedb88320UL;	/* CRC-32 polynomial */
-    row = 1;
-    for (n = 1; n < gf2_dim32; n++) {
-        odd[n] = row;
-        row <<= 1;
-    }
-
-    /* put operator for two zero bits in even */
-    gf2_matrix_square32(even, odd);
-
-    /* put operator for four zero bits in odd */
-    gf2_matrix_square32(odd, even);
-
-    /* apply len2 zeros to crc1 (first square will put the operator for one
-       zero byte, eight zero bits, in even) */
-    do {
-        /* apply zeros operator for this bit of len2 */
-        gf2_matrix_square32(even, odd);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times32(even, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-        if (len2 == 0)
-            break;
-
-        /* another iteration of the loop with odd and even swapped */
-        gf2_matrix_square32(odd, even);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times32(odd, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-    } while (len2 != 0);
-
-    /* return combined crc */
-    crc1 ^= crc2;
-    return crc1;
-}
-/*@=shadow@*/
-
-#endif	/* !defined(WITH_ZLIB) */
-
 /* Include Bob Jenkins lookup3 hash */
 #define	_JLU3_jlu32l
 #include "lookup3.c"
-
-/**
- */
-typedef struct {
-	rpmuint32_t crc;
-	rpmuint32_t (*update)  (rpmuint32_t crc, const byte * data, size_t size);
-	rpmuint32_t (*combine) (rpmuint32_t crc1, rpmuint32_t crc2, size_t len2);
-} sum32Param;
-
-/**
- */
-static int sum32Reset(register sum32Param* mp)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (0, NULL, 0);
-    return 0;
-}
-
-/**
- */
-static int sum32Update(sum32Param* mp, const byte* data, size_t size)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (mp->crc, data, size);
-    return 0;
-}
-
-/**
- */
-static int sum32Digest(sum32Param* mp, byte* data)
-	/*@modifies *mp, data @*/
-{
-	rpmuint32_t c = mp->crc;
-
-	data[ 0] = (byte)(c >> 24);
-	data[ 1] = (byte)(c >> 16);
-	data[ 2] = (byte)(c >>  8);
-	data[ 3] = (byte)(c      );
-
-	(void) sum32Reset(mp);
-
-	return 0;
-}
-
-/*
- * ECMA-182 polynomial, see
- *     http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-182.pdf
- */
-/**
- */
-static rpmuint64_t crc64(rpmuint64_t crc, const byte * data, size_t size)
-	/*@*/
-{
-    static rpmuint64_t polynomial =
-	0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
-    static rpmuint64_t xorout = 0xffffffffffffffffULL;
-    static rpmuint64_t table[256];
-
-    crc ^= xorout;
-
-    if (data == NULL) {
-	/* generate the table of CRC remainders for all possible bytes */
-	rpmuint64_t c;
-	rpmuint32_t i, j;
-	for (i = 0;  i < 256;  i++) {
-	    c = i;
-	    for (j = 0;  j < 8;  j++) {
-		if (c & 1)
-		    c = polynomial ^ (c >> 1);
-		else
-		    c = (c >> 1);
-	    }
-	    table[i] = c;
-	}
-    } else
-    while (size) {
-	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
-	size--;
-	data++;
-    }
-
-    crc ^= xorout;
-
-    return crc;
-
-}
-
-/*
- * Swiped from zlib, using rpmuint64_t rather than unsigned long computation.
- */
-/*@unchecked@*/
-static int gf2_dim64 = 64;
-
-/**
- */
-static rpmuint64_t gf2_matrix_times64(rpmuint64_t *mat, rpmuint64_t vec)
-	/*@*/
-{
-    rpmuint64_t sum;
-
-    sum = 0;
-    while (vec) {
-        if (vec & 1)
-            sum ^= *mat;
-        vec >>= 1;
-        mat++;
-    }
-    return sum;
-}
-
-/**
- */
-static void gf2_matrix_square64(/*@out@*/ rpmuint64_t *square, rpmuint64_t *mat)
-	/*@modifies square @*/
-{
-    int n;
-
-    for (n = 0; n < gf2_dim64; n++)
-        square[n] = gf2_matrix_times64(mat, mat[n]);
-}
-
-/**
- */
-static rpmuint64_t crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2)
-	/*@*/
-{
-    int n;
-    rpmuint64_t row;
-    size_t nb = gf2_dim64 * sizeof(row);
-    rpmuint64_t * even = alloca(nb);	/* even-power-of-two zeros operator */
-    rpmuint64_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
-
-    /* degenerate case */
-    if (len2 == 0)
-        return crc1;
-
-    /* put operator for one zero bit in odd */
-    odd[0] = 0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
-    row = 1;
-    for (n = 1; n < gf2_dim64; n++) {
-        odd[n] = row;
-        row <<= 1;
-    }
-
-    /* put operator for two zero bits in even */
-    gf2_matrix_square64(even, odd);
-
-    /* put operator for four zero bits in odd */
-    gf2_matrix_square64(odd, even);
-
-    /* apply len2 zeros to crc1 (first square will put the operator for one
-       zero byte, eight zero bits, in even) */
-    do {
-        /* apply zeros operator for this bit of len2 */
-        gf2_matrix_square64(even, odd);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times64(even, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-        if (len2 == 0)
-            break;
-
-        /* another iteration of the loop with odd and even swapped */
-        gf2_matrix_square64(odd, even);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times64(odd, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-    } while (len2 != 0);
-
-    /* return combined crc */
-    crc1 ^= crc2;
-    return crc1;
-}
-
-/**
- */
-typedef struct {
-	rpmuint64_t crc;
-	rpmuint64_t (*update)  (rpmuint64_t crc, const byte * data, size_t size);
-	rpmuint64_t (*combine) (rpmuint64_t crc1, rpmuint64_t crc2, size_t len2);
-} sum64Param;
-
-/**
- */
-static int sum64Reset(register sum64Param* mp)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (0, NULL, 0);
-    return 0;
-}
-
-/**
- */
-static int sum64Update(sum64Param* mp, const byte* data, size_t size)
-	/*@modifies *mp @*/
-{
-    if (mp->update)
-	mp->crc = (*mp->update) (mp->crc, data, size);
-    return 0;
-}
-
-/**
- */
-static int sum64Digest(sum64Param* mp, byte* data)
-	/*@modifies *mp, data @*/
-{
-	rpmuint64_t c = mp->crc;
-
-	data[ 0] = (byte)(c >> 56);
-	data[ 1] = (byte)(c >> 48);
-	data[ 2] = (byte)(c >> 40);
-	data[ 3] = (byte)(c >> 32);
-	data[ 4] = (byte)(c >> 24);
-	data[ 5] = (byte)(c >> 16);
-	data[ 6] = (byte)(c >>  8);
-	data[ 7] = (byte)(c      );
-
-	(void) sum64Reset(mp);
-
-	return 0;
-}
 
 /*@access DIGEST_CTX@*/
 
@@ -600,10 +235,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) crc32;
-#if !defined(WITH_ZLIB) || defined(HAVE_ZLIB_CRC32_COMBINE)
-	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) crc32_combine;
-#endif
+	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) __crc32;
+	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) __crc32_combine;
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
@@ -620,10 +253,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) adler32;
-#if !defined(WITH_ZLIB) || defined(HAVE_ZLIB_ADLER32_COMBINE)
-	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) adler32_combine;
-#endif
+	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) __adler32;
+	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) __adler32_combine;
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
@@ -657,8 +288,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type@*/
-	    mp->update = (rpmuint64_t (*)(rpmuint64_t, const byte *, size_t)) crc64;
-	    mp->combine = (rpmuint64_t (*)(rpmuint64_t, rpmuint64_t, size_t)) crc64_combine;
+	    mp->update = (rpmuint64_t (*)(rpmuint64_t, const byte *, size_t)) __crc64;
+	    mp->combine = (rpmuint64_t (*)(rpmuint64_t, rpmuint64_t, size_t)) __crc64_combine;
 /*@=type@*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;

@@ -1,5 +1,7 @@
 
 5.2a1 -> 5.2a2:
+    - jbj: refactor the sumNN wrappers out of digest.c too.
+    - jbj: include crc routines in a standalone file.
     - jbj: fix: unmatched file/dir path triggers were firing.
     - jbj: fire file trigger patterns symmetrically.
     - jbj: fire trigger patterns against filepaths. still asymmetric, todo++.
