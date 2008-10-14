@@ -4,10 +4,6 @@
 
 #include "system.h"
 
-#if defined(WITH_ZLIB)
-#include <zlib.h>
-#endif
-
 #include "rpmio_internal.h"
 
 #include <rpmbc.h>
