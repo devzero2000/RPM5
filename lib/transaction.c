@@ -1200,7 +1200,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     ts->probs = rpmpsFree(ts->probs);
-    ts->probs = rpmpsCreate();
 
     /* XXX Make sure the database is open RDWR for package install/erase. */
     {	int dbmode = O_RDONLY;

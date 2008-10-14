@@ -540,7 +540,6 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	(void) rpmtsSetFlags(ts, transFlags);
 	(void) rpmtsSetDFlags(ts, depFlags);
 	ts->probs = rpmpsFree(ts->probs);
-	ts->probs = rpmpsCreate();
 
 	/* Install the previously erased packages for this transaction. 
 	 */

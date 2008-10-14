@@ -2753,7 +2753,6 @@ int rpmtsCheck(rpmts ts)
 	goto exit;
 
     ts->probs = rpmpsFree(ts->probs);
-    ts->probs = rpmpsCreate();
 
     rpmalMakeIndex(ts->addedPackages);
 
