@@ -1016,9 +1016,6 @@ exit:
 }
 
 /*@unchecked@*/
-static int _jbj = 0;
-
-/*@unchecked@*/
 static rpmTag _trigger_tag;
 
 /**
@@ -1068,9 +1065,6 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	goto exit;
     }
     arg1 += psm->countCorrection;
-
-if (_jbj)
-fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceName, triggerName);
 
     Tds = rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem);
     if (Tds == NULL)
@@ -1216,7 +1210,6 @@ static int rpmdbTriggerGlobs(rpmpsm psm)
 	xx = argvAdd(&psm->Tpats, t);
     }
     keys = argvFree(keys);
-if (_jbj && psm->Tpats != NULL) argvPrint("trigger patterns", psm->Tpats, NULL);
     return 0;
 }
 
@@ -1260,8 +1253,6 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	/* XXX re-add the pesky trailing '/' to dirnames. */
 	depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
 	depName[nName+1] = '\0';
-if (_jbj)          
-fprintf(stderr, "*** looking for trigger \"%s\"\n", depName);
 
 	if (depName[0] == '/' && psm->Tmires != NULL) {
 	    miRE mire;
@@ -1276,8 +1267,6 @@ fprintf(stderr, "*** looking for trigger \"%s\"\n", depName);
 		}
 		if (mireRegexec(mire, depName, 0) < 0)
 		    continue;
-if (_jbj)
-fprintf(stderr, "=== %p[%d] %s matched %s\n", psm->Tpats, j, pattern, depName);
 
 		/* Reset the primary retrieval key to the pattern. */
 		depName = _free(depName);
@@ -1288,8 +1277,6 @@ fprintf(stderr, "=== %p[%d] %s matched %s\n", psm->Tpats, j, pattern, depName);
 
 	/* Retrieve triggered header(s) by key. */
 	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
-if (_jbj)
-fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x %s depName %s mi %p\n", psm, psm->sense, tagName(tagno),depName, mi);
 
 	nvals = argiCount(instances);
 	vals = argiData(instances);
@@ -1471,9 +1458,6 @@ assert(fi->h != NULL);
 	}
 
 	mi = rpmtsInitIterator(ts, tagno, Name, 0);
-
-if (_jbj)
-fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x %s N %s mi %p\n", psm, i, Ihe->p.ui32p[i], psm->sense, tagName(tagno), Name, mi);
 
 	/* Don't retrieve headers that have already been processed. */
 	nvals = argiCount(instances);
