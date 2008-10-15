@@ -753,6 +753,7 @@ print (t)\
 %_dbi_config_Filedigests        %{expand:%%{_dbi_config_%{_dbapi_used}_Filedigests}}
 %_dbi_config_Group              %{expand:%%{_dbi_config_%{_dbapi_used}_Group}}
 %_dbi_config_Name               %{expand:%%{_dbi_config_%{_dbapi_used}_Name}}
+%_dbi_config_Obsoletename       %{expand:%%{_dbi_config_%{_dbapi_used}_Obsoletename}}
 %_dbi_config_Packagecolor       %{expand:%%{_dbi_config_%{_dbapi_used}_Packagecolor}}
 %_dbi_config_Providename        %{expand:%%{_dbi_config_%{_dbapi_used}_Providename}}
 %_dbi_config_Pubkeys            %{expand:%%{_dbi_config_%{_dbapi_used}_Pubkeys}}
