@@ -246,6 +246,7 @@ assert(argv[ac] != NULL);
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
+    int delslash = 1;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
@@ -294,6 +295,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     case RPMTAG_DIRNAMES:
 	tagEVR = 0;
 	tagF = 0;
+	delslash = (flags & 0x2) ? 0 : 1;
 	break;
     case RPMTAG_BASENAMES:
 	tagEVR = RPMTAG_DIRNAMES;
@@ -350,6 +352,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    size_t len;
 	    unsigned i;
 	    /* XXX Dirnames always have trailing '/', trim that here. */
+	    if (delslash)
 	    for (i = 0; i < Count; i++) {
 		(void) urlPath(N[i], (const char **)&dn);
 		if (dn > N[i])

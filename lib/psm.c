@@ -1027,12 +1027,10 @@ static rpmTag _trigger_tag;
  * @param sourceH
  * @param triggeredH
  * @param arg2
- * @param delslash	delete trailing slash in trigger names?
  * @return		RPMRC_OK on success
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
-			Header sourceH, Header triggeredH,
-			int arg2, int delslash)
+			Header sourceH, Header triggeredH, int arg2)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1106,32 +1104,42 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 	if (depName[0] == '/') {
 	    size_t nb = strlen(depName);
 	    if (Glob_pattern_p(depName, 0)) {
-
-		/* Initialize file names and pattern containers. */
-		if (Fds == NULL)
-		    Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		rpmds ds = NULL;
+		if (depName[nb-1] == '/') {
+		    /* XXX Dirnames w trailing "/" needed. */
+		    if (Dds == NULL)
+			Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0x2);
+		    ds = rpmdsLink(Dds, "Triggers");
+		} else {
+		    if (Fds == NULL)
+			Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		    ds = rpmdsLink(Fds, "Triggers");
+		}
 		if (mire == NULL)
 		    mire = mireNew(RPMMIRE_GLOB, 0);
 
 		xx = mireRegcomp(mire, depName);
-		if ((Fds = rpmdsInit(Fds)) != NULL)
-		while (rpmdsNext(Fds) >= 0) {
-		    if (mireRegexec(mire, rpmdsN(Fds), 0) < 0)
+		if ((ds = rpmdsInit(ds)) != NULL)
+		while (rpmdsNext(ds) >= 0) {
+		    const char * N = rpmdsN(ds);
+		    xx = mireRegexec(mire, N, 0);
+		    if (xx < 0)
 			continue;
 		    bingo = 1;
 		    break;
 		}
+		ds = rpmdsFree(ds);
 		xx = mireClean(mire);
-	    } else {
-		if (delslash && depName[nb-1] == '/')
-		    depName[nb-1] = '\0';
 	    }
+
 	    /* If not matched, and directory trigger, try dir names. */
 	    if (!bingo && depName[nb-1] == '/') {
+		/* XXX Dirnames w trailing "/" needed. */
 		if (Dds == NULL)
-		    Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0);
+		    Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0x2);
 		bingo = rpmdsMatch(Tds, Dds);
 	    }
+
 	    /* If not matched, try file paths. */
 	    if (!bingo) {
 		if (Fds == NULL)
@@ -1249,35 +1257,32 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	depName = _free(depName);
 	depName = xmalloc(nName + 1 + 1);
 	(void) stpcpy(depName, Name);
+	/* XXX re-add the pesky trailing '/' to dirnames. */
 	depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
 	depName[nName+1] = '\0';
+if (_jbj)          
+fprintf(stderr, "*** looking for trigger \"%s\"\n", depName);
 
-	if (depName[0] == '/') {
+	if (depName[0] == '/' && psm->Tmires != NULL) {
+	    miRE mire;
+	    int j;
 
-	    /* XXX Skip pattern <-> pattern match false triggers. */
-	    if (Glob_pattern_p(depName, 0))
-		continue;
-
-	    if (psm->Tmires) {
-		miRE mire;
-		int j;
-
-		/* XXX mireApply doesn't tell which pattern matched. */
-		for (j = 0, mire = psm->Tmires; j < psm->nTmires; j++, mire++) {
-		    const char * pattern = psm->Tpats[j];
-		    if (depName[nName-1] != '/') {
-			size_t npattern = strlen(pattern);
-			depName[nName] = (pattern[npattern-1] == '/')
-				? '/' : '\0';
-		    }
-		    if (mireRegexec(mire, depName, 0) < 0)
-			continue;
+	    /* XXX mireApply doesn't tell which pattern matched. */
+	    for (j = 0, mire = psm->Tmires; j < psm->nTmires; j++, mire++) {
+		const char * pattern = psm->Tpats[j];
+		if (depName[nName-1] != '/') {
+		    size_t npattern = strlen(pattern);
+		    depName[nName] = (pattern[npattern-1] == '/') ? '/' : '\0';
+		}
+		if (mireRegexec(mire, depName, 0) < 0)
+		    continue;
 if (_jbj)
 fprintf(stderr, "=== %p[%d] %s matched %s\n", psm->Tpats, j, pattern, depName);
-		    depName = _free(depName);
-		    depName = xstrdup(pattern);
-		    break;
-		}
+
+		/* Reset the primary retrieval key to the pattern. */
+		depName = _free(depName);
+		depName = xstrdup(pattern);
+		break;
 	    }
 	}
 
@@ -1296,7 +1301,7 @@ fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x %s depName %s mi %p\n", psm,
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
 		continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2, 0);
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
 	    prev = instance;
 	    xx = argiAdd(&instances, -1, instance);
 	    xx = argiSort(instances, NULL);
@@ -1360,7 +1365,9 @@ assert(fi->h != NULL);
 
 	/* If not limited to NEVRA triggers, also try file/dir path triggers. */
 	if (tagno != RPMTAG_NAME) {
-	    int xx = rpmdbTriggerGlobs(psm);
+	    int xx;
+	    /* Retrieve trigger patterns from rpmdb. */
+	    xx = rpmdbTriggerGlobs(psm);
 
 	    rc |= runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage);
 	    rc |= runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage);
@@ -1453,7 +1460,6 @@ assert(fi->h != NULL);
     for (i = 0; (Name = keys[i]) != NULL; i++) {
 	unsigned prev, instance;
 	unsigned nvals;
-	int delslash;
 	ARGint_t vals;
 
 	/* If not limited to NEVRA triggers, use file/dir index. */
@@ -1463,8 +1469,6 @@ assert(fi->h != NULL);
 		tagno = (Name[strlen(Name)-1] == '/')
 			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
 	}
-
-	delslash = (tagno == RPMTAG_DIRNAMES);
 
 	mi = rpmtsInitIterator(ts, tagno, Name, 0);
 
@@ -1486,7 +1490,7 @@ fprintf(stderr, "=== runImmedTriggers(%p) indices[%d] %d sense 0x%x %s N %s mi %
 		continue;
 
 	    rc |= handleOneTrigger(psm, sourceH, fi->h,
-				rpmdbGetIteratorCount(mi), delslash);
+				rpmdbGetIteratorCount(mi));
 
 	    /* Mark header instance as processed. */
 	    prev = instance;
