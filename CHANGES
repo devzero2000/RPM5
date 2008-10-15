@@ -1,4 +1,6 @@
 5.1.5 -> 5.1.6:
+    - jbj: generate Obsoletename index in rpmdb.
+    - jbj: generate Filepaths index in rpmdb.
     - bero: Python 2.6 support in configure.ac
     - jbj: refactor the sumNN wrappers out of digest.c too.
     - jbj: include crc routines in a standalone file.
