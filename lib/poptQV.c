@@ -172,9 +172,9 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
  { "whatprovides", '\0', 0, NULL, POPT_WHATPROVIDES,
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
- { "whatconflicts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_WHATCONFLICTS,
+ { "whatconflicts", '\0', 0, NULL, POPT_WHATCONFLICTS,
 	N_("query/verify the package(s) which conflict with a dependency"), "CAPABILITY" },
- { "whatobsoletes", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_WHATOBSOLETES,
+ { "whatobsoletes", '\0', 0, NULL, POPT_WHATOBSOLETES,
 	N_("query/verify the package(s) which obsolete a dependency"), "CAPABILITY" },
 
  { "transaction", 'T', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
