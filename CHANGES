@@ -1,4 +1,5 @@
 5.1.5 -> 5.1.6:
+    - jbj: add rpmdsMatch to match dependency against set.
     - jbj: rpmdb: add rpmdbMireApply to retrieve primary keys from index.
     - jbj: rpmio: add argiCmp and argiSort.
     - jbj: add --whatconflicts/--whatobsoletes.
