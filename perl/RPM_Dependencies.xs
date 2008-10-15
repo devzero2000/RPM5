@@ -5,6 +5,7 @@
 #undef Fflush
 #undef Mkdir
 #undef Stat
+#undef Fstat
 
 #include "rpmio.h"
 #include "rpmcb.h"		/* XXX fnpyKey */

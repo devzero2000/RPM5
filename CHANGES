@@ -1,4 +1,5 @@
 5.1.5 -> 5.1.6:
+    - jbj: fix: adding Fstat() broke perl builds.
     - jbj: generate Obsoletename index in rpmdb.
     - jbj: generate Filepaths index in rpmdb.
     - bero: Python 2.6 support in configure.ac
