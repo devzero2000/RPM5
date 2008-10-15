@@ -100,20 +100,22 @@ check-install:
 	${rpm} -U probes-test/probes-2*.rpm
 
 check-triggers:
-	${rpm} -Uv --noparentdirs --nodeps triggers-N/triggers-N*.rpm
+	-${rpm} -Uv --noparentdirs --nodeps triggers-N/triggers-N*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-N-a triggers-N-b
-	${rpm} -Uv --noparentdirs --nodeps triggers-P/triggers-P*.rpm
+	-${rpm} -Uv --noparentdirs --nodeps triggers-P/triggers-P*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-P-a triggers-P-b
-	${rpm} -Uv --noparentdirs --nodeps triggers-D/triggers-D*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-D-a triggers-D-b
-	${rpm} -Uv --noparentdirs --nodeps triggers-F/triggers-F*.rpm
+	-${rpm} -Uv --noparentdirs --nodeps triggers-F/triggers-F*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-F-a triggers-F-b
-	${rpm} -Uv --noparentdirs --nodeps triggers-FP/triggers-FP*.rpm
+	-${rpm} -Uv --noparentdirs --nodeps triggers-FP/triggers-FP*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-FP-a triggers-FP-b
-
-check-b0rken:
-	${rpm} -Uv --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
+	-${rpm} -Uv --noparentdirs --nodeps triggers-D/triggers-D*.rpm
+	${rpm} -ev --noparentdirs --nodeps triggers-D-a triggers-D-b
+	-${rpm} -Uv --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-DP-a triggers-DP-b
+
+borken:
+	-${rpm} -Uv --noparentdirs --nodeps triggers-NA/triggers-NA*.rpm
+	${rpm} -ev --noparentdirs --nodeps triggers-NA-a triggers-NA-b
 
 check-query:
 	@${rpm} -qW . > /dev/null 2>&1

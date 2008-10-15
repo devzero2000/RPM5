@@ -8,9 +8,10 @@ devtool-sanity
 edos-test
 popt
 probes-test
-triggers-N
-triggers-P
 triggers-D
 triggers-DP
 triggers-F
 triggers-FP
+triggers-N
+triggers-NA
+triggers-P

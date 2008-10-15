@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<otherdata xmlns="http://linux.duke.edu/metadata/other" packages="11">
+<otherdata xmlns="http://linux.duke.edu/metadata/other" packages="12">
 <package pkgid="b041a71594a3bf628883ea514861ce0bdec828f1" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1212789600">- add some additional content</changelog>
@@ -42,6 +42,10 @@
 <package pkgid="6e6849792e60bb2d685cd7051d7e25c9385f2875" name="triggers-N" arch="i386">
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on N functional tests.</changelog>
+</package>
+<package pkgid="32c017be3c279f1c62e89495b1a98b3a6fb60ebd" name="triggers-NA" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on N.A compound functional tests.</changelog>
 </package>
 <package pkgid="b02c0c40ed7e14949b4e73b54b08476797c7fffb" name="triggers-P" arch="i386">
   <version epoch="0" ver="1.0" rel="1"/>

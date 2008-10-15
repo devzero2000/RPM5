@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="11">
+<metadata xmlns="http://linux.duke.edu/metadata/common" xmlns:rpm="http://linux.duke.edu/metadata/rpm" packages="12">
 <package type="rpm">
   <name>devtool-sanity</name>
   <arch>noarch</arch>
@@ -317,6 +317,34 @@ shell-like rules.</description>
     <rpm:group>Development/Tools</rpm:group>
     <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
     <rpm:header-range start="368" end="4080"/>
+    <rpm:provides>
+    </rpm:provides>
+    <rpm:requires>
+    </rpm:requires>
+    <rpm:conflicts>
+    </rpm:conflicts>
+    <rpm:obsoletes>
+    </rpm:obsoletes>
+  </format>
+</package>
+<package type="rpm">
+  <name>triggers-NA</name>
+  <arch>i386</arch>
+  <version epoch="0" ver="1.0" rel="1"/>
+  <checksum type="sha" pkgid="YES">32c017be3c279f1c62e89495b1a98b3a6fb60ebd</checksum>
+  <summary>Triggers on N.A compound functional tests.</summary>
+  <description></description>
+  <packager></packager>
+  <url>http://rpm5.org/</url>
+  <time file="1224093895" build="1224093853"/>
+  <size package="4650" installed="4650" archive="1680"/>
+  <location xml:base="(none)" href="triggers-NA-1.0-1.src.rpm"/>
+  <format>
+    <rpm:license>Public Domain</rpm:license>
+    <rpm:vendor/>
+    <rpm:group>Development/Tools</rpm:group>
+    <rpm:buildhost>wellfleet.jbj.org</rpm:buildhost>
+    <rpm:header-range start="368" end="4108"/>
     <rpm:provides>
     </rpm:provides>
     <rpm:requires>
