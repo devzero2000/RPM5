@@ -6,7 +6,7 @@
     - jbj: use generic retrieval code for --group and --triggerdby too.
     - jbj: attempt generic retrieval code using --whatconflicts/--whatobsoletes.
     - jbj: add --whatconflicts/--whatobsoletes, hidden for now.
-    - jbj: generate Obsoletename index.
+    - jbj: generate Obsoletename index in rpmdb.
     - jbj: use rpmdsMatch to detect rpmdb trigger firing.
     - jbj: add rpmdsMatch to match dependency against set.
     - jbj: refactor the sumNN wrappers out of digest.c too.
@@ -19,7 +19,7 @@
 
 5.1.0 -> 5.2a1:
     - jbj: update osgideps.pl (#466111).
-    - jbj: create absolute file paths index in rpmdb.
+    - jbj: generate Filepaths index in rpmdb.
     - jbj: fix: he->tag was returning RPMTAG_BASENAMES, not RPMTAG_FILEPATHS.
     - proyvind: install rpmbuild.h & rpmspec.h on system again (needed by urpmi).
     - jbj: avoid mtab info leakage problems (#457940).
