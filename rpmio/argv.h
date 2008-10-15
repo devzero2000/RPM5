@@ -5,20 +5,11 @@
  * \file rpmio/argv.h
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#if defined(HAVE_STDINT_H) || (defined(__STDC_VERSION__) && __STDC_VERSION__+0 >= 199901L)
-#include <stdint.h>
-#endif
-#if defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#endif
-
 typedef	const char * ARGstr_t;
 typedef ARGstr_t * ARGV_t;
 
-typedef	uint32_t * ARGint_t;
+typedef	unsigned int * ARGint_t;
+
 struct ARGI_s {
     unsigned nvals;
     ARGint_t vals;
@@ -93,7 +84,18 @@ ARGV_t argvData(/*@null@*/ ARGV_t argv)
 	/*@*/;
 
 /**
- * Compare argv arrays using strcmp (qsort/bsearch).
+ * Compare argi elements (qsort/bsearch).
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
+/*@-exportlocal@*/
+int argiCmp(const void * a, const void * b)
+	/*@*/;
+/*@=exportlocal@*/
+
+/**
+ * Compare argv elements using strcmp (qsort/bsearch).
  * @param a		1st instance address
  * @param b		2nd instance address
  * @return		result of comparison
@@ -104,7 +106,7 @@ int argvCmp(const void * a, const void * b)
 /*@=exportlocal@*/
 
 /**
- * Compare argv arrays using strcasecmp (qsort/bsearch).
+ * Compare argv elements using strcasecmp (qsort/bsearch).
  * @param a		1st instance address
  * @param b		2nd instance address
  * @return		result of comparison
@@ -131,6 +133,15 @@ int argvFnmatch(const void * a, const void * b)
 int argvFnmatchCasefold(const void * a, const void * b)
 	/*@*/;
 #endif
+
+/**
+ * Sort an argi array.
+ * @param argi		argi array
+ * @param compar	strcmp-like comparison function, or NULL for argiCmp()
+ * @return		0 always
+ */
+int argiSort(ARGI_t argi, int (*compar)(const void *, const void *))
+	/*@*/;
 
 /**
  * Sort an argv array.
