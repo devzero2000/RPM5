@@ -13,24 +13,28 @@
 
 #include <rpmio.h>
 #include <poptIO.h>
+
 #include <rpmtag.h>
-#include <rpmcli.h>
-
 #include "rpmdb.h"
-#include "rpmfi.h"
 
-#include "rpmgi.h"
+#include "rpmfi.h"
+#define	_RPMTS_INTERNAL		/* XXX for ts->rdb */
 #include "rpmts.h"
+#include "rpmgi.h"
 
 #include "manifest.h"
 #include "misc.h"	/* XXX for currentDirectory() */
 
+#include <rpmcli.h>
+
 #include "debug.h"
+
+/*@access rpmts @*/	/* XXX cast */
 
 /**
  */
 static void printFileInfo(char * te, const char * name,
-			  unsigned int size, unsigned short mode,
+			  size_t size, unsigned short mode,
 			  unsigned int mtime,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
@@ -72,9 +76,9 @@ static void printFileInfo(char * te, const char * name,
     /* In verbose file listing output, give the owner and group fields
        more width and at the same time reduce the nlink and size fields
        more to typical sizes within OpenPKG. */
-    sprintf(sizefield, "%8u", size);
+    sprintf(sizefield, "%8u", (unsigned)size);
 #else
-    sprintf(sizefield, "%12u", size);
+    sprintf(sizefield, "%12u", (unsigned)size);
 #endif
 
     /* this knows too much about dev_t */
@@ -130,7 +134,8 @@ static void printFileInfo(char * te, const char * name,
 /**
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     const char * errstr = "(unkown error)";
     const char * str;
@@ -180,7 +185,20 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     *te = '\0';
 
     if (qva->qva_queryFormat != NULL) {
-	const char * str = queryHeader(h, qva->qva_queryFormat);
+	const char * str;
+
+#ifdef	NOTYET	/* XXX necessary for --whatneeds/--needswhat */
+/*@-type@*/	/* FIX rpmtsGetRDB()? */
+	(void) headerSetRpmdb(h, ts->rdb);
+/*@=type@*/
+#endif
+
+	str = queryHeader(h, qva->qva_queryFormat);
+
+#ifdef	NOTYET	/* XXX necessary for --whatneeds/--needswhat */
+	(void) headerSetRpmdb(h, NULL);
+#endif
+
 	if (str) {
 	    size_t tx = (te - t);
 
@@ -385,6 +403,10 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	Header h;
 	int rc;
 
+#ifdef	NOTYET	/* XXX exiting here will leave stale locks. */
+	(void) rpmdbCheckSignals();
+#endif
+
 	h = rpmgiHeader(gi);
 	if (h == NULL)		/* XXX perhaps stricter break instead? */
 	    continue;
@@ -447,6 +469,22 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	return 1;
 
     switch (qva->qva_source) {
+#ifdef	NOTYET
+    default:
+    case RPMQV_GROUP:
+    case RPMQV_TRIGGEREDBY:
+#endif
+    case RPMQV_WHATCONFLICTS:
+    case RPMQV_WHATOBSOLETES:
+	qva->qva_mi = rpmtsInitIterator(ts, qva->qva_source, arg, 0);
+	if (qva->qva_mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("key \"%s\" not found in %s table\n"),
+			arg, tagName((rpmTag)qva->qva_source));
+	    res = 1;
+	} else
+	    res = rpmcliShowMatches(qva, ts);
+	break;
+
     case RPMQV_RPM:
 	res = rpmgiShowMatches(qva, ts);
 	break;
@@ -700,6 +738,8 @@ assert(fn != NULL);
 }
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
+	/*@globals rpmioFtsOpts @*/
+	/*@modifies rpmioFtsOpts @*/
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;

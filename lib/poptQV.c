@@ -6,6 +6,8 @@
 #include "system.h"
 
 #include <rpmio.h>
+
+#include <rpmtag.h>
 #include <rpmcli.h>
 #include <rpmgi.h>		/* XXX for giFlags */
 
@@ -36,6 +38,8 @@ int specedit = 0;
 #define	POPT_WHATNEEDS		-1038
 #define	POPT_SPECSRPM		-1039
 #define POPT_QUERYBYSOURCEPKGID	-1040
+#define	POPT_WHATCONFLICTS	-1041
+#define	POPT_WHATOBSOLETES	-1042
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -71,6 +75,10 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES;
 				qva->qva_sourceCount++; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES;
+				qva->qva_sourceCount++; break;
+    case POPT_WHATCONFLICTS: qva->qva_source |= RPMQV_WHATCONFLICTS;
+				qva->qva_sourceCount++; break;
+    case POPT_WHATOBSOLETES: qva->qva_source |= RPMQV_WHATOBSOLETES;
 				qva->qva_sourceCount++; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
 				qva->qva_sourceCount++; break;
@@ -162,6 +170,10 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
  { "whatprovides", '\0', 0, NULL, POPT_WHATPROVIDES,
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
+ { "whatconflicts", '\0', 0, NULL, POPT_WHATCONFLICTS,
+	N_("query/verify the package(s) which conflict with a dependency"), "CAPABILITY" },
+ { "whatobsoletes", '\0', 0, NULL, POPT_WHATOBSOLETES,
+	N_("query/verify the package(s) which obsolete a dependency"), "CAPABILITY" },
 
  { "transaction", 'T', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
 	N_("create transaction set"), NULL},
