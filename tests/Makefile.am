@@ -60,9 +60,9 @@ check-markup: $(POPTPKGS)
 	-@${rpmrepo} --bzip2 .
 	-@${rpmrepo} --lzma .
 	@${rpmrepo} --uncompressed .
-	@diff -u {repodata,ref}/primary.xml
-	@diff -u {repodata,ref}/filelists.xml
-	@diff -u {repodata,ref}/other.xml
+	@-diff -u {repodata,ref}/primary.xml
+	@-diff -u {repodata,ref}/filelists.xml
+	@-diff -u {repodata,ref}/other.xml
 # XXX repomd.xml always differs because st->st_ctime is used.
 	@-diff -u {repodata,ref}/repomd.xml > /dev/null 2>&1
 

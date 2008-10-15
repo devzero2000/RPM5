@@ -9,7 +9,7 @@
   <description>Trivial standalone test package</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
-  <time file="1212942130" build="1212894237"/>
+  <time file="1212941596" build="1212894237"/>
   <size package="4573" installed="4573" archive="2580"/>
   <location xml:base="(none)" href="devtool-sanity-1.0-1.src.rpm"/>
   <format>
@@ -37,7 +37,7 @@
   <description></description>
   <packager></packager>
   <url>http://www.mancoosi.org/edos/manager.html</url>
-  <time file="1218570361" build="1212949492"/>
+  <time file="1218879238" build="1212949492"/>
   <size package="2664" installed="2664" archive="2520"/>
   <location xml:base="(none)" href="edos-test-1-0.src.rpm"/>
   <format>
@@ -148,7 +148,7 @@ shell-like rules.</description>
   <description>This is the parent package.</description>
   <packager></packager>
   <url></url>
-  <time file="1218569770" build="1213640344"/>
+  <time file="1218572973" build="1213640344"/>
   <size package="11746" installed="11746" archive="9084"/>
   <location xml:base="(none)" href="probes-test-1-0.src.rpm"/>
   <format>
