@@ -35,6 +35,7 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(cache_size) = 512_KB
     cpuinfo(cid)
     cpuinfo(clflush)
+    cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(cpu_MHz) = 2394.166
     cpuinfo(cpu_family) = 15

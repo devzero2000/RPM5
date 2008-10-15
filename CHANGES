@@ -1,4 +1,6 @@
 5.1.5 -> 5.1.6:
+    - jbj: verify trigger tests have same result as HEAD.
+    - jbj: backport rpmds functionality needed for file/dir triggers from HEAD.
     - jbj: backport file/directory triggers from HEAD.
     - jbj: add rpmdsMatch to match dependency against set.
     - jbj: rpmdb: add rpmdbMireApply to retrieve primary keys from index.
