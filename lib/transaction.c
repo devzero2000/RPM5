@@ -1739,8 +1739,11 @@ assert(psm != NULL);
 	
 	psm = rpmpsmNew(ts, p, fi);
 assert(psm != NULL);
-	psm->unorderedSuccessor =
-		(rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
+       if (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1))
+	    psm->flags |= RPMPSM_FLAGS_UNORDERED;
+       else
+	    psm->flags &= ~RPMPSM_FLAGS_UNORDERED;
+
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:

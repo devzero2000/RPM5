@@ -6,6 +6,12 @@
  * Package state machine to handle a package from a transaction set.
  */
 
+
+/** \ingroup rpmts
+ * Package state machine data.
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
+
 #include <rpmsq.h>
 
 /*@-exportlocal@*/
@@ -60,16 +66,73 @@ typedef enum pkgStage_e {
 #undef	_fd
 
 /**
+ * Scriptlet identifiers.
+ */
+typedef enum rpmScriptID_e {
+    RPMSCRIPT_UNKNOWN		=  0,	/*!< unknown scriptlet */
+    RPMSCRIPT_PRETRANS		=  1,	/*!< %pretrans scriptlet */
+    RPMSCRIPT_TRIGGERPREIN	=  2,	/*!< %triggerprein scriptlet */
+    RPMSCRIPT_PREIN		=  3,	/*!< %pre scriptlet */
+    RPMSCRIPT_POSTIN		=  4,	/*!< %post scriptlet  */
+    RPMSCRIPT_TRIGGERIN		=  5,	/*!< %triggerin scriptlet  */
+    RPMSCRIPT_TRIGGERUN		=  6,	/*!< %triggerun scriptlet  */
+    RPMSCRIPT_PREUN		=  7,	/*!< %preun scriptlet  */
+    RPMSCRIPT_POSTUN		=  8,	/*!< %postun scriptlet  */
+    RPMSCRIPT_TRIGGERPOSTUN	=  9,	/*!< %triggerpostun scriptlet  */
+    RPMSCRIPT_POSTTRANS		= 10,	/*!< %posttrans scriptlet  */
+	/* 11-15 unused */
+    RPMSCRIPT_VERIFY		= 16,	/*!< %verify scriptlet  */
+    RPMSCRIPT_SANITYCHECK	= 17,	/*!< %sanitycheck scriptlet  */
+    RPMSCRIPT_MAX		= 32
+} rpmScriptID;
+
+/**
+ * Scriptlet states (when installed).
+ */
+typedef enum rpmScriptState_e {
+    RPMSCRIPT_STATE_UNKNOWN	= 0,
+	/* 0-15 reserved for waitpid return. */
+    RPMSCRIPT_STATE_EXEC	= (1 << 16), /*!< scriptlet was exec'd */
+    RPMSCRIPT_STATE_REAPED	= (1 << 17), /*!< scriptlet was reaped */
+	/* 18-23 unused */
+    RPMSCRIPT_STATE_SELINUX	= (1 << 24), /*!< scriptlet exec by SELinux */
+    RPMSCRIPT_STATE_EMULATOR	= (1 << 25), /*!< scriptlet exec in emulator */
+    RPMSCRIPT_STATE_LUA		= (1 << 26)  /*!< scriptlet exec with lua */
+} rpmScriptState;
+
+/**
+ * PSM control bits.
+ */
+typedef enum rpmpsmFlags_e {
+    RPMPSM_FLAGS_DEBUG		= (1 << 0), /*!< (unimplemented) */
+    RPMPSM_FLAGS_CHROOTDONE	= (1 << 1), /*!< Was chroot(2) done? */
+    RPMPSM_FLAGS_UNORDERED	= (1 << 2), /*!< Are all pre-requsites done? */
+    RPMPSM_FLAGS_GOTTRIGGERS	= (1 << 3), /*!< Triggers were retrieved? */
+} rpmpsmFlags;
+
+/**
  */
 struct rpmpsm_s {
     struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
 
+/*@only@*/ /*@null@*/
+    const char * NVRA;		/*!< NVRA identifier (for debugging) */
+    rpmpsmFlags flags;		/*!< PSM control bit(s). */
 /*@refcounted@*/
     rpmts ts;			/*!< transaction set */
 /*@dependent@*/ /*@null@*/
     rpmte te;			/*!< current transaction element */
 /*@refcounted@*/ /*@relnull@*/
-    rpmfi fi;			/*!< transaction element file info */
+    rpmfi fi;			/*!< file info */
+/*@refcounted@*/ /*@relnull@*/
+    rpmds triggers;		/*!< trigger dependency set */
+/*@null@*/
+    const char ** Tpats;	/*!< rpmdb trigger pattern strings */
+/*@null@*/
+    void * Tmires;		/*!< rpmdb trigger patterns */
+    int nTmires;		/*!< no. of rpmdb trigger patterns */
+/*@only@*/
+    HE_t IPhe;			/*!< Install prefixes */
 /*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
 /*@relnull@*/
@@ -97,8 +160,6 @@ struct rpmpsm_s {
     int scriptArg;		/*!< Scriptlet package arg. */
     int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
-    int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
-    int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
     rpmCallbackType what;	/*!< Callback type. */
     unsigned long long amount;	/*!< Callback amount. */
     unsigned long long total;	/*!< Callback total. */

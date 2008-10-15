@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#define	_MIRE_INTERNAL	/* XXX mireApply doesn't tell which pattern matched. */
+
 #include <rpmio_internal.h>	/* XXX FDSTAT_READ */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
@@ -18,6 +20,9 @@
 #include "fsm.h"		/* XXX CPIO_FOO/IOSM_FOO constants */
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
+#define F_ISSET(_psm, _FLAG)	((_psm)->flags & (RPMPSM_FLAGS_##_FLAG))
+#define F_SET(_psm, _FLAG)	((_psm)->flags |=  (RPMPSM_FLAGS_##_FLAG))
+#define F_CLR(_psm, _FLAG)	((_psm)->flags &= ~(RPMPSM_FLAGS_##_FLAG))
 
 #define	_RPMEVR_INTERNAL
 #include "rpmds.h"
@@ -32,6 +37,9 @@
 #include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "signature.h"		/* signature constants */
+
+#include <rpmcli.h>
+
 #include "debug.h"
 
 #define	_PSM_DEBUG	0
@@ -202,7 +210,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     memset(psm, 0, sizeof(*psm));
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
 
+/*@-mods@*/	/* Avoid void * _fd annotations for now. */
     rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+/*@=mods@*/
     switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
@@ -249,7 +259,11 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 assert(fi->h != NULL);
 assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     (void) rpmteSetHeader(fi->te, fi->h);
+/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
+/*@-refcounttrans -temptrans @*/	/* FIX: XfdLink annotation */
     ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
+/*@=refcounttrans =temptrans @*/
+/*@=mods@*/
 
     (void) headerMacrosLoad(fi->h);
 
@@ -515,15 +529,23 @@ static pid_t psmWait(rpmpsm psm)
 #ifdef WITH_LUA
 /**
  * Run internal Lua script.
+ * @param psm		package state machine data
+ * @param h		header
+ * @param sln		name of scriptlet section
+ * @param Phe		scriptlet args, Phe->p.argv[0] is interpreter to use
+ * @param script	scriptlet body
+ * @param arg1		no. instances of package installed after scriptlet exec
+ *			(-1 is no arg)
+ * @param arg2		ditto, but for the target package
+ * @return		RPMRC_OK on success
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
-		   int progArgc, const char **progArgv,
+static rpmRC runLuaScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
+    const char * NVRA = psm->NVRA;
     int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
     int i;
@@ -537,10 +559,6 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
     if (ssp != NULL)
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
-
-    he->tag = RPMTAG_NVRA;
-    xx = headerGet(h, he, 0);
-assert(he->p.str != NULL);
 
     /* Save the current working directory. */
 /*@-nullpass@*/
@@ -568,9 +586,9 @@ assert(he->p.str != NULL);
     var = rpmluavNew();
     rpmluavSetListMode(var, 1);
 /*@+relaxtypes@*/
-    if (progArgv) {
-	for (i = 0; i < progArgc && progArgv[i]; i++) {
-	    rpmluavSetValue(var, RPMLUAV_STRING, progArgv[i]);
+    if (Phe->p.argv) {
+	for (i = 0; i < (int)Phe->c && Phe->p.argv[i]; i++) {
+	    rpmluavSetValue(var, RPMLUAV_STRING, Phe->p.argv[i]);
 	    rpmluaSetVar(lua, var);
 	}
     }
@@ -590,7 +608,7 @@ assert(he->p.str != NULL);
 
     {
 	char buf[BUFSIZ];
-	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, he->p.str);
+	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, NVRA);
 	xx = rpmluaRunScript(lua, script, buf);
 	if (xx == -1) {
 	    void * ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
@@ -621,7 +639,6 @@ assert(he->p.str != NULL);
 	xx = fchdir(rootFdno);
 
     xx = close(rootFdno);
-    he->p.ptr = _free(he->p.ptr);
 
     return rc;
 }
@@ -639,34 +656,32 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * Run scriptlet with args.
  *
  * Run a script with an interpreter. If the interpreter is not specified,
- * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
- * the header will be ignored, passing instead arg1 and arg2.
+ * /bin/sh will be used.
  *
  * @param psm		package state machine data
  * @param h		header
  * @param sln		name of scriptlet section
- * @param progArgc	no. of args from header
- * @param progArgv	args from header, progArgv[0] is the interpreter to use
- * @param script	scriptlet from header
+ * @param Phe		scriptlet args, Phe->p.argv[0] is interpreter to use
+ * @param script	scriptlet body
  * @param arg1		no. instances of package installed after scriptlet exec
  *			(-1 is no arg)
  * @param arg2		ditto, but for the target package
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
-		int progArgc, const char ** progArgv,
+static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
 		const char * script, int arg1, int arg2)
 	/*@globals ldconfig_done, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies psm, ldconfig_done, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
+    const char * NVRA = psm->NVRA;
+    HE_t IPhe = psm->IPhe;
     const char ** argv = NULL;
     int argc = 0;
-    const char ** prefixes = NULL;
-    int numPrefixes;
+    const char ** IP = NULL;
+    int nIP;
     size_t maxPrefixLength;
     size_t len;
     char * prefixBuf = NULL;
@@ -674,9 +689,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t scriptFd = NULL;
     FD_t out = NULL;		/* exit: expects this to be initialized. */
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    const char * NVRA;
     const char * body = NULL;
     int * ssp = NULL;
+    pid_t pid;
     int xx;
     int i;
 
@@ -685,24 +700,27 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (ssp != NULL)
 	*ssp = RPMSCRIPT_STATE_UNKNOWN;
 
-    if (progArgv == NULL && script == NULL)
+    if (Phe->p.argv == NULL && script == NULL)
 	return RPMRC_OK;
 
     /* Macro expand all scriptlets. */
     body = rpmExpand(script, NULL);
 
-    he->tag = RPMTAG_NVRA;
-    xx = headerGet(h, he, 0);
+    /* XXX Load NVRA lazily. This should be done elsewhere ... */
+    if (NVRA == NULL) {
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	he->tag = RPMTAG_NVRA;
+	xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
-    NVRA = he->p.str;
+	psm->NVRA = NVRA = he->p.str;
+    }
 
-    if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
+    if (Phe->p.argv && strcmp(Phe->p.argv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA);
-	rc = runLuaScript(psm, h, sln, progArgc, progArgv,
-			    body, arg1, arg2);
+	rc = runLuaScript(psm, h, sln, Phe, body, arg1, arg2);
 #endif
 	goto exit;
     }
@@ -712,12 +730,12 @@ assert(he->p.str != NULL);
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
-    if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
- 	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
+    if (ldconfig_path && Phe->p.argv != NULL && F_ISSET(psm, UNORDERED)) {
+ 	if (ldconfig_done && !strcmp(Phe->p.argv[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) skipping redundant \"%s\".\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
-		progArgv[0]);
+		Phe->p.argv[0]);
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
@@ -726,47 +744,54 @@ assert(he->p.str != NULL);
     rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) %ssynchronous scriptlet start\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
-		(psm->unorderedSuccessor ? "a" : ""));
+		(F_ISSET(psm, UNORDERED) ? "a" : ""));
 
-    if (!progArgv) {
+    if (Phe->p.argv == NULL) {
 	argv = alloca(5 * sizeof(*argv));
 	argv[0] = "/bin/sh";
 	argc = 1;
 	ldconfig_done = 0;
     } else {
-	argv = alloca((progArgc + 4) * sizeof(*argv));
-	memcpy(argv, progArgv, progArgc * sizeof(*argv));
-	argc = progArgc;
+	argv = alloca((Phe->c + 4) * sizeof(*argv));
+	memcpy(argv, Phe->p.argv, Phe->c * sizeof(*argv));
+	argc = Phe->c;
 	ldconfig_done = (ldconfig_path && !strcmp(argv[0], ldconfig_path)
 		? 1 : 0);
     }
 
-    he->tag = RPMTAG_INSTPREFIXES;
-    xx = headerGet(h, he, 0);
-    prefixes = he->p.argv;
-    numPrefixes = he->c;
-    if (!xx) {
-	he->p.ptr = _free(he->p.ptr);
-	he->tag = RPMTAG_INSTALLPREFIX;
-	xx = headerGet(h, he, 0);
-	if (xx) {
-	    char * t;
-	    prefixes = xmalloc(sizeof(*prefixes) + strlen(he->p.argv[0]) + 1);
-	    prefixes[0] = t = (char *) &prefixes[1];
-	    t = stpcpy(t, he->p.argv[0]);
-	    *t = '\0';
-	    he->p.ptr = _free(he->p.ptr);
-	    numPrefixes = 1;
-	} else {
-	    prefixes = NULL;
-	    numPrefixes = 0;
+    /* XXX Load INSTPREFIXES lazily. This should be done elsewhere ... */
+    if (IPhe->tag == 0) {
+	IPhe->tag = RPMTAG_INSTPREFIXES;
+	xx = headerGet(h, IPhe, 0);
+	if (!xx) {
+	    IPhe->p.ptr = _free(IPhe->p.ptr);
+	    IPhe->tag = RPMTAG_INSTALLPREFIX;
+	    xx = headerGet(h, IPhe, 0);
+	    if (xx) {
+		const char ** av =
+			xmalloc(sizeof(*av) + strlen(IPhe->p.argv[0]) + 1);
+		char * t = (char *) &av[1];
+
+		av[0] = t;
+		t = stpcpy(t, IPhe->p.argv[0]);
+		*t = '\0';
+		IPhe->p.ptr = _free(IPhe->p.ptr);
+		IPhe->t = RPM_STRING_ARRAY_TYPE;
+		IPhe->p.argv = av;
+		IPhe->c = 1;
+	    } else {
+		IPhe->p.argv = NULL;
+		IPhe->c = 0;
+	    }
 	}
     }
+    IP = IPhe->p.argv;
+    nIP = IPhe->c;
 
     maxPrefixLength = 0;
-    if (prefixes != NULL)
-    for (i = 0; i < numPrefixes; i++) {
-	len = strlen(prefixes[i]);
+    if (IP != NULL)
+    for (i = 0; i < nIP; i++) {
+	len = strlen(IP[i]);
 	if (len > maxPrefixLength) maxPrefixLength = len;
     }
     prefixBuf = alloca(maxPrefixLength + 50);
@@ -774,6 +799,7 @@ assert(he->p.str != NULL);
     if (script) {
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
+	size_t nw;
 
 	if (rpmTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd))
 	    goto exit;
@@ -782,13 +808,13 @@ assert(he->p.str != NULL);
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
 	{
 	    static const char set_x[] = "set -x\n";
-	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
+	    nw = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
 	}
 
 	if (ldconfig_path && strstr(body, ldconfig_path) != NULL)
 	    ldconfig_done = 1;
 
-	xx = Fwrite(body, sizeof(body[0]), strlen(body), fd);
+	nw = Fwrite(body, sizeof(body[0]), strlen(body), fd);
 	xx = Fclose(fd);
 
 	{   const char * sn = fn;
@@ -830,7 +856,7 @@ assert(he->p.str != NULL);
     if (out == NULL)	/* XXX can't happen */
 	goto exit;
 
-    xx = rpmsqFork(&psm->sq);
+    pid = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
 	int pipes[2];
 	int flag;
@@ -882,14 +908,14 @@ assert(he->p.str != NULL);
 	    /*@=modobserver@*/
 	}
 
-	if (prefixes != NULL)
-	for (i = 0; i < numPrefixes; i++) {
-	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	if (IP != NULL)
+	for (i = 0; i < nIP; i++) {
+	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, IP[i]);
 	    xx = doputenv(prefixBuf);
 
 	    /* backwards compatibility */
 	    if (i == 0) {
-		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
+		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", IP[i]);
 		xx = doputenv(prefixBuf);
 	    }
 	}
@@ -947,7 +973,8 @@ assert(he->p.str != NULL);
     if (psm->sq.reaped < 0) {
 	rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, NVRA, psm->sq.child, psm->sq.reaped, strerror(errno));
+		 sln, NVRA, (int)psm->sq.child, (int)psm->sq.reaped,
+		strerror(errno));
 	goto exit;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
@@ -971,8 +998,6 @@ assert(he->p.str != NULL);
     rc = RPMRC_OK;
 
 exit:
-    prefixes = _free(prefixes);
-
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
@@ -983,7 +1008,6 @@ exit:
     }
 
     body = _free(body);
-    NVRA = _free(NVRA);
 
     return rc;
 }
@@ -997,159 +1021,331 @@ static rpmRC runInstScript(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
+    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
     rpmfi fi = psm->fi;
     const char * argv0 = NULL;
-    const char * script;
     rpmRC rc = RPMRC_OK;
-    int xx;
 
 assert(fi->h != NULL);
-    he->tag = psm->scriptTag;
-    xx = headerGet(fi->h, he, 0);
-    script = he->p.str;
-    if (script == NULL)
+    She->tag = psm->scriptTag;
+    if (!headerGet(fi->h, She, 0))
 	goto exit;
-    he->tag = psm->progTag;
-    xx = headerGet(fi->h, he, 0);
-    if (he->p.ptr == NULL)
+
+    Phe->tag = psm->progTag;
+    if (!headerGet(fi->h, Phe, 0))
 	goto exit;
 
     /* Coerce strings into header argv return. */
-    if (he->t == RPM_STRING_TYPE) {
-	const char * s = he->p.str;
+    if (Phe->t == RPM_STRING_TYPE) {
+	const char * s = Phe->p.str;
 	char * t;
-	he->p.argv = xmalloc(sizeof(*he->p.argv)+strlen(s)+1);
-	he->p.argv[0] = t = (char *) &he->p.argv[1];
+	Phe->p.argv = xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
+	Phe->p.argv[0] = t = (char *) &Phe->p.argv[1];
 	t = stpcpy(t, s);
 	*t = '\0';
 	s = _free(s);
     }
 
     /* Expand "%script -p %%{interpreter}" macros. */
-    if (he->p.argv[0][0] == '%')
-	he->p.argv[0] = argv0 = rpmExpand(he->p.argv[0], NULL);
+    if (Phe->p.argv[0][0] == '%')
+	Phe->p.argv[0] = argv0 = rpmExpand(Phe->p.argv[0], NULL);
 
-    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), he->c, he->p.argv,
-		script, psm->scriptArg, -1);
+    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), Phe,
+		She->p.str, psm->scriptArg, -1);
 
 exit:
     argv0 = _free(argv0);
-    he->p.ptr = _free(he->p.ptr);
-    script = _free(script);
+    Phe->p.ptr = _free(Phe->p.ptr);
+    She->p.ptr = _free(She->p.ptr);
     return rc;
 }
 
+/*@unchecked@*/
+static rpmTag _trigger_tag;
+
 /**
  * Execute triggers.
- * @todo Trigger on any provides, not just package NVR.
  * @param psm		package state machine data
  * @param sourceH
  * @param triggeredH
  * @param arg2
- * @param triggersAlreadyRun
- * @return
+ * @return		RPMRC_OK on success
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
-			Header sourceH, Header triggeredH,
-			int arg2, unsigned char * triggersAlreadyRun)
+			Header sourceH, Header triggeredH, int arg2)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int scareMem = 0;
+    static int scareMem = 0;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
+    HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
+    miRE mire = NULL;
     const rpmts ts = psm->ts;
-    rpmds trigger = NULL;
-    const char ** triggerScripts;
-    const char ** triggerProgs;
-    uint32_t * triggerIndices;
+    rpmds Tds = NULL;
+    rpmds Fds = NULL;
+    rpmds Dds = NULL;
+    rpmds Pds = NULL;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
+    int arg1;
     int xx;
     int i;
 
     he->tag = RPMTAG_NAME;
     xx = headerGet(sourceH, he, 0);
     sourceName = he->p.str;
+
     he->tag = RPMTAG_NAME;
     xx = headerGet(triggeredH, he, 0);
     triggerName = he->p.str;
 
-    trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
-    if (trigger == NULL)
+    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
+    if (arg1 < 0) {
+	/* XXX W2DO? fails as "execution of script failed" */
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+    arg1 += psm->countCorrection;
+
+    Tds = rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem);
+    if (Tds == NULL)
+	goto exit;
+    xx = rpmdsSetNoPromote(Tds, 1);
+
+    Ihe->tag = RPMTAG_TRIGGERINDEX;
+    if (!headerGet(triggeredH, Ihe, 0))
 	goto exit;
 
-    (void) rpmdsSetNoPromote(trigger, 1);
+    She->tag = RPMTAG_TRIGGERSCRIPTS;
+    if (!headerGet(triggeredH, She, 0))
+	goto exit;
 
-    while ((i = rpmdsNext(trigger)) >= 0) {
-	const char * Name;
-	uint32_t Flags = rpmdsFlags(trigger);
+    Phe->tag = RPMTAG_TRIGGERSCRIPTPROG;
+    if (!headerGet(triggeredH, Phe, 0))
+	goto exit;
 
-	if ((Name = rpmdsN(trigger)) == NULL)
-	    continue;   /* XXX can't happen */
+    if ((Tds = rpmdsInit(Tds)) != NULL)
+    while ((i = rpmdsNext(Tds)) >= 0) {
+	uint32_t Flags = rpmdsFlags(Tds);
+	char * depName;
+	int bingo;
 
-	if (strcmp(Name, sourceName))
-	    continue;
+	/* Skip triggers that are not in this context. */
 	if (!(Flags & psm->sense))
 	    continue;
 
-	/*
-	 * XXX Trigger on any provided dependency, not just the package NEVR.
-	 */
-	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
-	    continue;
-
-	he->tag = RPMTAG_TRIGGERINDEX;
-	xx = headerGet(triggeredH, he, 0);
-	triggerIndices = he->p.ui32p;
-	he->tag = RPMTAG_TRIGGERSCRIPTS;
-	xx = headerGet(triggeredH, he, 0);
-	triggerScripts = he->p.argv;
-	he->tag = RPMTAG_TRIGGERSCRIPTPROG;
-	xx = headerGet(triggeredH, he, 0);
-	triggerProgs = he->p.argv;
-
-	if (triggerIndices && triggerScripts && triggerProgs) {
-	    int arg1;
-	    int index;
-
-	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
-	    if (arg1 < 0) {
-		/* XXX W2DO? fails as "execution of script failed" */
-		rc = RPMRC_FAIL;
-	    } else {
-		arg1 += psm->countCorrection;
-		index = triggerIndices[i];
-		if (triggersAlreadyRun == NULL ||
-		    triggersAlreadyRun[index] == 0)
-		{
-		    rc = runScript(psm, triggeredH, "%trigger", 1,
-			    triggerProgs + index, triggerScripts[index],
-			    arg1, arg2);
-		    if (triggersAlreadyRun != NULL)
-			triggersAlreadyRun[index] = 1;
+	bingo = 0;		/* no trigger to fire. */
+	depName = (char *) rpmdsN(Tds);
+	if (depName[0] == '/') {
+	    size_t nb = strlen(depName);
+	    if (Glob_pattern_p(depName, 0)) {
+		rpmds ds = NULL;
+		if (depName[nb-1] == '/') {
+		    /* XXX Dirnames w trailing "/" needed. */
+		    if (Dds == NULL)
+			Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0x2);
+		    ds = rpmdsLink(Dds, "Triggers");
+		} else {
+		    if (Fds == NULL)
+			Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		    ds = rpmdsLink(Fds, "Triggers");
 		}
+		if (mire == NULL)
+		    mire = mireNew(RPMMIRE_GLOB, 0);
+
+		xx = mireRegcomp(mire, depName);
+		if ((ds = rpmdsInit(ds)) != NULL)
+		while (rpmdsNext(ds) >= 0) {
+		    const char * N = rpmdsN(ds);
+		    xx = mireRegexec(mire, N, 0);
+		    if (xx < 0)
+			continue;
+		    bingo = 1;
+		    break;
+		}
+		ds = rpmdsFree(ds);
+		xx = mireClean(mire);
+	    }
+
+	    /* If not matched, and directory trigger, try dir names. */
+	    if (!bingo && depName[nb-1] == '/') {
+		/* XXX Dirnames w trailing "/" needed. */
+		if (Dds == NULL)
+		    Dds = rpmdsNew(sourceH, RPMTAG_DIRNAMES, 0x2);
+		bingo = rpmdsMatch(Tds, Dds);
+	    }
+
+	    /* If not matched, try file paths. */
+	    if (!bingo) {
+		if (Fds == NULL)
+		    Fds = rpmdsNew(sourceH, RPMTAG_BASENAMES, 0);
+		bingo = rpmdsMatch(Tds, Fds);
 	    }
 	}
 
-	triggerIndices = _free(triggerIndices);
-	triggerScripts = _free(triggerScripts);
-	triggerProgs = _free(triggerProgs);
+	/* If trigger not fired yet, try provided dependency match. */
+	if (!bingo) {
+	    if (Pds == NULL)
+		Pds = rpmdsNew(sourceH, RPMTAG_PROVIDENAME, 0);
+	    bingo = rpmdsMatch(Tds, Pds);
+	    bingo = rpmdsNegateRC(Tds, bingo);
+	}
+	if (!bingo)
+	    continue;
 
-	/*
-	 * Each target/source header pair can only result in a single
-	 * script being run.
-	 */
-	break;
+	/* Coerce strings into header argv return. */
+	/* XXX FIXME: permit trigger scripts with arguments. */
+	{   int index = Ihe->p.ui32p[i];
+	    const char * s = Phe->p.argv[index];
+	    char * t;
+	    
+	    he->tag = Phe->tag;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->c = 1;
+	    he->p.argv = xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
+	    he->p.argv[0] = t = (char *) &he->p.argv[1];
+	    t = stpcpy(t, s);
+	    *t = '\0';
+
+	    rc |= runScript(psm, triggeredH, "%trigger", he,
+			She->p.argv[index], arg1, arg2);
+
+	    he->p.ptr = _free(he->p.ptr);
+	}
     }
 
-    trigger = rpmdsFree(trigger);
+    mire = mireFree(mire);
+    Pds = rpmdsFree(Pds);
+    Dds = rpmdsFree(Dds);
+    Fds = rpmdsFree(Fds);
+    Tds = rpmdsFree(Tds);
 
 exit:
-    sourceName = _free(sourceName);
+    Ihe->p.ptr = _free(Ihe->p.ptr);
+    She->p.ptr = _free(She->p.ptr);
+    Phe->p.ptr = _free(Phe->p.ptr);
     triggerName = _free(triggerName);
+    sourceName = _free(sourceName);
+
+    return rc;
+}
+
+/* Retrieve trigger patterns from rpmdb. */
+static int rpmdbTriggerGlobs(rpmpsm psm)
+	/*@ modifies psm @*/
+{
+    const rpmts ts = psm->ts;
+    ARGV_t keys = NULL;
+    int xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_TRIGGERNAME,
+		RPMMIRE_STRCMP, NULL, &keys);
+    int nkeys = argvCount(keys);
+    int i;
+    
+    if (keys)
+    for (i = 0; i < nkeys; i++) {
+	char * t = (char *) keys[i];
+	if (!Glob_pattern_p(t, 0))
+	    continue;
+	xx = mireAppend(RPMMIRE_GLOB, 0, t, NULL,
+		(miRE *)&psm->Tmires, &psm->nTmires);
+	xx = argvAdd(&psm->Tpats, t);
+    }
+    keys = argvFree(keys);
+    return 0;
+}
+
+/**
+ * Run a dependency set loop against rpmdb triggers.
+ * @param psm		package state machine data
+ * @param tagno		dependency set to run against rpmdb
+ * @param arg2		scriptlet arg2
+ * @return		RPMRC_OK on success
+ */
+static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    static int scareMem = 0;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
+    rpmds ds = rpmdsNew(fi->h, tagno, scareMem);
+    char * depName = NULL;
+    ARGI_t instances = NULL;
+    rpmdbMatchIterator mi;
+    Header triggeredH;
+    rpmRC rc = RPMRC_OK;
+    int i;
+    int xx;
+
+    /* Fire elements against rpmdb trigger strings. */
+    if ((ds = rpmdsInit(ds)) != NULL)
+    while ((i = rpmdsNext(ds)) >= 0) {
+	const char * Name = rpmdsN(ds);
+	size_t nName = strlen(Name);
+	unsigned prev, instance;
+	unsigned nvals;
+	ARGint_t vals;
+
+	depName = _free(depName);
+	depName = xmalloc(nName + 1 + 1);
+	(void) stpcpy(depName, Name);
+	/* XXX re-add the pesky trailing '/' to dirnames. */
+	depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
+	depName[nName+1] = '\0';
+
+	if (depName[0] == '/' && psm->Tmires != NULL) {
+	    miRE mire;
+	    int j;
+
+	    /* XXX mireApply doesn't tell which pattern matched. */
+	    for (j = 0, mire = psm->Tmires; j < psm->nTmires; j++, mire++) {
+		const char * pattern = psm->Tpats[j];
+		if (depName[nName-1] != '/') {
+		    size_t npattern = strlen(pattern);
+		    depName[nName] = (pattern[npattern-1] == '/') ? '/' : '\0';
+		}
+		if (mireRegexec(mire, depName, 0) < 0)
+		    continue;
+
+		/* Reset the primary retrieval key to the pattern. */
+		depName = _free(depName);
+		depName = xstrdup(pattern);
+		break;
+	    }
+	}
+
+	/* Retrieve triggered header(s) by key. */
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, depName, 0);
+
+	nvals = argiCount(instances);
+	vals = argiData(instances);
+	if (nvals > 0)
+	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+
+	prev = 0;
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    instance = rpmdbGetIteratorOffset(mi);
+	    if (prev == instance)
+		continue;
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
+	    prev = instance;
+	    xx = argiAdd(&instances, -1, instance);
+	    xx = argiSort(instances, NULL);
+	}
+
+	mi = rpmdbFreeIterator(mi);
+    }
+
+    instances = argiFree(instances);
+    depName = _free(depName);
+    ds = rpmdsFree(ds);
 
     return rc;
 }
@@ -1167,29 +1363,53 @@ static rpmRC runTriggers(rpmpsm psm)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    int numPackage = -1;
+    int numPackage;
+    rpmTag tagno;
     rpmRC rc = RPMRC_OK;
-    const char * N = NULL;
 
-    if (psm->te) 	/* XXX can't happen */
-	N = rpmteN(psm->te);
-/* XXX: Might need to adjust instance counts for autorollback. */
-    if (N) 		/* XXX can't happen */
-	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N)
-				+ psm->countCorrection;
-    if (numPackage < 0)
-	return RPMRC_NOTFOUND;
+    /* Select RPMTAG_NAME or RPMTAG_PROVIDENAME index for triggering. */
+    if (_trigger_tag == 0) {
+	const char * t = rpmExpand("%{?_trigger_tag}", NULL);
+/*@-mods@*/
+	_trigger_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+/*@=mods@*/
+	t = _free(t);
+    }
+    tagno = _trigger_tag;
 
-    if (fi != NULL && fi->h != NULL)	/* XXX can't happen */
-    {	Header triggeredH;
-	rpmdbMatchIterator mi;
-	int countCorrection = psm->countCorrection;
+assert(psm->te != NULL);
+    {	const char * N = rpmteN(psm->te);
+assert(N != NULL);
+	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N);
+	numPackage += psm->countCorrection;
+	if (numPackage < 0)
+	    return RPMRC_NOTFOUND;
+    }
+assert(fi != NULL);
+assert(fi->h != NULL);
+
+    /* XXX Save/restore count correction. */
+    {	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, N, 0);
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
-	mi = rpmdbFreeIterator(mi);
+
+	/* Try name/providename triggers first. */
+	rc |= runTriggersLoop(psm, tagno, numPackage);
+
+	/* If not limited to NEVRA triggers, also try file/dir path triggers. */
+	if (tagno != RPMTAG_NAME) {
+	    int xx;
+	    /* Retrieve trigger patterns from rpmdb. */
+	    xx = rpmdbTriggerGlobs(psm);
+
+	    rc |= runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage);
+	    rc |= runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage);
+
+	    psm->Tpats = argvFree(psm->Tpats);
+	    psm->Tmires = mireFreeAll(psm->Tmires, psm->nTmires);
+	    psm->nTmires = 0;
+	}
+
 	psm->countCorrection = countCorrection;
     }
 
@@ -1207,59 +1427,114 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    const char ** triggerNames;
-    int numTriggers;
-    uint32_t * triggerIndices;
-    int numTriggerIndices;
-    unsigned char * triggersRun;
+    rpmds triggers = NULL;
+    rpmdbMatchIterator mi;
+    ARGV_t keys = NULL;
+    ARGI_t instances = NULL;
+    Header sourceH = NULL;
+    const char * Name;
+    rpmTag tagno;
     rpmRC rc = RPMRC_OK;
-    size_t nb;
+    int i;
     int xx;
 
 assert(fi->h != NULL);
-    if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
-    he->tag = RPMTAG_TRIGGERNAME;
-    xx = headerGet(fi->h, he, 0);
-    triggerNames = he->p.argv;
-    numTriggers = he->c;
-    he->tag = RPMTAG_TRIGGERINDEX;
-    xx = headerGet(fi->h, he, 0);
-    triggerIndices = he->p.ui32p;
-    numTriggerIndices = he->c;
+    /* Select RPMTAG_NAME or RPMTAG_PROVIDENAME index for triggering. */
+    if (_trigger_tag == 0) {
+	const char * t = rpmExpand("%{?_trigger_tag}", NULL);
+/*@-mods@*/
+	_trigger_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+/*@=mods@*/
+	t = _free(t);
+    }
+    tagno = _trigger_tag;
 
-    if (!(triggerNames && numTriggers > 0 && triggerIndices && numTriggerIndices > 0))
+    triggers = rpmdsLink(psm->triggers, "ImmedTriggers");
+    if (triggers == NULL)
 	goto exit;
 
-    nb = sizeof(*triggersRun) * numTriggerIndices;
-    triggersRun = memset(alloca(nb), 0, nb);
+    Ihe->tag = RPMTAG_TRIGGERINDEX;
+    xx = headerGet(fi->h, Ihe, 0);
+    if (!(xx && Ihe->p.ui32p && Ihe->c)) goto exit;
 
-    {	Header sourceH = NULL;
-	int i;
+    /* Collect primary trigger keys, expanding globs as needed. */
+    triggers = rpmdsInit(triggers);
+    if (triggers != NULL)
+    while ((i = rpmdsNext(triggers)) >= 0) {
+	evrFlags Flags = rpmdsFlags(triggers);
+	const char * Name = rpmdsN(triggers);
+	const char * EVR = rpmdsEVR(triggers);
 
-	for (i = 0; i < numTriggers; i++) {
-	    rpmdbMatchIterator mi;
+	/* Skip triggers that are not in this context. */
+	if (!(Flags & psm->sense))
+	    continue;
 
-	    if (triggersRun[triggerIndices[i]] != 0) continue;
-	
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, triggerNames[i], 0);
-
-	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(psm, sourceH, fi->h,
-				rpmdbGetIteratorCount(mi),
-				triggersRun);
-	    }
-
-	    mi = rpmdbFreeIterator(mi);
+	/* If not limited to NEVRA triggers, use file/dir index. */
+	if (tagno != RPMTAG_NAME) {
+	    /* XXX if trigger name ends with '/', use dirnames instead. */
+	    if (Name[0] == '/') 
+		tagno = (Name[strlen(Name)-1] == '/')
+			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
 	}
+	/* XXX For now, permit globs only in unversioned triggers. */
+	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(Name, 0))
+	    xx = rpmdbMireApply(rpmtsGetRdb(ts), tagno, RPMMIRE_GLOB, Name, &keys);
+	else
+	    xx = argvAdd(&keys, Name);
+    }
+    triggers = rpmdsFree(triggers);
+
+    /* For all primary keys, retrieve headers and fire triggers. */
+    if (keys != NULL)
+    for (i = 0; (Name = keys[i]) != NULL; i++) {
+	unsigned prev, instance;
+	unsigned nvals;
+	ARGint_t vals;
+
+	/* If not limited to NEVRA triggers, use file/dir index. */
+	if (tagno != RPMTAG_NAME) {
+	    /* XXX if trigger name ends with '/', use dirnames instead. */
+	    if (Name[0] == '/') 
+		tagno = (Name[strlen(Name)-1] == '/')
+			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
+	}
+
+	mi = rpmtsInitIterator(ts, tagno, Name, 0);
+
+	/* Don't retrieve headers that have already been processed. */
+	nvals = argiCount(instances);
+	vals = argiData(instances);
+	if (nvals > 0)
+	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+
+	prev = 0;
+	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+
+	    /* Skip headers that have already been processed. */
+	    instance = rpmdbGetIteratorOffset(mi);
+	    if (prev == instance)
+		continue;
+
+	    rc |= handleOneTrigger(psm, sourceH, fi->h,
+				rpmdbGetIteratorCount(mi));
+
+	    /* Mark header instance as processed. */
+	    prev = instance;
+	    xx = argiAdd(&instances, -1, instance);
+	    xx = argiSort(instances, NULL);
+	}
+
+	mi = rpmdbFreeIterator(mi);
     }
 
 exit:
-    triggerIndices = _free(triggerIndices);
-    triggerNames = _free(triggerNames);
+    instances = argiFree(instances);
+    keys = argvFree(keys);
+    Ihe->p.ptr = _free(Ihe->p.ptr);
     return rc;
 }
 
@@ -1349,6 +1624,10 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 /*@=internalglobs@*/
 
     psm->sstates = _free(psm->sstates);
+    psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
+    psm->IPhe = _free(psm->IPhe);
+    psm->NVRA = _free(psm->NVRA);
+    psm->triggers = rpmdsFree(psm->triggers);
 
     (void) rpmpsmUnlink(psm, msg);
 
@@ -1376,6 +1655,9 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 #endif
     if (fi)	psm->fi = rpmfiLink(fi, msg);
 
+    psm->triggers = NULL;
+    psm->NVRA = NULL;
+    psm->IPhe = xcalloc(1, sizeof(*psm->IPhe));
     psm->sstates = xcalloc(RPMSCRIPT_MAX, sizeof(*psm->sstates));
 
     return rpmpsmLink(psm, msg);
@@ -1388,7 +1670,8 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
  * @return		tag value (0 on failure)
  */
 static uint32_t hLoadTID(Header h, rpmTag tag)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t val;
@@ -1409,7 +1692,8 @@ static uint32_t hLoadTID(Header h, rpmTag tag)
  * @return		0 always
  */
 static int hCopyTag(Header sh, Header th, rpmTag tag)
-	/*@modifies th @*/
+	/*@globals internalState @*/
+	/*@modifies th, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx = 1;
@@ -1550,7 +1834,8 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
  * @return		0 always
  */
 static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
-	/*@modifies fi @*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fi, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tscolor = rpmtsColor(ts);
@@ -1617,9 +1902,11 @@ assert(fi->h != NULL);
 	if (fn != NULL) {
 	    he->tag = RPMTAG_PACKAGEORIGIN;
 	    he->t = RPM_STRING_TYPE;
-	    he->p.str = fn;
+	    he->p.str = xstrdup(fn);
 	    he->c = 1;
 	    xx = headerPut(fi->h, he, 0);
+	    he->p.ptr = _free(he->p.ptr);
+
 	    if (digest != NULL) {
 		he->tag = RPMTAG_PACKAGEDIGEST;
 		he->t = RPM_STRING_TYPE;
@@ -1628,13 +1915,19 @@ assert(fi->h != NULL);
 		xx = headerPut(fi->h, he, 0);
 	    }
 	    if (st != NULL) {
+/* XXX Fstat(2) in pkgio.c should set *st. Verify st->st_mode w assert(3). */
+#ifndef	DYING
+		int ut = urlPath(fn, NULL);
+		/* XXX URI is active, so avoid the lazy Stat(2) for now. */
+		if (!(ut == URL_IS_HTTP || ut == URL_IS_HTTPS))
 		if (st->st_mode == 0 && st->st_mtime == 0 && st->st_size == 0)
 		    xx = Stat(fn, st);
+#endif
 		if (st->st_mode != 0) {
 		    he->tag = RPMTAG_PACKAGESTAT;
 		    he->t = RPM_BIN_TYPE;
 		    he->p.ptr = (void *)st;
-		    he->c = sizeof(*st);
+		    he->c = (rpmTagCount) sizeof(*st);
 		    xx = headerPut(fi->h, he, 0);
 		}
 	    }
@@ -1715,7 +2008,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int xx;
 
 /* XXX hackery to assert(!scaremem) in rpmfiNew. */
+/*@-castexpose@*/
 if (fi->h == NULL && fi->te && ((rpmte)fi->te)->h != NULL) fi->h = headerLink(((rpmte)fi->te)->h);
+/*@=castexpose@*/
 
     switch (stage) {
     case PSM_UNKNOWN:
@@ -1958,7 +2253,7 @@ psm->te->h = headerLink(fi->h);
 		    digest = he->p.str;
 		he->tag = RPMTAG_PACKAGESTAT;
 		xx = headerGet(fi->h, he, 0);
-		if (xx && he->p.ptr != NULL && he->c == sizeof(*st)) {
+		if (xx && he->p.ptr != NULL && (size_t)he->c == sizeof(*st)) {
 		    st = he->p.ptr;
 		    nstbytes = he->c;
 		}
@@ -2074,7 +2369,7 @@ psm->te->h = headerLink(fi->h);
 		    he->tag = RPMTAG_PACKAGESTAT;
 		    he->t = RPM_BIN_TYPE;
 		    he->p.ptr = (void *)st;
-		    he->c = nstbytes;
+		    he->c = (rpmTagCount)nstbytes;
 		    xx = headerPut(psm->oh, he, 0);
 		    st = _free(st);
 		}
@@ -2422,7 +2717,7 @@ psm->te->h = headerFree(psm->te->h);
     {	const char * rootDir = rpmtsRootDir(ts);
 	/* Change root directory if requested and not already done. */
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
-	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
+	 && !rpmtsChrootDone(ts) && !F_ISSET(psm, CHROOTDONE))
 	{
 	    static int _pw_loaded = 0;
 	    static int _gr_loaded = 0;
@@ -2443,20 +2738,20 @@ psm->te->h = headerFree(psm->te->h);
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = Chroot(rootDir);
 	    /*@=modobserver@*/
-	    psm->chrootDone = 1;
+	    F_SET(psm, CHROOTDONE);
 	    (void) rpmtsSetChrootDone(ts, 1);
 	}
     }	break;
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
-	if (psm->chrootDone) {
+	if (F_ISSET(psm, CHROOTDONE)) {
 	    const char * rootDir = rpmtsRootDir(ts);
 	    const char * currDir = rpmtsCurrDir(ts);
 	    /*@-modobserver@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = Chroot(".");
 	    /*@=modobserver@*/
-	    psm->chrootDone = 0;
+	    F_CLR(psm, CHROOTDONE);
 	    (void) rpmtsSetChrootDone(ts, 0);
 	    if (currDir != NULL)	/* XXX can't happen */
 		xx = Chdir(currDir);
@@ -2473,7 +2768,12 @@ psm->te->h = headerFree(psm->te->h);
     case PSM_IMMED_TRIGGERS:
 	/* Run triggers in this package other package(s) set off. */
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	rc = runImmedTriggers(psm);
+	if (!F_ISSET(psm, GOTTRIGGERS)) {
+	    psm->triggers = rpmdsNew(fi->h, RPMTAG_TRIGGERNAME, 0);
+	    F_SET(psm, GOTTRIGGERS);
+	}
+	if (psm->triggers != NULL)
+	    rc = runImmedTriggers(psm);
 	break;
 
     case PSM_RPMIO_FLAGS:
