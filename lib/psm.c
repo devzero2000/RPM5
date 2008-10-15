@@ -1121,6 +1121,7 @@ fprintf(stderr, "=== handleOneTrigger(%p) source %s trigger %s\n", psm, sourceNa
 		    bingo = 1;
 		    break;
 		}
+		xx = mireClean(mire);
 	    } else {
 		if (delslash && depName[nb-1] == '/')
 		    depName[nb-1] = '\0';
@@ -1186,6 +1187,31 @@ exit:
     return rc;
 }
 
+/* Retrieve trigger patterns from rpmdb. */
+static int rpmdbTriggerGlobs(rpmpsm psm)
+	/*@ modifies psm @*/
+{
+    const rpmts ts = psm->ts;
+    ARGV_t keys = NULL;
+    int xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_TRIGGERNAME,
+		RPMMIRE_STRCMP, NULL, &keys);
+    int nkeys = argvCount(keys);
+    int i;
+    
+    if (keys)
+    for (i = 0; i < nkeys; i++) {
+	char * t = (char *) keys[i];
+	if (!Glob_pattern_p(t, 0))
+	    continue;
+	xx = mireAppend(RPMMIRE_GLOB, 0, t, NULL,
+		(miRE *)&psm->Tmires, &psm->nTmires);
+	xx = argvAdd(&psm->Tpats, t);
+    }
+    keys = argvFree(keys);
+if (_jbj && psm->Tpats != NULL) argvPrint("trigger patterns", psm->Tpats, NULL);
+    return 0;
+}
+
 /**
  * Run a dependency set loop against rpmdb triggers.
  * @param psm		package state machine data
@@ -1204,36 +1230,12 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
     rpmfi fi = psm->fi;
     rpmds ds = rpmdsNew(fi->h, tagno, scareMem);
     char * depName = NULL;
-    int nmires = 0;
-    miRE mires = NULL;
-    ARGV_t patterns = NULL;
     ARGI_t instances = NULL;
     rpmdbMatchIterator mi;
     Header triggeredH;
     rpmRC rc = RPMRC_OK;
     int i;
     int xx;
-
-    /* Retrieve trigger patterns from rpmdb. */
-if (tagno == RPMTAG_BASENAMES || tagno == RPMTAG_DIRNAMES) {
-    ARGV_t keys = NULL;
-    int nkeys = 0;
-    rpmTag ttagno = RPMTAG_TRIGGERNAME;
-    
-    xx = rpmdbMireApply(rpmtsGetRdb(ts), ttagno, RPMMIRE_STRCMP, NULL, &keys);
-    nkeys = argvCount(keys);
-    if (keys)
-    for (i = 0; i < nkeys; i++) {
-	char * t = (char *) keys[i];
-	if (!Glob_pattern_p(t, 0))
-	    continue;
-	xx = mireAppend(RPMMIRE_GLOB, ttagno, t, NULL, &mires, &nmires);
-	xx = argvAdd(&patterns, t);
-    }
-    keys = argvFree(keys);
-
-if (_jbj && patterns != NULL) argvPrint("trigger patterns", patterns, NULL);
-}
 
     /* Fire elements against rpmdb trigger strings. */
     if ((ds = rpmdsInit(ds)) != NULL)
@@ -1256,13 +1258,13 @@ if (_jbj && patterns != NULL) argvPrint("trigger patterns", patterns, NULL);
 	    if (Glob_pattern_p(depName, 0))
 		continue;
 
-	    if (mires) {
+	    if (psm->Tmires) {
 		miRE mire;
 		int j;
 
 		/* XXX mireApply doesn't tell which pattern matched. */
-		for (j = 0, mire = mires; j < nmires; j++, mire++) {
-		    const char * pattern = patterns[j];
+		for (j = 0, mire = psm->Tmires; j < psm->nTmires; j++, mire++) {
+		    const char * pattern = psm->Tpats[j];
 		    if (depName[nName-1] != '/') {
 			size_t npattern = strlen(pattern);
 			depName[nName] = (pattern[npattern-1] == '/')
@@ -1271,7 +1273,7 @@ if (_jbj && patterns != NULL) argvPrint("trigger patterns", patterns, NULL);
 		    if (mireRegexec(mire, depName, 0) < 0)
 			continue;
 if (_jbj)
-fprintf(stderr, "=== %p[%d] %s matched %s\n", patterns, j, pattern, depName);
+fprintf(stderr, "=== %p[%d] %s matched %s\n", psm->Tpats, j, pattern, depName);
 		    depName = _free(depName);
 		    depName = xstrdup(pattern);
 		    break;
@@ -1303,8 +1305,6 @@ fprintf(stderr, "=== runTriggersLoop(%p) sense 0x%x %s depName %s mi %p\n", psm,
 	mi = rpmdbFreeIterator(mi);
     }
 
-    patterns = argvFree(patterns);
-    mires = mireFreeAll(mires, nmires);
     instances = argiFree(instances);
     depName = _free(depName);
     ds = rpmdsFree(ds);
@@ -1360,8 +1360,14 @@ assert(fi->h != NULL);
 
 	/* If not limited to NEVRA triggers, also try file/dir path triggers. */
 	if (tagno != RPMTAG_NAME) {
+	    int xx = rpmdbTriggerGlobs(psm);
+
 	    rc |= runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage);
 	    rc |= runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage);
+
+	    psm->Tpats = argvFree(psm->Tpats);
+	    psm->Tmires = mireFreeAll(psm->Tmires, psm->nTmires);
+	    psm->nTmires = 0;
 	}
 
 	psm->countCorrection = countCorrection;

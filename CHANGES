@@ -1,5 +1,7 @@
 
 5.2a1 -> 5.2a2:
+    - jbj: fix a memory leak by calling mireClean().
+    - jbj: save rpmdb trigger patterns in psm.c, eliminating 2nd retrieve.
     - jbj: use generic retrieval code for --group and --triggerdby too.
     - jbj: attempt generic retrieval code using --whatconflicts/--whatobsoletes.
     - jbj: add --whatconflicts/--whatobsoletes, hidden for now.

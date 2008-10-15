@@ -126,6 +126,11 @@ struct rpmpsm_s {
     rpmfi fi;			/*!< file info */
 /*@refcounted@*/ /*@relnull@*/
     rpmds triggers;		/*!< trigger dependency set */
+/*@null@*/
+    const char ** Tpats;	/*!< rpmdb trigger pattern strings */
+/*@null@*/
+    void * Tmires;		/*!< rpmdb trigger patterns */
+    int nTmires;		/*!< no. of rpmdb trigger patterns */
 /*@only@*/
     HE_t IPhe;			/*!< Install prefixes */
 /*@relnull@*/
