@@ -1,4 +1,5 @@
 5.1.5 -> 5.1.6:
+    - jbj: rpmdb: add rpmdbMireApply to retrieve primary keys from index.
     - jbj: rpmio: add argiCmp and argiSort.
     - jbj: add --whatconflicts/--whatobsoletes.
     - jbj: fix: adding Fstat() broke perl builds.

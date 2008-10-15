@@ -1173,6 +1173,19 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
+ * Return array of keys matching a pattern.
+ * @param db		rpm database
+ * @param tag		rpm tag
+ * @param mode		type of pattern match
+ * @param pat		pattern to match
+ * @retval *argvp	array of keys that match
+ * @return		0 on success
+ */
+int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
+		const char *** argvp)
+	/*@modifies db, *argvp */;
+
+/** \ingroup rpmdb
  * Add package header to rpm database and indices.
  * @param db		rpm database
  * @param iid		install transaction id (iid = 0 or -1 to skip)
