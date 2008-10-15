@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<otherdata xmlns="http://linux.duke.edu/metadata/other" packages="5">
-<package pkgid="f4b34bce38c077a682f6a10e91bac4ac8dd6d905" name="devtool-sanity" arch="noarch">
+<otherdata xmlns="http://linux.duke.edu/metadata/other" packages="12">
+<package pkgid="b041a71594a3bf628883ea514861ce0bdec828f1" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1212789600">- add some additional content</changelog>
 </package>
@@ -22,5 +22,33 @@
 </package>
 <package pkgid="b2e1fd2756b27bcf888c990c02be7912074cd096" name="probes-test" arch="noarch">
   <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="c2fc0cea2a2f453f20cb80419b2fd33addd2f52a" name="triggers-D" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on D functional tests.</changelog>
+</package>
+<package pkgid="5a41e48e2ccfc5c5536d14ff404b46b2b228b6cc" name="triggers-DP" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on D pattern functional tests.</changelog>
+</package>
+<package pkgid="3295b197089d5e0c4ef7c80ce0833757f1527ad4" name="triggers-F" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on F functional tests.</changelog>
+</package>
+<package pkgid="fe4b16a2559f3bb282b40a0a951f20b9faefe303" name="triggers-FP" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on F pattern functional tests.</changelog>
+</package>
+<package pkgid="6e6849792e60bb2d685cd7051d7e25c9385f2875" name="triggers-N" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on N functional tests.</changelog>
+</package>
+<package pkgid="32c017be3c279f1c62e89495b1a98b3a6fb60ebd" name="triggers-NA" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on N.A compound functional tests.</changelog>
+</package>
+<package pkgid="b02c0c40ed7e14949b4e73b54b08476797c7fffb" name="triggers-P" arch="i386">
+  <version epoch="0" ver="1.0" rel="1"/>
+  <changelog author="Jeff Johnson &lt;jbj@rpm5.org&gt; - 1.0-1" date="1221948000">- Triggers on P functional tests.</changelog>
 </package>
 </otherdata>

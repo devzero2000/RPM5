@@ -720,17 +720,17 @@ end
 -14: sources	%{lua: for i, s in ipairs(sources) do print(s.." ") end}
 -14: sparc	sun4 sun4m sun4c sun4d sun4u sparc sparcv8 sparcv9 sparc64 sparc64v sparcv9b sparcv9v sparcv9v2
 -14: tmpdir	%{_tmppath}
--14: triggerin	%%triggerin -- %*
-  echo "--- triggerin(%NVRA)     arg $1 $2 ..."
+-14: triggerin	%%triggerin %1 -- %2%{?3: %3 %4}
+  echo "--- triggerin(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
 %nil
--14: triggerpostun	%%triggerpostun -- %*
-  echo "--- triggerpostun(%NVRA) arg $1 $2 ..."
+-14: triggerpostun	%%triggerpostun %1 -- %2%{?3: %3 %4}
+  echo "--- triggerpostun(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
 %nil
--14: triggerprein	%%triggerprein -- %*
-  echo "--- triggerprein(%NVRA)  arg $1 $2 ..."
+-14: triggerprein	%%triggerprein %1 -- %2%{?3: %3 %4}
+  echo "--- triggerprein(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
 %nil
--14: triggerun	%%triggerun -- %*
-  echo "--- triggerun(%NVRA)     arg $1 $2 ..."
+-14: triggerun	%%triggerun %1 -- %2%{?3: %3 %4}
+  echo "--- triggerun(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
 %nil
 -14: undefined	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
 -14: verifyscript	%%verifyscript %*
