@@ -2336,7 +2336,6 @@ static int _fnTag(Header h, HE_t he, rpmTag tag)
 {
     he->t = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, tag, &he->p.argv, &he->c);
-fprintf(stderr, "*** %s(%d) %p[%u]\n", tagName(he->tag), he->t, he->p.ptr, he->c);
     he->freeData = 1;
     return 0;
 }
