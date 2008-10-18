@@ -447,6 +447,27 @@
 
 =============================================================================
 
+5.1.5 -> 5.1.6:
+    - jbj: verify trigger tests have same result as HEAD.
+    - jbj: backport rpmds functionality needed for file/dir triggers from HEAD.
+    - jbj: backport file/directory triggers from HEAD.
+    - jbj: add rpmdsMatch to match dependency against set.
+    - jbj: rpmdb: add rpmdbMireApply to retrieve primary keys from index.
+    - jbj: rpmio: add argiCmp and argiSort.
+    - jbj: add --whatconflicts/--whatobsoletes.
+    - jbj: fix: adding Fstat() broke perl builds.
+    - jbj: generate Obsoletename index in rpmdb.
+    - jbj: generate Filepaths index in rpmdb.
+    - bero: Python 2.6 support in configure.ac
+    - jbj: refactor the sumNN wrappers out of digest.c too.
+    - jbj: include crc routines in a standalone file.
+    - jbj: use a switch on errno to make leakage pathology filtering easier.
+    - jbj: use Stat(2) for --rpmiodebug tracing.
+    - jbj: fix: resurrect cpuinfo() probe, hack-o-rounds for both /proc & libio.
+    - jbj: rpmio: rewrite rpmioSlurp to use Fstat(2) instead.
+    - jbj: rpmrpc: add Fstat(2).
+    - jbj: fix: he->tag was returning RPMTAG_BASENAMES, not RPMTAG_FILEPATHS.
+
 5.1.4 -> 5.1.5:
     - jbj: update sk.po (Translation Project).
     - jbj: avoid mtab info leakage problems (#457940).
