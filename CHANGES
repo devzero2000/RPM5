@@ -1,4 +1,6 @@
 
+5.2a2 -> 5.2a3:
+
 5.2a1 -> 5.2a2:
     - jbj: permit --whatconflicts/--whatobsoletes to be displayed with --help.
     - jbj: add flag to keep trailing slash in dirnames dependency set.
