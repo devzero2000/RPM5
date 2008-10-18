@@ -1,3 +1,5 @@
+5.1.6 -> 5.1.7:
+
 5.1.5 -> 5.1.6:
     - jbj: verify trigger tests have same result as HEAD.
     - jbj: backport rpmds functionality needed for file/dir triggers from HEAD.
