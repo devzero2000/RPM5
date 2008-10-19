@@ -71,7 +71,7 @@ static rpmRC checkOwners(const char * urlfn)
  * @param db		saved file suffix (i.e. patch --suffix argument)
  * @param reverse	include -R?
  * @param removeEmpties	include -E?
- * @param fuzz		include -F?
+ * @param fuzz		include -F? (fuzz<0 means no)
  * @param subdir	sub-directory (i.e patch -d argument);
  * @return		expanded %patch macro (NULL on error)
  */
@@ -99,7 +99,7 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 #endif
     if (subdir)
 	t = stpcpy( stpcpy(t, "-d "), subdir);
-    if (fuzz) {
+    if (fuzz >= 0) {
 	t = stpcpy(t, "-F ");
 	sprintf(t, "%10.10d", fuzz);
 	t += strlen(t);
@@ -527,7 +527,8 @@ static rpmRC doPatchMacro(Spec spec, const char * line)
     int patch_index, x;
 
     memset(patch_nums, 0, sizeof(patch_nums));
-    opt_P = opt_p = opt_R = opt_E = opt_F = 0;
+    opt_P = opt_p = opt_R = opt_E = 0;
+    opt_F = rpmExpandNumeric("%{?_default_patch_fuzz}%{!?_default_patch_fuzz:-1}");
     opt_b = NULL;
     opt_d = NULL;
     patch_index = 0;
