@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - afb: make buildroot path configurable, but keep old defaults
+    - rpm.org: add %{_buildrootdir} macro for use with %{buildroot}
 
 5.2a1 -> 5.2a2:
     - jbj: permit --whatconflicts/--whatobsoletes to be displayed with --help.

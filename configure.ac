@@ -1498,6 +1498,17 @@ AC_ARG_WITH(
 AC_MSG_RESULT([$MAGIC_MACRO])
 AC_SUBST(MAGIC_MACRO)
 
+dnl # determine RPM buildroot directory path
+AC_MSG_CHECKING([for RPM buildroot directory])
+BUILDROOTDIR_MACRO="%{_tmppath}"
+AC_ARG_WITH(
+    [path-buildroot],
+    AS_HELP_STRING([--with-path-buildroot=ARG], [build with RPM buildroot path (or macro)]),
+    [BUILDROOTDIR_MACRO="$withval"]
+)
+AC_MSG_RESULT([$BUILDROOTDIR_MACRO])
+AC_SUBST(BUILDROOTDIR_MACRO)
+
 dnl # determine RPM locale directory path
 AC_MSG_CHECKING([for RPM locale directory])
 LOCALEDIR=`echo "${usrprefix}/share/locale"`
