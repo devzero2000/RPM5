@@ -461,6 +461,20 @@
                      "rpm -bb" operation.
      ________________________________________________________________________
 
+     Change:         extension-based-compression-detection
+     Purpose:        Prefer file extension for detecting file compression.
+     Reason:         RPM tries to detect file compression by inspecting
+                     "magic" bytes at the front of a file. This works for
+                     formats with known "magic" bytes just fine, but fails
+                     horribly for formats like LZMA where no such "magic"
+                     bytes exist. For Fedora we prefer to first use file
+                     extension based determination (if someone is mis-names
+                     his distribution files we have to take action anyway)
+                     and fall back to "magic" byte based determination only
+                     if no well known extension is found. Additionally,
+                     detecting LZMA we want to do via file extension only.
+     ________________________________________________________________________
+
   o  Name:           MANDRIVA
      Vendor:         Mandriva Linux <http://wiki.mandriva.com/>
      Representative: Per Øyvind Karlsen <pkarlsen@rpm5.org>

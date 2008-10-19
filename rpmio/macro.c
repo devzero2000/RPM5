@@ -2412,13 +2412,13 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     ssize_t nb;
     int rc = -1;
     unsigned char magic[13];
-#if defined(RPM_VENDOR_OPENPKG) /* extension-based-compression-detection */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) /* extension-based-compression-detection */
     size_t file_len;
 #endif
 
     *compressed = COMPRESSED_NOT;
 
-#if defined(RPM_VENDOR_OPENPKG) /* extension-based-compression-detection */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) /* extension-based-compression-detection */
     file_len = strlen(file);
     if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tbz") == 0)
         || (file_len > 4 && strcasecmp(file+file_len-4, ".bz2") == 0)) {
@@ -2483,7 +2483,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
      &&	magic[2] == 'Z' && magic[3] == 'O')	/* lzop */
 	*compressed = COMPRESSED_LZOP;
     else
-#if !defined(RPM_VENDOR_OPENPKG) /* extension-based-compression-detection */
+#if !defined(RPM_VENDOR_OPENPKG) && !defined(RPM_VENDOR_FEDORA) /* extension-based-compression-detection */
     /* XXX Ick, LZMA has no magic. See http://lkml.org/lkml/2005/6/13/285 */
     if (magic[ 9] == (unsigned char) 0x00 && magic[10] == (unsigned char) 0x00 &&
 	magic[11] == (unsigned char) 0x00 && magic[12] == (unsigned char) 0x00)	/* lzmash */
