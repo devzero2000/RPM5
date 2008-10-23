@@ -2400,6 +2400,24 @@ int rpmtsOrder(rpmts ts)
 	}
       }
 
+	/* Ensure that erasures follow installs during upgrades. */
+      if (rpmteType(p) == TR_REMOVED && p->flink.Pkgid && p->flink.Pkgid[0]) {
+
+	qi = rpmtsiInit(ts);
+	while ((q = rpmtsiNext(qi, TR_ADDED)) != NULL) {
+	    if (strcmp(q->pkgid, p->flink.Pkgid[0]))
+		continue;
+	    requires = rpmdsFromPRCO(q->PRCO, RPMTAG_NAME);
+	    if (requires != NULL) {
+		/* XXX disable erased arrow reversal. */
+		p->type = TR_ADDED;
+		(void) addRelation(ts, p, selected, requires);
+		p->type = TR_REMOVED;
+	    }
+	}
+	qi = rpmtsiFree(qi);
+      }
+
       if (_autobits != 0xffffffff)
       {
 
@@ -2612,7 +2630,7 @@ rescan:
 #endif
 		const char * dp;
 		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
-			? RPMLOG_WARNING : RPMLOG_DEBUG;
+			? RPMLOG_WARNING : RPMLOG_ERR;
 ;
 
 		/* Unchain predecessor loop. */

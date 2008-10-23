@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: add a relation to to force install-before-erase.
+    - jbj: display dependency loops as an error for now.
     - rpm.org: add %{_default_patch_fuzz} macro for patch --fuzz
     - afb: make buildroot path configurable, but keep old defaults
     - rpm.org: add %{_buildrootdir} macro for use with %{buildroot}
