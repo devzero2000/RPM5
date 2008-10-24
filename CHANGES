@@ -1,5 +1,8 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: lua: add license, and compile lxplib.
+    - jbj: lua: add lom.lua wrapper for lxplib.
+    - jbj: lua: diddle bin2c.c to permit multiple *.lua args.
     - jbj: lua: add virgin lxplib lua bindings (unused atm).
     - jbj: lua: add license, hotwire CRYPTO_OPENSSL, and compile lcrypto.
     - jbj: lua: add virgin lcrypto lua bindings (unused atm).
