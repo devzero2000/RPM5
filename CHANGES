@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: ensure that internal lua has all the right files.
     - jbj: add a relation to to force install-before-erase.
     - jbj: display dependency loops as an error for now.
     - rpm.org: add %{_default_patch_fuzz} macro for patch --fuzz
