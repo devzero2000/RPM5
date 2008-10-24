@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: lua: add virgin lxplib lua bindings (unused atm).
     - jbj: lua: add license, hotwire CRYPTO_OPENSSL, and compile lcrypto.
     - jbj: lua: add virgin lcrypto lua bindings (unused atm).
     - jbj: lua: ensure that internal lua has all the right files.
