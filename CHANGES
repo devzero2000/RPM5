@@ -1,4 +1,6 @@
 5.1.6 -> 5.1.7:
+    - jbj: add a relation to to force install-before-erase.
+    - jbj: display dependency loops as an error for now.
 
 5.1.5 -> 5.1.6:
     - jbj: verify trigger tests have same result as HEAD.
