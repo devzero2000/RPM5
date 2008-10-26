@@ -19,7 +19,7 @@ EXTRA_DIST = \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
-	macros.php* find-*.php find-php-*
+	macros.php*
 
 installprefix = $(DESTDIR)
 
@@ -44,3 +44,4 @@ versionlib_SCRIPTS = \
 	rpm.daily rpm.log rpm.xinetd \
 	symclash.py symclash.sh tgpg u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh
+
