@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+	- jbj: add a relation to to force install-before-erase.
+	- jbj: display dependency loops as an error for now.
 	- glen: do not skip %clean from spec file
 	- robert: install rpmdeps and debugedit to pkglibdir as on HEAD
 	- jbj: fix: python ts.hdrFromFdno(fdno) segfault.
