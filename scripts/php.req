@@ -1,78 +1,82 @@
-#!/usr/bin/perl -W
+#!/usr/bin/perl
 #####################################################################
 #                                                                   #
-# Check system dependencies between php-pear/php-pecl modules       #
+# Check system dependences between php-pear modules                 #
 #                                                                   #
-# Adam Go³êbiowski  <adamg@pld-linux.org>                           #
-#                                                                   #
-# based on previous work by:                                        #
 # Pawe³ Go³aszewski <blues@ds.pg.gda.pl>                            #
-# Micha³ Moskal     <malekith@pld-linux.org>                        #
-#                                                                   #
-# ----------------------------------------------------------------- #
-# ChangeLog:                                                        #
-# 20031201: complete rewrite to use PEAR's package.xml, now handles #
-#           all dependencies, including PHP modules (like php-gmp), #
-#           and PECL extensions   (adamg)                           #
+# Micha³ Moskal <malekith@pld-linux.org>                            #
+# ------------------------------------------------------------------#
+# TODO:                                                             #
+# - extension_loaded - dependencies.                                #
+# - some clean-up...                                                #
 #####################################################################
 
-@req_arr = ();
-$fname = '/dev/null';
-foreach ( @ARGV ? $ARGV : <> )
-{
-    $fname = $_ if (/package.xml/)
+$pear = "/usr/share/pear";
+
+@files = ();
+%req = ();
+
+foreach (@ARGV ? $ARGV : <> ) {
+	chomp;
+	$f = $_;
+	push @files, $f;
+	# skip non-php files
+	next unless ($f =~ /\.php$/);
+	open(F, "< $f") or die;
+
+	if ($f =~ /$pear/) {
+		$file_dir = $f;
+		$file_dir =~ s|.*$pear/||;
+		$file_dir =~ s|/[^/]*$||;
+	} else {
+		$file_dir = undef;
+	}
+
+	while (<F>) {
+		# skip comments
+		next if (/^\s*(#|\/\/|\*|\/\*)/);
+
+		while (/(\W|^)(require|include)(_once)?
+			  \s* \(? \s* ("([^"]*)"|'([^']*)') 
+			  \s* \)? \s* ;/xg) {
+			if ($5 ne "") {
+				$x = $5;
+			} elsif ($6 ne "") {
+				$x = $6;
+			} else {
+				next;
+			}
+
+			next if ($x =~ m|^\./| or $x =~ /\$/);
+			next unless ($x =~ /\.php$/);
+			$req{$x} = 1;
+		}
+
+		next unless (defined $file_dir);
+
+		while (/(\W|^)(require|include)(_once)?
+			  \s* \(? \s* dirname \s* \( \s* __FILE__ \s* \) \s* \. \s*
+			  ("([^"]*)"|'([^']*)') 
+			  \s* \)? \s* ;/xg) {
+			if ($5 ne "") {
+				$x = $5;
+			} elsif ($6 ne "") {
+				$x = $6;
+			} else {
+				next;
+			}
+
+			next if ($x =~ /\$/);
+			next unless ($x =~ /\.php$/);
+
+			$x = "$file_dir/$x";
+			$x =~ s|/+|/|g;
+			$req{$x} = 1;
+		}
+	}
 }
 
-open F, $fname;
-
-while (<F>) {
-	if ( /\s+\<dep\s+type\=\"([a-zA-z]*)\"/ ) {
-	  $type = $1;
-	  die ("ERROR: Unsupported type: $type\n") if ( $type !~ /^(pkg|ext|php|prog|os|sapi|zend)$/i);
-	  # Default relation (as suggested by PEAR manual) is has
-	  $rel = "has";
-	  $rel = $1 if ( /rel="([a-zA-Z]*)"/ );
-	  die ("ERROR: Unsupported relation: $rel\n") if ( $rel !~ /^(has|eq|lt|le|gt|ge)$/ );
-	   
-	  # Check if we don't have some unsupported connection betweend relation and type
-	  die ("ERROR: Cannot use lt/le/gt/ge relation with prog/os/sapi type!\n") if ( $rel =~ /^(lt|le|gt|ge)$/ && $type =~ /^(prog|os|sapi)$/ );
-
-	  # do we have version?
-	  $version = "";
-	  $version = $1 if ( /version="([a-zA-z0-9\.\+]*)"/ );
-
-	  # optional - actually this one is optional ;)
-	  # NOTE: 
-	  # even though this attribute marks dependency as optional,
-	  # we will add it to Requires: 
-	  $optional = "no";
-	  $optional = $1 if ( /optional="([a-zA-Z]*)"/ );
-          die ("ERROR: Ambigous value of optional attribute: $optional\n") if ( $optional !~ /(yes|no)/i );
-
-	  # now, check if we need to pull out package/extension/whatever name
-	  $name = "";
-	  $name = "php" if ( $type =~ /php/ );
-	  $name = "$1"  if ( $type !~ /php/ && /\>([a-zA-Z0-9\_\-]*)\</ );
-	   
-	  $relation = "";
-	  $relation = "<"  if ( $rel eq "lt");
-	  $relation = "<=" if ( $rel eq "le");
-	  $relation = "="  if ( $rel eq "eq");
-	  $relation = ">=" if ( $rel eq "ge");
-	  $relation = ">"  if ( $rel eq "gt");
-	  $relation = "="  if ( $rel eq "has");
-	  # die if we were unable to substitute relations
-	  die "ERROR: Unexpected relation! ($rel)\n" if ( $relation eq "");
-	   
-	  $req = "";
-	  $relver = "";
-	  $relver = "$relation $version" if ( $version !~ /^$/ );
-	  $req = "$name $relver" if ( $type =~ /(php|prog)/ );
-	  $req = "php-$name $relver" if ( $type =~ /ext/ );
-	  $req = "php-pear-$name" if ( $type =~ /pkg/ );
-	   
-	  push @req_arr, $req
-
-    }
+f: for $f (keys %req) {
+	for $g (@files) { next f if ($g =~ /\Q$f\E$/); }
+	print "pear($f)\n";
 }
-for $r (@req_arr) { print "$r\n"; }

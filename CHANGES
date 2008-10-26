@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: update php dependency generators from PLD
 	- jbj: add a relation to to force install-before-erase.
 	- jbj: display dependency loops as an error for now.
 	- glen: do not skip %clean from spec file
