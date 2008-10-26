@@ -131,8 +131,7 @@ sub process_file {
 
     # handle "use base qw/ foo::bar baz::blah /;" and variations
     if (
-        m/^ \s*
-           use \s+ base
+        m/^ \s* use \s+ base
 	   (?:  \s+ q[wq]? \s* ( [!@#\$%^&*'"\/+=`~,.?-] ) \s* ( [\w:]+? (?: \s+[\w:]+? )*? ) \s* \1
                |
 		\s* ( ["'] ) ( [\w:]+? ) \3
