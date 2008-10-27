@@ -1,199 +1,140 @@
 #!/usr/bin/perl
+use strict;
 
-# RPM (and it's source code) is covered under two separate licenses.
+# perl.prov - find information about perl modules for RPM
+# $Id$
 
-# The entire code base may be distributed under the terms of the GNU
-# General Public License (GPL), which appears immediately below.
-# Alternatively, all of the source code in the lib subdirectory of the
-# RPM source code distribution as well as any code derived from that
-# code may instead be distributed under the GNU Library General Public
-# License (LGPL), at the choice of the distributor. The complete text
-# of the LGPL appears at the bottom of this file.
+# It's questionable if we should provide perl(Foo::Bar) for modules
+# from outside @INC (possibly shipped with some applications).
+# I think we should not, and provide them only for the perl.req script,
+# while it scans files in that particular application.
 
-# This alternative is allowed to enable applications to be linked
-# against the RPM library (commonly called librpm) without forcing
-# such applications to be distributed under the GPL.
 
-# Any questions regarding the licensing of RPM should be addressed to
-# Erik Troan <ewt@redhat.com>.
-
-# a simple script to print the proper name for perl libraries.
-
-# To save development time I do not parse the perl grammmar but
-# instead just lex it looking for what I want.  I take special care to
-# ignore comments and pod's.
-
-# it would be much better if perl could tell us the proper name of a
-# given script.
-
-# The filenames to scan are either passed on the command line or if
-# that is empty they are passed via stdin.
-
-# If there are lines in the file which match the pattern
-#      (m/^\s*\$VERSION\s*=\s+/)
-# then these are taken to be the version numbers of the modules.
-# Special care is taken with a few known idioms for specifying version
-# numbers of files under rcs/cvs control.
-
-# If there are strings in the file which match the pattern
-#     m/^\s*\$RPM_Provides\s*=\s*["'](.*)['"]/i
-# then these are treated as additional names which are provided by the
-# file and are printed as well.
-
-# I plan to rewrite this in C so that perl is not required by RPM at
-# build time.
-
-# by Ken Estes Mail.com kestes@staff.mail.com
-
-if ("@ARGV") {
-  foreach (@ARGV) {
-    process_file($_);
-  }
-} else {
-
-  # notice we are passed a list of filenames NOT as common in unix the
-  # contents of the file.
-
-  foreach (<>) {
-    process_file($_);
-  }
+# check if we are called directly
+if ($0 =~ m#(?:^|/)perl.prov$#) {
+	my $prov = new RPM::PerlReq;
+	# process @ARGV or STDIN
+	foreach ( @ARGV ? @ARGV : <> ) {
+		chomp;
+		next if -l || !-f _;                # skip non-files and symlinks
+		next if m#/usr/(?:share/doc|src)/#; # lot of false alarms; warning: we omit ^ here
+		next if !m#\.p[ml]$#;               # we only care about *.pm and *.pl files
+		$prov->process_file($_);
+	}
+	$prov->print_result;
 }
 
 
-foreach $module (sort keys %require) {
-  if (length($require{$module}) == 0) {
-    print "perl($module)\n";
-  } else {
+package RPM::PerlReq;
+use Safe;
 
-    # I am not using rpm3.0 so I do not want spaces arround my
-    # operators. Also I will need to change the processing of the
-    # $RPM_* variable when I upgrade.
-
-    print "perl($module) = $require{$module}\n";
-  }
+sub new {
+	my $class = shift;
+	my $self = {
+		inc => [
+			sort { length $b cmp length $a } grep m#^/#,
+			map { y#/#/#s; s#/$##; $_ } @INC
+		],
+		provide => {},
+		safe    => Safe->new,
+		@_,
+	};
+	bless $self, $class;
 }
 
-exit 0;
-
-
+# print out what we found
+sub print_result {
+	my $self = shift;
+	for (sort keys %{ $self->{provide} }) {
+		print "perl($_)"
+		  . (length $self->{provide}->{$_} ? " = $self->{provide}->{$_}" : '')
+		  . "\n";
+	}
+}
 
 sub process_file {
+	my $self = shift;
+	my $file = shift;
+	my ( $package, $version );
 
-  my ($file) = @_;
-  chomp $file;
-  
-  open(FILE, "<$file") || return;
+	# if the file lives under @INC, we can
+	# obtain the package name from it's path
+	for (@{ $self->{inc} }) {
+		if ($file =~ m#\Q$_\E/(.+)$#) {    # we can't use ^ here
+			$package = $1;
 
-  my ($package, $version, $incomment, $inover) = ();
+			if ($package !~ s/\.pm$//) {    # it's a *.pl
+			#	$package =~ m#([^/]+)$#;
+			#	$provide{$1} = '';
+				return 1;
+			}
 
-  while (<FILE>) {
-    
-    # skip the documentation
+			$package =~ s#/#::#g;
+			last;
+		}
+	}
 
-    # we should not need to have item in this if statement (it
-    # properly belongs in the over/back section) but people do not
-    # read the perldoc.
+	# it can be a *.pl oustide @INC
+	return if /\.pl$/;
 
-    if (m/^=(head[1-4]|pod|item)/) {
-      $incomment = 1;
-    }
+	local *FILE;
+	open FILE, $file or die "$0: cannot open file `$file': $!";
 
-    if (m/^=(cut)/) {
-      $incomment = 0;
-      $inover = 0;
-    }
-    
-    if (m/^=(over)/) {
-      $inover = 1;
-    }
+	while (<FILE>) {
 
-    if (m/^=(back)/) {
-      $inover = 0;
-    }
+		# skip the documentation
+		next
+		  if m/^=(?:head1|head2|pod|item|begin|for|over)\b/
+		     ... ( m/^=(?:cut|end)\b/ || $. == 1 );
 
-    if ($incomment || $inover) {
-       next;
-    }
-    
-    # skip the data section
-    if (m/^__(DATA|END)__$/) {
-      last;
-    }
+		# skip the data section
+		last if m/^__(?:DATA|END)__$/;
 
-    # not everyone puts the package name of the file as the first
-    # package name so we report all namespaces except some common
-    # false positives as if they were provided packages (really ugly).
+		# search for the package name
+		if (
+			!defined $package
+			&& ( my ($pack) = m/^\s*(?:\{\s*)?package\s+([_:a-zA-Z0-9]+?):*\s*;/ )
+			&& $1 ne 'main'
+			&& match_the_path( $file, $1 )
+		  )
+		{
+			$package = $pack;
+		}
 
-    if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*;/) {
-      $package=$1;
-      undef $version;
-      if ($package eq 'main') {
-        undef $package;
-      } else {
-        # If $package already exists in the $require hash, it means
-        # the package definition is broken up over multiple blocks.
-        # In that case, don't stomp a previous $VERSION we might have
-        # found.  (See BZ#214496.)
-        $require{$package}=undef unless (exists $require{$package});
-      }
-    }
+		if ( !defined $version && /([\$*])(([\w\:\']*)\bVERSION)\b.*\=/ ) {
+			( $version = $self->{safe}->reval($_) ) =~ s/^\s+|alpha|beta|\s+$//g;
+			if ( defined $version
+				&& length $version
+				&& $version =~ /[^\d\._abcdefgh]/ )
+			{
+				warn "$0: weird version number in $file: [$version]\n";
+				$version = '';
+			}
+		}
+	}
 
-    # after we found the package name take the first assignment to
-    # $VERSION as the version number. Exporter requires that the
-    # variable be called VERSION so we are safe.
+	unless ( defined $package ) {
+		warn "$0: weird, cannot determine the package name for `$file'\n";
+		return 0;
+	}
 
-    # here are examples of VERSION lines from the perl distribution
+	$self->{provide}->{$package} = $version;
 
-    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision$ =~ /(\d+)\.(\d+)/);
-    #ExtUtils/Install.pm:$VERSION = substr q$Revision$, 10;
-    #CGI/Apache.pm:$VERSION = (qw$Revision$)[1];
-    #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
-    #General.pm:$Config::General::VERSION = 2.33;
-    # 
-    # or with the new "our" pragma you could (read will) see:
-    #
-    #    our $VERSION = '1.00'
-    if (($package) && (m/^\s*(our\s+)?\$(\Q$package\E::)?VERSION\s*=\s+/)) {
+	close FILE or die "$0: cannot close file `$file': $!";
 
-      # first see if the version string contains the string
-      # '$Revision' this often causes bizzare strings and is the most
-      # common method of non static numbering.
-
-      if (m/(\$Revision: (\d+[.0-9]+))/) {
-	$version= $2; 
-      } elsif (m/[\'\"]?(\d+[.0-9]+)[\'\"]?/) {
-	
-	# look for a static number hard coded in the script
-	
-	$version= $1; 
-      }
-      $require{$package}=$version;
-    }
-  
-    # Allow someone to have a variable that defines virtual packages
-    # The variable is called $RPM_Provides.  It must be scoped with 
-    # "our", but not "local" or "my" (just would not make sense). 
-    # 
-    # For instance:
-    #  
-    #     $RPM_Provides = "blah bleah"
-    # 
-    # Will generate provides for "blah" and "bleah".
-    #
-    # Each keyword can appear multiple times.  Don't
-    #  bother with datastructures to store these strings,
-    #  if we need to print it print it now.
-	
-    if ( m/^\s*(our\s+)?\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
-      foreach $_ (split(/\s+/, $2)) {
-	print "$_\n";
-      }
-    }
-
-  }
-
-  close(FILE) ||
-    die("$0: Could not close file: '$file' : $!\n");
-
-  return ;
+	1;
 }
+
+
+# Returns C<true> if the package name matches the path,
+# so you can use() it.  C<false> otherwise.
+sub match_the_path {
+	my ( $file, $pack ) = @_;
+	$pack =~ s#::#/#g;
+	$file =~ /\Q$pack\E(?:\.pm)?$/;
+}
+
+
+1;
+
+# vim: ts=4 sw=4 noet noai nosi cin
