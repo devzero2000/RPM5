@@ -2134,7 +2134,7 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     /* Avoid certain dependency relations. */
-    if (teType == TR_ADDED && ignoreDep(ts, p, q))
+    if (ignoreDep(ts, p, q))
 	return 0;
 
     /* Avoid redundant relations. */
