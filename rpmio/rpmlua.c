@@ -58,6 +58,9 @@ static int rpm_print(lua_State *L)
 /*@unchecked@*/
 const char *rpmluaFiles = RPMLUAFILES;
 
+/*@unchecked@*/
+const char * rpmluaPath = "%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/lua/?.lua";
+
 rpmlua rpmluaGetGlobalState(void)
 {
 /*@-globstate@*/
@@ -109,7 +112,7 @@ rpmlua rpmluaNew()
 	lua_call(L, 1, 0);
 /*@=noeffectuncon@*/
     }
-    {	const char * _lua_path = rpmGetPath("%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}", "/lua/?.lua", NULL);
+    {	const char * _lua_path = rpmGetPath(rpmluaPath, NULL);
 	if (_lua_path != NULL) {
 	    lua_pushliteral(L, "LUA_PATH");
 	    lua_pushstring(L, _lua_path);

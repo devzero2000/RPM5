@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: lua: display rudimentary info about lua with --showrc.
     - jbj: WRlua: preserve forward linkage by avoiding vmefail/get_date.
     - jbj: add a relation to to force install-before-erase.
     - jbj: display dependency loops as an error for now.

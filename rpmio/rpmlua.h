@@ -47,6 +47,12 @@ typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 extern "C" {
 #endif
 
+/*@unchecked@*/
+extern const char * rpmluaFiles;
+
+/*@unchecked@*/
+extern const char * rpmluaPath;
+
 /*@-exportlocal@*/
 /*@only@*/ /*@exposed@*/ /*@relnull@*/
 rpmlua rpmluaGetGlobalState(void)
