@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - rpm.org: Add posix.mkstemp() to Lua posix lib.
     - jbj: fix: apply _dependency_whiteout to erased relations too.
     - jbj: lua: display rudimentary info about lua with --showrc.
     - jbj: lua: preload "crypto" in rpmlua.c.
