@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: lua: display rudimentary info about lua with --showrc.
     - jbj: lua: preload "crypto" in rpmlua.c.
     - jbj: lua: lom.lua has requires("lxp"), so preload "lxp" in rpmlua.c.
     - jbj: WRlua: preserve forward linkage by avoiding vmefail/get_date.

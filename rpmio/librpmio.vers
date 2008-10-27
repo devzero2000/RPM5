@@ -337,6 +337,8 @@ LIBRPMIO_0
     rpmlogGetCallback;
     rpmlogSetFile;
     rpmlogSetMask;
+    rpmluaFiles;
+    rpmluaPath;
     rpmluaCheckScript;
     rpmluaDelVar;
     rpmluaFiles;

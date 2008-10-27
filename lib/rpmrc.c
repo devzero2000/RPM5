@@ -1010,10 +1010,23 @@ int rpmShowRC(FILE * fp)
     {	const char * s = rpmExpand("%{?optflags}", NULL);
 	fprintf(fp, "%-21s : %s\n", "optflags", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
+
+	fprintf(fp, "\nLUA MODULES:\n");
+/*@-globs@*/
+	s = rpmExpand(rpmluaFiles, NULL);
+/*@=globs@*/
+	fprintf(fp, "%-21s : %s\n", "luafiles", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+/*@-globs@*/
+	s = rpmExpand(rpmluaPath, NULL);
+/*@=globs@*/
+	fprintf(fp, "%-21s : %s\n", "luapath", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+
+	fprintf(fp, "\nMACRO DEFINITIONS:\n");
 /*@-globs@*/
 	s = rpmExpand(rpmMacrofiles, NULL);
 /*@=globs@*/
-	fprintf(fp, "\nMACRO DEFINITIONS:\n");
 	fprintf(fp, "%-21s : %s\n", "macrofiles", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
     }
