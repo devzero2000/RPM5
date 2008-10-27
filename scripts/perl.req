@@ -140,15 +140,22 @@ sub process_file {
   return if (!is_perlfile($file, \*FILE));
 
   while (<FILE>) {
-    
-    # skip the "= <<" block
 
-    if ( ( m/^\s*\$(.*)\s*=\s*<<\s*["'](.*)['"]/) ||
-         ( m/^\s*\$(.*)\s*=\s*<<\s*(.*);/) ) {
-      $tag = $2;
-      while (<FILE>) {
-        ( $_ =~ /^$tag/) && last;
-      }
+    # skip the documentation
+    if ( /^ = (?: head\d | pod | item | over | back | (?: begin|end|for ) \s+\S+ ) \b/x ) {
+        $_ = <FILE> until /^=cut/ or eof;
+        next;
+    }
+
+    # naively strip some comments... will screw m/\#/, m##, q##, qw##, qr##, etc, but these don't really matter for us 
+    s/(?<! \\ ) # \b .+ //x;
+
+    # skip the "= <<label", "print <<", "warn <<", "foo(<<label) blocks
+    # note: watch out for the binary << operator and comments
+    if ( m/ (?: = | \b[a-z][a-z_]+\(? ) \s* << \s* (?: q{0,2}(["']) (.+) \1 | ([a-zA-Z][a-zA-Z\d_]*) ) [\s;\)]* $/x ) {
+        my $tag = defined $2 ? $2 : $3;
+        $_ = <FILE> until m/^\Q$tag\E\s*$/ or eof;
+        next;
     }
 
     # skip q{} quoted sections - just hope we don't have curly brackets
@@ -156,24 +163,8 @@ sub process_file {
     # marker, such as occurs right here. Draw the line somewhere.
     if ( m/^.*\Wq[qxwr]?\s*([\{\(\[#|\/])[^})\]#|\/]*$/ && ! m/^\s*(require|use)\s/ ) {
       $tag = $1;
-      $tag =~ tr/{\(\[\#|\//})]#|\//;
-      while (<FILE>) {
-        ( $_ =~ m/\}/ ) && last;
-      }
-    }
-
-    # skip the documentation
-
-    # we should not need to have item in this if statement (it
-    # properly belongs in the over/back section) but people do not
-    # read the perldoc.
-
-    if ( (m/^=(head[1-4]|pod|item)/) .. (m/^=(cut)/) ) {
-      next;
-    }
-
-    if ( (m/^=(over)/) .. (m/^=(back)/) ) {
-      next;
+      $tag =~ tr/{([/})]/;
+      $_ = <FILE> until m/\Q$tag\E/ or eof;
     }
     
     # skip the data section
@@ -196,7 +187,28 @@ sub process_file {
       }
     }
 
-    if ( 
+    # handle "use base qw/ foo::bar baz::blah /;" and variations
+    if (
+        m/^ \s* use \s+ base
+           (?:  \s+ q[wq]? \s* ( [!@#\$%^&*'"\/+=`~,.?-] ) \s* ( [\w:]+? (?: \s+[\w:]+? )*? ) \s* \1
+               |
+                \s* ( ["'] ) ( [\w:]+? ) \3
+               |
+                # qw[], qw(), qw<>, qw{} are handled here; lax, but who gives
+                \s+ q[wq]? \s* [\[({<] \s* ( [\w:]+? (?: \s+[\w:]+? )*? ) \s* [\])}>]
+           )
+           \s* ;
+       /x
+      )
+    {
+        my @deps = ( $1 ? split /\s+/, $2 : $3 ? $4 : split /\s+/, $5 );
+        for my $mod ( grep !exists $require{$_}, @deps ) {
+            $require{$mod} = '';
+            $line{$mod}    = $_;
+        }
+    }
+
+    elsif ( 
 
 # ouch could be in a eval, perhaps we do not want these since we catch
 # an exception they must not be required
