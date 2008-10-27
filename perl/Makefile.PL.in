@@ -12,7 +12,7 @@ WriteMakefile(
     'NAME'		=> 'RPM',
     'VERSION_FROM'	=> 'RPM.pm', # finds $VERSION
     'PREREQ_PM'		=> {}, # e.g., Module::Name => 1.1
-    'LIBS'		=> [join(' ', @ldaddp) . ' ' . join(' ', @ldadd) . '    -lpopt -lneon -lbeecrypt -lpthread  -lneon  '],
+    'LIBS'		=> [join(' ', @ldaddp) . ' ' . join(' ', @ldadd) . ' @LIBS@ @WITH_POPT_LIB@ @WITH_BEECRYPT_LIB@ -lneon'],
     'DEFINE'		=> join(" ", @defines), # e.g., '-DHAVE_SOMETHING'
     'INC' => join(' ', map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
     'TYPEMAPS'          => [ 'typemap' ],
