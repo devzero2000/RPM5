@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: use modern chown syntax in setugids popt macro
 	- glen: perl makefile: respect LIBS from configure
 	- glen: update php dependency generators from PLD
 	- jbj: add a relation to to force install-before-erase.
