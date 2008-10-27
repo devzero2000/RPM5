@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: lua: preload "crypto" in rpmlua.c.
+    - jbj: lua: lom.lua has requires("lxp"), so preload "lxp" in rpmlua.c.
     - jbj: WRlua: preserve forward linkage by avoiding vmefail/get_date.
     - jbj: lua: add virgin luasocket-2.0.2 lua bindings (unused atm).
     - jbj: lua: add license, and compile lxplib.

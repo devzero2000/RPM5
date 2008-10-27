@@ -21,6 +21,8 @@
 #include <lrexlib.h>
 #include <luuid.h>
 #include <lwrs.h>
+#include <lcrypto.h>
+#include <lxplib.h>
 #endif
 
 #include <unistd.h>
@@ -90,6 +92,8 @@ rpmlua rpmluaNew()
 	{"rex_pcre", luaopen_rex_pcre},
 	{"uuid", luaopen_uuid},
 	{"wrs", luaopen_wrs},
+	{"crypto", luaopen_crypto},
+	{"lxp", luaopen_lxp},
 	{"local", luaopen_local},
 #endif
 	{"rpm", luaopen_rpm},
