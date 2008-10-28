@@ -500,6 +500,18 @@
                      "rpm -bb" operation.
      ________________________________________________________________________
 
+     Change:         no-owner-group-on-srpm-install
+     Purpose:        Do not set owner/group on installation/unpacking of SRPM
+     Reason:         In Mandriva it is not wished that file owner/group are
+                     set on files during installation of _source_ RPMs.
+                     Instead, the current run-time owner/group should
+                     be used, because most of the time the owner/group
+                     in the source RPM (which is the owner/group of the
+                     files as staying on the package author system) is
+                     not existing on the target system anyway.
+
+     ________________________________________________________________________
+
   o  Name:           WINDRIVER
      Vendor:         Wind River <http://windriver.com/>
      Representative: Jeff Johnson <jbj@rpm5.org>

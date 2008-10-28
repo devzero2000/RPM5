@@ -896,8 +896,8 @@ int fsmMapAttrs(IOSM_t fsm)
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;
 
-#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	/* Make sure OpenPKG RPM does not try to set file owner/group on files during
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_MANDRIVA) /* no-owner-group-on-srpm-install */
+	/* Make sure OpenPKG/Mandriva RPM does not try to set file owner/group on files during
 	   installation of _source_ RPMs. Instead, let it use the current
 	   run-time owner/group, because most of the time the owner/group in
 	   the source RPM (which is the owner/group of the files as staying on
@@ -905,7 +905,7 @@ int fsmMapAttrs(IOSM_t fsm)
 	   course. */
 #endif
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
-#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+#if defined(RPM_VENDOR_OPENPKG) ||defined(RPM_VENDOR_MANDRIVA) /* no-owner-group-on-srpm-install */
 	  if (!fi->isSource) {
 #endif
 	    if (fsm->goal == IOSM_PKGINSTALL)
@@ -913,13 +913,13 @@ int fsmMapAttrs(IOSM_t fsm)
 		    _("user %s does not exist - using root\n"), fi->fuser[i]);
 	    uid = 0;
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
-#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_MANDRIVA) /* no-owner-group-on-srpm-install */
 	  }
 #endif
 	}
 
 	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
-#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_MANDRIVA) /* no-owner-group-on-srpm-install */
 	  if (!fi->isSource) {
 #endif
 	    if (fsm->goal == IOSM_PKGINSTALL)
@@ -927,7 +927,7 @@ int fsmMapAttrs(IOSM_t fsm)
 		    _("group %s does not exist - using root\n"), fi->fgroup[i]);
 	    gid = 0;
 	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
-#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+#if defined(RPM_VENDOR_OPENPKG) ||  defined(RPM_VENDOR_MANDRIVA) /* no-owner-group-on-srpm-install */
 	  }
 #endif
 	}

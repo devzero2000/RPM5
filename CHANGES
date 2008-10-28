@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: disable preservation of file ownership for source rpms on
+        Mandriva too. (no-owner-group-on-srpm-install)
     - rpm.org: Add posix.mkstemp() to Lua posix lib.
     - jbj: fix: apply _dependency_whiteout to erased relations too.
     - jbj: lua: display rudimentary info about lua with --showrc.
@@ -52,7 +54,7 @@
     - proyvind: rpm4compat: add urltype & prototype for urlPath() since it's
       used by rpmfiBuildFNames. (Why does only C++ complaint about this???)
     - proyvind: rpm4compat: add rpm_machtable_e since it's been moved out of
-      the api.
+        the api.
     - proyvind: rpm4compat: explicitly cast to HE_t (C++ compatibility).
     - proyvind: rpm4compat: define all _RPM*_INTERNALs before inclusion of any
       rpm headers at all to ensure that these actually has any effect.
