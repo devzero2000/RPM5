@@ -107,6 +107,47 @@ rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
 	--POPTdesc=$"list prerequisite packages of args"
 
 #==============================================================================
+#rpm	alias --mancoosi:dudf.xml --qf '\
+#<dudf xmlns="http://www.mancoosi.org/2008/cudf/dudf" version="1.0">\
+#\n <timestamp>Thu, 02 Oct 2008 17:28:48 +0200</timestamp>\
+#\n <distribution>MandrivaLinux</distribution>\
+#\n <installer>\
+#\n  <name>rpm</name>\
+#\n  <version>5.2</version>\
+#\n </installer>\
+#\n <meta-installer>\
+#\n  <name>rpm</name>\
+#\n  <version>5.2</version>\
+#\n </meta-installer>\
+#\n <problem>\
+#\n  <installer>\
+#\n   <package-status format="rpm_db_header">\
+#\n    <package name="gpg-pubkey" version="22458a98" arch="src" release="3969e7de">\
+#\n     <provides>gpg(Mandriva Security Team &lt;security mandriva.com&gt;)[== 4:9aa8d0d022458a98-3969e7de] gpg(22458a98)[== 4:9aa8d0d022458a98-3969e7de] </provides>\
+#\n    </package>\
+#\n    <package name="gpg-pubkey" version="26752624" arch="src" release="3fd74faa">\
+#\n     <provides>gpg(MandrakeCooker &lt;cooker linux-mandrake.com&gt;)[== 4:dd684d7a26752624-3fd74faa] gpg(26752624)[== 4:dd684d7a26752624-3fd74faa] </provides>\
+#\n    </package>\
+#\n    <package name="dash-static" version="0.5.4" arch="i586" release="7mdv2008.1">\
+#\n     <provides>ash /bin/dash.static dash-static[== 0.5.4-7mdv2008.1] </provides>\
+#\n     <conflicts>dash[&lt; 0.5.4-3] </conflicts>\
+#\n    </package>\
+#\n    <package name="gpg-pubkey" version="70771ff3" arch="src" release="3c8f768f">\
+#\n     <provides>gpg(Mandrake Linux &lt;mandrake mandrakesoft.com&gt;)[== 4:e7898ae070771ff3-3c8f768f] gpg(70771ff3)[== 4:e7898ae070771ff3-3c8f768f] </provides>\
+#\n    </package>\
+#\n    <package name="gpg-pubkey" version="70771ff3" arch="src" release="3c8f768f">\
+#\n     <provides>gpg(Mandrake Linux &lt;mandrake mandrakesoft.com&gt;)[== 4:e7898ae070771ff3-3c8f768f] gpg(70771ff3)[== 4:e7898ae070771ff3-3c8f768f] </provides>\
+#\n    </package>\
+#\n    <package name="gpg-pubkey" version="78d019f5" arch="src" release="3fd7504d">\
+#\n     <provides>gpg(MandrakeContrib &lt;cooker linux-mandrake.com&gt;)[== 4:445935f878d019f5-3fd7504d] gpg(78d019f5)[== 4:445935f878d019f5-3fd7504d] </provides>\
+#\n    </package>\
+#\n    <package name="gpg-pubkey" version="70771ff3" arch="src" release="44b3822e">\
+#\n     <provides>gpg(Mandriva Linux &lt;mandriva mandriva.com&gt;)[== 4:e7898ae070771ff3-44b3822e] gpg(70771ff3)[== 4:e7898ae070771ff3-44b3822e] </provides>\
+#\n    </package>\
+#\n    <package name="glibc" version="2.7" arch="i586" release="12mnb1">\
+#\n'
+
+#==============================================================================
 rpm	alias --deb:control --qf '\
 Package: %{NAME}\
 \nVersion: %|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}\
