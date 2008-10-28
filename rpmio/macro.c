@@ -2483,7 +2483,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
      &&	magic[2] == 'Z' && magic[3] == 'O')	/* lzop */
 	*compressed = COMPRESSED_LZOP;
     else
-#if !defined(RPM_VENDOR_OPENPKG) && !defined(RPM_VENDOR_FEDORA) /* extension-based-compression-detection */
+#if !defined(RPM_VENDOR_OPENPKG) && !defined(RPM_VENDOR_FEDORA) && !defined(RPM_VENDOR_MANDRIVA) /* extension-based-compression-detection */
     /* XXX Ick, LZMA has no magic. See http://lkml.org/lkml/2005/6/13/285 */
     if (magic[ 9] == (unsigned char) 0x00 && magic[10] == (unsigned char) 0x00 &&
 	magic[11] == (unsigned char) 0x00 && magic[12] == (unsigned char) 0x00)	/* lzmash */

@@ -509,13 +509,26 @@
                      in the source RPM (which is the owner/group of the
                      files as staying on the package author system) is
                      not existing on the target system anyway.
-
      ________________________________________________________________________
 
      Change:         no-deps-on-building-srpms
      Purpose:        Do not perform any dependency checking on building SRPMs.
      Reason:         Don't really need this as 'digest(...)' and friends hasn't
                      been put to use (yet), making this just annoying.
+     ________________________________________________________________________
+
+     Change:         extension-based-compression-detection
+     Purpose:        Prefer file extension for detecting file compression.
+     Reason:         RPM tries to detect file compression by inspecting
+                     "magic" bytes at the front of a file. This works for
+                     formats with known "magic" bytes just fine, but fails
+                     horribly for formats like LZMA where no such "magic"
+                     bytes exist. For Fedora we prefer to first use file
+                     extension based determination (if someone is mis-names
+                     his distribution files we have to take action anyway)
+                     and fall back to "magic" byte based determination only
+                     if no well known extension is found. Additionally,
+                     detecting LZMA we want to do via file extension only.
      ________________________________________________________________________
 
   o  Name:           WINDRIVER
