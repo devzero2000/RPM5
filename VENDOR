@@ -514,7 +514,7 @@
      Change:         no-deps-on-building-srpms
      Purpose:        Do not perform any dependency checking on building SRPMs.
      Reason:         Don't really need this as 'digest(...)' and friends hasn't
-                     been put to use (yet), making this just annoying.
+                     been put to use (so far), making this just annoying.
      ________________________________________________________________________
 
      Change:         extension-based-compression-detection
@@ -529,6 +529,19 @@
                      and fall back to "magic" byte based determination only
                      if no well known extension is found. Additionally,
                      detecting LZMA we want to do via file extension only.
+     ________________________________________________________________________
+
+     Change:         optional-dirname-and-symlink-deps
+     Purpose:        Optional dependencies on symlinks and parent directories.
+     Reason:         Mandriva doesn't store file lists in it's standard
+                     synthesis metadata, resulting in any dependencies on these
+                     not met during installation fail. Also always enforcing
+                     these dependencies on third party packages which rarely
+                     complies with distro policies, is of varying quality wrt.
+                     quality and what not will also often lead to these having
+                     files in directories not owned etc. Also in the case of
+                     usage on systems not primarily using rpm, this will
+                     ~always be an issue.
      ________________________________________________________________________
 
   o  Name:           WINDRIVER
