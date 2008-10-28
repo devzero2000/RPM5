@@ -512,6 +512,12 @@
 
      ________________________________________________________________________
 
+     Change:         no-deps-on-building-srpms
+     Purpose:        Do not perform any dependency checking on building SRPMs.
+     Reason:         Don't really need this as 'digest(...)' and friends hasn't
+                     been put to use (yet), making this just annoying.
+     ________________________________________________________________________
+
   o  Name:           WINDRIVER
      Vendor:         Wind River <http://windriver.com/>
      Representative: Jeff Johnson <jbj@rpm5.org>

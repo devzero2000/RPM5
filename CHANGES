@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: disable buildrequires checking for building src.rpms on
+        Mandriva too. (no-deps-on-building-srpms)
     - proyvind: disable preservation of file ownership for source rpms on
         Mandriva too. (no-owner-group-on-srpm-install)
     - rpm.org: Add posix.mkstemp() to Lua posix lib.
