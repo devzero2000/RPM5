@@ -2412,13 +2412,13 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     ssize_t nb;
     int rc = -1;
     unsigned char magic[13];
-#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) /* extension-based-compression-detection */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) /* extension-based-compression-detection */
     size_t file_len;
 #endif
 
     *compressed = COMPRESSED_NOT;
 
-#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) /* extension-based-compression-detection */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) /* extension-based-compression-detection */
     file_len = strlen(file);
     if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tbz") == 0)
         || (file_len > 4 && strcasecmp(file+file_len-4, ".bz2") == 0)) {
