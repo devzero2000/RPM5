@@ -566,7 +566,7 @@ int mireStudy(miRE mire, int nmires)
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[32];
-	    if (nmires == 1) s[0] = '\0'; else sprintf(s, " number %d", j);
+	    if (nmires == 1) s[0] = '\0'; else sprintf(s, _(" number %d"), j);
 	    rpmlog(RPMLOG_ERR, _("%s: Error while studying regex%s: %s\n"),
 		__progname, s, error);
 	    goto exit;
