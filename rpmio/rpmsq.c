@@ -305,6 +305,9 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->pipes[0] = sq->pipes[1] = -1;
 
 	    sq->id = ME();
+            /* XXX __OpenBSD__ insque(3) needs rock initialized. */
+            if (rpmsqQueue->q_forw == NULL)
+                rpmsqQueue->q_forw = rpmsqQueue;
 /*@-noeffect@*/
 	    insque(elem, (prev != NULL ? prev : rpmsqQueue));
 /*@=noeffect@*/
