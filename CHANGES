@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: add #ifdef's needed to compile on __OpenBSD__.
     - proyvind: Mandriva: make directory & symlink dependencies optional with
         %{_check_symlink_deps} & %{_check_dirname_deps}. (optional-dirname-and-symlink-deps)
     - proyvind: Mandriva: prefer file extension for detecting file compression.
