@@ -963,6 +963,9 @@ int rpmtsInitDSI(const rpmts ts)
 #elif defined(__APPLE__) && defined(__MACH__) && !defined(_SYS_STATVFS_H_)
 	dsi->f_fsid = 0; /* "Not meaningful in this implementation." */
 	dsi->f_namemax = pathconf(ts->filesystems[i], _PC_NAME_MAX);
+#elif defined(__OpenBSD__)
+	dsi->f_fsid = 0; /* sfb.f_fsid is a structure on OpenBSD */
+	dsi->f_namemax = pathconf(ts->filesystems[i], _PC_NAME_MAX);
 #else
 	dsi->f_fsid = sfb.f_fsid;
 	dsi->f_namemax = sfb.f_namelen;

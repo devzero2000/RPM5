@@ -205,7 +205,7 @@ struct dirent * avReaddir(DIR * dir)
 #endif
 
 #if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__) || defined(__QNXNTO__))
-#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
+#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__) && !defined(__OpenBSD__)
     dp->d_off = 0;		/* W2DO? */
 #endif
     dp->d_type = dt[i];

@@ -34,7 +34,7 @@ struct __dirstream {
 typedef struct __dirstream *	AVDIR;
 typedef struct __dirstream *	DAVDIR;
 #else
-# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
 typedef struct __dirstream *	AVDIR;
 typedef struct __dirstream *	DAVDIR;
 #else	/* __FreeBSD__ */

@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: add #ifdef's needed to compile on __OpenBSD__.
     - jbj: fix: permit " number %d" to be translated.
     - jbj: fix: apply _dependency_whiteout to erased relations too.
     - jbj: lua: display rudimentary info about lua with --showrc.
