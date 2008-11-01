@@ -523,7 +523,7 @@
                      "magic" bytes at the front of a file. This works for
                      formats with known "magic" bytes just fine, but fails
                      horribly for formats like LZMA where no such "magic"
-                     bytes exist. For Fedora we prefer to first use file
+                     bytes exist. For Mandriva we prefer to first use file
                      extension based determination (if someone is mis-names
                      his distribution files we have to take action anyway)
                      and fall back to "magic" byte based determination only
