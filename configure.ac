@@ -1636,6 +1636,34 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(RPMLUAFILES)
 AC_MSG_RESULT([$RPMLUAFILES])
 
+dnl # determine whether to build using a specific vendor's changes or not
+AC_MSG_CHECKING([if building for a specfic vendor])
+
+AC_ARG_WITH(
+    [vendor],
+    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: openpkg, rpm4darwin, fedora, mandriva or windriver]),
+    if test ".$withval" != .no; then
+	    if test "$withval" == "openpkg"; then
+		    AC_DEFINE([RPM_VENDOR_OPENPKG], 1, Vendor is OpenPKG)
+	    fi
+	    if test "$withval" == "rpm4darwin"; then
+		    AC_DEFINE([RPM_VENDOR_RPM4DARWIN], 1, Vendor is RPM for Darwin)
+	    fi
+	    if test "$withval" == "fedora"; then
+		    AC_DEFINE([RPM_VENDOR_FEDORA], 1, Vendor is Fedora)
+	    fi
+	    if test "$withval" == "mandriva"; then
+		    AC_DEFINE([RPM_VENDOR_MANDRIVA], 1, Vendor is Mandriva)
+	    fi
+	    if test "$withval" == "windriver"; then
+		    AC_DEFINE([RPM_VENDOR_WINDRIVER], 1, Vendor is Windriver)
+	    fi
+	    AC_MSG_RESULT([$withval])
+    else
+	    AC_MSG_RESULT(no)
+    fi
+)
+
 testdir="`pwd`/tests"
 AC_SUBST(testdir)
 
