@@ -1581,6 +1581,11 @@ AC_ARG_WITH(
     AS_HELP_STRING([--with-path-macros=ARG], [build with colon-separated RPM macro files path]),
     [MACROFILES="$withval"]
 )
+AC_ARG_WITH(
+    [extra-path-macros],
+    AS_HELP_STRING([--with-extra-path-macros=ARG], [build with additional colon-separated RPM macro files path not overriding defaults]),
+    [MACROFILES="$MACROFILES:$withval"]
+)
 AC_DEFINE_UNQUOTED(
     [MACROFILES], ["$MACROFILES"],
     [Colon separated RPM macro files path]

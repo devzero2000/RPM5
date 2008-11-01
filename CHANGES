@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: add --with-extra-path-macros configure option that adds
+	 additional macro file paths without overriding existing defaults.
     - proyvind: add --with-vendor configure option to define RPM_VENDOR_*.
     - proyvind: Mandriva: make loglevel for dependency loop detection
 	overridable, debug-level by default. (loop-detection-optional-loglevel)
