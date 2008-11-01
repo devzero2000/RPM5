@@ -2645,7 +2645,7 @@ rescan:
 		const char * nevra;
 #endif
 		const char * dp;
-		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
+		rpmlogLvl msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMLOG_WARNING : RPMLOG_ERR;
 
 		/* Unchain predecessor loop. */
