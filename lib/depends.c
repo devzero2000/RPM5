@@ -2647,7 +2647,6 @@ rescan:
 		const char * dp;
 		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMLOG_WARNING : RPMLOG_ERR;
-;
 
 		/* Unchain predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;
