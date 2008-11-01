@@ -544,6 +544,15 @@
                      ~always be an issue.
      ________________________________________________________________________
 
+     Change:         loop-detection-optional-loglevel
+     Purpose:        Report dependency loops at optional log level
+     Reason:         Mandriva has many dependency loops by intentetion,
+                     especially due to it's library package policies.
+                     For now we want to be able to not display these as errors,
+                     but rather as debug-level messages by default, or at any
+                     other log level defined by %_loop_detection_loglevel.
+________________________________________________________________________
+
   o  Name:           WINDRIVER
      Vendor:         Wind River <http://windriver.com/>
      Representative: Jeff Johnson <jbj@rpm5.org>

@@ -2647,6 +2647,10 @@ rescan:
 		const char * dp;
 		rpmlogLvl msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMLOG_WARNING : RPMLOG_ERR;
+#if defined(RPM_VENDOR_MANDRIVA) /* loop-detection-optional-loglevel */
+		// Report loops as debug-level message by default (7 = RPMLOG_DEBUG), overridable
+		msglvl = rpmExpandNumeric("%{?_loop_detection_loglevel}%{?!_loop_detection_loglevel:7}");
+#endif
 
 		/* Unchain predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;

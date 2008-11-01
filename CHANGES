@@ -1,15 +1,17 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: Mandriva: make loglevel for dependency loop detection
+	overridable, debug-level by default. (loop-detection-optional-loglevel)
     - jbj: fix: __OpenBSD__ insque(3) needs rpmsq rock initialized.
     - jbj: add #ifdef's needed to compile on __OpenBSD__.
     - proyvind: Mandriva: make directory & symlink dependencies optional with
-        %{_check_symlink_deps} & %{_check_dirname_deps}. (optional-dirname-and-symlink-deps)
+	%{_check_symlink_deps} & %{_check_dirname_deps}. (optional-dirname-and-symlink-deps)
     - proyvind: Mandriva: prefer file extension for detecting file compression.
-        (extension-based-compression-detection)
+	(extension-based-compression-detection)
     - proyvind: Mandriva: disable buildrequires checking for building src.rpms.
-        (no-deps-on-building-srpms)
+	(no-deps-on-building-srpms)
     - proyvind: Mandriva: disable preservation of file ownership for source rpms.
-        (no-owner-group-on-srpm-install)
+	(no-owner-group-on-srpm-install)
     - rpm.org: Add posix.mkstemp() to Lua posix lib.
     - jbj: fix: apply _dependency_whiteout to erased relations too.
     - jbj: lua: display rudimentary info about lua with --showrc.
