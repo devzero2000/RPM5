@@ -2,7 +2,9 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST =	ref/* ref/.alldigests
+# Note: *.src.rpm's cannot be added here because of suffix rules.
+EXTRA_DIST =	ref/[^C]* ref/.alldigests
+
 SUBDIRS =
 
 macros =	$(abs_top_builddir)/macros:$(testdir)/macros

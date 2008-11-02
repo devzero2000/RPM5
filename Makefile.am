@@ -32,7 +32,17 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	python/mpw/Makefile.am python/mpw/test/* python/test/resources/* python/test/dscmp \
 	python/test/psTest.py python/test/testhdr python/test/testit python/test/testmi \
 	python/test/testrollback.py python/test/dsMerge.py \
-	python/rpm/__init__.py python/[a-z]* python/Makefile.in python/Makefile.am
+	python/rpm/__init__.py python/[a-z]* python/Makefile.in python/Makefile.am \
+	tests/devtool-sanity-1.0-1.src.rpm \
+	tests/edos-test-1-0.src.rpm \
+	tests/probes-test-1-0.src.rpm \
+	tests/triggers-D-1.0-1.src.rpm \
+	tests/triggers-DP-1.0-1.src.rpm \
+	tests/triggers-F-1.0-1.src.rpm \
+	tests/triggers-FP-1.0-1.src.rpm \
+	tests/triggers-N-1.0-1.src.rpm \
+	tests/triggers-NA-1.0-1.src.rpm \
+	tests/triggers-P-1.0-1.src.rpm
 
 SUBDIRS =
 if USE_NLS
