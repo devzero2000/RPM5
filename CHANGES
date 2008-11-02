@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: lua: explicitly link against libexpat as assumption on implicit
+	linking cannot be guaranteed.
     - proyvind: add --with-extra-path-macros configure option that adds
 	 additional macro file paths without overriding existing defaults.
     - proyvind: add --with-vendor configure option to define RPM_VENDOR_*.
