@@ -21,13 +21,13 @@ cpio =		cpio
 check-init: macros
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
-	@diff -u {tmp,ref}/version || cp {tmp,ref}/version
+	@-diff -u {tmp,ref}/version || cp {tmp,ref}/version
 	@${rpm} -v --querytags	> tmp/querytags
-	@diff -u {tmp,ref}/querytags || cp {tmp,ref}/querytags
+	@-diff -u {tmp,ref}/querytags || cp {tmp,ref}/querytags
 	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
-	-@diff -u {tmp,ref}/showrc || cp {tmp,ref}/showrc
+	@-diff -u {tmp,ref}/showrc || cp {tmp,ref}/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
-	@diff -u {tmp,ref}/.alldigests || cp {tmp,ref}/.alldigests
+	@-diff -u {tmp,ref}/.alldigests || cp {tmp,ref}/.alldigests
 	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
 
 POPTURI =	http://rpm5.org/files/popt/
@@ -42,10 +42,6 @@ $(POPTPKGS):
 check-pubkeys: $(POPTPKGS)
 	@rm -rf tmp/rpmdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
-#	-@${rpm} -Kv --usecrypto gcrypt $(POPTPKGS) > tmp/popt.Kv-gcrypt
-	-@${rpm} -Kv --usecrypto ssl $(POPTPKGS) > tmp/popt.Kv-ssl
-	-@${rpm} -Kv --usecrypto nss $(POPTPKGS) > tmp/popt.Kv-nss
-	-@${rpm} -Kv --usecrypto beecrypt $(POPTPKGS) > tmp/popt.Kv-beecrypt
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u {tmp,ref}/popt.Kv
 
@@ -55,18 +51,6 @@ check-markup: $(POPTPKGS)
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@diff -u {tmp,ref}/popt.xml
-	-@${rpmrepo} --database --gzip .
-	-@${rpmrepo} --database --bzip2 .
-	-@${rpmrepo} --database --lzma .
-	-@${rpmrepo} --gzip .
-	-@${rpmrepo} --bzip2 .
-	-@${rpmrepo} --lzma .
-	@${rpmrepo} --uncompressed .
-	@diff -u {repodata,ref}/primary.xml || cp {repodata,ref}/primary.xml
-	@diff -u {repodata,ref}/filelists.xml || cp {repodata,ref}/filelists.xml
-	@diff -u {repodata,ref}/other.xml || cp {repodata,ref}/other.xml
-# XXX repomd.xml always differs because st->st_ctime is used.
-	@-diff -u {repodata,ref}/repomd.xml > /dev/null 2>&1
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
@@ -115,15 +99,11 @@ check-triggers:
 	-${rpm} -Uv --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-DP-a triggers-DP-b
 
-borken:
-	-${rpm} -Uv --noparentdirs --nodeps triggers-NA/triggers-NA*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-NA-a triggers-NA-b
-
 check-query:
 	@${rpm} -qW . > /dev/null 2>&1
-	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1
-	-@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
-	-@${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
+	@-${rpm} -U --justdb */*.rpm > /dev/null 2>&1
+	@-${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
+	@-${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
 	@${rpm} -qa > /dev/null
 	@${rpm} -qa 'arch=noarch' > /dev/null
 	@${rpm} -qa 'arch=!noarch' > /dev/null
@@ -135,9 +115,7 @@ check-query:
 	@${rpm} -qal > /dev/null
 	@${rpm} -qalv > /dev/null
 	@${rpm} -qa --qf '%{INSTALLTIME} %{INSTALLTIME:date} %{INSTALLTIME:day} %{INSTALLTIME:dec} %{INSTALLTIME:hex} %{INSTALLTIME:oct}\n' > /dev/null
-	@${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{DBINSTANCE} %{HDRID} %{PKGID} %{SOURCEPKGID}\n' > /dev/null
-	@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
@@ -150,23 +128,15 @@ check-query:
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEPROVIDE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEREQUIRE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
-	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
 	@${rpm} --rebuilddb
 	@-${rpm} -Va > /dev/null
 	@-${rpm} -Vp tmp/manifest > /dev/null
 	@${rpm} -e probes
 	@${rpm} -e devtool-sanity
-#	@${rpm} -e --justdb `${rpm} -qa` --allmatches
-
-check-jbj:
-	@${rpm} -qp ref/cAos.i386.manifest > /dev/null
-	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
-	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
-	@-${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
 
 check-local: check-init check-pubkeys check-markup \
-	check-build check-install check-query check-jbj
+	check-build check-install check-query # check-repo check-jbj
 
 clean-local:
-	rm -rf tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
-	rm -rf $(POPTPKGS) repodata/
+	rm -rf tmp $(BUILD_DIRS)
+	rm -rf repodata/

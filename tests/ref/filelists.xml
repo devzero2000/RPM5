@@ -1,5 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="12">
+<filelists xmlns="http://linux.duke.edu/metadata/filelists" packages="50">
+<package pkgid="e209149ebeb644f877c90a2ee5d91021bbdf5c5d" name="cudf-test" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+  <file>cudf-test.spec</file>
+</package>
+<package pkgid="ecb92c1050496fd6d2e0c4ca84f88d54a3a14daa" name="battery" arch="noarch">
+  <version epoch="0" ver="3" rel="0"/>
+</package>
+<package pkgid="bcb526b7bfd4829fc764bea436d1ad3de3bb49cc" name="bicycle" arch="noarch">
+  <version epoch="0" ver="7" rel="0"/>
+</package>
+<package pkgid="cc217a0fd489f04565b1b402dd84203b70631eb0" name="car" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="ddde0c56f12810751039e6312166f4839e57690f" name="door" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="53cd4376af0dbc9adf292d6156ef2299b6b2ebcb" name="door" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="bf73a6a58dd822e4756e49a9e6adb7b215d42ec1" name="electric-engine" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="20f97d147678c4329e7e0152c29121b19ed22f20" name="electric-engine" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="42d64fd6d50f8126e8cefc537b1b727fc6e9ab3a" name="gasoline-engine" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="b6a58d4eaad1ac3c0bc6b2fccac28a883d07fcff" name="gasoline-engine" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="f44f046aeb322a5790e8128909a955e36aec97df" name="glass" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="51e68adafc4e5811981c5b12b8072526cc6ae389" name="glass" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="cc6c410599b09015b50da5e67dba210f66076c9e" name="solar-collector" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="31703c42bfa8a0580bf586a9bc3993865b47c26e" name="tire" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="5731a5187091d1c22cbf32e2874babcdd880a48b" name="tire" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="80ad38524956e565a427f525523f31df0dd4e89a" name="turbo" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="07519197d9fbe0cfa7e3b1e2b2fc105a3a7e5134" name="wheel" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="5ac9747a0b50baa3925e0280129837c5f1d90a9c" name="wheel" arch="noarch">
+  <version epoch="0" ver="3" rel="0"/>
+</package>
+<package pkgid="5413c1adbec480bbc5873ecba0d32356b5865111" name="window" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="55566397439c3032be92102a882e58981b931bf7" name="window" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="ffa75392f8904ac4c5345f11adc42288f6c6076b" name="window" arch="noarch">
+  <version epoch="0" ver="3" rel="0"/>
+</package>
 <package pkgid="b041a71594a3bf628883ea514861ce0bdec828f1" name="devtool-sanity" arch="noarch">
   <version epoch="0" ver="1.0" rel="1"/>
   <file>JBJ-GPG-KEY</file>
@@ -8,6 +72,51 @@
 <package pkgid="567d8380ab37ff1a109df15b9a93e3d08cdbd3be" name="edos-test" arch="noarch">
   <version epoch="0" ver="1" rel="0"/>
   <file>edos-test.spec</file>
+</package>
+<package pkgid="3edb4f1f8aaa2b376704bfc47d160029cf506cfb" name="car" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="506dd746417d8e9082e8d083f6389d0e36a200a7" name="door" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="2bbca140363abdb93dd9e6c2be8f34c1cc89ab64" name="door" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="739a0b95a0eab835aed7eb5d3a4bf778774742a2" name="engine" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="5b1f892b9480e4e72ee8a4066c8d2446780b6a95" name="engine" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="f6df63eadf97c3cef3533e4647c198973d8353ba" name="glass" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="9b669e1a9d92ea409cbd535e4cefab71fe9e263b" name="glass" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="63ca4d07405d7f6ead31a3a241a2eaa525946dee" name="turbo" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="2f5545ca6b3971fc7148f52ac87d386d4825f603" name="tyre" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="39f4c4f8720e07ad82a5fec9f31cef4e641b9075" name="tyre" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="2df77b08b87840ddc95ddfbf77b466cdd26ccf32" name="wheel" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
+</package>
+<package pkgid="04945b86bc5dbdeadb1ff5e0dde031e39262180f" name="wheel" arch="noarch">
+  <version epoch="0" ver="3" rel="0"/>
+</package>
+<package pkgid="6321123c43fb30dafdcdf26dca3412715e6e47ae" name="window" arch="noarch">
+  <version epoch="0" ver="0" rel="0"/>
+</package>
+<package pkgid="3ae70efb3360810f32ac1c308daf38cd8f924439" name="window" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="4bd2818b3971fcca24e57c21be6f457c24352c11" name="window" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
 </package>
 <package pkgid="26c75af3071d9cd2a8efe9a1d2af9c3518791001" name="popt" arch="i386">
   <version epoch="0" ver="1.14" rel="1"/>
@@ -67,6 +176,12 @@
   <file>test3.asc</file>
   <file>test3.sig</file>
   <file>test3.txt</file>
+</package>
+<package pkgid="35bbbe780474ccf86d1d24b5291d30223780bfa9" name="probes" arch="noarch">
+  <version epoch="0" ver="1" rel="0"/>
+</package>
+<package pkgid="6b1d710bf943fd235173e7a8f94bc48948af9bc0" name="probes" arch="noarch">
+  <version epoch="0" ver="2" rel="0"/>
 </package>
 <package pkgid="c2fc0cea2a2f453f20cb80419b2fd33addd2f52a" name="triggers-D" arch="i386">
   <version epoch="0" ver="1.0" rel="1"/>

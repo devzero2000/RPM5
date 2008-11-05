@@ -20,7 +20,7 @@
 %_rpmds_sysinfo_path	%{_topdir}/sysinfo/
 %_dbpath		%{_topdir}/tmp/rpmdb/
 
-%_tmppath		%{_topdir}/tmp/
+%_tmppath		%{_topdir}/tmp
 %_hrmib_path		%{_tmppath}/hrmib/%{___NVRA}
 %_repackage_dir		%{_tmppath}/repackage/
 
@@ -34,6 +34,12 @@
 %_solve_dbpath		%{_tmppath}/cachedb/
 %_solve_pkgsdir		%{_topdir}/edos-test/
 %_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
+
+%find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
+%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
+%__libtool_provides     %{nil}
+%__libtool_requires     %{nil}
+%__scriptlet_requires	%{nil}
 
 %NVR		%{name}-%{version}-%{release}
 %NVRA		%{name}-%{version}-%{release}.%{_target_cpu}

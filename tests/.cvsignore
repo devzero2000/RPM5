@@ -4,6 +4,7 @@ macros
 popt*.rpm
 repodata
 tmp
+cudf-test
 devtool-sanity
 edos-test
 popt
