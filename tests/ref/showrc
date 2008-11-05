@@ -9,6 +9,10 @@ compatible archs      : i386
 compatible os's       : linux
 optflags              : -O2
 
+LUA MODULES:
+luafiles              : /usr/lib/rpm/init.lua:/usr/lib/rpm/rpmlua:/usr/lib/rpm/i386-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/i386-linux/rpmlua:~/.rpmlua
+luapath               : /usr/lib/rpm/lua/?.lua
+
 MACRO DEFINITIONS:
 macrofiles            : ../macros:../tests/macros
 Features provided by rpmlib installer:
@@ -401,6 +405,7 @@ print (t)
 -14: _build_source_file_digest_algo	%{_build_file_digest_algo}
 -14: _build_vendor	%{_host_vendor}
 -14: _builddir	%{_ntopdir}
+-14: _buildrootdir	%{_tmppath}
 -14: _buildshell	/bin/sh
 -14: _cache_dbpath	%{_tmppath}/cachedb/
 -14: _changelog_truncate	1 year ago
@@ -471,6 +476,7 @@ print (t)
 -14: _dbi_config_Installtid	%{expand:%%{_dbi_config_%{_dbapi_used}_Installtid}}
 -14: _dbi_config_Name	%{expand:%%{_dbi_config_%{_dbapi_used}_Name}}
 -14: _dbi_config_Nvra	%{expand:%%{_dbi_config_%{_dbapi_used}_Nvra}}
+-14: _dbi_config_Obsoletename	%{expand:%%{_dbi_config_%{_dbapi_used}_Obsoletename}}
 -14: _dbi_config_Packagecolor	%{expand:%%{_dbi_config_%{_dbapi_used}_Packagecolor}}
 -14: _dbi_config_Packages	%{expand:%%{_dbi_config_%{_dbapi_used}_Packages}}
 -14: _dbi_config_Providename	%{expand:%%{_dbi_config_%{_dbapi_used}_Providename}}
@@ -587,7 +593,7 @@ print (t)
 -14: _specdir	%{_ntopdir}
 -14: _srcrpmdir	%{_ntopdir}
 -14: _sysconfdir	%{_prefix}/etc
--11: _target	i386-linux
+-11= _target	i386-linux
 -14: _target_alias	%{_host_alias}
 -11= _target_cpu	i386
 -11= _target_os	linux
@@ -619,7 +625,7 @@ print (t)
 -14: arm	arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l
 -14: bcond_with	%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 -14: bcond_without	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
--14: buildroot	%{_tmppath}/%{name}-root
+-14: buildroot	%{_buildrootdir}/%{name}-root
 -14: configure	
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
@@ -681,8 +687,9 @@ package or when debugging this package.
 %define __patch_number  %{-P:%{-P*}}%{!-P:0} 
 %define __patch_file    %{P:%{__patch_number}} 
 %define __patch_suffix  %{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} 
+%define __patch_fuzz    %{?_default_patch_fuzz:%(test %{_default_patch_fuzz} -ge 0 && echo "--fuzz=%{_default_patch_fuzz} ")} 
 %define __patch_options -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %{-R} %{-E} %{__patch_suffix} 
-echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%{__patch_file}} | %{__patch} %{__patch_options}
+echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%{__patch_file}} | %{__patch} %{__patch_fuzz}%{__patch_options}
 }
 -14: patches	%{lua: for i, p in ipairs(patches) do print(p.." ") end}
 -14: perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
@@ -754,4 +761,4 @@ end
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 447 empty 0
+======================== active 449 empty 0
