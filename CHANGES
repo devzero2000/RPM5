@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: devtool: provision a fedora host sufficiently to build from cvs.
     - jbj: add cudf-tests example packaging.
     - jbj: include tests/*.src.rpm, exclude tests/ref/CVS/*, with "make dist".
     - proyvind: lua: explicitly link against libexpat as assumption on implicit
