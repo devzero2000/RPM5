@@ -154,6 +154,7 @@ static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
 {
     /*@-nullret -temptrans -retalias @*/
     union { alKey key; alNum num; } u;
+    u.num = 0;
     u.key = pkgKey;
     return u.num;
     /*@=nullret =temptrans =retalias @*/
@@ -165,6 +166,7 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
 {
     /*@-nullret -temptrans -retalias @*/
     union { alKey key; alNum num; } u;
+    u.key = 0;
     u.num = pkgNum;
     return u.key;
     /*@=nullret =temptrans =retalias @*/
