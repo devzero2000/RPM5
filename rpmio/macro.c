@@ -1229,40 +1229,42 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    *b = '\0';
 	b = buf;
     } else if (STREQ("realpath", f, fn)) {
-        char rp[PATH_MAX];
-        char *cp;
-        size_t l;
-        if ((cp = realpath(buf, rp)) != NULL) {
-            l = strlen(cp);
-            if ((size_t)(l+1) <= bufn) {
-                memcpy(buf, cp, l+1);
-                b = buf;
-            }
-        }
+	char rp[PATH_MAX];
+	char *cp;
+	size_t l;
+	if ((cp = realpath(buf, rp)) != NULL) {
+	    l = strlen(cp);
+	    if ((size_t)(l+1) <= bufn) {
+		memcpy(buf, cp, l+1);
+		b = buf;
+	    }
+	}
     } else if (STREQ("getenv", f, fn)) {
-        char *cp;
-        if ((cp = getenv(buf)) != NULL)
-            b = cp;
+	char *cp;
+	if ((cp = getenv(buf)) != NULL)
+	    b = cp;
     } else if (STREQ("shrink", f, fn)) {
-        /* shrink body by removing all leading and trailing whitespaces and
-           reducing intermediate whitespaces to a single space character */
-        int i, j, k, was_space = 0;
-        for (i = 0, j = 0, k = (int)strlen(buf); i < k; ) {
-            if (xisspace((int)(buf[i]))) {
-                was_space = 1;
-                i++;
-                continue;
-            }
-            else if (was_space) {
-                was_space = 0;
-                if (j > 0) /* remove leading blanks at all */
-                    buf[j++] = ' ';
-                /* fallthrough */
-            }
-            buf[j++] = buf[i++];
-        }
-        buf[j] = '\0';
-        b = buf;
+	/*
+	 * shrink body by removing all leading and trailing whitespaces and
+	 * reducing intermediate whitespaces to a single space character.
+	 */
+	int i, j, k, was_space = 0;
+	for (i = 0, j = 0, k = (int)strlen(buf); i < k; ) {
+	    if (xisspace((int)(buf[i]))) {
+		was_space = 1;
+		i++;
+		continue;
+	    }
+	    else if (was_space) {
+		was_space = 0;
+		if (j > 0) /* remove leading blanks at all */
+		    buf[j++] = ' ';
+		/* fallthrough */
+	    }
+	    buf[j++] = buf[i++];
+	}
+	buf[j] = '\0';
+	b = buf;
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1324,46 +1326,60 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    be++;
 /*@=globs@*/
 #if defined(HAVE_MKSTEMP)
-        (void) close(mkstemp(b));
+	(void) close(mkstemp(b));
 #else
-        (void) mktemp(b);
+	(void) mktemp(b);
+#endif
+    } else if (STREQ("mkdtemp", f, fn)) {
+/*@-globs@*/
+	for (b = buf; (c = (int)*b) && isblank(c);)
+	    b++;
+	/* XXX FIXME: file paths with embedded white space needs rework. */
+	for (be = b; (c = (int)*be) && !isblank(c);)
+	    be++;
+/*@=globs@*/
+#if defined(HAVE_MKDTEMP)
+	(void) mkdtemp(b);
+#else
+	if ((b = tmpnam(b)) != NULL)
+	    (void) mkdir(b, 0700);	/* XXX S_IWRSXU is not included. */
 #endif
     } else if (STREQ("uuid", f, fn)) {
-        int uuid_version;
-        const char *uuid_ns;
-        const char *uuid_data;
-        char *cp;
-        size_t n;
+	int uuid_version;
+	const char *uuid_ns;
+	const char *uuid_data;
+	char *cp;
+	size_t n;
 
-        uuid_version = 1;
-        uuid_ns = NULL;
-        uuid_data = NULL;
-        cp = buf;
-        if ((n = strspn(cp, " \t\n")) > 0)
-            cp += n;
-        if ((n = strcspn(cp, " \t\n")) > 0) {
-            uuid_version = (int)strtol(cp, (char **)NULL, 10);
-            cp += n;
-            if ((n = strspn(cp, " \t\n")) > 0)
-                cp += n;
-            if ((n = strcspn(cp, " \t\n")) > 0) {
-                uuid_ns = cp;
-                cp += n;
-                *cp++ = '\0';
-                if ((n = strspn(cp, " \t\n")) > 0)
-                    cp += n;
-                if ((n = strcspn(cp, " \t\n")) > 0) {
-                    uuid_data = cp;
-                    cp += n;
-                    *cp++ = '\0';
-                }
-            }
-        }
+	uuid_version = 1;
+	uuid_ns = NULL;
+	uuid_data = NULL;
+	cp = buf;
+	if ((n = strspn(cp, " \t\n")) > 0)
+	    cp += n;
+	if ((n = strcspn(cp, " \t\n")) > 0) {
+	    uuid_version = (int)strtol(cp, (char **)NULL, 10);
+	    cp += n;
+	    if ((n = strspn(cp, " \t\n")) > 0)
+		cp += n;
+	    if ((n = strcspn(cp, " \t\n")) > 0) {
+		uuid_ns = cp;
+		cp += n;
+		*cp++ = '\0';
+		if ((n = strspn(cp, " \t\n")) > 0)
+		    cp += n;
+		if ((n = strcspn(cp, " \t\n")) > 0) {
+		    uuid_data = cp;
+		    cp += n;
+		    *cp++ = '\0';
+		}
+	    }
+	}
 /*@-nullpass@*/	/* FIX: uuid_ns may be NULL */
-        if (rpmuuidMake(uuid_version, uuid_ns, uuid_data, buf, NULL))
-            rpmlog(RPMLOG_ERR, "failed to create UUID\n");
-        else
-            b = buf;
+	if (rpmuuidMake(uuid_version, uuid_ns, uuid_data, buf, NULL))
+	    rpmlog(RPMLOG_ERR, "failed to create UUID\n");
+	else
+	    b = buf;
 /*@=nullpass@*/
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = (int)*b) && xisdigit(c);)
@@ -1704,6 +1720,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("verbose", f, fn) ||
 	    STREQ("uncompress", f, fn) ||
 	    STREQ("mkstemp", f, fn) ||
+	    STREQ("mkdtemp", f, fn) ||
 	    STREQ("uuid", f, fn) ||
 	    STREQ("url2path", f, fn) ||
 	    STREQ("u2p", f, fn) ||
@@ -1837,14 +1854,14 @@ int rpmSecuritySaneFile(const char *filename)
     uid_t uid;
 
     if (stat(filename, &sb) == -1)
-        return 1;
+	return 1;
     uid = getuid();
     if (sb.st_uid != uid)
-        return 0;
+	return 0;
     if (!S_ISREG(sb.st_mode))
-        return 0;
+	return 0;
     if (sb.st_mode & (S_IWGRP|S_IWOTH))
-        return 0;
+	return 0;
     return 1;
 }
 
@@ -2250,10 +2267,10 @@ static void expand_macrosfile_macro(const char *file_name, const char *buf, size
     l = strlen(macro_name);
     k = strlen(file_name);
     while ((cp = strstr(buf, macro_name)) != NULL) {
-        if (((strlen(buf) - l) + k) < bufn) {
-            memmove(cp+k, cp+l, strlen(cp+l)+1);
-            memcpy(cp, file_name, k);
-        }
+	if (((strlen(buf) - l) + k) < bufn) {
+	    memmove(cp+k, cp+l, strlen(cp+l)+1);
+	    memcpy(cp, file_name, k);
+	}
     }
     return;
 }
@@ -2336,7 +2353,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	av[1] = NULL;
 #else
 	i = rpmGlob(m, &ac, &av);
-        if (i != 0)
+	if (i != 0)
 	    continue;
 #endif
 
@@ -2346,13 +2363,13 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	    size_t slen = strlen(av[i]);
 	    const char *fn = av[i];
 
-        if (fn[0] == '@' /* attention */) {
-            fn++;
-            if (!rpmSecuritySaneFile(fn)) {
-                rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", fn);
-                /*@innercontinue@*/ continue;
-            }
-        }
+	if (fn[0] == '@' /* attention */) {
+	    fn++;
+	    if (!rpmSecuritySaneFile(fn)) {
+		rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", fn);
+		/*@innercontinue@*/ continue;
+	    }
+	}
 
 	/* Skip backup files and %config leftovers. */
 #define	_suffix(_s, _x) \
@@ -2420,33 +2437,33 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 
 #if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) /* extension-based-compression-detection */
     file_len = strlen(file);
-    if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tbz") == 0)
-        || (file_len > 4 && strcasecmp(file+file_len-4, ".bz2") == 0)) {
-        *compressed = COMPRESSED_BZIP2;
-        return 0;
-    }
-    else if (file_len > 4 && strcasecmp(file+file_len-4, ".zip") == 0) {
-        *compressed = COMPRESSED_ZIP;
-        return 0;
-    }
-    else if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tlz") == 0)
-             || (file_len > 5 && strcasecmp(file+file_len-5, ".lzma") == 0)) {
-        *compressed = COMPRESSED_LZMA;
-        return 0;
-    }
-    else if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tgz") == 0)
-             || (file_len > 3 && strcasecmp(file+file_len-3, ".gz") == 0)
-             || (file_len > 2 && strcasecmp(file+file_len-2, ".Z") == 0)) {
-        *compressed = COMPRESSED_OTHER;
-        return 0;
-    }
-    else if (file_len > 5 && strcasecmp(file+file_len-5, ".cpio") == 0) {
-        *compressed = COMPRESSED_NOT;
-        return 0;
-    }
-    else if (file_len > 4 && strcasecmp(file+file_len-4, ".tar") == 0) {
-        *compressed = COMPRESSED_NOT;
-        return 0;
+    if ((file_len > 4 && strcasecmp(file+file_len-4, ".tbz") == 0)
+     || (file_len > 4 && strcasecmp(file+file_len-4, ".bz2") == 0)) {
+	*compressed = COMPRESSED_BZIP2;
+	return 0;
+    } else
+    if (file_len > 4 && strcasecmp(file+file_len-4, ".zip") == 0) {
+	*compressed = COMPRESSED_ZIP;
+	return 0;
+    } else
+    if ((file_len > 4 && strcasecmp(file+file_len-4, ".tlz") == 0)
+     || (file_len > 5 && strcasecmp(file+file_len-5, ".lzma") == 0)) {
+	*compressed = COMPRESSED_LZMA;
+	return 0;
+    } else
+    if ((file_len > 4 && strcasecmp(file+file_len-4, ".tgz") == 0)
+     || (file_len > 3 && strcasecmp(file+file_len-3, ".gz") == 0)
+     || (file_len > 2 && strcasecmp(file+file_len-2, ".Z") == 0)) {
+	*compressed = COMPRESSED_OTHER;
+	return 0;
+    } else
+    if (file_len > 5 && strcasecmp(file+file_len-5, ".cpio") == 0) {
+	*compressed = COMPRESSED_NOT;
+	return 0;
+    } else
+    if (file_len > 4 && strcasecmp(file+file_len-4, ".tar") == 0) {
+	*compressed = COMPRESSED_NOT;
+	return 0;
     }
 #endif
 

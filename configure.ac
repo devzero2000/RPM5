@@ -704,7 +704,7 @@ AC_CHECK_FUNCS([dnl
     mtrace putenv realpath setenv clearenv stpcpy stpncpy strcspn strdup dnl
     strndup strerror strtol strtoul strspn strstr sighold sigrelse sigpause dnl
     sigprocmask sigemptyset sigaddset sigdelset sigsuspend madvise dnl
-    __secure_getenv regcomp ftok mkstemp setlocale getpassphrase dnl
+    __secure_getenv regcomp ftok mkdtemp mkstemp setlocale getpassphrase dnl
     mempcpy getmode setmode dnl
 ])
 
@@ -1144,7 +1144,7 @@ USE_LUA_CHKCONFIG=no
 RPM_CHECK_LIB(
     [Lua], [lua],
     [lua], [lua_newstate], [lua.h],
-    [no,internal:external:none], [lua:local],
+    [no,internal:external:none], [lua:local:socket],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_CHECK_LIB(m, fabs)
           AC_CHECK_LIB(dl, dlopen)

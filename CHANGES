@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: lua: bind mkdtemp(3) in lposix.c
+    - jbj: macros: add %{mkdtemp:...} primitive (consistent leading whitespace too).
     - jbj: devtool: provision a fedora host sufficiently to build from cvs.
     - jbj: add cudf-tests example packaging.
     - jbj: include tests/*.src.rpm, exclude tests/ref/CVS/*, with "make dist".
