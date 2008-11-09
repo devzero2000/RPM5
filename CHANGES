@@ -1,4 +1,6 @@
 5.1.6 -> 5.1.7:
+    - jbj: lua: bind mkdtemp(3) in lposix.c
+    - jbj: macros: add %{mkdtemp:...} primitive (consistent leading whitespace too).
     - jbj: include tests/*.src.rpm, exclude tests/ref/CVS/*, with "make dist".
     - jbj: fix: __OpenBSD__ insque(3) needs rpmsq rock initialized.
     - jbj: add #ifdef's needed to compile on __OpenBSD__.

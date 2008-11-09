@@ -1236,8 +1236,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
         if ((cp = getenv(buf)) != NULL)
             b = cp;
     } else if (STREQ("shrink", f, fn)) {
-        /* shrink body by removing all leading and trailing whitespaces and
-           reducing intermediate whitespaces to a single space character */
+	/*
+	 * shrink body by removing all leading and trailing whitespaces and
+	 * reducing intermediate whitespaces to a single space character.
+	 */
         int i, j, k, was_space = 0;
         for (i = 0, j = 0, k = (int)strlen(buf); i < k; ) {
             if (xisspace((int)(buf[i]))) {
@@ -1319,6 +1321,20 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
         (void) close(mkstemp(b));
 #else
         (void) mktemp(b);
+#endif
+    } else if (STREQ("mkdtemp", f, fn)) {
+/*@-globs@*/
+	for (b = buf; (c = (int)*b) && isblank(c);)
+	    b++;
+	/* XXX FIXME: file paths with embedded white space needs rework. */
+	for (be = b; (c = (int)*be) && !isblank(c);)
+	    be++;
+/*@=globs@*/
+#if defined(HAVE_MKDTEMP)
+	(void) mkdtemp(b);
+#else
+	if ((b = tmpnam(b)) != NULL)
+	    (void) mkdir(b, 0700);	/* XXX S_IWRSXU is not included. */
 #endif
     } else if (STREQ("uuid", f, fn)) {
         int uuid_version;
@@ -1696,6 +1712,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("verbose", f, fn) ||
 	    STREQ("uncompress", f, fn) ||
 	    STREQ("mkstemp", f, fn) ||
+	    STREQ("mkdtemp", f, fn) ||
 	    STREQ("uuid", f, fn) ||
 	    STREQ("url2path", f, fn) ||
 	    STREQ("u2p", f, fn) ||
@@ -2416,27 +2433,27 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
         || (file_len > 4 && strcasecmp(file+file_len-4, ".bz2") == 0)) {
         *compressed = COMPRESSED_BZIP2;
         return 0;
-    }
-    else if (file_len > 4 && strcasecmp(file+file_len-4, ".zip") == 0) {
+    } else
+    if (file_len > 4 && strcasecmp(file+file_len-4, ".zip") == 0) {
         *compressed = COMPRESSED_ZIP;
         return 0;
-    }
-    else if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tlz") == 0)
+    } else
+    if ((file_len > 4 && strcasecmp(file+file_len-4, ".tlz") == 0)
              || (file_len > 5 && strcasecmp(file+file_len-5, ".lzma") == 0)) {
         *compressed = COMPRESSED_LZMA;
         return 0;
-    }
-    else if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tgz") == 0)
+    } else
+    if ((file_len > 4 && strcasecmp(file+file_len-4, ".tgz") == 0)
              || (file_len > 3 && strcasecmp(file+file_len-3, ".gz") == 0)
              || (file_len > 2 && strcasecmp(file+file_len-2, ".Z") == 0)) {
         *compressed = COMPRESSED_OTHER;
         return 0;
-    }
-    else if (file_len > 5 && strcasecmp(file+file_len-5, ".cpio") == 0) {
+    } else
+    if (file_len > 5 && strcasecmp(file+file_len-5, ".cpio") == 0) {
         *compressed = COMPRESSED_NOT;
         return 0;
-    }
-    else if (file_len > 4 && strcasecmp(file+file_len-4, ".tar") == 0) {
+    } else
+    if (file_len > 4 && strcasecmp(file+file_len-4, ".tar") == 0) {
         *compressed = COMPRESSED_NOT;
         return 0;
     }
