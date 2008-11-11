@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: eliminate --with-vendor arguments that are not in use.
     - jbj: eliminate rpmal debugging code.
     - jbj: lua: disable mkdtemp(3) bindings, no solaris portability atm.
     - jbj: lua: bind mkdtemp(3) in lposix.c
