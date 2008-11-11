@@ -17,22 +17,6 @@
 
 /*@null@*/
 static PyObject *
-rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args,
-		PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmal_debug))
-    	return NULL;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/*@null@*/
-static PyObject *
 rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
@@ -109,8 +93,6 @@ rpmal_MakeIndex(rpmalObject * s)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmal_methods[] = {
- {"Debug",	(PyCFunction)rpmal_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
  {"add",	(PyCFunction)rpmal_Add,		METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"delete",	(PyCFunction)rpmal_Del,		METH_VARARGS|METH_KEYWORDS,

@@ -18,9 +18,6 @@
 
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 
-/*@unchecked@*/
-int _rpmal_debug = 0;
-
 /*@access alKey @*/
 /*@access alNum @*/
 /*@access rpmal @*/
@@ -135,19 +132,6 @@ static void rpmalFreeIndex(rpmal al)
     }
 }
 
-#ifdef	DYING
-/**
- * Return number of packages in list.
- * @param al		available list
- * @return		no. of packages in list
- */
-static int alGetSize(/*@null@*/ const rpmal al)
-	/*@*/
-{
-    return (al != NULL ? al->size : 0);
-}
-#endif
-
 static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
 		/*@null@*/ alKey pkgKey)
 	/*@*/
@@ -171,29 +155,6 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
     return u.key;
     /*@=nullret =temptrans =retalias @*/
 }
-
-#ifdef	DYING
-/**
- * Return available package.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package pointer
- */
-/*@dependent@*/ /*@null@*/
-static availablePackage alGetPkg(/*@null@*/ const rpmal al,
-		/*@null@*/ alKey pkgKey)
-	/*@*/
-{
-    alNum pkgNum = alKey2Num(al, pkgKey);
-    availablePackage alp = NULL;
-
-    if (al != NULL && pkgNum >= 0 && pkgNum < alGetSize(al)) {
-	if (al->list != NULL)
-	    alp = al->list + pkgNum;
-    }
-    return alp;
-}
-#endif
 
 rpmal rpmalCreate(int delta)
 {
@@ -289,19 +250,6 @@ static int fieCompare(const void * one, const void * two)
     if (a->baseName == NULL || b->baseName == NULL)
 	return lenchk;
 
-#ifdef	NOISY
-/*@-modfilesys@*/
-if (_rpmal_debug) {
-fprintf(stderr, "\t\tstrcmp(%p:%p, %p:%p)", a, a->baseName, b, b->baseName);
-#if 0
-fprintf(stderr, " a %s", a->baseName);
-#endif
-fprintf(stderr, " b %s", a->baseName);
-fprintf(stderr, "\n");
-}
-/*@=modfilesys@*/
-#endif
-
     return strcmp(a->baseName, b->baseName);
 }
 
@@ -315,11 +263,6 @@ void rpmalDel(rpmal al, alKey pkgKey)
 	return;		/* XXX can't happen */
 
     alp = al->list + pkgNum;
-
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
-/*@=modfilesys@*/
 
     /* Delete directory/file info entries from added package list. */
     if ((fi = alp->fi) != NULL)
@@ -351,11 +294,6 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    if (die == NULL)
 		continue;
 
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "--- die[%5d] %p [%3u] %s\n", (int)(die - al->dirs), die, (unsigned)die->dirNameLen, die->dirName);
-/*@=modfilesys@*/
-
 	    last = die->numFiles;
 	    fie = die->files + last - 1;
 	    for (i = last - 1; i >= 0; i--, fie--) {
@@ -363,18 +301,8 @@ fprintf(stderr, "--- die[%5d] %p [%3u] %s\n", (int)(die - al->dirs), die, (unsig
 		    /*@innercontinue@*/ continue;
 		die->numFiles--;
 
-		if (i < die->numFiles) {
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, (unsigned) ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
-/*@=modfilesys@*/
-
+		if (i < die->numFiles)
 		    memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
-		}
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3u] %s\n", die->files, die->numFiles, die->files + die->numFiles, (unsigned)sizeof(*fie), fie->baseName, (unsigned)fie->baseNameLen, fie->baseName);
-/*@=modfilesys@*/
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
 	    }
@@ -387,19 +315,9 @@ fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3u] %s\n", die->files, die->nu
 	    die->files = _free(die->files);
 	    die->dirName = _free(die->dirName);
 	    al->numDirs--;
-	    if ((die - al->dirs) < al->numDirs) {
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (int)(die - al->dirs), die, die+1, (unsigned)((al->numDirs - (die - al->dirs)) * sizeof(*die)));
-/*@=modfilesys@*/
-
+	    if ((die - al->dirs) < al->numDirs)
 		memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
-	    }
 
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->numDirs, (unsigned)sizeof(*die));
-/*@=modfilesys@*/
 	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
 	}
 
@@ -448,11 +366,6 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 
     alp->key = key;
     alp->tscolor = tscolor;
-
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
-/*@=modfilesys@*/
 
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
     alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
@@ -525,10 +438,6 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 		die->dirNameLen = dieNeedle->dirNameLen;
 		die->files = NULL;
 		die->numFiles = 0;
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "+++ die[%5d] %p [%3u] %s\n", al->numDirs, die, (unsigned)die->dirNameLen, die->dirName);
-/*@=modfilesys@*/
 
 		al->numDirs++;
 	    }
@@ -552,13 +461,6 @@ fprintf(stderr, "+++ die[%5d] %p [%3u] %s\n", al->numDirs, die, (unsigned)die->d
 
 	    fie = die->files + die->numFiles;
 
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] %p->files [%p[%d],%p) -> [%p[%d],%p)\n", dirMapping[dx], die,
-die->files, die->numFiles, die->files+die->numFiles,
-fie, (next - first), fie + (next - first));
-/*@=modfilesys@*/
-
 	    /* Rewind to first file, generate file index entry for each file. */
 	    fi = rpmfiInit(fi, first);
 	    while ((first = rpmfiNext(fi)) >= 0 && first < next) {
@@ -568,10 +470,6 @@ fie, (next - first), fie + (next - first));
 		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
 		fie->ficolor = rpmfiFColor(fi);
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] %p:%p[%2u] %s\n", die->files, die->numFiles, fie, fie->baseName, (unsigned)fie->baseNameLen, rpmfiFN(fi));
-/*@=modfilesys@*/
 
 		die->numFiles++;
 		fie++;
@@ -741,11 +639,6 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	 die++)
     {
 
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"));
-/*@=modfilesys@*/
-
 /*@-observertrans@*/
 	fieNeedle->baseName = baseName;
 /*@=observertrans@*/
@@ -754,11 +647,6 @@ fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"))
 		       sizeof(*fieNeedle), fieCompare);
 	if (fie == NULL)
 	    continue;	/* XXX shouldn't happen */
-
-/*@-modfilesys@*/
-if (_rpmal_debug)
-fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"));
-/*@=modfilesys@*/
 
 	alp = al->list + fie->pkgNum;
 
