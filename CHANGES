@@ -1,4 +1,5 @@
 5.0.3 -> 5.0.4:
+    - at: fix: initialize msbits of erased package keys to zeroes on 64b hosts.
     - jbj: fix: python ts.hdrFromFdno(fdno) segfault.
     - jbj: use Realpath(3) so that RPMTAG_PACKAGEORIGIN has absolute path.
     - jbj: rpmio: add Realpath(3).
