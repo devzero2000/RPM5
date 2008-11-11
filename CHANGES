@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - at: fix: initialize msbits of erased package keys to zeroes on 64b hosts.
     - jbj: lua: bind mkdtemp(3) in lposix.c
     - jbj: macros: add %{mkdtemp:...} primitive (consistent leading whitespace too).
     - jbj: include tests/*.src.rpm, exclude tests/ref/CVS/*, with "make dist".

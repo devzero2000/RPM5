@@ -163,6 +163,7 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
 {
     /*@-nullret -temptrans -retalias @*/
     union { alKey key; alNum num; } u;
+    u.key = NULL;
     u.num = pkgNum;
     return u.key;
     /*@=nullret =temptrans =retalias @*/
