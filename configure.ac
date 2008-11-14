@@ -1647,7 +1647,7 @@ AC_MSG_CHECKING([if building for a specfic vendor])
 AC_ARG_WITH(
     [vendor],
     AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark]),
-    if test ".$withval" != .no; then
+    [if test ".$withval" != .no; then
 	    case "$withval" in
 	    "mandriva")
 		    AC_DEFINE([RPM_VENDOR_MANDRIVA], 1, Vendor is Mandriva)
@@ -1659,7 +1659,7 @@ AC_ARG_WITH(
 	    AC_MSG_RESULT([$withval])
     else
 	    AC_MSG_RESULT(no)
-    fi
+    fi]
 )
 
 testdir="`pwd`/tests"
