@@ -1130,14 +1130,14 @@ rpmRC packageSources(Spec spec)
     CSA_t csa = &csabuf;
     rpmRC rc;
     int xx;
-#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) /* backward-compat-rpmtag-sourcepackage */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) /* backward-compat-rpmtag-sourcepackage */
     rpmuint32_t val;
 #endif
 
     /* Add rpmlib markers for tracking. */
     (void) rpmlibMarkers(spec->sourceHeader);
 
-#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) /* backward-compat-rpmtag-sourcepackage */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_FEDORA) || defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) /* backward-compat-rpmtag-sourcepackage */
     /* Mark package as a SRPM for backward compatibility with RPM < 4.4.6 */
     he->tag = RPMTAG_SOURCEPACKAGE;
     he->t = RPM_UINT32_TYPE;
