@@ -1,4 +1,6 @@
 5.1.6 -> 5.1.7:
+    - jbj: WR: lua: display "rpm:lua:foo" progname w chkconfig/useradd/groupadd
+	errors.
     - jbj: WR: fix: sqlite assertion failure while sequentially retrieving keys.
     - jbj: update INSTALL to indicate that external zlib is preferred now.
     - at: fix: initialize msbits of erased package keys to zeroes on 64b hosts.
