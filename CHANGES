@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: WR: fix: sqlite assertion failure while sequentially retrieving keys.
     - bero: Ark: create --with-vendor=ark, borrow some Mandriva patches, add
         use-gnu-tar-compression-detection patch for vendor ark
     - jbj: eliminate --with-vendor arguments that are not in use.

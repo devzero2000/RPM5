@@ -1186,8 +1186,10 @@ fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
  * to later iteration confusion.  (It may return the same value for the multiple keys.)
  */
 
+#ifdef	DYING
 /* Only RPMDBI_PACKAGES is supposed to be iterating, and this is guarenteed to be unique */
 assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
+#endif
 
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
