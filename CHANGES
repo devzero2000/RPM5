@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: lua: change paths to extend lua with external modules on linux.
     - jbj: WR: lua: display "rpm:lua:foo" progname w chkconfig/useradd/groupadd
 	errors.
     - jbj: WR: fix: sqlite assertion failure while sequentially retrieving keys.
