@@ -45,8 +45,6 @@ librpmmisc_la_LIBADD = \
 	@WITH_XAR_LIBS@
 if ENABLE_BUILD_EXTLIBDEP
 librpmmisc_la_LDFLAGS += $(LDFLAGS)
-# XXX Avoiding SELinux text relocation requires -pie -nostartfiles -nodefaultlibs
-librpmmisc_la_LDFLAGS += -XCClinker -pie -XCClinker -nostartfiles
 librpmmisc_la_LIBADD  += $(LIBS)
 endif
 librpmmisc_la_DEPENDENCIES = \
