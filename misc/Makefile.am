@@ -45,12 +45,14 @@ librpmmisc_la_LIBADD = \
 	@WITH_XAR_LIBS@
 if ENABLE_BUILD_EXTLIBDEP
 librpmmisc_la_LDFLAGS += $(LDFLAGS)
+# XXX Avoiding SELinux text relocation requires -pie -nostartfiles -nodefaultlibs
+librpmmisc_la_LDFLAGS += -XCClinker -pie -XCClinker -nostartfiles
 librpmmisc_la_LIBADD  += $(LIBS)
 endif
 librpmmisc_la_DEPENDENCIES = \
 	@ALLOCA@
-librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
-	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
+#librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
+#	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
