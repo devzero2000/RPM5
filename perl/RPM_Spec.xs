@@ -87,8 +87,7 @@ void
 srcheader(spec)
     Spec spec
     PPCODE:
-    if ( ! spec->sourceHeader) 
-        initSourceHeader(spec, NULL); /* TODO NULL => @retval *sfp     srpm file list (may be NULL) */
+    initSourceHeader(spec, NULL); /* TODO NULL => @retval *sfp     srpm file list (may be NULL) */
     XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", (void *)headerLink(spec->sourceHeader))));
 
 void
@@ -159,8 +158,7 @@ check(spec, ts = NULL)
     else
         ts = rpmtsCreate();
 
-    if ( ! spec->sourceHeader) 
-        initSourceHeader(spec, NULL); /* TODO NULL => @retval *sfp     srpm file list (may be NULL) */
+    initSourceHeader(spec, NULL); /* TODO NULL => @retval *sfp     srpm file list (may be NULL) */
 
     if (!headerIsEntry(spec->sourceHeader, RPMTAG_REQUIRENAME)
      && !headerIsEntry(spec->sourceHeader, RPMTAG_CONFLICTNAME))

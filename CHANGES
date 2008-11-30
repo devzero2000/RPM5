@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: perl: always do initSourceHeader() (fixes RPM::Spec->srcheader()
+	& RPM::SPEC->check()).
     - jbj: lua: inline a copy of getdate.c
     - jbj: lua: change paths to extend lua with external modules on linux.
     - jbj: WR: lua: display "rpm:lua:foo" progname w chkconfig/useradd/groupadd
