@@ -36,11 +36,11 @@ Optional options are:
 
 =head2 srcheader
 
-Return a L<RPM::Header> object about the futur source rpm
+Return a L<RPM::Header> object about the future source rpm
 
 =head2 binheader
 
-Return an array of L<RPM::Header> object about futur binaries rpms
+Return an array of L<RPM::Header> object about future binaries rpms
 
 =head2 srcrpm
 
