@@ -173,7 +173,7 @@ WITH_PERL="--without-perl"
 	--mandir='${prefix}%{__share}/man' \
         --with-db=internal \
         --with-db-tools-integrated \
-        --with-zlib=internal \
+        --with-zlib=external \
         --with-file=internal \
         --with-lua=internal \
         --with-sqlite=external \
@@ -197,7 +197,6 @@ WITH_PERL="--without-perl"
         --enable-build-warnings \
         --enable-build-debug
 
-make -C zlib clean || :
 make -C lua clean || :
 make -C python clean || :
 
