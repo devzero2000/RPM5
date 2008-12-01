@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: fix: better choice for paths to add (#473814 comment #4).
     - jbj: fix: include build dirname to find multiple *.pc (#473814).
     - jbj: lua: inline a copy of getdate.c
     - jbj: WR: lua: display "rpm:lua:foo" progname w chkconfig/useradd/groupadd
