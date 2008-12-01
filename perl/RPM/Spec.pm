@@ -72,6 +72,14 @@ Return an array listing sources included in the specfile.
 =head2 sources_url
 
 Return an array listing sources url included in the specfile.
+
+=head2 icon
+
+Return icon filename if included in the specfile.
+
+=head2 icon_url
+
+Return icon url if included in the specfile.
 =cut
 
 # currently everything is in the XS code
