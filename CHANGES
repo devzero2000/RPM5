@@ -1,7 +1,5 @@
 
 5.2a2 -> 5.2a3:
-    - proyvind: perl: fix SIGABRT in RPM::Dependencies->add() due to an
-	uninitialized variable.
     - proyvind: perl: add api doc for RPM::Spec->icon() & RPM::Spec->icon_url().
     - jbj: fix: include build dirname to find multiple *.pc (#473814).
     - proyvind: perl: always do initSourceHeader() (fixes RPM::Spec->srcheader()
