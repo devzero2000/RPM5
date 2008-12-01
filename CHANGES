@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: fix: include build dirname to find multiple *.pc (#473814).
     - proyvind: perl: always do initSourceHeader() (fixes RPM::Spec->srcheader()
 	& RPM::SPEC->check()).
     - jbj: lua: inline a copy of getdate.c
