@@ -234,7 +234,7 @@ __nopromote(Dep, sv_nopromote = NULL)
     
 int
 add(Dep, name,  sv_sense = NULL, sv_evr = NULL)
-    rpmds Dep
+    rpmds Dep = NULL;
     char * name
     SV * sv_evr
     SV * sv_sense
