@@ -1,5 +1,5 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
-%define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
+%define	with_python_version	@PYTHON_VERSION@%{nil}
 %define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
