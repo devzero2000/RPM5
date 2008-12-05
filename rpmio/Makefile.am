@@ -48,8 +48,6 @@ RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@ \
-	@WITH_LUA_LDFLAGS@ \
-	@WITH_LUA_LIBS@
 
 RPM_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -82,13 +80,11 @@ librpmio_la_SOURCES = \
 	rpmkeyring.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c
-librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION) \
-	@WITH_LUA_LDFLAGS@
+librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
-librpmio_la_LIBADD = \
-	@WITH_LUA_LIBS@
+librpmio_la_LIBADD =
 if ENABLE_BUILD_INTLIBDEP
 librpmio_la_LIBADD += \
 	$(top_builddir)/misc/librpmmisc.la

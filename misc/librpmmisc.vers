@@ -27,11 +27,13 @@ LIBRPMMISC_0
     lua_next;
     lua_objlen;
     luaopen_base;
+    luaopen_crypto;
     luaopen_debug;
     luaopen_io;
     luaopen_local;
     luaopen_math;
     luaopen_os;
+    luaopen_lxp;
     luaopen_package;
     luaopen_posix;
     luaopen_rex_pcre;
