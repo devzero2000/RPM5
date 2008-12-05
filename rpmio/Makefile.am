@@ -47,7 +47,7 @@ AM_CPPFLAGS = \
 RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@ \
+	@LTLIBINTL@
 
 RPM_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
