@@ -407,7 +407,7 @@ package or when debugging this package.\
 %define __patch_suffix  %{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} \
 %define __patch_fuzz    %{?_default_patch_fuzz:%(test %{_default_patch_fuzz} -ge 0 && echo "--fuzz=%{_default_patch_fuzz} ")} \
 %define __patch_options -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %{-R} %{-E} %{__patch_suffix} \
-echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%{__patch_file}} | %{__patch} %{__patch_fuzz}%{__patch_options}\
+echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress:%{__patch_file}} | %{__patch} %{__patch_fuzz}%{__patch_options} ) || exit 1\
 }
 
 #
@@ -523,6 +523,7 @@ print (t)\
 #	8	SHA256
 #	9	SHA384
 #	10	SHA512
+#	11	SHA224
 #	104	MD4
 #	105	RIPEMD-128
 #	106	CRC-32
