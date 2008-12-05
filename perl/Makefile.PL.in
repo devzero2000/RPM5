@@ -66,7 +66,7 @@ WriteMakefile(
 	      'CCFLAGS' => '@CFLAGS@',
 	      'dynamic_lib'	=> { OTHERLDFLAGS => join(' ', @ldaddp, @ldadd, @ldlibs) },
 	      'OPTIMIZE'=> '-g',
-	      'INC'	=> join(' ', @cppflags, map { '-I@top_srcdir@/'. $_ } @libdir),
+	      'INC'	=> join(' ', @cppflags, map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
 	      'INSTALLMAN1DIR'	=> '@mandir@/man1',
 	      'INSTALLMAN3DIR'	=> '@mandir@/man3',
 	      @PERL_INSTALLDIRS@
