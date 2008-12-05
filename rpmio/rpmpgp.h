@@ -201,7 +201,8 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_KEY_REVOKE	 = 0x20, /*!< Key revocation */
     PGPSIGTYPE_SUBKEY_REVOKE	 = 0x28, /*!< Subkey revocation */
     PGPSIGTYPE_CERT_REVOKE	 = 0x30, /*!< Certification revocation */
-    PGPSIGTYPE_TIMESTAMP	 = 0x40  /*!< Timestamp */
+    PGPSIGTYPE_TIMESTAMP	 = 0x40,  /*!< Timestamp */
+    PGPSIGTYPE_CONFIRM		 = 0x50  /*!< Third-Party confirmation */
 } pgpSigType;
 /*@=typeuse@*/
 
@@ -266,9 +267,10 @@ extern struct pgpValTbl_s pgpPubkeyTbl[];
        4          - Blowfish (128 bit key, 16 rounds) [BLOWFISH]
        5          - SAFER-SK128 (13 rounds) [SAFER]
        6          - Reserved for DES/SK
-       7          - Reserved for AES with 128-bit key
-       8          - Reserved for AES with 192-bit key
-       9          - Reserved for AES with 256-bit key
+       7          - AES with 128-bit key
+       8          - AES with 192-bit key
+       9          - AES with 256-bit key
+       10         - Twofish with 256-bit key
        100 to 110 - Private/Experimental algorithm.
 \endverbatim
  *
@@ -429,17 +431,26 @@ typedef struct pgpPktSigV4_s {
  * The value of the subpacket type octet may be:
  *
 \verbatim
+       0 = reserved
+       1 = reserved
        2 = signature creation time
        3 = signature expiration time
        4 = exportable certification
        5 = trust signature
        6 = regular expression
        7 = revocable
+       8 = reserved
        9 = key expiration time
        10 = placeholder for backward compatibility
        11 = preferred symmetric algorithms
        12 = revocation key
+       13 = reserved
+       14 = reserved
+       15 = reserved
        16 = issuer key ID
+       17 = reserved
+       18 = reserved
+       19 = reserved
        20 = notation data
        21 = preferred hash algorithms
        22 = preferred compression algorithms
@@ -450,6 +461,9 @@ typedef struct pgpPktSigV4_s {
        27 = key flags
        28 = signer's user id
        29 = reason for revocation
+       30 = features
+       31 = signature target
+       32 = embedded signature
        100 to 110 = internal or user-defined
 \endverbatim
  *
@@ -486,8 +500,9 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_KEY_FLAGS	=  27, /*!< key flags */
     PGPSUBTYPE_SIGNER_USERID	=  28, /*!< signer's user id */
     PGPSUBTYPE_REVOKE_REASON	=  29, /*!< reason for revocation */
-    PGPSUBTYPE_FEATURES		=  30, /*!< feature flags (gpg) */
-    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature (gpg) */
+    PGPSUBTYPE_FEATURES		=  30, /*!< feature flags */
+    PGPSUBTYPE_SIG_TARGET	=  31, /*!< signature target */
+    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature */
 
     PGPSUBTYPE_INTERNAL_100	= 100, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_101	= 101, /*!< internal or user-defined */

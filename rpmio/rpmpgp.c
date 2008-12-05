@@ -78,6 +78,7 @@ struct pgpValTbl_s pgpSigTypeTbl[] = {
     { PGPSIGTYPE_SUBKEY_REVOKE,	"Subkey revocation signature" },
     { PGPSIGTYPE_CERT_REVOKE,	"Certification revocation signature" },
     { PGPSIGTYPE_TIMESTAMP,	"Timestamp signature" },
+    { PGPSIGTYPE_CONFIRM,	"Third-Party Confirmation signature" },
     { -1,			"Unknown signature type" },
 };
 
@@ -125,6 +126,7 @@ struct pgpValTbl_s pgpHashTbl[] = {
     { PGPHASHALGO_MD2,		"MD2" },
     { PGPHASHALGO_TIGER192,	"TIGER192" },
     { PGPHASHALGO_HAVAL_5_160,	"HAVAL-5-160" },
+    { PGPHASHALGO_SHA224,	"SHA224" },
     { PGPHASHALGO_SHA256,	"SHA256" },
     { PGPHASHALGO_SHA384,	"SHA384" },
     { PGPHASHALGO_SHA512,	"SHA512" },
@@ -162,6 +164,7 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_SIGNER_USERID,	"signer's user id" },
     { PGPSUBTYPE_REVOKE_REASON,	"reason for revocation" },
     { PGPSUBTYPE_FEATURES,	"features" },
+    { PGPSUBTYPE_SIG_TARGET,	"signature target" },
     { PGPSUBTYPE_EMBEDDED_SIG,	"embedded signature" },
 
     { PGPSUBTYPE_INTERNAL_100,	"internal subpkt type 100" },
@@ -348,6 +351,7 @@ int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_SIGNER_USERID:
 	case PGPSUBTYPE_REVOKE_REASON:
 	case PGPSUBTYPE_FEATURES:
+	case PGPSUBTYPE_SIG_TARGET:
 	case PGPSUBTYPE_EMBEDDED_SIG:
 	case PGPSUBTYPE_INTERNAL_100:
 	case PGPSUBTYPE_INTERNAL_101:
