@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: fix linking against internal lua.
     - jbj: perl: add a sentinel to rpmdsSingle() rather than exporting rpmdsDup().
     - jbj: fix: better choice for paths to add (#473814 comment #4).
     - proyvind: perl: add api doc for RPM::Spec->icon() & RPM::Spec->icon_url().
