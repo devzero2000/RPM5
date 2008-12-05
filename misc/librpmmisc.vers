@@ -38,6 +38,7 @@ LIBRPMMISC_0
     luaopen_posix;
     luaopen_rex_pcre;
     luaopen_rex_posix;
+    luaopen_socket_core;
     luaopen_string;
     luaopen_table;
     luaopen_uuid;
