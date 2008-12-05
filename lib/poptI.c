@@ -21,7 +21,11 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@-fullinitblock@*/
 /*@unchecked@*/
 struct rpmQVKArguments_s rpmIArgs = {
+#if defined(RPM_VENDOR_MANDRIVA) /* dont-filter-install-file-conflicts */
+    .probFilter = RPMPROB_FILTER_NONE;
+#else
     .probFilter = (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
+#endif
 };
 /*@=fullinitblock@*/
 

@@ -551,7 +551,17 @@
                      For now we want to be able to not display these as errors,
                      but rather as debug-level messages by default, or at any
                      other log level defined by %_loop_detection_loglevel.
-________________________________________________________________________
+     ________________________________________________________________________
+
+     Change:         dont-filter-install-file-conflicts
+     Purpose:        Always treat file conflicts during install as errors.
+     Reason:         Mandriva takes a more stricter approach on allowing
+                     file conflicts with policies requiring such cases to
+                     be explicitly dealt with on packaging side rather than
+                     relying on best effort. Several different versions
+                     of package with same name or file names are therefore
+                     not allowed when doing install ('rpm -i') of packages.
+     ________________________________________________________________________
 
   o  Name:           WINDRIVER
      Vendor:         Wind River <http://windriver.com/>
