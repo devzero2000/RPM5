@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: perl: clean out some mess.
+    - proyvind: perl: don't add rpath to module.
     - proyvind: fix linking against internal lua.
     - jbj: perl: add a sentinel to rpmdsSingle() rather than exporting rpmdsDup().
     - jbj: fix: better choice for paths to add (#473814 comment #4).
