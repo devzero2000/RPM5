@@ -1646,7 +1646,7 @@ AC_MSG_CHECKING([if building for a specfic vendor])
 
 AC_ARG_WITH(
     [vendor],
-    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark]),
+    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora]),
     [if test ".$withval" != .no; then
 	    case "$withval" in
 	    "mandriva")
@@ -1654,6 +1654,9 @@ AC_ARG_WITH(
 		    ;;
 	    "ark")
 		    AC_DEFINE([RPM_VENDOR_ARK], 1, Vendor is Ark)
+		    ;;
+	    "fedora")
+		    AC_DEFINE([RPM_VENDOR_FEDORA], 1, Vendor is Fedora)
 		    ;;
 	    esac
 	    AC_MSG_RESULT([$withval])
