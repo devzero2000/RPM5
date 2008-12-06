@@ -67,6 +67,16 @@ PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kw
 
 /** \ingroup py_c
  */
+PyObject * rpmHeaderToFile(PyObject * self, PyObject * args, PyObject * kwds)
+	/*@*/;
+
+/** \ingroup py_c
+ */
+PyObject * rpmHeaderToFD(PyObject * self, PyObject * args, PyObject * kwds)
+	/*@*/;
+
+/** \ingroup py_c
+ */
 PyObject * rpmReadHeaders (FD_t fd)
 	/*@*/;
 

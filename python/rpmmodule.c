@@ -248,6 +248,10 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "readHeaderFromFD", (PyCFunction) rpmSingleHeaderFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+    { "writeHeaderListToFD", (PyCFunction) rpmHeaderToFD, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "writeHeaderListToFile", (PyCFunction) rpmHeaderToFile, METH_VARARGS|METH_KEYWORDS,
+	NULL },
 
     { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },

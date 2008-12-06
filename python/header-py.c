@@ -670,6 +670,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject * rpmReadHeaders (FD_t fd)
 {
     PyObject * list;
+    PyObject * ret = NULL;
     Header h;
     hdrObject * hdr;
 
@@ -825,6 +826,80 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args,
 
     return tuple;
 }
+
+/**
+ */
+PyObject * rpmWriteHeaders (PyObject * list, FD_t fd)
+{
+    int count;
+
+    if (!fd) {
+	PyErr_SetFromErrno(pyrpmError);
+	return NULL;
+    }
+
+    for(count = 0; count < PyList_Size(list); count++){
+	Py_BEGIN_ALLOW_THREADS
+	const char item[] = "Header";
+	const char * msg = NULL;
+	hdrObject * hdr = (hdrObject *)PyList_GetItem(list, count);
+	rpmRC rc = rpmpkgWrite(item, fd, hdr->h, &msg);
+	if (rc != RPMRC_OK)
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s : error code: %d\n", "rpmpkgWrite", item, msg, rc);
+	msg = _free(msg);
+	Py_END_ALLOW_THREADS
+    }
+    
+    Py_RETURN_TRUE;
+}
+
+/**
+ */
+PyObject * rpmHeaderToFD(PyObject * self, PyObject * args,
+		PyObject * kwds)
+{
+    FD_t fd;
+    int fileno;
+    PyObject * list;
+    PyObject * ret;
+    char * kwlist[] = {"headers", "fd", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &list, &fileno))
+	return NULL;
+
+    fd = fdDup(fileno);
+
+    ret = rpmWriteHeaders (list, fd);
+    Fclose(fd);
+
+    return list;
+}
+
+/**
+ */
+PyObject * rpmHeaderToFile(PyObject * self, PyObject * args,
+		PyObject *kwds)
+{
+    char * filespec;
+    FD_t fd;
+    PyObject * list;
+    PyObject * ret;
+    char * kwlist[] = {"headers", "file", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Os", kwlist, &list, &filespec))
+	return NULL;
+
+    fd = Fopen(filespec, "w.fdio");
+    if (!fd) {
+	PyErr_SetFromErrno(pyrpmError);
+	return NULL;
+    }
+
+    ret = rpmWriteHeaders (list, fd);
+    Fclose(fd);
+
+    return ret; 
+} 
 
 /**
  */
