@@ -290,16 +290,15 @@ static inline HeaderIterator headerInitIterator(Header h){
 	return headerInit(h);
 }
 
-static inline void * headerFreeData(const void * data, rpmTagType type) {
+static inline void * headerFreeData(const void * data, __attribute__((unused)) rpmTagType type) {
 	if (data)
 		free((void *)data);
 	return NULL;
 }
 
-static inline int headerWrite(void * _fd, Header h, enum hMagic magicp) {
+static inline int headerWrite(void * _fd, Header h, __attribute__((unused)) enum hMagic magicp) {
 	const char item[] = "Header";
 	const char * msg = NULL;
-	(void) magicp;
 	rpmRC rc = rpmpkgWrite(item, (FD_t)_fd, h, &msg);
 	if (rc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerWrite", item, msg);
@@ -309,11 +308,10 @@ static inline int headerWrite(void * _fd, Header h, enum hMagic magicp) {
 	return rc;
 }
 
-static inline Header headerRead(void * _fd, enum hMagic magicp) {
+static inline Header headerRead(void * _fd, __attribute__((unused)) enum hMagic magicp) {
 	const char item[] = "Header";
 	Header h = NULL;
 	const char * msg = NULL;
-	(void) magicp;
 	rpmRC rc = rpmpkgRead(item, (FD_t)_fd, &h, &msg);
 	switch (rc) {
 		default:
@@ -327,7 +325,7 @@ static inline Header headerRead(void * _fd, enum hMagic magicp) {
 	return h;
 }
 
-static inline int rpmMachineScore(int type, const char * name) {
+static inline int rpmMachineScore(__attribute__((unused)) int type, const char * name) {
 	char * platform = rpmExpand(name, "-%{_target_vendor}-%{_target_os}%{?_gnu}", NULL);
 	int score = rpmPlatformScore(platform, NULL, 0);
 

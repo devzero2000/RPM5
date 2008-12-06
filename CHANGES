@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: rpm4compat: disable warnings about unused variables.
     - proyvind: Mandriva: Always treat file conflicts during install (rpm -i)
 	 as errors. (dont-filter-install-file-conflicts)
     - proyvind: perl: clean out some mess.
