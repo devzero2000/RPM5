@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - pixel: handle posttrans p with no body.
     - proyvind: python: add writeHeaderListToFD() & writeHeaderListToFile().
 	(improved version of TurboLinux patch)
     - proyvind: rpm4compat: disable warnings about unused variables.

@@ -1901,7 +1901,7 @@ assert(psm != NULL);
 	    if ((fi = rpmtsiFi(pi)) == NULL)
 	    	continue;	/* XXX can't happen */
 
-	    haspostscript = (fi->posttrans != NULL ? 1 : 0);
+	    haspostscript = (fi->posttrans || fi->posttransprog ? 1 : 0);
 	    p->fi = rpmfiFree(p->fi);
 
 	    /* If no post-transaction script, then don't bother. */
