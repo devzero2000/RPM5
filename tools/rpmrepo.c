@@ -212,7 +212,7 @@ static const char primary_xml_qfmt[] = "\
 \n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
-\n  <size package=\"%{PACKAGESIZE}\" installed=\"%{PACKAGESIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
+\n  <size package=\"%{PACKAGESIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
 \n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href=\"%{PACKAGEORIGIN:bncdata}\"/>\
 \n  <format>\
 %|license?{\
