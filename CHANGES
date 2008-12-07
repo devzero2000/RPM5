@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - afb: rpmrepo: fix installed size bug (wrong value being written)
     - pixel: handle posttrans p with no body.
     - proyvind: python: add writeHeaderListToFD() & writeHeaderListToFile().
 	(improved version of TurboLinux patch)
