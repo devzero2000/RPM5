@@ -30,7 +30,7 @@ enum FCOLOR_e {
     RPMFC_ELFMIPSN32		= (1 <<  2),
 #define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
 
-	/* bits 4-7 unused */
+	/* bits 4-6 unused */
     RPMFC_DESKTOP_FILE		= (1 << 7),	/* XXX */
 
     RPMFC_PKGCONFIG		= (1 <<  8),
