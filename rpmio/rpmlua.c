@@ -21,8 +21,13 @@
 #include <lrexlib.h>
 #include <luuid.h>
 #include <lwrs.h>
+#ifdef	USE_LUA_CRYPTO		/* XXX external lua modules instead. */
 #include <lcrypto.h>
 #include <lxplib.h>
+#endif
+#ifdef	USE_LUA_SOCKET		/* XXX external lua modules instead. */
+#include <luasocket.h>
+#endif
 #endif
 
 #include <unistd.h>
@@ -95,8 +100,13 @@ rpmlua rpmluaNew()
 	{"rex_pcre", luaopen_rex_pcre},
 	{"uuid", luaopen_uuid},
 	{"wrs", luaopen_wrs},
+#ifdef	USE_LUA_CRYPTO		/* XXX external lua modules instead. */
 	{"crypto", luaopen_crypto},
 	{"lxp", luaopen_lxp},
+#endif
+#ifdef	USE_LUA_SOCKET		/* XXX external lua modules instead. */
+	{"socket", luaopen_socket_core},
+#endif
 	{"local", luaopen_local},
 #endif
 	{"rpm", luaopen_rpm},
