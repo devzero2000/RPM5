@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: sketch in %remove file flag, surely gonna change before finished.
     - jbj: eliminate --nomd5, use --nofdigests instead.
     - jbj: sketch in arbitrary per-package Transflags: tag.
     - jbj: add RPMTRANS_FLAGS_NORPMDB and --norpmdb disablers.

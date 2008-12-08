@@ -65,7 +65,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_TYPED	= (1 << 15),	/*!< (unimplemented) from %%spook */
     RPMFILE_SOURCE	= (1 << 16),	/*!< from SourceN: (srpm only). */
     RPMFILE_PATCH	= (1 << 17),	/*!< from PatchN: (srpm only). */
-    RPMFILE_OPTIONAL	= (1 << 18)	/*!< from %%optional. */
+    RPMFILE_OPTIONAL	= (1 << 18),	/*!< from %%optional. */
+    RPMFILE_REMOVE	= (1 << 19)	/*!< remove file (after %post). */
 } rpmfileAttrs;
 
 #define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)

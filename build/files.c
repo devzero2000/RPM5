@@ -865,6 +865,7 @@ static VFA_t virtualFileAttributes[] = {
 	{ "%pubkey",	0,	RPMFILE_PUBKEY },
 	{ "%policy",	0,	RPMFILE_POLICY },
 	{ "%optional",	0,	RPMFILE_OPTIONAL },
+	{ "%remove",	0,	RPMFILE_REMOVE },
 
 #if WHY_NOT
 	{ "%icon",	0,	RPMFILE_ICON },
