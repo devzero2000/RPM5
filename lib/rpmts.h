@@ -87,16 +87,19 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NORPMDB	= (1 << 25),	/*!< from --norpmdb */
 	/* 26 unused */
     RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
-	/* 28-29 unused */
+    RPMTRANS_FLAG_NOPRETRANS	= (1 << 28),	/*!< from --nopretrans */
+    RPMTRANS_FLAG_NOPOSTTRANS	= (1 << 29),	/*!< from --noposttrans */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
 	/* 31 unused */
 } rpmtransFlags;
 
 #define	_noTransScripts		\
-  ( RPMTRANS_FLAG_NOPRE |	\
+  ( RPMTRANS_FLAG_NOPRETRANS |	\
+    RPMTRANS_FLAG_NOPRE |	\
     RPMTRANS_FLAG_NOPOST |	\
     RPMTRANS_FLAG_NOPREUN |	\
-    RPMTRANS_FLAG_NOPOSTUN	\
+    RPMTRANS_FLAG_NOPOSTUN |	\
+    RPMTRANS_FLAG_NOPOSTTRANS	\
   )
 
 #define	_noTransTriggers	\

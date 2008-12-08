@@ -1,10 +1,14 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: transFlags: regroup bits together in poptI table.
+    - jbj: transFlags: use POPT_SET_BIT consistently, no callbacks needed.
+    - jbj: transFlags: add --nopretrans/--noposttrans disablers.
+    - jbj: lua: disable embedded socket/crypto/xmlrpc modules. external instead.
     - jbj: sketch in %remove file flag, surely gonna change before finished.
-    - jbj: eliminate --nomd5, use --nofdigests instead.
+    - jbj: transFlags: eliminate --nomd5, use --nofdigests instead.
     - jbj: sketch in arbitrary per-package Transflags: tag.
-    - jbj: add RPMTRANS_FLAGS_NORPMDB and --norpmdb disablers.
-    - jbj: eliminate (never implemented) RPMTRANS_KEEP_OBSOLETES.
+    - jbj: transFlags: add RPMTRANS_FLAGS_NORPMDB and --norpmdb disablers.
+    - jbj: transFlags: eliminate (never implemented) RPMTRANS_KEEP_OBSOLETES.
     - jbj: python: remove compile warnings from rpmWriteHeaders() addition.
     - afb: rpmrepo: fix installed size bug (wrong value being written)
     - pixel: handle posttrans p with no body.

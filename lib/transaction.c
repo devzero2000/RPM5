@@ -1316,9 +1316,10 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point. */
-    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRETRANS) &&
+       (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
      	  || (rpmpsNumProblems(ts->probs) &&
-		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))))
+		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))))
     {
 	rpmlog(RPMLOG_DEBUG, D_("running pre-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
@@ -1888,7 +1889,9 @@ assert(psm != NULL);
 /*@=nullpass@*/
     pi = rpmtsiFree(pi);
 
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTTRANS) &&
+	!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
+    {
 
 	if ((rpmtsFlags(ts) & _noTransTriggers) != _noTransTriggers)
 	    rpmRunFileTriggers(rpmtsRootDir(ts));

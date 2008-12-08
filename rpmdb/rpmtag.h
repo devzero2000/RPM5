@@ -405,7 +405,7 @@ enum rpmTag_e {
     RPMTAG_RPMLIBVERSION	= 1199, /* i */
     RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
     RPMTAG_RPMLIBVENDOR		= 1201, /* i */
-    RPMTAG_CLASS		= 1202, /* s */
+    RPMTAG_CLASS		= 1202, /* s arbitrary */
     RPMTAG_TRACK		= 1203, /* s internal arbitrary */
     RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
     RPMTAG_SANITYCHECK		= 1205, /* s */
@@ -423,8 +423,12 @@ enum rpmTag_e {
     RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
 
 /*@-enummemuse@*/
-    RPMTAG_FIRSTFREE_TAG	/*!< internal */
+    RPMTAG_FIRSTFREE_TAG,	/*!< internal */
 /*@=enummemuse@*/
+
+    RPMTAG_PACKAGETRANSFLAGS	= 0x4efaafd9, /* s[] arbitrary */
+    RPMTAG_PACKAGEDEPFLAGS	= 0x748a8314, /* s[] arbitrary */
+    RPMTAG_LASTARBITRARY_TAG	= 0x80000000  /*!< internal */
 };
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
