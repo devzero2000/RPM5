@@ -215,6 +215,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
 	rpmrc = rpmgiLoadManifest(gi, fn);
+	/* XXX its unclear if RPMRC_NOTFOUND should fail or continue here. */
 	if (rpmrc != RPMRC_OK) {
 	    gi->argv[gi->i] = fn;	/* Manifest failed, restore fn */
 	    break;
