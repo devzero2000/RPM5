@@ -501,6 +501,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     int numRPMS = 0;
     rpmRelocation relocations = NULL;
     rpmVSFlags vsflags, ovsflags;
+    rpmRC rpmrc;
     int rc;
     int xx;
 
@@ -562,7 +563,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, _giFlags);
-    while (rpmgiNext(gi) == RPMRC_OK) {
+    while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	Header h;
 
 	fn = _free(fn);
@@ -672,6 +673,8 @@ assert(xx != 0 && he->p.str != NULL);
 
  }	/* end-of-transaction-build */
 
+    /* XXX exit if the iteration failed. */
+    if (rpmrc == RPMRC_FAIL) numFailed = numRPMS;
     if (numFailed) goto exit;
 
     if (numRPMS) {
