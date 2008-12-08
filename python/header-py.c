@@ -670,7 +670,6 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject * rpmReadHeaders (FD_t fd)
 {
     PyObject * list;
-    PyObject * ret = NULL;
     Header h;
     hdrObject * hdr;
 
