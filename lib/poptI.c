@@ -307,8 +307,13 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NODOCS,
 	N_("do not install documentation"), NULL},
 
+ { "norpmdb", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_NORPMDB,
+	N_("don't register headers in rpmdb"), NULL},
+#ifdef	DYING
  { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFDIGESTS,
 	N_("don't verify file digests"), NULL },
+#endif
  { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
 	N_("don't verify file digests"), NULL },
  { "nocontexts", '\0',0,  NULL, RPMCLI_POPT_NOCONTEXTS,

@@ -82,6 +82,11 @@ PyObject * rpmReadHeaders (FD_t fd)
 
 /** \ingroup py_c
  */
+PyObject * rpmWriteHeaders (PyObject * list, FD_t fd)
+	/*@*/;
+
+/** \ingroup py_c
+ */
 PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 

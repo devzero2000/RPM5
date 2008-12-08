@@ -133,6 +133,7 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
+    rpmuint32_t transFlags;	/*!< Package transaction disablers. */
     rpmuint32_t color;		/*!< Color bit(s) from package dependencies. */
     rpmuint32_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
 

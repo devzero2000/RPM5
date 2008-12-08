@@ -58,9 +58,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
     RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
-/*@-enummemuse@*/
-    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
-/*@=enummemuse@*/
+	/* 7 unused */
     RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
@@ -73,7 +71,7 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_UNDO		= (1 << 14),
 /*@=enummemuse@*/
-    /* 15 unused */
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
     RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
@@ -86,13 +84,12 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
-
-    /* 26 unused */
+    RPMTRANS_FLAG_NORPMDB	= (1 << 25),	/*!< from --norpmdb */
+	/* 26 unused */
     RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
-    /* 28-29 unused */
+	/* 28-29 unused */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
-    /* 31 unused */
+	/* 31 unused */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

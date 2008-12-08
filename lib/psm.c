@@ -2787,6 +2787,7 @@ assert(psm->mi == NULL);
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 	if (fi->isSource)	break;	/* XXX never add SRPM's */
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
@@ -2816,6 +2817,7 @@ assert(psm->te != NULL);
     case PSM_RPMDB_REMOVE:
     {	
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);

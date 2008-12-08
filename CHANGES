@@ -1,5 +1,10 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: eliminate --nomd5, use --nofdigests instead.
+    - jbj: sketch in arbitrary per-package Transflags: tag.
+    - jbj: add RPMTRANS_FLAGS_NORPMDB and --norpmdb disablers.
+    - jbj: eliminate (never implemented) RPMTRANS_KEEP_OBSOLETES.
+    - jbj: python: remove compile warnings from rpmWriteHeaders() addition.
     - afb: rpmrepo: fix installed size bug (wrong value being written)
     - pixel: handle posttrans p with no body.
     - proyvind: python: add writeHeaderListToFD() & writeHeaderListToFile().
