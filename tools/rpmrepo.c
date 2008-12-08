@@ -658,7 +658,7 @@ static int rpmioExists(const char * fn, /*@out@*/ struct stat * st)
 /**
  * Return stat(2) creation time of a file.
  * @param fn		file path
- * @retrun		st_ctime
+ * @return		st_ctime
  */
 static time_t rpmioCtime(const char * fn)
 	/*@globals h_errno, fileSystem, internalState @*/
