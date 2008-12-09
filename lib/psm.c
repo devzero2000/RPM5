@@ -669,7 +669,7 @@ assert(he->p.str != NULL);
 	psm->NVRA = NVRA = he->p.str;
     }
 
-    if (Phe->p.argv && strcmp(Phe->p.argv[0], "<lua>") == 0) {
+    if (Phe->p.argv && Php->p.argv[0] && strcmp(Phe->p.argv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),

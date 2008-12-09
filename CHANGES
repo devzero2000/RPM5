@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - rpm.org: fix segfault on packages without separate scriptlet program tags (rhbz#475214)
     - jbj: don't attempt install if rpmgiNext() returns RPMRC_FAIL.
     - jbj: transFlags: regroup bits together in poptI table.
     - jbj: transFlags: use POPT_SET_BIT consistently, no callbacks needed.
