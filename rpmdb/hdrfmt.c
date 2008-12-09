@@ -1208,7 +1208,8 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+static /*@only@*/
+char * depflagsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -1244,6 +1245,56 @@ assert(ix == 0);
 	    *t++ = '=';
 	if (anint & RPMSENSE_SENSEMASK)
 	    *t++ = ' ';
+	*t = '\0';
+
+	val = xstrdup(buf);
+    }
+
+    return val;
+}
+
+/**
+ * Format dependency type for display.
+ * @todo There's more sense bits, and the bits are attributes, not exclusive.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static /*@only@*/
+char * deptypeFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_UINT64_TYPE) {
+	val = xstrdup(_("(invalid type)"));
+    } else {
+	rpmuint64_t anint = he->p.ui64p[ix];
+	char *t, *buf;
+
+	t = buf = alloca(32);
+	*t = '\0';
+
+	if (anint & RPMSENSE_SCRIPT_PRE)
+	    t = stpcpy(t, "pre");
+	else if (anint & RPMSENSE_SCRIPT_POST)
+	    t = stpcpy(t, "post");
+	else if (anint & RPMSENSE_SCRIPT_PREUN)
+	    t = stpcpy(t, "preun");
+	else if (anint & RPMSENSE_SCRIPT_POSTUN)
+	    t = stpcpy(t, "postun");
+	else if (anint & RPMSENSE_SCRIPT_VERIFY)
+	    t = stpcpy(t, "verify");
+	else if (anint & RPMSENSE_RPMLIB)
+	    t = stpcpy(t, "rpmlib");
+	else if (anint & RPMSENSE_INTERP)
+	    t = stpcpy(t, "interp");
+	else if (anint & (RPMSENSE_FIND_PROVIDES | RPMSENSE_FIND_REQUIRES))
+	    t = stpcpy(t, "auto");
+	else
+	    t = stpcpy(t, "manual");
 	*t = '\0';
 
 	val = xstrdup(buf);
@@ -4472,6 +4523,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = cdataFormat } },
     { HEADER_EXT_FORMAT, "depflags",
 	{ .fmtFunction = depflagsFormat } },
+    { HEADER_EXT_FORMAT, "deptype",
+	{ .fmtFunction = deptypeFormat } },
     { HEADER_EXT_FORMAT, "digest",
 	{ .fmtFunction = digestFormat } },
     { HEADER_EXT_FORMAT, "fflags",
