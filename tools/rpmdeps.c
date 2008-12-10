@@ -143,7 +143,7 @@ static int rpmdepPrint(const char * msg, rpmds ds, FILE * fp)
 	if (_rpmfc_debug || rpmIsDebug())
 	    fprintf(fp, "%6d\t", rpmdsIx(ds));
 	if (_rpmfc_debug || rpmIsVerbose())
-	    fprintf(fp, "%s: ", rpmdsTagName(ds));
+	    fprintf(fp, "%s: ", rpmdsType(ds));
 	fprintf(fp, "%s\n", rpmdsDNEVR(ds)+2);
     }
     return 0;
