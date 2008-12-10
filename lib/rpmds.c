@@ -610,7 +610,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     ds->N = xcalloc(2, sizeof(*ds->N));		ds->N[0] = N;
     ds->EVR = xcalloc(2, sizeof(*ds->EVR));	ds->EVR[0] = EVR;
     /*@=assignexpose@*/
-    ds->Flags = xcalloc(2, sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     {	char t[2];
 	t[0] = ds->Type[0];
 	t[1] = '\0';

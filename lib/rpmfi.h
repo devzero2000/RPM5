@@ -72,24 +72,6 @@ typedef	enum rpmfileAttrs_e {
 #define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
 
-/**
- * File disposition(s) during package install/erase transaction.
- */
-typedef enum fileAction_e {
-    FA_UNKNOWN = 0,	/*!< initial action for file ... */
-    FA_CREATE,		/*!< ... copy in from payload. */
-    FA_COPYIN,		/*!< ... copy in from payload. */
-    FA_COPYOUT,		/*!< ... copy out to payload. */
-    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
-    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
-    FA_SKIP, 		/*!< ... already replaced, don't remove. */
-    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
-    FA_ERASE,		/*!< ... to be removed. */
-    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
-    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
-} fileAction;
-
 /** \ingroup rpmfi
  * File info tag sets from a header, so that a header can be discarded early.
  */
@@ -98,9 +80,6 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 #if defined(_RPMFI_INTERNAL)
 
 #include "mire.h"
-
-#define XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
 /** \ingroup rpmfi
  * A package filename set.
@@ -157,7 +136,10 @@ struct rpmfi_s {
     const rpmuint32_t * fcolors;/*!< File color bits (header) */
 
 /*@only@*/ /*@null@*/
-    const char ** fcontexts;	/*! FIle security contexts. */
+    const char ** fcaps;	/*! File capabilities. */
+
+/*@only@*/ /*@null@*/
+    const char ** fcontexts;	/*! File security contexts. */
 
 /*@only@*/ /*@null@*/
     const char ** cdict;	/*!< File class dictionary (header) */
@@ -194,9 +176,9 @@ struct rpmfi_s {
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */
     rpmuint32_t flags;		/*!< File flags (default). */
-    fileAction action;		/*!< File disposition (default). */
+    int action;			/*!< File disposition (default). */
 /*@owned@*/ /*@relnull@*/
-    fileAction * actions;	/*!< File disposition(s). */
+    int * actions;		/*!< File disposition(s). */
 /*@owned@*/
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 /*@owned@*/
@@ -630,6 +612,7 @@ void * rpmfiInclude(/*@null@*/ const rpmfi fi)
  */
 int rpmfiNInclude(/*@null@*/ const rpmfi fi)
 	/*@*/;
+
 /**
  * Return next file iterator index.
  * @param fi		file info set
@@ -821,7 +804,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
  * @param skipMissing	OK to skip missing files?
  * @return		file dispostion
  */
-fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+int rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies nfi, fileSystem, internalState @*/;
 
@@ -866,6 +849,7 @@ rpmRelocation rpmfiDupeRelocations(rpmRelocation relocs, int * nrelocsp)
 int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
 		const char * oldPath, const char * newPath)
 	/*@modifies *relp, *nrelp @*/;
+
 
 /*@}*/
 #endif	/* _RPMFI_NOMETHODS */

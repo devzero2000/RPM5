@@ -7,6 +7,7 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmlog.h>
+#include <iosm.h>		/* XXX iosmFileAction */
 #include <rpmurl.h>
 #include <rpmpgp.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
@@ -1095,7 +1096,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		rpmuint32_t fileSize, rpmuint32_t prevSize, rpmuint32_t fixupSize,
 		int _action)
 {
-    fileAction action = _action;
+    iosmFileAction action = _action;
     rpmDiskSpaceInfo dsi;
     rpmuint64_t bneeded;
 

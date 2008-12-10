@@ -2448,8 +2448,8 @@ assert(psm->te != NULL);
 
 	}
 	if (psm->goal == PSM_PKGSAVE) {
-	    fileAction * actions = fi->actions;
-	    fileAction action = fi->action;
+	    iosmFileAction * actions = (iosmFileAction *) fi->actions;
+	    iosmFileAction action = (iosmFileAction) fi->action;
 
 	    fi->action = FA_COPYOUT;
 	    fi->actions = NULL;
@@ -2488,8 +2488,8 @@ assert(psm->te != NULL);
 	    psm->total = psm->amount;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    fi->action = action;
-	    fi->actions = actions;
+	    fi->action = (int) action;
+	    fi->actions = (int *) actions;
 	}
 	break;
     case PSM_POST:

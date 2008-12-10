@@ -344,7 +344,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	for (i = 0; i < (int)fi->fc; i++)
 #endif
 	{
-            if (!XFA_SKIPPING(fi->actions[i]))
+            if (!iosmFileActionSkipped(fi->actions[i]))
 		dnli->active[fi->dil[i]] = (char)1;
 	}
 
@@ -529,7 +529,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 
 	for (j = iosm->li->linksLeft - 1; j >= 0; j--) {
 	    ix = iosm->li->filex[j];
-	    if (ix < 0 || XFA_SKIPPING(fi->actions[ix]))
+	    if (ix < 0 || iosmFileActionSkipped(fi->actions[ix]))
 		continue;
 	    break;
 	}
@@ -1340,7 +1340,7 @@ static int iosmMakeLinks(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	iosm->ix = iosm->li->filex[i];
 	iosm->path = _free(iosm->path);
 	rc = iosmNext(iosm, IOSM_MAP);
-	if (XFA_SKIPPING(iosm->action)) continue;
+	if (iosmFileActionSkipped(iosm->action)) continue;
 
 	rc = iosmUNSAFE(iosm, IOSM_VERIFY);
 	if (!rc) continue;
@@ -1398,7 +1398,7 @@ static int iosmCommitLinks(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	if (iosm->li->filex[i] < 0) continue;
 	iosm->ix = iosm->li->filex[i];
 	rc = iosmNext(iosm, IOSM_MAP);
-	if (!XFA_SKIPPING(iosm->action))
+	if (!iosmFileActionSkipped(iosm->action))
 	    rc = iosmNext(iosm, IOSM_COMMIT);
 	iosm->path = _free(iosm->path);
 	iosm->li->filex[i] = -1;
@@ -1925,7 +1925,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	rc = iosmMapAttrs(iosm);
 	if (rc) break;
 
-	iosm->postpone = XFA_SKIPPING(iosm->action);
+	iosm->postpone = iosmFileActionSkipped(iosm->action);
 	if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	    /*@-evalorder@*/ /* FIX: saveHardLink can modify iosm */
 	    if (S_ISREG(st->st_mode) && st->st_nlink > 1)
@@ -2669,6 +2669,14 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
     return rc;
 }
 /*@=compmempass@*/
+
+#define IOSM_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
+
+int iosmFileActionSkipped(iosmFileAction action)
+{
+    return IOSM_SKIPPING(action);
+}
 
 /*@observer@*/ const char * iosmFileActionString(iosmFileAction a)
 {

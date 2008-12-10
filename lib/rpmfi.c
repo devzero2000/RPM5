@@ -607,7 +607,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     return 0;
 }
 
-fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+int rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
@@ -726,7 +726,7 @@ const char * rpmfiTypeString(rpmfi fi)
  */
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
-		Header origH, fileAction * actions)
+		Header origH, iosmFileAction * actions)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		internalState @*/
 	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
@@ -1548,7 +1548,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 	/*@-compdef@*/ /* FIX: fi->digests undefined */
-	foo = relocateFileList(ts, fi, h, fi->actions);
+	foo = relocateFileList(ts, fi, h, (iosmFileAction *) fi->actions);
 	/*@=compdef@*/
 	fi->h = headerFree(fi->h);
 	fi->h = headerLink(foo);

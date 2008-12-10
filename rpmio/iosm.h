@@ -14,12 +14,28 @@
  */
 typedef /*@abstract@*/ struct iosm_s * IOSM_t;
 
-typedef	int iosmFileAction;
-
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _iosm_debug;
 /*@=exportlocal@*/
+
+/**
+ * File disposition(s) during package install/erase processing.
+ */
+typedef enum iosmFileAction_e {
+    FA_UNKNOWN = 0,	/*!< initial action for file ... */
+    FA_CREATE,		/*!< ... copy in from payload. */
+    FA_COPYIN,		/*!< ... copy in from payload. */
+    FA_COPYOUT,		/*!< ... copy out to payload. */
+    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
+    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
+    FA_SKIP, 		/*!< ... already replaced, don't remove. */
+    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
+    FA_ERASE,		/*!< ... to be removed. */
+    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
+    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
+    FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
+} iosmFileAction;
 
 /** \ingroup payload
  */
@@ -278,7 +294,7 @@ struct iosm_s {
     const unsigned char * digest;/*!< Bin digest (usually MD5, NULL disables). */
 /*@dependent@*/ /*@observer@*/ /*@null@*/
     const char * fcontext;	/*!< File security context (NULL disables). */
-    
+
     rpmuint32_t fflags;		/*!< File flags. */
     iosmFileAction action;	/*!< File disposition. */
     iosmFileStage goal;		/*!< Package state machine goal. */
@@ -420,6 +436,14 @@ int iosmMapAttrs(IOSM_t iosm)
 extern int (*_iosmNext) (IOSM_t iosm, iosmFileStage nstage)
 	/*@modifies iosm @*/;
 #endif
+
+/**
+ * Is the file going to be skipped?
+ * @param iosm		I/O state machine
+ * @return		Is file to be skipped?
+ */
+int iosmFileActionSkipped(iosmFileAction action)
+	/*@*/;
 
 /**
  * File state machine driver.
