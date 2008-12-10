@@ -9,6 +9,7 @@
 #include <ugid.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>	/* XXX urlGetPath */
+#include <mire.h>
 
 #define	_RPMAV_INTERNAL	/* XXX avOpendir */
 #include <rpmdav.h>
@@ -416,6 +417,36 @@ const char * rpmfiFGroup(rpmfi fi)
 	    fgroup = fi->fgroup[fi->i];
     }
     return fgroup;
+}
+
+int rpmfiSetFAction(rpmfi fi, int action)
+{
+    iosmFileAction oaction = FA_UNKNOWN;
+    if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
+	oaction = fi->actions[fi->i];
+	fi->actions[fi->i] = action;
+    }
+    return oaction;
+}
+
+void * rpmfiExclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->exclude : NULL);
+}
+
+int rpmfiNExclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->nexclude : 0);
+}
+
+void * rpmfiInclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->include : NULL);
+}
+
+int rpmfiNInclude(const rpmfi fi)
+{
+    return (fi != NULL ? fi->ninclude : 0);
 }
 
 int rpmfiNext(rpmfi fi)
@@ -1219,6 +1250,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     }
 
     fi->fsm = freeFSM(fi->fsm);
+
+    fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
+    fi->include = mireFreeAll(fi->include, fi->ninclude);
 
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
