@@ -20,7 +20,7 @@ extern int _rpmds_debug;
 
 /** \ingroup rpmds
  */
-/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@null@*/
 extern const char *_sysinfo_path;
 
 /** \ingroup rpmds
@@ -31,6 +31,8 @@ extern int _rpmds_nopromote;
 /*@=exportlocal@*/
 
 #if defined(_RPMDS_INTERNAL)
+#include "mire.h"
+
 /** \ingroup rpmds
  * A dependency set.
  */
@@ -57,6 +59,12 @@ struct rpmds_s {
     int (*EVRparse) (const char *evrstr, EVR_t evr);	 /* EVR parsing. */
     int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
     struct rpmns_s ns;		/*!< Name (split). */
+/*@only@*/ /*@null@*/
+    miRE exclude;		/*!< Iterator exclude patterns. */
+    int nexclude;		/*!< No. of exclude patterns. */
+/*@only@*/ /*@null@*/
+    miRE include;		/*!< Iterator include patterns. */
+    int ninclude;		/*!< No. of include patterns. */
 /*@only@*/ /*@null@*/
     const char * A;		/*!< Arch (from containing package). */
     uint32_t BT;		/*!< Package build time tie breaker. */
@@ -201,7 +209,8 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
  */
 /*@null@*/
 rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmds
  * Create, load and initialize a dependency set of size 1.
@@ -381,6 +390,40 @@ uint32_t rpmdsColor(/*@null@*/ const rpmds ds)
  */
 uint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, uint32_t color)
 	/*@modifies ds @*/;
+
+/** \ingroup rpmds
+ * Return dependency exclude patterns.
+ * @param ds		dependency set
+ * @return		dependency exclude patterns (NULL if not set)
+ */
+/*@null@*/
+void * rpmdsExclude(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Return no. of dependency exclude patterns.
+ * @param ds		dependency set
+ * @return		dependency exclude patterns (0 if not set)
+ */
+int rpmdsNExclude(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Return dependency include patterns.
+ * @param ds		dependency set
+ * @return		dependency include patterns (NULL if not set)
+ */
+/*@null@*/
+void * rpmdsInclude(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Return no. of dependency include patterns.
+ * @param ds		dependency set
+ * @return		dependency include patterns (0 if not set)
+ */
+int rpmdsNInclude(/*@null@*/ const rpmds ds)
+	/*@*/;
 
 /** \ingroup rpmds
  * Return current dependency file refs.
@@ -684,7 +727,8 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
  * @return		1 if dependency overlaps, 0 otherwise
  */
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmds
  * Negate return code for negated comparisons.
@@ -695,30 +739,16 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 int rpmdsNegateRC(const rpmds ds, int rc)
 	/*@*/;
 
-#if !defined(SWIG)
 /** \ingroup rpmds
  * Return current dependency type name.
  * @param ds		dependency set
  * @return		current dependency type name
  */
-/*@unused@*/ static inline /*@observer@*/
-const char * rpmdsTagName(/*@null@*/ const rpmds ds)
-	/*@*/
-{
-    rpmTag tagN = rpmdsTagN(ds);
+/*@observer@*/
+const char * rpmdsType(/*@null@*/ const rpmds ds)
+	/*@*/;
 
-    switch (tagN) {
-    case RPMTAG_PROVIDENAME:	return "Provides";	/*@notreached@*/ break;
-    case RPMTAG_REQUIRENAME:	return "Requires";	/*@notreached@*/ break;
-    case RPMTAG_CONFLICTNAME:	return "Conflicts";	/*@notreached@*/ break;
-    case RPMTAG_OBSOLETENAME:	return "Obsoletes";	/*@notreached@*/ break;
-    case RPMTAG_TRIGGERNAME:	return "Triggers";	/*@notreached@*/ break;
-    case RPMTAG_DIRNAMES:	return "Dirnames";	/*@notreached@*/ break;
-    default:	break;
-    }
-    return tagName(tagN);
-}
-
+#if !defined(SWIG)
 /** \ingroup rpmds
  * Print current dependency set contents.
  * @param ds		dependency set
@@ -734,7 +764,7 @@ int rpmdsPrint(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
 	fp = stderr;
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0)
-        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);
+        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsType(ds), rpmdsDNEVR(ds)+2);
     return 0;
 }
 
@@ -753,10 +783,10 @@ int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
 	fp = stderr;
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0) {
-	int rc = rpmdsResult(ds);
+	int32_t rc = rpmdsResult(ds);
 	if (rc > 0)
 	    continue;
-        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsTagName(ds), rpmdsDNEVR(ds)+2);
+        fprintf(fp, "%6d\t%s: %s\n", rpmdsIx(ds), rpmdsType(ds), rpmdsDNEVR(ds)+2);
     }
     return 0;
 }

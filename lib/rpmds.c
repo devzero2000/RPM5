@@ -82,13 +82,14 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 #include <rpmlib.h>
+#include <argv.h>
+
+#include <rpmtag.h>
 
 #define	_RPMDS_INTERNAL
 #define	_RPMEVR_INTERNAL
 #define	_RPMPRCO_INTERNAL
 #include <rpmds.h>
-
-#include <argv.h>
 
 #include "debug.h"
 
@@ -139,10 +140,42 @@ fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
 
+/**
+ * Return dependency set type string.
+ * @param tagN		dependency set tag
+ * @return		dependency set type string
+ */
+/*@observer@*/
+static const char * rpmdsTagName(rpmTag tagN)
+	/*@*/
+{
+    const char * Type;
+
+    /* XXX Preserve existing names in debugging messages. */
+    switch (tagN) {
+    default:			Type = tagName(tagN);	break;
+    case RPMTAG_PROVIDENAME:	Type = "Provides";	break;
+    case RPMTAG_REQUIRENAME:	Type = "Requires";	break;
+    case RPMTAG_CONFLICTNAME:	Type = "Conflicts";	break;
+    case RPMTAG_OBSOLETENAME:	Type = "Obsoletes";	break;
+    case RPMTAG_TRIGGERNAME:	Type = "Triggers";	break;
+    case RPMTAG_SUGGESTSNAME:	Type = "Suggests";	break;
+    case RPMTAG_ENHANCESNAME:	Type = "Enhances";	break;
+    case RPMTAG_DIRNAMES:	Type = "Dirs";		break;
+    case RPMTAG_BASENAMES:	Type = "Files";		break;
+    case RPMTAG_FILELINKTOS:	Type = "Linktos";	break;
+    case 0:			Type = "Unknown";	break;
+    }
+    return Type;
+}
+
+const char * rpmdsType(const rpmds ds)
+{
+    return rpmdsTagName(rpmdsTagN(ds));
+}
+
 rpmds rpmdsFree(rpmds ds)
 {
-    rpmTag tagEVR, tagF;
-
     if (ds == NULL)
 	return NULL;
 
@@ -153,44 +186,6 @@ rpmds rpmdsFree(rpmds ds)
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesys@*/
-
-    if (ds->tagN == RPMTAG_PROVIDENAME) {
-	tagEVR = RPMTAG_PROVIDEVERSION;
-	tagF = RPMTAG_PROVIDEFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_REQUIRENAME) {
-	tagEVR = RPMTAG_REQUIREVERSION;
-	tagF = RPMTAG_REQUIREFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_CONFLICTNAME) {
-	tagEVR = RPMTAG_CONFLICTVERSION;
-	tagF = RPMTAG_CONFLICTFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_OBSOLETENAME) {
-	tagEVR = RPMTAG_OBSOLETEVERSION;
-	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_TRIGGERNAME) {
-	tagEVR = RPMTAG_TRIGGERVERSION;
-	tagF = RPMTAG_TRIGGERFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_SUGGESTSNAME) {
-	tagEVR = RPMTAG_SUGGESTSVERSION;
-	tagF = RPMTAG_SUGGESTSFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_ENHANCESNAME) {
-	tagEVR = RPMTAG_ENHANCESVERSION;
-	tagF = RPMTAG_ENHANCESFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_DIRNAMES) {
-	tagEVR = 0;
-	tagF = 0;
-    } else
-    if (ds->tagN == RPMTAG_FILELINKTOS) {
-	tagEVR = 0;
-	tagF = 0;
-    } else
-	return NULL;
 
     if (ds->Count > 0) {
 	ds->N = _free(ds->N);
@@ -206,6 +201,8 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
     ds->Result = _free(ds->Result);
+    ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
+    ds->include = mireFreeAll(ds->include, ds->ninclude);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
@@ -247,62 +244,69 @@ assert(argv[ac] != NULL);
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
+    int delslash = 1;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
-    const char * Type;
+    const char * Type = NULL;
     const char ** N;
     uint32_t Count;
     int xx;
 
 assert(scareMem == 0);		/* XXX always allocate memory */
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
+
+    if (tagN == RPMTAG_NAME)
+	return rpmdsThis(h, tagN, RPMSENSE_EQUAL);
+
+    switch (tagN) {
+    default:
+	goto exit;
+	/*@notreached@*/ break;
+    case RPMTAG_PROVIDENAME:
 	tagEVR = RPMTAG_PROVIDEVERSION;
 	tagF = RPMTAG_PROVIDEFLAGS;
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
+	break;
+    case RPMTAG_REQUIRENAME:
 	tagEVR = RPMTAG_REQUIREVERSION;
 	tagF = RPMTAG_REQUIREFLAGS;
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
+	break;
+    case RPMTAG_CONFLICTNAME:
 	tagEVR = RPMTAG_CONFLICTVERSION;
 	tagF = RPMTAG_CONFLICTFLAGS;
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
+	break;
+    case RPMTAG_OBSOLETENAME:
 	tagEVR = RPMTAG_OBSOLETEVERSION;
 	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Triggers";
+	break;
+    case RPMTAG_TRIGGERNAME:
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
-    } else
-    if (tagN == RPMTAG_SUGGESTSNAME) {
-	Type = "Suggests";
+	break;
+    case RPMTAG_SUGGESTSNAME:
 	tagEVR = RPMTAG_SUGGESTSVERSION;
 	tagF = RPMTAG_SUGGESTSFLAGS;
-    } else
-    if (tagN == RPMTAG_ENHANCESNAME) {
-	Type = "Enhances";
+	break;
+    case RPMTAG_ENHANCESNAME:
 	tagEVR = RPMTAG_ENHANCESVERSION;
 	tagF = RPMTAG_ENHANCESFLAGS;
-    } else
-    if (tagN == RPMTAG_DIRNAMES) {
-	Type = "Dirnames";
+	break;
+    case RPMTAG_DIRNAMES:
 	tagEVR = 0;
 	tagF = 0;
-    } else
-    if (tagN == RPMTAG_FILELINKTOS) {
-	Type = "Filelinktos";
+	delslash = (flags & 0x2) ? 0 : 1;
+	break;
+    case RPMTAG_BASENAMES:
 	tagEVR = RPMTAG_DIRNAMES;
 	tagF = RPMTAG_DIRINDEXES;
-    } else
-	goto exit;
+	break;
+    case RPMTAG_FILELINKTOS:
+	tagEVR = RPMTAG_DIRNAMES;
+	tagF = RPMTAG_DIRINDEXES;
+	break;
+    }
+
+    if (Type == NULL)
+	Type = rpmdsTagName(tagN);
 
     he->tag = tagN;
     xx = headerGet(h, he, 0);
@@ -342,20 +346,40 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	}
 
 	if (tagN == RPMTAG_DIRNAMES) {
-	    char * t;
+	    char * dn;
 	    size_t len;
 	    unsigned i;
 	    /* XXX Dirnames always have trailing '/', trim that here. */
+	    if (delslash)
 	    for (i = 0; i < Count; i++) {
-		(void) urlPath(N[i], (const char **)&t);
-		if (t > N[i])
-		    N[i] = t;
-		t = (char *)N[i];
-		len = strlen(t);
+		(void) urlPath(N[i], (const char **)&dn);
+		if (dn > N[i])
+		    N[i] = dn;
+		dn = (char *)N[i];
+		len = strlen(dn);
 		/* XXX don't truncate if parent is / */
-		if (len > 1 && t[len-1] == '/')
-		    t[len-1] = '\0';
+		if (len > 1 && dn[len-1] == '/')
+		    dn[len-1] = '\0';
 	    }
+	} else
+	if (tagN == RPMTAG_BASENAMES) {
+	    const char ** av = xcalloc(Count+1, sizeof(*av));
+	    char * dn;
+	    unsigned i;
+
+	    for (i = 0; i < Count; i++) {
+		(void) urlPath(ds->EVR[ds->Flags[i]], (const char **)&dn);
+		av[i] = rpmGenPath(NULL, dn, N[i]);
+	    }
+	    av[Count] = NULL;
+
+/*@-unqualifiedtrans@*/
+	    N = ds->N = _free(ds->N);
+/*@=unqualifiedtrans@*/
+	    N = ds->N = rpmdsDupArgv(av, Count);
+	    av = argvFree(av);
+	    ds->EVR = _free(ds->EVR);
+	    ds->Flags = _free(ds->Flags);
 	} else
 	if (tagN == RPMTAG_FILELINKTOS) {
 	    /* XXX Construct the absolute path of the target symlink(s). */
@@ -374,7 +398,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    }
 	    av[Count] = NULL;
 
+/*@-unqualifiedtrans@*/
 	    N = ds->N = _free(ds->N);
+/*@=unqualifiedtrans@*/
 	    N = ds->N = rpmdsDupArgv(av, Count);
 	    av = argvFree(av);
 	    ds->EVR = _free(ds->EVR);
@@ -502,34 +528,10 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     char * t;
     int xx;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Triggers";
-    } else
-    if (tagN == RPMTAG_SUGGESTSNAME) {
-    Type = "Suggests";
-    } else
-    if (tagN == RPMTAG_ENHANCESNAME) {
-    Type = "Enhances";
-    } else
-    if (tagN == RPMTAG_DIRNAMES) {
-	Type = "Dirnames";
-    } else
-    if (tagN == RPMTAG_FILELINKTOS) {
-	Type = "Filelinktos";
-    } else
-	goto exit;
+    if (tagN == RPMTAG_NAME)
+	tagN = RPMTAG_PROVIDENAME;
+
+    Type = rpmdsTagName(tagN);
 
     he->tag = RPMTAG_EPOCH;
     xx = headerGet(h, he, 0);
@@ -584,7 +586,6 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 	/*@=nullstate@*/
     }
 
-exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
@@ -593,41 +594,14 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     rpmds ds = NULL;
     const char * Type;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Triggers";
-    } else
-    if (tagN == RPMTAG_SUGGESTSNAME) {
-    Type = "Suggests";
-    } else
-    if (tagN == RPMTAG_ENHANCESNAME) {
-    Type = "Enhances";
-    } else
-    if (tagN == RPMTAG_DIRNAMES) {
-	Type = "Dirnames";
-    } else
-    if (tagN == RPMTAG_FILELINKTOS) {
-	Type = "Filelinktos";
-    } else
-	goto exit;
+    Type = rpmdsTagName(tagN);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
     ds->tagN = tagN;
     ds->A = NULL;
     {	time_t now = time(NULL);
-	ds->BT = now;
+	ds->BT = (uint32_t)now;
     }
     ds->Count = 1;
     /*@-assignexpose@*/
@@ -641,7 +615,6 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 /*@i@*/	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
 
-exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
@@ -741,8 +714,8 @@ time_t rpmdsSetBT(const rpmds ds, time_t BT)
 {
     time_t oBT = 0;
     if (ds != NULL) {
-	oBT = ds->BT;
-	ds->BT = BT;
+	oBT = (time_t)ds->BT;
+	ds->BT = (uint32_t)BT;
     }
     return oBT;
 }
@@ -828,6 +801,26 @@ uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
     return ocolor;
 }
 
+void * rpmdsExclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->exclude : NULL);
+}
+
+int rpmdsNExclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->nexclude : 0);
+}
+
+void * rpmdsInclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->include : NULL);
+}
+
+int rpmdsNInclude(const rpmds ds)
+{
+    return (ds != NULL ? ds->ninclude : 0);
+}
+
 uint32_t rpmdsRefs(const rpmds ds)
 {
     uint32_t Refs = 0;
@@ -892,10 +885,10 @@ void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
     if (!(ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count))
 	return;
-    if (!(ds->Type != NULL && ds->DNEVR != NULL))
+    if (ds->DNEVR == NULL)
 	return;
 
-    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
+    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", rpmdsTagName(ds->tagN),
 		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
 		(rc ? _("NO ") : _("YES")),
 		(where != NULL ? where : ""));
@@ -1189,6 +1182,7 @@ static struct cpuinfo_s ctags[] = {
     { "wp",		0,  3 },
     { "flags",		0,  4 },
     { "bogomips",	0,  1 },
+    { "clflush_size",	0,  1 },
     { NULL,		0, -1 }
 };
 
@@ -1253,13 +1247,13 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 {
     struct cpuinfo_s * ct;
     const char * NS = "cpuinfo";
-    char buf[BUFSIZ];
-    char * f, * fe;
+    uint8_t * b;
+    ssize_t blen;
+    char * f, * fe, * fend;
     char * g, * ge;
     char * t;
-    FD_t fd = NULL;
-    FILE * fp;
     int rc = -1;
+    int xx;
 
 /*@-modobserver@*/
     if (_cpuinfo_path == NULL) {
@@ -1281,15 +1275,21 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     for (ct = ctags; ct->name != NULL; ct++)
 	ct->done = 0;
 
-    fd = Fopen(fn, "r.fpio");
-    if (fd == NULL || Ferror(fd))
+    xx = rpmioSlurp(fn, &b, &blen);
+    if (!(xx == 0 && b != NULL && blen > 0))
 	goto exit;
-    fp = fdGetFILE(fd);
 
-    if (fp != NULL)
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    for (f = (char *)b; *f != '\0'; f = fend) {
+	/* find EOL */
+	fe = f;
+	while (*fe != '\0' && !(*fe == '\n' || *fe == '\r'))
+	    fe++;
+	ge = fe;
+	while (*fe != '\0' && (*fe == '\n' || *fe == '\r'))
+	    *fe++ = '\0';
+	fend = fe;
+
 	/* rtrim on line. */
-	ge = f + strlen(f);
 	while (--ge > f && _isspace(*ge))
 	    *ge = '\0';
 
@@ -1362,7 +1362,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     }
 
 exit:
-    if (fd != NULL) (void) Fclose(fd);
+    b = _free(b);
     return rc;
 }
 
@@ -1491,7 +1491,7 @@ assert(fn != NULL);
 
     ln = 0;
     if (fp != NULL)
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while((f = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	ln++;
 
 	/* insure a terminator. */
@@ -2667,7 +2667,7 @@ int rpmdsMergePRCO(void * context, rpmds ds)
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(ds)));
+fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, rpmdsTagName(rpmdsTagN(ds)));
 /*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:
@@ -2708,13 +2708,7 @@ rpmPRCO rpmdsFreePRCO(rpmPRCO PRCO)
 	PRCO->T = rpmdsFree(PRCO->T);
 	PRCO->D = rpmdsFree(PRCO->D);
 	PRCO->L = rpmdsFree(PRCO->L);
-	PRCO->Pdsp = NULL;
-	PRCO->Rdsp = NULL;
-	PRCO->Cdsp = NULL;
-	PRCO->Odsp = NULL;
-	PRCO->Tdsp = NULL;
-	PRCO->Ddsp = NULL;
-	PRCO->Ldsp = NULL;
+	memset(PRCO, 0, sizeof(*PRCO));
 	PRCO = _free(PRCO);
     }
     return NULL;
@@ -2725,8 +2719,8 @@ rpmPRCO rpmdsNewPRCO(Header h)
     rpmPRCO PRCO = xcalloc(1, sizeof(*PRCO));
 
     if (h != NULL) {
-	int scareMem = 0;
-	PRCO->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	static int scareMem = 0;
+	PRCO->this = rpmdsNew(h, RPMTAG_NAME, scareMem);
 	PRCO->P = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
 	PRCO->R = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	PRCO->C = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
@@ -2747,25 +2741,19 @@ rpmPRCO rpmdsNewPRCO(Header h)
 
 rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
 {
-    if (PRCO == NULL)
-	return NULL;
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
-    if (tagN == RPMTAG_NAME)
-	return PRCO->this;
-    if (tagN == RPMTAG_PROVIDENAME)
-	return *PRCO->Pdsp;
-    if (tagN == RPMTAG_REQUIRENAME)
-	return *PRCO->Rdsp;
-    if (tagN == RPMTAG_CONFLICTNAME)
-	return *PRCO->Cdsp;
-    if (tagN == RPMTAG_OBSOLETENAME)
-	return *PRCO->Odsp;
-    if (tagN == RPMTAG_TRIGGERNAME)
-	return *PRCO->Tdsp;
-    if (tagN == RPMTAG_DIRNAMES)
-	return *PRCO->Ddsp;
-    if (tagN == RPMTAG_FILELINKTOS)
-	return *PRCO->Ldsp;
+    if (PRCO != NULL)
+    switch (tagN) {
+    default:	break;
+    case RPMTAG_NAME:		return PRCO->this;	/*@notreached@*/ break;
+    case RPMTAG_PROVIDENAME:	return *PRCO->Pdsp;	/*@notreached@*/ break;
+    case RPMTAG_REQUIRENAME:	return *PRCO->Rdsp;	/*@notreached@*/ break;
+    case RPMTAG_CONFLICTNAME:	return *PRCO->Cdsp;	/*@notreached@*/ break;
+    case RPMTAG_OBSOLETENAME:	return *PRCO->Odsp;	/*@notreached@*/ break;
+    case RPMTAG_TRIGGERNAME:	return *PRCO->Tdsp;	/*@notreached@*/ break;
+    case RPMTAG_DIRNAMES:	return *PRCO->Ddsp;	/*@notreached@*/ break;
+    case RPMTAG_FILELINKTOS:	return *PRCO->Ldsp;	/*@notreached@*/ break;
+    }
     return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
@@ -2843,7 +2831,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
     {	struct stat sb, * st = &sb;
 	if (stat(fn, st) != 0)
 	    return -1;
-	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+	is_executable = (int)(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
     }
 
     fdno = open(fn, O_RDONLY);
@@ -2881,13 +2869,13 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	    if (!skipP)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
+		for (cnt = (int)shdr->sh_info; --cnt >= 0; ) {
 		
 		    def = gelf_getverdef (data, offset, &def_mem);
 		    if (def == NULL)
 			/*@innerbreak@*/ break;
-		    auxoffset = offset + def->vd_aux;
-		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
+		    auxoffset = (unsigned)(offset + def->vd_aux);
+		    for (cnt2 = (int)def->vd_cnt; --cnt2 >= 0; ) {
 			GElf_Verdaux aux_mem, * aux;
 
 			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
@@ -2931,7 +2919,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	    if (!skipR && is_executable)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
+		for (cnt = (int)shdr->sh_info; --cnt >= 0; ) {
 		    need = gelf_getverneed (data, offset, &need_mem);
 		    if (need == NULL)
 			/*@innerbreak@*/ break;
@@ -2941,8 +2929,8 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 			/*@innerbreak@*/ break;
 		    soname = _free(soname);
 		    soname = xstrdup(s);
-		    auxoffset = offset + need->vn_aux;
-		    for (cnt2 = need->vn_cnt; --cnt2 >= 0; ) {
+		    auxoffset = (unsigned)(offset + need->vn_aux);
+		    for (cnt2 = (int)need->vn_cnt; --cnt2 >= 0; ) {
 			GElf_Vernaux aux_mem, * aux;
 
 			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
@@ -3132,7 +3120,7 @@ fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n"
     if (fp == NULL)
 	goto exit;
 
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while((f = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	EVR = NULL;
 	/* rtrim on line. */
 	ge = f + strlen(f);
@@ -3276,7 +3264,7 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) P %p R %p C %p O %p\n", PRCO, rldp, PR
 if (_rpmds_debug > 0)
 fprintf(stderr, "*** rpmdsRldpath(%p, %s) globbing %s\n", PRCO, rldp, buf);
 
-	xx = glob(buf, 0, NULL, &gl);
+	xx = Glob(buf, 0, NULL, &gl);
 	if (xx)		/* glob error, probably GLOB_NOMATCH */
 	    continue;
 
@@ -3306,7 +3294,7 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, 
 	    xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
 	}
 /*@-immediatetrans@*/
-	globfree(&gl);
+	Globfree(&gl);
 /*@=immediatetrans@*/
     }
     rc = 0;
@@ -3467,7 +3455,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 
     ln = 0;
     cmdprinted = 0;
-    while((f = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while((f = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	ln++;
 
 	/* insure a terminator. */
@@ -3806,6 +3794,8 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	t += strlen(t);
     }
     (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
+    V = _free(V);
+    R = _free(R);
 
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	if (nopromote)
@@ -3813,6 +3803,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	result = rpmdsCompare(pkg, req);
 	pkg = rpmdsFree(pkg);
     }
+    pkgN = _free(pkgN);
 
 exit:
     return result;
