@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: perl: add a sentinel to rpmdsSingle() rather than exporting rpmdsDup().
     - jbj: update po files (Translation Project).
     - jbj: fix: don't display lua info if compiled --without-lua.
     - jbj: rpmds: add storage and getters for exclude/include patterns.
