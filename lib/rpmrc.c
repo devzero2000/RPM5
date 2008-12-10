@@ -982,6 +982,7 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp, "%-21s : %s\n", "optflags", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
 
+#ifdef	WITH_LUA
 	fprintf(fp, "\nLUA MODULES:\n");
 /*@-globs@*/
 	s = rpmExpand(rpmluaFiles, NULL);
@@ -993,6 +994,7 @@ int rpmShowRC(FILE * fp)
 /*@=globs@*/
 	fprintf(fp, "%-21s : %s\n", "luapath", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
+#endif
 
 	fprintf(fp, "\nMACRO DEFINITIONS:\n");
 /*@-globs@*/

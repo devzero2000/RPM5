@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: fix: don't display lua info if compiled --without-lua.
     - jbj: rpmds: add storage and getters for exclude/include patterns.
     - jbj: rpmds: expose rpmdsType() in rpmds ABI.
     - jbj: rpmds: add rpmdsType() to name dependency sets status quo ante.
