@@ -146,11 +146,12 @@ extern int _url_debug;		/*!< URL debugging? */
  * @param msg		debugging identifier (unused)
  * @return		new instance
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 urlinfo	urlNew(const char * msg)
 	/*@*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@null@*/
 urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
@@ -175,12 +176,13 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
  * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@null@*/
 urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
 		const char * file, unsigned line)
 	/*@globals fileSystem, internalState @*/

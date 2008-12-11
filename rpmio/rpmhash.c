@@ -27,7 +27,9 @@ struct hashTable_s {
     size_t keySize;			/*!< size of key (0 if unknown) */
     int freeData;	/*!< should data be freed when table is destroyed? */
     hashBucket * buckets;		/*!< hash bucket array */
+/*@relnull@*/
     hashFunctionType fn;		/*!< generate hash value for key */
+/*@relnull@*/
     hashEqualityType eq;		/*!< compare hash keys for equality */
 };
 

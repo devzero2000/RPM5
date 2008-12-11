@@ -305,7 +305,9 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
 	    }
 	else
 	    dt[nac] = (unsigned char)DT_UNKNOWN;
+/*@-dependenttrans@*/
 	nav[nac++] = t;
+/*@=dependenttrans@*/
 	t = stpcpy(t, av[ac++]);
 	t++;	/* trailing \0 */
     }
@@ -889,7 +891,7 @@ static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const c
 
 /* =============================================================== */
 
-/*@-readonlytrans@*/
+/*@-nullassign -readonlytrans@*/
 /*@unchecked@*/ /*@observer@*/
 static const ne_propname fetch_props[] = {
     { "DAV:", "getcontentlength" },
@@ -900,7 +902,7 @@ static const ne_propname fetch_props[] = {
     { "DAV:", "checked-out" },
     { NULL, NULL }
 };
-/*@=readonlytrans@*/
+/*@=nullassign =readonlytrans@*/
 
 #define ELM_resourcetype (NE_PROPS_STATE_TOP + 1)
 #define ELM_collection (NE_PROPS_STATE_TOP + 2)
@@ -1382,13 +1384,13 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
-/*@unchecked@*/
+/*@observer@*/
 static const char * hrefpat = "(?i)<a(?:\\s+[a-z][a-z0-9_]*(?:=(?:\"[^\"]*\"|\\S+))?)*?\\s+href=(?:\"([^\"]*)\"|(\\S+))";
 
 /**
  */
 static int htmlParse(rpmhtml html)
-	/*@globals internalState @*/
+	/*@globals hrefpat, internalState @*/
 	/*@modifies html, internalState @*/
 {
     miRE mire;
@@ -1545,7 +1547,7 @@ fprintf(stderr, "*** htmlParse(%p) rc %d\n", html, rc);
 /* HACK htmlNLST() should be rewritten to use davReq/davResp w callbacks. */
 /*@-mustmod@*/
 static int htmlNLST(urlinfo u, avContext ctx) 
-	/*@globals internalState @*/
+	/*@globals hrefpat, internalState @*/
 	/*@modifies ctx, internalState @*/
 {
     rpmhtml html = htmlNew(u, ctx);
@@ -1572,7 +1574,7 @@ exit:
 /*@=mustmod@*/
 
 static int davNLST(avContext ctx)
-	/*@globals internalState @*/
+	/*@globals hrefpat, internalState @*/
 	/*@modifies ctx, internalState @*/
 {
     urlinfo u = NULL;
@@ -2053,6 +2055,7 @@ int davMkdir(const char * path, mode_t mode)
     rc = davInit(path, &u);
     if (rc)
 	goto exit;
+assert(u != NULL);
 
     (void) urlPath(path, &src);
 
@@ -2077,6 +2080,7 @@ int davRmdir(const char * path)
     rc = davInit(path, &u);
     if (rc)
 	goto exit;
+assert(u != NULL);
 
     (void) urlPath(path, &src);
 
@@ -2103,6 +2107,7 @@ int davRename(const char * oldpath, const char * newpath)
     rc = davInit(oldpath, &u);
     if (rc)
 	goto exit;
+assert(u != NULL);
 
     (void) urlPath(oldpath, &src);
     (void) urlPath(newpath, &dst);
@@ -2128,6 +2133,7 @@ int davUnlink(const char * path)
     rc = davInit(path, &u);
     if (rc)
 	goto exit;
+assert(u != NULL);
 
     (void) urlPath(path, &src);
 
@@ -2172,7 +2178,7 @@ static const char * statstr(const struct stat * st,
 }
 
 int davStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals fileSystem, internalState @*/
+	/*@globals hrefpat, fileSystem, internalState @*/
 	/*@modifies *st, fileSystem, internalState @*/
 {
     avContext ctx = NULL;
@@ -2221,7 +2227,7 @@ fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 }
 
 int davLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals fileSystem, internalState @*/
+	/*@globals hrefpat, fileSystem, internalState @*/
 	/*@modifies *st, fileSystem, internalState @*/
 {
     avContext ctx = NULL;
@@ -2349,6 +2355,7 @@ struct dirent * davReaddir(DIR * dir)
 }
 
 DIR * davOpendir(const char * path)
+	/*@globals hrefpat @*/
 {
     AVDIR avdir = NULL;
     avContext ctx = NULL;

@@ -61,6 +61,7 @@ rpmKeyring rpmKeyringLink(/*@returned@*/ rpmKeyring keyring)
  * @param keyring	keyring handle
  * @return		NULL always
  */
+/*@null@*/
 rpmKeyring rpmKeyringUnlink(/*@killref@*/ rpmKeyring keyring)
 	/*@modifies keyring @*/;
 
@@ -87,6 +88,7 @@ rpmPubkey rpmPubkeyRead(const char *filename)
  * @param key		Pubkey to free
  * @return		NULL always
  */
+/*@null@*/
 rpmPubkey rpmPubkeyFree(/*@killref@*/ rpmPubkey key)
 	/*@modifies key @*/;
 
@@ -104,6 +106,7 @@ rpmPubkey rpmPubkeyLink(/*@returned@*/ rpmPubkey key)
  * @param key		Pubkey
  * @return		NULL always
  */
+/*@null@*/
 rpmPubkey rpmPubkeyUnlink(/*@killref@*/ rpmPubkey key)
 	/*@modifies key @*/;
 

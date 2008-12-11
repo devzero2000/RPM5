@@ -123,11 +123,16 @@ typedef struct
 
     /* If the GLOB_ALTDIRFUNC flag is set, the following functions
        are used instead of the normal file access functions.  */
-    void (*gl_closedir) __PMT ((void *));
-    struct dirent *(*gl_readdir) __PMT ((void *));
-    __ptr_t (*gl_opendir) __PMT ((__const char *));
-    int (*gl_lstat) __PMT ((__const char *, struct stat *));
-    int (*gl_stat) __PMT ((__const char *, struct stat *));
+    void (*gl_closedir) __PMT ((void *))
+	/*@*/;
+    struct dirent *(*gl_readdir) __PMT ((void *))
+	/*@*/;
+    __ptr_t (*gl_opendir) __PMT ((__const char *))
+	/*@*/;
+    int (*gl_lstat) __PMT ((__const char *, struct stat *))
+	/*@*/;
+    int (*gl_stat) __PMT ((__const char *, struct stat *))
+	/*@*/;
   } glob_t;
 
 #ifdef _LARGEFILE64_SOURCE
@@ -141,11 +146,16 @@ typedef struct
 
     /* If the GLOB_ALTDIRFUNC flag is set, the following functions
        are used instead of the normal file access functions.  */
-    void (*gl_closedir) __PMT ((void *));
-    struct dirent64 *(*gl_readdir) __PMT ((void *));
-    __ptr_t (*gl_opendir) __PMT ((__const char *));
-    int (*gl_lstat) __PMT ((__const char *, struct stat64 *));
-    int (*gl_stat) __PMT ((__const char *, struct stat64 *));
+    void (*gl_closedir) __PMT ((void *))
+	/*@*/;
+    struct dirent64 *(*gl_readdir) __PMT ((void *))
+	/*@*/;
+    __ptr_t (*gl_opendir) __PMT ((__const char *))
+	/*@*/;
+    int (*gl_lstat) __PMT ((__const char *, struct stat64 *))
+	/*@*/;
+    int (*gl_stat) __PMT ((__const char *, struct stat64 *))
+	/*@*/;
   } glob64_t;
 #endif
 
@@ -160,7 +170,9 @@ typedef struct
 #if defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS != 64
 extern int glob __P ((__const char *__pattern, int __flags,
 		      int (*__errfunc) (__const char *, int),
-		      glob_t *__pglob));
+		      glob_t *__pglob))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /* Free storage allocated in PGLOB by a previous `glob' call.  */
 extern void globfree __P ((glob_t *__pglob));
@@ -168,9 +180,12 @@ extern void globfree __P ((glob_t *__pglob));
 # if defined(__GNUC__) && __GNUC__ >= 2
 extern int glob __P ((__const char *__pattern, int __flags,
 		      int (*__errfunc) (__const char *, int),
-		      glob_t *__pglob)) __asm__ ("glob64");
+		      glob_t *__pglob)) __asm__ ("glob64")
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
-extern void globfree __P ((glob_t *__pglob)) __asm__ ("globfree64");
+extern void globfree __P ((glob_t *__pglob)) __asm__ ("globfree64")
+	/*@*/;
 # else
 #  define glob glob64
 #  define globfree globfree64
@@ -182,9 +197,12 @@ extern void globfree __P ((glob_t *__pglob)) __asm__ ("globfree64");
 /*@-protoparammatch -type @*/
 extern int glob64 __P ((__const char *__pattern, int __flags,
 			int (*__errfunc) (__const char *, int),
-			glob64_t *__pglob));
+			glob64_t *__pglob))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
-extern void globfree64 __P ((glob64_t *__pglob));
+extern void globfree64 __P ((glob64_t *__pglob))
+	/*@*/;
 /*@=protoparammatch =type @*/
 #endif
 
@@ -195,7 +213,8 @@ extern void globfree64 __P ((glob64_t *__pglob));
 
    This function is not part of the interface specified by POSIX.2
    but several programs want to use it.  */
-extern int glob_pattern_p __P ((__const char *__pattern, int __quote));
+extern int glob_pattern_p __P ((__const char *__pattern, int __quote))
+	/*@*/;
 #endif
 
 #ifdef	__cplusplus

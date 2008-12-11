@@ -270,6 +270,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     /*@-usereleased@*/
     u = urlFree(u, "_url_cache (urlFind)");
     /*@=usereleased@*/
+assert(u != NULL);
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;

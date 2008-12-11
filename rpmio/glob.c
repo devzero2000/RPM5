@@ -105,13 +105,19 @@
 
 #define GLOB_INTERFACE_VERSION 1
 
-static inline const char *next_brace_sub __P ((const char *begin));
+/*@null@*/
+static inline const char *next_brace_sub __P ((const char *begin))
+	/*@*/;
 static int glob_in_dir __P ((const char *pattern, const char *directory,
 			     int flags,
 			     int (*errfunc) (const char *, int),
-			     glob_t *pglob));
-static int prefix_array __P ((const char *prefix, char **array, size_t n));
-static int collated_compare __P ((const __ptr_t, const __ptr_t));
+			     glob_t *pglob))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+static int prefix_array __P ((const char *prefix, char **array, size_t n))
+	/*@*/;
+static int collated_compare __P ((const __ptr_t, const __ptr_t))
+	/*@*/;
 
 
 /* Find the end of the sub-pattern in a brace expression.  We define

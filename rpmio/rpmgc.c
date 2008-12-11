@@ -28,6 +28,7 @@ extern int _pgp_print;
 
 static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
+	/*@*/
 {
     char buf[BUFSIZ];
     size_t nb;
@@ -351,7 +352,7 @@ void rpmgcClean(void * impl)
 }
 /*@=mustmod@*/
 
-static
+static /*@null@*/
 void * rpmgcFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {

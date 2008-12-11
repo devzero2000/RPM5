@@ -30,7 +30,7 @@ struct addrinfo
   struct addrinfo *ai_next;	/* Pointer to next in list.  */
 };
 
-/*@-exportheader@*/
+/*@-exportheader -incondefs @*/
 extern int getaddrinfo (__const char *__restrict __name,
 			__const char *__restrict __service,
 			__const struct addrinfo *__restrict __req,
@@ -45,7 +45,7 @@ extern int getnameinfo (__const struct sockaddr *__restrict __sa,
 
 extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 	/*@modifies __ai @*/;
-/*@=exportheader@*/
+/*@=exportheader =incondefs @*/
 #else
 #include <netdb.h>		/* XXX getaddrinfo et al */
 #endif
@@ -1324,6 +1324,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     }
 
     chptr = passReply;
+assert(chptr != NULL);
     while (*chptr && *chptr != '(') chptr++;
     if (*chptr != '(') return FTPERR_PASSIVE_ERROR;
     chptr++;

@@ -64,6 +64,7 @@ static int enable_rsync = 1;
 
 static inline
 int hex(char c)
+	/*@*/
 {
     if (c >= '0' && c <= '9')
 	return (int)(c - '0');

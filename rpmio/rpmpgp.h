@@ -1481,6 +1481,7 @@ int pgpSetSig(pgpDig dig,
  * @param opx		per-container accumulator index (aka rpmtsOpX)
  * @return		per-container accumulator pointer
  */
+/*@null@*/
 void * pgpStatsAccumulator(pgpDig dig, int opx)
 	/*@*/;
 

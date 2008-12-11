@@ -375,7 +375,7 @@ int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
     return 0;
 }
 
-/*@-varuse =readonlytrans @*/
+/*@-varuse =readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpSigRSA[] = {
     " m**d =",
@@ -388,7 +388,7 @@ static const char * pgpSigDSA[] = {
     "    s =",
     NULL,
 };
-/*@=varuse =readonlytrans @*/
+/*@=varuse =readonlytrans =nullassign @*/
 
 static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		pgpSigType sigtype, const rpmuint8_t * p)
@@ -557,7 +557,7 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
     return rc;
 }
 
-/*@-varuse =readonlytrans @*/
+/*@-varuse =readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicRSA[] = {
     "    n =",
@@ -608,7 +608,7 @@ static const char * pgpSecretELGAMAL[] = {
     NULL,
 };
 #endif
-/*@=varuse =readonlytrans @*/
+/*@=varuse =readonlytrans =nullassign @*/
 
 static const rpmuint8_t * pgpPrtPubkeyParams(const pgpPkt pp,
 		pgpPubkeyAlgo pubkey_algo, /*@returned@*/ const rpmuint8_t * p)

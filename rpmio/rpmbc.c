@@ -293,7 +293,7 @@ void rpmbcClean(void * impl)
 }
 /*@=mustmod@*/
 
-static
+static /*@null@*/
 void * rpmbcFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {

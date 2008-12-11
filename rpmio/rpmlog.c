@@ -114,11 +114,11 @@ int rpmlogSetMask (int mask)
     return omask;
 }
 
-/*@unchecked@*/
-static /*@null@*/ rpmlogCallback _rpmlogCallback = NULL;
+/*@unchecked@*/ /*@null@*/
+static rpmlogCallback _rpmlogCallback;
 
-/*@unchecked@*/
-static rpmlogCallbackData _rpmlogCallbackData = NULL;
+/*@unchecked@*/ /*@null@*/
+static rpmlogCallbackData _rpmlogCallbackData;
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 	/*@globals _rpmlogCallback, _rpmlogCallbackData @*/

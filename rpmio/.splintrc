@@ -12,19 +12,25 @@
 +strict			# lclint level
 
 # --- in progress
+-bounds
+-checkpost		# 7 *read ensures annotations
 -branchstate
 -bufferoverflowhigh
 
--compdef		# 16
+-compdef		# 82
 -compmempass		# 15
--moduncon		# 247
--noeffectuncon		# 263
--nullpass		# 38
+-moduncon		# 260
+-noeffect		# 9
+-noeffectuncon		# 268
+-nullderef		# 14 rpmlua annotations
+-nullpass		# 171
+-nullstate		# 33 indirections hard to annotate
 -protoparammatch	# 16
+-type			# 156
 
--onlytrans		# 15
--readonlytrans		# 12 digest names
--refcounttrans		# 19
+-onlytrans		# 20 only <=> newref confusions
+-readonlytrans		# 10 digest names
+-refcounttrans		# 19 only <=> newref confusions
 
 # --- +partial artifacts
 -declundef		# 442

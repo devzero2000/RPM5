@@ -1228,6 +1228,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
+#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
     } else if (STREQ("realpath", f, fn)) {
 	char rp[PATH_MAX];
 	char *cp;
@@ -1239,6 +1240,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 		b = buf;
 	    }
 	}
+#endif
     } else if (STREQ("getenv", f, fn)) {
 	char *cp;
 	if ((cp = getenv(buf)) != NULL)
@@ -1338,7 +1340,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	for (be = b; (c = (int)*be) && !isblank(c);)
 	    be++;
 /*@=globs@*/
-#if defined(HAVE_MKDTEMP)
+#if defined(HAVE_MKDTEMP) && !defined(__LCLINT__)
 	(void) mkdtemp(b);
 #else
 	if ((b = tmpnam(b)) != NULL)

@@ -55,7 +55,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
 	    )
 
 /*@only@*/ /*@unchecked@*/ /*@relnull@*/
-static rpmlua globalLuaState = NULL;
+static rpmlua globalLuaState;
 
 static int luaopen_rpm(lua_State *L)
 	/*@modifies L @*/;
@@ -63,10 +63,10 @@ static int rpm_print(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 const char * rpmluaFiles = RPMLUAFILES;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 const char * rpmluaPath = "%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/lua/?.lua";
 
 rpmlua rpmluaGetGlobalState(void)
@@ -81,7 +81,7 @@ rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
     lua_State *L = lua_open();
-    /*@-readonlytrans@*/
+    /*@-readonlytrans -nullassign @*/
     /*@observer@*/ /*@unchecked@*/
     static const luaL_reg lualibs[] = {
 	/* standard LUA libraries */
@@ -112,9 +112,9 @@ rpmlua rpmluaNew()
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
     };
+    /*@=readonlytrans =nullassign @*/
     /*@observer@*/ /*@unchecked@*/
     const luaL_reg *lib = lualibs;
-    /*@=readonlytrans@*/
     char *path_buf;
     char *path_next;
     char *path;
@@ -212,6 +212,7 @@ void rpmluaSetData(rpmlua _lua, const char *key, const void *data)
     lua_rawset(L, LUA_REGISTRYINDEX);
 }
 
+/*@null@*/
 static void *getdata(lua_State *L, const char *key)
 	/*@modifies L @*/
 {
@@ -1068,7 +1069,7 @@ static int rpm_realpath(lua_State *L)
 {
     const char *pn;
     char rp_buf[PATH_MAX];
-    char *rp;
+    char *rp = "";
 
     if (lua_isstring(L, 1))
         pn = lua_tostring(L, 1);
@@ -1076,15 +1077,17 @@ static int rpm_realpath(lua_State *L)
         (void)luaL_argerror(L, 1, "pathname");
         return 0;
     }
+#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
     if ((rp = realpath(pn, rp_buf)) == NULL) {
         (void)luaL_error(L, "failed to resolve path via realpath(3): %s", strerror(errno));
         return 0;
     }
+#endif
     lua_pushstring(L, (const char *)rp);
     return 1;
 }
 
-/*@-readonlytrans@*/
+/*@-readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
     {"macros", rpm_macros},
@@ -1104,7 +1107,7 @@ static const luaL_reg rpmlib[] = {
     {"realpath", rpm_realpath},
     {NULL, NULL}
 };
-/*@=readonlytrans@*/
+/*@=readonlytrans =nullassign @*/
 
 static int luaopen_rpm(lua_State *L)
 	/*@modifies L @*/

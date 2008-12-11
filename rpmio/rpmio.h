@@ -105,7 +105,9 @@ struct FDIO_s {
   fdio_write_function_t		write;
   fdio_seek_function_t		seek;
   fdio_close_function_t		close;
+/*@null@*/
   fdio_fopen_function_t		_fopen;
+/*@null@*/
   fdio_fdopen_function_t	_fdopen;
 /*@null@*/
   fdio_flush_function_t		_flush;
@@ -362,9 +364,7 @@ int Symlink(const char * oldpath, const char * newpath)
 /*@-incondefs@*/
 int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, errno, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
-	/*@ensures maxRead(buf) <= bufsiz @*/;
+	/*@modifies *buf, errno, fileSystem, internalState @*/;
 /*@=incondefs@*/
 
 /**
@@ -455,9 +455,12 @@ int Closedir(/*@only@*/ DIR * dir)
 /**
  * realpath(3) clone.
  */
+/*@-globuse@*/
+/*@null@*/
 char * Realpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
 	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies *resolved_path, errno, fileSystem, internalState @*/;
+	/*@modifies resolved_path, errno, fileSystem, internalState @*/;
+/*@=globuse@*/
 
 /**
  * lseek(2) clone.

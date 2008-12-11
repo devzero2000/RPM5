@@ -47,10 +47,10 @@ typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 extern "C" {
 #endif
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 extern const char * rpmluaFiles;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 extern const char * rpmluaPath;
 
 /*@-exportlocal@*/
@@ -62,6 +62,7 @@ rpmlua rpmluaNew(void)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
+/*@null@*/
 void *rpmluaFree(/*@only@*/ rpmlua lua)
 	/*@globals internalState @*/
 	/*@modifies lua, internalState @*/;
@@ -83,6 +84,7 @@ void rpmluaInteractive(/*@null@*/ rpmlua _lua)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _lua, fileSystem, internalState @*/;
 
+/*@null@*/
 void *rpmluaGetData(/*@null@*/ rpmlua _lua, const char *key)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _lua, fileSystem, internalState @*/;
@@ -122,6 +124,7 @@ void rpmluaPop(/*@null@*/ rpmlua _lua)
 /*@only@*/
 rpmluav rpmluavNew(void)
 	/*@*/;
+/*@null@*/
 void * rpmluavFree(/*@only@*/ rpmluav var)
 	/*@modifes var @*/;
 void rpmluavSetListMode(rpmluav var, int flag)

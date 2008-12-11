@@ -300,7 +300,7 @@ void rpmsslClean(void * impl)
 }
 /*@=mustmod@*/
 
-static
+static /*@null@*/
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {

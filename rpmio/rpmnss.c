@@ -200,7 +200,7 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 /*@=temptrans@*/
 }
 
-static
+static /*@null@*/
 SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
 	/*@*/
 {
@@ -224,17 +224,19 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
     key->pkcs11ID = CK_INVALID_HANDLE;
     key->pkcs11Slot = NULL;
     key->arena = arena;
+/*@-nullret@*/	/* key->pkcs11Slot can be NULL */
     return key;
+/*@=nullret@*/
 }
 
-static
+static /*@null@*/
 SECKEYPublicKey * rpmnssNewRSAKey(void)
 	/*@*/
 {
     return rpmnssNewPublicKey(rsaKey);
 }
 
-static
+static /*@null@*/
 SECKEYPublicKey * rpmnssNewDSAKey(void)
 	/*@*/
 {
@@ -356,7 +358,7 @@ void rpmnssClean(void * impl)
 }
 /*@=mustmod@*/
 
-static
+static /*@null@*/
 void * rpmnssFree(/*@only@*/ void * impl)
 	/*@*/
 {

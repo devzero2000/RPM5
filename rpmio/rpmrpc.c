@@ -942,13 +942,12 @@ typedef enum {
 
 /**
  */
-/*@unchecked@*/
-static size_t ftpBufAlloced = 0;
+static size_t ftpBufAlloced;
 
 /**
  */
-/*@unchecked@*/
-static /*@only@*/ char * ftpBuf = NULL;
+/*@only@*/ /*@relnull@*/
+static char * ftpBuf;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -1170,8 +1169,8 @@ static const char * statstr(const struct stat * st,
 
 /* FIXME: borked for path with trailing '/' */
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
@@ -1189,8 +1188,8 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 
 /* FIXME: borked for path with trailing '/' */
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
@@ -1207,8 +1206,8 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 }
 
 static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, *buf, fileSystem, internalState @*/
 {
     int rc;
     rc = ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
@@ -1219,8 +1218,10 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
 
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
-	/*@globals h_errno, errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, errno,
+		fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, errno,
+		fileSystem, internalState @*/
 {
     AVDIR avdir;
     avContext ctx;
@@ -1326,6 +1327,8 @@ assert(resolved_path == NULL);	/* XXX no POSIXly broken realpath(3) here. */
 }
 
 int Stat(const char * path, struct stat * st)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1358,6 +1361,8 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
 }
 
 int Lstat(const char * path, struct stat * st)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1656,6 +1661,8 @@ fprintf(stderr, "*** Symlink(%s,%s)\n", oldpath, newpath);
 }
 
 int Readlink(const char * path, char * buf, size_t bufsiz)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1819,6 +1826,8 @@ fprintf(stderr, "*** Globfree(%p)\n", pglob);
 }
 
 DIR * Opendir(const char * path)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1877,16 +1886,18 @@ char * Realpath(const char * path, /*@null@*/ char * resolved_path)
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
-    char * rpath;
+    char * rpath = NULL;
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path : "NULL"));
+#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
 /*@-nullpass@*/
     /* XXX if POSIXly broken realpath(3) is desired, do that. */
     /* XXX note: preserves current rpmlib realpath(3) usage cases. */
     if (path == NULL || resolved_path != NULL)
 	return realpath(path, resolved_path);
 /*@=nullpass@*/
+#endif	/* !__LCLINT__ */
 
     switch (ut) {
     case URL_IS_FTP:
@@ -1917,6 +1928,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 	break;
     }
 
+#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
     if (lpath == NULL || *lpath == '/')
 /*@-nullpass@*/	/* XXX glibc extension */
 	rpath = realpath(lpath, resolved_path);
@@ -1951,6 +1963,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 	t = _free(t);
 #endif
     }
+#endif	/* !__LCLINT__ */
 
     return rpath;
 }

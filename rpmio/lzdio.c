@@ -62,6 +62,7 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
     int encoding = 0;
     FILE *fp;
     LZFILE *lzfile;
+    lzma_stream tmp;
     lzma_ret ret;
 
     for (; *mode != '\0'; mode++) {
@@ -86,11 +87,10 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
     lzfile->fp = fp;
     lzfile->encoding = encoding;
     lzfile->eof = 0;
-    lzma_stream tmp =
 #if LZMA_VERSION == 49990030
-	    LZMA_STREAM_INIT_VAR;
+    tmp = LZMA_STREAM_INIT_VAR;
 #else
-	    LZMA_STREAM_INIT;
+    tmp = LZMA_STREAM_INIT;
 #endif
     lzfile->strm = tmp;
     if (encoding) {
@@ -255,7 +255,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 /* =============================================================== */
 
-static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
+static inline /*@dependent@*/ /*@null@*/ void * lzdFileno(FD_t fd)
 	/*@*/
 {
     void * rc = NULL;

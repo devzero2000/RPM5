@@ -22,7 +22,7 @@
 
 /*@-moduncon@*/
 
-static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
+static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)
 	/*@*/
 {
     void * rc = NULL;
