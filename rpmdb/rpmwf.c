@@ -133,6 +133,7 @@ assert(fn != NULL);
 	}
 
 	wf->l = wf->b;
+assert(wf->l != NULL);
 	wf->nl = 96;
 
 	wf->s = wf->l + wf->nl;

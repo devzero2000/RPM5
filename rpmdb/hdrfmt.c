@@ -1081,8 +1081,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    te = stpcpy(te, "    ");
 	if (xtag)
 	    te = stpcpy(te, xtag);
+/*@-modobserver@*/
 	    if (freetag)
 		xtag = _free(xtag);
+/*@=modobserver@*/
 	te = yamlstrcpy(te, s, lvl);
 	te += strlen(te);
     }
@@ -3986,8 +3988,10 @@ static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+/*@-nullassign@*/
     /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "mode", NULL };
+/*@=nullassign@*/
     const char * fn = NULL;
     struct stat sb, *st = &sb;
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -4158,8 +4162,10 @@ static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
+/*@-nullassign@*/
     /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "v5", NULL };
+/*@=nullassign@*/
     rpmuint32_t version = 0;
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val = NULL;
@@ -4239,7 +4245,7 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 /*@-unrecog@*/	/* Add annotated prototype. */
 	stack[ix] = strtoll(he->p.str, &end, 0);
 /*@=unrecog@*/
-	if (*end != '\0') {
+	if (end && *end != '\0') {
 	    val = xstrdup(_("(invalid string :rpn)"));
 	    goto exit;
 	}
@@ -4265,7 +4271,7 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	    }
 	    end = NULL;
 	    stack[ix] = strtoll(arg, &end, 0);
-	    if (*end != '\0') {
+	    if (end && *end != '\0') {
 		val = xstrdup(_("(invalid number :rpn)"));
 		goto exit;
 	    }
@@ -5717,7 +5723,7 @@ exit:
  * @param element	element index
  * @return		end of formatted string (NULL on error)
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		size_t element)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/

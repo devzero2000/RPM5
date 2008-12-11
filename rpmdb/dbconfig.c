@@ -653,10 +653,10 @@ dbiIndex db3Free(dbiIndex dbi)
 static const char *db3_config_default =
     "hash tmpdir=/var/tmp create cdb mpool mp_mmapsize=16Mb mp_size=1Mb perms=0644";
 
-dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
+dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
-    char * dbOpts = rpmExpand("%{_dbi_config_", tagName(rpmtag), "}", NULL);
+    char * dbOpts = rpmExpand("%{_dbi_config_", tagName(tag), "}", NULL);
 
     if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
 	dbOpts = _free(dbOpts);
@@ -796,13 +796,13 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     /*@-assignexpose -newreftrans@*/ /* FIX: figger rpmdb/dbi refcounts */
 /*@i@*/	dbi->dbi_rpmdb = rpmdb;
     /*@=assignexpose =newreftrans@*/
-    dbi->dbi_rpmtag = rpmtag;
+    dbi->dbi_rpmtag = tag;
     
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.
      */
     /*@-sizeoftype@*/
-    switch (rpmtag) {
+    switch (tag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
 	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);

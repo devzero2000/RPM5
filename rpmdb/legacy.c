@@ -15,7 +15,9 @@
 # define _FILE_OFFSET_BITS 32
 #endif
 #if defined(__LCLINT__)
+/*@-incondefs@*/
 typedef long long loff_t;
+/*@=incondefs@*/
 #endif
 #include <gelf.h>
 

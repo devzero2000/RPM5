@@ -816,6 +816,7 @@ Header headerLink(Header h)
  * @param h		header
  * @return		NULL always
  */
+/*@null@*/
 Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/;
 

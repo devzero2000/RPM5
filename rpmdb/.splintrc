@@ -13,7 +13,20 @@
 
 # --- in progress
 +slovak-fcns
+-bounds
 -bufferoverflowhigh	# 26
+
+-globstate		# 1 LCL buggy
+-noeffect		# 3
+-nullpass		# 86
+-nullstate		# 52 indirections hard to annotate
+-type
+
+-dependenttrans		# 1
+-immediatetrans		# 2
+-observertrans		# 1
+-refcounttrans		# 1
+-statictrans		# 1
 
 # --- +partial artifacts
 -declundef		# 544

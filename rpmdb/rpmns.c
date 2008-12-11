@@ -443,7 +443,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
 
 	if (!(_rc == 0 && iob != NULL)) {
 if (_rpmns_debug)
-fprintf(stderr, "==> rpmiobSlurp(%s) MSG %p[%u] ret %d\n", _fn, iob->b, (unsigned int)iob->blen, _rc);
+fprintf(stderr, "==> rpmiobSlurp(%s) MSG ret %d\n", _fn, _rc);
 	    iob = rpmiobFree(iob);
 	    _fn = _free(_fn);
 	    goto exit;

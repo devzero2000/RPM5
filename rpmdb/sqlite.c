@@ -102,7 +102,9 @@ struct _sql_dbcursor_s {
 
     int count;
 
+/*@null@*/
     void * lkey;		/* Last key returned */
+/*@null@*/
     void * ldata;		/* Last data returned */
 
     int used;

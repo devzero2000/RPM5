@@ -19,7 +19,7 @@
 #endif
 
 #if defined(_RPMDB_INTERNAL)
-#define DBT_INIT {0}	/* -Wno-missing-field-initializers */
+#define DBT_INIT /*@-fullinitblock@*/ {0} /*@-fullinitblock@*/ 	/* -Wno-missing-field-initializers */
 #endif
 
 /*@-exportlocal@*/
@@ -907,7 +907,9 @@ rpmdb XrpmdbLink (rpmdb db, const char * msg,
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
-		int mode, int perms, int flags);
+		int mode, int perms, int flags)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /** @todo document rpmdbOpenDatabase
  */
@@ -1187,7 +1189,9 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  */
 int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 		const char *** argvp)
-	/*@modifies db, *argvp */;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies db, *argvp,
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.

@@ -49,6 +49,7 @@ rpmtd rpmtdNew(void)
  * @param td		Tag data container
  * @return		NULL always
  */
+/*@null@*/
 rpmtd rpmtdFree(/*@only@*/ rpmtd td)
 	/*@modifies td @*/;
  
@@ -132,7 +133,7 @@ int rpmtdNext(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 rpmuint32_t * rpmtdNextUint32(rpmtd td)
 	/*@modifies td @*/;
 
@@ -141,7 +142,7 @@ rpmuint32_t * rpmtdNextUint32(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 rpmuint64_t * rpmtdNextUint64(rpmtd td)
 	/*@modifies td @*/;
 
@@ -150,7 +151,7 @@ rpmuint64_t * rpmtdNextUint64(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 const char * rpmtdNextString(rpmtd td)
 	/*@modifies td @*/;
 
@@ -162,7 +163,7 @@ const char * rpmtdNextString(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to rpmuint16_t, NULL on error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 rpmuint8_t * rpmtdGetUint8(rpmtd td)
 	/*@*/;
 
@@ -174,7 +175,7 @@ rpmuint8_t * rpmtdGetUint8(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to rpmuint16_t, NULL on error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 rpmuint16_t * rpmtdGetUint16(rpmtd td)
 	/*@*/;
 
@@ -186,7 +187,7 @@ rpmuint16_t * rpmtdGetUint16(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to rpmuint32_t, NULL on error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 rpmuint32_t * rpmtdGetUint32(rpmtd td)
 	/*@*/;
 
@@ -198,7 +199,7 @@ rpmuint32_t * rpmtdGetUint32(rpmtd td)
  * @param td		Tag data container
  * @return		Pointer to rpmuint64_t, NULL on error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 rpmuint64_t * rpmtdGetUint64(rpmtd td)
 	/*@*/;
 
@@ -210,7 +211,7 @@ rpmuint64_t * rpmtdGetUint64(rpmtd td)
  * @param td		Tag data container
  * @return		String constant from container, NULL on error
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 const char * rpmtdGetString(rpmtd td)
 	/*@*/;
 
@@ -243,6 +244,7 @@ typedef enum rpmtdFormats_e {
  * @return		String representation of current data (malloc'ed), 
  * 			NULL on error
  */
+/*@null@*/
 char * rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char * errmsg)
 	/*@*/;
 
@@ -367,6 +369,7 @@ int rpmtdFromArgi(rpmtd td, rpmTag tag, const void * _argi)
  * @param td		Container to copy
  * @return		New container or NULL on error
  */
+/*@null@*/
 rpmtd rpmtdDup(rpmtd td)
 	/*@modifies td @*/;
 

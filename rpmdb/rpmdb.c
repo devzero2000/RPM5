@@ -316,6 +316,7 @@ static struct _dbiVec *mydbvecs[] = {
 /*@=nullassign@*/
 
 static inline int checkfd(const char * devnull, int fdno, int flags)
+	/*@*/
 {
     struct stat sb;
     int ret = 0;
@@ -1096,8 +1097,8 @@ int rpmdbSync(rpmdb db)
  * @return		macro expanded absolute path
  */
 static const char * rpmdbURIPath(const char *uri)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * s = rpmGetPath(uri, NULL);
     const char * fn = NULL;
@@ -1126,7 +1127,7 @@ static const char * rpmdbURIPath(const char *uri)
 	char dn[PATH_MAX];
 	char *t;
 	dn[0] = '\0';
-	if ((t = realpath(".", dn)) != NULL) {
+	if ((t = Realpath(".", dn)) != NULL) {
 	    t += strlen(dn);
 	    if (t > dn && t[-1] != '/')
 		*t++ = '/';

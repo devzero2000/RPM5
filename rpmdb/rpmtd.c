@@ -22,7 +22,7 @@
 
 #define	rpmHeaderFormats	headerCompoundFormats
 
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 static void * rpmHeaderFormatFuncByName(const char *fmt)
 	/*@*/
 {

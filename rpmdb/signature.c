@@ -619,7 +619,7 @@ verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
 	(void) rpmswEnter(op, 0);
 	(void) rpmDigestFinal(rpmDigestDup(md5ctx), &md5sum, &md5len, 0);
 	(void) rpmswExit(op, 0);
-	op->count--;	/* XXX one too many */
+	if (op != NULL) op->count--;	/* XXX one too many */
     }
 
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
@@ -793,7 +793,7 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 	(void) rpmswExit(op, sigp->hashlen);
-	op->count--;	/* XXX one too many */
+	if (op != NULL) op->count--;	/* XXX one too many */
 
 	if (pgpImplSetRSA(ctx, dig, sigp)) {
 	    res = RPMRC_FAIL;
@@ -890,7 +890,7 @@ assert(sigp != NULL);
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
 	(void) rpmswExit(op, sigp->hashlen);
-	op->count--;	/* XXX one too many */
+	if (op != NULL) op->count--;	/* XXX one too many */
 
 	if (pgpImplSetDSA(ctx, dig, sigp)) {
 	    res = RPMRC_FAIL;

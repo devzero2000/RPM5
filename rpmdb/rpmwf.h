@@ -115,10 +115,12 @@ rpmwf rpmwfNew(const char * fn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+/*@relnull@*/
 rpmwf rdRPM(const char * rpmfn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+/*@relnull@*/
 rpmwf rdXAR(const char * xarfn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
