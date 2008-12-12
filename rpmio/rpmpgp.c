@@ -1015,7 +1015,7 @@ pgpDig XpgpDigUnlink(pgpDig dig, const char * msg, const char * fn, unsigned ln)
 {
     if (dig == NULL) return NULL;
 /*@-modfilesys@*/
-if (_pgp_debug && msg != NULL)
+if (_pgp_debug < 0 && msg != NULL)
 fprintf(stderr, "--> dig %p -- %d %s at %s:%u\n", dig, dig->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
     dig->nrefs--;
@@ -1028,7 +1028,7 @@ pgpDig XpgpDigLink(pgpDig dig, const char * msg, const char * fn, unsigned ln)
     dig->nrefs++;
 
 /*@-modfilesys@*/
-if (_pgp_debug && msg != NULL)
+if (_pgp_debug < 0 && msg != NULL)
 fprintf(stderr, "--> dig %p ++ %d %s at %s:%u\n", dig, dig->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
 
