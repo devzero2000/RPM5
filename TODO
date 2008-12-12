@@ -12,7 +12,6 @@
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
-    - jbj: fix openssl RSA signature verification.
     - jbj: finish Requires: sanitycheck(N) = E:V-R runtime probe.
     - jbj: finish BuildRequires: vcheck(N) = E:V-R runtime probe.
     - jbj: write up added featlets/bugtures in %docdir notes.
