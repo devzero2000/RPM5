@@ -80,6 +80,9 @@ int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     case PGPHASHALGO_SHA512:
 	prefix = "3051300d060960864801650304020305000440";
 	break;
+    case PGPHASHALGO_SHA224:
+	prefix = "302d300d06096086480165030402040500041C";
+	break;
     default:
 	prefix = NULL;
 	break;

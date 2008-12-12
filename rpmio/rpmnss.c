@@ -64,6 +64,9 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     case PGPHASHALGO_SHA512:
 	nss->sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
 	break;
+    case PGPHASHALGO_SHA224:
+	nss->sigalg = SEC_OID_UNKNOWN;
+	break;
     default:
 	nss->sigalg = SEC_OID_UNKNOWN;
 	break;

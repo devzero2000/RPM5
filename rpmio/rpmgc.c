@@ -43,106 +43,71 @@ fprintf(stderr, "========== %s:\n%s", msg, buf);
     return;
 }
 
-/**
- * Convert hex to binary nibble.
- * @param c            hex character
- * @return             binary nibble
- */
-static
-unsigned char nibble(char c)
-	/*@*/
-{
-    if (c >= '0' && c <= '9')
-	return (unsigned char) (c - '0');
-    if (c >= 'A' && c <= 'F')
-	return (unsigned char)((int)(c - 'A') + 10);
-    if (c >= 'a' && c <= 'f')
-	return (unsigned char)((int)(c - 'a') + 10);
-    return (unsigned char) '\0';
-}
-
 static
 int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmgc gc = dig->impl;
-    unsigned int nbits = gcry_mpi_get_nbits(gc->c);
-    unsigned int nb = (nbits + 7) >> 3;
-    const char * prefix;
-    const char * hexstr;
-    const char * s;
-    rpmuint8_t signhash16[2];
-    char * tt;
+    const char * hash_algo_name = NULL;
     gcry_mpi_t c = NULL;
     gcry_error_t rc;
     int xx;
 
-    /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
-	prefix = "3020300c06082a864886f70d020505000410";
+	hash_algo_name = "md5";
 	break;
     case PGPHASHALGO_SHA1:
-	prefix = "3021300906052b0e03021a05000414";
+	hash_algo_name = "sha1";
 	break;
     case PGPHASHALGO_RIPEMD160:
-	prefix = "3021300906052b2403020105000414";
+	hash_algo_name = "ripemd160";
 	break;
     case PGPHASHALGO_MD2:
-	prefix = "3020300c06082a864886f70d020205000410";
+	hash_algo_name = "md2";
 	break;
     case PGPHASHALGO_TIGER192:
-	prefix = "3029300d06092b06010401da470c0205000418";
+	hash_algo_name = "tiger";
 	break;
     case PGPHASHALGO_HAVAL_5_160:
-	prefix = NULL;
+#ifdef	NOTYET
+	hash_algo_name = "haval";
+#endif
 	break;
     case PGPHASHALGO_SHA256:
-	prefix = "3031300d060960864801650304020105000420";
+	hash_algo_name = "sha256";
 	break;
     case PGPHASHALGO_SHA384:
-	prefix = "3041300d060960864801650304020205000430";
+	hash_algo_name = "sha384";
 	break;
     case PGPHASHALGO_SHA512:
-	prefix = "3051300d060960864801650304020305000440";
+	hash_algo_name = "sha512";
+	break;
+    case PGPHASHALGO_SHA224:
+#ifdef	NOTYET
+	hash_algo_name = "sha224";
+#endif
 	break;
     default:
-	prefix = NULL;
 	break;
     }
-    if (prefix == NULL)
+    if (hash_algo_name == NULL)
 	return 1;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
-    hexstr = tt = xmalloc(2 * nb + 1);
-    memset(tt, (int) 'f', (2 * nb));
-    tt[0] = '0'; tt[1] = '0';
-    tt[2] = '0'; tt[3] = '1';
-    tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
-    *tt++ = '0'; *tt++ = '0';
-    tt = stpcpy(tt, prefix);
-    tt = stpcpy(tt, dig->md5);
+    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
-    xx = gcry_mpi_scan(&c, GCRYMPI_FMT_HEX, hexstr, strlen(hexstr), NULL);
-    rc = gcry_sexp_build(&gc->hash, NULL,
-		"(data (flags pkcs1) (hash %s %m))",
-		gcry_pk_algo_name((int)sigp->hash_algo), c);
+    xx = gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->md5, dig->md5len, NULL);
+    rc = gcry_sexp_build(&gc->hash, NULL, "(data (flags pkcs1) (hash %s %m))",
+		hash_algo_name, c);
     gcry_mpi_release(c);
 if (_pgp_debug)
 rpmgcDump("gc->hash", gc->hash);
 /*@=moduncon =noeffectuncon @*/
 
-    hexstr = _free(hexstr);
-
     /* Compare leading 16 bits of digest for quick check. */
-    s = dig->md5;
-/*@-type@*/
-    signhash16[0] = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-    signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
-/*@=type@*/
-    return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
+    return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
 static

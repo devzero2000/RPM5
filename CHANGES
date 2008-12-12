@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmgc: bulldoze the RSA compost. still not working yet ...
+    - jbj: rpmpgp: add ASN1 goop for SHA-224, add to bc/gc/nss/ssl.
     - jbj: bury file actions into iosm, replace XFA_SKIPPING with a
 	iosmFileActionSkipped() call.
     - rpm.org: Add "deptype" format extension.

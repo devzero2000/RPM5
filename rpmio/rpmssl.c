@@ -91,12 +91,19 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	break;
     case PGPHASHALGO_SHA256:
 	prefix = "3031300d060960864801650304020105000420";
+	ssl->type = NID_sha256;
 	break;
     case PGPHASHALGO_SHA384:
 	prefix = "3041300d060960864801650304020205000430";
+	ssl->type = NID_sha384;
 	break;
     case PGPHASHALGO_SHA512:
 	prefix = "3051300d060960864801650304020305000440";
+	ssl->type = NID_sha512;
+	break;
+    case PGPHASHALGO_SHA224:
+	prefix = "302d300d06096086480165030402040500041C";
+	ssl->type = NID_sha224;
 	break;
     default:
 	prefix = NULL;
