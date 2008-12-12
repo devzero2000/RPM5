@@ -1,7 +1,7 @@
 #!/bin/sh
 
 hdir="`pwd`/.gnupg"
-gpg="gpg --homedir $hdir"
+gpg="gpg2 --homedir $hdir"
 
 rm -rf $hdir
 
@@ -14,10 +14,10 @@ Name-Comment: 1024
 Name-Email: jbj@jbj.org
 %commit
 Key-Type: RSA
-Key-Length: 1024
+Key-Length: 4096
 Key-Usage: sign
 Name-Real: RSApub
-Name-Comment: 1024
+Name-Comment: 4096
 Name-Email: jbj@jbj.org
 %commit
 GO_SYSIN_DD
