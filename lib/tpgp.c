@@ -1,23 +1,15 @@
-/** \ingroup rpmio signature
- * \file rpmio/tkey.c
- * Routines to handle RFC-2440 detached signatures.
+/**
+ * \file lib/tpgp.c
+ * Test RFC-4880 clearsigned and detached signatures.
  */
 
 extern int _pgp_debug;
 extern int _pgp_print;
 
 #include "system.h"
-#include <rpmio.h>
-#include <rpmcb.h>
-#include <rpmmacro.h>
-#include <poptIO.h>
 
-#include <rpmtag.h>
-#include <rpmdb.h>
+#include <rpmcli.h>
 #include <rpmns.h>
-
-#include <rpmps.h>
-#include <rpmts.h>
 
 #include "genpgp.h"
 
@@ -53,7 +45,7 @@ rpmRC doit(rpmts ts, const char * sigtype)
 }
 
 static struct poptOption optionsTable[] = {
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
         N_("Common options:"),
         NULL },
 
@@ -65,15 +57,13 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
     rpmts ts = rpmtsCreate();
-    int rc;
+    int rc = rpmtsOpenDB(ts, O_RDONLY);
 
 _rpmns_debug = 1;
 _pgp_debug = 1;
 _pgp_print = 1;
-
-    (void) rpmtsOpenDB(ts, O_RDONLY);
 
     rc = doit(ts, "DSA");
 
@@ -81,7 +71,7 @@ _pgp_print = 1;
 
     ts = rpmtsFree(ts);
 
-    optCon = rpmioFini(optCon);
+    optCon = rpmcliFini(optCon);
 
     return rc;
 }
