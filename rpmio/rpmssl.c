@@ -51,6 +51,24 @@ unsigned char nibble(char c)
 }
 
 static
+void hexdump(const char * msg, unsigned char * b, size_t blen)
+{
+    static const char hex[] = "0123456789abcdef";
+
+    fprintf(stderr, "*** %s:", msg);
+    if (b != NULL)
+    while (blen > 0) {
+	fprintf(stderr, "%c%c",
+		hex[ (unsigned)((*b >> 4) & 0x0f) ],
+		hex[ (unsigned)((*b     ) & 0x0f) ]);
+	blen--;
+	b++;
+    }
+    fprintf(stderr, "\n");
+    return;
+}
+
+static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -127,6 +145,7 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     xx = BN_hex2bn(&ssl->rsahm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
+if (_pgp_debug < 0) fprintf(stderr, "*** rsahm: %s\n", hexstr);
     hexstr = _free(hexstr);
 
     /* Compare leading 16 bits of digest for quick check. */
@@ -138,19 +157,40 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
+static unsigned char * bn2buf(const char * msg, const BIGNUM * s, size_t maxn)
+{
+    unsigned char * t = xcalloc(1, maxn);
+/*@-moduncon@*/
+    size_t nt = BN_bn2bin(s, t);
+/*@=moduncon@*/
+
+    if (nt < maxn) {
+	size_t pad = (maxn - nt);
+if (_pgp_debug < 0) fprintf(stderr, "\tmemmove(%p, %p, %u)\n", t+pad, t, (unsigned)nt);
+	memmove(t+pad, t, nt);
+if (_pgp_debug < 0) fprintf(stderr, "\tmemset(%p, 0, %u)\n", t, (unsigned)pad);
+	memset(t, 0, pad);
+    }
+if (_pgp_debug < 0) hexdump(msg, t, maxn);
+    return t;
+}
+
 static
 int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
     rpmssl ssl = dig->impl;
-    unsigned char * rsahm;
-    unsigned char * dbuf;
-    size_t nb, ll;
+/*@-moduncon@*/
+    size_t maxn = BN_num_bytes(ssl->rsa->n);
+    unsigned char * hm = bn2buf("hm", ssl->rsahm, maxn);
+    unsigned char *  c = bn2buf(" c", ssl->c, maxn);
+    size_t nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
+/*@=moduncon@*/
+    size_t i;
     int rc = 0;
     int xx;
 
     /* Verify RSA signature. */
-/*@-moduncon@*/
     /* XXX This is _NOT_ the correct openssl function to use:
      *	rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
      *
@@ -169,28 +209,21 @@ int rpmsslVerifyRSA(pgpDig dig)
      *	  return (j != hlen || memcmp(dbuf, hash, j));
      *	}
      */
-
-    nb = BN_num_bytes(ssl->rsahm);
-    rsahm = xmalloc(nb);
-    xx = BN_bn2bin(ssl->rsahm, rsahm);
-    ll = BN_num_bytes(ssl->rsa->n);
-    xx = (int)ll;	/* WRONG WRONG WRONG */
-    dbuf = xcalloc(1, ll);
-    /* XXX FIXME: what parameter goes into dbuf? */
-/*@-type@*/
-    while (xx < (int)ll)
-	memmove(&dbuf[1], dbuf, xx++), dbuf[0] = 0;
-/*@=type@*/
-    xx = RSA_public_decrypt((int)ll, dbuf, dbuf, ssl->rsa, RSA_PKCS1_PADDING);
-/*@=moduncon@*/
-    rc = (xx == (int)nb && (memcmp(rsahm, dbuf, nb) == 0));
-    dbuf = _free(dbuf);
-    rsahm = _free(rsahm);
-
-    if (rc != 1) {
-	rpmlog(RPMLOG_WARNING, "RSA verification using openssl is not yet implemented. rpmmsslVerifyRSA() will continue without verifying the RSA signature.\n");
-	rc = 1;
+    for (i = 2; i < maxn; i++) {
+	if (hm[i] == 0xff)
+	    continue;
+	i++;
+if (_pgp_debug < 0) hexdump("HM", hm + i, (maxn - i));
+	break;
     }
+
+if (_pgp_debug < 0) hexdump("HM", hm + (maxn - nb), nb);
+if (_pgp_debug < 0) hexdump(" C",  c, nb);
+
+    rc = ((maxn - i) == nb && (xx = memcmp(hm+i, c, nb)) == 0);
+
+    c = _free(c);
+    hm = _free(hm);
 
     return rc;
 }
