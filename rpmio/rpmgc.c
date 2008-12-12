@@ -102,7 +102,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     rc = gcry_sexp_build(&gc->hash, NULL, "(data (flags pkcs1) (hash %s %m))",
 		hash_algo_name, c);
     gcry_mpi_release(c);
-if (_pgp_debug)
+if (_pgp_debug < 0)
 rpmgcDump("gc->hash", gc->hash);
 /*@=moduncon =noeffectuncon @*/
 
@@ -122,14 +122,14 @@ int rpmgcVerifyRSA(pgpDig dig)
 		"(sig-val (RSA (s %m)))",
 		 gc->c);
 /*@=moduncon@*/
-if (_pgp_debug)
+if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
 /*@-moduncon@*/
     rc = gcry_sexp_build(&gc->pkey, NULL,
 		"(public-key (RSA (n %m) (e %m)))",
 		gc->n, gc->e);
 /*@=moduncon@*/
-if (_pgp_debug)
+if (_pgp_debug < 0)
 rpmgcDump("gc->pkey", gc->pkey);
 
     /* Verify RSA signature. */
@@ -160,7 +160,7 @@ int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 		"(data (flags raw) (value %b))",
 		dig->sha1len, dig->sha1);
 /*@=moduncon =noeffectuncon @*/
-if (_pgp_debug)
+if (_pgp_debug < 0)
 rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
@@ -178,12 +178,12 @@ int rpmgcVerifyDSA(pgpDig dig)
     rc = gcry_sexp_build(&gc->sig, NULL,
 		"(sig-val (DSA (r %m) (s %m)))",
 		gc->r, gc->s);
-if (_pgp_debug)
+if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
     rc = gcry_sexp_build(&gc->pkey, NULL,
 		"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
 		gc->p, gc->q, gc->g, gc->y);
-if (_pgp_debug)
+if (_pgp_debug < 0)
 rpmgcDump("gc->pkey", gc->pkey);
 
     /* Verify DSA signature. */
