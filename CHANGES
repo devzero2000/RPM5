@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: use digest names in debugging messages.
+    - jbj: name digests according to RFC 4880 section 9.4.
     - jbj: rename s/hdrmd5ctx/hdrctx/ used by RSA to avoid legacy confusions.
     - jbj: fix: RSA V4 signed *.rpm plaintext hash was not generated correctly.
     - jbj: ensure that digest agrees with signature hash algorithm.

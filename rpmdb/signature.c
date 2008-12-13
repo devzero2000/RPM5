@@ -562,7 +562,7 @@ static /*@observer@*/ const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
+verifySize(const pgpDig dig, /*@out@*/ char * t)
 	/*@modifies *t @*/
 {
     const void * sig = pgpGetSig(dig);
@@ -595,7 +595,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Digest(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX md5ctx)
+verifyMD5(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
@@ -605,10 +605,17 @@ verifyMD5Digest(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX md5ctx)
     rpmuint8_t * md5sum = NULL;
     size_t md5len = 0;
 
-    *t = '\0';
-    t = stpcpy(t, _("MD5 digest: "));
+assert(dig != NULL);
+assert(md5ctx != NULL);
+assert(sig != NULL);
 
-    if (md5ctx == NULL || sig == NULL || dig == NULL) {
+    *t = '\0';
+
+    /* Identify the hash. */
+    t = stpcpy(t, rpmDigestName(md5ctx));
+    t = stpcpy(t, _(" digest: "));
+
+    if (sig == NULL) {		/* XXX can't happen, DYING */
 	res = RPMRC_NOKEY;
 	t = stpcpy(t, rpmSigString(res));
 	goto exit;
@@ -650,7 +657,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHADigest(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX shactx)
+verifySHA1(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX shactx)
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
@@ -661,10 +668,18 @@ verifySHADigest(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX shactx)
     rpmRC res;
     const char * SHA1 = NULL;
 
-    *t = '\0';
-    t = stpcpy(t, _("Header SHA-1 digest: "));
+assert(dig != NULL);
+assert(shactx != NULL);
+assert(sig != NULL);
 
-    if (shactx == NULL || sig == NULL || dig == NULL) {
+    *t = '\0';
+    t = stpcpy(t, _("Header "));
+
+    /* Identify the hash. */
+    t = stpcpy(t, rpmDigestName(shactx));
+    t = stpcpy(t, _(" digest: "));
+
+    if (sig == NULL) {		/* XXX can't happen, DYING */
 	res = RPMRC_NOKEY;
 	t = stpcpy(t, rpmSigString(res));
 	goto exit;
@@ -704,7 +719,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
+verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
 	/*@globals internalState @*/
 	/*@modifies dig, *t, internalState */
 {
@@ -712,7 +727,6 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
 #ifdef	NOTYET
     rpmuint32_t siglen = pgpGetSiglen(dig);
 #endif
-    rpmSigTag sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC res = RPMRC_OK;
     int xx;
@@ -720,67 +734,31 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
 assert(dig != NULL);
 assert(rsactx != NULL);
 assert(sigp != NULL);
+assert(sigp->pubkey_algo == PGPPUBKEYALGO_RSA);
+assert(sigp->hash_algo == rpmDigestAlgo(rsactx));
+assert(pgpGetSigtag(dig) == RPMSIGTAG_RSA);
+assert(sig != NULL);
+
     *t = '\0';
-    if (dig != NULL && dig->hdrctx == rsactx)
+    if (dig->hdrctx == rsactx)
 	t = stpcpy(t, _("Header "));
+
+    /* Identify the signature version. */
     *t++ = 'V';
     switch (sigp->version) {
     case 3:	*t++ = '3';	break;
     case 4:	*t++ = '4';	break;
     }
 
-    if (sig == NULL) {
-	res = RPMRC_NOKEY;
-    }
-
-    /* Verify the desired signature match. */
-    switch (sigp->pubkey_algo) {
-    case PGPPUBKEYALGO_RSA:
-	if (sigtag == RPMSIGTAG_RSA)
-	    break;
-	/*@fallthrough@*/
-    default:
-	res = RPMRC_NOKEY;
-	break;
-    }
-
     /* Identify the RSA/hash. */
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	t = stpcpy(t, " RSA/MD5");
-	break;
-    case PGPHASHALGO_SHA1:
-	t = stpcpy(t, " RSA/SHA1");
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	t = stpcpy(t, " RSA/RIPEMD160");
-	break;
-    case PGPHASHALGO_MD2:
-	t = stpcpy(t, " RSA/MD2");
-	break;
-    case PGPHASHALGO_TIGER192:
-	t = stpcpy(t, " RSA/TIGER192");
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	res = RPMRC_NOKEY;
-	break;
-    case PGPHASHALGO_SHA256:
-	t = stpcpy(t, " RSA/SHA256");
-	break;
-    case PGPHASHALGO_SHA384:
-	t = stpcpy(t, " RSA/SHA384");
-	break;
-    case PGPHASHALGO_SHA512:
-	t = stpcpy(t, " RSA/SHA512");
-	break;
-    default:
-	res = RPMRC_NOKEY;
-	break;
+    {   const char * hashname = rpmDigestName(rsactx);
+	t = stpcpy(t, " RSA");
+	if (strcmp(hashname, "UNKNOWN")) {
+	    *t++ = '/';
+	    t = stpcpy(t, hashname);
+	}
     }
-
     t = stpcpy(t, _(" signature: "));
-    if (res != RPMRC_OK)
-	goto exit;
 
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	DIGEST_CTX ctx = rpmDigestDup(rsactx);
@@ -821,6 +799,7 @@ assert(sigp != NULL);
     }
 
 exit:
+    /* Identify the pubkey fingerprint. */
     t = stpcpy(t, rpmSigString(res));
     if (sigp != NULL) {
 	t = stpcpy(t, ", key ID ");
@@ -838,7 +817,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
+verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
 	/*@globals internalState @*/
 	/*@modifies dig, *t, internalState */
 {
@@ -846,7 +825,6 @@ verifyDSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
 #ifdef	NOTYET
     rpmuint32_t siglen = pgpGetSiglen(dig);
 #endif
-    rpmSigTag sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC res;
     int xx;
@@ -854,29 +832,31 @@ verifyDSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
 assert(dig != NULL);
 assert(dsactx != NULL);
 assert(sigp != NULL);
+assert(sigp->pubkey_algo == PGPPUBKEYALGO_DSA);
+assert(sigp->hash_algo == rpmDigestAlgo(dsactx));
+assert(pgpGetSigtag(dig) == RPMSIGTAG_DSA);
+assert(sig != NULL);
+
     *t = '\0';
     if (dig != NULL && dig->hdrsha1ctx == dsactx)
 	t = stpcpy(t, _("Header "));
+
+    /* Identify the signature version. */
     *t++ = 'V';
     switch (sigp->version) {
     case 3:    *t++ = '3';     break;
     case 4:    *t++ = '4';     break;
     }
-    t = stpcpy(t, _(" DSA signature: "));
 
-    if (sig == NULL) {
-	res = RPMRC_NOKEY;
-	goto exit;
+    /* Identify the DSA/hash. */
+    {   const char * hashname = rpmDigestName(dsactx);
+	t = stpcpy(t, " DSA");
+	if (strcmp(hashname, "UNKNOWN") && strcmp(hashname, "SHA1")) {
+	    *t++ = '/';
+	    t = stpcpy(t, hashname);
+	}
     }
-
-    /* XXX sanity check on sigtag and signature agreement. */
-    if (!(sigtag == RPMSIGTAG_DSA
-    	&& sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA
-    	&& sigp->hash_algo == (rpmuint8_t)PGPHASHALGO_SHA1))
-    {
-	res = RPMRC_NOKEY;
-	goto exit;
-    }
+    t = stpcpy(t, _(" signature: "));
 
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	DIGEST_CTX ctx = rpmDigestDup(dsactx);
@@ -917,6 +897,7 @@ assert(sigp != NULL);
     }
 
 exit:
+    /* Identify the pubkey fingerprint. */
     t = stpcpy(t, rpmSigString(res));
     if (sigp != NULL) {
 	t = stpcpy(t, ", key ID ");
@@ -942,19 +923,19 @@ rpmVerifySignature(void * _dig, char * result)
 
     switch (sigtag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(dig, result);
+	res = verifySize(dig, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Digest(dig, result, dig->md5ctx);
+	res = verifyMD5(dig, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHADigest(dig, result, dig->hdrsha1ctx);
+	res = verifySHA1(dig, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(dig, result, dig->hdrctx);
+	res = verifyRSA(dig, result, dig->hdrctx);
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(dig, result, dig->hdrsha1ctx);
+	res = verifyDSA(dig, result, dig->hdrsha1ctx);
 	break;
     default:
 	sprintf(result, _("Signature: UNKNOWN (%u)\n"), (unsigned)sigtag);
