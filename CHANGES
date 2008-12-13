@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: fix: RSA V4 signed *.rpm plaintext hash was not generated correctly.
     - jbj: ensure that digest agrees with signature hash algorithm.
     - jbj: digest: add getters for digest name/algo/ANS1oid.
     - jbj: rpmssl: functional RSA verify --usecrypto ssl for signature(...) probe.

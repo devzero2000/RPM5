@@ -595,8 +595,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
-		/*@null@*/ DIGEST_CTX md5ctx)
+verifyMD5Digest(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
@@ -644,15 +643,14 @@ exit:
 }
 
 /**
- * Verify header immutable region SHA1 digest.
+ * Verify header immutable region SHA-1 digest.
  * @param dig		container
  * @retval t		verbose success/failure text
- * @param sha1ctx
+ * @param shactx	SHA-1 digest context
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
-		/*@null@*/ DIGEST_CTX sha1ctx)
+verifySHADigest(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX shactx)
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
@@ -664,9 +662,9 @@ verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
     const char * SHA1 = NULL;
 
     *t = '\0';
-    t = stpcpy(t, _("Header SHA1 digest: "));
+    t = stpcpy(t, _("Header SHA-1 digest: "));
 
-    if (sha1ctx == NULL || sig == NULL || dig == NULL) {
+    if (shactx == NULL || sig == NULL || dig == NULL) {
 	res = RPMRC_NOKEY;
 	t = stpcpy(t, rpmSigString(res));
 	goto exit;
@@ -674,7 +672,7 @@ verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
 
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
-	(void) rpmDigestFinal(rpmDigestDup(sha1ctx), &SHA1, NULL, 1);
+	(void) rpmDigestFinal(rpmDigestDup(shactx), &SHA1, NULL, 1);
 	(void) rpmswExit(op, 0);
     }
 
@@ -702,12 +700,11 @@ exit:
  * Verify RSA signature.
  * @param dig		container
  * @retval t		verbose success/failure text
- * @param md5ctx
+ * @param rsactx	RSA digest context
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
-		/*@null@*/ DIGEST_CTX md5ctx)
+verifyRSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
 	/*@globals internalState @*/
 	/*@modifies dig, *t, internalState */
 {
@@ -721,9 +718,10 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
     int xx;
 
 assert(dig != NULL);
+assert(rsactx != NULL);
 assert(sigp != NULL);
     *t = '\0';
-    if (dig != NULL && dig->hdrmd5ctx == md5ctx)
+    if (dig != NULL && dig->hdrctx == rsactx)
 	t = stpcpy(t, _("Header "));
     *t++ = 'V';
     switch (sigp->version) {
@@ -731,7 +729,7 @@ assert(sigp != NULL);
     case 4:	*t++ = '4';	break;
     }
 
-    if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
+    if (sig == NULL) {
 	res = RPMRC_NOKEY;
     }
 
@@ -784,18 +782,26 @@ assert(sigp != NULL);
     if (res != RPMRC_OK)
 	goto exit;
 
-assert(md5ctx != NULL);	/* XXX can't happen. */
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	DIGEST_CTX ctx;
+	DIGEST_CTX ctx = rpmDigestDup(rsactx);
 
 	(void) rpmswEnter(op, 0);
-	ctx = rpmDigestDup(md5ctx);
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+	if (sigp->version == (rpmuint8_t) 4) {
+	    rpmuint32_t nb = (rpmuint32_t) sigp->hashlen;
+	    rpmuint8_t trailer[6];
+	    nb = (rpmuint32_t) htonl(nb);
+	    trailer[0] = sigp->version;
+	    trailer[1] = (rpmuint8_t)0xff;
+	    memcpy(trailer+2, &nb, sizeof(nb));
+	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+	}
 	(void) rpmswExit(op, sigp->hashlen);
 	if (op != NULL) op->count--;	/* XXX one too many */
 
-	if (pgpImplSetRSA(ctx, dig, sigp)) {
+	if ((xx = pgpImplSetRSA(ctx, dig, sigp)) != 0) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -828,12 +834,11 @@ exit:
  * Verify DSA signature.
  * @param dig		container
  * @retval t		verbose success/failure text
- * @param sha1ctx
+ * @param dsactx	DSA digest context
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
-		/*@null@*/ DIGEST_CTX sha1ctx)
+verifyDSASignature(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
 	/*@globals internalState @*/
 	/*@modifies dig, *t, internalState */
 {
@@ -847,9 +852,10 @@ verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
     int xx;
 
 assert(dig != NULL);
+assert(dsactx != NULL);
 assert(sigp != NULL);
     *t = '\0';
-    if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
+    if (dig != NULL && dig->hdrsha1ctx == dsactx)
 	t = stpcpy(t, _("Header "));
     *t++ = 'V';
     switch (sigp->version) {
@@ -858,7 +864,7 @@ assert(sigp != NULL);
     }
     t = stpcpy(t, _(" DSA signature: "));
 
-    if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
+    if (sig == NULL) {
 	res = RPMRC_NOKEY;
 	goto exit;
     }
@@ -873,10 +879,9 @@ assert(sigp != NULL);
     }
 
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	DIGEST_CTX ctx;
+	DIGEST_CTX ctx = rpmDigestDup(dsactx);
 
 	(void) rpmswEnter(op, 0);
-	ctx = rpmDigestDup(sha1ctx);
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
@@ -940,13 +945,13 @@ rpmVerifySignature(void * _dig, char * result)
 	res = verifySizeSignature(dig, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(dig, result, dig->md5ctx);
+	res = verifyMD5Digest(dig, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(dig, result, dig->hdrsha1ctx);
+	res = verifySHADigest(dig, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(dig, result, dig->hdrmd5ctx);
+	res = verifyRSASignature(dig, result, dig->hdrctx);
 	break;
     case RPMSIGTAG_DSA:
 	res = verifyDSASignature(dig, result, dig->hdrsha1ctx);

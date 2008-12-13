@@ -1097,28 +1097,28 @@ assert(dig != NULL);
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
-	dig->hdrmd5ctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
+	dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
 
 	b = NULL; nb = 0;
 	(void) headerGetMagic(NULL, &b, &nb);
 	if (b && nb > 0) {
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	    (void) rpmDigestUpdate(dig->hdrctx, b, nb);
 	    dig->nbytes += nb;
 	}
 
 	b = (unsigned char *) ildl;
 	nb = sizeof(ildl);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	(void) rpmDigestUpdate(dig->hdrctx, b, nb);
 	dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
 	nb = (size_t) (htonl(ildl[0]) * sizeof(*pe));
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	(void) rpmDigestUpdate(dig->hdrctx, b, nb);
 	dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
 	nb = (size_t) htonl(ildl[1]);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	(void) rpmDigestUpdate(dig->hdrctx, b, nb);
 	dig->nbytes += nb;
 	(void) rpmswExit(op, dig->nbytes);
 
