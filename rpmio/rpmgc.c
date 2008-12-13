@@ -49,8 +49,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 {
     rpmgc gc = dig->impl;
     const char * hash_algo_name = NULL;
-    gcry_mpi_t c = NULL;
-    gcry_error_t rc;
+    int rc;
     int xx;
 
     switch (sigp->hash_algo) {
@@ -98,16 +97,28 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
-    xx = gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->md5, dig->md5len, NULL);
-    rc = gcry_sexp_build(&gc->hash, NULL, "(data (flags pkcs1) (hash %s %m))",
+    {	gcry_mpi_t c = NULL;
+	gcry_error_t yy;
+	xx = gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->md5, dig->md5len, NULL);
+	yy = gcry_sexp_build(&gc->hash, NULL, "(data (flags pkcs1) (hash %s %m))",
 		hash_algo_name, c);
-    gcry_mpi_release(c);
-if (_pgp_debug < 0)
-rpmgcDump("gc->hash", gc->hash);
+	gcry_mpi_release(c);
+if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
+    }
 /*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
+    {	const rpmuint8_t *s = dig->md5;
+	const rpmuint8_t *t = sigp->signhash16;
+	rc = memcmp(s, t, sizeof(sigp->signhash16));
+#ifdef	DYING
+	if (rc != 0)
+	    fprintf(stderr, "*** hash fails: digest(%02x%02x) != signhash(%02x%02x)\n",
+		s[0], s[1], t[0], t[1]);
+#endif
+    }
+
+    return rc;
 }
 
 static
@@ -152,6 +163,7 @@ int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     gcry_error_t rc;
     int xx;
 
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 
    /* Set DSA hash. */

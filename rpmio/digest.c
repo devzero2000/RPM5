@@ -49,9 +49,28 @@ struct DIGEST_CTX_s {
 	/*@modifies param @*/;	/*!< Digest transform. */
     int (*Digest) (void * param, /*@out@*/ byte * digest)
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
+    pgpHashAlgo hashalgo;	/*!< RFC 2440/4880 hash algorithm id. */
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */
+/*@null@*/
+    const char * asn1;		/*!< RFC 3447 ASN1 oid string (in hex). */
     void * param;		/*!< Digest parameters. */
 };
+
+pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
+{
+    return (ctx != NULL ? ctx->hashalgo : PGPHASHALGO_NONE);
+}
+
+const char * rpmDigestName(DIGEST_CTX ctx)
+{
+    return (ctx != NULL ? ctx->name : "UNKNOWN");
+}
+
+const char * rpmDigestASN1(DIGEST_CTX ctx)
+{
+    return (ctx != NULL ? ctx->asn1 : NULL);
+}
+
 
 DIGEST_CTX
 rpmDigestDup(DIGEST_CTX octx)
@@ -68,6 +87,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
     int xx;
 
+    ctx->hashalgo = hashalgo;
     ctx->flags = flags;
 
     switch (hashalgo) {
@@ -84,6 +104,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md5Update;
 	ctx->Digest = (int (*)(void *, byte *)) md5Digest;
 /*@=type@*/
+	ctx->asn1 = "3020300c06082a864886f70d020505000410";
 	break;
     case PGPHASHALGO_SHA1:
 	ctx->name = "SHA-1";
@@ -98,6 +119,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha1Update;
 	ctx->Digest = (int (*)(void *, byte *)) sha1Digest;
 /*@=type@*/
+	ctx->asn1 = "3021300906052b0e03021a05000414";
 	break;
     case PGPHASHALGO_RIPEMD128:
 	ctx->name = "RIPEMD-128";
@@ -126,6 +148,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd160Update;
 	ctx->Digest = (int (*)(void *, byte *)) rmd160Digest;
 /*@=type@*/
+	ctx->asn1 = "3021300906052b2403020105000414";
 	break;
     case PGPHASHALGO_RIPEMD256:
 	ctx->name = "RIPEMD-256";
@@ -196,6 +219,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) tigerUpdate;
 	ctx->Digest = (int (*)(void *, byte *)) tigerDigest;
 /*@=type@*/
+	ctx->asn1 = "3029300d06092b06010401da470c0205000418";
 	break;
     case PGPHASHALGO_MD2:
 	ctx->name = "MD2";
@@ -210,6 +234,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md2Update;
 	ctx->Digest = (int (*)(void *, byte *)) md2Digest;
 /*@=type@*/
+	ctx->asn1 = "3020300c06082a864886f70d020205000410";
 	break;
     case PGPHASHALGO_MD4:
 	ctx->name = "MD4";
@@ -310,6 +335,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha224Update;
 	ctx->Digest = (int (*)(void *, byte *)) sha224Digest;
 /*@=type@*/
+	ctx->asn1 = "302d300d06096086480165030402040500041C";
 	break;
     case PGPHASHALGO_SHA256:
 	ctx->name = "SHA-256";
@@ -324,6 +350,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha256Update;
 	ctx->Digest = (int (*)(void *, byte *)) sha256Digest;
 /*@=type@*/
+	ctx->asn1 = "3031300d060960864801650304020105000420";
 	break;
     case PGPHASHALGO_SHA384:
 	ctx->name = "SHA-384";
@@ -338,6 +365,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha384Update;
 	ctx->Digest = (int (*)(void *, byte *)) sha384Digest;
 /*@=type@*/
+	ctx->asn1 = "3041300d060960864801650304020205000430";
 	break;
     case PGPHASHALGO_SHA512:
 	ctx->name = "SHA-512";
@@ -352,6 +380,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha512Update;
 	ctx->Digest = (int (*)(void *, byte *)) sha512Digest;
 /*@=type@*/
+	ctx->asn1 = "3051300d060960864801650304020305000440";
 	break;
 #endif
     case PGPHASHALGO_HAVAL_5_160:

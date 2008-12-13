@@ -82,7 +82,7 @@ struct pgpDig_s {
 /*@only@*/ /*@null@*/
     DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
 /*@only@*/ /*@null@*/
-    DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
+    DIGEST_CTX hdrctx;		/*!< (rsa) header hash context. */
 /*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */

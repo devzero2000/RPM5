@@ -75,56 +75,45 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     rpmssl ssl = dig->impl;
     unsigned int nbits = BN_num_bits(ssl->c);
     unsigned int nb = (nbits + 7) >> 3;
-    const char * prefix;
+    const char * prefix = rpmDigestASN1(ctx);
     const char * hexstr;
     const char * s;
     rpmuint8_t signhash16[2];
     char * tt;
     int xx;
 
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     ssl->type = 0;
-    /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
-	prefix = "3020300c06082a864886f70d020505000410";
 	ssl->type = NID_md5;
 	break;
     case PGPHASHALGO_SHA1:
-	prefix = "3021300906052b0e03021a05000414";
 	ssl->type = NID_sha1;
 	break;
     case PGPHASHALGO_RIPEMD160:
-	prefix = "3021300906052b2403020105000414";
 	ssl->type = NID_ripemd160;
 	break;
     case PGPHASHALGO_MD2:
-	prefix = "3020300c06082a864886f70d020205000410";
 	ssl->type = NID_md2;
 	break;
     case PGPHASHALGO_TIGER192:
-	prefix = "3029300d06092b06010401da470c0205000418";
 	break;
     case PGPHASHALGO_HAVAL_5_160:
-	prefix = NULL;
 	break;
     case PGPHASHALGO_SHA256:
-	prefix = "3031300d060960864801650304020105000420";
 	ssl->type = NID_sha256;
 	break;
     case PGPHASHALGO_SHA384:
-	prefix = "3041300d060960864801650304020205000430";
 	ssl->type = NID_sha384;
 	break;
     case PGPHASHALGO_SHA512:
-	prefix = "3051300d060960864801650304020305000440";
 	ssl->type = NID_sha512;
 	break;
     case PGPHASHALGO_SHA224:
-	prefix = "302d300d06096086480165030402040500041C";
 	ssl->type = NID_sha224;
 	break;
     default:
-	prefix = NULL;
 	break;
     }
     if (prefix == NULL || ssl->type == 0)
@@ -234,6 +223,7 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 {
     int xx;
 
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Set DSA hash. */
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 

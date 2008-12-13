@@ -36,6 +36,7 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     rpmnss nss = dig->impl;
     int xx;
 
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	nss->sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
@@ -105,9 +106,10 @@ int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     rpmnss nss = dig->impl;
     int xx;
 
-    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
+
+    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));

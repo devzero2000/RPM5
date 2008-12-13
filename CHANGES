@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: ensure that digest agrees with signature hash algorithm.
+    - jbj: digest: add getters for digest name/algo/ANS1oid.
     - jbj: rpmssl: functional RSA verify --usecrypto ssl for signature(...) probe.
     - jbj: rpmgc: functional RSA verify --usecrypto gc for signature(...) probe.
     - jbj: rpmgc: bulldoze the RSA compost. still not working yet ...

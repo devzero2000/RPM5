@@ -255,10 +255,13 @@ LIBRPMIO_0
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;
+    rpmDigestAlgo;
+    rpmDigestASN1;
     rpmDigestDup;
     rpmDigestFinal;
     rpmDigestHashAlgo;
     rpmDigestInit;
+    rpmDigestName;
     rpmDigestPoptTable;
     rpmDigestUpdate;
     rpmDumpMacroTable;
