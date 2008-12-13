@@ -51,6 +51,7 @@ int _psm_threads = 0;
 
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access Header @*/		/* XXX void * arg */
+/*@access miRE @*/
 
 /*@access rpmpsm @*/
 
@@ -493,7 +494,7 @@ static pid_t psmWait(rpmpsm psm)
  * @param arg2		ditto, but for the target package
  * @return		RPMRC_OK on success
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
+static rpmRC runLuaScript(rpmpsm psm, /*@unused@*/ Header h, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
@@ -521,8 +522,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
 
     /* Get into the chroot. */
     if (!rpmtsChrootDone(ts)) {
-       inChroot = 0;
 	const char *rootDir = rpmtsRootDir(ts);
+	inChroot = 0;
 	/*@-modobserver @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    xx = Chroot(rootDir);
@@ -1029,7 +1030,7 @@ static rpmTag _trigger_tag;
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH, int arg2)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
-	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
+	/*@modifies psm, sourceH, triggeredH,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int scareMem = 0;
@@ -1118,9 +1119,9 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		    const char * N = rpmdsN(ds);
 		    xx = mireRegexec(mire, N, 0);
 		    if (xx < 0)
-			continue;
+			/*@innercontinue@*/ continue;
 		    bingo = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 		ds = rpmdsFree(ds);
 		xx = mireClean(mire);
@@ -1191,7 +1192,8 @@ exit:
 
 /* Retrieve trigger patterns from rpmdb. */
 static int rpmdbTriggerGlobs(rpmpsm psm)
-	/*@ modifies psm @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies psm, rpmGlobalMacroContext @*/
 {
     const rpmts ts = psm->ts;
     ARGV_t keys = NULL;
@@ -1266,12 +1268,12 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 		    depName[nName] = (pattern[npattern-1] == '/') ? '/' : '\0';
 		}
 		if (mireRegexec(mire, depName, 0) < 0)
-		    continue;
+		    /*@innercontinue@*/ continue;
 
 		/* Reset the primary retrieval key to the pattern. */
 		depName = _free(depName);
 		depName = xstrdup(pattern);
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
 
@@ -1287,7 +1289,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
-		continue;
+		/*@innercontinue@*/ continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
 	    prev = instance;
 	    xx = argiAdd(&instances, -1, instance);
@@ -1420,7 +1422,7 @@ assert(fi->h != NULL);
     if (triggers != NULL)
     while ((i = rpmdsNext(triggers)) >= 0) {
 	evrFlags Flags = rpmdsFlags(triggers);
-	const char * Name = rpmdsN(triggers);
+	const char * N = rpmdsN(triggers);
 	const char * EVR = rpmdsEVR(triggers);
 
 	/* Skip triggers that are not in this context. */
@@ -1430,15 +1432,15 @@ assert(fi->h != NULL);
 	/* If not limited to NEVRA triggers, use file/dir index. */
 	if (tagno != RPMTAG_NAME) {
 	    /* XXX if trigger name ends with '/', use dirnames instead. */
-	    if (Name[0] == '/') 
-		tagno = (Name[strlen(Name)-1] == '/')
+	    if (N[0] == '/') 
+		tagno = (N[strlen(N)-1] == '/')
 			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
 	}
 	/* XXX For now, permit globs only in unversioned triggers. */
-	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(Name, 0))
-	    xx = rpmdbMireApply(rpmtsGetRdb(ts), tagno, RPMMIRE_GLOB, Name, &keys);
+	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(N, 0))
+	    xx = rpmdbMireApply(rpmtsGetRdb(ts), tagno, RPMMIRE_GLOB, N, &keys);
 	else
-	    xx = argvAdd(&keys, Name);
+	    xx = argvAdd(&keys, N);
     }
     triggers = rpmdsFree(triggers);
 
@@ -1471,7 +1473,7 @@ assert(fi->h != NULL);
 	    /* Skip headers that have already been processed. */
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    rc |= handleOneTrigger(psm, sourceH, fi->h,
 				rpmdbGetIteratorCount(mi));

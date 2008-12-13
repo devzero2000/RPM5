@@ -439,6 +439,7 @@ assert(EVR != NULL);
 
 /**
  */
+/*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
@@ -538,6 +539,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { NULL,			RPMFC_BLACK }
 };
+/*@=nullassign@*/
 
 int rpmfcColoring(const char * fmstr)
 {
@@ -864,12 +866,14 @@ typedef struct rpmfcApplyTbl_s {
 /**
  * XXX Having two entries for rpmfcSCRIPT may be unnecessary duplication.
  */
+/*@-nullassign@*/
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO) },
     { NULL, 0 }
 };
+/*@=nullassign@*/
 
 rpmRC rpmfcApply(rpmfc fc)
 {
@@ -1139,6 +1143,7 @@ struct DepMsg_s {
 
 /**
  */
+/*@-nullassign@*/
 /*@unchecked@*/
 static struct DepMsg_s depMsgs[] = {
   { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
@@ -1176,6 +1181,7 @@ static struct DepMsg_s depMsgs[] = {
 	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
+/*@=nullassign@*/
 
 /*@unchecked@*/
 static DepMsg_t DepMsgs = depMsgs;
@@ -1311,6 +1317,7 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 
 /**
  */
+/*@-nullassign@*/
 /*@unchecked@*/
 static struct DepMsg_s scriptMsgs[] = {
   { "Requires(pre)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
@@ -1327,6 +1334,7 @@ static struct DepMsg_s scriptMsgs[] = {
 	RPMSENSE_SCRIPT_POSTUN, 0 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
+/*@=nullassign@*/
 
 /*@unchecked@*/
 static DepMsg_t ScriptMsgs = scriptMsgs;

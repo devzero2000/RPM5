@@ -151,7 +151,7 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
-	/*@globals filesystems, fsnames, numFilesystems,
+	/*@globals h_errno, filesystems, fsnames, numFilesystems,
 		fileSystem, internalState @*/
 	/*@modifies filesystems, fsnames, numFilesystems,
 		fileSystem, internalState @*/

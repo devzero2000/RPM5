@@ -2422,7 +2422,7 @@ int rpmtsOrder(rpmts ts)
 	qi = rpmtsiInit(ts);
 	while ((q = rpmtsiNext(qi, TR_ADDED)) != NULL) {
 	    if (strcmp(q->pkgid, p->flink.Pkgid[0]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    requires = rpmdsFromPRCO(q->PRCO, RPMTAG_NAME);
 	    if (requires != NULL) {
 		/* XXX disable erased arrow reversal. */

@@ -26,7 +26,7 @@ void rpmFreeFilesystems(void)
 /*@-incondefs@*/
 int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 		/*@null@*/ /*@out@*/ rpmuint32_t * num)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *listptr, *num, fileSystem, internalState @*/
 	/*@requires maxSet(listptr) >= 0 /\ maxSet(num) >= 0 @*/
 	/*@ensures maxRead(num) == 0 @*/;

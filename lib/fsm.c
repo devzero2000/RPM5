@@ -1617,7 +1617,7 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
-		(fsm->path ? apath + fsm->astriplen : ""),
+		(apath ? apath + fsm->astriplen : ""),
 		_fafilter(fsm->action));
     }
 #undef	_fafilter

@@ -16,20 +16,26 @@
 +slovak-fcns
 -bufferoverflowhigh
 
+-bounds
 -branchstate
+-checkpost
 
 -compdef
 -compmempass
--incondefs	# 12
--modobserver	# 7
--nullderef	# 18
--nullpass	# 31
--nullstate	# 23	HE_t needs null annotations
--redecl		# 38
--usereleased	# 26
+-incondefs		# 12
+-modobserver		# 7
+-moduncon
+-noeffect		# 3
+-noeffectuncon
+-nullderef		# 18
+-nullpass		# 31
+-nullstate		# 23	HE_t needs null annotations
+-redecl			# 38
+-type
+-usereleased		# 26
 
--kepttrans	# 37
--onlytrans	# 29
+-kepttrans		# 37
+-onlytrans		# 29
 
 # --- +partial artifacts
 -declundef

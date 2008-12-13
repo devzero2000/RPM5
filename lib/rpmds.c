@@ -1593,6 +1593,7 @@ exit:
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 const char *_sysinfo_path = NULL;
 
+/*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 static const char *_sysinfo_tags[] = {
     "Providename",
@@ -1603,6 +1604,7 @@ static const char *_sysinfo_tags[] = {
     "Filelinktos",
     NULL
 };
+/*@=nullassign@*/
 
 int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	/*@globals _sysinfo_path @*/

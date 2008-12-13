@@ -473,6 +473,7 @@ rpmcliFini(poptContext optCon)
 }
 
 static inline int checkfd(const char * devnull, int fdno, int flags)
+	/*@*/
 {
     struct stat sb;
     int ret = 0;
