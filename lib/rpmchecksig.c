@@ -832,10 +832,10 @@ pgpDig dig = fdGetDig(fd);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he->p.ptr, he->c);
-	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	    dig->hdrctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
-		(void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, he->p.ptr, he->c);
+		(void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hdrctx, he->p.ptr, he->c);
 	    he->p.ptr = _free(he->p.ptr);
 	}
 	h = headerFree(h);

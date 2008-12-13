@@ -246,12 +246,12 @@ assert(0);
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
-	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	dig->hdrctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	if (hmagic && nmagic > 0) {
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
 	    dig->nbytes += nmagic;
 	}
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
+	(void) rpmDigestUpdate(dig->hdrctx, uh, uhc);
 	dig->nbytes += uhc;
 	(void) rpmswExit(op, dig->nbytes);
 	op->count--;	/* XXX one too many */
