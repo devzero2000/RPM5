@@ -139,6 +139,30 @@ int rpmbcVerifyDSA(pgpDig dig)
     return rc;
 }
 
+static
+int rpmbcSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies dig @*/
+{
+    int rc = 1;		/* XXX always fail. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+
+    return rc;
+}
+
+static
+int rpmbcVerifyECDSA(pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
 /**
  */
 static /*@observer@*/
@@ -303,6 +327,7 @@ void * rpmbcInit(void)
 struct pgpImplVecs_s rpmbcImplVecs = {
 	rpmbcSetRSA, rpmbcVerifyRSA,
 	rpmbcSetDSA, rpmbcVerifyDSA,
+	rpmbcSetECDSA, rpmbcVerifyECDSA,
 	rpmbcMpiItem, rpmbcClean,
 	rpmbcFree, rpmbcInit
 };

@@ -208,6 +208,31 @@ rpmgcDump("gc->pkey", gc->pkey);
     return (rc ? 0 : 1);
 }
 
+
+static
+int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies dig @*/
+{
+    int rc = 1;		/* XXX always fail. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+
+    return rc;
+}
+
+static
+int rpmgcVerifyECDSA(pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
 /*@-globuse -mustmod @*/
 static
 int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
@@ -350,6 +375,7 @@ void * rpmgcInit(void)
 struct pgpImplVecs_s rpmgcImplVecs = {
 	rpmgcSetRSA, rpmgcVerifyRSA,
 	rpmgcSetDSA, rpmgcVerifyDSA,
+	rpmgcSetECDSA, rpmgcVerifyECDSA,
 	rpmgcMpiItem, rpmgcClean,
 	rpmgcFree, rpmgcInit
 };

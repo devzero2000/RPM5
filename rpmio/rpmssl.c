@@ -213,6 +213,31 @@ int rpmsslVerifyDSA(pgpDig dig)
     return rc;
 }
 
+
+static
+int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies dig @*/
+{
+    int rc = 1;		/* XXX always fail. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+
+    return rc;
+}
+
+static
+int rpmsslVerifyECDSA(pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
 static
 int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p,
@@ -321,6 +346,7 @@ void * rpmsslInit(void)
 struct pgpImplVecs_s rpmsslImplVecs = {
 	rpmsslSetRSA, rpmsslVerifyRSA,
 	rpmsslSetDSA, rpmsslVerifyDSA,
+	rpmsslSetECDSA, rpmsslVerifyECDSA,
 	rpmsslMpiItem, rpmsslClean,
 	rpmsslFree, rpmsslInit
 };

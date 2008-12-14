@@ -1630,6 +1630,8 @@ typedef struct pgpImplVecs_s {
     pgpImplVerify_t	_pgpVerifyRSA;
     pgpImplSet_t	_pgpSetDSA;
     pgpImplVerify_t	_pgpVerifyDSA;
+    pgpImplSet_t	_pgpSetECDSA;
+    pgpImplVerify_t	_pgpVerifyECDSA;
     pgpImplMpiItem_t	_pgpMpiItem;
     pgpImplClean_t	_pgpClean;
     pgpImplFree_t	_pgpFree;
@@ -1676,6 +1678,24 @@ int pgpImplVerifyDSA(pgpDig dig)
 	/*@*/
 {
     return (*pgpImplVecs->_pgpVerifyDSA) (dig);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies ctx, dig @*/
+{
+    return (*pgpImplVecs->_pgpSetECDSA) (ctx, dig, sigp);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplVerifyECDSA(pgpDig dig)
+	/*@*/
+{
+    return (*pgpImplVecs->_pgpVerifyECDSA) (dig);
 }
 
 /**
