@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmnss: fix: correct RSA/SHA512 cut-n-paste error.
     - jbj: rpmssl: don't bother with (unused) NID_foo.
     - jbj: use digest names in debugging messages.
     - jbj: name digests according to RFC 4880 section 9.4.

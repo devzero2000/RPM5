@@ -37,6 +37,7 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    nss->sigalg = SEC_OID_UNKNOWN;
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	nss->sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
@@ -45,16 +46,16 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	nss->sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_RIPEMD160:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     case PGPHASHALGO_MD2:
 	nss->sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
 	break;
+    case PGPHASHALGO_MD4:
+	nss->sigalg = SEC_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION;
+	break;
     case PGPHASHALGO_TIGER192:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     case PGPHASHALGO_SHA256:
 	nss->sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
@@ -63,13 +64,11 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	nss->sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA512:
-	nss->sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
+	nss->sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA224:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     default:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     }
     if (nss->sigalg == SEC_OID_UNKNOWN)
