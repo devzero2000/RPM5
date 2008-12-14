@@ -257,20 +257,6 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
 /*@=nullret@*/
 }
 
-static /*@null@*/
-SECKEYPublicKey * rpmnssNewRSAKey(void)
-	/*@*/
-{
-    return rpmnssNewPublicKey(rsaKey);
-}
-
-static /*@null@*/
-SECKEYPublicKey * rpmnssNewDSAKey(void)
-	/*@*/
-{
-    return rpmnssNewPublicKey(dsaKey);
-}
-
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
@@ -306,7 +292,7 @@ assert(0);
 	break;
     case 30:		/* RSA n */
 	if (nss->rsa == NULL)
-	    nss->rsa = rpmnssNewRSAKey();
+	    nss->rsa = rpmnssNewPublicKey(rsaKey);
 	if (nss->rsa == NULL)
 	    rc = 1;
 	else
@@ -314,7 +300,7 @@ assert(0);
 	break;
     case 31:		/* RSA e */
 	if (nss->rsa == NULL)
-	    nss->rsa = rpmnssNewRSAKey();
+	    nss->rsa = rpmnssNewPublicKey(rsaKey);
 	if (nss->rsa == NULL)
 	    rc = 1;
 	else
@@ -322,7 +308,7 @@ assert(0);
 	break;
     case 40:		/* DSA p */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
@@ -330,7 +316,7 @@ assert(0);
 	break;
     case 41:		/* DSA q */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
@@ -338,7 +324,7 @@ assert(0);
 	break;
     case 42:		/* DSA g */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
@@ -346,7 +332,7 @@ assert(0);
 	break;
     case 43:		/* DSA y */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else

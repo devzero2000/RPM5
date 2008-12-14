@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmnss: eliminate pubkey type wrapping methods.
     - jbj: stub in pgpImpl{Set,Verify}ECDSA methods.
     - jbj: rpmnss: fix: correct RSA/SHA512 cut-n-paste error.
     - jbj: rpmssl: don't bother with (unused) NID_foo.
