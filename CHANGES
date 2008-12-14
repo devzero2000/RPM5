@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmgc: display errors with gcry_strerror().
     - jbj: rpmnss: eliminate pubkey type wrapping methods.
     - jbj: stub in pgpImpl{Set,Verify}ECDSA methods.
     - jbj: rpmnss: fix: correct RSA/SHA512 cut-n-paste error.

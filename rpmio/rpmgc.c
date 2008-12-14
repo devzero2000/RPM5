@@ -44,6 +44,17 @@ fprintf(stderr, "========== %s:\n%s", msg, buf);
 }
 
 static
+gcry_error_t rpmgcErr(rpmgc gc, const char * msg, gcry_error_t err)
+	/*@*/
+{
+    if (err) {
+	fprintf (stderr, "rpmgc: %s: %s/%s\n",
+		msg, gcry_strsource (err), gcry_strerror (err));
+    }
+    return err;
+}
+
+static
 int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -100,8 +111,9 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     {	gcry_mpi_t c = NULL;
 	gcry_error_t yy;
 	xx = gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->md5, dig->md5len, NULL);
-	yy = gcry_sexp_build(&gc->hash, NULL, "(data (flags pkcs1) (hash %s %m))",
-		hash_algo_name, c);
+	yy = rpmgcErr(gc, "RSA c",
+		gcry_sexp_build(&gc->hash, NULL,
+			"(data (flags pkcs1) (hash %s %m))", hash_algo_name, c) );
 	gcry_mpi_release(c);
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     }
@@ -126,33 +138,34 @@ int rpmgcVerifyRSA(pgpDig dig)
 	/*@*/
 {
     rpmgc gc = dig->impl;
-    gcry_error_t rc;
+    gcry_error_t err;
 
 /*@-moduncon@*/
-    rc = gcry_sexp_build(&gc->sig, NULL,
-		"(sig-val (RSA (s %m)))",
-		 gc->c);
+    err = rpmgcErr(gc, "RSA gc->sig",
+		gcry_sexp_build(&gc->sig, NULL,
+			"(sig-val (RSA (s %m)))", gc->c) );
 /*@=moduncon@*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
 /*@-moduncon@*/
-    rc = gcry_sexp_build(&gc->pkey, NULL,
-		"(public-key (RSA (n %m) (e %m)))",
-		gc->n, gc->e);
+    err = rpmgcErr(gc, "RSA gc->pkey",
+		gcry_sexp_build(&gc->pkey, NULL,
+			"(public-key (RSA (n %m) (e %m)))", gc->n, gc->e) );
 /*@=moduncon@*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->pkey", gc->pkey);
 
     /* Verify RSA signature. */
 /*@-moduncon@*/
-    rc = gcry_pk_verify (gc->sig, gc->hash, gc->pkey);
+    err = rpmgcErr(gc, "RSA verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pkey) );
 /*@=moduncon@*/
 
     gcry_sexp_release(gc->pkey);	gc->pkey = NULL;
     gcry_sexp_release(gc->hash);	gc->hash = NULL;
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
 
-    return (rc ? 0 : 1);
+    return (err ? 0 : 1);
 }
 
 static
@@ -160,7 +173,7 @@ int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmgc gc = dig->impl;
-    gcry_error_t rc;
+    gcry_error_t err;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
@@ -168,9 +181,9 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
    /* Set DSA hash. */
 /*@-moduncon -noeffectuncon @*/
-    rc = gcry_sexp_build(&gc->hash, NULL,
-		"(data (flags raw) (value %b))",
-		dig->sha1len, dig->sha1);
+    err = rpmgcErr(gc, "DSA gc->hash",
+		gcry_sexp_build(&gc->hash, NULL,
+			"(data (flags raw) (value %b))", dig->sha1len, dig->sha1) );
 /*@=moduncon =noeffectuncon @*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->hash", gc->hash);
@@ -184,28 +197,30 @@ int rpmgcVerifyDSA(pgpDig dig)
 	/*@*/
 {
     rpmgc gc = dig->impl;
-    gcry_error_t rc;
+    gcry_error_t err;
 
 /*@-moduncon -noeffectuncon @*/
-    rc = gcry_sexp_build(&gc->sig, NULL,
-		"(sig-val (DSA (r %m) (s %m)))",
-		gc->r, gc->s);
+    err = rpmgcErr(gc, "DSA gc->sig",
+		gcry_sexp_build(&gc->sig, NULL,
+			"(sig-val (DSA (r %m) (s %m)))", gc->r, gc->s) );
 if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
-    rc = gcry_sexp_build(&gc->pkey, NULL,
-		"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
-		gc->p, gc->q, gc->g, gc->y);
+    err = rpmgcErr(gc, "DSA gc->pkey",
+		gcry_sexp_build(&gc->pkey, NULL,
+			"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
+			gc->p, gc->q, gc->g, gc->y) );
 if (_pgp_debug < 0)
 rpmgcDump("gc->pkey", gc->pkey);
 
     /* Verify DSA signature. */
-    rc = gcry_pk_verify (gc->sig, gc->hash, gc->pkey);
+    err = rpmgcErr(gc, "DSA verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pkey) );
 
     gcry_sexp_release(gc->pkey);	gc->pkey = NULL;
     gcry_sexp_release(gc->hash);	gc->hash = NULL;
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
 /*@=moduncon -noeffectuncon @*/
-    return (rc ? 0 : 1);
+    return (err ? 0 : 1);
 }
 
 
@@ -242,9 +257,10 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 	/*@modifies dig, fileSystem @*/
 {
     rpmgc gc = dig->impl;
-    unsigned int nb;
+    size_t nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
+    size_t nscan = 0;
+    gcry_error_t err;
     int rc = 0;
-    int xx;
 
 /*@-moduncon -noeffectuncon @*/
     switch (itemno) {
@@ -252,40 +268,40 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 assert(0);
 	break;
     case 10:		/* RSA m**d */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->c, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "RSA m**d",
+		gcry_mpi_scan(&gc->c, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 20:		/* DSA r */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->r, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "DSA r",
+		gcry_mpi_scan(&gc->r, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 21:		/* DSA s */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->s, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "DSA s",
+		gcry_mpi_scan(&gc->s, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 30:		/* RSA n */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->n, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "RSA n",
+		gcry_mpi_scan(&gc->n, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 31:		/* RSA e */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->e, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "RSA e",
+		gcry_mpi_scan(&gc->e, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 40:		/* DSA p */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->p, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "DSA p",
+		gcry_mpi_scan(&gc->p, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 41:		/* DSA q */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->q, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "DSA q",
+		gcry_mpi_scan(&gc->q, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 42:		/* DSA g */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->g, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "DSA g",
+		gcry_mpi_scan(&gc->g, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     case 43:		/* DSA y */
-	nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
-	xx = gcry_mpi_scan(&gc->y, GCRYMPI_FMT_PGP, p, nb, NULL);
+	err = rpmgcErr(gc, "DSA y",
+		gcry_mpi_scan(&gc->y, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 	break;
     }
 /*@=moduncon =noeffectuncon @*/
