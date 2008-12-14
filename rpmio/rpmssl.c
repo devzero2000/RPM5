@@ -83,40 +83,7 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    ssl->type = 0;
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	ssl->type = NID_md5;
-	break;
-    case PGPHASHALGO_SHA1:
-	ssl->type = NID_sha1;
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	ssl->type = NID_ripemd160;
-	break;
-    case PGPHASHALGO_MD2:
-	ssl->type = NID_md2;
-	break;
-    case PGPHASHALGO_TIGER192:
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	break;
-    case PGPHASHALGO_SHA256:
-	ssl->type = NID_sha256;
-	break;
-    case PGPHASHALGO_SHA384:
-	ssl->type = NID_sha384;
-	break;
-    case PGPHASHALGO_SHA512:
-	ssl->type = NID_sha512;
-	break;
-    case PGPHASHALGO_SHA224:
-	ssl->type = NID_sha224;
-	break;
-    default:
-	break;
-    }
-    if (prefix == NULL || ssl->type == 0)
+    if (prefix == NULL)
 	return 1;
 
     xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
@@ -146,7 +113,7 @@ if (_pgp_debug < 0) fprintf(stderr, "*** rsahm: %s\n", hexstr);
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
-static unsigned char * bn2buf(const char * msg, const BIGNUM * s, size_t maxn)
+static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t maxn)
 {
     unsigned char * t = xcalloc(1, maxn);
 /*@-moduncon@*/
@@ -171,8 +138,8 @@ int rpmsslVerifyRSA(pgpDig dig)
     rpmssl ssl = dig->impl;
 /*@-moduncon@*/
     size_t maxn = BN_num_bytes(ssl->rsa->n);
-    unsigned char * hm = bn2buf("hm", ssl->rsahm, maxn);
-    unsigned char *  c = bn2buf(" c", ssl->c, maxn);
+    unsigned char * hm = rpmsslBN2bin("hm", ssl->rsahm, maxn);
+    unsigned char *  c = rpmsslBN2bin(" c", ssl->c, maxn);
     size_t nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
 /*@=moduncon@*/
     size_t i;
