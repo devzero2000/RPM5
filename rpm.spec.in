@@ -2,6 +2,7 @@
 %define	with_python_version	@PYTHON_VERSION@%{nil}
 %define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
+%define	with_lzma		@WITH_LZMA@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
@@ -37,6 +38,9 @@ BuildRequires: sqlite-devel
 
 %if "%{with_bzip2}" == "yes"
 BuildRequires: bzip2-devel >= 1.0
+%endif
+%if "%{with_lzma}" == "yes"
+BuildRequires: lzma-utils-devel >= 4.999.3
 %endif
 %if "%{with_apidocs}" == "1"
 BuildRequires: doxygen graphviz
@@ -152,6 +156,18 @@ programs that will manipulate RPM packages and databases.
 # XXX rpm needs functioning nptl for configure tests
 unset LD_ASSUME_KERNEL || :
 
+%if "%{with_bzip2}" == "yes"
+WITH_BZIP2="--with-bzip2=external"
+%else
+WITH_BZIP2="--without-bzip2"
+%endif
+
+%if "%{with_lzma}" == "yes"
+WITH_LZMA="--with-lzma=%{_prefix}"
+%else
+WITH_LZMA="--without-lzma"
+%endif
+
 %if %{with_python_subpackage}
 WITH_PYTHON="--with-python=%{with_python_version}"
 %else
@@ -181,7 +197,8 @@ WITH_PERL="--without-perl"
         --with-nss=external \
         --with-neon=external \
         --with-xar=internal \
-        --with-bzip2=external \
+	$WITH_BZIP2 \
+	$WITH_LZMA \
         --with-popt=external \
         --with-keyutils=external \
         --with-libelf \
