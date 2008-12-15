@@ -1041,6 +1041,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	fmode = "r.bzdio";	/* Open with bzip2 decompression. */
     else if (chkSuffix(pathname, ".lzma"))
 	fmode = "r.lzdio";	/* Open with lzma decompression. */
+    else if (chkSuffix(pathname, ".xz"))
+	fmode = "r.xzdio";	/* Open with xz decompression. */
     else
 	fmode = "r.ufdio";
 

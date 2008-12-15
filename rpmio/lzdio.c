@@ -1,5 +1,5 @@
 /** \ingroup rpmio
- * \file rpmio/lzdio.c
+ * \file rpmio/xzdio.c
  * Support for LZMA compression library.
  */
 
@@ -38,11 +38,11 @@
 
 /*@access FD_t @*/
 
-#define	LZDONLY(fd)	assert(fdGetIo(fd) == lzdio)
+#define	XZDONLY(fd)	assert(fdGetIo(fd) == xzdio)
 
 #define kBufferSize (1 << 15)
 
-typedef struct lzfile {
+typedef struct xzfile {
 /*@only@*/
     rpmuint8_t buf[kBufferSize];	/*!< IO buffer */
     lzma_stream strm;		/*!< LZMA stream */
@@ -50,18 +50,18 @@ typedef struct lzfile {
     FILE * fp;
     int encoding;
     int eof;
-} LZFILE;
+} XZFILE;
 
 /*@-globstate@*/
 /*@null@*/
-static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
+static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int xz)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int level = 5;
     int encoding = 0;
     FILE *fp;
-    LZFILE *lzfile;
+    XZFILE *xzfile;
     lzma_stream tmp;
     lzma_ret ret;
 
@@ -79,142 +79,144 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 	fp = fopen(path, encoding ? "w" : "r");
     if (!fp)
 	return NULL;
-    lzfile = calloc(1, sizeof(*lzfile));
-    if (!lzfile) {
+    xzfile = calloc(1, sizeof(*xzfile));
+    if (!xzfile) {
 	(void) fclose(fp);
 	return NULL;
     }
-    lzfile->fp = fp;
-    lzfile->encoding = encoding;
-    lzfile->eof = 0;
-#if LZMA_VERSION == 49990030
-    tmp = LZMA_STREAM_INIT_VAR;
-#else
-    tmp = LZMA_STREAM_INIT;
-#endif
-    lzfile->strm = tmp;
+    xzfile->fp = fp;
+    xzfile->encoding = encoding;
+    xzfile->eof = 0;
+    tmp = (lzma_stream)LZMA_STREAM_INIT;
+    xzfile->strm = tmp;
     if (encoding) {
-#if LZMA_VERSION == 49990030
-	lzma_options_alone options;
-/*@-unrecog@*/
-	options.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
-/*@=unrecog@*/
-	memcpy(&options.lzma, &lzma_preset_lzma[level - 1], sizeof(options.lzma));
-#else
-	lzma_options_lzma options;
-	lzma_lzma_preset(&options, level);
-#endif
-	ret = lzma_alone_encoder(&lzfile->strm, &options);
-    } else {
-#if LZMA_VERSION == 49990030
-	ret = lzma_auto_decoder(&lzfile->strm, NULL, 0);
-#else
-	/* FIXME: second argument now sets memory limit, setting it to
-	 * '-1' means unlimited and isn't really recommended. A sane
-	 * default value when setting it to '0' will probably be
-	 * implemented in liblzma soon, so then we should switch
-	 * back to '0'.
+	if (xz)
+	    ret = lzma_easy_encoder(&xzfile->strm, level, 0, LZMA_CHECK_CRC32);
+	else {
+	    lzma_options_lzma options;
+	    lzma_lzma_preset(&options, level);
+	    ret = lzma_alone_encoder(&xzfile->strm, &options);
+	}
+    } else
+	/* We set the memlimit for decompression to 100MiB which should be
+	 * more than enough to be sufficient for level 9 which requires 65 MiB.
 	 */
-	ret = lzma_auto_decoder(&lzfile->strm, -1, 0);
-#endif
-    }
+	ret = lzma_auto_decoder(&xzfile->strm, 100*(1<<20), 0);
     if (ret != LZMA_OK) {
 	(void) fclose(fp);
-	memset(lzfile, 0, sizeof(*lzfile));
-	free(lzfile);
+	memset(xzfile, 0, sizeof(*xzfile));
+	free(xzfile);
 	return NULL;
     }
-    return lzfile;
+    return xzfile;
 }
 /*@=globstate@*/
 
 /*@null@*/
-static LZFILE *lzopen(const char *path, const char *mode)
+static XZFILE *lzopen(const char *path, const char *mode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    return lzopen_internal(path, mode, -1);
+    return xzopen_internal(path, mode, -1, 0);
 }
 
 /*@null@*/
-static LZFILE *lzdopen(int fd, const char *mode)
+static XZFILE *lzdopen(int fd, const char *mode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (fd < 0)
 	return NULL;
-    return lzopen_internal(0, mode, fd);
+    return xzopen_internal(0, mode, fd, 0);
 }
 
-static int lzflush(LZFILE *lzfile)
+/*@null@*/
+static XZFILE *xzopen(const char *path, const char *mode)
 	/*@globals fileSystem @*/
-	/*@modifies lzfile, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
-    return fflush(lzfile->fp);
+    return xzopen_internal(path, mode, -1, 1);
 }
 
-static int lzclose(/*@only@*/ LZFILE *lzfile)
+/*@null@*/
+static XZFILE *xzdopen(int fd, const char *mode)
 	/*@globals fileSystem @*/
-	/*@modifies *lzfile, fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    if (fd < 0)
+	return NULL;
+    return xzopen_internal(0, mode, fd, 1);
+}
+
+static int xzflush(XZFILE *xzfile)
+	/*@globals fileSystem @*/
+	/*@modifies xzfile, fileSystem @*/
+{
+    return fflush(xzfile->fp);
+}
+
+static int xzclose(/*@only@*/ XZFILE *xzfile)
+	/*@globals fileSystem @*/
+	/*@modifies *xzfile, fileSystem @*/
 {
     lzma_ret ret;
     size_t n;
     int rc;
 
-    if (!lzfile)
+    if (!xzfile)
 	return -1;
-    if (lzfile->encoding) {
+    if (xzfile->encoding) {
 	for (;;) {
-	    lzfile->strm.avail_out = kBufferSize;
-	    lzfile->strm.next_out = (uint8_t *)lzfile->buf;
-	    ret = lzma_code(&lzfile->strm, LZMA_FINISH);
+	    xzfile->strm.avail_out = kBufferSize;
+	    xzfile->strm.next_out = (uint8_t *)xzfile->buf;
+	    ret = lzma_code(&xzfile->strm, LZMA_FINISH);
 	    if (ret != LZMA_OK && ret != LZMA_STREAM_END)
 		return -1;
-	    n = kBufferSize - lzfile->strm.avail_out;
-	    if (n && fwrite(lzfile->buf, 1, n, lzfile->fp) != n)
+	    n = kBufferSize - xzfile->strm.avail_out;
+	    if (n && fwrite(xzfile->buf, 1, n, xzfile->fp) != n)
 		return -1;
 	    if (ret == LZMA_STREAM_END)
 		break;
 	}
     }
-    lzma_end(&lzfile->strm);
-    rc = fclose(lzfile->fp);
-    memset(lzfile, 0, sizeof(*lzfile));
-    free(lzfile);
+    lzma_end(&xzfile->strm);
+    rc = fclose(xzfile->fp);
+    memset(xzfile, 0, sizeof(*xzfile));
+    free(xzfile);
     return rc;
 }
 
 /*@-mustmod@*/
-static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
+static ssize_t xzread(XZFILE *xzfile, void *buf, size_t len)
 	/*@globals fileSystem @*/
-	/*@modifies lzfile, *buf, fileSystem @*/
+	/*@modifies xzfile, *buf, fileSystem @*/
 {
     lzma_ret ret;
     int eof = 0;
 
-    if (!lzfile || lzfile->encoding)
+    if (!xzfile || xzfile->encoding)
       return -1;
-    if (lzfile->eof)
+    if (xzfile->eof)
       return 0;
 /*@-temptrans@*/
-    lzfile->strm.next_out = buf;
+    xzfile->strm.next_out = buf;
 /*@=temptrans@*/
-    lzfile->strm.avail_out = len;
+    xzfile->strm.avail_out = len;
     for (;;) {
-	if (!lzfile->strm.avail_in) {
-	    lzfile->strm.next_in = (uint8_t *)lzfile->buf;
-	    lzfile->strm.avail_in = fread(lzfile->buf, 1, kBufferSize, lzfile->fp);
-	    if (!lzfile->strm.avail_in)
+	if (!xzfile->strm.avail_in) {
+	    xzfile->strm.next_in = (uint8_t *)xzfile->buf;
+	    xzfile->strm.avail_in = fread(xzfile->buf, 1, kBufferSize, xzfile->fp);
+	    if (!xzfile->strm.avail_in)
 		eof = 1;
 	}
-	ret = lzma_code(&lzfile->strm, LZMA_RUN);
+	ret = lzma_code(&xzfile->strm, LZMA_RUN);
 	if (ret == LZMA_STREAM_END) {
-	    lzfile->eof = 1;
-	    return len - lzfile->strm.avail_out;
+	    xzfile->eof = 1;
+	    return len - xzfile->strm.avail_out;
 	}
 	if (ret != LZMA_OK)
 	    return -1;
-	if (!lzfile->strm.avail_out)
+	if (!xzfile->strm.avail_out)
 	    return len;
 	if (eof)
 	    return -1;
@@ -223,31 +225,31 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
 }
 /*@=mustmod@*/
 
-static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
+static ssize_t xzwrite(XZFILE *xzfile, void *buf, size_t len)
 	/*@globals fileSystem @*/
-	/*@modifies lzfile, fileSystem @*/
+	/*@modifies xzfile, fileSystem @*/
 {
     lzma_ret ret;
     size_t n;
 
-    if (!lzfile || !lzfile->encoding)
+    if (!xzfile || !xzfile->encoding)
 	return -1;
     if (!len)
 	return 0;
 /*@-temptrans@*/
-    lzfile->strm.next_in = buf;
+    xzfile->strm.next_in = buf;
 /*@=temptrans@*/
-    lzfile->strm.avail_in = len;
+    xzfile->strm.avail_in = len;
     for (;;) {
-	lzfile->strm.next_out = (uint8_t *)lzfile->buf;
-	lzfile->strm.avail_out = kBufferSize;
-	ret = lzma_code(&lzfile->strm, LZMA_RUN);
+	xzfile->strm.next_out = (uint8_t *)xzfile->buf;
+	xzfile->strm.avail_out = kBufferSize;
+	ret = lzma_code(&xzfile->strm, LZMA_RUN);
 	if (ret != LZMA_OK)
 	    return -1;
-	n = kBufferSize - lzfile->strm.avail_out;
-	if (n && fwrite(lzfile->buf, 1, n, lzfile->fp) != n)
+	n = kBufferSize - xzfile->strm.avail_out;
+	if (n && fwrite(xzfile->buf, 1, n, xzfile->fp) != n)
 	    return -1;
-	if (!lzfile->strm.avail_in)
+	if (!xzfile->strm.avail_in)
 	    return len;
     }
     /*@notreached@*/
@@ -255,7 +257,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 /* =============================================================== */
 
-static inline /*@dependent@*/ /*@null@*/ void * lzdFileno(FD_t fd)
+static inline /*@dependent@*/ /*@null@*/ void * xzdFileno(FD_t fd)
 	/*@*/
 {
     void * rc = NULL;
@@ -266,7 +268,7 @@ static inline /*@dependent@*/ /*@null@*/ void * lzdFileno(FD_t fd)
 /*@-boundsread@*/
 	    FDSTACK_t * fps = &fd->fps[i];
 /*@=boundsread@*/
-	    if (fps->io != lzdio)
+	    if (fps->io != xzdio && fps->io != lzdio)
 		continue;
 	    rc = fps->fp;
 	break;
@@ -282,13 +284,13 @@ static /*@null@*/ FD_t lzdOpen(const char * path, const char * fmode)
 {
     FD_t fd;
     mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
-    LZFILE * lzfile = lzopen(path, fmode);
+    XZFILE * xzfile = lzopen(path, fmode);
 
-    if (lzfile == NULL)
+    if (xzfile == NULL)
 	return NULL;
     fd = fdNew("open (lzdOpen)");
-    fdPop(fd); fdPush(fd, lzdio, lzfile, -1);
-    fdSetOpen(fd, path, fileno(lzfile->fp), mode);
+    fdPop(fd); fdPush(fd, lzdio, xzfile, -1);
+    fdSetOpen(fd, path, fileno(xzfile->fp), mode);
     return fdLink(fd, "lzdOpen");
 }
 /*@=globuse@*/
@@ -300,7 +302,7 @@ static /*@null@*/ FD_t lzdFdopen(void * cookie, const char * fmode)
 {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
-    LZFILE *lzfile;
+    XZFILE *lzfile;
 
 assert(fmode != NULL);
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
@@ -313,35 +315,72 @@ assert(fmode != NULL);
 /*@=globuse@*/
 
 /*@-globuse@*/
-static int lzdFlush(void * cookie)
+static /*@null@*/ FD_t xzdOpen(const char * path, const char * fmode)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    FD_t fd;
+    mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
+    XZFILE * xzfile = xzopen(path, fmode);
+
+    if (xzfile == NULL)
+	return NULL;
+    fd = fdNew("open (xzdOpen)");
+    fdPop(fd); fdPush(fd, xzdio, xzfile, -1);
+    fdSetOpen(fd, path, fileno(xzfile->fp), mode);
+    return fdLink(fd, "xzdOpen");
+}
+/*@=globuse@*/
+
+/*@-globuse@*/
+static /*@null@*/ FD_t xzdFdopen(void * cookie, const char * fmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    FD_t fd = c2f(cookie);
+    int fdno = fdFileno(fd);
+    XZFILE *xzfile;
+
+assert(fmode != NULL);
+    fdSetFdno(fd, -1);          /* XXX skip the fdio close */
+    if (fdno < 0) return NULL;
+    xzfile = xzdopen(fdno, fmode);
+    if (xzfile == NULL) return NULL;
+    fdPush(fd, xzdio, xzfile, fdno);
+    return fdLink(fd, "xzdFdopen");
+}
+/*@=globuse@*/
+
+/*@-globuse@*/
+static int xzdFlush(void * cookie)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FD_t fd = c2f(cookie);
-    return lzflush(lzdFileno(fd));
+    return xzflush(xzdFileno(fd));
 }
 /*@=globuse@*/
 
 /* =============================================================== */
 /*@-globuse@*/
 /*@-mustmod@*/          /* LCL: *buf is modified */
-static ssize_t lzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
+static ssize_t xzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    LZFILE *lzfile;
+    XZFILE *xzfile;
     ssize_t rc = -1;
 
 assert(fd != NULL);
     if (fd->bytesRemain == 0) return 0; /* XXX simulate EOF */
-    lzfile = lzdFileno(fd);
-assert(lzfile != NULL);
+    xzfile = xzdFileno(fd);
+assert(xzfile != NULL);
     fdstat_enter(fd, FDSTAT_READ);
 /*@-compdef@*/
-    rc = lzread(lzfile, buf, count);
+    rc = xzread(xzfile, buf, count);
 /*@=compdef@*/
-DBGIO(fd, (stderr, "==>\tlzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\txzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc == -1) {
 	fd->errcookie = "Lzma: decoding error";
     } else if (rc >= 0) {
@@ -356,23 +395,23 @@ DBGIO(fd, (stderr, "==>\tlzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 /*@=globuse@*/
 
 /*@-globuse@*/
-static ssize_t lzdWrite(void * cookie, const char * buf, size_t count)
+static ssize_t xzdWrite(void * cookie, const char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    LZFILE *lzfile;
+    XZFILE *xzfile;
     ssize_t rc = 0;
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;   /* XXX simulate EOF */
 
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
-    lzfile = lzdFileno(fd);
+    xzfile = xzdFileno(fd);
 
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = lzwrite(lzfile, (void *)buf, count);
-DBGIO(fd, (stderr, "==>\tlzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+    rc = xzwrite(xzfile, (void *)buf, count);
+DBGIO(fd, (stderr, "==>\txzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	fd->errcookie = "Lzma: encoding error";
     } else if (rc > 0) {
@@ -381,56 +420,64 @@ DBGIO(fd, (stderr, "==>\tlzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
     return rc;
 }
 
-static inline int lzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
+static inline int xzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
 			/*@unused@*/ int whence)
 	/*@*/
 {
     FD_t fd = c2f(cookie);
 
-    LZDONLY(fd);
+    XZDONLY(fd);
     return -2;
 }
 
-static int lzdClose( /*@only@*/ void * cookie)
+static int xzdClose( /*@only@*/ void * cookie)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    LZFILE *lzfile;
+    XZFILE *xzfile;
     const char * errcookie;
     int rc;
 
-    lzfile = lzdFileno(fd);
+    xzfile = xzdFileno(fd);
 
-    if (lzfile == NULL) return -2;
-    errcookie = strerror(ferror(lzfile->fp));
+    if (xzfile == NULL) return -2;
+    errcookie = strerror(ferror(xzfile->fp));
 
     fdstat_enter(fd, FDSTAT_CLOSE);
     /*@-dependenttrans@*/
-    rc = lzclose(lzfile);
+    rc = xzclose(xzfile);
     /*@=dependenttrans@*/
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
     if (fd && rc == -1)
 	fd->errcookie = errcookie;
 
-DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\txzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
-    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "LZDIO", stderr);
+    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
     /*@-branchstate@*/
     if (rc == 0)
-	fd = fdFree(fd, "open (lzdClose)");
+	fd = fdFree(fd, "open (xzdClose)");
     /*@=branchstate@*/
     return rc;
 }
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s lzdio_s = {
-  lzdRead, lzdWrite, lzdSeek, lzdClose, lzdOpen, lzdFdopen, lzdFlush,
+  xzdRead, xzdWrite, xzdSeek, xzdClose, lzdOpen, lzdFdopen, xzdFlush,
 };
 /*@=type@*/
 
 FDIO_t lzdio = /*@-compmempass@*/ &lzdio_s /*@=compmempass@*/ ;
+
+/*@-type@*/ /* LCL: function typedefs */
+static struct FDIO_s xzdio_s = {
+  xzdRead, xzdWrite, xzdSeek, xzdClose, xzdOpen, xzdFdopen, xzdFlush,
+};
+/*@=type@*/
+
+FDIO_t xzdio = /*@-compmempass@*/ &xzdio_s /*@=compmempass@*/ ;
 
 #endif
 

@@ -1430,6 +1430,9 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ar archive format.") },
 #endif
+    { "rpmlib(PayloadIsXz)",		"5.2-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload can be compressed using xz.") },
     { NULL,				NULL, 0,	NULL }
 };
 

@@ -2752,6 +2752,8 @@ psm->te->h = headerFree(psm->te->h);
 	    t = stpcpy(t, ".bzdio");
 	if (!strcmp(payload_compressor, "lzma"))
 	    t = stpcpy(t, ".lzdio");
+	if (!strcmp(payload_compressor, "xz"))
+	    t = stpcpy(t, ".xzdio");
 	payload_compressor = _free(payload_compressor);
 
 	he->tag = RPMTAG_PAYLOADFORMAT;

@@ -1974,6 +1974,8 @@ static struct poptOption repoCompressionPoptTable[] = {
 	N_("use bzip2 compression"), NULL },
  { "lzma", '\0', POPT_ARG_VAL,			&compression, 3,
 	N_("use lzma compression"), NULL },
+ { "xz", '\0', POPT_ARG_VAL,			&compression, 4,
+	N_("use xz compression"), NULL },
     POPT_TABLEEND
 };
 
@@ -2117,6 +2119,10 @@ main(int argc, char *argv[])
     case 3:
 	repo->suffix = ".lzma";
 	repo->wmode = "w.lzdio";
+	break;
+    case 4:
+	repo->suffix = ".xz";
+	repo->wmode = "w.xzdio";
 	break;
     }
 

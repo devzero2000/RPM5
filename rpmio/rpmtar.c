@@ -541,6 +541,8 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 	    fmode = "r.bzdio";      /* Open with bzip2 decompression. */
 	else if (chkSuffix(fn, ".lzma"))
 	    fmode = "r.lzdio";      /* Open with lzma decompression. */
+	else if (chkSuffix(fn, ".xz"))
+	    fmode = "r.xzdio";      /* Open with xz decompression. */
 	else
 	    fmode = "r.ufdio";
 

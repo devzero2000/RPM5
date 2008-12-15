@@ -165,6 +165,9 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 	case COMPRESSED_LZMA:
 	    zipper = "%{__lzma}";
 	    break;
+	case COMPRESSED_XZ:
+	    zipper = "%{__xz}";
+	    break;
 	}
 	zipper = rpmGetPath(zipper, NULL);
 
@@ -298,6 +301,9 @@ _rpmmg_debug = 0;
 	    break;
 	case COMPRESSED_LZMA:
 	    t = "%{__lzma} -dc";
+	    break;
+	case COMPRESSED_XZ:
+	    t = "%{__xz} -dc";
 	    break;
 	case COMPRESSED_ZIP:
 #if defined(RPM_VENDOR_OPENPKG) /* use-bsdtar-for-zip-files */
