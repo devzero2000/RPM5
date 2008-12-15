@@ -30,12 +30,13 @@ static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
 	/*@*/
 {
-    char buf[BUFSIZ];
-    size_t nb;
+    size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
+    char * buf = alloca(nb+1);
 
 /*@-modunconnomods @*/
-    nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, sizeof(buf));
+    nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
 /*@=modunconnomods @*/
+    buf[nb] = '\0';
 /*@-modfilesys@*/
 if (_pgp_debug)
 fprintf(stderr, "========== %s:\n%s", msg, buf);
@@ -179,12 +180,10 @@ int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 
-   /* Set DSA hash. */
-/*@-moduncon -noeffectuncon @*/
+    /* Set DSA hash. */
     err = rpmgcErr(gc, "DSA gc->hash",
 		gcry_sexp_build(&gc->hash, NULL,
 			"(data (flags raw) (value %b))", dig->sha1len, dig->sha1) );
-/*@=moduncon =noeffectuncon @*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->hash", gc->hash);
 
@@ -200,6 +199,7 @@ int rpmgcVerifyDSA(pgpDig dig)
     gcry_error_t err;
 
 /*@-moduncon -noeffectuncon @*/
+
     err = rpmgcErr(gc, "DSA gc->sig",
 		gcry_sexp_build(&gc->sig, NULL,
 			"(sig-val (DSA (r %m) (s %m)))", gc->r, gc->s) );
@@ -219,7 +219,9 @@ rpmgcDump("gc->pkey", gc->pkey);
     gcry_sexp_release(gc->pkey);	gc->pkey = NULL;
     gcry_sexp_release(gc->hash);	gc->hash = NULL;
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
+
 /*@=moduncon -noeffectuncon @*/
+
     return (err ? 0 : 1);
 }
 
@@ -257,54 +259,61 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 	/*@modifies dig, fileSystem @*/
 {
     rpmgc gc = dig->impl;
-    size_t nb = ((pgpMpiBits(p) + 7) >> 3) + 2;
+    size_t nb = pgpMpiLen(p);
+    const char * mpiname = "";
+    gcry_mpi_t * mpip = NULL;
     size_t nscan = 0;
     gcry_error_t err;
     int rc = 0;
 
-/*@-moduncon -noeffectuncon @*/
     switch (itemno) {
     default:
 assert(0);
 	break;
     case 10:		/* RSA m**d */
-	err = rpmgcErr(gc, "RSA m**d",
-		gcry_mpi_scan(&gc->c, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname ="RSA m**d";	mpip = &gc->c;
 	break;
     case 20:		/* DSA r */
-	err = rpmgcErr(gc, "DSA r",
-		gcry_mpi_scan(&gc->r, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "DSA r";	mpip = &gc->r;
 	break;
     case 21:		/* DSA s */
-	err = rpmgcErr(gc, "DSA s",
-		gcry_mpi_scan(&gc->s, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "DSA s";	mpip = &gc->s;
 	break;
     case 30:		/* RSA n */
-	err = rpmgcErr(gc, "RSA n",
-		gcry_mpi_scan(&gc->n, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "RSA n";	mpip = &gc->n;
 	break;
     case 31:		/* RSA e */
-	err = rpmgcErr(gc, "RSA e",
-		gcry_mpi_scan(&gc->e, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "RSA e";	mpip = &gc->e;
 	break;
     case 40:		/* DSA p */
-	err = rpmgcErr(gc, "DSA p",
-		gcry_mpi_scan(&gc->p, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "DSA p";	mpip = &gc->p;
 	break;
     case 41:		/* DSA q */
-	err = rpmgcErr(gc, "DSA q",
-		gcry_mpi_scan(&gc->q, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "DSA q";	mpip = &gc->q;
 	break;
     case 42:		/* DSA g */
-	err = rpmgcErr(gc, "DSA g",
-		gcry_mpi_scan(&gc->g, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "DSA g";	mpip = &gc->g;
 	break;
     case 43:		/* DSA y */
-	err = rpmgcErr(gc, "DSA y",
-		gcry_mpi_scan(&gc->y, GCRYMPI_FMT_PGP, p, nb, &nscan) );
+	mpiname = "DSA y";	mpip = &gc->y;
 	break;
     }
+
+/*@-moduncon -noeffectuncon @*/
+    err = rpmgcErr(gc, mpiname,
+		gcry_mpi_scan(mpip, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 /*@=moduncon =noeffectuncon @*/
+
+    if (_pgp_debug < 0)
+    {	size_t nbits = gcry_mpi_get_nbits(*mpip);
+	unsigned char * hex = NULL;
+	size_t nhex = 0;
+	err = rpmgcErr(gc, "MPI print",
+		gcry_mpi_aprint(GCRYMPI_FMT_HEX, &hex, &nhex, *mpip) );
+	fprintf(stderr, "*** %s\t%5d:%s\n", mpiname, nbits, hex);
+	hex = _free(hex);
+    }
+
     return rc;
 }
 /*@=globuse =mustmod @*/
@@ -370,13 +379,27 @@ void rpmgcClean(void * impl)
 }
 /*@=mustmod@*/
 
+/*@unchecked@*/
+static int rpmgc_initialized;
+
 static /*@null@*/
 void * rpmgcFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
     rpmgc gc = impl;
+
     rpmgcClean(impl);
+
+    if (--rpmgc_initialized == 0 && _pgp_debug < 0) {
+	gcry_error_t err;
+	err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
+		gcry_control(GCRYCTL_CLEAR_DEBUG_FLAGS, 3));
+	err = rpmgcErr(gc, "SET_VERBOSITY",
+		gcry_control(GCRYCTL_SET_VERBOSITY, 0) );
+    }
+
     gc = _free(gc);
+
     return NULL;
 }
 
@@ -385,6 +408,15 @@ void * rpmgcInit(void)
 	/*@*/
 {
     rpmgc gc = xcalloc(1, sizeof(*gc));
+
+    if (rpmgc_initialized++ == 0 && _pgp_debug < 0) {
+	gcry_error_t err;
+	err = rpmgcErr(gc, "SET_VERBOSITY",
+		gcry_control(GCRYCTL_SET_VERBOSITY, 3) );
+	err = rpmgcErr(gc, "SET_DEBUG_FLAGS",
+		gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 3) );
+    }
+
     return (void *) gc;
 }
 
