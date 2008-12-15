@@ -72,7 +72,7 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	ar.c argv.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
-	getdate.c gzdio.c glob.c iosm.c lzdio.c \
+	getdate.c gzdio.c glob.c iosm.c xzdio.c \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \

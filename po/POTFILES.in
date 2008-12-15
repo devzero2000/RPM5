@@ -77,7 +77,7 @@ rpmio/fts.c
 rpmio/gzdio.c
 rpmio/iosm.c
 rpmio/lookup3.c
-rpmio/lzdio.c
+rpmio/xzdio.c
 rpmio/macro.c
 rpmio/md2.c
 rpmio/md4.c
