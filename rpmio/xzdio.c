@@ -46,6 +46,10 @@ typedef struct xzfile {
 /*@only@*/
     rpmuint8_t buf[kBufferSize];	/*!< IO buffer */
     lzma_stream strm;		/*!< LZMA stream */
+#if LZMA_VERSION == 49990030U
+    lzma_memlimit *limit;
+    lzma_allocator allocator;
+#endif
 /*@dependent@*/
     FILE * fp;
     int encoding;
@@ -90,6 +94,27 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
     tmp = (lzma_stream)LZMA_STREAM_INIT;
     xzfile->strm = tmp;
     if (encoding) {
+#if LZMA_VERSION == 49990030U
+	if (xz) {
+#if 0
+	    lzma_options_stream options;
+	    options.check = LZMA_CHECK_CRC32;
+	    options.filters[0].id = LZMA_FILTER_LZMA;
+	    options.filters[0].options = (lzma_options_lzma *)(lzma_preset_lzma + level - 1);
+	    /* Terminate the filter options array. */
+	    options.filters[1].id = UINT64_MAX;
+	    ret = lzma_stream_encoder_single(&xzfile->strm, &options);
+#else
+	    ret = LZMA_PROG_ERROR;
+#endif
+	} else {
+	    lzma_options_alone options;
+	    options.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
+	    memcpy(&options.lzma,
+	           (lzma_options_lzma *)(lzma_preset_lzma + level - 1), sizeof(lzma_options_lzma));
+	    ret = lzma_alone_encoder(&xzfile->strm, &options);
+	}
+#else
 	if (xz)
 	    ret = lzma_easy_encoder(&xzfile->strm, level, 0, LZMA_CHECK_CRC32);
 	else {
@@ -97,11 +122,22 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	    lzma_lzma_preset(&options, level);
 	    ret = lzma_alone_encoder(&xzfile->strm, &options);
 	}
-    } else
+#endif
+    } else {
 	/* We set the memlimit for decompression to 100MiB which should be
 	 * more than enough to be sufficient for level 9 which requires 65 MiB.
 	 */
+#if LZMA_VERSION == 49990030U
+	xzfile->limit = lzma_memlimit_create(100*(1<<20));
+	xzfile->allocator.alloc = (void*) lzma_memlimit_alloc;
+	xzfile->allocator.free = (void*) lzma_memlimit_free;
+	xzfile->allocator.opaque = xzfile->limit;
+	xzfile->strm.allocator = &xzfile->allocator;
+	ret = lzma_auto_decoder(&xzfile->strm, NULL, NULL);
+#else
 	ret = lzma_auto_decoder(&xzfile->strm, 100*(1<<20), 0);
+#endif
+    }
     if (ret != LZMA_OK) {
 	(void) fclose(fp);
 	memset(xzfile, 0, sizeof(*xzfile));
@@ -180,6 +216,9 @@ static int xzclose(/*@only@*/ XZFILE *xzfile)
 	}
     }
     lzma_end(&xzfile->strm);
+#if LZMA_VERSION == 49990030U
+    lzma_memlimit_end(xzfile->limit, 1);
+#endif
     rc = fclose(xzfile->fp);
     memset(xzfile, 0, sizeof(*xzfile));
     free(xzfile);
