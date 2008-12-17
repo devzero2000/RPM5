@@ -665,10 +665,10 @@ ONLY_MATCHING_RESTART:
 		    if (printname != NULL) fprintf(stdout, "%s:", printname);
 		    if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d:", linenumber);
 		    if (GF_ISSET(LOFFSETS))
-			fprintf(stdout, "%zd,%d", matchptr + offsets[0] - ptr,
+			fprintf(stdout, "%d,%d", (int)(matchptr + offsets[0] - ptr),
 			    offsets[1] - offsets[0]);
 		    else if (GF_ISSET(FOFFSETS))
-			fprintf(stdout, "%zd,%d", filepos + matchptr + offsets[0] - ptr,
+			fprintf(stdout, "%d,%d", (int)(filepos + matchptr + offsets[0] - ptr),
 			    offsets[1] - offsets[0]);
 		    else
 			(void)fwrite(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
