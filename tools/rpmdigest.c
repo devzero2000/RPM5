@@ -968,7 +968,7 @@ main(int argc, char *argv[])
 
 exit:
     if (dc->nfailed)
-	fprintf(stderr, "%s: WARNING: %u of %d computed checksums did NOT match\n",
+	fprintf(stderr, "%s: WARNING: %zu of %zd computed checksums did NOT match\n",
 		__progname, dc->nfailed, dc->ncomputed);
 
     if (dc->ofd) {
