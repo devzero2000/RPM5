@@ -968,8 +968,8 @@ main(int argc, char *argv[])
 
 exit:
     if (dc->nfailed)
-	fprintf(stderr, "%s: WARNING: %zu of %zd computed checksums did NOT match\n",
-		__progname, dc->nfailed, dc->ncomputed);
+	fprintf(stderr, "%s: WARNING: %u of %u computed checksums did NOT match\n",
+		__progname, (unsigned) dc->nfailed, (unsigned) dc->ncomputed);
 
     if (dc->ofd) {
 	/* Print the output spewage digest for 0install format manifests. */
