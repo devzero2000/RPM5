@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: add -Werror=format-security to gcc warning flags.
+    - proyvind: xzdio: rename from lzdio.
     - proyvind: lzdio: set memlimit for decoding to 100MiB.
     - proyvind: add support for xz for all tools shipped with rpm. 
     - proyvind: lzdio: add support for xz format. (removes liblzma 4.999.3 support)
