@@ -87,7 +87,7 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
-    const char *patch;
+    const char *patch, *flags;
 
     *t = '\0';
     if (db)
@@ -146,6 +146,8 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
     if (strcmp(patch, "%{__patch}") == 0)
         patch = xstrdup("patch");
 
+    flags = rpmExpand("%{?_default_patch_flags}%{!?_default_patch_flags:-s}", NULL);
+
     if (compressed) {
 	const char *zipper;
 
@@ -173,7 +175,7 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -d < '%s' | %s -p%d %s -s\n"
+		"%s -d < '%s' | %s -p%d %s %s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
@@ -183,19 +185,20 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 		(const char *) basename((char *)fn),
 /*@=moduncon@*/
 		zipper,
-		fn, patch, strip, args);
+		fn, patch, strip, args, flags);
 	zipper = _free(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -p%d %s -s < '%s'", c,
+		"%s -p%d %s %s < '%s'", c,
 /*@-moduncon@*/
 		(const char *) basename((char *)fn),
 /*@=moduncon@*/
-		patch, strip, args, fn);
+		patch, strip, args, flags, fn);
     }
 
     patch = _free(patch);
+    flags = _free(flags);
     Lurlfn = _free(Lurlfn);
     return buf;
 }

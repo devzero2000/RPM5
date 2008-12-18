@@ -382,6 +382,9 @@ package or when debugging this package.\
 #	Default fuzz level for %patch in spec file.
 #%_default_patch_fuzz	-1
 
+#	Default patch flags
+%_default_patch_flags	-s
+
 #==============================================================================
 # ---- Build configuration macros.
 #
@@ -407,7 +410,7 @@ package or when debugging this package.\
 %define __patch_file    %{P:%{__patch_number}} \
 %define __patch_suffix  %{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} \
 %define __patch_fuzz    %{?_default_patch_fuzz:%(test %{_default_patch_fuzz} -ge 0 && echo "--fuzz=%{_default_patch_fuzz} ")} \
-%define __patch_options -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %{-R} %{-E} %{__patch_suffix} \
+%define __patch_options %{_default_patch_flags} %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %{-R} %{-E} %{__patch_suffix} \
 echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress:%{__patch_file}} | %{__patch} %{__patch_fuzz}%{__patch_options} ) || exit 1\
 }
 
