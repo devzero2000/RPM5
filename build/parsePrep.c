@@ -283,11 +283,13 @@ _rpmmg_debug = 0;
     if (strcmp(tar, "%{__tar}") == 0)
         tar = xstrdup("tar");
 
-#if !defined(RPM_VENDOR_ARK) /* use-gnu-tar-compression-detection */
-    if (compressed != COMPRESSED_NOT) {
+#if defined(RPM_VENDOR_ARK) /* use-gnu-tar-compression-detection */
+/* We leave compression handling for all tar based files up to GNU tar */
+    if (compressed == COMPRESSED_ZIP)
 #else
-    if (compressed == COMPRESSED_ZIP) { /* We leave compression handling for all tar based files up to GNU tar */
+    if (compressed != COMPRESSED_NOT)
 #endif
+    {
 	const char *zipper;
 	int needtar = 1;
 
