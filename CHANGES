@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: add RPMTAG_DISTTAG to optionalTags so that it may be used as
+	%{disttag}.
     - rpm.org: add %{_default_patch_flags} macro for patch options
     - proyvind: add -Werror=format-security to gcc warning flags.
     - proyvind: xzdio: rename from lzdio.

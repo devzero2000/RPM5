@@ -364,6 +364,7 @@ static struct optionalTag {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
+    { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
     { 0xffffffff,		"%{class}" },
     { -1, NULL }
