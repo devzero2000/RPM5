@@ -62,7 +62,7 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    int level = 5;
+    int level = LZMA_EASY_LEVEL_DEFAULT;
     int encoding = 0;
     FILE *fp;
     XZFILE *xzfile;
@@ -128,14 +128,14 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	 * more than enough to be sufficient for level 9 which requires 65 MiB.
 	 */
 #if LZMA_VERSION == 49990030U
-	xzfile->limit = lzma_memlimit_create(100*(1<<20));
+	xzfile->limit = lzma_memlimit_create(100<<20);
 	xzfile->allocator.alloc = (void*) lzma_memlimit_alloc;
 	xzfile->allocator.free = (void*) lzma_memlimit_free;
 	xzfile->allocator.opaque = xzfile->limit;
 	xzfile->strm.allocator = &xzfile->allocator;
 	ret = lzma_auto_decoder(&xzfile->strm, NULL, NULL);
 #else
-	ret = lzma_auto_decoder(&xzfile->strm, 100*(1<<20), 0);
+	ret = lzma_auto_decoder(&xzfile->strm, 100<<20, 0);
 #endif
     }
     if (ret != LZMA_OK) {
