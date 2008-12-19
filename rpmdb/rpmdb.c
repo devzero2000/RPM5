@@ -3896,7 +3896,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
-    const char * myprefix;
+    const char * myprefix = NULL;
     rpmdb olddb;
     const char * dbpath = NULL;
     const char * rootdbpath = NULL;
