@@ -4,6 +4,7 @@
 #include <argv.h>
 #include <rpmhash.h>
 
+#include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
 
@@ -137,7 +138,7 @@ static struct poptOption optionsTable[] = {
 };
 
 int
-main(int argc, const char **argv)
+main(int argc, char *const argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     ARGV_t av;
