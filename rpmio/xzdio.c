@@ -34,6 +34,10 @@
 
 #include "lzma.h"
 
+#ifndef LZMA_EASY_LEVEL_DEFAULT
+#define LZMA_EASY_LEVEL_DEFAULT 6
+#endif
+
 #include "debug.h"
 
 /*@access FD_t @*/
