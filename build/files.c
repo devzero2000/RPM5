@@ -2248,7 +2248,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
     pkg->cpioList = NULL;
 
     if (pkg->fileFile) {
-	char *saveptr;
+	char *saveptr = NULL;
 	char *filesFiles = xstrdup(pkg->fileFile);
 /*@-unrecog@*/
 	char *token = strtok_r(filesFiles, ",", &saveptr);
