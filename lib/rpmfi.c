@@ -1912,7 +1912,7 @@ void rpmfiBuildFSContexts(Header h,
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
 	const char *fn;
-	security_context_t scon;
+	security_context_t scon = NULL;
 
 	fn = rpmfiFN(fi);
 	fcnb[ac] = lgetfilecon(fn, &scon);
