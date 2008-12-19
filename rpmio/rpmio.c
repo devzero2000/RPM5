@@ -2667,9 +2667,11 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	} else if (!strcmp(end, "lzdio")) {
 	    iof = lzdio;
 	    fd = iof->_fdopen(fd, zstdio);
+#if LZMA_VERSION > 49990050U
 	} else if (!strcmp(end, "xzdio")) {
 	    iof = xzdio;
 	    fd = iof->_fdopen(fd, zstdio);
+#endif
 #endif
 	} else if (!strcmp(end, "ufdio")) {
 	    iof = ufdio;
@@ -2840,8 +2842,10 @@ int Fflush(FD_t fd)
 #if defined(HAVE_LZMA_H)
     if (vh && fdGetIo(fd) == lzdio && lzdio->_flush != NULL)
 	return (*lzdio->_flush) ((void *)fd);
+#if LZMA_VERSION > 49990050U
     if (vh && fdGetIo(fd) == xzdio && xzdio->_flush != NULL)
 	return (*xzdio->_flush) ((void *)fd);
+#endif
 #endif
 
     return 0;
@@ -2875,9 +2879,14 @@ int Ferror(FD_t fd)
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
 #endif
 #if defined(HAVE_LZMA_H)
-	} else if (fps->io == lzdio || fps->io == xzdio) {
+	} else if (fps->io == lzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
-	    i--;	/* XXX fdio under lzdio/xzdio always has fdno == -1 */
+	    i--;	/* XXX fdio under lzdio always has fdno == -1 */
+#if LZMA_VERSION > 49990050U
+	} else if (fps->io == xzdio) {
+	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	    i--;	/* XXX fdio under xzdio always has fdno == -1 */
+#endif
 #endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
