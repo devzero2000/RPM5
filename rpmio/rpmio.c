@@ -2295,7 +2295,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	fd = fdOpen(path, flags, mode);
 	if (fd) {
 	    fdSetIo(fd, ufdio);
-	    fd->rd_timeoutsecs = 60;
+	    fd->rd_timeoutsecs = 1;
 	    fd->contentLength = fd->bytesRemain = -1;
 	}
 	break;
