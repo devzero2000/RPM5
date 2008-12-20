@@ -132,7 +132,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 	    goto exit;
 	}
     }
-    if (blen < sb.st_size)
+    if (blen < (size_t)sb.st_size)
 	b = xrealloc(b, blen+1);
     b[blen] = (rpmuint8_t) '\0';
 

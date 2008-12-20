@@ -206,7 +206,7 @@ static void getFiletriggers(const char * rootDir, miRE matches_any,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies matches_any, *nftp, *list, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    struct filetrigger_raw * list_raw;
+    struct filetrigger_raw * list_raw = NULL;
     int xx;
     int i;
 

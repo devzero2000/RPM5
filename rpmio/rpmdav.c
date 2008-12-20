@@ -2028,7 +2028,7 @@ int davClose(void * cookie)
 /*@-onlytrans@*/
     FD_t fd = cookie;
 /*@=onlytrans@*/
-    int rc;
+    int rc = 0;
 
 assert(fd->req != NULL);
     if (fd->req != (void *)-1) {
@@ -2202,7 +2202,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 
     if (st->st_mode == 0)
 	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
-    st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
+    st->st_size = (ctx->sizes ? ctx->sizes[0] : (size_t)st->st_size);
     st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
     st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
@@ -2251,7 +2251,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 
     if (st->st_mode == 0)
 	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
-    st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
+    st->st_size = (ctx->sizes ? ctx->sizes[0] : (size_t)st->st_size);
     st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
     st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {

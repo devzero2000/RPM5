@@ -2295,7 +2295,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	fd = fdOpen(path, flags, mode);
 	if (fd) {
 	    fdSetIo(fd, ufdio);
-	    fd->rd_timeoutsecs = 1;
+	    fd->rd_timeoutsecs = 60;
 	    fd->contentLength = fd->bytesRemain = -1;
 	}
 	break;
@@ -2742,7 +2742,7 @@ DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ?
 
 FD_t Fopen(const char *path, const char *_fmode)
 {
-    const char * fmode;
+    const char * fmode = NULL;
     char stdio[20], other[20];
     const char *end = NULL;
     mode_t perms = 0666;

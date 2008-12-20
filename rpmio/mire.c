@@ -289,7 +289,7 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
 
 int mireSetLocale(/*@unused@*/ miRE mire, const char * locale)
 {
-    const char * locale_from;
+    const char * locale_from = NULL;
     int rc = -1;	/* assume failure */
 
     /* XXX TODO: --locale jiggery-pokery should be done env LC_ALL=C rpmgrep */
@@ -559,10 +559,10 @@ int mireStudy(miRE mire, int nmires)
     /* Study the PCRE regex's, as we will be running them many times */
     if (mire)		/* note rc=0 return with no mire's. */
     for (j = 0; j < nmires; mire++, j++) {
-	const char * error;
 	if (mire->mode != RPMMIRE_PCRE)
 	    continue;
 #if defined(WITH_PCRE)
+	const char * error;
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[32];
@@ -575,6 +575,8 @@ int mireStudy(miRE mire, int nmires)
     }
     rc = 0;
 
+#if defined(WITH_PCRE)
 exit:
+#endif
     return rc;
 }
