@@ -525,7 +525,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	/*@modifies rpmpoptfiles @*/
 {
     poptContext optCon;
-    char *path_buf, *path, *path_next;
     int rc;
     int xx;
     int i;
@@ -576,10 +575,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	return NULL;
     }
 
-/*@-nullpass -temptrans@*/
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
-/*@=nullpass =temptrans@*/
-
     /* read all RPM POPT configuration files */
     for (i = 1; i < argc; i++) {
 	if (strcmp(argv[i], "--rpmpopt") == 0 && i+1 < argc) {
@@ -591,7 +586,16 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	    break;
 	}
     }
-    path_buf = xstrdup(rpmpoptfiles);
+
+/*@-nullpass -temptrans@*/
+    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+/*@=nullpass =temptrans@*/
+
+#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
+  { char * path_buf = xstrdup(rpmpoptfiles);
+    char *path;
+    char *path_next;
+
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
         int ac;
@@ -625,6 +629,12 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
         av = _free(av);
     }
     path_buf = _free(path_buf);
+  }
+#else
+    /* XXX FIXME: better error message is needed. */
+    if ((xx = poptReadConfigFiles(optCon, rpmpoptfiles)) != 0)
+	rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", rpmpoptfiles);
+#endif
 
 #if defined(RPM_VENDOR_WINDRIVER)
     {	const char * poptAliasFn = rpmGetPath(__usrlibrpm, "/rpmpopt", NULL);
@@ -634,6 +644,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 #endif
 
     /* read standard POPT configuration files */
+    /* XXX FIXME: the 2nd arg useEnv flag is UNUSED. */
     (void) poptReadDefaultConfig(optCon, 1);
 
 #if defined(RPM_VENDOR_WINDRIVER)

@@ -11,6 +11,7 @@
 #include <rpmhook.h>
 #include <rpmcb.h>
 #include <argv.h>
+#include <popt.h>		/* XXX poptSaneFile test */
 
 #include <lua.h>
 #include <lualib.h>
@@ -165,7 +166,12 @@ rpmlua rpmluaNew()
             const char *fn = av[i];
             if (fn[0] == '@' /* attention */) {
                 fn++;
-                if (!rpmSecuritySaneFile(fn)) {
+#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
+                if (!rpmSecuritySaneFile(fn))
+#else
+                if (!poptSaneFile(fn))
+#endif
+		{
                     rpmlog(RPMLOG_WARNING, "existing RPM Lua script file \"%s\" considered INSECURE -- not loaded\n", fn);
                     /*@innercontinue@*/ continue;
                 }

@@ -1853,6 +1853,7 @@ expandMacro(MacroBuf mb)
     return rc;
 }
 
+#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
 int rpmSecuritySaneFile(const char *filename)
 {
     struct stat sb;
@@ -1869,6 +1870,7 @@ int rpmSecuritySaneFile(const char *filename)
 	return 0;
     return 1;
 }
+#endif
 
 #if !defined(DEBUG_MACROS)
 /* =============================================================== */
@@ -2370,7 +2372,12 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 
 	if (fn[0] == '@' /* attention */) {
 	    fn++;
-	    if (!rpmSecuritySaneFile(fn)) {
+#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
+	    if (!rpmSecuritySaneFile(fn))
+#else
+	    if (!poptSaneFile(fn))
+#endif
+	    {
 		rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", fn);
 		/*@innercontinue@*/ continue;
 	    }
