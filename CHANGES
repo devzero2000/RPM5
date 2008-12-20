@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: bury MDV file triggers under RPM_VENDOR_MANDRIVA.
     - jbj: use poptSaneFile() when available (popt-1.15).
     - jbj: use poptReadConfigFiles() when available (popt-1.15).
     - provyind: python: build with -fno-strict-aliasing.

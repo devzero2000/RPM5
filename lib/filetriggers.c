@@ -1,3 +1,4 @@
+#if defined(RPM_VENDOR_MANDRIVA)
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX for fdGetFILE() */
@@ -377,3 +378,4 @@ exit:
 	xx = unlink(fn);
     fn = _free(fn);
 }
+#endif	/* defined(RPM_VENDOR_MANDRIVA) */

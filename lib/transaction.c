@@ -36,7 +36,9 @@
 
 #include "misc.h" /* XXX (free)splitString, currentDirectory */
 
+#if defined(RPM_VENDOR_MANDRIVA)
 #include "filetriggers.h" /* XXX mayAddToFilesAwaitingFiletriggers, rpmRunFileTriggers */
+#endif
 
 #include <rpmcli.h>	/* XXX QVA_t INSTALL_FOO flags */
 #include <rpmrollback.h>	/* IDTX prototypes */
@@ -1824,11 +1826,14 @@ assert(psm != NULL);
 		if ((xx = rpmpsmStage(psm, PSM_PKGINSTALL)) != 0) {
 		    ourrc++;
 		    xx = markLinkedFailed(ts, p);
-		} else {
+		}
+#if defined(RPM_VENDOR_MANDRIVA)
+		else {
 		    if(!rpmteIsSource(fi->te))
 	    		xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
 		    p->done = 1;
 		}
+#endif
 
 	    } else {
 		ourrc++;
@@ -1853,11 +1858,14 @@ assert(psm != NULL);
 	    if (p->linkFailed == 0) {
 		if ((xx = rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
 		    ourrc++;
-		} else {
+		}
+#if defined(RPM_VENDOR_MANDRIVA)
+		else {
 		    if(!rpmteIsSource(fi->te))
 			xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
 		    p->done = 1;
 		}
+#endif
 	    } else
 		ourrc++;
 
@@ -1893,8 +1901,10 @@ assert(psm != NULL);
 	!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
     {
 
+#if defined(RPM_VENDOR_MANDRIVA)
 	if ((rpmtsFlags(ts) & _noTransTriggers) != _noTransTriggers)
 	    rpmRunFileTriggers(rpmtsRootDir(ts));
+#endif
 
 	rpmlog(RPMLOG_DEBUG, D_("running post-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
