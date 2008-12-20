@@ -58,7 +58,6 @@
 #define	NAMLEN(_d)	NLENGTH(_d)
 
 /* If the system has the `struct dirent64' type we use it internally.  */
-#if defined _LIBC
 # if defined HAVE_DIRENT_H || defined __GNU_LIBRARY__
 #  define CONVERT_D_NAMLEN(d64, d32)
 # else
@@ -85,7 +84,6 @@
   CONVERT_D_NAMLEN (d64, d32)						      \
   CONVERT_D_INO (d64, d32)						      \
   CONVERT_D_TYPE (d64, d32)
-#endif
 
 #if (defined POSIX || defined WINDOWS32) && !defined __GNU_LIBRARY__
 /* Posix does not require that the d_ino field be present, and some
@@ -1117,7 +1115,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
     		    }
     		  d64buf;
 
-    		  if ((flags & GLOB_ALTDIRFUNC, 0))
+    		  if ((flags & GLOB_ALTDIRFUNC))
   		    {
 			struct dirent *d32 = (*pglob->gl_readdir) (stream);
       			if (d32 != NULL)
