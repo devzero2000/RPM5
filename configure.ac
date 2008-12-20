@@ -1575,6 +1575,11 @@ MACROFILES="${MACROFILES}:${USRLIBRPM}/%{_target}/macros"
 MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/macros.*"
 MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/macros"
 MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/%{_target}/macros"
+AC_ARG_WITH(
+    [extra-path-macros],
+    AS_HELP_STRING([--with-extra-path-macros=ARG], [build with additional colon-separated RPM macro files path not overriding defaults]),
+    [MACROFILES="$MACROFILES:$withval"]
+)
 if test ".$WITH_PATH_VERSIONED" = .yes; then
     MACROFILES="${MACROFILES}:~/.rpmmacros-${VERSION}"
 else
@@ -1584,11 +1589,6 @@ AC_ARG_WITH(
     [path-macros],
     AS_HELP_STRING([--with-path-macros=ARG], [build with colon-separated RPM macro files path]),
     [MACROFILES="$withval"]
-)
-AC_ARG_WITH(
-    [extra-path-macros],
-    AS_HELP_STRING([--with-extra-path-macros=ARG], [build with additional colon-separated RPM macro files path not overriding defaults]),
-    [MACROFILES="$MACROFILES:$withval"]
 )
 AC_DEFINE_UNQUOTED(
     [MACROFILES], ["$MACROFILES"],
