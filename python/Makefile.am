@@ -30,6 +30,7 @@ noinst_HEADERS = header-py.h \
 pkgpyexec_LTLIBRARIES = _rpmmodule.la
 pkgpyexec_SCRIPTS = rpm/__init__.py
 
+_rpmmodule_la_CFLAGS = -fno-strict-aliasing
 _rpmmodule_la_LDFLAGS = -module -avoid-version
 _rpmmodule_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \

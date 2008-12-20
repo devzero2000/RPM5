@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - provyind: python: build with -fno-strict-aliasing.
     - proyvind: tevr: fix build issues.
     - proyvind: add RPMTAG_DISTTAG to optionalTags so that it may be used as
 	%{disttag}.
