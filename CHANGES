@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: invert the sense of a <-> b comparison, change sign of Mandriva override.
     - jbj: bury MDV file triggers under RPM_VENDOR_MANDRIVA.
     - jbj: use poptSaneFile() when available (popt-1.15).
     - jbj: use poptReadConfigFiles() when available (popt-1.15).

@@ -21,9 +21,9 @@ int _rpmevr_debug = 0;
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
 /*@unchecked@*/
 #if defined(RPM_VENDOR_MANDRIVA) /* old-comparision-behaviour */
-static int _invert_digits_alphas_comparison = 1;
-#else
 static int _invert_digits_alphas_comparison = -1;
+#else
+static int _invert_digits_alphas_comparison = 1;
 #endif
 
 /* XXX Punctuation characters that are not treated as alphas */
@@ -84,7 +84,7 @@ int rpmEVRcmp(const char * a, const char * b)
 
 	    /* Calculate digit comparison return code. */
 	    if (a == ae || b == be)
-		rc = (int)(*b - *a) * _invert_digits_alphas_comparison;
+		rc = (int)(*a - *b) * _invert_digits_alphas_comparison;
 	    else {
 		rc = (ae - a) - (be - b);
 		if (!rc)
