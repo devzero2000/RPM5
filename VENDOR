@@ -330,31 +330,6 @@
      Reason:         [see scripts/integrity.txt for detailed documentation]
      ________________________________________________________________________
 
-     Change:         support-wildcards-in-EVR-comparison
-     Purpose:        Support asterisk ("*") as a wildcard in EVR comparison.
-     Reason:         In OpenPKG we sometimes wish to specify dependencies on
-                     just the "Release" tag of a package and want to
-                     avoid repeating the "Version" in front of it (we
-                     do not care about the "Version" in this case, even
-                     on "Version" downgrades). So, "foo >= *-20080201"
-                     should match any package "foo" with a "Release"
-                     larger than "20080201". This is important if one
-                     wants to just assert the _packaging_ (versioned via
-                     "Release") and not the _application_ (versioned
-                     via "Version") status. It usually occurs after a
-                     packaging fix in package "foo".
-     Hint:           Technically, the better solution would be to use
-                     the "Epoch" but this works only if one keeps the
-                     "Epoch" monotonically increasing. In OpenPKG
-                     "Epoch" is not used as the "Release" inherently and
-                     intentionally _IS_ the monotonically increasing
-                     value since many years (OpenPKG uses strict
-                     well-defined values for "Release" throughout all
-                     branches). Also, "Epoch" only works for the simple
-                     "*" match, but not for more crazy things like "4.*.0"
-                     or whatever else one can come up.
-     ________________________________________________________________________
-
      Change:         use-bsdtar-for-zip-files
      Purpose:        Use bsdtar(1) for unpacking ZIP format files.
      Reason:         OpenPKG uses bsdtar(1) to unpack ZIP format files to

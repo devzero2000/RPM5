@@ -50,7 +50,7 @@ int rpmEVRcmp(const char * a, const char * b)
 	/*@*/
 {
     const char * ae, * be;
-    int rc = 0;
+    int rc = 0;		/* assume equal */
 
     /* Compare version strings segment by segment. */
     for (; *a && *b && rc == 0; a = ae, b = be) {
@@ -59,20 +59,15 @@ int rpmEVRcmp(const char * a, const char * b)
 	while (*a && !(xisdigit((int)*a) || xisrpmalpha((int)*a))) a++;
 	while (*b && !(xisdigit((int)*b) || xisrpmalpha((int)*b))) b++;
 
+	/* Wildcard comparison? */
+	/* Note: limited to suffix-only wildcard matching at the moment. */
+	if (a[0] == '*' && a[1] == '\0') {
+            be = strchr(b, '\0');	/* XXX be = b + strlen(b); */
+	} else
+	if (b[0] == '*' && b[1] == '\0') {
+            ae = strchr(a, '\0');	/* XXX ae = a + strlen(a); */
+	} else
 	/* Digit string comparison? */
-#if defined(RPM_VENDOR_OPENPKG) /* support-wildcards-in-EVR-comparison */
-        if (a[0] == '*') {
-            ae = a + 1;
-            if ((be = strchr(b, a[1])) == NULL)
-                be = b;
-        }
-        else if (b[0] == '*') {
-            be = b + 1;
-            if ((ae = strchr(a, b[1])) == NULL)
-                ae = a;
-        }
-        else
-#endif
 	if (xisdigit((int)*a) || xisdigit((int)*b)) {
 	    /* Discard leading zeroes. */
 	    while (a[0] == '0' && xisdigit((int)a[1])) a++;
