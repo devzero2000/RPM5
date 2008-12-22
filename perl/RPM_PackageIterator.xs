@@ -46,6 +46,12 @@ new(class, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
     ts = rpmtsFree(ts);
 
 void
+DESTROY(mi)
+    rpmdbMatchIterator mi
+    CODE:
+    mi = rpmdbFreeIterator(mi);
+
+void
 prune(mi, ...)
     rpmdbMatchIterator mi
     PREINIT:

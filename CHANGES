@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: perl: add destructor function for RPM::PackageIterator.
     - proyvind: add new DistEpoch tag.
     - jbj: merge "support-wildcards-in-EVR-comparison" patch (OpenPKG).
     - jbj: invert the sense of a <-> b comparison, change sign of Mandriva override.
