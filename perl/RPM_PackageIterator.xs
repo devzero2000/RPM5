@@ -43,7 +43,7 @@ new(class, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
     PUTBACK;
     _newiterator(ts, sv_tagname, sv_tagvalue, keylen);
     SPAGAIN;
-    ts = rpmtsFree(ts);
+    /* FIXME: ts = rpmtsFree(ts); */
 
 void
 DESTROY(mi)
