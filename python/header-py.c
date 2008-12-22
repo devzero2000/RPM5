@@ -405,6 +405,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	    case RPMTAG_NAME:
 	    case RPMTAG_VERSION:
 	    case RPMTAG_RELEASE:
+	    case RPMTAG_DISTEPOCH:
 	    case RPMTAG_ARCH:
 	    case RPMTAG_OS:
 		Py_INCREF(Py_None);

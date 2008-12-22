@@ -524,7 +524,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
-    const char * Name, * V, * R;
+    const char * Name, * V, * R, * D;
     rpmuint32_t E;
     const char ** N, ** EVR;
     char * t;
@@ -540,6 +540,9 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
+    he->tag = RPMTAG_DISTEPOCH;
+    xx = headerGet(h, he, 0);
+    D = (he->p.str ? he->p.str : NULL);
 /*@-mods@*/
     xx = headerNEVRA(h, &Name, NULL, &V, &R, NULL);
 /*@=mods@*/
@@ -552,14 +555,17 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     t = stpcpy(t, Name);
     Name = _free(Name);
 
-    t = xmalloc(sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-"));
+    t = xmalloc(sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-") + (D ? strlen(D) + sizeof(":") : 0));
     EVR = (const char **) t;
     t += sizeof(*EVR);
     *t = '\0';
     EVR[0] = t;
-    sprintf(t, "%d:", E);
     t += strlen(t);
     t = stpcpy( stpcpy( stpcpy( t, V), "-"), R);
+    if (D != NULL) {
+	t = stpcpy( stpcpy( t, ":"), D);
+	D = _free(D);
+    }
     V = _free(V);
     R = _free(R);
 
@@ -3638,6 +3644,8 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 /*@i@*/	sense = EVRcmp(a->V, b->V);
 	if (sense == 0 && a->R && *a->R && b->R && *b->R)
 /*@i@*/	    sense = EVRcmp(a->R, b->R);
+	if (sense == 0 && a->D && *a->D && b->D && *b->D)
+/*@i@*/	    sense = EVRcmp(a->D, b->D);
     }
     a->str = _free(a->str);
     b->str = _free(b->str);
@@ -3762,9 +3770,9 @@ exit:
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char * pkgN, * V, * R;
+    const char * pkgN, * V, * R, * D;
     rpmuint32_t E;
-    int gotE = 0;
+    int gotE = 0, gotD = 0;
     const char * pkgEVR;
     char * t;
     evrFlags reqFlags = req->ns.Flags;
@@ -3790,16 +3798,25 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
+    he->tag = RPMTAG_DISTEPOCH;
+    gotD = headerGet(h, he, 0);
+    D = (he->p.str ? he->p.str : NULL);
+
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
     if (R) nb += strlen(R);
+    if (D) nb += strlen(D) + 1;
     pkgEVR = t = alloca(nb);
     *t = '\0';
     if (gotE) {
 	sprintf(t, "%d:", E);
 	t += strlen(t);
     }
-    (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
+    t = stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
+    if (gotD) {
+	t =  stpcpy( stpcpy( t, ":"), D);
+	D = _free(D);
+    }
     V = _free(V);
     R = _free(R);
 

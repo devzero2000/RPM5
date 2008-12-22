@@ -25,6 +25,7 @@ static struct tagMacro {
     { "name",		RPMTAG_NAME },
     { "version",	RPMTAG_VERSION },
     { "release",	RPMTAG_RELEASE },
+    { "distepoch",	RPMTAG_DISTEPOCH },
     { "epoch",		RPMTAG_EPOCH },
     { "arch",		RPMTAG_ARCH },
     { "os",		RPMTAG_OS },

@@ -110,15 +110,15 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	/*@modifies evrstr, evr @*/
 {
     char *s = xstrdup(evrstr);
-    char *se;
+    char *se, *se2;
 
-    evr->str = se = s;
+    evr->str = se2 = se = s;
     while (*se && xisdigit((int)*se)) se++;	/* se points to epoch terminator */
 
     if (*se == ':') {
 	evr->E = s;
 	*se++ = '\0';
-	evr->V = se;
+	evr->V = se2 = se;
 	if (*evr->E == '\0') evr->E = "0";
 	evr->Elong = strtoul(evr->E, NULL, 10);
     } else {
@@ -126,7 +126,14 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->V = s;
 	evr->Elong = 0;
     }
-    se = strrchr(se, '-');		/* se points to version terminator */
+    se = strrchr(se, ':');		/* se points to release terminator */
+    if (se) {
+	*se++ = '\0';
+	evr->D = se;
+    } else {
+	evr->D = NULL;
+    }
+    se = strrchr(se2, '-');		/* se points to version terminator */
     if (se) {
 	*se++ = '\0';
 	evr->R = se;
@@ -251,6 +258,14 @@ int rpmVersionCompare(Header first, Header second)
     xx = headerGet(first, he, 0);
     one = he->p.str;
     he->tag = RPMTAG_RELEASE;
+    xx = headerGet(second, he, 0);
+    two = he->p.str;
+    rc = rpmvercmp(one, two);
+
+    he->tag = RPMTAG_DISTEPOCH;
+    xx = headerGet(first, he, 0);
+    one = he->p.str;
+    he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(second, he, 0);
     two = he->p.str;
     rc = rpmvercmp(one, two);

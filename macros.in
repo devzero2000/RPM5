@@ -857,7 +857,7 @@ print (t)\
 #	binary packages.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_build_name_fmt	%%{ARCH}/%{___NVRA}.rpm
+%_build_name_fmt	%%{ARCH}/%{___NVRDA}.rpm
 
 #	The default transaction color. This value is a set of bits to
 #	determine file and dependency affinity for this arch.
@@ -1008,6 +1008,10 @@ print (t)\
 #
 # Default query format string for displaying package names everywhere
 %___NVRA	%%{NAME}-%%{VERSION}-%%{RELEASE}%%|ARCH?{.%%|SOURCERPM?{%%{ARCH}}:{src}|}:{}|
+
+# Format string including DistTag & DistEpoch if defined
+%___NVRDA	%%{NAME}-%%{VERSION}-%%{RELEASE}%%|DISTTAG?{-%%{DISTTAG}%%|DISTEPOCH?{%%{DISTEPOCH}}|}|%%|ARCH?{.%%|SOURCERPM?{%%{ARCH}}:{src}|}:{}|
+
 
 # Default headerSprintf() output format string for rpm -qa
 #

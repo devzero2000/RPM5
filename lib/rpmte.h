@@ -112,6 +112,8 @@ struct rpmte_s {
 /*@only@*/ /*@null@*/
     char * release;		/*!< Release: */
 /*@only@*/ /*@null@*/
+    char * distepoch;
+/*@only@*/ /*@null@*/
     const char * arch;		/*!< Architecture hint. */
 /*@only@*/ /*@null@*/
     const char * os;		/*!< Operating system hint. */
@@ -281,6 +283,15 @@ extern const char * rpmteV(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteR(rpmte te)
+	/*@*/;
+
+/** \ingroup rpmte
+ * Retrieve distepoch string of transaction element.
+ * @param te		transaction element
+ * @return		distepoch string
+ */
+/*@observer@*/ /*@null@*/
+extern const char * rpmteD(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte

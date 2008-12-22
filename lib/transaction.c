@@ -619,7 +619,7 @@ static int ensureOlder(rpmts ts,
     if (p == NULL || h == NULL)
 	return 1;
 
-    nb = strlen(rpmteNEVR(p)) + (rpmteE(p) != NULL ? strlen(rpmteE(p)) : 0) + 1;
+    nb = strlen(rpmteNEVR(p)) + (rpmteE(p) != NULL ? strlen(rpmteE(p)) : 0) + (rpmteD(p) != NULL ? strlen(rpmteD(p)) + 1 : 0) + 1;
     t = alloca(nb);
     *t = '\0';
     reqEVR = t;
@@ -627,6 +627,7 @@ static int ensureOlder(rpmts ts,
     if (rpmteV(p) != NULL)	t = stpcpy(t, rpmteV(p));
     *t++ = '-';
     if (rpmteR(p) != NULL)	t = stpcpy(t, rpmteR(p));
+    if (rpmteD(p) != NULL)	*t++ = ':', t = stpcpy(t, rpmteD(p));
 
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
     rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
@@ -1277,6 +1278,8 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 				rpmteV(p));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 				rpmteR(p));
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
+				rpmteD(p));
 	    if (tscolor) {
 		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
 				rpmteA(p));

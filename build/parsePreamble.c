@@ -26,6 +26,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
+    RPMTAG_DISTEPOCH,
     RPMTAG_LICENSE,
     RPMTAG_GROUP,		/* XXX permissive. */
     RPMTAG_SUMMARY,		/* XXX permissive. */
@@ -363,6 +364,7 @@ static struct optionalTag {
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
+    { RPMTAG_DISTEPOCH,	"%{distepoch}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
@@ -609,6 +611,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_NAME:
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
+    case RPMTAG_DISTEPOCH:
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
     case RPMTAG_REPOTAG:
@@ -881,6 +884,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, "version"},
     {RPMTAG_RELEASE,		0, 0, "release"},
+    {RPMTAG_DISTEPOCH,		0, 0, "distepoch"},
     {RPMTAG_EPOCH,		0, 0, "epoch"},
     {RPMTAG_EPOCH,		0, 1, "serial"},
     {RPMTAG_SUMMARY,		1, 0, "summary"},

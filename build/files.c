@@ -2537,6 +2537,7 @@ int initSourceHeader(Spec spec, rpmiob *sfp)
 	case RPMTAG_NAME:
 	case RPMTAG_VERSION:
 	case RPMTAG_RELEASE:
+	case RPMTAG_DISTEPOCH:
 	case RPMTAG_EPOCH:
 	case RPMTAG_SUMMARY:
 	case RPMTAG_DESCRIPTION:

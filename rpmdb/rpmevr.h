@@ -88,6 +88,8 @@ struct EVR_s {
     const char * V;		/*!< Version */
 /*@observer@*/ /*@null@*/
     const char * R;		/*!< Release */
+/*@observer@*/ /*@null@*/
+    const char * D;		/*!< DistEpoch */
     evrFlags Flags;		/*!< EVR comparison flags. */
 };
 

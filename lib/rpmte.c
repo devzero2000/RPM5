@@ -57,6 +57,7 @@ static void delTE(rpmte p)
     p->name = _free(p->name);
     p->version = _free(p->version);
     p->release = _free(p->release);
+    p->distepoch = _free(p->distepoch);
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
     p->pkgid = _free(p->pkgid);
@@ -163,6 +164,13 @@ assert(he->p.str != NULL);
 	he->p.ptr = _free(he->p.ptr);
     } else
 	p->epoch = NULL;
+
+    he->tag = RPMTAG_DISTEPOCH;
+    xx = headerGet(h, he, 0);
+    if (he->p.str != NULL) {
+	p->distepoch = (char*)(xx ? he->p.str : xstrdup("?RPMTAG_DISTEPOCH?"));
+    } else
+	p->distepoch = NULL;
 
     p->installed = 0;
 
@@ -286,6 +294,11 @@ const char * rpmteV(rpmte te)
 const char * rpmteR(rpmte te)
 {
     return (te != NULL ? te->release : NULL);
+}
+
+const char * rpmteD(rpmte te)
+{
+    return (te != NULL ? te->distepoch : NULL);
 }
 
 const char * rpmteA(rpmte te)

@@ -449,9 +449,9 @@ static int rpmLeadVersion(void)
 void providePackageNVR(Header h)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char *N, *V, *R;
+    const char *N, *V, *R, *D;
     rpmuint32_t E;
-    int gotE;
+    int gotE, gotD;
     const char *pEVR;
     char *p;
     rpmuint32_t pFlags = RPMSENSE_EQUAL;
@@ -466,7 +466,12 @@ void providePackageNVR(Header h)
     xx = headerNEVRA(h, &N, NULL, &V, &R, NULL);
     if (!(N && V && R))
 	return;
-    pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1);
+
+    he->tag = RPMTAG_DISTEPOCH;
+    gotD = headerGet(h, he, 0);
+    D = (he->p.str ? he->p.str : NULL);
+
+    pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1 + (gotD ? strlen(D) + 1 : 0));
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
     gotE = headerGet(h, he, 0);
@@ -476,7 +481,11 @@ void providePackageNVR(Header h)
 	sprintf(p, "%d:", E);
 	p += strlen(p);
     }
-    (void) stpcpy( stpcpy( stpcpy(p, V) , "-") , R);
+    p = stpcpy( stpcpy( stpcpy(p, V) , "-") , R);
+    if (gotD) {
+	p = stpcpy( stpcpy( p, ":"), D);
+    	D = _free(D);
+    }
     V = _free(V);
     R = _free(R);
 
