@@ -1,3 +1,5 @@
+#include "config.h"
+
 #if defined(RPM_VENDOR_MANDRIVA)
 #include "system.h"
 
