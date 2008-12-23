@@ -49,7 +49,7 @@ static inline int xisrpmalpha(int c)
 int rpmEVRcmp(const char * a, const char * b)
 	/*@*/
 {
-    const char * ae, * be;
+    const char * ae = NULL, * be = NULL;
     int rc = 0;		/* assume equal */
 
     /* Compare version strings segment by segment. */
