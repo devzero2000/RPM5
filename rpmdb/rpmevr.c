@@ -261,13 +261,15 @@ int rpmVersionCompare(Header first, Header second)
     xx = headerGet(second, he, 0);
     two = he->p.str;
     rc = rpmvercmp(one, two);
+    if (rc)
+	goto exit;
 
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(first, he, 0);
-    one = he->p.str;
+    one = (xx && he->p.str ? he->p.str : xstrdup(""));
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(second, he, 0);
-    two = he->p.str;
+    two = (xx && he->p.str ? he->p.str : xstrdup(""));
     rc = rpmvercmp(one, two);
 
 exit:
