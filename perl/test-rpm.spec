@@ -1,3 +1,5 @@
+%undefine disttag
+%undefine distepoch
 Summary: test rpm for perl-RPM2 test suite
 BuildArch: noarch
 Name: test-rpm
