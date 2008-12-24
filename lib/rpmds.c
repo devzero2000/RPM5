@@ -524,7 +524,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
-    const char * Name, * V, * R, * D;
+    const char * Name, * V, * R, * D = NULL;
     rpmuint32_t E;
     const char ** N, ** EVR;
     char * t;
@@ -540,9 +540,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
+#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)    
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(h, he, 0);
     D = (he->p.str ? he->p.str : NULL);
+#endif
 /*@-mods@*/
     xx = headerNEVRA(h, &Name, NULL, &V, &R, NULL);
 /*@=mods@*/
@@ -3644,8 +3646,10 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 /*@i@*/	sense = EVRcmp(a->V, b->V);
 	if (sense == 0 && a->R && *a->R && b->R && *b->R)
 /*@i@*/	    sense = EVRcmp(a->R, b->R);
+#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
 	if (sense == 0 && a->D && *a->D && b->D && *b->D)
 /*@i@*/	    sense = EVRcmp(a->D, b->D);
+#endif
     }
     a->str = _free(a->str);
     b->str = _free(b->str);
@@ -3798,14 +3802,16 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
+#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
     he->tag = RPMTAG_DISTEPOCH;
     gotD = headerGet(h, he, 0);
     D = (he->p.str ? he->p.str : NULL);
+#endif
 
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
     if (R) nb += strlen(R);
-    if (D) nb += strlen(D) + 1;
+    if (gotD) nb += strlen(D) + 1;
     pkgEVR = t = alloca(nb);
     *t = '\0';
     if (gotE) {

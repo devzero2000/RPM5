@@ -126,6 +126,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->V = s;
 	evr->Elong = 0;
     }
+#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)    
     se = strrchr(se, ':');		/* se points to release terminator */
     if (se) {
 	*se++ = '\0';
@@ -133,6 +134,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     } else {
 	evr->D = NULL;
     }
+#endif
     se = strrchr(se2, '-');		/* se points to version terminator */
     if (se) {
 	*se++ = '\0';
@@ -264,6 +266,7 @@ int rpmVersionCompare(Header first, Header second)
     if (rc)
 	goto exit;
 
+#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(first, he, 0);
     one = (xx && he->p.str ? he->p.str : xstrdup(""));
@@ -271,6 +274,7 @@ int rpmVersionCompare(Header first, Header second)
     xx = headerGet(second, he, 0);
     two = (xx && he->p.str ? he->p.str : xstrdup(""));
     rc = rpmvercmp(one, two);
+#endif
 
 exit:
     one = _free(one);

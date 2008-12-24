@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: move comparision of DISTEPOCH under NOTYET &
+	RPM_VENDOR_MANDRIVA for now.
     - proyvind: only do DISTEPOCH comparision if RELEASE is equal.
     - proyvind: set DISTEPOCH to "" if not present in rpmVersionCompare().
     - proyvind: perl: "fix" segfault with RPM::PackageIterator.
