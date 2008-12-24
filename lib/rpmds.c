@@ -562,6 +562,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     t += sizeof(*EVR);
     *t = '\0';
     EVR[0] = t;
+    sprintf(t, "%d:", E);
     t += strlen(t);
     t = stpcpy( stpcpy( stpcpy( t, V), "-"), R);
     if (D != NULL) {
