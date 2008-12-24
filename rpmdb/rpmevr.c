@@ -263,10 +263,11 @@ int rpmVersionCompare(Header first, Header second)
     xx = headerGet(second, he, 0);
     two = he->p.str;
     rc = rpmvercmp(one, two);
+#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
+
     if (rc)
 	goto exit;
 
-#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(first, he, 0);
     one = (xx && he->p.str ? he->p.str : xstrdup(""));
