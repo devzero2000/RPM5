@@ -66,8 +66,8 @@
 #define DW_FORM_indirect	0x16
 
 #include <beecrypt/beecrypt.h>
-
 #include "hashtab.h"
+#include <rpmtag.h>
 
 #define DW_TAG_partial_unit 0x3c
 
@@ -76,9 +76,6 @@ char *dest_dir = NULL;
 char *list_file = NULL;
 int list_file_fd = -1;
 int do_build_id = 0;
-
-typedef unsigned int uint_32;
-typedef unsigned short uint_16;
 
 typedef struct
 {
@@ -93,7 +90,7 @@ typedef struct
 typedef struct
 {
   unsigned char *ptr;
-  uint_32 addend;
+  rpmuint32_t addend;
 } REL;
 
 #define read_uleb128(ptr) ({		\
@@ -112,31 +109,31 @@ typedef struct
   ret;					\
 })
 
-static uint_16 (*do_read_16) (unsigned char *ptr);
-static uint_32 (*do_read_32) (unsigned char *ptr);
+static rpmuint16_t (*do_read_16) (unsigned char *ptr);
+static rpmuint32_t (*do_read_32) (unsigned char *ptr);
 static void (*write_32) (unsigned char *ptr, GElf_Addr val);
 
 static int ptr_size;
 
-static inline uint_16
+static inline rpmuint16_t
 buf_read_ule16 (unsigned char *data)
 {
   return data[0] | (data[1] << 8);
 }
 
-static inline uint_16
+static inline rpmuint16_t
 buf_read_ube16 (unsigned char *data)
 {
   return data[1] | (data[0] << 8);
 }
 
-static inline uint_32
+static inline rpmuint32_t
 buf_read_ule32 (unsigned char *data)
 {
   return data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
 }
 
-static inline uint_32
+static inline rpmuint32_t
 buf_read_ube32 (unsigned char *data)
 {
   return data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24);
@@ -168,13 +165,13 @@ strptr (DSO *dso, int sec, off_t offset)
 #define read_1(ptr) *ptr++
 
 #define read_16(ptr) ({					\
-  uint_16 ret = do_read_16 (ptr);			\
+  rpmuint16_t ret = do_read_16 (ptr);			\
   ptr += 2;						\
   ret;							\
 })
 
 #define read_32(ptr) ({					\
-  uint_32 ret = do_read_32 (ptr);			\
+  rpmuint32_t ret = do_read_32 (ptr);			\
   ptr += 4;						\
   ret;							\
 })
@@ -183,7 +180,7 @@ REL *relptr, *relend;
 int reltype;
 
 #define do_read_32_relocated(ptr) ({			\
-  uint_32 dret = do_read_32 (ptr);			\
+  rpmuint32_t dret = do_read_32 (ptr);			\
   if (relptr)						\
     {							\
       while (relptr < relend && relptr->ptr < ptr)	\
@@ -200,7 +197,7 @@ int reltype;
 })
 
 #define read_32_relocated(ptr) ({			\
-  uint_32 ret = do_read_32_relocated (ptr);		\
+  rpmuint32_t ret = do_read_32_relocated (ptr);		\
   ptr += 4;						\
   ret;							\
 })
@@ -208,7 +205,7 @@ int reltype;
 static void
 dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
 {
-  uint_32 v = (uint_32) val;
+  rpmuint32_t v = (rpmuint32_t) val;
 
   p[0] = v;
   p[1] = v >> 8;
@@ -220,7 +217,7 @@ dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
 static void
 dwarf2_write_be32 (unsigned char *p, GElf_Addr val)
 {
-  uint_32 v = (uint_32) val;
+  rpmuint32_t v = (rpmuint32_t) val;
 
   p[3] = v;
   p[2] = v >> 8;
@@ -468,8 +465,8 @@ static int
 has_prefix (const char  *str,
 	    const char  *prefix)
 {
-  int str_len;
-  int prefix_len;
+  size_t str_len;
+  size_t prefix_len;
   
   str_len = strlen (str);
   prefix_len = strlen (prefix);
@@ -481,14 +478,14 @@ has_prefix (const char  *str,
 }
 
 static int
-edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
+edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
 {
   unsigned char *ptr = debug_sections[DEBUG_LINE].data, *dir;
   unsigned char **dirt;
   unsigned char *endsec = ptr + debug_sections[DEBUG_LINE].size;
   unsigned char *endcu, *endprol;
   unsigned char opcode_base;
-  uint_32 value, dirt_cnt;
+  rpmuint32_t value, dirt_cnt;
   size_t comp_dir_len = strlen (comp_dir);
   size_t abs_file_cnt = 0, abs_dir_cnt = 0;
 
@@ -679,9 +676,12 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  if (--shrank == 0)
 	    error (EXIT_FAILURE, 0,
 		   "canonicalization unexpectedly shrank by one character");
-	  memset (ptr, 'X', shrank);
-	  ptr += shrank;
-	  *ptr++ = '\0';
+	  else
+	    {	    
+	      memset (ptr, 'X', shrank);
+	      ptr += shrank;
+	      *ptr++ = '\0';
+	    }
 	}
 
       if (abs_dir_cnt + abs_file_cnt != 0)
@@ -737,7 +737,7 @@ static unsigned char *
 edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 {
   int i;
-  uint_32 list_offs;
+  rpmuint32_t list_offs;
   int found_list_offs;
   char *comp_dir;
   
@@ -746,9 +746,9 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   found_list_offs = 0;
   for (i = 0; i < t->nattr; ++i)
     {
-      uint_32 form = t->attr[i].form;
-      uint_32 len = 0;
-      int base_len, dest_len;
+      rpmuint32_t form = t->attr[i].form;
+      size_t len = 0;
+      size_t base_len, dest_len;
       
 
       while (1)
@@ -791,7 +791,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      {
 		  char *dir;
 
-		  dir = (char *)debug_sections[DEBUG_STR].data
+		  dir = (char *) debug_sections[DEBUG_STR].data
 		      + do_read_32_relocated (ptr);
 
 		  free (comp_dir);
@@ -821,7 +821,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    {
 	      char *name;
 	      
-	      name = (char *)debug_sections[DEBUG_STR].data
+	      name = (char *) debug_sections[DEBUG_STR].data
 		     + do_read_32_relocated (ptr);
 	      if (*name == '/' && comp_dir == NULL)
 		{
@@ -1062,7 +1062,7 @@ edit_dwarf2 (DSO *dso)
   if (debug_sections[DEBUG_INFO].data != NULL)
     {
       unsigned char *ptr, *endcu, *endsec;
-      uint_32 value;
+      rpmuint32_t value;
       htab_t abbrev;
       struct abbrev_tag tag, *t;
       int phase;
@@ -1407,7 +1407,6 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
       memchunk chunk = { .data = (void *) data, .size = size };
       hashFunctionContextUpdateMC (&ctx, &chunk);
     }
-
     union
     {
       GElf_Ehdr ehdr;
@@ -1467,7 +1466,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 
   /* Now format the build ID bits in hex to print out.  */
   {
-    const unsigned char * id = (unsigned char *) build_id->d_buf + build_id_offset;
+    const rpmuint8_t * id = (rpmuint8_t *)build_id->d_buf + build_id_offset;
     char hex[build_id_size * 2 + 1];
     int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
     assert (n == 2);
@@ -1494,8 +1493,7 @@ main (int argc, char *argv[])
   Elf_Data *build_id = NULL;
   size_t build_id_offset = 0, build_id_size = 0;
 
-  optCon = poptGetContext("debugedit", argc, (const char **)argv,
-			  optionsTable, 0);
+  optCon = poptGetContext("debugedit", argc, (const char **)argv, optionsTable, 0);
   
   while ((nextopt = poptGetNextOpt (optCon)) > 0 || nextopt == POPT_ERROR_BADOPT)
     /* do nothing */ ;
@@ -1613,7 +1611,8 @@ main (int argc, char *argv[])
 	      Elf_Data src = dst;
 	      src.d_buf = data->d_buf;
 	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
-	      while ((char *) data->d_buf + data->d_size - (char *) src.d_buf > (int) sizeof nh
+	      while ((char *) data->d_buf + data->d_size - 
+		     (char *) src.d_buf > (int) sizeof nh
 		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
 		{
 		  Elf32_Word len = sizeof nh + nh.n_namesz;
@@ -1623,7 +1622,8 @@ main (int argc, char *argv[])
 		      && !memcmp ((char *) src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
 		    {
 		      build_id = data;
-		      build_id_offset = (char *) src.d_buf + len - (char *) data->d_buf;
+		      build_id_offset = (char *) src.d_buf + len - 
+					(char *) data->d_buf;
 		      build_id_size = nh.n_descsz;
 		      break;
 		    }
