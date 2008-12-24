@@ -153,7 +153,7 @@ strptr (DSO *dso, int sec, off_t offset)
 	{
 	  if (data->d_buf
 	      && offset >= data->d_off
-	      && offset < data->d_off + data->d_size)
+	      && offset < data->d_off + (off_t)data->d_size)
 	    return (const char *) data->d_buf + (offset - data->d_off);
 	}
     }
