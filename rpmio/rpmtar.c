@@ -94,8 +94,6 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
-#define _RPMFI_INTERNAL
-#include "../lib/rpmfi.h"
 
 #define	_IOSM_INTERNAL
 #include <iosm.h>                /* XXX CPIO_FOO/FSM_FOO constants */
@@ -106,13 +104,15 @@ typedef /*@abstract@*/ struct rpmte_s * rpmte;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 typedef struct rpmRelocation_s * rpmRelocation;
 
+#define _RPMFI_INTERNAL
+#include "../lib/rpmfi.h"
+
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
 typedef struct rpmPRCO_s * rpmPRCO;
 typedef struct Spec_s * Spec;
 #include "../lib/rpmts.h"
 
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 #define	_RPMSQ_INTERNAL
 #include "../lib/psm.h"
 
