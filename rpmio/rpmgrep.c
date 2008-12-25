@@ -59,6 +59,12 @@ typedef unsigned BOOL;
 #define MBUFTHIRD 8192
 #endif
 
+static inline void fwrite_check(const void *ptr, size_t size, size_t nmemb, FILE *stream)
+{
+    if(fwrite(ptr, size, nmemb, stream) != nmemb)
+	perror("fwrite");
+}
+
 #if !defined(POPT_ARG_ARGV)
 static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
 	/*@*/
@@ -494,7 +500,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
 	if (printname != NULL) fprintf(stdout, "%s-", printname);
 	if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 	pp = end_of_line(pp, endptr, &ellength);
-	(void)fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
+	fwrite_check(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
 	lastmatchrestart = pp;
     }
 }
@@ -595,7 +601,7 @@ ONLY_MATCHING_RESTART:
 		fprintf(stderr, _("%s: pcre_exec() error %d while matching "), __progname, mrc);
 		if (pattern_count > 1) fprintf(stderr, _("pattern number %d to "), i+1);
 		fprintf(stderr, _("this line:\n"));
-		(void)fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
+		fwrite_check(matchptr, 1, linelength, stderr);  /* In case binary zero included */
 		fprintf(stderr, "\n");
 #if defined(PCRE_ERROR_MATCHLIMIT)
 		if (error_count == 0 &&
@@ -671,7 +677,7 @@ ONLY_MATCHING_RESTART:
 			fprintf(stdout, "%d,%d", (int)(filepos + matchptr + offsets[0] - ptr),
 			    offsets[1] - offsets[0]);
 		    else
-			(void)fwrite(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
+			fwrite_check(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
 		    fprintf(stdout, "\n");
 		    matchptr += offsets[1];
 		    length -= offsets[1];
@@ -713,7 +719,7 @@ ONLY_MATCHING_RESTART:
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
 			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 			pp = end_of_line(pp, endptr, &ellength);
-			(void)fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
+			fwrite_check(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
 			lastmatchrestart = pp;
 		    }
 		    if (lastmatchrestart != ptr) hyphenpending = TRUE;
@@ -750,7 +756,7 @@ ONLY_MATCHING_RESTART:
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
 			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", linenumber - linecount--);
 			pp = end_of_line(pp, endptr, &ellength);
-			(void)fwrite(p, 1, pp - p, stdout);
+			fwrite_check(p, 1, pp - p, stdout);
 			p = pp;
 		    }
 		}
@@ -794,14 +800,14 @@ ONLY_MATCHING_RESTART:
 
 		/* We have to split the line(s) up if coloring. */
 		if (GF_ISSET(COLOR) && color_string != NULL) {
-		    (void)fwrite(ptr, 1, offsets[0], stdout);
+		    fwrite_check(ptr, 1, offsets[0], stdout);
 		    fprintf(stdout, "%c[%sm", 0x1b, color_string);
-		    (void)fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
+		    fwrite_check(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
 		    fprintf(stdout, "%c[00m", 0x1b);
-		    (void)fwrite(ptr + offsets[1], 1, (linelength + endlinelength) - offsets[1],
+		    fwrite_check(ptr + offsets[1], 1, (linelength + endlinelength) - offsets[1],
 			stdout);
 		}
-		else (void)fwrite(ptr, 1, linelength + endlinelength, stdout);
+		else fwrite_check(ptr, 1, linelength + endlinelength, stdout);
 	    }
 
 	    /* End of doing what has to be done for a match */
