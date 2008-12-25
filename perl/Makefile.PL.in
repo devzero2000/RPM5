@@ -63,7 +63,7 @@ WriteMakefile(
 	      'OBJECT'	=> join(' ', @objects),
 	      'VERSION' => '@VERSION@',
 	      'MAKEFILE'=> 'Makefile.perl',
-	      'CCFLAGS' => '@CFLAGS@',
+	      'CCFLAGS' => join(' ', '@CFLAGS@', '-Wno-unused-variable', '-Wno-missing-prototypes', '-Wno-implicit', '-Wno-strict-prototypes'),
 	      'dynamic_lib'	=> { OTHERLDFLAGS => join(' ', @ldaddp, @ldadd, @ldlibs) },
 	      'OPTIMIZE'=> '-g',
 	      'INC'	=> join(' ', @cppflags, map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
