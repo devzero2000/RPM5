@@ -68,9 +68,12 @@ static int opt_preserve_name;
 static int opt_recursive;
 
 /*@unchecked@*/
-static lzma_check_type opt_check = LZMA_CHECK_CRC64;
+static lzma_check opt_check = LZMA_CHECK_CRC64;
 /*@unchecked@*/
-static lzma_options_filter opt_filters[8];
+static lzma_filter filters[LZMA_FILTERS_MAX + 1];
+/*@unchecked@*/
+static size_t filters_count = 0;
+
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
@@ -83,15 +86,12 @@ static int opt_memory;
 static int opt_threads;
 
 /*@unchecked@*/
-static size_t preset_number = 7 - 1;
-/*@unchecked@*/
-static int preset_default = 1;
+static size_t preset_number = 7;
 /*@unchecked@*/
 static size_t filter_count = 0;
 
 enum {
-        OPT_COPY = INT_MIN,
-        OPT_SUBBLOCK,
+        OPT_SUBBLOCK = INT_MIN,
         OPT_X86,
         OPT_POWERPC,
         OPT_IA64,
@@ -99,7 +99,8 @@ enum {
         OPT_ARMTHUMB,
         OPT_SPARC,
         OPT_DELTA,
-        OPT_LZMA,
+	OPT_LZMA1,
+	OPT_LZMA2,
 
         OPT_FILES,
         OPT_FILES0,
@@ -364,7 +365,7 @@ set_subblock(void *options, rpmuint32_t key, rpmuint64_t value)
 }
 
 static lzma_options_subblock *
-parse_options_subblock(const char *str)
+options_subblock(const char *str)
 	/*@*/
 {
 	static const option_map opts[] = {
@@ -392,7 +393,7 @@ parse_options_subblock(const char *str)
 /* ===== Delta ===== */
 
 enum {
-	OPT_DISTANCE,
+	OPT_DIST,
 };
 
 
@@ -402,24 +403,28 @@ set_delta(void *options, rpmuint32_t key, rpmuint64_t value)
 {
 	lzma_options_delta *opt = options;
 	switch (key) {
-	case OPT_DISTANCE:
-		opt->distance = value;
+	case OPT_DIST:
+		opt->dist = value;
 		break;
 	}
 }
 
 static lzma_options_delta *
-parse_options_delta(const char *str)
+options_delta(const char *str)
 {
 	static const option_map opts[] = {
-		{ "distance", NULL,  LZMA_DELTA_DISTANCE_MIN,
-		                     LZMA_DELTA_DISTANCE_MAX },
+		{ "dist",     NULL,  LZMA_DELTA_DIST_MIN,
+		                     LZMA_DELTA_DIST_MAX },
 		{ NULL,       NULL,  0, 0 }
 	};
 
-	lzma_options_delta *options = xmalloc(sizeof(lzma_options_subblock));
+	lzma_options_delta *options = xmalloc(sizeof(lzma_options_delta));
 	// It's hard to give a useful default for this.
-	options->distance = LZMA_DELTA_DISTANCE_MIN;
+	*options = (lzma_options_delta){
+		// It's hard to give a useful default for this.
+		.type = LZMA_DELTA_TYPE_BYTE,
+		.dist = LZMA_DELTA_DIST_MIN,
+	};
 
 	parse_options(str, opts, &set_delta, options);
 
@@ -428,14 +433,15 @@ parse_options_delta(const char *str)
 
 /* ===== LZMA ===== */
 enum {
+	OPT_PRESET,
 	OPT_DICT,
 	OPT_LC,
 	OPT_LP,
 	OPT_PB,
 	OPT_MODE,
-	OPT_FB,
+	OPT_NICE,
 	OPT_MF,
-	OPT_MC
+	OPT_DEPTH,
 };
 
 static void
@@ -445,48 +451,56 @@ set_lzma(void *options, rpmuint32_t key, rpmuint64_t value)
 	lzma_options_lzma *opt = options;
 
 	switch (key) {
+	case OPT_PRESET:
+		if (lzma_lzma_preset(options, (uint32_t)(value))) {
+			fprintf(stderr, "LZMA1/LZMA2 preset %u is not supported",
+					(unsigned int)(value));
+			/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+		}
+		break;
+
 	case OPT_DICT:
-		opt->dictionary_size = value;
+		opt->dict_size = value;
 		break;
 
 	case OPT_LC:
-		opt->literal_context_bits = value;
+		opt->lc = value;
 		break;
 
 	case OPT_LP:
-		opt->literal_pos_bits = value;
+		opt->lp = value;
 		break;
 
 	case OPT_PB:
-		opt->pos_bits = value;
+		opt->pb = value;
 		break;
 
 	case OPT_MODE:
 		opt->mode = value;
 		break;
 
-	case OPT_FB:
-		opt->fast_bytes = value;
+	case OPT_NICE:
+		opt->nice_len = value;
 		break;
 
 	case OPT_MF:
-		opt->match_finder = value;
+		opt->mf = value;
 		break;
 
-	case OPT_MC:
-		opt->match_finder_cycles = value;
+	case OPT_DEPTH:
+		opt->depth = value;
 		break;
 	}
 }
 
 static lzma_options_lzma *
-parse_options_lzma(const char *str)
+options_lzma(const char *str)
 {
 	/*@unchecked@*/ /*@observer@*/
 	static const name_id_map modes[] = {
-		{ "fast", LZMA_MODE_FAST },
-		{ "best", LZMA_MODE_BEST },
-		{ NULL,   0 }
+		{ "fast",   LZMA_MODE_FAST },
+		{ "normal", LZMA_MODE_NORMAL },
+		{ NULL,     0 }
 	};
 
 	/*@unchecked@*/ /*@observer@*/
@@ -501,30 +515,32 @@ parse_options_lzma(const char *str)
 
 	/*@unchecked@*/ /*@observer@*/
 	static const option_map opts[] = {
-		{ "dict", NULL,   LZMA_DICTIONARY_SIZE_MIN,
-				LZMA_DICTIONARY_SIZE_MAX },
-		{ "lc",   NULL,   LZMA_LITERAL_CONTEXT_BITS_MIN,
-				  LZMA_LITERAL_CONTEXT_BITS_MAX },
-		{ "lp",   NULL,   LZMA_LITERAL_POS_BITS_MIN,
-				  LZMA_LITERAL_POS_BITS_MAX },
-		{ "pb",   NULL,   LZMA_POS_BITS_MIN, LZMA_POS_BITS_MAX },
-		{ "mode", modes,  0, 0 },
-		{ "fb",   NULL,   LZMA_FAST_BYTES_MIN, LZMA_FAST_BYTES_MAX },
-		{ "mf",   mfs,    0, 0 },
-		{ "mc",   NULL,   0, UINT32_MAX },
-		{ NULL,   NULL,   0, 0 }
+		{ "preset", NULL,   1, 9 },
+		{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
+				(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
+		{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
+		{ "lp",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
+		{ "pb",     NULL,   LZMA_PB_MIN, LZMA_PB_MAX },
+		{ "mode",   modes,  0, 0 },
+		{ "nice",   NULL,   2, 273 },
+		{ "mf",     mfs,    0, 0 },
+		{ "depth",  NULL,   0, UINT32_MAX },
+		{ NULL,     NULL,   0, 0 }
 	};
 
 	lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
 
-	options->dictionary_size = LZMA_DICTIONARY_SIZE_DEFAULT;
-	options->literal_context_bits = LZMA_LITERAL_CONTEXT_BITS_DEFAULT;
-	options->literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT;
-	options->pos_bits = LZMA_POS_BITS_DEFAULT;
-	options->mode = LZMA_MODE_BEST;
-	options->fast_bytes = LZMA_FAST_BYTES_DEFAULT;
-	options->match_finder = LZMA_MF_BT4;
-	options->match_finder_cycles = 0;
+	options->dict_size = LZMA_DICT_SIZE_DEFAULT;
+	options->preset_dict = NULL;
+	options->preset_dict_size = 0,
+	options->lc = LZMA_LC_DEFAULT;
+	options->lp = LZMA_LP_DEFAULT;
+	options->pb = LZMA_PB_DEFAULT;
+	options->persistent = 0;
+	options->mode = LZMA_MODE_NORMAL;
+	options->nice_len = 64;
+	options->mf = LZMA_MF_BT4;
+	options->depth = 0;
 
 	parse_options(str, opts, &set_lzma, options);
 
@@ -532,36 +548,20 @@ parse_options_lzma(const char *str)
 }
 
 static void
-add_filter(lzma_vli id, const char *opt_str)
-	/*@globals filter_count, opt_filters, preset_default @*/
-	/*@modifies filter_count, opt_filters, preset_default @*/
+coder_add_filter(lzma_vli id, void *options)
+	/*@globals filter_count, filters @*/
+	/*@modifies filter_count, filters @*/
 {
-    if (filter_count == 7) {
-	fprintf(stderr, _("%s: Maximum number of filters is seven\n"),
+    if (filter_count == 4) {
+	fprintf(stderr, _("%s: Maximum number of filters is four\n"),
 		__progname);
 	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
     }
 
-    opt_filters[filter_count].id = id;
+    filters[filters_count].id = id;
+    filters[filters_count].options = options;
+    ++filters_count;
 
-    switch (id) {
-    case LZMA_FILTER_SUBBLOCK:
-	opt_filters[filter_count].options = parse_options_subblock(opt_str);
-	break;
-    case LZMA_FILTER_DELTA:
-	opt_filters[filter_count].options = parse_options_delta(opt_str);
-	break;
-    case LZMA_FILTER_LZMA:
-	opt_filters[filter_count].options = parse_options_lzma(opt_str);
-	break;
-    default:
-	assert(opt_str == NULL);
-	opt_filters[filter_count].options = NULL;
-	break;
-    }
-
-    ++filter_count;
-    preset_default = 0;
     return;
 }
 
@@ -612,37 +612,36 @@ static void rpmzArgCallback(poptContext con,
 	    /*@notreached@*/
 	}
 	break;
-    case OPT_COPY:
-	add_filter(LZMA_FILTER_COPY, NULL);
+    case OPT_SUBBLOCK:
+	coder_add_filter(LZMA_FILTER_SUBBLOCK, options_subblock(optarg));
 	break;
     case OPT_X86:
-	add_filter(LZMA_FILTER_X86, NULL);
+	coder_add_filter(LZMA_FILTER_X86, NULL);
 	break;
     case OPT_POWERPC:
-	add_filter(LZMA_FILTER_POWERPC, NULL);
+	coder_add_filter(LZMA_FILTER_POWERPC, NULL);
 	break;
     case OPT_IA64:
-	add_filter(LZMA_FILTER_IA64, NULL);
+	coder_add_filter(LZMA_FILTER_IA64, NULL);
 	break;
     case OPT_ARM:
-	add_filter(LZMA_FILTER_ARM, NULL);
+	coder_add_filter(LZMA_FILTER_ARM, NULL);
 	break;
     case OPT_ARMTHUMB:
-	add_filter(LZMA_FILTER_ARMTHUMB, NULL);
+	coder_add_filter(LZMA_FILTER_ARMTHUMB, NULL);
 	break;
     case OPT_SPARC:
-	add_filter(LZMA_FILTER_SPARC, NULL);
-	break;
-    case OPT_SUBBLOCK:
-	add_filter(LZMA_FILTER_SUBBLOCK, optarg);
+	coder_add_filter(LZMA_FILTER_SPARC, NULL);
 	break;
     case OPT_DELTA:
-	add_filter(LZMA_FILTER_DELTA, optarg);
+	coder_add_filter(LZMA_FILTER_DELTA, options_delta(optarg));
 	break;
-    case OPT_LZMA:
-	add_filter(LZMA_FILTER_LZMA, optarg);
+    case OPT_LZMA1:
+	coder_add_filter(LZMA_FILTER_LZMA1, options_lzma(optarg));
 	break;
-
+    case OPT_LZMA2:
+	coder_add_filter(LZMA_FILTER_LZMA2, options_lzma(optarg));
+	break;
     case OPT_FILES:
 	opt_files_split = '\n';
 	/*@fallthrough@*/
@@ -748,12 +747,14 @@ static struct poptOption optionsTable[] = {
 "                        lp=NUM     number of literal position bits (0-4; 0)\n"
 "                        pb=NUM     number of position bits (0-4; 2)\n"
 "                        mode=MODE  compression mode (`fast' or `best'; `best')\n"
-"                        fb=NUM     number of fast bytes (5-273; 128)\n"
+"                        nice_len=NUM     number of fast bytes (5-273; 128)\n"
 "                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
-"                        mfc=NUM    match finder cycles; 0=automatic (default)\n"
+"                        depth=NUM    match finder cycles; 0=automatic (default)\n"
 #endif
-  { "lzma", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA,
+  { "lzma", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA1,
 	N_("set lzma filter"), N_("OPTS") },
+  { "lzma2", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA2,
+	N_("set lzma2 filter"), N_("OPTS") },
 
   { "x86", '\0', 0,				NULL, OPT_X86,
 	N_("ix86 filter (sometimes called BCJ filter)"), NULL },
@@ -776,14 +777,11 @@ static struct poptOption optionsTable[] = {
 
 #ifdef	REFERENCE
 "  --delta=[OPTS]      Delta filter; valid OPTS (valid values; default):\n"
-"                        distance=NUM  Distance between bytes being\n"
+"                        dist=NUM  Distance between bytes being\n"
 "                                      subtracted from each other (1-256; 1)\n"
 #endif
   { "delta", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_DELTA,
 	N_("set delta filter"), N_("OPTS") },
-
-  { "copy", '\0', 0,				NULL, OPT_COPY,
-	N_("No filtering (useful only when specified alone)"), NULL },
 
 #ifdef	REFERENCE
 "  --subblock=[OPTS]   Subblock filter; valid OPTS (valid values; default):\n"

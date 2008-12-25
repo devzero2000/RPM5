@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: rpmz: merge with recent xz code to work with recent liblzma API
+	changes.
     - proyvind: lookup3: fix build breakage.
     - proyvind: tpw: fix linking against librpm.
     - proyvind: rpmtar: fix build breakage.
