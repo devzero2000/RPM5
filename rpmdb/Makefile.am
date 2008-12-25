@@ -27,7 +27,7 @@ EXTRA_PROGRAMS = tjfn
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDFLAGS = @LDFLAGS_STATIC@
-tjfn_LDADD = librpmdb.la
+tjfn_LDADD = $(mylibs)
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h

@@ -9,6 +9,8 @@
 
 #include <db.h>
 
+#include <rpmtag.h>
+
 #define RPMDB_HOME	"/tmp/rpm"
 #define	RPMDB_Packages	"Packages"
 #define	RPMDB_Dirnames	"Dirnames"

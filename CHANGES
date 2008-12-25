@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: rpmdb/tjfn: fix build breakage.
     - proyvind: lib/tgi: fix build breakage.
     - proyvind: rpmio/rpmz: merge with recent xz code to work with recent liblzma API
 	changes.
