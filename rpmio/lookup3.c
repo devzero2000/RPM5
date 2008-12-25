@@ -35,6 +35,7 @@
 /* -------------------------------------------------------------------- */
 
 #include "system.h"
+#include "rpmiotypes.h"
 #include "debug.h"
 
 #if defined(_JLU3_SELFTEST)

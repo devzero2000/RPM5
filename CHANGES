@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: lookup3: fix build breakage.
     - proyvind: tpw: fix linking against librpm.
     - proyvind: rpmtar: fix build breakage.
     - proyvind: rpmcpio: fix build breakage.
