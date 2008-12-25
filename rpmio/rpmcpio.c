@@ -59,6 +59,7 @@
 __FBSDID("$FreeBSD$");
 
 #include <getopt.h>
+#include <stdarg.h>
 
 #include <rpmio.h>
 #include "rpmcpio.h"
