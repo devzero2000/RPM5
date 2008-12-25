@@ -26,6 +26,7 @@
 
 #define rpmlog fprintf
 #define RPMLOG_ERR stderr
+#define RPMLOG_WARNING stderr
 #undef	_
 #define	_(x)	x
 
@@ -68,9 +69,10 @@ const char * rpmMacrofiles = MACROFILES;
 #define	_RPMLUA_INTERNAL	/* XXX lua->printbuf access */
 #include <rpmlua.h>
 #endif
-#include <rpmuuid.h>
 
 #endif
+
+#include <rpmuuid.h>
 
 #define	_MACRO_INTERNAL
 #include <rpmmacro.h>
@@ -220,6 +222,7 @@ sortMacroTable(MacroContext mc)
     }
 }
 
+#if !defined(DEBUG_MACROS)
 /*@only@*/
 static char * dupMacroEntry(MacroEntry me)
 	/*@*/
@@ -246,6 +249,7 @@ assert(me != NULL);
 
     return t;
 }
+#endif
 
 void
 rpmDumpMacroTable(MacroContext mc, FILE * fp)
