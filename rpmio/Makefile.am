@@ -311,7 +311,7 @@ tput_SOURCES = tput.c
 tput_LDADD = $(RPMIO_LDADD_COMMON)
 
 tpw_SOURCES = tpw.c
-tpw_LDFLAGS = $(RPMIO_LDADD_COMMON)
+tpw_LDFLAGS = $(RPM_LDADD_COMMON) $(RPMIO_LDADD_COMMON)
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPMIO_LDADD_COMMON)
