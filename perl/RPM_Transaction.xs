@@ -33,6 +33,7 @@
    Also, we probably want to give a nice interface such that we could allow
    users of RPM to do their own callback, but that will have to come later.
 */
+#ifdef NOTYET
 static void * _null_callback(
 	const void * arg, 
 	const rpmCallbackType what, 
@@ -130,6 +131,7 @@ static void * _null_callback(
 	
 	return rc;	
 }
+#endif
 
 static void *
     transCallback(const void *h,
