@@ -1402,7 +1402,8 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
      or Elf64 object, only that we are consistent in what bits feed the
      hash so it comes out the same for the same file contents.  */
   {
-    inline void process (const void *data, size_t size)
+    auto inline void process (const void *data, size_t size);
+    auto inline void process (const void *data, size_t size)
     {
       memchunk chunk = { .data = (void *) data, .size = size };
       hashFunctionContextUpdateMC (&ctx, &chunk);
