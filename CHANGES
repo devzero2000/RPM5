@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: perl: clean out rest of warnings.
     - proyvind: check return value for functions declared with attribute
 	warn_unused_result. (some inspired by rpm.org)
     - proyvind: debugedit: perform some cleanups and pull in some from rpm.org
