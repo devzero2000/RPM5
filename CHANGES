@@ -1,12 +1,13 @@
 
 5.2a2 -> 5.2a3:
-    - proyvind: rpmz: merge with recent xz code to work with recent liblzma API
+    - proyvind: lib/tgi: fix build breakage.
+    - proyvind: rpmio/rpmz: merge with recent xz code to work with recent liblzma API
 	changes.
-    - proyvind: lookup3: fix build breakage.
-    - proyvind: tpw: fix linking against librpm.
-    - proyvind: rpmtar: fix build breakage.
-    - proyvind: rpmcpio: fix build breakage.
-    - proyvind: tmacro: fix build breakage.
+    - proyvind: rpmio/lookup3: fix build breakage.
+    - proyvind: rpmio/tpw: fix linking against librpm.
+    - proyvind: rpmio/rpmtar: fix build breakage.
+    - proyvind: rpmio/rpmcpio: fix build breakage.
+    - proyvind: rpmio/tmacro: fix build breakage.
     - proyvind: perl: clean out rest of warnings.
     - proyvind: check return value for functions declared with attribute
 	warn_unused_result. (some inspired by rpm.org)

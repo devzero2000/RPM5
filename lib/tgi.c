@@ -6,10 +6,12 @@
 #include <mire.h>
 #include <rpmcb.h>
 
+#include <rpmtag.h>
 #include <rpmdb.h>
 
 #include <rpmgi.h>
 #include <rpmcli.h>
+#include <poptIO.h>
 
 #include <rpmte.h>
 
@@ -127,7 +129,7 @@ static struct poptOption optionsTable[] = {
  { "queryformat", '\0', POPT_ARG_STRING, &queryFormat, 0,
         N_("use the following query format"), "QUERYFORMAT" },
 
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
         N_("File tree walk options for fts(3):"),
         NULL },
 
@@ -159,8 +161,8 @@ main(int argc, char *const argv[])
     if (optCon == NULL)
         exit(EXIT_FAILURE);
 
-    if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (rpmioFtsOpts == 0)
+	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
     if (gitagstr != NULL) {
 	gitag = tagValue(gitagstr);
@@ -189,7 +191,7 @@ main(int argc, char *const argv[])
 
     gi = rpmgiNew(ts, gitag, gikeystr, 0);
 
-    (void) rpmgiSetArgs(gi, av, ftsOpts, giFlags);
+    (void) rpmgiSetArgs(gi, av, rpmioFtsOpts, giFlags);
 
 #if defined(REFERENCE_FORNOW)
 if (fileURL[0] == '=') {
