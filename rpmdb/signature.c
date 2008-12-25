@@ -170,7 +170,10 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     inpipe[0] = inpipe[1] = 0;
-    (void) pipe(inpipe);
+    if (pipe(inpipe) < 0) {
+	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for signing: %m"));
+	return 1;
+    }
 
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);

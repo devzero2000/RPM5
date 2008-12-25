@@ -728,7 +728,10 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
     if (rpmioPipeOutput) {
-	(void) pipe(p);
+	if (pipe(p) < 0) {
+	    fprintf(stderr, _("creating a pipe for --pipe failed: %m\n"));
+	    goto exit;
+	}
 
 	if (!(pipeChild = fork())) {
 	    (void) close(p[1]);

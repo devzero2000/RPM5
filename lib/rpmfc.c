@@ -77,9 +77,11 @@ static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     /*@=type@*/
 
     toProg[0] = toProg[1] = 0;
-    (void) pipe(toProg);
     fromProg[0] = fromProg[1] = 0;
-    (void) pipe(fromProg);
+    if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
+	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
+	return NULL;
+    }
     
     if (!(child = fork())) {
 	(void) close(toProg[1]);

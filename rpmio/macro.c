@@ -1344,7 +1344,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    be++;
 /*@=globs@*/
 #if defined(HAVE_MKDTEMP) && !defined(__LCLINT__)
-	(void) mkdtemp(b);
+	if (mkdtemp(b) == NULL)
+	    perror("mkdtemp");
 #else
 	if ((b = tmpnam(b)) != NULL)
 	    (void) mkdir(b, 0700);	/* XXX S_IWRSXU is not included. */

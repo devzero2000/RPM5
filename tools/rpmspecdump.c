@@ -118,13 +118,31 @@ struct DepSet {
     ssize_t		cnt;
 };
 
+static inline void safe_write(int fd, const char *buf, size_t count)
+{
+  ssize_t written;
+
+  do {
+    written = write(fd, buf, count);
+    if ((size_t)written == count)
+      break;
+    if (written > 0) {
+      buf += written;
+      count -= written;
+    }
+  } while (written >= 0 || errno == EINTR);
+  if (written < 0) {
+	  perror("write");
+  }
+}
+
 inline static void 
 writeStr(int fd, char const *cmd)
 {
-  (void)write(fd, cmd, strlen(cmd));
+  safe_write(fd, cmd, strlen(cmd));
 }
 
-#define WRITE_MSG(FD,X)		(void)(write(FD,X,sizeof(X)-1))
+#define WRITE_MSG(FD,X)		safe_write(FD,X,sizeof(X)-1)
 #define WRITE_STR(FD,X)		writeStr(FD,X)
 
 static void
@@ -213,7 +231,7 @@ parseArgs(struct Arguments *args, int argc, char *argv[])
   }
 
   if (optind+1!=argc) {
-    write(2, "No/too much specfile(s) given; aborting\n", 40);
+    safe_write(2, "No/too much specfile(s) given; aborting\n", 40);
     exit(1);
   }
 

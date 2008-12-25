@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: check return value for functions declared with attribute
+	warn_unused_result. (some inspired by rpm.org)
     - proyvind: debugedit: perform some cleanups and pull in some from rpm.org
 	as well while at it.
     - proyvind: move comparision of DISTEPOCH under NOTYET &
