@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: xzdio: add a couple of missing print messages.
     - proyvind: add %__xz macro.
     - proyvind: rpmdb/tjfn: fix build breakage.
     - proyvind: lib/tgi: fix build breakage.

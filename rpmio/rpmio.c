@@ -214,6 +214,10 @@ const char * fdbg(FD_t fd)
 #if defined(HAVE_LZMA_H)
 	} else if (fps->io == lzdio) {
 	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
+#if LZMA_VERSION > 49990050U
+	} else if (fps->io == xzdio) {
+	    sprintf(be, "XZD %p fdno %d", fps->fp, fps->fdno);
+#endif	    
 #endif
 	} else if (fps->io == fpio) {
 	    /*@+voidabstract@*/
@@ -2340,6 +2344,10 @@ static const char * getFdErrstr (FD_t fd)
 
 #ifdef	HAVE_LZMA_H
     if (fdGetIo(fd) == lzdio) {
+	errstr = fd->errcookie;
+    } else
+#if LZMA_VERSION > 49990050U
+    if (fdGetIo(fd) == xzdio) {
 	errstr = fd->errcookie;
     } else
 #endif
