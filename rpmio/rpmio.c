@@ -2351,6 +2351,7 @@ static const char * getFdErrstr (FD_t fd)
 	errstr = fd->errcookie;
     } else
 #endif
+#endif
 
     {
 	errstr = (fd->syserrno ? strerror(fd->syserrno) : "");
