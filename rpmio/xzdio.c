@@ -345,14 +345,14 @@ static /*@null@*/ FD_t lzdFdopen(void * cookie, const char * fmode)
 {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
-    XZFILE *lzfile;
+    XZFILE *xzfile;
 
 assert(fmode != NULL);
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
     if (fdno < 0) return NULL;
-    lzfile = lzdopen(fdno, fmode);
-    if (lzfile == NULL) return NULL;
-    fdPush(fd, lzdio, lzfile, fdno);
+    xzfile = lzdopen(fdno, fmode);
+    if (xzfile == NULL) return NULL;
+    fdPush(fd, lzdio, xzfile, fdno);
     return fdLink(fd, "lzdFdopen");
 }
 /*@=globuse@*/
