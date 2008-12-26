@@ -378,6 +378,7 @@ print (t)
 -14: __vsflags	0xf0000
 -14: __wget	%{_bindir}/wget
 -14: __xar	%{_bindir}/xar
+-14: __xz	%{_bindir}/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
 -14: _arch	i386
 -14: _autorelocate_dcolor	0

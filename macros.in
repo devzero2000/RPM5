@@ -93,6 +93,7 @@
 %__vcheck		%{__perl} %{_rpmhome}/vcheck
 %__wget			@__WGET@
 %__xar			@__XAR@
+%__xz			@__XZ@
 
 #==============================================================================
 # ---- Build system path macros.
