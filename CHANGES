@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: rpmio: include lzma.h header so that LZMA_VERSION actually gets
+	defined and can be compared (fixes xzdio breakage).
     - proyvind: xzdio: add a couple of missing print messages.
     - proyvind: add %__xz macro.
     - proyvind: rpmdb/tjfn: fix build breakage.

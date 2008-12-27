@@ -58,6 +58,10 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 # include <netinet/in_systm.h>
 #endif
 
+#if defined(HAVE_LZMA_H)
+#include <lzma.h>
+#endif
+
 #include <rpmiotypes.h>
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
