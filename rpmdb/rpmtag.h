@@ -422,7 +422,6 @@ enum rpmTag_e {
     RPMTAG_PACKAGESTAT		= 1216,	/* x */
     RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
     RPMTAG_DISTEPOCH		= 1218, /* s */
-#define	RPMTAG_D	RPMTAG_DISTEPOCH	/* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG,	/*!< internal */
