@@ -603,7 +603,7 @@ int urlGetFile(const char * url, const char * dest)
     }
 /*@=globs =mods@*/
 
-    sfd = Fopen(url, "r");
+    sfd = Fopen(url, "r.ufdio");
     if (sfd == NULL || Ferror(sfd)) {
 	rpmlog(RPMLOG_DEBUG, D_("failed to open %s: %s\n"), url, Fstrerror(sfd));
 	rc = FTPERR_UNKNOWN;
