@@ -524,10 +524,14 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
-    const char * Name, * V, * R, * D = NULL;
+    const char * Name, * V, * R;
+#ifdef	RPM_VENDOR_MANDRIVA
+    const char * D = NULL;
+#endif
     rpmuint32_t E;
     const char ** N, ** EVR;
     char * t;
+    size_t nb;
     int xx;
 
     if (tagN == RPMTAG_NAME)
@@ -557,7 +561,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     t = stpcpy(t, Name);
     Name = _free(Name);
 
-    t = xmalloc(sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-") + (D ? strlen(D) + sizeof(":") : 0));
+    nb = sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-");
+#ifdef	RPM_VENDOR_MANDRIVA
+    nb += (D ? strlen(D) + sizeof(":") : 0);
+#endif
+    t = xmalloc(nb);
     EVR = (const char **) t;
     t += sizeof(*EVR);
     *t = '\0';
@@ -565,10 +573,12 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     sprintf(t, "%d:", E);
     t += strlen(t);
     t = stpcpy( stpcpy( stpcpy( t, V), "-"), R);
+#ifdef	RPM_VENDOR_MANDRIVA
     if (D != NULL) {
 	t = stpcpy( stpcpy( t, ":"), D);
 	D = _free(D);
     }
+#endif
     V = _free(V);
     R = _free(R);
 
@@ -3775,9 +3785,13 @@ exit:
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char * pkgN, * V, * R, * D;
+    const char * pkgN, * V, * R;
+#ifdef	RPM_VENDOR_MANDRIVA
+    const char * D;
+    int gotD = 0;
+#endif
     rpmuint32_t E;
-    int gotE = 0, gotD = 0;
+    int gotE = 0;
     const char * pkgEVR;
     char * t;
     evrFlags reqFlags = req->ns.Flags;
@@ -3812,7 +3826,9 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
     if (R) nb += strlen(R);
+#ifdef	RPM_VENDOR_MANDRIVA
     if (gotD) nb += strlen(D) + 1;
+#endif
     pkgEVR = t = alloca(nb);
     *t = '\0';
     if (gotE) {
@@ -3820,10 +3836,12 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	t += strlen(t);
     }
     t = stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
+#ifdef	RPM_VENDOR_MANDRIVA
     if (gotD) {
 	t =  stpcpy( stpcpy( t, ":"), D);
 	D = _free(D);
     }
+#endif
     V = _free(V);
     R = _free(R);
 

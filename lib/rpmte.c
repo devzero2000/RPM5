@@ -57,7 +57,9 @@ static void delTE(rpmte p)
     p->name = _free(p->name);
     p->version = _free(p->version);
     p->release = _free(p->release);
+#ifdef	RPM_VENDOR_MANDRIVA
     p->distepoch = _free(p->distepoch);
+#endif
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
     p->pkgid = _free(p->pkgid);
@@ -165,12 +167,14 @@ assert(he->p.str != NULL);
     } else
 	p->epoch = NULL;
 
+#ifdef	RPM_VENDOR_MANDRIVA
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(h, he, 0);
     if (he->p.str != NULL) {
 	p->distepoch = (char*)(xx ? he->p.str : xstrdup("?RPMTAG_DISTEPOCH?"));
     } else
 	p->distepoch = NULL;
+#endif
 
     p->installed = 0;
 
@@ -296,10 +300,12 @@ const char * rpmteR(rpmte te)
     return (te != NULL ? te->release : NULL);
 }
 
+#ifdef	RPM_VENDOR_MANDRIVA
 const char * rpmteD(rpmte te)
 {
     return (te != NULL ? te->distepoch : NULL);
 }
+#endif
 
 const char * rpmteA(rpmte te)
 {

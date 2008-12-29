@@ -2018,8 +2018,10 @@ assert(psm->mi == NULL);
 			rpmteV(psm->te));
 		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 			rpmteR(psm->te));
+#ifdef	RPM_VENDOR_MANDRIVA
 		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
 			rpmteD(psm->te));
+#endif
 		if (tscolor) {
 		    xx = rpmdbSetIteratorRE(psm->mi,RPMTAG_ARCH, RPMMIRE_STRCMP,
 			rpmteA(psm->te));
