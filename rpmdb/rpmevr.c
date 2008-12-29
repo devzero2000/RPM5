@@ -115,7 +115,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     char *se2;
 #endif
 
-    evr->str = se2 = se = s;
+    evr->str = se = s;
 #ifdef	RPM_VENDOR_MANDRIVA
     se2 = se;
 #endif
