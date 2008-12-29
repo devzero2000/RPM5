@@ -110,15 +110,24 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	/*@modifies evrstr, evr @*/
 {
     char *s = xstrdup(evrstr);
-    char *se, *se2;
+    char *se;
+#ifdef	RPM_VENDOR_MANDRIVA
+    char *se2;
+#endif
 
     evr->str = se2 = se = s;
+#ifdef	RPM_VENDOR_MANDRIVA
+    se2 = se;
+#endif
     while (*se && xisdigit((int)*se)) se++;	/* se points to epoch terminator */
 
     if (*se == ':') {
 	evr->E = s;
 	*se++ = '\0';
-	evr->V = se2 = se;
+	evr->V = se;
+#ifdef	RPM_VENDOR_MANDRIVA
+	se2 = se;
+#endif
 	if (*evr->E == '\0') evr->E = "0";
 	evr->Elong = strtoul(evr->E, NULL, 10);
     } else {
@@ -134,8 +143,10 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     } else {
 	evr->D = NULL;
     }
-#endif
     se = strrchr(se2, '-');		/* se points to version terminator */
+#else
+    se = strrchr(se, '-');		/* se points to version terminator */
+#endif
     if (se) {
 	*se++ = '\0';
 	evr->R = se;
