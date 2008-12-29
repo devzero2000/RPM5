@@ -1,10 +1,6 @@
-#if defined(HAVE_CONFIG_H)
-#include "config.h"
-#endif
-
-#if defined(RPM_VENDOR_MANDRIVA)
 #include "system.h"
 
+#if defined(RPM_VENDOR_MANDRIVA)
 #include <rpmio_internal.h>	/* XXX for fdGetFILE() */
 #include <argv.h>
 #include <rpmlog.h>
