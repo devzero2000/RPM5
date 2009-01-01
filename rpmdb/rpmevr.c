@@ -5,6 +5,7 @@
 
 #include <rpmiotypes.h>
 #include <rpmmacro.h>
+#include <mire.h>
 
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
@@ -107,6 +108,30 @@ int rpmEVRcmp(const char * a, const char * b)
     return rc;
 }
 
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static const char * _evr_tuple_match = "i^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
+/*@unchecked@*/ /*@null@*/
+static const char * evr_tuple_match = NULL;
+/*@unchecked@*/ /*@null@*/
+static miRE evr_tuple_mire = NULL;
+/*@unchecked@*/
+static int evr_tuple_nmire;
+
+static miRE rpmEVRmire(void)
+	/*@*/
+{
+    if (evr_tuple_mire == NULL) {
+	int xx;
+	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
+	if (evr_tuple_match == NULL || evr_tuple_match[0] == '\0')
+	    evr_tuple_match = xstrdup(_evr_tuple_match);
+	xx = mireAppend(RPMMIRE_REGEX, 0, evr_tuple_match, NULL,
+		&evr_tuple_mire, &evr_tuple_nmire);
+    }
+assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
+    return evr_tuple_mire;
+}
+
 int rpmEVRparse(const char * evrstr, EVR_t evr)
 	/*@modifies evrstr, evr @*/
 {
@@ -153,6 +178,19 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->F[RPMEVR_R] = se;
     } else {
 	evr->F[RPMEVR_R] = NULL;
+    }
+
+    {	miRE mire = rpmEVRmire();
+	int noffsets = 4 * 3;
+	int offsets[4 * 3];
+	int xx;
+
+	memset(offsets, 0, sizeof(offsets));
+	xx = mireSetEOptions(mire, offsets, noffsets);
+
+	xx = mireRegexec(mire, evr->str, strlen(evr->str));
+
+	xx = mireSetEOptions(mire, NULL, 0);
     }
     return 0;
 }
