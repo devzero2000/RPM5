@@ -86,11 +86,11 @@ struct EVR_s {
 #endif
     evrFlags Flags;		/*!< EVR comparison flags. */
     size_t nF;			/*!< No. of parsed fields. */
-    const char * F[6];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
-#define	RPMEVR_E	1
-#define	RPMEVR_V	2
-#define	RPMEVR_R	3
-#define	RPMEVR_D	4
+    const char * F[4];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
+#define	RPMEVR_E	0
+#define	RPMEVR_V	1
+#define	RPMEVR_R	2
+#define	RPMEVR_D	3
 };
 
 #define	RPMSENSE_TRIGGER	\

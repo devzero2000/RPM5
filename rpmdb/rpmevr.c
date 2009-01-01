@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <rpmiotypes.h>
+#include <rpmmacro.h>
 
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
@@ -139,9 +140,9 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     se = strrchr(se, ':');		/* se points to release terminator */
     if (se) {
 	*se++ = '\0';
-	evr->D = se;
+	evr->F[RPMEVR_D] = se;
     } else {
-	evr->D = NULL;
+	evr->F[RPMEVR_D] = NULL;
     }
     se = strrchr(se2, '-');		/* se points to version terminator */
 #else
@@ -168,8 +169,24 @@ static int compare_values(const char *a, const char *b)
     return rpmvercmp(a, b);
 }
 
+/*@unchecked@*/ /*@null@*/
+static const char * evr_tuple_order = NULL;
+
+static const char * rpmEVRorder(void)
+	/*@*/
+{
+    if (evr_tuple_order == NULL) {
+	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
+	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
+	    evr_tuple_order = xstrdup("EVR");
+    }
+assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
+    return evr_tuple_order;
+}
+
 int rpmEVRcompare(const EVR_t a, const EVR_t b)
 {
+    const char * s;
     int rc = 0;
 
 assert(a->F[RPMEVR_E] != NULL);
@@ -179,12 +196,19 @@ assert(b->F[RPMEVR_E] != NULL);
 assert(b->F[RPMEVR_V] != NULL);
 assert(b->F[RPMEVR_R] != NULL);
 
-    if (!rc)
-	rc = compare_values(a->F[RPMEVR_E], b->F[RPMEVR_E]);
-    if (!rc)
-	rc = compare_values(a->F[RPMEVR_V], b->F[RPMEVR_V]);
-    if (!rc)
-	rc = compare_values(a->F[RPMEVR_R], b->F[RPMEVR_R]);
+    for (s = rpmEVRorder(); *s; s++) {
+	int ix;
+	switch ((int)*s) {
+	default:	continue;	/*@notreached@*/ break;
+	case 'E':	ix = RPMEVR_E;	break;
+	case 'V':	ix = RPMEVR_V;	break;
+	case 'R':	ix = RPMEVR_R;	break;
+	case 'D':	ix = RPMEVR_D;	break;
+	}
+	rc = compare_values(a->F[ix], b->F[ix]);
+	if (rc)
+	    break;
+    }
     return rc;
 }
 

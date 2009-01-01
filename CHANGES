@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: EVRtuple: wire up evr_tuple_order precedence permutation.
     - jbj: EVRtuple: use array for tuple storage.
     - rse: EVRtuple: macro configuration parameterization.
     - proyvind: rpmio: include lzma.h header so that LZMA_VERSION actually gets
