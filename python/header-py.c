@@ -923,15 +923,16 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     int rc;
 
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&A->E, &A->V, &A->R, &B->E, &B->V, &B->R))
+			&A->F[RPMEVR_E], &A->F[RPMEVR_V], &A->F[RPMEVR_R], &B->F[RPMEVR_E], &B->F[RPMEVR_V], &B->F[RPMEVR_R]))
 	return NULL;
 
-    if (A->E == NULL)	A->E = "0";
-    if (B->E == NULL)	B->E = "0";
-    if (A->V == NULL)	A->E = "";
-    if (B->V == NULL)	B->E = "";
-    if (A->R == NULL)	A->E = "";
-    if (B->R == NULL)	B->E = "";
+    /* XXX nuke the unnecessary (and fix non-opaque) sanity check. */
+    if (A->F[RPMEVR_E] == NULL)	A->F[RPMEVR_E] = "0";
+    if (B->F[RPMEVR_E] == NULL)	B->F[RPMEVR_E] = "0";
+    if (A->F[RPMEVR_V] == NULL)	A->F[RPMEVR_V] = "";
+    if (B->F[RPMEVR_V] == NULL)	B->F[RPMEVR_V] = "";
+    if (A->F[RPMEVR_R] == NULL)	A->F[RPMEVR_R] = "";
+    if (B->F[RPMEVR_R] == NULL)	B->F[RPMEVR_R] = "";
 
     rc = rpmEVRcompare(A, B);
 

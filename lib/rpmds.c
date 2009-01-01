@@ -3640,9 +3640,9 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 
     /* Compare {A,B} [epoch:]version[-release] */
     sense = 0;
-    if (a->E && *a->E && b->E && *b->E)
-/*@i@*/	sense = EVRcmp(a->E, b->E);
-    else if (a->E && *a->E && atol(a->E) > 0) {
+    if (a->F[RPMEVR_E] && *a->F[RPMEVR_E] && b->F[RPMEVR_E] && *b->F[RPMEVR_E])
+/*@i@*/	sense = EVRcmp(a->F[RPMEVR_E], b->F[RPMEVR_E]);
+    else if (a->F[RPMEVR_E] && *a->F[RPMEVR_E] && atol(a->F[RPMEVR_E]) > 0) {
 	if (!B->nopromote) {
 	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMLOG_WARNING : RPMLOG_DEBUG);
 	    rpmlog(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
@@ -3650,16 +3650,16 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 	    sense = 0;
 	} else
 	    sense = 1;
-    } else if (b->E && *b->E && atol(b->E) > 0)
+    } else if (b->F[RPMEVR_E] && *b->F[RPMEVR_E] && atol(b->F[RPMEVR_E]) > 0)
 	sense = -1;
 
     if (sense == 0) {
-/*@i@*/	sense = EVRcmp(a->V, b->V);
-	if (sense == 0 && a->R && *a->R && b->R && *b->R)
-/*@i@*/	    sense = EVRcmp(a->R, b->R);
+/*@i@*/	sense = EVRcmp(a->F[RPMEVR_V], b->F[RPMEVR_V]);
+	if (sense == 0 && a->F[RPMEVR_R] && *a->F[RPMEVR_R] && b->F[RPMEVR_R] && *b->F[RPMEVR_R])
+/*@i@*/	    sense = EVRcmp(a->F[RPMEVR_R], b->F[RPMEVR_R]);
 #if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
-	if (sense == 0 && a->D && *a->D && b->D && *b->D)
-/*@i@*/	    sense = EVRcmp(a->D, b->D);
+	if (sense == 0 && a->F[RPMEVR_D] && *a->F[RPMEVR_D] && b->F[RPMEVR_D] && *b->F[RPMEVR_D])
+/*@i@*/	    sense = EVRcmp(a->F[RPMEVR_D], b->F[RPMEVR_D]);
 #endif
     }
     a->str = _free(a->str);
