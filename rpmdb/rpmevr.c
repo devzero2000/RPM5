@@ -122,17 +122,17 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     while (*se && xisdigit((int)*se)) se++;	/* se points to epoch terminator */
 
     if (*se == ':') {
-	evr->E = s;
+	evr->F[RPMEVR_E] = s;
 	*se++ = '\0';
-	evr->V = se;
+	evr->F[RPMEVR_V] = se;
 #ifdef	RPM_VENDOR_MANDRIVA
 	se2 = se;
 #endif
-	if (*evr->E == '\0') evr->E = "0";
-	evr->Elong = strtoul(evr->E, NULL, 10);
+	if (*evr->F[RPMEVR_E] == '\0') evr->F[RPMEVR_E] = "0";
+	evr->Elong = strtoul(evr->F[RPMEVR_E], NULL, 10);
     } else {
-	evr->E = NULL;	/* XXX disable epoch compare if missing */
-	evr->V = s;
+	evr->F[RPMEVR_E] = NULL; /* XXX disable epoch compare if missing */
+	evr->F[RPMEVR_V] = s;
 	evr->Elong = 0;
     }
 #if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)    
@@ -149,9 +149,9 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 #endif
     if (se) {
 	*se++ = '\0';
-	evr->R = se;
+	evr->F[RPMEVR_R] = se;
     } else {
-	evr->R = NULL;
+	evr->F[RPMEVR_R] = NULL;
     }
     return 0;
 }
@@ -172,19 +172,19 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 {
     int rc = 0;
 
-assert(a->E != NULL);
-assert(a->V != NULL);
-assert(a->R != NULL);
-assert(b->E != NULL);
-assert(b->V != NULL);
-assert(b->R != NULL);
+assert(a->F[RPMEVR_E] != NULL);
+assert(a->F[RPMEVR_V] != NULL);
+assert(a->F[RPMEVR_R] != NULL);
+assert(b->F[RPMEVR_E] != NULL);
+assert(b->F[RPMEVR_V] != NULL);
+assert(b->F[RPMEVR_R] != NULL);
 
     if (!rc)
-	rc = compare_values(a->E, b->E);
+	rc = compare_values(a->F[RPMEVR_E], b->F[RPMEVR_E]);
     if (!rc)
-	rc = compare_values(a->V, b->V);
+	rc = compare_values(a->F[RPMEVR_V], b->F[RPMEVR_V]);
     if (!rc)
-	rc = compare_values(a->R, b->R);
+	rc = compare_values(a->F[RPMEVR_R], b->F[RPMEVR_R]);
     return rc;
 }
 

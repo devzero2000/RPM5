@@ -81,18 +81,16 @@ typedef enum evrFlags_e rpmsenseFlags;
  */
 struct EVR_s {
     const char * str;		/*!< EVR storage */
-/*@observer@*/ /*@null@*/
-    const char * E;		/*!< Epoch */
+#ifndef	DYING
     unsigned long Elong;
-/*@observer@*/ /*@null@*/
-    const char * V;		/*!< Version */
-/*@observer@*/ /*@null@*/
-    const char * R;		/*!< Release */
-#ifdef	RPM_VENDOR_MANDRIVA
-/*@observer@*/ /*@null@*/
-    const char * D;		/*!< DistEpoch */
 #endif
     evrFlags Flags;		/*!< EVR comparison flags. */
+    size_t nF;			/*!< No. of parsed fields. */
+    const char * F[6];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
+#define	RPMEVR_E	1
+#define	RPMEVR_V	2
+#define	RPMEVR_R	3
+#define	RPMEVR_D	4
 };
 
 #define	RPMSENSE_TRIGGER	\

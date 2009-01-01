@@ -69,6 +69,6 @@ int dpkgEVRcompare(const EVR_t a, const EVR_t b)
 
     if (a->Elong > b->Elong) return 1;
     if (a->Elong < b->Elong) return -1;
-    r = dpkgEVRcmp(a->V, b->V);  if (r) return r;
-    return dpkgEVRcmp(a->R, b->R);
+    r = dpkgEVRcmp(a->F[RPMEVR_V], b->F[RPMEVR_V]);  if (r) return r;
+    return dpkgEVRcmp(a->F[RPMEVR_R], b->F[RPMEVR_R]);
 }

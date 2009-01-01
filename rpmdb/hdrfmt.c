@@ -2660,12 +2660,12 @@ static int rpmEVRoverlap(EVR_t a, EVR_t b)
     int sense;
     int result;
 
-    if (a->E == NULL)	a->E = "0";
-    if (b->E == NULL)	b->E = "0";
-    if (a->V == NULL)	a->V = "";
-    if (b->V == NULL)	b->V = "";
-    if (a->R == NULL)	a->R = "";
-    if (b->R == NULL)	b->R = "";
+    if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
+    if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
+    if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
+    if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
+    if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
+    if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
     sense = rpmEVRcompare(a, b);
 
     /* Detect overlap of {A,B} range. */
