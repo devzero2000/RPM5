@@ -34,8 +34,8 @@
 
 #include "lzma.h"
 
-#ifndef LZMA_EASY_LEVEL_DEFAULT
-#define LZMA_EASY_LEVEL_DEFAULT 6
+#ifndef LZMA_PRESET_DEFAULT
+#define LZMA_PRESET_DEFAULT     UINT32_C(6)
 #endif
 
 #include "debug.h"
@@ -66,7 +66,7 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    int level = LZMA_EASY_LEVEL_DEFAULT;
+    int level = LZMA_PRESET_DEFAULT;
     int encoding = 0;
     FILE *fp;
     XZFILE *xzfile;
@@ -120,7 +120,7 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	}
 #else
 	if (xz)
-	    ret = lzma_easy_encoder(&xzfile->strm, level, 0, LZMA_CHECK_CRC32);
+	    ret = lzma_easy_encoder(&xzfile->strm, level, LZMA_CHECK_CRC32);
 	else {
 	    lzma_options_lzma options;
 	    lzma_lzma_preset(&options, level);

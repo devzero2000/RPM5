@@ -998,10 +998,10 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [], [])
 
-dnl # LZMA Utils
+dnl # libLZMA
 RPM_CHECK_LIB(
-    [LZMA Utils], [lzma],
-    [lzma], [lzma_init], [lzma.h],
+    [libLZMA], [lzma],
+    [lzma], [lzma_auto_decoder], [lzma.h],
     [no,external:internal:none], [lzma:src/liblzma/api:src/liblzma],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_LZMA_INTERNAL=true
