@@ -478,7 +478,7 @@ void providePackageNVR(Header h)
     he->tag = RPMTAG_DISTEPOCH;
     gotD = headerGet(h, he, 0);
     D = (he->p.str ? he->p.str : NULL);
-    nb += (gotD ? strlen(D) + 1 : 0));
+    nb += (gotD ? strlen(D) + 1 : 0);
 #endif
     pEVR = p = alloca(nb);
     *p = '\0';
