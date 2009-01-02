@@ -5,6 +5,7 @@
 
 #include <rpmiotypes.h>
 #include <rpmmacro.h>
+#define	_MIRE_INTERNAL
 #include <mire.h>
 
 #include <rpmtag.h>
@@ -109,7 +110,7 @@ int rpmEVRcmp(const char * a, const char * b)
 }
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
-static const char * _evr_tuple_match = "i^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
+static const char * _evr_tuple_match = "^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
 /*@unchecked@*/ /*@null@*/
 static const char * evr_tuple_match = NULL;
 /*@unchecked@*/ /*@null@*/
@@ -125,8 +126,16 @@ static miRE rpmEVRmire(void)
 	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
 	if (evr_tuple_match == NULL || evr_tuple_match[0] == '\0')
 	    evr_tuple_match = xstrdup(_evr_tuple_match);
+
+#ifdef	NOTYET	/* XXX avoid need for evr_tuple_nmire */
+	evr_tuple_mire = mireNew(RPMMIRE_REGEX, 0);
+	xx = mireSetCOptions(evr_tuple_mire, RPMMIRE_REGEX, 0, 0, NULL);
+	xx = mireRegcomp(evr_tuple_mire, evr_tuple_match);
+#else
 	xx = mireAppend(RPMMIRE_REGEX, 0, evr_tuple_match, NULL,
 		&evr_tuple_mire, &evr_tuple_nmire);
+#endif
+
     }
 assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
     return evr_tuple_mire;
@@ -181,14 +190,32 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
     }
 
     {	miRE mire = rpmEVRmire();
-	int noffsets = 4 * 3;
-	int offsets[4 * 3];
+	int noffsets = 10 * 3;
+	int offsets[10 * 3];
 	int xx;
+	int i;
 
-	memset(offsets, 0, sizeof(offsets));
+	memset(offsets, -1, sizeof(offsets));
 	xx = mireSetEOptions(mire, offsets, noffsets);
 
-	xx = mireRegexec(mire, evr->str, strlen(evr->str));
+	xx = mireRegexec(mire, evrstr, strlen(evrstr));
+
+	for (i = 0; i < noffsets; i += 2) {
+	    size_t nb;
+	    int ix;
+
+	    if (offsets[i] < 0) continue;
+	    nb = (size_t)(offsets[i+1] - offsets[i]);
+	    switch (i/2) {
+	    default:
+	    case 0:	continue;	/*@notreached@*/ break;
+	    case 1:	ix = RPMEVR_E;	break;
+	    case 2:	ix = RPMEVR_V;	break;
+	    case 3:	ix = RPMEVR_R;	break;
+	    case 4:	ix = RPMEVR_D;	break;
+	    }
+assert(!strncmp(evr->F[ix], evrstr+offsets[i], nb));
+	}
 
 	xx = mireSetEOptions(mire, NULL, 0);
     }

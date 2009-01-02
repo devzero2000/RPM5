@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: EVRtuple: blueprint new <-> old parsers with an assert.
+    - jbj: EVRtuple: parse EVRD using RPMMIRE_REGEX & evr_tuple_match.
     - jbj: EVRtuple: wire up evr_tuple_match RE pattern match.
     - jbj: EVRtuple: wire up evr_tuple_order precedence permutation.
     - jbj: EVRtuple: use array for tuple storage.
