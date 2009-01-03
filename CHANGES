@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: EVRtuple: precedence permutation for rpmdsCompare().
     - jbj: EVRtuple: precedence permutation for rpmVersionCompare().
     - jbj: EVRtuple: blueprint new <-> old parsers with an assert.
     - jbj: EVRtuple: parse EVRD using RPMMIRE_REGEX & evr_tuple_match.
