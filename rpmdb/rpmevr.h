@@ -86,11 +86,11 @@ struct EVR_s {
 #endif
     evrFlags Flags;		/*!< EVR comparison flags. */
     size_t nF;			/*!< No. of parsed fields. */
-    const char * F[4];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
-#define	RPMEVR_E	0
-#define	RPMEVR_V	1
-#define	RPMEVR_R	2
-#define	RPMEVR_D	3
+    const char * F[5];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
+#define	RPMEVR_E	1
+#define	RPMEVR_V	2
+#define	RPMEVR_R	3
+#define	RPMEVR_D	4
 };
 
 #define	RPMSENSE_TRIGGER	\
@@ -172,11 +172,11 @@ rpmsenseFlags rpmEVRflags(/*@null@*/const char *op, /*@null@*/const char **end)
  * Compare headers to determine which header is "newer".
  * @deprecated Use rpmdsCompare instead.
  * @todo	Eliminate in rpm-5.1.
- * @param first		1st header
- * @param second	2nd header
+ * @param A		1st header
+ * @param B		2nd header
  * @return		result of comparison
  */
-int rpmVersionCompare(Header first, Header second)
+int rpmVersionCompare(Header A, Header B)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 

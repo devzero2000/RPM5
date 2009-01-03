@@ -324,63 +324,63 @@ rpmsenseFlags rpmEVRflags(const char *op, const char **end)
     return Flags;
 }
 
-int rpmVersionCompare(Header first, Header second)
+int rpmVersionCompare(Header A, Header B)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Ahe = memset(alloca(sizeof(*Ahe)), 0, sizeof(*Ahe));
+    HE_t Bhe = memset(alloca(sizeof(*Bhe)), 0, sizeof(*Bhe));
     const char * one, * two;
     rpmuint32_t Eone, Etwo;
-    int rc;
+    const char * s;
+    int rc = 0;
     int xx;
 
-    he->tag = RPMTAG_EPOCH;
-    xx = headerGet(first, he, 0);
-    Eone = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
-    he->p.ptr = _free(he->p.ptr);
-    he->tag = RPMTAG_EPOCH;
-    xx = headerGet(second, he, 0);
-    Etwo = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
-    he->p.ptr = _free(he->p.ptr);
-
-    if (Eone < Etwo)
-	return -1;
-    else if (Eone > Etwo)
-	return 1;
-
-    he->tag = RPMTAG_VERSION;
-    xx = headerGet(first, he, 0);
-    one = he->p.str;
-    he->tag = RPMTAG_VERSION;
-    xx = headerGet(second, he, 0);
-    two = he->p.str;
-    rc = rpmvercmp(one, two);
-    if (rc)
-	goto exit;
-
-    he->tag = RPMTAG_RELEASE;
-    xx = headerGet(first, he, 0);
-    one = he->p.str;
-    he->tag = RPMTAG_RELEASE;
-    xx = headerGet(second, he, 0);
-    two = he->p.str;
-    rc = rpmvercmp(one, two);
-#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
-
-    if (rc)
-	goto exit;
-
-    he->tag = RPMTAG_DISTEPOCH;
-    xx = headerGet(first, he, 0);
-    one = (xx && he->p.str ? he->p.str : xstrdup(""));
-    he->tag = RPMTAG_DISTEPOCH;
-    xx = headerGet(second, he, 0);
-    two = (xx && he->p.str ? he->p.str : xstrdup(""));
-    rc = rpmvercmp(one, two);
-#endif
-
-exit:
-    one = _free(one);
-/*@-usereleased@*/
-    two = _free(two);
-/*@=usereleased@*/
+    for (s = rpmEVRorder(); *s; s++) {
+	switch ((int)*s) {
+	default:	continue;	/*@notreached@*/ break;
+	case 'E':
+	    Ahe->tag = RPMTAG_EPOCH;
+	    xx = headerGet(A, Ahe, 0);
+	    Eone = (xx && Ahe->p.ui32p ? Ahe->p.ui32p[0] : 0);
+	    Bhe->tag = RPMTAG_EPOCH;
+	    xx = headerGet(B, Bhe, 0);
+	    Etwo = (xx && Bhe->p.ui32p ? Bhe->p.ui32p[0] : 0);
+	    if (Eone < Etwo)
+		rc = -1;
+	    else if (Eone > Etwo)
+		rc = 1;
+	    /*@switchbreak@*/ break;
+	case 'V':
+	    Ahe->tag = RPMTAG_VERSION;
+	    xx = headerGet(A, Ahe, 0);
+	    one = (xx && Ahe->p.str ? Ahe->p.str : "");
+	    Bhe->tag = RPMTAG_VERSION;
+	    xx = headerGet(B, Bhe, 0);
+	    two = (xx && Bhe->p.str ? Bhe->p.str : "");
+	    rc = rpmvercmp(one, two);
+	    /*@switchbreak@*/ break;
+	case 'R':
+	    Ahe->tag = RPMTAG_RELEASE;
+	    xx = headerGet(A, Ahe, 0);
+	    one = (xx && Ahe->p.str ? Ahe->p.str : "");
+	    Bhe->tag = RPMTAG_RELEASE;
+	    xx = headerGet(B, Bhe, 0);
+	    two = (xx && Bhe->p.str ? Bhe->p.str : "");
+	    rc = rpmvercmp(one, two);
+	    /*@switchbreak@*/ break;
+	case 'D':
+	    Ahe->tag = RPMTAG_DISTEPOCH;
+	    xx = headerGet(A, Ahe, 0);
+	    one = (xx && Ahe->p.str ? Ahe->p.str : "");
+	    Bhe->tag = RPMTAG_DISTEPOCH;
+	    xx = headerGet(B, Bhe, 0);
+	    two = (xx && Bhe->p.str ? Bhe->p.str : "");
+	    rc = rpmvercmp(one, two);
+	    /*@switchbreak@*/ break;
+	}
+	Ahe->p.ptr = _free(Ahe->p.ptr);
+	Bhe->p.ptr = _free(Bhe->p.ptr);
+	if (rc)
+	    break;
+    }
     return rc;
 }
