@@ -237,6 +237,11 @@ static int compare_values(const char *a, const char *b)
 /*@unchecked@*/ /*@null@*/
 static const char * evr_tuple_order = NULL;
 
+/**
+ * Return precedence permutation string.
+ * @return		precedence permutation
+ */
+/*@observer@*/
 static const char * rpmEVRorder(void)
 	/*@*/
 {
@@ -265,10 +270,10 @@ assert(b->F[RPMEVR_R] != NULL);
 	int ix;
 	switch ((int)*s) {
 	default:	continue;	/*@notreached@*/ break;
-	case 'E':	ix = RPMEVR_E;	break;
-	case 'V':	ix = RPMEVR_V;	break;
-	case 'R':	ix = RPMEVR_R;	break;
-	case 'D':	ix = RPMEVR_D;	break;
+	case 'E':	ix = RPMEVR_E;	/*@switchbreak@*/break;
+	case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
+	case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
+	case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
 	rc = compare_values(a->F[ix], b->F[ix]);
 	if (rc)
