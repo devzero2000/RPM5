@@ -141,28 +141,23 @@ assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
     return evr_tuple_mire;
 }
 
-int rpmEVRparse(const char * evrstr, EVR_t evr)
+#ifndef	DYING
+static int oldrpmEVRparse(const char * evrstr, EVR_t evr)
 	/*@modifies evrstr, evr @*/
 {
     char *s = xstrdup(evrstr);
     char *se;
-#ifdef	RPM_VENDOR_MANDRIVA
     char *se2;
-#endif
 
     evr->str = se = s;
-#ifdef	RPM_VENDOR_MANDRIVA
     se2 = se;
-#endif
-    while (*se && xisdigit((int)*se)) se++;	/* se points to epoch terminator */
+    while (*se && xisdigit((int)*se)) se++; /* se points to epoch terminator */
 
     if (*se == ':') {
 	evr->F[RPMEVR_E] = s;
 	*se++ = '\0';
 	evr->F[RPMEVR_V] = se;
-#ifdef	RPM_VENDOR_MANDRIVA
 	se2 = se;
-#endif
 	if (*evr->F[RPMEVR_E] == '\0') evr->F[RPMEVR_E] = "0";
 	evr->Elong = strtoul(evr->F[RPMEVR_E], NULL, 10);
     } else {
@@ -170,7 +165,6 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->F[RPMEVR_V] = s;
 	evr->Elong = 0;
     }
-#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)    
     se = strrchr(se, ':');		/* se points to release terminator */
     if (se) {
 	*se++ = '\0';
@@ -179,9 +173,6 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->F[RPMEVR_D] = NULL;
     }
     se = strrchr(se2, '-');		/* se points to version terminator */
-#else
-    se = strrchr(se, '-');		/* se points to version terminator */
-#endif
     if (se) {
 	*se++ = '\0';
 	evr->F[RPMEVR_R] = se;
@@ -189,36 +180,76 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->F[RPMEVR_R] = NULL;
     }
 
-    {	miRE mire = rpmEVRmire();
-	int noffsets = 10 * 3;
-	int offsets[10 * 3];
-	int xx;
-	int i;
+    return 0;
+}
+#endif
 
-	memset(offsets, -1, sizeof(offsets));
-	xx = mireSetEOptions(mire, offsets, noffsets);
+int rpmEVRparse(const char * evrstr, EVR_t evr)
+	/*@modifies evrstr, evr @*/
+{
+    miRE mire = rpmEVRmire();
+    int noffsets = 6 * 3;
+    int offsets[6 * 3];
+    size_t nb;
+    int xx;
+    int i;
 
-	xx = mireRegexec(mire, evrstr, strlen(evrstr));
+    memset(evr, 0, sizeof(*evr));
+    evr->str = xstrdup(evrstr);
+    nb = strlen(evr->str);
 
-	for (i = 0; i < noffsets; i += 2) {
-	    size_t nb;
-	    int ix;
+    memset(offsets, -1, sizeof(offsets));
+    xx = mireSetEOptions(mire, offsets, noffsets);
 
-	    if (offsets[i] < 0) continue;
-	    nb = (size_t)(offsets[i+1] - offsets[i]);
-	    switch (i/2) {
-	    default:
-	    case 0:	continue;	/*@notreached@*/ break;
-	    case 1:	ix = RPMEVR_E;	break;
-	    case 2:	ix = RPMEVR_V;	break;
-	    case 3:	ix = RPMEVR_R;	break;
-	    case 4:	ix = RPMEVR_D;	break;
-	    }
-assert(!strncmp(evr->F[ix], evrstr+offsets[i], nb));
+    xx = mireRegexec(mire, evr->str, strlen(evr->str));
+
+    for (i = 0; i < noffsets; i += 2) {
+	int ix;
+
+	if (offsets[i] < 0)
+	    continue;
+
+	switch (i/2) {
+	default:
+	case 0:	continue;	/*@notreached@*/ break;
+	case 1:	ix = RPMEVR_E;	/*@switchbreak@*/break;
+	case 2:	ix = RPMEVR_V;	/*@switchbreak@*/break;
+	case 3:	ix = RPMEVR_R;	/*@switchbreak@*/break;
+	case 4:	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
 
-	xx = mireSetEOptions(mire, NULL, 0);
+assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
+assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
+	{   char * te = (char *) evr->str;
+	    evr->F[ix] = te + offsets[i];
+	    te += offsets[i+1];
+	    *te = '\0';
+	}
+
     }
+
+    evr->Elong = evr->F[RPMEVR_E] ? strtoul(evr->F[RPMEVR_E], NULL, 10) : 0;
+
+    xx = mireSetEOptions(mire, NULL, 0);
+
+#ifndef	DYING
+    {	EVR_t Oevr = memset(alloca(sizeof(*Oevr)), 0, sizeof(*Oevr));
+
+	xx = oldrpmEVRparse(evrstr, Oevr);
+assert(Oevr->Elong == evr->Elong);
+
+	for (i = 0; i < 5; i++) {
+	    if (Oevr->F[i] == NULL && evr->F[i] == NULL)
+		continue;
+	    if (Oevr->F[i] == NULL || evr->F[i] == NULL
+	     || strcmp(Oevr->F[i], evr->F[i]))
+		fprintf(stderr, "==> \"%s\" %d strcmp(%s,%s)\n",
+			evrstr, i, Oevr->F[i], evr->F[i]);
+	}
+	Oevr->str = _free(Oevr->str);
+    }
+#endif	/* DYING */
+
     return 0;
 }
 
