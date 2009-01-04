@@ -939,9 +939,9 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
 	done
     fi
     AC_ARG_WITH(python-inc-dir, AS_HELP_STRING([--with-python-inc-dir=DIR], [directory with Python include files]),
-	    [WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="`(python -c 'from distutils.sysconfig import get_python_inc; print get_python_inc()') 2>/dev/null`"])
+	    [WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="`(${__PYTHON} -c 'from distutils.sysconfig import get_python_inc; print get_python_inc()') 2>/dev/null`"])
     AC_ARG_WITH(python-lib-dir, AS_HELP_STRING([--with-python-lib-dir=DIR], [directory with Python library]),
-	    [pythondir="$withval"], [pythondir="`(python -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)') 2>/dev/null`"])
+	    [pythondir="$withval"], [pythondir="`(${__PYTHON} -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)') 2>/dev/null`"])
 ])
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
