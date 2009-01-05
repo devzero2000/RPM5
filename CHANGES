@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: EVRtuple: attempt rpmEVRparse() during parceRCPOT().
+	no error returns from rpmEVRparse() to trigger the message yet, todo++.
     - jbj: EVRtuple: teach --whatneeds/--needswhat to use EVR_t opaquely.
     - jbj: EVRtuple: add rpmEVR{new,free} creator and destructors.
     - jbj: EVRtuple: mark the old EVRD parser for destruction.

@@ -12,6 +12,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+/*@access EVR_t @*/
+
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
@@ -153,6 +155,22 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
+
+	/* Make sure that EVR is parseable during install. */
+	if (EVR != NULL) {
+	    EVR_t evr = memset(alloca(sizeof(*evr)), 0, sizeof(*evr));
+	    int xx = rpmEVRparse(xstrdup(EVR), evr);
+
+	    evr->str = _free(evr->str);
+	    if (xx != 0) {
+		rpmlog(RPMLOG_ERR,
+			 _("line %d: EVR does not parse: %s\n"),
+			 spec->lineNum, spec->line);
+		N = _free(N);
+		EVR = _free(EVR);
+		return RPMRC_FAIL;
+	    }
+	}
 
 	(void) addReqProv(spec, h, tagN, N, EVR, Flags, index);
 
