@@ -21,6 +21,28 @@ int _rpmevr_debug = 0;
 #define MAX(x, y) ( ((x)>(y))?(x):(y) )
 #endif
 
+EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
+{
+    EVR_t evr = xcalloc(1, sizeof(*evr));
+    evr->Flags = Flags;
+    if (initialize) {
+	evr->F[RPMEVR_E] = "0";
+	evr->F[RPMEVR_V] = "";
+	evr->F[RPMEVR_R] = "";
+    }
+    return evr;
+}
+
+EVR_t rpmEVRfree(EVR_t evr)
+{
+    if (evr != NULL) {
+	evr->str = _free(evr->str);
+	memset(evr, 0, sizeof(*evr));
+	evr = _free(evr);
+    }
+    return NULL;
+}
+
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
 /*@unchecked@*/
 #if defined(RPM_VENDOR_MANDRIVA) /* old-comparision-behaviour */
@@ -311,6 +333,30 @@ assert(b->F[RPMEVR_R] != NULL);
 	    break;
     }
     return rc;
+}
+
+int rpmEVRoverlap(EVR_t a, EVR_t b)
+{
+    rpmsenseFlags aF = a->Flags;
+    rpmsenseFlags bF = b->Flags;
+    int sense = rpmEVRcompare(a, b);
+    int result;
+
+    /* Detect overlap of {A,B} range. */
+    if (aF == RPMSENSE_NOTEQUAL || bF == RPMSENSE_NOTEQUAL)
+        result = (sense != 0);
+    else if (sense < 0 && ((aF & RPMSENSE_GREATER) || (bF & RPMSENSE_LESS)))
+        result = 1;
+    else if (sense > 0 && ((aF & RPMSENSE_LESS) || (bF & RPMSENSE_GREATER)))
+        result = 1;
+    else if (sense == 0 &&
+        (((aF & RPMSENSE_EQUAL) && (bF & RPMSENSE_EQUAL)) ||
+         ((aF & RPMSENSE_LESS) && (bF & RPMSENSE_LESS)) ||
+         ((aF & RPMSENSE_GREATER) && (bF & RPMSENSE_GREATER))))
+        result = 1;
+    else
+        result = 0;
+    return result;
 }
 
 /*@-redecl@*/

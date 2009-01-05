@@ -82,10 +82,9 @@ typedef enum evrFlags_e rpmsenseFlags;
 struct EVR_s {
     const char * str;		/*!< EVR storage */
 #ifndef	DYING
-    unsigned long Elong;
+    unsigned long Elong;	/*!< E converted to integer. */
 #endif
     evrFlags Flags;		/*!< EVR comparison flags. */
-    size_t nF;			/*!< No. of parsed fields. */
     const char * F[5];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
 #define	RPMEVR_E	1
 #define	RPMEVR_V	2
@@ -124,6 +123,24 @@ struct EVR_s {
 #endif	/* _RPMEVR_INTERNAL */
 
 /** \ingroup rpmds
+ * Create a new EVR container.
+ * @param flags		EVR inequality flags
+ * @param initialize	Should empty defaults be initialized?
+ * @return		initialized EVR container
+ */
+EVR_t rpmEVRnew(rpmuint32_t flags, int initialize)
+        /*@*/;
+
+/** \ingroup rpmtd
+ * Destroy an EVR container.
+ * @param		EVR container
+ * @return		NULL always
+ */
+/*@null@*/
+EVR_t rpmEVRfree(/*@only@*/ EVR_t evr)
+        /*@modifies evr @*/;
+
+/** \ingroup rpmds
  * Segmented string compare.
  * @param a		1st string
  * @param b		2nd string
@@ -142,12 +159,21 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	/*@modifies evrstr, evr @*/;
 
 /** \ingroup rpmds
- * Compare EVR containers.
+ * Compare EVR containers for equality.
  * @param a		1st EVR container
  * @param b		2nd EVR container
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
 int rpmEVRcompare(const EVR_t a, const EVR_t b)
+	/*@*/;
+
+/** \ingroup rpmds
+ * Compare EVR containers for overlap.
+ * @param a		1st EVR container
+ * @param b		2nd EVR container
+ * @return		1 if EVR inequalities overlap, 0 otherwise
+ */
+int rpmEVRoverlap(EVR_t a, EVR_t b)
 	/*@*/;
 
 /** \ingroup rpmds

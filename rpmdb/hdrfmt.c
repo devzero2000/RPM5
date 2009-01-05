@@ -2652,39 +2652,6 @@ exit:
     return rc;
 }
 
-static int rpmEVRoverlap(EVR_t a, EVR_t b)
-	/*@modifies a, b @*/
-{
-    rpmsenseFlags aF = a->Flags;
-    rpmsenseFlags bF = b->Flags;
-    int sense;
-    int result;
-
-    if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
-    if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
-    if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
-    if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
-    if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
-    if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
-    sense = rpmEVRcompare(a, b);
-
-    /* Detect overlap of {A,B} range. */
-    if (aF == RPMSENSE_NOTEQUAL || bF == RPMSENSE_NOTEQUAL)
-        result = (sense != 0);
-    else if (sense < 0 && ((aF & RPMSENSE_GREATER) || (bF & RPMSENSE_LESS)))
-        result = 1;
-    else if (sense > 0 && ((aF & RPMSENSE_LESS) || (bF & RPMSENSE_GREATER)))
-        result = 1;
-    else if (sense == 0 &&
-        (((aF & RPMSENSE_EQUAL) && (bF & RPMSENSE_EQUAL)) ||
-         ((aF & RPMSENSE_LESS) && (bF & RPMSENSE_LESS)) ||
-         ((aF & RPMSENSE_GREATER) && (bF & RPMSENSE_GREATER))))
-        result = 1;
-    else
-        result = 0;
-    return result;
-}
-
 static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 		HE_t PNhe, /*@null@*/ HE_t PEVRhe, /*@null@*/ HE_t PFhe)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -2703,18 +2670,21 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     rpmTag tagN = RPMTAG_REQUIRENAME;
     rpmTag tagEVR = RPMTAG_REQUIREVERSION;
     rpmTag tagF = RPMTAG_REQUIREFLAGS;
-    EVR_t Pevr = memset(alloca(sizeof(*Pevr)), 0, sizeof(*Pevr));
-    EVR_t Revr = memset(alloca(sizeof(*Revr)), 0, sizeof(*Revr));
+    rpmuint32_t PFlags;
+    rpmuint32_t RFlags;
+    EVR_t Pevr;
     Header oh;
     int rc = 0;
     int xx;
 
     if (tagNVRA == 0)
 	tagNVRA = RPMTAG_NVRA;
+
+    PFlags = (PFhe != NULL ? (PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK) : 0);
+    Pevr = rpmEVRnew(PFlags, 1);
+
     if (PEVRhe != NULL)
 	xx = rpmEVRparse(xstrdup(PEVRhe->p.argv[PNhe->ix]), Pevr);
-    if (PFhe != NULL)
-	Pevr->Flags = (PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK);
 
     RNhe->tag = tagN;
     REVRhe->tag = tagEVR;
@@ -2740,13 +2710,16 @@ assert(RFhe->c == RNhe->c);
 		/*@innercontinue@*/ continue;
 	    if (PEVRhe == NULL)
 		goto bingo;
-	    Revr->Flags = RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK;
-	    if (!(Pevr->Flags && Revr->Flags))
-		goto bingo;
-	    xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
-	    xx = rpmEVRoverlap(Pevr, Revr);
-	    Revr->str = _free(Revr->str);
-	    memset(Revr, 0, sizeof(*Revr));
+	    RFlags = RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK;
+	    {	EVR_t Revr = rpmEVRnew(RFlags, 1);
+		if (!(PFlags && RFlags))
+		    xx = 1;
+		else {
+		    xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
+		    xx = rpmEVRoverlap(Pevr, Revr);
+		}
+		Revr = rpmEVRfree(Revr);
+	    }
 	    if (xx)
 		goto bingo;
 	}
@@ -2771,7 +2744,7 @@ bottom:
     }
     mi = rpmdbFreeIterator(mi);
 
-    Pevr->str = _free(Pevr->str);
+    Pevr = rpmEVRfree(Pevr);
 
     return rc;
 }
@@ -2874,8 +2847,9 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 	? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME;
     rpmTag tagEVR = RPMTAG_PROVIDEVERSION;
     rpmTag tagF = RPMTAG_PROVIDEFLAGS;
-    EVR_t Revr = memset(alloca(sizeof(*Revr)), 0, sizeof(*Revr));
-    EVR_t Pevr = memset(alloca(sizeof(*Pevr)), 0, sizeof(*Pevr));
+    rpmuint32_t PFlags;
+    rpmuint32_t RFlags;
+    EVR_t Revr;
     Header oh;
     int rc = 0;
     int xx;
@@ -2883,10 +2857,11 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     if (tagNVRA == 0)
 	tagNVRA = RPMTAG_NVRA;
 
+    RFlags = (RFhe != NULL ? (RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK) : 0);
+    Revr = rpmEVRnew(RFlags, 1);
+
     if (REVRhe != NULL)
 	xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
-    if (RFhe != NULL)
-	Revr->Flags = (RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK);
 
     PNhe->tag = tagN;
     PEVRhe->tag = tagEVR;
@@ -2912,13 +2887,16 @@ assert(PFhe->c == PNhe->c);
 		/*@innercontinue@*/ continue;
 	    if (REVRhe == NULL)
 		goto bingo;
-	    Pevr->Flags = PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK;
-	    if (!(Revr->Flags && Pevr->Flags))
-		goto bingo;
-	    xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
-	    xx = rpmEVRoverlap(Revr, Pevr);
-	    Pevr->str = _free(Pevr->str);
-	    memset(Pevr, 0, sizeof(*Pevr));
+	    PFlags = PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK;
+	    {	EVR_t Pevr = rpmEVRnew(PFlags, 1);
+		if (!(PFlags && RFlags))
+		    xx = 1;
+		else {
+		    xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
+		    xx = rpmEVRoverlap(Revr, Pevr);
+		}
+		Pevr = rpmEVRfree(Pevr);
+	    }
 	    if (xx)
 		goto bingo;
 	}
@@ -2943,7 +2921,7 @@ bottom:
     }
     mi = rpmdbFreeIterator(mi);
 
-    Revr->str = _free(Revr->str);
+    Revr = rpmEVRfree(Revr);
 
     return rc;
 }

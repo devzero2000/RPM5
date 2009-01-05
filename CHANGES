@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: EVRtuple: teach --whatneeds/--needswhat to use EVR_t opaquely.
+    - jbj: EVRtuple: add rpmEVR{new,free} creator and destructors.
     - jbj: EVRtuple: mark the old EVRD parser for destruction.
     - jbj: EVRtuple: use the new EVRD pattern parser, reverse the assert check.
     - jbj: EVRtuple: precedence permutation for rpmdsCompare().

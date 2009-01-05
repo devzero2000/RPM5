@@ -123,6 +123,9 @@ LIBRPMDB_0
     rpmEVRcmp;
     rpmEVRcompare;
     rpmEVRflags;
+    rpmEVRfree;
+    rpmEVRnew;
+    rpmEVRoverlap;
     rpmEVRparse;
     _rpmns_debug;
     _rpmns_N_at_A;
