@@ -52,10 +52,6 @@ PyObject * pyrpmError;
 
 extern sigset_t rpmsqCaught;
 
-#if PY_VERSION_HEX < 0x02050000
-typedef int Py_ssize_t;
-#endif
-
 /**
  *  */
 static PyObject * archScore(PyObject * s, PyObject * args,
