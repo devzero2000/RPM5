@@ -918,23 +918,24 @@ PyObject * versionCompare (PyObject * self, PyObject * args,
 
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    EVR_t A = memset(alloca(sizeof(*A)), 0, sizeof(*A));
-    EVR_t B = memset(alloca(sizeof(*B)), 0, sizeof(*B));
+    EVR_t a = rpmEVRnew(RPMSENSE_EQUAL, 1);
+    EVR_t b = rpmEVRnew(RPMSENSE_EQUAL, 1);
     int rc;
 
+    /* XXX FIXME: labelCompare cannot specify Distepoch: field */
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&A->F[RPMEVR_E], &A->F[RPMEVR_V], &A->F[RPMEVR_R], &B->F[RPMEVR_E], &B->F[RPMEVR_V], &B->F[RPMEVR_R]))
+			&a->F[RPMEVR_E], &a->F[RPMEVR_V], &a->F[RPMEVR_R],
+			&b->F[RPMEVR_E], &b->F[RPMEVR_V], &b->F[RPMEVR_R]))
+    {
+	a = rpmEVRfree(a);
+	b = rpmEVRfree(b);
 	return NULL;
+    }
 
-    /* XXX nuke the unnecessary (and fix non-opaque) sanity check. */
-    if (A->F[RPMEVR_E] == NULL)	A->F[RPMEVR_E] = "0";
-    if (B->F[RPMEVR_E] == NULL)	B->F[RPMEVR_E] = "0";
-    if (A->F[RPMEVR_V] == NULL)	A->F[RPMEVR_V] = "";
-    if (B->F[RPMEVR_V] == NULL)	B->F[RPMEVR_V] = "";
-    if (A->F[RPMEVR_R] == NULL)	A->F[RPMEVR_R] = "";
-    if (B->F[RPMEVR_R] == NULL)	B->F[RPMEVR_R] = "";
+    rc = rpmEVRcompare(a, b);
 
-    rc = rpmEVRcompare(A, B);
+    a = rpmEVRfree(a);
+    b = rpmEVRfree(b);
 
     return Py_BuildValue("i", rc);
 }

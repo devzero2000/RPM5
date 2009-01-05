@@ -29,6 +29,7 @@ EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
 	evr->F[RPMEVR_E] = "0";
 	evr->F[RPMEVR_V] = "";
 	evr->F[RPMEVR_R] = "";
+	evr->F[RPMEVR_D] = "";
     }
     return evr;
 }
@@ -315,9 +316,11 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 assert(a->F[RPMEVR_E] != NULL);
 assert(a->F[RPMEVR_V] != NULL);
 assert(a->F[RPMEVR_R] != NULL);
+assert(a->F[RPMEVR_D] != NULL);
 assert(b->F[RPMEVR_E] != NULL);
 assert(b->F[RPMEVR_V] != NULL);
 assert(b->F[RPMEVR_R] != NULL);
+assert(b->F[RPMEVR_D] != NULL);
 
     for (s = rpmEVRorder(); *s; s++) {
 	int ix;
@@ -339,8 +342,19 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
 {
     rpmsenseFlags aF = a->Flags;
     rpmsenseFlags bF = b->Flags;
-    int sense = rpmEVRcompare(a, b);
+    int sense;
     int result;
+
+    /* XXX HACK: postpone committing to single "missing" value for now. */
+    if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
+    if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
+    if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
+    if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
+    if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
+    if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
+    if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
+    if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
+    sense = rpmEVRcompare(a, b);
 
     /* Detect overlap of {A,B} range. */
     if (aF == RPMSENSE_NOTEQUAL || bF == RPMSENSE_NOTEQUAL)

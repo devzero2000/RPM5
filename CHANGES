@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: EVRtuple: handle EVR_t opaquely in python labelCompare().
+    - jbj: EVRtuple: postpone committing to single "missing" value for now.
     - jbj: EVRtuple: attempt rpmEVRparse() during parseRCPOT().
 	no error returns from rpmEVRparse() to trigger the message yet, todo++.
     - jbj: EVRtuple: teach --whatneeds/--needswhat to use EVR_t opaquely.
