@@ -1059,12 +1059,55 @@ print (t)\
 
 # data validation patterns for identifier tags
 %pattern_Name		[A-Za-z0-9]+[A-Za-z0-9+._-]*
-#%pattern_Epoch		[0-9]+
-#%pattern_Version	[A-Za-z0-9+._]+
-#%pattern_Release	[A-Za-z0-9+._]+
-#%pattern_Disttag	[A-Za-z0-9]+
-#%pattern_Repotag	[A-Za-z0-9]+
-#%pattern_Distepoch	[A-Za-z0-9.]+
+%pattern_Epoch		[0-9]+
+%pattern_Version	[A-Za-z0-9+._]+
+%pattern_Release	[A-Za-z0-9+._]+
+%pattern_Disttag	[A-Za-z0-9]+
+%pattern_Repotag	[A-Za-z0-9]+
+%pattern_Distepoch	[A-Za-z0-9.]+
+#%pattern_Url
+#%pattern_Cvsid
+#%pattern_Group
+#%pattern_Summary
+#%pattern_Distribution
+#%pattern_Vendor
+#%pattern_License
+#%pattern_Packager
+#%pattern_Buildroot
+#%pattern_Keywords
+#%pattern_Variants
+#%pattern_Prefixes
+#%pattern_Docdir
+#%pattern_Xmajor
+#%pattern_Xminor
+#%pattern_Autoreqprov
+#%pattern_Autoreq
+#%pattern_Autoprov
+#%pattern_Source
+#%pattern_Patch
+#%pattern_Icon
+#%pattern_Nosource
+#%pattern_Nopatch
+#%pattern_Buildprereq
+#%pattern_Buildprovides
+#%pattern_Buildrequires
+#%pattern_Buildconflicts
+#%pattern_Buildobsoletes
+#%pattern_Buildsuggests
+#%pattern_Buildenhances
+#%pattern_Prereq
+#%pattern_Provideflags
+#%pattern_Requireflags
+#%pattern_Conflictflags
+#%pattern_Obsoleteflags
+#%pattern_Suggestsflags
+#%pattern_Enhancesflags
+#%pattern_Buildplatforms
+#%pattern_Excludearch
+#%pattern_Exclusivearch
+#%pattern_Excludeos
+#%pattern_Exclusiveos
+#%pattern_Buildarchs
 
 #==============================================================================
 # ---- Run-time probe dependency macros.
