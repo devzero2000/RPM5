@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmbuild: add tag data validation pattern checks.
     - jbj: EVRtuple: handle EVR_t opaquely in python labelCompare().
     - jbj: EVRtuple: postpone committing to single "missing" value for now.
     - jbj: EVRtuple: attempt rpmEVRparse() during parseRCPOT().

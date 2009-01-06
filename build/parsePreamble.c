@@ -10,6 +10,7 @@
 #include <rpmlog.h>
 #include <rpmurl.h>
 #include <argv.h>
+#include <mire.h>
 
 #define	_RPMEVR_INTERNAL
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
@@ -560,6 +561,39 @@ if (multiToken) { \
 extern int noLang;
 /*@=redecl@*/
 
+static rpmRC tagValidate(Spec spec, rpmTag tag, const char * value)
+	/*@*/
+{
+    const char * tagN = tagName(tag);
+    const char * pattern = rpmExpand("%{?pattern_", tagN, "}", NULL);
+    rpmRC ec = RPMRC_OK;
+
+    if (pattern && *pattern) {
+	miRE mire;
+	int xx;
+
+	mire = mireNew(RPMMIRE_REGEX, tag);
+	xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, 0, NULL);
+	if (!xx)
+	    xx = mireRegcomp(mire, pattern);
+	if (!xx)
+	    xx = mireRegexec(mire, value, strlen(value));
+	if (!xx)
+	    ec = RPMRC_OK;
+	else {
+	    rpmlog(RPMLOG_ERR, _("line %d: invalid tag value(\"%s\") %s: %s\n"),
+		    spec->lineNum, pattern, tagN, spec->line);
+	    ec = RPMRC_FAIL;
+	}
+
+	mire = mireFree(mire);
+    }
+
+    pattern = _free(pattern);
+
+    return ec;
+}
+
 /**
  */
 static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
@@ -600,6 +634,10 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	return RPMRC_FAIL;
     }
     end = findLastChar(field);
+
+    /* Validate tag data content. */
+    if (tagValidate(spec, tag, field) != RPMRC_OK)
+	return RPMRC_FAIL;
 
     /* See if this is multi-token */
     end = field;
