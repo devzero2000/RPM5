@@ -1051,11 +1051,20 @@ print (t)\
 # STEP 2: Assemble <E,V,R,D> tuple from regex parts
 # <E,V,R,D>         case 1:  case 2:  case 3:  case 4:  case 5:  case 6:
 #                   X:X-X:X  X:X-X    X:X      X:       X-X      X
-# %evr_tuple_select 1234     123_     12__     1___     _12_     __2_
+# %evr_tuple_select 1234     123_     12__     1___     _23_     _2__
 %evr_tuple_select 123_
 
 # STEP 3: Configure the comparison order of the <E,V,R,D> tuple elements
 %evr_tuple_order  EVR
+
+# data validation patterns for identifier tags
+%pattern_Name		[A-Za-z0-9]+[A-Za-z0-9+._-]*
+#%pattern_Epoch		[0-9]+
+#%pattern_Version	[A-Za-z0-9+._]+
+#%pattern_Release	[A-Za-z0-9+._]+
+#%pattern_Disttag	[A-Za-z0-9]+
+#%pattern_Repotag	[A-Za-z0-9]+
+#%pattern_Distepoch	[A-Za-z0-9.]+
 
 #==============================================================================
 # ---- Run-time probe dependency macros.
