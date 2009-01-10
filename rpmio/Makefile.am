@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
-	librpmio.vers testit.sh rpmgrep.1
+	librpmio.vers testit.sh
 
 EXTRA_PROGRAMS = rpmcpio rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
@@ -164,10 +164,6 @@ lint:
 lint_rpmcpio:
 	$(LINT) -f .splintrc_rpmcpio $(DEFS) $(INCLUDES) rpmcpio.c
 
-.PHONY:	lint_rpmgrep
-lint_rpmgrep:
-	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
-
 .PHONY:	lint_rpmtar
 lint_rpmtar:
 	$(LINT) -f .splintrc_rpmtar $(DEFS) $(INCLUDES) rpmtar.c
@@ -201,45 +197,40 @@ lcov-report:
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
 
-TESTS += RunGrepTest
-dist_noinst_SCRIPTS += RunGrepTest
-bin_PROGRAMS += rpmgrep
-man_MANS +=	rpmgrep.1
+#TESTS += RunGrepTest
+#dist_noinst_SCRIPTS += RunGrepTest
 
-rpmgrep_SOURCES = rpmgrep.c
-rpmgrep_LDADD = $(RPMIO_LDADD_COMMON)
-
-EXTRA_DIST += \
-  testdata/grepinput \
-  testdata/grepinput8 \
-  testdata/grepinputv \
-  testdata/grepinputx \
-  testdata/greplist \
-  testdata/grepoutput \
-  testdata/grepoutput8 \
-  testdata/grepoutputN \
-  testdata/testinput1 \
-  testdata/testinput2 \
-  testdata/testinput3 \
-  testdata/testinput4 \
-  testdata/testinput5 \
-  testdata/testinput6 \
-  testdata/testinput7 \
-  testdata/testinput8 \
-  testdata/testinput9 \
-  testdata/testinput10 \
-  testdata/testoutput1 \
-  testdata/testoutput2 \
-  testdata/testoutput3 \
-  testdata/testoutput4 \
-  testdata/testoutput5 \
-  testdata/testoutput6 \
-  testdata/testoutput7 \
-  testdata/testoutput8 \
-  testdata/testoutput9 \
-  testdata/testoutput10 \
-  testdata/wintestinput3 \
-  testdata/wintestoutput3
+#EXTRA_DIST += \
+#  testdata/grepinput \
+#  testdata/grepinput8 \
+#  testdata/grepinputv \
+#  testdata/grepinputx \
+#  testdata/greplist \
+#  testdata/grepoutput \
+#  testdata/grepoutput8 \
+#  testdata/grepoutputN \
+#  testdata/testinput1 \
+#  testdata/testinput2 \
+#  testdata/testinput3 \
+#  testdata/testinput4 \
+#  testdata/testinput5 \
+#  testdata/testinput6 \
+#  testdata/testinput7 \
+#  testdata/testinput8 \
+#  testdata/testinput9 \
+#  testdata/testinput10 \
+#  testdata/testoutput1 \
+#  testdata/testoutput2 \
+#  testdata/testoutput3 \
+#  testdata/testoutput4 \
+#  testdata/testoutput5 \
+#  testdata/testoutput6 \
+#  testdata/testoutput7 \
+#  testdata/testoutput8 \
+#  testdata/testoutput9 \
+#  testdata/testoutput10 \
+#  testdata/wintestinput3 \
+#  testdata/wintestoutput3
 
 rpmcpio_SOURCES = rpmcpio.c
 rpmcpio_LDADD = $(RPM_LDADD_COMMON)

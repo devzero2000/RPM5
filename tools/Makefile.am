@@ -41,7 +41,8 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmrepo rpmspecdump
+bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmgrep rpmmtree rpmrepo rpmspecdump
+man_MANS =		rpmgrep.1
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmcmp rpmdeps @WITH_LIBELF_DEBUGEDIT@
@@ -60,6 +61,9 @@ rpmdeps_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmdigest_SOURCES =	rpmdigest.c
 rpmdigest_LDADD =	$(RPMIO_LDADD_COMMON)
+
+rpmgrep_SOURCES =	rpmgrep.c
+rpmgrep_LDADD =		$(RPMIO_LDADD_COMMON)
 
 rpmmtree_SOURCES =	rpmmtree.c
 rpmmtree_LDADD =	$(RPM_LDADD_COMMON)
@@ -161,6 +165,10 @@ endif
 
 check-local:
 	-./rpmdeps --perl > /dev/null 2>&1
+
+.PHONY: lint_rpmgrep
+lint_rpmgrep:
+	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
 
 .PHONY:	lint_rpmmtree
 lint_rpmmtree:

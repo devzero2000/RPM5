@@ -13,6 +13,7 @@ rpmcache
 rpmcmp
 rpmdeps
 rpmdigest
+rpmgrep
 rpmmtree
 rpmrepo
 rpmspecdump
