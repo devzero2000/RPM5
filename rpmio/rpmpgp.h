@@ -400,8 +400,7 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
        4          - Reserved for double-width SHA (experimental)
        5          - MD2                                    "MD2"
        6          - Reserved for TIGER/192                 "TIGER192"
-       7          - Reserved for HAVAL (5 pass, 160-bit)
-       "HAVAL-5-160"
+       7          - Reserved for HAVAL (5 pass, 160-bit)   "HAVAL-5-160"
        100 to 110 - Private/Experimental algorithm.
 \endverbatim
  *
@@ -421,6 +420,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SHA256		=  8,	/*!< SHA-256 */
     PGPHASHALGO_SHA384		=  9,	/*!< SHA-384 */
     PGPHASHALGO_SHA512		= 10,	/*!< SHA-512 */
+    PGPHASHALGO_SHA224		= 11,	/*!< SHA-224 */
 
     PGPHASHALGO_MD4		= 104,	/*!< (private) MD4 */
     PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
@@ -428,7 +428,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_ADLER32		= 107,	/*!< (private) ADLER-32 */
     PGPHASHALGO_CRC64		= 108,	/*!< (private) CRC-64 */
     PGPHASHALGO_JLU32		= 109,	/*!< (private) Jenkins lookup3.c */
-    PGPHASHALGO_SHA224		= 110,	/*!< (private) SHA-224 */
+
     PGPHASHALGO_RIPEMD256	= 111,	/*!< (private) RIPEMD-256 */
     PGPHASHALGO_RIPEMD320	= 112,	/*!< (private) RIPEMD-320 */
     PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */

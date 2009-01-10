@@ -26,10 +26,10 @@ mireEL_t _mireEL = EL_LF;
 int _mireSTRINGoptions = 0;
 
 /*@unchecked@*/
-int _mireGLOBoptions = FNM_PATHNAME | FNM_PERIOD;
+int _mireGLOBoptions = FNM_EXTMATCH | FNM_PATHNAME | FNM_PERIOD;
 
 /*@unchecked@*/
-int _mireREGEXoptions = REG_EXTENDED;
+int _mireREGEXoptions = REG_EXTENDED | REG_NEWLINE;
 
 /*@unchecked@*/
 int _mirePCREoptions = 0;
@@ -289,7 +289,7 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
 
 int mireSetLocale(/*@unused@*/ miRE mire, const char * locale)
 {
-    const char * locale_from;
+    const char * locale_from = NULL;
     int rc = -1;	/* assume failure */
 
     /* XXX TODO: --locale jiggery-pokery should be done env LC_ALL=C rpmgrep */

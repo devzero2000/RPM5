@@ -517,6 +517,7 @@ print (t)\
 #	8	SHA256
 #	9	SHA384
 #	10	SHA512
+#	11	SHA224
 #	104	MD4
 #	105	RIPEMD-128
 #	106	CRC-32
@@ -942,6 +943,17 @@ print (t)\
 %_vsflags_rebuilddb	%{__vsflags}
 %_vsflags_verify	%{__vsflags}
 
+#	Choose keyutils keyring type:
+#
+#	group		KEY_SPEC_GROUP_KEYRING
+#	process		KEY_SPEC_PROCESS_KEYRING
+#	session		KEY_SPEC_SESSION_KEYRING
+#	thread		KEY_SPEC_THREAD_KEYRING
+#	user		KEY_SPEC_USER_KEYRING
+#	user_session	KEY_SPEC_USER_SESSION_KEYRING
+#
+#%_keyutils_keyring	process
+
 #	Relations between package names that cause dependency loops
 #	with legacy packages that cannot be fixed. Relations are
 #	specified as
@@ -1007,6 +1019,76 @@ print (t)\
 #	%_uuid_uri	%{?_uuid_auth}/%{?_uuid_path}/Tagname/Tagvalue
 %_uuid_auth	http://rpm5.org/
 %_uuid_path	/package
+
+#==============================================================================
+# ---- EVRD... dependency tuple comparison macros.
+#
+
+# STEP 1: Match the string and capture regex parts
+#                      1          2           3             4
+#                      X     ":"  X        "-"X          ":"X
+#%evr_tuple_match  ^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$
+   
+# STEP 2: Assemble <E,V,R,D> tuple from regex parts
+# <E,V,R,D>         case 1:  case 2:  case 3:  case 4:  case 5:  case 6:
+#                   X:X-X:X  X:X-X    X:X      X:       X-X      X
+# %evr_tuple_select 1234     123_     12__     1___     _23_     _2__
+#%evr_tuple_select 123_
+
+# STEP 3: Configure the comparison order of the <E,V,R,D> tuple elements
+#%evr_tuple_order  EVR
+
+# data validation patterns for identifier tags
+#%pattern_Name		[A-Za-z0-9]+[A-Za-z0-9+._-]*
+#%pattern_Epoch		[0-9]+
+#%pattern_Version	[A-Za-z0-9+._]+
+#%pattern_Release	[A-Za-z0-9+._]+
+#%pattern_Disttag	[A-Za-z0-9]+
+#%pattern_Repotag	[A-Za-z0-9]+
+#%pattern_Distepoch	[A-Za-z0-9.]+
+#%pattern_Url
+#%pattern_Cvsid
+#%pattern_Group
+#%pattern_Summary
+#%pattern_Distribution
+#%pattern_Vendor
+#%pattern_License
+#%pattern_Packager
+#%pattern_Buildroot
+#%pattern_Keywords
+#%pattern_Variants
+#%pattern_Prefixes
+#%pattern_Docdir
+#%pattern_Xmajor
+#%pattern_Xminor
+#%pattern_Autoreqprov
+#%pattern_Autoreq
+#%pattern_Autoprov
+#%pattern_Source
+#%pattern_Patch
+#%pattern_Icon
+#%pattern_Nosource
+#%pattern_Nopatch
+#%pattern_Buildprereq
+#%pattern_Buildprovides
+#%pattern_Buildrequires
+#%pattern_Buildconflicts
+#%pattern_Buildobsoletes
+#%pattern_Buildsuggests
+#%pattern_Buildenhances
+#%pattern_Prereq
+#%pattern_Provideflags
+#%pattern_Requireflags
+#%pattern_Conflictflags
+#%pattern_Obsoleteflags
+#%pattern_Suggestsflags
+#%pattern_Enhancesflags
+#%pattern_Buildplatforms
+#%pattern_Excludearch
+#%pattern_Exclusivearch
+#%pattern_Excludeos
+#%pattern_Exclusiveos
+#%pattern_Buildarchs
 
 #==============================================================================
 # ---- Run-time probe dependency macros.

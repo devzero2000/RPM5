@@ -65,7 +65,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_TYPED	= (1 << 15),	/*!< (unimplemented) from %%spook */
     RPMFILE_SOURCE	= (1 << 16),	/*!< from SourceN: (srpm only). */
     RPMFILE_PATCH	= (1 << 17),	/*!< from PatchN: (srpm only). */
-    RPMFILE_OPTIONAL	= (1 << 18)	/*!< from %%optional. */
+    RPMFILE_OPTIONAL	= (1 << 18),	/*!< from %%optional. */
+    RPMFILE_REMOVE	= (1 << 19)	/*!< remove file (after %post). */
 } rpmfileAttrs;
 
 #define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)
@@ -96,6 +97,8 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 
 #if defined(_RPMFI_INTERNAL)
 
+#include "mire.h"
+
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
@@ -113,9 +116,9 @@ struct rpmfi_s {
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for file info set (or NULL) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const char ** bnl;		/*!< Base name(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
@@ -129,17 +132,17 @@ struct rpmfi_s {
 
 /*@only@*/ /*@relnull@*/
           uint32_t * dil;	/*!< Directory indice(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const uint32_t * fflags;	/*!< File flag(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const uint32_t * fsizes;	/*!< File size(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const uint32_t * fmtimes;	/*!< File modification time(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
           uint16_t * fmodes;	/*!< File mode(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const uint16_t * frdevs;	/*!< File rdev(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const uint32_t * finodes;	/*!< File inodes(s) (from header) */
 
 /*@only@*/ /*@null@*/
@@ -152,6 +155,9 @@ struct rpmfi_s {
 
 /*@only@*/ /*@null@*/
     const uint32_t * fcolors;	/*!< File color bits (header) */
+
+/*@only@*/ /*@null@*/
+    const char ** fcaps;	/*! File capabilities. */
 
 /*@only@*/ /*@null@*/
     const char ** fcontexts;	/*! FIle security contexts. */
@@ -170,7 +176,7 @@ struct rpmfi_s {
 /*@only@*/ /*@null@*/
     const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const uint32_t * vflags;	/*!< File verify flag(s) (from header) */
 
     uint32_t dc;		/*!< No. of directories. */
@@ -222,8 +228,8 @@ struct rpmfi_s {
     const char * verifyscriptprog;
 
 /*@only@*/ /*@null@*/
-    char * fn;			/*!< File name buffer. */
-    size_t fnlen;		/*!< File name buffer length. */
+    char * fn;			/*!< File name buffer, fnlen + 1 bytes. */
+    size_t fnlen;		/*!< Maximum file name length (without '\0'). */
 
     size_t astriplen;
     size_t striplen;
@@ -664,7 +670,7 @@ rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
  * @return		0 always
  */
 int rpmfiSetHeader(rpmfi fi, /*@null@*/ Header h)
-	/*@modifies fi @*/;
+	/*@modifies fi, h @*/;
 
 /**
  * Destroy a file info set.
@@ -696,7 +702,7 @@ rpmfi rpmfiNew(/*@null@*/ const void * _ts, Header h, rpmTag tagN, int flags)
  * @return		-1 on error, 0 on success
  */
 int rpmfiFStat(rpmfi fi, /*@out@*/ struct stat * st)
-	/*@*/;
+	/*@modifies *st @*/;
 
 /**
  * Return lstat(2) data of path from file info set.
@@ -706,7 +712,7 @@ int rpmfiFStat(rpmfi fi, /*@out@*/ struct stat * st)
  * @return		-1 on error, 0 on success
  */
 int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
-	/*@modifies fi @*/;
+	/*@modifies fi, *st @*/;
 
 /**
  * Return directory stream onto file info set.
@@ -715,7 +721,8 @@ int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
  * @return		NULL on error
  */
 DIR * rpmfiOpendir(rpmfi fi, const char * name)
-	/*@modifies fi @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fi, fileSystem, internalState @*/;
 
 /**
  * Retrieve file classes from header.
