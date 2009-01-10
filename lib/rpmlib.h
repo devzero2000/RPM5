@@ -25,17 +25,6 @@ extern struct MacroContext_s * rpmGlobalMacroContext;
 extern struct MacroContext_s * rpmCLIMacroContext;
 /*@=incondefs@*/
 
-/*@unchecked@*/ /*@observer@*/
-extern const char * RPMVERSION;
-
-/*@unchecked@*/ /*@observer@*/
-extern const char * rpmNAME;
-
-/*@unchecked@*/ /*@observer@*/
-extern const char * rpmEVR;
-
-/*@unchecked@*/
-extern int rpmFLAGS;
 /*@=redecl@*/
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/

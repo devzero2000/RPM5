@@ -1,4 +1,6 @@
 5.1.6 -> 5.1.7:
+    - jbj: move rpmns.[ch] to -lrpmdb for use with header format extensions.
+    - jbj: move rpmevr.[ch] to -lrpmdb for use with header format extensions.
     - jbj: move rpmgrep and man page from rpmio/ to tools/ and install.
     - jbj: rpmfi: add storage and getters for exclude/include patterns.
     - jbj: perl: add a sentinel to rpmdsSingle() rather than exporting rpmdsDup().

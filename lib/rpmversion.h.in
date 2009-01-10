@@ -5,6 +5,18 @@
 extern "C" {
 #endif
 
+/*@unchecked@*/ /*@observer@*/
+extern const char * RPMVERSION;
+
+/*@unchecked@*/ /*@observer@*/
+extern const char * rpmNAME;
+
+/*@unchecked@*/ /*@observer@*/
+extern const char * rpmEVR;
+
+/*@unchecked@*/
+extern int rpmFLAGS;
+
 /*
    VERSION <M,N,t,O,R,s>
    ---------------------
