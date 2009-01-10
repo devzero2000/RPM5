@@ -1,4 +1,8 @@
 5.1.6 -> 5.1.7:
+    - jbj: rpmrepo: avoid double'd error message.
+    - jbj: rpmrepo: terminate immediately, rather than "best-effort" continue,
+        on I/O error.
+    - jbj: rpmrepo: terminate on short read, don't bother with extra EOF read.
     - jbj: move rpmns.[ch] to -lrpmdb for use with header format extensions.
     - jbj: move rpmevr.[ch] to -lrpmdb for use with header format extensions.
     - jbj: move rpmgrep and man page from rpmio/ to tools/ and install.

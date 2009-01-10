@@ -313,8 +313,8 @@ static const char other_xml_qfmt[] = "\
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *primary_sql_init[] = {
-"PRAGMA synchronous = 0;",
-"pragma locking_mode = EXCLUSIVE;",
+"PRAGMA synchronous = \"OFF\";",
+"pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE conflicts (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
 "CREATE TABLE db_info (dbversion INTEGER,  checksum TEXT);",
 "CREATE TABLE files (  pkgKey INTEGER,  name TEXT,  type TEXT );",
@@ -346,8 +346,8 @@ static const char *primary_sql_init[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static const char *filelists_sql_init[] = {
-"PRAGMA synchronous = 0;",
-"pragma locking_mode = EXCLUSIVE;",
+"PRAGMA synchronous = \"OFF\";",
+"pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
 "CREATE TABLE filelist (  pkgKey INTEGER,  name TEXT,  type TEXT );",
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
@@ -365,8 +365,8 @@ static const char *filelists_sql_init[] = {
 
 /*@unchecked@*/ /*@observer@*/
 static const char *other_sql_init[] = {
-"PRAGMA synchronous = 0;",
-"pragma locking_mode = EXCLUSIVE;",
+"PRAGMA synchronous = \"OFF\";",
+"pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE changelog (  pkgKey INTEGER,  author TEXT,  date INTEGER,  changelog TEXT);",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
@@ -657,7 +657,7 @@ static int rpmioExists(const char * fn, /*@out@*/ struct stat * st)
 /**
  * Return stat(2) creation time of a file.
  * @param fn		file path
- * @retrun		st_ctime
+ * @return		st_ctime
  */
 static time_t rpmioCtime(const char * fn)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -959,6 +959,29 @@ static int rfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew
 }
 
 /**
+ * Close an I/O stream, accumulating uncompress/digest statistics.
+ * @param repo		repository
+ * @param fd		I/O stream
+ * @return		0 on success
+ */
+static int repoFclose(rpmrepo repo, FD_t fd)
+	/*@modifies repo, fd @*/
+{
+    int rc = 0;
+
+    if (fd != NULL) {
+	if (repo->ts != NULL) {
+	    (void) rpmswAdd(rpmtsOp(repo->ts, RPMTS_OP_UNCOMPRESS),
+			fdstat_op(fd, FDSTAT_READ));
+	    (void) rpmswAdd(rpmtsOp(repo->ts, RPMTS_OP_DIGEST),
+			fdstat_op(fd, FDSTAT_DIGEST));
+	}
+	rc = Fclose(fd);
+    }
+    return rc;
+}
+
+/**
  * Open a repository metadata file.
  * @param repo		repository
  * @param rfile		repository metadata file
@@ -1047,8 +1070,10 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	/* XXX what if path needs expansion? */
 	rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
 	if (algo != PGPHASHALGO_NONE) {
-	    char buffer[128 * 1024];
-	    while (Fread(buffer, sizeof(buffer[0]), sizeof(buffer), fd) > 0)
+	    char buffer[32 * BUFSIZ];
+	    size_t nb = sizeof(buffer);
+	    size_t nr;
+	    while ((nr = Fread(buffer, sizeof(buffer[0]), nb, fd)) == nb)
 		{};
 	    if (Ferror(fd)) {
 		fprintf(stderr, _("%s: Fread(%s) failed: %s\n"),
@@ -1277,8 +1302,13 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 
 	repo->current++;
 	if (h == NULL) {
+#ifdef	DYING	/* XXX repoReadHeader() displays error. Continuing is foolish */
 	    repo_error(0, _("\nError %s: %s\n"), pkg, strerror(errno));
 	    continue;
+#else
+	    rc = 1;
+	    break;
+#endif
 	}
 	(void) headerSetInstance(h, (uint32_t)repo->current);
 
@@ -1340,9 +1370,12 @@ static int repoRfileDigest(const rpmrepo repo, rpmrfile rfile,
 	if (st->st_size > 0)
 	    mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fd), 0);
 	if (mapped != (void *)-1) {
+	    rpmop op = rpmtsOp(repo->ts, RPMTS_OP_DIGEST);
+	    rpmtime_t tstamp = rpmswEnter(op, 0);
 	    DIGEST_CTX ctx = rpmDigestInit(repo->algo, RPMDIGEST_NONE);
 	    xx = rpmDigestUpdate(ctx, mapped, st->st_size);
 	    xx = rpmDigestFinal(ctx, digestp, NULL, asAscii);
+	    tstamp = rpmswExit(op, st->st_size);
 	    xx = munmap(mapped, st->st_size);
 	    break;
 	}
@@ -1366,7 +1399,7 @@ static int repoRfileDigest(const rpmrepo repo, rpmrfile rfile,
 
 exit:
     if (fd)
-	xx = Fclose(fd);
+	xx = repoFclose(repo, fd);
     fn = _free(fn);
     return rc;
 }
@@ -1396,7 +1429,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     else
 	rfile->digest = xstrdup("");
 
-    (void) Fclose(rfile->fd);
+    (void) repoFclose(repo, rfile->fd);
     rfile->fd = NULL;
 
     /* Compute the (usually compressed) ouput file digest too. */
@@ -1581,7 +1614,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
 	 || rfileXMLWrite(rfile, repoMDExpand(repo, &repo->primary))
 	 || rfileXMLWrite(rfile, xstrdup(rfile->xml_fini)))
 	    rc = 1;
-	(void) Fclose(rfile->fd);
+	(void) repoFclose(repo, rfile->fd);
 	rfile->fd = NULL;
     }
 
@@ -2203,7 +2236,10 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 
     repo->pkgcount = argvCount(repo->pkglist);
 
+    /* XXX enable --stats using transaction set. */
+    _rpmts_stats = _rpmsw_stats;
     repo->ts = rpmtsCreate();
+
     /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
     (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
 
