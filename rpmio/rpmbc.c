@@ -40,51 +40,18 @@ unsigned char nibble(char c)
 
 static
 int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
     rpmbc bc = dig->impl;
     unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(bc->c.size);
     unsigned int nb = (nbits + 7) >> 3;
-    const char * prefix;
+    const char * prefix = rpmDigestASN1(ctx);
     const char * hexstr;
-    const char * s;
-    uint8_t signhash16[2];
     char * tt;
+    int rc;
     int xx;
 
-    /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	prefix = "3020300c06082a864886f70d020505000410";
-	break;
-    case PGPHASHALGO_SHA1:
-	prefix = "3021300906052b0e03021a05000414";
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	prefix = "3021300906052b2403020105000414";
-	break;
-    case PGPHASHALGO_MD2:
-	prefix = "3020300c06082a864886f70d020205000410";
-	break;
-    case PGPHASHALGO_TIGER192:
-	prefix = "3029300d06092b06010401da470c0205000418";
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	prefix = NULL;
-	break;
-    case PGPHASHALGO_SHA256:
-	prefix = "3031300d060960864801650304020105000420";
-	break;
-    case PGPHASHALGO_SHA384:
-	prefix = "3041300d060960864801650304020205000430";
-	break;
-    case PGPHASHALGO_SHA512:
-	prefix = "3051300d060960864801650304020305000440";
-	break;
-    default:
-	prefix = NULL;
-	break;
-    }
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     if (prefix == NULL)
 	return 1;
 
@@ -105,12 +72,19 @@ int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     hexstr = _free(hexstr);
 
     /* Compare leading 16 bits of digest for quick check. */
-    s = dig->md5;
-/*@-type@*/
-    signhash16[0] = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-    signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
-/*@=type@*/
-    return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
+    {	const char *str = dig->md5;
+	uint8_t s[2];
+	const uint8_t *t = sigp->signhash16;
+	s[0] = (uint8_t) (nibble(str[0]) << 4) | nibble(str[1]);
+	s[1] = (uint8_t) (nibble(str[2]) << 4) | nibble(str[3]);
+	rc = memcmp(s, t, sizeof(sigp->signhash16));
+#ifdef	DYING
+	if (rc != 0)
+	    fprintf(stderr, "*** hash fails: digest(%02x%02x) != signhash(%02x%02x)\n",
+		s[0], s[1], t[0], t[1]);
+#endif
+    }
+    return rc;
 }
 
 static
@@ -133,12 +107,13 @@ int rpmbcVerifyRSA(pgpDig dig)
 
 static
 int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
     rpmbc bc = dig->impl;
     uint8_t signhash16[2];
     int xx;
 
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 
 /*@-moduncon -noeffectuncon @*/
@@ -146,8 +121,8 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 /*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    signhash16[0] = (*bc->hm.data >> 24) & 0xff;
-    signhash16[1] = (*bc->hm.data >> 16) & 0xff;
+    signhash16[0] = (uint8_t)((*bc->hm.data >> 24) & 0xff);
+    signhash16[1] = (uint8_t)((*bc->hm.data >> 16) & 0xff);
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
 
@@ -185,7 +160,7 @@ int pgpMpiSet(const char * pre, unsigned int lbits,
 		/*@out@*/ void * dest, const uint8_t * p,
 		/*@null@*/ const uint8_t * pend)
 	/*@globals fileSystem @*/
-	/*@modifies *dest, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     mpnumber * mpn = dest;
     unsigned int mbits = pgpMpiBits(p);
@@ -222,7 +197,7 @@ static
 int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
 	/*@globals fileSystem @*/
-	/*@modifies dig, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmbc bc = dig->impl;
     int rc = 0;
@@ -276,6 +251,7 @@ fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);
     return rc;
 }
 
+/*@-mustmod@*/
 static
 void rpmbcClean(void * impl)
 	/*@modifies impl @*/
@@ -291,8 +267,9 @@ void rpmbcClean(void * impl)
 	mpnfree(&bc->rsahm);
     }
 }
+/*@=mustmod@*/
 
-static
+static /*@null@*/
 void * rpmbcFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {

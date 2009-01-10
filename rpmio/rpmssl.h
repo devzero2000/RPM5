@@ -35,8 +35,6 @@ struct rpmssl_s {
     BIGNUM * rsahm;
 
     BIGNUM * c;
-
-    int type;
 };
 #endif
 

@@ -1,4 +1,14 @@
 5.1.6 -> 5.1.7:
+    - jbj: rpmgc: display errors with gcry_strerror().
+    - jbj: rpmnss: eliminate pubkey type wrapping methods.
+    - jbj: rpmnss: fix: correct RSA/SHA512 cut-n-paste error.
+    - jbj: rpmssl: don't bother with (unused) NID_foo.
+    - jbj: name digests according to RFC 4880 section 9.4.
+    - jbj: digest: add getters for digest name/algo/ANS1oid.
+    - jbj: rpmssl: functional RSA verify --usecrypto ssl for signature(...) probe.
+    - jbj: rpmgc: functional RSA verify --usecrypto gc for signature(...) probe.
+    - jbj: rpmgc: bulldoze the RSA compost. still not working yet ...
+    - jbj: rpmpgp: add ASN1 goop for SHA-224, add to bc/gc/nss/ssl.
     - jbj: rpmdigest: parse/verify 0install manifest format.
     - jbj: rpmdigest: resurrect rpmdigest -c manifest before attempting
 	0install manifest verification.

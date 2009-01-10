@@ -1688,6 +1688,34 @@ unsigned int pgpCRC(const uint8_t * octets, size_t len)
 }
 
 /** \ingroup rpmpgp
+ * Return digest algorithm identifier.
+ * @param ctx		digest context
+ * @return		digest hash algorithm identifier
+ */
+/*@observer@*/
+pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
+	/*@*/;
+
+/** \ingroup rpmpgp
+ * Return digest name.
+ * @param ctx		digest context
+ * @return		digest name
+ */
+/*@observer@*/
+const char * rpmDigestName(DIGEST_CTX ctx)
+	/*@*/;
+
+/** \ingroup rpmpgp
+ * Return digest ASN1 oid string.
+ * Values from PKCS#1 v2.1 (aka RFC-3447).
+ * @param ctx		digest context
+ * @return		digest ASN1 oid string
+ */
+/*@observer@*/ /*@null@*/
+const char * rpmDigestASN1(DIGEST_CTX ctx)
+	/*@*/;
+
+/** \ingroup rpmpgp
  * Duplicate a digest context.
  * @param octx		existing digest context
  * @return		duplicated digest context

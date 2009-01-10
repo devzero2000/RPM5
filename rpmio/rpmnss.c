@@ -9,11 +9,11 @@
 #if defined(WITH_NSS)
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
-#else
-#include <rpmpgp.h>		/* XXX DIGEST_CTX */
 #endif
 
 #include "debug.h"
+
+#if defined(WITH_NSS)
 
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
@@ -31,12 +31,13 @@ extern int _rpmnss_init;
 
 static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int xx;
 
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    nss->sigalg = SEC_OID_UNKNOWN;
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	nss->sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
@@ -45,16 +46,16 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	nss->sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_RIPEMD160:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     case PGPHASHALGO_MD2:
 	nss->sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
 	break;
+    case PGPHASHALGO_MD4:
+	nss->sigalg = SEC_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION;
+	break;
     case PGPHASHALGO_TIGER192:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     case PGPHASHALGO_SHA256:
 	nss->sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
@@ -63,10 +64,11 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	nss->sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA512:
-	nss->sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
+	nss->sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
+	break;
+    case PGPHASHALGO_SHA224:
 	break;
     default:
-	nss->sigalg = SEC_OID_UNKNOWN;
 	break;
     }
     if (nss->sigalg == SEC_OID_UNKNOWN)
@@ -76,16 +78,12 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
-#else
-    return 1;
-#endif	/* WITH_NSS */
 }
 
 static
 int rpmnssVerifyRSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc;
 
@@ -98,35 +96,28 @@ int rpmnssVerifyRSA(pgpDig dig)
 /*@=moduncon =nullstate @*/
 
     return rc;
-#else
-    return 0;
-#endif	/* WITH_NSS */
 }
 
 static
 int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/
+	/*@modifies dig @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int xx;
 
-    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
+
+    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
-#else
-    return 1;
-#endif	/* WITH_NSS */
 }
 
 static
 int rpmnssVerifyDSA(pgpDig dig)
 	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc;
 
@@ -139,12 +130,8 @@ int rpmnssVerifyDSA(pgpDig dig)
 /*@=moduncon =nullstate @*/
 
     return rc;
-#else
-    return 0;
-#endif	/* WITH_NSS */
 }
 
-#if defined(WITH_NSS)
 /**
  * @return		0 on success
  */
@@ -192,6 +179,7 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 {
     unsigned int nbytes = pgpMpiLen(p)-2;
 
+/*@-moduncon@*/
     if (item == NULL) {
 	if ((item = SECITEM_AllocItem(arena, item, nbytes)) == NULL)
 	    return item;
@@ -207,6 +195,7 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 	    return NULL;
 	}
     }
+/*@=moduncon@*/
 
     memcpy(item->data, p+2, nbytes);
     item->len = nbytes;
@@ -215,13 +204,14 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 /*@=temptrans@*/
 }
 
-static
+static /*@null@*/
 SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
 	/*@*/
 {
     PRArenaPool *arena;
     SECKEYPublicKey *key;
 
+/*@-moduncon@*/
     arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
     if (arena == NULL)
 	return NULL;
@@ -232,38 +222,26 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
 	PORT_FreeArena(arena, PR_FALSE);
 	return NULL;
     }
+/*@=moduncon@*/
     
     key->keyType = type;
     key->pkcs11ID = CK_INVALID_HANDLE;
     key->pkcs11Slot = NULL;
     key->arena = arena;
+/*@-nullret@*/	/* key->pkcs11Slot can be NULL */
     return key;
+/*@=nullret@*/
 }
-
-static
-SECKEYPublicKey * rpmnssNewRSAKey(void)
-	/*@*/
-{
-    return rpmnssNewPublicKey(rsaKey);
-}
-
-static
-SECKEYPublicKey * rpmnssNewDSAKey(void)
-	/*@*/
-{
-    return rpmnssNewPublicKey(dsaKey);
-}
-#endif	/* WITH_NSS */
 
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
-	/*@modifies dig @*/
+	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = dig->impl;
     int rc = 0;
 
+/*@-moduncon@*/
     switch (itemno) {
     default:
 assert(0);
@@ -290,7 +268,7 @@ assert(0);
 	break;
     case 30:		/* RSA n */
 	if (nss->rsa == NULL)
-	    nss->rsa = rpmnssNewRSAKey();
+	    nss->rsa = rpmnssNewPublicKey(rsaKey);
 	if (nss->rsa == NULL)
 	    rc = 1;
 	else
@@ -298,7 +276,7 @@ assert(0);
 	break;
     case 31:		/* RSA e */
 	if (nss->rsa == NULL)
-	    nss->rsa = rpmnssNewRSAKey();
+	    nss->rsa = rpmnssNewPublicKey(rsaKey);
 	if (nss->rsa == NULL)
 	    rc = 1;
 	else
@@ -306,7 +284,7 @@ assert(0);
 	break;
     case 40:		/* DSA p */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
@@ -314,7 +292,7 @@ assert(0);
 	break;
     case 41:		/* DSA q */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
@@ -322,7 +300,7 @@ assert(0);
 	break;
     case 42:		/* DSA g */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
@@ -330,25 +308,24 @@ assert(0);
 	break;
     case 43:		/* DSA y */
 	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewDSAKey();
+	    nss->dsa = rpmnssNewPublicKey(dsaKey);
 	if (nss->dsa == NULL)
 	    rc = 1;
 	else
 	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.publicValue, p);
 	break;
     }
+/*@=moduncon@*/
     return rc;
-#else
-    return 1;
-#endif	/* WITH_NSS */
 }
 
+/*@-mustmod@*/
 static
 void rpmnssClean(void * impl)
 	/*@modifies impl @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = impl;
+/*@-moduncon@*/
     if (nss != NULL) {
 	if (nss->dsa != NULL) {
 	    SECKEY_DestroyPublicKey(nss->dsa);
@@ -366,38 +343,36 @@ void rpmnssClean(void * impl)
 	    SECITEM_ZfreeItem(nss->rsasig, PR_TRUE);
 	    nss->rsasig = NULL;
 	}
+/*@=moduncon@*/
     }
-#endif	/* WITH_NSS */
 }
+/*@=mustmod@*/
 
-static
+static /*@null@*/
 void * rpmnssFree(/*@only@*/ void * impl)
-	/*@modifies impl @*/
+	/*@*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = impl;
     if (nss != NULL) {
 	rpmnssClean(impl);
 	nss = _free(nss);
     }
-#endif	/* WITH_NSS */
     return NULL;
 }
 
 static
 void * rpmnssInit(void)
-	/*@*/
+	/*@globals _rpmnss_init @*/
+	/*@modifies _rpmnss_init @*/
 {
-#if defined(WITH_NSS)
     rpmnss nss = xcalloc(1, sizeof(*nss));
 
+/*@-moduncon@*/
     (void) NSS_NoDB_Init(NULL);
+/*@=moduncon@*/
     _rpmnss_init = 1;
 
     return (void *) nss;
-#else
-    return NULL;
-#endif	/* WITH_NSS */
 }
 
 struct pgpImplVecs_s rpmnssImplVecs = {
@@ -406,3 +381,6 @@ struct pgpImplVecs_s rpmnssImplVecs = {
 	rpmnssMpiItem, rpmnssClean,
 	rpmnssFree, rpmnssInit
 };
+
+#endif
+
