@@ -93,7 +93,7 @@ struct pgpDigParams_s {
 
     uint8_t hash_algo;
     uint8_t sigtype;
-    uint8_t hashlen;
+    size_t hashlen;
     uint8_t signhash16[2];
     uint8_t signid[8];
     uint8_t saved;
@@ -110,7 +110,7 @@ struct pgpDig_s {
     struct pgpDigParams_s pubkey;
 
     uint32_t sigtag;		/*!< Package signature tag. */
-    uint32_t sigtype;		/*!< Package signature data type. */
+    uint32_t sigtype;	/*!< Package signature data type. */
 /*@relnull@*/
     const void * sig;		/*!< Package signature. */
     uint32_t siglen;		/*!< Package signature length. */
@@ -141,7 +141,7 @@ struct pgpDig_s {
 /*@only@*/ /*@null@*/
     DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
 /*@only@*/ /*@null@*/
-    DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
+    DIGEST_CTX hdrctx;		/*!< (rsa) header hash context. */
 /*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
@@ -154,7 +154,8 @@ struct pgpDig_s {
  */
 typedef const struct pgpValTbl_s {
     int val;
-/*@observer@*/ const char * str;
+/*@observer@*/
+    const char * str;
 } * pgpValTbl;
  
 /** \ingroup rpmpgp
@@ -230,11 +231,10 @@ extern struct pgpValTbl_s pgpTagTbl[];
  *   - MPI of Elgamal (Diffie-Hellman) value m * y**k mod p.
  */
 typedef struct pgpPktPubkey_s {
-    uint8_t version;	/*!< version number (generate 3, accept 2). */
-    uint8_t keyid[8];	/*!< key ID of the public key for session key. */
-    uint8_t algo;	/*!< public key algorithm used. */
+    uint8_t version;		/*!< version number (generate 3, accept 2). */
+    uint8_t keyid[8];	/*!< key ID of the public key for session. */
+    uint8_t algo;		/*!< public key algorithm used. */
 } pgpPktPubkey;
-
 
 /** \ingroup rpmpgp
  * 5.2.1. Signature Types
@@ -260,7 +260,8 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_KEY_REVOKE	 = 0x20, /*!< Key revocation */
     PGPSIGTYPE_SUBKEY_REVOKE	 = 0x28, /*!< Subkey revocation */
     PGPSIGTYPE_CERT_REVOKE	 = 0x30, /*!< Certification revocation */
-    PGPSIGTYPE_TIMESTAMP	 = 0x40  /*!< Timestamp */
+    PGPSIGTYPE_TIMESTAMP	 = 0x40,  /*!< Timestamp */
+    PGPSIGTYPE_CONFIRM		 = 0x50  /*!< Third-Party confirmation */
 } pgpSigType;
 /*@=typeuse@*/
 
@@ -325,9 +326,10 @@ extern struct pgpValTbl_s pgpPubkeyTbl[];
        4          - Blowfish (128 bit key, 16 rounds) [BLOWFISH]
        5          - SAFER-SK128 (13 rounds) [SAFER]
        6          - Reserved for DES/SK
-       7          - Reserved for AES with 128-bit key
-       8          - Reserved for AES with 192-bit key
-       9          - Reserved for AES with 256-bit key
+       7          - AES with 128-bit key
+       8          - AES with 192-bit key
+       9          - AES with 256-bit key
+       10         - Twofish with 256-bit key
        100 to 110 - Private/Experimental algorithm.
 \endverbatim
  *
@@ -469,7 +471,7 @@ typedef struct pgpPktSigV3_s {
     uint8_t sigtype;	/*!< signature type. */
     uint8_t time[4];	/*!< 4 byte creation time. */
     uint8_t signid[8];	/*!< key ID of signer. */
-    uint8_t pubkey_algo;/*!< public key algorithm. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
     uint8_t hash_algo;	/*!< hash algorithm. */
     uint8_t signhash16[2];	/*!< left 16 bits of signed hash value. */
 } * pgpPktSigV3;
@@ -496,9 +498,9 @@ typedef struct pgpPktSigV3_s {
  *   - One or more multi-precision integers comprising the signature.
  */
 typedef struct pgpPktSigV4_s {
-    uint8_t version;	/*!< version number (4). */
-    uint8_t sigtype;	/*!< signature type. */
-    uint8_t pubkey_algo;/*!< public key algorithm. */
+    uint8_t version;		/*!< version number (4). */
+    uint8_t sigtype;		/*!< signature type. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
     uint8_t hash_algo;	/*!< hash algorithm. */
     uint8_t hashlen[2];	/*!< length of following hashed material. */
 } * pgpPktSigV4;
@@ -536,17 +538,26 @@ typedef struct pgpPktSigV4_s {
  * The value of the subpacket type octet may be:
  *
 \verbatim
+       0 = reserved
+       1 = reserved
        2 = signature creation time
        3 = signature expiration time
        4 = exportable certification
        5 = trust signature
        6 = regular expression
        7 = revocable
+       8 = reserved
        9 = key expiration time
        10 = placeholder for backward compatibility
        11 = preferred symmetric algorithms
        12 = revocation key
+       13 = reserved
+       14 = reserved
+       15 = reserved
        16 = issuer key ID
+       17 = reserved
+       18 = reserved
+       19 = reserved
        20 = notation data
        21 = preferred hash algorithms
        22 = preferred compression algorithms
@@ -557,6 +568,9 @@ typedef struct pgpPktSigV4_s {
        27 = key flags
        28 = signer's user id
        29 = reason for revocation
+       30 = features
+       31 = signature target
+       32 = embedded signature
        100 to 110 = internal or user-defined
 \endverbatim
  *
@@ -593,8 +607,9 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_KEY_FLAGS	=  27, /*!< key flags */
     PGPSUBTYPE_SIGNER_USERID	=  28, /*!< signer's user id */
     PGPSUBTYPE_REVOKE_REASON	=  29, /*!< reason for revocation */
-    PGPSUBTYPE_FEATURES		=  30, /*!< feature flags (gpg) */
-    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature (gpg) */
+    PGPSUBTYPE_FEATURES		=  30, /*!< feature flags */
+    PGPSUBTYPE_SIG_TARGET	=  31, /*!< signature target */
+    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature */
 
     PGPSUBTYPE_INTERNAL_100	= 100, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_101	= 101, /*!< internal or user-defined */
@@ -707,10 +722,10 @@ typedef struct pgpPktSymkey_s {
  * pass packet.
  */
 typedef struct pgpPktOnepass_s {
-    uint8_t version;	/*!< version number (3). */
-    uint8_t sigtype;	/*!< signature type. */
+    uint8_t version;		/*!< version number (3). */
+    uint8_t sigtype;		/*!< signature type. */
     uint8_t hash_algo;	/*!< hash algorithm. */
-    uint8_t pubkey_algo;/*!< public key algorithm. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
     uint8_t signid[8];	/*!< key ID of signer. */
     uint8_t nested;
 } * pgpPktOnepass;
@@ -788,10 +803,10 @@ typedef struct pgpPktOnepass_s {
  *
  */
 typedef struct pgpPktKeyV3_s {
-    uint8_t version;	/*!< version number (3). */
-    uint8_t time[4];	/*!< time that the key was created. */
+    uint8_t version;		/*!< version number (3). */
+    uint8_t time[4];		/*!< time that the key was created. */
     uint8_t valid[2];	/*!< time in days that this key is valid. */
-    uint8_t pubkey_algo;/*!< public key algorithm. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
 } * pgpPktKeyV3;
 
 /** \ingroup rpmpgp
@@ -826,9 +841,9 @@ typedef struct pgpPktKeyV3_s {
  *
  */
 typedef struct pgpPktKeyV4_s {
-    uint8_t version;	/*!< version number (4). */
-    uint8_t time[4];	/*!< time that the key was created. */
-    uint8_t pubkey_algo;/*!< public key algorithm. */
+    uint8_t version;		/*!< version number (4). */
+    uint8_t time[4];		/*!< time that the key was created. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
 } * pgpPktKeyV4;
 
 /** \ingroup rpmpgp
@@ -1153,11 +1168,11 @@ unsigned int pgpGrab(const uint8_t * s, size_t nbytes)
 unsigned int pgpLen(const uint8_t * s, /*@out@*/ unsigned int * lenp)
 	/*@modifies *lenp @*/
 {
-    if (*s < 192) {
+    if (*s < (uint8_t)192) {
 	*lenp = (unsigned int) *s++;
 	return 1;
-    } else if (*s < 255) {
-	*lenp = (unsigned int) ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
+    } else if (*s < (uint8_t)255) {
+	*lenp = (unsigned int) ((((unsigned)s[0]) - 192) << 8) + (unsigned)s[1] + 192;
 	return 2;
     } else {
 	*lenp = pgpGrab(s+1, 4);
@@ -1373,7 +1388,8 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
  * @retval keyid[8]	public key fingerprint
  * @return		8 (no. of bytes) on success, < 0 on error
  */
-int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ uint8_t * keyid)
+int pgpExtractPubkeyFingerprint(const char * b64pkt,
+		/*@out@*/ uint8_t * keyid)
 	/*@modifies *keyid @*/;
 
 /** \ingroup rpmpgp
@@ -1418,7 +1434,7 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
  * @return		type of armor found
  */
 pgpArmor pgpReadPkts(const char * fn,
-		/*@out@*/ const uint8_t ** pkt, /*@out@*/ size_t * pktlen)
+		/*@out@*/ uint8_t ** pkt, /*@out@*/ size_t * pktlen)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
 
@@ -1429,7 +1445,7 @@ pgpArmor pgpReadPkts(const char * fn,
  * @param ns		binary pkt data length
  * @return		formatted string
  */
-char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
+char * pgpArmorWrap(uint8_t atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1579,6 +1595,7 @@ int pgpSetSig(pgpDig dig,
  * @param opx		per-container accumulator index (aka rpmtsOpX)
  * @return		per-container accumulator pointer
  */
+/*@null@*/
 void * pgpStatsAccumulator(pgpDig dig, int opx)
 	/*@*/;
 

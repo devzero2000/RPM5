@@ -8,13 +8,13 @@
 
 #include <rpmio_internal.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmlib.h>
 
-#include "rpmts.h"
-
+#include <rpmtag.h>
 #include <pkgio.h>
-
 #include "signature.h"		/* XXX rpmVerifySignature */
+
+#include <rpmlib.h>
+#include "rpmts.h"
 
 #include "debug.h"
 
@@ -213,9 +213,9 @@ assert(dig != NULL);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-/*@-noeffect@*/
+/*@-ownedtrans -noeffect@*/
     xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
-/*@=noeffect@*/
+/*@=ownedtrans =noeffect@*/
 
     switch ((rpmSigTag)she->tag) {
     default:	/* XXX keep gcc quiet. */
@@ -247,12 +247,12 @@ assert(0);
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
-	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	dig->hdrctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	if (hmagic && nmagic > 0) {
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
 	    dig->nbytes += nmagic;
 	}
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
+	(void) rpmDigestUpdate(dig->hdrctx, uh, uhc);
 	dig->nbytes += uhc;
 	(void) rpmswExit(op, dig->nbytes);
 	op->count--;	/* XXX one too many */

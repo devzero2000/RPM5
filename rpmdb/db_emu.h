@@ -19,19 +19,19 @@ struct __db {
 };
 
 struct __db_dbt {
-  uint32_t	size;
-  void		*data;
+    uint32_t	size;
+    void	*data;
 
 #define DB_DBT_MALLOC 0x01   /* We malloc the memory and hand off a copy. */
-  uint32_t	flags;
+    uint32_t	flags;
 };
 
 struct __db_env {
-  void		*app_private;
+    void	*app_private;
 };
 
 struct __dbc {
-  DB		*dbp;
+    DB		*dbp;
 };
 
 struct __db_txn {
@@ -39,7 +39,7 @@ struct __db_txn {
 };
 
 struct __db_h_stat {
-  uint32_t	hash_nkeys;
+    uint32_t	hash_nkeys;
 };
 
 #define DB_FAST_STAT 11
