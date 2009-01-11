@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: add --whatneeds/--needswhat popt aliases.
     - jbj: backport the test harness for signature(). worksforme.
     - jbj: rpmbuild: enumerate all the lexical patterns in parsePreamble().
     - jbj: rpmbuild: enable pattern validation for simple package identifiers.

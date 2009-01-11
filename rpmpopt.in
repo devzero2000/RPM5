@@ -101,6 +101,10 @@ rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
 rpm	alias --yaml --qf '[%{*:yaml}\n]' \
 	--POPTdesc=$"list metadata in yaml"
+rpm	alias --whatneeds -q --qf '[%{whatneeds}\n]' \
+	--POPTdesc=$"list packages that depend on args"
+rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
+	--POPTdesc=$"list prerequisite packages of args"
 
 #==============================================================================
 rpm	alias --yum:primary.xml --qf '\

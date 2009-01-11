@@ -8,7 +8,7 @@
 #if defined(HAVE_ICONV)
 #include <iconv.h>
 #if defined(__LCLINT__)
-/*@-declundef -incondefs @*/
+/*@-declundef -exportheader -incondefs @*/
 extern /*@only@*/ iconv_t iconv_open(const char *__tocode, const char *__fromcode)
 	/*@*/;
 
@@ -21,35 +21,39 @@ extern size_t iconv(iconv_t __cd, /*@null@*/ char ** __inbuf,
 
 extern int iconv_close(/*@only@*/ iconv_t __cd)
         /*@modifies __cd @*/;
-/*@=declundef =incondefs @*/
-#endif
-#endif
-#if defined(HAVE_LANGINFO_H)
-#include <langinfo.h>
-#if defined(__LCLINT__)
-/*@-declundef -incondefs @*/
-extern char *nl_langinfo (nl_item __item)
-	/*@*/;
-/*@=declundef =incondefs @*/
+/*@=declundef =exportheader =incondefs @*/
 #endif
 #endif
 
+#if defined(HAVE_LANGINFO_H)
+#include <langinfo.h>
+#if defined(__LCLINT__)
+/*@-declundef -exportheader -incondefs @*/
+extern char *nl_langinfo (nl_item __item)
+	/*@*/;
+/*@=declundef =exportheader =incondefs @*/
+#endif
+#endif
+
+#define	_MIRE_INTERNAL
 #include "rpmio_internal.h"
 #include <rpmbc.h>	/* XXX beecrypt base64 */
 #include <rpmcb.h>	/* XXX rpmIsVerbose */
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 #include <rpmuuid.h>
-#include "argv.h"
-#include "ugid.h"
+#include <argv.h>
+#include <ugid.h>
 
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
-
-#include <rpmlib.h>	/* XXX rpmfi, rpmMkdirPath */
-#include <rpmfi.h>	/* XXX RPMFILE_FOO */
-
 #define _RPMEVR_INTERNAL
 #include <rpmevr.h>	/* XXX RPMSENSE_FOO */
+#include <rpmns.h>
+#include <rpmdb.h>
+
+#include <rpmlib.h>	/* XXX rpmfi */
+#include "misc.h"	/* XXX rpmMkdirPath */
+#include <rpmfi.h>	/* XXX RPMFILE_FOO */
 
 #include "legacy.h"
 #include "misc.h"
@@ -64,6 +68,9 @@ extern int _hdr_debug;
 /*@access headerSprintfExtension @*/
 /*@access headerTagTableEntry @*/
 /*@access Header @*/	/* XXX debugging msgs */
+/*@access EVR_t @*/
+/*@access rpmdb @*/	/* XXX for casts */
+/*@access miRE @*/
 
 /**
  * Convert tag data representation.
@@ -72,7 +79,7 @@ extern int _hdr_debug;
  * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
-static char * intFormat(HE_t he, /*@null@*/ const char ** av,
+static char * intFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 		/*@null@*/ const char *fmt)
 	/*@*/
 {
@@ -186,7 +193,7 @@ static char * decFormat(HE_t he, /*@null@*/ const char ** av)
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(HE_t he, /*@null@*/ const char ** av,
+static char * realDateFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 		const char * strftimeFormat)
 	/*@*/
 {
@@ -242,7 +249,7 @@ static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
+static char * shescapeFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     char * val;
@@ -292,7 +299,6 @@ static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
     return val;
 }
 
-/*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal",
 	{ .fmtFunction = octFormat } },
@@ -312,9 +318,9 @@ static struct headerSprintfExtension_s _headerDefaultFormats[] = {
 	{ .fmtFunction = shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
-/*@=type@*/
 
 headerSprintfExtension headerDefaultFormats = &_headerDefaultFormats[0];
+
 /* XXX FIXME: static for now, refactor from manifest.c later. */
 static char * rpmPermsString(int mode)
 	/*@*/
@@ -329,10 +335,10 @@ static char * rpmPermsString(int mode)
 	perms[0] = 'l';
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
-    /*@-unrecog@*/
+/*@-unrecog@*/
     else if (S_ISSOCK(mode)) 
 	perms[0] = 's';
-    /*@=unrecog@*/
+/*@=unrecog@*/
     else if (S_ISCHR(mode))
 	perms[0] = 'c';
     else if (S_ISBLK(mode))
@@ -370,7 +376,8 @@ static char * rpmPermsString(int mode)
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * triggertypeFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -400,7 +407,8 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * permsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -422,7 +430,8 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * fflagsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
 {
     int ix = (he->ix >= 0 ? he->ix : 0);
     char * val;
@@ -463,14 +472,14 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * armorFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * enc;
     const unsigned char * s;
     size_t ns;
-    int atype;
+    uint8_t atype;
     char * val;
 
 assert(ix == 0);
@@ -478,7 +487,7 @@ assert(ix == 0);
     case RPM_BIN_TYPE:
 	s = (unsigned char *) he->p.ui8p;
 	ns = he->c;
-	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
+	atype = (uint8_t)PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
@@ -489,7 +498,7 @@ assert(ix == 0);
 	if (b64decode(enc, (void **)&s, &ns))
 	    return xstrdup(_("(not base64)"));
 /*@=moduncon@*/
-	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
+	atype = (uint8_t)PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
     case RPM_UINT8_TYPE:
     case RPM_UINT16_TYPE:
@@ -502,7 +511,7 @@ assert(ix == 0);
     }
 
     val = pgpArmorWrap(atype, s, ns);
-    if (atype == PGPARMOR_PUBKEY)
+    if (atype == (uint8_t)PGPARMOR_PUBKEY)
 	s = _free(s);
     return val;
 }
@@ -514,7 +523,7 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * base64Format(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -559,6 +568,7 @@ assert(ix == 0);
 
     /* XXX b64encode accesses uninitialized memory. */
     { 	unsigned char * _data = xcalloc(1, ns+1);
+assert(he->p.ptr != NULL);
 	memcpy(_data, he->p.ptr, ns);
 /*@-moduncon@*/
 	if ((enc = b64encode(_data, ns)) != NULL) {
@@ -570,7 +580,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
+/*@-globstate@*/	/* b64encode_eolstr annotation */
     return val;
 /*@=globstate@*/
 }
@@ -586,8 +596,7 @@ static size_t xmlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-    while ((c = (int) *s++) != (int) '\0')
-    {
+    while ((c = (int) *s++) != (int) '\0') {
 	switch (c) {
 	case '<':
 	case '>':	len += sizeof("&lt;") - 1;	/*@switchbreak@*/ break;
@@ -639,9 +648,7 @@ strdup_locale_convert (/*@null@*/ const char * buffer,
 	tocode = "UTF-8";
 
 #ifdef HAVE_LANGINFO_H
-/*@-type@*/
     fromcode = nl_langinfo (CODESET);
-/*@=type@*/
 #endif
 
     if (fromcode != NULL && strcmp(tocode, fromcode) != 0
@@ -730,18 +737,23 @@ assert(ix == 0);
 	val = xstrdup(_("(not a string)"));
     } else {
 	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb = xmlstrlen(s);
+	size_t nb;
 	char * t;
 
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+	nb = xmlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = xmlstrcpy(t, s);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-/*@-globstate@*/
+exit:
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -750,22 +762,19 @@ assert(ix == 0);
  * @param av		parameter list (NULL assumes UTF-8)
  * @return		formatted string
  */
-static /*@only@*/ char * iconvFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * iconvFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
-    char * val;
+    char * val = NULL;
 
 assert(ix == 0);
-    if (he->t != RPM_STRING_TYPE) {
-	val = xstrdup(_("(not a string)"));
-    } else {
+    if (he->t == RPM_STRING_TYPE)
 	val = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-    }
+    if (val == NULL)
+	val = xstrdup(_("(not a string)"));
 
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -774,7 +783,7 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * xmlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -808,7 +817,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
-/*@-globs -mods@*/
+/*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
@@ -820,13 +829,13 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = he->p.ui8p[ix];
+	anint = (uint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = he->p.ui16p[ix];
+	anint = (uint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = he->p.ui32p[ix];
+	anint = (uint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
@@ -932,12 +941,13 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
+    int freetag = 0;
     size_t nb;
     char * val;
     const char * s = NULL;
@@ -946,11 +956,13 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
     int freeit = 0;
     int lvl = 0;
     int xx;
+    int ls;
     int c;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     xx = 0;
+    ls = 0;
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
@@ -965,7 +977,9 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 		continue;
 	    case '\n':	/* multiline */
 		xx = 1;
-		/*@switchbreak@*/ break;
+		if (s[0] == ' ' || s[0] == '\t') /* leading space */
+		    ls = 1;
+		continue;
 	    case '-':	/* leading "- \"" */
 	    case ':':	/* embedded ": " or ":" at EOL */
 		if (s[0] != ' ' && s[0] != '\0' && s[1] != '"')
@@ -976,13 +990,26 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    /*@loopbreak@*/ break;
 	}
 	if (xx) {
-	    if (element >= 0) {
-		xtag = "- |-\n";
-		lvl = 3;
+	    if (ls) { /* leading spaces means we need to specify the indent */
+		xtag = xmalloc(strlen("- |##-\n") + 1);
+		freetag = 1;
+		if (element >= 0) {
+		    lvl = 3;
+		    sprintf((char *)xtag, "- |%d-\n", lvl);
+		} else {
+		    lvl = 2;
+		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		    sprintf((char *)xtag, "|%d-\n", lvl);
+		}
 	    } else {
-		xtag = "|-\n";
-		lvl = 2;
-		if (he->ix < 0) lvl++;	/* XXX extra indent for array[1] */
+		if (element >= 0) {
+		    xtag = "- |-\n";
+		    lvl = 3;
+		} else {
+		    xtag = "|-\n";
+		    lvl = 2;
+		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		}
 	    }
 	} else {
 	    xtag = (element >= 0 ? "- " : NULL);
@@ -994,7 +1021,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
-/*@-globs -mods@*/
+/*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
@@ -1007,13 +1034,13 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = he->p.ui8p[ix];
+	anint = (uint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = he->p.ui16p[ix];
+	anint = (uint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = he->p.ui32p[ix];
+	anint = (uint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
@@ -1054,6 +1081,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    te = stpcpy(te, "    ");
 	if (xtag)
 	    te = stpcpy(te, xtag);
+/*@-modobserver@*/
+	    if (freetag)
+		xtag = _free(xtag);
+/*@=modobserver@*/
 	te = yamlstrcpy(te, s, lvl);
 	te += strlen(te);
     }
@@ -1073,7 +1104,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * pgpsigFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -1084,7 +1115,7 @@ assert(ix == 0);
     if (!(he->t == RPM_BIN_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	unsigned char * pkt = (unsigned char *) he->p.ui8p;
+	uint8_t * pkt = he->p.ui8p;
 	unsigned int pktlen = 0;
 	unsigned int v = (unsigned int) *pkt;
 	pgpTag tag = 0;
@@ -1094,11 +1125,11 @@ assert(ix == 0);
 	if (v & 0x80) {
 	    if (v & 0x40) {
 		tag = (v & 0x3f);
-		plen = pgpLen((byte *)pkt+1, &hlen);
+		plen = pgpLen(pkt+1, &hlen);
 	    } else {
 		tag = (v >> 2) & 0xf;
 		plen = (1 << (v & 0x3));
-		hlen = pgpGrab((byte *)pkt+1, plen);
+		hlen = pgpGrab(pkt+1, plen);
 	    }
 	
 	    pktlen = 1 + plen + hlen;
@@ -1112,7 +1143,7 @@ assert(ix == 0);
 	    size_t nb = 0;
 	    const char *tempstr;
 
-	    (void) pgpPrtPkts((byte *)pkt, pktlen, dig, 0);
+	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
 
 	    val = NULL;
 	again:
@@ -1179,7 +1210,8 @@ assert(ix == 0);
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/
+char * depflagsFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -1224,13 +1256,64 @@ assert(ix == 0);
 }
 
 /**
+ * Format dependency type for display.
+ * @todo There's more sense bits, and the bits are attributes, not exclusive.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static /*@only@*/
+char * deptypeFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_UINT64_TYPE) {
+	val = xstrdup(_("(invalid type)"));
+    } else {
+	uint64_t anint = he->p.ui64p[ix];
+	char *t, *buf;
+
+	t = buf = alloca(32);
+	*t = '\0';
+
+	if (anint & RPMSENSE_SCRIPT_PRE)
+	    t = stpcpy(t, "pre");
+	else if (anint & RPMSENSE_SCRIPT_POST)
+	    t = stpcpy(t, "post");
+	else if (anint & RPMSENSE_SCRIPT_PREUN)
+	    t = stpcpy(t, "preun");
+	else if (anint & RPMSENSE_SCRIPT_POSTUN)
+	    t = stpcpy(t, "postun");
+	else if (anint & RPMSENSE_SCRIPT_VERIFY)
+	    t = stpcpy(t, "verify");
+	else if (anint & RPMSENSE_RPMLIB)
+	    t = stpcpy(t, "rpmlib");
+	else if (anint & RPMSENSE_INTERP)
+	    t = stpcpy(t, "interp");
+	else if (anint & (RPMSENSE_FIND_PROVIDES | RPMSENSE_FIND_REQUIRES))
+	    t = stpcpy(t, "auto");
+	else
+	    t = stpcpy(t, "manual");
+	*t = '\0';
+
+	val = xstrdup(buf);
+    }
+
+    return val;
+}
+
+/**
  * Retrieve install prefixes.
  * @param h		header
  * @retval *he		tag container
  * @return		0 on success
  */
 static int instprefixTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_INSTALLPREFIX;
     if (headerGet(h, he, 0))
@@ -1256,7 +1339,7 @@ static int instprefixTag(Header h, HE_t he)
  * @param tv		unix timeval
  * @return		0 on success
  */
-static int tv2uuidv1(Header h, HE_t he, struct timeval *tv)
+static int tv2uuidv1(/*@unused@*/ Header h, HE_t he, struct timeval *tv)
 	/*@modifies he @*/
 {
     uint64_t uuid_time = ((uint64_t)tv->tv_sec * 10000000) +
@@ -1276,13 +1359,13 @@ static int tv2uuidv1(Header h, HE_t he, struct timeval *tv)
     he->p.ui8p[8] &= 0x3f;	/* preserve reserved, clear clock */
     he->p.ui8p[9] &= 0x00;
 
-    he->p.ui8p[3] = (uuid_time >>  0);
-    he->p.ui8p[2] = (uuid_time >>  8);
-    he->p.ui8p[1] = (uuid_time >> 16);
-    he->p.ui8p[0] = (uuid_time >> 24);
-    he->p.ui8p[5] = (uuid_time >> 32);
-    he->p.ui8p[4] = (uuid_time >> 40);
-    he->p.ui8p[6] |= (uuid_time >> 56) & 0x0f;
+    he->p.ui8p[3] = (uint8_t)(uuid_time >>  0);
+    he->p.ui8p[2] = (uint8_t)(uuid_time >>  8);
+    he->p.ui8p[1] = (uint8_t)(uuid_time >> 16);
+    he->p.ui8p[0] = (uint8_t)(uuid_time >> 24);
+    he->p.ui8p[5] = (uint8_t)(uuid_time >> 32);
+    he->p.ui8p[4] = (uint8_t)(uuid_time >> 40);
+    he->p.ui8p[6] |= (uint8_t)(uuid_time >> 56) & 0x0f;
 
 #ifdef	NOTYET
     /* XXX Jigger up a non-zero (but constant) clock value. Is this needed? */
@@ -1300,14 +1383,15 @@ static int tv2uuidv1(Header h, HE_t he, struct timeval *tv)
  * @return		0 on success
  */
 static int tag2uuidv1(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     struct timeval tv;
 
     if (!headerGet(h, he, 0))
 	return 1;
-    tv.tv_sec = he->p.ui32p[0];
-    tv.tv_usec = (he->c > 1 ? he->p.ui32p[1] : 0);
+    tv.tv_sec = (long) he->p.ui32p[0];
+    tv.tv_usec = (long) (he->c > 1 ? he->p.ui32p[1] : 0);
     he->p.ptr = _free(he->p.ptr);
     return tv2uuidv1(h, he, &tv);
 }
@@ -1319,7 +1403,8 @@ static int tag2uuidv1(Header h, HE_t he)
  * @return		0 on success
  */
 static int installtime_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_INSTALLTIME;
     return tag2uuidv1(h, he);
@@ -1332,7 +1417,8 @@ static int installtime_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int buildtime_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BUILDTIME;
     return tag2uuidv1(h, he);
@@ -1345,7 +1431,8 @@ static int buildtime_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int origintime_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_ORIGINTIME;
     return tag2uuidv1(h, he);
@@ -1358,7 +1445,8 @@ static int origintime_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int installtid_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_INSTALLTID;
     return tag2uuidv1(h, he);
@@ -1371,7 +1459,8 @@ static int installtid_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int removetid_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REMOVETID;
     return tag2uuidv1(h, he);
@@ -1384,7 +1473,8 @@ static int removetid_uuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int origintid_uuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_ORIGINTID;
     return tag2uuidv1(h, he);
@@ -1396,8 +1486,8 @@ static const char uuid_ns[] = "ns:URL";
 static const char uuid_auth[] = "%{?_uuid_auth}%{!?_uuid_auth:http://rpm5.org}";
 /*@unchecked@*/ /*@observer@*/
 static const char uuid_path[] = "%{?_uuid_path}%{!?_uuid_path:/package}";
-/*@unchecked@*/ /*@observer@*/
-static int uuid_version = 5;
+/*@unchecked@*/
+static uint32_t uuid_version = 5;
 
 /**
  * Convert tag string to UUID.
@@ -1407,9 +1497,10 @@ static int uuid_version = 5;
  * @retval val		UUID string
  * @return		0 on success
  */
-static int str2uuid(HE_t he, /*@null@*/ const char ** av,
-		int version, /*@null@*/ char * val)
-	/*@modifies he @*/
+static int str2uuid(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
+		uint32_t version, char * val)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     const char * ns = NULL;
     const char * tagn = tagName(he->tag);
@@ -1441,7 +1532,7 @@ assert(he->t == RPM_STRING_TYPE);
     he->c = 128/8;
     he->p.ptr = xcalloc(1, he->c);
     he->freeData = 1;
-    rc = rpmuuidMake(version, ns, s, val, (unsigned char *)he->p.ui8p);
+    rc = rpmuuidMake((int)version, ns, s, val, (unsigned char *)he->p.ui8p);
     if (rc) {
 	he->p.ptr = _free(he->p.ptr);
 	he->freeData = 0;
@@ -1457,7 +1548,8 @@ assert(he->t == RPM_STRING_TYPE);
  * @return		0 on success
  */
 static int tag2uuidv5(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     if (!headerGet(h, he, 0))
 	return 1;
@@ -1473,8 +1565,8 @@ assert(0);
 
 	t = te = xmalloc (2*he->c + 1);
 	for (i = 0; i < he->c; i++) {
-	    *te++ = hex[ ((he->p.ui8p[i] >> 4) & 0x0f) ];
-	    *te++ = hex[ ((he->p.ui8p[i]     ) & 0x0f) ];
+	    *te++ = hex[ (int)((he->p.ui8p[i] >> 4) & 0x0f) ];
+	    *te++ = hex[ (int)((he->p.ui8p[i]     ) & 0x0f) ];
 	}
 	*te = '\0';
 	he->p.ptr = _free(he->p.ptr);
@@ -1496,7 +1588,8 @@ assert(0);
  * @return		0 on success
  */
 static int pkguuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_PKGID;
     return tag2uuidv5(h, he);
@@ -1509,7 +1602,8 @@ static int pkguuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int sourcepkguuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_SOURCEPKGID;
     return tag2uuidv5(h, he);
@@ -1522,7 +1616,8 @@ static int sourcepkguuidTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int hdruuidTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_HDRID;
     return tag2uuidv5(h, he);
@@ -1633,7 +1728,8 @@ exit:
  * @return		0 on success
  */
 static int triggertypeTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
     rpmTagData indices = { .ptr = NULL };
@@ -1647,7 +1743,7 @@ static int triggertypeTag(Header h, HE_t he)
 
     he->freeData = 0;
 
-/*@-compmempass@*/
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     _he->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(h, _he, 0);
     if (!xx) goto exit;
@@ -1720,8 +1816,8 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @return		0 on success
  */
 static int i18nTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc = 1;		/* assume failure */
@@ -1738,16 +1834,25 @@ static int i18nTag(Header h, HE_t he)
 	const char * msgid;
 
 	{   HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
-	    const char * tn = tagName(he->tag);
+	    const char * tn;
 	    char * mk;
 	    size_t nb = sizeof("()");
 	    int xx;
+
 	    nhe->tag = RPMTAG_NAME;
 	    xx = headerGet(h, nhe, 0);
+	    /*
+	     * XXX Ick, tagName() is called by headerGet(), and the tagName()
+	     * buffer is valid only until next tagName() call.
+	     * For now, do the tagName() lookup after headerGet().
+	     */
+	    tn = tagName(he->tag);
 	    if (tn)	nb += strlen(tn);
 	    if (nhe->p.str)	nb += strlen(nhe->p.str);
 	    mk = alloca(nb);
-	    sprintf(mk, "%s(%s)", (nhe->p.str ? nhe->p.str : ""), (tn ? tn : ""));
+	    (void) snprintf(mk, nb, "%s(%s)",
+			(nhe->p.str ? nhe->p.str : ""), (tn ? tn : ""));
+	    mk[nb-1] = '\0';
 	    nhe->p.ptr = _free(nhe->p.ptr);
 	    msgkey = mk;
 	}
@@ -1763,7 +1868,9 @@ static int i18nTag(Header h, HE_t he)
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
-	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
+/*@-unrecog@*/
+	    msgid = dgettext(domain, msgkey);
+/*@=unrecog@*/
 	    if (msgid != msgkey) break;
 	}
 
@@ -1777,7 +1884,9 @@ static int i18nTag(Header h, HE_t he)
 #endif
 
 	if (domain && msgid) {
-	    const char * s = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
+/*@-unrecog@*/
+	    const char * s = dgettext(domain, msgid);
+/*@=unrecog@*/
 	    if (s) {
 		rc = 0;
 		he->p.str = xstrdup(s);
@@ -1798,9 +1907,7 @@ static int i18nTag(Header h, HE_t he)
 	rc = 0;
 	he->p.str = xstrtolocale(he->p.str);
 	he->freeData = 1;
-/*@-nullstate@*/
 	return rc;
-/*@=nullstate@*/
     }
 
     he->t = RPM_STRING_TYPE;
@@ -1815,7 +1922,8 @@ static int i18nTag(Header h, HE_t he)
  * Retrieve text and convert to locale.
  */
 static int localeTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     int rc;
 
@@ -1869,8 +1977,8 @@ assert(he->p.argv[i] != NULL);
  * @return		0 on success
  */
 static int summaryTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_SUMMARY;
     return i18nTag(h, he);
@@ -1883,22 +1991,24 @@ static int summaryTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int descriptionTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_DESCRIPTION;
     return i18nTag(h, he);
 }
 
 static int changelognameTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CHANGELOGNAME;
     return localeTag(h, he);
 }
 
 static int changelogtextTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CHANGELOGTEXT;
     return localeTag(h, he);
@@ -1911,8 +2021,8 @@ static int changelogtextTag(Header h, HE_t he)
  * @return		0 on success
  */
 static int groupTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies he, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
     he->tag = RPMTAG_GROUP;
     return i18nTag(h, he);
@@ -1924,12 +2034,8 @@ static int groupTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int dbinstanceTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     he->tag = RPMTAG_DBINSTANCE;
     he->t = RPM_UINT32_TYPE;
@@ -1939,7 +2045,6 @@ static int dbinstanceTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve starting byte offset of header.
@@ -1947,12 +2052,8 @@ static int dbinstanceTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int headerstartoffTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     he->tag = RPMTAG_HEADERSTARTOFF;
     he->t = RPM_UINT64_TYPE;
@@ -1962,7 +2063,6 @@ static int headerstartoffTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve ending byte offset of header.
@@ -1970,12 +2070,8 @@ static int headerstartoffTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int headerendoffTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     he->tag = RPMTAG_HEADERENDOFF;
     he->t = RPM_UINT64_TYPE;
@@ -1985,7 +2081,6 @@ static int headerendoffTag(Header h, HE_t he)
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve package origin from header.
@@ -1993,12 +2088,9 @@ static int headerendoffTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgoriginTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     const char * origin;
     int rc = 1;
@@ -2015,7 +2107,6 @@ static int pkgoriginTag(Header h, HE_t he)
     }
     return rc;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve package baseurl from header.
@@ -2023,12 +2114,9 @@ static int pkgoriginTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgbaseurlTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     const char * baseurl;
     int rc = 1;
@@ -2045,7 +2133,6 @@ static int pkgbaseurlTag(Header h, HE_t he)
     }
     return rc;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve package digest from header.
@@ -2053,12 +2140,8 @@ static int pkgbaseurlTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgdigestTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     const char * digest;
     int rc = 1;
@@ -2074,7 +2157,6 @@ static int pkgdigestTag(Header h, HE_t he)
     }
     return rc;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve *.rpm package st->st_mtime from header.
@@ -2082,23 +2164,18 @@ static int pkgdigestTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgmtimeTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     struct stat * st = headerGetStatbuf(h);
     he->tag = RPMTAG_PACKAGETIME;
     he->t = RPM_UINT64_TYPE;
     he->p.ui64p = xmalloc(sizeof(*he->p.ui64p));
-    he->p.ui64p[0] = st->st_mtime;
+    he->p.ui64p[0] = (uint64_t)st->st_mtime;
     he->freeData = 1;
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve *.rpm package st->st_size from header.
@@ -2106,23 +2183,18 @@ static int pkgmtimeTag(Header h, HE_t he)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int pkgsizeTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@modifies he @*/
 {
     struct stat * st = headerGetStatbuf(h);
     he->tag = RPMTAG_PACKAGESIZE;
     he->t = RPM_UINT64_TYPE;
     he->p.ui64p = xmalloc(sizeof(*he->p.ui64p));
-    he->p.ui64p[0] = st->st_size;
+    he->p.ui64p[0] = (uint64_t)st->st_size;
     he->freeData = 1;
     he->c = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Return (malloc'd) header name-version-release.arch string.
@@ -2131,7 +2203,8 @@ static int pkgsizeTag(Header h, HE_t he)
  */
 /*@only@*/
 static char * hGetNVRA(Header h)
-	/*@modifies h @*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     const char * N = NULL;
     const char * V = NULL;
@@ -2181,12 +2254,9 @@ static char * hGetNVRA(Header h)
  * @retval *he		tag container
  * @return		0 on success
  */
-/*@-globuse@*/
 static int nvraTag(Header h, HE_t he)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies h, he, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies h, he, internalState @*/
 {
     he->t = RPM_STRING_TYPE;
     he->p.str = hGetNVRA(h);
@@ -2194,7 +2264,6 @@ static int nvraTag(Header h, HE_t he)
     he->freeData = 1;
     return 0;
 }
-/*@=globuse@*/
 
 /**
  * Retrieve file names from header.
@@ -2216,7 +2285,8 @@ static int nvraTag(Header h, HE_t he)
 static void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@null@*/ /*@out@*/ const char *** fnp,
 		/*@null@*/ /*@out@*/ rpmTagCount * fcp)
-	/*@modifies *fnp, *fcp @*/
+	/*@globals internalState @*/
+	/*@modifies *fnp, *fcp, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag dirNameTag = 0;
@@ -2246,7 +2316,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	return;		/* programmer error */
     }
 
-/*@-compmempass@*/
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = tagN;
     xx = headerGet(h, he, 0);
     /* XXX 3.0.x SRPM's can be used, relative fn's at RPMTAG_OLDFILENAMES. */
@@ -2314,7 +2384,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
  * @return		0 on success
  */
 static int _fnTag(Header h, HE_t he, rpmTag tag)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->t = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, tag, &he->p.argv, &he->c);
@@ -2346,8 +2417,210 @@ static int origpathsTag(Header h, HE_t he)
     return _fnTag(h, he, RPMTAG_ORIGBASENAMES);
 }
 
+/**
+ * Return Debian formatted dependencies as string array.
+ * @param h		header
+ * @retval *he		tag container
+ * @param Nhe		dependency name container
+ * @param EVRhe		dependency epoch:version-release container
+ * @param Fhe		dependency flags container
+ * @return		0 on success
+ */
+static int debevrfmtTag(/*@unused@*/ Header h, HE_t he,
+		HE_t Nhe, HE_t EVRhe, HE_t Fhe)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, Nhe, rpmGlobalMacroContext, internalState @*/
+{
+    char * t, * te;
+    size_t nb = 0;
+    int rc = 1;
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = 0;
+    he->freeData = 1;
+    for (Nhe->ix = 0; Nhe->ix < (int)Nhe->c; Nhe->ix++) {
+	nb += sizeof(*he->p.argv);
+	nb += strlen(Nhe->p.argv[Nhe->ix]) + 1;
+	if (*EVRhe->p.argv[Nhe->ix] != '\0')
+	    nb += strlen(EVRhe->p.argv[Nhe->ix]) + (sizeof(" (== )")-1);
+	he->c++;
+    }
+    nb += sizeof(*he->p.argv);
+
+    he->p.argv = xmalloc(nb);
+    te = (char *) &he->p.argv[he->c+1];
+
+    he->c = 0;
+    for (Nhe->ix = 0; Nhe->ix < (int)Nhe->c; Nhe->ix++) {
+	he->p.argv[he->c++] = te;
+	if (*EVRhe->p.argv[Nhe->ix] != '\0') {
+	    char opstr[4], * op = opstr;
+	    if (Fhe->p.ui32p[Nhe->ix] & RPMSENSE_LESS)
+		*op++ = '<';
+	    if (Fhe->p.ui32p[Nhe->ix] & RPMSENSE_GREATER)
+		*op++ = '>';
+	    if (Fhe->p.ui32p[Nhe->ix] & RPMSENSE_EQUAL)
+		*op++ = '=';
+	    *op = '\0';
+	    t = rpmExpand(Nhe->p.argv[Nhe->ix],
+			" (", opstr, " ", EVRhe->p.argv[Nhe->ix], ")", NULL);
+	} else
+	    t = rpmExpand(Nhe->p.argv[Nhe->ix], NULL);
+	te = stpcpy(te, t);
+	te++;
+	t = _free(t);
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+    return rc;
+}
+
+/**
+ * Retrieve and return Debian formatted dependecies for --deb:control.
+ * @param h		header
+ * @retval *he		tag container
+ * @param tagN		dependency tag name
+ * @param tagEVR	dependency tag epoch:version-release
+ * @param tagF		dependency tag flags
+ * @return		0 on success
+ */
+static int debevrTag(Header h, HE_t he, rpmTag tagN, rpmTag tagEVR, rpmTag tagF)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
+{
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t EVRhe = memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
+    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+    int rc = 1;
+    int xx;
+
+    Nhe->tag = tagN;
+    if (!(xx = headerGet(h, Nhe, 0)))
+	goto exit;
+    EVRhe->tag = tagEVR;
+    if (!(xx = headerGet(h, EVRhe, 0)))
+	goto exit;
+assert(EVRhe->c == Nhe->c);
+    Fhe->tag = tagF;
+    if (!(xx = headerGet(h, Fhe, 0)))
+	goto exit;
+assert(Fhe->c == Nhe->c);
+
+    rc = debevrfmtTag(h, he, Nhe, EVRhe, Fhe);
+
+exit:
+    Nhe->p.ptr = _free(Nhe->p.ptr);
+    EVRhe->p.ptr = _free(EVRhe->p.ptr);
+    Fhe->p.ptr = _free(Fhe->p.ptr);
+    return rc;
+}
+
+/**
+ * Retrieve Depends: and Conflicts: for --deb:control.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int debconflictsTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
+{
+    he->tag = tagValue("Debconflicts");
+    return debevrTag(h, he,
+	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+}
+
+static int debdependsTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
+{
+    he->tag = tagValue("Debdepends");
+    return debevrTag(h, he,
+	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+}
+
+static int debobsoletesTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
+{
+    he->tag = tagValue("Debobsoletes");
+    return debevrTag(h, he,
+	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
+static int debprovidesTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
+{
+    he->tag = tagValue("Debprovides");
+    return debevrTag(h, he,
+	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+}
+
+/**
+ * Retrieve digest/path pairs for --deb:md5sums.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int debmd5sumsTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, internalState @*/
+{
+    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Dhe = memset(alloca(sizeof(*Dhe)), 0, sizeof(*Dhe));
+    char * t, * te;
+    size_t nb = 0;
+    int rc = 1;
+    int xx;
+
+    Nhe->tag = RPMTAG_FILEPATHS;
+    if (!(xx = headerGet(h, Nhe, 0)))
+	goto exit;
+    Dhe->tag = RPMTAG_FILEDIGESTS;
+    if (!(xx = headerGet(h, Dhe, 0)))
+	goto exit;
+assert(Dhe->c == Nhe->c);
+
+    he->tag = tagValue("Debmd5sums");
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = 0;
+    he->freeData = 1;
+    for (Dhe->ix = 0; Dhe->ix < (int)Dhe->c; Dhe->ix++) {
+	if (!(Dhe->p.argv[Dhe->ix] && *Dhe->p.argv[Dhe->ix]))
+	    continue;
+	nb += sizeof(*he->p.argv);
+	nb += strlen(Dhe->p.argv[Dhe->ix]) + sizeof("  ") + strlen(Nhe->p.argv[Dhe->ix]) - 1;
+	he->c++;
+    }
+    nb += sizeof(*he->p.argv);
+
+    he->p.argv = xmalloc(nb);
+    te = (char *) &he->p.argv[he->c+1];
+
+    he->c = 0;
+    for (Dhe->ix = 0; Dhe->ix < (int)Dhe->c; Dhe->ix++) {
+	if (!(Dhe->p.argv[Dhe->ix] && *Dhe->p.argv[Dhe->ix]))
+	    continue;
+	he->p.argv[he->c++] = te;
+	t = rpmExpand(Dhe->p.argv[Dhe->ix], "  ", Nhe->p.argv[Dhe->ix]+1, NULL);
+	te = stpcpy(te, t);
+	te++;
+	t = _free(t);
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    Nhe->p.ptr = _free(Nhe->p.ptr);
+    Dhe->p.ptr = _free(Dhe->p.ptr);
+    return rc;
+}
+
 static int filestatTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTagData paths = { .ptr = NULL };
     /* _dev */
@@ -2379,6 +2652,354 @@ exit:
     return rc;
 }
 
+static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
+		HE_t PNhe, /*@null@*/ HE_t PEVRhe, /*@null@*/ HE_t PFhe)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *avp, *hitp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
+    HE_t REVRhe = memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
+    HE_t RFhe = memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
+    rpmdb _rpmdb = (rpmdb) headerGetRpmdb(h);
+    const char * key = PNhe->p.argv[PNhe->ix];
+    size_t keylen = 0;
+    rpmdbMatchIterator mi;
+    rpmTag tagN = RPMTAG_REQUIRENAME;
+    rpmTag tagEVR = RPMTAG_REQUIREVERSION;
+    rpmTag tagF = RPMTAG_REQUIREFLAGS;
+    uint32_t PFlags;
+    uint32_t RFlags;
+    EVR_t Pevr;
+    Header oh;
+    int rc = 0;
+    int xx;
+
+    if (tagNVRA == 0)
+	tagNVRA = RPMTAG_NVRA;
+
+    PFlags = (PFhe != NULL ? (PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK) : 0);
+    Pevr = rpmEVRnew(PFlags, 1);
+
+    if (PEVRhe != NULL)
+	xx = rpmEVRparse(xstrdup(PEVRhe->p.argv[PNhe->ix]), Pevr);
+
+    RNhe->tag = tagN;
+    REVRhe->tag = tagEVR;
+    RFhe->tag = tagF;
+
+    mi = rpmdbInitIterator(_rpmdb, tagN, key, keylen);
+    if (hitp && *hitp)
+	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+	if (!headerGet(oh, RNhe, 0))
+	    goto bottom;
+	if (PEVRhe != NULL) {
+	    if (!headerGet(oh, REVRhe, 0))
+		goto bottom;
+assert(REVRhe->c == RNhe->c);
+	    if (!headerGet(oh, RFhe, 0))
+		goto bottom;
+assert(RFhe->c == RNhe->c);
+	}
+
+	for (RNhe->ix = 0; RNhe->ix < (int)RNhe->c; RNhe->ix++) {
+	    if (strcmp(PNhe->p.argv[PNhe->ix], RNhe->p.argv[RNhe->ix]))
+		/*@innercontinue@*/ continue;
+	    if (PEVRhe == NULL)
+		goto bingo;
+	    RFlags = RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK;
+	    {	EVR_t Revr = rpmEVRnew(RFlags, 1);
+		if (!(PFlags && RFlags))
+		    xx = 1;
+		else {
+		    xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
+		    xx = rpmEVRoverlap(Pevr, Revr);
+		}
+		Revr = rpmEVRfree(Revr);
+	    }
+	    if (xx)
+		goto bingo;
+	}
+	goto bottom;
+
+bingo:
+	NVRAhe->tag = tagNVRA;
+	xx = headerGet(oh, NVRAhe, 0);
+	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
+	    xx = argvAdd(avp, NVRAhe->p.str);
+	    xx = argvSort(*avp, NULL);
+	    if (hitp != NULL)
+		xx = argiAdd(hitp, -1, rpmdbGetIteratorOffset(mi));
+	    rc++;
+	}
+
+bottom:
+	RNhe->p.ptr = _free(RNhe->p.ptr);
+	REVRhe->p.ptr = _free(REVRhe->p.ptr);
+	RFhe->p.ptr = _free(RFhe->p.ptr);
+	NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    Pevr = rpmEVRfree(Pevr);
+
+    return rc;
+}
+
+static int whatneedsTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
+    HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
+    HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
+    HE_t FNhe = memset(alloca(sizeof(*FNhe)), 0, sizeof(*FNhe));
+    rpmTag tagNVRA = RPMTAG_NVRA;
+    ARGV_t pkgs = NULL;
+    ARGI_t hits = NULL;
+    int rc = 1;
+
+    PNhe->tag = RPMTAG_PROVIDENAME;
+    if (!headerGet(h, PNhe, 0))
+	goto exit;
+    PEVRhe->tag = RPMTAG_PROVIDEVERSION;
+    if (!headerGet(h, PEVRhe, 0))
+	goto exit;
+assert(PEVRhe->c == PNhe->c);
+    PFhe->tag = RPMTAG_PROVIDEFLAGS;
+    if (!headerGet(h, PFhe, 0))
+	goto exit;
+assert(PFhe->c == PNhe->c);
+
+    FNhe->tag = RPMTAG_FILEPATHS;
+    if (!headerGet(h, FNhe, 0))
+	goto exit;
+
+    NVRAhe->tag = tagNVRA;;
+    if (!headerGet(h, NVRAhe, 0))
+	goto exit;
+
+    (void) argvAdd(&pkgs, NVRAhe->p.str);
+
+    for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++)
+	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, PNhe, PEVRhe, PFhe);
+    for (FNhe->ix = 0; FNhe->ix < (int)FNhe->c; FNhe->ix++)
+	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, FNhe, NULL, NULL);
+
+    /* Convert package NVRA array to Header string array. */
+    {	size_t nb = 0;
+	char * te;
+	uint32_t i;
+
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->c = argvCount(pkgs);
+	nb = 0;
+	for (i = 0; i < he->c; i++) {
+	    nb += sizeof(*he->p.argv);
+	    nb += strlen(pkgs[i]) + 1;
+	}
+	nb += sizeof(*he->p.argv);
+
+	he->p.argv = xmalloc(nb);
+	te = (char *) &he->p.argv[he->c+1];
+
+	for (i = 0; i < he->c; i++) {
+	    he->p.argv[i] = te;
+	    te = stpcpy(te, pkgs[i]);
+	    te++;
+	}
+	he->p.argv[he->c] = NULL;
+    }
+
+    hits = argiFree(hits);
+    pkgs = argvFree(pkgs);
+    rc = 0;
+
+exit:
+    NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    PNhe->p.ptr = _free(PNhe->p.ptr);
+    PEVRhe->p.ptr = _free(PEVRhe->p.ptr);
+    PFhe->p.ptr = _free(PFhe->p.ptr);
+    FNhe->p.ptr = _free(FNhe->p.ptr);
+    return rc;
+}
+
+static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
+		HE_t RNhe, /*@null@*/ HE_t REVRhe, /*@null@*/ HE_t RFhe)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *avp, *hitp, REVRhe, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
+    HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
+    HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
+    rpmdb _rpmdb = (rpmdb) headerGetRpmdb(h);
+    const char * key = RNhe->p.argv[RNhe->ix];
+    size_t keylen = 0;
+    rpmdbMatchIterator mi;
+    rpmTag tagN = tagN = (*RNhe->p.argv[RNhe->ix] == '/')
+	? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME;
+    rpmTag tagEVR = RPMTAG_PROVIDEVERSION;
+    rpmTag tagF = RPMTAG_PROVIDEFLAGS;
+    uint32_t PFlags;
+    uint32_t RFlags;
+    EVR_t Revr;
+    Header oh;
+    int rc = 0;
+    int xx;
+
+    if (tagNVRA == 0)
+	tagNVRA = RPMTAG_NVRA;
+
+    RFlags = (RFhe != NULL ? (RFhe->p.ui32p[RNhe->ix] & RPMSENSE_SENSEMASK) : 0);
+    Revr = rpmEVRnew(RFlags, 1);
+
+    if (REVRhe != NULL)
+	xx = rpmEVRparse(REVRhe->p.argv[RNhe->ix], Revr);
+
+    PNhe->tag = tagN;
+    PEVRhe->tag = tagEVR;
+    PFhe->tag = tagF;
+
+    mi = rpmdbInitIterator(_rpmdb, tagN, key, keylen);
+    if (hitp && *hitp)
+	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+	if (!headerGet(oh, PNhe, 0))
+	    goto bottom;
+	if (REVRhe != NULL) {
+	    if (!headerGet(oh, PEVRhe, 0))
+		goto bottom;
+assert(PEVRhe->c == PNhe->c);
+	    if (!headerGet(oh, PFhe, 0))
+		goto bottom;
+assert(PFhe->c == PNhe->c);
+	}
+
+	for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++) {
+	    if (strcmp(RNhe->p.argv[RNhe->ix], PNhe->p.argv[PNhe->ix]))
+		/*@innercontinue@*/ continue;
+	    if (REVRhe == NULL)
+		goto bingo;
+	    PFlags = PFhe->p.ui32p[PNhe->ix] & RPMSENSE_SENSEMASK;
+	    {	EVR_t Pevr = rpmEVRnew(PFlags, 1);
+		if (!(PFlags && RFlags))
+		    xx = 1;
+		else {
+		    xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
+		    xx = rpmEVRoverlap(Revr, Pevr);
+		}
+		Pevr = rpmEVRfree(Pevr);
+	    }
+	    if (xx)
+		goto bingo;
+	}
+	goto bottom;
+
+bingo:
+	NVRAhe->tag = tagNVRA;
+	xx = headerGet(oh, NVRAhe, 0);
+	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
+	    xx = argvAdd(avp, NVRAhe->p.str);
+	    xx = argvSort(*avp, NULL);
+	    if (hitp != NULL)
+		xx = argiAdd(hitp, -1, rpmdbGetIteratorOffset(mi));
+	    rc++;
+	}
+
+bottom:
+	PNhe->p.ptr = _free(PNhe->p.ptr);
+	PEVRhe->p.ptr = _free(PEVRhe->p.ptr);
+	PFhe->p.ptr = _free(PFhe->p.ptr);
+	NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    Revr = rpmEVRfree(Revr);
+
+    return rc;
+}
+
+static int needswhatTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
+    HE_t REVRhe = memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
+    HE_t RFhe = memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
+    rpmTag tagNVRA = RPMTAG_NVRA;
+    ARGV_t pkgs = NULL;
+    ARGI_t hits = NULL;
+    int rc = 1;
+
+    RNhe->tag = RPMTAG_REQUIRENAME;
+    if (!headerGet(h, RNhe, 0))
+	goto exit;
+    REVRhe->tag = RPMTAG_REQUIREVERSION;
+    if (!headerGet(h, REVRhe, 0))
+	goto exit;
+assert(REVRhe->c == RNhe->c);
+    RFhe->tag = RPMTAG_REQUIREFLAGS;
+    if (!headerGet(h, RFhe, 0))
+	goto exit;
+assert(RFhe->c == RNhe->c);
+
+    NVRAhe->tag = tagNVRA;;
+    if (!headerGet(h, NVRAhe, 0))
+	goto exit;
+
+    (void) argvAdd(&pkgs, NVRAhe->p.str);
+
+    for (RNhe->ix = 0; RNhe->ix < (int)RNhe->c; RNhe->ix++) {
+	if (*RNhe->p.argv[RNhe->ix] == '/' || *REVRhe->p.argv[RNhe->ix] == '\0')
+	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, NULL, NULL);
+	else
+	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, REVRhe, RFhe);
+    }
+
+    /* Convert package NVRA array to Header string array. */
+    {	size_t nb = 0;
+	char * te;
+	uint32_t i;
+
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->c = argvCount(pkgs);
+	nb = 0;
+	for (i = 0; i < he->c; i++) {
+	    nb += sizeof(*he->p.argv);
+	    nb += strlen(pkgs[i]) + 1;
+	}
+	nb += sizeof(*he->p.argv);
+
+	he->p.argv = xmalloc(nb);
+	te = (char *) &he->p.argv[he->c+1];
+
+	for (i = 0; i < he->c; i++) {
+	    he->p.argv[i] = te;
+	    te = stpcpy(te, pkgs[i]);
+	    te++;
+	}
+	he->p.argv[he->c] = NULL;
+    }
+
+    hits = argiFree(hits);
+    pkgs = argvFree(pkgs);
+    rc = 0;
+
+exit:
+    NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
+    RNhe->p.ptr = _free(RNhe->p.ptr);
+    REVRhe->p.ptr = _free(REVRhe->p.ptr);
+    RFhe->p.ptr = _free(RFhe->p.ptr);
+    return rc;
+}
 static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
 		uint32_t i)
 	/*@*/
@@ -2396,7 +3017,8 @@ static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
 }
 
 static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTag tag = he->tag;
     rpmTagData N = { .ptr = NULL };
@@ -2410,6 +3032,7 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
     N.argv = he->p.argv;
@@ -2428,8 +3051,10 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	ac++;
 	nb += sizeof(*he->p.argv);
 	nb += sizeof("<rpm:entry name=\"\"/>");
@@ -2458,8 +3083,10 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     t = (char *) &he->p.argv[he->c + 1];
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "<rpm:entry");
 	t = stpcpy(t, " name=\"");
@@ -2468,23 +3095,27 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	} else
 	    t = stpcpy(t, N.argv[i]);
 	t = stpcpy(t, "\"");
+/*@-readonlytrans@*/
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
-	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    uint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
 	    const char *E, *V, *R;
 	    char *f, *fe;
 	    t = stpcpy( stpcpy( stpcpy(t, " flags=\""), Fstr[Fx]), "\"");
 	    f = (char *) EVR.argv[i];
-	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++);
+	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++)
+		{};
 	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
 	    V = f;
-	    for (fe = f; *fe != '\0' && *fe != '-'; fe++);
+	    for (fe = f; *fe != '\0' && *fe != '-'; fe++)
+		{};
 	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
 	    t = stpcpy( stpcpy( stpcpy(t, " epoch=\""), (E && *E ? E : "0")), "\"");
 	    t = stpcpy( stpcpy( stpcpy(t, " ver=\""), V), "\"");
 	    if (R != NULL)
 		t = stpcpy( stpcpy( stpcpy(t, " rel=\""), R), "\"");
 	}
+/*@=readonlytrans@*/
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
 	    t = stpcpy(t, " pre=\"1\"");
@@ -2493,38 +3124,47 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	*t++ = '\0';
     }
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* N.argv may be kept. */
     N.argv = _free(N.argv);
+/*@=kepttrans@*/
+/*@-usereleased@*/	/* EVR.argv may be dead. */
     EVR.argv = _free(EVR.argv);
+/*@=usereleased@*/
     F.ui32p = _free(F.ui32p);
     return rc;
 }
 
 static int PxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_PROVIDENAME;
     return PRCOxmlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
 }
 
 static int RxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REQUIRENAME;
     return PRCOxmlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
 }
 
 static int CxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CONFLICTNAME;
     return PRCOxmlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
 }
 
 static int OxmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_OBSOLETENAME;
     return PRCOxmlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
@@ -2541,8 +3181,7 @@ static size_t sqlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-    while ((c = (int) *s++) != (int) '\0')
-    {
+    while ((c = (int) *s++) != (int) '\0') {
 	switch (c) {
 	case '\'':	len += 1;			/*@fallthrough@*/
 	default:	len += 1;			/*@switchbreak@*/ break;
@@ -2590,22 +3229,30 @@ assert(ix == 0);
 	val = xstrdup(_("(not a string)"));
     } else {
 	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb = sqlstrlen(s);
+	size_t nb;
 	char * t;
 
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+
+	nb = sqlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = sqlstrcpy(t, s);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-/*@-globstate@*/
+exit:
     return val;
-/*@=globstate@*/
 }
 
+/*@-compmempass -kepttrans -nullstate -usereleased @*/
 static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTag tag = he->tag;
     rpmTagData N = { .ptr = NULL };
@@ -2620,6 +3267,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
     N.argv = he->p.argv;
@@ -2635,12 +3283,14 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     if (xx == 0) goto exit;
     F.ui32p = he->p.ui32p;
 
-    xx = snprintf(instance, sizeof(instance), "'%d'", headerGetInstance(h));
+    xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	ac++;
 	nb += sizeof(*he->p.argv);
 	nb += strlen(instance) + sizeof(", '', '', '', '', ''");
@@ -2664,28 +3314,34 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     t = (char *) &he->p.argv[he->c + 1];
     ac = 0;
     for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
+/*@=nullstate@*/
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, instance);
 	t = stpcpy( stpcpy( stpcpy(t, ", '"), N.argv[i]), "'");
+/*@-readonlytrans@*/
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
-	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    uint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
 	    const char *E, *V, *R;
 	    char *f, *fe;
 	    t = stpcpy( stpcpy( stpcpy(t, ", '"), Fstr[Fx]), "'");
 	    f = (char *) EVR.argv[i];
-	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++);
+	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++)
+		{};
 	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
 	    V = f;
-	    for (fe = f; *fe != '\0' && *fe != '-'; fe++);
+	    for (fe = f; *fe != '\0' && *fe != '-'; fe++)
+		{};
 	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
 	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (E && *E ? E : "0")), "'");
 	    t = stpcpy( stpcpy( stpcpy(t, ", '"), V), "'");
 	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (R ? R : "")), "'");
 	} else
 	    t = stpcpy(t, ", '', '', '', ''");
+/*@=readonlytrans@*/
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME)
 	    t = stpcpy(stpcpy(stpcpy(t, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
@@ -2693,38 +3349,47 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	*t++ = '\0';
     }
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* N.argv may be kept. */
     N.argv = _free(N.argv);
+/*@=kepttrans@*/
+/*@-usereleased@*/	/* EVR.argv may be dead. */
     EVR.argv = _free(EVR.argv);
+/*@=usereleased@*/
     F.ui32p = _free(F.ui32p);
     return rc;
 }
 
 static int PsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_PROVIDENAME;
     return PRCOsqlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
 }
 
 static int RsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REQUIRENAME;
     return PRCOsqlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
 }
 
 static int CsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CONFLICTNAME;
     return PRCOsqlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
 }
 
 static int OsqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_OBSOLETENAME;
     return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
@@ -2736,6 +3401,7 @@ static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, uint32_t i)
     const char * dn = DN.argv[DI.ui32p[i]];
     size_t dnlen = strlen(dn);
 
+assert(dn != NULL);
     if (strstr(dn, "bin/") != NULL)
 	return 1;
     if (dnlen >= sizeof("/etc/")-1 && !strncmp(dn, "/etc/", dnlen))
@@ -2746,7 +3412,8 @@ static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, uint32_t i)
 }
 
 static int FDGxmlTag(Header h, HE_t he, int lvl)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTagData BN = { .ptr = NULL };
     rpmTagData DN = { .ptr = NULL };
@@ -2761,6 +3428,7 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = RPMTAG_BASENAMES;
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
@@ -2852,33 +3520,43 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
     }
 
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* {BN,DN,DI}.argv may be kept. */
     BN.argv = _free(BN.argv);
+/*@-usereleased@*/	/* DN.argv may be dead. */
     DN.argv = _free(DN.argv);
+/*@=usereleased@*/
     DI.ui32p = _free(DI.ui32p);
+/*@=kepttrans@*/
     FMODES.ui16p = _free(FMODES.ui16p);
+/*@-usereleased@*/	/* FFLAGS.argv may be dead. */
     FFLAGS.ui32p = _free(FFLAGS.ui32p);
+/*@=usereleased@*/
     return rc;
 }
 
 static int F1xmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGxmlTag(h, he, 1);
 }
 
 static int F2xmlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGxmlTag(h, he, 2);
 }
 
 static int FDGsqlTag(Header h, HE_t he, int lvl)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     rpmTagData BN = { .ptr = NULL };
     rpmTagData DN = { .ptr = NULL };
@@ -2894,6 +3572,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     int rc = 1;		/* assume failure */
     int xx;
 
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = RPMTAG_BASENAMES;
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
@@ -2920,7 +3599,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     if (xx == 0) goto exit;
     FFLAGS.ui32p = he->p.ui32p;
 
-    xx = snprintf(instance, sizeof(instance), "'%d'", headerGetInstance(h));
+    xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
@@ -2988,26 +3667,35 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     }
 
     he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
     rc = 0;
 
 exit:
+/*@-kepttrans@*/	/* {BN,DN,DI}.argv may be kept. */
     BN.argv = _free(BN.argv);
+/*@-usereleased@*/	/* DN.argv may be dead. */
     DN.argv = _free(DN.argv);
+/*@=usereleased@*/
     DI.ui32p = _free(DI.ui32p);
+/*@=kepttrans@*/
     FMODES.ui16p = _free(FMODES.ui16p);
+/*@-usereleased@*/	/* FFLAGS.argv may be dead. */
     FFLAGS.ui32p = _free(FFLAGS.ui32p);
+/*@=usereleased@*/
     return rc;
 }
 
 static int F1sqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGsqlTag(h, he, 1);
 }
 
 static int F2sqlTag(Header h, HE_t he)
-	/*@modifies he @*/
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGsqlTag(h, he, 2);
@@ -3032,6 +3720,7 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	size_t nb;
 	char * t;
 
+assert(he->p.str != NULL);
 	/* Get rightmost '/' in string (i.e. basename(3) behavior). */
 	if ((bn = strrchr(he->p.str, '/')) != NULL)
 	    bn++;
@@ -3040,6 +3729,12 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 
 	/* Convert to utf8, escape for XML CDATA. */
 	s = strdup_locale_convert(bn, (av ? av[0] : NULL));
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+
 	nb = xmlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = xmlstrcpy(t, s);	t += strlen(t);
@@ -3047,9 +3742,8 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	s = _free(s);
     }
 
-/*@-globstate@*/
+exit:
     return val;
-/*@=globstate@*/
 }
 
 typedef struct key_s {
@@ -3212,7 +3906,7 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
     uint32_t keyval = 0;
 
     if (name && * name) {
-	KEY needle = { .name = name };
+	KEY needle = { .name = name, .value = 0 };
 	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
 	if (k)
 	    keyval = k->value;
@@ -3250,6 +3944,7 @@ assert(ix == 0);
 	break;
     }
 
+assert(he->p.ptr != NULL);
     {	uint32_t keyval = keyValue(keyDigests, nkeyDigests, (av ? av[0] : NULL));
 	uint32_t algo = (keyval ? keyval : PGPHASHALGO_SHA1);
 	DIGEST_CTX ctx = rpmDigestInit(algo, 0);
@@ -3258,9 +3953,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -3270,10 +3963,13 @@ exit:
  * @return		formatted string
  */
 static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    /*@unchecked@*/
+/*@-nullassign@*/
+    /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "mode", NULL };
+/*@=nullassign@*/
     const char * fn = NULL;
     struct stat sb, *st = &sb;
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -3281,12 +3977,13 @@ static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
     int xx;
     int i;
 
+    memset(st, 0, sizeof(*st));
 assert(ix == 0);
     switch(he->t) {
     case RPM_BIN_TYPE:
 	/* XXX limit to RPMTAG_PACKAGESTAT ... */
 	if (he->tag == RPMTAG_PACKAGESTAT)
-	if (he->c == sizeof(*st)) {
+	if ((size_t)he->c == sizeof(*st)) {
 	    st = (struct stat *)he->p.ptr;
 	    break;
 	}
@@ -3299,7 +3996,9 @@ assert(ix == 0);
 	fn = he->p.str;
 	if (Lstat(fn, st) == 0)
 	    break;
+/*@-ownedtrans@*/
 	val = rpmExpand("(Lstat:", fn, ":", strerror(errno), ")", NULL);
+/*@=ownedtrans@*/
 	goto exit;
 	/*@notreached@*/ break;
     }
@@ -3316,63 +4015,63 @@ assert(ix == 0);
 	b[0] = '\0';
 	switch (keyval) {
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_NONE:
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_DEV:
 	    xx = snprintf(b, nb, "0x%lx", (unsigned long)st->st_dev);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_INO:
 	    xx = snprintf(b, nb, "0x%lx", (unsigned long)st->st_ino);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_MODE:
 	    xx = snprintf(b, nb, "%06o", (unsigned)st->st_mode);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_NLINK:
 	    xx = snprintf(b, nb, "0x%ld", (unsigned long)st->st_nlink);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_UID:
 	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_uid);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_GID:
 	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_gid);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_RDEV:
 	    xx = snprintf(b, nb, "0x%lx", (unsigned long)st->st_rdev);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_SIZE:
 	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_size);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_BLKSIZE:
 	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_blksize);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_BLOCKS:
 	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_blocks);
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_ATIME:
 	    (void) stpcpy(b, ctime(&st->st_atime));
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_CTIME:
 	    (void) stpcpy(b, ctime(&st->st_ctime));
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_MTIME:
 	    (void) stpcpy(b, ctime(&st->st_mtime));
-	    break;
+	    /*@switchbreak@*/ break;
 #ifdef	NOTYET
 	case STAT_KEYS_FLAGS:
-	    break;
+	    /*@switchbreak@*/ break;
 #endif
 	case STAT_KEYS_SLINK:
 	    if (fn != NULL && S_ISLNK(st->st_mode)) {
 		ssize_t size = Readlink(fn, b, nb);
 		if (size == -1) {
 		    nval = rpmExpand("(Readlink:", fn, ":", strerror(errno), ")", NULL);
-		    stpcpy(b, nval);
+		    (void) stpcpy(b, nval);
 		    nval = _free(nval);
 		} else
 		    b[size] = '\0';
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_DIGEST:
 	    if (fn != NULL && S_ISREG(st->st_mode)) {
 		uint32_t digval = keyValue(keyDigests, nkeyDigests, av[i]);
@@ -3392,19 +4091,27 @@ assert(ix == 0);
 			fdFiniDigest(fd, algo, &nval, NULL, asAscii);
 	    }
 		if (nval) {
-		    stpcpy(b, nval);
+		    (void) stpcpy(b, nval);
 		    nval = _free(nval);
 		}
 		if (fd != NULL)
 		    xx = Fclose(fd);
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case STAT_KEYS_UNAME:
-	    (void) stpcpy(b, uidToUname(st->st_uid));
-	    break;
+	{   const char * uname = uidToUname(st->st_uid);
+	    if (uname != NULL)
+		(void) stpcpy(b, uname);
+	    else
+		xx = snprintf(b, nb, "%u", (unsigned)st->st_uid);
+	}   /*@switchbreak@*/ break;
 	case STAT_KEYS_GNAME:
-	    (void) stpcpy(b, gidToGname(st->st_gid));
-	    break;
+	{   const char * gname = gidToGname(st->st_gid);
+	    if (gname != NULL)
+		(void) stpcpy(b, gname);
+	    else
+		xx = snprintf(b, nb, "%u", (unsigned)st->st_gid);
+	}   /*@switchbreak@*/ break;
 	}
 	if (b[0] == '\0')
 	    continue;
@@ -3420,9 +4127,7 @@ assert(ix == 0);
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -3432,11 +4137,14 @@ exit:
  * @return		formatted string
  */
 static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
-    /*@unchecked@*/
+/*@-nullassign@*/
+    /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "v5", NULL };
-    int version = 0;
+/*@=nullassign@*/
+    uint32_t version = 0;
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val = NULL;
     int i;
@@ -3459,13 +4167,13 @@ assert(ix == 0);
 
 	switch (keyval) {
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	case UUID_KEYS_V1:
 	case UUID_KEYS_V3:
 	case UUID_KEYS_V4:
 	case UUID_KEYS_V5:
 	    version = keyval;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
 
@@ -3477,14 +4185,13 @@ assert(ix == 0);
 	nhe->p.str = xstrdup(he->p.str);
 	nhe->c = he->c;
 	val = xmalloc((128/4 + 4) + 1);
+	*val = '\0';
 	xx = str2uuid(nhe, NULL, version, val);
 	nhe->p.ptr = _free(nhe->p.ptr);
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
 /**
@@ -3513,8 +4220,10 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	break;
     case RPM_STRING_TYPE:
 	end = NULL;
+/*@-unrecog@*/	/* Add annotated prototype. */
 	stack[ix] = strtoll(he->p.str, &end, 0);
-	if (*end != '\0') {
+/*@=unrecog@*/
+	if (end && *end != '\0') {
 	    val = xstrdup(_("(invalid string :rpn)"));
 	    goto exit;
 	}
@@ -3525,12 +4234,12 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
     for (i = 0; av[i] != NULL; i++) {
 	const char * arg = av[i];
 	size_t len = strlen(arg);
-	int c = *arg;
+	int c = (int) *arg;
 
 	if (len == 0) {
 	    /* do nothing */
 	} else if (len > 1) {
-	    if (!(xisdigit(c) || (c == '-' && xisdigit(arg[1])))) {
+	    if (!(xisdigit(c) || (c == (int)'-' && xisdigit((int) arg[1])))) {
 		val = xstrdup(_("(expected number :rpn)"));
 		goto exit;
 	    }
@@ -3540,7 +4249,7 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	    }
 	    end = NULL;
 	    stack[ix] = strtoll(arg, &end, 0);
-	    if (*end != '\0') {
+	    if (end && *end != '\0') {
 		val = xstrdup(_("(invalid number :rpn)"));
 		goto exit;
 	    }
@@ -3550,23 +4259,23 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 		goto exit;
 	    }
 	    switch (c) {
-	    case '&':	stack[ix] &= stack[ix+1];	break;
-	    case '|':	stack[ix] |= stack[ix+1];	break;
-	    case '^':	stack[ix] ^= stack[ix+1];	break;
-	    case '+':	stack[ix] += stack[ix+1];	break;
-	    case '-':	stack[ix] -= stack[ix+1];	break;
-	    case '*':	stack[ix] *= stack[ix+1];	break;
+	    case '&':	stack[ix] &= stack[ix+1];	/*@switchbreak@*/ break;
+	    case '|':	stack[ix] |= stack[ix+1];	/*@switchbreak@*/ break;
+	    case '^':	stack[ix] ^= stack[ix+1];	/*@switchbreak@*/ break;
+	    case '+':	stack[ix] += stack[ix+1];	/*@switchbreak@*/ break;
+	    case '-':	stack[ix] -= stack[ix+1];	/*@switchbreak@*/ break;
+	    case '*':	stack[ix] *= stack[ix+1];	/*@switchbreak@*/ break;
 	    case '%':	
 	    case '/':	
 		if (stack[ix+1] == 0) {
 		    val = xstrdup(_("(divide by zero :rpn)"));
 		    goto exit;
 		}
-		if (c == '%')
+		if (c == (int)'%')
 		    stack[ix] %= stack[ix+1];
 		else
 		    stack[ix] /= stack[ix+1];
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
     }
@@ -3580,12 +4289,115 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
     }
 
 exit:
-/*@-globstate@*/
     return val;
-/*@=globstate@*/
 }
 
-/*@-type@*/ /* FIX: cast? */
+/**
+ * Replace string values.
+ * @param he		tag container
+ * @param av		parameter list (NULL is an error)
+ * @return		formatted string
+ */
+static /*@only@*/ char * strsubFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
+{
+    char * val = NULL;
+    int ac = argvCount(av);
+    miRE mires = NULL;
+    int nmires = 0;
+    int xx;
+    int i;
+
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :strsub)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_STRING_TYPE:
+	if (ac < 2 || (ac % 2) != 0) {
+	    val = xstrdup(_("(invalid args :strsub)"));
+	    goto exit;
+	}
+	break;
+    }
+    if (av == NULL)
+	goto noop;
+
+    /* Create the mire pattern array. */
+    for (i = 0; av[i] != NULL; i += 2)
+	xx = mireAppend(RPMMIRE_REGEX, 0, av[i], NULL, &mires, &nmires);
+
+    /* Find-and-replace first pattern that matches. */
+    if (mires != NULL) {
+	int noffsets = 3;
+	int offsets[3];
+	const char * s, * se;
+	char * t, * te;
+	char * nval;
+	size_t slen;
+	size_t nb;
+
+	for (i = 0; i < nmires; i++) {
+	    miRE mire = mires + i;
+
+	    s = he->p.str;
+	    slen = strlen(s);
+	    if ((xx = mireRegexec(mire, s, slen)) < 0)
+		continue;
+	    xx = mireSetEOptions(mire, offsets, noffsets);
+
+	    /* Replace the string(s). This is just s/find/replace/g */
+	    val = xstrdup("");
+	    while (*s != '\0') {
+		nb = strlen(s);
+		if ((se = strchr(s, '\n')) == NULL)
+		    se = s + nb;
+		else
+		    se++;
+
+		offsets[0] = offsets[1] = -1;
+		xx = mireRegexec(mire, s, nb);
+
+		nb = 1;
+		/* On match, copy lead-in and match string. */
+		if (xx == 0)
+		    nb += offsets[0] + strlen(av[2*i+1]);
+		/* Copy up to EOL on nomatch or insertion. */
+		if (xx != 0 || offsets[1] == offsets[0])
+		    nb += (se - (s + offsets[1]));
+
+		te = t = xmalloc(nb);
+
+		/* On match, copy lead-in and match string. */
+		if (xx == 0) {
+		    te = stpcpy( stpncpy(te, s, offsets[0]), av[2*i+1]);
+		    s += offsets[1];
+		}
+		/* Copy up to EOL on nomatch or insertion. */
+		if (xx != 0 || offsets[1] == offsets[0]) {
+		    s += offsets[1];
+		    te = stpncpy(te, s, (se - s));
+		    s = se;
+		}
+		*te = '\0';
+
+		nval = rpmExpand(val, t, NULL);
+		val = _free(val);
+		val = nval;
+		t = _free(t);
+	    }
+	}
+	mires = mireFreeAll(mires, nmires);
+    }
+
+noop:
+    if (val == NULL)
+	val = xstrdup(he->p.str);
+exit:
+    return val;
+}
+
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_BUILDTIMEUUID",
 	{ .tagFunction = buildtime_uuidTag } },
@@ -3671,6 +4483,20 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = F1sqlTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILESSQLENTRY2",
 	{ .tagFunction = F2sqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBCONFLICTS",
+	{ .tagFunction = debconflictsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBDEPENDS",
+	{ .tagFunction = debdependsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBMD5SUMS",
+	{ .tagFunction = debmd5sumsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBOBSOLETES",
+	{ .tagFunction = debobsoletesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DEBPROVIDES",
+	{ .tagFunction = debprovidesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NEEDSWHAT",
+	{ .tagFunction = needswhatTag } },
+    { HEADER_EXT_TAG, "RPMTAG_WHATNEEDS",
+	{ .tagFunction = whatneedsTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
@@ -3681,6 +4507,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = cdataFormat } },
     { HEADER_EXT_FORMAT, "depflags",
 	{ .fmtFunction = depflagsFormat } },
+    { HEADER_EXT_FORMAT, "deptype",
+	{ .fmtFunction = deptypeFormat } },
     { HEADER_EXT_FORMAT, "digest",
 	{ .fmtFunction = digestFormat } },
     { HEADER_EXT_FORMAT, "fflags",
@@ -3699,6 +4527,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = sqlescapeFormat } },
     { HEADER_EXT_FORMAT, "stat",
 	{ .fmtFunction = statFormat } },
+    { HEADER_EXT_FORMAT, "strsub",
+	{ .fmtFunction = strsubFormat } },
     { HEADER_EXT_FORMAT, "triggertype",	
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",
@@ -3711,7 +4541,6 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = yamlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) &headerDefaultFormats } }
 } ;
-/*@=type@*/
 
 headerSprintfExtension headerCompoundFormats = &_headerCompoundFormats[0];
 
@@ -3801,13 +4630,15 @@ struct sprintfTag_s {
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    rpmTag tagno;
+/*@only@*/ /*@relnull@*/
+    rpmTag * tagno;
     int justOne;
     int arrayCount;
 /*@kept@*/
     char * format;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     ARGV_t av;
+/*@only@*/ /*@relnull@*/
     ARGV_t params;
     unsigned pad;
 };
@@ -3884,7 +4715,8 @@ struct headerSprintfArgs_s {
 
 /**
  */
-static char escapedChar(const char ch)	/*@*/
+static char escapedChar(const char ch)
+	/*@*/
 {
 /*@-modfilesys@*/
 if (_hdr_debug)
@@ -3936,9 +4768,12 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 	switch (format[i].type) {
 	case PTOK_TAG:
 	    (void) rpmheClean(&format[i].u.tag.he);
+	    format[i].u.tag.tagno = _free(format[i].u.tag.tagno);
 	    format[i].u.tag.av = argvFree(format[i].u.tag.av);
 	    format[i].u.tag.params = argvFree(format[i].u.tag.params);
+/*@-type@*/
 	    format[i].u.tag.fmtfuncs = _free(format[i].u.tag.fmtfuncs);
+/*@=type@*/
 	    /*@switchbreak@*/ break;
 	case PTOK_ARRAY:
 	    format[i].u.array.format =
@@ -3953,9 +4788,12 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
 	    (void) rpmheClean(&format[i].u.cond.tag.he);
+	    format[i].u.cond.tag.tagno = _free(format[i].u.cond.tag.tagno);
 	    format[i].u.cond.tag.av = argvFree(format[i].u.cond.tag.av);
 	    format[i].u.cond.tag.params = argvFree(format[i].u.cond.tag.params);
+/*@-type@*/
 	    format[i].u.cond.tag.fmtfuncs = _free(format[i].u.cond.tag.fmtfuncs);
+/*@=type@*/
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
 	case PTOK_STRING:
@@ -3984,7 +4822,7 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
 
     if (hsa != NULL) {
 	hsa->i = 0;
-	if (tag != NULL && tag->tagno == (rpmTag)-2)
+	if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2)
 	    hsa->hi = headerInit(hsa->h);
     }
 /*@-nullret@*/
@@ -3999,7 +4837,8 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
  */
 /*@null@*/
 static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
-	/*@modifies hsa */
+	/*@globals internalState @*/
+	/*@modifies hsa, internalState @*/
 {
     sprintfToken fmt = NULL;
     sprintfTag tag =
@@ -4017,11 +4856,11 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    HE_t he = rpmheClean(&tag->he);
 	    if (!headerNext(hsa->hi, he, 0))
 	    {
-		tag->tagno = 0;
+		tag->tagno[0] = 0;
 		return NULL;
 	    }
 	    he->avail = 1;
-	    tag->tagno = he->tag;
+	    tag->tagno[0] = he->tag;
 	}
     }
 
@@ -4146,14 +4985,14 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     sprintfTag stag = (token->type == PTOK_COND
 	? &token->u.cond.tag : &token->u.tag);
     int extNum;
+    rpmTag tagno = (rpmTag)-1;
 
     stag->fmtfuncs = NULL;
     stag->ext = NULL;
     stag->extNum = 0;
-    stag->tagno = -1;
 
     if (!strcmp(name, "*")) {
-	stag->tagno = -2;
+	tagno = (rpmTag)-2;
 	goto bingo;
     }
 
@@ -4172,32 +5011,37 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 	if (!xstrcasecmp(ext->name, name)) {
 	    stag->ext = ext->u.tagFunction;
 	    stag->extNum = extNum;
+	    tagno = tagValue(name);
 	    goto bingo;
 	}
     }
 
     /* Search tag names. */
-    stag->tagno = myTagValue(hsa->tags, name);
-    if (stag->tagno != 0)
+    tagno = myTagValue(hsa->tags, name);
+    if (tagno != 0)
 	goto bingo;
 
     return 1;
 
 bingo:
+    stag->tagno = xcalloc(1, sizeof(*stag->tagno));
+    stag->tagno[0] = tagno;
     /* Search extensions for specific format(s). */
     if (stag->av != NULL) {
 	int i;
+/*@-type@*/
 	stag->fmtfuncs = xcalloc(argvCount(stag->av) + 1, sizeof(*stag->fmtfuncs));
+/*@=type@*/
 	for (i = 0; stag->av[i] != NULL; i++) {
 	    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
 		 ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
 	    {
 		if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		if (strcmp(ext->name, stag->av[i]+1))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		stag->fmtfuncs[i] = ext->u.fmtFunction;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
     }
@@ -4228,7 +5072,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * @param state
  * @return		0 on success
  */
-static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
+static int parseFormat(headerSprintfArgs hsa, char * str,
 		/*@out@*/ sprintfToken * formatPtr,
 		/*@out@*/ size_t * numTokensPtr,
 		/*@null@*/ /*@out@*/ char ** endPtr, int state)
@@ -4263,7 +5107,7 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
     format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
-/*@-infloops@*/ /* LCL: can't detect done termination */
+/*@-infloops@*/ /* LCL: can't detect (start, *start) termination */
     dst = start = str;
     numTokens = 0;
     token = NULL;
@@ -4276,9 +5120,9 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
 		if (token == NULL || token->type != PTOK_STRING) {
 		    token = format + numTokens++;
 		    token->type = PTOK_STRING;
-		    /*@-temptrans -assignexpose@*/
+/*@-temptrans -assignexpose@*/
 		    dst = token->u.string.string = start;
-		    /*@=temptrans =assignexpose@*/
+/*@=temptrans =assignexpose@*/
 		}
 		start++;
 		*dst++ = *start++;
@@ -4302,9 +5146,9 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
 		/*@switchbreak@*/ break;
 	    }
 
-	    /*@-assignexpose@*/
+/*@-assignexpose@*/
 	    token->u.tag.format = start;
-	    /*@=assignexpose@*/
+/*@=assignexpose@*/
 	    token->u.tag.pad = 0;
 	    token->u.tag.justOne = 0;
 	    token->u.tag.arrayCount = 0;
@@ -4491,9 +5335,9 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 	    if (token == NULL || token->type != PTOK_STRING) {
 		token = format + numTokens++;
 		token->type = PTOK_STRING;
-		/*@-temptrans -assignexpose@*/
+/*@-temptrans -assignexpose@*/
 		dst = token->u.string.string = start;
-		/*@=temptrans =assignexpose@*/
+/*@=temptrans =assignexpose@*/
 	    }
 
 /*@-modfilesys@*/
@@ -4675,8 +5519,9 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
  */
 /*@observer@*/ /*@null@*/
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
-		uint32_t element)
-	/*@modifies hsa, tag @*/
+		size_t element)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies hsa, tag, rpmGlobalMacroContext, internalState @*/
 {
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     HE_t he = &tag->he;
@@ -4691,7 +5536,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	if (tag->ext)
 	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 	else {
-	    he->tag = tag->tagno;	/* XXX necessary? */
+	    he->tag = tag->tagno[0];	/* XXX necessary? */
 	    xx = headerGet(hsa->h, he, 0);
 	}
 	if (!xx) {
@@ -4744,13 +5589,13 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 assert(0);	/* XXX keep gcc quiet. */
 	    /*@innerbreak@*/ break;
 	case RPM_UINT8_TYPE:
-	    ival = he->p.ui8p[element];
+	    ival = (uint64_t)he->p.ui8p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_UINT16_TYPE:
-	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
+	    ival = (uint64_t)he->p.ui16p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_UINT32_TYPE:
-	    ival = he->p.ui32p[element];
+	    ival = (uint64_t)he->p.ui32p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_UINT64_TYPE:
 	    ival = he->p.ui64p[element];
@@ -4798,10 +5643,10 @@ assert(0);	/* XXX keep gcc quiet. */
 
 	    nval = fmt(vhe, av);
 
-/*@-modfilesys@*/
+/*@-castfcnptr -modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], tag->params[i], fmt, vhe, (av ? av : NULL), val);
-/*@=modfilesys@*/
+fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], (tag->params ? tag->params[i] : NULL), (void *)fmt, (void *)vhe, (void *)(av ? av : NULL), (val ? val : "(null)"));
+/*@=castfcnptr =modfilesys@*/
 
 	    /* Accumulate (by appending) next formmatter's return string. */
 	    if (val == NULL)
@@ -4809,7 +5654,7 @@ fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], tag->params[i], f
 	    else {
 		char * oval = val;
 		/* XXX using ... | ... as separator is feeble. */
-		val = rpmExpand(val, (*val ? " | " : ""), nval, NULL);
+		val = rpmExpand(val, (*val != '\0' ? " | " : ""), nval, NULL);
 		oval = _free(oval);
 	    }
 	    nval = _free(nval);
@@ -4856,19 +5701,20 @@ exit:
  * @param element	element index
  * @return		end of formatted string (NULL on error)
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
-		uint32_t element)
-	/*@modifies hsa, token @*/
+		size_t element)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies hsa, token, rpmGlobalMacroContext, internalState @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
-    uint32_t i, j;
-    uint32_t numElements;
+    size_t i, j;
+    size_t numElements;
     sprintfToken spft;
     sprintfTag tag = NULL;
     HE_t he = NULL;
-    uint32_t condNumFormats;
+    size_t condNumFormats;
     size_t need;
     int xx;
 
@@ -4898,7 +5744,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
     case PTOK_COND:
 	if (token->u.cond.tag.ext
-	 || headerIsEntry(hsa->h, token->u.cond.tag.tagno))
+	 || headerIsEntry(hsa->h, token->u.cond.tag.tagno[0]))
 	{
 	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
@@ -4930,7 +5776,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		continue;
 	    he = &tag->he;
 	    if (!he->avail) {
-		he->tag = tag->tagno;
+		he->tag = tag->tagno[0];
 		if (tag->ext)
 		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 		else
@@ -4949,7 +5795,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    numElements = he->c;
 		    /*@switchbreak@*/ break;
 		}
-		if (he->c == numElements)
+		if ((size_t)he->c == numElements)
 		    /*@switchbreak@*/ break;
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");
@@ -4990,43 +5836,41 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isxml) {
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno & 0x40000000) {
+		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				(unsigned) tag->tagno);
+				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		} else
-		    tagN = myTagName(hsa->tags, tag->tagno, NULL);
+		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
+assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
-		rpmTag tagT = 0;
+		rpmTagReturnType tagT = 0;
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno & 0x40000000) {
+		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				(unsigned) tag->tagno);
+				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
-/*@-type@*/
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
-/*@=type@*/
 		} else
-		    tagN = myTagName(hsa->tags, tag->tagno, &tagT);
+		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
+assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		*te++ = ' ';
 		*te++ = ' ';
 		te = stpcpy(te, tagN);
 		*te++ = ':';
-/*@-type@*/
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
-/*@=type@*/
 		*te = '\0';
 		hsa->vallen += (te - t);
 	    }
@@ -5163,9 +6007,9 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	NULL));
 
     /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
-    isxml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->av != NULL
+    isxml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
 		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
-    isyaml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->av != NULL
+    isyaml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
 		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
 
     if (isxml) {
@@ -5183,9 +6027,9 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 
     hsa = hsaInit(hsa);
     while ((nextfmt = hsaNext(hsa)) != NULL) {
-/*@-modobserver@*/	/* headerCompoundFormats not modified. */
+/*@-globs -mods@*/	/* XXX rpmGlobalMacroContext @*/
 	te = singleSprintf(hsa, nextfmt, 0);
-/*@=modobserver@*/
+/*@=globs =mods @*/
 	if (te == NULL) {
 	    hsa->val = _free(hsa->val);
 	    break;
