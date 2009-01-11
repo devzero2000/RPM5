@@ -390,13 +390,13 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  * Check package and header signatures.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
- * @param fd		package file handle
+ * @param _fd		package file handle
  * @param fn		package file name
  * @return		0 on success, 1 on failure
  */
-int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
+int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies qva, ts, fd, rpmGlobalMacroContext, h_errno,
+	/*@modifies qva, ts, _fd, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
