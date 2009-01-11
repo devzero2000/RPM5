@@ -1,24 +1,26 @@
 #!/bin/sh
 
 hdir="`pwd`/.gnupg"
-gpg="gpg --homedir $hdir"
+gpg="gpg2 --homedir $hdir"
 
 rm -rf $hdir
 
-$gpg --gen-key --batch << GO_SYSIN_DD
+$gpg --batch --debug-quick-random --gen-key << GO_SYSIN_DD
 Key-Type: DSA
 Key-Length: 1024
 Key-Usage: sign
 Name-Real: DSApub
 Name-Comment: 1024
-Name-Email: jbj@jbj.org
+Name-Email: jbj@rpm5.org
+Expire-Date: 7
 %commit
 Key-Type: RSA
-Key-Length: 1024
-Key-Usage: sign
+Key-Length: 4096
+Key-Usage: sign,encrypt
 Name-Real: RSApub
-Name-Comment: 1024
-Name-Email: jbj@jbj.org
+Name-Comment: 4096
+Name-Email: jbj@rpm5.org
+Expire-Date: 7
 %commit
 GO_SYSIN_DD
 
