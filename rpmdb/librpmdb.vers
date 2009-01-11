@@ -24,7 +24,9 @@ LIBRPMDB_0
     fpLookup;
     fpLookupList;
     _hdr_debug;
+    _hdr_fastdatalength;
     _hdr_getops;
+    _hdr_lazytagswab;
     _hdr_loadops;
     _hdr_stats;
     headerAddI18NString;
@@ -42,6 +44,8 @@ LIBRPMDB_0
     headerSetBaseURL;
     headerGetDigest;
     headerSetDigest;
+    headerGetRpmdb;
+    headerSetRpmdb;
     headerGetInstance;
     headerSetInstance;
     headerGetMagic;
@@ -119,6 +123,9 @@ LIBRPMDB_0
     rpmEVRcmp;
     rpmEVRcompare;
     rpmEVRflags;
+    rpmEVRfree;
+    rpmEVRnew;
+    rpmEVRoverlap;
     rpmEVRparse;
     _rpmns_debug;
     _rpmns_N_at_A;

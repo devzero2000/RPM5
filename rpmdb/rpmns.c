@@ -5,18 +5,19 @@
 
 #include <rpmio_internal.h>	/* XXX rpmioSlurp */
 #include <rpmmacro.h>
+#include <rpmcb.h>
 
 #define	_RPMPGP_INTERNAL
 #include <rpmpgp.h>
 
 #include <rpmlib.h>		/* XXX RPMRC_OK */
+#include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
-
-#include <rpmcb.h>
 #include <rpmdb.h>
+
 #include <rpmps.h>
 #define	_RPMTS_INTERNAL		/* XXX ts->pkpkt, ts->pkpktlen */
 #include <rpmts.h>
@@ -183,12 +184,12 @@ nsType rpmnsClassify(const char * str)
     Type = rpmnsProbe(str);
     if (Type != RPMNS_TYPE_UNKNOWN)
 	return Type;
-    for (s = str; *s; s++) {
+    for (s = str; *s != '\0'; s++) {
 	if (s[0] == '(' || s[strlen(s)-1] == ')')
 	    return RPMNS_TYPE_NAMESPACE;
 	if (s[0] == '.' && s[1] == 's' && s[2] == 'o')
 	    return RPMNS_TYPE_DSO;
-	if (s[0] == '.' && xisdigit(s[-1]) && xisdigit(s[1]))
+	if (s[0] == '.' && xisdigit((int)s[-1]) && xisdigit((int)s[1]))
 	    return RPMNS_TYPE_VERSION;
 	if (_rpmns_N_at_A && _rpmns_N_at_A[0]) {
 	    if (s[0] == _rpmns_N_at_A[0] && rpmnsArch(s+1))
@@ -278,10 +279,10 @@ static inline unsigned char nibble(char c)
     if (c >= '0' && c <= '9')
 	return (unsigned char)(c - '0');
     if (c >= 'A' && c <= 'F')
-	return (unsigned char)((c - 'A') + 10);
+	return (unsigned char)((int)(c - 'A') + 10);
     if (c >= 'a' && c <= 'f')
-	return (unsigned char)((c - 'a') + 10);
-    return 0;
+	return (unsigned char)((int)(c - 'a') + 10);
+    return '\0';
 }
 
 rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
@@ -300,7 +301,10 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     int xx;
 
 if (_rpmns_debug)
-fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubid);
+fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn,
+(sigfn ? sigfn : "(null)"),
+(pubfn ? pubfn : "(null)"),
+(pubid ? pubid : "(null)"));
 
     /* Load the signature. Use sigfn if specified, otherwise clearsign. */
     if (sigfn && *sigfn) {
@@ -308,7 +312,7 @@ fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubid);
 	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
 	if (xx != PGPARMOR_SIGNATURE) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned int)sigpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned)sigpktlen, xx);
 	    _sigfn = _free(_sigfn);
 	    goto exit;
 	}
@@ -318,7 +322,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsi
 	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
 	if (xx != PGPARMOR_SIGNATURE) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned int)sigpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned)sigpktlen, xx);
 	    _sigfn = _free(_sigfn);
 	    goto exit;
 	}
@@ -327,22 +331,24 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsi
     xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
     if (xx) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, (unsigned int)sigpktlen, xx);
+fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, (unsigned)sigpktlen, xx);
 	goto exit;
     }
 
     sigp = pgpGetSignature(dig);
 
-    if (sigp->version != 3 && sigp->version != 4) {
+    if (sigp->version != (uint8_t)3 && sigp->version != (uint8_t)4) {
 if (_rpmns_debug)
-fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
+fprintf(stderr, "==> unverifiable V%u\n", (unsigned)sigp->version);
 	goto exit;
     }
 
     /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
     if (pubfn && *pubfn) {
 	const char * _pubfn = rpmExpand(pubfn, NULL);
-	xx = pgpReadPkts(_pubfn, (uint8_t **)&ts->pkpkt, &ts->pkpktlen);
+/*@-type@*/
+	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
+/*@=type@*/
 	if (xx != PGPARMOR_PUBKEY) {
 if (_rpmns_debug)
 fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, (unsigned int)ts->pkpktlen, xx);
@@ -395,7 +401,7 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	xx = memcmp(t, s + (8 - ns), ns);
 
 	/* XXX HACK: V4 RSA key id's are wonky atm. */
-	if (pubp->pubkey_algo == PGPPUBKEYALGO_RSA)
+	if (pubp->pubkey_algo == (uint8_t)PGPPUBKEYALGO_RSA)
 	    xx = 0;
 
 	if (xx) {
@@ -412,10 +418,10 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4), pubid);
      && sigp->hash_algo == pubp->hash_algo
 #endif
     /* XXX HACK: V4 RSA key id's are wonky atm. */
-     && (pubp->pubkey_algo == PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) ) {
+     && (pubp->pubkey_algo == (uint8_t)PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) ) {
 if (_rpmns_debug) {
 fprintf(stderr, "==> mismatch between signature and pubkey\n");
-fprintf(stderr, "\tpubkey_algo: %u  %u\n", sigp->pubkey_algo, pubp->pubkey_algo);
+fprintf(stderr, "\tpubkey_algo: %u  %u\n", (unsigned)sigp->pubkey_algo, (unsigned)pubp->pubkey_algo);
 fprintf(stderr, "\tsignid: %08X %08X    %08X %08X\n",
 pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4), 
 pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
@@ -424,7 +430,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
     }
 
     /* Compute the message digest. */
-    ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+    ctx = rpmDigestInit((pgpHashAlgo)sigp->hash_algo, RPMDIGEST_NONE);
 
     {	
 	static const char clrtxt[] = "-----BEGIN PGP SIGNED MESSAGE-----";
@@ -436,7 +442,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
 
 	if (!(_rc == 0 && b != NULL && blen > 0)) {
 if (_rpmns_debug)
-fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, (unsigned int)blen, _rc);
+fprintf(stderr, "==> rpmioSlurp(%s) MSG ret %d\n", _fn, _rc);
 	    b = _free(b);
 	    _fn = _free(_fn);
 	    goto exit;
@@ -479,12 +485,12 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, (unsigned int)
 
     if (sigp->hash != NULL)
 	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-    if (sigp->version == 4) {
-	uint32_t nb = sigp->hashlen;
+    if (sigp->version == (uint8_t)4) {
+	uint32_t nb = (uint32_t)sigp->hashlen;
 	uint8_t trailer[6];
-	nb = htonl(nb);
+	nb = (uint32_t)htonl(nb);
 	trailer[0] = sigp->version;
-	trailer[1] = 0xff;
+	trailer[1] = (uint8_t)0xff;
 	memcpy(trailer+2, &nb, sizeof(nb));
 	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
     }
@@ -503,7 +509,7 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, (unsigned int)
     }
     if (rc != RPMRC_OK) {
 if (_rpmns_debug)
-fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
+fprintf(stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo);
 	goto exit;
     }
 
@@ -524,7 +530,9 @@ exit:
     sigpkt = _free(sigpkt);
     ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
+/*@-nullstate@*/
     rpmtsCleanDig(ts);
+/*@=nullstate@*/
 
 if (_rpmns_debug)
 fprintf(stderr, "============================ verify: %s\n",

@@ -828,22 +828,24 @@ PyObject * versionCompare (PyObject * self, PyObject * args,
 
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    EVR_t A = memset(alloca(sizeof(*A)), 0, sizeof(*A));
-    EVR_t B = memset(alloca(sizeof(*B)), 0, sizeof(*B));
+    EVR_t a = rpmEVRnew(RPMSENSE_EQUAL, 1);
+    EVR_t b = rpmEVRnew(RPMSENSE_EQUAL, 1);
     int rc;
 
+    /* XXX FIXME: labelCompare cannot specify Distepoch: field */
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&A->E, &A->V, &A->R, &B->E, &B->V, &B->R))
+			&a->F[RPMEVR_E], &a->F[RPMEVR_V], &a->F[RPMEVR_R],
+			&b->F[RPMEVR_E], &b->F[RPMEVR_V], &b->F[RPMEVR_R]))
+    {
+	a = rpmEVRfree(a);
+	b = rpmEVRfree(b);
 	return NULL;
+    }
 
-    if (A->E == NULL)	A->E = "0";
-    if (B->E == NULL)	B->E = "0";
-    if (A->V == NULL)	A->E = "";
-    if (B->V == NULL)	B->E = "";
-    if (A->R == NULL)	A->E = "";
-    if (B->R == NULL)	B->E = "";
+    rc = rpmEVRcompare(a, b);
 
-    rc = rpmEVRcompare(A, B);
+    a = rpmEVRfree(a);
+    b = rpmEVRfree(b);
 
     return Py_BuildValue("i", rc);
 }

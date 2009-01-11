@@ -4,7 +4,11 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmmacro.h>
+#define	_MIRE_INTERNAL
+#include <mire.h>
 
+#include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
 
@@ -17,9 +21,36 @@ int _rpmevr_debug = 0;
 #define MAX(x, y) ( ((x)>(y))?(x):(y) )
 #endif
 
+EVR_t rpmEVRnew(uint32_t Flags, int initialize)
+{
+    EVR_t evr = xcalloc(1, sizeof(*evr));
+    evr->Flags = Flags;
+    if (initialize) {
+	evr->F[RPMEVR_E] = "0";
+	evr->F[RPMEVR_V] = "";
+	evr->F[RPMEVR_R] = "";
+	evr->F[RPMEVR_D] = "";
+    }
+    return evr;
+}
+
+EVR_t rpmEVRfree(EVR_t evr)
+{
+    if (evr != NULL) {
+	evr->str = _free(evr->str);
+	memset(evr, 0, sizeof(*evr));
+	evr = _free(evr);
+    }
+    return NULL;
+}
+
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
 /*@unchecked@*/
+#if defined(RPM_VENDOR_MANDRIVA) /* old-comparision-behaviour */
 static int _invert_digits_alphas_comparison = -1;
+#else
+static int _invert_digits_alphas_comparison = 1;
+#endif
 
 /* XXX Punctuation characters that are not treated as alphas */
 /*@unchecked@*/ /*@observer@*/
@@ -44,42 +75,37 @@ static inline int xisrpmalpha(int c)
 int rpmEVRcmp(const char * a, const char * b)
 	/*@*/
 {
-    const char * ae, * be;
-    int rc = 0;
+    const char * ae = NULL, * be = NULL;
+    int rc = 0;		/* assume equal */
 
     /* Compare version strings segment by segment. */
     for (; *a && *b && rc == 0; a = ae, b = be) {
 
 	/* Skip leading non-alpha, non-digit characters. */
-	while (*a && !(xisdigit(*a) || xisrpmalpha(*a))) a++;
-	while (*b && !(xisdigit(*b) || xisrpmalpha(*b))) b++;
+	while (*a && !(xisdigit((int)*a) || xisrpmalpha((int)*a))) a++;
+	while (*b && !(xisdigit((int)*b) || xisrpmalpha((int)*b))) b++;
 
+	/* Wildcard comparison? */
+	/* Note: limited to suffix-only wildcard matching at the moment. */
+	if (a[0] == '*' && a[1] == '\0') {
+            be = strchr(b, '\0');	/* XXX be = b + strlen(b); */
+	} else
+	if (b[0] == '*' && b[1] == '\0') {
+            ae = strchr(a, '\0');	/* XXX ae = a + strlen(a); */
+	} else
 	/* Digit string comparison? */
-#if defined(RPM_VENDOR_OPENPKG) /* support-wildcards-in-EVR-comparison */
-        if (a[0] == '*') {
-            ae = a + 1;
-            if ((be = strchr(b, a[1])) == NULL)
-                be = b;
-        }
-        else if (b[0] == '*') {
-            be = b + 1;
-            if ((ae = strchr(a, b[1])) == NULL)
-                ae = a;
-        }
-        else
-#endif
-	if (xisdigit(*a) || xisdigit(*b)) {
+	if (xisdigit((int)*a) || xisdigit((int)*b)) {
 	    /* Discard leading zeroes. */
-	    while (a[0] == '0' && xisdigit(a[1])) a++;
-	    while (b[0] == '0' && xisdigit(b[1])) b++;
+	    while (a[0] == '0' && xisdigit((int)a[1])) a++;
+	    while (b[0] == '0' && xisdigit((int)b[1])) b++;
 
 	    /* Find end of digit strings. */
-	    ae = a; while (xisdigit(*ae)) ae++;
-	    be = b; while (xisdigit(*be)) be++;
+	    ae = a; while (xisdigit((int)*ae)) ae++;
+	    be = b; while (xisdigit((int)*be)) be++;
 
 	    /* Calculate digit comparison return code. */
 	    if (a == ae || b == be)
-		rc = (*b - *a) * _invert_digits_alphas_comparison;
+		rc = (int)(*a - *b) * _invert_digits_alphas_comparison;
 	    else {
 		rc = (ae - a) - (be - b);
 		if (!rc)
@@ -87,8 +113,8 @@ int rpmEVRcmp(const char * a, const char * b)
 	    }
 	} else {
 	    /* Find end of alpha strings. */
-	    ae = a; while (xisrpmalpha(*ae)) ae++;
-	    be = b; while (xisrpmalpha(*be)) be++;
+	    ae = a; while (xisrpmalpha((int)*ae)) ae++;
+	    be = b; while (xisrpmalpha((int)*be)) be++;
 
 	    /* Calculate alpha comparison return code. */
 	    rc = strncmp(a, b, MAX((ae - a), (be - b)));
@@ -97,7 +123,7 @@ int rpmEVRcmp(const char * a, const char * b)
 
     /* Longer string wins. */
     if (!rc)
-	rc = (*a - *b);
+	rc = (int)(*a - *b);
 
     /* Force strict -1, 0, 1 return. */
     rc = (rc > 0 ? 1
@@ -106,33 +132,147 @@ int rpmEVRcmp(const char * a, const char * b)
     return rc;
 }
 
-int rpmEVRparse(const char * evrstr, EVR_t evr)
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static const char * _evr_tuple_match = "^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
+/*@unchecked@*/ /*@null@*/
+static const char * evr_tuple_match = NULL;
+/*@unchecked@*/ /*@null@*/
+static miRE evr_tuple_mire = NULL;
+/*@unchecked@*/
+static int evr_tuple_nmire;
+
+static miRE rpmEVRmire(void)
+	/*@*/
+{
+    if (evr_tuple_mire == NULL) {
+	int xx;
+	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
+	if (evr_tuple_match == NULL || evr_tuple_match[0] == '\0')
+	    evr_tuple_match = xstrdup(_evr_tuple_match);
+
+#ifdef	NOTYET	/* XXX avoid need for evr_tuple_nmire */
+	evr_tuple_mire = mireNew(RPMMIRE_REGEX, 0);
+	xx = mireSetCOptions(evr_tuple_mire, RPMMIRE_REGEX, 0, 0, NULL);
+	xx = mireRegcomp(evr_tuple_mire, evr_tuple_match);
+#else
+	xx = mireAppend(RPMMIRE_REGEX, 0, evr_tuple_match, NULL,
+		&evr_tuple_mire, &evr_tuple_nmire);
+#endif
+
+    }
+assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
+    return evr_tuple_mire;
+}
+
+#ifndef	DYING
+static int oldrpmEVRparse(const char * evrstr, EVR_t evr)
 	/*@modifies evrstr, evr @*/
 {
     char *s = xstrdup(evrstr);
     char *se;
+    char *se2;
 
     evr->str = se = s;
-    while (*se && xisdigit(*se)) se++;	/* se points to epoch terminator */
+    se2 = se;
+    while (*se && xisdigit((int)*se)) se++; /* se points to epoch terminator */
 
     if (*se == ':') {
-	evr->E = s;
+	evr->F[RPMEVR_E] = s;
 	*se++ = '\0';
-	evr->V = se;
-	if (*evr->E == '\0') evr->E = "0";
-	evr->Elong = strtoul(evr->E, NULL, 10);
+	evr->F[RPMEVR_V] = se;
+	se2 = se;
+	if (*evr->F[RPMEVR_E] == '\0') evr->F[RPMEVR_E] = "0";
+	evr->Elong = strtoul(evr->F[RPMEVR_E], NULL, 10);
     } else {
-	evr->E = NULL;	/* XXX disable epoch compare if missing */
-	evr->V = s;
+	evr->F[RPMEVR_E] = NULL; /* XXX disable epoch compare if missing */
+	evr->F[RPMEVR_V] = s;
 	evr->Elong = 0;
     }
-    se = strrchr(se, '-');		/* se points to version terminator */
+    se = strrchr(se, ':');		/* se points to release terminator */
     if (se) {
 	*se++ = '\0';
-	evr->R = se;
+	evr->F[RPMEVR_D] = se;
     } else {
-	evr->R = NULL;
+	evr->F[RPMEVR_D] = NULL;
     }
+    se = strrchr(se2, '-');		/* se points to version terminator */
+    if (se) {
+	*se++ = '\0';
+	evr->F[RPMEVR_R] = se;
+    } else {
+	evr->F[RPMEVR_R] = NULL;
+    }
+
+    return 0;
+}
+#endif
+
+int rpmEVRparse(const char * evrstr, EVR_t evr)
+	/*@modifies evrstr, evr @*/
+{
+    miRE mire = rpmEVRmire();
+    int noffsets = 6 * 3;
+    int offsets[6 * 3];
+    size_t nb;
+    int xx;
+    int i;
+
+    memset(evr, 0, sizeof(*evr));
+    evr->str = xstrdup(evrstr);
+    nb = strlen(evr->str);
+
+    memset(offsets, -1, sizeof(offsets));
+    xx = mireSetEOptions(mire, offsets, noffsets);
+
+    xx = mireRegexec(mire, evr->str, strlen(evr->str));
+
+    for (i = 0; i < noffsets; i += 2) {
+	int ix;
+
+	if (offsets[i] < 0)
+	    continue;
+
+	switch (i/2) {
+	default:
+	case 0:	continue;	/*@notreached@*/ break;
+	case 1:	ix = RPMEVR_E;	/*@switchbreak@*/break;
+	case 2:	ix = RPMEVR_V;	/*@switchbreak@*/break;
+	case 3:	ix = RPMEVR_R;	/*@switchbreak@*/break;
+	case 4:	ix = RPMEVR_D;	/*@switchbreak@*/break;
+	}
+
+assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
+assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
+	{   char * te = (char *) evr->str;
+	    evr->F[ix] = te + offsets[i];
+	    te += offsets[i+1];
+	    *te = '\0';
+	}
+
+    }
+
+    evr->Elong = evr->F[RPMEVR_E] ? strtoul(evr->F[RPMEVR_E], NULL, 10) : 0;
+
+    xx = mireSetEOptions(mire, NULL, 0);
+
+#ifndef	DYING
+    {	EVR_t Oevr = memset(alloca(sizeof(*Oevr)), 0, sizeof(*Oevr));
+
+	xx = oldrpmEVRparse(evrstr, Oevr);
+assert(Oevr->Elong == evr->Elong);
+
+	for (i = 0; i < 5; i++) {
+	    if (Oevr->F[i] == NULL && evr->F[i] == NULL)
+		continue;
+	    if (Oevr->F[i] == NULL || evr->F[i] == NULL
+	     || strcmp(Oevr->F[i], evr->F[i]))
+		fprintf(stderr, "==> \"%s\" %d strcmp(%s,%s)\n",
+			evrstr, i, Oevr->F[i], evr->F[i]);
+	}
+	Oevr->str = _free(Oevr->str);
+    }
+#endif	/* DYING */
+
     return 0;
 }
 
@@ -148,20 +288,94 @@ static int compare_values(const char *a, const char *b)
     return rpmvercmp(a, b);
 }
 
+/*@unchecked@*/ /*@null@*/
+static const char * evr_tuple_order = NULL;
+
+/**
+ * Return precedence permutation string.
+ * @return		precedence permutation
+ */
+/*@observer@*/
+static const char * rpmEVRorder(void)
+	/*@*/
+{
+    if (evr_tuple_order == NULL) {
+	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
+	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
+	    evr_tuple_order = xstrdup("EVR");
+    }
+assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
+    return evr_tuple_order;
+}
+
 int rpmEVRcompare(const EVR_t a, const EVR_t b)
 {
+    const char * s;
     int rc = 0;
 
-    if (!rc)
-	rc = compare_values(a->E, b->E);
-    if (!rc)
-	rc = compare_values(a->V, b->V);
-    if (!rc)
-	rc = compare_values(a->R, b->R);
+assert(a->F[RPMEVR_E] != NULL);
+assert(a->F[RPMEVR_V] != NULL);
+assert(a->F[RPMEVR_R] != NULL);
+assert(a->F[RPMEVR_D] != NULL);
+assert(b->F[RPMEVR_E] != NULL);
+assert(b->F[RPMEVR_V] != NULL);
+assert(b->F[RPMEVR_R] != NULL);
+assert(b->F[RPMEVR_D] != NULL);
+
+    for (s = rpmEVRorder(); *s; s++) {
+	int ix;
+	switch ((int)*s) {
+	default:	continue;	/*@notreached@*/ break;
+	case 'E':	ix = RPMEVR_E;	/*@switchbreak@*/break;
+	case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
+	case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
+	case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
+	}
+	rc = compare_values(a->F[ix], b->F[ix]);
+	if (rc)
+	    break;
+    }
     return rc;
 }
 
+int rpmEVRoverlap(EVR_t a, EVR_t b)
+{
+    rpmsenseFlags aF = a->Flags;
+    rpmsenseFlags bF = b->Flags;
+    int sense;
+    int result;
+
+    /* XXX HACK: postpone committing to single "missing" value for now. */
+    if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
+    if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
+    if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
+    if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
+    if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
+    if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
+    if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
+    if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
+    sense = rpmEVRcompare(a, b);
+
+    /* Detect overlap of {A,B} range. */
+    if (aF == RPMSENSE_NOTEQUAL || bF == RPMSENSE_NOTEQUAL)
+        result = (sense != 0);
+    else if (sense < 0 && ((aF & RPMSENSE_GREATER) || (bF & RPMSENSE_LESS)))
+        result = 1;
+    else if (sense > 0 && ((aF & RPMSENSE_LESS) || (bF & RPMSENSE_GREATER)))
+        result = 1;
+    else if (sense == 0 &&
+        (((aF & RPMSENSE_EQUAL) && (bF & RPMSENSE_EQUAL)) ||
+         ((aF & RPMSENSE_LESS) && (bF & RPMSENSE_LESS)) ||
+         ((aF & RPMSENSE_GREATER) && (bF & RPMSENSE_GREATER))))
+        result = 1;
+    else
+        result = 0;
+    return result;
+}
+
+/*@-redecl@*/
 int (*rpmvercmp) (const char *a, const char *b) = rpmEVRcmp;
+/*@=redecl@*/
 
 /**
  */
@@ -204,4 +418,65 @@ rpmsenseFlags rpmEVRflags(const char *op, const char **end)
 	break;
     }
     return Flags;
+}
+
+int rpmVersionCompare(Header A, Header B)
+{
+    HE_t Ahe = memset(alloca(sizeof(*Ahe)), 0, sizeof(*Ahe));
+    HE_t Bhe = memset(alloca(sizeof(*Bhe)), 0, sizeof(*Bhe));
+    const char * one, * two;
+    uint32_t Eone, Etwo;
+    const char * s;
+    int rc = 0;
+    int xx;
+
+    for (s = rpmEVRorder(); *s; s++) {
+	switch ((int)*s) {
+	default:	continue;	/*@notreached@*/ break;
+	case 'E':
+	    Ahe->tag = RPMTAG_EPOCH;
+	    xx = headerGet(A, Ahe, 0);
+	    Eone = (xx && Ahe->p.ui32p ? Ahe->p.ui32p[0] : 0);
+	    Bhe->tag = RPMTAG_EPOCH;
+	    xx = headerGet(B, Bhe, 0);
+	    Etwo = (xx && Bhe->p.ui32p ? Bhe->p.ui32p[0] : 0);
+	    if (Eone < Etwo)
+		rc = -1;
+	    else if (Eone > Etwo)
+		rc = 1;
+	    /*@switchbreak@*/ break;
+	case 'V':
+	    Ahe->tag = RPMTAG_VERSION;
+	    xx = headerGet(A, Ahe, 0);
+	    one = (xx && Ahe->p.str ? Ahe->p.str : "");
+	    Bhe->tag = RPMTAG_VERSION;
+	    xx = headerGet(B, Bhe, 0);
+	    two = (xx && Bhe->p.str ? Bhe->p.str : "");
+	    rc = rpmvercmp(one, two);
+	    /*@switchbreak@*/ break;
+	case 'R':
+	    Ahe->tag = RPMTAG_RELEASE;
+	    xx = headerGet(A, Ahe, 0);
+	    one = (xx && Ahe->p.str ? Ahe->p.str : "");
+	    Bhe->tag = RPMTAG_RELEASE;
+	    xx = headerGet(B, Bhe, 0);
+	    two = (xx && Bhe->p.str ? Bhe->p.str : "");
+	    rc = rpmvercmp(one, two);
+	    /*@switchbreak@*/ break;
+	case 'D':
+	    Ahe->tag = RPMTAG_DISTEPOCH;
+	    xx = headerGet(A, Ahe, 0);
+	    one = (xx && Ahe->p.str ? Ahe->p.str : "");
+	    Bhe->tag = RPMTAG_DISTEPOCH;
+	    xx = headerGet(B, Bhe, 0);
+	    two = (xx && Bhe->p.str ? Bhe->p.str : "");
+	    rc = rpmvercmp(one, two);
+	    /*@switchbreak@*/ break;
+	}
+	Ahe->p.ptr = _free(Ahe->p.ptr);
+	Bhe->p.ptr = _free(Bhe->p.ptr);
+	if (rc)
+	    break;
+    }
+    return rc;
 }

@@ -81,9 +81,9 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
-#include <rpmlib.h>
 #include <argv.h>
 
+#include <rpmlib.h>
 #include <rpmtag.h>
 
 #define	_RPMDS_INTERNAL
@@ -526,6 +526,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     uint32_t E;
     const char ** N, ** EVR;
     char * t;
+    size_t nb;
     int xx;
 
     if (tagN == RPMTAG_NAME)
@@ -550,7 +551,8 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     t = stpcpy(t, Name);
     Name = _free(Name);
 
-    t = xmalloc(sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-"));
+    nb = sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-");
+    t = xmalloc(nb);
     EVR = (const char **) t;
     t += sizeof(*EVR);
     *t = '\0';
@@ -1592,6 +1594,7 @@ exit:
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 const char *_sysinfo_path = NULL;
 
+/*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 static const char *_sysinfo_tags[] = {
     "Providename",
@@ -1602,6 +1605,7 @@ static const char *_sysinfo_tags[] = {
     "Filelinktos",
     NULL
 };
+/*@=nullassign@*/
 
 int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	/*@globals _sysinfo_path @*/
@@ -3571,6 +3575,26 @@ static int rpmdsNAcmp(rpmds A, rpmds B)
     return rc;
 }
 
+/*@unchecked@*/ /*@null@*/
+static const char * evr_tuple_order = NULL;
+
+/**
+ * Return precedence permutation string.
+ * @return		precedence permutation
+ */
+/*@observer@*/
+static const char * rpmdsEVRorder(void)
+	/*@*/
+{
+    if (evr_tuple_order == NULL) {
+	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
+	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
+	    evr_tuple_order = xstrdup("EVR");
+    }
+assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
+    return evr_tuple_order;
+}
+
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
     const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
@@ -3581,6 +3605,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     evrFlags bFlags = B->ns.Flags;
     int (*EVRcmp) (const char *a, const char *b);
     int result = 1;
+    const char * s;
     int sense;
     int xx;
 
@@ -3613,26 +3638,40 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
     EVRcmp = (A->EVRcmp && B->EVRcmp && A->EVRcmp == B->EVRcmp)
 	? A->EVRcmp : rpmvercmp;
 
-    /* Compare {A,B} [epoch:]version[-release] */
+    /* Compare {A,B} [epoch:]version[-release][:distepoch] */
     sense = 0;
-    if (a->E && *a->E && b->E && *b->E)
-/*@i@*/	sense = EVRcmp(a->E, b->E);
-    else if (a->E && *a->E && atol(a->E) > 0) {
-	if (!B->nopromote) {
-	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMLOG_WARNING : RPMLOG_DEBUG);
-	    rpmlog(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
-		aDepend, bDepend);
-	    sense = 0;
-	} else
-	    sense = 1;
-    } else if (b->E && *b->E && atol(b->E) > 0)
-	sense = -1;
-
-    if (sense == 0) {
-/*@i@*/	sense = EVRcmp(a->V, b->V);
-	if (sense == 0 && a->R && *a->R && b->R && *b->R)
-/*@i@*/	    sense = EVRcmp(a->R, b->R);
+    for (s = rpmdsEVRorder(); *s; s++) {
+	int ix;
+        switch ((int)*s) {
+        default:        continue;       /*@notreached@*/ break;
+        case 'E':
+	    ix = RPMEVR_E;
+	    if (a->F[ix] && *a->F[ix] && b->F[ix] && *b->F[ix])
+		/*@switchbreak@*/ break;
+	    /* XXX Special handling for missing Epoch: tags hysteria */
+	    if (a->F[ix] && *a->F[ix] && atol(a->F[ix]) > 0) {
+		if (!B->nopromote) {
+		    int lvl = (_rpmds_unspecified_epoch_noise
+			? RPMLOG_WARNING : RPMLOG_DEBUG);
+		    rpmlog(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
+			aDepend, bDepend);
+		    sense = 0;
+		} else
+		    sense = 1;
+	    } else
+	    if (b->F[ix] && *b->F[ix] && atol(b->F[ix]) > 0)
+		sense = -1;
+	    /*@switchbreak@*/ break;
+        case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
+        case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
+        case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
+        }
+	if (a->F[ix] && *a->F[ix] && b->F[ix] && *b->F[ix])
+/*@i@*/	    sense = EVRcmp(a->F[ix], b->F[ix]);
+	if (sense)
+	    break;
     }
+
     a->str = _free(a->str);
     b->str = _free(b->str);
 
@@ -3793,7 +3832,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	sprintf(t, "%d:", E);
 	t += strlen(t);
     }
-    (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
+    t = stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
     V = _free(V);
     R = _free(R);
 

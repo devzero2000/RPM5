@@ -1,4 +1,22 @@
 5.1.6 -> 5.1.7:
+    - jbj: rpmbuild: enumerate all the lexical patterns in parsePreamble().
+    - jbj: rpmbuild: enable pattern validation for simple package identifiers.
+    - jbj: rpmbuild: add tag data validation pattern checks.
+    - jbj: EVRtuple: handle EVR_t opaquely in python labelCompare().
+    - jbj: EVRtuple: postpone committing to single "missing" value for now.
+    - jbj: EVRtuple: attempt rpmEVRparse() during parseRCPOT().
+        no error returns from rpmEVRparse() to trigger the message yet, todo++.
+    - jbj: EVRtuple: teach --whatneeds/--needswhat to use EVR_t opaquely.
+    - jbj: EVRtuple: add rpmEVR{new,free} creator and destructors.
+    - jbj: EVRtuple: mark the old EVRD parser for destruction.
+    - jbj: EVRtuple: use the new EVRD pattern parser, reverse the assert check.
+    - jbj: EVRtuple: precedence permutation for rpmdsCompare().
+    - jbj: EVRtuple: precedence permutation for rpmVersionCompare().
+    - jbj: EVRtuple: blueprint new <-> old parsers with an assert.
+    - jbj: EVRtuple: parse EVRD using RPMMIRE_REGEX & evr_tuple_match.
+    - jbj: EVRtuple: wire up evr_tuple_match RE pattern match.
+    - jbj: EVRtuple: wire up evr_tuple_order precedence permutation.
+    - jbj: EVRtuple: use array for tuple storage.
     - rse: EVRtuple: macro configuration parameterization.
     - jbj: add FNM_EXTMATCH to default flags w RPMMIRE_GLOB.
     - jbj: rpmsw: change bytes accumulator to unsigned long long.

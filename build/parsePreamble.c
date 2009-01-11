@@ -6,6 +6,10 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmlog.h>
+#include <rpmurl.h>
+#include <argv.h>
+#include <mire.h>
 
 #define	_RPMEVR_INTERNAL
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
@@ -22,6 +26,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
+    RPMTAG_DISTEPOCH,
     RPMTAG_LICENSE,
     RPMTAG_GROUP,		/* XXX permissive. */
     RPMTAG_SUMMARY,		/* XXX permissive. */
@@ -92,7 +97,7 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 static int parseSimplePart(Spec spec, /*@out@*/char ** Np,
 		/*@out@*/rpmParseState *flag)
 	/*@globals internalState@*/
-	/*@modifies *name, *flag, internalState @*/
+	/*@modifies *Np, *flag, internalState, spec->line @*/
 {
     char * s, * se;
     int rc = 0;		/* assume failure */
@@ -214,6 +219,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 
 /**
  */
+/*@null@*/
 static inline char * findLastChar(char * s)
 	/*@modifies *s @*/
 {
@@ -236,7 +242,8 @@ static inline char * findLastChar(char * s)
 /**
  */
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = -1;
@@ -261,8 +268,8 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 /**
  */
 static int checkForValidArchitectures(Spec spec)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
@@ -298,7 +305,7 @@ exit:
  * @return		RPMRC_OK if OK
  */
 static rpmRC checkForRequired(Header h, const char * NVR)
-	/*@modifies h @*/
+	/*@*/
 {
     rpmTag * p;
     rpmRC rc = RPMRC_OK;
@@ -322,7 +329,8 @@ static rpmRC checkForRequired(Header h, const char * NVR)
  * @return		RPMRC_OK if OK
  */
 static rpmRC checkForDuplicates(Header h, const char * NVR)
-	/*@modifies h @*/
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
@@ -356,7 +364,9 @@ static struct optionalTag {
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
+    { RPMTAG_DISTEPOCH,	"%{distepoch}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
+    { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
     { 0xffffffff,		"%{class}" },
     { -1, NULL }
@@ -365,8 +375,8 @@ static struct optionalTag {
 /**
  */
 static void fillOutMainPackage(Header h)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies h, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct optionalTag *ot;
@@ -490,10 +500,10 @@ static int doIcon(Spec spec, Header h)
 	he->tag = RPMTAG_XPM;
     else
 	he->tag = tagValue("Icon");
-	he->t = RPM_BIN_TYPE;
-	he->p.ui8p = icon;
-	he->c = nb;
-	xx = headerPut(h, he, 0);
+    he->t = RPM_BIN_TYPE;
+    he->p.ui8p = icon;
+    he->c = (rpmTagCount)nb;
+    xx = headerPut(h, he, 0);
     rc = 0;
     
 exit:
@@ -550,6 +560,39 @@ if (multiToken) { \
 extern int noLang;
 /*@=redecl@*/
 
+static rpmRC tagValidate(Spec spec, rpmTag tag, const char * value)
+	/*@*/
+{
+    const char * tagN = tagName(tag);
+    const char * pattern = rpmExpand("%{?pattern_", tagN, "}", NULL);
+    rpmRC ec = RPMRC_OK;
+
+    if (pattern && *pattern) {
+	miRE mire;
+	int xx;
+
+	mire = mireNew(RPMMIRE_REGEX, tag);
+	xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, 0, NULL);
+	if (!xx)
+	    xx = mireRegcomp(mire, pattern);
+	if (!xx)
+	    xx = mireRegexec(mire, value, strlen(value));
+	if (!xx)
+	    ec = RPMRC_OK;
+	else {
+	    rpmlog(RPMLOG_ERR, _("line %d: invalid tag value(\"%s\") %s: %s\n"),
+		    spec->lineNum, pattern, tagN, spec->line);
+	    ec = RPMRC_FAIL;
+	}
+
+	mire = mireFree(mire);
+    }
+
+    pattern = _free(pattern);
+
+    return ec;
+}
+
 /**
  */
 static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
@@ -559,7 +602,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->sourceHeader, spec->BANames, spec->BACount,
 		spec->line,
-		pkg->header, pkg->autoProv, pkg->autoReq,
+		pkg->header, pkg->autoProv, pkg->autoReq, pkg->noarch,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -591,6 +634,10 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     }
     end = findLastChar(field);
 
+    /* Validate tag data content. */
+    if (tagValidate(spec, tag, field) != RPMRC_OK)
+	return RPMRC_FAIL;
+
     /* See if this is multi-token */
     end = field;
     SKIPNONSPACE(end);
@@ -601,6 +648,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_NAME:
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
+    case RPMTAG_DISTEPOCH:
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
     case RPMTAG_REPOTAG:
@@ -681,7 +729,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		he->p.ptr = _free(he->p.ptr);
 		return RPMRC_FAIL;
 	    }
-	    len = strlen(he->p.argv[he->c]);
+	    len = (int)strlen(he->p.argv[he->c]);
 	    if (he->p.argv[he->c][len - 1] == '/' && len > 1) {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
@@ -847,8 +895,10 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
     }
 
+/*@-usereleased@*/
     if (macro)
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
+/*@=usereleased@*/
     
     return RPMRC_OK;
 }
@@ -871,6 +921,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, "version"},
     {RPMTAG_RELEASE,		0, 0, "release"},
+    {RPMTAG_DISTEPOCH,		0, 0, "distepoch"},
     {RPMTAG_EPOCH,		0, 0, "epoch"},
     {RPMTAG_EPOCH,		0, 1, "serial"},
     {RPMTAG_SUMMARY,		1, 0, "summary"},
