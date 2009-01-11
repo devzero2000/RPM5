@@ -35,6 +35,17 @@
      Characteristic: cross-platform multiple-instance use of RPM
      ________________________________________________________________________
 
+     Change:         no-hard-coded-ugid
+     Purpose:        do not make hard-coded assumptions about any uid/gid
+     Reason:         OpenPKG can safely rely on the /etc/passwd and /etc/group
+                     lookups for all uid/gid and has no need to assume
+                     that for instance GID 0 is "root". Actually, such
+                     an assumption is a portability problem as GID 0
+                     under e.g. BSD is named "wheel" and not "root",
+                     etc. As a result, things like "rpm -V" would report
+                     wrong information, etc.
+     ________________________________________________________________________
+
      Change:         splitted-source-directory
      Purpose:        support so-called "splitted source directories", i.e.,
                      source files (listed on SourceX and PatchX headers)

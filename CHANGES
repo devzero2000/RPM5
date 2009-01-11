@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: backport OpenPKG no-hard-coded-ugid.
     - jbj: rpmku: create opaque keyutils keyring.
     - jbj: keyutils: permit configurable keyring.
     - jbj: rpmgc: display errors with gcry_strerror().

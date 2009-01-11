@@ -25,9 +25,11 @@ int unameToUid(const char * thisUname, uid_t * uid)
     if (!thisUname) {
 	lastUnameLen = 0;
 	return -1;
+#if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
     } else if (strcmp(thisUname, "root") == 0) {
 	*uid = 0;
 	return 0;
+#endif
     }
 
     thisUnameLen = strlen(thisUname);
@@ -69,9 +71,11 @@ int gnameToGid(const char * thisGname, gid_t * gid)
     if (thisGname == NULL) {
 	lastGnameLen = 0;
 	return -1;
+#if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
     } else if (strcmp(thisGname, "root") == 0) {
 	*gid = 0;
 	return 0;
+#endif
     }
 
     thisGnameLen = strlen(thisGname);
@@ -91,6 +95,7 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	    /*@=internalglobs@*/
 	    grent = getgrnam(thisGname);
 	    if (grent == NULL) {
+#if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
 		/* XXX The filesystem package needs group/lock w/o getgrnam. */
 		if (strcmp(thisGname, "lock") == 0) {
 		    *gid = lastGid = 54;
@@ -100,6 +105,7 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 		    *gid = lastGid = 12;
 		    return 0;
 		} else
+#endif
 		return -1;
 	    }
 	}
@@ -120,8 +126,10 @@ char * uidToUname(uid_t uid)
     if (uid == (uid_t) -1) {
 	lastUid = (uid_t) -1;
 	return NULL;
+#if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
     } else if (uid == (uid_t) 0) {
 	return "root";
+#endif
     } else if (uid == lastUid) {
 	return lastUname;
     } else {
@@ -151,8 +159,10 @@ char * gidToGname(gid_t gid)
     if (gid == (gid_t) -1) {
 	lastGid = (gid_t) -1;
 	return NULL;
+#if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
     } else if (gid == (gid_t) 0) {
 	return "root";
+#endif
     } else if (gid == lastGid) {
 	return lastGname;
     } else {
