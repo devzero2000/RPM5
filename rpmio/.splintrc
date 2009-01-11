@@ -12,38 +12,35 @@
 +strict			# lclint level
 
 # --- in progress
+-bounds
+-checkpost		# 7 *read ensures annotations
 -branchstate
 -bufferoverflowhigh
--shiftnegative		# 1 lzdReadOpen
 
--compdef		# 16
--compmempass		# 2 LZMA
--globs			# 19
--moduncon		# 323
--mustmod		# 16
--noeffectuncon		# 183
--nullpass
--paramuse
--protoparammatch	# 1 LZMA
+-compdef		# 82
+-compmempass		# 15
+-moduncon		# 260
+-noeffect		# 9
+-noeffectuncon		# 268
+-nullderef		# 14 rpmlua annotations
+-nullpass		# 171
+-nullstate		# 33 indirections hard to annotate
+-protoparammatch	# 16
+-type			# 156
 
--onlytrans
+-onlytrans		# 20 only <=> newref confusions
 -readonlytrans		# 10 digest names
--refcounttrans
-
--forempty
--looploopbreak		# 2 LZMA
--nullptrarith		# 16 LZMA
--shadow			# 3 LZMA
+-refcounttrans		# 19 only <=> newref confusions
 
 # --- +partial artifacts
--declundef
--exportheadervar
--exportlocal
+-declundef		# 442
+-exportheadervar	# 5
+-exportlocal		# 62
 
--enummemuse
--fcnuse
--typeuse
--varuse
+-enummemuse		# 327
+-fcnuse			# 305
+-typeuse		# 22
+-varuse			# 10
 
 # --- not-yet at strict level
 -bitwisesigned		# 236

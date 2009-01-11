@@ -13,23 +13,30 @@
 
 # --- in progress
 +slovak-fcns
--bufferoverflowhigh
+-bounds
+-bufferoverflowhigh	# 26
 
--incondefs	# 5
--nullpass	# 10
+-globstate		# 1 LCL buggy
+-noeffect		# 3
+-nullpass		# 86
+-nullstate		# 52 indirections hard to annotate
+-type
 
--internalglobs	# 81
--unrecog	# 2 rpmcliPackagesTotal misplaced
+-dependenttrans		# 1
+-immediatetrans		# 2
+-observertrans		# 1
+-refcounttrans		# 1
+-statictrans		# 1
 
 # --- +partial artifacts
--declundef
--exportheadervar
--exportlocal
+-declundef		# 544
+-exportheadervar	# 7
+-exportlocal		# 44
 
--enummemuse
--fcnuse
--typeuse
--varuse
+-enummemuse		# 538
+-fcnuse			# 361
+-typeuse		# 19
+-varuse			# 26
 
 # --- not-yet at strict level
 -bitwisesigned		# 228
@@ -62,4 +69,3 @@
 -boolops		# 136
 +boolint		# 407
 +ignorequals		# 165
-#+matchanyintegral	# 23
