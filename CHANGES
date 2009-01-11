@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmbuild: use anchored patterns for data validation.
     - jbj: move rpmgrep and man page from rpmio/ to tools/ and install.
     - jbj: EVRtuple: eliminate the old EVR parser.
     - jbj: rpmbuild: enumerate all the lexical patterns in parsePreamble().
