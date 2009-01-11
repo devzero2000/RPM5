@@ -10,7 +10,7 @@
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101731" build="1223910429"/>
-  <size package="6783" installed="6783" archive="2460"/>
+  <size package="6783" installed="2080" archive="2460"/>
   <location xml:base="(none)" href="devtool-sanity-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -38,7 +38,7 @@
   <packager></packager>
   <url>http://www.mancoosi.org/edos/manager.html</url>
   <time file="1218879238" build="1212949492"/>
-  <size package="2664" installed="2664" archive="2520"/>
+  <size package="2664" installed="2268" archive="2520"/>
   <location xml:base="(none)" href="edos-test-1-0.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -73,7 +73,7 @@ shell-like rules.</description>
   <packager></packager>
   <url></url>
   <time file="1207484927" build="1207158035"/>
-  <size package="102588" installed="102588" archive="226620"/>
+  <size package="102588" installed="221078" archive="226620"/>
   <location xml:base="(none)" href="popt-1.14-1.i386.rpm"/>
   <format>
     <rpm:license>X Consortium</rpm:license>
@@ -120,7 +120,7 @@ shell-like rules.</description>
   <packager></packager>
   <url></url>
   <time file="1207484942" build="1207158035"/>
-  <size package="705199" installed="705199" archive="697748"/>
+  <size package="705199" installed="697372" archive="697748"/>
   <location xml:base="(none)" href="popt-1.14-1.src.rpm"/>
   <format>
     <rpm:license>X Consortium</rpm:license>
@@ -149,7 +149,7 @@ shell-like rules.</description>
   <packager></packager>
   <url></url>
   <time file="1218572973" build="1213640344"/>
-  <size package="11746" installed="11746" archive="9084"/>
+  <size package="11746" installed="7492" archive="9084"/>
   <location xml:base="(none)" href="probes-test-1-0.src.rpm"/>
   <format>
     <rpm:license>Any</rpm:license>
@@ -197,7 +197,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1223913285"/>
-  <size package="4604" installed="4604" archive="1584"/>
+  <size package="4604" installed="1330" archive="1584"/>
   <location xml:base="(none)" href="triggers-D-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -225,7 +225,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1223957353"/>
-  <size package="4634" installed="4634" archive="1600"/>
+  <size package="4634" installed="1347" archive="1600"/>
   <location xml:base="(none)" href="triggers-DP-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -253,7 +253,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1223913521"/>
-  <size package="4606" installed="4606" archive="1600"/>
+  <size package="4606" installed="1346" archive="1600"/>
   <location xml:base="(none)" href="triggers-F-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -281,7 +281,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1223957630"/>
-  <size package="4638" installed="4638" archive="1616"/>
+  <size package="4638" installed="1363" archive="1616"/>
   <location xml:base="(none)" href="triggers-FP-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -309,7 +309,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1223911215"/>
-  <size package="4603" installed="4603" archive="1560"/>
+  <size package="4603" installed="1306" archive="1560"/>
   <location xml:base="(none)" href="triggers-N-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -337,7 +337,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1224093853"/>
-  <size package="4650" installed="4650" archive="1680"/>
+  <size package="4650" installed="1425" archive="1680"/>
   <location xml:base="(none)" href="triggers-NA-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>
@@ -365,7 +365,7 @@ shell-like rules.</description>
   <packager></packager>
   <url>http://rpm5.org/</url>
   <time file="1224101353" build="1223911669"/>
-  <size package="4599" installed="4599" archive="1432"/>
+  <size package="4599" installed="1178" archive="1432"/>
   <location xml:base="(none)" href="triggers-P-1.0-1.src.rpm"/>
   <format>
     <rpm:license>Public Domain</rpm:license>

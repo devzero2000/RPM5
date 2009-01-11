@@ -9,6 +9,10 @@ compatible archs      : i386
 compatible os's       : linux
 optflags              : -O2
 
+LUA MODULES:
+luafiles              : /usr/lib/rpm/init.lua:/usr/lib/rpm/rpmlua:/usr/lib/rpm/i386-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/i386-linux/rpmlua:~/.rpmlua
+luapath               : /usr/lib/rpm/lua/?.lua
+
 MACRO DEFINITIONS:
 macrofiles            : ../macros:../tests/macros
 Features provided by rpmlib installer:
@@ -30,14 +34,14 @@ Features provided by rpmlib installer:
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
-    cpuinfo(bogomips) = 4791.41
+    cpuinfo(bogomips) = 4788.29
     cpuinfo(bts)
     cpuinfo(cache_size) = 512_KB
     cpuinfo(cid)
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
-    cpuinfo(cpu_MHz) = 2394.166
+    cpuinfo(cpu_MHz) = 2394.147
     cpuinfo(cpu_family) = 15
     cpuinfo(cx8)
     cpuinfo(de)
@@ -521,6 +525,7 @@ print (t)
 -14: _install_script_path	/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
 -14: _javadir	%{_datadir}/java
 -14: _javadocdir	%{_datadir}/javadoc
+-14: _keyutils_keyring	process
 -14: _legion	%{expand:%%global ._legion %{name}}%{_legion}
 -14: _lib	lib
 -14: _libdir	%{_exec_prefix}/%{_lib}
@@ -573,7 +578,7 @@ print (t)
 -14: _specdir	%{_ntopdir}
 -14: _srcrpmdir	%{_ntopdir}
 -14: _sysconfdir	%{_prefix}/etc
--11: _target	i386-linux
+-11= _target	i386-linux
 -14: _target_alias	%{_host_alias}
 -11= _target_cpu	i386
 -11= _target_os	linux
@@ -642,6 +647,9 @@ package or when debugging this package.
 %endif
 %{nil}
 -14: defined	%{expand:%%{?%{1}:1}%%{!?%{1}:0}}
+-14: evr_tuple_match	^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$
+-14: evr_tuple_order	EVR
+-14: evr_tuple_select	123_
 -14: find_lang	%{_rpmhome}/find-lang.sh %{buildroot}
 -14: ix86	i386 i486 i586 i686 pentium3 pentium4 athlon
 -14: make	%{__make}
@@ -671,6 +679,13 @@ package or when debugging this package.
 echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%{__patch_file}} | %{__patch} %{__patch_options}
 }
 -14: patches	%{lua: for i, p in ipairs(patches) do print(p.." ") end}
+-14: pattern_Distepoch	[A-Za-z0-9.]+
+-14: pattern_Disttag	[A-Za-z0-9]+
+-14: pattern_Epoch	[0-9]+
+-14: pattern_Name	[A-Za-z0-9]+[A-Za-z0-9+._-]*
+-14: pattern_Release	[A-Za-z0-9+._]+
+-14: pattern_Repotag	[A-Za-z0-9]+
+-14: pattern_Version	[A-Za-z0-9+._]+
 -14: perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
 -14: perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
 -14: perl_sitearch	%(eval "`%{__perl} -V:installsitearch`"; echo $installsitearch)
@@ -739,4 +754,4 @@ end
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 442 empty 0
+======================== active 453 empty 0
