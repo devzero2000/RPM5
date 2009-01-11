@@ -113,7 +113,8 @@ fingerPrintCache fpCacheFree(/*@only@*/ fingerPrintCache cache)
  */
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
 			const char * baseName, int scareMem)
-	/*@modifies cache @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies cache, fileSystem, internalState @*/;
 
 /**
  * Return hash value for a finger print.
@@ -149,7 +150,8 @@ int fpEqual(const void * key1, const void * key2)
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const uint32_t * dirIndexes, 
 		  uint32_t fileCount, fingerPrint * fpList)
-	/*@modifies cache, *fpList @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies cache, *fpList, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

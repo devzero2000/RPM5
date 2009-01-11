@@ -169,7 +169,6 @@ fprintf(stderr, "*** Rmdir(%s)\n", path);
 /*@unchecked@*/
 const char * _chroot_prefix = NULL;
 
-/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 int Chroot(const char * path)
 {
     const char * lpath;
@@ -197,8 +196,10 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 /*@-dependenttrans -modobserver -observertrans @*/
     _chroot_prefix = _free(_chroot_prefix);
 /*@=dependenttrans =modobserver =observertrans @*/
+/*@-globs -mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
     if (strcmp(path, "."))
 	_chroot_prefix = rpmGetPath(path, NULL);
+/*@=globs =mods@*/
 
 /*@-superuser@*/
     return chroot(path);
@@ -667,9 +668,9 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 
 	/* Here just this special case with MM-DD-YY */
         if (is_dos_date(p)){
-	    /*@-mods@*/
+/*@-mods@*/
             p[2] = p[5] = '-';
-	    /*@=mods@*/
+/*@=mods@*/
 
 	    memset(d, 0, sizeof(d));
 	    if (sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
@@ -941,13 +942,12 @@ typedef enum {
 
 /**
  */
-/*@unchecked@*/
-static size_t ftpBufAlloced = 0;
+static size_t ftpBufAlloced;
 
 /**
  */
-/*@unchecked@*/
-static /*@only@*/ char * ftpBuf = NULL;
+/*@only@*/ /*@relnull@*/
+static char * ftpBuf;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -1169,8 +1169,8 @@ static const char * statstr(const struct stat * st,
 
 /* FIXME: borked for path with trailing '/' */
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
@@ -1188,8 +1188,8 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 
 /* FIXME: borked for path with trailing '/' */
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
@@ -1206,8 +1206,8 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 }
 
 static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, *buf, fileSystem, internalState @*/
 {
     int rc;
     rc = ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
@@ -1218,8 +1218,10 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
 
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
-	/*@globals h_errno, errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/
+	/*@globals ftpBufAlloced, ftpBuf, h_errno, errno,
+		fileSystem, internalState @*/
+	/*@modifies ftpBufAlloced, ftpBuf, errno,
+		fileSystem, internalState @*/
 {
     AVDIR avdir;
     avContext ctx;
@@ -1325,6 +1327,8 @@ assert(resolved_path == NULL);	/* XXX no POSIXly broken realpath(3) here. */
 }
 
 int Stat(const char * path, struct stat * st)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1349,7 +1353,7 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
-	errno = EINVAL;		/* XXX W2DO? */
+	errno = ENOENT;	
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -1357,6 +1361,8 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
 }
 
 int Lstat(const char * path, struct stat * st)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1381,7 +1387,7 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
-	errno = EINVAL;		/* XXX W2DO? */
+	errno = ENOENT;	
 	return -2;
 	/*@notreached@*/ break;
     }
@@ -1424,7 +1430,7 @@ fprintf(stderr, "*** Fstat(%p,%p) path %s\n", fd, st, path);
 	}
 	st->st_ino = hashFunctionString(0, path, 0);;
 	st->st_size = fd->contentLength;
-#ifdef	NOTYET	/* XXX needs transport changes from HEAD. */
+#ifdef NOTYET	/* XXX needs transport changes from HEAD. */
 	st->st_mtime = fd->lastModified;
 #endif
 
@@ -1657,6 +1663,8 @@ fprintf(stderr, "*** Symlink(%s,%s)\n", oldpath, newpath);
 }
 
 int Readlink(const char * path, char * buf, size_t bufsiz)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1820,6 +1828,8 @@ fprintf(stderr, "*** Globfree(%p)\n", pglob);
 }
 
 DIR * Opendir(const char * path)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
@@ -1878,16 +1888,18 @@ char * Realpath(const char * path, /*@null@*/ char * resolved_path)
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
-    char * rpath;
+    char * rpath = NULL;
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path : "NULL"));
+#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
 /*@-nullpass@*/
     /* XXX if POSIXly broken realpath(3) is desired, do that. */
     /* XXX note: preserves current rpmlib realpath(3) usage cases. */
     if (path == NULL || resolved_path != NULL)
 	return realpath(path, resolved_path);
 /*@=nullpass@*/
+#endif	/* !__LCLINT__ */
 
     switch (ut) {
     case URL_IS_FTP:
@@ -1918,6 +1930,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 	break;
     }
 
+#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
     if (lpath == NULL || *lpath == '/')
 /*@-nullpass@*/	/* XXX glibc extension */
 	rpath = realpath(lpath, resolved_path);
@@ -1937,7 +1950,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 	 * the result.
 	 */
 	if ((t = realpath(".", dn)) != NULL) {
-/*@-mods@*/	/* XXX no rpmGlobalMacroContext mods please. */
+/*@-globs -mods@*/	/* XXX no rpmGlobalMacroContext mods please. */
 	    rpath = (char *) rpmGetPath(t, "/", lpath, NULL);
 	    /* XXX preserve the pesky trailing '/' */
 	    if (lpath[strlen(lpath)-1] == '/') {
@@ -1945,13 +1958,14 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 		rpath = rpmExpand(s, "/", NULL);
 		s = _free(s);
 	    }
-/*@=mods@*/
+/*@=globs =mods@*/
 	} else
 	    rpath = NULL;
 #if defined(__GLIBC__)
 	t = _free(t);
 #endif
     }
+#endif	/* !__LCLINT__ */
 
     return rpath;
 }

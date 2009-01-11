@@ -35,6 +35,7 @@ extern "C" {
  * @param mg		magic wrapper
  * @return		NULL always
  */
+/*@null@*/
 rpmmg rpmmgFree(/*@only@*/ /*@null@*/rpmmg mg)
 	/*@globals fileSystem @*/
 	/*@modifies mg, fileSystem @*/;

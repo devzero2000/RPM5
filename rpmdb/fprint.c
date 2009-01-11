@@ -4,8 +4,10 @@
 
 #include "system.h"
 
-#include <rpmio.h>	/* XXX rpmRC codes. */
+#include <rpmio.h>	/* XXX Realpath(). */
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
+
+#include <rpmtag.h>
 #include <rpmdb.h>
 
 #include "fprint.h"
@@ -55,7 +57,8 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
  */
 static fingerPrint doLookup(fingerPrintCache cache,
 		const char * dirName, const char * baseName, int scareMem)
-	/*@modifies cache @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies cache, fileSystem, internalState @*/
 {
     char dir[PATH_MAX];
     const char * cleanDirName;
@@ -88,7 +91,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
 	dir[0] = '\0';
-	if (realpath(".", dir) != NULL) {
+	if (Realpath(".", dir) != NULL) {
 	    end = dir + strlen(dir);
 	    if (end[-1] != '/')	*end++ = '/';
 	    end = stpncpy(end, cleanDirName, sizeof(dir) - (end - dir));

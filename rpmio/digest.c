@@ -256,12 +256,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (uint32_t (*)(uint32_t, const uint8_t *, size_t)) __crc32;
-#if defined(ZLIB_H)
-#if defined(HAVE_ZLIB_CRC32_COMBINE)
+	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) __crc32;
 	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) __crc32_combine;
-#endif
-#endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
@@ -278,12 +274,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-#if defined(ZLIB_H)
-	    mp->update = (uint32_t (*)(uint32_t, const uint8_t *, size_t)) __adler32;
-#if defined(HAVE_ZLIB_ADLER32_COMBINE)
+	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) __adler32;
 	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) __adler32_combine;
-#endif
-#endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
@@ -317,7 +309,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type@*/
-	    mp->update = (uint64_t (*)(uint64_t, const uint8_t *, size_t)) __crc64;
+	    mp->update = (uint64_t (*)(uint64_t, const byte *, size_t)) __crc64;
 	    mp->combine = (uint64_t (*)(uint64_t, uint64_t, size_t)) __crc64_combine;
 /*@=type@*/
 	    ctx->paramsize = sizeof(*mp);

@@ -292,7 +292,7 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp;
     pgpDigParams pubp;
-    const unsigned char * sigpkt = NULL;
+    uint8_t * sigpkt = NULL;
     size_t sigpktlen = 0;
     DIGEST_CTX ctx = NULL;
     int printing = 0;
@@ -342,7 +342,7 @@ fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
     /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
     if (pubfn && *pubfn) {
 	const char * _pubfn = rpmExpand(pubfn, NULL);
-	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
+	xx = pgpReadPkts(_pubfn, (uint8_t **)&ts->pkpkt, &ts->pkpktlen);
 	if (xx != PGPARMOR_PUBKEY) {
 if (_rpmns_debug)
 fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, (unsigned int)ts->pkpktlen, xx);

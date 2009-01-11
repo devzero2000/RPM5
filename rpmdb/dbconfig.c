@@ -5,11 +5,11 @@
 #include "system.h"
 
 #include <popt.h>
-#include <rpmtag.h>
 #include <rpmio.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
 
+#include <rpmtag.h>
 #define	_RPMDB_INTERNAL
 #include "rpmdb.h"
 #include "debug.h"
@@ -177,7 +177,7 @@ DB_DIRECT_LOG
 DB_DSYNC_DB
 DB_DSYNC_LOG
 DB_LOG_AUTOREMOVE
-DB_LOG_BUFFER_FULL	???
+DB_LOG_BUFFER_FULL	/* ??? */
 DB_LOG_INMEMORY
 DB_NOLOCKING
 DB_MULTIVERSION
@@ -654,14 +654,11 @@ dbiIndex db3Free(dbiIndex dbi)
 static const char *db3_config_default =
     "hash tmpdir=/var/tmp create cdb mpool mp_mmapsize=16Mb mp_size=1Mb perms=0644";
 
-dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
+dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
-    char dbiTagMacro[128];
-    char * dbOpts;
+    char * dbOpts = rpmExpand("%{_dbi_config_", tagName(tag), "}", NULL);
 
-    sprintf(dbiTagMacro, "%%{_dbi_config_%s}", tagName(rpmtag));
-    dbOpts = rpmExpand(dbiTagMacro, NULL);
     if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
 	dbOpts = _free(dbOpts);
 	dbOpts = rpmExpand("%{_dbi_config}", NULL);
@@ -800,13 +797,13 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     /*@-assignexpose -newreftrans@*/ /* FIX: figger rpmdb/dbi refcounts */
 /*@i@*/	dbi->dbi_rpmdb = rpmdb;
     /*@=assignexpose =newreftrans@*/
-    dbi->dbi_rpmtag = rpmtag;
+    dbi->dbi_rpmtag = tag;
     
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.
      */
     /*@-sizeoftype@*/
-    switch (rpmtag) {
+    switch (tag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
 	dbi->dbi_jlen = 1 * sizeof(uint32_t);

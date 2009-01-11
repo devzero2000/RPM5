@@ -30,6 +30,8 @@ extern const char *__progname;
 #endif
 
 #include "rpmdb.h"
+
+#include "rpmversion.h"
 #include "rpmps.h"
 #include "rpmts.h"
 

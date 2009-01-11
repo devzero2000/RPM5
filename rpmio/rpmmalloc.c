@@ -22,7 +22,9 @@
     fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
     exit(EXIT_FAILURE);
     /*@notreached@*/
+/*@-nullret@*/
     return NULL;
+/*@=nullret@*/
 }
 /*@=modfilesys@*/
 

@@ -69,8 +69,8 @@ extern "C" {
  */
 /*@-exportlocal@*/
 int rpmsqInsert(/*@null@*/ void * elem, /*@null@*/ void * prev)
-	/*@globals systemState @*/
-	/*@modifies elem, prev, systemState @*/;
+	/*@globals rpmsqQueue, systemState @*/
+	/*@modifies elem, prev, rpmsqQueue, systemState @*/;
 /*@=exportlocal@*/
 
 /**

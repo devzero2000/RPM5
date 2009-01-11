@@ -47,12 +47,43 @@
 
 # include "system.h"
 
+/* Needed for offsetof() */
+# include <stddef.h>
+
 # include <assert.h>
 
 #undef __alloca
 #define	__alloca	alloca
 #define	__stat		stat
 #define	NAMLEN(_d)	NLENGTH(_d)
+
+/* If the system has the `struct dirent64' type we use it internally.  */
+# if defined HAVE_DIRENT_H || defined __GNU_LIBRARY__
+#  define CONVERT_D_NAMLEN(d64, d32)
+# else
+#  define CONVERT_D_NAMLEN(d64, d32) \
+  (d64)->d_namlen = (d32)->d_namlen;
+# endif
+
+# if (defined POSIX || defined WINDOWS32) && !defined __GNU_LIBRARY__
+#  define CONVERT_D_INO(d64, d32)
+# else
+#  define CONVERT_D_INO(d64, d32) \
+  (d64)->d_ino = (d32)->d_ino;
+# endif
+
+# ifdef _DIRENT_HAVE_D_TYPE
+#  define CONVERT_D_TYPE(d64, d32) \
+  (d64)->d_type = (d32)->d_type;
+# else
+#  define CONVERT_D_TYPE(d64, d32)
+# endif
+
+# define CONVERT_DIRENT_DIRENT64(d64, d32) \
+  memcpy ((d64)->d_name, (d32)->d_name, NAMLEN (d32) + 1);		      \
+  CONVERT_D_NAMLEN (d64, d32)						      \
+  CONVERT_D_INO (d64, d32)						      \
+  CONVERT_D_TYPE (d64, d32)
 
 #if (defined POSIX || defined WINDOWS32) && !defined __GNU_LIBRARY__
 /* Posix does not require that the d_ino field be present, and some
@@ -72,13 +103,19 @@
 
 #define GLOB_INTERFACE_VERSION 1
 
-static inline const char *next_brace_sub __P ((const char *begin));
+/*@null@*/
+static inline const char *next_brace_sub __P ((const char *begin))
+	/*@*/;
 static int glob_in_dir __P ((const char *pattern, const char *directory,
 			     int flags,
 			     int (*errfunc) (const char *, int),
-			     glob_t *pglob));
-static int prefix_array __P ((const char *prefix, char **array, size_t n));
-static int collated_compare __P ((const __ptr_t, const __ptr_t));
+			     glob_t *pglob))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+static int prefix_array __P ((const char *prefix, char **array, size_t n))
+	/*@*/;
+static int collated_compare __P ((const __ptr_t, const __ptr_t))
+	/*@*/;
 
 
 /* Find the end of the sub-pattern in a brace expression.  We define
@@ -1069,9 +1106,28 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 		  const char *name;
 		  size_t len;
 #ifdef _LARGEFILE64_SOURCE
-		  struct dirent64 *d = ((flags & GLOB_ALTDIRFUNC)
-				      ? (*pglob->gl_readdir) (stream)
-				      : readdir64 ((DIR *) stream));
+		  struct dirent64 *d;
+		  union
+		    {
+	 		struct dirent64 d64;
+      			char room [offsetof (struct dirent64, d_name[0])
+   				   + NAME_MAX + 1];
+    		    }
+    		  d64buf;
+
+    		  if ((flags & GLOB_ALTDIRFUNC))
+  		    {
+			struct dirent *d32 = (*pglob->gl_readdir) (stream);
+      			if (d32 != NULL)
+    			  {
+	    		    CONVERT_DIRENT_DIRENT64 (&d64buf.d64, d32);
+      			    d = &d64buf.d64;
+      			  }
+      			else
+	    		  d = NULL;
+    		    }
+    		  else
+	  	    d = readdir64 (stream);
 #else
 		  struct dirent *d = ((flags & GLOB_ALTDIRFUNC)
 				      ? (*pglob->gl_readdir) (stream)

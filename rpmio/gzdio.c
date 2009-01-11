@@ -15,7 +15,7 @@ typedef	enum { true = 1, false = 0 } bool;
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
-#ifdef	HAVE_ZLIB_H
+#if defined(WITH_ZLIB)
 
 /*@-noparams@*/
 #include <zlib.h>
@@ -28,7 +28,7 @@ typedef	enum { true = 1, false = 0 } bool;
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
 
 typedef struct cpio_state_s {
-    uint32_t n;			/* byte progress in cpio header */
+    uint32_t n;				/* byte progress in cpio header */
     uint32_t mode;			/* file attributes */
     uint32_t nlnk;
     uint32_t size;
@@ -37,7 +37,7 @@ typedef struct cpio_state_s {
 #define RSYNC_WIN 4096
 
 typedef struct rsync_state_s {
-    uint32_t n;			/* number of elements in the window */
+    uint32_t n;				/* number of elements in the window */
     uint32_t sum;			/* current sum */
     unsigned char win[RSYNC_WIN];	/* window elements */
 } * rsync_state;
@@ -64,6 +64,7 @@ static int enable_rsync = 1;
 
 static inline
 int hex(char c)
+	/*@*/
 {
     if (c >= '0' && c <= '9')
 	return (int)(c - '0');
@@ -132,7 +133,7 @@ bool rsync_next(rsync_state s, unsigned char c)
     uint32_t i;
 
     if (s->n < RSYNC_WIN) {		/* not enough elements */
-	s->sum += (uint32_t)c;	/* update the sum */
+	s->sum += (uint32_t)c;		/* update the sum */
 	s->win[s->n++] = c;		/* remember the element */
 	return false;			/* no match */
     }
@@ -458,4 +459,4 @@ static struct FDIO_s gzdio_s = {
 FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
 /*@=moduncon@*/
-#endif	/* HAVE_ZLIB_H */
+#endif	/* WITH_ZLIB */
