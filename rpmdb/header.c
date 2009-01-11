@@ -27,6 +27,14 @@ int _hdr_debug = 0;
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
+/* Compute tag data store size using offsets? */
+/*@unchecked@*/
+int _hdr_fastdatalength = 0;
+
+/* Swab tag data only when accessed through headerGet()? */
+/*@unchecked@*/
+int _hdr_lazytagswab = 0;
+
 /** \ingroup header
  */
 /*@-type@*/
@@ -174,6 +182,7 @@ Header headerNew(void)
     h->origin = NULL;
     h->baseurl = NULL;
     h->digest = NULL;
+    h->rpmdb = NULL;
     h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
@@ -360,12 +369,12 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
     return length;
 }
 
-#ifdef	NOTYET
 /** \ingroup header
  * Swab uint64_t/uint32_t/uint16_t arrays within header region.
  *
  */
-static unsigned char * tagSwab(unsigned char * t, const HE_t he, size_t nb)
+static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
+		const HE_t he, size_t nb)
 	/*@modifies *t @*/
 {
     uint32_t i;
@@ -391,14 +400,16 @@ static unsigned char * tagSwab(unsigned char * t, const HE_t he, size_t nb)
 	    tt[i] = (uint16_t) htons(he->p.ui16p[i]);
     }   break;
     default:
+assert(he->p.ptr != NULL);
 	if ((void *)t != he->p.ptr && nb)
 	    memcpy(t, he->p.ptr, nb);
 	t += nb;
 	break;
     }
+/*@-compdef@*/
     return t;
+/*@=compdef@*/
 }
-#endif
 
 /**
  * Always realloc HE_t memory.
@@ -443,8 +454,17 @@ assert(0);	/* XXX stop unimplemented oversights. */
 
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
-	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
-	he->p.ptr = ptr;
+	void * ptr = xmalloc(nb);
+	if (_hdr_lazytagswab) {
+	    if (tagSwab(ptr, he, nb) != NULL)
+		he->p.ptr = ptr;
+	    else {
+		ptr = _free(ptr);
+		rc = 0;
+	    }
+	} else {
+	    he->p.ptr = memcpy(ptr, he->p.ptr, nb);
+	}
     }
 
     if (rc)
@@ -454,7 +474,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
 }
 
 /** \ingroup header
- * Swap uint32_t and uint16_t arrays within header region.
+ * Swab uint64_t/uint32_t/uint16_t arrays within header region.
  *
  * This code is way more twisty than I would like.
  *
@@ -487,6 +507,7 @@ static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl
 		int32_t regionid)
 	/*@modifies *entry, *dataStart @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTagData p;
     rpmTagData pend;
     unsigned char * tprev = NULL;
@@ -521,9 +542,20 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 
 	p.ptr = ie.data;
 	pend.ui8p = (uint8_t *) dataEnd;
+
+	/* Find the length of the tag data store. */
+	if (dataEnd && _hdr_fastdatalength) {
+	    /* Compute the tag data store length using offsets. */
+	    if (il > 1)
+		ie.length = ((uint32_t) ntohl(pe[1].offset) - ie.info.offset);
+	    else
+		ie.length = (dataEnd - t);
+	} else {
+	    /* Compute the tag data store length by counting. */
 /*@-nullstate@*/	/* pend.ui8p derived from dataLength may be null */
-	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
+	    ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
 /*@=nullstate@*/
+	}
 	if (ie.length == 0 || hdrchkData(ie.length))
 	    return 0;
 
@@ -563,41 +595,17 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	}
 
 	/* Perform endian conversions */
-	switch (ntohl(pe->type)) {
-	case RPM_UINT64_TYPE:
-	{   uint64_t * it = (uint64_t *)t;
-	    uint32_t b[2];
-	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return 0;
-		b[1] = (uint32_t) htonl(((uint32_t *)it)[0]);
-		b[0] = (uint32_t) htonl(((uint32_t *)it)[1]);
-		if (b[1] != ((uint32_t *)it)[0])
-		    memcpy(it, b, sizeof(b));
-	    }
-	    t = (unsigned char *) it;
-	}   /*@switchbreak@*/ break;
-	case RPM_UINT32_TYPE:
-	{   uint32_t * it = (uint32_t *)t;
-	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return 0;
-		*it = (uint32_t) htonl(*it);
-	    }
-	    t = (unsigned char *) it;
-	}   /*@switchbreak@*/ break;
-	case RPM_UINT16_TYPE:
-	{   uint16_t * it = (uint16_t *) t;
-	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return 0;
-		*it = (uint16_t) htons(*it);
-	    }
-	    t = (unsigned char *) it;
-	}   /*@switchbreak@*/ break;
-	default:
+	if (_hdr_lazytagswab)
 	    t += ie.length;
-	    /*@switchbreak@*/ break;
+	else {
+	    he->tag = ie.info.tag;
+	    he->t = ie.info.type;
+/*@-kepttrans@*/
+	    he->p.ptr = t;
+/*@=kepttrans@*/
+	    he->c = ie.info.count;
+	    if ((t = tagSwab(t, he, ie.length)) == NULL)
+		return 0;
 	}
 
 	dl += ie.length;
@@ -659,9 +667,9 @@ void * headerUnload(Header h, size_t * lenp)
 	    int32_t rid;
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
-	    rdl = -entry->info.offset;	/* negative offset */
-	    ril = rdl/sizeof(*pe);
-	    rid = entry->info.offset;
+	    rdl = (uint32_t)-entry->info.offset;	/* negative offset */
+	    ril = (uint32_t)(rdl/sizeof(*pe));
+	    rid = (uint32_t)entry->info.offset;
 
 	    il += ril;
 	    dl += entry->rdlen + entry->info.count;
@@ -735,7 +743,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	const char * src;
 	unsigned char *t;
 	uint32_t count;
-	uint32_t rdlen;
+	size_t rdlen;
 
 	if (entry->data == NULL || entry->length == 0)
 	    continue;
@@ -752,9 +760,9 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
 
-	    rdl = -entry->info.offset;	/* negative offset */
-	    ril = rdl/sizeof(*pe) + ndribbles;
-	    rid = entry->info.offset;
+	    rdl = (uint32_t)-entry->info.offset;	/* negative offset */
+	    ril = (uint32_t)(rdl/sizeof(*pe) + ndribbles);
+	    rid = (uint32_t)entry->info.offset;
 
 	    src = (char *)entry->data;
 	    rdlen = entry->rdlen;
@@ -779,7 +787,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		rdlen += entry->info.count;
 
 		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
-		if (count != rdlen)
+		if (count != (uint32_t)rdlen)
 		    goto errxit;
 
 	    } else {
@@ -797,7 +805,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		te += entry->info.count + drlen;
 
 		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
-		if (count != (rdlen + entry->info.count + drlen))
+		if (count != (uint32_t)(rdlen + entry->info.count + drlen))
 		    goto errxit;
 	    }
 
@@ -1053,7 +1061,7 @@ Header headerLoad(void * uh)
 	entry->info.type = REGION_TAG_TYPE;
 	entry->info.tag = HEADER_IMAGE;
 	/*@-sizeoftype@*/
-	entry->info.count = REGION_TAG_COUNT;
+	entry->info.count = (rpmTagCount)REGION_TAG_COUNT;
 	/*@=sizeoftype@*/
 	entry->info.offset = ((unsigned char *)pe - dataStart); /* negative offset */
 
@@ -1092,16 +1100,16 @@ Header headerLoad(void * uh)
 		size_t nb = REGION_TAG_COUNT;
 /*@=sizeoftype@*/
 		uint32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
-		rdl = -ntohl(stei[2]);	/* negative offset */
+		rdl = (uint32_t)-ntohl(stei[2]);	/* negative offset */
 assert((int32_t)rdl >= 0);	/* XXX insurance */
-		ril = rdl/sizeof(*pe);
+		ril = (uint32_t)(rdl/sizeof(*pe));
 		if (hdrchkTags(ril) || hdrchkData(rdl))
 		    goto errxit;
 		entry->info.tag = (uint32_t) htonl(pe->tag);
 	    } else {
 		ril = il;
 		/*@-sizeoftype@*/
-		rdl = (ril * sizeof(struct entryInfo_s));
+		rdl = (uint32_t)(ril * sizeof(struct entryInfo_s));
 		/*@=sizeoftype@*/
 		entry->info.tag = HEADER_IMAGE;
 	    }
@@ -1117,14 +1125,14 @@ assert((int32_t)rdl >= 0);	/* XXX insurance */
 	    goto errxit;
 	entry->rdlen = rdlen;
 
-	if (ril < h->indexUsed) {
+	if (ril < (uint32_t)h->indexUsed) {
 	    indexEntry newEntry = entry + ril;
 	    size_t ne = (h->indexUsed - ril);
 	    int32_t rid = entry->info.offset+1;
 	    uint32_t rc;
 
 	    /* Load dribble entries from region. */
-	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, dataEnd, rid);
+	    rc = regionSwab(newEntry, (uint32_t)ne, 0, pe+ril, dataStart, dataEnd, rid);
 	    if (rc == 0)
 		goto errxit;
 	    rdlen += rc;
@@ -1213,7 +1221,9 @@ int headerSetOrigin(Header h, const char * origin)
 
 const char * headerGetBaseURL(Header h)
 {
+/*@-retexpose@*/
     return (h != NULL ? h->baseurl : NULL);
+/*@=retexpose@*/
 }
 
 int headerSetBaseURL(Header h, const char * baseurl)
@@ -1227,7 +1237,9 @@ int headerSetBaseURL(Header h, const char * baseurl)
 
 struct stat * headerGetStatbuf(Header h)
 {
-    return &h->sb;
+/*@-immediatetrans -retexpose@*/
+    return (h != NULL ? &h->sb : NULL);
+/*@=immediatetrans =retexpose@*/
 }
 
 int headerSetStatbuf(Header h, struct stat * st)
@@ -1239,7 +1251,9 @@ int headerSetStatbuf(Header h, struct stat * st)
 
 const char * headerGetDigest(Header h)
 {
+/*@-compdef -retexpose -usereleased @*/
     return (h != NULL ? h->digest : NULL);
+/*@=compdef =retexpose =usereleased @*/
 }
 
 int headerSetDigest(Header h, const char * digest)
@@ -1249,6 +1263,22 @@ int headerSetDigest(Header h, const char * digest)
 	h->digest = xstrdup(digest);
     }
     return 0;
+}
+
+void * headerGetRpmdb(Header h)
+{
+/*@-compdef -retexpose -usereleased @*/
+    return (h != NULL ? h->rpmdb : NULL);
+/*@=compdef =retexpose =usereleased @*/
+}
+
+void * headerSetRpmdb(Header h, void * rpmdb)
+{
+/*@-assignexpose -temptrans @*/
+    if (h != NULL)
+	h->rpmdb = rpmdb;
+/*@=assignexpose =temptrans @*/
+    return NULL;
 }
 
 uint32_t headerGetInstance(Header h)
@@ -1295,6 +1325,7 @@ Header headerReload(Header h, int tag)
     const char * baseurl = (h->baseurl != NULL ? xstrdup(h->baseurl) : NULL);
     const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
     struct stat sb = h->sb;	/* structure assignment */
+    void * rpmdb = h->rpmdb;
     uint32_t instance = h->instance;
     int xx;
 
@@ -1328,7 +1359,10 @@ Header headerReload(Header h, int tag)
 	xx = headerSetDigest(nh, digest);
 	digest = _free(digest);
     }
+/*@-assignexpose@*/
     nh->sb = sb;	/* structure assignment */
+/*@=assignexpose@*/
+    (void) headerSetRpmdb(nh, rpmdb);
     xx = (int) headerSetInstance(nh, instance);
     return nh;
 }
@@ -1397,10 +1431,10 @@ static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 	    uint32_t ril;
 
 assert(entry->info.offset <= 0);		/* XXX insurance */
-	    rdl = -entry->info.offset;	/* negative offset */
-	    ril = rdl/sizeof(*pe);
+	    rdl = (uint32_t)-entry->info.offset;	/* negative offset */
+	    ril = (uint32_t)(rdl/sizeof(*pe));
 	    /*@-sizeoftype@*/
-	    rdl = entry->rdlen;
+	    rdl = (uint32_t)entry->rdlen;
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
 	    if (entry->info.tag == HEADER_IMAGE) {
 		ril -= 1;
@@ -1411,8 +1445,8 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    }
 
 	    he->p.ui32p = ei = xmalloc(count);
-	    ei[0] = htonl(ril);
-	    ei[1] = htonl(rdl);
+	    ei[0] = (uint32_t)htonl(ril);
+	    ei[1] = (uint32_t)htonl(rdl);
 
 	    /*@-castexpose@*/
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
@@ -1428,7 +1462,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    if (rc == 0)
 		he->p.ptr = _free(he->p.ptr);
 	} else {
-	    count = entry->length;
+	    count = (rpmTagCount)entry->length;
 	    he->p.ptr = (!minMem
 		? memcpy(xmalloc(count), entry->data, count)
 		: entry->data);
@@ -1677,6 +1711,8 @@ static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
 	}
     }	break;
     default:
+assert((*dest).ptr != NULL);
+assert((*src).ptr != NULL);
 	memmove((*dest).ptr, (*src).ptr, len);
 	break;
     }

@@ -53,7 +53,7 @@ extern int rpm_typeAlign[16];
  */
 typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
 struct entryInfo_s {
-    rpmTag tag;		/*!< Tag identifier. */
+    rpmTag tag;			/*!< Tag identifier. */
     rpmTagType type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
     rpmTagCount count;		/*!< Number of tag elements. */
@@ -87,8 +87,12 @@ struct headerToken_s {
     void * blob;		/*!< Header region blob. */
 /*@only@*/ /*@null@*/
     const char * origin;	/*!< Header origin (e.g. path or URL). */
+/*@only@*/ /*@null@*/
     const char * baseurl;	/*!< Header base URL (e.g. path or URL). */
+/*@only@*/ /*@null@*/
     const char * digest;	/*!< Header digest (from origin *.rpm file) */
+/*@null@*/
+    void * rpmdb;		/*!< rpmdb pointer (or NULL). */
     struct stat sb;		/*!< Header stat(2) (from origin *.rpm file) */
     uint32_t instance;		/*!< Header instance (if from rpmdb). */
     uint32_t startoff;		/*!< Header starting byte offset in package. */

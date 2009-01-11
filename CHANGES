@@ -1,4 +1,9 @@
 5.1.6 -> 5.1.7:
+    - rse: EVRtuple: macro configuration parameterization.
+    - jbj: add FNM_EXTMATCH to default flags w RPMMIRE_GLOB.
+    - jbj: rpmsw: change bytes accumulator to unsigned long long.
+    - proyvind: add new DistEpoch tag.
+    - jbj: add getter/setter methods to pass a rpmdb using a header argument.
     - jbj: transFlags: regroup bits together in poptI table.
     - jbj: transFlags: use POPT_SET_BIT consistently, no callbacks needed.
     - jbj: transFlags: add --nopretrans/--noposttrans disablers.

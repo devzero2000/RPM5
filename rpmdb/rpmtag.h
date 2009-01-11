@@ -405,7 +405,7 @@ enum rpmTag_e {
     RPMTAG_RPMLIBVERSION	= 1199, /* i */
     RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
     RPMTAG_RPMLIBVENDOR		= 1201, /* i */
-    RPMTAG_CLASS		= 1202, /* s */
+    RPMTAG_CLASS		= 1202, /* s arbitrary */
     RPMTAG_TRACK		= 1203, /* s internal arbitrary */
     RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
     RPMTAG_SANITYCHECK		= 1205, /* s */
@@ -421,10 +421,15 @@ enum rpmTag_e {
     RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
     RPMTAG_PACKAGESTAT		= 1216,	/* x */
     RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
+    RPMTAG_DISTEPOCH		= 1218, /* s */
 
 /*@-enummemuse@*/
-    RPMTAG_FIRSTFREE_TAG	/*!< internal */
+    RPMTAG_FIRSTFREE_TAG,	/*!< internal */
 /*@=enummemuse@*/
+
+    RPMTAG_PACKAGETRANSFLAGS	= 0x4efaafd9, /* s[] arbitrary */
+    RPMTAG_PACKAGEDEPFLAGS	= 0x748a8314, /* s[] arbitrary */
+    RPMTAG_LASTARBITRARY_TAG	= 0x80000000  /*!< internal */
 };
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
@@ -719,9 +724,8 @@ char * headerSprintf(Header h, const char * fmt,
 		/*@null@*/ headerTagTableEntry tags,
 		/*@null@*/ headerSprintfExtension exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
-	/*@globals headerCompoundFormats @*/
-	/*@modifies h, *errmsg @*/
-	/*@requires maxSet(errmsg) >= 0 @*/;
+	/*@globals headerCompoundFormats, internalState @*/
+	/*@modifies h, *errmsg, internalState @*/;
 
 /** \ingroup header
  * Retrieve extension or tag value from a header.
@@ -732,7 +736,8 @@ char * headerSprintf(Header h, const char * fmt,
  * @return		1 on success, 0 on failure
  */
 int headerGet(Header h, HE_t he, unsigned int flags)
-	/*@modifies he @*/;
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/;
 #define	HEADERGET_NOEXTENSION	(1 << 0) /*!< Extension search disabler. */
 #define	HEADERGET_NOI18NSTRING	(1 << 1) /*!< Return i18n strings as argv. */
 
@@ -796,7 +801,8 @@ HeaderIterator headerInit(Header h)
  * @return		1 on success, 0 on failure
  */
 int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
-	/*@modifies hi, he @*/;
+	/*@globals internalState @*/
+	/*@modifies hi, he, internalState @*/;
 
 /** \ingroup header
  * Reference a header instance.
@@ -811,6 +817,7 @@ Header headerLink(Header h)
  * @param h		header
  * @return		NULL always
  */
+/*@null@*/
 Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/;
 
@@ -846,7 +853,8 @@ size_t headerSizeof(/*@null@*/ Header h)
  */
 /*@only@*/ /*@null@*/
 void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
-	/*@modifies h, *lenp @*/;
+	/*@globals internalState @*/
+	/*@modifies h, *lenp, internalState @*/;
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
@@ -858,7 +866,8 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
  */
 /*@null@*/
 Header headerReload(/*@only@*/ Header h, int tag)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
 
 /** \ingroup header
  * Duplicate a header.
@@ -867,7 +876,8 @@ Header headerReload(/*@only@*/ Header h, int tag)
  */
 /*@null@*/
 Header headerCopy(Header h)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
 
 /** \ingroup header
  * Convert header to in-memory representation.
@@ -876,7 +886,8 @@ Header headerCopy(Header h)
  */
 /*@null@*/
 Header headerLoad(/*@kept@*/ void * uh)
-	/*@modifies uh @*/;
+	/*@globals internalState @*/
+	/*@modifies uh, internalState @*/;
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
@@ -885,7 +896,8 @@ Header headerLoad(/*@kept@*/ void * uh)
  */
 /*@null@*/
 Header headerCopyLoad(const void * uh)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup header
  * Check if tag is in header.
@@ -927,7 +939,8 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
  * @param tagstocopy	array of tags that are copied
  */
 void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
-	/*@modifies headerTo @*/;
+	/*@globals internalState @*/
+	/*@modifies headerTo, internalState @*/;
 
 /** \ingroup header
  * Return header magic.
@@ -1018,6 +1031,25 @@ const char * headerGetDigest(/*@null@*/ Header h)
  * @return		0 always
  */
 int headerSetDigest(/*@null@*/ Header h, const char * digest)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return rpmdb pointer.
+ * @param h		header
+ * @return		rpmdb pointer
+ */
+/*@null@*/
+void * headerGetRpmdb(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store rpmdb pointer.
+ * @param h		header
+ * @param rpmdb		new rpmdb pointer (or NULL to unset)
+ * @return		NULL always
+ */
+/*@null@*/
+void * headerSetRpmdb(/*@null@*/ Header h, /*@null@*/ void * rpmdb)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -1115,7 +1147,8 @@ int headerNEVRA(Header h,
 		/*@null@*/ /*@out@*/ const char ** vp,
 		/*@null@*/ /*@out@*/ const char ** rp,
 		/*@null@*/ /*@out@*/ const char ** ap)
-	/*@modifies h, *np, *vp, *rp, *ap @*/;
+	/*@globals internalState @*/
+	/*@modifies h, *np, *vp, *rp, *ap, internalState @*/;
 
 /**
  * Return header color.
@@ -1123,7 +1156,8 @@ int headerNEVRA(Header h,
  * @return		header color
  */
 uint32_t hGetColor(Header h)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
 
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
@@ -1132,7 +1166,8 @@ uint32_t hGetColor(Header h)
  * @param sigh		signature header
  */
 void headerMergeLegacySigs(Header h, const Header sigh)
-	/*@modifies h, sigh @*/;
+	/*@globals internalState @*/
+	/*@modifies h, sigh, internalState @*/;
 
 /** \ingroup header
  * Regenerate signature header.
@@ -1142,7 +1177,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
  * @return		regenerated signature header
  */
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
+
 #ifdef __cplusplus
 }
 #endif
