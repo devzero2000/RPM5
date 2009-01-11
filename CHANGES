@@ -1,4 +1,6 @@
 5.1.6 -> 5.1.7:
+    - jbj: rpmku: create opaque keyutils keyring.
+    - jbj: keyutils: permit configurable keyring.
     - jbj: rpmgc: display errors with gcry_strerror().
     - jbj: rpmnss: eliminate pubkey type wrapping methods.
     - jbj: rpmnss: fix: correct RSA/SHA512 cut-n-paste error.

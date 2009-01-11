@@ -952,7 +952,7 @@ print (t)\
 #	user		KEY_SPEC_USER_KEYRING
 #	user_session	KEY_SPEC_USER_SESSION_KEYRING
 #
-#%_keyutils_keyring	process
+%_keyutils_keyring	process
 
 #	Relations between package names that cause dependency loops
 #	with legacy packages that cannot be fixed. Relations are

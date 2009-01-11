@@ -302,6 +302,10 @@ LIBRPMIO_0
     rpmioPipeOutput;
     rpmioRootDir;
     rpmioSlurp;
+    _kuKeyring;
+    rpmkuFindPubkey;
+    rpmkuStorePubkey;
+    rpmkuPassPhrase;
     rpmLoadMacroFile;
     rpmLoadMacros;
     rpmlog;
