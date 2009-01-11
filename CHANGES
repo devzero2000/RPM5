@@ -1,4 +1,10 @@
 5.1.6 -> 5.1.7:
+    - jbj: transFlags: regroup bits together in poptI table.
+    - jbj: transFlags: use POPT_SET_BIT consistently, no callbacks needed.
+    - jbj: transFlags: add --nopretrans/--noposttrans disablers.
+    - jbj: transFlags: eliminate --nomd5, use --nofdigests instead.
+    - jbj: transFlags: add RPMTRANS_FLAGS_NORPMDB and --norpmdb disablers.
+    - jbj: transFlags: eliminate (never implemented) RPMTRANS_KEEP_OBSOLETES.
     - jbj: use poptSaneFile() when available (popt-1.15).
     - jbj: use poptReadConfigFiles() when available (popt-1.15).
     - jbj: rename s/hdrmd5ctx/hdrctx/ used by RSA to avoid legacy confusions.

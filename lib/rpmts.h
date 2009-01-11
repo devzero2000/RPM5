@@ -58,9 +58,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
     RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
-/*@-enummemuse@*/
-    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
-/*@=enummemuse@*/
+	/* 7 unused */
     RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
@@ -73,7 +71,7 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_UNDO		= (1 << 14),
 /*@=enummemuse@*/
-    /* 15 unused */
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
     RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
@@ -86,20 +84,22 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
-
-    /* 26 unused */
+    RPMTRANS_FLAG_NORPMDB	= (1 << 25),	/*!< from --norpmdb */
+	/* 26 unused */
     RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
-    /* 28-29 unused */
+    RPMTRANS_FLAG_NOPRETRANS	= (1 << 28),	/*!< from --nopretrans */
+    RPMTRANS_FLAG_NOPOSTTRANS	= (1 << 29),	/*!< from --noposttrans */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
-    /* 31 unused */
+	/* 31 unused */
 } rpmtransFlags;
 
 #define	_noTransScripts		\
-  ( RPMTRANS_FLAG_NOPRE |	\
+  ( RPMTRANS_FLAG_NOPRETRANS |	\
+    RPMTRANS_FLAG_NOPRE |	\
     RPMTRANS_FLAG_NOPOST |	\
     RPMTRANS_FLAG_NOPREUN |	\
-    RPMTRANS_FLAG_NOPOSTUN	\
+    RPMTRANS_FLAG_NOPOSTUN |	\
+    RPMTRANS_FLAG_NOPOSTTRANS	\
   )
 
 #define	_noTransTriggers	\
@@ -275,9 +275,9 @@ struct rpmts_s {
     int ntrees;			/*!< No. of dependency trees. */
     int maxDepth;		/*!< Maximum depth of dependency tree(s). */
 
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     rpmte teInstall;		/*!< current rpmtsAddInstallElement element. */
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     rpmte teErase;		/*!< current rpmtsAddEraseElement element. */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
@@ -289,7 +289,7 @@ struct rpmts_s {
 /*@null@*/
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    uint32_t tid[2];			/*!< Transaction id. */
+    uint32_t tid[2];		/*!< Transaction id. */
 
     uint32_t color;		/*!< Transaction color bits. */
     uint32_t prefcolor;		/*!< Preferred file color. */
@@ -297,10 +297,10 @@ struct rpmts_s {
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
 
-/*@only@*/ /*@relnull@*/
-    const unsigned char * pkpkt;/*!< Current pubkey packet. */
+/*@relnull@*/
+    uint8_t * pkpkt;		/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
-    unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
+    uint8_t pksignid[8];	/*!< Current pubkey fingerprint. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
@@ -698,6 +698,7 @@ extern const char * rpmtsCurrDir(rpmts ts)
 void rpmtsSetCurrDir(rpmts ts, /*@null@*/ const char * currDir)
 	/*@modifies ts @*/;
 
+#if defined(_RPMTS_INTERNAL)	/* XXX avoid FD_t in API. */
 /** \ingroup rpmts
  * Get transaction script file handle, i.e. stdout/stderr on scriptlet execution
  * @param ts		transaction set
@@ -713,7 +714,9 @@ FD_t rpmtsScriptFd(rpmts ts)
  * @param scriptFd	new script file handle (or NULL)
  */
 void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
-	/*@modifies ts, scriptFd @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, scriptFd, fileSystem @*/;
+#endif
 
 /** \ingroup rpmts
  * Get selinuxEnabled flag, i.e. is SE linux enabled?
@@ -792,7 +795,8 @@ rpmdb rpmtsGetRdb(rpmts ts)
  */
 /*@null@*/
 rpmPRCO rpmtsPRCO(rpmts ts)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Initialize disk space info for each and every mounted file systems.
@@ -1030,8 +1034,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /*@-redecl@*/
 /*@unchecked@*/
