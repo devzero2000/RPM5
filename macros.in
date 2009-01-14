@@ -1059,7 +1059,7 @@ print (t)\
 
 # data validation patterns for identifier tags
 %pattern_Name		^[A-Za-z0-9][A-Za-z0-9+._-]*$
-%pattern_Epoch		^[0-9]+*$
+%pattern_Epoch		^[0-9]+$
 %pattern_Version	^[A-Za-z0-9+._]+$
 %pattern_Release	^[A-Za-z0-9+._]+$
 %pattern_Disttag	^[A-Za-z0-9]+$
