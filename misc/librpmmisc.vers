@@ -69,6 +69,10 @@ LIBRPMMISC_0
     lzma_code;
     lzma_end;
     lzma_preset_lzma;
+    lzma_memlimit_alloc;
+    lzma_memlimit_create;
+    lzma_memlimit_end;
+    lzma_memlimit_free;
     LZMA_STREAM_INIT_VAR;
     magic_buffer;
     magic_close;
@@ -76,6 +80,10 @@ LIBRPMMISC_0
     magic_file;
     magic_load;
     magic_open;
+    pcreposix_regcomp;
+    pcreposix_regerror;
+    pcreposix_regexec;
+    pcreposix_regfree ;
     xar_add_frombuffer;
     xar_close;
     xar_extract_tobuffersz;

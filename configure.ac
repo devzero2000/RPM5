@@ -999,6 +999,7 @@ RPM_CHECK_LIB(
     [], [])
 
 dnl # libLZMA
+WITH_LZMA_INTERNAL=false
 RPM_CHECK_LIB(
     [libLZMA], [lzma],
     [lzma], [lzma_auto_decoder], [lzma.h],
@@ -1172,11 +1173,16 @@ AM_CONDITIONAL(USE_LUA_CRYPTO, [ test ".$USE_LUA_CRYPTO" = .yes ])
 AM_CONDITIONAL(USE_LUA_SOCKET, [ test ".$USE_LUA_SOCKET" = .yes ])
 
 dnl # PCRE
+WITH_PCRE_INTERNAL=false
 RPM_CHECK_LIB(
     [PCRE], [pcre],
     [pcre], [pcre_compile], [pcre.h],
-    [no,external:none], [],
-    [ dnl # make sure PCRE POSIX API can be really _USED_ by RPM
+    [yes,internal:external:none], [pcre],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          WITH_PCRE_INTERNAL=true
+          AC_DEFINE(HAVE_PCRE_H, 1, [Define to 1 if you have <pcre.h>])
+      fi
+      dnl # make sure PCRE POSIX API can be really _USED_ by RPM
       LIBS_SAVED="$LIBS"
       LIBS="-lpcreposix $LIBS"
       AC_LINK_IFELSE([

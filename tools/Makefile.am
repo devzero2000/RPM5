@@ -15,6 +15,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/misc \
 	-I$(top_srcdir)/build \
 	@WITH_DB_CPPFLAGS@ \
+	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
 EXTRA_DIST =	hashtab.h
