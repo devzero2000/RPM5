@@ -34,7 +34,6 @@ librpmmisc_la_LDFLAGS += \
 	@WITH_LZMA_LDFLAGS@ \
 	@WITH_LUA_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
-	@WITH_PCRE_LDFLAGS@ \
 	@WITH_XAR_LDFLAGS@
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \

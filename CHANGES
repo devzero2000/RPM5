@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: pcre: finalize --with-pcre=internal building.
     - jbj: pcre: punish PLD with internal bloat until the trivial AutoFu exists.
     - jbj: rpmbuild: use anchored patterns for data validation.
     - jbj: move rpmgrep and man page from rpmio/ to tools/ and install.
