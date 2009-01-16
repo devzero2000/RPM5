@@ -252,6 +252,7 @@ static const char * rpmdcPrintCoreutils(rpmdc dc, int rc)
     /* Calculate size of message. */
     if (dc->dalgoName != NULL)
 	nb += strlen(dc->dalgoName) + sizeof(":") - 1;
+assert(dc->digest != NULL);
     if (dc->digest != NULL && dc->digestlen > 0)
 	nb += dc->digestlen;
     nb += sizeof(" *") - 1;
@@ -527,13 +528,12 @@ static int rpmdcPrintFile(rpmdc dc)
     int rc = 0;
 
 if (_rpmdc_debug)
-fprintf(stderr, "\trpmdcPrintFile(%p) fn %s\n", dc, dc->fn);
+fprintf(stderr, "\trpmdcPrintFile(%p) fd %p fn %s\n", dc, dc->fd, dc->fn);
 
-    if (dc->fd != NULL) {
-	fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
+assert(dc->fd != NULL);
+    fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
 assert(dc->digest != NULL);
-	dc->ncomputed++;
-    }
+    dc->ncomputed++;
 
     if (dc->manifests) {
 	dc->nchecked++;
@@ -563,6 +563,10 @@ static int rpmdcFiniFile(rpmdc dc)
     int rc = 0;
     int xx;
 
+    /* Only regular files have dc->fd != NULL here. Skip all other paths. */
+    if (dc->fd == NULL)
+	return rc;
+
 if (_rpmdc_debug)
 fprintf(stderr, "\trpmdcFiniFile(%p) fn %s\n", dc, dc->fn);
     switch (dalgo) {
@@ -588,12 +592,12 @@ fprintf(stderr, "\trpmdcFiniFile(%p) fn %s\n", dc, dc->fn);
 	}
       }	break;
     }
-    if (dc->fd != NULL) {
-	(void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
-	(void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	Fclose(dc->fd);
-	dc->fd = NULL;
-    }
+
+    (void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
+    (void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+    Fclose(dc->fd);
+    dc->fd = NULL;
+
     return rc;
 }
 

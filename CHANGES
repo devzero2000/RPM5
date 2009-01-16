@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmdigest: avoid segfault on named pipes and other uglix fauna.
     - jbj: pcre: finalize --with-pcre=internal building.
     - jbj: pcre: punish PLD with internal bloat until the trivial AutoFu exists.
     - jbj: rpmbuild: use anchored patterns for data validation.
