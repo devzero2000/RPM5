@@ -2720,6 +2720,7 @@ int processSourceFiles(Spec spec)
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr && *_srcdefattr) {
         xx = snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
+	_srcdefattr_buf[sizeof(_srcdefattr_buf)-1] = '\0';
         xx = parseForAttr(_srcdefattr_buf, &fl);
     }
 
