@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: handle "config(N) = E:V-R" within rpmns.c (but treat as a string).
     - rpm.org: Don't try to create "" directories.
     - rpm.org: Don't bother calculating string sizes manually.
     - rpm.org: memory used by lua gets freed (just remove comment).

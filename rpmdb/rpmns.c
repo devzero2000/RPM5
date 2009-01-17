@@ -103,6 +103,7 @@ static struct _rpmnsProbes_s {
     nsType Type;
 } rpmnsProbes[] = {
     { "rpmlib",		RPMNS_TYPE_RPMLIB },
+    { "config",		RPMNS_TYPE_CONFIG },
     { "cpuinfo",	RPMNS_TYPE_CPUINFO },
     { "getconf",	RPMNS_TYPE_GETCONF },
     { "uname",		RPMNS_TYPE_UNAME },
@@ -259,6 +260,7 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_COMPOUND:
     case RPMNS_TYPE_NAMESPACE:
     case RPMNS_TYPE_TAG:
+    case RPMNS_TYPE_CONFIG:
     default:
 	ns->NS = NULL;
 	ns->N = ns->str;

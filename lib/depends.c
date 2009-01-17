@@ -2099,6 +2099,7 @@ static inline int addRelation(rpmts ts,
     /* Avoid certain NS dependencies. */
     switch (NSType) {
     case RPMNS_TYPE_RPMLIB:
+    case RPMNS_TYPE_CONFIG:
     case RPMNS_TYPE_CPUINFO:
     case RPMNS_TYPE_GETCONF:
     case RPMNS_TYPE_UNAME:
@@ -2120,13 +2121,6 @@ static inline int addRelation(rpmts ts,
 	/*@notreached@*/ break;
     default:
 	break;
-    }
-
-    {	const char * Name = rpmdsN(requires);
-
-	/* Avoid package config dependencies. */
-	if (Name == NULL || !strncmp(Name, "config(", sizeof("config(")-1))
-	    return 0;
     }
 
     pkgKey = RPMAL_NOMATCH;
