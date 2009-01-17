@@ -52,6 +52,9 @@ lib/transaction.c
 lib/verify.c
 rpmdb/db3.c
 rpmdb/dbconfig.c
+rpmdb/rpmdpkg.c
+rpmdb/rpmevr.c
+rpmdb/rpmns.c
 rpmdb/fprint.c
 rpmdb/hdrNVR.c
 rpmdb/hdrfmt.c
@@ -72,8 +75,11 @@ rpmio/ar.c
 rpmio/argv.c
 rpmio/bzdio.c
 rpmio/cpio.c
+rpmio/crc.c
 rpmio/digest.c
+rpmio/fnmatch.c
 rpmio/fts.c
+rpmio/glob.c
 rpmio/gzdio.c
 rpmio/iosm.c
 rpmio/lookup3.c
@@ -90,11 +96,12 @@ rpmio/rmd256.c
 rpmio/rmd320.c
 rpmio/rpmbc.c
 rpmio/rpmdav.c
-rpmio/rpmgrep.c
+rpmio/rpmgc.c
 rpmio/rpmhash.c
 rpmio/rpmhook.c
 rpmio/rpmio.c
 rpmio/rpmiob.c
+rpmio/rpmku.c
 rpmio/rpmlog.c
 rpmio/rpmlua.c
 rpmio/rpmmalloc.c
@@ -119,5 +126,6 @@ tools/rpmcache.c
 tools/rpmcmp.c
 tools/rpmdeps.c
 tools/rpmdigest.c
+tools/rpmgrep.c
 tools/rpmmtree.c
 tools/rpmrepo.c

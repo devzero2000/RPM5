@@ -525,8 +525,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmal.h \
                          @top_srcdir@/lib/rpmchecksig.c \
                          @top_srcdir@/lib/rpmcli.h \
-                         @top_srcdir@/lib/rpmdpkg.c \
-                         @top_srcdir@/lib/rpmdpkg.h \
                          @top_srcdir@/lib/rpmds.c \
                          @top_srcdir@/lib/rpmds.h \
                          @top_srcdir@/lib/rpmfc.c \
@@ -569,6 +567,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/poptDB.c \
                          @top_srcdir@/rpmdb/rpmdb.c \
                          @top_srcdir@/rpmdb/rpmdb.h \
+                         @top_srcdir@/rpmdb/rpmdpkg.c \
+                         @top_srcdir@/rpmdb/rpmdpkg.h \
                          @top_srcdir@/rpmdb/rpmevr.c \
                          @top_srcdir@/rpmdb/rpmevr.h \
                          @top_srcdir@/rpmdb/rpmns.c \
@@ -587,9 +587,15 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/bzdio.c \
                          @top_srcdir@/rpmio/cpio.c \
                          @top_srcdir@/rpmio/cpio.h \
+                         @top_srcdir@/rpmio/crc.c \
+                         @top_srcdir@/rpmio/crc.h \
                          @top_srcdir@/rpmio/digest.c \
+                         @top_srcdir@/rpmio/fnmatch.c \
+                         @top_srcdir@/rpmio/fnmatch.h \
                          @top_srcdir@/rpmio/fts.c \
                          @top_srcdir@/rpmio/fts.h \
+                         @top_srcdir@/rpmio/glob.c \
+                         @top_srcdir@/rpmio/glob.h \
                          @top_srcdir@/rpmio/gzdio.c \
                          @top_srcdir@/rpmio/iosm.c \
                          @top_srcdir@/rpmio/iosm.h \
@@ -619,6 +625,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmio_internal.h \
                          @top_srcdir@/rpmio/rpmiob.c \
                          @top_srcdir@/rpmio/rpmiotypes.h \
+                         @top_srcdir@/rpmio/rpmku.c \
+                         @top_srcdir@/rpmio/rpmku.h \
                          @top_srcdir@/rpmio/rpmlog.c \
                          @top_srcdir@/rpmio/rpmlog.h \
                          @top_srcdir@/rpmio/rpmlua.c \
