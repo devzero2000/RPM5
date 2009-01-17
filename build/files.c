@@ -2364,7 +2364,8 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	    continue;
 	fileName = NULL;
 	/*@-nullpass@*/	/* LCL: buf is NULL ?!? */
-	strcpy(buf, s);
+	strncpy(buf, s, sizeof(buf)-1);
+	buf[sizeof(buf)-1] = '\0';
 	/*@=nullpass@*/
 	
 	/* Reset for a new line in %files */
