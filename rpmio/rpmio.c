@@ -2945,7 +2945,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     int created = 0;
     int rc;
 
-    if (path == NULL)
+    if (path == NULL || *path == '\0')
 	return -1;
     d = alloca(strlen(path)+2);
     de = stpcpy(d, path);
