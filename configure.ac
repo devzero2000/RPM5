@@ -1127,20 +1127,31 @@ AM_CONDITIONAL(USE_LUA_SHADOW, [ test ".$USE_LUA_SHADOW" = .yes ])
 AM_CONDITIONAL(USE_LUA_CHKCONFIG, [ test ".$USE_LUA_CHKCONFIG" = .yes ])
 
 dnl # PCRE
+WITH_PCRE_INTERNAL=false
 RPM_CHECK_LIB(
     [PCRE], [pcre],
     [pcre], [pcre_compile], [pcre.h],
-    [no,external:none], [],
-    [ dnl # make sure PCRE POSIX API can be really _USED_ by RPM
-      LIBS_SAVED="$LIBS"
-      LIBS="-lpcreposix $LIBS"
-      AC_LINK_IFELSE([
-          AC_LANG_PROGRAM([#include <pcreposix.h>], [(void)regcomp(0, 0, 0)])
-      ], [
+    [yes,internal:external:none], [pcre],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          WITH_PCRE_INTERNAL=true
+          AC_DEFINE(HAVE_PCRE_H, 1, [Define to 1 if you have <pcre.h>])
+	  dnl XXX why isn't this set by RPM_CHECK_LIB?!?
+	  AC_DEFINE(HAVE_LIBPCRE, 1, [Define to 1 if you have the 'pcre' library (-lpcre).])
           AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
-      ], [
+	  WITH_PCRE_LIBS="-lpcreposix ${WITH_PCRE_LIBS}"
+	  AC_SUBST(WITH_PCRE_LIBS)
+      else
+	dnl # make sure PCRE POSIX API can be really _USED_ by RPM
+	LIBS_SAVED="$LIBS"
+	LIBS="-lpcreposix $LIBS"
+	AC_LINK_IFELSE([
+          AC_LANG_PROGRAM([#include <pcreposix.h>], [(void)regcomp(0, 0, 0)])
+	], [
+          AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
+	], [
           LIBS="$LIBS_SAVED"
-      ])
+	])
+      fi
       dnl # enable PCRE native API support for embedded Lua
       if test ".$WITH_LUA" = .yes; then
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_PCRE"

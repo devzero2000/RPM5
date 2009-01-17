@@ -1,4 +1,11 @@
 5.1.6 -> 5.1.7:
+    - rpm.org: Don't try to create "" directories.
+    - rpm.org: Don't bother calculating string sizes manually.
+    - rpm.org: memory used by lua gets freed (just remove comment).
+    - rpm.org: repeated read config -> free config needs globalLuaState == NULL.
+    - rpm.org: Fix buffer overflow on oversized filelist entries(susebz#397006).
+    - jbj: pcre: finalize --with-pcre=internal building.
+    - jbj: pcre: punish PLD with internal bloat until the trivial AutoFu exists.
     - jbj: rpmdigest: avoid segfault on named pipes and other uglix fauna.
     - jbj: rpmbuild: use anchored patterns for data validation.
     - jbj: run "make check" to self consistency. worksforme.

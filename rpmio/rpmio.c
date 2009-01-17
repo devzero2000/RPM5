@@ -2898,7 +2898,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     int created = 0;
     int rc;
 
-    if (path == NULL)
+    if (path == NULL || *path == '\0')
 	return -1;
     d = alloca(strlen(path)+2);
     de = stpcpy(d, path);
@@ -3152,7 +3152,7 @@ int _rpmnss_init = 0;
 
 void rpmioClean(void)
 {
-#if defined(WITH_LUA)   /* XXX this should be done in a rpmioClean() wrapper. */
+#if defined(WITH_LUA)
     (void) rpmluaFree(NULL);
 #endif
 #if defined(WITH_NEON)

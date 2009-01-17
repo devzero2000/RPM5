@@ -40,6 +40,9 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
+echo "===> pcre"
+( cd pcre && sh ./autogen.sh --noconfigure "$@" )
+echo "<=== pcre"
 echo "===> file"
 ( cd file && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== file"

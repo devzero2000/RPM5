@@ -13,6 +13,10 @@ LIBRPMMISC_0
     magic_file;
     magic_load;
     magic_open;
+    pcreposix_regcomp;
+    pcreposix_regerror;
+    pcreposix_regexec;
+    pcreposix_regfree ;
     xar_add_frombuffer;
     xar_close;
     xar_extract_tobuffersz;

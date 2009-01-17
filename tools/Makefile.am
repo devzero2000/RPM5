@@ -13,6 +13,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
 	@WITH_DB_CPPFLAGS@ \
+	@WITH_PCRE_CPPFLAGS@
 	@WITH_XAR_CPPFLAGS@
 
 EXTRA_DIST =	hashtab.h
