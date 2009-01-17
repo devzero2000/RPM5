@@ -42,7 +42,7 @@ LZMA Utils  [3] optional  4.42.2  4.999.3 http://tukaani.org/lzma/
 File/magic  [4] optional  4.0     4.26    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
-PCRE            optional  7.0     7.8     http://www.pcre.org/
+PCRE            mandatory 7.0     7.8     http://www.pcre.org/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
