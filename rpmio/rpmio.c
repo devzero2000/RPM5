@@ -3137,7 +3137,7 @@ int _rpmnss_init = 0;
 
 void rpmioClean(void)
 {
-#if defined(WITH_LUA)   /* XXX this should be done in a rpmioClean() wrapper. */
+#if defined(WITH_LUA)
     (void) rpmluaFree(NULL);
 #endif
 #if defined(WITH_NEON)
