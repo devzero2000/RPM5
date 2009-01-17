@@ -192,14 +192,13 @@ void *rpmluaFree(rpmlua lua)
 	/*@globals globalLuaState @*/
 	/*@modifies globalLuaState @*/
 {
-    if (lua == NULL) {
+    if (lua == NULL)
 	lua = globalLuaState;
-	globalLuaState = NULL;
-    }
     if (lua) {
 	if (lua->L) lua_close(lua->L);
 	lua->printbuf = _free(lua->printbuf);
 	lua = _free(lua);
+	if (lua == globalLuaState) globalLuaState = NULL;
     }
     return NULL;
 }
