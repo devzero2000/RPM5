@@ -41,7 +41,7 @@ RPMBUILD_LDADD_COMMON = \
 	$(RPM_LDADD_COMMON)
 
 bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmmtree rpmrepo
-man_MANS =		rpmgrep.1
+dist_man_MANS =		rpmgrep.1
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmcmp rpmdeps @WITH_LIBELF_DEBUGEDIT@

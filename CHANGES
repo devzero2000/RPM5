@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: include rpmgrep.1 with "make dist".
     - rpm.org: Don't try to create "" directories.
     - rpm.org: Don't bother calculating string sizes manually.
     - rpm.org: memory used by lua gets freed (just remove comment).
