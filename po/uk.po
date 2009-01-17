@@ -3138,7 +3138,7 @@ msgstr "(неправильний тип)"
 #: rpmdb/hdrfmt.c:4319
 #, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(неправильний тип)"
+msgstr "(неправильний тип xml)"
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4322,7 +4322,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "невідомий тег: \"%s\"\n"
+msgstr "рядок %d: Невідомий тег: %s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4342,7 +4342,7 @@ msgstr ""
 #: tools/rpmdigest.c:340
 #, fuzzy, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "невідомий тег: \"%s\"\n"
+msgstr "рядок %d: Невідомий тег: %s\n"
 
 #: tools/rpmdigest.c:355
 #, c-format
@@ -5279,13 +5279,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "SHA1 контрольна сума заголовка: "
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "Підпис V3 DSA: "
-
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "Невідомий тип піктограми: %s\n"
 
@@ -5331,6 +5324,13 @@ msgstr ""
 
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "помилка(%d) збереження елементу \"%s\" у %s\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "SHA1 контрольна сума заголовка: "
+
+#, fuzzy
+#~ msgid " DSA signature: "
+#~ msgstr "Підпис V3 DSA: "
 
 #~ msgid "--ignoresize may only be specified during package installation"
 #~ msgstr "--ignoresize дозволяється вказувати лише при встановленні пакету"

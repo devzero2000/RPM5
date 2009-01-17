@@ -1816,9 +1816,8 @@ msgid "don't verify file digests"
 msgstr "paket bağımlılıkları doğrulanmaz"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "%s: 0x%x de başlık okunamadı\n"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -5289,13 +5288,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "Başlık SHA1 özeti: "
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "V3 DSA imza: "
-
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "tar veriyolu açılamadı: %m\n"
 
@@ -5687,6 +5679,9 @@ msgstr ""
 
 #~ msgid "You must set \"%%_pgp_name\" in your macro file\n"
 #~ msgstr "Makro dosyanızda \"%%_pgp_name\" belirtmelisiniz\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "Başlık SHA1 özeti: "
 
 #~ msgid "V3 RSA/MD5 signature: "
 #~ msgstr "V3 RSA/MD5 imza: "

@@ -1816,9 +1816,8 @@ msgid "don't verify file digests"
 msgstr "älä tarkista paketin riippuvuuksia"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "en voi lukea headeria %d:stä päivittäessä"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -3169,14 +3168,12 @@ msgid "(divide by zero :rpn)"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:4314
-#, fuzzy
 msgid "(invalid type :strsub)"
-msgstr "(ei ole luku)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:4319
-#, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(ei ole luku)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4364,7 +4361,7 @@ msgstr "virheellinen paketin numero: %s\n"
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
 msgid "%s: Failed to open %s\n"
-msgstr "en voinut avata %s: %s"
+msgstr "%s:n avaus epäonnistui\n"
 
 #: tools/rpmdigest.c:322
 #, c-format
@@ -5311,10 +5308,6 @@ msgstr ""
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
 #, fuzzy
 #~ msgid "Failed to open tar pipe: %m\n"
@@ -6975,9 +6968,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unable to stat icon: %s"
 #~ msgstr "%s:n kirjoitus ei onnistu"
-
-#~ msgid "failed to open %s\n"
-#~ msgstr "%s:n avaus epäonnistui\n"
 
 #, fuzzy
 #~ msgid "%s: fdWrite failed: %s\n"

@@ -3155,14 +3155,12 @@ msgid "(divide by zero :rpn)"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:4314
-#, fuzzy
 msgid "(invalid type :strsub)"
-msgstr "(није број)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:4319
-#, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(није број)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4343,7 +4341,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "непознат таг: \"%s\"\n"
+msgstr "погрешан број пакета: %s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4363,7 +4361,7 @@ msgstr ""
 #: tools/rpmdigest.c:340
 #, fuzzy, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "непознат таг: \"%s\"\n"
+msgstr "погрешан број пакета: %s\n"
 
 #: tools/rpmdigest.c:355
 #, c-format
@@ -5292,10 +5290,6 @@ msgid "repo is up to date\n"
 msgstr ""
 
 #, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "%s: Потпис није на располагању\n"
-
-#, fuzzy
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "(непознат тип)"
 
@@ -5330,3 +5324,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "грешка записивања слога %s у %s"
+
+#, fuzzy
+#~ msgid " DSA signature: "
+#~ msgstr "%s: Потпис није на располагању\n"

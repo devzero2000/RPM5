@@ -1841,9 +1841,8 @@ msgid "don't verify file digests"
 msgstr "proprietario"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "leggi x n"
+msgstr ""
 
 #: lib/poptI.c:236
 #, c-format

@@ -3112,7 +3112,7 @@ msgstr "(tipo inválido)"
 #: rpmdb/hdrfmt.c:4319
 #, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(tipo inválido)"
+msgstr "(tipo yaml inválido)"
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4283,7 +4283,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "rótulo desconhecido: \"%s\"\n"
+msgstr "linha %d: Opção desconhecida: %s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4303,7 +4303,7 @@ msgstr ""
 #: tools/rpmdigest.c:340
 #, fuzzy, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "rótulo desconhecido: \"%s\"\n"
+msgstr "linha %d: Opção desconhecida: %s\n"
 
 #: tools/rpmdigest.c:355
 #, c-format
@@ -5238,12 +5238,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "Sumário SHA1 do cabeçalho: "
-
-#~ msgid " DSA signature: "
-#~ msgstr " assinatura DSA: "
-
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "Não é possível abrir o 'pipe' para o tar: %m\n"
 
@@ -5622,6 +5616,12 @@ msgstr ""
 
 #~ msgid "You must set \"%%_pgp_name\" in your macro file\n"
 #~ msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "Sumário SHA1 do cabeçalho: "
+
+#~ msgid " DSA signature: "
+#~ msgstr " assinatura DSA: "
 
 #~ msgid "Broken MD5 digest: UNSUPPORTED\n"
 #~ msgstr "Soma de controlo MD5 danificada: NÃO SUPORTADO\n"

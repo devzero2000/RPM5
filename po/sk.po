@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: rpm 5.1.5pre1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2009-01-17 13:11-0500\n"
-"PO-Revision-Date: 2008-10-06 13:54+0100\n"
-"Last-Translator: Ladislav Michnovič <ladislav.michnovic@gmail.com>\n"
+"PO-Revision-Date: 2008-12-29 00:38+0100\n"
+"Last-Translator: Ladislav Michnovic <ladislav.michnovic@gmail.com>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -63,23 +63,23 @@ msgstr "predefinovať cieľovú platformu"
 
 #: rpmqv.c:92
 msgid "Query options (with -q or --query):"
-msgstr ""
+msgstr "Voľby \"query\" (s -q alebo --query):"
 
 #: rpmqv.c:95
 msgid "Verify options (with -V or --verify):"
-msgstr ""
+msgstr "Voľby \"verify\" (s -V alebo --verify)"
 
 #: rpmqv.c:99
 msgid "Source options (with --query or --verify):"
-msgstr ""
+msgstr "Voľby \"source\" (s --query alebo --verify):"
 
 #: rpmqv.c:106
 msgid "Dependency check/order options:"
-msgstr ""
+msgstr "Voľby závislostí check/order:"
 
 #: rpmqv.c:112
 msgid "File tree walk options (with --ftswalk):"
-msgstr ""
+msgstr "Voľby prejdenia stromu súborov (s --ftswalk)"
 
 #: rpmqv.c:118
 #, fuzzy
@@ -88,15 +88,15 @@ msgstr "Veľkosť podpisu:   %d\n"
 
 #: rpmqv.c:124
 msgid "Database options:"
-msgstr ""
+msgstr "Voľby databázy:"
 
 #: rpmqv.c:130
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr ""
+msgstr "Voľby \"build\" s [ <specfile> | <tarball> | <source package> ]:"
 
 #: rpmqv.c:136
 msgid "Install/Upgrade/Erase options:"
-msgstr ""
+msgstr "Voľby inštalovania/aktualizácie/zmazania:"
 
 #: rpmqv.c:141 tools/rpmdeps.c:155
 #, fuzzy
@@ -139,7 +139,7 @@ msgstr "súbory môžu byť presunuté iba počas inštalácie balíka"
 
 #: rpmqv.c:572
 msgid "cannot use --prefix with --relocate or --excludepath"
-msgstr ""
+msgstr "nie je možné použiť --prefix spolu s --relocate alebo --excludepath"
 
 #: rpmqv.c:575
 msgid ""
@@ -246,7 +246,7 @@ msgstr "argumenty pre --root (-r) musia začínať znakom /"
 #: rpmqv.c:689
 #, c-format
 msgid "no files to sign\n"
-msgstr ""
+msgstr "žiadne súbory k podpísaniu\n"
 
 #: rpmqv.c:694
 #, c-format
@@ -255,7 +255,7 @@ msgstr "nie je možné pracovať so súborom %s\n"
 
 #: rpmqv.c:706
 msgid "Enter pass phrase: "
-msgstr ""
+msgstr "Zadajte heslovaciu frázu:"
 
 #: rpmqv.c:708
 #, c-format
@@ -332,6 +332,9 @@ msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
+"\n"
+"\n"
+"Chyby tvorby RPM:\n"
 
 #: build/expression.c:228
 #, fuzzy
@@ -477,7 +480,7 @@ msgstr "Nie je možné miešať špeciálne %%doc s inými formami: %s"
 #: build/files.c:1015
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
-msgstr ""
+msgstr "neplatný _docdir_fmt: %s\n"
 
 #: build/files.c:1317
 #, fuzzy, c-format
@@ -487,7 +490,7 @@ msgstr "Súbor zadaný dvakrát: %s."
 #: build/files.c:1534
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
-msgstr ""
+msgstr "Symbolický odkaz ukazuje do BuildRoot: %s -> %s\n"
 
 #: build/files.c:1852
 #, fuzzy, c-format
@@ -507,7 +510,7 @@ msgstr "Súbor nebol nájdený: %s"
 #: build/files.c:2078
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
-msgstr ""
+msgstr "%s: nie je možné nahrať neznámy tag (%d).\n"
 
 #: build/files.c:2084
 #, fuzzy, c-format
@@ -517,7 +520,7 @@ msgstr "%s: readLead zlyhalo\n"
 #: build/files.c:2088 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: not an armored public key.\n"
-msgstr ""
+msgstr "%s: neobrnený verejný kľúč.\n"
 
 #: build/files.c:2095
 #, fuzzy, c-format
@@ -555,9 +558,9 @@ msgid "line: %s\n"
 msgstr "riadok: %s"
 
 #: build/files.c:2750
-#, fuzzy, c-format
+#, c-format
 msgid "Bad file: %s: %s\n"
-msgstr "súbor %s: %s\n"
+msgstr "Zlý súbor: %s: %s\n"
 
 #: build/files.c:2770 build/parsePrep.c:53
 #, c-format
@@ -565,9 +568,9 @@ msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
 #: build/files.c:2815
-#, fuzzy, c-format
+#, c-format
 msgid "Checking for unpackaged file(s): %s\n"
-msgstr "vyhľadáva sa balík %s\n"
+msgstr "Kontrolujem nezabalené súbory: %s\n"
 
 #: build/files.c:2830
 #, c-format
@@ -575,35 +578,37 @@ msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
+"Našli sa nainštalované (ale nezabalené) súbory:\n"
+"%s"
 
 #: build/files.c:2862
-#, fuzzy, c-format
+#, c-format
 msgid "Processing files: %s\n"
-msgstr "Spracovávajú sa súbory: %s\n"
+msgstr "Spracovávam súbory: %s\n"
 
 #: build/names.c:54
 msgid "getUname: too many uid's\n"
-msgstr ""
+msgstr "getUname: príliš veľa UID-ov\n"
 
 #: build/names.c:78
 msgid "getUnameS: too many uid's\n"
-msgstr ""
+msgstr "getUnameS: príliš veľa UIDov\n"
 
 #: build/names.c:105
 msgid "getUidS: too many uid's\n"
-msgstr ""
+msgstr "getUidS: príliš veľa UIDov\n"
 
 #: build/names.c:132
 msgid "getGname: too many gid's\n"
-msgstr ""
+msgstr "getGname: príliš veľa GIDov\n"
 
 #: build/names.c:156
 msgid "getGnameS: too many gid's\n"
-msgstr ""
+msgstr "getGnameS: príliš veľa GIDov\n"
 
 #: build/names.c:183
 msgid "getGidS: too many gid's\n"
-msgstr ""
+msgstr "getGidS: príliš veľa GIDov\n"
 
 #: build/names.c:221
 #, c-format
@@ -611,24 +616,24 @@ msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie je možné kanonizovať názov počítača: %s\n"
 
 #: build/pack.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
+msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s\n"
 
 #: build/pack.c:73
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
+msgstr "vytvorenie archívu zlyhalo: %s\n"
 
 #: build/pack.c:95
-#, fuzzy, c-format
+#, c-format
 msgid "cpio_copy write failed: %s\n"
-msgstr "cpio_copy zápis zlyhal: %s"
+msgstr "cpio_copy zápis zlyhal: %s\n"
 
 #: build/pack.c:102
-#, fuzzy, c-format
+#, c-format
 msgid "cpio_copy read failed: %s\n"
-msgstr "cpio_copy čítanie zlyhalo: %s"
+msgstr "cpio_copy čítanie zlyhalo: %s\n"
 
 #: build/pack.c:217 build/pack.c:231
 #, fuzzy, c-format
@@ -847,7 +852,7 @@ msgstr "Duplicitné záznamy %s v balíku: %s"
 
 #: build/parsePreamble.c:441
 msgid "No icon file in sources\n"
-msgstr ""
+msgstr "Žiaden súbor s ikonou v zdrojáku\n"
 
 #: build/parsePreamble.c:469
 #, fuzzy, c-format
@@ -867,7 +872,7 @@ msgstr "Nie je možné prečítať ikonu: %s"
 #: build/parsePreamble.c:490
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
-msgstr ""
+msgstr "Ikona %s je príliš veľká (max. %d bajtov)\n"
 
 #: build/parsePreamble.c:554
 #, fuzzy, c-format
@@ -932,12 +937,12 @@ msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 #: build/parsePreamble.c:876
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
-msgstr ""
+msgstr "riadok %d: Sú podporované iba \"noarch\" podbalíky: %s\n"
 
 #: build/parsePreamble.c:1003
-#, c-format
+#, fuzzy, c-format
 msgid "Legacy syntax is unsupported: %s\n"
-msgstr ""
+msgstr "Nie je podporovaná legacy syntax: %s\n"
 
 #: build/parsePreamble.c:1104
 #, fuzzy, c-format
@@ -1149,7 +1154,7 @@ msgstr "príprava (rozbaliť zdrojové súbory a aplikovať záplaty)"
 #: build/poptBT.c:149 build/poptBT.c:152 build/poptBT.c:155 build/poptBT.c:159
 #: build/poptBT.c:162
 msgid "<specfile>"
-msgstr ""
+msgstr "<specfile>"
 
 #: build/poptBT.c:139
 msgid "build through %build (%prep, then compile) from <specfile>"
@@ -1198,7 +1203,7 @@ msgstr "príprava (rozbaliť zdrojové súbory a aplikovať záplaty)"
 #: build/poptBT.c:166 build/poptBT.c:169 build/poptBT.c:172 build/poptBT.c:175
 #: build/poptBT.c:178 build/poptBT.c:181 build/poptBT.c:184
 msgid "<tarball>"
-msgstr ""
+msgstr "<tarball>"
 
 #: build/poptBT.c:168
 msgid "build through %build (%prep, then compile) from <tarball>"
@@ -1316,7 +1321,7 @@ msgstr "predefinovať cieľovú platformu"
 
 #: build/poptBT.c:224 lib/poptALL.c:359 lib/poptQV.c:330
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "CPU-DODÁVATEĽ-OS"
 
 #: build/poptBT.c:226
 #, fuzzy
@@ -1370,7 +1375,7 @@ msgstr "balík %s nie je nainštalovaný\n"
 
 #: lib/depends.c:906
 msgid "(cached)"
-msgstr ""
+msgstr "(v medzipamäti)"
 
 #: lib/depends.c:922
 #, fuzzy
@@ -1379,15 +1384,15 @@ msgstr "(neznámy typ)"
 
 #: lib/depends.c:941
 msgid "(user lookup)"
-msgstr ""
+msgstr "(vyhľadanie používateľa)"
 
 #: lib/depends.c:958
 msgid "(group lookup)"
-msgstr ""
+msgstr "(vyhľadania skupiny)"
 
 #: lib/depends.c:967
 msgid "(access probe)"
-msgstr ""
+msgstr "(sonda prístupu)"
 
 #: lib/depends.c:989
 #, fuzzy
@@ -1396,7 +1401,7 @@ msgstr "Poskytuje:"
 
 #: lib/depends.c:1046
 msgid "(diskspace probe)"
-msgstr ""
+msgstr "(sonda miesta na disku)"
 
 #: lib/depends.c:1088
 msgid "(digest probe)"
@@ -1414,15 +1419,15 @@ msgstr "režim otázok"
 
 #: lib/depends.c:1164
 msgid "(gnupg probe)"
-msgstr ""
+msgstr "(sonda gnupg)"
 
 #: lib/depends.c:1177
 msgid "(macro probe)"
-msgstr ""
+msgstr "(sonda makra)"
 
 #: lib/depends.c:1205
 msgid "(envvar probe)"
-msgstr ""
+msgstr "(sonda premenných prostredia)"
 
 #: lib/depends.c:1232
 #, fuzzy
@@ -1435,7 +1440,7 @@ msgstr ""
 
 #: lib/depends.c:1275
 msgid "(vcheck probe)"
-msgstr ""
+msgstr "(sonda vcheck)"
 
 #: lib/depends.c:1296
 #, fuzzy
@@ -1479,7 +1484,7 @@ msgstr "Poskytuje:"
 
 #: lib/depends.c:1462
 msgid "(hint skipped)"
-msgstr ""
+msgstr "(preskočený tip)"
 
 #: lib/depends.c:1900
 #, c-format
@@ -1493,7 +1498,7 @@ msgstr "odstraňuje sa index skupín\n"
 
 #: lib/depends.c:2625
 msgid "LOOP:\n"
-msgstr ""
+msgstr "SLUČKA:\n"
 
 #: lib/depends.c:2661
 #, c-format
@@ -1608,7 +1613,7 @@ msgstr "%s: readLead zlyhalo\n"
 #: lib/poptALL.c:145 rpmio/poptIO.c:148
 #, c-format
 msgid "%s ("
-msgstr ""
+msgstr "%s ("
 
 #: lib/poptALL.c:291 lib/poptQV.c:300 lib/poptQV.c:347
 #, fuzzy
@@ -1621,11 +1626,11 @@ msgstr ""
 
 #: lib/poptALL.c:297
 msgid "print dependency loops as warning"
-msgstr ""
+msgstr "vypísať slučky závislostí ako varovanie"
 
 #: lib/poptALL.c:300
 msgid "do not suggest missing dependency resolution(s)"
-msgstr ""
+msgstr "nenavrhovať chýbajúce riešenia závislostí"
 
 #: lib/poptALL.c:303
 #, fuzzy
@@ -1769,7 +1774,7 @@ msgstr "presunutia musia mať za znakom = znak /"
 
 #: lib/poptI.c:110
 msgid "Option --rbexclude needs transaction id argument(s)"
-msgstr ""
+msgstr "Voľba --rbexclude vyžaduje ako argument identifikátor(y) transakcie(í)"
 
 #: lib/poptI.c:141
 msgid "Option --rollback needs a time/date stamp argument"
@@ -1778,7 +1783,7 @@ msgstr ""
 #: lib/poptI.c:145
 #, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
-msgstr ""
+msgstr "Úloha návratu:  %-24.24s (0x%08x)\n"
 
 #: lib/poptI.c:149
 msgid "malformed rollback time/date stamp argument"
@@ -1926,7 +1931,7 @@ msgstr "vynechať súbory v ceste <cesta>"
 
 #: lib/poptI.c:288 tools/rpmmtree.c:3605 tools/rpmmtree.c:3608
 msgid "<path>"
-msgstr ""
+msgstr "<path>"
 
 #: lib/poptI.c:292
 #, fuzzy
@@ -1993,7 +1998,7 @@ msgstr "presunúť balík do <adresára>, pokiaľ to balík povoľuje"
 
 #: lib/poptI.c:341
 msgid "<dir>"
-msgstr ""
+msgstr "<dir>"
 
 #: lib/poptI.c:343
 #, fuzzy
@@ -2019,7 +2024,7 @@ msgstr ""
 
 #: lib/poptI.c:353 lib/poptI.c:356
 msgid "<date>"
-msgstr ""
+msgstr "<date>"
 
 #: lib/poptI.c:355
 msgid "If transaction fails rollback to <date>"
@@ -2027,7 +2032,7 @@ msgstr ""
 
 #: lib/poptI.c:358
 msgid "Exclude Transaction I.D. from rollback"
-msgstr ""
+msgstr "Vynechať identifikátor transakcie z navrátenia"
 
 #: lib/poptI.c:359
 msgid "<tid>"

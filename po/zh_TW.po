@@ -3053,7 +3053,7 @@ msgstr "(無效型態)"
 #: rpmdb/hdrfmt.c:4319
 #, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(無效型態)"
+msgstr "(無效的 yaml 型態)"
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4218,7 +4218,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "不明的標記：「%s」\n"
+msgstr "列 %d：不明標記：%s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4238,7 +4238,7 @@ msgstr ""
 #: tools/rpmdigest.c:340
 #, fuzzy, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "不明的標記：「%s」\n"
+msgstr "列 %d：不明標記：%s\n"
 
 #: tools/rpmdigest.c:355
 #, c-format
@@ -5172,15 +5172,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Failed %s(%d) key(0x%lx): %s\n"
-#~ msgstr "失敗的 %s(%d) 鍵 (0x%lx)：%s\n"
-
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "表頭 SHA1 摘要："
-
-#~ msgid " DSA signature: "
-#~ msgstr " DSA 簽章："
-
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "不明的圖示類型：%s\n"
 
@@ -5228,3 +5219,12 @@ msgstr ""
 
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
+
+#~ msgid "Failed %s(%d) key(0x%lx): %s\n"
+#~ msgstr "失敗的 %s(%d) 鍵 (0x%lx)：%s\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "表頭 SHA1 摘要："
+
+#~ msgid " DSA signature: "
+#~ msgstr " DSA 簽章："

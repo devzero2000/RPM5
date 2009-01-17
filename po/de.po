@@ -3124,7 +3124,7 @@ msgstr "(ungültiger Typ)"
 #: rpmdb/hdrfmt.c:4319
 #, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(ungültiger Typ)"
+msgstr "(ungültiger YAML-Typ)"
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4296,7 +4296,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "Unbekannter Tag: \"%s\"\n"
+msgstr "Zeile %d: Unbekannter Tag: %s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4316,7 +4316,7 @@ msgstr ""
 #: tools/rpmdigest.c:340
 #, fuzzy, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "Unbekannter Tag: \"%s\"\n"
+msgstr "Zeile %d: Unbekannter Tag: %s\n"
 
 #: tools/rpmdigest.c:355
 #, c-format
@@ -5251,12 +5251,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "SHA1-Prüfsumme des Headers: "
-
-#~ msgid " DSA signature: "
-#~ msgstr " DSA-Signatur: "
-
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "Unbekannter Icon-Typ: %s\n"
 
@@ -5304,6 +5298,12 @@ msgstr ""
 
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "Fehler(%d) beim Speichern des Eintrags \"%s\" in %s\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "SHA1-Prüfsumme des Headers: "
+
+#~ msgid " DSA signature: "
+#~ msgstr " DSA-Signatur: "
 
 #~ msgid "--ignoresize may only be specified during package installation"
 #~ msgstr ""

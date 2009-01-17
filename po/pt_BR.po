@@ -5292,10 +5292,6 @@ msgid "repo is up to date\n"
 msgstr ""
 
 #, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "gere assinatura PGP"
-
-#, fuzzy
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "No consegui abrir: %s\n"
 
@@ -5314,6 +5310,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "No consegui abrir: %s\n"
+
+#, fuzzy
+#~ msgid " DSA signature: "
+#~ msgstr "gere assinatura PGP"
 
 #, fuzzy
 #~ msgid "--ignoresize may only be specified during package installation"

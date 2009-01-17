@@ -3134,7 +3134,7 @@ msgstr "(不正なタイプ)"
 #: rpmdb/hdrfmt.c:4319
 #, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(不正なタイプ)"
+msgstr "(不正な XML タイプ)"
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4309,7 +4309,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "不明なタグ: \"%s\"\n"
+msgstr "%d 行目: 不明なタグ: %s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4329,7 +4329,7 @@ msgstr ""
 #: tools/rpmdigest.c:340
 #, fuzzy, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "不明なタグ: \"%s\"\n"
+msgstr "%d 行目: 不明なタグ: %s\n"
 
 #: tools/rpmdigest.c:355
 #, c-format
@@ -5267,13 +5267,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "ヘッダ SHA1 ダイジェスト: "
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "V3 DSA 署名: "
-
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "不明なアイコンタイプ: %s\n"
 
@@ -5323,6 +5316,13 @@ msgstr ""
 
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "ヘッダ SHA1 ダイジェスト: "
+
+#, fuzzy
+#~ msgid " DSA signature: "
+#~ msgstr "V3 DSA 署名: "
 
 #~ msgid "--ignoresize may only be specified during package installation"
 #~ msgstr "--ignoresize はパッケージインストール時のみ指定できます。"

@@ -1802,9 +1802,8 @@ msgid "don't verify file digests"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -5295,10 +5294,6 @@ msgstr ""
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "서명이 없습니다\n"
 
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "tar 파이프를 여는데 실패함: %m\n"

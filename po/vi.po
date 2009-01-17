@@ -3121,7 +3121,7 @@ msgstr "(kiểu không hợp lệ)"
 #: rpmdb/hdrfmt.c:4319
 #, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(kiểu không hợp lệ)"
+msgstr "(kiểu YAML không hợp lệ)"
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4278,7 +4278,7 @@ msgstr ""
 #: tools/rpmdigest.c:214
 #, fuzzy, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "%s: Không rõ thiết lập màu « %s »\n"
+msgstr "dòng %d: Không rõ thẻ: %s\n"
 
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
@@ -4336,9 +4336,8 @@ msgid "Print 0install manifest"
 msgstr ""
 
 #: tools/rpmdigest.c:843
-#, fuzzy
 msgid "Read in binary mode"
-msgstr "chạy ở chế độ đa dòng"
+msgstr ""
 
 #: tools/rpmdigest.c:847 tools/rpmdigest.c:851
 #, fuzzy
@@ -5271,6 +5270,12 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
+#~ msgid "Unknown icon type: %s\n"
+#~ msgstr "Không rõ kiểu biểu tượng: %s\n"
+
+#~ msgid "Package already exists: %s\n"
+#~ msgstr "Gói đã có : %s\n"
+
 #~ msgid "Failed %s(%d) key(0x%lx): %s\n"
 #~ msgstr "Lỗi %s(%d) khoá (0x%lx): %s\n"
 
@@ -5279,12 +5284,6 @@ msgstr ""
 
 #~ msgid " DSA signature: "
 #~ msgstr " Chữ ký DSA: "
-
-#~ msgid "Unknown icon type: %s\n"
-#~ msgstr "Không rõ kiểu biểu tượng: %s\n"
-
-#~ msgid "Package already exists: %s\n"
-#~ msgstr "Gói đã có : %s\n"
 
 #~ msgid "--replacefiles may only be specified during package installation"
 #~ msgstr ""

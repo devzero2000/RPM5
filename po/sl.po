@@ -873,7 +873,7 @@ msgstr "vrstica %d: Napaèna izbira %s: %s"
 #: build/parsePreamble.c:583
 #, fuzzy, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
-msgstr "vrstica %d: Nepravilen argument za %%setup %c: %s"
+msgstr "vrstica %d: Deformirana znaèka: %s"
 
 #: build/parsePreamble.c:623
 #, fuzzy, c-format
@@ -1829,9 +1829,8 @@ msgid "don't verify file digests"
 msgstr "brez preverjanja soodvisnosti paketa"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "%s: ni mo¾no prebrati glave pri 0x%x"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -3185,14 +3184,12 @@ msgid "(divide by zero :rpn)"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:4314
-#, fuzzy
 msgid "(invalid type :strsub)"
-msgstr "(ni ¹tevilo)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:4319
-#, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(ni ¹tevilo)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -4375,7 +4372,7 @@ msgstr "vrstica %d: Neznana znaèka: %s"
 #: tools/rpmdigest.c:307
 #, fuzzy, c-format
 msgid "%s: Failed to open %s\n"
-msgstr "neuspe¹no odpiranje %s: %s\n"
+msgstr "neuspe¹no odpiranje %s\n"
 
 #: tools/rpmdigest.c:322
 #, c-format
@@ -5322,10 +5319,6 @@ msgstr ""
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "Podpis manjka\n"
 
 #, fuzzy
 #~ msgid "Failed to open tar pipe: %m\n"
@@ -7427,6 +7420,3 @@ msgstr ""
 
 #~ msgid "%s: fdWrite failed: %s\n"
 #~ msgstr "%s: fdWrite neuspe¹en: %s\n"
-
-#~ msgid "failed to open %s\n"
-#~ msgstr "neuspe¹no odpiranje %s\n"

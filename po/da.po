@@ -1803,9 +1803,8 @@ msgid "don't verify file digests"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "%s: kan ikke læse hoved ved 0x%x\n"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -3148,14 +3147,12 @@ msgid "(divide by zero :rpn)"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:4314
-#, fuzzy
 msgid "(invalid type :strsub)"
-msgstr "(ikke et tal)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:4319
-#, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "(ikke et tal)"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -5284,10 +5281,6 @@ msgstr ""
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "Ingen signatur\n"
 
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "Kunne ikke åbne tar-videreførsel: %m\n"

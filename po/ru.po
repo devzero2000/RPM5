@@ -5259,17 +5259,17 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "дайджест SHA1 заголовка:"
-
-#~ msgid " DSA signature: "
-#~ msgstr " подпись DSA: "
-
 #~ msgid "Unknown icon type: %s\n"
 #~ msgstr "Неизвестный тип пиктограммы: %s\n"
 
 #~ msgid "Package already exists: %s\n"
 #~ msgstr "Пакет уже существует: %s\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "дайджест SHA1 заголовка:"
+
+#~ msgid " DSA signature: "
+#~ msgstr " подпись DSA: "
 
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "Ошибка открытия канала tar: %m\n"

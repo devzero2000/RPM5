@@ -1840,9 +1840,8 @@ msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -5349,13 +5348,6 @@ msgstr ""
 msgid "repo is up to date\n"
 msgstr ""
 
-#~ msgid "Header SHA1 digest: "
-#~ msgstr "En-tête digest SHA1: "
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "signature V3 DSA: "
-
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "Échec d'ouverture d'un pipe « tar »: %m\n"
 
@@ -5759,6 +5751,9 @@ msgstr ""
 
 #~ msgid "You must set \"%%_pgp_name\" in your macro file\n"
 #~ msgstr "Vous devez initialiser \"%%_pgp_name\" dans votre fichier macro\n"
+
+#~ msgid "Header SHA1 digest: "
+#~ msgstr "En-tête digest SHA1: "
 
 #~ msgid "V3 RSA/MD5 signature: "
 #~ msgstr "signature V3 RSA/MD5: "

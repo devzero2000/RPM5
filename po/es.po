@@ -875,9 +875,9 @@ msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
 #: build/parsePreamble.c:583
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
-msgstr "el paquete %s no está enlistado en %s"
+msgstr ""
 
 #: build/parsePreamble.c:623
 #, c-format
@@ -1805,9 +1805,8 @@ msgid "don't verify file digests"
 msgstr "no verifica la arquitectura del paquete"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "no se puede leer el encabezado en %d para actualización"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -3148,14 +3147,12 @@ msgid "(divide by zero :rpn)"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:4314
-#, fuzzy
 msgid "(invalid type :strsub)"
-msgstr "número de paquete no válido: %s\n"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:4319
-#, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "número de paquete no válido: %s\n"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -5269,10 +5266,6 @@ msgstr ""
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "ignora cualquier firma MD5"
 
 #, fuzzy
 #~ msgid "Failed to open tar pipe: %m\n"

@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: update po files (Translation Project).
     - jbj: update PO and doxygen manifests.
     - jbj: include rpmgrep.1 with "make dist".
     - rpm.org: Don't try to create "" directories.

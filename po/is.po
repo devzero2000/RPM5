@@ -4229,9 +4229,9 @@ msgid "%s: %s: Manifest is empty\n"
 msgstr ""
 
 #: tools/rpmdigest.c:340
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "Óþekkt tegund táknmyndar: %s\n"
+msgstr ""
 
 #: tools/rpmdigest.c:355
 #, c-format

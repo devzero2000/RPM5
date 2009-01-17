@@ -1781,9 +1781,8 @@ msgid "don't verify file digests"
 msgstr "ikke verifiser pakkeavhengigheter"
 
 #: lib/poptI.c:229
-#, fuzzy
 msgid "don't register headers in rpmdb"
-msgstr "Ugyldig/ulesbar header"
+msgstr ""
 
 #: lib/poptI.c:236
 #, fuzzy, c-format
@@ -3101,14 +3100,12 @@ msgid "(divide by zero :rpn)"
 msgstr ""
 
 #: rpmdb/hdrfmt.c:4314
-#, fuzzy
 msgid "(invalid type :strsub)"
-msgstr "ugyldig pakkenummer: %s\n"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:4319
-#, fuzzy
 msgid "(invalid args :strsub)"
-msgstr "ugyldig pakkenummer: %s\n"
+msgstr ""
 
 #: rpmdb/hdrfmt.c:5159
 msgid "missing { after %"
@@ -5222,10 +5219,6 @@ msgstr ""
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid " DSA signature: "
-#~ msgstr "hopp over MD5-signaturer"
 
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "Kunne ikke åpne tar-rør: %m\n"
