@@ -662,6 +662,20 @@ rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
 
+# RPM_VENDOR_PLD /* rpm-popt-aliases */
+rpm    alias --downgrade       --oldpackage \
+	--POPTdesc=$"Allow an upgrade to replace a newer package with an older one."
+
+rpm alias --what-provides --whatprovides \
+	--POPTdesc=$"find package name that contains a provided capability"
+
+rpm alias --what-requires --whatrequires \
+	--POPTdesc=$"find package name that contains a required capability"
+
+rpm alias --norepackage --define '_repackage_all_erasures 0' \
+	--POPTdesc=$"Disable re-package of the files before erasing"
+# RPM_VENDOR_PLD /* rpm-popt-aliases */
+
 # set the time check to <secs>
 rpm	alias --timecheck	--define '_timecheck !#:+'
 
