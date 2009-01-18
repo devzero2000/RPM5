@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: PLD: rpm-notsc: Don't use rdtsc timing.
     - jbj: PLD: rpm-popt-aliases: Add --downgrade/--norepackage aliases.
     - jbj: PLD: rpm-epoch0: Always add Epoch: 0 to packages.
     - jbj: handle "config(N) = E:V-R" within rpmns.c (but treat as a string).
