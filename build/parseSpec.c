@@ -172,7 +172,7 @@ static int restoreFirstChar(Spec spec)
 
 /**
  */
-static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
+static int copyNextLineFromOFI(Spec spec, OFI_t * ofi, rpmStripFlags strip)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->nextline, spec->lbuf, spec->lbufPtr,
@@ -234,12 +234,16 @@ static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
 /*@=mods@*/
 
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
+	/* Also don't expand macros in %changelog if STRIP_NOEXPAND is set */
+	/* (first line is omitted, so %date macro will be expanded */
+      if (!(strip & STRIP_NOEXPAND)) {
 	if (spec->readStack->reading &&
 	    expandMacros(spec, spec->macros, spec->lbuf, spec->lbuf_len)) {
 		rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 			spec->lineNum, spec->lbuf);
 		return RPMRC_FAIL;
 	}
+      }
 	spec->nextline = spec->lbuf;
     }
     return 0;
@@ -341,7 +345,7 @@ retry:
     return 0;
 }
 
-int readLine(Spec spec, int strip)
+int readLine(Spec spec, rpmStripFlags strip)
 {
     char  *s;
     int match;
@@ -356,7 +360,7 @@ int readLine(Spec spec, int strip)
 
       /* Copy next file line into the spec line buffer */
 
-      if ((rc = copyNextLineFromOFI(spec, ofi)) != 0) {
+      if ((rc = copyNextLineFromOFI(spec, ofi, strip)) != 0) {
 	if (rc == RPMRC_FAIL)
 	    goto retry;
 	return rc;
@@ -369,6 +373,7 @@ int readLine(Spec spec, int strip)
     SKIPSPACE(s);
 
     match = -1;
+  if (!(strip & STRIP_NOEXPAND)) {
     if (!spec->readStack->reading && !strncmp("%if", s, sizeof("%if")-1)) {
 	match = 0;
     } else if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
@@ -450,6 +455,7 @@ int readLine(Spec spec, int strip)
 	ofi = spec->fileStack;
 	goto retry;
     }
+  }
 
     if (match != -1) {
 	rl = xmalloc(sizeof(*rl));

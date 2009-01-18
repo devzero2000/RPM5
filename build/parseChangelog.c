@@ -280,7 +280,7 @@ int parseChangelog(Spec spec)
 	line = xstrtolocale(line);
 	iob = rpmiobAppend(iob, spec->line, 0);
 	line = _free(line);
-	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
+	if ((rc = readLine(spec, STRIP_COMMENTS | STRIP_NOEXPAND)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
 	}
