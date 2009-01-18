@@ -98,6 +98,19 @@ struct rpmfc_s {
     rpmiob iob_python;	/*!< concatenated list of python colored files. */
     rpmiob iob_php;	/*!< concatenated list of php colored files. */
 
+#ifdef SUPPORT_PLD_DEPFILTER
+    int findprov;
+    regex_t * Pnoauto;
+    int Pnoauto_c;
+    regex_t * PFnoauto;
+    int PFnoauto_c;
+    int findreq;
+    regex_t * Rnoauto;
+    int Rnoauto_c;
+    regex_t * RFnoauto;
+    int RFnoauto_c;
+#endif /* SUPPORT_PLD_DEPFILTER */
+
 };
 
 /**
