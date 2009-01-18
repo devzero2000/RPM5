@@ -1183,6 +1183,23 @@ assert(lastpkg != NULL);
 	headerCopyTags(spec->packages->header, pkg->header,
 			(rpmuint32_t *)copyTagsDuringParse);
 
+#ifdef RPM_VENDOR_PLD /* rpm-epoch0 */
+    /* Add Epoch: 0 to package header if it was not set by spec */
+    he->tag = RPMTAG_NAME;
+    if (headerGet(spec->packages->header, he, 0) == 0) {
+    	uint32_t num = 0;
+
+	he->tag = RPMTAG_EPOCH;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &num;
+	he->c = 1;
+	xx = headerPut(pkg->header, he, 0);
+
+	/* also declare %{epoch} to be same */
+	addMacro(spec->macros, "epoch", NULL, "0", RMIL_SPEC);
+    }
+
+#endif /* RPM_VENDOR_PLD /* rpm-epoch0 */ */
     if (checkForRequired(pkg->header, NVR) != RPMRC_OK)
 	return RPMRC_FAIL;
 

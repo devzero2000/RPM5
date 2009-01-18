@@ -589,3 +589,15 @@
      Reason:         Allow additional architectures to be added via a
                      "_known_arch" list. This is useful to allow for new
                      variants w/o having to modify RPM each time.
+     ________________________________________________________________________
+
+  o  Name:           PLD
+     Vendor:         PLD <http://pld-linux.org/>
+     Representative: Jeff Johnson <jbj@rpm5.org>
+     Application:    PLD Linux
+     Characteristic: productive anarchy
+     ________________________________________________________________________
+
+     Change:         rpm-epoch0
+     Purpose:        Explictly add Epoch: 0 in all packages.
+     Reason:         Avoids compatibility issues with ancient versions of RPM
