@@ -99,15 +99,13 @@ struct rpmfc_s {
     rpmiob iob_php;	/*!< concatenated list of php colored files. */
 
 #ifdef SUPPORT_PLD_DEPFILTER
-    int findprov;
-    regex_t * Pnoauto;
+    void * Pnoauto;
     int Pnoauto_c;
-    regex_t * PFnoauto;
+    void * PFnoauto;
     int PFnoauto_c;
-    int findreq;
-    regex_t * Rnoauto;
+    void * Rnoauto;
     int Rnoauto_c;
-    regex_t * RFnoauto;
+    void * RFnoauto;
     int RFnoauto_c;
 #endif /* SUPPORT_PLD_DEPFILTER */
 

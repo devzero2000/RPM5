@@ -24,13 +24,6 @@
 #include <rpmds.h>
 #include <rpmfi.h>
 
-#ifdef SUPPORT_PLD_DEPFILTER
-#ifdef AUTODEP_PKGNAMES /* define to use package names in R */
-#include <rpmts.h>
-#include <rpmdb.h>
-#endif /* AUTODEF_PKGNAMES */
-#endif /* SUPPORT_PLD_DEPFILTER */
-
 #include "debug.h"
 
 /*@access rpmds @*/
@@ -818,7 +811,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 	se++;
 
 #ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq
+	if (!fc->skipReq
 	 && !rpmfcMatchRegexps(fc->Rnoauto, fc->Rnoauto_c, s, 'R'))
 #endif /* SUPPORT_PLD_DEPFILTER */
 	if (is_executable) {
@@ -851,52 +844,28 @@ static int rpmfcSCRIPT(rpmfc fc)
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
 	if (strncmp(fn, "/usr/share/doc/", sizeof("/usr/share/doc/")-1)) {
-#ifdef SUPPORT_PLD_DEPFILTER
-	    if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
 		xx = rpmfcHelper(fc, 'P', "perl");
-#ifdef SUPPORT_PLD_DEPFILTER
-	    if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	    if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
 		xx = rpmfcHelper(fc, 'R', "perl");
 	}
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	xx = rpmfcHelper(fc, 'P', "python");
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 #ifdef	NOTYET
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "python");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_LIBTOOL) {
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	xx = rpmfcHelper(fc, 'P', "libtool");
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 #ifdef	NOTYET
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "libtool");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PKGCONFIG) {
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	xx = rpmfcHelper(fc, 'P', "pkgconfig");
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 #ifdef	NOTYET
 	if (is_executable)
 #endif
@@ -904,36 +873,18 @@ static int rpmfcSCRIPT(rpmfc fc)
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_BOURNE) {
 #ifdef	NOTYET
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	xx = rpmfcHelper(fc, 'P', "executable");
 #endif
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "executable");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PHP) {
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	xx = rpmfcHelper(fc, 'P', "php");
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "php");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_MONO) {
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	xx = rpmfcHelper(fc, 'P', "mono");
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq)
-#endif /* SUPPORT_PLD_DEPFILTER */
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "mono");
     }
@@ -962,7 +913,7 @@ fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(
 	break;
     case RPMTAG_PROVIDENAME:
 #ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findprov
+	if (!fc->skipProv
 	 && !rpmfcMatchRegexps(fc->Pnoauto, fc->Pnoauto_c, ds->N[0], 'P'))
 #endif /* SUPPORT_PLD_DEPFILTER */
 	{
@@ -976,7 +927,7 @@ fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(
 	break;
     case RPMTAG_REQUIRENAME:
 #ifdef SUPPORT_PLD_DEPFILTER
-	if (fc->findreq
+	if (!fc->skipReq
 	 && !rpmfcMatchRegexps(fc->Rnoauto, fc->Rnoauto_c, ds->N[0], 'R'))
 #endif /* SUPPORT_PLD_DEPFILTER */
 	{
@@ -1029,114 +980,6 @@ static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
 };
 /*@=nullassign@*/
 
-#ifdef SUPPORT_PLD_DEPFILTER
-#ifdef AUTODEP_PKGNAMES /* define to use package names in R */
-static int rpmfcFindRequiredPackages(rpmfc fc) 
-{
-    rpmts ts = NULL;
-    const char * s;
-    char * se;
-    rpmds ds;
-    const char * N;
-    const char * EVR;
-    int32_t Flags;
-    unsigned char deptype;
-    int nddict;
-    int previx;
-    int ix;
-    int i;
-    int j;
-    int xx;
-    int r;
-    const char * hname;
-    rpmdbMatchIterator it;
-    Header hdr;
-    regex_t * Rnoautodep;
-    int Rnoautodep_c;
-
-    Rnoautodep = rpmfcExpandRegexps("%{__noautoreqdep}", &Rnoautodep_c);
-    
-    ts = rpmtsCreate(); /* XXX ts created in main() should be used */
-    
-    rpmlog(RPMLOG_NOTICE, _("Searching for required packages....\n"));
-
-    nddict = argvCount(fc->ddict);
-    previx = -1;
-    for (i = 0; i < nddict; i++) {
-	s = fc->ddict[i];
-
-	/* Parse out (file#,deptype,N,EVR,Flags) */
-	ix = strtol(s, &se, 10);
-assert(se != NULL);
-	deptype = *se++;
-	se++;
-	N = se;
-	while (*se && *se != ' ')
-	    se++;
-	*se++ = '\0';
-	EVR = se;
-	while (*se && *se != ' ')
-	    se++;
-	*se++ = '\0';
-	Flags = strtol(se, NULL, 16);
-
-	if (deptype!='R') continue;
-
-	rpmlog(RPMLOG_DEBUG, _("#%i requires: %s,%s,%i\n"), ix, N, EVR, Flags);
-	if (EVR && EVR[0]) {
-	    rpmlog(RPMLOG_DEBUG, _("skipping #%i require\n"));
-	    continue;
-	}
-	for (j = 0; j < Rnoautodep_c; j++) {
-	    if (!regexec(&Rnoautodep[j], N, 0, NULL, 0)) {
-		rpmlog(RPMLOG_NOTICE, 
-			_("skipping %s requirement processing"
-			" (matches Rnoautodep pattern #%i)\n"), N, j);
-		break;
-	    }
-	}
-	if (j < Rnoautodep_c) continue;
-	if (N[0] == '/') {
-	    rpmlog(RPMLOG_DEBUG, _("skipping #%i require (is file requirement)\n"));
-	    continue;
-	}
-	it = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, N, 0);
-	if (!it) {
-	    rpmlog(RPMLOG_DEBUG, _("%s -> not found\n"), N);
-	    continue;
-	}
-	rpmlog(RPMLOG_DEBUG, _("Iterator: %p\n"), it);
-	if (rpmdbGetIteratorCount(it) > 1) {
-	    rpmlog(RPMLOG_DEBUG, _("%s -> multiple (skipping)\n"), N);
-	    rpmdbFreeIterator(it);
-	    continue;
-	}
-	hdr = rpmdbNextIterator(it);
-assert(hdr != NULL);
-	r = headerGetEntry(hdr, RPMTAG_NAME, NULL, (void **)&hname, NULL);
-assert(r < 2);
-	if (!strcmp(hname, N)) {
-	    rpmlog(RPMLOG_DEBUG, _("%s -> %s (skipping)\n"), N, hname);
-	    rpmdbFreeIterator(it);
-	    continue;
-	}
-
-	rpmlog(RPMLOG_DEBUG, "%s -> %s\n", N, hname);
-
-       	ds = rpmdsSingle(RPMTAG_REQUIRENAME, hname, "", RPMSENSE_FIND_REQUIRES);
-		xx = rpmdsMerge(&fc->requires, ds);
-		ds = rpmdsFree(ds);
-
-	rpmdbFreeIterator(it);
-    }
-
-    Rnoautodep = rpmfcFreeRegexps(Rnoautodep, Rnoautodep_c);
-    ts = rpmtsFree(ts);
-    return 0;
-}
-#endif /* AUTODEF_PKGNAMES */
-#endif /* SUPPORT_PLD_DEPFILTER */
-
 rpmRC rpmfcApply(rpmfc fc)
 {
     rpmfcApplyTbl fcat;
@@ -1158,8 +1001,9 @@ rpmRC rpmfcApply(rpmfc fc)
     int skipping;
 
 #ifdef SUPPORT_PLD_DEPFILTER
-    const char * buildroot = rpmExpand("%{buildroot}", NULL);
-    int buildroot_l = (buildroot && *buildroot ? strlen(buildroot) : 0);
+    const regex_t * preg;
+    int skipProv = fc->skipProv;
+    int skipReq = fc->skipReq;
     int j;
 
     fc->Pnoauto_c = 0;
@@ -1199,28 +1043,26 @@ assert(fc->fn != NULL);
 		/*@innercontinue@*/ continue;
 
 #ifdef SUPPORT_PLD_DEPFILTER
-	    fc->findprov = 1;
-	    fc->findreq = 1;
-	    if (!strncmp(fc->fn[fc->ix], buildroot, buildroot_l)) {
-		for (j = 0; j < fc->PFnoauto_c; j++) {
-		    fn = fc->fn[fc->ix] + buildroot_l;
-		    if (!regexec(&fc->PFnoauto[j], fn, 0, NULL, 0)) {
+	    fc->skipProv = skipProv;
+	    fc->skipReq = skipReq;
+	    for (j = 0, preg = fc->PFnoauto; j < fc->PFnoauto_c; j++, preg++) {
+		fn = fc->fn[fc->ix] + fc->brlen;
+		if (!regexec(preg, fn, 0, NULL, 0)) {
 			rpmlog(RPMLOG_NOTICE, _("skipping %s provides detection"
 						" (matches PFnoauto pattern #%i)\n"),
 				fc->fn[fc->ix], j);
-			fc->findprov = 0;
+			fc->skipProv = 1;
 			break;
-		    }
 		}
-		for (j = 0; j < fc->RFnoauto_c; j++) {
-		    fn = fc->fn[fc->ix] + buildroot_l;
-		    if (!regexec(&fc->RFnoauto[j], fn, 0, NULL, 0)) {
+	    }
+	    for (j = 0, preg = fc->RFnoauto; j < fc->RFnoauto_c; j++, preg++) {
+		fn = fc->fn[fc->ix] + fc->brlen;
+		if (!regexec(preg, fn, 0, NULL, 0)) {
 			rpmlog(RPMLOG_NOTICE, _("skipping %s requires detection"
 						" (matches RFnoauto pattern #%i)\n"),
 				fc->fn[fc->ix], j);
-			fc->findreq = 0;
+			fc->skipReq = 1;
 			break;
-		    }
 		}
 	    }
 #endif /* SUPPORT_PLD_DEPFILTER */
@@ -1234,9 +1076,8 @@ assert(fc->fn != NULL);
     fc->RFnoauto = rpmfcFreeRegexps(fc->RFnoauto, fc->RFnoauto_c);
     fc->Pnoauto = rpmfcFreeRegexps(fc->Pnoauto, fc->Pnoauto_c);
     fc->Rnoauto = rpmfcFreeRegexps(fc->Rnoauto, fc->Rnoauto_c);
-#ifdef AUTODEP_PKGNAMES /* define to use package names in R */
-    rpmfcFindRequiredPackages(fc);
-#endif
+    fc->skipProv = skipProv;
+    fc->skipReq = skipReq;
 #endif /* SUPPORT_PLD_DEPFILTER */
 
     /* Generate per-file indices into package dependencies. */
