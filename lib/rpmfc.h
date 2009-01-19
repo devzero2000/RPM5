@@ -98,12 +98,16 @@ struct rpmfc_s {
     rpmiob iob_python;	/*!< concatenated list of python colored files. */
     rpmiob iob_php;	/*!< concatenated list of php colored files. */
 
+/*@null@*/
     void * Pmires;	/*!< Filter patterns from %{__noautoprov} */
     int Pnmire;
+/*@null@*/
     void * PFmires;	/*!< Filter patterns from %{__noautoprov} */
     int PFnmire;
+/*@null@*/
     void * Rmires;	/*!< Filter patterns from %{__noautoreq} */
     int Rnmire;
+/*@null@*/
     void * RFmires;	/*!< Filter patterns from %{__noautoreqfile} */
     int RFnmire;
 
@@ -199,7 +203,8 @@ rpmRC rpmfcClassify(rpmfc fc, const char ** argv, /*@null@*/ rpmuint16_t * fmode
  */
 /*@-exportlocal@*/
 rpmRC rpmfcApply(rpmfc fc)
-	/*@modifies fc @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, internalState @*/;
 /*@=exportlocal@*/
 
 /**

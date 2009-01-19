@@ -18,8 +18,10 @@
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
 
-static int _filter_values = 0;
-static int _filter_execs = 0;
+/*@unchecked@*/
+static int _filter_values = 1;
+/*@unchecked@*/
+static int _filter_execs = 1;
 
 #define	_RPMFC_INTERNAL
 #include <rpmfc.h>
@@ -31,6 +33,7 @@ static int _filter_execs = 0;
 #include "debug.h"
 
 /*@access rpmds @*/
+/*@access miRE @*/
 
 /**
  */
@@ -324,8 +327,10 @@ assert(0);
     return buf;
 };
 
+/*@null@*/
 static void * rpmfcExpandRegexps(const char * str, int * nmirep)
-	/*@modifies *nmirep @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies *nmirep, rpmGlobalMacroContext, internalState @*/
 {
     ARGV_t av = NULL;
     int ac = 0;
@@ -337,7 +342,7 @@ static void * rpmfcExpandRegexps(const char * str, int * nmirep)
 
     s = rpmExpand(str, NULL);
     if (s) {
-    	poptParseArgvString(s, &ac, (const char ***)&av);
+    	xx = poptParseArgvString(s, &ac, (const char ***)&av);
 	s = _free(s);
     }
     if (ac == 0 || av == NULL || *av == NULL)
@@ -348,10 +353,10 @@ static void * rpmfcExpandRegexps(const char * str, int * nmirep)
 	/* XXX add REG_NOSUB? better error msg?  */
 	if (xx) {
 	    rpmlog(RPMLOG_NOTICE, 
-			_("Compilation of regular expresion '%s'"
-		        " (expanded from '%s') failed. Skipping it.\n"),
+			_("Compilation of pattern '%s'"
+		        " (expanded from '%s') failed. Skipping ...\n"),
 			av[i], str);
-	    nmire--;
+	    nmire--;	/* XXX does this actually skip?!? */
 	}
     }
     if (nmire == 0)
@@ -366,30 +371,30 @@ exit:
 
 static int rpmfcMatchRegexps(void * mires, int nmire,
 		const char * str, char deptype)
-	/*@*/
+	/*@modifies mires @*/
 {
     miRE mire = mires;
     int xx;
     int i;
 
     for (i = 0; i < nmire; i++) {
-	rpmlog(RPMLOG_DEBUG,
-	    _("Checking %c: '%s' against _noauto expr. #%i\n"), deptype, str, i);
-	xx = mireRegexec(mire + i, str, 0);
-	if (xx >= 0) {
-	    rpmlog(RPMLOG_NOTICE,
-		_("Skipping %c: '%s' as it matches _noauto expr. #%i\n"), deptype, str, i);
-	    return 1;
-	}
+	rpmlog(RPMLOG_DEBUG, D_("Checking %c: '%s'\n"), deptype, str);
+	if ((xx = mireRegexec(mire + i, str, 0)) < 0)
+	    continue;
+	rpmlog(RPMLOG_NOTICE, _("Skipping %c: '%s'\n"), deptype, str);
+	return 1;
     }
     return 0;
 }
 
+/*@null@*/
 static void * rpmfcFreeRegexps(/*@only@*/ void * mires, int nmire)
 	/*@modifies mires @*/
 {
     miRE mire = mires;
+/*@-refcounttrans@*/
     return mireFreeAll(mire, nmire);
+/*@=refcounttrans@*/
 }
 
 /**
@@ -1006,8 +1011,8 @@ rpmRC rpmfcApply(rpmfc fc)
 	fc->RFmires = rpmfcExpandRegexps("%{__noautoreqfiles}", &fc->RFnmire);
 	fc->Pmires = rpmfcExpandRegexps("%{__noautoprov}", &fc->Pnmire);
 	fc->Rmires = rpmfcExpandRegexps("%{__noautoreq}", &fc->Rnmire);
-	rpmlog(RPMLOG_DEBUG, _("%i _noautoprov patterns.\n"), fc->Pnmire);
-	rpmlog(RPMLOG_DEBUG, _("%i _noautoreq patterns.\n"), fc->Rnmire);
+	rpmlog(RPMLOG_DEBUG, D_("%i _noautoprov patterns.\n"), fc->Pnmire);
+	rpmlog(RPMLOG_DEBUG, D_("%i _noautoreq patterns.\n"), fc->Rnmire);
     }
 
 /* Make sure something didn't go wrong previously! */
@@ -1033,32 +1038,30 @@ assert(fc->fn != NULL);
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		/*@innercontinue@*/ continue;
 
-	if (_filter_execs) {	/* XXX fix indentation */
-	    fc->skipProv = skipProv;
-	    fc->skipReq = skipReq;
-	    for (j = 0, mire = fc->PFmires; j < fc->PFnmire; j++) {
-		fn = fc->fn[fc->ix] + fc->brlen;
-		xx = mireRegexec(mire + j, fn, 0);
-		if (xx >= 0) {
-		    rpmlog(RPMLOG_NOTICE, _("skipping %s provides detection"
-					    " (matches PFmires pattern #%i)\n"),
-				fc->fn[fc->ix], j);
+	    if (_filter_execs) {
+		fc->skipProv = skipProv;
+		fc->skipReq = skipReq;
+		if ((mire = fc->PFmires) != NULL)
+		for (j = 0; j < fc->PFnmire; j++, mire++) {
+		    fn = fc->fn[fc->ix] + fc->brlen;
+		    if ((xx = mireRegexec(mire, fn, 0)) < 0)
+			/*@innercontinue@*/ continue;
+		    rpmlog(RPMLOG_NOTICE, _("skipping %s provides detection\n"),
+				fn);
 		    fc->skipProv = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
-	    }
-	    for (j = 0, mire = fc->RFmires; j < fc->RFnmire; j++) {
-		fn = fc->fn[fc->ix] + fc->brlen;
-		xx = mireRegexec(mire + j, fn, 0);
-		if (xx >= 0) {
-		    rpmlog(RPMLOG_NOTICE, _("skipping %s requires detection"
-					    " (matches RFmires pattern #%i)\n"),
-				fc->fn[fc->ix], j);
+		if ((mire = fc->RFmires) != NULL)
+		for (j = 0; j < fc->RFnmire; j++, mire++) {
+		    fn = fc->fn[fc->ix] + fc->brlen;
+		    if ((xx = mireRegexec(mire, fn, 0)) < 0)
+			/*@innercontinue@*/ continue;
+		    rpmlog(RPMLOG_NOTICE, _("skipping %s requires detection\n"),
+				fn);
 		    fc->skipReq = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 	    }
-	}
 
 	    xx = (*fcat->func) (fc);
 	}
