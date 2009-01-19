@@ -98,16 +98,14 @@ struct rpmfc_s {
     rpmiob iob_python;	/*!< concatenated list of python colored files. */
     rpmiob iob_php;	/*!< concatenated list of php colored files. */
 
-#ifdef SUPPORT_PLD_DEPFILTER
-    void * Pnoauto;
-    int Pnoauto_c;
-    void * PFnoauto;
-    int PFnoauto_c;
-    void * Rnoauto;
-    int Rnoauto_c;
-    void * RFnoauto;
-    int RFnoauto_c;
-#endif /* SUPPORT_PLD_DEPFILTER */
+    void * Pmires;	/*!< Filter patterns from %{__noautoprov} */
+    int Pnmire;
+    void * PFmires;	/*!< Filter patterns from %{__noautoprov} */
+    int PFnmire;
+    void * Rmires;	/*!< Filter patterns from %{__noautoreq} */
+    int Rnmire;
+    void * RFmires;	/*!< Filter patterns from %{__noautoreqfile} */
+    int RFnmire;
 
 };
 

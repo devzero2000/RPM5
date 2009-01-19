@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: PLD: rpm-pld-autodep: add run-time disablers, attempt miRE's instead.
     - jbj: PLD: rpm-noexpand: Don't expand macros in %changelog.
     - jbj: PLD: rpm-pld-autodep: merge and simplify. entirely dysfunctional ...
     - jbj: PLD: rpm-notsc: Don't use rdtsc timing.

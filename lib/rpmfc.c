@@ -6,8 +6,10 @@
 #include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmlog.h>
 #include <rpmurl.h>
-#include <argv.h>
 #include <rpmmg.h>
+#include <argv.h>
+#define	_MIRE_INTERNAL
+#include <mire.h>
 
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
@@ -16,7 +18,9 @@
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
 
-#undef	SUPPORT_PLD_DEPFILTER	/* XXX merge/construction scaffholding. */
+static int _filter_values = 0;
+static int _filter_execs = 0;
+
 #define	_RPMFC_INTERNAL
 #include <rpmfc.h>
 
@@ -320,75 +324,73 @@ assert(0);
     return buf;
 };
 
-#ifdef SUPPORT_PLD_DEPFILTER
-static regex_t * rpmfcExpandRegexps(const char * str, int *count)
+static void * rpmfcExpandRegexps(const char * str, int * nmirep)
+	/*@modifies *nmirep @*/
 {
-    int i, j, r;
-    const char *s;
-    ARGV_t patterns = NULL;
-    regex_t *compiled = NULL;
+    ARGV_t av = NULL;
+    int ac = 0;
+    miRE mire = NULL;
+    int nmire = 0;
+    const char * s;
+    int xx;
+    int i;
 
     s = rpmExpand(str, NULL);
     if (s) {
-    	poptParseArgvString(s, count, (const char ***)&patterns);
+    	poptParseArgvString(s, &ac, (const char ***)&av);
 	s = _free(s);
     }
-    if (patterns == NULL) {
-       	*count = 0;
-	return NULL;
-    }
-    if (*count == 0) {
-	_free(patterns);
-	return NULL;
-    }
+    if (ac == 0 || av == NULL || *av == NULL)
+	goto exit;
 
-    compiled = xmalloc(sizeof(regex_t)*(*count));
-    j = 0;
-    for (i = 0; i < *count; i++) {
-	r = regcomp(&compiled[j], patterns[i], REG_NOSUB);
-	if (r == 0) j++;
-	else {
+    for (i = 0; i < ac; i++) {
+	xx = mireAppend(RPMMIRE_REGEX, 0, av[i], NULL, &mire, &nmire);
+	/* XXX add REG_NOSUB? better error msg?  */
+	if (xx) {
 	    rpmlog(RPMLOG_NOTICE, 
 			_("Compilation of regular expresion '%s'"
 		        " (expanded from '%s') failed. Skipping it.\n"),
-			patterns[i],str);
+			av[i], str);
+	    nmire--;
 	}
     }
-    patterns = _free(patterns);
-    if (j == 0) {
-	compiled = _free(compiled);
-	*count = 0;
-	return NULL;
-    }
-    *count = j;
-    return compiled;
+    if (nmire == 0)
+	mire = mireFree(mire);
+
+exit:
+    av = _free(av);
+    if (nmirep)
+	*nmirep = nmire;
+    return mire;
 }
 
-static int rpmfcMatchRegexps(regex_t *regexps, int count, const char *str, char deptype)
+static int rpmfcMatchRegexps(void * mires, int nmire,
+		const char * str, char deptype)
+	/*@*/
 {
-    int j;
-    for (j = 0; j < count; j++) {
+    miRE mire = mires;
+    int xx;
+    int i;
+
+    for (i = 0; i < nmire; i++) {
 	rpmlog(RPMLOG_DEBUG,
-	    _("Checking %c: '%s' against _noauto expr. #%i\n"), deptype, str, j);
-	if (!regexec(&regexps[j], str, 0, NULL, 0)) {
+	    _("Checking %c: '%s' against _noauto expr. #%i\n"), deptype, str, i);
+	xx = mireRegexec(mire + i, str, 0);
+	if (xx >= 0) {
 	    rpmlog(RPMLOG_NOTICE,
-		_("Skipping %c: '%s' as it matches _noauto expr. #%i\n"), deptype, str, j);
+		_("Skipping %c: '%s' as it matches _noauto expr. #%i\n"), deptype, str, i);
 	    return 1;
 	}
     }
     return 0;
 }
 
-static regex_t * rpmfcFreeRegexps(regex_t * regexps, int count)
+static void * rpmfcFreeRegexps(/*@only@*/ void * mires, int nmire)
+	/*@modifies mires @*/
 {
-    int i;
-	
-    if (regexps)
-    for (i = 0; i < count; i++)
-	regfree(&regexps[i]);
-    return _free(regexps);
+    miRE mire = mires;
+    return mireFreeAll(mire, nmire);
 }
-#endif /* SUPPORT_PLD_DEPFILTER */
 
 /**
  * Run per-interpreter dependency helper.
@@ -401,10 +403,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-#ifdef SUPPORT_PLD_DEPFILTER
-    regex_t * noauto;
-    int noauto_c;
-#endif
+    miRE mire = NULL;
+    int nmire = 0;
     const char * fn = fc->fn[fc->ix];
     char buf[BUFSIZ];
     rpmiob iob_stdout = NULL;
@@ -433,10 +433,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
-#ifdef SUPPORT_PLD_DEPFILTER
-	noauto = fc->Pnoauto;
-	noauto_c = fc->Pnoauto_c;
-#endif /* SUPPORT_PLD_DEPFILTER */
+	mire = fc->Pmires;
+	nmire = fc->Pnmire;
 	break;
     case 'R':
 	if (fc->skipReq)
@@ -445,10 +443,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
 	tagN = RPMTAG_REQUIRENAME;
-#ifdef SUPPORT_PLD_DEPFILTER
-	noauto = fc->Rnoauto;
-	noauto_c = fc->Rnoauto_c;
-#endif /* SUPPORT_PLD_DEPFILTER */
+	mire = fc->Rmires;
+	nmire = fc->Rnmire;
 	break;
     }
     buf[sizeof(buf)-1] = '\0';
@@ -493,10 +489,8 @@ assert(*s != '\0');
 assert(EVR != NULL);
 	    }
 
-#ifdef SUPPORT_PLD_DEPFILTER
-	    if (rpmfcMatchRegexps(noauto, noauto_c, N, deptype))
+	    if (_filter_values && rpmfcMatchRegexps(mire, nmire, N, deptype))
 		continue;
-#endif /* SUPPORT_PLD_DEPFILTER */
 
 	    /* Add tracking dependency for versioned Provides: */
 	    if (!fc->tracked && deptype == 'P' && *EVR != '\0') {
@@ -810,10 +804,9 @@ static int rpmfcSCRIPT(rpmfc fc)
 	*se = '\0';
 	se++;
 
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (!fc->skipReq
-	 && !rpmfcMatchRegexps(fc->Rnoauto, fc->Rnoauto_c, s, 'R'))
-#endif /* SUPPORT_PLD_DEPFILTER */
+	if (!_filter_values
+	 || (!fc->skipReq
+	  && !rpmfcMatchRegexps(fc->Rmires, fc->Rnmire, s, 'R')))
 	if (is_executable) {
 	    /* Add to package requires. */
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
@@ -912,10 +905,9 @@ fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(
 	rc = -1;
 	break;
     case RPMTAG_PROVIDENAME:
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (!fc->skipProv
-	 && !rpmfcMatchRegexps(fc->Pnoauto, fc->Pnoauto_c, ds->N[0], 'P'))
-#endif /* SUPPORT_PLD_DEPFILTER */
+	if (!_filter_values
+	 || (!fc->skipProv
+	  && !rpmfcMatchRegexps(fc->Pmires, fc->Pnmire, ds->N[0], 'P')))
 	{
 	    /* Add to package provides. */
 	    rc = rpmdsMerge(&fc->provides, ds);
@@ -926,10 +918,9 @@ fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(
 	}
 	break;
     case RPMTAG_REQUIRENAME:
-#ifdef SUPPORT_PLD_DEPFILTER
-	if (!fc->skipReq
-	 && !rpmfcMatchRegexps(fc->Rnoauto, fc->Rnoauto_c, ds->N[0], 'R'))
-#endif /* SUPPORT_PLD_DEPFILTER */
+	if (!_filter_values
+	 || (!fc->skipReq
+	  && !rpmfcMatchRegexps(fc->Rmires, fc->Rnmire, ds->N[0], 'R')))
 	{
 	    /* Add to package requires. */
 	    rc = rpmdsMerge(&fc->requires, ds);
@@ -1000,24 +991,24 @@ rpmRC rpmfcApply(rpmfc fc)
     int xx;
     int skipping;
 
-#ifdef SUPPORT_PLD_DEPFILTER
-    const regex_t * preg;
+    miRE mire;
     int skipProv = fc->skipProv;
     int skipReq = fc->skipReq;
     int j;
 
-    fc->Pnoauto_c = 0;
-    fc->PFnoauto_c = 0;
-    fc->Rnoauto_c = 0;
-    fc->RFnoauto_c = 0;
+    if (_filter_execs) {
+	fc->Pnmire = 0;
+	fc->PFnmire = 0;
+	fc->Rnmire = 0;
+	fc->RFnmire = 0;
     
-    fc->PFnoauto = rpmfcExpandRegexps("%{__noautoprovfiles}", &fc->PFnoauto_c);
-    fc->RFnoauto = rpmfcExpandRegexps("%{__noautoreqfiles}", &fc->RFnoauto_c);
-    fc->Pnoauto = rpmfcExpandRegexps("%{__noautoprov}", &fc->Pnoauto_c);
-    fc->Rnoauto = rpmfcExpandRegexps("%{__noautoreq}", &fc->Rnoauto_c);
-    rpmlog(RPMLOG_DEBUG, _("%i _noautoprov patterns.\n"), fc->Pnoauto_c);
-    rpmlog(RPMLOG_DEBUG, _("%i _noautoreq patterns.\n"), fc->Rnoauto_c);
-#endif /* SUPPORT_PLD_DEPFILTER */
+	fc->PFmires = rpmfcExpandRegexps("%{__noautoprovfiles}", &fc->PFnmire);
+	fc->RFmires = rpmfcExpandRegexps("%{__noautoreqfiles}", &fc->RFnmire);
+	fc->Pmires = rpmfcExpandRegexps("%{__noautoprov}", &fc->Pnmire);
+	fc->Rmires = rpmfcExpandRegexps("%{__noautoreq}", &fc->Rnmire);
+	rpmlog(RPMLOG_DEBUG, _("%i _noautoprov patterns.\n"), fc->Pnmire);
+	rpmlog(RPMLOG_DEBUG, _("%i _noautoreq patterns.\n"), fc->Rnmire);
+    }
 
 /* Make sure something didn't go wrong previously! */
 assert(fc->fn != NULL);
@@ -1042,43 +1033,45 @@ assert(fc->fn != NULL);
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		/*@innercontinue@*/ continue;
 
-#ifdef SUPPORT_PLD_DEPFILTER
+	if (_filter_execs) {	/* XXX fix indentation */
 	    fc->skipProv = skipProv;
 	    fc->skipReq = skipReq;
-	    for (j = 0, preg = fc->PFnoauto; j < fc->PFnoauto_c; j++, preg++) {
+	    for (j = 0, mire = fc->PFmires; j < fc->PFnmire; j++) {
 		fn = fc->fn[fc->ix] + fc->brlen;
-		if (!regexec(preg, fn, 0, NULL, 0)) {
-			rpmlog(RPMLOG_NOTICE, _("skipping %s provides detection"
-						" (matches PFnoauto pattern #%i)\n"),
+		xx = mireRegexec(mire + j, fn, 0);
+		if (xx >= 0) {
+		    rpmlog(RPMLOG_NOTICE, _("skipping %s provides detection"
+					    " (matches PFmires pattern #%i)\n"),
 				fc->fn[fc->ix], j);
-			fc->skipProv = 1;
-			break;
+		    fc->skipProv = 1;
+		    break;
 		}
 	    }
-	    for (j = 0, preg = fc->RFnoauto; j < fc->RFnoauto_c; j++, preg++) {
+	    for (j = 0, mire = fc->RFmires; j < fc->RFnmire; j++) {
 		fn = fc->fn[fc->ix] + fc->brlen;
-		if (!regexec(preg, fn, 0, NULL, 0)) {
-			rpmlog(RPMLOG_NOTICE, _("skipping %s requires detection"
-						" (matches RFnoauto pattern #%i)\n"),
+		xx = mireRegexec(mire + j, fn, 0);
+		if (xx >= 0) {
+		    rpmlog(RPMLOG_NOTICE, _("skipping %s requires detection"
+					    " (matches RFmires pattern #%i)\n"),
 				fc->fn[fc->ix], j);
-			fc->skipReq = 1;
-			break;
+		    fc->skipReq = 1;
+		    break;
 		}
 	    }
-#endif /* SUPPORT_PLD_DEPFILTER */
+	}
 
 	    xx = (*fcat->func) (fc);
 	}
     }
 
-#ifdef SUPPORT_PLD_DEPFILTER
-    fc->PFnoauto = rpmfcFreeRegexps(fc->PFnoauto, fc->PFnoauto_c);
-    fc->RFnoauto = rpmfcFreeRegexps(fc->RFnoauto, fc->RFnoauto_c);
-    fc->Pnoauto = rpmfcFreeRegexps(fc->Pnoauto, fc->Pnoauto_c);
-    fc->Rnoauto = rpmfcFreeRegexps(fc->Rnoauto, fc->Rnoauto_c);
+    if (_filter_execs) {
+	fc->PFmires = rpmfcFreeRegexps(fc->PFmires, fc->PFnmire);
+	fc->RFmires = rpmfcFreeRegexps(fc->RFmires, fc->RFnmire);
+	fc->Pmires = rpmfcFreeRegexps(fc->Pmires, fc->Pnmire);
+	fc->Rmires = rpmfcFreeRegexps(fc->Rmires, fc->Rnmire);
+    }
     fc->skipProv = skipProv;
     fc->skipReq = skipReq;
-#endif /* SUPPORT_PLD_DEPFILTER */
 
     /* Generate per-file indices into package dependencies. */
     nddict = argvCount(fc->ddict);
