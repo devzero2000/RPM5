@@ -18,9 +18,10 @@ lookup3
 rpmcpio
 rpmcurl
 rpmdigest
+rpmdpkg
 rpmgenpkglist
 rpmgensrclist
-rpmgrep
+rpmgpg
 rpmtar
 rpmwget
 rpmz

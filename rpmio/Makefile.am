@@ -14,7 +14,7 @@ EXTRA_DIST = \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
 
-EXTRA_PROGRAMS = rpmcpio rpmcurl \
+EXTRA_PROGRAMS = rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmtar rpmwget rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
@@ -238,6 +238,9 @@ rpmcpio_LDADD = $(RPM_LDADD_COMMON)
 
 rpmcurl_SOURCES = rpmcurl.c
 rpmcurl_LDADD = $(RPMIO_LDADD_COMMON)
+
+rpmdpkg_SOURCES = rpmdpkg.c
+rpmdpkg_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmgenbasedir = rpmgenbasedir.c
 rpmgenbasedir_LDADD = $(RPMIO_LDADD_COMMON)

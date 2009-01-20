@@ -207,7 +207,7 @@ main(int argc, char *argv[])
     int i;
 
 /*@-observertrans -readonlytrans @*/
-    __progname = "rpmgenpkglist";
+    __progname = "rpmgpg";
 /*@=observertrans =readonlytrans @*/
 
     av = poptGetArgs(optCon);
