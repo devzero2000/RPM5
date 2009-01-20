@@ -14,7 +14,7 @@ EXTRA_DIST = \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
 
-EXTRA_PROGRAMS = rpmcpio rpmcurl rpmdpkg \
+EXTRA_PROGRAMS = rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmtar rpmwget rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
@@ -232,6 +232,9 @@ lcov-report:
 #  testdata/testoutput10 \
 #  testdata/wintestinput3 \
 #  testdata/wintestoutput3
+
+rpmborg_SOURCES = rpmborg.c
+rpmborg_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmcpio_SOURCES = rpmcpio.c
 rpmcpio_LDADD = $(RPM_LDADD_COMMON)

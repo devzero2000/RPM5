@@ -15,6 +15,7 @@ gengpg.h
 getdate.c
 lcov
 lookup3
+rpmborg
 rpmcpio
 rpmcurl
 rpmdigest
