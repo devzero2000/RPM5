@@ -217,10 +217,6 @@ static struct poptOption optionsTable[] = {
         rpmborgArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-	N_("\
-"), NULL },
-
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmborgCommandsPoptTable, 0,
         N_("Commands:"), NULL },
 
