@@ -5,6 +5,60 @@
 
 #include "debug.h"
 
+/*==============================================================*/
+
+#define _KFB(n) (1U << (n))
+#define _BFB(n) (_KFB(n) | 0x40000000)
+
+/**
+ * Bit field enum for rpmborg CLI options.
+ */
+enum borgFlags_e {
+    BORG_FLAGS_NONE		= 0,
+    BORG_FLAGS_DEB		= _BFB( 0), /*!< -d,--to-deb ... */
+    BORG_FLAGS_RPM		= _BFB( 1), /*!< -r,--to-rpm ... */
+    BORG_FLAGS_SLP		= _BFB( 2), /*!<    --to-slp ... */
+    BORG_FLAGS_LSB		= _BFB( 3), /*!< -l,--to-lsb ... */
+    BORG_FLAGS_TGZ		= _BFB( 4), /*!< -t,--to-tgz ... */
+    BORG_FLAGS_PKG		= _BFB( 5), /*!< -p,--to-pkg ... */
+    BORG_FLAGS_XAR		= _BFB( 6), /*!< -x,--to-xar ... */
+        /* 7-15 unused */
+    BORG_FLAGS_INSTALL		= _BFB(16), /*!< -i,--install ... */
+    BORG_FLAGS_GENERATE		= _BFB(17), /*!< -g,--generate ... */
+    BORG_FLAGS_SCRIPTS		= _BFB(18), /*!< -c,--scripts ... */
+    BORG_FLAGS_KEEPVERSION	= _BFB(19), /*!< -k,--keep-version ... */
+    BORG_FLAGS_NOPATCH		= _BFB(20), /*!<    --nopatch ... */
+    BORG_FLAGS_ANYPATCH		= _BFB(21), /*!<    --anypatch ... */
+    BORG_FLAGS_SINGLE		= _BFB(22), /*!< -s,--single ... */
+    BORG_FLAGS_FIXPERMS		= _BFB(23), /*!<    --fixperms ... */
+    BORG_FLAGS_TEST		= _BFB(24), /*!<    --test ... */
+};
+
+/**
+ */
+typedef struct rpmborg_s * rpmborg;
+
+/**
+ */
+struct rpmborg_s {
+    const char * patch;		/*!<    --patch ... */
+    const char * description;	/*!<    --description ... */
+    const char * version;	/*!<    --version ... */
+    int bump;			/*!<    --bump ... */
+    int verbose;		/*!< -v,--verbose ... */
+};
+
+/*@unchecked@*/
+static struct rpmborg_s __rpmborg;
+/*@unchecked@*/
+static rpmborg _rpmborg = &__rpmborg;
+
+/*@unchecked@*/
+enum borgFlags_e borgFlags = BORG_FLAGS_NONE;
+
+/*==============================================================*/
+#define POPT_BORG_VERYVERBOSE	-1500
+
 /**
  */
 static void rpmborgArgCallback(poptContext con,
@@ -13,9 +67,19 @@ static void rpmborgArgCallback(poptContext con,
                 /*@unused@*/ void * data)
 	/*@*/
 {
+    rpmborg borg = _rpmborg;
+
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case POPT_BORG_VERYVERBOSE:	/*    --veryverbose */
+	borg->verbose++;	
+        borg->verbose++;
+        break;
+    case 'v':                   /* -v,--verbose */
+        borg->verbose++;
+        break;
+    case '?':
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -26,25 +90,10 @@ static void rpmborgArgCallback(poptContext con,
 
 /*==============================================================*/
 
-#define	POPT_XXX	0
+#define	POPT_XXX		0
 #if !defined(POPT_BIT_TOGGLE)
 #define	POPT_BIT_TOGGLE	(POPT_ARG_VAL|POPT_ARGFLAG_XOR)
 #endif
-
-#define	BORG_TO_DEB	(1 << 0)
-#define	BORG_TO_RPM	(1 << 1)
-#define	BORG_TO_SLP	(1 << 2)
-#define	BORG_TO_LSB	(1 << 3)
-#define	BORG_TO_TGZ	(1 << 4)
-#define	BORG_TO_PKG	(1 << 5)
-#define	BORG_TO_XAR	(1 << 6)
-
-static int _targets;
-static int _install;
-static int _generate;
-static int _scripts;
-static int _keep_version;
-static int _bump;
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmborgCommandsPoptTable[] = {
@@ -54,33 +103,67 @@ static struct poptOption rpmborgCommandsPoptTable[] = {
 /*@=type@*/
 
 	/* XXX this bit is (default). */
-  { "to-deb", 'd', POPT_BIT_SET, &_targets, BORG_TO_DEB,
+  { "to-deb", 'd', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_DEB,
         N_("Generate a Debian deb package."), NULL },
-  { "to-rpm", 'r', POPT_BIT_SET, &_targets, BORG_TO_RPM,
+
+#ifdef	NOTYET	/* XXX need means for immediate --help display. */
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("    Enables these options:"), NULL },
+#endif
+  { "patch", '\0', POPT_ARG_STRING,	&__rpmborg.patch, 0,
+        N_("Specify patch file to use instead of automatically looking for patch in /var/lib/borg."), N_("<patch>") },
+  { "nopatch", '\0', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_NOPATCH,
+        N_("Do not use patches."), NULL },
+  { "anypatch", '\0', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_ANYPATCH,
+        N_("Use even old version os patches."), NULL },
+  { "single", 's', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_SINGLE,
+        N_("Like --generate, but do not create .orig directory."), NULL },
+  { "fixperms", '\0', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_FIXPERMS,
+        N_("Munge/fix permissions and owners."), NULL },
+  { "test", '\0', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_TEST,
+        N_("Test generated packages with lintian."), NULL },
+
+  { "to-rpm", 'r', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_RPM,
         N_("Generate a RPM rpm package."), NULL },
-  { "to-slp", '\0', POPT_BIT_SET, &_targets, BORG_TO_SLP,
+  { "to-slp", '\0', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_SLP,
         N_("Generate a Stampede slp package."), NULL },
-  { "to-lsb", 'l', POPT_BIT_SET, &_targets, BORG_TO_LSB,
+  { "to-lsb", 'l', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_LSB,
         N_("Generate a LSB package."), NULL },
-  { "to-tgz", 't', POPT_BIT_SET, &_targets, BORG_TO_TGZ,
+  { "to-tgz", 't', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_TGZ,
         N_("Generate a Slackware tgz package."), NULL },
-  { "to-pkg", 'p', POPT_BIT_SET, &_targets, BORG_TO_PKG,
+#ifdef	NOTYET	/* XXX need means for immediate --help display. */
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("    Enables these options:"), NULL },
+#endif
+  { "description", '\0', POPT_ARG_STRING,	&__rpmborg.description, 0,
+        N_("Specify package description."), N_("<desc>") },
+	/*XXX collides with -V,--version */
+  { "version", '\0', POPT_ARG_STRING,	&__rpmborg.version, 0,
+        N_("Specify package version."), N_("<version>") },
+
+  { "to-pkg", 'p', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_PKG,
         N_("Generate a Solaris pkg package."), NULL },
-  { "to-xar", 'x', POPT_BIT_SET, &_targets, BORG_TO_XAR,
+  { "to-xar", 'x', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_XAR,
         N_("Generate a XARv1 package."), NULL },
-  { "install", 'i', POPT_ARG_VAL, &_install, -1,
+
+  { "install", 'i', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_INSTALL,
         N_("Install generated package."), NULL },
-  { "generate", 'g', POPT_ARG_VAL, &_generate, -1,
+  { "generate", 'g', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_GENERATE,
         N_("Generate build tree, but do not build package."), NULL },
-  { "scripts", 'c', POPT_ARG_VAL, &_scripts, -1,
+  { "scripts", 'c', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_SCRIPTS,
         N_("Include scripts in package."), NULL },
-  { "keep-version", 'k', POPT_ARG_VAL, &_keep_version, -1,
+  { "keep-version", 'k', POPT_BIT_SET,	&borgFlags, BORG_FLAGS_KEEPVERSION,
         N_("Do not change version of generated package."), NULL },
-  { "bump", '\0', POPT_ARG_VAL, &_bump, -1,
+
+  { "bump", '\0', POPT_ARG_INT,		&__rpmborg.bump, 0,
         N_("Increment package version by this number."), N_("number") },
 
-#ifdef	REFERENCE
+ { "verbose", 'v', 0,			NULL, (int)'v',
+        N_("Display each command the Borg runs."), NULL },
+ { "veryverbose", '\0', 0,		NULL, POPT_BORG_VERYVERBOSE,
+        N_("Display each command the Borg runs."), NULL },
 
+#ifdef	REFERENCE
   -d, --to-deb              Generate a Debian deb package (default).
      Enables these options:
        --patch=<patch>      Specify patch file to use instead of automatically
@@ -108,7 +191,6 @@ static struct poptOption rpmborgCommandsPoptTable[] = {
       --bump=number         Increment package version by this number.
   -h, --help                Display this help message.
   -V, --version		    Display the Borg version number.
-
 #endif
 
   POPT_TABLEEND
@@ -147,6 +229,10 @@ static struct poptOption optionsTable[] = {
         N_("Options:"), NULL },
 #endif
 
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOALIAS
   POPT_AUTOHELP
 
@@ -154,33 +240,6 @@ static struct poptOption optionsTable[] = {
 	N_("\
 Usage: rpmborg [options] file [...]\n\
   file [...]                Package file or files to convert.\n\
-  -d, --to-deb              Generate a Debian deb package (default).\n\
-     Enables these options:\n\
-       --patch=<patch>      Specify patch file to use instead of automatically\n\
-                            looking for patch in /var/lib/borg.\n\
-       --nopatch	    Do not use patches.\n\
-       --anypatch           Use even old version os patches.\n\
-       -s, --single         Like --generate, but do not create .orig\n\
-                            directory.\n\
-       --fixperms           Munge/fix permissions and owners.\n\
-       --test               Test generated packages with lintian.\n\
-  -r, --to-rpm              Generate a RPM rpm package.\n\
-      --to-slp              Generate a Stampede slp package.\n\
-  -l, --to-lsb              Generate a LSB package.\n\
-  -t, --to-tgz              Generate a Slackware tgz package.\n\
-     Enables these options:\n\
-       --description=<desc> Specify package description.\n\
-       --version=<version>  Specify package version.\n\
-  -p, --to-pkg              Generate a Solaris pkg package.\n\
-  -i, --install             Install generated package.\n\
-  -g, --generate            Generate build tree, but do not build package.\n\
-  -c, --scripts             Include scripts in package.\n\
-  -v, --verbose             Display each command the Borg runs.\n\
-      --veryverbose         Be verbose, and also display output of run commands.\n\
-  -k, --keep-version        Do not change version of generated package.\n\
-      --bump=number         Increment package version by this number.\n\
-  -h, --help                Display this help message.\n\
-  -V, --version		    Display the Borg's version number.\n\
 "), NULL },
 
   POPT_TABLEEND
