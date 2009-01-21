@@ -5,6 +5,10 @@
 
 #include "debug.h"
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
+
 /*==============================================================*/
 
 #define _KFB(n) (1U << (n))
@@ -24,6 +28,8 @@ enum dpkgFlags_e {
     DPKG_FLAGS_NODEBSIG		= _DFB( 5), /*!<    --no-debsig ... */
     DPKG_FLAGS_DRYRUN		= _DFB( 6), /*!<    --dry-run ... */
     DPKG_FLAGS_FORCE		= _DFB( 7), /*!<    --force ... */
+    DPKG_FLAGS_PENDING		= _DFB( 8), /*!< -a,--pending ... */
+    DPKG_FLAGS_NOSELECTALSO	= _DFB( 9), /*!<    --no-also-select ... */
 
 };
 
@@ -39,12 +45,15 @@ struct rpmdpkg_s {
     const char * instdir;	/*!<    --instdir ... */
 
     int debug;			/*!< -D,--debug ... */
+    int command_fd;		/*!< -c,--command-fd ... */
     int status_fd;		/*!<    --status-fd ... */
-    const char * log;		/*!<    --log ... */
+    const char * log_file;	/*!<    --log ... */
     const char **ignore_depends;/*!<    --ignore-depends ... */
-    int abort_after;		/*!<    --abort-after ... */
+    int errabort;		/*!<    --abort-after ... */
 
     int verbose;		/*!< -v,--verbose ... */
+
+    const char ** recursedirs;	/*!< -R,--recursive ... */
 
 };
 
@@ -80,6 +89,7 @@ enum dpkgFlags_e dpkgFlags = DPKG_FLAGS_NONE;
 #define	POPT_DPKG_PRINT_INSTALL_ARCH	17
 #define	POPT_DPKG_PREDEP_PACKAGE	18
 #define	POPT_DPKG_COMPARE_VERSIONS	19
+#define	POPT_DPKG_LICENSE		20
 
 /**
  */
@@ -207,15 +217,19 @@ static struct poptOption rpmdpkgCommandsPoptTable[] = {
 
 #ifdef	REFERENCE
 
-  --compare-versions <a> <op> <b>  Compare version numbers - see below.\n\
   --force-help                     Show help on forcing.\n\
   -Dh|--debug=help                 Show help on debugging.\n\
 \n\
   -h|--help                        Show this help message.\n\
-  --version                        Show the version.\n\
-  --license|--licence              Show the copyright licensing terms.\n\
 
 #endif
+
+  { "license", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_LICENSE,
+	N_("Show the copyright licensing terms."), NULL },
+  { "licence", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_LICENSE,
+	N_("Show the copyright licensing terms."), NULL },
+  { "version", '\0', POPT_ARG_NONE, NULL, 'v',
+	N_("Show the version."), NULL },
 
   POPT_TABLEEND
 
@@ -227,41 +241,6 @@ static struct poptOption rpmdpkgOptionsPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmdpkgArgCallback, 0, NULL, NULL },
 /*@=type@*/
-
-#ifdef	NOTYET
-/*
-  ACTION( "command-fd",                   'c', act_commandfd,   commandfd     ),
-*/
-
-  { "status-fd",         0,   1, NULL,          NULL,      setpipe, 0, &status_pipes },
-  { "log",               0,   1, NULL,          &log_file, NULL,    0 },
-  { "pending",           'a', 0, &f_pending,    NULL,      NULL,    1 },
-  { "recursive",         'R', 0, &f_recursive,  NULL,      NULL,    1 },
-  { "no-act",            0,   0, &f_noact,      NULL,      NULL,    1 },
-  { "dry-run",           0,   0, &f_noact,      NULL,      NULL,    1 },
-  { "simulate",          0,   0, &f_noact,      NULL,      NULL,    1 },
-  { "no-debsig",         0,   0, &f_nodebsig,   NULL,      NULL,    1 },
-  /* Alias ('G') for --refuse. */
-  {  NULL,               'G', 0, &fc_downgrade, NULL,      NULL,    0 },
-  { "selected-only",     'O', 0, &f_alsoselect, NULL,      NULL,    0 },
-  { "triggers",           0,  0, &f_triggers,   NULL,      NULL,    1 },
-  { "no-triggers",        0,  0, &f_triggers,   NULL,      NULL,   -1 },
-  /* FIXME: Remove ('N') sometime. */
-  { "no-also-select",    'N', 0, &f_alsoselect, NULL,      NULL,    0 },
-  { "skip-same-version", 'E', 0, &f_skipsame,   NULL,      NULL,    1 },
-  { "auto-deconfigure",  'B', 0, &f_autodeconf, NULL,      NULL,    1 },
-  OBSOLETE( "largemem", 0 ),
-  OBSOLETE( "smallmem", 0 ),
-  { "root",              0,   1, NULL,          NULL,      setroot,       0 },
-  { "abort-after",       0,   1, &errabort,     NULL,      setinteger,    0 },
-  { "admindir",          0,   1, NULL,          &admindir, NULL,          0 },
-  { "instdir",           0,   1, NULL,          &instdir,  NULL,          0 },
-  { "ignore-depends",    0,   1, NULL,          NULL,      ignoredepends, 0 },
-  { "force",             0,   2, NULL,          NULL,      setforce,      1 },
-  { "refuse",            0,   2, NULL,          NULL,      setforce,      0 },
-  { "no-force",          0,   2, NULL,          NULL,      setforce,      0 },
-  { "debug",             'D', 1, NULL,          NULL,      setdebug,      0 },
-#endif
 
 	/* XXX default value */
   { "admindir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &__rpmdpkg.admindir, 0,
@@ -275,46 +254,51 @@ static struct poptOption rpmdpkgOptionsPoptTable[] = {
         N_("Skip packages not selected for install/upgrade."), NULL },
   { "skip-same-version", 'E', POPT_BIT_SET, &dpkgFlags, DPKG_FLAGS_SKIPSAMEVERSION,
         N_("Skip packages whose same version is installed."), NULL },
+	/* XXX Alias ('G') for --refuse. */
   { "refuse-downgrade", 'G', POPT_BIT_SET, &dpkgFlags, DPKG_FLAGS_NODOWNGRADE,
         N_("Skip packages with earlier version than installed."), NULL },
   { "auto-deconfigure", 'B', POPT_BIT_SET, &dpkgFlags, DPKG_FLAGS_DECONFIGURE,
         N_("Install even if it would break some other package."), NULL },
 	/* XXX enabler needed too. */
-  { "triggers", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &dpkgFlags, DPKG_FLAGS_NOTRIGGERS,
+  { "no-triggers", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE, &dpkgFlags, DPKG_FLAGS_NOTRIGGERS,
         N_("Skip or force consequential trigger processing."), NULL },
-  { "no-triggers", '\0', POPT_BIT_SET,	&dpkgFlags, DPKG_FLAGS_NOTRIGGERS,
-        N_("Skip or force consequential trigger processing."), NULL },
-  { "no-debsig", '\0', POPT_BIT_SET,	&dpkgFlags, DPKG_FLAGS_NODEBSIG,
+	/* XXX FIXME: Remove ('N') sometime. */
+  { "no-also-select", 'N', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &dpkgFlags, DPKG_FLAGS_NOSELECTALSO,
+        N_("?no-also-select?"), NULL },
+  { "no-debsig", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE, &dpkgFlags, DPKG_FLAGS_NODEBSIG,
         N_("Do not try to verify package signatures."), NULL },
-  { "dryrun", '\0', POPT_BIT_SET,	&dpkgFlags, DPKG_FLAGS_DRYRUN,
+  { "dryrun", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&dpkgFlags, DPKG_FLAGS_DRYRUN,
         N_("Just say what we would do - don't do it."), NULL },
-  { "no-act", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &dpkgFlags, DPKG_FLAGS_DRYRUN,
+  { "no-act", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN, &dpkgFlags, DPKG_FLAGS_DRYRUN,
         N_("Just say what we would do - don't do it."), NULL },
   { "simulate", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &dpkgFlags, DPKG_FLAGS_DRYRUN,
         N_("Just say what we would do - don't do it."), NULL },
   { "debug", 'D', POPT_ARG_INT,		&__rpmdpkg.debug, 0,
         N_("Enable debugging (see -Dhelp or --debug=help)."), N_("<octal>") },
+  { "command-fd", 'c', POPT_ARG_INT|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmdpkg.command_fd, 0,
+        N_("?command-fd?"), N_("<n>") },
   { "status-fd", '\0', POPT_ARG_INT,	&__rpmdpkg.status_fd, 0,
         N_("Send status change updates to file descriptor <n>."), N_("<n>") },
-  { "log", '\0', POPT_ARG_STRING,	&__rpmdpkg.log, 0,
+  { "log", '\0', POPT_ARG_STRING,	&__rpmdpkg.log_file, 0,
         N_("Log status changes and actions to <filename>."), N_("<filename>") },
 	/* XXX dpkg uses comma separated list. */
   { "ignore-depends", '\0', POPT_ARG_ARGV, &__rpmdpkg.ignore_depends, 0,
         N_("Ignore dependencies involving <package>."), N_("<package>") },
-	/* XXX disabler needed too. */
+	/* XXX disabler needed too. POPT_ARGFLAG_TOGGLE? */
   { "force", '\0', POPT_BIT_SET,	&dpkgFlags, DPKG_FLAGS_FORCE,
         N_("Override problems (see --force-help)."), NULL },
 	/* XXX disablers needed too. */
   { "no-force", '\0', POPT_BIT_CLR,	&dpkgFlags, DPKG_FLAGS_FORCE,
         N_("Stop when problems encountered."), NULL },
+	/* XXX Alias ('G') for --refuse. */
   { "refuse", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &dpkgFlags, DPKG_FLAGS_FORCE,
         N_("Stop when problems encountered."), NULL },
-  { "abort-after", 'B', POPT_ARG_INT,		&__rpmdpkg.abort_after, 0,
+  { "abort-after", 'B', POPT_ARG_INT,		&__rpmdpkg.errabort, 0,
         N_("Send status change updates to file descriptor <n>."), N_("<n>") },
 
-  { "recursive", 'R', POPT_ARG_STRING, NULL, 'R',
+  { "recursive", 'R', POPT_ARG_ARGV, &__rpmdpkg.recursedirs, 0,
         N_("?recursive?"), N_("<directory>") },
-  { "pending", 'a', POPT_ARG_NONE, NULL, 'a',
+  { "pending", 'a', POPT_BIT_SET, &dpkgFlags, DPKG_FLAGS_PENDING,
         N_("?pending?"), NULL },
 
   POPT_TABLEEND
