@@ -29,6 +29,9 @@
 
 const char *__progname;
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
 #define POPT_SHOWVERSION	-999
 #define POPT_UNDEFINE		-994
 #define	POPT_CRYPTO		-993
@@ -347,11 +350,6 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("<FILE:...>") },
 #endif	/* NOTYET */
 
-#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-	N_("disable use of libio(3) API"), NULL},
-#endif
-
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmioPipeOutput, 0,
 	N_("send stdout to CMD"),
 	N_("CMD") },
@@ -367,8 +365,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("print the version"), NULL },
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-       N_("disable use of libio(3) API"), NULL},
+ { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, -1,
+	N_("disable use of libio(3) API"), NULL},
 #endif
 
  { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,

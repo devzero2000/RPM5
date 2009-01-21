@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: add POPT_ARGFLAG_TOGGLE sufficient to test (invisible w popt < 1.15).
     - jbj: enable the PLD dependency filtering.
     - jbj: PLD: rpm-pld-autodep: add run-time disablers, attempt miRE's instead.
     - jbj: PLD: rpm-noexpand: Don't expand macros in %changelog.

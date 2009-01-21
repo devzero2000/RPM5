@@ -35,6 +35,9 @@ const char *__localedir = LOCALEDIR;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 extern unsigned int * keyids;
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
@@ -304,19 +307,19 @@ struct poptOption rpmcliDepFlagsPoptTable[] = {
  { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
  	&global_depFlags, RPMDEPS_FLAG_DEPLOOPS,
 	N_("print dependency loops as warning"), NULL},
- { "nosuggest", '\0', POPT_BIT_SET,
+ { "nosuggest", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
 	&global_depFlags, RPMDEPS_FLAG_NOSUGGEST,
 	N_("do not suggest missing dependency resolution(s)"), NULL},
  { "noconflicts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOCONFLICTS,
 	N_("do not check added package conflicts"), NULL},
- { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOLINKTOS,
 	N_("ignore added package requires on symlink targets"), NULL},
  { "noobsoletes", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOOBSOLETES,
 	N_("ignore added package obsoletes"), NULL},
- { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
 	N_("ignore added package requires on file parent directory"), NULL},
  { "norequires", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,

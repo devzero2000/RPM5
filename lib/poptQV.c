@@ -21,6 +21,9 @@ struct rpmQVKArguments_s rpmQVKArgs;
 /*@unchecked@*/
 int specedit = 0;
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
 #define POPT_QUERYFORMAT	-1000
 #define POPT_WHATREQUIRES	-1001
 #define POPT_WHATPROVIDES	-1002
@@ -302,20 +305,20 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("add suggested packages to transaction"), NULL },
 
  /* Duplicate file attr flags from packages into command line options. */
- { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
         N_("skip %%config files"), NULL },
- { "nodoc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "nodoc", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_DOC,
         N_("skip %%doc files"), NULL },
- { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
 #ifdef	NOTEVER		/* XXX there's hardly a need for these */
- { "nolicense", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "nolicense", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_LICENSE,
         N_("skip %%license files"), NULL },
- { "noreadme", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noreadme", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_README,
         N_("skip %%readme files"), NULL },
 #endif
@@ -344,7 +347,7 @@ struct poptOption rpmVerifyPoptTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
- { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
 
@@ -460,7 +463,7 @@ struct poptOption rpmSignPoptTable[] = {
 	N_("generate signature"), NULL },
  /* XXX perhaps POPT_ARG_INT instead of callback. */
  { "trust", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  POPT_TRUST,
-        N_("specify trust metric"), "TRUST" },
+        N_("specify trust metric"), N_("TRUST") },
  { "trusted", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.trust, 1,
         N_("set ultimate trust when importing pubkey(s)"), NULL },
