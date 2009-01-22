@@ -1034,7 +1034,6 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"", 0);
 		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, buf, 1);
 		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "export DOCDIR", 1);
-		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "rm -rf \"$DOCDIR\"", 1);
 		mkdir_p = rpmExpand("%{?__mkdir_p}%{!?__mkdir_p:mkdir -p}", NULL);
 		if (!mkdir_p)
 		    mkdir_p = xstrdup("mkdir -p");
