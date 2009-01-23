@@ -78,8 +78,8 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	    encoding = 1;
 	else if (*mode == 'r')
 	    encoding = 0;
-	else if (*mode >= '1' && *mode <= '9')
-	    level = (int)(*mode - '0');
+	else if (*mode >= '0' && *mode <= '9')
+	    level = (int)*mode;
     }
     if (fd != -1)
 	fp = fdopen(fd, encoding ? "w" : "r");
