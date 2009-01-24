@@ -32,7 +32,7 @@ my @objects = qw(
 # teach MakeMaker some Mac OS X LDFLAGS:
 my @LDFLAGS = qw(@LDFLAGS@);
 foreach (@LDFLAGS) {
-    if (m/-arch|ppc|i386|ppc64|x86_64/) {
+    if (m/^(-arch|ppc|i386|ppc64|x86_64)$/) {
          push (@ldflags, $&);
     } elsif (m/-Wl,-search_paths_first/) {
          push (@ldflags, $&);
