@@ -201,114 +201,19 @@ static const char repomd_xml_fini[] = "</repomd>\n";
 
 /* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
 /*@unchecked@*/ /*@observer@*/
-static const char primary_xml_qfmt[] = "\
-<package type=\"rpm\">\
-\n  <name>%{NAME:cdata}</name>\
-\n  <arch>%{ARCH:cdata}</arch>\
-\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-\n  <checksum type=\"sha\" pkgid=\"YES\">%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|</checksum>\
-\n  <summary>%{SUMMARY:cdata}</summary>\
-\n  <description>%{DESCRIPTION:cdata}</description>\
-\n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
-\n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
-\n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
-\n  <size package=\"%{PACKAGESIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
-\n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href=\"%{PACKAGEORIGIN:bncdata}\"/>\
-\n  <format>\
-%|license?{\
-\n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
-}:{\
-\n    <rpm:license/>\
-}|\
-%|vendor?{\
-\n    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\
-}:{\
-\n    <rpm:vendor/>\
-}|\
-%|group?{\
-\n    <rpm:group>%{GROUP:cdata}</rpm:group>\
-}:{\
-\n    <rpm:group/>\
-}|\
-%|buildhost?{\
-\n    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\
-}:{\
-\n    <rpm:buildhost/>\
-}|\
-%|sourcerpm?{\
-\n    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\
-}|\
-\n    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\
-%|providexmlentry?{\
-\n    <rpm:provides>\
-[\
-\n      %{providexmlentry}\
-]\
-\n    </rpm:provides>\
-}:{\
-\n    <rpm:provides/>\
-}|\
-%|requirexmlentry?{\
-\n    <rpm:requires>\
-[\
-\n      %{requirexmlentry}\
-]\
-\n    </rpm:requires>\
-}:{\
-\n    <rpm:requires/>\
-}|\
-%|conflictxmlentry?{\
-\n    <rpm:conflicts>\
-[\
-\n      %{conflictxmlentry}\
-]\
-\n    </rpm:conflicts>\
-}:{\
-\n    <rpm:conflicts/>\
-}|\
-%|obsoletexmlentry?{\
-\n    <rpm:obsoletes>\
-[\
-\n      %{obsoletexmlentry}\
-]\
-\n    </rpm:obsoletes>\
-}:{\
-\n    <rpm:obsoletes/>\
-}|\
-%|filesxmlentry1?{\
-[\
-\n    %{filesxmlentry1}\
-]\
-}|\
-\n  </format>\
-\n</package>\
-\n";
+static const char primary_xml_qfmt[] =
+#include "yum_primary_xml"
+;
 
 /*@unchecked@*/ /*@observer@*/
-static const char filelists_xml_qfmt[] = "\
-<package pkgid=\"%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
-\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-%|filesxmlentry2?{\
-[\
-\n  %{filesxmlentry2}\
-]\
-}|\
-\n</package>\
-\n";
+static const char filelists_xml_qfmt[] =
+#include "yum_filelists_xml"
+;
 
 /*@unchecked@*/ /*@observer@*/
-static const char other_xml_qfmt[] = "\
-<package pkgid=\"%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
-\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-%|changelogname?{\
-[\
-\n  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\
-]\
-}:{\
-\n  <changelog/>\
-}|\
-\n</package>\
-\n";
+static const char other_xml_qfmt[] =
+#include "yum_other_xml"
+;
 
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
@@ -437,61 +342,9 @@ static const char *other_sql_init[] = {
 /* files      3 type TEXT */
 
 /*@unchecked@*/ /*@observer@*/
-static const char primary_sql_qfmt[] = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
-,\n '%{NAME:sqlescape}'\
-, '%{ARCH:sqlescape}'\
-, '%{VERSION:sqlescape}'\
-, '%|EPOCH?{%{EPOCH}}:{0}|'\
-, '%{RELEASE:sqlescape}'\
-,\n '%{SUMMARY:sqlescape}'\
-,\n '%{DESCRIPTION:sqlescape}'\
-,\n '%|URL?{%{URL:sqlescape}}|'\
-, '%{PACKAGETIME}'\
-, '%{BUILDTIME}'\
-, '%|license?{%{LICENSE:sqlescape}}|'\
-,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
-, '%|group?{%{GROUP:sqlescape}}|'\
-,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
-, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
-,\n '%{HEADERSTARTOFF}'\
-, '%{HEADERENDOFF}'\
-, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{PACKAGESIZE}'\
-, '%{SIZE}'\
-, '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:bncdata}'\
-,\n '%{PACKAGEBASEURL:sqlescape}'\
-, 'sha'\
-);\
-%|obsoletename?{[\
-\nINSERT into obsoletes values (\
-%{obsoletesqlentry}\
-);\
-]}|\
-%|providename?{[\
-\nINSERT into provides values (\
-%{providesqlentry}\
-);\
-]}|\
-%|conflictname?{[\
-\nINSERT into conflicts values (\
-%{conflictsqlentry}\
-);\
-]}|\
-%|requirename?{[\
-\nINSERT into requires values (\
-%{requiresqlentry}\
-);\
-]}|\
-%|basenames?{[\
-\nINSERT into files values (\
-%{filessqlentry1}\
-);\
-]}|\
-";
+static const char primary_sql_qfmt[] =
+#include "yum_primary_sqlite"
+;
 
 /* packages  1 pkgKey INTEGER PRIMARY KEY */
 /* packages  2 pkgId TEXT */
@@ -500,17 +353,9 @@ INSERT into packages values (\
 /* filelist  3 type TEXT */
 
 /*@unchecked@*/ /*@observer@*/
-static const char filelists_sql_qfmt[] = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
-);\
-%|basenames?{[\
-\nINSERT into filelist values (\
-%{filessqlentry2}\
-);\
-]}|\
-";
+static const char filelists_sql_qfmt[] =
+#include "yum_filelists_sqlite"
+;
 
 /* packages  1 pkgKey INTEGER PRIMARY KEY */
 /* packages  2 pkgId TEXT */
@@ -520,22 +365,9 @@ INSERT into packages values (\
 /* changelog 4 changelog TEXT */
 
 /*@unchecked@*/ /*@observer@*/
-static const char other_sql_qfmt[] = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
-);\
-%|changelogname?{[\
-\nINSERT into changelog values (\
-'XXX'\
-, '%{CHANGELOGNAME:sqlescape}'\
-, '%{CHANGELOGTIME}'\
-, '%{CHANGELOGTEXT:sqlescape}'\
-);\
-]}:{\
-\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
-}|\
-";
+static const char other_sql_qfmt[] =
+#include "yum_other_sqlite"
+;
 
 /*@-fullinitblock@*/
 /*@unchecked@*/

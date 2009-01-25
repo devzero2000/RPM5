@@ -1,3 +1,4 @@
+"\
 INSERT into packages values (\
 '%{DBINSTANCE}'\
 , '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
@@ -50,4 +51,5 @@ INSERT into packages values (\
 \nINSERT into files values (\
 %{filessqlentry1}\
 );\
-]}|
+]}|\
+\n"

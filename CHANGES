@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmrepo: compile in queryformat strings.
+    - jbj: add doublequotes around queryformats for #include use in rpmrepo.c.
     - jbj: blueprint/use yum:{primary,filelists,other}.sqlite queryformats.
     - jbj: blueprint/use yum:{primary,filelists,other}.xml queryformats.
     - jbj: install yum:{primary,filelists,other}.xml queryformats.

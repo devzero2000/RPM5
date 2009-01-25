@@ -70,6 +70,7 @@ rpmmtree_SOURCES =	rpmmtree.c
 rpmmtree_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmrepo_SOURCES =	rpmrepo.c
+rpmrepo_CPPFLAGS =	$(AM_CPPFLAGS) -I$(top_builddir)/scripts $(CPPFLAGS)
 rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmspecdump_SOURCES =	rpmspecdump.c

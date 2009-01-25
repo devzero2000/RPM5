@@ -1,3 +1,4 @@
+"\
 <package type=\"rpm\">\
 \n  <name>%{NAME:cdata}</name>\
 \n  <arch>%{ARCH:cdata}</arch>\
@@ -77,4 +78,5 @@
 ]\
 }|\
 \n  </format>\
-\n</package>
+\n</package>\
+\n"
