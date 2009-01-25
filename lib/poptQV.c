@@ -195,18 +195,17 @@ struct poptOption rpmQVSourcePoptTable[] = {
    POPT_TABLEEND
 };
 
+#if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
+#define	POPT_READFILE_TRIMNEWLINES	1
 /**
  * Read a file into a buffer.
- * @param con		context
  * @param fn		file name
- * @retval *bp		file contents
- * @retval *nbp		no. of bytes in file contents
+ * @retval *bp		buffer (malloc'd)
+ * @retval *nbp		no. of bytes in buffer (including final NUL)
+ * @param flags		1 to trim escaped newlines
  * return		0 on success
  */
-static int poptSlurp(/*@unused@*/ poptContext con, const char * fn,
-		char ** bp, off_t * nbp)
-	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies *bp, *nbp, errno, fileSystem, internalState @*/
+static int poptReadFile(const char * fn, char ** bp, size_t * nbp, int flags)
 {
     int fdno;
     char * b = NULL;
@@ -230,36 +229,43 @@ static int poptSlurp(/*@unused@*/ poptContext con, const char * fn,
     }
     if (close(fdno) == -1)
 	goto exit;
-    if (b == NULL || nb <= 0) {
-	rc = POPT_ERROR_BADCONFIG;
+    if (b == NULL) {
+	rc = POPT_ERROR_MALLOC;
 	goto exit;
     }
     rc = 0;
 
    /* Trim out escaped newlines. */
-    for (t = b, s = b, se = b + nb; *s && s < se; s++) {
-	switch (*s) {
-	case '\\':
-	    if (s[1] == '\n') {
-		s++;
-		continue;
+/*@-bitwisesigned@*/
+    if (flags & POPT_READFILE_TRIMNEWLINES)
+/*@=bitwisesigned@*/
+    {
+	for (t = b, s = b, se = b + nb; *s && s < se; s++) {
+	    switch (*s) {
+	    case '\\':
+		if (s[1] == '\n') {
+		    s++;
+		    continue;
+		}
+		/*@fallthrough@*/
+	    default:
+		*t++ = *s;
+		/*@switchbreak@*/ break;
 	    }
-	    /*@fallthrough@*/
-	default:
-	    *t++ = *s;
-	    /*@switchbreak@*/ break;
 	}
+	*t++ = '\0';
+	nb = (off_t)(t - b);
     }
-    *t++ = '\0';
-    nb = (off_t)(t - b);
 
 exit:
     if (rc == 0) {
 	*bp = b;
-	*nbp = nb;
+	*nbp = (size_t) nb;
     } else {
+/*@-usedef@*/
 	if (b)
 	    free(b);
+/*@=usedef@*/
 	*bp = NULL;
 	*nbp = 0;
     }
@@ -267,6 +273,7 @@ exit:
     return rc;
 /*@=compdef =nullstate @*/
 }
+#endif /* !defined(POPT_READFILE_TRIMNEWLINES) */
 
 /* ========== Query specific popt args */
 
@@ -292,16 +299,17 @@ static void queryArgCallback(poptContext con,
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
 	    char * b = NULL;
-	    off_t nb = 0;
+	    size_t nb = 0;
 
 	    /* Read queryformat from file. */
 	    if (arg[0] == '/') {
 		const char * fn = arg;
 		int rc;
 
-		if ((rc = poptSlurp(con, fn, &b, &nb)) != 0)
+		rc = poptReadFile(fn, &b, &nb, POPT_READFILE_TRIMNEWLINES);
+		if (rc != 0)
 		    goto _qfexit;
-		if (b == NULL || nb <= 0)
+		if (b == NULL || nb == 0)	/* XXX can't happen */
 		    goto _qfexit;
 		/* XXX trim trailing newline(s). */
 		nb--;		/* XXX skip final NUL */
