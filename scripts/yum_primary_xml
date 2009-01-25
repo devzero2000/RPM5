@@ -35,7 +35,7 @@
 \n    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\
 }|\
 \n    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\
-%|providexmlentry?{\
+%|providename?{\
 \n    <rpm:provides>\
 [\
 \n      %{providexmlentry}\
@@ -44,7 +44,7 @@
 }:{\
 \n    <rpm:provides/>\
 }|\
-%|requirexmlentry?{\
+%|requirename?{\
 \n    <rpm:requires>\
 [\
 \n      %{requirexmlentry}\
@@ -53,7 +53,7 @@
 }:{\
 \n    <rpm:requires/>\
 }|\
-%|conflictxmlentry?{\
+%|conflictname?{\
 \n    <rpm:conflicts>\
 [\
 \n      %{conflictxmlentry}\
@@ -62,7 +62,7 @@
 }:{\
 \n    <rpm:conflicts/>\
 }|\
-%|obsoletexmlentry?{\
+%|obsoletename?{\
 \n    <rpm:obsoletes>\
 [\
 \n      %{obsoletexmlentry}\

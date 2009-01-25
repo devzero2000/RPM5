@@ -311,10 +311,12 @@ static void queryArgCallback(poptContext con,
 		    goto _qfexit;
 		if (b == NULL || nb == 0)	/* XXX can't happen */
 		    goto _qfexit;
+#ifdef	DYING	/* XXX don't muck about with queryformats. */
 		/* XXX trim trailing newline(s). */
 		nb--;		/* XXX skip final NUL */
 		while (nb > 0 && b[nb-1] == '\n')
 		    b[--nb] = '\0';
+#endif
 		arg = b;
 	    }
 
