@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: install yum:{primary,filelists,other}.xml queryformats.
     - jbj: use poptReadFile with retrofit for popt < 1.15.
     - jbj: rude & crude backing store for --queryformat templates.
     - proyvind: xzdio: accept compression level 0 - 9 (new '0' = former '1' etc.).
