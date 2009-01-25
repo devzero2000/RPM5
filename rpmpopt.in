@@ -258,61 +258,7 @@ rpm	alias --deb:md5sums --qf '\
 rpm	alias --yum:primary.xml --qf @USRLIBRPM@/qf/yum_primary_xml
 	--POPTdesc=$"display yum primary.xml markup"
 
-rpm	alias --yum:primary.sqlite --qf "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
-,\n '%{NAME:sqlescape}'\
-, '%{ARCH:sqlescape}'\
-, '%{VERSION:sqlescape}'\
-, '%|EPOCH?{%{EPOCH}}:{0}|'\
-, '%{RELEASE:sqlescape}'\
-,\n '%{SUMMARY:sqlescape}'\
-,\n '%{DESCRIPTION:sqlescape}'\
-,\n '%|URL?{%{URL:sqlescape}}|'\
-, '%{PACKAGETIME}'\
-, '%{BUILDTIME}'\
-, '%|license?{%{LICENSE:sqlescape}}|'\
-,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
-, '%|group?{%{GROUP:sqlescape}}|'\
-,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
-, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
-,\n '%{HEADERSTARTOFF}'\
-, '%{HEADERENDOFF}'\
-, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{PACKAGESIZE}'\
-, '%{SIZE}'\
-, '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:bncdata}'\
-,\n '%{PACKAGEBASEURL:sqlescape}'\
-, 'sha'\
-);\
-%|providename?{[\
-\nINSERT into provides values (\
-%{providesqlentry}\
-);\
-]}|\
-%|conflictname?{[\
-\nINSERT into conflicts values (\
-%{conflictsqlentry}\
-);\
-]}|\
-%|obsoletename?{[\
-\nINSERT into obsoletes values (\
-%{conflictsqlentry}\
-);\
-]}|\
-%|requirename?{[\
-\nINSERT into requires values (\
-%{requiresqlentry}\
-);\
-]}|\
-%|basenames?{[\
-\nINSERT into files    values (\
-%{filessqlentry1}\
-);\
-]}|\
-\n"\
+rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite
 	--POPTdesc=$"display yum primary.sqlite import"
 
 rpm	alias --yum:primary.yaml --qf '\
@@ -396,17 +342,7 @@ Package:\
 rpm	alias --yum:filelists.xml --qf @USRLIBRPM@/qf/yum_filelists_xml
 	--POPTdesc=$"display yum filelists.xml markup"
 
-rpm	alias --yum:filelists.sqlite --qf "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
-);\
-%|basenames?{[\
-\nINSERT into filelist values (\
-%{filessqlentry2}\
-);\
-]}|\
-\n" \
+rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite
 	--POPTdesc=$"display yum filelists.sqlite import"
 
 rpm	alias --yum:filelists.yaml --qf '\
@@ -429,22 +365,7 @@ Filelists:\
 rpm	alias --yum:other.xml --qf @USRLIBRPM@/qf/yum_other_xml
 	--POPTdesc=$"display yum other.xml markup"
 
-rpm	alias --yum:other.sqlite --qf "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
-);\
-%|changelogname?{[\
-\nINSERT into changelog values (\
-'XXX'\
-, '%{CHANGELOGNAME:sqlescape}'\
-, '%{CHANGELOGTIME}'\
-, '%{CHANGELOGTEXT:sqlescape}'\
-);\
-]}:{\
-\nINSERT into changelog values ('%{DBINSTANCE}', '', '', '');\
-}|\
-\n" \
+rpm	alias --yum:other.sqlite --qf @USRLIBRPM@/qf/yum_other_sqlite
 	--POPTdesc=$"display yum other.sqlite import"
 
 rpm	alias --yum:other.yaml --qf '\

@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: blueprint/use yum:{primary,filelists,other}.sqlite queryformats.
     - jbj: blueprint/use yum:{primary,filelists,other}.xml queryformats.
     - jbj: install yum:{primary,filelists,other}.xml queryformats.
     - jbj: use poptReadFile with retrofit for popt < 1.15.

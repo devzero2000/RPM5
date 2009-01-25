@@ -23,7 +23,8 @@ EXTRA_DIST = \
 	rpmsort rt-reloc-wrapper.sh symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
-	yum:filelists.xml yum:other.xml yum:primary.xml \
+	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
+	yum_filelists_xml yum_other_xml yum_primary_xml \
 	macros.perl* macros.python* \
 	macros.php* find-*.php find-php-*
 
@@ -52,7 +53,8 @@ pkglib_SCRIPTS = \
 
 pkglibqfdir =		@USRLIBRPM@/qf
 pkglibqf_DATA = \
-	yum:filelists.xml yum:other.xml yum:primary.xml
+	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
+	yum_filelists_xml yum_other_xml yum_primary_xml
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
