@@ -264,6 +264,7 @@ rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite
 rpm	alias --yum:primary.yaml --qf '\
 Package:\
 \n  Id:          %|HDRID?{%{HDRID}}:{-}|\
+\n  Idtype:      sha\
 \n  Name:        %{NAME:yaml}\
 \n  Arch:        %{ARCH:yaml}\
 \n  Version:     %{VERSION:yaml}\
@@ -271,9 +272,15 @@ Package:\
 \n  Release:     %{RELEASE:yaml}\
 \n  Summary:     %{SUMMARY:yaml}\
 \n  Description: %{DESCRIPTION:yaml}\
+\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
 \n  Url:         %|URL?{%{URL:yaml}}:{-}|\
 \n  Filetime:    %{PACKAGETIME}\
 \n  Buildtime:   %{BUILDTIME}\
+\n  Packagesize: %{PACKAGESIZE}\
+\n  Size:        %{SIZE}\
+\n  Archivesize: %{ARCHIVESIZE}\
+\n  Location:    %{PACKAGEORIGIN:yaml}\
+\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
 \n  License:     %|license?{%{LICENSE:yaml}}:{-}|\
 \n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{-}|\
 \n  Group:       %|group?{%{GROUP:yaml}}:{-}|\
@@ -281,59 +288,34 @@ Package:\
 \n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{-}|\
 \n  Hdrstart:    %{HEADERSTARTOFF}\
 \n  Hdrend:      %{HEADERENDOFF}\
-\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
-\n  Packagesize: %{PACKAGESIZE}\
-\n  Size:        %{SIZE}\
-\n  Archivesize: %{ARCHIVESIZE}\
-\n  Location:    %{PACKAGEORIGIN:yaml}\
-\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
-\n  Idtype:      sha\
-\n  Rpm:\
-%|license?{\
-\n    License: 	 %{LICENSE:yaml}\
-}|\
-%|vendor?{\
-\n    Vendor:    %{VENDOR:yaml}\
-}|\
-%|group?{\
-\n    Group:     %{GROUP:yaml}\
-}|\
-%|buildhost?{\
-\n    Buildhost: %{BUILDHOST:yaml}\
-}|\
-%|sourcerpm?{\
-\n    Sourcerpm: %{SOURCERPM:yaml}\
-}|\
-\n    Hdrstart:  %{HEADERSTARTOFF}\
-\n    Hdrend:    %{HEADERENDOFF}\
-%|providexmlentry?{\
-\n    Provides:\
+%|providename?{\
+\n  Provides:\
 [\
-\n      - %{providesqlentry}\
+\n    %{provideyamlentry}\
 ]\
 }|\
-%|requirexmlentry?{\
-\n    Requires:\
+%|requirename?{\
+\n  Requires:\
 [\
-\n      - %{requiresqlentry}\
+\n    %{requireyamlentry}\
 ]\
 }|\
-%|conflictxmlentry?{\
-\n    Conflicts:\
+%|conflictname?{\
+\n  Conflicts:\
 [\
-\n      - %{conflictsqlentry}\
+\n    %{conflictyamlentry}\
 ]\
 }|\
-%|obsoletexmlentry?{\
-\n    Obsoletes:\
+%|obsoletename?{\
+\n  Obsoletes:\
 [\
-\n      - %{obsoletesqlentry}\
+\n    %{obsoleteyamlentry}\
 ]\
 }|\
 %|filesxmlentry1?{\
-\n    Files:\
+\n  Files:\
 [\
-\n      - %{filessqlentry1}\
+\n    %{filesyamlentry1}\
 ]\
 }|\
 \n'\
@@ -348,15 +330,16 @@ rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite
 rpm	alias --yum:filelists.yaml --qf '\
 Filelists:\
 \n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Idtype:  sha\
 \n  Name:    %{NAME:yaml}\
 \n  Arch:    %{ARCH:yaml}\
 \n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
 \n  Version: %{VERSION:yaml}\
 \n  Release: %{RELEASE:yaml}\
 \n  Files:\
-%|filesxmlentry2?{\
+%|filesyamlentry2?{\
 [\
-\n    - %{filesxmlentry2}\
+\n    %{filesyamlentry2}\
 ]\
 }|\
 \n' \
@@ -371,6 +354,7 @@ rpm	alias --yum:other.sqlite --qf @USRLIBRPM@/qf/yum_other_sqlite
 rpm	alias --yum:other.yaml --qf '\
 Other:\
 \n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Idtype:  sha\
 \n  Name:    %{NAME:yaml}\
 \n  Arch:    %{ARCH:yaml}\
 \n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\

@@ -3000,6 +3000,7 @@ exit:
     RFhe->p.ptr = _free(RFhe->p.ptr);
     return rc;
 }
+
 static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
 		rpmuint32_t i)
 	/*@*/
@@ -3395,6 +3396,133 @@ static int OsqlTag(Header h, HE_t he)
     return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
 }
 
+static int PRCOyamlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    rpmTag tag = he->tag;
+    rpmTagData N = { .ptr = NULL };
+    rpmTagData EVR = { .ptr = NULL };
+    rpmTagData F = { .ptr = NULL };
+    size_t nb;
+    rpmuint32_t ac;
+    rpmuint32_t c;
+    rpmuint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int indent = 0;
+    int xx;
+
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    N.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = EVRtag;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    EVR.argv = he->p.argv;
+
+    he->tag = Ftag;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    F.ui32p = he->p.ui32p;
+
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
+	if (PRCOSkip(tag, N, EVR, F, i))
+	    continue;
+/*@=nullstate@*/
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += sizeof("- ");
+	if (*N.argv[i] == '/')
+	    nb += yamlstrlen(N.argv[i], indent);
+	else
+	    nb += strlen(N.argv[i]);
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    nb += sizeof(" >= ") - 1;
+	    nb += strlen(EVR.argv[i]);
+	}
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb + BUFSIZ);	/* XXX hack: leave slop */
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    for (i = 0; i < c; i++) {
+/*@-nullstate@*/	/* EVR.argv might be NULL */
+	if (PRCOSkip(tag, N, EVR, F, i))
+	    continue;
+/*@=nullstate@*/
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "- ");
+	if (*N.argv[i] == '/') {
+	    t = yamlstrcpy(t, N.argv[i], indent);	t += strlen(t);
+	} else
+	    t = stpcpy(t, N.argv[i]);
+/*@-readonlytrans@*/
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    static char *Fstr[] = { "?0","<",">","?3","=","<=",">=","?7" };
+	    rpmuint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    t = stpcpy( stpcpy( stpcpy(t, " "), Fstr[Fx]), " ");
+	    t = stpcpy(t, EVR.argv[i]);
+	}
+/*@=readonlytrans@*/
+	*t++ = '\0';
+    }
+    he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
+    rc = 0;
+
+exit:
+/*@-kepttrans@*/	/* N.argv may be kept. */
+    N.argv = _free(N.argv);
+/*@=kepttrans@*/
+/*@-usereleased@*/	/* EVR.argv may be dead. */
+    EVR.argv = _free(EVR.argv);
+/*@=usereleased@*/
+    F.ui32p = _free(F.ui32p);
+    return rc;
+}
+
+static int PyamlTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_PROVIDENAME;
+    return PRCOyamlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+}
+
+static int RyamlTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_REQUIRENAME;
+    return PRCOyamlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+}
+
+static int CyamlTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_CONFLICTNAME;
+    return PRCOyamlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+}
+
+static int OyamlTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_OBSOLETENAME;
+    return PRCOyamlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
 static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, rpmuint32_t i)
 	/*@*/
 {
@@ -3699,6 +3827,149 @@ static int F2sqlTag(Header h, HE_t he)
 {
     he->tag = RPMTAG_BASENAMES;
     return FDGsqlTag(h, he, 2);
+}
+
+static int FDGyamlTag(Header h, HE_t he, int lvl)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    rpmTagData BN = { .ptr = NULL };
+    rpmTagData DN = { .ptr = NULL };
+    rpmTagData DI = { .ptr = NULL };
+    rpmTagData FMODES = { .ptr = NULL };
+    rpmTagData FFLAGS = { .ptr = NULL };
+    size_t nb;
+    rpmuint32_t ac;
+    rpmuint32_t c;
+    rpmuint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int indent = 0;
+    int xx;
+
+/*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
+    he->tag = RPMTAG_BASENAMES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    BN.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = RPMTAG_DIRNAMES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    DN.argv = he->p.argv;
+
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    DI.ui32p = he->p.ui32p;
+
+    he->tag = RPMTAG_FILEMODES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    FMODES.ui16p = he->p.ui16p;
+
+    he->tag = RPMTAG_FILEFLAGS;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    FFLAGS.ui32p = he->p.ui32p;
+
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += sizeof("- ");
+	nb += yamlstrlen(DN.argv[DI.ui32p[i]], indent);
+	nb += yamlstrlen(BN.argv[i], indent);
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    nb += sizeof("") - 1;
+	else if (S_ISDIR(FMODES.ui16p[i]))
+	    nb += sizeof("/") - 1;
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb);
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    /* FIXME: Files, then dirs, finally ghosts breaks sort order.  */
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "- ");
+	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
+	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
+	t = stpcpy(t, "");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (!S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "- ");
+	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
+	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
+	t = stpcpy(t, "/");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "- ");
+	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
+	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
+	*t++ = '\0';
+    }
+
+    he->p.argv[he->c] = NULL;
+/*@=compmempass@*/
+    rc = 0;
+
+exit:
+/*@-kepttrans@*/	/* {BN,DN,DI}.argv may be kept. */
+    BN.argv = _free(BN.argv);
+/*@-usereleased@*/	/* DN.argv may be dead. */
+    DN.argv = _free(DN.argv);
+/*@=usereleased@*/
+    DI.ui32p = _free(DI.ui32p);
+/*@=kepttrans@*/
+    FMODES.ui16p = _free(FMODES.ui16p);
+/*@-usereleased@*/	/* FFLAGS.argv may be dead. */
+    FFLAGS.ui32p = _free(FFLAGS.ui32p);
+/*@=usereleased@*/
+    return rc;
+}
+
+static int F1yamlTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGyamlTag(h, he, 1);
+}
+
+static int F2yamlTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGyamlTag(h, he, 2);
 }
 
 /**
@@ -4471,6 +4742,18 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = F1xmlTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILESXMLENTRY2",
 	{ .tagFunction = F2xmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PROVIDEYAMLENTRY",
+	{ .tagFunction = PyamlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_REQUIREYAMLENTRY",
+	{ .tagFunction = RyamlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CONFLICTYAMLENTRY",
+	{ .tagFunction = CyamlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_OBSOLETEYAMLENTRY",
+	{ .tagFunction = OyamlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESYAMLENTRY1",
+	{ .tagFunction = F1yamlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESYAMLENTRY2",
+	{ .tagFunction = F2yamlTag } },
     { HEADER_EXT_TAG, "RPMTAG_PROVIDESQLENTRY",
 	{ .tagFunction = PsqlTag } },
     { HEADER_EXT_TAG, "RPMTAG_REQUIRESQLENTRY",
