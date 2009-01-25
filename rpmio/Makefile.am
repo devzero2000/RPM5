@@ -243,7 +243,7 @@ rpmcurl_SOURCES = rpmcurl.c
 rpmcurl_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmdpkg_SOURCES = rpmdpkg.c
-rpmdpkg_LDADD = $(RPMIO_LDADD_COMMON)
+rpmdpkg_LDADD = $(RPM_LDADD_COMMON)
 
 rpmgenbasedir = rpmgenbasedir.c
 rpmgenbasedir_LDADD = $(RPMIO_LDADD_COMMON)

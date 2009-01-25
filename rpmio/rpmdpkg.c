@@ -1,7 +1,16 @@
 #include "system.h"
 
 #include <rpmio.h>
+#ifdef	DYING
 #include <poptIO.h>
+#define	rpmcliInit		rpmioInit
+#define	rpmcliFini		rpmioFini
+#define	rpmcliAllPoptTable	rpmioAllPoptTable
+#
+#else
+#include <argv.h>
+#include <rpmcli.h>
+#endif
 
 #include "debug.h"
 
@@ -178,17 +187,17 @@ static struct poptOption rpmdpkgCommandsPoptTable[] = {
   { "search", 'S', POPT_ARG_STRING, NULL, 'S',
         N_("Find package(s) owning file(s)."), N_("<pattern>") },
 
-  { "assert-support-predepends", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_ASSERT_SUPPORT_PREDEPENDS,
+  { "assert-support-predepends", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_ASSERT_SUPPORT_PREDEPENDS,
         N_("?assert-support-predepends?"), NULL },
-  { "assert-working-epoch", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_ASSERT_WORKING_EPOCH,
+  { "assert-working-epoch", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_ASSERT_WORKING_EPOCH,
         N_("?assert-working-epoch?"), NULL },
-  { "assert-long-filenames", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_ASSERT_LONG_FILENAMES,
+  { "assert-long-filenames", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_ASSERT_LONG_FILENAMES,
         N_("?assert-long-filenames?"), NULL },
-  { "assert-multi-conrep", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_ASSERT_MULTI_CONREP,
+  { "assert-multi-conrep", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_ASSERT_MULTI_CONREP,
         N_("?assert-multi-conrep?"), NULL },
-  { "print-architecture", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_PRINT_ARCH,
+  { "print-architecture", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_PRINT_ARCH,
         N_("Print dpkg architecture."), NULL },
-  { "print-installation-architecture", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_PRINT_INSTALL_ARCH,
+  { "print-installation-architecture", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_DPKG_PRINT_INSTALL_ARCH,
         N_("Print dpkg installation architecture."), NULL },
   { "predep-package", '\0', POPT_ARG_NONE, NULL, POPT_DPKG_PREDEP_PACKAGE,
         N_("?predep-package?"), NULL },
@@ -318,8 +327,8 @@ static struct poptOption optionsTable[] = {
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmdpkgOptionsPoptTable, 0,
         N_("Options:"), NULL },
 
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"),
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options for all executables:"),
 	NULL },
 
   POPT_AUTOALIAS
@@ -413,7 +422,7 @@ main(int argc, char *argv[])
 	/*@modifies __assert_program_name, _rpmrepo,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
     const char ** av = NULL;
     int ac;
     int rc = 1;		/* assume failure. */
@@ -436,7 +445,7 @@ main(int argc, char *argv[])
     rc = 0;
 
 exit:
-    optCon = rpmioFini(optCon);
+    optCon = rpmcliFini(optCon);
 
     return rc;
 }
