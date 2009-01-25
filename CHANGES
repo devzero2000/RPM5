@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rude & crude backing store for --queryformat templates.
     - proyvind: xzdio: accept compression level 0 - 9 (new '0' = former '1' etc.).
     - proyvind: don't wipe out $DOCDIR when using %doc as it will wipe out any
 	files that would happen to be installed during %install.

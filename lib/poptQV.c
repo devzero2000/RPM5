@@ -195,6 +195,79 @@ struct poptOption rpmQVSourcePoptTable[] = {
    POPT_TABLEEND
 };
 
+/**
+ * Read a file into a buffer.
+ * @param con		context
+ * @param fn		file name
+ * @retval *bp		file contents
+ * @retval *nbp		no. of bytes in file contents
+ * return		0 on success
+ */
+static int poptSlurp(/*@unused@*/ poptContext con, const char * fn,
+		char ** bp, off_t * nbp)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *bp, *nbp, errno, fileSystem, internalState @*/
+{
+    int fdno;
+    char * b = NULL;
+    off_t nb = 0;
+    char * s, * t, * se;
+    int rc = POPT_ERROR_ERRNO;	/* assume failure */
+
+    fdno = open(fn, O_RDONLY);
+    if (fdno < 0)
+	goto exit;
+
+    if ((nb = lseek(fdno, 0, SEEK_END)) == (off_t)-1
+     || lseek(fdno, 0, SEEK_SET) == (off_t)-1
+     || (b = calloc(sizeof(*b), (size_t)nb + 1)) == NULL
+     || read(fdno, (char *)b, (size_t)nb) != (ssize_t)nb)
+    {
+	int oerrno = errno;
+	(void) close(fdno);
+	errno = oerrno;
+	goto exit;
+    }
+    if (close(fdno) == -1)
+	goto exit;
+    if (b == NULL || nb <= 0) {
+	rc = POPT_ERROR_BADCONFIG;
+	goto exit;
+    }
+    rc = 0;
+
+   /* Trim out escaped newlines. */
+    for (t = b, s = b, se = b + nb; *s && s < se; s++) {
+	switch (*s) {
+	case '\\':
+	    if (s[1] == '\n') {
+		s++;
+		continue;
+	    }
+	    /*@fallthrough@*/
+	default:
+	    *t++ = *s;
+	    /*@switchbreak@*/ break;
+	}
+    }
+    *t++ = '\0';
+    nb = (off_t)(t - b);
+
+exit:
+    if (rc == 0) {
+	*bp = b;
+	*nbp = nb;
+    } else {
+	if (b)
+	    free(b);
+	*bp = NULL;
+	*nbp = 0;
+    }
+/*@-compdef -nullstate @*/	/* XXX cannot annotate char ** correctly */
+    return rc;
+/*@=compdef =nullstate @*/
+}
+
 /* ========== Query specific popt args */
 
 static void queryArgCallback(poptContext con,
@@ -218,6 +291,26 @@ static void queryArgCallback(poptContext con,
     case POPT_QUERYFORMAT:
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
+	    char * b = NULL;
+	    off_t nb = 0;
+
+	    /* Read queryformat from file. */
+	    if (arg[0] == '/') {
+		const char * fn = arg;
+		int rc;
+
+		if ((rc = poptSlurp(con, fn, &b, &nb)) != 0)
+		    goto _qfexit;
+		if (b == NULL || nb <= 0)
+		    goto _qfexit;
+		/* XXX trim trailing newline(s). */
+		nb--;		/* XXX skip final NUL */
+		while (nb > 0 && b[nb-1] == '\n')
+		    b[--nb] = '\0';
+		arg = b;
+	    }
+
+	    /* Append to existing queryformat. */
 	    if (qf) {
 		size_t len = strlen(qf) + strlen(arg) + 1;
 		qf = xrealloc(qf, len);
@@ -227,6 +320,9 @@ static void queryArgCallback(poptContext con,
 		strcpy(qf, arg);
 	    }
 	    qva->qva_queryFormat = qf;
+
+	_qfexit:
+	    b = _free(b);
 	}
 	break;
 
