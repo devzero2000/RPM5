@@ -215,6 +215,21 @@ static const char other_xml_qfmt[] =
 #include "yum_other_xml"
 ;
 
+/*@unchecked@*/ /*@observer@*/
+static const char primary_yaml_qfmt[] =
+#include "wnh_primary_yaml"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char filelists_yaml_qfmt[] =
+#include "wnh_filelists_yaml"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char other_yaml_qfmt[] =
+#include "wnh_other_yaml"
+;
+
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *primary_sql_init[] = {

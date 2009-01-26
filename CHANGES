@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmrepo: compile in wnh_{primary,filelists,other}_yaml queryformats.
     - jbj: stub in deb:{Packages,Sources} queryformt templates.
     - jbj: install/use deb:control queryformat. todo++
     - jbj: install/use deb:{md5sums,preinst,postinst,prerm,postrm} queryformats.
