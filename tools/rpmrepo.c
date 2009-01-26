@@ -83,6 +83,16 @@ struct rpmrfile_s {
     const char ** sql_init;
 /*@observer@*/
     const char * sql_qfmt;
+#ifdef	NOTYET	/* XXX char **?!? */
+/*@observer@*/
+    const char ** sql_fini;
+#endif
+/*@observer@*/
+    const char * yaml_init;
+/*@observer@*/
+    const char * yaml_qfmt;
+/*@observer@*/
+    const char * yaml_fini;
 /*@relnull@*/
     FD_t fd;
 #if defined(WITH_SQLITE)
@@ -413,7 +423,13 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= primary_xml_qfmt,
 	.xml_fini= primary_xml_fini,
 	.sql_init= primary_sql_init,
-	.sql_qfmt= primary_sql_qfmt
+	.sql_qfmt= primary_sql_qfmt,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= primary_yaml_qfmt,
+	.yaml_fini= NULL
     },
     .filelists	= {
 	.type	= "filelists",
@@ -421,7 +437,13 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= filelists_xml_qfmt,
 	.xml_fini= filelists_xml_fini,
 	.sql_init= filelists_sql_init,
-	.sql_qfmt= filelists_sql_qfmt
+	.sql_qfmt= filelists_sql_qfmt,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= filelists_yaml_qfmt,
+	.yaml_fini= NULL
     },
     .other	= {
 	.type	= "other",
@@ -429,7 +451,13 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= other_xml_qfmt,
 	.xml_fini= other_xml_fini,
 	.sql_init= other_sql_init,
-	.sql_qfmt= other_sql_qfmt
+	.sql_qfmt= other_sql_qfmt,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= other_yaml_qfmt,
+	.yaml_fini= NULL
     },
     .repomd	= {
 	.type	= "repomd",
@@ -437,7 +465,13 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= NULL,
 	.xml_fini= repomd_xml_fini,
 	.sql_init= NULL,
-	.sql_qfmt= NULL
+	.sql_qfmt= NULL,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= NULL,
+	.yaml_fini= NULL
     }
 };
 /*@=fullinitblock@*/

@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmrepo: initialize ".yaml" markup, add pre/post oneshot vecctors.
     - jbj: rpmrepo: compile in deb_{Packages,Sources} queryformats.
     - jbj: rpmrepo: compile in wnh_{primary,filelists,other}_yaml queryformats.
     - jbj: stub in deb:{Packages,Sources} queryformt templates.
