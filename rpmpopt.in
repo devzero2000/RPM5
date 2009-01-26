@@ -258,119 +258,31 @@ rpm	alias --deb:md5sums --qf '\
 rpm	alias --yum:primary.xml --qf @USRLIBRPM@/qf/yum_primary_xml
 	--POPTdesc=$"display yum primary.xml markup"
 
-rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite
-	--POPTdesc=$"display yum primary.sqlite import"
-
-rpm	alias --yum:primary.yaml --qf '\
-Package:\
-\n  Id:          %|HDRID?{%{HDRID}}:{-}|\
-\n  Idtype:      sha\
-\n  Name:        %{NAME:yaml}\
-\n  Arch:        %{ARCH:yaml}\
-\n  Version:     %{VERSION:yaml}\
-\n  Epoch:       %|EPOCH?{%{EPOCH}}:{0}|\
-\n  Release:     %{RELEASE:yaml}\
-\n  Summary:     %{SUMMARY:yaml}\
-\n  Description: %{DESCRIPTION:yaml}\
-\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
-\n  Url:         %|URL?{%{URL:yaml}}:{-}|\
-\n  Filetime:    %{PACKAGETIME:date}\
-\n  Buildtime:   %{BUILDTIME:date}\
-\n  Packagesize: %{PACKAGESIZE}\
-\n  Size:        %{SIZE}\
-\n  Archivesize: %{ARCHIVESIZE}\
-\n  Location:    %{PACKAGEORIGIN:yaml}\
-\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
-\n  License:     %|license?{%{LICENSE:yaml}}:{-}|\
-\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{-}|\
-\n  Group:       %|group?{%{GROUP:yaml}}:{-}|\
-\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{-}|\
-\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{-}|\
-\n  Hdrstart:    %{HEADERSTARTOFF}\
-\n  Hdrend:      %{HEADERENDOFF}\
-%|providename?{\
-\n  Provides:\
-[\
-\n    %{provideyamlentry}\
-]\
-}|\
-%|requirename?{\
-\n  Requires:\
-[\
-\n    %{requireyamlentry}\
-]\
-}|\
-%|conflictname?{\
-\n  Conflicts:\
-[\
-\n    %{conflictyamlentry}\
-]\
-}|\
-%|obsoletename?{\
-\n  Obsoletes:\
-[\
-\n    %{obsoleteyamlentry}\
-]\
-}|\
-%|filesxmlentry1?{\
-\n  Files:\
-[\
-\n    %{filesyamlentry1}\
-]\
-}|\
-\n'\
-	--POPTdesc=$"display yum primary.yaml markup"
-
 rpm	alias --yum:filelists.xml --qf @USRLIBRPM@/qf/yum_filelists_xml
 	--POPTdesc=$"display yum filelists.xml markup"
-
-rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite
-	--POPTdesc=$"display yum filelists.sqlite import"
-
-rpm	alias --yum:filelists.yaml --qf '\
-Filelists:\
-\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
-\n  Idtype:  sha\
-\n  Name:    %{NAME:yaml}\
-\n  Arch:    %{ARCH:yaml}\
-\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
-\n  Version: %{VERSION:yaml}\
-\n  Release: %{RELEASE:yaml}\
-\n  Files:\
-%|filesyamlentry2?{\
-[\
-\n    %{filesyamlentry2}\
-]\
-}|\
-\n' \
-	--POPTdesc=$"display yum filelists.yaml markup"
 
 rpm	alias --yum:other.xml --qf @USRLIBRPM@/qf/yum_other_xml
 	--POPTdesc=$"display yum other.xml markup"
 
+#==============================================================================
+rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite
+	--POPTdesc=$"display yum primary.sqlite import"
+
+rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite
+	--POPTdesc=$"display yum filelists.sqlite import"
+
 rpm	alias --yum:other.sqlite --qf @USRLIBRPM@/qf/yum_other_sqlite
 	--POPTdesc=$"display yum other.sqlite import"
 
-rpm	alias --yum:other.yaml --qf '\
-Other:\
-\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
-\n  Idtype:  sha\
-\n  Name:    %{NAME:yaml}\
-\n  Arch:    %{ARCH:yaml}\
-\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
-\n  Version: %{VERSION:yaml}\
-\n  Release: %{RELEASE:yaml}\
-\n  Changelogs:\
-%|changelogname?{\
-[\
-\n   -\
-\n    Author: %{CHANGELOGNAME}\
-\n    Date:   %{CHANGELOGTIME:date}\
-\n%{CHANGELOGTEXT:yaml}\
-]\
-}|\
-\n' \
-	--POPTdesc=$"display yum other.yaml markup"
+#==============================================================================
+rpm	alias --wnh:primary.yaml --qf @USRLIBRPM@/qf/wnh_primary_yaml
+	--POPTdesc=$"display wnh primary.yaml markup"
+
+rpm	alias --wnh:filelists.yaml --qf @USRLIBRPM@/qf/wnh_filelists_yaml
+	--POPTdesc=$"display wnh filelists.yaml markup"
+
+rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml
+	--POPTdesc=$"display wnh other.yaml markup"
 
 #==============================================================================
 rpm	alias --triggerscripts --qf '\

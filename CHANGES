@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: install/use wnh:{primary,filelists,other}.yaml queryformats.
     - jbj: attempt --yum:other.yaml markup definition (gud enuf for now).
     - jbj: finish up yum:{primary,filelists}.yaml header extension tags.
     - jbj: rpmrepo: compile in queryformat strings.
