@@ -213,6 +213,12 @@ rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
 #\n' \
 #	--POPTdesc=$"display binary debian/control file"
 
+rpm	alias --deb:Packages --qf @USRLIBRPM@/qf/deb_Packages \
+	--POPTdesc=$"display Debian Packages file"
+
+rpm	alias --deb:Sources --qf @USRLIBRPM@/qf/deb_Sources \
+	--POPTdesc=$"display Debian Sources file"
+
 rpm	alias --deb:control --qf @USRLIBRPM@/qf/deb_control \
 	--POPTdesc=$"display binary debian/control file"
 

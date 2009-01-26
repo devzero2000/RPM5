@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: stub in deb:{Packages,Sources} queryformt templates.
     - jbj: install/use deb:control queryformat. todo++
     - jbj: install/use deb:{md5sums,preinst,postinst,prerm,postrm} queryformats.
     - jbj: install/use wnh:{primary,filelists,other}.yaml queryformats.
