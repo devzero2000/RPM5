@@ -274,8 +274,8 @@ Package:\
 \n  Description: %{DESCRIPTION:yaml}\
 \n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
 \n  Url:         %|URL?{%{URL:yaml}}:{-}|\
-\n  Filetime:    %{PACKAGETIME}\
-\n  Buildtime:   %{BUILDTIME}\
+\n  Filetime:    %{PACKAGETIME:date}\
+\n  Buildtime:   %{BUILDTIME:date}\
 \n  Packagesize: %{PACKAGESIZE}\
 \n  Size:        %{SIZE}\
 \n  Archivesize: %{ARCHIVESIZE}\
@@ -363,7 +363,10 @@ Other:\
 \n  Changelogs:\
 %|changelogname?{\
 [\
-\n    - <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\
+\n   -\
+\n    Author: %{CHANGELOGNAME}\
+\n    Date:   %{CHANGELOGTIME:date}\
+\n%{CHANGELOGTEXT:yaml}\
 ]\
 }|\
 \n' \
