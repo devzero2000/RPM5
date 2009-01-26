@@ -213,75 +213,49 @@ Package: %{NAME}\
 \n' \
 	--POPTdesc=$"display binary debian/control file"
 
-rpm	alias --deb:preinst --qf '\
-%|PREIN?{\
-%|PREINPROG?{#!%{PREINPROG})}:{#!/bin/sh}|\
-\n%{PREIN}\
-}|\
-\n' \
+rpm	alias --deb:preinst --qf @USRLIBRPM@/qf/deb_preinst \
 	--POPTdesc=$"display debian/preinst script"
 
-rpm	alias --deb:postinst --qf '\
-%|POSTIN?{\
-%|POSTINPROG?{#!%{POSTINPROG})}:{#!/bin/sh}|\
-\n%{POSTIN}\
-}|\
-\n' \
+rpm	alias --deb:postinst --qf @USRLIBRPM@/qf/deb_postinst \
 	--POPTdesc=$"display debian/postinst script"
 
-rpm	alias --deb:prerm --qf '\
-%|PREUN?{\
-%|PREUNPROG?{#!%{PREUNPROG})}:{#!/bin/sh}|\
-\n%{PREUN}\
-}|\
-\n' \
+rpm	alias --deb:prerm --qf @USRLIBRPM@/qf/deb_prerm \
 	--POPTdesc=$"display debian/prerm script"
 
-rpm	alias --deb:postrm --qf '\
-%|POSTUN?{\
-%|POSTUNPROG?{#!%{POSTUNPROG})}:{#!/bin/sh}|\
-\n%{POSTUN}\
-}|\
-\n' \
+rpm	alias --deb:postrm --qf @USRLIBRPM@/qf/deb_postrm \
 	--POPTdesc=$"display debian/postrm script"
 
-rpm	alias --deb:md5sums --qf '\
-%|FILENAMES?{\
-[\
-%{Debmd5sums}\n\
-]\
-}|\
-' \
+rpm	alias --deb:md5sums --qf @USRLIBRPM@/qf/deb_md5sums \
 	--POPTdesc=$"display debian/md5sums manifest"
 
 #==============================================================================
-rpm	alias --yum:primary.xml --qf @USRLIBRPM@/qf/yum_primary_xml
+rpm	alias --yum:primary.xml --qf @USRLIBRPM@/qf/yum_primary_xml \
 	--POPTdesc=$"display yum primary.xml markup"
 
-rpm	alias --yum:filelists.xml --qf @USRLIBRPM@/qf/yum_filelists_xml
+rpm	alias --yum:filelists.xml --qf @USRLIBRPM@/qf/yum_filelists_xml \
 	--POPTdesc=$"display yum filelists.xml markup"
 
-rpm	alias --yum:other.xml --qf @USRLIBRPM@/qf/yum_other_xml
+rpm	alias --yum:other.xml --qf @USRLIBRPM@/qf/yum_other_xml \
 	--POPTdesc=$"display yum other.xml markup"
 
 #==============================================================================
-rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite
+rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite \
 	--POPTdesc=$"display yum primary.sqlite import"
 
-rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite
+rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite \
 	--POPTdesc=$"display yum filelists.sqlite import"
 
-rpm	alias --yum:other.sqlite --qf @USRLIBRPM@/qf/yum_other_sqlite
+rpm	alias --yum:other.sqlite --qf @USRLIBRPM@/qf/yum_other_sqlite \
 	--POPTdesc=$"display yum other.sqlite import"
 
 #==============================================================================
-rpm	alias --wnh:primary.yaml --qf @USRLIBRPM@/qf/wnh_primary_yaml
+rpm	alias --wnh:primary.yaml --qf @USRLIBRPM@/qf/wnh_primary_yaml \
 	--POPTdesc=$"display wnh primary.yaml markup"
 
-rpm	alias --wnh:filelists.yaml --qf @USRLIBRPM@/qf/wnh_filelists_yaml
+rpm	alias --wnh:filelists.yaml --qf @USRLIBRPM@/qf/wnh_filelists_yaml \
 	--POPTdesc=$"display wnh filelists.yaml markup"
 
-rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml
+rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml \
 	--POPTdesc=$"display wnh other.yaml markup"
 
 #==============================================================================
