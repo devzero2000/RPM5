@@ -2264,6 +2264,25 @@ static rpmuint32_t _autobits = 0xffffffff;
 #define	isAuto(_x)	(1)
 #endif
 
+/*@unchecked@*/
+static int slashDepth = 1;	/* #slashes pemitted in parentdir deps. */
+
+static int countSlashes(const char * dn)
+	/*@*/
+{
+    int nslashes = 0;
+    int c;
+
+    while ((c = (int)*dn++) != 0) {
+	switch (c) {
+	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
+	case '/':	nslashes++;	/*@switchbreak@*/break;
+	}
+    }
+
+    return nslashes;
+}
+
 int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
@@ -2428,13 +2447,16 @@ int rpmtsOrder(rpmts ts)
 	qi = rpmtsiFree(qi);
       }
 
-      if (_autobits != 0xffffffff)
       {
 
 	/* Order by requiring parent directories pre-requsites. */
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
+
+	    /* XXX Attempt to avoid loops by filtering out deep paths. */
+	    if (countSlashes(rpmdsN(requires)) > slashDepth)
+		continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, requires);

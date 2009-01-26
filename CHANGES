@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmtsOrder: enable parentdir/linkto ordering relations.
     - jbj: rpmrepo: initialize Packages/Sources markup.
     - jbj: rpmrepo: initialize ".yaml" markup, add pre/post oneshot vectors.
     - jbj: rpmrepo: compile in deb_{Packages,Sources} queryformats.
