@@ -230,6 +230,16 @@ static const char other_yaml_qfmt[] =
 #include "wnh_other_yaml"
 ;
 
+/*@unchecked@*/ /*@observer@*/
+static const char deb_Packages[] =
+#include "deb_Packages"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char deb_Sources[] =
+#include "deb_Sources"
+;
+
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *primary_sql_init[] = {
