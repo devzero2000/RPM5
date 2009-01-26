@@ -93,6 +93,18 @@ struct rpmrfile_s {
     const char * yaml_qfmt;
 /*@observer@*/
     const char * yaml_fini;
+/*@observer@*/
+    const char * Packages_init;
+/*@observer@*/
+    const char * Packages_qfmt;
+/*@observer@*/
+    const char * Packages_fini;
+/*@observer@*/
+    const char * Sources_init;
+/*@observer@*/
+    const char * Sources_qfmt;
+/*@observer@*/
+    const char * Sources_fini;
 /*@relnull@*/
     FD_t fd;
 #if defined(WITH_SQLITE)
@@ -241,12 +253,12 @@ static const char other_yaml_qfmt[] =
 ;
 
 /*@unchecked@*/ /*@observer@*/
-static const char deb_Packages[] =
+static const char Packages_qfmt[] =
 #include "deb_Packages"
 ;
 
 /*@unchecked@*/ /*@observer@*/
-static const char deb_Sources[] =
+static const char Sources_qfmt[] =
 #include "deb_Sources"
 ;
 
@@ -429,7 +441,13 @@ static struct rpmrepo_s __rpmrepo = {
 #endif
 	.yaml_init= NULL,
 	.yaml_qfmt= primary_yaml_qfmt,
-	.yaml_fini= NULL
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= NULL,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= NULL,
+	.Sources_fini= NULL
     },
     .filelists	= {
 	.type	= "filelists",
@@ -443,7 +461,13 @@ static struct rpmrepo_s __rpmrepo = {
 #endif
 	.yaml_init= NULL,
 	.yaml_qfmt= filelists_yaml_qfmt,
-	.yaml_fini= NULL
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= NULL,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= NULL,
+	.Sources_fini= NULL
     },
     .other	= {
 	.type	= "other",
@@ -457,7 +481,13 @@ static struct rpmrepo_s __rpmrepo = {
 #endif
 	.yaml_init= NULL,
 	.yaml_qfmt= other_yaml_qfmt,
-	.yaml_fini= NULL
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= NULL,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= NULL,
+	.Sources_fini= NULL
     },
     .repomd	= {
 	.type	= "repomd",
@@ -471,7 +501,13 @@ static struct rpmrepo_s __rpmrepo = {
 #endif
 	.yaml_init= NULL,
 	.yaml_qfmt= NULL,
-	.yaml_fini= NULL
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= Packages_qfmt,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= Sources_qfmt,
+	.Sources_fini= NULL
     }
 };
 /*@=fullinitblock@*/
