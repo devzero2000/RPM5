@@ -167,50 +167,53 @@ rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
 #\n'
 
 #==============================================================================
-rpm	alias --deb:control --qf '\
-Package: %{NAME}\
-\nVersion: %|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}\
-\nSection: %{GROUP}\
-%|Priority?{\
-\nPriority: %{Priority}\
-}:{\
-\nPriority: standard\
-}|\
-\nArchitecture: %{ARCH:strsub(noarch,all,src,source)}\
-%|Essential?{\
-\nEssential: %{Essential}\
-}|\
-%|REQUIRENAME?{\
-\nDepends:[ %{Debdepends}]\
-}|\
-%|Predepends?{\
-\nPre-Depends:[ %{Predepends}]\
-}|\
-%|Recommends?{\
-\nRecommends:[ %{Recommends}]\
-}|\
-%|Suggests?{\
-\nSuggests:[ %{Suggests}]\
-}|\
-%|Enhances?{\
-\nEnhances:[ %{Enhances}]\
-}|\
-%|Breaks?{\
-\nBreaks:[ %{Breaks}]\
-}|\
-%|CONFLICTNAME?{\
-\nConflicts:[ %{Debconflicts}]\
-}|\
-\nInstalled-Size: %{SIZE:rpn(1023,+,1024,/)}\
-%|PACKAGER?{\
-\nMaintainer: %{PACKAGER}\
-}|\
-\nDescription: %{SUMMARY}\
-\n%{DESCRIPTION:strsub(^, )}\
-%|URL?{\
-\nHomepage: %{URL}\
-}|\
-\n' \
+#rpm	alias --deb:control --qf '\
+#Package: %{NAME}\
+#\nVersion: %|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}\
+#\nSection: %{GROUP}\
+#%|Priority?{\
+#\nPriority: %{Priority}\
+#}:{\
+#\nPriority: standard\
+#}|\
+#\nArchitecture: %{ARCH:strsub(noarch,all,src,source)}\
+#%|Essential?{\
+#\nEssential: %{Essential}\
+#}|\
+#%|REQUIRENAME?{\
+#\nDepends:[ %{Debdepends}]\
+#}|\
+#%|Predepends?{\
+#\nPre-Depends:[ %{Predepends}]\
+#}|\
+#%|Recommends?{\
+#\nRecommends:[ %{Recommends}]\
+#}|\
+#%|Suggests?{\
+#\nSuggests:[ %{Suggests}]\
+#}|\
+#%|Enhances?{\
+#\nEnhances:[ %{Enhances}]\
+#}|\
+#%|Breaks?{\
+#\nBreaks:[ %{Breaks}]\
+#}|\
+#%|CONFLICTNAME?{\
+#\nConflicts:[ %{Debconflicts}]\
+#}|\
+#\nInstalled-Size: %{SIZE:rpn(1023,+,1024,/)}\
+#%|PACKAGER?{\
+#\nMaintainer: %{PACKAGER}\
+#}|\
+#\nDescription: %{SUMMARY}\
+#\n%{DESCRIPTION:strsub(^, )}\
+#%|URL?{\
+#\nHomepage: %{URL}\
+#}|\
+#\n' \
+#	--POPTdesc=$"display binary debian/control file"
+
+rpm	alias --deb:control --qf @USRLIBRPM@/qf/deb_control \
 	--POPTdesc=$"display binary debian/control file"
 
 rpm	alias --deb:preinst --qf @USRLIBRPM@/qf/deb_preinst \

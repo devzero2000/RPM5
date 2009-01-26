@@ -8,7 +8,7 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	brp-implant-ident-static brp-java-repack-jars \
 	check-files cross-build \
-	deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
+	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.ksyms find-requires.ksyms kmodtool \
@@ -56,7 +56,7 @@ pkglib_SCRIPTS = \
 
 pkglibqfdir =		@USRLIBRPM@/qf
 pkglibqf_DATA = \
-	deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
+	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml

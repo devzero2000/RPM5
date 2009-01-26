@@ -1,8 +1,7 @@
 "\
 %|FILENAMES?{\
 [\
-\n%{Debmd5sums}\
+%{Debmd5sums}\n\
 ]\
-\n\
 }|\
 "
