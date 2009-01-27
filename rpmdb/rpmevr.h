@@ -80,6 +80,7 @@ typedef enum evrFlags_e rpmsenseFlags;
  * An EVR parsing container.
  */
 struct EVR_s {
+/*@owned@*/
     const char * str;		/*!< EVR storage */
 #ifndef	DYING
     unsigned long Elong;	/*!< E converted to integer. */
@@ -124,11 +125,11 @@ struct EVR_s {
 
 /** \ingroup rpmds
  * Create a new EVR container.
- * @param flags		EVR inequality flags
+ * @param Flags		EVR inequality flags
  * @param initialize	Should empty defaults be initialized?
  * @return		initialized EVR container
  */
-EVR_t rpmEVRnew(rpmuint32_t flags, int initialize)
+EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
         /*@*/;
 
 /** \ingroup rpmtd

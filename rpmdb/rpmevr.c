@@ -26,10 +26,12 @@ EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
     EVR_t evr = xcalloc(1, sizeof(*evr));
     evr->Flags = Flags;
     if (initialize) {
+/*@-readonlytrans @*/
 	evr->F[RPMEVR_E] = "0";
 	evr->F[RPMEVR_V] = "";
 	evr->F[RPMEVR_R] = "";
 	evr->F[RPMEVR_D] = "";
+/*@=readonlytrans @*/
     }
     return evr;
 }
@@ -78,6 +80,8 @@ int rpmEVRcmp(const char * a, const char * b)
     const char * ae = NULL, * be = NULL;
     int rc = 0;		/* assume equal */
 
+assert(a != NULL);
+assert(b != NULL);
     /* Compare version strings segment by segment. */
     for (; *a && *b && rc == 0; a = ae, b = be) {
 
@@ -135,14 +139,15 @@ int rpmEVRcmp(const char * a, const char * b)
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 static const char * _evr_tuple_match =
 	"^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
 static const char * evr_tuple_match = NULL;
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@refcounted@*/ /*@null@*/
 static miRE evr_tuple_mire = NULL;
 
 static miRE rpmEVRmire(void)
 	/*@*/
 {
+/*@-globs -internalglobs -mods @*/
     if (evr_tuple_mire == NULL) {
 	int xx;
 	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
@@ -154,8 +159,11 @@ static miRE rpmEVRmire(void)
 	xx = mireRegcomp(evr_tuple_mire, evr_tuple_match);
 
     }
+/*@=globs =internalglobs =mods @*/
 assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
+/*@-retalias@*/
     return evr_tuple_mire;
+/*@=retalias@*/
 }
 
 int rpmEVRparse(const char * evrstr, EVR_t evr)
@@ -185,7 +193,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 
 	switch (i/2) {
 	default:
-	case 0:	continue;	/*@notreached@*/ break;
+	case 0:	continue;	/*@notreached@*/ /*@switchbreak@*/ break;
 	case 1:	ix = RPMEVR_E;	/*@switchbreak@*/break;
 	case 2:	ix = RPMEVR_V;	/*@switchbreak@*/break;
 	case 3:	ix = RPMEVR_R;	/*@switchbreak@*/break;
@@ -221,7 +229,7 @@ static int compare_values(const char *a, const char *b)
     return rpmvercmp(a, b);
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
 static const char * evr_tuple_order = NULL;
 
 /**
@@ -232,11 +240,13 @@ static const char * evr_tuple_order = NULL;
 static const char * rpmEVRorder(void)
 	/*@*/
 {
+/*@-globs -internalglobs -mods @*/
     if (evr_tuple_order == NULL) {
 	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
 	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
 	    evr_tuple_order = xstrdup("EVR");
     }
+/*@=globs =internalglobs =mods @*/
 assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
     return evr_tuple_order;
 }
@@ -255,10 +265,10 @@ assert(b->F[RPMEVR_V] != NULL);
 assert(b->F[RPMEVR_R] != NULL);
 assert(b->F[RPMEVR_D] != NULL);
 
-    for (s = rpmEVRorder(); *s; s++) {
+    for (s = rpmEVRorder(); *s != '\0'; s++) {
 	int ix;
 	switch ((int)*s) {
-	default:	continue;	/*@notreached@*/ break;
+	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
 	case 'E':	ix = RPMEVR_E;	/*@switchbreak@*/break;
 	case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
 	case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
@@ -279,6 +289,7 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     int result;
 
     /* XXX HACK: postpone committing to single "missing" value for now. */
+/*@-mods -readonlytrans @*/
     if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
     if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
     if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
@@ -287,6 +298,7 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
     if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
     if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
+/*@=mods =readonlytrans @*/
     sense = rpmEVRcompare(a, b);
 
     /* Detect overlap of {A,B} range. */
@@ -363,9 +375,9 @@ int rpmVersionCompare(Header A, Header B)
     int rc = 0;
     int xx;
 
-    for (s = rpmEVRorder(); *s; s++) {
+    for (s = rpmEVRorder(); *s != '\0'; s++) {
 	switch ((int)*s) {
-	default:	continue;	/*@notreached@*/ break;
+	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
 	case 'E':
 	    Ahe->tag = RPMTAG_EPOCH;
 	    xx = headerGet(A, Ahe, 0);

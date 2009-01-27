@@ -211,7 +211,6 @@ extern "C" {
  * @param ctx		digest context
  * @return		digest hash algorithm identifier
  */
-/*@observer@*/
 pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
 	/*@*/;
 
