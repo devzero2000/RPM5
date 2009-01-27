@@ -3595,8 +3595,12 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
 	nb += xmlstrlen(BN.argv[i]);
 	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
 	    nb += sizeof(" type=\"ghost\"") - 1;
-	else if (S_ISDIR(FMODES.ui16p[i]))
+	else if (S_ISDIR(FMODES.ui16p[i])) {
 	    nb += sizeof(" type=\"dir\"") - 1;
+#ifdef	NOTYET
+	    nb += sizeof("/") - 1;
+#endif
+	}
     }
 
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -3631,6 +3635,11 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
 	t = stpcpy(t, "<file type=\"dir\">");
 	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
 	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+#ifdef	NOTYET
+	/* Append the pesky trailing / to directories. */
+	if (t[-1] != '/')
+	    t = stpcpy(t, "/");
+#endif
 	t = stpcpy(t, "</file>");
 	*t++ = '\0';
     }
@@ -3740,9 +3749,12 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	nb += strlen(BN.argv[i]);
 	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
 	    nb += sizeof("ghost") - 1;
-	else if (S_ISDIR(FMODES.ui16p[i]))
+	else if (S_ISDIR(FMODES.ui16p[i])) {
 	    nb += sizeof("dir") - 1;
-	else
+#ifdef	NOTYET
+	    nb += sizeof("/") - 1;
+#endif
+	} else
 	    nb += sizeof("file") - 1;
     }
 
@@ -3778,6 +3790,11 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
+#ifdef	NOTYET
+	/* Append the pesky trailing / to directories. */
+	if (t[-1] != '/')
+	    t = stpcpy(t, "/");
+#endif
 	t = stpcpy(t, "', 'dir'");
 	*t++ = '\0';
     }
@@ -3922,7 +3939,9 @@ static int FDGyamlTag(Header h, HE_t he, int lvl)
 	t = stpcpy(t, "- ");
 	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
 	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
-	t = stpcpy(t, "/");
+	/* Append the pesky trailing / to directories. */
+	if (t[-1] != '/')
+	    t = stpcpy(t, "/");
 	*t++ = '\0';
     }
     for (i = 0; i < c; i++) {
