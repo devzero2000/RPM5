@@ -110,6 +110,7 @@ LIBRPM_0
     _rpmds_nopromote;
     rpmdsNoPromote;
     rpmdsNotify;
+    rpmdsNSType;
     rpmdsNVRMatchesDep;
     rpmdsPipe;
     rpmdsProblem;
