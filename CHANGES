@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: add %mips & %mipsx macros for mips archictecture.
     - jbj: add rpmdsNSType() to -lrpm loader map.
     - jbj: rpmtsOrder: enable parentdir/linkto ordering relations.
     - jbj: rpmrepo: initialize Packages/Sources markup.
