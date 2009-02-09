@@ -75,6 +75,7 @@ LIBRPMDB_0
     headerSetOrigin;
     headerSizeof;
     headerSprintf;
+    headerUnlink;
     headerUnload;
     headerVerifyInfo;
     hGetColor;
