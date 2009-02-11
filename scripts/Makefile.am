@@ -2,6 +2,9 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+HELPERS = \
+	makeshlibs
+
 EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
@@ -30,7 +33,7 @@ EXTRA_DIST = \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml \
 	macros.perl* macros.python* \
-	macros.php* find-*.php find-php-*
+	macros.php* find-*.php find-php-* ${HELPERS}
 
 all:
 
@@ -54,6 +57,9 @@ pkglib_SCRIPTS = \
 	rpm.daily rpm.log rpm.xinetd \
 	tgpg u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
+
+pkglibhelperdir =	@USRLIBRPM@/helpers
+pkglibhelper_SCRIPTS = 	${HELPERS}
 
 pkglibqfdir =		@USRLIBRPM@/qf
 pkglibqf_DATA = \

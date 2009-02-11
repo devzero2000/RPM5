@@ -312,7 +312,9 @@ package or when debugging this package.\
 
 #	The PATH put into the environment before running %pre/%post et al.
 #
-%_install_script_path	/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
+%_install_helpers %{rpmhome}/helpers
+%_helperpath	%{?_install_helpers:%{_install_helpers}:}
+%_install_script_path	%{_helperpath}/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
 
 #	A colon separated list of desired locales to be installed;
 #	"all" means install all locale specific files.
