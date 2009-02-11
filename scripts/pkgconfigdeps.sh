@@ -23,7 +23,11 @@ case $1 in
 	$pkgconfig --print-provides "$filename" 2> /dev/null | while read n r v ; do
 	    # We have a dependency.  Make a note that we need the pkgconfig
 	    # tool for this package.
-	    echo "pkgconfig($n)" "$r" "$v"
+	    if  [ -n "$r" ] && [ -n "$v" ]; then
+		echo "pkgconfig($n)" "$r" "$v"
+	    else
+		echo "pkgconfig($n)"
+	    fi
 	done
 	;;
     esac
@@ -36,7 +40,12 @@ case $1 in
 	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
 	    i="`expr $i + 1`"
 	    [ $i -eq 1 ] && echo "pkgconfig"
-	    echo "pkgconfig($n)" "$r" "$v"
+	    [ -n "$n" ] || continue
+	    if  [ -n "$r" ] && [ -n "$v" ]; then
+		echo "pkgconfig($n)" "$r" "$v"
+	    else
+		echo "pkgconfig($n)"
+	    fi
 	done
     esac
     done
