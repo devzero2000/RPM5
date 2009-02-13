@@ -21,10 +21,11 @@ case $1 in
 	PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	export PKG_CONFIG_PATH
 	$pkgconfig --print-provides "$filename" 2> /dev/null | while read n r v ; do
+	    [ -n "$n" ] || continue
 	    # We have a dependency.  Make a note that we need the pkgconfig
 	    # tool for this package.
 	    if  [ -n "$r" ] && [ -n "$v" ]; then
-		echo "pkgconfig($n)" "$r" "$v"
+		echo "pkgconfig($n) $r $v"
 	    else
 		echo "pkgconfig($n)"
 	    fi
@@ -34,19 +35,25 @@ case $1 in
     done
     ;;
 -R|--requires)
+    oneshot="pkgconfig"
     while read filename ; do
     case "${filename}" in
     *.pc)
+	[ -n "$oneshot" ] && echo "$oneshot"; oneshot=""
+	# Query the dependencies of the package.
+	DIR=`dirname ${filename}`
+	PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
+	export PKG_CONFIG_PATH
 	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
-	    i="`expr $i + 1`"
-	    [ $i -eq 1 ] && echo "pkgconfig"
 	    [ -n "$n" ] || continue
 	    if  [ -n "$r" ] && [ -n "$v" ]; then
-		echo "pkgconfig($n)" "$r" "$v"
+		echo "pkgconfig($n) $r $v"
 	    else
 		echo "pkgconfig($n)"
 	    fi
+	    oneshot=""
 	done
+	;;
     esac
     done
     ;;
