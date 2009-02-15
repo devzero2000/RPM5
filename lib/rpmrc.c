@@ -8,6 +8,10 @@
 #define __power_pc() 0
 #endif
 
+#if defined(HAVE_CPUINFO_H)
+#include <cpuinfo.h>
+#endif
+
 #define	_RPMIOB_INTERNAL	/* XXX for rpmiobSlurp */
 #include <rpmio.h>
 #include <rpmcb.h>
@@ -498,6 +502,92 @@ exit:
 }
 /*@=onlytrans@*/
 
+#if defined(HAVE_CPUINFO_H)
+static rpmRC rpmCpuinfo(void)
+{
+    rpmRC rc = RPMRC_FAIL;
+    static struct utsname un;    
+    const char *cpu;
+    miRE mi_re = NULL;
+    int mi_nre = 0;
+    int xx;
+    CVOG_t cvog = NULL;
+    uname(&un);
+    cpuinfo_t *cip = cpuinfo_new();
+
+    xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
+
+#if defined(__i386__) || defined(__x86_64__)
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "i386", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_AC))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "i486", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_TSC))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "i586", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_get_vendor(cip) == CPUINFO_VENDOR_NSC)
+	xx = mireAppend(RPMMIRE_REGEX, 0, "geode", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_CMOV))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "i686", NULL, &mi_re, &mi_nre);
+	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_MMX))
+	    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium2", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_get_vendor(cip) == CPUINFO_VENDOR_AMD && cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW_PLUS)
+	xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE2))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "x86_64") == 0)
+	xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
+#endif
+
+#if defined(__powerpc__)
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_PPC))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc", NULL, &mi_re, &mi_nre);
+	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "ppc64") == 0)
+	    xx = mireAppend(RPMMIRE_REGEX, 0, "ppc64", NULL, &mi_re, &mi_nre);
+#endif
+
+#if defined(__ia64__)
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_IA64))
+	xx = mireAppend(RPMMIRE_REGEX, 0, "ia64", NULL, &mi_re, &mi_nre);
+#endif
+    
+#if defined(__mips__)
+#if defined(__MIPSEL__)
+#define mips32 "mipsel"
+#define mips64 "mips64el"
+#elif define(__MIPSEB__)
+#define mips32 "mips"
+#define mips64 "mips64"
+#endif
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_MIPS)) {
+	xx = mireAppend(RPMMIRE_REGEX, 0, mips32, NULL, &mi_re, &mi_nre);
+	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "mips64") == 0)
+	    xx = mireAppend(RPMMIRE_REGEX, 0, mips64, NULL, &mi_re, &mi_nre);
+#endif
+
+    cpuinfo_destroy(cip);
+
+    cpu = mi_re[mi_nre-1].pattern;
+    if(cpu != NULL)
+    {
+	if (!parseCVOG(cpu, &cvog) && cvog != NULL) {
+	    addMacro(NULL, "_host_cpu", NULL, cvog->cpu, -1);
+	    addMacro(NULL, "_host_vendor", NULL, cvog->vendor, -1);
+	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
+	}
+	rc = RPMRC_OK;
+	if (rc == RPMRC_OK) {
+	    platpat = mireFreeAll(platpat, nplatpat);
+	    platpat = mi_re;
+	    nplatpat = mi_nre;
+	}
+
+    }
+    return rc;
+}
+#endif
+
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
 {
@@ -602,6 +692,8 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (cp == NULL || cp[0] == '\0')
 	    cp = _platform;
 	if (rpmPlatform(cp) == RPMRC_OK) {
+#elif defined(HAVE_CPUINFO_H)
+	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK) {
 #else
 	if (rpmPlatform(_platform) == RPMRC_OK) {
 #endif

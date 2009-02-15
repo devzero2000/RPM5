@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - proyvind: add initial support for detecting automatically detecting
+	architecture through libcpuinfo.
     - jbj: stub-in /usr/lib/rpm/helpers/makeshlibs proof-of-concept.
     - proyvind: add %mips & %mipsx macros for mips archictecture.
     - jbj: add rpmdsNSType() to -lrpm loader map.
