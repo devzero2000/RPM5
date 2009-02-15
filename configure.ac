@@ -998,14 +998,21 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [], [])
 
+# --with-xz option was formerly known as --with-lzma
+if test ".${with_xz+set}" != .set; then
+  if test "${with_lzma+set}" = set; then
+    with_xz=$with_lzma
+  fi
+fi
+
 dnl # libLZMA
-WITH_LZMA_INTERNAL=false
+WITH_XZ_INTERNAL=false
 RPM_CHECK_LIB(
-    [libLZMA], [lzma],
+    [XZ libLZMA], [xz],
     [lzma], [lzma_auto_decoder], [lzma.h],
-    [no,external:internal:none], [lzma:src/liblzma/api:src/liblzma],
+    [no,external:internal:none], [xz:src/liblzma/api:src/liblzma],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-          WITH_LZMA_INTERNAL=true
+          WITH_XZ_INTERNAL=true
           AC_DEFINE(HAVE_LZMA_H, 1, [Define to 1 if you have <lzma.h>])
       fi
     ], [])

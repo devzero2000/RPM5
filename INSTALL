@@ -38,7 +38,7 @@ SQLite      [1] optional  3.3     3.6.3   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
-LZMA Utils  [3] optional  4.42.2  4.999.3 http://tukaani.org/lzma/
+XZ Utils    [3] optional  4.999.3 4.999.8 http://tukaani.org/xz/
 File/magic  [4] optional  4.0     4.26    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
@@ -63,8 +63,8 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
                Building RPM against stock external Lua not recommended
                as it reduces its RPM-specific functionality.
 
-[3] lzma:      Modified LZMA Utils copy bundled with RPM.
-               Building RPM against stock external LZMA currently still not recommended.
+[3] xz:        Modified XZ Utils copy bundled with RPM.
+               Building RPM against stock external XZ currently still not recommended.
 
 [4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against stock external File/magic supported, too.
