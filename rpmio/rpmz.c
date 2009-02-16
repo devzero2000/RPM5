@@ -80,9 +80,15 @@ static size_t filters_count = 0;
 static const char *stdin_filename = "(stdin)";
 
 /*@unchecked@*/
-static int opt_memory;
-/*@unchecked@*/
 static int opt_threads;
+#ifdef	NOTYET
+/*@unchecked@*/
+static rpmuint64_t memlimit_encoder = 0;
+/*@unchecked@*/
+static rpmuint64_t memlimit_decoder = 0;
+#endif
+/*@unchecked@*/
+static rpmuint64_t memlimit_custom = 0;
 
 /*@unchecked@*/
 static size_t preset_number = 6;
@@ -575,6 +581,30 @@ static void rpmzArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case 'M':
+    {	char * end = NULL;
+	memlimit_custom = (rpmuint64_t) strtoll(arg, &end, 0);
+	if (end == NULL || *end == '\0')
+	    break;
+	if (!strcmp(end, "k") || !strcmp(end, "kB"))
+	    memlimit_custom *= 1000;
+	else if (!strcmp(end, "M") || !strcmp(end, "MB"))
+	    memlimit_custom *= 1000 * 1000;
+	else if (!strcmp(end, "G") || !strcmp(end, "GB"))
+	    memlimit_custom *= 1000 * 1000 * 1000;
+	else if (!strcmp(end, "Ki") || !strcmp(end, "KiB"))
+	    memlimit_custom *= 1024;
+	else if (!strcmp(end, "Mi") || !strcmp(end, "MiB"))
+	    memlimit_custom *= 1024 * 1024;
+	else if (!strcmp(end, "Gi") || !strcmp(end, "GiB"))
+	    memlimit_custom *= 1024 * 1024 * 1024;
+	else {
+	    fprintf(stderr, _("%s: Invalid memory scaling suffix \"%s\"\n"),
+		__progname, arg);
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
+	    /*@notreached@*/
+	}
+    }	break;
     case 'C':
 	if (!strcmp(arg, "none"))
 	    opt_check = LZMA_CHECK_NONE;
@@ -717,7 +747,7 @@ static struct poptOption optionsTable[] = {
 	N_("file FORMAT {auto|xz|lzma|alone|gzip|gz|raw}"), N_("FORMAT") },
   { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
 	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
-  { "memory", 'M', POPT_ARG_INT,		&opt_memory,  0,
+  { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
 	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
   { "threads", 'T', POPT_ARG_INT,		&opt_threads, 0,
 	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
@@ -765,7 +795,7 @@ static struct poptOption optionsTable[] = {
 "                        depth=NUM    match finder cycles; 0=automatic (default)\n"
 #endif
   { "lzma1", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA1,
-	N_("set lzma filter"), N_("OPTS") },
+	N_("set lzma1 filter"), N_("OPTS") },
   { "lzma2", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA2,
 	N_("set lzma2 filter"), N_("OPTS") },
 
