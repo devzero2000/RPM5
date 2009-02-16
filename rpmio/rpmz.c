@@ -35,16 +35,16 @@ enum tool_mode {
 /*@unchecked@*/
 static enum tool_mode opt_mode = MODE_COMPRESS;
 
-enum header_type {
-        HEADER_AUTO,
-        HEADER_NATIVE,
-        HEADER_SINGLE,
-        HEADER_MULTI,
-        HEADER_ALONE,
-        // HEADER_GZIP,
+// NOTE: The order of these is significant in suffix.c.
+enum format_type {
+	FORMAT_AUTO,
+	FORMAT_XZ,
+	FORMAT_LZMA,
+	FORMAT_GZIP,
+	FORMAT_RAW,
 };
 /*@unchecked@*/
-static enum header_type opt_header = HEADER_AUTO;
+static enum format_type opt_format = FORMAT_AUTO;
 
 /*@unchecked@*/
 static char *opt_suffix = NULL;
@@ -74,7 +74,6 @@ static lzma_filter filters[LZMA_FILTERS_MAX + 1];
 /*@unchecked@*/
 static size_t filters_count = 0;
 
-
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
 /*@unchecked@*/
@@ -86,7 +85,7 @@ static int opt_memory;
 static int opt_threads;
 
 /*@unchecked@*/
-static size_t preset_number = 7;
+static size_t preset_number = 6;
 /*@unchecked@*/
 static size_t filter_count = 0;
 
@@ -594,17 +593,17 @@ static void rpmzArgCallback(poptContext con,
 	break;
     case 'F':
 	if (!strcmp(arg, "auto"))
-	    opt_header = 0;
-	else if (!strcmp(arg, "native"))
-	    opt_header = 1;
-	else if (!strcmp(arg, "single"))
-	    opt_header = 2;
-	else if (!strcmp(arg, "multi"))
-	    opt_header = 3;
+	    opt_format = FORMAT_AUTO;
+	else if (!strcmp(arg, "xz"))
+	    opt_format = FORMAT_XZ;
+	else if (!strcmp(arg, "lzma"))
+	    opt_format = FORMAT_LZMA;
 	else if (!strcmp(arg, "alone"))
-	    opt_header = 4;
-	else if (!strcmp(arg, "gzip"))
-	    opt_header = 5;
+	    opt_format = FORMAT_LZMA;
+	else if (!strcmp(arg, "gzip") || !strcmp(arg, "gz"))
+	    opt_format = FORMAT_GZIP;
+	else if (!strcmp(arg, "raw"))
+	    opt_format = FORMAT_RAW;
 	else {
 	    fprintf(stderr, _("%s: Unknown file format type \"%s\"\n"),
 		__progname, arg);
@@ -705,16 +704,34 @@ static struct poptOption optionsTable[] = {
 	N_("write to standard output and don't delete input files"), NULL },
   { "suffix", 'S', POPT_ARG_STRING,		&opt_suffix, 0,
 	N_("use suffix `.SUF' on compressed files instead"), N_(".SUF") },
-  { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
-	N_("file FORMAT {auto|native|single|multi|alone|gzip}"), N_("FORMAT") },
+  /* XXX unimplemented */
+  { "recursive", 'r', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &opt_recursive, 1,
+	N_("?recursive?"), NULL },
   { "files", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, NULL, OPT_FILES,
 	N_("read filenames to process from FILE"), N_("FILE") },
   { "files0", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, NULL, OPT_FILES0,
 	N_("like --files but use the nul byte as terminator"), N_("FILE") },
 
+  /* ===== Basic compression settings */
+  { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
+	N_("file FORMAT {auto|xz|lzma|alone|gzip|gz|raw}"), N_("FORMAT") },
+  { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
+	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
+  { "memory", 'M', POPT_ARG_INT,		&opt_memory,  0,
+	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
+  { "threads", 'T', POPT_ARG_INT,		&opt_threads, 0,
+	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
+
   /* ===== Compression options */
-  { "fast", '\0', POPT_ARG_VAL,			&preset_number,  1,
+#ifdef	NOTYET
+  { "extreme", 'e', POPT_ARG_VAL,			&preset_number,  1,
+	N_("extreme compression"), NULL },
+#endif
+  { "fast", '\0', POPT_ARG_VAL,				&preset_number,  1,
 	N_("fast compression"), NULL },
+  { "best", '\0', POPT_ARG_VAL,				&preset_number,  9,
+	N_("best compression"), NULL },
+
   { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  1,
 	NULL, NULL },
   { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  2,
@@ -733,10 +750,6 @@ static struct poptOption optionsTable[] = {
 	NULL, NULL },
   { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  9,
 	NULL, NULL },
-  { "best", '\0', POPT_ARG_VAL,			&preset_number,  9,
-	N_("best compression"), NULL },
-  { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
-	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
 
   /* ===== Custom filters */
 #ifdef	REFERENCE
@@ -751,7 +764,7 @@ static struct poptOption optionsTable[] = {
 "                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
 "                        depth=NUM    match finder cycles; 0=automatic (default)\n"
 #endif
-  { "lzma", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA1,
+  { "lzma1", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA1,
 	N_("set lzma filter"), N_("OPTS") },
   { "lzma2", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA2,
 	N_("set lzma2 filter"), N_("OPTS") },
@@ -799,30 +812,22 @@ static struct poptOption optionsTable[] = {
 	N_("do not save or restore filename and time stamp (default)"), NULL },
 #ifdef	NOTYET
   { "sign", 'S', POPT_ARG_STRING,		NULL, 0,
-	N_("sign the data with GnuPG when compressing, or verify the signature when decompressing"), N_("PUBKEY"} },
+	N_("sign the data with GnuPG when compressing, or verify the signature when decompressing"), N_("PUBKEY") },
 #endif
-
-  /* ===== Resource usage options */
-  { "memory", 'M', POPT_ARG_INT,		&opt_memory,  0,
-	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
-  { "threads", 'T', POPT_ARG_INT,		&opt_threads, 0,
-	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
 
   /* ===== Other options */
 #ifdef	NOTYET
-  { "quiet", 'q',              POPT_ARG_VAL,       NULL,  'q',
+  { "quiet", 'q',		POPT_ARG_VAL,       NULL,  'q',
 	N_("suppress warnings; specify twice to suppress errors too"), NULL },
-  { "verbose", 'v',            POPT_ARG_VAL,       NULL,  'v',
+  { "verbose", 'v',		POPT_ARG_VAL,       NULL,  'v',
 	N_("be verbose; specify twice for even more verbose"), NULL },
-  { "help", 'h',               POPT_ARG_VAL,       NULL,  'h',
+  { "help", 'h',		POPT_ARG_VAL,       NULL,  'h',
 	N_("display this help and exit"), NULL },
-  { "version", 'V',            POPT_ARG_VAL,       NULL,  'V',
+  { "long-help", 'h',		POPT_ARG_VAL,       NULL,  'H',
+	N_("display this help and exit"), NULL },
+  { "version", 'V',		POPT_ARG_VAL,       NULL,  'V',
 	N_("display version and license information and exit"), NULL },
 #endif
-
-  /* XXX unimplemented */
-  { "recursive", 'r', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &opt_recursive, 1,
-	N_(""), NULL },
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
