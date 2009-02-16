@@ -68,6 +68,8 @@ LIBRPMMISC_0
     lzma_auto_decoder;
     lzma_code;
     lzma_end;
+    lzma_easy_encoder;
+    lzma_lzma_preset;
     lzma_preset_lzma;
     lzma_memlimit_alloc;
     lzma_memlimit_create;

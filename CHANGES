@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: fix: avoid the assertion failure w LZMA lzdio by upgrading to XZ.
     - proyvind: add initial support for detecting automatically detecting
 	architecture through libcpuinfo.
     - jbj: stub-in /usr/lib/rpm/helpers/makeshlibs proof-of-concept.
