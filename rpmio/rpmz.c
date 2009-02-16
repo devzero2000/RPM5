@@ -27,21 +27,21 @@
 #include "debug.h"
 
 enum tool_mode {
-        MODE_COMPRESS,
-        MODE_DECOMPRESS,
-        MODE_TEST,
-        MODE_LIST,
+    MODE_COMPRESS,
+    MODE_DECOMPRESS,
+    MODE_TEST,
+    MODE_LIST,
 };
 /*@unchecked@*/
 static enum tool_mode opt_mode = MODE_COMPRESS;
 
 // NOTE: The order of these is significant in suffix.c.
 enum format_type {
-	FORMAT_AUTO,
-	FORMAT_XZ,
-	FORMAT_LZMA,
-	FORMAT_GZIP,
-	FORMAT_RAW,
+    FORMAT_AUTO,
+    FORMAT_XZ,
+    FORMAT_LZMA,
+    FORMAT_GZIP,
+    FORMAT_RAW,
 };
 /*@unchecked@*/
 static enum format_type opt_format = FORMAT_AUTO;
@@ -81,12 +81,10 @@ static const char *stdin_filename = "(stdin)";
 
 /*@unchecked@*/
 static int opt_threads;
-#ifdef	NOTYET
 /*@unchecked@*/
 static rpmuint64_t memlimit_encoder = 0;
 /*@unchecked@*/
 static rpmuint64_t memlimit_decoder = 0;
-#endif
 /*@unchecked@*/
 static rpmuint64_t memlimit_custom = 0;
 
@@ -96,20 +94,145 @@ static size_t preset_number = 6;
 static size_t filter_count = 0;
 
 enum {
-        OPT_SUBBLOCK = INT_MIN,
-        OPT_X86,
-        OPT_POWERPC,
-        OPT_IA64,
-        OPT_ARM,
-        OPT_ARMTHUMB,
-        OPT_SPARC,
-        OPT_DELTA,
-	OPT_LZMA1,
-	OPT_LZMA2,
+    OPT_SUBBLOCK = INT_MIN,
+    OPT_X86,
+    OPT_POWERPC,
+    OPT_IA64,
+    OPT_ARM,
+    OPT_ARMTHUMB,
+    OPT_SPARC,
+    OPT_DELTA,
+    OPT_LZMA1,
+    OPT_LZMA2,
 
-        OPT_FILES,
-        OPT_FILES0,
+    OPT_FILES,
+    OPT_FILES0,
 };
+
+/*==============================================================*/
+static int checkfd(const char * devnull, int fdno, int flags)
+	/*@*/
+{
+    struct stat sb;
+    int ret = 0;
+
+    if (fstat(fdno, &sb) == -1 && errno == EBADF)
+	ret = (open(devnull, flags) == fdno) ? 1 : 2;
+    return ret;
+}
+
+static void io_init(void)
+	/*@*/
+{
+    static int _oneshot = 0;
+
+    /* Insure that stdin/stdout/stderr are open, lest stderr end up in rpmdb. */
+   if (!_oneshot) {
+	static const char _devnull[] = "/dev/null";
+#if defined(STDIN_FILENO)
+	(void) checkfd(_devnull, STDIN_FILENO, O_RDONLY);
+#endif
+#if defined(STDOUT_FILENO)
+	(void) checkfd(_devnull, STDOUT_FILENO, O_WRONLY);
+#endif
+#if defined(STDERR_FILENO)
+	(void) checkfd(_devnull, STDERR_FILENO, O_WRONLY);
+#endif
+	_oneshot++;
+    }
+}
+
+/*==============================================================*/
+#define	HAVE_PHYSMEM_SYSCONF	1	/* XXX hotwired for linux */
+
+static rpmuint64_t physmem(void)
+	/*@*/
+{
+    rpmuint64_t ret = 0;
+
+#if defined(HAVE_PHYSMEM_SYSCONF)
+    {	const long pagesize = sysconf(_SC_PAGESIZE);
+	const long pages = sysconf(_SC_PHYS_PAGES);
+	if (pagesize != -1 || pages != -1)
+	    ret = (rpmuint64_t)(pagesize) * (rpmuint64_t)(pages);
+    }
+#elif defined(HAVE_PHYSMEM_SYSCTL)
+    {	int name[2] = { CTL_HW, HW_PHYSMEM };
+	unsigned long mem;
+	size_t mem_ptr_size = sizeof(mem);
+	if (!sysctl(name, 2, &mem, &mem_ptr_size, NULL, NULL)) {
+	    if (mem_ptr_size != sizeof(mem)) {
+		if (mem_ptr_size == sizeof(unsigned int))
+		    ret = *(unsigned int *)(&mem);
+	    } else {
+		ret = mem;
+	    }
+	}
+    }
+#endif
+    return ret;
+}
+
+#define	HAVE_NCPU_SYSCONF	1	/* XXX hotwired for linux */
+
+static void
+hw_cores(void)
+	/*@globals opt_threads @*/
+	/*@modifies opt_threads @*/
+{
+#if defined(HAVE_NCPU_SYSCONF)
+    {	const long cpus = sysconf(_SC_NPROCESSORS_ONLN);
+	if (cpus > 0)
+	    opt_threads = (size_t)(cpus);
+    }
+
+#elif defined(HAVE_NCPU_SYSCTL)
+    {	int name[2] = { CTL_HW, HW_NCPU };
+	int cpus;
+	size_t cpus_size = sizeof(cpus);
+	if (!sysctl(name, &cpus, &cpus_size, NULL, NULL)
+	 && cpus_size == sizeof(cpus) && cpus > 0)
+	    opt_threads = (size_t)(cpus);
+    }
+#endif
+
+#if defined(_SC_THREAD_THREADS_MAX)
+    {	const long threads_max = sysconf(_SC_THREAD_THREADS_MAX);
+	if (threads_max > 0 && (int)(threads_max) < opt_threads)
+	    opt_threads = (int)(threads_max);
+    }
+#elif defined(PTHREAD_THREADS_MAX)
+    if (opt_threads > PTHREAD_THREADS_MAX)
+	opt_threads = PTHREAD_THREADS_MAX;
+#endif
+
+    return;
+}
+
+static void
+hw_memlimit_init(void)
+	/*@globals memlimit_decoder, memlimit_encoder @*/
+	/*@modifies memlimit_decoder, memlimit_encoder @*/
+{
+    rpmuint64_t mem = physmem();
+
+    /* Assume 16MB as minimum memory. */
+    if (mem == 0)
+	    mem = 16 * 1024 * 1024;
+
+    /* Use 90% of RAM when encoding, 33% when decoding. */
+    memlimit_encoder = mem - mem / 10;
+    memlimit_decoder = mem / 3;
+    return;
+}
+
+static void
+hw_init(void)
+{
+    hw_memlimit_init();
+    hw_cores();
+    return;
+}
 
 /*==============================================================*/
 
@@ -219,17 +342,16 @@ static rpmRC file_uncompress(const char *file)
 /*==============================================================*/
 
 typedef struct {
-	const char *name;
-	rpmuint64_t id;
+    const char *name;
+    rpmuint64_t id;
 } name_id_map;
 
 typedef struct {
-	const char *name;
-	const name_id_map *map;
-	rpmuint64_t min;
-	rpmuint64_t max;
+    const char *name;
+    const name_id_map *map;
+    rpmuint64_t min;
+    rpmuint64_t max;
 } option_map;
-
 
 /// Parses option=value pairs that are separated with colons, semicolons,
 /// or commas: opt=val:opt=val;opt=val,opt=val
@@ -258,141 +380,130 @@ parse_options(const char *str, const option_map *opts,
 		void *filter_options)
 	/*@*/
 {
-	char * s;
-	char *name;
+    char * s;
+    char *name;
 
-	if (str == NULL || str[0] == '\0')
-		return;
+    if (str == NULL || str[0] == '\0')
+	return;
 
-	s = xstrdup(str);
-	name = s;
+    s = xstrdup(str);
+    name = s;
 
-	while (1) {
-		char *split = strchr(name, ',');
-		char *value;
-		int found;
-		size_t i;
+    while (1) {
+	char *split = strchr(name, ',');
+	char *value;
+	int found;
+	size_t i;
 
-		if (split != NULL)
-			*split = '\0';
+	if (split != NULL)
+	    *split = '\0';
 
-		value = strchr(name, '=');
-		if (value != NULL)
-			*value++ = '\0';
+	value = strchr(name, '=');
+	if (value != NULL)
+	    *value++ = '\0';
 
-		if (value == NULL || value[0] == '\0') {
-			fprintf(stderr, _("%s: %s: Options must be `name=value' "
+	if (value == NULL || value[0] == '\0') {
+	    fprintf(stderr, _("%s: %s: Options must be `name=value' "
 					"pairs separated with commas"),
 					__progname, str);
-			/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-		}
-
-		// Look for the option name from the option map.
-		found = 0;
-		for (i = 0; opts[i].name != NULL; ++i) {
-			if (strcmp(name, opts[i].name) != 0)
-				continue;
-
-			if (opts[i].map == NULL) {
-				// value is an integer.
-				rpmuint64_t v;
-#ifdef NOTYET
-				v = str_to_uint64(name, value,
-						opts[i].min, opts[i].max);
-#else
-				v = strtoull(value, NULL, 0);
-#endif
-				set(filter_options, i, v);
-			} else {
-				// value is a string which we should map
-				// to an integer.
-				size_t j;
-				for (j = 0; opts[i].map[j].name != NULL; ++j) {
-					if (strcmp(opts[i].map[j].name, value)
-							== 0)
-						break;
-				}
-
-				if (opts[i].map[j].name == NULL) {
-					fprintf(stderr, _("%s: %s: Invalid option "
-							"value"), __progname, value);
-					/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-				}
-
-				set(filter_options, i, opts[i].map[j].id);
-			}
-
-			found = 1;
-			break;
-		}
-
-		if (!found) {
-			fprintf(stderr, _("%s: %s: Invalid option name"), __progname, name);
-			/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-		}
-
-		if (split == NULL)
-			break;
-
-		name = split + 1;
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
 
-	free(s);
-	return;
+	// Look for the option name from the option map.
+	found = 0;
+	for (i = 0; opts[i].name != NULL; ++i) {
+	    if (strcmp(name, opts[i].name) != 0)
+		continue;
+
+	    if (opts[i].map == NULL) {
+		// value is an integer.
+		rpmuint64_t v;
+#ifdef NOTYET
+		v = str_to_uint64(name, value, opts[i].min, opts[i].max);
+#else
+		v = strtoull(value, NULL, 0);
+#endif
+		set(filter_options, i, v);
+	    } else {
+		// value is a string which we should map
+		// to an integer.
+		size_t j;
+		for (j = 0; opts[i].map[j].name != NULL; ++j) {
+		    if (strcmp(opts[i].map[j].name, value) == 0)
+			break;
+		}
+
+		if (opts[i].map[j].name == NULL) {
+		    fprintf(stderr, _("%s: %s: Invalid option value"),
+			__progname, value);
+		    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
+		}
+
+		set(filter_options, i, opts[i].map[j].id);
+	    }
+
+	    found = 1;
+	    break;
+	}
+
+	if (!found) {
+	    fprintf(stderr, _("%s: %s: Invalid option name"), __progname, name);
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
+	}
+
+	if (split == NULL)
+	    break;
+
+	name = split + 1;
+    }
+
+    s = _free(s);
+    return;
 }
 
 /* ===== Subblock ===== */
 enum {
-	OPT_SIZE,
-	OPT_RLE,
-	OPT_ALIGN,
+    OPT_SIZE,
+    OPT_RLE,
+    OPT_ALIGN,
 };
 
 static void
 set_subblock(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
 {
-	lzma_options_subblock *opt = options;
+    lzma_options_subblock *opt = options;
 
-	switch (key) {
-	case OPT_SIZE:
-		opt->subblock_data_size = value;
-		break;
-
-	case OPT_RLE:
-		opt->rle = value;
-		break;
-
-	case OPT_ALIGN:
-		opt->alignment = value;
-		break;
-	}
+    switch (key) {
+    case OPT_SIZE:	opt->subblock_data_size = value;	break;
+    case OPT_RLE:	opt->rle = value;			break;
+    case OPT_ALIGN:	opt->alignment = value;			break;
+    }
 }
 
 static lzma_options_subblock *
 options_subblock(const char *str)
 	/*@*/
 {
-	static const option_map opts[] = {
-		{ "size", NULL,   LZMA_SUBBLOCK_DATA_SIZE_MIN,
-		                  LZMA_SUBBLOCK_DATA_SIZE_MAX },
-		{ "rle",  NULL,   LZMA_SUBBLOCK_RLE_OFF,
-		                  LZMA_SUBBLOCK_RLE_MAX },
-		{ "align",NULL,   LZMA_SUBBLOCK_ALIGNMENT_MIN,
-		                  LZMA_SUBBLOCK_ALIGNMENT_MAX },
-		{ NULL,   NULL,   0, 0 }
-	};
+    static const option_map opts[] = {
+	{ "size", NULL,   LZMA_SUBBLOCK_DATA_SIZE_MIN,
+	                  LZMA_SUBBLOCK_DATA_SIZE_MAX },
+	{ "rle",  NULL,   LZMA_SUBBLOCK_RLE_OFF,
+	                  LZMA_SUBBLOCK_RLE_MAX },
+	{ "align",NULL,   LZMA_SUBBLOCK_ALIGNMENT_MIN,
+	                  LZMA_SUBBLOCK_ALIGNMENT_MAX },
+	{ NULL,   NULL,   0, 0 }
+    };
 
-	lzma_options_subblock *options
-			= xmalloc(sizeof(lzma_options_subblock));
-	options->allow_subfilters = 0;
-	options->alignment = LZMA_SUBBLOCK_ALIGNMENT_DEFAULT;
-	options->subblock_data_size = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT;
-	options->rle = LZMA_SUBBLOCK_RLE_OFF;
+    lzma_options_subblock *options = xmalloc(sizeof(lzma_options_subblock));
+    options->allow_subfilters = 0;
+    options->alignment = LZMA_SUBBLOCK_ALIGNMENT_DEFAULT;
+    options->subblock_data_size = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT;
+    options->rle = LZMA_SUBBLOCK_RLE_OFF;
 
-	parse_options(str, opts, &set_subblock, options);
+    parse_options(str, opts, &set_subblock, options);
 
-	return options;
+    return options;
 }
 
 /* ===== Delta ===== */
@@ -406,150 +517,125 @@ static void
 set_delta(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
 {
-	lzma_options_delta *opt = options;
-	switch (key) {
-	case OPT_DIST:
-		opt->dist = value;
-		break;
-	}
+    lzma_options_delta *opt = options;
+    switch (key) {
+    case OPT_DIST:	opt->dist = value;		break;
+    }
 }
 
 static lzma_options_delta *
 options_delta(const char *str)
 {
-	static const option_map opts[] = {
-		{ "dist",     NULL,  LZMA_DELTA_DIST_MIN,
-		                     LZMA_DELTA_DIST_MAX },
-		{ NULL,       NULL,  0, 0 }
-	};
+    static const option_map opts[] = {
+	{ "dist",     NULL,  LZMA_DELTA_DIST_MIN,
+	                     LZMA_DELTA_DIST_MAX },
+	{ NULL,       NULL,  0, 0 }
+    };
 
-	lzma_options_delta *options = xmalloc(sizeof(lzma_options_delta));
+    lzma_options_delta *options = xmalloc(sizeof(lzma_options_delta));
+    // It's hard to give a useful default for this.
+    *options = (lzma_options_delta) {
 	// It's hard to give a useful default for this.
-	*options = (lzma_options_delta){
-		// It's hard to give a useful default for this.
-		.type = LZMA_DELTA_TYPE_BYTE,
-		.dist = LZMA_DELTA_DIST_MIN,
-	};
+	.type = LZMA_DELTA_TYPE_BYTE,
+	.dist = LZMA_DELTA_DIST_MIN,
+    };
 
-	parse_options(str, opts, &set_delta, options);
+    parse_options(str, opts, &set_delta, options);
 
-	return options;
+    return options;
 }
 
 /* ===== LZMA ===== */
 enum {
-	OPT_PRESET,
-	OPT_DICT,
-	OPT_LC,
-	OPT_LP,
-	OPT_PB,
-	OPT_MODE,
-	OPT_NICE,
-	OPT_MF,
-	OPT_DEPTH,
+    OPT_PRESET,
+    OPT_DICT,
+    OPT_LC,
+    OPT_LP,
+    OPT_PB,
+    OPT_MODE,
+    OPT_NICE,
+    OPT_MF,
+    OPT_DEPTH,
 };
 
 static void
 set_lzma(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
 {
-	lzma_options_lzma *opt = options;
+    lzma_options_lzma *opt = options;
 
-	switch (key) {
-	case OPT_PRESET:
-		if (lzma_lzma_preset(options, (uint32_t)(value))) {
-			fprintf(stderr, "LZMA1/LZMA2 preset %u is not supported",
+    switch (key) {
+    case OPT_PRESET:
+	if (lzma_lzma_preset(options, (uint32_t)(value))) {
+	    fprintf(stderr, _("LZMA1/LZMA2 preset %u is not supported"),
 					(unsigned int)(value));
-			/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-		}
-		break;
-
-	case OPT_DICT:
-		opt->dict_size = value;
-		break;
-
-	case OPT_LC:
-		opt->lc = value;
-		break;
-
-	case OPT_LP:
-		opt->lp = value;
-		break;
-
-	case OPT_PB:
-		opt->pb = value;
-		break;
-
-	case OPT_MODE:
-		opt->mode = value;
-		break;
-
-	case OPT_NICE:
-		opt->nice_len = value;
-		break;
-
-	case OPT_MF:
-		opt->mf = value;
-		break;
-
-	case OPT_DEPTH:
-		opt->depth = value;
-		break;
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
+	break;
+
+    case OPT_DICT:	opt->dict_size = value;		break;
+    case OPT_LC:	opt->lc = value;		break;
+    case OPT_LP:	opt->lp = value;		break;
+    case OPT_PB:	opt->pb = value;		break;
+    case OPT_MODE:	opt->mode = value;		break;
+    case OPT_NICE:	opt->nice_len = value;		break;
+    case OPT_MF:	opt->mf = value;		break;
+    case OPT_DEPTH:	opt->depth = value;		break;
+    }
 }
 
 static lzma_options_lzma *
 options_lzma(const char *str)
 {
-	/*@unchecked@*/ /*@observer@*/
-	static const name_id_map modes[] = {
-		{ "fast",   LZMA_MODE_FAST },
-		{ "normal", LZMA_MODE_NORMAL },
-		{ NULL,     0 }
-	};
+    /*@unchecked@*/ /*@observer@*/
+    static const name_id_map modes[] = {
+	{ "fast",   LZMA_MODE_FAST },
+	{ "normal", LZMA_MODE_NORMAL },
+	{ NULL,     0 }
+    };
 
-	/*@unchecked@*/ /*@observer@*/
-	static const name_id_map mfs[] = {
-		{ "hc3", LZMA_MF_HC3 },
-		{ "hc4", LZMA_MF_HC4 },
-		{ "bt2", LZMA_MF_BT2 },
-		{ "bt3", LZMA_MF_BT3 },
-		{ "bt4", LZMA_MF_BT4 },
-		{ NULL,  0 }
-	};
+    /*@unchecked@*/ /*@observer@*/
+    static const name_id_map mfs[] = {
+	{ "hc3", LZMA_MF_HC3 },
+	{ "hc4", LZMA_MF_HC4 },
+	{ "bt2", LZMA_MF_BT2 },
+	{ "bt3", LZMA_MF_BT3 },
+	{ "bt4", LZMA_MF_BT4 },
+	{ NULL,  0 }
+    };
 
-	/*@unchecked@*/ /*@observer@*/
-	static const option_map opts[] = {
-		{ "preset", NULL,   1, 9 },
-		{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
-				(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
-		{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
-		{ "lp",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
-		{ "pb",     NULL,   LZMA_PB_MIN, LZMA_PB_MAX },
-		{ "mode",   modes,  0, 0 },
-		{ "nice",   NULL,   2, 273 },
-		{ "mf",     mfs,    0, 0 },
-		{ "depth",  NULL,   0, UINT32_MAX },
-		{ NULL,     NULL,   0, 0 }
-	};
+    /*@unchecked@*/ /*@observer@*/
+    static const option_map opts[] = {
+	{ "preset", NULL,   1, 9 },
+	{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
+			(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
+	{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
+	{ "lp",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
+	{ "pb",     NULL,   LZMA_PB_MIN, LZMA_PB_MAX },
+	{ "mode",   modes,  0, 0 },
+	{ "nice",   NULL,   2, 273 },
+	{ "mf",     mfs,    0, 0 },
+	{ "depth",  NULL,   0, UINT32_MAX },
+	{ NULL,     NULL,   0, 0 }
+    };
 
-	lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
+    lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
 
-	options->dict_size = LZMA_DICT_SIZE_DEFAULT;
-	options->preset_dict = NULL;
-	options->preset_dict_size = 0,
-	options->lc = LZMA_LC_DEFAULT;
-	options->lp = LZMA_LP_DEFAULT;
-	options->pb = LZMA_PB_DEFAULT;
-	options->persistent = 0;
-	options->mode = LZMA_MODE_NORMAL;
-	options->nice_len = 64;
-	options->mf = LZMA_MF_BT4;
-	options->depth = 0;
+    options->dict_size = LZMA_DICT_SIZE_DEFAULT;
+    options->preset_dict = NULL;
+    options->preset_dict_size = 0,
+    options->lc = LZMA_LC_DEFAULT;
+    options->lp = LZMA_LP_DEFAULT;
+    options->pb = LZMA_PB_DEFAULT;
+    options->persistent = 0;
+    options->mode = LZMA_MODE_NORMAL;
+    options->nice_len = 64;
+    options->mf = LZMA_MF_BT4;
+    options->depth = 0;
 
-	parse_options(str, opts, &set_lzma, options);
+    parse_options(str, opts, &set_lzma, options);
 
-	return options;
+    return options;
 }
 
 static void
@@ -880,8 +966,8 @@ main(int argc, char *argv[])
 	/*@modifies __assert_program_name, _rpmrepo,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    const char ** av = NULL;
+    poptContext optCon;
+    const char ** av;
     int ac;
     int rc = 1;		/* assume failure. */
     int i;
@@ -890,6 +976,14 @@ main(int argc, char *argv[])
     __progname = "rpmz";
 /*@=observertrans =readonlytrans @*/
 
+    /* Make sure that stdin/stdout/stderr are open. */
+    io_init();
+
+    /* Set hardware specific parameters. */
+    hw_init();
+
+    /* Parse options. */
+    optCon = rpmioInit(argc, argv, optionsTable);
     av = poptGetArgs(optCon);
     if (av == NULL || av[0] == NULL) {
 	poptPrintUsage(optCon, stderr, 0);
@@ -897,6 +991,7 @@ main(int argc, char *argv[])
     }
     ac = argvCount(av);
 
+    /* Process arguments. */
     if (av != NULL)
     for (i = 0; i < ac; i++) {
 	rpmRC frc;
