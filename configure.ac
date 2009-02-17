@@ -1254,6 +1254,14 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [], [])
 
+# later..
+dnl # CPUInfo
+#RPM_CHECK_LIB(
+#    [CPUInfo], [cpuinfo],
+#    [cpuinfo], [cpuinfo_new], [cpuinfo.h],
+#    [no,external:none], [],
+#    [AC_MSG_WARN([CPUInfo support is under development])], [])
+
 dnl ##
 dnl ## ==== INSTALLATION PARAMETERS ====
 dnl ##

@@ -8,7 +8,7 @@
 #define __power_pc() 0
 #endif
 
-#if defined(HAVE_CPUINFO_H)
+#if defined(SUPPORT_LIBCPUINFO)
 #include <cpuinfo.h>
 #endif
 
@@ -502,7 +502,7 @@ exit:
 }
 /*@=onlytrans@*/
 
-#if defined(HAVE_CPUINFO_H)
+#if defined(SUPPORT_LIBCPUINFO)
 static rpmRC rpmCpuinfo(void)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -692,7 +692,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (cp == NULL || cp[0] == '\0')
 	    cp = _platform;
 	if (rpmPlatform(cp) == RPMRC_OK) {
-#elif defined(HAVE_CPUINFO_H)
+#elif defined(SUPPORT_LIBCPUINFO)
 	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK) {
 #else
 	if (rpmPlatform(_platform) == RPMRC_OK) {
