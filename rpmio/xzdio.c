@@ -62,7 +62,7 @@ typedef struct xzfile {
 
 /*@-globstate@*/
 /*@null@*/
-static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int xz)
+static XZFILE *xzopen_internal(const char *path, const char *mode, int fdno, int xz)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -81,8 +81,8 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	else if (*mode >= '0' && *mode <= '9')
 	    level = (int)(*mode - '0');
     }
-    if (fd != -1)
-	fp = fdopen(fd, encoding ? "w" : "r");
+    if (fdno != -1)
+	fp = fdopen(fdno, encoding ? "w" : "r");
     else
 	fp = fopen(path, encoding ? "w" : "r");
     if (!fp)
@@ -119,9 +119,9 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fd, int x
 	    ret = lzma_alone_encoder(&xzfile->strm, &options);
 	}
 #else
-	if (xz)
+	if (xz) {
 	    ret = lzma_easy_encoder(&xzfile->strm, level, LZMA_CHECK_CRC32);
-	else {
+	} else {
 	    lzma_options_lzma options;
 	    lzma_lzma_preset(&options, level);
 	    ret = lzma_alone_encoder(&xzfile->strm, &options);
@@ -161,13 +161,13 @@ static XZFILE *lzopen(const char *path, const char *mode)
 }
 
 /*@null@*/
-static XZFILE *lzdopen(int fd, const char *mode)
+static XZFILE *lzdopen(int fdno, const char *mode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    if (fd < 0)
+    if (fdno < 0)
 	return NULL;
-    return xzopen_internal(0, mode, fd, 0);
+    return xzopen_internal(0, mode, fdno, 0);
 }
 
 /*@null@*/
@@ -179,13 +179,13 @@ static XZFILE *xzopen(const char *path, const char *mode)
 }
 
 /*@null@*/
-static XZFILE *xzdopen(int fd, const char *mode)
+static XZFILE *xzdopen(int fdno, const char *mode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    if (fd < 0)
+    if (fdno < 0)
 	return NULL;
-    return xzopen_internal(0, mode, fd, 1);
+    return xzopen_internal(0, mode, fdno, 1);
 }
 
 static int xzflush(XZFILE *xzfile)
