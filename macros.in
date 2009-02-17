@@ -1590,7 +1590,7 @@ done \
 %mips mips mips2 mips3 mips4
 %mipsel mipsel mips2el mips3el mips4el loongson2e loongson2f
 
-%mipsx %mipseb %mipsel mips64 mips64el
+%mipsx %mips %mipsel mips64 mips64el
  
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
