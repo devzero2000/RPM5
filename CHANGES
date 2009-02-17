@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmz: handle gzip/bzip2/xz/lzma compression in 1 executable.
     - proyvind: create %mipsel and also add more generations to the mips macros. 
     - jbj: fix: avoid the assertion failure w LZMA lzdio by upgrading to XZ.
     - proyvind: add initial support for detecting automatically detecting

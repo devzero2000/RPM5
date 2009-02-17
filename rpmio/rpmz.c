@@ -26,6 +26,8 @@
 
 #include "debug.h"
 
+static int _debug = 1;
+
 enum tool_mode {
     MODE_COMPRESS,
     MODE_DECOMPRESS,
@@ -40,8 +42,9 @@ enum format_type {
     FORMAT_AUTO,
     FORMAT_XZ,
     FORMAT_LZMA,
-    FORMAT_GZIP,
     FORMAT_RAW,
+    FORMAT_GZIP,
+    FORMAT_BZIP2,
 };
 /*@unchecked@*/
 static enum format_type opt_format = FORMAT_AUTO;
@@ -74,10 +77,10 @@ static lzma_filter filters[LZMA_FILTERS_MAX + 1];
 /*@unchecked@*/
 static size_t filters_count = 0;
 
-// We don't modify or free() this, but we need to assign it in some
-// non-const pointers.
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static const char *stdin_filename = "(stdin)";
+/*@unchecked@*/ /*@observer@*/
+static const char *stdout_filename = "(stdout)";
 
 /*@unchecked@*/
 static int opt_threads;
@@ -108,6 +111,50 @@ enum {
     OPT_FILES,
     OPT_FILES0,
 };
+
+/**
+ */
+typedef struct rpmz_s * rpmz;
+
+/**
+ */
+struct rpmz_s {
+    char * b;
+    size_t nb;
+
+/*@null@*/
+    const char * isuffix;
+    enum format_type ifmt;
+    FDIO_t idio;
+/*@null@*/
+    const char * ifn;
+    char ifmode[32];
+/*@null@*/
+    FD_t ifd;
+
+/*@null@*/
+    const char * osuffix;
+    enum format_type ofmt;
+    FDIO_t odio;
+/*@null@*/
+    const char * ofn;
+    char ofmode[32];
+/*@null@*/
+    FD_t ofd;
+
+/*@null@*/
+    const char * suffix;
+};
+
+/*@unchecked@*/
+static struct rpmz_s __rpmz = {
+    .nb		= 16 * BUFSIZ,
+    .ifmode	= "rb",
+    .ofmode	= "wb",
+    .suffix	= "",
+};
+/*@unchecked@*/
+static rpmz _rpmz = &__rpmz;
 
 /*==============================================================*/
 static int checkfd(const char * devnull, int fdno, int flags)
@@ -236,107 +283,299 @@ hw_init(void)
 
 /*==============================================================*/
 
-#define GZ_SUFFIX	".gz"
-#define SUFFIX_LEN	(sizeof(GZ_SUFFIX)-1)
-#define	BUFLEN		(16 * 1024)
-#define	MAX_NAME_LEN	1024
+/*@unchecked@*/ /*@observer@*/
+static struct suffixPairs_s {
+    enum format_type format;
+/*@null@*/
+    const char * csuffix;
+/*@relnull@*/
+    const char * usuffix;
+} suffixPairs[] = {
+    { FORMAT_XZ,	".xz",	"" },
+    { FORMAT_XZ,	".txz",	".tar" },
+    { FORMAT_LZMA,	".lzma","" },
+    { FORMAT_LZMA,	".tlz",	".tar" },
+    { FORMAT_GZIP,	".gz",	"" },
+    { FORMAT_GZIP,	".tgz",	".tar" },
+    { FORMAT_BZIP2,	".bz2",	"" },
+    { FORMAT_RAW,	NULL,	NULL }
+};
+
+/**
+ * Check string for a suffix.
+ * @param fn		string
+ * @param suffix	suffix
+ * @return		1 if string ends with suffix
+ */
+static int chkSuffix(const char * fn, const char * suffix)
+	/*@*/
+{
+    size_t flen = strlen(fn);
+    size_t slen = strlen(suffix);
+    int rc = (flen > slen && !strcmp(fn + flen - slen, suffix));
+if (_debug)
+fprintf(stderr, "\tchk(%s,%s) ret %d\n", fn, suffix, rc);
+    return rc;
+}
+
+/**
+ * Return (malloc'd) string with new suffix substituted for old.
+ * @param fn		string
+ * @param old		old suffix
+ * @param new		new suffix
+ * @return		new string
+ */
+static char * changeSuffix(const char * fn,
+		/*@null@*/ const char * old, 
+		/*@null@*/ const char * new)
+	/*@*/
+{
+    size_t nfn = strlen(fn);
+    size_t nos = (old ? strlen(old) : 0);
+    size_t nns = (new ? strlen(new) : 0);
+    char * t = xmalloc(nfn - nos + nns + 1);
+
+    {	char * te = t;
+
+	strncpy(te, fn, (nfn - nos));
+	te += (nfn - nos);
+	if (new)
+	    te = stpcpy(te, new);
+	*te = '\0';
+    }
+
+    return t;
+}
+
+/**
+ * Return (malloc'd) uncompressed file name.
+ * @param z		rpmz container
+ * @return		uncompressed file name
+ */
+static const char * uncompressedFN(rpmz z)
+	/*@*/
+{
+    struct suffixPairs_s * sp;
+    const char * fn = z->ifn;
+    const char * t = NULL;
+
+    for (sp = suffixPairs; sp->csuffix != NULL; sp++) {
+	if (opt_format != sp->format)
+	    continue;
+	if (!chkSuffix(fn, sp->csuffix))
+	    continue;
+	t = changeSuffix(fn, sp->csuffix, sp->usuffix);
+	break;
+    }
+
+    if (t == NULL)
+	t = xstrdup(fn);
+
+if (_debug)
+fprintf(stderr, "==> uncompressedFN: %s\n", t);
+    return t;
+}
+
+/**
+ * Return (malloc'd) compressed file name.
+ * @param z		rpmz container
+ * @return		compressed file name
+ */
+static const char * compressedFN(rpmz z)
+	/*@*/
+{
+    struct suffixPairs_s * sp;
+    const char * fn = z->ifn;
+    const char * t = NULL;
+
+    for (sp = suffixPairs; sp->csuffix != NULL; sp++) {
+	if (opt_format != sp->format || *sp->usuffix == '\0')
+	    continue;
+	if (!chkSuffix(fn, sp->usuffix))
+	    continue;
+	t = changeSuffix(fn, sp->usuffix, sp->csuffix);
+	break;
+    }
+
+    if (t == NULL)
+	t = rpmGetPath(fn, (z->suffix ? z->suffix : z->osuffix), NULL);
+
+if (_debug)
+fprintf(stderr, "==>   compressedFN: %s\n", t);
+    return t;
+}
 
 /*
  * Copy input to output.
  */
-static rpmRC rpmz_copy(FD_t in, FD_t out)
+static rpmRC rpmzCopy(rpmz z)
 {
-    char buf[BUFLEN];
-    size_t len;
-
     for (;;) {
-        len = Fread(buf, 1, sizeof(buf), in);
-        if (Ferror(in))
+	size_t len = Fread(z->b, 1, z->nb, z->ifd);
+
+	if (Ferror(z->ifd))
 	    return RPMRC_FAIL;
 
-        if (len == 0) break;
+	if (len == 0) break;
 
-        if (Fwrite(buf, 1, len, out) != len)
+	if (Fwrite(z->b, 1, len, z->ofd) != len)
 	    return RPMRC_FAIL;
     }
     return RPMRC_OK;
+}
+
+static rpmRC rpmzFini(rpmz z, rpmRC rc)
+{
+    int xx;
+
+    if (z->ifd != NULL) {
+	xx = Fclose(z->ifd);
+	z->ifd = NULL;
+    }
+    if (z->ofd != NULL) {
+	xx = Fclose(z->ofd);
+	z->ofd = NULL;
+    }
+
+    /* Clean up input/output files as needed. */
+    switch (rc) {
+    default:
+	break;
+    case RPMRC_FAIL:
+	if (z->ofn != NULL && strcmp(z->ofn, stdout_filename)) {
+	    xx = Unlink(z->ofn);
+if (_debug)
+fprintf(stderr, "==> Unlink(%s) FAIL\n", z->ofn);
+	}
+	break;
+    case RPMRC_OK:
+	if (!opt_keep_original && z->ifn != stdin_filename) {
+	    xx = Unlink(z->ifn);
+if (_debug)
+fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
+	}
+	break;
+    }
+    z->ofn = _free(z->ofn);
+
+    return rc;
 }
 
 /*
  * Compress the given file: create a corresponding .gz file and remove the
  * original.
  */
-static rpmRC file_compress(const char *file, const char *fmode)
+static rpmRC rpmzCompress(rpmz z)
 {
-    const char * infile = file;
-    char outfile[MAX_NAME_LEN];
-    FD_t in;
-    FD_t out;
-    rpmRC rc;
-    int xx;
+    struct stat sb;
+    rpmRC rc = RPMRC_FAIL;
 
-    (void) stpcpy( stpcpy(outfile, file), GZ_SUFFIX);
+if (_debug)
+fprintf(stderr, "==> rpmzCompress(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
+    if (z->ifn == NULL) {
+	z->ifn = stdin_filename;
+	z->ifd = fdDup(STDIN_FILENO);
+    } else {
+	if (Stat(z->ifn, &sb) < 0) {
+	    fprintf(stderr, "%s: input %s doesn't exist, skipping\n",
+			__progname, z->ifn);
+	    goto exit;
+	}
+	if (!S_ISREG(sb.st_mode)) {
+	    fprintf(stderr, "%s: input %s is not a regular file, skipping\n",
+			__progname, z->ifn);
+	    goto exit;
+	}
+	z->ifd = Fopen(z->ifn, z->ifmode);
+    }
+    if (z->ifd == NULL || Ferror(z->ifd)) {
+	fprintf(stderr, "%s: can't open %s\n", __progname, z->ifn);
+	goto exit;
+    }
 
-    in = Fopen(infile, "rb");
-    if (in == NULL) {
-        fprintf(stderr, "%s: can't Fopen %s\n", __progname, infile);
-	return RPMRC_FAIL;
+    if (opt_stdout) {
+	z->ofn = xstrdup(stdout_filename);
+	z->ofd = z->odio->_fdopen(fdDup(STDOUT_FILENO), z->ofmode);
+    } else {
+	if (z->ifn == stdin_filename)	/* XXX error needed here. */
+	    goto exit;
+	z->ofn = compressedFN(z);
+	if (!opt_force && Stat(z->ofn, &sb) == 0) {
+	    fprintf(stderr, "%s: output file %s already exists\n",
+			__progname, z->ofn);
+	    /* XXX TODO: ok to overwrite(y/N)? */
+	    goto exit;
+	}
+	z->ofd = z->odio->_fopen(z->ofn, z->ofmode);
+	fdFree(z->ofd, NULL);		/* XXX adjust refcounts. */
     }
-    out = gzdio->_fopen(outfile, fmode);
-    if (out == NULL) {
-        fprintf(stderr, "%s: can't _fopen %s\n", __progname, outfile);
-	xx = Fclose(in);
-	return RPMRC_FAIL;
+    if (z->ofd == NULL || Ferror(z->ofd)) {
+	fprintf(stderr, "%s: can't open %s\n", __progname, z->ofn);
+	goto exit;
     }
-    rc = rpmz_copy(in, out);
-    xx = Fclose(in);
-    xx = Fclose(out);
-    if (rc == RPMRC_OK)
-	xx = Unlink(infile);
-    return rc;
+
+    rc = rpmzCopy(z);
+
+exit:
+    return rpmzFini(z, rc);
 }
 
 /*
  * Uncompress the given file and remove the original.
  */
-static rpmRC file_uncompress(const char *file)
+static rpmRC rpmzUncompress(rpmz z)
 {
-    char buf[MAX_NAME_LEN];
-    const char *infile, *outfile;
-    FD_t out;
-    FD_t in;
-    size_t len = strlen(file);
-    rpmRC rc;
-    int xx;
+    struct stat sb;
+    rpmRC rc = RPMRC_FAIL;
 
-    strcpy(buf, file);
-
-    if (len > SUFFIX_LEN && strcmp(file+len-SUFFIX_LEN, GZ_SUFFIX) == 0) {
-        buf[len-SUFFIX_LEN] = '\0';
-        infile = file;
-        outfile = buf;
+if (_debug)
+fprintf(stderr, "==> rpmzUncompress(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
+    if (z->ifn == NULL) {
+	z->ifn = stdin_filename;
+	z->ifd = z->idio->_fdopen(fdDup(STDIN_FILENO), z->ifmode);
     } else {
-        strcat(buf, GZ_SUFFIX);
-        outfile = file;
-        infile = buf;
+	if (Stat(z->ifn, &sb) < 0) {
+	    fprintf(stderr, "%s: input %s doesn't exist, skipping\n",
+			__progname, z->ifn);
+	    goto exit;
+	}
+	if (!S_ISREG(sb.st_mode)) {
+	    fprintf(stderr, "%s: input %s is not a regular file, skipping\n",
+			__progname, z->ifn);
+	    goto exit;
+	}
+	z->ifd = z->idio->_fopen(z->ifn, z->ifmode);
+	fdFree(z->ifd, NULL);		/* XXX adjust refcounts. */
     }
-    in = gzdio->_fopen(infile, "rb");
-    if (in == NULL) {
-        fprintf(stderr, "%s: can't _fopen %s\n", __progname, infile);
-	return RPMRC_FAIL;
+    if (z->ifd == NULL || Ferror(z->ifd)) {
+	fprintf(stderr, "%s: can't open %s\n", __progname, z->ifn);
+	goto exit;
     }
-    out = Fopen(outfile, "wb");
-    if (out == NULL) {
-        fprintf(stderr, "%s: can't Fopen %s\n", __progname, outfile);
-	xx = Fclose(in);
-	return RPMRC_FAIL;
+
+    if (opt_stdout)  {
+	z->ofn = xstrdup(stdout_filename);
+	z->ofd = fdDup(STDOUT_FILENO);
+    } else {
+	if (z->ifn == stdin_filename)	/* XXX error needed here. */
+	    goto exit;
+	z->ofn = uncompressedFN(z);
+	if (!opt_force && Stat(z->ofn, &sb) == 0) {
+	    fprintf(stderr, "%s: output file %s already exists\n",
+			__progname, z->ofn);
+	    /* XXX TODO: ok to overwrite(y/N)? */
+	    goto exit;
+	}
+	z->ofd = Fopen(z->ofn, z->ofmode);
     }
-    rc = rpmz_copy(in, out);
-    xx = Fclose(in);
-    xx = Fclose(out);
-    if (rc == RPMRC_OK)
-	xx = Unlink(infile);
-    return rc;
+    if (z->ofd == NULL || Ferror(z->ofd)) {
+	fprintf(stderr, "%s: can't Fopen %s\n", __progname, z->ofn);
+	goto exit;
+    }
+
+    rc = rpmzCopy(z);
+
+exit:
+    return rpmzFini(z, rc);
 }
 
 /*==============================================================*/
@@ -512,7 +751,6 @@ enum {
 	OPT_DIST,
 };
 
-
 static void
 set_delta(void *options, rpmuint32_t key, rpmuint64_t value)
 	/*@*/
@@ -659,11 +897,13 @@ coder_add_filter(lzma_vli id, void *options)
 /**
  */
 static void rpmzArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, const char * arg,
-                /*@unused@*/ void * data)
+		/*@unused@*/ enum poptCallbackReason reason,
+		const struct poptOption * opt, const char * arg,
+		/*@unused@*/ void * data)
 	/*@*/
 {
+    rpmz z = _rpmz;
+
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
@@ -708,19 +948,27 @@ static void rpmzArgCallback(poptContext con,
 	}
 	break;
     case 'F':
-	if (!strcmp(arg, "auto"))
+	if (!strcmp(arg, "auto")) {
 	    opt_format = FORMAT_AUTO;
-	else if (!strcmp(arg, "xz"))
+	} else if (!strcmp(arg, "xz")) {
+	    z->idio = z->odio = xzdio;
+	    z->osuffix = ".xz";
 	    opt_format = FORMAT_XZ;
-	else if (!strcmp(arg, "lzma"))
+	} else if (!strcmp(arg, "lzma") || !strcmp(arg, "alone")) {
+	    z->idio = z->odio = lzdio;
+	    z->osuffix = ".lzma";
 	    opt_format = FORMAT_LZMA;
-	else if (!strcmp(arg, "alone"))
-	    opt_format = FORMAT_LZMA;
-	else if (!strcmp(arg, "gzip") || !strcmp(arg, "gz"))
-	    opt_format = FORMAT_GZIP;
-	else if (!strcmp(arg, "raw"))
+	} else if (!strcmp(arg, "raw")) {
 	    opt_format = FORMAT_RAW;
-	else {
+	} else if (!strcmp(arg, "gzip") || !strcmp(arg, "gz")) {
+	    z->idio = z->odio = gzdio;
+	    z->osuffix = ".gz";
+	    opt_format = FORMAT_GZIP;
+	} else if (!strcmp(arg, "bzip2") || !strcmp(arg, "bz2")) {
+	    z->idio = z->odio = bzdio;
+	    z->osuffix = ".bz2";
+	    opt_format = FORMAT_BZIP2;
+	} else {
 	    fprintf(stderr, _("%s: Unknown file format type \"%s\"\n"),
 		__progname, arg);
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
@@ -791,7 +1039,7 @@ static void rpmzArgCallback(poptContext con,
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmzArgCallback, 0, NULL, NULL },
+	rpmzArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
   /* ===== Operation modes */
@@ -945,11 +1193,15 @@ static struct poptOption optionsTable[] = {
 	N_("display version and license information and exit"), NULL },
 #endif
 
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOALIAS
   POPT_AUTOHELP
 
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-        N_("\
+	N_("\
 Usage: rpmz [OPTION]... [FILE]...\n\
 Compress or decompress FILEs.\n\
 \n\
@@ -967,14 +1219,25 @@ main(int argc, char *argv[])
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     poptContext optCon;
+    rpmz z = _rpmz;
     const char ** av;
     int ac;
     int rc = 1;		/* assume failure. */
+    int xx;
     int i;
 
 /*@-observertrans -readonlytrans @*/
     __progname = "rpmz";
 /*@=observertrans =readonlytrans @*/
+
+    /* XXX TODO: Set modes and format based on argv[0]. */
+
+    z->b = xmalloc(z->nb);
+#ifndef	DYING
+    z->idio = z->odio = gzdio;
+    z->osuffix = ".gz";
+    opt_format = FORMAT_GZIP;
+#endif
 
     /* Make sure that stdin/stdout/stderr are open. */
     io_init();
@@ -982,32 +1245,43 @@ main(int argc, char *argv[])
     /* Set hardware specific parameters. */
     hw_init();
 
-    /* Parse options. */
+    /* XXX TODO: Parse environment options. */
+
+    /* Parse CLI options. */
     optCon = rpmioInit(argc, argv, optionsTable);
     av = poptGetArgs(optCon);
-    if (av == NULL || av[0] == NULL) {
-	poptPrintUsage(optCon, stderr, 0);
-	goto exit;
-    }
     ac = argvCount(av);
 
+    /* With no arguments, act as a stdin/stdout filter. */
+    if (av == NULL || av[0] == NULL)
+	ac++;
+
+    if (opt_mode == MODE_COMPRESS) {
+	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
+		(unsigned)(preset_number % 10));
+    }
+    z->suffix = opt_suffix;
+
     /* Process arguments. */
-    if (av != NULL)
     for (i = 0; i < ac; i++) {
-	rpmRC frc;
-	frc = RPMRC_OK;
+	rpmRC frc = RPMRC_OK;
+
+	/* Use NULL for stdin. */
+	z->ifn = (av && strcmp(av[i], "-") ? av[i] : NULL);
+
 	switch (opt_mode) {
 	case MODE_COMPRESS:
-	    frc = file_compress(av[i], "wb6");
+	    frc = rpmzCompress(z);
 	    break;
 	case MODE_DECOMPRESS:
-	    frc = file_uncompress(av[i]);
+	    frc = rpmzUncompress(z);
 	    break;
 	case MODE_TEST:
 	    break;
 	case MODE_LIST:
 	    break;
 	}
+
 	if (frc != RPMRC_OK)
 	    goto exit;
     }
@@ -1015,6 +1289,7 @@ main(int argc, char *argv[])
     rc = 0;
 
 exit:
+    z->b = _free(z->b);
     optCon = rpmioFini(optCon);
 
     return rc;
