@@ -65,17 +65,13 @@ static int opt_stdout;
 static int opt_force;
 /*@unchecked@*/
 static int opt_keep_original;
+
+#ifdef	NOTYET
 /*@unchecked@*/
 static int opt_preserve_name;
+#endif
 /*@unchecked@*/
 static int opt_recursive;
-
-/*@unchecked@*/
-static lzma_check opt_check = LZMA_CHECK_CRC64;
-/*@unchecked@*/
-static lzma_filter filters[LZMA_FILTERS_MAX + 1];
-/*@unchecked@*/
-static size_t filters_count = 0;
 
 /*@unchecked@*/ /*@observer@*/
 static const char *stdin_filename = "(stdin)";
@@ -91,10 +87,34 @@ static rpmuint64_t memlimit_decoder = 0;
 /*@unchecked@*/
 static rpmuint64_t memlimit_custom = 0;
 
+#ifdef	NOTYET
+/*@unchecked@*/
+static lzma_stream strm = LZMA_STREAM_INIT;
+#endif
+/*@unchecked@*/
+static lzma_filter filters[LZMA_FILTERS_MAX + 1];
+/*@unchecked@*/
+static size_t filters_count = 0;
 /*@unchecked@*/
 static size_t preset_number = 6;
+#ifdef	NOTYET
+/// True if we should auto-adjust the compression settings to use less memory
+/// if memory usage limit is too low for the original settings.
 /*@unchecked@*/
-static size_t filter_count = 0;
+static bool auto_adjust = true;
+/// Indicate if no preset has been explicitly given. In that case, if we need
+/// to auto-adjust for lower memory usage, we won't print a warning.
+/*@unchecked@*/
+static bool preset_default = true;
+/// If a preset is used (no custom filter chain) and preset_extreme is true,
+/// a significantly slower compression is used to achieve slightly better
+/// compression ratio.
+/*@unchecked@*/
+static bool preset_extreme = false;
+#endif
+
+/*@unchecked@*/
+static lzma_check opt_check = LZMA_CHECK_CRC64;
 
 enum {
     OPT_SUBBLOCK = INT_MIN,
@@ -131,6 +151,7 @@ struct rpmz_s {
     char ifmode[32];
 /*@null@*/
     FD_t ifd;
+    struct stat isb;
 
 /*@null@*/
     const char * osuffix;
@@ -141,6 +162,7 @@ struct rpmz_s {
     char ofmode[32];
 /*@null@*/
     FD_t ofd;
+    struct stat osb;
 
 /*@null@*/
     const char * suffix;
@@ -405,25 +427,6 @@ fprintf(stderr, "==>   compressedFN: %s\n", t);
     return t;
 }
 
-/*
- * Copy input to output.
- */
-static rpmRC rpmzCopy(rpmz z)
-{
-    for (;;) {
-	size_t len = Fread(z->b, 1, z->nb, z->ifd);
-
-	if (Ferror(z->ifd))
-	    return RPMRC_FAIL;
-
-	if (len == 0) break;
-
-	if (Fwrite(z->b, 1, len, z->ofd) != len)
-	    return RPMRC_FAIL;
-    }
-    return RPMRC_OK;
-}
-
 static rpmRC rpmzFini(rpmz z, rpmRC rc)
 {
     int xx;
@@ -461,91 +464,48 @@ fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
     return rc;
 }
 
-/*
- * Compress the given file: create a corresponding .gz file and remove the
- * original.
- */
-static rpmRC rpmzCompress(rpmz z)
+static rpmRC rpmzInit(rpmz z)
+	/*@*/
 {
-    struct stat sb;
     rpmRC rc = RPMRC_FAIL;
 
 if (_debug)
-fprintf(stderr, "==> rpmzCompress(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
+fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
+
     if (z->ifn == NULL) {
 	z->ifn = stdin_filename;
-	z->ifd = fdDup(STDIN_FILENO);
+	switch (opt_mode) {
+	default:
+	    break;
+	case MODE_COMPRESS:
+	    z->ifd = fdDup(STDIN_FILENO);
+	    break;
+	case MODE_DECOMPRESS:
+	    z->ifd = z->idio->_fdopen(fdDup(STDIN_FILENO), z->ifmode);
+	    break;
+	}
     } else {
-	if (Stat(z->ifn, &sb) < 0) {
+	if (Stat(z->ifn, &z->isb) < 0) {
 	    fprintf(stderr, "%s: input %s doesn't exist, skipping\n",
 			__progname, z->ifn);
 	    goto exit;
 	}
-	if (!S_ISREG(sb.st_mode)) {
+	if (!S_ISREG(z->isb.st_mode)) {
 	    fprintf(stderr, "%s: input %s is not a regular file, skipping\n",
 			__progname, z->ifn);
 	    goto exit;
 	}
-	z->ifd = Fopen(z->ifn, z->ifmode);
-    }
-    if (z->ifd == NULL || Ferror(z->ifd)) {
-	fprintf(stderr, "%s: can't open %s\n", __progname, z->ifn);
-	goto exit;
-    }
-
-    if (opt_stdout) {
-	z->ofn = xstrdup(stdout_filename);
-	z->ofd = z->odio->_fdopen(fdDup(STDOUT_FILENO), z->ofmode);
-    } else {
-	if (z->ifn == stdin_filename)	/* XXX error needed here. */
-	    goto exit;
-	z->ofn = compressedFN(z);
-	if (!opt_force && Stat(z->ofn, &sb) == 0) {
-	    fprintf(stderr, "%s: output file %s already exists\n",
-			__progname, z->ofn);
-	    /* XXX TODO: ok to overwrite(y/N)? */
-	    goto exit;
+	switch (opt_mode) {
+	default:
+	    break;
+	case MODE_COMPRESS:
+	    z->ifd = Fopen(z->ifn, z->ifmode);
+	    break;
+	case MODE_DECOMPRESS:
+	    z->ifd = z->idio->_fopen(z->ifn, z->ifmode);
+	    fdFree(z->ifd, NULL);		/* XXX adjust refcounts. */
+	    break;
 	}
-	z->ofd = z->odio->_fopen(z->ofn, z->ofmode);
-	fdFree(z->ofd, NULL);		/* XXX adjust refcounts. */
-    }
-    if (z->ofd == NULL || Ferror(z->ofd)) {
-	fprintf(stderr, "%s: can't open %s\n", __progname, z->ofn);
-	goto exit;
-    }
-
-    rc = rpmzCopy(z);
-
-exit:
-    return rpmzFini(z, rc);
-}
-
-/*
- * Uncompress the given file and remove the original.
- */
-static rpmRC rpmzUncompress(rpmz z)
-{
-    struct stat sb;
-    rpmRC rc = RPMRC_FAIL;
-
-if (_debug)
-fprintf(stderr, "==> rpmzUncompress(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
-    if (z->ifn == NULL) {
-	z->ifn = stdin_filename;
-	z->ifd = z->idio->_fdopen(fdDup(STDIN_FILENO), z->ifmode);
-    } else {
-	if (Stat(z->ifn, &sb) < 0) {
-	    fprintf(stderr, "%s: input %s doesn't exist, skipping\n",
-			__progname, z->ifn);
-	    goto exit;
-	}
-	if (!S_ISREG(sb.st_mode)) {
-	    fprintf(stderr, "%s: input %s is not a regular file, skipping\n",
-			__progname, z->ifn);
-	    goto exit;
-	}
-	z->ifd = z->idio->_fopen(z->ifn, z->ifmode);
-	fdFree(z->ifd, NULL);		/* XXX adjust refcounts. */
     }
     if (z->ifd == NULL || Ferror(z->ifd)) {
 	fprintf(stderr, "%s: can't open %s\n", __progname, z->ifn);
@@ -554,28 +514,73 @@ fprintf(stderr, "==> rpmzUncompress(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmod
 
     if (opt_stdout)  {
 	z->ofn = xstrdup(stdout_filename);
-	z->ofd = fdDup(STDOUT_FILENO);
+	switch (opt_mode) {
+	default:
+	    break;
+	case MODE_COMPRESS:
+	    z->ofd = z->odio->_fdopen(fdDup(STDOUT_FILENO), z->ofmode);
+	    break;
+	case MODE_DECOMPRESS:
+	    z->ofd = fdDup(STDOUT_FILENO);
+	    break;
+	}
     } else {
 	if (z->ifn == stdin_filename)	/* XXX error needed here. */
 	    goto exit;
-	z->ofn = uncompressedFN(z);
-	if (!opt_force && Stat(z->ofn, &sb) == 0) {
-	    fprintf(stderr, "%s: output file %s already exists\n",
+	switch (opt_mode) {
+	default:
+	    break;
+	case MODE_COMPRESS:
+	    z->ofn = compressedFN(z);
+	    if (!opt_force && Stat(z->ofn, &z->osb) == 0) {
+		fprintf(stderr, "%s: output file %s already exists\n",
 			__progname, z->ofn);
-	    /* XXX TODO: ok to overwrite(y/N)? */
-	    goto exit;
+		/* XXX TODO: ok to overwrite(y/N)? */
+		goto exit;
+	    }
+	    z->ofd = z->odio->_fopen(z->ofn, z->ofmode);
+	    fdFree(z->ofd, NULL);		/* XXX adjust refcounts. */
+	    break;
+	case MODE_DECOMPRESS:
+	    z->ofn = uncompressedFN(z);
+	    if (!opt_force && Stat(z->ofn, &z->osb) == 0) {
+		fprintf(stderr, "%s: output file %s already exists\n",
+			__progname, z->ofn);
+		/* XXX TODO: ok to overwrite(y/N)? */
+		goto exit;
+	    }
+	    z->ofd = Fopen(z->ofn, z->ofmode);
+	    break;
 	}
-	z->ofd = Fopen(z->ofn, z->ofmode);
     }
     if (z->ofd == NULL || Ferror(z->ofd)) {
-	fprintf(stderr, "%s: can't Fopen %s\n", __progname, z->ofn);
+	fprintf(stderr, "%s: can't open %s\n", __progname, z->ofn);
 	goto exit;
     }
 
-    rc = rpmzCopy(z);
+    rc = RPMRC_OK;
 
 exit:
-    return rpmzFini(z, rc);
+    return rc;
+}
+
+/*
+ * Copy input to output.
+ */
+static rpmRC rpmzCopy(rpmz z)
+{
+    for (;;) {
+	size_t len = Fread(z->b, 1, z->nb, z->ifd);
+
+	if (Ferror(z->ifd))
+	    return RPMRC_FAIL;
+
+	if (len == 0) break;
+
+	if (Fwrite(z->b, 1, len, z->ofd) != len)
+	    return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
 }
 
 /*==============================================================*/
@@ -878,12 +883,12 @@ options_lzma(const char *str)
 
 static void
 coder_add_filter(lzma_vli id, void *options)
-	/*@globals filter_count, filters @*/
-	/*@modifies filter_count, filters @*/
+	/*@globals filters, filters_count @*/
+	/*@modifies filters, filters_count @*/
 {
-    if (filter_count == 4) {
-	fprintf(stderr, _("%s: Maximum number of filters is four\n"),
-		__progname);
+    if (filters_count == LZMA_FILTERS_MAX) {
+	fprintf(stderr, _("%s: Maximum number of filters is %d\n"),
+		__progname, LZMA_FILTERS_MAX);
 	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
     }
 
@@ -893,6 +898,193 @@ coder_add_filter(lzma_vli id, void *options)
 
     return;
 }
+
+#ifdef	NOTYET
+static void
+coder_set_compression_settings(void)
+	/*@globals filters, filters_count, opt_threads, preset_default, preset_number @*/
+	/*@modifies filters, filters_count, opt_threads, preset_default, preset_number @*/
+{
+	// Options for LZMA1 or LZMA2 in case we are using a preset.
+	static lzma_options_lzma opt_lzma;
+	uint64_t memory_usage;
+	uint64_t memory_limit;
+	size_t thread_limit;
+
+	if (filters_count == 0) {
+		// We are using a preset. This is not a good idea in raw mode
+		// except when playing around with things. Different versions
+		// of this software may use different options in presets, and
+		// thus make uncompressing the raw data difficult.
+		if (opt_format == FORMAT_RAW) {
+			// The message is shown only if warnings are allowed
+			// but the exit status isn't changed.
+			message(V_WARNING, _("Using a preset in raw mode "
+					"is discouraged."));
+			message(V_WARNING, _("The exact options of the "
+					"presets may vary between software "
+					"versions."));
+		}
+
+		// Get the preset for LZMA1 or LZMA2.
+		if (preset_extreme)
+			preset_number |= LZMA_PRESET_EXTREME;
+
+		if (lzma_lzma_preset(&opt_lzma, preset_number))
+			message_bug();
+
+		// Use LZMA2 except with --format=lzma we use LZMA1.
+		filters[0].id = opt_format == FORMAT_LZMA
+				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
+		filters[0].options = &opt_lzma;
+		filters_count = 1;
+	} else {
+		preset_default = false;
+	}
+
+	// Terminate the filter options array.
+	filters[filters_count].id = LZMA_VLI_UNKNOWN;
+
+	// If we are using the LZMA_Alone format, allow exactly one filter
+	// which has to be LZMA.
+	if (opt_format == FORMAT_LZMA && (filters_count != 1
+			|| filters[0].id != LZMA_FILTER_LZMA1))
+		message_fatal(_("With --format=lzma only the LZMA1 filter "
+				"is supported"));
+
+	// Print the selected filter chain.
+	message_filters(V_DEBUG, filters);
+
+	// If using --format=raw, we can be decoding. The memusage function
+	// also validates the filter chain and the options used for the
+	// filters.
+	if (opt_mode == MODE_COMPRESS) {
+		memory_usage = lzma_raw_encoder_memusage(filters);
+		memory_limit = hardware_memlimit_encoder();
+	} else {
+		memory_usage = lzma_raw_decoder_memusage(filters);
+		memory_limit = hardware_memlimit_decoder();
+	}
+
+	if (memory_usage == UINT64_MAX)
+		message_fatal("Unsupported filter chain or filter options");
+
+	// Print memory usage info.
+#if defined(__LCLINT__)
+	message(V_DEBUG, _("%'llu MiB (%'llu B) of memory is "
+			"required per thread, "
+			"limit is %'llu MiB (%'llu B)"),
+			(unsigned long long)(memory_usage >> 20),
+			(unsigned long long)memory_usage,
+			(unsigned long long)(memory_limit >> 20),
+			(unsigned long long)memory_limit);
+#else
+	message(V_DEBUG, _("%'" PRIu64 " MiB (%'" PRIu64 " B) of memory is "
+			"required per thread, "
+			"limit is %'" PRIu64 " MiB (%'" PRIu64 " B)"),
+			memory_usage >> 20, memory_usage,
+			memory_limit >> 20, memory_limit);
+#endif
+
+	if (memory_usage > memory_limit) {
+		size_t i = 0;
+		lzma_options_lzma *opt;
+		uint32_t orig_dict_size;
+
+		// If --no-auto-adjust was used or we didn't find LZMA1 or
+		// LZMA2 as the last filter, give an error immediatelly.
+		// --format=raw implies --no-auto-adjust.
+		if (!auto_adjust || opt_format == FORMAT_RAW)
+			memlimit_too_small(memory_usage, memory_limit);
+
+		assert(opt_mode == MODE_COMPRESS);
+
+		// Look for the last filter if it is LZMA2 or LZMA1, so
+		// we can make it use less RAM. With other filters we don't
+		// know what to do.
+		while (filters[i].id != LZMA_FILTER_LZMA2
+				&& filters[i].id != LZMA_FILTER_LZMA1) {
+			if (filters[i].id == LZMA_VLI_UNKNOWN)
+				memlimit_too_small(memory_usage, memory_limit);
+
+			++i;
+		}
+
+		// Decrease the dictionary size until we meet the memory
+		// usage limit. First round down to full mebibytes.
+		opt = filters[i].options;
+		orig_dict_size = opt->dict_size;
+		opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
+		while (true) {
+			// If it is below 1 MiB, auto-adjusting failed. We
+			// could be more sophisticated and scale it down even
+			// more, but let's see if many complain about this
+			// version.
+			//
+			// FIXME: Displays the scaled memory usage instead
+			// of the original.
+			if (opt->dict_size < (UINT32_C(1) << 20))
+				memlimit_too_small(memory_usage, memory_limit);
+
+			memory_usage = lzma_raw_encoder_memusage(filters);
+			if (memory_usage == UINT64_MAX)
+				message_bug();
+
+			// Accept it if it is low enough.
+			if (memory_usage <= memory_limit)
+				break;
+
+			// Otherwise 1 MiB down and try again. I hope this
+			// isn't too slow method for cases where the original
+			// dict_size is very big.
+			opt->dict_size -= UINT32_C(1) << 20;
+		}
+
+		// Tell the user that we decreased the dictionary size.
+		// However, omit the message if no preset or custom chain
+		// was given. FIXME: Always warn?
+#if defined(__LCLINT__)
+		if (!preset_default)
+			message(V_WARNING, "Adjusted LZMA%c dictionary size "
+					"from %'u MiB to "
+					"%'u MiB to not exceed "
+					"the memory usage limit of "
+					"%'llu MiB",
+					filters[i].id == LZMA_FILTER_LZMA2
+						? '2' : '1',
+					(unsigned)(orig_dict_size >> 20),
+					(unsigned)(opt->dict_size >> 20),
+					(unsigned long long)(memory_limit >> 20));
+#else
+		if (!preset_default)
+			message(V_WARNING, "Adjusted LZMA%c dictionary size "
+					"from %'" PRIu32 " MiB to "
+					"%'" PRIu32 " MiB to not exceed "
+					"the memory usage limit of "
+					"%'" PRIu64 " MiB",
+					filters[i].id == LZMA_FILTER_LZMA2
+						? '2' : '1',
+					orig_dict_size >> 20,
+					opt->dict_size >> 20,
+					memory_limit >> 20);
+#endif
+	}
+
+	// Limit the number of worker threads so that memory usage
+	// limit isn't exceeded.
+	assert(memory_usage > 0);
+	thread_limit = memory_limit / memory_usage;
+	if (thread_limit == 0)
+		thread_limit = 1;
+
+	if (opt_threads > thread_limit)
+		opt_threads = thread_limit;
+
+	return;
+}
+#endif	/* NOTYET */
+
+/*==============================================================*/
 
 /**
  */
@@ -1169,12 +1361,12 @@ static struct poptOption optionsTable[] = {
   { "subblock", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_SUBBLOCK,
 	N_("set subblock filter"), N_("OPTS") },
 
+#ifdef	NOTYET
   /* ===== Metadata options */
   { "name", 'N', POPT_ARG_VAL,			&opt_preserve_name, 1,
 	N_("save or restore the original filename and time stamp"), NULL },
   { "no-name", 'n', POPT_ARG_VAL,		&opt_preserve_name, 0,
 	N_("do not save or restore filename and time stamp (default)"), NULL },
-#ifdef	NOTYET
   { "sign", 'S', POPT_ARG_STRING,		NULL, 0,
 	N_("sign the data with GnuPG when compressing, or verify the signature when decompressing"), N_("PUBKEY") },
 #endif
@@ -1223,7 +1415,6 @@ main(int argc, char *argv[])
     const char ** av;
     int ac;
     int rc = 1;		/* assume failure. */
-    int xx;
     int i;
 
 /*@-observertrans -readonlytrans @*/
@@ -1231,6 +1422,44 @@ main(int argc, char *argv[])
 /*@=observertrans =readonlytrans @*/
 
     /* XXX TODO: Set modes and format based on argv[0]. */
+#ifdef	NOTYET
+	// Initialize those parts of *args that we need later.
+	args->files_name = NULL;
+	args->files_file = NULL;
+	args->files_delim = '\0';
+
+	// Type of the file format to use when --format=auto or no --format
+	// was specified.
+    {	enum format_type format_compress_auto = FORMAT_XZ;
+
+	// Check how we were called.
+	{
+		// Remove the leading path name, if any.
+		const char *name = strrchr(argv[0], '/');
+		if (name == NULL)
+			name = argv[0];
+		else
+			++name;
+
+		// NOTE: It's possible that name[0] is now '\0' if argv[0]
+		// is weird, but it doesn't matter here.
+
+		// The default file format is .lzma if the command name
+		// contains "lz".
+		if (strstr(name, "lz") != NULL)
+			format_compress_auto = FORMAT_LZMA;
+
+		// Operation mode
+		if (strstr(name, "cat") != NULL) {
+			// Imply --decompress --stdout
+			opt_mode = MODE_DECOMPRESS;
+			opt_stdout = true;
+		} else if (strstr(name, "un") != NULL) {
+			// Imply --decompress
+			opt_mode = MODE_DECOMPRESS;
+		}
+	}
+#endif	/* NOTYET */
 
     z->b = xmalloc(z->nb);
 #ifndef	DYING
@@ -1246,6 +1475,15 @@ main(int argc, char *argv[])
     hw_init();
 
     /* XXX TODO: Parse environment options. */
+#ifdef	NOTYET
+	// First the flags from environment
+	parse_environment(args, argv[0]);
+
+	// Then from the command line
+	optind = 1;
+	parse_real(args, argc, argv);
+#endif	/* NOTYET */
+
 
     /* Parse CLI options. */
     optCon = rpmioInit(argc, argv, optionsTable);
@@ -1256,11 +1494,39 @@ main(int argc, char *argv[])
     if (av == NULL || av[0] == NULL)
 	ac++;
 
+#ifdef	NOTYET
+	// Never remove the source file when the destination is not on disk.
+	// In test mode the data is written nowhere, but setting opt_stdout
+	// will make the rest of the code behave well.
+	if (opt_stdout || opt_mode == MODE_TEST) {
+		opt_keep_original = true;
+		opt_stdout = true;
+	}
+
+	// If no --format flag was used, or it was --format=auto, we need to
+	// decide what is the target file format we are going to use. This
+	// depends on how we were called (checked earlier in this function).
+	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_AUTO)
+		opt_format = format_compress_auto;
+    }
+#endif	/* NOTYET */
+
     if (opt_mode == MODE_COMPRESS) {
+	int xx;
 	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
 		(unsigned)(preset_number % 10));
     }
     z->suffix = opt_suffix;
+
+#ifdef	NOTYET
+    // Compression settings need to be validated (options themselves and
+    // their memory usage) when compressing to any file format. It has to
+    // be done also when uncompressing raw data, since for raw decoding
+    // the options given on the command line are used to know what kind
+    // of raw data we are supposed to decode.
+    if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
+	coder_set_compression_settings();
+#endif
 
     /* Process arguments. */
     for (i = 0; i < ac; i++) {
@@ -1271,10 +1537,11 @@ main(int argc, char *argv[])
 
 	switch (opt_mode) {
 	case MODE_COMPRESS:
-	    frc = rpmzCompress(z);
-	    break;
 	case MODE_DECOMPRESS:
-	    frc = rpmzUncompress(z);
+	    frc = rpmzInit(z);
+	    if (frc == RPMRC_OK)
+		frc = rpmzCopy(z);
+	    frc = rpmzFini(z, frc);
 	    break;
 	case MODE_TEST:
 	    break;
