@@ -1595,6 +1595,65 @@ Compress or decompress FILEs.\n\
 
 };
 
+/**
+ */
+static rpmRC rpmzParseEnv(rpmz z, /*@null@*/ const char * envvar)
+	/*@*/
+{
+    static char whitespace[] = " \f\n\r\t\v,";
+    static char _envvar[] = "RPMZ";
+    char * s = getenv((envvar ? envvar : _envvar));
+    ARGV_t av = NULL;
+    poptContext optCon;
+    rpmRC rc = RPMRC_OK;
+    int ac;
+    int xx;
+
+    if (s == NULL)
+	goto exit;
+
+    /* XXX todo: argvSplit() assumes single separator between args. */
+    xx = argvSplit(&av, s, whitespace);
+    ac = argvCount(av);
+    if (ac < 1)
+	goto exit;
+
+    optCon = poptGetContext(__progname, ac, (const char **)av,
+		optionsTable, POPT_CONTEXT_KEEP_FIRST);
+
+    /* Process all options, whine if unknown. */
+    while ((xx = poptGetNextOpt(optCon)) > 0) {
+	const char * optArg = poptGetOptArg(optCon);
+/*@-dependenttrans -modobserver -observertrans @*/
+	optArg = _free(optArg);
+/*@=dependenttrans =modobserver =observertrans @*/
+	switch (xx) {
+	default:
+/*@-nullpass@*/
+	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+		__progname, xx);
+/*@=nullpass@*/
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+        }
+    }
+
+    if (xx < -1) {
+/*@-nullpass@*/
+	fprintf(stderr, "%s: %s: %s\n", __progname,
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+		poptStrerror(xx));
+/*@=nullpass@*/
+	rc = RPMRC_FAIL;
+    }
+    optCon = poptFreeContext(optCon);
+
+exit:
+    av = argvFree(av);
+    return rc;
+}
+
 int
 main(int argc, char *argv[])
 	/*@globals __assert_program_name,
@@ -1661,22 +1720,20 @@ main(int argc, char *argv[])
 #endif
 
     /* Make sure that stdin/stdout/stderr are open. */
+    /* XXX done by rpmioInit as well. */
     io_init();
 
     /* Set hardware specific parameters. */
     hw_init();
 
-    /* XXX TODO: Parse environment options. */
-#ifdef	NOTYET
-	// First the flags from environment
-	parse_environment(args, argv[0]);
-
-	// Then from the command line
-	optind = 1;
-	parse_real(args, argc, argv);
-#endif	/* NOTYET */
+    /* Parse environment options. */
+    /* XXX NULL uses "RPMZ" envvar. */
+    rc = rpmzParseEnv(z, NULL);
+    if (rc) {
+    }
 
     /* Parse CLI options. */
+    /* XXX todo: needs to be earlier. */
     optCon = rpmioInit(argc, argv, optionsTable);
 
     /* Add files from CLI. */
