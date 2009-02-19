@@ -366,11 +366,23 @@ static struct rpmsig_s {
     { SIGCHLD,	rpmsqAction },
 #define	rpmsigTbl_sigchld	(&rpmsigTbl[2])
     { SIGHUP,	rpmsqAction },
-#define	rpmsigTbl_sighup	(&rpmsigTbl[3])
+#define	rpmsigTbl_sighup	(&rpmsigTbl[3])		/* XXX unused */
     { SIGTERM,	rpmsqAction },
-#define	rpmsigTbl_sigterm	(&rpmsigTbl[4])
+#define	rpmsigTbl_sigterm	(&rpmsigTbl[4])		/* XXX unused */
     { SIGPIPE,	rpmsqAction },
-#define	rpmsigTbl_sigpipe	(&rpmsigTbl[5])
+#define	rpmsigTbl_sigpipe	(&rpmsigTbl[5])		/* XXX unused */
+
+#ifdef	NOTYET		/* XXX todo++ */
+#if defined(SIGXCPU)
+    { SIGXCPU,	rpmsqAction },
+#define	rpmsigTbl_sigxcpu	(&rpmsigTbl[6])		/* XXX unused */
+#endif
+#if defined(SIGXFSZ)
+    { SIGXFSZ,	rpmsqAction },
+#define	rpmsigTbl_sigxfsz	(&rpmsigTbl[7])		/* XXX unused */
+#endif
+#endif
+
     { -1,	NULL },
 };
 /*@=fullinitblock@*/

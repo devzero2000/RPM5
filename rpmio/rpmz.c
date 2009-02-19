@@ -20,9 +20,11 @@
 
 #include "system.h"
 
-#include <rpmio.h>
-#include <poptIO.h>
 #include <lzma.h>
+
+#include <rpmio.h>
+#include <rpmsq.h>
+#include <poptIO.h>
 
 #include "debug.h"
 
@@ -583,6 +585,118 @@ static rpmRC rpmzCopy(rpmz z)
     return RPMRC_OK;
 }
 
+/*==============================================================*/
+/*@unchecked@*/
+static int signals_init_count;
+
+static void signals_init(void)
+	/*@*/
+{
+    int xx;
+
+    if (signals_init_count++ == 0) {
+	xx = rpmsqEnable(SIGHUP,      NULL);
+	xx = rpmsqEnable(SIGINT,      NULL);
+	xx = rpmsqEnable(SIGTERM,     NULL);
+	xx = rpmsqEnable(SIGQUIT,     NULL);
+	xx = rpmsqEnable(SIGPIPE,     NULL);
+	xx = rpmsqEnable(SIGXCPU,     NULL);
+	xx = rpmsqEnable(SIGXFSZ,     NULL);
+    }
+}
+
+static void signals_fini(void)
+	/*@*/
+{
+    int xx;
+
+    if (--signals_init_count == 0) {
+	xx = rpmsqEnable(-SIGHUP,     NULL);
+	xx = rpmsqEnable(-SIGINT,     NULL);
+	xx = rpmsqEnable(-SIGTERM,    NULL);
+	xx = rpmsqEnable(-SIGQUIT,    NULL);
+	xx = rpmsqEnable(-SIGPIPE,    NULL);
+	xx = rpmsqEnable(-SIGXCPU,    NULL);
+	xx = rpmsqEnable(-SIGXFSZ,    NULL);
+    }
+}
+
+static int signals_terminating(int terminate)
+	/*@*/
+{
+    static int terminating = 0;
+
+    if (terminating) return 1;
+
+    if (sigismember(&rpmsqCaught, SIGHUP)
+     || sigismember(&rpmsqCaught, SIGINT)
+     || sigismember(&rpmsqCaught, SIGTERM)
+     || sigismember(&rpmsqCaught, SIGQUIT)
+     || sigismember(&rpmsqCaught, SIGPIPE)
+     || sigismember(&rpmsqCaught, SIGXCPU)
+     || sigismember(&rpmsqCaught, SIGXFSZ)
+     || terminate)
+	terminating = 1;
+    return terminating;
+}
+
+#ifdef	NOTYET
+/*@unchecked@*/
+static int signals_block_count;
+
+static void
+signals_block(void)
+        /*@globals errno, signals_block_count @*/
+        /*@modifies errno, signals_block_count @*/
+{
+        if (signals_block_count++ == 0) {
+                const int saved_errno = errno;
+                mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
+                errno = saved_errno;
+        }
+
+        return;
+}
+
+static void
+signals_unblock(void)
+        /*@globals errno, signals_block_count @*/
+        /*@modifies errno, signals_block_count @*/
+{
+        assert(signals_block_count > 0);
+
+        if (--signals_block_count == 0) {
+                const int saved_errno = errno;
+                mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
+                errno = saved_errno;
+        }
+
+        return;
+}
+#endif
+
+static void signals_exit(void)
+	/*@*/
+{
+#ifdef	NOTYET
+	const int sig = exit_signal;
+
+	if (sig != 0) {
+		struct sigaction sa;
+		sa.sa_handler = SIG_DFL;
+		sigfillset(&sa.sa_mask);
+		sa.sa_flags = 0;
+		sigaction(sig, &sa, NULL);
+		raise(exit_signal);
+	}
+
+	return;
+}
+
+#else
+    signals_fini();
+#endif
+}
 /*==============================================================*/
 
 typedef struct {
@@ -1528,6 +1642,8 @@ main(int argc, char *argv[])
 	coder_set_compression_settings();
 #endif
 
+    signals_init();
+
     /* Process arguments. */
     for (i = 0; i < ac; i++) {
 	rpmRC frc = RPMRC_OK;
@@ -1549,7 +1665,7 @@ main(int argc, char *argv[])
 	    break;
 	}
 
-	if (frc != RPMRC_OK)
+	if (frc != RPMRC_OK || signals_terminating(0))
 	    goto exit;
     }
 
@@ -1558,6 +1674,8 @@ main(int argc, char *argv[])
 exit:
     z->b = _free(z->b);
     optCon = rpmioFini(optCon);
+
+    signals_exit();
 
     return rc;
 }

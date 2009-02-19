@@ -766,6 +766,10 @@ int rpmdbCheckTerminate(int terminate)
      || sigismember(&rpmsqCaught, SIGHUP)
      || sigismember(&rpmsqCaught, SIGTERM)
      || sigismember(&rpmsqCaught, SIGPIPE)
+#ifdef	NOTYET		/* XXX todo++ */
+     || sigismember(&rpmsqCaught, SIGXCPU)
+     || sigismember(&rpmsqCaught, SIGXFSZ)
+#endif
      || terminate)
 	terminating = 1;
 
