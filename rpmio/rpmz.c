@@ -22,7 +22,10 @@
 
 #include <lzma.h>
 
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
 #include <rpmio.h>
+
 #include <rpmsq.h>
 #include <poptIO.h>
 
@@ -53,15 +56,6 @@ static enum format_type opt_format = FORMAT_AUTO;
 
 /*@unchecked@*/
 static char *opt_suffix = NULL;
-
-/*@unchecked@*/
-static const char *opt_files_name = NULL;
-/*@unchecked@*/
-static char opt_files_split = '\0';
-#ifdef	DYING
-/*@unchecked@*/
-static FILE *opt_files_file = NULL;
-#endif
 
 /*@unchecked@*/
 static int opt_stdout;
@@ -132,8 +126,6 @@ enum {
     OPT_LZMA1,
     OPT_LZMA2,
 
-    OPT_FILES,
-    OPT_FILES0,
 };
 
 /**
@@ -145,6 +137,13 @@ typedef struct rpmz_s * rpmz;
 struct rpmz_s {
     char * b;
     size_t nb;
+
+/*@null@*/
+    ARGV_t argv;			/*!< URI's to process. */
+/*@null@*/
+    ARGV_t manifests;			/*!<    --files ... */
+/*@null@*/
+    const char * base_prefix;
 
 /*@null@*/
     const char * isuffix;
@@ -1220,6 +1219,84 @@ coder_set_compression_settings(void)
 
 /**
  */
+static int rpmzLoadManifests(rpmz z)
+	/*@modifies z @*/
+{
+    ARGV_t manifests;
+    const char * fn;
+    int rc = 0;	/* assume success */
+
+    if ((manifests = z->manifests) != NULL)	/* note rc=0 return with no files to load. */
+    while ((fn = *manifests++) != NULL) {
+	unsigned lineno;
+	char * be = NULL;
+	rpmiob iob = NULL;
+	int xx = rpmiobSlurp(fn, &iob);
+	char * f;
+	char * fe;
+
+	if (!(xx == 0 && iob != NULL)) {
+	    fprintf(stderr, _("%s: Failed to open %s\n"), __progname, fn);
+	    rc = -1;
+	    goto bottom;
+	}
+
+	be = (char *)(iob->b + iob->blen);
+	while (be > (char *)iob->b && (be[-1] == '\n' || be[-1] == '\r')) {
+	  be--;
+	  *be = '\0';
+	}
+
+	/* Parse and save manifest items. */
+	lineno = 0;
+	for (f = (char *)iob->b; *f; f = fe) {
+	    const char * path;
+	    char * g, * ge;
+	    lineno++;
+
+	    fe = f;
+	    while (*fe && !(*fe == '\n' || *fe == '\r'))
+		fe++;
+	    g = f;
+	    ge = fe;
+	    while (*fe && (*fe == '\n' || *fe == '\r'))
+		*fe++ = '\0';
+
+	    while (*g && xisspace((int)*g))
+		*g++ = '\0';
+	    /* Skip comment lines. */
+	    if (*g == '#')
+		continue;
+
+	    while (ge > g && xisspace(ge[-1]))
+		*--ge = '\0';
+	    /* Skip empty lines. */
+	    if (ge == g)
+		continue;
+
+	    /* Prepend z->base_prefix if specified. */
+	    if (z->base_prefix)
+		path = rpmExpand(z->base_prefix, g, NULL);
+	    else
+		path = rpmExpand(g, NULL);
+	    (void) argvAdd(&z->argv, path);
+	    path = _free(path);
+	}
+
+bottom:
+	iob = rpmiobFree(iob);
+	if (rc != 0)
+	    goto exit;
+    }
+
+exit:
+    return rc;
+}
+
+/*==============================================================*/
+
+/**
+ */
 static void rpmzArgCallback(poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
@@ -1329,31 +1406,6 @@ static void rpmzArgCallback(poptContext con,
     case OPT_LZMA2:
 	coder_add_filter(LZMA_FILTER_LZMA2, options_lzma(optarg));
 	break;
-    case OPT_FILES:
-	opt_files_split = '\n';
-	/*@fallthrough@*/
-    case OPT_FILES0:
-	if (arg == NULL || !strcmp(arg, "-")) {
-#ifdef	DYING
-	    opt_files_name = xstrdup(stdin_filename);
-	    opt_files_file = stdin;
-#else
-	    opt_files_name = xstrdup("-");
-#endif
-	} else {
-	    opt_files_name = xstrdup(arg);
-#ifdef	DYING
-	    opt_files_file = fopen(opt_files_name,
-			opt->val == OPT_FILES ? "r" : "rb");
-	    if (opt_files_file == NULL || ferror(opt_files_file)) {
-		fprintf(stderr, _("%s: %s: %s\n"),
-			__progname, opt_files_name, strerror(errno));
-		/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-		/*@notreached@*/
-	    }
-#endif
-	}
-	break;
 
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
@@ -1404,10 +1456,9 @@ static struct poptOption optionsTable[] = {
   /* XXX unimplemented */
   { "recursive", 'r', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &opt_recursive, 1,
 	N_("?recursive?"), NULL },
-  { "files", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, NULL, OPT_FILES,
+
+  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
 	N_("read filenames to process from FILE"), N_("FILE") },
-  { "files0", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL|POPT_ARGFLAG_DOC_HIDDEN, NULL, OPT_FILES0,
-	N_("like --files but use the nul byte as terminator"), N_("FILE") },
 
   /* ===== Basic compression settings */
   { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
@@ -1553,9 +1604,9 @@ main(int argc, char *argv[])
 {
     poptContext optCon;
     rpmz z = _rpmz;
-    const char ** av;
     int ac;
     int rc = 1;		/* assume failure. */
+    int xx;
     int i;
 
 /*@-observertrans -readonlytrans @*/
@@ -1625,36 +1676,25 @@ main(int argc, char *argv[])
 	parse_real(args, argc, argv);
 #endif	/* NOTYET */
 
-
     /* Parse CLI options. */
     optCon = rpmioInit(argc, argv, optionsTable);
-    av = poptGetArgs(optCon);
-    ac = argvCount(av);
 
-    /* Add files from --files manifest. */
-    if (opt_files_name != NULL) {
-	FD_t fd = Fopen(opt_files_name, "r.fpio");
-	ARGV_t fav = NULL;
-	int xx;
-	if (fd == NULL || Ferror(fd)) {
-	    if (fd) xx = Fclose(fd);
-fprintf(stderr, "%s: can't open manifest %s\n", __progname, opt_files_name);
-	    goto exit;
-	}
-	xx = argvFgets(&fav, fd);
-	if (fd) xx = Fclose(fd);
-if (_debug)
-argvPrint("manifest args", fav, NULL);
-	xx = argvAppend(&av, fav);
-	fav = argvFree(fav);
-	ac = argvCount(av);
+    /* Add files from CLI. */
+    {	ARGV_t av = poptGetArgs(optCon);
+	if (av != NULL)
+	    xx = argvAppend(&z->argv, av);
     }
 
-if (_debug)
-argvPrint("input args", av, NULL);
+    /* Add files from --files manifest(s). */
+    if (z->manifests != NULL)
+        xx = rpmzLoadManifests(z);
 
+if (_debug)
+argvPrint("input args", z->argv, NULL);
+
+    ac = argvCount(z->argv);
     /* With no arguments, act as a stdin/stdout filter. */
-    if (av == NULL || av[0] == NULL)
+    if (z->argv == NULL || z->argv[0] == NULL)
 	ac++;
 
 #ifdef	NOTYET
@@ -1698,7 +1738,7 @@ argvPrint("input args", av, NULL);
 	rpmRC frc = RPMRC_OK;
 
 	/* Use NULL for stdin. */
-	z->ifn = (av && strcmp(av[i], "-") ? av[i] : NULL);
+	z->ifn = (z->argv && strcmp(z->argv[i], "-") ? z->argv[i] : NULL);
 
 	switch (opt_mode) {
 	case MODE_COMPRESS:
@@ -1718,8 +1758,10 @@ argvPrint("input args", av, NULL);
     rc = 0;
 
 exit:
-    opt_files_name = _free(opt_files_name);
+    z->manifests = argvFree(z->manifests);
+    z->argv = argvFree(z->argv);
     z->b = _free(z->b);
+
     optCon = rpmioFini(optCon);
 
     signals_exit();
