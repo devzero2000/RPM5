@@ -1654,6 +1654,37 @@ exit:
     return rc;
 }
 
+/**
+ */
+static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
+	/*@*/
+{
+#ifdef	NOTYET
+    enum format_type format_compress_auto = FORMAT_XZ;
+#endif
+    const char * s = strrchr(argv0, '/');
+    const char * name = (s ? (s + 1) : argv0);
+    rpmRC rc = RPMRC_OK;
+
+#ifdef	NOTYET
+    if (strstr(name, "lz") != NULL) {
+	format_compress_auto = FORMAT_LZMA;
+	z->idio = z->odio = lzdio;
+	z->osuffix = ".lzma";
+	opt_format = FORMAT_LZMA;
+    }
+#endif
+
+    if (strstr(name, "cat") != NULL) {
+	opt_mode = MODE_DECOMPRESS;
+	opt_stdout = true;
+    } else if (strstr(name, "un") != NULL) {
+	opt_mode = MODE_DECOMPRESS;
+    }
+
+    return rc;
+}
+
 int
 main(int argc, char *argv[])
 	/*@globals __assert_program_name,
@@ -1672,45 +1703,10 @@ main(int argc, char *argv[])
     __progname = "rpmz";
 /*@=observertrans =readonlytrans @*/
 
-    /* XXX TODO: Set modes and format based on argv[0]. */
-#ifdef	NOTYET
-	// Initialize those parts of *args that we need later.
-	args->files_name = NULL;
-	args->files_file = NULL;
-	args->files_delim = '\0';
-
-	// Type of the file format to use when --format=auto or no --format
-	// was specified.
-    {	enum format_type format_compress_auto = FORMAT_XZ;
-
-	// Check how we were called.
-	{
-		// Remove the leading path name, if any.
-		const char *name = strrchr(argv[0], '/');
-		if (name == NULL)
-			name = argv[0];
-		else
-			++name;
-
-		// NOTE: It's possible that name[0] is now '\0' if argv[0]
-		// is weird, but it doesn't matter here.
-
-		// The default file format is .lzma if the command name
-		// contains "lz".
-		if (strstr(name, "lz") != NULL)
-			format_compress_auto = FORMAT_LZMA;
-
-		// Operation mode
-		if (strstr(name, "cat") != NULL) {
-			// Imply --decompress --stdout
-			opt_mode = MODE_DECOMPRESS;
-			opt_stdout = true;
-		} else if (strstr(name, "un") != NULL) {
-			// Imply --decompress
-			opt_mode = MODE_DECOMPRESS;
-		}
-	}
-#endif	/* NOTYET */
+    /* Set modes and format based on argv[0]. */
+    xx = rpmzParseArgv0(z, argv[0]);
+    if (xx)
+	goto exit;
 
     z->b = xmalloc(z->nb);
 #ifndef	DYING
@@ -1728,9 +1724,9 @@ main(int argc, char *argv[])
 
     /* Parse environment options. */
     /* XXX NULL uses "RPMZ" envvar. */
-    rc = rpmzParseEnv(z, NULL);
-    if (rc) {
-    }
+    xx = rpmzParseEnv(z, NULL);
+    if (xx)
+	goto exit;
 
     /* Parse CLI options. */
     /* XXX todo: needs to be earlier. */
