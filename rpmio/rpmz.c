@@ -28,7 +28,7 @@
 
 #include "debug.h"
 
-static int _debug = 1;
+static int _debug = 0;
 
 enum tool_mode {
     MODE_COMPRESS,
@@ -58,8 +58,10 @@ static char *opt_suffix = NULL;
 static const char *opt_files_name = NULL;
 /*@unchecked@*/
 static char opt_files_split = '\0';
+#ifdef	DYING
 /*@unchecked@*/
 static FILE *opt_files_file = NULL;
+#endif
 
 /*@unchecked@*/
 static int opt_stdout;
@@ -570,6 +572,7 @@ exit:
  * Copy input to output.
  */
 static rpmRC rpmzCopy(rpmz z)
+	/*@*/
 {
     for (;;) {
 	size_t len = Fread(z->b, 1, z->nb, z->ifd);
@@ -583,6 +586,21 @@ static rpmRC rpmzCopy(rpmz z)
 	    return RPMRC_FAIL;
     }
     return RPMRC_OK;
+}
+
+/*
+ * Copy input to output.
+ */
+static rpmRC rpmzProcess(rpmz z)
+	/*@*/
+{
+    rpmRC rc;
+
+    rc = rpmzInit(z);
+    if (rc == RPMRC_OK)
+	rc = rpmzCopy(z);
+    rc = rpmzFini(z, rc);
+    return rc;
 }
 
 /*==============================================================*/
@@ -1316,10 +1334,15 @@ static void rpmzArgCallback(poptContext con,
 	/*@fallthrough@*/
     case OPT_FILES0:
 	if (arg == NULL || !strcmp(arg, "-")) {
+#ifdef	DYING
 	    opt_files_name = xstrdup(stdin_filename);
 	    opt_files_file = stdin;
+#else
+	    opt_files_name = xstrdup("-");
+#endif
 	} else {
 	    opt_files_name = xstrdup(arg);
+#ifdef	DYING
 	    opt_files_file = fopen(opt_files_name,
 			opt->val == OPT_FILES ? "r" : "rb");
 	    if (opt_files_file == NULL || ferror(opt_files_file)) {
@@ -1328,6 +1351,7 @@ static void rpmzArgCallback(poptContext con,
 		/*@-exitarg@*/ exit(2); /*@=exitarg@*/
 		/*@notreached@*/
 	    }
+#endif
 	}
 	break;
 
@@ -1347,6 +1371,9 @@ static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmzArgCallback, 0, NULL, NULL },
 /*@=type@*/
+
+  { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
+	N_("debug spewage"), NULL },
 
   /* ===== Operation modes */
   { "compress", 'z', POPT_ARG_VAL,		&opt_mode, MODE_COMPRESS,
@@ -1379,12 +1406,12 @@ static struct poptOption optionsTable[] = {
 	N_("?recursive?"), NULL },
   { "files", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, NULL, OPT_FILES,
 	N_("read filenames to process from FILE"), N_("FILE") },
-  { "files0", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, NULL, OPT_FILES0,
+  { "files0", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL|POPT_ARGFLAG_DOC_HIDDEN, NULL, OPT_FILES0,
 	N_("like --files but use the nul byte as terminator"), N_("FILE") },
 
   /* ===== Basic compression settings */
   { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
-	N_("file FORMAT {auto|xz|lzma|alone|gzip|gz|raw}"), N_("FORMAT") },
+	N_("file FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"), N_("FORMAT") },
   { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
 	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
   { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
@@ -1604,6 +1631,28 @@ main(int argc, char *argv[])
     av = poptGetArgs(optCon);
     ac = argvCount(av);
 
+    /* Add files from --files manifest. */
+    if (opt_files_name != NULL) {
+	FD_t fd = Fopen(opt_files_name, "r.fpio");
+	ARGV_t fav = NULL;
+	int xx;
+	if (fd == NULL || Ferror(fd)) {
+	    if (fd) xx = Fclose(fd);
+fprintf(stderr, "%s: can't open manifest %s\n", __progname, opt_files_name);
+	    goto exit;
+	}
+	xx = argvFgets(&fav, fd);
+	if (fd) xx = Fclose(fd);
+if (_debug)
+argvPrint("manifest args", fav, NULL);
+	xx = argvAppend(&av, fav);
+	fav = argvFree(fav);
+	ac = argvCount(av);
+    }
+
+if (_debug)
+argvPrint("input args", av, NULL);
+
     /* With no arguments, act as a stdin/stdout filter. */
     if (av == NULL || av[0] == NULL)
 	ac++;
@@ -1654,10 +1703,7 @@ main(int argc, char *argv[])
 	switch (opt_mode) {
 	case MODE_COMPRESS:
 	case MODE_DECOMPRESS:
-	    frc = rpmzInit(z);
-	    if (frc == RPMRC_OK)
-		frc = rpmzCopy(z);
-	    frc = rpmzFini(z, frc);
+	    frc = rpmzProcess(z);
 	    break;
 	case MODE_TEST:
 	    break;
@@ -1672,6 +1718,7 @@ main(int argc, char *argv[])
     rc = 0;
 
 exit:
+    opt_files_name = _free(opt_files_name);
     z->b = _free(z->b);
     optCon = rpmioFini(optCon);
 

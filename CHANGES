@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmz: stub in --files manifest handling (ignore --files0 for now).
     - jbj: rpmz: stub in signal handling.
     - jbj: rpmz: handle gzip/bzip2/xz/lzma compression in 1 executable.
     - proyvind: create %mipsel and also add more generations to the mips macros. 
