@@ -111,6 +111,7 @@ enum rpmzFlags_e {
     RPMZ_FLAGS_FORCE		= _ZFB(1),	/*< -f, --force ... */
     RPMZ_FLAGS_KEEP		= _ZFB(2),	/*< -k, --keep ... */
     RPMZ_FLAGS_RECURSE		= _ZFB(3),	/*< -r, --recursive ... */
+    /* XXX unused */
     RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*<     --extreme ... */
 
 #ifdef	NOTYET
@@ -143,7 +144,7 @@ struct rpmz_s {
     rpmuint64_t memlimit_custom;
 
 /*@unchecked@*/
-    int threads;			/*!< No. or threads to use. */
+    unsigned int threads;		/*!< No. or threads to use. */
 
 /*@observer@*/
     const char *stdin_filename;		/*!< Display name for stdin. */
@@ -187,9 +188,10 @@ struct rpmz_s {
     const char * suffix;		/*!< -S, --suffix ... */
 
     /* LZMA specific configuration. */
-    lzma_check checksum;
-    lzma_filter filters[LZMA_FILTERS_MAX + 1];
-    size_t filters_count;
+    lzma_options_lzma _options;
+    lzma_check _checksum;
+    lzma_filter _filters[LZMA_FILTERS_MAX + 1];
+    size_t _filters_count;
 
 };
 
@@ -208,7 +210,7 @@ static struct rpmz_s __rpmz = {
     .ofmode	= "wb",
     .suffix	= "",
 
-    .checksum	= LZMA_CHECK_CRC64,
+    ._checksum	= LZMA_CHECK_CRC64,
 
 };
 /*@unchecked@*/
@@ -302,8 +304,8 @@ hw_cores(rpmz z)
 
 #if defined(_SC_THREAD_THREADS_MAX)
     {	const long threads_max = sysconf(_SC_THREAD_THREADS_MAX);
-	if (threads_max > 0 && (int)(threads_max) < z->threads)
-	    z->threads = (int)(threads_max);
+	if (threads_max > 0 && (unsigned)(threads_max) < z->threads)
+	    z->threads = (unsigned)(threads_max);
     }
 #elif defined(PTHREAD_THREADS_MAX)
     if (z->threads > PTHREAD_THREADS_MAX)
@@ -1049,17 +1051,31 @@ static void
 coder_add_filter(rpmz z, lzma_vli id, void *options)
 	/*@modifies z @*/
 {
-    if (z->filters_count == LZMA_FILTERS_MAX) {
+    if (z->_filters_count == LZMA_FILTERS_MAX) {
 	fprintf(stderr, _("%s: Maximum number of filters is %d\n"),
 		__progname, LZMA_FILTERS_MAX);
 	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
     }
 
-    z->filters[z->filters_count].id = id;
-    z->filters[z->filters_count].options = options;
-    z->filters_count++;
+    z->_filters[z->_filters_count].id = id;
+    z->_filters[z->_filters_count].options = options;
+    z->_filters_count++;
 
     return;
+}
+
+static rpmuint64_t
+hw_memlimit_encoder(rpmz z)
+	/*@*/
+{
+    return z->memlimit_custom != 0 ? z->memlimit_custom : z->memlimit_encoder;
+}
+
+static rpmuint64_t
+hw_memlimit_decoder(rpmz z)
+	/*@*/
+{
+    return z->memlimit_custom != 0 ? z->memlimit_custom : z->memlimit_decoder;
 }
 
 static void
@@ -1067,6 +1083,11 @@ coder_set_compression_settings(rpmz z)
 	/*@globals preset_default, preset_number @*/
 	/*@modifies z, preset_default, preset_number @*/
 {
+
+    // Options for LZMA1 or LZMA2 in case we are using a preset.
+    rpmuint64_t memory_usage;
+    rpmuint64_t memory_limit;
+    size_t thread_limit;
 
     /* Add the per-architecture filters. */
     if (F_ISSET(z->flags, X86))
@@ -1082,75 +1103,79 @@ coder_set_compression_settings(rpmz z)
     if (F_ISSET(z->flags, SPARC))
 	coder_add_filter(z, LZMA_FILTER_SPARC, NULL);
 
+    if (z->_filters_count == 0) {
 #ifdef	NOTYET
-	// Options for LZMA1 or LZMA2 in case we are using a preset.
-	static lzma_options_lzma opt_lzma;
-	uint64_t memory_usage;
-	uint64_t memory_limit;
-	size_t thread_limit;
-	size_t preset_number = z->level;
+	// We are using a preset. This is not a good idea in raw mode
+	// except when playing around with things. Different versions
+	// of this software may use different options in presets, and
+	// thus make uncompressing the raw data difficult.
+	if (z->format == RPMZ_FORMAT_RAW) {
+	    // The message is shown only if warnings are allowed
+	    // but the exit status isn't changed.
+	    message(V_WARNING, _("Using a preset in raw mode "
+				"is discouraged."));
+	    message(V_WARNING, _("The exact options of the "
+				"presets may vary between software "
+				"versions."));
+	}
+#endif	/* NOTYET */
 
-	if (z->filters_count == 0) {
-		// We are using a preset. This is not a good idea in raw mode
-		// except when playing around with things. Different versions
-		// of this software may use different options in presets, and
-		// thus make uncompressing the raw data difficult.
-		if (z->format == RPMZ_FORMAT_RAW) {
-			// The message is shown only if warnings are allowed
-			// but the exit status isn't changed.
-			message(V_WARNING, _("Using a preset in raw mode "
-					"is discouraged."));
-			message(V_WARNING, _("The exact options of the "
-					"presets may vary between software "
-					"versions."));
-		}
+	{   size_t preset_number = z->level;	/* XXX eliminate */
 
-		// Get the preset for LZMA1 or LZMA2.
-		if (preset_extreme)
-			preset_number |= LZMA_PRESET_EXTREME;
+#ifdef	NOTYET
+	    // Get the preset for LZMA1 or LZMA2.
+	    if (preset_extreme)
+		preset_number |= LZMA_PRESET_EXTREME;
+#endif	/* NOTYET */
 
-		if (lzma_lzma_preset(&opt_lzma, preset_number))
-			message_bug();
-
-		// Use LZMA2 except with --format=lzma we use LZMA1.
-		z->filters[0].id = z->format == RPMZ_FORMAT_LZMA
-				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
-		z->filters[0].options = &opt_lzma;
-		z->filters_count = 1;
-	} else {
-		preset_default = false;
+	    /* XXX error message on failure? */
+	    (void) lzma_lzma_preset(&z->_options, preset_number);
 	}
 
-	// Terminate the filter options array.
-	z->filters[z->filters_count].id = LZMA_VLI_UNKNOWN;
+	// Use LZMA2 except with --format=lzma we use LZMA1.
+	z->_filters[0].id = z->format == RPMZ_FORMAT_LZMA
+			? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
+	z->_filters[0].options = &z->_options;
+	z->_filters_count = 1;
+    }
+#ifdef	NOTYET
+    else
+	preset_default = false;
+#endif	/* NOTYET */
 
-	// If we are using the LZMA_Alone format, allow exactly one filter
-	// which has to be LZMA.
-	if (z->format == RPMZ_FORMAT_LZMA && (z->filters_count != 1
-			|| z->filters[0].id != LZMA_FILTER_LZMA1))
-		message_fatal(_("With --format=lzma only the LZMA1 filter "
+    // Terminate the filter options array.
+    z->_filters[z->_filters_count].id = LZMA_VLI_UNKNOWN;
+
+#ifdef	NOTYET
+    // If we are using the LZMA_Alone format, allow exactly one filter
+    // which has to be LZMA.
+    if (z->format == RPMZ_FORMAT_LZMA && (z->_filters_count != 1
+			|| z->_filters[0].id != LZMA_FILTER_LZMA1))
+	message_fatal(_("With --format=lzma only the LZMA1 filter "
 				"is supported"));
 
-	// Print the selected filter chain.
-	message_filters(V_DEBUG, z->filters);
+    // Print the selected filter chain.
+    message_filters(V_DEBUG, z->_filters);
+#endif	/* NOTYET */
 
-	// If using --format=raw, we can be decoding. The memusage function
-	// also validates the filter chain and the options used for the
-	// filters.
-	if (z->mode == RPMZ_MODE_COMPRESS) {
-		memory_usage = lzma_raw_encoder_memusage(z->filters);
-		memory_limit = hardware_memlimit_encoder();
-	} else {
-		memory_usage = lzma_raw_decoder_memusage(z->filters);
-		memory_limit = hardware_memlimit_decoder();
-	}
+    // If using --format=raw, we can be decoding. The memusage function
+    // also validates the filter chain and the options used for the
+    // filters.
+    if (z->mode == RPMZ_MODE_COMPRESS) {
+	memory_usage = lzma_raw_encoder_memusage(z->_filters);
+	memory_limit = hw_memlimit_encoder(z);
+    } else {
+	memory_usage = lzma_raw_decoder_memusage(z->_filters);
+	memory_limit = hw_memlimit_decoder(z);
+    }
 
-	if (memory_usage == UINT64_MAX)
-		message_fatal("Unsupported filter chain or filter options");
+#ifdef	NOTYET
+    if (memory_usage == UINT64_MAX)
+	message_fatal("Unsupported filter chain or filter options");
 
-	// Print memory usage info.
+    // Print memory usage info.
 #if defined(__LCLINT__)
-	message(V_DEBUG, _("%'llu MiB (%'llu B) of memory is "
+    message(V_DEBUG, _("%'llu MiB (%'llu B) of memory is "
 			"required per thread, "
 			"limit is %'llu MiB (%'llu B)"),
 			(unsigned long long)(memory_usage >> 20),
@@ -1158,109 +1183,119 @@ coder_set_compression_settings(rpmz z)
 			(unsigned long long)(memory_limit >> 20),
 			(unsigned long long)memory_limit);
 #else
-	message(V_DEBUG, _("%'" PRIu64 " MiB (%'" PRIu64 " B) of memory is "
+    message(V_DEBUG, _("%'" PRIu64 " MiB (%'" PRIu64 " B) of memory is "
 			"required per thread, "
 			"limit is %'" PRIu64 " MiB (%'" PRIu64 " B)"),
 			memory_usage >> 20, memory_usage,
 			memory_limit >> 20, memory_limit);
-#endif
-
-	if (memory_usage > memory_limit) {
-		size_t i = 0;
-		lzma_options_lzma *opt;
-		uint32_t orig_dict_size;
-
-		// If --no-auto-adjust was used or we didn't find LZMA1 or
-		// LZMA2 as the last filter, give an error immediatelly.
-		// --format=raw implies --no-auto-adjust.
-		if (!auto_adjust || z->format == RPMZ_FORMAT_RAW)
-			memlimit_too_small(memory_usage, memory_limit);
-
-		assert(z->mode == RPMZ_MODE_COMPRESS);
-
-		// Look for the last filter if it is LZMA2 or LZMA1, so
-		// we can make it use less RAM. With other filters we don't
-		// know what to do.
-		while (z->filters[i].id != LZMA_FILTER_LZMA2
-				&& z->filters[i].id != LZMA_FILTER_LZMA1) {
-			if (z->filters[i].id == LZMA_VLI_UNKNOWN)
-				memlimit_too_small(memory_usage, memory_limit);
-
-			++i;
-		}
-
-		// Decrease the dictionary size until we meet the memory
-		// usage limit. First round down to full mebibytes.
-		opt = z->filters[i].options;
-		orig_dict_size = opt->dict_size;
-		opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
-		while (true) {
-			// If it is below 1 MiB, auto-adjusting failed. We
-			// could be more sophisticated and scale it down even
-			// more, but let's see if many complain about this
-			// version.
-			//
-			// FIXME: Displays the scaled memory usage instead
-			// of the original.
-			if (opt->dict_size < (UINT32_C(1) << 20))
-				memlimit_too_small(memory_usage, memory_limit);
-
-			memory_usage = lzma_raw_encoder_memusage(z->filters);
-			if (memory_usage == UINT64_MAX)
-				message_bug();
-
-			// Accept it if it is low enough.
-			if (memory_usage <= memory_limit)
-				break;
-
-			// Otherwise 1 MiB down and try again. I hope this
-			// isn't too slow method for cases where the original
-			// dict_size is very big.
-			opt->dict_size -= UINT32_C(1) << 20;
-		}
-
-		// Tell the user that we decreased the dictionary size.
-		// However, omit the message if no preset or custom chain
-		// was given. FIXME: Always warn?
-#if defined(__LCLINT__)
-		if (!preset_default)
-			message(V_WARNING, "Adjusted LZMA%c dictionary size "
-					"from %'u MiB to "
-					"%'u MiB to not exceed "
-					"the memory usage limit of "
-					"%'llu MiB",
-					z->filters[i].id == LZMA_FILTER_LZMA2
-						? '2' : '1',
-					(unsigned)(orig_dict_size >> 20),
-					(unsigned)(opt->dict_size >> 20),
-					(unsigned long long)(memory_limit >> 20));
-#else
-		if (!preset_default)
-			message(V_WARNING, "Adjusted LZMA%c dictionary size "
-					"from %'" PRIu32 " MiB to "
-					"%'" PRIu32 " MiB to not exceed "
-					"the memory usage limit of "
-					"%'" PRIu64 " MiB",
-					z->filters[i].id == LZMA_FILTER_LZMA2
-						? '2' : '1',
-					orig_dict_size >> 20,
-					opt->dict_size >> 20,
-					memory_limit >> 20);
-#endif
-	}
-
-	// Limit the number of worker threads so that memory usage
-	// limit isn't exceeded.
-	assert(memory_usage > 0);
-	thread_limit = memory_limit / memory_usage;
-	if (thread_limit == 0)
-		thread_limit = 1;
-
-	if (z->threads > thread_limit)
-		z->threads = thread_limit;
+#endif	/* __LCLINT__ */
 #endif	/* NOTYET */
 
-	return;
+    if (memory_usage > memory_limit) {
+	size_t i = 0;
+	lzma_options_lzma *opt;
+	uint32_t orig_dict_size;
+
+#ifdef	NOTYET
+	// If --no-auto-adjust was used or we didn't find LZMA1 or
+	// LZMA2 as the last filter, give an error immediatelly.
+	// --format=raw implies --no-auto-adjust.
+	if (!auto_adjust || z->format == RPMZ_FORMAT_RAW)
+	    memlimit_too_small(memory_usage, memory_limit);
+
+	assert(z->mode == RPMZ_MODE_COMPRESS);
+
+	// Look for the last filter if it is LZMA2 or LZMA1, so
+	// we can make it use less RAM. With other filters we don't
+	// know what to do.
+	while (z->_filters[i].id != LZMA_FILTER_LZMA2
+		&& z->_filters[i].id != LZMA_FILTER_LZMA1) {
+	    if (z->_filters[i].id == LZMA_VLI_UNKNOWN)
+		memlimit_too_small(memory_usage, memory_limit);
+
+	    ++i;
+	}
+#endif	/* NOTYET */
+
+	// Decrease the dictionary size until we meet the memory
+	// usage limit. First round down to full mebibytes.
+	opt = z->_filters[i].options;
+	orig_dict_size = opt->dict_size;
+#ifdef	NOTYET	/* XXX refigure loop termination conditions */
+	opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
+	while (1) {
+	    // If it is below 1 MiB, auto-adjusting failed. We
+	    // could be more sophisticated and scale it down even
+	    // more, but let's see if many complain about this
+	    // version.
+	    //
+#ifdef	NOTYET
+	    // FIXME: Displays the scaled memory usage instead
+	    // of the original.
+	    if (opt->dict_size < (UINT32_C(1) << 20))
+		memlimit_too_small(memory_usage, memory_limit);
+#endif	/* NOTYET */
+
+	    memory_usage = lzma_raw_encoder_memusage(z->_filters);
+#ifdef	NOTYET
+	    if (memory_usage == UINT64_MAX)
+		message_bug();
+#endif	/* NOTYET */
+
+	    // Accept it if it is low enough.
+	    if (memory_usage <= memory_limit)
+		break;
+
+	    // Otherwise 1 MiB down and try again. I hope this
+	    // isn't too slow method for cases where the original
+	    // dict_size is very big.
+	    opt->dict_size -= UINT32_C(1) << 20;
+	}
+#endif	/* NOTYET */
+
+#ifdef	NOTYET
+	// Tell the user that we decreased the dictionary size.
+	// However, omit the message if no preset or custom chain
+	// was given. FIXME: Always warn?
+#if defined(__LCLINT__)
+	if (!preset_default)
+	    message(V_WARNING, "Adjusted LZMA%c dictionary size "
+				"from %'u MiB to "
+				"%'u MiB to not exceed "
+				"the memory usage limit of "
+				"%'llu MiB",
+				z->_filters[i].id == LZMA_FILTER_LZMA2
+					? '2' : '1',
+				(unsigned)(orig_dict_size >> 20),
+				(unsigned)(opt->dict_size >> 20),
+				(unsigned long long)(memory_limit >> 20));
+#else
+	if (!preset_default)
+	    message(V_WARNING, "Adjusted LZMA%c dictionary size "
+				"from %'" PRIu32 " MiB to "
+				"%'" PRIu32 " MiB to not exceed "
+				"the memory usage limit of "
+				"%'" PRIu64 " MiB",
+				z->_filters[i].id == LZMA_FILTER_LZMA2
+					? '2' : '1',
+				orig_dict_size >> 20,
+				opt->dict_size >> 20,
+				memory_limit >> 20);
+#endif	/* __LCLINT__ */
+#endif	/* NOTYET */
+    }
+
+    // Limit the number of worker threads so that memory usage
+    // limit isn't exceeded.
+    assert(memory_usage > 0);
+    thread_limit = memory_limit / memory_usage;
+    if (thread_limit == 0)
+	thread_limit = 1;
+
+    if (z->threads > thread_limit)
+	z->threads = thread_limit;
+
+    return;
 }
 
 /*==============================================================*/
@@ -1382,13 +1417,13 @@ static void rpmzArgCallback(poptContext con,
     }	break;
     case 'C':
 	if (!strcmp(arg, "none"))
-	    z->checksum = LZMA_CHECK_NONE;
+	    z->_checksum = LZMA_CHECK_NONE;
 	else if (!strcmp(arg, "crc32"))
-	    z->checksum = LZMA_CHECK_CRC32;
+	    z->_checksum = LZMA_CHECK_CRC32;
 	else if (!strcmp(arg, "crc64"))
-	    z->checksum = LZMA_CHECK_CRC64;
+	    z->_checksum = LZMA_CHECK_CRC64;
 	else if (!strcmp(arg, "sha256"))
-	    z->checksum = LZMA_CHECK_SHA256;
+	    z->_checksum = LZMA_CHECK_SHA256;
 	else {
 	    fprintf(stderr, _("%s: Unknown integrity check method \"%s\"\n"),
 		__progname, arg);
