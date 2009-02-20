@@ -33,26 +33,27 @@
 
 static int _debug = 0;
 
-enum tool_mode {
-    MODE_COMPRESS,
-    MODE_DECOMPRESS,
-    MODE_TEST,
-    MODE_LIST,
+/**
+ */
+enum rpmzMode_e {
+    RPMZ_MODE_COMPRESS		= 0,
+    RPMZ_MODE_DECOMPRESS	= 1,
+    RPMZ_MODE_TEST		= 2,
+    RPMZ_MODE_LIST		= 3,
 };
-/*@unchecked@*/
-static enum tool_mode opt_mode = MODE_COMPRESS;
 
-// NOTE: The order of these is significant in suffix.c.
-enum format_type {
-    FORMAT_AUTO,
-    FORMAT_XZ,
-    FORMAT_LZMA,
-    FORMAT_RAW,
-    FORMAT_GZIP,
-    FORMAT_BZIP2,
+/**
+ */
+enum rpmzFormat_e {
+    RPMZ_FORMAT_AUTO		= 0,
+    RPMZ_FORMAT_XZ		= 1,
+    RPMZ_FORMAT_LZMA		= 2,
+    RPMZ_FORMAT_RAW		= 3,
+    RPMZ_FORMAT_GZIP		= 4,
+    RPMZ_FORMAT_ZLIB		= 5,
+    RPMZ_FORMAT_ZIP		= 6,
+    RPMZ_FORMAT_BZIP2		= 7,
 };
-/*@unchecked@*/
-static enum format_type opt_format = FORMAT_AUTO;
 
 /*@unchecked@*/
 static char *opt_suffix = NULL;
@@ -62,6 +63,7 @@ static char *opt_suffix = NULL;
 static int opt_preserve_name;
 #endif
 
+#ifdef	DYING
 /*@unchecked@*/ /*@observer@*/
 static const char *stdin_filename = "(stdin)";
 /*@unchecked@*/ /*@observer@*/
@@ -75,6 +77,7 @@ static rpmuint64_t memlimit_encoder = 0;
 static rpmuint64_t memlimit_decoder = 0;
 /*@unchecked@*/
 static rpmuint64_t memlimit_custom = 0;
+#endif
 
 #ifdef	NOTYET
 /*@unchecked@*/
@@ -154,8 +157,24 @@ enum rpmzFlags_e {
  */
 struct rpmz_s {
     enum rpmzFlags_e flags;		/*!< Control bits. */
-    char * b;
-    size_t nb;
+    enum rpmzFormat_e format;		/*!< Compression format. */
+    enum rpmzMode_e mode;		/*!< Operation mode. */
+
+    rpmuint64_t mem;			/*!< Physical memory. */
+    rpmuint64_t memlimit_encoder;
+    rpmuint64_t memlimit_decoder;
+    rpmuint64_t memlimit_custom;
+
+/*@unchecked@*/
+    int threads;			/*!< No. or threads to use. */
+
+/*@observer@*/
+    const char *stdin_filename;		/*!< Display name for stdin. */
+/*@observer@*/
+    const char *stdout_filename;	/*!< Display name for stdout. */
+
+    char * b;				/*!< Buffer for I/O. */
+    size_t nb;				/*!< Buffer size (in bytes) */
 
 /*@null@*/
     ARGV_t argv;			/*!< URI's to process. */
@@ -166,7 +185,7 @@ struct rpmz_s {
 
 /*@null@*/
     const char * isuffix;
-    enum format_type ifmt;
+    enum rpmzFormat_e ifmt;
     FDIO_t idio;
 /*@null@*/
     const char * ifn;
@@ -177,7 +196,7 @@ struct rpmz_s {
 
 /*@null@*/
     const char * osuffix;
-    enum format_type ofmt;
+    enum rpmzFormat_e ofmt;
     FDIO_t odio;
 /*@null@*/
     const char * ofn;
@@ -193,6 +212,12 @@ struct rpmz_s {
 /*@unchecked@*/
 static struct rpmz_s __rpmz = {
     .flags	= RPMZ_FLAGS_NONE,
+    .format	= RPMZ_FORMAT_AUTO,
+    .mode	= RPMZ_MODE_COMPRESS,
+
+    .stdin_filename = "(stdin)",
+    .stdout_filename = "(stdout)",
+
     .nb		= 16 * BUFSIZ,
     .ifmode	= "rb",
     .ofmode	= "wb",
@@ -268,14 +293,13 @@ static rpmuint64_t physmem(void)
 #define	HAVE_NCPU_SYSCONF	1	/* XXX hotwired for linux */
 
 static void
-hw_cores(void)
-	/*@globals opt_threads @*/
-	/*@modifies opt_threads @*/
+hw_cores(rpmz z)
+	/*@modifies z @*/
 {
 #if defined(HAVE_NCPU_SYSCONF)
     {	const long cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	if (cpus > 0)
-	    opt_threads = (size_t)(cpus);
+	    z->threads = (size_t)(cpus);
     }
 
 #elif defined(HAVE_NCPU_SYSCTL)
@@ -284,66 +308,67 @@ hw_cores(void)
 	size_t cpus_size = sizeof(cpus);
 	if (!sysctl(name, &cpus, &cpus_size, NULL, NULL)
 	 && cpus_size == sizeof(cpus) && cpus > 0)
-	    opt_threads = (size_t)(cpus);
+	    z->threads = (size_t)(cpus);
     }
 #endif
 
 #if defined(_SC_THREAD_THREADS_MAX)
     {	const long threads_max = sysconf(_SC_THREAD_THREADS_MAX);
-	if (threads_max > 0 && (int)(threads_max) < opt_threads)
-	    opt_threads = (int)(threads_max);
+	if (threads_max > 0 && (int)(threads_max) < z->threads)
+	    z->threads = (int)(threads_max);
     }
 #elif defined(PTHREAD_THREADS_MAX)
-    if (opt_threads > PTHREAD_THREADS_MAX)
-	opt_threads = PTHREAD_THREADS_MAX;
+    if (z->threads > PTHREAD_THREADS_MAX)
+	z->threads = PTHREAD_THREADS_MAX;
 #endif
 
     return;
 }
 
 static void
-hw_memlimit_init(void)
+hw_memlimit_init(rpmz z)
 	/*@globals memlimit_decoder, memlimit_encoder @*/
 	/*@modifies memlimit_decoder, memlimit_encoder @*/
 {
-    rpmuint64_t mem = physmem();
+    z->mem = physmem();
 
     /* Assume 16MB as minimum memory. */
-    if (mem == 0)
-	    mem = 16 * 1024 * 1024;
+    if (z->mem == 0)
+	    z->mem = 16 * 1024 * 1024;
 
     /* Use 90% of RAM when encoding, 33% when decoding. */
-    memlimit_encoder = mem - mem / 10;
-    memlimit_decoder = mem / 3;
+    z->memlimit_encoder = z->mem - z->mem / 10;
+    z->memlimit_decoder = z->mem / 3;
     return;
 }
 
 static void
-hw_init(void)
+hw_init(rpmz z)
 {
-    hw_memlimit_init();
-    hw_cores();
+    hw_memlimit_init(z);
+    hw_cores(z);
     return;
 }
 
 /*==============================================================*/
 
+/* XXX todo: add zlib/zip and other common suffixes. */
 /*@unchecked@*/ /*@observer@*/
 static struct suffixPairs_s {
-    enum format_type format;
+    enum rpmzFormat_e format;
 /*@null@*/
     const char * csuffix;
 /*@relnull@*/
     const char * usuffix;
 } suffixPairs[] = {
-    { FORMAT_XZ,	".xz",	"" },
-    { FORMAT_XZ,	".txz",	".tar" },
-    { FORMAT_LZMA,	".lzma","" },
-    { FORMAT_LZMA,	".tlz",	".tar" },
-    { FORMAT_GZIP,	".gz",	"" },
-    { FORMAT_GZIP,	".tgz",	".tar" },
-    { FORMAT_BZIP2,	".bz2",	"" },
-    { FORMAT_RAW,	NULL,	NULL }
+    { RPMZ_FORMAT_XZ,	".xz",	"" },
+    { RPMZ_FORMAT_XZ,	".txz",	".tar" },
+    { RPMZ_FORMAT_LZMA,	".lzma","" },
+    { RPMZ_FORMAT_LZMA,	".tlz",	".tar" },
+    { RPMZ_FORMAT_GZIP,	".gz",	"" },
+    { RPMZ_FORMAT_GZIP,	".tgz",	".tar" },
+    { RPMZ_FORMAT_BZIP2,".bz2",	"" },
+    { RPMZ_FORMAT_RAW,	NULL,	NULL }
 };
 
 /**
@@ -405,7 +430,7 @@ static const char * uncompressedFN(rpmz z)
     const char * t = NULL;
 
     for (sp = suffixPairs; sp->csuffix != NULL; sp++) {
-	if (opt_format != sp->format)
+	if (z->format != sp->format)
 	    continue;
 	if (!chkSuffix(fn, sp->csuffix))
 	    continue;
@@ -434,7 +459,7 @@ static const char * compressedFN(rpmz z)
     const char * t = NULL;
 
     for (sp = suffixPairs; sp->csuffix != NULL; sp++) {
-	if (opt_format != sp->format || *sp->usuffix == '\0')
+	if (z->format != sp->format || *sp->usuffix == '\0')
 	    continue;
 	if (!chkSuffix(fn, sp->usuffix))
 	    continue;
@@ -468,14 +493,14 @@ static rpmRC rpmzFini(rpmz z, rpmRC rc)
     default:
 	break;
     case RPMRC_FAIL:
-	if (z->ofn != NULL && strcmp(z->ofn, stdout_filename)) {
+	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_filename)) {
 	    xx = Unlink(z->ofn);
 if (_debug)
 fprintf(stderr, "==> Unlink(%s) FAIL\n", z->ofn);
 	}
 	break;
     case RPMRC_OK:
-	if (!F_ISSET(z->flags, KEEP) && z->ifn != stdin_filename) {
+	if (!F_ISSET(z->flags, KEEP) && z->ifn != z->stdin_filename) {
 	    xx = Unlink(z->ifn);
 if (_debug)
 fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
@@ -496,14 +521,14 @@ if (_debug)
 fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 
     if (z->ifn == NULL) {
-	z->ifn = stdin_filename;
-	switch (opt_mode) {
+	z->ifn = z->stdin_filename;
+	switch (z->mode) {
 	default:
 	    break;
-	case MODE_COMPRESS:
+	case RPMZ_MODE_COMPRESS:
 	    z->ifd = fdDup(STDIN_FILENO);
 	    break;
-	case MODE_DECOMPRESS:
+	case RPMZ_MODE_DECOMPRESS:
 	    z->ifd = z->idio->_fdopen(fdDup(STDIN_FILENO), z->ifmode);
 	    break;
 	}
@@ -518,13 +543,13 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 			__progname, z->ifn);
 	    goto exit;
 	}
-	switch (opt_mode) {
+	switch (z->mode) {
 	default:
 	    break;
-	case MODE_COMPRESS:
+	case RPMZ_MODE_COMPRESS:
 	    z->ifd = Fopen(z->ifn, z->ifmode);
 	    break;
-	case MODE_DECOMPRESS:
+	case RPMZ_MODE_DECOMPRESS:
 	    z->ifd = z->idio->_fopen(z->ifn, z->ifmode);
 	    fdFree(z->ifd, NULL);		/* XXX adjust refcounts. */
 	    break;
@@ -536,24 +561,24 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
     }
 
     if (F_ISSET(z->flags, STDOUT))  {
-	z->ofn = xstrdup(stdout_filename);
-	switch (opt_mode) {
+	z->ofn = xstrdup(z->stdout_filename);
+	switch (z->mode) {
 	default:
 	    break;
-	case MODE_COMPRESS:
+	case RPMZ_MODE_COMPRESS:
 	    z->ofd = z->odio->_fdopen(fdDup(STDOUT_FILENO), z->ofmode);
 	    break;
-	case MODE_DECOMPRESS:
+	case RPMZ_MODE_DECOMPRESS:
 	    z->ofd = fdDup(STDOUT_FILENO);
 	    break;
 	}
     } else {
-	if (z->ifn == stdin_filename)	/* XXX error needed here. */
+	if (z->ifn == z->stdin_filename)	/* XXX error needed here. */
 	    goto exit;
-	switch (opt_mode) {
+	switch (z->mode) {
 	default:
 	    break;
-	case MODE_COMPRESS:
+	case RPMZ_MODE_COMPRESS:
 	    z->ofn = compressedFN(z);
 	    if (!F_ISSET(z->flags, FORCE) && Stat(z->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
@@ -564,7 +589,7 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 	    z->ofd = z->odio->_fopen(z->ofn, z->ofmode);
 	    fdFree(z->ofd, NULL);		/* XXX adjust refcounts. */
 	    break;
-	case MODE_DECOMPRESS:
+	case RPMZ_MODE_DECOMPRESS:
 	    z->ofn = uncompressedFN(z);
 	    if (!F_ISSET(z->flags, FORCE) && Stat(z->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
@@ -1052,8 +1077,8 @@ coder_add_filter(lzma_vli id, void *options)
 
 static void
 coder_set_compression_settings(rpmz z)
-	/*@globals filters, filters_count, opt_threads, preset_default, preset_number @*/
-	/*@modifies filters, filters_count, opt_threads, preset_default, preset_number @*/
+	/*@globals filters, filters_count, preset_default, preset_number @*/
+	/*@modifies z, filters, filters_count, preset_default, preset_number @*/
 {
 
     /* Add the per-architecture filters. */
@@ -1082,7 +1107,7 @@ coder_set_compression_settings(rpmz z)
 		// except when playing around with things. Different versions
 		// of this software may use different options in presets, and
 		// thus make uncompressing the raw data difficult.
-		if (opt_format == FORMAT_RAW) {
+		if (z->format == RPMZ_FORMAT_RAW) {
 			// The message is shown only if warnings are allowed
 			// but the exit status isn't changed.
 			message(V_WARNING, _("Using a preset in raw mode "
@@ -1100,7 +1125,7 @@ coder_set_compression_settings(rpmz z)
 			message_bug();
 
 		// Use LZMA2 except with --format=lzma we use LZMA1.
-		filters[0].id = opt_format == FORMAT_LZMA
+		filters[0].id = z->format == RPMZ_FORMAT_LZMA
 				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
 		filters[0].options = &opt_lzma;
 		filters_count = 1;
@@ -1113,7 +1138,7 @@ coder_set_compression_settings(rpmz z)
 
 	// If we are using the LZMA_Alone format, allow exactly one filter
 	// which has to be LZMA.
-	if (opt_format == FORMAT_LZMA && (filters_count != 1
+	if (z->format == RPMZ_FORMAT_LZMA && (filters_count != 1
 			|| filters[0].id != LZMA_FILTER_LZMA1))
 		message_fatal(_("With --format=lzma only the LZMA1 filter "
 				"is supported"));
@@ -1124,7 +1149,7 @@ coder_set_compression_settings(rpmz z)
 	// If using --format=raw, we can be decoding. The memusage function
 	// also validates the filter chain and the options used for the
 	// filters.
-	if (opt_mode == MODE_COMPRESS) {
+	if (z->mode == RPMZ_MODE_COMPRESS) {
 		memory_usage = lzma_raw_encoder_memusage(filters);
 		memory_limit = hardware_memlimit_encoder();
 	} else {
@@ -1160,10 +1185,10 @@ coder_set_compression_settings(rpmz z)
 		// If --no-auto-adjust was used or we didn't find LZMA1 or
 		// LZMA2 as the last filter, give an error immediatelly.
 		// --format=raw implies --no-auto-adjust.
-		if (!auto_adjust || opt_format == FORMAT_RAW)
+		if (!auto_adjust || z->format == RPMZ_FORMAT_RAW)
 			memlimit_too_small(memory_usage, memory_limit);
 
-		assert(opt_mode == MODE_COMPRESS);
+		assert(z->mode == RPMZ_MODE_COMPRESS);
 
 		// Look for the last filter if it is LZMA2 or LZMA1, so
 		// we can make it use less RAM. With other filters we don't
@@ -1243,8 +1268,8 @@ coder_set_compression_settings(rpmz z)
 	if (thread_limit == 0)
 		thread_limit = 1;
 
-	if (opt_threads > thread_limit)
-		opt_threads = thread_limit;
+	if (z->threads > thread_limit)
+		z->threads = thread_limit;
 #endif	/* NOTYET */
 
 	return;
@@ -1345,21 +1370,21 @@ static void rpmzArgCallback(poptContext con,
     switch (opt->val) {
     case 'M':
     {	char * end = NULL;
-	memlimit_custom = (rpmuint64_t) strtoll(arg, &end, 0);
+	z->memlimit_custom = (rpmuint64_t) strtoll(arg, &end, 0);
 	if (end == NULL || *end == '\0')
 	    break;
 	if (!strcmp(end, "k") || !strcmp(end, "kB"))
-	    memlimit_custom *= 1000;
+	    z->memlimit_custom *= 1000;
 	else if (!strcmp(end, "M") || !strcmp(end, "MB"))
-	    memlimit_custom *= 1000 * 1000;
+	    z->memlimit_custom *= 1000 * 1000;
 	else if (!strcmp(end, "G") || !strcmp(end, "GB"))
-	    memlimit_custom *= 1000 * 1000 * 1000;
+	    z->memlimit_custom *= 1000 * 1000 * 1000;
 	else if (!strcmp(end, "Ki") || !strcmp(end, "KiB"))
-	    memlimit_custom *= 1024;
+	    z->memlimit_custom *= 1024;
 	else if (!strcmp(end, "Mi") || !strcmp(end, "MiB"))
-	    memlimit_custom *= 1024 * 1024;
+	    z->memlimit_custom *= 1024 * 1024;
 	else if (!strcmp(end, "Gi") || !strcmp(end, "GiB"))
-	    memlimit_custom *= 1024 * 1024 * 1024;
+	    z->memlimit_custom *= 1024 * 1024 * 1024;
 	else {
 	    fprintf(stderr, _("%s: Invalid memory scaling suffix \"%s\"\n"),
 		__progname, arg);
@@ -1385,25 +1410,25 @@ static void rpmzArgCallback(poptContext con,
 	break;
     case 'F':
 	if (!strcmp(arg, "auto")) {
-	    opt_format = FORMAT_AUTO;
+	    z->format = RPMZ_FORMAT_AUTO;
 	} else if (!strcmp(arg, "xz")) {
 	    z->idio = z->odio = xzdio;
 	    z->osuffix = ".xz";
-	    opt_format = FORMAT_XZ;
+	    z->format = RPMZ_FORMAT_XZ;
 	} else if (!strcmp(arg, "lzma") || !strcmp(arg, "alone")) {
 	    z->idio = z->odio = lzdio;
 	    z->osuffix = ".lzma";
-	    opt_format = FORMAT_LZMA;
+	    z->format = RPMZ_FORMAT_LZMA;
 	} else if (!strcmp(arg, "raw")) {
-	    opt_format = FORMAT_RAW;
+	    z->format = RPMZ_FORMAT_RAW;
 	} else if (!strcmp(arg, "gzip") || !strcmp(arg, "gz")) {
 	    z->idio = z->odio = gzdio;
 	    z->osuffix = ".gz";
-	    opt_format = FORMAT_GZIP;
+	    z->format = RPMZ_FORMAT_GZIP;
 	} else if (!strcmp(arg, "bzip2") || !strcmp(arg, "bz2")) {
 	    z->idio = z->odio = bzdio;
 	    z->osuffix = ".bz2";
-	    opt_format = FORMAT_BZIP2;
+	    z->format = RPMZ_FORMAT_BZIP2;
 	} else {
 	    fprintf(stderr, _("%s: Unknown file format type \"%s\"\n"),
 		__progname, arg);
@@ -1446,18 +1471,18 @@ static struct poptOption optionsTable[] = {
 	N_("debug spewage"), NULL },
 
   /* ===== Operation modes */
-  { "compress", 'z', POPT_ARG_VAL,		&opt_mode, MODE_COMPRESS,
+  { "compress", 'z', POPT_ARG_VAL,		&__rpmz.mode, RPMZ_MODE_COMPRESS,
 	N_("force compression"), NULL },
-  { "decompress", 'd', POPT_ARG_VAL,		&opt_mode, MODE_DECOMPRESS,
+  { "decompress", 'd', POPT_ARG_VAL,		&__rpmz.mode, RPMZ_MODE_DECOMPRESS,
 	N_("force decompression"), NULL },
-  { "uncompress", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &opt_mode, MODE_DECOMPRESS,
+  { "uncompress", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz.mode, RPMZ_MODE_DECOMPRESS,
 
 	N_("force decompression"), NULL },
-  { "test", 't', POPT_ARG_VAL,			&opt_mode,  MODE_TEST,
+  { "test", 't', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_TEST,
 	N_("test compressed file integrity"), NULL },
-  { "list", 'l', POPT_ARG_VAL,			&opt_mode,  MODE_LIST,
+  { "list", 'l', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_LIST,
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
-  { "info", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&opt_mode,  MODE_LIST,
+  { "info", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode,  RPMZ_MODE_LIST,
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
 
   /* ===== Operation modifiers */
@@ -1486,7 +1511,7 @@ static struct poptOption optionsTable[] = {
 	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
   { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
 	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
-  { "threads", 'T', POPT_ARG_INT,		&opt_threads, 0,
+  { "threads", 'T', POPT_ARG_INT,		&__rpmz.threads, 0,
 	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
 
   /* ===== Compression options */
@@ -1677,7 +1702,7 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 	/*@*/
 {
 #ifdef	NOTYET
-    enum format_type format_compress_auto = FORMAT_XZ;
+    enum rpmzFormat_e format_compress_auto = RPMZ_FORMAT_XZ;
 #endif
     const char * s = strrchr(argv0, '/');
     const char * name = (s ? (s + 1) : argv0);
@@ -1685,18 +1710,18 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 
 #ifdef	NOTYET
     if (strstr(name, "lz") != NULL) {
-	format_compress_auto = FORMAT_LZMA;
+	format_compress_auto = RPMZ_FORMAT_LZMA;
 	z->idio = z->odio = lzdio;
 	z->osuffix = ".lzma";
-	opt_format = FORMAT_LZMA;
+	z->format = RPMZ_FORMAT_LZMA;
     }
 #endif
 
     if (strstr(name, "cat") != NULL) {
-	opt_mode = MODE_DECOMPRESS;
+	z->mode = RPMZ_MODE_DECOMPRESS;
 	z->flags |= RPMZ_FLAGS_STDOUT;
     } else if (strstr(name, "un") != NULL) {
-	opt_mode = MODE_DECOMPRESS;
+	z->mode = RPMZ_MODE_DECOMPRESS;
     }
 
     return rc;
@@ -1709,8 +1734,8 @@ main(int argc, char *argv[])
 	/*@modifies __assert_program_name, _rpmrepo,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    poptContext optCon;
     rpmz z = _rpmz;
+    poptContext optCon;
     int ac;
     int rc = 1;		/* assume failure. */
     int xx;
@@ -1729,7 +1754,7 @@ main(int argc, char *argv[])
 #ifndef	DYING
     z->idio = z->odio = gzdio;
     z->osuffix = ".gz";
-    opt_format = FORMAT_GZIP;
+    z->format = RPMZ_FORMAT_GZIP;
 #endif
 
     /* Make sure that stdin/stdout/stderr are open. */
@@ -1737,7 +1762,7 @@ main(int argc, char *argv[])
     io_init();
 
     /* Set hardware specific parameters. */
-    hw_init();
+    hw_init(z);
 
     /* Parse environment options. */
     /* XXX NULL uses "RPMZ" envvar. */
@@ -1771,7 +1796,7 @@ argvPrint("input args", z->argv, NULL);
 	// Never remove the source file when the destination is not on disk.
 	// In test mode the data is written nowhere, but setting opt_stdout
 	// will make the rest of the code behave well.
-	if (F_ISSET(z->flags, STDOUT) || opt_mode == MODE_TEST) {
+	if (F_ISSET(z->flags, STDOUT) || z->mode == RPMZ_MODE_TEST) {
 		z->flags |= RPMZ_FLAGS_KEEP;
 		z->flags |= RPMZ_FLAGS_STDOUT;
 	}
@@ -1779,12 +1804,12 @@ argvPrint("input args", z->argv, NULL);
 	// If no --format flag was used, or it was --format=auto, we need to
 	// decide what is the target file format we are going to use. This
 	// depends on how we were called (checked earlier in this function).
-	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_AUTO)
-		opt_format = format_compress_auto;
+	if (z->mode == RPMZ_MODE_COMPRESS && z->format == RPMZ_FORMAT_AUTO)
+		z->format = format_compress_auto;
     }
 #endif	/* NOTYET */
 
-    if (opt_mode == MODE_COMPRESS) {
+    if (z->mode == RPMZ_MODE_COMPRESS) {
 	int xx;
 	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
 		(unsigned)(preset_number % 10));
@@ -1798,7 +1823,7 @@ argvPrint("input args", z->argv, NULL);
     // the options given on the command line are used to know what kind
     // of raw data we are supposed to decode.
 #endif
-    if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
+    if (z->mode == RPMZ_MODE_COMPRESS || z->format == RPMZ_FORMAT_RAW)
 	coder_set_compression_settings(z);
 
     signals_init();
@@ -1810,14 +1835,14 @@ argvPrint("input args", z->argv, NULL);
 	/* Use NULL for stdin. */
 	z->ifn = (z->argv && strcmp(z->argv[i], "-") ? z->argv[i] : NULL);
 
-	switch (opt_mode) {
-	case MODE_COMPRESS:
-	case MODE_DECOMPRESS:
+	switch (z->mode) {
+	case RPMZ_MODE_COMPRESS:
+	case RPMZ_MODE_DECOMPRESS:
 	    frc = rpmzProcess(z);
 	    break;
-	case MODE_TEST:
+	case RPMZ_MODE_TEST:
 	    break;
-	case MODE_LIST:
+	case RPMZ_MODE_LIST:
 	    break;
 	}
 
