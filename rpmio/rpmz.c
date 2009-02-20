@@ -111,8 +111,11 @@ enum rpmzFlags_e {
     RPMZ_FLAGS_FORCE		= _ZFB(1),	/*< -f, --force ... */
     RPMZ_FLAGS_KEEP		= _ZFB(2),	/*< -k, --keep ... */
     RPMZ_FLAGS_RECURSE		= _ZFB(3),	/*< -r, --recursive ... */
-    /* XXX unused */
-    RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*<     --extreme ... */
+    RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*< -e, --extreme ... */
+  /* XXX compressor specific flags need to be set some other way. */
+  /* XXX unused */
+    RPMZ_FLAGS_FAST		= _ZFB(5),	/*<     --fast ... */
+    RPMZ_FLAGS_BEST		= _ZFB(6),	/*<     --best ... */
 
 #ifdef	NOTYET
     RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
@@ -696,7 +699,6 @@ static int signals_terminating(int terminate)
     return terminating;
 }
 
-#ifdef	NOTYET
 /*@unchecked@*/
 static int signals_block_count;
 
@@ -705,13 +707,14 @@ signals_block(void)
         /*@globals errno, signals_block_count @*/
         /*@modifies errno, signals_block_count @*/
 {
-        if (signals_block_count++ == 0) {
-                const int saved_errno = errno;
-                mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
-                errno = saved_errno;
-        }
-
-        return;
+    if (signals_block_count++ == 0) {
+#ifdef	NOTYET
+	const int saved_errno = errno;
+	mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
+	errno = saved_errno;
+#endif
+    }
+    return;
 }
 
 static void
@@ -719,40 +722,39 @@ signals_unblock(void)
         /*@globals errno, signals_block_count @*/
         /*@modifies errno, signals_block_count @*/
 {
-        assert(signals_block_count > 0);
+    assert(signals_block_count > 0);
 
-        if (--signals_block_count == 0) {
-                const int saved_errno = errno;
-                mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
-                errno = saved_errno;
-        }
-
-        return;
-}
+    if (--signals_block_count == 0) {
+#ifdef	NOTYET
+	const int saved_errno = errno;
+	mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
+	errno = saved_errno;
 #endif
+    }
+    return;
+}
 
 static void signals_exit(void)
 	/*@*/
 {
 #ifdef	NOTYET
-	const int sig = exit_signal;
+    const int sig = exit_signal;
 
-	if (sig != 0) {
-		struct sigaction sa;
-		sa.sa_handler = SIG_DFL;
-		sigfillset(&sa.sa_mask);
-		sa.sa_flags = 0;
-		sigaction(sig, &sa, NULL);
-		raise(exit_signal);
-	}
+    if (sig != 0) {
+	struct sigaction sa;
+	sa.sa_handler = SIG_DFL;
+	sigfillset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(sig, &sa, NULL);
+	raise(exit_signal);
+    }
 
-	return;
-}
-
+    return;
 #else
     signals_fini();
 #endif
 }
+
 /*==============================================================*/
 
 typedef struct {
@@ -1078,6 +1080,266 @@ hw_memlimit_decoder(rpmz z)
     return z->memlimit_custom != 0 ? z->memlimit_custom : z->memlimit_decoder;
 }
 
+/// Verbosity levels
+enum message_verbosity {
+    V_SILENT,	///< No messages
+    V_ERROR,	///< Only error messages
+    V_WARNING,	///< Errors and warnings
+    V_VERBOSE,	///< Errors, warnings, and verbose statistics
+    V_DEBUG,	///< Debugging, FIXME remove?
+};
+
+static void
+vmessage(enum message_verbosity v, const char *fmt, va_list ap)
+	/*@globals progress_active @*/
+	/*@modifies ap, progress_active @*/
+{
+#ifdef	NOTYET
+    if (v <= verbosity)
+#endif
+    {
+	signals_block();
+
+#ifdef	NOTYET
+	// If there currently is a progress message on the screen,
+	// print a newline so that the progress message is left
+	// readable. This is good, because it is nice to be able to
+	// see where the error occurred. (The alternative would be
+	// to clear the progress message and replace it with the
+	// error message.)
+	if (progress_active) {
+	    progress_active = false;
+	    fputc('\n', stderr);
+	}
+#endif
+
+	fprintf(stderr, "%s: ", __progname);
+	vfprintf(stderr, fmt, ap);
+	fputc('\n', stderr);
+
+	signals_unblock();
+    }
+
+    return;
+}
+
+static void
+message(enum message_verbosity v, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vmessage(v, fmt, ap);
+    va_end(ap);
+    return;
+}
+
+#ifdef	UNUSED
+static void
+message_warning(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vmessage(V_WARNING, fmt, ap);
+    va_end(ap);
+
+#ifdef	NOTYET
+    set_exit_status(E_WARNING);
+#endif
+    return;
+}
+
+static void
+message_error(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vmessage(V_ERROR, fmt, ap);
+    va_end(ap);
+
+#ifdef	NOTYET
+    set_exit_status(E_ERROR);
+#endif
+    return;
+}
+#endif	/* UNUSED */
+
+static void
+message_fatal(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vmessage(V_ERROR, fmt, ap);
+    va_end(ap);
+
+#ifdef	NOTYET
+    my_exit(E_ERROR);
+#else
+    exit(EXIT_FAILURE);
+#endif
+}
+
+static void
+message_bug(void)
+{
+    message_fatal(_("Internal error (bug)"));
+}
+
+static void
+message_filters(enum message_verbosity v, const lzma_filter *filters)
+{
+    size_t i;
+
+#ifdef	NOTYET
+    if (v > verbosity)
+		return;
+#endif
+
+    fprintf(stderr, _("%s: Filter chain:"), __progname);
+
+    for (i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+	fprintf(stderr, " --");
+
+	switch (filters[i].id) {
+	case LZMA_FILTER_LZMA1:
+	case LZMA_FILTER_LZMA2: {
+	    const lzma_options_lzma *opt = filters[i].options;
+	    const char *mode;
+	    const char *mf;
+
+	    switch (opt->mode) {
+	    case LZMA_MODE_FAST:
+		mode = "fast";
+		break;
+
+	    case LZMA_MODE_NORMAL:
+		mode = "normal";
+		break;
+
+	    default:
+		mode = "UNKNOWN";
+		break;
+	    }
+
+	    switch (opt->mf) {
+	    case LZMA_MF_HC3:
+		mf = "hc3";
+		break;
+
+	    case LZMA_MF_HC4:
+		mf = "hc4";
+		break;
+
+	    case LZMA_MF_BT2:
+		mf = "bt2";
+		break;
+
+	    case LZMA_MF_BT3:
+		mf = "bt3";
+		break;
+
+	    case LZMA_MF_BT4:
+		mf = "bt4";
+		break;
+
+	    default:
+		mf = "UNKNOWN";
+		break;
+	    }
+
+#ifdef	NOTYET
+#if defined(__LCLINT__)
+	    fprintf(stderr, "lzma%c=dict=%u"
+			",lc=%u,lp=%u"
+			",pb=%u"
+			",mode=%s,nice=%u,mf=%s"
+			",depth=%u",
+			filters[i].id == LZMA_FILTER_LZMA2
+				? '2' : '1',
+			(unsigned)opt->dict_size,
+			(unsigned)opt->lc, (unsigned)opt->lp, (unsigned)opt->pb,
+			mode, (unsigned)opt->nice_len, mf, (unsigned)opt->depth);
+#else
+	    fprintf(stderr, "lzma%c=dict=%" PRIu32
+			",lc=%" PRIu32 ",lp=%" PRIu32
+			",pb=%" PRIu32
+			",mode=%s,nice=%" PRIu32 ",mf=%s"
+			",depth=%" PRIu32,
+			filters[i].id == LZMA_FILTER_LZMA2
+				? '2' : '1',
+			opt->dict_size,
+			opt->lc, opt->lp, opt->pb,
+			mode, opt->nice_len, mf, opt->depth);
+#endif	/* __LCLINT__ */
+#endif	/* NOTYET */
+	    break;
+	}
+
+	case LZMA_FILTER_X86:
+	    fprintf(stderr, "x86");
+	    break;
+
+	case LZMA_FILTER_POWERPC:
+	    fprintf(stderr, "powerpc");
+	    break;
+
+	case LZMA_FILTER_IA64:
+	    fprintf(stderr, "ia64");
+	    break;
+
+	case LZMA_FILTER_ARM:
+	    fprintf(stderr, "arm");
+	    break;
+
+	case LZMA_FILTER_ARMTHUMB:
+	    fprintf(stderr, "armthumb");
+	    break;
+
+	case LZMA_FILTER_SPARC:
+	    fprintf(stderr, "sparc");
+	    break;
+
+	case LZMA_FILTER_DELTA: {
+#ifdef	NOTYET
+	    const lzma_options_delta *opt = filters[i].options;
+#if defined(__LCLINT__)
+	    fprintf(stderr, "delta=dist=%u", (unsigned)opt->dist);
+#else
+	    fprintf(stderr, "delta=dist=%" PRIu32, opt->dist);
+#endif	/* __LCLINT__ */
+#endif	/* NOTYET */
+	    break;
+	}
+
+	default:
+	    fprintf(stderr, "UNKNOWN");
+	    break;
+	}
+    }
+
+    fputc('\n', stderr);
+    return;
+}
+
+static void lzma_attribute((noreturn))
+memlimit_too_small(uint64_t memory_usage, uint64_t memory_limit)
+	/*@*/
+{
+#ifdef	NOTYET
+#if defined(__LCLINT__)
+    message_fatal(_("Memory usage limit (%ull MiB) is too small "
+			"for the given filter setup (%ull MiB)"),
+			(unsigned long long)(memory_limit >> 20),
+			(unsigned long long)(memory_usage >> 20));
+#else
+    message_fatal(_("Memory usage limit (%" PRIu64 " MiB) is too small "
+			"for the given filter setup (%" PRIu64 " MiB)"),
+			memory_limit >> 20, memory_usage >> 20);
+#endif
+#else
+    exit(EXIT_FAILURE);
+#endif
+}
+
 static void
 coder_set_compression_settings(rpmz z)
 	/*@globals preset_default, preset_number @*/
@@ -1104,7 +1366,6 @@ coder_set_compression_settings(rpmz z)
 	coder_add_filter(z, LZMA_FILTER_SPARC, NULL);
 
     if (z->_filters_count == 0) {
-#ifdef	NOTYET
 	// We are using a preset. This is not a good idea in raw mode
 	// except when playing around with things. Different versions
 	// of this software may use different options in presets, and
@@ -1118,18 +1379,15 @@ coder_set_compression_settings(rpmz z)
 				"presets may vary between software "
 				"versions."));
 	}
-#endif	/* NOTYET */
 
-	{   size_t preset_number = z->level;	/* XXX eliminate */
+	{   size_t preset_number = z->level;
 
-#ifdef	NOTYET
 	    // Get the preset for LZMA1 or LZMA2.
-	    if (preset_extreme)
+	    if (F_ISSET(z->flags, EXTREME))
 		preset_number |= LZMA_PRESET_EXTREME;
-#endif	/* NOTYET */
 
-	    /* XXX error message on failure? */
-	    (void) lzma_lzma_preset(&z->_options, preset_number);
+	    if (lzma_lzma_preset(&z->_options, preset_number))
+		message_bug();
 	}
 
 	// Use LZMA2 except with --format=lzma we use LZMA1.
@@ -1146,7 +1404,6 @@ coder_set_compression_settings(rpmz z)
     // Terminate the filter options array.
     z->_filters[z->_filters_count].id = LZMA_VLI_UNKNOWN;
 
-#ifdef	NOTYET
     // If we are using the LZMA_Alone format, allow exactly one filter
     // which has to be LZMA.
     if (z->format == RPMZ_FORMAT_LZMA && (z->_filters_count != 1
@@ -1156,7 +1413,6 @@ coder_set_compression_settings(rpmz z)
 
     // Print the selected filter chain.
     message_filters(V_DEBUG, z->_filters);
-#endif	/* NOTYET */
 
     // If using --format=raw, we can be decoding. The memusage function
     // also validates the filter chain and the options used for the
@@ -1169,11 +1425,11 @@ coder_set_compression_settings(rpmz z)
 	memory_limit = hw_memlimit_decoder(z);
     }
 
-#ifdef	NOTYET
     if (memory_usage == UINT64_MAX)
 	message_fatal("Unsupported filter chain or filter options");
 
     // Print memory usage info.
+#ifdef	NOTYET
 #if defined(__LCLINT__)
     message(V_DEBUG, _("%'llu MiB (%'llu B) of memory is "
 			"required per thread, "
@@ -1194,7 +1450,7 @@ coder_set_compression_settings(rpmz z)
     if (memory_usage > memory_limit) {
 	size_t i = 0;
 	lzma_options_lzma *opt;
-	uint32_t orig_dict_size;
+	rpmuint32_t orig_dict_size;
 
 #ifdef	NOTYET
 	// If --no-auto-adjust was used or we didn't find LZMA1 or
@@ -1229,18 +1485,15 @@ coder_set_compression_settings(rpmz z)
 	    // more, but let's see if many complain about this
 	    // version.
 	    //
-#ifdef	NOTYET
 	    // FIXME: Displays the scaled memory usage instead
 	    // of the original.
 	    if (opt->dict_size < (UINT32_C(1) << 20))
 		memlimit_too_small(memory_usage, memory_limit);
-#endif	/* NOTYET */
 
 	    memory_usage = lzma_raw_encoder_memusage(z->_filters);
-#ifdef	NOTYET
+
 	    if (memory_usage == UINT64_MAX)
 		message_bug();
-#endif	/* NOTYET */
 
 	    // Accept it if it is low enough.
 	    if (memory_usage <= memory_limit)
@@ -1283,6 +1536,7 @@ coder_set_compression_settings(rpmz z)
 				memory_limit >> 20);
 #endif	/* __LCLINT__ */
 #endif	/* NOTYET */
+
     }
 
     // Limit the number of worker threads so that memory usage
@@ -1534,8 +1788,8 @@ static struct poptOption optionsTable[] = {
 	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
 
   /* ===== Compression options */
-  /* XXX LZMA specific flag needs to be set some other way. */
-  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.level,  LZMA_PRESET_EXTREME,
+  /* XXX compressor specific flags need to be set some other way. */
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
 	N_("extreme compression"), NULL },
   { "fast", '\0', POPT_ARG_VAL,				&__rpmz.level,  1,
 	N_("fast compression"), NULL },
@@ -1731,8 +1985,6 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 #ifdef	NOTYET
     if (strstr(name, "lz") != NULL) {
 	format_compress_auto = RPMZ_FORMAT_LZMA;
-	z->idio = z->odio = lzdio;
-	z->osuffix = ".lzma";
 	z->format = RPMZ_FORMAT_LZMA;
     }
 #endif
