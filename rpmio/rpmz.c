@@ -196,7 +196,7 @@ struct rpmz_s {
 /*@unchecked@*/
 static struct rpmz_s __rpmz = {
     .flags	= RPMZ_FLAGS_NONE,
-    .format	= RPMZ_FORMAT_AUTO,
+    .format	= RPMZ_FORMAT_GZIP,	/* XXX RPMZ_FORMAT_AUTO? */
     .mode	= RPMZ_MODE_COMPRESS,
     .level	= 6,		/* XXX compression level is type specific. */
 
@@ -355,6 +355,10 @@ static struct suffixPairs_s {
     { RPMZ_FORMAT_LZMA,		".tlz",	".tar" },
     { RPMZ_FORMAT_GZIP,		".gz",	"" },
     { RPMZ_FORMAT_GZIP,		".tgz",	".tar" },
+    { RPMZ_FORMAT_ZLIB,		".gz",	"" },
+    { RPMZ_FORMAT_ZLIB,		".tgz",	".tar" },
+    { RPMZ_FORMAT_ZIP,		".zip",	"" },
+    { RPMZ_FORMAT_ZIP,		".tgz",	".tar" },
     { RPMZ_FORMAT_BZIP2,	".bz2",	"" },
     { RPMZ_FORMAT_RAW,		NULL,	NULL }
 };
@@ -1393,27 +1397,23 @@ static void rpmzArgCallback(poptContext con,
 	}
 	break;
     case 'F':
-	if (!strcmp(arg, "auto")) {
+	if (!strcmp(arg, "auto"))
 	    z->format = RPMZ_FORMAT_AUTO;
-	} else if (!strcmp(arg, "xz")) {
-	    z->idio = z->odio = xzdio;
-	    z->osuffix = ".xz";
+	else if (!strcmp(arg, "xz"))
 	    z->format = RPMZ_FORMAT_XZ;
-	} else if (!strcmp(arg, "lzma") || !strcmp(arg, "alone")) {
-	    z->idio = z->odio = lzdio;
-	    z->osuffix = ".lzma";
+	else if (!strcmp(arg, "lzma") || !strcmp(arg, "alone"))
 	    z->format = RPMZ_FORMAT_LZMA;
-	} else if (!strcmp(arg, "raw")) {
+	else if (!strcmp(arg, "raw"))
 	    z->format = RPMZ_FORMAT_RAW;
-	} else if (!strcmp(arg, "gzip") || !strcmp(arg, "gz")) {
-	    z->idio = z->odio = gzdio;
-	    z->osuffix = ".gz";
+	else if (!strcmp(arg, "gzip") || !strcmp(arg, "gz"))
 	    z->format = RPMZ_FORMAT_GZIP;
-	} else if (!strcmp(arg, "bzip2") || !strcmp(arg, "bz2")) {
-	    z->idio = z->odio = bzdio;
-	    z->osuffix = ".bz2";
+	else if (!strcmp(arg, "zlib"))
+	    z->format = RPMZ_FORMAT_ZLIB;
+	else if (!strcmp(arg, "zip"))
+	    z->format = RPMZ_FORMAT_ZIP;
+	else if (!strcmp(arg, "bzip2") || !strcmp(arg, "bz2"))
 	    z->format = RPMZ_FORMAT_BZIP2;
-	} else {
+	else {
 	    fprintf(stderr, _("%s: Unknown file format type \"%s\"\n"),
 		__progname, arg);
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
@@ -1736,11 +1736,6 @@ main(int argc, char *argv[])
 	goto exit;
 
     z->iob = rpmiobNew(z->nb);
-#ifndef	DYING
-    z->idio = z->odio = gzdio;
-    z->osuffix = ".gz";
-    z->format = RPMZ_FORMAT_GZIP;
-#endif
 
     /* Make sure that stdin/stdout/stderr are open. */
     /* XXX done by rpmioInit as well. */
@@ -1758,6 +1753,37 @@ main(int argc, char *argv[])
     /* Parse CLI options. */
     /* XXX todo: needs to be earlier. */
     optCon = rpmioInit(argc, argv, optionsTable);
+
+    /* XXX Set additional parameters from z->format. */
+    switch (z->format) {
+    case RPMZ_FORMAT_AUTO:
+	/* XXX W2DO? */
+	break;
+    case RPMZ_FORMAT_XZ:
+	z->idio = z->odio = xzdio;
+	z->osuffix = ".xz";
+	break;
+    case RPMZ_FORMAT_LZMA:
+	z->idio = z->odio = lzdio;
+	z->osuffix = ".lzma";
+	break;
+    case RPMZ_FORMAT_RAW:
+	/* XXX W2DO? */
+	break;
+    case RPMZ_FORMAT_GZIP:
+    case RPMZ_FORMAT_ZLIB:
+	z->idio = z->odio = gzdio;
+	z->osuffix = ".gz";
+	break;
+    case RPMZ_FORMAT_ZIP:
+	z->idio = z->odio = gzdio;
+	z->osuffix = ".zip";
+	break;
+    case RPMZ_FORMAT_BZIP2:
+	z->idio = z->odio = bzdio;
+	z->osuffix = ".bz2";
+	break;
+    }
 
     /* Add files from CLI. */
     {	ARGV_t av = poptGetArgs(optCon);
