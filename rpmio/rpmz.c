@@ -63,32 +63,16 @@ static char *opt_suffix = NULL;
 static int opt_preserve_name;
 #endif
 
-#ifdef	DYING
-/*@unchecked@*/ /*@observer@*/
-static const char *stdin_filename = "(stdin)";
-/*@unchecked@*/ /*@observer@*/
-static const char *stdout_filename = "(stdout)";
-
-/*@unchecked@*/
-static int opt_threads;
-/*@unchecked@*/
-static rpmuint64_t memlimit_encoder = 0;
-/*@unchecked@*/
-static rpmuint64_t memlimit_decoder = 0;
-/*@unchecked@*/
-static rpmuint64_t memlimit_custom = 0;
-#endif
-
 #ifdef	NOTYET
 /*@unchecked@*/
 static lzma_stream strm = LZMA_STREAM_INIT;
 #endif
-/*@unchecked@*/
-static lzma_filter filters[LZMA_FILTERS_MAX + 1];
-/*@unchecked@*/
-static size_t filters_count = 0;
+
+#ifdef	NOTYET
 /*@unchecked@*/
 static size_t preset_number = 6;
+#endif
+
 #ifdef	NOTYET
 /// True if we should auto-adjust the compression settings to use less memory
 /// if memory usage limit is too low for the original settings.
@@ -107,8 +91,10 @@ static bool preset_extreme = false;
 #endif
 #endif
 
+#ifdef	DYING
 /*@unchecked@*/
 static lzma_check opt_check = LZMA_CHECK_CRC64;
+#endif
 
 enum {
     OPT_SUBBLOCK = INT_MIN,
@@ -135,7 +121,7 @@ enum rpmzFlags_e {
     RPMZ_FLAGS_FORCE		= _ZFB(1),	/*< -f, --force ... */
     RPMZ_FLAGS_KEEP		= _ZFB(2),	/*< -k, --keep ... */
     RPMZ_FLAGS_RECURSE		= _ZFB(3),	/*< -r, --recursive ... */
-    RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*< -r, --recursive ... */
+    RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*<     --extreme ... */
 
 #ifdef	NOTYET
     RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
@@ -159,6 +145,7 @@ struct rpmz_s {
     enum rpmzFlags_e flags;		/*!< Control bits. */
     enum rpmzFormat_e format;		/*!< Compression format. */
     enum rpmzMode_e mode;		/*!< Operation mode. */
+    unsigned int level;			/*!< Compression level. */
 
     rpmuint64_t mem;			/*!< Physical memory. */
     rpmuint64_t memlimit_encoder;
@@ -207,6 +194,12 @@ struct rpmz_s {
 
 /*@null@*/
     const char * suffix;
+
+    /* LZMA specific configuration. */
+    lzma_check checksum;
+    lzma_filter filters[LZMA_FILTERS_MAX + 1];
+    size_t filters_count;
+
 };
 
 /*@unchecked@*/
@@ -214,6 +207,7 @@ static struct rpmz_s __rpmz = {
     .flags	= RPMZ_FLAGS_NONE,
     .format	= RPMZ_FORMAT_AUTO,
     .mode	= RPMZ_MODE_COMPRESS,
+    .level	= 6,		/* XXX compression level is type specific. */
 
     .stdin_filename = "(stdin)",
     .stdout_filename = "(stdout)",
@@ -222,6 +216,9 @@ static struct rpmz_s __rpmz = {
     .ifmode	= "rb",
     .ofmode	= "wb",
     .suffix	= "",
+
+    .checksum	= LZMA_CHECK_CRC64,
+
 };
 /*@unchecked@*/
 static rpmz _rpmz = &__rpmz;
@@ -361,14 +358,14 @@ static struct suffixPairs_s {
 /*@relnull@*/
     const char * usuffix;
 } suffixPairs[] = {
-    { RPMZ_FORMAT_XZ,	".xz",	"" },
-    { RPMZ_FORMAT_XZ,	".txz",	".tar" },
-    { RPMZ_FORMAT_LZMA,	".lzma","" },
-    { RPMZ_FORMAT_LZMA,	".tlz",	".tar" },
-    { RPMZ_FORMAT_GZIP,	".gz",	"" },
-    { RPMZ_FORMAT_GZIP,	".tgz",	".tar" },
-    { RPMZ_FORMAT_BZIP2,".bz2",	"" },
-    { RPMZ_FORMAT_RAW,	NULL,	NULL }
+    { RPMZ_FORMAT_XZ,		".xz",	"" },
+    { RPMZ_FORMAT_XZ,		".txz",	".tar" },
+    { RPMZ_FORMAT_LZMA,		".lzma","" },
+    { RPMZ_FORMAT_LZMA,		".tlz",	".tar" },
+    { RPMZ_FORMAT_GZIP,		".gz",	"" },
+    { RPMZ_FORMAT_GZIP,		".tgz",	".tar" },
+    { RPMZ_FORMAT_BZIP2,	".bz2",	"" },
+    { RPMZ_FORMAT_RAW,		NULL,	NULL }
 };
 
 /**
@@ -953,11 +950,8 @@ options_delta(const char *str)
 
     lzma_options_delta *options = xmalloc(sizeof(lzma_options_delta));
     // It's hard to give a useful default for this.
-    *options = (lzma_options_delta) {
-	// It's hard to give a useful default for this.
-	.type = LZMA_DELTA_TYPE_BYTE,
-	.dist = LZMA_DELTA_DIST_MIN,
-    };
+    options->type = LZMA_DELTA_TYPE_BYTE;
+    options->dist = LZMA_DELTA_DIST_MIN;
 
     parse_options(str, opts, &set_delta, options);
 
@@ -991,7 +985,6 @@ set_lzma(void *options, rpmuint32_t key, rpmuint64_t value)
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
 	break;
-
     case OPT_DICT:	opt->dict_size = value;		break;
     case OPT_LC:	opt->lc = value;		break;
     case OPT_LP:	opt->lp = value;		break;
@@ -1058,42 +1051,41 @@ options_lzma(const char *str)
 }
 
 static void
-coder_add_filter(lzma_vli id, void *options)
-	/*@globals filters, filters_count @*/
-	/*@modifies filters, filters_count @*/
+coder_add_filter(rpmz z, lzma_vli id, void *options)
+	/*@modifies z @*/
 {
-    if (filters_count == LZMA_FILTERS_MAX) {
+    if (z->filters_count == LZMA_FILTERS_MAX) {
 	fprintf(stderr, _("%s: Maximum number of filters is %d\n"),
 		__progname, LZMA_FILTERS_MAX);
 	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
     }
 
-    filters[filters_count].id = id;
-    filters[filters_count].options = options;
-    ++filters_count;
+    z->filters[z->filters_count].id = id;
+    z->filters[z->filters_count].options = options;
+    z->filters_count++;
 
     return;
 }
 
 static void
 coder_set_compression_settings(rpmz z)
-	/*@globals filters, filters_count, preset_default, preset_number @*/
-	/*@modifies z, filters, filters_count, preset_default, preset_number @*/
+	/*@globals preset_default, preset_number @*/
+	/*@modifies z, preset_default, preset_number @*/
 {
 
     /* Add the per-architecture filters. */
     if (F_ISSET(z->flags, X86))
-	coder_add_filter(LZMA_FILTER_X86, NULL);
+	coder_add_filter(z, LZMA_FILTER_X86, NULL);
     if (F_ISSET(z->flags, POWERPC))
-	coder_add_filter(LZMA_FILTER_POWERPC, NULL);
+	coder_add_filter(z, LZMA_FILTER_POWERPC, NULL);
     if (F_ISSET(z->flags, IA64))
-	coder_add_filter(LZMA_FILTER_IA64, NULL);
+	coder_add_filter(z, LZMA_FILTER_IA64, NULL);
     if (F_ISSET(z->flags, ARM))
-	coder_add_filter(LZMA_FILTER_ARM, NULL);
+	coder_add_filter(z, LZMA_FILTER_ARM, NULL);
     if (F_ISSET(z->flags, ARMTHUMB))
-	coder_add_filter(LZMA_FILTER_ARMTHUMB, NULL);
+	coder_add_filter(z, LZMA_FILTER_ARMTHUMB, NULL);
     if (F_ISSET(z->flags, SPARC))
-	coder_add_filter(LZMA_FILTER_SPARC, NULL);
+	coder_add_filter(z, LZMA_FILTER_SPARC, NULL);
 
 #ifdef	NOTYET
 	// Options for LZMA1 or LZMA2 in case we are using a preset.
@@ -1101,8 +1093,9 @@ coder_set_compression_settings(rpmz z)
 	uint64_t memory_usage;
 	uint64_t memory_limit;
 	size_t thread_limit;
+	size_t preset_number = z->level;
 
-	if (filters_count == 0) {
+	if (z->filters_count == 0) {
 		// We are using a preset. This is not a good idea in raw mode
 		// except when playing around with things. Different versions
 		// of this software may use different options in presets, and
@@ -1125,35 +1118,35 @@ coder_set_compression_settings(rpmz z)
 			message_bug();
 
 		// Use LZMA2 except with --format=lzma we use LZMA1.
-		filters[0].id = z->format == RPMZ_FORMAT_LZMA
+		z->filters[0].id = z->format == RPMZ_FORMAT_LZMA
 				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
-		filters[0].options = &opt_lzma;
-		filters_count = 1;
+		z->filters[0].options = &opt_lzma;
+		z->filters_count = 1;
 	} else {
 		preset_default = false;
 	}
 
 	// Terminate the filter options array.
-	filters[filters_count].id = LZMA_VLI_UNKNOWN;
+	z->filters[z->filters_count].id = LZMA_VLI_UNKNOWN;
 
 	// If we are using the LZMA_Alone format, allow exactly one filter
 	// which has to be LZMA.
-	if (z->format == RPMZ_FORMAT_LZMA && (filters_count != 1
-			|| filters[0].id != LZMA_FILTER_LZMA1))
+	if (z->format == RPMZ_FORMAT_LZMA && (z->filters_count != 1
+			|| z->filters[0].id != LZMA_FILTER_LZMA1))
 		message_fatal(_("With --format=lzma only the LZMA1 filter "
 				"is supported"));
 
 	// Print the selected filter chain.
-	message_filters(V_DEBUG, filters);
+	message_filters(V_DEBUG, z->filters);
 
 	// If using --format=raw, we can be decoding. The memusage function
 	// also validates the filter chain and the options used for the
 	// filters.
 	if (z->mode == RPMZ_MODE_COMPRESS) {
-		memory_usage = lzma_raw_encoder_memusage(filters);
+		memory_usage = lzma_raw_encoder_memusage(z->filters);
 		memory_limit = hardware_memlimit_encoder();
 	} else {
-		memory_usage = lzma_raw_decoder_memusage(filters);
+		memory_usage = lzma_raw_decoder_memusage(z->filters);
 		memory_limit = hardware_memlimit_decoder();
 	}
 
@@ -1193,9 +1186,9 @@ coder_set_compression_settings(rpmz z)
 		// Look for the last filter if it is LZMA2 or LZMA1, so
 		// we can make it use less RAM. With other filters we don't
 		// know what to do.
-		while (filters[i].id != LZMA_FILTER_LZMA2
-				&& filters[i].id != LZMA_FILTER_LZMA1) {
-			if (filters[i].id == LZMA_VLI_UNKNOWN)
+		while (z->filters[i].id != LZMA_FILTER_LZMA2
+				&& z->filters[i].id != LZMA_FILTER_LZMA1) {
+			if (z->filters[i].id == LZMA_VLI_UNKNOWN)
 				memlimit_too_small(memory_usage, memory_limit);
 
 			++i;
@@ -1203,7 +1196,7 @@ coder_set_compression_settings(rpmz z)
 
 		// Decrease the dictionary size until we meet the memory
 		// usage limit. First round down to full mebibytes.
-		opt = filters[i].options;
+		opt = z->filters[i].options;
 		orig_dict_size = opt->dict_size;
 		opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
 		while (true) {
@@ -1217,7 +1210,7 @@ coder_set_compression_settings(rpmz z)
 			if (opt->dict_size < (UINT32_C(1) << 20))
 				memlimit_too_small(memory_usage, memory_limit);
 
-			memory_usage = lzma_raw_encoder_memusage(filters);
+			memory_usage = lzma_raw_encoder_memusage(z->filters);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
 
@@ -1241,7 +1234,7 @@ coder_set_compression_settings(rpmz z)
 					"%'u MiB to not exceed "
 					"the memory usage limit of "
 					"%'llu MiB",
-					filters[i].id == LZMA_FILTER_LZMA2
+					z->filters[i].id == LZMA_FILTER_LZMA2
 						? '2' : '1',
 					(unsigned)(orig_dict_size >> 20),
 					(unsigned)(opt->dict_size >> 20),
@@ -1253,7 +1246,7 @@ coder_set_compression_settings(rpmz z)
 					"%'" PRIu32 " MiB to not exceed "
 					"the memory usage limit of "
 					"%'" PRIu64 " MiB",
-					filters[i].id == LZMA_FILTER_LZMA2
+					z->filters[i].id == LZMA_FILTER_LZMA2
 						? '2' : '1',
 					orig_dict_size >> 20,
 					opt->dict_size >> 20,
@@ -1394,13 +1387,13 @@ static void rpmzArgCallback(poptContext con,
     }	break;
     case 'C':
 	if (!strcmp(arg, "none"))
-	    opt_check = LZMA_CHECK_NONE;
+	    z->checksum = LZMA_CHECK_NONE;
 	else if (!strcmp(arg, "crc32"))
-	    opt_check = LZMA_CHECK_CRC32;
+	    z->checksum = LZMA_CHECK_CRC32;
 	else if (!strcmp(arg, "crc64"))
-	    opt_check = LZMA_CHECK_CRC64;
+	    z->checksum = LZMA_CHECK_CRC64;
 	else if (!strcmp(arg, "sha256"))
-	    opt_check = LZMA_CHECK_SHA256;
+	    z->checksum = LZMA_CHECK_SHA256;
 	else {
 	    fprintf(stderr, _("%s: Unknown integrity check method \"%s\"\n"),
 		__progname, arg);
@@ -1438,16 +1431,16 @@ static void rpmzArgCallback(poptContext con,
 	break;
 
     case OPT_SUBBLOCK:
-	coder_add_filter(LZMA_FILTER_SUBBLOCK, options_subblock(optarg));
+	coder_add_filter(z, LZMA_FILTER_SUBBLOCK, options_subblock(optarg));
 	break;
     case OPT_DELTA:
-	coder_add_filter(LZMA_FILTER_DELTA, options_delta(optarg));
+	coder_add_filter(z, LZMA_FILTER_DELTA, options_delta(optarg));
 	break;
     case OPT_LZMA1:
-	coder_add_filter(LZMA_FILTER_LZMA1, options_lzma(optarg));
+	coder_add_filter(z, LZMA_FILTER_LZMA1, options_lzma(optarg));
 	break;
     case OPT_LZMA2:
-	coder_add_filter(LZMA_FILTER_LZMA2, options_lzma(optarg));
+	coder_add_filter(z, LZMA_FILTER_LZMA2, options_lzma(optarg));
 	break;
 
     default:
@@ -1515,30 +1508,31 @@ static struct poptOption optionsTable[] = {
 	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
 
   /* ===== Compression options */
-  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&preset_number,  LZMA_PRESET_EXTREME,
+  /* XXX LZMA specific flag needs to be set some other way. */
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.level,  LZMA_PRESET_EXTREME,
 	N_("extreme compression"), NULL },
-  { "fast", '\0', POPT_ARG_VAL,				&preset_number,  1,
+  { "fast", '\0', POPT_ARG_VAL,				&__rpmz.level,  1,
 	N_("fast compression"), NULL },
-  { "best", '\0', POPT_ARG_VAL,				&preset_number,  9,
+  { "best", '\0', POPT_ARG_VAL,				&__rpmz.level,  9,
 	N_("best compression"), NULL },
 
-  { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  1,
+  { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  1,
 	NULL, NULL },
-  { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  2,
+  { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  2,
 	NULL, NULL },
-  { NULL, '3', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  3,
+  { NULL, '3', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  3,
 	NULL, NULL },
-  { NULL, '4', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  4,
+  { NULL, '4', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  4,
 	NULL, NULL },
-  { NULL, '5', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  5,
+  { NULL, '5', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  5,
 	NULL, NULL },
-  { NULL, '6', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  6,
+  { NULL, '6', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  6,
 	NULL, NULL },
-  { NULL, '7', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  7,
+  { NULL, '7', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  7,
 	NULL, NULL },
-  { NULL, '8', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  8,
+  { NULL, '8', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  8,
 	NULL, NULL },
-  { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&preset_number,  9,
+  { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  9,
 	NULL, NULL },
 
   /* ===== Custom filters */
@@ -1812,7 +1806,7 @@ argvPrint("input args", z->argv, NULL);
     if (z->mode == RPMZ_MODE_COMPRESS) {
 	int xx;
 	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
-		(unsigned)(preset_number % 10));
+		(unsigned)(__rpmz.level % 10));
     }
     z->suffix = opt_suffix;
 
