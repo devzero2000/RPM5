@@ -57,19 +57,10 @@ static enum format_type opt_format = FORMAT_AUTO;
 /*@unchecked@*/
 static char *opt_suffix = NULL;
 
-/*@unchecked@*/
-static int opt_stdout;
-/*@unchecked@*/
-static int opt_force;
-/*@unchecked@*/
-static int opt_keep_original;
-
 #ifdef	NOTYET
 /*@unchecked@*/
 static int opt_preserve_name;
 #endif
-/*@unchecked@*/
-static int opt_recursive;
 
 /*@unchecked@*/ /*@observer@*/
 static const char *stdin_filename = "(stdin)";
@@ -104,11 +95,13 @@ static bool auto_adjust = true;
 /// to auto-adjust for lower memory usage, we won't print a warning.
 /*@unchecked@*/
 static bool preset_default = true;
+#ifdef	DYING
 /// If a preset is used (no custom filter chain) and preset_extreme is true,
 /// a significantly slower compression is used to achieve slightly better
 /// compression ratio.
 /*@unchecked@*/
 static bool preset_extreme = false;
+#endif
 #endif
 
 /*@unchecked@*/
@@ -116,12 +109,7 @@ static lzma_check opt_check = LZMA_CHECK_CRC64;
 
 enum {
     OPT_SUBBLOCK = INT_MIN,
-    OPT_X86,
-    OPT_POWERPC,
-    OPT_IA64,
-    OPT_ARM,
-    OPT_ARMTHUMB,
-    OPT_SPARC,
+
     OPT_DELTA,
     OPT_LZMA1,
     OPT_LZMA2,
@@ -132,9 +120,40 @@ enum {
  */
 typedef struct rpmz_s * rpmz;
 
+#define F_ISSET(_f, _FLAG) (((_f) & ((RPMZ_FLAGS_##_FLAG) & ~0x40000000)) != RPMZ_FLAGS_NONE)
+#define RZ_ISSET(_FLAG) F_ISSET(z->flags, _FLAG)
+
+#define _KFB(n) (1U << (n))
+#define _ZFB(n) (_KFB(n) | 0x40000000)
+
+enum rpmzFlags_e {
+    RPMZ_FLAGS_NONE		= 0,
+    RPMZ_FLAGS_STDOUT		= _ZFB(0),	/*< -c, --stdout ... */
+    RPMZ_FLAGS_FORCE		= _ZFB(1),	/*< -f, --force ... */
+    RPMZ_FLAGS_KEEP		= _ZFB(2),	/*< -k, --keep ... */
+    RPMZ_FLAGS_RECURSE		= _ZFB(3),	/*< -r, --recursive ... */
+    RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*< -r, --recursive ... */
+
+#ifdef	NOTYET
+    RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
+    RPMZ_FLAGS_DELTA,
+    RPMZ_FLAGS_LZMA1,
+    RPMZ_FLAGS_LZMA2,
+#endif
+
+    RPMZ_FLAGS_X86		= _ZFB(16),
+    RPMZ_FLAGS_POWERPC		= _ZFB(17),
+    RPMZ_FLAGS_IA64		= _ZFB(18),
+    RPMZ_FLAGS_ARM		= _ZFB(19),
+    RPMZ_FLAGS_ARMTHUMB		= _ZFB(20),
+    RPMZ_FLAGS_SPARC		= _ZFB(21),
+
+};
+
 /**
  */
 struct rpmz_s {
+    enum rpmzFlags_e flags;		/*!< Control bits. */
     char * b;
     size_t nb;
 
@@ -173,6 +192,7 @@ struct rpmz_s {
 
 /*@unchecked@*/
 static struct rpmz_s __rpmz = {
+    .flags	= RPMZ_FLAGS_NONE,
     .nb		= 16 * BUFSIZ,
     .ifmode	= "rb",
     .ofmode	= "wb",
@@ -455,7 +475,7 @@ fprintf(stderr, "==> Unlink(%s) FAIL\n", z->ofn);
 	}
 	break;
     case RPMRC_OK:
-	if (!opt_keep_original && z->ifn != stdin_filename) {
+	if (!F_ISSET(z->flags, KEEP) && z->ifn != stdin_filename) {
 	    xx = Unlink(z->ifn);
 if (_debug)
 fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
@@ -515,7 +535,7 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 	goto exit;
     }
 
-    if (opt_stdout)  {
+    if (F_ISSET(z->flags, STDOUT))  {
 	z->ofn = xstrdup(stdout_filename);
 	switch (opt_mode) {
 	default:
@@ -535,7 +555,7 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 	    break;
 	case MODE_COMPRESS:
 	    z->ofn = compressedFN(z);
-	    if (!opt_force && Stat(z->ofn, &z->osb) == 0) {
+	    if (!F_ISSET(z->flags, FORCE) && Stat(z->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
 			__progname, z->ofn);
 		/* XXX TODO: ok to overwrite(y/N)? */
@@ -546,7 +566,7 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 	    break;
 	case MODE_DECOMPRESS:
 	    z->ofn = uncompressedFN(z);
-	    if (!opt_force && Stat(z->ofn, &z->osb) == 0) {
+	    if (!F_ISSET(z->flags, FORCE) && Stat(z->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
 			__progname, z->ofn);
 		/* XXX TODO: ok to overwrite(y/N)? */
@@ -1030,12 +1050,27 @@ coder_add_filter(lzma_vli id, void *options)
     return;
 }
 
-#ifdef	NOTYET
 static void
-coder_set_compression_settings(void)
+coder_set_compression_settings(rpmz z)
 	/*@globals filters, filters_count, opt_threads, preset_default, preset_number @*/
 	/*@modifies filters, filters_count, opt_threads, preset_default, preset_number @*/
 {
+
+    /* Add the per-architecture filters. */
+    if (F_ISSET(z->flags, X86))
+	coder_add_filter(LZMA_FILTER_X86, NULL);
+    if (F_ISSET(z->flags, POWERPC))
+	coder_add_filter(LZMA_FILTER_POWERPC, NULL);
+    if (F_ISSET(z->flags, IA64))
+	coder_add_filter(LZMA_FILTER_IA64, NULL);
+    if (F_ISSET(z->flags, ARM))
+	coder_add_filter(LZMA_FILTER_ARM, NULL);
+    if (F_ISSET(z->flags, ARMTHUMB))
+	coder_add_filter(LZMA_FILTER_ARMTHUMB, NULL);
+    if (F_ISSET(z->flags, SPARC))
+	coder_add_filter(LZMA_FILTER_SPARC, NULL);
+
+#ifdef	NOTYET
 	// Options for LZMA1 or LZMA2 in case we are using a preset.
 	static lzma_options_lzma opt_lzma;
 	uint64_t memory_usage;
@@ -1210,10 +1245,10 @@ coder_set_compression_settings(void)
 
 	if (opt_threads > thread_limit)
 		opt_threads = thread_limit;
+#endif	/* NOTYET */
 
 	return;
 }
-#endif	/* NOTYET */
 
 /*==============================================================*/
 
@@ -1376,26 +1411,9 @@ static void rpmzArgCallback(poptContext con,
 	    /*@notreached@*/
 	}
 	break;
+
     case OPT_SUBBLOCK:
 	coder_add_filter(LZMA_FILTER_SUBBLOCK, options_subblock(optarg));
-	break;
-    case OPT_X86:
-	coder_add_filter(LZMA_FILTER_X86, NULL);
-	break;
-    case OPT_POWERPC:
-	coder_add_filter(LZMA_FILTER_POWERPC, NULL);
-	break;
-    case OPT_IA64:
-	coder_add_filter(LZMA_FILTER_IA64, NULL);
-	break;
-    case OPT_ARM:
-	coder_add_filter(LZMA_FILTER_ARM, NULL);
-	break;
-    case OPT_ARMTHUMB:
-	coder_add_filter(LZMA_FILTER_ARMTHUMB, NULL);
-	break;
-    case OPT_SPARC:
-	coder_add_filter(LZMA_FILTER_SPARC, NULL);
 	break;
     case OPT_DELTA:
 	coder_add_filter(LZMA_FILTER_DELTA, options_delta(optarg));
@@ -1443,18 +1461,19 @@ static struct poptOption optionsTable[] = {
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
 
   /* ===== Operation modifiers */
-  { "keep", 'k', POPT_ARG_VAL,			&opt_keep_original, 1,
+  { "keep", 'k', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_KEEP,
 	N_("keep (don't delete) input files"), NULL },
-  { "force", 'f', POPT_ARG_VAL,			&opt_force,  1,
+  { "force", 'f', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_FORCE,
 	N_("force overwrite of output file and (de)compress links"), NULL },
-  { "stdout", 'c', POPT_ARG_VAL,		&opt_stdout,  1,
+  { "stdout", 'c', POPT_BIT_SET,		&__rpmz.flags,  RPMZ_FLAGS_STDOUT,
 	N_("write to standard output and don't delete input files"), NULL },
-  { "to-stdout", 'c', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &opt_stdout,  1,
+  { "to-stdout", 'c', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz.flags,  RPMZ_FLAGS_STDOUT,
 	N_("write to standard output and don't delete input files"), NULL },
   { "suffix", 'S', POPT_ARG_STRING,		&opt_suffix, 0,
 	N_("use suffix `.SUF' on compressed files instead"), N_(".SUF") },
+
   /* XXX unimplemented */
-  { "recursive", 'r', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &opt_recursive, 1,
+  { "recursive", 'r', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz.flags, RPMZ_FLAGS_RECURSE,
 	N_("?recursive?"), NULL },
 
   { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
@@ -1471,10 +1490,8 @@ static struct poptOption optionsTable[] = {
 	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
 
   /* ===== Compression options */
-#ifdef	NOTYET
-  { "extreme", 'e', POPT_ARG_VAL,			&preset_number,  1,
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&preset_number,  LZMA_PRESET_EXTREME,
 	N_("extreme compression"), NULL },
-#endif
   { "fast", '\0', POPT_ARG_VAL,				&preset_number,  1,
 	N_("fast compression"), NULL },
   { "best", '\0', POPT_ARG_VAL,				&preset_number,  9,
@@ -1517,23 +1534,23 @@ static struct poptOption optionsTable[] = {
   { "lzma2", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA2,
 	N_("set lzma2 filter"), N_("OPTS") },
 
-  { "x86", '\0', 0,				NULL, OPT_X86,
+  { "x86", '\0', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_X86,
 	N_("ix86 filter (sometimes called BCJ filter)"), NULL },
-  { "bcj", '\0', POPT_ARGFLAG_DOC_HIDDEN,	NULL, OPT_X86,
+  { "bcj", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags, RPMZ_FLAGS_X86,
 	N_("x86 filter (sometimes called BCJ filter)"), NULL },
-  { "powerpc", '\0', 0,				NULL, OPT_POWERPC,
+  { "powerpc", '\0', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_POWERPC,
 	N_("PowerPC (big endian) filter"), NULL },
-  { "ppc", '\0', POPT_ARGFLAG_DOC_HIDDEN,	NULL, OPT_POWERPC,
+  { "ppc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags, RPMZ_FLAGS_POWERPC,
 	N_("PowerPC (big endian) filter"), NULL },
-  { "ia64", '\0', 0,				NULL, OPT_IA64,
+  { "ia64", '\0', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_IA64,
 	N_("IA64 (Itanium) filter"), NULL },
-  { "itanium", '\0', POPT_ARGFLAG_DOC_HIDDEN,	NULL, OPT_IA64,
+  { "itanium", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags, RPMZ_FLAGS_IA64,
 	N_("IA64 (Itanium) filter"), NULL },
-  { "arm", '\0', 0,				NULL, OPT_ARM,
+  { "arm", '\0', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_ARM,
 	N_("ARM filter"), NULL },
-  { "armthumb", '\0', 0,			NULL, OPT_ARMTHUMB,
+  { "armthumb", '\0', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_ARMTHUMB,
 	N_("ARM-Thumb filter"), NULL },
-  { "sparc", '\0', 0,				NULL, OPT_SPARC,
+  { "sparc", '\0', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_SPARC,
 	N_("SPARC filter"), NULL },
 
 #ifdef	REFERENCE
@@ -1677,7 +1694,7 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 
     if (strstr(name, "cat") != NULL) {
 	opt_mode = MODE_DECOMPRESS;
-	opt_stdout = true;
+	z->flags |= RPMZ_FLAGS_STDOUT;
     } else if (strstr(name, "un") != NULL) {
 	opt_mode = MODE_DECOMPRESS;
     }
@@ -1754,9 +1771,9 @@ argvPrint("input args", z->argv, NULL);
 	// Never remove the source file when the destination is not on disk.
 	// In test mode the data is written nowhere, but setting opt_stdout
 	// will make the rest of the code behave well.
-	if (opt_stdout || opt_mode == MODE_TEST) {
-		opt_keep_original = true;
-		opt_stdout = true;
+	if (F_ISSET(z->flags, STDOUT) || opt_mode == MODE_TEST) {
+		z->flags |= RPMZ_FLAGS_KEEP;
+		z->flags |= RPMZ_FLAGS_STDOUT;
 	}
 
 	// If no --format flag was used, or it was --format=auto, we need to
@@ -1780,9 +1797,9 @@ argvPrint("input args", z->argv, NULL);
     // be done also when uncompressing raw data, since for raw decoding
     // the options given on the command line are used to know what kind
     // of raw data we are supposed to decode.
-    if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
-	coder_set_compression_settings();
 #endif
+    if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
+	coder_set_compression_settings(z);
 
     signals_init();
 
