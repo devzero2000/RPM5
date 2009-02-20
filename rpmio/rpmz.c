@@ -69,11 +69,6 @@ static lzma_stream strm = LZMA_STREAM_INIT;
 #endif
 
 #ifdef	NOTYET
-/*@unchecked@*/
-static size_t preset_number = 6;
-#endif
-
-#ifdef	NOTYET
 /// True if we should auto-adjust the compression settings to use less memory
 /// if memory usage limit is too low for the original settings.
 /*@unchecked@*/
@@ -89,11 +84,6 @@ static bool preset_default = true;
 /*@unchecked@*/
 static bool preset_extreme = false;
 #endif
-#endif
-
-#ifdef	DYING
-/*@unchecked@*/
-static lzma_check opt_check = LZMA_CHECK_CRC64;
 #endif
 
 enum {
@@ -160,7 +150,8 @@ struct rpmz_s {
 /*@observer@*/
     const char *stdout_filename;	/*!< Display name for stdout. */
 
-    char * b;				/*!< Buffer for I/O. */
+/*@relnull@*/
+    rpmiob iob;				/*!< Buffer for I/O. */
     size_t nb;				/*!< Buffer size (in bytes) */
 
 /*@null@*/
@@ -193,7 +184,7 @@ struct rpmz_s {
     struct stat osb;
 
 /*@null@*/
-    const char * suffix;
+    const char * suffix;		/*!< -S, --suffix ... */
 
     /* LZMA specific configuration. */
     lzma_check checksum;
@@ -612,18 +603,18 @@ exit:
 /*
  * Copy input to output.
  */
-static rpmRC rpmzCopy(rpmz z)
+static rpmRC rpmzCopy(rpmz z, rpmiob iob)
 	/*@*/
 {
     for (;;) {
-	size_t len = Fread(z->b, 1, z->nb, z->ifd);
+	iob->blen = Fread(iob->b, 1, iob->allocated, z->ifd);
 
 	if (Ferror(z->ifd))
 	    return RPMRC_FAIL;
 
-	if (len == 0) break;
+	if (iob->blen == 0) break;
 
-	if (Fwrite(z->b, 1, len, z->ofd) != len)
+	if (Fwrite(iob->b, 1, iob->blen, z->ofd) != iob->blen)
 	    return RPMRC_FAIL;
     }
     return RPMRC_OK;
@@ -639,7 +630,7 @@ static rpmRC rpmzProcess(rpmz z)
 
     rc = rpmzInit(z);
     if (rc == RPMRC_OK)
-	rc = rpmzCopy(z);
+	rc = rpmzCopy(z, z->iob);
     rc = rpmzFini(z, rc);
     return rc;
 }
@@ -926,7 +917,7 @@ options_subblock(const char *str)
 /* ===== Delta ===== */
 
 enum {
-	OPT_DIST,
+    OPT_DIST,
 };
 
 static void
@@ -1744,7 +1735,7 @@ main(int argc, char *argv[])
     if (xx)
 	goto exit;
 
-    z->b = xmalloc(z->nb);
+    z->iob = rpmiobNew(z->nb);
 #ifndef	DYING
     z->idio = z->odio = gzdio;
     z->osuffix = ".gz";
@@ -1786,21 +1777,20 @@ argvPrint("input args", z->argv, NULL);
     if (z->argv == NULL || z->argv[0] == NULL)
 	ac++;
 
-#ifdef	NOTYET
-	// Never remove the source file when the destination is not on disk.
-	// In test mode the data is written nowhere, but setting opt_stdout
-	// will make the rest of the code behave well.
-	if (F_ISSET(z->flags, STDOUT) || z->mode == RPMZ_MODE_TEST) {
-		z->flags |= RPMZ_FLAGS_KEEP;
-		z->flags |= RPMZ_FLAGS_STDOUT;
-	}
-
-	// If no --format flag was used, or it was --format=auto, we need to
-	// decide what is the target file format we are going to use. This
-	// depends on how we were called (checked earlier in this function).
-	if (z->mode == RPMZ_MODE_COMPRESS && z->format == RPMZ_FORMAT_AUTO)
-		z->format = format_compress_auto;
+    // Never remove the source file when the destination is not on disk.
+    // In test mode the data is written nowhere, but setting opt_stdout
+    // will make the rest of the code behave well.
+    if (F_ISSET(z->flags, STDOUT) || z->mode == RPMZ_MODE_TEST) {
+	z->flags |= RPMZ_FLAGS_KEEP;
+	z->flags |= RPMZ_FLAGS_STDOUT;
     }
+
+#ifdef	NOTYET
+    // If no --format flag was used, or it was --format=auto, we need to
+    // decide what is the target file format we are going to use. This
+    // depends on how we were called (checked earlier in this function).
+    if (z->mode == RPMZ_MODE_COMPRESS && z->format == RPMZ_FORMAT_AUTO)
+	z->format = format_compress_auto;
 #endif	/* NOTYET */
 
     if (z->mode == RPMZ_MODE_COMPRESS) {
@@ -1810,13 +1800,11 @@ argvPrint("input args", z->argv, NULL);
     }
     z->suffix = opt_suffix;
 
-#ifdef	NOTYET
     // Compression settings need to be validated (options themselves and
     // their memory usage) when compressing to any file format. It has to
     // be done also when uncompressing raw data, since for raw decoding
     // the options given on the command line are used to know what kind
     // of raw data we are supposed to decode.
-#endif
     if (z->mode == RPMZ_MODE_COMPRESS || z->format == RPMZ_FORMAT_RAW)
 	coder_set_compression_settings(z);
 
@@ -1849,7 +1837,7 @@ argvPrint("input args", z->argv, NULL);
 exit:
     z->manifests = argvFree(z->manifests);
     z->argv = argvFree(z->argv);
-    z->b = _free(z->b);
+    z->iob = rpmiobFree(z->iob);
 
     optCon = rpmioFini(optCon);
 
