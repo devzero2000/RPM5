@@ -262,7 +262,16 @@ static void io_init(void)
 }
 
 /*==============================================================*/
+#if linux
 #define	HAVE_PHYSMEM_SYSCONF	1	/* XXX hotwired for linux */
+#endif
+#if defined(__APPLE__) && defined(__MACH__)
+#define	HAVE_PHYSMEM_SYSCTL	1	/* XXX hotwired for darwin */
+#endif
+
+#if defined(HAVE_PHYSMEM_SYSCTL) /* HAVE_SYS_SYSCTL_H */
+#include <sys/sysctl.h>
+#endif
 
 static rpmuint64_t physmem(void)
 	/*@*/
@@ -292,7 +301,16 @@ static rpmuint64_t physmem(void)
     return ret;
 }
 
+#if linux
 #define	HAVE_NCPU_SYSCONF	1	/* XXX hotwired for linux */
+#endif
+#if defined(__APPLE__) && defined(__MACH__)
+#define	HAVE_NCPU_SYSCTL	1	/* XXX hotwired for darwin */
+#endif
+
+#if defined(HAVE_NCPU_SYSCTL) /* HAVE_SYS_SYSCTL_H */
+#include <sys/sysctl.h>
+#endif
 
 static void
 hw_cores(rpmz z)
