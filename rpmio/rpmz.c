@@ -279,7 +279,7 @@ static rpmuint64_t physmem(void)
     {	int name[2] = { CTL_HW, HW_PHYSMEM };
 	unsigned long mem;
 	size_t mem_ptr_size = sizeof(mem);
-	if (!sysctl(name, 2, &mem, &mem_ptr_size, NULL, NULL)) {
+	if (!sysctl(name, 2, &mem, &mem_ptr_size, NULL, 0)) {
 	    if (mem_ptr_size != sizeof(mem)) {
 		if (mem_ptr_size == sizeof(unsigned int))
 		    ret = *(unsigned int *)(&mem);
@@ -308,7 +308,7 @@ hw_cores(rpmz z)
     {	int name[2] = { CTL_HW, HW_NCPU };
 	int cpus;
 	size_t cpus_size = sizeof(cpus);
-	if (!sysctl(name, &cpus, &cpus_size, NULL, NULL)
+	if (!sysctl(name, 2, &cpus, &cpus_size, NULL, 0)
 	 && cpus_size == sizeof(cpus) && cpus > 0)
 	    z->threads = (size_t)(cpus);
     }
