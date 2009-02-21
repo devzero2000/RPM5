@@ -844,8 +844,7 @@ parse_options(const char *str, const option_map *opts,
 	    *value++ = '\0';
 
 	if (value == NULL || value[0] == '\0') {
-	    fprintf(stderr, _("%s: %s: Options must be `name=value' "
-					"pairs separated with commas"),
+	    fprintf(stderr, _("%s: %s: Options must be `name=value' pairs separated with commas\n"),
 					__progname, str);
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
@@ -875,7 +874,7 @@ parse_options(const char *str, const option_map *opts,
 		}
 
 		if (opts[i].map[j].name == NULL) {
-		    fprintf(stderr, _("%s: %s: Invalid option value"),
+		    fprintf(stderr, _("%s: %s: Invalid option value\n"),
 			__progname, value);
 		    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 		}
@@ -888,7 +887,7 @@ parse_options(const char *str, const option_map *opts,
 	}
 
 	if (!found) {
-	    fprintf(stderr, _("%s: %s: Invalid option name"), __progname, name);
+	    fprintf(stderr, _("%s: %s: Invalid option name\n"), __progname, name);
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
 
@@ -1004,7 +1003,7 @@ set_lzma(void *options, rpmuint32_t key, rpmuint64_t value)
     switch (key) {
     case OPT_PRESET:
 	if (lzma_lzma_preset(options, (uint32_t)(value))) {
-	    fprintf(stderr, _("LZMA1/LZMA2 preset %u is not supported"),
+	    fprintf(stderr, _("LZMA1/LZMA2 preset %u is not supported\n"),
 					(unsigned int)(value));
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
@@ -1108,6 +1107,8 @@ hw_memlimit_decoder(rpmz z)
 static void
 message_filters(int code, const lzma_filter *filters)
 {
+    char t[BUFSIZ];
+    char * te = t;
     unsigned pri = RPMLOG_PRI(code);
     unsigned mask = RPMLOG_MASK(pri);
     size_t i;
@@ -1115,108 +1116,79 @@ message_filters(int code, const lzma_filter *filters)
     if ((mask & rpmlogSetMask(0)) == 0)
 	return;
 
-    fprintf(stderr, _("%s: Filter chain:"), __progname);
+    *te = '\0';
+    te = stpcpy( stpcpy(te, __progname), ": Filter chain:");
 
     for (i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
-	fprintf(stderr, " --");
+	te = stpcpy(te, " --");
 
 	switch (filters[i].id) {
 	case LZMA_FILTER_LZMA1:
 	case LZMA_FILTER_LZMA2: {
 	    const lzma_options_lzma *opt = filters[i].options;
+	    const char *lzmaver;
 	    const char *mode;
 	    const char *mf;
 
 	    switch (opt->mode) {
-	    case LZMA_MODE_FAST:
-		mode = "fast";
-		break;
-
-	    case LZMA_MODE_NORMAL:
-		mode = "normal";
-		break;
-
-	    default:
-		mode = "UNKNOWN";
-		break;
+	    case LZMA_MODE_FAST:	mode = "fast";		break;
+	    case LZMA_MODE_NORMAL:	mode = "normal";	break;
+	    default:			mode = "UNKNOWN";	break;
 	    }
 
 	    switch (opt->mf) {
-	    case LZMA_MF_HC3:
-		mf = "hc3";
-		break;
-
-	    case LZMA_MF_HC4:
-		mf = "hc4";
-		break;
-
-	    case LZMA_MF_BT2:
-		mf = "bt2";
-		break;
-
-	    case LZMA_MF_BT3:
-		mf = "bt3";
-		break;
-
-	    case LZMA_MF_BT4:
-		mf = "bt4";
-		break;
-
-	    default:
-		mf = "UNKNOWN";
-		break;
+	    case LZMA_MF_HC3:		mf = "hc3";		break;
+	    case LZMA_MF_HC4:		mf = "hc4";		break;
+	    case LZMA_MF_BT2:		mf = "bt2";		break;
+	    case LZMA_MF_BT3:		mf = "bt3";		break;
+	    case LZMA_MF_BT4:		mf = "bt4";		break;
+	    default:			mf = "UNKNOWN";		break;
 	    }
 
-	    fprintf(stderr, "lzma%c=dict=%u"
-			",lc=%u,lp=%u"
-			",pb=%u"
-			",mode=%s,nice=%u,mf=%s"
-			",depth=%u",
-			filters[i].id == LZMA_FILTER_LZMA2
-				? '2' : '1',
-			(unsigned)opt->dict_size,
-			(unsigned)opt->lc, (unsigned)opt->lp, (unsigned)opt->pb,
-			mode, (unsigned)opt->nice_len, mf, (unsigned)opt->depth);
+	    lzmaver = (filters[i].id == LZMA_FILTER_LZMA2 ? "2" : "1");
+	    te = stpcpy( stpcpy(te, "lzma"), lzmaver);
+	    te = stpcpy(te, "=dict=");
+	    sprintf(te, "%u", (unsigned)opt->dict_size);
+	    te += strlen(te);
+	    te = stpcpy(te, ",lc=");
+	    sprintf(te, "%u", (unsigned)opt->lc);
+	    te += strlen(te);
+	    te = stpcpy(te, ",lp=");
+	    sprintf(te, "%u", (unsigned)opt->lp);
+	    te += strlen(te);
+	    te = stpcpy(te, ",pb=");
+	    sprintf(te, "%u", (unsigned)opt->pb);
+	    te += strlen(te);
+	    te = stpcpy( stpcpy(te, ",mode="), mode);
+	    te = stpcpy(te, ",nice=");
+	    sprintf(te, "%u", (unsigned)opt->nice_len);
+	    te += strlen(te);
+	    te = stpcpy( stpcpy(te, ",mf="), mf);
+	    te = stpcpy(te, ",depth=");
+	    sprintf(te, "%u", (unsigned)opt->depth);
+	    te += strlen(te);
 	    break;
 	}
 
-	case LZMA_FILTER_X86:
-	    fprintf(stderr, "x86");
-	    break;
-
-	case LZMA_FILTER_POWERPC:
-	    fprintf(stderr, "powerpc");
-	    break;
-
-	case LZMA_FILTER_IA64:
-	    fprintf(stderr, "ia64");
-	    break;
-
-	case LZMA_FILTER_ARM:
-	    fprintf(stderr, "arm");
-	    break;
-
-	case LZMA_FILTER_ARMTHUMB:
-	    fprintf(stderr, "armthumb");
-	    break;
-
-	case LZMA_FILTER_SPARC:
-	    fprintf(stderr, "sparc");
-	    break;
-
+	case LZMA_FILTER_X86:	te = stpcpy(te, "x86");		break;
+	case LZMA_FILTER_POWERPC: te = stpcpy(te, "powerpc");	break;
+	case LZMA_FILTER_IA64:	te = stpcpy(te, "ia64");	break;
+	case LZMA_FILTER_ARM:	te = stpcpy(te, "arm");	break;
+	case LZMA_FILTER_ARMTHUMB: te = stpcpy(te, "armthumb"); break;
+	case LZMA_FILTER_SPARC:	te = stpcpy(te, "sparc");	break;
 	case LZMA_FILTER_DELTA: {
 	    const lzma_options_delta *opt = filters[i].options;
-	    fprintf(stderr, "delta=dist=%u", (unsigned)opt->dist);
+	    te = stpcpy(te, "delta=dist=");
+	    sprintf(te, "%u", (unsigned)opt->dist);
+	    te += strlen(te);
 	    break;
 	}
 
-	default:
-	    fprintf(stderr, "UNKNOWN");
-	    break;
+	default:		te = stpcpy(te, "UNKNOWN");	break;
 	}
     }
-
-    fputc('\n', stderr);
+    *te = '\0';
+    rpmlog(code, "%s\n", t);
     return;
 }
 
