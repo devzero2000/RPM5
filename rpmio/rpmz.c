@@ -229,6 +229,8 @@ static struct rpmz_s __rpmz = {
 static rpmz _rpmz = &__rpmz;
 
 /*==============================================================*/
+/**
+ */
 static int checkfd(const char * devnull, int fdno, int flags)
 	/*@*/
 {
@@ -240,6 +242,8 @@ static int checkfd(const char * devnull, int fdno, int flags)
     return ret;
 }
 
+/**
+ */
 static void io_init(void)
 	/*@*/
 {
@@ -259,6 +263,149 @@ static void io_init(void)
 #endif
 	_oneshot++;
     }
+}
+
+/// \brief      Copies owner/group and permissions
+///
+/// \todo       ACL and EA support
+///
+static void
+io_copy_attrs(rpmz z)
+	/*@*/
+{
+#ifdef	NOTYET
+	// Skip chown and chmod on Windows.
+#ifndef _WIN32
+	// This function is more tricky than you may think at first.
+	// Blindly copying permissions may permit users to access the
+	// destination file who didn't have permission to access the
+	// source file.
+
+	// Try changing the owner of the file. If we aren't root or the owner
+	// isn't already us, fchown() probably doesn't succeed. We warn
+	// about failing fchown() only if we are root.
+	if (fchown(pair->dest_fd, pair->src_st.st_uid, -1) && warn_fchown)
+		message_warning(_("%s: Cannot set the file owner: %s"),
+				pair->dest_name, strerror(errno));
+
+    {	mode_t mode;
+
+	if (fchown(pair->dest_fd, -1, pair->src_st.st_gid)) {
+		message_warning(_("%s: Cannot set the file group: %s"),
+				pair->dest_name, strerror(errno));
+		// We can still safely copy some additional permissions:
+		// `group' must be at least as strict as `other' and
+		// also vice versa.
+		//
+		// NOTE: After this, the owner of the source file may
+		// get additional permissions. This shouldn't be too bad,
+		// because the owner would have had permission to chmod
+		// the original file anyway.
+		mode = ((pair->src_st.st_mode & 0070) >> 3)
+				& (pair->src_st.st_mode & 0007);
+		mode = (pair->src_st.st_mode & 0700) | (mode << 3) | mode;
+	} else {
+		// Drop the setuid, setgid, and sticky bits.
+		mode = pair->src_st.st_mode & 0777;
+	}
+
+	if (fchmod(pair->dest_fd, mode))
+		message_warning(_("%s: Cannot set the file permissions: %s"),
+				pair->dest_name, strerror(errno));
+    }
+#endif
+
+	// Copy the timestamps. We have several possible ways to do this, of
+	// which some are better in both security and precision.
+	//
+	// First, get the nanosecond part of the timestamps. As of writing,
+	// it's not standardized by POSIX, and there are several names for
+	// the same thing in struct stat.
+    {	long atime_nsec;
+	long mtime_nsec;
+
+#	if defined(HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC)
+	// GNU and Solaris
+	atime_nsec = pair->src_st.st_atim.tv_nsec;
+	mtime_nsec = pair->src_st.st_mtim.tv_nsec;
+
+#	elif defined(HAVE_STRUCT_STAT_ST_ATIMESPEC_TV_NSEC)
+	// BSD
+	atime_nsec = pair->src_st.st_atimespec.tv_nsec;
+	mtime_nsec = pair->src_st.st_mtimespec.tv_nsec;
+
+#	elif defined(HAVE_STRUCT_STAT_ST_ATIMENSEC)
+	// GNU and BSD without extensions
+	atime_nsec = pair->src_st.st_atimensec;
+	mtime_nsec = pair->src_st.st_mtimensec;
+
+#	elif defined(HAVE_STRUCT_STAT_ST_UATIME)
+	// Tru64
+	atime_nsec = pair->src_st.st_uatime * 1000;
+	mtime_nsec = pair->src_st.st_umtime * 1000;
+
+#	elif defined(HAVE_STRUCT_STAT_ST_ATIM_ST__TIM_TV_NSEC)
+	// UnixWare
+	atime_nsec = pair->src_st.st_atim.st__tim.tv_nsec;
+	mtime_nsec = pair->src_st.st_mtim.st__tim.tv_nsec;
+
+#	else
+	// Safe fallback
+	atime_nsec = 0;
+	mtime_nsec = 0;
+#	endif
+
+	// Construct a structure to hold the timestamps and call appropriate
+	// function to set the timestamps.
+#if defined(HAVE_FUTIMENS)
+	// Use nanosecond precision.
+      {	struct timespec tv[2];
+	tv[0].tv_sec = pair->src_st.st_atime;
+	tv[0].tv_nsec = atime_nsec;
+	tv[1].tv_sec = pair->src_st.st_mtime;
+	tv[1].tv_nsec = mtime_nsec;
+
+	(void)futimens(pair->dest_fd, tv);
+      }
+
+#elif defined(HAVE_FUTIMES) || defined(HAVE_FUTIMESAT) || defined(HAVE_UTIMES)
+	// Use microsecond precision.
+      {	struct timeval tv[2];
+	tv[0].tv_sec = pair->src_st.st_atime;
+	tv[0].tv_usec = atime_nsec / 1000;
+	tv[1].tv_sec = pair->src_st.st_mtime;
+	tv[1].tv_usec = mtime_nsec / 1000;
+
+#	if defined(HAVE_FUTIMES)
+	(void)futimes(pair->dest_fd, tv);
+#	elif defined(HAVE_FUTIMESAT)
+	(void)futimesat(pair->dest_fd, NULL, tv);
+#	else
+	// Argh, no function to use a file descriptor to set the timestamp.
+	(void)utimes(pair->dest_name, tv);
+#	endif
+      }
+
+#elif defined(HAVE_UTIME)
+	// Use one-second precision. utime() doesn't support using file
+	// descriptor either. Some systems have broken utime() prototype
+	// so don't make this const.
+      {	struct utimbuf buf = {
+		.actime = pair->src_st.st_atime,
+		.modtime = pair->src_st.st_mtime,
+	};
+
+	// Avoid warnings.
+	(void)atime_nsec;
+	(void)mtime_nsec;
+
+	(void)utime(pair->dest_name, &buf);
+      }
+#endif
+    }
+#endif	/* NOTYET */
+
+	return;
 }
 
 /*==============================================================*/
