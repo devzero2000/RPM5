@@ -2046,9 +2046,41 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
     const char * name = (s ? (s + 1) : argv0);
     rpmRC rc = RPMRC_OK;
 
+#if defined(WITH_XZ)
+    if (strstr(name, "xz") != NULL) {
+	z->_format_compress_auto = RPMZ_FORMAT_XZ;
+	z->format = RPMZ_FORMAT_XZ;	/* XXX eliminate */
+    } else
     if (strstr(name, "lz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_LZMA;
 	z->format = RPMZ_FORMAT_LZMA;	/* XXX eliminate */
+    } else
+#endif	/* WITH_XZ */
+#if defined(WITH_ZLIB)
+    if (strstr(name, "gz") != NULL) {
+	z->_format_compress_auto = RPMZ_FORMAT_GZIP;
+	z->format = RPMZ_FORMAT_GZIP;	/* XXX eliminate */
+    } else
+    if (strstr(name, "zlib") != NULL) {
+	z->_format_compress_auto = RPMZ_FORMAT_ZLIB;
+	z->format = RPMZ_FORMAT_ZLIB;	/* XXX eliminate */
+    } else
+#ifdef	NOTYET		/* XXX watchout for bzip2 */
+    if (strstr(name, "zip") != NULL) {
+	z->_format_compress_auto = RPMZ_FORMAT_ZIP;
+	z->format = RPMZ_FORMAT_ZIP;	/* XXX eliminate */
+    } else
+#endif
+#endif	/* WITH_ZLIB */
+#if defined(WITH_BZIP2)
+    if (strstr(name, "bz") != NULL) {
+	z->_format_compress_auto = RPMZ_FORMAT_BZIP2;
+	z->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
+    } else
+#endif	/* WITH_BZIP2 */
+    {
+	z->_format_compress_auto = RPMZ_FORMAT_AUTO;
+	z->format = RPMZ_FORMAT_AUTO;	/* XXX eliminate */
     }
 
     if (strstr(name, "cat") != NULL) {
@@ -2105,9 +2137,11 @@ main(int argc, char *argv[])
 
     /* XXX Set additional parameters from z->format. */
     switch (z->format) {
+    default:
     case RPMZ_FORMAT_AUTO:
 	/* XXX W2DO? */
 	break;
+#if defined(WITH_XZ)
     case RPMZ_FORMAT_XZ:
 	z->idio = z->odio = xzdio;
 	z->osuffix = ".xz";
@@ -2119,6 +2153,8 @@ main(int argc, char *argv[])
     case RPMZ_FORMAT_RAW:
 	/* XXX W2DO? */
 	break;
+#endif	/* WITH_XZ */
+#if defined(WITH_ZLIB)
     case RPMZ_FORMAT_GZIP:
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".gz";
@@ -2131,10 +2167,13 @@ main(int argc, char *argv[])
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".zip";
 	break;
+#endif	/* WITH_ZLIB */
+#if defined(WITH_BZIP2)
     case RPMZ_FORMAT_BZIP2:
 	z->idio = z->odio = bzdio;
 	z->osuffix = ".bz2";
 	break;
+#endif	/* WITH_BZIP2 */
     }
 
     /* Add files from CLI. */
