@@ -112,15 +112,22 @@ typedef struct rpmz_s * rpmz;
 
 enum rpmzFlags_e {
     RPMZ_FLAGS_NONE		= 0,
-    RPMZ_FLAGS_STDOUT		= _ZFB(0),	/*< -c, --stdout ... */
-    RPMZ_FLAGS_FORCE		= _ZFB(1),	/*< -f, --force ... */
-    RPMZ_FLAGS_KEEP		= _ZFB(2),	/*< -k, --keep ... */
-    RPMZ_FLAGS_RECURSE		= _ZFB(3),	/*< -r, --recursive ... */
-    RPMZ_FLAGS_EXTREME		= _ZFB(4),	/*< -e, --extreme ... */
+    RPMZ_FLAGS_STDOUT		= _ZFB( 0),	/*!< -c, --stdout ... */
+    RPMZ_FLAGS_FORCE		= _ZFB( 1),	/*!< -f, --force ... */
+    RPMZ_FLAGS_KEEP		= _ZFB( 2),	/*!< -k, --keep ... */
+    RPMZ_FLAGS_RECURSE		= _ZFB( 3),	/*!< -r, --recursive ... */
+    RPMZ_FLAGS_EXTREME		= _ZFB( 4),	/*!< -e, --extreme ... */
   /* XXX compressor specific flags need to be set some other way. */
   /* XXX unused */
-    RPMZ_FLAGS_FAST		= _ZFB(5),	/*<     --fast ... */
-    RPMZ_FLAGS_BEST		= _ZFB(6),	/*<     --best ... */
+    RPMZ_FLAGS_FAST		= _ZFB( 5),	/*!<     --fast ... */
+    RPMZ_FLAGS_BEST		= _ZFB( 6),	/*!<     --best ... */
+
+  /* XXX logic is reversed, disablers should clear with toggle. */
+    RPMZ_FLAGS_NONAME		= _ZFB( 7),	/*!< -n, --no-name ... */
+    RPMZ_FLAGS_NOTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
+
+    RPMZ_FLAGS_RSYNCABLE	= _ZFB( 9),	/*!< -R, --rsyncable ... */
+    RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
 
 #ifdef	NOTYET
     RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
@@ -151,7 +158,7 @@ struct rpmz_s {
     rpmuint64_t memlimit_decoder;
     rpmuint64_t memlimit_custom;
 
-/*@unchecked@*/
+    unsigned int blocksize;		/*!< PIGZ: Compression block size (Kb) */
     unsigned int threads;		/*!< No. or threads to use. */
 
 /*@observer@*/
@@ -207,10 +214,18 @@ struct rpmz_s {
 
 /*@unchecked@*/
 static struct rpmz_s __rpmz = {
+  /* XXX logic is reversed, disablers should clear with toggle. */
+#ifdef	NOTYET
+    .flags	= (RPMZ_FLAGS_NONAME|RPMZ_FLAGS_NOTIME),
+#else
     .flags	= RPMZ_FLAGS_NONE,
+#endif
     .format	= RPMZ_FORMAT_GZIP,	/* XXX RPMZ_FORMAT_AUTO? */
     .mode	= RPMZ_MODE_COMPRESS,
     .level	= 6,		/* XXX compression level is type specific. */
+
+    .blocksize	= 128,
+    .threads	= 8,
 
     .stdin_filename = "(stdin)",
     .stdout_filename = "(stdout)",
@@ -550,10 +565,12 @@ static struct suffixPairs_s {
     { RPMZ_FORMAT_LZMA,		".tlz",	".tar" },
     { RPMZ_FORMAT_GZIP,		".gz",	"" },
     { RPMZ_FORMAT_GZIP,		".tgz",	".tar" },
-    { RPMZ_FORMAT_ZLIB,		".gz",	"" },
-    { RPMZ_FORMAT_ZLIB,		".tgz",	".tar" },
+    { RPMZ_FORMAT_ZLIB,		".zz",	"" },
+    { RPMZ_FORMAT_ZLIB,		".tzz",	".tar" },
     { RPMZ_FORMAT_ZIP,		".zip",	"" },
+#ifdef	NOTYET
     { RPMZ_FORMAT_ZIP,		".tgz",	".tar" },
+#endif
     { RPMZ_FORMAT_BZIP2,	".bz2",	"" },
     { RPMZ_FORMAT_RAW,		NULL,	NULL }
 };
@@ -1786,7 +1803,8 @@ static struct poptOption optionsTable[] = {
 	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
   { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
 	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
-  { "threads", 'T', POPT_ARG_INT,		&__rpmz.threads, 0,
+  /* XXX -T collides with pigz -T,--no-time */
+  { "threads", 'T', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,		&__rpmz.threads, 0,
 	N_("use maximum of NUM (de)compression threads"), N_("NUM") },
 
   /* ===== Compression options */
@@ -1855,6 +1873,48 @@ static struct poptOption optionsTable[] = {
 	N_("SPARC filter"), NULL },
 
 #ifdef	REFERENCE
+Usage: pigz [options] [files ...]
+  will compress files in place, adding the suffix '.gz'.  If no files are
+  specified, stdin will be compressed to stdout.  pigz does what gzip does,
+  but spreads the work over multiple processors and cores when compressing.
+
+Options:
+  -0 to -9, --fast, --best   Compression levels, --fast is -1, --best is -9
+  -b, --blocksize mmm  Set compression block size to mmmK (default 128K)
+  -p, --processes n    Allow up to n compression threads (default 8)
+  -i, --independent    Compress blocks independently for damage recovery
+  -R, --rsyncable      Input-determined block locations for rsync
+  -d, --decompress     Decompress the compressed input
+  -t, --test           Test the integrity of the compressed input
+  -l, --list           List the contents of the compressed input
+  -f, --force          Force overwrite, compress .gz, links, and to terminal
+  -r, --recursive      Process the contents of all subdirectories
+  -s, --suffix .sss    Use suffix .sss instead of .gz (for compression)
+  -z, --zlib           Compress to zlib (.zz) instead of gzip format
+  -K, --zip            Compress to PKWare zip (.zip) single entry format
+  -k, --keep           Do not delete original file after processing
+  -c, --stdout         Write all processed output to stdout (wont delete)
+  -N, --name           Store/restore file name and mod time in/from header
+  -n, --no-name        Do not store or restore file name in/from header
+  -T, --no-time        Do not store or restore mod time in/from header
+  -q, --quiet          Print no messages, even on error
+  -v, --verbose        Provide more verbose output
+#endif
+  { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.blocksize, 0,
+	N_("Set compression block size to mmmK"), N_("mmm") },
+  /* XXX same as --threads */
+  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.threads, 0,
+	N_("Allow up to n compression threads"), N_("n") },
+  { "independent", 'i', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags, RPMZ_FLAGS_INDEPENDENT,
+	N_("Compress blocks independently for damage recovery"), NULL },
+  { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz.flags, RPMZ_FLAGS_RSYNCABLE,
+	N_("Input-determined block locations for rsync"), NULL },
+  { "zlib", 'z', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZLIB,
+	N_("Compress to zlib (.zz) instead of gzip format"), NULL },
+  { "zip", 'K', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZIP,
+	N_("Compress to PKWare zip (.zip) single entry format"), NULL },
+
+#ifdef	REFERENCE
 "  --delta=[OPTS]      Delta filter; valid OPTS (valid values; default):\n"
 "                        dist=NUM  Distance between bytes being\n"
 "                                      subtracted from each other (1-256; 1)\n"
@@ -1871,12 +1931,17 @@ static struct poptOption optionsTable[] = {
   { "subblock", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_SUBBLOCK,
 	N_("set subblock filter"), N_("OPTS") },
 
-#ifdef	NOTYET
   /* ===== Metadata options */
-  { "name", 'N', POPT_ARG_VAL,			&opt_preserve_name, 1,
-	N_("save or restore the original filename and time stamp"), NULL },
-  { "no-name", 'n', POPT_ARG_VAL,		&opt_preserve_name, 0,
-	N_("do not save or restore filename and time stamp (default)"), NULL },
+  /* XXX logic is reversed, disablers should clear with toggle. */
+  { "name", 'N', POPT_BIT_CLR|POPT_ARGFLAG_TOGGLE,			&__rpmz.flags, (RPMZ_FLAGS_NONAME|RPMZ_FLAGS_NOTIME),
+	N_("Store/restore file name and mod time in/from header"), NULL },
+  { "no-name", 'n', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_NONAME,
+	N_("Do not store or restore file name in/from header"), NULL },
+  /* XXX -T collides with xz -T,--threads */
+  { "no-time", 'T', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_NOTIME,
+	N_("Do not store or restore mod time in/from header"), NULL },
+
+#ifdef	NOTYET
   { "sign", 'S', POPT_ARG_STRING,		NULL, 0,
 	N_("sign the data with GnuPG when compressing, or verify the signature when decompressing"), N_("PUBKEY") },
 #endif
@@ -2055,9 +2120,12 @@ main(int argc, char *argv[])
 	/* XXX W2DO? */
 	break;
     case RPMZ_FORMAT_GZIP:
-    case RPMZ_FORMAT_ZLIB:
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".gz";
+	break;
+    case RPMZ_FORMAT_ZLIB:
+	z->idio = z->odio = gzdio;
+	z->osuffix = ".zz";
 	break;
     case RPMZ_FORMAT_ZIP:
 	z->idio = z->odio = gzdio;
