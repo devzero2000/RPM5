@@ -671,6 +671,19 @@ if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
 fi
 
+# Find the best function to set timestamps.
+AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
+
+dnl # The command line tool can copy high resolution timestamps if such
+dnl # information is availabe in struct stat. Otherwise one second accuracy
+dnl # is used.
+AC_CHECK_MEMBERS([
+	struct stat.st_atim.tv_nsec,
+	struct stat.st_atimespec.tv_nsec,
+	struct stat.st_atimensec,
+	struct stat.st_uatime,
+	struct stat.st_atim.st__tim.tv_nsec])
+
 AC_MSG_CHECKING(if timezone is defined)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
 AC_MSG_RESULT($HAS_TIMEZONE)
