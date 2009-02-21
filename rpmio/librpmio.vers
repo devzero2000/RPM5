@@ -74,6 +74,10 @@ LIBRPMIO_0
     delMacro;
     expandMacros;
     _fsmNext;
+    Fchmod;
+    _Fchmod;
+    Fchown;
+    _Fchown;
     Fclose;
     _Fclose;
     Fcntl;
@@ -462,6 +466,9 @@ LIBRPMIO_0
     XurlLink;
     XurlNew;
     xzdio;
+    yarnAbort;
+    yarnDestruct;
+    yarnFreeLock;
     yarnJoin;
     yarnJoinAll;
     yarnLaunch;

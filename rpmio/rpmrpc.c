@@ -1450,7 +1450,7 @@ int Chown(const char * path, uid_t owner, gid_t group)
     int ut = urlPath(path, &lpath);
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Chown(%s,%d,%d)\n", path, (int)owner, (int)group);
+fprintf(stderr, "*** Chown(%s,%u,%u)\n", path, (unsigned)owner, (unsigned)group);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;
@@ -1470,13 +1470,40 @@ fprintf(stderr, "*** Chown(%s,%d,%d)\n", path, (int)owner, (int)group);
     return chown(path, owner, group);
 }
 
+int Fchown(FD_t fd, uid_t owner, gid_t group)
+{
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Fchown(%p,%u,%u) path %s\n", fd, (unsigned)owner, (unsigned)group, path);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return fchown(Fileno(fd), owner, group);
+}
+
 int Lchown(const char * path, uid_t owner, gid_t group)
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Lchown(%s,%d,%d)\n", path, (int)owner, (int)group);
+fprintf(stderr, "*** Lchown(%s,%u,%u)\n", path, (unsigned)owner, (unsigned)group);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;
@@ -1520,6 +1547,33 @@ fprintf(stderr, "*** Chmod(%s,%0o)\n", path, (int)mode);
 	/*@notreached@*/ break;
     }
     return chmod(path, mode);
+}
+
+int Fchmod(FD_t fd, mode_t mode)
+{
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Fchmod(%p,%0o) path %s\n", fd, (int)mode, path);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return fchmod(Fileno(fd), mode);
 }
 
 int Mkfifo(const char * path, mode_t mode)

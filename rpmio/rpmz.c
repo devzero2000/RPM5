@@ -265,6 +265,32 @@ static void io_init(void)
     }
 }
 
+/// \brief      Unlinks a file
+///
+/// This tries to verify that the file being unlinked really is the file that
+/// we want to unlink by verifying device and inode numbers. There's still
+/// a small unavoidable race, but this is much better than nothing (the file
+/// could have been moved/replaced even hours earlier).
+static void
+io_unlink(const char *fn, const struct stat *ost)
+	/*@*/
+{
+#ifndef _WIN32
+    // On Windows, st_ino is meaningless, so don't bother testing it.
+    struct stat nsb;
+
+    if (Lstat(fn, &nsb) != 0
+     || nsb.st_dev != ost->st_dev || nsb.st_ino != ost->st_ino)
+	rpmlog(RPMLOG_ERR, _("%s: File seems to be moved, not removing\n"), fn);
+    else
+#endif
+    // There's a race condition between Lstat() and Unlink()
+    // but at least we have tried to avoid removing wrong file.
+    if (Unlink(fn))
+	rpmlog(RPMLOG_ERR, _("%s: Cannot remove: %s\n"), fn, strerror(errno));
+    return;
+}
+
 /// \brief      Copies owner/group and permissions
 ///
 /// \todo       ACL and EA support
@@ -273,7 +299,6 @@ static void
 io_copy_attrs(rpmz z)
 	/*@*/
 {
-#ifdef	NOTYET
 	// Skip chown and chmod on Windows.
 #ifndef _WIN32
 	// This function is more tricky than you may think at first.
@@ -284,15 +309,15 @@ io_copy_attrs(rpmz z)
 	// Try changing the owner of the file. If we aren't root or the owner
 	// isn't already us, fchown() probably doesn't succeed. We warn
 	// about failing fchown() only if we are root.
-	if (fchown(pair->dest_fd, pair->src_st.st_uid, -1) && warn_fchown)
-		message_warning(_("%s: Cannot set the file owner: %s"),
-				pair->dest_name, strerror(errno));
+	if (Fchown(z->ofd, z->isb.st_uid, -1) && (geteuid() == 0))
+		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file owner: %s\n"),
+				z->ofn, strerror(errno));
 
     {	mode_t mode;
 
-	if (fchown(pair->dest_fd, -1, pair->src_st.st_gid)) {
-		message_warning(_("%s: Cannot set the file group: %s"),
-				pair->dest_name, strerror(errno));
+	if (Fchown(z->ofd, -1, z->isb.st_gid)) {
+		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file group: %s\n"),
+				z->ofn, strerror(errno));
 		// We can still safely copy some additional permissions:
 		// `group' must be at least as strict as `other' and
 		// also vice versa.
@@ -301,17 +326,17 @@ io_copy_attrs(rpmz z)
 		// get additional permissions. This shouldn't be too bad,
 		// because the owner would have had permission to chmod
 		// the original file anyway.
-		mode = ((pair->src_st.st_mode & 0070) >> 3)
-				& (pair->src_st.st_mode & 0007);
-		mode = (pair->src_st.st_mode & 0700) | (mode << 3) | mode;
+		mode = ((z->isb.st_mode & 0070) >> 3)
+				& (z->isb.st_mode & 0007);
+		mode = (z->isb.st_mode & 0700) | (mode << 3) | mode;
 	} else {
 		// Drop the setuid, setgid, and sticky bits.
-		mode = pair->src_st.st_mode & 0777;
+		mode = z->isb.st_mode & 0777;
 	}
 
-	if (fchmod(pair->dest_fd, mode))
-		message_warning(_("%s: Cannot set the file permissions: %s"),
-				pair->dest_name, strerror(errno));
+	if (Fchmod(z->ofd, mode))
+		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file permissions: %s\n"),
+				z->ofn, strerror(errno));
     }
 #endif
 
@@ -326,28 +351,28 @@ io_copy_attrs(rpmz z)
 
 #	if defined(HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC)
 	// GNU and Solaris
-	atime_nsec = pair->src_st.st_atim.tv_nsec;
-	mtime_nsec = pair->src_st.st_mtim.tv_nsec;
+	atime_nsec = z->isb.st_atim.tv_nsec;
+	mtime_nsec = z->isb.st_mtim.tv_nsec;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_ATIMESPEC_TV_NSEC)
 	// BSD
-	atime_nsec = pair->src_st.st_atimespec.tv_nsec;
-	mtime_nsec = pair->src_st.st_mtimespec.tv_nsec;
+	atime_nsec = z->isb.st_atimespec.tv_nsec;
+	mtime_nsec = z->isb.st_mtimespec.tv_nsec;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_ATIMENSEC)
 	// GNU and BSD without extensions
-	atime_nsec = pair->src_st.st_atimensec;
-	mtime_nsec = pair->src_st.st_mtimensec;
+	atime_nsec = z->isb.st_atimensec;
+	mtime_nsec = z->isb.st_mtimensec;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_UATIME)
 	// Tru64
-	atime_nsec = pair->src_st.st_uatime * 1000;
-	mtime_nsec = pair->src_st.st_umtime * 1000;
+	atime_nsec = z->isb.st_uatime * 1000;
+	mtime_nsec = z->isb.st_umtime * 1000;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_ATIM_ST__TIM_TV_NSEC)
 	// UnixWare
-	atime_nsec = pair->src_st.st_atim.st__tim.tv_nsec;
-	mtime_nsec = pair->src_st.st_mtim.st__tim.tv_nsec;
+	atime_nsec = z->isb.st_atim.st__tim.tv_nsec;
+	mtime_nsec = z->isb.st_mtim.st__tim.tv_nsec;
 
 #	else
 	// Safe fallback
@@ -360,29 +385,29 @@ io_copy_attrs(rpmz z)
 #if defined(HAVE_FUTIMENS)
 	// Use nanosecond precision.
       {	struct timespec tv[2];
-	tv[0].tv_sec = pair->src_st.st_atime;
+	tv[0].tv_sec = z->isb.st_atime;
 	tv[0].tv_nsec = atime_nsec;
-	tv[1].tv_sec = pair->src_st.st_mtime;
+	tv[1].tv_sec = z->isb.st_mtime;
 	tv[1].tv_nsec = mtime_nsec;
 
-	(void)futimens(pair->dest_fd, tv);
+	(void)futimens(Fileno(z->ofd), tv);
       }
 
 #elif defined(HAVE_FUTIMES) || defined(HAVE_FUTIMESAT) || defined(HAVE_UTIMES)
 	// Use microsecond precision.
       {	struct timeval tv[2];
-	tv[0].tv_sec = pair->src_st.st_atime;
+	tv[0].tv_sec = z->isb.st_atime;
 	tv[0].tv_usec = atime_nsec / 1000;
-	tv[1].tv_sec = pair->src_st.st_mtime;
+	tv[1].tv_sec = z->isb.st_mtime;
 	tv[1].tv_usec = mtime_nsec / 1000;
 
 #	if defined(HAVE_FUTIMES)
-	(void)futimes(pair->dest_fd, tv);
+	(void)futimes(Fileno(z->ofd), tv);
 #	elif defined(HAVE_FUTIMESAT)
-	(void)futimesat(pair->dest_fd, NULL, tv);
+	(void)futimesat(Fileno(z->ofd), NULL, tv);
 #	else
 	// Argh, no function to use a file descriptor to set the timestamp.
-	(void)utimes(pair->dest_name, tv);
+	(void)Utimes(z->ofn, tv);
 #	endif
       }
 
@@ -391,19 +416,18 @@ io_copy_attrs(rpmz z)
 	// descriptor either. Some systems have broken utime() prototype
 	// so don't make this const.
       {	struct utimbuf buf = {
-		.actime = pair->src_st.st_atime,
-		.modtime = pair->src_st.st_mtime,
+		.actime = z->isb.st_atime,
+		.modtime = z->isb.st_mtime,
 	};
 
 	// Avoid warnings.
 	(void)atime_nsec;
 	(void)mtime_nsec;
 
-	(void)utime(pair->dest_name, &buf);
+	(void)Utime(z->ofn, &buf);
       }
 #endif
     }
-#endif	/* NOTYET */
 
 	return;
 }
@@ -637,13 +661,27 @@ static rpmRC rpmzFini(rpmz z, rpmRC rc)
 {
     int xx;
 
-    if (z->ifd != NULL) {
-	xx = Fclose(z->ifd);
-	z->ifd = NULL;
-    }
+    /* XXX mask signals */
     if (z->ofd != NULL) {
-	xx = Fclose(z->ofd);
+	xx = Fflush(z->ofd);
+
+	/* Timestamp output file same as input. */
+	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_filename))
+	    io_copy_attrs(z);	/* XXX add error return */
+	if ((xx = Fclose(z->ofd)) != 0) {
+	    rpmlog(RPMLOG_ERR, _("%s: Closing output file failed: %s\n"),
+                                z->ofn, strerror(errno));
+	    rc = RPMRC_FAIL;
+	}
 	z->ofd = NULL;
+    }
+    if (z->ifd != NULL) {
+	if ((xx = Fclose(z->ifd)) != 0) {
+	    rpmlog(RPMLOG_ERR, _("%s: Closing input file failed: %s\n"),
+                                z->ifn, strerror(errno));
+	    rc = RPMRC_FAIL;
+	}
+	z->ifd = NULL;
     }
 
     /* Clean up input/output files as needed. */
@@ -659,12 +697,13 @@ fprintf(stderr, "==> Unlink(%s) FAIL\n", z->ofn);
 	break;
     case RPMRC_OK:
 	if (!F_ISSET(z->flags, KEEP) && z->ifn != z->stdin_filename) {
-	    xx = Unlink(z->ifn);
+	    io_unlink(z->ifn, &z->isb);
 if (_debug)
 fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
 	}
 	break;
     }
+
     z->ofn = _free(z->ofn);
 
     return rc;

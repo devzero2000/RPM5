@@ -301,6 +301,14 @@ int Chown(const char * path, uid_t owner, gid_t group)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
+ * fchown(2) clone.
+ * @todo Implement remotely.
+ */
+int Fchown(FD_t fd, uid_t owner, gid_t group)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
  * lchown(2) clone.
  * @todo Implement remotely.
  */
@@ -313,6 +321,14 @@ int Lchown(const char * path, uid_t owner, gid_t group)
  * @todo Implement remotely.
  */
 int Chmod(const char * path, mode_t mode)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * fchmod(2) clone.
+ * @todo Implement remotely.
+ */
+int Fchmod(FD_t fd, mode_t mode)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 

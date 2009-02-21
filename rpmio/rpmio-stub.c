@@ -46,8 +46,12 @@ int (*_Fstat) (void * fd, struct stat * st)
 	= (int (*) (void *, struct stat * st))Fstat;
 /*@=type@*/
 int (*_Chown) (const char * path, uid_t owner, gid_t group) = Chown;
+int (*_Fchown) (void * fd, uid_t owner, gid_t group)
+	= (int (*) (void *, uid_t, gid_t)) Fchown;
 int (*_Lchown) (const char * path, uid_t owner, gid_t group) = Lchown;
 int (*_Chmod) (const char * path, mode_t mode) = Chmod;
+int (*_Fchmod) (void * fd, mode_t mode)
+	= (int (*) (void *, mode_t))Fchmod;
 int (*_Mkfifo) (const char * path, mode_t mode) = Mkfifo;
 int (*_Mknod) (const char * path, mode_t mode, dev_t dev) = Mknod;
 int (*_Utime) (const char * path, const struct utimbuf * buf) = Utime;
