@@ -462,6 +462,17 @@ LIBRPMIO_0
     XurlLink;
     XurlNew;
     xzdio;
+    yarnJoin;
+    yarnJoinAll;
+    yarnLaunch;
+    yarnMem;
+    yarnNewLock;
+    yarnPeekLock;
+    yarnPossess;
+    yarnPrefix;
+    yarnRelease;
+    yarnTwist;
+    yarnWaitFor;
   local:
     *;
 };

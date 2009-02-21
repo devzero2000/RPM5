@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: yarn: add to rpmio.
     - jbj: rpmz: stub in argv[0] processing to set operation mode.
     - jbj: rpmz: stub in RPMZ envvar option processing.
     - jbj: fix: eliminate a argvSplit() memory leak.
