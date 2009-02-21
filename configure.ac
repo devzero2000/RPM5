@@ -723,6 +723,94 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the ge
   ])
 ])
 
+dnl # Check how to find out the amount of physical memory in the system. The
+dnl # xz command line tool uses this to automatically limit its memory usage.
+dnl # - sysconf() gives all the needed info on GNU+Linux and Solaris.
+dnl # - BSDs use sysctl().
+AC_MSG_CHECKING([how to detect the amount of physical memory])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <unistd.h>
+int
+main()
+{
+	long i;
+	i = sysconf(_SC_PAGESIZE);
+	i = sysconf(_SC_PHYS_PAGES);
+	return 0;
+}
+]])], [
+	AC_DEFINE([HAVE_PHYSMEM_SYSCONF], [1],
+		[Define to 1 if the amount of physical memory can be detected
+		with sysconf(_SC_PAGESIZE) and sysconf(_SC_PHYS_PAGES).])
+	AC_MSG_RESULT([sysconf])
+], [
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/types.h>
+#ifdef HAVE_SYS_PARAM_H
+#	include <sys/param.h>
+#endif
+#include <sys/sysctl.h>
+int
+main()
+{
+	int name[2] = { CTL_HW, HW_PHYSMEM };
+	unsigned long mem;
+	size_t mem_ptr_size = sizeof(mem);
+	sysctl(name, 2, &mem, &mem_ptr_size, NULL, NULL);
+	return 0;
+}
+]])], [
+	AC_DEFINE([HAVE_PHYSMEM_SYSCTL], [1],
+		[Define to 1 if the amount of physical memory can be detected
+		with sysctl().])
+	AC_MSG_RESULT([sysctl])
+], [
+	AC_MSG_RESULT([unknown])
+])])
+
+dnl # Check how to find out the number of available CPU cores in the system.
+dnl # sysconf(_SC_NPROCESSORS_ONLN) works on most systems, except that BSDs
+dnl # use sysctl().
+AC_MSG_CHECKING([how to detect the number of available CPU cores])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <unistd.h>
+int
+main()
+{
+	long i;
+	i = sysconf(_SC_NPROCESSORS_ONLN);
+	return 0;
+}
+]])], [
+	AC_DEFINE([HAVE_NCPU_SYSCONF], [1],
+		[Define to 1 if the number of available CPU cores can be
+		detected with sysconf(_SC_NPROCESSORS_ONLN).])
+	AC_MSG_RESULT([sysconf])
+], [
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/types.h>
+#ifdef HAVE_SYS_PARAM_H
+#	include <sys/param.h>
+#endif
+#include <sys/sysctl.h>
+int
+main()
+{
+	int name[2] = { CTL_HW, HW_NCPU };
+	int cpus;
+	size_t cpus_size = sizeof(cpus);
+	sysctl(name, 2, &cpus, &cpus_size, NULL, NULL);
+	return 0;
+}
+]])], [
+	AC_DEFINE([HAVE_NCPU_SYSCTL], [1],
+		[Define to 1 if the number of available CPU cores can be
+		detected with sysctl().])
+	AC_MSG_RESULT([sysctl])
+], [
+	AC_MSG_RESULT([unknown])
+])])
+
 dnl ##
 dnl ## ==== THIRD-PARTY LIBRARIES (1/2) ====
 dnl ##
