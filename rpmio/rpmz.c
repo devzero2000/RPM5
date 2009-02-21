@@ -306,6 +306,7 @@ io_copy_attrs(rpmz z)
 	// destination file who didn't have permission to access the
 	// source file.
 
+#ifdef	NOTYET		/* XXX Fileno used by Fchmod/Fchown needs work. */
 	// Try changing the owner of the file. If we aren't root or the owner
 	// isn't already us, fchown() probably doesn't succeed. We warn
 	// about failing fchown() only if we are root.
@@ -338,6 +339,7 @@ io_copy_attrs(rpmz z)
 		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file permissions: %s\n"),
 				z->ofn, strerror(errno));
     }
+#endif
 #endif
 
 	// Copy the timestamps. We have several possible ways to do this, of
@@ -390,6 +392,7 @@ io_copy_attrs(rpmz z)
 	tv[1].tv_sec = z->isb.st_mtime;
 	tv[1].tv_nsec = mtime_nsec;
 
+	/* XXX Fileno onto libio FILE * is -1 so EBADF is returned. */
 	(void)futimens(Fileno(z->ofd), tv);
       }
 
@@ -402,8 +405,10 @@ io_copy_attrs(rpmz z)
 	tv[1].tv_usec = mtime_nsec / 1000;
 
 #	if defined(HAVE_FUTIMES)
+	/* XXX Fileno onto libio FILE * is -1 so EBADF is returned. */
 	(void)futimes(Fileno(z->ofd), tv);
 #	elif defined(HAVE_FUTIMESAT)
+	/* XXX Fileno onto libio FILE * is -1 so EBADF is returned. */
 	(void)futimesat(Fileno(z->ofd), NULL, tv);
 #	else
 	// Argh, no function to use a file descriptor to set the timestamp.
