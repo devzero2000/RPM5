@@ -44,7 +44,6 @@ enum rpmzMode_e {
     RPMZ_MODE_COMPRESS		= 0,
     RPMZ_MODE_DECOMPRESS	= 1,
     RPMZ_MODE_TEST		= 2,
-    RPMZ_MODE_LIST		= 3,
 };
 
 /**
@@ -56,8 +55,9 @@ enum rpmzFormat_e {
     RPMZ_FORMAT_RAW		= 3,
     RPMZ_FORMAT_GZIP		= 4,
     RPMZ_FORMAT_ZLIB		= 5,
-    RPMZ_FORMAT_ZIP		= 6,
-    RPMZ_FORMAT_BZIP2		= 7,
+    RPMZ_FORMAT_ZIP2		= 6,
+    RPMZ_FORMAT_ZIP3		= 7,
+    RPMZ_FORMAT_BZIP2		= 8,
 };
 
 /*@unchecked@*/
@@ -123,11 +123,14 @@ enum rpmzFlags_e {
     RPMZ_FLAGS_BEST		= _ZFB( 6),	/*!<     --best ... */
 
   /* XXX logic is reversed, disablers should clear with toggle. */
-    RPMZ_FLAGS_NONAME		= _ZFB( 7),	/*!< -n, --no-name ... */
-    RPMZ_FLAGS_NOTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
+    RPMZ_FLAGS_HNAME		= _ZFB( 7),	/*!< -n, --no-name ... */
+    RPMZ_FLAGS_HTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
 
+  /* XXX unimplemented */
     RPMZ_FLAGS_RSYNCABLE	= _ZFB( 9),	/*!< -R, --rsyncable ... */
+  /* XXX logic is reversed. */
     RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
+    RPMZ_FLAGS_LIST		= _ZFB(11),	/*!< -l, --list ... */
 
 #ifdef	NOTYET
     RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
@@ -215,11 +218,7 @@ struct rpmz_s {
 /*@unchecked@*/
 static struct rpmz_s __rpmz = {
   /* XXX logic is reversed, disablers should clear with toggle. */
-#ifdef	NOTYET
-    .flags	= (RPMZ_FLAGS_NONAME|RPMZ_FLAGS_NOTIME),
-#else
-    .flags	= RPMZ_FLAGS_NONE,
-#endif
+    .flags	= (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME|RPMZ_FLAGS_INDEPENDENT),
     .format	= RPMZ_FORMAT_GZIP,	/* XXX RPMZ_FORMAT_AUTO? */
     .mode	= RPMZ_MODE_COMPRESS,
     .level	= 6,		/* XXX compression level is type specific. */
@@ -567,9 +566,9 @@ static struct suffixPairs_s {
     { RPMZ_FORMAT_GZIP,		".tgz",	".tar" },
     { RPMZ_FORMAT_ZLIB,		".zz",	"" },
     { RPMZ_FORMAT_ZLIB,		".tzz",	".tar" },
-    { RPMZ_FORMAT_ZIP,		".zip",	"" },
+    { RPMZ_FORMAT_ZIP2,		".zip",	"" },	/* XXX zip3 from pigz? */
 #ifdef	NOTYET
-    { RPMZ_FORMAT_ZIP,		".tgz",	".tar" },
+    { RPMZ_FORMAT_ZIP2,		".tgz",	".tar" },
 #endif
     { RPMZ_FORMAT_BZIP2,	".bz2",	"" },
     { RPMZ_FORMAT_RAW,		NULL,	NULL }
@@ -1718,7 +1717,7 @@ static void rpmzArgCallback(poptContext con,
 	else if (!strcmp(arg, "zlib"))
 	    z->format = RPMZ_FORMAT_ZLIB;
 	else if (!strcmp(arg, "zip"))
-	    z->format = RPMZ_FORMAT_ZIP;
+	    z->format = RPMZ_FORMAT_ZIP2;	/* XXX zip3 from pigz? */
 	else if (!strcmp(arg, "bzip2") || !strcmp(arg, "bz2"))
 	    z->format = RPMZ_FORMAT_BZIP2;
 	else {
@@ -1772,9 +1771,9 @@ static struct poptOption optionsTable[] = {
 	N_("force decompression"), NULL },
   { "test", 't', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_TEST,
 	N_("test compressed file integrity"), NULL },
-  { "list", 'l', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_LIST,
+  { "list", 'l', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_LIST,
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
-  { "info", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode,  RPMZ_MODE_LIST,
+  { "info", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags,  RPMZ_FLAGS_LIST,
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
 
   /* ===== Operation modifiers */
@@ -1911,7 +1910,7 @@ Options:
 	N_("Input-determined block locations for rsync"), NULL },
   { "zlib", 'z', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZLIB,
 	N_("Compress to zlib (.zz) instead of gzip format"), NULL },
-  { "zip", 'K', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZIP,
+  { "zip", 'K', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZIP2,
 	N_("Compress to PKWare zip (.zip) single entry format"), NULL },
 
 #ifdef	REFERENCE
@@ -1933,12 +1932,12 @@ Options:
 
   /* ===== Metadata options */
   /* XXX logic is reversed, disablers should clear with toggle. */
-  { "name", 'N', POPT_BIT_CLR|POPT_ARGFLAG_TOGGLE,			&__rpmz.flags, (RPMZ_FLAGS_NONAME|RPMZ_FLAGS_NOTIME),
+  { "name", 'N', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,			&__rpmz.flags, (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME),
 	N_("Store/restore file name and mod time in/from header"), NULL },
-  { "no-name", 'n', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_NONAME,
+  { "no-name", 'n', POPT_BIT_CLR,		&__rpmz.flags, RPMZ_FLAGS_HNAME,
 	N_("Do not store or restore file name in/from header"), NULL },
   /* XXX -T collides with xz -T,--threads */
-  { "no-time", 'T', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_NOTIME,
+  { "no-time", 'T', POPT_BIT_CLR,		&__rpmz.flags, RPMZ_FLAGS_HTIME,
 	N_("Do not store or restore mod time in/from header"), NULL },
 
 #ifdef	NOTYET
@@ -2056,6 +2055,12 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 	z->format = RPMZ_FORMAT_LZMA;	/* XXX eliminate */
     } else
 #endif	/* WITH_XZ */
+#if defined(WITH_BZIP2)
+    if (strstr(name, "bz") != NULL) {
+	z->_format_compress_auto = RPMZ_FORMAT_BZIP2;
+	z->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
+    } else
+#endif	/* WITH_BZIP2 */
 #if defined(WITH_ZLIB)
     if (strstr(name, "gz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_GZIP;
@@ -2065,19 +2070,12 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 	z->_format_compress_auto = RPMZ_FORMAT_ZLIB;
 	z->format = RPMZ_FORMAT_ZLIB;	/* XXX eliminate */
     } else
-#ifdef	NOTYET		/* XXX watchout for bzip2 */
+	/* XXX watchout for "bzip2" matching */
     if (strstr(name, "zip") != NULL) {
-	z->_format_compress_auto = RPMZ_FORMAT_ZIP;
-	z->format = RPMZ_FORMAT_ZIP;	/* XXX eliminate */
+	z->_format_compress_auto = RPMZ_FORMAT_ZIP2;
+	z->format = RPMZ_FORMAT_ZIP2;	/* XXX eliminate */
     } else
-#endif
 #endif	/* WITH_ZLIB */
-#if defined(WITH_BZIP2)
-    if (strstr(name, "bz") != NULL) {
-	z->_format_compress_auto = RPMZ_FORMAT_BZIP2;
-	z->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
-    } else
-#endif	/* WITH_BZIP2 */
     {
 	z->_format_compress_auto = RPMZ_FORMAT_AUTO;
 	z->format = RPMZ_FORMAT_AUTO;	/* XXX eliminate */
@@ -2163,7 +2161,7 @@ main(int argc, char *argv[])
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".zz";
 	break;
-    case RPMZ_FORMAT_ZIP:
+    case RPMZ_FORMAT_ZIP2:
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".zip";
 	break;
@@ -2238,8 +2236,6 @@ argvPrint("input args", z->argv, NULL);
 	    frc = rpmzProcess(z);
 	    break;
 	case RPMZ_MODE_TEST:
-	    break;
-	case RPMZ_MODE_LIST:
 	    break;
 	}
 
