@@ -60,9 +60,6 @@ enum rpmzFormat_e {
     RPMZ_FORMAT_BZIP2		= 8,
 };
 
-/*@unchecked@*/
-static char *opt_suffix = NULL;
-
 #ifdef	NOTYET
 /*@unchecked@*/
 static int opt_preserve_name;
@@ -220,7 +217,7 @@ struct rpmz_s {
 static struct rpmz_s __rpmz = {
   /* XXX logic is reversed, disablers should clear with toggle. */
     .flags	= (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME|RPMZ_FLAGS_INDEPENDENT),
-    .format	= RPMZ_FORMAT_GZIP,	/* XXX RPMZ_FORMAT_AUTO? */
+    .format	= RPMZ_FORMAT_AUTO,
     .mode	= RPMZ_MODE_COMPRESS,
     .level	= 6,		/* XXX compression level is type specific. */
 
@@ -233,10 +230,16 @@ static struct rpmz_s __rpmz = {
     .nb		= 16 * BUFSIZ,
     .ifmode	= "rb",
     .ofmode	= "wb",
+#ifdef	DYING
     .suffix	= "",
+#endif
 
     ._auto_adjust = 1,
+#ifdef	NOTYET
     ._format_compress_auto = RPMZ_FORMAT_XZ,
+#else
+    ._format_compress_auto = RPMZ_FORMAT_GZIP,
+#endif
     ._checksum	= LZMA_CHECK_CRC64,
 
 };
@@ -290,19 +293,22 @@ static void
 io_unlink(const char *fn, const struct stat *ost)
 	/*@*/
 {
-#ifndef _WIN32
     // On Windows, st_ino is meaningless, so don't bother testing it.
+#ifndef _WIN32
     struct stat nsb;
 
     if (Lstat(fn, &nsb) != 0
      || nsb.st_dev != ost->st_dev || nsb.st_ino != ost->st_ino)
 	rpmlog(RPMLOG_ERR, _("%s: File seems to be moved, not removing\n"), fn);
     else
-#endif
     // There's a race condition between Lstat() and Unlink()
     // but at least we have tried to avoid removing wrong file.
+    if (S_ISREG(nsb.st_mode) && Unlink(fn))
+	rpmlog(RPMLOG_ERR, _("%s: Cannot remove: %s\n"), fn, strerror(errno));
+#else
     if (Unlink(fn))
 	rpmlog(RPMLOG_ERR, _("%s: Cannot remove: %s\n"), fn, strerror(errno));
+#endif
     return;
 }
 
@@ -675,9 +681,13 @@ static const char * compressedFN(rpmz z)
 	t = rpmGetPath(fn, (z->suffix ? z->suffix : z->osuffix), NULL);
 
 if (_debug)
-fprintf(stderr, "==>   compressedFN: %s\n", t);
+fprintf(stderr, "==>   compressedFN: %s (suffix %s osuffix %s)\n", t, z->suffix, z->osuffix);
     return t;
 }
+
+/* forward ref */
+static rpmRC rpmzProcess(rpmz z, /*@null@*/ const char * ifn)
+	/*@modifies z @*/;
 
 static rpmRC rpmzFini(rpmz z, rpmRC rc)
 {
@@ -742,7 +752,6 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
     z->ifn = ifn;	/* XXX ifn[] for rpmzProcess() append w --recurse */
 
     if (ifn == NULL) {
-	strcpy(z->_ifn, z->stdin_filename);
 	z->ifn = z->stdin_filename;
 	switch (z->mode) {
 	default:
@@ -788,12 +797,41 @@ assert(errno != EFBIG);
 
 	/* Recurse into directory */
 	if (S_ISDIR(st->st_mode)) {
+	    struct dirent * dp;
+	    DIR * dir;
+	    ARGV_t av = NULL;
+	    size_t len;
+	    char * te;
+	    int xx;
+	    int i;
+
 	    if (!F_ISSET(z->flags, RECURSE)) {
 		fprintf(stderr, "%s: input %s is a directory -- skipping\n",
 			__progname, z->ifn);
 		goto exit;
 	    }
-	    rc = RPMRC_OK;	/* XXX silently succeed w --recurse. */
+	    len = strlen(z->_ifn);
+	    te = z->_ifn + len;
+	    if ((dir = Opendir(z->ifn)) == NULL)
+		goto exit;
+	    while ((dp = Readdir(dir)) != NULL) {
+		if (dp->d_name[0] == '\0' ||
+		   (dp->d_name[0] == '.' && (dp->d_name[1] == '\0' ||
+		   (dp->d_name[1] == '.' && dp->d_name[2] == '\0'))))
+		    continue;
+		xx = argvAdd(&av, dp->d_name);
+	    }
+	    xx = Closedir(dir);
+	    if (av != NULL)
+	    for (i = 0; av[i] != NULL; i++) {
+		*te = '/';
+		strncpy(te+1, av[i], sizeof(z->_ifn) - len - 1);
+assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
+		(void) rpmzProcess(z, z->_ifn);
+		*te = '\0';
+	    }
+	    av = argvFree(av);
+	    rc = RPMRC_OK;
 	    goto exit;
 	}
 
@@ -893,12 +931,11 @@ static rpmRC rpmzCopy(rpmz z, rpmiob iob)
  * Copy input to output.
  */
 static rpmRC rpmzProcess(rpmz z, /*@null@*/ const char * ifn)
-	/*@*/
 {
     rpmRC rc;
 
     rc = rpmzInit(z, ifn);
-    if (rc == RPMRC_OK)
+    if (rc == RPMRC_OK && z->ifd != NULL && z->ofd != NULL)
 	rc = rpmzCopy(z, z->iob);
     rc = rpmzFini(z, rc);
     return rc;
@@ -1824,7 +1861,7 @@ static struct poptOption optionsTable[] = {
 	N_("write to standard output and don't delete input files"), NULL },
   { "to-stdout", 'c', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz.flags,  RPMZ_FLAGS_STDOUT,
 	N_("write to standard output and don't delete input files"), NULL },
-  { "suffix", 'S', POPT_ARG_STRING,		&opt_suffix, 0,
+  { "suffix", 'S', POPT_ARG_STRING,		&__rpmz.suffix, 0,
 	N_("use suffix `.SUF' on compressed files instead"), N_(".SUF") },
 
   /* XXX unimplemented */
@@ -2172,26 +2209,44 @@ main(int argc, char *argv[])
     /* XXX todo: needs to be earlier. */
     optCon = rpmioInit(argc, argv, optionsTable);
 
+    // Never remove the source file when the destination is not on disk.
+    // In test mode the data is written nowhere, but setting opt_stdout
+    // will make the rest of the code behave well.
+    if (F_ISSET(z->flags, STDOUT) || z->mode == RPMZ_MODE_TEST) {
+	z->flags |= RPMZ_FLAGS_KEEP;
+	z->flags |= RPMZ_FLAGS_STDOUT;
+    }
+
+    // If no --format flag was used, or it was --format=auto, we need to
+    // decide what is the target file format we are going to use. This
+    // depends on how we were called (checked earlier in this function).
+    if (z->mode == RPMZ_MODE_COMPRESS && z->format == RPMZ_FORMAT_AUTO)
+	z->format = z->_format_compress_auto;
+
     /* XXX Set additional parameters from z->format. */
     switch (z->format) {
     default:
-    case RPMZ_FORMAT_AUTO:
-	/* XXX W2DO? */
-	break;
-#if defined(WITH_XZ)
     case RPMZ_FORMAT_XZ:
 	z->idio = z->odio = xzdio;
 	z->osuffix = ".xz";
+	if (z->mode == RPMZ_MODE_COMPRESS)
+	    coder_set_compression_settings(z);
 	break;
     case RPMZ_FORMAT_LZMA:
 	z->idio = z->odio = lzdio;
 	z->osuffix = ".lzma";
+	if (z->mode == RPMZ_MODE_COMPRESS)
+	    coder_set_compression_settings(z);
 	break;
     case RPMZ_FORMAT_RAW:
-	/* XXX W2DO? */
+	z->idio = z->odio = xzdio;
+	z->osuffix = ".xz";	/* XXX W2DO? */
+	coder_set_compression_settings(z);
 	break;
-#endif	/* WITH_XZ */
-#if defined(WITH_ZLIB)
+    case RPMZ_FORMAT_AUTO:
+fprintf(stderr, "==> warning: assuming auto format is gzip\n");
+	z->format = RPMZ_FORMAT_GZIP;
+	/*@fallthrough@*/
     case RPMZ_FORMAT_GZIP:
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".gz";
@@ -2204,13 +2259,10 @@ main(int argc, char *argv[])
 	z->idio = z->odio = gzdio;
 	z->osuffix = ".zip";
 	break;
-#endif	/* WITH_ZLIB */
-#if defined(WITH_BZIP2)
     case RPMZ_FORMAT_BZIP2:
 	z->idio = z->odio = bzdio;
 	z->osuffix = ".bz2";
 	break;
-#endif	/* WITH_BZIP2 */
     }
 
     /* Add files from CLI. */
@@ -2231,34 +2283,11 @@ argvPrint("input args", z->argv, NULL);
     if (z->argv == NULL || z->argv[0] == NULL)
 	ac++;
 
-    // Never remove the source file when the destination is not on disk.
-    // In test mode the data is written nowhere, but setting opt_stdout
-    // will make the rest of the code behave well.
-    if (F_ISSET(z->flags, STDOUT) || z->mode == RPMZ_MODE_TEST) {
-	z->flags |= RPMZ_FLAGS_KEEP;
-	z->flags |= RPMZ_FLAGS_STDOUT;
-    }
-
-    // If no --format flag was used, or it was --format=auto, we need to
-    // decide what is the target file format we are going to use. This
-    // depends on how we were called (checked earlier in this function).
-    if (z->mode == RPMZ_MODE_COMPRESS && z->format == RPMZ_FORMAT_AUTO)
-	z->format = z->_format_compress_auto;
-
     if (z->mode == RPMZ_MODE_COMPRESS) {
 	int xx;
 	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
 		(unsigned)(__rpmz.level % 10));
     }
-    z->suffix = opt_suffix;
-
-    // Compression settings need to be validated (options themselves and
-    // their memory usage) when compressing to any file format. It has to
-    // be done also when uncompressing raw data, since for raw decoding
-    // the options given on the command line are used to know what kind
-    // of raw data we are supposed to decode.
-    if (z->mode == RPMZ_MODE_COMPRESS || z->format == RPMZ_FORMAT_RAW)
-	coder_set_compression_settings(z);
 
     signals_init();
 
