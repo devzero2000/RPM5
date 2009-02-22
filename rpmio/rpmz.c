@@ -186,6 +186,7 @@ struct rpmz_s {
     FDIO_t idio;
 /*@null@*/
     const char * ifn;
+    char _ifn[PATH_MAX+1];	/*!< input file name (accommodate recursion) */
     char ifmode[32];
 /*@null@*/
     FD_t ifd;
@@ -730,7 +731,7 @@ fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
     return rc;
 }
 
-static rpmRC rpmzInit(rpmz z)
+static rpmRC rpmzInit(rpmz z, /*@null@*/ const char * ifn)
 	/*@*/
 {
     rpmRC rc = RPMRC_FAIL;
@@ -738,7 +739,10 @@ static rpmRC rpmzInit(rpmz z)
 if (_debug)
 fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 
-    if (z->ifn == NULL) {
+    z->ifn = ifn;	/* XXX ifn[] for rpmzProcess() append w --recurse */
+
+    if (ifn == NULL) {
+	strcpy(z->_ifn, z->stdin_filename);
 	z->ifn = z->stdin_filename;
 	switch (z->mode) {
 	default:
@@ -751,16 +755,49 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
 	    break;
 	}
     } else {
-	if (Stat(z->ifn, &z->isb) < 0) {
-	    fprintf(stderr, "%s: input %s doesn't exist, skipping\n",
+	struct stat * st = &z->isb;
+
+	/* set input file name (already set if recursed here) */
+	if (ifn != z->_ifn) {
+/*@-mayaliasunique@*/
+	    strncpy(z->_ifn, ifn, sizeof(z->_ifn));
+/*@=mayaliasunique@*/
+assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
+	    z->ifn = z->_ifn;
+	}
+	if (Lstat(z->ifn, &z->isb) < 0) {
+#ifdef	EOVERFLOW
+assert(errno != EOVERFLOW);
+assert(errno != EFBIG);
+#endif
+	    fprintf(stderr, "%s: input %s does not exist, skipping\n",
 			__progname, z->ifn);
 	    goto exit;
 	}
-	if (!S_ISREG(z->isb.st_mode)) {
-	    fprintf(stderr, "%s: input %s is not a regular file, skipping\n",
+	if (!S_ISREG(st->st_mode) && !S_ISLNK(st->st_mode) && !S_ISDIR(st->st_mode))
+	{
+	    fprintf(stderr, "%s: input %s is a special file or device -- skipping\n",
 			__progname, z->ifn);
 	    goto exit;
 	}
+	if (S_ISLNK(st->st_mode) && !F_ISSET(z->flags, FORCE)) {
+	    fprintf(stderr, "%s: input %s is a symbolic link -- skipping\n",
+			__progname, z->ifn);
+	    goto exit;
+	}
+
+	/* Recurse into directory */
+	if (S_ISDIR(st->st_mode)) {
+	    if (!F_ISSET(z->flags, RECURSE)) {
+		fprintf(stderr, "%s: input %s is a directory -- skipping\n",
+			__progname, z->ifn);
+		goto exit;
+	    }
+	    rc = RPMRC_OK;	/* XXX silently succeed w --recurse. */
+	    goto exit;
+	}
+
+	/* Open input file. */
 	switch (z->mode) {
 	default:
 	    break;
@@ -793,6 +830,8 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
     } else {
 	if (z->ifn == z->stdin_filename)	/* XXX error needed here. */
 	    goto exit;
+
+	/* Open output file. */
 	switch (z->mode) {
 	default:
 	    break;
@@ -853,12 +892,12 @@ static rpmRC rpmzCopy(rpmz z, rpmiob iob)
 /*
  * Copy input to output.
  */
-static rpmRC rpmzProcess(rpmz z)
+static rpmRC rpmzProcess(rpmz z, /*@null@*/ const char * ifn)
 	/*@*/
 {
     rpmRC rc;
 
-    rc = rpmzInit(z);
+    rc = rpmzInit(z, ifn);
     if (rc == RPMRC_OK)
 	rc = rpmzCopy(z, z->iob);
     rc = rpmzFini(z, rc);
@@ -2225,15 +2264,16 @@ argvPrint("input args", z->argv, NULL);
 
     /* Process arguments. */
     for (i = 0; i < ac; i++) {
+	const char * ifn;
 	rpmRC frc = RPMRC_OK;
 
 	/* Use NULL for stdin. */
-	z->ifn = (z->argv && strcmp(z->argv[i], "-") ? z->argv[i] : NULL);
+	ifn = (z->argv && strcmp(z->argv[i], "-") ? z->argv[i] : NULL);
 
 	switch (z->mode) {
 	case RPMZ_MODE_COMPRESS:
 	case RPMZ_MODE_DECOMPRESS:
-	    frc = rpmzProcess(z);
+	    frc = rpmzProcess(z, ifn);
 	    break;
 	case RPMZ_MODE_TEST:
 	    break;
