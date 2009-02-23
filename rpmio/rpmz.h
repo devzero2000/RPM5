@@ -97,11 +97,6 @@ typedef struct rpmzSpace_s * rpmzSpace;
 typedef struct rpmzPool_s * rpmzPool;
 typedef struct rpmzJob_s * rpmzJob;
 
-/**
- */
-/*@unchecked@*/
-extern rpmz _rpmz;
-
 #if defined(_RPMZ_INTERNAL)
 /** a space (one buffer for each space) */
 struct rpmzSpace_s {
@@ -135,7 +130,6 @@ struct rpmzJob_s {
     rpmzJob next;		/*!< next job in the list (either list) */
 };
 
-#if defined(_RPMZ_INTERNAL_NOTYET)
 /**
  */
 struct rpmz_s {
@@ -144,16 +138,18 @@ struct rpmz_s {
     enum rpmzMode_e mode;	/*!< Operation mode. */
     unsigned int level;		/*!< Compression level. */
 
-#ifdef	NOTYET
+    unsigned int threads;	/*!< No. or threads to use. */
+/*@null@*/ /*@observer@*/
+    const char * suffix;	/*!< -S, --suffix ... */
+
+    char _ifn[PATH_MAX+1];	/*!< input file name (accommodate recursion) */
+
+#if defined(_RPMZ_INTERNAL_XZ)
     rpmuint64_t mem;		/*!< Physical memory. */
     rpmuint64_t memlimit_encoder;
     rpmuint64_t memlimit_decoder;
     rpmuint64_t memlimit_custom;
-#endif
 
-    unsigned int threads;	/*!< No. or threads to use. */
-
-#ifdef	NOTYET
 /*@observer@*/
     const char *stdin_filename;	/*!< Display name for stdin. */
 /*@observer@*/
@@ -191,16 +187,19 @@ struct rpmz_s {
 /*@null@*/
     FD_t ofd;
     struct stat osb;
-#endif	/* NOTYET */
 
-/*@null@*/ /*@observer@*/
-    const char * suffix;	/*!< -S, --suffix ... */
+    int _auto_adjust;
+    enum rpmzFormat_e _format_compress_auto;
+    lzma_options_lzma _options;
+    lzma_check _checksum;
+    lzma_filter _filters[LZMA_FILTERS_MAX + 1];
+    size_t _filters_count;
+#endif	/* _RPMZ_INTERNAL_XZ */
 
-    /* PIGZ specific configuration. */
+#if defined(_RPMZ_INTERNAL_PIGZ)	/* PIGZ specific configuration. */
     int verbosity;        /*!< 0 = quiet, 1 = normal, 2 = verbose, 3 = trace */
 
 /* --- globals (modified by main thread only when it's the only thread) */
-    char _ifn[PATH_MAX+1];	/*!< input file name (accommodate recursion) */
 /*@relnull@*/
     char * _ofn;		/*!< output file name (allocated if not NULL) */
     int ifdno;			/*!< input file descriptor */
@@ -296,9 +295,9 @@ struct rpmz_s {
 /*@only@*/ /*@null@*/
     yarnLock log_lock;
 #endif	/* DEBUG */
+#endif	/* _RPMZ_INTERNAL_PIGZ */
 
 };
-#endif	/* _RPMZ_INTERNAL_NOTYET */
 #endif	/* _RPMZ_INTERNAL */
 
 /*==============================================================*/
@@ -307,7 +306,13 @@ struct rpmz_s {
 extern "C" {
 #endif
 
-#if defined(_RPMZ_INTERNAL_NOTYET)
+#if defined(_RPMZ_INTERNAL)
+/*@unchecked@*/
+extern struct rpmz_s __rpmz;
+
+/*@unchecked@*/
+extern rpmz _rpmz;
+
 /**
  */
 extern void rpmzArgCallback(poptContext con,
@@ -351,6 +356,7 @@ static struct poptOption rpmzOptionsPoptTable[] = {
   { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  9,
 	NULL, NULL },
 
+#if defined(_RPMZ_INTERNAL_PIGZ)
 #ifdef	NOTYET	/* XXX --blocksize/--processes validate arg */
   { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.blocksize, 0,
 	N_("Set compression block size to mmmK"), N_("mmm") },
@@ -368,18 +374,30 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Compress blocks independently for damage recovery"), NULL },
   { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz.flags, RPMZ_FLAGS_RSYNCABLE,
 	N_("Input-determined block locations for rsync"), NULL },
+#endif	/* _RPMZ_INTERNAL_PIGZ */
+#if defined(_RPMZ_INTERNAL_XZ)
+  /* XXX -T collides with pigz -T,--no-time */
+  { "threads", '\0', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.threads, 0,
+	N_("Allow up to n compression threads"), N_("n") },
+#endif	/* _RPMZ_INTERNAL_XZ */
 
   /* ===== Operation modes */
-#ifdef	NOTYET
+#if defined(_RPMZ_INTERNAL_XZ)
   { "compress", 'z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode, RPMZ_MODE_COMPRESS,
 	N_("force compression"), NULL },
-#endif
+  { "uncompress", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode, RPMZ_MODE_DECOMPRESS,
+	N_("force decompression"), NULL },
+#endif	/* _RPMZ_INTERNAL_XZ */
   { "decompress", 'd', POPT_ARG_VAL,		&__rpmz.mode, RPMZ_MODE_DECOMPRESS,
 	N_("Decompress the compressed input"), NULL },
   { "test", 't', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_TEST,
 	N_("Test the integrity of the compressed input"), NULL },
   { "list", 'l', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_LIST,
 	N_("List the contents of the compressed input"), NULL },
+#if defined(_RPMZ_INTERNAL_XZ)
+  { "info", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags,  RPMZ_FLAGS_LIST,
+	N_("list block sizes, total sizes, and possible metadata"), NULL },
+#endif	/* _RPMZ_INTERNAL_XZ */
   { "force", 'f', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_FORCE,
 	N_("Force overwrite, compress .gz, links, and to terminal"), NULL },
 
@@ -388,6 +406,7 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Process the contents of all subdirectories"), NULL },
   { "suffix", 'S', POPT_ARG_STRING,		&__rpmz.suffix, 0,
 	N_("Use suffix .sss instead of .gz (for compression)"), N_(".sss") },
+#if defined(_RPMZ_INTERNAL_PIGZ)
   { "ascii", 'a', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'a',
 	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
   { "bits", 'Z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
@@ -396,6 +415,7 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Compress to zlib (.zz) instead of gzip format"), NULL },
   { "zip", 'K', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZIP2,
 	N_("Compress to PKWare zip (.zip) single entry format"), NULL },
+#endif	/* _RPMZ_INTERNAL_PIGZ */
   { "keep", 'k', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_KEEP,
 	N_("Do not delete original file after processing"), NULL },
   { "stdout", 'c', POPT_BIT_SET,		&__rpmz.flags,  RPMZ_FLAGS_STDOUT,
@@ -414,6 +434,7 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Do not store or restore mod time in/from header"), NULL },
 
   /* ===== Other options */
+#if defined(_RPMZ_INTERNAL_PIGZ)
   { "quiet", 'q',	POPT_ARG_VAL,				NULL,  'q',
 	N_("Print no messages, even on error"), NULL },
   { "verbose", 'v',	POPT_ARG_VAL,				NULL,  'v',
@@ -422,13 +443,17 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("?version?"), NULL },
   { "license", 'L',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'L',
 	N_("?license?"), NULL },
+#endif	/* _RPMZ_INTERNAL_PIGZ */
 
   POPT_TABLEEND
 };
+#endif	/* _RPMZ_INTERNAL */
 
+#if defined(_RPMZ_INTERNAL)
 /**
  */
-static rpmRC rpmzParseEnv(/*@unused@*/ rpmz z, /*@null@*/ const char * envvar)
+static rpmRC rpmzParseEnv(/*@unused@*/ rpmz z, /*@null@*/ const char * envvar,
+		struct poptOption optionsTable[])
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -480,11 +505,12 @@ static rpmRC rpmzParseEnv(/*@unused@*/ rpmz z, /*@null@*/ const char * envvar)
 		poptStrerror(xx));
 /*@=nullpass@*/
 	rc = RPMRC_FAIL;
+    } else	/* Check no args were in the envvar. */
+    if (argvCount(poptGetArgs(optCon))) {
+	fprintf(stderr, "%s: cannot provide files in %s envvar\n",
+		 __progname, (envvar ? envvar : _envvar));
+	rc = RPMRC_FAIL;
     }
-
-    /* Check that only options were in the envvar. */
-    if (argvCount(poptGetArgs(optCon)))
-	bail("cannot provide files in GZIP environment variable", "");
 
 exit:
     if (optCon)
@@ -492,11 +518,14 @@ exit:
     av = argvFree(av);
     return rc;
 }
+#endif	/* _RPMZ_INTERNAL */
 
+#if defined(_RPMZ_INTERNAL_XZ)
 /**
  */
-static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
-	/*@*/
+static rpmRC rpmzParseArgv0(rpmz z, const char * argv0)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies z, fileSystem, internalState @*/
 {
     const char * s = strrchr(argv0, '/');
     const char * name = (s ? (s + 1) : argv0);
@@ -547,7 +576,7 @@ static rpmRC rpmzParseArgv0(rpmz z, /*@null@*/ const char * argv0)
 
     return rc;
 }
-#endif	/* _RPMZ_INTERNAL_NOTYET */
+#endif	/* _RPMZ_INTERNAL_XZ */
 
 #ifdef __cplusplus
 }
