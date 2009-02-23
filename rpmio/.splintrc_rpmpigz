@@ -1,0 +1,84 @@
+-I. -I.. -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
+
++partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-bounds
+-bufferoverflowhigh
+
+-bitwisesigned		# 77
+-boolops		# 135
+-branchstate
+-compdef		# 34
+-compmempass		# 6
+-enummemuse		# 2
+-evalorder		# 14
+-fixedformalarray
+-formatconst		# 3
+-modobserver		# 4
+-mustfreefresh		# 1 splint on crack?
+-nullpass		# 31
+-predboolint		# 91
+-predboolothers		# 6
+-predboolptr		# 27
+-retvalint		# 85
+-retvalother		# 6
+-shiftimplementation	# 83
+-shiftnegative		# 3
+-sizeoftype		# 9
+-strictops		# 5
+-type			# 15
+-usedef			# 10
+
++boolint
++charint
++charintliteral
++enumint
++ignorequals
++ignoresigns
++matchanyintegral
++numliteral
+
+-temptrans		# 3
+
+-elseifcomplete		# 3
+-forblock		# 4
+-looploopbreak		# 6
+-loopswitchbreak	# 20
+-whileblock		# 13
+-whileempty		# 2
+
+# --- +partial artifacts
+-declundef		# 1
+-exportheader		# 3
+-exportheadervar
+-exportlocal		# 3
+-exportvar		# 1
+
+-fcnuse			# 2
+-fielduse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-exportconst		# 6
+-exportfcn		# 13
+-exporttype		# 2
+-ifblock		# 210
+-isoreserved		# 8
+-isoreservedinternal	# 17
+-protoparamname		# 526
+-ptrarith		# 224
+
+# --- not-yet at checks level
+
+# --- not-yet at standard level

@@ -165,6 +165,10 @@ lint:
 lint_rpmcpio:
 	$(LINT) -f .splintrc_rpmcpio $(DEFS) $(INCLUDES) rpmcpio.c
 
+.PHONY:	lint_rpmpigz
+lint_rpmpigz:
+	$(LINT) -f .splintrc_rpmpigz $(DEFS) $(INCLUDES) rpmpigz.c
+
 .PHONY:	lint_rpmtar
 lint_rpmtar:
 	$(LINT) -f .splintrc_rpmtar $(DEFS) $(INCLUDES) rpmtar.c
