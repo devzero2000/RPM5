@@ -797,6 +797,7 @@ assert(errno != EFBIG);
 
 	/* Recurse into directory */
 	if (S_ISDIR(st->st_mode)) {
+	    struct stat sb = *st;	/* structure assignment. */
 	    struct dirent * dp;
 	    DIR * dir;
 	    ARGV_t av = NULL;
@@ -807,12 +808,12 @@ assert(errno != EFBIG);
 
 	    if (!F_ISSET(z->flags, RECURSE)) {
 		fprintf(stderr, "%s: input %s is a directory -- skipping\n",
-			__progname, z->ifn);
+			__progname, z->_ifn);
 		goto exit;
 	    }
 	    len = strlen(z->_ifn);
 	    te = z->_ifn + len;
-	    if ((dir = Opendir(z->ifn)) == NULL)
+	    if ((dir = Opendir(z->_ifn)) == NULL)
 		goto exit;
 	    while ((dp = Readdir(dir)) != NULL) {
 		if (dp->d_name[0] == '\0' ||
@@ -831,6 +832,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 		*te = '\0';
 	    }
 	    av = argvFree(av);
+	    *st = sb;			/* structure assignment. */
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
