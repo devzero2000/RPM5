@@ -94,7 +94,7 @@
    2.1.4   9 Nov 2008  Fix bug when decompressing very short files
  */
 
-#define VERSION "pigz 2.1.4\n"
+#define PIGZVERSION "pigz 2.1.4\n"
 
 /* To-do:
     - add --rsyncable (or -R) [use my own algorithm, set min/max block size]
@@ -217,47 +217,17 @@
 
 #define	DEBUG	/* XXX this shouldn't be here. */
 
-/* use large file functions if available */
-#define _FILE_OFFSET_BITS 64
-
-/* included headers and what is expected from each */
-#include <stdio.h>      /* fflush(), fprintf(), fputs(), getchar(), putc(), */
-                        /* puts(), printf(), vasprintf(), stderr, EOF, NULL,
-                           SEEK_END, size_t, off_t */
-#include <stdlib.h>     /* exit(), malloc(), free(), realloc(), atol(), */
-                        /* atoi(), getenv() */
-#include <stdarg.h>     /* va_start(), va_end(), va_list */
-#include <string.h>     /* memset(), memchr(), memcpy(), strcmp(), */
-                        /* strcpy(), strncpy(), strlen(), strcat() */
-#include <errno.h>      /* errno, EEXIST */
-#include <assert.h>     /* assert() */
-#include <time.h>       /* ctime(), time(), time_t, mktime() */
-#include <signal.h>     /* signal(), SIGINT */
-/*@-incondefs -mutrep@*/
-#include <sys/types.h>  /* ssize_t */
-/*@=incondefs =mutrep@*/
-#include <sys/time.h>   /* utimes(), gettimeofday(), struct timeval */
-/*@-fixedformalarray@*/
-#include <unistd.h>     /* unlink(), _exit(), read(), write(), close(), */
-                        /* lseek(), isatty(), chown() */
-/*@=fixedformalarray@*/
-/*@-matchfields@*/
-#include <sys/stat.h>   /* chmod(), stat(), fstat(), lstat(), struct stat, */
-                        /* S_ISDIR, S_ISLNK, S_ISREG */
-#include <fcntl.h>      /* open(), O_CREAT, O_EXCL, O_RDONLY, O_TRUNC, */
-                        /* O_WRONLY */
-/*@-mutrep@*/
-#include <dirent.h>     /* opendir(), readdir(), closedir(), DIR, */
-                        /* struct dirent */
-/*@=mutrep@*/
-/*@=matchfields@*/
-#include <limits.h>     /* PATH_MAX */
+#include "system.h"
 
 #include "zlib.h"       /* deflateInit2(), deflateReset(), deflate(), */
                         /* deflateEnd(), deflateSetDictionary(), crc32(),
                            Z_DEFAULT_COMPRESSION, Z_DEFAULT_STRATEGY,
                            Z_DEFLATED, Z_NO_FLUSH, Z_NULL, Z_OK,
                            Z_SYNC_FLUSH, z_stream */
+
+#if !defined(ZLIB_VERNUM) || ZLIB_VERNUM < 0x1230
+#  error Need zlib version 1.2.3 or later
+#endif
 
 #if defined(__LCLINT__)
 /*@-incondefs@*/
@@ -300,20 +270,6 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
 
 #endif
 
-#if !defined(ZLIB_VERNUM) || ZLIB_VERNUM < 0x1230
-#  error Need zlib version 1.2.3 or later
-#endif
-
-#undef	bindtextdomain
-#define	bindtextdomain(Domain, Directory) /* empty */
-#undef	textdomain
-#define	textdomain(Domain) /* empty */
-#define	_(Text) Text
-#define	D_(Text) Text
-#undef	dgettext
-#define	dgettext(DomainName, Text) Text
-#define	N_(Text) Text
-
 #define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <rpmio.h>
@@ -324,20 +280,18 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
 /*@-bufferoverflowhigh -mustfreeonly@*/
 #include "poptIO.h"
 /*@=bufferoverflowhigh =mustfreeonly@*/
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
 
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 #  include "yarn.h"     /* yarnThread, yarnLaunch(), yarnJoin(), yarnJoinAll(), */
                         /* yarnLock, yarnNewLock(), yarnPossess(), yarnTwist(), yarnWaitFor(),
                            yarnRelease(), yarnPeekLock(), yarnFreeLock(), yarnPrefix */
 #endif
 
-#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
-#define	POPT_ARGFLAG_TOGGLE	0
-#endif
+#include "debug.h"
 
-/*@unchecked@*/
-const char *__progname;
-#define progname        __progname
 /*@unchecked@*/
 static int _debug = 0;
 
@@ -630,7 +584,7 @@ static struct rpmz_s __rpmz = {
     .level	= Z_DEFAULT_COMPRESSION,/* XXX level is format specific. */
 
     .blocksize	= 131072UL,
-#ifdef NOTHREAD
+#ifdef _PIGZNOTHREAD
     .threads	= 1,
 #else
     .threads	= 8,
@@ -654,7 +608,7 @@ static void rpmzDefaults(rpmz z)
 	/*@modifies z @*/
 {
     z->level = Z_DEFAULT_COMPRESSION;
-#ifdef NOTHREAD
+#ifdef _PIGZNOTHREAD
     z->threads = 1;
 #else
     z->threads = 8;
@@ -682,9 +636,9 @@ static rpmz _rpmz = &__rpmz;
 /* prevent end-of-line conversions on MSDOSish operating systems */
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #  include <io.h>       /* setmode(), O_BINARY */
-#  define SET_BINARY_MODE(fd) setmode(fd, O_BINARY)
+#  define SET_BINARY_MODE(_fdno) setmode(_fdno, O_BINARY)
 #else
-#  define SET_BINARY_MODE(fd)
+#  define SET_BINARY_MODE(_fdno)
 #endif
 
 /* exit with error, delete output file if in the middle of writing it */
@@ -706,23 +660,12 @@ static int bail(char *why, char *what)
     return 0;
 }
 
-/*@mayexit@*/
-static inline void * xmalloc(size_t nb)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    void * p = malloc(nb);
-    if (p == NULL)
-	bail("not enough memory", "");
-    return p;
-}
-
 /*==============================================================*/
 
 #if defined(DEBUG) || defined(__LCLINT__)
 
 /* maximum log entry length */
-#define MAXMSG 256
+#define _PIGZMAXMSG 256
 
 /* set up log (call from main thread before other threads launched) */
 static void rpmzLogInit(rpmz z)
@@ -731,7 +674,7 @@ static void rpmzLogInit(rpmz z)
 {
     if (z->log_tail == NULL) {
 /*@-mustfreeonly@*/
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 	z->log_lock = yarnNewLock(0);
 #endif
 	z->log_head = NULL;
@@ -748,7 +691,7 @@ static void rpmzLogAdd(rpmz z, char *fmt, ...)
     struct timeval now;
     struct log *me;
     va_list ap;
-    char msg[MAXMSG];
+    char msg[_PIGZMAXMSG];
 
     gettimeofday(&now, NULL);
     me = xmalloc(sizeof(*me));
@@ -765,13 +708,13 @@ static void rpmzLogAdd(rpmz z, char *fmt, ...)
 /*@-mustfreeonly@*/
     me->next = NULL;
 /*@=mustfreeonly@*/
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 assert(z->log_lock != NULL);
     yarnPossess(z->log_lock);
 #endif
     *z->log_tail = me;
     z->log_tail = &(me->next);
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     yarnTwist(z->log_lock, BY, 1);
 #endif
 }
@@ -786,12 +729,12 @@ static int rpmzLogShow(rpmz z)
 
     if (z->log_tail == NULL)
 	return 0;
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     yarnPossess(z->log_lock);
 #endif
     me = z->log_head;
     if (me == NULL) {
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 	yarnRelease(z->log_lock);
 #endif
 	return 0;
@@ -799,7 +742,7 @@ static int rpmzLogShow(rpmz z)
     z->log_head = me->next;
     if (me->next == NULL)
 	z->log_tail = &z->log_head;
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     yarnTwist(z->log_lock, BY, -1);
 #endif
     diff.tv_usec = me->when.tv_usec - z->start.tv_usec;
@@ -824,7 +767,7 @@ static void rpmzLogFree(rpmz z)
     struct log *me;
 
     if (z->log_tail != NULL) {
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 	yarnPossess(z->log_lock);
 #endif
 	while ((me = z->log_head) != NULL) {
@@ -834,7 +777,7 @@ static void rpmzLogFree(rpmz z)
 	    me = _free(me);
 /*@=compdestroy@*/
 	}
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 	yarnTwist(z->log_lock, TO, 0);
 	z->log_lock = yarnFreeLock(z->log_lock);
 #endif
@@ -914,11 +857,11 @@ static void rpmzWrite(rpmz z, unsigned char *buf, size_t len)
 }
 
 /* sliding dictionary size for deflate */
-#define DICT 32768U
+#define _PIGZDICT 32768U
 
 /* largest power of 2 that fits in an unsigned int -- used to limit requests
    to zlib functions that use unsigned int lengths */
-#define MAX ((((unsigned)0 - 1) >> 1) + 1)
+#define _PIGZMAX ((((unsigned)0 - 1) >> 1) + 1)
 
 /* convert Unix time to MS-DOS date and time, assuming current timezone
    (you got a better idea?) */
@@ -1099,14 +1042,16 @@ assert(0);
 }
 
 /* compute check value depending on format */
-#define CHECK(a,b,c) (z->format == RPMZ_FORMAT_ZLIB ? adler32(a,b,c) : crc32(a,b,c))
+#define CHECK(a,b,c) \
+    (z->format == RPMZ_FORMAT_ZLIB ? adler32(a,b,c) : crc32(a,b,c))
 
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 /* -- threaded portions of pigz -- */
 
 /* -- check value combination routines for parallel calculation -- */
 
-#define COMB(a,b,c) (z->format == RPMZ_FORMAT_ZLIB ? adler32_comb(a,b,c) : crc32_comb(a,b,c))
+#define COMB(a,b,c) \
+    (z->format == RPMZ_FORMAT_ZLIB ? adler32_comb(a,b,c) : crc32_comb(a,b,c))
 /* combine two crc-32's or two adler-32's (copied from zlib 1.2.3 so that pigz
    can be compatible with older versions of zlib) */
 
@@ -1476,12 +1421,12 @@ assert(job != NULL);
 
 	/* set dictionary if provided, release that input buffer (only provided
 	 * if F_ISSET(z->flags, INDEPENDENT) is true and if this is not the first work unit) -- the
-	 * amount of data in the buffer is assured to be >= DICT */
+	 * amount of data in the buffer is assured to be >= _PIGZDICT */
 	if (job->out != NULL) {
 	    len = job->out->len;
 /*@-noeffect@*/
 	    deflateSetDictionary(&strm,
-		(unsigned char *)(job->out->buf) + (len - DICT), DICT);
+		(unsigned char *)(job->out->buf) + (len - _PIGZDICT), _PIGZDICT);
 /*@=noeffect@*/
 	    rpmzDropSpace(job->out);
 	}
@@ -1495,18 +1440,18 @@ assert(job != NULL);
 	strm.next_in = job->in->buf;
 	strm.next_out = job->out->buf;
 
-	/* run MAX-sized amounts of input through deflate -- this loop is
+	/* run _PIGZMAX-sized amounts of input through deflate -- this loop is
 	 * needed for those cases where the integer type is smaller than the
 	 * size_t type, or when len is close to the limit of the size_t type */
 	len = job->in->len;
-	while (len > MAX) {
-	    strm.avail_in = MAX;
+	while (len > _PIGZMAX) {
+	    strm.avail_in = _PIGZMAX;
 	    strm.avail_out = (unsigned)-1;
 /*@-noeffect@*/
 	    (void)deflate(&strm, Z_NO_FLUSH);
 /*@=noeffect@*/
 assert(strm.avail_in == 0 && strm.avail_out != 0);
-	    len -= MAX;
+	    len -= _PIGZMAX;
 	}
 
 	/* run the last piece through deflate -- terminate with a sync marker,
@@ -1541,10 +1486,10 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 	len = job->in->len;
 	next = job->in->buf;
 	check = CHECK(0L, Z_NULL, 0);
-	while (len > MAX) {
-	    check = CHECK(check, next, MAX);
-	    len -= MAX;
-	    next += MAX;
+	while (len > _PIGZMAX) {
+	    check = CHECK(check, next, _PIGZMAX);
+	    len -= _PIGZMAX;
+	    next += _PIGZMAX;
 	}
 	check = CHECK(check, next, (unsigned)len);
 	rpmzDropSpace(job->in);
@@ -1769,7 +1714,7 @@ static void rpmzSingleCompress(rpmz z, int reset)
 
     /* initialize the deflate structure if this is the first time */
     if (strm == NULL) {
-	out_size = z->blocksize > MAX ? MAX : (unsigned)z->blocksize;
+	out_size = z->blocksize > _PIGZMAX ? _PIGZMAX : (unsigned)z->blocksize;
 
 /*@-mustfreeonly@*/
 	in = xmalloc(z->blocksize);
@@ -1811,9 +1756,9 @@ static void rpmzSingleCompress(rpmz z, int reset)
 	strm->next_in = in;
 /*@=mustfreeonly@*/
 
-	/* compress MAX-size chunks in case unsigned type is small */
-	while (got > MAX) {
-	    strm->avail_in = MAX;
+	/* compress _PIGZMAX-size chunks in case unsigned type is small */
+	while (got > _PIGZMAX) {
+	    strm->avail_in = _PIGZMAX;
 	    check = CHECK(check, strm->next_in, strm->avail_in);
 	    do {
 		strm->avail_out = out_size;
@@ -1827,7 +1772,7 @@ static void rpmzSingleCompress(rpmz z, int reset)
 		clen += out_size - strm->avail_out;
 	    } while (strm->avail_out == 0);
 assert(strm->avail_in == 0);
-	    got -= MAX;
+	    got -= _PIGZMAX;
 	}
 
 	/* compress the remainder, finishing if end of input -- when not -i,
@@ -1861,7 +1806,7 @@ assert(strm->avail_in == 0);
 
 /* --- decompression --- */
 
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 /* parallel read thread */
 static void load_read_thread(void *_z)
 	/*@globals fileSystem, internalState @*/
@@ -1897,7 +1842,7 @@ static size_t load(rpmz z)
 	return 0;
     }
 
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     /* if first time in or z->threads == 1, read a buffer to have something to
        return, otherwise wait for the previous read job to complete */
     if (z->threads > 1) {
@@ -1963,7 +1908,7 @@ static void in_init(rpmz z)
     z->in_eof = 0;
     z->in_short = 0;
     z->in_tot = 0;
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     z->in_which = -1;
 #endif
 }
@@ -2474,7 +2419,7 @@ static unsigned inb(void *_z, unsigned char **buf)
     return z->in_left;
 }
 
-#ifndef	NOTHREAD
+#ifndef	_PIGZNOTHREAD
 /* output write thread */
 static void outb_write(void *_z)
 	/*@globals fileSystem, internalState @*/
@@ -2515,7 +2460,7 @@ static void outb_check(void *_z)
     } while (len);
     Trace((z, "-- exited decompress check thread"));
 }
-#endif	/* NOTHREAD */
+#endif	/* _PIGZNOTHREAD */
 
 /* call-back output function for inflateBack() -- wait for the last write and
    check calculation to complete, copy the write buffer, and then alert the
@@ -2526,7 +2471,7 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmz z = _z;
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
 /*@only@*/ /*@relnull@*/
     static yarnThread wr;
 /*@only@*/ /*@relnull@*/
@@ -3197,7 +3142,7 @@ assert(z->hname == NULL);
 	else
 	    rpmzDecompressLZW(z);
     }
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     else if (z->threads > 1)
 	rpmzParallelCompress(z);
 #endif
@@ -3236,7 +3181,7 @@ static void rpmzNewOpts(rpmz z)
 	/*@modifies z, fileSystem, internalState @*/
 {
     rpmzSingleCompress(z, 1);
-#ifndef NOTHREAD
+#ifndef _PIGZNOTHREAD
     rpmzFinishJobs(z);
 #endif
 }
@@ -3271,18 +3216,18 @@ static void rpmzArgCallback(poptContext con,
     if (opt->arg == NULL)
     switch (opt->val) {
     case 'L':
-	fputs(VERSION, stderr);
+	fputs(PIGZVERSION, stderr);
 	fputs("Copyright (C) 2007 Mark Adler\n", stderr);
 	fputs("Subject to the terms of the zlib license.\n", stderr);
 	fputs("No warranty is provided or implied.\n", stderr);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
-    case 'V':	fputs(VERSION, stderr); exit(EXIT_SUCCESS);
+    case 'V':	fputs(PIGZVERSION, stderr); exit(EXIT_SUCCESS);
     case 'Z':	bail("invalid option: LZW output not supported", "");
     case 'a':	bail("invalid option: ascii conversion not supported", "");
     case 'b':
 	z->blocksize = (size_t)(atol(arg)) << 10;   /* chunk size */
-	if (z->blocksize < DICT)
+	if (z->blocksize < _PIGZDICT)
 	    bail("block size too small (must be >= 32K)", "");
 	if (z->blocksize + (z->blocksize >> 11) + 10 < (z->blocksize >> 11) + 10 ||
 	    (ssize_t)(z->blocksize + (z->blocksize >> 11) + 10) < 0)
@@ -3295,7 +3240,7 @@ static void rpmzArgCallback(poptContext con,
 	    bail("need at least one process", "");
 	if ((2 + (z->threads << 1)) < 1)
 	    bail("too many processes", "");
-#ifdef NOTHREAD
+#ifdef _PIGZNOTHREAD
 	if (z->threads > 1)
 	    bail("this pigz compiled without threads", "");
 #endif
@@ -3632,14 +3577,14 @@ int main(int argc, char **argv)
     int i;
 
 /*@-observertrans -readonlytrans @*/
-    __progname = "pigz";
+    __progname = "rpmpigz";
 /*@=observertrans =readonlytrans @*/
 
     /* prepare for interrupts and logging */
     signal(SIGINT, rpmzAbort);
 
-#ifndef NOTHREAD
-    yarnPrefix = "pigz";            /* prefix for yarn error messages */
+#ifndef _PIGZNOTHREAD
+    yarnPrefix = "rpmpigz";         /* prefix for yarn error messages */
     yarnAbort = rpmzAbort;          /* call on thread error */
 #endif
 #if defined(DEBUG) || defined(__LCLINT__)
