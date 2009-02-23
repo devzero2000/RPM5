@@ -17,7 +17,9 @@
 
 /* for thread portability */
 #define _POSIX_PTHREAD_SEMANTICS
+#if !defined(_REENTRANT)
 #define _REENTRANT
+#endif
 
 /* external libraries and entities referenced */
 #include <stdio.h>      /* fprintf(), stderr */
@@ -270,13 +272,14 @@ long yarnPeekLock(yarnLock bolt)
     return bolt->value;
 }
 
-void yarnFreeLock(yarnLock bolt)
+yarnLock yarnFreeLock(yarnLock bolt)
 {
     int ret;
     if ((ret = pthread_cond_destroy(&(bolt->cond))) ||
         (ret = pthread_mutex_destroy(&(bolt->mutex))))
         fail(ret);
     my_free(bolt);
+    return NULL;
 }
 
 /* -- thread functions (uses lock functions above) -- */
@@ -412,7 +415,7 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
 /*@=dependenttrans =globstate =mustfreefresh @*/
 }
 
-void yarnJoin(yarnThread ally)
+yarnThread yarnJoin(yarnThread ally)
 	/*@globals threads, threads_lock @*/
 	/*@modifies threads, threads_lock @*/
 {
@@ -441,6 +444,7 @@ void yarnJoin(yarnThread ally)
     *prior = match->next;
     yarnRelease(&(threads_lock));
     my_free(ally);
+    return NULL;
 }
 
 /* This implementation of yarnJoinAll() only attempts to join threads that have

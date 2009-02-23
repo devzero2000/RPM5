@@ -127,7 +127,8 @@ typedef struct yarnThread_s * yarnThread;
 yarnThread yarnLaunch(void (*probe)(void *), void *payload)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
-void yarnJoin(/*@only@*/ yarnThread ally)
+/*@only@*/ /*@null@*/
+yarnThread yarnJoin(/*@only@*/ yarnThread ally)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ally, fileSystem, internalState @*/;
 int yarnJoinAll(void)
@@ -159,6 +160,7 @@ void yarnWaitFor(yarnLock bolt, yarnWaitOP op, long)
 	/*@modifies bolt, fileSystem, internalState @*/;
 long yarnPeekLock(yarnLock bolt)
 	/*@*/;
-void yarnFreeLock(/*@only@*/ yarnLock bolt)
+/*@only@*/ /*@null@*/
+yarnLock yarnFreeLock(/*@only@*/ yarnLock bolt)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies bolt, fileSystem, internalState @*/;
