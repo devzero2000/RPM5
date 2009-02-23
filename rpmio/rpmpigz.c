@@ -270,101 +270,6 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
 
 #endif
 
-#define	_RPMIOB_INTERNAL
-#include <rpmiotypes.h>
-#include <rpmio.h>
-#include <rpmlog.h>
-#include <argv.h>
-
-#include <rpmsq.h>
-/*@-bufferoverflowhigh -mustfreeonly@*/
-#include "poptIO.h"
-/*@=bufferoverflowhigh =mustfreeonly@*/
-#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
-#define	POPT_ARGFLAG_TOGGLE	0
-#endif
-
-#ifndef _PIGZNOTHREAD
-#  include "yarn.h"     /* yarnThread, yarnLaunch(), yarnJoin(), yarnJoinAll(), */
-                        /* yarnLock, yarnNewLock(), yarnPossess(), yarnTwist(), yarnWaitFor(),
-                           yarnRelease(), yarnPeekLock(), yarnFreeLock(), yarnPrefix */
-#endif
-
-#include "debug.h"
-
-/*@unchecked@*/
-static int _debug = 0;
-
-/**
- */
-enum rpmzMode_e {
-    RPMZ_MODE_COMPRESS		= 0,
-    RPMZ_MODE_DECOMPRESS	= 1,
-    RPMZ_MODE_TEST		= 2,
-};
-
-/**
- */
-enum rpmzFormat_e {
-    RPMZ_FORMAT_AUTO		= 0,
-    RPMZ_FORMAT_XZ		= 1,
-    RPMZ_FORMAT_LZMA		= 2,
-    RPMZ_FORMAT_RAW		= 3,
-    RPMZ_FORMAT_GZIP		= 4,
-    RPMZ_FORMAT_ZLIB		= 5,
-    RPMZ_FORMAT_ZIP2		= 6,
-    RPMZ_FORMAT_ZIP3		= 7,
-    RPMZ_FORMAT_BZIP2		= 8,
-};
-
-/**
- */
-typedef struct rpmz_s * rpmz;
-
-#define F_ISSET(_f, _FLAG) (((_f) & ((RPMZ_FLAGS_##_FLAG) & ~0x40000000)) != RPMZ_FLAGS_NONE)
-#define RZ_ISSET(_FLAG) F_ISSET(z->flags, _FLAG)
-
-#define _KFB(n) (1U << (n))
-#define _ZFB(n) (_KFB(n) | 0x40000000)
-
-enum rpmzFlags_e {
-    RPMZ_FLAGS_NONE		= 0,
-    RPMZ_FLAGS_STDOUT		= _ZFB( 0),	/*!< -c, --stdout ... */
-    RPMZ_FLAGS_FORCE		= _ZFB( 1),	/*!< -f, --force ... */
-    RPMZ_FLAGS_KEEP		= _ZFB( 2),	/*!< -k, --keep ... */
-    RPMZ_FLAGS_RECURSE		= _ZFB( 3),	/*!< -r, --recursive ... */
-    RPMZ_FLAGS_EXTREME		= _ZFB( 4),	/*!< -e, --extreme ... */
-  /* XXX compressor specific flags need to be set some other way. */
-  /* XXX unused */
-    RPMZ_FLAGS_FAST		= _ZFB( 5),	/*!<     --fast ... */
-    RPMZ_FLAGS_BEST		= _ZFB( 6),	/*!<     --best ... */
-
-  /* XXX logic is reversed, disablers should clear with toggle. */
-    RPMZ_FLAGS_HNAME		= _ZFB( 7),	/*!< -n, --no-name ... */
-    RPMZ_FLAGS_HTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
-
-  /* XXX unimplemented */
-    RPMZ_FLAGS_RSYNCABLE	= _ZFB( 9),	/*!< -R, --rsyncable ... */
-  /* XXX logic is reversed. */
-    RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
-    RPMZ_FLAGS_LIST		= _ZFB(11),	/*!< -l, --list ... */
-
-#ifdef	NOTYET
-    RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
-    RPMZ_FLAGS_DELTA,
-    RPMZ_FLAGS_LZMA1,
-    RPMZ_FLAGS_LZMA2,
-#endif
-
-    RPMZ_FLAGS_X86		= _ZFB(16),
-    RPMZ_FLAGS_POWERPC		= _ZFB(17),
-    RPMZ_FLAGS_IA64		= _ZFB(18),
-    RPMZ_FLAGS_ARM		= _ZFB(19),
-    RPMZ_FLAGS_ARMTHUMB		= _ZFB(20),
-    RPMZ_FLAGS_SPARC		= _ZFB(21),
-
-};
-
 #if defined(DEBUG) || defined(__LCLINT__)
 /* trace log */
 struct log {
@@ -374,41 +279,17 @@ struct log {
 };
 #endif
 
-typedef struct rpmzSpace_s * rpmzSpace;
-typedef struct rpmzPool_s * rpmzPool;
-typedef struct rpmzJob_s * rpmzJob;
+#define	_RPMIOB_INTERNAL
+#define	_RPMZ_INTERNAL
+#include "rpmz.h"
 
-/** a space (one buffer for each space) */
-struct rpmzSpace_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-    void * buf;			/*!< buffer of size pool->size */
-    size_t len;			/*!< for application usage */
-    rpmzPool pool;		/*!< pool to return to */
-    rpmzSpace next;		/*!< for pool linked list */
-};
+#include "debug.h"
 
-/** pool of spaces (one pool for each size needed) */
-struct rpmzPool_s {
-    yarnLock have;		/*!< unused spaces available, lock for list */
-/*@relnull@*/
-    rpmzSpace head;		/*!< linked list of available buffers */
-    size_t size;		/*!< size of all buffers in this pool */
-    int limit;			/*!< number of new spaces allowed, or -1 */
-    int made;			/*!< number of buffers made */
-};
+/*@unchecked@*/
+static int _debug = 0;
 
-/**
- */
-struct rpmzJob_s {
-    long seq;			/*!< sequence number */
-    int more;			/*!< true if this is not the last chunk */
-    rpmzSpace in;		/*!< input data to compress */
-    rpmzSpace out;		/*!< dictionary or resulting compressed data */
-    unsigned long check;	/*!< check value for input data */
-    yarnLock calc;		/*!< released when check calculation complete */
-/*@dependent@*/ /*@null@*/
-    rpmzJob next;		/*!< next job in the list (either list) */
-};
+#define F_ISSET(_f, _FLAG) (((_f) & ((RPMZ_FLAGS_##_FLAG) & ~0x40000000)) != RPMZ_FLAGS_NONE)
+#define RZ_ISSET(_FLAG) F_ISSET(z->flags, _FLAG)
 
 /**
  */
@@ -629,7 +510,7 @@ static void rpmzDefaults(rpmz z)
 }
 
 /*@unchecked@*/
-static rpmz _rpmz = &__rpmz;
+rpmz _rpmz = &__rpmz;
 
 /*==============================================================*/
 

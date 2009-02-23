@@ -66,7 +66,7 @@ noinst_HEADERS = \
 	poptIO.h rpmbc.h rpmdav.h \
 	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
-	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h \
+	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h \
 	tar.h ugid.h yarn.h
 
 usrlibdir = $(libdir)

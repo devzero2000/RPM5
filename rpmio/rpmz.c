@@ -22,43 +22,14 @@
 
 #include <lzma.h>
 
+#define	_RPMZ_INTERNAL
 #define	_RPMIOB_INTERNAL
-#include <rpmiotypes.h>
-#include <rpmio.h>
-#include <rpmlog.h>
-
-#include <rpmsq.h>
-#include <poptIO.h>
+#include "rpmz.h"
 
 #include "debug.h"
 
-#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
-#define	POPT_ARGFLAG_TOGGLE	0
-#endif
-
+/*@unchecked@*/
 static int _debug = 0;
-
-/**
- */
-enum rpmzMode_e {
-    RPMZ_MODE_COMPRESS		= 0,
-    RPMZ_MODE_DECOMPRESS	= 1,
-    RPMZ_MODE_TEST		= 2,
-};
-
-/**
- */
-enum rpmzFormat_e {
-    RPMZ_FORMAT_AUTO		= 0,
-    RPMZ_FORMAT_XZ		= 1,
-    RPMZ_FORMAT_LZMA		= 2,
-    RPMZ_FORMAT_RAW		= 3,
-    RPMZ_FORMAT_GZIP		= 4,
-    RPMZ_FORMAT_ZLIB		= 5,
-    RPMZ_FORMAT_ZIP2		= 6,
-    RPMZ_FORMAT_ZIP3		= 7,
-    RPMZ_FORMAT_BZIP2		= 8,
-};
 
 #ifdef	NOTYET
 /*@unchecked@*/
@@ -79,13 +50,6 @@ static bool auto_adjust = true;
 /// to auto-adjust for lower memory usage, we won't print a warning.
 /*@unchecked@*/
 static bool preset_default = true;
-#ifdef	DYING
-/// If a preset is used (no custom filter chain) and preset_extreme is true,
-/// a significantly slower compression is used to achieve slightly better
-/// compression ratio.
-/*@unchecked@*/
-static bool preset_extreme = false;
-#endif
 #endif
 
 enum {
@@ -97,53 +61,8 @@ enum {
 
 };
 
-/**
- */
-typedef struct rpmz_s * rpmz;
-
 #define F_ISSET(_f, _FLAG) (((_f) & ((RPMZ_FLAGS_##_FLAG) & ~0x40000000)) != RPMZ_FLAGS_NONE)
 #define RZ_ISSET(_FLAG) F_ISSET(z->flags, _FLAG)
-
-#define _KFB(n) (1U << (n))
-#define _ZFB(n) (_KFB(n) | 0x40000000)
-
-enum rpmzFlags_e {
-    RPMZ_FLAGS_NONE		= 0,
-    RPMZ_FLAGS_STDOUT		= _ZFB( 0),	/*!< -c, --stdout ... */
-    RPMZ_FLAGS_FORCE		= _ZFB( 1),	/*!< -f, --force ... */
-    RPMZ_FLAGS_KEEP		= _ZFB( 2),	/*!< -k, --keep ... */
-    RPMZ_FLAGS_RECURSE		= _ZFB( 3),	/*!< -r, --recursive ... */
-    RPMZ_FLAGS_EXTREME		= _ZFB( 4),	/*!< -e, --extreme ... */
-  /* XXX compressor specific flags need to be set some other way. */
-  /* XXX unused */
-    RPMZ_FLAGS_FAST		= _ZFB( 5),	/*!<     --fast ... */
-    RPMZ_FLAGS_BEST		= _ZFB( 6),	/*!<     --best ... */
-
-  /* XXX logic is reversed, disablers should clear with toggle. */
-    RPMZ_FLAGS_HNAME		= _ZFB( 7),	/*!< -n, --no-name ... */
-    RPMZ_FLAGS_HTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
-
-  /* XXX unimplemented */
-    RPMZ_FLAGS_RSYNCABLE	= _ZFB( 9),	/*!< -R, --rsyncable ... */
-  /* XXX logic is reversed. */
-    RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
-    RPMZ_FLAGS_LIST		= _ZFB(11),	/*!< -l, --list ... */
-
-#ifdef	NOTYET
-    RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
-    RPMZ_FLAGS_DELTA,
-    RPMZ_FLAGS_LZMA1,
-    RPMZ_FLAGS_LZMA2,
-#endif
-
-    RPMZ_FLAGS_X86		= _ZFB(16),
-    RPMZ_FLAGS_POWERPC		= _ZFB(17),
-    RPMZ_FLAGS_IA64		= _ZFB(18),
-    RPMZ_FLAGS_ARM		= _ZFB(19),
-    RPMZ_FLAGS_ARMTHUMB		= _ZFB(20),
-    RPMZ_FLAGS_SPARC		= _ZFB(21),
-
-};
 
 /**
  */
@@ -230,9 +149,6 @@ static struct rpmz_s __rpmz = {
     .nb		= 16 * BUFSIZ,
     .ifmode	= "rb",
     .ofmode	= "wb",
-#ifdef	DYING
-    .suffix	= "",
-#endif
 
     ._auto_adjust = 1,
 #ifdef	NOTYET
@@ -243,8 +159,9 @@ static struct rpmz_s __rpmz = {
     ._checksum	= LZMA_CHECK_CRC64,
 
 };
+
 /*@unchecked@*/
-static rpmz _rpmz = &__rpmz;
+rpmz _rpmz = &__rpmz;
 
 /*==============================================================*/
 /**
