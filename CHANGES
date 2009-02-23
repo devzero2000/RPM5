@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmz: add a modified version of rpmpigz (before merging with rpmz).
     - jbj: rpmz: add Fchown/Fchmod, attempt to preserve owner/perms/timestamp.
     - jbj: rpmz: swipe xz AutoFu to detect timestamps.
     - jbj: rpmz: swipe xz AutoFu to detect physmem/ncpus.
