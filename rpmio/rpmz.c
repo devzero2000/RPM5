@@ -67,6 +67,9 @@ enum {
 
 /*@unchecked@*/
 struct rpmz_s __rpmz = {
+    .stdin_fn	= "(stdin)",
+    .stdout_fn	= "(stdout)",
+
   /* XXX logic is reversed, disablers should clear with toggle. */
     .flags	= (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME|RPMZ_FLAGS_INDEPENDENT),
     .format	= RPMZ_FORMAT_AUTO,
@@ -77,9 +80,6 @@ struct rpmz_s __rpmz = {
     .blocksize	= 128,
 #endif
     .threads	= 8,
-
-    .stdin_filename = "(stdin)",
-    .stdout_filename = "(stdout)",
 
     .nb		= 16 * BUFSIZ,
     .ifmode	= "rb",
@@ -550,7 +550,7 @@ static rpmRC rpmzFini(rpmz z, rpmRC rc)
 	xx = Fflush(z->ofd);
 
 	/* Timestamp output file same as input. */
-	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_filename))
+	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_fn))
 	    io_copy_attrs(z);	/* XXX add error return */
 	if ((xx = Fclose(z->ofd)) != 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: Closing output file failed: %s\n"),
@@ -573,14 +573,14 @@ static rpmRC rpmzFini(rpmz z, rpmRC rc)
     default:
 	break;
     case RPMRC_FAIL:
-	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_filename)) {
+	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_fn)) {
 	    xx = Unlink(z->ofn);
 if (_debug)
 fprintf(stderr, "==> Unlink(%s) FAIL\n", z->ofn);
 	}
 	break;
     case RPMRC_OK:
-	if (!F_ISSET(z->flags, KEEP) && z->ifn != z->stdin_filename) {
+	if (!F_ISSET(z->flags, KEEP) && z->ifn != z->stdin_fn) {
 	    io_unlink(z->ifn, &z->isb);
 if (_debug)
 fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
@@ -604,7 +604,7 @@ fprintf(stderr, "==> rpmzInit(%p) ifn %s ofmode %s\n", z, z->ifn, z->ofmode);
     z->ifn = ifn;	/* XXX ifn[] for rpmzProcess() append w --recurse */
 
     if (ifn == NULL) {
-	z->ifn = z->stdin_filename;
+	z->ifn = z->stdin_fn;
 	switch (z->mode) {
 	default:
 	    break;
@@ -708,7 +708,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
     }
 
     if (F_ISSET(z->flags, STDOUT))  {
-	z->ofn = xstrdup(z->stdout_filename);
+	z->ofn = xstrdup(z->stdout_fn);
 	switch (z->mode) {
 	default:
 	    break;
@@ -720,7 +720,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 	    break;
 	}
     } else {
-	if (z->ifn == z->stdin_filename)	/* XXX error needed here. */
+	if (z->ifn == z->stdin_fn)	/* XXX error needed here. */
 	    goto exit;
 
 	/* Open output file. */
@@ -1500,6 +1500,7 @@ assert(memory_usage != UINT64_MAX);
     return;
 }
 
+#ifdef	DYING
 /*==============================================================*/
 
 /**
@@ -1577,6 +1578,7 @@ bottom:
 exit:
     return rc;
 }
+#endif
 
 /*==============================================================*/
 
@@ -1671,6 +1673,13 @@ void rpmzArgCallback(poptContext con,
 	coder_add_filter(z, LZMA_FILTER_LZMA2, options_lzma(optarg));
 	break;
 
+    case 'L':
+	fprintf(stderr, "%s\n", VERSION);
+	/* XXX add license display. */
+	exit(EXIT_SUCCESS);
+	/*@notreached@*/ break;
+    case 'V':	fprintf(stderr, "%s\n", VERSION); exit(EXIT_SUCCESS);
+
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -1744,8 +1753,10 @@ static struct poptOption rpmzFiltersPoptTable[] = {
   POPT_TABLEEND
 };
 
+/* XXX grrr, popt needs better way to insert text strings in --help. */
+/* XXX fixme: popt does post order recursion into sub-tables. */
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption optionsTable[] = {
+static struct poptOption rpmzPrivatePoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmzArgCallback, 0, NULL, NULL },
@@ -1754,15 +1765,6 @@ static struct poptOption optionsTable[] = {
   { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
 	N_("debug spewage"), NULL },
 
-  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
-	N_("read filenames to process from FILE"), N_("FILE") },
-
-  /* ===== Basic compression settings */
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
-        N_("\
-Options:\
-"), NULL },
-
   { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
 	N_("file FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"), N_("FORMAT") },
   { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
@@ -1770,24 +1772,9 @@ Options:\
   { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
 	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
 
-  /* ===== Compression options */
-  /* XXX compressor specific flags need to be set some other way. */
-  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
-	N_("extreme compression"), NULL },
-
-  /* ===== Custom filters */
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzFiltersPoptTable, 0,
-        N_("\
-Filters:\
-"), NULL },
-
-  /* ===== Metadata options */
-#ifdef	NOTYET
-  { "sign", 'S', POPT_ARG_STRING,		NULL, 0,
-	N_("sign the data with GnuPG when compressing, or verify the signature when decompressing"), N_("PUBKEY") },
-#endif
-
-  /* ===== Other options */
+	/* XXX POPT_ARG_ARGV portability. */
+  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
+	N_("Read file names from MANIFEST"), N_("MANIFEST") },
 #ifdef	NOTYET
   { "quiet", 'q',		POPT_ARG_VAL,       NULL,  'q',
 	N_("suppress warnings; specify twice to suppress errors too"), NULL },
@@ -1797,9 +1784,50 @@ Filters:\
 	N_("display this help and exit"), NULL },
   { "long-help", 'h',		POPT_ARG_VAL,       NULL,  'H',
 	N_("display this help and exit"), NULL },
-  { "version", 'V',		POPT_ARG_VAL,       NULL,  'V',
-	N_("display version and license information and exit"), NULL },
 #endif
+  { "version", 'V',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'V',
+	N_("Display software version"), NULL },
+  { "license", 'L',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'L',
+	N_("Display softwre license"), NULL },
+
+  POPT_TABLEEND
+};
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption optionsTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	rpmzArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzPrivatePoptTable, 0,
+        N_("\
+  Compress or decompress FILEs.\n\
+\n\
+Options:\
+"), NULL },
+
+  /* ===== Basic compression settings */
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
+        N_("Compression options: "), NULL },
+
+  /* ===== Compression options */
+#ifdef	DYING
+  /* XXX compressor specific flags need to be set some other way. */
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
+	N_("extreme compression"), NULL },
+#endif
+
+  /* ===== Custom filters */
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzFiltersPoptTable, 0,
+        N_("Filters:"), NULL },
+
+  /* ===== Metadata options */
+#ifdef	NOTYET
+  { "sign", 'S', POPT_ARG_STRING,		NULL, 0,
+	N_("sign the data with GnuPG when compressing, or verify the signature when decompressing"), N_("PUBKEY") },
+#endif
+
+  /* ===== Other options */
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
@@ -1811,8 +1839,7 @@ Filters:\
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 Usage: rpmz [OPTION]... [FILE]...\n\
-Compress or decompress FILEs.\n\
-\n\
+  Compress or decompress FILEs.\
 "), NULL },
 
   POPT_TABLEEND
@@ -1917,6 +1944,12 @@ fprintf(stderr, "==> warning: assuming auto format is gzip\n");
 	break;
     }
 
+    if (z->mode == RPMZ_MODE_COMPRESS) {
+	int xx;
+	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
+		(unsigned)(__rpmz.level % 10));
+    }
+
     /* Add files from CLI. */
     {	ARGV_t av = poptGetArgs(optCon);
 	if (av != NULL)
@@ -1934,12 +1967,6 @@ argvPrint("input args", z->argv, NULL);
     /* With no arguments, act as a stdin/stdout filter. */
     if (z->argv == NULL || z->argv[0] == NULL)
 	ac++;
-
-    if (z->mode == RPMZ_MODE_COMPRESS) {
-	int xx;
-	xx = snprintf(z->ofmode, sizeof(z->ofmode)-1, "wb%u",
-		(unsigned)(__rpmz.level % 10));
-    }
 
     signals_init();
 

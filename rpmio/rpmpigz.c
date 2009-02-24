@@ -295,6 +295,9 @@ static int _debug = 0;
 /*@-fullinitblock@*/
 /*@unchecked@*/
 struct rpmz_s __rpmz = {
+    .stdin_fn	= "<stdin>",
+    .stdout_fn	= "<stdout>",
+
   /* XXX logic is reversed, disablers should clear with toggle. */
     .flags	= RPMZ_FLAGS_INDEPENDENT   /* initialize dictionary each thread */
       |	(RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME),/* store/restore name and timestamp */
@@ -310,11 +313,6 @@ struct rpmz_s __rpmz = {
 #endif
     .verbosity	= 1,		/* normal message level */
     .suffix	= "gz",		/* compressed file suffix */
-
-#ifdef	NOTYET
-    .stdin_filename = "(stdin)",
-    .stdout_filename = "(stdout)",
-#endif	/* NOTYET */
 
     .in_buf_allocated = IN_BUF_ALLOCATED,
     .out_buf_allocated = OUT_BUF_ALLOCATED,
@@ -2630,7 +2628,7 @@ static void rpmzProcess(rpmz z, /*@null@*/ char *path)
 
     /* open input file with name in, descriptor z->ifdno -- set name and mtime */
     if (path == NULL) {
-	strcpy(z->_ifn, "<stdin>");
+	strcpy(z->_ifn, z->stdin_fn);
 	z->ifdno = STDIN_FILENO;
 /*@-mustfreeonly@*/
 	z->name = NULL;
@@ -2791,9 +2789,8 @@ assert(z->hname == NULL);
     if (path == NULL || F_ISSET(z->flags, STDOUT)) {
 	/* write to stdout */
 /*@-mustfreeonly@*/
-	z->_ofn = xmalloc(strlen("<stdout>") + 1);
+	z->_ofn = xstrdup(z->stdout_fn);
 /*@=mustfreeonly@*/
-	strcpy(z->_ofn, "<stdout>");
 	z->ofdno = STDOUT_FILENO;
 	if (z->mode == RPMZ_MODE_COMPRESS && !F_ISSET(z->flags, TTY) && isatty(z->ofdno))
 	    bail("trying to write compressed data to a terminal",
@@ -3006,8 +3003,10 @@ Options:
   -v, --verbose        Provide more verbose output
 #endif
 
+/* XXX grrr, popt needs better way to insert text strings in --help. */
+/* XXX fixme: popt does post order recursion into sub-tables. */
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption optionsTable[] = {
+static struct poptOption rpmzPrivatePoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmzArgCallback, 0, NULL, NULL },
@@ -3016,7 +3015,29 @@ static struct poptOption optionsTable[] = {
   { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
 	N_("debug spewage"), NULL },
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
+	/* XXX POPT_ARG_ARGV portability. */
+  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
+	N_("Read file names from MANIFEST"), N_("MANIFEST") },
+  { "quiet", 'q',	POPT_ARG_VAL,				NULL,  'q',
+	N_("Print no messages, even on error"), NULL },
+  { "verbose", 'v',	POPT_ARG_VAL,				NULL,  'v',
+	N_("Provide more verbose output"), NULL },
+  { "version", 'V',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'V',
+	N_("Display software version"), NULL },
+  { "license", 'L',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'L',
+	N_("Display softwre license"), NULL },
+
+  POPT_TABLEEND
+};
+
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption optionsTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	rpmzArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzPrivatePoptTable, 0,
         N_("\
   rpmpigz will compress files in place, adding the suffix '.gz'. If no files are\n\
   specified, stdin will be compressed to stdout.  rpmpigz does what gzip does,\n\
@@ -3025,8 +3046,11 @@ static struct poptOption optionsTable[] = {
 Options:\
 "), NULL },
 
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
+        N_("Compression options: "), NULL },
+
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"),
+	N_("Common options:"),
 	NULL },
 
   POPT_AUTOALIAS
@@ -3054,9 +3078,9 @@ int main(int argc, char **argv)
 {
     rpmz z = _rpmz;
     poptContext optCon;
-    const char ** av;
     int ac;
     int rc = 1;		/* assume failure */
+    int xx;
     int i;
 
 /*@-observertrans -readonlytrans @*/
@@ -3071,6 +3095,7 @@ int main(int argc, char **argv)
     yarnAbort = rpmzAbort;          /* call on thread error */
 #endif
 #if defined(DEBUG) || defined(__LCLINT__)
+    /* XXX add POPT_ARG_TIMEOFDAY oneshot? */
     gettimeofday(&z->start, NULL);  /* starting time for log entries */
     rpmzLogInit(z);                     /* initialize logging */
 #endif
@@ -3078,31 +3103,43 @@ int main(int argc, char **argv)
     /* set all options to defaults */
     rpmzDefaults(z);
 
-    optCon = rpmioInit(argc, argv, optionsTable);
-
     /* process user environment variable defaults */
     if (rpmzParseEnv(z, "GZIP", optionsTable))
         goto exit;
 
+    optCon = rpmioInit(argc, argv, optionsTable);
+
+    /* Add files from CLI. */
+    {	ARGV_t av = poptGetArgs(optCon);
+	if (av != NULL)
+	    xx = argvAppend(&z->argv, av);
+    }
+
+    /* Add files from --files manifest(s). */
+    if (z->manifests != NULL)
+        xx = rpmzLoadManifests(z);
+
+if (_debug)
+argvPrint("input args", z->argv, NULL);
+
+    ac = argvCount(z->argv);
     /* if no command line arguments and stdout is a terminal, show help */
-    av = poptGetArgs(optCon);
-    if ((av == NULL || av[0] == NULL) && isatty(STDOUT_FILENO)) {
+    if ((z->argv == NULL || z->argv[0] == NULL) && isatty(STDOUT_FILENO)) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
     }
-    ac = argvCount(av);
 
     /* process command-line arguments */
-    if (av == NULL || av[0] == NULL) {
+    if (z->argv == NULL || z->argv[0] == NULL) {
 	/* list stdin or compress stdin to stdout if no file names provided */
 	rpmzProcess(z, NULL);
     } else {
 	for (i = 0; i < ac; i++) {
 	    if (i == 1 && F_ISSET(z->flags, STDOUT) && z->mode == RPMZ_MODE_COMPRESS && !F_ISSET(z->flags, LIST) && (z->format == RPMZ_FORMAT_ZIP2 || z->format == RPMZ_FORMAT_ZIP3)) {
 		fprintf(stderr, "warning: output is concatenated zip files ");
-		fprintf(stderr, "-- pigz will not be able to extract\n");
+		fprintf(stderr, "-- %s will not be able to extract\n", __progname);
 	    }
-	    rpmzProcess(z, strcmp(av[i], "-") ? (char *)av[i] : NULL);
+	    rpmzProcess(z, strcmp(z->argv[i], "-") ? (char *)z->argv[i] : NULL);
 	}
     }
 
@@ -3112,6 +3149,12 @@ int main(int argc, char **argv)
 exit:
     rpmzNewOpts(z);
     rpmzLogDump(z);
+
+    z->manifests = argvFree(z->manifests);
+    z->argv = argvFree(z->argv);
+#ifdef	NOTYET
+    z->iob = rpmiobFree(z->iob);
+#endif
 
     optCon = rpmioFini(optCon);
     

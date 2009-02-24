@@ -140,6 +140,18 @@ struct rpmzJob_s {
 /**
  */
 struct rpmz_s {
+/*@observer@*/
+    const char *stdin_fn;	/*!< Display name for stdin. */
+/*@observer@*/
+    const char *stdout_fn;	/*!< Display name for stdout. */
+
+/*@null@*/
+    ARGV_t argv;		/*!< Files to process. */
+/*@null@*/
+    ARGV_t manifests;		/*!< Manifests to process. */
+/*@null@*/
+    const char * base_prefix;	/*!< Prefix for file manifests paths. */
+
     enum rpmzFlags_e flags;	/*!< Control bits. */
     enum rpmzFormat_e format;	/*!< Compression format. */
     enum rpmzMode_e mode;	/*!< Operation mode. */
@@ -157,21 +169,9 @@ struct rpmz_s {
     rpmuint64_t memlimit_decoder;
     rpmuint64_t memlimit_custom;
 
-/*@observer@*/
-    const char *stdin_filename;	/*!< Display name for stdin. */
-/*@observer@*/
-    const char *stdout_filename;/*!< Display name for stdout. */
-
 /*@relnull@*/
     rpmiob iob;			/*!< Buffer for I/O. */
     size_t nb;			/*!< Buffer size (in bytes) */
-
-/*@null@*/
-    ARGV_t argv;		/*!< URI's to process. */
-/*@null@*/
-    ARGV_t manifests;		/*!<    --files ... */
-/*@null@*/
-    const char * base_prefix;
 
 /*@null@*/
     const char * isuffix;
@@ -342,6 +342,11 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("fast compression"), NULL },
   { "best", '\0', POPT_ARG_VAL,				&__rpmz.level,  9,
 	N_("best compression"), NULL },
+#if defined(_RPMZ_INTERNAL_XZ)
+  /* XXX compressor specific flags need to be set some other way. */
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
+	N_("extreme compression"), NULL },
+#endif	/* _RPMZ_INTERNAL_XZ */
   { NULL, '0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  0,
 	NULL, NULL },
   { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  1,
@@ -457,19 +462,87 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Do not store or restore mod time in/from header"), NULL },
 
   /* ===== Other options */
-#if defined(_RPMZ_INTERNAL_PIGZ)
-  { "quiet", 'q',	POPT_ARG_VAL,				NULL,  'q',
-	N_("Print no messages, even on error"), NULL },
-  { "verbose", 'v',	POPT_ARG_VAL,				NULL,  'v',
-	N_("Provide more verbose output"), NULL },
-  { "version", 'V',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'V',
-	N_("?version?"), NULL },
-  { "license", 'L',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'L',
-	N_("?license?"), NULL },
-#endif	/* _RPMZ_INTERNAL_PIGZ */
 
   POPT_TABLEEND
 };
+#endif	/* _RPMZ_INTERNAL */
+
+#if defined(_RPMZ_INTERNAL)
+/**
+ */
+static int rpmzLoadManifests(rpmz z)
+	/*@modifies z @*/
+{
+    ARGV_t manifests;
+    const char * fn;
+    int rc = 0;	/* assume success */
+
+    if ((manifests = z->manifests) != NULL)	/* note rc=0 return with no files to load. */
+    while ((fn = *manifests++) != NULL) {
+	unsigned lineno;
+	char * be = NULL;
+	rpmiob iob = NULL;
+	int xx = rpmiobSlurp(fn, &iob);
+	char * f;
+	char * fe;
+
+	if (!(xx == 0 && iob != NULL)) {
+	    fprintf(stderr, _("%s: Failed to open %s\n"), __progname, fn);
+	    rc = -1;
+	    goto bottom;
+	}
+
+	be = (char *)(iob->b + iob->blen);
+	while (be > (char *)iob->b && (be[-1] == '\n' || be[-1] == '\r')) {
+	  be--;
+	  *be = '\0';
+	}
+
+	/* Parse and save manifest items. */
+	lineno = 0;
+	for (f = (char *)iob->b; *f; f = fe) {
+	    const char * path;
+	    char * g, * ge;
+	    lineno++;
+
+	    fe = f;
+	    while (*fe && !(*fe == '\n' || *fe == '\r'))
+		fe++;
+	    g = f;
+	    ge = fe;
+	    while (*fe && (*fe == '\n' || *fe == '\r'))
+		*fe++ = '\0';
+
+	    while (*g && xisspace((int)*g))
+		*g++ = '\0';
+	    /* Skip comment lines. */
+	    if (*g == '#')
+		continue;
+
+	    while (ge > g && xisspace(ge[-1]))
+		*--ge = '\0';
+	    /* Skip empty lines. */
+	    if (ge == g)
+		continue;
+
+	    /* Prepend z->base_prefix if specified. */
+	    if (z->base_prefix)
+		path = rpmExpand(z->base_prefix, g, NULL);
+	    else
+		path = rpmExpand(g, NULL);
+	    (void) argvAdd(&z->argv, path);
+	    path = _free(path);
+	}
+
+bottom:
+	iob = rpmiobFree(iob);
+	if (rc != 0)
+	    goto exit;
+    }
+
+exit:
+    return rc;
+}
 #endif	/* _RPMZ_INTERNAL */
 
 #if defined(_RPMZ_INTERNAL)
