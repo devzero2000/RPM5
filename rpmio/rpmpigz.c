@@ -2666,7 +2666,7 @@ static void rpmzProcess(rpmz z, /*@null@*/ char *path)
 		fprintf(stderr, "%s is a special file or device -- skipping\n", z->_ifn);
 	    return;
 	}
-	if (S_ISLNK(st->st_mode) && !F_ISSET(z->flags, FORCE)) {
+	if (S_ISLNK(st->st_mode) && !F_ISSET(z->flags, SYMLINKS)) {
 	    if (z->verbosity > 0)
 		fprintf(stderr, "%s is a symbolic link -- skipping\n", z->_ifn);
 	    return;
@@ -2710,7 +2710,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 	}
 
 	/* don't compress .gz (or provided suffix) files, unless -f */
-	if (!(F_ISSET(z->flags, FORCE) || F_ISSET(z->flags, LIST) || z->mode != RPMZ_MODE_COMPRESS) && len >= strlen(z->suffix) &&
+	if (!(F_ISSET(z->flags, ALREADY) || F_ISSET(z->flags, LIST) || z->mode != RPMZ_MODE_COMPRESS) && len >= strlen(z->suffix) &&
 		strcmp(z->_ifn + len - strlen(z->suffix), z->suffix) == 0) {
 	    if (z->verbosity > 0)
 		fprintf(stderr, "%s ends with %s -- skipping\n", z->_ifn, z->suffix);
@@ -2795,7 +2795,7 @@ assert(z->hname == NULL);
 /*@=mustfreeonly@*/
 	strcpy(z->_ofn, "<stdout>");
 	z->ofdno = STDOUT_FILENO;
-	if (z->mode == RPMZ_MODE_COMPRESS && !F_ISSET(z->flags, FORCE) && isatty(z->ofdno))
+	if (z->mode == RPMZ_MODE_COMPRESS && !F_ISSET(z->flags, TTY) && isatty(z->ofdno))
 	    bail("trying to write compressed data to a terminal",
 		" (use -f to force)");
     }
@@ -2816,7 +2816,7 @@ assert(z->hname == NULL);
 	memcpy(z->_ofn, to, len);
 	strcpy(z->_ofn + len, z->mode != RPMZ_MODE_COMPRESS ? "" : z->suffix);
 	z->ofdno = open(z->_ofn, O_CREAT | O_TRUNC | O_WRONLY |
-                         (F_ISSET(z->flags, FORCE) ? 0 : O_EXCL), 0666);
+                         (F_ISSET(z->flags, OVERWRITE) ? 0 : O_EXCL), 0666);
 
 	/* if exists and not -f, give user a chance to overwrite */
 	if (z->ofdno < 0 && errno == EEXIST && isatty(0) && z->verbosity) {

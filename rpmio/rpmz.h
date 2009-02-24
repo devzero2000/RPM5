@@ -55,7 +55,7 @@ enum rpmzFormat_e {
 enum rpmzFlags_e {
     RPMZ_FLAGS_NONE		= 0,
     RPMZ_FLAGS_STDOUT		= _ZFB( 0),	/*!< -c, --stdout ... */
-    RPMZ_FLAGS_FORCE		= _ZFB( 1),	/*!< -f, --force ... */
+	/* 1 unused */
     RPMZ_FLAGS_KEEP		= _ZFB( 2),	/*!< -k, --keep ... */
     RPMZ_FLAGS_RECURSE		= _ZFB( 3),	/*!< -r, --recursive ... */
     RPMZ_FLAGS_EXTREME		= _ZFB( 4),	/*!< -e, --extreme ... */
@@ -73,6 +73,13 @@ enum rpmzFlags_e {
   /* XXX logic is reversed. */
     RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
     RPMZ_FLAGS_LIST		= _ZFB(11),	/*!< -l, --list ... */
+
+    RPMZ_FLAGS_OVERWRITE	= _ZFB(12),	/*!<     --overwrite ... */
+    RPMZ_FLAGS_ALREADY		= _ZFB(13),	/*!<     --recompress ... */
+    RPMZ_FLAGS_SYMLINKS		= _ZFB(14),	/*!<     --symlinks ... */
+    RPMZ_FLAGS_TTY		= _ZFB(15),	/*!<     --tty ... */
+#define	RPMZ_FLAGS_FORCE	\
+    (RPMZ_FLAGS_OVERWRITE|RPMZ_FLAGS_ALREADY|RPMZ_FLAGS_SYMLINKS|RPMZ_FLAGS_TTY)
 
 #ifdef	NOTYET
     RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
@@ -357,21 +364,24 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	NULL, NULL },
 
 #if defined(_RPMZ_INTERNAL_PIGZ)
-#ifdef	NOTYET	/* XXX --blocksize/--processes validate arg */
+#ifdef	NOTYET	/* XXX --blocksize/--processes callback to validate arg */
   { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.blocksize, 0,
 	N_("Set compression block size to mmmK"), N_("mmm") },
   /* XXX same as --threads */
   { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.threads, 0,
 	N_("Allow up to n compression threads"), N_("n") },
 #else
+  /* XXX show default is bogus with callback, can't find value. */
   { "blocksize", 'b', POPT_ARG_VAL|POPT_ARGFLAG_SHOW_DEFAULT,	NULL, 'b',
 	N_("Set compression block size to mmmK"), N_("mmm") },
   /* XXX same as --threads */
   { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	NULL, 'p',
 	N_("Allow up to n compression threads"), N_("n") },
 #endif
+  /* XXX display toggle "-i,--[no]indepndent" bustage. */
   { "independent", 'i', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags, RPMZ_FLAGS_INDEPENDENT,
 	N_("Compress blocks independently for damage recovery"), NULL },
+  /* XXX display toggle "-r,--[no]rsyncable" bustage. */
   { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz.flags, RPMZ_FLAGS_RSYNCABLE,
 	N_("Input-determined block locations for rsync"), NULL },
 #endif	/* _RPMZ_INTERNAL_PIGZ */
@@ -398,11 +408,24 @@ static struct poptOption rpmzOptionsPoptTable[] = {
   { "info", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags,  RPMZ_FLAGS_LIST,
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
 #endif	/* _RPMZ_INTERNAL_XZ */
-  { "force", 'f', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_FORCE,
-	N_("Force overwrite, compress .gz, links, and to terminal"), NULL },
+  { "force", 'f', POPT_BIT_SET,		&__rpmz.flags,  RPMZ_FLAGS_FORCE,
+	N_("Force: --overwrite --recompress --symlinks --tty"), NULL },
+  { "overwrite", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
+	&__rpmz.flags,  RPMZ_FLAGS_OVERWRITE,
+	N_("  Permit overwrite of output files"), NULL },
+  { "recompress",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
+	&__rpmz.flags,  RPMZ_FLAGS_ALREADY,
+	N_("  Permit compress of already compressed files"), NULL },
+  { "symlinks",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
+	&__rpmz.flags,  RPMZ_FLAGS_SYMLINKS,
+	N_("  Permit symlink input file to be compressed"), NULL },
+  { "tty",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
+	&__rpmz.flags,  RPMZ_FLAGS_TTY,
+	N_("  Permit compressed output to terminal"), NULL },
 
   /* ===== Operation modifiers */
-  { "recursive", 'r', POPT_BIT_SET,	&__rpmz.flags, RPMZ_FLAGS_RECURSE,
+  /* XXX display toggle "-r,--[no]recursive" bustage. */
+  { "recursive", 'r', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags, RPMZ_FLAGS_RECURSE,
 	N_("Process the contents of all subdirectories"), NULL },
   { "suffix", 'S', POPT_ARG_STRING,		&__rpmz.suffix, 0,
 	N_("Use suffix .sss instead of .gz (for compression)"), N_(".sss") },

@@ -641,7 +641,7 @@ assert(errno != EFBIG);
 			__progname, z->ifn);
 	    goto exit;
 	}
-	if (S_ISLNK(st->st_mode) && !F_ISSET(z->flags, FORCE)) {
+	if (S_ISLNK(st->st_mode) && !F_ISSET(z->flags, SYMLINKS)) {
 	    fprintf(stderr, "%s: input %s is a symbolic link -- skipping\n",
 			__progname, z->ifn);
 	    goto exit;
@@ -729,7 +729,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 	    break;
 	case RPMZ_MODE_COMPRESS:
 	    z->ofn = compressedFN(z);
-	    if (!F_ISSET(z->flags, FORCE) && Stat(z->ofn, &z->osb) == 0) {
+	    if (!F_ISSET(z->flags, OVERWRITE) && Stat(z->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
 			__progname, z->ofn);
 		/* XXX TODO: ok to overwrite(y/N)? */
@@ -740,7 +740,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 	    break;
 	case RPMZ_MODE_DECOMPRESS:
 	    z->ofn = uncompressedFN(z);
-	    if (!F_ISSET(z->flags, FORCE) && Stat(z->ofn, &z->osb) == 0) {
+	    if (!F_ISSET(z->flags, OVERWRITE) && Stat(z->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
 			__progname, z->ofn);
 		/* XXX TODO: ok to overwrite(y/N)? */
@@ -1680,37 +1680,12 @@ void rpmzArgCallback(poptContext con,
 }
 
 /*==============================================================*/
-
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption optionsTable[] = {
+static struct poptOption rpmzFiltersPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmzArgCallback, 0, NULL, NULL },
 /*@=type@*/
-
-  { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
-	N_("debug spewage"), NULL },
-
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
-        N_("\
-Options:\
-"), NULL },
-
-  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
-	N_("read filenames to process from FILE"), N_("FILE") },
-
-  /* ===== Basic compression settings */
-  { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
-	N_("file FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"), N_("FORMAT") },
-  { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
-	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
-  { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
-	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
-
-  /* ===== Compression options */
-  /* XXX compressor specific flags need to be set some other way. */
-  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
-	N_("extreme compression"), NULL },
 
   /* ===== Custom filters */
 #ifdef	REFERENCE
@@ -1726,14 +1701,14 @@ Options:\
 "                        depth=NUM    match finder cycles; 0=automatic (default)\n"
 #endif
   { "lzma1", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA1,
-	N_("set lzma1 filter"), N_("OPTS") },
+	N_("LZMA1 filter"), N_("OPTS") },
   { "lzma2", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA2,
-	N_("set lzma2 filter"), N_("OPTS") },
+	N_("LZMA2 filter"), N_("OPTS") },
 
   { "x86", '\0', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_X86,
 	N_("ix86 filter (sometimes called BCJ filter)"), NULL },
   { "bcj", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags, RPMZ_FLAGS_X86,
-	N_("x86 filter (sometimes called BCJ filter)"), NULL },
+	N_("x86 filter (also called BCJ filter)"), NULL },
   { "powerpc", '\0', POPT_BIT_SET,		&__rpmz.flags, RPMZ_FLAGS_POWERPC,
 	N_("PowerPC (big endian) filter"), NULL },
   { "ppc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags, RPMZ_FLAGS_POWERPC,
@@ -1755,7 +1730,7 @@ Options:\
 "                                      subtracted from each other (1-256; 1)\n"
 #endif
   { "delta", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_DELTA,
-	N_("set delta filter"), N_("OPTS") },
+	N_("Delta filter"), N_("OPTS") },
 
 #ifdef	REFERENCE
 "  --subblock=[OPTS]   Subblock filter; valid OPTS (valid values; default):\n"
@@ -1764,7 +1739,47 @@ Options:\
 "                        rle=NUM     run-length encoder chunk size (0-256; 0)\n"
 #endif
   { "subblock", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_SUBBLOCK,
-	N_("set subblock filter"), N_("OPTS") },
+	N_("Subblock filter"), N_("OPTS") },
+
+  POPT_TABLEEND
+};
+
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption optionsTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	rpmzArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+  { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
+	N_("debug spewage"), NULL },
+
+  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
+	N_("read filenames to process from FILE"), N_("FILE") },
+
+  /* ===== Basic compression settings */
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
+        N_("\
+Options:\
+"), NULL },
+
+  { "format", 'F', POPT_ARG_STRING,		NULL, 'F',
+	N_("file FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"), N_("FORMAT") },
+  { "check", 'C', POPT_ARG_STRING,		NULL, 'C',
+	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
+  { "memory", 'M', POPT_ARG_STRING,		NULL,  'M',
+	N_("use roughly NUM Mbytes of memory at maximum"), N_("NUM") },
+
+  /* ===== Compression options */
+  /* XXX compressor specific flags need to be set some other way. */
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
+	N_("extreme compression"), NULL },
+
+  /* ===== Custom filters */
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzFiltersPoptTable, 0,
+        N_("\
+Filters:\
+"), NULL },
 
   /* ===== Metadata options */
 #ifdef	NOTYET
