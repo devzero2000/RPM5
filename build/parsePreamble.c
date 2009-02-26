@@ -365,7 +365,7 @@ static struct optionalTag {
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
-    { RPMTAG_DISTEPOCH,	"%{distepoch}" },
+    { RPMTAG_DISTEPOCH,		"%{distepoch}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
