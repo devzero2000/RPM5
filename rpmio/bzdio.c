@@ -131,7 +131,13 @@ static int _bzdV = 1;
 /*@unchecked@*/
 static int _bzdW = 30;
 
-static void rpmbzClose(rpmbz bz, int abort)
+static const char * rpmbzStrerror(rpmbz bz)
+	/*@*/
+{
+    return BZ2_bzerror(bz->bzfile, &bz->bzerr);
+}
+
+static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
 	/*@modifies bz @*/
 {
     if (bz->bzfile != NULL) {
@@ -140,6 +146,8 @@ static void rpmbzClose(rpmbz bz, int abort)
 	else
 	    BZ2_bzWriteClose(&bz->bzerr, bz->bzfile, abort,
 		&bz->nbytes_in, &bz->nbytes_out);
+	if (bz->bzerr != BZ_OK && errmsg)
+	    *errmsg = rpmbzStrerror(bz);
     }
     bz->bzfile = NULL;
 }
@@ -149,7 +157,7 @@ static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
 	/*@globals fileSystem @*/
 	/*@modifies bz, fileSystem @*/
 {
-    rpmbzClose(bz, abort);
+    rpmbzClose(bz, abort, NULL);
     if (bz->fp != NULL) {
 	(void) fclose(bz->fp);
 	bz->fp = NULL;
@@ -222,20 +230,18 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
     return (bz->bzfile != NULL ? bz : rpmbzFree(bz, 0));
 }
 
-static const char * rpmbzStrerror(rpmbz bz)
-	/*@*/
-{
-    return BZ2_bzerror(bz->bzfile, &bz->bzerr);
-}
-
-#ifdef	NOTYET	/* XXX TODO: finish wiring up the FD_t <-> rpmbz abstraction. */
-static ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count)
+static ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
+		/*@null@*/ const char ** errmsg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     ssize_t rc = 0;
 
-assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
+#ifdef	NOTYET	/* XXX hmmm, read after close needs to return EOF. */
+assert(bz->bzfile != NULL);
+#else
+    if (bz->bzfile == NULL) return 0;
+#endif
     rc = BZ2_bzRead(&bz->bzerr, bz->bzfile, buf, (int)count);
     switch (bz->bzerr) {
     case BZ_STREAM_END: {
@@ -249,23 +255,26 @@ assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
 	    unused = NULL;
 	    nUnused = 0;
 	}
-	rpmbzClose(bz, 0);
+	rpmbzClose(bz, 0, NULL);
 	bz->bzfile = BZ2_bzReadOpen(&bz->bzerr, bz->fp, bz->V, bz->S,
 			unused, nUnused);
 	unused = _free(unused);
     }   /*@fallthrough@*/
     case BZ_OK:
-	    break;
+assert(rc >= 0);
+	break;
     default:
 	rc = -1;	/* XXX just in case. */
-	rpmbzClose(bz, 1);
+	if (errmsg)
+	    *errmsg = rpmbzStrerror(bz);
+	rpmbzClose(bz, 1, NULL);
 	break;
     }
     return rc;
 }
-#endif	/* NOTYET */
 
-static ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count)
+static ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count,
+		/*@null@*/ const char ** errmsg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -278,7 +287,9 @@ assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
 	rc = count;
 	break;
     default:
-	rpmbzClose(bz, 1);
+	if (errmsg)
+	    *errmsg = rpmbzStrerror(bz);
+	rpmbzClose(bz, 1, NULL);
 	rc = -1;
 	break;
     }
@@ -372,34 +383,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 assert(bz != NULL);
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     fdstat_enter(fd, FDSTAT_READ);
-    if (bz->bzfile != NULL) {
-	rc = BZ2_bzRead(&bz->bzerr, bz->bzfile, buf, (int)count);
-	switch (bz->bzerr) {
-	case BZ_STREAM_END: {
-	    void * unused = NULL;
-	    int nUnused = 0;
-	    
-	    BZ2_bzReadGetUnused(&bz->bzerr, bz->bzfile, &unused, &nUnused);
-	    if (unused != NULL && nUnused > 0)
-		unused = memcpy(xmalloc(nUnused), unused, nUnused);
-	    else {
-		unused = NULL;
-		nUnused = 0;
-	    }
-	    rpmbzClose(bz, 0);
-	    bz->bzfile = BZ2_bzReadOpen(&bz->bzerr, bz->fp, bz->V, bz->S,
-			unused, nUnused);
-	    unused = _free(unused);
-	}   /*@fallthrough@*/
-	case BZ_OK:
-	    break;
-	default:
-	    rc = -1;	/* XXX just in case. */
-	    fd->errcookie = rpmbzStrerror(bz);
-	    rpmbzClose(bz, 1);
-	    break;
-	}
-    }
+    rc = rpmbzRead(bz, buf, count, (const char **)&fd->errcookie);
     if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 /*@-compdef@*/
@@ -426,11 +410,9 @@ assert(bz != NULL);
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = rpmbzWrite(bz, buf, count);
+    rc = rpmbzWrite(bz, buf, count, (const char **)&fd->errcookie);
     if (rc >= 0)
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
-    else
-	fd->errcookie = rpmbzStrerror(bz);
     return rc;
 }
 /*@=globuse@*/
@@ -459,20 +441,15 @@ assert(bz != NULL);
 
     fdstat_enter(fd, FDSTAT_CLOSE);
     /*@-noeffectuncon@*/ /* FIX: check rc */
-    rpmbzClose(bz, 0);
+    rpmbzClose(bz, 0, (const char **)&fd->errcookie);
     /*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 
     /* XXX TODO: preserve fd if errors */
 
-    if (fd) {
-	if (rc == -1)
-	    fd->errcookie = rpmbzStrerror(bz);
-	else
-	if (rc >= 0) {
-	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
-	}
-    }
+    if (fd)
+    if (rc >= 0)
+	fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
 DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
