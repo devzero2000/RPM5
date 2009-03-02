@@ -219,8 +219,70 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
     return (bz->bzfile != NULL ? bz : rpmbzFree(bz, 0));
 }
 
-/* =============================================================== */
+static const char * rpmbzStrerror(rpmbz bz)
+	/*@*/
+{
+    return BZ2_bzerror(bz->bzfile, &bz->bzerr);
+}
 
+#ifdef	NOTYET	/* XXX TODO: finish wiring up the FD_t <-> rpmbz abstraction. */
+static ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *buf, fileSystem, internalState @*/
+{
+    ssize_t rc = 0;
+
+assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
+    rc = BZ2_bzRead(&bz->bzerr, bz->bzfile, buf, (int)count);
+    switch (bz->bzerr) {
+    case BZ_STREAM_END: {
+	void * unused = NULL;
+	int nUnused = 0;
+	    
+	BZ2_bzReadGetUnused(&bz->bzerr, bz->bzfile, &unused, &nUnused);
+	if (unused != NULL && nUnused > 0)
+	    unused = memcpy(xmalloc(nUnused), unused, nUnused);
+	else {
+	    unused = NULL;
+	    nUnused = 0;
+	}
+	rpmbzClose(bz, 0);
+	bz->bzfile = BZ2_bzReadOpen(&bz->bzerr, bz->fp, bz->V, bz->S,
+			unused, nUnused);
+	unused = _free(unused);
+    }   /*@fallthrough@*/
+    case BZ_OK:
+	    break;
+    default:
+	rc = -1;	/* XXX just in case. */
+	rpmbzClose(bz, 1);
+	break;
+    }
+    return rc;
+}
+
+static ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    ssize_t rc;
+
+assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
+    BZ2_bzWrite(&bz->bzerr, bz->bzfile, (void *)buf, (int)count);
+    switch (bz->bzerr) {
+    case BZ_OK:
+	rc = count;
+	break;
+    default:
+	rpmbzClose(bz, 1);
+	rc = -1;
+	break;
+    }
+    return rc;
+}
+#endif	/* NOTYET */
+
+/* =============================================================== */
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)
 	/*@*/
 {
@@ -250,7 +312,7 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
     if (bz == NULL)
 	return NULL;
     fd = fdNew("open (bzdOpen)");
-#ifdef	NOTYET
+#ifdef	NOTYET		/* XXX persistent URI cache prevents fileno(bz->fp) */
     fdPop(fd); fdPush(fd, bzdio, bz, fileno(bz->fp));
 #else
     fdPop(fd); fdPush(fd, bzdio, bz, -1);
@@ -271,7 +333,7 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 
     if (bz == NULL)
 	return NULL;
-#ifdef	NOTYET
+#ifdef	NOTYET		/* XXX persistent URI cache prevents pop */
     fdPop(fd); fdPush(fd, bzdio, bz, fileno(bz->fp));
 #else
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
@@ -330,7 +392,7 @@ assert(bz != NULL);
 	    break;
 	default:
 	    rc = -1;	/* XXX just in case. */
-	    fd->errcookie = BZ2_bzerror(bz->bzfile, &bz->bzerr);
+	    fd->errcookie = rpmbzStrerror(bz);
 	    rpmbzClose(bz, 1);
 	    break;
 	}
@@ -368,7 +430,7 @@ assert(bz != NULL);
 	break;
     default:
 	rc = -1;
-	fd->errcookie = BZ2_bzerror(bz->bzfile, &bz->bzerr);
+	fd->errcookie = rpmbzStrerror(bz);
 	rpmbzClose(bz, 1);
 	break;
     }
@@ -409,9 +471,9 @@ assert(bz != NULL);
     /* XXX TODO: preserve fd if errors */
 
     if (fd) {
-	if (rc == -1) {
-	    fd->errcookie = BZ2_bzerror(bz->bzfile, &bz->bzerr);
-	} else
+	if (rc == -1)
+	    fd->errcookie = rpmbzStrerror(bz);
+	else
 	if (rc >= 0) {
 	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 	}

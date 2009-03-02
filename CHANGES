@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: bzdio: stub-in an abstraction between FD_t <-> rpmbz methods.
     - jbj: bzdio: hmm, revert the pop/replace patch, there's more todo++ ...
     - jbj: bzdio: pop/replace ufdio with bzdio (including a fdno).
     - jbj: bzdio: take out the rubbish.
