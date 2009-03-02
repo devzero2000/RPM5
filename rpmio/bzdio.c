@@ -88,6 +88,8 @@ static int _bzdW = 30;
 static rpmbz rpmbzFree(/*@only@*/ rpmbz bz)
 	/*@modifies bz @*/
 {
+    if (bz->fp != NULL)
+	(void) fclose(bz->fp);
     bz = _free(bz);
     return NULL;
 }
@@ -95,8 +97,59 @@ static rpmbz rpmbzFree(/*@only@*/ rpmbz bz)
 static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 	/*@*/
 {
-    rpmbz bz = xcalloc(1, sizeof(*bz));
+    rpmbz bz;
+    const char * s = fmode;
+    char stdio[20];
+    char *t = stdio;
+    char *te = t + sizeof(stdio) - 2;
+    int c;
+
+#ifdef	NOTYET
+assert(fmode != NULL);
+#else
+    if (fmode == NULL)	return NULL;
+#endif
+    bz = xcalloc(1, sizeof(*bz));
+    bz->B = _bzdB;
+    bz->S = _bzdS;
+    bz->V = _bzdV;
+    bz->W = _bzdW;
+
+    switch ((c = *s++)) {
+    case 'a':
+    case 'r':
+    case 'w':
+	*t++ = (char)c;
+	break;
+    }
+	
+    while ((c = *s++) != 0)
+    switch (c) {
+    case '.':
+	break;
+    case '+':
+    case 'x':
+    case 'm':
+    case 'c':
+    case 'b':
+	if (t < te) *t++ = c;
+	break;
+    default:
+	if (xisdigit(c))
+	    bz->B = c - (int)'0';
+	break;
+    }
+    *t = '\0';
+
+#ifdef	NOTYET
+    if (fdno >= 0)
+	bz->fp = fdopen(fdno, stdio);
+    else if (path != NULL)
+	bz->fp = fopen(path, stdio);
+    return (bz->fp ? bz : rpmbzFree(bz));
+#else
     return bz;
+#endif
 }
 
 /* =============================================================== */
@@ -126,7 +179,7 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
 {
     FD_t fd;
     rpmbz bz = rpmbzNew(path, fmode, -1);
-    mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
+    mode_t mode = (fmode && fmode[0] == 'r' ? O_RDONLY : O_WRONLY);
 
     if ((bz->bzfile = BZ2_bzopen(path, fmode)) == NULL) {
 	bz = rpmbzFree(bz);
@@ -146,13 +199,12 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
-    rpmbz bz;
+    rpmbz bz = rpmbzNew(NULL, fmode, fdno);
+    mode_t mode = (fmode && fmode[0] == 'r' ? O_RDONLY : O_WRONLY);
 
-    if (fmode == NULL) return NULL;
-    bz = rpmbzNew(NULL, fmode, fdno);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
-    if (fdno < 0
-     || (bz->bzfile = BZ2_bzdopen(fdno, fmode)) == NULL) {
+    if (fdno < 0 || bz == NULL || (bz->bzfile=BZ2_bzdopen(fdno, fmode)) == NULL)
+    {
 	bz = rpmbzFree(bz);
 	return NULL;
     }
@@ -181,11 +233,10 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz;
+    rpmbz bz = bzdFileno(fd);
     ssize_t rc = 0;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
-    bz = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
     if (bz->bzfile != NULL)
 	/*@-compdef@*/
@@ -212,14 +263,13 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz;
+    rpmbz bz = bzdFileno(fd);
     ssize_t rc;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
-    bz = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
     rc = BZ2_bzwrite(bz->bzfile, (void *)buf, (int)count);
     if (rc == -1) {
@@ -247,15 +297,13 @@ static int bzdClose( /*@only@*/ void * cookie)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz;
+    rpmbz bz = bzdFileno(fd);
     int rc;
 
-    bz = bzdFileno(fd);
-
-    if (bz->bzfile == NULL) {
-	bz = rpmbzFree(bz);
+assert(bz != NULL);
+    if (bz->bzfile == NULL)	/* XXX memory leak w errors? */
 	return -2;
-    }
+
     fdstat_enter(fd, FDSTAT_CLOSE);
     /*@-noeffectuncon@*/ /* FIX: check rc */
     BZ2_bzclose(bz->bzfile);
@@ -277,6 +325,7 @@ static int bzdClose( /*@only@*/ void * cookie)
 DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
+
     if (rc == 0) {
 	bz = rpmbzFree(bz);
 	fd = fdFree(fd, "open (bzdClose)");
