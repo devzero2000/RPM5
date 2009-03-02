@@ -250,7 +250,7 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
     if (bz == NULL)
 	return NULL;
     fd = fdNew("open (bzdOpen)");
-#ifndef	NOTYET
+#ifdef	NOTYET
     fdPop(fd); fdPush(fd, bzdio, bz, fileno(bz->fp));
 #else
     fdPop(fd); fdPush(fd, bzdio, bz, -1);
@@ -271,7 +271,7 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 
     if (bz == NULL)
 	return NULL;
-#ifndef	NOTYET
+#ifdef	NOTYET
     fdPop(fd); fdPush(fd, bzdio, bz, fileno(bz->fp));
 #else
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
