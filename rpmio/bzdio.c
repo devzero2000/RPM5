@@ -12,11 +12,77 @@
 
 #include <bzlib.h>
 
+#if defined(__LCLINT__)
+/*@-incondefs =protoparammatch@*/
+/*@-exportheader@*/
+
+BZ_EXTERN BZFILE* BZ_API(BZ2_bzReadOpen) (
+/*@out@*/
+      int*  bzerror,
+      FILE* f,
+      int   verbosity,
+      int   small,
+/*@out@*/
+      void* unused,
+      int   nUnused
+   )
+	/*@modifies *bzerror, f @*/;
+
+BZ_EXTERN void BZ_API(BZ2_bzReadClose) (
+/*@out@*/
+      int*    bzerror,
+      BZFILE* b
+   )
+	/*@modifies *bzerror, b @*/;
+
+BZ_EXTERN void BZ_API(BZ2_bzReadGetUnused) (
+/*@out@*/
+      int*    bzerror,
+      BZFILE* b,
+/*@out@*/
+      void**  unused,
+      int*    nUnused
+   )
+	/*@modifies *bzerror, b, *unused, *nUnused @*/;
+
+BZ_EXTERN int BZ_API(BZ2_bzRead) (
+/*@out@*/
+      int*    bzerror,
+      BZFILE* b,
+/*@out@*/
+      void*   buf,
+      int     len
+   )
+	/*@modifies *bzerror, b, *buf @*/;
+
+/*@=exportheader@*/
+/*@=incondefs =protoparammatch@*/
+#endif	/* __LCLINT__ */
+
 #include "debug.h"
 
 /*@access FD_t @*/
 
 #define	BZDONLY(fd)	assert(fdGetIo(fd) == bzdio)
+
+typedef	struct rpmbz_s {
+    BZFILE *bzfile;	
+    int bzerr;
+    FILE * fp;		/*!< file pointer */
+    int B;		/*!< blockSize100K (default: 9) */
+    int S;		/*!< small (default: 0) */
+    int V;		/*!< verboisty (default: 0) */
+    int W;		/*!< workFactor (default: 30) */
+} * rpmbz;
+
+/*@unchecked@*/
+static int _bzdB = 9;
+/*@unchecked@*/
+static int _bzdS = 0;
+/*@unchecked@*/
+static int _bzdV = 1;
+/*@unchecked@*/
+static int _bzdW = 30;
 
 /* =============================================================== */
 
