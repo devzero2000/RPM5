@@ -138,7 +138,7 @@ static const char * rpmbzStrerror(rpmbz bz)
 }
 
 static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
-	/*@modifies bz @*/
+	/*@modifies bz, *errmsg @*/
 {
     if (bz->bzfile != NULL) {
 	if (bz->omode == O_RDONLY)
@@ -146,8 +146,10 @@ static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
 	else
 	    BZ2_bzWriteClose(&bz->bzerr, bz->bzfile, abort,
 		&bz->nbytes_in, &bz->nbytes_out);
+/*@-usereleased@*/	/* XXX does bz->bzfile persist after *Close? */
 	if (bz->bzerr != BZ_OK && errmsg)
 	    *errmsg = rpmbzStrerror(bz);
+/*@=usereleased@*/
     }
     bz->bzfile = NULL;
 }
@@ -230,10 +232,11 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
     return (bz->bzfile != NULL ? bz : rpmbzFree(bz, 0));
 }
 
+/*@-mustmod@*/
 static ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies bz, *buf, *errmsg, internalState @*/
 {
     ssize_t rc = 0;
 
@@ -272,11 +275,12 @@ assert(rc >= 0);
     }
     return rc;
 }
+/*@=mustmod@*/
 
 static ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies bz, *errmsg, internalState @*/
 {
     ssize_t rc;
 
@@ -383,12 +387,12 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 assert(bz != NULL);
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     fdstat_enter(fd, FDSTAT_READ);
+/*@-modobserver@*/ /* FIX: is errcookie an observer? */
     rc = rpmbzRead(bz, buf, count, (const char **)&fd->errcookie);
+/*@=modobserver@*/
     if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-/*@-compdef@*/
 	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
-/*@=compdef@*/
     }
     return rc;
 }
@@ -410,7 +414,9 @@ assert(bz != NULL);
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     fdstat_enter(fd, FDSTAT_WRITE);
+/*@-modobserver@*/ /* FIX: is errcookie an observer? */
     rc = rpmbzWrite(bz, buf, count, (const char **)&fd->errcookie);
+/*@=modobserver@*/
     if (rc >= 0)
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
     return rc;
@@ -440,9 +446,9 @@ assert(bz != NULL);
 	return -2;
 
     fdstat_enter(fd, FDSTAT_CLOSE);
-    /*@-noeffectuncon@*/ /* FIX: check rc */
+/*@-modobserver@*/ /* FIX: is errcookie an observer? */
     rpmbzClose(bz, 0, (const char **)&fd->errcookie);
-    /*@=noeffectuncon@*/
+/*@=modobserver@*/
     rc = 0;	/* XXX FIXME */
 
     /* XXX TODO: preserve fd if errors */
