@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: bzdio: use the rpmbz container to carry around BZFILE *bzfile.
     - jbj: bzdio: add annotation for bzip2, add (unused) rpmbz container.
     - jbj: rpmz: add a modified version of rpmpigz (before merging with rpmz).
     - jbj: rpmz: add Fchown/Fchmod, attempt to preserve owner/perms/timestamp.

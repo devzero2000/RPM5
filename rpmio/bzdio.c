@@ -84,9 +84,22 @@ static int _bzdV = 1;
 /*@unchecked@*/
 static int _bzdW = 30;
 
-/* =============================================================== */
 
-/*@-moduncon@*/
+static rpmbz rpmbzFree(/*@only@*/ rpmbz bz)
+	/*@modifies bz @*/
+{
+    bz = _free(bz);
+    return NULL;
+}
+
+static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
+	/*@*/
+{
+    rpmbz bz = xcalloc(1, sizeof(*bz));
+    return bz;
+}
+
+/* =============================================================== */
 
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)
 	/*@*/
@@ -112,13 +125,15 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd;
-    BZFILE *bzfile;
+    rpmbz bz = rpmbzNew(path, fmode, -1);
     mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
 
-    if ((bzfile = BZ2_bzopen(path, fmode)) == NULL)
+    if ((bz->bzfile = BZ2_bzopen(path, fmode)) == NULL) {
+	bz = rpmbzFree(bz);
 	return NULL;
+    }
     fd = fdNew("open (bzdOpen)");
-    fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
+    fdPop(fd); fdPush(fd, bzdio, bz, -1);
     fdSetOpen(fd, path, -1, mode);
     return fdLink(fd, "bzdOpen");
 }
@@ -130,17 +145,19 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    int fdno;
-    BZFILE *bzfile;
+    int fdno = fdFileno(fd);
+    rpmbz bz;
 
     if (fmode == NULL) return NULL;
-    fdno = fdFileno(fd);
+    bz = rpmbzNew(NULL, fmode, fdno);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
-    if (fdno < 0) return NULL;
-    bzfile = BZ2_bzdopen(fdno, fmode);
-    if (bzfile == NULL) return NULL;
+    if (fdno < 0
+     || (bz->bzfile = BZ2_bzdopen(fdno, fmode)) == NULL) {
+	bz = rpmbzFree(bz);
+	return NULL;
+    }
 
-    fdPush(fd, bzdio, bzfile, fdno);		/* Push bzdio onto stack */
+    fdPush(fd, bzdio, bz, fdno);		/* Push bzdio onto stack */
 
     return fdLink(fd, "bzdFdopen");
 }
@@ -164,20 +181,20 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    BZFILE *bzfile;
+    rpmbz bz;
     ssize_t rc = 0;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
-    bzfile = bzdFileno(fd);
+    bz = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
-    if (bzfile)
+    if (bz->bzfile != NULL)
 	/*@-compdef@*/
-	rc = BZ2_bzread(bzfile, buf, (int)count);
+	rc = BZ2_bzread(bz->bzfile, buf, (int)count);
 	/*@=compdef@*/
     if (rc == -1) {
 	int zerror = 0;
-	if (bzfile)
-	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	if (bz->bzfile != NULL)
+	    fd->errcookie = BZ2_bzerror(bz->bzfile, &zerror);
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
@@ -195,19 +212,19 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    BZFILE *bzfile;
+    rpmbz bz;
     ssize_t rc;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
-    bzfile = bzdFileno(fd);
+    bz = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = BZ2_bzwrite(bzfile, (void *)buf, (int)count);
+    rc = BZ2_bzwrite(bz->bzfile, (void *)buf, (int)count);
     if (rc == -1) {
 	int zerror = 0;
-	fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	fd->errcookie = BZ2_bzerror(bz->bzfile, &zerror);
     } else if (rc > 0) {
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
     }
@@ -230,15 +247,19 @@ static int bzdClose( /*@only@*/ void * cookie)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    BZFILE *bzfile;
+    rpmbz bz;
     int rc;
 
-    bzfile = bzdFileno(fd);
+    bz = bzdFileno(fd);
 
-    if (bzfile == NULL) return -2;
+    if (bz->bzfile == NULL) {
+	bz = rpmbzFree(bz);
+	return -2;
+    }
     fdstat_enter(fd, FDSTAT_CLOSE);
     /*@-noeffectuncon@*/ /* FIX: check rc */
-    BZ2_bzclose(bzfile);
+    BZ2_bzclose(bz->bzfile);
+    bz->bzfile = NULL;
     /*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 
@@ -247,7 +268,7 @@ static int bzdClose( /*@only@*/ void * cookie)
     if (fd) {
 	if (rc == -1) {
 	    int zerror = 0;
-	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	    fd->errcookie = BZ2_bzerror(bz->bzfile, &zerror);
 	} else if (rc >= 0) {
 	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 	}
@@ -256,8 +277,10 @@ static int bzdClose( /*@only@*/ void * cookie)
 DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
-    if (rc == 0)
+    if (rc == 0) {
+	bz = rpmbzFree(bz);
 	fd = fdFree(fd, "open (bzdClose)");
+    }
     return rc;
 }
 
@@ -269,6 +292,5 @@ static struct FDIO_s bzdio_s = {
 
 FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 
-/*@=moduncon@*/
 #endif
 
