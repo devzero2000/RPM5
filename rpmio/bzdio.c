@@ -112,6 +112,7 @@ typedef	struct rpmbz_s {
     BZFILE *bzfile;	
     int bzerr;
     int omode;		/*!< open mode: O_RDONLY | O_WRONLY */
+/*@dependent@*/ /*@null@*/
     FILE * fp;		/*!< file pointer */
     int B;		/*!< blockSize100K (default: 9) */
     int S;		/*!< small (default: 0) */
@@ -143,9 +144,10 @@ static void rpmbzClose(rpmbz bz, int abort)
     bz->bzfile = NULL;
 }
 
-/*@only@*/
+/*@only@*/ /*@null@*/
 static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
-	/*@modifies bz @*/
+	/*@globals fileSystem @*/
+	/*@modifies bz, fileSystem @*/
 {
     rpmbzClose(bz, abort);
     if (bz->fp != NULL) {
@@ -158,7 +160,8 @@ static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
 
 /*@only@*/
 static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmbz bz;
     const char * s = fmode;
@@ -189,18 +192,18 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
     while ((c = *s++) != 0)
     switch (c) {
     case '.':
-	break;
+	/*@switchbreak@*/ break;
     case '+':
     case 'x':
     case 'm':
     case 'c':
     case 'b':
 	if (t < te) *t++ = c;
-	break;
+	/*@switchbreak@*/ break;
     default:
 	if (xisdigit(c))
 	    bz->B = c - (int)'0';
-	break;
+	/*@switchbreak@*/ break;
     }
     *t = '\0';
 
@@ -484,7 +487,9 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
 
     if (rc == 0) {
+/*@-dependenttrans@*/
 	bz = rpmbzFree(bz, 0);
+/*@=dependenttrans@*/
 	fd = fdFree(fd, "open (bzdClose)");
     }
     return rc;
