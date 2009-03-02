@@ -562,7 +562,7 @@ int mireStudy(miRE mire, int nmires)
 	if (mire->mode != RPMMIRE_PCRE)
 	    continue;
 #if defined(WITH_PCRE)
-	const char * error;
+      {	const char * error;
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[32];
@@ -571,6 +571,7 @@ int mireStudy(miRE mire, int nmires)
 		__progname, s, error);
 	    goto exit;
 	}
+      }
 #endif
     }
     rc = 0;

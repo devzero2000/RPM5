@@ -45,13 +45,15 @@ fprintf(stderr, "========== %s:\n%s", msg, buf);
 }
 
 static
-gcry_error_t rpmgcErr(rpmgc gc, const char * msg, gcry_error_t err)
+gcry_error_t rpmgcErr(/*@unused@*/rpmgc gc, const char * msg, gcry_error_t err)
 	/*@*/
 {
+/*@-evalorderuncon -modfilesys -moduncon @*/
     if (err) {
 	fprintf (stderr, "rpmgc: %s: %s/%s\n",
 		msg, gcry_strsource (err), gcry_strerror (err));
     }
+/*@=evalorderuncon =modfilesys =moduncon @*/
     return err;
 }
 
@@ -227,8 +229,8 @@ rpmgcDump("gc->pkey", gc->pkey);
 
 
 static
-int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies dig @*/
+int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
 {
     int rc = 1;		/* XXX always fail. */
     int xx;
@@ -242,7 +244,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 }
 
 static
-int rpmgcVerifyECDSA(pgpDig dig)
+int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
     int rc = 0;		/* XXX always fail. */
@@ -310,7 +312,7 @@ assert(0);
 	size_t nhex = 0;
 	err = rpmgcErr(gc, "MPI print",
 		gcry_mpi_aprint(GCRYMPI_FMT_HEX, &hex, &nhex, *mpip) );
-	fprintf(stderr, "*** %s\t%5d:%s\n", mpiname, nbits, hex);
+	fprintf(stderr, "*** %s\t%5d:%s\n", mpiname, (int)nbits, hex);
 	hex = _free(hex);
     }
 
@@ -384,7 +386,8 @@ static int rpmgc_initialized;
 
 static /*@null@*/
 void * rpmgcFree(/*@only@*/ void * impl)
-	/*@modifies impl @*/
+	/*@globals rpmgc_initialized @*/
+	/*@modifies impl, rpmgc_initialized @*/
 {
     rpmgc gc = impl;
 
@@ -405,7 +408,8 @@ void * rpmgcFree(/*@only@*/ void * impl)
 
 static
 void * rpmgcInit(void)
-	/*@*/
+	/*@globals rpmgc_initialized @*/
+	/*@modifies rpmgc_initialized @*/
 {
     rpmgc gc = xcalloc(1, sizeof(*gc));
 

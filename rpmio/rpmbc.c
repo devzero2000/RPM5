@@ -140,8 +140,8 @@ int rpmbcVerifyDSA(pgpDig dig)
 }
 
 static
-int rpmbcSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies dig @*/
+int rpmbcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
 {
     int rc = 1;		/* XXX always fail. */
     int xx;
@@ -155,7 +155,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 }
 
 static
-int rpmbcVerifyECDSA(pgpDig dig)
+int rpmbcVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
     int rc = 0;		/* XXX always fail. */

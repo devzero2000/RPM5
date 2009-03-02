@@ -200,7 +200,9 @@ void *rpmluaFree(rpmlua lua)
 	if (lua == globalLuaState) globalLuaState = NULL;
 	lua = _free(lua);
     }
+/*@-globstate@*/
     return NULL;
+/*@=globstate@*/
 }
 
 void rpmluaSetData(rpmlua _lua, const char *key, const void *data)

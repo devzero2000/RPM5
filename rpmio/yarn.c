@@ -38,7 +38,7 @@
 #include <errno.h>      /* ENOMEM, EAGAIN, EINVAL */
 
 #if defined(__LCLINT__)
-/*@-incondefs -protoparammatch@*/
+/*@-incondefs -protoparammatch -redecl @*/
 /*@-exportheader@*/
 #ifdef	NOTYET
 extern int __sigsetjmp (struct __jmp_buf_tag __env[1], int __savemask) __THROW
@@ -71,11 +71,11 @@ extern int pthread_attr_setdetachstate (pthread_attr_t *__attr,
 	/*@*/;
 
 extern int pthread_create(/*@out@*/ pthread_t *__restrict __newthread,
-		__const pthread_attr_t *__restrict __attr,
+		/*@null@*/ __const pthread_attr_t *__restrict __attr,
 		void *(*__start_routine)(void*),
 		void *__restrict arg) __THROW __nonnull ((1, 3))
 	/*@modifies *__newthread @*/;
-extern int pthread_join(pthread_t thread, /*@out@*/ void **value_ptr)
+extern int pthread_join(pthread_t thread, /*@null@*/ /*@out@*/ void **value_ptr)
 	/*@modifies *value_ptr @*/;
 
 extern int pthread_mutex_destroy(pthread_mutex_t *mutex)
@@ -98,7 +98,7 @@ extern int pthread_mutex_unlock(pthread_mutex_t *mutex)
 extern int pthread_cond_destroy(pthread_cond_t *cond)
 	/*@modifies *cond @*/;
 extern int pthread_cond_init(/*@out@*/ pthread_cond_t *restrict cond,
-		const pthread_condattr_t *restrict attr)
+		/*@null@*/ const pthread_condattr_t *restrict attr)
 	/*@globals errno, internalState @*/
 	/*@modifies *cond, errno, internalState @*/;
 
@@ -120,7 +120,7 @@ extern int pthread_cancel (pthread_t __th)
 	/*@*/;
 
 /*@=exportheader@*/
-/*@=incondefs =protoparammatch@*/
+/*@=incondefs =protoparammatch =redecl @*/
 #endif	/* __LCLINT__ */
 
 /* interface definition */
@@ -129,9 +129,9 @@ extern int pthread_cancel (pthread_t __th)
 /* error handling external globals, resettable by application */
 /*@unchecked@*/ /*@observer@*/
 const char *yarnPrefix = "yarn";
-/*@-nullassign@*/
+/*@-nullassign -redecl @*/
 void (*yarnAbort)(int) = NULL;
-/*@=nullassign@*/
+/*@=nullassign =redecl @*/
 
 
 /* immediately exit -- use for errors that shouldn't ever happen */
@@ -207,6 +207,7 @@ yarnLock yarnNewLock(long initial)
     return bolt;
 }
 
+/*@-mustmod@*/
 void yarnPossess(yarnLock bolt)
 {
     int ret;
@@ -222,6 +223,7 @@ void yarnRelease(yarnLock bolt)
     if ((ret = pthread_mutex_unlock(&(bolt->mutex))) != 0)
         fail(ret);
 }
+/*@=mustmod@*/
 
 void yarnTwist(yarnLock bolt, yarnTwistOP op, long val)
 {
@@ -238,11 +240,12 @@ void yarnTwist(yarnLock bolt, yarnTwistOP op, long val)
 
 #define until(a) while(!(a))
 
+/*@-mustmod@*/
 void yarnWaitFor(yarnLock bolt, yarnWaitOP op, long val)
 {
     int ret;
 
-/*@-infloops@*/		/* XXX splint can't see non-annotated effects */
+/*@-infloops -whileblock@*/	/* XXX splint can't see non-annotated effects */
     switch (op) {
     case TO_BE:
         until (bolt->value == val)
@@ -264,8 +267,9 @@ void yarnWaitFor(yarnLock bolt, yarnWaitOP op, long val)
             if ((ret = pthread_cond_wait(&(bolt->cond), &(bolt->mutex))) != 0)
                 fail(ret);
     }
-/*@=infloops@*/
+/*@=infloops =whileblock@*/
 }
+/*@=mustmod@*/
 
 long yarnPeekLock(yarnLock bolt)
 {
@@ -310,7 +314,7 @@ struct capsule {
 };
 
 /* mark the calling thread as done and alert yarnJoinAll() */
-static void yarnReenter(void * dummy)
+static void yarnReenter(/*@unused@*/ void * dummy)
 	/*@globals threads, threads_lock, fileSystem, internalState @*/
 	/*@modifies threads, threads_lock, fileSystem, internalState @*/
 {
@@ -353,9 +357,9 @@ static void * yarnIgnition(/*@only@*/ void * arg)
     struct capsule *capsule = arg;
 
     /* run yarnReenter() before leaving */
-/*@-moduncon -noeffectuncon @*/
+/*@-moduncon -noeffectuncon -sysunrecog @*/
     pthread_cleanup_push(yarnReenter, NULL);
-/*@=moduncon =noeffectuncon @*/
+/*@=moduncon =noeffectuncon =sysunrecog @*/
 
     /* execute the requested function with argument */
 /*@-noeffectuncon@*/
@@ -387,11 +391,11 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
        (allocated instead of automatic so that we're sure this will still be
        there when yarnIgnition() actually starts up -- yarnIgnition() will free this
        allocation) */
-    capsule = my_malloc(sizeof(struct capsule));
+    capsule = my_malloc(sizeof(*capsule));
     capsule->probe = probe;
-/*@-mustfreeonly@*/
+/*@-mustfreeonly -temptrans @*/
     capsule->payload = payload;
-/*@=mustfreeonly@*/
+/*@=mustfreeonly =temptrans @*/
 
     /* assure this thread is in the list before yarnJoinAll() or yarnIgnition() looks
        for it */
@@ -410,9 +414,9 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
     th->next = threads;
     threads = th;
     yarnRelease(&(threads_lock));
-/*@-dependenttrans -globstate -mustfreefresh @*/ /* XXX what frees capsule?!? */
+/*@-dependenttrans -globstate -mustfreefresh -retalias @*/ /* XXX what frees capsule?!? */
     return th;
-/*@=dependenttrans =globstate =mustfreefresh @*/
+/*@=dependenttrans =globstate =mustfreefresh =retalias @*/
 }
 
 yarnThread yarnJoin(yarnThread ally)
@@ -473,7 +477,7 @@ int yarnJoinAll(void)
         prior = &(threads);
         while ((match = *prior) != NULL) {
             if (match->done)
-                break;
+                /*@innerbreak@*/ break;
             prior = &(match->next);
         }
         if (match == NULL)
@@ -504,5 +508,5 @@ void yarnDestruct(yarnThread off_course)
 
     if ((ret = pthread_cancel(off_course->id)) != 0)
         fail(ret);
-    yarnJoin(off_course);
+    (void) yarnJoin(off_course);
 }

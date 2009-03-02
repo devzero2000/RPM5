@@ -50,8 +50,10 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
+/*@-modfilesys@*/
 static
 void hexdump(const char * msg, unsigned char * b, size_t blen)
+	/*@*/
 {
     static const char hex[] = "0123456789abcdef";
 
@@ -67,6 +69,7 @@ void hexdump(const char * msg, unsigned char * b, size_t blen)
     fprintf(stderr, "\n");
     return;
 }
+/*@=modfilesys@*/
 
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -101,8 +104,10 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = BN_hex2bn(&ssl->rsahm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
+/*@-modfilesys@*/
 if (_pgp_debug < 0) fprintf(stderr, "*** rsahm: %s\n", hexstr);
     hexstr = _free(hexstr);
+/*@=modfilesys@*/
 
     /* Compare leading 16 bits of digest for quick check. */
     s = dig->md5;
@@ -116,18 +121,24 @@ if (_pgp_debug < 0) fprintf(stderr, "*** rsahm: %s\n", hexstr);
 static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t maxn)
 {
     unsigned char * t = xcalloc(1, maxn);
-/*@-moduncon@*/
+/*@-modunconnomods@*/
     size_t nt = BN_bn2bin(s, t);
-/*@=moduncon@*/
+/*@=modunconnomods@*/
 
     if (nt < maxn) {
 	size_t pad = (maxn - nt);
+/*@-modfilesys@*/
 if (_pgp_debug < 0) fprintf(stderr, "\tmemmove(%p, %p, %u)\n", t+pad, t, (unsigned)nt);
+/*@=modfilesys@*/
 	memmove(t+pad, t, nt);
+/*@-modfilesys@*/
 if (_pgp_debug < 0) fprintf(stderr, "\tmemset(%p, 0, %u)\n", t, (unsigned)pad);
+/*@=modfilesys@*/
 	memset(t, 0, pad);
     }
+/*@-modfilesys@*/
 if (_pgp_debug < 0) hexdump(msg, t, maxn);
+/*@=modfilesys@*/
     return t;
 }
 
@@ -169,12 +180,16 @@ int rpmsslVerifyRSA(pgpDig dig)
 	if (hm[i] == 0xff)
 	    continue;
 	i++;
+/*@-modfilesys@*/
 if (_pgp_debug < 0) hexdump("HM", hm + i, (maxn - i));
+/*@=modfilesys@*/
 	break;
     }
 
+/*@-modfilesys@*/
 if (_pgp_debug < 0) hexdump("HM", hm + (maxn - nb), nb);
 if (_pgp_debug < 0) hexdump(" C",  c, nb);
+/*@=modfilesys@*/
 
     rc = ((maxn - i) == nb && (xx = memcmp(hm+i, c, nb)) == 0);
 
@@ -215,8 +230,8 @@ int rpmsslVerifyDSA(pgpDig dig)
 
 
 static
-int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies dig @*/
+int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
 {
     int rc = 1;		/* XXX always fail. */
     int xx;
@@ -230,7 +245,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 }
 
 static
-int rpmsslVerifyECDSA(pgpDig dig)
+int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
     int rc = 0;		/* XXX always fail. */

@@ -123,7 +123,7 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fdno, int
 	    ret = lzma_easy_encoder(&xzfile->strm, level, LZMA_CHECK_CRC32);
 	} else {
 	    lzma_options_lzma options;
-	    lzma_lzma_preset(&options, level);
+	    (void) lzma_lzma_preset(&options, level);
 	    ret = lzma_alone_encoder(&xzfile->strm, &options);
 	}
 #endif

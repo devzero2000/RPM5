@@ -51,7 +51,7 @@ struct DIGEST_CTX_s {
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
     pgpHashAlgo hashalgo;	/*!< RFC 2440/4880 hash algorithm id. */
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */
-/*@null@*/
+/*@observer@*/ /*@null@*/
     const char * asn1;		/*!< RFC 3447 ASN1 oid string (in hex). */
     void * param;		/*!< Digest parameters. */
 };
