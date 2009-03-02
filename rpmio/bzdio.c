@@ -87,28 +87,7 @@ BZ_EXTERN void BZ_API(BZ2_bzWriteClose) (
    )
 	/*@modifies *bzerror, b, *nbytes_in, *nbytes_out @*/;
 
-BZ_EXTERN int BZ_API(BZ2_bzread) (
-      BZFILE* b,
-   /*@out@*/
-      void* buf,
-      int len
-   )
-	/*@modifies b, *buf @*/;
-
-BZ_EXTERN int BZ_API(BZ2_bzwrite) (
-      BZFILE* b,
-      void*   buf,
-      int     len
-   )
-	/*@modifies b @*/;
-
 BZ_EXTERN int BZ_API(BZ2_bzflush) (
-      BZFILE* b
-   )
-	/*@modifies b @*/;
-
-BZ_EXTERN void BZ_API(BZ2_bzclose) (
-   /*@only@*/
       BZFILE* b
    )
 	/*@modifies b @*/;
@@ -155,15 +134,11 @@ static void rpmbzClose(rpmbz bz, int abort)
 	/*@modifies bz @*/
 {
     if (bz->bzfile != NULL) {
-#ifdef	NOTYET
 	if (bz->omode == O_RDONLY)
 	    BZ2_bzReadClose(&bz->bzerr, bz->bzfile);
 	else
 	    BZ2_bzWriteClose(&bz->bzerr, bz->bzfile, abort,
 		&bz->nbytes_in, &bz->nbytes_out);
-#else
-	BZ2_bzclose(bz->bzfile);
-#endif
     }
     bz->bzfile = NULL;
 }
@@ -192,11 +167,7 @@ static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
     char *te = t + sizeof(stdio) - 2;
     int c;
 
-#ifdef	NOTYET
-assert(fmode != NULL);
-#else
-    if (fmode == NULL)	return NULL;
-#endif
+assert(fmode != NULL);		/* XXX return NULL instead? */
     bz = xcalloc(1, sizeof(*bz));
     bz->B = _bzdB;
     bz->S = _bzdS;
@@ -234,23 +205,15 @@ assert(fmode != NULL);
     *t = '\0';
 
     if (fdno >= 0) {
-#ifdef	NOTYET
 	if ((bz->fp = fdopen(fdno, stdio)) != NULL)
 	    bz->bzfile = (bz->omode == O_RDONLY)
 		? BZ2_bzReadOpen(&bz->bzerr, bz->fp, bz->V, bz->S, NULL, 0)
 		: BZ2_bzWriteOpen(&bz->bzerr, bz->fp, bz->B, bz->V, bz->W);
-#else
-	bz->bzfile = BZ2_bzdopen(fdno, fmode);
-#endif
     } else if (path != NULL) {
-#ifdef	NOTYET
 	if ((bz->fp = fopen(path, stdio)) != NULL)
 	    bz->bzfile = (bz->omode == O_RDONLY)
 		? BZ2_bzReadOpen(&bz->bzerr, bz->fp, bz->V, bz->S, NULL, 0)
 		: BZ2_bzWriteOpen(&bz->bzerr, bz->fp, bz->B, bz->V, bz->W);
-#else
-	bz->bzfile = BZ2_bzopen(path, fmode);
-#endif
     }
 
     return (bz->bzfile != NULL ? bz : rpmbzFree(bz, 0));
@@ -345,7 +308,6 @@ assert(bz != NULL);
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     fdstat_enter(fd, FDSTAT_READ);
     if (bz->bzfile != NULL) {
-#ifdef	NOTYET
 	rc = BZ2_bzRead(&bz->bzerr, bz->bzfile, buf, (int)count);
 	switch (bz->bzerr) {
 	case BZ_STREAM_END: {
@@ -367,15 +329,11 @@ assert(bz != NULL);
 	case BZ_OK:
 	    break;
 	default:
+	    rc = -1;	/* XXX just in case. */
 	    fd->errcookie = BZ2_bzerror(bz->bzfile, &bz->bzerr);
 	    rpmbzClose(bz, 1);
 	    break;
 	}
-#else
-	rc = BZ2_bzread(bz->bzfile, buf, (int)count);
-	if (rc == -1 && bz->bzfile != NULL)
-	    fd->errcookie = BZ2_bzerror(bz->bzfile, &bz->bzerr);
-#endif
     }
     if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
@@ -403,7 +361,6 @@ assert(bz != NULL);
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     fdstat_enter(fd, FDSTAT_WRITE);
-#ifdef	NOTYET
     BZ2_bzWrite(&bz->bzerr, bz->bzfile, (void *)buf, (int)count);
     switch (bz->bzerr) {
     case BZ_OK:
@@ -415,12 +372,6 @@ assert(bz != NULL);
 	rpmbzClose(bz, 1);
 	break;
     }
-#else
-    rc = BZ2_bzwrite(bz->bzfile, (void *)buf, (int)count);
-    if (rc == -1)
-	fd->errcookie = BZ2_bzerror(bz->bzfile, &bz->bzerr);
-    else
-#endif
     if (rc >= 0)
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
     return rc;

@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: bzdio: take out the rubbish.
     - jbj: bzdio: stage the multi-block BZIP2 payload code for debugging.
     - jbj: bzdio: populate rpmbz with all but bz->fp, rearrange code to taste.
     - jbj: bzdio: use the rpmbz container to carry around BZFILE *bzfile.
