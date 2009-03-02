@@ -263,6 +263,7 @@ assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
     }
     return rc;
 }
+#endif	/* NOTYET */
 
 static ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
@@ -283,7 +284,6 @@ assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
     }
     return rc;
 }
-#endif	/* NOTYET */
 
 /* =============================================================== */
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)
@@ -426,19 +426,11 @@ assert(bz != NULL);
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     fdstat_enter(fd, FDSTAT_WRITE);
-    BZ2_bzWrite(&bz->bzerr, bz->bzfile, (void *)buf, (int)count);
-    switch (bz->bzerr) {
-    case BZ_OK:
-	rc = count;
-	break;
-    default:
-	rc = -1;
-	fd->errcookie = rpmbzStrerror(bz);
-	rpmbzClose(bz, 1);
-	break;
-    }
+    rc = rpmbzWrite(bz, buf, count);
     if (rc >= 0)
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
+    else
+	fd->errcookie = rpmbzStrerror(bz);
     return rc;
 }
 /*@=globuse@*/
