@@ -1787,6 +1787,9 @@ assert(psm != NULL);
 			/*@innerbreak@*/ break;
 		    }
 		    if (rpmteFd(p) != NULL) gotfd = 1;
+		} else {
+		    ourrc++;
+		    xx = markLinkedFailed(ts, p);
 		}
 	    }
 	    /*@=type@*/
