@@ -36,6 +36,7 @@ LIBRPMIO_0
     avmagicdir;
     avOpendir;
     avReaddir;
+    bzio;
     bzdio;
     Chdir;
     _Chdir;

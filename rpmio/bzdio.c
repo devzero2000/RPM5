@@ -300,6 +300,51 @@ assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
     return rc;
 }
 
+static int rpmbzSeek(/*@unused@*/ void * _bz, /*@unused@*/ _libio_pos_t pos,
+			/*@unused@*/ int whence)
+	/*@*/
+{
+    return -2;
+}
+
+static /*@null@*/ rpmbz rpmbzOpen(const char * path, const char * fmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    return  rpmbzNew(path, fmode, -1);
+}
+
+static /*@null@*/ rpmbz rpmbzFdopen(void * _fdno, const char * fmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    int fdno = (int)_fdno;	/* XXX hack */
+    return  rpmbzNew(NULL, fmode, fdno);
+}
+
+static int rpmbzFlush(void * _bz)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    rpmbz bz = _bz;
+    return BZ2_bzflush(bz->bzfile);
+}
+
+/* XXX HACK: args are rpmbz, not a FD_t, etc. likely should do a FIO_t? */
+/*@-type@*/ /* LCL: function typedefs */
+static struct FDIO_s bzio_s = {
+    (fdio_read_function_t)	rpmbzRead,
+    (fdio_write_function_t)	rpmbzWrite,
+    (fdio_seek_function_t)	rpmbzSeek,
+    (fdio_close_function_t)	rpmbzClose,
+    (fdio_fopen_function_t)	rpmbzOpen,
+    (fdio_fdopen_function_t)	rpmbzFdopen,
+    (fdio_flush_function_t)	rpmbzFlush,
+};
+/*@=type@*/
+
+FDIO_t bzio = /*@-compmempass@*/ &bzio_s /*@=compmempass@*/ ;
+
 /* =============================================================== */
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)
 	/*@*/
@@ -325,7 +370,7 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd;
-    rpmbz bz = rpmbzNew(path, fmode, -1);
+    rpmbz bz = rpmbzOpen(path, fmode);
 
     if (bz == NULL)
 	return NULL;
@@ -347,7 +392,7 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
-    rpmbz bz = rpmbzNew(NULL, fmode, fdno);
+    rpmbz bz = rpmbzFdopen((void *)fdno, fmode);
 
     if (bz == NULL)
 	return NULL;
@@ -367,13 +412,11 @@ static int bzdFlush(void * cookie)
 	/*@modifies fileSystem @*/
 {
     FD_t fd = c2f(cookie);
-    int rc;
-    rc = BZ2_bzflush(bzdFileno(fd));
-    return rc;
+    rpmbz bz = bzdFileno(fd);
+    return rpmbzFlush(bz);
 }
 /*@=globuse@*/
 
-/* =============================================================== */
 /*@-globuse@*/
 /*@-mustmod@*/		/* LCL: *buf is modified */
 static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
@@ -423,14 +466,15 @@ assert(bz != NULL);
 }
 /*@=globuse@*/
 
-static inline int bzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
-			/*@unused@*/ int whence)
+static int bzdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@*/
 {
     FD_t fd = c2f(cookie);
+    rpmbz bz = bzdFileno(fd);
 
+assert(bz != NULL);
     BZDONLY(fd);
-    return -2;
+    return rpmbzSeek(bz, pos, whence);
 }
 
 static int bzdClose( /*@only@*/ void * cookie)
@@ -442,8 +486,10 @@ static int bzdClose( /*@only@*/ void * cookie)
     int rc;
 
 assert(bz != NULL);
+#ifdef	DYING
     if (bz->bzfile == NULL)	/* XXX memory leak w errors? */
 	return -2;
+#endif
 
     fdstat_enter(fd, FDSTAT_CLOSE);
 /*@-modobserver@*/ /* FIX: is errcookie an observer? */
