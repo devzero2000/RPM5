@@ -419,6 +419,11 @@ LIBRPMIO_0
     rpmxarSwapBuf;
     XrpmxarUnlink;
     rpmuuidMake;
+    rpmzLogAdd;
+    rpmzLogDump;
+    rpmzLogFree;
+    rpmzLogInit;
+    rpmzMsgShow;
     Stat;
     _Stat;
     Symlink;

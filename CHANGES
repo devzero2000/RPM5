@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmz: carve out an opaque trace logging subsystem from pigz.
     - glen: markLinkedFailed if rpm file reopen failed during transaction to avoid losing old pkg info from db
     - jbj: bzdio: finish abstraction between FD_t <-> rpmbz methods.
     - jbj: bzdio: stub-in an abstraction between FD_t <-> rpmbz methods.

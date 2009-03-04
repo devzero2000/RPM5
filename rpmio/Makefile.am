@@ -66,7 +66,7 @@ noinst_HEADERS = \
 	poptIO.h rpmbc.h rpmdav.h \
 	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
-	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h \
+	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzlog.h \
 	tar.h ugid.h yarn.h
 
 usrlibdir = $(libdir)
@@ -79,7 +79,7 @@ librpmio_la_SOURCES = \
 	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmkeyring.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
-	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c \
+	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c rpmzlog.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
