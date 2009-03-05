@@ -9,9 +9,9 @@
 #include <rpmmacro.h>
 #include <argv.h>
 #include <keyutils.h>
+#endif
 #define _RPMPGP_INTERNAL
 #include <rpmpgp.h>
-#endif
 #include <rpmku.h>
 
 #include "debug.h"
