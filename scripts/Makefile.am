@@ -44,7 +44,7 @@ pkglib_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files cross-build executabledeps.sh hrmib-cache \
+	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
 	find-requires.perl getpo.sh http.req \
