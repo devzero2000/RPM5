@@ -37,6 +37,7 @@
  */
 
 #include "system.h"
+#include <stdarg.h>
 
 #include <rpmiotypes.h>
 #include "yarn.h"
