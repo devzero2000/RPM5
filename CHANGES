@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: update po files (Translation Project).
     - jbj: yarn: lobotomize yarn.c conditioned on HAVE_PTHREAD_H.
     - jbj: rpmz: toss the pbzip2 carcass into the compression cassoulet ...
     - rse: upgrade devtool environment to: GNU m4 1.4.12, Perl 5.10.0, OpenSSL 0.9.8j, NEON 0.28.4, SQLite 3.6.11, File 5.00
