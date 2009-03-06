@@ -1823,6 +1823,7 @@ static int repoDoFinalMove(rpmrepo repo)
 
 /*==============================================================*/
 
+#if 0
 #if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
 #define	POPT_READFILE_TRIMNEWLINES	1
 /**
@@ -1902,6 +1903,7 @@ exit:
 /*@=compdef =nullstate @*/
 }
 #endif /* !defined(POPT_READFILE_TRIMNEWLINES) */
+#endif
 
 #if !defined(POPT_ARG_ARGV)		/* XXX popt < 1.14 */
 /**
