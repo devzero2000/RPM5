@@ -1099,13 +1099,6 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [], [])
 
-# --with-xz option was formerly known as --with-lzma
-if test ".${with_xz+set}" != .set; then
-  if test "${with_lzma+set}" = set; then
-    with_xz=$with_lzma
-  fi
-fi
-
 dnl # libLZMA
 WITH_XZ_INTERNAL=false
 RPM_CHECK_LIB(

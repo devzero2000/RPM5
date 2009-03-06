@@ -1,5 +1,7 @@
 
 5.2a2 -> 5.2a3:
+    - rse: finally switch devtool from LZMA to XZ, too.
+    - rse: remove ugly --with-lzma to --with-xz hack (really not needed)
     - rse: cleanup a few recently introduced compile-time warnings
     - jbj: rpmz: add attribution and debugging to rpmzq.
     - jbj: rpmz: carve out job queue and buffer pool management from pigz.

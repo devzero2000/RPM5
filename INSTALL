@@ -83,7 +83,7 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 GNU zip         optional  -       -       http://www.gzip.org/
 Bzip2           optional  -       -       http://www.bzip.org/
-LZMA Utils      optional  -       -       http://tukaani.org/lzma/
+XZ              optional  -       -       http://tukaani.org/xz/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
