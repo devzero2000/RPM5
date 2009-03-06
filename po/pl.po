@@ -5,16 +5,16 @@
 # Wojciech Drapiñski <wojciech.drapinski@zie.pg.gda.pl>, 1999.
 # Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>, 1999
 # Arkadiusz Mi¶kiewicz <arekm@pld-linux.org>, 2004, 2006.
-# Jakub Bogusz <qboosh@pld-linux.org>, 2002-2008.
+# Jakub Bogusz <qboosh@pld-linux.org>, 2002-2009.
 #
 # Pre-translation has bean done using PePeSza v0.7
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 5.1.5pre1\n"
+"Project-Id-Version: rpm 5.1.6\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-01-17 13:11-0500\n"
-"PO-Revision-Date: 2008-09-29 21:43+0200\n"
+"POT-Creation-Date: 2009-03-06 17:20-0500\n"
+"PO-Revision-Date: 2009-03-04 16:01+0100\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -699,7 +699,7 @@ msgstr "Nie mo¿na ponownie odczytaæ nag³ówka podpisu.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/pack.c:806 lib/psm.c:2317
+#: build/pack.c:806 lib/psm.c:2270
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s\n"
@@ -719,7 +719,7 @@ msgstr "Nie mo¿na odczytaæ danych z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 
-#: build/pack.c:915 lib/psm.c:2632
+#: build/pack.c:915 lib/psm.c:2589
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1323,9 +1323,9 @@ msgid "Query specfile for platform(s): %s\n"
 msgstr "Odpytywanie pliku spec dla platform(y): %s\n"
 
 #: lib/depends.c:600
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is intended for a %s platform\n"
-msgstr "pakiet %s jest przeznaczony dla platformy %s"
+msgstr "pakiet %s jest przeznaczony dla platformy %s\n"
 
 #: lib/depends.c:675
 #, c-format
@@ -2056,14 +2056,12 @@ msgid "query/verify the package(s) which provide a dependency"
 msgstr "odpytaj/sprawd¼ pakiet(y) udostêpniaj±ce zasób"
 
 #: lib/poptQV.c:174
-#, fuzzy
 msgid "query/verify the package(s) which conflict with a dependency"
-msgstr "odpytaj/sprawd¼ pakiet(y) udostêpniaj±ce zasób"
+msgstr "odpytaj/sprawd¼ pakiet(y) bêd±ce w konflikcie z zale¿no¶ci±"
 
 #: lib/poptQV.c:176
-#, fuzzy
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr "odpytaj/sprawd¼ pakiet(y) wymagaj±ce zasobu"
+msgstr "odpytaj/sprawd¼ pakiet(y) zastêpuj±ce zale¿no¶æ"
 
 #: lib/poptQV.c:179
 msgid "create transaction set"
@@ -2218,63 +2216,63 @@ msgstr "ustaw ostateczne zaufanie przy importowaniu kluczy publicznych"
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "wy³±cz ostateczne zaufanie przy importowaniu kluczy publicznych"
 
-#: lib/psm.c:235
+#: lib/psm.c:188
 msgid "source package expected, binary found\n"
 msgstr "spodziewany pakiet ¼ród³owy, a napotkano binarny\n"
 
-#: lib/psm.c:342 lib/psm.c:358
+#: lib/psm.c:295 lib/psm.c:311
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nie mo¿na zapisaæ do %%%s %s\n"
 
-#: lib/psm.c:394
+#: lib/psm.c:347
 msgid "source package contains no .spec file\n"
 msgstr "pakiet ¼ród³owy nie zawiera pliku .spec\n"
 
-#: lib/psm.c:964 lib/rpmfc.c:106
+#: lib/psm.c:917 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nie mo¿na wykonaæ fork na %s: %s\n"
 
-#: lib/psm.c:975
+#: lib/psm.c:928
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s) skryptlet nie powiód³ siê, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:938
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s) skryptlet nie powiód³ siê, sygna³ %d\n"
 
-#: lib/psm.c:991
+#: lib/psm.c:944
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) skryptlet nie powiód³ siê, status wyj¶cia %d\n"
 
-#: lib/psm.c:2209
+#: lib/psm.c:2162
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: skrypt %s nie powiód³ siê (%d), pomijanie %s\n"
 
-#: lib/psm.c:2330
+#: lib/psm.c:2283
 msgid "Unable to reload signature header\n"
 msgstr "Nie mo¿na ponownie odczytaæ nag³ówka podpisu\n"
 
-#: lib/psm.c:2457
+#: lib/psm.c:2414
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê%s%s: %s\n"
 
-#: lib/psm.c:2458
+#: lib/psm.c:2415
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:2641
+#: lib/psm.c:2598
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 
-#: lib/psm.c:2644
+#: lib/psm.c:2601
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
@@ -2322,9 +2320,9 @@ msgid "package without owner/group tags\n"
 msgstr "pakiet bez etykiet w³a¶cicieli/grup plików\n"
 
 #: lib/query.c:481
-#, fuzzy, c-format
+#, c-format
 msgid "key \"%s\" not found in %s table\n"
-msgstr "pakiet %s nie jest zainstalowany\n"
+msgstr "klucz \"%s\" nie zosta³ znaleziony w tabeli %s\n"
 
 #: lib/query.c:514
 #, c-format
@@ -2900,12 +2898,12 @@ msgstr "Wycofanie do %-24.24s (0x%08x)\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr "B³êdna liczba elementów transakcji.\n"
 
-#: lib/verify.c:303
+#: lib/verify.c:304
 #, c-format
 msgid "missing   %c %s"
 msgstr "brak      %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:434
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespe³nione zale¿no¶ci dla %s:\n"
@@ -3356,9 +3354,9 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: uszkodzony nag³ówek #%u odtworzony -- pomijanie.\n"
 
 #: rpmdb/rpmdb.c:2863
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) getting keys from %s index\n"
-msgstr "b³±d(%d) podczas pobierania rekordów z indeksu %s\n"
+msgstr "b³±d(%d) podczas pobierania kluczy z indeksu %s\n"
 
 #: rpmdb/rpmdb.c:2908
 #, c-format
@@ -4768,7 +4766,7 @@ msgid " (%s not created: user not specified)"
 msgstr " (%s nie utworzony: u¿ytkownik nie okre¶lony)"
 
 #: tools/rpmmtree.c:3297
-#, fuzzy, c-format
+#, c-format
 msgid " (%s not created: group not specified))"
 msgstr " (%s nie utworzony: grupa nie okre¶lona)"
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-01-17 13:11-0500\n"
+"POT-Creation-Date: 2009-03-06 17:20-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -720,7 +720,7 @@ msgstr "Incapable de recharger l'en-tête de signature.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Ne peut ouvrir %s: %s\n"
 
-#: build/pack.c:806 lib/psm.c:2317
+#: build/pack.c:806 lib/psm.c:2270
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Incapable de produire le package: %s\n"
@@ -740,7 +740,7 @@ msgstr "Incapable de lire la charge à partir de %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Incapable d'écrire la charge vers %s: %s\n"
 
-#: build/pack.c:915 lib/psm.c:2632
+#: build/pack.c:915 lib/psm.c:2589
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "A écrit: %s\n"
@@ -2307,63 +2307,63 @@ msgstr ""
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:235
+#: lib/psm.c:188
 msgid "source package expected, binary found\n"
 msgstr "source du package attendu, binaire obtenu\n"
 
-#: lib/psm.c:342 lib/psm.c:358
+#: lib/psm.c:295 lib/psm.c:311
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "ne peut écrire vers %%%s %s\n"
 
-#: lib/psm.c:394
+#: lib/psm.c:347
 msgid "source package contains no .spec file\n"
 msgstr "source du package ne contient pas de fichier .spec\n"
 
-#: lib/psm.c:964 lib/rpmfc.c:106
+#: lib/psm.c:917 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Ne peut lancer dupliquer le processur par fork() %s: %s\n"
 
-#: lib/psm.c:975
+#: lib/psm.c:928
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:938
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, état de fin d'exécution %d\n"
 
-#: lib/psm.c:991
+#: lib/psm.c:944
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, état de fin d'exécution %d\n"
 
-#: lib/psm.c:2209
+#: lib/psm.c:2162
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s scriptlet a échoué (%d), escamotage de %s\n"
 
-#: lib/psm.c:2330
+#: lib/psm.c:2283
 msgid "Unable to reload signature header\n"
 msgstr "incapable de recharger l'en-tête de signature\n"
 
-#: lib/psm.c:2457
+#: lib/psm.c:2414
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "le dépaquetage de l'archive a échoué %s%s:%s\n"
 
-#: lib/psm.c:2458
+#: lib/psm.c:2415
 msgid " on file "
 msgstr " sur le fichier"
 
-#: lib/psm.c:2641
+#: lib/psm.c:2598
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s a échoue sur le fichier %s: %s\n"
 
-#: lib/psm.c:2644
+#: lib/psm.c:2601
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s a échoué: %s\n"
@@ -3011,12 +3011,12 @@ msgstr "rollback de packages (+%d/-%d) à %-24.24s (0x%08x):\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:303
+#: lib/verify.c:304
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manquant  %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:434
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dépendances non satisfaites pour %s: "

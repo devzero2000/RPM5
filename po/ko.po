@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-01-17 13:11-0500\n"
+"POT-Creation-Date: 2009-03-06 17:20-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -687,7 +687,7 @@ msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:806 lib/psm.c:2317
+#: build/pack.c:806 lib/psm.c:2270
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
@@ -707,7 +707,7 @@ msgstr "%s의 payload를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:915 lib/psm.c:2632
+#: build/pack.c:915 lib/psm.c:2589
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -2275,70 +2275,70 @@ msgstr ""
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:235
+#: lib/psm.c:188
 msgid "source package expected, binary found\n"
 msgstr "소스 패키지가 필요하며, 바이너리가 검색되었습니다\n"
 
-#: lib/psm.c:342 lib/psm.c:358
+#: lib/psm.c:295 lib/psm.c:311
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s %s(을)를 작성할 수 없습니다\n"
 
-#: lib/psm.c:394
+#: lib/psm.c:347
 msgid "source package contains no .spec file\n"
 msgstr "소스 패키지에 .spec 파일이 포함되어 있지 않습니다\n"
 
-#: lib/psm.c:964 lib/rpmfc.c:106
+#: lib/psm.c:917 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s(을)를 fork 할 수 없음: %s\n"
 
-#: lib/psm.c:975
+#: lib/psm.c:928
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 "%s: %s 스크립틀릿(scriptlet)이 실패했습니다 (%d), %s-%s-%s(을)를 생략합니다\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:938
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr ""
 "%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
 "$d\n"
 
-#: lib/psm.c:991
+#: lib/psm.c:944
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr ""
 "%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
 "$d\n"
 
-#: lib/psm.c:2209
+#: lib/psm.c:2162
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 "%s: %s 스크립틀릿(scriptlet)이 실패했습니다 (%d), %s-%s-%s(을)를 생략합니다\n"
 
-#: lib/psm.c:2330
+#: lib/psm.c:2283
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 
-#: lib/psm.c:2457
+#: lib/psm.c:2414
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: lib/psm.c:2458
+#: lib/psm.c:2415
 msgid " on file "
 msgstr " 다음 파일의 "
 
-#: lib/psm.c:2641
+#: lib/psm.c:2598
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 
-#: lib/psm.c:2644
+#: lib/psm.c:2601
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
@@ -2983,12 +2983,12 @@ msgstr ""
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:303
+#: lib/verify.c:304
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "다음을 찾을 수 없음    %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:434
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s에 의존성 문제 발생: "

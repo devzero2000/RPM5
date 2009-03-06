@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-01-17 13:11-0500\n"
+"POT-Creation-Date: 2009-03-06 17:20-0500\n"
 "PO-Revision-Date: 2004-09-20 16:01+0530\n"
 "Last-Translator: Amanpreet Singh Alam <aalam@redhat.com>\n"
 "Language-Team: Punjabi <fedora-trans-pa@redhat.com>\n"
@@ -681,7 +681,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:806 lib/psm.c:2317
+#: build/pack.c:806 lib/psm.c:2270
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -701,7 +701,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:915 lib/psm.c:2632
+#: build/pack.c:915 lib/psm.c:2589
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2189,63 +2189,63 @@ msgstr ""
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:235
+#: lib/psm.c:188
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:342 lib/psm.c:358
+#: lib/psm.c:295 lib/psm.c:311
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:394
+#: lib/psm.c:347
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:964 lib/rpmfc.c:106
+#: lib/psm.c:917 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:975
+#: lib/psm.c:928
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:985
+#: lib/psm.c:938
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/psm.c:991
+#: lib/psm.c:944
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:2209
+#: lib/psm.c:2162
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2330
+#: lib/psm.c:2283
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:2457
+#: lib/psm.c:2414
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2458
+#: lib/psm.c:2415
 msgid " on file "
 msgstr " ਫਾਇਲ਼ ਤੇ"
 
-#: lib/psm.c:2641
+#: lib/psm.c:2598
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2644
+#: lib/psm.c:2601
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2867,12 +2867,12 @@ msgstr ""
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:303
+#: lib/verify.c:304
 #, c-format
 msgid "missing   %c %s"
 msgstr ""
 
-#: lib/verify.c:433
+#: lib/verify.c:434
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "ਨਿਰਭਰਤਾ ਅਸਫਲ:\n"

@@ -1,14 +1,14 @@
 # Translation of `rpm' messages to Indonesian.
 # Copyright (C) 2008 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rpm package.
-# Arif E. Nugroho <arif_endro@yahoo.com>, 2008.
+# Arif E. Nugroho <arif_endro@yahoo.com>, 2008, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 5.1.5pre1\n"
+"Project-Id-Version: rpm 5.1.6\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-01-17 13:11-0500\n"
-"PO-Revision-Date: 2008-09-27 09:46+0700\n"
+"POT-Creation-Date: 2009-03-06 17:20-0500\n"
+"PO-Revision-Date: 2009-03-06 13:00+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -697,7 +697,7 @@ msgstr "Tidak dapat mereload signature header.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: build/pack.c:806 lib/psm.c:2317
+#: build/pack.c:806 lib/psm.c:2270
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Tidak dapat menulis package: %s\n"
@@ -717,7 +717,7 @@ msgstr "Tidak dapat membaca payload dari %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Tidak dapat menulis payload untuk %s: %s\n"
 
-#: build/pack.c:915 lib/psm.c:2632
+#: build/pack.c:915 lib/psm.c:2589
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Menulis: %s\n"
@@ -1326,19 +1326,19 @@ msgid "Query specfile for platform(s): %s\n"
 msgstr "Menanyakan specfile untuk platform(s): %s\n"
 
 #: lib/depends.c:600
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is intended for a %s platform\n"
-msgstr "package %s tidak ditujukan untuk platform %s"
+msgstr "paket %s tidak ditujukan untuk platform %s\n"
 
 #: lib/depends.c:675
 #, c-format
 msgid "package %s was already added, skipping %s\n"
-msgstr "package %s sudah ditambahkan, melewatkan %s\n"
+msgstr "paket %s sudah ditambahkan, melewatkan %s\n"
 
 #: lib/depends.c:689
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
-msgstr "package %s sudah ditambahkan, digantikan dengan %s\n"
+msgstr "paket %s sudah ditambahkan, digantikan dengan %s\n"
 
 #: lib/depends.c:906
 msgid "(cached)"
@@ -1443,7 +1443,7 @@ msgstr "(hint dilewatkan)"
 #: lib/depends.c:1900
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
-msgstr "menghiraukan nama package relasi [%d]\t%s -> %s\n"
+msgstr "menghiraukan nama paket relasi [%d]\t%s -> %s\n"
 
 #: lib/depends.c:2023
 #, c-format
@@ -1556,8 +1556,7 @@ msgstr "%s: Tidak ada signature yang available\n"
 #: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:1009
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
-msgstr ""
-"melewatkan package %s dengan tanda-tangan V%u yang tidak terverifikasi\n"
+msgstr "melewatkan paket %s dengan tanda-tangan V%u yang tidak terverifikasi\n"
 
 #: lib/package.c:311 lib/rpmchecksig.c:122
 #, c-format
@@ -1571,7 +1570,7 @@ msgstr "%s ("
 
 #: lib/poptALL.c:291 lib/poptQV.c:300 lib/poptQV.c:347
 msgid "add suggested packages to transaction"
-msgstr "tambahkan packages yang disarankan pada transaksi"
+msgstr "tambahkan paket yang disarankan pada transaksi"
 
 #: lib/poptALL.c:294
 msgid "use anaconda \"presentation order\""
@@ -1587,27 +1586,27 @@ msgstr "jangan menyarankan solusi dari dependensi yang hilang"
 
 #: lib/poptALL.c:303
 msgid "do not check added package conflicts"
-msgstr "jangan mengecheck koflik penambahan package"
+msgstr "jangan mengecheck koflik penambahan paket"
 
 #: lib/poptALL.c:306
 msgid "ignore added package requires on symlink targets"
-msgstr "hiraukan penambahan package yang membutuhkan symlink di targets"
+msgstr "hiraukan penambahan paket yang membutuhkan symlink di targets"
 
 #: lib/poptALL.c:309
 msgid "ignore added package obsoletes"
-msgstr "hiraukan penambahan package yang sudah lama"
+msgstr "hiraukan penambahan paket yang sudah lama"
 
 #: lib/poptALL.c:312
 msgid "ignore added package requires on file parent directory"
-msgstr "hiraukan penambahan package yang membutuhkan file di direktori utama"
+msgstr "hiraukan penambahan paket yang membutuhkan file di direktori utama"
 
 #: lib/poptALL.c:315
 msgid "do not check added package requires"
-msgstr "jangan mengecheck hal-hal yang diperlukan untuk menambahkan package"
+msgstr "jangan mengecheck hal-hal yang diperlukan untuk menambahkan paket"
 
 #: lib/poptALL.c:318
 msgid "ignore added package upgrades"
-msgstr "hiraukan penambahan package untuk upgrade"
+msgstr "hiraukan penambahan paket untuk upgrade"
 
 #: lib/poptALL.c:334
 msgid "predefine MACRO with value EXPR"
@@ -1680,11 +1679,11 @@ msgstr "menggunakan threads untuk file state machine"
 
 #: lib/poptALL.c:393
 msgid "debug package state machine"
-msgstr "debug package state machine"
+msgstr "debug paket state machine"
 
 #: lib/poptALL.c:395
 msgid "use threads for package state machine"
-msgstr "menggunakan threads untuk package state machine"
+msgstr "menggunakan threads untuk paket state machine"
 
 #: lib/poptALL.c:657 rpmio/poptIO.c:579
 #, c-format
@@ -1742,12 +1741,11 @@ msgstr "install semua files, walaupun konfigurasi yang mungkin dilewati"
 
 #: lib/poptI.c:203 lib/poptI.c:233
 msgid "do not execute package scriptlet(s)"
-msgstr "jangan menjalankan package scriptlet(s)"
+msgstr "jangan menjalankan paket scriptlet(s)"
 
 #: lib/poptI.c:206
 msgid "save erased package files by renaming into sub-directory"
-msgstr ""
-"simpan packages yang dihapus dengan mengganti nama kedalam sub-direktori"
+msgstr "simpan paket yang dihapus dengan mengganti nama kedalam sub-direktori"
 
 #: lib/poptI.c:209 lib/poptI.c:217
 msgid "do not install configuration files"
@@ -1806,7 +1804,7 @@ msgstr "jangan menjalankan %%postun scriptlet (jika ada)"
 
 #: lib/poptI.c:254
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "jangan menjalankan scriptlet(s) dibuat oleh package ini"
+msgstr "jangan menjalankan scriptlet(s) dibuat oleh paket ini"
 
 #: lib/poptI.c:257
 #, c-format
@@ -1830,7 +1828,7 @@ msgstr "jangan menjalankan %%triggerpostun scriptlet(s)"
 
 #: lib/poptI.c:270
 msgid "save erased package files by repackaging"
-msgstr "simpan package yang dihapus dengan me-repackaging-nya"
+msgstr "simpan paket yang dihapus dengan me-repackaging-nya"
 
 #: lib/poptI.c:272
 msgid "don't install, but tell if it would work or not"
@@ -1841,20 +1839,20 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"menghilangkan seluruh package yang cocok dengan <package> (biasanya sebuah "
-"kesalahan terjadi jika <package> dispesifikasikan oleh beberapa package"
+"menghilangkan seluruh paket yang cocok dengan <paket> (biasanya sebuah "
+"kesalahan terjadi jika <paket> dispesifikasikan oleh beberapa paket"
 
 #: lib/poptI.c:281
 msgid "relocate files in non-relocatable package"
-msgstr "relocate files dalam packages yang tidak relocateable"
+msgstr "relocate files dalam paket yang tidak relocateable"
 
 #: lib/poptI.c:285
 msgid "erase (uninstall) package"
-msgstr "menghapus (uninstall) package"
+msgstr "menghapus (uninstall) paket"
 
 #: lib/poptI.c:285
 msgid "<package>+"
-msgstr "<package>+"
+msgstr "<paket>+"
 
 #: lib/poptI.c:287
 msgid "skip files with leading component <path> "
@@ -1866,11 +1864,11 @@ msgstr "<path>"
 
 #: lib/poptI.c:292
 msgid "detect file conflicts between packages"
-msgstr "deteksi files konflik dalam package"
+msgstr "deteksi files konflik dalam paket"
 
 #: lib/poptI.c:296
 msgid "upgrade package(s) if already installed"
-msgstr "upgrade package(s) jika sudah terinstall"
+msgstr "upgrade paket(s) jika sudah terinstall"
 
 #: lib/poptI.c:297 lib/poptI.c:315 lib/poptI.c:363
 msgid "<packagefile>+"
@@ -1878,15 +1876,15 @@ msgstr "<packagefile>+"
 
 #: lib/poptI.c:299
 msgid "print hash marks as package installs (good with -v)"
-msgstr "tampilkan hash marks sebagai package install (baik dengan opsi -v)"
+msgstr "tampilkan hash marks sebagai paket install (baik dengan opsi -v)"
 
 #: lib/poptI.c:303
 msgid "don't verify package architecture"
-msgstr "jangan memverifikasi arsitektur package"
+msgstr "jangan memverifikasi arsitektur paket"
 
 #: lib/poptI.c:306
 msgid "don't verify package operating system"
-msgstr "jangan memverifikasi package sistem operasi"
+msgstr "jangan memverifikasi paket sistem operasi"
 
 #: lib/poptI.c:310
 msgid "don't check disk space before installing"
@@ -1898,31 +1896,31 @@ msgstr "install dokumentasi"
 
 #: lib/poptI.c:315
 msgid "install package(s)"
-msgstr "install package(s)"
+msgstr "install paket(s)"
 
 #: lib/poptI.c:318
 msgid "do not verify package dependencies"
-msgstr "jangan memverifikasi dependensi package"
+msgstr "jangan memverifikasi dependensi paket"
 
 #: lib/poptI.c:322
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "jangan me-reorder instalasi package untuk memenuhi dependensi"
+msgstr "jangan me-reorder instalasi paket untuk memenuhi dependensi"
 
 #: lib/poptI.c:334
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"upgrade ke versi yang lebih tua dari package (--force pada upgrade membuat "
-"ini semua secara otomatis)"
+"upgrade ke versi yang lebih tua dari paket (--force pada upgrade membuat ini "
+"semua secara otomatis)"
 
 #: lib/poptI.c:338
 msgid "print percentages as package installs"
-msgstr "tampilkan persentasi proses instalasi package"
+msgstr "tampilkan persentasi proses instalasi paket"
 
 #: lib/poptI.c:340
 msgid "relocate the package to <dir>, if relocatable"
-msgstr "relocate package ke <dir>, jika relocatable"
+msgstr "relocate paket ke <dir>, jika relocatable"
 
 #: lib/poptI.c:341
 msgid "<dir>"
@@ -1938,15 +1936,15 @@ msgstr "<lama>=<baru>"
 
 #: lib/poptI.c:347
 msgid "ignore file conflicts between packages"
-msgstr "menghiraukan file konflik antar packages"
+msgstr "menghiraukan file konflik antar paket"
 
 #: lib/poptI.c:350
 msgid "reinstall if the package is already present"
-msgstr "reinstall jika package sudah ada"
+msgstr "reinstall jika paket sudah ada"
 
 #: lib/poptI.c:352
 msgid "deinstall new, reinstall old, package(s), back to <date>"
-msgstr "deinstall baru, reinstall lama, package(s), kembali ke <tanggal>"
+msgstr "deinstall baru, reinstall lama, paket(s), kembali ke <tanggal>"
 
 #: lib/poptI.c:353 lib/poptI.c:356
 msgid "<date>"
@@ -1966,11 +1964,11 @@ msgstr "<tid>"
 
 #: lib/poptI.c:362
 msgid "upgrade package(s)"
-msgstr "upgrade package(s)"
+msgstr "upgrade paket(s)"
 
 #: lib/poptQV.c:127
 msgid "query/verify all packages"
-msgstr "query/verifikasi semua packages"
+msgstr "query/verifikasi semua paket"
 
 #: lib/poptQV.c:129
 msgid "rpm checksig mode"
@@ -1978,39 +1976,39 @@ msgstr "rpm mode checksig"
 
 #: lib/poptQV.c:131
 msgid "query/verify package(s) owning file"
-msgstr "query/verifikasi package(s) yang memiliki file"
+msgstr "query/verifikasi paket(s) yang memiliki file"
 
 #: lib/poptQV.c:133
 msgid "query/verify package(s) in group"
-msgstr "query/verifikasi package(s) dalam group"
+msgstr "query/verifikasi paket(s) dalam group"
 
 #: lib/poptQV.c:135
 msgid "query/verify a package file"
-msgstr "query/verifikasi sebuah file package"
+msgstr "query/verifikasi sebuah file paket"
 
 #: lib/poptQV.c:138
 msgid "query/verify package(s) from TOP file tree walk"
-msgstr "query/verifikasi package(s) dari TOP file tree walk"
+msgstr "query/verifikasi paket(s) dari TOP file tree walk"
 
 #: lib/poptQV.c:140
 msgid "query/verify package(s) from system HDLIST"
-msgstr "query/verifikasi package(s) dari system HDLIST"
+msgstr "query/verifikasi paket(s) dari system HDLIST"
 
 #: lib/poptQV.c:143
 msgid "query/verify package(s) with source package identifier"
-msgstr "query/verifikasi package(s) dengan identifikasi source package"
+msgstr "query/verifikasi paket(s) dengan identifikasi source paket"
 
 #: lib/poptQV.c:145
 msgid "query/verify package(s) with package identifier"
-msgstr "query/verifikasi package(s) dengan package identifier"
+msgstr "query/verifikasi paket(s) dengan paket identifier"
 
 #: lib/poptQV.c:147
 msgid "query/verify package(s) with header identifier"
-msgstr "query/verifikasi package(s) dengan header identifier"
+msgstr "query/verifikasi paket(s) dengan header identifier"
 
 #: lib/poptQV.c:149
 msgid "query/verify package(s) with file identifier"
-msgstr "query/verifikasi package(s) dengan file identifier"
+msgstr "query/verifikasi paket(s) dengan file identifier"
 
 #: lib/poptQV.c:152
 msgid "rpm query mode"
@@ -2034,11 +2032,11 @@ msgstr "menanyakan sumber metadata dari spec file parse"
 
 #: lib/poptQV.c:160
 msgid "query/verify package(s) from install transaction"
-msgstr "query/verifikasi package(s) dari transaksi install"
+msgstr "query/verifikasi paket(s) dari transaksi install"
 
 #: lib/poptQV.c:162
 msgid "query the package(s) triggered by the package"
-msgstr "query package(s) yang ditrigger oleh package"
+msgstr "query paket(s) yang ditrigger oleh paket"
 
 #: lib/poptQV.c:164
 msgid "rpm verify mode"
@@ -2046,26 +2044,24 @@ msgstr "rpm mode verifikasi"
 
 #: lib/poptQV.c:166
 msgid "query/verify the package(s) which require a dependency"
-msgstr "query/verifikasi package(s) yang membutuhkan sebuah dependensi"
+msgstr "query/verifikasi paket(s) yang membutuhkan sebuah dependensi"
 
 #: lib/poptQV.c:168
 msgid "query/verify the package(s) which require any contained provide"
 msgstr ""
-"menanyakan/memverifikasi package(s) yang membutuhkan apapun yang disediakan"
+"menanyakan/memverifikasi paket(s) yang membutuhkan apapun yang disediakan"
 
 #: lib/poptQV.c:172
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "query/verifikasi dari package(s) yang memberikan sebuah dependensi"
+msgstr "query/verifikasi dari paket(s) yang memberikan sebuah dependensi"
 
 #: lib/poptQV.c:174
-#, fuzzy
 msgid "query/verify the package(s) which conflict with a dependency"
-msgstr "query/verifikasi dari package(s) yang memberikan sebuah dependensi"
+msgstr "query/verifikasi dari paket(s) yang konflik dengan sebuah dependensi"
 
 #: lib/poptQV.c:176
-#, fuzzy
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr "query/verifikasi package(s) yang membutuhkan sebuah dependensi"
+msgstr "query/verifikasi paket(s) yang membuat ditinggalkan sebuah dependensi"
 
 #: lib/poptQV.c:179
 msgid "create transaction set"
@@ -2081,7 +2077,7 @@ msgstr "jangan menyatukan argumen"
 
 #: lib/poptQV.c:185
 msgid "do not process non-package files as manifests"
-msgstr "jangan memproses file tidak di-package sebagai implementasi"
+msgstr "jangan memproses file tidak di-paket sebagai implementasi"
 
 #: lib/poptQV.c:187
 msgid "do not read headers"
@@ -2101,7 +2097,7 @@ msgstr "tampilkan informasi file dasar"
 
 #: lib/poptQV.c:296
 msgid "list files in package"
-msgstr "tampilkan isi file dalam package"
+msgstr "tampilkan isi file dalam paket"
 
 #: lib/poptQV.c:305 lib/poptQV.c:352
 #, c-format
@@ -2174,11 +2170,11 @@ msgstr "jangan memverifikasi context file keamanan"
 
 #: lib/poptQV.c:393
 msgid "don't verify files in package"
-msgstr "jangan memverifikasi file dalam package"
+msgstr "jangan memverifikasi file dalam paket"
 
 #: lib/poptQV.c:396 lib/poptQV.c:399
 msgid "don't verify package dependencies"
-msgstr "jangan memverifikasi dependensi package"
+msgstr "jangan memverifikasi dependensi paket"
 
 #: lib/poptQV.c:404 lib/poptQV.c:408 lib/poptQV.c:411 lib/poptQV.c:414
 msgid "don't execute verify script(s)"
@@ -2186,15 +2182,15 @@ msgstr "jangan menjalankan script(s) verifikasi"
 
 #: lib/poptQV.c:448
 msgid "sign package(s) (identical to --resign)"
-msgstr "sign package(s) (sama dengan --resign)"
+msgstr "sign paket(s) (sama dengan --resign)"
 
 #: lib/poptQV.c:450
 msgid "verify package signature(s)"
-msgstr "verifikasi signature(s) package"
+msgstr "verifikasi signature(s) paket"
 
 #: lib/poptQV.c:452
 msgid "delete package signatures"
-msgstr "hapus tanda tangan package"
+msgstr "hapus tanda tangan paket"
 
 #: lib/poptQV.c:454
 msgid "import an armored public key"
@@ -2202,7 +2198,7 @@ msgstr "import sebuah armored public key"
 
 #: lib/poptQV.c:456
 msgid "sign package(s) (identical to --addsign)"
-msgstr "sign package(s) (sama dengan --addsign)"
+msgstr "sign paket(s) (sama dengan --addsign)"
 
 #: lib/poptQV.c:458
 msgid "generate signature"
@@ -2220,63 +2216,63 @@ msgstr "set kepercayaan maksimal ketika mengimpor pubkey(s)"
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "unset kepercayaan maksimal ketika mengimpor pubkey(s)"
 
-#: lib/psm.c:235
+#: lib/psm.c:188
 msgid "source package expected, binary found\n"
-msgstr "source package diperkirakan, binary ditemukan\n"
+msgstr "source paket diperkirakan, binary ditemukan\n"
 
-#: lib/psm.c:342 lib/psm.c:358
+#: lib/psm.c:295 lib/psm.c:311
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "tidak dapat menulis ke %%%s %s\n"
 
-#: lib/psm.c:394
+#: lib/psm.c:347
 msgid "source package contains no .spec file\n"
-msgstr "source package tidak terdapat spec file\n"
+msgstr "source paket tidak terdapat spec file\n"
 
-#: lib/psm.c:964 lib/rpmfc.c:106
+#: lib/psm.c:917 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: lib/psm.c:975
+#: lib/psm.c:928
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s) scriptlet gagal, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:938
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s) scriptlet gagal, sinyal %d\n"
 
-#: lib/psm.c:991
+#: lib/psm.c:944
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) scriptlet gagal, status keluar %d\n"
 
-#: lib/psm.c:2209
+#: lib/psm.c:2162
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s scriptlet gagal (%d), melewati %s\n"
 
-#: lib/psm.c:2330
+#: lib/psm.c:2283
 msgid "Unable to reload signature header\n"
 msgstr "Tidak dapat mereload header signature\n"
 
-#: lib/psm.c:2457
+#: lib/psm.c:2414
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "gagal membuka archive %s%s: %s\n"
 
-#: lib/psm.c:2458
+#: lib/psm.c:2415
 msgid " on file "
 msgstr " pada file "
 
-#: lib/psm.c:2641
+#: lib/psm.c:2598
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s gagal pada file %s: %s\n"
 
-#: lib/psm.c:2644
+#: lib/psm.c:2601
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s gagal: %s\n"
@@ -2321,22 +2317,22 @@ msgstr "(tidak diketahui %3d) "
 
 #: lib/query.c:347 lib/query.c:377
 msgid "package without owner/group tags\n"
-msgstr "package tanpa tanda owner/group\n"
+msgstr "paket tanpa tanda owner/group\n"
 
 #: lib/query.c:481
-#, fuzzy, c-format
+#, c-format
 msgid "key \"%s\" not found in %s table\n"
-msgstr "package %s tidak terinstall\n"
+msgstr "kunci \"%s\" tidak ditemukan dalam tabel %s\n"
 
 #: lib/query.c:514
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr "group %s tidak terdapat packages\n"
+msgstr "group %s tidak terdapat paket\n"
 
 #: lib/query.c:523
 #, c-format
 msgid "no package triggers %s\n"
-msgstr "tidak ada package triggers %s\n"
+msgstr "tidak ada paket triggers %s\n"
 
 #: lib/query.c:538 lib/query.c:561 lib/query.c:583 lib/query.c:618
 #, c-format
@@ -2346,17 +2342,17 @@ msgstr "malformed %s: %s\n"
 #: lib/query.c:550 lib/query.c:567 lib/query.c:594 lib/query.c:623
 #, c-format
 msgid "no package matches %s: %s\n"
-msgstr "tidak ada package yang cocok %s: %s\n"
+msgstr "tidak ada paket yang cocok %s: %s\n"
 
 #: lib/query.c:634
 #, c-format
 msgid "no package requires %s\n"
-msgstr "tidak ada package yang dibutuhkan %s\n"
+msgstr "tidak ada paket yang dibutuhkan %s\n"
 
 #: lib/query.c:645
 #, c-format
 msgid "no package provides %s\n"
-msgstr "tidak ada package yang memberikan %s\n"
+msgstr "tidak ada paket yang memberikan %s\n"
 
 #: lib/query.c:679
 #, c-format
@@ -2366,12 +2362,12 @@ msgstr "file %s: %s\n"
 #: lib/query.c:682
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "file %s tidak dimiliki oleh package manapun\n"
+msgstr "file %s tidak dimiliki oleh paket manapun\n"
 
 #: lib/query.c:707
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr "nomor package tidak valid: %s\n"
+msgstr "nomor paket tidak valid: %s\n"
 
 #: lib/query.c:714
 #, c-format
@@ -2381,7 +2377,7 @@ msgstr "rekaman %u tidak dapat dibaca\n"
 #: lib/query.c:724 lib/query.c:730 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
-msgstr "package %s tidak terinstall\n"
+msgstr "paket %s tidak terinstall\n"
 
 #: lib/rpmal.c:768
 msgid "(added files)"
@@ -2487,15 +2483,15 @@ msgstr ""
 
 #: lib/rpmds.c:1392
 msgid "package payload can be compressed using bzip2."
-msgstr "package payload dapat dikompres dengan menggunakan bzip2"
+msgstr "paket payload dapat dikompres dengan menggunakan bzip2"
 
 #: lib/rpmds.c:1396
 msgid "package payload file(s) have \"./\" prefix."
-msgstr "package payload file(s) memiliki\"./\" awalan."
+msgstr "paket payload file(s) memiliki\"./\" awalan."
 
 #: lib/rpmds.c:1399
 msgid "package name-version-release is not implicitly provided."
-msgstr "package name-version-release tidak secara implisit diberikan."
+msgstr "paket name-version-release tidak secara implisit diberikan."
 
 #: lib/rpmds.c:1402
 msgid "header tags are always sorted after being loaded."
@@ -2511,8 +2507,7 @@ msgstr "sebuah file set hardlink mungkin diinstall tidak secara sempurna."
 
 #: lib/rpmds.c:1411
 msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"package scriptlets mungkin mengakses database rpm ketika menginstallnya."
+msgstr "paket scriptlets mungkin mengakses database rpm ketika menginstallnya."
 
 #: lib/rpmds.c:1415
 msgid "internal support for lua scripts."
@@ -2524,11 +2519,11 @@ msgstr "header tags dapat memiliki tipe uint64_t."
 
 #: lib/rpmds.c:1422
 msgid "package payload can be in ustar tar archive format."
-msgstr "package payload dapat dalam format ustar tar"
+msgstr "paket payload dapat dalam format ustar tar"
 
 #: lib/rpmds.c:1425
 msgid "package payload can be compressed using lzma."
-msgstr "package payload dapat dikompres dengan menggunakan lzma."
+msgstr "paket payload dapat dikompres dengan menggunakan lzma."
 
 #: lib/rpmds.c:1428
 msgid "file digests can be other than MD5."
@@ -2536,7 +2531,7 @@ msgstr "file digests dapat lain dari MD5"
 
 #: lib/rpmds.c:1432
 msgid "package payload can be in ar archive format."
-msgstr "package payload dapat dalam format ar archive."
+msgstr "paket payload dapat dalam format ar archive."
 
 #: lib/rpmds.c:1523 lib/rpmds.c:3492
 #, c-format
@@ -2632,7 +2627,7 @@ msgstr "Menyiapkan..."
 
 #: lib/rpminstall.c:194
 msgid "Preparing packages for installation..."
-msgstr "Menyiapkan packages untuk instalasi..."
+msgstr "Menyiapkan paket untuk instalasi..."
 
 #: lib/rpminstall.c:212
 msgid "Repackaging..."
@@ -2648,7 +2643,7 @@ msgstr "Mengupgrade..."
 
 #: lib/rpminstall.c:235
 msgid "Upgrading packages..."
-msgstr "Mengupgrade packages..."
+msgstr "Mengupgrade paket..."
 
 #: lib/rpminstall.c:294
 msgid "Failed dependencies"
@@ -2665,22 +2660,22 @@ msgstr "masalah di Install/Erase"
 #: lib/rpminstall.c:550
 #, c-format
 msgid "package \"%s\" cannot be found\n"
-msgstr "package \"%s\" tidak dapat ditemukan\n"
+msgstr "paket \"%s\" tidak dapat ditemukan\n"
 
 #: lib/rpminstall.c:571
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
-msgstr "package \"%s\" tidak dapat dihapus\n"
+msgstr "paket \"%s\" tidak dapat dihapus\n"
 
 #: lib/rpminstall.c:597
 #, c-format
 msgid "package %s is not relocatable\n"
-msgstr "package %s tidak dapat direlokasikan\n"
+msgstr "paket %s tidak dapat direlokasikan\n"
 
 #: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr "\"%s\" menspesifikasikan beberapa packages\n"
+msgstr "\"%s\" menspesifikasikan beberapa paket\n"
 
 #: lib/rpminstall.c:791
 #, c-format
@@ -2714,12 +2709,12 @@ msgstr "berbeda"
 #: lib/rpmps.c:249
 #, c-format
 msgid "package %s is intended for a %s platform"
-msgstr "package %s tidak ditujukan untuk platform %s"
+msgstr "paket %s tidak ditujukan untuk platform %s"
 
 #: lib/rpmps.c:254
 #, c-format
 msgid "package %s is already installed"
-msgstr "package %s sudah terinstall"
+msgstr "paket %s sudah terinstall"
 
 #: lib/rpmps.c:259
 #, c-format
@@ -2729,7 +2724,7 @@ msgstr "membungkus kembali dengan %s: %s hilang"
 #: lib/rpmps.c:264
 #, c-format
 msgid "path %s in package %s is not relocatable"
-msgstr "path %s dalam package %s tidak dapat direlokasikan"
+msgstr "path %s dalam paket %s tidak dapat direlokasikan"
 
 #: lib/rpmps.c:269
 #, c-format
@@ -2739,27 +2734,27 @@ msgstr "file %s konflik ketikan akan menginstall %s dan %s"
 #: lib/rpmps.c:274
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr "file %s dari install dari %s konflik dengan file dari package %s"
+msgstr "file %s dari install dari %s konflik dengan file dari paket %s"
 
 #: lib/rpmps.c:279
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
-msgstr "package %s (yang lebih baru dari %s) sudah terinstall"
+msgstr "paket %s (yang lebih baru dari %s) sudah terinstall"
 
 #: lib/rpmps.c:284
 #, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
-msgstr "memasang package %s membutuhkan %lu%cB pada %s filesystem"
+msgstr "memasang paket %s membutuhkan %lu%cB pada %s filesystem"
 
 #: lib/rpmps.c:294
 #, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
-msgstr "menginstall package %s membutuhkan %lu inodes pada %s filesystem"
+msgstr "menginstall paket %s membutuhkan %lu inodes pada %s filesystem"
 
 #: lib/rpmps.c:299
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "package %s pre-transaction syscall(s): %s gagal: %s"
+msgstr "paket %s pre-transaction syscall(s): %s gagal: %s"
 
 #: lib/rpmps.c:303
 #, c-format
@@ -2778,12 +2773,12 @@ msgstr "%s konflik dengan %s%s"
 #: lib/rpmps.c:314
 #, c-format
 msgid "installing package %s on %s rdonly filesystem"
-msgstr "menginstall package %s pada %s filesystem read-only"
+msgstr "menginstall paket %s pada %s filesystem read-only"
 
 #: lib/rpmps.c:319
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
-msgstr "kesalahan tidak diketahui %d ditemui ketikan memanipulasi package %s"
+msgstr "kesalahan tidak diketahui %d ditemui ketikan memanipulasi paket %s"
 
 #: lib/rpmrc.c:1013
 #, c-format
@@ -2817,16 +2812,16 @@ msgstr "Menghiraukan TID dari rollback: %-24.24s (0x%08x)\n"
 
 #: lib/rpmrollback.c:601
 msgid "Missing re-packaged package(s)"
-msgstr "Hilang re-package package(s)"
+msgstr "Hilang re-package paket(s)"
 
 #: lib/rpmrollback.c:609
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "Rollback packages (+%d/-%d) ke %-24.24s (0x%08x):\n"
+msgstr "Rollback paket (+%d/-%d) ke %-24.24s (0x%08x):\n"
 
 #: lib/rpmrollback.c:635
 msgid "Cleaning up repackaged packages:\n"
-msgstr "Membersihkan repackage package:\n"
+msgstr "Membersihkan repackage paket:\n"
 
 #: lib/rpmrollback.c:642
 #, c-format
@@ -2866,17 +2861,17 @@ msgstr "tidak dapat membuka database Packages dalam %s\n"
 #: lib/rpmts.c:201
 #, c-format
 msgid "extra '(' in package label: %s\n"
-msgstr "kelebihan '(' di label package: %s\n"
+msgstr "kelebihan '(' di label paket: %s\n"
 
 #: lib/rpmts.c:219
 #, c-format
 msgid "missing '(' in package label: %s\n"
-msgstr "Hilang '(' dalam package label: %s\n"
+msgstr "Hilang '(' dalam paket label: %s\n"
 
 #: lib/rpmts.c:227
 #, c-format
 msgid "missing ')' in package label: %s\n"
-msgstr "hilang ')' dalam package label: %s\n"
+msgstr "hilang ')' dalam paket label: %s\n"
 
 #: lib/rpmts.c:289
 #, c-format
@@ -2902,12 +2897,12 @@ msgstr "Rollback  ke %-24.24s (0x%08x):\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr "Jumlah element transaksi tidak valid.\n"
 
-#: lib/verify.c:303
+#: lib/verify.c:304
 #, c-format
 msgid "missing   %c %s"
 msgstr "kehilangan %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:434
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dependensi untuk %s tidak terpenuhi:\n"
@@ -3137,7 +3132,7 @@ msgstr "initialisasi database"
 #: rpmdb/poptDB.c:25
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
-"membuat kembali database dibalik lists dari header package yang terinstall"
+"membuat kembali database dibalik lists dari header paket yang terinstall"
 
 #: rpmdb/poptDB.c:29
 msgid "verify database files"
@@ -3357,9 +3352,9 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: header rusak #%u diterima -- dilewati.\n"
 
 #: rpmdb/rpmdb.c:2863
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) getting keys from %s index\n"
-msgstr "error(%d) mendapatkan rekaman dari %s index\n"
+msgstr "error(%d) mendapatkan kunci dari %s index\n"
 
 #: rpmdb/rpmdb.c:2908
 #, c-format
@@ -3384,7 +3379,7 @@ msgstr "error(%d) menghapus catatan dari %s\n"
 #: rpmdb/rpmdb.c:3339
 #, c-format
 msgid "error(%d) allocating new package instance\n"
-msgstr "error(%d) menempatkan package baru\n"
+msgstr "error(%d) menempatkan paket baru\n"
 
 #: rpmdb/rpmdb.c:3413
 msgid "rpmdbAdd: skipping"
@@ -4054,12 +4049,12 @@ msgstr "url port harus berupa sebuah nomor\n"
 #: tools/rpm2cpio.c:64
 #, c-format
 msgid "argument is not an RPM package\n"
-msgstr "argument bukan merupakan sebuah package RPM\n"
+msgstr "argument bukan merupakan sebuah paket RPM\n"
 
 #: tools/rpm2cpio.c:69
 #, c-format
 msgid "error reading header from package\n"
-msgstr "error membaca header dari package\n"
+msgstr "error membaca header dari paket\n"
 
 #: tools/rpm2cpio.c:97
 #, c-format
@@ -4076,7 +4071,7 @@ msgstr "memperbarui cache basis data"
 
 #: tools/rpmcache.c:527
 msgid "don't update cache database, only print package paths"
-msgstr "jangan meng-update database cache, hanya tampilkan jalur package"
+msgstr "jangan meng-update database cache, hanya tampilkan jalur paket"
 
 #: tools/rpmcache.c:530
 msgid "File tree walk options:"
@@ -4167,7 +4162,7 @@ msgstr "mencetak soname(...) set ketergantungan"
 
 #: tools/rpmdeps.c:193
 msgid "print package(...) dependency set"
-msgstr "mencetak package(...) set ketergantungan"
+msgstr "mencetak paket(...) set ketergantungan"
 
 #: tools/rpmdeps.c:196
 msgid "print java(...) dependency set"

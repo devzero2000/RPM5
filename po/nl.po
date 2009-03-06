@@ -1,5 +1,4 @@
-# translation of nl.po to Dutch
-# Translation of rpm-5.1.0 to Dutch.
+# Translation of rpm to Dutch.
 # This file is distributed under the same license as the rpm package.
 #
 # Reinout van Schouwen <reinout@cs.vu.nl>, 2005.
@@ -7,10 +6,10 @@
 # Erwin Poeze <erwin.poeze@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm-5.1.5pre1\n"
+"Project-Id-Version: rpm-5.1.6\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-01-17 13:11-0500\n"
-"PO-Revision-Date: 2008-09-25 17:09+0100\n"
+"POT-Creation-Date: 2009-03-06 17:20-0500\n"
+"PO-Revision-Date: 2009-03-04 11:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -699,7 +698,7 @@ msgstr "Kan handtekeningkop niet opnieuw laden.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kan %s niet openen: %s\n"
 
-#: build/pack.c:806 lib/psm.c:2317
+#: build/pack.c:806 lib/psm.c:2270
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kan pakket niet wegschrijven: %s\n"
@@ -719,7 +718,7 @@ msgstr "Kan pakketbestanden niet lezen uit %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan pakketbestanden niet schrijven naar %s: %s\n"
 
-#: build/pack.c:915 lib/psm.c:2632
+#: build/pack.c:915 lib/psm.c:2589
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Weggeschreven: %s\n"
@@ -1335,9 +1334,9 @@ msgid "Query specfile for platform(s): %s\n"
 msgstr "Bevragen van .spec-bestand voor platform(en): %s\n"
 
 #: lib/depends.c:600
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is intended for a %s platform\n"
-msgstr "pakket %s is bedoeld voor een %s-platform"
+msgstr "pakket %s is bedoeld voor een %s-platform\n"
 
 #: lib/depends.c:675
 #, c-format
@@ -2075,14 +2074,13 @@ msgid "query/verify the package(s) which provide a dependency"
 msgstr "pakket(ten) op leveringen bevragen/verifiëren "
 
 #: lib/poptQV.c:174
-#, fuzzy
 msgid "query/verify the package(s) which conflict with a dependency"
-msgstr "pakket(ten) op leveringen bevragen/verifiëren "
+msgstr ""
+"pakket(ten) op conflicten met een afhankelijkheden bevragen/verifiëren "
 
 #: lib/poptQV.c:176
-#, fuzzy
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr "pakket(ten) met vereisten bevragen/verifiëren"
+msgstr "pakketten die een afhankelijkheid achterhalen bevragen/verifiëren"
 
 #: lib/poptQV.c:179
 msgid "create transaction set"
@@ -2240,63 +2238,63 @@ msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 "maximale betrouwbaarheid bij importeren publieke sleutel(s) uitschakelen"
 
-#: lib/psm.c:235
+#: lib/psm.c:188
 msgid "source package expected, binary found\n"
 msgstr "bronpakket verwacht, uitvoerbaar bestand gevonden\n"
 
-#: lib/psm.c:342 lib/psm.c:358
+#: lib/psm.c:295 lib/psm.c:311
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kan niet schrijven naar %%%s %s\n"
 
-#: lib/psm.c:394
+#: lib/psm.c:347
 msgid "source package contains no .spec file\n"
 msgstr "bronpakket bevat geen .spec-bestand\n"
 
-#: lib/psm.c:964 lib/rpmfc.c:106
+#: lib/psm.c:917 lib/rpmfc.c:106
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kan geen nieuw proces starten voor %s: %s\n"
 
-#: lib/psm.c:975
+#: lib/psm.c:928
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s)-scriptlet is mislukt, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:985
+#: lib/psm.c:938
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s)-scriptlet is mislukt, signaal %d\n"
 
-#: lib/psm.c:991
+#: lib/psm.c:944
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s)-scriptlet is mislukt, stopstatus %d\n"
 
-#: lib/psm.c:2209
+#: lib/psm.c:2162
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-scriptlet is mislukt (%d), overslaan %s\n"
 
-#: lib/psm.c:2330
+#: lib/psm.c:2283
 msgid "Unable to reload signature header\n"
 msgstr "Kan handtekeningkop niet opnieuw laden\n"
 
-#: lib/psm.c:2457
+#: lib/psm.c:2414
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uitpakken van archief is mislukt%s%s: %s\n"
 
-#: lib/psm.c:2458
+#: lib/psm.c:2415
 msgid " on file "
 msgstr " op bestand "
 
-#: lib/psm.c:2641
+#: lib/psm.c:2598
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s is mislukt op bestand %s: %s\n"
 
-#: lib/psm.c:2644
+#: lib/psm.c:2601
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s is mislukt: %s\n"
@@ -2344,9 +2342,9 @@ msgid "package without owner/group tags\n"
 msgstr "pakket zonder eigenaar- of groepslabels\n"
 
 #: lib/query.c:481
-#, fuzzy, c-format
+#, c-format
 msgid "key \"%s\" not found in %s table\n"
-msgstr "pakket %s is niet geïnstalleerd\n"
+msgstr "sleutel \"%s\" is niet gevonden in tabel %s\n"
 
 #: lib/query.c:514
 #, c-format
@@ -2927,12 +2925,12 @@ msgstr "Terugdraaien naar %-24.24s (0x%08x)\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ongeldig aantal transactie-elementen.\n"
 
-#: lib/verify.c:303
+#: lib/verify.c:304
 #, c-format
 msgid "missing   %c %s"
 msgstr "ontbrekende   %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:434
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Afhankelijkheden niet voldaan voor %s:\n"
@@ -3382,9 +3380,9 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: beschadigde kop #%u opgehaald -- overslaan.\n"
 
 #: rpmdb/rpmdb.c:2863
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) getting keys from %s index\n"
-msgstr "fout(%d) tijdens ophalen records vanaf %s index\n"
+msgstr "fout(%d) tijdens ophalen sleutels vanaf %s-index\n"
 
 #: rpmdb/rpmdb.c:2908
 #, c-format
