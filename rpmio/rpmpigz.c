@@ -360,7 +360,7 @@ rpmz _rpmz = &__rpmz;
 
 /* exit with error, delete output file if in the middle of writing it */
 /*@exits@*/
-static int bail(char *why, char *what)
+static int bail(const char *why, const char *what)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -371,7 +371,7 @@ static int bail(char *why, char *what)
 	Unlink(z->_ofn);
 /*@=globs@*/
     if (z->verbosity > 0)
-	fprintf(stderr, "pigz abort: %s%s\n", why, what);
+	fprintf(stderr, "%s abort: %s%s\n", "pigz", why, what);
     exit(EXIT_FAILURE);
 /*@notreached@*/
     return 0;
@@ -1305,6 +1305,7 @@ assert(z->compress_head == NULL && yarnPeekLock(z->compress_have) == 0);
     yarnPossess(z->write_first);
 assert(z->write_head == NULL);
     yarnTwist(z->write_first, TO, -1);
+
 /*@-globstate@*/	/* XXX z->write_head is reachable */
     return;
 /*@=globstate@*/
@@ -1888,29 +1889,29 @@ static int rpmzGetHeader(rpmz z, int save)
 /* --- list contents of compressed input (gzip, zlib, or lzw) */
 
 /* find standard compressed file suffix, return length of suffix */
-static size_t compressed_suffix(char *nm)
+static size_t compressed_suffix(const char *fn)
 	/*@*/
 {
     size_t len;
 
-    len = strlen(nm);
+    len = strlen(fn);
     if (len > 4) {
-	nm += len - 4;
+	fn += len - 4;
 	len = 4;
-	if (strcmp(nm, ".zip") == 0 || strcmp(nm, ".ZIP") == 0)
+	if (strcmp(fn, ".zip") == 0 || strcmp(fn, ".ZIP") == 0)
 	    return 4;
     }
     if (len > 3) {
-	nm += len - 3;
+	fn += len - 3;
 	len = 3;
-	if (strcmp(nm, ".gz") == 0 || strcmp(nm, "-gz") == 0 ||
-	    strcmp(nm, ".zz") == 0 || strcmp(nm, "-zz") == 0)
+	if (strcmp(fn, ".gz") == 0 || strcmp(fn, "-gz") == 0 ||
+	    strcmp(fn, ".zz") == 0 || strcmp(fn, "-zz") == 0)
 	    return 3;
     }
     if (len > 2) {
 	nm += len - 2;
-	if (strcmp(nm, ".z") == 0 || strcmp(nm, "-z") == 0 ||
-	    strcmp(nm, "_z") == 0 || strcmp(nm, ".Z") == 0)
+	if (strcmp(fn, ".z") == 0 || strcmp(fn, "-z") == 0 ||
+	    strcmp(fn, "_z") == 0 || strcmp(fn, ".Z") == 0)
 	    return 2;
     }
     return 0;
