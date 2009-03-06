@@ -24,6 +24,8 @@ rpmdpkg
 rpmgenpkglist
 rpmgensrclist
 rpmgpg
+rpmpbzip2
+rpmpigz
 rpmtar
 rpmwget
 rpmz
