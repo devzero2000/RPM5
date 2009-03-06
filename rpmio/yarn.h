@@ -2,6 +2,8 @@
  * Copyright (C) 2008 Mark Adler
  * Version 1.1  26 Oct 2008  Mark Adler
  */
+#ifndef	_H_YARN_
+#define	_H_YARN_
 
 /*
   This software is provided 'as-is', without any express or implied
@@ -111,10 +113,12 @@
 
 /*@unchecked@*/ /*@observer@*/
 extern const char *yarnPrefix;
+/*@-redecl@*/
 /*@mayexit@*/
 extern void (*yarnAbort)(int)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
+/*@=redecl@*/
 
 /*@-globuse@*/
 void yarnMem(void *(*)(size_t), void (*)(void *))
@@ -164,3 +168,5 @@ long yarnPeekLock(yarnLock bolt)
 yarnLock yarnFreeLock(/*@only@*/ yarnLock bolt)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies bolt, fileSystem, internalState @*/;
+
+#endif	/* _H_YARN_ */
