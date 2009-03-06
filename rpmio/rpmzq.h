@@ -14,12 +14,15 @@ extern int _rpmzq_debug;
 /**
  */
 typedef /*@abstract@*/ struct rpmzSpace_s * rpmzSpace;
+
 /**
  */
 typedef /*@abstract@*/ struct rpmzPool_s * rpmzPool;
+
 /**
  */
 typedef /*@abstract@*/ struct rpmzQueue_s * rpmzQueue;
+
 /**
  */
 typedef /*@abstract@*/ struct rpmzJob_s * rpmzJob;
@@ -129,46 +132,46 @@ int rpmbzCompressBlock(void * _bz, rpmzJob job)
 /* initialize a pool (pool structure itself provided, not allocated) -- the
    limit is the maximum number of spaces in the pool, or -1 to indicate no
    limit, i.e., to never wait for a buffer to return to the pool */
-rpmzPool rpmzNewPool(size_t size, int limit)
+rpmzPool rpmzqNewPool(size_t size, int limit)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /* get a space from a pool -- the use count is initially set to one, so there
    is no need to call rpmzUseSpace() for the first use */
-rpmzSpace rpmzNewSpace(rpmzPool pool)
+rpmzSpace rpmzqNewSpace(rpmzPool pool)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies pool, fileSystem, internalState @*/;
 
 /* increment the use count to require one more drop before returning this space
    to the pool */
-void rpmzUseSpace(rpmzSpace space)
+void rpmzqUseSpace(rpmzSpace space)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies space, fileSystem, internalState @*/;
 
 /* drop a space, returning it to the pool if the use count is zero */
 /*@null@*/
-rpmzSpace rpmzDropSpace(/*@only@*/ rpmzSpace space)
+rpmzSpace rpmzqDropSpace(/*@only@*/ rpmzSpace space)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies space, fileSystem, internalState @*/;
 
 /* free the memory and lock resources of a pool -- return number of spaces for
    debugging and resource usage measurement */
 /*@null@*/
-rpmzPool rpmzFreePool(/*@only@*/ rpmzPool pool, /*@null@*/ int *countp)
+rpmzPool rpmzqFreePool(/*@only@*/ rpmzPool pool, /*@null@*/ int *countp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies pool, *countp, fileSystem, internalState @*/;
 
 /**
  */
 /*@null@*/
-rpmzJob rpmzFreeJob(/*@only@*/ rpmzJob job)
+rpmzJob rpmzqFreeJob(/*@only@*/ rpmzJob job)
         /*@globals fileSystem, internalState @*/
         /*@modifies job, fileSystem, internalState @*/;
 
 /**
  */
 /*@only@*/
-rpmzJob rpmzNewJob(long seq)
+rpmzJob rpmzqNewJob(long seq)
         /*@globals fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/;
 

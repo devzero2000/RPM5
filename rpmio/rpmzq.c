@@ -121,7 +121,7 @@ static int rpmbzDecompressBlock(rpmbz bz, rpmzJob job)
 /* initialize a pool (pool structure itself provided, not allocated) -- the
    limit is the maximum number of spaces in the pool, or -1 to indicate no
    limit, i.e., to never wait for a buffer to return to the pool */
-rpmzPool rpmzNewPool(size_t size, int limit)
+rpmzPool rpmzqNewPool(size_t size, int limit)
 {
     rpmzPool pool = xcalloc(1, sizeof(*pool));
     pool->have = yarnNewLock(0);
@@ -136,8 +136,8 @@ zqFprint(stderr, "    ++ pool %p[%u,%d]\n", pool, (unsigned)size, limit);
 }
 
 /* get a space from a pool -- the use count is initially set to one, so there
-   is no need to call rpmzUseSpace() for the first use */
-rpmzSpace rpmzNewSpace(rpmzPool pool)
+   is no need to call rpmzqUseSpace() for the first use */
+rpmzSpace rpmzqNewSpace(rpmzPool pool)
 {
     rpmzSpace space;
 
@@ -180,7 +180,7 @@ zqFprint(stderr, "    ++ space %p use %d buf %p[%u]\n", space, 1, space->buf, sp
 
 /* increment the use count to require one more drop before returning this space
    to the pool */
-void rpmzUseSpace(rpmzSpace space)
+void rpmzqUseSpace(rpmzSpace space)
 {
     int use;
     yarnPossess(space->use);
@@ -190,7 +190,7 @@ zqFprint(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, use+1, space->buf, s
 }
 
 /* drop a space, returning it to the pool if the use count is zero */
-rpmzSpace rpmzDropSpace(/*@only@*/ rpmzSpace space)
+rpmzSpace rpmzqDropSpace(/*@only@*/ rpmzSpace space)
 {
     int use;
 
@@ -214,7 +214,7 @@ assert(use != 0);
 
 /* free the memory and lock resources of a pool -- return number of spaces for
    debugging and resource usage measurement */
-rpmzPool rpmzFreePool(rpmzPool pool, int *countp)
+rpmzPool rpmzqFreePool(rpmzPool pool, int *countp)
 {
     rpmzSpace space;
     int count;
@@ -247,7 +247,7 @@ zqFprint(stderr, "    -- pool %p count %d\n", pool, count);
     return NULL;
 }
 
-rpmzJob rpmzFreeJob(rpmzJob job)
+rpmzJob rpmzqFreeJob(rpmzJob job)
 {
 zqFprint(stderr, "    -- job %p[%ld] %p => %p\n", job, job->seq, job->in, job->out);
     if (job->calc != NULL)
@@ -256,7 +256,7 @@ zqFprint(stderr, "    -- job %p[%ld] %p => %p\n", job, job->seq, job->in, job->o
     return NULL;
 }
 
-rpmzJob rpmzNewJob(long seq)
+rpmzJob rpmzqNewJob(long seq)
 {
     rpmzJob job = xcalloc(1, sizeof(*job));
     job->seq = seq;
@@ -305,9 +305,9 @@ zqFprint(stderr, "==> FIXME: %s: caught %d z->cthreads %d\n", __FUNCTION__, caug
     zq->cthreads = 0;
 
     /* free the resources */
-    zq->out_pool = rpmzFreePool(zq->out_pool, &caught);
+    zq->out_pool = rpmzqFreePool(zq->out_pool, &caught);
     Trace((zlog, "-- freed %d output buffers", caught));
-    zq->in_pool = rpmzFreePool(zq->in_pool, &caught);
+    zq->in_pool = rpmzqFreePool(zq->in_pool, &caught);
     Trace((zlog, "-- freed %d input buffers", caught));
     zq->write_first = yarnFreeLock(zq->write_first);
     zq->compress_have = yarnFreeLock(zq->compress_have);
@@ -329,9 +329,9 @@ zqFprint(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
     zq->write_first = yarnNewLock(-1);
     zq->write_head = NULL;
 
-    zq->in_pool = rpmzNewPool(zq->iblocksize, zq->ilimit);
+    zq->in_pool = rpmzqNewPool(zq->iblocksize, zq->ilimit);
 zqFprint(stderr, "-->  in_pool: %p[%u] blocksize %u\n", zq->in_pool, (unsigned)zq->ilimit, (unsigned)zq->iblocksize);
-    zq->out_pool = rpmzNewPool(zq->oblocksize, zq->olimit);
+    zq->out_pool = rpmzqNewPool(zq->oblocksize, zq->olimit);
 zqFprint(stderr, "--> out_pool: %p[%u] blocksize %u\n", zq->out_pool, (unsigned)zq->olimit, (unsigned)zq->oblocksize);
 
 }
@@ -460,7 +460,7 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
     yarnTwist(zq->write_first, TO, zq->write_head->seq);
 }
 
-static rpmzJob  rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
+static rpmzJob rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, job, fileSystem, internalState @*/
 {
@@ -475,11 +475,11 @@ static rpmzJob  rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
 	 * bytes for the terminating stored block) */
 	outlen = ((job->in->len*1.01)+600);
 /*@-mustfreeonly@*/
-	job->out = rpmzNewSpace(zq->out_pool);
+	job->out = rpmzqNewSpace(zq->out_pool);
 /*@=mustfreeonly@*/
 	if (job->out->len < outlen) {
 zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
-	    job->out = rpmzDropSpace(job->out);
+	    job->out = rpmzqDropSpace(job->out);
 	    job->out = xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
 	    job->out->buf = xmalloc(job->out->len);
@@ -490,10 +490,10 @@ zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__,
 	break;
     case O_RDONLY:
 	outlen = 6 * job->in->len;
-	job->out = rpmzNewSpace(zq->out_pool);
+	job->out = rpmzqNewSpace(zq->out_pool);
 	if (job->out->len < outlen) {
 zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
-	    job->out = rpmzDropSpace(job->out);
+	    job->out = rpmzqDropSpace(job->out);
 	    job->out = xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
 	    job->out->buf = xmalloc(job->out->len);
@@ -508,7 +508,7 @@ zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__,
 		/*@loopbreak@*/ break;
 zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] realloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
 	    if (job->out->use != NULL)
-		job->out = rpmzDropSpace(job->out);
+		job->out = rpmzqDropSpace(job->out);
 	    else {
 zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] free\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len);
 		job->out->buf = _free(job->out->buf);
