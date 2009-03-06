@@ -398,7 +398,6 @@ LIBRPM_0
     rpmVerifyPoptTable;
     rpmVerifySignatures;
     RPMVERSION;
-    rpmVersionCompare;
     showQueryPackage;
     showVerifyPackage;
     specedit;
