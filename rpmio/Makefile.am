@@ -16,7 +16,7 @@ EXTRA_DIST = \
 
 EXTRA_PROGRAMS = rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
-	rpmpigz rpmtar rpmwget rpmz \
+	rpmpbzip2 rpmpigz rpmtar rpmwget rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
@@ -165,6 +165,10 @@ lint:
 lint_rpmcpio:
 	$(LINT) -f .splintrc_rpmcpio $(DEFS) $(INCLUDES) rpmcpio.c
 
+.PHONY:	lint_rpmpbzip2
+lint_rpmpbzip2:
+	$(LINT) -f .splintrc_rpmpbzip2 $(DEFS) $(INCLUDES) rpmpbzip2.c
+
 .PHONY:	lint_rpmpigz
 lint_rpmpigz:
 	$(LINT) -f .splintrc_rpmpigz $(DEFS) $(INCLUDES) rpmpigz.c
@@ -260,6 +264,9 @@ rpmgensrclist_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmgpg_SOURCES = rpmgpg.c
 rpmgpg_LDADD = $(RPMIO_LDADD_COMMON)
+
+rpmpbzip2_SOURCES = rpmpbzip2.c
+rpmpbzip2_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmpigz_SOURCES = rpmpigz.c
 rpmpigz_LDADD = $(RPMIO_LDADD_COMMON)

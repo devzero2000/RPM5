@@ -342,7 +342,7 @@ rpmzQueue rpmzqFree(rpmzQueue zq)
     return NULL;
 }
 
-rpmzQueue rpmzqNew(rpmzLog zlog, int flags,
+rpmzQueue rpmzqNew(rpmzLog zlog, unsigned int flags,
 		int verbosity, unsigned int level, size_t blocksize, int limit)
 {
     rpmzQueue zq = xcalloc(1, sizeof(*zq));

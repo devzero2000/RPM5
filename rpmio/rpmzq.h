@@ -63,7 +63,7 @@ struct rpmzJob_s {
 };
 
 struct rpmzQueue_s {
-    int flags;			/*!< Control bits. */
+    unsigned int flags;		/*!< Control bits. */
 /*@null@*/
     const char *ifn;		/*!< input file name */
     int ifdno;			/*!< input file descriptor */
@@ -199,7 +199,7 @@ rpmzQueue rpmzqFree(/*@only@*/ rpmzQueue zq)
 /**
  */
 /*@only@*/
-rpmzQueue rpmzqNew(rpmzLog zlog, int flags,
+rpmzQueue rpmzqNew(rpmzLog zlog, unsigned int flags,
 		int verbosity, unsigned int level, size_t blocksize, int limit)
 	/*@*/;
 

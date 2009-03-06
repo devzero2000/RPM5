@@ -1,0 +1,80 @@
+#-I. -I.. -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
+-I. -I.. -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
++partial
++forcehints
+
+#-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-bounds			# 42
+-bufferoverflowhigh	# 1 rpmpgp.h
+
+-bitwisesigned		# 21
+-branchstate
+-boolops		# 10
+-compdef		# 3
+-compdestroy	# 47
+-compmempass		# 4
+-duplicatequals		# 7 unsigned long long casts
+-fixedformalarray
+-incondefs		# 112
+-matchfields		# 1 pthreadtypes.h
+-mustdefine		# 3
+-mustfreefresh		# 40
+-mustfreeonly		# 38
+-mutrep
+-noeffect		# 11 from stubbing rpmio
+-nullpass		# 33
+-predboolptr
+-retalias		# 1
+-shiftimplementation	# 1 byteswap.h
+-sizeoftype		# 1 sched.h
+-strictops		# 4
+-type			# 14
+-usedef			# 19
+-usereleased		# 9
+
+-temptrans		# 11
+-unqualifiedtrans	# 2
+
+-elseifcomplete		# 7
+-whileblock
+
+# --- +partial artifacts
+-declundef		# 11
+-exportconst
+-exportfcn
+-exportheader
+-exportheadervar
+-exportlocal
+-exporttype
+-exportvar
+
+-enummemuse
+-fcnuse
+-fielduse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-ifblock		# 159
+-isoreserved		# 5
+-isoreservedinternal	# 5
+-protoparamname		# 465
+-ptrarith		# 17
+
+# --- not-yet at checks level
+
+# --- not-yet at standard level
++boolint
++charint
++enumint
++ignorequals		# 17
++matchanyintegral	# 27
