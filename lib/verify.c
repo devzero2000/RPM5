@@ -7,6 +7,7 @@
 
 #include <rpmio.h>
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
+#define	_RPMTS_INTERNAL	/* XXX for rpmtsSetScriptFd */
 #include <rpmcli.h>
 
 #define	_RPMSQ_INTERNAL
