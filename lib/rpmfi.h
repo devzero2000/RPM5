@@ -592,8 +592,8 @@ extern const char * rpmfiFUser(/*@null@*/ rpmfi fi)
 extern const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
 	/*@*/;
 
-extern int rpmfiSetFAction(rpmfi, int)
-	/*@*/;
+extern int rpmfiSetFAction(rpmfi fi, int action)
+	/*@modifies fi @*/;
 
 /** \ingroup rpmfi
  * Return file info exclude patterns.
