@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - jbj: rpmz: add attribution and debugging to rpmzq.
     - jbj: rpmz: carve out job queue and buffer pool management from pigz.
     - jbj: rpmz: carve out an opaque trace logging subsystem from pigz.
     - glen: markLinkedFailed if rpm file reopen failed during transaction to avoid losing old pkg info from db

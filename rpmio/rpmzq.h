@@ -6,9 +6,22 @@
  * Job queue and buffer pool management.
  */
 
+/**
+ */
+/*@unchecked@*/
+extern int _rpmzq_debug;
+
+/**
+ */
 typedef /*@abstract@*/ struct rpmzSpace_s * rpmzSpace;
+/**
+ */
 typedef /*@abstract@*/ struct rpmzPool_s * rpmzPool;
+/**
+ */
 typedef /*@abstract@*/ struct rpmzQueue_s * rpmzQueue;
+/**
+ */
 typedef /*@abstract@*/ struct rpmzJob_s * rpmzJob;
 
 #ifdef	_RPMZQ_INTERNAL
@@ -187,16 +200,6 @@ rpmzQueue rpmzqNew(rpmzLog zlog, int flags,
 		int verbosity, unsigned int level, size_t blocksize, int limit)
 	/*@*/;
 
-/** start another compress/decompress thread if needed */
-void rpmzqLaunch(rpmzQueue zq, long seq, unsigned int threads)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies zq, fileSystem, internalState @*/;
-
-/** verify no more jobs, prepare for next use */
-void rpmzqVerify(rpmzQueue zq)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies zq, fileSystem, internalState @*/;
-
 /**
  */
 /*@null@*/
@@ -221,6 +224,16 @@ rpmzJob rpmzqDelWJob(rpmzQueue zq, long seq)
 void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, job, fileSystem, internalState @*/;
+
+/** start another compress/decompress thread if needed */
+void rpmzqLaunch(rpmzQueue zq, long seq, unsigned int threads)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/;
+
+/** verify no more jobs, prepare for next use */
+void rpmzqVerify(rpmzQueue zq)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
