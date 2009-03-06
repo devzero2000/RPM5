@@ -1,5 +1,6 @@
 
 5.2a2 -> 5.2a3:
+    - rse: cleanup a few recently introduced compile-time warnings
     - jbj: rpmz: add attribution and debugging to rpmzq.
     - jbj: rpmz: carve out job queue and buffer pool management from pigz.
     - jbj: rpmz: carve out an opaque trace logging subsystem from pigz.
