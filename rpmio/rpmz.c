@@ -1,22 +1,22 @@
 /**
- * \file rpmio/rpmrepo.c
+ * \file rpmio/rpmz.c
  */
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copyright (C) 2007 Lasse Collin
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-///////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ *  Copyright (C) 2007 Lasse Collin
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ */
 
 #include "system.h"
 
@@ -43,12 +43,12 @@ static lzma_stream strm = LZMA_STREAM_INIT;
 #endif
 
 #ifdef	NOTYET
-/// True if we should auto-adjust the compression settings to use less memory
-/// if memory usage limit is too low for the original settings.
+/*  True if we should auto-adjust the compression settings to use less memory
+    if memory usage limit is too low for the original settings. */
 /*@unchecked@*/
 static bool auto_adjust = true;
-/// Indicate if no preset has been explicitly given. In that case, if we need
-/// to auto-adjust for lower memory usage, we won't print a warning.
+/*  Indicate if no preset has been explicitly given. In that case, if we need
+    to auto-adjust for lower memory usage, we won't print a warning. */
 /*@unchecked@*/
 static bool preset_default = true;
 #endif
@@ -135,17 +135,17 @@ static void io_init(void)
     }
 }
 
-/// \brief      Unlinks a file
-///
-/// This tries to verify that the file being unlinked really is the file that
-/// we want to unlink by verifying device and inode numbers. There's still
-/// a small unavoidable race, but this is much better than nothing (the file
-/// could have been moved/replaced even hours earlier).
+/*  \brief      Unlinks a file
+
+    This tries to verify that the file being unlinked really is the file that
+    we want to unlink by verifying device and inode numbers. There's still
+    a small unavoidable race, but this is much better than nothing (the file
+    could have been moved/replaced even hours earlier). */
 static void
 io_unlink(const char *fn, const struct stat *ost)
 	/*@*/
 {
-    // On Windows, st_ino is meaningless, so don't bother testing it.
+    /* On Windows, st_ino is meaningless, so don't bother testing it. */
 #ifndef _WIN32
     struct stat nsb;
 
@@ -153,8 +153,8 @@ io_unlink(const char *fn, const struct stat *ost)
      || nsb.st_dev != ost->st_dev || nsb.st_ino != ost->st_ino)
 	rpmlog(RPMLOG_ERR, _("%s: File seems to be moved, not removing\n"), fn);
     else
-    // There's a race condition between Lstat() and Unlink()
-    // but at least we have tried to avoid removing wrong file.
+    /* There's a race condition between Lstat() and Unlink()
+       but at least we have tried to avoid removing wrong file. */
     if (S_ISREG(nsb.st_mode) && Unlink(fn))
 	rpmlog(RPMLOG_ERR, _("%s: Cannot remove: %s\n"), fn, strerror(errno));
 #else
@@ -164,25 +164,25 @@ io_unlink(const char *fn, const struct stat *ost)
     return;
 }
 
-/// \brief      Copies owner/group and permissions
-///
-/// \todo       ACL and EA support
-///
+/*  \brief      Copies owner/group and permissions
+
+    \todo       ACL and EA support
+*/
 static void
 io_copy_attrs(rpmz z)
 	/*@*/
 {
-	// Skip chown and chmod on Windows.
+	/* Skip chown and chmod on Windows. */
 #ifndef _WIN32
-	// This function is more tricky than you may think at first.
-	// Blindly copying permissions may permit users to access the
-	// destination file who didn't have permission to access the
-	// source file.
+	/* This function is more tricky than you may think at first.
+	   Blindly copying permissions may permit users to access the
+	   destination file who didn't have permission to access the
+	   source file. */
 
 #ifdef	NOTYET		/* XXX Fileno used by Fchmod/Fchown needs work. */
-	// Try changing the owner of the file. If we aren't root or the owner
-	// isn't already us, fchown() probably doesn't succeed. We warn
-	// about failing fchown() only if we are root.
+	/* Try changing the owner of the file. If we aren't root or the owner
+	   isn't already us, fchown() probably doesn't succeed. We warn
+	   about failing fchown() only if we are root. */
 	if (Fchown(z->ofd, z->isb.st_uid, -1) && (geteuid() == 0))
 		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file owner: %s\n"),
 				z->ofn, strerror(errno));
@@ -192,19 +192,19 @@ io_copy_attrs(rpmz z)
 	if (Fchown(z->ofd, -1, z->isb.st_gid)) {
 		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file group: %s\n"),
 				z->ofn, strerror(errno));
-		// We can still safely copy some additional permissions:
-		// `group' must be at least as strict as `other' and
-		// also vice versa.
-		//
-		// NOTE: After this, the owner of the source file may
-		// get additional permissions. This shouldn't be too bad,
-		// because the owner would have had permission to chmod
-		// the original file anyway.
+		/* We can still safely copy some additional permissions:
+		   `group' must be at least as strict as `other' and
+		   also vice versa.
+
+		   NOTE: After this, the owner of the source file may
+		   get additional permissions. This shouldn't be too bad,
+		   because the owner would have had permission to chmod
+		   the original file anyway. */
 		mode = ((z->isb.st_mode & 0070) >> 3)
 				& (z->isb.st_mode & 0007);
 		mode = (z->isb.st_mode & 0700) | (mode << 3) | mode;
 	} else {
-		// Drop the setuid, setgid, and sticky bits.
+		/* Drop the setuid, setgid, and sticky bits. */
 		mode = z->isb.st_mode & 0777;
 	}
 
@@ -215,50 +215,50 @@ io_copy_attrs(rpmz z)
 #endif
 #endif
 
-	// Copy the timestamps. We have several possible ways to do this, of
-	// which some are better in both security and precision.
-	//
-	// First, get the nanosecond part of the timestamps. As of writing,
-	// it's not standardized by POSIX, and there are several names for
-	// the same thing in struct stat.
+	/* Copy the timestamps. We have several possible ways to do this, of
+	   which some are better in both security and precision.
+
+	   First, get the nanosecond part of the timestamps. As of writing,
+	   it's not standardized by POSIX, and there are several names for
+	   the same thing in struct stat. */
     {	long atime_nsec;
 	long mtime_nsec;
 
 #	if defined(HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC)
-	// GNU and Solaris
+	/* GNU and Solaris */
 	atime_nsec = z->isb.st_atim.tv_nsec;
 	mtime_nsec = z->isb.st_mtim.tv_nsec;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_ATIMESPEC_TV_NSEC)
-	// BSD
+	/* BSD */
 	atime_nsec = z->isb.st_atimespec.tv_nsec;
 	mtime_nsec = z->isb.st_mtimespec.tv_nsec;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_ATIMENSEC)
-	// GNU and BSD without extensions
+	/* GNU and BSD without extensions */
 	atime_nsec = z->isb.st_atimensec;
 	mtime_nsec = z->isb.st_mtimensec;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_UATIME)
-	// Tru64
+	/* Tru64 */
 	atime_nsec = z->isb.st_uatime * 1000;
 	mtime_nsec = z->isb.st_umtime * 1000;
 
 #	elif defined(HAVE_STRUCT_STAT_ST_ATIM_ST__TIM_TV_NSEC)
-	// UnixWare
+	/* UnixWare */
 	atime_nsec = z->isb.st_atim.st__tim.tv_nsec;
 	mtime_nsec = z->isb.st_mtim.st__tim.tv_nsec;
 
 #	else
-	// Safe fallback
+	/* Safe fallback */
 	atime_nsec = 0;
 	mtime_nsec = 0;
 #	endif
 
-	// Construct a structure to hold the timestamps and call appropriate
-	// function to set the timestamps.
+	/* Construct a structure to hold the timestamps and call appropriate
+	   function to set the timestamps. */
 #if defined(HAVE_FUTIMENS)
-	// Use nanosecond precision.
+	/* Use nanosecond precision. */
       {	struct timespec tv[2];
 	tv[0].tv_sec = z->isb.st_atime;
 	tv[0].tv_nsec = atime_nsec;
@@ -270,7 +270,7 @@ io_copy_attrs(rpmz z)
       }
 
 #elif defined(HAVE_FUTIMES) || defined(HAVE_FUTIMESAT) || defined(HAVE_UTIMES)
-	// Use microsecond precision.
+	/* Use microsecond precision. */
       {	struct timeval tv[2];
 	tv[0].tv_sec = z->isb.st_atime;
 	tv[0].tv_usec = atime_nsec / 1000;
@@ -284,21 +284,21 @@ io_copy_attrs(rpmz z)
 	/* XXX Fileno onto libio FILE * is -1 so EBADF is returned. */
 	(void)futimesat(Fileno(z->ofd), NULL, tv);
 #	else
-	// Argh, no function to use a file descriptor to set the timestamp.
+	/* Argh, no function to use a file descriptor to set the timestamp. */
 	(void)Utimes(z->ofn, tv);
 #	endif
       }
 
 #elif defined(HAVE_UTIME)
-	// Use one-second precision. utime() doesn't support using file
-	// descriptor either. Some systems have broken utime() prototype
-	// so don't make this const.
+	/* Use one-second precision. utime() doesn't support using file
+	   descriptor either. Some systems have broken utime() prototype
+	   so don't make this const. */
       {	struct utimbuf buf = {
 		.actime = z->isb.st_atime,
 		.modtime = z->isb.st_mtime,
 	};
 
-	// Avoid warnings.
+	/* Avoid warnings. */
 	(void)atime_nsec;
 	(void)mtime_nsec;
 
@@ -918,26 +918,26 @@ typedef struct {
     rpmuint64_t max;
 } option_map;
 
-/// Parses option=value pairs that are separated with colons, semicolons,
-/// or commas: opt=val:opt=val;opt=val,opt=val
-///
-/// Each option is a string, that is converted to an integer using the
-/// index where the option string is in the array.
-///
-/// Value can be either a number with minimum and maximum value limit, or
-/// a string-id map mapping a list of possible string values to integers.
-///
-/// When parsing both option and value succeed, a filter-specific function
-/// is called, which should update the given value to filter-specific
-/// options structure.
-///
-/// \param      str     String containing the options from the command line
-/// \param      opts    Filter-specific option map
-/// \param      set     Filter-specific function to update filter_options
-/// \param      filter_options  Pointer to filter-specific options structure
-///
-/// \return     Returns only if no errors occur.
-///
+/*  Parses option=value pairs that are separated with colons, semicolons,
+    or commas: opt=val:opt=val;opt=val,opt=val
+
+    Each option is a string, that is converted to an integer using the
+    index where the option string is in the array.
+
+    Value can be either a number with minimum and maximum value limit, or
+    a string-id map mapping a list of possible string values to integers.
+
+    When parsing both option and value succeed, a filter-specific function
+    is called, which should update the given value to filter-specific
+    options structure.
+
+    \param      str     String containing the options from the command line
+    \param      opts    Filter-specific option map
+    \param      set     Filter-specific function to update filter_options
+    \param      filter_options  Pointer to filter-specific options structure
+
+    \return     Returns only if no errors occur.
+*/
 static void
 parse_options(const char *str, const option_map *opts,
 		void (*set)(void *filter_options,
@@ -973,14 +973,14 @@ parse_options(const char *str, const option_map *opts,
 	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	}
 
-	// Look for the option name from the option map.
+	/* Look for the option name from the option map. */
 	found = 0;
 	for (i = 0; opts[i].name != NULL; ++i) {
 	    if (strcmp(name, opts[i].name) != 0)
 		continue;
 
 	    if (opts[i].map == NULL) {
-		// value is an integer.
+		/* value is an integer. */
 		rpmuint64_t v;
 #ifdef NOTYET
 		v = str_to_uint64(name, value, opts[i].min, opts[i].max);
@@ -989,8 +989,8 @@ parse_options(const char *str, const option_map *opts,
 #endif
 		set(filter_options, i, v);
 	    } else {
-		// value is a string which we should map
-		// to an integer.
+		/* value is a string which we should map
+		   to an integer. */
 		size_t j;
 		for (j = 0; opts[i].map[j].name != NULL; ++j) {
 		    if (strcmp(opts[i].map[j].name, value) == 0)
@@ -1096,7 +1096,7 @@ options_delta(const char *str)
     };
 
     lzma_options_delta *options = xmalloc(sizeof(lzma_options_delta));
-    // It's hard to give a useful default for this.
+    /* It's hard to give a useful default for this. */
     options->type = LZMA_DELTA_TYPE_BYTE;
     options->dist = LZMA_DELTA_DIST_MIN;
 
@@ -1333,7 +1333,7 @@ coder_set_compression_settings(rpmz z)
 	/*@modifies z, preset_default, preset_number @*/
 {
 
-    // Options for LZMA1 or LZMA2 in case we are using a preset.
+    /* Options for LZMA1 or LZMA2 in case we are using a preset. */
     rpmuint64_t memory_usage;
     rpmuint64_t memory_limit;
     size_t thread_limit;
@@ -1353,20 +1353,20 @@ coder_set_compression_settings(rpmz z)
 	coder_add_filter(z, LZMA_FILTER_SPARC, NULL);
 
     if (z->_filters_count == 0) {
-	// We are using a preset. This is not a good idea in raw mode
-	// except when playing around with things. Different versions
-	// of this software may use different options in presets, and
-	// thus make uncompressing the raw data difficult.
+	/* We are using a preset. This is not a good idea in raw mode
+	   except when playing around with things. Different versions
+	   of this software may use different options in presets, and
+	   thus make uncompressing the raw data difficult. */
 	if (z->format == RPMZ_FORMAT_RAW) {
-	    // The message is shown only if warnings are allowed
-	    // but the exit status isn't changed.
+	    /* The message is shown only if warnings are allowed
+	       but the exit status isn't changed. */
 	    rpmlog(RPMLOG_WARNING, _("Using a preset in raw mode is discouraged.\n"));
 	    rpmlog(RPMLOG_WARNING, _("The exact options of the presets may vary between software versions.\n"));
 	}
 
 	{   size_t preset_number = z->level;
 
-	    // Get the preset for LZMA1 or LZMA2.
+	    /* Get the preset for LZMA1 or LZMA2. */
 	    if (F_ISSET(z->flags, EXTREME))
 		preset_number |= LZMA_PRESET_EXTREME;
 
@@ -1374,7 +1374,7 @@ coder_set_compression_settings(rpmz z)
 assert(0);
 	}
 
-	// Use LZMA2 except with --format=lzma we use LZMA1.
+	/* Use LZMA2 except with --format=lzma we use LZMA1. */
 	z->_filters[0].id = z->format == RPMZ_FORMAT_LZMA
 			? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
 	z->_filters[0].options = &z->_options;
@@ -1385,21 +1385,21 @@ assert(0);
 	preset_default = false;
 #endif	/* NOTYET */
 
-    // Terminate the filter options array.
+    /* Terminate the filter options array. */
     z->_filters[z->_filters_count].id = LZMA_VLI_UNKNOWN;
 
-    // If we are using the LZMA_Alone format, allow exactly one filter
-    // which has to be LZMA.
+    /* If we are using the LZMA_Alone format, allow exactly one filter
+       which has to be LZMA. */
     if (z->format == RPMZ_FORMAT_LZMA && (z->_filters_count != 1
 			|| z->_filters[0].id != LZMA_FILTER_LZMA1))
 	rpmlog(RPMLOG_CRIT, _("With --format=lzma only the LZMA1 filter is supported\n"));
 
-    // Print the selected filter chain.
+    /* Print the selected filter chain. */
     message_filters(RPMLOG_DEBUG, z->_filters);
 
-    // If using --format=raw, we can be decoding. The memusage function
-    // also validates the filter chain and the options used for the
-    // filters.
+    /* If using --format=raw, we can be decoding. The memusage function
+       also validates the filter chain and the options used for the
+       filters. */
     if (z->mode == RPMZ_MODE_COMPRESS) {
 	memory_usage = lzma_raw_encoder_memusage(z->_filters);
 	memory_limit = hw_memlimit_encoder(z);
@@ -1411,7 +1411,7 @@ assert(0);
     if (memory_usage == UINT64_MAX)
 	rpmlog(RPMLOG_CRIT, "Unsupported filter chain or filter options\n");
 
-    // Print memory usage info.
+    /* Print memory usage info. */
     rpmlog(RPMLOG_DEBUG, _("%'llu MiB (%'llu B) of memory is required per thread, limit is %'llu MiB (%'llu B)\n"),
 			(unsigned long long)(memory_usage >> 20),
 			(unsigned long long)memory_usage,
@@ -1423,9 +1423,9 @@ assert(0);
 	lzma_options_lzma *opt;
 	rpmuint32_t orig_dict_size;
 
-	// If --no-auto-adjust was used or we didn't find LZMA1 or
-	// LZMA2 as the last filter, give an error immediatelly.
-	// --format=raw implies --no-auto-adjust.
+	/* If --no-auto-adjust was used or we didn't find LZMA1 or
+	   LZMA2 as the last filter, give an error immediatelly.
+	   --format=raw implies --no-auto-adjust. */
 	if (!z->_auto_adjust || z->format == RPMZ_FORMAT_RAW)
 	    memlimit_too_small(memory_usage, memory_limit);
 
@@ -1433,9 +1433,9 @@ assert(0);
 	assert(z->mode == RPMZ_MODE_COMPRESS);
 #endif	/* NOTYET */
 
-	// Look for the last filter if it is LZMA2 or LZMA1, so
-	// we can make it use less RAM. With other filters we don't
-	// know what to do.
+	/* Look for the last filter if it is LZMA2 or LZMA1, so
+	   we can make it use less RAM. With other filters we don't
+	   know what to do. */
 	while (z->_filters[i].id != LZMA_FILTER_LZMA2
 		&& z->_filters[i].id != LZMA_FILTER_LZMA1) {
 	    if (z->_filters[i].id == LZMA_VLI_UNKNOWN)
@@ -1444,38 +1444,38 @@ assert(0);
 	    ++i;
 	}
 
-	// Decrease the dictionary size until we meet the memory
-	// usage limit. First round down to full mebibytes.
+	/* Decrease the dictionary size until we meet the memory
+	   usage limit. First round down to full mebibytes. */
 	opt = z->_filters[i].options;
 	orig_dict_size = opt->dict_size;
 	opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
 	while (1) {
-	    // If it is below 1 MiB, auto-adjusting failed. We
-	    // could be more sophisticated and scale it down even
-	    // more, but let's see if many complain about this
-	    // version.
-	    //
-	    // FIXME: Displays the scaled memory usage instead
-	    // of the original.
+	    /* If it is below 1 MiB, auto-adjusting failed. We
+	       could be more sophisticated and scale it down even
+	       more, but let's see if many complain about this
+	       version.
+
+	       FIXME: Displays the scaled memory usage instead
+	       of the original. */
 	    if (opt->dict_size < (UINT32_C(1) << 20))
 		memlimit_too_small(memory_usage, memory_limit);
 
 	    memory_usage = lzma_raw_encoder_memusage(z->_filters);
 assert(memory_usage != UINT64_MAX);
 
-	    // Accept it if it is low enough.
+	    /* Accept it if it is low enough. */
 	    if (memory_usage <= memory_limit)
 		break;
 
-	    // Otherwise 1 MiB down and try again. I hope this
-	    // isn't too slow method for cases where the original
-	    // dict_size is very big.
+	    /* Otherwise 1 MiB down and try again. I hope this
+	       isn't too slow method for cases where the original
+	       dict_size is very big. */
 	    opt->dict_size -= UINT32_C(1) << 20;
 	}
 
-	// Tell the user that we decreased the dictionary size.
-	// However, omit the message if no preset or custom chain
-	// was given. FIXME: Always warn?
+	/* Tell the user that we decreased the dictionary size.
+	   However, omit the message if no preset or custom chain
+	   was given. FIXME: Always warn? */
 #ifdef	NOTYET
 	if (!preset_default)
 #endif	/* NOTYET */
@@ -1487,8 +1487,8 @@ assert(memory_usage != UINT64_MAX);
 				(unsigned long long)(memory_limit >> 20));
     }
 
-    // Limit the number of worker threads so that memory usage
-    // limit isn't exceeded.
+    /* Limit the number of worker threads so that memory usage
+       limit isn't exceeded. */
     assert(memory_usage > 0);
     thread_limit = memory_limit / memory_usage;
     if (thread_limit == 0)
@@ -1888,17 +1888,17 @@ main(int argc, char *argv[])
     /* XXX todo: needs to be earlier. */
     optCon = rpmioInit(argc, argv, optionsTable);
 
-    // Never remove the source file when the destination is not on disk.
-    // In test mode the data is written nowhere, but setting opt_stdout
-    // will make the rest of the code behave well.
+    /* Never remove the source file when the destination is not on disk.
+       In test mode the data is written nowhere, but setting opt_stdout
+       will make the rest of the code behave well. */
     if (F_ISSET(z->flags, STDOUT) || z->mode == RPMZ_MODE_TEST) {
 	z->flags |= RPMZ_FLAGS_KEEP;
 	z->flags |= RPMZ_FLAGS_STDOUT;
     }
 
-    // If no --format flag was used, or it was --format=auto, we need to
-    // decide what is the target file format we are going to use. This
-    // depends on how we were called (checked earlier in this function).
+    /* If no --format flag was used, or it was --format=auto, we need to
+       decide what is the target file format we are going to use. This
+       depends on how we were called (checked earlier in this function). */
     if (z->mode == RPMZ_MODE_COMPRESS && z->format == RPMZ_FORMAT_AUTO)
 	z->format = z->_format_compress_auto;
 
