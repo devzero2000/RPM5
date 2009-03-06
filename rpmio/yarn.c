@@ -15,15 +15,27 @@
                        Add yarn_abort() function for clean-up on error exit
  */
 
+#include "system.h"
+
 /* for thread portability */
+#if defined(HAVE_PTHREAD_H)
+#if !defined(_POSIX_PTHREAD_SEMANTICS)
 #define _POSIX_PTHREAD_SEMANTICS
+#endif
 #if !defined(_REENTRANT)
 #define _REENTRANT
 #endif
+#else	/* HAVE_PTHREAD_H */
+#undef	_POSIX_PTHREAD_SEMANTICS
+#undef	_REENTRANT
+#endif	/* HAVE_PTHREAD_H */
 
 /* external libraries and entities referenced */
 #include <stdio.h>      /* fprintf(), stderr */
 #include <stdlib.h>     /* exit(), malloc(), free(), NULL */
+
+#if defined(HAVE_PTHREAD_H)
+
 /*@-incondefs@*/
 #include <pthread.h>    /* pthread_t, pthread_create(), pthread_join(), */
     /* pthread_attr_t, pthread_attr_init(), pthread_attr_destroy(),
@@ -34,6 +46,39 @@
        pthread_cond_t, PTHREAD_COND_INITIALIZER, pthread_cond_init(),
        pthread_cond_broadcast(), pthread_cond_wait(), pthread_cond_destroy() */
 /*@=incondefs@*/
+
+#else	/* HAVE_PTHREAD_H */
+
+#define	pthread_t	int
+#define	pthread_self()	0
+#define	pthread_equal(_t1, _t2)	((_t1) == (_t2))
+#define	pthread_create(__newthread, __attr, __start_routine, arg)	(-1)
+#define	pthread_join(__thread, __value_ptr)				(-1)
+#define	pthread_cancel(__th)						(-1)
+#define	pthread_cleanup_pop(__execute)
+#define	pthread_cleanup_push(__routine, __arg)
+
+#define	pthread_attr_t	int
+#define	pthread_attr_init(__attr)				(-1)
+#define	pthread_attr_destroy(__attr)				(-1)
+#define	pthread_attr_setdetachstate(__attr, __detachstate)	(-1)
+
+#define	pthread_mutex_t	int
+#define	PTHREAD_MUTEX_INITIALIZER	0
+#define	PTHREAD_CREATE_JOINABLE		0
+#define	pthread_mutex_destroy(__mutex)		(-1)
+#define	pthread_mutex_init(__mutex, __attr)	(-1)
+#define	pthread_mutex_lock(__mutex)		(-1)
+#define	pthread_mutex_unlock(__mutex)		(-1)
+
+#define	pthread_cond_t	int
+#define	PTHREAD_COND_INITIALIZER	0
+#define	pthread_cond_destroy(__cond)		(-1)
+#define	pthread_cond_init(__cond, __attr)	(-1)
+#define	pthread_cond_wait(__cond, __mutex)	(-1)
+#define	pthread_cond_broadcast(__cond)		(-1)
+
+#endif	/* HAVE_PTHREAD_H */
 
 #include <errno.h>      /* ENOMEM, EAGAIN, EINVAL */
 
@@ -125,6 +170,8 @@ extern int pthread_cancel (pthread_t __th)
 
 /* interface definition */
 #include "yarn.h"
+
+#include "debug.h"
 
 /* error handling external globals, resettable by application */
 /*@unchecked@*/ /*@observer@*/
