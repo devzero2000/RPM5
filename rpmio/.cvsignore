@@ -16,6 +16,7 @@ getdate.c
 lcov
 lookup3
 rpmborg
+rpmgrep
 rpmcpio
 rpmcurl
 rpmdigest
