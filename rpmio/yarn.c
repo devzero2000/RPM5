@@ -361,6 +361,7 @@ struct capsule {
 };
 
 /* mark the calling thread as done and alert yarnJoinAll() */
+#if defined(HAVE_PTHREAD_H)
 static void yarnReenter(/*@unused@*/ void * dummy)
 	/*@globals threads, threads_lock, fileSystem, internalState @*/
 	/*@modifies threads, threads_lock, fileSystem, internalState @*/
@@ -392,12 +393,14 @@ static void yarnReenter(/*@unused@*/ void * dummy)
     /* update the count of threads to be joined and alert yarnJoinAll() */
     yarnTwist(&(threads_lock), BY, 1);
 }
+#endif
 
 /* all threads go through this routine so that just before the thread exits,
    it marks itself as done in the threads list and alerts yarnJoinAll() so that
    the thread resources can be released -- use cleanup stack so that the
    marking occurs even if the thread is cancelled */
 /*@null@*/
+#if defined(HAVE_PTHREAD_H)
 static void * yarnIgnition(/*@only@*/ void * arg)
 	/*@*/
 {
@@ -422,6 +425,7 @@ static void * yarnIgnition(/*@only@*/ void * arg)
     /* exit thread */
     return NULL;
 }
+#endif
 
 /* not all POSIX implementations create threads as joinable by default, so that
    is made explicit here */
@@ -432,7 +436,9 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
     int ret;
     yarnThread th;
     struct capsule * capsule;
+#if defined(HAVE_PTHREAD_H)
     pthread_attr_t attr;
+#endif
 
     /* construct the requested call and argument for the yarnIgnition() routine
        (allocated instead of automatic so that we're sure this will still be
