@@ -10,126 +10,14 @@
 
 #if defined(HAVE_BZLIB_H)
 
-#include <bzlib.h>
-
-#if defined(__LCLINT__)
-/*@-incondefs =protoparammatch@*/
-/*@-exportheader@*/
-
-BZ_EXTERN BZFILE* BZ_API(BZ2_bzReadOpen) (
-   /*@out@*/
-      int*  bzerror,
-      FILE* f,
-      int   verbosity,
-      int   small,
-   /*@out@*/
-      void* unused,
-      int   nUnused
-   )
-	/*@modifies *bzerror, f @*/;
-
-BZ_EXTERN void BZ_API(BZ2_bzReadClose) (
-   /*@out@*/
-      int*    bzerror,
-   /*@only@*/
-      BZFILE* b
-   )
-	/*@modifies *bzerror, b @*/;
-
-BZ_EXTERN void BZ_API(BZ2_bzReadGetUnused) (
-   /*@out@*/
-      int*    bzerror,
-      BZFILE* b,
-   /*@out@*/
-      void**  unused,
-      int*    nUnused
-   )
-	/*@modifies *bzerror, b, *unused, *nUnused @*/;
-
-BZ_EXTERN int BZ_API(BZ2_bzRead) (
-   /*@out@*/
-      int*    bzerror,
-      BZFILE* b,
-   /*@out@*/
-      void*   buf,
-      int     len
-   )
-	/*@modifies *bzerror, b, *buf @*/;
-
-BZ_EXTERN BZFILE* BZ_API(BZ2_bzWriteOpen) (
-      int*  bzerror,
-      FILE* f,
-      int   blockSize100k,
-      int   verbosity,
-      int   workFactor
-   )
-	/*@modifies *bzerror @*/;
-
-BZ_EXTERN void BZ_API(BZ2_bzWrite) (
-   /*@out@*/
-      int*    bzerror,
-      BZFILE* b,
-      void*   buf,
-      int     len
-   )
-	/*@modifies *bzerror, b @*/;
-
-BZ_EXTERN void BZ_API(BZ2_bzWriteClose) (
-   /*@out@*/
-      int*          bzerror,
-   /*@only@*/
-      BZFILE*       b,
-      int           abandon,
-   /*@out@*/
-      unsigned int* nbytes_in,
-   /*@out@*/
-      unsigned int* nbytes_out
-   )
-	/*@modifies *bzerror, b, *nbytes_in, *nbytes_out @*/;
-
-BZ_EXTERN int BZ_API(BZ2_bzflush) (
-      BZFILE* b
-   )
-	/*@modifies b @*/;
-
-BZ_EXTERN const char * BZ_API(BZ2_bzerror) (
-      BZFILE *b,
-   /*@out@*/
-      int    *errnum
-   );
-
-/*@=exportheader@*/
-/*@=incondefs =protoparammatch@*/
-#endif	/* __LCLINT__ */
+#define	_RPMBZ_INTERNAL
+#include "rpmbz.h"
 
 #include "debug.h"
 
 /*@access FD_t @*/
 
 #define	BZDONLY(fd)	assert(fdGetIo(fd) == bzdio)
-
-typedef	struct rpmbz_s {
-    BZFILE *bzfile;	
-    int bzerr;
-    int omode;		/*!< open mode: O_RDONLY | O_WRONLY */
-/*@dependent@*/ /*@null@*/
-    FILE * fp;		/*!< file pointer */
-    int B;		/*!< blockSize100K (default: 9) */
-    int S;		/*!< small (default: 0) */
-    int V;		/*!< verboisty (default: 0) */
-    int W;		/*!< workFactor (default: 30) */
-    unsigned int nbytes_in;
-    unsigned int nbytes_out;
-} * rpmbz;
-
-/*@unchecked@*/
-static int _bzdB = 9;
-/*@unchecked@*/
-static int _bzdS = 0;
-/*@unchecked@*/
-static int _bzdV = 1;
-/*@unchecked@*/
-static int _bzdW = 30;
 
 static const char * rpmbzStrerror(rpmbz bz)
 	/*@*/
@@ -164,8 +52,7 @@ static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
 	(void) fclose(bz->fp);
 	bz->fp = NULL;
     }
-    bz = _free(bz);
-    return NULL;
+    return rpmbzFini(bz);
 }
 
 /*@only@*/
@@ -174,6 +61,8 @@ static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 	/*@modifies fileSystem @*/
 {
     rpmbz bz;
+    int level = -1;	/* XXX use _bzdB default */
+    mode_t omode;
     const char * s = fmode;
     char stdio[20];
     char *t = stdio;
@@ -181,25 +70,20 @@ static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
     int c;
 
 assert(fmode != NULL);		/* XXX return NULL instead? */
-    bz = xcalloc(1, sizeof(*bz));
-    bz->B = _bzdB;
-    bz->S = _bzdS;
-    bz->V = _bzdV;
-    bz->W = _bzdW;
 
     switch ((c = *s++)) {
     case 'a':
     case 'w':
-	bz->omode = O_WRONLY;
+	omode = O_WRONLY;
 	*t++ = (char)c;
 	break;
     case 'r':
-	bz->omode = O_RDONLY;
+	omode = O_RDONLY;
 	*t++ = (char)c;
 	break;
     }
 	
-    while ((c = *s++) != 0)
+    while ((c = *s++) != 0) {
     switch (c) {
     case '.':
 	/*@switchbreak@*/ break;
@@ -211,11 +95,13 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
 	if (t < te) *t++ = c;
 	/*@switchbreak@*/ break;
     default:
-	if (xisdigit(c))
-	    bz->B = c - (int)'0';
+	if (c >= (int)'0' && c <= (int)'9')
+	    level = c - (int)'0';
 	/*@switchbreak@*/ break;
-    }
+    }}
     *t = '\0';
+
+    bz = rpmbzInit(level, omode);
 
     if (fdno >= 0) {
 	if ((bz->fp = fdopen(fdno, stdio)) != NULL)
@@ -231,6 +117,86 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
 
     return (bz->bzfile != NULL ? bz : rpmbzFree(bz, 0));
 }
+
+#ifdef	NOTYET
+/*@-mustmod -nullstate@*/
+static void rpmbzCompress(rpmbz bz, rpmzJob job)
+	/*@globals fileSystem @*/
+	/*@modifies bz, job, fileSystem @*/
+{
+    bz_stream *bzstrm = &bz->strm;
+    size_t len;			/* remaining bytes to compress/check */
+    int ret;
+
+    /* initialize the deflate stream for this block */
+    bzstrm->bzfree = NULL;
+    bzstrm->bzalloc = NULL;
+    bzstrm->opaque = NULL;
+    if ((ret = BZ2_bzCompressInit(bzstrm, bz->B, bz->V, bz->W)) != BZ_OK)
+	bail("not enough memory", "BZ2_bzCompressInit");
+
+    bzstrm->next_in = job->in->buf;
+    bzstrm->next_out = job->out->buf;
+    bzstrm->avail_out = job->out->len;
+
+    /* run _PIGZMAX-sized amounts of input through deflate -- this loop is
+    * needed for those cases where the integer type is smaller than the
+    * size_t type, or when len is close to the limit of the size_t type */
+    len = job->in->len;
+    while (len > _PIGZMAX) {
+	bzstrm->avail_in = _PIGZMAX;
+	if ((ret = BZ2_bzCompress(bzstrm, BZ_RUN)) != BZ_RUN_OK)
+	    fprintf(stderr, "*** BZ2_bzCompress(%d): %d\n", BZ_RUN, ret);
+assert(bzstrm->avail_in == 0 && bzstrm->avail_out != 0);
+	len -= _PIGZMAX;
+    }
+
+    /* run the last piece through deflate -- terminate with a sync marker,
+    * or finish deflate stream if this is the last block */
+    bzstrm->avail_in = (unsigned)len;
+    ret = BZ2_bzCompress(bzstrm, BZ_FINISH);
+    if (!(ret == BZ_FINISH_OK || ret == BZ_STREAM_END))
+	fprintf(stderr, "*** BZ2_bzCompress(%d): %d\n", BZ_FINISH, ret);
+    if ((ret = BZ2_bzCompressEnd(bzstrm)) != BZ_OK)
+	fprintf(stderr, "*** BZ2_bzCompressEnd: %d\n", ret);
+#ifdef	NOTYET
+assert(bzstrm->avail_in == 0 && bzstrm->avail_out != 0);
+#endif
+
+}
+/*@=mustmod =nullstate@*/
+
+/*@-mustmod -nullstate@*/
+static void rpmbzDecompress(rpmbz bz, rpmzJob job)
+	/*@globals fileSystem @*/
+	/*@modifies bz, job, fileSystem @*/
+{
+    bz_stream *bzstrm = &bz->strm;
+    int ret;
+
+    /* initialize the inflate stream for this block */
+    bzstrm->bzfree = NULL;
+    bzstrm->bzalloc = NULL;
+    bzstrm->opaque = NULL;
+    if ((ret = BZ2_bzDecompressInit(bzstrm, bz->V, bz->S)) != BZ_OK)
+	bail("not enough memory", "BZ2_bzDecompressInit");
+
+    bzstrm->next_in = job->in->buf;
+    bzstrm->avail_in = job->in->len;
+    bzstrm->next_out = job->out->buf;
+    bzstrm->avail_out = job->out->len;
+
+    if ((ret = BZ2_bzDecompress(bzstrm)) != BZ_RUN_OK)
+	fprintf(stderr, "*** BZ2_bzDecompress: %d\n", ret);
+
+    job->out->len -= bzstrm->avail_out;
+
+    if ((ret = BZ2_bzDecompressEnd(bzstrm)) != BZ_OK)
+	fprintf(stderr, "*** BZ2_bzDecompressEnd: %d\n", ret);
+
+}
+/*@=mustmod =nullstate@*/
+#endif	/* NOTYET */
 
 /*@-mustmod@*/
 static ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
@@ -268,7 +234,7 @@ assert(rc >= 0);
 	break;
     default:
 	rc = -1;	/* XXX just in case. */
-	if (errmsg)
+	if (errmsg != NULL)
 	    *errmsg = rpmbzStrerror(bz);
 	rpmbzClose(bz, 1, NULL);
 	break;
@@ -291,7 +257,7 @@ assert(bz->bzfile != NULL);	/* XXX TODO: lazy open? */
 	rc = count;
 	break;
     default:
-	if (errmsg)
+	if (errmsg != NULL)
 	    *errmsg = rpmbzStrerror(bz);
 	rpmbzClose(bz, 1, NULL);
 	rc = -1;
@@ -329,21 +295,6 @@ static int rpmbzFlush(void * _bz)
     rpmbz bz = _bz;
     return BZ2_bzflush(bz->bzfile);
 }
-
-/* XXX HACK: args are rpmbz, not a FD_t, etc. likely should do a FIO_t? */
-/*@-type@*/ /* LCL: function typedefs */
-static struct FDIO_s bzio_s = {
-    (fdio_read_function_t)	rpmbzRead,
-    (fdio_write_function_t)	rpmbzWrite,
-    (fdio_seek_function_t)	rpmbzSeek,
-    (fdio_close_function_t)	rpmbzClose,
-    (fdio_fopen_function_t)	rpmbzOpen,
-    (fdio_fdopen_function_t)	rpmbzFdopen,
-    (fdio_flush_function_t)	rpmbzFlush,
-};
-/*@=type@*/
-
-FDIO_t bzio = /*@-compmempass@*/ &bzio_s /*@=compmempass@*/ ;
 
 /* =============================================================== */
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)

@@ -276,12 +276,12 @@ int rpmbzFlush(void * _bz)
 
 /**
  */
-int rpmbzCompress(rpmbz bz, rpmzJob job)
+int rpmbzCompressBlock(rpmbz bz, rpmzJob job)
 	/*@modifies job @*/;
 
 /**
  */
-int rpmbzDecompress(rpmbz bz, rpmzJob job)
+int rpmbzDecompressBlock(rpmbz bz, rpmzJob job)
 	/*@modifies job @*/;
 #endif	/* NOTYET */
 
