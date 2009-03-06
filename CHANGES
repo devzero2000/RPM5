@@ -1,4 +1,5 @@
 5.1.6 -> 5.1.7:
+    - jbj: eleminate duplicate rpmVersionCompare() routines.
     - afb: backport macosx ldflags fixes.
     - glen: markLinkedFailed if rpm file reopen failed during transaction to avoid losing old pkg info from db
     - jbj: add rpmdsNSType() to -lrpm loader map.
