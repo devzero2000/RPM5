@@ -312,7 +312,9 @@ struct rpmz_s __rpmz = {
 static void rpmzDefaults(rpmz z)
 	/*@modifies z @*/
 {
-    rpmzQueue zq = z->zq;
+    rpmzQueue zq = &z->_zq;	/* XXX initialize rpmzq */
+
+    z->suffix = ".gz";               /* compressed file suffix */
 
     zq->level = Z_DEFAULT_COMPRESSION;	/* XXX level is format specific. */
 #ifdef _PIGZNOTHREAD
@@ -327,7 +329,6 @@ static void rpmzDefaults(rpmz z)
     zq->flags |= RPMZ_FLAGS_INDEPENDENT; /* initialize dictionary each thread */
     zq->flags |= (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME); /* store/restore name and timestamp */
     zq->flags &= ~RPMZ_FLAGS_STDOUT; /* don't force output to stdout */
-    z->suffix = ".gz";              /* compressed file suffix */
     zq->mode = RPMZ_MODE_COMPRESS;   /* compress */
     zq->flags &= ~RPMZ_FLAGS_LIST;   /* compress */
     zq->flags &= ~RPMZ_FLAGS_KEEP;   /* delete input file once compressed */
