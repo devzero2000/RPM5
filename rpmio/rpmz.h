@@ -19,6 +19,8 @@
 #define	POPT_ARGFLAG_TOGGLE	0
 #endif
 
+#include "rpmzlog.h"
+
 #ifndef _PIGZNOTHREAD
 #  include <yarn.h>     /* yarnThread, yarnLaunch(), yarnJoin(), yarnJoinAll(), */
                         /* yarnLock, yarnNewLock(), yarnPossess(), yarnTwist(), yarnWaitFor(),
@@ -293,16 +295,11 @@ struct rpmz_s {
     unsigned long zip_clen;	/*!< header compressed length */
     unsigned long zip_ulen;	/*!< header uncompressed length */
 
-#if defined(DEBUG) || defined(__LCLINT__)
-    struct timeval start;	/*!< starting time of day for tracing */
-/*@null@*/
-    struct log *log_head;
-/*@shared@*/ /*@relnull@*/
-    struct log **log_tail;
-/*@only@*/ /*@null@*/
-    yarnLock log_lock;
-#endif	/* DEBUG */
 #endif	/* _RPMZ_INTERNAL_PIGZ */
+
+    struct timeval start;	/*!< starting time of day for tracing */
+/*@owned@*/ /*@null@*/
+    rpmzLog zlog;		/*!< trace logging */
 
 };
 #endif	/* _RPMZ_INTERNAL */

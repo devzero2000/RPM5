@@ -270,15 +270,6 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
 
 #endif
 
-#if defined(DEBUG) || defined(__LCLINT__)
-/* trace log */
-struct log {
-    struct timeval when;	/* time of entry */
-    char *msg;			/* message */
-    struct log *next;		/* next entry */
-};
-#endif
-
 #define	_RPMIOB_INTERNAL
 #define	_RPMZ_INTERNAL
 #define	_RPMZ_INTERNAL_PIGZ
@@ -286,11 +277,22 @@ struct log {
 
 #include "debug.h"
 
+#if defined(DEBUG) || defined(__LCLINT__)
+#define Trace(x) \
+    do { \
+	if (z->verbosity > 2) { \
+	    rpmzLogAdd x; \
+	} \
+    } while (0)
+#else	/* !DEBUG */
+#define rpmzLogDump(_zlog, _fp)
+#define Trace(x)
+#endif	/* DEBUG */
+
 /*@unchecked@*/
 static int _debug = 0;
 
 #define F_ISSET(_f, _FLAG) (((_f) & ((RPMZ_FLAGS_##_FLAG) & ~0x40000000)) != RPMZ_FLAGS_NONE)
-#define RZ_ISSET(_FLAG) F_ISSET(z->flags, _FLAG)
 
 /*@-fullinitblock@*/
 /*@unchecked@*/
@@ -376,158 +378,6 @@ static int bail(const char *why, const char *what)
 /*@notreached@*/
     return 0;
 }
-
-/*==============================================================*/
-
-#if defined(DEBUG) || defined(__LCLINT__)
-
-/* maximum log entry length */
-#define _PIGZMAXMSG 256
-
-/* set up log (call from main thread before other threads launched) */
-static void rpmzLogInit(rpmz z)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
-{
-    if (z->log_tail == NULL) {
-/*@-mustfreeonly@*/
-#ifndef _PIGZNOTHREAD
-	z->log_lock = yarnNewLock(0);
-#endif
-	z->log_head = NULL;
-	z->log_tail = &z->log_head;
-/*@=mustfreeonly@*/
-    }
-}
-
-/* add entry to trace log */
-static void rpmzLogAdd(rpmz z, char *fmt, ...)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
-{
-    struct timeval now;
-    struct log *me;
-    va_list ap;
-    char msg[_PIGZMAXMSG];
-
-    gettimeofday(&now, NULL);
-    me = xmalloc(sizeof(*me));
-    me->when = now;
-    va_start(ap, fmt);
-    vsnprintf(msg, sizeof(msg)-1, fmt, ap);
-    va_end(ap);
-    msg[sizeof(msg)-1] = '\0';
-
-/*@-mustfreeonly@*/
-    me->msg = xmalloc(strlen(msg) + 1);
-/*@=mustfreeonly@*/
-    strcpy(me->msg, msg);
-/*@-mustfreeonly@*/
-    me->next = NULL;
-/*@=mustfreeonly@*/
-#ifndef _PIGZNOTHREAD
-assert(z->log_lock != NULL);
-    yarnPossess(z->log_lock);
-#endif
-    *z->log_tail = me;
-    z->log_tail = &(me->next);
-#ifndef _PIGZNOTHREAD
-    yarnTwist(z->log_lock, BY, 1);
-#endif
-}
-
-/* pull entry from trace log and print it, return false if empty */
-static int rpmzLogShow(rpmz z)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
-{
-    struct log *me;
-    struct timeval diff;
-
-    if (z->log_tail == NULL)
-	return 0;
-#ifndef _PIGZNOTHREAD
-    yarnPossess(z->log_lock);
-#endif
-    me = z->log_head;
-    if (me == NULL) {
-#ifndef _PIGZNOTHREAD
-	yarnRelease(z->log_lock);
-#endif
-	return 0;
-    }
-    z->log_head = me->next;
-    if (me->next == NULL)
-	z->log_tail = &z->log_head;
-#ifndef _PIGZNOTHREAD
-    yarnTwist(z->log_lock, BY, -1);
-#endif
-    diff.tv_usec = me->when.tv_usec - z->start.tv_usec;
-    diff.tv_sec = me->when.tv_sec - z->start.tv_sec;
-    if (diff.tv_usec < 0) {
-	diff.tv_usec += 1000000L;
-	diff.tv_sec--;
-    }
-    fprintf(stderr, "trace %ld.%06ld %s\n",
-	    (long)diff.tv_sec, (long)diff.tv_usec, me->msg);
-    fflush(stderr);
-    free(me->msg);
-    free(me);
-    return 1;
-}
-
-/* release log resources (need to do rpmzLogInit() to use again) */
-static void rpmzLogFree(rpmz z)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
-{
-    struct log *me;
-
-    if (z->log_tail != NULL) {
-#ifndef _PIGZNOTHREAD
-	yarnPossess(z->log_lock);
-#endif
-	while ((me = z->log_head) != NULL) {
-	    z->log_head = me->next;
-	    me->msg = _free(me->msg);
-/*@-compdestroy@*/
-	    me = _free(me);
-/*@=compdestroy@*/
-	}
-#ifndef _PIGZNOTHREAD
-	yarnTwist(z->log_lock, TO, 0);
-	z->log_lock = yarnFreeLock(z->log_lock);
-#endif
-	z->log_tail = NULL;
-    }
-}
-
-/* show entries until no more, free log */
-static void rpmzLogDump(rpmz z)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
-{
-    if (z->log_tail == NULL)
-	return;
-    while (rpmzLogShow(z))
-	;
-    rpmzLogFree(z);
-}
-
-/* debugging macro */
-#define Trace(x) \
-    do { \
-	if (z->verbosity > 2) { \
-	    rpmzLogAdd x; \
-	} \
-    } while (0)
-
-#else	/* !DEBUG */
-
-#define rpmzLogDump(_z)
-#define Trace(x)
-
-#endif	/* DEBUG */
 
 /*==============================================================*/
 
@@ -1052,6 +902,8 @@ static void rpmzFinishJobs(rpmz z)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
+    rpmzLog zlog = z->zlog;
+
     struct rpmzJob_s job;
     int caught;
 
@@ -1071,15 +923,15 @@ static void rpmzFinishJobs(rpmz z)
 
     /* join all of the compress threads, verify they all came back */
     caught = yarnJoinAll();
-    Trace((z, "-- joined %d compress threads", caught));
+    Trace((zlog, "-- joined %d compress threads", caught));
 assert(caught == z->cthreads);
     z->cthreads = 0;
 
     /* free the resources */
     z->out_pool = rpmzFreePool(z->out_pool, &caught);
-    Trace((z, "-- freed %d output buffers", caught));
+    Trace((zlog, "-- freed %d output buffers", caught));
     z->in_pool = rpmzFreePool(z->in_pool, &caught);
-    Trace((z, "-- freed %d input buffers", caught));
+    Trace((zlog, "-- freed %d input buffers", caught));
     z->write_first = yarnFreeLock(z->write_first);
     z->compress_have = yarnFreeLock(z->compress_have);
 }
@@ -1095,6 +947,8 @@ static void compress_thread(void *_z)
 	/*@modifies _z, fileSystem, internalState @*/
 {
     rpmz z = _z;
+    rpmzLog zlog = z->zlog;
+
     rpmzJob job;                    /* job pulled and working on */ 
     rpmzJob here;                   /* pointers for inserting in write list */ 
     rpmzJob * prior;                /* pointers for inserting in write list */ 
@@ -1130,7 +984,7 @@ assert(job != NULL);
 	/* got a job -- initialize and set the compression level (note that if
 	 * deflateParams() is called immediately after deflateReset(), there is
 	 * no need to initialize the input/output for the stream) */
-	Trace((z, "-- compressing #%ld", job->seq));
+	Trace((zlog, "-- compressing #%ld", job->seq));
 /*@-noeffect@*/
 	(void)deflateReset(&strm);
 	(void)deflateParams(&strm, z->level, Z_DEFAULT_STRATEGY);
@@ -1180,7 +1034,7 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 /*@=noeffect@*/
 assert(strm.avail_in == 0 && strm.avail_out != 0);
 	job->out->len = strm.next_out - (unsigned char *)(job->out->buf);
-	Trace((z, "-- compressed #%ld%s", job->seq, job->more ? "" : " (last)"));
+	Trace((zlog, "-- compressed #%ld%s", job->seq, job->more ? "" : " (last)"));
 
 	/* reserve input buffer until check value has been calculated */
 	rpmzUseSpace(job->in);
@@ -1213,7 +1067,7 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 	job->check = check;
 	yarnPossess(job->calc);
 	yarnTwist(job->calc, TO, 1);
-	Trace((z, "-- checked #%ld%s", job->seq, job->more ? "" : " (last)"));
+	Trace((zlog, "-- checked #%ld%s", job->seq, job->more ? "" : " (last)"));
 
 	/* done with that one -- go find another job */
     }
@@ -1237,6 +1091,8 @@ static void write_thread(void *_z)
 	/*@modifies _z, fileSystem, internalState @*/
 {
     rpmz z = _z;
+    rpmzLog zlog = z->zlog;
+
     long seq;                       /* next sequence number looking for */
     rpmzJob job;                    /* job pulled and working on */
     size_t len;                     /* input length */
@@ -1247,7 +1103,7 @@ static void write_thread(void *_z)
     unsigned long check;            /* check value of uncompressed data */
 
     /* build and write header */
-    Trace((z, "-- write thread running"));
+    Trace((zlog, "-- write thread running"));
     head = rpmzPutHeader(z);
 
     /* process output of compress threads until end of input */    
@@ -1273,10 +1129,10 @@ assert(job != NULL);
 	clen += (unsigned long)(job->out->len);
 
 	/* write the compressed data and drop the output buffer */
-	Trace((z, "-- writing #%ld", seq));
+	Trace((zlog, "-- writing #%ld", seq));
 	rpmzWrite(z, job->out->buf, job->out->len);
 	rpmzDropSpace(job->out);
-	Trace((z, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
+	Trace((zlog, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
 
 	/* wait for check calculation to complete, then combine, once
 	 * the compress thread is done with the input, release it */
@@ -1319,6 +1175,8 @@ static void rpmzParallelCompress(rpmz z)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
+    rpmzLog zlog = z->zlog;
+
     long seq;                       /* sequence number */
     rpmzSpace prev;                 /* previous input space */
     rpmzSpace next;                 /* next input space */
@@ -1364,7 +1222,7 @@ static void rpmzParallelCompress(rpmz z)
 	    }
 	}
 	job->more = more;
-	Trace((z, "-- read #%ld%s", seq, more ? "" : " (last)"));
+	Trace((zlog, "-- read #%ld%s", seq, more ? "" : " (last)"));
 	if (++seq < 1)
 	    bail("input too long: ", z->_ifn);
 
@@ -1387,7 +1245,7 @@ static void rpmzParallelCompress(rpmz z)
     /* wait for the write thread to complete (we leave the compress threads out
        there and waiting in case there is another stream to compress) */
     z->writeth = yarnJoin(z->writeth);
-    Trace((z, "-- write thread joined"));
+    Trace((zlog, "-- write thread joined"));
 }
 
 #endif
@@ -1531,17 +1389,19 @@ static void load_read_thread(void *_z)
 	/*@modifies _z, fileSystem, internalState @*/
 {
     rpmz z = _z;
+    rpmzLog zlog = z->zlog;
+
     size_t len;
 
-    Trace((z, "-- launched decompress read thread"));
+    Trace((zlog, "-- launched decompress read thread"));
     do {
 	yarnPossess(z->load_state);
 	yarnWaitFor(z->load_state, TO_BE, 1);
 	z->in_len = len = rpmzRead(z, z->in_which ? z->in_buf : z->in_buf2, z->in_buf_allocated);
-	Trace((z, "-- decompress read thread read %lu bytes", len));
+	Trace((zlog, "-- decompress read thread read %lu bytes", len));
 	yarnTwist(z->load_state, TO, 0);
     } while (len == z->in_buf_allocated);
-    Trace((z, "-- exited decompress read thread"));
+    Trace((zlog, "-- exited decompress read thread"));
 }
 #endif
 
@@ -2144,19 +2004,20 @@ static void outb_write(void *_z)
 	/*@modifies _z, fileSystem, internalState @*/
 {
     rpmz z = _z;
+    rpmzLog zlog = z->zlog;
     size_t len;
 
-    Trace((z, "-- launched decompress write thread"));
+    Trace((zlog, "-- launched decompress write thread"));
     do {
 	yarnPossess(z->outb_write_more);
 	yarnWaitFor(z->outb_write_more, TO_BE, 1);
 	len = z->out_len;
 	if (len && z->mode == RPMZ_MODE_DECOMPRESS)
 	    rpmzWrite(z, z->out_copy, len);
-	Trace((z, "-- decompress wrote %lu bytes", len));
+	Trace((zlog, "-- decompress wrote %lu bytes", len));
 	yarnTwist(z->outb_write_more, TO, 0);
     } while (len);
-    Trace((z, "-- exited decompress write thread"));
+    Trace((zlog, "-- exited decompress write thread"));
 }
 
 /* output check thread */
@@ -2165,18 +2026,19 @@ static void outb_check(void *_z)
 	/*@modifies _z, fileSystem, internalState @*/
 {
     rpmz z = _z;
+    rpmzLog zlog = z->zlog;
     size_t len;
 
-    Trace((z, "-- launched decompress check thread"));
+    Trace((zlog, "-- launched decompress check thread"));
     do {
 	yarnPossess(z->outb_check_more);
 	yarnWaitFor(z->outb_check_more, TO_BE, 1);
 	len = z->out_len;
 	z->out_check = CHECK(z->out_check, z->out_copy, len);
-	Trace((z, "-- decompress checked %lu bytes", len));
+	Trace((zlog, "-- decompress checked %lu bytes", len));
 	yarnTwist(z->outb_check_more, TO, 0);
     } while (len);
-    Trace((z, "-- exited decompress check thread"));
+    Trace((zlog, "-- exited decompress check thread"));
 }
 #endif	/* _PIGZNOTHREAD */
 
@@ -2911,10 +2773,10 @@ static void rpmzAbort(/*@unused@*/ int sig)
 {
     rpmz z = _rpmz;
 
-    Trace((z, "termination by user"));
+    Trace((z->zlog, "termination by user"));
     if (z->ofdno != -1 && z->_ofn != NULL)
 	Unlink(z->_ofn);
-    rpmzLogDump(z);
+    z->zlog = rpmzLogDump(z->zlog, NULL);
     _exit(EXIT_FAILURE);
 }
 
@@ -3095,10 +2957,10 @@ int main(int argc, char **argv)
     yarnPrefix = "rpmpigz";         /* prefix for yarn error messages */
     yarnAbort = rpmzAbort;          /* call on thread error */
 #endif
-#if defined(DEBUG) || defined(__LCLINT__)
     /* XXX add POPT_ARG_TIMEOFDAY oneshot? */
     gettimeofday(&z->start, NULL);  /* starting time for log entries */
-    rpmzLogInit(z);                     /* initialize logging */
+#if defined(DEBUG) || defined(__LCLINT__)
+    z->zlog = rpmzLogInit(&z->start);/* initialize logging */
 #endif
 
     /* set all options to defaults */
@@ -3149,7 +3011,7 @@ argvPrint("input args", z->argv, NULL);
     /* done -- release resources, show log */
 exit:
     rpmzNewOpts(z);
-    rpmzLogDump(z);
+    z->zlog = rpmzLogDump(z->zlog, NULL);
 
     z->manifests = argvFree(z->manifests);
     z->argv = argvFree(z->argv);
