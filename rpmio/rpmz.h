@@ -143,6 +143,8 @@ struct rpmzJob_s {
  */
 typedef struct rpmzQueue_s * rpmzQueue;
 
+/**
+ */
 struct rpmzQueue_s {
 #ifdef	NOTYET
     unsigned int flags;		/*!< Control bits. */
@@ -159,8 +161,16 @@ struct rpmzQueue_s {
 #endif
 
 /* --- globals (modified by main thread only when it's the only thread) */
-    size_t blocksize;		/*!< uncompressed input size per thread */
+    enum rpmzFlags_e flags;	/*!< Control bits. */
+    enum rpmzFormat_e format;	/*!< Compression format. */
+    enum rpmzMode_e mode;	/*!< Operation mode. */
+    unsigned int level;		/*!< Compression level. */
     unsigned int threads;	/*!< No. or threads to use. */
+#ifdef	NOTYET	/* XXX popt has sizeof(size_t) != sizeof(unsigned int) issues */
+    size_t blocksize;		/*!< uncompressed input size per thread */
+#else
+    unsigned int blocksize;	/*!< uncompressed input size per thread */
+#endif
 
 /*@null@*/
     const char * ofn;		/*!< output file name (allocated if not NULL) */
@@ -212,11 +222,6 @@ struct rpmz_s {
 /*@null@*/
     const char * base_prefix;	/*!< Prefix for file manifests paths. */
 
-    enum rpmzFlags_e flags;	/*!< Control bits. */
-    enum rpmzFormat_e format;	/*!< Compression format. */
-    enum rpmzMode_e mode;	/*!< Operation mode. */
-    unsigned int level;		/*!< Compression level. */
-
 /*@null@*/ /*@observer@*/
     const char * suffix;	/*!< -S, --suffix ... */
 
@@ -261,8 +266,6 @@ struct rpmz_s {
 #endif	/* _RPMZ_INTERNAL_XZ */
 
 #if defined(_RPMZ_INTERNAL_PIGZ)	/* PIGZ specific configuration. */
-/* --- globals (modified by main thread only when it's the only thread) */
-
 /* --- globals for decompression and listing buffered reading */
     int in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
@@ -363,42 +366,42 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	rpmzArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { "fast", '\0', POPT_ARG_VAL,				&__rpmz.level,  1,
+  { "fast", '\0', POPT_ARG_VAL,				&__rpmz._zq.level,  1,
 	N_("fast compression"), NULL },
-  { "best", '\0', POPT_ARG_VAL,				&__rpmz.level,  9,
+  { "best", '\0', POPT_ARG_VAL,				&__rpmz._zq.level,  9,
 	N_("best compression"), NULL },
 #if defined(_RPMZ_INTERNAL_XZ)
   /* XXX compressor specific flags need to be set some other way. */
-  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags,  RPMZ_FLAGS_EXTREME,
+  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags,  RPMZ_FLAGS_EXTREME,
 	N_("extreme compression"), NULL },
 #endif	/* _RPMZ_INTERNAL_XZ */
-  { NULL, '0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  0,
+  { NULL, '0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  0,
 	NULL, NULL },
-  { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  1,
+  { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  1,
 	NULL, NULL },
-  { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  2,
+  { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  2,
 	NULL, NULL },
-  { NULL, '3', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  3,
+  { NULL, '3', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  3,
 	NULL, NULL },
-  { NULL, '4', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  4,
+  { NULL, '4', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  4,
 	NULL, NULL },
-  { NULL, '5', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  5,
+  { NULL, '5', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  5,
 	NULL, NULL },
-  { NULL, '6', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  6,
+  { NULL, '6', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  6,
 	NULL, NULL },
-  { NULL, '7', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  7,
+  { NULL, '7', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  7,
 	NULL, NULL },
-  { NULL, '8', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  8,
+  { NULL, '8', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  8,
 	NULL, NULL },
-  { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  9,
+  { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  9,
 	NULL, NULL },
 
 #if defined(_RPMZ_INTERNAL_PIGZ)
 #ifdef	NOTYET	/* XXX --blocksize/--processes callback to validate arg */
-  { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.blocksize, 0,
+  { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz._zq.blocksize, 0,
 	N_("Set compression block size to mmmK"), N_("mmm") },
   /* XXX same as --threads */
-  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.threads, 0,
+  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz._zq.threads, 0,
 	N_("Allow up to n compression threads"), N_("n") },
 #else
   /* XXX show default is bogus with callback, can't find value. */
@@ -409,10 +412,10 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Allow up to n compression threads"), N_("n") },
 #endif
   /* XXX display toggle "-i,--[no]indepndent" bustage. */
-  { "independent", 'i', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags, RPMZ_FLAGS_INDEPENDENT,
+  { "independent", 'i', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags, RPMZ_FLAGS_INDEPENDENT,
 	N_("Compress blocks independently for damage recovery"), NULL },
   /* XXX display toggle "-r,--[no]rsyncable" bustage. */
-  { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz.flags, RPMZ_FLAGS_RSYNCABLE,
+  { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz._zq.flags, RPMZ_FLAGS_RSYNCABLE,
 	N_("Input-determined block locations for rsync"), NULL },
 #endif	/* _RPMZ_INTERNAL_PIGZ */
 #if defined(_RPMZ_INTERNAL_XZ)
@@ -423,39 +426,39 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 
   /* ===== Operation modes */
 #if defined(_RPMZ_INTERNAL_XZ)
-  { "compress", 'z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode, RPMZ_MODE_COMPRESS,
+  { "compress", 'z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.mode, RPMZ_MODE_COMPRESS,
 	N_("force compression"), NULL },
-  { "uncompress", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode, RPMZ_MODE_DECOMPRESS,
+  { "uncompress", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.mode, RPMZ_MODE_DECOMPRESS,
 	N_("force decompression"), NULL },
 #endif	/* _RPMZ_INTERNAL_XZ */
-  { "decompress", 'd', POPT_ARG_VAL,		&__rpmz.mode, RPMZ_MODE_DECOMPRESS,
+  { "decompress", 'd', POPT_ARG_VAL,		&__rpmz._zq.mode, RPMZ_MODE_DECOMPRESS,
 	N_("Decompress the compressed input"), NULL },
-  { "test", 't', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_TEST,
+  { "test", 't', POPT_ARG_VAL,			&__rpmz._zq.mode,  RPMZ_MODE_TEST,
 	N_("Test the integrity of the compressed input"), NULL },
-  { "list", 'l', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_LIST,
+  { "list", 'l', POPT_BIT_SET,			&__rpmz._zq.flags,  RPMZ_FLAGS_LIST,
 	N_("List the contents of the compressed input"), NULL },
 #if defined(_RPMZ_INTERNAL_XZ)
-  { "info", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.flags,  RPMZ_FLAGS_LIST,
+  { "info", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.flags,  RPMZ_FLAGS_LIST,
 	N_("list block sizes, total sizes, and possible metadata"), NULL },
 #endif	/* _RPMZ_INTERNAL_XZ */
-  { "force", 'f', POPT_BIT_SET,		&__rpmz.flags,  RPMZ_FLAGS_FORCE,
+  { "force", 'f', POPT_BIT_SET,		&__rpmz._zq.flags,  RPMZ_FLAGS_FORCE,
 	N_("Force: --overwrite --recompress --symlinks --tty"), NULL },
   { "overwrite", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz.flags,  RPMZ_FLAGS_OVERWRITE,
+	&__rpmz._zq.flags,  RPMZ_FLAGS_OVERWRITE,
 	N_("  Permit overwrite of output files"), NULL },
   { "recompress",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz.flags,  RPMZ_FLAGS_ALREADY,
+	&__rpmz._zq.flags,  RPMZ_FLAGS_ALREADY,
 	N_("  Permit compress of already compressed files"), NULL },
   { "symlinks",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz.flags,  RPMZ_FLAGS_SYMLINKS,
+	&__rpmz._zq.flags,  RPMZ_FLAGS_SYMLINKS,
 	N_("  Permit symlink input file to be compressed"), NULL },
   { "tty",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz.flags,  RPMZ_FLAGS_TTY,
+	&__rpmz._zq.flags,  RPMZ_FLAGS_TTY,
 	N_("  Permit compressed output to terminal"), NULL },
 
   /* ===== Operation modifiers */
   /* XXX display toggle "-r,--[no]recursive" bustage. */
-  { "recursive", 'r', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags, RPMZ_FLAGS_RECURSE,
+  { "recursive", 'r', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags, RPMZ_FLAGS_RECURSE,
 	N_("Process the contents of all subdirectories"), NULL },
   { "suffix", 'S', POPT_ARG_STRING,		&__rpmz.suffix, 0,
 	N_("Use suffix .sss instead of .gz (for compression)"), N_(".sss") },
@@ -464,26 +467,26 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
   { "bits", 'Z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
 	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
-  { "zlib", 'z', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZLIB,
+  { "zlib", 'z', POPT_ARG_VAL,		&__rpmz._zq.format, RPMZ_FORMAT_ZLIB,
 	N_("Compress to zlib (.zz) instead of gzip format"), NULL },
-  { "zip", 'K', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZIP2,
+  { "zip", 'K', POPT_ARG_VAL,		&__rpmz._zq.format, RPMZ_FORMAT_ZIP2,
 	N_("Compress to PKWare zip (.zip) single entry format"), NULL },
 #endif	/* _RPMZ_INTERNAL_PIGZ */
-  { "keep", 'k', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_KEEP,
+  { "keep", 'k', POPT_BIT_SET,			&__rpmz._zq.flags, RPMZ_FLAGS_KEEP,
 	N_("Do not delete original file after processing"), NULL },
-  { "stdout", 'c', POPT_BIT_SET,		&__rpmz.flags,  RPMZ_FLAGS_STDOUT,
+  { "stdout", 'c', POPT_BIT_SET,		&__rpmz._zq.flags,  RPMZ_FLAGS_STDOUT,
 	N_("Write all processed output to stdout (won't delete)"), NULL },
-  { "to-stdout", 'c', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz.flags,  RPMZ_FLAGS_STDOUT,
+  { "to-stdout", 'c', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz._zq.flags,  RPMZ_FLAGS_STDOUT,
 	N_("write to standard output and don't delete input files"), NULL },
 
   /* ===== Metadata options */
   /* XXX logic is reversed, disablers should clear with toggle. */
-  { "name", 'N', POPT_BIT_SET,		&__rpmz.flags, (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME),
+  { "name", 'N', POPT_BIT_SET,		&__rpmz._zq.flags, (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME),
 	N_("Store/restore file name and mod time in/from header"), NULL },
-  { "no-name", 'n', POPT_BIT_CLR,	&__rpmz.flags, RPMZ_FLAGS_HNAME,
+  { "no-name", 'n', POPT_BIT_CLR,	&__rpmz._zq.flags, RPMZ_FLAGS_HNAME,
 	N_("Do not store or restore file name in/from header"), NULL },
   /* XXX -T collides with xz -T,--threads */
-  { "no-time", 'T', POPT_BIT_CLR,	&__rpmz.flags, RPMZ_FLAGS_HTIME,
+  { "no-time", 'T', POPT_BIT_CLR,	&__rpmz._zq.flags, RPMZ_FLAGS_HTIME,
 	N_("Do not store or restore mod time in/from header"), NULL },
 
   /* ===== Other options */
@@ -648,6 +651,7 @@ static rpmRC rpmzParseArgv0(rpmz z, const char * argv0)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
+    rpmzQueue zq = z->zq;
     const char * s = strrchr(argv0, '/');
     const char * name = (s ? (s + 1) : argv0);
     rpmRC rc = RPMRC_OK;
@@ -655,44 +659,44 @@ static rpmRC rpmzParseArgv0(rpmz z, const char * argv0)
 #if defined(WITH_XZ)
     if (strstr(name, "xz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_XZ;
-	z->format = RPMZ_FORMAT_XZ;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_XZ;	/* XXX eliminate */
     } else
     if (strstr(name, "lz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_LZMA;
-	z->format = RPMZ_FORMAT_LZMA;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_LZMA;	/* XXX eliminate */
     } else
 #endif	/* WITH_XZ */
 #if defined(WITH_BZIP2)
     if (strstr(name, "bz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_BZIP2;
-	z->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
     } else
 #endif	/* WITH_BZIP2 */
 #if defined(WITH_ZLIB)
     if (strstr(name, "gz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_GZIP;
-	z->format = RPMZ_FORMAT_GZIP;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_GZIP;	/* XXX eliminate */
     } else
     if (strstr(name, "zlib") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_ZLIB;
-	z->format = RPMZ_FORMAT_ZLIB;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_ZLIB;	/* XXX eliminate */
     } else
 	/* XXX watchout for "bzip2" matching */
     if (strstr(name, "zip") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_ZIP2;
-	z->format = RPMZ_FORMAT_ZIP2;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_ZIP2;	/* XXX eliminate */
     } else
 #endif	/* WITH_ZLIB */
     {
 	z->_format_compress_auto = RPMZ_FORMAT_AUTO;
-	z->format = RPMZ_FORMAT_AUTO;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_AUTO;	/* XXX eliminate */
     }
 
     if (strstr(name, "cat") != NULL) {
-	z->mode = RPMZ_MODE_DECOMPRESS;
-	z->flags |= RPMZ_FLAGS_STDOUT;
+	zq->mode = RPMZ_MODE_DECOMPRESS;
+	zq->flags |= RPMZ_FLAGS_STDOUT;
     } else if (strstr(name, "un") != NULL) {
-	z->mode = RPMZ_MODE_DECOMPRESS;
+	zq->mode = RPMZ_MODE_DECOMPRESS;
     }
 
     return rc;
