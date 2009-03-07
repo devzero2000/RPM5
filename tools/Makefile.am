@@ -40,7 +40,7 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmmtree rpmrepo
+bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmmtree rpmrepo
 noinst_PROGRAMS =   rpmgrep
 dist_man_MANS =		rpmgrep.1
 
