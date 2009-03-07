@@ -76,11 +76,6 @@ struct rpmz_s __rpmz = {
     .mode	= RPMZ_MODE_COMPRESS,
     .level	= 6,		/* XXX compression level is type specific. */
 
-#if defined(_RPMZ_INTERNAL_PIGZ)
-    .blocksize	= 128,
-#endif
-    .threads	= 8,
-
     .nb		= 16 * BUFSIZ,
     .ifmode	= "rb",
     .ofmode	= "wb",
@@ -352,10 +347,12 @@ static void
 hw_cores(rpmz z)
 	/*@modifies z @*/
 {
+    rpmzQueue zq = z->zq;
+
 #if defined(HAVE_NCPU_SYSCONF)
     {	const long cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	if (cpus > 0)
-	    z->threads = (size_t)(cpus);
+	    zq->threads = (size_t)(cpus);
     }
 
 #elif defined(HAVE_NCPU_SYSCTL)
@@ -370,12 +367,12 @@ hw_cores(rpmz z)
 
 #if defined(_SC_THREAD_THREADS_MAX)
     {	const long threads_max = sysconf(_SC_THREAD_THREADS_MAX);
-	if (threads_max > 0 && (unsigned)(threads_max) < z->threads)
-	    z->threads = (unsigned)(threads_max);
+	if (threads_max > 0 && (unsigned)(threads_max) < zq->threads)
+	    zq->threads = (unsigned)(threads_max);
     }
 #elif defined(PTHREAD_THREADS_MAX)
-    if (z->threads > PTHREAD_THREADS_MAX)
-	z->threads = PTHREAD_THREADS_MAX;
+    if (zq->threads > PTHREAD_THREADS_MAX)
+	zq->threads = PTHREAD_THREADS_MAX;
 #endif
 
     return;
@@ -1334,6 +1331,7 @@ coder_set_compression_settings(rpmz z)
 	/*@globals preset_default, preset_number @*/
 	/*@modifies z, preset_default, preset_number @*/
 {
+    rpmzQueue zq = z->zq;
 
     /* Options for LZMA1 or LZMA2 in case we are using a preset. */
     rpmuint64_t memory_usage;
@@ -1496,8 +1494,8 @@ assert(memory_usage != UINT64_MAX);
     if (thread_limit == 0)
 	thread_limit = 1;
 
-    if (z->threads > thread_limit)
-	z->threads = thread_limit;
+    if (zq->threads > thread_limit)
+	zq->threads = thread_limit;
 
     return;
 }
@@ -1856,6 +1854,8 @@ main(int argc, char *argv[])
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
+    rpmzQueue zq = &z->_zq;
+
     poptContext optCon;
     int ac;
     int rc = 1;		/* assume failure. */
@@ -1865,6 +1865,10 @@ main(int argc, char *argv[])
 /*@-observertrans -readonlytrans @*/
     __progname = "rpmz";
 /*@=observertrans =readonlytrans @*/
+
+    z->zq = zq;		/* XXX initialize rpmzq */
+    zq->blocksize = 128;
+    zq->threads	= 8;
 
     /* Set modes and format based on argv[0]. */
     xx = rpmzParseArgv0(z, argv[0]);
@@ -1969,8 +1973,6 @@ argvPrint("input args", z->argv, NULL);
     /* With no arguments, act as a stdin/stdout filter. */
     if (z->argv == NULL || z->argv[0] == NULL)
 	ac++;
-
-    z->zq = &z->_zq;		/* XXX initialize rpmzq */
 
     signals_init();
 

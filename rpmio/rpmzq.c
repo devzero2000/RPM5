@@ -338,24 +338,21 @@ zqFprint(stderr, "--> out_pool: %p[%u] blocksize %u\n", zq->out_pool, (unsigned)
 
 rpmzQueue rpmzqFree(rpmzQueue zq)
 {
-    zq = _free(zq);
     return NULL;
 }
 
-rpmzQueue rpmzqNew(rpmzLog zlog, unsigned int flags,
-		int verbosity, unsigned int level, size_t blocksize, int limit)
+rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, unsigned int flags,
+		unsigned int level, int limit)
 {
-    rpmzQueue zq = xcalloc(1, sizeof(*zq));
     zq->flags = flags;
     zq->ifn = NULL;
     zq->ifdno = -1;
     zq->ofn = NULL;
     zq->ofdno = -1;
-    zq->verbosity = verbosity;
     zq->level = level;
-    zq->iblocksize = blocksize;
+    zq->iblocksize = zq->blocksize;
     zq->ilimit = limit;
-    zq->oblocksize = blocksize;
+    zq->oblocksize = zq->blocksize;
     zq->olimit = limit;
 /*@-assignexpose@*/
     zq->zlog = zlog;

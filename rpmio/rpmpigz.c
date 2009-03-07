@@ -307,12 +307,6 @@ struct rpmz_s __rpmz = {
     .mode	= RPMZ_MODE_COMPRESS,	/* compress */
     .level	= Z_DEFAULT_COMPRESSION,/* XXX level is format specific. */
 
-    .blocksize	= 131072UL,
-#ifdef _PIGZNOTHREAD
-    .threads	= 1,
-#else
-    .threads	= 8,
-#endif
     .suffix	= "gz",		/* compressed file suffix */
 
     .in_buf_allocated = IN_BUF_ALLOCATED,
@@ -329,12 +323,12 @@ static void rpmzDefaults(rpmz z)
 
     z->level = Z_DEFAULT_COMPRESSION;
 #ifdef _PIGZNOTHREAD
-    z->threads = 1;
+    zq->threads = 1;
 #else
-    z->threads = 8;
+    zq->threads = 8;
 #endif
     zq->verbosity = 1;              /* normal message level */
-    z->blocksize = 131072UL;
+    zq->blocksize = 131072UL;
     z->flags &= ~RPMZ_FLAGS_RSYNCABLE; /* don't do rsync blocking */
     z->flags |= RPMZ_FLAGS_INDEPENDENT; /* initialize dictionary each thread */
     z->flags |= (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME); /* store/restore name and timestamp */
@@ -747,7 +741,7 @@ static unsigned long adler32_comb(unsigned long adler1, unsigned long adler2,
 /* initialize a pool (pool structure itself provided, not allocated) -- the
    limit is the maximum number of spaces in the pool, or -1 to indicate no
    limit, i.e., to never wait for a buffer to return to the pool */
-static rpmzPool rpmzNewPool(size_t size, int limit)
+static rpmzPool rpmzqNewPool(size_t size, int limit)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -763,8 +757,8 @@ static rpmzPool rpmzNewPool(size_t size, int limit)
 }
 
 /* get a space from a pool -- the use count is initially set to one, so there
-   is no need to call rpmzUseSpace() for the first use */
-static rpmzSpace rpmzNewSpace(rpmzPool pool)
+   is no need to call rpmzqUseSpace() for the first use */
+static rpmzSpace rpmzqNewSpace(rpmzPool pool)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies pool, fileSystem, internalState @*/
 {
@@ -805,7 +799,7 @@ assert(pool->limit != 0);
 
 /* increment the use count to require one more drop before returning this space
    to the pool */
-static void rpmzUseSpace(rpmzSpace space)
+static void rpmzqUseSpace(rpmzSpace space)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies space, fileSystem, internalState @*/
 {
@@ -815,7 +809,7 @@ static void rpmzUseSpace(rpmzSpace space)
 
 /* drop a space, returning it to the pool if the use count is zero */
 /*@null@*/
-static rpmzSpace rpmzDropSpace(/*@only@*/ rpmzSpace space)
+static rpmzSpace rpmzqDropSpace(/*@only@*/ rpmzSpace space)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies space, fileSystem, internalState @*/
 {
@@ -840,7 +834,7 @@ assert(use != 0);
 /* free the memory and lock resources of a pool -- return number of spaces for
    debugging and resource usage measurement */
 /*@null@*/
-static rpmzPool rpmzFreePool(/*@only@*/ rpmzPool pool, /*@null@*/ int *countp)
+static rpmzPool rpmzqFreePool(/*@only@*/ rpmzPool pool, /*@null@*/ int *countp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies pool, *countp, fileSystem, internalState @*/
 {
@@ -878,12 +872,10 @@ assert(count == pool->made);
    this is the last chunk, which after writing tells write_thread to return */
 
 /* setup job lists (call from main thread) */
-static void rpmzSetupJobs(rpmz z)
+static void rpmzqInit(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
-
     /* set up only if not already set up*/
     if (zq->compress_have != NULL)
 	return;
@@ -897,18 +889,17 @@ static void rpmzSetupJobs(rpmz z)
     zq->write_head = NULL;
 
     /* initialize buffer pools */
-    zq->in_pool = rpmzNewPool(z->blocksize, (z->threads << 1) + 2);
-    zq->out_pool = rpmzNewPool(z->blocksize + (z->blocksize >> 11) + 10, -1);
+    zq->in_pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
+    zq->out_pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
 /*@=mustfreeonly@*/
 }
 
 /* command the compress threads to all return, then join them all (call from
    main thread), free all the thread-related resources */
-static void rpmzFinishJobs(rpmz z)
+static void rpmzqFini(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
     rpmzLog zlog = zq->zlog;
 
     struct rpmzJob_s job;
@@ -935,9 +926,9 @@ assert(caught == zq->cthreads);
     zq->cthreads = 0;
 
     /* free the resources */
-    zq->out_pool = rpmzFreePool(zq->out_pool, &caught);
+    zq->out_pool = rpmzqFreePool(zq->out_pool, &caught);
     Trace((zlog, "-- freed %d output buffers", caught));
-    zq->in_pool = rpmzFreePool(zq->in_pool, &caught);
+    zq->in_pool = rpmzqFreePool(zq->in_pool, &caught);
     Trace((zlog, "-- freed %d input buffers", caught));
     zq->write_first = yarnFreeLock(zq->write_first);
     zq->compress_have = yarnFreeLock(zq->compress_have);
@@ -1007,14 +998,14 @@ assert(job != NULL);
 	    deflateSetDictionary(&strm,
 		(unsigned char *)(job->out->buf) + (len - _PIGZDICT), _PIGZDICT);
 /*@=noeffect@*/
-	    rpmzDropSpace(job->out);
+	    rpmzqDropSpace(job->out);
 	}
 
 	/* set up input and output (the output size is assured to be big enough
 	 * for the worst case expansion of the input buffer size, plus five
 	 * bytes for the terminating stored block) */
 /*@-mustfreeonly@*/
-	job->out = rpmzNewSpace(zq->out_pool);
+	job->out = rpmzqNewSpace(zq->out_pool);
 /*@=mustfreeonly@*/
 	strm.next_in = job->in->buf;
 	strm.next_out = job->out->buf;
@@ -1045,7 +1036,7 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 	Trace((zlog, "-- compressed #%ld%s", job->seq, job->more ? "" : " (last)"));
 
 	/* reserve input buffer until check value has been calculated */
-	rpmzUseSpace(job->in);
+	rpmzqUseSpace(job->in);
 
 	/* insert write job in list in sorted order, alert write thread */
 	yarnPossess(zq->write_first);
@@ -1071,7 +1062,7 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 	    next += _PIGZMAX;
 	}
 	check = CHECK(check, next, (unsigned)len);
-	rpmzDropSpace(job->in);
+	rpmzqDropSpace(job->in);
 	job->check = check;
 	yarnPossess(job->calc);
 	yarnTwist(job->calc, TO, 1);
@@ -1133,14 +1124,14 @@ assert(job != NULL);
 	/* update lengths, save uncompressed length for COMB */
 	more = job->more;
 	len = job->in->len;
-	rpmzDropSpace(job->in);
+	rpmzqDropSpace(job->in);
 	ulen += (unsigned long)len;
 	clen += (unsigned long)(job->out->len);
 
 	/* write the compressed data and drop the output buffer */
 	Trace((zlog, "-- writing #%ld", seq));
 	rpmzWrite(z, job->out->buf, job->out->len);
-	rpmzDropSpace(job->out);
+	rpmzqDropSpace(job->out);
 	Trace((zlog, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
 
 	/* wait for check calculation to complete, then combine, once
@@ -1194,7 +1185,7 @@ static void rpmzParallelCompress(rpmz z)
     int more;                       /* true if more input to read */
 
     /* if first time or after an option change, setup the job lists */
-    rpmzSetupJobs(z);
+    rpmzqInit(zq);
 
     /* start write thread */
 /*@-mustfreeonly@*/
@@ -1205,7 +1196,7 @@ static void rpmzParallelCompress(rpmz z)
        the output of the compress threads) */
     seq = 0;
     prev = NULL;
-    next = rpmzNewSpace(zq->in_pool);
+    next = rpmzqNewSpace(zq->in_pool);
     next->len = rpmzRead(z, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
@@ -1221,13 +1212,13 @@ static void rpmzParallelCompress(rpmz z)
 	if (next->len < next->pool->size)
 	    more = 0;
 	else {
-	    next = rpmzNewSpace(zq->in_pool);
+	    next = rpmzqNewSpace(zq->in_pool);
 	    next->len = rpmzRead(z, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
-		rpmzDropSpace(next);  /* won't be using it */
+		rpmzqDropSpace(next);  /* won't be using it */
 	    if (F_ISSET(z->flags, INDEPENDENT) && more) {
-		rpmzUseSpace(job->in);    /* hold as dictionary for next loop */
+		rpmzqUseSpace(job->in);    /* hold as dictionary for next loop */
 		prev = job->in;
 	    }
 	}
@@ -1237,7 +1228,7 @@ static void rpmzParallelCompress(rpmz z)
 	    bail("input too long: ", z->_ifn);
 
 	/* start another compress thread if needed */
-	if (zq->cthreads < (int)seq && zq->cthreads < (int)z->threads) {
+	if (zq->cthreads < (int)seq && zq->cthreads < (int)zq->threads) {
 	    (void)yarnLaunch(compress_thread, z);
 	    zq->cthreads++;
 	}
@@ -1268,6 +1259,7 @@ static void rpmzSingleCompress(rpmz z, int reset)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    rpmzQueue zq = z->zq;
     size_t got;                     /* amount read */
     size_t more;                    /* amount of next read (0 if eof) */
     unsigned long head;             /* header length */
@@ -1300,11 +1292,11 @@ static void rpmzSingleCompress(rpmz z, int reset)
 
     /* initialize the deflate structure if this is the first time */
     if (strm == NULL) {
-	out_size = z->blocksize > _PIGZMAX ? _PIGZMAX : (unsigned)z->blocksize;
+	out_size = zq->blocksize > _PIGZMAX ? _PIGZMAX : (unsigned)zq->blocksize;
 
 /*@-mustfreeonly@*/
-	in = xmalloc(z->blocksize);
-	next = xmalloc(z->blocksize);
+	in = xmalloc(zq->blocksize);
+	next = xmalloc(zq->blocksize);
 	out = xmalloc(out_size);
 	strm = xmalloc(sizeof(*strm));
 /*@=mustfreeonly@*/
@@ -1331,12 +1323,12 @@ static void rpmzSingleCompress(rpmz z, int reset)
     /* do raw deflate and calculate check value */
     ulen = clen = 0;
     check = CHECK(0L, Z_NULL, 0);
-    more = rpmzRead(z, next, z->blocksize);
+    more = rpmzRead(z, next, zq->blocksize);
     do {
 	/* get data to compress, see if there is any more input */
 	got = more;
 	{ unsigned char *temp; temp = in; in = next; next = temp; }
-	more = got < z->blocksize ? 0 : rpmzRead(z, next, z->blocksize);
+	more = got < zq->blocksize ? 0 : rpmzRead(z, next, zq->blocksize);
 	ulen += (unsigned long)got;
 /*@-mustfreeonly@*/
 	strm->next_in = in;
@@ -1425,6 +1417,7 @@ static size_t load(rpmz z)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
+    rpmzQueue zq = z->zq;
     /* if already detected end of file, do nothing */
     if (z->in_short) {
 	z->in_eof = 1;
@@ -1434,7 +1427,7 @@ static size_t load(rpmz z)
 #ifndef _PIGZNOTHREAD
     /* if first time in or z->threads == 1, read a buffer to have something to
        return, otherwise wait for the previous read job to complete */
-    if (z->threads > 1) {
+    if (zq->threads > 1) {
 	/* if first time, fire up the read thread, ask for a read */
 	if (z->in_which == -1) {
 	    z->in_which = 1;
@@ -2066,13 +2059,14 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmz z = _z;
+    rpmzQueue zq = z->zq;
 #ifndef _PIGZNOTHREAD
 /*@only@*/ /*@relnull@*/
     static yarnThread wr;
 /*@only@*/ /*@relnull@*/
     static yarnThread ch;
 
-    if (z->threads > 1) {
+    if (zq->threads > 1) {
 	/* if first time, initialize state and launch threads */
 	if (z->outb_write_more == NULL) {
 /*@-mustfreeonly@*/
@@ -2740,7 +2734,7 @@ assert(z->hname == NULL);
 	    rpmzDecompressLZW(z);
     }
 #ifndef _PIGZNOTHREAD
-    else if (z->threads > 1)
+    else if (zq->threads > 1)
 	rpmzParallelCompress(z);
 #endif
     else
@@ -2777,9 +2771,11 @@ static void rpmzNewOpts(rpmz z)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
+    rpmzQueue zq = z->zq;
+
     rpmzSingleCompress(z, 1);
 #ifndef _PIGZNOTHREAD
-    rpmzFinishJobs(z);
+    rpmzqFini(zq);
 #endif
 }
 
@@ -2825,22 +2821,22 @@ void rpmzArgCallback(poptContext con,
     case 'Z':	bail("invalid option: LZW output not supported", "");
     case 'a':	bail("invalid option: ascii conversion not supported", "");
     case 'b':
-	z->blocksize = (size_t)(atol(arg)) << 10;   /* chunk size */
-	if (z->blocksize < _PIGZDICT)
+	zq->blocksize = (size_t)(atol(arg)) << 10;   /* chunk size */
+	if (zq->blocksize < _PIGZDICT)
 	    bail("block size too small (must be >= 32K)", "");
-	if (z->blocksize + (z->blocksize >> 11) + 10 < (z->blocksize >> 11) + 10 ||
-	    (ssize_t)(z->blocksize + (z->blocksize >> 11) + 10) < 0)
+	if (zq->blocksize + (zq->blocksize >> 11) + 10 < (zq->blocksize >> 11) + 10 ||
+	    (ssize_t)(zq->blocksize + (zq->blocksize >> 11) + 10) < 0)
 	    bail("block size too large", "");
 	rpmzNewOpts(z);
 	break;
     case 'p':
-	z->threads = atoi(arg);                  /* # processes */
-	if (z->threads < 1)
+	zq->threads = atoi(arg);                  /* # processes */
+	if (zq->threads < 1)
 	    bail("need at least one process", "");
-	if ((2 + (z->threads << 1)) < 1)
+	if ((2 + (zq->threads << 1)) < 1)
 	    bail("too many processes", "");
 #ifdef _PIGZNOTHREAD
-	if (z->threads > 1)
+	if (zq->threads > 1)
 	    bail("this pigz compiled without threads", "");
 #endif
 	rpmzNewOpts(z);

@@ -213,7 +213,6 @@ struct rpmz_s {
     enum rpmzMode_e mode;	/*!< Operation mode. */
     unsigned int level;		/*!< Compression level. */
 
-    unsigned int threads;	/*!< No. or threads to use. */
 /*@null@*/ /*@observer@*/
     const char * suffix;	/*!< -S, --suffix ... */
 
@@ -224,7 +223,6 @@ struct rpmz_s {
 
     /* PBZIP2 specific configuration. */
     struct timeval start;	/*!< starting time of day for tracing */
-    int verbosity;        /*!< 0 = quiet, 1 = normal, 2 = verbose, 3 = trace */
 
     struct stat isb;
 /*@relnull@*/
@@ -234,9 +232,8 @@ struct rpmz_s {
     char *ofn;
     char _ofn[PATH_MAX+1];
 
-    unsigned int blocksize; /*!< uncompressed input size per thread (>= 32K) */
-
 /*@owned@*/ /*@relnull@*/
+    struct rpmzQueue_s _zq;
     rpmzQueue zq;		/*!< buffer pools. */
 
     int NumBlocks;
@@ -267,10 +264,6 @@ static struct rpmz_s __rpmz = {
     .mode	= RPMZ_MODE_COMPRESS,
     .level	= 1,
 
-    .threads	= 2,
-
-    .blocksize	= 1*100000,
-    .verbosity	= 1,		/* normal message level */
     .suffix	= "bz2",	/* compressed file suffix */
 
 };
@@ -298,7 +291,7 @@ static void bail(const char *why, const char *what)
     if (zq->ofdno != -1 && z->ofn != NULL)
 	xx = unlink(z->ofn);
 /*@=globs@*/
-    if (z->verbosity > 0)
+    if (zq->verbosity > 0)
 	fprintf(stderr, "%s abort: %s%s\n", __progname, why, what);
     exit(EXIT_FAILURE);
 /*@notreached@*/
@@ -608,7 +601,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 
     // use direcdecompress() instead to process 1 bzip2 stream
     if (_nblocks <= 1) {
-	if (z->verbosity > 0)
+	if (zq->verbosity > 0)
 	    fprintf(stderr, "Switching to no threads mode: only 1 BZIP2 block found.\n");
 	goto exit;
     }
@@ -700,7 +693,7 @@ assert(zq->level == z->level);
 #endif
     zq->omode = O_RDONLY;
 #ifdef	REFERENCE	/* XXX this is what compression uses. */
-    zq->iblocksize = z->blocksize;
+    zq->iblocksize = zq->blocksize;
     zq->ilimit = z->NumBlocks;
     zq->oblocksize = (size_t) ((zq->iblocksize*1.01)+600);
     zq->olimit = z->NumBlocks/2 + 1;
@@ -760,7 +753,7 @@ assert(nread == next->len);
 assert(zq->level == z->level);
 assert(zq->omode == O_RDONLY);
 	/* start another decompress thread if needed */
-	rpmzqLaunch(zq, seq, z->threads);
+	rpmzqLaunch(zq, seq, zq->threads);
 
 	/* put job at end of compress list, let all the compressors know */
 	rpmzqAddCJob(zq, job);
@@ -849,7 +842,7 @@ assert(zq->omode == O_WRONLY);
 	    bail("input too long: ", "");	/* XXX z->_ifn */
 
 	/* start another compress thread if needed */
-	rpmzqLaunch(zq, seq, z->threads);
+	rpmzqLaunch(zq, seq, zq->threads);
 
 	/* put job at end of compress list, let all the compressors know */
 	rpmzqAddCJob(zq, job);
@@ -895,10 +888,9 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     job->out = xcalloc(1, sizeof(*job->out));
 
 assert(zq->flags == z->flags);
-assert(zq->verbosity == z->verbosity);
 assert(zq->ofn == (char *)z->_ofn);
 assert(zq->ofdno == -1);
-assert(zq->iblocksize == z->blocksize);
+assert(zq->iblocksize == zq->blocksize);
     zq->lastseq = z->NumBlocks;
 assert(zq->level == z->level);
     zq->level = z->level;
@@ -1127,7 +1119,7 @@ static int rpmzProcess(rpmz z, const char * ifn, int fileLoop)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies z, fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
+    rpmzQueue zq;
 
     const char bz2Header[] = "BZh91AY&SY";  // using 900k block size
 /*@+charint@*/
@@ -1143,14 +1135,15 @@ static int rpmzProcess(rpmz z, const char * ifn, int fileLoop)
 
 fprintf(stderr, "--> %s(%p,%s)\n", __FUNCTION__, z, ifn);
 
+    zq = z->zq;
+assert(zq != NULL);
 assert(zq->flags == z->flags);
-assert(zq->verbosity == z->verbosity);
 
     z->fileSize = 0;
 
     // test file for errors if requested
     if (z->mode == RPMZ_MODE_TEST) {
-	if (z->verbosity > 0) {
+	if (zq->verbosity > 0) {
 	    fprintf(stderr, "      File #: %d\n", fileLoop+1);
 	    if (strcmp(ifn, "-") != 0)
 		fprintf(stderr, "     Testing: %s\n", ifn);
@@ -1162,13 +1155,13 @@ assert(zq->verbosity == z->verbosity);
 	    rc = ret;
 	    goto exit;
 	} else if (ret == 0) {
-	    if (z->verbosity > 0)
+	    if (zq->verbosity > 0)
 		fprintf(stderr, "        Test: OK\n");
 	    rc = 0;
 	} else
 	    rc = 2;
 
-	if (z->verbosity > 0)
+	if (zq->verbosity > 0)
 	    fprintf(stderr, "-------------------------------------------\n");
 	goto exit;
     }
@@ -1328,7 +1321,7 @@ assert(zq->verbosity == z->verbosity);
     }
 
     // display per file settings
-    if (z->verbosity > 0) {
+    if (zq->verbosity > 0) {
 	fprintf(stderr, "         File #: %d\n", fileLoop+1);
 	fprintf(stderr, "     Input Name: %s\n", zq->ifdno != STDIN_FILENO ? zq->ifn : "<stdin>");
 
@@ -1351,7 +1344,7 @@ assert(zq->verbosity == z->verbosity);
     default:
 	if (z->fileSize > 0) {
 	    // calculate the # of blocks of data
-	    numBlocks = (z->fileSize + z->blocksize - 1) / z->blocksize;
+	    numBlocks = (z->fileSize + zq->blocksize - 1) / zq->blocksize;
 	}
 
 	// write special compressed data for special 0 byte input file case
@@ -1374,7 +1367,7 @@ assert(zq->verbosity == z->verbosity);
 		rc = 1;
 		goto exit;
 	    }
-	    if (z->verbosity > 0) {
+	    if (zq->verbosity > 0) {
 		fprintf(stderr, "    Output Size: %llu bytes\n", (unsigned long long)sizeof(bz2HeaderZero));
 		fprintf(stderr, "-------------------------------------------\n");
 	    }
@@ -1389,15 +1382,15 @@ assert(zq->verbosity == z->verbosity);
     switch (z->mode) {
     case RPMZ_MODE_DECOMPRESS:
 	// use multi-threaded code
-	if (z->threads > 0) {
-	    if (z->verbosity > 0)
+	if (zq->threads > 0) {
+	    if (zq->verbosity > 0)
 		fprintf(stderr, "Decompressing data...\n");
 
 	    // start reading in data for decompression
 	    ret = rpmzParallelDecompress(z);
 	    if (ret == -99) {
 		// only 1 block detected, use single threaded code to decompress
-		z->threads = 0;
+		zq->threads = 0;
 	    } else if (ret != 0)
 		rc = 1;
 	    else
@@ -1405,8 +1398,8 @@ assert(zq->verbosity == z->verbosity);
 	}
 
 	// use single threaded code
-	if (z->threads < 1) {
-	    if (z->verbosity > 0)
+	if (zq->threads < 1) {
+	    if (zq->verbosity > 0)
 		fprintf(stderr, "Decompressing data (no threads)...\n");
 
 	    rpmzClose(zq, 1, -1);	/* XXX close ifdno */
@@ -1430,8 +1423,8 @@ assert(zq->verbosity == z->verbosity);
 	rpmzqInit(zq);
 
 	// use multi-threaded code
-	if (z->threads > 0) {
-	    if (z->verbosity > 0)
+	if (zq->threads > 0) {
+	    if (zq->verbosity > 0)
 		fprintf(stderr, "Compressing data...\n");
 
 #if defined(PIGZ_FLIP)
@@ -1447,7 +1440,7 @@ assert(zq->verbosity == z->verbosity);
 #endif
 	} else {
 	    // do not use threads for compression
-	    if (z->verbosity > 0)
+	    if (zq->verbosity > 0)
 		fprintf(stderr, "Compressing data (no threads)...\n");
 
 	    ret = rpmzSingleCompress(z, 0);	/* XXX reset? */
@@ -1482,7 +1475,7 @@ assert(zq->verbosity == z->verbosity);
 	    xx = unlink(zq->ifn);
     }
 
-    if (z->verbosity > 0)
+    if (zq->verbosity > 0)
 	fprintf(stderr, "-------------------------------------------\n");
 
 exit:
@@ -1676,6 +1669,7 @@ static void rpmzArgCallback(poptContext con,
 	/*@modifies _rpmz, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
+    rpmzQueue zq = &z->_zq;
 
 #define	PBZIP2VERSION	"1.0.5"
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
@@ -1688,21 +1682,21 @@ static void rpmzArgCallback(poptContext con,
 	/*@notreached@*/ break;
     case 'V':	(void)fputs(PBZIP2VERSION, stderr); exit(EXIT_SUCCESS);
     case 'b':
-	z->blocksize = (size_t)(atol(arg)) * 100000;   /* chunk size */
-	if (z->blocksize < 100000)
+	zq->blocksize = (size_t)(atol(arg)) * 100000;   /* chunk size */
+	if (zq->blocksize < 100000)
 	    bail("block size too small (must be > 0)", "");
-	if (z->blocksize > 1000000000)
+	if (zq->blocksize > 1000000000)
 	    bail("block size too large", "");
 	break;
     case 'p':
-	z->threads = atoi(arg);                  /* # processes */
-	if (z->threads < 1)
+	zq->threads = atoi(arg);                  /* # processes */
+	if (zq->threads < 1)
 	    bail("need at least one process", "");
-	if ((2 + (z->threads << 1)) < 1)
+	if ((2 + (zq->threads << 1)) < 1)
 	    bail("too many processes", "");
 	break;
-    case 'q':	z->verbosity = 0; break;
-    case 'v':	z->verbosity++; break;
+    case 'q':	zq->verbosity = 0; break;
+    case 'v':	zq->verbosity++; break;
     default:
 	/* XXX really need to display longName/shortName instead. */
 	fprintf(stderr, _("Unknown option -%c\n"), (char)opt->val);
@@ -2079,6 +2073,7 @@ int main(int argc, char* argv[])
 	/*@modifies _rpmz, __assert_program_name, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
+    rpmzQueue zq = &z->_zq;
     rpmzLog zlog = NULL;
     poptContext optCon;
 
@@ -2097,6 +2092,10 @@ int main(int argc, char* argv[])
 #if defined(PBZIP_DEBUG) || defined(__LCLINT__)
     zlog = rpmzLogInit(&z->start);		/* initialize logging */
 #endif
+
+    zq->threads	= 2;
+    zq->blocksize = 1*100000;
+    zq->verbosity = 1;		/* normal message level */
 
     hw_init(z);
 
@@ -2165,20 +2164,18 @@ rc = 1;
     if (F_ISSET(z->flags, STDOUT))
 	z->flags |= RPMZ_FLAGS_KEEP;
 
+    z->zq = rpmzqNew(zq, zlog, z->flags, z->level, 0);
+
     signals_init();
 
-    {	rpmzQueue zq = rpmzqNew(zlog, z->flags, z->verbosity, z->level, z->blocksize, 0);
-	z->zq = zq;
-    }
-
-    if (z->verbosity > 0) {
+    if (zq->verbosity > 0) {
 	if (z->mode != RPMZ_MODE_TEST) {
 	    if (z->mode != RPMZ_MODE_DECOMPRESS) {
 		fprintf(stderr, " BWT Block Size: %d00k\n", z->level);
-		if (z->blocksize < 100000)
-		    fprintf(stderr, "File Block Size: %d bytes\n", z->blocksize);
+		if (zq->blocksize < 100000)
+		    fprintf(stderr, "File Block Size: %d bytes\n", zq->blocksize);
 		else
-		    fprintf(stderr, "File Block Size: %dk\n", z->blocksize/1000);
+		    fprintf(stderr, "File Block Size: %dk\n", zq->blocksize/1000);
 	    }
 	}
 	fprintf(stderr, "-------------------------------------------\n");

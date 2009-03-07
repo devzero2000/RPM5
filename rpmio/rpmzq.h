@@ -75,6 +75,9 @@ struct rpmzQueue_s {
     size_t oblocksize;
     int olimit;
 
+    size_t blocksize;		/*!< uncompressed input size per thread */
+    unsigned int threads;	/*!< No. or threads to use. */
+
 /*@null@*/
     const char * ofn;		/*!< output file name (allocated if not NULL) */
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
@@ -196,13 +199,12 @@ void rpmzqInit(rpmzQueue zq)
  */
 /*@null@*/
 rpmzQueue rpmzqFree(/*@only@*/ rpmzQueue zq)
-        /*@modifies zq @*/;
+        /*@*/;
 
 /**
  */
-/*@only@*/
-rpmzQueue rpmzqNew(rpmzLog zlog, unsigned int flags,
-		int verbosity, unsigned int level, size_t blocksize, int limit)
+rpmzQueue rpmzqNew(/*@returned@*/rpmzQueue zq, rpmzLog zlog, unsigned int flags,
+		unsigned int level, int limit)
 	/*@*/;
 
 /**

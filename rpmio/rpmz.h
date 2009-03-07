@@ -158,12 +158,18 @@ struct rpmzQueue_s {
     const char *ifn;		/*!< input file name */
 #endif
 
+/* --- globals (modified by main thread only when it's the only thread) */
+    size_t blocksize;		/*!< uncompressed input size per thread */
+    unsigned int threads;	/*!< No. or threads to use. */
+
 /*@null@*/
     const char * ofn;		/*!< output file name (allocated if not NULL) */
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
 
 /*@owned@*/ /*@null@*/
     rpmzLog zlog;		/*!< trace logging */
+
+    int cthreads;		/*!< number of compression threads running */
 
     int ifdno;			/*!< input file descriptor */
     int ofdno;			/*!< output file descriptor */
@@ -173,6 +179,7 @@ struct rpmzQueue_s {
 /*@relnull@*/
     rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
 
+/* --- globals for job queue and buffer management */
     /* list of compress jobs (with tail for appending to list) */
 /*@only@*/ /*@null@*/
     yarnLock compress_have;	/*!< no. compress/decompress jobs waiting */
@@ -180,8 +187,6 @@ struct rpmzQueue_s {
     rpmzJob compress_head;
 /*@shared@*/
     rpmzJob * compress_tail;
-
-    int cthreads;		/*!< number of compression threads running */
 
 /*@only@*/ /*@null@*/
     yarnLock write_first;	/*!< lowest sequence number in list */
@@ -212,7 +217,6 @@ struct rpmz_s {
     enum rpmzMode_e mode;	/*!< Operation mode. */
     unsigned int level;		/*!< Compression level. */
 
-    unsigned int threads;	/*!< No. or threads to use. */
 /*@null@*/ /*@observer@*/
     const char * suffix;	/*!< -S, --suffix ... */
 
@@ -258,9 +262,6 @@ struct rpmz_s {
 
 #if defined(_RPMZ_INTERNAL_PIGZ)	/* PIGZ specific configuration. */
 /* --- globals (modified by main thread only when it's the only thread) */
-
-    /* XXX PIGZ used size_t not unsigned int. */
-    unsigned int blocksize; /*!< uncompressed input size per thread (>= 32K) */
 
 /* --- globals for decompression and listing buffered reading */
     int in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
@@ -416,7 +417,7 @@ static struct poptOption rpmzOptionsPoptTable[] = {
 #endif	/* _RPMZ_INTERNAL_PIGZ */
 #if defined(_RPMZ_INTERNAL_XZ)
   /* XXX -T collides with pigz -T,--no-time */
-  { "threads", '\0', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.threads, 0,
+  { "threads", '\0', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz._zq.threads, 0,
 	N_("Allow up to n compression threads"), N_("n") },
 #endif	/* _RPMZ_INTERNAL_XZ */
 
