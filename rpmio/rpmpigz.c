@@ -649,8 +649,8 @@ static unsigned long rpmzPutHeader(rpmz z)
 	break;
     case RPMZ_FORMAT_ZLIB:	/* zlib */
 	head[0] = 0x78;             /* deflate, 32K window */
-	head[1] = (z->level == 9 ? 3 : (z->level == 1 ? 0 :
-	    (z->level >= 6 || z->level == Z_DEFAULT_COMPRESSION ? 1 :  2))) << 6;
+	head[1] = (z->level == 9U ? 3 : (z->level == 1U ? 0 :
+	    (z->level >= 6U || z->level == (unsigned)Z_DEFAULT_COMPRESSION ? 1 :  2))) << 6;
 	head[1] += 31 - (((head[0] << 8) + head[1]) % 31);
 	rpmzWrite(z, head, 2);
 	len = 2;
@@ -1369,7 +1369,7 @@ static void rpmzParallelCompress(rpmz z)
 	    bail("input too long: ", z->_ifn);
 
 	/* start another compress thread if needed */
-	if (z->cthreads < seq && z->cthreads < z->threads) {
+	if (z->cthreads < (int)seq && z->cthreads < (int)z->threads) {
 	    (void)yarnLaunch(compress_thread, z);
 	    z->cthreads++;
 	}
@@ -1853,7 +1853,7 @@ static int rpmzGetHeader(rpmz z, int save)
 	    if (z->in_left == 0 && load(z) == 0)
 		return -3;
 	    end = memchr(z->in_next, 0, z->in_left);
-	    copy = end == NULL ? z->in_left : (end - z->in_next) + 1;
+	    copy = end == NULL ? z->in_left : (size_t)(end - z->in_next) + 1;
 	    if (have + copy > size) {
 		while (have + copy > (size <<= 1))
 		    ;
@@ -1909,7 +1909,7 @@ static size_t compressed_suffix(const char *fn)
 	    return 3;
     }
     if (len > 2) {
-	nm += len - 2;
+	fn += len - 2;
 	if (strcmp(fn, ".z") == 0 || strcmp(fn, "-z") == 0 ||
 	    strcmp(fn, "_z") == 0 || strcmp(fn, ".Z") == 0)
 	    return 2;
@@ -1927,7 +1927,7 @@ static void rpmzShowInfo(rpmz z, int method, unsigned long check, off_t len, int
 	/*@modifies fileSystem, internalState @*/
 {
     static int oneshot = 1; /* true if we need to print listing header */
-    int max;                /* maximum name length for current verbosity */
+    size_t max;             /* maximum name length for current verbosity */
     size_t n;               /* name length without suffix */
     time_t now;             /* for getting current year */
     char mod[26];           /* modification time in text */
@@ -2400,7 +2400,7 @@ static void rpmzDecompressLZW(rpmz z)
 	/*@modifies z, fileSystem, internalState @*/
 {
     int got;                    /* byte just read by GET() */
-    int chunk;                  /* bytes left in current chunk */
+    unsigned int chunk;         /* bytes left in current chunk */
     int left;                   /* bits left in rem */
     unsigned rem;               /* unused bits from input */
     int bits;                   /* current bits per code */
