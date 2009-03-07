@@ -687,6 +687,117 @@
 
 =============================================================================
 
+5.1.6 -> 5.1.7:
+    - jbj: update po files (Translation Project).
+    - jbj: eleminate duplicate rpmVersionCompare() routines.
+    - afb: backport macosx ldflags fixes.
+    - glen: markLinkedFailed if rpm file reopen failed during transaction to avoid losing old pkg info from db
+    - jbj: add rpmdsNSType() to -lrpm loader map.
+    - jbj: update po files (Translation Project).
+    - jbj: update PO and doxygen manifests.
+    - jbj: include rpmgrep.1 with "make dist".
+    - rpm.org: Don't try to create "" directories.
+    - rpm.org: Don't bother calculating string sizes manually.
+    - rpm.org: memory used by lua gets freed (just remove comment).
+    - rpm.org: repeated read config -> free config needs globalLuaState == NULL.
+    - rpm.org: Fix buffer overflow on oversized filelist entries(susebz#397006).
+    - jbj: pcre: finalize --with-pcre=internal building.
+    - jbj: pcre: punish PLD with internal bloat until the trivial AutoFu exists.
+    - jbj: rpmdigest: avoid segfault on named pipes and other uglix fauna.
+    - jbj: rpmbuild: use anchored patterns for data validation.
+    - jbj: run "make check" to self consistency. worksforme.
+    - jbj: add --whatneeds/--needswhat popt aliases.
+    - jbj: backport the test harness for signature(). worksforme.
+    - jbj: rpmbuild: enumerate all the lexical patterns in parsePreamble().
+    - jbj: rpmbuild: enable pattern validation for simple package identifiers.
+    - jbj: rpmbuild: add tag data validation pattern checks.
+    - jbj: EVRtuple: handle EVR_t opaquely in python labelCompare().
+    - jbj: EVRtuple: postpone committing to single "missing" value for now.
+    - jbj: EVRtuple: attempt rpmEVRparse() during parseRCPOT().
+        no error returns from rpmEVRparse() to trigger the message yet, todo++.
+    - jbj: EVRtuple: teach --whatneeds/--needswhat to use EVR_t opaquely.
+    - jbj: EVRtuple: add rpmEVR{new,free} creator and destructors.
+    - jbj: EVRtuple: mark the old EVRD parser for destruction.
+    - jbj: EVRtuple: use the new EVRD pattern parser, reverse the assert check.
+    - jbj: EVRtuple: precedence permutation for rpmdsCompare().
+    - jbj: EVRtuple: precedence permutation for rpmVersionCompare().
+    - jbj: EVRtuple: blueprint new <-> old parsers with an assert.
+    - jbj: EVRtuple: parse EVRD using RPMMIRE_REGEX & evr_tuple_match.
+    - jbj: EVRtuple: wire up evr_tuple_match RE pattern match.
+    - jbj: EVRtuple: wire up evr_tuple_order precedence permutation.
+    - jbj: EVRtuple: use array for tuple storage.
+    - rse: EVRtuple: macro configuration parameterization.
+    - jbj: add FNM_EXTMATCH to default flags w RPMMIRE_GLOB.
+    - jbj: rpmsw: change bytes accumulator to unsigned long long.
+    - proyvind: add new DistEpoch tag.
+    - jbj: add getter/setter methods to pass a rpmdb using a header argument.
+    - jbj: transFlags: regroup bits together in poptI table.
+    - jbj: transFlags: use POPT_SET_BIT consistently, no callbacks needed.
+    - jbj: transFlags: add --nopretrans/--noposttrans disablers.
+    - jbj: transFlags: eliminate --nomd5, use --nofdigests instead.
+    - jbj: transFlags: add RPMTRANS_FLAGS_NORPMDB and --norpmdb disablers.
+    - jbj: transFlags: eliminate (never implemented) RPMTRANS_KEEP_OBSOLETES.
+    - jbj: use poptSaneFile() when available (popt-1.15).
+    - jbj: use poptReadConfigFiles() when available (popt-1.15).
+    - jbj: rename s/hdrmd5ctx/hdrctx/ used by RSA to avoid legacy confusions.
+    - jbj: backport misc. changes from HEAD.
+    - jbj: backport OpenPKG no-hard-coded-ugid.
+    - jbj: rpmku: create opaque keyutils keyring.
+    - jbj: keyutils: permit configurable keyring.
+    - jbj: rpmgc: display errors with gcry_strerror().
+    - jbj: rpmnss: eliminate pubkey type wrapping methods.
+    - jbj: rpmnss: fix: correct RSA/SHA512 cut-n-paste error.
+    - jbj: rpmssl: don't bother with (unused) NID_foo.
+    - jbj: name digests according to RFC 4880 section 9.4.
+    - jbj: digest: add getters for digest name/algo/ANS1oid.
+    - jbj: rpmssl: functional RSA verify --usecrypto ssl for signature(...) probe.
+    - jbj: rpmgc: functional RSA verify --usecrypto gc for signature(...) probe.
+    - jbj: rpmgc: bulldoze the RSA compost. still not working yet ...
+    - jbj: rpmpgp: add ASN1 goop for SHA-224, add to bc/gc/nss/ssl.
+    - jbj: rpmdigest: parse/verify 0install manifest format.
+    - jbj: rpmdigest: resurrect rpmdigest -c manifest before attempting
+	0install manifest verification.
+    - jbj: rpmdigest: add sha256 (and other) digests to 0install manifests.
+    - jbj: rpmdigest: achieve "sha1new" 0install manifest spewage for trees.
+    - jbj: rpmdigest: generalize to do multi-rooted Fts(3) traversal.
+    - jbj: rpmdigest: pull in mtreeCwalk() for 0install dir args tree spewage.
+    - jbj: rpmdigest: achieve 0install manifest spewage for file args.
+    - jbj: rpmdigest: refactor to prepare for 0install manifest spewage.
+    - jbj: rpmrepo: avoid double'd error message.
+    - jbj: rpmrepo: terminate immediately, rather than "best-effort" continue,
+        on I/O error.
+    - jbj: rpmrepo: terminate on short read, don't bother with extra EOF read.
+    - jbj: move rpmns.[ch] to -lrpmdb for use with header format extensions.
+    - jbj: move rpmevr.[ch] to -lrpmdb for use with header format extensions.
+    - jbj: move rpmgrep and man page from rpmio/ to tools/ and install.
+    - jbj: rpmfi: add storage and getters for exclude/include patterns.
+    - jbj: perl: add a sentinel to rpmdsSingle() rather than exporting rpmdsDup().
+    - jbj: update po files (Translation Project).
+    - jbj: fix: don't display lua info if compiled --without-lua.
+    - jbj: rpmds: add storage and getters for exclude/include patterns.
+    - jbj: rpmds: expose rpmdsType() in rpmds ABI.
+    - jbj: rpmds: add rpmdsType() to name dependency sets status quo ante.
+    - afb: rpmrepo: fix installed size bug (wrong value being written)
+    - jbj: fix: better choice for paths to add (#473814 comment #4).
+    - jbj: fix: include build dirname to find multiple *.pc (#473814).
+    - jbj: lua: inline a copy of getdate.c
+    - jbj: WR: lua: display "rpm:lua:foo" progname w chkconfig/useradd/groupadd
+	errors.
+    - jbj: WR: fix: sqlite assertion failure while sequentially retrieving keys.
+    - jbj: update INSTALL to indicate that external zlib is preferred now.
+    - at: fix: initialize msbits of erased package keys to zeroes on 64b hosts.
+    - jbj: lua: bind mkdtemp(3) in lposix.c
+    - jbj: macros: add %{mkdtemp:...} primitive (consistent leading whitespace too).
+    - jbj: include tests/*.src.rpm, exclude tests/ref/CVS/*, with "make dist".
+    - jbj: fix: __OpenBSD__ insque(3) needs rpmsq rock initialized.
+    - jbj: add #ifdef's needed to compile on __OpenBSD__.
+    - jbj: fix: permit " number %d" to be translated.
+    - jbj: fix: apply _dependency_whiteout to erased relations too.
+    - jbj: lua: display rudimentary info about lua with --showrc.
+    - jbj: WRlua: preserve forward linkage by avoiding vmefail/get_date.
+    - jbj: add a relation to to force install-before-erase.
+    - jbj: display dependency loops as an error for now.
+
 5.1.5 -> 5.1.6:
     - jbj: verify trigger tests have same result as HEAD.
     - jbj: backport rpmds functionality needed for file/dir triggers from HEAD.
