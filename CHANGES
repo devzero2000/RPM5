@@ -1,4 +1,6 @@
 
+5.2a3 -> 5.2a4:
+
 5.2a2 -> 5.2a3:
     - rse: use Pthreads under --with-pthreads controlled WITH_PTHREADS and not <pthreads.h> existance-derived HAVE_PTHREADS_H 
     - jbj: update po files (Translation Project).
