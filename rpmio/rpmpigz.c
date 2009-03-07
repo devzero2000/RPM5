@@ -300,8 +300,6 @@ struct rpmz_s __rpmz = {
     .stdin_fn	= "<stdin>",
     .stdout_fn	= "<stdout>",
 
-    .suffix	= "gz",		/* compressed file suffix */
-
     .in_buf_allocated = IN_BUF_ALLOCATED,
     .out_buf_allocated = OUT_BUF_ALLOCATED,
 
@@ -309,12 +307,14 @@ struct rpmz_s __rpmz = {
 /*@=fullinitblock@*/
 
 /* set option defaults */
-static void rpmzDefaults(rpmz z)
+static void rpmzDefaults(rpmzQueue zq)
 	/*@modifies z @*/
 {
-    rpmzQueue zq = &z->_zq;	/* XXX initialize rpmzq */
-
-    z->suffix = ".gz";               /* compressed file suffix */
+    zq->suffix = ".gz";               /* compressed file suffix */
+    zq->ifn = NULL;
+    zq->ifdno = -1;
+    zq->ofn = NULL;
+    zq->ofdno = -1;
 
     zq->level = Z_DEFAULT_COMPRESSION;	/* XXX level is format specific. */
 #ifdef _PIGZNOTHREAD
@@ -2582,10 +2582,10 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 	}
 
 	/* don't compress .gz (or provided suffix) files, unless -f */
-	if (!(F_ISSET(zq->flags, ALREADY) || F_ISSET(zq->flags, LIST) || zq->mode != RPMZ_MODE_COMPRESS) && len >= strlen(z->suffix) &&
-		strcmp(z->_ifn + len - strlen(z->suffix), z->suffix) == 0) {
+	if (!(F_ISSET(zq->flags, ALREADY) || F_ISSET(zq->flags, LIST) || zq->mode != RPMZ_MODE_COMPRESS) && len >= strlen(zq->suffix) &&
+		strcmp(z->_ifn + len - strlen(zq->suffix), zq->suffix) == 0) {
 	    if (zq->verbosity > 0)
-		fprintf(stderr, "%s ends with %s -- skipping\n", z->_ifn, z->suffix);
+		fprintf(stderr, "%s ends with %s -- skipping\n", z->_ifn, zq->suffix);
 	    return;
 	}
 
@@ -2682,10 +2682,10 @@ assert(z->hname == NULL);
 
 	/* create output file and open to write */
 	{   size_t nb = len +
-		(zq->mode != RPMZ_MODE_COMPRESS ? 0 : strlen(z->suffix)) + 1;
+		(zq->mode != RPMZ_MODE_COMPRESS ? 0 : strlen(zq->suffix)) + 1;
 	    char * t = xmalloc(nb);
 	    memcpy(t, to, len);
-	    strcpy(t + len, zq->mode != RPMZ_MODE_COMPRESS ? "" : z->suffix);
+	    strcpy(t + len, zq->mode != RPMZ_MODE_COMPRESS ? "" : zq->suffix);
 	    zq->ofn = t;
 	}
 	zq->ofdno = open(zq->ofn, O_CREAT | O_TRUNC | O_WRONLY |
@@ -2973,8 +2973,8 @@ int main(int argc, char **argv)
     signal(SIGINT, rpmzAbort);
 
 #ifndef _PIGZNOTHREAD
-    yarnPrefix = "rpmpigz";         /* prefix for yarn error messages */
-    yarnAbort = rpmzAbort;          /* call on thread error */
+    yarnPrefix = __progname;	/* prefix for yarn error messages */
+    yarnAbort = rpmzAbort;	/* call on thread error */
 #endif
     /* XXX add POPT_ARG_TIMEOFDAY oneshot? */
     gettimeofday(&z->start, NULL);  /* starting time for log entries */
@@ -2983,7 +2983,7 @@ int main(int argc, char **argv)
 #endif
 
     /* set all options to defaults */
-    rpmzDefaults(z);
+    rpmzDefaults(zq);
 
     /* process user environment variable defaults */
     if (rpmzParseEnv(z, "GZIP", optionsTable))

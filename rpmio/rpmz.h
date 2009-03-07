@@ -172,6 +172,10 @@ struct rpmzQueue_s {
     unsigned int blocksize;	/*!< uncompressed input size per thread */
 #endif
 
+/*@null@*/ /*@observer@*/
+    const char * suffix;	/*!< -S, --suffix ... */
+/*@null@*/
+    const char * ifn;
 /*@null@*/
     const char * ofn;		/*!< output file name (allocated if not NULL) */
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
@@ -222,9 +226,6 @@ struct rpmz_s {
 /*@null@*/
     const char * base_prefix;	/*!< Prefix for file manifests paths. */
 
-/*@null@*/ /*@observer@*/
-    const char * suffix;	/*!< -S, --suffix ... */
-
     char _ifn[PATH_MAX+1];	/*!< input file name (accommodate recursion) */
 
 #if defined(_RPMZ_INTERNAL_XZ)
@@ -241,8 +242,6 @@ struct rpmz_s {
     const char * isuffix;
     enum rpmzFormat_e ifmt;
     FDIO_t idio;
-/*@null@*/
-    const char * ifn;
     char ifmode[32];
 /*@null@*/
     FD_t ifd;
@@ -460,7 +459,7 @@ static struct poptOption rpmzOptionsPoptTable[] = {
   /* XXX display toggle "-r,--[no]recursive" bustage. */
   { "recursive", 'r', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags, RPMZ_FLAGS_RECURSE,
 	N_("Process the contents of all subdirectories"), NULL },
-  { "suffix", 'S', POPT_ARG_STRING,		&__rpmz.suffix, 0,
+  { "suffix", 'S', POPT_ARG_STRING,		&__rpmz._zq.suffix, 0,
 	N_("Use suffix .sss instead of .gz (for compression)"), N_(".sss") },
 #if defined(_RPMZ_INTERNAL_PIGZ)
   { "ascii", 'a', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'a',
