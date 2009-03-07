@@ -163,6 +163,7 @@ rpmzLog rpmzLogFree(rpmzLog zlog)
 	zlog->msg_lock = yarnFreeLock(zlog->msg_lock);
 	zlog->msg_tail = NULL;
     }
+    zlog = _free(zlog);
     return NULL;
 }
 
