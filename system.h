@@ -731,8 +731,10 @@ static inline const char *rcsid(const char *p) { \
 #define Makedev(x,y)   makedev((x),(y))
 #endif
 
+#if defined(WITH_PTHREADS)
 #if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
 #include <pthread.h>
+#endif
 #endif
 
 /**

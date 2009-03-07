@@ -1924,7 +1924,7 @@ static int postPopulateInstallHeader(/*@unused@*/ const rpmts ts,
     return 0;
 }
 
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 static void * rpmpsmThread(void * arg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1941,7 +1941,7 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     psm->nstage = nstage;
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     if (_psm_threads)
 	return rpmsqJoin( rpmsqThread(rpmpsmThread, psm) );
 #endif

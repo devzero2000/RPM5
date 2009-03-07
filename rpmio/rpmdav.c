@@ -175,7 +175,7 @@ int avClosedir(/*@only@*/ DIR * dir)
 if (_av_debug)
 fprintf(stderr, "*** avClosedir(%p)\n", avdir);
 
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 /*@-moduncon -noeffectuncon @*/
     (void) pthread_mutex_destroy(&avdir->lock);
 /*@=moduncon =noeffectuncon @*/
@@ -274,7 +274,7 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
     /* Hash the directory path for a d_ino analogue. */
     avdir->filepos = hashFunctionString(0, path, 0);
 
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 /*@-moduncon -noeffectuncon -nullpass @*/
     (void) pthread_mutex_init(&avdir->lock, NULL);
 /*@=moduncon =noeffectuncon =nullpass @*/

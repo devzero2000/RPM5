@@ -18,23 +18,23 @@
 #include "system.h"
 
 /* for thread portability */
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 #if !defined(_POSIX_PTHREAD_SEMANTICS)
 #define _POSIX_PTHREAD_SEMANTICS
 #endif
 #if !defined(_REENTRANT)
 #define _REENTRANT
 #endif
-#else	/* HAVE_PTHREAD_H */
+#else	/* WITH_PTHREADS */
 #undef	_POSIX_PTHREAD_SEMANTICS
 #undef	_REENTRANT
-#endif	/* HAVE_PTHREAD_H */
+#endif	/* WITH_PTHREADS */
 
 /* external libraries and entities referenced */
 #include <stdio.h>      /* fprintf(), stderr */
 #include <stdlib.h>     /* exit(), malloc(), free(), NULL */
 
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 
 /*@-incondefs@*/
 #include <pthread.h>    /* pthread_t, pthread_create(), pthread_join(), */
@@ -47,7 +47,7 @@
        pthread_cond_broadcast(), pthread_cond_wait(), pthread_cond_destroy() */
 /*@=incondefs@*/
 
-#else	/* HAVE_PTHREAD_H */
+#else	/* WITH_PTHREADS */
 
 #define	pthread_t	int
 #define	pthread_self()	0
@@ -78,7 +78,7 @@
 #define	pthread_cond_wait(__cond, __mutex)	(-1)
 #define	pthread_cond_broadcast(__cond)		(-1)
 
-#endif	/* HAVE_PTHREAD_H */
+#endif	/* WITH_PTHREADS */
 
 #include <errno.h>      /* ENOMEM, EAGAIN, EINVAL */
 
@@ -361,7 +361,7 @@ struct capsule {
 };
 
 /* mark the calling thread as done and alert yarnJoinAll() */
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 static void yarnReenter(/*@unused@*/ void * dummy)
 	/*@globals threads, threads_lock, fileSystem, internalState @*/
 	/*@modifies threads, threads_lock, fileSystem, internalState @*/
@@ -400,7 +400,7 @@ static void yarnReenter(/*@unused@*/ void * dummy)
    the thread resources can be released -- use cleanup stack so that the
    marking occurs even if the thread is cancelled */
 /*@null@*/
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 static void * yarnIgnition(/*@only@*/ void * arg)
 	/*@*/
 {
@@ -436,7 +436,7 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
     int ret;
     yarnThread th;
     struct capsule * capsule;
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     pthread_attr_t attr;
 #endif
 

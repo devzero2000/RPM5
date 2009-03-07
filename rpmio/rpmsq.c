@@ -190,7 +190,7 @@ static	void __remque(struct qelem * elem)
 #define	remque(_e)	__remque(_e)
 #endif
 
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 
 # if !defined(__QNX__)
 /* XXX suggested in bugzilla #159024 */
@@ -266,7 +266,7 @@ static void *__pid2vp(pid_t pid)
     return u.vp;
 }
 
-#endif	/* HAVE_PTHREAD_H */
+#endif	/* WITH_PTHREADS */
 
 #define	_RPMSQ_INTERNAL
 #include <rpmsq.h>
@@ -655,7 +655,7 @@ fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, (int)sq->
 
 void * rpmsqThread(void * (*start) (void * arg), void * arg)
 {
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     pthread_t pth;
     int ret;
 
@@ -670,7 +670,7 @@ void * rpmsqThread(void * (*start) (void * arg), void * arg)
 
 int rpmsqJoin(void * thread)
 {
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     pthread_t pth = (pthread_t) thread;
     if (thread == NULL)
 	return EINVAL;
@@ -683,7 +683,7 @@ int rpmsqJoin(void * thread)
 
 int rpmsqThreadEqual(void * thread)
 {
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     pthread_t t1 = (pthread_t) thread;
     pthread_t t2 = pthread_self();
     return pthread_equal(t1, t2);
@@ -696,7 +696,7 @@ int rpmsqThreadEqual(void * thread)
 /**
  * SIGCHLD cancellation handler.
  */
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
 static void
 sigchld_cancel (void *arg)
 	/*@globals rpmsigTbl, fileSystem, internalState @*/
@@ -729,7 +729,7 @@ rpmsqExecve (const char ** argv)
 	/*@globals rpmsigTbl @*/
 	/*@modifies rpmsigTbl @*/
 {
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     int oldtype;
 #endif
     int status = -1;

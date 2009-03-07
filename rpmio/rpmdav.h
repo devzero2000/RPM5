@@ -26,7 +26,7 @@ struct __dirstream {
     size_t size;		/* Total valid data in the block.  */
     size_t offset;		/* Current offset into the block.  */
     off_t filepos;		/* Position of next entry to read.  */
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     pthread_mutex_t lock;	/* Mutex lock for this structure.  */
 #endif
 };

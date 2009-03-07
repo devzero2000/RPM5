@@ -603,6 +603,7 @@ AC_ARG_WITH([pthreads],
     AS_HELP_STRING([--without-pthreads], [build RPM without POSIX pthreads]),
     [ WITH_PTHREADS="$withval" ], [ WITH_PTHREADS=yes ])
 if test ".$WITH_PTHREADS" = .yes; then
+    AC_DEFINE(WITH_PTHREADS, 1, [Define to 1 for using Pthreads])
     AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
     AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
         AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
