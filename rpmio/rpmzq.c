@@ -341,15 +341,12 @@ rpmzQueue rpmzqFree(rpmzQueue zq)
     return NULL;
 }
 
-rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, unsigned int flags,
-		unsigned int level, int limit)
+rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, int limit)
 {
-    zq->flags = flags;
     zq->ifn = NULL;
     zq->ifdno = -1;
     zq->ofn = NULL;
     zq->ofdno = -1;
-    zq->level = level;
     zq->iblocksize = zq->blocksize;
     zq->ilimit = limit;
     zq->oblocksize = zq->blocksize;

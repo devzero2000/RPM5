@@ -113,78 +113,6 @@ static int _debug;
 
 /**
  */
-enum rpmzMode_e {
-    RPMZ_MODE_COMPRESS		= 0,
-    RPMZ_MODE_DECOMPRESS	= 1,
-    RPMZ_MODE_TEST		= 2,
-};
-
-/**
- */
-enum rpmzFormat_e {
-    RPMZ_FORMAT_AUTO		= 0,
-    RPMZ_FORMAT_XZ		= 1,
-    RPMZ_FORMAT_LZMA		= 2,
-    RPMZ_FORMAT_RAW		= 3,
-    RPMZ_FORMAT_GZIP		= 4,
-    RPMZ_FORMAT_ZLIB		= 5,
-    RPMZ_FORMAT_ZIP2		= 6,
-    RPMZ_FORMAT_ZIP3		= 7,
-    RPMZ_FORMAT_BZIP2		= 8,
-};
-
-#define _KFB(n) (1U << (n))
-#define _ZFB(n) (_KFB(n) | 0x40000000)
-
-/**
- */
-enum rpmzFlags_e {
-    RPMZ_FLAGS_NONE		= 0,
-    RPMZ_FLAGS_STDOUT		= _ZFB( 0),	/*!< -c, --stdout ... */
-	/* 1 unused */
-    RPMZ_FLAGS_KEEP		= _ZFB( 2),	/*!< -k, --keep ... */
-    RPMZ_FLAGS_RECURSE		= _ZFB( 3),	/*!< -r, --recursive ... */
-    RPMZ_FLAGS_EXTREME		= _ZFB( 4),	/*!< -e, --extreme ... */
-  /* XXX compressor specific flags need to be set some other way. */
-  /* XXX unused */
-    RPMZ_FLAGS_FAST		= _ZFB( 5),	/*!<     --fast ... */
-    RPMZ_FLAGS_BEST		= _ZFB( 6),	/*!<     --best ... */
-
-  /* XXX logic is reversed, disablers should clear with toggle. */
-    RPMZ_FLAGS_HNAME		= _ZFB( 7),	/*!< -n, --no-name ... */
-    RPMZ_FLAGS_HTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
-
-  /* XXX unimplemented */
-    RPMZ_FLAGS_RSYNCABLE	= _ZFB( 9),	/*!< -R, --rsyncable ... */
-  /* XXX logic is reversed. */
-    RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
-    RPMZ_FLAGS_LIST		= _ZFB(11),	/*!< -l, --list ... */
-
-    RPMZ_FLAGS_OVERWRITE	= _ZFB(12),	/*!<     --overwrite ... */
-    RPMZ_FLAGS_ALREADY		= _ZFB(13),	/*!<     --recompress ... */
-    RPMZ_FLAGS_SYMLINKS		= _ZFB(14),	/*!<     --symlinks ... */
-    RPMZ_FLAGS_TTY		= _ZFB(15),	/*!<     --tty ... */
-#define	RPMZ_FLAGS_FORCE	\
-    (RPMZ_FLAGS_OVERWRITE|RPMZ_FLAGS_ALREADY|RPMZ_FLAGS_SYMLINKS|RPMZ_FLAGS_TTY)
-
-#ifdef	NOTYET
-    RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
-    RPMZ_FLAGS_DELTA,
-    RPMZ_FLAGS_LZMA1,
-    RPMZ_FLAGS_LZMA2,
-#endif
-
-    RPMZ_FLAGS_X86		= _ZFB(16),
-    RPMZ_FLAGS_POWERPC		= _ZFB(17),
-    RPMZ_FLAGS_IA64		= _ZFB(18),
-    RPMZ_FLAGS_ARM		= _ZFB(19),
-    RPMZ_FLAGS_ARMTHUMB		= _ZFB(20),
-    RPMZ_FLAGS_SPARC		= _ZFB(21),
-
-};
-
-/**
- */
 typedef /*@abstract@*/ struct rpmz_s * rpmz;
 /*@access rpmz @*/
 
@@ -2164,7 +2092,9 @@ rc = 1;
     if (F_ISSET(z->flags, STDOUT))
 	z->flags |= RPMZ_FLAGS_KEEP;
 
-    z->zq = rpmzqNew(zq, zlog, z->flags, z->level, 0);
+    z->zq = rpmzqNew(zq, zlog, 0);
+    zq->flags = z->flags;
+    zq->level = z->level;
 
     signals_init();
 
