@@ -141,6 +141,59 @@ struct rpmzJob_s {
 
 /**
  */
+typedef struct rpmzQueue_s * rpmzQueue;
+
+struct rpmzQueue_s {
+#ifdef	NOTYET
+    unsigned int flags;		/*!< Control bits. */
+
+    long lastseq;		/*!< Last seq. */
+    unsigned int level;		/*!< Compression level. */
+    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
+    size_t iblocksize;
+    int ilimit;
+    size_t oblocksize;
+    int olimit;
+/*@null@*/
+    const char *ifn;		/*!< input file name */
+#endif
+
+/*@null@*/
+    const char * ofn;		/*!< output file name (allocated if not NULL) */
+    int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
+
+/*@owned@*/ /*@null@*/
+    rpmzLog zlog;		/*!< trace logging */
+
+    int ifdno;			/*!< input file descriptor */
+    int ofdno;			/*!< output file descriptor */
+
+/*@relnull@*/
+    rpmzPool in_pool;		/*!< input buffer pool (malloc'd). */
+/*@relnull@*/
+    rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
+
+    /* list of compress jobs (with tail for appending to list) */
+/*@only@*/ /*@null@*/
+    yarnLock compress_have;	/*!< no. compress/decompress jobs waiting */
+/*@null@*/
+    rpmzJob compress_head;
+/*@shared@*/
+    rpmzJob * compress_tail;
+
+    int cthreads;		/*!< number of compression threads running */
+
+/*@only@*/ /*@null@*/
+    yarnLock write_first;	/*!< lowest sequence number in list */
+/*@null@*/
+    rpmzJob write_head;		/*!< list of write jobs */
+
+/*@only@*/ /*@null@*/
+    yarnThread writeth;		/*!< write thread if running */
+};
+
+/**
+ */
 struct rpmz_s {
 /*@observer@*/
     const char *stdin_fn;	/*!< Display name for stdin. */
@@ -190,8 +243,6 @@ struct rpmz_s {
     const char * osuffix;
     enum rpmzFormat_e ofmt;
     FDIO_t odio;
-/*@null@*/
-    const char * ofn;		/*!< output file name (allocated if not NULL) */
     char ofmode[32];
 /*@null@*/
     FD_t ofd;
@@ -206,38 +257,10 @@ struct rpmz_s {
 #endif	/* _RPMZ_INTERNAL_XZ */
 
 #if defined(_RPMZ_INTERNAL_PIGZ)	/* PIGZ specific configuration. */
-    int verbosity;        /*!< 0 = quiet, 1 = normal, 2 = verbose, 3 = trace */
-
 /* --- globals (modified by main thread only when it's the only thread) */
-/*@relnull@*/
-    char * _ofn;		/*!< output file name (allocated if not NULL) */
-    int ifdno;			/*!< input file descriptor */
-    int ofdno;			/*!< output file descriptor */
 
     /* XXX PIGZ used size_t not unsigned int. */
     unsigned int blocksize; /*!< uncompressed input size per thread (>= 32K) */
-
-/*@relnull@*/
-    rpmzPool in_pool;		/*!< input buffer pool (malloc'd). */
-/*@relnull@*/
-    rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
-
-    /* list of compress jobs (with tail for appending to list) */
-/*@only@*/ /*@null@*/
-    yarnLock compress_have;	/*!< number of compress jobs waiting */
-/*@null@*/
-    rpmzJob compress_head;
-/*@shared@*/
-    rpmzJob * compress_tail;
-
-/*@only@*/ /*@null@*/
-    yarnLock write_first;	/*!< lowest sequence number in list */
-/*@null@*/
-    rpmzJob write_head;		/*!< list of write jobs */
-    int cthreads;		/*!< number of compression threads running */
-
-/*@only@*/ /*@null@*/
-    yarnThread writeth;		/*!< write thread if running */
 
 /* --- globals for decompression and listing buffered reading */
     int in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
@@ -298,8 +321,12 @@ struct rpmz_s {
 #endif	/* _RPMZ_INTERNAL_PIGZ */
 
     struct timeval start;	/*!< starting time of day for tracing */
-/*@owned@*/ /*@null@*/
-    rpmzLog zlog;		/*!< trace logging */
+
+/* ++++ rpmzq */
+    struct rpmzQueue_s _zq;
+/*@owned@*/ /*@relnull@*/
+    rpmzQueue zq;               /*!< buffer pools. */
+/* ---- rpmzq */
 
 };
 #endif	/* _RPMZ_INTERNAL */

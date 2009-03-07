@@ -66,10 +66,6 @@ struct rpmzQueue_s {
     unsigned int flags;		/*!< Control bits. */
 /*@null@*/
     const char *ifn;		/*!< input file name */
-    int ifdno;			/*!< input file descriptor */
-/*@null@*/
-    const char *ofn;		/*!< output file name */
-    int ofdno;			/*!< output file descriptor */
 
     long lastseq;		/*!< Last seq. */
     unsigned int level;		/*!< Compression level. */
@@ -79,14 +75,20 @@ struct rpmzQueue_s {
     size_t oblocksize;
     int olimit;
 
+/*@null@*/
+    const char * ofn;		/*!< output file name (allocated if not NULL) */
+    int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
+
+/*@owned@*/ /*@null@*/
+    rpmzLog zlog;		/*!< trace logging */
+
+    int ifdno;			/*!< input file descriptor */
+    int ofdno;			/*!< output file descriptor */
+
 /*@relnull@*/
     rpmzPool in_pool;		/*!< input buffer pool (malloc'd). */
 /*@relnull@*/
     rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
-
-    int verbosity;        /*!< 0 = quiet, 1 = normal, 2 = verbose, 3 = trace */
-/*@owned@*/ /*@null@*/
-    rpmzLog zlog;		/*!< trace logging */
 
     /* list of compress jobs (with tail for appending to list) */
 /*@only@*/ /*@null@*/

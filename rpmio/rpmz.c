@@ -185,13 +185,13 @@ io_copy_attrs(rpmz z)
 	   about failing fchown() only if we are root. */
 	if (Fchown(z->ofd, z->isb.st_uid, -1) && (geteuid() == 0))
 		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file owner: %s\n"),
-				z->ofn, strerror(errno));
+				zq->ofn, strerror(errno));
 
     {	mode_t mode;
 
 	if (Fchown(z->ofd, -1, z->isb.st_gid)) {
 		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file group: %s\n"),
-				z->ofn, strerror(errno));
+				zq->ofn, strerror(errno));
 		/* We can still safely copy some additional permissions:
 		   `group' must be at least as strict as `other' and
 		   also vice versa.
@@ -210,7 +210,7 @@ io_copy_attrs(rpmz z)
 
 	if (Fchmod(z->ofd, mode))
 		rpmlog(RPMLOG_WARNING, _("%s: Cannot set the file permissions: %s\n"),
-				z->ofn, strerror(errno));
+				zq->ofn, strerror(errno));
     }
 #endif
 #endif
@@ -285,7 +285,7 @@ io_copy_attrs(rpmz z)
 	(void)futimesat(Fileno(z->ofd), NULL, tv);
 #	else
 	/* Argh, no function to use a file descriptor to set the timestamp. */
-	(void)Utimes(z->ofn, tv);
+	(void)Utimes(zq->ofn, tv);
 #	endif
       }
 
@@ -302,7 +302,7 @@ io_copy_attrs(rpmz z)
 	(void)atime_nsec;
 	(void)mtime_nsec;
 
-	(void)Utime(z->ofn, &buf);
+	(void)Utime(zq->ofn, &buf);
       }
 #endif
     }
@@ -543,6 +543,7 @@ static rpmRC rpmzProcess(rpmz z, /*@null@*/ const char * ifn)
 
 static rpmRC rpmzFini(rpmz z, rpmRC rc)
 {
+    rpmzQueue zq = z->zq;
     int xx;
 
     /* XXX mask signals */
@@ -550,11 +551,11 @@ static rpmRC rpmzFini(rpmz z, rpmRC rc)
 	xx = Fflush(z->ofd);
 
 	/* Timestamp output file same as input. */
-	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_fn))
+	if (zq->ofn != NULL && strcmp(zq->ofn, z->stdout_fn))
 	    io_copy_attrs(z);	/* XXX add error return */
 	if ((xx = Fclose(z->ofd)) != 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: Closing output file failed: %s\n"),
-                                z->ofn, strerror(errno));
+                                zq->ofn, strerror(errno));
 	    rc = RPMRC_FAIL;
 	}
 	z->ofd = NULL;
@@ -573,10 +574,10 @@ static rpmRC rpmzFini(rpmz z, rpmRC rc)
     default:
 	break;
     case RPMRC_FAIL:
-	if (z->ofn != NULL && strcmp(z->ofn, z->stdout_fn)) {
-	    xx = Unlink(z->ofn);
+	if (zq->ofn != NULL && strcmp(zq->ofn, z->stdout_fn)) {
+	    xx = Unlink(zq->ofn);
 if (_debug)
-fprintf(stderr, "==> Unlink(%s) FAIL\n", z->ofn);
+fprintf(stderr, "==> Unlink(%s) FAIL\n", zq->ofn);
 	}
 	break;
     case RPMRC_OK:
@@ -588,7 +589,7 @@ fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
 	break;
     }
 
-    z->ofn = _free(z->ofn);
+    zq->ofn = _free(zq->ofn);
 
     return rc;
 }
@@ -596,6 +597,7 @@ fprintf(stderr, "==> Unlink(%s)\n", z->ifn);
 static rpmRC rpmzInit(rpmz z, /*@null@*/ const char * ifn)
 	/*@*/
 {
+    rpmzQueue zq = z->zq;
     rpmRC rc = RPMRC_FAIL;
 
 if (_debug)
@@ -708,7 +710,7 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
     }
 
     if (F_ISSET(z->flags, STDOUT))  {
-	z->ofn = xstrdup(z->stdout_fn);
+	zq->ofn = xstrdup(z->stdout_fn);
 	switch (z->mode) {
 	default:
 	    break;
@@ -728,30 +730,30 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 	default:
 	    break;
 	case RPMZ_MODE_COMPRESS:
-	    z->ofn = compressedFN(z);
-	    if (!F_ISSET(z->flags, OVERWRITE) && Stat(z->ofn, &z->osb) == 0) {
+	    zq->ofn = compressedFN(z);
+	    if (!F_ISSET(z->flags, OVERWRITE) && Stat(zq->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
-			__progname, z->ofn);
+			__progname, zq->ofn);
 		/* XXX TODO: ok to overwrite(y/N)? */
 		goto exit;
 	    }
-	    z->ofd = z->odio->_fopen(z->ofn, z->ofmode);
+	    z->ofd = z->odio->_fopen(zq->ofn, z->ofmode);
 	    fdFree(z->ofd, NULL);		/* XXX adjust refcounts. */
 	    break;
 	case RPMZ_MODE_DECOMPRESS:
-	    z->ofn = uncompressedFN(z);
-	    if (!F_ISSET(z->flags, OVERWRITE) && Stat(z->ofn, &z->osb) == 0) {
+	    zq->ofn = uncompressedFN(z);
+	    if (!F_ISSET(z->flags, OVERWRITE) && Stat(zq->ofn, &z->osb) == 0) {
 		fprintf(stderr, "%s: output file %s already exists\n",
-			__progname, z->ofn);
+			__progname, zq->ofn);
 		/* XXX TODO: ok to overwrite(y/N)? */
 		goto exit;
 	    }
-	    z->ofd = Fopen(z->ofn, z->ofmode);
+	    z->ofd = Fopen(zq->ofn, z->ofmode);
 	    break;
 	}
     }
     if (z->ofd == NULL || Ferror(z->ofd)) {
-	fprintf(stderr, "%s: can't open %s\n", __progname, z->ofn);
+	fprintf(stderr, "%s: can't open %s\n", __progname, zq->ofn);
 	goto exit;
     }
 
@@ -1967,6 +1969,8 @@ argvPrint("input args", z->argv, NULL);
     /* With no arguments, act as a stdin/stdout filter. */
     if (z->argv == NULL || z->argv[0] == NULL)
 	ac++;
+
+    z->zq = &z->_zq;		/* XXX initialize rpmzq */
 
     signals_init();
 
