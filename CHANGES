@@ -1,3 +1,5 @@
+5.1.7 -> 5.1.8:
+
 5.1.6 -> 5.1.7:
     - jbj: update po files (Translation Project).
     - jbj: eleminate duplicate rpmVersionCompare() routines.
