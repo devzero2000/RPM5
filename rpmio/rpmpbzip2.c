@@ -47,14 +47,13 @@
 
 #include "system.h"
 
-#include <popt.h>
-
-#include "rpmiotypes.h"
-
+#include <rpmiotypes.h>
 #include "rpmio_internal.h"
-#include "rpmlog.h"
-#include "rpmsq.h"
+#include <rpmlog.h>
 #include "argv.h"
+#include "rpmsq.h"
+
+#include "poptIO.h"
 
 #include "yarn.h"
 
@@ -2084,8 +2083,8 @@ int main(int argc, char* argv[])
     poptContext optCon;
 
     const char stdinFile[] = "-";
-    int rc = 0;
     int ac = 0;
+    int rc = 0;
     int xx;
     int i;
 
@@ -2110,26 +2109,7 @@ int main(int argc, char* argv[])
     // get program name to determine if decompress mode should be used
     xx = rpmzParseArgv0(z, argv[0]);
 
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
-
-    /* Process all options, whine if unknown. */
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	const char * optArg = poptGetOptArg(optCon);
-/*@-dependenttrans -modobserver -observertrans @*/
-	optArg = _free(optArg);
-/*@=dependenttrans =modobserver =observertrans @*/
-	switch (rc) {
-	default:
-/*@-nullpass@*/
-	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
-		__progname, rc);
-/*@=nullpass@*/
-	    exit(EXIT_FAILURE);
-
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-        }
-    }
-    rc = 0;
+    optCon = rpmioInit(argc, argv, optionsTable);
 
     /* Add files from CLI. */
     {	ARGV_t av = poptGetArgs(optCon);
@@ -2218,7 +2198,7 @@ exit:
 
     signals_exit();
 
-    optCon = poptFreeContext(optCon);
+    optCon = rpmioFini(optCon);
 
 /*@-globstate@*/	/* XXX __progname silliness */
     return rc;
