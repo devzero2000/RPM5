@@ -1065,8 +1065,9 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 	rpmzqDropSpace(job->in);
 	job->check = check;
 	yarnPossess(job->calc);
-	yarnTwist(job->calc, TO, 1);
 	Trace((zlog, "-- checked #%ld%s", job->seq, job->more ? "" : " (last)"));
+	yarnTwist(job->calc, TO, 1);
+	job = NULL;	/* XXX job is already free'd here. */
 
 	/* done with that one -- go find another job */
     }
