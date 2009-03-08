@@ -1265,17 +1265,23 @@ static void load_read_thread(void *_z)
     rpmz z = _z;
     rpmzQueue zq = z->zq;
     rpmzLog zlog = zq->zlog;
+    rpmzJob job = &zq->_job;
+    size_t nread;
 
-    size_t len;
-
+assert(job->in != NULL);
     Trace((zlog, "-- launched decompress read thread"));
     do {
 	yarnPossess(z->load_state);
 	yarnWaitFor(z->load_state, TO_BE, 1);
-	z->in_len = len = rpmzRead(zq, z->in_which ? z->in_buf : z->in_buf2, z->in_buf_allocated);
-	Trace((zlog, "-- decompress read thread read %lu bytes", len));
+
+	job->in->len = z->in_buf_allocated;
+	job->in->buf = z->in_which ? z->in_buf : z->in_buf2;
+	nread = rpmzRead(zq, job->in->buf, job->in->len);
+	job->in->len = nread;
+
+	Trace((zlog, "-- decompress read thread read %lu bytes", nread));
 	yarnTwist(z->load_state, TO, 0);
-    } while (len == z->in_buf_allocated);
+    } while (nread == z->in_buf_allocated);
     Trace((zlog, "-- exited decompress read thread"));
 }
 #endif
@@ -1290,6 +1296,8 @@ static size_t load(rpmz z)
 	/*@modifies z, fileSystem, internalState @*/
 {
     rpmzQueue zq = z->zq;
+    rpmzJob job = &zq->_job;
+
     /* if already detected end of file, do nothing */
     if (z->in_short) {
 	z->in_eof = 1;
@@ -1315,12 +1323,12 @@ static size_t load(rpmz z)
 	yarnRelease(z->load_state);
 
 	/* set up input buffer with the data just read */
-	z->in_next = z->in_which ? z->in_buf : z->in_buf2;
-	z->in_left = z->in_len;
+	z->in_left = job->in->len;
+	z->in_next = job->in->buf;
 
 	/* if not at end of file, alert read thread to load next buffer,
 	 * alternate between in_buf and in_buf2 */
-	if (z->in_len == z->in_buf_allocated) {
+	if (job->in->len == z->in_buf_allocated) {
 	    z->in_which = 1 - z->in_which;
 	    yarnPossess(z->load_state);
 	    yarnTwist(z->load_state, TO, 1);
@@ -1335,9 +1343,14 @@ static size_t load(rpmz z)
     }
     else
 #endif
-    {
+    {	size_t nread;
 	/* don't use threads -- simply read a buffer into z->in_buf */
-	z->in_left = rpmzRead(zq, z->in_next = z->in_buf, z->in_buf_allocated);
+	job->in->len = z->in_buf_allocated;
+	job->in->buf = z->in_buf;
+	nread = rpmzRead(zq, job->in->buf, job->in->len);
+	job->in->len = nread;
+	z->in_left = job->in->len;
+	z->in_next = job->in->buf;
     }
 
     /* note end of file */
@@ -2843,6 +2856,7 @@ int main(int argc, char **argv)
 /*@-observertrans -readonlytrans @*/
     __progname = "rpmpigz";
 /*@=observertrans =readonlytrans @*/
+    zq->_job.in = &zq->_job_in;
     z->zq = zq;		/* XXX initialize rpmzq */
 
     /* XXX sick hack to initialize the popt callback. */

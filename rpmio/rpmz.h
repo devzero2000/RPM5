@@ -106,7 +106,6 @@ struct rpmz_s {
     unsigned long out_check;	/*!< check value of output */
 
     /* parallel reading */
-    size_t in_len;		/*!< data waiting in next buffer */
 /*@only@*/ /*@null@*/
     yarnLock load_state;	/*!< value = 0 to wait, 1 to read a buffer */
 /*@only@*/ /*@null@*/

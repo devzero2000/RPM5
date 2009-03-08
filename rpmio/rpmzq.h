@@ -208,6 +208,8 @@ struct rpmzQueue_s {
     size_t oblocksize;
     int olimit;
 #endif
+    struct rpmzSpace_s _job_in;
+    struct rpmzJob_s _job;
 
 };
 #endif	/* _RPMZQ_INTERNAL */
