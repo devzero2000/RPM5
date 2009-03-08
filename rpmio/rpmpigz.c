@@ -1946,6 +1946,7 @@ static void outb_check(void *_z)
     rpmz z = _z;
     rpmzQueue zq = z->zq;
     rpmzLog zlog = zq->zlog;
+    rpmzJob job = &zq->_job;
     size_t len;
 
     Trace((zlog, "-- launched decompress check thread"));
@@ -1953,7 +1954,7 @@ static void outb_check(void *_z)
 	yarnPossess(z->outb_check_more);
 	yarnWaitFor(z->outb_check_more, TO_BE, 1);
 	len = z->out_len;
-	z->out_check = CHECK(z->out_check, z->out_copy, len);
+	job->check = CHECK(job->check, z->out_copy, len);
 	Trace((zlog, "-- decompress checked %lu bytes", len));
 	yarnTwist(z->outb_check_more, TO, 0);
     } while (len);
@@ -1971,6 +1972,7 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
 {
     rpmz z = _z;
     rpmzQueue zq = z->zq;
+    rpmzJob job = &zq->_job;
 #ifndef _PIGZNOTHREAD
 /*@only@*/ /*@relnull@*/
     static yarnThread wr;
@@ -2023,7 +2025,7 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
     if (len) {
 	if (zq->mode == RPMZ_MODE_DECOMPRESS)
 	    rpmzWrite(zq, buf, len);
-	z->out_check = CHECK(z->out_check, buf, len);
+	job->check = CHECK(job->check, buf, len);
 	z->out_tot += len;
     }
     return 0;
@@ -2054,7 +2056,7 @@ static void rpmzInflateCheck(rpmz z)
 	/* header already read -- set up for decompression */
 	z->in_tot = job->in->len;               /* track compressed data length */
 	z->out_tot = 0;
-	z->out_check = CHECK(0L, Z_NULL, 0);
+	job->check = CHECK(0L, Z_NULL, 0);
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.opaque = Z_NULL;
@@ -2093,8 +2095,8 @@ static void rpmzInflateCheck(rpmz z)
 		bail("corrupted zip entry -- missing trailer: ", z->_ifn);
 
 	    /* if crc doesn't match, try info-zip variant with sig */
-	    if (z->zip_crc != z->out_check) {
-		if (z->zip_crc != 0x08074b50UL || z->zip_clen != z->out_check)
+	    if (z->zip_crc != job->check) {
+		if (z->zip_crc != 0x08074b50UL || z->zip_clen != job->check)
 		    bail("corrupted zip entry -- crc32 mismatch: ", z->_ifn);
 		z->zip_crc = z->zip_clen;
 		z->zip_clen = z->zip_ulen;
@@ -2121,7 +2123,7 @@ static void rpmzInflateCheck(rpmz z)
 	    check += GET();
 	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted zlib stream -- missing trailer: ", z->_ifn);
-	    if (check != z->out_check)
+	    if (check != job->check)
 		bail("corrupted zlib stream -- adler32 mismatch: ", z->_ifn);
 	    break;
 	case RPMZ_FORMAT_GZIP:	/* gzip trailer */
@@ -2129,7 +2131,7 @@ static void rpmzInflateCheck(rpmz z)
 	    len = GET4();
 	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted gzip stream -- missing trailer: ", z->_ifn);
-	    if (check != z->out_check)
+	    if (check != job->check)
 		bail("corrupted gzip stream -- crc32 mismatch: ", z->_ifn);
 	    if (len != (z->out_tot & LOW32))
 		bail("corrupted gzip stream -- length mismatch: ", z->_ifn);
