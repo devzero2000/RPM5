@@ -154,6 +154,26 @@ struct rpmzJob_s {
 
 /**
  */
+typedef	struct rpmzh_s * rpmzh;
+
+/**
+ */
+struct rpmzh_s {
+/*@observer@*/ /*@null@*/
+    const char * name;		/*!< name for gzip header */
+    time_t mtime;		/*!< time stamp for gzip header */
+    unsigned long head;		/*!< header length */
+    unsigned long ulen;		/*!< total uncompressed size (overflow ok) */
+    unsigned long clen;		/*!< total compressed size (overflow ok) */
+    unsigned long check;	/*!< check value of uncompressed data */
+/* saved gzip/zip header data for decompression, testing, and listing */
+/*@only@*/ /*@null@*/
+    char * hname;		/*!< name from header (allocated) */
+    time_t stamp;		/*!< time stamp from gzip header */
+};
+
+/**
+ */
 struct rpmzQueue_s {
 /* --- globals (modified by main thread only when it's the only thread) */
     enum rpmzFlags_e flags;	/*!< Control bits. */
@@ -212,6 +232,7 @@ struct rpmzQueue_s {
     size_t oblocksize;
     int olimit;
 #endif
+    struct rpmzh_s _zh;
     struct rpmzSpace_s _job_in;
     struct rpmzJob_s _job;
 
