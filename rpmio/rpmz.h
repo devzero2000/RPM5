@@ -99,8 +99,6 @@ struct rpmz_s {
 /*@shared@*/
     unsigned char * in_next;	/*!< next buffer waiting to use */
     size_t in_pend;		/*!< number of bytes waiting to use */
-    int in_eof;			/*!< true if reached end of file on input */
-    int in_short;		/*!< true if last read didn't fill buffer */
     off_t in_tot;		/*!< total bytes read from input */
     off_t out_tot;		/*!< total bytes written to output */
     unsigned long out_check;	/*!< check value of output */

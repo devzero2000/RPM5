@@ -1288,7 +1288,7 @@ assert(z->in_next == NULL);
 /* load() is called when job->in->len has gone to zero in order to provide more
    input data: load the input buffer with z->in_buf_allocated (or fewer if at end of file) bytes
    from the file zq->ifdno, set job->in->buf to point to the job->in->len bytes read,
-   update z->in_tot, and return job->in->len -- z->in_eof is set to true when job->in->len has
+   update z->in_tot, and return job->in->len -- job->more is set to 0 when job->in->len has
    gone to zero and there is no more data left to read from zq->ifdno */
 static size_t load(rpmz z)
 	/*@globals fileSystem, internalState @*/
@@ -1298,8 +1298,8 @@ static size_t load(rpmz z)
     rpmzJob job = &zq->_job;
 
     /* if already detected end of file, do nothing */
-    if (z->in_short) {
-	z->in_eof = 1;
+    if (job->more < 0) {	/* XXX job->more to eliminate z->in_short */
+	job->more = 0;		/* XXX job->more to eliminate z->in_eof */
 	return 0;
     }
 
@@ -1365,12 +1365,13 @@ assert(z->in_next == NULL);
 
     /* note end of file */
     if (job->in->len < z->in_buf_allocated) {
-	z->in_short = 1;
+	job->more = -1;		/* XXX job->more to eliminate z->in_short */
 
 	/* if we got bupkis, now is the time to mark eof */
 	if (job->in->len == 0)
-	    z->in_eof = 1;
-    }
+	    job->more = 0;	/* XXX job->more to eliminate z->in_eof */
+    } else
+	job->more = 1;
 
     /* update the total and return the available bytes */
     z->in_tot += job->in->len;
@@ -1383,10 +1384,14 @@ static void in_init(rpmz z)
 {
     rpmzQueue zq = z->zq;
     rpmzJob job = &zq->_job;
+    job->seq = 0;
+    job->more = 1;	/* XXX job->more to eliminate z->in_eof/z->in_short */
     job->in->len = 0;
     job->in->buf = NULL;
-    z->in_eof = 0;
-    z->in_short = 0;
+    job->out = NULL;
+    job->check = 0;
+    job->calc = NULL;
+    job->next = NULL;
     z->in_tot = 0;
 #ifndef _PIGZNOTHREAD
     z->in_which = -1;
@@ -1394,7 +1399,7 @@ static void in_init(rpmz z)
 }
 
 /* buffered reading macros for decompression and listing */
-#define GET() (z->in_eof || (job->in->len == 0 && load(z) == 0) ? EOF : \
+#define GET() ((!job->more) || (job->in->len == 0 && load(z) == 0) ? EOF : \
                (job->in->len--, *job->in->buf++))
 #define GET2() (tmp2 = GET(), tmp2 + (GET() << 8))
 #define GET4() (tmp4 = GET2(), tmp4 + ((unsigned long)(GET2()) << 16))
@@ -1454,7 +1459,7 @@ static int rpmzReadExtra(rpmz z, unsigned len, int save)
     while (len >= 4) {
 	id = GET2();
 	size = GET2();
-	if (z->in_eof)
+	if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	    return -1;
 	len -= 4;
 	if (size > len)
@@ -1522,10 +1527,10 @@ static int rpmzGetHeader(rpmz z, int save)
     /* see if it's a gzip, zlib, or lzw file */
     zq->format = RPMZ_FORMAT_GZIP;
     magic = GET() << 8;
-    if (z->in_eof)
+    if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	return -1;
     magic += GET();
-    if (z->in_eof)
+    if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	return -2;
     if (magic % 31 == 0) {          /* it's zlib */
 	zq->format = RPMZ_FORMAT_ZLIB;
@@ -1538,14 +1543,14 @@ static int rpmzGetHeader(rpmz z, int save)
 	    return -3;
 	SKIP(2);
 	flags = GET2();
-	if (z->in_eof)
+	if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	    return -3;
 	if (flags & 0xfff0)
 	    return -4;
 	method = GET2();
 	if (flags & 1)              /* encrypted */
 	    method = 255;           /* mark as unknown method */
-	if (z->in_eof)
+	if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	    return -3;
 	if (save)
 	    z->stamp = dos2time(GET4());
@@ -1577,7 +1582,7 @@ static int rpmzGetHeader(rpmz z, int save)
 	    SKIP(fname);
 	rpmzReadExtra(z, extra, save);
 	zq->format = (flags & 8) ? RPMZ_FORMAT_ZIP3 : RPMZ_FORMAT_ZIP2;
-	return z->in_eof ? -3 : method;
+	return (!job->more) ? -3 : method; /* XXX job->more to eliminate z->in_eof */
     }
     if (magic != 0x1f8b)            /* not gzip */
 	return -2;
@@ -1585,7 +1590,7 @@ static int rpmzGetHeader(rpmz z, int save)
     /* it's gzip -- get method and flags */
     method = GET();
     flags = GET();
-    if (z->in_eof)
+    if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	return -1;
     if (flags & 0xe0)
 	return -4;
@@ -1602,7 +1607,7 @@ static int rpmzGetHeader(rpmz z, int save)
     /* skip extra field, if present */
     if (flags & 4) {
 	extra = GET2();
-	if (z->in_eof)
+	if (!job->more)		/* XXX job->more to eliminate z->in_eof */
 	    return -3;
 	SKIP(extra);
     }
@@ -1635,13 +1640,13 @@ static int rpmzGetHeader(rpmz z, int save)
     }
     else if (flags & 8)
 	while (GET() != 0)
-	    if (z->in_eof)
+	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		return -3;
 
     /* skip comment */
     if (flags & 16)
 	while (GET() != 0)
-	    if (z->in_eof)
+	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		return -3;
 
     /* skip header crc */
@@ -1838,7 +1843,8 @@ static void rpmzListInfo(rpmz z)
     }
 
     /* skip to end to get trailer (8 bytes), compute compressed length */
-    if (z->in_short) {                  /* whole thing already read */
+    if (job->more < 0) {	/* XXX job->more to eliminate z->in_short */
+	/* whole thing already read */
 	if (job->in->len < 8) {
 	    if (zq->verbosity > 0)
 		fprintf(stderr, "%s not a valid gzip file -- skipping\n",
@@ -2083,7 +2089,7 @@ static void rpmzInflateCheck(rpmz z)
 	    z->zip_crc = GET4();
 	    z->zip_clen = GET4();
 	    z->zip_ulen = GET4();
-	    if (z->in_eof)
+	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted zip entry -- missing trailer: ", z->_ifn);
 
 	    /* if crc doesn't match, try info-zip variant with sig */
@@ -2100,7 +2106,7 @@ static void rpmzInflateCheck(rpmz z)
 		z->zip_ulen = GET4();
 		GET4();
 	    }
-	    if (z->in_eof)
+	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted zip entry -- missing trailer: ", z->_ifn);
 	    /*@fallthrough@*/
 	case RPMZ_FORMAT_ZIP2:
@@ -2113,7 +2119,7 @@ static void rpmzInflateCheck(rpmz z)
 	    check += GET() << 16;
 	    check += GET() << 8;
 	    check += GET();
-	    if (z->in_eof)
+	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted zlib stream -- missing trailer: ", z->_ifn);
 	    if (check != z->out_check)
 		bail("corrupted zlib stream -- adler32 mismatch: ", z->_ifn);
@@ -2121,7 +2127,7 @@ static void rpmzInflateCheck(rpmz z)
 	case RPMZ_FORMAT_GZIP:	/* gzip trailer */
 	    check = GET4();
 	    len = GET4();
-	    if (z->in_eof)
+	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted gzip stream -- missing trailer: ", z->_ifn);
 	    if (check != z->out_check)
 		bail("corrupted gzip stream -- crc32 mismatch: ", z->_ifn);
@@ -2199,7 +2205,7 @@ static void rpmzDecompressLZW(rpmz z)
     /* process remainder of compress header -- a flags byte */
     z->out_tot = 0;
     flags = GET();
-    if (z->in_eof)
+    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 	bail("missing lzw data: ", z->_ifn);
     if (flags & 0x60)
 	bail("unknown lzw flags set: ", z->_ifn);
@@ -2218,11 +2224,11 @@ static void rpmzDecompressLZW(rpmz z)
     /* set up: get first 9-bit code, which is the first decompressed byte, but
        don't create a table entry until the next code */
     got = GET();
-    if (z->in_eof)                          /* no compressed data is ok */
-	return;
+    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
+	return;                             /* no compressed data is ok */
     final = prev = (unsigned)got;           /* low 8 bits of code */
     got = GET();
-    if (z->in_eof || (got & 1) != 0)        /* missing a bit or code >= 256 */
+    if (!job->more || (got & 1) != 0)       /* missing a bit or code >= 256 */
 	bail("invalid lzw code: ", z->_ifn);
     rem = (unsigned)got >> 1;               /* remaining 7 bits */
     left = 7;
@@ -2246,7 +2252,7 @@ static void rpmzDecompressLZW(rpmz z)
 	    chunk = bits;
 	code = rem;                         /* low bits of code */
 	got = GET();
-	if (z->in_eof) {                    /* EOF is end of compressed data */
+	if (!job->more) {                   /* EOF is end of compressed data */
 	    /* write remaining buffered output */
 	    z->out_tot += outcnt;
 	    if (outcnt && zq->mode == RPMZ_MODE_DECOMPRESS)
@@ -2258,7 +2264,7 @@ static void rpmzDecompressLZW(rpmz z)
 	chunk--;
 	if (bits > left) {                  /* need more bits */
 	    got = GET();
-	    if (z->in_eof)                  /* can't end in middle of code */
+	    if (!job->more)                 /* can't end in middle of code */
 		bail("invalid lzw code: ", z->_ifn);
 	    code += (unsigned)got << left;  /* high bits of code */
 	    left += 8;
