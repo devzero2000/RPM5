@@ -170,6 +170,10 @@ struct rpmzh_s {
 /*@only@*/ /*@null@*/
     char * hname;		/*!< name from header (allocated) */
     time_t stamp;		/*!< time stamp from gzip header */
+	/* XXX zip_head?!? */
+    unsigned long zip_ulen;	/*!< header uncompressed length */
+    unsigned long zip_clen;	/*!< header compressed length */
+    unsigned long zip_crc;	/*!< header crc */
 };
 
 /**

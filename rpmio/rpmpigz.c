@@ -1440,13 +1440,13 @@ static int rpmzReadExtra(rpmz z, unsigned len, int save)
 	len -= size;
 	if (id == 0x0001) {
 	    /* Zip64 Extended Information Extra Field */
-	    if (z->zip_ulen == LOW32 && size >= 8) {
-		z->zip_ulen = GET4();
+	    if (zh->zip_ulen == LOW32 && size >= 8) {
+		zh->zip_ulen = GET4();
 		SKIP(4);
 		size -= 8;
 	    }
-	    if (z->zip_clen == LOW32 && size >= 8) {
-		z->zip_clen = GET4();
+	    if (zh->zip_clen == LOW32 && size >= 8) {
+		zh->zip_clen = GET4();
 		SKIP(4);
 		size -= 8;
 	    }
@@ -1530,9 +1530,9 @@ static int rpmzGetHeader(rpmz z, int save)
 	    zh->stamp = dos2time(GET4());
 	else
 	    SKIP(4);
-	z->zip_crc = GET4();
-	z->zip_clen = GET4();
-	z->zip_ulen = GET4();
+	zh->zip_crc = GET4();
+	zh->zip_clen = GET4();
+	zh->zip_ulen = GET4();
 	fname = GET2();
 	extra = GET2();
 	if (save) {
@@ -1776,8 +1776,8 @@ static void rpmzListInfo(rpmz z)
 
     /* list zip file */
     if (zq->format == RPMZ_FORMAT_ZIP2 || zq->format == RPMZ_FORMAT_ZIP3) {
-	z->in_tot = z->zip_clen;
-	rpmzShowInfo(z, method, z->zip_crc, z->zip_ulen, 0);
+	z->in_tot = zh->zip_clen;
+	rpmzShowInfo(z, method, zh->zip_crc, zh->zip_ulen, 0);
 	return;
     }
 
@@ -2023,6 +2023,7 @@ static void rpmzInflateCheck(rpmz z)
 {
     rpmzQueue zq = z->zq;
     rpmzJob job = &zq->_job;
+    rpmzh zh = &zq->_zh;
     int ret;
     int cont;
     unsigned long check;
@@ -2069,33 +2070,33 @@ static void rpmzInflateCheck(rpmz z)
 	switch (zq->format) {
 	case RPMZ_FORMAT_ZIP3:	/* data descriptor follows */
 	    /* read original version of data descriptor*/
-	    z->zip_crc = GET4();
-	    z->zip_clen = GET4();
-	    z->zip_ulen = GET4();
+	    zh->zip_crc = GET4();
+	    zh->zip_clen = GET4();
+	    zh->zip_ulen = GET4();
 	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted zip entry -- missing trailer: ", z->_ifn);
 
 	    /* if crc doesn't match, try info-zip variant with sig */
-	    if (z->zip_crc != job->check) {
-		if (z->zip_crc != 0x08074b50UL || z->zip_clen != job->check)
+	    if (zh->zip_crc != job->check) {
+		if (zh->zip_crc != 0x08074b50UL || zh->zip_clen != job->check)
 		    bail("corrupted zip entry -- crc32 mismatch: ", z->_ifn);
-		z->zip_crc = z->zip_clen;
-		z->zip_clen = z->zip_ulen;
-		z->zip_ulen = GET4();
+		zh->zip_crc = zh->zip_clen;
+		zh->zip_clen = zh->zip_ulen;
+		zh->zip_ulen = GET4();
 	    }
 
 	    /* if second length doesn't match, try 64-bit lengths */
-	    if (z->zip_ulen != (z->out_tot & LOW32)) {
-		z->zip_ulen = GET4();
+	    if (zh->zip_ulen != (z->out_tot & LOW32)) {
+		zh->zip_ulen = GET4();
 		GET4();
 	    }
 	    if (!job->more)	/* XXX job->more to eliminate z->in_eof */
 		bail("corrupted zip entry -- missing trailer: ", z->_ifn);
 	    /*@fallthrough@*/
 	case RPMZ_FORMAT_ZIP2:
-	    if (z->zip_clen != (clen & LOW32) || z->zip_ulen != (z->out_tot & LOW32))
+	    if (zh->zip_clen != (clen & LOW32) || zh->zip_ulen != (z->out_tot & LOW32))
 		bail("corrupted zip entry -- length mismatch: ", z->_ifn);
-	    check = z->zip_crc;
+	    check = zh->zip_crc;
 	    break;
 	case RPMZ_FORMAT_ZLIB:	/* zlib (big-endian) trailer */
 	    check = GET() << 24;

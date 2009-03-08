@@ -128,10 +128,6 @@ struct rpmz_s {
     unsigned char _suffix[65536];	/*!< one-character LZW suffix */
     unsigned char _match[65280 + 2];	/*!< buffer for reversed match */
 
-    unsigned long zip_crc;	/*!< header crc */
-    unsigned long zip_clen;	/*!< header compressed length */
-    unsigned long zip_ulen;	/*!< header uncompressed length */
-
 #endif	/* _RPMZ_INTERNAL_PIGZ */
 
     struct timeval start;	/*!< starting time of day for tracing */
