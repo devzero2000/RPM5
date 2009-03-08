@@ -357,8 +357,7 @@ static int bail(const char *why, const char *what)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmz z = _rpmz;
-    rpmzQueue zq = z->zq;
+    rpmzQueue zq = _rpmz->zq;
 
 /*@-globs@*/
     if (zq->ofdno != -1 && zq->ofn != NULL)
@@ -374,11 +373,10 @@ static int bail(const char *why, const char *what)
 /*==============================================================*/
 
 /* read up to len bytes into buf, repeating read() calls as needed */
-static size_t rpmzRead(rpmz z, unsigned char *buf, size_t len)
+static size_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t len)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
     int fdno = zq->ifdno;
     ssize_t ret;
     size_t got;
@@ -387,7 +385,7 @@ static size_t rpmzRead(rpmz z, unsigned char *buf, size_t len)
     while (len) {
 	ret = read(fdno, buf, len);
 	if (ret < 0)
-	    bail("read error on ", z->_ifn);
+	    bail("read error on ", zq->ifn);
 	if (ret == 0)
 	    break;
 	buf += ret;
@@ -398,11 +396,10 @@ static size_t rpmzRead(rpmz z, unsigned char *buf, size_t len)
 }
 
 /* write len bytes, repeating write() calls as needed */
-static void rpmzWrite(rpmz z, unsigned char *buf, size_t len)
+static void rpmzWrite(rpmzQueue zq, unsigned char *buf, size_t len)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
     int fdno = zq->ofdno;
     ssize_t ret;
 
@@ -423,6 +420,16 @@ static void rpmzWrite(rpmz z, unsigned char *buf, size_t len)
 /* largest power of 2 that fits in an unsigned int -- used to limit requests
    to zlib functions that use unsigned int lengths */
 #define _PIGZMAX ((((unsigned)0 - 1) >> 1) + 1)
+
+typedef	struct rpmzh_s * rpmzh;
+struct rpmzh_s {
+    const char * name;		/*!< name for gzip header */
+    time_t mtime;		/*!< time stamp for gzip header */
+    unsigned long head;		/*!< header length */
+    unsigned long ulen;		/*!< total uncompressed size (overflow ok) */
+    unsigned long clen;		/*!< total compressed size (overflow ok) */
+    unsigned long check;	/*!< check value of uncompressed data */
+};
 
 /* convert Unix time to MS-DOS date and time, assuming current timezone
    (you got a better idea?) */
@@ -452,11 +459,10 @@ static unsigned long time2dos(time_t t)
 #define PUT4M(a,b) (*(a)=(b)>>24,(a)[1]=(b)>>16,(a)[2]=(b)>>8,(a)[3]=(b))
 
 /* write a gzip, zlib, or zip header using the information in the globals */
-static unsigned long rpmzPutHeader(rpmz z)
+static unsigned long rpmzPutHeader(rpmzQueue zq, rpmzh zh)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
     unsigned long len;
     unsigned char head[30];
 
@@ -468,28 +474,28 @@ static unsigned long rpmzPutHeader(rpmz z)
 	PUT2L(head + 4, 20);        /* version needed to extract (2.0) */
 	PUT2L(head + 6, 8);         /* flags: data descriptor follows data */
 	PUT2L(head + 8, 8);         /* deflate */
-	PUT4L(head + 10, time2dos(z->mtime));
+	PUT4L(head + 10, time2dos(zh->mtime));
 	PUT4L(head + 14, 0);        /* crc (not here) */
 	PUT4L(head + 18, 0);        /* compressed length (not here) */
 	PUT4L(head + 22, 0);        /* uncompressed length (not here) */
-	PUT2L(head + 26, z->name == NULL ? 1 : strlen(z->name));  /* name length */
+	PUT2L(head + 26, zh->name == NULL ? 1 : strlen(zh->name));  /* name length */
 	PUT2L(head + 28, 9);        /* length of extra field (see below) */
-	rpmzWrite(z, head, 30);     /* write local header */
+	rpmzWrite(zq, head, 30);    /* write local header */
 	len = 30;
 
 	/* write file name (use "-" for stdin) */
-	if (z->name == NULL)
-	    rpmzWrite(z, (unsigned char *)"-", 1);
+	if (zh->name == NULL)
+	    rpmzWrite(zq, (unsigned char *)"-", 1);
 	else
-	    rpmzWrite(z, (unsigned char *)z->name, strlen(z->name));
-	len += z->name == NULL ? 1 : strlen(z->name);
+	    rpmzWrite(zq, (unsigned char *)zh->name, strlen(zh->name));
+	len += zh->name == NULL ? 1 : strlen(zh->name);
 
 	/* write extended timestamp extra field block (9 bytes) */
 	PUT2L(head, 0x5455);        /* extended timestamp signature */
 	PUT2L(head + 2, 5);         /* number of data bytes in this block */
 	head[4] = 1;                /* flag presence of mod time */
-	PUT4L(head + 5, z->mtime);  /* mod time */
-	rpmzWrite(z, head, 9);      /* write extra field block */
+	PUT4L(head + 5, zh->mtime); /* mod time */
+	rpmzWrite(zq, head, 9);     /* write extra field block */
 	len += 9;
 	break;
     case RPMZ_FORMAT_ZLIB:	/* zlib */
@@ -497,23 +503,23 @@ static unsigned long rpmzPutHeader(rpmz z)
 	head[1] = (zq->level == 9U ? 3 : (zq->level == 1U ? 0 :
 	    (zq->level >= 6U || zq->level == (unsigned)Z_DEFAULT_COMPRESSION ? 1 :  2))) << 6;
 	head[1] += 31 - (((head[0] << 8) + head[1]) % 31);
-	rpmzWrite(z, head, 2);
+	rpmzWrite(zq, head, 2);
 	len = 2;
 	break;
     case RPMZ_FORMAT_GZIP:	/* gzip */
 	head[0] = 31;
 	head[1] = 139;
 	head[2] = 8;                /* deflate */
-	head[3] = z->name != NULL ? 8 : 0;
-	PUT4L(head + 4, z->mtime);
+	head[3] = zh->name != NULL ? 8 : 0;
+	PUT4L(head + 4, zh->mtime);
 	head[8] = zq->level == 9 ? 2 : (zq->level == 1 ? 4 : 0);
 	head[9] = 3;                /* unix */
-	rpmzWrite(z, head, 10);
+	rpmzWrite(zq, head, 10);
 	len = 10;
-	if (z->name != NULL)
-	    rpmzWrite(z, (unsigned char *)z->name, strlen(z->name) + 1);
-	if (z->name != NULL)
-	    len += strlen(z->name) + 1;
+	if (zh->name != NULL)
+	    rpmzWrite(zq, (unsigned char *)zh->name, strlen(zh->name) + 1);
+	if (zh->name != NULL)
+	    len += strlen(zh->name) + 1;
 	break;
     default:
 assert(0);
@@ -523,12 +529,10 @@ assert(0);
 }
 
 /* write a gzip, zlib, or zip trailer */
-static void rpmzPutTrailer(rpmz z, unsigned long ulen, unsigned long clen,
-		unsigned long check, unsigned long head)
+static void rpmzPutTrailer(rpmzQueue zq, rpmzh zh)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmzQueue zq = z->zq;
     unsigned char tail[46];
 
     switch (zq->format) {
@@ -537,10 +541,10 @@ static void rpmzPutTrailer(rpmz z, unsigned long ulen, unsigned long clen,
     {	unsigned long cent;
 
 	/* write data descriptor (as promised in local header) */
-	PUT4L(tail, check);
-	PUT4L(tail + 4, clen);
-	PUT4L(tail + 8, ulen);
-	rpmzWrite(z, tail, 12);
+	PUT4L(tail, zh->check);
+	PUT4L(tail + 4, zh->clen);
+	PUT4L(tail + 8, zh->ulen);
+	rpmzWrite(zq, tail, 12);
 
 	/* write central file header */
 	PUT4L(tail, 0x02014b50UL);  /* central header signature */
@@ -549,33 +553,33 @@ static void rpmzPutTrailer(rpmz z, unsigned long ulen, unsigned long clen,
 	PUT2L(tail + 6, 20);        /* version needed to extract (2.0) */
 	PUT2L(tail + 8, 8);         /* data descriptor is present */
 	PUT2L(tail + 10, 8);        /* deflate */
-	PUT4L(tail + 12, time2dos(z->mtime));
-	PUT4L(tail + 16, check);    /* crc */
-	PUT4L(tail + 20, clen);     /* compressed length */
-	PUT4L(tail + 24, ulen);     /* uncompressed length */
-	PUT2L(tail + 28, z->name == NULL ? 1 : strlen(z->name));  /* name length */
+	PUT4L(tail + 12, time2dos(zh->mtime));
+	PUT4L(tail + 16, zh->check);/* crc */
+	PUT4L(tail + 20, zh->clen); /* compressed length */
+	PUT4L(tail + 24, zh->ulen); /* uncompressed length */
+	PUT2L(tail + 28, zh->name == NULL ? 1 : strlen(zh->name));  /* name length */
 	PUT2L(tail + 30, 9);        /* length of extra field (see below) */
 	PUT2L(tail + 32, 0);        /* no file comment */
 	PUT2L(tail + 34, 0);        /* disk number 0 */
 	PUT2L(tail + 36, 0);        /* internal file attributes */
 	PUT4L(tail + 38, 0);        /* external file attributes (ignored) */
 	PUT4L(tail + 42, 0);        /* offset of local header */
-	rpmzWrite(z, tail, 46);     /* write central file header */
+	rpmzWrite(zq, tail, 46);    /* write central file header */
 	cent = 46;
 
 	/* write file name (use "-" for stdin) */
-	if (z->name == NULL)
-	    rpmzWrite(z, (unsigned char *)"-", 1);
+	if (zh->name == NULL)
+	    rpmzWrite(zq, (unsigned char *)"-", 1);
 	else
-	    rpmzWrite(z, (unsigned char *)z->name, strlen(z->name));
-	cent += z->name == NULL ? 1 : strlen(z->name);
+	    rpmzWrite(zq, (unsigned char *)zh->name, strlen(zh->name));
+	cent += zh->name == NULL ? 1 : strlen(zh->name);
 
 	/* write extended timestamp extra field block (9 bytes) */
 	PUT2L(tail, 0x5455);        /* extended timestamp signature */
 	PUT2L(tail + 2, 5);         /* number of data bytes in this block */
 	tail[4] = 1;                /* flag presence of mod time */
-	PUT4L(tail + 5, z->mtime);  /* mod time */
-	rpmzWrite(z, tail, 9);      /* write extra field block */
+	PUT4L(tail + 5, zh->mtime); /* mod time */
+	rpmzWrite(zq, tail, 9);     /* write extra field block */
 	cent += 9;
 
 	/* write end of central directory record */
@@ -585,18 +589,18 @@ static void rpmzPutTrailer(rpmz z, unsigned long ulen, unsigned long clen,
 	PUT2L(tail + 8, 1);         /* number of entries on this disk */
 	PUT2L(tail + 10, 1);        /* total number of entries */
 	PUT4L(tail + 12, cent);     /* size of central directory */
-	PUT4L(tail + 16, head + clen + 12); /* offset of central directory */
+	PUT4L(tail + 16, zh->head + zh->clen + 12); /* offset of central directory */
 	PUT2L(tail + 20, 0);        /* no zip file comment */
-	rpmzWrite(z, tail, 22);     /* write end of central directory record */
+	rpmzWrite(zq, tail, 22);    /* write end of central directory record */
     }	break;
     case RPMZ_FORMAT_ZLIB:	/* zlib */
-	PUT4M(tail, check);
-	rpmzWrite(z, tail, 4);
+	PUT4M(tail, zh->check);
+	rpmzWrite(zq, tail, 4);
 	break;
     case RPMZ_FORMAT_GZIP:	/* gzip */
-	PUT4L(tail, check);
-	PUT4L(tail + 4, ulen);
-	rpmzWrite(z, tail, 8);
+	PUT4L(tail, zh->check);
+	PUT4L(tail + 4, zh->ulen);
+	rpmzWrite(zq, tail, 8);
 	break;
     default:
 assert(0);
@@ -806,8 +810,7 @@ static void compress_thread(void *_z)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _z, fileSystem, internalState @*/
 {
-    rpmz z = _z;
-    rpmzQueue zq = z->zq;
+    rpmzQueue zq = ((rpmz)_z)->zq;
     rpmzLog zlog = zq->zlog;
 
     rpmzJob job;                    /* job pulled and working on */ 
@@ -972,18 +975,25 @@ static void write_thread(void *_z)
     rpmzJob job;                    /* job pulled and working on */
     size_t len;                     /* input length */
     int more;                       /* true if more chunks to write */
+#ifdef	DYING
     unsigned long head;             /* header length */
     unsigned long ulen;             /* total uncompressed size (overflow ok) */
     unsigned long clen;             /* total compressed size (overflow ok) */
     unsigned long check;            /* check value of uncompressed data */
+#else
+    struct rpmzh_s _zh;
+    rpmzh zh = &_zh;
+    zh->name = z->name;
+    zh->mtime = z->mtime;
+#endif
 
     /* build and write header */
     Trace((zlog, "-- write thread running"));
-    head = rpmzPutHeader(z);
+    zh->head = rpmzPutHeader(zq, zh);
 
     /* process output of compress threads until end of input */    
-    ulen = clen = 0;
-    check = CHECK(0L, Z_NULL, 0);
+    zh->ulen = zh->clen = 0;
+    zh->check = CHECK(0L, Z_NULL, 0);
     seq = 0;
     do {
 	/* get next write job in order */
@@ -994,12 +1004,12 @@ assert(job != NULL);
 	more = job->more;
 	len = job->in->len;
 	rpmzqDropSpace(job->in);
-	ulen += (unsigned long)len;
-	clen += (unsigned long)(job->out->len);
+	zh->ulen += (unsigned long)len;
+	zh->clen += (unsigned long)(job->out->len);
 
 	/* write the compressed data and drop the output buffer */
 	Trace((zlog, "-- writing #%ld", seq));
-	rpmzWrite(z, job->out->buf, job->out->len);
+	rpmzWrite(zq, job->out->buf, job->out->len);
 	rpmzqDropSpace(job->out);
 	Trace((zlog, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
 
@@ -1008,7 +1018,7 @@ assert(job != NULL);
 	yarnPossess(job->calc);
 	yarnWaitFor(job->calc, TO_BE, 1);
 	yarnRelease(job->calc);
-	check = COMB(check, job->check, len);
+	zh->check = COMB(zh->check, job->check, len);
 
 	/* free the job */
 	job = rpmzqFreeJob(job);
@@ -1018,7 +1028,7 @@ assert(job != NULL);
     } while (more);
 
     /* write trailer */
-    rpmzPutTrailer(z, ulen, clen, check, head);
+    rpmzPutTrailer(zq, zh);
 
     /* verify no more jobs, prepare for next use */
     rpmzqVerify(zq);
@@ -1058,7 +1068,7 @@ static void rpmzParallelCompress(rpmz z)
     seq = 0;
     prev = NULL;
     next = rpmzqNewSpace(zq->in_pool);
-    next->len = rpmzRead(z, next->buf, next->pool->size);
+    next->len = rpmzRead(zq, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
 	job = rpmzqNewJob(seq);
@@ -1072,7 +1082,7 @@ static void rpmzParallelCompress(rpmz z)
 	    more = 0;
 	else {
 	    next = rpmzqNewSpace(zq->in_pool);
-	    next->len = rpmzRead(z, next->buf, next->pool->size);
+	    next->len = rpmzRead(zq, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
 		rpmzqDropSpace(next);  /* won't be using it */
@@ -1117,10 +1127,6 @@ static void rpmzSingleCompress(rpmz z, int reset)
     rpmzQueue zq = z->zq;
     size_t got;                     /* amount read */
     size_t more;                    /* amount of next read (0 if eof) */
-    unsigned long head;             /* header length */
-    unsigned long ulen;             /* total uncompressed size (overflow ok) */
-    unsigned long clen;             /* total compressed size (overflow ok) */
-    unsigned long check;            /* check value of uncompressed data */
     static unsigned out_size;       /* size of output buffer */
 /*@only@*/
     static unsigned char *in;       /* reused i/o buffers */
@@ -1130,6 +1136,17 @@ static void rpmzSingleCompress(rpmz z, int reset)
     static unsigned char *out;      /* reused i/o buffers */
 /*@only@*/ /*@null@*/
     static z_stream *strm = NULL;   /* reused deflate structure */
+#ifdef	DYING
+    unsigned long head;             /* header length */
+    unsigned long ulen;             /* total uncompressed size (overflow ok) */
+    unsigned long clen;             /* total compressed size (overflow ok) */
+    unsigned long check;            /* check value of uncompressed data */
+#else
+    struct rpmzh_s _zh;
+    rpmzh zh = &_zh;
+    zh->name = z->name;
+    zh->mtime = z->mtime;
+#endif
 
     /* if requested, just release the allocations and return */
     if (reset) {
@@ -1167,7 +1184,7 @@ static void rpmzSingleCompress(rpmz z, int reset)
     }
 
     /* write header */
-    head = rpmzPutHeader(z);
+    zh->head = rpmzPutHeader(zq, zh);
 
     /* set compression level in case it changed */
 /*@-noeffect@*/
@@ -1176,15 +1193,15 @@ static void rpmzSingleCompress(rpmz z, int reset)
 /*@=noeffect@*/
 
     /* do raw deflate and calculate check value */
-    ulen = clen = 0;
-    check = CHECK(0L, Z_NULL, 0);
-    more = rpmzRead(z, next, zq->blocksize);
+    zh->ulen = zh->clen = 0;
+    zh->check = CHECK(0L, Z_NULL, 0);
+    more = rpmzRead(zq, next, zq->blocksize);
     do {
 	/* get data to compress, see if there is any more input */
 	got = more;
 	{ unsigned char *temp; temp = in; in = next; next = temp; }
-	more = got < zq->blocksize ? 0 : rpmzRead(z, next, zq->blocksize);
-	ulen += (unsigned long)got;
+	more = got < zq->blocksize ? 0 : rpmzRead(zq, next, zq->blocksize);
+	zh->ulen += (unsigned long)got;
 /*@-mustfreeonly@*/
 	strm->next_in = in;
 /*@=mustfreeonly@*/
@@ -1192,7 +1209,7 @@ static void rpmzSingleCompress(rpmz z, int reset)
 	/* compress _PIGZMAX-size chunks in case unsigned type is small */
 	while (got > _PIGZMAX) {
 	    strm->avail_in = _PIGZMAX;
-	    check = CHECK(check, strm->next_in, strm->avail_in);
+	    zh->check = CHECK(zh->check, strm->next_in, strm->avail_in);
 	    do {
 		strm->avail_out = out_size;
 /*@-mustfreeonly@*/
@@ -1201,8 +1218,8 @@ static void rpmzSingleCompress(rpmz z, int reset)
 /*@-noeffect@*/
 		(void)deflate(strm, Z_NO_FLUSH);
 /*@=noeffect@*/
-		rpmzWrite(z, out, out_size - strm->avail_out);
-		clen += out_size - strm->avail_out;
+		rpmzWrite(zq, out, out_size - strm->avail_out);
+		zh->clen += out_size - strm->avail_out;
 	    } while (strm->avail_out == 0);
 assert(strm->avail_in == 0);
 	    got -= _PIGZMAX;
@@ -1212,7 +1229,7 @@ assert(strm->avail_in == 0);
 	 * use a Z_SYNC_FLUSH so that this and parallel compression produce the
 	 * same output */
 	strm->avail_in = (unsigned)got;
-	check = CHECK(check, strm->next_in, strm->avail_in);
+	zh->check = CHECK(zh->check, strm->next_in, strm->avail_in);
 	do {
 	    strm->avail_out = out_size;
 /*@-kepttrans -mustfreeonly@*/
@@ -1222,8 +1239,8 @@ assert(strm->avail_in == 0);
 	    (void)deflate(strm,
 		more ? (F_ISSET(zq->flags, INDEPENDENT) ? Z_SYNC_FLUSH : Z_FULL_FLUSH) : Z_FINISH);
 /*@=noeffect@*/
-	    rpmzWrite(z, out, out_size - strm->avail_out);
-	    clen += out_size - strm->avail_out;
+	    rpmzWrite(zq, out, out_size - strm->avail_out);
+	    zh->clen += out_size - strm->avail_out;
 	} while (strm->avail_out == 0);
 assert(strm->avail_in == 0);
 
@@ -1231,7 +1248,7 @@ assert(strm->avail_in == 0);
     } while (more);
 
     /* write trailer */
-    rpmzPutTrailer(z, ulen, clen, check, head);
+    rpmzPutTrailer(zq, zh);
 }
 /*@=nullstate@*/
 
@@ -1255,7 +1272,7 @@ static void load_read_thread(void *_z)
     do {
 	yarnPossess(z->load_state);
 	yarnWaitFor(z->load_state, TO_BE, 1);
-	z->in_len = len = rpmzRead(z, z->in_which ? z->in_buf : z->in_buf2, z->in_buf_allocated);
+	z->in_len = len = rpmzRead(zq, z->in_which ? z->in_buf : z->in_buf2, z->in_buf_allocated);
 	Trace((zlog, "-- decompress read thread read %lu bytes", len));
 	yarnTwist(z->load_state, TO, 0);
     } while (len == z->in_buf_allocated);
@@ -1320,7 +1337,7 @@ static size_t load(rpmz z)
 #endif
     {
 	/* don't use threads -- simply read a buffer into z->in_buf */
-	z->in_left = rpmzRead(z, z->in_next = z->in_buf, z->in_buf_allocated);
+	z->in_left = rpmzRead(zq, z->in_next = z->in_buf, z->in_buf_allocated);
     }
 
     /* note end of file */
@@ -1769,7 +1786,7 @@ static void rpmzListInfo(rpmz z)
 	else {
 	    z->in_tot = at;
 	    lseek(zq->ifdno, -4, SEEK_END);
-	    rpmzRead(z, tail, 4);
+	    rpmzRead(zq, tail, 4);
 	    check = (*tail << 24) + (tail[1] << 16) + (tail[2] << 8) + tail[3];
 	}
 	z->in_tot -= 6;
@@ -1803,7 +1820,7 @@ static void rpmzListInfo(rpmz z)
     }
     else if ((at = lseek(zq->ifdno, -8, SEEK_END)) != -1) {
 	z->in_tot = at - z->in_tot + z->in_left; /* compressed size */
-	rpmzRead(z, tail, 8);           /* get trailer */
+	rpmzRead(zq, tail, 8);           /* get trailer */
     }
     else {                              /* can't seek */
 	at = z->in_tot - z->in_left;    /* save header size */
@@ -1876,7 +1893,7 @@ static void outb_write(void *_z)
 	yarnWaitFor(z->outb_write_more, TO_BE, 1);
 	len = z->out_len;
 	if (len && zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(z, z->out_copy, len);
+	    rpmzWrite(zq, z->out_copy, len);
 	Trace((zlog, "-- decompress wrote %lu bytes", len));
 	yarnTwist(z->outb_write_more, TO, 0);
     } while (len);
@@ -1967,7 +1984,7 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
     /* if just one process or no threads, then do it without threads */
     if (len) {
 	if (zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(z, buf, len);
+	    rpmzWrite(zq, buf, len);
 	z->out_check = CHECK(z->out_check, buf, len);
 	z->out_tot += len;
     }
@@ -2199,7 +2216,7 @@ static void rpmzDecompressLZW(rpmz z)
 	    /* write remaining buffered output */
 	    z->out_tot += outcnt;
 	    if (outcnt && zq->mode == RPMZ_MODE_DECOMPRESS)
-		rpmzWrite(z, z->out_buf, outcnt);
+		rpmzWrite(zq, z->out_buf, outcnt);
 	    return;
 	}
 	code += (unsigned)got << left;      /* middle (or high) bits of code */
@@ -2271,7 +2288,7 @@ static void rpmzDecompressLZW(rpmz z)
 		z->out_buf[outcnt++] = z->_match[--stack];
 	    z->out_tot += outcnt;
 	    if (zq->mode == RPMZ_MODE_DECOMPRESS)
-		rpmzWrite(z, z->out_buf, outcnt);
+		rpmzWrite(zq, z->out_buf, outcnt);
 	    outcnt = 0;
 	}
 	p = z->_match + stack;
