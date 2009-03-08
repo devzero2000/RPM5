@@ -117,7 +117,11 @@ enum rpmzFlags_e {
 /** a space (one buffer for each space) */
 struct rpmzSpace_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
+#ifdef	NOTYET	/* XXX zq->_job_in casts are too painful to contemplate ... */
     void * buf;			/*!< buffer of size pool->size */
+#else
+    unsigned char * buf;	/*!< buffer of size pool->size */
+#endif
     size_t len;			/*!< for application usage */
     rpmzPool pool;		/*!< pool to return to */
     rpmzSpace next;		/*!< for pool linked list */

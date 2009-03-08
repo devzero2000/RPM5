@@ -97,8 +97,8 @@ struct rpmz_s {
     unsigned char in_buf2[IN_BUF_ALLOCATED];	/*! second buffer for parallel reads */
 
 /*@shared@*/
-    unsigned char * in_next;	/*!< next unused byte in buffer */
-    size_t in_left;		/*!< number of unused bytes in buffer */
+    unsigned char * in_next;	/*!< next buffer waiting to use */
+    size_t in_pend;		/*!< number of bytes waiting to use */
     int in_eof;			/*!< true if reached end of file on input */
     int in_short;		/*!< true if last read didn't fill buffer */
     off_t in_tot;		/*!< total bytes read from input */

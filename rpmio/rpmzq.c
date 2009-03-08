@@ -297,8 +297,8 @@ int rpmbzCompressBlock(void * _bz, rpmzJob job)
 {
     rpmbz bz = _bz;
     int rc;
-    rc = BZ2_bzBuffToBuffCompress(job->out->buf, &job->out->len,
-		job->in->buf, job->in->len, bz->B, bz->V, bz->W);
+    rc = BZ2_bzBuffToBuffCompress((char *)job->out->buf, &job->out->len,
+		(char *)job->in->buf, job->in->len, bz->B, bz->V, bz->W);
     if (rc != BZ_OK)
 	zqFprint(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
     return rc;
@@ -311,8 +311,8 @@ static int rpmbzDecompressBlock(rpmbz bz, rpmzJob job)
 	/*@modifies job, fileSystem @*/
 {
     int rc;
-    rc = BZ2_bzBuffToBuffDecompress(job->out->buf, &job->out->len,
-		job->in->buf, job->in->len, bz->S, bz->V);
+    rc = BZ2_bzBuffToBuffDecompress((char *)job->out->buf, &job->out->len,
+		(char *)job->in->buf, job->in->len, bz->S, bz->V);
     if (rc != BZ_OK)
 	zqFprint(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
     return rc;
