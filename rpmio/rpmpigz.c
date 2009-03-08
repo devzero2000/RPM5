@@ -1094,7 +1094,7 @@ static void rpmzParallelCompress(rpmz z)
 	job->more = more;
 	Trace((zlog, "-- read #%ld%s", seq, more ? "" : " (last)"));
 	if (++seq < 1)
-	    bail("input too long: ", z->_ifn);
+	    bail("input too long: ", zq->ifn);
 
 	/* start another compress thread if needed */
 	if (zq->cthreads < (int)seq && zq->cthreads < (int)zq->threads) {
