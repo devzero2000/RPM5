@@ -91,17 +91,16 @@ struct rpmz_s {
 #if defined(_RPMZ_INTERNAL_PIGZ)	/* PIGZ specific configuration. */
 /* --- globals for decompression and listing buffered reading */
     int in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
+    unsigned char * in_next;	/*!< next buffer waiting to use */
+    size_t in_pend;		/*!< number of bytes waiting to use */
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t in_buf_allocated;
     unsigned char in_buf[IN_BUF_ALLOCATED];	/*!< input buffer */
     unsigned char in_buf2[IN_BUF_ALLOCATED];	/*! second buffer for parallel reads */
 
 /*@shared@*/
-    unsigned char * in_next;	/*!< next buffer waiting to use */
-    size_t in_pend;		/*!< number of bytes waiting to use */
     off_t in_tot;		/*!< total bytes read from input */
     off_t out_tot;		/*!< total bytes written to output */
-    unsigned long out_check;	/*!< check value of output */
 
     /* parallel reading */
 /*@only@*/ /*@null@*/
