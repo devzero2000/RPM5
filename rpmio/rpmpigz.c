@@ -271,6 +271,7 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
 #endif
 
 #define	_RPMIOB_INTERNAL
+#define	_RPMZQ_INTERNAL
 #define	_RPMZ_INTERNAL
 #define	_RPMZ_INTERNAL_PIGZ
 #include "rpmz.h"
@@ -724,178 +725,18 @@ static unsigned long adler32_comb(unsigned long adler1, unsigned long adler2,
 
 /*==============================================================*/
 
-/* -- pool of spaces for buffer management -- */
-
-/* These routines manage a pool of spaces.  Each pool specifies a fixed size
-   buffer to be contained in each space.  Each space has a use count, which
-   when decremented to zero returns the space to the pool.  If a space is
-   requested from the pool and the pool is empty, a space is immediately
-   created unless a specified limit on the number of spaces has been reached.
-   Only if the limit is reached will it wait for a space to be returned to the
-   pool.  Each space knows what pool it belongs to, so that it can be returned.
- */
-
-/* initialize a pool (pool structure itself provided, not allocated) -- the
-   limit is the maximum number of spaces in the pool, or -1 to indicate no
-   limit, i.e., to never wait for a buffer to return to the pool */
-static rpmzPool rpmzqNewPool(size_t size, int limit)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    rpmzPool pool = xmalloc(sizeof(*pool));
-/*@-mustfreeonly@*/
-    pool->have = yarnNewLock(0);
-    pool->head = NULL;
-/*@=mustfreeonly@*/
-    pool->size = size;
-    pool->limit = limit;
-    pool->made = 0;
-    return pool;
-}
-
-/* get a space from a pool -- the use count is initially set to one, so there
-   is no need to call rpmzqUseSpace() for the first use */
-static rpmzSpace rpmzqNewSpace(rpmzPool pool)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies pool, fileSystem, internalState @*/
-{
-    rpmzSpace space;
-
-    /* if can't create any more, wait for a space to show up */
-    yarnPossess(pool->have);
-    if (pool->limit == 0)
-	yarnWaitFor(pool->have, NOT_TO_BE, 0);
-
-    /* if a space is available, pull it from the list and return it */
-    if (pool->head != NULL) {
-	space = pool->head;
-	yarnPossess(space->use);
-	pool->head = space->next;
-	yarnTwist(pool->have, BY, -1);      /* one less in pool */
-	yarnTwist(space->use, TO, 1);       /* initially one user */
-	return space;
-    }
-
-    /* nothing available, don't want to wait, make a new space */
-assert(pool->limit != 0);
-    if (pool->limit > 0)
-	pool->limit--;
-    pool->made++;
-    yarnRelease(pool->have);
-
-    space = xmalloc(sizeof(*space));
-/*@-mustfreeonly@*/
-    space->use = yarnNewLock(1);           /* initially one user */
-    space->buf = xmalloc(pool->size);
-    space->pool = pool;                 /* remember the pool this belongs to */
-/*@=mustfreeonly@*/
-/*@-nullret@*/
-    return space;
-/*@=nullret@*/
-}
-
-/* increment the use count to require one more drop before returning this space
-   to the pool */
-static void rpmzqUseSpace(rpmzSpace space)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies space, fileSystem, internalState @*/
-{
-    yarnPossess(space->use);
-    yarnTwist(space->use, BY, 1);
-}
-
-/* drop a space, returning it to the pool if the use count is zero */
-/*@null@*/
-static rpmzSpace rpmzqDropSpace(/*@only@*/ rpmzSpace space)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies space, fileSystem, internalState @*/
-{
-    int use;
-
-    yarnPossess(space->use);
-    use = yarnPeekLock(space->use);
-assert(use != 0);
-    if (use == 1) {
-	rpmzPool pool = space->pool;
-	yarnPossess(pool->have);
-/*@-mustfreeonly@*/
-	space->next = pool->head;
-/*@=mustfreeonly@*/
-	pool->head = space;
-	yarnTwist(pool->have, BY, 1);
-    }
-    yarnTwist(space->use, BY, -1);
-    return NULL;
-}
-
-/* free the memory and lock resources of a pool -- return number of spaces for
-   debugging and resource usage measurement */
-/*@null@*/
-static rpmzPool rpmzqFreePool(/*@only@*/ rpmzPool pool, /*@null@*/ int *countp)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies pool, *countp, fileSystem, internalState @*/
-{
-    rpmzSpace space;
-    int count;
-
-    yarnPossess(pool->have);
-    count = 0;
-    while ((space = pool->head) != NULL) {
-	pool->head = space->next;
-	space->buf = _free(space->buf);
-	space->use = yarnFreeLock(space->use);
-/*@-compdestroy@*/
-	space = _free(space);
-/*@=compdestroy@*/
-	count++;
-    }
-    yarnRelease(pool->have);
-    pool->have = yarnFreeLock(pool->have);
-assert(count == pool->made);
-/*@-compdestroy@*/
-    pool = _free(pool);
-/*@=compdestroy@*/
-    if (countp)
-	*countp = count;
-    return NULL;
-}
-
-/*==============================================================*/
-
 /* -- parallel compression -- */
 
 /* compress or write job (passed from compress list to write list) -- if seq is
    equal to -1, compress_thread() is instructed to return; if more is false then
    this is the last chunk, which after writing tells write_thread to return */
 
-/* setup job lists (call from main thread) */
-static void rpmzqInit(rpmzQueue zq)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
-{
-    /* set up only if not already set up*/
-    if (zq->compress_have != NULL)
-	return;
-
-    /* allocate locks and initialize lists */
-/*@-mustfreeonly@*/
-    zq->compress_have = yarnNewLock(0);
-    zq->compress_head = NULL;
-    zq->compress_tail = &zq->compress_head;
-    zq->write_first = yarnNewLock(-1);
-    zq->write_head = NULL;
-
-    /* initialize buffer pools */
-    zq->in_pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
-    zq->out_pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
-/*@=mustfreeonly@*/
-}
-
+#ifndef	DYING	/* XXX only the in_pool/out_pool scaling remains todo++ ... */
 /* command the compress threads to all return, then join them all (call from
    main thread), free all the thread-related resources */
-static void rpmzqFini(rpmzQueue zq)
+static void _rpmzqFini(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzLog zlog = zq->zlog;
 
@@ -930,6 +771,30 @@ assert(caught == zq->cthreads);
     zq->write_first = yarnFreeLock(zq->write_first);
     zq->compress_have = yarnFreeLock(zq->compress_have);
 }
+
+/* setup job lists (call from main thread) */
+static void _rpmzqInit(rpmzQueue zq)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
+{
+    /* set up only if not already set up*/
+    if (zq->compress_have != NULL)
+	return;
+
+    /* allocate locks and initialize lists */
+/*@-mustfreeonly@*/
+    zq->compress_have = yarnNewLock(0);
+    zq->compress_head = NULL;
+    zq->compress_tail = &zq->compress_head;
+    zq->write_first = yarnNewLock(-1);
+    zq->write_head = NULL;
+
+    /* initialize buffer pools */
+    zq->in_pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
+    zq->out_pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
+/*@=mustfreeonly@*/
+}
+#endif	/* DYING */
 
 /* get the next compression job from the head of the list, compress and compute
    the check value on the input, and put a job in the write list with the
@@ -1183,7 +1048,7 @@ static void rpmzParallelCompress(rpmz z)
     int more;                       /* true if more input to read */
 
     /* if first time or after an option change, setup the job lists */
-    rpmzqInit(zq);
+    _rpmzqInit(zq);
 
     /* start write thread */
 /*@-mustfreeonly@*/
@@ -2776,7 +2641,7 @@ static void rpmzNewOpts(rpmz z)
 
     rpmzSingleCompress(z, 1);
 #ifndef _PIGZNOTHREAD
-    rpmzqFini(zq);
+    _rpmzqFini(zq);
 #endif
 }
 
@@ -2787,7 +2652,7 @@ static void rpmzAbort(/*@unused@*/ int sig)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
-    rpmzQueue zq = &z->_zq;	/* XXX initialize rpmzq */
+    rpmzQueue zq = z->zq;
 
     Trace((zq->zlog, "termination by user"));
     if (zq->ofdno != -1 && zq->ofn != NULL)
@@ -2798,7 +2663,7 @@ static void rpmzAbort(/*@unused@*/ int sig)
 
 /**
  */
-void rpmzArgCallback(poptContext con,
+static void rpmzqArgCallback(poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, /*@unused@*/ const char * arg,
 		/*@unused@*/ void * data)
@@ -2806,7 +2671,7 @@ void rpmzArgCallback(poptContext con,
 	/*@modifies _rpmz, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
-    rpmzQueue zq = &z->_zq;	/* XXX initialize rpmzq */
+    rpmzQueue zq = z->zq;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -2889,7 +2754,7 @@ Options:
 static struct poptOption rpmzPrivatePoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	rpmzArgCallback, 0, NULL, NULL },
+	rpmzqArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
   { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
@@ -2914,7 +2779,7 @@ static struct poptOption rpmzPrivatePoptTable[] = {
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	rpmzArgCallback, 0, NULL, NULL },
+	rpmzqArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzPrivatePoptTable, 0,
@@ -2926,7 +2791,7 @@ static struct poptOption optionsTable[] = {
 Options:\
 "), NULL },
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzqOptionsPoptTable, 0,
         N_("Compression options: "), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
@@ -2957,7 +2822,7 @@ int main(int argc, char **argv)
 		fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
-    rpmzQueue zq = &z->_zq;
+    rpmzQueue zq = _rpmzq;
     poptContext optCon;
     int ac;
     int rc = 1;		/* assume failure */
@@ -2968,6 +2833,9 @@ int main(int argc, char **argv)
     __progname = "rpmpigz";
 /*@=observertrans =readonlytrans @*/
     z->zq = zq;		/* XXX initialize rpmzq */
+
+    /* XXX sick hack to initialize the popt callback. */
+    rpmzqOptionsPoptTable[0].arg = (void *)&rpmzqArgCallback;
 
     /* prepare for interrupts and logging */
     signal(SIGINT, rpmzAbort);

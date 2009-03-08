@@ -6,10 +6,40 @@
  * Job queue and buffer pool management.
  */
 
+#include <popt.h>
+
+#include <yarn.h>
+
+/**
+ */
+typedef /*@abstract@*/ struct rpmzSpace_s * rpmzSpace;
+
+/**
+ */
+typedef /*@abstract@*/ struct rpmzPool_s * rpmzPool;
+
+/**
+ */
+typedef /*@abstract@*/ struct rpmzQueue_s * rpmzQueue;
+
+/**
+ */
+typedef /*@abstract@*/ struct rpmzJob_s * rpmzJob;
+
 /**
  */
 /*@unchecked@*/
 extern int _rpmzq_debug;
+
+/**
+ */
+/*@unchecked@*/
+extern rpmzQueue _rpmzq;
+
+/**
+ */
+/*@unchecked@*/
+extern struct poptOption rpmzqOptionsPoptTable[];
 
 /**
  */
@@ -33,8 +63,8 @@ enum rpmzFormat_e {
     RPMZ_FORMAT_BZIP2		= 8,
 };
 
-#define _KFB(n) (1U << (n))
-#define _ZFB(n) (_KFB(n) | 0x40000000)
+#define _ZKFB(n) (1U << (n))
+#define _ZFB(n) (_ZKFB(n) | 0x40000000)
 
 /**
  */
@@ -83,22 +113,6 @@ enum rpmzFlags_e {
 
 };
 
-/**
- */
-typedef /*@abstract@*/ struct rpmzSpace_s * rpmzSpace;
-
-/**
- */
-typedef /*@abstract@*/ struct rpmzPool_s * rpmzPool;
-
-/**
- */
-typedef /*@abstract@*/ struct rpmzQueue_s * rpmzQueue;
-
-/**
- */
-typedef /*@abstract@*/ struct rpmzJob_s * rpmzJob;
-
 #ifdef	_RPMZQ_INTERNAL
 /** a space (one buffer for each space) */
 struct rpmzSpace_s {
@@ -137,16 +151,6 @@ struct rpmzJob_s {
 /**
  */
 struct rpmzQueue_s {
-/*@null@*/
-    const char *ifn;		/*!< input file name */
-
-    long lastseq;		/*!< Last seq. */
-    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
-    size_t iblocksize;
-    int ilimit;
-    size_t oblocksize;
-    int olimit;
-
 /* --- globals (modified by main thread only when it's the only thread) */
     enum rpmzFlags_e flags;	/*!< Control bits. */
     enum rpmzFormat_e format;	/*!< Compression format. */
@@ -159,6 +163,10 @@ struct rpmzQueue_s {
     unsigned int blocksize;	/*!< uncompressed input size per thread */
 #endif
 
+/*@null@*/ /*@observer@*/
+    const char * suffix;	/*!< -S, --suffix ... */
+/*@null@*/
+    const char * ifn;
 /*@null@*/
     const char * ofn;		/*!< output file name (allocated if not NULL) */
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
@@ -191,6 +199,16 @@ struct rpmzQueue_s {
 
 /*@only@*/ /*@null@*/
     yarnThread writeth;		/*!< write thread if running */
+
+#ifndef	DYING	/* XXX this cruft is going away */
+    long lastseq;		/*!< Last seq. */
+    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
+    size_t iblocksize;
+    int ilimit;
+    size_t oblocksize;
+    int olimit;
+#endif
+
 };
 #endif	/* _RPMZQ_INTERNAL */
 

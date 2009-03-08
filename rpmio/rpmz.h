@@ -21,195 +21,19 @@
 
 #include "rpmzlog.h"
 
-#ifndef _PIGZNOTHREAD
-#  include <yarn.h>     /* yarnThread, yarnLaunch(), yarnJoin(), yarnJoinAll(), */
-                        /* yarnLock, yarnNewLock(), yarnPossess(), yarnTwist(), yarnWaitFor(),
-                           yarnRelease(), yarnPeekLock(), yarnFreeLock(), yarnPrefix */
-#endif
-
-/**
- */
-enum rpmzMode_e {
-    RPMZ_MODE_COMPRESS		= 0,
-    RPMZ_MODE_DECOMPRESS	= 1,
-    RPMZ_MODE_TEST		= 2,
-};
-
-/**
- */
-enum rpmzFormat_e {
-    RPMZ_FORMAT_AUTO		= 0,
-    RPMZ_FORMAT_XZ		= 1,
-    RPMZ_FORMAT_LZMA		= 2,
-    RPMZ_FORMAT_RAW		= 3,
-    RPMZ_FORMAT_GZIP		= 4,
-    RPMZ_FORMAT_ZLIB		= 5,
-    RPMZ_FORMAT_ZIP2		= 6,
-    RPMZ_FORMAT_ZIP3		= 7,
-    RPMZ_FORMAT_BZIP2		= 8,
-};
-
-#define _KFB(n) (1U << (n))
-#define _ZFB(n) (_KFB(n) | 0x40000000)
-
-/**
- */
-enum rpmzFlags_e {
-    RPMZ_FLAGS_NONE		= 0,
-    RPMZ_FLAGS_STDOUT		= _ZFB( 0),	/*!< -c, --stdout ... */
-	/* 1 unused */
-    RPMZ_FLAGS_KEEP		= _ZFB( 2),	/*!< -k, --keep ... */
-    RPMZ_FLAGS_RECURSE		= _ZFB( 3),	/*!< -r, --recursive ... */
-    RPMZ_FLAGS_EXTREME		= _ZFB( 4),	/*!< -e, --extreme ... */
-  /* XXX compressor specific flags need to be set some other way. */
-  /* XXX unused */
-    RPMZ_FLAGS_FAST		= _ZFB( 5),	/*!<     --fast ... */
-    RPMZ_FLAGS_BEST		= _ZFB( 6),	/*!<     --best ... */
-
-  /* XXX logic is reversed, disablers should clear with toggle. */
-    RPMZ_FLAGS_HNAME		= _ZFB( 7),	/*!< -n, --no-name ... */
-    RPMZ_FLAGS_HTIME		= _ZFB( 8),	/*!< -T, --no-time ... */
-
-  /* XXX unimplemented */
-    RPMZ_FLAGS_RSYNCABLE	= _ZFB( 9),	/*!< -R, --rsyncable ... */
-  /* XXX logic is reversed. */
-    RPMZ_FLAGS_INDEPENDENT	= _ZFB(10),	/*!< -i, --independent ... */
-    RPMZ_FLAGS_LIST		= _ZFB(11),	/*!< -l, --list ... */
-
-    RPMZ_FLAGS_OVERWRITE	= _ZFB(12),	/*!<     --overwrite ... */
-    RPMZ_FLAGS_ALREADY		= _ZFB(13),	/*!<     --recompress ... */
-    RPMZ_FLAGS_SYMLINKS		= _ZFB(14),	/*!<     --symlinks ... */
-    RPMZ_FLAGS_TTY		= _ZFB(15),	/*!<     --tty ... */
-#define	RPMZ_FLAGS_FORCE	\
-    (RPMZ_FLAGS_OVERWRITE|RPMZ_FLAGS_ALREADY|RPMZ_FLAGS_SYMLINKS|RPMZ_FLAGS_TTY)
-
-#ifdef	NOTYET
-    RPMZ_FLAGS_SUBBLOCK		= INT_MIN,
-    RPMZ_FLAGS_DELTA,
-    RPMZ_FLAGS_LZMA1,
-    RPMZ_FLAGS_LZMA2,
-#endif
-
-    RPMZ_FLAGS_X86		= _ZFB(16),
-    RPMZ_FLAGS_POWERPC		= _ZFB(17),
-    RPMZ_FLAGS_IA64		= _ZFB(18),
-    RPMZ_FLAGS_ARM		= _ZFB(19),
-    RPMZ_FLAGS_ARMTHUMB		= _ZFB(20),
-    RPMZ_FLAGS_SPARC		= _ZFB(21),
-
-};
+#include "rpmzq.h"
 
 /**
  */
 typedef struct rpmz_s * rpmz;
-typedef struct rpmzSpace_s * rpmzSpace;
-typedef struct rpmzPool_s * rpmzPool;
-typedef struct rpmzJob_s * rpmzJob;
 
 #if defined(_RPMZ_INTERNAL)
-/** a space (one buffer for each space) */
-struct rpmzSpace_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-    void * buf;			/*!< buffer of size pool->size */
-    size_t len;			/*!< for application usage */
-    rpmzPool pool;		/*!< pool to return to */
-    rpmzSpace next;		/*!< for pool linked list */
-};
 
-/** pool of spaces (one pool for each size needed) */
-struct rpmzPool_s {
-    yarnLock have;		/*!< unused spaces available, lock for list */
-/*@relnull@*/
-    rpmzSpace head;		/*!< linked list of available buffers */
-    size_t size;		/*!< size of all buffers in this pool */
-    int limit;			/*!< number of new spaces allowed, or -1 */
-    int made;			/*!< number of buffers made */
-};
+/*@unchecked@*/
+extern struct rpmz_s __rpmz;
 
-/**
- */
-struct rpmzJob_s {
-    long seq;			/*!< sequence number */
-    int more;			/*!< true if this is not the last chunk */
-    rpmzSpace in;		/*!< input data to compress */
-    rpmzSpace out;		/*!< dictionary or resulting compressed data */
-    unsigned long check;	/*!< check value for input data */
-    yarnLock calc;		/*!< released when check calculation complete */
-/*@dependent@*/ /*@null@*/
-    rpmzJob next;		/*!< next job in the list (either list) */
-};
-
-/**
- */
-typedef struct rpmzQueue_s * rpmzQueue;
-
-/**
- */
-struct rpmzQueue_s {
-#ifdef	NOTYET
-    unsigned int flags;		/*!< Control bits. */
-
-    long lastseq;		/*!< Last seq. */
-    unsigned int level;		/*!< Compression level. */
-    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
-    size_t iblocksize;
-    int ilimit;
-    size_t oblocksize;
-    int olimit;
-/*@null@*/
-    const char *ifn;		/*!< input file name */
-#endif
-
-/* --- globals (modified by main thread only when it's the only thread) */
-    enum rpmzFlags_e flags;	/*!< Control bits. */
-    enum rpmzFormat_e format;	/*!< Compression format. */
-    enum rpmzMode_e mode;	/*!< Operation mode. */
-    unsigned int level;		/*!< Compression level. */
-    unsigned int threads;	/*!< No. or threads to use. */
-#ifdef	NOTYET	/* XXX popt has sizeof(size_t) != sizeof(unsigned int) issues */
-    size_t blocksize;		/*!< uncompressed input size per thread */
-#else
-    unsigned int blocksize;	/*!< uncompressed input size per thread */
-#endif
-
-/*@null@*/ /*@observer@*/
-    const char * suffix;	/*!< -S, --suffix ... */
-/*@null@*/
-    const char * ifn;
-/*@null@*/
-    const char * ofn;		/*!< output file name (allocated if not NULL) */
-    int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
-
-/*@owned@*/ /*@null@*/
-    rpmzLog zlog;		/*!< trace logging */
-
-    int cthreads;		/*!< number of compression threads running */
-
-    int ifdno;			/*!< input file descriptor */
-    int ofdno;			/*!< output file descriptor */
-
-/*@relnull@*/
-    rpmzPool in_pool;		/*!< input buffer pool (malloc'd). */
-/*@relnull@*/
-    rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
-
-/* --- globals for job queue and buffer management */
-    /* list of compress jobs (with tail for appending to list) */
-/*@only@*/ /*@null@*/
-    yarnLock compress_have;	/*!< no. compress/decompress jobs waiting */
-/*@null@*/
-    rpmzJob compress_head;
-/*@shared@*/
-    rpmzJob * compress_tail;
-
-/*@only@*/ /*@null@*/
-    yarnLock write_first;	/*!< lowest sequence number in list */
-/*@null@*/
-    rpmzJob write_head;		/*!< list of write jobs */
-
-/*@only@*/ /*@null@*/
-    yarnThread writeth;		/*!< write thread if running */
-};
+/*@unchecked@*/
+extern rpmz _rpmz;
 
 /**
  */
@@ -332,6 +156,7 @@ struct rpmz_s {
 /* ---- rpmzq */
 
 };
+
 #endif	/* _RPMZ_INTERNAL */
 
 /*==============================================================*/
@@ -339,160 +164,6 @@ struct rpmz_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#if defined(_RPMZ_INTERNAL)
-/*@unchecked@*/
-extern struct rpmz_s __rpmz;
-
-/*@unchecked@*/
-extern rpmz _rpmz;
-
-/**
- */
-extern void rpmzArgCallback(poptContext con,
-		/*@unused@*/ enum poptCallbackReason reason,
-		const struct poptOption * opt, /*@unused@*/ const char * arg,
-		/*@unused@*/ void * data)
-	/*@globals _rpmz, fileSystem, internalState @*/
-	/*@modifies _rpmz, fileSystem, internalState @*/;
-
-/*==============================================================*/
-
-/*@unchecked@*/ /*@observer@*/
-static struct poptOption rpmzOptionsPoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	rpmzArgCallback, 0, NULL, NULL },
-/*@=type@*/
-
-  { "fast", '\0', POPT_ARG_VAL,				&__rpmz._zq.level,  1,
-	N_("fast compression"), NULL },
-  { "best", '\0', POPT_ARG_VAL,				&__rpmz._zq.level,  9,
-	N_("best compression"), NULL },
-#if defined(_RPMZ_INTERNAL_XZ)
-  /* XXX compressor specific flags need to be set some other way. */
-  { "extreme", 'e', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags,  RPMZ_FLAGS_EXTREME,
-	N_("extreme compression"), NULL },
-#endif	/* _RPMZ_INTERNAL_XZ */
-  { NULL, '0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  0,
-	NULL, NULL },
-  { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  1,
-	NULL, NULL },
-  { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  2,
-	NULL, NULL },
-  { NULL, '3', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  3,
-	NULL, NULL },
-  { NULL, '4', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  4,
-	NULL, NULL },
-  { NULL, '5', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  5,
-	NULL, NULL },
-  { NULL, '6', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  6,
-	NULL, NULL },
-  { NULL, '7', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  7,
-	NULL, NULL },
-  { NULL, '8', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  8,
-	NULL, NULL },
-  { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.level,  9,
-	NULL, NULL },
-
-#if defined(_RPMZ_INTERNAL_PIGZ)
-#ifdef	NOTYET	/* XXX --blocksize/--processes callback to validate arg */
-  { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz._zq.blocksize, 0,
-	N_("Set compression block size to mmmK"), N_("mmm") },
-  /* XXX same as --threads */
-  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz._zq.threads, 0,
-	N_("Allow up to n compression threads"), N_("n") },
-#else
-  /* XXX show default is bogus with callback, can't find value. */
-  { "blocksize", 'b', POPT_ARG_VAL|POPT_ARGFLAG_SHOW_DEFAULT,	NULL, 'b',
-	N_("Set compression block size to mmmK"), N_("mmm") },
-  /* XXX same as --threads */
-  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	NULL, 'p',
-	N_("Allow up to n compression threads"), N_("n") },
-#endif
-  /* XXX display toggle "-i,--[no]indepndent" bustage. */
-  { "independent", 'i', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags, RPMZ_FLAGS_INDEPENDENT,
-	N_("Compress blocks independently for damage recovery"), NULL },
-  /* XXX display toggle "-r,--[no]rsyncable" bustage. */
-  { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz._zq.flags, RPMZ_FLAGS_RSYNCABLE,
-	N_("Input-determined block locations for rsync"), NULL },
-#endif	/* _RPMZ_INTERNAL_PIGZ */
-#if defined(_RPMZ_INTERNAL_XZ)
-  /* XXX -T collides with pigz -T,--no-time */
-  { "threads", '\0', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz._zq.threads, 0,
-	N_("Allow up to n compression threads"), N_("n") },
-#endif	/* _RPMZ_INTERNAL_XZ */
-
-  /* ===== Operation modes */
-#if defined(_RPMZ_INTERNAL_XZ)
-  { "compress", 'z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.mode, RPMZ_MODE_COMPRESS,
-	N_("force compression"), NULL },
-  { "uncompress", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.mode, RPMZ_MODE_DECOMPRESS,
-	N_("force decompression"), NULL },
-#endif	/* _RPMZ_INTERNAL_XZ */
-  { "decompress", 'd', POPT_ARG_VAL,		&__rpmz._zq.mode, RPMZ_MODE_DECOMPRESS,
-	N_("Decompress the compressed input"), NULL },
-  { "test", 't', POPT_ARG_VAL,			&__rpmz._zq.mode,  RPMZ_MODE_TEST,
-	N_("Test the integrity of the compressed input"), NULL },
-  { "list", 'l', POPT_BIT_SET,			&__rpmz._zq.flags,  RPMZ_FLAGS_LIST,
-	N_("List the contents of the compressed input"), NULL },
-#if defined(_RPMZ_INTERNAL_XZ)
-  { "info", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz._zq.flags,  RPMZ_FLAGS_LIST,
-	N_("list block sizes, total sizes, and possible metadata"), NULL },
-#endif	/* _RPMZ_INTERNAL_XZ */
-  { "force", 'f', POPT_BIT_SET,		&__rpmz._zq.flags,  RPMZ_FLAGS_FORCE,
-	N_("Force: --overwrite --recompress --symlinks --tty"), NULL },
-  { "overwrite", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz._zq.flags,  RPMZ_FLAGS_OVERWRITE,
-	N_("  Permit overwrite of output files"), NULL },
-  { "recompress",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz._zq.flags,  RPMZ_FLAGS_ALREADY,
-	N_("  Permit compress of already compressed files"), NULL },
-  { "symlinks",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz._zq.flags,  RPMZ_FLAGS_SYMLINKS,
-	N_("  Permit symlink input file to be compressed"), NULL },
-  { "tty",'\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,
-	&__rpmz._zq.flags,  RPMZ_FLAGS_TTY,
-	N_("  Permit compressed output to terminal"), NULL },
-
-  /* ===== Operation modifiers */
-  /* XXX display toggle "-r,--[no]recursive" bustage. */
-  { "recursive", 'r', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz._zq.flags, RPMZ_FLAGS_RECURSE,
-	N_("Process the contents of all subdirectories"), NULL },
-  { "suffix", 'S', POPT_ARG_STRING,		&__rpmz._zq.suffix, 0,
-	N_("Use suffix .sss instead of .gz (for compression)"), N_(".sss") },
-#if defined(_RPMZ_INTERNAL_PIGZ)
-  { "ascii", 'a', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'a',
-	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
-  { "bits", 'Z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
-	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
-  { "zlib", 'z', POPT_ARG_VAL,		&__rpmz._zq.format, RPMZ_FORMAT_ZLIB,
-	N_("Compress to zlib (.zz) instead of gzip format"), NULL },
-  { "zip", 'K', POPT_ARG_VAL,		&__rpmz._zq.format, RPMZ_FORMAT_ZIP2,
-	N_("Compress to PKWare zip (.zip) single entry format"), NULL },
-#endif	/* _RPMZ_INTERNAL_PIGZ */
-  { "keep", 'k', POPT_BIT_SET,			&__rpmz._zq.flags, RPMZ_FLAGS_KEEP,
-	N_("Do not delete original file after processing"), NULL },
-  { "stdout", 'c', POPT_BIT_SET,		&__rpmz._zq.flags,  RPMZ_FLAGS_STDOUT,
-	N_("Write all processed output to stdout (won't delete)"), NULL },
-  { "to-stdout", 'c', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz._zq.flags,  RPMZ_FLAGS_STDOUT,
-	N_("write to standard output and don't delete input files"), NULL },
-
-  /* ===== Metadata options */
-  /* XXX logic is reversed, disablers should clear with toggle. */
-  { "name", 'N', POPT_BIT_SET,		&__rpmz._zq.flags, (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME),
-	N_("Store/restore file name and mod time in/from header"), NULL },
-  { "no-name", 'n', POPT_BIT_CLR,	&__rpmz._zq.flags, RPMZ_FLAGS_HNAME,
-	N_("Do not store or restore file name in/from header"), NULL },
-  /* XXX -T collides with xz -T,--threads */
-  { "no-time", 'T', POPT_BIT_CLR,	&__rpmz._zq.flags, RPMZ_FLAGS_HTIME,
-	N_("Do not store or restore mod time in/from header"), NULL },
-
-  /* ===== Other options */
-
-  POPT_TABLEEND
-};
-#endif	/* _RPMZ_INTERNAL */
 
 #if defined(_RPMZ_INTERNAL)
 /**
@@ -570,9 +241,7 @@ bottom:
 exit:
     return rc;
 }
-#endif	/* _RPMZ_INTERNAL */
 
-#if defined(_RPMZ_INTERNAL)
 /**
  */
 static rpmRC rpmzParseEnv(/*@unused@*/ rpmz z, /*@null@*/ const char * envvar,

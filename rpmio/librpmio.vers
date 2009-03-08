@@ -426,6 +426,7 @@ LIBRPMIO_0
     rpmzMsgShow;
     _rpmzq_debug;
     rpmbzCompressBlock;
+    _rpmzq;
     rpmzqAddCJob;
     rpmzqAddWJob;
     rpmzqDelCJob;
@@ -441,6 +442,7 @@ LIBRPMIO_0
     rpmzqNewJob;
     rpmzqNewPool;
     rpmzqNewSpace;
+    rpmzqOptionsPoptTable;
     rpmzqUseSpace;
     rpmzqVerify;
     Stat;
