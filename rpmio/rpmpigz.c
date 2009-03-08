@@ -2801,6 +2801,7 @@ Options:\
   POPT_AUTOALIAS
   POPT_AUTOHELP
 
+#ifdef	DYING
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 Usage: rpmpigz [options] [files ...]\n\
@@ -2808,6 +2809,7 @@ Usage: rpmpigz [options] [files ...]\n\
   specified, stdin will be compressed to stdout.  rpmpigz does what gzip does,\n\
   but spreads the work over multiple processors and cores when compressing.\n\
 "), NULL },
+#endif
 
   POPT_TABLEEND
 };

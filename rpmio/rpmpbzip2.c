@@ -136,14 +136,6 @@ struct rpmz_s {
 /*@null@*/
     const char * base_prefix;	/*!< Prefix for file manifests paths. */
 
-    enum rpmzFlags_e flags;	/*!< Control bits. */
-    enum rpmzFormat_e format;	/*!< Compression format. */
-    enum rpmzMode_e mode;	/*!< Operation mode. */
-    unsigned int level;		/*!< Compression level. */
-
-/*@null@*/ /*@observer@*/
-    const char * suffix;	/*!< -S, --suffix ... */
-
 #if !defined(PATH_MAX)		/* XXX grrr ... */
 #define	PATH_MAX	4096
 #endif
@@ -153,15 +145,10 @@ struct rpmz_s {
     struct timeval start;	/*!< starting time of day for tracing */
 
     struct stat isb;
-/*@relnull@*/
-    const char *ifn;
 
-/*@relnull@*/
-    char *ofn;
     char _ofn[PATH_MAX+1];
 
 /*@owned@*/ /*@relnull@*/
-    struct rpmzQueue_s _zq;
     rpmzQueue zq;		/*!< buffer pools. */
 
     int NumBlocks;
@@ -187,13 +174,6 @@ static struct rpmz_s __rpmz = {
     .stdin_fn	= "<stdin>",
     .stdout_fn	= "<stdout>",
 
-    .flags	= RPMZ_FLAGS_NONE,
-    .format	= RPMZ_FORMAT_BZIP2,
-    .mode	= RPMZ_MODE_COMPRESS,
-    .level	= 1,
-
-    .suffix	= "bz2",	/* compressed file suffix */
-
 };
 /*@=fullinitblock@*/
 
@@ -216,8 +196,8 @@ static void bail(const char *why, const char *what)
     int xx;
 
 /*@-globs@*/
-    if (zq->ofdno != -1 && z->ofn != NULL)
-	xx = unlink(z->ofn);
+    if (zq->ofdno != -1 && zq->ofn != NULL)
+	xx = unlink(zq->ofn);
 /*@=globs@*/
     if (zq->verbosity > 0)
 	fprintf(stderr, "%s abort: %s%s\n", __progname, why, what);
@@ -336,8 +316,6 @@ static void write_thread(void * _z)
 fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     Trace((zlog, "-- write thread running"));
 
-assert(zq->flags == z->flags);
-assert(zq->ofn == (char *)z->_ofn);
 assert(zq->ofdno == -1);
 assert(zq->lastseq == z->NumBlocks);
 
@@ -461,7 +439,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 
     // set search header to value in file
     {	char _buf[16];
-	xx = snprintf(_buf, sizeof(_buf), "%d", (z->level % 10));
+	xx = snprintf(_buf, sizeof(_buf), "%d", (zq->level % 10));
 	bz2Header[3] = _buf[0];
     }
 
@@ -611,14 +589,9 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     rpmzqFini(zq);		/* XXX lose any existing values. */
     /* XXX needs to be done one-time in rpmzProcess, not here. */
 /*@-assignexpose@*/
-    zq->ofn = (char *) z->_ofn;
+    zq->ofn = xstrdup(z->_ofn);
 /*@=assignexpose@*/
     zq->lastseq = z->NumBlocks;
-#ifdef	NOTYET
-assert(zq->level == z->level);
-#else
-    zq->level = z->level;
-#endif
     zq->omode = O_RDONLY;
 #ifdef	REFERENCE	/* XXX this is what compression uses. */
     zq->iblocksize = zq->blocksize;
@@ -678,7 +651,6 @@ assert(nread == next->len);
 	if (++seq < 1)
 	    bail("input too long: ", "");	/* XXX z->_ifn */
 
-assert(zq->level == z->level);
 assert(zq->omode == O_RDONLY);
 	/* start another decompress thread if needed */
 	rpmzqLaunch(zq, seq, zq->threads);
@@ -721,9 +693,6 @@ static int rpmzParallelCompress(rpmz z)
 
 fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 
-assert(zq->flags == z->flags);
-assert(zq->ofn == (char *)z->_ofn);
-assert(zq->level == z->level);
 assert(zq->omode == O_WRONLY);
 
     /* start write thread */
@@ -815,13 +784,9 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     job->in = xcalloc(1, sizeof(*job->in));
     job->out = xcalloc(1, sizeof(*job->out));
 
-assert(zq->flags == z->flags);
-assert(zq->ofn == (char *)z->_ofn);
 assert(zq->ofdno == -1);
 assert(zq->iblocksize == zq->blocksize);
     zq->lastseq = z->NumBlocks;
-assert(zq->level == z->level);
-    zq->level = z->level;
     zq->omode = O_WRONLY;
 
     bz = rpmbzInit(zq->level, O_WRONLY);
@@ -910,13 +875,9 @@ static int rpmzSingleDecompress(rpmz z, const char *ifn, const char *ofn)
 
 fprintf(stderr, "--> %s(%s,%s)\n", __FUNCTION__, ifn, ofn);
 
-assert(zq->flags == z->flags);
-assert(zq->level == z->level);
 assert(zq->omode == O_RDONLY);
 
     zq->lastseq = z->NumBlocks;
-assert(zq->level == z->level);
-    zq->level = 0;
     zq->omode = O_RDONLY;
 
     ifd = Fopen(ifn, "rb.bzdio");
@@ -1065,12 +1026,11 @@ fprintf(stderr, "--> %s(%p,%s)\n", __FUNCTION__, z, ifn);
 
     zq = z->zq;
 assert(zq != NULL);
-assert(zq->flags == z->flags);
 
     z->fileSize = 0;
 
     // test file for errors if requested
-    if (z->mode == RPMZ_MODE_TEST) {
+    if (zq->mode == RPMZ_MODE_TEST) {
 	if (zq->verbosity > 0) {
 	    fprintf(stderr, "      File #: %d\n", fileLoop+1);
 	    if (strcmp(ifn, "-") != 0)
@@ -1098,7 +1058,7 @@ assert(zq->flags == z->flags);
 /*@-mayaliasunique@*/
     strncpy(z->_ofn, ifn, 2040);
 /*@=mayaliasunique@*/
-    if (z->mode == RPMZ_MODE_DECOMPRESS && (strcmp(ifn, "-") != 0)) {
+    if (zq->mode == RPMZ_MODE_DECOMPRESS && (strcmp(ifn, "-") != 0)) {
 	size_t nb;
 
 	// check if input file is a valid .bz2 compressed file
@@ -1142,7 +1102,7 @@ assert(zq->flags == z->flags);
 	    }
 	    // set block size for decompression
 	    if ((tmpBuff[3] >= '1') && (tmpBuff[3] <= '9'))
-		zq->level = z->level = (tmpBuff[3] - '0');
+		zq->level = (tmpBuff[3] - '0');
 	    else {
 		fprintf(stderr, "*ERROR: File [%s] is NOT a valid bzip2!  Skipping...\n", ifn);
 		fprintf(stderr, "-------------------------------------------\n");
@@ -1174,8 +1134,8 @@ assert(zq->flags == z->flags);
 
     // setup signal handling filenames
 /*@-assignexpose@*/
-    zq->ifn = z->ifn = ifn;
-    zq->ofn = z->ofn = z->_ofn;
+    zq->ifn = ifn;
+    zq->ofn = xstrdup(z->_ofn);
 /*@=assignexpose@*/
 
     if (strcmp(ifn, "-") != 0) {
@@ -1211,7 +1171,7 @@ assert(zq->flags == z->flags);
 
 	// don't process a 0 byte file
 	if (z->fileSize == 0) {
-	    if (z->mode == RPMZ_MODE_DECOMPRESS) {
+	    if (zq->mode == RPMZ_MODE_DECOMPRESS) {
 		fprintf(stderr, "*ERROR: File is of size 0 [%s]!  Skipping...\n", ifn);
 		fprintf(stderr, "-------------------------------------------\n");
 		rc = 1;
@@ -1258,13 +1218,13 @@ assert(zq->flags == z->flags);
 	else
 	    fprintf(stderr, "    Output Name: %s\n\n", z->stdout_fn);
 
-	if (z->mode == RPMZ_MODE_DECOMPRESS)
-	    fprintf(stderr, " BWT Block Size: %d00k\n", (z->level % 10));
+	if (zq->mode == RPMZ_MODE_DECOMPRESS)
+	    fprintf(stderr, " BWT Block Size: %d00k\n", (zq->level % 10));
 	if (strcmp(zq->ifn, "-") != 0)
 	    fprintf(stderr, "     Input Size: %llu bytes\n", (unsigned long long)z->fileSize);
     }
 
-    switch (z->mode) {
+    switch (zq->mode) {
     case RPMZ_MODE_DECOMPRESS:
 	numBlocks = 0;
 	break;
@@ -1307,7 +1267,7 @@ assert(zq->flags == z->flags);
 
     z->NumBlocks = numBlocks;
 
-    switch (z->mode) {
+    switch (zq->mode) {
     case RPMZ_MODE_DECOMPRESS:
 	// use multi-threaded code
 	if (zq->threads > 0) {
@@ -1389,8 +1349,8 @@ assert(zq->flags == z->flags);
     }
 
     // finished processing file
-    z->ifn = NULL;
-    z->ofn = NULL;
+    zq->ifn = NULL;
+    zq->ofn = NULL;
 
     // remove input file unless requested not to by user
     if (!F_ISSET(zq->flags, KEEP)) {
@@ -1578,18 +1538,19 @@ static void rpmzAbort(/*@unused@*/ int sig)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
+    rpmzQueue zq = z->zq;
 
     Trace((z->zlog, "termination by user"));
-    if (zq->ofdno != -1 && q->ofn != NULL)
+    if (zq->ofdno != -1 && zq->ofn != NULL)
 	Unlink(z->ofn);
-    z->zlog = rpmzLogDump(z->zlog, NULL);
+    zq->zlog = rpmzLogDump(zq->zlog, NULL);
     _exit(EXIT_FAILURE);
 }
 #endif
 
 /**
  */
-static void rpmzArgCallback(poptContext con,
+static void rpmzqArgCallback(poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, /*@unused@*/ const char * arg,
 		/*@unused@*/ void * data)
@@ -1597,7 +1558,7 @@ static void rpmzArgCallback(poptContext con,
 	/*@modifies _rpmz, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
-    rpmzQueue zq = &z->_zq;
+    rpmzQueue zq = z->zq;
 
 #define	PBZIP2VERSION	"1.0.5"
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
@@ -1636,195 +1597,64 @@ static void rpmzArgCallback(poptContext con,
 
 /*==============================================================*/
 
+
+/* XXX grrr, popt needs better way to insert text strings in --help. */
+/* XXX fixme: popt does post order recursion into sub-tables. */
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption rpmzOptionsPoptTable[] = {
+static struct poptOption rpmzPrivatePoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	rpmzArgCallback, 0, NULL, NULL },
+	rpmzqArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-#ifdef	REFERENCE
-Usage: pigz [options] [files ...]
-  will compress files in place, adding the suffix '.gz'.  If no files are
-  specified, stdin will be compressed to stdout.  pigz does what gzip does,
-  but spreads the work over multiple processors and cores when compressing.
+  { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
+	N_("debug spewage"), NULL },
 
-Options:
-  -0 to -9, --fast, --best   Compression levels, --fast is -1, --best is -9
-  -b, --blocksize mmm  Set compression block size to mmmK (default 128K)
-  -p, --processes n    Allow up to n compression threads (default 8)
-  -i, --independent    Compress blocks independently for damage recovery
-  -R, --rsyncable      Input-determined block locations for rsync
-  -d, --decompress     Decompress the compressed input
-  -t, --test           Test the integrity of the compressed input
-  -l, --list           List the contents of the compressed input
-  -f, --force          Force overwrite, compress .gz, links, and to terminal
-  -r, --recursive      Process the contents of all subdirectories
-  -s, --suffix .sss    Use suffix .sss instead of .gz (for compression)
-  -z, --zlib           Compress to zlib (.zz) instead of gzip format
-  -K, --zip            Compress to PKWare zip (.zip) single entry format
-  -k, --keep           Do not delete original file after processing
-  -c, --stdout         Write all processed output to stdout (wont delete)
-  -N, --name           Store/restore file name and mod time in/from header
-  -n, --no-name        Do not store or restore file name in/from header
-  -T, --no-time        Do not store or restore mod time in/from header
-  -q, --quiet          Print no messages, even on error
-  -v, --verbose        Provide more verbose output
-#endif
-
-#ifdef	REFERENCE
-Parallel BZIP2 v1.0.5 - by: Jeff Gilchrist http://compression.ca
-[Jan. 08, 2009]             (uses libbzip2 by Julian Seward)
-
-Usage: ./pbzip2 [-1 .. -9] [-b#cdfhklp#qrtVz] <filename> <filename2> <filenameN>
- -b#      : where # is the file block size in 100k (default 9 = 900k)
- -c       : output to standard out (stdout)
- -d       : decompress file
- -f       : force, overwrite existing output file
- -h       : print this help message
- -k       : keep input file, dont delete
- -l       : load average determines max number processors to use
- -p#      : where # is the number of processors (default 2)
- -q       : quiet mode (default)
- -r       : read entire input file into RAM and split between processors
- -t       : test compressed file integrity
- -v       : verbose mode
- -V       : display version info for pbzip2 then exit
- -z       : compress file (default)
- -1 .. -9 : set BWT block size to 100k .. 900k (default 900k)
-
-Example: pbzip2 -b15vk myfile.tar
-Example: pbzip2 -p4 -r -5 myfile.tar second*.txt
-Example: tar cf myfile.tar.bz2 --use-compress-prog=pbzip2 dir_to_compress/
-Example: pbzip2 -d myfile.tar.bz2
-
-#endif
-
-  { "fast", '\0', POPT_ARG_VAL,				&__rpmz.level,  1,
-	N_("fast compression"), NULL },
-  { "best", '\0', POPT_ARG_VAL,				&__rpmz.level,  9,
-	N_("best compression"), NULL },
-  { NULL, '0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  0,
-	NULL, NULL },
-  { NULL, '1', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  1,
-	NULL, NULL },
-  { NULL, '2', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  2,
-	NULL, NULL },
-  { NULL, '3', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  3,
-	NULL, NULL },
-  { NULL, '4', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  4,
-	NULL, NULL },
-  { NULL, '5', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  5,
-	NULL, NULL },
-  { NULL, '6', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  6,
-	NULL, NULL },
-  { NULL, '7', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  7,
-	NULL, NULL },
-  { NULL, '8', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  8,
-	NULL, NULL },
-  { NULL, '9', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.level,  9,
-	NULL, NULL },
-
-#ifdef  NOTYET	/* XXX --blocksize/--processes validate arg */
-  { "blocksize", 'b', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.blocksize, 0,
-	N_("Set compression block size to mmmK"), N_("mmm") },
-  /* XXX same as --threads */
-  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmz.threads, 0,
-	N_("Allow up to n compression threads"), N_("n") },
-#else
-  { "blocksize", 'b', POPT_ARG_VAL|POPT_ARGFLAG_SHOW_DEFAULT,	NULL, 'b',
-	N_("Set compression block size to mmmK"), N_("mmm") },
-  /* XXX same as --threads */
-  { "processes", 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	NULL, 'p',
-	N_("Allow up to n compression threads"), N_("n") },
-#endif
-
-  { "independent", 'i', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,	&__rpmz.flags, RPMZ_FLAGS_INDEPENDENT,
-	N_("Compress blocks independently for damage recovery"), NULL },
-  { "rsyncable", 'R', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE,		&__rpmz.flags, RPMZ_FLAGS_RSYNCABLE,
-	N_("Input-determined block locations for rsync"), NULL },
-
-  /* ===== Operation modes */
 #ifdef	NOTYET
-  { "compress", 'z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmz.mode, RPMZ_MODE_COMPRESS,
-	N_("force compression"), NULL },
+	/* XXX POPT_ARG_ARGV portability. */
+  { "files", '\0', POPT_ARG_ARGV,		&__rpmz.manifests, 0,
+	N_("Read file names from MANIFEST"), N_("MANIFEST") },
 #endif
-  { "decompress", 'd', POPT_ARG_VAL,		&__rpmz.mode, RPMZ_MODE_DECOMPRESS,
-	N_("Decompress the compressed input"), NULL },
-  { "test", 't', POPT_ARG_VAL,			&__rpmz.mode,  RPMZ_MODE_TEST,
-	N_("Test the integrity of the compressed input"), NULL },
-  { "list", 'l', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_LIST,
-	N_("List the contents of the compressed input"), NULL },
-  { "force", 'f', POPT_BIT_SET,			&__rpmz.flags,  RPMZ_FLAGS_FORCE,
-	N_("Force overwrite, compress .gz, links, and to terminal"), NULL },
-
-  /* ===== Operation modifiers */
-  /* XXX unimplemented */
-  { "recursive", 'r', POPT_BIT_SET,	&__rpmz.flags, RPMZ_FLAGS_RECURSE,
-	N_("Process the contents of all subdirectories"), NULL },
-  { "suffix", 'S', POPT_ARG_STRING,		&__rpmz.suffix, 0,
-	N_("Use suffix .sss instead of .gz (for compression)"), N_(".sss") },
-  { "ascii", 'a', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'a',
-	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
-  { "bits", 'Z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
-	N_("Compress to LZW (.Z) instead of gzip format"), NULL },
-  { "zlib", 'z', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZLIB,
-	N_("Compress to zlib (.zz) instead of gzip format"), NULL },
-  { "zip", 'K', POPT_ARG_VAL,		&__rpmz.format, RPMZ_FORMAT_ZIP2,
-	N_("Compress to PKWare zip (.zip) single entry format"), NULL },
-  { "keep", 'k', POPT_BIT_SET,			&__rpmz.flags, RPMZ_FLAGS_KEEP,
-	N_("Do not delete original file after processing"), NULL },
-  { "stdout", 'c', POPT_BIT_SET,		&__rpmz.flags,  RPMZ_FLAGS_STDOUT,
-	N_("Write all processed output to stdout (won't delete)"), NULL },
-  { "to-stdout", 'c', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmz.flags,  RPMZ_FLAGS_STDOUT,
-	N_("write to standard output and don't delete input files"), NULL },
-
-  /* ===== Metadata options */
-  /* XXX logic is reversed, disablers should clear with toggle. */
-  { "name", 'N', POPT_BIT_SET,		&__rpmz.flags, (RPMZ_FLAGS_HNAME|RPMZ_FLAGS_HTIME),
-	N_("Store/restore file name and mod time in/from header"), NULL },
-  { "no-name", 'n', POPT_BIT_CLR,	&__rpmz.flags, RPMZ_FLAGS_HNAME,
-	N_("Do not store or restore file name in/from header"), NULL },
-  /* XXX -T collides with xz -T,--threads */
-  { "no-time", 'T', POPT_BIT_CLR,	&__rpmz.flags, RPMZ_FLAGS_HTIME,
-	N_("Do not store or restore mod time in/from header"), NULL },
-
-  /* ===== Other options */
   { "quiet", 'q',	POPT_ARG_VAL,				NULL,  'q',
 	N_("Print no messages, even on error"), NULL },
   { "verbose", 'v',	POPT_ARG_VAL,				NULL,  'v',
 	N_("Provide more verbose output"), NULL },
   { "version", 'V',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'V',
-	N_("?version?"), NULL },
+	N_("Display software version"), NULL },
   { "license", 'L',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'L',
-	N_("?license?"), NULL },
+	N_("Display softwre license"), NULL },
 
   POPT_TABLEEND
-
 };
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	rpmzArgCallback, 0, NULL, NULL },
+	rpmzqArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { "debug", 'D', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
-	N_("debug spewage"), NULL },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzPrivatePoptTable, 0,
+        N_("\
+  rpmpbzip2 will compress files in place, adding the suffix '.bz2'. If no\n\
+  files are specified, stdin will be compressed to stdout. rpmpbzip2 does\n\
+  what bzip2 does, but spreads the work over multiple processors and cores\n\
+  when compressing.\n\
+\n\
+Options:\
+"), NULL },
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzOptionsPoptTable, 0,
-        N_("Options:"), NULL },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzqOptionsPoptTable, 0,
+        N_("Compression options:"), NULL },
 
-#ifdef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
 	NULL },
-#endif
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
 
+#ifdef	DYING
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 Parallel BZIP2 v1.0.5 - by: Jeff Gilchrist [http://compression.ca]\n\
@@ -1852,6 +1682,7 @@ Example: pbzip2 -p4 -r -5 myfile.tar second*.txt\n\
 Example: tar cf myfile.tar.bz2 --use-compress-prog=pbzip2 dir_to_compress/\n\
 Example: pbzip2 -d myfile.tar.bz2\n\
 "), NULL },
+#endif
 
   POPT_TABLEEND
 
@@ -1932,6 +1763,7 @@ static int rpmzParseArgv0(rpmz z, const char * argv0)
 	/*@globals internalState @*/
 	/*@modifies z, internalState @*/
 {
+    rpmzQueue zq = z->zq;
     const char * s = strrchr(argv0, PATH_SEP);
     const char * name = (s != NULL ? (s + 1) : argv0);
 #ifdef	NOTYET
@@ -1944,51 +1776,51 @@ static int rpmzParseArgv0(rpmz z, const char * argv0)
     } else
     if (strstr(name, "lz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_LZMA;
-	z->format = RPMZ_FORMAT_LZMA;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_LZMA;	/* XXX eliminate */
     } else
 #endif	/* WITH_XZ */
 #if defined(WITH_BZIP2)
     if (strstr(name, "bz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_BZIP2;
-	z->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_BZIP2;	/* XXX eliminate */
     } else
 #endif	/* WITH_BZIP2 */
 #if defined(WITH_ZLIB)
     if (strstr(name, "gz") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_GZIP;
-	z->format = RPMZ_FORMAT_GZIP;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_GZIP;	/* XXX eliminate */
     } else
     if (strstr(name, "zlib") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_ZLIB;
-	z->format = RPMZ_FORMAT_ZLIB;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_ZLIB;	/* XXX eliminate */
     } else
 	/* XXX watchout for "bzip2" matching */
     if (strstr(name, "zip") != NULL) {
 	z->_format_compress_auto = RPMZ_FORMAT_ZIP2;
-	z->format = RPMZ_FORMAT_ZIP2;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_ZIP2;	/* XXX eliminate */
     } else
 #endif	/* WITH_ZLIB */
     {
 	z->_format_compress_auto = RPMZ_FORMAT_AUTO;
-	z->format = RPMZ_FORMAT_AUTO;	/* XXX eliminate */
+	zq->format = RPMZ_FORMAT_AUTO;	/* XXX eliminate */
     }
 
     if (strstr(name, "cat") != NULL) {
-	z->mode = RPMZ_MODE_DECOMPRESS;
-	z->flags |= RPMZ_FLAGS_STDOUT;
+	zq->mode = RPMZ_MODE_DECOMPRESS;
+	zq->flags |= RPMZ_FLAGS_STDOUT;
     } else if (strstr(name, "un") != NULL) {
-	z->mode = RPMZ_MODE_DECOMPRESS;
+	zq->mode = RPMZ_MODE_DECOMPRESS;
     }
 
     return rc;
 #else
 
     if ((strstr(name, "unzip") != 0) || (strstr(name, "UNZIP") != 0))
-	z->mode = RPMZ_MODE_DECOMPRESS;
+	zq->mode = RPMZ_MODE_DECOMPRESS;
     if ((strstr(name, "zcat") != 0) || (strstr(name, "ZCAT") != 0)) {
-	z->flags |= RPMZ_FLAGS_STDOUT;
-	z->flags |= RPMZ_FLAGS_KEEP;
-	z->mode = RPMZ_MODE_DECOMPRESS;
+	zq->flags |= RPMZ_FLAGS_STDOUT;
+	zq->flags |= RPMZ_FLAGS_KEEP;
+	zq->mode = RPMZ_MODE_DECOMPRESS;
     }
 
     return 0;
@@ -2001,7 +1833,7 @@ int main(int argc, char* argv[])
 	/*@modifies _rpmz, __assert_program_name, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
-    rpmzQueue zq = &z->_zq;
+    rpmzQueue zq = _rpmzq;
     rpmzLog zlog = NULL;
     poptContext optCon;
 
@@ -2012,8 +1844,20 @@ int main(int argc, char* argv[])
     int i;
 
 /*@-observertrans -readonlytrans @*/
-    __progname = "pbzip2";
+    __progname = "rpmpbzip2";
 /*@=observertrans =readonlytrans @*/
+    z->zq = zq;                /* XXX initialize rpmzq */
+    zq->threads	= 2;
+    zq->blocksize = 1*100000;
+    zq->verbosity = 1;		/* normal message level */
+    zq->flags = RPMZ_FLAGS_NONE;
+    zq->format = RPMZ_FORMAT_BZIP2;
+    zq->mode = RPMZ_MODE_COMPRESS;
+    zq->level = 1;
+    zq->suffix = "bz2",	/* compressed file suffix */
+
+    /* XXX sick hack to initialize the popt callback. */
+    rpmzqOptionsPoptTable[0].arg = (void *)&rpmzqArgCallback;
 
     /* XXX add POPT_ARG_TIMEOFDAY oneshot? */
     xx = gettimeofday(&z->start, NULL);	/* starting time for log entries */
@@ -2021,17 +1865,22 @@ int main(int argc, char* argv[])
     zlog = rpmzLogInit(&z->start);		/* initialize logging */
 #endif
 
-    zq->threads	= 2;
-    zq->blocksize = 1*100000;
-    zq->verbosity = 1;		/* normal message level */
-
     hw_init(z);
 
     // check to see if we are likely being called from TAR
     if (argc < 2) {
-	z->flags |= RPMZ_FLAGS_STDOUT;
-	z->flags |= RPMZ_FLAGS_KEEP;
+	zq->flags |= RPMZ_FLAGS_STDOUT;
+	zq->flags |= RPMZ_FLAGS_KEEP;
     }
+
+#ifdef	NOTYET
+    /* set all options to defaults */
+    rpmzDefaults(zq);
+
+    /* process user environment variable defaults */
+    if (rpmzParseEnv(z, "BZIP2", optionsTable))
+        goto exit;
+#endif
 
     // get program name to determine if decompress mode should be used
     xx = rpmzParseArgv0(z, argv[0]);
@@ -2043,7 +1892,15 @@ int main(int argc, char* argv[])
 	if (av != NULL)
 	xx = argvAppend(&z->argv, av);
     }
-assert(z->argv != NULL);
+
+#ifdef	NOTYET
+    /* Add files from --files manifest(s). */
+    if (z->manifests != NULL)
+        xx = rpmzLoadManifests(z);
+#endif
+
+if (_debug)
+argvPrint("input args", z->argv, NULL);
 
     ac = argvCount(z->argv);
     /* if no command line arguments and stdout is a terminal, show help */
@@ -2054,7 +1911,7 @@ rc = 1;
     }
 
     if (ac == 0) {
-	if (z->mode == RPMZ_MODE_TEST) {
+	if (zq->mode == RPMZ_MODE_TEST) {
 	    if (isatty(fileno(stdin))) {
 		    fprintf(stderr,"*ERROR: Won't read compressed data from terminal.  Aborting!\n");
 		    fprintf(stderr,"For help type: %s -h\n", argv[0]);
@@ -2063,7 +1920,7 @@ rc = 1;
 	    }
 	    // expecting data from stdin
 	    z->argv[ac++] = stdinFile;
-	} else if (F_ISSET(z->flags, STDOUT)) {
+	} else if (F_ISSET(zq->flags, STDOUT)) {
 	    if (isatty(fileno(stdout))) {
 		    fprintf(stderr,"*ERROR: Won't write compressed data to terminal.  Aborting!\n");
 		    fprintf(stderr,"For help type: %s -h\n", argv[0]);
@@ -2072,7 +1929,7 @@ rc = 1;
 	    }
 	    // expecting data from stdin
 	    z->argv[ac++] = stdinFile;
-	} else if (z->mode == RPMZ_MODE_DECOMPRESS && (argc == 2)) {
+	} else if (zq->mode == RPMZ_MODE_DECOMPRESS && (argc == 2)) {
 	    if (isatty(fileno(stdin))) {
 		    fprintf(stderr,"*ERROR: Won't read compressed data from terminal.  Aborting!\n");
 		    fprintf(stderr,"For help type: %s -h\n", argv[0]);
@@ -2080,8 +1937,8 @@ rc = 1;
 		    goto exit;
 	    }
 	    // expecting data from stdin via TAR
-	    z->flags |= RPMZ_FLAGS_STDOUT;
-	    z->flags |= RPMZ_FLAGS_KEEP;
+	    zq->flags |= RPMZ_FLAGS_STDOUT;
+	    zq->flags |= RPMZ_FLAGS_KEEP;
 	    z->argv[ac++] = stdinFile;
 	} else {
 	    poptPrintUsage(optCon, stderr, 0);
@@ -2089,19 +1946,17 @@ rc = 1;
 	}
     }
 
-    if (F_ISSET(z->flags, STDOUT))
-	z->flags |= RPMZ_FLAGS_KEEP;
+    if (F_ISSET(zq->flags, STDOUT))
+	zq->flags |= RPMZ_FLAGS_KEEP;
 
-    z->zq = rpmzqNew(zq, zlog, 0);
-    zq->flags = z->flags;
-    zq->level = z->level;
+    z->zq = rpmzqNew(zq, zlog, 0);	/* XXX eliminate */
 
     signals_init();
 
     if (zq->verbosity > 0) {
-	if (z->mode != RPMZ_MODE_TEST) {
-	    if (z->mode != RPMZ_MODE_DECOMPRESS) {
-		fprintf(stderr, " BWT Block Size: %d00k\n", z->level);
+	if (zq->mode != RPMZ_MODE_TEST) {
+	    if (zq->mode != RPMZ_MODE_DECOMPRESS) {
+		fprintf(stderr, " BWT Block Size: %d00k\n", zq->level);
 		if (zq->blocksize < 100000)
 		    fprintf(stderr, "File Block Size: %d bytes\n", zq->blocksize);
 		else

@@ -106,6 +106,63 @@ static void _rpmzqArgCallback(poptContext con,
     }
 }
 
+#ifdef	REFERENCE
+Usage: pigz [options] [files ...]
+  will compress files in place, adding the suffix '.gz'.  If no files are
+  specified, stdin will be compressed to stdout.  pigz does what gzip does,
+  but spreads the work over multiple processors and cores when compressing.
+
+Options:
+  -0 to -9, --fast, --best   Compression levels, --fast is -1, --best is -9
+  -b, --blocksize mmm  Set compression block size to mmmK (default 128K)
+  -p, --processes n    Allow up to n compression threads (default 8)
+  -i, --independent    Compress blocks independently for damage recovery
+  -R, --rsyncable      Input-determined block locations for rsync
+  -d, --decompress     Decompress the compressed input
+  -t, --test           Test the integrity of the compressed input
+  -l, --list           List the contents of the compressed input
+  -f, --force          Force overwrite, compress .gz, links, and to terminal
+  -r, --recursive      Process the contents of all subdirectories
+  -s, --suffix .sss    Use suffix .sss instead of .gz (for compression)
+  -z, --zlib           Compress to zlib (.zz) instead of gzip format
+  -K, --zip            Compress to PKWare zip (.zip) single entry format
+  -k, --keep           Do not delete original file after processing
+  -c, --stdout         Write all processed output to stdout (wont delete)
+  -N, --name           Store/restore file name and mod time in/from header
+  -n, --no-name        Do not store or restore file name in/from header
+  -T, --no-time        Do not store or restore mod time in/from header
+  -q, --quiet          Print no messages, even on error
+  -v, --verbose        Provide more verbose output
+#endif
+
+#ifdef	REFERENCE
+Parallel BZIP2 v1.0.5 - by: Jeff Gilchrist http://compression.ca
+[Jan. 08, 2009]             (uses libbzip2 by Julian Seward)
+
+Usage: ./pbzip2 [-1 .. -9] [-b#cdfhklp#qrtVz] <filename> <filename2> <filenameN>
+ -b#      : where # is the file block size in 100k (default 9 = 900k)
+ -c       : output to standard out (stdout)
+ -d       : decompress file
+ -f       : force, overwrite existing output file
+ -h       : print this help message
+ -k       : keep input file, dont delete
+ -l       : load average determines max number processors to use
+ -p#      : where # is the number of processors (default 2)
+ -q       : quiet mode (default)
+ -r       : read entire input file into RAM and split between processors
+ -t       : test compressed file integrity
+ -v       : verbose mode
+ -V       : display version info for pbzip2 then exit
+ -z       : compress file (default)
+ -1 .. -9 : set BWT block size to 100k .. 900k (default 900k)
+
+Example: pbzip2 -b15vk myfile.tar
+Example: pbzip2 -p4 -r -5 myfile.tar second*.txt
+Example: tar cf myfile.tar.bz2 --use-compress-prog=pbzip2 dir_to_compress/
+Example: pbzip2 -d myfile.tar.bz2
+
+#endif
+
 /*@unchecked@*/ /*@observer@*/
 struct poptOption rpmzqOptionsPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
