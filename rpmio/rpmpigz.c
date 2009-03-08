@@ -829,6 +829,7 @@ static void compress_thread(void *_z)
     /* keep looking for work */
     for (;;) {
 	/* get a job (like I tell my son) */
+#ifndef	DYING	/* XXX something buggy here */
 	yarnPossess(zq->compress_have);
 	yarnWaitFor(zq->compress_have, NOT_TO_BE, 0);
 	job = zq->compress_head;
@@ -841,6 +842,11 @@ assert(job != NULL);
 	if (job->next == NULL)
 	    zq->compress_tail = &zq->compress_head;
 	yarnTwist(zq->compress_have, BY, -1);
+#else
+	job = rpmzqDelCJob(zq);
+	if (job == NULL)
+	    break;
+#endif
 
 	/* got a job -- initialize and set the compression level (note that if
 	 * deflateParams() is called immediately after deflateReset(), there is
@@ -895,12 +901,15 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 /*@=noeffect@*/
 assert(strm.avail_in == 0 && strm.avail_out != 0);
 	job->out->len = strm.next_out - (unsigned char *)(job->out->buf);
+#ifndef	DYING	/* XXX eliminate zq->omode first */
 	Trace((zlog, "-- compressed #%ld%s", job->seq, job->more ? "" : " (last)"));
+#endif
 
 	/* reserve input buffer until check value has been calculated */
 	rpmzqUseSpace(job->in);
 
 	/* insert write job in list in sorted order, alert write thread */
+#ifndef	DYING	/* XXX eliminate zq->omode first */
 	yarnPossess(zq->write_first);
 	prior = &zq->write_head;
 	while ((here = *prior) != NULL) {
@@ -911,6 +920,9 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 	job->next = here;
 	*prior = job;
 	yarnTwist(zq->write_first, TO, zq->write_head->seq);
+#else
+	rpmzqAddWJob(zq, job);
+#endif
 
 	/* calculate the check value in parallel with writing, alert the write
 	 * thread that the calculation is complete, and drop this usage of the
@@ -975,14 +987,8 @@ static void write_thread(void *_z)
     seq = 0;
     do {
 	/* get next write job in order */
-	yarnPossess(zq->write_first);
-	yarnWaitFor(zq->write_first, TO_BE, seq);
-	job = zq->write_head;
+	job = rpmzqDelWJob(zq, seq);
 assert(job != NULL);
-/*@-dependenttrans@*/
-	zq->write_head = job->next;
-/*@=dependenttrans@*/
-	yarnTwist(zq->write_first, TO, zq->write_head == NULL ? -1 : zq->write_head->seq);
 
 	/* update lengths, save uncompressed length for COMB */
 	more = job->more;
@@ -1005,10 +1011,7 @@ assert(job != NULL);
 	check = COMB(check, job->check, len);
 
 	/* free the job */
-	job->calc = yarnFreeLock(job->calc);
-/*@-compdestroy@*/
-	job = _free(job);
-/*@=compdestroy@*/
+	job = rpmzqFreeJob(job);
 
 	/* get the next buffer in sequence */
 	seq++;
@@ -1018,12 +1021,7 @@ assert(job != NULL);
     rpmzPutTrailer(z, ulen, clen, check, head);
 
     /* verify no more jobs, prepare for next use */
-    yarnPossess(zq->compress_have);
-assert(zq->compress_head == NULL && yarnPeekLock(zq->compress_have) == 0);
-    yarnRelease(zq->compress_have);
-    yarnPossess(zq->write_first);
-assert(zq->write_head == NULL);
-    yarnTwist(zq->write_first, TO, -1);
+    rpmzqVerify(zq);
 
 /*@-globstate@*/	/* XXX zq->write_head is reachable */
     return;
@@ -1063,12 +1061,10 @@ static void rpmzParallelCompress(rpmz z)
     next->len = rpmzRead(z, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
-	job = xmalloc(sizeof(*job));
-	job->seq = seq;
+	job = rpmzqNewJob(seq);
 /*@-mustfreeonly@*/
 	job->in = next;
 	job->out = F_ISSET(zq->flags, INDEPENDENT) ? prev : NULL;  /* dictionary for compression */
-	job->calc = yarnNewLock(0);
 /*@=mustfreeonly@*/
 
 	/* check for end of file, reading next chunk if not sure */
@@ -1097,11 +1093,7 @@ static void rpmzParallelCompress(rpmz z)
 	}
 
 	/* put job at end of compress list, let all the compressors know */
-	yarnPossess(zq->compress_have);
-	job->next = NULL;
-	*zq->compress_tail = job;
-	zq->compress_tail = &(job->next);
-	yarnTwist(zq->compress_have, BY, 1);
+	rpmzqAddCJob(zq, job);
 
 	/* do until end of input */
     } while (more);
