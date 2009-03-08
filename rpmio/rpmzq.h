@@ -233,6 +233,7 @@ struct rpmzQueue_s {
     int olimit;
 #endif
     struct rpmzh_s _zh;
+    struct rpmzSpace_s _job_out;
     struct rpmzSpace_s _job_in;
     struct rpmzJob_s _job;
 

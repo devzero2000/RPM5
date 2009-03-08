@@ -113,8 +113,7 @@ struct rpmz_s {
 #define OUT_BUF_ALLOCATED 32768U /*!< must be at least 32K for inflateBack() window */
     unsigned char out_buf[OUT_BUF_ALLOCATED];
     /* output data for parallel write and check */
-    unsigned char out_copy[OUT_BUF_ALLOCATED];
-    size_t out_len;
+    unsigned char _out_copy[OUT_BUF_ALLOCATED];
 
 /*@only@*/ /*@null@*/
     yarnLock outb_write_more;	/*!< outb write threads states */
@@ -129,14 +128,6 @@ struct rpmz_s {
     unsigned char _suffix[65536];	/*!< one-character LZW suffix */
     unsigned char _match[65280 + 2];	/*!< buffer for reversed match */
 
-/*@observer@*/ /*@null@*/
-    const char * name;		/*!< name for gzip header */
-    time_t mtime;		/*!< time stamp for gzip header */
-
-/* saved gzip/zip header data for decompression, testing, and listing */
-    time_t stamp;		/*!< time stamp from gzip header */
-/*@only@*/ /*@null@*/
-    char * hname;		/*!< name from header (allocated) */
     unsigned long zip_crc;	/*!< header crc */
     unsigned long zip_clen;	/*!< header compressed length */
     unsigned long zip_ulen;	/*!< header uncompressed length */

@@ -1359,7 +1359,8 @@ static void in_init(rpmz z)
     job->more = 1;	/* XXX job->more to eliminate z->in_eof/z->in_short */
     job->in->len = 0;
     job->in->buf = NULL;
-    job->out = NULL;
+    job->out->len = 0;
+    job->out->buf = NULL;
     job->check = 0;
     job->calc = NULL;
     job->next = NULL;
@@ -1898,18 +1899,21 @@ static void outb_write(void *_z)
     rpmz z = _z;
     rpmzQueue zq = z->zq;
     rpmzLog zlog = zq->zlog;
-    size_t len;
+    rpmzJob job = &zq->_job;
+    size_t nwrote;
 
+assert(job->out != NULL);
     Trace((zlog, "-- launched decompress write thread"));
     do {
 	yarnPossess(z->outb_write_more);
 	yarnWaitFor(z->outb_write_more, TO_BE, 1);
-	len = z->out_len;
-	if (len && zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(zq, z->out_copy, len);
-	Trace((zlog, "-- decompress wrote %lu bytes", len));
+assert(job->out->buf != NULL);
+	nwrote = job->out->len;
+	if (nwrote && zq->mode == RPMZ_MODE_DECOMPRESS)
+	    rpmzWrite(zq, job->out->buf, job->out->len);
+	Trace((zlog, "-- decompress wrote %lu bytes", nwrote));
 	yarnTwist(z->outb_write_more, TO, 0);
-    } while (len);
+    } while (nwrote);
     Trace((zlog, "-- exited decompress write thread"));
 }
 
@@ -1922,17 +1926,19 @@ static void outb_check(void *_z)
     rpmzQueue zq = z->zq;
     rpmzLog zlog = zq->zlog;
     rpmzJob job = &zq->_job;
-    size_t len;
+    size_t nchecked;
 
+assert(job->out != NULL);
     Trace((zlog, "-- launched decompress check thread"));
     do {
 	yarnPossess(z->outb_check_more);
 	yarnWaitFor(z->outb_check_more, TO_BE, 1);
-	len = z->out_len;
-	job->check = CHECK(job->check, z->out_copy, len);
-	Trace((zlog, "-- decompress checked %lu bytes", len));
+assert(job->out->buf != NULL);
+	nchecked = job->out->len;
+	job->check = CHECK(job->check, job->out->buf, nchecked);
+	Trace((zlog, "-- decompress checked %lu bytes", nchecked));
 	yarnTwist(z->outb_check_more, TO, 0);
-    } while (len);
+    } while (nchecked);
     Trace((zlog, "-- exited decompress check thread"));
 }
 #endif	/* _PIGZNOTHREAD */
@@ -1954,6 +1960,7 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
 /*@only@*/ /*@relnull@*/
     static yarnThread ch;
 
+assert(job->out != NULL);
     if (zq->threads > 1) {
 	/* if first time, initialize state and launch threads */
 	if (z->outb_write_more == NULL) {
@@ -1972,10 +1979,11 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
 	yarnWaitFor(z->outb_write_more, TO_BE, 0);
 
 	/* copy the output and alert the worker bees */
-	z->out_len = len;
+	job->out->buf = z->_out_copy;
+	job->out->len = len;
 	z->out_tot += len;
 /*@-mayaliasunique@*/
-	memcpy(z->out_copy, buf, len);
+	memcpy(job->out->buf, buf, job->out->len);
 /*@=mayaliasunique@*/
 	yarnTwist(z->outb_write_more, TO, 1);
 	yarnTwist(z->outb_check_more, TO, 1);
@@ -1992,17 +2000,15 @@ static int outb(void *_z, /*@null@*/ unsigned char *buf, unsigned len)
 	/* return for more decompression while last buffer is being written
 	 * and having its check value calculated -- we wait for those to finish
 	 * the next time this function is called */
-	return 0;
-    }
+    } else
 #endif
-
-    /* if just one process or no threads, then do it without threads */
-    if (len) {
+    if (len) {		/* if no threads, then do it without threads */
 	if (zq->mode == RPMZ_MODE_DECOMPRESS)
 	    rpmzWrite(zq, buf, len);
 	job->check = CHECK(job->check, buf, len);
 	z->out_tot += len;
     }
+
     return 0;
 }
 
@@ -2862,6 +2868,7 @@ int main(int argc, char **argv)
     __progname = "rpmpigz";
 /*@=observertrans =readonlytrans @*/
     zq->_job.in = &zq->_job_in;
+    zq->_job.out = &zq->_job_out;
     z->zq = zq;		/* XXX initialize rpmzq */
 
     /* XXX sick hack to initialize the popt callback. */
