@@ -1291,12 +1291,13 @@ static void load_read_thread(void *_zq)
     do {
 	yarnPossess(zq->load_state);
 	yarnWaitFor(zq->load_state, TO_BE, 1);
-assert(zq->_in_pend == 0);
-assert(zq->_in_next == NULL);
-	zq->_in_pend = zq->_in_buf_allocated;
-	zq->_in_next = zq->_in_which ? zq->_in_buf : zq->_in_buf2;
-	nread = rpmzRead(zq, zq->_in_next, zq->_in_pend);
-	zq->_in_pend = nread;
+
+assert(zq->_in_pend == NULL);
+	zq->_in_pend = xcalloc(1, sizeof(*zq->_in_pend));
+	zq->_in_pend->len = zq->_in_buf_allocated;
+	zq->_in_pend->buf = xmalloc(zq->_in_pend->len);
+	nread = rpmzRead(zq, zq->_in_pend->buf, zq->_in_pend->len);
+	zq->_in_pend->len = nread;
 
 	Trace((zlog, "-- decompress read thread read %lu bytes", nread));
 	yarnTwist(zq->load_state, TO, 0);
@@ -1317,6 +1318,8 @@ static size_t load(rpmzQueue zq)
 {
     rpmzJob job = &zq->_job;
 
+if (_debug)
+fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u] -> %p[%u]\n", __FUNCTION__, zq, job, (unsigned)job->seq, job->in->buf, (unsigned)job->in->len, job->out->buf, (unsigned)job->out->len);
     /* if already detected end of file, do nothing */
     if (job->more < 0) {
 	job->more = 0;
@@ -1347,10 +1350,12 @@ assert(job->in->len == 0);
 	yarnRelease(zq->load_state);
 
 	/* set up input buffer with the data just read */
-	job->in->len = zq->_in_pend;
-	job->in->buf = zq->_in_next;
-	zq->_in_pend = 0;
-	zq->_in_next = NULL;
+	zq->_in_prev = _free(zq->_in_prev);
+	if (job->in != &zq->_job_in)
+	    job->in = _free(job->in);
+	job->in = zq->_in_pend;
+	zq->_in_prev = job->in->buf;
+	zq->_in_pend = NULL;
 
 	/* if not at end of file, alert read thread to load next buffer,
 	 * alternate between in_buf and in_buf2 */
@@ -1371,16 +1376,20 @@ assert(job->in->len == 0);
 #endif
     {	size_t nread;
 	/* don't use threads -- simply read a buffer into zq->_in_buf */
-assert(zq->_in_pend == 0);
-assert(zq->_in_next == NULL);
-	zq->_in_pend = zq->_in_buf_allocated;
-	zq->_in_next = zq->_in_buf;
-	nread = rpmzRead(zq, zq->_in_next, zq->_in_pend);
-	zq->_in_pend = nread;
-	job->in->len = zq->_in_pend;
-	job->in->buf = zq->_in_next;
-	zq->_in_pend = 0;
-	zq->_in_next = NULL;
+assert(zq->_in_pend == NULL);
+	zq->_in_pend = xcalloc(1, sizeof(*zq->_in_pend));
+	zq->_in_pend->len = zq->_in_buf_allocated;
+	zq->_in_pend->buf = xmalloc(zq->_in_pend->len);
+
+	nread = rpmzRead(zq, zq->_in_pend->buf, zq->_in_pend->len);
+	zq->_in_pend->len = nread;
+
+	zq->_in_prev = _free(zq->_in_prev);
+	if (job->in != &zq->_job_in)
+	    job->in = _free(job->in);
+	job->in = zq->_in_pend;
+	zq->_in_prev = job->in->buf;
+	zq->_in_pend = NULL;
     }
 
     /* note end of file */
@@ -1931,6 +1940,8 @@ static unsigned inb(void *_zq, unsigned char **buf)
 {
     rpmzQueue zq = _zq;
     rpmzJob job = &zq->_job;
+if (_debug)
+fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u] -> %p[%u]\n", __FUNCTION__, zq, job, (unsigned)job->seq, job->in->buf, (unsigned)job->in->len, job->out->buf, (unsigned)job->out->len);
     load(zq);
     *buf = job->in->buf;
     return job->in->len;
@@ -2074,6 +2085,9 @@ static void rpmzInflateCheck(rpmzQueue zq)
     unsigned long tmp4;
     off_t clen;
 
+if (_debug)
+fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u] -> %p[%u]\n", __FUNCTION__, zq, job, (unsigned)job->seq, job->in->buf, (unsigned)job->in->len, job->out->buf, (unsigned)job->out->len);
+
     cont = 0;
     do {
 	/* header already read -- set up for decompression */
@@ -2180,6 +2194,10 @@ assert(0);
     } while ((zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB) && (ret = rpmzGetHeader(zq, 0)) == 8);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
 	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
+
+    zq->_in_prev = _free(zq->_in_prev);
+    zq->_in_pend = _free(zq->_in_pend);
+    job->in = _free(job->in);
 }
 /*@=nullstate@*/
 
@@ -2369,6 +2387,11 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	 * left provide the first 0..7 bits of the next code, end is the last
 	 * valid table entry */
     }
+
+    zq->_in_prev = _free(zq->_in_prev);
+    zq->_in_pend = _free(zq->_in_pend);
+    job->in = _free(job->in);
+
 }
 
 /* --- file processing --- */

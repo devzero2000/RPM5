@@ -258,12 +258,10 @@ struct rpmzQueue_s {
 
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
-    unsigned char * _in_next;	/*!< next buffer waiting to use */
-    size_t _in_pend;		/*!< number of bytes waiting to use */
+    unsigned char * _in_prev;	/*!< prev buffer waiting to free */
+    rpmzSpace _in_pend;		/*!< pending space to load. */
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
-    unsigned char _in_buf[IN_BUF_ALLOCATED];	/*!< input buffer */
-    unsigned char _in_buf2[IN_BUF_ALLOCATED];	/*! second buffer for parallel reads */
 
     /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
     size_t _out_buf_allocated;
