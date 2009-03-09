@@ -358,7 +358,7 @@ static int bail(const char *why, const char *what)
     rpmzQueue zq = _rpmz->zq;
 
 /*@-globs@*/
-    if (zq->ofdno != -1 && zq->ofn != NULL)
+    if (zq->ofdno > STDOUT_FILENO && zq->ofn != NULL)
 	Unlink(zq->ofn);
 /*@=globs@*/
     if (zq->verbosity > 0)
@@ -366,6 +366,132 @@ static int bail(const char *why, const char *what)
     exit(EXIT_FAILURE);
 /*@notreached@*/
     return 0;
+}
+
+/*==============================================================*/
+/* sliding dictionary size for deflate */
+#define _PIGZDICT 32768U
+
+/* largest power of 2 that fits in an unsigned int -- used to limit requests
+   to zlib functions that use unsigned int lengths */
+#define _PIGZMAX ((((unsigned)0 - 1) >> 1) + 1)
+
+typedef /*@abstract@*/ struct rpmgz_s * rpmgz;
+
+struct rpmgz_s {
+    z_stream strm;
+    int strategy;
+    int level;
+    int omode;			/*!< open mode: O_RDONLY | O_WRONLY */
+};
+
+/*@only@*/ /*@null@*/
+static rpmgz rpmgzFini(/*@only@*/ rpmgz gz)
+        /*@modifies gz @*/
+{
+    gz = _free(gz);
+    return NULL;
+}
+
+/*@only@*/
+static rpmgz rpmgzInit(int level, mode_t omode)
+        /*@*/
+{
+    rpmgz gz = xcalloc(1, sizeof(*gz));
+
+    gz->strategy = Z_DEFAULT_STRATEGY;
+    gz->level = (level >= 1 && level <= 9) ? level : Z_DEFAULT_COMPRESSION;
+    gz->omode = omode;
+    return gz;
+}
+
+/*@only@*/
+static rpmgz rpmgzCompressInit(int level, mode_t omode)
+        /*@modifies gz @*/
+{
+    rpmgz gz = rpmgzInit(level, omode);
+    z_stream * sp = &gz->strm;
+
+    sp->zfree = Z_NULL;
+    sp->zalloc = Z_NULL;
+    sp->opaque = Z_NULL;
+    if (deflateInit2(sp, gz->level, Z_DEFLATED, -15, 8, gz->strategy) != Z_OK)
+	bail("not enough memory", "deflateInit2");
+    return gz;
+}
+
+static void rpmgzCompressReset(rpmgz gz, rpmzJob job)
+        /*@modifies gz, job @*/
+{
+    z_stream * sp = &gz->strm;
+
+    /* got a job -- initialize and set the compression level (note that if
+     * deflateParams() is called immediately after deflateReset(), there is
+     * no need to initialize the input/output for the stream) */
+/*@-noeffect@*/
+    (void)deflateReset(sp);
+    (void)deflateParams(sp, gz->level, gz->strategy);
+/*@=noeffect@*/
+
+    /* set dictionary if provided, release that input buffer (only provided
+     * if F_ISSET(zq->flags, INDEPENDENT) is true and if this is not the
+     * first work unit) */
+    if (job->out != NULL) {
+	unsigned char * buf = job->out->buf;
+assert(job->out->len >= _PIGZDICT);
+	buf += job->out->len;
+	buf -= _PIGZDICT;
+/*@-noeffect@*/
+	deflateSetDictionary(sp, buf, _PIGZDICT);
+/*@=noeffect@*/
+	rpmzqDropSpace(job->out);
+	job->out = NULL;
+    }
+}
+
+static void rpmgzCompress(rpmgz gz, rpmzJob job)
+        /*@modifies gz, job @*/
+{
+    z_stream * sp = &gz->strm;
+    unsigned char * out_buf = job->out->buf;
+    size_t len;
+
+    sp->next_in = job->in->buf;
+    sp->next_out = job->out->buf;
+
+    /* run _PIGZMAX-sized amounts of input through deflate -- this loop is
+     * needed for those cases where the integer type is smaller than the
+     * size_t type, or when len is close to the limit of the size_t type */
+    for (len = job->in->len; len > _PIGZMAX; len -= _PIGZMAX) {
+	sp->avail_in = _PIGZMAX;
+	sp->avail_out = (unsigned)-1;
+/*@-noeffect@*/
+	(void)deflate(sp, Z_NO_FLUSH);
+/*@=noeffect@*/
+assert(sp->avail_in == 0 && sp->avail_out != 0);
+    }
+
+    /* run the last piece through deflate -- terminate with a sync marker,
+     * or finish deflate stream if this is the last block */
+    sp->avail_in = (unsigned)len;
+    sp->avail_out = (unsigned)-1;
+/*@-noeffect@*/
+    (void)deflate(sp, job->more ? Z_SYNC_FLUSH :  Z_FINISH);
+/*@=noeffect@*/
+assert(sp->avail_in == 0 && sp->avail_out != 0);
+    job->out->len = sp->next_out - out_buf;
+}
+
+/*@only@*/ /*@null@*/
+static rpmgz rpmgzCompressFini(/*@only@*/ rpmgz gz)
+        /*@modifies gz @*/
+{
+    z_stream * sp = &gz->strm;
+
+/*@-noeffect@*/
+    deflateEnd(sp);
+/*@=noeffect@*/
+    return rpmgzFini(gz);
 }
 
 /*==============================================================*/
@@ -411,13 +537,6 @@ static void rpmzWrite(rpmzQueue zq, unsigned char *buf, size_t len)
 	len -= ret;
     }
 }
-
-/* sliding dictionary size for deflate */
-#define _PIGZDICT 32768U
-
-/* largest power of 2 that fits in an unsigned int -- used to limit requests
-   to zlib functions that use unsigned int lengths */
-#define _PIGZMAX ((((unsigned)0 - 1) >> 1) + 1)
 
 /* convert Unix time to MS-DOS date and time, assuming current timezone
    (you got a better idea?) */
@@ -807,15 +926,10 @@ static void compress_thread(void *_z)
     unsigned long check;            /* check value of input */
     unsigned char *next;            /* pointer for check value data */
     size_t len;                     /* remaining bytes to compress/check */
-    z_stream strm;                  /* deflate stream */
+    rpmgz gz;                       /* deflate stream */
 
     /* initialize the deflate stream for this thread */
-    strm.zfree = Z_NULL;
-    strm.zalloc = Z_NULL;
-    strm.opaque = Z_NULL;
-    if (deflateInit2(&strm, zq->level, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY) !=
-	    Z_OK)
-	bail("not enough memory", "");
+    gz = rpmgzCompressInit(zq->level, O_WRONLY);
 
     /* keep looking for work */
     for (;;) {
@@ -839,26 +953,9 @@ assert(job != NULL);
 	    break;
 #endif
 
-	/* got a job -- initialize and set the compression level (note that if
-	 * deflateParams() is called immediately after deflateReset(), there is
-	 * no need to initialize the input/output for the stream) */
+	/* got a job -- initialize and set the compression level. */
 	Trace((zlog, "-- compressing #%ld", job->seq));
-/*@-noeffect@*/
-	(void)deflateReset(&strm);
-	(void)deflateParams(&strm, zq->level, Z_DEFAULT_STRATEGY);
-/*@=noeffect@*/
-
-	/* set dictionary if provided, release that input buffer (only provided
-	 * if F_ISSET(zq->flags, INDEPENDENT) is true and if this is not the first work unit) -- the
-	 * amount of data in the buffer is assured to be >= _PIGZDICT */
-	if (job->out != NULL) {
-	    len = job->out->len;
-/*@-noeffect@*/
-	    deflateSetDictionary(&strm,
-		(unsigned char *)(job->out->buf) + (len - _PIGZDICT), _PIGZDICT);
-/*@=noeffect@*/
-	    rpmzqDropSpace(job->out);
-	}
+	rpmgzCompressReset(gz, job);
 
 	/* set up input and output (the output size is assured to be big enough
 	 * for the worst case expansion of the input buffer size, plus five
@@ -866,32 +963,10 @@ assert(job != NULL);
 /*@-mustfreeonly@*/
 	job->out = rpmzqNewSpace(zq->out_pool);
 /*@=mustfreeonly@*/
-	strm.next_in = job->in->buf;
-	strm.next_out = job->out->buf;
 
-	/* run _PIGZMAX-sized amounts of input through deflate -- this loop is
-	 * needed for those cases where the integer type is smaller than the
-	 * size_t type, or when len is close to the limit of the size_t type */
-	len = job->in->len;
-	while (len > _PIGZMAX) {
-	    strm.avail_in = _PIGZMAX;
-	    strm.avail_out = (unsigned)-1;
-/*@-noeffect@*/
-	    (void)deflate(&strm, Z_NO_FLUSH);
-/*@=noeffect@*/
-assert(strm.avail_in == 0 && strm.avail_out != 0);
-	    len -= _PIGZMAX;
-	}
+	/* Compress the job. */
+	rpmgzCompress(gz, job);
 
-	/* run the last piece through deflate -- terminate with a sync marker,
-	 * or finish deflate stream if this is the last block */
-	strm.avail_in = (unsigned)len;
-	strm.avail_out = (unsigned)-1;
-/*@-noeffect@*/
-	(void)deflate(&strm, job->more ? Z_SYNC_FLUSH :  Z_FINISH);
-/*@=noeffect@*/
-assert(strm.avail_in == 0 && strm.avail_out != 0);
-	job->out->len = strm.next_out - (unsigned char *)(job->out->buf);
 #ifndef	DYING	/* XXX eliminate zq->omode first */
 	Trace((zlog, "-- compressed #%ld%s", job->seq, job->more ? "" : " (last)"));
 #endif
@@ -939,9 +1014,9 @@ assert(strm.avail_in == 0 && strm.avail_out != 0);
 
     /* found job with seq == -1 -- free deflate memory and return to join */
     yarnRelease(zq->compress_have);
-/*@-noeffect@*/
-    deflateEnd(&strm);
-/*@=noeffect@*/
+
+    gz = rpmgzCompressFini(gz);
+
 /*@-mustfreeonly@*/	/* XXX zq->compress_head not released */
     return;
 /*@=mustfreeonly@*/
@@ -2026,7 +2101,6 @@ static void rpmzInflateCheck(rpmz z)
     int cont;
     unsigned long check;
     unsigned long len;
-    z_stream strm;
     unsigned tmp2;
     unsigned long tmp4;
     off_t clen;
@@ -2037,6 +2111,8 @@ static void rpmzInflateCheck(rpmz z)
 	zq->in_tot = job->in->len;               /* track compressed data length */
 	zq->out_tot = 0;
 	job->check = CHECK(0L, Z_NULL, 0);
+
+    {	z_stream strm;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.opaque = Z_NULL;
@@ -2059,6 +2135,8 @@ static void rpmzInflateCheck(rpmz z)
 /*@-noeffect@*/
 	inflateBackEnd(&strm);
 /*@=noeffect@*/
+    }
+
 	outb(z, NULL, 0);        /* finish off final write and check */
 
 	/* compute compressed data length */
@@ -2407,8 +2485,7 @@ static void rpmzProcess(rpmz z, /*@null@*/ char *path)
 	zh->mtime = F_ISSET(zq->flags, HTIME) ?
 		(fstat(zq->ifdno, st) ? time(NULL) : st->st_mtime) : 0;
 	len = 0;
-    }
-    else {
+    } else {
 	/* set input file name (already set if recursed here) */
 	if (path != z->_ifn) {
 /*@-mayaliasunique@*/
@@ -2518,15 +2595,12 @@ assert(zh->hname == NULL);
 	in_init(z);
 	method = rpmzGetHeader(z, 1);
 	if (method != 8 && method != 256) {
-	    zh->hname = _free(zh->hname);
-	    if (zq->ifdno != STDIN_FILENO)
-		close(zq->ifdno);
 	    if (method != -1 && zq->verbosity > 0)
 		fprintf(stderr,
 		    method < 0 ? "%s is not compressed -- skipping\n" :
 			"%s has unknown compression method -- skipping\n",
 			z->_ifn);
-	    return;
+	    goto exit;
 	}
 
 	/* if requested, test input file (possibly a special list) */
@@ -2540,20 +2614,14 @@ assert(zh->hname == NULL);
 		    rpmzShowInfo(z, method, 0, zq->out_tot, 0);
 		}
 	    }
-	    zh->hname = _free(zh->hname);
-	    if (zq->ifdno != STDIN_FILENO)
-		close(zq->ifdno);
-	    return;
+	    goto exit;
 	}
     }
 
     /* if requested, just list information about input file */
     if (F_ISSET(zq->flags, LIST)) {
 	rpmzListInfo(z);
-	zh->hname = _free(zh->hname);
-	if (zq->ifdno != STDIN_FILENO)
-	    close(zq->ifdno);
-	return;
+	goto exit;
     }
 
     /* create output file out, descriptor zq->ofdno */
@@ -2566,8 +2634,7 @@ assert(zh->hname == NULL);
 	if (zq->mode == RPMZ_MODE_COMPRESS && !F_ISSET(zq->flags, TTY) && isatty(zq->ofdno))
 	    bail("trying to write compressed data to a terminal",
 		" (use -f to force)");
-    }
-    else {
+    } else {
 	char *to;
 
 	/* use header name for output when decompressing with -N */
@@ -2608,11 +2675,7 @@ assert(zh->hname == NULL);
 	if (zq->ofdno < 0 && errno == EEXIST) {
 	    if (zq->verbosity > 0)
 		fprintf(stderr, "%s exists -- skipping\n", zq->ofn);
-	    zq->ofn = _free(zq->ofn);
-	    zh->hname = _free(zh->hname);
-	    if (zq->ifdno != STDIN_FILENO)
-		close(zq->ifdno);
-	    return;
+	    goto exit;
 	}
 
 	/* if some other error, give up */
@@ -2643,8 +2706,6 @@ assert(zh->hname == NULL);
     }
 
     /* finish up, copy attributes, set times, delete original */
-    if (zq->ifdno != STDIN_FILENO)
-	close(zq->ifdno);
     if (zq->ofdno != STDOUT_FILENO) {
 	if (close(zq->ofdno))
 	    bail("write error on ", zq->ofn);
@@ -2657,7 +2718,16 @@ assert(zh->hname == NULL);
 	if (zq->mode != RPMZ_MODE_COMPRESS && F_ISSET(zq->flags, HTIME) && zh->stamp)
 	    touch(zq->ofn, zh->stamp);
     }
+
+exit:
+    zh->hname = _free(zh->hname);
+    if (zq->ifdno > STDIN_FILENO) {
+	(void) close(zq->ifdno);
+	zq->ifdno = -1;
+    }
+    zq->ofdno = -1;
     zq->ofn = _free(zq->ofn);
+    return;
 }
 
 /*==============================================================*/
