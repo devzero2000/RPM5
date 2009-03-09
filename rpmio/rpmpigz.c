@@ -304,10 +304,13 @@ struct rpmz_s __rpmz = {
 /*@=fullinitblock@*/
 
 /* set option defaults */
+/*@-mustmod@*/
 static void rpmzDefaults(rpmzQueue zq)
 	/*@modifies zq @*/
 {
+/*@-observertrans -readonlytrans@*/
     zq->suffix = ".gz";               /* compressed file suffix */
+/*@=observertrans =readonlytrans@*/
     zq->ifn = _rpmz->_ifn;
     zq->ifdno = -1;
     zq->ofn = NULL;
@@ -333,6 +336,7 @@ static void rpmzDefaults(rpmzQueue zq)
     zq->flags &= ~RPMZ_FLAGS_RECURSE;/* don't go into directories */
     zq->format = RPMZ_FORMAT_GZIP;   /* use gzip format */
 }
+/*@=mustmod@*/
 
 /*@unchecked@*/
 rpmz _rpmz = &__rpmz;
@@ -375,6 +379,7 @@ static int bail(const char *why, const char *what)
 #define _PIGZMAX ((((unsigned)0 - 1) >> 1) + 1)
 
 typedef /*@abstract@*/ struct rpmgz_s * rpmgz;
+/*@access rpmgz @*/
 
 struct rpmgz_s {
     z_stream strm;
@@ -385,15 +390,17 @@ struct rpmgz_s {
 
 /*@only@*/ /*@null@*/
 static rpmgz rpmgzFini(/*@only@*/ rpmgz gz)
-        /*@modifies gz @*/
+	/*@modifies gz @*/
 {
+/*@-compdestroy@*/
     gz = _free(gz);
+/*@=compdestroy@*/
     return NULL;
 }
 
 /*@only@*/
 static rpmgz rpmgzInit(int level, mode_t omode)
-        /*@*/
+	/*@*/
 {
     rpmgz gz = xcalloc(1, sizeof(*gz));
 
@@ -405,21 +412,26 @@ static rpmgz rpmgzInit(int level, mode_t omode)
 
 /*@only@*/
 static rpmgz rpmgzCompressInit(int level, mode_t omode)
-        /*@modifies gz @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     rpmgz gz = rpmgzInit(level, omode);
     z_stream * sp = &gz->strm;
 
+/*@-nullstate -nullret @*/
     sp->zfree = Z_NULL;
     sp->zalloc = Z_NULL;
     sp->opaque = Z_NULL;
     if (deflateInit2(sp, gz->level, Z_DEFLATED, -15, 8, gz->strategy) != Z_OK)
 	bail("not enough memory", "deflateInit2");
     return gz;
+/*@=nullstate =nullret @*/
 }
 
+/*@-mustmod@*/
 static void rpmgzCompressReset(rpmgz gz, rpmzJob job)
-        /*@modifies gz, job @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies gz, job, fileSystem, internalState @*/
 {
     z_stream * sp = &gz->strm;
 
@@ -446,9 +458,11 @@ assert(job->out->len >= _PIGZDICT);
 	job->out = NULL;
     }
 }
+/*@=mustmod@*/
 
+/*@-mustmod@*/
 static void rpmgzCompress(rpmgz gz, rpmzJob job)
-        /*@modifies gz, job @*/
+	/*@modifies gz, job->out @*/
 {
     z_stream * sp = &gz->strm;
     unsigned char * out_buf = job->out->buf;
@@ -479,10 +493,12 @@ assert(sp->avail_in == 0 && sp->avail_out != 0);
 assert(sp->avail_in == 0 && sp->avail_out != 0);
     job->out->len = sp->next_out - out_buf;
 }
+/*@=mustmod@*/
 
+/*@-mustmod@*/
 /*@only@*/ /*@null@*/
 static rpmgz rpmgzCompressFini(/*@only@*/ rpmgz gz)
-        /*@modifies gz @*/
+	/*@modifies gz @*/
 {
     z_stream * sp = &gz->strm;
 
@@ -491,6 +507,7 @@ static rpmgz rpmgzCompressFini(/*@only@*/ rpmgz gz)
 /*@=noeffect@*/
     return rpmgzFini(gz);
 }
+/*@=mustmod@*/
 
 /*==============================================================*/
 
@@ -845,7 +862,7 @@ static unsigned long adler32_comb(unsigned long adler1, unsigned long adler2,
    main thread), free all the thread-related resources */
 static void _rpmzqFini(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies zq, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     rpmzLog zlog = zq->zlog;
 
@@ -884,7 +901,7 @@ assert(caught == zq->cthreads);
 /* setup job lists (call from main thread) */
 static void _rpmzqInit(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies zq, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     /* set up only if not already set up*/
     if (zq->compress_have != NULL)
@@ -913,7 +930,7 @@ static void _rpmzqInit(rpmzQueue zq)
 /*@-nullstate@*/
 static void compress_thread(void *_zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _zq, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
     rpmzLog zlog = zq->zlog;
@@ -1148,7 +1165,9 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	/* start another compress thread if needed */
 	if (zq->cthreads < (int)seq && zq->cthreads < (int)zq->threads) {
 	    (void)yarnLaunch(compress_thread, zq);
+/*@-noeffect@*/
 	    zq->cthreads++;
+/*@=noeffect@*/
 	}
 
 	/* put job at end of compress list, let all the compressors know */
@@ -1299,7 +1318,7 @@ assert(strm->avail_in == 0);
 /* parallel read thread */
 static void load_read_thread(void *_zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _z, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
     rpmzLog zlog = zq->zlog;
@@ -1328,9 +1347,10 @@ assert(zq->_in_next == NULL);
    from the file zq->ifdno, set job->in->buf to point to the job->in->len bytes read,
    update zq->in_tot, and return job->in->len -- job->more is set to 0 when job->in->len has
    gone to zero and there is no more data left to read from zq->ifdno */
+/*@-mustmod@*/
 static size_t load(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
 
@@ -1414,8 +1434,10 @@ assert(zq->_in_next == NULL);
     zq->in_tot += job->in->len;
     return job->in->len;
 }
+/*@=mustmod@*/
 
 /* initialize for reading new input */
+/*@-mustmod@*/
 static void in_init(rpmzQueue zq)
 	/*@modifies zq @*/
 {
@@ -1434,6 +1456,7 @@ static void in_init(rpmzQueue zq)
     zq->_in_which = -1;
 #endif
 }
+/*@=mustmod@*/
 
 /* buffered reading macros for decompression and listing */
 #define GET() ((!job->more) || (job->in->len == 0 && load(zq) == 0) ? EOF : \
@@ -1483,7 +1506,7 @@ static long tolong(unsigned long val)
 /* process zip extra field to extract zip64 lengths and Unix mod time */
 static int rpmzReadExtra(rpmzQueue zq, unsigned len, int save)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
     rpmzh zh = &zq->_zh;
@@ -1544,7 +1567,7 @@ static int rpmzReadExtra(rpmzQueue zq, unsigned len, int save)
    lzw -- set zq->format to indicate gzip, zlib, or zip */
 static int rpmzGetHeader(rpmzQueue zq, int save)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
     rpmzh zh = &zq->_zh;
@@ -1812,7 +1835,7 @@ static void rpmzShowInfo(rpmzQueue zq, int method, unsigned long check, off_t le
    well if the uncompressed length is less than 4 GB) */
 static void rpmzListInfo(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
     rpmzh zh = &zq->_zh;
@@ -1941,7 +1964,7 @@ static void rpmzListInfo(rpmzQueue zq)
 /* call-back input function for inflateBack() */
 static unsigned inb(void *_zq, unsigned char **buf)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _z, *buf, fileSystem, internalState @*/
+	/*@modifies _zq, *buf, fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
     rpmzJob job = &zq->_job;
@@ -1954,7 +1977,7 @@ static unsigned inb(void *_zq, unsigned char **buf)
 /* output write thread */
 static void outb_write(void *_zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _z, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
     rpmzLog zlog = zq->zlog;
@@ -1979,7 +2002,7 @@ assert(job->out->buf != NULL);
 /* output check thread */
 static void outb_check(void *_zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _z, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
     rpmzLog zlog = zq->zlog;
@@ -2076,7 +2099,7 @@ assert(job->out != NULL);
 /*@-nullstate@*/
 static void rpmzInflateCheck(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
     rpmzh zh = &zq->_zh;
@@ -2224,7 +2247,7 @@ assert(0);
    header (two bytes) has already been read and verified. */
 static void rpmzDecompressLZW(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies z, fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
     int got;                    /* byte just read by GET() */
@@ -2717,6 +2740,7 @@ exit:
 /* either new buffer size, new compression level, or new number of processes --
    get rid of old buffers and threads to force the creation of new ones with
    the new settings */
+/*@-mustmod@*/
 static void rpmzNewOpts(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, fileSystem, internalState @*/
@@ -2726,6 +2750,7 @@ static void rpmzNewOpts(rpmzQueue zq)
     _rpmzqFini(zq);
 #endif
 }
+/*@=mustmod@*/
 
 /* catch termination signal */
 /*@exits@*/
@@ -2789,7 +2814,9 @@ static void rpmzqArgCallback(poptContext con,
 	rpmzNewOpts(zq);
 	break;
     case 'q':	zq->verbosity = 0; break;
+/*@-noeffect@*/
     case 'v':	zq->verbosity++; break;
+/*@=noeffect@*/
     default:
 	/* XXX really need to display longName/shortName instead. */
 	fprintf(stderr, _("Unknown option -%c\n"), (char)opt->val);
@@ -2864,7 +2891,7 @@ static struct poptOption optionsTable[] = {
 /*@=type@*/
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzPrivatePoptTable, 0,
-        N_("\
+	N_("\
   rpmpigz will compress files in place, adding the suffix '.gz'. If no files are\n\
   specified, stdin will be compressed to stdout.  rpmpigz does what gzip does,\n\
   but spreads the work over multiple processors and cores when compressing.\n\
@@ -2873,7 +2900,7 @@ Options:\
 "), NULL },
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmzqOptionsPoptTable, 0,
-        N_("Compression options: "), NULL },
+	N_("Compression options: "), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options:"),
@@ -2899,10 +2926,10 @@ Usage: rpmpigz [options] [files ...]\n\
    least two in order to provide a dictionary in one work unit for the other
    work unit, and that size must be at least 32K to store a full dictionary. */
 int main(int argc, char **argv)
-	/*@globals __progname, yarnPrefix, h_errno, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies __progname, yarnPrefix, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals _rpmz, rpmzqOptionsPoptTable, __assert_program_name, yarnPrefix, h_errno,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies _rpmz, rpmzqOptionsPoptTable, __assert_program_name, yarnPrefix,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmz z = _rpmz;
     rpmzQueue zq = _rpmzq;
@@ -2920,7 +2947,9 @@ int main(int argc, char **argv)
     z->zq = zq;		/* XXX initialize rpmzq */
 
     /* XXX sick hack to initialize the popt callback. */
+/*@-castfcnptr@*/
     rpmzqOptionsPoptTable[0].arg = (void *)&rpmzqArgCallback;
+/*@=castfcnptr@*/
 
     /* prepare for interrupts and logging */
     signal(SIGINT, rpmzAbort);
@@ -2943,7 +2972,7 @@ int main(int argc, char **argv)
 
     /* process user environment variable defaults */
     if (rpmzParseEnv(z, "GZIP", optionsTable))
-        goto exit;
+	goto exit;
 
     optCon = rpmioInit(argc, argv, optionsTable);
 
@@ -2955,7 +2984,7 @@ int main(int argc, char **argv)
 
     /* Add files from --files manifest(s). */
     if (z->manifests != NULL)
-        xx = rpmzLoadManifests(z);
+	xx = rpmzLoadManifests(z);
 
 if (_debug)
 argvPrint("input args", z->argv, NULL);
@@ -2989,7 +3018,9 @@ exit:
     z->zq->zlog = rpmzLogDump(z->zq->zlog, NULL);
 
     z->manifests = argvFree(z->manifests);
+/*@-nullstate@*/
     z->argv = argvFree(z->argv);
+/*@=nullstate@*/
 #ifdef	NOTYET
     z->iob = rpmiobFree(z->iob);
 #endif

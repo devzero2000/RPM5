@@ -19,13 +19,18 @@
 -boolops		# 135
 -branchstate
 -compdef		# 34
+-compdestroy
 -compmempass		# 6
 -enummemuse		# 2
 -evalorder		# 14
 -fixedformalarray
 -formatconst		# 3
+-incondefs
+-matchfields
 -modobserver		# 4
+-mustfreeonly
 -mustfreefresh		# 1 splint on crack?
+-mutrep
 -nullpass		# 31
 -predboolint		# 91
 -predboolothers		# 6

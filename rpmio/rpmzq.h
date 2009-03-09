@@ -199,11 +199,15 @@ struct rpmzQueue_s {
     const char * ofn;		/*!< output file name (allocated if not NULL) */
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
 
+    struct timeval start;	/*!< starting time of day for tracing */
 /*@owned@*/ /*@null@*/
     rpmzLog zlog;		/*!< trace logging */
 
     int ifdno;			/*!< input file descriptor */
     int ofdno;			/*!< output file descriptor */
+
+    off_t in_tot;		/*!< total bytes read from input */
+    off_t out_tot;		/*!< total bytes written to output */
 
 /*@relnull@*/
     rpmzPool in_pool;		/*!< input buffer pool (malloc'd). */
@@ -228,6 +232,17 @@ struct rpmzQueue_s {
 /*@only@*/ /*@null@*/
     yarnThread writeth;		/*!< write thread if running */
 
+    /* parallel reading */
+/*@only@*/ /*@null@*/
+    yarnLock load_state;	/*!< value = 0 to wait, 1 to read a buffer */
+/*@only@*/ /*@null@*/
+    yarnThread load_thread;	/*!< load_read_thread() thread for joining */
+
+/*@only@*/ /*@null@*/
+    yarnLock outb_write_more;	/*!< outb write threads states */
+/*@only@*/ /*@null@*/
+    yarnLock outb_check_more;	/*!< outb check threads states */
+
 #ifndef	DYING	/* XXX this cruft is going away */
     long lastseq;		/*!< Last seq. */
     mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
@@ -250,27 +265,12 @@ struct rpmzQueue_s {
     unsigned char _in_buf[IN_BUF_ALLOCATED];	/*!< input buffer */
     unsigned char _in_buf2[IN_BUF_ALLOCATED];	/*! second buffer for parallel reads */
 
-/*@shared@*/
-    off_t in_tot;		/*!< total bytes read from input */
-    off_t out_tot;		/*!< total bytes written to output */
-
-    /* parallel reading */
-/*@only@*/ /*@null@*/
-    yarnLock load_state;	/*!< value = 0 to wait, 1 to read a buffer */
-/*@only@*/ /*@null@*/
-    yarnThread load_thread;	/*!< load_read_thread() thread for joining */
-
     /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
     size_t _out_buf_allocated;
 #define OUT_BUF_ALLOCATED 32768U /*!< must be at least 32K for inflateBack() window */
     unsigned char _out_buf[OUT_BUF_ALLOCATED];
     /* output data for parallel write and check */
     unsigned char _out_copy[OUT_BUF_ALLOCATED];
-
-/*@only@*/ /*@null@*/
-    yarnLock outb_write_more;	/*!< outb write threads states */
-/*@only@*/ /*@null@*/
-    yarnLock outb_check_more;	/*!< outb check threads states */
 
 /* --- memory for rpmzDecompressLZW()
  * the first 256 entries of prefix[] and suffix[] are never used, could
@@ -279,8 +279,6 @@ struct rpmzQueue_s {
     unsigned short _prefix[65536];	/*!< index to LZW prefix string */
     unsigned char _suffix[65536];	/*!< one-character LZW suffix */
     unsigned char _match[65280 + 2];	/*!< buffer for reversed match */
-
-    struct timeval start;	/*!< starting time of day for tracing */
 };
 #endif	/* _RPMZQ_INTERNAL */
 

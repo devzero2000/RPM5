@@ -108,7 +108,8 @@ extern "C" {
 /**
  */
 static int rpmzLoadManifests(rpmz z)
-	/*@modifies z @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies z, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     ARGV_t manifests;
     const char * fn;
@@ -154,13 +155,13 @@ static int rpmzLoadManifests(rpmz z)
 		*g++ = '\0';
 	    /* Skip comment lines. */
 	    if (*g == '#')
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    while (ge > g && xisspace(ge[-1]))
 		*--ge = '\0';
 	    /* Skip empty lines. */
 	    if (ge == g)
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /* Prepend z->base_prefix if specified. */
 	    if (z->base_prefix)
@@ -226,7 +227,7 @@ static rpmRC rpmzParseEnv(/*@unused@*/ rpmz z, /*@null@*/ const char * envvar,
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
-        }
+	}
     }
 
     if (xx < -1) {
