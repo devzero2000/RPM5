@@ -88,50 +88,6 @@ struct rpmz_s {
     size_t _filters_count;
 #endif	/* _RPMZ_INTERNAL_XZ */
 
-#if defined(_RPMZ_INTERNAL_PIGZ)	/* PIGZ specific configuration. */
-/* --- globals for decompression and listing buffered reading */
-    int in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
-    unsigned char * in_next;	/*!< next buffer waiting to use */
-    size_t in_pend;		/*!< number of bytes waiting to use */
-#define IN_BUF_ALLOCATED 32768U	/* input buffer size */
-    size_t in_buf_allocated;
-    unsigned char in_buf[IN_BUF_ALLOCATED];	/*!< input buffer */
-    unsigned char in_buf2[IN_BUF_ALLOCATED];	/*! second buffer for parallel reads */
-
-/*@shared@*/
-    off_t in_tot;		/*!< total bytes read from input */
-    off_t out_tot;		/*!< total bytes written to output */
-
-    /* parallel reading */
-/*@only@*/ /*@null@*/
-    yarnLock load_state;	/*!< value = 0 to wait, 1 to read a buffer */
-/*@only@*/ /*@null@*/
-    yarnThread load_thread;	/*!< load_read_thread() thread for joining */
-
-    /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
-    size_t out_buf_allocated;
-#define OUT_BUF_ALLOCATED 32768U /*!< must be at least 32K for inflateBack() window */
-    unsigned char out_buf[OUT_BUF_ALLOCATED];
-    /* output data for parallel write and check */
-    unsigned char _out_copy[OUT_BUF_ALLOCATED];
-
-/*@only@*/ /*@null@*/
-    yarnLock outb_write_more;	/*!< outb write threads states */
-/*@only@*/ /*@null@*/
-    yarnLock outb_check_more;	/*!< outb check threads states */
-
-/* --- memory for rpmzDecompressLZW()
- * the first 256 entries of prefix[] and suffix[] are never used, could
- * have offset the index, but it's faster to waste the memory
- */
-    unsigned short _prefix[65536];	/*!< index to LZW prefix string */
-    unsigned char _suffix[65536];	/*!< one-character LZW suffix */
-    unsigned char _match[65280 + 2];	/*!< buffer for reversed match */
-
-#endif	/* _RPMZ_INTERNAL_PIGZ */
-
-    struct timeval start;	/*!< starting time of day for tracing */
-
 /* ++++ rpmzq */
     struct rpmzQueue_s _zq;
 /*@owned@*/ /*@relnull@*/
