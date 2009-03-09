@@ -454,8 +454,7 @@ assert(job->out->len >= _PIGZDICT);
 /*@-noeffect@*/
 	deflateSetDictionary(sp, buf, _PIGZDICT);
 /*@=noeffect@*/
-	rpmzqDropSpace(job->out);
-	job->out = NULL;
+	(void) rpmzqDropSpace(job->out);	/* XXX don't reset job->out */
     }
 }
 /*@=mustmod@*/
@@ -517,12 +516,11 @@ static size_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t len)
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     int fdno = zq->ifdno;
-    ssize_t ret;
-    size_t got;
+    size_t got = 0;
 
     got = 0;
     while (len) {
-	ret = read(fdno, buf, len);
+	ssize_t ret = read(fdno, buf, len);
 	if (ret < 0)
 	    bail("read error on ", zq->ifn);
 	if (ret == 0)
@@ -531,7 +529,7 @@ static size_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t len)
 	len -= ret;
 	got += ret;
     }
-    return got;
+    return got;		/* XXX never returns < 0 */
 }
 
 /* write len bytes, repeating write() calls as needed */
@@ -540,16 +538,17 @@ static void rpmzWrite(rpmzQueue zq, unsigned char *buf, size_t len)
 	/*@modifies fileSystem, internalState @*/
 {
     int fdno = zq->ofdno;
-    ssize_t ret;
+    size_t put = 0;
 
     while (len) {
-	ret = write(fdno, buf, len);
+	ssize_t ret = write(fdno, buf, len);
 	if (ret < 1)
 	    fprintf(stderr, "write error code %d\n", errno);
 	if (ret < 1)
 	    bail("write error on ", zq->ofn);
 	buf += ret;
 	len -= ret;
+	put += ret;
     }
 }
 
@@ -936,8 +935,6 @@ static void compress_thread(void *_zq)
     rpmzLog zlog = zq->zlog;
 
     rpmzJob job;                    /* job pulled and working on */ 
-    rpmzJob here;                   /* pointers for inserting in write list */ 
-    rpmzJob * prior;                /* pointers for inserting in write list */ 
     unsigned long check;            /* check value of input */
     unsigned char *next;            /* pointer for check value data */
     size_t len;                     /* remaining bytes to compress/check */
@@ -945,28 +942,14 @@ static void compress_thread(void *_zq)
 
     /* initialize the deflate stream for this thread */
     gz = rpmgzCompressInit(zq->level, O_WRONLY);
+    zq->omode = O_WRONLY;	/* XXX eliminate */
 
     /* keep looking for work */
     for (;;) {
 	/* get a job (like I tell my son) */
-#ifndef	DYING	/* XXX something buggy here */
-	yarnPossess(zq->compress_have);
-	yarnWaitFor(zq->compress_have, NOT_TO_BE, 0);
-	job = zq->compress_head;
-assert(job != NULL);
-	if (job->seq == -1)
-	    break;
-/*@-dependenttrans@*/
-	zq->compress_head = job->next;
-/*@=dependenttrans@*/
-	if (job->next == NULL)
-	    zq->compress_tail = &zq->compress_head;
-	yarnTwist(zq->compress_have, BY, -1);
-#else
 	job = rpmzqDelCJob(zq);
 	if (job == NULL)
 	    break;
-#endif
 
 	/* got a job -- initialize and set the compression level. */
 	Trace((zlog, "-- compressing #%ld", job->seq));
@@ -982,28 +965,11 @@ assert(job != NULL);
 	/* Compress the job. */
 	rpmgzCompress(gz, job);
 
-#ifndef	DYING	/* XXX eliminate zq->omode first */
-	Trace((zlog, "-- compressed #%ld%s", job->seq, job->more ? "" : " (last)"));
-#endif
-
 	/* reserve input buffer until check value has been calculated */
 	rpmzqUseSpace(job->in);
 
 	/* insert write job in list in sorted order, alert write thread */
-#ifndef	DYING	/* XXX eliminate zq->omode first */
-	yarnPossess(zq->write_first);
-	prior = &zq->write_head;
-	while ((here = *prior) != NULL) {
-	    if (here->seq > job->seq)
-		break;
-	    prior = &(here->next);
-	}
-	job->next = here;
-	*prior = job;
-	yarnTwist(zq->write_first, TO, zq->write_head->seq);
-#else
 	rpmzqAddWJob(zq, job);
-#endif
 
 	/* calculate the check value in parallel with writing, alert the write
 	 * thread that the calculation is complete, and drop this usage of the
@@ -1017,7 +983,7 @@ assert(job != NULL);
 	    next += _PIGZMAX;
 	}
 	check = CHECK(check, next, (unsigned)len);
-	rpmzqDropSpace(job->in);
+	(void) rpmzqDropSpace(job->in);		/* XXX don't reset job->in */
 	job->check = check;
 	yarnPossess(job->calc);
 	Trace((zlog, "-- checked #%ld%s", job->seq, job->more ? "" : " (last)"));
@@ -1026,9 +992,6 @@ assert(job != NULL);
 
 	/* done with that one -- go find another job */
     }
-
-    /* found job with seq == -1 -- free deflate memory and return to join */
-    yarnRelease(zq->compress_have);
 
     gz = rpmgzCompressFini(gz);
 
@@ -1070,14 +1033,14 @@ assert(job != NULL);
 	/* update lengths, save uncompressed length for COMB */
 	more = job->more;
 	len = job->in->len;
-	rpmzqDropSpace(job->in);
+	(void) rpmzqDropSpace(job->in);		/* XXX don't reset job->in */
 	zh->ulen += (unsigned long)len;
 	zh->clen += (unsigned long)(job->out->len);
 
 	/* write the compressed data and drop the output buffer */
 	Trace((zlog, "-- writing #%ld", seq));
 	rpmzWrite(zq, job->out->buf, job->out->len);
-	rpmzqDropSpace(job->out);
+	(void) rpmzqDropSpace(job->out);	/* XXX don't reset job->out */
 	Trace((zlog, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
 
 	/* wait for check calculation to complete, then combine, once
@@ -1151,7 +1114,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	    next->len = rpmzRead(zq, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
-		rpmzqDropSpace(next);  /* won't be using it */
+		next = rpmzqDropSpace(next);  /* won't be using it */
 	    if (F_ISSET(zq->flags, INDEPENDENT) && more) {
 		rpmzqUseSpace(job->in);    /* hold as dictionary for next loop */
 		prev = job->in;
