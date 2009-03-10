@@ -1293,9 +1293,7 @@ static void load_read_thread(void *_zq)
 	yarnWaitFor(zq->load_state, TO_BE, 1);
 
 assert(zq->_in_pend == NULL);
-	zq->_in_pend = xcalloc(1, sizeof(*zq->_in_pend));
-	zq->_in_pend->len = zq->_in_buf_allocated;
-	zq->_in_pend->buf = xmalloc(zq->_in_pend->len);
+	zq->_in_pend = rpmzqNewSpace(zq->load_pool);
 	nread = rpmzRead(zq, zq->_in_pend->buf, zq->_in_pend->len);
 	zq->_in_pend->len = nread;
 
@@ -1326,7 +1324,6 @@ fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u] -> %p[%u]\n", __FUNCTION__, zq, 
 	return 0;
     }
 
-assert(job->in != NULL);
 #if 0		/* XXX hmmm, the comment above is incorrect. todo++ */
 assert(job->in->len == 0);
 #endif
@@ -1338,6 +1335,8 @@ assert(job->in->len == 0);
 	/* if first time, fire up the read thread, ask for a read */
 	if (zq->_in_which == -1) {
 	    zq->_in_which = 1;
+assert(zq->load_pool == NULL);
+	    zq->load_pool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
 /*@-mustfreeonly@*/
 	    zq->load_state = yarnNewLock(1);
 	    zq->load_thread = yarnLaunch(load_read_thread, zq);
@@ -1350,9 +1349,10 @@ assert(job->in->len == 0);
 	yarnRelease(zq->load_state);
 
 	/* set up input buffer with the data just read */
-	zq->_in_prev = _free(zq->_in_prev);
-	if (job->in != &zq->_job_in)
-	    job->in = _free(job->in);
+	if (job->in != NULL) {
+	    job->in->buf = zq->_in_prev;
+	    job->in = rpmzqDropSpace(job->in);
+	}
 	job->in = zq->_in_pend;
 	zq->_in_prev = job->in->buf;
 	zq->_in_pend = NULL;
@@ -1385,8 +1385,7 @@ assert(zq->_in_pend == NULL);
 	zq->_in_pend->len = nread;
 
 	zq->_in_prev = _free(zq->_in_prev);
-	if (job->in != &zq->_job_in)
-	    job->in = _free(job->in);
+	job->in = _free(job->in);
 	job->in = zq->_in_pend;
 	zq->_in_prev = job->in->buf;
 	zq->_in_pend = NULL;
@@ -1416,10 +1415,14 @@ static void in_init(rpmzQueue zq)
     rpmzJob job = &zq->_job;
     job->seq = 0;
     job->more = 1;
-    job->in->len = 0;
-    job->in->buf = NULL;
-    job->out->len = 0;
-    job->out->buf = NULL;
+    if (job->in != NULL) {
+	job->in->len = 0;
+	job->in->buf = NULL;
+    }
+    if (job->out != NULL) {
+	job->out->len = 0;
+	job->out->buf = NULL;
+    }
     job->check = 0;
     job->calc = NULL;
     job->next = NULL;
@@ -1431,7 +1434,7 @@ static void in_init(rpmzQueue zq)
 /*@=mustmod@*/
 
 /* buffered reading macros for decompression and listing */
-#define GET() ((!job->more) || (job->in->len == 0 && load(zq) == 0) ? EOF : \
+#define GET() ((!job->more) || (!(job->in && job->in->len) && load(zq) == 0) ? EOF : \
                (job->in->len--, *job->in->buf++))
 #define GET2() (tmp2 = GET(), tmp2 + (GET() << 8))
 #define GET4() (tmp4 = GET2(), tmp4 + ((unsigned long)(GET2()) << 16))
@@ -2194,10 +2197,6 @@ assert(0);
     } while ((zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB) && (ret = rpmzGetHeader(zq, 0)) == 8);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
 	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
-
-    zq->_in_prev = _free(zq->_in_prev);
-    zq->_in_pend = _free(zq->_in_pend);
-    job->in = _free(job->in);
 }
 /*@=nullstate@*/
 
@@ -2919,6 +2918,7 @@ int main(int argc, char **argv)
 {
     rpmz z = _rpmz;
     rpmzQueue zq = _rpmzq;
+    rpmzJob job = &zq->_job;
     poptContext optCon;
     int ac;
     int rc = 1;		/* assume failure */
@@ -2928,7 +2928,6 @@ int main(int argc, char **argv)
 /*@-observertrans -readonlytrans @*/
     __progname = "rpmpigz";
 /*@=observertrans =readonlytrans @*/
-    zq->_job.in = &zq->_job_in;
     zq->_job.out = &zq->_job_out;
     z->zq = zq;		/* XXX initialize rpmzq */
 
@@ -2998,8 +2997,25 @@ argvPrint("input args", z->argv, NULL);
 
     rc = 0;
 
-    /* done -- release resources, show log */
 exit:
+    /* done -- release resources, show log */
+    if (zq->load_pool != NULL) {
+	rpmzLog zlog = zq->zlog;
+	int caught;
+	if (job->in->buf != NULL) {
+	    job->in->buf = zq->_in_prev;
+	    zq->_in_prev = NULL;
+	    job->in = rpmzqDropSpace(job->in);
+	}
+	if (zq->_in_pend != NULL)
+	    zq->_in_pend = rpmzqDropSpace(zq->_in_pend);
+	zq->load_pool = rpmzqFreePool(zq->load_pool, &caught);
+	Trace((zlog, "-- freed %d input buffers", caught));
+    } else {
+	zq->_in_prev = _free(zq->_in_prev);
+	zq->_in_pend = _free(zq->_in_pend);
+	job->in = _free(job->in);
+    }
     rpmzNewOpts(zq);
     z->zq->zlog = rpmzLogDump(z->zq->zlog, NULL);
 

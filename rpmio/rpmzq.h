@@ -253,7 +253,9 @@ struct rpmzQueue_s {
 #endif
     struct rpmzh_s _zh;
     struct rpmzSpace_s _job_out;
+#ifdef	DYING
     struct rpmzSpace_s _job_in;
+#endif
     struct rpmzJob_s _job;
 
 /* --- globals for decompression and listing buffered reading */
@@ -262,6 +264,8 @@ struct rpmzQueue_s {
     rpmzSpace _in_pend;		/*!< pending space to load. */
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
+/*@relnull@*/
+    rpmzPool load_pool;		/*!< load/read input buffer pool (malloc'd). */
 
     /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
     size_t _out_buf_allocated;
