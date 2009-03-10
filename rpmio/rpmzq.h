@@ -252,8 +252,8 @@ struct rpmzQueue_s {
     int olimit;
 #endif
     struct rpmzh_s _zh;
-    struct rpmzSpace_s _job_out;
-    struct rpmzJob_s _job;
+/*@owned@*/ /*@relnull@*/
+    rpmzJob _job;
 
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
