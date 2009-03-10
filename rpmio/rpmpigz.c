@@ -1010,7 +1010,7 @@ static void write_thread(void *_zq)
 {
     rpmzQueue zq = _zq;
     rpmzLog zlog = zq->zlog;
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
 
     long seq;                       /* next sequence number looking for */
     rpmzJob job;                    /* job pulled and working on */
@@ -1155,7 +1155,7 @@ static void rpmzSingleCompress(rpmzQueue zq, int reset)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
 
     size_t got;                     /* amount read */
     size_t more;                    /* amount of next read (0 if eof) */
@@ -1485,7 +1485,7 @@ static int rpmzReadExtra(rpmzQueue zq, unsigned len, int save)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = zq->_job;
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
     unsigned id;
     unsigned size;
     unsigned tmp2;
@@ -1547,7 +1547,7 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = zq->_job;
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
     unsigned magic;             /* magic header */
     int method;                 /* compression method */
     int flags;                  /* header flags */
@@ -1735,7 +1735,7 @@ static void rpmzShowInfo(rpmzQueue zq, int method, unsigned long check, off_t le
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
     static int oneshot = 1; /* true if we need to print listing header */
     size_t max;             /* maximum name length for current verbosity */
     size_t n;               /* name length without suffix */
@@ -1816,7 +1816,7 @@ static void rpmzListInfo(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = zq->_job;
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
     int method;             /* rpmzGetHeader() return value */
     size_t n;               /* available trailer bytes */
     off_t at;               /* used to calculate compressed length */
@@ -2087,7 +2087,7 @@ static void rpmzInflateCheck(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = zq->_job;
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
     size_t _out_buf_allocated = zq->_out_buf_allocated;	/* OUT_BUF_ALLOCATED */
     unsigned char *_out_buf;
 
@@ -2497,7 +2497,7 @@ static void rpmzProcess(rpmz z, /*@null@*/ const char *path)
 	/*@modifies z, fileSystem, internalState @*/
 {
     rpmzQueue zq = z->zq;
-    rpmzh zh = &zq->_zh;
+    rpmzh zh = zq->_zh;
     int method = -1;                /* rpmzGetHeader() return value */
     size_t len;                     /* length of base name (minus suffix) */
     struct stat sb, *st = &sb;      /* to get file type and mod time */
@@ -2992,6 +2992,7 @@ int main(int argc, char **argv)
     zq->zlog = rpmzLogInit(&zq->start);/* initialize logging */
 #endif
 
+    zq->_zh = xcalloc(1, sizeof(*zq->_zh));	/* XXX do lazily */
     zq->_in_buf_allocated = IN_BUF_ALLOCATED;
     zq->_out_buf_allocated = OUT_BUF_ALLOCATED;
 
@@ -3068,6 +3069,7 @@ exit:
     }
     zq->_in_prev = _free(zq->_in_prev);
     zq->_in_pend = _free(zq->_in_pend);
+    zq->_zh = _free(zq->_zh);
 
     rpmzNewOpts(zq);
     z->zq->zlog = rpmzLogDump(z->zq->zlog, NULL);

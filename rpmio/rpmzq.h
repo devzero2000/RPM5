@@ -251,9 +251,10 @@ struct rpmzQueue_s {
     size_t oblocksize;
     int olimit;
 #endif
-    struct rpmzh_s _zh;
+/*@only@*/ /*@relnull@*/
+    rpmzh _zh;			/*!< compressed file header info (malloc'd). */
 /*@owned@*/ /*@relnull@*/
-    rpmzJob _job;
+    rpmzJob _job;		/*!< decompress job (malloc'd). */
 
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
