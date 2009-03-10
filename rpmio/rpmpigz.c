@@ -2080,6 +2080,9 @@ static void rpmzInflateCheck(rpmzQueue zq)
 {
     rpmzJob job = &zq->_job;
     rpmzh zh = &zq->_zh;
+    size_t _out_buf_allocated = zq->_out_buf_allocated;	/* OUT_BUF_ALLOCATED */
+    unsigned char *_out_buf;
+
     int ret;
     int cont;
     unsigned long check;
@@ -2088,21 +2091,27 @@ static void rpmzInflateCheck(rpmzQueue zq)
     unsigned long tmp4;
     off_t clen;
 
+    /* must be at least 32K for inflateBack() window */
+    if (_out_buf_allocated < 32768U)	/* OUT_BUF_ALLOCATED */
+	_out_buf_allocated = 32768U;	/* OUT_BUF_ALLOCATED */
+    _out_buf = xmalloc(_out_buf_allocated);
+
 if (_debug)
 fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u] -> %p[%u]\n", __FUNCTION__, zq, job, (unsigned)job->seq, job->in->buf, (unsigned)job->in->len, job->out->buf, (unsigned)job->out->len);
 
     cont = 0;
     do {
 	/* header already read -- set up for decompression */
-	zq->in_tot = job->in->len;               /* track compressed data length */
+	zq->in_tot = job->in->len;	/* track compressed data length */
 	zq->out_tot = 0;
 	job->check = CHECK(0L, Z_NULL, 0);
 
-    {	z_stream strm;
+    {	
+	z_stream strm;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.opaque = Z_NULL;
-	ret = inflateBackInit(&strm, 15, zq->_out_buf);
+	ret = inflateBackInit(&strm, 15, _out_buf);
 	if (ret != Z_OK)
 	    bail("not enough memory", "");
 
@@ -2197,6 +2206,7 @@ assert(0);
     } while ((zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB) && (ret = rpmzGetHeader(zq, 0)) == 8);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
 	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
+    _out_buf = _free(_out_buf);
 }
 /*@=nullstate@*/
 
@@ -2230,6 +2240,17 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzJob job = &zq->_job;
+    /* XXX how should LZW buffers scale? */
+    size_t _out_buf_allocated = 32768U;	/* OUT_BUF_ALLOCATED */
+    unsigned char *_out_buf;
+    /* --- memory for rpmzDecompressLZW()
+     * the first 256 entries of prefix[] and suffix[] are never used, could
+     * have offset the index, but it's faster to waste the memory
+     */
+    unsigned short _prefix[65536];	/* index to LZW prefix string */
+    unsigned char _suffix[65536];	/* one-character LZW suffix */
+    unsigned char _match[65280 + 2];	/* buffer for reversed match */
+
     int got;                    /* byte just read by GET() */
     unsigned int chunk;         /* bytes left in current chunk */
     int left;                   /* bits left in rem */
@@ -2246,6 +2267,8 @@ static void rpmzDecompressLZW(rpmzQueue zq)
     unsigned stack;             /* next position for reversed string */
     unsigned outcnt;            /* bytes in output buffer */
     unsigned char *p;
+
+    _out_buf = xmalloc(_out_buf_allocated);
 
     /* process remainder of compress header -- a flags byte */
     zq->out_tot = 0;
@@ -2270,7 +2293,7 @@ static void rpmzDecompressLZW(rpmzQueue zq)
        don't create a table entry until the next code */
     got = GET();
     if (!job->more)
-	return;                             /* no compressed data is ok */
+	goto exit;                          /* no compressed data is ok */
     final = prev = (unsigned)got;           /* low 8 bits of code */
     got = GET();
     if (!job->more || (got & 1) != 0)       /* missing a bit or code >= 256 */
@@ -2278,7 +2301,7 @@ static void rpmzDecompressLZW(rpmzQueue zq)
     rem = (unsigned)got >> 1;               /* remaining 7 bits */
     left = 7;
     chunk = bits - 2;                       /* 7 bytes left in this chunk */
-    zq->_out_buf[0] = (unsigned char)final;   /* write first decompressed byte */
+    _out_buf[0] = (unsigned char)final; /* write first decompressed byte */
     outcnt = 1;
 
     /* decode codes */
@@ -2301,8 +2324,8 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	    /* write remaining buffered output */
 	    zq->out_tot += outcnt;
 	    if (outcnt && zq->mode == RPMZ_MODE_DECOMPRESS)
-		rpmzWrite(zq, zq->_out_buf, outcnt);
-	    return;
+		rpmzWrite(zq, _out_buf, outcnt);
+	    goto exit;
 	}
 	code += (unsigned)got << left;      /* middle (or high) bits of code */
 	left += 8;
@@ -2343,43 +2366,43 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	     */
 	    if (code != end + 1 || prev > end)
 		bail("invalid lzw code: ", zq->ifn);
-	    zq->_match[stack++] = (unsigned char)final;
+	    _match[stack++] = (unsigned char)final;
 	    code = prev;
 	}
 
 	/* walk through linked list to generate output in reverse order */
-	p = zq->_match + stack;
+	p = _match + stack;
 	while (code >= 256) {
-	    *p++ = zq->_suffix[code];
-	    code = zq->_prefix[code];
+	    *p++ = _suffix[code];
+	    code = _prefix[code];
 	}
-	stack = p - zq->_match;
-	zq->_match[stack++] = (unsigned char)code;
+	stack = p - _match;
+	_match[stack++] = (unsigned char)code;
 	final = code;
 
 	/* link new table entry */
 	if (end < mask) {
 	    end++;
-	    zq->_prefix[end] = (unsigned short)prev;
-	    zq->_suffix[end] = (unsigned char)final;
+	    _prefix[end] = (unsigned short)prev;
+	    _suffix[end] = (unsigned char)final;
 	}
 
 	/* set previous code for next iteration */
 	prev = temp;
 
 	/* write output in forward order */
-	while (stack > zq->_out_buf_allocated - outcnt) {
-	    while (outcnt < zq->_out_buf_allocated)
-		zq->_out_buf[outcnt++] = zq->_match[--stack];
+	while (stack > _out_buf_allocated - outcnt) {
+	    while (outcnt < _out_buf_allocated)
+		_out_buf[outcnt++] = _match[--stack];
 	    zq->out_tot += outcnt;
 	    if (zq->mode == RPMZ_MODE_DECOMPRESS)
-		rpmzWrite(zq, zq->_out_buf, outcnt);
+		rpmzWrite(zq, _out_buf, outcnt);
 	    outcnt = 0;
 	}
-	p = zq->_match + stack;
+	p = _match + stack;
 	do {
-	    zq->_out_buf[outcnt++] = *--p;
-	} while (p > zq->_match);
+	    _out_buf[outcnt++] = *--p;
+	} while (p > _match);
 	stack = 0;
 
 	/* loop for next code with final and prev as the last match, rem and
@@ -2387,6 +2410,8 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	 * valid table entry */
     }
 
+exit:
+    _out_buf = _free(_out_buf);
     zq->_in_prev = _free(zq->_in_prev);
     zq->_in_pend = _free(zq->_in_pend);
     job->in = _free(job->in);

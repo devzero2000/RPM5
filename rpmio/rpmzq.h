@@ -253,9 +253,6 @@ struct rpmzQueue_s {
 #endif
     struct rpmzh_s _zh;
     struct rpmzSpace_s _job_out;
-#ifdef	DYING
-    struct rpmzSpace_s _job_in;
-#endif
     struct rpmzJob_s _job;
 
 /* --- globals for decompression and listing buffered reading */
@@ -270,17 +267,9 @@ struct rpmzQueue_s {
     /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
     size_t _out_buf_allocated;
 #define OUT_BUF_ALLOCATED 32768U /*!< must be at least 32K for inflateBack() window */
-    unsigned char _out_buf[OUT_BUF_ALLOCATED];
     /* output data for parallel write and check */
     unsigned char _out_copy[OUT_BUF_ALLOCATED];
 
-/* --- memory for rpmzDecompressLZW()
- * the first 256 entries of prefix[] and suffix[] are never used, could
- * have offset the index, but it's faster to waste the memory
- */
-    unsigned short _prefix[65536];	/*!< index to LZW prefix string */
-    unsigned char _suffix[65536];	/*!< one-character LZW suffix */
-    unsigned char _match[65280 + 2];	/*!< buffer for reversed match */
 };
 #endif	/* _RPMZQ_INTERNAL */
 
