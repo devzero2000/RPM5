@@ -263,13 +263,12 @@ struct rpmzQueue_s {
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
 /*@relnull@*/
-    rpmzPool load_pool;		/*!< load/read input buffer pool (malloc'd). */
+    rpmzPool load_ipool;	/*!< load/read input buffer pool (malloc'd). */
+    rpmzPool load_opool;	/*!< load/read ouput buffer pool (malloc'd). */
 
     /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
     size_t _out_buf_allocated;
 #define OUT_BUF_ALLOCATED 32768U /*!< must be at least 32K for inflateBack() window */
-    /* output data for parallel write and check */
-    unsigned char _out_copy[OUT_BUF_ALLOCATED];
 
 };
 #endif	/* _RPMZQ_INTERNAL */

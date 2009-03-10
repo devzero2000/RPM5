@@ -288,7 +288,7 @@ struct poptOption rpmzqOptionsPoptTable[] = {
   POPT_TABLEEND
 };
 
-#define	zqFprint	if (_rpmzq_debug) fprintf
+#define	zqFprintf	if (_rpmzq_debug) fprintf
 
 /*==============================================================*/
 
@@ -300,7 +300,7 @@ int rpmbzCompressBlock(void * _bz, rpmzJob job)
     rc = BZ2_bzBuffToBuffCompress((char *)job->out->buf, &job->out->len,
 		(char *)job->in->buf, job->in->len, bz->B, bz->V, bz->W);
     if (rc != BZ_OK)
-	zqFprint(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
+	zqFprintf(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
     return rc;
 }
 /*@=mustmod@*/
@@ -314,7 +314,7 @@ static int rpmbzDecompressBlock(rpmbz bz, rpmzJob job)
     rc = BZ2_bzBuffToBuffDecompress((char *)job->out->buf, &job->out->len,
 		(char *)job->in->buf, job->in->len, bz->S, bz->V);
     if (rc != BZ_OK)
-	zqFprint(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
+	zqFprintf(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
     return rc;
 }
 /*@=mustmod@*/
@@ -345,7 +345,7 @@ rpmzPool rpmzqNewPool(size_t size, int limit)
     pool->size = size;
     pool->limit = limit;
     pool->made = 0;
-zqFprint(stderr, "    ++ pool %p[%u,%d]\n", pool, (unsigned)size, limit);
+zqFprintf(stderr, "    ++ pool %p[%u,%d]\n", pool, (unsigned)size, limit);
     return pool;
 }
 
@@ -386,7 +386,7 @@ assert(pool->limit != 0);
     space->pool = pool;                 /* remember the pool this belongs to */
 /*@=assignexpose@*/
 /*@=mustfreeonly@*/
-zqFprint(stderr, "    ++ space %p use %d buf %p[%u]\n", space, 1, space->buf, space->len);
+zqFprintf(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, 1, space->buf, space->len);
 /*@-nullret@*/
     return space;
 /*@=nullret@*/
@@ -399,7 +399,7 @@ void rpmzqUseSpace(rpmzSpace space)
     int use;
     yarnPossess(space->use);
     use = yarnPeekLock(space->use);
-zqFprint(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, use+1, space->buf, space->len);
+zqFprintf(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, use+1, space->buf, space->len);
     yarnTwist(space->use, BY, 1);
 }
 
@@ -410,8 +410,13 @@ rpmzSpace rpmzqDropSpace(rpmzSpace space)
 
     yarnPossess(space->use);
     use = yarnPeekLock(space->use);
-zqFprint(stderr, "    -- space %p[%u] buf %p[%u]\n", space, use, space->buf, space->len);
-assert(use != 0);
+zqFprintf(stderr, "    -- space %p[%d] buf %p[%u]\n", space, use, space->buf, space->len);
+#ifdef	NOTYET
+assert(use > 0);
+#else
+if (use <= 0)
+fprintf(stderr, "==> FIXME: %s: space %p[%d]\n", __FUNCTION__, space, use);
+#endif
     if (use == 1) {
 	rpmzPool pool = space->pool;
 	yarnPossess(pool->have);
@@ -450,9 +455,9 @@ rpmzPool rpmzqFreePool(rpmzPool pool, int *countp)
 assert(count == pool->made);
 #else
 if (count != pool->made)
-zqFprint(stderr, "==> FIXME: %s: count %d pool->made %d\n", __FUNCTION__, count, pool->made);
+fprintf(stderr, "==> FIXME: %s: count %d pool->made %d\n", __FUNCTION__, count, pool->made);
 #endif
-zqFprint(stderr, "    -- pool %p count %d\n", pool, count);
+zqFprintf(stderr, "    -- pool %p count %d\n", pool, count);
 /*@-compdestroy@*/
     pool = _free(pool);
 /*@=compdestroy@*/
@@ -463,7 +468,7 @@ zqFprint(stderr, "    -- pool %p count %d\n", pool, count);
 
 rpmzJob rpmzqFreeJob(rpmzJob job)
 {
-zqFprint(stderr, "    -- job %p[%ld] %p => %p\n", job, job->seq, job->in, job->out);
+zqFprintf(stderr, "    -- job %p[%ld] %p => %p\n", job, job->seq, job->in, job->out);
     if (job->calc != NULL)
 	job->calc = yarnFreeLock(job->calc);
     job = _free(job);
@@ -475,7 +480,7 @@ rpmzJob rpmzqNewJob(long seq)
     rpmzJob job = xcalloc(1, sizeof(*job));
     job->seq = seq;
     job->calc = yarnNewLock(0);
-zqFprint(stderr, "    ++ job %p[%ld]\n", job, seq);
+zqFprintf(stderr, "    ++ job %p[%ld]\n", job, seq);
     return job;
 }
 
@@ -492,7 +497,7 @@ void rpmzqFini(rpmzQueue zq)
     struct rpmzJob_s job;
     int caught;
 
-zqFprint(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
+zqFprintf(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
     /* only do this once */
     if (zq->compress_have == NULL)
 	return;
@@ -514,7 +519,7 @@ zqFprint(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
 assert(caught == zq->cthreads);
 #else
 if (caught != zq->cthreads)
-zqFprint(stderr, "==> FIXME: %s: caught %d z->cthreads %d\n", __FUNCTION__, caught, zq->cthreads);
+fprintf(stderr, "==> FIXME: %s: caught %d z->cthreads %d\n", __FUNCTION__, caught, zq->cthreads);
 #endif
     zq->cthreads = 0;
 
@@ -530,7 +535,7 @@ zqFprint(stderr, "==> FIXME: %s: caught %d z->cthreads %d\n", __FUNCTION__, caug
 /* setup job lists (call from main thread) */
 void rpmzqInit(rpmzQueue zq)
 {
-zqFprint(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
+zqFprintf(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
     /* set up only if not already set up*/
     if (zq->compress_have != NULL)
 	return;
@@ -544,9 +549,9 @@ zqFprint(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
     zq->write_head = NULL;
 
     zq->in_pool = rpmzqNewPool(zq->iblocksize, zq->ilimit);
-zqFprint(stderr, "-->  in_pool: %p[%u] blocksize %u\n", zq->in_pool, (unsigned)zq->ilimit, (unsigned)zq->iblocksize);
+zqFprintf(stderr, "-->  in_pool: %p[%u] blocksize %u\n", zq->in_pool, (unsigned)zq->ilimit, (unsigned)zq->iblocksize);
     zq->out_pool = rpmzqNewPool(zq->oblocksize, zq->olimit);
-zqFprint(stderr, "--> out_pool: %p[%u] blocksize %u\n", zq->out_pool, (unsigned)zq->olimit, (unsigned)zq->oblocksize);
+zqFprintf(stderr, "--> out_pool: %p[%u] blocksize %u\n", zq->out_pool, (unsigned)zq->olimit, (unsigned)zq->oblocksize);
 
 }
 
@@ -637,7 +642,7 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
     default:	assert(0);	break;
     case O_WRONLY:
 	pct = (100.0 * job->out->len) / job->in->len;
-	zqFprint(stderr, "       job %p[%ld]:\t%p[%u] => %p[%u]\t(%3.1f%%)\n",
+	zqFprintf(stderr, "       job %p[%ld]:\t%p[%u] => %p[%u]\t(%3.1f%%)\n",
 			job, job->seq, job->in->buf, job->in->len,
 			job->out->buf, job->out->len, pct);
 	Trace((zlog, "-- compressed #%ld %3.1f%%%s", job->seq, pct,
@@ -645,7 +650,7 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
 	break;
     case O_RDONLY:
 	pct = (100.0 * job->in->len) / job->out->len;
-	zqFprint(stderr, "       job %p[%ld]:\t%p[%u] <= %p[%u]\t(%3.1f%%)\n",
+	zqFprintf(stderr, "       job %p[%ld]:\t%p[%u] <= %p[%u]\t(%3.1f%%)\n",
 			job, job->seq, job->in->buf, job->in->len,
 			job->out->buf, job->out->len, pct);
 	Trace((zlog, "-- decompressed #%ld %3.1f%%%s", job->seq, pct,
@@ -686,7 +691,7 @@ static rpmzJob rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
 	job->out = rpmzqNewSpace(zq->out_pool);
 /*@=mustfreeonly@*/
 	if (job->out->len < outlen) {
-zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
+fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
 	    job->out = rpmzqDropSpace(job->out);
 	    job->out = xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
@@ -700,7 +705,7 @@ zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__,
 	outlen = 6 * job->in->len;
 	job->out = rpmzqNewSpace(zq->out_pool);
 	if (job->out->len < outlen) {
-zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
+fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
 	    job->out = rpmzqDropSpace(job->out);
 	    job->out = xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
@@ -714,11 +719,11 @@ zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__,
 	    ret = rpmbzDecompressBlock(bz, job);
 	    if (ret != BZ_OUTBUFF_FULL)
 		/*@loopbreak@*/ break;
-zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] realloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
+fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] realloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
 	    if (job->out->use != NULL)
 		job->out = rpmzqDropSpace(job->out);
 	    else {
-zqFprint(stderr, "==> FIXME: %s: job->out %p %p[%u] free\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len);
+fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] free\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len);
 		job->out->buf = _free(job->out->buf);
 		job->out = _free(job->out);
 	    }
@@ -745,7 +750,7 @@ static void rpmzqCompressThread (void *_zq)
     rpmbz bz = rpmbzInit(zq->level, zq->omode);
     rpmzJob job;
 
-zqFprint(stderr, "--> %s(%p) bz %p\n", __FUNCTION__, zq, bz);
+zqFprintf(stderr, "--> %s(%p) bz %p\n", __FUNCTION__, zq, bz);
 
     /* get job, insert write job in list in sorted order, alert write thread */
 /*@-evalorder@*/
@@ -765,7 +770,7 @@ static void rpmzqDecompressThread(void *_zq)
     rpmbz bz = rpmbzInit(zq->level, zq->omode);
     rpmzJob job;
 
-zqFprint(stderr, "--> %s(%p) bz %p\n", __FUNCTION__, zq, bz);
+zqFprintf(stderr, "--> %s(%p) bz %p\n", __FUNCTION__, zq, bz);
 
     /* get job, insert write job in list in sorted order, alert write thread */
 /*@-evalorder@*/
