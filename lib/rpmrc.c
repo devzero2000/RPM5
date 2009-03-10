@@ -572,7 +572,7 @@ static rpmRC rpmCpuinfo(void)
 
     cpuinfo_destroy(cip);
 
-    cpu = mi_re[mi_nre-1].pattern;
+    cpu = mi_re[0].pattern;
     if(cpu != NULL)
     {
 	if (!parseCVOG(cpu, &cvog) && cvog != NULL) {
