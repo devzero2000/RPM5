@@ -747,7 +747,7 @@ static void rpmzqCompressThread (void *_zq)
 	/*@modifies _zq, fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
-    rpmbz bz = rpmbzInit(zq->level, zq->omode);
+    rpmbz bz = rpmbzInit(zq->level, -1, -1, zq->omode);
     rpmzJob job;
 
 zqFprintf(stderr, "--> %s(%p) bz %p\n", __FUNCTION__, zq, bz);
@@ -767,7 +767,7 @@ static void rpmzqDecompressThread(void *_zq)
 	/*@modifies _zq, fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
-    rpmbz bz = rpmbzInit(zq->level, zq->omode);
+    rpmbz bz = rpmbzInit(zq->level, -1, -1, zq->omode);
     rpmzJob job;
 
 zqFprintf(stderr, "--> %s(%p) bz %p\n", __FUNCTION__, zq, bz);

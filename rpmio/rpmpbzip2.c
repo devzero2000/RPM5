@@ -243,7 +243,7 @@ assert(ofn == zq->ofn);
 }
 
 /* read up to count bytes into buf, repeating read() calls as needed */
-static ssize_t rpmzRead(rpmzQueue zq, char *buf, size_t count)
+static ssize_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
@@ -265,7 +265,7 @@ fprintf(stderr, "--> %s(%p,%p[%u]) rc %u\n", __FUNCTION__, zq, buf, (unsigned)co
 }
 
 /* write count bytes, repeating write() calls as needed */
-static ssize_t rpmzWrite(rpmzQueue zq, const char *buf, size_t count)
+static ssize_t rpmzWrite(rpmzQueue zq, const unsigned char *buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -789,7 +789,7 @@ assert(zq->iblocksize == zq->blocksize);
     zq->lastseq = z->NumBlocks;
     zq->omode = O_WRONLY;
 
-    bz = rpmbzInit(zq->level, O_WRONLY);
+    bz = rpmbzInit(zq->level, -1, -1, O_WRONLY);
 
     if (rpmzOpen(zq, zq->ofn) < 0)	/* XXX open ofdno */
 	bail("open error on ", zq->ofn);

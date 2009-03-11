@@ -2558,6 +2558,8 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
  * - bzopen:	[1-9] is block size (modulo 100K)
  * - bzopen:	's' is smallmode
+ * - bzopen:	'q' sets verbosity to 0
+ * = bzopen:	'v' does verbosity++ (up to 4)
  * - HACK:	'.' terminates, rest is type of I/O
  */
 static inline void cvtfmode (const char *m,

@@ -191,7 +191,7 @@ static rpmbz rpmbzFini(/*@only@*/ rpmbz bz)
 }
 
 /*@only@*/
-static rpmbz rpmbzInit(int level, mode_t omode)
+static rpmbz rpmbzInit(int level, int small, int verbosity, mode_t omode)
 	/*@*/
 {
     rpmbz bz = xcalloc(1, sizeof(*bz));
@@ -201,8 +201,8 @@ static rpmbz rpmbzInit(int level, mode_t omode)
     static int _bzdW = 30;
 
     bz->B = (level >= 1 && level <= 9) ? level : _bzdB;
-    bz->S = _bzdS;
-    bz->V = _bzdV;
+    bz->S = (small >= 0) ? small : _bzdS;
+    bz->V = (verbosity >= 0 && verbosity <= 4) ? verbosity : _bzdV;
     bz->W = _bzdW;
     bz->omode = omode;
     return bz;

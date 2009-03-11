@@ -2229,7 +2229,6 @@ assert(0);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
 	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
     _out_buf = _free(_out_buf);
-    job = NULL;
 }
 /*@=nullstate@*/
 
@@ -2437,10 +2436,6 @@ assert(job->out == NULL);
 
 exit:
     _out_buf = _free(_out_buf);
-    zq->_in_prev = _free(zq->_in_prev);
-    zq->_in_pend = _free(zq->_in_pend);
-    job->in = _free(job->in);
-    job = NULL;
 
 }
 

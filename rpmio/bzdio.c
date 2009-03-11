@@ -63,6 +63,8 @@ static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
     rpmbz bz;
     int level = -1;	/* XXX use _bzdB default */
     mode_t omode;
+    int small = -1;	/* XXX use _bzdS default */
+    int verbosity = -1;	/* XXX use _bzdV default */
     const char * s = fmode;
     char stdio[20];
     char *t = stdio;
@@ -94,6 +96,17 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
     case 'b':
 	if (t < te) *t++ = c;
 	/*@switchbreak@*/ break;
+    case 's':
+	if (small < 0) small = 0;
+	small++;
+	/*@switchbreak@*/ break;
+    case 'q':
+	verbosity = 0;
+	/*@switchbreak@*/ break;
+    case 'v':
+	if (verbosity < 0) verbosity = 0;
+	if (verbosity < 4) verbosity++;
+	/*@switchbreak@*/ break;
     default:
 	if (c >= (int)'0' && c <= (int)'9')
 	    level = c - (int)'0';
@@ -101,7 +114,7 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
     }}
     *t = '\0';
 
-    bz = rpmbzInit(level, omode);
+    bz = rpmbzInit(level, small, verbosity, omode);
 
     if (fdno >= 0) {
 	if ((bz->fp = fdopen(fdno, stdio)) != NULL)
@@ -233,7 +246,7 @@ assert(bz->bzfile != NULL);
 assert(rc >= 0);
 	break;
     default:
-	rc = -1;	/* XXX just in case. */
+	rc = -1;
 	if (errmsg != NULL)
 	    *errmsg = rpmbzStrerror(bz);
 	rpmbzClose(bz, 1, NULL);
