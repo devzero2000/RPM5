@@ -71,6 +71,10 @@
 
 #include "debug.h"
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
+
 /*@unchecked@*/
 int _rpmzq_debug = 0;
 
