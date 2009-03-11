@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: xzdio: kill backwards compatibility with ancient lzma utils.
     - proyvind: fix order of archs added throuh libcpuinfo so that
 	rpmPlatformScore() will return correct value.
 
