@@ -1430,8 +1430,9 @@ assert(job != NULL);
 /*@=mustmod@*/
 
 /* buffered reading macros for decompression and listing */
-static size_t jobPull(rpmzQueue zq, /*@null@*/ unsigned char *buf, size_t len)
-	/*@*/
+static size_t rpmzqJobPull(rpmzQueue zq,
+		/*@null@*/ unsigned char *buf, size_t len)
+	/*@modifies *buf @*/
 {
     rpmzJob job = zq->_job;
     size_t togo = len;
@@ -1451,7 +1452,6 @@ assert(job != NULL);
 	job->in->len -= job->in->len;
 	if (load(zq) == 0)
 	    return got;
-	job = zq->_job;		/* XXX prepare for job chaining. */
     }
     if (togo > 0) {
 	if (buf != NULL) {
@@ -1470,7 +1470,7 @@ assert(job != NULL);
     do { size_t jpull = (_len); \
 	unsigned char * jbuf = (unsigned char *)(_buf); \
 assert(jbuf == NULL || jpull < sizeof(_buf)); \
-	if ((nb = jobPull(zq, jbuf, jpull)) != jpull) \
+	if ((nb = rpmzqJobPull(zq, jbuf, jpull)) != jpull) \
 	    return (_rc); \
 	b = jbuf; \
     } while (0);
@@ -1479,16 +1479,19 @@ assert(jbuf == NULL || jpull < sizeof(_buf)); \
     do { size_t jpull = (_len); \
 	unsigned char * jbuf = (unsigned char *)(_buf); \
 assert(jbuf == NULL || jpull < sizeof(_buf)); \
-	if ((nb = jobPull(zq, jbuf, jpull)) != jpull) \
+	if ((nb = rpmzqJobPull(zq, jbuf, jpull)) != jpull) \
 	    bail((_why), zq->ifn); \
 	b = jbuf; \
     } while (0);
 
-#define GET() ((!job->more) || (!(job->in && job->in->len) && load(zq) == 0) ? EOF : \
-               (job->in->len--, *job->in->buf++))
-#define GET2() (tmp2 = GET(), tmp2 + (GET() << 8))
-#define GET4() (tmp4 = GET2(), tmp4 + ((unsigned long)(GET2()) << 16))
-#define SKIP(_dist) PULL(NULL, (_dist), -1)
+#define	GET()	(nb--, *b++)
+#define GET2()	(tmp2 = GET(), tmp2 + (GET() << 8))
+#define GET4()	(tmp4 = GET2(), tmp4 + ((unsigned long)(GET2()) << 16))
+#define	SKIP(_nskip) \
+    do { size_t nskip = (_nskip); \
+assert(nskip >= nb); \
+	b += nskip, nb -= nskip; \
+    } while (0);
 
 /* convert MS-DOS date and time to a Unix time, assuming current timezone
    (you got a better idea?) */
@@ -1523,7 +1526,6 @@ static int rpmzReadExtra(rpmzQueue zq, unsigned len, int save)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, fileSystem, internalState @*/
 {
-    rpmzJob job = zq->_job;
     rpmzh zh = zq->_zh;
     unsigned id;
     unsigned size;
@@ -1532,13 +1534,11 @@ static int rpmzReadExtra(rpmzQueue zq, unsigned len, int save)
     unsigned char _b[64], *b = _b;
     size_t nb = 0;
 
-assert(job != NULL);
     /* process extra blocks */
     while (len >= 4) {
+	PULL(_b, 4, -1);
 	id = GET2();
 	size = GET2();
-	if (!job->more)
-	    return -1;
 	len -= 4;
 	if (size > len)
 	    break;
@@ -1546,11 +1546,13 @@ assert(job != NULL);
 	if (id == 0x0001) {
 	    /* Zip64 Extended Information Extra Field */
 	    if (zh->zip_ulen == LOW32 && size >= 8) {
+		PULL(_b, 8, -1);
 		zh->zip_ulen = GET4();
 		SKIP(4);
 		size -= 8;
 	    }
 	    if (zh->zip_clen == LOW32 && size >= 8) {
+		PULL(_b, 8, -1);
 		zh->zip_clen = GET4();
 		SKIP(4);
 		size -= 8;
@@ -1559,22 +1561,25 @@ assert(job != NULL);
 	if (save) {
 	    if ((id == 0x000d || id == 0x5855) && size >= 8) {
 		/* PKWare Unix or Info-ZIP Type 1 Unix block */
+		PULL(_b, 8, -1);
 		SKIP(4);
 		zh->stamp = tolong(GET4());
 		size -= 8;
 	    }
 	    if (id == 0x5455 && size >= 5) {
 		/* Extended Timestamp block */
+		PULL(_b, 1, -1);
 		size--;
 		if (GET() & 1) {
+		    PULL(_b, 4, -1);
 		    zh->stamp = tolong(GET4());
 		    size -= 4;
 		}
 	    }
 	}
-	SKIP(size);
+	PULL(NULL, size, -1);
     }
-    SKIP(len);
+    PULL(NULL, len, -1);
     return 0;
 }
 
@@ -1595,6 +1600,7 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
     unsigned fname, extra;      /* name and extra field lengths */
     unsigned tmp2;              /* for macro */
     unsigned long tmp4;         /* for macro */
+    char * next;
     unsigned char _b[64], *b = _b;
     size_t nb = 0;
 
@@ -1607,12 +1613,11 @@ assert(job != NULL);
 
     /* see if it's a gzip, zlib, or lzw file */
     zq->format = RPMZ_FORMAT_GZIP;
+
+    PULL(_b, 1, -1);
     magic = GET() << 8;
-    if (!job->more)
-	return -1;
+    PULL(_b, 1, -2);
     magic += GET();
-    if (!job->more)
-	return -2;
     if (magic % 31 == 0) {          /* it's zlib */
 	zq->format = RPMZ_FORMAT_ZLIB;
 	return (int)((magic >> 8) & 0xf);
@@ -1620,19 +1625,17 @@ assert(job != NULL);
     if (magic == 0x1f9d)            /* it's lzw */
 	return 256;
     if (magic == 0x504b) {          /* it's zip */
+	PULL(_b, 4, -3);
 	if (GET() != 3 || GET() != 4)
 	    return -3;
 	SKIP(2);
+	PULL(_b, 24, -3);
 	flags = GET2();
-	if (!job->more)
-	    return -3;
 	if (flags & 0xfff0)
 	    return -4;
 	method = GET2();
 	if (flags & 1)              /* encrypted */
 	    method = 255;           /* mark as unknown method */
-	if (!job->more)
-	    return -3;
 	if (save)
 	    zh->stamp = dos2time(GET4());
 	else
@@ -1642,25 +1645,19 @@ assert(job != NULL);
 	zh->zip_ulen = GET4();
 	fname = GET2();
 	extra = GET2();
-	if (save) {
-/*@-mustfreeonly@*/
-	    char *next = zh->hname = xmalloc(fname + 1);
-/*@=mustfreeonly@*/
-	    while (fname > job->in->len) {
-		memcpy(next, job->in->buf, job->in->len);
-		fname -= job->in->len;
-		next += job->in->len;
-		if (load(zq) == 0)
-		    return -3;
-	    }
-	    memcpy(next, job->in->buf, fname);
-	    job->in->len -= fname;
-	    job->in->buf += fname;
-	    next += fname;
-	    *next = '\0';
+
+	next = xmalloc(fname + 1);
+	if (rpmzqJobPull(zq, (unsigned char *)next, fname) != fname) {
+	    next = _free(next);
+	    return -3;
 	}
-	else
-	    SKIP(fname);
+	if (save) {
+	    next[fname] = '\0';
+/*@-mustfreeonly@*/
+	    zh->hname = next;
+/*@=mustfreeonly@*/
+	} else
+	    next = _free(next);
 	rpmzReadExtra(zq, extra, save);
 	zq->format = (flags & 8) ? RPMZ_FORMAT_ZIP3 : RPMZ_FORMAT_ZIP2;
 	return (!job->more) ? -3 : method;
@@ -1669,10 +1666,9 @@ assert(job != NULL);
 	return -2;
 
     /* it's gzip -- get method and flags */
+    PULL(_b, 8, -1);
     method = GET();
     flags = GET();
-    if (!job->more)
-	return -1;
     if (flags & 0xe0)
 	return -4;
 
@@ -1687,52 +1683,48 @@ assert(job != NULL);
 
     /* skip extra field, if present */
     if (flags & 4) {
+	PULL(_b, 2, -3);
 	extra = GET2();
-	if (!job->more)
-	    return -3;
-	SKIP(extra);
+	PULL(NULL, extra, -3);
     }
 
     /* read file name, if present, into allocated memory */
-    if ((flags & 8) && save) {
-	unsigned char *end;
-	size_t copy, have, size = 128;
+    if (flags & 8) {
+	size_t size = 128;
+	size_t have = 0;
 /*@-mustfreeonly@*/
-	zh->hname = xmalloc(size);
+	next = xmalloc(size+1);
 /*@=mustfreeonly@*/
-	have = 0;
 	do {
-	    if (job->in->len == 0 && load(zq) == 0)
+	    if (rpmzqJobPull(zq, (unsigned char *)next+have, 1) != 1) {
+		next = _free(next);
 		return -3;
-	    end = memchr(job->in->buf, 0, job->in->len);
-	    copy = end == NULL ? job->in->len : (size_t)(end - job->in->buf) + 1;
-	    if (have + copy > size) {
-		while (have + copy > (size <<= 1))
-		    ;
-		zh->hname = realloc(zh->hname, size);
-		if (zh->hname == NULL)
-		    bail("not enough memory", "");
 	    }
-	    memcpy(zh->hname + have, job->in->buf, copy);
-	    have += copy;
-	    job->in->len -= copy;
-	    job->in->buf += copy;
-	} while (end == NULL);
+	    if (next[have] == '\0')
+		break;
+	    have++;
+	    if (have == size) {
+		size += size;
+		next = xrealloc(next, size);
+	    }
+	} while (1);
+	next[have] = '\0';
+	next = xrealloc(next, have+1);
     }
-    else if (flags & 8)
-	while (GET() != 0)
-	    if (!job->more)
-		return -3;
+    if (save)
+	zh->hname = next;
+    else
+	next = _free(next);
 
     /* skip comment */
     if (flags & 16)
-	while (GET() != 0)
-	    if (!job->more)
-		return -3;
+	do {
+	    PULL(_b, 1, -3);
+	} while (*b != '\0');
 
     /* skip header crc */
     if (flags & 2)
-	SKIP(2);
+	PULL(NULL, 2, -3);
 
     /* return compression method */
     return method;
@@ -2213,11 +2205,10 @@ fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u]\n", __FUNCTION__, zq, job, (unsi
 	switch (zq->format) {
 	case RPMZ_FORMAT_ZIP3:	/* data descriptor follows */
 	    /* read original version of data descriptor*/
+	    BPULL(_b, 12, "corrupted zip entry -- missing trailer: ");
 	    zh->zip_crc = GET4();
 	    zh->zip_clen = GET4();
 	    zh->zip_ulen = GET4();
-	    if (!job->more)
-		bail("corrupted zip entry -- missing trailer: ", zq->ifn);
 
 	    /* if crc doesn't match, try info-zip variant with sig */
 	    if (zh->zip_crc != job->check) {
@@ -2225,16 +2216,16 @@ fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u]\n", __FUNCTION__, zq, job, (unsi
 		    bail("corrupted zip entry -- crc32 mismatch: ", zq->ifn);
 		zh->zip_crc = zh->zip_clen;
 		zh->zip_clen = zh->zip_ulen;
+		BPULL(_b, 4, "corrupted zip entry -- missing trailer: ");
 		zh->zip_ulen = GET4();
 	    }
 
 	    /* if second length doesn't match, try 64-bit lengths */
 	    if (zh->zip_ulen != (zq->out_tot & LOW32)) {
+		BPULL(_b, 8, "corrupted zip entry -- missing trailer: ");
 		zh->zip_ulen = GET4();
 		GET4();
 	    }
-	    if (!job->more)
-		bail("corrupted zip entry -- missing trailer: ", zq->ifn);
 	    /*@fallthrough@*/
 	case RPMZ_FORMAT_ZIP2:
 	    if (zh->zip_clen != (clen & LOW32) || zh->zip_ulen != (zq->out_tot & LOW32))
@@ -2242,20 +2233,18 @@ fprintf(stderr, "--- %s(%p)\tjob %p[%u]: %p[%u]\n", __FUNCTION__, zq, job, (unsi
 	    check = zh->zip_crc;
 	    break;
 	case RPMZ_FORMAT_ZLIB:	/* zlib (big-endian) trailer */
+	    BPULL(_b, 4, "corrupted zlib stream -- missing trailer: ");
 	    check = GET() << 24;
 	    check += GET() << 16;
 	    check += GET() << 8;
 	    check += GET();
-	    if (!job->more)
-		bail("corrupted zlib stream -- missing trailer: ", zq->ifn);
 	    if (check != job->check)
 		bail("corrupted zlib stream -- adler32 mismatch: ", zq->ifn);
 	    break;
 	case RPMZ_FORMAT_GZIP:	/* gzip trailer */
+	    BPULL(_b, 8, "corrupted gzip stream -- missing trailer: ");
 	    check = GET4();
 	    len = GET4();
-	    if (!job->more)
-		bail("corrupted gzip stream -- missing trailer: ", zq->ifn);
 	    if (check != job->check)
 		bail("corrupted gzip stream -- crc32 mismatch: ", zq->ifn);
 	    if (len != (zq->out_tot & LOW32))
@@ -2348,9 +2337,10 @@ assert(job->out == NULL);
 
     /* process remainder of compress header -- a flags byte */
     zq->out_tot = 0;
+
+    BPULL(_b, 1, "missing lzw data: ");
+
     flags = GET();
-    if (!job->more)
-	bail("missing lzw data: ", zq->ifn);
     if (flags & 0x60)
 	bail("unknown lzw flags set: ", zq->ifn);
     max = flags & 0x1f;
@@ -2367,13 +2357,15 @@ assert(job->out == NULL);
 
     /* set up: get first 9-bit code, which is the first decompressed byte, but
        don't create a table entry until the next code */
+    nb = rpmzqJobPull(zq, _b, 2);
+    if (nb == 0)                            /* no compressed data is ok */
+	goto exit;
+    b = _b;
     got = GET();
-    if (!job->more)
-	goto exit;                          /* no compressed data is ok */
     final = prev = (unsigned)got;           /* low 8 bits of code */
-    got = GET();
-    if (!job->more || (got & 1) != 0)       /* missing a bit or code >= 256 */
+    if (nb == 0 && (got & 1) != 0)          /* missing a bit or code >= 256 */
 	bail("invalid lzw code: ", zq->ifn);
+    got = GET();
     rem = (unsigned)got >> 1;               /* remaining 7 bits */
     left = 7;
     chunk = bits - 2;                       /* 7 bytes left in this chunk */
@@ -2395,21 +2387,24 @@ assert(job->out == NULL);
 	if (chunk == 0)                     /* decrement chunk modulo bits */
 	    chunk = bits;
 	code = rem;                         /* low bits of code */
-	got = GET();
-	if (!job->more) {                   /* EOF is end of compressed data */
+
+	nb = rpmzqJobPull(zq, _b, 1);
+	if (nb != 1) {                      /* EOF is end of compressed data */
 	    /* write remaining buffered output */
 	    zq->out_tot += outcnt;
 	    if (outcnt && zq->mode == RPMZ_MODE_DECOMPRESS)
 		rpmzWrite(zq, _out_buf, outcnt);
 	    goto exit;
 	}
+	b = _b;
+
+	got = GET();
 	code += (unsigned)got << left;      /* middle (or high) bits of code */
 	left += 8;
 	chunk--;
 	if (bits > left) {                  /* need more bits */
+	    BPULL(_b, 1, "invalid lzw code: ");
 	    got = GET();
-	    if (!job->more)                 /* can't end in middle of code */
-		bail("invalid lzw code: ", zq->ifn);
 	    code += (unsigned)got << left;  /* high bits of code */
 	    left += 8;
 	    chunk--;
@@ -3117,7 +3112,7 @@ exit:
     if (zq->_job != NULL) {
 	rpmzJob job = zq->_job;
 	if (zq->threads > 1) {
-	    if (job->in->buf != NULL) {
+	    if (job->in != NULL && job->in->buf != NULL) {
 		job->in->buf = zq->_in_prev;
 		zq->_in_prev = NULL;
 		job->in = rpmzqDropSpace(job->in);
