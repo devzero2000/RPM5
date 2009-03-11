@@ -30,7 +30,7 @@ my @objects = qw(
 );
 
 # teach MakeMaker some Mac OS X LDFLAGS:
-my @LDFLAGS = qw(@LDFLAGS@);
+my @LDFLAGS = qw(@LDFLAGS@ @WITH_PERL_LIBS@ $(CCCDLFLAGS) $(CCDLFLAGS) -L$(PERL_ARCHLIB)/CORE -lperl );
 my $uname = `uname`; chomp($uname);
 foreach (@LDFLAGS) {
     if ("$uname" eq "Darwin" && m/^(-arch|ppc|i386|ppc64|x86_64)$/) {

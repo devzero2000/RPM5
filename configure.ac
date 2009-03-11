@@ -918,6 +918,10 @@ AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux su
 dnl # optional Perl language bindings
 WITH_PERL_SUBDIR=""
 WITH_PERL_SUBPACKAGE=0
+WITH_PERL_LIBS=""
+if test ".$WITH_PTHREADS" = .yes; then
+    WITH_PERL_LIBS="-lpthread"
+fi
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]), [
     if test ".$withval" != .no; then
 	    PERL_INSTALLDIRS=""
@@ -937,6 +941,8 @@ AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bi
 ])
 AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
+AC_SUBST(WITH_PERL_LIBS)
+
 
 dnl # optional Python language bindings
 WITH_PYTHON_SUBDIR=""
