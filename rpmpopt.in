@@ -65,8 +65,12 @@ rpm	alias --scripts:yaml --qf '\
 	--POPTdesc=$"list install/erase scriptlets (YAML markup)"
 
 #==============================================================================
+rpm     alias --danglinglink  --nofiles  \
+          --pipe "set $(grep '^/' | sort -u) ; [ -L  \"$1\" ] && echo \"$1\" " \
+        --POPTdesc=$"display link needed, but not provided, by packages"
+
 rpm     alias --orphandirs --nofiles \
-                   --pipe "grep '^/' | sort -u" \
+          --pipe "set $(grep '^/' | sort -u) ; [ -d  \"$1\" ] && echo \"$1\" " \
         --POPTdesc=$"display directories needed, but not provided, by packages"
 
 rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
