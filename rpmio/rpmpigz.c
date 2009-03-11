@@ -1448,7 +1448,10 @@ assert(job != NULL);
 	}
 	got += job->in->len;
 	togo -= job->in->len;
-	job->in->buf += job->in->len;
+	{   unsigned char * _buf = job->in->buf;
+	    _buf += job->in->len;
+	    job->in->buf = _buf;	/* XXX don't change job->in->buf?!? */
+	}
 	job->in->len -= job->in->len;
 	if (load(zq) == 0)
 	    return got;
@@ -1458,7 +1461,10 @@ assert(job != NULL);
 	    memcpy(buf, job->in->buf, togo);
 	    buf += togo;
 	}
-	job->in->buf += togo;
+	{   unsigned char * _buf = job->in->buf;
+	    _buf += togo;
+	    job->in->buf = _buf;	/* XXX don't change job->in->buf?!? */
+	}
 	job->in->len -= togo;
 	got += togo;
 	togo -= togo;
@@ -1858,6 +1864,7 @@ static void rpmzListInfo(rpmzQueue zq)
     unsigned char tail[8];  /* trailer containing check and length */
     unsigned long check;    /* check value from trailer */
     unsigned long len;      /* check length from trailer */
+    unsigned char * bufend;
 
 assert(job != NULL);
 assert(job->out == NULL);
@@ -1887,9 +1894,12 @@ assert(job->out == NULL);
 	    check = 0;
 	    do {
 		len = job->in->len < 4 ? job->in->len : 4;
-		job->in->buf += job->in->len - len;
+		bufend = job->in->buf;
+		bufend += job->in->len;
+		bufend -= len;
 		while (len--)
-		    check = (check << 8) + *job->in->buf++;
+		    check = (check << 8) + *bufend++;
+		job->in->buf = bufend;	/* XXX don't change job->in->buf?!? */
 	    } while (load(zq) != 0);
 	    check &= LOW32;
 	}
@@ -1927,17 +1937,20 @@ assert(job->out == NULL);
 	    return;
 	}
 	zq->in_tot = job->in->len - 8;     /* compressed size */
-	memcpy(tail, job->in->buf + (job->in->len - 8), 8);
+	bufend = job->in->buf;
+	bufend += job->in->len;
+	memcpy(tail, bufend - 8, 8);
     }
     else if ((at = lseek(zq->ifdno, -8, SEEK_END)) != -1) {
 	zq->in_tot = at - zq->in_tot + job->in->len; /* compressed size */
 	rpmzRead(zq, tail, 8);           /* get trailer */
-    }
-    else {                              /* can't seek */
-	at = zq->in_tot - job->in->len;    /* save header size */
+    } else {                             /* can't seek */
+	at = zq->in_tot - job->in->len;  /* save header size */
 	do {
 	    n = job->in->len < 8 ? job->in->len : 8;
-	    memcpy(tail, job->in->buf + (job->in->len - n), n);
+	    bufend = job->in->buf;
+	    bufend += job->in->len;
+	    memcpy(tail, bufend - n, n);
 	    load(zq);
 	} while (job->in->len == zq->_in_buf_allocated);       /* read until end */
 	if (job->in->len < 8) {
@@ -1955,8 +1968,11 @@ assert(job->out == NULL);
 		memcpy(tail + 8 - job->in->len, job->in->buf, job->in->len);
 	    }
 	}
-	else
-	    memcpy(tail, job->in->buf + (job->in->len - 8), 8);
+	else {
+	    bufend = job->in->buf;
+	    bufend += job->in->len;
+	    memcpy(tail, bufend - 8, 8);
+	}
 	zq->in_tot -= at + 8;
     }
     if (zq->in_tot < 2) {
@@ -2290,7 +2306,10 @@ assert(0);
 	    } \
 	} \
 	job->in->len -= chunk; \
-	job->in->buf += chunk; \
+	{   unsigned char * _buf = job->in->buf; \
+	    _buf += job->in->len; \
+	    job->in->buf = _buf; /* XXX don't change job->in->buf?!? */ \
+	} \
 	chunk = 0; \
     } while (0)
 
