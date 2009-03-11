@@ -1430,21 +1430,65 @@ assert(job != NULL);
 /*@=mustmod@*/
 
 /* buffered reading macros for decompression and listing */
+static size_t jobPull(rpmzQueue zq, /*@null@*/ unsigned char *buf, size_t len)
+	/*@*/
+{
+    rpmzJob job = zq->_job;
+    size_t togo = len;
+    size_t got = 0;
+
+assert(job != NULL);
+    if (!job->more || (!(job->in && job->in->len) && load(zq) == 0))
+	return got;
+    while (togo > job->in->len) {
+	if (buf != NULL) {
+	    memcpy(buf, job->in->buf, job->in->len);
+	    buf += job->in->len;
+	}
+	got += job->in->len;
+	togo -= job->in->len;
+	job->in->buf += job->in->len;
+	job->in->len -= job->in->len;
+	if (load(zq) == 0)
+	    return got;
+	job = zq->_job;		/* XXX prepare for job chaining. */
+    }
+    if (togo > 0) {
+	if (buf != NULL) {
+	    memcpy(buf, job->in->buf, togo);
+	    buf += togo;
+	}
+	job->in->buf += togo;
+	job->in->len -= togo;
+	got += togo;
+	togo -= togo;
+    }
+    return got;
+}
+
+#define PULL(_buf, _len, _rc) \
+    do { size_t jpull = (_len); \
+	unsigned char * jbuf = (unsigned char *)(_buf); \
+assert(jbuf == NULL || jpull < sizeof(_buf)); \
+	if ((nb = jobPull(zq, jbuf, jpull)) != jpull) \
+	    return (_rc); \
+	b = jbuf; \
+    } while (0);
+
+#define BPULL(_buf, _len, _why) \
+    do { size_t jpull = (_len); \
+	unsigned char * jbuf = (unsigned char *)(_buf); \
+assert(jbuf == NULL || jpull < sizeof(_buf)); \
+	if ((nb = jobPull(zq, jbuf, jpull)) != jpull) \
+	    bail((_why), zq->ifn); \
+	b = jbuf; \
+    } while (0);
+
 #define GET() ((!job->more) || (!(job->in && job->in->len) && load(zq) == 0) ? EOF : \
                (job->in->len--, *job->in->buf++))
 #define GET2() (tmp2 = GET(), tmp2 + (GET() << 8))
 #define GET4() (tmp4 = GET2(), tmp4 + ((unsigned long)(GET2()) << 16))
-#define SKIP(dist) \
-    do { \
-	size_t togo = (dist); \
-	while (togo > job->in->len) { \
-	    togo -= job->in->len; \
-	    if (load(zq) == 0) \
-		return -1; \
-	} \
-	job->in->len -= togo; \
-	job->in->buf += togo; \
-    } while (0)
+#define SKIP(_dist) PULL(NULL, (_dist), -1)
 
 /* convert MS-DOS date and time to a Unix time, assuming current timezone
    (you got a better idea?) */
@@ -1485,6 +1529,8 @@ static int rpmzReadExtra(rpmzQueue zq, unsigned len, int save)
     unsigned size;
     unsigned tmp2;
     unsigned long tmp4;
+    unsigned char _b[64], *b = _b;
+    size_t nb = 0;
 
 assert(job != NULL);
     /* process extra blocks */
@@ -1549,6 +1595,8 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
     unsigned fname, extra;      /* name and extra field lengths */
     unsigned tmp2;              /* for macro */
     unsigned long tmp4;         /* for macro */
+    unsigned char _b[64], *b = _b;
+    size_t nb = 0;
 
 assert(job != NULL);
     /* clear return information */
@@ -2111,6 +2159,8 @@ static void rpmzInflateCheck(rpmzQueue zq)
     unsigned tmp2;
     unsigned long tmp4;
     off_t clen;
+    unsigned char _b[64], *b = _b;
+    size_t nb = 0;
 
 assert(job != NULL);
 assert(job->out == NULL);
@@ -2289,6 +2339,8 @@ static void rpmzDecompressLZW(rpmzQueue zq)
     unsigned stack;             /* next position for reversed string */
     unsigned outcnt;            /* bytes in output buffer */
     unsigned char *p;
+    unsigned char _b[64], *b = _b;
+    size_t nb = 0;
 
 assert(job != NULL);
 assert(job->out == NULL);
