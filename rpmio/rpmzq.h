@@ -258,8 +258,13 @@ struct rpmzQueue_s {
 
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
+
     unsigned char * _in_prev;	/*!< prev buffer waiting to free */
-    rpmzSpace _in_pend;		/*!< pending space to load. */
+/*@only@*/ /*@null@*/
+    yarnLock read_first;	/*!< lowest sequence number in list */
+/*@null@*/
+    rpmzJob read_head;		/*!< list of read jobs */
+
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
 /*@relnull@*/
@@ -388,6 +393,18 @@ rpmzJob rpmzqDelWJob(rpmzQueue zq, long seq)
 /**
  */
 void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zq, job, fileSystem, internalState @*/;
+
+/**
+ */
+rpmzJob rpmzqDelRJob(rpmzQueue zq, long seq)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zq, fileSystem, internalState @*/;
+
+/**
+ */
+void rpmzqAddRJob(rpmzQueue zq, rpmzJob job)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, job, fileSystem, internalState @*/;
 

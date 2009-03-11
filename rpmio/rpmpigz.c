@@ -1289,13 +1289,18 @@ static void load_read_thread(void *_zq)
 
     Trace((zlog, "-- launched decompress read thread"));
     do {
+	rpmzJob job;
+	static long seq = 0;
 	yarnPossess(zq->load_state);
 	yarnWaitFor(zq->load_state, TO_BE, 1);
 
-assert(zq->_in_pend == NULL);
-	zq->_in_pend = rpmzqNewSpace(zq->load_ipool);
-	nread = rpmzRead(zq, zq->_in_pend->buf, zq->_in_pend->len);
-	zq->_in_pend->len = nread;
+	job = rpmzqNewJob(seq++);
+	job->in = rpmzqNewSpace(zq->load_ipool);
+	nread = rpmzRead(zq, job->in->buf, job->in->len);
+	job->more = (job->in->len == nread);
+	job->in->len = nread;
+
+	rpmzqAddRJob(zq, job);
 
 	Trace((zlog, "-- decompress read thread read %lu bytes", nread));
 	yarnTwist(zq->load_state, TO, 0);
@@ -1331,6 +1336,8 @@ assert(job->in->len == 0);
     /* if first time in or zq->threads == 1, read a buffer to have something to
        return, otherwise wait for the previous read job to complete */
     if (zq->threads > 1) {
+	static long seq = 0;
+	rpmzJob njob;
 	/* if first time, fire up the read thread, ask for a read */
 	if (zq->_in_which == -1) {
 	    zq->_in_which = 1;
@@ -1350,9 +1357,12 @@ assert(job->in->len == 0);
 	    job->in->buf = zq->_in_prev;
 	    job->in = rpmzqDropSpace(job->in);
 	}
-	job->in = zq->_in_pend;
+	njob = rpmzqDelRJob(zq, seq++);
+assert(njob != NULL);
+	job->in = njob->in;
+	njob->in = NULL;
+	njob = rpmzqFreeJob(njob);
 	zq->_in_prev = job->in->buf;
-	zq->_in_pend = NULL;
 
 	/* if not at end of file, alert read thread to load next buffer,
 	 * alternate between in_buf and in_buf2 */
@@ -1373,19 +1383,17 @@ assert(job->in->len == 0);
 #endif
     {	size_t nread;
 	/* don't use threads -- simply read a buffer into zq->_in_buf */
-assert(zq->_in_pend == NULL);
-	zq->_in_pend = xcalloc(1, sizeof(*zq->_in_pend));
-	zq->_in_pend->len = zq->_in_buf_allocated;
-	zq->_in_pend->buf = xmalloc(zq->_in_pend->len);
-
-	nread = rpmzRead(zq, zq->_in_pend->buf, zq->_in_pend->len);
-	zq->_in_pend->len = nread;
-
+	
 	zq->_in_prev = _free(zq->_in_prev);
 	job->in = _free(job->in);
-	job->in = zq->_in_pend;
+	job->in = xcalloc(1, sizeof(*job->in));
+	job->in->len = zq->_in_buf_allocated;
+	job->in->buf = xmalloc(job->in->len);
+
+	nread = rpmzRead(zq, job->in->buf, job->in->len);
+	job->in->len = nread;
+
 	zq->_in_prev = job->in->buf;
-	zq->_in_pend = NULL;
     }
 
     /* note end of file */
@@ -2697,6 +2705,8 @@ assert(zh->hname == NULL);
 	if (zq->_job == NULL) {	/* XXX zq->_job needs to exist. */
 	    zq->_job = rpmzqNewJob(0);
 	    if (zq->threads > 1) {
+		if (zq->read_first == NULL)
+		    zq->read_first = yarnNewLock(-1);
 		if (zq->load_ipool == NULL)
 		    zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
 		if (zq->load_opool == NULL) 
@@ -2734,6 +2744,8 @@ assert(zh->hname == NULL);
 	if (zq->_job == NULL) {	/* XXX zq->_job needs to exist. */
 	    zq->_job = rpmzqNewJob(0);
 	    if (zq->threads > 1) {
+		if (zq->read_first == NULL)
+		    zq->read_first = yarnNewLock(-1);
 		if (zq->load_ipool == NULL)
 		    zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
 		if (zq->load_opool == NULL) 
@@ -3147,8 +3159,6 @@ exit:
     if (zq->load_ipool != NULL) {
 	rpmzLog zlog = zq->zlog;
 	int caught;
-	if (zq->_in_pend != NULL)
-	    zq->_in_pend = rpmzqDropSpace(zq->_in_pend);
 	zq->load_ipool = rpmzqFreePool(zq->load_ipool, &caught);
 	Trace((zlog, "-- freed %d input buffers", caught));
     }
@@ -3156,10 +3166,11 @@ exit:
 	rpmzLog zlog = zq->zlog;
 	int caught;
 	zq->load_opool = rpmzqFreePool(zq->load_opool, &caught);
-	Trace((zlog, "-- freed %d input buffers", caught));
+	Trace((zlog, "-- freed %d output buffers", caught));
     }
     zq->_in_prev = _free(zq->_in_prev);
-    zq->_in_pend = _free(zq->_in_pend);
+    if (zq->read_first != NULL)
+	zq->read_first = yarnFreeLock(zq->read_first);
     zq->_zh = _free(zq->_zh);
 
     rpmzNewOpts(zq);
