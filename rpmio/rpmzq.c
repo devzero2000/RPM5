@@ -38,6 +38,8 @@
 
 #include "system.h"
 
+#if defined(HAVE_BZLIB_H)
+
 #include <rpmiotypes.h>
 #include <rpmlog.h>
 
@@ -847,3 +849,5 @@ assert(zq->compress_head == NULL && yarnPeekLock(zq->compress_have) == 0);
 assert(zq->write_head == NULL);
     yarnTwist(zq->write_first, TO, -1);
 }
+
+#endif /* HAVE_BZLIB_H */
