@@ -995,7 +995,7 @@ static void compress_thread(void *_zq)
 	 * for the worst case expansion of the input buffer size, plus five
 	 * bytes for the terminating stored block) */
 /*@-mustfreeonly@*/
-	job->out = rpmzqNewSpace(zq->out_pool);
+	job->out = rpmzqNewSpace(zq->out_pool, zq->out_pool->size);
 /*@=mustfreeonly@*/
 
 	/* Compress the job. */
@@ -1087,7 +1087,7 @@ assert(job != NULL);
 	zh->check = COMB(zh->check, job->check, len);
 
 	/* free the job */
-	job = rpmzqFreeJob(job);
+	job = rpmzqDropJob(job);
 
 	/* get the next buffer in sequence */
 	seq++;
@@ -1132,7 +1132,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
        the output of the compress threads) */
     seq = 0;
     prev = NULL;
-    next = rpmzqNewSpace(zq->in_pool);
+    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
     next->len = rpmzRead(zq, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
@@ -1146,7 +1146,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	if (next->len < next->pool->size)
 	    more = 0;
 	else {
-	    next = rpmzqNewSpace(zq->in_pool);
+	    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
 	    next->len = rpmzRead(zq, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
@@ -1331,7 +1331,7 @@ static void load_read_thread(void *_zq)
 	yarnWaitFor(zq->load_state, TO_BE, 1);
 
 	job = rpmzqNewJob(seq++);
-	job->in = rpmzqNewSpace(zq->load_ipool);
+	job->in = rpmzqNewSpace(zq->load_ipool, zq->load_ipool->size);
 	nread = rpmzRead(zq, job->in->buf, job->in->len);
 	job->more = (job->in->len == nread);
 	job->in->len = nread;
@@ -1389,14 +1389,13 @@ assert(job->in->len == 0);
 	yarnRelease(zq->load_state);
 
 	/* set up input buffer with the data just read */
-	if (job->in != NULL)
-	    job->in = rpmzqDropSpace(job->in);
+	job->in = rpmzqDropSpace(job->in);
 	njob = rpmzqDelRJob(zq, seq++);
 assert(njob != NULL);
 	job->in = njob->in;
 	job->seq = njob->seq;	/* XXX propagate job->seq for now */
 	njob->in = NULL;
-	njob = rpmzqFreeJob(njob);
+	njob = rpmzqDropJob(njob);
 
 	/* if not at end of file, alert read thread to load next buffer,
 	 * alternate between in_buf and in_buf2 */
@@ -1418,13 +1417,8 @@ assert(njob != NULL);
     {	size_t nread;
 	/* don't use threads -- free old buffer, malloc and read a new buffer */
 	
-	job->in->ptr = _free(job->in->ptr);
-	job->in = _free(job->in);
-	job->in = xcalloc(1, sizeof(*job->in));
-	job->in->len = zq->_in_buf_allocated;
-	job->in->buf = xmalloc(job->in->len);
-	job->in->ptr = job->in->buf;
-
+	job->in = rpmzqDropSpace(job->in);
+	job->in = rpmzqNewSpace(NULL, zq->_in_buf_allocated);
 	nread = rpmzRead(zq, job->in->buf, job->in->len);
 	job->in->len = nread;
     }
@@ -2162,7 +2156,7 @@ assert(job != NULL);
 	yarnWaitFor(zq->outb_write_more, TO_BE, 0);
 
 	/* queue the output and alert the worker bees */
-	job->out = rpmzqNewSpace(zq->load_opool);
+	job->out = rpmzqNewSpace(zq->load_opool, zq->load_opool->size);
 assert(job->out->len >= len);
 	job->out->len = len;
 	if (len > 0) {
@@ -3212,16 +3206,10 @@ exit:
     /* done -- release resources, show log */
     if (zq->_job != NULL) {
 	rpmzJob job = zq->_job;
-	if (zq->threads > 1) {
-	    if (job->in != NULL)
-		job->in = rpmzqDropSpace(job->in);
-	} else {
-	    job->in->ptr = _free(job->in->ptr);
-	    job->in = _free(job->in);
-	    job->out = _free(job->out);
-	}
+	job->in = rpmzqDropSpace(job->in);
+	job->out = rpmzqDropSpace(job->out);
 	job = NULL;
-	zq->_job = rpmzqFreeJob(zq->_job);
+	zq->_job = rpmzqDropJob(zq->_job);
     }
 	
     if (zq->load_ipool != NULL) {

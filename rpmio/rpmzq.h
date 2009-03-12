@@ -138,6 +138,7 @@ struct rpmzPool_s {
 /**
  */
 struct rpmzJob_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
     long seq;			/*!< sequence number */
     int more;			/*!< true if this is not the last chunk */
 /*@relnull@*/
@@ -147,7 +148,7 @@ struct rpmzJob_s {
     unsigned long check;	/*!< check value for input data */
     yarnLock calc;		/*!< released when check calculation complete */
 /*@dependent@*/ /*@null@*/
-    rpmzJob next;		/*!< next job in the list (either list) */
+    rpmzJob next;		/*!< for job linked list */
 };
 
 /**
@@ -299,21 +300,29 @@ rpmzPool rpmzqNewPool(size_t size, int limit)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-/* get a space from a pool -- the use count is initially set to one, so there
-   is no need to call rpmzUseSpace() for the first use */
-rpmzSpace rpmzqNewSpace(rpmzPool pool)
+/**
+ * Get a space from a pool (or malloc if pool == NULL).
+ * The use count is initially set to one, so there is no need to call
+ * rpmzUseSpace() for the first use.
+ */
+rpmzSpace rpmzqNewSpace(/*@null@*/ rpmzPool pool, size_t len)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies pool, fileSystem, internalState @*/;
 
-/* increment the use count to require one more drop before returning this space
-   to the pool */
+/**
+ * Increment the use count to require one more drop before returning
+ * this space to the pool.
+ */
 void rpmzqUseSpace(rpmzSpace space)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies space, fileSystem, internalState @*/;
 
-/* drop a space, returning it to the pool if the use count is zero */
+/**
+ * Drop a space, returning to the pool (or free'ing if no pool) when the
+ * use count is zero. If space == NULL, nothing is done.
+ */
 /*@null@*/
-rpmzSpace rpmzqDropSpace(/*@only@*/ rpmzSpace space)
+rpmzSpace rpmzqDropSpace(/*@only@*/ /*@null@*/ rpmzSpace space)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies space, fileSystem, internalState @*/;
 
@@ -337,6 +346,19 @@ rpmzJob rpmzqFreeJob(/*@only@*/ rpmzJob job)
 rpmzJob rpmzqNewJob(long seq)
         /*@globals fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/;
+
+/**
+ */
+void rpmzqUseJob(rpmzJob job)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies job, fileSystem, internalState @*/;
+
+/**
+ */
+/*@null@*/
+rpmzJob rpmzqDropJob(/*@only@*/ /*@null@*/ rpmzJob job)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies job, fileSystem, internalState @*/;
 
 /* compress or write job (passed from compress list to write list) -- if seq is
    equal to -1, rpmzqCompressThread() is instructed to return; if more is false then

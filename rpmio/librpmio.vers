@@ -433,10 +433,10 @@ LIBRPMIO_0
     rpmzqDelCJob;
     rpmzqDelRJob;
     rpmzqDelWJob;
+    rpmzqDropJob;
     rpmzqDropSpace;
     rpmzqFini;
     rpmzqFree;
-    rpmzqFreeJob;
     rpmzqFreePool;
     rpmzqInit;
     rpmzqLaunch;
@@ -445,6 +445,7 @@ LIBRPMIO_0
     rpmzqNewPool;
     rpmzqNewSpace;
     rpmzqOptionsPoptTable;
+    rpmzqUseJob;
     rpmzqUseSpace;
     rpmzqVerify;
     Stat;

@@ -344,8 +344,7 @@ fprintf(stderr, "==> FIXME: %s: job->more %d more %d\n", __FUNCTION__, job->more
 	    job->in = rpmzqDropSpace(job->in);
 	else {
 fprintf(stderr, "==> FIXME: %s: job->in %p %p[%u] free\n", __FUNCTION__, job->in, job->in->buf, (unsigned)job->in->len);
-	    job->in->buf = _free(job->in->buf);
-	    job->in = _free(job->in);
+	    job->in = rpmzqDropSpace(job->in);
 	}
 
         /* write the compressed data and drop the output buffer */
@@ -357,15 +356,14 @@ assert((size_t)nwrote == job->out->len);
 	    job->out = rpmzqDropSpace(job->out);
 	} else {
 fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] free\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len);
-	    job->out->buf = _free(job->out->buf);
-	    job->out = _free(job->out);
+	    job->out = rpmzqDropSpace(job->out);
 	}
 
         Trace((zlog, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
 
 	rpmzProgress(zq, seq, zq->lastseq);
 
-	job = rpmzqFreeJob(job);
+	job = rpmzqDropJob(job);
 
 	seq++;
 
@@ -390,8 +388,8 @@ exit:
     otherwise return NULL if not found.
 */
 /*@null@*/ /*@observer@*/
-static const char *memstr(const char *b, size_t blen,
-		const char *s, size_t slen)
+static const unsigned char *memstr(const unsigned char *b, size_t blen,
+		const unsigned char *s, size_t slen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -421,13 +419,13 @@ static int rpmzParallelDecompressBlocks(rpmz z,
     bz2BlockListing * blp;
     bz2BlockListing * nextblp;
 
-    char bz2Header[] = "BZh91AY&SY";  // for 900k BWT block size
+    unsigned char bz2Header[] = "BZh91AY&SY";  // for 900k BWT block size
     OFF_T bytesLeft = 0;
     OFF_T inSize = 100000;
     OFF_T ret = 0;
     int i;
-    char *b;
-    const char * be;
+    unsigned char *b;
+    const unsigned char * be;
     size_t blag;
     size_t blen;
     OFF_T boff = 0;
@@ -468,7 +466,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	    memmove(b, b+blen-blag, blag);
 
 	// read file data minus overflow from previous buffer
-	nread = rpmzRead(zq, b+blag, blen-blag);
+	nread = rpmzRead(zq, (unsigned char *)b+blag, blen-blag);
 	/* XXX 0b EOF read is prolly scwewy */
 
 	if (nread < 0) {
@@ -478,7 +476,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	}
 
 	// scan buffer for bzip2 start header
-	be = memstr(b, nread+blag, bz2Header, strlen(bz2Header));
+	be = memstr(b, nread+blag, bz2Header, sizeof(bz2Header)-1);
 
 	while (be != NULL) {
 /*@-nullptrarith@*/
@@ -497,12 +495,12 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	    _nblocks++;
 
 	    be++;
-	    be = memstr(be, nread+blag-(be-b), bz2Header, strlen(bz2Header));
+	    be = memstr(be, nread+blag-(be-b), bz2Header, sizeof(bz2Header)-1);
 	}
 
 	boff += nread;
 	bytesLeft -= nread;
-	blag = strlen(bz2Header) - 1;
+	blag = sizeof(bz2Header) - 1 - 1;
     }
 
     // use direcdecompress() instead to process 1 bzip2 stream
@@ -625,7 +623,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	    goto exit;
 	}
 
-	next = rpmzqNewSpace(zq->in_pool);
+	next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
 	if (next->len >= blp->dataSize) {
 	    nread = rpmzRead(zq, next->buf, next->len);
 assert(nread != 0);
@@ -633,11 +631,10 @@ assert(nread != 0);
 	} else {
 fprintf(stderr, "==> FIXME: %s: next->len(%u) < dataSize(%u)\n", __FUNCTION__, (unsigned)next->len, (unsigned)blp->dataSize);
 	    next = rpmzqDropSpace(next);
-	    next = xcalloc(1, sizeof(*next));
-	    next->len = blp->dataSize;
-	    next->buf = xmalloc(next->len);
+	    next = rpmzqNewSpace(NULL, blp->dataSize);
 	    nread = rpmzRead(zq, next->buf, next->len);
 assert(nread == next->len);
+	    next->len = nread;
 	}
 
 	job = rpmzqNewJob(seq);
@@ -703,7 +700,7 @@ assert(zq->omode == O_WRONLY);
     /* read from input and start compress threads (write thread will pick up
        the output of the compress threads) */
     seq = 0;
-    next = rpmzqNewSpace(zq->in_pool);
+    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
     next->len = rpmzRead(zq, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
@@ -721,7 +718,7 @@ assert(zq->omode == O_WRONLY);
 	if (next->len < next->pool->size)
 	    more = 0;
 	else {
-	    next = rpmzqNewSpace(zq->in_pool);
+	    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
 	    next->len = rpmzRead(zq, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
@@ -781,8 +778,8 @@ static int rpmzSingleCompress(rpmz z, /*@unused@*/ int reset)
 fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 
     job = rpmzqNewJob(seq);
-    job->in = xcalloc(1, sizeof(*job->in));
-    job->out = xcalloc(1, sizeof(*job->out));
+    job->in = rpmzqNewSpace(NULL, 0);
+    job->out = rpmzqNewSpace(NULL, 0);
 
 assert(zq->ofdno == -1);
 assert(zq->iblocksize == zq->blocksize);
@@ -800,12 +797,12 @@ assert(zq->iblocksize == zq->blocksize);
     while (bytesLeft > 0) {
 
 	job->in->len = (bytesLeft > zq->iblocksize) ? zq->iblocksize : bytesLeft;
-	job->in->buf = xmalloc(job->in->len);
+	job->in->ptr = job->in->buf = xmalloc(job->in->len);
 
 	nread = rpmzRead(zq, job->in->buf, job->in->len);
 
 	if (nread == 0) {
-	    job->in->buf = _free(job->in->buf);
+	    job->in->ptr = _free(job->in->ptr);
 	    job->in->len = 0;
 	    break;
 	}
@@ -813,7 +810,7 @@ assert(zq->iblocksize == zq->blocksize);
 	bytesLeft -= nread;
 
 	job->out->len = (size_t) ((job->in->len*1.01)+600);
-	job->out->buf = xmalloc(job->out->len);
+	job->in->ptr = job->out->buf = xmalloc(job->out->len);
 
 	ret = rpmbzCompressBlock(bz, job);
 	if (ret != BZ_OK) {
@@ -844,11 +841,9 @@ assert(zq->iblocksize == zq->blocksize);
     rc = 0;
 
 exit:
-    job->out->buf = _free(job->out->buf);
-    job->out = _free(job->out);
-    job->in->buf = _free(job->in->buf);
-    job->in = _free(job->in);
-    job = rpmzqFreeJob(job);
+    job->out = rpmzqDropSpace(job->out);
+    job->in = rpmzqDropSpace(job->in);
+    job = rpmzqDropJob(job);
 
     bz = rpmbzFini(bz);
 
@@ -1010,11 +1005,11 @@ static int rpmzProcess(rpmz z, const char * ifn, int fileLoop)
 {
     rpmzQueue zq;
 
-    const char bz2Header[] = "BZh91AY&SY";  // using 900k block size
+    const unsigned char bz2Header[] = "BZh91AY&SY";  // using 900k block size
 /*@+charint@*/
-    char bz2HeaderZero[] = { 0x42, 0x5A, 0x68, 0x39, 0x17, 0x72, 0x45, 0x38, 0x50, 0x90, 0x00, 0x00, 0x00, 0x00 };
+    unsigned char bz2HeaderZero[] = { 0x42, 0x5A, 0x68, 0x39, 0x17, 0x72, 0x45, 0x38, 0x50, 0x90, 0x00, 0x00, 0x00, 0x00 };
 /*@=charint@*/
-    char tmpBuff[50];
+    unsigned char tmpBuff[50];
     size_t size;
     int zeroByteFile = 0;
     int numBlocks = 0;
@@ -1071,10 +1066,10 @@ assert(zq != NULL);
 	    goto exit;
 	}
 	memset(tmpBuff, 0, sizeof(tmpBuff));
-	size = rpmzRead(zq, tmpBuff, strlen(bz2Header)+1);
+	size = rpmzRead(zq, tmpBuff, sizeof(bz2Header));
 	rpmzClose(zq, 1, -1);	/* XXX close ifdno */
 
-	if ((size == (size_t)(-1)) || (size < strlen(bz2Header)+1)) {
+	if ((size == (size_t)(-1)) || (size < sizeof(bz2Header))) {
 	    fprintf(stderr, "*ERROR: File [%s] is NOT a valid bzip2!  Skipping...\n", ifn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rc = 1;
@@ -1088,9 +1083,9 @@ assert(zq != NULL);
 		goto exit;
 	    }
 	    // skip 4th char which differs depending on BWT block size used
-	    if (memstr(tmpBuff+4, size-4, bz2Header+4, strlen(bz2Header)-4) == NULL) {
+	    if (memstr(tmpBuff+4, size-4, bz2Header+4, sizeof(bz2Header)-1-4) == NULL) {
 		// check to see if this is a special 0 byte file
-		if (memstr(tmpBuff+4, size-4, bz2HeaderZero+4, strlen(bz2Header)-4) == NULL) {
+		if (memstr(tmpBuff+4, size-4, bz2HeaderZero+4, sizeof(bz2Header)-1-4) == NULL) {
 		    fprintf(stderr, "*ERROR: File [%s] is NOT a valid bzip2!  Skipping...\n", ifn);
 		    fprintf(stderr, "-------------------------------------------\n");
 		    rc = 1;
