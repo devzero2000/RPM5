@@ -1447,8 +1447,10 @@ jobDebug("loaded", zq->_job);
 static void in_init(rpmzQueue zq)
 	/*@modifies zq @*/
 {
-    rpmzJob job = zq->_job;
-assert(job != NULL);
+    rpmzJob job;
+    if (zq->_job == NULL)
+	zq->_job = rpmzqNewJob(0);
+    job = zq->_job;
     job->seq = 0;
     job->more = 1;
     if (job->in != NULL) {
@@ -1633,7 +1635,6 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, fileSystem, internalState @*/
 {
-    rpmzJob job = zq->_job;
     rpmzh zh = zq->_zh;
     unsigned magic;             /* magic header */
     int method;                 /* compression method */
@@ -1644,11 +1645,11 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
     char * next;
     unsigned char _b[64], *b = _b;
     size_t nb = 0;
+    int rc;
 
 if (_debug)
 jobDebug(" start", zq->_job);
 
-assert(job != NULL);
     /* clear return information */
     if (save) {
 	zh->stamp = 0;
@@ -1702,9 +1703,9 @@ assert(job != NULL);
 /*@=mustfreeonly@*/
 	} else
 	    next = _free(next);
-	rpmzReadExtra(zq, extra, save);
+	rc = rpmzReadExtra(zq, extra, save);
 	zq->format = (flags & 8) ? RPMZ_FORMAT_ZIP3 : RPMZ_FORMAT_ZIP2;
-	return (!job->more) ? -3 : method;
+	return (rc == 0) ? method : -3;
     }
     if (magic != 0x1f8b)            /* not gzip */
 	return -2;
@@ -1910,8 +1911,6 @@ static void rpmzListInfo(rpmzQueue zq)
 if (_debug)
 jobDebug("  list", zq->_job);
 
-assert(job != NULL);
-assert(job->out == NULL);
     /* initialize input buffer */
     in_init(zq);
 
@@ -2766,7 +2765,6 @@ assert(zh->hname == NULL);
 	if (zq->_job == NULL) {	/* XXX zq->_job needs to exist. */
 	    /* inflateBack() window is a function of windowBits */
 	    size_t _out_len = (1 << infWBits);
-	    zq->_job = rpmzqNewJob(0);
 	    if (zq->threads > 1) {
 		if (zq->read_first == NULL)
 		    zq->read_first = yarnNewLock(-1);
@@ -2807,7 +2805,6 @@ assert(zh->hname == NULL);
 	if (zq->_job == NULL) {	/* XXX zq->_job needs to exist. */
 	    /* inflateBack() window is a function of windowBits */
 	    size_t _out_len = (1 << infWBits);
-	    zq->_job = rpmzqNewJob(0);
 	    if (zq->threads > 1) {
 		if (zq->read_first == NULL)
 		    zq->read_first = yarnNewLock(-1);
