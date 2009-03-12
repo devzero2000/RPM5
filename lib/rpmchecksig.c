@@ -354,6 +354,8 @@ if (sigh != NULL) {
 		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
+		he->tag = (rpmTag)RPMSIGTAG_PGP;
+		xx = headerDel(sigh, he, 0);
 		he->tag = (rpmTag)RPMSIGTAG_DSA;
 		xx = headerDel(sigh, he, 0);
 		/*@fallthrough@*/
