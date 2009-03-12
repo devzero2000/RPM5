@@ -1206,31 +1206,16 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 {
     const char * NS = "cpuinfo";
     struct cpuinfo *cip = cpuinfo_new();
-    int i,j;
+    cpuinfo_feature_t feature;
 
-    static const struct {
-	int base;
-	int max;
-    } features_bits[] = {
-	{ CPUINFO_FEATURE_COMMON + 1, CPUINFO_FEATURE_COMMON_MAX },
-	{ CPUINFO_FEATURE_X86, CPUINFO_FEATURE_X86_MAX },
-	{ CPUINFO_FEATURE_IA64, CPUINFO_FEATURE_IA64_MAX },
-	{ CPUINFO_FEATURE_PPC, CPUINFO_FEATURE_PPC_MAX },
-	{ CPUINFO_FEATURE_MIPS, CPUINFO_FEATURE_MIPS_MAX },
-	{ -1, 0 }
-    };
-
-    for (i = 0; features_bits[i].base != -1; i++) {
-	int base = features_bits[i].base;
-	int count = features_bits[i].max - base;
-	for (j = 0; j < count; j++) {
-	    int feature = base + j;
-	    if (cpuinfo_has_feature(cip, feature)) {
-		/* XXX: some mnemonics are currently different from /proc/cpuinfo's */
-		const char *name = cpuinfo_string_of_feature(feature);
-		if (name)
-		    rpmdsNSAdd(dsp, NS, name, "", RPMSENSE_PROBE);
-	    }
+    for (feature = cpuinfo_feature_common; feature != cpuinfo_feature_architecture_max; feature++) {
+	if(feature == cpuinfo_feature_common_max)
+	    feature = cpuinfo_feature_architecture;
+	if (cpuinfo_has_feature(cip, feature)) {
+	    /* XXX: some mnemonics are currently different from /proc/cpuinfo's */
+	    const char *name = cpuinfo_string_of_feature(feature);
+	    if (name)
+		rpmdsNSAdd(dsp, NS, name, "", RPMSENSE_PROBE);
 	}
     }
     cpuinfo_destroy(cip);
