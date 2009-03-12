@@ -1209,7 +1209,8 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     cpuinfo_feature_t feature;
 
     char mhz[20];
-    sprintf(mhz, "%d", cpuinfo_get_frequency(cip));
+    snprintf(mhz, 19, "%d", cpuinfo_get_frequency(cip));
+    mhz[19] = '\0';
     rpmdsNSAdd(dsp, NS, "cpu_MHz", mhz, RPMSENSE_PROBE|RPMSENSE_EQUAL);
 
     for (feature = cpuinfo_feature_common; feature != cpuinfo_feature_architecture_max; feature++) {
