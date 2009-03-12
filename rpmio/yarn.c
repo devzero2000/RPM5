@@ -66,17 +66,17 @@
 #define	pthread_mutex_t	int
 #define	PTHREAD_MUTEX_INITIALIZER	0
 #define	PTHREAD_CREATE_JOINABLE		0
-#define	pthread_mutex_destroy(__mutex)		(-1)
-#define	pthread_mutex_init(__mutex, __attr)	(-1)
-#define	pthread_mutex_lock(__mutex)		(-1)
-#define	pthread_mutex_unlock(__mutex)		(-1)
+#define	pthread_mutex_destroy(__mutex)		(0)	/* FreeLock */
+#define	pthread_mutex_init(__mutex, __attr)	(0)	/* NewLock */
+#define	pthread_mutex_lock(__mutex)		(0)	/* Possess */
+#define	pthread_mutex_unlock(__mutex)		(0)	/* Twist/Release */
 
 #define	pthread_cond_t	int
 #define	PTHREAD_COND_INITIALIZER	0
-#define	pthread_cond_destroy(__cond)		(-1)
-#define	pthread_cond_init(__cond, __attr)	(-1)
-#define	pthread_cond_wait(__cond, __mutex)	(-1)
-#define	pthread_cond_broadcast(__cond)		(-1)
+#define	pthread_cond_destroy(__cond)		(0)	/* FreeLock */
+#define	pthread_cond_init(__cond, __attr)	(0)	/* NewLock */
+#define	pthread_cond_wait(__cond, __mutex)	(sleep(60U))	/* WaitFor */
+#define	pthread_cond_broadcast(__cond)		(0)	/* Twist */
 
 #endif	/* WITH_PTHREADS */
 
