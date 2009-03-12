@@ -4,11 +4,14 @@
 /** \ingroup rpmio
  * \file rpmio/rpmzlog.h
  */
+#include <sys/time.h>
 
 /** trace log pointer */
 typedef /*@abstract@*/ struct rpmzLog_s * rpmzLog;
 
 #ifdef	_RPMZLOG_INTERNAL
+#include <yarn.h>
+
 /** trace msg pointer */
 typedef /*@abstract@*/ struct rpmzMsg_s * rpmzMsg;
 

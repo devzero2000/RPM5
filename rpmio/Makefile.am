@@ -57,7 +57,7 @@ RPM_LDADD_COMMON = \
 	$(RPMIO_LDADD_COMMON)
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
-pkginc_HEADERS = mire.h yarn.h \
+pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
 	rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
 	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
@@ -66,8 +66,8 @@ noinst_HEADERS = \
 	poptIO.h rpmbc.h rpmbz.h rpmdav.h \
 	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
-	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzlog.h rpmzq.h \
-	tar.h ugid.h yarn.h
+	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	tar.h ugid.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la

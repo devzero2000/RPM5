@@ -15,8 +15,6 @@
 
 #include <rpmxar.h>
 
-#include "yarn.h"
-
 /** \ingroup rpmio
  */
 typedef struct _FDSTACK_s {

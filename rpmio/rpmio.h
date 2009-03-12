@@ -9,12 +9,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-/*@-noparams@*/
-#include "glob.h"
-/*@=noparams@*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <rpmzlog.h>
+#include <yarn.h>
 
 /** \ingroup rpmio
  * Hide libio API lossage.
@@ -433,16 +433,16 @@ int Glob_error(const char * epath, int eerrno)
  */
 int Glob(const char * pattern, int flags,
 		int errfunc(const char * epath, int eerrno),
-		/*@out@*/ glob_t * pglob)
+		/*@out@*/ void * _pglob)
 	/*@globals fileSystem @*/
-	/*@modifies *pglob, fileSystem @*/;
+	/*@modifies *_pglob, fileSystem @*/;
 
 /**
  * globfree(3) clone.
  */
-void Globfree( /*@only@*/ glob_t * pglob)
+void Globfree( /*@only@*/ void * _pglob)
 	/*@globals fileSystem @*/
-	/*@modifies *pglob, fileSystem @*/;
+	/*@modifies *_pglob, fileSystem @*/;
 
 
 /**
