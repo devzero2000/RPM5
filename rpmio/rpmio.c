@@ -284,13 +284,10 @@ if (cookie == NULL)
 DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, -9, msg, file, line));
 #endif
     fd = c2f(cookie);
-    if (fd && fd->use) {
-	int nrefs;
+    if (fd) {
 	yarnPossess(fd->use);
-	nrefs = yarnPeekLock(fd->use);
+DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
 	yarnTwist(fd->use, BY, 1);
-	nrefs++;
-DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, nrefs, msg, file, line, fdbg(fd)));
     }
     return fd;
 }
@@ -309,38 +306,40 @@ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 assert(fd != NULL);
 #else
 if (fd == NULL)
-DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, -9, msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, file, line));
 #endif
     FDSANE(fd);
     if (fd) {
-	int nrefs;
 	yarnPossess(fd->use);
-	nrefs = yarnPeekLock(fd->use);
-	yarnTwist(fd->use, BY, -1);
-	nrefs--;
-DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, nrefs, msg, file, line, fdbg(fd)));
-	if (nrefs > 0)
-	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
-	fd->opath = _free(fd->opath);
-	fd->stats = _free(fd->stats);
-	for (i = fd->ndigests - 1; i >= 0; i--) {
-	    FDDIGEST_t fddig = fd->digests + i;
-	    if (fddig->hashctx == NULL)
-		continue;
-	    (void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
-	    fddig->hashctx = NULL;
-	}
-	fd->ndigests = 0;
-	fd->contentType = _free(fd->contentType);
-	fd->contentDisposition = _free(fd->contentDisposition);
+DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
+	if (yarnPeekLock(fd->use) == 1) {
+	    yarnLock use = fd->use;
+	    fd->opath = _free(fd->opath);
+	    fd->stats = _free(fd->stats);
+	    for (i = fd->ndigests - 1; i >= 0; i--) {
+		FDDIGEST_t fddig = fd->digests + i;
+		if (fddig->hashctx == NULL)
+		    continue;
+		(void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
+		fddig->hashctx = NULL;
+	    }
+	    fd->ndigests = 0;
+	    fd->contentType = _free(fd->contentType);
+	    fd->contentDisposition = _free(fd->contentDisposition);
 /*@-onlytrans@*/
 #ifdef WITH_XAR
-	fd->xar = rpmxarFree(fd->xar);
+	    fd->xar = rpmxarFree(fd->xar);
 #endif
-	fd->dig = pgpDigFree(fd->dig);
+	    fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
-	memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
-	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
+	    memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
+	    /*@-refcounttrans@*/ fd = _free(fd); /*@=refcounttrans@*/
+	    yarnTwist(use, BY, -1);
+	    use = yarnFreeLock(use);
+	    return NULL;
+	}
+	yarnTwist(fd->use, BY, -1);
+	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
     }
     return NULL;
 }
