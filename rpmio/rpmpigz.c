@@ -1448,8 +1448,19 @@ static void in_init(rpmzQueue zq)
 	/*@modifies zq @*/
 {
     rpmzJob job;
-    if (zq->_job == NULL)
+    if (zq->_job == NULL) {
+	/* inflateBack() window is a function of windowBits */
+	size_t _out_len = (1 << infWBits);
+	if (zq->threads > 1) {
+	    if (zq->read_first == NULL)
+		zq->read_first = yarnNewLock(-1);
+	    if (zq->load_ipool == NULL)
+		zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
+	    if (zq->load_opool == NULL) 
+		zq->load_opool = rpmzqNewPool(_out_len,  2);
+	}
 	zq->_job = rpmzqNewJob(0);
+    }
     job = zq->_job;
     job->seq = 0;
     job->more = 1;
@@ -2762,18 +2773,6 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 assert(zh->hname == NULL);
     zh->hname = _free(zh->hname);
     if (zq->mode != RPMZ_MODE_COMPRESS) {
-	if (zq->_job == NULL) {	/* XXX zq->_job needs to exist. */
-	    /* inflateBack() window is a function of windowBits */
-	    size_t _out_len = (1 << infWBits);
-	    if (zq->threads > 1) {
-		if (zq->read_first == NULL)
-		    zq->read_first = yarnNewLock(-1);
-		if (zq->load_ipool == NULL)
-		    zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
-		if (zq->load_opool == NULL) 
-		    zq->load_opool = rpmzqNewPool(_out_len,  2);
-	    }
-	}
 	in_init(zq);
 	method = rpmzGetHeader(zq, 1);
 	if (method != 8 && method != 256) {
@@ -2802,18 +2801,6 @@ assert(zh->hname == NULL);
 
     /* if requested, just list information about input file */
     if (F_ISSET(zq->flags, LIST)) {
-	if (zq->_job == NULL) {	/* XXX zq->_job needs to exist. */
-	    /* inflateBack() window is a function of windowBits */
-	    size_t _out_len = (1 << infWBits);
-	    if (zq->threads > 1) {
-		if (zq->read_first == NULL)
-		    zq->read_first = yarnNewLock(-1);
-		if (zq->load_ipool == NULL)
-		    zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
-		if (zq->load_opool == NULL) 
-		    zq->load_opool = rpmzqNewPool(_out_len,  2);
-	    }
-	}
 	rpmzListInfo(zq);
 	goto exit;
     }
