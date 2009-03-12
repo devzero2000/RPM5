@@ -1212,7 +1212,6 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 	if(feature == cpuinfo_feature_common_max)
 	    feature = cpuinfo_feature_architecture;
 	if (cpuinfo_has_feature(cip, feature)) {
-	    /* XXX: some mnemonics are currently different from /proc/cpuinfo's */
 	    const char *name = cpuinfo_string_of_feature(feature);
 	    if (name)
 		rpmdsNSAdd(dsp, NS, name, "", RPMSENSE_PROBE);
