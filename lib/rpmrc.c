@@ -518,21 +518,23 @@ static rpmRC rpmCpuinfo(void)
 #if defined(__i386__) || defined(__x86_64__)
     if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "x86_64") == 0)
 	xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE2))
-	xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE))
-	xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW_PLUS)
-	xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
     if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_CMOV))
     {
 	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_MMX))
+	{
+	    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE))
+	    {
+	    	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE2))
+	    	    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
+		xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
+	    }
+	    if(cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW_PLUS)
+		xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
 	    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium2", NULL, &mi_re, &mi_nre);
+	}
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i686", NULL, &mi_re, &mi_nre);
     }
-    if(cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW)
-	xx = mireAppend(RPMMIRE_REGEX, 0, "k6", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_get_vendor(cip) == CPUINFO_VENDOR_NSC)
+    if(cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW && cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_MMX))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "geode", NULL, &mi_re, &mi_nre);
     if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_TSC))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i586", NULL, &mi_re, &mi_nre);
