@@ -1907,10 +1907,12 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, ure
     if (rc || u == NULL || u->sess == NULL)
 	goto exit;
 
+    yarnPossess(u->ctrl->use);
     if (u->ctrl == NULL)
 	u->ctrl = fdNew("persist ctrl (davOpen)");
-    else if (u->ctrl->nrefs > 2 && u->data == NULL)
+    else if (yarnPeekLock(u->ctrl->use) > 2 && u->data == NULL)
 	u->data = fdNew("persist data (davOpen)");
+    yarnRelease(u->ctrl->use);
 
     if (u->ctrl->url == NULL)
 	fd = u->ctrl = fdLink(u->ctrl, "grab ctrl (davOpen persist ctrl)");
@@ -2310,10 +2312,12 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
     if (urlSplit(url, &u))
         goto exit;
 
+    yarnPossess(u->ctrl->use);
     if (u->ctrl == NULL)
         u->ctrl = fdNew("persist ctrl (httpOpen)");
-    if (u->ctrl->nrefs > 2 && u->data == NULL)
+    if (yarnPeekLock(u->ctrl->use) > 2 && u->data == NULL)
         u->data = fdNew("persist data (httpOpen)");
+    yarnRelease(u->ctrl->use);
 
     if (u->ctrl->url == NULL)
         fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");

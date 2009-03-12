@@ -66,6 +66,8 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
 
+#include "yarn.h"
+
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
@@ -123,7 +125,6 @@ static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 /*@access urlinfo @*/
 /*@access FDSTAT_t @*/
 
-#define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
 
@@ -276,14 +277,20 @@ FD_t XfdLink(void * cookie, const char * msg,
 	/*@modifies *cookie @*/
 {
     FD_t fd;
+#ifdef	NOTYET
+assert(cookie != NULL);
+#else
 if (cookie == NULL)
-    /*@-castexpose@*/
-DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, FDNREFS(cookie)+1, msg, file, line));
-    /*@=castexpose@*/
+DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, -9, msg, file, line));
+#endif
     fd = c2f(cookie);
-    if (fd) {
-	fd->nrefs++;
-DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
+    if (fd && fd->use) {
+	int nrefs;
+	yarnPossess(fd->use);
+	nrefs = yarnPeekLock(fd->use);
+	yarnTwist(fd->use, BY, 1);
+	nrefs++;
+DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, nrefs, msg, file, line, fdbg(fd)));
     }
     return fd;
 }
@@ -298,12 +305,21 @@ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 {
 	int i;
 
+#ifdef	NOTYET
+assert(fd != NULL);
+#else
 if (fd == NULL)
-DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, -9, msg, file, line));
+#endif
     FDSANE(fd);
     if (fd) {
-DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
-	if (--fd->nrefs > 0)
+	int nrefs;
+	yarnPossess(fd->use);
+	nrefs = yarnPeekLock(fd->use);
+	yarnTwist(fd->use, BY, -1);
+	nrefs--;
+DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, nrefs, msg, file, line, fdbg(fd)));
+	if (nrefs > 0)
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 	fd->opath = _free(fd->opath);
 	fd->stats = _free(fd->stats);
@@ -337,7 +353,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
-    fd->nrefs = 0;
+    fd->use = yarnNewLock(0);
     fd->flags = 0;
     fd->magic = FDMAGIC;
     fd->urlType = URL_IS_UNKNOWN;

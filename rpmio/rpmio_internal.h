@@ -15,6 +15,8 @@
 
 #include <rpmxar.h>
 
+#include "yarn.h"
+
 /** \ingroup rpmio
  */
 typedef struct _FDSTACK_s {
@@ -55,8 +57,7 @@ typedef struct _FDDIGEST_s {
  * The FD_t File Handle data structure.
  */
 struct _FD_s {
-/*@refs@*/
-    int		nrefs;
+    yarnLock use;		/*!< use count -- return to pool when zero */
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
 #define	RPMIO_DEBUG_REFS	0x20000000
