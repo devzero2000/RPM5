@@ -383,11 +383,13 @@ assert(pool->limit != 0);
     pool->made++;
     yarnRelease(pool->have);
 
-    space = xmalloc(sizeof(*space));
+    space = xcalloc(1, sizeof(*space));
 /*@-mustfreeonly@*/
     space->use = yarnNewLock(1);           /* initially one user */
     space->len = pool->size;		/* XXX initialize to pool->size */
     space->buf = xmalloc(space->len);
+    space->ptr = space->buf;		/* XXX save allocated buffer */
+    space->ix = 0;			/* XXX initialize to 0 */
 /*@-assignexpose@*/
     space->pool = pool;                 /* remember the pool this belongs to */
 /*@=assignexpose@*/
@@ -426,7 +428,9 @@ fprintf(stderr, "==> FIXME: %s: space %p[%d]\n", __FUNCTION__, space, use);
     if (use == 1) {
 	rpmzPool pool = space->pool;
 	yarnPossess(pool->have);
+	space->buf = space->ptr;	/* XXX reset to original allocation. */
 	space->len = pool->size;	/* XXX reset to pool->size */
+	space->ix = 0;			/* XXX reset to 0 */
 /*@-mustfreeonly@*/
 	space->next = pool->head;
 /*@=mustfreeonly@*/

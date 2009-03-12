@@ -117,12 +117,10 @@ enum rpmzFlags_e {
 /** a space (one buffer for each space) */
 struct rpmzSpace_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
-#ifdef	NOTYET	/* XXX zq->_job_in casts are too painful to contemplate ... */
-    void * buf;			/*!< buffer of size pool->size */
-#else
-    unsigned char * buf;	/*!< buffer of size pool->size */
-#endif
-    size_t len;			/*!< for application usage */
+    void *ptr;			/*!< original buffer allocation address */
+    size_t ix;			/*!< current buffer index (application) */
+    unsigned char *buf;		/*!< current buffer address (application) */
+    size_t len;			/*!< current buffer length (application) */
     rpmzPool pool;		/*!< pool to return to */
     rpmzSpace next;		/*!< for pool linked list */
 };
@@ -257,9 +255,8 @@ struct rpmzQueue_s {
     rpmzJob _job;		/*!< decompress job (malloc'd). */
 
 /* --- globals for decompression and listing buffered reading */
-    int _in_which;		/*!< -1: start, 0: in_buf2, 1: in_buf */
+    int _in_which;		/*!< -1: start */
 
-    unsigned char * _in_prev;	/*!< prev buffer waiting to free */
 /*@only@*/ /*@null@*/
     yarnLock read_first;	/*!< lowest sequence number in list */
 /*@null@*/
@@ -270,10 +267,6 @@ struct rpmzQueue_s {
 /*@relnull@*/
     rpmzPool load_ipool;	/*!< load/read input buffer pool (malloc'd). */
     rpmzPool load_opool;	/*!< load/read ouput buffer pool (malloc'd). */
-
-    /* output buffers/window for rpmzInflateCheck() and rpmzDecompressLZW() */
-    size_t _out_buf_allocated;
-#define OUT_BUF_ALLOCATED 32768U /*!< must be at least 32K for inflateBack() window */
 
 };
 #endif	/* _RPMZQ_INTERNAL */
