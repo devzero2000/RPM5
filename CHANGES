@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: use cpuinfo() probe for detecting platform rather than
+	libcpuinfo directly.
     - jbj: delete ancient header+payload RSA signatures too using GPG (#488953).
     - jbj: rpmio: install rpmzlog.h and yarn.h, carry with rpmio.h.
     - jbj: rpmio: don't include glob.h.

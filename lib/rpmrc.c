@@ -8,10 +8,6 @@
 #define __power_pc() 0
 #endif
 
-#if defined(SUPPORT_LIBCPUINFO)
-#include <cpuinfo.h>
-#endif
-
 #define	_RPMIOB_INTERNAL	/* XXX for rpmiobSlurp */
 #include <rpmio.h>
 #include <rpmcb.h>
@@ -23,7 +19,10 @@
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
+#define _RPMEVR_INTERNAL
+#include <rpmevr.h>
 
+#define _RPMDS_INTERNAL
 #include <rpmds.h>
 
 #include <rpmcli.h>
@@ -503,6 +502,14 @@ exit:
 /*@=onlytrans@*/
 
 #if defined(SUPPORT_LIBCPUINFO)
+static inline int rpmCpuinfoMatch(const char * feature, rpmds cpuinfo)
+{
+    rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, "", RPMSENSE_PROBE);
+    int ret = rpmdsMatch(cpufeature, cpuinfo);
+    cpufeature = rpmdsFree(cpufeature);
+    return ret;
+}
+
 static rpmRC rpmCpuinfo(void)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -512,52 +519,55 @@ static rpmRC rpmCpuinfo(void)
     int mi_nre = 0;
     int xx;
     CVOG_t cvog = NULL;
+    rpmds cpuinfo = NULL;
+
     uname(&un);
-    cpuinfo_t *cip = cpuinfo_new();
+    xx = rpmdsCpuinfo(&cpuinfo, NULL);
 
 #if defined(__i386__) || defined(__x86_64__)
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "x86_64") == 0)
+    /* XXX: kinda superfluous, same as with cpuinfo([arch]), do nicer..? */
+    if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo) && strcmp(un.machine, "x86_64") == 0)
 	xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_CMOV))
+    if(rpmCpuinfoMatch("cpuinfo(cmov)", cpuinfo))
     {
-	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_MMX))
+	if(rpmCpuinfoMatch("cpuinfo(mmx)", cpuinfo))
 	{
-	    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE))
+	    if(rpmCpuinfoMatch("cpuinfo(sse)", cpuinfo))
 	    {
-	    	if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_SSE2))
+	    	if(rpmCpuinfoMatch("cpuinfo(sse2)", cpuinfo))
 	    	    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
 		xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
 	    }
-	    if(cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW_PLUS)
+	    if(rpmCpuinfoMatch("cpuinfo(3dnow+)", cpuinfo))
 		xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
 	    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium2", NULL, &mi_re, &mi_nre);
 	}
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i686", NULL, &mi_re, &mi_nre);
     }
-    if(cpuinfo_get_vendor(cip) == CPUINFO_FEATURE_X86_3DNOW && cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_MMX))
+    if(rpmCpuinfoMatch("cpuinfo(3dnow)", cpuinfo) && rpmCpuinfoMatch("cpuinfo(mmx)", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "geode", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_TSC))
+    if(rpmCpuinfoMatch("cpuinfo(tsc)", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i586", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86_AC))
+    if(rpmCpuinfoMatch("cpuinfo(ac)", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i486", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86))
+    if(rpmCpuinfoMatch("cpuinfo([x86])", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i386", NULL, &mi_re, &mi_nre);
 #endif
 
 #if defined(__powerpc__)
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "ppc64") == 0)
+    if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo) && strcmp(un.machine, "ppc64") == 0)
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc64", NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_PPC))
+    if(rpmCpuinfoMatch("cpuinfo([ppc])", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc", NULL, &mi_re, &mi_nre);
 #endif
 
 #if defined(__powerpc__) || defined(__i386__) || defined(__x86_64__)
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_PPC) || cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86))    
+    if(rpmCpuinfoMatch("cpuinfo([ppc])", cpuinfo) || rpmCpuinfoMatch("cpuinfo([ppc])", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
 #endif    
 
 #if defined(__ia64__)
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_IA64))
+    if(rpmCpuinfoMatch("cpuinfo([ia64])", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ia64", NULL, &mi_re, &mi_nre);
 #endif
     
@@ -577,7 +587,7 @@ static rpmRC rpmCpuinfo(void)
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
-    cpuinfo_destroy(cip);
+    cpuinfo = rpmdsFree(cpuinfo);
 
     cpu = mi_re[0].pattern;
     if(cpu != NULL)
