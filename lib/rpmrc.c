@@ -564,10 +564,10 @@ static rpmRC rpmCpuinfo(void)
 #define mips32 "mips"
 #define mips64 "mips64"
 #endif
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_64BIT) && strcmp(un.machine, "mips64") == 0)
+    /* XXX: libcpuinfo only have irix support for now.. */
+    if(strcmp(un.machine, "mips64") == 0)
 	xx = mireAppend(RPMMIRE_REGEX, 0, mips64, NULL, &mi_re, &mi_nre);
-    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_MIPS)) {
-	xx = mireAppend(RPMMIRE_REGEX, 0, mips32, NULL, &mi_re, &mi_nre);
+    xx = mireAppend(RPMMIRE_REGEX, 0, mips32, NULL, &mi_re, &mi_nre);
 #endif
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
