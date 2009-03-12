@@ -1482,9 +1482,14 @@ static size_t rpmzqJobPull(rpmzQueue zq,
 		/*@null@*/ unsigned char *buf, size_t len)
 	/*@modifies *buf @*/
 {
-    rpmzJob job = zq->_job;
+    rpmzJob job;
     size_t togo = len;
     size_t got = 0;
+
+    /* initialize input buffer */
+    if (zq->_job == NULL)
+	in_init(zq);
+    job = zq->_job;
 
 assert(job != NULL);
     if (!job->more || (!(job->in && job->in->len) && load(zq) == 0))
@@ -1922,9 +1927,6 @@ static void rpmzListInfo(rpmzQueue zq)
 if (_debug)
 jobDebug("  list", zq->_job);
 
-    /* initialize input buffer */
-    in_init(zq);
-
     /* read header information and position input after header */
     method = rpmzGetHeader(zq, 1);
     if (method < 0) {
@@ -2361,6 +2363,8 @@ assert(0);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
 	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
 
+    zq->_job->in = rpmzqDropSpace(zq->_job->in);
+    zq->_job = rpmzqDropJob(zq->_job);
 if (_debug)
 jobDebug("finish", zq->_job);
 }
@@ -2773,7 +2777,6 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 assert(zh->hname == NULL);
     zh->hname = _free(zh->hname);
     if (zq->mode != RPMZ_MODE_COMPRESS) {
-	in_init(zq);
 	method = rpmzGetHeader(zq, 1);
 	if (method != 8 && method != 256) {
 	    if (method != -1 && zq->verbosity > 0)
