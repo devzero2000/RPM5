@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: add support for cpuinfo() probe through libcpuinfo.
     - proyvind: perl: make sure to link against all required libraries to fix
 	build with --no-undefined.
     - proyvind: only provide PayLoadIsLzma and PayLoadIsXz features when enabled.

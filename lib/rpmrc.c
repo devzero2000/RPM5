@@ -1169,7 +1169,11 @@ int rpmShowRC(FILE * fp)
 
 	xx = rpmdsCpuinfo(&ds, NULL);
 	if (ds != NULL) {
+#if defined(SUPPORT_LIBCPUINFO)
+	    const char * fn = "libcpuinfo";
+#else
 	    const char * fn = (_cpuinfo_path ? _cpuinfo_path : "/proc/cpuinfo");
+#endif
 	    fprintf(fp,
 		_("Features provided by current cpuinfo (from %s):\n"), fn);
 	    ds = rpmdsInit(ds);

@@ -3,6 +3,10 @@
  */
 #include "system.h"
 
+#if defined(SUPPORT_LIBCPUINFO)
+#include <cpuinfo.h>
+#endif
+
 #if defined(HAVE_GELF_H) && !defined(__FreeBSD__)
 #if LIBELF_H_LFS_CONFLICT
 /* Some implementations of libelf.h/gelf.h are incompatible with
@@ -1172,6 +1176,70 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     return i;
 }
 
+/**
+ * Merge a single provides, wrapping N as "NS(N)".
+ * @retval *dsp		(loaded) dependency set
+ * @param NS		dependency name space
+ * @param N		name
+ * @param EVR		epoch:version-release
+ * @param Flags		comparison/context flags
+ */
+static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
+		const char *N, const char *EVR, evrFlags Flags)
+	/*@modifies *dsp @*/
+{
+    char *t;
+    rpmds ds;
+    int xx;
+
+    t = alloca(strlen(NS)+sizeof("()")+strlen(N));
+    *t = '\0';
+    (void) stpcpy( stpcpy( stpcpy( stpcpy(t, NS), "("), N), ")");
+
+    ds = rpmdsSingle(RPMTAG_PROVIDENAME, t, EVR, Flags);
+    xx = rpmdsMerge(dsp, ds);
+    ds = rpmdsFree(ds);
+}
+
+#if defined(SUPPORT_LIBCPUINFO)
+int rpmdsCpuinfo(rpmds *dsp, const char * fn)
+{
+    const char * NS = "cpuinfo";
+    struct cpuinfo *cip = cpuinfo_new();
+    int i,j;
+
+    static const struct {
+	int base;
+	int max;
+    } features_bits[] = {
+	{ CPUINFO_FEATURE_COMMON + 1, CPUINFO_FEATURE_COMMON_MAX },
+	{ CPUINFO_FEATURE_X86, CPUINFO_FEATURE_X86_MAX },
+	{ CPUINFO_FEATURE_IA64, CPUINFO_FEATURE_IA64_MAX },
+	{ CPUINFO_FEATURE_PPC, CPUINFO_FEATURE_PPC_MAX },
+	{ CPUINFO_FEATURE_MIPS, CPUINFO_FEATURE_MIPS_MAX },
+	{ -1, 0 }
+    };
+
+    for (i = 0; features_bits[i].base != -1; i++) {
+	int base = features_bits[i].base;
+	int count = features_bits[i].max - base;
+	for (j = 0; j < count; j++) {
+	    int feature = base + j;
+	    if (cpuinfo_has_feature(cip, feature)) {
+		/* XXX: some mnemonics are currently different from /proc/cpuinfo's */
+		const char *name = cpuinfo_string_of_feature(feature);
+		if (name)
+		    rpmdsNSAdd(dsp, NS, name, "", RPMSENSE_PROBE);
+	    }
+	}
+    }
+    cpuinfo_destroy(cip);
+
+    return RPMRC_OK;
+}    
+
+#else
+
 struct cpuinfo_s {
 /*@observer@*/ /*@null@*/
     const char *name;
@@ -1229,31 +1297,6 @@ static int rpmdsCpuinfoCtagFlags(const char * name)
 	break;
     }
     return flags;
-}
-
-/**
- * Merge a single provides, wrapping N as "NS(N)".
- * @retval *dsp		(loaded) dependency set
- * @param NS		dependency name space
- * @param N		name
- * @param EVR		epoch:version-release
- * @param Flags		comparison/context flags
- */
-static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
-		const char *N, const char *EVR, evrFlags Flags)
-	/*@modifies *dsp @*/
-{
-    char *t;
-    rpmds ds;
-    int xx;
-
-    t = alloca(strlen(NS)+sizeof("()")+strlen(N));
-    *t = '\0';
-    (void) stpcpy( stpcpy( stpcpy( stpcpy(t, NS), "("), N), ")");
-
-    ds = rpmdsSingle(RPMTAG_PROVIDENAME, t, EVR, Flags);
-    xx = rpmdsMerge(dsp, ds);
-    ds = rpmdsFree(ds);
 }
 
 #define	_PROC_CPUINFO	"/proc/cpuinfo"
@@ -1385,6 +1428,7 @@ exit:
     iob = rpmiobFree(iob);
     return rc;
 }
+#endif
 
 struct rpmlibProvides_s {
 /*@observer@*/ /*@relnull@*/
