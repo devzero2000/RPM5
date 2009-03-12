@@ -551,6 +551,11 @@ static rpmRC rpmCpuinfo(void)
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc", NULL, &mi_re, &mi_nre);
 #endif
 
+#if defined(__powerpc__) || defined(__i386__) || defined(__x86_64__)
+    if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_PPC) || cpuinfo_has_feature(cip, CPUINFO_FEATURE_X86))    
+	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
+#endif    
+
 #if defined(__ia64__)
     if(cpuinfo_has_feature(cip, CPUINFO_FEATURE_IA64))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ia64", NULL, &mi_re, &mi_nre);
