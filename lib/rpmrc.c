@@ -597,6 +597,9 @@ static rpmRC rpmCpuinfo(void)
 	    addMacro(NULL, "_host_vendor", NULL, cvog->vendor, -1);
 	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
 	}
+	cvog->str = _free(cvog->str);
+	cvog = _free(cvog);
+
 	rc = RPMRC_OK;
 	if (rc == RPMRC_OK) {
 	    platpat = mireFreeAll(platpat, nplatpat);
