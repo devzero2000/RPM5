@@ -177,6 +177,34 @@ struct rpmzh_s {
 
 /**
  */
+typedef struct rpmzFIFO_s * rpmzFIFO;
+
+/**
+ */
+struct rpmzFIFO_s {
+/*@only@*/ /*@null@*/
+    yarnLock have;		/*!< no. of queued jobs waiting */
+/*@null@*/
+    rpmzJob head;
+/*@shared@*/
+    rpmzJob * tail;
+};
+
+/**
+ */
+typedef struct rpmzSEQ_s * rpmzSEQ;
+
+/**
+ */
+struct rpmzSEQ_s {
+/*@only@*/ /*@null@*/
+    yarnLock first;		/*!< lowest seq job waiting */
+/*@null@*/
+    rpmzJob head;
+};
+
+/**
+ */
 struct rpmzQueue_s {
 /* --- globals (modified by main thread only when it's the only thread) */
     enum rpmzFlags_e flags;	/*!< Control bits. */
@@ -213,20 +241,19 @@ struct rpmzQueue_s {
 /*@relnull@*/
     rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
 
-    /* list of compress jobs (with tail for appending to list) */
-/*@only@*/ /*@null@*/
-    yarnLock compress_have;	/*!< no. compress/decompress jobs waiting */
-/*@null@*/
-    rpmzJob compress_head;
-/*@shared@*/
-    rpmzJob * compress_tail;
+#ifdef	NOTYET
+    rpmzSEQ compress;		/*!< list of compress jobs. */
+#else
+    struct rpmzFIFO_s _compress;
+#endif
 
     int cthreads;		/*!< number of compression threads running */
 
-/*@only@*/ /*@null@*/
-    yarnLock write_first;	/*!< lowest sequence number in list */
-/*@null@*/
-    rpmzJob write_head;		/*!< list of write jobs */
+#ifdef	NOTYET
+    rpmzSEQ write;		/*!< list of write jobs. */
+#else
+    struct rpmzSEQ_s _write;
+#endif
 
 /*@only@*/ /*@null@*/
     yarnThread writeth;		/*!< write thread if running */
@@ -256,14 +283,13 @@ struct rpmzQueue_s {
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start */
 
-/*@only@*/ /*@null@*/
-    yarnLock qi_first;		/*!< lowest sequence number in list */
-/*@null@*/
-    rpmzJob qi;			/*!< list of decompress input jobs */
-/*@only@*/ /*@null@*/
-    yarnLock qo_first;		/*!< lowest sequence number in list */
-/*@null@*/
-    rpmzJob qo;			/*!< list of decompress output jobs */
+#ifdef	NOTYET
+    rpmzSEQ qi;			/*!< list of read input jobs. */
+    rpmzSEQ qo;			/*!< list of write output jobs. */
+#else
+    struct rpmzSEQ_s _qi;
+    struct rpmzSEQ_s _qo;
+#endif
 
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
