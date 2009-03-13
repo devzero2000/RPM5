@@ -1080,6 +1080,7 @@ int rpmShowRC(FILE * fp)
     int i;
     machEquivTable equivTable;
     int xx;
+    miRE mire;
 
     /* the caller may set the build arch which should be printed here */
     fprintf(fp, "ARCHITECTURE AND OS:\n");
@@ -1103,9 +1104,8 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "install os            : %s\n", current[OS]);
 
     fprintf(fp, "compatible archs      :");
-    equivTable = &tables[RPM_MACHTABLE_INSTARCH].equiv;
-    for (i = 0; i < equivTable->count; i++)
-	fprintf(fp," %s", equivTable->list[i].name);
+    for (mire = platpat, i = 0; i < nplatpat; i++)
+	fprintf(fp, " %s", mire[i].pattern);
     fprintf(fp, "\n");
 
     fprintf(fp, "compatible os's       :");

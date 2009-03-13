@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: get the list of compatible archs printed with '--showrc' from
+	mire platform patterns.
     - proyvind: use cpuinfo() probe for detecting platform rather than
 	libcpuinfo directly.
     - jbj: delete ancient header+payload RSA signatures too using GPG (#488953).
