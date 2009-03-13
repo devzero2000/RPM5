@@ -417,6 +417,50 @@ rpmzQueue rpmzqNew(/*@returned@*/rpmzQueue zq, rpmzLog zlog, int limit)
 
 /**
  */
+void rpmzqInitFIFO(rpmzFIFO zs, long val)
+	/*@modifies zs @*/;
+
+/**
+ */
+void rpmzqFiniFIFO(rpmzFIFO zs)
+	/*@modifies zs @*/;
+
+/**
+ */
+rpmzJob rpmzqDelFIFO(rpmzFIFO zs)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, fileSystem, internalState @*/;
+
+/**
+ */
+void rpmzqAddFIFO(rpmzFIFO zs, rpmzJob job)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, job, fileSystem, internalState @*/;
+
+/**
+ */
+void rpmzqInitSEQ(rpmzSEQ zs, long val)
+	/*@modifies zs @*/;
+
+/**
+ */
+void rpmzqFiniSEQ(rpmzSEQ zs)
+	/*@modifies zs @*/;
+
+/**
+ */
+rpmzJob rpmzqDelSEQ(rpmzSEQ zs, long seq)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, fileSystem, internalState @*/;
+
+/**
+ */
+void rpmzqAddSEQ(rpmzSEQ zs, rpmzJob job)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, job, fileSystem, internalState @*/;
+
+/**
+ */
 /*@null@*/
 rpmzJob rpmzqDelCJob(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/

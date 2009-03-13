@@ -645,6 +645,108 @@ rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, int limit)
     return zq;
 }
 
+void rpmzqInitFIFO(rpmzFIFO zs, long val)
+{
+    zs->have = yarnNewLock(val);
+    zs->head = NULL;
+    zs->tail = &zs->head;
+}
+
+void rpmzqFiniFIFO(rpmzFIFO zs)
+{
+    if (zs->have != NULL)
+	zs->have = yarnFreeLock(zs->have);
+    zs->head = NULL;
+    zs->tail = &zs->head;
+}
+
+rpmzJob rpmzqDelFIFO(rpmzFIFO zs)
+{
+    rpmzJob job;
+
+    /* get job from compress list, let all the compressors know */
+    yarnPossess(zs->have);
+    yarnWaitFor(zs->have, NOT_TO_BE, 0);
+    job = zs->head;
+assert(job != NULL);
+    if (job->seq == -1) {
+	yarnRelease(zs->have);
+	return NULL;
+    }
+
+/*@-assignexpose -dependenttrans@*/
+    zs->head = job->next;
+/*@=assignexpose =dependenttrans@*/
+    if (job->next == NULL)
+	zs->tail = &zs->head;
+    yarnTwist(zs->have, BY, -1);
+
+    return job;
+}
+
+void rpmzqAddFIFO(rpmzFIFO zs, rpmzJob job)
+{
+    /* put job at end of compress list, let all the compressors know */
+    yarnPossess(zs->have);
+    job->next = NULL;
+/*@-assignexpose@*/
+    *zs->tail = job;
+    zs->tail = &job->next;
+/*@=assignexpose@*/
+    yarnTwist(zs->have, BY, 1);
+}
+
+void rpmzqInitSEQ(rpmzSEQ zs, long val)
+{
+    zs->first = yarnNewLock(val);
+    zs->head = NULL;
+}
+
+void rpmzqFiniSEQ(rpmzSEQ zs)
+{
+    if (zs->first != NULL)
+	zs->first = yarnFreeLock(zs->first);
+    zs->head = NULL;
+}
+
+rpmzJob rpmzqDelSEQ(rpmzSEQ zs, long seq)
+{
+    rpmzJob job;
+
+    /* get next read job in order */
+    yarnPossess(zs->first);
+    yarnWaitFor(zs->first, TO_BE, seq);
+    job = zs->head;
+assert(job != NULL);
+/*@-assignexpose -dependenttrans@*/
+    zs->head = job->next;
+/*@=assignexpose =dependenttrans@*/
+    yarnTwist(zs->first, TO, zs->head == NULL ? -1 : zs->head->seq);
+    return job;
+}
+
+void rpmzqAddSEQ(rpmzSEQ zs, rpmzJob job)
+{
+    rpmzJob here;		/* pointers for inserting in SEQ list */
+    rpmzJob * prior;		/* pointers for inserting in SEQ list */
+
+    yarnPossess(zs->first);
+
+    /* insert read job in list in sorted order, alert read thread */
+    prior = &zs->head;
+    while ((here = *prior) != NULL) {
+	if (here->seq > job->seq)
+	    break;
+	prior = &here->next;
+    }
+/*@-onlytrans@*/
+    job->next = here;
+/*@=onlytrans@*/
+    *prior = job;
+
+    yarnTwist(zs->first, TO, zs->head->seq);
+}
+
 rpmzJob rpmzqDelCJob(rpmzQueue zq)
 {
     rpmzJob job;
