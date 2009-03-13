@@ -205,7 +205,6 @@ WITH_PERL="--without-perl"
         --with-selinux \
 	$WITH_PYTHON \
 	$WITH_PERL \
-        --with-db-tools-integrated \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
         --enable-build-pic \
