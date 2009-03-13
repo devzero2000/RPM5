@@ -252,16 +252,18 @@ struct rpmzQueue_s {
 #endif
 /*@only@*/ /*@relnull@*/
     rpmzh _zh;			/*!< compressed file header info (malloc'd). */
-/*@owned@*/ /*@relnull@*/
-    rpmzJob _job;		/*!< decompress job (malloc'd). */
 
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start */
 
 /*@only@*/ /*@null@*/
-    yarnLock read_first;	/*!< lowest sequence number in list */
+    yarnLock qi_first;		/*!< lowest sequence number in list */
 /*@null@*/
-    rpmzJob read_head;		/*!< list of read jobs */
+    rpmzJob qi;			/*!< list of decompress input jobs */
+/*@only@*/ /*@null@*/
+    yarnLock qo_first;		/*!< lowest sequence number in list */
+/*@null@*/
+    rpmzJob qo;			/*!< list of decompress output jobs */
 
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
@@ -349,14 +351,15 @@ rpmzJob rpmzqNewJob(long seq)
 
 /**
  */
-void rpmzqUseJob(rpmzJob job)
+/*@newref@*/ /*@null@*/
+rpmzJob rpmzqUseJob(/*@null@*/ rpmzJob job)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies job, fileSystem, internalState @*/;
 
 /**
  */
 /*@null@*/
-rpmzJob rpmzqDropJob(/*@only@*/ /*@null@*/ rpmzJob job)
+rpmzJob rpmzqDropJob(/*@killref@*/ /*@null@*/ rpmzJob job)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies job, fileSystem, internalState @*/;
 

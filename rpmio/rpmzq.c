@@ -502,13 +502,15 @@ zqFprintf(stderr, "    ++ job %p[%ld] use %d\n", job, seq, 1);
     return job;
 }
 
-void rpmzqUseJob(rpmzJob job)
+rpmzJob rpmzqUseJob(rpmzJob job)
 {
     int use;
+    if (job == NULL) return NULL;
     yarnPossess(job->use);
     use = yarnPeekLock(job->use);
 zqFprintf(stderr, "    ++ job %p[%ld] use %d\n", job, job->seq, use+1);
     yarnTwist(job->use, BY, 1);
+    return job;
 }
 
 /* drop a job, returning it to the pool if the use count is zero */
@@ -745,14 +747,14 @@ rpmzJob rpmzqDelRJob(rpmzQueue zq, long seq)
     rpmzJob job;
 
     /* get next read job in order */
-    yarnPossess(zq->read_first);
-    yarnWaitFor(zq->read_first, TO_BE, seq);
-    job = zq->read_head;
+    yarnPossess(zq->qi_first);
+    yarnWaitFor(zq->qi_first, TO_BE, seq);
+    job = zq->qi;
 assert(job != NULL);
 /*@-assignexpose -dependenttrans@*/
-    zq->read_head = job->next;
+    zq->qi = job->next;
 /*@=assignexpose =dependenttrans@*/
-    yarnTwist(zq->read_first, TO, zq->read_head == NULL ? -1 : zq->read_head->seq);
+    yarnTwist(zq->qi_first, TO, zq->qi == NULL ? -1 : zq->qi->seq);
     return job;
 }
 
@@ -761,10 +763,10 @@ void rpmzqAddRJob(rpmzQueue zq, rpmzJob job)
     rpmzJob here;		/* pointers for inserting in read list */
     rpmzJob * prior;		/* pointers for inserting in read list */
 
-    yarnPossess(zq->read_first);
+    yarnPossess(zq->qi_first);
 
     /* insert read job in list in sorted order, alert read thread */
-    prior = &zq->read_head;
+    prior = &zq->qi;
     while ((here = *prior) != NULL) {
 	if (here->seq > job->seq)
 	    break;
@@ -775,7 +777,7 @@ void rpmzqAddRJob(rpmzQueue zq, rpmzJob job)
 /*@=onlytrans@*/
     *prior = job;
 
-    yarnTwist(zq->read_first, TO, zq->read_head->seq);
+    yarnTwist(zq->qi_first, TO, zq->qi->seq);
 }
 
 static rpmzJob rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
