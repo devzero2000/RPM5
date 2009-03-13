@@ -534,7 +534,7 @@ static rpmRC rpmCpuinfo(void)
 			xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
 		    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
 		}
-		if(rpmCpuinfoMatch("cpuinfo(3dnow+)", cpuinfo))
+		if(rpmCpuinfoMatch("cpuinfo(3dnowext)", cpuinfo))
 		    xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
 		xx = mireAppend(RPMMIRE_REGEX, 0, "pentium2", NULL, &mi_re, &mi_nre);
 	    }
