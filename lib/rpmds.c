@@ -1213,10 +1213,8 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     tmp[19] = '\0';
     rpmdsNSAdd(dsp, NS, "cpu_MHz", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
     snprintf(tmp, 19, "%d", cpuinfo_get_cores(cip));
-    tmp[19] = '\0';
     rpmdsNSAdd(dsp, NS, "cpu_cores", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
     snprintf(tmp, 19, "%d", cpuinfo_get_threads(cip));
-    tmp[19] = '\0';
     rpmdsNSAdd(dsp, NS, "cpu_threads", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
 
     for (feature = cpuinfo_feature_common; feature != cpuinfo_feature_architecture_max; feature++) {
