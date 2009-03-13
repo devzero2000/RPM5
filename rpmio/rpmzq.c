@@ -742,44 +742,6 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
     yarnTwist(zq->_write.first, TO, zq->_write.head->seq);
 }
 
-rpmzJob rpmzqDelRJob(rpmzQueue zq, long seq)
-{
-    rpmzJob job;
-
-    /* get next read job in order */
-    yarnPossess(zq->_qi.first);
-    yarnWaitFor(zq->_qi.first, TO_BE, seq);
-    job = zq->_qi.head;
-assert(job != NULL);
-/*@-assignexpose -dependenttrans@*/
-    zq->_qi.head = job->next;
-/*@=assignexpose =dependenttrans@*/
-    yarnTwist(zq->_qi.first, TO, zq->_qi.head == NULL ? -1 : zq->_qi.head->seq);
-    return job;
-}
-
-void rpmzqAddRJob(rpmzQueue zq, rpmzJob job)
-{
-    rpmzJob here;		/* pointers for inserting in read list */
-    rpmzJob * prior;		/* pointers for inserting in read list */
-
-    yarnPossess(zq->_qi.first);
-
-    /* insert read job in list in sorted order, alert read thread */
-    prior = &zq->_qi.head;
-    while ((here = *prior) != NULL) {
-	if (here->seq > job->seq)
-	    break;
-	prior = &here->next;
-    }
-/*@-onlytrans@*/
-    job->next = here;
-/*@=onlytrans@*/
-    *prior = job;
-
-    yarnTwist(zq->_qi.first, TO, zq->_qi.head->seq);
-}
-
 static rpmzJob rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, job, fileSystem, internalState @*/

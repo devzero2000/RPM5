@@ -428,10 +428,8 @@ LIBRPMIO_0
     rpmbzCompressBlock;
     _rpmzq;
     rpmzqAddCJob;
-    rpmzqAddRJob;
     rpmzqAddWJob;
     rpmzqDelCJob;
-    rpmzqDelRJob;
     rpmzqDelWJob;
     rpmzqDropJob;
     rpmzqDropSpace;

@@ -284,11 +284,11 @@ struct rpmzQueue_s {
     int _in_which;		/*!< -1: start */
 
 #ifdef	NOTYET
-    rpmzSEQ qi;			/*!< list of read input jobs. */
-    rpmzSEQ qo;			/*!< list of write output jobs. */
+    rpmzFIFO qi;		/*!< list of read input jobs. */
+    rpmzFIFO qo;		/*!< list of write output jobs. */
 #else
-    struct rpmzSEQ_s _qi;
-    struct rpmzSEQ_s _qo;
+    struct rpmzFIFO_s _qi;
+    struct rpmzFIFO_s _qo;
 #endif
 
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
@@ -437,18 +437,6 @@ rpmzJob rpmzqDelWJob(rpmzQueue zq, long seq)
 /**
  */
 void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies zq, job, fileSystem, internalState @*/;
-
-/**
- */
-rpmzJob rpmzqDelRJob(rpmzQueue zq, long seq)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies zq, fileSystem, internalState @*/;
-
-/**
- */
-void rpmzqAddRJob(rpmzQueue zq, rpmzJob job)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, job, fileSystem, internalState @*/;
 
