@@ -1328,7 +1328,7 @@ static void load_read_thread(void *_zq)
 	yarnWaitFor(zi->state, TO_BE, 1);
 
 	job = rpmzqNewJob(seq++);
-	job->in = rpmzqNewSpace(zq->load_ipool, zq->load_ipool->size);
+	job->in = rpmzqNewSpace(zi->pool, zi->pool->size);
 	nread = rpmzRead(zq, job->in->buf, job->in->len);
 	job->more = (job->in->len == nread);
 	job->in->len = nread;
@@ -1487,10 +1487,10 @@ static void in_init(rpmzQueue zq)
 	/* inflateBack() window is a function of windowBits */
     size_t _out_len = (1 << infWBits);
     if (zq->threads > 1) {
-	if (zq->load_ipool == NULL)
-	    zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
-	if (zq->load_opool == NULL) 
-	    zq->load_opool = rpmzqNewPool(_out_len,  2);
+	if (zq->_zi.pool == NULL)
+	    zq->_zi.pool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
+	if (zq->_zo.pool == NULL) 
+	    zq->_zo.pool = rpmzqNewPool(_out_len,  2);
 	if (zq->_zi._q.have == NULL)
 	    rpmzqInitFIFO(&zq->_zi._q, 0L);
 	if (zq->_zo._q.have == NULL)
@@ -2195,12 +2195,10 @@ static void rpmzoInit(rpmzQueue zq, rpmzo zo)
 /*@=mustfreeonly@*/
 }
 
-static void rpmzoNext(rpmzQueue zq, rpmzo zo, rpmzFIFO qo,
-		unsigned char *buf, unsigned len)
+static void rpmzoNext(rpmzo zo, unsigned char *buf, unsigned len)
 	/*@modifies zo @*/
 {
-    if (zo->wstate == NULL)
-	rpmzoInit(zq, zo);
+    rpmzFIFO qo = &zo->_q;
 
     /* wait for previous operation to complete */
     rpmzoWait(zo);
@@ -2209,7 +2207,7 @@ if (_debug)
 jobDebug("  outb", qo->head);
 
     /* queue the output and alert the worker bees */
-    qo->head->out = rpmzqNewSpace(zq->load_opool, zq->load_opool->size);
+    qo->head->out = rpmzqNewSpace(zo->pool, zo->pool->size);
 assert(qo->head->out->len >= len);
     qo->head->out->len = len;
     if (len > 0) {
@@ -2226,7 +2224,7 @@ assert(buf != NULL);
     yarnTwist(zo->kstate, TO, 1);
 
     if (len == 0) {
-	rpmzoWait(zo);	/* wait for last buffer to be finished synchronously. */
+	rpmzoWait(zo);	/* wait for last buffer to be finished. */
 	yarnRelease(zo->wstate);
 	yarnRelease(zo->kstate);
 	rpmzoFini(zo);
@@ -2245,6 +2243,7 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
 {
     rpmzQueue zq = _zq;
     rpmzo zo = &zq->_zo;
+
 #ifndef _PIGZNOTHREAD
 
     if (zq->threads > 1) {
@@ -2253,20 +2252,13 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
 	    rpmzoInit(zq, zo);
 
 	/* wait for previous write and check threads to complete */
-#ifdef	DYING
-	yarnPossess(zo->kstate);
-	yarnWaitFor(zo->kstate, TO_BE, 0);
-	yarnPossess(zo->wstate);
-	yarnWaitFor(zo->wstate, TO_BE, 0);
-#else
 	rpmzoWait(zo);
-#endif
 
 if (_debug)
 jobDebug("  outb", zo->_q.head);
 
 	/* queue the output and alert the worker bees */
-	zo->_q.head->out = rpmzqNewSpace(zq->load_opool, zq->load_opool->size);
+	zo->_q.head->out = rpmzqNewSpace(zo->pool, zo->pool->size);
 assert(zo->_q.head->out->len >= len);
 	zo->_q.head->out->len = len;
 	if (len > 0) {
@@ -2286,10 +2278,7 @@ assert(buf != NULL);
 	 * check threads, free lock */
 	if (len == 0) {
 	    /* XXX wait for this buffer to be finished synchronously. */
-	    yarnPossess(zo->kstate);
-	    yarnWaitFor(zo->kstate, TO_BE, 0);
-	    yarnPossess(zo->wstate);
-	    yarnWaitFor(zo->wstate, TO_BE, 0);
+	    rpmzoWait(zo);	/* wait for last buffer to be finished. */
 	    yarnRelease(zo->kstate);
 	    yarnRelease(zo->wstate);
 
@@ -3312,16 +3301,16 @@ exit:
     }
     rpmzqFiniFIFO(&zq->_zo._q);
 	
-    if (zq->load_ipool != NULL) {
+    if (zq->_zi.pool != NULL) {
 	rpmzLog zlog = zq->zlog;
 	int caught;
-	zq->load_ipool = rpmzqFreePool(zq->load_ipool, &caught);
+	zq->_zi.pool = rpmzqFreePool(zq->_zi.pool, &caught);
 	Trace((zlog, "-- freed %d input buffers", caught));
     }
-    if (zq->load_opool != NULL) {
+    if (zq->_zo.pool != NULL) {
 	rpmzLog zlog = zq->zlog;
 	int caught;
-	zq->load_opool = rpmzqFreePool(zq->load_opool, &caught);
+	zq->_zo.pool = rpmzqFreePool(zq->_zo.pool, &caught);
 	Trace((zlog, "-- freed %d output buffers", caught));
     }
     zq->_zh = _free(zq->_zh);

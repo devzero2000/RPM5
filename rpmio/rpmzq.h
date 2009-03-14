@@ -212,6 +212,7 @@ struct rpmzi_s {
 #else
     struct rpmzFIFO_s _q;
 #endif
+    rpmzPool pool;		/*!< input buffer pool (malloc'd). */
 };
 
 /**
@@ -230,6 +231,8 @@ struct rpmzo_s {
 #else
     struct rpmzFIFO_s _q;
 #endif
+/*@relnull@*/
+    rpmzPool pool;		/*!< ouput buffer pool (malloc'd). */
 };
 
 /**
@@ -307,9 +310,6 @@ struct rpmzQueue_s {
 
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;
-/*@relnull@*/
-    rpmzPool load_ipool;	/*!< load/read input buffer pool (malloc'd). */
-    rpmzPool load_opool;	/*!< load/read ouput buffer pool (malloc'd). */
 
 };
 #endif	/* _RPMZQ_INTERNAL */
