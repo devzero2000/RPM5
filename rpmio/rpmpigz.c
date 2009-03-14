@@ -1316,6 +1316,7 @@ static void load_read_thread(void *_zq)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
+    rpmzi zi = &zq->_zi;
     rpmzLog zlog = zq->zlog;
     size_t nread;
 
@@ -1323,8 +1324,8 @@ static void load_read_thread(void *_zq)
     do {
 	rpmzJob job;
 	static long seq = 0;
-	yarnPossess(zq->_zi.state);
-	yarnWaitFor(zq->_zi.state, TO_BE, 1);
+	yarnPossess(zi->state);
+	yarnWaitFor(zi->state, TO_BE, 1);
 
 	job = rpmzqNewJob(seq++);
 	job->in = rpmzqNewSpace(zq->load_ipool, zq->load_ipool->size);
@@ -1333,10 +1334,10 @@ static void load_read_thread(void *_zq)
 	job->in->len = nread;
 
 	/* queue read job at end of list. */
-	rpmzqAddFIFO(&zq->_zi._q, job);
+	rpmzqAddFIFO(&zi->_q, job);
 
 	Trace((zlog, "-- decompress read thread read %lu bytes", nread));
-	yarnTwist(zq->_zi.state, TO, 0);
+	yarnTwist(zi->state, TO, 0);
     } while (nread == zq->_in_buf_allocated);
     Trace((zlog, "-- exited decompress read thread"));
 }
@@ -1412,10 +1413,14 @@ assert(zq->qi->in->len == 0);
     if (zq->threads > 1) {
 	/* if first time, fire up the read thread, ask for a read */
 	if (zq->_in_which == -1) {
+#ifdef	DYING
 /*@-mustfreeonly@*/
 	    zq->_zi.state = yarnNewLock(1);
 	    zq->_zi.reader = yarnLaunch(load_read_thread, zq);
 /*@=mustfreeonly@*/
+#else
+	    rpmziInit(zq, &zq->_zi, 1L, 0);
+#endif
 	}
 
 	/* wait for the previously requested read to complete */
@@ -1439,8 +1444,12 @@ assert(zq->qi->in->len == 0);
 
 	/* at end of file -- join read thread (already exited), clean up */
 	else {
+#ifdef	DYING
 	    zq->_zi.reader = yarnJoin(zq->_zi.reader);
 	    zq->_zi.state = yarnFreeLock(zq->_zi.state);
+#else
+	    rpmziFini(&zq->_zi);
+#endif
 	    zq->_in_which = -1;
 	}
     }
@@ -2115,23 +2124,24 @@ static void outb_write(void *_zq)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
+    rpmzo zo = &zq->_zo;
     rpmzLog zlog = zq->zlog;
     size_t nwrote;
 
     Trace((zlog, "-- launched decompress write thread"));
     do {
-	yarnPossess(zq->_zo.wstate);
-	yarnWaitFor(zq->_zo.wstate, TO_BE, 1);
+	yarnPossess(zo->wstate);
+	yarnWaitFor(zo->wstate, TO_BE, 1);
 
 if (_debug)
-jobDebug(" write", zq->_zo._q.head);
-	nwrote = zq->_zo._q.head->out->len;
+jobDebug(" write", zo->_q.head);
+	nwrote = zo->_q.head->out->len;
 	if (nwrote && zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(zq, zq->_zo._q.head->out->buf, zq->_zo._q.head->out->len);
-	rpmzqDropSpace(zq->_zo._q.head->out);
+	    rpmzWrite(zq, zo->_q.head->out->buf, zo->_q.head->out->len);
+	rpmzqDropSpace(zo->_q.head->out);
 
 	Trace((zlog, "-- decompress wrote %lu bytes", nwrote));
-	yarnTwist(zq->_zo.wstate, TO, 0);
+	yarnTwist(zo->wstate, TO, 0);
     } while (nwrote);
     Trace((zlog, "-- exited decompress write thread"));
 }
@@ -2142,23 +2152,24 @@ static void outb_check(void *_zq)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmzQueue zq = _zq;
+    rpmzo zo = &zq->_zo;
     rpmzLog zlog = zq->zlog;
     size_t nchecked;
 
     Trace((zlog, "-- launched decompress check thread"));
     do {
-	yarnPossess(zq->_zo.kstate);
-	yarnWaitFor(zq->_zo.kstate, TO_BE, 1);
+	yarnPossess(zo->kstate);
+	yarnWaitFor(zo->kstate, TO_BE, 1);
 
 if (_debug)
-jobDebug(" check", zq->_zo._q.head);
-	nchecked = zq->_zo._q.head->out->len;
+jobDebug(" check", zo->_q.head);
+	nchecked = zo->_q.head->out->len;
 	if (nchecked > 0)
-	    zq->_zo._q.head->check = CHECK(zq->_zo._q.head->check, zq->_zo._q.head->out->buf, nchecked);
-	rpmzqDropSpace(zq->_zo._q.head->out);
+	    zo->_q.head->check = CHECK(zo->_q.head->check, zo->_q.head->out->buf, nchecked);
+	rpmzqDropSpace(zo->_q.head->out);
 
 	Trace((zlog, "-- decompress checked %lu bytes", nchecked));
-	yarnTwist(zq->_zo.kstate, TO, 0);
+	yarnTwist(zo->kstate, TO, 0);
     } while (nchecked);
     Trace((zlog, "-- exited decompress check thread"));
 }
@@ -2248,12 +2259,16 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
     if (zq->threads > 1) {
 	/* if first time, initialize state and launch threads */
 	if (zq->_zo.wstate == NULL) {
+#ifdef	DYING
 /*@-mustfreeonly@*/
 	    zq->_zo.wstate = yarnNewLock(0);
 	    zq->_zo.kstate = yarnNewLock(0);
 	    zq->_zo._writer = yarnLaunch(outb_write, zq);
 	    zq->_zo._checker = yarnLaunch(outb_check, zq);
 /*@=mustfreeonly@*/
+#else
+	    rpmzoInit(zq, &zq->_zo);
+#endif
 	}
 
 	/* wait for previous write and check threads to complete */
@@ -2291,10 +2306,14 @@ assert(buf != NULL);
 	    yarnWaitFor(zq->_zo.wstate, TO_BE, 0);
 	    yarnRelease(zq->_zo.kstate);
 	    yarnRelease(zq->_zo.wstate);
+#ifdef	DYING
 	    zq->_zo._checker = yarnJoin(zq->_zo._checker);
 	    zq->_zo._writer = yarnJoin(zq->_zo._writer);
 	    zq->_zo.kstate = yarnFreeLock(zq->_zo.kstate);
 	    zq->_zo.wstate = yarnFreeLock(zq->_zo.wstate);
+#else
+	    rpmzoFini(&zq->_zo);
+#endif
 
 	}
 
