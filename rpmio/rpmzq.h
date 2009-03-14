@@ -178,9 +178,6 @@ struct rpmzh_s {
 /**
  */
 typedef struct rpmzFIFO_s * rpmzFIFO;
-
-/**
- */
 struct rpmzFIFO_s {
 /*@only@*/ /*@null@*/
     yarnLock have;		/*!< no. of queued jobs waiting */
@@ -193,14 +190,36 @@ struct rpmzFIFO_s {
 /**
  */
 typedef struct rpmzSEQ_s * rpmzSEQ;
-
-/**
- */
 struct rpmzSEQ_s {
 /*@only@*/ /*@null@*/
     yarnLock first;		/*!< lowest seq job waiting */
 /*@null@*/
     rpmzJob head;
+};
+
+/**
+ */
+typedef	struct rpmzi_s * rpmzi;
+struct rpmzi_s {
+/*@only@*/ /*@null@*/
+    yarnLock state;		/*!< value = 0 to wait, 1 to read a buffer */
+/*@only@*/ /*@null@*/
+    yarnThread reader;		/*!< load_read_thread() thread for joining */
+    off_t in_tot;		/*!< total bytes read from input */
+    int cnt;			/*!< no. of loads perfromed. */
+};
+
+/**
+ */
+typedef	struct rpmzo_s * rpmzo;
+struct rpmzo_s {
+/*@only@*/ /*@null@*/
+    yarnLock wstate;		/*!< outb write threads states */
+    yarnThread _writer;		/*!< outb_write() thread for joining */
+/*@only@*/ /*@null@*/
+    yarnLock kstate;		/*!< outb check threads state */
+    yarnThread _checker;	/*!< outb_check() thread for joining */
+    off_t out_tot;		/*!< total bytes written to output */
 };
 
 /**
@@ -263,11 +282,13 @@ struct rpmzQueue_s {
     yarnLock load_state;	/*!< value = 0 to wait, 1 to read a buffer */
 /*@only@*/ /*@null@*/
     yarnThread load_thread;	/*!< load_read_thread() thread for joining */
+    struct rpmzi_s _zi;
 
 /*@only@*/ /*@null@*/
     yarnLock outb_write_more;	/*!< outb write threads states */
 /*@only@*/ /*@null@*/
     yarnLock outb_check_more;	/*!< outb check threads states */
+    struct rpmzo_s _zo;
 
 #ifndef	DYING	/* XXX this cruft is going away */
     long lastseq;		/*!< Last seq. */

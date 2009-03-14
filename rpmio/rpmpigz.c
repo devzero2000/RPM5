@@ -1309,6 +1309,7 @@ assert(strm->avail_in == 0);
 /* --- decompression --- */
 
 #ifndef _PIGZNOTHREAD
+
 /* parallel read thread */
 static void load_read_thread(void *_zq)
 	/*@globals fileSystem, internalState @*/
@@ -1340,6 +1341,50 @@ static void load_read_thread(void *_zq)
     Trace((zlog, "-- exited decompress read thread"));
 }
 #endif
+
+static void rpmziFini(rpmzi zi)
+	/*@modifies zi @*/
+{
+    zi->reader = yarnJoin(zi->reader);
+    zi->state = yarnFreeLock(zi->state);
+}
+
+static void rpmziInit(rpmzQueue zq, rpmzi zi, long val, off_t in_tot)
+	/*@modifies zi @*/
+{
+/*@-mustfreeonly@*/
+    zi->state = yarnNewLock(val);
+    zi->reader = yarnLaunch(load_read_thread, zq);
+    zi->cnt = 0;
+    zi->in_tot = in_tot;
+/*@=mustfreeonly@*/
+}
+
+static void rpmziNext(rpmzQueue zq, rpmzi zi, rpmzFIFO qi)
+	/*@modifies zi @*/
+{
+    if (zi->state == NULL)
+	rpmziInit(zq, zi, 1L, (off_t)0);
+
+    /* wait for the previously requested read to complete */
+    yarnPossess(zi->state);
+    yarnWaitFor(zi->state, TO_BE, 0);
+    yarnRelease(zi->state);
+
+    /* Drop previous buffer if not initializing. */
+    if (zi->cnt++ > 0) {
+	rpmzJob ojob = rpmzqDelFIFO(qi);
+	ojob->in = rpmzqDropSpace(ojob->in);
+	ojob = rpmzqDropJob(ojob);
+    }
+
+    /* if not at end of file, alert read thread to load next buffer */
+    if (qi->head->in->len == qi->head->in->pool->size) {
+	yarnPossess(zi->state);
+	yarnTwist(zi->state, TO, 1);
+    } else
+	rpmziFini(zi);
+}
 
 /* load() is called when job->in->len has gone to zero in order to provide more
    input data: load the input buffer with zq->_in_buf_allocated (or fewer if at end of file) bytes
@@ -2063,6 +2108,7 @@ jobDebug("  post", zq->_qi.head);
 }
 
 #ifndef	_PIGZNOTHREAD
+
 /* output write thread */
 static void outb_write(void *_zq)
 	/*@globals fileSystem, internalState @*/
@@ -2116,6 +2162,76 @@ jobDebug(" check", zq->_qo.head);
     } while (nchecked);
     Trace((zlog, "-- exited decompress check thread"));
 }
+
+static void rpmzoWait(rpmzo zo)
+	/*@modifies zo @*/
+{
+    /* wait for write and check threads to complete */
+    yarnPossess(zo->kstate);
+    yarnWaitFor(zo->kstate, TO_BE, 0);
+    yarnPossess(zo->wstate);
+    yarnWaitFor(zo->wstate, TO_BE, 0);
+}
+
+static void rpmzoFini(rpmzo zo)
+	/*@modifies zo @*/
+{
+    zo->_checker = yarnJoin(zo->_checker);
+    zo->kstate = yarnFreeLock(zo->kstate);
+    zo->_writer = yarnJoin(zo->_writer);
+    zo->wstate = yarnFreeLock(zo->wstate);
+}
+
+static void rpmzoInit(rpmzQueue zq, rpmzo zo)
+	/*@modifies zo @*/
+{
+/*@-mustfreeonly@*/
+    zo->wstate = yarnNewLock(0);
+    zo->_writer = yarnLaunch(outb_write, zq);
+    zo->kstate = yarnNewLock(0);
+    zo->_checker = yarnLaunch(outb_check, zq);
+    zo->out_tot = 0;
+/*@=mustfreeonly@*/
+}
+
+static void rpmzoNext(rpmzQueue zq, rpmzo zo, rpmzFIFO qo,
+		unsigned char *buf, unsigned len)
+	/*@modifies zo @*/
+{
+    if (zo->wstate == NULL)
+	rpmzoInit(zq, zo);
+
+    /* wait for previous operation to complete */
+    rpmzoWait(zo);
+
+if (_debug)
+jobDebug("  outb", qo->head);
+
+    /* queue the output and alert the worker bees */
+    qo->head->out = rpmzqNewSpace(zq->load_opool, zq->load_opool->size);
+assert(qo->head->out->len >= len);
+    qo->head->out->len = len;
+    if (len > 0) {
+	zo->out_tot += len;
+assert(buf != NULL);
+	/* XXX this memcpy cannot be avoided with inflateBack. */
+/*@-mayaliasunique@*/
+	memcpy(qo->head->out->buf, buf, len);
+/*@=mayaliasunique@*/
+    }
+    rpmzqUseSpace(qo->head->out);	/* XXX nrefs++ for check. */
+
+    yarnTwist(zo->wstate, TO, 1);
+    yarnTwist(zo->kstate, TO, 1);
+
+    if (len == 0) {
+	rpmzoWait(zo);	/* wait for last buffer to be finished synchronously. */
+	yarnRelease(zo->wstate);
+	yarnRelease(zo->kstate);
+	rpmzoFini(zo);
+    }
+}
+
 #endif	/* _PIGZNOTHREAD */
 
 /* call-back output function for inflateBack() -- wait for the last write and
