@@ -206,7 +206,12 @@ struct rpmzi_s {
 /*@only@*/ /*@null@*/
     yarnThread reader;		/*!< load_read_thread() thread for joining */
     off_t in_tot;		/*!< total bytes read from input */
-    int cnt;			/*!< no. of loads perfromed. */
+    int cnt;			/*!< no. of loads performed. */
+#ifdef	NOTYET
+    rpmzFIFO q;			/*!< list of read input jobs. */
+#else
+    struct rpmzFIFO_s _q;
+#endif
 };
 
 /**
@@ -220,6 +225,11 @@ struct rpmzo_s {
     yarnLock kstate;		/*!< outb check threads state */
     yarnThread _checker;	/*!< outb_check() thread for joining */
     off_t out_tot;		/*!< total bytes written to output */
+#ifdef	NOTYET
+    rpmzFIFO q;			/*!< list of write output jobs. */
+#else
+    struct rpmzFIFO_s _q;
+#endif
 };
 
 /**
@@ -278,17 +288,8 @@ struct rpmzQueue_s {
     yarnThread writeth;		/*!< write thread if running */
 
     /* parallel reading */
-/*@only@*/ /*@null@*/
-    yarnLock load_state;	/*!< value = 0 to wait, 1 to read a buffer */
-/*@only@*/ /*@null@*/
-    yarnThread load_thread;	/*!< load_read_thread() thread for joining */
-    struct rpmzi_s _zi;
-
-/*@only@*/ /*@null@*/
-    yarnLock outb_write_more;	/*!< outb write threads states */
-/*@only@*/ /*@null@*/
-    yarnLock outb_check_more;	/*!< outb check threads states */
-    struct rpmzo_s _zo;
+    struct rpmzi_s _zi;		/*!< decompress loader/reader thread state */
+    struct rpmzo_s _zo;		/*!< decompress writer thread(s) state */
 
 #ifndef	DYING	/* XXX this cruft is going away */
     long lastseq;		/*!< Last seq. */
@@ -303,14 +304,6 @@ struct rpmzQueue_s {
 
 /* --- globals for decompression and listing buffered reading */
     int _in_which;		/*!< -1: start */
-
-#ifdef	NOTYET
-    rpmzFIFO qi;		/*!< list of read input jobs. */
-    rpmzFIFO qo;		/*!< list of write output jobs. */
-#else
-    struct rpmzFIFO_s _qi;
-    struct rpmzFIFO_s _qo;
-#endif
 
 #define IN_BUF_ALLOCATED 32768U	/* input buffer size */
     size_t _in_buf_allocated;

@@ -1323,8 +1323,8 @@ static void load_read_thread(void *_zq)
     do {
 	rpmzJob job;
 	static long seq = 0;
-	yarnPossess(zq->load_state);
-	yarnWaitFor(zq->load_state, TO_BE, 1);
+	yarnPossess(zq->_zi.state);
+	yarnWaitFor(zq->_zi.state, TO_BE, 1);
 
 	job = rpmzqNewJob(seq++);
 	job->in = rpmzqNewSpace(zq->load_ipool, zq->load_ipool->size);
@@ -1333,10 +1333,10 @@ static void load_read_thread(void *_zq)
 	job->in->len = nread;
 
 	/* queue read job at end of list. */
-	rpmzqAddFIFO(&zq->_qi, job);
+	rpmzqAddFIFO(&zq->_zi._q, job);
 
 	Trace((zlog, "-- decompress read thread read %lu bytes", nread));
-	yarnTwist(zq->load_state, TO, 0);
+	yarnTwist(zq->_zi.state, TO, 0);
     } while (nread == zq->_in_buf_allocated);
     Trace((zlog, "-- exited decompress read thread"));
 }
@@ -1397,8 +1397,8 @@ static size_t load(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     /* if already detected end of file, do nothing */
-    if (zq->_qi.head && zq->_qi.head->more < 0) {
-	zq->_qi.head->more = 0;
+    if (zq->_zi._q.head && zq->_zi._q.head->more < 0) {
+	zq->_zi._q.head->more = 0;
 	return 0;
     }
 
@@ -1413,34 +1413,34 @@ assert(zq->qi->in->len == 0);
 	/* if first time, fire up the read thread, ask for a read */
 	if (zq->_in_which == -1) {
 /*@-mustfreeonly@*/
-	    zq->load_state = yarnNewLock(1);
-	    zq->load_thread = yarnLaunch(load_read_thread, zq);
+	    zq->_zi.state = yarnNewLock(1);
+	    zq->_zi.reader = yarnLaunch(load_read_thread, zq);
 /*@=mustfreeonly@*/
 	}
 
 	/* wait for the previously requested read to complete */
-	yarnPossess(zq->load_state);
-	yarnWaitFor(zq->load_state, TO_BE, 0);
-	yarnRelease(zq->load_state);
+	yarnPossess(zq->_zi.state);
+	yarnWaitFor(zq->_zi.state, TO_BE, 0);
+	yarnRelease(zq->_zi.state);
 
 	/* Drop previous buffer if not initializing. */
 	if (zq->_in_which != -1) {
-	    rpmzJob ojob = rpmzqDelFIFO(&zq->_qi);
+	    rpmzJob ojob = rpmzqDelFIFO(&zq->_zi._q);
 	    ojob->in = rpmzqDropSpace(ojob->in);
 	    ojob = rpmzqDropJob(ojob);
 	} else
 	    zq->_in_which = 1;
 
 	/* if not at end of file, alert read thread to load next buffer */
-	if (zq->_qi.head->in->len == zq->_in_buf_allocated) {
-	    yarnPossess(zq->load_state);
-	    yarnTwist(zq->load_state, TO, 1);
+	if (zq->_zi._q.head->in->len == zq->_in_buf_allocated) {
+	    yarnPossess(zq->_zi.state);
+	    yarnTwist(zq->_zi.state, TO, 1);
 	}
 
 	/* at end of file -- join read thread (already exited), clean up */
 	else {
-	    zq->load_thread = yarnJoin(zq->load_thread);
-	    zq->load_state = yarnFreeLock(zq->load_state);
+	    zq->_zi.reader = yarnJoin(zq->_zi.reader);
+	    zq->_zi.state = yarnFreeLock(zq->_zi.state);
 	    zq->_in_which = -1;
 	}
     }
@@ -1451,33 +1451,33 @@ assert(zq->qi->in->len == 0);
 	
 	/* Drop previous buffer if not initializing. */
 	if (zq->_in_which != -1)
-	    zq->_qi.head->in = rpmzqDropSpace(zq->_qi.head->in);
+	    zq->_zi._q.head->in = rpmzqDropSpace(zq->_zi._q.head->in);
 	else {
-	    zq->_qi.head = rpmzqNewJob(0);
+	    zq->_zi._q.head = rpmzqNewJob(0);
 	    zq->_in_which = 1;
 	}
 
-	zq->_qi.head->in = rpmzqNewSpace(NULL, zq->_in_buf_allocated);
-	nread = rpmzRead(zq, zq->_qi.head->in->buf, zq->_qi.head->in->len);
-	zq->_qi.head->in->len = nread;
+	zq->_zi._q.head->in = rpmzqNewSpace(NULL, zq->_in_buf_allocated);
+	nread = rpmzRead(zq, zq->_zi._q.head->in->buf, zq->_zi._q.head->in->len);
+	zq->_zi._q.head->in->len = nread;
     }
 
     /* note end of file */
-    if (zq->_qi.head->in->len < zq->_in_buf_allocated) {
-	zq->_qi.head->more = -1;
+    if (zq->_zi._q.head->in->len < zq->_in_buf_allocated) {
+	zq->_zi._q.head->more = -1;
 
 	/* if we got bupkis, now is the time to mark eof */
-	if (zq->_qi.head->in->len == 0)
-	    zq->_qi.head->more = 0;
+	if (zq->_zi._q.head->in->len == 0)
+	    zq->_zi._q.head->more = 0;
     } else
-	zq->_qi.head->more = 1;
+	zq->_zi._q.head->more = 1;
 
 if (_debug)
-jobDebug("loaded", zq->_qi.head);
+jobDebug("loaded", zq->_zi._q.head);
 
     /* update the total and return the available bytes */
-    zq->in_tot += zq->_qi.head->in->len;
-    return zq->_qi.head->in->len;
+    zq->in_tot += zq->_zi._q.head->in->len;
+    return zq->_zi._q.head->in->len;
 }
 /*@=mustmod@*/
 
@@ -1493,10 +1493,10 @@ static void in_init(rpmzQueue zq)
 	    zq->load_ipool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
 	if (zq->load_opool == NULL) 
 	    zq->load_opool = rpmzqNewPool(_out_len,  2);
-	if (zq->_qi.have == NULL)
-	    rpmzqInitFIFO(&zq->_qi, 0L);
-	if (zq->_qo.have == NULL)
-	    rpmzqInitFIFO(&zq->_qo, 0L);
+	if (zq->_zi._q.have == NULL)
+	    rpmzqInitFIFO(&zq->_zi._q, 0L);
+	if (zq->_zo._q.have == NULL)
+	    rpmzqInitFIFO(&zq->_zo._q, 0L);
     }
 
     zq->in_tot = 0;
@@ -1514,57 +1514,57 @@ static size_t rpmzqJobPull(rpmzQueue zq,
     int rc;
 
     /* initialize input buffer */
-    if (zq->_qi.head == NULL) {
+    if (zq->_zi._q.head == NULL) {
 	in_init(zq);
 	rc = load(zq);
     }
 
-    yarnPossess(zq->_qi.have);
+    yarnPossess(zq->_zi._q.have);
 
-    if (!zq->_qi.head->more)
+    if (!zq->_zi._q.head->more)
 	goto exit;
-    if (!(zq->_qi.head->in && zq->_qi.head->in->len)) {
-	yarnRelease(zq->_qi.have);
+    if (!(zq->_zi._q.head->in && zq->_zi._q.head->in->len)) {
+	yarnRelease(zq->_zi._q.have);
 	rc = load(zq);
-	yarnPossess(zq->_qi.have);
+	yarnPossess(zq->_zi._q.have);
 	if (rc == 0)
 	    goto exit;
     }
 
-    while (togo > zq->_qi.head->in->len) {
+    while (togo > zq->_zi._q.head->in->len) {
 	if (buf != NULL) {
-	    memcpy(buf, zq->_qi.head->in->buf, zq->_qi.head->in->len);
-	    buf += zq->_qi.head->in->len;
+	    memcpy(buf, zq->_zi._q.head->in->buf, zq->_zi._q.head->in->len);
+	    buf += zq->_zi._q.head->in->len;
 	}
-	got += zq->_qi.head->in->len;
-	togo -= zq->_qi.head->in->len;
-	{   unsigned char * _buf = zq->_qi.head->in->buf;
-	    _buf += zq->_qi.head->in->len;
-	    zq->_qi.head->in->buf = _buf;	/* XXX don't change job->in->buf?!? */
+	got += zq->_zi._q.head->in->len;
+	togo -= zq->_zi._q.head->in->len;
+	{   unsigned char * _buf = zq->_zi._q.head->in->buf;
+	    _buf += zq->_zi._q.head->in->len;
+	    zq->_zi._q.head->in->buf = _buf;	/* XXX don't change job->in->buf?!? */
 	}
-	zq->_qi.head->in->len -= zq->_qi.head->in->len;
+	zq->_zi._q.head->in->len -= zq->_zi._q.head->in->len;
 
-	yarnRelease(zq->_qi.have);
+	yarnRelease(zq->_zi._q.have);
 	rc = load(zq);
-	yarnPossess(zq->_qi.have);
+	yarnPossess(zq->_zi._q.have);
 	if (rc == 0)
 	    goto exit;
     }
     if (togo > 0) {
 	if (buf != NULL) {
-	    memcpy(buf, zq->_qi.head->in->buf, togo);
+	    memcpy(buf, zq->_zi._q.head->in->buf, togo);
 	    buf += togo;
 	}
-	{   unsigned char * _buf = zq->_qi.head->in->buf;
+	{   unsigned char * _buf = zq->_zi._q.head->in->buf;
 	    _buf += togo;
-	    zq->_qi.head->in->buf = _buf;	/* XXX don't change job->in->buf?!? */
+	    zq->_zi._q.head->in->buf = _buf;	/* XXX don't change job->in->buf?!? */
 	}
-	zq->_qi.head->in->len -= togo;
+	zq->_zi._q.head->in->len -= togo;
 	got += togo;
 	togo -= togo;
     }
 exit:
-    yarnRelease(zq->_qi.have);
+    yarnRelease(zq->_zi._q.have);
     return got;
 }
 
@@ -1707,7 +1707,7 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
     int rc;
 
 if (_debug)
-jobDebug(" start", zq->_qi.head);
+jobDebug(" start", zq->_zi._q.head);
 
     /* clear return information */
     if (save) {
@@ -1883,7 +1883,7 @@ static void rpmzShowInfo(rpmzQueue zq, int method, unsigned long check, off_t le
     char name[NAMEMAX1+1];  /* header or file name, possibly truncated */
 
 if (_debug)
-jobDebug("  show", zq->_qi.head);
+jobDebug("  show", zq->_zi._q.head);
 
     /* create abbreviated name from header file name or actual file name */
     max = zq->verbosity > 1 ? NAMEMAX2 : NAMEMAX1;
@@ -1957,7 +1957,7 @@ static void rpmzListInfo(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, fileSystem, internalState @*/
 {
-    rpmzJob job = zq->_qi.head;
+    rpmzJob job = zq->_zi._q.head;
     rpmzh zh = zq->_zh;
     int method;             /* rpmzGetHeader() return value */
     size_t n;               /* available trailer bytes */
@@ -1968,7 +1968,7 @@ static void rpmzListInfo(rpmzQueue zq)
     unsigned char * bufend;
 
 if (_debug)
-jobDebug("  list", zq->_qi.head);
+jobDebug("  list", zq->_zi._q.head);
 
     /* read header information and position input after header */
     method = rpmzGetHeader(zq, 1);
@@ -2101,10 +2101,10 @@ static unsigned inb(void *_zq, unsigned char **buf)
     load(zq);
 
 if (_debug)
-jobDebug("  post", zq->_qi.head);
+jobDebug("  post", zq->_zi._q.head);
 
-    *buf = zq->_qi.head->in->buf;
-    return zq->_qi.head->in->len;
+    *buf = zq->_zi._q.head->in->buf;
+    return zq->_zi._q.head->in->len;
 }
 
 #ifndef	_PIGZNOTHREAD
@@ -2120,18 +2120,18 @@ static void outb_write(void *_zq)
 
     Trace((zlog, "-- launched decompress write thread"));
     do {
-	yarnPossess(zq->outb_write_more);
-	yarnWaitFor(zq->outb_write_more, TO_BE, 1);
+	yarnPossess(zq->_zo.wstate);
+	yarnWaitFor(zq->_zo.wstate, TO_BE, 1);
 
 if (_debug)
-jobDebug(" write", zq->_qo.head);
-	nwrote = zq->_qo.head->out->len;
+jobDebug(" write", zq->_zo._q.head);
+	nwrote = zq->_zo._q.head->out->len;
 	if (nwrote && zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(zq, zq->_qo.head->out->buf, zq->_qo.head->out->len);
-	rpmzqDropSpace(zq->_qo.head->out);
+	    rpmzWrite(zq, zq->_zo._q.head->out->buf, zq->_zo._q.head->out->len);
+	rpmzqDropSpace(zq->_zo._q.head->out);
 
 	Trace((zlog, "-- decompress wrote %lu bytes", nwrote));
-	yarnTwist(zq->outb_write_more, TO, 0);
+	yarnTwist(zq->_zo.wstate, TO, 0);
     } while (nwrote);
     Trace((zlog, "-- exited decompress write thread"));
 }
@@ -2147,18 +2147,18 @@ static void outb_check(void *_zq)
 
     Trace((zlog, "-- launched decompress check thread"));
     do {
-	yarnPossess(zq->outb_check_more);
-	yarnWaitFor(zq->outb_check_more, TO_BE, 1);
+	yarnPossess(zq->_zo.kstate);
+	yarnWaitFor(zq->_zo.kstate, TO_BE, 1);
 
 if (_debug)
-jobDebug(" check", zq->_qo.head);
-	nchecked = zq->_qo.head->out->len;
+jobDebug(" check", zq->_zo._q.head);
+	nchecked = zq->_zo._q.head->out->len;
 	if (nchecked > 0)
-	    zq->_qo.head->check = CHECK(zq->_qo.head->check, zq->_qo.head->out->buf, nchecked);
-	rpmzqDropSpace(zq->_qo.head->out);
+	    zq->_zo._q.head->check = CHECK(zq->_zo._q.head->check, zq->_zo._q.head->out->buf, nchecked);
+	rpmzqDropSpace(zq->_zo._q.head->out);
 
 	Trace((zlog, "-- decompress checked %lu bytes", nchecked));
-	yarnTwist(zq->outb_check_more, TO, 0);
+	yarnTwist(zq->_zo.kstate, TO, 0);
     } while (nchecked);
     Trace((zlog, "-- exited decompress check thread"));
 }
@@ -2244,61 +2244,57 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
 {
     rpmzQueue zq = _zq;
 #ifndef _PIGZNOTHREAD
-/*@only@*/ /*@relnull@*/
-    static yarnThread wr;
-/*@only@*/ /*@relnull@*/
-    static yarnThread ch;
 
     if (zq->threads > 1) {
 	/* if first time, initialize state and launch threads */
-	if (zq->outb_write_more == NULL) {
+	if (zq->_zo.wstate == NULL) {
 /*@-mustfreeonly@*/
-	    zq->outb_write_more = yarnNewLock(0);
-	    zq->outb_check_more = yarnNewLock(0);
-	    wr = yarnLaunch(outb_write, zq);
-	    ch = yarnLaunch(outb_check, zq);
+	    zq->_zo.wstate = yarnNewLock(0);
+	    zq->_zo.kstate = yarnNewLock(0);
+	    zq->_zo._writer = yarnLaunch(outb_write, zq);
+	    zq->_zo._checker = yarnLaunch(outb_check, zq);
 /*@=mustfreeonly@*/
 	}
 
 	/* wait for previous write and check threads to complete */
-	yarnPossess(zq->outb_check_more);
-	yarnWaitFor(zq->outb_check_more, TO_BE, 0);
-	yarnPossess(zq->outb_write_more);
-	yarnWaitFor(zq->outb_write_more, TO_BE, 0);
+	yarnPossess(zq->_zo.kstate);
+	yarnWaitFor(zq->_zo.kstate, TO_BE, 0);
+	yarnPossess(zq->_zo.wstate);
+	yarnWaitFor(zq->_zo.wstate, TO_BE, 0);
 
 if (_debug)
-jobDebug("  outb", zq->_qo.head);
+jobDebug("  outb", zq->_zo._q.head);
 	/* queue the output and alert the worker bees */
-	zq->_qo.head->out = rpmzqNewSpace(zq->load_opool, zq->load_opool->size);
-assert(zq->_qo.head->out->len >= len);
-	zq->_qo.head->out->len = len;
+	zq->_zo._q.head->out = rpmzqNewSpace(zq->load_opool, zq->load_opool->size);
+assert(zq->_zo._q.head->out->len >= len);
+	zq->_zo._q.head->out->len = len;
 	if (len > 0) {
 	    zq->out_tot += len;
 assert(buf != NULL);
 	    /* XXX this memcpy cannot be avoided wuth inflateBack. */
 /*@-mayaliasunique@*/
-	    memcpy(zq->_qo.head->out->buf, buf, len);
+	    memcpy(zq->_zo._q.head->out->buf, buf, len);
 /*@=mayaliasunique@*/
 	}
-	rpmzqUseSpace(zq->_qo.head->out);	/* XXX nrefs++ for check. */
+	rpmzqUseSpace(zq->_zo._q.head->out);	/* XXX nrefs++ for check. */
 
-	yarnTwist(zq->outb_write_more, TO, 1);
-	yarnTwist(zq->outb_check_more, TO, 1);
+	yarnTwist(zq->_zo.wstate, TO, 1);
+	yarnTwist(zq->_zo.kstate, TO, 1);
 
 	/* if requested with len == 0, clean up -- terminate and join write and
 	 * check threads, free lock */
 	if (len == 0) {
 	    /* XXX wait for this buffer to be finished synchronously. */
-	    yarnPossess(zq->outb_check_more);
-	    yarnWaitFor(zq->outb_check_more, TO_BE, 0);
-	    yarnPossess(zq->outb_write_more);
-	    yarnWaitFor(zq->outb_write_more, TO_BE, 0);
-	    yarnTwist(zq->outb_check_more, TO, 0);
-	    yarnTwist(zq->outb_write_more, TO, 0);
-	    ch = yarnJoin(ch);
-	    wr = yarnJoin(wr);
-	    zq->outb_check_more = yarnFreeLock(zq->outb_check_more);
-	    zq->outb_write_more = yarnFreeLock(zq->outb_write_more);
+	    yarnPossess(zq->_zo.kstate);
+	    yarnWaitFor(zq->_zo.kstate, TO_BE, 0);
+	    yarnPossess(zq->_zo.wstate);
+	    yarnWaitFor(zq->_zo.wstate, TO_BE, 0);
+	    yarnRelease(zq->_zo.kstate);
+	    yarnRelease(zq->_zo.wstate);
+	    zq->_zo._checker = yarnJoin(zq->_zo._checker);
+	    zq->_zo._writer = yarnJoin(zq->_zo._writer);
+	    zq->_zo.kstate = yarnFreeLock(zq->_zo.kstate);
+	    zq->_zo.wstate = yarnFreeLock(zq->_zo.wstate);
 
 	}
 
@@ -2310,7 +2306,7 @@ assert(buf != NULL);
     if (len) {		/* if no threads, then do it without threads */
 	if (zq->mode == RPMZ_MODE_DECOMPRESS)
 	    rpmzWrite(zq, buf, len);
-	zq->_qo.head->check = CHECK(zq->_qo.head->check, buf, len);
+	zq->_zo._q.head->check = CHECK(zq->_zo._q.head->check, buf, len);
 	zq->out_tot += len;
     }
 
@@ -2340,21 +2336,21 @@ static void rpmzInflateCheck(rpmzQueue zq)
 
 if (_debug) {
 fprintf(stderr, "\n");
-jobDebug("  init", zq->_qi.head);
+jobDebug("  init", zq->_zi._q.head);
 }
 
     cont = 0;
     do {
 	/* header already read -- set up for decompression */
 
-        zq->_qo.head = rpmzqNewJob(0);
+        zq->_zo._q.head = rpmzqNewJob(0);
 
-	yarnPossess(zq->_qi.have);
-	zq->in_tot = zq->_qi.head->in->len;	/* track compressed data length */
-	yarnRelease(zq->_qi.have);
+	yarnPossess(zq->_zi._q.have);
+	zq->in_tot = zq->_zi._q.head->in->len;	/* track compressed data length */
+	yarnRelease(zq->_zi._q.have);
 
 	zq->out_tot = 0;
-	zq->_qo.head->check = CHECK(0L, Z_NULL, 0);
+	zq->_zo._q.head->check = CHECK(0L, Z_NULL, 0);
 
     {	
 	z_stream strm;
@@ -2363,7 +2359,7 @@ jobDebug("  init", zq->_qi.head);
 	unsigned char * _out_buf = xmalloc(_out_len);
 
 if (_debug)
-jobDebug("before", zq->_qi.head);
+jobDebug("before", zq->_zi._q.head);
 
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
@@ -2373,23 +2369,23 @@ jobDebug("before", zq->_qi.head);
 	    bail("not enough memory", "");
 
 	/* decompress, compute lengths and check value */
-	yarnPossess(zq->_qi.have);
-	strm.avail_in = zq->_qi.head->in->len;
+	yarnPossess(zq->_zi._q.have);
+	strm.avail_in = zq->_zi._q.head->in->len;
 /*@-sharedtrans@*/
-	strm.next_in = zq->_qi.head->in->buf;
+	strm.next_in = zq->_zi._q.head->in->buf;
 /*@=sharedtrans@*/
-	yarnRelease(zq->_qi.have);
+	yarnRelease(zq->_zi._q.have);
 
 	ret = inflateBack(&strm, inb, zq, outb, zq);
 	if (ret != Z_STREAM_END)
 	    bail("corrupted input -- invalid deflate data: ", zq->ifn);
 
-	yarnPossess(zq->_qi.have);
-	zq->_qi.head->in->len = strm.avail_in;
+	yarnPossess(zq->_zi._q.have);
+	zq->_zi._q.head->in->len = strm.avail_in;
 /*@-onlytrans@*/
-	zq->_qi.head->in->buf = strm.next_in;
+	zq->_zi._q.head->in->buf = strm.next_in;
 /*@=onlytrans@*/
-	yarnRelease(zq->_qi.have);
+	yarnRelease(zq->_zi._q.have);
 
 /*@-noeffect@*/
 	inflateBackEnd(&strm);
@@ -2399,14 +2395,14 @@ jobDebug("before", zq->_qi.head);
 	_out_buf = _free(_out_buf);
 
 if (_debug)
-jobDebug(" after", zq->_qi.head);
+jobDebug(" after", zq->_zi._q.head);
 
     }
 
-	yarnPossess(zq->_qi.have);
+	yarnPossess(zq->_zi._q.have);
 	/* compute compressed data length */
-	clen = zq->in_tot - zq->_qi.head->in->len;
-	yarnRelease(zq->_qi.have);
+	clen = zq->in_tot - zq->_zi._q.head->in->len;
+	yarnRelease(zq->_zi._q.have);
 
 	/* read and check trailer */
 	switch (zq->format) {
@@ -2418,8 +2414,8 @@ jobDebug(" after", zq->_qi.head);
 	    zh->zip_ulen = GET4();
 
 	    /* if crc doesn't match, try info-zip variant with sig */
-	    if (zh->zip_crc != zq->_qo.head->check) {
-		if (zh->zip_crc != 0x08074b50UL || zh->zip_clen != zq->_qo.head->check)
+	    if (zh->zip_crc != zq->_zo._q.head->check) {
+		if (zh->zip_crc != 0x08074b50UL || zh->zip_clen != zq->_zo._q.head->check)
 		    bail("corrupted zip entry -- crc32 mismatch: ", zq->ifn);
 		zh->zip_crc = zh->zip_clen;
 		zh->zip_clen = zh->zip_ulen;
@@ -2445,14 +2441,14 @@ jobDebug(" after", zq->_qi.head);
 	    check += GET() << 16;
 	    check += GET() << 8;
 	    check += GET();
-	    if (check != zq->_qo.head->check)
+	    if (check != zq->_zo._q.head->check)
 		bail("corrupted zlib stream -- adler32 mismatch: ", zq->ifn);
 	    break;
 	case RPMZ_FORMAT_GZIP:	/* gzip trailer */
 	    BPULL(_b, 8, "corrupted gzip stream -- missing trailer: ");
 	    check = GET4();
 	    len = GET4();
-	    if (check != zq->_qo.head->check)
+	    if (check != zq->_zo._q.head->check)
 		bail("corrupted gzip stream -- crc32 mismatch: ", zq->ifn);
 	    if (len != (zq->out_tot & LOW32))
 		bail("corrupted gzip stream -- length mismatch: ", zq->ifn);
@@ -2475,12 +2471,12 @@ assert(0);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
 	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
 
-    zq->_qi.head->in = rpmzqDropSpace(zq->_qi.head->in);
-    zq->_qi.head = rpmzqDropJob(zq->_qi.head);
-    zq->_qo.head->out = rpmzqDropSpace(zq->_qo.head->out);
-    zq->_qo.head = rpmzqDropJob(zq->_qo.head);
+    zq->_zi._q.head->in = rpmzqDropSpace(zq->_zi._q.head->in);
+    zq->_zi._q.head = rpmzqDropJob(zq->_zi._q.head);
+    zq->_zo._q.head->out = rpmzqDropSpace(zq->_zo._q.head->out);
+    zq->_zo._q.head = rpmzqDropJob(zq->_zo._q.head);
 if (_debug)
-jobDebug("finish", zq->_qi.head);
+jobDebug("finish", zq->_zi._q.head);
 
 }
 /*@=nullstate@*/
@@ -2517,7 +2513,7 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, fileSystem, internalState @*/
 {
-    rpmzJob job = zq->_qi.head;
+    rpmzJob job = zq->_zi._q.head;
     /* XXX LZW _out_buf scales with windowBits like inflateBack()? */
     size_t _out_len = (1 << infWBits);
     unsigned char * _out_buf = xmalloc(_out_len);
@@ -3306,17 +3302,17 @@ argvPrint("input args", z->argv, NULL);
 
 exit:
     /* done -- release resources, show log */
-    if (zq->_qi.head != NULL) {
-	zq->_qi.head->in = rpmzqDropSpace(zq->_qi.head->in);
-	zq->_qi.head = rpmzqDropJob(zq->_qi.head);
+    if (zq->_zi._q.head != NULL) {
+	zq->_zi._q.head->in = rpmzqDropSpace(zq->_zi._q.head->in);
+	zq->_zi._q.head = rpmzqDropJob(zq->_zi._q.head);
     }
-    rpmzqFiniFIFO(&zq->_qi);
+    rpmzqFiniFIFO(&zq->_zi._q);
 	
-    if (zq->_qo.head != NULL) {
-	zq->_qo.head->out = rpmzqDropSpace(zq->_qo.head->out);
-	zq->_qo.head = rpmzqDropJob(zq->_qo.head);
+    if (zq->_zo._q.head != NULL) {
+	zq->_zo._q.head->out = rpmzqDropSpace(zq->_zo._q.head->out);
+	zq->_zo._q.head = rpmzqDropJob(zq->_zo._q.head);
     }
-    rpmzqFiniFIFO(&zq->_qo);
+    rpmzqFiniFIFO(&zq->_zo._q);
 	
     if (zq->load_ipool != NULL) {
 	rpmzLog zlog = zq->zlog;
