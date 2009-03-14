@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: make it possible to set preferred build architectures when using
+	libcpuinfo with ie. '%_prefer_buildarchs x86_64:i686:i586'.
     - proyvind: get the list of compatible archs printed with '--showrc' from
 	mire platform patterns.
     - proyvind: use cpuinfo() probe for detecting platform rather than

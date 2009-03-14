@@ -13,6 +13,7 @@
 #include <rpmcb.h>
 #define _MIRE_INTERNAL
 #include <mire.h>
+#include <argv.h>
 #include <rpmlua.h>
 #include <rpmluaext.h>
 #include <rpmmacro.h>
@@ -848,7 +849,28 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 	if (name) *name = canon->short_name;
     } else {
 	if (num) *num = 255;
+#if defined(SUPPORT_LIBCPUINFO)
+	if (name)
+	{
+	    char * pref = NULL;
+	    if(type == ARCH && strlen((pref = rpmExpand("%{?_prefer_buildarchs}", NULL))) > 0)
+	    {
+	    	ARGV_t archs = NULL;
+		int i, j, n;
+
+		(void) argvSplit(&archs, pref, ":");
+
+		for(i = 0, j = argvCount(archs); (i < j && !*name); i++)
+    		    if((n = rpmPlatformScore(archs[i], platpat, nplatpat)) > 0)
+    			*name = ((miRE)platpat)[n-1].pattern;
+		archs = argvFree(archs);
+	    }
+	    if(pref) pref = _free(pref);
+	    if(!*name) *name = current[type];
+	}
+#else
 	if (name) *name = current[type];
+#endif
     }
 }
 
