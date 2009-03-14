@@ -144,6 +144,30 @@ assert(sfi->otherFileNum < he->c);
     return RPMRC_OK;
 }
 
+static rpmRC createDir(rpmts ts, const char ** fn, const char * name)
+{
+    rpmRC rc;
+    const char * N = rpmGenPath(rpmtsRootDir(ts), name, "");
+    char * t = xstrdup(name+2);
+    t[strlen(t)-1] = '\0';
+
+    if(fn) *fn = N;
+
+    rc = rpmMkdirPath(N, t+1);
+    if (!rc)
+    {
+    	if (Access(N, W_OK))
+    	    rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"),
+    		    t, N);
+#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
+	else
+	    chown(N, fi->uid, fi->gid);
+#endif
+    }
+    t = _free(t);
+    return rc;
+}
+
 rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
@@ -287,37 +311,13 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 	}
     }
 
-    _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-    rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
-    if (rpmrc) {
-	rpmrc = RPMRC_FAIL;
+    if(createDir(ts, NULL, "%{_topdir}") ||
+	    createDir(ts, NULL, "%{_builddir}") ||
+	    createDir(ts, NULL, "%{_rpmdir}") ||
+	    createDir(ts, NULL, "%{_srcrpmdir}") ||
+	    createDir(ts, &_sourcedir, "%{_sourcedir}") ||
+	    createDir(ts, &_specdir, "%{_specdir}"))
 	goto exit;
-    }
-    if (Access(_sourcedir, W_OK)) {
-	rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"),
-		"_sourcedir", _sourcedir);
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
-#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
-    chown(_sourcedir, fi->uid, fi->gid);
-#endif
-
-    _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-    rpmrc = rpmMkdirPath(_specdir, "specdir");
-    if (rpmrc) {
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
-    if (Access(_specdir, W_OK)) {
-	rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"),
-		"_specdir", _specdir);
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
-#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
-    chown(_specdir, fi->uid, fi->gid);
-#endif
 
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < (int)fi->fc) {

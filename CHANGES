@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: do lazy mkdir of %_topdir, %_builddir, %_rpmdir & %_srcrpmdir
+	when doing '--rebuild' so that it should mostly work easily for user.
     - proyvind: make it possible to set preferred build architectures when using
 	libcpuinfo with ie. '%_prefer_buildarchs x86_64:i686:i586'.
     - proyvind: get the list of compatible archs printed with '--showrc' from
