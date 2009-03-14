@@ -852,20 +852,20 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 #if defined(SUPPORT_LIBCPUINFO)
 	if (name)
 	{
-	    char * pref = NULL;
-	    if(type == ARCH && strlen((pref = rpmExpand("%{?_prefer_buildarchs}", NULL))) > 0)
+	    if(type == ARCH)
 	    {
-	    	ARGV_t archs = NULL;
 		int i, j, n;
+	    	ARGV_t archs = NULL;
+		char *pref = rpmExpand("%{?_prefer_buildarchs}", NULL);
 
 		(void) argvSplit(&archs, pref, ":");
+		for(i = 0, n = argvCount(archs); (i < n && !*name); i++)
+    		    if((j = rpmPlatformScore(archs[i], platpat, nplatpat)) > 0)
+    			*name = ((miRE)platpat)[j-1].pattern;
 
-		for(i = 0, j = argvCount(archs); (i < j && !*name); i++)
-    		    if((n = rpmPlatformScore(archs[i], platpat, nplatpat)) > 0)
-    			*name = ((miRE)platpat)[n-1].pattern;
 		archs = argvFree(archs);
+		pref = _free(pref);
 	    }
-	    if(pref) pref = _free(pref);
 	    if(!*name) *name = current[type];
 	}
 #else
