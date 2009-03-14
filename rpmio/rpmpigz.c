@@ -1343,19 +1343,39 @@ static void load_read_thread(void *_zq)
 }
 #endif
 
-static void rpmziFini(rpmzi zi)
-	/*@modifies zi @*/
+static void rpmziFini(rpmzi zi, /*@null@*/ int *caughtp)
+	/*@modifies zi, *caughtp @*/
 {
-    zi->reader = yarnJoin(zi->reader);
-    zi->state = yarnFreeLock(zi->state);
+    if (zi->reader != NULL)
+	zi->reader = yarnJoin(zi->reader);
+    if (caughtp != NULL) {	/* XXX garbage collecting? */
+	if (zi->state != NULL)
+	    zi->state = yarnFreeLock(zi->state);
+	if (zi->_q.head != NULL) {
+	    zi->_q.head->in = rpmzqDropSpace(zi->_q.head->in);
+	    zi->_q.head = rpmzqDropJob(zi->_q.head);
+	}
+	if (zi->_q.have != NULL)
+	    rpmzqFiniFIFO(&zi->_q);
+	if (zi->pool != NULL)
+	    zi->pool = rpmzqFreePool(zi->pool, caughtp);
+	else
+	    *caughtp = 0;
+    }
 }
 
 static void rpmziInit(rpmzQueue zq, rpmzi zi, long val, off_t in_tot)
 	/*@modifies zi @*/
 {
+    if (zi->pool == NULL)
+	zi->pool = rpmzqNewPool(zq->_in_buf_allocated, 2);
+    if (zq->_zi._q.have == NULL)
+	rpmzqInitFIFO(&zi->_q, 0L);
 /*@-mustfreeonly@*/
-    zi->state = yarnNewLock(val);
-    zi->reader = yarnLaunch(load_read_thread, zq);
+    if (zi->state == NULL)
+	zi->state = yarnNewLock(val);
+    if (zi->reader == NULL)
+	zi->reader = yarnLaunch(load_read_thread, zq);
     zi->cnt = 0;
     zi->in_tot = in_tot;
 /*@=mustfreeonly@*/
@@ -1384,7 +1404,7 @@ static void rpmziNext(rpmzi zi)
 	yarnPossess(zi->state);
 	yarnTwist(zi->state, TO, 1);
     } else
-	rpmziFini(zi);
+	rpmziFini(zi, NULL);
 }
 
 /* load() is called when job->in->len has gone to zero in order to provide more
@@ -1453,6 +1473,12 @@ jobDebug("loaded", zi->_q.head);
 
     /* update the total and return the available bytes */
     zq->in_tot += zi->_q.head->in->len;
+#ifdef	NOTYET
+assert(zq->in_tot == zi->in_tot);
+#else
+if (zq->in_tot != zi->in_tot)
+fprintf(stderr, "*** FIXME: in_tot zq % ld zi %ld\n", (long)zq->in_tot, (long)zi->in_tot);
+#endif
     return zi->_q.head->in->len;
 }
 /*@=mustmod@*/
@@ -1462,19 +1488,6 @@ jobDebug("loaded", zi->_q.head);
 static void in_init(rpmzQueue zq)
 	/*@modifies zq @*/
 {
-	/* inflateBack() window is a function of windowBits */
-    size_t _out_len = (1 << infWBits);
-    if (zq->threads > 1) {
-	if (zq->_zi.pool == NULL)
-	    zq->_zi.pool = rpmzqNewPool(zq->_in_buf_allocated, (zq->threads << 1) + 2);
-	if (zq->_zo.pool == NULL) 
-	    zq->_zo.pool = rpmzqNewPool(_out_len,  2);
-	if (zq->_zi._q.have == NULL)
-	    rpmzqInitFIFO(&zq->_zi._q, 0L);
-	if (zq->_zo._q.have == NULL)
-	    rpmzqInitFIFO(&zq->_zo._q, 0L);
-    }
-
     zq->in_tot = 0;
     zq->_in_which = -1;
 }
@@ -2152,24 +2165,58 @@ static void rpmzoWait(rpmzo zo)
     yarnWaitFor(zo->wstate, TO_BE, 0);
 }
 
-static void rpmzoFini(rpmzo zo)
-	/*@modifies zo @*/
+static void rpmzoFini(rpmzo zo, /*@null@*/ int *caughtp)
+	/*@modifies zo, *caughtp @*/
 {
-    zo->_checker = yarnJoin(zo->_checker);
-    zo->kstate = yarnFreeLock(zo->kstate);
-    zo->_writer = yarnJoin(zo->_writer);
-    zo->wstate = yarnFreeLock(zo->wstate);
+    if (zo->_checker != NULL)
+	zo->_checker = yarnJoin(zo->_checker);
+    if (zo->_writer != NULL)
+	zo->_writer = yarnJoin(zo->_writer);
+
+    if (caughtp != NULL) {	/* XXX garbage collecting? */
+	if (zo->kstate != NULL)
+	    zo->kstate = yarnFreeLock(zo->kstate);
+	if (zo->wstate != NULL)
+	    zo->wstate = yarnFreeLock(zo->wstate);
+	if (zo->_q.head != NULL) {
+	    zo->_q.head->out = rpmzqDropSpace(zo->_q.head->out);
+	    zo->_q.head = rpmzqDropJob(zo->_q.head);
+	}
+	if (zo->_q.have != NULL)
+	    rpmzqFiniFIFO(&zo->_q);
+	if (zo->pool != NULL)
+	    zo->pool = rpmzqFreePool(zo->pool, caughtp);
+	else
+	    *caughtp = 0;
+    }
 }
 
-static void rpmzoInit(rpmzQueue zq, rpmzo zo)
+static void rpmzoInit(rpmzQueue zq, rpmzo zo, off_t out_tot)
 	/*@modifies zo @*/
 {
+    if (zo->pool == NULL) {
+	/* inflateBack() window is a function of windowBits */
+	size_t _out_len = (1 << infWBits);
+	zo->pool = rpmzqNewPool(_out_len,  2);
+    }
+    if (zo->_q.have == NULL)
+	rpmzqInitFIFO(&zo->_q, 0L);
+
+    /* XXX spaces, not jobs, are currently queued by rpmzo */
+    if (zo->_q.head == NULL)
+	zo->_q.head = rpmzqNewJob(0);
+    zo->_q.head->check = CHECK(0L, Z_NULL, 0);
+
 /*@-mustfreeonly@*/
-    zo->wstate = yarnNewLock(0);
-    zo->_writer = yarnLaunch(outb_write, zq);
-    zo->kstate = yarnNewLock(0);
-    zo->_checker = yarnLaunch(outb_check, zq);
-    zo->out_tot = 0;
+    if (zo->wstate == NULL)
+	zo->wstate = yarnNewLock(0);
+    if (zo->_writer == NULL)
+	zo->_writer = yarnLaunch(outb_write, zq);
+    if (zo->kstate == NULL)
+	zo->kstate = yarnNewLock(0);
+    if (zo->_checker == NULL)
+	zo->_checker = yarnLaunch(outb_check, zq);
+    zo->out_tot = out_tot;
 /*@=mustfreeonly@*/
 }
 
@@ -2206,7 +2253,7 @@ assert(buf != NULL);
 	rpmzoWait(zo);	/* wait for last buffer to be finished. */
 	yarnRelease(zo->wstate);
 	yarnRelease(zo->kstate);
-	rpmzoFini(zo);
+	rpmzoFini(zo, NULL);
     }
 }
 
@@ -2227,8 +2274,10 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
 
     if (zq->threads > 1) {
 	/* if first time, initialize state and launch threads */
-	if (zo->wstate == NULL)
-	    rpmzoInit(zq, zo);
+	if (zo->wstate == NULL) {
+assert(zq->out_tot == 0);
+	    rpmzoInit(zq, zo, zq->out_tot);
+	}
 
 	rpmzoNext(zo, buf, len);
 
@@ -2245,6 +2294,7 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
 
     if (len > 0)
 	zq->out_tot += len;
+assert(zq->out_tot == zo->out_tot);
 
     return 0;
 }
@@ -2279,14 +2329,12 @@ jobDebug("  init", zq->_zi._q.head);
     do {
 	/* header already read -- set up for decompression */
 
-        zq->_zo._q.head = rpmzqNewJob(0);
-
 	yarnPossess(zq->_zi._q.have);
 	zq->in_tot = zq->_zi._q.head->in->len;	/* track compressed data length */
+	zq->_zi.in_tot = zq->_zi._q.head->in->len;	/* track compressed data length */
 	yarnRelease(zq->_zi._q.have);
 
 	zq->out_tot = 0;
-	zq->_zo._q.head->check = CHECK(0L, Z_NULL, 0);
 
     {	
 	z_stream strm;
@@ -2409,7 +2457,9 @@ assert(0);
 
     zq->_zi._q.head->in = rpmzqDropSpace(zq->_zi._q.head->in);
     zq->_zi._q.head = rpmzqDropJob(zq->_zi._q.head);
+#ifdef	DYING
     zq->_zo._q.head->out = rpmzqDropSpace(zq->_zo._q.head->out);
+#endif
     zq->_zo._q.head = rpmzqDropJob(zq->_zo._q.head);
 if (_debug)
 jobDebug("finish", zq->_zi._q.head);
@@ -3238,29 +3288,14 @@ argvPrint("input args", z->argv, NULL);
 
 exit:
     /* done -- release resources, show log */
-    if (zq->_zi._q.head != NULL) {
-	zq->_zi._q.head->in = rpmzqDropSpace(zq->_zi._q.head->in);
-	zq->_zi._q.head = rpmzqDropJob(zq->_zi._q.head);
-    }
-    rpmzqFiniFIFO(&zq->_zi._q);
-	
-    if (zq->_zo._q.head != NULL) {
-	zq->_zo._q.head->out = rpmzqDropSpace(zq->_zo._q.head->out);
-	zq->_zo._q.head = rpmzqDropJob(zq->_zo._q.head);
-    }
-    rpmzqFiniFIFO(&zq->_zo._q);
-	
-    if (zq->_zi.pool != NULL) {
-	rpmzLog zlog = zq->zlog;
+    {	rpmzLog zlog = zq->zlog;
 	int caught;
-	zq->_zi.pool = rpmzqFreePool(zq->_zi.pool, &caught);
-	Trace((zlog, "-- freed %d input buffers", caught));
-    }
-    if (zq->_zo.pool != NULL) {
-	rpmzLog zlog = zq->zlog;
-	int caught;
-	zq->_zo.pool = rpmzqFreePool(zq->_zo.pool, &caught);
-	Trace((zlog, "-- freed %d output buffers", caught));
+	rpmziFini(&zq->_zi, &caught);
+	if (caught > 0)
+	    Trace((zlog, "-- freed %d input buffers", caught));
+	rpmzoFini(&zq->_zo, &caught);
+	if (caught > 0)
+	    Trace((zlog, "-- freed %d output buffers", caught));
     }
     zq->_zh = _free(zq->_zh);
 
