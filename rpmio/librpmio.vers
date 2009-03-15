@@ -454,6 +454,8 @@ LIBRPMIO_0
     rpmzqUseJob;
     rpmzqUseSpace;
     rpmzqVerify;
+    rpmzqVerifyFIFO;
+    rpmzqVerifySEQ;
     Stat;
     _Stat;
     Symlink;

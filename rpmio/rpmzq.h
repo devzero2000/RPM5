@@ -207,11 +207,8 @@ struct rpmzi_s {
     yarnThread reader;		/*!< load_read_thread() thread for joining */
     off_t in_tot;		/*!< total bytes read from input */
     int cnt;			/*!< no. of loads performed. */
-#ifdef	NOTYET
+/*@relnull@*/
     rpmzFIFO q;			/*!< list of read input jobs. */
-#else
-    struct rpmzFIFO_s _q;
-#endif
 /*@relnull@*/
     rpmzPool pool;		/*!< input buffer pool (malloc'd). */
 };
@@ -227,11 +224,8 @@ struct rpmzo_s {
     yarnLock kstate;		/*!< outb check threads state */
     yarnThread _checker;	/*!< outb_check() thread for joining */
     off_t out_tot;		/*!< total bytes written to output */
-#ifdef	NOTYET
+/*@relnull@*/
     rpmzFIFO q;			/*!< list of write output jobs. */
-#else
-    struct rpmzFIFO_s _q;
-#endif
 /*@relnull@*/
     rpmzPool pool;		/*!< ouput buffer pool (malloc'd). */
 };
@@ -251,11 +245,8 @@ struct rpmzc_s {
     mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
 
     int cthreads;		/*!< number of compression threads running */
-#ifdef	NOTYET
-    rpmzSEQ q;			/*!< list of compress jobs. */
-#else
-    struct rpmzFIFO_s _q;
-#endif
+/*@relnull@*/
+    rpmzFIFO q;			/*!< list of compress jobs. */
 /*@relnull@*/
     rpmzPool pool;		/*!< input buffer pool (malloc'd). */
 };
@@ -266,11 +257,7 @@ typedef	struct rpmzw_s * rpmzw;
 struct rpmzw_s {
 /*@only@*/ /*@null@*/
     yarnThread thread;		/*!< write thread if running */
-#ifdef	NOTYET
     rpmzSEQ q;			/*!< list of write jobs. */
-#else
-    struct rpmzSEQ_s _q;
-#endif
 /*@relnull@*/
     rpmzPool pool;		/*!< ouput buffer pool (malloc'd). */
 };
@@ -449,12 +436,18 @@ rpmzQueue rpmzqNew(/*@returned@*/rpmzQueue zq, rpmzLog zlog, int limit)
 
 /**
  */
-void rpmzqInitFIFO(rpmzFIFO zs, long val)
+rpmzFIFO rpmzqInitFIFO(long val)
+	/*@*/;
+
+/**
+ */
+/*@null@*/
+rpmzFIFO rpmzqFiniFIFO(/*@only@*/ rpmzFIFO zs)
 	/*@modifies zs @*/;
 
 /**
  */
-void rpmzqFiniFIFO(rpmzFIFO zs)
+void rpmzqVerifyFIFO(/*@null@*/ rpmzFIFO zs)
 	/*@modifies zs @*/;
 
 /**
@@ -471,12 +464,18 @@ void rpmzqAddFIFO(rpmzFIFO zs, rpmzJob job)
 
 /**
  */
-void rpmzqInitSEQ(rpmzSEQ zs, long val)
+rpmzSEQ rpmzqInitSEQ(long val)
+	/*@*/;
+
+/**
+ */
+/*@null@*/
+rpmzSEQ rpmzqFiniSEQ(/*@only@*/ rpmzSEQ zs)
 	/*@modifies zs @*/;
 
 /**
  */
-void rpmzqFiniSEQ(rpmzSEQ zs)
+void rpmzqVerifySEQ(/*@null@*/ rpmzSEQ zs)
 	/*@modifies zs @*/;
 
 /**

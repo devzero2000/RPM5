@@ -568,18 +568,18 @@ void rpmzqFini(rpmzQueue zq)
 
 zqFprintf(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
     /* only do this once */
-    if (zq->_zc._q.have == NULL)
+    if (zq->_zc.q == NULL)
 	return;
 
     /* command all of the extant compress threads to return */
-    yarnPossess(zq->_zc._q.have);
+    yarnPossess(zq->_zc.q->have);
     job.seq = -1;
     job.next = NULL;
 /*@-immediatetrans -mustfreeonly@*/
-    zq->_zc._q.head = &job;
+    zq->_zc.q->head = &job;
 /*@=immediatetrans =mustfreeonly@*/
-    zq->_zc._q.tail = &job.next;
-    yarnTwist(zq->_zc._q.have, BY, 1);		/* will wake them all up */
+    zq->_zc.q->tail = &job.next;
+    yarnTwist(zq->_zc.q->have, BY, 1);		/* will wake them all up */
 
     /* join all of the compress threads, verify they all came back */
     caught = yarnJoinAll();
@@ -597,8 +597,8 @@ fprintf(stderr, "==> FIXME: %s: caught %d z->_zc.cthreads %d\n", __FUNCTION__, c
     Trace((zlog, "-- freed %d output buffers", caught));
     zq->_zc.pool = rpmzqFreePool(zq->_zc.pool, &caught);
     Trace((zlog, "-- freed %d input buffers", caught));
-    zq->_zw._q.first = yarnFreeLock(zq->_zw._q.first);
-    zq->_zc._q.have = yarnFreeLock(zq->_zc._q.have);
+    zq->_zc.q = rpmzqFiniFIFO(zq->_zc.q);
+    zq->_zw.q = rpmzqFiniSEQ(zq->_zw.q);
 }
 
 /* setup job lists (call from main thread) */
@@ -606,16 +606,13 @@ void rpmzqInit(rpmzQueue zq)
 {
 zqFprintf(stderr, "--> %s(%p)\n", __FUNCTION__, zq);
     /* set up only if not already set up*/
-    if (zq->_zc._q.have != NULL)
+    if (zq->_zc.q != NULL)
 	return;
 
     /* allocate locks and initialize lists */
 /*@-mustfreeonly@*/
-    zq->_zc._q.have = yarnNewLock(0);
-    zq->_zc._q.head = NULL;
-    zq->_zc._q.tail = &zq->_zc._q.head;
-    zq->_zw._q.first = yarnNewLock(-1);
-    zq->_zw._q.head = NULL;
+    zq->_zc.q = rpmzqInitFIFO(0L);
+    zq->_zw.q = rpmzqInitSEQ(-1L);
 
     zq->_zc.pool = rpmzqNewPool(zq->iblocksize, zq->ilimit);
 zqFprintf(stderr, "-->  in_pool: %p[%u] blocksize %u\n", zq->_zc.pool, (unsigned)zq->ilimit, (unsigned)zq->iblocksize);
@@ -645,19 +642,31 @@ rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, int limit)
     return zq;
 }
 
-void rpmzqInitFIFO(rpmzFIFO zs, long val)
+rpmzFIFO rpmzqInitFIFO(long val)
 {
+    rpmzFIFO zs = xcalloc(1, sizeof(*zs));
     zs->have = yarnNewLock(val);
     zs->head = NULL;
     zs->tail = &zs->head;
+    return zs;
 }
 
-void rpmzqFiniFIFO(rpmzFIFO zs)
+rpmzFIFO rpmzqFiniFIFO(rpmzFIFO zs)
 {
     if (zs->have != NULL)
 	zs->have = yarnFreeLock(zs->have);
     zs->head = NULL;
     zs->tail = &zs->head;
+    zs = _free(zs);
+    return NULL;
+}
+
+void rpmzqVerifyFIFO(rpmzFIFO zs)
+{
+assert(zs != NULL);
+    yarnPossess(zs->have);
+assert(zs->head == NULL && yarnPeekLock(zs->have) == 0);
+    yarnRelease(zs->have);
 }
 
 rpmzJob rpmzqDelFIFO(rpmzFIFO zs)
@@ -696,17 +705,29 @@ void rpmzqAddFIFO(rpmzFIFO zs, rpmzJob job)
     yarnTwist(zs->have, BY, 1);
 }
 
-void rpmzqInitSEQ(rpmzSEQ zs, long val)
+rpmzSEQ rpmzqInitSEQ(long val)
 {
+    rpmzSEQ zs = xcalloc(1, sizeof(*zs));
     zs->first = yarnNewLock(val);
     zs->head = NULL;
+    return zs;
 }
 
-void rpmzqFiniSEQ(rpmzSEQ zs)
+rpmzSEQ rpmzqFiniSEQ(rpmzSEQ zs)
 {
     if (zs->first != NULL)
 	zs->first = yarnFreeLock(zs->first);
     zs->head = NULL;
+    zs = _free(zs);
+    return NULL;
+}
+
+void rpmzqVerifySEQ(rpmzSEQ zs)
+{
+assert(zs != NULL);
+    yarnPossess(zs->first);
+assert(zs->head == NULL && yarnPeekLock(zs->first) == -1);
+    yarnRelease(zs->first);
 }
 
 rpmzJob rpmzqDelSEQ(rpmzSEQ zs, long seq)
@@ -752,21 +773,21 @@ rpmzJob rpmzqDelCJob(rpmzQueue zq)
     rpmzJob job;
 
     /* get job from compress list, let all the compressors know */
-    yarnPossess(zq->_zc._q.have);
-    yarnWaitFor(zq->_zc._q.have, NOT_TO_BE, 0);
-    job = zq->_zc._q.head;
+    yarnPossess(zq->_zc.q->have);
+    yarnWaitFor(zq->_zc.q->have, NOT_TO_BE, 0);
+    job = zq->_zc.q->head;
 assert(job != NULL);
     if (job->seq == -1) {
-	yarnRelease(zq->_zc._q.have);
+	yarnRelease(zq->_zc.q->have);
 	return NULL;
     }
 
 /*@-assignexpose -dependenttrans@*/
-    zq->_zc._q.head = job->next;
+    zq->_zc.q->head = job->next;
 /*@=assignexpose =dependenttrans@*/
     if (job->next == NULL)
-	zq->_zc._q.tail = &zq->_zc._q.head;
-    yarnTwist(zq->_zc._q.have, BY, -1);
+	zq->_zc.q->tail = &zq->_zc.q->head;
+    yarnTwist(zq->_zc.q->have, BY, -1);
 
     return job;
 }
@@ -774,13 +795,13 @@ assert(job != NULL);
 void rpmzqAddCJob(rpmzQueue zq, rpmzJob job)
 {
     /* put job at end of compress list, let all the compressors know */
-    yarnPossess(zq->_zc._q.have);
+    yarnPossess(zq->_zc.q->have);
     job->next = NULL;
 /*@-assignexpose@*/
-    *zq->_zc._q.tail = job;
-    zq->_zc._q.tail = &job->next;
+    *zq->_zc.q->tail = job;
+    zq->_zc.q->tail = &job->next;
 /*@=assignexpose@*/
-    yarnTwist(zq->_zc._q.have, BY, 1);
+    yarnTwist(zq->_zc.q->have, BY, 1);
 }
 
 rpmzJob rpmzqDelWJob(rpmzQueue zq, long seq)
@@ -788,14 +809,14 @@ rpmzJob rpmzqDelWJob(rpmzQueue zq, long seq)
     rpmzJob job;
 
     /* get next write job in order */
-    yarnPossess(zq->_zw._q.first);
-    yarnWaitFor(zq->_zw._q.first, TO_BE, seq);
-    job = zq->_zw._q.head;
+    yarnPossess(zq->_zw.q->first);
+    yarnWaitFor(zq->_zw.q->first, TO_BE, seq);
+    job = zq->_zw.q->head;
 assert(job != NULL);
 /*@-assignexpose -dependenttrans@*/
-    zq->_zw._q.head = job->next;
+    zq->_zw.q->head = job->next;
 /*@=assignexpose =dependenttrans@*/
-    yarnTwist(zq->_zw._q.first, TO, zq->_zw._q.head == NULL ? -1 : zq->_zw._q.head->seq);
+    yarnTwist(zq->_zw.q->first, TO, zq->_zw.q->head == NULL ? -1 : zq->_zw.q->head->seq);
     return job;
 }
 
@@ -807,7 +828,7 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
     rpmzJob * prior;		/* pointers for inserting in write list */
     double pct;
 
-    yarnPossess(zq->_zw._q.first);
+    yarnPossess(zq->_zw.q->first);
 
     switch (zq->omode) {
     default:	assert(0);	break;
@@ -830,7 +851,7 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
     }
 
     /* insert write job in list in sorted order, alert write thread */
-    prior = &zq->_zw._q.head;
+    prior = &zq->_zw.q->head;
     while ((here = *prior) != NULL) {
 	if (here->seq > job->seq)
 	    break;
@@ -841,7 +862,7 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
 /*@=onlytrans@*/
     *prior = job;
 
-    yarnTwist(zq->_zw._q.first, TO, zq->_zw._q.head->seq);
+    yarnTwist(zq->_zw.q->first, TO, zq->_zw.q->head->seq);
 }
 
 static rpmzJob rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
@@ -969,12 +990,8 @@ void rpmzqLaunch(rpmzQueue zq, long seq, unsigned int threads)
 /* verify no more jobs, prepare for next use */
 void rpmzqVerify(rpmzQueue zq)
 {
-    yarnPossess(zq->_zc._q.have);
-assert(zq->_zc._q.head == NULL && yarnPeekLock(zq->_zc._q.have) == 0);
-    yarnRelease(zq->_zc._q.have);
-    yarnPossess(zq->_zw._q.first);
-assert(zq->_zw._q.head == NULL);
-    yarnTwist(zq->_zw._q.first, TO, -1);
+    rpmzqVerifyFIFO(zq->_zc.q);
+    rpmzqVerifySEQ(zq->_zw.q);
 }
 
 #endif /* HAVE_BZLIB_H */
