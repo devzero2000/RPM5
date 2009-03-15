@@ -237,6 +237,33 @@ struct rpmzo_s {
 
 /**
  */
+typedef	struct rpmzc_s * rpmzc;
+struct rpmzc_s {
+    int cthreads;		/*!< number of compression threads running */
+#ifdef	NOTYET
+    rpmzSEQ q;			/*!< list of compress jobs. */
+#else
+    struct rpmzFIFO_s _q;
+#endif
+    rpmzPool pool;		/*!< input buffer pool (malloc'd). */
+};
+
+/**
+ */
+typedef	struct rpmzw_s * rpmzw;
+struct rpmzw_s {
+/*@only@*/ /*@null@*/
+    yarnThread thread;		/*!< write thread if running */
+#ifdef	NOTYET
+    rpmzSEQ q;			/*!< list of write jobs. */
+#else
+    struct rpmzSEQ_s _q;
+#endif
+    rpmzPool pool;		/*!< ouput buffer pool (malloc'd). */
+};
+
+/**
+ */
 struct rpmzQueue_s {
 /* --- globals (modified by main thread only when it's the only thread) */
     enum rpmzFlags_e flags;	/*!< Control bits. */
@@ -280,6 +307,7 @@ struct rpmzQueue_s {
 #endif
 
     int cthreads;		/*!< number of compression threads running */
+    struct rpmzc_s _zc;
 
 #ifdef	NOTYET
     rpmzSEQ write;		/*!< list of write jobs. */
@@ -289,6 +317,7 @@ struct rpmzQueue_s {
 
 /*@only@*/ /*@null@*/
     yarnThread writeth;		/*!< write thread if running */
+    struct rpmzw_s _zw;
 
     /* parallel reading */
     struct rpmzi_s _zi;		/*!< decompress loader/reader thread state */

@@ -885,7 +885,73 @@ static unsigned long adler32_comb(unsigned long adler1, unsigned long adler2,
 }
 
 /*==============================================================*/
+
 /* -- parallel compression -- */
+
+static void rpmzcFini(rpmzc zc, /*@null@*/ int *caughtp)
+	/*@modifies zc, *caughtp @*/
+{
+    if (caughtp != NULL) {	/* XXX garbage collecting? */
+	struct rpmzJob_s job;
+	/* command all of the extant compress threads to return */
+	yarnPossess(zc->_q.have);
+	job.seq = -1;
+	job.next = NULL;
+/*@-immediatetrans -mustfreeonly@*/
+	zc->_q.head = &job;
+/*@=immediatetrans =mustfreeonly@*/
+	zc->_q.tail = &(job.next);
+	yarnTwist(zc->_q.have, BY, 1);       /* will wake them all up */
+
+    /* join all of the compress threads, verify they all came back */
+	*caughtp = yarnJoinAll();
+#ifdef	NOTYET
+assert(zc->cthreads == *caughtp);
+#else
+if (zc->cthreads != *caughtp)
+fprintf(stderr, "*** FIXME: cthreads %d joined %d\n", zc->cthreads, *caughtp);
+#endif
+	zc->cthreads = 0;
+
+	if (zc->pool != NULL)
+	    zc->pool = rpmzqFreePool(zc->pool, caughtp);
+	else
+	    *caughtp = 0;
+    }
+    if (zc->_q.have != NULL)
+	rpmzqFiniFIFO(&zc->_q);
+}
+
+static void rpmzcInit(rpmzQueue zq, rpmzc zc, long val)
+	/*@modifies zc @*/
+{
+    if (zc->_q.have == NULL)
+	rpmzqInitFIFO(&zc->_q, val);
+    if (zc->pool == NULL)
+	zc->pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
+}
+
+static void rpmzwFini(rpmzw zw, /*@null@*/ int *caughtp)
+	/*@modifies zw, *caughtp @*/
+{
+    if (caughtp != NULL) {	/* XXX garbage collecting? */
+	if (zw->pool != NULL)
+	    zw->pool = rpmzqFreePool(zw->pool, caughtp);
+	else
+	    *caughtp = 0;
+    }
+    if (zw->_q.first != NULL)
+	rpmzqFiniSEQ(&zw->_q);
+}
+
+static void rpmzwInit(rpmzQueue zq, rpmzw zw, long val)
+	/*@modifies zc @*/
+{
+    if (zw->_q.first == NULL)
+	rpmzqInitSEQ(&zw->_q, val);
+    if (zw->pool == NULL)
+	zw->pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
+}
 
 /* compress or write job (passed from compress list to write list) -- if seq is
    equal to -1, compress_thread() is instructed to return; if more is false then
