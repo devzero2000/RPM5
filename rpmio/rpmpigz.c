@@ -914,8 +914,7 @@ static void compress_thread(void *_zq)
     rpmgz gz;                       /* deflate stream */
 
     /* initialize the deflate stream for this thread */
-    gz = rpmgzCompressInit(zq->level, O_WRONLY);
-    zq->omode = O_WRONLY;	/* XXX eliminate */
+    gz = rpmgzCompressInit(zc->level, zc->omode);
 
     /* keep looking for work */
     for (;;) {
@@ -1037,7 +1036,7 @@ assert(job != NULL);
     /* verify no more jobs, prepare for next use */
     rpmzqVerify(zq);
 
-/*@-globstate@*/	/* XXX zq->write_head is reachable */
+/*@-globstate@*/	/* XXX zq->_q.head is reachable */
     return;
 /*@=globstate@*/
 }
@@ -1082,12 +1081,33 @@ fprintf(stderr, "*** FIXME: cthreads %d joined %d\n", zc->cthreads, *caughtp);
 static void rpmzcInit(rpmzQueue zq, rpmzc zc, long val)
 	/*@modifies zc @*/
 {
+    zc->flags = zq->flags;	/* XXX unused */
+    zc->format = zq->format;	/* XXX unused */
+    zc->mode = zq->mode;	/* XXX unused */
+
+    zc->level = zq->level;
+    zc->threads = zq->threads;
+    zc->blocksize = (size_t)zq->blocksize;
+
+    zc->omode = zq->omode;
+
     /* allocate locks and initialize lists */
     if (zc->_q.have == NULL)
 	rpmzqInitFIFO(&zc->_q, val);
     /* initialize buffer pools */
     if (zc->pool == NULL)
-	zc->pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
+	zc->pool = rpmzqNewPool(zc->blocksize, (zc->threads << 1) + 2);
+}
+
+static void rpmzcLaunch(rpmzQueue zq, rpmzc zc, long seq)
+	/*@modifies zc @*/
+{
+    if (zc->cthreads < (int)seq && zc->cthreads < (int)zc->threads) {
+	(void)yarnLaunch(compress_thread, zq);
+/*@-noeffect@*/
+	zc->cthreads++;
+/*@=noeffect@*/
+    }
 }
 
 static void rpmzwFini(rpmzw zw, /*@null@*/ int *caughtp)
@@ -1139,6 +1159,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
     int more;                       /* true if more input to read */
 
     /* allocate locks, initialize lists, initialize buffer pools */
+    zq->omode = O_WRONLY;	/* XXX eliminate */
     rpmzcInit(zq, zc, 0L);
     rpmzwInit(zq, zw, -1L);
 
@@ -1176,12 +1197,16 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	    bail("input too long: ", zq->ifn);
 
 	/* start another compress thread if needed */
-	if (zc->cthreads < (int)seq && zc->cthreads < (int)zq->threads) {
+#ifdef	DYING
+	if (zc->cthreads < (int)seq && zc->cthreads < (int)zc->threads) {
 	    (void)yarnLaunch(compress_thread, zq);
 /*@-noeffect@*/
 	    zc->cthreads++;
 /*@=noeffect@*/
 	}
+#else
+	rpmzcLaunch(zq, zc, seq);
+#endif
 
 	/* put job at end of compress list, let all the compressors know */
 	rpmzqAddFIFO(&zc->_q, job);

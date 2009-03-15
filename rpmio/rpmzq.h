@@ -240,6 +240,16 @@ struct rpmzo_s {
  */
 typedef	struct rpmzc_s * rpmzc;
 struct rpmzc_s {
+    enum rpmzFlags_e flags;	/*!< (unused) Control bits. */
+    enum rpmzFormat_e format;	/*!< (unused) Compression format. */
+    enum rpmzMode_e mode;	/*!< (unused) Operation mode. */
+
+    unsigned int level;		/*!< Compression level. */
+    unsigned int threads;	/*!< No. or threads to use. */
+    size_t blocksize;		/*!< uncompressed input size per thread */
+
+    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
+
     int cthreads;		/*!< number of compression threads running */
 #ifdef	NOTYET
     rpmzSEQ q;			/*!< list of compress jobs. */
@@ -274,11 +284,8 @@ struct rpmzQueue_s {
     enum rpmzMode_e mode;	/*!< Operation mode. */
     unsigned int level;		/*!< Compression level. */
     unsigned int threads;	/*!< No. or threads to use. */
-#ifdef	NOTYET	/* XXX popt has sizeof(size_t) != sizeof(unsigned int) issues */
-    size_t blocksize;		/*!< uncompressed input size per thread */
-#else
+	/* XXX popt has sizeof(size_t) != sizeof(unsigned int) issues */
     unsigned int blocksize;	/*!< uncompressed input size per thread */
-#endif
 
 /*@null@*/ /*@observer@*/
     const char * suffix;	/*!< -S, --suffix ... */
@@ -304,9 +311,10 @@ struct rpmzQueue_s {
     struct rpmzi_s _zi;		/*!< decompress loader/reader thread(s) */
     struct rpmzo_s _zo;		/*!< decompress writer thread(s) */
 
+    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
+
 #ifndef	DYING	/* XXX this cruft is going away */
     long lastseq;		/*!< Last seq. */
-    mode_t omode;		/*!< O_RDONLY=decompress, O_WRONLY=compress */
     size_t iblocksize;
     int ilimit;
     size_t oblocksize;
