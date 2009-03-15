@@ -970,32 +970,32 @@ static void _rpmzqFini(rpmzQueue zq)
     int caught;
 
     /* only do this once */
-    if (zq->_compress.have == NULL)
+    if (zq->_zc._q.have == NULL)
 	return;
 
     /* command all of the extant compress threads to return */
-    yarnPossess(zq->_compress.have);
+    yarnPossess(zq->_zc._q.have);
     job.seq = -1;
     job.next = NULL;
 /*@-immediatetrans -mustfreeonly@*/
-    zq->_compress.head = &job;
+    zq->_zc._q.head = &job;
 /*@=immediatetrans =mustfreeonly@*/
-    zq->_compress.tail = &(job.next);
-    yarnTwist(zq->_compress.have, BY, 1);       /* will wake them all up */
+    zq->_zc._q.tail = &(job.next);
+    yarnTwist(zq->_zc._q.have, BY, 1);       /* will wake them all up */
 
     /* join all of the compress threads, verify they all came back */
     caught = yarnJoinAll();
     Trace((zlog, "-- joined %d compress threads", caught));
-assert(caught == zq->cthreads);
-    zq->cthreads = 0;
+assert(caught == zq->_zc.cthreads);
+    zq->_zc.cthreads = 0;
 
     /* free the resources */
-    zq->out_pool = rpmzqFreePool(zq->out_pool, &caught);
+    zq->_zw.pool = rpmzqFreePool(zq->_zw.pool, &caught);
     Trace((zlog, "-- freed %d output buffers", caught));
-    zq->in_pool = rpmzqFreePool(zq->in_pool, &caught);
+    zq->_zc.pool = rpmzqFreePool(zq->_zc.pool, &caught);
     Trace((zlog, "-- freed %d input buffers", caught));
-    rpmzqFiniSEQ(&zq->_write);
-    rpmzqFiniFIFO(&zq->_compress);
+    rpmzqFiniSEQ(&zq->_zw._q);
+    rpmzqFiniFIFO(&zq->_zc._q);
 }
 
 /* setup job lists (call from main thread) */
@@ -1004,17 +1004,17 @@ static void _rpmzqInit(rpmzQueue zq)
 	/*@modifies fileSystem, internalState @*/
 {
     /* set up only if not already set up*/
-    if (zq->_compress.have != NULL)
+    if (zq->_zc._q.have != NULL)
 	return;
 
     /* allocate locks and initialize lists */
-    rpmzqInitFIFO(&zq->_compress, 0L);
-    rpmzqInitSEQ(&zq->_write, -1L);
+    rpmzqInitFIFO(&zq->_zc._q, 0L);
+    rpmzqInitSEQ(&zq->_zw._q, -1L);
 
     /* initialize buffer pools */
 /*@-mustfreeonly@*/
-    zq->in_pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
-    zq->out_pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
+    zq->_zc.pool = rpmzqNewPool(zq->blocksize, (zq->threads << 1) + 2);
+    zq->_zw.pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
 /*@=mustfreeonly@*/
 }
 #endif	/* DYING */
@@ -1045,7 +1045,7 @@ static void compress_thread(void *_zq)
     /* keep looking for work */
     for (;;) {
 	/* get a job (like I tell my son) */
-	job = rpmzqDelFIFO(&zq->_compress);
+	job = rpmzqDelFIFO(&zq->_zc._q);
 	if (job == NULL)
 	    break;
 
@@ -1057,7 +1057,7 @@ static void compress_thread(void *_zq)
 	 * for the worst case expansion of the input buffer size, plus five
 	 * bytes for the terminating stored block) */
 /*@-mustfreeonly@*/
-	job->out = rpmzqNewSpace(zq->out_pool, zq->out_pool->size);
+	job->out = rpmzqNewSpace(zq->_zw.pool, zq->_zw.pool->size);
 /*@=mustfreeonly@*/
 
 	/* Compress the job. */
@@ -1067,7 +1067,7 @@ static void compress_thread(void *_zq)
 	rpmzqUseSpace(job->in);
 
 	/* insert write job in list in sorted order, alert write thread */
-	rpmzqAddSEQ(&zq->_write, job);
+	rpmzqAddSEQ(&zq->_zw._q, job);
 
 	/* calculate the check value in parallel with writing, alert the write
 	 * thread that the calculation is complete, and drop this usage of the
@@ -1093,7 +1093,7 @@ static void compress_thread(void *_zq)
 
     gz = rpmgzCompressFini(gz);
 
-/*@-mustfreeonly@*/	/* XXX zq->_compress.head not released */
+/*@-mustfreeonly@*/	/* XXX zq->_zc._q.head not released */
     return;
 /*@=mustfreeonly@*/
 }
@@ -1125,7 +1125,7 @@ static void write_thread(void *_zq)
     seq = 0;
     do {
 	/* get next write job in order */
-	job = rpmzqDelSEQ(&zq->_write, seq);
+	job = rpmzqDelSEQ(&zq->_zw._q, seq);
 assert(job != NULL);
 
 	/* update lengths, save uncompressed length for COMB */
@@ -1187,14 +1187,14 @@ static void rpmzParallelCompress(rpmzQueue zq)
 
     /* start write thread */
 /*@-mustfreeonly@*/
-    zq->writeth = yarnLaunch(write_thread, zq);
+    zq->_zw.thread = yarnLaunch(write_thread, zq);
 /*@=mustfreeonly@*/
 
     /* read from input and start compress threads (write thread will pick up
        the output of the compress threads) */
     seq = 0;
     prev = NULL;
-    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
+    next = rpmzqNewSpace(zq->_zc.pool, zq->_zc.pool->size);
     next->len = rpmzRead(zq, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
@@ -1208,7 +1208,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	if (next->len < next->pool->size)
 	    more = 0;
 	else {
-	    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
+	    next = rpmzqNewSpace(zq->_zc.pool, zq->_zc.pool->size);
 	    next->len = rpmzRead(zq, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
@@ -1224,22 +1224,22 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	    bail("input too long: ", zq->ifn);
 
 	/* start another compress thread if needed */
-	if (zq->cthreads < (int)seq && zq->cthreads < (int)zq->threads) {
+	if (zq->_zc.cthreads < (int)seq && zq->_zc.cthreads < (int)zq->threads) {
 	    (void)yarnLaunch(compress_thread, zq);
 /*@-noeffect@*/
-	    zq->cthreads++;
+	    zq->_zc.cthreads++;
 /*@=noeffect@*/
 	}
 
 	/* put job at end of compress list, let all the compressors know */
-	rpmzqAddFIFO(&zq->_compress, job);
+	rpmzqAddFIFO(&zq->_zc._q, job);
 
 	/* do until end of input */
     } while (more);
 
     /* wait for the write thread to complete (we leave the compress threads out
        there and waiting in case there is another stream to compress) */
-    zq->writeth = yarnJoin(zq->writeth);
+    zq->_zw.thread = yarnJoin(zq->_zw.thread);
     Trace((zlog, "-- write thread joined"));
 }
 

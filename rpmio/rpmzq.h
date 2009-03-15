@@ -212,6 +212,7 @@ struct rpmzi_s {
 #else
     struct rpmzFIFO_s _q;
 #endif
+/*@relnull@*/
     rpmzPool pool;		/*!< input buffer pool (malloc'd). */
 };
 
@@ -245,6 +246,7 @@ struct rpmzc_s {
 #else
     struct rpmzFIFO_s _q;
 #endif
+/*@relnull@*/
     rpmzPool pool;		/*!< input buffer pool (malloc'd). */
 };
 
@@ -259,6 +261,7 @@ struct rpmzw_s {
 #else
     struct rpmzSEQ_s _q;
 #endif
+/*@relnull@*/
     rpmzPool pool;		/*!< ouput buffer pool (malloc'd). */
 };
 
@@ -295,33 +298,11 @@ struct rpmzQueue_s {
     off_t in_tot;		/*!< total bytes read from input */
     off_t out_tot;		/*!< total bytes written to output */
 
-/*@relnull@*/
-    rpmzPool in_pool;		/*!< input buffer pool (malloc'd). */
-/*@relnull@*/
-    rpmzPool out_pool;		/*!< output buffer pool (malloc'd). */
+    struct rpmzc_s _zc;		/*!< compressor/decompressor threads */
+    struct rpmzw_s _zw;		/*!< serialize output thread. */
 
-#ifdef	NOTYET
-    rpmzSEQ compress;		/*!< list of compress jobs. */
-#else
-    struct rpmzFIFO_s _compress;
-#endif
-
-    int cthreads;		/*!< number of compression threads running */
-    struct rpmzc_s _zc;
-
-#ifdef	NOTYET
-    rpmzSEQ write;		/*!< list of write jobs. */
-#else
-    struct rpmzSEQ_s _write;
-#endif
-
-/*@only@*/ /*@null@*/
-    yarnThread writeth;		/*!< write thread if running */
-    struct rpmzw_s _zw;
-
-    /* parallel reading */
-    struct rpmzi_s _zi;		/*!< decompress loader/reader thread state */
-    struct rpmzo_s _zo;		/*!< decompress writer thread(s) state */
+    struct rpmzi_s _zi;		/*!< decompress loader/reader thread(s) */
+    struct rpmzo_s _zo;		/*!< decompress writer thread(s) */
 
 #ifndef	DYING	/* XXX this cruft is going away */
     long lastseq;		/*!< Last seq. */

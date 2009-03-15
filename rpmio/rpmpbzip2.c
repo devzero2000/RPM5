@@ -605,7 +605,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 
     /* start write thread */
 /*@-mustfreeonly@*/
-    zq->writeth = yarnLaunch(write_thread, z);
+    zq->_zw.thread = yarnLaunch(write_thread, z);
 /*@=mustfreeonly@*/
 
     // keep going until all the blocks are processed
@@ -623,7 +623,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	    goto exit;
 	}
 
-	next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
+	next = rpmzqNewSpace(zq->_zc.pool, zq->_zc.pool->size);
 	if (next->len >= blp->dataSize) {
 	    nread = rpmzRead(zq, next->buf, next->len);
 assert(nread != 0);
@@ -659,7 +659,7 @@ assert(zq->omode == O_RDONLY);
 
     /* wait for the write thread to complete (we leave the decompress threads out
        there and waiting in case there is another stream to decompress) */
-    zq->writeth = yarnJoin(zq->writeth);
+    zq->_zw.thread = yarnJoin(zq->_zw.thread);
     Trace((zlog, "-- write thread joined"));
 
     rc = 0;
@@ -694,13 +694,13 @@ assert(zq->omode == O_WRONLY);
 
     /* start write thread */
 /*@-mustfreeonly@*/
-    zq->writeth = yarnLaunch(write_thread, z);
+    zq->_zw.thread = yarnLaunch(write_thread, z);
 /*@=mustfreeonly@*/
 
     /* read from input and start compress threads (write thread will pick up
        the output of the compress threads) */
     seq = 0;
-    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
+    next = rpmzqNewSpace(zq->_zc.pool, zq->_zc.pool->size);
     next->len = rpmzRead(zq, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
@@ -718,7 +718,7 @@ assert(zq->omode == O_WRONLY);
 	if (next->len < next->pool->size)
 	    more = 0;
 	else {
-	    next = rpmzqNewSpace(zq->in_pool, zq->in_pool->size);
+	    next = rpmzqNewSpace(zq->_zc.pool, zq->_zc.pool->size);
 	    next->len = rpmzRead(zq, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
@@ -745,7 +745,7 @@ assert(zq->omode == O_WRONLY);
 
     /* wait for the write thread to complete (we leave the compress threads out
        there and waiting in case there is another stream to compress) */
-    zq->writeth = yarnJoin(zq->writeth);
+    zq->_zw.thread = yarnJoin(zq->_zw.thread);
     Trace((zlog, "-- write thread joined"));
 
     rc = 0;
