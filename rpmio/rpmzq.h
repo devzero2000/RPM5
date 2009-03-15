@@ -246,7 +246,7 @@ struct rpmzc_s {
 
     int cthreads;		/*!< number of compression threads running */
 /*@relnull@*/
-    rpmzFIFO q;			/*!< list of compress jobs. */
+    rpmzFIFO q;			/*!< list of compress jobs (malloc'd). */
 /*@relnull@*/
     rpmzPool pool;		/*!< input buffer pool (malloc'd). */
 };
@@ -257,7 +257,7 @@ typedef	struct rpmzw_s * rpmzw;
 struct rpmzw_s {
 /*@only@*/ /*@null@*/
     yarnThread thread;		/*!< write thread if running */
-    rpmzSEQ q;			/*!< list of write jobs. */
+    rpmzSEQ q;			/*!< list of write jobs (malloc'd). */
 /*@relnull@*/
     rpmzPool pool;		/*!< ouput buffer pool (malloc'd). */
 };

@@ -973,18 +973,6 @@ static void compress_thread(void *_zq)
 }
 /*@=nullstate@*/
 
-static void rpmzcVerify(rpmzc zc)
-	/*@modifies zc @*/
-{
-    rpmzqVerifyFIFO(zc->q);
-}
-
-static void rpmzwVerify(rpmzw zw)
-	/*@modifies zc @*/
-{
-    rpmzqVerifySEQ(zw->q);
-}
-
 /* collect the write jobs off of the list in sequence order and write out the
    compressed data until the last chunk is written -- also write the header and
    trailer and combine the individual check values of the input buffers */
@@ -1047,15 +1035,16 @@ assert(job != NULL);
     rpmzPutTrailer(zq, zh);
 
     /* verify no more jobs, prepare for next use */
-    rpmzcVerify(zc);
-    rpmzwVerify(zw);
+    rpmzqVerifyFIFO(zc->q);
+    rpmzqVerifySEQ(zw->q);
 
 /*@-globstate@*/	/* XXX zq->q->head is reachable */
     return;
 /*@=globstate@*/
 }
 
-static void rpmzcFini(rpmzc zc, /*@null@*/ int *caughtp)
+/*@null@*/
+static rpmzc rpmzcFini(rpmzc zc, /*@null@*/ int *caughtp)
 	/*@modifies zc, *caughtp @*/
 {
     if (caughtp != NULL) {	/* XXX garbage collecting? */
@@ -1064,7 +1053,7 @@ static void rpmzcFini(rpmzc zc, /*@null@*/ int *caughtp)
 	if (zc->q == NULL) {	/* XXX only do this once */
 	    if (caughtp)
 		*caughtp = 0;
-	    return;
+	    return NULL;
 	}
 
 	/* command all of the extant compress threads to return */
@@ -1095,11 +1084,14 @@ fprintf(stderr, "*** FIXME: cthreads %d joined %d\n", zc->cthreads, *caughtp);
 	if (zc->q != NULL)
 	    zc->q = rpmzqFiniFIFO(zc->q);
     }
+    return NULL;
 }
 
-static void rpmzcInit(rpmzQueue zq, rpmzc zc, long val)
+static rpmzc rpmzcInit(rpmzQueue zq, long val)
 	/*@modifies zc @*/
 {
+    rpmzc zc = &zq->_zc;
+
     zc->flags = zq->flags;	/* XXX unused */
     zc->format = zq->format;	/* XXX unused */
     zc->mode = zq->mode;	/* XXX unused */
@@ -1116,6 +1108,7 @@ static void rpmzcInit(rpmzQueue zq, rpmzc zc, long val)
     /* initialize buffer pools */
     if (zc->pool == NULL)
 	zc->pool = rpmzqNewPool(zc->blocksize, (zc->threads << 1) + 2);
+    return zc;
 }
 
 static void rpmzcLaunch(rpmzQueue zq, rpmzc zc, long seq)
@@ -1129,11 +1122,13 @@ static void rpmzcLaunch(rpmzQueue zq, rpmzc zc, long seq)
     }
 }
 
-static void rpmzwFini(rpmzw zw, /*@null@*/ int *caughtp)
+/*@null@*/
+static rpmzw rpmzwFini(rpmzw zw, /*@null@*/ int *caughtp)
 	/*@modifies zw, *caughtp @*/
 {
     if (zw->thread != NULL)
 	zw->thread = yarnJoin(zw->thread);
+
     /* free the resources */
     if (caughtp != NULL) {	/* XXX garbage collecting? */
 	if (zw->pool != NULL)
@@ -1143,11 +1138,14 @@ static void rpmzwFini(rpmzw zw, /*@null@*/ int *caughtp)
     }
     if (zw->q != NULL)
 	zw->q = rpmzqFiniSEQ(zw->q);
+    return NULL;
 }
 
-static void rpmzwInit(rpmzQueue zq, rpmzw zw, long val)
+static rpmzw rpmzwInit(rpmzQueue zq, long val)
 	/*@modifies zc @*/
 {
+    rpmzw zw = &zq->_zw;
+
     /* initialize buffer pools */
     if (zw->pool == NULL)
 	zw->pool = rpmzqNewPool(zq->blocksize + (zq->blocksize >> 11) + 10, -1);
@@ -1157,6 +1155,7 @@ static void rpmzwInit(rpmzQueue zq, rpmzw zw, long val)
     /* start write thread */
     if (zw->thread == NULL)
 	zw->thread = yarnLaunch(write_thread, zq);
+    return zw;
 }
 
 /* compress zq->ifdno to zq->ofdno, using multiple threads for the compression and check
@@ -1168,8 +1167,8 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzLog zlog = zq->zlog;
-    rpmzc zc = &zq->_zc;
-    rpmzw zw = &zq->_zw;
+    rpmzc zc;
+    rpmzw zw;
 
     long seq;                       /* sequence number */
     rpmzSpace prev;                 /* previous input space */
@@ -1179,8 +1178,8 @@ static void rpmzParallelCompress(rpmzQueue zq)
 
     /* allocate locks, initialize lists, initialize buffer pools */
     zq->omode = O_WRONLY;	/* XXX eliminate */
-    rpmzcInit(zq, zc, 0L);
-    rpmzwInit(zq, zw, -1L);
+    zc = rpmzcInit(zq, 0L);
+    zw = rpmzwInit(zq, -1L);
 
     /* read from input and start compress threads (write thread will pick up
        the output of the compress threads) */
@@ -1236,7 +1235,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
     /* wait for the write thread to complete (we leave the compress threads out
        there and waiting in case there is another stream to compress) */
     rpmzcFini(zc, NULL);
-    rpmzwFini(zw, NULL);
+    zw = rpmzwFini(zw, NULL);
     Trace((zlog, "-- write thread joined"));
 }
 
@@ -2404,10 +2403,8 @@ jobDebug("  init", zq->_zi.q->head);
     do {
 	/* header already read -- set up for decompression */
 
-	yarnPossess(zq->_zi.q->have);
 	zq->in_tot = zq->_zi.q->head->in->len;	/* track compressed data length */
 	zq->_zi.in_tot = zq->_zi.q->head->in->len;	/* track compressed data length */
-	yarnRelease(zq->_zi.q->have);
 
 	zq->out_tot = 0;
 
@@ -2428,23 +2425,19 @@ jobDebug("before", zq->_zi.q->head);
 	    bail("not enough memory", "");
 
 	/* decompress, compute lengths and check value */
-	yarnPossess(zq->_zi.q->have);
 	strm.avail_in = zq->_zi.q->head->in->len;
 /*@-sharedtrans@*/
 	strm.next_in = zq->_zi.q->head->in->buf;
 /*@=sharedtrans@*/
-	yarnRelease(zq->_zi.q->have);
 
 	ret = inflateBack(&strm, inb, zq, outb, zq);
 	if (ret != Z_STREAM_END)
 	    bail("corrupted input -- invalid deflate data: ", zq->ifn);
 
-	yarnPossess(zq->_zi.q->have);
 	zq->_zi.q->head->in->len = strm.avail_in;
 /*@-onlytrans@*/
 	zq->_zi.q->head->in->buf = strm.next_in;
 /*@=onlytrans@*/
-	yarnRelease(zq->_zi.q->have);
 
 /*@-noeffect@*/
 	inflateBackEnd(&strm);
@@ -2458,10 +2451,8 @@ jobDebug(" after", zq->_zi.q->head);
 
     }
 
-	yarnPossess(zq->_zi.q->have);
 	/* compute compressed data length */
 	clen = zq->in_tot - zq->_zi.q->head->in->len;
-	yarnRelease(zq->_zi.q->have);
 
 	/* read and check trailer */
 	switch (zq->format) {
@@ -3365,11 +3356,11 @@ exit:
 	int caught;
 
 	caught = 0;
-	rpmzcFini(&zq->_zc, &caught);
+	(void) rpmzcFini(&zq->_zc, &caught);
 	if (caught)
 	    Trace((zlog, "-- freed %d input buffers", caught));
 	caught = 0;
-	rpmzwFini(&zq->_zw, &caught);
+	(void) rpmzwFini(&zq->_zw, &caught);
 	if (caught)
 	    Trace((zlog, "-- freed %d output buffers", caught));
     }
