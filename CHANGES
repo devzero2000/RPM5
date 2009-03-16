@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: zlog: backport from HEAD.
+    - jbj: yarn: backport from HEAD (likely --with-pthreads needed todo++).
     - jbj: bzdio: handle multiblock compressed payloads transparently.
     - jbj: xzdio: backport the remaining xzdio contexxtual changes. worksforme.
     - jbj: xzdio: backport XZ changes from HEAD.

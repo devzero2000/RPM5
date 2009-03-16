@@ -393,6 +393,11 @@ LIBRPMIO_0
     rpmxarSwapBuf;
     XrpmxarUnlink;
     rpmuuidMake;
+    rpmzLogAdd;
+    rpmzLogDump;
+    rpmzLogFree;
+    rpmzLogLink;
+    rpmzLogNew;
     Stat;
     _Stat;
     stripTrailingBlanksStringBuf;
@@ -441,6 +446,20 @@ LIBRPMIO_0
     XurlLink;
     XurlNew;
     xzdio;
+    yarnAbort;
+    yarnDestruct;
+    yarnFreeLock;
+    yarnJoin;
+    yarnJoinAll;
+    yarnLaunch;
+    yarnMem;
+    yarnNewLock;
+    yarnPeekLock;
+    yarnPossess;
+    yarnPrefix;
+    yarnRelease;
+    yarnTwist;
+    yarnWaitFor;
   local:
     *;
 };
