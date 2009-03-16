@@ -254,7 +254,7 @@ package or when debugging this package.\
 %tmpdir			%{_tmppath}
 
 #	Path to top of build area.
-%_topdir		@PKGSRCDIR_MACRO@
+%_topdir		%(echo $HOME)/rpmbuild
 
 #==============================================================================
 # ---- Optional macros.

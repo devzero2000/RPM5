@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: change default %_topdir to $HOME/rpmbuild.
     - proyvind: change %buildroot to %{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
 	to make it more unique and informative.
     - proyvind: do lazy mkdir of %_builddir, %_rpmdir & %_srcrpmdir when doing
