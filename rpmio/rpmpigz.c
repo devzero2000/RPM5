@@ -311,10 +311,10 @@ static void rpmzDefaults(rpmzQueue zq)
 /*@-observertrans -readonlytrans@*/
     zq->suffix = ".gz";               /* compressed file suffix */
 /*@=observertrans =readonlytrans@*/
-    zq->ifn = _rpmz->_ifn;
-    zq->ifdno = -1;
-    zq->ofn = NULL;
-    zq->ofdno = -1;
+    zq->_zinp.fn = _rpmz->_ifn;
+    zq->_zinp.fdno = -1;
+    zq->_zout.fn = NULL;
+    zq->_zout.fdno = -1;
 
     zq->level = Z_DEFAULT_COMPRESSION;	/* XXX level is format specific. */
 #ifdef _PIGZNOTHREAD
@@ -368,8 +368,8 @@ static int bail(const char *why, const char *what)
     rpmzQueue zq = _rpmz->zq;
 
 /*@-globs@*/
-    if (zq->ofdno > STDOUT_FILENO && zq->ofn != NULL)
-	Unlink(zq->ofn);
+    if (zq->_zout.fdno > STDOUT_FILENO && zq->_zout.fn != NULL)
+	Unlink(zq->_zout.fn);
 /*@=globs@*/
     if (zq->verbosity > 0)
 	fprintf(stderr, "%s abort: %s%s\n", "pigz", why, what);
@@ -547,18 +547,17 @@ static void jobDebug(/*@null@*/ const char * msg, /*@null@*/ rpmzJob job)
 }
 
 /* read up to len bytes into buf, repeating read() calls as needed */
-static size_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t len)
+static size_t rpmzRead(rpmzf zf, unsigned char *buf, size_t len)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
-    int fdno = zq->ifdno;
     size_t got = 0;
 
     got = 0;
     while (len) {
-	ssize_t ret = read(fdno, buf, len);
+	ssize_t ret = read(zf->fdno, buf, len);
 	if (ret < 0)
-	    bail("read error on ", zq->ifn);
+	    bail("read error on ", zf->fn);
 	if (ret == 0)
 	    break;
 	buf += ret;
@@ -569,23 +568,34 @@ static size_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t len)
 }
 
 /* write len bytes, repeating write() calls as needed */
-static void rpmzWrite(rpmzQueue zq, unsigned char *buf, size_t len)
+static void rpmzWrite(rpmzf zf, unsigned char *buf, size_t len)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    int fdno = zq->ofdno;
     size_t put = 0;
 
     while (len) {
-	ssize_t ret = write(fdno, buf, len);
+	ssize_t ret = write(zf->fdno, buf, len);
 	if (ret < 1)
 	    fprintf(stderr, "write error code %d\n", errno);
 	if (ret < 1)
-	    bail("write error on ", zq->ofn);
+	    bail("write error on ", zf->fn);
 	buf += ret;
 	len -= ret;
 	put += ret;
     }
+}
+
+static off_t rpmzSeek(rpmzf zf, off_t offset, int whence)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    return lseek(zf->fdno, offset, whence);
+}
+
+static int rpmzClose(rpmzf zf)
+{
+    return close(zf->fdno);
 }
 
 /* convert Unix time to MS-DOS date and time, assuming current timezone
@@ -620,6 +630,7 @@ static unsigned long rpmzPutHeader(rpmzQueue zq, rpmzh zh)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    rpmzf zout = &zq->_zout;
     unsigned long len;
     unsigned char head[30];
 
@@ -637,14 +648,14 @@ static unsigned long rpmzPutHeader(rpmzQueue zq, rpmzh zh)
 	PUT4L(head + 22, 0);        /* uncompressed length (not here) */
 	PUT2L(head + 26, zh->name == NULL ? 1 : strlen(zh->name));  /* name length */
 	PUT2L(head + 28, 9);        /* length of extra field (see below) */
-	rpmzWrite(zq, head, 30);    /* write local header */
+	rpmzWrite(zout, head, 30);  /* write local header */
 	len = 30;
 
 	/* write file name (use "-" for stdin) */
 	if (zh->name == NULL)
-	    rpmzWrite(zq, (unsigned char *)"-", 1);
+	    rpmzWrite(zout, (unsigned char *)"-", 1);
 	else
-	    rpmzWrite(zq, (unsigned char *)zh->name, strlen(zh->name));
+	    rpmzWrite(zout, (unsigned char *)zh->name, strlen(zh->name));
 	len += zh->name == NULL ? 1 : strlen(zh->name);
 
 	/* write extended timestamp extra field block (9 bytes) */
@@ -652,7 +663,7 @@ static unsigned long rpmzPutHeader(rpmzQueue zq, rpmzh zh)
 	PUT2L(head + 2, 5);         /* number of data bytes in this block */
 	head[4] = 1;                /* flag presence of mod time */
 	PUT4L(head + 5, zh->mtime); /* mod time */
-	rpmzWrite(zq, head, 9);     /* write extra field block */
+	rpmzWrite(zout, head, 9);   /* write extra field block */
 	len += 9;
 	break;
     case RPMZ_FORMAT_ZLIB:	/* zlib */
@@ -660,7 +671,7 @@ static unsigned long rpmzPutHeader(rpmzQueue zq, rpmzh zh)
 	head[1] = (zq->level == 9U ? 3 : (zq->level == 1U ? 0 :
 	    (zq->level >= 6U || zq->level == (unsigned)Z_DEFAULT_COMPRESSION ? 1 :  2))) << 6;
 	head[1] += 31 - (((head[0] << 8) + head[1]) % 31);
-	rpmzWrite(zq, head, 2);
+	rpmzWrite(zout, head, 2);
 	len = 2;
 	break;
     case RPMZ_FORMAT_GZIP:	/* gzip */
@@ -671,10 +682,10 @@ static unsigned long rpmzPutHeader(rpmzQueue zq, rpmzh zh)
 	PUT4L(head + 4, zh->mtime);
 	head[8] = zq->level == 9 ? 2 : (zq->level == 1 ? 4 : 0);
 	head[9] = 3;                /* unix */
-	rpmzWrite(zq, head, 10);
+	rpmzWrite(zout, head, 10);
 	len = 10;
 	if (zh->name != NULL)
-	    rpmzWrite(zq, (unsigned char *)zh->name, strlen(zh->name) + 1);
+	    rpmzWrite(zout, (unsigned char *)zh->name, strlen(zh->name) + 1);
 	if (zh->name != NULL)
 	    len += strlen(zh->name) + 1;
 	break;
@@ -690,6 +701,7 @@ static void rpmzPutTrailer(rpmzQueue zq, rpmzh zh)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    rpmzf zout = &zq->_zout;
     unsigned char tail[46];
 
     switch (zq->format) {
@@ -701,7 +713,7 @@ static void rpmzPutTrailer(rpmzQueue zq, rpmzh zh)
 	PUT4L(tail, zh->check);
 	PUT4L(tail + 4, zh->clen);
 	PUT4L(tail + 8, zh->ulen);
-	rpmzWrite(zq, tail, 12);
+	rpmzWrite(zout, tail, 12);
 
 	/* write central file header */
 	PUT4L(tail, 0x02014b50UL);  /* central header signature */
@@ -721,14 +733,14 @@ static void rpmzPutTrailer(rpmzQueue zq, rpmzh zh)
 	PUT2L(tail + 36, 0);        /* internal file attributes */
 	PUT4L(tail + 38, 0);        /* external file attributes (ignored) */
 	PUT4L(tail + 42, 0);        /* offset of local header */
-	rpmzWrite(zq, tail, 46);    /* write central file header */
+	rpmzWrite(zout, tail, 46);  /* write central file header */
 	cent = 46;
 
 	/* write file name (use "-" for stdin) */
 	if (zh->name == NULL)
-	    rpmzWrite(zq, (unsigned char *)"-", 1);
+	    rpmzWrite(zout, (unsigned char *)"-", 1);
 	else
-	    rpmzWrite(zq, (unsigned char *)zh->name, strlen(zh->name));
+	    rpmzWrite(zout, (unsigned char *)zh->name, strlen(zh->name));
 	cent += zh->name == NULL ? 1 : strlen(zh->name);
 
 	/* write extended timestamp extra field block (9 bytes) */
@@ -736,7 +748,7 @@ static void rpmzPutTrailer(rpmzQueue zq, rpmzh zh)
 	PUT2L(tail + 2, 5);         /* number of data bytes in this block */
 	tail[4] = 1;                /* flag presence of mod time */
 	PUT4L(tail + 5, zh->mtime); /* mod time */
-	rpmzWrite(zq, tail, 9);     /* write extra field block */
+	rpmzWrite(zout, tail, 9);   /* write extra field block */
 	cent += 9;
 
 	/* write end of central directory record */
@@ -748,16 +760,16 @@ static void rpmzPutTrailer(rpmzQueue zq, rpmzh zh)
 	PUT4L(tail + 12, cent);     /* size of central directory */
 	PUT4L(tail + 16, zh->head + zh->clen + 12); /* offset of central directory */
 	PUT2L(tail + 20, 0);        /* no zip file comment */
-	rpmzWrite(zq, tail, 22);    /* write end of central directory record */
+	rpmzWrite(zout, tail, 22);  /* write end of central directory record */
     }	break;
     case RPMZ_FORMAT_ZLIB:	/* zlib */
 	PUT4M(tail, zh->check);
-	rpmzWrite(zq, tail, 4);
+	rpmzWrite(zout, tail, 4);
 	break;
     case RPMZ_FORMAT_GZIP:	/* gzip */
 	PUT4L(tail, zh->check);
 	PUT4L(tail + 4, zh->ulen);
-	rpmzWrite(zq, tail, 8);
+	rpmzWrite(zout, tail, 8);
 	break;
     default:
 assert(0);
@@ -984,6 +996,7 @@ static void write_thread(void *_zq)
     rpmzLog zlog = zq->zlog;
     rpmzc zc = &zq->_zc;
     rpmzw zw = &zq->_zw;
+    rpmzf zout = &zq->_zout;
     rpmzh zh = zq->_zh;
 
     long seq;                       /* next sequence number looking for */
@@ -1013,7 +1026,7 @@ assert(job != NULL);
 
 	/* write the compressed data and drop the output buffer */
 	Trace((zlog, "-- writing #%ld", seq));
-	rpmzWrite(zq, job->out->buf, job->out->len);
+	rpmzWrite(zout, job->out->buf, job->out->len);
 	(void) rpmzqDropSpace(job->out);	/* XXX don't reset job->out */
 	Trace((zlog, "-- wrote #%ld%s", seq, more ? "" : " (last)"));
 
@@ -1167,6 +1180,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzLog zlog = zq->zlog;
+    rpmzf zinp = &zq->_zinp;
     rpmzc zc;
     rpmzw zw;
 
@@ -1186,7 +1200,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
     seq = 0;
     prev = NULL;
     next = rpmzqNewSpace(zc->pool, zc->pool->size);
-    next->len = rpmzRead(zq, next->buf, next->pool->size);
+    next->len = rpmzRead(zinp, next->buf, next->pool->size);
     do {
 	/* create a new job, use next input chunk, previous as dictionary */
 	job = rpmzqNewJob(seq);
@@ -1200,7 +1214,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	    more = 0;
 	else {
 	    next = rpmzqNewSpace(zc->pool, zc->pool->size);
-	    next->len = rpmzRead(zq, next->buf, next->pool->size);
+	    next->len = rpmzRead(zinp, next->buf, next->pool->size);
 	    more = next->len != 0;
 	    if (!more)
 		next = rpmzqDropSpace(next);  /* won't be using it */
@@ -1212,7 +1226,7 @@ static void rpmzParallelCompress(rpmzQueue zq)
 	job->more = more;
 	Trace((zlog, "-- read #%ld%s", seq, more ? "" : " (last)"));
 	if (++seq < 1)
-	    bail("input too long: ", zq->ifn);
+	    bail("input too long: ", zq->_zinp.fn);
 
 	/* start another compress thread if needed */
 #ifdef	DYING
@@ -1250,6 +1264,8 @@ static void rpmzSingleCompress(rpmzQueue zq, int reset)
 	/*@modifies fileSystem, internalState @*/
 {
     rpmzh zh = zq->_zh;
+    rpmzf zinp = &zq->_zinp;
+    rpmzf zout = &zq->_zout;
 
     size_t got;                     /* amount read */
     size_t more;                    /* amount of next read (0 if eof) */
@@ -1310,12 +1326,12 @@ static void rpmzSingleCompress(rpmzQueue zq, int reset)
     /* do raw deflate and calculate check value */
     zh->ulen = zh->clen = 0;
     zh->check = CHECK(0L, Z_NULL, 0);
-    more = rpmzRead(zq, next, zq->blocksize);
+    more = rpmzRead(zinp, next, zq->blocksize);
     do {
 	/* get data to compress, see if there is any more input */
 	got = more;
 	{ unsigned char *temp; temp = in; in = next; next = temp; }
-	more = got < zq->blocksize ? 0 : rpmzRead(zq, next, zq->blocksize);
+	more = got < zq->blocksize ? 0 : rpmzRead(zinp, next, zq->blocksize);
 	zh->ulen += (unsigned long)got;
 /*@-mustfreeonly@*/
 	strm->next_in = in;
@@ -1333,7 +1349,7 @@ static void rpmzSingleCompress(rpmzQueue zq, int reset)
 /*@-noeffect@*/
 		(void)deflate(strm, Z_NO_FLUSH);
 /*@=noeffect@*/
-		rpmzWrite(zq, out, out_size - strm->avail_out);
+		rpmzWrite(zout, out, out_size - strm->avail_out);
 		zh->clen += out_size - strm->avail_out;
 	    } while (strm->avail_out == 0);
 assert(strm->avail_in == 0);
@@ -1354,7 +1370,7 @@ assert(strm->avail_in == 0);
 	    (void)deflate(strm,
 		more ? (F_ISSET(zq->flags, INDEPENDENT) ? Z_SYNC_FLUSH : Z_FULL_FLUSH) : Z_FINISH);
 /*@=noeffect@*/
-	    rpmzWrite(zq, out, out_size - strm->avail_out);
+	    rpmzWrite(zout, out, out_size - strm->avail_out);
 	    zh->clen += out_size - strm->avail_out;
 	} while (strm->avail_out == 0);
 assert(strm->avail_in == 0);
@@ -1379,6 +1395,7 @@ static void load_read_thread(void *_zq)
 {
     rpmzQueue zq = _zq;
     rpmzi zi = &zq->_zi;
+    rpmzf zinp = &zq->_zinp;
     rpmzLog zlog = zq->zlog;
     size_t nread;
 
@@ -1391,7 +1408,7 @@ static void load_read_thread(void *_zq)
 
 	job = rpmzqNewJob(seq++);
 	job->in = rpmzqNewSpace(zi->pool, zi->pool->size);
-	nread = rpmzRead(zq, job->in->buf, job->in->len);
+	nread = rpmzRead(zinp, job->in->buf, job->in->len);
 	job->more = (job->in->len == nread);
 	job->in->len = nread;
 
@@ -1486,6 +1503,7 @@ static size_t load(rpmzQueue zq)
 	/*@modifies zq, fileSystem, internalState @*/
 {
     rpmzi zi = &zq->_zi;
+    rpmzf zinp = &zq->_zinp;
 
     /* if already detected end of file, do nothing */
     if (zi->q && zi->q->head && zi->q->head->more < 0) {
@@ -1522,7 +1540,7 @@ assert(zq->qi->in->len == 0);
 	}
 
 	zi->q->head->in = rpmzqNewSpace(NULL, zq->_in_buf_allocated);
-	nread = rpmzRead(zq, zi->q->head->in->buf, zi->q->head->in->len);
+	nread = rpmzRead(zinp, zi->q->head->in->buf, zi->q->head->in->len);
 	zi->q->head->in->len = nread;
     }
 
@@ -1640,7 +1658,7 @@ assert(jbuf == NULL || jpull < sizeof(_buf)); \
 	unsigned char * jbuf = (unsigned char *)(_buf); \
 assert(jbuf == NULL || jpull < sizeof(_buf)); \
 	if ((nb = rpmzqJobPull(zq, jbuf, jpull)) != jpull) \
-	    bail((_why), zq->ifn); \
+	    bail((_why), zq->_zinp.fn); \
 	b = jbuf; \
     } while (0);
 
@@ -1950,8 +1968,8 @@ jobDebug("  show", zq->_zi.q->head);
     if (cont)
 	strncpy(name, "<...>", max + 1);
     else if (zh->hname == NULL) {
-	n = strlen(zq->ifn) - compressed_suffix(zq->ifn);
-	strncpy(name, zq->ifn, n > max + 1 ? max + 1 : n);
+	n = strlen(zq->_zinp.fn) - compressed_suffix(zq->_zinp.fn);
+	strncpy(name, zq->_zinp.fn, n > max + 1 ? max + 1 : n);
     }
     else
 	strncpy(name, zh->hname, max + 1);
@@ -2018,6 +2036,7 @@ static void rpmzListInfo(rpmzQueue zq)
 {
     rpmzJob job = zq->_zi.q->head;
     rpmzh zh = zq->_zh;
+    rpmzf zinp = &zq->_zinp;
     int method;             /* rpmzGetHeader() return value */
     size_t n;               /* available trailer bytes */
     off_t at;               /* used to calculate compressed length */
@@ -2034,7 +2053,7 @@ jobDebug("  list", zq->_zi.q->head);
     if (method < 0) {
 	zh->hname = _free(zh->hname);
 	if (method != -1 && zq->verbosity > 1)
-	    fprintf(stderr, "%s not a compressed file -- skipping\n", zq->ifn);
+	    fprintf(stderr, "%s not a compressed file -- skipping\n", zq->_zinp.fn);
 	return;
     }
 
@@ -2047,7 +2066,7 @@ jobDebug("  list", zq->_zi.q->head);
 
     /* list zlib file */
     if (zq->format == RPMZ_FORMAT_ZLIB) {
-	at = lseek(zq->ifdno, 0, SEEK_END);
+	at = rpmzSeek(&zq->_zinp, 0, SEEK_END);
 	if (at == -1) {
 	    check = 0;
 	    do {
@@ -2063,8 +2082,8 @@ jobDebug("  list", zq->_zi.q->head);
 	}
 	else {
 	    zq->in_tot = at;
-	    lseek(zq->ifdno, -4, SEEK_END);
-	    rpmzRead(zq, tail, 4);
+	    (void) rpmzSeek(&zq->_zinp, -4, SEEK_END);
+	    rpmzRead(zinp, tail, 4);
 	    check = (*tail << 24) + (tail[1] << 16) + (tail[2] << 8) + tail[3];
 	}
 	zq->in_tot -= 6;
@@ -2074,7 +2093,7 @@ jobDebug("  list", zq->_zi.q->head);
 
     /* list lzw file */
     if (method == 256) {
-	at = lseek(zq->ifdno, 0, SEEK_END);
+	at = rpmzSeek(&zq->_zinp, 0, SEEK_END);
 	if (at == -1)
 	    while (load(zq) != 0)
 		;
@@ -2091,7 +2110,7 @@ jobDebug("  list", zq->_zi.q->head);
 	if (job->in->len < 8) {
 	    if (zq->verbosity > 0)
 		fprintf(stderr, "%s not a valid gzip file -- skipping\n",
-			zq->ifn);
+			zq->_zinp.fn);
 	    return;
 	}
 	zq->in_tot = job->in->len - 8;     /* compressed size */
@@ -2099,9 +2118,9 @@ jobDebug("  list", zq->_zi.q->head);
 	bufend += job->in->len;
 	memcpy(tail, bufend - 8, 8);
     }
-    else if ((at = lseek(zq->ifdno, -8, SEEK_END)) != -1) {
+    else if ((at = rpmzSeek(&zq->_zinp, -8, SEEK_END)) != -1) {
 	zq->in_tot = at - zq->in_tot + job->in->len; /* compressed size */
-	rpmzRead(zq, tail, 8);           /* get trailer */
+	rpmzRead(zinp, tail, 8);           /* get trailer */
     } else {                             /* can't seek */
 	at = zq->in_tot - job->in->len;  /* save header size */
 	do {
@@ -2115,7 +2134,7 @@ jobDebug("  list", zq->_zi.q->head);
 	    if (n + job->in->len < 8) {
 		if (zq->verbosity > 0)
 		    fprintf(stderr, "%s not a valid gzip file -- skipping\n",
-				zq->ifn);
+				zq->_zinp.fn);
 		return;
 	    }
 	    if (job->in->len) {
@@ -2135,7 +2154,7 @@ jobDebug("  list", zq->_zi.q->head);
     }
     if (zq->in_tot < 2) {
 	if (zq->verbosity > 0)
-	    fprintf(stderr, "%s not a valid gzip file -- skipping\n", zq->ifn);
+	    fprintf(stderr, "%s not a valid gzip file -- skipping\n", zq->_zinp.fn);
 	return;
     }
 
@@ -2175,6 +2194,7 @@ static void outb_write(void *_zq)
 {
     rpmzQueue zq = _zq;
     rpmzo zo = &zq->_zo;
+    rpmzf zout = &zq->_zout;
     rpmzLog zlog = zq->zlog;
     size_t nwrote;
 
@@ -2187,7 +2207,7 @@ if (_debug)
 jobDebug(" write", zo->q->head);
 	nwrote = zo->q->head->out->len;
 	if (nwrote && zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(zq, zo->q->head->out->buf, zo->q->head->out->len);
+	    rpmzWrite(zout, zo->q->head->out->buf, zo->q->head->out->len);
 	rpmzqDropSpace(zo->q->head->out);
 
 	Trace((zlog, "-- decompress wrote %lu bytes", nwrote));
@@ -2343,6 +2363,7 @@ static int outb(void *_zq, /*@null@*/ unsigned char *buf, unsigned len)
 {
     rpmzQueue zq = _zq;
     rpmzo zo = &zq->_zo;
+    rpmzf zout = &zq->_zout;
 
 #ifndef _PIGZNOTHREAD
 
@@ -2362,7 +2383,7 @@ assert(zq->out_tot == 0);
 #endif
     if (len) {		/* if no threads, then do it without threads */
 	if (zq->mode == RPMZ_MODE_DECOMPRESS)
-	    rpmzWrite(zq, buf, len);
+	    rpmzWrite(zout, buf, len);
 	zo->q->head->check = CHECK(zo->q->head->check, buf, len);
     }
 
@@ -2432,7 +2453,7 @@ jobDebug("before", zq->_zi.q->head);
 
 	ret = inflateBack(&strm, inb, zq, outb, zq);
 	if (ret != Z_STREAM_END)
-	    bail("corrupted input -- invalid deflate data: ", zq->ifn);
+	    bail("corrupted input -- invalid deflate data: ", zq->_zinp.fn);
 
 	zq->_zi.q->head->in->len = strm.avail_in;
 /*@-onlytrans@*/
@@ -2466,7 +2487,7 @@ jobDebug(" after", zq->_zi.q->head);
 	    /* if crc doesn't match, try info-zip variant with sig */
 	    if (zh->zip_crc != zq->_zo.q->head->check) {
 		if (zh->zip_crc != 0x08074b50UL || zh->zip_clen != zq->_zo.q->head->check)
-		    bail("corrupted zip entry -- crc32 mismatch: ", zq->ifn);
+		    bail("corrupted zip entry -- crc32 mismatch: ", zq->_zinp.fn);
 		zh->zip_crc = zh->zip_clen;
 		zh->zip_clen = zh->zip_ulen;
 		BPULL(_b, 4, "corrupted zip entry -- missing trailer: ");
@@ -2482,7 +2503,7 @@ jobDebug(" after", zq->_zi.q->head);
 	    /*@fallthrough@*/
 	case RPMZ_FORMAT_ZIP2:
 	    if (zh->zip_clen != (clen & LOW32) || zh->zip_ulen != (zq->out_tot & LOW32))
-		bail("corrupted zip entry -- length mismatch: ", zq->ifn);
+		bail("corrupted zip entry -- length mismatch: ", zq->_zinp.fn);
 	    check = zh->zip_crc;
 	    break;
 	case RPMZ_FORMAT_ZLIB:	/* zlib (big-endian) trailer */
@@ -2492,16 +2513,16 @@ jobDebug(" after", zq->_zi.q->head);
 	    check += GET() << 8;
 	    check += GET();
 	    if (check != zq->_zo.q->head->check)
-		bail("corrupted zlib stream -- adler32 mismatch: ", zq->ifn);
+		bail("corrupted zlib stream -- adler32 mismatch: ", zq->_zinp.fn);
 	    break;
 	case RPMZ_FORMAT_GZIP:	/* gzip trailer */
 	    BPULL(_b, 8, "corrupted gzip stream -- missing trailer: ");
 	    check = GET4();
 	    len = GET4();
 	    if (check != zq->_zo.q->head->check)
-		bail("corrupted gzip stream -- crc32 mismatch: ", zq->ifn);
+		bail("corrupted gzip stream -- crc32 mismatch: ", zq->_zinp.fn);
 	    if (len != (zq->out_tot & LOW32))
-		bail("corrupted gzip stream -- length mismatch: ", zq->ifn);
+		bail("corrupted gzip stream -- length mismatch: ", zq->_zinp.fn);
 	    break;
 	default:
 assert(0);
@@ -2519,7 +2540,7 @@ assert(0);
 	 * (don't replace saved header information from first entry) */
     } while ((zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB) && (ret = rpmzGetHeader(zq, 0)) == 8);
     if (ret != -1 && (zq->format == RPMZ_FORMAT_GZIP || zq->format == RPMZ_FORMAT_ZLIB))
-	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->ifn);
+	fprintf(stderr, "%s OK, has trailing junk which was ignored\n", zq->_zinp.fn);
 
     zq->_zi.q->head->in = rpmzqDropSpace(zq->_zi.q->head->in);
     zq->_zi.q->head = rpmzqDropJob(zq->_zi.q->head);
@@ -2565,6 +2586,8 @@ static void rpmzDecompressLZW(rpmzQueue zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zq, fileSystem, internalState @*/
 {
+    rpmzf zout = &zq->_zout;
+
     rpmzJob job = zq->_zi.q->head;
     /* XXX LZW _out_buf scales with windowBits like inflateBack()? */
     size_t _out_len = (1 << infWBits);
@@ -2607,10 +2630,10 @@ assert(job->out == NULL);
 
     flags = GET();
     if (flags & 0x60)
-	bail("unknown lzw flags set: ", zq->ifn);
+	bail("unknown lzw flags set: ", zq->_zinp.fn);
     max = flags & 0x1f;
     if (max < 9 || max > 16)
-	bail("lzw bits out of range: ", zq->ifn);
+	bail("lzw bits out of range: ", zq->_zinp.fn);
     if (max == 9)                           /* 9 doesn't really mean 9 */
 	max = 10;
     flags &= 0x80;                          /* true if block compress */
@@ -2629,7 +2652,7 @@ assert(job->out == NULL);
     got = GET();
     final = prev = (unsigned)got;           /* low 8 bits of code */
     if (nb == 0 && (got & 1) != 0)          /* missing a bit or code >= 256 */
-	bail("invalid lzw code: ", zq->ifn);
+	bail("invalid lzw code: ", zq->_zinp.fn);
     got = GET();
     rem = (unsigned)got >> 1;               /* remaining 7 bits */
     left = 7;
@@ -2658,7 +2681,7 @@ assert(job->out == NULL);
 	    /* write remaining buffered output */
 	    zq->out_tot += outcnt;
 	    if (outcnt && zq->mode == RPMZ_MODE_DECOMPRESS)
-		rpmzWrite(zq, _out_buf, outcnt);
+		rpmzWrite(zout, _out_buf, outcnt);
 	    goto exit;
 	}
 	b = _b;
@@ -2701,7 +2724,7 @@ assert(job->out == NULL);
 	     * In any case, the prev > end check must be retained.
 	     */
 	    if (code != end + 1 || prev > end)
-		bail("invalid lzw code: ", zq->ifn);
+		bail("invalid lzw code: ", zq->_zinp.fn);
 	    _match[stack++] = (unsigned char)final;
 	    code = prev;
 	}
@@ -2732,7 +2755,7 @@ assert(job->out == NULL);
 		_out_buf[outcnt++] = _match[--stack];
 	    zq->out_tot += outcnt;
 	    if (zq->mode == RPMZ_MODE_DECOMPRESS)
-		rpmzWrite(zq, _out_buf, outcnt);
+		rpmzWrite(zout, _out_buf, outcnt);
 	    outcnt = 0;
 	}
 	p = _match + stack;
@@ -2826,43 +2849,43 @@ static void rpmzProcess(rpmz z, /*@null@*/ const char *path)
     /* open input file with name in, descriptor zq->ifdno -- set name and mtime */
     if (path == NULL) {
 	strcpy(z->_ifn, z->stdin_fn);
-	zq->ifdno = STDIN_FILENO;
+	zq->_zinp.fdno = STDIN_FILENO;
 /*@-mustfreeonly@*/
 	zh->name = NULL;
 /*@=mustfreeonly@*/
 	zh->mtime = F_ISSET(zq->flags, HTIME) ?
-		(fstat(zq->ifdno, st) ? time(NULL) : st->st_mtime) : 0;
+		(fstat(zq->_zinp.fdno, st) ? time(NULL) : st->st_mtime) : 0;
 	len = 0;
     } else {
 	/* set input file name (already set if recursed here) */
-	if (path != zq->ifn) {
+	if (path != zq->_zinp.fn) {
 /*@-mayaliasunique@*/
 	    strncpy(z->_ifn, path, sizeof(z->_ifn));
 /*@=mayaliasunique@*/
 	    if (z->_ifn[sizeof(z->_ifn) - 1])
 		bail("name too long: ", path);
 	}
-	len = strlen(zq->ifn);
+	len = strlen(zq->_zinp.fn);
 
 	/* only process regular files, but allow symbolic links if -f,
 	 * recurse into directory if -r */
-	if (Lstat(zq->ifn, st)) {
+	if (Lstat(zq->_zinp.fn, st)) {
 #ifdef EOVERFLOW
 	    if (errno == EOVERFLOW || errno == EFBIG)
-		bail(zq->ifn, " too large -- pigz not compiled with large file support");
+		bail(zq->_zinp.fn, " too large -- pigz not compiled with large file support");
 #endif
 	    if (zq->verbosity > 0)
-		fprintf(stderr, "%s does not exist -- skipping\n", zq->ifn);
+		fprintf(stderr, "%s does not exist -- skipping\n", zq->_zinp.fn);
 	    return;
 	}
 	if (!S_ISREG(st->st_mode) && !S_ISLNK(st->st_mode) && !S_ISDIR(st->st_mode)) {
 	    if (zq->verbosity > 0)
-		fprintf(stderr, "%s is a special file or device -- skipping\n", zq->ifn);
+		fprintf(stderr, "%s is a special file or device -- skipping\n", zq->_zinp.fn);
 	    return;
 	}
 	if (S_ISLNK(st->st_mode) && !F_ISSET(zq->flags, SYMLINKS)) {
 	    if (zq->verbosity > 0)
-		fprintf(stderr, "%s is a symbolic link -- skipping\n", zq->ifn);
+		fprintf(stderr, "%s is a symbolic link -- skipping\n", zq->_zinp.fn);
 	    return;
 	}
 
@@ -2877,11 +2900,11 @@ static void rpmzProcess(rpmz z, /*@null@*/ const char *path)
 
 	    if (!F_ISSET(zq->flags, RECURSE)) {
 		if (zq->verbosity > 0)
-		    fprintf(stderr, "%s is a directory -- skipping\n", zq->ifn);
+		    fprintf(stderr, "%s is a directory -- skipping\n", zq->_zinp.fn);
 		return;
 	    }
 	    te = z->_ifn + len;
-	    if ((dir = Opendir(zq->ifn)) == NULL)
+	    if ((dir = Opendir(zq->_zinp.fn)) == NULL)
 		return;
 	    while ((dp = Readdir(dir)) != NULL) {
 		if (dp->d_name[0] == '\0' ||
@@ -2896,7 +2919,7 @@ static void rpmzProcess(rpmz z, /*@null@*/ const char *path)
 		*te = '/';
 		strncpy(te+1, av[i], sizeof(z->_ifn) - len - 1);
 assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
-		(void) rpmzProcess(z, zq->ifn);
+		(void) rpmzProcess(z, zq->_zinp.fn);
 		*te = '\0';
 	    }
 	    av = argvFree(av);
@@ -2905,36 +2928,36 @@ assert(z->_ifn[sizeof(z->_ifn) - 1] == '\0');
 
 	/* don't compress .gz (or provided suffix) files, unless -f */
 	if (!(F_ISSET(zq->flags, ALREADY) || F_ISSET(zq->flags, LIST) || zq->mode != RPMZ_MODE_COMPRESS) && len >= strlen(zq->suffix) &&
-		strcmp(zq->ifn + len - strlen(zq->suffix), zq->suffix) == 0) {
+		strcmp(zq->_zinp.fn + len - strlen(zq->suffix), zq->suffix) == 0) {
 	    if (zq->verbosity > 0)
-		fprintf(stderr, "%s ends with %s -- skipping\n", zq->ifn, zq->suffix);
+		fprintf(stderr, "%s ends with %s -- skipping\n", zq->_zinp.fn, zq->suffix);
 	    return;
 	}
 
 	/* only decompress or list files with compressed suffix */
 	if (F_ISSET(zq->flags, LIST) || zq->mode != RPMZ_MODE_COMPRESS) {
-	    int suf = compressed_suffix(zq->ifn);
+	    int suf = compressed_suffix(zq->_zinp.fn);
 	    if (suf == 0) {
 		if (zq->verbosity > 0)
 		    fprintf(stderr, "%s does not have compressed suffix -- skipping\n",
-                            zq->ifn);
+                            zq->_zinp.fn);
 		return;
 	    }
 	    len -= suf;
 	}
 
 	/* open input file */
-	zq->ifdno = open(zq->ifn, O_RDONLY, 0);
-	if (zq->ifdno < 0)
-	    bail("read error on ", zq->ifn);
+	zq->_zinp.fdno = open(zq->_zinp.fn, O_RDONLY, 0);
+	if (zq->_zinp.fdno < 0)
+	    bail("read error on ", zq->_zinp.fn);
 
 	/* prepare gzip header information for compression */
 /*@-mustfreeonly@*/
-	zh->name = F_ISSET(zq->flags, HNAME) ? justname(zq->ifn) : NULL;
+	zh->name = F_ISSET(zq->flags, HNAME) ? justname(zq->_zinp.fn) : NULL;
 /*@=mustfreeonly@*/
 	zh->mtime = F_ISSET(zq->flags, HTIME) ? st->st_mtime : 0;
     }
-    SET_BINARY_MODE(zq->ifdno);
+    SET_BINARY_MODE(zq->_zinp.fdno);
 
     /* if decoding or testing, try to read gzip header */
 assert(zh->hname == NULL);
@@ -2946,7 +2969,7 @@ assert(zh->hname == NULL);
 		fprintf(stderr,
 		    method < 0 ? "%s is not compressed -- skipping\n" :
 			"%s has unknown compression method -- skipping\n",
-			zq->ifn);
+			zq->_zinp.fn);
 	    goto exit;
 	}
 
@@ -2975,17 +2998,17 @@ assert(zh->hname == NULL);
     if (path == NULL || F_ISSET(zq->flags, STDOUT)) {
 	/* write to stdout */
 /*@-mustfreeonly@*/
-	zq->ofn = xstrdup(z->stdout_fn);
+	zq->_zout.fn = xstrdup(z->stdout_fn);
 /*@=mustfreeonly@*/
-	zq->ofdno = STDOUT_FILENO;
-	if (zq->mode == RPMZ_MODE_COMPRESS && !F_ISSET(zq->flags, TTY) && isatty(zq->ofdno))
+	zq->_zout.fdno = STDOUT_FILENO;
+	if (zq->mode == RPMZ_MODE_COMPRESS && !F_ISSET(zq->flags, TTY) && isatty(zq->_zout.fdno))
 	    bail("trying to write compressed data to a terminal",
 		" (use -f to force)");
     } else {
 	const char *to;
 
 	/* use header name for output when decompressing with -N */
-	to = zq->ifn;
+	to = zq->_zinp.fn;
 	if (zq->mode != RPMZ_MODE_COMPRESS && F_ISSET(zq->flags, HNAME) && zh->hname != NULL) {
 	    to = zh->hname;
 	    len = strlen(zh->hname);
@@ -2997,16 +3020,16 @@ assert(zh->hname == NULL);
 	    char * t = xmalloc(nb);
 	    memcpy(t, to, len);
 	    strcpy(t + len, zq->mode != RPMZ_MODE_COMPRESS ? "" : zq->suffix);
-	    zq->ofn = t;
+	    zq->_zout.fn = t;
 	}
-	zq->ofdno = open(zq->ofn, O_CREAT | O_TRUNC | O_WRONLY |
+	zq->_zout.fdno = open(zq->_zout.fn, O_CREAT | O_TRUNC | O_WRONLY |
                          (F_ISSET(zq->flags, OVERWRITE) ? 0 : O_EXCL), 0666);
 
 	/* if exists and not -f, give user a chance to overwrite */
-	if (zq->ofdno < 0 && errno == EEXIST && isatty(0) && zq->verbosity) {
+	if (zq->_zout.fdno < 0 && errno == EEXIST && isatty(0) && zq->verbosity) {
 	    int ch, reply;
 
-	    fprintf(stderr, "%s exists -- overwrite (y/n)? ", zq->ofn);
+	    fprintf(stderr, "%s exists -- overwrite (y/n)? ", zq->_zout.fn);
 	    fflush(stderr);
 	    reply = -1;
 	    do {
@@ -3015,26 +3038,26 @@ assert(zh->hname == NULL);
 		    reply = ch == 'y' || ch == 'Y' ? 1 : 0;
 	    } while (ch != EOF && ch != '\n' && ch != '\r');
 	    if (reply == 1)
-		zq->ofdno = open(zq->ofn, O_CREAT | O_TRUNC | O_WRONLY, 0666);
+		zq->_zout.fdno = open(zq->_zout.fn, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 	}
 
 	/* if exists and no overwrite, report and go on to next */
-	if (zq->ofdno < 0 && errno == EEXIST) {
+	if (zq->_zout.fdno < 0 && errno == EEXIST) {
 	    if (zq->verbosity > 0)
-		fprintf(stderr, "%s exists -- skipping\n", zq->ofn);
+		fprintf(stderr, "%s exists -- skipping\n", zq->_zout.fn);
 	    goto exit;
 	}
 
 	/* if some other error, give up */
-	if (zq->ofdno < 0)
-	    bail("write error on ", zq->ofn);
+	if (zq->_zout.fdno < 0)
+	    bail("write error on ", zq->_zout.fn);
     }
     SET_BINARY_MODE(zq->ofdno);
     zh->hname = _free(zh->hname);
 
     /* process zq->ifdno to zq->ofdno */
     if (zq->verbosity > 1)
-	fprintf(stderr, "%s to %s ", zq->ifn, zq->ofn);
+	fprintf(stderr, "%s to %s ", zq->_zinp.fn, zq->_zout.fn);
     if (zq->mode != RPMZ_MODE_COMPRESS) {
 	if (method == 8)
 	    rpmzInflateCheck(zq);
@@ -3053,27 +3076,27 @@ assert(zh->hname == NULL);
     }
 
     /* finish up, copy attributes, set times, delete original */
-    if (zq->ofdno != STDOUT_FILENO) {
-	if (close(zq->ofdno))
-	    bail("write error on ", zq->ofn);
-	zq->ofdno = -1;              /* now prevent deletion on interrupt */
-	if (zq->ifdno != STDIN_FILENO) {
-	    copymeta(zq->ifn, zq->ofn);
+    if (zq->_zout.fdno != STDOUT_FILENO) {
+	if (rpmzClose(&zq->_zout))
+	    bail("write error on ", zq->_zout.fn);
+	zq->_zout.fdno = -1;	/* now prevent deletion on interrupt */
+	if (zq->_zinp.fdno != STDIN_FILENO) {
+	    copymeta(zq->_zinp.fn, zq->_zout.fn);
 	    if (!F_ISSET(zq->flags, KEEP))
-		Unlink(zq->ifn);
+		Unlink(zq->_zinp.fn);
 	}
 	if (zq->mode != RPMZ_MODE_COMPRESS && F_ISSET(zq->flags, HTIME) && zh->stamp)
-	    touch(zq->ofn, zh->stamp);
+	    touch(zq->_zout.fn, zh->stamp);
     }
 
 exit:
     zh->hname = _free(zh->hname);
-    if (zq->ifdno > STDIN_FILENO) {
-	(void) close(zq->ifdno);
-	zq->ifdno = -1;
+    if (zq->_zinp.fdno > STDIN_FILENO) {
+	(void) rpmzClose(&zq->_zinp);
+	zq->_zinp.fdno = -1;
     }
-    zq->ofdno = -1;
-    zq->ofn = _free(zq->ofn);
+    zq->_zout.fdno = -1;
+    zq->_zout.fn = _free(zq->_zout.fn);
     return;
 }
 
@@ -3088,8 +3111,8 @@ static void rpmzAbort(/*@unused@*/ int sig)
     rpmzQueue zq = _rpmz->zq;
 
     Trace((zq->zlog, "termination by user"));
-    if (zq->ofdno != -1 && zq->ofn != NULL)
-		Unlink(zq->ofn);
+    if (zq->_zout.fdno != -1 && zq->_zout.fn != NULL)
+	Unlink(zq->_zout.fn);
     zq->zlog = rpmzLogDump(zq->zlog, NULL);
     _exit(EXIT_FAILURE);
 }

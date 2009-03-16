@@ -264,6 +264,15 @@ struct rpmzw_s {
 
 /**
  */
+typedef	struct rpmzf_s * rpmzf;
+struct rpmzf_s {
+/*@null@*/
+    const char * fn;		/*!< file name */
+    int fdno;			/*!< file descriptor */
+};
+
+/**
+ */
 struct rpmzQueue_s {
 /* --- globals (modified by main thread only when it's the only thread) */
     enum rpmzFlags_e flags;	/*!< Control bits. */
@@ -276,18 +285,14 @@ struct rpmzQueue_s {
 
 /*@null@*/ /*@observer@*/
     const char * suffix;	/*!< -S, --suffix ... */
-/*@null@*/
-    const char * ifn;
-/*@null@*/
-    const char * ofn;		/*!< output file name (allocated if not NULL) */
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
 
     struct timeval start;	/*!< starting time of day for tracing */
 /*@owned@*/ /*@null@*/
     rpmzLog zlog;		/*!< trace logging */
 
-    int ifdno;			/*!< input file descriptor */
-    int ofdno;			/*!< output file descriptor */
+    struct rpmzf_s _zinp;
+    struct rpmzf_s _zout;
 
     off_t in_tot;		/*!< total bytes read from input */
     off_t out_tot;		/*!< total bytes written to output */

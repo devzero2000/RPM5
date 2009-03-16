@@ -628,10 +628,10 @@ rpmzQueue rpmzqFree(rpmzQueue zq)
 
 rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, int limit)
 {
-    zq->ifn = NULL;
-    zq->ifdno = -1;
-    zq->ofn = NULL;
-    zq->ofdno = -1;
+    zq->_zinp.fn = NULL;
+    zq->_zinp.fdno = -1;
+    zq->_zout.fn = NULL;
+    zq->_zout.fdno = -1;
     zq->iblocksize = zq->blocksize;
     zq->ilimit = limit;
     zq->oblocksize = zq->blocksize;

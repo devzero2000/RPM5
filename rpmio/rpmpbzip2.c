@@ -196,8 +196,8 @@ static void bail(const char *why, const char *what)
     int xx;
 
 /*@-globs@*/
-    if (zq->ofdno != -1 && zq->ofn != NULL)
-	xx = unlink(zq->ofn);
+    if (zq->_zout.fdno != -1 && zq->_zout.fn != NULL)
+	xx = unlink(zq->_zout.fn);
 /*@=globs@*/
     if (zq->verbosity > 0)
 	fprintf(stderr, "%s abort: %s%s\n", __progname, why, what);
@@ -214,14 +214,14 @@ static void rpmzClose(rpmzQueue zq, int iclose, int oclose)
     int xx;
 
     if (iclose > 0) {
-	if (zq->ifdno > STDERR_FILENO)
-	    xx = close(zq->ifdno);
-	zq->ifdno = -1;
+	if (zq->_zinp.fdno > STDERR_FILENO)
+	    xx = close(zq->_zinp.fdno);
+	zq->_zinp.fdno = -1;
     }
     if (oclose > 0) {
-	if (zq->ofdno > STDERR_FILENO)
-	    xx = close(zq->ofdno);
-	zq->ofdno = -1;
+	if (zq->_zout.fdno > STDERR_FILENO)
+	    xx = close(zq->_zout.fdno);
+	zq->_zout.fdno = -1;
     }
 }
 
@@ -230,15 +230,15 @@ static int rpmzOpen(rpmzQueue zq, const char * ofn)
 	/*@modifies zq, internalState @*/
 {
     int rc = 0;
-assert(ofn == zq->ofn);
+assert(ofn == zq->_zout.fn);
     if (!F_ISSET(zq->flags, STDOUT)) {
 	static mode_t _mode = 0666;	/* XXX pbzip2 attempts 0644 */
-	zq->ofdno = open(zq->ofn, O_CREAT | O_TRUNC | O_WRONLY |
+	zq->_zout.fdno = open(zq->_zout.fn, O_CREAT | O_TRUNC | O_WRONLY |
 			(F_ISSET(zq->flags, OVERWRITE) ? 0 : O_EXCL), _mode);
-	if (zq->ofdno < 0)
+	if (zq->_zout.fdno < 0)
 	    rc = -1;
     } else
-	zq->ofdno = STDOUT_FILENO;
+	zq->_zout.fdno = STDOUT_FILENO;
     return rc;
 }
 
@@ -247,13 +247,13 @@ static ssize_t rpmzRead(rpmzQueue zq, unsigned char *buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
-    int fdno = zq->ifdno;
+    int fdno = zq->_zinp.fdno;
     size_t got = 0;
 
     while (count > 0) {
 	ssize_t ret = read(fdno, buf, count);
 	if (ret < 0)
-	    bail("read error on ", zq->ifn);
+	    bail("read error on ", zq->_zinp.fn);
 	if (ret == 0)
 	    break;
 	buf += ret;
@@ -269,14 +269,14 @@ static ssize_t rpmzWrite(rpmzQueue zq, const unsigned char *buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    int fdno = zq->ofdno;
+    int fdno = zq->_zout.fdno;
     size_t put = 0;
 
     while (count) {
 	ssize_t ret = write(fdno, buf, count);
 	if (ret < 1) {
 	    fprintf(stderr, "write error code %d\n", errno);
-	    bail("write error on ", zq->ofn);
+	    bail("write error on ", zq->_zout.fn);
 	}
 	buf += ret;
 	count -= ret;
@@ -316,11 +316,11 @@ static void write_thread(void * _z)
 fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     Trace((zlog, "-- write thread running"));
 
-assert(zq->ofdno == -1);
+assert(zq->_zout.fdno == -1);
 assert(zq->lastseq == z->NumBlocks);
 
-    if (rpmzOpen(zq, zq->ofn) < 0)	/* XXX open ofdno */
-	bail("open error on ", zq->ofn);
+    if (rpmzOpen(zq, zq->_zout.fn) < 0)	/* XXX open ofdno */
+	bail("open error on ", zq->_zout.fn);
 
     seq = 0;
     do {
@@ -442,7 +442,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     }
 
     // go to start of file
-    ret = lseek(zq->ifdno, 0, SEEK_SET);
+    ret = lseek(zq->_zinp.fdno, 0, SEEK_SET);
     if (ret != 0) {
 	fprintf(stderr, "*ERROR: Could not seek to beginning of file [%llu]!  Skipping...\n", (unsigned long long)ret);
 	goto exit;
@@ -587,7 +587,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     rpmzqFini(zq);		/* XXX lose any existing values. */
     /* XXX needs to be done one-time in rpmzProcess, not here. */
 /*@-assignexpose@*/
-    zq->ofn = xstrdup(z->_ofn);
+    zq->_zout.fn = xstrdup(z->_ofn);
 /*@=assignexpose@*/
     zq->lastseq = z->NumBlocks;
     zq->omode = O_RDONLY;
@@ -616,7 +616,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 
 	// go to start of block position in file
 /*@-compdef@*/
-	ret = lseek(zq->ifdno, blp->dataStart, SEEK_SET);
+	ret = lseek(zq->_zinp.fdno, blp->dataStart, SEEK_SET);
 /*@=compdef@*/
 	if (ret != blp->dataStart) {
 	    fprintf(stderr, "*ERROR: Could not seek to beginning of file [%llu]!  Skipping...\n", (unsigned long long)ret);
@@ -781,15 +781,15 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     job->in = rpmzqNewSpace(NULL, 0);
     job->out = rpmzqNewSpace(NULL, 0);
 
-assert(zq->ofdno == -1);
+assert(zq->_zout.fdno == -1);
 assert(zq->iblocksize == zq->blocksize);
     zq->lastseq = z->NumBlocks;
     zq->omode = O_WRONLY;
 
     bz = rpmbzInit(zq->level, -1, -1, O_WRONLY);
 
-    if (rpmzOpen(zq, zq->ofn) < 0)	/* XXX open ofdno */
-	bail("open error on ", zq->ofn);
+    if (rpmzOpen(zq, zq->_zout.fn) < 0)	/* XXX open ofdno */
+	bail("open error on ", zq->_zout.fn);
 
     bytesLeft = z->fileSize;
 
@@ -1057,9 +1057,9 @@ assert(zq != NULL);
 	size_t nb;
 
 	// check if input file is a valid .bz2 compressed file
-	zq->ifdno = open(ifn, O_RDONLY | O_BINARY);
+	zq->_zinp.fdno = open(ifn, O_RDONLY | O_BINARY);
 	// check to see if file exists before processing
-	if (zq->ifdno == -1) {
+	if (zq->_zinp.fdno == -1) {
 	    fprintf(stderr, "*ERROR: File [%s] NOT found!  Skipping...\n", ifn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rc = 1;
@@ -1129,34 +1129,34 @@ assert(zq != NULL);
 
     // setup signal handling filenames
 /*@-assignexpose@*/
-    zq->ifn = ifn;
-    zq->ofn = xstrdup(z->_ofn);
+    zq->_zinp.fn = ifn;
+    zq->_zout.fn = xstrdup(z->_ofn);
 /*@=assignexpose@*/
 
     if (strcmp(ifn, "-") != 0) {
 	struct stat sb;
 	// read file for compression
-	zq->ifdno = open(zq->ifn, O_RDONLY | O_BINARY);
+	zq->_zinp.fdno = open(zq->_zinp.fn, O_RDONLY | O_BINARY);
 	// check to see if file exists before processing
-	if (zq->ifdno == -1) {
-	    fprintf(stderr, "*ERROR: File [%s] NOT found!  Skipping...\n", zq->ifn);
+	if (zq->_zinp.fdno == -1) {
+	    fprintf(stderr, "*ERROR: File [%s] NOT found!  Skipping...\n", zq->_zinp.fn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rc = 1;
 	    goto exit;
 	}
 
 	// get some information about the file
-	xx = fstat(zq->ifdno, &sb);
+	xx = fstat(zq->_zinp.fdno, &sb);
 	// check to make input is not a directory
 	if (S_ISDIR(sb.st_mode)) {
-	    fprintf(stderr, "*ERROR: File [%s] is a directory!  Skipping...\n", zq->ifn);
+	    fprintf(stderr, "*ERROR: File [%s] is a directory!  Skipping...\n", zq->_zinp.fn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rc = 1;
 	    goto exit;
 	}
 	// check to make sure input is a regular file
 	if (!S_ISREG(sb.st_mode)) {
-	    fprintf(stderr, "*ERROR: File [%s] is not a regular file!  Skipping...\n", zq->ifn);
+	    fprintf(stderr, "*ERROR: File [%s] is not a regular file!  Skipping...\n", zq->_zinp.fn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rc = 1;
 	    goto exit;
@@ -1179,23 +1179,23 @@ assert(zq != NULL);
 	    zeroByteFile = 0;
 
 	// get file meta data to write to output file
-	if (getFileMetaData(z, zq->ifn) != 0) {
+	if (getFileMetaData(z, zq->_zinp.fn) != 0) {
 	    fprintf(stderr, "*ERROR: Could not get file meta data from [%s]!  Skipping...\n", ifn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rc = 1;
 	    goto exit;
 	}
     } else {
-	zq->ifdno = STDIN_FILENO;
+	zq->_zinp.fdno = STDIN_FILENO;
 	z->fileSize = -1;	// fake it
     }
 
     // check to see if output file exists
     if (!F_ISSET(zq->flags, OVERWRITE) && !F_ISSET(zq->flags, STDOUT)) {
-	zq->ofdno = open(zq->ofn, O_RDONLY | O_BINARY);
+	zq->_zout.fdno = open(zq->_zout.fn, O_RDONLY | O_BINARY);
 	// check to see if file exists before processing
-	if (zq->ofdno != -1) {
-	    fprintf(stderr, "*ERROR: Output file [%s] already exists!  Use -f to overwrite...\n", zq->ofn);
+	if (zq->_zout.fdno != -1) {
+	    fprintf(stderr, "*ERROR: Output file [%s] already exists!  Use -f to overwrite...\n", zq->_zout.fn);
 	    fprintf(stderr, "-------------------------------------------\n");
 	    rpmzClose(zq, -1, 1);	/* XXX close ofdno */
 	    rc = 1;
@@ -1206,16 +1206,16 @@ assert(zq != NULL);
     // display per file settings
     if (zq->verbosity > 0) {
 	fprintf(stderr, "         File #: %d\n", fileLoop+1);
-	fprintf(stderr, "     Input Name: %s\n", zq->ifdno != STDIN_FILENO ? zq->ifn : "<stdin>");
+	fprintf(stderr, "     Input Name: %s\n", zq->_zinp.fdno != STDIN_FILENO ? zq->_zinp.fn : "<stdin>");
 
 	if (!F_ISSET(zq->flags, STDOUT))
-	    fprintf(stderr, "    Output Name: %s\n\n", zq->ofn);
+	    fprintf(stderr, "    Output Name: %s\n\n", zq->_zout.fn);
 	else
 	    fprintf(stderr, "    Output Name: %s\n\n", z->stdout_fn);
 
 	if (zq->mode == RPMZ_MODE_DECOMPRESS)
 	    fprintf(stderr, " BWT Block Size: %d00k\n", (zq->level % 10));
-	if (strcmp(zq->ifn, "-") != 0)
+	if (strcmp(zq->_zinp.fn, "-") != 0)
 	    fprintf(stderr, "     Input Size: %llu bytes\n", (unsigned long long)z->fileSize);
     }
 
@@ -1234,8 +1234,8 @@ assert(zq != NULL);
 	if (zeroByteFile == 1) {
 	    size_t nwrote;
 
-	    if (rpmzOpen(zq, zq->ofn) < 0) {	/* XXX open ofdno */
-		fprintf(stderr, "*ERROR: Could not create output file [%s]!\n", zq->ofn);
+	    if (rpmzOpen(zq, zq->_zout.fn) < 0) {	/* XXX open ofdno */
+		fprintf(stderr, "*ERROR: Could not create output file [%s]!\n", zq->_zout.fn);
 		rc = 1;
 		goto exit;
 	    }
@@ -1286,7 +1286,7 @@ assert(zq != NULL);
 		fprintf(stderr, "Decompressing data (no threads)...\n");
 
 	    rpmzClose(zq, 1, -1);	/* XXX close ifdno */
-	    ret = rpmzSingleDecompress(z, zq->ifn, zq->ofn);
+	    ret = rpmzSingleDecompress(z, zq->_zinp.fn, zq->_zout.fn);
 	    if (ret != 0)
 		rc = 1;
 	    else
@@ -1339,29 +1339,29 @@ assert(zq != NULL);
 
     if (!F_ISSET(zq->flags, STDOUT)) {
 	// write store file meta data to output file
-	if (writeFileMetaData(z, zq->ofn) != 0)
+	if (writeFileMetaData(z, zq->_zout.fn) != 0)
 	    fprintf(stderr, "*ERROR: Could not write file meta data to [%s]!\n", ifn);
     }
 
     // finished processing file
-    zq->ifn = NULL;
-    zq->ofn = NULL;
+    zq->_zinp.fn = NULL;
 
     // remove input file unless requested not to by user
     if (!F_ISSET(zq->flags, KEEP)) {
 	struct stat sb;
 	if (!F_ISSET(zq->flags, STDOUT)) {
 	    // only remove input file if output file exists
-	    if (stat(zq->ofn, &sb) == 0)
-		xx = unlink(zq->ifn);
+	    if (stat(zq->_zout.fn, &sb) == 0)
+		xx = unlink(zq->_zinp.fn);
 	} else
-	    xx = unlink(zq->ifn);
+	    xx = unlink(zq->_zinp.fn);
     }
 
     if (zq->verbosity > 0)
 	fprintf(stderr, "-------------------------------------------\n");
 
 exit:
+    zq->_zout.fn = _free(zq->_zout.fn);
     return rc;
 }
 
@@ -1536,8 +1536,8 @@ static void rpmzAbort(/*@unused@*/ int sig)
     rpmzQueue zq = z->zq;
 
     Trace((z->zlog, "termination by user"));
-    if (zq->ofdno != -1 && zq->ofn != NULL)
-	Unlink(z->ofn);
+    if (zq->_zout.fdno != -1 && zq->_zout.fn != NULL)
+	Unlink(z->_zout.fn);
     zq->zlog = rpmzLogDump(zq->zlog, NULL);
     _exit(EXIT_FAILURE);
 }
