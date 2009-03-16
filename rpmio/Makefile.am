@@ -64,7 +64,7 @@ noinst_HEADERS = \
 	ar.h cpio.h crc.h fnmatch.h glob.h iosm.h \
 	md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tar.h tiger.h \
-	rpmhook.h rpmio_internal.h rpmlua.h
+	rpmhook.h rpmio_internal.h rpmlua.h rpmbz.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la

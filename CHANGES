@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: bzdio: handle multiblock compressed payloads transparently.
     - jbj: xzdio: backport the remaining xzdio contexxtual changes. worksforme.
     - jbj: xzdio: backport XZ changes from HEAD.
     - jbj: rename lzdio.c -> xzdio.c.
