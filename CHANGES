@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: zlog: rework trace log with a refcount mutex instead.
     - proyvind: do lazy mkdir of %_topdir, %_builddir, %_rpmdir & %_srcrpmdir
 	when doing '--rebuild' so that it should mostly work easily for user.
     - proyvind: make it possible to set preferred build architectures when using

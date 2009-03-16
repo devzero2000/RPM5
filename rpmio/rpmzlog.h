@@ -7,7 +7,7 @@
 #include <sys/time.h>
 
 /** trace log pointer */
-typedef /*@abstract@*/ struct rpmzLog_s * rpmzLog;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmzLog_s * rpmzLog;
 
 #ifdef	_RPMZLOG_INTERNAL
 #include <yarn.h>
@@ -24,13 +24,13 @@ struct rpmzMsg_s {
 
 /** trace log */
 struct rpmzLog_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
     struct timeval start;	/*!< starting time of day for tracing */
 /*@null@*/
     rpmzMsg msg_head;
 /*@shared@*/ /*@relnull@*/
     rpmzMsg *msg_tail;
-/*@only@*/ /*@null@*/
-    yarnLock msg_lock;
+    int msg_count;
 };
 #endif	/* _RPMZLOG_INTERNAL */
 
@@ -39,10 +39,18 @@ extern "C" {
 #endif
 
 /**
+ * Reference the log data.
+ */
+/*@newref@*/
+rpmzLog rpmzLogLink(/*@returned@*/ /*@null@*/ rpmzLog zlog)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
  * Set up log (call from main thread before other threads launched).
  */
 /*@only@*/
-rpmzLog rpmzLogInit(/*@null@*/ struct timeval *tv)
+rpmzLog rpmzLogNew(/*@null@*/ struct timeval *tv)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
@@ -54,17 +62,10 @@ void rpmzLogAdd(/*@null@*/ rpmzLog zlog, char *fmt, ...)
 	/*@modifies zlog, fileSystem, internalState @*/;
 
 /**
- * Pull entry from trace log and print it, return false if empty.
- */
-int rpmzMsgShow(/*@null@*/ rpmzLog zlog, /*@null@*/ FILE * fp)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies zlog, *fp, fileSystem, internalState @*/;
-
-/**
- * Release log resources (need to do rpmzLogInit() to use again).
+ * Release a reference to the log data.
  */
 /*@null@*/
-rpmzLog rpmzLogFree(/*@only@*/ /*@null@*/ rpmzLog zlog)
+rpmzLog rpmzLogFree(/*@killref@*/ /*@null@*/ rpmzLog zlog)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zlog, fileSystem, internalState @*/;
 
@@ -72,7 +73,7 @@ rpmzLog rpmzLogFree(/*@only@*/ /*@null@*/ rpmzLog zlog)
  * Show entries until no more, free log.
  */
 /*@null@*/
-rpmzLog rpmzLogDump(rpmzLog zlog, /*@null@*/ FILE * fp)
+rpmzLog rpmzLogDump(/*@killref@*/ /*@null@*/ rpmzLog zlog, /*@null@*/ FILE * fp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zlog, *fp, fileSystem, internalState @*/;
 
