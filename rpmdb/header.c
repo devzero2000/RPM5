@@ -107,11 +107,12 @@ Header headerLink(Header h)
     if (h == NULL) return NULL;
 /*@=nullret@*/
 
-    h->nrefs++;
+    yarnPossess(h->use);
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "--> h  %p ++ %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
+fprintf(stderr, "--> h  %p ++ %ld at %s:%u\n", h, yarnPeekLock(h->use)+1, __FILE__, __LINE__);
 /*@=modfilesys@*/
+    yarnTwist(h->use, BY, 1);
 
     /*@-refcounttrans @*/
     return h;
@@ -121,56 +122,67 @@ fprintf(stderr, "--> h  %p ++ %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
 Header headerUnlink(Header h)
 {
     if (h == NULL) return NULL;
+    yarnPossess(h->use);
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "--> h  %p -- %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
+fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__, __LINE__);
 /*@=modfilesys@*/
-    h->nrefs--;
+    yarnTwist(h->use, BY, -1);
     return NULL;
 }
 
 Header headerFree(Header h)
 {
-    (void) headerUnlink(h);
 
-    /*@-usereleased@*/
-    if (h == NULL || h->nrefs > 0)
-	return NULL;	/* XXX return previous header? */
+    if (h == NULL)
+	return NULL;
 
-    if (h->index) {
-	indexEntry entry = h->index;
-	size_t i;
-	for (i = 0; i < h->indexUsed; i++, entry++) {
-	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
-		if (entry->length > 0) {
-		    rpmuint32_t * ei = entry->data;
-		    if ((ei - 2) == h->blob)
-			h->blob = _free(h->blob);
-		    entry->data = NULL;
+    yarnPossess(h->use);
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__, __LINE__);
+/*@=modfilesys@*/
+    if (yarnPeekLock(h->use) <= 1L) {
+	yarnLock use = h->use;
+/*@-usereleased@*/
+	if (h->index != NULL) {
+	    indexEntry entry = h->index;
+	    size_t i;
+	    for (i = 0; i < h->indexUsed; i++, entry++) {
+		if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry))
+		{
+		    if (entry->length > 0) {
+			rpmuint32_t * ei = entry->data;
+			if ((ei - 2) == h->blob)
+			    h->blob = _free(h->blob);
+			entry->data = NULL;
+		    }
+		} else if (!ENTRY_IN_REGION(entry)) {
+		    entry->data = _free(entry->data);
 		}
-	    } else if (!ENTRY_IN_REGION(entry)) {
-		entry->data = _free(entry->data);
+		entry->data = NULL;
 	    }
-	    entry->data = NULL;
+	    h->index = _free(h->index);
 	}
-	h->index = _free(h->index);
-    }
-    h->origin = _free(h->origin);
-    h->baseurl = _free(h->baseurl);
-    h->digest = _free(h->digest);
+	h->origin = _free(h->origin);
+	h->baseurl = _free(h->baseurl);
+	h->digest = _free(h->digest);
 
 /*@-nullstate@*/
-    if (_hdr_stats) {
-	if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
-	    (void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
-	if (_hdr_getops)	/* RPMTS_OP_HDRGET */
-	    (void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
-    }
+	if (_hdr_stats) {
+	    if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
+		(void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
+	    if (_hdr_getops)	/* RPMTS_OP_HDRGET */
+		(void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
+	}
 /*@=nullstate@*/
-
-    /*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
-    return h;
-    /*@=usereleased@*/
+	/*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
+	yarnTwist(use, BY, -1);
+	use = yarnFreeLock(use);
+/*@=usereleased@*/
+    } else
+	yarnTwist(h->use, BY, -1);
+    return NULL;
 }
 
 Header headerNew(void)
@@ -192,7 +204,7 @@ Header headerNew(void)
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
 	: NULL);
 
-    h->nrefs = 0;
+    h->use = yarnNewLock(0);
     /*@-globstate -observertrans @*/
     return headerLink(h);
     /*@=globstate =observertrans @*/
@@ -1049,7 +1061,7 @@ Header headerLoad(void * uh)
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
-    h->nrefs = 0;
+    h->use = yarnNewLock(0);;
     h->startoff = 0;
     h->endoff = (rpmuint32_t) pvlen;
     h = headerLink(h);

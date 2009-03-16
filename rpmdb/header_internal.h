@@ -6,6 +6,7 @@
  */
 
 #include <rpmtag.h>
+#include <yarn.h>
 
 #if !defined(__LCLINT__)
 #include <netinet/in.h>
@@ -82,6 +83,8 @@ struct indexEntry_s {
  * The Header data structure.
  */
 struct headerToken_s {
+/*@relnull@*/
+    yarnLock use;
     unsigned char magic[8];	/*!< Header magic. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
@@ -109,8 +112,6 @@ struct headerToken_s {
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 #define HEADERFLAG_SIGNATURE	(1 << 4) /*!< Signature header? */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 
 #ifdef __cplusplus
@@ -136,7 +137,11 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
  */
 /*@-type@*/ /* FIX: cast? */
 /*@unused@*/ static inline int headerUsageCount(Header h) /*@*/ {
-    return h->nrefs;
+    int nrefs = 0;
+    yarnPossess(h->use);
+    nrefs = (int)yarnPeekLock(h->use);
+    yarnRelease(h->use);
+    return nrefs;
 }
 /*@=type@*/
 
