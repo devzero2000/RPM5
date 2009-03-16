@@ -1107,7 +1107,7 @@ if (!(_rpmbuildFlags & 4)) {
 		if (Stat(dn, &st) < 0) {
 		    switch(errno) {
 		    case  ENOENT:
-			if (Mkdir(dn, 0755) == 0)
+			if (rpmioMkpath(dn, 0755, -1, -1) == 0)
 			    /*@switchbreak@*/ break;
 			/*@fallthrough@*/
 		    default:
@@ -1192,7 +1192,10 @@ rpmRC packageSources(Spec spec)
     spec->cookie = _free(spec->cookie);
     
     /* XXX this should be %_srpmdir */
-    {	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+    {	const char *srcrpmdir = rpmGetPath("%{_srcrpmdir}/", NULL);
+	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+
+	rc = rpmioMkpath(srcrpmdir, 0755, -1, -1);
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
@@ -1217,6 +1220,7 @@ assert(csa->cpioList != NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 /*@=nullpass =onlytrans =refcounttrans @*/
 	/*@=type@*/
+	srcrpmdir = _free(srcrpmdir);
 	fn = _free(fn);
     }
 

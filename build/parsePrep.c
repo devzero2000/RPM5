@@ -453,6 +453,7 @@ static int doSetupMacro(Spec spec, const char * line)
 	const char *buildDir;
 
 	(void) urlPath(buildDirURL, &buildDir);
+	rc = rpmioMkpath(buildDir, 0755, -1, -1);
 	sprintf(buf, "cd '%s'", buildDir);
 	spec->prep = rpmiobAppend(spec->prep, buf, 1);
 	buildDirURL = _free(buildDirURL);
