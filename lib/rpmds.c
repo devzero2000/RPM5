@@ -1419,9 +1419,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     N_("header tag data can be of type uint64_t.") },
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+#if defined(HAVE_LZMA_H)
     N_("package payload can be in ustar tar archive format.") },
     { "rpmlib(PayloadIsLzma)",		"4.4.6-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+#endif
     N_("package payload can be compressed using lzma.") },
     { "rpmlib(FileDigestParameterized)",    "4.4.6-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
@@ -1430,6 +1432,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(PayloadIsAr)",		"5.1-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ar archive format.") },
+#endif
+#if defined(HAVE_LZMA_H)
+    { "rpmlib(PayloadIsXz)",		"5.2-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload can be compressed using xz.") },
 #endif
     { NULL,				NULL, 0,	NULL }
 };

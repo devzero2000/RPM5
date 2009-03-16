@@ -31,6 +31,7 @@ endif
 librpmmisc_la_LDFLAGS += \
 	@WITH_DB_LDFLAGS@ \
 	@WITH_ZLIB_LDFLAGS@ \
+	@WITH_XZ_LDFLAGS@ \
 	@WITH_LUA_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
 	@WITH_PCRE_LDFLAGS@ \
@@ -39,6 +40,7 @@ librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
 	@WITH_DB_LIBS@ \
 	@WITH_ZLIB_LIBS@ \
+	@WITH_XZ_LIBS@ \
 	@WITH_LUA_LIBS@ \
 	@WITH_FILE_LIBS@ \
 	@WITH_XAR_LIBS@

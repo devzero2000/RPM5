@@ -658,6 +658,14 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    he->c = 1;
 	    xx = headerPut(h, he, 0);
 	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
+	} else if (s[1] == 'x' && s[2] == 'z') {
+	    he->tag = RPMTAG_PAYLOADCOMPRESSOR;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = xstrdup("xz");
+	    he->c = 1;
+	    xx = headerPut(h, he, 0);
+	    he->p.ptr = _free(he->p.ptr);
+	    (void) rpmlibNeedsFeature(h, "PayloadIsXz", "5.2-1");
 	}
 	strcpy(buf, rpmio_flags);
 	buf[s - rpmio_flags] = '\0';

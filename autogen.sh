@@ -43,6 +43,9 @@ libtoolize () {
 echo "===> pcre"
 ( cd pcre && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== pcre"
+echo "===> xz"
+( cd xz && sh ./autogen.sh --noconfigure "$@" )
+echo "<=== xz"
 echo "===> file"
 ( cd file && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== file"

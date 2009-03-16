@@ -478,6 +478,7 @@ AC_PATH_PROG(__TCLSH, tclsh, %{_bindir}/tclsh, $MYPATH)
 AC_PATH_PROG(__UNZIP, unzip, %{_bindir}/unzip, $MYPATH)
 AC_PATH_PROG(__WGET, wget, %{_bindir}/wget, $MYPATH)
 AC_PATH_PROG(__XAR, xar, %{_bindir}/xar, $MYPATH)
+AC_PATH_PROG(__XZ, xz, %{_bindir}/xz, $MYPATH)
 AC_PATH_PROG(__LD, ld, %{_bindir}/ld, $MYPATH)
 AC_PATH_PROG(__NM, nm, %{_bindir}/nm, $MYPATH)
 AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
@@ -985,11 +986,16 @@ RPM_CHECK_LIB(
     [], [])
 
 dnl # LZMA Utils
+WITH_XZ_INTERNAL=false
 RPM_CHECK_LIB(
-    [LZMA Utils], [lzma],
-    [lzma], [lzma_init], [lzma.h],
-    [no,external:none], [],
-    [], [])
+    [XZ libLZMA], [xz],
+    [lzma], [lzma_auto_decoder], [lzma.h],
+    [no,external:internal:none], [xz:src/liblzma/api:src/liblzma],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          WITH_XZ_INTERNAL=true
+          AC_DEFINE(HAVE_LZMA_H, 1, [Define to 1 if you have <lzma.h>])
+      fi
+    ], [])
 
 dnl # BeeCrypt
 RPM_CHECK_LIB(

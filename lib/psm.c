@@ -2388,10 +2388,6 @@ assert(psm->te != NULL);
 			fdstat_op(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
-if (rc) {
-fprintf(stderr, "==> FAIL: Fstrerror(%p) %s errno(%d) %s\n", psm->cfd, Fstrerror(psm->cfd), errno, strerror(errno));
-}
-
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->cfd);
 	    psm->cfd = NULL;

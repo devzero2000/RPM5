@@ -160,6 +160,9 @@ static char *doPatch(Spec spec, uint32_t c, int strip, const char *db,
 	case COMPRESSED_LZMA:
 	    zipper = "%{__lzma}";
 	    break;
+	case COMPRESSED_XZ:
+	    zipper = "%{__xz}";
+	    break;
 	}
 	zipper = rpmGetPath(zipper, NULL);
 
