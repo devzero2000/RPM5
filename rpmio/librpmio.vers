@@ -422,8 +422,8 @@ LIBRPMIO_0
     rpmzLogAdd;
     rpmzLogDump;
     rpmzLogFree;
-    rpmzLogInit;
-    rpmzMsgShow;
+    rpmzLogLink;
+    rpmzLogNew;
     _rpmzq_debug;
     rpmbzCompressBlock;
     _rpmzq;

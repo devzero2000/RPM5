@@ -3307,7 +3307,7 @@ int main(int argc, char **argv)
     /* XXX add POPT_ARG_TIMEOFDAY oneshot? */
     gettimeofday(&zq->start, NULL);  /* starting time for log entries */
 #if defined(DEBUG) || defined(__LCLINT__)
-    zq->zlog = rpmzLogInit(&zq->start);/* initialize logging */
+    zq->zlog = rpmzLogNew(&zq->start);/* initialize logging */
 #endif
 
     zq->_zh = xcalloc(1, sizeof(*zq->_zh));	/* XXX do lazily */
