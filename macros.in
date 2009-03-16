@@ -247,14 +247,14 @@ package or when debugging this package.\
 %_buildrootdir		@BUILDROOTDIR_MACRO@
 
 #       Build root path, where %install installs the package during build.
-%buildroot              %{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
+%buildroot              %{_buildrootdir}/%{name}-root
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
 %tmpdir			%{_tmppath}
 
 #	Path to top of build area.
-%_topdir		%(echo $HOME)/rpmbuild
+%_topdir		@PKGSRCDIR_MACRO@
 
 #==============================================================================
 # ---- Optional macros.

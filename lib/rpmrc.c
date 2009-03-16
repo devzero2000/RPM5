@@ -325,7 +325,7 @@ static void setDefaults(void)
     addMacro(NULL, "___build_pre", NULL, ___build_pre, RMIL_DEFAULT);
 
     addMacroDefault("_topdir",
-		"%{_usr}/src/rpm",      "%(echo $HOME)/rpmbuild");
+		"%{_usr}/src/rpm",      NULL);
     addMacroDefault("_tmppath",
 		"%{_var}/tmp",          NULL);
     addMacroDefault("_dbpath",
