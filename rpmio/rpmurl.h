@@ -30,7 +30,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
  * URL control structure.
  */
 struct urlinfo_s {
-/*@refs@*/ int nrefs;		/*!< no. of references */
+    yarnLock use;		/*!< use count -- return to pool when zero */
 /*@owned@*/ /*@relnull@*/
     const char * url;		/*!< copy of original url */
 /*@owned@*/ /*@relnull@*/
@@ -120,9 +120,11 @@ extern int _url_debug;		/*!< URL debugging? */
  * @param msg		debugging identifier (unused)
  * @return		new instance
  */
-/*@unused@*/ urlinfo	urlNew(const char * msg)	/*@*/;
+/*@unused@*/ /*@newref@*/
+urlinfo	urlNew(const char * msg)	/*@*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@newref@*/
 urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
@@ -132,11 +134,13 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
  * @param msg		debugging identifier (unused)
  * @return		referenced instance
  */
-/*@unused@*/ urlinfo	urlLink(urlinfo u, const char * msg)
+/*@unused@*/ /*@newref@*/
+urlinfo	urlLink(/*@returned@*/ urlinfo u, const char * msg)
 	/*@modifies u @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
+/*@newref@*/
+urlinfo	XurlLink(/*@returned@*/ urlinfo u, const char * msg, const char * file, unsigned line)
 	/*@modifies u @*/;
 #define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
 
@@ -146,7 +150,8 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
  * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-/*@unused@*/ urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
+/*@unused@*/
+urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/;
 

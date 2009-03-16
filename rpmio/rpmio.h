@@ -16,6 +16,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <rpmzlog.h>
+#include <yarn.h>
+
 /** \ingroup rpmio
  * Hide libio API lossage.
  * The libio interface changed after glibc-2.1.3 to pass the seek offset

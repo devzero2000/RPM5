@@ -39,11 +39,10 @@
 #include "system.h"
 #include <stdarg.h>
 
-#include <rpmio.h>	/* XXX for _free */
-#include "yarn.h"
-
 #define	_RPMZLOG_INTERNAL
-#include "rpmzlog.h"
+#include <rpmio.h>	/* XXX for _free */
+#include <yarn.h>
+#include <rpmzlog.h>
 
 #include "debug.h"
 
