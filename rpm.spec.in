@@ -2,7 +2,7 @@
 %define	with_python_version	@PYTHON_VERSION@%{nil}
 %define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
-%define	with_lzma		@WITH_LZMA@%{nil}
+%define	with_xz			@WITH_XZ@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
@@ -39,8 +39,8 @@ BuildRequires: sqlite-devel
 %if "%{with_bzip2}" == "yes"
 BuildRequires: bzip2-devel >= 1.0
 %endif
-%if "%{with_lzma}" == "yes"
-BuildRequires: lzma-utils-devel >= 4.999.3
+%if "%{with_xz}" == "yes"
+BuildRequires: xz-devel >= 4.999.8
 %endif
 %if "%{with_apidocs}" == "1"
 BuildRequires: doxygen graphviz
@@ -162,10 +162,10 @@ WITH_BZIP2="--with-bzip2=external"
 WITH_BZIP2="--without-bzip2"
 %endif
 
-%if "%{with_lzma}" == "yes"
-WITH_LZMA="--with-lzma=%{_prefix}"
+%if "%{with_xz}" == "yes"
+WITH_XZ="--with-xz=%{_prefix}"
 %else
-WITH_LZMA="--without-lzma"
+WITH_XZ="--without-xz"
 %endif
 
 %if %{with_python_subpackage}
@@ -198,7 +198,7 @@ WITH_PERL="--without-perl"
         --with-neon=external \
         --with-xar=internal \
 	$WITH_BZIP2 \
-	$WITH_LZMA \
+	$WITH_XZ \
         --with-popt=external \
         --with-keyutils=external \
         --with-libelf \
