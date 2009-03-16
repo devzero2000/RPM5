@@ -1632,7 +1632,7 @@ AC_SUBST(MAGIC_MACRO)
 
 dnl # determine RPM buildroot directory path
 AC_MSG_CHECKING([for RPM buildroot directory])
-BUILDROOTDIR_MACRO="%{_tmppath}"
+BUILDROOTDIR_MACRO="%{_topdir}/BUILDROOT"
 AC_ARG_WITH(
     [path-buildroot],
     AS_HELP_STRING([--with-path-buildroot=ARG], [build with RPM buildroot path (or macro)]),
