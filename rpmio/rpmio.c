@@ -286,7 +286,7 @@ DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, -9, msg, file, lin
     fd = c2f(cookie);
     if (fd) {
 	yarnPossess(fd->use);
-DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
+DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use)+1, msg, file, line, fdbg(fd)));
 	yarnTwist(fd->use, BY, 1);
     }
     return fd;
