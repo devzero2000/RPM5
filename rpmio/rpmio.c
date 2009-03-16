@@ -66,8 +66,6 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
 
-#include "yarn.h"
-
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
@@ -281,7 +279,7 @@ FD_t XfdLink(void * cookie, const char * msg,
 assert(cookie != NULL);
 #else
 if (cookie == NULL)
-DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, -9, msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p ++ %ld %s at %s:%u\n", cookie, -9L, msg, file, line));
 #endif
     fd = c2f(cookie);
     if (fd) {
@@ -312,7 +310,7 @@ DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, file, line)
     if (fd) {
 	yarnPossess(fd->use);
 DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
-	if (yarnPeekLock(fd->use) == 1) {
+	if (yarnPeekLock(fd->use) == 1L) {
 	    yarnLock use = fd->use;
 	    fd->opath = _free(fd->opath);
 	    fd->stats = _free(fd->stats);
@@ -2567,10 +2565,10 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * - gzopen:	[0-9] is compression level
  * - gzopen:	'f' is filtered (Z_FILTERED)
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
- * - bzopen:	[1-9] is block size (modulo 100K)
+ * - bzopen:	[1-9] is block size (in 100K units)
  * - bzopen:	's' is smallmode
  * - bzopen:	'q' sets verbosity to 0
- * = bzopen:	'v' does verbosity++ (up to 4)
+ * - bzopen:	'v' does verbosity++ (up to 4)
  * - HACK:	'.' terminates, rest is type of I/O
  */
 static inline void cvtfmode (const char *m,

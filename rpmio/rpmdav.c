@@ -1911,7 +1911,7 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, ure
 	u->ctrl = fdNew("persist ctrl (davOpen)");
     else {
 	yarnPossess(u->ctrl->use);
-	if (yarnPeekLock(u->ctrl->use) > 2 && u->data == NULL)
+	if (yarnPeekLock(u->ctrl->use) > 2L && u->data == NULL)
 	    u->data = fdNew("persist data (davOpen)");
 	yarnRelease(u->ctrl->use);
     }
@@ -2318,7 +2318,7 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
         u->ctrl = fdNew("persist ctrl (httpOpen)");
     if (u->ctrl != NULL) {	/* XXX can't happen */
 	yarnPossess(u->ctrl->use);
-	if (yarnPeekLock(u->ctrl->use) > 2 && u->data == NULL)
+	if (yarnPeekLock(u->ctrl->use) > 2L && u->data == NULL)
 	    u->data = fdNew("persist data (httpOpen)");
 	yarnRelease(u->ctrl->use);
     }
