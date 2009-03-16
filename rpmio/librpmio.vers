@@ -440,6 +440,7 @@ LIBRPMIO_0
     XurlFree;
     XurlLink;
     XurlNew;
+    xzdio;
   local:
     *;
 };

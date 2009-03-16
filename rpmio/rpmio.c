@@ -213,6 +213,8 @@ const char * fdbg(FD_t fd)
 #if defined(HAVE_LZMA_H)
 	} else if (fps->io == lzdio) {
 	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
+	} else if (fps->io == xzdio) {
+	    sprintf(be, "XZD %p fdno %d", fps->fp, fps->fdno);
 #endif
 	} else if (fps->io == fpio) {
 	    /*@+voidabstract@*/
@@ -2328,6 +2330,9 @@ static const char * getFdErrstr (FD_t fd)
     if (fdGetIo(fd) == lzdio) {
 	errstr = fd->errcookie;
     } else
+    if (fdGetIo(fd) == xzdio) {
+	errstr = fd->errcookie;
+    } else
 #endif
 
     {
@@ -2649,6 +2654,9 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	} else if (!strcmp(end, "lzdio")) {
 	    iof = lzdio;
 	    fd = iof->_fdopen(fd, zstdio);
+	} else if (!strcmp(end, "xzdio")) {
+	    iof = xzdio;
+	    fd = iof->_fdopen(fd, zstdio);
 #endif
 	} else if (!strcmp(end, "ufdio")) {
 	    iof = ufdio;
@@ -2817,6 +2825,8 @@ int Fflush(FD_t fd)
 #if defined(HAVE_LZMA_H)
     if (vh && fdGetIo(fd) == lzdio && lzdio->_flush != NULL)
 	return (*lzdio->_flush) ((void *)fd);
+    if (vh && fdGetIo(fd) == xzdio && xzdio->_flush != NULL)
+	return (*xzdio->_flush) ((void *)fd);
 #endif
 
     return 0;
@@ -2853,6 +2863,9 @@ int Ferror(FD_t fd)
 	} else if (fps->io == lzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under lzdio always has fdno == -1 */
+	} else if (fps->io == xzdio) {
+	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	    i--;        /* XXX fdio under xzdio always has fdno == -1 */
 #endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */

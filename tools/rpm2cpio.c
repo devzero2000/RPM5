@@ -89,6 +89,8 @@ int main(int argc, char **argv)
 	    t = stpcpy(t, ".bzdio");
 	if (!strcmp(payload_compressor, "lzma"))
 	    t = stpcpy(t, ".lzdio");
+	if (!strcmp(payload_compressor, "xz"))
+	    t = stpcpy(t, ".xzdio");
 	he->p.ptr = _free(he->p.ptr);
     }
 
