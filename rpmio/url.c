@@ -72,10 +72,11 @@ int _url_count = 0;
 urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
-    u->nrefs++;
+    yarnPossess(u->use);
 /*@-modfilesys@*/
-URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+URLDBGREFS(0, (stderr, "--> url %p ++ %ld %s at %s:%u\n", u, yarnPeekLock(u->use)+1, msg, file, line));
 /*@=modfilesys@*/
+    yarnTwist(u->use, BY, 1);
     /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
 }
 
@@ -85,6 +86,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     if ((u = xcalloc(1, sizeof(*u))) == NULL)
 	return NULL;
     memset(u, 0, sizeof(*u));
+    u->use = yarnNewLock(0);
     u->proxyp = -1;
     u->port = -1;
     u->urltype = URL_IS_UNKNOWN;
@@ -103,19 +105,23 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->buf = NULL;
     u->allow = RPMURL_SERVER_HASRANGE;
     u->httpVersion = 0;
-    u->nrefs = 0;
     u->magic = URLMAGIC;
     return XurlLink(u, msg, file, line);
 }
 
 urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
+    yarnLock use;
     int xx;
 
     URLSANE(u);
-URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
-    if (--u->nrefs > 0)
+    yarnPossess(u->use);
+URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use), msg, file, line));
+    if (yarnPeekLock(u->use) > 1) {
+	yarnTwist(u->use, BY, -1);
 	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
+    }
+    use = u->use;
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
@@ -175,8 +181,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     u->fragment = _free(u->fragment);
     u->proxyu = _free((void *)u->proxyu);
     u->proxyh = _free((void *)u->proxyh);
+    u->use = NULL;
 
     /*@-refcounttrans@*/ u = _free(u); /*@-refcounttrans@*/
+    yarnTwist(use, TO, 0);
+    use = yarnFreeLock(use);
     return NULL;
 }
 
@@ -189,8 +198,8 @@ void urlFreeCache(void)
 	    _url_cache[i] = urlFree(_url_cache[i], "_url_cache");
 	    if (_url_cache[i])
 		fprintf(stderr,
-			_("warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
-			i, _url_cache[i], _url_cache[i]->nrefs,
+			_("warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"),
+			i, _url_cache[i], yarnPeekLock(_url_cache[i]->use),
 			(_url_cache[i]->host ? _url_cache[i]->host : ""),
 			(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
 	}

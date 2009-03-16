@@ -43,7 +43,7 @@ extern void * urlNotifyArg;
  * URL control structure.
  */
 struct urlinfo_s {
-/*@refs@*/ int nrefs;		/*!< no. of references */
+    yarnLock use;		/*!< use count -- return to pool when zero */
 /*@owned@*/ /*@relnull@*/
     const char * url;		/*!< copy of original url */
 /*@owned@*/ /*@relnull@*/
@@ -161,12 +161,13 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
  * @param msg		debugging identifier (unused)
  * @return		referenced instance
  */
-/*@unused@*/
-urlinfo	urlLink(urlinfo u, const char * msg)
+/*@unused@*/ /*@newref@*/
+urlinfo	urlLink(/*@returned@*/ urlinfo u, const char * msg)
 	/*@modifies u @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
+/*@newref@*/
+urlinfo	XurlLink(/*@returned@*/ urlinfo u, const char * msg, const char * file, unsigned line)
 	/*@modifies u @*/;
 #define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
 
