@@ -118,7 +118,6 @@ static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 /*@access urlinfo @*/
 /*@access FDSTAT_t @*/
 
-#define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
 
@@ -297,14 +296,17 @@ FD_t XfdLink(void * cookie, const char * msg,
 	/*@modifies *cookie @*/
 {
     FD_t fd;
+#ifdef	NOTYET
+assert(cookie != NULL)
+#else
 if (cookie == NULL)
-    /*@-castexpose@*/
-DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, FDNREFS(cookie)+1, msg, file, line));
-    /*@=castexpose@*/
+DBGREFS(0, (stderr, "--> fd  %p ++ %ld %s at %s:%u\n", cookie, -9L, msg, file, line));
+#endif
     fd = c2f(cookie);
     if (fd) {
-	fd->nrefs++;
-DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
+	yarnPossess(fd->use);
+DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use)+1, msg, file, line, fdbg(fd)));
+	yarnTwist(fd->use, BY, 1);
     }
     return fd;
 }
@@ -317,31 +319,42 @@ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 {
 	int i;
 
+#ifdef	NOTYET
+assert(fd != NULL);
+#else
 if (fd == NULL)
-DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, file, line));
+#endif
     FDSANE(fd);
     if (fd) {
-DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
-	if (--fd->nrefs > 0)
-	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
-	fd->opath = _free(fd->opath);
-	fd->stats = _free(fd->stats);
-	for (i = fd->ndigests - 1; i >= 0; i--) {
-	    FDDIGEST_t fddig = fd->digests + i;
-	    if (fddig->hashctx == NULL)
-		continue;
-	    (void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
-	    fddig->hashctx = NULL;
-	}
-	fd->ndigests = 0;
+	yarnPossess(fd->use);
+DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
+	if (yarnPeekLock(fd->use) == 1L) {
+	    yarnLock use = fd->use;
+	    fd->opath = _free(fd->opath);
+	    fd->stats = _free(fd->stats);
+	    for (i = fd->ndigests - 1; i >= 0; i--) {
+		FDDIGEST_t fddig = fd->digests + i;
+		if (fddig->hashctx == NULL)
+		    continue;
+		(void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
+		fddig->hashctx = NULL;
+	    }
+	    fd->ndigests = 0;
 /*@-onlytrans@*/
 #ifdef WITH_XAR
-	fd->xar = rpmxarFree(fd->xar);
+	    fd->xar = rpmxarFree(fd->xar);
 #endif
-	fd->dig = pgpDigFree(fd->dig);
+	    fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
-	memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
-	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
+	    memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
+	    /*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
+	    yarnTwist(use, BY, -1);
+	    use = yarnFreeLock(use);
+	    return NULL;
+	}
+	yarnTwist(fd->use, BY, -1);
+	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
     }
     return NULL;
 }
@@ -354,7 +367,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
-    fd->nrefs = 0;
+    fd->use = yarnNewLock(0);
     fd->flags = 0;
     fd->magic = FDMAGIC;
     fd->urlType = URL_IS_UNKNOWN;
@@ -2529,8 +2542,11 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * - gzopen:	[0-9] is compression level
  * - gzopen:	'f' is filtered (Z_FILTERED)
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
- * - bzopen:	[1-9] is block size (modulo 100K)
+ * - bzopen:	[1-9] is block size (in 100K units)
  * - bzopen:	's' is smallmode
+ * - bzopen:	'q' sets verbosity to 0
+ * - bzopen:	'v' does verbosity++ (up to 4)
+ *
  * - HACK:	'.' terminates, rest is type of I/O
  */
 static inline void cvtfmode (const char *m,
@@ -2611,7 +2627,7 @@ typedef _IO_cookie_io_functions_t cookie_io_functions_t;
 
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
-    char stdio[20], other[20], zstdio[20];
+    char stdio[20], other[20], zstdio[40+1];
     const char *end = NULL;
     FDIO_t iof = NULL;
     FD_t fd = ofd;

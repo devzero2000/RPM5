@@ -1,5 +1,6 @@
 5.1.7 -> 5.1.8:
     - jbj: yarn: convert urlInfo refcounts to usage mutexes.
+    - jbj: yarn: convert FD_t refcounts to usage mutexes.
     - jbj: zlog: backport from HEAD.
     - jbj: yarn: backport from HEAD (likely --with-pthreads needed todo++).
     - jbj: bzdio: handle multiblock compressed payloads transparently.
