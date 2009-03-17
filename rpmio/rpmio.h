@@ -734,6 +734,55 @@ void rpmioClean(void)
 	/*@globals internalState, fileSystem @*/
 	/*@modifies internalState, fileSystem @*/;
 
+/**
+ */
+typedef	struct rpmioItem_s * rpmioItem;
+struct rpmioItem_s {
+    yarnLock use;
+    void *pool;
+};
+
+/**
+ */
+typedef struct rpmioPool_s * rpmioPool;
+
+/**
+ * Reclaim memory pool items.
+ * @param pool		memory pool (NULL uses global rpmio pool)
+ * @return		NULL always
+ */
+/*@null@*/
+rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/;
+
+/**
+ * Create a memory pool.
+ * @param name		pool name
+ * @param size		item size
+ * @param limit		no. of items permitted (-1 for unlimited)
+ * @return		memory pool
+ */
+rpmioPool rpmioNewPool(const char * name, size_t size, int limit)
+        /*@*/;
+
+/**
+ * Get unused item from pool, or alloc a new item.
+ * @param pool		memory pool (NULL will always alloc a new item)
+ * @param size		item size
+ * @return		new item
+ */
+rpmioItem rpmioGetPool(/*@null@*/ rpmioPool pool, size_t size)
+        /*@modifies pool @*/;
+
+/**
+ * Put unused item into pool (or free).
+ * @param _item		unused item
+ * @return		NULL always
+ */
+/*@null@*/
+rpmioItem rpmioPutPool(rpmioItem item)
+        /*@modifies item @*/;
+
 #ifdef __cplusplus
 }
 #endif

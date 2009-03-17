@@ -3,6 +3,9 @@
  */
 
 #include "system.h"
+#include <rpmiotypes.h>
+#include <rpmio.h>
+#include <rpmlog.h>
 #include "debug.h"
 
 #if defined(WITH_DMALLOC)
@@ -27,6 +30,125 @@
 /*@=nullret@*/
 }
 /*@=modfilesys@*/
+
+/**
+ */
+struct rpmioPool_s {
+    yarnLock have;		/*!< unused items available, lock for list */
+    void *pool;
+/*@relnull@*/
+    rpmioItem head;		/*!< linked list of available items */
+    rpmioItem * tail;
+    size_t size;		/*!< size of items in this pool */
+    int limit;			/*!< number of new items allowed, or -1 */
+    int made;			/*!< number of items made */
+    const char *name;
+};
+
+/*@unchecked@*/
+static rpmioPool _rpmioPool;
+
+rpmioPool rpmioFreePool(rpmioPool pool)
+{
+    if (pool == NULL) {
+	pool = _rpmioPool;
+	_rpmioPool = NULL;
+    }
+    if (pool != NULL) {
+	rpmioItem item;
+	int count = 0;
+	yarnPossess(pool->have);
+	while ((item = pool->head) != NULL) {
+	    pool->head = item->pool;	/* XXX pool == next */
+	    if (item->use != NULL)
+		item->use = yarnFreeLock(item->use);
+	    item = _free(item);
+	    count++;
+	}
+	yarnRelease(pool->have);
+	pool->have = yarnFreeLock(pool->have);
+	rpmlog(RPMLOG_DEBUG, ("rpm%s: pool alloc'd %d, free'd %d, items.\n"), pool->name, pool->made, count);
+assert(pool->made == count);
+	pool = _free(pool);
+    }
+    return NULL;
+}
+
+rpmioPool rpmioNewPool(const char * name, size_t size, int limit)
+	/*@*/
+{
+    rpmioPool pool = xcalloc(1, sizeof(*pool));
+    pool->have = yarnNewLock(0);
+    pool->pool = NULL;
+    pool->head = NULL;
+    pool->tail = &pool->head;
+    pool->size = size;
+    pool->limit = limit;
+    pool->made = 0;
+    pool->name = name;
+    rpmlog(RPMLOG_DEBUG, ("rpm%s: pool created.\n"), pool->name);
+    return pool;
+}
+
+rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
+{
+    rpmioItem item;
+
+    if (pool != NULL) {
+	/* if can't create any more, wait for a space to show up */
+	yarnPossess(pool->have);
+	if (pool->limit == 0)
+	    yarnWaitFor(pool->have, NOT_TO_BE, 0);
+
+	/* if a space is available, pull it from the list and return it */
+	if (pool->head != NULL) {
+	    item = pool->head;
+	    pool->head = item->pool;	/* XXX pool == next */
+	    if (pool->head == NULL)
+		pool->tail = &pool->head;
+	    item->pool = pool;		/* remember the pool this belongs to */
+	    yarnTwist(pool->have, BY, -1);      /* one less in pool */
+	    return item;
+	}
+
+	/* nothing available, don't want to wait, make a new item */
+assert(pool->limit != 0);
+	if (pool->limit > 0)
+	    pool->limit--;
+	pool->made++;
+	yarnRelease(pool->have);
+    }
+
+    item = xcalloc(1, size);
+    item->use = yarnNewLock(0);		/* XXX newref? */
+    item->pool = pool;
+    return item;
+}
+
+rpmioItem rpmioPutPool(rpmioItem item)
+{
+    rpmioPool pool;
+
+    if ((pool = item->pool) != NULL) {
+	yarnPossess(pool->have);
+	item->pool = NULL;		/* XXX pool == next */
+	*pool->tail = item;
+	pool->tail = (rpmioItem *)&item->pool;/* XXX pool == next */
+	yarnTwist(pool->have, BY, 1);
+	if (item->use != NULL)
+	    yarnTwist(item->use, BY, -1);
+	return NULL;
+    }
+
+    if (item->use != NULL) {
+	yarnTwist(item->use, BY, -1);
+	item->use = yarnFreeLock(item->use);
+    }
+    if (pool != NULL && pool->size > 0)
+	memset(item, 0, pool->size);	/* XXX trash & burn */
+    item = _free(item);
+    return NULL;
+}
 
 #if !(HAVE_MCHECK_H && defined(__GNUC__)) && !defined(__LCLINT__)
 
