@@ -67,3 +67,7 @@
 #if !defined(HAVE_STRSTR)
 #include "strstr.c"
 #endif
+
+#if !defined(HAVE_MKDTEMP)
+#include "mkdtemp.c"
+#endif

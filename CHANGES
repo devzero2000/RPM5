@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - devzero2000: add mkdtemp portability function to -lrpmmisc 
     - proyvind: do lazy mkdir of %_builddir, %_rpmdir & %_srcrpmdir when doing
 	--install for src.rpms as well.
     - jbj: yarn: convert Header refcount to usage mutex.

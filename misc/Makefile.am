@@ -15,10 +15,12 @@ EXTRA_DIST = \
 	setenv.c	stpcpy.c	stpncpy.c			\
 			strcspn.c	strdup.c	strerror.c	\
 	strftime.c	strcspn.c	strstr.c	strtol.c	\
-	strtoul.c
+	strtoul.c \
+        tempname.h \
+        mkdtemp.c 
 
 noinst_HEADERS = \
-	asprintf.h	err.h		error.h
+	asprintf.h	err.h		error.h tempname.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmmisc.la
