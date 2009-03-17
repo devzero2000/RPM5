@@ -11,6 +11,7 @@
 #include "system.h"
 
 #include <rpmiotypes.h>
+#include <rpmio.h>		/* XXX for rpmioPool et al */
 #define	_RPMTAG_INTERNAL
 #include <header_internal.h>
 
@@ -90,6 +91,22 @@ static struct rpmop_s hdr_getops;
 rpmop _hdr_getops = &hdr_getops;
 /*@=compmempass@*/
 
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _headerPool;
+
+static Header headerGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    Header h;
+
+    if (_headerPool == NULL) {
+	_headerPool = rpmioNewPool(" h", sizeof(*h), -1);
+	pool = _headerPool;
+    }
+    return (Header) rpmioGetPool(pool, sizeof(*h));
+}
+
 void * headerGetStats(Header h, int opx)
 {
     rpmop op = NULL;
@@ -143,8 +160,6 @@ if (_hdr_debug)
 fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__, __LINE__);
 /*@=modfilesys@*/
     if (yarnPeekLock(h->use) <= 1L) {
-	yarnLock use = h->use;
-/*@-usereleased@*/
 	if (h->index != NULL) {
 	    indexEntry entry = h->index;
 	    size_t i;
@@ -176,10 +191,7 @@ fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__
 		(void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
 	}
 /*@=nullstate@*/
-	/*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
-	yarnTwist(use, BY, -1);
-	use = yarnFreeLock(use);
-/*@=usereleased@*/
+	h = (Header) rpmioPutPool((rpmioItem)h);
     } else
 	yarnTwist(h->use, BY, -1);
     return NULL;
@@ -187,7 +199,7 @@ fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__
 
 Header headerNew(void)
 {
-    Header h = xcalloc(1, sizeof(*h));
+    Header h = headerGetPool(_headerPool);
 
     (void) memcpy(h->magic, header_magic, sizeof(h->magic));
     h->blob = NULL;
@@ -204,7 +216,6 @@ Header headerNew(void)
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
 	: NULL);
 
-    h->use = yarnNewLock(0);
     /*@-globstate -observertrans @*/
     return headerLink(h);
     /*@=globstate =observertrans @*/
@@ -1048,7 +1059,7 @@ Header headerLoad(void * uh)
     dataStart = (unsigned char *) (pe + il);
     dataEnd = dataStart + dl;
 
-    h = xcalloc(1, sizeof(*h));
+    h = headerGetPool(_headerPool);
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
 	(void) rpmswEnter(sw, 0);
     {	unsigned char * hmagic = header_magic;
@@ -1061,7 +1072,6 @@ Header headerLoad(void * uh)
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
-    h->use = yarnNewLock(0);;
     h->startoff = 0;
     h->endoff = (rpmuint32_t) pvlen;
     h = headerLink(h);
@@ -1185,9 +1195,8 @@ errxit:
     /*@-usereleased@*/
     if (h) {
 	h->index = _free(h->index);
-	/*@-refcounttrans@*/
-	h = _free(h);
-	/*@=refcounttrans@*/
+	yarnPossess(h->use);
+	h = (Header) rpmioPutPool((rpmioItem)h);
     }
     /*@=usereleased@*/
     /*@-refcounttrans -globstate@*/

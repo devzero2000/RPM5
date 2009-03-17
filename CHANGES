@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: use the pool allocator.
     - jbj: yarn: add a pool allocator.
     - devzero2000: add mkdtemp portability function to -lrpmmisc 
     - proyvind: do lazy mkdir of %_builddir, %_rpmdir & %_srcrpmdir when doing

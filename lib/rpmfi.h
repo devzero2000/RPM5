@@ -86,6 +86,9 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
  */
 struct rpmfi_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
 

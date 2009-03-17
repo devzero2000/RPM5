@@ -69,6 +69,21 @@ urlinfo *_url_cache = NULL;
 /*@unchecked@*/
 int _url_count = 0;
 
+/*@unchecked@*/ /*@null@*/
+rpmioPool _urlPool;
+
+static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    urlinfo u;
+
+    if (_urlPool == NULL) {
+	_urlPool = rpmioNewPool(" u", sizeof(*u), -1);
+	pool = _urlPool;
+    }
+    return (urlinfo) rpmioGetPool(pool, sizeof(*u));
+}
+
 urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
@@ -82,11 +97,10 @@ URLDBGREFS(0, (stderr, "--> url %p ++ %ld %s at %s:%u\n", u, yarnPeekLock(u->use
 
 urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 {
-    urlinfo u;
-    if ((u = xcalloc(1, sizeof(*u))) == NULL)
+    urlinfo u = urlGetPool(_urlPool);
+    if (u == NULL)	/* XXX can't happen */
 	return NULL;
     memset(u, 0, sizeof(*u));
-    u->use = yarnNewLock(0);
     u->proxyp = -1;
     u->port = -1;
     u->urltype = URL_IS_UNKNOWN;
@@ -111,7 +125,6 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 
 urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
-    yarnLock use;
     int xx;
 
     URLSANE(u);
@@ -121,7 +134,6 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use
 	yarnTwist(u->use, BY, -1);
 	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
     }
-    use = u->use;
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
@@ -183,9 +195,8 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use
     u->proxyh = _free((void *)u->proxyh);
     u->use = NULL;
 
-    /*@-refcounttrans@*/ u = _free(u); /*@-refcounttrans@*/
-    yarnTwist(use, TO, 0);
-    use = yarnFreeLock(use);
+    u = (urlinfo) rpmioPutPool((rpmioItem)u);
+
     return NULL;
 }
 

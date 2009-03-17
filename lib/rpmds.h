@@ -38,6 +38,8 @@ extern int _rpmds_nopromote;
  */
 struct rpmds_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
 /*@observer@*/
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
@@ -122,6 +124,7 @@ extern "C" {
 
 /** \name RPMDS */
 /*@{*/
+
 /** \ingroup rpmds
  * Unreference a dependency set instance.
  * @param ds		dependency set

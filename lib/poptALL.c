@@ -90,6 +90,8 @@ extern int _rpmdb_debug;
 
 /*@unchecked@*/
 extern int _rpmds_debug;
+/*@unchecked@*/
+extern rpmioPool _rpmdsPool;
 
 /* XXX avoid -lrpmbuild linkage. */
 /*@unchecked@*/
@@ -97,6 +99,9 @@ extern int _rpmds_debug;
 
 /*@unchecked@*/
 extern int _rpmfi_debug;
+/*@unchecked@*/
+extern rpmioPool _rpmfiPool;
+
 
 /*@unchecked@*/
 extern int _rpmgi_debug;
@@ -446,6 +451,12 @@ rpmcliFini(poptContext optCon)
 	/*@globals keyids @*/
 	/*@modifies keyids @*/
 {
+    extern rpmioPool _headerPool;
+
+    _headerPool = rpmioFreePool(_headerPool);
+    _rpmdsPool = rpmioFreePool(_rpmdsPool);
+    _rpmfiPool = rpmioFreePool(_rpmfiPool);
+
     /* XXX this should be done in the rpmioClean() wrapper. */
     /* keeps memory leak checkers quiet */
     rpmFreeMacros(NULL);

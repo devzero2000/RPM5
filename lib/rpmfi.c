@@ -54,6 +54,21 @@ struct rpmRelocation_s {
 /*@unchecked@*/
 int _rpmfi_debug = 0;
 
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmfiPool;
+
+static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmfi fi;
+
+    if (_rpmfiPool == NULL) {
+	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1);
+	pool = _rpmfiPool;
+    }
+    return (rpmfi) rpmioGetPool(pool, sizeof(*fi));
+}
+
 rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
@@ -1227,7 +1242,6 @@ fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), fi-
 /*@=modfilesys@*/
 
     if (yarnPeekLock(fi->use) <= 1L) {
-	yarnLock use = fi->use;
 
 /*@-modfilesys@*/
 if (_rpmfi_debug < 0)
@@ -1295,12 +1309,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->h = headerFree(fi->h);
 
-    /*@-nullstate -refcounttrans -usereleased@*/
-	memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
-	fi = _free(fi);
-    /*@=nullstate =refcounttrans =usereleased@*/
-	yarnTwist(use, BY, -1);
-	use = yarnFreeLock(use);
+	fi = (rpmfi) rpmioPutPool((rpmioItem)fi);
+
    } else
 	yarnTwist(fi->use, BY, -1);
 
@@ -1356,11 +1366,10 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	goto exit;
     }
 
-    fi = xcalloc(1, sizeof(*fi));
+    fi = rpmfiGetPool(_rpmfiPool);
     if (fi == NULL)	/* XXX can't happen */
 	goto exit;
 
-    fi->use = yarnNewLock(0);
     fi->magic = RPMFIMAGIC;
     fi->Type = Type;
     fi->i = -1;

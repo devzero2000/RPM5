@@ -122,6 +122,21 @@ int _rpmds_nopromote = 1;
 int _rpmds_unspecified_epoch_noise = 0;
 /*@=exportheadervar@*/
 
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmdsPool;
+
+static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmds ds;
+
+    if (_rpmdsPool == NULL) {
+	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1);
+	pool = _rpmdsPool;
+    }
+    return (rpmds) rpmioGetPool(pool, sizeof(*ds));
+}
+
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
@@ -192,8 +207,6 @@ if (_rpmds_debug)
 fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use), ds->Type, __FILE__, __LINE__);
 /*@=modfilesys@*/
     if (yarnPeekLock(ds->use) <= 1) {
-	yarnLock use = ds->use;
-
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
@@ -216,12 +229,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
 	ds->include = mireFreeAll(ds->include, ds->ninclude);
 
-	/*@-refcounttrans -usereleased@*/
-	memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
-	ds = _free(ds);
-	/*@=refcounttrans =usereleased@*/
-	yarnTwist(use, BY, -1);
-	use = yarnFreeLock(use);
+	ds = (rpmds) rpmioPutPool((rpmioItem)ds);
     } else
 	yarnTwist(ds->use, BY, -1);
     return NULL;
@@ -328,8 +336,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     N = he->p.argv;
     Count = he->c;
     if (xx && N != NULL && Count > 0) {
-	ds = xcalloc(1, sizeof(*ds));
-	ds->use = yarnNewLock(0);
+	ds = rpmdsGetPool(_rpmdsPool);
 	ds->Type = Type;
 	ds->h = NULL;
 	ds->i = -1;
@@ -596,8 +603,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     V = _free(V);
     R = _free(R);
 
-    ds = xcalloc(1, sizeof(*ds));
-    ds->use = yarnNewLock(0);
+    ds = rpmdsGetPool(NULL);
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
@@ -632,8 +638,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 
     Type = rpmdsTagName(tagN);
 
-    ds = xcalloc(1, sizeof(*ds));
-    ds->use = yarnNewLock(0);
+    ds = rpmdsGetPool(_rpmdsPool);
     ds->Type = Type;
     ds->tagN = tagN;
     ds->A = NULL;

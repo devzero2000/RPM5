@@ -68,6 +68,7 @@ LIBRPMDB_0
     headerNEVRA;
     headerNew;
     headerNext;
+    _headerPool;
     headerPut;
     headerRegenSigHeader;
     headerReload;

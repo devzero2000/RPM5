@@ -56,6 +56,9 @@ typedef struct _FDDIGEST_s {
  */
 struct _FD_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
 #define	RPMIO_DEBUG_REFS	0x20000000
