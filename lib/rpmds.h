@@ -37,6 +37,7 @@ extern int _rpmds_nopromote;
  * A dependency set.
  */
 struct rpmds_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
 /*@observer@*/
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
@@ -74,8 +75,6 @@ struct rpmds_s {
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif	/* _RPMDS_INTERNAL */
 
