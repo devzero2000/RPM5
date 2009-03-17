@@ -295,11 +295,15 @@ LIBRPMIO_0
     rpmioDigestHashAlgo;
     rpmioDigestPoptTable;
     rpmioFini;
+    rpmioFreePool;
     rpmioFtsOpts;
     rpmioFtsPoptTable;
+    rpmioGetPool;
     rpmioInit;
     rpmioMkpath;
+    rpmioNewPool;
     rpmioPipeOutput;
+    rpmioPutPool;
     rpmioRootDir;
     rpmioSlurp;
     _kuKeyring;
