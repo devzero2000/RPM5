@@ -41,22 +41,24 @@ int _rpmfi_debug = 0;
 rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
+    yarnPossess(fi->use);
 /*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), msg, fn, ln);
 /*@=modfilesys@*/
-    fi->nrefs--;
+    yarnTwist(fi->use, BY, -1);
     return NULL;
 }
 
 rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
-    fi->nrefs++;
+    yarnPossess(fi->use);
 /*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> fi %p ++ %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use)+1, msg, fn, ln);
 /*@=modfilesys@*/
+    yarnTwist(fi->use, BY, 1);
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
@@ -1201,8 +1203,14 @@ rpmfi rpmfiFree(rpmfi fi)
 {
     if (fi == NULL) return NULL;
 
-    if (fi->nrefs > 1)
-	return rpmfiUnlink(fi, fi->Type);
+    yarnPossess(fi->use);
+/*@-modfilesys@*/
+if (_rpmfi_debug)
+fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), fi->Type, __FILE__, __LINE__);
+/*@=modfilesys@*/
+
+    if (yarnPeekLock(fi->use) <= 1L) {
+	yarnLock use = fi->use;
 
 /*@-modfilesys@*/
 if (_rpmfi_debug < 0)
@@ -1269,10 +1277,13 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->h = headerFree(fi->h);
 
     /*@-nullstate -refcounttrans -usereleased@*/
-    (void) rpmfiUnlink(fi, fi->Type);
     memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
     fi = _free(fi);
     /*@=nullstate =refcounttrans =usereleased@*/
+	yarnTwist(use, BY, -1);
+	use = yarnFreeLock(use);
+   } else
+	yarnTwist(fi->use, BY, -1);
 
     return NULL;
 }
@@ -1330,6 +1341,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     if (fi == NULL)	/* XXX can't happen */
 	goto exit;
 
+    fi->use = yarnNewLock(0);
     fi->magic = RPMFIMAGIC;
     fi->Type = Type;
     fi->i = -1;
@@ -1338,6 +1350,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->h = NULL;
     fi->isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_RPMVERSION) != 0 &&
 	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
     if (fi->fsm == NULL)
