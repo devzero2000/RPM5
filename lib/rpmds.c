@@ -125,23 +125,24 @@ int _rpmds_unspecified_epoch_noise = 0;
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
+    yarnPossess(ds->use);
 /*@-modfilesys@*/
 if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p -- %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use), msg, fn, ln);
 /*@=modfilesys@*/
-    ds->nrefs--;
+    yarnTwist(ds->use, BY, -1);
     return NULL;
 }
 
 rpmds XrpmdsLink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
-    ds->nrefs++;
-
+    yarnPossess(ds->use);
 /*@-modfilesys@*/
 if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ds %p ++ %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use)+1, msg, fn, ln);
 /*@=modfilesys@*/
+    yarnTwist(ds->use, BY, 1);
 
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
@@ -185,36 +186,44 @@ rpmds rpmdsFree(rpmds ds)
     if (ds == NULL)
 	return NULL;
 
-    if (ds->nrefs > 1)
-	return rpmdsUnlink(ds, ds->Type);
+    yarnPossess(ds->use);
+/*@-modfilesys@*/
+if (_rpmds_debug)
+fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use), ds->Type, __FILE__, __LINE__);
+/*@=modfilesys@*/
+    if (yarnPeekLock(ds->use) <= 1) {
+	yarnLock use = ds->use;
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesys@*/
 
-    if (ds->Count > 0) {
-	ds->N = _free(ds->N);
-	ds->EVR = _free(ds->EVR);
-	ds->Flags = _free(ds->Flags);
-	ds->h = headerFree(ds->h);
-    }
+	if (ds->Count > 0) {
+	    ds->N = _free(ds->N);
+	    ds->EVR = _free(ds->EVR);
+	    ds->Flags = _free(ds->Flags);
+	    ds->h = headerFree(ds->h);
+	}
 
-    ds->DNEVR = _free(ds->DNEVR);
-    ds->ns.str = _free(ds->ns.str);
-    memset(&ds->ns, 0, sizeof(ds->ns));
-    ds->A = _free(ds->A);
-    ds->Color = _free(ds->Color);
-    ds->Refs = _free(ds->Refs);
-    ds->Result = _free(ds->Result);
-    ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
-    ds->include = mireFreeAll(ds->include, ds->ninclude);
+	ds->DNEVR = _free(ds->DNEVR);
+	ds->ns.str = _free(ds->ns.str);
+	memset(&ds->ns, 0, sizeof(ds->ns));
+	ds->A = _free(ds->A);
+	ds->Color = _free(ds->Color);
+	ds->Refs = _free(ds->Refs);
+	ds->Result = _free(ds->Result);
+	ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
+	ds->include = mireFreeAll(ds->include, ds->ninclude);
 
-    (void) rpmdsUnlink(ds, ds->Type);
-    /*@-refcounttrans -usereleased@*/
-    memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
-    ds = _free(ds);
-    /*@=refcounttrans =usereleased@*/
+	/*@-refcounttrans -usereleased@*/
+	memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
+	ds = _free(ds);
+	/*@=refcounttrans =usereleased@*/
+	yarnTwist(use, BY, -1);
+	use = yarnFreeLock(use);
+    } else
+	yarnTwist(ds->use, BY, -1);
     return NULL;
 }
 
@@ -320,6 +329,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     Count = he->c;
     if (xx && N != NULL && Count > 0) {
 	ds = xcalloc(1, sizeof(*ds));
+	ds->use = yarnNewLock(0);
 	ds->Type = Type;
 	ds->h = NULL;
 	ds->i = -1;
@@ -587,6 +597,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     R = _free(R);
 
     ds = xcalloc(1, sizeof(*ds));
+    ds->use = yarnNewLock(0);
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
@@ -622,6 +633,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     Type = rpmdsTagName(tagN);
 
     ds = xcalloc(1, sizeof(*ds));
+    ds->use = yarnNewLock(0);
     ds->Type = Type;
     ds->tagN = tagN;
     ds->A = NULL;
@@ -968,6 +980,7 @@ static rpmds rpmdsDup(const rpmds ods)
     size_t nb;
 
     ds->h = (ods->h != NULL ? headerLink(ods->h) : NULL);
+    ds->use = yarnNewLock(0);
 /*@-assignexpose@*/
     ds->Type = ods->Type;
 /*@=assignexpose@*/
