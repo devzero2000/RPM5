@@ -16,6 +16,7 @@
     - jbj: delete ancient header+payload RSA signatures too using GPG (#488953).
     - jbj: rpmio: install rpmzlog.h and yarn.h, carry with rpmio.h.
     - jbj: rpmio: don't include glob.h.
+    - devzero2000: fix --orphandirs port alias ; add --danglinglink popt alias
     - proyvind: add support for cpuinfo() probe through libcpuinfo.
     - proyvind: perl: make sure to link against all required libraries to fix
 	build with --no-undefined.
