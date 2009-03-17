@@ -527,7 +527,10 @@ static rpmRC rpmCpuinfo(void)
 
     if(rpmCpuinfoMatch("cpuinfo([x86])", cpuinfo)) {
 	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo) && strcmp(un.machine, "x86_64") == 0)
+	{
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
+    	    xx = mireAppend(RPMMIRE_REGEX, 0, "amd64", NULL, &mi_re, &mi_nre);
+	}
     	if(rpmCpuinfoMatch("cpuinfo(cmov)", cpuinfo)) {
     	    if(rpmCpuinfoMatch("cpuinfo(mmx)", cpuinfo)) {
 		if(rpmCpuinfoMatch("cpuinfo(sse)", cpuinfo)) {
