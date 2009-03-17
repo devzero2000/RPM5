@@ -57,22 +57,24 @@ int _rpmfi_debug = 0;
 rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
+    yarnPossess(fi->use);
 /*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), msg, fn, ln);
 /*@=modfilesys@*/
-    fi->nrefs--;
+    yarnTwist(fi->use, BY, -1);
     return NULL;
 }
 
 rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
-    fi->nrefs++;
+    yarnPossess(fi->use);
 /*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> fi %p ++ %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use)+1, msg, fn, ln);
 /*@=modfilesys@*/
+    yarnTwist(fi->use, BY, 1);
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
@@ -1218,80 +1220,89 @@ rpmfi rpmfiFree(rpmfi fi)
 {
     if (fi == NULL) return NULL;
 
-    if (fi->nrefs > 1)
-	return rpmfiUnlink(fi, fi->Type);
+    yarnPossess(fi->use);
+/*@-modfilesys@*/
+if (_rpmfi_debug)
+fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), fi->Type, __FILE__, __LINE__);
+/*@=modfilesys@*/
+
+    if (yarnPeekLock(fi->use) <= 1L) {
+	yarnLock use = fi->use;
 
 /*@-modfilesys@*/
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 /*@=modfilesys@*/
 
-    /* Free pre- and post-transaction script and interpreter strings. */
-    fi->pretrans = _free(fi->pretrans);
-    fi->pretransprog = _free(fi->pretransprog);
-    fi->posttrans = _free(fi->posttrans);
-    fi->posttransprog = _free(fi->posttransprog);
-    fi->verifyscript = _free(fi->verifyscript);
-    fi->verifyscriptprog = _free(fi->verifyscriptprog);
+	/* Free pre- and post-transaction script and interpreter strings. */
+	fi->pretrans = _free(fi->pretrans);
+	fi->pretransprog = _free(fi->pretransprog);
+	fi->posttrans = _free(fi->posttrans);
+	fi->posttransprog = _free(fi->posttransprog);
+	fi->verifyscript = _free(fi->verifyscript);
+	fi->verifyscriptprog = _free(fi->verifyscriptprog);
 
-    if (fi->fc > 0) {
-	fi->bnl = _free(fi->bnl);
-	fi->dnl = _free(fi->dnl);
+	if (fi->fc > 0) {
+	    fi->bnl = _free(fi->bnl);
+	    fi->dnl = _free(fi->dnl);
 
-	fi->flinks = _free(fi->flinks);
-	fi->flangs = _free(fi->flangs);
-	fi->fdigests = _free(fi->fdigests);
-	fi->digests = _free(fi->digests);
+	    fi->flinks = _free(fi->flinks);
+	    fi->flangs = _free(fi->flangs);
+	    fi->fdigests = _free(fi->fdigests);
+	    fi->digests = _free(fi->digests);
 
-	fi->cdict = _free(fi->cdict);
+	    fi->cdict = _free(fi->cdict);
 
-	fi->fuser = _free(fi->fuser);
-	fi->fgroup = _free(fi->fgroup);
+	    fi->fuser = _free(fi->fuser);
+	    fi->fgroup = _free(fi->fgroup);
 
-	fi->fstates = _free(fi->fstates);
+	    fi->fstates = _free(fi->fstates);
 
-	fi->fmtimes = _free(fi->fmtimes);
-	fi->fmodes = _free(fi->fmodes);
-	fi->fflags = _free(fi->fflags);
-	fi->vflags = _free(fi->vflags);
-	fi->fsizes = _free(fi->fsizes);
-	fi->frdevs = _free(fi->frdevs);
-	fi->finodes = _free(fi->finodes);
-	fi->dil = _free(fi->dil);
+	    fi->fmtimes = _free(fi->fmtimes);
+	    fi->fmodes = _free(fi->fmodes);
+	    fi->fflags = _free(fi->fflags);
+	    fi->vflags = _free(fi->vflags);
+	    fi->fsizes = _free(fi->fsizes);
+	    fi->frdevs = _free(fi->frdevs);
+	    fi->finodes = _free(fi->finodes);
+	    fi->dil = _free(fi->dil);
 
-	fi->fcolors = _free(fi->fcolors);
-	fi->fcdictx = _free(fi->fcdictx);
-	fi->ddict = _free(fi->ddict);
-	fi->fddictx = _free(fi->fddictx);
-	fi->fddictn = _free(fi->fddictn);
-    }
+	    fi->fcolors = _free(fi->fcolors);
+	    fi->fcdictx = _free(fi->fcdictx);
+	    fi->ddict = _free(fi->ddict);
+	    fi->fddictx = _free(fi->fddictx);
+	    fi->fddictn = _free(fi->fddictn);
+	}
 
 /*@-globs@*/	/* Avoid rpmGlobalMacroContext */
-    fi->fsm = freeFSM(fi->fsm);
+	fi->fsm = freeFSM(fi->fsm);
 /*@=globs@*/
 
-    fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
-    fi->include = mireFreeAll(fi->include, fi->ninclude);
+	fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
+	fi->include = mireFreeAll(fi->include, fi->ninclude);
 
-    fi->fn = _free(fi->fn);
-    fi->apath = _free(fi->apath);
-    fi->fmapflags = _free(fi->fmapflags);
+	fi->fn = _free(fi->fn);
+	fi->apath = _free(fi->apath);
+	fi->fmapflags = _free(fi->fmapflags);
 
-    fi->obnl = _free(fi->obnl);
-    fi->odnl = _free(fi->odnl);
+	fi->obnl = _free(fi->obnl);
+	fi->odnl = _free(fi->odnl);
 
-    fi->fcontexts = _free(fi->fcontexts);
+	fi->fcontexts = _free(fi->fcontexts);
 
-    fi->actions = _free(fi->actions);
-    fi->replacedSizes = _free(fi->replacedSizes);
+	fi->actions = _free(fi->actions);
+	fi->replacedSizes = _free(fi->replacedSizes);
 
-    fi->h = headerFree(fi->h);
+	fi->h = headerFree(fi->h);
 
     /*@-nullstate -refcounttrans -usereleased@*/
-    (void) rpmfiUnlink(fi, fi->Type);
-    memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
-    fi = _free(fi);
+	memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
+	fi = _free(fi);
     /*@=nullstate =refcounttrans =usereleased@*/
+	yarnTwist(use, BY, -1);
+	use = yarnFreeLock(use);
+   } else
+	yarnTwist(fi->use, BY, -1);
 
     return NULL;
 }
@@ -1349,6 +1360,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     if (fi == NULL)	/* XXX can't happen */
 	goto exit;
 
+    fi->use = yarnNewLock(0);
     fi->magic = RPMFIMAGIC;
     fi->Type = Type;
     fi->i = -1;
@@ -1357,6 +1369,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->h = NULL;
     fi->isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_RPMVERSION) != 0 &&
 	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
     if (fi->fsm == NULL)

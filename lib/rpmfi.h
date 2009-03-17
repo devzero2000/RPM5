@@ -85,6 +85,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
  * A package filename set.
  */
 struct rpmfi_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
 
@@ -234,8 +235,6 @@ struct rpmfi_s {
     int magic;
 #define	RPMFIMAGIC	0x09697923
 /*=============================*/
-
-/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 #endif	/* _RPMFI_INTERNAL */
