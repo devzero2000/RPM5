@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: yarn: glibc pthreads (at least) returns errno's, strrerror decodes.
+    - jbj: yarn: fix: assert fail instead of exit on error.
     - jbj: yarn: use the pool allocator.
     - jbj: yarn: add a pool allocator.
     - jbj: yarn: convert rpmfi refcounts to usage mutexes.
