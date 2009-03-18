@@ -315,11 +315,13 @@ LIBRPMIO_0
     rpmioHttpReadTimeoutSecs;
     rpmioHttpUserAgent;
     rpmioInit;
+    rpmioLinkPoolItem;
     rpmioMkpath;
     rpmioNewPool;
     rpmioPipeOutput;
     rpmioPutPool;
     rpmioRootDir;
+    rpmioUnlinkPoolItem;
     rpmKeyringAddKey;
     rpmKeyringFindKeyid;
     rpmKeyringFree;
@@ -505,7 +507,6 @@ LIBRPMIO_0
     XfdLink;
     XfdNew;
     XurlFree;
-    XurlLink;
     XurlNew;
     xzdio;
     yarnAbort;
