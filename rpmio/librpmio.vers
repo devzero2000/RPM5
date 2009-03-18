@@ -300,11 +300,13 @@ LIBRPMIO_0
     rpmioFtsPoptTable;
     rpmioGetPool;
     rpmioInit;
+    rpmioLinkPoolItem;
     rpmioMkpath;
     rpmioNewPool;
     rpmioPipeOutput;
     rpmioPutPool;
     rpmioRootDir;
+    rpmioUnlinkPoolItem;
     rpmioSlurp;
     _kuKeyring;
     rpmkuFindPubkey;
@@ -447,7 +449,6 @@ LIBRPMIO_0
     XfdLink;
     XfdNew;
     XurlFree;
-    XurlLink;
     XurlNew;
     xzdio;
     yarnAbort;

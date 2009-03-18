@@ -173,7 +173,7 @@ static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
     FD_t fd;
 
     if (_fdPool == NULL) {
-	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1);
+	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1, _rpmio_debug);
 	pool = _fdPool;
     }
     return (FD_t) rpmioGetPool(pool, sizeof(*fd));
@@ -308,7 +308,7 @@ int fdSeekNot(void * cookie,
 /*@-mustmod@*/ /* FIX: cookie is modified */
 /*@null@*/
 FD_t XfdLink(void * cookie, const char * msg,
-		const char * file, unsigned line)
+		const char * fn, unsigned ln)
 	/*@modifies *cookie @*/
 {
     FD_t fd;
@@ -316,12 +316,12 @@ FD_t XfdLink(void * cookie, const char * msg,
 assert(cookie != NULL)
 #else
 if (cookie == NULL)
-DBGREFS(0, (stderr, "--> fd  %p ++ %ld %s at %s:%u\n", cookie, -9L, msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p ++ %ld %s at %s:%u\n", cookie, -9L, msg, fn, ln));
 #endif
     fd = c2f(cookie);
     if (fd) {
 	yarnPossess(fd->use);
-DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use)+1, msg, file, line, fdbg(fd)));
+DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use)+1, msg, fn, ln, fdbg(fd)));
 	yarnTwist(fd->use, BY, 1);
     }
     return fd;
@@ -330,7 +330,7 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->
 
 /*@null@*/
 FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
-		const char *file, unsigned line)
+		const char *fn, unsigned ln)
 	/*@modifies fd @*/
 {
 	int i;
@@ -339,12 +339,12 @@ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 assert(fd != NULL);
 #else
 if (fd == NULL)
-DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, fn, ln));
 #endif
     FDSANE(fd);
     if (fd) {
 	yarnPossess(fd->use);
-DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
+DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, fn, ln, fdbg(fd)));
 	if (yarnPeekLock(fd->use) == 1L) {
 	    fd->opath = _free(fd->opath);
 	    fd->stats = _free(fd->stats);
@@ -372,7 +372,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->
 }
 
 /*@null@*/
-FD_t XfdNew(const char * msg, const char * file, unsigned line)
+FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
@@ -409,7 +409,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->ftpFileDoneNeeded = 0;
     fd->fd_cpioPos = 0;
 
-    return XfdLink(fd, msg, file, line);
+    return XfdLink(fd, msg, fn, ln);
 }
 
 static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
