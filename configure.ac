@@ -1193,7 +1193,7 @@ AC_SUBST(WITH_SYCK_SUBDIR)
 AC_SUBST(WITH_SYCK_INCLUDE)
 
 withval=no
-AC_ARG_WITH(dmalloc, [  --with-uuid             build with OSSP uuid support ])
+AC_ARG_WITH(uuid, [  --with-uuid                build with OSSP uuid support ])
 if test $withval = yes ; then
   AC_DEFINE(UUID, 1, [Build with OSSP uuid support?])
   LIBS="$LIBS -lossp-uuid"
