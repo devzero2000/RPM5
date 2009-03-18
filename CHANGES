@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: convert rpmtsi refcount to usage mutex.
     - jbj: yarn: convert rpmsx refcount to usage mutex.
     - jbj: yarn: convert rpmps refcount to usage mutex.
     - jbj: rpmds: fix: avoid pooling rpmdsThis/rpmdsSingle for now ...

@@ -41,6 +41,22 @@ static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
     return (rpmte) rpmioGetPool(pool, sizeof(*te));
 }
 
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmtsiPool;
+
+static rpmtsi rpmtsiGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmtsi tsi;
+
+    if (_rpmtsiPool == NULL) {
+	_rpmtsiPool = rpmioNewPool("tsi", sizeof(*tsi), -1, _rpmte_debug);/* XXX _rpmtsi_debug? */
+	pool = _rpmtsiPool;
+    }
+    return (rpmtsi) rpmioGetPool(pool, sizeof(*tsi));
+}
+
 void rpmteCleanDS(rpmte te)
 {
     te->PRCO = rpmdsFreePRCO(te->PRCO);
@@ -717,33 +733,33 @@ int rpmtsiOc(rpmtsi tsi)
 rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
-    /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
-/*@-internalglobs@*/
-    if (tsi)
-	tsi->ts = rpmtsFree(tsi->ts);
-/*@=internalglobs@*/
-
+    if (tsi == NULL) return NULL;
+    yarnPossess(tsi->use);
 /*@-modfilesys@*/
 if (_rpmte_debug)
-fprintf(stderr, "*** tsi %p -- %s:%d\n", tsi, fn, ln);
+fprintf(stderr, "*** tsi %p -- %ld %s at %s:%d\n", tsi, yarnPeekLock(tsi->use), "rpmtsiFree", fn, ln);
 /*@=modfilesys@*/
-    return _free(tsi);
+    if (yarnPeekLock(tsi->use) <= 1L) {
+/*@-internalglobs@*/
+	tsi->ts = rpmtsFree(tsi->ts);
+/*@=internalglobs@*/
+	tsi = (rpmtsi) rpmioPutPool((rpmioItem)tsi);
+    } else
+	yarnTwist(tsi->use, BY, -1);
+
+    return NULL;
 }
 
 rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
 {
-    rpmtsi tsi = NULL;
+    rpmtsi tsi = rpmtsiGetPool(_rpmtsiPool);
 
-    tsi = xcalloc(1, sizeof(*tsi));
     tsi->ts = rpmtsLink(ts, "rpmtsi");
     tsi->reverse = 0;
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;
-/*@-modfilesys@*/
-if (_rpmte_debug)
-fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
-/*@=modfilesys@*/
-    return tsi;
+
+    return (rpmtsi) rpmioLinkPoolItem((rpmioItem)tsi, "rpmtsiInit", fn, ln);
 }
 
 /**

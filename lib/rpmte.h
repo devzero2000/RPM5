@@ -185,6 +185,10 @@ struct rpmte_s {
  * Iterator across transaction elements, forward on install, backward on erase.
  */
 struct rpmtsi_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@refcounted@*/
     rpmts ts;		/*!< transaction set. */
     int reverse;	/*!< reversed traversal? */
