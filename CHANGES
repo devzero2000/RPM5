@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: rpmds: fix: avoid pooling rpmdsThis/rpmdsSingle for now ...
     - jbj: headerReload: fix: don't free the header blob.
     - jbj: yarn: convert rpmte to a usage mutex (no refcounts).
     - jbj: yarn: convert rpmgi refcount to usage mutex.

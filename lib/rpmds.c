@@ -578,7 +578,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     V = _free(V);
     R = _free(R);
 
+#ifdef	BUGGY
+    ds = rpmdsGetPool(_rpmdsPool);
+#else
     ds = rpmdsGetPool(NULL);
+#endif
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
@@ -613,7 +617,11 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 
     Type = rpmdsTagName(tagN);
 
+#ifdef	BUGGY
     ds = rpmdsGetPool(_rpmdsPool);
+#else
+    ds = rpmdsGetPool(NULL);
+#endif
     ds->Type = Type;
     ds->tagN = tagN;
     ds->A = NULL;
