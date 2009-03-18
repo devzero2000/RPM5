@@ -920,7 +920,7 @@ WITH_PERL_SUBDIR=""
 WITH_PERL_SUBPACKAGE=0
 WITH_PERL_LIBS=""
 if test ".$WITH_PTHREADS" = .yes; then
-    WITH_PERL_LIBS="-lpthread"
+    WITH_PERL_LIBS="$LIBS"
 fi
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]), [
     if test ".$withval" != .no; then
