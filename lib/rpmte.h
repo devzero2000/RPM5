@@ -89,6 +89,10 @@ struct sharedFileInfo_s {
  * A single package instance to be installed/removed atomically.
  */
 struct rpmte_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     rpmElementType type;	/*!< Package disposition (installed/removed). */
 
 /*@refcounted@*/ /*@relnull@*/

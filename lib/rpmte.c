@@ -26,6 +26,21 @@ int _rpmte_debug = 0;
 /*@access rpmts @*/	/* XXX cast */
 /*@access rpmtsi @*/
 
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmtePool;
+
+static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmte te;
+
+    if (_rpmtePool == NULL) {
+	_rpmtePool = rpmioNewPool("te", sizeof(*te), -1, _rpmte_debug);
+	pool = _rpmtePool;
+    }
+    return (rpmte) rpmioGetPool(pool, sizeof(*te));
+}
+
 void rpmteCleanDS(rpmte te)
 {
     te->PRCO = rpmdsFreePRCO(te->PRCO);
@@ -77,7 +92,6 @@ static void delTE(rpmte p)
 
     p->h = headerFree(p->h);
 
-    memset(p, 0, sizeof(*p));	/* XXX trash and burn */
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
     /*@=nullstate@*/
@@ -207,9 +221,9 @@ assert(he->p.str != NULL);
 rpmte rpmteFree(rpmte te)
 {
     if (te != NULL) {
+	yarnPossess(te->use); /* XXX no refcounts, rpioPutPool expects locked. */
 	delTE(te);
-	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
-	te = _free(te);
+	te = (rpmte)rpmioPutPool((rpmioItem)te);
     }
     return NULL;
 }
@@ -222,7 +236,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		alKey pkgKey)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmte p = xcalloc(1, sizeof(*p));
+    rpmte p = rpmteGetPool(_rpmtePool);
     int xx;
 
     p->type = type;
