@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio.h>	/* for yarn.h */
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* for rpmGetPath() */
 
@@ -16,6 +16,22 @@
 
 /*@unchecked@*/
 int _rpmsx_debug = 0;
+
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmsxPool;
+
+static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmsx sx;
+
+    if (_rpmsxPool == NULL) {
+	_rpmsxPool = rpmioNewPool("sx", sizeof(*sx), -1, _rpmsx_debug);
+	pool = _rpmsxPool;
+    }
+    return (rpmsx) rpmioGetPool(pool, sizeof(*sx));
+}
 
 /**
  * Stable sort for policy specifications, patterns before paths.
@@ -200,30 +216,6 @@ static int rpmsxFind(/*@null@*/ const rpmsx sx, const char ** bpp)
     return -1;
 }
 
-rpmsx XrpmsxUnlink(rpmsx sx, const char * msg, const char * fn, unsigned ln)
-{
-    if (sx == NULL) return NULL;
-/*@-modfilesys@*/
-if (_rpmsx_debug && msg != NULL)
-fprintf(stderr, "--> sx %p -- %d %s at %s:%u\n", sx, sx->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    sx->nrefs--;
-    return NULL;
-}
-
-rpmsx XrpmsxLink(rpmsx sx, const char * msg, const char * fn, unsigned ln)
-{
-    if (sx == NULL) return NULL;
-    sx->nrefs++;
-
-/*@-modfilesys@*/
-if (_rpmsx_debug && msg != NULL)
-fprintf(stderr, "--> sx %p ++ %d %s at %s:%u\n", sx, sx->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-
-    /*@-refcounttrans@*/ return sx; /*@=refcounttrans@*/
-}
-
 rpmsx rpmsxFree(rpmsx sx)
 {
     int i;
@@ -231,14 +223,13 @@ rpmsx rpmsxFree(rpmsx sx)
     if (sx == NULL)
 	return NULL;
 
-    if (sx->nrefs > 1)
-	return rpmsxUnlink(sx, __func__);
-
+    yarnPossess(sx->use);
 /*@-modfilesys@*/
-if (_rpmsx_debug < 0)
-fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
+if (_rpmsx_debug)
+fprintf(stderr, "--> sx %p -- %ld %s at %s:%u\n", sx, yarnPeekLock(sx->use), "rpmsxFree", __FILE__, __LINE__);
 /*@=modfilesys@*/
 
+    if (yarnPeekLock(sx->use) <= -1L) {
     if (sx->Count > 0)
     for (i = 0; i < sx->Count; i++) {
 	rpmsxp sxp = sx->sxp + i;
@@ -256,12 +247,9 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 	sxs->stem = _free(sxs->stem);
     }
     sx->sxs = _free(sx->sxs);
-
-    (void) rpmsxUnlink(sx, __func__);
-    /*@-refcounttrans -usereleased@*/
-    memset(sx, 0, sizeof(*sx));		/* XXX trash and burn */
-    sx = _free(sx);
-    /*@=refcounttrans =usereleased@*/
+	sx = (rpmsx) rpmioPutPool((rpmioItem)sx);
+    } else
+	yarnTwist(sx->use, BY, -1);
     return NULL;
 }
 
@@ -517,9 +505,8 @@ int rpmsxParse(rpmsx sx, const char * fn)
 
 rpmsx rpmsxNew(const char * fn)
 {
-    rpmsx sx;
+    rpmsx sx = rpmsxGetPool(_rpmsxPool);
 
-    sx = xcalloc(1, sizeof(*sx));
     sx->sxp = NULL;
     sx->Count = 0;
     sx->i = -1;
@@ -528,7 +515,7 @@ rpmsx rpmsxNew(const char * fn)
     sx->maxsxs = 0;
     sx->reverse = 0;
 
-    (void) rpmsxLink(sx, __func__);
+    (void) rpmsxLink(sx, "rpmsxNew");
 
     if (rpmsxParse(sx, fn) != 0)
 	return rpmsxFree(sx);
@@ -634,7 +621,7 @@ int rpmsxNext(/*@null@*/ rpmsx sx)
 /*@-modfilesys @*/
 if (_rpmsx_debug  < 0 && i != -1) {
 rpmsxp sxp = sx->sxp + i;
-fprintf(stderr, "*** sx %p\t%s[%d]\t%s\t%s\n", sx, __func__, i, sxp->pattern, sxp->context);
+fprintf(stderr, "*** sx %p\t%s[%d]\t%s\t%s\n", sx, "rpmsxNext", i, sxp->pattern, sxp->context);
 /*@=modfilesys @*/
 }
 
