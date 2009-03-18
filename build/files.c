@@ -2083,7 +2083,6 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	absolute = 1;
     } else
 	fn = rpmGenPath(buildURL, NULL, fn);
-    rc = rpmioMkpath(bildURL, 0755, -1, -1);
 
     switch (tag) {
     default:
