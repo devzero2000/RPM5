@@ -97,6 +97,8 @@ extern rpmioPool _rpmgiPool;
 
 /*@unchecked@*/
 extern int _rpmps_debug;
+/*@unchecked@*/
+extern rpmioPool _rpmpsPool;
 
 /*@unchecked@*/
 extern int _rpmsq_debug;
@@ -443,7 +445,9 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _headerPool;
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
+
     _rpmtePool = rpmioFreePool(_rpmtePool);
+    _rpmpsPool = rpmioFreePool(_rpmpsPool);
 
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
