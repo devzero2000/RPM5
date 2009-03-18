@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: use EINVAL, not -1, for --without-pthreads portability.
     - jbj: yarn: glibc pthreads (at least) returns errno's, strrerror decodes.
     - jbj: yarn: fix: assert fail instead of exit on error.
     - jbj: yarn: use the pool allocator.

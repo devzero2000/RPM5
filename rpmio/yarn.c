@@ -52,16 +52,16 @@
 #define	pthread_t	int
 #define	pthread_self()	0
 #define	pthread_equal(_t1, _t2)	((_t1) == (_t2))
-#define	pthread_create(__newthread, __attr, __start_routine, arg)	(-1)
-#define	pthread_join(__thread, __value_ptr)				(-1)
-#define	pthread_cancel(__th)						(-1)
+#define	pthread_create(__newthread, __attr, __start_routine, arg)	(EINVAL)
+#define	pthread_join(__thread, __value_ptr)				(EINVAL)
+#define	pthread_cancel(__th)						(EINVAL)
 #define	pthread_cleanup_pop(__execute)
 #define	pthread_cleanup_push(__routine, __arg)
 
 #define	pthread_attr_t	int
-#define	pthread_attr_init(__attr)				(-1)
-#define	pthread_attr_destroy(__attr)				(-1)
-#define	pthread_attr_setdetachstate(__attr, __detachstate)	(-1)
+#define	pthread_attr_init(__attr)				(EINVAL)
+#define	pthread_attr_destroy(__attr)				(EINVAL)
+#define	pthread_attr_setdetachstate(__attr, __detachstate)	(EINVAL)
 
 #define	pthread_mutex_t	int
 #define	PTHREAD_MUTEX_INITIALIZER	0
@@ -75,7 +75,7 @@
 #define	PTHREAD_COND_INITIALIZER	0
 #define	pthread_cond_destroy(__cond)		(0)	/* FreeLock */
 #define	pthread_cond_init(__cond, __attr)	(0)	/* NewLock */
-#define	pthread_cond_wait(__cond, __mutex)	(sleep(60U))	/* WaitFor */
+#define	pthread_cond_wait(__cond, __mutex)	(EINVAL)/* WaitFor */
 #define	pthread_cond_broadcast(__cond)		(0)	/* Twist */
 
 #endif	/* WITH_PTHREADS */
