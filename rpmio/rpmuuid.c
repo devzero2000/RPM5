@@ -1,7 +1,6 @@
 /** \ingroup rpmio
  * \file rpmio/rpmuuid.c
  */
-#define	WITH_UUID
 
 #if defined(__APPLE__)
 /* workaround for "uuid_t" type conflict, between <unistd.h> and "uuid.h" */

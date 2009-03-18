@@ -1193,6 +1193,13 @@ AC_SUBST(WITH_SYCK_SUBDIR)
 AC_SUBST(WITH_SYCK_INCLUDE)
 
 withval=no
+AC_ARG_WITH(dmalloc, [  --with-uuid             build with OSSP uuid support ])
+if test $withval = yes ; then
+  AC_DEFINE(UUID, 1, [Build with OSSP uuid support?])
+  LIBS="$LIBS -lossp-uuid"
+fi
+
+withval=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
 if test $withval = yes ; then
   AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
@@ -1520,7 +1527,7 @@ AC_SUBST(OBJDUMP)
 
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec rpm5.spec po/Makefile.in
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec rpm5.spec po/Makefile.in   
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile
 	scripts/macros.perl scripts/macros.php scripts/macros.python
