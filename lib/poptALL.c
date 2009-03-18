@@ -102,9 +102,10 @@ extern int _rpmfi_debug;
 /*@unchecked@*/
 extern rpmioPool _rpmfiPool;
 
-
 /*@unchecked@*/
 extern int _rpmgi_debug;
+/*@unchecked@*/
+extern rpmioPool _rpmgiPool;
 
 /*@unchecked@*/
 extern int _rpmps_debug;
@@ -453,9 +454,11 @@ rpmcliFini(poptContext optCon)
 {
     extern rpmioPool _headerPool;
 
-    _headerPool = rpmioFreePool(_headerPool);
+    _rpmgiPool = rpmioFreePool(_rpmgiPool);
+
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
+    _headerPool = rpmioFreePool(_headerPool);
 
     /* XXX this should be done in the rpmioClean() wrapper. */
     /* keeps memory leak checkers quiet */

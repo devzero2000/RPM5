@@ -41,6 +41,21 @@ int _rpmgi_debug = 0;
 /*@unchecked@*/
 rpmgiFlags giFlags = RPMGI_NONE;
 
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmgiPool;
+
+static rpmgi rpmgiGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmgi gi;
+
+    if (_rpmgiPool == NULL) {
+	_rpmgiPool = rpmioNewPool("gi", sizeof(*gi), -1, _rpmgi_debug);
+	pool = _rpmgiPool;
+    }
+    return (rpmgi) rpmioGetPool(pool, sizeof(*gi));
+}
+
 /**
  */
 /*@unchecked@*/
@@ -452,72 +467,46 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
     return rpmrc;
 }
 
-rpmgi XrpmgiUnlink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
-{
-    if (gi == NULL) return NULL;
-
-if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p -- %d %s(%s) at %s:%u\n", gi, gi->nrefs, msg, tagName(gi->tag), fn, ln);
-
-    gi->nrefs--;
-    return NULL;
-}
-
-rpmgi XrpmgiLink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
-{
-    if (gi == NULL) return NULL;
-    gi->nrefs++;
-
-if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p ++ %d %s(%s) at %s:%u\n", gi, gi->nrefs, msg, tagName(gi->tag), fn, ln);
-
-    /*@-refcounttrans@*/ return gi; /*@=refcounttrans@*/
-}
-
 rpmgi rpmgiFree(rpmgi gi)
 {
-    if (gi == NULL)
-	return NULL;
+    int xx;
 
-    if (gi->nrefs > 1)
-	return rpmgiUnlink(gi, "rpmgiFree");
+    if (gi == NULL) return NULL;
 
-    (void) rpmgiUnlink(gi, "rpmgiFree");
+    yarnPossess(gi->use);
+if (_rpmgi_debug)
+fprintf(stderr, "--> gi %p -- %ld %s(%s) at %s:%u\n", gi, yarnPeekLock(gi->use), "rpmgiFree", tagName(gi->tag), __FILE__, __LINE__);
+    if (yarnPeekLock(gi->use) <= 1L) {
+	gi->hdrPath = _free(gi->hdrPath);
+	gi->h = headerFree(gi->h);
 
-/*@-usereleased@*/
+	gi->argv = argvFree(gi->argv);
 
-    gi->hdrPath = _free(gi->hdrPath);
-    gi->h = headerFree(gi->h);
+	if (gi->ftsp != NULL) {
+	    xx = Fts_close(gi->ftsp);
+	    gi->ftsp = NULL;
+	    gi->fts = NULL;
+	}
+	if (gi->fd != NULL) {
+	    xx = Fclose(gi->fd);
+	    gi->fd = NULL;
+	}
+	gi->tsi = rpmtsiFree(gi->tsi);
+	gi->mi = rpmdbFreeIterator(gi->mi);
+	gi->ts = rpmtsFree(gi->ts);
 
-    gi->argv = argvFree(gi->argv);
+	gi = (rpmgi) rpmioPutPool((rpmioItem)gi);
+    } else
+	yarnTwist(gi->use, BY, -1);
 
-    if (gi->ftsp != NULL) {
-	int xx;
-	xx = Fts_close(gi->ftsp);
-	gi->ftsp = NULL;
-	gi->fts = NULL;
-    }
-    if (gi->fd != NULL) {
-	(void) Fclose(gi->fd);
-	gi->fd = NULL;
-    }
-    gi->tsi = rpmtsiFree(gi->tsi);
-    gi->mi = rpmdbFreeIterator(gi->mi);
-    gi->ts = rpmtsFree(gi->ts);
-
-    memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
-/*@-refcounttrans@*/
-    gi = _free(gi);
-/*@=refcounttrans@*/
-/*@=usereleased@*/
     return NULL;
 }
 
 rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 {
-    rpmgi gi = xcalloc(1, sizeof(*gi));
+    rpmgi gi = rpmgiGetPool(_rpmgiPool);
 
-    if (gi == NULL)
+    if (gi == NULL)	/* XXX can't happen */
 	return NULL;
 
     gi->ts = rpmtsLink(ts, "rpmgiNew");

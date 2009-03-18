@@ -40,6 +40,10 @@ extern rpmgiFlags giFlags;
 /** \ingroup rpmgi
  */
 struct rpmgi_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
     int (*tsOrder) (rpmts ts);	/*!< Iterator transaction ordering. */
@@ -78,8 +82,6 @@ struct rpmgi_s {
 /*@null@*/
     rpmRC (*stash) (rpmgi gi, Header h);
 
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif
 
@@ -100,15 +102,8 @@ extern "C" {
 rpmgi rpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
 		/*@null@*/ const char * msg)
 	/*@modifies gi @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmgi XrpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies gi @*/;
-/*@=exportlocal@*/
-#define	rpmgiUnlink(_gi, _msg)	XrpmgiUnlink(_gi, _msg, __FILE__, __LINE__)
+#define	rpmgiUnlink(_gi, _msg)	\
+	((rpmgi)rpmioUnlinkPoolItem((rpmioItem)(_gi), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a generalized iterator instance.
@@ -119,15 +114,8 @@ rpmgi XrpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
 	/*@modifies gi @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@newref@*/ /*@null@*/
-rpmgi XrpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies gi @*/;
-/*@=exportlocal@*/
-#define	rpmgiLink(_gi, _msg)	XrpmgiLink(_gi, _msg, __FILE__, __LINE__)
+#define	rpmgiLink(_gi, _msg)	\
+	((rpmgi)rpmioLinkPoolItem((rpmioItem)(_gi), _msg, __FILE__, __LINE__))
 
 /** Destroy a generalized iterator.
  * @param gi		generalized iterator
