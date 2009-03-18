@@ -31,6 +31,9 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
  */
 struct urlinfo_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@owned@*/ /*@relnull@*/
     const char * url;		/*!< copy of original url */
 /*@owned@*/ /*@relnull@*/

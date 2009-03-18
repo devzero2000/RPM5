@@ -83,8 +83,10 @@ struct indexEntry_s {
  * The Header data structure.
  */
 struct headerToken_s {
-/*@relnull@*/
-    yarnLock use;
+     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     unsigned char magic[8];	/*!< Header magic. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */

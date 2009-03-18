@@ -163,6 +163,22 @@ int _ftp_debug = 0;
 /*@unchecked@*/
 int _dav_debug = 0;
 
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _fdPool;
+
+static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    FD_t fd;
+
+    if (_fdPool == NULL) {
+	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1);
+	pool = _fdPool;
+    }
+    return (FD_t) rpmioGetPool(pool, sizeof(*fd));
+}
+
 /* =============================================================== */
 
 const char * fdbg(FD_t fd)
@@ -330,7 +346,6 @@ DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, file, line)
 	yarnPossess(fd->use);
 DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, file, line, fdbg(fd)));
 	if (yarnPeekLock(fd->use) == 1L) {
-	    yarnLock use = fd->use;
 	    fd->opath = _free(fd->opath);
 	    fd->stats = _free(fd->stats);
 	    for (i = fd->ndigests - 1; i >= 0; i--) {
@@ -347,10 +362,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->
 #endif
 	    fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
-	    memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
-	    /*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
-	    yarnTwist(use, BY, -1);
-	    use = yarnFreeLock(use);
+	    fd = (FD_t) rpmioPutPool((rpmioItem)fd);
 	    return NULL;
 	}
 	yarnTwist(fd->use, BY, -1);
@@ -364,10 +376,9 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    FD_t fd = xcalloc(1, sizeof(*fd));
+    FD_t fd = fdGetPool(_fdPool);
     if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
-    fd->use = yarnNewLock(0);
     fd->flags = 0;
     fd->magic = FDMAGIC;
     fd->urlType = URL_IS_UNKNOWN;
@@ -3181,6 +3192,8 @@ int _rpmnss_init = 0;
 
 void rpmioClean(void)
 {
+    extern rpmioPool _urlPool;
+
 #if defined(WITH_LUA)
     (void) rpmluaFree(NULL);
 #endif
@@ -3194,6 +3207,10 @@ void rpmioClean(void)
     }
 #endif
     urlFreeCache();
+
+    _urlPool = rpmioFreePool(_urlPool);
+    _fdPool = rpmioFreePool(_fdPool);
+
     rpmlogClose();
 }
 
