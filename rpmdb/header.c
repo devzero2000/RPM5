@@ -1361,8 +1361,6 @@ Header headerReload(Header h, int tag)
 	uh = _free(uh);
 	return NULL;
     }
-    if (nh->flags & HEADERFLAG_ALLOCATED)
-	uh = _free(uh);
     nh->flags |= HEADERFLAG_ALLOCATED;
     if (ENTRY_IS_REGION(nh->index)) {
 	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE)
