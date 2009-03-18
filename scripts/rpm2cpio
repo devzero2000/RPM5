@@ -31,6 +31,6 @@ case "$comp" in
     BZh)      dd if="$pkg" ibs=$o skip=1 2>/dev/null | bunzip2 ;;
     "$gz"*)   dd if="$pkg" ibs=$o skip=1 2>/dev/null | gunzip ;;
     # no magic in old lzma format, if unknown we assume that's lzma for now
-    *)        dd if="$pkg" ibs=$o skip=1 2>/dev/null | lzma d -si -so ;;
+    *)        dd if="$pkg" ibs=$o skip=1 2>/dev/null | unlzma ;;
     #*)        echo "Unrecognized rpm file: $pkg"; return 1 ;;
 esac
