@@ -187,10 +187,11 @@ static void fail(int err)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    fprintf(stderr, "%s: %s (%d) -- aborting\n", yarnPrefix,
-            err == ENOMEM ? "out of memory" : "internal pthread error", err);
+    fprintf(stderr, "%s: pthread error: %s(%d) -- aborting\n", yarnPrefix,
+            strerror(err), err);
     if (yarnAbort != NULL)
         yarnAbort(err);
+assert(0);
     exit(err == ENOMEM || err == EAGAIN ? err : EINVAL);
 }
 

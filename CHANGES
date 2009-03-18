@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: glibc pthreads (at least) returns errno's, strrerror decodes.
+    - jbj: yarn: fix: assert fail instead of exit on error.
     - jbj: yarn: use the pool allocator.
     - jbj: yarn: add a pool allocator.
     - devzero2000: add mkdtemp portability function to -lrpmmisc 
