@@ -260,21 +260,8 @@ extern "C" {
 rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 		/*@null@*/ const char * msg)
 	/*@modifies fi @*/;
-
-/** @todo Remove debugging entry from the ABI.
- * @param fi		file info set
- * @param msg
- * @param fn
- * @param ln
- * @return		NULL always
- */
-/*@-exportlocal@*/
-/*@null@*/
-rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies fi @*/;
-/*@=exportlocal@*/
-#define	rpmfiUnlink(_fi, _msg) XrpmfiUnlink(_fi, _msg, __FILE__, __LINE__)
+#define	rpmfiUnlink(_fi, _msg)	\
+	(rpmfi) rpmioUnlinkPoolItem((rpmioItem)(_fi), _msg, __FILE__, __LINE__)
 
 /**
  * Reference a file info set instance.
@@ -285,19 +272,8 @@ rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 /*@unused@*/ /*@null@*/
 rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
 	/*@modifies fi @*/;
-
-/** @todo Remove debugging entry from the ABI.
- * @param fi		file info set
- * @param msg
- * @param fn
- * @param ln
- * @return		NULL always
- */
-/*@null@*/
-rpmfi XrpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies fi @*/;
-#define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
+#define	rpmfiLink(_fi, _msg)	\
+	(rpmfi) rpmioLinkPoolItem((rpmioItem)(_fi), _msg, __FILE__, __LINE__)
 
 /**
  * Return file count from file info set.

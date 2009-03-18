@@ -155,7 +155,7 @@ urlinfo	urlNew(const char * msg)
 
 /** @todo Remove debugging entry from the ABI. */
 /*@null@*/
-urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
+urlinfo	XurlNew(const char * msg, const char * fn, unsigned ln)	/*@*/;
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
 /**
@@ -167,12 +167,8 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
 /*@unused@*/ /*@newref@*/
 urlinfo	urlLink(/*@returned@*/ urlinfo u, const char * msg)
 	/*@modifies u @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/
-urlinfo	XurlLink(/*@returned@*/ urlinfo u, const char * msg, const char * file, unsigned line)
-	/*@modifies u @*/;
-#define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
+#define	urlLink(_u, _msg)	\
+	(urlinfo) rpmioLinkPoolItem((rpmioItem)(_u), _msg, __FILE__, __LINE__)
 
 /**
  * Dereference a URL control structure instance.
@@ -188,7 +184,7 @@ urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 /** @todo Remove debugging entry from the ABI. */
 /*@null@*/
 urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
-		const char * file, unsigned line)
+		const char * fn, unsigned ln)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/;
 #define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)

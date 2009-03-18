@@ -40,6 +40,7 @@ struct rpmds_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
 /*@shared@*/ /*@null@*/
     void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@observer@*/
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
@@ -85,6 +86,10 @@ struct rpmds_s {
  * Container for provides/requires/conflicts/obsoletes dependency set(s).
  */
 struct rpmPRCO_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@dependent@*/ /*@relnull@*/
     rpmds * Pdsp;		/*!< Provides: collector. */
 /*@dependent@*/ /*@relnull@*/
@@ -135,15 +140,8 @@ extern "C" {
 rpmds rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 		/*@null@*/ const char * msg)
 	/*@modifies ds @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies ds @*/;
-/*@=exportlocal@*/
-#define	rpmdsUnlink(_ds, _msg)	XrpmdsUnlink(_ds, _msg, __FILE__, __LINE__)
+#define	rpmdsUnlink(_ds, _msg)	\
+	((rpmds)rpmioUnlinkPoolItem((rpmioItem)(_ds), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmds
  * Reference a dependency set instance.
@@ -154,13 +152,8 @@ rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
 	/*@modifies ds @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies ds @*/;
-#define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)
+#define	rpmdsLink(_ds, _msg)	\
+	((rpmds)rpmioLinkPoolItem((rpmioItem)(_ds), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmds
  * Destroy a dependency set.

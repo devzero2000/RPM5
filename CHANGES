@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: use the pool changes where possible.
     - jbj: yarn: add generic Link/Unlink refcount diddlers.
     - jbj: yarn: add debugging, reuse counter, and zlog to rpmioPool.
     - jbj: yarn: trick up a __FILE__:__LINE__ from caller when failing too.

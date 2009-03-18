@@ -63,34 +63,10 @@ static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
     rpmfi fi;
 
     if (_rpmfiPool == NULL) {
-	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1);
+	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1, _rpmfi_debug);
 	pool = _rpmfiPool;
     }
     return (rpmfi) rpmioGetPool(pool, sizeof(*fi));
-}
-
-rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
-{
-    if (fi == NULL) return NULL;
-    yarnPossess(fi->use);
-/*@-modfilesys@*/
-if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), msg, fn, ln);
-/*@=modfilesys@*/
-    yarnTwist(fi->use, BY, -1);
-    return NULL;
-}
-
-rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
-{
-    if (fi == NULL) return NULL;
-    yarnPossess(fi->use);
-/*@-modfilesys@*/
-if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p ++ %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use)+1, msg, fn, ln);
-/*@=modfilesys@*/
-    yarnTwist(fi->use, BY, 1);
-    /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
 int rpmfiFC(rpmfi fi)

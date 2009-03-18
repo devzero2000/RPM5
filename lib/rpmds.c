@@ -131,35 +131,10 @@ static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
     rpmds ds;
 
     if (_rpmdsPool == NULL) {
-	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1);
+	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1, _rpmds_debug);
 	pool = _rpmdsPool;
     }
     return (rpmds) rpmioGetPool(pool, sizeof(*ds));
-}
-
-rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
-{
-    if (ds == NULL) return NULL;
-    yarnPossess(ds->use);
-/*@-modfilesys@*/
-if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use), msg, fn, ln);
-/*@=modfilesys@*/
-    yarnTwist(ds->use, BY, -1);
-    return NULL;
-}
-
-rpmds XrpmdsLink(rpmds ds, const char * msg, const char * fn, unsigned ln)
-{
-    if (ds == NULL) return NULL;
-    yarnPossess(ds->use);
-/*@-modfilesys@*/
-if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p ++ %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use)+1, msg, fn, ln);
-/*@=modfilesys@*/
-    yarnTwist(ds->use, BY, 1);
-
-    /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
 
 /**

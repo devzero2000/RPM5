@@ -78,24 +78,26 @@ static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
     urlinfo u;
 
     if (_urlPool == NULL) {
-	_urlPool = rpmioNewPool(" u", sizeof(*u), -1);
+	_urlPool = rpmioNewPool(" u", sizeof(*u), -1, _url_debug);
 	pool = _urlPool;
     }
     return (urlinfo) rpmioGetPool(pool, sizeof(*u));
 }
 
-urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
+#ifdef	DYING
+urlinfo XurlLink(urlinfo u, const char *msg, const char *fn, unsigned ln)
 {
     URLSANE(u);
     yarnPossess(u->use);
 /*@-modfilesys@*/
-URLDBGREFS(0, (stderr, "--> url %p ++ %ld %s at %s:%u\n", u, yarnPeekLock(u->use)+1, msg, file, line));
+URLDBGREFS(0, (stderr, "--> url %p ++ %ld %s at %s:%u\n", u, yarnPeekLock(u->use)+1, msg, fn, ln));
 /*@=modfilesys@*/
     yarnTwist(u->use, BY, 1);
     /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
 }
+#endif
 
-urlinfo XurlNew(const char *msg, const char *file, unsigned line)
+urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
 {
     urlinfo u = urlGetPool(_urlPool);
     if (u == NULL)	/* XXX can't happen */
@@ -120,16 +122,20 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->allow = RPMURL_SERVER_HASRANGE;
     u->httpVersion = 0;
     u->magic = URLMAGIC;
-    return XurlLink(u, msg, file, line);
+#ifdef	DYING
+    return XurlLink(u, msg, fn, ln);
+#else
+    return (urlinfo) rpmioLinkPoolItem((rpmioItem)u, msg, fn, ln);
+#endif
 }
 
-urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
+urlinfo XurlFree(urlinfo u, const char *msg, const char *fn, unsigned ln)
 {
     int xx;
 
     URLSANE(u);
     yarnPossess(u->use);
-URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use), msg, file, line));
+URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use), msg, fn, ln));
     if (yarnPeekLock(u->use) > 1) {
 	yarnTwist(u->use, BY, -1);
 	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
@@ -147,7 +153,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use
 #endif
 
 /*@-usereleased@*/
-	u->ctrl = XfdFree(u->ctrl, "persist ctrl (urlFree)", file, line);
+	u->ctrl = XfdFree(u->ctrl, "persist ctrl (urlFree)", fn, ln);
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, (u->host ? u->host : ""),
@@ -167,7 +173,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use
 #endif
 
 /*@-usereleased@*/
-	u->data = XfdFree(u->data, "persist data (urlFree)", file, line);
+	u->data = XfdFree(u->data, "persist data (urlFree)", fn, ln);
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, (u->host ? u->host : ""),
