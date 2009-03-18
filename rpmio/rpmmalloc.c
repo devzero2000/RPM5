@@ -41,8 +41,13 @@ struct rpmioPool_s {
     rpmioItem * tail;
     size_t size;		/*!< size of items in this pool */
     int limit;			/*!< number of new items allowed, or -1 */
+    int flags;
+    int reused;			/*!< number of items reused */
     int made;			/*!< number of items made */
+/*@observer@*/
     const char *name;
+/*@null@*/
+    void * zlog;
 };
 
 /*@unchecked@*/
@@ -67,14 +72,14 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 	}
 	yarnRelease(pool->have);
 	pool->have = yarnFreeLock(pool->have);
-	rpmlog(RPMLOG_DEBUG, ("rpm%s: pool alloc'd %d, free'd %d, items.\n"), pool->name, pool->made, count);
+	rpmlog(RPMLOG_DEBUG, ("pool %s:\treused %d, alloc'd %d, free'd %d items.\n"), pool->name, pool->reused, pool->made, count);
 assert(pool->made == count);
 	pool = _free(pool);
     }
     return NULL;
 }
 
-rpmioPool rpmioNewPool(const char * name, size_t size, int limit)
+rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags)
 	/*@*/
 {
     rpmioPool pool = xcalloc(1, sizeof(*pool));
@@ -84,10 +89,45 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit)
     pool->tail = &pool->head;
     pool->size = size;
     pool->limit = limit;
+    pool->flags = flags;
+    pool->reused = 0;
     pool->made = 0;
     pool->name = name;
-    rpmlog(RPMLOG_DEBUG, ("rpm%s: pool created.\n"), pool->name);
+    pool->zlog = NULL;
+    rpmlog(RPMLOG_DEBUG, ("pool %s:\tcreated size %u limit %d flags %d\n"), pool->name, (unsigned)pool->size, pool->limit, pool->flags);
     return pool;
+}
+
+rpmioItem rpmioUnlinkPoolItem(rpmioItem item, const char * msg,
+		const char * fn, unsigned ln)
+{
+    rpmioPool pool;
+    if (item == NULL) return NULL;
+    yarnPossess(item->use);
+    if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+/*@-modfilesys@*/
+	fprintf(stderr, "--> %s %p -- %ld %s at %s:%u\n", pool->name,
+			item, yarnPeekLock(item->use), msg, fn, ln);
+/*@=modfilesys@*/
+    }
+    yarnTwist(item->use, BY, -1);
+    return item;
+}
+
+rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
+		const char * fn, unsigned ln)
+{
+    rpmioPool pool;
+    if (item == NULL) return NULL;
+    yarnPossess(item->use);
+    if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+/*@-modfilesys@*/
+	fprintf(stderr, "--> %s %p ++ %ld %s at %s:%u\n", pool->name,
+			item, yarnPeekLock(item->use)+1, msg, fn, ln);
+/*@=modfilesys@*/
+    }
+    yarnTwist(item->use, BY, 1);
+    return item;
 }
 
 rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
@@ -106,6 +146,7 @@ rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
 	    pool->head = item->pool;	/* XXX pool == next */
 	    if (pool->head == NULL)
 		pool->tail = &pool->head;
+	    pool->reused++;
 	    item->pool = pool;		/* remember the pool this belongs to */
 	    yarnTwist(pool->have, BY, -1);      /* one less in pool */
 	    return item;

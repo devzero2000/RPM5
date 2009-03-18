@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: add generic Link/Unlink refcount diddlers.
+    - jbj: yarn: add debugging, reuse counter, and zlog to rpmioPool.
     - jbj: yarn: trick up a __FILE__:__LINE__ from caller when failing too.
     - jbj: yarn: use EINVAL, not -1, for --without-pthreads portability.
     - jbj: yarn: glibc pthreads (at least) returns errno's, strrerror decodes.

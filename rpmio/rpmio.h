@@ -760,10 +760,37 @@ rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
  * @param name		pool name
  * @param size		item size
  * @param limit		no. of items permitted (-1 for unlimited)
+ * @param flags		debugging flags
  * @return		memory pool
  */
-rpmioPool rpmioNewPool(const char * name, size_t size, int limit)
+rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags)
         /*@*/;
+
+/**
+ * Decrement a pool item refcount.
+ * @param item		pool item
+ * @param msg		debugging msg (NULL disables debugging)
+ * @param fn		usually __FILE__
+ * @param ln		usually __LINE__
+ * @return		pool item
+ */
+/*@null@*/
+rpmioItem rpmioUnlinkPoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies item @*/;
+
+/**
+ * Increment a pool item refcount.
+ * @param item		pool item
+ * @param msg		debugging msg (NULL disables debugging)
+ * @param fn		usually __FILE__
+ * @param ln		usually __LINE__
+ * @return		pool item
+ */
+/*@newref@*/ /*@null@*/
+rpmioItem rpmioLinkPoolItem(/*@returned@*/ /*@null@*/ rpmioItem item,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies item @*/;
 
 /**
  * Get unused item from pool, or alloc a new item.
