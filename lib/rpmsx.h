@@ -62,6 +62,10 @@ struct rpmsxs_s {
  * File security context patterns container.
  */
 struct rpmsx_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@only@*/ /*@relnull@*/
     rpmsxp sxp;			/*!< File context patterns. */
     int Count;			/*!< No. of file context patterns. */
@@ -71,8 +75,6 @@ struct rpmsx_s {
     int nsxs;			/*!< No. of file stems. */
     int maxsxs;			/*!< No. of allocated file stems. */
     int reverse;		/*!< Reverse traversal? */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif /* defined(_RPMSX_INTERNAL) */
 
@@ -90,15 +92,8 @@ extern "C" {
 rpmsx rpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
 		/*@null@*/ const char * msg)
 	/*@modifies sx @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmsx XrpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies sx @*/;
-/*@=exportlocal@*/
-#define	rpmsxUnlink(_sx, _msg)	XrpmsxUnlink(_sx, _msg, __FILE__, __LINE__)
+#define	rpmsxUnlink(_sx, _msg)	\
+	((rpmsx)rpmioUnlinkPoolItem((rpmioItem)(_sx), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a security context patterns instance.
@@ -106,18 +101,11 @@ rpmsx XrpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
  * @param msg
  * @return		new security context patterns reference
  */
-/*@-exportlocal@*/
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmsx rpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg)
 	/*@modifies sx @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-rpmsx XrpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies sx @*/;
-/*@=exportlocal@*/
-#define	rpmsxLink(_sx, _msg)	XrpmsxLink(_sx, _msg, __FILE__, __LINE__)
+#define	rpmsxLink(_sx, _msg)	\
+	((rpmsx)rpmioLinkPoolItem((rpmioItem)(_sx), _msg, __FILE__, __LINE__))
 
 /**
  * Destroy a security context patterns.

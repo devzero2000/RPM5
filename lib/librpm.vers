@@ -410,8 +410,6 @@ LIBRPM_0
     tarTrailerWrite;
     XrpmpsmLink;
     XrpmpsmUnlink;
-    XrpmsxLink;
-    XrpmsxUnlink;
     XrpmtsiFree;
     XrpmtsiInit;
     XrpmtsLink;
