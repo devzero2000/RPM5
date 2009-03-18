@@ -183,17 +183,18 @@ void (*yarnAbort)(int) = NULL;
 
 /* immediately exit -- use for errors that shouldn't ever happen */
 /*@exits@*/
-static void fail(int err)
+static void _fail(int err, const char * fn, unsigned ln)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    fprintf(stderr, "%s: pthread error: %s(%d) -- aborting\n", yarnPrefix,
-            strerror(err), err);
+    fprintf(stderr, "%s: pthread error: %s(%d) -- aborting at %s:%u\n", yarnPrefix,
+            strerror(err), err, fn, ln);
     if (yarnAbort != NULL)
         yarnAbort(err);
 assert(0);
     exit(err == ENOMEM || err == EAGAIN ? err : EINVAL);
 }
+#define	fail(_err)	_fail((_err), __FILE__, __LINE__)
 
 /* memory handling routines provided by user -- if none are provided, malloc()
    and free() are used, which are therefore assumed to be thread-safe */
