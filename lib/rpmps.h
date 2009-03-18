@@ -82,11 +82,13 @@ struct rpmProblem_s {
 /**
  */
 struct rpmps_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 
 /**
@@ -120,19 +122,12 @@ extern "C" {
  * @param msg
  * @return		problem set
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 rpmps rpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
 		const char * msg)
 	/*@modifies ps @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmps XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
-		const char * msg, const char * fn, unsigned ln)
-	/*@modifies ps @*/;
-#define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)
-/*@=exportlocal@*/
+#define	rpmpsUnlink(_ps, _msg)	\
+	((rpmps)rpmioUnlinkPoolItem((rpmioItem)(_ps), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a problem set instance.
@@ -140,15 +135,11 @@ rpmps XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
  * @param msg
  * @return		new transaction set reference
  */
-/*@unused@*/
+/*@unused@*/ /*@newref@*/
 rpmps rpmpsLink (rpmps ps, const char * msg)
 	/*@modifies ps @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-rpmps XrpmpsLink (rpmps ps,
-		const char * msg, const char * fn, unsigned ln)
-        /*@modifies ps @*/;
-#define	rpmpsLink(_ps, _msg)	XrpmpsLink(_ps, _msg, __FILE__, __LINE__)
+#define	rpmpsLink(_ps, _msg)	\
+	((rpmps)rpmioLinkPoolItem((rpmioItem)(_ps), _msg, __FILE__, __LINE__))
 
 /**
  * Return number of problems in set.

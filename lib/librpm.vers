@@ -408,10 +408,8 @@ LIBRPM_0
     tarHeaderRead;
     tarHeaderWrite;
     tarTrailerWrite;
-    XrpmpsLink;
     XrpmpsmLink;
     XrpmpsmUnlink;
-    XrpmpsUnlink;
     XrpmsxLink;
     XrpmsxUnlink;
     XrpmtsiFree;

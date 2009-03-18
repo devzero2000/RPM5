@@ -19,6 +19,23 @@
 /*@unchecked@*/
 int _rpmps_debug = 0;
 
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmpsPool;
+
+static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmps ps;
+
+    if (_rpmpsPool == NULL) {
+	_rpmpsPool = rpmioNewPool("ps", sizeof(*ps), -1, _rpmps_debug);
+	pool = _rpmpsPool;
+    }
+    return (rpmps) rpmioGetPool(pool, sizeof(*ps));
+}
+
+#ifdef	DYING
 rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
@@ -44,6 +61,7 @@ fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
     return ps;
 /*@=refcounttrans@*/
 }
+#endif
 
 int rpmpsNumProblems(rpmps ps)
 {
@@ -98,28 +116,32 @@ rpmProblem rpmpsProblem(rpmpsi psi)
 
 rpmps rpmpsCreate(void)
 {
-    rpmps ps = xcalloc(1, sizeof(*ps));
+    rpmps ps = rpmpsGetPool(_rpmpsPool);
     return rpmpsLink(ps, "create");
 }
 
 rpmps rpmpsFree(rpmps ps)
 {
     if (ps == NULL) return NULL;
-    ps = rpmpsUnlink(ps, "dereference");
-    if (ps->nrefs > 0)
-	return NULL;
-	
-    if (ps->probs) {
-	int i;
-	for (i = 0; i < ps->numProblems; i++) {
-	    rpmProblem p = ps->probs + i;
-	    p->pkgNEVR = _free(p->pkgNEVR);
-	    p->altNEVR = _free(p->altNEVR);
-	    p->str1 = _free(p->str1);
+    yarnPossess(ps->use);
+/*@-modfilesys@*/
+if (_rpmps_debug)
+fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, yarnPeekLock(ps->use), "rpmpsFree", __FILE__, __LINE__);
+/*@=modfilesys@*/
+    if (yarnPeekLock(ps->use) <= 1L) {
+	if (ps->probs) {
+	    int i;
+	    for (i = 0; i < ps->numProblems; i++) {
+		rpmProblem p = ps->probs + i;
+		p->pkgNEVR = _free(p->pkgNEVR);
+		p->altNEVR = _free(p->altNEVR);
+		p->str1 = _free(p->str1);
+	    }
+	    ps->probs = _free(ps->probs);
 	}
-	ps->probs = _free(ps->probs);
-    }
-    ps = _free(ps);
+	ps = (rpmps) rpmioPutPool((rpmioItem)ps);
+    } else
+	yarnTwist(ps->use, BY, -1);
     return NULL;
 }
 
