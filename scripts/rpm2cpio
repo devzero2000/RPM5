@@ -29,6 +29,8 @@ if echo $COMPRESSION |grep -q gzip; then
 	DECOMPRESSOR=gunzip
 elif echo $COMPRESSION |grep -q bzip2; then
 	DECOMPRESSOR=bunzip2
+elif echo $COMPRESSION |grep -q xz; then
+	DECOMPRESSOR=unxz
 elif echo $COMPRESSION |grep -q cpio; then
 	DECOMPRESSOR=cat
 else
