@@ -5,7 +5,6 @@
 
 #if defined(SUPPORT_LIBCPUINFO)
 #include <cpuinfo.h>
-#include <endian.h>
 #endif
 
 #if defined(HAVE_GELF_H) && !defined(__FreeBSD__)
@@ -1210,6 +1209,12 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     struct cpuinfo *cip = cpuinfo_new();
     cpuinfo_feature_t feature;
     char tmp[20];
+    union _dbswap {
+     	rpmuint32_t ui;
+     	unsigned char uc[4];
+    };
+    static union _dbswap orderedbytes = { .ui = 0x11223344 };
+    const char * endianness = NULL;
 
     snprintf(tmp, 19, "%d", cpuinfo_get_frequency(cip));
     tmp[19] = '\0';
@@ -1218,16 +1223,14 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     rpmdsNSAdd(dsp, NS, "cpu_cores", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
     snprintf(tmp, 19, "%d", cpuinfo_get_threads(cip));
     rpmdsNSAdd(dsp, NS, "cpu_threads", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
-#ifdef __BYTE_ORDER
-#if __BYTE_ORDER == LITTLE_ENDIAN
-#define endian "little"
-#elif __BYTE_ORDER == BIG_ENDIAN
-#define endian "big"
-#elif __BYTE_ORDER == PDP_ENDIAN
-#define endian "pdp"
-#endif
-    rpmdsNSAdd(dsp, NS, "endianness", endian, RPMSENSE_PROBE|RPMSENSE_EQUAL);
-#endif
+
+    if(orderedbytes.uc[0] == 0x44)
+	endianness = "little";
+    else if(orderedbytes.uc[0] == 0x11)
+	endianness = "big";
+    else if(orderedbytes.uc[0] == 0x22)
+	endianness = "pdp";
+    rpmdsNSAdd(dsp, NS, "endianness", endianness, RPMSENSE_PROBE|RPMSENSE_EQUAL);
 
     for (feature = cpuinfo_feature_common; feature != cpuinfo_feature_architecture_max; feature++) {
 	if(feature == cpuinfo_feature_common_max)
