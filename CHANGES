@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: rpmps: fix: avoid reusing items from pool for now.
     - jbj: yarn: convert rpmtsi refcount to usage mutex.
     - jbj: yarn: convert rpmsx refcount to usage mutex.
     - jbj: yarn: convert rpmps refcount to usage mutex.

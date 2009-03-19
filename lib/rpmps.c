@@ -116,7 +116,11 @@ rpmProblem rpmpsProblem(rpmpsi psi)
 
 rpmps rpmpsCreate(void)
 {
+#ifdef	BUGGY
     rpmps ps = rpmpsGetPool(_rpmpsPool);
+#else
+    rpmps ps = rpmpsGetPool(NULL);
+#endif
     return rpmpsLink(ps, "create");
 }
 
