@@ -201,6 +201,10 @@ struct diskspaceInfo_s {
  * The set of packages to be installed/removed atomically.
  */
 struct rpmts_s {
+     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     rpmdepFlags depFlags;	/*!< Bit(s) to control rpmtsCheck(). */
     rpmtransFlags transFlags;	/*!< Bit(s) to control rpmtsRun(). */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
@@ -315,8 +319,6 @@ struct rpmts_s {
 
     rpmuint32_t arbgoal;	/*!< Autorollback goal */
 
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif	/* _RPMTS_INTERNAL */
 
@@ -402,15 +404,8 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet,
 rpmts rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
 		const char * msg)
 	/*@modifies ts @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmts XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
-		const char * msg, const char * fn, unsigned ln)
-	/*@modifies ts @*/;
-/*@=exportlocal@*/
-#define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
+#define	rpmtsUnlink(_ts, _msg)	\
+	((rpmts) rpmioUnlinkPoolItem((rpmioItem)(_ts), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmts
  * Reference a transaction set instance.
@@ -418,15 +413,11 @@ rpmts XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
  * @param msg
  * @return		new transaction set reference
  */
-/*@unused@*/
+/*@unused@*/ /*@newref@*/
 rpmts rpmtsLink (rpmts ts, const char * msg)
 	/*@modifies ts @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-rpmts XrpmtsLink (rpmts ts,
-		const char * msg, const char * fn, unsigned ln)
-        /*@modifies ts @*/;
-#define	rpmtsLink(_ts, _msg)	XrpmtsLink(_ts, _msg, __FILE__, __LINE__)
+#define	rpmtsLink(_ts, _msg)	\
+	((rpmts) rpmioLinkPoolItem((rpmioItem)(_ts), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmts
  * Close the database used by the transaction.

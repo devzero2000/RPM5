@@ -412,8 +412,6 @@ LIBRPM_0
     XrpmpsmUnlink;
     XrpmtsiFree;
     XrpmtsiInit;
-    XrpmtsLink;
-    XrpmtsUnlink;
   local:
     *;
 };

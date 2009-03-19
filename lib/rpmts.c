@@ -88,25 +88,22 @@ int _rpmts_stats = 0;
 /*@unchecked@*/
 int _rpmts_macros = 0;
 
-rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmtsPool;
+
+static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
 {
-/*@-modfilesys@*/
-if (_rpmts_debug)
-fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    ts->nrefs--;
-    return NULL;
+    rpmts ts;
+
+    if (_rpmtsPool == NULL) {
+	_rpmtsPool = rpmioNewPool("ts", sizeof(*ts), -1, _rpmts_debug);
+	pool = _rpmtsPool;
+    }
+    return (rpmts) rpmioGetPool(pool, sizeof(*ts));
 }
 
-rpmts XrpmtsLink(rpmts ts, const char * msg, const char * fn, unsigned ln)
-{
-    ts->nrefs++;
-/*@-modfilesys@*/
-if (_rpmts_debug)
-fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
-}
 
 int rpmtsCloseDB(rpmts ts)
 {
@@ -642,64 +639,75 @@ rpmts rpmtsFree(rpmts ts)
     if (ts == NULL)
 	return NULL;
 
-    if (ts->nrefs > 1)
-	return rpmtsUnlink(ts, "tsCreate");
+    yarnPossess(ts->use);
+/*@-modfilesys@*/
+if (_rpmts_debug)
+fprintf(stderr, "--> ts %p -- %ld %s at %s:%u\n", ts, yarnPeekLock(ts->use), "tsCreate", __FILE__, __LINE__);
+/*@=modfilesys@*/
+
+    if (yarnPeekLock(ts->use) <= 1L) {
 
 /*@-nullstate@*/	/* FIX: partial annotations */
-    rpmtsEmpty(ts);
+	/* XXX there's a recursion here ... release and reacquire the lock */
+#ifndef	BUGGY
+	yarnRelease(ts->use);	/* XXX hack-o-round */
+#endif
+	rpmtsEmpty(ts);
+#ifndef	BUGGY
+	yarnPossess(ts->use);	/* XXX hack-o-round */
+#endif
 /*@=nullstate@*/
 
-    ts->PRCO = rpmdsFreePRCO(ts->PRCO);
+	ts->PRCO = rpmdsFreePRCO(ts->PRCO);
 
-    (void) rpmtsCloseDB(ts);
+	(void) rpmtsCloseDB(ts);
 
-    (void) rpmtsCloseSDB(ts);
+	(void) rpmtsCloseSDB(ts);
 
-    ts->sx = rpmsxFree(ts->sx);
+	ts->sx = rpmsxFree(ts->sx);
 
-    ts->removedPackages = _free(ts->removedPackages);
+	ts->removedPackages = _free(ts->removedPackages);
 
-    ts->availablePackages = rpmalFree(ts->availablePackages);
-    ts->numAvailablePackages = 0;
+	ts->availablePackages = rpmalFree(ts->availablePackages);
+	ts->numAvailablePackages = 0;
 
-    ts->dsi = _free(ts->dsi);
+	ts->dsi = _free(ts->dsi);
 
-    if (ts->scriptFd != NULL) {
+	if (ts->scriptFd != NULL) {
 /*@-refcounttrans@*/	/* FIX: XfdFree annotation */
-	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
+	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
 /*@=refcounttrans@*/
-	ts->scriptFd = NULL;
-    }
-    ts->rootDir = _free(ts->rootDir);
-    ts->currDir = _free(ts->currDir);
+	    ts->scriptFd = NULL;
+	}
+	ts->rootDir = _free(ts->rootDir);
+	ts->currDir = _free(ts->currDir);
 
 /*@-type +voidabstract @*/	/* FIX: double indirection */
-    ts->order = _free(ts->order);
+	ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
-    ts->orderAlloced = 0;
+	ts->orderAlloced = 0;
 
-    ts->keyring = rpmKeyringFree(ts->keyring);
-    ts->pkpkt = _free(ts->pkpkt);
-    ts->pkpktlen = 0;
-    memset(ts->pksignid, 0, sizeof(ts->pksignid));
+	ts->keyring = rpmKeyringFree(ts->keyring);
+	ts->pkpkt = _free(ts->pkpkt);
+	ts->pkpktlen = 0;
+	memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
-    if (_rpmts_stats)
-	rpmtsPrintStats(ts);
+	if (_rpmts_stats)
+	    rpmtsPrintStats(ts);
 
-    if (_rpmts_macros) {
-	const char ** av = NULL;
+	if (_rpmts_macros) {
+	    const char ** av = NULL;
 /*@-globs@*/	/* Avoid rpmGlobalMcroContext et al. */
-	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
+	    (void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 /*@=globs@*/
-	argvPrint("macros used", av, NULL);
-	av = argvFree(av);
-    }
+	    argvPrint("macros used", av, NULL);
+	    av = argvFree(av);
+	}
 
-    (void) rpmtsUnlink(ts, "tsCreate");
 
-    /*@-refcounttrans -usereleased @*/
-    ts = _free(ts);
-    /*@=refcounttrans =usereleased @*/
+	ts = (rpmts) rpmioPutPool((rpmioItem)ts);
+    } else
+	yarnTwist(ts->use, BY, -1);
 
     return NULL;
 }
@@ -1374,10 +1382,9 @@ int rpmtsSetNotifyCallback(rpmts ts,
 
 rpmts rpmtsCreate(void)
 {
-    rpmts ts;
+    rpmts ts = rpmtsGetPool(_rpmtsPool);
     int xx;
 
-    ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
     ts->type = RPMTRANS_TYPE_NORMAL;
@@ -1447,8 +1454,6 @@ rpmts rpmtsCreate(void)
 
     /* Set autorollback goal to the end of time. */
     ts->arbgoal = 0xffffffff;
-
-    ts->nrefs = 0;
 
     return rpmtsLink(ts, "tsCreate");
 }
