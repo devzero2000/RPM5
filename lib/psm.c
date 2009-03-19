@@ -59,6 +59,21 @@ int _psm_threads = 0;
 
 /*@access rpmluav @*/
 
+/*@unchecked@*/ /*@null@*/
+rpmioPool _psmPool;
+
+static rpmpsm rpmpsmGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmpsm psm;
+
+    if (_psmPool == NULL) {
+	_psmPool = rpmioNewPool("psm", sizeof(*psm), -1, _psm_debug);
+	pool = _psmPool;
+    }
+    return (rpmpsm) rpmioGetPool(pool, sizeof(*psm));
+}
+
 /**
  * Mark files in database shared with this package as "replaced".
  * @param psm		package state machine data
@@ -1532,38 +1547,20 @@ static const char * pkgStageString(pkgStage a)
     /*@noteached@*/
 }
 
-rpmpsm XrpmpsmUnlink(rpmpsm psm, const char * msg, const char * fn, unsigned ln)
-{
-    if (psm == NULL) return NULL;
-/*@-modfilesys@*/
-if (_psm_debug && msg != NULL)
-fprintf(stderr, "--> psm %p -- %d %s at %s:%u\n", psm, psm->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    psm->nrefs--;
-    return NULL;
-}
-
-rpmpsm XrpmpsmLink(rpmpsm psm, const char * msg, const char * fn, unsigned ln)
-{
-    if (psm == NULL) return NULL;
-    psm->nrefs++;
-
-/*@-modfilesys@*/
-if (_psm_debug && msg != NULL)
-fprintf(stderr, "--> psm %p ++ %d %s at %s:%u\n", psm, psm->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-
-    /*@-refcounttrans@*/ return psm; /*@=refcounttrans@*/
-}
-
 rpmpsm rpmpsmFree(rpmpsm psm)
 {
-    const char * msg = "rpmpsmFree";
+    static const char msg[] = "rpmpsmFree";
     if (psm == NULL)
-	return NULL;
+    return NULL;
 
-    if (psm->nrefs > 1)
-	return rpmpsmUnlink(psm, msg);
+    yarnPossess(psm->use);
+
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "--> psm %p -- %ld %s at %s:%u\n", psm, yarnPeekLock(psm->use), msg, __FILE__, __LINE__);
+/*@=modfilesys@*/
+
+    if (yarnPeekLock(psm->use) <= 1L) {
 
 /*@-nullstate@*/
     psm->fi = rpmfiFree(psm->fi);
@@ -1582,12 +1579,9 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     psm->NVRA = _free(psm->NVRA);
     psm->triggers = rpmdsFree(psm->triggers);
 
-    (void) rpmpsmUnlink(psm, msg);
-
-    /*@-refcounttrans -usereleased@*/
-    memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
-    psm = _free(psm);
-    /*@=refcounttrans =usereleased@*/
+	psm = (rpmpsm) rpmioPutPool((rpmioItem)psm);
+    } else
+	yarnTwist(psm->use, BY, -1);
 
     return NULL;
 /*@=nullstate@*/
@@ -1595,8 +1589,8 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 {
-    const char * msg = "rpmpsmNew";
-    rpmpsm psm = xcalloc(1, sizeof(*psm));
+    static const char msg[] = "rpmpsmNew";
+    rpmpsm psm = rpmpsmGetPool(_psmPool);
 
     if (ts)	psm->ts = rpmtsLink(ts, msg);
 #ifdef	NOTYET

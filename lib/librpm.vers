@@ -403,12 +403,6 @@ LIBRPM_0
     specedit;
     splitString;
     strict_erasures;
-    _tar_debug;
-    tarHeaderRead;
-    tarHeaderWrite;
-    tarTrailerWrite;
-    XrpmpsmLink;
-    XrpmpsmUnlink;
     XrpmtsiFree;
     XrpmtsiInit;
   local:

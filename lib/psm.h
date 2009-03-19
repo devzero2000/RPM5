@@ -113,6 +113,10 @@ typedef enum rpmpsmFlags_e {
 /**
  */
 struct rpmpsm_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
 
 /*@only@*/ /*@null@*/
@@ -169,8 +173,6 @@ struct rpmpsm_s {
     pkgStage stage;		/*!< Current psm stage. */
     pkgStage nstage;		/*!< Next psm stage. */
 
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 
 #ifdef __cplusplus
@@ -187,15 +189,8 @@ extern "C" {
 rpmpsm rpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
 		/*@null@*/ const char * msg)
 	/*@modifies psm @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmpsm XrpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies psm @*/;
-/*@=exportlocal@*/
-#define	rpmpsmUnlink(_psm, _msg)	XrpmpsmUnlink(_psm, _msg, __FILE__, __LINE__)
+#define	rpmpsmUnlink(_psm, _msg)	\
+    ((rpmpsm)rpmioUnlinkPoolItem((rpmioItem)(_psm), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a package state machine instance.
@@ -206,15 +201,8 @@ rpmpsm XrpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
 	/*@modifies psm @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@newref@*/ /*@null@*/
-rpmpsm XrpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies psm @*/;
-/*@=exportlocal@*/
-#define	rpmpsmLink(_psm, _msg)	XrpmpsmLink(_psm, _msg, __FILE__, __LINE__)
+#define	rpmpsmLink(_psm, _msg)	\
+    ((rpmpsm)rpmioLinkPoolItem((rpmioItem)(_psm), _msg, __FILE__, __LINE__))
 
 /**
  * Destroy a package state machine.
