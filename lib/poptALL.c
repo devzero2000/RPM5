@@ -465,6 +465,7 @@ rpmcliFini(poptContext optCon)
 	/*@modifies keyids @*/
 {
     extern rpmioPool _headerPool;
+    extern rpmioPool _rpmdbPool;
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
 
@@ -478,6 +479,8 @@ rpmcliFini(poptContext optCon)
     _rpmsxPool = rpmioFreePool(_rpmsxPool);
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
+
+    _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _headerPool = rpmioFreePool(_headerPool);
 
     /* XXX this should be done in the rpmioClean() wrapper. */

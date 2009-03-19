@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: convert rpmdb refcount to usage mutex.
     - jbj: yarn: convert psm refcount to usage mutex.
     - jbj: yarn: convert rpmxar refcount to usage mutex.
     - jbj: yarn: convert pgpDig refcount to usage mutex (avoid recurse deadlock).

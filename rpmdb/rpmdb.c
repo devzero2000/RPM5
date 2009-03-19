@@ -67,7 +67,6 @@ static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;
 
-
 /* Use a path uniquifier in the upper 16 bits of tagNum? */
 /* XXX Note: one cannot just choose a value, rpmdb tagNum's need fixing too */
 #define	_DB_TAGGED_FILE_INDICES	1
@@ -930,11 +929,26 @@ exit:
 
 /*@-fullinitblock@*/
 /*@observer@*/ /*@unchecked@*/
-static struct rpmdb_s dbTemplate = {
+static struct rpmdb_s dbTemplate = { NULL, NULL,
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_ERRPFX
 };
 /*@=fullinitblock@*/
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmdbPool;
+
+static rpmdb rpmdbGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmdb db;
+
+    if (_rpmdbPool == NULL) {
+	_rpmdbPool = rpmioNewPool("db", sizeof(*db), -1, _rpmdb_debug);
+	pool = _rpmdbPool;
+    }
+    return (rpmdb) rpmioGetPool(pool, sizeof(*db));
+}
 
 int rpmdbOpenAll(rpmdb db)
 {
@@ -1015,6 +1029,7 @@ int rpmdbClose(rpmdb db)
 	/*@globals rpmdbRock @*/
 	/*@modifies rpmdbRock @*/
 {
+    static const char msg[] = "rpmdbClose";
     rpmdb * prev, next;
     size_t dbix;
     int rc = 0;
@@ -1022,55 +1037,59 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	return rc;
 
-    (void) rpmdbUnlink(db, "rpmdbClose");
+    yarnPossess(db->use);
+/*@-modfilesys@*/
+if (_rpmdb_debug)
+fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->use), msg, __FILE__, __LINE__);
 
     /*@-usereleased@*/
-    if (db->nrefs > 0)
-	return rc;
+    if (yarnPeekLock(db->use) <= 1L) {
 
-    if (db->_dbi)
-    for (dbix = db->db_ndbi; dbix;) {
-	int xx;
-	dbix--;
-	if (db->_dbi[dbix] == NULL)
-	    continue;
-	/*@-unqualifiedtrans@*/		/* FIX: double indirection. */
-    	xx = dbiClose(db->_dbi[dbix], 0);
-	if (xx && rc == 0) rc = xx;
-    	db->_dbi[dbix] = NULL;
-	/*@=unqualifiedtrans@*/
-    }
-    db->db_errpfx = _free(db->db_errpfx);
-    db->db_root = _free(db->db_root);
-    db->db_home = _free(db->db_home);
-    db->db_bits = PBM_FREE(db->db_bits);
-    db->db_tags = tagStoreFree(db->db_tags, db->db_ndbi);
-    db->_dbi = _free(db->_dbi);
-    db->db_ndbi = 0;
+	if (db->_dbi)
+	for (dbix = db->db_ndbi; dbix;) {
+	    int xx;
+	    dbix--;
+	    if (db->_dbi[dbix] == NULL)
+		continue;
+	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
+	    xx = dbiClose(db->_dbi[dbix], 0);
+	    if (xx && rc == 0) rc = xx;
+	    db->_dbi[dbix] = NULL;
+	    /*@=unqualifiedtrans@*/
+	}
+	db->db_errpfx = _free(db->db_errpfx);
+	db->db_root = _free(db->db_root);
+	db->db_home = _free(db->db_home);
+	db->db_bits = PBM_FREE(db->db_bits);
+	db->db_tags = tagStoreFree(db->db_tags, db->db_ndbi);
+	db->_dbi = _free(db->_dbi);
+	db->db_ndbi = 0;
 
 /*@-newreftrans@*/
-    prev = &rpmdbRock;
-    while ((next = *prev) != NULL && next != db)
-	prev = &next->db_next;
-    if (next) {
-/*@i@*/	*prev = next->db_next;
-	next->db_next = NULL;
-    }
+	prev = &rpmdbRock;
+	while ((next = *prev) != NULL && next != db)
+	    prev = &next->db_next;
+	if (next) {
+/*@i@*/	    *prev = next->db_next;
+	    next->db_next = NULL;
+	}
 /*@=newreftrans@*/
 
-    if (rpmdbRock == NULL && rpmmiRock == NULL) {
-	/* Last close uninstalls special signal handling. */
-	(void) rpmsqEnable(-SIGHUP,	NULL);
-	(void) rpmsqEnable(-SIGINT,	NULL);
-	(void) rpmsqEnable(-SIGTERM,	NULL);
-	(void) rpmsqEnable(-SIGQUIT,	NULL);
-	(void) rpmsqEnable(-SIGPIPE,	NULL);
-	/* Pending signals strike here. */
-	(void) rpmdbCheckSignals();
-    }
+	if (rpmdbRock == NULL && rpmmiRock == NULL) {
+	    /* Last close uninstalls special signal handling. */
+	    (void) rpmsqEnable(-SIGHUP,	NULL);
+	    (void) rpmsqEnable(-SIGINT,	NULL);
+	    (void) rpmsqEnable(-SIGTERM,	NULL);
+	    (void) rpmsqEnable(-SIGQUIT,	NULL);
+	    (void) rpmsqEnable(-SIGPIPE,	NULL);
+	    /* Pending signals strike here. */
+	    (void) rpmdbCheckSignals();
+	}
 
-    /*@-refcounttrans@*/ db = _free(db); /*@=refcounttrans@*/
     /*@=usereleased@*/
+	db = (rpmdb)rpmioPutPool((rpmioItem)db);
+    } else
+	yarnTwist(db->use, BY, -1);
 
     return rc;
 }
@@ -1156,7 +1175,7 @@ rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 	/*@globals _db_filter_dups, rpmGlobalMacroContext, h_errno @*/
 	/*@modifies _db_filter_dups, rpmGlobalMacroContext @*/
 {
-    rpmdb db = xcalloc(sizeof(*db), 1);
+    rpmdb db = rpmdbGetPool(_rpmdbPool);
     const char * epfx = _DB_ERRPFX;
     static int oneshot = 0;
 
@@ -1170,9 +1189,14 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 	oneshot = 1;
     }
 
-    /*@-assignexpose@*/
-    *db = dbTemplate;	/* structure assignment */
-    /*@=assignexpose@*/
+    {	yarnLock use = db->use;
+	void * pool = db->pool;
+	/*@-assignexpose@*/
+	*db = dbTemplate;	/* structure assignment */
+	/*@=assignexpose@*/
+	db->pool = pool;
+	db->use = use;
+    }
 
     db->_dbi = NULL;
 
@@ -1189,7 +1213,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
 	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
-	db = _free(db);
+	db = (rpmdb) rpmioPutPool((rpmioItem)db);
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
 
@@ -1199,7 +1223,6 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_filter_dups = _db_filter_dups;
     dbiTagsInit(&db->db_tags, &db->db_ndbi);
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
-    db->nrefs = 0;
     /*@-globstate@*/
     return rpmdbLink(db, "rpmdbCreate");
     /*@=globstate@*/
@@ -1312,26 +1335,6 @@ exit:
     return rc;
 }
 /*@=exportheader@*/
-
-rpmdb XrpmdbUnlink(rpmdb db, const char * msg, const char * fn, unsigned ln)
-{
-/*@-modfilesys@*/
-if (_rpmdb_debug)
-fprintf(stderr, "--> db %p -- %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    db->nrefs--;
-    return NULL;
-}
-
-rpmdb XrpmdbLink(rpmdb db, const char * msg, const char * fn, unsigned ln)
-{
-    db->nrefs++;
-/*@-modfilesys@*/
-if (_rpmdb_debug)
-fprintf(stderr, "--> db %p ++ %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    /*@-refcounttrans@*/ return db; /*@=refcounttrans@*/
-}
 
 /* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)

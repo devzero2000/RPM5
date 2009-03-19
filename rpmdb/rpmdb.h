@@ -53,7 +53,9 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
 #if defined(_RPMDB_INTERNAL)
+#include <rpmio.h>
 #include <rpmsw.h>
+
 #if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /** \ingroup dbi
  * A single item from an index database (i.e. the "data returned").
@@ -419,6 +421,10 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@owned@*/ /*@relnull@*/
     const char * db_root;	/*!< rpmdb path prefix */
 /*@owned@*/
@@ -466,8 +472,6 @@ struct rpmdb_s {
     struct rpmop_s db_putops;	/*!< dbiPut statistics. */
     struct rpmop_s db_delops;	/*!< dbiDel statistics. */
 
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif	/* defined(_RPMDB_INTERNAL) */
 
@@ -874,15 +878,8 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 /*@unused@*/ /*@null@*/
 rpmdb rpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg)
 	/*@modifies db @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
-		const char * fn, unsigned ln)
-	/*@modifies db @*/;
-/*@=exportlocal@*/
-#define	rpmdbUnlink(_db, _msg)	XrpmdbUnlink(_db, _msg, __FILE__, __LINE__)
+#define	rpmdbUnlink(_db, _msg)	\
+	((rpmdb)rpmioUnlinkPoolItem((rpmioItem)(_db), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmdb
  * Reference a database instance.
@@ -890,17 +887,11 @@ rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
  * @param msg
  * @return		new rpm database reference
  */
-/*@unused@*/
+/*@unused@*/ /*@newref@*/
 rpmdb rpmdbLink (rpmdb db, const char * msg)
 	/*@modifies db @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-rpmdb XrpmdbLink (rpmdb db, const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies db @*/;
-/*@=exportlocal@*/
-#define	rpmdbLink(_db, _msg)	XrpmdbLink(_db, _msg, __FILE__, __LINE__)
+#define	rpmdbLink(_db, _msg)	\
+	((void *)rpmioLinkPoolItem((rpmioItem)(_db), _msg, __FILE__, __LINE__))
 
 /** @todo document rpmdbNew
  */

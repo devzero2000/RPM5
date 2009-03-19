@@ -87,6 +87,7 @@ LIBRPMDB_0
     rpmAddSignature;
     rpmCheckPassPhrase;
     rpmDatabasePoptTable;
+    _rpmdbPool;
     rpmdbAdd;
     rpmdbAppendIterator;
     rpmDBArgs;
@@ -185,8 +186,6 @@ LIBRPMDB_0
     tagType;
     tagTypeValidate;
     tagValue;
-    XrpmdbLink;
-    XrpmdbUnlink;
   local:
     *;
 };
