@@ -514,7 +514,6 @@ static inline int rpmCpuinfoMatch(const char * feature, rpmds cpuinfo)
 static rpmRC rpmCpuinfo(void)
 {
     rpmRC rc = RPMRC_FAIL;
-    static struct utsname un;    
     const char *cpu;
     miRE mi_re = NULL;
     int mi_nre = 0;
@@ -522,11 +521,10 @@ static rpmRC rpmCpuinfo(void)
     CVOG_t cvog = NULL;
     rpmds cpuinfo = NULL;
 
-    uname(&un);
     xx = rpmdsCpuinfo(&cpuinfo, NULL);
 
     if(rpmCpuinfoMatch("cpuinfo([x86])", cpuinfo)) {
-	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo) && strcmp(un.machine, "x86_64") == 0)
+	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo))
 	{
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "amd64", NULL, &mi_re, &mi_nre);
@@ -555,7 +553,7 @@ static rpmRC rpmCpuinfo(void)
     }
 
     if(rpmCpuinfoMatch("cpuinfo([ppc])", cpuinfo)) {
-	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo) && strcmp(un.machine, "ppc64") == 0)
+	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo))
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "ppc64", NULL, &mi_re, &mi_nre);
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc", NULL, &mi_re, &mi_nre);
 	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
@@ -565,6 +563,7 @@ static rpmRC rpmCpuinfo(void)
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ia64", NULL, &mi_re, &mi_nre);
 
 #if defined(__mips__)
+    /* XXX: Better ways to determine endianness? */
 #if defined(__MIPSEL__)
 #define mips32 "mipsel"
 #define mips64 "mips64el"
@@ -573,7 +572,7 @@ static rpmRC rpmCpuinfo(void)
 #define mips64 "mips64"
 #endif
     /* XXX: libcpuinfo only have irix support for now.. */
-    if(strcmp(un.machine, "mips64") == 0)
+    if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, mips64, NULL, &mi_re, &mi_nre);
     xx = mireAppend(RPMMIRE_REGEX, 0, mips32, NULL, &mi_re, &mi_nre);
 #endif

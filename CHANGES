@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - proyvind: libcpuinfo may now return 64bit feature only if PER_LINUX_32BIT
+	personality isn't set, so don't check un.machine anymore.
     - jbj: yarn: convert rpmtsi refcount to usage mutex.
     - jbj: yarn: convert rpmsx refcount to usage mutex.
     - jbj: yarn: convert rpmps refcount to usage mutex.
