@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: yarn: convert rpmxar refcount to usage mutex.
     - jbj: yarn: convert pgpDig refcount to usage mutex (avoid recurse deadlock).
     - jbj: yarn: convert rpmts refcount to usage mutex (avoid recurse deadlock).
     - jbj: rpmps: fix: avoid reusing items from pool for now.

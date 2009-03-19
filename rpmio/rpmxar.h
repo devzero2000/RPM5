@@ -12,7 +12,12 @@ extern int _xar_debug;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 
 #ifdef	_RPMXAR_INTERNAL
+#include "yarn.h"
 struct rpmxar_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
 /*@relnull@*/
     const void * x;		/*!< xar_t */
 /*@relnull@*/
@@ -26,8 +31,6 @@ struct rpmxar_s {
     size_t bsize;		/*!< No. bytes of data. */
     size_t bx;			/*!< Data byte index. */
     int first;
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif
 
@@ -45,15 +48,8 @@ extern "C" {
 rpmxar rpmxarUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmxar xar,
 		/*@null@*/ const char * msg)
 	/*@modifies xar @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmxar XrpmxarUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmxar xar,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies xar @*/;
-/*@=exportlocal@*/
-#define	rpmxarUnlink(_xar, _msg) XrpmxarUnlink(_xar, _msg, __FILE__, __LINE__)
+#define	rpmxarUnlink(_xar, _msg)	\
+    ((rpmxar)rpmioUnlinkPoolItem((rpmioItem)(_xar), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a xar archive instance.
@@ -64,13 +60,8 @@ rpmxar XrpmxarUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmxar xar,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmxar rpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg)
 	/*@modifies xar @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-rpmxar XrpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies xar @*/;
-#define	rpmxarLink(_xar, _msg)	XrpmxarLink(_xar, _msg, __FILE__, __LINE__)
+#define	rpmxarLink(_xar, _msg)	\
+    ((rpmxar)rpmioLinkPoolItem((rpmioItem)(_xar), _msg, __FILE__, __LINE__))
 
 /*@null@*/
 rpmxar rpmxarFree(/*@killref@*/ /*@only@*/ rpmxar xar)
