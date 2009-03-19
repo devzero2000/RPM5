@@ -58,8 +58,7 @@ char *xar_get_path(xar_file_t f)
 
 #define	_RPMXAR_INTERNAL
 #include <rpmxar.h>
-
-#include <rpmio_internal.h>
+#include <rpmio_internal.h>	/* for fdGetXAR */
 
 #include "debug.h"
 
@@ -68,38 +67,31 @@ char *xar_get_path(xar_file_t f)
 /*@unchecked@*/
 int _xar_debug = 0;
 
-rpmxar XrpmxarUnlink(rpmxar xar, const char * msg, const char * fn, unsigned ln)
+/*@unchecked@*/ /*@null@*/
+rpmioPool _xarPool;
+
+static rpmxar rpmxarGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
 {
-    if (xar == NULL) return NULL;
-/*@-modfilesys@*/
-if (_xar_debug && msg != NULL)
-fprintf(stderr, "--> xar %p -- %d %s at %s:%u\n", xar, xar->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    xar->nrefs--;
-    return NULL;
+    rpmxar xar;
+
+    if (_xarPool == NULL) {
+	_xarPool = rpmioNewPool("xar", sizeof(*xar), -1, _xar_debug);
+	pool = _xarPool;
+    }
+    return (rpmxar) rpmioGetPool(pool, sizeof(*xar));
 }
-
-rpmxar XrpmxarLink(rpmxar xar, const char * msg, const char * fn, unsigned ln)
-{
-    if (xar == NULL) return NULL;
-    xar->nrefs++;
-
-/*@-modfilesys@*/
-if (_xar_debug && msg != NULL)
-fprintf(stderr, "--> xar %p ++ %d %s at %s:%u\n", xar, xar->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-
-    /*@-refcounttrans@*/ return xar; /*@=refcounttrans@*/
-}
-
 rpmxar rpmxarFree(rpmxar xar)
 {
-    if (xar) {
-
+    if (xar == NULL)
+	return NULL;
+    yarnPossess(xar->use);
+/*@-modfilesys@*/
+if (_xar_debug)
+fprintf(stderr, "--> xar %p -- %ld %s at %s:%u\n", xar, yarnPeekLock(xar->use), "rpmxarFree", __FILE__, __LINE__);
+/*@=modfilesys@*/
+    if (yarnPeekLock(xar->use) <= 1L) {
 /*@-onlytrans@*/
-	if (xar->nrefs > 1)
-	    return rpmxarUnlink(xar, "rpmxarFree");
-
 	if (xar->i) {
 	    xar_iter_free(xar->i);
 	    xar->i = NULL;
@@ -113,19 +105,16 @@ rpmxar rpmxarFree(rpmxar xar)
 	xar->member = _free(xar->member);
 	xar->b = _free(xar->b);
 
-	(void) rpmxarUnlink(xar, "rpmxarFree");
 /*@=onlytrans@*/
-	/*@-refcounttrans -usereleased@*/
-	memset(xar, 0, sizeof(*xar));         /* XXX trash and burn */
-	xar = _free(xar);
-	/*@=refcounttrans =usereleased@*/
-    }
+	xar = (rpmxar) rpmioPutPool((rpmioItem)xar);
+    } else
+	yarnTwist(xar->use, BY, -1);
     return NULL;
 }
 
 rpmxar rpmxarNew(const char * fn, const char * fmode)
 {
-    rpmxar xar = xcalloc(1, sizeof(*xar));
+    rpmxar xar = rpmxarGetPool(_xarPool);
     int flags = ((fmode && *fmode == 'w') ? WRITE : READ);
 
 assert(fn != NULL);
