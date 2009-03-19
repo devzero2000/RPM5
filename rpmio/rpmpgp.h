@@ -13,6 +13,7 @@
 #include <string.h>
 #include <popt.h>
 #include <rpmiotypes.h>
+#include <yarn.h>
 
 #if defined(_RPMPGP_INTERNAL)
 #include <rpmsw.h>
@@ -47,6 +48,10 @@ struct pgpDigParams_s {
  * Container for values parsed from an OpenPGP signature and public key.
  */
 struct pgpDig_s {
+    yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
@@ -64,8 +69,6 @@ struct pgpDig_s {
 	/*@modifies *_ts, *_dig @*/;/*!< Find pubkey, i.e. rpmtsFindPubkey(). */
 /*@null@*/
     void * _ts;			/*!< Find pubkey argument, i.e. rpmts. */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 
     rpmuint8_t ** ppkts;
     int npkts;
@@ -1378,13 +1381,8 @@ pgpDig XpgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 pgpDig pgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg)
 	/*@modifies dig @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-pgpDig XpgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-	/*@modifies dig @*/;
-#define	pgpDigLink(_dig, _msg)	XpgpDigLink(_dig, _msg, __FILE__, __LINE__)
+#define	pgpDigLink(_dig, _msg)	\
+	((pgpDig)rpmioLinkPoolItem((rpmioItem)(_dig), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmpgp
  * Destroy a container for parsed OpenPGP packates.

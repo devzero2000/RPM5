@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: convert pgpDig refcount to usage mutex (avoid recurse deadlock).
     - jbj: yarn: convert rpmts refcount to usage mutex (avoid recurse deadlock).
     - jbj: rpmps: fix: avoid reusing items from pool for now.
     - proyvind: libcpuinfo may now return 64bit feature only if PER_LINUX_32BIT

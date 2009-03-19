@@ -204,8 +204,6 @@ LIBRPMIO_0
     pgpDigClean;
     pgpDigFree;
     pgpDigNew;
-    XpgpDigLink;
-    XpgpDigUnlink;
     pgpDigVSFlags;
     _pgp_debug;
     _pgp_print;
