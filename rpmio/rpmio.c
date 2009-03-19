@@ -3192,6 +3192,7 @@ int _rpmnss_init = 0;
 
 void rpmioClean(void)
 {
+    extern rpmioPool _digPool;
     extern rpmioPool _urlPool;
 
 #if defined(WITH_LUA)
@@ -3209,6 +3210,7 @@ void rpmioClean(void)
     urlFreeCache();
 
     _urlPool = rpmioFreePool(_urlPool);
+    _digPool = rpmioFreePool(_digPool);
     _fdPool = rpmioFreePool(_fdPool);
 
     rpmlogClose();
