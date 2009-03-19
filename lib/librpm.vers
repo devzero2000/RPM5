@@ -404,12 +404,6 @@ LIBRPM_0
     showVerifyPackage;
     specedit;
     strict_erasures;
-    _tar_debug;
-    tarHeaderRead;
-    tarHeaderWrite;
-    tarTrailerWrite;
-    XrpmpsmLink;
-    XrpmpsmUnlink;
     XrpmtsiFree;
     XrpmtsiInit;
   local:
