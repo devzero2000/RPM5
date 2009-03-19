@@ -300,6 +300,7 @@ AC_PATH_PROG(__TCLSH, tclsh, %{_bindir}/tclsh, $MYPATH)
 AC_PATH_PROG(__UNZIP, unzip, %{_bindir}/unzip, $MYPATH)
 AC_PATH_PROG(__WGET, wget, %{_bindir}/wget, $MYPATH)
 AC_PATH_PROG(__XAR, xar, %{_bindir}/xar, $MYPATH)
+AC_PATH_PROG(__XZ, xz, %{_bindir}/xz, $MYPATH)
 
 AC_PATH_PROG(__LD, ld, %{_bindir}/ld, $MYPATH)
 AC_PATH_PROG(__NM, nm, %{_bindir}/nm, $MYPATH)
@@ -363,6 +364,21 @@ AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"],
 AC_SUBST(WITH_BZIP2)
 
 #=================
+
+#=================
+# Check for xz library. Prefer external, otherwise none.
+
+WITH_XZ_INCLUDE=
+AC_CHECK_LIB(lzma, lzma_auto_decoder, [
+   WITH_XZ=1
+   LIBS="$LIBS -llzma"
+   AC_DEFINE(HAVE_LZMA_H, 1, [Define as 1 if you have <lzma.h>]) ], 
+   WITH_XZ=0)
+AC_SUBST(WITH_XZ)
+AC_SUBST(WITH_XZ_INCLUDE)
+
+#=================
+
 
 localdone=
 

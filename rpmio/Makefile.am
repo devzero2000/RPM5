@@ -15,6 +15,7 @@ INCLUDES = -I. \
 	@WITH_LUA_INCLUDE@ \
 	@WITH_SYCK_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
+	@WITH_XZ_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
@@ -35,7 +36,7 @@ LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c getpass.c lzdio.c macro.c mire.c \
+	argv.c digest.c fts.c getpass.c xzdio.c macro.c mire.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \

@@ -205,8 +205,12 @@ const char * fdbg(/*@null@*/ FD_t fd)
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
+#if defined(HAVE_LZMA_H)
 	} else if (fps->io == lzdio) {
 	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
+	} else if (fps->io == xzdio) {
+	    sprintf(be, "XZD %p fdno %d", fps->fp, fps->fdno);
+#endif
 	} else if (fps->io == fpio) {
 	    /*@+voidabstract@*/
 	    sprintf(be, "%s %p(%d) fdno %d",
@@ -2783,9 +2787,14 @@ static const char * getFdErrstr (FD_t fd)
 	errstr = fd->errcookie;
     } else
 #endif	/* HAVE_BZLIB_H */
+#ifdef	HAVE_LZMA_H
     if (fdGetIo(fd) == lzdio) {
-    errstr = fd->errcookie;
-    } else 
+	errstr = fd->errcookie;
+    } else
+    if (fdGetIo(fd) == xzdio) {
+	errstr = fd->errcookie;
+    } else
+#endif /* HAVE_LZMA_H */
     {
 	errstr = (fd->syserrno ? strerror(fd->syserrno) : "");
     }
@@ -3108,9 +3117,14 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    fd = iof->_fdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
+#if defined(HAVE_LZMA_H)
 	} else if (!strcmp(end, "lzdio")) {
 	    iof = lzdio;
 	    fd = iof->_fdopen(fd, zstdio);
+	} else if (!strcmp(end, "xzdio")) {
+	    iof = xzdio;
+	    fd = iof->_fdopen(fd, zstdio);
+#endif
 	} else if (!strcmp(end, "ufdio")) {
 	    iof = ufdio;
 	} else if (!strcmp(end, "fpio")) {
@@ -3298,9 +3312,14 @@ int Ferror(FD_t fd)
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
 #endif
+#if defined(HAVE_LZMA_H)
     } else if (fps->io == lzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under lzdio always has fdno == -1 */
+    } else if (fps->io == xzdio) {
+	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	    i--;	/* XXX fdio under xzdio always has fdno == -1 */
+#endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
 	    ec = (fdFileno(fd) < 0 ? -1 : 0);

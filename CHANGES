@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- proyvind: backport xz/lzma payload support through liblzma.
 	- proyvind: make OSSP uuid support optional.
 	- glen: set failed state on upgrade if package reopen failed to avoid losing pkg info from db
 	- glen: scripts/rpm2cpio: avoid awk, use pure echo (from PLD)

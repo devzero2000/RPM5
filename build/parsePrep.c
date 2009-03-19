@@ -148,6 +148,9 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 	case COMPRESSED_LZMA:
 	    zipper = "%{__lzma}";
 	    break;
+	case COMPRESSED_XZ:
+	    zipper = "%{__xz}";
+	    break;
 	}
 	zipper = rpmGetPath(zipper, NULL);
 
@@ -250,6 +253,9 @@ static const char *doUntar(Spec spec, int c, int quietly)
 	    break;
 	case COMPRESSED_LZMA:
 	    t = "%{__lzma} -dc";
+	    break;
+	case COMPRESSED_XZ:
+	    t = "%{__xz} -dc";
 	    break;
 	case COMPRESSED_ZIP:
 	    if (rpmIsVerbose() && !quietly)
