@@ -5,6 +5,7 @@
 
 #if defined(SUPPORT_LIBCPUINFO)
 #include <cpuinfo.h>
+#include <endian.h>
 #endif
 
 #if defined(HAVE_GELF_H) && !defined(__FreeBSD__)
@@ -1217,6 +1218,16 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     rpmdsNSAdd(dsp, NS, "cpu_cores", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
     snprintf(tmp, 19, "%d", cpuinfo_get_threads(cip));
     rpmdsNSAdd(dsp, NS, "cpu_threads", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
+#ifdef __BYTE_ORDER
+#if __BYTE_ORDER == LITTLE_ENDIAN
+#define endian "little"
+#elif __BYTE_ORDER == BIG_ENDIAN
+#define endian "big"
+#elif __BYTE_ORDER == PDP_ENDIAN
+#define endian "pdp"
+#endif
+    rpmdsNSAdd(dsp, NS, "endianness", endian, RPMSENSE_PROBE|RPMSENSE_EQUAL);
+#endif
 
     for (feature = cpuinfo_feature_common; feature != cpuinfo_feature_architecture_max; feature++) {
 	if(feature == cpuinfo_feature_common_max)

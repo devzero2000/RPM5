@@ -503,9 +503,9 @@ exit:
 /*@=onlytrans@*/
 
 #if defined(SUPPORT_LIBCPUINFO)
-static inline int rpmCpuinfoMatch(const char * feature, rpmds cpuinfo)
+static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds cpuinfo)
 {
-    rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, "", RPMSENSE_PROBE);
+    rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, EVR, RPMSENSE_PROBE);
     int ret = rpmdsMatch(cpufeature, cpuinfo);
     cpufeature = rpmdsFree(cpufeature);
     return ret;
@@ -523,59 +523,59 @@ static rpmRC rpmCpuinfo(void)
 
     xx = rpmdsCpuinfo(&cpuinfo, NULL);
 
-    if(rpmCpuinfoMatch("cpuinfo([x86])", cpuinfo)) {
-	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo))
+    if(rpmCpuinfoMatch("cpuinfo([x86])", "", cpuinfo)) {
+	if(rpmCpuinfoMatch("cpuinfo(64bit)", "", cpuinfo))
 	{
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "amd64", NULL, &mi_re, &mi_nre);
 	}
-    	if(rpmCpuinfoMatch("cpuinfo(cmov)", cpuinfo)) {
-    	    if(rpmCpuinfoMatch("cpuinfo(mmx)", cpuinfo)) {
-		if(rpmCpuinfoMatch("cpuinfo(sse)", cpuinfo)) {
-		    if(rpmCpuinfoMatch("cpuinfo(sse2)", cpuinfo))
+    	if(rpmCpuinfoMatch("cpuinfo(cmov)", "", cpuinfo)) {
+    	    if(rpmCpuinfoMatch("cpuinfo(mmx)", "", cpuinfo)) {
+		if(rpmCpuinfoMatch("cpuinfo(sse)", "", cpuinfo)) {
+		    if(rpmCpuinfoMatch("cpuinfo(sse2)", "", cpuinfo))
 			xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
 		    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
 		}
-		if(rpmCpuinfoMatch("cpuinfo(3dnowext)", cpuinfo))
+		if(rpmCpuinfoMatch("cpuinfo(3dnowext)", "", cpuinfo))
 		    xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
 		xx = mireAppend(RPMMIRE_REGEX, 0, "pentium2", NULL, &mi_re, &mi_nre);
 	    }
 	    xx = mireAppend(RPMMIRE_REGEX, 0, "i686", NULL, &mi_re, &mi_nre);
 	}
-	if(rpmCpuinfoMatch("cpuinfo(3dnow)", cpuinfo) && rpmCpuinfoMatch("cpuinfo(mmx)", cpuinfo))
+	if(rpmCpuinfoMatch("cpuinfo(3dnow)", "", cpuinfo) && rpmCpuinfoMatch("cpuinfo(mmx)", "", cpuinfo))
 	    xx = mireAppend(RPMMIRE_REGEX, 0, "geode", NULL, &mi_re, &mi_nre);
-	if(rpmCpuinfoMatch("cpuinfo(tsc)", cpuinfo))
+	if(rpmCpuinfoMatch("cpuinfo(tsc)", "", cpuinfo))
 	    xx = mireAppend(RPMMIRE_REGEX, 0, "i586", NULL, &mi_re, &mi_nre);
-	if(rpmCpuinfoMatch("cpuinfo(ac)", cpuinfo))
+	if(rpmCpuinfoMatch("cpuinfo(ac)", "", cpuinfo))
 	    xx = mireAppend(RPMMIRE_REGEX, 0, "i486", NULL, &mi_re, &mi_nre);
 	xx = mireAppend(RPMMIRE_REGEX, 0, "i386", NULL, &mi_re, &mi_nre);
 	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
     }
 
-    if(rpmCpuinfoMatch("cpuinfo([ppc])", cpuinfo)) {
-	if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo))
+    if(rpmCpuinfoMatch("cpuinfo([ppc])", "", cpuinfo)) {
+	if(rpmCpuinfoMatch("cpuinfo(64bit)", "", cpuinfo))
     	    xx = mireAppend(RPMMIRE_REGEX, 0, "ppc64", NULL, &mi_re, &mi_nre);
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc", NULL, &mi_re, &mi_nre);
 	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
     }
 
-    if(rpmCpuinfoMatch("cpuinfo([ia64])", cpuinfo))
+    if(rpmCpuinfoMatch("cpuinfo([ia64])", "", cpuinfo))
 	xx = mireAppend(RPMMIRE_REGEX, 0, "ia64", NULL, &mi_re, &mi_nre);
 
-#if defined(__mips__)
-    /* XXX: Better ways to determine endianness? */
-#if defined(__MIPSEL__)
-#define mips32 "mipsel"
-#define mips64 "mips64el"
-#elif define(__MIPSEB__)
-#define mips32 "mips"
-#define mips64 "mips64"
-#endif
     /* XXX: libcpuinfo only have irix support for now.. */
-    if(rpmCpuinfoMatch("cpuinfo(64bit)", cpuinfo))
-	xx = mireAppend(RPMMIRE_REGEX, 0, mips64, NULL, &mi_re, &mi_nre);
-    xx = mireAppend(RPMMIRE_REGEX, 0, mips32, NULL, &mi_re, &mi_nre);
-#endif
+    if(rpmCpuinfoMatch("cpuinfo([mips])", "", cpuinfo)) {
+	int bit64 = rpmCpuinfoMatch("cpuinfo(64bit)", "", cpuinfo);
+	if(rpmCpuinfoMatch("cpuinfo(endianness)", "big", cpuinfo)) {
+    	    if(bit64)
+		xx = mireAppend(RPMMIRE_REGEX, 0, "mips64", NULL, &mi_re, &mi_nre);
+	    xx = mireAppend(RPMMIRE_REGEX, 0, "mips", NULL, &mi_re, &mi_nre);
+	}
+	else if(rpmCpuinfoMatch("cpuinfo(endianness)",  "little", cpuinfo)) {
+    	    if(bit64)
+		xx = mireAppend(RPMMIRE_REGEX, 0, "mips64el", NULL, &mi_re, &mi_nre);
+	    xx = mireAppend(RPMMIRE_REGEX, 0, "mipsel", NULL, &mi_re, &mi_nre);
+    	}
+    }
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
