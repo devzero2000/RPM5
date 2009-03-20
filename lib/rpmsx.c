@@ -29,7 +29,8 @@ static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
     rpmsx sx;
 
     if (_rpmsxPool == NULL) {
-	_rpmsxPool = rpmioNewPool("sx", sizeof(*sx), -1, _rpmsx_debug);
+	_rpmsxPool = rpmioNewPool("sx", sizeof(*sx), -1, _rpmsx_debug,
+			NULL, NULL, NULL);
 	pool = _rpmsxPool;
     }
     return (rpmsx) rpmioGetPool(pool, sizeof(*sx));

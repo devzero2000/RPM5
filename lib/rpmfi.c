@@ -63,7 +63,8 @@ static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
     rpmfi fi;
 
     if (_rpmfiPool == NULL) {
-	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1, _rpmfi_debug);
+	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1, _rpmfi_debug,
+			NULL, NULL, NULL);
 	pool = _rpmfiPool;
     }
     return (rpmfi) rpmioGetPool(pool, sizeof(*fi));

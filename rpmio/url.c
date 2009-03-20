@@ -78,7 +78,8 @@ static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
     urlinfo u;
 
     if (_urlPool == NULL) {
-	_urlPool = rpmioNewPool(" u", sizeof(*u), -1, _url_debug);
+	_urlPool = rpmioNewPool(" u", sizeof(*u), -1, _url_debug,
+			NULL, NULL, NULL);
 	pool = _urlPool;
     }
     return (urlinfo) rpmioGetPool(pool, sizeof(*u));

@@ -42,6 +42,13 @@ struct rpmioPool_s {
     size_t size;		/*!< size of items in this pool */
     int limit;			/*!< number of new items allowed, or -1 */
     int flags;
+/*@null@*/
+    const char * (*dbg) (void *item)
+	/*@*/;			/*!< generate string w Unlink/Link debugging */
+    void (*init) (void *item)
+	/*@modifies *item @*/;	/*!< create item contents. */
+    void (*fini) (void *item)
+	/*@modifies *item @*/;	/*!< destroy item contents. */
     int reused;			/*!< number of items reused */
     int made;			/*!< number of items made */
 /*@observer@*/
@@ -79,7 +86,10 @@ assert(pool->made == count);
     return NULL;
 }
 
-rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags)
+rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
+		const char * (*dbg) (void *item),
+		void (*init) (void *item),
+		void (*fini) (void *item))
 	/*@*/
 {
     rpmioPool pool = xcalloc(1, sizeof(*pool));
@@ -90,6 +100,9 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags)
     pool->size = size;
     pool->limit = limit;
     pool->flags = flags;
+    pool->dbg = dbg;
+    pool->init = init;
+    pool->fini = fini;
     pool->reused = 0;
     pool->made = 0;
     pool->name = name;
@@ -105,9 +118,10 @@ rpmioItem rpmioUnlinkPoolItem(rpmioItem item, const char * msg,
     if (item == NULL) return NULL;
     yarnPossess(item->use);
     if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
-	fprintf(stderr, "--> %s %p -- %ld %s at %s:%u\n", pool->name,
-			item, yarnPeekLock(item->use), msg, fn, ln);
+	fprintf(stderr, "--> %s %p -- %ld %s at %s:%u%s\n", pool->name,
+			item, yarnPeekLock(item->use), msg, fn, ln, imsg);
 /*@=modfilesys@*/
     }
     yarnTwist(item->use, BY, -1);
@@ -121,9 +135,10 @@ rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
     if (item == NULL) return NULL;
     yarnPossess(item->use);
     if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
-	fprintf(stderr, "--> %s %p ++ %ld %s at %s:%u\n", pool->name,
-			item, yarnPeekLock(item->use)+1, msg, fn, ln);
+	fprintf(stderr, "--> %s %p ++ %ld %s at %s:%u%s\n", pool->name,
+			item, yarnPeekLock(item->use)+1, msg, fn, ln, imsg);
 /*@=modfilesys@*/
     }
     yarnTwist(item->use, BY, 1);

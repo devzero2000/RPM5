@@ -76,7 +76,8 @@ static rpmxar rpmxarGetPool(/*@null@*/ rpmioPool pool)
     rpmxar xar;
 
     if (_xarPool == NULL) {
-	_xarPool = rpmioNewPool("xar", sizeof(*xar), -1, _xar_debug);
+	_xarPool = rpmioNewPool("xar", sizeof(*xar), -1, _xar_debug,
+			NULL, NULL, NULL);
 	pool = _xarPool;
     }
     return (rpmxar) rpmioGetPool(pool, sizeof(*xar));

@@ -35,7 +35,8 @@ static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
     rpmte te;
 
     if (_rpmtePool == NULL) {
-	_rpmtePool = rpmioNewPool("te", sizeof(*te), -1, _rpmte_debug);
+	_rpmtePool = rpmioNewPool("te", sizeof(*te), -1, _rpmte_debug,
+			NULL, NULL, NULL);
 	pool = _rpmtePool;
     }
     return (rpmte) rpmioGetPool(pool, sizeof(*te));
@@ -51,7 +52,8 @@ static rpmtsi rpmtsiGetPool(/*@null@*/ rpmioPool pool)
     rpmtsi tsi;
 
     if (_rpmtsiPool == NULL) {
-	_rpmtsiPool = rpmioNewPool("tsi", sizeof(*tsi), -1, _rpmte_debug);/* XXX _rpmtsi_debug? */
+	_rpmtsiPool = rpmioNewPool("tsi", sizeof(*tsi), -1, _rpmte_debug,
+			NULL, NULL, NULL);/* XXX _rpmtsi_debug? */
 	pool = _rpmtsiPool;
     }
     return (rpmtsi) rpmioGetPool(pool, sizeof(*tsi));

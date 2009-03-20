@@ -944,7 +944,8 @@ static rpmdb rpmdbGetPool(/*@null@*/ rpmioPool pool)
     rpmdb db;
 
     if (_rpmdbPool == NULL) {
-	_rpmdbPool = rpmioNewPool("db", sizeof(*db), -1, _rpmdb_debug);
+	_rpmdbPool = rpmioNewPool("db", sizeof(*db), -1, _rpmdb_debug,
+			NULL, NULL, NULL);
 	pool = _rpmdbPool;
     }
     return (rpmdb) rpmioGetPool(pool, sizeof(*db));

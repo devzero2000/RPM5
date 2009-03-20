@@ -101,7 +101,8 @@ static Header headerGetPool(/*@null@*/ rpmioPool pool)
     Header h;
 
     if (_headerPool == NULL) {
-	_headerPool = rpmioNewPool("h", sizeof(*h), -1, _hdr_debug);
+	_headerPool = rpmioNewPool("h", sizeof(*h), -1, _hdr_debug,
+			NULL, NULL, NULL);
 	pool = _headerPool;
     }
     return (Header) rpmioGetPool(pool, sizeof(*h));

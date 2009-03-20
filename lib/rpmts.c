@@ -98,7 +98,8 @@ static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
     rpmts ts;
 
     if (_rpmtsPool == NULL) {
-	_rpmtsPool = rpmioNewPool("ts", sizeof(*ts), -1, _rpmts_debug);
+	_rpmtsPool = rpmioNewPool("ts", sizeof(*ts), -1, _rpmts_debug,
+			NULL, NULL, NULL);
 	pool = _rpmtsPool;
     }
     return (rpmts) rpmioGetPool(pool, sizeof(*ts));

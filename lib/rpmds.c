@@ -131,7 +131,8 @@ static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
     rpmds ds;
 
     if (_rpmdsPool == NULL) {
-	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1, _rpmds_debug);
+	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1, _rpmds_debug,
+			NULL, NULL, NULL);
 	pool = _rpmdsPool;
     }
     return (rpmds) rpmioGetPool(pool, sizeof(*ds));

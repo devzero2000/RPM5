@@ -541,12 +541,8 @@ int fdClose( /*@only@*/ void * cookie)
 FD_t fdLink (/*@only@*/ void * cookie, const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
-/*@unused@*/
-/*@only@*/ /*@null@*/
-FD_t XfdLink (/*@only@*/ void * cookie, const char * msg, const char * fn, unsigned ln)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
-#define	fdLink(_fd, _msg)	XfdLink(_fd, _msg, __FILE__, __LINE__)
+#define	fdLink(_fd, _msg)	\
+	((FD_t)rpmioLinkPoolItem((rpmioItem)(_fd), _msg, __FILE__, __LINE__))
 /*@=incondefs@*/
 
 /*@-incondefs @*/
@@ -761,9 +757,15 @@ rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
  * @param size		item size
  * @param limit		no. of items permitted (-1 for unlimited)
  * @param flags		debugging flags
+ * @param (*dbg)()	generate string for Unlink/Link/Free debugging
+ * @param (*init)()	create item contents
+ * @param (*fini)()	destroy item contents
  * @return		memory pool
  */
-rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags)
+rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
+		/*@null@*/ const char * (*dbg) (void *item), 
+		/*@null@*/ void (*init) (void *item),
+		/*@null@*/ void (*fini) (void *item))
         /*@*/;
 
 /**

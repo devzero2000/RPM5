@@ -70,7 +70,8 @@ static rpmpsm rpmpsmGetPool(/*@null@*/ rpmioPool pool)
     rpmpsm psm;
 
     if (_psmPool == NULL) {
-	_psmPool = rpmioNewPool("psm", sizeof(*psm), -1, _psm_debug);
+	_psmPool = rpmioNewPool("psm", sizeof(*psm), -1, _psm_debug,
+			NULL, NULL, NULL);
 	pool = _psmPool;
     }
     return (rpmpsm) rpmioGetPool(pool, sizeof(*psm));

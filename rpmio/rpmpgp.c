@@ -1020,7 +1020,8 @@ static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
     pgpDig dig;
 
     if (_digPool == NULL) {
-	_digPool = rpmioNewPool("dig", sizeof(*dig), -1, _pgp_debug);
+	_digPool = rpmioNewPool("dig", sizeof(*dig), -1, _pgp_debug,
+			NULL, NULL, NULL);
 	pool = _digPool;
     }
     return (pgpDig) rpmioGetPool(pool, sizeof(*dig));

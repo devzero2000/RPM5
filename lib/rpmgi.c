@@ -50,7 +50,8 @@ static rpmgi rpmgiGetPool(/*@null@*/ rpmioPool pool)
     rpmgi gi;
 
     if (_rpmgiPool == NULL) {
-	_rpmgiPool = rpmioNewPool("gi", sizeof(*gi), -1, _rpmgi_debug);
+	_rpmgiPool = rpmioNewPool("gi", sizeof(*gi), -1, _rpmgi_debug,
+			NULL, NULL, NULL);
 	pool = _rpmgiPool;
     }
     return (rpmgi) rpmioGetPool(pool, sizeof(*gi));
