@@ -322,6 +322,7 @@ typedef	char * security_context_t;
 
 #define matchpathcon_init(_fn)	(-1)
 #define matchpathcon(_fn, _fmode, _s)	(-1)
+#define matchpathcon_fini() do {} while(0)
 #endif
 
 #if defined(WITH_SELINUX) && defined(__LCLINT__)
