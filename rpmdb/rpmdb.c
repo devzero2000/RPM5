@@ -1190,7 +1190,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 	oneshot = 1;
     }
 
-    {	yarnLock use = db->_item.use;
+    {	void * use = db->_item.use;
 	void * pool = db->_item.pool;
 	/*@-assignexpose@*/
 	*db = dbTemplate;	/* structure assignment */

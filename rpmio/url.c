@@ -134,7 +134,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->_it
 #endif
 
 /*@-usereleased@*/
-	    u->ctrl = XfdFree(u->ctrl, "persist ctrl (urlFree)", fn, ln);
+	    u->ctrl = rpmioFreePoolItem(u->ctrl, "persist ctrl (urlFree)", fn, ln);
 	    if (u->ctrl)
 		fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, (u->host ? u->host : ""),
@@ -154,7 +154,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->_it
 #endif
 
 /*@-usereleased@*/
-	    u->data = XfdFree(u->data, "persist data (urlFree)", fn, ln);
+	    u->data = rpmioFreePoolItem(u->data, "persist data (urlFree)", fn, ln);
 	    if (u->data)
 		fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, (u->host ? u->host : ""),
@@ -196,12 +196,15 @@ void urlFreeCache(void)
 	for (i = 0; i < _url_count; i++) {
 	    if (_url_cache[i] == NULL) continue;
 	    _url_cache[i] = urlFree(_url_cache[i], "_url_cache");
-	    if (_url_cache[i])
-		fprintf(stderr,
-			_("warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"),
-			i, _url_cache[i], yarnPeekLock(_url_cache[i]->_item.use),
-			(_url_cache[i]->host ? _url_cache[i]->host : ""),
-			(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
+	    if (_url_cache[i] == NULL)
+		continue;
+	    yarnPossess(_url_cache[i]->_item.use);
+	    fprintf(stderr,
+		_("warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"),
+		i, _url_cache[i], yarnPeekLock(_url_cache[i]->_item.use),
+		(_url_cache[i]->host ? _url_cache[i]->host : ""),
+		(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
+	    yarnRelease(_url_cache[i]->_item.use);
 	}
     }
     _url_cache = _free(_url_cache);

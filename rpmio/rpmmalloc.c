@@ -146,6 +146,32 @@ rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
     return item;
 }
 
+/*@null@*/
+rpmioItem rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
+                const char * msg, const char * fn, unsigned ln)
+        /*@modifies item @*/
+{
+    rpmioPool pool;
+    if (item == NULL) return NULL;
+
+assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
+    yarnPossess(item->use);
+    if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
+/*@-modfilesys@*/
+	fprintf(stderr, "--> %s %p -- %ld %s at %s:%u%s\n", pool->name,
+			item, yarnPeekLock(item->use), msg, fn, ln, imsg);
+/*@=modfilesys@*/
+    }
+    if (yarnPeekLock(item->use) <= 1L) {
+	if (pool->fini != NULL)
+	    (*pool->fini) ((void *)item);
+	item = rpmioPutPool(item);
+    } else
+	yarnTwist(item->use, BY, -1);
+    return item;
+}
+
 rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
 {
     rpmioItem item;
@@ -193,16 +219,14 @@ rpmioItem rpmioPutPool(rpmioItem item)
 	pool->tail = (rpmioItem *)&item->pool;/* XXX pool == next */
 	yarnTwist(pool->have, BY, 1);
 	if (item->use != NULL)
-	    yarnTwist(item->use, BY, -1);
+	    yarnTwist(item->use, TO, 0);
 	return NULL;
     }
 
     if (item->use != NULL) {
-	yarnTwist(item->use, BY, -1);
+	yarnTwist(item->use, TO, 0);
 	item->use = yarnFreeLock(item->use);
     }
-    if (pool != NULL && pool->size > 0)
-	memset(item, 0, pool->size);	/* XXX trash & burn */
     item = _free(item);
     return NULL;
 }

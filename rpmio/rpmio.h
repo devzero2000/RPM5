@@ -545,21 +545,14 @@ FD_t fdLink (/*@only@*/ void * cookie, const char * msg)
 	((FD_t)rpmioLinkPoolItem((rpmioItem)(_fd), _msg, __FILE__, __LINE__))
 /*@=incondefs@*/
 
-/*@-incondefs @*/
 /**
  */
-/*@unused@*/
-/*@only@*/ /*@null@*/
+/*@unused@*/ /*@only@*/ /*@null@*/
 FD_t fdFree(/*@only@*/ FD_t fd, const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
-/*@unused@*/
-/*@only@*/ /*@null@*/
-FD_t XfdFree(/*@only@*/ FD_t fd, const char * msg, const char * fn, unsigned ln)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
-#define	fdFree(_fd, _msg)	XfdFree(_fd, _msg, __FILE__, __LINE__)
-/*@=incondefs@*/
+#define	fdFree(_fd, _msg)	\
+	((FD_t)rpmioFreePoolItem((rpmioItem)(_fd), _msg, __FILE__, __LINE__))
 
 /*@-incondefs@*/
 /**
@@ -779,6 +772,19 @@ rpmioItem rpmioUnlinkPoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
  */
 /*@newref@*/ /*@null@*/
 rpmioItem rpmioLinkPoolItem(/*@returned@*/ /*@null@*/ rpmioItem item,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies item @*/;
+
+/**
+ * Free a pool item.
+ * @param item		pool item
+ * @param msg		debugging msg (NULL disables debugging)
+ * @param fn		usually __FILE__
+ * @param ln		usually __LINE__
+ * @return		pool item
+ */
+/*@null@*/
+rpmioItem rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
 		const char * msg, const char * fn, unsigned ln)
 	/*@modifies item @*/;
 

@@ -168,23 +168,6 @@ int _ftp_debug = 0;
 /*@unchecked@*/
 int _dav_debug = 0;
 
-
-/*@unchecked@*/ /*@null@*/
-rpmioPool _fdPool;
-
-static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    FD_t fd;
-
-    if (_fdPool == NULL) {
-	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1, _rpmio_debug,
-		(const char * (*)(void *))fdbg, NULL, NULL);
-	pool = _fdPool;
-    }
-    return (FD_t) rpmioGetPool(pool, sizeof(*fd));
-}
-
 /* =============================================================== */
 
 const char * fdbg(FD_t fd)
@@ -285,53 +268,48 @@ int fdSeekNot(void * cookie,
 
 /* =============================================================== */
 
-/*@-incondefs@*/
-/*@null@*/
-FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
-		const char *fn, unsigned ln)
-	/*@modifies fd @*/
+static void fdFini(void * _fd)
+	/*@modifies _fd @*/
 {
-	int i;
+    FD_t fd = _fd;
+    int i;
 
-#ifdef	NOTYET
 assert(fd != NULL);
-#else
-if (fd == NULL)
-DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, fn, ln));
-#endif
-    FDSANE(fd);
-    if (fd) {
-	yarnLock use = fd->_item.use;
-	yarnPossess(use);
-DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(use), msg, fn, ln, fdbg(fd)));
-	if (yarnPeekLock(use) == 1L) {
-	    fd->opath = _free(fd->opath);
-	    fd->stats = _free(fd->stats);
-	    for (i = fd->ndigests - 1; i >= 0; i--) {
-		FDDIGEST_t fddig = fd->digests + i;
-		if (fddig->hashctx == NULL)
-		    continue;
-		(void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
-		fddig->hashctx = NULL;
-	    }
-	    fd->ndigests = 0;
-	    fd->contentType = _free(fd->contentType);
-	    fd->contentDisposition = _free(fd->contentDisposition);
+    fd->opath = _free(fd->opath);
+    fd->stats = _free(fd->stats);
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	(void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
+	fddig->hashctx = NULL;
+    }
+    fd->ndigests = 0;
+    fd->contentType = _free(fd->contentType);
+    fd->contentDisposition = _free(fd->contentDisposition);
 /*@-onlytrans@*/
 #ifdef WITH_XAR
-	    fd->xar = rpmxarFree(fd->xar);
+    fd->xar = rpmxarFree(fd->xar);
 #endif
-	    fd->dig = pgpDigFree(fd->dig);
+    fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
-	    fd = (FD_t) rpmioPutPool((rpmioItem)fd);
-	    return NULL;
-	}
-	yarnTwist(use, BY, -1);
-	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
-    }
-    return NULL;
 }
-/*@=incondefs@*/
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _fdPool;
+
+static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    FD_t fd;
+
+    if (_fdPool == NULL) {
+	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1, _rpmio_debug,
+		(const char * (*)(void *))fdbg, NULL, fdFini);
+	pool = _fdPool;
+    }
+    return (FD_t) rpmioGetPool(pool, sizeof(*fd));
+}
 
 /*@-incondefs@*/
 /*@null@*/
