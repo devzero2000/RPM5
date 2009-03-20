@@ -9,6 +9,7 @@
 #endif
 
 #include <rpmio_internal.h>
+#include <rpmmacro.h>
 
 #define	_RPMDAV_INTERNAL
 #include <rpmdav.h>
