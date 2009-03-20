@@ -201,10 +201,7 @@ struct diskspaceInfo_s {
  * The set of packages to be installed/removed atomically.
  */
 struct rpmts_s {
-     yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmdepFlags depFlags;	/*!< Bit(s) to control rpmtsCheck(). */
     rpmtransFlags transFlags;	/*!< Bit(s) to control rpmtsRun(). */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */

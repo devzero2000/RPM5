@@ -1,13 +1,17 @@
 ARCHITECTURE AND OS:
-build arch            : i686
-compatible build archs: i686
+build arch            : i386
+compatible build archs: i386
 build os              : Linux
 compatible build os's : linux
-install arch          : i686
+install arch          : i386
 install os            : Linux
-compatible archs      : i686
+compatible archs      : i386
 compatible os's       : linux
 optflags              : -O2
+
+LUA MODULES:
+luafiles              : /usr/lib/rpm/init.lua:/usr/lib/rpm/rpmlua:/usr/lib/rpm/i386-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/i386-linux/rpmlua:~/.rpmlua
+luapath               : /usr/lib/rpm/lua/?.lua
 
 MACRO DEFINITIONS:
 macrofiles            : ../macros:../tests/macros
@@ -30,50 +34,43 @@ Features provided by rpmlib installer:
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
-    cpuinfo(bogomips) = 3726.12
-    cpuinfo(cache_size) = 4096_KB
+    cpuinfo(bogomips) = 4788.29
+    cpuinfo(bts)
+    cpuinfo(cache_size) = 512_KB
+    cpuinfo(cid)
     cpuinfo(clflush)
+    cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
-    cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 1862.040
-    cpuinfo(cpu_family) = 6
-    cpuinfo(cx16)
+    cpuinfo(cpu_MHz) = 2394.147
+    cpuinfo(cpu_family) = 15
     cpuinfo(cx8)
     cpuinfo(de)
-    cpuinfo(ds_cpl)
     cpuinfo(dts)
-    cpuinfo(est)
     cpuinfo(fpu)
     cpuinfo(fpu_exception)
     cpuinfo(fxsr)
     cpuinfo(ht)
-    cpuinfo(lahf_lm)
-    cpuinfo(lm)
     cpuinfo(mca)
     cpuinfo(mce)
     cpuinfo(mmx)
-    cpuinfo(model) = 15
-    cpuinfo(monitor)
+    cpuinfo(model) = 2
     cpuinfo(msr)
     cpuinfo(mtrr)
-    cpuinfo(nx)
     cpuinfo(pae)
     cpuinfo(pat)
     cpuinfo(pbe)
+    cpuinfo(pebs)
     cpuinfo(pge)
-    cpuinfo(pni)
     cpuinfo(pse)
     cpuinfo(pse36)
-    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
-    cpuinfo(stepping) = 7
+    cpuinfo(stepping) = 9
     cpuinfo(tm)
-    cpuinfo(tm2)
     cpuinfo(tsc)
+    cpuinfo(up)
     cpuinfo(vme)
-    cpuinfo(vmx)
     cpuinfo(wp)
     cpuinfo(xtpr)
 
@@ -147,9 +144,14 @@ done
   %{?_javaclasspath:CLASSPATH="%{_javaclasspath}"
   export CLASSPATH}
   unset PERL_MM_OPT || :
+  LC_ALL=C
+  export LC_ALL
   LANG=C
   export LANG
   unset DISPLAY || :
+  unset LINGUAS || :
+  unset LANGUAGE || :
+  unset LC_MESSAGES || :
   
   %{verbose:set -x}%{!verbose:exec > /dev/null}
   umask 022
@@ -159,27 +161,27 @@ done
 %{___build_pre}
 %{nil}
 -14: __aclocal	aclocal
--14: __ar	i586-wrs-linux-gnu-i686-glibc_std-ar
+-14: __ar	ar
 -14: __arch_install_post	%{nil}
 -14: __as	/usr/bin/as
 -14: __autoconf	autoconf
 -14: __autoheader	autoheader
 -14: __automake	automake
 -14: __awk	gawk
--14: __bash	%{_bindir}/bash
--14: __bzip2	%{_bindir}/bzip2
+-14: __bash	/bin/bash
+-14: __bzip2	/usr/bin/bzip2
 -14: __cat	/bin/cat
--14: __cc	i586-wrs-linux-gnu-i686-glibc_std-gcc
+-14: __cc	gcc
 -14: __check_files	%{_rpmhome}/check-files %{buildroot}
 -14: __chgrp	/bin/chgrp
 -14: __chmod	/bin/chmod
 -14: __chown	/bin/chown
 -14: __cp	/bin/cp
 -14: __cpio	/bin/cpio
--14: __cpp	i586-wrs-linux-gnu-i686-glibc_std-gcc -E
--14: __curl	%{_bindir}/curl
--14: __cvs	%{_bindir}/cvs
--14: __cxx	i586-wrs-linux-gnu-i686-glibc_std-g++
+-14: __cpp	gcc -E
+-14: __curl	/usr/bin/curl
+-14: __cvs	/usr/bin/cvs
+-14: __cxx	g++
 -14: __dbi_btconfig	
   btree		
   %{__dbi_other}
@@ -205,15 +207,15 @@ done
 -14: __debug_install_post	
    %{_rpmhome}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"
 %{nil}
--14: __diff	/bin/diff
+-14: __diff	/usr/bin/diff
 -14: __ditto	%{_bindir}/ditto
 -14: __exeext	%{nil}
--14: __file	%{_bindir}/file
+-14: __file	/usr/bin/file
 -14: __file_context_path	/etc/selinux/%{__policy_tree}/contexts/files/file_contexts
--14: __find	%{_bindir}/find
+-14: __find	/bin/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
--14: __gpg	%{_bindir}/gpg
+-14: __gpg	/usr/bin/gpg
 -14: __gpg_check_password_cmd	%{__gpg} 
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
 -14: __gpg_sign_cmd	%{__gpg} 
@@ -221,39 +223,39 @@ done
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 -14: __grep	/bin/grep
 -14: __gzip	/bin/gzip
--14: __hg	%{_bindir}/hg
+-14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id
 -14: __install	/usr/bin/install
 -14: __install_info	/sbin/install-info
 -14: __java_provides	%{_rpmhome}/javadeps.sh --provides
 -14: __java_requires	%{_rpmhome}/javadeps.sh --requires
--14: __ld	%{_bindir}/ld
+-14: __ld	/usr/bin/ld
 -14: __ldconfig	/sbin/ldconfig
 -14: __libext	a
 -14: __libtool_provides	%{nil}
 -14: __libtool_requires	%{nil}
 -14: __libtoolize	libtoolize
 -14: __ln_s	ln -s
--14: __lua	%{_bindir}/lua
--14: __lzma	%{_bindir}/lzma
--14: __lzop	%{_bindir}/lzop
--14: __make	%{_bindir}/make
+-14: __lua	/usr/bin/lua
+-14: __lzma	/usr/bin/lzma
+-14: __lzop	/usr/bin/lzop
+-14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
 -14: __mono_provides	%{_rpmhome}/mono-find-provides
 -14: __mono_requires	%{_rpmhome}/mono-find-requires
 -14: __mv	/bin/mv
--14: __nm	%{_bindir}/nm
--14: __objcopy	%{_bindir}/objcopy
--14: __objdump	%{_bindir}/objdump
+-14: __nm	/usr/bin/nm
+-14: __objcopy	/usr/bin/objcopy
+-14: __objdump	/usr/bin/objdump
 -14: __objext	o
 -14: __os_install_post	%{___build_post}
--14: __patch	%{_bindir}/patch
--14: __pax	%{_bindir}/pax
--14: __perl	%{_bindir}/perl
+-14: __patch	/usr/bin/patch
+-14: __pax	/usr/bin/pax
+-14: __perl	/usr/bin/perl
 -14: __perl_provides	%{_rpmhome}/perl.prov
 -14: __perl_requires	%{_rpmhome}/perl.req
--14: __pgp	%{_bindir}/pgp
+-14: __pgp	/usr/bin/pgp
 -14: __pgp5_check_password_cmd	%{__pgp} 
 	pgps +batchmode=on +verbose=0 +armor=off "%{_pgp_name}" -f
 -14: __pgp5_sign_cmd	%{__pgp} 
@@ -264,7 +266,7 @@ done
 -14: __pgp_sign_cmd	%{__pgp} 
 	pgp +batchmode=on +verbose=0 +armor=off 
 	"+myname=%{_pgp_name}" -sb %{__plaintext_filename} %{__signature_filename}
--14: __php	%{_bindir}/php
+-14: __php	/usr/bin/php
 -14: __pkgconfig_provides	%{_rpmhome}/pkgconfigdeps.sh --provides
 -14: __pkgconfig_requires	%{_rpmhome}/pkgconfigdeps.sh --requires
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
@@ -278,13 +280,13 @@ if f then
 end
 print (t)
 }}%{__policy_tree}
--14: __python	%{_bindir}/python
+-14: __python	/usr/bin/python
 -14: __python_provides	%{_rpmhome}/pythondeps.sh --provides
 -14: __python_requires	%{_rpmhome}/pythondeps.sh --requires
--14: __ranlib	i586-wrs-linux-gnu-i686-glibc_std-ranlib
+-14: __ranlib	ranlib
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
--14: __rsh	%{_bindir}/rsh
+-14: __rsh	/usr/bin/rsh
 -14: __scriptlet_requires	%{nil}
 -14: __sed	/bin/sed
 -14: __sh	/bin/sh
@@ -368,18 +370,25 @@ print (t)
 -14: __spec_track_template	#!%{__spec_track_shell}
 %{__spec_track_pre}
 %{nil}
--14: __ssh	%{_bindir}/ssh
--14: __strip	%{_bindir}/strip
--14: __svn	%{_bindir}/svn
+-14: __ssh	/usr/bin/ssh
+-14: __strip	/usr/bin/strip
+-14: __svn	/usr/bin/svn
 -14: __tar	/bin/tar
--14: __tclsh	%{_bindir}/tclsh
--14: __unzip	%{_bindir}/unzip
+-14: __tclsh	/usr/bin/tclsh
+-14: __unzip	/usr/bin/unzip
 -14: __vcheck	%{__perl} %{_rpmhome}/vcheck
 -14: __vsflags	0xf0000
+<<<<<<< showrc
+-14: __wget	/usr/bin/wget
+-14: __xar	/usr/bin/xar
+-14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{arbitrary_tags_debian}
+-14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
+=======
 -14: __wget	%{_bindir}/wget
 -14: __xar	%{_bindir}/xar
 -14: __xz	%{_bindir}/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
+>>>>>>> 1.13
 -14: _arch	i386
 -14: _autorelocate_dcolor	0
 -14: _autorelocate_path	%{nil}
@@ -403,12 +412,13 @@ print (t)
 -14: _build_source_file_digest_algo	%{_build_file_digest_algo}
 -14: _build_vendor	%{_host_vendor}
 -14: _builddir	%{_ntopdir}
+-14: _buildrootdir	%{_tmppath}
 -14: _buildshell	/bin/sh
 -14: _cache_dbpath	%{_tmppath}/cachedb/
 -14: _changelog_truncate	1 year ago
 -14: _datadir	%{_prefix}/share
--14: _dbapi	4
--14: _dbapi_rebuild	4
+-14: _dbapi	3
+-14: _dbapi_rebuild	3
 -14: _dbapi_used	%{?_rpmdb_rebuild:%{_dbapi_rebuild}}%{!?_rpmdb_rebuild:%{_dbapi}}
 -14: _dbi_btconfig	
   %{?_rpmdb_rebuild:%{__dbi_btconfig_rebuild}}
@@ -505,6 +515,9 @@ print (t)
 	%{?_dependency_whiteout_system} 
 	%{nil}
 -14: _dependency_whiteout_caos_core	
+	perl>perl-Filter		
+	pam>coreutils			
+	pam>initscripts			
 	glibc-common>glibc		
 	glibc>nscd
 -14: _disable_shell_interpreter_deps	0
@@ -514,21 +527,23 @@ print (t)
 -14: _gnu	-gnu
 -14: _hkp_keyserver	%{nil}
 -14: _hkp_keyserver_query	%{nil}
--14: _host	i686-wrs-linux-gnu
--14: _host_alias	i686-wrs-linux-gnu%{nil}
+-14: _host	i686-pc-linux-gnu
+-14: _host_alias	%{nil}
 -14: _host_cpu	i686
 -14: _host_os	linux-gnu
 -14: _host_platform	%{_host_cpu}-%{_host_vendor}-%{_host_os}%{?_gnu}
--14: _host_vendor	wrs
+-14: _host_vendor	pc
 -14: _hrmib_path	%{_tmppath}/hrmib/%{___NVRA}
 -14: _icondir	%{_sourcedir}
 -14: _includedir	%{_prefix}/include
 -14: _infodir	%{_prefix}/info
+-14: _initrddir	%{_sysconfdir}/rc.d/init.d
 -14: _install_file_context_path	%{__file_context_path}
 -14: _install_langs	all
 -14: _install_script_path	/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
 -14: _javadir	%{_datadir}/java
 -14: _javadocdir	%{_datadir}/javadoc
+-14: _keyutils_keyring	process
 -14: _legion	%{expand:%%global ._legion %{name}}%{_legion}
 -14: _lib	lib
 -14: _libdir	%{_exec_prefix}/%{_lib}
@@ -537,6 +552,7 @@ print (t)
 -14: _localstatedir	%{_prefix}/var
 -14: _mandir	%{_prefix}/man
 -14: _missing_doc_files_terminate_build	1
+-14: _multilibpatt	(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\.([oa]|la|so[0-9.]*)$
 -14: _ntopdir	%{_topdir}/%{_legion}
 -14: _oldincludedir	/usr/include
 -14: _openall_before_chroot	0
@@ -569,10 +585,13 @@ print (t)
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
--14: _rpmversion	5.1.6
+-14: _rpmversion	5.2.DEVEL
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg
+-14: _smp_mflags	%([ -z "$RPM_BUILD_NCPUS" ] \
+	&& RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \
+	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
 -14: _solve_dbpath	%{_tmppath}/cachedb/
 -14: _solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
 -14: _solve_pkgsdir	%{_topdir}/edos-test/
@@ -581,9 +600,9 @@ print (t)
 -14: _specdir	%{_ntopdir}
 -14: _srcrpmdir	%{_ntopdir}
 -14: _sysconfdir	%{_prefix}/etc
--11: _target	i686-linux
+-11= _target	i386-linux
 -14: _target_alias	%{_host_alias}
--11= _target_cpu	i686
+-11= _target_cpu	i386
 -11= _target_os	linux
 -14: _target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_gnu}
 -14: _target_vendor	%{_host_vendor}
@@ -601,7 +620,7 @@ print (t)
 -14: _uuid_path	/package
 -14: _var	/var
 -14: _varrun	/var/run
--14: _vendor	wrs
+-14: _vendor	redhat
 -14: _verify_file_context_path	%{__file_context_path}
 -14: _vsflags_build	%{__vsflags}
 -14: _vsflags_erase	%{__vsflags}
@@ -613,7 +632,7 @@ print (t)
 -14: arm	arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l
 -14: bcond_with	%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 -14: bcond_without	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
--14: buildroot	%{_tmppath}/%{name}-root
+-14: buildroot	%{_buildrootdir}/%{name}-root
 -14: configure	
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
@@ -675,8 +694,9 @@ package or when debugging this package.
 %define __patch_number  %{-P:%{-P*}}%{!-P:0} 
 %define __patch_file    %{P:%{__patch_number}} 
 %define __patch_suffix  %{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} 
+%define __patch_fuzz    %{?_default_patch_fuzz:%(test %{_default_patch_fuzz} -ge 0 && echo "--fuzz=%{_default_patch_fuzz} ")} 
 %define __patch_options -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %{-R} %{-E} %{__patch_suffix} 
-echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && %{uncompress:%{__patch_file}} | %{__patch} %{__patch_options}
+echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress:%{__patch_file}} | %{__patch} %{__patch_fuzz}%{__patch_options} ) || exit 1
 }
 -14: patches	%{lua: for i, p in ipairs(patches) do print(p.." ") end}
 -14: perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
@@ -718,7 +738,7 @@ PreReq: python >= %{python_version}, python < %{maxver}
 -14: rpm_license_check	%{expand:%%define rpm_license_check %{lua:
 f = io.open("/dev/tty", "w")
 if f then
-    f:write ("\nJust checking to see who is using rpm-5.1.6.\nThe RPM Package Manager license is LGPL, as always.\nRelax ...\n")
+    f:write ("\nJust checking to see who is using rpm-5.2.DEVEL.\nThe RPM Package Manager license is LGPL, as always.\nRelax ...\n")
     f:close()
 end
 }1}%{rpm_license_check}
@@ -727,7 +747,8 @@ end
 %nil
 -15: sigtype	none
 -14: sources	%{lua: for i, s in ipairs(sources) do print(s.." ") end}
--14: sparc	sun4 sun4m sun4c sun4d sun4u sparc sparcv8 sparcv9 sparc64 sparc64v sparcv9b sparcv9v sparcv9v2
+-14: sparc	sun4 sun4m sun4c sun4d sun4u sparcv9b sparcv9v2 %{sparcx}
+-14: sparcx	sparc sparcv8 sparcv9 sparcv9v sparc64 sparc64v
 -14: tmpdir	%{_tmppath}
 -14: triggerin	%%triggerin %1 -- %2%{?3: %3 %4}
   echo "--- triggerin(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
@@ -747,4 +768,4 @@ end
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 442 empty 0
+======================== active 449 empty 0

@@ -301,9 +301,10 @@ DBGREFS(0, (stderr, "--> fd  %p -- %ld %s at %s:%u\n", fd, -9L, msg, fn, ln));
 #endif
     FDSANE(fd);
     if (fd) {
-	yarnPossess(fd->use);
-DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use), msg, fn, ln, fdbg(fd)));
-	if (yarnPeekLock(fd->use) == 1L) {
+	yarnLock use = fd->_item.use;
+	yarnPossess(use);
+DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(use), msg, fn, ln, fdbg(fd)));
+	if (yarnPeekLock(use) == 1L) {
 	    fd->opath = _free(fd->opath);
 	    fd->stats = _free(fd->stats);
 	    for (i = fd->ndigests - 1; i >= 0; i--) {
@@ -325,7 +326,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->
 	    fd = (FD_t) rpmioPutPool((rpmioItem)fd);
 	    return NULL;
 	}
-	yarnTwist(fd->use, BY, -1);
+	yarnTwist(use, BY, -1);
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
     }
     return NULL;

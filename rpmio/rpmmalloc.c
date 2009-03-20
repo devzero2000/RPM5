@@ -6,6 +6,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 #include <rpmlog.h>
+#include <yarn.h>
 #include "debug.h"
 
 #if defined(WITH_DMALLOC)

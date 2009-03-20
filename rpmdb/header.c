@@ -125,12 +125,12 @@ Header headerLink(Header h)
     if (h == NULL) return NULL;
 /*@=nullret@*/
 
-    yarnPossess(h->use);
+    yarnPossess(h->_item.use);
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "--> h  %p ++ %ld at %s:%u\n", h, yarnPeekLock(h->use)+1, __FILE__, __LINE__);
+fprintf(stderr, "--> h  %p ++ %ld at %s:%u\n", h, yarnPeekLock(h->_item.use)+1, __FILE__, __LINE__);
 /*@=modfilesys@*/
-    yarnTwist(h->use, BY, 1);
+    yarnTwist(h->_item.use, BY, 1);
 
     /*@-refcounttrans @*/
     return h;
@@ -140,12 +140,12 @@ fprintf(stderr, "--> h  %p ++ %ld at %s:%u\n", h, yarnPeekLock(h->use)+1, __FILE
 Header headerUnlink(Header h)
 {
     if (h == NULL) return NULL;
-    yarnPossess(h->use);
+    yarnPossess(h->_item.use);
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__, __LINE__);
+fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->_item.use), __FILE__, __LINE__);
 /*@=modfilesys@*/
-    yarnTwist(h->use, BY, -1);
+    yarnTwist(h->_item.use, BY, -1);
     return NULL;
 }
 
@@ -155,12 +155,12 @@ Header headerFree(Header h)
     if (h == NULL)
 	return NULL;
 
-    yarnPossess(h->use);
+    yarnPossess(h->_item.use);
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__, __LINE__);
+fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->_item.use), __FILE__, __LINE__);
 /*@=modfilesys@*/
-    if (yarnPeekLock(h->use) <= 1L) {
+    if (yarnPeekLock(h->_item.use) <= 1L) {
 	if (h->index != NULL) {
 	    indexEntry entry = h->index;
 	    size_t i;
@@ -194,7 +194,7 @@ fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->use), __FILE__
 /*@=nullstate@*/
 	h = (Header) rpmioPutPool((rpmioItem)h);
     } else
-	yarnTwist(h->use, BY, -1);
+	yarnTwist(h->_item.use, BY, -1);
     return NULL;
 }
 
@@ -1196,7 +1196,7 @@ errxit:
     /*@-usereleased@*/
     if (h) {
 	h->index = _free(h->index);
-	yarnPossess(h->use);
+	yarnPossess(h->_item.use);	/* XXX rpmioPutItem expects locked. */
 	h = (Header) rpmioPutPool((rpmioItem)h);
     }
     /*@=usereleased@*/

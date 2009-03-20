@@ -177,12 +177,12 @@ rpmds rpmdsFree(rpmds ds)
     if (ds == NULL)
 	return NULL;
 
-    yarnPossess(ds->use);
+    yarnPossess(ds->_item.use);
 /*@-modfilesys@*/
 if (_rpmds_debug)
-fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->use), ds->Type, __FILE__, __LINE__);
+fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->_item.use), ds->Type, __FILE__, __LINE__);
 /*@=modfilesys@*/
-    if (yarnPeekLock(ds->use) <= 1) {
+    if (yarnPeekLock(ds->_item.use) <= 1L) {
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
@@ -207,7 +207,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
 	ds = (rpmds) rpmioPutPool((rpmioItem)ds);
     } else
-	yarnTwist(ds->use, BY, -1);
+	yarnTwist(ds->_item.use, BY, -1);
     return NULL;
 }
 
@@ -965,11 +965,14 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
 static rpmds rpmdsDup(const rpmds ods)
 	/*@modifies ods @*/
 {
-    rpmds ds = xcalloc(1, sizeof(*ds));
+#ifdef	BUGGY
+    rpmds ds = rpmdsGetPool(_rpmdsPool);
+#else
+    rpmds ds = rpmdsGetPool(NULL);
+#endif
     size_t nb;
 
     ds->h = (ods->h != NULL ? headerLink(ods->h) : NULL);
-    ds->use = yarnNewLock(0);
 /*@-assignexpose@*/
     ds->Type = ods->Type;
 /*@=assignexpose@*/

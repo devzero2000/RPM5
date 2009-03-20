@@ -474,10 +474,10 @@ rpmgi rpmgiFree(rpmgi gi)
 
     if (gi == NULL) return NULL;
 
-    yarnPossess(gi->use);
+    yarnPossess(gi->_item.use);
 if (_rpmgi_debug)
-fprintf(stderr, "--> gi %p -- %ld %s(%s) at %s:%u\n", gi, yarnPeekLock(gi->use), "rpmgiFree", tagName(gi->tag), __FILE__, __LINE__);
-    if (yarnPeekLock(gi->use) <= 1L) {
+fprintf(stderr, "--> gi %p -- %ld %s(%s) at %s:%u\n", gi, yarnPeekLock(gi->_item.use), "rpmgiFree", tagName(gi->tag), __FILE__, __LINE__);
+    if (yarnPeekLock(gi->_item.use) <= 1L) {
 	gi->hdrPath = _free(gi->hdrPath);
 	gi->h = headerFree(gi->h);
 
@@ -498,7 +498,7 @@ fprintf(stderr, "--> gi %p -- %ld %s(%s) at %s:%u\n", gi, yarnPeekLock(gi->use),
 
 	gi = (rpmgi) rpmioPutPool((rpmioItem)gi);
     } else
-	yarnTwist(gi->use, BY, -1);
+	yarnTwist(gi->_item.use, BY, -1);
 
     return NULL;
 }

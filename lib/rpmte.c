@@ -239,7 +239,7 @@ assert(he->p.str != NULL);
 rpmte rpmteFree(rpmte te)
 {
     if (te != NULL) {
-	yarnPossess(te->use); /* XXX no refcounts, rpioPutPool expects locked. */
+	yarnPossess(te->_item.use); /* XXX no refcounts, rpioPutPool expects locked. */
 	delTE(te);
 	te = (rpmte)rpmioPutPool((rpmioItem)te);
     }
@@ -736,18 +736,18 @@ rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
     if (tsi == NULL) return NULL;
-    yarnPossess(tsi->use);
+    yarnPossess(tsi->_item.use);
 /*@-modfilesys@*/
 if (_rpmte_debug)
-fprintf(stderr, "*** tsi %p -- %ld %s at %s:%d\n", tsi, yarnPeekLock(tsi->use), "rpmtsiFree", fn, ln);
+fprintf(stderr, "*** tsi %p -- %ld %s at %s:%d\n", tsi, yarnPeekLock(tsi->_item.use), "rpmtsiFree", fn, ln);
 /*@=modfilesys@*/
-    if (yarnPeekLock(tsi->use) <= 1L) {
+    if (yarnPeekLock(tsi->_item.use) <= 1L) {
 /*@-internalglobs@*/
 	tsi->ts = rpmtsFree(tsi->ts);
 /*@=internalglobs@*/
 	tsi = (rpmtsi) rpmioPutPool((rpmioItem)tsi);
     } else
-	yarnTwist(tsi->use, BY, -1);
+	yarnTwist(tsi->_item.use, BY, -1);
 
     return NULL;
 }

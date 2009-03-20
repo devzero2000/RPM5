@@ -6,6 +6,8 @@
  * Structure(s)and methods for a XAR archive wrapper format.
  */
 
+#include <rpmiotypes.h>
+
 /*@unchecked@*/
 extern int _xar_debug;
 
@@ -14,10 +16,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 #ifdef	_RPMXAR_INTERNAL
 #include "yarn.h"
 struct rpmxar_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@relnull@*/
     const void * x;		/*!< xar_t */
 /*@relnull@*/

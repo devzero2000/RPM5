@@ -1,5 +1,10 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: url: fix: u->use clobbers the lock from the pool.
+    - jbj: rpmds: fix: rpmdsDup needs to go through rpmdsGetPool() too.
+    - jbj: yarn: move rpmioItem to <rpmiotypes.h>
+    - jbj: yarn: use void * use, not yarnLock use, to hide the details.
+    - jbj: yarn: wrap use/pool into a per-object "struct rpmioItem_s _item".
     - jbj: yarn: stub in (*init)() and (*fini)() pool item methods.
     - jbj: yarn: add a (*dbg)() formatter to make fdLink() generic.
     - jbj: yarn: stub-in rpmmi pool handling under NOTYET.

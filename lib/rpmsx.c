@@ -6,6 +6,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* for yarn.h */
 #include <rpmmacro.h>	/* for rpmGetPath() */
+#include <yarn.h>
 
 #include <rpmtypes.h>
 
@@ -226,13 +227,13 @@ rpmsx rpmsxFree(rpmsx sx)
     if (sx == NULL)
 	return NULL;
 
-    yarnPossess(sx->use);
+    yarnPossess(sx->_item.use);
 /*@-modfilesys@*/
 if (_rpmsx_debug)
-fprintf(stderr, "--> sx %p -- %ld %s at %s:%u\n", sx, yarnPeekLock(sx->use), "rpmsxFree", __FILE__, __LINE__);
+fprintf(stderr, "--> sx %p -- %ld %s at %s:%u\n", sx, yarnPeekLock(sx->_item.use), "rpmsxFree", __FILE__, __LINE__);
 /*@=modfilesys@*/
 
-    if (yarnPeekLock(sx->use) <= -1L) {
+    if (yarnPeekLock(sx->_item.use) <= -1L) {
 	if (sx->Count > 0)
 	for (i = 0; i < sx->Count; i++) {
 	    rpmsxp sxp = sx->sxp + i;
@@ -252,7 +253,7 @@ fprintf(stderr, "--> sx %p -- %ld %s at %s:%u\n", sx, yarnPeekLock(sx->use), "rp
 	sx->sxs = _free(sx->sxs);
 	sx = (rpmsx) rpmioPutPool((rpmioItem)sx);
     } else
-	yarnTwist(sx->use, BY, -1);
+	yarnTwist(sx->_item.use, BY, -1);
     return NULL;
 }
 

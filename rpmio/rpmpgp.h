@@ -48,10 +48,7 @@ struct pgpDigParams_s {
  * Container for values parsed from an OpenPGP signature and public key.
  */
 struct pgpDig_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 

@@ -89,10 +89,7 @@ struct sharedFileInfo_s {
  * A single package instance to be installed/removed atomically.
  */
 struct rpmte_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmElementType type;	/*!< Package disposition (installed/removed). */
 
 /*@refcounted@*/ /*@relnull@*/
@@ -185,10 +182,7 @@ struct rpmte_s {
  * Iterator across transaction elements, forward on install, backward on erase.
  */
 struct rpmtsi_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@refcounted@*/
     rpmts ts;		/*!< transaction set. */
     int reverse;	/*!< reversed traversal? */

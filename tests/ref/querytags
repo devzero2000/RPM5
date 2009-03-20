@@ -111,6 +111,7 @@ OS                     1021 string
 P                      1047 argv array
 PACKAGEBASEURL         1217 string
 PACKAGECOLOR           1184 uint32
+PACKAGEDEPFLAGS      1955234580 argv array
 PACKAGEDIGEST          1215 string
 PACKAGEORIGIN          1170 string
 PACKAGEPREFCOLOR       1185 uint32
@@ -118,6 +119,7 @@ PACKAGER               1015 string
 PACKAGESIZE            1214 uint64
 PACKAGESTAT            1216 octets
 PACKAGETIME            1213 uint64
+PACKAGETRANSFLAGS    1325051865 argv array
 PATCH                  1019 argv array
 PATCHESFLAGS           1134 uint32 array
 PATCHESNAME            1133 argv array

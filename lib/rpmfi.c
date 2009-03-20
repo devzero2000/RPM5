@@ -1212,13 +1212,13 @@ rpmfi rpmfiFree(rpmfi fi)
 {
     if (fi == NULL) return NULL;
 
-    yarnPossess(fi->use);
+    yarnPossess(fi->_item.use);
 /*@-modfilesys@*/
 if (_rpmfi_debug)
-fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->use), fi->Type, __FILE__, __LINE__);
+fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->_item.use), fi->Type, __FILE__, __LINE__);
 /*@=modfilesys@*/
 
-    if (yarnPeekLock(fi->use) <= 1L) {
+    if (yarnPeekLock(fi->_item.use) <= 1L) {
 
 /*@-modfilesys@*/
 if (_rpmfi_debug < 0)
@@ -1289,7 +1289,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi = (rpmfi) rpmioPutPool((rpmioItem)fi);
 
    } else
-	yarnTwist(fi->use, BY, -1);
+	yarnTwist(fi->_item.use, BY, -1);
 
     return NULL;
 }

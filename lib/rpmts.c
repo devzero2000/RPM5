@@ -640,22 +640,22 @@ rpmts rpmtsFree(rpmts ts)
     if (ts == NULL)
 	return NULL;
 
-    yarnPossess(ts->use);
+    yarnPossess(ts->_item.use);
 /*@-modfilesys@*/
 if (_rpmts_debug)
-fprintf(stderr, "--> ts %p -- %ld %s at %s:%u\n", ts, yarnPeekLock(ts->use), "tsCreate", __FILE__, __LINE__);
+fprintf(stderr, "--> ts %p -- %ld %s at %s:%u\n", ts, yarnPeekLock(ts->_item.use), "tsCreate", __FILE__, __LINE__);
 /*@=modfilesys@*/
 
-    if (yarnPeekLock(ts->use) <= 1L) {
+    if (yarnPeekLock(ts->_item.use) <= 1L) {
 
 /*@-nullstate@*/	/* FIX: partial annotations */
 	/* XXX there's a recursion here ... release and reacquire the lock */
 #ifndef	BUGGY
-	yarnRelease(ts->use);	/* XXX hack-o-round */
+	yarnRelease(ts->_item.use);	/* XXX hack-o-round */
 #endif
 	rpmtsEmpty(ts);
 #ifndef	BUGGY
-	yarnPossess(ts->use);	/* XXX hack-o-round */
+	yarnPossess(ts->_item.use);	/* XXX hack-o-round */
 #endif
 /*@=nullstate@*/
 
@@ -708,7 +708,7 @@ fprintf(stderr, "--> ts %p -- %ld %s at %s:%u\n", ts, yarnPeekLock(ts->use), "ts
 
 	ts = (rpmts) rpmioPutPool((rpmioItem)ts);
     } else
-	yarnTwist(ts->use, BY, -1);
+	yarnTwist(ts->_item.use, BY, -1);
 
     return NULL;
 }

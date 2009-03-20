@@ -28,6 +28,20 @@ typedef /*@unsignedintegraltype@*/	unsigned long long	rpmuint64_t;
  */
 typedef /*@signedintegraltype@*/	int			rpmint32_t;
 
+/**
+ */
+typedef	struct rpmioItem_s * rpmioItem;
+struct rpmioItem_s {
+/*@null@*/
+    void *use;			/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+};
+
+/**
+ */
+typedef struct rpmioPool_s * rpmioPool;
+
 /** \ingroup rpmio
  */
 typedef struct rpmiob_s * rpmiob;

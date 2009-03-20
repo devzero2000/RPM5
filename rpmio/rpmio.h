@@ -13,8 +13,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <rpmiotypes.h>
 #include <rpmzlog.h>
-#include <yarn.h>
 
 /** \ingroup rpmio
  * Hide libio API lossage.
@@ -729,18 +729,6 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 void rpmioClean(void)
 	/*@globals internalState, fileSystem @*/
 	/*@modifies internalState, fileSystem @*/;
-
-/**
- */
-typedef	struct rpmioItem_s * rpmioItem;
-struct rpmioItem_s {
-    yarnLock use;
-    void *pool;
-};
-
-/**
- */
-typedef struct rpmioPool_s * rpmioPool;
 
 /**
  * Reclaim memory pool items.

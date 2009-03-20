@@ -85,10 +85,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
  * A package filename set.
  */
 struct rpmfi_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
 

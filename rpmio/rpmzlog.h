@@ -25,6 +25,9 @@ struct rpmzMsg_s {
 /** trace log */
 struct rpmzLog_s {
     yarnLock use;		/*!< use count -- return to pool when zero */
+/*@shared@*/ /*@null@*/
+    void *pool;			/*!< pool (or NULL if malloc'd) */
+
     struct timeval start;	/*!< starting time of day for tracing */
 /*@null@*/
     rpmzMsg msg_head;

@@ -1066,26 +1066,24 @@ pgpDig pgpDigFree(pgpDig dig)
 	return NULL;
 
 /*@-onlytrans@*/
-    yarnPossess(dig->use);
+    yarnPossess(dig->_item.use);
 /*@-modfilesys@*/
 if (_pgp_debug < 0)
-fprintf(stderr, "--> dig %p -- %ld %s at %s:%u\n", dig, yarnPeekLock(dig->use), "pgpDigFree", __FILE__, __LINE__);
+fprintf(stderr, "--> dig %p -- %ld %s at %s:%u\n", dig, yarnPeekLock(dig->_item.use), "pgpDigFree", __FILE__, __LINE__);
 /*@=modfilesys@*/
-    if (yarnPeekLock(dig->use) <= 1L) {
-	yarnLock use = dig->use;
-
+    if (yarnPeekLock(dig->_item.use) <= 1L) {
 	/* Lose the header tag data. */
 	/* XXX this free should be done somewhere else. */
 	dig->sig = _free(dig->sig);
 
 	/* XXX there's a recursion here ... release and reacquire the lock */
 #ifndef	BUGGY
-	yarnRelease(dig->use);
+	yarnRelease(dig->_item.use);
 #endif
 	/* Dump the signature/pubkey data. */
 	pgpDigClean(dig);
 #ifndef	BUGGY
-	yarnPossess(dig->use);
+	yarnPossess(dig->_item.use);
 #endif
 
 	if (dig->hdrsha1ctx != NULL)
@@ -1111,7 +1109,7 @@ fprintf(stderr, "--> dig %p -- %ld %s at %s:%u\n", dig, yarnPeekLock(dig->use), 
 /*@=onlytrans@*/
 	dig = (pgpDig) rpmioPutPool((rpmioItem)dig);
     } else
-	yarnTwist(dig->use, BY, -1);
+	yarnTwist(dig->_item.use, BY, -1);
     return NULL;
 }
 

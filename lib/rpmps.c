@@ -7,6 +7,7 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmtypes.h>
+#include <yarn.h>
 
 #define	_RPMPS_INTERNAL
 #include "rpmps.h"
@@ -35,34 +36,6 @@ static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
     }
     return (rpmps) rpmioGetPool(pool, sizeof(*ps));
 }
-
-#ifdef	DYING
-rpmps XrpmpsUnlink(rpmps ps, const char * msg,
-		const char * fn, unsigned ln)
-{
-/*@-modfilesys@*/
-if (_rpmps_debug && msg != NULL)
-fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    ps->nrefs--;
-/*@-refcounttrans@*/
-    return ps;
-/*@=refcounttrans@*/
-}
-
-rpmps XrpmpsLink(rpmps ps, const char * msg,
-		const char * fn, unsigned ln)
-{
-    ps->nrefs++;
-/*@-modfilesys@*/
-if (_rpmps_debug && msg != NULL)
-fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-/*@-refcounttrans@*/
-    return ps;
-/*@=refcounttrans@*/
-}
-#endif
 
 int rpmpsNumProblems(rpmps ps)
 {
@@ -128,12 +101,12 @@ rpmps rpmpsCreate(void)
 rpmps rpmpsFree(rpmps ps)
 {
     if (ps == NULL) return NULL;
-    yarnPossess(ps->use);
+    yarnPossess(ps->_item.use);
 /*@-modfilesys@*/
 if (_rpmps_debug)
-fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, yarnPeekLock(ps->use), "rpmpsFree", __FILE__, __LINE__);
+fprintf(stderr, "--> ps %p -- %ld %s at %s:%u\n", ps, yarnPeekLock(ps->_item.use), "rpmpsFree", __FILE__, __LINE__);
 /*@=modfilesys@*/
-    if (yarnPeekLock(ps->use) <= 1L) {
+    if (yarnPeekLock(ps->_item.use) <= 1L) {
 	if (ps->probs) {
 	    int i;
 	    for (i = 0; i < ps->numProblems; i++) {
@@ -146,7 +119,7 @@ fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, yarnPeekLock(ps->use), "rpm
 	}
 	ps = (rpmps) rpmioPutPool((rpmioItem)ps);
     } else
-	yarnTwist(ps->use, BY, -1);
+	yarnTwist(ps->_item.use, BY, -1);
     return NULL;
 }
 
