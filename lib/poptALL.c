@@ -465,6 +465,9 @@ rpmcliFini(poptContext optCon)
 	/*@modifies keyids @*/
 {
     extern rpmioPool _headerPool;
+#ifdef	NOTYET
+    extern rpmioPool _rpmmiPool;
+#endif
     extern rpmioPool _rpmdbPool;
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
@@ -480,6 +483,9 @@ rpmcliFini(poptContext optCon)
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
 
+#ifdef	NOTYET
+    _rpmmiPool = rpmioFreePool(_rpmmiPool);
+#endif
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _headerPool = rpmioFreePool(_headerPool);
 

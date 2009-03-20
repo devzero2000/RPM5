@@ -88,6 +88,7 @@ LIBRPMDB_0
     rpmCheckPassPhrase;
     rpmDatabasePoptTable;
     _rpmdbPool;
+    _rpmmiPool;
     rpmdbAdd;
     rpmdbAppendIterator;
     rpmDBArgs;
