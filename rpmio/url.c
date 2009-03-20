@@ -73,19 +73,6 @@ static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
     return (urlinfo) rpmioGetPool(pool, sizeof(*u));
 }
 
-#ifdef	DYING
-urlinfo XurlLink(urlinfo u, const char *msg, const char *fn, unsigned ln)
-{
-    URLSANE(u);
-    yarnPossess(u->use);
-/*@-modfilesys@*/
-URLDBGREFS(0, (stderr, "--> url %p ++ %ld %s at %s:%u\n", u, yarnPeekLock(u->use)+1, msg, fn, ln));
-/*@=modfilesys@*/
-    yarnTwist(u->use, BY, 1);
-    /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
-}
-#endif
-
 urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
 {
     urlinfo u = urlGetPool(_urlPool);
@@ -102,11 +89,7 @@ urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
     u->allow = RPMURL_SERVER_HASRANGE;
     u->httpVersion = 0;
     u->magic = URLMAGIC;
-#ifdef	DYING
-    return XurlLink(u, msg, fn, ln);
-#else
     return (urlinfo) rpmioLinkPoolItem((rpmioItem)u, msg, fn, ln);
-#endif
 }
 
 urlinfo XurlFree(urlinfo u, const char *msg, const char *fn, unsigned ln)
@@ -114,18 +97,15 @@ urlinfo XurlFree(urlinfo u, const char *msg, const char *fn, unsigned ln)
     int xx;
 
     URLSANE(u);
-    yarnPossess(u->use);
-URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use), msg, fn, ln));
-    if (yarnPeekLock(u->use) > 1) {
-	yarnTwist(u->use, BY, -1);
-	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
-    }
+    yarnPossess(u->_item.use);
+URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->_item.use), msg, fn, ln));
+    if (yarnPeekLock(u->_item.use) <= 1L) {
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
-	    (void) Fclose(u->ctrl);
+		xx = Fclose(u->ctrl);
 	} else if (fdFileno(u->ctrl) >= 0)
 	    xx = fdio->close(u->ctrl);
 #else
@@ -174,11 +154,13 @@ URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->use
     u->fragment = _free(u->fragment);
     u->proxyu = _free((void *)u->proxyu);
     u->proxyh = _free((void *)u->proxyh);
-    u->use = NULL;
-
     u = (urlinfo) rpmioPutPool((rpmioItem)u);
-
     return NULL;
+    } else {
+	yarnTwist(u->_item.use, BY, -1);
+	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
+    }
+    /*@notreached@*/
 }
 
 void urlFreeCache(void)
@@ -191,7 +173,7 @@ void urlFreeCache(void)
 	    if (_url_cache[i])
 		fprintf(stderr,
 			_("warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"),
-			i, _url_cache[i], yarnPeekLock(_url_cache[i]->use),
+			i, _url_cache[i], yarnPeekLock(_url_cache[i]->_item.use),
 			(_url_cache[i]->host ? _url_cache[i]->host : ""),
 			(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
 	}

@@ -926,7 +926,7 @@ exit:
 
 /*@-fullinitblock@*/
 /*@observer@*/ /*@unchecked@*/
-static struct rpmdb_s dbTemplate = { NULL, NULL,
+static struct rpmdb_s dbTemplate = { { NULL, NULL},
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_ERRPFX
 };
@@ -1035,13 +1035,13 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	goto exit;
 
-    yarnPossess(db->use);
+    yarnPossess(db->_item.use);
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->use), msg, __FILE__, __LINE__);
+fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use), msg, __FILE__, __LINE__);
 
     /*@-usereleased@*/
-    if (yarnPeekLock(db->use) <= 1L) {
+    if (yarnPeekLock(db->_item.use) <= 1L) {
 
 	if (db->_dbi)
 	for (dbix = db->db_ndbi; dbix;) {
@@ -1076,7 +1076,7 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->use), msg
 	/*@=usereleased@*/
 	db = (rpmdb)rpmioPutPool((rpmioItem)db);
     } else
-	yarnTwist(db->use, BY, -1);
+	yarnTwist(db->_item.use, BY, -1);
 
 exit:
     (void) rpmsqEnable(-SIGHUP,	NULL);
@@ -1182,13 +1182,13 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 	oneshot = 1;
     }
 
-    {	yarnLock use = db->use;
-	void * pool = db->pool;
-    /*@-assignexpose@*/
-    *db = dbTemplate;	/* structure assignment */
-    /*@=assignexpose@*/
-	db->pool = pool;
-	db->use = use;
+    {	void * use = db->_item.use;
+	void * pool = db->_item.pool;
+	/*@-assignexpose@*/
+	*db = dbTemplate;	/* structure assignment */
+	/*@=assignexpose@*/
+	db->_item.pool = pool;
+	db->_item.use = use;
     }
 
     db->_dbi = NULL;

@@ -62,10 +62,7 @@ struct rpmsxs_s {
  * File security context patterns container.
  */
 struct rpmsx_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@only@*/ /*@relnull@*/
     rpmsxp sxp;			/*!< File context patterns. */
     int Count;			/*!< No. of file context patterns. */

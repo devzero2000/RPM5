@@ -56,6 +56,8 @@ char *xar_get_path(xar_file_t f)
 #define XAR_OPT_VAL_GZIP 0
 #endif	/* WITH_XAR */
 
+#include <rpmio.h>
+
 #define	_RPMXAR_INTERNAL
 #include <rpmxar.h>
 #include <rpmio_internal.h>	/* for fdGetXAR */
@@ -86,12 +88,12 @@ rpmxar rpmxarFree(rpmxar xar)
 {
     if (xar == NULL)
 	return NULL;
-    yarnPossess(xar->use);
+    yarnPossess(xar->_item.use);
 /*@-modfilesys@*/
 if (_xar_debug)
-fprintf(stderr, "--> xar %p -- %ld %s at %s:%u\n", xar, yarnPeekLock(xar->use), "rpmxarFree", __FILE__, __LINE__);
+fprintf(stderr, "--> xar %p -- %ld %s at %s:%u\n", xar, yarnPeekLock(xar->_item.use), "rpmxarFree", __FILE__, __LINE__);
 /*@=modfilesys@*/
-    if (yarnPeekLock(xar->use) <= 1L) {
+    if (yarnPeekLock(xar->_item.use) <= 1L) {
 /*@-onlytrans@*/
 	if (xar->i) {
 	    xar_iter_free(xar->i);
@@ -109,7 +111,7 @@ fprintf(stderr, "--> xar %p -- %ld %s at %s:%u\n", xar, yarnPeekLock(xar->use), 
 /*@=onlytrans@*/
 	xar = (rpmxar) rpmioPutPool((rpmioItem)xar);
     } else
-	yarnTwist(xar->use, BY, -1);
+	yarnTwist(xar->_item.use, BY, -1);
     return NULL;
 }
 

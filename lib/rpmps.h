@@ -82,10 +82,7 @@ struct rpmProblem_s {
 /**
  */
 struct rpmps_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */

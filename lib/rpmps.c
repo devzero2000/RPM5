@@ -36,34 +36,6 @@ static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
     return (rpmps) rpmioGetPool(pool, sizeof(*ps));
 }
 
-#ifdef	DYING
-rpmps XrpmpsUnlink(rpmps ps, const char * msg,
-		const char * fn, unsigned ln)
-{
-/*@-modfilesys@*/
-if (_rpmps_debug && msg != NULL)
-fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    ps->nrefs--;
-/*@-refcounttrans@*/
-    return ps;
-/*@=refcounttrans@*/
-}
-
-rpmps XrpmpsLink(rpmps ps, const char * msg,
-		const char * fn, unsigned ln)
-{
-    ps->nrefs++;
-/*@-modfilesys@*/
-if (_rpmps_debug && msg != NULL)
-fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-/*@-refcounttrans@*/
-    return ps;
-/*@=refcounttrans@*/
-}
-#endif
-
 int rpmpsNumProblems(rpmps ps)
 {
     int numProblems = 0;
@@ -128,25 +100,25 @@ rpmps rpmpsCreate(void)
 rpmps rpmpsFree(rpmps ps)
 {
     if (ps == NULL) return NULL;
-    yarnPossess(ps->use);
+    yarnPossess(ps->_item.use);
 /*@-modfilesys@*/
 if (_rpmps_debug)
-fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, yarnPeekLock(ps->use), "rpmpsFree", __FILE__, __LINE__);
+fprintf(stderr, "--> ps %p -- %ld %s at %s:%u\n", ps, yarnPeekLock(ps->_item.use), "rpmpsFree", __FILE__, __LINE__);
 /*@=modfilesys@*/
-    if (yarnPeekLock(ps->use) <= 1L) {
-    if (ps->probs) {
-	int i;
-	for (i = 0; i < ps->numProblems; i++) {
-	    rpmProblem p = ps->probs + i;
-	    p->pkgNEVR = _free(p->pkgNEVR);
-	    p->altNEVR = _free(p->altNEVR);
-	    p->str1 = _free(p->str1);
+    if (yarnPeekLock(ps->_item.use) <= 1L) {
+	if (ps->probs) {
+	    int i;
+	    for (i = 0; i < ps->numProblems; i++) {
+		rpmProblem p = ps->probs + i;
+		p->pkgNEVR = _free(p->pkgNEVR);
+		p->altNEVR = _free(p->altNEVR);
+		p->str1 = _free(p->str1);
+	    }
+	    ps->probs = _free(ps->probs);
 	}
-	ps->probs = _free(ps->probs);
-    }
 	ps = (rpmps) rpmioPutPool((rpmioItem)ps);
     } else
-	yarnTwist(ps->use, BY, -1);
+	yarnTwist(ps->_item.use, BY, -1);
     return NULL;
 }
 

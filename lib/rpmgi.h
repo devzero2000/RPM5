@@ -40,10 +40,7 @@ extern rpmgiFlags giFlags;
 /** \ingroup rpmgi
  */
 struct rpmgi_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
     int (*tsOrder) (rpmts ts);	/*!< Iterator transaction ordering. */

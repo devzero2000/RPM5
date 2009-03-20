@@ -30,10 +30,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
  * URL control structure.
  */
 struct urlinfo_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@owned@*/ /*@relnull@*/
     const char * url;		/*!< copy of original url */
 /*@owned@*/ /*@relnull@*/

@@ -809,7 +809,7 @@ void rpmioClean(void)
  */
 typedef	struct rpmioItem_s * rpmioItem;
 struct rpmioItem_s {
-    yarnLock use;
+    void *use;
     void *pool;
 };
 

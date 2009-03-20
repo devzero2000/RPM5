@@ -5,8 +5,8 @@
  * \file rpmdb/header_internal.h
  */
 
+#include <rpmio.h>
 #include <rpmtag.h>
-#include <yarn.h>
 
 #if !defined(__LCLINT__)
 #include <netinet/in.h>
@@ -83,10 +83,7 @@ struct indexEntry_s {
  * The Header data structure.
  */
 struct headerToken_s {
-     yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     unsigned char magic[8];	/*!< Header magic. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
@@ -140,9 +137,9 @@ int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int 
 /*@-type@*/ /* FIX: cast? */
 /*@unused@*/ static inline int headerUsageCount(Header h) /*@*/ {
     int nrefs = 0;
-    yarnPossess(h->use);
-    nrefs = (int)yarnPeekLock(h->use);
-    yarnRelease(h->use);
+    yarnPossess(h->_item.use);
+    nrefs = (int)yarnPeekLock(h->_item.use);
+    yarnRelease(h->_item.use);
     return nrefs;
 }
 /*@=type@*/

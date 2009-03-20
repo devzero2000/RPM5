@@ -1554,14 +1554,14 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     if (psm == NULL)
     return NULL;
 
-    yarnPossess(psm->use);
+    yarnPossess(psm->_item.use);
 
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "--> psm %p -- %ld %s at %s:%u\n", psm, yarnPeekLock(psm->use), msg, __FILE__, __LINE__);
+fprintf(stderr, "--> psm %p -- %ld %s at %s:%u\n", psm, yarnPeekLock(psm->_item.use), msg, __FILE__, __LINE__);
 /*@=modfilesys@*/
 
-    if (yarnPeekLock(psm->use) <= 1L) {
+    if (yarnPeekLock(psm->_item.use) <= 1L) {
 
 /*@-nullstate@*/
     psm->fi = rpmfiFree(psm->fi);
@@ -1582,7 +1582,7 @@ fprintf(stderr, "--> psm %p -- %ld %s at %s:%u\n", psm, yarnPeekLock(psm->use), 
 
 	psm = (rpmpsm) rpmioPutPool((rpmioItem)psm);
     } else
-	yarnTwist(psm->use, BY, -1);
+	yarnTwist(psm->_item.use, BY, -1);
 
     return NULL;
 /*@=nullstate@*/
