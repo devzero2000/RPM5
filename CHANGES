@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: QNX: avoid conflicting db defines for __mutex_lock/__mutex_unlock.
     - jbj: yarn: convert rpmdb refcount to usage mutex.
     - jbj: yarn: convert psm refcount to usage mutex.
     - jbj: yarn: convert rpmxar refcount to usage mutex.
