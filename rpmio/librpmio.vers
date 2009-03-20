@@ -294,6 +294,7 @@ LIBRPMIO_0
     rpmioDigestPoptTable;
     rpmioFini;
     rpmioFreePool;
+    rpmioFreePoolItem;
     rpmioFtsOpts;
     rpmioFtsPoptTable;
     rpmioGetPool;
@@ -443,7 +444,6 @@ LIBRPMIO_0
     xstrcasecmp;
     xstrncasecmp;
     xstrtolocale;
-    XfdFree;
     XfdNew;
     XurlFree;
     XurlNew;

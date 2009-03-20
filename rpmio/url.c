@@ -100,62 +100,62 @@ urlinfo XurlFree(urlinfo u, const char *msg, const char *fn, unsigned ln)
     yarnPossess(u->_item.use);
 URLDBGREFS(0, (stderr, "--> url %p -- %ld %s at %s:%u\n", u, yarnPeekLock(u->_item.use), msg, fn, ln));
     if (yarnPeekLock(u->_item.use) <= 1L) {
-    if (u->ctrl) {
+	if (u->ctrl) {
 #ifndef	NOTYET
-	void * fp = fdGetFp(u->ctrl);
-	if (fp) {
-	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
+	    void * fp = fdGetFp(u->ctrl);
+	    if (fp) {
+		fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 		xx = Fclose(u->ctrl);
-	} else if (fdFileno(u->ctrl) >= 0)
-	    xx = fdio->close(u->ctrl);
+	    } else if (fdFileno(u->ctrl) >= 0)
+		xx = fdio->close(u->ctrl);
 #else
-	xx = Fclose(u->ctrl);
+	    xx = Fclose(u->ctrl);
 #endif
 
-	u->ctrl = XfdFree(u->ctrl, "persist ctrl (urlFree)", fn, ln);
-	/*@-usereleased@*/
-	if (u->ctrl)
-	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
+	    u->ctrl = rpmioFreePoolItem(u->ctrl, "persist ctrl (urlFree)", fn, ln);
+	    /*@-usereleased@*/
+	    if (u->ctrl)
+		fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
-	/*@=usereleased@*/
-    }
-    if (u->data) {
+	    /*@=usereleased@*/
+	}
+	if (u->data) {
 #ifndef	NOTYET
-	void * fp = fdGetFp(u->data);
-	if (fp) {
-	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
-	    (void) Fclose(u->data);
-	} else if (fdFileno(u->data) >= 0)
-	    xx = fdio->close(u->data);
+	    void * fp = fdGetFp(u->data);
+	    if (fp) {
+		fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
+		xx = Fclose(u->data);
+	    } else if (fdFileno(u->data) >= 0)
+		xx = fdio->close(u->data);
 #else
-	xx = Fclose(u->ctrl);
+	    xx = Fclose(u->ctrl);
 #endif
 
-	u->data = XfdFree(u->data, "persist data (urlFree)", fn, ln);
-	/*@-usereleased@*/
-	if (u->data)
-	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
+	    u->data = rpmioFreePoolItem(u->data, "persist data (urlFree)", fn, ln);
+	    /*@-usereleased@*/
+	    if (u->data)
+		fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
-	/*@=usereleased@*/
-    }
+	    /*@=usereleased@*/
+	}
 #ifdef WITH_NEON
-    xx = davFree(u);
+	xx = davFree(u);
 #endif
-    u->buf = _free(u->buf);
-    u->url = _free(u->url);
-    u->scheme = _free((void *)u->scheme);
-    u->user = _free((void *)u->user);
-    u->password = _free((void *)u->password);
-    u->host = _free((void *)u->host);
-    u->portstr = _free((void *)u->portstr);
-    u->query = _free(u->query);
-    u->fragment = _free(u->fragment);
-    u->proxyu = _free((void *)u->proxyu);
-    u->proxyh = _free((void *)u->proxyh);
-    u = (urlinfo) rpmioPutPool((rpmioItem)u);
-    return NULL;
+	u->buf = _free(u->buf);
+	u->url = _free(u->url);
+	u->scheme = _free((void *)u->scheme);
+	u->user = _free((void *)u->user);
+	u->password = _free((void *)u->password);
+	u->host = _free((void *)u->host);
+	u->portstr = _free((void *)u->portstr);
+	u->query = _free(u->query);
+	u->fragment = _free(u->fragment);
+	u->proxyu = _free((void *)u->proxyu);
+	u->proxyh = _free((void *)u->proxyh);
+	u = (urlinfo) rpmioPutPool((rpmioItem)u);
+	return NULL;
     } else {
 	yarnTwist(u->_item.use, BY, -1);
 	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
@@ -170,12 +170,15 @@ void urlFreeCache(void)
 	for (i = 0; i < _url_count; i++) {
 	    if (_url_cache[i] == NULL) continue;
 	    _url_cache[i] = urlFree(_url_cache[i], "_url_cache");
-	    if (_url_cache[i])
+	    if (_url_cache[i] == NULL)
+		continue;
+	    yarnPossess(_url_cache[i]->_item.use);
 		fprintf(stderr,
 			_("warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"),
 			i, _url_cache[i], yarnPeekLock(_url_cache[i]->_item.use),
 			(_url_cache[i]->host ? _url_cache[i]->host : ""),
 			(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
+	    yarnRelease(_url_cache[i]->_item.use);
 	}
     }
     _url_cache = _free(_url_cache);
