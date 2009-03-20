@@ -444,7 +444,6 @@ LIBRPMIO_0
     xstrncasecmp;
     xstrtolocale;
     XfdFree;
-    XfdLink;
     XfdNew;
     XurlFree;
     XurlNew;

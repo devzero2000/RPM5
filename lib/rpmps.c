@@ -29,7 +29,8 @@ static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
     rpmps ps;
 
     if (_rpmpsPool == NULL) {
-	_rpmpsPool = rpmioNewPool("ps", sizeof(*ps), -1, _rpmps_debug);
+	_rpmpsPool = rpmioNewPool("ps", sizeof(*ps), -1, _rpmps_debug,
+			NULL, NULL, NULL);
 	pool = _rpmpsPool;
     }
     return (rpmps) rpmioGetPool(pool, sizeof(*ps));

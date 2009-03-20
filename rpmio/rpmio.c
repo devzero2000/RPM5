@@ -173,7 +173,8 @@ static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
     FD_t fd;
 
     if (_fdPool == NULL) {
-	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1, _rpmio_debug);
+	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1, _rpmio_debug,
+		(const char * (*)(void *))fdbg, NULL, NULL);
 	pool = _fdPool;
     }
     return (FD_t) rpmioGetPool(pool, sizeof(*fd));
@@ -305,29 +306,6 @@ int fdSeekNot(void * cookie,
 }
 
 /* =============================================================== */
-/*@-mustmod@*/ /* FIX: cookie is modified */
-/*@null@*/
-FD_t XfdLink(void * cookie, const char * msg,
-		const char * fn, unsigned ln)
-	/*@modifies *cookie @*/
-{
-    FD_t fd;
-#ifdef	NOTYET
-assert(cookie != NULL)
-#else
-if (cookie == NULL)
-DBGREFS(0, (stderr, "--> fd  %p ++ %ld %s at %s:%u\n", cookie, -9L, msg, fn, ln));
-#endif
-    fd = c2f(cookie);
-    if (fd) {
-	yarnPossess(fd->use);
-DBGREFS(fd, (stderr, "--> fd  %p ++ %ld %s at %s:%u %s\n", fd, yarnPeekLock(fd->use)+1, msg, fn, ln, fdbg(fd)));
-	yarnTwist(fd->use, BY, 1);
-    }
-    return fd;
-}
-/*@=mustmod@*/
-
 /*@null@*/
 FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *fn, unsigned ln)
@@ -409,7 +387,7 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
     fd->ftpFileDoneNeeded = 0;
     fd->fd_cpioPos = 0;
 
-    return XfdLink(fd, msg, fn, ln);
+    return (FD_t)rpmioLinkPoolItem((rpmioItem)fd, msg, fn, ln);
 }
 
 static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
