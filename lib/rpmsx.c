@@ -20,23 +20,6 @@
 /*@unchecked@*/
 int _rpmsx_debug = 0;
 
-
-/*@unchecked@*/ /*@null@*/
-rpmioPool _rpmsxPool;
-
-static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmsx sx;
-
-    if (_rpmsxPool == NULL) {
-	_rpmsxPool = rpmioNewPool("sx", sizeof(*sx), -1, _rpmsx_debug,
-			NULL, NULL, NULL);
-	pool = _rpmsxPool;
-    }
-    return (rpmsx) rpmioGetPool(pool, sizeof(*sx));
-}
-
 /**
  * Stable sort for policy specifications, patterns before paths.
  * @param sx           security context patterns
@@ -220,41 +203,45 @@ static int rpmsxFind(/*@null@*/ const rpmsx sx, const char ** bpp)
     return -1;
 }
 
-rpmsx rpmsxFree(rpmsx sx)
+static void rpmsxFini(void * _sx)
+	/*@modifies *_sx @*/
 {
+    rpmsx sx = _sx;
     int i;
 
-    if (sx == NULL)
-	return NULL;
+    if (sx->Count > 0)
+    for (i = 0; i < sx->Count; i++) {
+	rpmsxp sxp = sx->sxp + i;
+	sxp->pattern = _free(sxp->pattern);
+	sxp->type = _free(sxp->type);
+	sxp->context = _free(sxp->context);
+/*@i@*/	regfree(sxp->preg);
+/*@i@*/	sxp->preg = _free(sxp->preg);
+    }
+    sx->sxp = _free(sx->sxp);
 
-    yarnPossess(sx->_item.use);
-/*@-modfilesys@*/
-if (_rpmsx_debug)
-fprintf(stderr, "--> sx %p -- %ld %s at %s:%u\n", sx, yarnPeekLock(sx->_item.use), "rpmsxFree", __FILE__, __LINE__);
-/*@=modfilesys@*/
+    if (sx->nsxs > 0)
+    for (i = 0; i < sx->nsxs; i++) {
+	rpmsxs sxs = sx->sxs + i;
+	sxs->stem = _free(sxs->stem);
+    }
+    sx->sxs = _free(sx->sxs);
+}
 
-    if (yarnPeekLock(sx->_item.use) <= -1L) {
-	if (sx->Count > 0)
-	for (i = 0; i < sx->Count; i++) {
-	    rpmsxp sxp = sx->sxp + i;
-	    sxp->pattern = _free(sxp->pattern);
-	    sxp->type = _free(sxp->type);
-	    sxp->context = _free(sxp->context);
-/*@i@*/	    regfree(sxp->preg);
-/*@i@*/	    sxp->preg = _free(sxp->preg);
-	}
-	sx->sxp = _free(sx->sxp);
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmsxPool;
 
-	if (sx->nsxs > 0)
-	for (i = 0; i < sx->nsxs; i++) {
-	    rpmsxs sxs = sx->sxs + i;
-	    sxs->stem = _free(sxs->stem);
-	}
-	sx->sxs = _free(sx->sxs);
-	sx = (rpmsx) rpmioPutPool((rpmioItem)sx);
-    } else
-	yarnTwist(sx->_item.use, BY, -1);
-    return NULL;
+static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmsx sx;
+
+    if (_rpmsxPool == NULL) {
+	_rpmsxPool = rpmioNewPool("sx", sizeof(*sx), -1, _rpmsx_debug,
+			NULL, NULL, rpmsxFini);
+	pool = _rpmsxPool;
+    }
+    return (rpmsx) rpmioGetPool(pool, sizeof(*sx));
 }
 
 /**

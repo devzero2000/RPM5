@@ -202,10 +202,12 @@ extern "C" {
  * @param te		transaction element
  * @return		NULL always
  */
-/*@null@*/
+/*@unused@*/ /*@null@*/
 rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
 	/*@globals fileSystem @*/
 	/*@modifies te, fileSystem @*/;
+#define rpmteFree(_te)  \
+    ((rpmte) rpmioFreePoolItem((rpmioItem)(_te), __FUNCTION__, __FILE__, __LINE__))
 
 /** \ingroup rpmte
  * Create a transaction element.

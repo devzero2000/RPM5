@@ -90,7 +90,7 @@ rpmsx rpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
 		/*@null@*/ const char * msg)
 	/*@modifies sx @*/;
 #define	rpmsxUnlink(_sx, _msg)	\
-	((rpmsx)rpmioUnlinkPoolItem((rpmioItem)(_sx), _msg, __FILE__, __LINE__))
+    ((rpmsx)rpmioUnlinkPoolItem((rpmioItem)(_sx), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a security context patterns instance.
@@ -102,18 +102,18 @@ rpmsx rpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
 rpmsx rpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg)
 	/*@modifies sx @*/;
 #define	rpmsxLink(_sx, _msg)	\
-	((rpmsx)rpmioLinkPoolItem((rpmioItem)(_sx), _msg, __FILE__, __LINE__))
+    ((rpmsx)rpmioLinkPoolItem((rpmioItem)(_sx), _msg, __FILE__, __LINE__))
 
 /**
  * Destroy a security context patterns.
  * @param sx		security context patterns
  * @return		NULL always
  */
-/*@-exportlocal@*/
 /*@null@*/
 rpmsx rpmsxFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx)
 	/*@modifies sx@*/;
-/*@=exportlocal@*/
+#define	rpmsxFree(_sx)	\
+    ((rpmsx)rpmioFreePoolItem((rpmioItem)(_sx), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Parse selinux file security context patterns.

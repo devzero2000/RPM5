@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: wire up rpmteFini, eliminate rpmteFree.
+    - jbj: yarn: wire up rpmsxFini, eliminate rpmsxFree.
     - jbj: yarn: wire up rpmfiFini, eliminate rpmfiFree.
     - jbj: yarn: wire up rpmgiFini, eliminate rpmgiFree.
     - jbj: rpmtsi: use __FUNCTION__ rather than adding a 2nd arg everywhere.
