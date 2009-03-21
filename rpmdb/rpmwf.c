@@ -226,7 +226,7 @@ rpmwf rpmwfFree(rpmwf wf)
 /*@=dependenttrans@*/
 	}
 
-	wf->xar = rpmxarFree(wf->xar);
+	wf->xar = rpmxarFree(wf->xar, "rpmwfFree");
 	(void) rpmwfFini(wf);
 
 	wf->fn = _free(wf->fn);
@@ -316,7 +316,7 @@ rpmwf rdXAR(const char * xarfn)
 
     while (rpmxarNext(wf->xar) == 0)
 	rc = rpmwfPullXAR(wf, NULL);
-    wf->xar = rpmxarFree(wf->xar);
+    wf->xar = rpmxarFree(wf->xar, "rdXAR");
 
 /*@-noeffect@*/
 if (_rpmwf_debug) rpmwfDump(wf, "rdXAR", xarfn);
@@ -347,7 +347,7 @@ if (_rpmwf_debug) rpmwfDump(wf, "wrXAR", xarfn);
 	goto exit;
 
 exit:
-    wf->xar = rpmxarFree(wf->xar);
+    wf->xar = rpmxarFree(wf->xar, "wrXAR");
     return rc;
 }
 

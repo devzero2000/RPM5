@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: wire up rpmxarFini, eliminate rpmxarFree.
+    - jbj: yarn: wire up pgpDigFini, eliminate pgpDigFree.
     - jbj: yarn: wire up urlFini, eliminate XurlFree.
     - jbj: yarn: wire up fdFini, eliminate XfdFree.
     - jbj: url: fix: u->use clobbers the lock from the pool.

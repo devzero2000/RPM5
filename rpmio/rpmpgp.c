@@ -1011,22 +1011,6 @@ int pgpPrtPkt(const rpmuint8_t * pkt, size_t pleft)
 /*@unchecked@*/
 pgpVSFlags pgpDigVSFlags;
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _digPool;
-
-static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    pgpDig dig;
-
-    if (_digPool == NULL) {
-	_digPool = rpmioNewPool("dig", sizeof(*dig), -1, _pgp_debug,
-			NULL, NULL, NULL);
-	pool = _digPool;
-    }
-    return (pgpDig) rpmioGetPool(pool, sizeof(*dig));
-}
-
 void pgpDigClean(pgpDig dig)
 {
     if (dig != NULL) {
@@ -1060,57 +1044,61 @@ void pgpDigClean(pgpDig dig)
 /*@=nullstate@*/
 }
 
-pgpDig pgpDigFree(pgpDig dig)
+static void pgpDigFini(void * _dig)
+	/*@modifies _dig @*/
 {
-    if (dig == NULL)
-	return NULL;
+    pgpDig dig = _dig;
 
-/*@-onlytrans@*/
+    /* Lose the header tag data. */
+    /* XXX this free should be done somewhere else. */
+    dig->sig = _free(dig->sig);
+
+    /* XXX there's a recursion here ... release and reacquire the lock */
+#ifndef	BUGGY
+    yarnRelease(dig->_item.use);
+#endif
+    /* Dump the signature/pubkey data. */
+    pgpDigClean(dig);
+#ifndef	BUGGY
     yarnPossess(dig->_item.use);
-/*@-modfilesys@*/
-if (_pgp_debug < 0)
-fprintf(stderr, "--> dig %p -- %ld %s at %s:%u\n", dig, yarnPeekLock(dig->_item.use), "pgpDigFree", __FILE__, __LINE__);
-/*@=modfilesys@*/
-    if (yarnPeekLock(dig->_item.use) <= 1L) {
-	/* Lose the header tag data. */
-	/* XXX this free should be done somewhere else. */
-	dig->sig = _free(dig->sig);
-
-	/* XXX there's a recursion here ... release and reacquire the lock */
-#ifndef	BUGGY
-	yarnRelease(dig->_item.use);
-#endif
-	/* Dump the signature/pubkey data. */
-	pgpDigClean(dig);
-#ifndef	BUGGY
-	yarnPossess(dig->_item.use);
 #endif
 
-	if (dig->hdrsha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
-	dig->hdrsha1ctx = NULL;
+    if (dig->hdrsha1ctx != NULL)
+	(void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
+    dig->hdrsha1ctx = NULL;
 
-	if (dig->sha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	dig->sha1ctx = NULL;
+    if (dig->sha1ctx != NULL)
+	(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+    dig->sha1ctx = NULL;
 
 #ifdef	NOTYET
-	if (dig->hdrmd5ctx != NULL)
-	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
-	dig->hdrmd5ctx = NULL;
+    if (dig->hdrmd5ctx != NULL)
+	(void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
+    dig->hdrmd5ctx = NULL;
 #endif
 
-	if (dig->md5ctx != NULL)
-	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	dig->md5ctx = NULL;
+    if (dig->md5ctx != NULL)
+	(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+    dig->md5ctx = NULL;
 
-	dig->impl = pgpImplFree(dig->impl);
+    dig->impl = pgpImplFree(dig->impl);
 
-/*@=onlytrans@*/
-	dig = (pgpDig) rpmioPutPool((rpmioItem)dig);
-    } else
-	yarnTwist(dig->_item.use, BY, -1);
-    return NULL;
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _digPool;
+
+static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    pgpDig dig;
+
+    if (_digPool == NULL) {
+	_digPool = rpmioNewPool("dig", sizeof(*dig), -1, _pgp_debug,
+			NULL, NULL, pgpDigFini);
+	pool = _digPool;
+    }
+    return (pgpDig) rpmioGetPool(pool, sizeof(*dig));
 }
 
 pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
@@ -1266,7 +1254,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	_digp = NULL;
 
     if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts) || ppkts == NULL) {
-	_dig = pgpDigFree(_dig);
+	_dig = pgpDigFree(_dig, "pgpPrtPkts");
 	return -1;
     }
 
@@ -1283,7 +1271,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     } else
 	ppkts = _free(ppkts);
 
-    _dig = pgpDigFree(_dig);
+    _dig = pgpDigFree(_dig, "pgpPrtPkts");
     return 0;
 }
 /*@=globstate =incondefs =nullderef @*/

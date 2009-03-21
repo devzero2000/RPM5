@@ -289,9 +289,9 @@ assert(fd != NULL);
     fd->contentDisposition = _free(fd->contentDisposition);
 /*@-onlytrans@*/
 #ifdef WITH_XAR
-    fd->xar = rpmxarFree(fd->xar);
+    fd->xar = rpmxarFree(fd->xar, "fdFini");
 #endif
-    fd->dig = pgpDigFree(fd->dig);
+    fd->dig = pgpDigFree(fd->dig, "fdFini");
 /*@=onlytrans@*/
 }
 

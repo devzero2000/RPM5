@@ -70,6 +70,24 @@ int _xar_debug = 0;
 /*@unchecked@*/ /*@null@*/
 rpmioPool _xarPool;
 
+static void rpmxarFini(void * _xar)
+        /*@ modifies *_xar @*/
+{
+    rpmxar xar =_xar;
+    if (xar->i) {
+	xar_iter_free(xar->i);
+	xar->i = NULL;
+    }
+    if (xar->x) {
+	int xx;
+	xx = xar_close(xar->x);
+	xar->x = NULL;
+    }
+
+    xar->member = _free(xar->member);
+    xar->b = _free(xar->b);
+}
+
 static rpmxar rpmxarGetPool(/*@null@*/ rpmioPool pool)
 	/*@modifies pool @*/
 {
@@ -77,40 +95,10 @@ static rpmxar rpmxarGetPool(/*@null@*/ rpmioPool pool)
 
     if (_xarPool == NULL) {
 	_xarPool = rpmioNewPool("xar", sizeof(*xar), -1, _xar_debug,
-			NULL, NULL, NULL);
+			NULL, NULL, rpmxarFini);
 	pool = _xarPool;
     }
     return (rpmxar) rpmioGetPool(pool, sizeof(*xar));
-}
-rpmxar rpmxarFree(rpmxar xar)
-{
-    if (xar == NULL)
-	return NULL;
-    yarnPossess(xar->_item.use);
-/*@-modfilesys@*/
-if (_xar_debug)
-fprintf(stderr, "--> xar %p -- %ld %s at %s:%u\n", xar, yarnPeekLock(xar->_item.use), "rpmxarFree", __FILE__, __LINE__);
-/*@=modfilesys@*/
-    if (yarnPeekLock(xar->_item.use) <= 1L) {
-/*@-onlytrans@*/
-	if (xar->i) {
-	    xar_iter_free(xar->i);
-	    xar->i = NULL;
-	}
-	if (xar->x) {
-	    int xx;
-	    xx = xar_close(xar->x);
-	    xar->x = NULL;
-	}
-
-	xar->member = _free(xar->member);
-	xar->b = _free(xar->b);
-
-/*@=onlytrans@*/
-	xar = (rpmxar) rpmioPutPool((rpmioItem)xar);
-    } else
-	yarnTwist(xar->_item.use, BY, -1);
-    return NULL;
 }
 
 rpmxar rpmxarNew(const char * fn, const char * fmode)

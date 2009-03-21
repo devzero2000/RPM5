@@ -62,9 +62,12 @@ rpmxar rpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg)
 #define	rpmxarLink(_xar, _msg)	\
     ((rpmxar)rpmioLinkPoolItem((rpmioItem)(_xar), _msg, __FILE__, __LINE__))
 
-/*@null@*/
-rpmxar rpmxarFree(/*@killref@*/ /*@only@*/ rpmxar xar)
+/*@unused@*/ /*@null@*/
+rpmxar rpmxarFree(/*@killref@*/ /*@only@*/ rpmxar xar,
+		/*@null@*/ const char * msg)
 	/*@modifies xar @*/;
+#define	rpmxarFree(_xar, _msg)	\
+    ((rpmxar)rpmioFreePoolItem((rpmioItem)(_xar), _msg, __FILE__, __LINE__))
 
 /*@-globuse@*/
 /*@relnull@*/

@@ -1359,15 +1359,8 @@ extern pgpVSFlags pgpDigVSFlags;
 pgpDig pgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
 		/*@null@*/ const char * msg)
 	/*@modifies dig @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-pgpDig XpgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies dig @*/;
-/*@=exportlocal@*/
-#define	pgpDigUnlink(_dig, _msg) XpgpDigUnlink(_dig, _msg, __FILE__, __LINE__)
+#define	pgpDigUnlink(_dig, _msg)	\
+    ((pgpDig)rpmioUnlinkPoolItem((rpmioItem)(_dig), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmpgp
  * Reference a signature parameters instance.
@@ -1379,16 +1372,18 @@ pgpDig XpgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
 pgpDig pgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg)
 	/*@modifies dig @*/;
 #define	pgpDigLink(_dig, _msg)	\
-	((pgpDig)rpmioLinkPoolItem((rpmioItem)(_dig), _msg, __FILE__, __LINE__))
+    ((pgpDig)rpmioLinkPoolItem((rpmioItem)(_dig), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmpgp
  * Destroy a container for parsed OpenPGP packates.
  * @param dig		signature parameters container
  * @return		NULL always
  */
-/*@null@*/
+/*@unused@*/ /*@null@*/
 pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
+#define pgpDigFree(_dig, _msg)       \
+    ((pgpDig)rpmioFreePoolItem((rpmioItem)(_dig), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmpgp
  * Create a container for parsed OpenPGP packates.
