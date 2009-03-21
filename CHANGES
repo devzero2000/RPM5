@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: yarn: wire up urlFini, eliminate XurlFree.
     - jbj: yarn: wire up fdFini, eliminate XfdFree.
     - jbj: url: fix: u->use clobbers the lock from the pool.
     - jbj: rpmds: fix: rpmdsDup needs to go through rpmdsGetPool() too.
