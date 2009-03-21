@@ -23,22 +23,6 @@ int _rpmte_debug = 0;
 /*@access alKey @*/
 /*@access rpmtsi @*/
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _rpmtePool;
-
-static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmte te;
-
-    if (_rpmtePool == NULL) {
-	_rpmtePool = rpmioNewPool("te", sizeof(*te), -1, _rpmte_debug,
-			NULL, NULL, NULL);
-	pool = _rpmtePool;
-    }
-    return (rpmte) rpmioGetPool(pool, sizeof(*te));
-}
-
 void rpmteCleanDS(rpmte te)
 {
     te->PRCO = rpmdsFreePRCO(te->PRCO);
@@ -220,14 +204,28 @@ assert(he->p.str != NULL);
 /*@=compdef@*/
 }
 
-rpmte rpmteFree(rpmte te)
+static void rpmteFini(void * _te)
+	/*@modifies *_te @*/
 {
-    if (te != NULL) {
-	yarnPossess(te->_item.use); /* XXX no refcounts, rpioPutPool expects locked. */
+    rpmte te = _te;
+
 	delTE(te);
-	te = (rpmte)rpmioPutPool((rpmioItem)te);
     }
-    return NULL;
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmtePool;
+
+static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmte te;
+
+    if (_rpmtePool == NULL) {
+	_rpmtePool = rpmioNewPool("te", sizeof(*te), -1, _rpmte_debug,
+			NULL, NULL, rpmteFini);
+	pool = _rpmtePool;
+    }
+    return (rpmte) rpmioGetPool(pool, sizeof(*te));
 }
 
 rpmte rpmteNew(const rpmts ts, Header h,

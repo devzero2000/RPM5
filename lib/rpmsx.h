@@ -109,11 +109,11 @@ rpmsx rpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg)
  * @param sx		security context patterns
  * @return		NULL always
  */
-/*@-exportlocal@*/
 /*@null@*/
 rpmsx rpmsxFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx)
 	/*@modifies sx@*/;
-/*@=exportlocal@*/
+#define	rpmsxFree(_sx)	\
+    ((rpmsx)rpmioFreePoolItem((rpmioItem)(_sx), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Parse selinux file security context patterns.

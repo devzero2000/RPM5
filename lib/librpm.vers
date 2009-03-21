@@ -259,7 +259,6 @@ LIBRPM_0
     _rpmsx_debug;
     rpmsxFContext;
     rpmsxFMode;
-    rpmsxFree;
     rpmsxFStem;
     rpmsxInit;
     rpmsxIx;
@@ -288,7 +287,6 @@ LIBRPM_0
     rpmteFd;
     rpmteFI;
     rpmteFlink;
-    rpmteFree;
     rpmteFreeTSI;
     rpmteHdrid;
     rpmteHeader;
