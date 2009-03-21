@@ -54,22 +54,6 @@ struct rpmRelocation_s {
 /*@unchecked@*/
 int _rpmfi_debug = 0;
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _rpmfiPool;
-
-static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmfi fi;
-
-    if (_rpmfiPool == NULL) {
-	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1, _rpmfi_debug,
-			NULL, NULL, NULL);
-	pool = _rpmfiPool;
-    }
-    return (rpmfi) rpmioGetPool(pool, sizeof(*fi));
-}
-
 int rpmfiFC(rpmfi fi)
 {
     return (fi != NULL ? fi->fc : 0);
@@ -1208,90 +1192,87 @@ int rpmfiSetHeader(rpmfi fi, Header h)
     return 0;
 }
 
-rpmfi rpmfiFree(rpmfi fi)
+static void rpmfiFini(void * _fi)
+	/*@modifies *_fi @*/
 {
-    if (fi == NULL) return NULL;
+    rpmfi fi = _fi;
 
-    yarnPossess(fi->_item.use);
-/*@-modfilesys@*/
-if (_rpmfi_debug)
-fprintf(stderr, "--> fi %p -- %ld %s at %s:%u\n", fi, yarnPeekLock(fi->_item.use), fi->Type, __FILE__, __LINE__);
-/*@=modfilesys@*/
+    /* Free pre- and post-transaction script and interpreter strings. */
+    fi->pretrans = _free(fi->pretrans);
+    fi->pretransprog = _free(fi->pretransprog);
+    fi->posttrans = _free(fi->posttrans);
+    fi->posttransprog = _free(fi->posttransprog);
+    fi->verifyscript = _free(fi->verifyscript);
+    fi->verifyscriptprog = _free(fi->verifyscriptprog);
 
-    if (yarnPeekLock(fi->_item.use) <= 1L) {
+    if (fi->fc > 0) {
+	fi->bnl = _free(fi->bnl);
+	fi->dnl = _free(fi->dnl);
 
-/*@-modfilesys@*/
-if (_rpmfi_debug < 0)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
-/*@=modfilesys@*/
+	fi->flinks = _free(fi->flinks);
+	fi->flangs = _free(fi->flangs);
+	fi->fdigests = _free(fi->fdigests);
+	fi->digests = _free(fi->digests);
 
-	/* Free pre- and post-transaction script and interpreter strings. */
-	fi->pretrans = _free(fi->pretrans);
-	fi->pretransprog = _free(fi->pretransprog);
-	fi->posttrans = _free(fi->posttrans);
-	fi->posttransprog = _free(fi->posttransprog);
-	fi->verifyscript = _free(fi->verifyscript);
-	fi->verifyscriptprog = _free(fi->verifyscriptprog);
+	fi->cdict = _free(fi->cdict);
 
-	if (fi->fc > 0) {
-	    fi->bnl = _free(fi->bnl);
-	    fi->dnl = _free(fi->dnl);
+	fi->fuser = _free(fi->fuser);
+	fi->fgroup = _free(fi->fgroup);
 
-	    fi->flinks = _free(fi->flinks);
-	    fi->flangs = _free(fi->flangs);
-	    fi->fdigests = _free(fi->fdigests);
-	    fi->digests = _free(fi->digests);
+	fi->fstates = _free(fi->fstates);
 
-	    fi->cdict = _free(fi->cdict);
+	fi->fmtimes = _free(fi->fmtimes);
+	fi->fmodes = _free(fi->fmodes);
+	fi->fflags = _free(fi->fflags);
+	fi->vflags = _free(fi->vflags);
+	fi->fsizes = _free(fi->fsizes);
+	fi->frdevs = _free(fi->frdevs);
+	fi->finodes = _free(fi->finodes);
+	fi->dil = _free(fi->dil);
 
-	    fi->fuser = _free(fi->fuser);
-	    fi->fgroup = _free(fi->fgroup);
-
-	    fi->fstates = _free(fi->fstates);
-
-	    fi->fmtimes = _free(fi->fmtimes);
-	    fi->fmodes = _free(fi->fmodes);
-	    fi->fflags = _free(fi->fflags);
-	    fi->vflags = _free(fi->vflags);
-	    fi->fsizes = _free(fi->fsizes);
-	    fi->frdevs = _free(fi->frdevs);
-	    fi->finodes = _free(fi->finodes);
-	    fi->dil = _free(fi->dil);
-
-	    fi->fcolors = _free(fi->fcolors);
-	    fi->fcdictx = _free(fi->fcdictx);
-	    fi->ddict = _free(fi->ddict);
-	    fi->fddictx = _free(fi->fddictx);
-	    fi->fddictn = _free(fi->fddictn);
-	}
+	fi->fcolors = _free(fi->fcolors);
+	fi->fcdictx = _free(fi->fcdictx);
+	fi->ddict = _free(fi->ddict);
+	fi->fddictx = _free(fi->fddictx);
+	fi->fddictn = _free(fi->fddictn);
+    }
 
 /*@-globs@*/	/* Avoid rpmGlobalMacroContext */
-	fi->fsm = freeFSM(fi->fsm);
+    fi->fsm = freeFSM(fi->fsm);
 /*@=globs@*/
 
-	fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
-	fi->include = mireFreeAll(fi->include, fi->ninclude);
+    fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
+    fi->include = mireFreeAll(fi->include, fi->ninclude);
 
-	fi->fn = _free(fi->fn);
-	fi->apath = _free(fi->apath);
-	fi->fmapflags = _free(fi->fmapflags);
+    fi->fn = _free(fi->fn);
+    fi->apath = _free(fi->apath);
+    fi->fmapflags = _free(fi->fmapflags);
 
-	fi->obnl = _free(fi->obnl);
-	fi->odnl = _free(fi->odnl);
+    fi->obnl = _free(fi->obnl);
+    fi->odnl = _free(fi->odnl);
 
-	fi->fcontexts = _free(fi->fcontexts);
+    fi->fcontexts = _free(fi->fcontexts);
 
-	fi->actions = _free(fi->actions);
-	fi->replacedSizes = _free(fi->replacedSizes);
+    fi->actions = _free(fi->actions);
+    fi->replacedSizes = _free(fi->replacedSizes);
 
-	fi->h = headerFree(fi->h);
+    fi->h = headerFree(fi->h);
+}
 
-	fi = (rpmfi) rpmioPutPool((rpmioItem)fi);
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmfiPool;
 
-   } else
-	yarnTwist(fi->_item.use, BY, -1);
+static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmfi fi;
 
-    return NULL;
+    if (_rpmfiPool == NULL) {
+	_rpmfiPool = rpmioNewPool("fi", sizeof(*fi), -1, _rpmfi_debug,
+			NULL, NULL, rpmfiFini);
+	pool = _rpmfiPool;
+    }
+    return (rpmfi) rpmioGetPool(pool, sizeof(*fi));
 }
 
 /**

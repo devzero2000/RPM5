@@ -258,7 +258,7 @@ rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 		/*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 #define	rpmfiUnlink(_fi, _msg)	\
-	(rpmfi) rpmioUnlinkPoolItem((rpmioItem)(_fi), _msg, __FILE__, __LINE__)
+    ((rpmfi) rpmioUnlinkPoolItem((rpmioItem)(_fi), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a file info set instance.
@@ -270,7 +270,7 @@ rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 #define	rpmfiLink(_fi, _msg)	\
-	(rpmfi) rpmioLinkPoolItem((rpmioItem)(_fi), _msg, __FILE__, __LINE__)
+    ((rpmfi) rpmioLinkPoolItem((rpmioItem)(_fi), _msg, __FILE__, __LINE__))
 
 /**
  * Return file count from file info set.
@@ -643,6 +643,8 @@ int rpmfiSetHeader(rpmfi fi, /*@null@*/ Header h)
 rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 	/*@globals fileSystem @*/
 	/*@modifies fi, fileSystem @*/;
+#define	rpmfiFree(_fi)	\
+    ((rpmfi) rpmioFreePoolItem((rpmioItem)(_fi), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Create and load a file info set.
