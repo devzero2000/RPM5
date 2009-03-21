@@ -172,7 +172,6 @@ LIBRPM_0
     rpmfiFN;
     rpmfiFNlink;
     rpmfiFRdev;
-    rpmfiFree;
     rpmfiFSize;
     rpmfiFState;
     rpmfiSetFState;
