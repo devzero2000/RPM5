@@ -503,7 +503,6 @@ LIBRPMIO_0
     xstrncasecmp;
     xstrtolocale;
     XfdNew;
-    XurlFree;
     XurlNew;
     xzdio;
     yarnAbort;

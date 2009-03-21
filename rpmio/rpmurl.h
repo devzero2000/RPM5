@@ -140,7 +140,6 @@ extern int _url_debug;		/*!< URL debugging? */
 #define RPMURL_DEBUG_IO		0x40000000
 #define RPMURL_DEBUG_REFS	0x20000000
 
-
 /**
  * Create a URL control structure instance.
  * @param msg		debugging identifier (unused)
@@ -177,14 +176,8 @@ urlinfo	urlLink(/*@returned@*/ urlinfo u, const char * msg)
 urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@null@*/
-urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
-		const char * fn, unsigned ln)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies u, fileSystem, internalState @*/;
-#define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
+#define	urlFree(_u, _msg)	\
+	((urlinfo)rpmioFreePoolItem((rpmioItem)(_u), _msg, __FILE__, __LINE__))
 
 /**
  * Free cached URL control structures.
