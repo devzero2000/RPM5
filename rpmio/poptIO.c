@@ -55,6 +55,8 @@ extern int _iosm_debug;
 /*@unchecked@*/
 extern int noLibio;
 /*@unchecked@*/
+extern int _pgp_debug;
+/*@unchecked@*/
 extern int _rpmio_debug;
 /*@unchecked@*/
 extern int _rpmsq_debug;
@@ -390,6 +392,8 @@ struct poptOption rpmioAllPoptTable[] = {
  { "iosmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_iosm_debug, -1,
 	N_("debug I/O state machine"), NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
+	NULL, NULL},
+  { "pgpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_debug, -1,
 	NULL, NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},

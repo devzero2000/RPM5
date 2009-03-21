@@ -231,7 +231,6 @@ LIBRPM_0
     rpmpsFreeIterator;
     rpmpsInitIterator;
     rpmpsNextIterator;
-    rpmpsmFree;
     rpmpsmNew;
     rpmpsmStage;
     rpmpsNumProblems;
@@ -403,7 +402,6 @@ LIBRPM_0
     specedit;
     splitString;
     strict_erasures;
-    XrpmtsiFree;
     XrpmtsiInit;
   local:
     *;

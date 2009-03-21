@@ -207,9 +207,12 @@ rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
  * @return		NULL always
  */
 /*@null@*/
-rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm)
+rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
+		/*@null@*/ const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies psm, fileSystem @*/;
+#define	rpmpsmFree(_psm, _msg)	\
+    ((rpmpsm)rpmioFreePoolItem((rpmioItem)(_psm), _msg, __FILE__, __LINE__))
 
 /**
  * Create and load a package state machine.
