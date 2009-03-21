@@ -269,7 +269,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(psm->ts, NULL);
 
-    psm = rpmpsmFree(psm);
+    psm = rpmpsmFree(psm, "rpmVerifyScript");
 
     return rc;
 }

@@ -61,22 +61,6 @@ int _psm_threads = 0;
 
 /*@access rpmluav @*/
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _psmPool;
-
-static rpmpsm rpmpsmGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmpsm psm;
-
-    if (_psmPool == NULL) {
-	_psmPool = rpmioNewPool("psm", sizeof(*psm), -1, _psm_debug,
-			NULL, NULL, NULL);
-	pool = _psmPool;
-    }
-    return (rpmpsm) rpmioGetPool(pool, sizeof(*psm));
-}
-
 /**
  * Mark files in database shared with this package as "replaced".
  * @param psm		package state machine data
@@ -1551,45 +1535,44 @@ static const char * pkgStageString(pkgStage a)
     /*@noteached@*/
 }
 
-rpmpsm rpmpsmFree(rpmpsm psm)
+static void rpmpsmFini(void * _psm)
+	/*@modifies _psm @*/
 {
-    static const char msg[] = "rpmpsmFree";
-
-    if (psm == NULL)
-	return NULL;
-
-    yarnPossess(psm->_item.use);
-
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "--> psm %p -- %ld %s at %s:%u\n", psm, yarnPeekLock(psm->_item.use), msg, __FILE__, __LINE__);
-/*@=modfilesys@*/
-
-    if (yarnPeekLock(psm->_item.use) <= 1L) {
+    rpmpsm psm = _psm;
 
 /*@-nullstate@*/
-	psm->fi = rpmfiFree(psm->fi);
+    psm->fi = rpmfiFree(psm->fi);
 #ifdef	NOTYET
-	psm->te = rpmteFree(psm->te);
+    psm->te = rpmteFree(psm->te);
 #else
-	psm->te = NULL;
+    psm->te = NULL;
 #endif
 /*@-internalglobs@*/
-	psm->ts = rpmtsFree(psm->ts);
+    psm->ts = rpmtsFree(psm->ts);
 /*@=internalglobs@*/
 
-	psm->sstates = _free(psm->sstates);
-	psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
-	psm->IPhe = _free(psm->IPhe);
-	psm->NVRA = _free(psm->NVRA);
-	psm->triggers = rpmdsFree(psm->triggers);
-
-	psm = (rpmpsm) rpmioPutPool((rpmioItem)psm);
-    } else
-	yarnTwist(psm->_item.use, BY, -1);
-
-    return NULL;
+    psm->sstates = _free(psm->sstates);
+    psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
+    psm->IPhe = _free(psm->IPhe);
+    psm->NVRA = _free(psm->NVRA);
+    psm->triggers = rpmdsFree(psm->triggers);
 /*@=nullstate@*/
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _psmPool;
+
+static rpmpsm rpmpsmGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmpsm psm;
+
+    if (_psmPool == NULL) {
+	_psmPool = rpmioNewPool("psm", sizeof(*psm), -1, _psm_debug,
+			NULL, NULL, rpmpsmFini);
+	pool = _psmPool;
+    }
+    return (rpmpsm) rpmioGetPool(pool, sizeof(*psm));
 }
 
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)

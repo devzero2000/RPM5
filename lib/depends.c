@@ -542,6 +542,7 @@ rpmlog(RPMLOG_DEBUG, D_("   Comparing compat archs %s ? %s\n"), arch, t);
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
+    static const char msg[] = "rpmtsAddInstallElement";
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     rpmuint32_t tscolor = rpmtsColor(ts);
@@ -701,7 +702,7 @@ assert(he->p.str != NULL);
 	    break;
 	}
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     oldChk = rpmdsFree(oldChk);
     newChk = rpmdsFree(newChk);
 
@@ -801,7 +802,7 @@ fprintf(stderr, "*** %s: %d in %s\n", rpmteNEVRA(p), rpmdbCount(rpmtsGetRdb(ts),
 exit:
     arch = _free(arch);
     os = _free(os);
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     return ec;
 }
 
@@ -2087,6 +2088,7 @@ static inline int addRelation(rpmts ts,
 	/*@modifies ts, p, *selected, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    static const char msg[] = "addRelation";
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
     nsType NSType = rpmdsNSType(requires);
@@ -2139,7 +2141,7 @@ static inline int addRelation(rpmts ts,
 	if (pkgKey == rpmteAddedKey(q))
 	    break;
     }
-    qi = rpmtsiFree(qi);
+    qi = rpmtsiFree(qi, msg);
     if (q == NULL || i >= ts->orderCount)
 	return 0;
 
@@ -2287,6 +2289,7 @@ static int countSlashes(const char * dn)
 
 int rpmtsOrder(rpmts ts)
 {
+    static const char msg[] = "rpmtsOrder";
     rpmds requires;
     rpmuint32_t Flags;
     int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
@@ -2338,7 +2341,7 @@ int rpmtsOrder(rpmts ts)
 	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
 	(void) rpmteSetAddedKey(p, pkgKey);
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     rpmalMakeIndex(ts->erasedPackages);
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
@@ -2360,7 +2363,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL)
 	rpmteNewTSI(p);
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     /* Record all relations. */
     rpmlog(RPMLOG_DEBUG, D_("========== recording tsort relations\n"));
@@ -2446,7 +2449,7 @@ int rpmtsOrder(rpmts ts)
 		p->type = TR_REMOVED;
 	    }
 	}
-	qi = rpmtsiFree(qi);
+	qi = rpmtsiFree(qi, msg);
       }
 
       {
@@ -2477,7 +2480,7 @@ int rpmtsOrder(rpmts ts)
       }
 
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     /* Save predecessor count and mark tree roots. */
     treex = 0;
@@ -2501,14 +2504,14 @@ int rpmtsOrder(rpmts ts)
 #endif
 
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
     rpmlog(RPMLOG_DEBUG, D_("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
 
 rescan:
-    if (pi != NULL) pi = rpmtsiFree(pi);
+    if (pi != NULL) pi = rpmtsiFree(pi, msg);
     q = r = NULL;
     qlen = 0;
     pi = rpmtsiInit(ts);
@@ -2524,7 +2527,7 @@ rescan:
 	addQ(p, &q, &r, prefcolor);
 	qlen++;
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = rpmteTSI(q)->tsi_suc) {
@@ -2608,7 +2611,7 @@ rescan:
 		tsi->tsi_suc = p;
 		tsi = rpmteTSI(p);
 	    }
-	    pi = rpmtsiFree(pi);
+	    pi = rpmtsiFree(pi, msg);
 	    tsi->tsi_suc = NULL;
 	}
     }
@@ -2627,7 +2630,7 @@ rescan:
 	    if (rpmteTSI(q)->tsi_count == 0)
 		rpmteTSI(q)->tsi_count = -1;
 	}
-	qi = rpmtsiFree(qi);
+	qi = rpmtsiFree(qi, msg);
 
 	/* T10. Mark all packages with their predecessors. */
 	qi = rpmtsiInit(ts);
@@ -2638,7 +2641,7 @@ rescan:
 	    markLoop(tsi, q);
 	    rpmteTSI(q)->tsi_next = tsi;
 	}
-	qi = rpmtsiFree(qi);
+	qi = rpmtsiFree(qi, msg);
 
 	/* T11. Print all dependency loops. */
 	ri = rpmtsiInit(ts);
@@ -2700,7 +2703,7 @@ rescan:
 		rpmteTSI(p)->tsi_queued = 0;
 	    }
 	}
-	ri = rpmtsiFree(ri);
+	ri = rpmtsiFree(ri, msg);
 
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
@@ -2725,7 +2728,7 @@ rescan:
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	rpmteFreeTSI(p);
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     /*
      * The order ends up as installed packages followed by removed packages.
@@ -2739,7 +2742,7 @@ rescan:
 	orderList[j].orIndex = rpmtsiOc(pi);
 	j++;
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     qsort(orderList, numOrderList, sizeof(*orderList), orderListIndexCmp);
 
@@ -2786,6 +2789,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
+    static const char msg[] = "rpmtsCheck";
     const char * depName = NULL;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     rpmuint32_t tscolor = rpmtsColor(ts);
@@ -2881,7 +2885,7 @@ int rpmtsCheck(rpmts ts)
 	if (rc && (ourrc = rc) >= terminate)
 	    break;
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     if (rc && (ourrc = rc) >= terminate)
 	goto exit;
 
@@ -2924,7 +2928,7 @@ int rpmtsCheck(rpmts ts)
 	if (rc && (ourrc = rc) >= terminate)
 	    break;
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     if (rc && (ourrc = rc) >= terminate)
 	goto exit;
 
@@ -2946,7 +2950,7 @@ int rpmtsCheck(rpmts ts)
 
 exit:
     mi = rpmdbFreeIterator(mi);
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     depName = _free(depName);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);

@@ -366,7 +366,8 @@ void rpmtsCleanDig(rpmts ts)
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 /*@-onlytrans@*/
-	ts->dig = pgpDigFree(ts->dig, "rpmtsCleanDig");
+	(void) pgpDigFree(ts->dig, "rpmtsCleanDig");
+	ts->dig = NULL;		/* XXX make sure the ptr is __REALLY__ gone */
 /*@=onlytrans@*/
     }
 }

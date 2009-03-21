@@ -1,5 +1,9 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: pgpDig: fix: rpmioFreePoolItem() can return non-NULL, clear ts->dig.
+    - jbj: rpmio: add --pgpdebug for pgpDig debugging.
+    - jbj: yarn: wire up rpmtsiFini, eliminate rpmtsiFree.
+    - jbj: yarn: wire up rpmpsmFini, eliminate rpmpsmFree.
     - jbj: yarn: wire up rpmxarFini, eliminate rpmxarFree.
     - jbj: yarn: wire up pgpDigFini, eliminate pgpDigFree.
     - jbj: yarn: wire up urlFini, eliminate XurlFree.

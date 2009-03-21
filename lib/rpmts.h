@@ -1109,7 +1109,7 @@ int rpmtsPrint(/*@null@*/ rpmts ts, /*@null@*/ FILE * fp)
     while ((te = rpmtsiNext(tsi, 0)) != NULL)
         fprintf(fp, "t%s> %s\n", (rpmteType(te) == TR_ADDED ? "I" : "E"),
 		rpmteNEVRA(te));
-    tsi = rpmtsiFree(tsi);
+    tsi = rpmtsiFree(tsi, "rpmtsPrint");
     return 0;
 }
 #endif	/* defined(_RPMTS_PRINT) */

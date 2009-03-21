@@ -677,23 +677,12 @@ int rpmtsiOc(rpmtsi tsi)
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-rpmtsi rpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi)
+rpmtsi rpmtsiFree(/*@killref@*//*@null@*/ rpmtsi tsi,
+		/*@null@*/ const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-
-/** \ingroup rpmte
- * Destroy transaction element iterator.
- * @param tsi		transaction element iterator
- * @param fn
- * @param ln
- * @return		NULL always
- */
-/*@null@*/
-rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
-		const char * fn, unsigned int ln)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-#define	rpmtsiFree(_tsi)	XrpmtsiFree(_tsi, __FILE__, __LINE__)
+#define	rpmtsiFree(_tsi, _msg)	\
+	((rpmtsi)rpmioFreePoolItem((rpmioItem)(_tsi), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmte
  * Create transaction element iterator.

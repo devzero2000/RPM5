@@ -470,6 +470,7 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
 
 rpmgi rpmgiFree(rpmgi gi)
 {
+    static const char msg[] = "rpmgiFree";
     int xx;
 
     if (gi == NULL) return NULL;
@@ -492,7 +493,7 @@ fprintf(stderr, "--> gi %p -- %ld %s(%s) at %s:%u\n", gi, yarnPeekLock(gi->_item
 	    xx = Fclose(gi->fd);
 	    gi->fd = NULL;
 	}
-	gi->tsi = rpmtsiFree(gi->tsi);
+	gi->tsi = rpmtsiFree(gi->tsi, msg);
 	gi->mi = rpmdbFreeIterator(gi->mi);
 	gi->ts = rpmtsFree(gi->ts);
 
@@ -544,6 +545,7 @@ static const char * _query_hdlist_path  = "/usr/share/comps/%{_arch}/hdlist";
 
 rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 {
+    static const char msg[] = "rpmgiNext";
     char hnum[32];
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int xx;
@@ -644,7 +646,7 @@ nextkey:
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
-	    gi->tsi = rpmtsiFree(gi->tsi);
+	    gi->tsi = rpmtsiFree(gi->tsi, msg);
 	    goto enditer;
 	}
     }	break;

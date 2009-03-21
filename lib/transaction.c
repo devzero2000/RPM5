@@ -948,7 +948,7 @@ static rpmRC _processFailedPackage(rpmts ts, rpmte p)
 assert(psm != NULL);
 	psm->stepName = "failed";	/* XXX W2DO? */
 	rc = rpmpsmStage(psm, PSM_RPMDB_ADD);
-	psm = rpmpsmFree(psm);
+	psm = rpmpsmFree(psm, "_processFailedPackage");
     }
     return rc;
 }
@@ -959,6 +959,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rbts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    static const char msg[] = "rpmtsRollback";
     const char * semfn = NULL;
     rpmRC rc = 0;
     rpmuint32_t arbgoal = rpmtsARBGoal(rbts);
@@ -1003,7 +1004,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 		break;
 	    }
 	}
-	tsi = rpmtsiFree(tsi);
+	tsi = rpmtsiFree(tsi, msg);
 	if (rc != RPMRC_OK) 
 	    goto cleanup;
     }
@@ -1106,6 +1107,7 @@ static int markLinkedFailed(rpmts ts, rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies ts, p, fileSystem @*/
 {
+    static const char msg[] = "markLinkedFailed";
     rpmtsi qi; rpmte q;
     int bingo;
 
@@ -1132,13 +1134,14 @@ static int markLinkedFailed(rpmts ts, rpmte p)
 
 	q->linkFailed = p->linkFailed;
     }
-    qi = rpmtsiFree(qi);
+    qi = rpmtsiFree(qi, msg);
 
     return 0;
 }
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
+    static const char msg[] = "rpmtsRun";
     rpmuint32_t tscolor = rpmtsColor(ts);
     int i, j;
     int ourrc = 0;
@@ -1219,7 +1222,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		dbmode = (O_RDWR|O_CREAT);
 		break;
 	    }
-	    pi = rpmtsiFree(pi);
+	    pi = rpmtsiFree(pi, msg);
 	}
 
 	/* Open database RDWR for installing packages. */
@@ -1308,7 +1311,7 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	totalFileCount += fc;
 
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     ps = rpmpsFree(ps);
 
     /* The ordering doesn't matter here */
@@ -1323,7 +1326,7 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 
 	totalFileCount += fc;
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
 
     /* Run pre-transaction scripts, but only if there are no known
@@ -1381,7 +1384,7 @@ assert(psm != NULL);
 		psm->scriptTag = RPMTAG_PRETRANS;
 		psm->progTag = RPMTAG_PRETRANSPROG;
 		xx = rpmpsmStage(psm, PSM_SCRIPT);
-		psm = rpmpsmFree(psm);
+		psm = rpmpsmFree(psm, msg);
 
 /*@-compdef -usereleased @*/
 		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
@@ -1390,7 +1393,7 @@ assert(psm != NULL);
 		p->h = headerFree(p->h);
 	    }
 	}
-	pi = rpmtsiFree(pi);
+	pi = rpmtsiFree(pi, msg);
     }
 
     /* ===============================================
@@ -1430,7 +1433,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
 
 	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     if (!rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
@@ -1481,7 +1484,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
@@ -1564,7 +1567,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 		    if (rpmteDBOffset(q) == ro)
 			knownBad = ro;
 		}
-		qi = rpmtsiFree(qi);
+		qi = rpmtsiFree(qi, msg);
 
 		shared->pkgFileNum = i;
 		shared->otherPkg = dbiIndexRecordOffset(matches[i], j);
@@ -1636,7 +1639,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
 /*@=nullpass@*/
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
     ps = rpmpsFree(ps);
 
     if (rpmtsChrootDone(ts)) {
@@ -1665,7 +1668,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    continue;
 	fi->fps = _free(fi->fps);
     }
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     fpc = fpCacheFree(fpc);
     ts->ht = htFree(ts->ht);
@@ -1719,7 +1722,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 		psm = rpmpsmNew(ts, p, fi);
 assert(psm != NULL);
 		xx = rpmpsmStage(psm, PSM_PKGSAVE);
-		psm = rpmpsmFree(psm);
+		psm = rpmpsmFree(psm, msg);
 		fi->mapflags &= ~IOSM_MAP_ABSOLUTE;
 		fi->mapflags &= ~IOSM_MAP_ADDDOT;
 		fi->mapflags &= ~IOSM_ALL_HARDLINKS;
@@ -1729,7 +1732,7 @@ assert(psm != NULL);
 		/*@switchbreak@*/ break;
 	    }
 	}
-	pi = rpmtsiFree(pi);
+	pi = rpmtsiFree(pi, msg);
 	if (progress)
 	    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_STOP,
 				7, numRemoved);
@@ -1896,7 +1899,7 @@ assert(psm != NULL);
 	xx = rpmdbSync(rpmtsGetRdb(ts));
 
 /*@-nullstate@*/ /* FIX: psm->fi may be NULL */
-	psm = rpmpsmFree(psm);
+	psm = rpmpsmFree(psm, msg);
 /*@=nullstate@*/
 
 	/* If we received an error, lets break out and rollback, provided
@@ -1908,7 +1911,7 @@ assert(psm != NULL);
 	}
     }
 /*@=nullpass@*/
-    pi = rpmtsiFree(pi);
+    pi = rpmtsiFree(pi, msg);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTTRANS) &&
 	!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
@@ -1971,7 +1974,7 @@ assert(psm != NULL);
 	    	psm->scriptTag = RPMTAG_POSTTRANS;
 	    	psm->progTag = RPMTAG_POSTTRANSPROG;
 	    	xx = rpmpsmStage(psm, PSM_SCRIPT);
-	    	psm = rpmpsmFree(psm);
+	    	psm = rpmpsmFree(psm, msg);
 
 /*@-compdef -usereleased @*/
 		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
@@ -1982,7 +1985,7 @@ assert(psm != NULL);
 	    }
 /*@=nullpass@*/
 	}
-	pi = rpmtsiFree(pi);
+	pi = rpmtsiFree(pi, msg);
     }
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
