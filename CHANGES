@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: rpmtsi: use __FUNCTION__ rather than adding a 2nd arg everywhere.
     - jbj: pgpDig: fix: rpmioFreePoolItem() can return non-NULL, clear ts->dig.
     - jbj: rpmio: add --pgpdebug for pgpDig debugging.
     - jbj: yarn: wire up rpmtsiFini, eliminate rpmtsiFree.

@@ -350,7 +350,6 @@ static PyObject *
 rpmts_iternext(rpmtsObject * s)
 	/*@modifies s @*/
 {
-    static const char msg[] = "rpmts_iternext";
     PyObject * result = NULL;
     rpmte te;
 
@@ -370,7 +369,7 @@ fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s-
     if (te != NULL) {
 	result = (PyObject *) rpmte_Wrap(te);
     } else {
-	s->tsi = rpmtsiFree(s->tsi, msg);
+	s->tsi = rpmtsiFree(s->tsi);
 	s->tsiFilter = 0;
     }
 /*@=branchstate@*/
