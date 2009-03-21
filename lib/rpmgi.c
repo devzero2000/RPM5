@@ -41,22 +41,6 @@ int _rpmgi_debug = 0;
 /*@unchecked@*/
 rpmgiFlags giFlags = RPMGI_NONE;
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _rpmgiPool;
-
-static rpmgi rpmgiGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmgi gi;
-
-    if (_rpmgiPool == NULL) {
-	_rpmgiPool = rpmioNewPool("gi", sizeof(*gi), -1, _rpmgi_debug,
-			NULL, NULL, NULL);
-	pool = _rpmgiPool;
-    }
-    return (rpmgi) rpmioGetPool(pool, sizeof(*gi));
-}
-
 /**
  */
 /*@unchecked@*/
@@ -468,39 +452,45 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
     return rpmrc;
 }
 
-rpmgi rpmgiFree(rpmgi gi)
+static void rpmgiFini(void * _gi)
+	/*@modifies *_gi @*/
 {
+    rpmgi gi = _gi;
     int xx;
 
-    if (gi == NULL) return NULL;
+    gi->hdrPath = _free(gi->hdrPath);
+    gi->h = headerFree(gi->h);
 
-    yarnPossess(gi->_item.use);
-if (_rpmgi_debug)
-fprintf(stderr, "--> gi %p -- %ld %s(%s) at %s:%u\n", gi, yarnPeekLock(gi->_item.use), "rpmgiFree", tagName(gi->tag), __FILE__, __LINE__);
-    if (yarnPeekLock(gi->_item.use) <= 1L) {
-	gi->hdrPath = _free(gi->hdrPath);
-	gi->h = headerFree(gi->h);
+    gi->argv = argvFree(gi->argv);
 
-	gi->argv = argvFree(gi->argv);
+    if (gi->ftsp != NULL) {
+	xx = Fts_close(gi->ftsp);
+	gi->ftsp = NULL;
+	gi->fts = NULL;
+    }
+    if (gi->fd != NULL) {
+	xx = Fclose(gi->fd);
+	gi->fd = NULL;
+    }
+    gi->tsi = rpmtsiFree(gi->tsi);
+    gi->mi = rpmdbFreeIterator(gi->mi);
+    gi->ts = rpmtsFree(gi->ts);
+}
 
-	if (gi->ftsp != NULL) {
-	    xx = Fts_close(gi->ftsp);
-	    gi->ftsp = NULL;
-	    gi->fts = NULL;
-	}
-	if (gi->fd != NULL) {
-	    xx = Fclose(gi->fd);
-	    gi->fd = NULL;
-	}
-	gi->tsi = rpmtsiFree(gi->tsi);
-	gi->mi = rpmdbFreeIterator(gi->mi);
-	gi->ts = rpmtsFree(gi->ts);
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmgiPool;
 
-	gi = (rpmgi) rpmioPutPool((rpmioItem)gi);
-    } else
-	yarnTwist(gi->_item.use, BY, -1);
+static rpmgi rpmgiGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmgi gi;
 
-    return NULL;
+    if (_rpmgiPool == NULL) {
+	_rpmgiPool = rpmioNewPool("gi", sizeof(*gi), -1, _rpmgi_debug,
+			NULL, NULL, rpmgiFini);
+	pool = _rpmgiPool;
+    }
+    return (rpmgi) rpmioGetPool(pool, sizeof(*gi));
 }
 
 rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
