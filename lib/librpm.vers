@@ -203,7 +203,6 @@ LIBRPM_0
     rpmGetPassPhrase;
     _rpmgi_debug;
     rpmgiEscapeSpaces;
-    rpmgiFree;
     rpmgiHdrPath;
     rpmgiHeader;
     rpmgiNew;

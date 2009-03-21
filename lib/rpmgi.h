@@ -122,6 +122,8 @@ rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
 rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
         /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
+#define	rpmgiFree(_gi)	\
+    ((rpmgi)rpmioFreePoolItem((rpmioItem)(_gi), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Return a generalized iterator.
