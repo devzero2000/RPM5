@@ -363,7 +363,7 @@ void rpmtsCleanDig(rpmts ts)
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 /*@-onlytrans@*/
-	ts->dig = pgpDigFree(ts->dig);
+	ts->dig = pgpDigFree(ts->dig, "rpmtsCleanDig");
 /*@=onlytrans@*/
     }
 }
@@ -485,7 +485,7 @@ fprintf(stderr, "--> rdLead(%p, %p, %p)\n", fd, ptr, msg);
 assert(fn != NULL);
 	    xar = rpmxarNew(fn, "r");
 	    fdSetXAR(fd, xar);
-	    (void) rpmxarFree(xar);
+	    (void) rpmxarFree(xar, "rdLead");
 	}
     }
 
@@ -1368,7 +1368,7 @@ exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
     ei = _free(ei);
-    dig = pgpDigFree(dig);
+    dig = pgpDigFree(dig, "rpmReadHeader");
     h = headerFree(h);
 
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {

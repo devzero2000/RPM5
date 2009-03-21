@@ -201,7 +201,6 @@ LIBRPMIO_0
     pgpArmorWrap;
     pgpCompressionTbl;
     pgpDigClean;
-    pgpDigFree;
     pgpDigNew;
     pgpDigVSFlags;
     _pgp_debug;
@@ -389,14 +388,11 @@ LIBRPMIO_0
     rpmswPrint;
     rpmswSub;
     rpmUndefineMacro;
-    rpmxarFree;
-    XrpmxarLink;
     rpmxarNew;
     rpmxarNext;
     rpmxarPush;
     rpmxarPull;
     rpmxarSwapBuf;
-    XrpmxarUnlink;
     rpmuuidMake;
     rpmzLogAdd;
     rpmzLogDump;

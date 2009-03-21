@@ -308,9 +308,9 @@ assert(fd != NULL);
     fd->ndigests = 0;
 /*@-onlytrans@*/
 #ifdef WITH_XAR
-    fd->xar = rpmxarFree(fd->xar);
+    fd->xar = rpmxarFree(fd->xar, "fdFini");
 #endif
-    fd->dig = pgpDigFree(fd->dig);
+    fd->dig = pgpDigFree(fd->dig, "fdFini");
 /*@=onlytrans@*/
 }
 

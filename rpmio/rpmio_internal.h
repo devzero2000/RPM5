@@ -227,7 +227,7 @@ void fdSetDig(FD_t fd, pgpDig dig)
 	/*@modifies fd, dig @*/
 {
     FDSANE(fd);
-    fd->dig = pgpDigFree(fd->dig);
+    fd->dig = pgpDigFree(fd->dig, "fdSetDig");
     fd->dig = pgpDigLink(dig, "fdSetDig");
 }
 

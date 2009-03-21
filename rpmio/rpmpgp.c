@@ -1007,22 +1007,6 @@ int pgpPrtPkt(const uint8_t * pkt, size_t pleft)
 /*@unchecked@*/
 pgpVSFlags pgpDigVSFlags;
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _digPool;
-
-static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    pgpDig dig;
-
-    if (_digPool == NULL) {
-	_digPool = rpmioNewPool("dig", sizeof(*dig), -1, _pgp_debug,
-			NULL, NULL, NULL);
-	pool = _digPool;
-    }
-    return (pgpDig) rpmioGetPool(pool, sizeof(*dig));
-}
-
 void pgpDigClean(pgpDig dig)
 {
     if (dig != NULL) {
@@ -1056,18 +1040,11 @@ void pgpDigClean(pgpDig dig)
 /*@=nullstate@*/
 }
 
-pgpDig pgpDigFree(pgpDig dig)
+static void pgpDigFini(void * _dig)
+	/*@modifies _dig @*/
 {
-    if (dig == NULL)
-	return NULL;
+    pgpDig dig = _dig;
 
-/*@-onlytrans@*/
-    yarnPossess(dig->_item.use);
-/*@-modfilesys@*/
-if (_pgp_debug < 0)
-fprintf(stderr, "--> dig %p -- %ld %s at %s:%u\n", dig, yarnPeekLock(dig->_item.use), "pgpDigFree", __FILE__, __LINE__);
-/*@=modfilesys@*/
-    if (yarnPeekLock(dig->_item.use) <= 1L) {
 	/* Lose the header tag data. */
 	/* XXX this free should be done somewhere else. */
 	dig->sig = _free(dig->sig);
@@ -1102,11 +1079,22 @@ fprintf(stderr, "--> dig %p -- %ld %s at %s:%u\n", dig, yarnPeekLock(dig->_item.
 
 	dig->impl = pgpImplFree(dig->impl);
 
-/*@=onlytrans@*/
-	dig = (pgpDig) rpmioPutPool((rpmioItem)dig);
-    } else
-	yarnTwist(dig->_item.use, BY, -1);
-    return NULL;
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _digPool;
+
+static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    pgpDig dig;
+
+    if (_digPool == NULL) {
+	_digPool = rpmioNewPool("dig", sizeof(*dig), -1, _pgp_debug,
+			NULL, NULL, pgpDigFini);
+	pool = _digPool;
+    }
+    return (pgpDig) rpmioGetPool(pool, sizeof(*dig));
 }
 
 pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
@@ -1262,7 +1250,7 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	_digp = NULL;
 
     if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts) || ppkts == NULL) {
-	_dig = pgpDigFree(_dig);
+	_dig = pgpDigFree(_dig, "pgpPrtPkts");
 	return -1;
     }
 
@@ -1279,7 +1267,7 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     } else
 	ppkts = _free(ppkts);
 
-    _dig = pgpDigFree(_dig);
+    _dig = pgpDigFree(_dig, "pgpPrtPkts");
     return 0;
 }
 /*@=globstate =incondefs =nullderef @*/
