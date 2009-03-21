@@ -519,7 +519,6 @@ rpmps rpmtsProblems(rpmts ts)
 
 void rpmtsClean(rpmts ts)
 {
-    static const char msg[] = "rpmtsClean";
     rpmtsi pi; rpmte p;
 
     if (ts == NULL)
@@ -529,7 +528,7 @@ void rpmtsClean(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	rpmteCleanDS(p);
-    pi = rpmtsiFree(pi, msg);
+    pi = rpmtsiFree(pi);
 
     ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
@@ -547,7 +546,6 @@ void rpmtsClean(rpmts ts)
 
 void rpmtsEmpty(rpmts ts)
 {
-    static const char msg[] = "rpmtsEmpty";
     rpmtsi pi; rpmte p;
     int oc;
 
@@ -563,7 +561,7 @@ void rpmtsEmpty(rpmts ts)
 	ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=type =unqualifiedtrans @*/
     }
-    pi = rpmtsiFree(pi, msg);
+    pi = rpmtsiFree(pi);
 
     ts->orderCount = 0;
     ts->ntrees = 0;
