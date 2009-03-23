@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: make misc identical to HEAD (hmm @WITH_PCRE_LDFLAGS@ is AWOL)
+    - devzero2000: add mkdtemp portability function to -lrpmmisc
     - jbj: yarn: wire up rpmteFini, eliminate rpmteFree.
     - jbj: yarn: wire up rpmsxFini, eliminate rpmsxFree.
     - jbj: yarn: wire up rpmfiFini, eliminate rpmfiFree.

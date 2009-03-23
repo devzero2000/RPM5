@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)
 
 EXTRA_DIST = \
-	librpmmisc.vers \
+	librpmmisc.vers asprintf.h \
 	alloca.c	basename.c	err.c		error.c		\
 	fakefork.c			getcwd.c	getmntent.c	\
 	getwd.c						memcmp.c	\
@@ -15,10 +15,12 @@ EXTRA_DIST = \
 	setenv.c	stpcpy.c	stpncpy.c			\
 			strcspn.c	strdup.c	strerror.c	\
 	strftime.c	strcspn.c	strstr.c	strtol.c	\
-	strtoul.c
+	strtoul.c \
+        tempname.h \
+        mkdtemp.c 
 
 noinst_HEADERS = \
-	asprintf.h	err.h		error.h	
+	asprintf.h	err.h		error.h tempname.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmmisc.la
@@ -34,7 +36,6 @@ librpmmisc_la_LDFLAGS += \
 	@WITH_XZ_LDFLAGS@ \
 	@WITH_LUA_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
-	@WITH_PCRE_LDFLAGS@ \
 	@WITH_XAR_LDFLAGS@
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
@@ -43,6 +44,7 @@ librpmmisc_la_LIBADD = \
 	@WITH_XZ_LIBS@ \
 	@WITH_LUA_LIBS@ \
 	@WITH_FILE_LIBS@ \
+	@WITH_PCRE_LIBS@ \
 	@WITH_XAR_LIBS@
 if ENABLE_BUILD_EXTLIBDEP
 librpmmisc_la_LDFLAGS += $(LDFLAGS)
@@ -50,8 +52,8 @@ librpmmisc_la_LIBADD  += $(LIBS)
 endif
 librpmmisc_la_DEPENDENCIES = \
 	@ALLOCA@
-librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
-	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
+#librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
+#	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
