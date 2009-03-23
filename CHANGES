@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - devzero2000: add autofu AC_CPP_FUNC portability macro
     - jbj: yarn: wire up rpmteFini, eliminate rpmteFree.
     - jbj: yarn: wire up rpmsxFini, eliminate rpmsxFree.
     - jbj: yarn: wire up rpmfiFini, eliminate rpmfiFree.

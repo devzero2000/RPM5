@@ -109,6 +109,37 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
 
+dnl Needed for the test support code; this was found at
+dnl http://lists.gnu.org/archive/html/bug-autoconf/2002-07/msg00028.html
+
+# AC_CPP_FUNC
+# ------------------ #
+# Checks to see if ANSI C99 CPP variable __func__ works.
+# If not, perhaps __FUNCTION__ works instead. 
+# If not, we'll just define __func__ to "". 
+AC_DEFUN([AC_CPP_FUNC],
+[AC_REQUIRE([AC_PROG_CC_STDC])dnl
+AC_CACHE_CHECK([for an ANSI C99-conforming __func__], ac_cv_cpp_func,
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+[[char *foo = __func__;]])],
+  [ac_cv_cpp_func=yes], 
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+[[char *foo = __FUNCTION__;]])],
+  [ac_cv_cpp_func=__FUNCTION__], 
+  [ac_cv_cpp_func=no])])])
+if test $ac_cv_cpp_func = __FUNCTION__; then
+  AC_DEFINE(__func__,__FUNCTION__,
+            [Define to __FUNCTION__ or "" if `__func__' does not conform to 
+ANSI C.])
+elif test $ac_cv_cpp_func = no; then
+  AC_DEFINE(__func__,"",
+            [Define to __FUNCTION__ or "" if `__func__' does not conform to 
+ANSI C.])
+fi
+])# AC_CPP_FUNC
+
+AC_CPP_FUNC
+
 AC_USE_SYSTEM_EXTENSIONS
 
 AC_PROG_AWK
@@ -117,6 +148,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_YACC
+
 
 AC_PATH_PROG(AS, as, as)
 
