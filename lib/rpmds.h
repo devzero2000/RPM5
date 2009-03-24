@@ -156,6 +156,7 @@ rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
 /*@null@*/
 rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
+
 /** \ingroup rpmds
  * Create and load a dependency set.
  * @param h		header
