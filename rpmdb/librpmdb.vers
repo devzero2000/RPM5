@@ -172,6 +172,7 @@ LIBRPMDB_0
     rdXAR;
     wrRPM;
     wrXAR;
+    _rpmwfPool;
     rpmwfFree;
     rpmwfNextXAR;
     rpmwfPullXAR;

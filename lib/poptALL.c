@@ -469,6 +469,7 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _rpmmiPool;
 #endif
     extern rpmioPool _rpmdbPool;
+    extern rpmioPool _rpmwfPool;
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
 
@@ -486,6 +487,7 @@ rpmcliFini(poptContext optCon)
 #ifdef	NOTYET
     _rpmmiPool = rpmioFreePool(_rpmmiPool);
 #endif
+    _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _headerPool = rpmioFreePool(_headerPool);
 

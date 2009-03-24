@@ -17,6 +17,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmwf_s * rpmwf;
 
 #ifdef	_RPMWF_INTERNAL
 struct rpmwf_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@relnull@*/
     const char * fn;
 /*@relnull@*/
@@ -38,8 +39,6 @@ struct rpmwf_s {
     size_t np;
 /*@relnull@*/ /*@refcounted@*/
     rpmxar xar;
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
 };
 #endif
 
@@ -78,15 +77,8 @@ rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
 rpmwf rpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,
 		/*@null@*/ const char * msg)
 	/*@modifies wf @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmwf XrpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies wf @*/;
-/*@=exportlocal@*/
-#define	rpmwfUnlink(_wf, _msg)	XrpmwfUnlink(_wf, _msg, __FILE__, __LINE__)
+#define	rpmwfUnlink(_wf, _msg)	\
+    ((rpmwf)rpmioUnlinkPoolItem((rpmioItem)(_wf), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a wrapper format instance.
@@ -97,18 +89,15 @@ rpmwf XrpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmwf rpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg)
 	/*@modifies wf @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-rpmwf XrpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies wf @*/;
-#define	rpmwfLink(_wf, _msg)	XrpmwfLink(_wf, _msg, __FILE__, __LINE__)
+#define	rpmwfLink(_wf, _msg)	\
+    ((rpmwf)rpmioLinkPoolItem((rpmioItem)(_wf), _msg, __FILE__, __LINE__))
 
 /*@null@*/
 rpmwf rpmwfFree(/*@only@*/ rpmwf wf)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies wf, fileSystem, internalState @*/;
+#define	rpmwfFree(_wf)	\
+    ((rpmwf)rpmioFreePoolItem((rpmioItem)(_wf), __FUNCTION__, __FILE__, __LINE__))
 
 /*@relnull@*/
 rpmwf rpmwfNew(const char * fn)
