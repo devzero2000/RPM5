@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: wire up headerScrub, eliminate header{Link,Unlink}.
     - devzero2000: fix: add autofu AC_CPP_FUNC portability macro in the acinclude.m4
     - devzero2000: add autofu AC_CPP_FUNC portability macro
     - jbj: yarn: wire up rpmteFini, eliminate rpmteFree.

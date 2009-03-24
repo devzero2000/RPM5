@@ -91,23 +91,6 @@ static struct rpmop_s hdr_getops;
 rpmop _hdr_getops = &hdr_getops;
 /*@=compmempass@*/
 
-
-/*@unchecked@*/ /*@null@*/
-rpmioPool _headerPool;
-
-static Header headerGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    Header h;
-
-    if (_headerPool == NULL) {
-	_headerPool = rpmioNewPool("h", sizeof(*h), -1, _hdr_debug,
-			NULL, NULL, NULL);
-	pool = _headerPool;
-    }
-    return (Header) rpmioGetPool(pool, sizeof(*h));
-}
-
 void * headerGetStats(Header h, int opx)
 {
     rpmop op = NULL;
@@ -119,83 +102,72 @@ void * headerGetStats(Header h, int opx)
     return op;
 }
 
-Header headerLink(Header h)
+static void headerScrub(void * _h)	/* XXX headerFini already in use */
+	/*@modifies *_h @*/
 {
-/*@-nullret@*/
-    if (h == NULL) return NULL;
-/*@=nullret@*/
+    Header h = _h;
 
-    yarnPossess(h->_item.use);
-/*@-modfilesys@*/
-if (_hdr_debug)
-fprintf(stderr, "--> h  %p ++ %ld at %s:%u\n", h, yarnPeekLock(h->_item.use)+1, __FILE__, __LINE__);
-/*@=modfilesys@*/
-    yarnTwist(h->_item.use, BY, 1);
-
-    /*@-refcounttrans @*/
-    return h;
-    /*@=refcounttrans @*/
-}
-
-Header headerUnlink(Header h)
-{
-    if (h == NULL) return NULL;
-    yarnPossess(h->_item.use);
-/*@-modfilesys@*/
-if (_hdr_debug)
-fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->_item.use), __FILE__, __LINE__);
-/*@=modfilesys@*/
-    yarnTwist(h->_item.use, BY, -1);
-    return NULL;
-}
-
-Header headerFree(Header h)
-{
-
-    if (h == NULL)
-	return NULL;
-
-    yarnPossess(h->_item.use);
-/*@-modfilesys@*/
-if (_hdr_debug)
-fprintf(stderr, "--> h  %p -- %ld at %s:%u\n", h, yarnPeekLock(h->_item.use), __FILE__, __LINE__);
-/*@=modfilesys@*/
-    if (yarnPeekLock(h->_item.use) <= 1L) {
-	if (h->index != NULL) {
-	    indexEntry entry = h->index;
-	    size_t i;
-	    for (i = 0; i < h->indexUsed; i++, entry++) {
-		if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry))
-		{
-		    if (entry->length > 0) {
-			rpmuint32_t * ei = entry->data;
-			if ((ei - 2) == h->blob)
-			    h->blob = _free(h->blob);
-			entry->data = NULL;
-		    }
-		} else if (!ENTRY_IN_REGION(entry)) {
-		    entry->data = _free(entry->data);
+    if (h->index != NULL) {
+	indexEntry entry = h->index;
+	size_t i;
+	for (i = 0; i < h->indexUsed; i++, entry++) {
+	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
+		if (entry->length > 0) {
+		    rpmuint32_t * ei = entry->data;
+		    if ((ei - 2) == h->blob)
+			h->blob = _free(h->blob);
+		    entry->data = NULL;
 		}
-		entry->data = NULL;
+	    } else if (!ENTRY_IN_REGION(entry)) {
+		entry->data = _free(entry->data);
 	    }
-	    h->index = _free(h->index);
+	    entry->data = NULL;
 	}
-	h->origin = _free(h->origin);
-	h->baseurl = _free(h->baseurl);
-	h->digest = _free(h->digest);
+	h->index = _free(h->index);
+    }
+    h->origin = _free(h->origin);
+    h->baseurl = _free(h->baseurl);
+    h->digest = _free(h->digest);
 
 /*@-nullstate@*/
-	if (_hdr_stats) {
-	    if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
-		(void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
-	    if (_hdr_getops)	/* RPMTS_OP_HDRGET */
-		(void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
-	}
+    if (_hdr_stats) {
+	if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
+	    (void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
+	if (_hdr_getops)	/* RPMTS_OP_HDRGET */
+	    (void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
+    }
 /*@=nullstate@*/
-	h = (Header) rpmioPutPool((rpmioItem)h);
-    } else
-	yarnTwist(h->_item.use, BY, -1);
+}
+
+#ifndef	BUGGY
+Header headerFree(Header h)
+{
+    /* XXX There's a h = headerFree(h) somewhere that depends on
+     * a NULL being returned from headerFree(). Wire up a NULL
+     * return from rpmioFreePoolItem() in headerFree() for now.
+     * Note: the code that depends on headerFree() returning NULL
+     * is on some lazy deallocation teardown path while trying to exit from
+     * rpm -qavv that is dereferencing a Header more often than necessary.
+     */
+    (void) rpmioFreePoolItem((rpmioItem)h, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
+}
+#endif
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _headerPool;
+
+static Header headerGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    Header h;
+
+    if (_headerPool == NULL) {
+	_headerPool = rpmioNewPool("h", sizeof(*h), -1, _hdr_debug,
+			NULL, NULL, headerScrub);
+	pool = _headerPool;
+    }
+    return (Header) rpmioGetPool(pool, sizeof(*h));
 }
 
 Header headerNew(void)
