@@ -81,7 +81,12 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 	yarnRelease(pool->have);
 	pool->have = yarnFreeLock(pool->have);
 	rpmlog(RPMLOG_DEBUG, ("pool %s:\treused %d, alloc'd %d, free'd %d items.\n"), pool->name, pool->reused, pool->made, count);
+#ifdef	NOTYET
 assert(pool->made == count);
+#else
+if (pool->made != count)
+fprintf(stderr, "==> FIXME: pool %s: made %d count %d\n", pool->name, pool->made, count);
+#endif
 	pool = _free(pool);
     }
     return NULL;
@@ -154,7 +159,9 @@ rpmioItem rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
     rpmioPool pool;
     if (item == NULL) return NULL;
 
+#ifdef	NOTYET
 assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
+#endif
     yarnPossess(item->use);
     if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
 	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
@@ -164,7 +171,7 @@ assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
 /*@=modfilesys@*/
     }
     if (yarnPeekLock(item->use) <= 1L) {
-	if (pool->fini != NULL)
+	if (pool != NULL && pool->fini != NULL)
 	    (*pool->fini) ((void *)item);
 	item = rpmioPutPool(item);
     } else
