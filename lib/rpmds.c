@@ -122,22 +122,6 @@ int _rpmds_nopromote = 1;
 int _rpmds_unspecified_epoch_noise = 0;
 /*@=exportheadervar@*/
 
-/*@unchecked@*/ /*@null@*/
-rpmioPool _rpmdsPool;
-
-static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmds ds;
-
-    if (_rpmdsPool == NULL) {
-	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1, _rpmds_debug,
-			NULL, NULL, NULL);
-	pool = _rpmdsPool;
-    }
-    return (rpmds) rpmioGetPool(pool, sizeof(*ds));
-}
-
 /**
  * Return dependency set type string.
  * @param tagN		dependency set tag
@@ -172,21 +156,9 @@ const char * rpmdsType(const rpmds ds)
     return rpmdsTagName(rpmdsTagN(ds));
 }
 
-rpmds rpmdsFree(rpmds ds)
+static void rpmdsFini(void * _ds)
 {
-    if (ds == NULL)
-	return NULL;
-
-    yarnPossess(ds->_item.use);
-/*@-modfilesys@*/
-if (_rpmds_debug)
-fprintf(stderr, "--> ds %p -- %ld %s at %s:%u\n", ds, yarnPeekLock(ds->_item.use), ds->Type, __FILE__, __LINE__);
-/*@=modfilesys@*/
-    if (yarnPeekLock(ds->_item.use) <= 1L) {
-/*@-modfilesys@*/
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
-/*@=modfilesys@*/
+    rpmds ds = _ds;
 
 	if (ds->Count > 0) {
 	    ds->N = _free(ds->N);
@@ -204,11 +176,28 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	ds->Result = _free(ds->Result);
 	ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
 	ds->include = mireFreeAll(ds->include, ds->ninclude);
+}
 
-	ds = (rpmds) rpmioPutPool((rpmioItem)ds);
-    } else
-	yarnTwist(ds->_item.use, BY, -1);
+rpmds rpmdsFree(rpmds ds)
+{
+    (void)rpmioFreePoolItem((rpmioItem)ds, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmdsPool;
+
+static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmds ds;
+
+    if (_rpmdsPool == NULL) {
+	_rpmdsPool = rpmioNewPool("ds", sizeof(*ds), -1, _rpmds_debug,
+			NULL, NULL, rpmdsFini);
+	pool = _rpmdsPool;
+    }
+    return (rpmds) rpmioGetPool(pool, sizeof(*ds));
 }
 
 static /*@null@*/

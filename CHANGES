@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: wire up rpmdsFini, mark rpmdsFree for destruction.
     - jbj: yarn: wire up rpmtsFini, mark rpmtsFree for destruction.
     - jbj: yarn: for now, don't assert fail, just print FIXME.
     - jbj: yarn: wire up headerScrub, eliminate header{Link,Unlink}.
