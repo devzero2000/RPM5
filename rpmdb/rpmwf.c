@@ -183,37 +183,10 @@ fprintf(stderr, "==> rpmwfPushRPM(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
     return RPMRC_OK;
 }
 
-rpmwf XrpmwfUnlink(rpmwf wf, const char * msg, const char * fn, unsigned ln)
+static void rpmwfScrub(void *_wf)
+	/*@modifies *_wf @*/
 {
-    if (wf == NULL) return NULL;
-/*@-modfilesys@*/
-if (_rpmwf_debug && msg != NULL)
-fprintf(stderr, "-->  wf %p -- %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    wf->nrefs--;
-    return NULL;
-}
-
-rpmwf XrpmwfLink(rpmwf wf, const char * msg, const char * fn, unsigned ln)
-{
-    if (wf == NULL) return NULL;
-    wf->nrefs++;
-
-/*@-modfilesys@*/
-if (_rpmwf_debug && msg != NULL)
-fprintf(stderr, "-->  wf %p ++ %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-
-    /*@-refcounttrans@*/ return wf; /*@=refcounttrans@*/
-}
-
-rpmwf rpmwfFree(rpmwf wf)
-{
-    if (wf) {
-
-/*@-onlytrans@*/
-	if (wf->nrefs > 1)
-	    return rpmwfUnlink(wf, "rpmwfFree");
+    rpmwf wf = _wf;
 
 	if (wf->b == NULL) {
 /*@-dependenttrans@*/	/* rpm needs dependent, xar needs only */
@@ -228,15 +201,22 @@ rpmwf rpmwfFree(rpmwf wf)
 	(void) rpmwfFini(wf);
 
 	wf->fn = _free(wf->fn);
+}
 
-	(void) rpmwfUnlink(wf, "rpmwfFree");
-/*@=onlytrans@*/
-	/*@-refcounttrans -usereleased@*/
-	memset(wf, 0, sizeof(*wf));         /* XXX trash and burn */
-	wf = _free(wf);
-	/*@=refcounttrans =usereleased@*/
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmwfPool;
+
+static rpmwf rpmwfGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmwf wf;
+
+    if (_rpmwfPool == NULL) {
+	_rpmwfPool = rpmioNewPool("wf", sizeof(*wf), -1, _rpmwf_debug,
+			NULL, NULL, rpmwfScrub);
+	pool = _rpmwfPool;
     }
-    return NULL;
+    return (rpmwf) rpmioGetPool(pool, sizeof(*wf));
 }
 
 rpmwf rpmwfNew(const char * fn)
@@ -249,7 +229,7 @@ rpmwf rpmwfNew(const char * fn)
     if ((xx = Stat(fn, st)) < 0)
 	return NULL;
 /*@=globs@*/
-    wf = xcalloc(1, sizeof(*wf));
+    wf = rpmwfGetPool(_rpmwfPool);
     wf->fn = xstrdup(fn);
     wf->nb = st->st_size;
 
