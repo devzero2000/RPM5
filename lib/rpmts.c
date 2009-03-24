@@ -88,24 +88,6 @@ int _rpmts_stats = 0;
 /*@unchecked@*/
 int _rpmts_macros = 0;
 
-
-/*@unchecked@*/ /*@null@*/
-rpmioPool _rpmtsPool;
-
-static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
-{
-    rpmts ts;
-
-    if (_rpmtsPool == NULL) {
-	_rpmtsPool = rpmioNewPool("ts", sizeof(*ts), -1, _rpmts_debug,
-			NULL, NULL, NULL);
-	pool = _rpmtsPool;
-    }
-    return (rpmts) rpmioGetPool(pool, sizeof(*ts));
-}
-
-
 int rpmtsCloseDB(rpmts ts)
 {
     int rc = 0;
@@ -636,82 +618,89 @@ static void rpmtsPrintStats(rpmts ts)
 /*@=globstate@*/
 }
 
-rpmts rpmtsFree(rpmts ts)
+static void rpmtsFini(void * _ts)
+	/*@modifies *_ts @*/
 {
-    if (ts == NULL)
-	return NULL;
-
-    yarnPossess(ts->_item.use);
-/*@-modfilesys@*/
-if (_rpmts_debug)
-fprintf(stderr, "--> ts %p -- %ld %s at %s:%u\n", ts, yarnPeekLock(ts->_item.use), "tsCreate", __FILE__, __LINE__);
-/*@=modfilesys@*/
-
-    if (yarnPeekLock(ts->_item.use) <= 1L) {
+    rpmts ts = _ts;
 
 /*@-nullstate@*/	/* FIX: partial annotations */
-	/* XXX there's a recursion here ... release and reacquire the lock */
+    /* XXX there's a recursion here ... release and reacquire the lock */
 #ifndef	BUGGY
-	yarnRelease(ts->_item.use);	/* XXX hack-o-round */
+    yarnRelease(ts->_item.use);	/* XXX hack-o-round */
 #endif
-	rpmtsEmpty(ts);
+    rpmtsEmpty(ts);
 #ifndef	BUGGY
-	yarnPossess(ts->_item.use);	/* XXX hack-o-round */
+    yarnPossess(ts->_item.use);	/* XXX hack-o-round */
 #endif
 /*@=nullstate@*/
 
-	ts->PRCO = rpmdsFreePRCO(ts->PRCO);
+    ts->PRCO = rpmdsFreePRCO(ts->PRCO);
 
-	(void) rpmtsCloseDB(ts);
+    (void) rpmtsCloseDB(ts);
 
-	(void) rpmtsCloseSDB(ts);
+    (void) rpmtsCloseSDB(ts);
 
-	ts->sx = rpmsxFree(ts->sx);
+    ts->sx = rpmsxFree(ts->sx);
 
-	ts->removedPackages = _free(ts->removedPackages);
+    ts->removedPackages = _free(ts->removedPackages);
 
-	ts->availablePackages = rpmalFree(ts->availablePackages);
-	ts->numAvailablePackages = 0;
+    ts->availablePackages = rpmalFree(ts->availablePackages);
+    ts->numAvailablePackages = 0;
 
-	ts->dsi = _free(ts->dsi);
+    ts->dsi = _free(ts->dsi);
 
-	if (ts->scriptFd != NULL) {
+    if (ts->scriptFd != NULL) {
 /*@-refcounttrans@*/	/* FIX: XfdFree annotation */
-	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
+	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
 /*@=refcounttrans@*/
-	    ts->scriptFd = NULL;
-	}
-	ts->rootDir = _free(ts->rootDir);
-	ts->currDir = _free(ts->currDir);
+	ts->scriptFd = NULL;
+    }
+    ts->rootDir = _free(ts->rootDir);
+    ts->currDir = _free(ts->currDir);
 
 /*@-type +voidabstract @*/	/* FIX: double indirection */
-	ts->order = _free(ts->order);
+    ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
-	ts->orderAlloced = 0;
+    ts->orderAlloced = 0;
 
-	ts->keyring = rpmKeyringFree(ts->keyring);
-	ts->pkpkt = _free(ts->pkpkt);
-	ts->pkpktlen = 0;
-	memset(ts->pksignid, 0, sizeof(ts->pksignid));
+    ts->keyring = rpmKeyringFree(ts->keyring);
+    ts->pkpkt = _free(ts->pkpkt);
+    ts->pkpktlen = 0;
+    memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
-	if (_rpmts_stats)
-	    rpmtsPrintStats(ts);
+    if (_rpmts_stats)
+	rpmtsPrintStats(ts);
 
-	if (_rpmts_macros) {
-	    const char ** av = NULL;
+    if (_rpmts_macros) {
+	const char ** av = NULL;
 /*@-globs@*/	/* Avoid rpmGlobalMcroContext et al. */
-	    (void)rpmGetMacroEntries(NULL, NULL, 1, &av);
+	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 /*@=globs@*/
-	    argvPrint("macros used", av, NULL);
-	    av = argvFree(av);
-	}
+	argvPrint("macros used", av, NULL);
+	av = argvFree(av);
+    }
+}
 
-
-	ts = (rpmts) rpmioPutPool((rpmioItem)ts);
-    } else
-	yarnTwist(ts->_item.use, BY, -1);
-
+rpmts rpmtsFree(rpmts ts)
+{
+    (void) rpmioFreePoolItem((rpmioItem)ts, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmtsPool;
+
+static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmts ts;
+
+    if (_rpmtsPool == NULL) {
+	_rpmtsPool = rpmioNewPool("ts", sizeof(*ts), -1, _rpmts_debug,
+			NULL, NULL, rpmtsFini);
+	pool = _rpmtsPool;
+    }
+    return (rpmts) rpmioGetPool(pool, sizeof(*ts));
 }
 
 void * rpmtsGetKeyring(rpmts ts, /*@unused@*/ int autoload)

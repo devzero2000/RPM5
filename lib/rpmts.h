@@ -628,6 +628,10 @@ void rpmtsEmpty(rpmts ts)
 rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState @*/;
+#ifdef	NOTYET
+#define	rpmtsFree(_ts)	\
+	((rpmts) rpmioFreePoolItem((rpmioItem)(_ts), __FUNCTION__, __FILE__, __LINE__))
+#endif
 
 /** \ingroup rpmts
  * Get transaction keyring.
