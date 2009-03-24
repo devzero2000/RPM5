@@ -9,6 +9,7 @@
 #endif
 
 #include <rpmiotypes.h>
+#include <rpmio.h>	/* for *Pool methods */
 #include <rpmlog.h>
 #define	_RPMMG_INTERNAL
 #include <rpmmg.h>
@@ -18,26 +19,38 @@
 /*@unchecked@*/
 int _rpmmg_debug = 0;
 
-rpmmg rpmmgFree(rpmmg mg)
+static void rpmmgFini(void * _mg)
 {
-if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgFree(%p)\n", mg);
-    if (mg) {
+    rpmmg mg = _mg;
+
 #if defined(HAVE_MAGIC_H)
-	if (mg->ms) {
-	    magic_close(mg->ms);
-	    mg->ms = NULL;
-	}
-#endif
-	mg->fn = _free(mg->fn);
-	mg = _free(mg);
+    if (mg->ms) {
+	magic_close(mg->ms);
+	mg->ms = NULL;
     }
-    return NULL;
+#endif
+    mg->fn = _free(mg->fn);
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmmgPool;
+
+static rpmmg rpmmgGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmmg mg;
+
+    if (_rpmmgPool == NULL) {
+	_rpmmgPool = rpmioNewPool("mg", sizeof(*mg), -1, _rpmmg_debug,
+			NULL, NULL, rpmmgFini);
+	pool = _rpmmgPool;
+    }
+    return (rpmmg) rpmioGetPool(pool, sizeof(*mg));
 }
 
 rpmmg rpmmgNew(const char * fn, int flags)
 {
-    rpmmg mg = xcalloc(1, sizeof(*mg));
+    rpmmg mg = rpmmgGetPool(_rpmmgPool);
     int xx;
 
     if (fn)
@@ -58,9 +71,7 @@ rpmmg rpmmgNew(const char * fn, int flags)
     }
 #endif
 
-if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgNew(%s, 0x%x) mg %p\n", (fn ? fn : "(nil)"), flags, mg);
-    return mg;
+    return rpmmgLink(mg);
 }
 
 const char * rpmmgFile(rpmmg mg, const char *fn)

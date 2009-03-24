@@ -13,12 +13,13 @@ extern int _rpmmg_debug;
 
 /** \ingroup rpmio
  */
-typedef struct rpmmg_s * rpmmg;
+typedef /*@refcounted@*/ struct rpmmg_s * rpmmg;
 
 #if defined(_RPMMG_INTERNAL)
 /** \ingroup rpmio
  */
 struct rpmmg_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     int flags;
 /*@relnull@*/
@@ -31,14 +32,38 @@ extern "C" {
 #endif
 
 /**
+ * Unreference a magic wrapper instance.
+ * @param mg		magic wrapper
+ * @return
+ */
+/*@unused@*/ /*@null@*/
+rpmmg rpmmgUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmmg mg)
+	/*@modifies mg @*/;
+#define	rpmmgUnlink(_ds)	\
+    ((rpmmg)rpmioUnlinkPoolItem((rpmioItem)(_mg), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a magic wrapper instance.
+ * @param mg		magic wrapper
+ * @return		new magic wrapper reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmmg rpmmgLink (/*@null@*/ rpmmg mg)
+	/*@modifies mg @*/;
+#define	rpmmgLink(_mg)	\
+    ((rpmmg)rpmioLinkPoolItem((rpmioItem)(_mg), __FUNCTION__, __FILE__, __LINE__))
+
+/**
  * Destroy a magic wrapper.
  * @param mg		magic wrapper
  * @return		NULL always
  */
 /*@null@*/
-rpmmg rpmmgFree(/*@only@*/ /*@null@*/rpmmg mg)
+rpmmg rpmmgFree(/*@killref@*/ /*@null@*/rpmmg mg)
 	/*@globals fileSystem @*/
 	/*@modifies mg, fileSystem @*/;
+#define	rpmmgFree(_mg)	\
+    ((rpmmg)rpmioFreePoolItem((rpmioItem)(_mg), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Create and load a magic wrapper.
@@ -46,7 +71,7 @@ rpmmg rpmmgFree(/*@only@*/ /*@null@*/rpmmg mg)
  * @param flags		magic flags
  * @return		new magic wrapper
  */
-/*@only@*/ /*@null@*/
+/*@newref@*/ /*@null@*/
 rpmmg rpmmgNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
