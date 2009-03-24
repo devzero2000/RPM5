@@ -1,6 +1,7 @@
 
 5.2a3 -> 5.2a4:
-    - jbj: yarn: convert rpmmg refcount to usage mutex with refcounts.
+    - jbj: yarn: convert hashTable to usage mutex with refcounts.
+    - jbj: yarn: convert rpmmg to usage mutex with refcounts.
     - jbj: yarn: convert rpmwf refcount to usage mutex.
     - jbj: rpmdb: don't bother with the silly structure assignment initialize.
     - jbj: yarn: wire up rpmdsFini, mark rpmdsFree for destruction.

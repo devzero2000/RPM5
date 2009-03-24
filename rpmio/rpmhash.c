@@ -4,8 +4,12 @@
  */
 
 #include "system.h"
+#include <rpmiotypes.h>
+#include <rpmio.h>
 #include <rpmhash.h>
 #include "debug.h"
+
+int _ht_debug = 0;
 
 typedef /*@owned@*/ const void * voidptr;
 
@@ -23,6 +27,7 @@ struct hashBucket_s {
 /**
  */
 struct hashTable_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     int numBuckets;			/*!< number of hash buckets */
     size_t keySize;			/*!< size of key (0 if unknown) */
     int freeData;	/*!< should data be freed when table is destroyed? */
@@ -131,24 +136,6 @@ rpmuint32_t hashFunctionString(rpmuint32_t h, const void * data, size_t size)
     return h;
 }
 
-hashTable htCreate(int numBuckets, size_t keySize, int freeData,
-		hashFunctionType fn, hashEqualityType eq)
-{
-    hashTable ht;
-
-    ht = xmalloc(sizeof(*ht));
-    ht->numBuckets = numBuckets;
-    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
-    ht->keySize = keySize;
-    ht->freeData = freeData;
-    /*@-assignexpose@*/
-    ht->fn = (fn != NULL ? fn : hashFunctionString);
-    ht->eq = (eq != NULL ? eq : hashEqualityString);
-    /*@=assignexpose@*/
-
-    return ht;
-}
-
 void htAddEntry(hashTable ht, const void * key, const void * data)
 {
     rpmuint32_t hash = 0;
@@ -179,34 +166,6 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
     b->data[b->dataCount++] = data;
 }
 
-hashTable htFree(hashTable ht)
-{
-    hashBucket b, n;
-    int i;
-
-    for (i = 0; i < ht->numBuckets; i++) {
-	b = ht->buckets[i];
-	if (b == NULL)
-	    continue;
-	ht->buckets[i] = NULL;
-	if (ht->keySize > 0)
-	    b->key = _free(b->key);
-	do {
-	    n = b->next;
-	    if (b->data) {
-		if (ht->freeData)
-		    *b->data = _free(*b->data);
-		b->data = _free(b->data);
-	    }
-	    b = _free(b);
-	} while ((b = n) != NULL);
-    }
-
-    ht->buckets = _free(ht->buckets);
-    ht = _free(ht);
-    return NULL;
-}
-
 int htHasEntry(hashTable ht, const void * key)
 {
     hashBucket b;
@@ -230,4 +189,65 @@ int htGetEntry(hashTable ht, const void * key, const void * data,
 	*(const void **)tableKey = b->key;
 
     return 0;
+}
+
+static void htFini(void * _ht)
+	/*@modifies *_ht @*/
+{
+    hashTable ht = _ht;
+    hashBucket b, n;
+    int i;
+
+    for (i = 0; i < ht->numBuckets; i++) {
+	b = ht->buckets[i];
+	if (b == NULL)
+	    continue;
+	ht->buckets[i] = NULL;
+	if (ht->keySize > 0)
+	    b->key = _free(b->key);
+	do {
+	    n = b->next;
+	    if (b->data) {
+		if (ht->freeData)
+		    *b->data = _free(*b->data);
+		b->data = _free(b->data);
+	    }
+	    b = _free(b);
+	} while ((b = n) != NULL);
+    }
+
+    ht->buckets = _free(ht->buckets);
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _htPool;
+
+static hashTable htGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    hashTable ht;
+
+    if (_htPool == NULL) {
+	_htPool = rpmioNewPool("ht", sizeof(*ht), -1, _ht_debug,
+			NULL, NULL, htFini);
+	pool = _htPool;
+    }
+    return (hashTable) rpmioGetPool(pool, sizeof(*ht));
+}
+
+hashTable htCreate(int numBuckets, size_t keySize, int freeData,
+		hashFunctionType fn, hashEqualityType eq)
+{
+    hashTable ht = htGetPool(_htPool);
+
+    ht->numBuckets = numBuckets;
+    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+    ht->keySize = keySize;
+    ht->freeData = freeData;
+    /*@-assignexpose@*/
+    ht->fn = (fn != NULL ? fn : hashFunctionString);
+    ht->eq = (eq != NULL ? eq : hashEqualityString);
+    /*@=assignexpose@*/
+
+    return htLink(ht);
 }

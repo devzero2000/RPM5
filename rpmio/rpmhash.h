@@ -56,30 +56,6 @@ rpmuint32_t hashFunctionString(rpmuint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**
- * Create hash table.
- * If keySize > 0, the key is duplicated within the table (which costs
- * memory, but may be useful anyway.
- * @param numBuckets    number of hash buckets
- * @param keySize       size of key (0 if unknown)
- * @param freeData      Should data be freed when table is destroyed?
- * @param fn            function to generate hash key (NULL for default)
- * @param eq            function to compare keys for equality (NULL for default)
- * @return		pointer to initialized hash table
- */
-hashTable htCreate(int numBuckets, size_t keySize, int freeData,
-		/*@null@*/ hashFunctionType fn, /*@null@*/ hashEqualityType eq)
-	/*@*/; 
-
-/**
- * Destroy hash table.
- * @param ht            pointer to hash table
- * @return		NULL always
- */
-/*@null@*/
-hashTable htFree( /*@only@*/ hashTable ht)
-	/*@modifies ht @*/;
-
-/**
  * Add item to hash table.
  * @param ht            pointer to hash table
  * @param key           pointer to key
@@ -113,6 +89,54 @@ int htGetEntry(hashTable ht, const void * key,
 /*@unused@*/
 int htHasEntry(hashTable ht, const void * key)
 	/*@*/;
+
+/**
+ * Unreference a hash table instance.
+ * @param ht		hash table
+ * @return		NULL if free'd
+ */
+/*@unused@*/ /*@null@*/
+hashTable htUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ hashTable ht);
+	/*@modifies ht @*/;
+#define	htUnlink(_ht)	\
+    ((hashTable)rpmioUnlinkPoolItem((rpmioItem)(_ht), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a hash table instance.
+ * @param ds		hash table
+ * @return		new hash table reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+hashTable htLink (/*@null@*/ hashTable ht)
+	/*@modifies ht @*/;
+#define	htLink(_ht)	\
+    ((hashTable)rpmioLinkPoolItem((rpmioItem)(_ht), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Destroy hash table.
+ * @param ht            pointer to hash table
+ * @return		NULL always
+ */
+/*@null@*/
+hashTable htFree( /*@only@*/ hashTable ht)
+	/*@modifies ht @*/;
+#define	htFree(_ht)	\
+    ((hashTable)rpmioFreePoolItem((rpmioItem)(_ht), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Create hash table.
+ * If keySize > 0, the key is duplicated within the table (which costs
+ * memory, but may be useful anyway.
+ * @param numBuckets    number of hash buckets
+ * @param keySize       size of key (0 if unknown)
+ * @param freeData      Should data be freed when table is destroyed?
+ * @param fn            function to generate hash key (NULL for default)
+ * @param eq            function to compare keys for equality (NULL for default)
+ * @return		pointer to initialized hash table
+ */
+hashTable htCreate(int numBuckets, size_t keySize, int freeData,
+		/*@null@*/ hashFunctionType fn, /*@null@*/ hashEqualityType eq)
+	/*@*/; 
 
 #ifdef __cplusplus
 }
