@@ -59,7 +59,6 @@ LIBRPMDB_0
     headerSetStatbuf;
     headerInit;
     headerIsEntry;
-    headerLink;
     headerLoad;
     headerMacrosLoad;
     headerMacrosUnload;

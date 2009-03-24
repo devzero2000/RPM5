@@ -811,6 +811,8 @@ int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
  */
 Header headerLink(Header h)
 	/*@modifies h @*/;
+#define headerLink(_h)        \
+    ((Header)rpmioLinkPoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
 
 /** \ingroup header
  * Dereference a header instance.
@@ -820,6 +822,8 @@ Header headerLink(Header h)
 /*@null@*/
 Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/;
+#define headerUnlink(_h)        \
+    ((Header)rpmioUnlinkPoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
 
 /** \ingroup header
  * Dereference a header instance.
@@ -829,6 +833,10 @@ Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 /*@null@*/
 Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/;
+#ifdef	NOTYET	/* XXX h = headerFree(h) NULL return needs to be found/fixed. */
+#define headerFree(_h)        \
+    ((Header)rpmioFreePoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
+#endif
 
 /** \ingroup header
  * Create new (empty) header instance.
