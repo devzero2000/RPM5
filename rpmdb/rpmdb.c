@@ -918,23 +918,6 @@ exit:
     return 0;
 }
 
-#define	_DB_ROOT	"/"
-#define	_DB_HOME	"%{?_dbpath}"
-#define	_DB_FLAGS	0
-#define _DB_MODE	0
-#define _DB_PERMS	0644
-
-#define _DB_MAJOR	-1
-#define	_DB_ERRPFX	"rpmdb"
-
-/*@-fullinitblock@*/
-/*@observer@*/ /*@unchecked@*/
-static struct rpmdb_s dbTemplate = { { NULL, NULL},
-    _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
-    _DB_MAJOR,	_DB_ERRPFX
-};
-/*@=fullinitblock@*/
-
 /*@unchecked@*/ /*@null@*/
 rpmioPool _rpmdbPool;
 
@@ -1167,8 +1150,16 @@ assert(fn != NULL);
     return fn;
 }
 
+#define	_DB_ROOT	"/"
+#define	_DB_HOME	"%{?_dbpath}"
+#define	_DB_FLAGS	0
+#define _DB_MODE	0
+#define _DB_PERMS	0644
+
+#define _DB_MAJOR	-1
+#define	_DB_ERRPFX	"rpmdb"
+
 /*@-exportheader@*/
-/*@-globs -mods -incondefs@*/	/* FIX: dbTemplate structure assignment */
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
@@ -1190,22 +1181,16 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 	oneshot = 1;
     }
 
-    {	void * use = db->_item.use;
-	void * pool = db->_item.pool;
-	/*@-assignexpose@*/
-	*db = dbTemplate;	/* structure assignment */
-	/*@=assignexpose@*/
-	db->_item.pool = pool;
-	db->_item.use = use;
-    }
+    db->db_api = _DB_MAJOR;
+    db->db_errpfx = _DB_ERRPFX;
 
     db->_dbi = NULL;
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
-    if (mode >= 0)	db->db_mode = mode;
-    if (perms >= 0)	db->db_perms = perms;
-    if (flags >= 0)	db->db_flags = flags;
+    db->db_mode = (mode >= 0) ? mode : _DB_MODE;
+    db->db_perms = (perms >= 0)	? perms : _DB_PERMS;
+    db->db_flags = (flags >= 0) ? flags : _DB_FLAGS;
 
     db->db_root = rpmdbURIPath( (root && *root ? root : _DB_ROOT) );
     db->db_home = rpmdbURIPath( (home && *home ? home : _DB_HOME) );
@@ -1228,7 +1213,6 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     return rpmdbLink(db, "rpmdbCreate");
     /*@=globstate@*/
 }
-/*@=globs =mods =incondefs@*/
 /*@=exportheader@*/
 
 /*@-exportheader@*/
