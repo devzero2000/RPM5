@@ -24,6 +24,10 @@ struct rpmmg_s {
     int flags;
 /*@relnull@*/
     void * ms;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* _RPMMG_INTERNAL */
 

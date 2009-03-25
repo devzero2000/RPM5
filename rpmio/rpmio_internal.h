@@ -15,6 +15,9 @@
 
 #include <rpmxar.h>
 
+/*@access pgpDig @*/	/* XXX FIXME: (by refactoring to foo.c) */
+/*@access rpmxar @*/	/* XXX FIXME: (by refactoring to foo.c) */
+
 /** \ingroup rpmio
  */
 typedef struct _FDSTACK_s {
@@ -65,7 +68,7 @@ struct _FD_s {
     FDSTACK_t	fps[8];
     int		urlType;	/* ufdio: */
 
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     void *	url;		/* ufdio: URL info */
 /*@relnull@*/
     void *	req;		/* ufdio: HTTP request */
@@ -103,6 +106,10 @@ struct _FD_s {
     time_t	lastModified;	/* ufdio: (HTTP) */
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
     unsigned long long	fd_cpioPos;	/* cpio: */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 /*@access FD_t@*/
 
@@ -231,11 +238,14 @@ mode_t fdGetOMode(FD_t fd)
  */
 /*@unused@*/ static inline
 void fdSetDig(FD_t fd, pgpDig dig)
-	/*@modifies fd, dig @*/
+	/*@globals fileSystem @*/
+	/*@modifies fd, dig, fileSystem @*/
 {
     FDSANE(fd);
+/*@-assignexpose@*/
     fd->dig = pgpDigFree(fd->dig, "fdSetDig");
     fd->dig = pgpDigLink(dig, "fdSetDig");
+/*@=assignexpose@*/
 }
 
 /** \ingroup rpmio
@@ -254,10 +264,13 @@ void fdSetDig(FD_t fd, pgpDig dig)
  */
 /*@unused@*/ static inline
 void fdSetXAR(FD_t fd, rpmxar xar)
-	/*@modifies fd, xar @*/
+	/*@globals fileSystem @*/
+	/*@modifies fd, xar, fileSystem @*/
 {
     FDSANE(fd);
+/*@-assignexpose@*/
     fd->xar = rpmxarLink(xar, "fdSetXAR");
+/*@=assignexpose@*/
 }
 
 /** \ingroup rpmio

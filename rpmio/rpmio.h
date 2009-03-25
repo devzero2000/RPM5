@@ -132,8 +132,7 @@ struct FDIO_s {
 size_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *buf, fileSystem @*/
-	/*@requires maxSet(buf) >= (nmemb - 1) @*/
-	/*@ensures maxRead(buf) == result @*/;
+	/*@requires maxSet(buf) >= (nmemb - 1) @*/;
 /*@=incondefs@*/
 
 /**
@@ -503,14 +502,10 @@ off_t Lseek(int fdno, off_t offset, int whence)
 /*@-exportlocal@*/
 /**
  */
-/*@-incondefs@*/
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies *cookie, *buf, errno, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) == result @*/ ;
+	/*@modifies *cookie, *buf, errno, fileSystem, internalState @*/;
 #define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
-/*@=incondefs@*/
 
 /**
  */
@@ -533,42 +528,37 @@ int fdClose( /*@only@*/ void * cookie)
 	/*@modifies errno, fileSystem, internalState @*/;
 #define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
 
-/*@-incondefs @*/
 /**
  */
 /*@unused@*/
-/*@only@*/ /*@null@*/
-FD_t fdLink (/*@only@*/ void * cookie, const char * msg)
+/*@newref@*/ /*@null@*/
+FD_t fdLink (void * cookie, const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 #define	fdLink(_fd, _msg)	\
 	((FD_t)rpmioLinkPoolItem((rpmioItem)(_fd), _msg, __FILE__, __LINE__))
-/*@=incondefs@*/
 
 /**
  */
-/*@unused@*/ /*@only@*/ /*@null@*/
-FD_t fdFree(/*@only@*/ FD_t fd, const char * msg)
+/*@unused@*/ /*@null@*/
+FD_t fdFree(/*@killref@*/ FD_t fd, const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 #define	fdFree(_fd, _msg)	\
 	((FD_t)rpmioFreePoolItem((rpmioItem)(_fd), _msg, __FILE__, __LINE__))
 
-/*@-incondefs@*/
 /**
  */
 /*@unused@*/
-/*@only@*/ /*@null@*/
+/*@newref@*/ /*@null@*/
 FD_t fdNew (const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-/*@unused@*/
-/*@only@*/ /*@null@*/
+/*@newref@*/ /*@null@*/
 FD_t XfdNew (const char * msg, const char * fn, unsigned ln)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 #define	fdNew(_msg)		XfdNew(_msg, __FILE__, __LINE__)
-/*@=incondefs@*/
 
 /**
  */
@@ -651,21 +641,25 @@ typedef enum ftperrCode_e {
 /**
  */
 /*@-redecl@*/
-/*@observer@*/ const char * ftpStrerror(int errorNumber)
+/*@observer@*/
+const char * ftpStrerror(int errorNumber)
 	/*@*/;
 /*@=redecl@*/
 
 /**
  */
 /*@unused@*/
-/*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd)
-	/*@modifies fd @*/;
+/*@dependent@*/ /*@null@*/
+void * ufdGetUrlinfo(FD_t fd)
+	/*@globals fileSystem @*/
+	/*@modifies fd, fileSystem @*/;
 
 /**
  */
 /*@-redecl@*/
 /*@unused@*/
-/*@observer@*/ const char * urlStrerror(const char * url)
+/*@observer@*/
+const char * urlStrerror(const char * url)
 	/*@globals h_errno, internalState @*/
 	/*@modifies internalState @*/;
 /*@=redecl@*/
@@ -716,12 +710,15 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 /*@=exportlocal@*/
 /*@}*/
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+extern rpmioPool _fdPool;
+
 /**
  * Free all memory allocated by rpmio usage.
  */
 void rpmioClean(void)
-	/*@globals internalState, fileSystem @*/
-	/*@modifies internalState, fileSystem @*/;
+	/*@globals _fdPool, fileSystem, internalState @*/
+	/*@modifies _fdPool, fileSystem, internalState @*/;
 
 /**
  * Reclaim memory pool items.
@@ -730,7 +727,8 @@ void rpmioClean(void)
  */
 /*@null@*/
 rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies pool, fileSystem, internalState @*/;
 
 /**
  * Create a memory pool.
@@ -743,11 +741,13 @@ rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
  * @param (*fini)()	destroy item contents
  * @return		memory pool
  */
-rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
+rpmioPool rpmioNewPool(/*@observer@*/ const char * name,
+		size_t size, int limit, int flags,
 		/*@null@*/ const char * (*dbg) (void *item), 
 		/*@null@*/ void (*init) (void *item),
 		/*@null@*/ void (*fini) (void *item))
-        /*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Decrement a pool item refcount.
@@ -760,7 +760,8 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
 /*@null@*/
 rpmioItem rpmioUnlinkPoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
 		const char * msg, const char * fn, unsigned ln)
-	/*@modifies item @*/;
+	/*@globals fileSystem @*/
+	/*@modifies item, fileSystem @*/;
 
 /**
  * Increment a pool item refcount.
@@ -773,7 +774,8 @@ rpmioItem rpmioUnlinkPoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
 /*@newref@*/ /*@null@*/
 rpmioItem rpmioLinkPoolItem(/*@returned@*/ /*@null@*/ rpmioItem item,
 		const char * msg, const char * fn, unsigned ln)
-	/*@modifies item @*/;
+	/*@globals fileSystem @*/
+	/*@modifies item, fileSystem @*/;
 
 /**
  * Free a pool item.
@@ -784,9 +786,10 @@ rpmioItem rpmioLinkPoolItem(/*@returned@*/ /*@null@*/ rpmioItem item,
  * @return		pool item
  */
 /*@null@*/
-rpmioItem rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
+void * rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
 		const char * msg, const char * fn, unsigned ln)
-	/*@modifies item @*/;
+	/*@globals fileSystem @*/
+	/*@modifies item, fileSystem @*/;
 
 /**
  * Get unused item from pool, or alloc a new item.
@@ -794,8 +797,9 @@ rpmioItem rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
  * @param size		item size
  * @return		new item
  */
-rpmioItem rpmioGetPool(/*@null@*/ rpmioPool pool, size_t size)
-        /*@modifies pool @*/;
+rpmioItem rpmioGetPool(/*@kept@*/ /*@null@*/ rpmioPool pool, size_t size)
+	/*@globals fileSystem @*/
+        /*@modifies pool, fileSystem @*/;
 
 /**
  * Put unused item into pool (or free).
@@ -804,7 +808,8 @@ rpmioItem rpmioGetPool(/*@null@*/ rpmioPool pool, size_t size)
  */
 /*@null@*/
 rpmioItem rpmioPutPool(rpmioItem item)
-        /*@modifies item @*/;
+	/*@globals fileSystem @*/
+        /*@modifies item, fileSystem @*/;
 
 #ifdef __cplusplus
 }

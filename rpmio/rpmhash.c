@@ -9,6 +9,7 @@
 #include <rpmhash.h>
 #include "debug.h"
 
+/*@unchecked@*/
 int _ht_debug = 0;
 
 typedef /*@owned@*/ const void * voidptr;
@@ -36,6 +37,10 @@ struct hashTable_s {
     hashFunctionType fn;		/*!< generate hash value for key */
 /*@relnull@*/
     hashEqualityType eq;		/*!< compare hash keys for equality */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;				/*!< (unused) keep splint happy */
+#endif
 };
 
 /**
@@ -191,8 +196,9 @@ int htGetEntry(hashTable ht, const void * key, const void * data,
     return 0;
 }
 
+/*@-mustmod@*/	/* XXX splint on crack */
 static void htFini(void * _ht)
-	/*@modifies *_ht @*/
+	/*@modifies _ht @*/
 {
     hashTable ht = _ht;
     hashBucket b, n;
@@ -218,12 +224,14 @@ static void htFini(void * _ht)
 
     ht->buckets = _free(ht->buckets);
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _htPool;
 
 static hashTable htGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _htPool, fileSystem @*/
+	/*@modifies pool, _htPool, fileSystem @*/
 {
     hashTable ht;
 

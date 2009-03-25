@@ -393,11 +393,11 @@ assert(pool->limit != 0);
 	space->buf = xmalloc(space->len);
     space->ptr = space->buf;		/* XXX save allocated buffer */
     space->ix = 0;			/* XXX initialize to 0 */
-/*@-assignexpose@*/
+/*@-assignexpose -temptrans @*/
     space->pool = pool;                 /* remember the pool this belongs to */
-/*@=assignexpose@*/
+/*@=assignexpose =temptrans @*/
 /*@=mustfreeonly@*/
-zqFprintf(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, 1, space->buf, space->len);
+zqFprintf(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, 1, space->buf, (unsigned)space->len);
 /*@-nullret@*/
     return space;
 /*@=nullret@*/
@@ -410,7 +410,7 @@ void rpmzqUseSpace(rpmzSpace space)
     int use;
     yarnPossess(space->use);
     use = yarnPeekLock(space->use);
-zqFprintf(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, use+1, space->buf, space->len);
+zqFprintf(stderr, "    ++ space %p[%d] buf %p[%u]\n", space, use+1, space->buf, (unsigned)space->len);
     yarnTwist(space->use, BY, 1);
 }
 
@@ -424,7 +424,7 @@ rpmzSpace rpmzqDropSpace(rpmzSpace space)
 
     yarnPossess(space->use);
     use = yarnPeekLock(space->use);
-zqFprintf(stderr, "    -- space %p[%d] buf %p[%u]\n", space, use, space->buf, space->len);
+zqFprintf(stderr, "    -- space %p[%d] buf %p[%u]\n", space, use, space->buf, (unsigned)space->len);
 #ifdef	NOTYET
 assert(use > 0);
 #else
@@ -621,7 +621,7 @@ zqFprintf(stderr, "--> out_pool: %p[%u] blocksize %u\n", zq->_zw.pool, (unsigned
 
 }
 
-rpmzQueue rpmzqFree(rpmzQueue zq)
+rpmzQueue rpmzqFree(/*@unused@*/ rpmzQueue zq)
 {
     return NULL;
 }
@@ -760,9 +760,9 @@ void rpmzqAddSEQ(rpmzSEQ zs, rpmzJob job)
 	    break;
 	prior = &here->next;
     }
-/*@-onlytrans@*/
+/*@-assignexpose@*/
     job->next = here;
-/*@=onlytrans@*/
+/*@=assignexpose@*/
     *prior = job;
 
     yarnTwist(zs->first, TO, zs->head->seq);
@@ -835,16 +835,16 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
     case O_WRONLY:
 	pct = (100.0 * job->out->len) / job->in->len;
 	zqFprintf(stderr, "       job %p[%ld]:\t%p[%u] => %p[%u]\t(%3.1f%%)\n",
-			job, job->seq, job->in->buf, job->in->len,
-			job->out->buf, job->out->len, pct);
+			job, job->seq, job->in->buf, (unsigned)job->in->len,
+			job->out->buf, (unsigned)job->out->len, pct);
 	Trace((zlog, "-- compressed #%ld %3.1f%%%s", job->seq, pct,
 		(job->more ? "" : " (last)")));
 	break;
     case O_RDONLY:
 	pct = (100.0 * job->in->len) / job->out->len;
 	zqFprintf(stderr, "       job %p[%ld]:\t%p[%u] <= %p[%u]\t(%3.1f%%)\n",
-			job, job->seq, job->in->buf, job->in->len,
-			job->out->buf, job->out->len, pct);
+			job, job->seq, job->in->buf, (unsigned)job->in->len,
+			job->out->buf, (unsigned)job->out->len, pct);
 	Trace((zlog, "-- decompressed #%ld %3.1f%%%s", job->seq, pct,
 		(job->more ? "" : " (last)")));
 	break;
@@ -857,9 +857,9 @@ void rpmzqAddWJob(rpmzQueue zq, rpmzJob job)
 	    break;
 	prior = &here->next;
     }
-/*@-onlytrans@*/
+/*@-assignexpose@*/
     job->next = here;
-/*@=onlytrans@*/
+/*@=assignexpose@*/
     *prior = job;
 
     yarnTwist(zq->_zw.q->first, TO, zq->_zw.q->head->seq);

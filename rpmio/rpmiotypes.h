@@ -30,12 +30,16 @@ typedef /*@signedintegraltype@*/	int			rpmint32_t;
 
 /**
  */
-typedef	struct rpmioItem_s * rpmioItem;
+typedef	/*@refcounted@*/ struct rpmioItem_s * rpmioItem;
 struct rpmioItem_s {
 /*@null@*/
     void *use;			/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
+/*@kept@*/ /*@null@*/
     void *pool;			/*!< pool (or NULL if malloc'd) */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /**

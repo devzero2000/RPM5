@@ -36,9 +36,11 @@
  */
 struct rpmioPool_s {
     yarnLock have;		/*!< unused items available, lock for list */
+/*@relnull@*/
     void *pool;
 /*@relnull@*/
     rpmioItem head;		/*!< linked list of available items */
+/*@dependent@*/
     rpmioItem * tail;
     size_t size;		/*!< size of items in this pool */
     int limit;			/*!< number of new items allowed, or -1 */
@@ -46,8 +48,10 @@ struct rpmioPool_s {
 /*@null@*/
     const char * (*dbg) (void *item)
 	/*@*/;			/*!< generate string w Unlink/Link debugging */
+/*@null@*/
     void (*init) (void *item)
 	/*@modifies *item @*/;	/*!< create item contents. */
+/*@null@*/
     void (*fini) (void *item)
 	/*@modifies *item @*/;	/*!< destroy item contents. */
     int reused;			/*!< number of items reused */
@@ -58,10 +62,12 @@ struct rpmioPool_s {
     void * zlog;
 };
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static rpmioPool _rpmioPool;
 
 rpmioPool rpmioFreePool(rpmioPool pool)
+	/*@globals _rpmioPool @*/
+	/*@modifies _rpmioPool @*/
 {
     if (pool == NULL) {
 	pool = _rpmioPool;
@@ -80,7 +86,7 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 	}
 	yarnRelease(pool->have);
 	pool->have = yarnFreeLock(pool->have);
-	rpmlog(RPMLOG_DEBUG, ("pool %s:\treused %d, alloc'd %d, free'd %d items.\n"), pool->name, pool->reused, pool->made, count);
+	rpmlog(RPMLOG_DEBUG, D_("pool %s:\treused %d, alloc'd %d, free'd %d items.\n"), pool->name, pool->reused, pool->made, count);
 #ifdef	NOTYET
 assert(pool->made == count);
 #else
@@ -92,6 +98,7 @@ fprintf(stderr, "==> FIXME: pool %s: made %d count %d\n", pool->name, pool->made
     return NULL;
 }
 
+/*@-internalglobs@*/
 rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
 		const char * (*dbg) (void *item),
 		void (*init) (void *item),
@@ -113,10 +120,12 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
     pool->made = 0;
     pool->name = name;
     pool->zlog = NULL;
-    rpmlog(RPMLOG_DEBUG, ("pool %s:\tcreated size %u limit %d flags %d\n"), pool->name, (unsigned)pool->size, pool->limit, pool->flags);
+    rpmlog(RPMLOG_DEBUG, D_("pool %s:\tcreated size %u limit %d flags %d\n"), pool->name, (unsigned)pool->size, pool->limit, pool->flags);
     return pool;
 }
+/*@=internalglobs@*/
 
+/*@-internalglobs@*/
 rpmioItem rpmioUnlinkPoolItem(rpmioItem item, const char * msg,
 		const char * fn, unsigned ln)
 {
@@ -131,9 +140,13 @@ rpmioItem rpmioUnlinkPoolItem(rpmioItem item, const char * msg,
 /*@=modfilesys@*/
     }
     yarnTwist(item->use, BY, -1);
+/*@-retalias@*/	/* XXX returning the deref'd item is used to detect nrefs = 0 */
     return item;
+/*@=retalias@*/
 }
+/*@=internalglobs@*/
 
+/*@-internalglobs@*/
 rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
 		const char * fn, unsigned ln)
 {
@@ -150,9 +163,11 @@ rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
     yarnTwist(item->use, BY, 1);
     return item;
 }
+/*@=internalglobs@*/
 
+/*@-internalglobs@*/
 /*@null@*/
-rpmioItem rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
+void * rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
                 const char * msg, const char * fn, unsigned ln)
         /*@modifies item @*/
 {
@@ -176,9 +191,13 @@ assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
 	item = rpmioPutPool(item);
     } else
 	yarnTwist(item->use, BY, -1);
-    return item;
+/*@-retalias@*/	/* XXX returning the deref'd item is used to detect nrefs = 0 */
+    return (void *) item;
+/*@=retalias@*/
 }
+/*@=internalglobs@*/
 
+/*@-internalglobs@*/
 rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
 {
     rpmioItem item;
@@ -214,7 +233,9 @@ assert(pool->limit != 0);
     item->pool = pool;
     return item;
 }
+/*@=internalglobs@*/
 
+/*@-internalglobs@*/
 rpmioItem rpmioPutPool(rpmioItem item)
 {
     rpmioPool pool;
@@ -237,6 +258,7 @@ rpmioItem rpmioPutPool(rpmioItem item)
     item = _free(item);
     return NULL;
 }
+/*@=internalglobs@*/
 
 #if !(HAVE_MCHECK_H && defined(__GNUC__)) && !defined(__LCLINT__)
 

@@ -88,6 +88,10 @@ struct pgpDig_s {
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
 /*@owned@*/ /*@relnull@*/
     void * impl;		/*!< Implementation data */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif
 
@@ -1391,7 +1395,8 @@ pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
  */
 /*@relnull@*/
 pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmpgp
  * Release (malloc'd) data from container.

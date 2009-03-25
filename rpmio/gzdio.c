@@ -188,8 +188,7 @@ bool sync_hint(rpmGZFILE rpmgz, unsigned char c)
 
 static ssize_t
 rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t len)
-	/*@globals fileSystem @*/
-	/*@modifies rpmgz, fileSystem @*/
+	/*@modifies rpmgz @*/
 {
     ssize_t rc;
     size_t n;
@@ -291,8 +290,7 @@ static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
 }
 
 static int gzdFlush(void * cookie)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     FD_t fd = c2f(cookie);
     rpmGZFILE rpmgz;
@@ -302,6 +300,7 @@ static int gzdFlush(void * cookie)
 }
 
 /* =============================================================== */
+/*@-mustmod@*/
 static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/
@@ -331,6 +330,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     }
     return rc;
 }
+/*@=mustmod@*/
 
 static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/

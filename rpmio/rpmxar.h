@@ -30,6 +30,10 @@ struct rpmxar_s {
     size_t bsize;		/*!< No. bytes of data. */
     size_t bx;			/*!< Data byte index. */
     int first;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif
 
@@ -97,8 +101,7 @@ int rpmxarSwapBuf(rpmxar xar, /*@null@*/ unsigned char * b, size_t bsize,
 ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)
         /*@globals fileSystem, internalState @*/
         /*@modifies buf, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) == result @*/;
+	/*@requires maxSet(buf) >= (count - 1) @*/;
 /*@=incondefs@*/
 
 #ifdef __cplusplus

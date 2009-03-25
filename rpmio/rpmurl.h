@@ -118,6 +118,10 @@ struct urlinfo_s {
 
 #define	RPMURL_SERVER_HASDAV	(RPMURL_SERVER_HASDAVCLASS1|RPMURL_SERVER_HASDAVCLASS2|RPMURL_SERVER_HASDAVEXEC)
     unsigned magic;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #ifdef __cplusplus
@@ -151,7 +155,9 @@ urlinfo	urlNew(const char * msg)
 
 /** @todo Remove debugging entry from the ABI. */
 /*@null@*/
-urlinfo	XurlNew(const char * msg, const char * fn, unsigned ln)	/*@*/;
+urlinfo	XurlNew(const char * msg, const char * fn, unsigned ln)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
 /**
@@ -202,7 +208,6 @@ urltype	urlIsURL(const char * url)
  */
 /*@-incondefs@*/
 urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
-	/*@ensures maxSet(*pathp) == 0 /\ maxRead(*pathp) == 0 @*/
 	/*@modifies *pathp @*/;
 /*@=incondefs@*/
 

@@ -67,11 +67,13 @@ char *xar_get_path(xar_file_t f)
 /*@unchecked@*/
 int _xar_debug = 0;
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _xarPool;
 
+/*@-globuse -mustmod@*/
 static void rpmxarFini(void * _xar)
-        /*@ modifies *_xar @*/
+	/*@globals fileSystem @*/
+        /*@modifies _xar, fileSystem @*/
 {
     rpmxar xar =_xar;
     if (xar->i) {
@@ -87,9 +89,11 @@ static void rpmxarFini(void * _xar)
     xar->member = _free(xar->member);
     xar->b = _free(xar->b);
 }
+/*@=globuse =mustmod@*/
 
 static rpmxar rpmxarGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _xarPool, fileSystem @*/
+	/*@modifies pool, _xarPool, fileSystem @*/
 {
     rpmxar xar;
 

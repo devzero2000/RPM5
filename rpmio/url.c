@@ -64,8 +64,9 @@ int _url_debug = 0;
 /*@only@*/ /*@null@*/
 urlinfo *_url_cache = NULL;
 
-static void urlFini(void * _u)
-	/*@ modifies *_u @*/
+static void urlFini(void *_u)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _u, fileSystem, internalState @*/
 {
     urlinfo u =_u;
     int xx;
@@ -136,16 +137,17 @@ static void urlFini(void * _u)
 /*@unchecked@*/
 int _url_count = 0;
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _urlPool;
 
 static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _urlPool, fileSystem @*/
+	/*@modifies pool, _urlPool, fileSystem @*/
 {
     urlinfo u;
 
     if (_urlPool == NULL) {
-	_urlPool = rpmioNewPool(" u", sizeof(*u), -1, _url_debug,
+	_urlPool = rpmioNewPool("u", sizeof(*u), -1, _url_debug,
 			NULL, NULL, urlFini);
 	pool = _urlPool;
     }

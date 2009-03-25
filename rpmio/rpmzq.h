@@ -24,12 +24,14 @@ typedef /*@abstract@*/ struct rpmzQueue_s * rpmzQueue;
 
 /**
  */
-typedef /*@abstract@*/ struct rpmzJob_s * rpmzJob;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmzJob_s * rpmzJob;
 
 /**
  */
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _rpmzq_debug;
+/*@=redecl@*/
 
 /**
  */
@@ -38,7 +40,7 @@ extern rpmzQueue _rpmzq;
 
 /**
  */
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 extern struct poptOption rpmzqOptionsPoptTable[];
 
 /**
@@ -147,7 +149,7 @@ struct rpmzJob_s {
     rpmzSpace out;		/*!< dictionary or resulting compressed data */
     unsigned long check;	/*!< check value for input data */
     yarnLock calc;		/*!< released when check calculation complete */
-/*@dependent@*/ /*@null@*/
+/*@null@*/
     rpmzJob next;		/*!< for job linked list */
 };
 
@@ -288,7 +290,7 @@ struct rpmzQueue_s {
     int verbosity;		/*!< 0:quiet, 1:normal, 2:verbose, 3:trace */
 
     struct timeval start;	/*!< starting time of day for tracing */
-/*@owned@*/ /*@null@*/
+/*@refcounted@*/ /*@null@*/
     rpmzLog zlog;		/*!< trace logging */
 
     struct rpmzf_s _zinp;
@@ -388,13 +390,13 @@ rpmzPool rpmzqFreePool(/*@only@*/ rpmzPool pool, /*@null@*/ int *countp)
 /**
  */
 /*@null@*/
-rpmzJob rpmzqFreeJob(/*@only@*/ rpmzJob job)
+rpmzJob rpmzqFreeJob(/*@killref@*/ rpmzJob job)
         /*@globals fileSystem, internalState @*/
         /*@modifies job, fileSystem, internalState @*/;
 
 /**
  */
-/*@only@*/
+/*@newref@*/
 rpmzJob rpmzqNewJob(long seq)
         /*@globals fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/;
@@ -437,26 +439,30 @@ rpmzQueue rpmzqFree(/*@only@*/ rpmzQueue zq)
 /**
  */
 rpmzQueue rpmzqNew(/*@returned@*/rpmzQueue zq, rpmzLog zlog, int limit)
-	/*@*/;
+	/*@modifies zq @*/;
 
 /**
  */
 rpmzFIFO rpmzqInitFIFO(long val)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  */
 /*@null@*/
 rpmzFIFO rpmzqFiniFIFO(/*@only@*/ rpmzFIFO zs)
-	/*@modifies zs @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, fileSystem, internalState @*/;
 
 /**
  */
 void rpmzqVerifyFIFO(/*@null@*/ rpmzFIFO zs)
-	/*@modifies zs @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, fileSystem, internalState @*/;
 
 /**
  */
+/*@null@*/
 rpmzJob rpmzqDelFIFO(rpmzFIFO zs)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zs, fileSystem, internalState @*/;
@@ -470,18 +476,21 @@ void rpmzqAddFIFO(rpmzFIFO zs, rpmzJob job)
 /**
  */
 rpmzSEQ rpmzqInitSEQ(long val)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  */
 /*@null@*/
 rpmzSEQ rpmzqFiniSEQ(/*@only@*/ rpmzSEQ zs)
-	/*@modifies zs @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, fileSystem, internalState @*/;
 
 /**
  */
 void rpmzqVerifySEQ(/*@null@*/ rpmzSEQ zs)
-	/*@modifies zs @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies zs, fileSystem, internalState @*/;
 
 /**
  */

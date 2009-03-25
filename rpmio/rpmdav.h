@@ -213,13 +213,9 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 
 /**
  */
-/*@-incondefs@*/
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
         /*@globals errno, fileSystem, internalState @*/
-        /*@modifies buf, errno, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) == result @*/;
-/*@=incondefs@*/
+        /*@modifies buf, errno, fileSystem, internalState @*/;
 
 /**
  */

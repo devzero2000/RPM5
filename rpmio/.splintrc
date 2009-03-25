@@ -13,27 +13,30 @@
 
 # --- in progress
 -bounds
--checkpost		# 7 *read ensures annotations
 -branchstate
 -bufferoverflowhigh
 
+-castexpose		# 14
 -compdef		# 82
 -compmempass		# 15
--moduncon		# 260
+-evalorder		# 47
+-moduncon		# 261
 -noeffect		# 9
--noeffectuncon		# 268
+-noeffectuncon		# 260
 -nullderef		# 14 rpmlua annotations
--nullpass		# 171
+-nullpass		# 177
 -nullstate		# 33 indirections hard to annotate
--protoparammatch	# 16
--type			# 156
+-protoparammatch	# 4
+-type			# 259
 
--onlytrans		# 20 only <=> newref confusions
+-newreftrans		# 19
+-onlytrans		# 29 only <=> newref confusions
 -readonlytrans		# 10 digest names
--refcounttrans		# 19 only <=> newref confusions
+-refcounttrans		# 44 only <=> newref confusions
 
 # --- +partial artifacts
 -declundef		# 442
+-exportheader
 -exportheadervar	# 5
 -exportlocal		# 62
 

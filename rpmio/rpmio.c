@@ -122,6 +122,8 @@ static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 /*@access FILE @*/	/* XXX to permit comparison/conversion with void *. */
 /*@access urlinfo @*/
 /*@access FDSTAT_t @*/
+/*@access rpmxar @*/
+/*@access pgpDig @*/
 
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
@@ -269,7 +271,8 @@ int fdSeekNot(void * cookie,
 /* =============================================================== */
 
 static void fdFini(void * _fd)
-	/*@modifies _fd @*/
+	/*@globals fileSystem @*/
+	/*@modifies _fd, fileSystem @*/
 {
     FD_t fd = _fd;
     int i;
@@ -295,11 +298,12 @@ assert(fd != NULL);
 /*@=onlytrans@*/
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _fdPool;
 
 static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _fdPool, fileSystem @*/
+	/*@modifies pool, _fdPool, fileSystem @*/
 {
     FD_t fd;
 
@@ -359,7 +363,6 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies buf, errno, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) == result @*/
 {
     FD_t fd = c2f(cookie);
     ssize_t rc;
@@ -1690,8 +1693,10 @@ static int ftpAbort(urlinfo u, FD_t data)
 	tosecs = data->rd_timeoutsecs;
 	data->rd_timeoutsecs = 10;
 	if (fdReadable(data, data->rd_timeoutsecs) > 0) {
+/*@-infloopsuncon@*/
 	    while ((ufdio->read)(data, u->buf, u->bufAlloced) > 0)
 		u->buf[0] = '\0';
+/*@=infloopsuncon@*/
 	}
 	data->rd_timeoutsecs = tosecs;
 	/* XXX ftp abort needs to close the data channel to receive status */
@@ -1881,7 +1886,9 @@ void * ufdGetUrlinfo(FD_t fd)
     FDSANE(fd);
     if (fd->url == NULL)
 	return NULL;
+/*@-retexpose@*/
     return urlLink(fd->url, "ufdGetUrlinfo");
+/*@=retexpose@*/
 }
 
 /* =============================================================== */
@@ -1889,7 +1896,6 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) == result @*/
 {
     FD_t fd = c2f(cookie);
     size_t bytesRead;
@@ -2213,6 +2219,7 @@ static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 if (_rpmio_debug)
 fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mode);
 
+/*@-usereleased@*/
     switch (urlType) {
     case URL_IS_FTP:
 	fd = ftpOpen(url, flags, mode, &u);
@@ -2293,6 +2300,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	(void) ufdClose(fd);
 	return NULL;
     }
+/*@=usereleased@*/
 DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     return fd;
 }
@@ -2437,6 +2445,7 @@ int Fclose(FD_t fd)
     FDSANE(fd);
 DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 
+/*@-usereleased@*/
     fd = fdLink(fd, "Fclose");
     if (fd != NULL)
     while (fd->nfps >= 0) {
@@ -2464,7 +2473,6 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 		/*@-refcounttrans@*/
 		rc = ufdClose(fd);
 		/*@=refcounttrans@*/
-/*@-usereleased@*/
 		if (fdGetFdno(fd) >= 0)
 		    break;
 		if (!fd->persist)
@@ -3109,11 +3117,15 @@ int _rpmnss_init = 0;
 
 void rpmioClean(void)
 {
+/*@-nestedextern@*/
     extern rpmioPool _digPool;
     extern rpmioPool _xarPool;
     extern rpmioPool _urlPool;
     extern rpmioPool _rpmmgPool;
+/*@-shadow@*/
     extern rpmioPool _htPool;
+/*@=shadow@*/
+/*@=nestedextern@*/
 
 #if defined(WITH_LUA)
     (void) rpmluaFree(NULL);

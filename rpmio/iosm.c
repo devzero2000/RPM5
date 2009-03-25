@@ -716,7 +716,9 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     iosm->goal = goal;
     if (cfd != NULL) {
+/*@-assignexpose@*/
 	iosm->cfd = fdLink(cfd, "persist (iosm)");
+/*@=assignexpose@*/
 	pos = fdGetCpioPos(iosm->cfd);
 	fdSetCpioPos(iosm->cfd, 0);
     }
