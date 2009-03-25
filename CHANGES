@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: poptIO: add --htdebug.
     - jbj: yarn: convert rpmfc to usage mutex with refcounts.
     - jbj: yarn: convert hashTable to usage mutex with refcounts.
     - jbj: yarn: convert rpmmg to usage mutex with refcounts.
