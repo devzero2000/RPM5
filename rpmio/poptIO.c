@@ -51,6 +51,8 @@ extern int _ftp_debug;
 /*@unchecked@*/
 extern int _fts_debug;
 /*@unchecked@*/
+extern int _ht_debug;
+/*@unchecked@*/
 extern int _iosm_debug;
 /*@unchecked@*/
 extern int noLibio;
@@ -323,92 +325,89 @@ struct poptOption rpmioAllPoptTable[] = {
 /*@=type@*/
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,
-        NULL, NULL },
+        N_("Debug generic operations"), NULL },
 
 #ifdef	NOTYET
  { "define", 'D', POPT_ARG_STRING, NULL, (int)'D',
-	N_("define MACRO with value EXPR"),
+	N_("Define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
  { "undefine", '\0', POPT_ARG_STRING, NULL, POPT_UNDEFINE,
-	N_("undefine MACRO"),
+	N_("Undefine MACRO"),
 	N_("'MACRO'") },
  { "eval", 'E', POPT_ARG_STRING, NULL, (int)'E',
-	N_("print macro expansion of EXPR"),
+	N_("Print macro expansion of EXPR"),
 	N_("'EXPR'") },
 
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
-	N_("read <FILE:...> instead of default file(s)"),
+	N_("Read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
 #ifdef WITH_LUA
  { "rpmlua", '\0', POPT_ARG_STRING, &rpmluaFiles, 0,
-	N_("read <FILE:...> instead of default RPM Lua file(s)"),
+	N_("Read <FILE:...> instead of default RPM Lua file(s)"),
 	N_("<FILE:...>") },
 #endif
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
-	N_("read <FILE:...> instead of default POPT file(s)"),
+	N_("Read <FILE:...> instead of default POPT file(s)"),
 	N_("<FILE:...>") },
 #endif	/* NOTYET */
 
-#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-	N_("disable use of libio(3) API"), NULL},
-#endif
-
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmioPipeOutput, 0,
-	N_("send stdout to CMD"),
+	N_("Send stdout to CMD"),
 	N_("CMD") },
  { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &rpmioRootDir, 0,
-	N_("use ROOT as top level directory"),
+	N_("Use ROOT as top level directory"),
 	N_("ROOT") },
 
  { "quiet", '\0', 0, NULL, (int)'q',
-	N_("provide less detailed output"), NULL},
+	N_("Provide less detailed output"), NULL},
  { "verbose", 'v', 0, NULL, (int)'v',
-	N_("provide more detailed output"), NULL},
+	N_("Provide more detailed output"), NULL},
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
-	N_("print the version"), NULL },
+	N_("Print the version"), NULL },
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-       N_("disable use of libio(3) API"), NULL},
+       N_("Disable use of libio(3) API"), NULL},
 #endif
 
  { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,
-        N_("select cryptography implementation"),
+        N_("Select cryptography implementation"),
 	N_("CRYPTO") },
 
  { "ardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ar_debug, -1,
-	N_("debug ar archives"), NULL},
+	N_("Debug ar archives"), NULL},
  { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
-	N_("debug argv collections"), NULL},
+	N_("Debug argv collections"), NULL},
  { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
-	N_("debug cpio archives"), NULL},
+	N_("Debug cpio archives"), NULL},
  { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug WebDAV data stream"), NULL},
+	N_("Debug WebDAV data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug FTP/HTTP data stream"), NULL},
+	N_("Debug FTP/HTTP data stream"), NULL},
  { "ftsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fts_debug, -1,
-	N_("debug Fts(3) traverse"), NULL},
+	N_("Debug Fts(3) traverse"), NULL},
+ { "htdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fts_debug, -1,
+	N_("Debug hash tables"), NULL},
  { "iosmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_iosm_debug, -1,
-	N_("debug I/O state machine"), NULL},
+	N_("Debug I/O state machine"), NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
-	NULL, NULL},
+	N_("Debug miRE patterns"), NULL},
   { "pgpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_debug, -1,
-	NULL, NULL},
+	N_("Debug PGP usage"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
+	N_("Debug rpmio I/O"), NULL},
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
-	NULL, NULL},
+	N_("Debug rpmmg magic"), NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
-	NULL, NULL},
+	N_("Debug rpmsq Signal Queue"), NULL},
  { "xardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_xar_debug, -1,
-	N_("debug xar archives"), NULL},
+	N_("Debug xar archives"), NULL},
  { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
-	N_("debug tar archives"), NULL},
+	N_("Debug tar archives"), NULL},
  { "stats", '\0', POPT_ARG_VAL,				&_rpmsw_stats, -1,
-	N_("display operation statistics"), NULL},
+	N_("Display operation statistics"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
+	N_("Debug URL cache handling"), NULL},
 
    POPT_TABLEEND
 };
