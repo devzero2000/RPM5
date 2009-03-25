@@ -70,6 +70,7 @@ enum FCOLOR_e {
 /**
  */
 struct rpmfc_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     size_t nfiles;	/*!< no. of files */
     size_t fknown;	/*!< no. of classified files */
     size_t fwhite;	/*!< no. of "white" files */
@@ -164,26 +165,6 @@ void rpmfcPrint(/*@null@*/ const char * msg, rpmfc fc, /*@null@*/ FILE * fp)
 /*@=exportlocal@*/
 
 /**
- * Destroy a file classifier.
- * @param fc		file classifier
- * @return		NULL always
- */
-/*@-exportlocal@*/
-/*@null@*/
-rpmfc rpmfcFree(/*@only@*/ /*@null@*/ rpmfc fc)
-	/*@modifies fc @*/;
-/*@=exportlocal@*/
-
-/**
- * Create a file classifier.
- * @return		new file classifier
- */
-/*@-exportlocal@*/
-rpmfc rpmfcNew(void)
-	/*@*/;
-/*@=exportlocal@*/
-
-/**
  * Build file class dictionary and mappings.
  * @param fc		file classifier
  * @param argv		files to classify
@@ -216,6 +197,48 @@ rpmRC rpmfcApply(rpmfc fc)
 rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Unreference a file classifier instance.
+ * @param ds		dependency set
+ * @return		NULL if free'd
+ */
+/*@unused@*/ /*@null@*/
+rpmfc rpmfcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfc fc)
+	/*@modifies fc @*/;
+#define	rpmfcUnlink(_fc)	\
+	((rpmfc)rpmioUnlinkPoolItem((rpmioItem)(_fc), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a file classifier instance.
+ * @param ds		file classifier
+ * @return		new file classifier reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmfc rpmfcLink (/*@null@*/ rpmfc fc)
+	/*@modifies ds @*/;
+#define	rpmfcLink(_fc)	\
+	((rpmfc)rpmioLinkPoolItem((rpmioItem)(_fc), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Destroy a file classifier.
+ * @param fc		file classifier
+ * @return		NULL if free'd
+ */
+/*@null@*/
+rpmfc rpmfcFree(/*@only@*/ /*@null@*/ rpmfc fc)
+	/*@modifies fc @*/;
+#define	rpmfcFree(_fc)	\
+	((rpmfc)rpmioFreePoolItem((rpmioItem)(_fc), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Create a file classifier.
+ * @return		new file classifier
+ */
+/*@-exportlocal@*/
+rpmfc rpmfcNew(void)
+	/*@*/;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }

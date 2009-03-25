@@ -138,7 +138,6 @@ LIBRPM_0
     rpmfcClassify;
     rpmfcColoring;
     rpmfcExec;
-    rpmfcFree;
     rpmfcGenerateDepends;
     rpmfcNew;
     rpmfcPrint;
