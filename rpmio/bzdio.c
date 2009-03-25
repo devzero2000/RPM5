@@ -25,6 +25,7 @@ static const char * rpmbzStrerror(rpmbz bz)
     return BZ2_bzerror(bz->bzfile, &bz->bzerr);
 }
 
+/*@-mustmod@*/
 static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
 	/*@modifies bz, *errmsg @*/
 {
@@ -41,6 +42,7 @@ static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
     }
     bz->bzfile = NULL;
 }
+/*@=mustmod@*/
 
 /*@only@*/ /*@null@*/
 static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
@@ -55,6 +57,7 @@ static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
     return rpmbzFini(bz);
 }
 
+/*@-mustmod@*/
 /*@only@*/
 static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 	/*@globals fileSystem @*/
@@ -128,8 +131,11 @@ assert(fmode != NULL);		/* XXX return NULL instead? */
 		: BZ2_bzWriteOpen(&bz->bzerr, bz->fp, bz->B, bz->V, bz->W);
     }
 
+/*@-usereleased@*/
     return (bz->bzfile != NULL ? bz : rpmbzFree(bz, 0));
+/*@=usereleased@*/
 }
+/*@=mustmod@*/
 
 #ifdef	NOTYET
 /*@-mustmod -nullstate@*/
@@ -302,8 +308,7 @@ static /*@null@*/ rpmbz rpmbzFdopen(void * _fdno, const char * fmode)
 }
 
 static int rpmbzFlush(void * _bz)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     rpmbz bz = _bz;
     return BZ2_bzflush(bz->bzfile);

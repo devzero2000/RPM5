@@ -18,7 +18,10 @@
 /*@unchecked@*/
 int _rpmmg_debug = 0;
 
+/*@-mustmod@*/	/* XXX splint on crack */
 static void rpmmgFini(void * _mg)
+	/*@globals fileSystem @*/
+	/*@modifies *_mg, fileSystem @*/
 {
     rpmmg mg = _mg;
 
@@ -29,13 +32,15 @@ static void rpmmgFini(void * _mg)
 	}
 #endif
 	mg->fn = _free(mg->fn);
-    }
+}
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmmgPool;
 
 static rpmmg rpmmgGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmmgPool, fileSystem @*/
+	/*@modifies pool, _rpmmgPool, fileSystem @*/
 {
     rpmmg mg;
 

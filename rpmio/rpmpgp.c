@@ -1040,10 +1040,11 @@ void pgpDigClean(pgpDig dig)
 /*@=nullstate@*/
 }
 
-static void pgpDigFini(void * _dig)
-	/*@modifies _dig @*/
+static void pgpDigFini(void * __dig)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies __dig, fileSystem, internalState @*/
 {
-    pgpDig dig = _dig;
+    pgpDig dig = __dig;
 
 	/* Lose the header tag data. */
 	/* XXX this free should be done somewhere else. */
@@ -1081,11 +1082,12 @@ static void pgpDigFini(void * _dig)
 
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _digPool;
 
 static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _digPool, fileSystem @*/
+	/*@modifies pool, _digPool, fileSystem @*/
 {
     pgpDig dig;
 

@@ -8,7 +8,7 @@
 
 /**
  */
-typedef /*@abstract@*/ struct hashTable_s * hashTable;
+typedef /*@abstract@*/ /*@refcounted@*/ struct hashTable_s * hashTable;
 
 #ifdef __cplusplus
 extern "C" {
@@ -93,7 +93,7 @@ int htHasEntry(hashTable ht, const void * key)
  * @return		NULL if free'd
  */
 /*@unused@*/ /*@null@*/
-hashTable htUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ hashTable ht);
+hashTable htUnlink (/*@killref@*/ /*@null@*/ hashTable ht)
 	/*@modifies ht @*/;
 #define	htUnlink(_ht)	\
     ((hashTable)rpmioUnlinkPoolItem((rpmioItem)(_ht), __FUNCTION__, __FILE__, __LINE__))
@@ -131,9 +131,11 @@ hashTable htFree( /*@only@*/ hashTable ht)
  * @param eq            function to compare keys for equality (NULL for default)
  * @return		pointer to initialized hash table
  */
+/*@newref@*/ /*@null@*/
 hashTable htCreate(int numBuckets, size_t keySize, int freeData,
 		/*@null@*/ hashFunctionType fn, /*@null@*/ hashEqualityType eq)
-	/*@*/; 
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus
 }

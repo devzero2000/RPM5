@@ -4,7 +4,7 @@
 #include <bzlib.h>
 
 #if defined(__LCLINT__)
-/*@=incondefs =protoparammatch@*/
+/*@-incondefs =protoparammatch@*/
 /*@-exportheader@*/
 
 BZ_EXTERN BZFILE* BZ_API(BZ2_bzReadOpen) (

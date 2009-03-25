@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: rpmio: rescusitate splint annotations.
     - jbj: getdate: ignore internalState changes.
     - jbj: zlog: use struct rpmioItem_s use/pool container.
     - jbj: poptIO: add --htdebug.
