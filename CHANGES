@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: yarn: convert rpmfc to usage mutex with refcounts.
     - jbj: yarn: convert hashTable to usage mutex with refcounts.
     - jbj: yarn: convert rpmmg to usage mutex with refcounts.
     - jbj: yarn: convert rpmwf refcount to usage mutex.

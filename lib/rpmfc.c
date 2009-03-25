@@ -623,37 +623,6 @@ assert(ix < nrequires);
     }
 }
 
-rpmfc rpmfcFree(rpmfc fc)
-{
-    if (fc) {
-	fc->fn = argvFree(fc->fn);
-	fc->fcolor = argiFree(fc->fcolor);
-	fc->fcdictx = argiFree(fc->fcdictx);
-	fc->fddictx = argiFree(fc->fddictx);
-	fc->fddictn = argiFree(fc->fddictn);
-	fc->cdict = argvFree(fc->cdict);
-	fc->ddict = argvFree(fc->ddict);
-	fc->ddictx = argiFree(fc->ddictx);
-
-	fc->provides = rpmdsFree(fc->provides);
-	fc->requires = rpmdsFree(fc->requires);
-
-	fc->sb_java = freeStringBuf(fc->sb_java);
-	fc->sb_perl = freeStringBuf(fc->sb_perl);
-	fc->sb_python = freeStringBuf(fc->sb_python);
-	fc->sb_php = freeStringBuf(fc->sb_php);
-
-    }
-    fc = _free(fc);
-    return NULL;
-}
-
-rpmfc rpmfcNew(void)
-{
-    rpmfc fc = xcalloc(1, sizeof(*fc));
-    return fc;
-}
-
 /**
  * Extract script dependencies.
  * @param fc		file classifier
@@ -1656,3 +1625,48 @@ rpmfcPrint(msg, fc, NULL);
 
     return rc;
 }
+
+static void rpmfcFini(void * _fc)
+{
+    rpmfc fc = _fc;
+
+    fc->fn = argvFree(fc->fn);
+    fc->fcolor = argiFree(fc->fcolor);
+    fc->fcdictx = argiFree(fc->fcdictx);
+    fc->fddictx = argiFree(fc->fddictx);
+    fc->fddictn = argiFree(fc->fddictn);
+    fc->cdict = argvFree(fc->cdict);
+    fc->ddict = argvFree(fc->ddict);
+    fc->ddictx = argiFree(fc->ddictx);
+
+    fc->provides = rpmdsFree(fc->provides);
+    fc->requires = rpmdsFree(fc->requires);
+
+    fc->sb_java = freeStringBuf(fc->sb_java);
+    fc->sb_perl = freeStringBuf(fc->sb_perl);
+    fc->sb_python = freeStringBuf(fc->sb_python);
+    fc->sb_php = freeStringBuf(fc->sb_php);
+}
+
+/*@unchecked@*/ /*@null@*/
+rpmioPool _rpmfcPool;
+
+static rpmfc rpmfcGetPool(/*@null@*/ rpmioPool pool)
+	/*@modifies pool @*/
+{
+    rpmfc fc;
+
+    if (_rpmfcPool == NULL) {
+	_rpmfcPool = rpmioNewPool("fc", sizeof(*fc), -1, _rpmfc_debug,
+			NULL, NULL, rpmfcFini);
+	pool = _rpmfcPool;
+    }
+    return (rpmfc) rpmioGetPool(pool, sizeof(*fc));
+}
+
+rpmfc rpmfcNew(void)
+{
+    rpmfc fc = rpmfcGetPool(_rpmfcPool);
+    return rpmfcLink(fc);
+}
+

@@ -86,6 +86,8 @@ extern rpmioPool _rpmdsPool;
 /* XXX avoid -lrpmbuild linkage. */
 /*@unchecked@*/
        int _rpmfc_debug;
+/*@unchecked@*/
+extern rpmioPool _rpmfcPool;
 
 /*@unchecked@*/
 extern int _rpmfi_debug;
@@ -466,6 +468,7 @@ rpmcliFini(poptContext optCon)
     _rpmtePool = rpmioFreePool(_rpmtePool);
     _rpmpsPool = rpmioFreePool(_rpmpsPool);
 
+    _rpmfcPool = rpmioFreePool(_rpmfcPool);
     _rpmsxPool = rpmioFreePool(_rpmsxPool);
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
