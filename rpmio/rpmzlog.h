@@ -24,16 +24,17 @@ struct rpmzMsg_s {
 
 /** trace log */
 struct rpmzLog_s {
-    yarnLock use;		/*!< use count -- return to pool when zero */
-/*@shared@*/ /*@null@*/
-    void *pool;			/*!< pool (or NULL if malloc'd) */
-
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     struct timeval start;	/*!< starting time of day for tracing */
 /*@null@*/
     rpmzMsg msg_head;
 /*@shared@*/ /*@relnull@*/
     rpmzMsg *msg_tail;
     int msg_count;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* _RPMZLOG_INTERNAL */
 
@@ -44,15 +45,15 @@ extern "C" {
 /**
  * Reference the log data.
  */
-/*@newref@*/
-rpmzLog rpmzLogLink(/*@returned@*/ /*@null@*/ rpmzLog zlog)
+/*@newref@*/ /*@null@*/
+rpmzLog rpmzLogLink(/*@null@*/ rpmzLog zlog)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@modifies zlog, fileSystem, internalState @*/;
 
 /**
  * Set up log (call from main thread before other threads launched).
  */
-/*@only@*/
+/*@newref@*/
 rpmzLog rpmzLogNew(/*@null@*/ struct timeval *tv)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

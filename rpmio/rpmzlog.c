@@ -47,6 +47,7 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 static int _rpmzlog_debug = 0;
 
 /*@access rpmzMsg @*/
@@ -63,11 +64,11 @@ rpmzLog rpmzLogLink(rpmzLog zlog)
 
     if (zlog == NULL)
 	return NULL;
-    yarnPossess(zlog->use);
-    nrefs = yarnPeekLock(zlog->use);
+    yarnPossess(zlog->_item.use);
+    nrefs = yarnPeekLock(zlog->_item.use);
 if (_rpmzlog_debug)
 fprintf(stderr, "    ++ zlog %p[%ld]\n", zlog, nrefs+1);
-    yarnTwist(zlog->use, BY, 1);
+    yarnTwist(zlog->_item.use, BY, 1);
     return zlog;
 }
 
@@ -75,16 +76,20 @@ rpmzLog rpmzLogNew(struct timeval *tv)
 {
     rpmzLog zlog = xcalloc(1, sizeof(*zlog));
 
-    zlog->use = yarnNewLock(0);
+    zlog->_item.use = yarnNewLock(0);
     zlog->msg_head = NULL;
     zlog->msg_tail = &zlog->msg_head;
 
     /* starting time for log entries */
+/*@-assignexpose@*/
     if (tv != NULL)
 	zlog->start = *tv;	/* structure assignment */
     else
 	(void) gettimeofday(&zlog->start, NULL);
+/*@=assignexpose@*/
+/*@-nullret@*/
     return rpmzLogLink(zlog);
+/*@=nullret@*/
 }
 
 void rpmzLogAdd(rpmzLog zlog, char *fmt, ...)
@@ -114,12 +119,12 @@ void rpmzLogAdd(rpmzLog zlog, char *fmt, ...)
     me->next = NULL;
 /*@=mustfreeonly@*/
 
-assert(zlog->use != NULL);
-    yarnPossess(zlog->use);
+assert(zlog->_item.use != NULL);
+    yarnPossess(zlog->_item.use);
     *zlog->msg_tail = me;
     zlog->msg_tail = &me->next;
     zlog->msg_count++;
-    yarnRelease(zlog->use);
+    yarnRelease(zlog->_item.use);
 }
 
 /**
@@ -137,16 +142,16 @@ static int rpmzMsgShow(/*@null@*/ rpmzLog zlog, /*@null@*/ FILE * fp)
     if (fp == NULL)
 	fp = stderr;
 
-    yarnPossess(zlog->use);
+    yarnPossess(zlog->_item.use);
     if (zlog->msg_tail == NULL || (me = zlog->msg_head) == NULL) {
-	yarnRelease(zlog->use);
+	yarnRelease(zlog->_item.use);
 	return 0;
     }
     zlog->msg_head = me->next;
     if (me->next == NULL)
 	zlog->msg_tail = &zlog->msg_head;
     zlog->msg_count--;
-    yarnRelease(zlog->use);
+    yarnRelease(zlog->_item.use);
 
     diff.tv_usec = me->when.tv_usec - zlog->start.tv_usec;
     diff.tv_sec = me->when.tv_sec - zlog->start.tv_sec;
@@ -170,8 +175,8 @@ rpmzLog rpmzLogFree(rpmzLog zlog)
     if (zlog == NULL)
 	return NULL;
 
-    yarnPossess(zlog->use);
-    nrefs = yarnPeekLock(zlog->use);
+    yarnPossess(zlog->_item.use);
+    nrefs = yarnPeekLock(zlog->_item.use);
 if (_rpmzlog_debug)
 fprintf(stderr, "    -- zlog %p[%ld]\n", zlog, nrefs);
 #ifdef  NOTYET
@@ -181,7 +186,7 @@ if (nrefs <= 0)
 fprintf(stderr, "==> FIXME: %s: zlog %p[%ld]\n", __FUNCTION__, zlog, nrefs);
 #endif
     if (nrefs == 1) {
-	yarnLock use = zlog->use;
+	yarnLock use = zlog->_item.use;
 	if (zlog->msg_tail != NULL) {
 	    while ((me = zlog->msg_head) != NULL) {
 		zlog->msg_head = me->next;
@@ -204,7 +209,7 @@ fprintf(stderr, "==> FIXME: %s: zlog %p[%ld] count %d\n", __FUNCTION__, zlog, nr
 	yarnTwist(use, BY, -1);
 	use = yarnFreeLock(use);
     } else
-	yarnTwist(zlog->use, BY, -1);
+	yarnTwist(zlog->_item.use, BY, -1);
     return NULL;
 }
 
