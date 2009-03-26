@@ -15,6 +15,9 @@ extern int _pgp_print;
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 static
 rpmRC doit(rpmts ts, const char * sigtype)
 {
@@ -69,7 +72,8 @@ _pgp_print = 1;
 
     rc = doit(ts, "RSA");
 
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts = NULL;
 
     optCon = rpmcliFini(optCon);
 

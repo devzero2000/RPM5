@@ -158,7 +158,8 @@ static void rpmdsFini(void * _ds)
 	ds->N = _free(ds->N);
 	ds->EVR = _free(ds->EVR);
 	ds->Flags = _free(ds->Flags);
-	ds->h = headerFree(ds->h);
+	(void)headerFree(ds->h);
+	ds->h = NULL;
     }
 
     ds->DNEVR = _free(ds->DNEVR);
@@ -170,12 +171,6 @@ static void rpmdsFini(void * _ds)
     ds->Result = _free(ds->Result);
     ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
     ds->include = mireFreeAll(ds->include, ds->ninclude);
-}
-
-rpmds rpmdsFree(rpmds ds)
-{
-    (void)rpmioFreePoolItem((rpmioItem)ds, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
 }
 
 /*@unchecked@*/ /*@null@*/
@@ -1228,7 +1223,8 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
 
     ds = rpmdsSingle(RPMTAG_PROVIDENAME, t, EVR, Flags);
     xx = rpmdsMerge(dsp, ds);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
 }
 
 #define	_PROC_CPUINFO	"/proc/cpuinfo"
@@ -1454,7 +1450,8 @@ int rpmdsRpmlib(rpmds * dsp, void * tblp)
 	rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
 	xx = rpmdsMerge(dsp, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
     }
     return 0;
 }
@@ -1576,7 +1573,8 @@ assert(fn != NULL);
 	ds = rpmdsSingle(tagN, N, EVR , Flags);
 	if (ds) {	/* XXX can't happen */
 	    xx = rpmdsMergePRCO(PRCO, ds);
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	}
     }
     rc = 0;
@@ -2705,14 +2703,22 @@ fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, rpmdsTagName(rpm
 rpmPRCO rpmdsFreePRCO(rpmPRCO PRCO)
 {
     if (PRCO) {
-	PRCO->this = rpmdsFree(PRCO->this);
-	PRCO->P = rpmdsFree(PRCO->P);
-	PRCO->R = rpmdsFree(PRCO->R);
-	PRCO->C = rpmdsFree(PRCO->C);
-	PRCO->O = rpmdsFree(PRCO->O);
-	PRCO->T = rpmdsFree(PRCO->T);
-	PRCO->D = rpmdsFree(PRCO->D);
-	PRCO->L = rpmdsFree(PRCO->L);
+	(void)rpmdsFree(PRCO->this);
+	PRCO->this = NULL;
+	(void)rpmdsFree(PRCO->P);
+	PRCO->P = NULL;
+	(void)rpmdsFree(PRCO->R);
+	PRCO->R = NULL;
+	(void)rpmdsFree(PRCO->C);
+	PRCO->C = NULL;
+	(void)rpmdsFree(PRCO->O);
+	PRCO->O = NULL;
+	(void)rpmdsFree(PRCO->T);
+	PRCO->T = NULL;
+	(void)rpmdsFree(PRCO->D);
+	PRCO->D = NULL;
+	(void)rpmdsFree(PRCO->L);
+	PRCO->L = NULL;
 	memset(PRCO, 0, sizeof(*PRCO));
 	PRCO = _free(PRCO);
     }
@@ -2910,7 +2916,8 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 					sonameDep(t, buf, isElf64),
 					"", RPMSENSE_FIND_PROVIDES);
 			    xx = add(context, ds);
-			    ds = rpmdsFree(ds);
+			    (void)rpmdsFree(ds);
+			    ds = NULL;
 			}
 			auxoffset += aux->vda_next;
 		    }
@@ -2962,7 +2969,8 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 					sonameDep(t, buf, isElf64),
 					"", RPMSENSE_FIND_REQUIRES);
 			    xx = add(context, ds);
-			    ds = rpmdsFree(ds);
+			    (void)rpmdsFree(ds);
+			    ds = NULL;
 			}
 			auxoffset += aux->vna_next;
 		    }
@@ -3003,7 +3011,8 @@ assert(s != NULL);
 				sonameDep(buf, s, isElf64),
 				"", RPMSENSE_FIND_REQUIRES);
 			xx = add(context, ds);
-			ds = rpmdsFree(ds);
+			(void)rpmdsFree(ds);
+			ds = NULL;
 			/*@switchbreak@*/ break;
 		    case DT_SONAME:
 			gotSONAME = 1;
@@ -3017,7 +3026,8 @@ assert(s != NULL);
 				sonameDep(buf, s, isElf64),
 				"", RPMSENSE_FIND_PROVIDES);
 			xx = add(context, ds);
-			ds = rpmdsFree(ds);
+			(void)rpmdsFree(ds);
+			ds = NULL;
 			/*@switchbreak@*/ break;
 		    }
 		}
@@ -3033,7 +3043,8 @@ assert(s != NULL);
 	ds = rpmdsSingle(RPMTAG_REQUIRENAME, "rtld(GNU_HASH)", "",
 			RPMSENSE_FIND_REQUIRES);
 	xx = add(context, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
     }
 
     /* For DSO's, provide the basename of the file if DT_SONAME not found. */
@@ -3050,7 +3061,8 @@ assert(s != NULL);
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME,
 		sonameDep(buf, s, isElf64), "", RPMSENSE_FIND_PROVIDES);
 	xx = add(context, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
     }
 
 exit:
@@ -3186,7 +3198,8 @@ fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n"
 	Flags |= RPMSENSE_PROBE;
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	xx = rpmdsMerge(PRCO->Pdsp, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
 
 	xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
     }
@@ -3294,7 +3307,8 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, 
 	    Flags |= RPMSENSE_PROBE;
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	    xx = rpmdsMerge(PRCO->Pdsp, ds);
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 
 	    xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
 	}
@@ -3542,7 +3556,8 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 	Flags |= RPMSENSE_PROBE;
 	ds = rpmdsSingle(tagN, N, EVR, Flags);
 	xx = rpmdsMerge(dsp, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
     }
     rc = 0;
 
@@ -3788,7 +3803,8 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	    break;
 
 exit:
-    provides = rpmdsFree(provides);
+    (void)rpmdsFree(provides);
+    provides = NULL;
 
     return result;
 }
@@ -3841,7 +3857,8 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	if (nopromote)
 	    (void) rpmdsSetNoPromote(pkg, nopromote);
 	result = rpmdsCompare(pkg, req);
-	pkg = rpmdsFree(pkg);
+	(void)rpmdsFree(pkg);
+	pkg = NULL;
     }
     pkgN = _free(pkgN);
 

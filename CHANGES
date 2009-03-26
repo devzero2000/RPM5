@@ -1,4 +1,9 @@
 5.1.7 -> 5.1.8:
+    - jbj: use rpmioFreePoolItem for rpmds, eliminate rpmdsFree.
+    - jbj: finish up using rpmioFreePoolItem() for rpmts and Header objects.
+    - devzero2000: continuing for refcount rewrite : add define of fooFree to rpmioFreePoolItem
+    - devzero2000: begin change programming style for refcount : rpmtsFree and h
+eaderFree
     - jbj: rpmio: rescusitate splint annotations.
     - jbj: getdate: ignore internalState changes.
     - jbj: zlog: use struct rpmioItem_s use/pool container.

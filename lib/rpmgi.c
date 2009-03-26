@@ -141,7 +141,8 @@ Header rpmgiReadHeader(rpmgi gi, const char * path)
 	    /* XXX Read a package manifest. Restart ftswalk on success. */
 	case RPMRC_FAIL:
 	default:
-	    h = headerFree(h);
+	    (void)headerFree(h);
+	    h = NULL;
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -220,7 +221,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
     if (rpmrc == RPMRC_OK && h != NULL)
 	gi->h = headerLink(h);
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     return rpmrc;
 }
@@ -307,7 +309,8 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 	}
 	if (h != NULL) {
 	    gi->h = headerLink(h);
-	    h = headerFree(h);
+	    (void)headerFree(h);
+	    h = NULL;
 /*@-noeffectuncon@*/
 	    if (gi->stash != NULL)
 		(void) (*gi->stash) (gi, gi->h);
@@ -453,7 +456,8 @@ static void rpmgiFini(void * _gi)
     int xx;
 
     gi->hdrPath = _free(gi->hdrPath);
-    gi->h = headerFree(gi->h);
+    (void)headerFree(gi->h);
+    gi->h = NULL;
 
     gi->argv = argvFree(gi->argv);
 
@@ -468,7 +472,8 @@ static void rpmgiFini(void * _gi)
     }
     gi->tsi = rpmtsiFree(gi->tsi);
     gi->mi = rpmdbFreeIterator(gi->mi);
-    gi->ts = rpmtsFree(gi->ts);
+    (void)rpmtsFree(gi->ts); 
+    gi->ts = NULL;
 }
 
 /*@unchecked@*/ /*@null@*/
@@ -539,7 +544,8 @@ if (_rpmgi_debug)
 fprintf(stderr, "*** rpmgiNext(%p) tag %s\n", gi, tagName(gi->tag));
 
     /* Free header from previous iteration. */
-    gi->h = headerFree(gi->h);
+    (void)headerFree(gi->h);
+    gi->h = NULL;
     gi->hdrPath = _free(gi->hdrPath);
     hnum[0] = '\0';
 
@@ -624,7 +630,8 @@ nextkey:
 		sprintf(hnum, "%u", (unsigned)gi->i);
 		gi->hdrPath = rpmExpand("%s h# ", teTypeString, hnum, NULL);
 		rpmrc = RPMRC_OK;
-		h = headerFree(h);
+		(void)headerFree(h);
+		h = NULL;
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
@@ -661,7 +668,8 @@ nextkey:
 		sprintf(hnum, "%u", (unsigned)gi->i);
 		gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
-		h = headerFree(h);
+		(void)headerFree(h);
+		h = NULL;
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
@@ -785,7 +793,8 @@ enditer:
 
     }
 
-    gi->h = headerFree(gi->h);
+    (void)headerFree(gi->h);
+    gi->h = NULL;
     gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;
     gi->active = 0;

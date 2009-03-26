@@ -817,7 +817,7 @@ Header headerLink(Header h)
 /** \ingroup header
  * Dereference a header instance.
  * @param h		header
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
@@ -828,15 +828,13 @@ Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 /** \ingroup header
  * Dereference a header instance.
  * @param h		header
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/;
-#ifdef	NOTYET	/* XXX h = headerFree(h) NULL return needs to be found/fixed. */
 #define headerFree(_h)        \
     ((Header)rpmioFreePoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
-#endif
 
 /** \ingroup header
  * Create new (empty) header instance.

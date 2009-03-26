@@ -1548,7 +1548,8 @@ if (rc == 0)
 	dirNames = _free(dirNames);
 /*@=usereleased@*/
 	dirIndexes = _free(dirIndexes);
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
     }
 
     rec = _free(rec);
@@ -1909,7 +1910,8 @@ assert(data->data != NULL);
 	data->size = 0;
     }
 
-    mi->mi_h = headerFree(mi->mi_h);
+    (void)headerFree(mi->mi_h);
+    mi->mi_h = NULL;
 
 /*@-nullstate@*/
     return rc;
@@ -3177,7 +3179,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     (void) unblockSignals(db, &signalMask);
 
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     /* XXX return ret; */
     return 0;
@@ -4157,7 +4160,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts);
-		nh = headerFree(nh);
+		(void)headerFree(nh);
+		nh = NULL;
 	    }
 
 	    if (rc) {

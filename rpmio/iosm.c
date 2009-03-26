@@ -802,10 +802,9 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
 #if defined(_USE_RPMTS)
     (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			&iosm->op_digest);
-    iosm->iter->ts = rpmtsFree(iter->ts);
-#else
-    iosm->iter->ts = NULL;
+    (void)rpmtsFree(iter->ts);
 #endif
+    iosm->iter->ts = NULL;
     iosm->iter = mapFreeIterator(iosm->iter);
     if (iosm->cfd != NULL) {
 	iosm->cfd = fdFree(iosm->cfd, "persist (iosm)");

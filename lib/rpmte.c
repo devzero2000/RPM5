@@ -73,7 +73,8 @@ static void delTE(rpmte p)
     p->blink.Pkgid = argvFree(p->blink.Pkgid);
     p->blink.Hdrid = argvFree(p->blink.Hdrid);
 
-    p->h = headerFree(p->h);
+    (void)headerFree(p->h);
+    p->h = NULL;
 
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
@@ -282,7 +283,8 @@ Header rpmteHeader(rpmte te)
 Header rpmteSetHeader(rpmte te, Header h)
 {
     if (te != NULL)  {
-	te->h = headerFree(te->h);
+	(void)headerFree(te->h);
+	te->h = NULL;
 	if (h != NULL)
 	    te->h = headerLink(h);
     }
@@ -707,7 +709,8 @@ static void rpmtsiFini(void * _tsi)
 {
     rpmtsi tsi = _tsi;
 /*@-internalglobs@*/
-	tsi->ts = rpmtsFree(tsi->ts);
+    (void)rpmtsFree(tsi->ts);
+    tsi->ts = NULL;
 /*@=internalglobs@*/
 }
 

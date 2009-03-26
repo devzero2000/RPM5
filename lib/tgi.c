@@ -211,7 +211,8 @@ if (fileURL[0] == '=') {
 	fileURL = NULL;
 	pkgx++;
     }
-    this = rpmdsFree(this);
+    (void)rpmdsFree(this);
+    this = NULL;
 } else
 #endif
 
@@ -280,7 +281,8 @@ fprintf(stdout, "======================= %d transaction elements\n\
     }
 
     gi = rpmgiFree(gi);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts = NULL;
     optCon = rpmcliFini(optCon);
 
     return rc;

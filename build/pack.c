@@ -76,7 +76,8 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     }
 
     failedFile = _free(failedFile);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts = NULL;
 
     return rc;
 }
@@ -363,7 +364,8 @@ int readRPM(const char *fileName, Spec *specp, void * l,
     spec->packages = newPackage(spec);
 
     /* XXX the header just allocated will be allocated again */
-    spec->packages->header = headerFree(spec->packages->header);
+    (void)headerFree(spec->packages->header);
+    spec->packages->header = NULL;
 
     /* Read the rpm lead, signatures, and header */
     {	rpmts ts = rpmtsCreate();
@@ -374,7 +376,8 @@ int readRPM(const char *fileName, Spec *specp, void * l,
 			 &spec->packages->header);
 	/*@=mustmod@*/
 
-	ts = rpmtsFree(ts);
+	(void)rpmtsFree(ts); 
+	ts = NULL;
 
 	if (sigs) *sigs = NULL;			/* XXX HACK */
     }
@@ -588,7 +591,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
-    *hdrp = headerFree(*hdrp);
+    (void)headerFree(*hdrp);
+    *hdrp = NULL;
 
     if (pkgidp)
 	*pkgidp = NULL;
@@ -863,7 +867,8 @@ assert(0);
 
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, nh, &msg);
-	nh = headerFree(nh);
+	(void)headerFree(nh);
+	nh = NULL;
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fileName, item,
                 (msg && *msg ? msg : "write failed\n"));
@@ -895,7 +900,8 @@ assert(0);
 
 exit:
     SHA1 = _free(SHA1);
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sigh != NULL && pkgidp != NULL) {
@@ -905,7 +911,8 @@ exit:
 	    *pkgidp = he->p.ui8p;		/* XXX memory leak */
     }
 
-    sigh = headerFree(sigh);
+    (void)headerFree(sigh);
+    sigh = NULL;
     if (ifd) {
 	(void) Fclose(ifd);
 	ifd = NULL;

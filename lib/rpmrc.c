@@ -1017,7 +1017,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
 	PRCO = rpmdsFreePRCO(PRCO);
@@ -1032,7 +1033,8 @@ int rpmShowRC(FILE * fp)
 	    if (DNEVR != NULL)
 		fprintf(fp, "    %s\n", DNEVR+2);
 	}
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
 	fprintf(fp, "\n");
 
 	xx = rpmdsCpuinfo(&ds, NULL);
@@ -1046,7 +1048,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
     }
@@ -1062,7 +1065,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
 
@@ -1076,7 +1080,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
     }

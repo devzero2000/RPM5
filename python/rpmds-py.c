@@ -337,7 +337,8 @@ rpmds_Sort(rpmdsObject * s)
     rpmds nds = NULL;
 
     if (rpmdsMerge(&nds, s->ds) >= 0) {
-	s->ds = rpmdsFree(s->ds);
+	(void)rpmdsFree(s->ds);
+	s->ds = NULL;
 	s->ds = nds;
     }
     Py_INCREF(Py_None);
@@ -591,7 +592,8 @@ rpmds_dealloc(rpmdsObject * s)
 	/*@modifies s @*/
 {
     if (s) {
-	s->ds = rpmdsFree(s->ds);
+	(void)rpmdsFree(s->ds);
+	s->ds = NULL;
 	PyObject_Del(s);
     }
 }
@@ -693,7 +695,8 @@ static void rpmds_free(/*@only@*/ rpmdsObject * s)
 {
 if (_rpmds_debug)
 fprintf(stderr, "%p -- ds %p\n", s, s->ds);
-    s->ds = rpmdsFree(s->ds);
+    (void)rpmdsFree(s->ds);
+    s->ds = NULL;
 
     PyObject_Del((PyObject *)s);
 }

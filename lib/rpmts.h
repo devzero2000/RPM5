@@ -392,7 +392,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet,
  * Unreference a transaction instance.
  * @param ts		transaction set
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmts rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
@@ -619,16 +619,14 @@ void rpmtsEmpty(rpmts ts)
 /** \ingroup rpmts
  * Destroy transaction set, closing the database as well.
  * @param ts		transaction set
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
-rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
+rpmts rpmtsFree(/*@killref@*/ /*@null@*/ rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState @*/;
-#ifdef	NOTYET
 #define	rpmtsFree(_ts)	\
 	((rpmts) rpmioFreePoolItem((rpmioItem)(_ts), __FUNCTION__, __FILE__, __LINE__))
-#endif
 
 /** \ingroup rpmts
  * Get verify signatures flag(s).

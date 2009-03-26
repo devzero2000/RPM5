@@ -344,7 +344,8 @@ assert(0);	/* XXX never happens. */
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
 	    if (!headerGet(h, he, 0) || he->p.ptr == NULL)
 	    {
-		h = headerFree(h);
+		(void)headerFree(h);
+		h = NULL;
 		goto exit;
 	    }
 	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
@@ -355,7 +356,8 @@ assert(0);	/* XXX never happens. */
 	    (void) rpmDigestFinal(ctx, &SHA1, NULL, 1);
 	    he->p.ptr = _free(he->p.ptr);
 	}
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
 
 	if (SHA1 == NULL)
 	    goto exit;
@@ -417,7 +419,8 @@ exit:
 	(void) Unlink(fn);
 	fn = _free(fn);
     }
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
     if (fd != NULL) (void) Fclose(fd);
     return ret;
 }

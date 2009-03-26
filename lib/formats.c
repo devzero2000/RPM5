@@ -252,7 +252,8 @@ assert(ds != NULL);
 	*t++ = '\0';
     }
     av = argvFree(av);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
 
     /* XXX perhaps return "(none)" inband if no suggests/enhances <shrug>. */
 

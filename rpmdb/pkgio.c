@@ -855,7 +855,8 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
 	*sighp = headerLink(sigh);
-    sigh = headerFree(sigh);
+    (void)headerFree(sigh);
+    sigh = NULL;
 
     if (msg != NULL) {
 	buf[sizeof(buf)-1] = '\0';
@@ -1220,7 +1221,8 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
     h = headerLoad((void *)ptr);
     if (h == NULL)
 	rc = RPMRC_FAIL;
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     return rc;
 }
@@ -1370,7 +1372,8 @@ exit:
 	*hdrp = headerLink(h);
     ei = _free(ei);
     dig = pgpDigFree(dig, "rpmReadHeader");
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {
 	buf[sizeof(buf)-1] = '\0';

@@ -1169,7 +1169,8 @@ dColors[j] |= fColors[i];
 int rpmfiSetHeader(rpmfi fi, Header h)
 {
     if (fi->h != NULL)
-	fi->h = headerFree(fi->h);
+	(void)headerFree(fi->h);
+    fi->h = NULL;
     if (h != NULL)
 	fi->h = headerLink(h);
     return 0;
@@ -1237,7 +1238,8 @@ static void rpmfiFini(void * _fi)
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
 
-    fi->h = headerFree(fi->h);
+    (void)headerFree(fi->h);
+    fi->h = NULL;
 }
 
 /*@unchecked@*/ /*@null@*/
@@ -1511,9 +1513,11 @@ if (fi->actions == NULL)
 	/*@-compdef@*/ /* FIX: fi->digests undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	/*@=compdef@*/
-	fi->h = headerFree(fi->h);
+	(void)headerFree(fi->h);
+	fi->h = NULL;
 	fi->h = headerLink(foo);
-	foo = headerFree(foo);
+	(void)headerFree(foo);
+	foo = NULL;
     }
 
     if (fi->isSource && fi->dc == 1 && *fi->dnl[0] == '\0') {
@@ -1566,7 +1570,8 @@ if (fi->actions == NULL)
     }
 
     if (!scareMem)
-	fi->h = headerFree(fi->h);
+	(void)headerFree(fi->h);
+    fi->h = NULL;
 
     dnlmax = -1;
     for (i = 0; i < (int)fi->dc; i++) {
@@ -2037,7 +2042,8 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 
 exit:
     fi = rpmfiFree(fi);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
     if (fdepsp)
 	*fdepsp = av;
     else

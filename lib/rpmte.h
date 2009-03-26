@@ -189,7 +189,7 @@ extern "C" {
 /** \ingroup rpmte
  * Destroy a transaction element.
  * @param te		transaction element
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
@@ -637,7 +637,7 @@ int rpmtsiOc(rpmtsi tsi)
 /** \ingroup rpmte
  * Destroy transaction element iterator.
  * @param tsi		transaction element iterator
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmtsi rpmtsiFree(/*@killref@*//*@null@*/ rpmtsi tsi)

@@ -6062,7 +6062,8 @@ exit:
     if (errmsg)
 	*errmsg = hsa->errmsg;
 /*@=dependenttrans =observertrans @*/
-    hsa->h = headerFree(hsa->h);
+    (void)headerFree(hsa->h);
+    hsa->h = NULL;
     hsa->fmt = _free(hsa->fmt);
 /*@-retexpose@*/
     return hsa->val;

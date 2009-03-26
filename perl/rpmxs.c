@@ -76,7 +76,8 @@ void _rpm2header(rpmts ts, char * filename, int checkmode) {
         rc = rpmReadPackageFile(ts, fd, filename, &ret);
 	    if (checkmode) {
 	        XPUSHs(sv_2mortal(newSViv(rc)));
-		    ret = headerFree(ret); /* For checking the package, we don't keep the header */
+	    (void)headerFree(ret); /* For checking the package, we don't keep the header */
+	    ret = NULL;
         } else {
             if (rc == 0) {
         	    XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", (void *)ret)));

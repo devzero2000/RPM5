@@ -194,7 +194,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     fi->h = headerLink(h);
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     if (fi == NULL) {	/* XXX can't happen */
 	rpmrc = RPMRC_FAIL;
@@ -371,7 +372,8 @@ exit:
     psm->fi = rpmfiFree(psm->fi);
     psm->te = NULL;
 
-    if (h != NULL) h = headerFree(h);
+    if (h != NULL) (void)headerFree(h);
+    h = NULL;
 
     if (fi != NULL) {
 	(void) rpmteSetHeader(fi->te, NULL);
@@ -387,7 +389,8 @@ exit:
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
 
-    psm->ts = rpmtsFree(psm->ts);
+    (void)rpmtsFree(psm->ts); 
+    psm->ts = NULL;
 
     return rpmrc;
 }
@@ -1121,7 +1124,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		    bingo = 1;
 		    break;
 		}
-		ds = rpmdsFree(ds);
+		(void)rpmdsFree(ds);
+		ds = NULL;
 		xx = mireClean(mire);
 	    }
 
@@ -1173,10 +1177,14 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     }
 
     mire = mireFree(mire);
-    Pds = rpmdsFree(Pds);
-    Dds = rpmdsFree(Dds);
-    Fds = rpmdsFree(Fds);
-    Tds = rpmdsFree(Tds);
+    (void)rpmdsFree(Pds);
+    Pds = NULL;
+    (void)rpmdsFree(Dds);
+    Dds = NULL;
+    (void)rpmdsFree(Fds);
+    Fds = NULL;
+    (void)rpmdsFree(Tds);
+    Tds = NULL;
 
 exit:
     Ihe->p.ptr = _free(Ihe->p.ptr);
@@ -1298,7 +1306,8 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 
     instances = argiFree(instances);
     depName = _free(depName);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
 
     return rc;
 }
@@ -1439,7 +1448,8 @@ assert(fi->h != NULL);
 	else
 	    xx = argvAdd(&keys, Name);
     }
-    triggers = rpmdsFree(triggers);
+    (void)rpmdsFree(triggers);
+    triggers = NULL;
 
     /* For all primary keys, retrieve headers and fire triggers. */
     if (keys != NULL)
@@ -1545,14 +1555,16 @@ static void rpmpsmFini(void * _psm)
     psm->te = NULL;
 #endif
 /*@-internalglobs@*/
-    psm->ts = rpmtsFree(psm->ts);
+    (void)rpmtsFree(psm->ts); 
+    psm->ts = NULL;
 /*@=internalglobs@*/
 
     psm->sstates = _free(psm->sstates);
     psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
     psm->IPhe = _free(psm->IPhe);
     psm->NVRA = _free(psm->NVRA);
-    psm->triggers = rpmdsFree(psm->triggers);
+    (void)rpmdsFree(psm->triggers);
+    psm->triggers = NULL;
 /*@=nullstate@*/
 }
 
@@ -2221,7 +2233,8 @@ psm->te->h = headerLink(fi->h);
 			}
 			hi = headerFini(hi);
 
-			oh = headerFree(oh);
+			(void)headerFree(oh);
+			oh = NULL;
 			uh = _free(uh);
 		    } else
 			break;	/* XXX shouldn't ever happen */
@@ -2264,7 +2277,8 @@ psm->te->h = headerLink(fi->h);
 		    break;
 		}
 		rc = rpmpkgWrite(item, psm->fd, sigh, NULL);
-		sigh = headerFree(sigh);
+		(void)headerFree(sigh);
+		sigh = NULL;
 		if (rc != RPMRC_OK) {
 		    break;
 		}
@@ -2589,16 +2603,21 @@ assert(psm->te != NULL);
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
 #ifdef	DYING
 if (psm->te != NULL)
-if (psm->te->h != NULL)
-psm->te->h = headerFree(psm->te->h);
+if (psm->te->h != NULL) {
+(void)headerFree(psm->te->h);
+psm->te->h = NULL;
+}
 #else
 	    if (psm->te != NULL)
 		(void) rpmteSetHeader(psm->te, NULL);
 #endif
-	    if (fi->h != NULL)
-		fi->h = headerFree(fi->h);
+	    if (fi->h != NULL) {
+		(void)headerFree(fi->h);
+		fi->h = NULL;
  	}
-	psm->oh = headerFree(psm->oh);
+ 	}
+	(void)headerFree(psm->oh);
+	psm->oh = NULL;
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->payload_format = _free(psm->payload_format);

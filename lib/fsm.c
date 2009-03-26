@@ -133,7 +133,8 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
     if (iter) {
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
 /*@-internalglobs@*/ /* XXX rpmswExit() */
-	iter->ts = rpmtsFree(iter->ts);
+	(void)rpmtsFree(iter->ts); 
+	iter->ts = NULL;
 /*@=internalglobs@*/
     }
     return _free(p);
@@ -733,7 +734,8 @@ fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
 			&fsm->op_digest);
 
     fsm->lmtab = _free(fsm->lmtab);
-    fsm->iter->ts = rpmtsFree(fsm->iter->ts);
+    (void)rpmtsFree(fsm->iter->ts); 
+    fsm->iter->ts = NULL;
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
 	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");

@@ -557,7 +557,8 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    h = rpmgiReadHeader(gi, fn);
 	    if (h)
 		gi->h = headerLink(h);
-	    h = headerFree(h);
+	    (void)headerFree(h);
+	    h = NULL;
         }
 
 	/* === Check for "-bang" erasures within install transaction. */

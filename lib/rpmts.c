@@ -360,7 +360,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    continue;
 
 	/* Save new "best" candidate. */
-	bh = headerFree(bh);
+	(void)headerFree(bh);
+	bh = NULL;
 	bh = headerLink(h);
 	bhtime = htime;
 	bhnamelen = hnamelen;
@@ -376,7 +377,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     if (qfmt == NULL || *qfmt == '\0')
 	goto exit;
     str = headerSprintf(bh, qfmt, NULL, rpmHeaderFormats, &errstr);
-    bh = headerFree(bh);
+    (void)headerFree(bh);
+    bh = NULL;
     qfmt = _free(qfmt);
     if (str == NULL) {
 	rpmlog(RPMLOG_ERR, _("incorrect solve path format: %s\n"), errstr);
@@ -416,7 +418,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    break;
 	}
 	str = _free(str);
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
 	goto exit;
     }
 
@@ -641,7 +644,7 @@ static void rpmtsFini(void * _ts)
 
     if (ts->scriptFd != NULL) {
 /*@-refcounttrans@*/	/* FIX: XfdFree annotation */
-	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
+	ts->scriptFd = fdFree(ts->scriptFd, __FUNCTION__);
 /*@=refcounttrans@*/
 	ts->scriptFd = NULL;
     }
@@ -668,12 +671,6 @@ static void rpmtsFini(void * _ts)
 	argvPrint("macros used", av, NULL);
 	av = argvFree(av);
     }
-}
-
-rpmts rpmtsFree(rpmts ts)
-{
-    (void) rpmioFreePoolItem((rpmioItem)ts, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
 }
 
 /*@unchecked@*/ /*@null@*/
@@ -1110,12 +1107,23 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 		rpmCallbackType what, uint64_t amount, uint64_t total)
 {
     void * ptr = NULL;
-    if (ts && ts->notify && te) {
-assert(!(te->type == TR_ADDED && te->h == NULL));
+    if (ts && ts->notify) {
+	Header h;
+	fnpyKey cbkey;
 	/*@-type@*/ /* FIX: cast? */
 	/*@-noeffectuncon @*/ /* FIX: check rc */
-	ptr = ts->notify(te->h, what, amount, total,
-			rpmteKey(te), ts->notifyData);
+	if (te) {
+/*@-mods@*/	/* XXX noisy in transaction.c */
+	    h = headerLink(te->h);
+/*@=mods@*/
+	    cbkey = rpmteKey(te);
+	} else {
+	    h = NULL;
+	    cbkey = NULL;
+	}
+	ptr = ts->notify(h, what, amount, total, cbkey, ts->notifyData);
+	(void)headerFree(h);
+	h = NULL;
 	/*@=noeffectuncon @*/
 	/*@=type@*/
     }

@@ -849,7 +849,7 @@ rpmioPool rpmioNewPool(/*@observer@*/ const char * name,
  * @param msg		debugging msg (NULL disables debugging)
  * @param fn		usually __FILE__
  * @param ln		usually __LINE__
- * @return		pool item
+ * @return		pool item (NULL on last dereference)
  */
 /*@null@*/
 rpmioItem rpmioUnlinkPoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
@@ -877,7 +877,7 @@ rpmioItem rpmioLinkPoolItem(/*@returned@*/ /*@null@*/ rpmioItem item,
  * @param msg		debugging msg (NULL disables debugging)
  * @param fn		usually __FILE__
  * @param ln		usually __LINE__
- * @return		pool item
+ * @return		pool item (NULL on last dereference)
  */
 /*@null@*/
 void * rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,

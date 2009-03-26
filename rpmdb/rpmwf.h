@@ -71,7 +71,7 @@ rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
  * Unreference a wrapper format instance.
  * @param wf		wrapper format
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmwf rpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,

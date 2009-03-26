@@ -920,7 +920,8 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
     case RPMRC_OK:
 	if (h)
 	    result = Py_BuildValue("N", hdr_Wrap(h));
-	h = headerFree(h);	/* XXX ref held by result */
+	(void)headerFree(h);	/* XXX ref held by result */
+	h = NULL;
 	break;
 
     case RPMRC_NOKEY:
@@ -1510,7 +1511,8 @@ static void rpmts_dealloc(/*@only@*/ rpmtsObject * s)
 
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
-    s->ts = rpmtsFree(s->ts);
+    (void)rpmtsFree(s->ts);
+    s->ts = NULL;
 
     if (s->scriptFd) Fclose(s->scriptFd);
     /* this will free the keyList, and decrement the ref count of all
@@ -1589,7 +1591,8 @@ static void rpmts_free(/*@only@*/ rpmtsObject * s)
 {
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
-    s->ts = rpmtsFree(s->ts);
+    (void)rpmtsFree(s->ts);
+    s->ts = NULL;
 
     if (s->scriptFd)
 	Fclose(s->scriptFd);

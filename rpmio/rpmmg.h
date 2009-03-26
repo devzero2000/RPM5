@@ -38,7 +38,7 @@ extern "C" {
 /**
  * Unreference a magic wrapper instance.
  * @param mg		magic wrapper
- * @return
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmmg rpmmgUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmmg mg)
@@ -60,7 +60,7 @@ rpmmg rpmmgLink (/*@null@*/ rpmmg mg)
 /**
  * Destroy a magic wrapper.
  * @param mg		magic wrapper
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 rpmmg rpmmgFree(/*@killref@*/ /*@null@*/rpmmg mg)

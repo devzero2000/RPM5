@@ -2968,7 +2968,8 @@ static Header rpmftsReadHeader(rpmfts fts, const char * path)
 	    /* XXX Read a package manifest. Restart ftswalk on success. */
 	case RPMRC_FAIL:
 	default:
-	    h = headerFree(h);
+	    (void)headerFree(h);
+	    h = NULL;
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -2993,7 +2994,8 @@ static /*@null@*/ rpmfi rpmftsLoadFileInfo(rpmfts fts, const char * path)
 
     if (h != NULL) {
 	fts->fi = rpmfiNew(fts->ts, h, RPMTAG_BASENAMES, 0);
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
     }
     return fts->fi;
 }
@@ -3839,7 +3841,8 @@ main(int argc, char *argv[])
 
 exit:
 #if defined(_RPMFI_INTERNAL)
-    fts->ts = rpmtsFree(fts->ts);
+    (void)rpmtsFree(fts->ts); 
+    fts->ts = NULL;
     fts->fi = rpmfiFree(fts->fi);
     tagClean(NULL);     /* Free header tag indices. */
 #endif

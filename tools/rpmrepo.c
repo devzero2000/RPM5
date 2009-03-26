@@ -1094,7 +1094,8 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	case RPMRC_NOTFOUND:
 	case RPMRC_FAIL:
 	default:
-	    h = headerFree(h);
+	    (void)headerFree(h);
+	    h = NULL;
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -1324,7 +1325,8 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 	 || repoWriteMDFile(repo, &repo->other, h))
 	    rc = 1;
 
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
 	if (rc) break;
 
 	if (!repo->quiet) {
@@ -2270,7 +2272,8 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 	goto exit;
 
 exit:
-    repo->ts = rpmtsFree(repo->ts);
+    (void)rpmtsFree(repo->ts); 
+    repo->ts = NULL;
     repo->primary.digest = _free(repo->primary.digest);
     repo->primary.Zdigest = _free(repo->primary.Zdigest);
     repo->filelists.digest = _free(repo->filelists.digest);

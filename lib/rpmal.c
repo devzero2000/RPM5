@@ -221,7 +221,8 @@ rpmal rpmalFree(rpmal al)
 
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
-	alp->provides = rpmdsFree(alp->provides);
+	(void)rpmdsFree(alp->provides);
+	alp->provides = NULL;
 	alp->fi = rpmfiFree(alp->fi);
     }
 
@@ -408,7 +409,8 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->
 	}
     }
 
-    alp->provides = rpmdsFree(alp->provides);
+    (void)rpmdsFree(alp->provides);
+    alp->provides = NULL;
     alp->fi = rpmfiFree(alp->fi);
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
