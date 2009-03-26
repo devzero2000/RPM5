@@ -40,6 +40,7 @@ extern void rpmtsCleanDig(void * ts)
 #include "legacy.h"
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 #if defined(__LCLINT__)
 #define	UINT32_T	u_int32_t

@@ -32,6 +32,9 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 /* RPM Lua function:
  * <result> = rpm.vercmp(
  *     <version1>  -- first  version (e.g. "N.N.N")

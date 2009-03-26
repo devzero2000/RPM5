@@ -19,6 +19,9 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 static const char * gitagstr = NULL;
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;

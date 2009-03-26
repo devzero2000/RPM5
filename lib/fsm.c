@@ -34,6 +34,9 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 /*@access FD_t @*/	/* XXX void ptr args */
 /*@access FSMI_t @*/
 /*@access IOSM_t @*/

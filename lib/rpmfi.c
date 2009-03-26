@@ -33,6 +33,7 @@
 #include <rpmcli.h>	/* XXX rpmHeaderFormats */
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@access IOSM_t @*/	/* XXX cast */
 

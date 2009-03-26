@@ -45,6 +45,8 @@
 
 #include "debug.h"
 
+#define headerFree() rpmioFreePoolItem()
+
 /*@access dbiIndexSet @*/
 
 /*@access fnpyKey @*/

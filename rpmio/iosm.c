@@ -54,6 +54,9 @@ typedef struct Spec_s * Spec;
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 /*@access FD_t @*/	/* XXX void ptr args */
 /*@access IOSMI_t @*/
 /*@access IOSM_t @*/

@@ -28,6 +28,10 @@ const char *__progname;
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 static int _debug = 0;
 
 /* XXX should be flag in ts */

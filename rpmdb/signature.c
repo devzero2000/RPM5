@@ -20,6 +20,8 @@
 
 #include "debug.h"
 
+#define headerFree() rpmioFreePoolItem()
+
 /*@access FD_t@*/		/* XXX ufdio->read arg1 is void ptr */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access DIGEST_CTX@*/		/* XXX compared with NULL */

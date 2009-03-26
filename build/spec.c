@@ -16,6 +16,7 @@
 #include "rpmlua.h"
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@-redecl@*/
 extern int specedit;

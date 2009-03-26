@@ -34,6 +34,8 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
 /*@unchecked@*/
 /*@-shadow@*/
 extern int _rpmts_debug;

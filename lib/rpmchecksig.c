@@ -25,6 +25,7 @@
 #include <rpmcli.h>
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access Header @*/		/* XXX void * arg */

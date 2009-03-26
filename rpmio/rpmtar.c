@@ -120,6 +120,9 @@ typedef struct Spec_s * Spec;
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 /*@access FD_t @*/
 /*@access rpmpsm @*/
 /*@access IOSM_t @*/

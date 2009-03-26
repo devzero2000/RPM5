@@ -56,6 +56,10 @@ extern int sqlite3_close(sqlite3 * db)
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 /*@access FD_t @*/
 /*@access miRE @*/
 

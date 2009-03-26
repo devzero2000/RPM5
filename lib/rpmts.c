@@ -35,6 +35,7 @@
 #include <rpmcli.h>
 
 #include "fs.h"
+#define headerFree() rpmioFreePoolItem()
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */

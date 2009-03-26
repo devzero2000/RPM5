@@ -23,6 +23,7 @@
 #include "rpmconstant.h"
 
 #include "rpmxs.h"
+#define headerFree() rpmioFreePoolItem()
 
 static int scalar2constant(SV * svconstant, const char * context, int * val) {
     int rc = 0;

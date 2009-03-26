@@ -14,6 +14,9 @@ const char *__progname;
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 int main(int argc, char **argv)
 {
     FD_t fdi, fdo;

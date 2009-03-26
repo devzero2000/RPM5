@@ -59,6 +59,7 @@ extern char *nl_langinfo (nl_item __item)
 #include "misc.h"
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@unchecked@*/
 extern int _hdr_debug;

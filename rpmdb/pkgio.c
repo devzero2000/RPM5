@@ -32,6 +32,7 @@
 
 #include "signature.h"
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@access rpmts @*/
 /*@access pgpDig @*/

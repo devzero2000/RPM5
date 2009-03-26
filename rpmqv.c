@@ -56,6 +56,9 @@ extern const char *__progname;
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+
+
 enum modes {
 
     MODE_QUERY		= (1 <<  0),

@@ -19,6 +19,10 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 /*@unchecked@*/
 int _rpmte_debug = 0;
 

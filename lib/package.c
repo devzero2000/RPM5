@@ -17,6 +17,7 @@
 #include "rpmts.h"
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 

@@ -103,6 +103,10 @@ static const char copyright[] =
 #define	_KFB(n)	(1U << (n))
 #define	_MFB(n)	(_KFB(n) | 0x40000000)
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 /**
  * Bit field enum for mtree CLI options.
  */

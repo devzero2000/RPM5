@@ -25,6 +25,7 @@
 #include <rpmfi.h>
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@access tsortInfo @*/
 /*@access rpmte @*/		/* XXX for install <-> erase associate. */

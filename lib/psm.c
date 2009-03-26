@@ -43,6 +43,10 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 #define	_PSM_DEBUG	0
 /*@unchecked@*/
 int _psm_debug = _PSM_DEBUG;

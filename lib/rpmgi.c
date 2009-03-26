@@ -25,6 +25,10 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access fnpyKey @*/
 /*@access rpmdbMatchIterator @*/

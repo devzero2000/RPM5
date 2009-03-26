@@ -28,6 +28,7 @@
 #include <rpmrollback.h>
 
 #include "debug.h"
+#define headerFree() rpmioFreePoolItem()
 
 /*@access FD_t @*/	/* XXX void * arg */
 /*@access rpmts @*/

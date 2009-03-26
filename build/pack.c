@@ -28,6 +28,10 @@
 
 #include "debug.h"
 
+#define rpmtsfree() rpmioFreePoolItem()
+#define headerFree() rpmioFreePoolItem()
+
+
 /*@access rpmts @*/
 /*@access rpmfi @*/	/* compared with NULL */
 /*@access Header @*/	/* compared with NULL */
