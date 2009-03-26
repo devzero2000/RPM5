@@ -503,7 +503,8 @@ assert(EVR != NULL);
 			"rpmlib(VersionedDependencies)", "3.0.3-1",
 			RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL));
 		xx = rpmdsMerge(&fc->requires, ds);
-		ds = rpmdsFree(ds);
+		(void)rpmdsFree(ds);
+		ds = NULL;
 		fc->tracked = 1;
 	    }
 
@@ -515,7 +516,8 @@ assert(EVR != NULL);
 	    /* Add to file dependencies. */
 	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
 
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	}
 
 	pav = argvFree(pav);
@@ -788,7 +790,8 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    /* Add to file requires. */
 	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, ds));
 
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	}
 
 	/* Set color based on interpreter name. */
@@ -1074,13 +1077,15 @@ assert(se != NULL);
 	    skipping = fc->skipProv;
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->provides, ds);
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    /*@switchbreak@*/ break;
 	case 'R':
 	    skipping = fc->skipReq;
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->requires, ds);
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    /*@switchbreak@*/ break;
 	}
 
@@ -1327,7 +1332,8 @@ static void printDeps(Header h)
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
 	if ((int)dm->ntag != -1) {
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    ds = rpmdsNew(h, dm->ntag, flags);
 	}
 	if (dm->ftag == 0)
@@ -1355,7 +1361,8 @@ static void printDeps(Header h)
 	if (bingo)
 	    rpmlog(RPMLOG_NOTICE, "\n");
     }
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
 }
 
 /**
@@ -1614,7 +1621,8 @@ rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
     if (!fc->skipProv) {
 	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, flags);
 	xx = rpmdsMerge(&fc->provides, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
 	he->tag = RPMTAG_PROVIDENAME;
 	xx = headerDel(pkg->header, he, 0);
 	he->tag = RPMTAG_PROVIDEVERSION;
@@ -1632,14 +1640,16 @@ assert(EVR != NULL);
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR,
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    xx = rpmdsMerge(&fc->provides, ds);
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	}
     }
 
     if (!fc->skipReq) {
 	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, flags);
 	xx = rpmdsMerge(&fc->requires, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
 	he->tag = RPMTAG_REQUIRENAME;
 	xx = headerDel(pkg->header, he, 0);
 	he->tag = RPMTAG_REQUIREVERSION;
@@ -1657,7 +1667,8 @@ assert(EVR != NULL);
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR,
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    xx = rpmdsMerge(&fc->requires, ds);
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	}
     }
 
@@ -1811,8 +1822,10 @@ static void rpmfcFini(void *_fc)
     fc->ddict = argvFree(fc->ddict);
     fc->ddictx = argiFree(fc->ddictx);
 
-    fc->provides = rpmdsFree(fc->provides);
-    fc->requires = rpmdsFree(fc->requires);
+    (void)rpmdsFree(fc->provides);
+    fc->provides = NULL;
+    (void)rpmdsFree(fc->requires);
+    fc->requires = NULL;
 
     fc->iob_java = rpmiobFree(fc->iob_java);
     fc->iob_perl = rpmiobFree(fc->iob_perl);

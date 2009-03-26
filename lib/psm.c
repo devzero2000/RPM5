@@ -1126,7 +1126,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		    bingo = 1;
 		    /*@innerbreak@*/ break;
 		}
-		ds = rpmdsFree(ds);
+		(void)rpmdsFree(ds);
+		ds = NULL;
 		xx = mireClean(mire);
 	    }
 
@@ -1178,10 +1179,14 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     }
 
     mire = mireFree(mire);
-    Pds = rpmdsFree(Pds);
-    Dds = rpmdsFree(Dds);
-    Fds = rpmdsFree(Fds);
-    Tds = rpmdsFree(Tds);
+    (void)rpmdsFree(Pds);
+    Pds = NULL;
+    (void)rpmdsFree(Dds);
+    Dds = NULL;
+    (void)rpmdsFree(Fds);
+    Fds = NULL;
+    (void)rpmdsFree(Tds);
+    Tds = NULL;
 
 exit:
     Ihe->p.ptr = _free(Ihe->p.ptr);
@@ -1304,7 +1309,8 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 
     instances = argiFree(instances);
     depName = _free(depName);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
 
     return rc;
 }
@@ -1445,7 +1451,8 @@ assert(fi->h != NULL);
 	else
 	    xx = argvAdd(&keys, N);
     }
-    triggers = rpmdsFree(triggers);
+    (void)rpmdsFree(triggers);
+    triggers = NULL;
 
     /* For all primary keys, retrieve headers and fire triggers. */
     if (keys != NULL)
@@ -1559,7 +1566,8 @@ static void rpmpsmFini(void * _psm)
     psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
     psm->IPhe = _free(psm->IPhe);
     psm->NVRA = _free(psm->NVRA);
-    psm->triggers = rpmdsFree(psm->triggers);
+    (void)rpmdsFree(psm->triggers);
+    psm->triggers = NULL;
 /*@=nullstate@*/
 }
 

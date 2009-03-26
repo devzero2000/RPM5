@@ -191,8 +191,10 @@ Package freePackage(Package pkg)
     pkg->verifyFile = _free(pkg->verifyFile);
     pkg->sanityCheckFile = _free(pkg->sanityCheckFile);
 
-    pkg->header = headerFree(pkg->header);
-    pkg->ds = rpmdsFree(pkg->ds);
+    (void)headerFree(pkg->header);
+    pkg->header = NULL;
+    (void)rpmdsFree(pkg->ds);
+    pkg->ds = NULL;
     pkg->fileList = rpmiobFree(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList != NULL) {

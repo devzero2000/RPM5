@@ -170,8 +170,10 @@ static int rpmHeadersIdentical(Header first, Header second)
 	rpmds A = rpmdsThis(first, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 	rpmds B = rpmdsThis(second, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 	rc = rpmdsCompare(A, B);
-	A = rpmdsFree(A);
-	B = rpmdsFree(B);
+	(void)rpmdsFree(A);
+	A = NULL;
+	(void)rpmdsFree(B);
+	B = NULL;
     }
     one = _free(one);
     two = _free(two);
@@ -499,7 +501,8 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	}
 	mi = rpmdbFreeIterator(mi);
     }
-    obsoletes = rpmdsFree(obsoletes);
+    (void)rpmdsFree(obsoletes);
+    obsoletes = NULL;
 
     return 0;
 }
@@ -703,8 +706,10 @@ assert(he->p.str != NULL);
 	}
     }
     pi = rpmtsiFree(pi);
-    oldChk = rpmdsFree(oldChk);
-    newChk = rpmdsFree(newChk);
+    (void)rpmdsFree(oldChk);
+    oldChk = NULL;
+    (void)rpmdsFree(newChk);
+    newChk = NULL;
 
     /* If newer (or same) NEVRAO was already added, exit now. */
     if (ec)
@@ -834,12 +839,14 @@ void rpmnsClean(void)
 	/*@globals sysinfo_path, _sysinfo_path, rpmlibP, cpuinfoP, getconfP, unameP @*/
 	/*@modifies sysinfo_path, _sysinfo_path, rpmlibP, cpuinfoP, getconfP, unameP @*/
 {
-/*@-refcounttrans@*/
-    rpmlibP = rpmdsFree(rpmlibP);
-    cpuinfoP = rpmdsFree(cpuinfoP);
-    getconfP = rpmdsFree(getconfP);
-    unameP = rpmdsFree(unameP);
-/*@=refcounttrans@*/
+    (void)rpmdsFree(rpmlibP);
+    rpmlibP = NULL;
+    (void)rpmdsFree(cpuinfoP);
+    cpuinfoP = NULL;
+    (void)rpmdsFree(getconfP);
+    getconfP = NULL;
+    (void)rpmdsFree(unameP);
+    unameP = NULL;
 /*@-observertrans@*/
     _sysinfo_path = _free(_sysinfo_path);
 /*@=observertrans@*/
@@ -1400,7 +1407,8 @@ retry:
 	/* Search using the original {EVR,"",Flags} from the dep set. */
 	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", Flags);
 	xx = rpmdsSearch(sonameP, ds);
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
 	PRCO = rpmdsFreePRCO(PRCO);
 
 	/* Was the dependency satisfied? */
@@ -1790,10 +1798,14 @@ static int checkPackageSet(rpmts ts, const char * depName,
 		requires, conflicts, dirnames, linktos,
 		depName, tscolor, adding);
 
-	linktos = rpmdsFree(linktos);
-	dirnames = rpmdsFree(dirnames);
-	conflicts = rpmdsFree(conflicts);
-	requires = rpmdsFree(requires);
+	(void)rpmdsFree(linktos);
+	linktos = NULL;
+	(void)rpmdsFree(dirnames);
+	dirnames = NULL;
+	(void)rpmdsFree(conflicts);
+	conflicts = NULL;
+	(void)rpmdsFree(requires);
+	requires = NULL;
 	he->p.str = _free(he->p.str);
 
 	if (rc > ourrc)

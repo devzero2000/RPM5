@@ -507,7 +507,8 @@ static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds 
 {
     rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, EVR, RPMSENSE_PROBE);
     int ret = rpmdsMatch(cpufeature, cpuinfo);
-    cpufeature = rpmdsFree(cpufeature);
+    (void)rpmdsFree(cpufeature);
+    cpufeature = NULL;
     return ret;
 }
 
@@ -579,7 +580,8 @@ static rpmRC rpmCpuinfo(void)
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
-    cpuinfo = rpmdsFree(cpuinfo);
+    (void)rpmdsFree(cpuinfo);
+    cpuinfo = NULL;
 
     cpu = mi_re[0].pattern;
     if(cpu != NULL)
@@ -1177,7 +1179,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
 	PRCO = rpmdsFreePRCO(PRCO);
@@ -1192,7 +1195,8 @@ int rpmShowRC(FILE * fp)
 	    if (DNEVR != NULL)
 		fprintf(fp, "    %s\n", DNEVR+2);
 	}
-	ds = rpmdsFree(ds);
+	(void)rpmdsFree(ds);
+	ds = NULL;
 	fprintf(fp, "\n");
 
 	xx = rpmdsCpuinfo(&ds, NULL);
@@ -1210,7 +1214,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
     }
@@ -1226,7 +1231,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
 
@@ -1240,7 +1246,8 @@ int rpmShowRC(FILE * fp)
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    ds = rpmdsFree(ds);
+	    (void)rpmdsFree(ds);
+	    ds = NULL;
 	    fprintf(fp, "\n");
 	}
     }

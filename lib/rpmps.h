@@ -189,7 +189,7 @@ rpmps rpmpsCreate(void)
 /**
  * Destroy a problem set.
  * @param ps		problem set
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)

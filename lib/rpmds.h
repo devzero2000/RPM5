@@ -128,14 +128,14 @@ extern "C" {
  * Unreference a dependency set instance.
  * @param ds		dependency set
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmds rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 		/*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 #define	rpmdsUnlink(_ds, _msg)	\
-	((rpmds)rpmioUnlinkPoolItem((rpmioItem)(_ds), _msg, __FILE__, __LINE__))
+    ((rpmds)rpmioUnlinkPoolItem((rpmioItem)(_ds), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmds
  * Reference a dependency set instance.
@@ -147,16 +147,19 @@ rpmds rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 #define	rpmdsLink(_ds, _msg)	\
-	((rpmds)rpmioLinkPoolItem((rpmioItem)(_ds), _msg, __FILE__, __LINE__))
+    ((rpmds)rpmioLinkPoolItem((rpmioItem)(_ds), _msg, __FILE__, __LINE__))
 
 /** \ingroup rpmds
  * Destroy a dependency set.
  * @param ds		dependency set
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
-rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
+rpmds rpmdsFree(/*@killref@*/ /*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
+#define	rpmdsFree(_ds)	\
+    ((rpmds)rpmioFreePoolItem((rpmioItem)(_ds), __FUNCTION__, __FILE__, __LINE__))
+
 /** \ingroup rpmds
  * Create and load a dependency set.
  * @param h		header

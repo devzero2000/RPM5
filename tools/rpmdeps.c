@@ -439,8 +439,10 @@ fprintf(stderr, "\n*** Checking %s Requires(%d): against Provides(%d): closure:\
     }
 
     fc = rpmfcFree(fc);
-    P = rpmdsFree(P);
-    R = rpmdsFree(R);
+    (void)rpmdsFree(P);
+    P = NULL;
+    (void)rpmdsFree(R);
+    R = NULL;
     PRCO = rpmdsFreePRCO(PRCO);
 
     ec = 0;

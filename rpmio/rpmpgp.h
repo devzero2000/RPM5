@@ -1357,7 +1357,7 @@ extern pgpVSFlags pgpDigVSFlags;
  * Unreference a signature parameters instance.
  * @param dig		signature parameters
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 pgpDig pgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
@@ -1381,7 +1381,7 @@ pgpDig pgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg)
 /** \ingroup rpmpgp
  * Destroy a container for parsed OpenPGP packates.
  * @param dig		signature parameters container
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)

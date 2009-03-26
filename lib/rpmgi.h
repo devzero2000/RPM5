@@ -93,7 +93,7 @@ extern "C" {
  * Unreference a generalized iterator instance.
  * @param gi		generalized iterator
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmgi rpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
@@ -116,7 +116,7 @@ rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
 
 /** Destroy a generalized iterator.
  * @param gi		generalized iterator
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)

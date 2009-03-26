@@ -63,7 +63,8 @@ static int nitems = 0;
 static inline Item freeItem(Item item) {
     if (item != NULL) {
 	item->path = _free(item->path);
-	item->this = rpmdsFree(item->this);
+	(void)rpmdsFree(item->this);
+	item->this = NULL;
 	(void)headerFree(item->h);
 	item->h = NULL;
 	item = _free(item);
@@ -285,7 +286,8 @@ static rpmRC cacheStashLatest(rpmgi gi, Header h)
 #endif
 
 exit:
-    add = rpmdsFree(add);
+    (void)rpmdsFree(add);
+    add = NULL;
     return (ec ? RPMRC_NOTFOUND : RPMRC_OK);
 }
 

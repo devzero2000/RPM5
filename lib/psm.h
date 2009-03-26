@@ -180,7 +180,7 @@ extern "C" {
  * Unreference a package state machine instance.
  * @param psm		package state machine
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmpsm rpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
@@ -204,7 +204,7 @@ rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
 /**
  * Destroy a package state machine.
  * @param psm		package state machine
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,

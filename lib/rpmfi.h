@@ -251,7 +251,7 @@ extern "C" {
  * Unreference a file info set instance.
  * @param fi		file info set
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
@@ -637,7 +637,7 @@ int rpmfiSetHeader(rpmfi fi, /*@null@*/ Header h)
 /**
  * Destroy a file info set.
  * @param fi		file info set
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)

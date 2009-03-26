@@ -83,7 +83,7 @@ extern "C" {
  * Unreference a security context patterns instance.
  * @param sx		security context patterns
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmsx rpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
@@ -107,7 +107,7 @@ rpmsx rpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg)
 /**
  * Destroy a security context patterns.
  * @param sx		security context patterns
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 rpmsx rpmsxFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx)

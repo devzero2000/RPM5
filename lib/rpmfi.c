@@ -2110,7 +2110,8 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 
 exit:
     fi = rpmfiFree(fi);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
     if (fdepsp)
 	*fdepsp = av;
     else

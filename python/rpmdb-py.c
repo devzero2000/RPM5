@@ -14,7 +14,6 @@
 #include "header-py.h"
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@access Header @*/
 

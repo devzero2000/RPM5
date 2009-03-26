@@ -45,7 +45,7 @@ extern "C" {
  * Unreference a xar archive instance.
  * @param xar		xar archive
  * @param msg
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 rpmxar rpmxarUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmxar xar,

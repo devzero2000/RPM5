@@ -25,8 +25,6 @@
 
 #include "debug.h"
 
-#define headerFree() rpmioFreePoolItem()
-
 /** \ingroup python
  * \class Rpm
  * \brief START HERE / RPM base module for the Python API

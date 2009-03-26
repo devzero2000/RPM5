@@ -817,7 +817,7 @@ Header headerLink(Header h)
 /** \ingroup header
  * Dereference a header instance.
  * @param h		header
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
@@ -828,7 +828,7 @@ Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 /** \ingroup header
  * Dereference a header instance.
  * @param h		header
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 Header headerFree(/*@killref@*/ /*@null@*/ Header h)

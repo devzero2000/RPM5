@@ -254,7 +254,8 @@ static int missingokTag(Header h, HE_t he)
 	*t++ = '\0';
     }
     av = argvFree(av);
-    ds = rpmdsFree(ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = argv;

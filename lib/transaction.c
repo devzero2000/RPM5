@@ -636,7 +636,8 @@ static int ensureOlder(rpmts ts,
 
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
     rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
-    req = rpmdsFree(req);
+    (void)rpmdsFree(req);
+    req = NULL;
 
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);

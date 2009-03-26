@@ -115,7 +115,7 @@ hashTable htLink (/*@null@*/ hashTable ht)
 /**
  * Destroy hash table.
  * @param ht            pointer to hash table
- * @return		NULL always
+ * @return		NULL on last dereference
  */
 /*@null@*/
 hashTable htFree( /*@only@*/ hashTable ht)

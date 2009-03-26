@@ -213,7 +213,8 @@ if (fileURL[0] == '=') {
 	fileURL = NULL;
 	pkgx++;
     }
-    this = rpmdsFree(this);
+    (void)rpmdsFree(this);
+    this = NULL;
 } else
 #endif
 
