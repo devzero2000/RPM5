@@ -2279,7 +2279,8 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 	goto exit;
 
 exit:
-    repo->ts = rpmtsFree(repo->ts);
+    (void)rpmtsFree(repo->ts); 
+    repo->ts=NULL;
     repo->primary.digest = _free(repo->primary.digest);
     repo->primary.Zdigest = _free(repo->primary.Zdigest);
     repo->filelists.digest = _free(repo->filelists.digest);

@@ -356,7 +356,8 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     if (lua != NULL)
         rpmluaFree(lua);
     if (ts != NULL)
-        ts = rpmtsFree(ts);
+        (void)rpmtsFree(ts); 
+    ts=NULL;
     if (spec_iob != NULL)
         spec_iob = rpmiobFree(spec_iob);
     if (proc_iob != NULL)
@@ -1043,7 +1044,8 @@ ia->rbRun = rpmcliInstallRun;
 exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts=NULL;
 
     if (pipeChild) {
 	(void) fclose(stdout);

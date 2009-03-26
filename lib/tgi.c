@@ -282,7 +282,8 @@ fprintf(stdout, "======================= %d transaction elements\n\
     }
 
     gi = rpmgiFree(gi);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts=NULL;
     optCon = rpmcliFini(optCon);
 
     return rc;

@@ -474,7 +474,8 @@ static void rpmgiFini(void * _gi)
     }
     gi->tsi = rpmtsiFree(gi->tsi);
     gi->mi = rpmdbFreeIterator(gi->mi);
-    gi->ts = rpmtsFree(gi->ts);
+    (void)rpmtsFree(gi->ts); 
+    gi->ts=NULL;
 }
 
 /*@unchecked@*/ /*@null@*/

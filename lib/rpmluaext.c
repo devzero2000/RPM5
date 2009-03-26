@@ -174,7 +174,8 @@ static int rpmluaext_signature(lua_State *L)
     rc = rpmnsProbeSignature(ts, fn_data, fn_sig, fn_pkey, fp, 0);
 
     /* destroy transaction */
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts=NULL;
 
     /* provide results */
     lua_pushboolean(L, rc == RPMRC_OK);
@@ -264,7 +265,8 @@ static int rpmluaext_query(lua_State *L)
     rpmlogSetCallback(rpmlog_cb, rpmlog_cb_data);
 
     /* destroy transaction */
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts=NULL;
 
     return 1;
 }

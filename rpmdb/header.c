@@ -1325,7 +1325,8 @@ Header headerReload(Header h, int tag)
 
 /*@-onlytrans@*/
     uh = headerUnload(h, NULL);
-    h = headerFree(h);
+    (void) headerFree(h);
+    h = NULL ;
 /*@=onlytrans@*/
     if (uh == NULL)
 	return NULL;
@@ -2065,7 +2066,8 @@ struct headerIterator_s {
 HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
 {
     if (hi != NULL) {
-	hi->h = headerFree(hi->h);
+	(void) headerFree(hi->h);
+        hi->h = NULL ;
 	hi = _free(hi);
     }
     return hi;

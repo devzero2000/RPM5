@@ -620,7 +620,8 @@ main(int argc, char *argv[])
     freeGlobs();
 
     gi = rpmgiFree(gi);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts=NULL;
     optCon = rpmcliFini(optCon);
 
     return ec;

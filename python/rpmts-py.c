@@ -1521,7 +1521,8 @@ static void rpmts_dealloc(/*@only@*/ rpmtsObject * s)
 
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
-    s->ts = rpmtsFree(s->ts);
+    (void)rpmtsFree(s->ts); 
+    s->ts=NULL;
 
     if (s->scriptFd) Fclose(s->scriptFd);
     /* this will free the keyList, and decrement the ref count of all
@@ -1600,7 +1601,8 @@ static void rpmts_free(/*@only@*/ rpmtsObject * s)
 {
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
-    s->ts = rpmtsFree(s->ts);
+    (void)rpmtsFree(s->ts); 
+    s->ts=NULL;
 
     if (s->scriptFd)
 	Fclose(s->scriptFd);

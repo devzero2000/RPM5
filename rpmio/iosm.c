@@ -804,7 +804,8 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
 #if defined(_USE_RPMTS)
     (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			&iosm->op_digest);
-    iosm->iter->ts = rpmtsFree(iter->ts);
+    iosm->(void)rpmtsFree(iter->ts); 
+    iter->ts=NULL;
 #else
     iosm->iter->ts = NULL;
 #endif

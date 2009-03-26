@@ -3845,7 +3845,8 @@ main(int argc, char *argv[])
 
 exit:
 #if defined(_RPMFI_INTERNAL)
-    fts->ts = rpmtsFree(fts->ts);
+    (void)rpmtsFree(fts->ts); 
+    fts->ts=NULL;
     fts->fi = rpmfiFree(fts->fi);
     tagClean(NULL);     /* Free header tag indices. */
 #endif

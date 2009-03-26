@@ -389,7 +389,8 @@ exit:
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
 
-    psm->ts = rpmtsFree(psm->ts);
+    (void)rpmtsFree(psm->ts); 
+    psm->ts=NULL;
 
     return rpmrc;
 }
@@ -1548,7 +1549,8 @@ static void rpmpsmFini(void * _psm)
     psm->te = NULL;
 #endif
 /*@-internalglobs@*/
-    psm->ts = rpmtsFree(psm->ts);
+    (void)rpmtsFree(psm->ts); 
+    psm->ts=NULL;
 /*@=internalglobs@*/
 
     psm->sstates = _free(psm->sstates);

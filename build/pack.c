@@ -82,7 +82,8 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     }
 
     failedFile = _free(failedFile);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts); 
+    ts=NULL;
 
     return rc;
 }
@@ -381,7 +382,8 @@ int readRPM(const char *fileName, Spec *specp, void * l,
 			 &spec->packages->header);
 	/*@=mustmod@*/
 
-	ts = rpmtsFree(ts);
+	(void)rpmtsFree(ts); 
+    ts=NULL;
 
 	if (sigs) *sigs = NULL;			/* XXX HACK */
     }

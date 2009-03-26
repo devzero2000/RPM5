@@ -55,7 +55,8 @@ int main(int argc, char **argv)
 	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
 	/*@=mustmod@*/
 
-	ts = rpmtsFree(ts);
+	(void)rpmtsFree(ts); 
+    ts=NULL;
     }
 
     switch (rc) {
