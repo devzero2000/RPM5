@@ -16,6 +16,8 @@ LIBRPMDB_0
     dpkgEVRcmp;
     dpkgEVRcompare;
     dpkgEVRparse;
+    evr_tuple_match;
+    evr_tuple_mire;
     _fini;
     fpCacheCreate;
     fpCacheFree;

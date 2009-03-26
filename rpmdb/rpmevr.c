@@ -140,9 +140,9 @@ assert(b != NULL);
 static const char * _evr_tuple_match =
 	"^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
 /*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
-static const char * evr_tuple_match = NULL;
+const char * evr_tuple_match = NULL;
 /*@unchecked@*/ /*@refcounted@*/ /*@null@*/
-static miRE evr_tuple_mire = NULL;
+miRE evr_tuple_mire = NULL;
 
 static miRE rpmEVRmire(void)
 	/*@*/

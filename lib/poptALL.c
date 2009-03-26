@@ -472,6 +472,11 @@ rpmcliFini(poptContext optCon)
 #endif
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmwfPool;
+    extern const char * evr_tuple_match;
+    extern miRE evr_tuple_mire;
+
+    evr_tuple_match = _free(evr_tuple_match);
+    evr_tuple_mire = mireFree(evr_tuple_mire);
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
 
