@@ -1604,13 +1604,8 @@ static void rpmts_free(/*@only@*/ rpmtsObject * s)
 {
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
-<<<<<<< rpmts-py.c
     (void)rpmtsFree(s->ts);
     s->ts = NULL;
-=======
-    (void)rpmtsFree(s->ts); 
-    s->ts=NULL;
->>>>>>> 1.100
 
     if (s->scriptFd)
 	Fclose(s->scriptFd);
