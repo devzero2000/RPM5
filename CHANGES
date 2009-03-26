@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - devzero2000: continuing for refcount rewrite : add define of fooFree to rpmioFreePoolItem
+    - devzero2000: begin change programming style for refcount : rpmtsFree and headerFree
     - jbj: rpmio: rescusitate splint annotations.
     - jbj: getdate: ignore internalState changes.
     - jbj: poptIO: add --htdebug.
