@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: EVRtuple: fix: dig out the one time mire allocation leak.
     - jbj: use rpmioFreePoolItem for rpmds, eliminate rpmdsFree.
     - jbj: finish up using rpmioFreePoolItem() for rpmts and Header objects.
     - devzero2000: continuing for refcount rewrite : add define of fooFree to rpmioFreePoolItem

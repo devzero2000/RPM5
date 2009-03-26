@@ -135,9 +135,9 @@ int rpmEVRcmp(const char * a, const char * b)
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 static const char * _evr_tuple_match = "^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
 /*@unchecked@*/ /*@null@*/
-static const char * evr_tuple_match = NULL;
+const char * evr_tuple_match = NULL;
 /*@unchecked@*/ /*@null@*/
-static miRE evr_tuple_mire = NULL;
+miRE evr_tuple_mire = NULL;
 /*@unchecked@*/
 static int evr_tuple_nmire;
 
