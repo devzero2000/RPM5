@@ -23,7 +23,6 @@
 #include "rpmconstant.h"
 
 #include "rpmxs.h"
-#define headerFree() rpmioFreePoolItem()
 
 static int scalar2constant(SV * svconstant, const char * context, int * val) {
     int rc = 0;
@@ -78,16 +77,17 @@ void _rpm2header(rpmts ts, char * filename, int checkmode) {
     dSP;
     if ((fd = Fopen(filename, "r"))) {
         rc = rpmReadPackageFile(ts, fd, filename, &ret);
-	    if (checkmode) {
-	        XPUSHs(sv_2mortal(newSViv(rc)));
-		    ret = headerFree(ret); /* For checking the package, we don't keep the header */
+	if (checkmode) {
+	    XPUSHs(sv_2mortal(newSViv(rc)));
+	    (void)headerFree(ret); /* For checking the package, we don't keep the header */
+	    ret = NULL;
         } else {
             if (rc == 0) {
         	    XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", (void *)ret)));
             } else {
                 XPUSHs(sv_2mortal(&PL_sv_undef));
             }
-	    }
+	}
         Fclose(fd);
     } else {
         XPUSHs(sv_2mortal(&PL_sv_undef));

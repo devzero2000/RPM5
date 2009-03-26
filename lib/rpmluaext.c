@@ -32,9 +32,6 @@
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-
-
 /* RPM Lua function:
  * <result> = rpm.vercmp(
  *     <version1>  -- first  version (e.g. "N.N.N")
@@ -178,7 +175,7 @@ static int rpmluaext_signature(lua_State *L)
 
     /* destroy transaction */
     (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
 
     /* provide results */
     lua_pushboolean(L, rc == RPMRC_OK);
@@ -269,7 +266,7 @@ static int rpmluaext_query(lua_State *L)
 
     /* destroy transaction */
     (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
 
     return 1;
 }

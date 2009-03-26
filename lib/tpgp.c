@@ -73,7 +73,7 @@ _pgp_print = 1;
     rc = doit(ts, "RSA");
 
     (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
 
     optCon = rpmcliFini(optCon);
 

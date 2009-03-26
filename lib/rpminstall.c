@@ -30,7 +30,6 @@
 #include <rpmrollback.h>
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@access FD_t @*/	/* XXX void * arg */
 /*@access rpmts @*/	/* XXX ts->suggests */
@@ -587,7 +586,8 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    h = rpmgiReadHeader(gi, fn);
 	    if (h != NULL)
 		gi->h = headerLink(h);
-	    h = headerFree(h);
+	    (void)headerFree(h);
+	    h = NULL;
         }
 
 	/* === Check for "-bang" erasures within install transaction. */

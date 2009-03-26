@@ -340,7 +340,6 @@ LIBRPM_0
     rpmtsFilterFlags;
     rpmtsFindPubkey;
     rpmtsFlags;
-    rpmtsFree;
     rpmtsFreeLock;
     rpmtsGetKeyring;
     rpmtsGetTid;

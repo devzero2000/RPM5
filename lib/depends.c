@@ -25,7 +25,6 @@
 #include <rpmfi.h>
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@access tsortInfo @*/
 /*@access rpmte @*/		/* XXX for install <-> erase associate. */
@@ -398,7 +397,8 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 /*@=nullptrarith@*/
 
     }
-    debuginfoHeader = headerFree(debuginfoHeader);
+    (void)headerFree(debuginfoHeader);
+    debuginfoHeader = NULL;
 
     return (int)nrefs;
 }

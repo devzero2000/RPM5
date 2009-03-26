@@ -25,7 +25,6 @@
 #include <rpmcli.h>
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access Header @*/		/* XXX void * arg */
@@ -290,11 +289,14 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		}
 	    }
 	    hi = headerFini(hi);
-	    oh = headerFree(oh);
+	    (void)headerFree(oh);
+	    oh = NULL;
 
-	    sigh = headerFree(sigh);
+	    (void)headerFree(sigh);
+	    sigh = NULL;
 	    sigh = headerLink(nh);
-	    nh = headerFree(nh);
+	    (void)headerFree(nh);
+	    nh = NULL;
 	}
 
 if (sigh != NULL) {
@@ -457,7 +459,8 @@ exit:
     if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 
     lead = _free(lead);
-    sigh = headerFree(sigh);
+    (void)headerFree(sigh);
+    sigh = NULL;
 
     gi = rpmgiFree(gi);
 
@@ -701,7 +704,8 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
 exit:
     /* Clean up. */
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
     dig = pgpDigFree(dig, "rpmcliImportPubkey");
     n = _free(n);
     u = _free(u);
@@ -824,7 +828,8 @@ pgpDig dig = fdGetDig(fd);
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
 	    xx = headerGet(h, he, 0);
 	    if (!xx || he->p.ptr == NULL) {
-		h = headerFree(h);
+		(void)headerFree(h);
+		h = NULL;
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, _("headerGet failed"),
 			_("failed to retrieve original header\n"));
 		rc = RPMRC_FAIL;
@@ -841,7 +846,8 @@ pgpDig dig = fdGetDig(fd);
 	    (void) rpmDigestUpdate(dig->hdrctx, he->p.ptr, he->c);
 	    he->p.ptr = _free(he->p.ptr);
 	}
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
     }
 
     if (xar != NULL) {
@@ -1126,7 +1132,8 @@ assert(she->p.ptr != NULL);
 
 exit:
     rpmtsCleanDig(ts);
-    sigh = headerFree(sigh);
+    (void)headerFree(sigh);
+    sigh = NULL;
     return res;
 }
 

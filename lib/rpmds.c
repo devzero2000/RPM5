@@ -98,7 +98,6 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #include <rpmds.h>
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@access rpmns @*/
 /*@access EVR_t @*/
@@ -165,7 +164,8 @@ static void rpmdsFini(void * _ds)
 	    ds->N = _free(ds->N);
 	    ds->EVR = _free(ds->EVR);
 	    ds->Flags = _free(ds->Flags);
-	    ds->h = headerFree(ds->h);
+	    (void)headerFree(ds->h);
+	    ds->h = NULL;
 	}
 
 	ds->DNEVR = _free(ds->DNEVR);

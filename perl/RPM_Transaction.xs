@@ -249,10 +249,11 @@ new(class, ...)
     RETVAL
 
 void
-DESTROY(t)
-	rpmts t
+DESTROY(ts)
+	rpmts ts
     CODE:
-	t = rpmtsFree(t);
+	(void)rpmtsFree(ts);
+	ts = NULL;
 
 void
 setrootdir(ts, root)
@@ -466,7 +467,8 @@ run(ts, callback, ...)
     ps = rpmtsProblems(ts);
     RETVAL = rpmtsRun(ts, ps, probFilter);
     ps = rpmpsFree(ps);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
     OUTPUT:
     RETVAL
 

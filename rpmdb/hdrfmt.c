@@ -59,7 +59,6 @@ extern char *nl_langinfo (nl_item __item)
 #include "misc.h"
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@unchecked@*/
 extern int _hdr_debug;
@@ -6365,7 +6364,8 @@ exit:
     if (errmsg)
 	*errmsg = hsa->errmsg;
 /*@=dependenttrans =observertrans @*/
-    hsa->h = headerFree(hsa->h);
+    (void)headerFree(hsa->h);
+    hsa->h = NULL;
     hsa->fmt = _free(hsa->fmt);
 /*@-retexpose@*/
     return hsa->val;

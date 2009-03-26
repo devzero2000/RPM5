@@ -28,7 +28,6 @@
 #include <rpmrollback.h>
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 /*@access FD_t @*/	/* XXX void * arg */
 /*@access rpmts @*/
@@ -56,7 +55,8 @@ IDTX IDTXfree(IDTX idtx)
 	if (idtx->idt)
 	for (i = 0; i < idtx->nidt; i++) {
 	    IDT idt = idtx->idt + i;
-	    idt->h = headerFree(idt->h);
+	    (void)headerFree(idt->h);
+	    idt->h = NULL;
 	    idt->key = _free(idt->key);
 	}
 	idtx->idt = _free(idtx->idt);
@@ -224,7 +224,8 @@ assert(!strcmp(av[i], origin));
 	}
 	idtx->nidt++;
 bottom:
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
     }
 
     for (i = 0; i < ac; i++)
@@ -566,7 +567,8 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 		if (rc < 0)
 		    goto exit;
 #ifdef	NOTYET
-	    	rp->h = headerFree(rp->h);
+	    	(void)headerFree(rp->h);
+		rpm->h = NULL;
 #endif
 		rp->done = 1;
 	    }

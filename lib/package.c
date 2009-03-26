@@ -17,7 +17,6 @@
 #include "rpmts.h"
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -351,7 +350,8 @@ exit:
 	/* Bump reference count for return. */
 	*hdrp = headerLink(h);
     }
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     /* Accumulate time reading package header. */
     (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_READHDR),
@@ -360,7 +360,8 @@ exit:
 		opsave);
 
     rpmtsCleanDig(ts);
-    sigh = headerFree(sigh);
+    (void)headerFree(sigh);
+    sigh = NULL;
     return rc;
 }
 /*@=mods@*/

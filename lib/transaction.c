@@ -45,8 +45,6 @@
 
 #include "debug.h"
 
-#define headerFree() rpmioFreePoolItem()
-
 /*@access dbiIndexSet @*/
 
 /*@access fnpyKey @*/
@@ -1390,7 +1388,8 @@ assert(psm != NULL);
 		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 /*@=compdef =usereleased @*/
 		p->fd = NULL;
-		p->h = headerFree(p->h);
+		(void)headerFree(p->h);
+		p->h = NULL;
 	    }
 	}
 	pi = rpmtsiFree(pi);
@@ -1893,8 +1892,10 @@ assert(psm != NULL);
 	/* Would have freed header above in TR_ADD portion of switch
 	 * but needed the header to add it to the autorollback transaction.
 	 */
-	if (rpmteType(p) == TR_ADDED)
-	    p->h = headerFree(p->h);
+	if (rpmteType(p) == TR_ADDED) {
+	    (void)headerFree(p->h);
+	    p->h = NULL;
+	}
 
 	xx = rpmdbSync(rpmtsGetRdb(ts));
 
@@ -1981,7 +1982,8 @@ assert(psm != NULL);
 /*@=compdef =usereleased @*/
 	    	p->fd = NULL;
 	    	p->fi = rpmfiFree(p->fi);
-	    	p->h = headerFree(p->h);
+	    	(void)headerFree(p->h);
+		p->h = NULL;
 	    }
 /*@=nullpass@*/
 	}

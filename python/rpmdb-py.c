@@ -193,7 +193,8 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
     }
 
     ho = hdr_Wrap(h);
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     return ho;
 }

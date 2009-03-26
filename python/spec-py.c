@@ -25,8 +25,8 @@
  * \code
  *  import rpm
  *  rpm.addMacro("_topdir","/path/to/topdir")
- *  ts=rpm.ts()
- *  s=ts.parseSpec("foo.spec")
+ *  ts = rpm.ts()
+ *  s = ts.parseSpec("foo.spec")
  *  print s.prep()
  * \endcode
  *

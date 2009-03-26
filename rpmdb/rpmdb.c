@@ -40,7 +40,6 @@ extern void rpmtsCleanDig(void * ts)
 #include "legacy.h"
 
 #include "debug.h"
-#define headerFree() rpmioFreePoolItem()
 
 #if defined(__LCLINT__)
 #define	UINT32_T	u_int32_t
@@ -1563,7 +1562,8 @@ if (rc == 0)
 	dirNames = _free(dirNames);
 /*@=usereleased@*/
 	dirIndexes = _free(dirIndexes);
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
     }
 
     rec = _free(rec);
@@ -1915,7 +1915,8 @@ assert(v.data != NULL);
 	v.size = 0;
     }
 
-    mi->mi_h = headerFree(mi->mi_h);
+    (void)headerFree(mi->mi_h);
+    mi->mi_h = NULL;
 
 /*@-nullstate@*/
     return rc;
@@ -3110,7 +3111,8 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 
     (void) unblockSignals(db, &signalMask);
 
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     /* XXX return ret; */
     return 0;
@@ -4057,7 +4059,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts);
-		nh = headerFree(nh);
+		(void)headerFree(nh);
+		nh = NULL;
 	    }
 
 	    if (rc) {

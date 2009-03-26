@@ -75,7 +75,8 @@ new(perlclass, specfile = NULL, ...)
     PUTBACK;
     _newspec(ts, specfile, passphrase, rootdir, cookies, anyarch, force, verify);
     SPAGAIN;
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
     
 void
 DESTROY(spec)
@@ -173,7 +174,8 @@ check(spec, ts = NULL)
     ps = rpmtsProblems(ts);
     if (ps &&  rpmpsNumProblems(ps)) /* if no problem, return undef */
         XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Problems", ps)));
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
     SPAGAIN;
     
     
@@ -185,7 +187,8 @@ build(spec, sv_buildflags)
     rpmts ts = rpmtsCreate();
     CODE:
     RETVAL = _specbuild(ts, spec, sv_buildflags);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
     OUTPUT:
     RETVAL
 

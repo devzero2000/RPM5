@@ -139,21 +139,6 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 /*@=nullstate@*/
 }
 
-#ifndef	BUGGY
-Header headerFree(Header h)
-{
-    /* XXX There's a h = headerFree(h) somewhere that depends on
-     * a NULL being returned from headerFree(). Wire up a NULL
-     * return from rpmioFreePoolItem() in headerFree() for now.
-     * Note: the code that depends on headerFree() returning NULL
-     * is on some lazy deallocation teardown path while trying to exit from
-     * rpm -qavv that is dereferencing a Header more often than necessary.
-     */
-    (void) rpmioFreePoolItem((rpmioItem)h, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
-}
-#endif
-
 /*@unchecked@*/ /*@null@*/
 rpmioPool _headerPool;
 
@@ -1325,7 +1310,7 @@ Header headerReload(Header h, int tag)
 
 /*@-onlytrans@*/
     uh = headerUnload(h, NULL);
-    (void) headerFree(h);
+    (void)headerFree(h);
     h = NULL ;
 /*@=onlytrans@*/
     if (uh == NULL)
@@ -2066,8 +2051,8 @@ struct headerIterator_s {
 HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
 {
     if (hi != NULL) {
-	(void) headerFree(hi->h);
-        hi->h = NULL ;
+	(void)headerFree(hi->h);
+        hi->h = NULL;
 	hi = _free(hi);
     }
     return hi;

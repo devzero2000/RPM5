@@ -211,14 +211,16 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     /* XXX this legacy switch is a hack, needs to be removed. */
     if (legacy) {
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
-	headerFree(s->h);
+	(void)headerFree(s->h);
+	s->h = NULL;
     }
     {	size_t len;
 	buf = headerUnload(h, &len);
 	nb = len;
 	nb -= 8;	/* XXX HEADER_MAGIC_NO */
     }
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     if (buf == NULL || nb == 0) {
 	PyErr_SetString(pyrpmError, "can't unload bad header\n");
@@ -336,6 +338,7 @@ static void hdr_dealloc(hdrObject * s)
 	/*@*/
 {
     if (s->h) headerFree(s->h);
+    s->h = NULL;
     PyObject_Del(s);
 }
 
@@ -663,7 +666,8 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     headerAllocated(h);
 
     hdr = hdr_Wrap(h);
-    h = headerFree(h);	/* XXX ref held by hdr */
+    (void)headerFree(h);	/* XXX ref held by hdr */
+    h = NULL;
 
     return (PyObject *) hdr;
 }
@@ -705,7 +709,8 @@ PyObject * rpmReadHeaders (FD_t fd)
 	}
 	Py_DECREF(hdr);
 
-	h = headerFree(h);	/* XXX ref held by hdr */
+	(void)headerFree(h);	/* XXX ref held by hdr */
+	h = NULL;
 
 	Py_BEGIN_ALLOW_THREADS
 	{   const char item[] = "Header";
@@ -818,7 +823,8 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args,
     if (h && tuple) {
 	PyTuple_SET_ITEM(tuple, 0, (PyObject *) hdr_Wrap(h));
 	PyTuple_SET_ITEM(tuple, 1, PyLong_FromLong(offset));
-	h = headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
     } else {
 	Py_INCREF(Py_None);
 	Py_INCREF(Py_None);

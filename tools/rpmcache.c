@@ -28,10 +28,6 @@ const char *__progname;
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-#define headerFree() rpmioFreePoolItem()
-
-
 static int _debug = 0;
 
 /* XXX should be flag in ts */
@@ -68,7 +64,8 @@ static inline Item freeItem(Item item) {
     if (item != NULL) {
 	item->path = _free(item->path);
 	item->this = rpmdsFree(item->this);
-	item->h = headerFree(item->h);
+	(void)headerFree(item->h);
+	item->h = NULL;
 	item = _free(item);
     }
     return NULL;
@@ -625,7 +622,7 @@ main(int argc, char *argv[])
 
     gi = rpmgiFree(gi);
     (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
     optCon = rpmcliFini(optCon);
 
     return ec;

@@ -34,9 +34,6 @@
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-
-
 /*@access FD_t @*/	/* XXX void ptr args */
 /*@access FSMI_t @*/
 /*@access IOSM_t @*/
@@ -141,7 +138,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
 /*@-internalglobs@*/ /* XXX rpmswExit() */
 	(void)rpmtsFree(iter->ts); 
-    iter->ts=NULL;
+	iter->ts = NULL;
 /*@=internalglobs@*/
     }
     return _free(p);
@@ -752,7 +749,7 @@ fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
 
     fsm->lmtab = _free(fsm->lmtab);
     (void)rpmtsFree(fsm->iter->ts); 
-    fsm->iter->ts=NULL;
+    fsm->iter->ts = NULL;
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
 /*@-refcounttrans@*/	/* FIX: XfdFree annotation */

@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: finish up using rpmioFreePoolItem() for rpmts and Header objects.
     - devzero2000: continuing for refcount rewrite : add define of fooFree to rpmioFreePoolItem
     - devzero2000: begin change programming style for refcount : rpmtsFree and headerFree
     - jbj: rpmio: rescusitate splint annotations.

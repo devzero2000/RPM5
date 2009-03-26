@@ -54,9 +54,6 @@ typedef struct Spec_s * Spec;
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-
-
 /*@access FD_t @*/	/* XXX void ptr args */
 /*@access IOSMI_t @*/
 /*@access IOSM_t @*/
@@ -807,8 +804,8 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
 #if defined(_USE_RPMTS)
     (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			&iosm->op_digest);
-    iosm->(void)rpmtsFree(iter->ts); 
-    iter->ts=NULL;
+    (void)rpmtsFree(iter->ts); 
+    iter->ts = NULL;
 #else
     iosm->iter->ts = NULL;
 #endif

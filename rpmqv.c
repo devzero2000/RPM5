@@ -56,9 +56,6 @@ extern const char *__progname;
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-
-
 enum modes {
 
     MODE_QUERY		= (1 <<  0),
@@ -360,7 +357,7 @@ static void integrity_check(const char *progname, enum modes progmode_num)
         rpmluaFree(lua);
     if (ts != NULL)
         (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
     if (spec_iob != NULL)
         spec_iob = rpmiobFree(spec_iob);
     if (proc_iob != NULL)
@@ -1048,7 +1045,7 @@ exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
     (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
 
     if (pipeChild) {
 	(void) fclose(stdout);

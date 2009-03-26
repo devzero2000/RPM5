@@ -43,10 +43,6 @@
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-#define headerFree() rpmioFreePoolItem()
-
-
 #define	_PSM_DEBUG	0
 /*@unchecked@*/
 int _psm_debug = _PSM_DEBUG;
@@ -224,7 +220,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     fi->h = headerLink(h);
-    h = headerFree(h);
+    (void)headerFree(h);
+    h = NULL;
 
     if (fi == NULL) {	/* XXX can't happen */
 	rpmrc = RPMRC_FAIL;
@@ -377,7 +374,8 @@ exit:
     psm->fi = rpmfiFree(psm->fi);
     psm->te = NULL;
 
-    if (h != NULL) h = headerFree(h);
+    if (h != NULL) (void)headerFree(h);
+    h = NULL;
 
     if (fi != NULL) {
 	(void) rpmteSetHeader(fi->te, NULL);
@@ -394,7 +392,7 @@ exit:
     rpmtsClean(ts);
 
     (void)rpmtsFree(psm->ts); 
-    psm->ts=NULL;
+    psm->ts = NULL;
 
     return rpmrc;
 }
@@ -1554,7 +1552,7 @@ static void rpmpsmFini(void * _psm)
 #endif
 /*@-internalglobs@*/
     (void)rpmtsFree(psm->ts); 
-    psm->ts=NULL;
+    psm->ts = NULL;
 /*@=internalglobs@*/
 
     psm->sstates = _free(psm->sstates);
@@ -2234,7 +2232,8 @@ psm->te->h = headerLink(fi->h);
 			}
 			hi = headerFini(hi);
 
-			oh = headerFree(oh);
+			(void)headerFree(oh);
+			oh = NULL;
 			uh = _free(uh);
 		    } else
 			break;	/* XXX shouldn't ever happen */
@@ -2277,7 +2276,8 @@ psm->te->h = headerLink(fi->h);
 		    break;
 		}
 		rc = rpmpkgWrite(item, psm->fd, sigh, NULL);
-		sigh = headerFree(sigh);
+		(void)headerFree(sigh);
+		sigh = NULL;
 		if (rc != RPMRC_OK) {
 		    break;
 		}
@@ -2602,16 +2602,21 @@ assert(psm->te != NULL);
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
 #ifdef	DYING
 if (psm->te != NULL)
-if (psm->te->h != NULL)
-psm->te->h = headerFree(psm->te->h);
+if (psm->te->h != NULL) {
+(void)headerFree(psm->te->h);
+psm->te->h = NULL;
+}
 #else
 	    if (psm->te != NULL)
 		(void) rpmteSetHeader(psm->te, NULL);
 #endif
-	    if (fi->h != NULL)
-		fi->h = headerFree(fi->h);
+	    if (fi->h != NULL) {
+		(void)headerFree(fi->h);
+		fi->h = NULL;
+	    }
  	}
-	psm->oh = headerFree(psm->oh);
+	(void)headerFree(psm->oh);
+	psm->oh = NULL;
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->payload_format = _free(psm->payload_format);

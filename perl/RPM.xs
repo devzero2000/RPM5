@@ -220,5 +220,6 @@ installsrpm(filename, sv_vsflags = NULL)
     PUTBACK;
     _installsrpms(ts, filename);
     SPAGAIN;
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
 

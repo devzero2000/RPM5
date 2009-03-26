@@ -98,13 +98,15 @@ rpm2header(filename, sv_vsflags = NULL)
     rpmtsSetVSFlags(ts, vsflags);
     _rpm2header(ts, filename, 0);
     SPAGAIN;
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
 
 void
 DESTROY(h)
 	Header h
     CODE:
-	headerFree(h);
+	(void)headerFree(h);
+	h = NULL;
 
 #
 # OO methodes
@@ -445,7 +447,8 @@ files(header, ts = NULL)
         ts = rpmtsCreate();
     RETVAL = rpmfiNew(ts, header, RPMTAG_BASENAMES, 0);
     if (RETVAL != NULL) RETVAL = rpmfiInit(RETVAL, 0);
-    ts = rpmtsFree(ts);
+    (void)rpmtsFree(ts);
+    ts = NULL;
     OUTPUT:
     RETVAL
  

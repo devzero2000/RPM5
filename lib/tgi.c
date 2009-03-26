@@ -19,9 +19,6 @@
 
 #include "debug.h"
 
-#define rpmtsfree() rpmioFreePoolItem()
-
-
 static const char * gitagstr = NULL;
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;
@@ -286,7 +283,7 @@ fprintf(stdout, "======================= %d transaction elements\n\
 
     gi = rpmgiFree(gi);
     (void)rpmtsFree(ts); 
-    ts=NULL;
+    ts = NULL;
     optCon = rpmcliFini(optCon);
 
     return rc;

@@ -38,7 +38,6 @@ LIBRPMDB_0
     headerDefaultFormats;
     headerDel;
     headerFini;
-    headerFree;
     headerGet;
     headerGetBaseURL;
     headerSetBaseURL;
