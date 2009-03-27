@@ -32,6 +32,7 @@
 #include "debug.h"
 
 /*@access rpmts @*/
+/*@access rpmxar @*/
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access Header @*/            /* XXX compared with NULL */
@@ -167,7 +168,9 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 assert(dig != NULL);
 assert(sigp != NULL);
 assert(pubp != NULL);
+/*@-sefparams@*/
 assert(rpmtsDig(ts) == dig);
+/*@=sefparams@*/
 
 #if 0
 fprintf(stderr, "==> find sig id %08x %08x ts pubkey id %08x %08x\n",
@@ -553,7 +556,7 @@ exit:
     if (rc == RPMRC_OK && leadp != NULL)
 	*leadp = l;
     else
-	l = _free(l);
+	/*@-dependenttrans@*/ l = _free(l); /*@=dependenttrans@*/
 	
     if (msg != NULL && buf[0] != '\0') {
 	buf[sizeof(buf)-1] = '\0';
@@ -620,8 +623,10 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen
     int fdno = Fileno(fd);
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
+/*@-type@*/
 	st->st_size = 0;
 	st->st_size -= nl + siglen + pad + datalen;
+/*@=type@*/
     } else
 #endif
     if (Fstat(fd, st) < 0)

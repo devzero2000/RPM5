@@ -313,6 +313,10 @@ struct rpmts_s {
 
     uint32_t arbgoal;		/*!< Autorollback goal */
 
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* _RPMTS_INTERNAL */
 
@@ -598,7 +602,8 @@ rpmps rpmtsProblems(rpmts ts)
  * @param ts		transaction set
  */
 void rpmtsCleanDig(rpmts ts)
-	/*@modifies ts @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmts
  * Free memory needed only for dependency checks and ordering.
@@ -756,7 +761,8 @@ uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
  * @return		signature/pubkey constants.
  */
 pgpDig rpmtsDig(rpmts ts)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmts
  * Return OpenPGP pubkey constants.
@@ -766,7 +772,8 @@ pgpDig rpmtsDig(rpmts ts)
 /*@-exportlocal@*/
 /*@exposed@*/ /*@null@*/
 pgpDigParams rpmtsPubkey(const rpmts ts)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
 /** \ingroup rpmts

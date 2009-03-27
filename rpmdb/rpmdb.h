@@ -465,6 +465,10 @@ struct rpmdb_s {
     struct rpmop_s db_putops;	/*!< dbiPut statistics. */
     struct rpmop_s db_delops;	/*!< dbiDel statistics. */
 
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* defined(_RPMDB_INTERNAL) */
 
@@ -891,7 +895,9 @@ rpmdb rpmdbLink (rpmdb db, const char * msg)
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
-		int mode, int perms, int flags);
+		int mode, int perms, int flags)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** @todo document rpmdbOpenDatabase
  */

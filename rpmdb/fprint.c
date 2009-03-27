@@ -13,12 +13,15 @@
 #include "fprint.h"
 #include "debug.h"
 
+/*@access hashTable @*/
+
 fingerPrintCache fpCacheCreate(int sizeHint)
 {
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
     fpc->ht = htCreate(sizeHint * 2, 0, 1, NULL, NULL);
+assert(fpc->ht != NULL);
     return fpc;
 }
 
@@ -135,8 +138,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    /*@-usereleased@*/	/* LCL: contiguous malloc confusion */
 	    dn += sizeof(*newEntry);
 	    strcpy(dn, (*buf != '\0' ? buf : "/"));
-	    newEntry->ino = sb.st_ino;
-	    newEntry->dev = sb.st_dev;
+	    newEntry->ino = (ino_t)sb.st_ino;
+	    newEntry->dev = (dev_t)sb.st_dev;
 	    newEntry->dirName = dn;
 	    fp.entry = newEntry;
 

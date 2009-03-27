@@ -66,7 +66,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	struct stat sb, * st = &sb;
 	if (stat(path, st) < 0)
 	    return -1;
-	*fsizep = st->st_size;
+	*fsizep = (size_t)st->st_size;
     }
 
     fdno = open(path, O_RDONLY);
@@ -242,7 +242,9 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
     /* Reap the prelink -y helper. */
     if (pid) {
 	int status;
+/*@+longunsignedintegral@*/
 	(void) waitpid(pid, &status, 0);
+/*@=longunsignedintegral@*/
 	if (!WIFEXITED(status) || WEXITSTATUS(status))
 	    rc = 1;
     }

@@ -26,10 +26,12 @@ EVR_t rpmEVRnew(uint32_t Flags, int initialize)
     EVR_t evr = xcalloc(1, sizeof(*evr));
     evr->Flags = Flags;
     if (initialize) {
+/*@-observertrans -readonlytrans @*/
 	evr->F[RPMEVR_E] = "0";
 	evr->F[RPMEVR_V] = "";
 	evr->F[RPMEVR_R] = "";
 	evr->F[RPMEVR_D] = "";
+/*@=observertrans =readonlytrans @*/
     }
     return evr;
 }
@@ -69,7 +71,9 @@ static inline int xisrpmalpha(int c)
 	rc = xispunct(c);
     if (rc && _rpmnotalpha && *_rpmnotalpha)
 	rc = (strchr(_rpmnotalpha, c) == NULL);
+/*@-globstate@*/
     return rc;
+/*@=globstate@*/
 }
 
 int rpmEVRcmp(const char * a, const char * b)
@@ -161,7 +165,9 @@ static miRE rpmEVRmire(void)
 
     }
 assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
+/*@-globstate -retalias@*/
     return evr_tuple_mire;
+/*@=globstate =retalias@*/
 }
 
 #ifndef	DYING
@@ -346,6 +352,7 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     int result;
 
     /* XXX HACK: postpone committing to single "missing" value for now. */
+/*@-mods -observertrans -readonlytrans @*/
     if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
     if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
     if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
@@ -354,6 +361,7 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
     if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
     if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
+/*@=mods =observertrans =readonlytrans @*/
     sense = rpmEVRcompare(a, b);
 
     /* Detect overlap of {A,B} range. */
