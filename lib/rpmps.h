@@ -86,6 +86,10 @@ struct rpmps_s {
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /**

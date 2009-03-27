@@ -72,6 +72,10 @@ struct rpmsx_s {
     int nsxs;			/*!< No. of file stems. */
     int maxsxs;			/*!< No. of allocated file stems. */
     int reverse;		/*!< Reverse traversal? */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* defined(_RPMSX_INTERNAL) */
 

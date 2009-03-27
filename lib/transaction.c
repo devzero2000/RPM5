@@ -1184,7 +1184,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
 	const char * fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+/*@-moduncon@*/
 	int xx = matchpathcon_init(fn);
+/*@=moduncon@*/
         if (xx == -1)
 	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
 	fn = _free(fn);
@@ -1972,8 +1974,10 @@ assert(psm != NULL);
 	pi = rpmtsiFree(pi);
     }
 
+/*@-moduncon -noeffectuncon @*/
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
 	matchpathcon_fini();
+/*@=moduncon =noeffectuncon @*/
 
     lock = rpmtsFreeLock(lock);
 

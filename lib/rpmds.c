@@ -173,11 +173,12 @@ static void rpmdsFini(void * _ds)
     ds->include = mireFreeAll(ds->include, ds->ninclude);
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmdsPool;
 
 static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmdsPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmdsPool, fileSystem, internalState @*/
 {
     rpmds ds;
 
@@ -933,10 +934,10 @@ static rpmds rpmdsDup(const rpmds ods)
 #endif
     size_t nb;
 
+/*@-assignexpose -castexpose @*/
     ds->h = (ods->h != NULL ? headerLink(ods->h) : NULL);
-/*@-assignexpose@*/
     ds->Type = ods->Type;
-/*@=assignexpose@*/
+/*@=assignexpose =castexpose @*/
     ds->tagN = ods->tagN;
     ds->Count = ods->Count;
     ds->i = ods->i;
@@ -3591,8 +3592,8 @@ static int rpmdsNAcmp(rpmds A, rpmds B)
     return rc;
 }
 
-/*@unchecked@*/ /*@null@*/
-static const char * evr_tuple_order = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+const char * evr_tuple_order = NULL;
 
 /**
  * Return precedence permutation string.
@@ -3600,15 +3601,20 @@ static const char * evr_tuple_order = NULL;
  */
 /*@observer@*/
 static const char * rpmdsEVRorder(void)
-	/*@*/
+	/*@globals evr_tuple_order @*/
+	/*@modifies evr_tuple_order @*/
 {
     if (evr_tuple_order == NULL) {
+/*@-mods@*/
 	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
+/*@=mods@*/
 	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
 	    evr_tuple_order = xstrdup("EVR");
     }
 assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
+/*@-freshtrans@*/
     return evr_tuple_order;
+/*@=freshtrans@*/
 }
 
 int rpmdsCompare(const rpmds A, const rpmds B)
@@ -3659,7 +3665,7 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
     for (s = rpmdsEVRorder(); *s; s++) {
 	int ix;
         switch ((int)*s) {
-        default:        continue;       /*@notreached@*/ break;
+        default:        continue;       /*@notreached@*//*@switchbreak@*/ break;
         case 'E':
 	    ix = RPMEVR_E;
 	    if (a->F[ix] && *a->F[ix] && b->F[ix] && *b->F[ix])

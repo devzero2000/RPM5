@@ -453,10 +453,14 @@ if (_rpmal_debug)
 fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 /*@=modfilesys@*/
 
+/*@-assignexpose -castexpose @*/
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
     alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
+/*@=assignexpose =castexpose @*/
 
+/*@-castexpose@*/
     fi = rpmfiLink(alp->fi, "Files index (rpmalAdd)");
+/*@=castexpose@*/
     fi = rpmfiInit(fi, 0);
     if (rpmfiFC(fi) > 0) {
 	dirInfo dieNeedle =

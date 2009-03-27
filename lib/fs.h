@@ -28,8 +28,7 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 		/*@null@*/ /*@out@*/ uint32_t * num)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *listptr, *num, fileSystem, internalState @*/
-	/*@requires maxSet(listptr) >= 0 /\ maxSet(num) >= 0 @*/
-	/*@ensures maxRead(num) == 0 @*/;
+	/*@requires maxSet(listptr) >= 0 /\ maxSet(num) >= 0 @*/;
 /*@=incondefs@*/
 
 /**
@@ -50,8 +49,7 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
 	/*@modifies *usagesPtr, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(fileList) >= 0 /\ maxSet(fssizes) == 0
-		/\ maxSet(usagesPtr) >= 0 @*/
-	/*@ensures maxRead(usagesPtr) == 0 @*/;
+		/\ maxSet(usagesPtr) >= 0 @*/;
 /*@=incondefs@*/
 
 #ifdef __cplusplus

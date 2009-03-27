@@ -496,8 +496,10 @@ rpmps rpmtsProblems(rpmts ts)
     static const char msg[] = "rpmtsProblems";
     rpmps ps = NULL;
     if (ts) {
+/*@-castexpose@*/
 	if (ts->probs)
 	    ps = rpmpsLink(ts->probs, msg);
+/*@=castexpose@*/
     }
     return ps;
 }
@@ -612,7 +614,7 @@ static void rpmtsPrintStats(rpmts ts)
 }
 
 static void rpmtsFini(void * _ts)
-	/*@modifies *_ts @*/
+	/*@modifies _ts @*/
 {
     rpmts ts = _ts;
 
@@ -643,17 +645,15 @@ static void rpmtsFini(void * _ts)
     ts->dsi = _free(ts->dsi);
 
     if (ts->scriptFd != NULL) {
-/*@-refcounttrans@*/	/* FIX: XfdFree annotation */
+/*@-assignexpose@*/
 	ts->scriptFd = fdFree(ts->scriptFd, __FUNCTION__);
-/*@=refcounttrans@*/
+/*@=assignexpose@*/
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
     ts->currDir = _free(ts->currDir);
 
-/*@-type +voidabstract @*/	/* FIX: double indirection */
     ts->order = _free(ts->order);
-/*@=type =voidabstract @*/
     ts->orderAlloced = 0;
 
     ts->pkpkt = _free(ts->pkpkt);
@@ -673,11 +673,12 @@ static void rpmtsFini(void * _ts)
     }
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtsPool;
 
 static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmtsPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmtsPool, fileSystem, internalState @*/
 {
     rpmts ts;
 
@@ -833,13 +834,15 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 
     if (ts != NULL) {
 	if (ts->scriptFd != NULL) {
+/*@-assignexpose@*/
 	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
+/*@=assignexpose@*/
 	    ts->scriptFd = NULL;
 	}
-/*@+voidabstract@*/
+/*@-assignexpose -castexpose @*/
 	if (scriptFd != NULL)
 	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
-/*@=voidabstract@*/
+/*@=assignexpose =castexpose @*/
     }
 }
 
@@ -1129,9 +1132,9 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 	/*@-type@*/ /* FIX: cast? */
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	if (te) {
-/*@-mods@*/	/* XXX noisy in transaction.c */
+/*@-castexpose -mods@*/	/* XXX noisy in transaction.c */
 	    h = headerLink(te->h);
-/*@=mods@*/
+/*@=castexpose =mods@*/
 	    cbkey = rpmteKey(te);
 	} else {
 	    h = NULL;

@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../rpmdb -I../rpmio -I../xar/include -I/usr/include/beecrypt -I/usr/include/nss3 -I/usr/include/nspr4 -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
+-I. -I.. -I../build -I../rpmdb -I../rpmio -I../db3 -I../xar/include -I/usr/include/beecrypt -I/usr/include/nss3 -I/usr/include/nspr4 -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
 
 +partial
 +forcehints
@@ -16,38 +16,35 @@
 +slovak-fcns
 -bufferoverflowhigh
 
--warnlintcomments	# 1 ARGSUSED in getdate.y
-
+-bounds
 -branchstate
+
+-abstract		# 234
 -compdef
 -compmempass
--globs
--globstate
--globuse
--incondefs
--infloops
--internalglobs
--modobserver
--mods
--mustmod
--nullderef	# 11
--nullpass	# 31
--nullptrarith	# 1
--nullstate	# 9
--predboolothers
--redecl		# 38
--usereleased
+-evalorder		# 100
+-globs			# 8 h_errno et al
+-incondefs		# 12
+-internalglobs		# 39
+-modfilesys		# 83
+-modobserver		# 7
+-noeffect		# 3
+-nullassign
+-nullderef		# 18
+-nullpass		# 31
+-nullptrarith
+-nullret
+-nullstate		# 23	HE_t needs null annotations
+-redecl			# 38
+-shadow
+-type
+-usereleased		# 26
 
--abstract
--castexpose
-+voidabstract
-
--dependenttrans
--kepttrans
--observertrans
--onlytrans
+-kepttrans		# 37
+-newreftrans
+-onlytrans		# 29
 -ownedtrans
--readonlytrans
+-refcounttrans		# 24
 -temptrans
 -unqualifiedtrans
 
@@ -93,4 +90,3 @@
 +boolint		# 106
 +charint		# 173
 +ignorequals		# 397
-+matchanyintegral	# 115
