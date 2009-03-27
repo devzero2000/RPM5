@@ -996,16 +996,20 @@ enterChroot(dbi);
     sqldb = xcalloc(1, sizeof(*sqldb));
 
     sql_errcode = NULL;
+/*@+longunsignedintegral@*/
     if (dbi->dbi_perms)
         /* mask-out permission bits which are not requested (security) */
         umask_safed = umask(~((mode_t)(dbi->dbi_perms)));
+/*@=longunsignedintegral@*/
     xx = sqlite3_open(dbfname, &sqldb->db);
     if (dbi->dbi_perms) {
         if ((0644 /* = SQLite hard-coded default */ & dbi->dbi_perms) != dbi->dbi_perms) {
             /* add requested permission bits which are still missing (semantic) */
             (void) Chmod(dbfname, dbi->dbi_perms);
         }
+/*@+longunsignedintegral@*/
         (void) umask(umask_safed);
+/*@=longunsignedintegral@*/
     }
     if (xx != SQLITE_OK)
 	sql_errcode = sqlite3_errmsg(sqldb->db);

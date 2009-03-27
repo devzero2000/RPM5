@@ -1081,10 +1081,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    te = stpcpy(te, "    ");
 	if (xtag)
 	    te = stpcpy(te, xtag);
-/*@-modobserver@*/
+/*@-modobserver -observertrans -statictrans @*/	/* XXX LCL: can't see freetag flow */
 	    if (freetag)
 		xtag = _free(xtag);
-/*@=modobserver@*/
+/*@=modobserver =observertrans =statictrans @*/
 	te = yamlstrcpy(te, s, lvl);
 	te += strlen(te);
     }
@@ -2171,7 +2171,9 @@ static int pkgmtimeTag(Header h, HE_t he)
     he->tag = RPMTAG_PACKAGETIME;
     he->t = RPM_UINT64_TYPE;
     he->p.ui64p = xmalloc(sizeof(*he->p.ui64p));
+/*@-type@*/
     he->p.ui64p[0] = (rpmuint64_t)st->st_mtime;
+/*@=type@*/
     he->freeData = 1;
     he->c = 1;
     return 0;
@@ -4339,13 +4341,13 @@ assert(ix == 0);
 	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_blocks);
 	    /*@switchbreak@*/ break;
 	case STAT_KEYS_ATIME:
-	    (void) stpcpy(b, ctime(&st->st_atime));
+/*@i@*/	    (void) stpcpy(b, ctime((time_t *)&st->st_atime));
 	    /*@switchbreak@*/ break;
 	case STAT_KEYS_CTIME:
-	    (void) stpcpy(b, ctime(&st->st_ctime));
+/*@i@*/	    (void) stpcpy(b, ctime((time_t *)&st->st_ctime));
 	    /*@switchbreak@*/ break;
 	case STAT_KEYS_MTIME:
-	    (void) stpcpy(b, ctime(&st->st_mtime));
+/*@i@*/	    (void) stpcpy(b, ctime((time_t *)&st->st_mtime));
 	    /*@switchbreak@*/ break;
 #ifdef	NOTYET
 	case STAT_KEYS_FLAGS:
@@ -5113,7 +5115,8 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
  * @return		headerSprintf args
  */
 static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
-	/*@modifies hsa */
+	/*@globals fileSystem @*/
+	/*@modifies hsa, fileSystem @*/
 {
     sprintfTag tag =
 	(hsa->format->type == PTOK_TAG
@@ -5177,7 +5180,8 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
  * @return		headerSprintf args
  */
 static headerSprintfArgs hsaFini(/*@returned@*/ headerSprintfArgs hsa)
-	/*@modifies hsa */
+	/*@globals fileSystem @*/
+	/*@modifies hsa, fileSystem @*/
 {
     if (hsa != NULL) {
 	hsa->hi = headerFini(hsa->hi);
@@ -6286,7 +6290,9 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
     if (exts == NULL)
 	exts = headerCompoundFormats;
  
+/*@-assignexpose -castexpose @*/
     hsa->h = headerLink(h);
+/*@=assignexpose =castexpose @*/
     hsa->fmt = xstrdup(fmt);
 /*@-assignexpose -dependenttrans@*/
     hsa->exts = exts;

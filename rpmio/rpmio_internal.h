@@ -242,10 +242,10 @@ void fdSetDig(FD_t fd, pgpDig dig)
 	/*@modifies fd, dig, fileSystem @*/
 {
     FDSANE(fd);
-/*@-assignexpose@*/
+/*@-assignexpose -castexpose @*/
     fd->dig = pgpDigFree(fd->dig, "fdSetDig");
     fd->dig = pgpDigLink(dig, "fdSetDig");
-/*@=assignexpose@*/
+/*@=assignexpose =castexpose @*/
 }
 
 /** \ingroup rpmio
@@ -268,9 +268,9 @@ void fdSetXAR(FD_t fd, rpmxar xar)
 	/*@modifies fd, xar, fileSystem @*/
 {
     FDSANE(fd);
-/*@-assignexpose@*/
+/*@-assignexpose -castexpose @*/
     fd->xar = rpmxarLink(xar, "fdSetXAR");
-/*@=assignexpose@*/
+/*@=assignexpose =castexpose @*/
 }
 
 /** \ingroup rpmio

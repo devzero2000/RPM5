@@ -1316,6 +1316,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		}
 		rpmlog(RPMLOG_ERR, _("Runnning db->verify ...\n"));
 		rpmdb = rpmdbLink(rpmdb, "DB_RUNRECOVERY");
+assert(rpmdb != NULL);
 		rpmdb->db_remove_env = 1;
 		rpmdb->db_verifying = 1;
 		xx = rpmdbVerifyAllDBI(rpmdb);

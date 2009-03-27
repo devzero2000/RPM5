@@ -185,18 +185,20 @@ fprintf(stderr, "==> rpmwfPushRPM(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
     return RPMRC_OK;
 }
 
+/*@-mustmod@*/
 static void rpmwfScrub(void *_wf)
-	/*@modifies *_wf @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _wf, fileSystem, internalState @*/
 {
     rpmwf wf = _wf;
 
     if (wf->b == NULL) {
-/*@-dependenttrans@*/	/* rpm needs dependent, xar needs only */
+/*@-dependenttrans -onlytrans @*/	/* rpm needs dependent, xar needs only */
 	wf->l = _free(wf->l);
 	wf->s = _free(wf->s);
 	wf->h = _free(wf->h);
 	wf->p = _free(wf->p);
-/*@=dependenttrans@*/
+/*@=dependenttrans =onlytrans @*/
     }
 
     wf->xar = rpmxarFree(wf->xar, "rpmwfFree");
@@ -204,12 +206,14 @@ static void rpmwfScrub(void *_wf)
 
     wf->fn = _free(wf->fn);
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmwfPool;
 
 static rpmwf rpmwfGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmwfPool, fileSystem @*/
+	/*@modifies pool, _rpmwfPool, fileSystem @*/
 {
     rpmwf wf;
 
@@ -233,7 +237,7 @@ rpmwf rpmwfNew(const char * fn)
 /*@=globs@*/
     wf = rpmwfGetPool(_rpmwfPool);
     wf->fn = xstrdup(fn);
-    wf->nb = st->st_size;
+    wf->nb = (size_t)st->st_size;
 
     return rpmwfLink(wf, "rpmwfNew");
 }

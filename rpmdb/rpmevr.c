@@ -26,12 +26,12 @@ EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
     EVR_t evr = xcalloc(1, sizeof(*evr));
     evr->Flags = Flags;
     if (initialize) {
-/*@-readonlytrans @*/
+/*@-observertrans -readonlytrans @*/
 	evr->F[RPMEVR_E] = "0";
 	evr->F[RPMEVR_V] = "";
 	evr->F[RPMEVR_R] = "";
 	evr->F[RPMEVR_D] = "";
-/*@=readonlytrans @*/
+/*@=observertrans =readonlytrans @*/
     }
     return evr;
 }
@@ -71,7 +71,9 @@ static inline int xisrpmalpha(int c)
 	rc = xispunct(c);
     if (rc && _rpmnotalpha && *_rpmnotalpha)
 	rc = (strchr(_rpmnotalpha, c) == NULL);
+/*@-globstate@*/
     return rc;
+/*@=globstate@*/
 }
 
 int rpmEVRcmp(const char * a, const char * b)
@@ -161,9 +163,9 @@ static miRE rpmEVRmire(void)
     }
 /*@=globs =internalglobs =mods @*/
 assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
-/*@-retalias@*/
+/*@-globstate -retalias@*/
     return evr_tuple_mire;
-/*@=retalias@*/
+/*@=globstate =retalias@*/
 }
 
 int rpmEVRparse(const char * evrstr, EVR_t evr)
@@ -289,7 +291,7 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     int result;
 
     /* XXX HACK: postpone committing to single "missing" value for now. */
-/*@-mods -readonlytrans @*/
+/*@-mods -observertrans -readonlytrans @*/
     if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
     if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
     if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
@@ -298,7 +300,7 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
     if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
     if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
-/*@=mods =readonlytrans @*/
+/*@=mods =observertrans =readonlytrans @*/
     sense = rpmEVRcompare(a, b);
 
     /* Detect overlap of {A,B} range. */

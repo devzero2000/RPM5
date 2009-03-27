@@ -338,6 +338,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
     /* Insure that stdin/stdout/stderr are open, lest stderr end up in rpmdb. */
    if (!_oneshot) {
 	static const char _devnull[] = "/dev/null";
+/*@-noeffect@*/
 #if defined(STDIN_FILENO)
 	(void) checkfd(_devnull, STDIN_FILENO, O_RDONLY);
 #endif
@@ -347,6 +348,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 #if defined(STDERR_FILENO)
 	(void) checkfd(_devnull, STDERR_FILENO, O_WRONLY);
 #endif
+/*@=noeffect@*/
 	_oneshot++;
    }
 
@@ -852,8 +854,8 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
  * @return		header query string
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@globals headerCompoundFormats, internalState @*/
-	/*@modifies h, internalState @*/
+	/*@globals headerCompoundFormats, fileSystem, internalState @*/
+	/*@modifies h, fileSystem, internalState @*/
 {
     const char * errstr = "(unkown error)";
     const char * str;
@@ -918,11 +920,12 @@ exit:
     return 0;
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmdbPool;
 
 static rpmdb rpmdbGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmdbPool, fileSystem @*/
+	/*@modifies pool, _rpmdbPool, fileSystem @*/
 {
     rpmdb db;
 
@@ -1159,13 +1162,13 @@ assert(fn != NULL);
 #define _DB_MAJOR	-1
 #define	_DB_ERRPFX	"rpmdb"
 
-/*@-exportheader@*/
+/*@-exportheader -globs -mods @*/
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@globals _db_filter_dups, rpmGlobalMacroContext, h_errno @*/
-	/*@modifies _db_filter_dups, rpmGlobalMacroContext @*/
+	/*@globals _db_filter_dups @*/
+	/*@modifies _db_filter_dups @*/
 {
     rpmdb db = rpmdbGetPool(_rpmdbPool);
     const char * epfx = _DB_ERRPFX;
@@ -1182,7 +1185,6 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     }
 
     db->db_api = _DB_MAJOR;
-    db->db_errpfx = _DB_ERRPFX;
 
     db->_dbi = NULL;
 
@@ -1210,10 +1212,10 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     dbiTagsInit(&db->db_tags, &db->db_ndbi);
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     /*@-globstate@*/
-    return rpmdbLink(db, "rpmdbCreate");
+    return rpmdbLink(db, "rpmdbNew");
     /*@=globstate@*/
 }
-/*@=exportheader@*/
+/*@=exportheader =globs =mods @*/
 
 /*@-exportheader@*/
 int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
@@ -2368,8 +2370,10 @@ next:
 	mi_offset.ui = mi->mi_offset;
 	if (dbiByteSwapped(dbi) == 1)
 	    _DBSWAP(mi_offset);
+/*@-immediatetrans@*/
 	k.data = &mi_offset.ui;
-	k.size = sizeof(mi_offset.ui);
+/*@=immediatetrans@*/
+	k.size = (u_int32_t)sizeof(mi_offset.ui);
 #if !defined(_USE_COPY_LOAD)
 	v.flags |= DB_DBT_MALLOC;
 #endif
@@ -2727,7 +2731,9 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	}
     }
 
+/*@-assignexpose@*/
     mi->mi_db = rpmdbLink(db, "matchIterator");
+/*@=assignexpose@*/
     mi->mi_rpmtag = tag;
 
     mi->mi_dbc = NULL;
@@ -3197,7 +3203,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
 	/* Retrieve join key for next header instance. */
 	k.data = &idx0;
-	k.size = sizeof(idx0);
+	k.size = (u_int32_t)sizeof(idx0);
 	ret = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 
 	hdrNum = 0;
@@ -3214,8 +3220,10 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	if (ret == 0 && v.data) {
 	    memcpy(v.data, &mi_offset, sizeof(mi_offset.ui));
 	} else {
+/*@-immediatetrans@*/
 	    v.data = &mi_offset;
-	    v.size = sizeof(mi_offset.ui);
+/*@=immediatetrans@*/
+	    v.size = (u_int32_t)sizeof(mi_offset.ui);
 	}
 
 /*@-compmempass@*/
@@ -3834,8 +3842,10 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    xx = Chown(nfn, nst->st_uid, nst->st_gid);
 	    xx = Chmod(nfn, (nst->st_mode & 07777));
 	    {	struct utimbuf stamp;
-		stamp.actime = nst->st_atime;
-		stamp.modtime = nst->st_mtime;
+/*@-type@*/
+		stamp.actime = (time_t)nst->st_atime;
+		stamp.modtime = (time_t)nst->st_mtime;
+/*@=type@*/
 		xx = Utime(nfn, &stamp);
 	    }
 /*@-moduncon -noeffectuncon@*/

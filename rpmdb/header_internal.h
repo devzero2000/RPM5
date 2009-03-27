@@ -111,6 +111,10 @@ struct headerToken_s {
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 #define HEADERFLAG_SIGNATURE	(1 << 4) /*!< Signature header? */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #ifdef __cplusplus
@@ -135,7 +139,11 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
  * @return		no. of references
  */
 /*@-type@*/ /* FIX: cast? */
-/*@unused@*/ static inline int headerUsageCount(Header h) /*@*/ {
+/*@unused@*/ static inline
+int headerUsageCount(Header h)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
     int nrefs = 0;
     yarnPossess(h->_item.use);
     nrefs = (int)yarnPeekLock(h->_item.use);

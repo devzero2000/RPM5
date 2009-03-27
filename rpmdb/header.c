@@ -102,6 +102,7 @@ void * headerGetStats(Header h, int opx)
     return op;
 }
 
+/*@-mustmod@*/
 static void headerScrub(void * _h)	/* XXX headerFini already in use */
 	/*@modifies *_h @*/
 {
@@ -138,12 +139,14 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
     }
 /*@=nullstate@*/
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _headerPool;
 
 static Header headerGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _headerPool, fileSystem @*/
+	/*@modifies pool, _headerPool, fileSystem @*/
 {
     Header h;
 
@@ -174,9 +177,9 @@ Header headerNew(void)
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
 	: NULL);
 
-    /*@-globstate -observertrans @*/
+/*@-globstate -nullret -observertrans @*/
     return headerLink(h);
-    /*@=globstate =observertrans @*/
+/*@=globstate =nullret =observertrans @*/
 }
 
 /**
@@ -1033,6 +1036,7 @@ Header headerLoad(void * uh)
     h->startoff = 0;
     h->endoff = (rpmuint32_t) pvlen;
     h = headerLink(h);
+assert(h != NULL);
 
     entry = h->index;
     i = 0;
@@ -2064,7 +2068,10 @@ HeaderIterator headerInit(Header h)
 
     headerSort(h);
 
+/*@-assignexpose -castexpose @*/
     hi->h = headerLink(h);
+/*@=assignexpose =castexpose @*/
+assert(hi->h != NULL);
     hi->next_index = 0;
     return hi;
 }

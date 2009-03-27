@@ -217,7 +217,9 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	pw = _free(pw);
     }
 
+/*@+longunsignedintegral@*/
     (void) waitpid(pid, &status, 0);
+/*@=longunsignedintegral@*/
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
 	return 1;
@@ -547,7 +549,9 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	pw = _free(pw);
     }
 
+/*@+longunsignedintegral@*/
     (void) waitpid(pid, &status, 0);
+/*@=longunsignedintegral@*/
 
     return ((!WIFEXITED(status) || WEXITSTATUS(status)) ? 1 : 0);
 }
@@ -740,8 +744,8 @@ verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
 assert(dig != NULL);
 assert(rsactx != NULL);
 assert(sigp != NULL);
-assert(sigp->pubkey_algo == PGPPUBKEYALGO_RSA);
-assert(sigp->hash_algo == rpmDigestAlgo(rsactx));
+assert(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA);
+assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(rsactx));
 assert(pgpGetSigtag(dig) == RPMSIGTAG_RSA);
 assert(sig != NULL);
 
@@ -838,8 +842,8 @@ verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
 assert(dig != NULL);
 assert(dsactx != NULL);
 assert(sigp != NULL);
-assert(sigp->pubkey_algo == PGPPUBKEYALGO_DSA);
-assert(sigp->hash_algo == rpmDigestAlgo(dsactx));
+assert(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA);
+assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(dsactx));
 assert(pgpGetSigtag(dig) == RPMSIGTAG_DSA);
 assert(sig != NULL);
 

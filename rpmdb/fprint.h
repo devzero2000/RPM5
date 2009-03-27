@@ -92,7 +92,8 @@ int rpmdbFindFpList(/*@null@*/ void * _db, fingerPrint * fpList,
  * @return pointer to initialized fingerprint cache
  */
 /*@only@*/ fingerPrintCache fpCacheCreate(int sizeHint)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Destroy finger print cache.
@@ -101,7 +102,8 @@ int rpmdbFindFpList(/*@null@*/ void * _db, fingerPrint * fpList,
  */
 /*@null@*/
 fingerPrintCache fpCacheFree(/*@only@*/ fingerPrintCache cache)
-	/*@modifies cache @*/;
+	/*@globals fileSystem @*/
+	/*@modifies cache, fileSystem @*/;
 
 /**
  * Return finger print of a file path.

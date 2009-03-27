@@ -724,8 +724,8 @@ char * headerSprintf(Header h, const char * fmt,
 		/*@null@*/ headerTagTableEntry tags,
 		/*@null@*/ headerSprintfExtension exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
-	/*@globals headerCompoundFormats, internalState @*/
-	/*@modifies h, *errmsg, internalState @*/;
+	/*@globals headerCompoundFormats, fileSystem, internalState @*/
+	/*@modifies h, *errmsg, fileSystem, internalState @*/;
 
 /** \ingroup header
  * Retrieve extension or tag value from a header.
@@ -783,7 +783,8 @@ int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
  */
 /*@null@*/
 HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/;
+	/*@globals fileSystem @*/
+	/*@modifies hi, fileSystem */;
 
 /** \ingroup header
  * Create header tag iterator.
@@ -791,7 +792,8 @@ HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
  * @return		header tag iterator
  */
 HeaderIterator headerInit(Header h)
-	/*@modifies h */;
+	/*@globals fileSystem @*/
+	/*@modifies h, fileSystem */;
 
 /** \ingroup header
  * Return next tag from header.
@@ -841,7 +843,8 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
  * @return		header
  */
 Header headerNew(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
@@ -872,8 +875,8 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
  */
 /*@null@*/
 Header headerReload(/*@only@*/ Header h, int tag)
-	/*@globals internalState @*/
-	/*@modifies h, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies h, fileSystem, internalState @*/;
 
 /** \ingroup header
  * Duplicate a header.
@@ -882,8 +885,8 @@ Header headerReload(/*@only@*/ Header h, int tag)
  */
 /*@null@*/
 Header headerCopy(Header h)
-	/*@globals internalState @*/
-	/*@modifies h, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies h, fileSystem, internalState @*/;
 
 /** \ingroup header
  * Convert header to in-memory representation.
@@ -892,8 +895,8 @@ Header headerCopy(Header h)
  */
 /*@null@*/
 Header headerLoad(/*@kept@*/ void * uh)
-	/*@globals internalState @*/
-	/*@modifies uh, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies uh, fileSystem, internalState @*/;
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
@@ -902,8 +905,8 @@ Header headerLoad(/*@kept@*/ void * uh)
  */
 /*@null@*/
 Header headerCopyLoad(const void * uh)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup header
  * Check if tag is in header.
@@ -1172,8 +1175,8 @@ rpmuint32_t hGetColor(Header h)
  * @param sigh		signature header
  */
 void headerMergeLegacySigs(Header h, const Header sigh)
-	/*@globals internalState @*/
-	/*@modifies h, sigh, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies h, sigh, fileSystem, internalState @*/;
 
 /** \ingroup header
  * Regenerate signature header.
@@ -1183,8 +1186,8 @@ void headerMergeLegacySigs(Header h, const Header sigh)
  * @return		regenerated signature header
  */
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
-	/*@globals internalState @*/
-	/*@modifies h, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies h, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../lib -I../rpmio -I../sqlite -I../xar/include -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
+-I. -I.. -I../build -I../lib -I../rpmio -I../db3 -I../sqlite -I../xar/include -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
 
 +partial
 +forcehints
@@ -16,17 +16,14 @@
 -bounds
 -bufferoverflowhigh	# 26
 
--globstate		# 1 LCL buggy
--noeffect		# 3
--nullpass		# 86
--nullstate		# 52 indirections hard to annotate
--type
+-evalorder		# 17
+-nullpass		# 90
+-nullstate		# 56 indirections hard to annotate
+-usereleased		# 4
 
--dependenttrans		# 1
--immediatetrans		# 2
--observertrans		# 1
--refcounttrans		# 1
--statictrans		# 1
+-newreftrans		# 5
+-onlytrans		# 8
+-refcounttrans		# 7
 
 # --- +partial artifacts
 -declundef		# 544
