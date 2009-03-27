@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: rpmtsOrder: enable parentdir/linkto ordering relations.
+    - jbj: initialize ts->PRCO lazily (measured 20.4% rpm -qa speedup ymmv).
     - jbj: EVRtuple: fix: dig out the one time mire allocation leak.
     - jbj: use rpmioFreePoolItem for rpmds, eliminate rpmdsFree.
     - jbj: finish up using rpmioFreePoolItem() for rpmts and Header objects.
