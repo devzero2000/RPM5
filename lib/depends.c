@@ -2277,7 +2277,7 @@ static rpmuint32_t _autobits = 0xffffffff;
 #define isAuto(_x)	((_x) & _autobits)
 
 /*@unchecked@*/
-static int slashDepth = 1;	/* #slashes pemitted in parentdir deps. */
+static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
 
 static int countSlashes(const char * dn)
 	/*@*/

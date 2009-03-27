@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: rpmtsOrder: fully enable parentdir deps when ordering.
     - jbj: EVRtuple: fix: dig out the one time mire allocation leak.
     - jbj: use rpmioFreePoolItem for rpmds, eliminate rpmdsFree.
     - jbj: finish up using rpmioFreePoolItem() for rpmts and Header objects.
