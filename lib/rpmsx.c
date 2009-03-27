@@ -203,8 +203,9 @@ static int rpmsxFind(/*@null@*/ const rpmsx sx, const char ** bpp)
     return -1;
 }
 
+/*@-mustmod@*/
 static void rpmsxFini(void * _sx)
-	/*@modifies *_sx @*/
+	/*@modifies _sx @*/
 {
     rpmsx sx = _sx;
     int i;
@@ -227,12 +228,14 @@ static void rpmsxFini(void * _sx)
     }
     sx->sxs = _free(sx->sxs);
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmsxPool;
 
 static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmsxPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmsxPool, fileSystem, internalState @*/
 {
     rpmsx sx;
 

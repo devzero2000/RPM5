@@ -235,6 +235,10 @@ struct rpmfi_s {
     int magic;
 #define	RPMFIMAGIC	0x09697923
 /*=============================*/
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #endif	/* _RPMFI_INTERNAL */

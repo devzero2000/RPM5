@@ -157,7 +157,9 @@ mapInitIterator(rpmfi fi, int reverse)
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
+/*@-assignexpose -castexpose @*/
     iter->fi = rpmfiLink(fi, "mapIterator");
+/*@=assignexpose =castexpose @*/
     iter->reverse = reverse;
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
@@ -674,15 +676,17 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     fsm->goal = goal;
     if (cfd != NULL) {
-/*@-refcounttrans@*/	/* FIX: XfdLink annotation */
+/*@-assignexpose -castexpose @*/
 	fsm->cfd = fdLink(cfd, "persist (fsm)");
-/*@=refcounttrans@*/
+/*@=assignexpose =castexpose @*/
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
 /*@-mods@*/	/* LCL: avoid void * _ts/_fi annotations for now. */
     fsm->iter = mapInitIterator(fi, reverse);
+/*@-assignexpose -castexpose @*/
     fsm->iter->ts = rpmtsLink(ts, "mapIterator");
+/*@=assignexpose =castexpose @*/
     fsm->nofcontexts = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS);
 /*@=mods@*/
     fsm->nofdigests =
@@ -772,9 +776,10 @@ static int fsmMapFContext(IOSM_t fsm)
     fsm->fcontext = NULL;
     if (!fsm->nofcontexts) {
 	security_context_t scon = NULL;
-	int xx = matchpathcon(fsm->path, fsm->sb.st_mode, &scon);
-
 /*@-moduncon@*/
+	int xx = matchpathcon(fsm->path, fsm->sb.st_mode, &scon);
+/*@=moduncon@*/
+
 	if (!xx && scon != NULL)
 	    fsm->fcontext = scon;
 #ifdef	DYING	/* XXX SELinux file contexts not set from package content. */
@@ -787,7 +792,6 @@ static int fsmMapFContext(IOSM_t fsm)
 		fsm->fcontext = (fi->fcontexts ? fi->fcontexts[i] : NULL);
 	}
 #endif
-/*@=moduncon@*/
     }
     return 0;
 }
@@ -1493,9 +1497,11 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 		    security_context_t scon = NULL;
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
+/*@-moduncon@*/
 		    if (!fsm->nofcontexts
 		     && !matchpathcon(fsm->path, st->st_mode, &scon)
 		     && scon != NULL)
+/*@=moduncon@*/
 		    {
 			fsm->fcontext = scon;
 			rc = fsmNext(fsm, IOSM_LSETFCON);

@@ -170,6 +170,10 @@ struct rpmpsm_s {
     pkgStage stage;		/*!< Current psm stage. */
     pkgStage nstage;		/*!< Next psm stage. */
 
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #ifdef __cplusplus

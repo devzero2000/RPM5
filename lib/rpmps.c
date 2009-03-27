@@ -20,12 +20,12 @@
 /*@unchecked@*/
 int _rpmps_debug = 0;
 
-
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmpsPool;
 
 static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmpsPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmpsPool, fileSystem, internalState @*/
 {
     rpmps ps;
 
@@ -50,7 +50,9 @@ rpmpsi rpmpsInitIterator(rpmps ps)
     rpmpsi psi = NULL;
     if (ps != NULL) {
 	psi = xcalloc(1, sizeof(*psi));
+/*@-assignexpose -castexpose @*/
 	psi->ps = rpmpsLink(ps, "iter ref");
+/*@=assignexpose =castexpose @*/
 	psi->ix = -1;
     }
     return psi;

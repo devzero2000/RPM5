@@ -297,7 +297,9 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     te = t = buf;
     *te = '\0';
 
+/*@-castexpose@*/
     fi = rpmfiLink(fi, "verifyHeader");
+/*@=castexpose@*/
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0) {

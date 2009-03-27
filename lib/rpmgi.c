@@ -455,8 +455,10 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
     return rpmrc;
 }
 
+/*@-mustmod@*/
 static void rpmgiFini(void * _gi)
-	/*@modifies *_gi @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies _gi, rpmGlobalMacroContext @*/
 {
     rpmgi gi = _gi;
     int xx;
@@ -481,12 +483,14 @@ static void rpmgiFini(void * _gi)
     (void)rpmtsFree(gi->ts); 
     gi->ts = NULL;
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmgiPool;
 
 static rpmgi rpmgiGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmgiPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmgiPool, fileSystem, internalState @*/
 {
     rpmgi gi;
 
@@ -505,7 +509,9 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     if (gi == NULL)	/* XXX can't happen */
 	return NULL;
 
+/*@-assignexpose -castexpose @*/
     gi->ts = rpmtsLink(ts, "rpmgiNew");
+/*@=assignexpose =castexpose @*/
     gi->tsOrder = rpmtsOrder;
     gi->tag = (rpmTag) tag;
 /*@-assignexpose@*/
@@ -754,9 +760,9 @@ enditer:
 
 	/* Permit access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
-	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), +RPMTAG_PROVIDENAME);
-	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), +RPMTAG_BASENAMES);
-	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), +RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMTAG_PROVIDENAME);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
 	}
 
 	/* XXX query/verify will need the glop added to a buffer instead. */

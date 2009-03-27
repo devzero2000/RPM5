@@ -79,6 +79,10 @@ struct rpmgi_s {
 /*@null@*/
     rpmRC (*stash) (rpmgi gi, Header h);
 
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif
 

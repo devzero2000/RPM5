@@ -772,10 +772,14 @@ assert(p != NULL);
 	    validRelocations = _free(validRelocations);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
+/*@-castexpose@*/
 	return headerLink(origH);
+/*@=castexpose@*/
     }
 
+/*@-castexpose@*/
     h = headerLink(origH);
+/*@=castexpose@*/
 
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
@@ -1180,7 +1184,9 @@ dColors[j] |= fColors[i];
     fn = _free(fn);
 /*@=dependenttrans@*/
 
+/*@-retalias@*/
     return h;
+/*@=retalias@*/
 }
 
 int rpmfiSetHeader(rpmfi fi, Header h)
@@ -1188,8 +1194,10 @@ int rpmfiSetHeader(rpmfi fi, Header h)
     if (fi->h != NULL)
 	(void)headerFree(fi->h);
     fi->h = NULL;
+/*@-assignexpose -castexpose @*/
     if (h != NULL)
 	fi->h = headerLink(h);
+/*@=assignexpose =castexpose @*/
     return 0;
 }
 
@@ -1261,11 +1269,12 @@ static void rpmfiFini(void * _fi)
     fi->h = NULL;
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmfiPool;
 
 static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmfiPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmfiPool, fileSystem, internalState @*/
 {
     rpmfi fi;
 

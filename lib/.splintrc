@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../rpmdb -I../rpmio -I../xar/include -I/usr/include/beecrypt -I/usr/include/nss3 -I/usr/include/nspr4 -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
+-I. -I.. -I../build -I../rpmdb -I../rpmio -I../db3 -I../xar/include -I/usr/include/beecrypt -I/usr/include/nss3 -I/usr/include/nspr4 -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
 
 +partial
 +forcehints
@@ -18,24 +18,35 @@
 
 -bounds
 -branchstate
--checkpost
 
+-abstract		# 234
 -compdef
 -compmempass
+-evalorder		# 100
+-globs			# 8 h_errno et al
 -incondefs		# 12
+-internalglobs		# 39
+-modfilesys		# 83
 -modobserver		# 7
--moduncon
 -noeffect		# 3
--noeffectuncon
+-nullassign
 -nullderef		# 18
 -nullpass		# 31
+-nullptrarith
+-nullret
 -nullstate		# 23	HE_t needs null annotations
 -redecl			# 38
+-shadow
 -type
 -usereleased		# 26
 
 -kepttrans		# 37
+-newreftrans
 -onlytrans		# 29
+-ownedtrans
+-refcounttrans		# 24
+-temptrans
+-unqualifiedtrans
 
 # --- +partial artifacts
 -declundef

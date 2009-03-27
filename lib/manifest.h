@@ -18,8 +18,7 @@ extern "C" {
 /*@-incondefs@*/
 /*@only@*/
 char * rpmPermsString(int mode)	
-	/*@*/
-	/*@ensures maxSet(result) == 10 /\ maxRead(result) == 10 @*/;
+	/*@*/;
 /*@=incondefs@*/
 
 /**

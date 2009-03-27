@@ -205,18 +205,19 @@ assert(he->p.str != NULL);
 }
 
 static void rpmteFini(void * _te)
-	/*@modifies *_te @*/
+	/*@modifies _te @*/
 {
     rpmte te = _te;
 
     delTE(te);
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtePool;
 
 static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmtePool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmtePool, fileSystem, internalState @*/
 {
     rpmte te;
 
@@ -276,7 +277,9 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance)
 
 Header rpmteHeader(rpmte te)
 {
+/*@-castexpose -retalias -retexpose @*/
     return (te != NULL && te->h != NULL ? headerLink(te->h) : NULL);
+/*@=castexpose =retalias =retexpose @*/
 }
 
 Header rpmteSetHeader(rpmte te, Header h)
@@ -284,8 +287,10 @@ Header rpmteSetHeader(rpmte te, Header h)
     if (te != NULL)  {
 	(void)headerFree(te->h);
 	te->h = NULL;
+/*@-assignexpose -castexpose @*/
 	if (h != NULL)
 	    te->h = headerLink(h);
+/*@=assignexpose =castexpose @*/
     }
     return NULL;
 }
@@ -715,8 +720,9 @@ int rpmtsiOc(rpmtsi tsi)
     return tsi->ocsave;
 }
 
+/*@-mustmod@*/
 static void rpmtsiFini(void * _tsi)
-	/*@modifies *_tsi @*/
+	/*@modifies _tsi @*/
 {
     rpmtsi tsi = _tsi;
 /*@-internalglobs@*/
@@ -724,12 +730,14 @@ static void rpmtsiFini(void * _tsi)
     tsi->ts = NULL;
 /*@=internalglobs@*/
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtsiPool;
 
 static rpmtsi rpmtsiGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmtsiPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmtsiPool, fileSystem, internalState @*/
 {
     rpmtsi tsi;
 
@@ -745,7 +753,9 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
 {
     rpmtsi tsi = rpmtsiGetPool(_rpmtsiPool);
 
+/*@-assignexpose -castexpose @*/
     tsi->ts = rpmtsLink(ts, "rpmtsi");
+/*@=assignexpose =castexpose @*/
     tsi->reverse = 0;
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;

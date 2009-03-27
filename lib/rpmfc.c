@@ -302,7 +302,6 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, size_t ix,
 	/*@globals internalState @*/
 	/*@modifies buf, internalState @*/
 	/*@requires maxSet(buf) >= 0 @*/
-	/*@ensures maxRead(buf) == 0 @*/
 {
     rpmTag tagN = rpmdsTagN(ds);
     char deptype = 'X';
@@ -1808,8 +1807,9 @@ rpmfcPrint(msg, fc, NULL);
     return rc;
 }
 
+/*@-mustmod@*/
 static void rpmfcFini(void *_fc)
-	/*@modifies *_fc @*/
+	/*@modifies _fc @*/
 {
     rpmfc fc = _fc;
 
@@ -1832,12 +1832,14 @@ static void rpmfcFini(void *_fc)
     fc->iob_python = rpmiobFree(fc->iob_python);
     fc->iob_php = rpmiobFree(fc->iob_php);
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmfcPool;
 
 static rpmfc rpmfcGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmfcPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmfcPool, fileSystem, internalState @*/
 {
     rpmfc fc;
 

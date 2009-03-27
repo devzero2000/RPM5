@@ -8,7 +8,7 @@ extern int _rpmfc_debug;
 
 /**
  */
-typedef /*@abstract@*/ struct rpmfc_s * rpmfc;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfc_s * rpmfc;
 
 /**
  */
@@ -216,7 +216,7 @@ rpmfc rpmfcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfc fc)
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmfc rpmfcLink (/*@null@*/ rpmfc fc)
-	/*@modifies ds @*/;
+	/*@modifies fc @*/;
 #define	rpmfcLink(_fc)	\
 	((rpmfc)rpmioLinkPoolItem((rpmioItem)(_fc), __FUNCTION__, __FILE__, __LINE__))
 

@@ -206,6 +206,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
  * return		0 on success
  */
 static int poptReadFile(const char * fn, char ** bp, size_t * nbp, int flags)
+	/*@globals errno @*/
+	/*@modifies *bp, *nbp, errno @*/
 {
     int fdno;
     char * b = NULL;

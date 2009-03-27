@@ -466,18 +466,24 @@ rpmcliFini(poptContext optCon)
 	/*@globals keyids @*/
 	/*@modifies keyids @*/
 {
+/*@-nestedextern@*/
     extern rpmioPool _headerPool;
 #ifdef	NOTYET
     extern rpmioPool _rpmmiPool;
 #endif
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmwfPool;
+    extern const char * evr_tuple_order;
     extern const char * evr_tuple_match;
     extern miRE evr_tuple_mire;
+/*@=nestedextern@*/
 
+/*@-mods@*/
+    evr_tuple_order = _free(evr_tuple_order);
     evr_tuple_match = _free(evr_tuple_match);
     evr_tuple_mire = mireFree(evr_tuple_mire);
 
+/*@-onlyunqglobaltrans@*/
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
 
     _psmPool = rpmioFreePool(_psmPool);
@@ -498,6 +504,8 @@ rpmcliFini(poptContext optCon)
     _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _headerPool = rpmioFreePool(_headerPool);
+/*@=onlyunqglobaltrans@*/
+/*@=mods@*/
 
     /* XXX this should be done in the rpmioClean() wrapper. */
     /* keeps memory leak checkers quiet */
@@ -525,7 +533,9 @@ rpmcliFini(poptContext optCon)
     /*@=noeffect@*/
 #endif
 
+/*@-globstate@*/
     return NULL;
+/*@=globstate@*/
 }
 
 static inline int checkfd(const char * devnull, int fdno, int flags)

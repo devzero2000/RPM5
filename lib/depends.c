@@ -2468,7 +2468,7 @@ int rpmtsOrder(rpmts ts)
 
 	    /* XXX Attempt to avoid loops by filtering out deep paths. */
 	    if (countSlashes(rpmdsN(requires)) > slashDepth)
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, requires);

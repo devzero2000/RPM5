@@ -861,7 +861,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 /*@null@*/
 void * rpmtsNotify(rpmts ts, rpmte te,
                 rpmCallbackType what, rpmuint64_t amount, rpmuint64_t total)
-	/*@*/;
+	/*@modifies te @*/;
 
 /** \ingroup rpmts
  * Return number of (ordered) transaction set elements.

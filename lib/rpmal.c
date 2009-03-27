@@ -369,10 +369,14 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
     alp->key = key;
     alp->tscolor = tscolor;
 
+/*@-assignexpose -castexpose @*/
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
     alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
+/*@=assignexpose =castexpose @*/
 
+/*@-castexpose@*/
     fi = rpmfiLink(alp->fi, "Files index (rpmalAdd)");
+/*@=castexpose@*/
     fi = rpmfiInit(fi, 0);
     if (rpmfiFC(fi) > 0) {
 	dirInfo dieNeedle =

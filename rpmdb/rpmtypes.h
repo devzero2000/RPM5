@@ -47,6 +47,8 @@ typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
 
+/**
+ */
 typedef struct rpmRelocation_s * rpmRelocation;
 
 #endif /* _H_RPMTYPES_ */

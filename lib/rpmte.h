@@ -22,7 +22,7 @@ typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 /** \ingroup rpmte
  * Transaction element iterator.
  */
-typedef /*@abstract@*/ struct rpmtsi_s *		rpmtsi;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmtsi_s *rpmtsi;
 
 /** \ingroup rpmte
  * Transaction element type.
@@ -175,7 +175,10 @@ struct rpmte_s {
 	    int dboffset;
 	} removed;
     } u;
-
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /** \ingroup rpmte
@@ -188,6 +191,10 @@ struct rpmtsi_s {
     int reverse;	/*!< reversed traversal? */
     int ocsave;		/*!< last returned iterator index. */
     int oc;		/*!< iterator index. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #endif	/* _RPMTE_INTERNAL */

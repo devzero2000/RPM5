@@ -507,7 +507,9 @@ rpmps rpmtsProblems(rpmts ts)
     if (ts) {
 	if (ts->probs == NULL)
 	    ts->probs = rpmpsCreate();
+/*@-castexpose@*/
 	ps = rpmpsLink(ts->probs, msg);
+/*@=castexpose@*/
     }
     return ps;
 }
@@ -622,7 +624,7 @@ static void rpmtsPrintStats(rpmts ts)
 }
 
 static void rpmtsFini(void * _ts)
-	/*@modifies *_ts @*/
+	/*@modifies _ts @*/
 {
     rpmts ts = _ts;
 
@@ -684,11 +686,12 @@ static void rpmtsFini(void * _ts)
     }
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtsPool;
 
 static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _rpmtsPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmtsPool, fileSystem, internalState @*/
 {
     rpmts ts;
 
@@ -894,15 +897,15 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 
     if (ts != NULL) {
 	if (ts->scriptFd != NULL) {
-/*@-refcounttrans@*/	/* FIX: XfdFree annotation */
+/*@-assignexpose@*/
 	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
-/*@=refcounttrans@*/
+/*@=assignexpose@*/
 	    ts->scriptFd = NULL;
 	}
-/*@-refcounttrans@*/	/* FIX: XfdLink annotation */
+/*@-assignexpose -castexpose @*/
 	if (scriptFd != NULL)
 	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
-/*@=refcounttrans@*/
+/*@=assignexpose =castexpose @*/
     }
 }
 
@@ -1192,9 +1195,9 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 	/*@-type@*/ /* FIX: cast? */
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	if (te) {
-/*@-mods@*/	/* XXX noisy in transaction.c */
+/*@-castexpose -mods@*/	/* XXX noisy in transaction.c */
 	    h = headerLink(te->h);
-/*@=mods@*/
+/*@=castexpose =mods@*/
 	    cbkey = rpmteKey(te);
 	} else {
 	    h = NULL;

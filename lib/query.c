@@ -653,7 +653,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
-	    fn = realpath(arg, fnbuf);
+	    fn = Realpath(arg, fnbuf);
 	    fn = xstrdup( (fn != NULL ? fn : arg) );
 	} else if (*arg != '/') {
 	    const char *curDir = currentDirectory();

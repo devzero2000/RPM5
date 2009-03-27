@@ -75,6 +75,10 @@ struct rpmds_s {
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* _RPMDS_INTERNAL */
 
@@ -114,6 +118,10 @@ struct rpmPRCO_s {
     rpmds D;		/*!< Dirnames */
 /*@refcounted@*/ /*@null@*/
     rpmds L;		/*!< Linktos */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* _RPMPRCO_INTERNAL */
 

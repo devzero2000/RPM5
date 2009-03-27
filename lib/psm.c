@@ -145,23 +145,24 @@ assert(sfi->otherFileNum < he->c);
 }
 
 static rpmRC createDir(rpmts ts, const char ** fn, const char * name)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *fn, rpmGlobalMacroContext @*/
 {
-    rpmRC rc;
     const char * N = rpmGenPath(rpmtsRootDir(ts), name, "");
     char * t = xstrdup(name+2);
+    rpmRC rc;
+
     t[strlen(t)-1] = '\0';
 
     if(fn) *fn = N;
 
     rc = rpmMkdirPath(N, t+1);
-    if (!rc)
-    {
+    if (rc != RPMRC_OK) {
     	if (Access(N, W_OK))
-    	    rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"),
-    		    t, N);
+    	    rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"), t, N);
 #if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
 	else
-	    chown(N, fi->uid, fi->gid);
+	    Chown(N, fi->uid, fi->gid);
 #endif
     }
     t = _free(t);
@@ -187,7 +188,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     int i;
 
     memset(psm, 0, sizeof(*psm));
+/*@-assignexpose -castexpose @*/
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
+/*@=assignexpose =castexpose @*/
 
 /*@-mods@*/	/* Avoid void * _fd annotations for now. */
     rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
@@ -240,9 +243,9 @@ assert(fi->h != NULL);
 assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     (void) rpmteSetHeader(fi->te, fi->h);
 /*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
-/*@-refcounttrans -temptrans @*/	/* FIX: XfdLink annotation */
+/*@-assignexpose -castexpose -temptrans @*/
     ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
-/*@=refcounttrans =temptrans @*/
+/*@=assignexpose =castexpose =temptrans @*/
 /*@=mods@*/
 
     (void) headerMacrosLoad(fi->h);
@@ -379,8 +382,10 @@ exit:
 
     if (fi != NULL) {
 	(void) rpmteSetHeader(fi->te, NULL);
+/*@-mods@*/	/* Avoid void * _fd annotations for now. */
 	if (((rpmte)fi->te)->fd != NULL)
 	    (void) Fclose(((rpmte)fi->te)->fd);
+/*@=mods@*/
 	((rpmte)fi->te)->fd = NULL;
 	fi->te = NULL;
 #if 0
@@ -1418,7 +1423,9 @@ assert(fi->h != NULL);
     }
     tagno = _trigger_tag;
 
+/*@-castexpose@*/
     triggers = rpmdsLink(psm->triggers, "ImmedTriggers");
+/*@=castexpose@*/
     if (triggers == NULL)
 	goto exit;
 
@@ -1545,6 +1552,7 @@ static const char * pkgStageString(pkgStage a)
     /*@noteached@*/
 }
 
+/*@-mustmod@*/
 static void rpmpsmFini(void * _psm)
 	/*@modifies _psm @*/
 {
@@ -1570,12 +1578,14 @@ static void rpmpsmFini(void * _psm)
     psm->triggers = NULL;
 /*@=nullstate@*/
 }
+/*@=mustmod@*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _psmPool;
 
 static rpmpsm rpmpsmGetPool(/*@null@*/ rpmioPool pool)
-	/*@modifies pool @*/
+	/*@globals _psmPool, fileSystem, internalState @*/
+	/*@modifies pool, _psmPool, fileSystem, internalState @*/
 {
     rpmpsm psm;
 
@@ -1592,15 +1602,17 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
     static const char msg[] = "rpmpsmNew";
     rpmpsm psm = rpmpsmGetPool(_psmPool);
 
+/*@-assignexpose -castexpose @*/
     if (ts)	psm->ts = rpmtsLink(ts, msg);
 #ifdef	NOTYET
     if (te)	psm->te = rpmteLink(te, msg);
 #else
-/*@-assignexpose -temptrans @*/
+/*@-temptrans @*/
     if (te)	psm->te = te;
-/*@=assignexpose =temptrans @*/
+/*@=temptrans @*/
 #endif
     if (fi)	psm->fi = rpmfiLink(fi, msg);
+/*@=assignexpose =castexpose @*/
 
     psm->triggers = NULL;
     psm->NVRA = NULL;
@@ -2781,8 +2793,10 @@ assert(psm->mi == NULL);
 	psm->mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
 	fi->h = rpmdbNextIterator(psm->mi);
+/*@-castexpose@*/
 	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
+/*@=castexpose@*/
 	psm->mi = rpmdbFreeIterator(psm->mi);
 
 	if (fi->h != NULL) {
