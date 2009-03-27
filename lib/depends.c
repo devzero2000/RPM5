@@ -2271,13 +2271,10 @@ static void addQ(/*@dependent@*/ rpmte p,
 /*@unchecked@*/
 #ifdef	NOTYET
 static rpmuint32_t _autobits = _notpre(_ALL_REQUIRES_MASK);
-#define isAuto(_x)	((_x) & _autobits)
 #else
-#if 0
 static rpmuint32_t _autobits = 0xffffffff;
 #endif
-#define	isAuto(_x)	(1)
-#endif
+#define isAuto(_x)	((_x) & _autobits)
 
 /*@unchecked@*/
 static int slashDepth = 1;	/* #slashes pemitted in parentdir deps. */
