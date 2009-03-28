@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - rse: add RPM Lua function rpm.hostname()
     - jbj: fix: handle ./../foo paths correctly (#491388).
     - jbj: rpmlib: rescusitate splint annotations.
     - jbj: rpmdb: rescusitate splint annotations.

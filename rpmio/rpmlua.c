@@ -1094,6 +1094,24 @@ static int rpm_realpath(lua_State *L)
     return 1;
 }
 
+static int rpm_hostname(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
+{
+    char hostname[1024];
+    struct hostent *hbn;
+    char *h;
+
+    (void)gethostname(hostname, sizeof(hostname));
+    if ((hbn = gethostbyname(hostname)) != NULL)
+        h = hbn->h_name;
+    else
+        h = "localhost";
+    lua_pushstring(L, (const char *)h);
+    return 1;
+}
+
+
 /*@-readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
@@ -1112,6 +1130,7 @@ static const luaL_reg rpmlib[] = {
     {"slurp", rpm_slurp},
     {"sleep", rpm_sleep},
     {"realpath", rpm_realpath},
+    {"hostname", rpm_hostname},
     {NULL, NULL}
 };
 /*@=readonlytrans =nullassign @*/
