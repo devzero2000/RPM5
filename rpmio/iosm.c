@@ -435,7 +435,7 @@ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
     return dn;
 }
 
-#if defined(HAVE_PTHREAD_H)
+#if defined(WOTH_PTHREADS)
 static void * iosmThread(void * arg)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies arg, fileSystem, internalState @*/
@@ -452,7 +452,7 @@ int iosmNext(IOSM_t iosm, iosmFileStage nstage)
 	/*@modifies iosm, fileSystem, internalState @*/
 {
     iosm->nstage = nstage;
-#if defined(HAVE_PTHREAD_H)
+#if defined(WOTH_PTHREADS)
     if (iosm->multithreaded)
 	return rpmsqJoin( rpmsqThread(iosmThread, iosm) );
 #endif

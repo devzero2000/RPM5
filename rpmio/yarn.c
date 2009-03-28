@@ -17,10 +17,6 @@
 
 #include "system.h"
 
-#if defined(HAVE_PTHREAD_H) && !defined(WITH_PTHREADS)
-#define	WITH_PTHREADS	/* XXX rpm-5_1 needs --with-pthreads retrofit */
-#endif
-
 /* for thread portability */
 #if defined(WITH_PTHREADS)
 #if !defined(_POSIX_PTHREAD_SEMANTICS)
