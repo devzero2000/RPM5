@@ -2669,10 +2669,11 @@ char *rpmCleanPath(char * path)
 	    if (begin && s[1] == '\0') {
 		/*@switchbreak@*/ break;
 	    }
-	    /* Trim embedded ./ , trailing /. */
-	    if ((t[-1] == '/' && s[1] == '\0') || (t > path && t[-1] == '/' && s[1] == '/')) {
-		s++;
-		continue;
+	    if (t > path && t[-1] == '/')
+	    switch (s[1]) {
+	    case '/':	s++;	/*@fallthrough@*/	/* Trim embedded ./ */
+	    case '\0':	s++;	continue;		/* Trim trailing /. */
+	    default:	break;
 	    }
 	    /* Trim embedded /../ and trailing /.. */
 	    if (!begin && t > path && t[-1] == '/' && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
