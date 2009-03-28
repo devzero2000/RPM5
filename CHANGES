@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: fix: handle ./../foo paths correctly (#491388).
     - jbj: rpmlib: rescusitate splint annotations.
     - jbj: rpmdb: rescusitate splint annotations.
     - jbj: rpmtsOrder: fully enable parentdir deps when ordering.
