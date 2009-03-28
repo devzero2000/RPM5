@@ -2,6 +2,7 @@
 /*@unchecked@*/
 extern const char * __progname;
 
+#define	_RPMIOB_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <poptIO.h>
 #include "debug.h"
@@ -296,27 +297,26 @@ static int rpmdcParseZeroInstall(rpmdc dc)
     while ((dc->fn = *dc->manifests++) != NULL) {
 	unsigned lineno;
 	char * be;
-	uint8_t * b = NULL;
-	ssize_t blen = 0;
-	int xx = rpmioSlurp(dc->fn, &b, &blen);
+	rpmiob iob = NULL;
+	int xx = rpmiobSlurp(dc->fn, &iob);
 	const char * digest;
 	char * f;
 	char * fe;
 
-	if (!(xx == 0 && b != NULL && blen > 0)) {
+	if (!(xx == 0 && iob != NULL)) {
 	    fprintf(stderr, _("%s: Failed to open %s\n"), __progname, dc->fn);
 	    rc = -1;
 	    goto bottom;
 	}
 
-	be = (char *)(b + blen);
-	while (be > (char *)b && (be[-1] == '\n' || be[-1] == '\r')) {
+	be = (char *)(iob->b + iob->blen);
+	while (be > (char *)iob->b && (be[-1] == '\n' || be[-1] == '\r')) {
 	  be--;
 	  *be = '\0';
 	}
 
 	/* Parse "algo=digest" from last line. */
-	be = strrchr((char *)b, '=');
+	be = strrchr((char *)iob->b, '=');
 	if (be == NULL) {
 	    fprintf(stderr,
 		_("%s: %s: Manifest needs \"algo=digest\" as last line\n"),
@@ -326,9 +326,9 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 	}
 	*be = '\0';
 	dc->digest = be + 1;
-	while (be > (char *)b && !(be[-1] == '\n' || be[-1] == '\r'))
+	while (be > (char *)iob->b && !(be[-1] == '\n' || be[-1] == '\r'))
 	    be--;
-	if (be <= (char *)b) {
+	if (be <= (char *)iob->b) {
 	    fprintf(stderr, _("%s: %s: Manifest is empty\n"),
 		__progname, dc->fn);
 	    rc = 2;
@@ -347,7 +347,7 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 	/* Verify the manifest digest. */
 	{   DIGEST_CTX ctx = rpmDigestInit(dc->dalgo, 0);
 
-	    (void) rpmDigestUpdate(ctx, (char *)b, (be - (char *)b));
+	    (void) rpmDigestUpdate(ctx, (char *)iob->b, (be - (char *)iob->b));
 	    digest = NULL;
 	    (void) rpmDigestFinal(ctx, &digest, NULL, 1);
 	    if (strcmp(dc->digest, digest)) {
@@ -362,7 +362,7 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 
 	/* Parse and save manifest items. */
 	lineno = 0;
-	for (f = (char *)b; *f; f = fe) {
+	for (f = (char *)iob->b; *f; f = fe) {
 	    static const char hexdigits[] = "0123456789ABCDEFabcdef";
 	    const char * _dn = NULL;
 	    const char * path;
@@ -432,7 +432,7 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 	}
 
 bottom:
-	b = _free(b);
+	iob = rpmiobFree(iob);
 	if (rc != 0)
 	    goto exit;
     }
@@ -530,9 +530,9 @@ if (_rpmdc_debug)
 fprintf(stderr, "\trpmdcPrintFile(%p) fd %p fn %s\n", dc, dc->fd, dc->fn);
 
 assert(dc->fd != NULL);
-	fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
+    fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
 assert(dc->digest != NULL);
-	dc->ncomputed++;
+    dc->ncomputed++;
 
     if (dc->manifests) {
 	dc->nchecked++;
@@ -592,10 +592,10 @@ fprintf(stderr, "\trpmdcFiniFile(%p) fn %s\n", dc, dc->fn);
       }	break;
     }
 
-	(void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
-	(void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	Fclose(dc->fd);
-	dc->fd = NULL;
+    (void) rpmswAdd(&dc->readops, fdstat_op(dc->fd, FDSTAT_READ));
+    (void) rpmswAdd(&dc->digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+    Fclose(dc->fd);
+    dc->fd = NULL;
 
     return rc;
 }

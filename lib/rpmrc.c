@@ -8,11 +8,15 @@
 #define __power_pc() 0
 #endif
 
+#define	_RPMIOB_INTERNAL	/* XXX for rpmiobSlurp */
+#include <rpmio.h>
 #define _MIRE_INTERNAL
-#include <rpmio_internal.h> /* for rpmioSlurp() */
+#include <mire.h>
+#include <argv.h>
 #include <rpmlua.h>
 #include <rpmluaext.h>
 #include <rpmmacro.h>
+
 #include <rpmcli.h>
 #include <rpmds.h>
 
@@ -25,6 +29,7 @@ static const char * configTarget = NULL;
 
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = SYSCONFIGDIR "/platform";
+
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
 void * platpat = NULL;
 /*@unchecked@*/
@@ -403,8 +408,7 @@ static rpmRC rpmPlatform(const char * platform)
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     CVOG_t cvog = NULL;
-    uint8_t * b = NULL;
-    ssize_t blen = 0;
+    rpmiob iob = NULL;
     int init_platform = 0;
     miRE mi_re = NULL;
     int mi_nre = 0;
@@ -412,14 +416,14 @@ static rpmRC rpmPlatform(const char * platform)
     rpmRC rc;
     int xx;
 
-    rc = rpmioSlurp(platform, &b, &blen);
+    rc = rpmiobSlurp(platform, &iob);
 
-    if (rc || b == NULL || blen <= 0) {
+    if (rc || iob == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
-    p = (char *)b;
+    p = (char *)iob->b;
     for (pe = p; p && *p; p = pe) {
 	pe = strchr(p, '\n');
 	if (pe)
@@ -466,9 +470,7 @@ exit:
 	cvog->str = _free(cvog->str);
 	cvog = _free(cvog);
     }
-/*@-modobserver@*/
-    b = _free(b);
-/*@=modobserver@*/
+    iob = rpmiobFree(iob);
     if (rc == RPMRC_OK) {
 	platpat = mireFreeAll(platpat, nplatpat);
 	platpat = mi_re;

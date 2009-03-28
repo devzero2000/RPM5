@@ -14,6 +14,7 @@
 #include <regex.h>
 #endif
 
+#define	_RPMIOB_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <fts.h>
 
@@ -303,7 +304,7 @@ typedef struct VFA {
  */
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
-VFA_t verifyAttrs[] = {
+static VFA_t verifyAttrs[] = {
     { "md5",	0,	RPMVERIFY_MD5 },
     { "size",	0,	RPMVERIFY_FILESIZE },
     { "link",	0,	RPMVERIFY_LINKTO },
@@ -842,7 +843,7 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 
     /* Got match */
     s = fileName + matches[1].rm_eo - 1;
-    x = matches[1].rm_eo - matches[1].rm_so;
+    x = (int)matches[1].rm_eo - (int)matches[1].rm_so;
     buf[x] = '\0';
     while (x) {
 	buf[--x] = *s--;
@@ -856,7 +857,7 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
  */
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
-VFA_t virtualFileAttributes[] = {
+static VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0,	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	0,	RPMFILE_DOC },
 	{ "%ghost",	0,	RPMFILE_GHOST },
@@ -2060,6 +2061,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
     const char * apkt = NULL;
+    rpmiob iob = NULL;
     uint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
@@ -2091,12 +2093,15 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
 	break;
     case RPMTAG_POLICIES:
-	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
+	xx = rpmiobSlurp(fn, &iob);
+	if (!(xx == 0 && iob != NULL)) {
 	    rpmlog(RPMLOG_ERR, _("%s: *.te policy read failed.\n"), fn);
 	    goto exit;
 	}
-	apkt = (const char *) pkt;	/* XXX unsigned char */
-	pkt = NULL;
+	apkt = (const char *) iob->b;	/* XXX unsigned char */
+	/* XXX steal the I/O buffer */
+	iob->b = (uint8_t *)xcalloc(1, sizeof(*iob->b));
+	iob->blen = 0;
 	break;
     }
 
@@ -2115,6 +2120,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 exit:
     apkt = _free(apkt);
     pkt = _free(pkt);
+    iob = rpmiobFree(iob);
     fn = _free(fn);
     if (rc != RPMRC_OK)
 	fl->processingFailed = 1;

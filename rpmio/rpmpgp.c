@@ -4,7 +4,9 @@
  */
 
 #include "system.h"
-#include "rpmio_internal.h"
+
+#define	_RPMIOB_INTERNAL
+#include <rpmio.h>
 
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>	/* XXX still needs base64 goop */
@@ -1046,39 +1048,39 @@ static void pgpDigFini(void * __dig)
 {
     pgpDig dig = __dig;
 
-	/* Lose the header tag data. */
-	/* XXX this free should be done somewhere else. */
-	dig->sig = _free(dig->sig);
+    /* Lose the header tag data. */
+    /* XXX this free should be done somewhere else. */
+    dig->sig = _free(dig->sig);
 
-	/* XXX there's a recursion here ... release and reacquire the lock */
+    /* XXX there's a recursion here ... release and reacquire the lock */
 #ifndef	BUGGY
-	yarnRelease(dig->_item.use);
+    yarnRelease(dig->_item.use);
 #endif
-	/* Dump the signature/pubkey data. */
-	pgpDigClean(dig);
+    /* Dump the signature/pubkey data. */
+    pgpDigClean(dig);
 #ifndef	BUGGY
-	yarnPossess(dig->_item.use);
+    yarnPossess(dig->_item.use);
 #endif
 
-	if (dig->hdrsha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
-	dig->hdrsha1ctx = NULL;
+    if (dig->hdrsha1ctx != NULL)
+	(void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
+    dig->hdrsha1ctx = NULL;
 
-	if (dig->sha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	dig->sha1ctx = NULL;
+    if (dig->sha1ctx != NULL)
+	(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+    dig->sha1ctx = NULL;
 
 #ifdef	NOTYET
-	if (dig->hdrmd5ctx != NULL)
-	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
-	dig->hdrmd5ctx = NULL;
+    if (dig->hdrmd5ctx != NULL)
+	(void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
+    dig->hdrmd5ctx = NULL;
 #endif
 
-	if (dig->md5ctx != NULL)
-	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	dig->md5ctx = NULL;
+    if (dig->md5ctx != NULL)
+	(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+    dig->md5ctx = NULL;
 
-	dig->impl = pgpImplFree(dig->impl);
+    dig->impl = pgpImplFree(dig->impl);
 
 }
 
@@ -1276,8 +1278,7 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 
 pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 {
-    uint8_t * b = NULL;
-    ssize_t blen;
+    rpmiob iob = NULL;
     const char * enc = NULL;
     const char * crcenc = NULL;
     uint8_t * dec;
@@ -1292,12 +1293,12 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
     pgpTag tag = 0;
     int rc;
 
-    rc = rpmioSlurp(fn, &b, &blen);
-    if (rc || b == NULL || blen <= 0)
+    rc = rpmiobSlurp(fn, &iob);
+    if (rc || iob == NULL)
 	goto exit;
 
     /* Read unarmored packets. */
-    if (pgpIsPkt(b, &tag)) {
+    if (pgpIsPkt(iob->b, &tag)) {
 	switch (tag) {
 	default:		ec = PGPARMOR_NONE;	break;
 	case PGPTAG_PUBLIC_KEY:	ec = PGPARMOR_PUBKEY;	break;
@@ -1313,7 +1314,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 	/* Truncate blen to actual no. of octets in packet. */
 	if (ec != PGPARMOR_NONE) {
 	    pgpPkt pp = alloca(sizeof(*pp));
-	    blen = pgpPktLen(b, blen, pp);
+	    iob->blen = pgpPktLen(iob->b, iob->blen, pp);
 	}
 	goto exit;
     }
@@ -1321,7 +1322,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 #define	TOKEQ(_s, _tok)	(!strncmp((_s), (_tok), sizeof(_tok)-1))
 
     /* Read armored packets, converting to binary. */
-    for (t = (char *)b; t && *t; t = te) {
+    for (t = (char *)iob->b; t && *t; t = te) {
 	if ((te = strchr(t, '\n')) == NULL)
 	    te = t + strlen(t);
 	else
@@ -1423,9 +1424,9 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 		ec = PGPARMOR_ERR_CRC_CHECK;
 		goto exit;
 	    }
-	    b = _free(b);
-	    b = dec;
-	    blen = declen;
+	    iob->b = _free(iob->b);
+	    iob->b = dec;
+	    iob->blen = declen;
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
@@ -1434,14 +1435,14 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 
 exit:
     if (ec > PGPARMOR_NONE) {
-	if (pkt)	*pkt = b;
-	if (pktlen)	*pktlen = blen;
-	b = NULL;	/* XXX b has been stolen */
+	if (pkt)	*pkt = iob->b;
+	if (pktlen)	*pktlen = iob->blen;
+	iob = _free(iob);	/* XXX iob->b has been stolen */
     } else {
 	if (pkt)	*pkt = NULL;
 	if (pktlen)	*pktlen = 0;
     }
-    b = _free(b);
+    iob = rpmiobFree(iob);
     return ec;
 }
 

@@ -78,6 +78,7 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #define	DT_GNU_HASH	0x6ffffef5
 #endif
 
+#define	_RPMIOB_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
@@ -1143,6 +1144,32 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     return i;
 }
 
+/**
+ * Merge a single provides, wrapping N as "NS(N)".
+ * @retval *dsp		(loaded) dependency set
+ * @param NS		dependency name space
+ * @param N		name
+ * @param EVR		epoch:version-release
+ * @param Flags		comparison/context flags
+ */
+static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
+		const char *N, const char *EVR, evrFlags Flags)
+	/*@modifies *dsp @*/
+{
+    char *t;
+    rpmds ds;
+    int xx;
+
+    t = alloca(strlen(NS)+sizeof("()")+strlen(N));
+    *t = '\0';
+    (void) stpcpy( stpcpy( stpcpy( stpcpy(t, NS), "("), N), ")");
+
+    ds = rpmdsSingle(RPMTAG_PROVIDENAME, t, EVR, Flags);
+    xx = rpmdsMerge(dsp, ds);
+    (void)rpmdsFree(ds);
+    ds = NULL;
+}
+
 struct cpuinfo_s {
 /*@observer@*/ /*@null@*/
     const char *name;
@@ -1202,32 +1229,6 @@ static int rpmdsCpuinfoCtagFlags(const char * name)
     return flags;
 }
 
-/**
- * Merge a single provides, wrapping N as "NS(N)".
- * @retval *dsp		(loaded) dependency set
- * @param NS		dependency name space
- * @param N		name
- * @param EVR		epoch:version-release
- * @param Flags		comparison/context flags
- */
-static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
-		const char *N, const char *EVR, evrFlags Flags)
-	/*@modifies *dsp @*/
-{
-    char *t;
-    rpmds ds;
-    int xx;
-
-    t = alloca(strlen(NS)+sizeof("()")+strlen(N));
-    *t = '\0';
-    (void) stpcpy( stpcpy( stpcpy( stpcpy(t, NS), "("), N), ")");
-
-    ds = rpmdsSingle(RPMTAG_PROVIDENAME, t, EVR, Flags);
-    xx = rpmdsMerge(dsp, ds);
-    (void)rpmdsFree(ds);
-    ds = NULL;
-}
-
 #define	_PROC_CPUINFO	"/proc/cpuinfo"
 /**
  */
@@ -1240,8 +1241,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 {
     struct cpuinfo_s * ct;
     const char * NS = "cpuinfo";
-    uint8_t * b;
-    ssize_t blen;
+    rpmiob iob = NULL;
     char * f, * fe, * fend;
     char * g, * ge;
     char * t;
@@ -1268,11 +1268,11 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     for (ct = ctags; ct->name != NULL; ct++)
 	ct->done = 0;
 
-    xx = rpmioSlurp(fn, &b, &blen);
-    if (!(xx == 0 && b != NULL && blen > 0))
+    xx = rpmiobSlurp(fn, &iob);
+    if (!(xx == 0 && iob != NULL))
 	goto exit;
 
-    for (f = (char *)b; *f != '\0'; f = fend) {
+    for (f = (char *)iob->b; *f != '\0'; f = fend) {
 	/* find EOL */
 	fe = f;
 	while (*fe != '\0' && !(*fe == '\n' || *fe == '\r'))
@@ -1355,7 +1355,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     }
 
 exit:
-    b = _free(b);
+    iob = rpmiobFree(iob);
     return rc;
 }
 
@@ -1410,12 +1410,12 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     N_("header tag data can be of type uint64_t.") },
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
-#if defined(HAVE_LZMA_H)
     N_("package payload can be in ustar tar archive format.") },
+#if defined(HAVE_LZMA_H)
     { "rpmlib(PayloadIsLzma)",		"4.4.6-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
-#endif
     N_("package payload can be compressed using lzma.") },
+#endif
     { "rpmlib(FileDigestParameterized)",    "4.4.6-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("file digests can be other than MD5.") },

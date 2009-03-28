@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: more hack-o-rounds for LUA <-> PCRE, add --disable-static for now.
+    - jbj: backport rpmiotypes.h/rpmiob.c, use rpmiobSlurp instead.
     - jbj: fix: handle ./../foo paths correctly (#491388).
     - jbj: rpmlib: rescusitate splint annotations.
     - jbj: rpmdb: rescusitate splint annotations.

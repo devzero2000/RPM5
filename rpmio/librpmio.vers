@@ -285,6 +285,16 @@ LIBRPMIO_0
     rpmhookUnregisterAny;
     rpmInitMacros;
     _rpmio_debug;
+    _rpmiob_chunk;
+    rpmiobAppend;
+    rpmiobBuf;
+    rpmiobEmpty;
+    rpmiobFree;
+    rpmiobLen;
+    rpmiobNew;
+    rpmiobRTrim;
+    rpmiobSlurp;
+    rpmiobStr;
     rpmioAccess;
     rpmioAllPoptTable;
     rpmioClean;

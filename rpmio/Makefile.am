@@ -57,9 +57,9 @@ RPM_LDADD_COMMON = \
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmgc.h \
-	rpmhash.h rpmio.h rpmio-stub.h rpmku.h rpmlog.h rpmmacro.h rpmmg.h \
-	rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h \
-	stringbuf.h ugid.h rpmuuid.h rpmzlog.h yarn.h
+	rpmhash.h rpmio.h rpmiotypes.h rpmio-stub.h rpmku.h rpmlog.h \
+	rpmmacro.h rpmmg.h rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h \
+	rpmurl.h rpmxar.h stringbuf.h ugid.h rpmuuid.h rpmzlog.h yarn.h
 noinst_HEADERS = \
 	ar.h cpio.h crc.h fnmatch.h glob.h iosm.h \
 	md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
@@ -74,10 +74,11 @@ librpmio_la_SOURCES = \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
-	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
-	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
-	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c rpmzlog.c \
-	strcasecmp.c stringbuf.c strtolocale.c tar.c url.c ugid.c yarn.c
+	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c \
+	rpmio-stub.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c \
+	rpmnss.c rpmpgp.c rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c \
+	rpmxar.c rpmzlog.c strcasecmp.c stringbuf.c strtolocale.c \
+	tar.c url.c ugid.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers

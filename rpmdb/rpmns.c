@@ -3,7 +3,8 @@
  */
 #include "system.h"
 
-#include <rpmio_internal.h>	/* XXX rpmioSlurp */
+#define	_RPMIOB_INTERNAL	/* XXX rpmiobSlurp */
+#include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
@@ -436,26 +437,25 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
 	static const char clrtxt[] = "-----BEGIN PGP SIGNED MESSAGE-----";
 	static const char sigtxt[] = "-----BEGIN PGP SIGNATURE-----";
 	const char * _fn = rpmExpand(fn, NULL);
-	uint8_t * b = NULL;
-	ssize_t blen = 0;
-	int _rc = rpmioSlurp(_fn, &b, &blen);
+	rpmiob iob = NULL;
+	int _rc = rpmiobSlurp(_fn, &iob);
 
-	if (!(_rc == 0 && b != NULL && blen > 0)) {
+	if (!(_rc == 0 && iob != NULL)) {
 if (_rpmns_debug)
-fprintf(stderr, "==> rpmioSlurp(%s) MSG ret %d\n", _fn, _rc);
-	    b = _free(b);
+fprintf(stderr, "==> rpmiobSlurp(%s) MSG ret %d\n", _fn, _rc);
+	    iob = rpmiobFree(iob);
 	    _fn = _free(_fn);
 	    goto exit;
 	}
 	_fn = _free(_fn);
 
 	/* XXX clearsign sig is PGPSIGTYPE_TEXT not PGPSIGTYPE_BINARY. */
-	if (!strncmp((char *)b, clrtxt, strlen(clrtxt))) {
-	    const char * be = (char *) (b + blen);
+	if (!strncmp((char *)iob->b, clrtxt, strlen(clrtxt))) {
+	    const char * be = (char *) (iob->b + iob->blen);
 	    const char * t;
 
 	    /* Skip to '\n\n' start-of-plaintext */
-	    t = (char *) b;
+	    t = (char *) iob->b;
 	    while (t && t < be && *t != '\n')
 		t = strchr(t, '\n') + 1;
 	    if (!(t && t < be))
@@ -478,9 +478,9 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG ret %d\n", _fn, _rc);
 		xx = rpmDigestUpdate(ctx, "\r\n", sizeof("\r\n")-1);
 	    }
 	} else
-	    xx = rpmDigestUpdate(ctx, b, blen);
+	    xx = rpmDigestUpdate(ctx, iob->b, iob->blen);
 
-	b = _free(b);
+	iob = rpmiobFree(iob);
     }
 
     if (sigp->hash != NULL)

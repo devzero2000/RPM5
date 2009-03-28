@@ -1,8 +1,8 @@
-/*@-realcompare -sizeoftype @*/
+/*@-moduncon -mustmod -realcompare -sizeoftype @*/
 #include "system.h"
 
 #ifdef	WITH_LUA
-#include <rpmio_internal.h>
+#define	_RPMIOB_INTERNAL
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmlog.h>
@@ -10,6 +10,7 @@
 #include <rpmhook.h>
 #include <rpmcb.h>
 #include <argv.h>
+#include <popt.h>		/* XXX poptSaneFile test */
 
 #include <lua.h>
 #include <lualib.h>
@@ -47,7 +48,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
 	    )
 
 /*@only@*/ /*@unchecked@*/ /*@relnull@*/
-static rpmlua globalLuaState = NULL;
+static rpmlua globalLuaState;
 
 static int luaopen_rpm(lua_State *L)
 	/*@modifies L @*/;
@@ -55,10 +56,10 @@ static int rpm_print(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/;
 
-/*@unchecked@*/
-const char *rpmluaFiles = RPMLUAFILES;
+/*@unchecked@*/ /*@observer@*/
+const char * rpmluaFiles = RPMLUAFILES;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 const char * rpmluaPath = "%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/lua/?.lua";
 
 rpmlua rpmluaGetGlobalState(void)
@@ -68,12 +69,12 @@ rpmlua rpmluaGetGlobalState(void)
 /*@=globstate@*/
 }
 
-/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
+/*@-globs -mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
     lua_State *L = lua_open();
-    /*@-readonlytrans@*/
+    /*@-readonlytrans -nullassign @*/
     /*@observer@*/ /*@unchecked@*/
     static const luaL_reg lualibs[] = {
 	/* standard LUA libraries */
@@ -97,9 +98,9 @@ rpmlua rpmluaNew()
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
     };
+    /*@=readonlytrans =nullassign @*/
     /*@observer@*/ /*@unchecked@*/
     const luaL_reg *lib = lualibs;
-    /*@=readonlytrans@*/
     char *path_buf;
     char *path_next;
     char *path;
@@ -150,7 +151,12 @@ rpmlua rpmluaNew()
             const char *fn = av[i];
             if (fn[0] == '@' /* attention */) {
                 fn++;
-                if (!rpmSecuritySaneFile(fn)) {
+#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
+		if (!rpmSecuritySaneFile(fn))
+#else
+		if (!poptSaneFile(fn))
+#endif
+		{
                     rpmlog(RPMLOG_WARNING, "existing RPM Lua script file \"%s\" considered INSECURE -- not loaded\n", fn);
                     /*@innercontinue@*/ continue;
                 }
@@ -165,7 +171,7 @@ rpmlua rpmluaNew()
 
     return lua;
 }
-/*@=mods@*/
+/*@=globs =mods@*/
 
 void *rpmluaFree(rpmlua lua)
 	/*@globals globalLuaState @*/
@@ -179,7 +185,9 @@ void *rpmluaFree(rpmlua lua)
 	if (lua == globalLuaState) globalLuaState = NULL;
 	lua = _free(lua);
     }
+/*@-globstate@*/
     return NULL;
+/*@=globstate@*/
 }
 
 void rpmluaSetData(rpmlua _lua, const char *key, const void *data)
@@ -196,6 +204,7 @@ void rpmluaSetData(rpmlua _lua, const char *key, const void *data)
     lua_rawset(L, LUA_REGISTRYINDEX);
 }
 
+/*@null@*/
 static void *getdata(lua_State *L, const char *key)
 	/*@modifies L @*/
 {
@@ -687,7 +696,9 @@ static int rpm_macros(lua_State *L)
     lua_newtable(L);
 /*@=modunconnomods@*/
 
+/*@-globs@*/
     ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
+/*@=globs@*/
 
     if (av != NULL)
     for (i = 0; i < ac; i++) {
@@ -979,7 +990,9 @@ static int rpm_load(lua_State *L)
 	(void)luaL_argerror(L, 1, "filename expected");
     } else {
 	const char *filename = lua_tostring(L, 1);
+/*@-globs@*/
 	(void)rpmLoadMacroFile(NULL, filename);
+/*@=globs@*/
     }
     return 0;
 }
@@ -1004,10 +1017,9 @@ static int rpm_slurp(lua_State *L)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies L, fileSystem, internalState @*/
 {
-    uint8_t *b;
-    ssize_t blen;
-    int rc;
+    rpmiob iob = NULL;
     const char *fn;
+    int rc;
 
     if (lua_isstring(L, 1))
         fn = lua_tostring(L, 1);
@@ -1015,12 +1027,15 @@ static int rpm_slurp(lua_State *L)
         (void)luaL_argerror(L, 1, "filename");
         return 0;
     }
-    rc = rpmioSlurp(fn, &b, &blen);
-    if (rc || b == NULL || blen <= 0) {
+/*@-globs@*/
+    rc = rpmiobSlurp(fn, &iob);
+/*@=globs@*/
+    if (rc || iob == NULL) {
         (void)luaL_error(L, "failed to slurp data");
         return 0;
     }
-    lua_pushlstring(L, (const char *)b, (size_t)blen);
+    lua_pushlstring(L, (const char *)rpmiobStr(iob), rpmiobLen(iob));
+    iob = rpmiobFree(iob);
     return 1;
 }
 
@@ -1046,7 +1061,7 @@ static int rpm_realpath(lua_State *L)
 {
     const char *pn;
     char rp_buf[PATH_MAX];
-    char *rp;
+    char *rp = "";
 
     if (lua_isstring(L, 1))
         pn = lua_tostring(L, 1);
@@ -1054,7 +1069,7 @@ static int rpm_realpath(lua_State *L)
         (void)luaL_argerror(L, 1, "pathname");
         return 0;
     }
-    if ((rp = realpath(pn, rp_buf)) == NULL) {
+    if ((rp = Realpath(pn, rp_buf)) == NULL) {
         (void)luaL_error(L, "failed to resolve path via realpath(3): %s", strerror(errno));
         return 0;
     }
@@ -1062,7 +1077,7 @@ static int rpm_realpath(lua_State *L)
     return 1;
 }
 
-/*@-readonlytrans@*/
+/*@-readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
     {"macros", rpm_macros},
@@ -1082,7 +1097,7 @@ static const luaL_reg rpmlib[] = {
     {"realpath", rpm_realpath},
     {NULL, NULL}
 };
-/*@=readonlytrans@*/
+/*@=readonlytrans =nullassign @*/
 
 static int luaopen_rpm(lua_State *L)
 	/*@modifies L @*/
@@ -1093,4 +1108,4 @@ static int luaopen_rpm(lua_State *L)
 }
 #endif	/* WITH_LUA */
 
-/*@=realcompare =sizeoftype @*/
+/*@=moduncon =mustmod =realcompare =sizeoftype @*/

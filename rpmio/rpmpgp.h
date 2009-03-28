@@ -12,67 +12,8 @@
 
 #include <string.h>
 #include <popt.h>
+#include <rpmiotypes.h>
 #include <yarn.h>
-
-/** \ingroup rpmpgp
- */
-typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
-
-/** \ingroup rpmpgp
- */
-typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
-
-/**
- */
-typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
-
-/**
- */
-typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
-
-/** \ingroup rpmpgp
- * Bit(s) to control digest and signature verification.
- */
-typedef enum pgpVSFlags_e {
-    RPMVSF_DEFAULT	= 0,
-    RPMVSF_NOHDRCHK	= (1 <<  0),
-    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
-    /* bit(s) 2-7 unused */
-    RPMVSF_NOSHA1HEADER	= (1 <<  8),
-    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
-    RPMVSF_NODSAHEADER	= (1 << 10),
-    RPMVSF_NORSAHEADER	= (1 << 11),
-    /* bit(s) 12-15 unused */
-    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
-    RPMVSF_NOMD5	= (1 << 17),
-    RPMVSF_NODSA	= (1 << 18),
-    RPMVSF_NORSA	= (1 << 19)
-    /* bit(s) 20-31 unused */
-} pgpVSFlags;
-
-#define	_RPMVSF_NODIGESTS	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 )
-
-#define	_RPMVSF_NOSIGNATURES	\
-  ( RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER |	\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
-#define	_RPMVSF_NOHEADER	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER )
-
-#define	_RPMVSF_NOPAYLOAD	\
-  ( RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 |		\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
 
 #if defined(_RPMPGP_INTERNAL)
 #include <rpmsw.h>
