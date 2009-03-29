@@ -142,6 +142,10 @@ struct rpmiob_s{
     uint8_t * b;		/*!< data octects. */
     size_t blen;		/*!< no. of octets used. */
     size_t allocated;		/*!< no. of octets allocated. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;				/*!< (unused) keep splint happy */
+#endif
 };
 #endif
 
