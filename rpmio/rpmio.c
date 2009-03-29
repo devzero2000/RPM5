@@ -3098,13 +3098,14 @@ int _rpmnss_init = 0;
 void rpmioClean(void)
 {
 /*@-nestedextern@*/
-    extern rpmioPool _digPool;
-    extern rpmioPool _xarPool;
     extern rpmioPool _urlPool;
-    extern rpmioPool _rpmmgPool;
+    extern rpmioPool _xarPool;
+    extern rpmioPool _digPool;
+    extern rpmioPool _rpmiobPool;
 /*@-shadow@*/
     extern rpmioPool _htPool;
 /*@=shadow@*/
+    extern rpmioPool _rpmmgPool;
 /*@=nestedextern@*/
 
 #if defined(WITH_LUA)
@@ -3121,8 +3122,9 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
-    _htPool = rpmioFreePool(_htPool);
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
+    _htPool = rpmioFreePool(_htPool);
+    _rpmiobPool = rpmioFreePool(_rpmiobPool);
     _digPool = rpmioFreePool(_digPool);
     _xarPool = rpmioFreePool(_xarPool);
     _urlPool = rpmioFreePool(_urlPool);

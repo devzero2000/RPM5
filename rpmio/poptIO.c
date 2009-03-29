@@ -61,6 +61,8 @@ extern int _pgp_debug;
 /*@unchecked@*/
 extern int _rpmio_debug;
 /*@unchecked@*/
+extern int _rpmiob_debug;
+/*@unchecked@*/
 extern int _rpmsq_debug;
 /*@unchecked@*/
 extern int _tar_debug;
@@ -396,6 +398,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug PGP usage"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("Debug rpmio I/O"), NULL},
+ { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
+	N_("Debug rpmio I/O buffers"), NULL},
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,

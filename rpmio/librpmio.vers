@@ -289,7 +289,6 @@ LIBRPMIO_0
     rpmiobAppend;
     rpmiobBuf;
     rpmiobEmpty;
-    rpmiobFree;
     rpmiobLen;
     rpmiobNew;
     rpmiobRTrim;
