@@ -62,6 +62,7 @@ const char * rpmMacrofiles = MACROFILES;
 
 #include <rpmio_internal.h>
 #include <rpmlog.h>
+#include <mire.h>
 
 #ifdef	WITH_LUA
 #define	_RPMLUA_INTERNAL	/* XXX lua->printbuf access */
@@ -278,9 +279,12 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
 }
 
 int
-rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
+rpmGetMacroEntries(MacroContext mc, void * _mire, int used,
 		const char *** avp)
 {
+/*@-assignexpose -castexpose @*/
+    miRE mire = (miRE) _mire;
+/*@=assignexpose =castexpose @*/
     const char ** av;
     int ac = 0;
     int i;

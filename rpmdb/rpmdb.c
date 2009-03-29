@@ -1927,7 +1927,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     rpmdbMatchIterator * prev, next;
     dbiIndex dbi;
     int xx;
-    int i;
 
     if (mi == NULL)
 	return NULL;
@@ -1950,10 +1949,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	xx = dbiCclose(dbi, mi->mi_dbc, 0);
     mi->mi_dbc = NULL;
 
-    if (mi->mi_re != NULL)
-    for (i = 0; i < mi->mi_nre; i++)
-	xx = mireClean(mi->mi_re + i);
-    mi->mi_re = _free(mi->mi_re);
+    mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
@@ -2137,8 +2133,19 @@ assert(nmire != NULL);
     if (rc)
 	goto exit;
 
+    if (mi->mi_re == NULL) {
+	mi->mi_re = mireGetPool(_mirePool);
+	mire = mi->mi_re;
+    } else {
+	void *use =  mi->mi_re->_item.use;
+	void *pool = mi->mi_re->_item.pool;
     mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
     mire = mi->mi_re + mi->mi_nre;
+	memset(mire, 0, sizeof(*mire));
+	/* XXX ensure no segfault, copy the use/pool from 1st item. */
+	mire->_item.use = use;
+	mire->_item.pool = pool;
+    }
     mi->mi_nre++;
     
     mire->mode = nmire->mode;
@@ -2152,7 +2159,6 @@ assert(nmire != NULL);
     /* XXX todo: permit PCRE patterns to be used. */
     mire->offsets = NULL;
     mire->noffsets = 0;
-    mire->nrefs = 0;
 
     if (mi->mi_nre > 1)
 	qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
