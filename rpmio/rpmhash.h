@@ -103,7 +103,7 @@ hashTable htUnlink (/*@killref@*/ /*@null@*/ hashTable ht)
 
 /**
  * Reference a hash table instance.
- * @param ds		hash table
+ * @param ht		hash table
  * @return		new hash table reference
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/

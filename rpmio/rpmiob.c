@@ -10,18 +10,38 @@
 /*@unchecked@*/
 size_t _rpmiob_chunk = 1024;
 
-rpmiob rpmiobFree(rpmiob iob)
+/*@unchecked@*/
+int _rpmiob_debug;
+
+static void rpmiobFini(void * _iob)
 {
-    if (iob != NULL) {
-	iob->b = _free(iob->b);
-	iob = _free(iob);
+    rpmiob iob = _iob;
+
+    iob->b = _free(iob->b);
+    iob->blen = 0;
+    iob->allocated = 0;
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmiobPool;
+
+static rpmiob rpmiobGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmiobPool, fileSystem @*/
+	/*@modifies pool, _rpmiobPool, fileSystem @*/
+{
+    rpmiob iob;
+
+    if (_rpmiobPool == NULL) {
+	_rpmiobPool = rpmioNewPool("iob", sizeof(*iob), -1, _rpmiob_debug,
+			NULL, NULL, rpmiobFini);
+	pool = _rpmiobPool;
     }
-    return NULL;
+    return (rpmiob) rpmioGetPool(pool, sizeof(*iob));
 }
 
 rpmiob rpmiobNew(size_t len)
 {
-    rpmiob iob = xcalloc(1, sizeof(*iob));
+    rpmiob iob = rpmiobGetPool(_rpmiobPool);
     if (len == 0)
 	len = _rpmiob_chunk;
     iob->allocated = len;
@@ -142,7 +162,7 @@ exit:
     if (rc == 0) {
 	if (iobp != NULL) {
 	    /* XXX use rpmiobNew() if/when lazy iop->b alloc is implemented. */
-	    rpmiob iob = xcalloc(1, sizeof(*iob));
+	    rpmiob iob = rpmiobGetPool(_rpmiobPool);
 	    iob->b = b;
 	    iob->blen = blen;
 	    iob->allocated = blen;

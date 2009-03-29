@@ -34,14 +34,13 @@
  *
  */
 
-
 static void 
 spec_dealloc(specObject * s) 
     /*@modifies s @*/
 {
-        if (s->spec)
-            s->spec = freeSpec(s->spec);
-        PyObject_Del(s);
+    if (s->spec)
+	s->spec = freeSpec(s->spec);
+    PyObject_Del(s);
 }
 
 static int

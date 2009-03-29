@@ -160,23 +160,23 @@ static void rpmdsFini(void * _ds)
 {
     rpmds ds = _ds;
 
-	if (ds->Count > 0) {
-	    ds->N = _free(ds->N);
-	    ds->EVR = _free(ds->EVR);
-	    ds->Flags = _free(ds->Flags);
-	    (void)headerFree(ds->h);
-	    ds->h = NULL;
-	}
+    if (ds->Count > 0) {
+	ds->N = _free(ds->N);
+	ds->EVR = _free(ds->EVR);
+	ds->Flags = _free(ds->Flags);
+	(void)headerFree(ds->h);
+	ds->h = NULL;
+    }
 
-	ds->DNEVR = _free(ds->DNEVR);
-	ds->ns.str = _free(ds->ns.str);
-	memset(&ds->ns, 0, sizeof(ds->ns));
-	ds->A = _free(ds->A);
-	ds->Color = _free(ds->Color);
-	ds->Refs = _free(ds->Refs);
-	ds->Result = _free(ds->Result);
-	ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
-	ds->include = mireFreeAll(ds->include, ds->ninclude);
+    ds->DNEVR = _free(ds->DNEVR);
+    ds->ns.str = _free(ds->ns.str);
+    memset(&ds->ns, 0, sizeof(ds->ns));
+    ds->A = _free(ds->A);
+    ds->Color = _free(ds->Color);
+    ds->Refs = _free(ds->Refs);
+    ds->Result = _free(ds->Result);
+    ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
+    ds->include = mireFreeAll(ds->include, ds->ninclude);
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/

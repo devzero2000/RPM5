@@ -214,9 +214,10 @@ typedef enum rpmDigestFlags_e {
 /** \ingroup rpmio
  */
 struct rpmiob_s{
-    rpmuint8_t * b;	/*!< data octects. */
-    size_t blen;	/*!< no. of octets used. */
-    size_t allocated;	/*!< no. of octets allocated. */
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    rpmuint8_t * b;		/*!< data octects. */
+    size_t blen;		/*!< no. of octets used. */
+    size_t allocated;		/*!< no. of octets allocated. */
 };
 #endif
 
@@ -390,13 +391,37 @@ const char * xstrtolocale(/*@only@*/ const char *str)
 	/*@modifies *str @*/;
 
 /**
- * Destroy an I/O buffer.
+ * Unreference a I/O buffer instance.
+ * @param iob		hash table
+ * @return		NULL if free'd
+ */
+/*@unused@*/ /*@null@*/
+rpmiob rpmiobUnlink (/*@killref@*/ /*@null@*/ rpmiob iob)
+	/*@modifies iob @*/;
+#define	rpmiobUnlink(_iob)	\
+    ((rpmiob)rpmioUnlinkPoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a I/O buffer instance.
  * @param iob		I/O buffer
- * @return		NULL always
+ * @return		new I/O buffer reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmiob rpmiobLink (/*@null@*/ rpmiob iob)
+	/*@modifies iob @*/;
+#define	rpmiobLink(_iob)	\
+    ((rpmiob)rpmioLinkPoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Destroy a I/O buffer instance.
+ * @param iob		I/O buffer
+ * @return		NULL on last dereference
  */
 /*@null@*/
-rpmiob rpmiobFree(/*@only@*/ /*@null@*/ rpmiob iob)
+rpmiob rpmiobFree( /*@only@*/ rpmiob iob)
 	/*@modifies iob @*/;
+#define	rpmiobFree(_iob)	\
+    ((rpmiob)rpmioFreePoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Create an I/O buffer.
