@@ -18,22 +18,20 @@ extern "C" {
 /**
  * Lookup pubkey in keyutils keyring.
  * @param sigp		signature packet
- * @retval *bp		pubkey I/O buffer
- * @retval *blenp	pubkey I/O buffer length
+ * @retval *iobp	pubkey I/O buffer
  * @return		RPMRC_OK on success
  */
-rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ uint8_t ** bp, /*@out@*/ size_t * blenp)
-	/*@modifies *bp, *blenp @*/;
+rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
+	/*@modifies *iobp @*/;
 
 /**
  * Store pubkey in keyutils keyring.
  * @param sigp		signature packet
- * @param b		pubkey I/O buffer
- * @param blen		pubkey I/O buffer length
+ * @param iob		pubkey I/O buffer
  * @return		RPMRC_OK on success
  */
-rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ uint8_t * b, size_t blen)
-	/*@modifies b @*/;
+rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
+	/*@modifies iob @*/;
 
 /**
  * Return pass phrase from keyutils keyring.

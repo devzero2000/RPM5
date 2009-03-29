@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#define	_RPMIOB_INTERNAL
 #include <rpmio.h>
 #if defined(HAVE_KEYUTILS_H)
 #include <rpmmacro.h>
@@ -143,12 +144,10 @@ assert(password != NULL);
 char * (*Getpass) (const char * prompt) = _GetPass;
 /*@=redecl@*/
 
-rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ uint8_t ** bp, size_t * blenp)
+rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 {
-    if (bp != NULL)
-	*bp = NULL;
-    if (blenp != NULL)
-	*blenp = 0;
+    if (iobp != NULL)
+	*iobp = NULL;
 
 #if defined(HAVE_KEYUTILS_H)
     if (_kuCache) {
@@ -168,25 +167,24 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ uint8_t ** bp, size_t * blenp
 	key = keyctl_search(keyring, "user", krn, 0);
 	xx = keyctl_read(key, NULL, 0);
 	if (xx > 0) {
-	    uint8_t * b = NULL;
-	    ssize_t blen = xx;
-	    xx = keyctl_read_alloc(key, (void **)&b);
+	    rpmiob iob = rpmiobNew(xx);
+	    xx = keyctl_read(key, (char *)iob->b, iob->blen);
 	    if (xx > 0) {
 #ifdef	NOTYET
 		pubkeysource = xstrdup(krn);
 		_kuCache = 0;	/* XXX don't bother caching. */
 #endif
 	    } else
-		b = _free(b);
+		iob = rpmiobFree(iob);
 
-	    if (b != NULL) {
-		if (bp)
-		    *bp = b;
-		if (blenp)
-		    *blenp = blen;
+
+	    if (iob != NULL && iobp != NULL) {
+		*iobp = iob;
 		return RPMRC_OK;
-	    } else
+	    } else {
+		iob = rpmiobFree(iob);
 		return RPMRC_NOTFOUND;
+	    }
 	} else
 	    return RPMRC_NOTFOUND;
     } else
@@ -194,7 +192,7 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ uint8_t ** bp, size_t * blenp
     return RPMRC_NOTFOUND;
 }
 
-rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ uint8_t * b, size_t blen)
+rpmRC rpmkuStorePubkey(pgpDigParams sigp, rpmiob iob)
 {
 #if defined(HAVE_KEYUTILS_H)
     if (_kuCache) {
@@ -209,11 +207,11 @@ rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ uint8_t * b, size_t blen)
 	*krn = '\0';
 	(void) stpcpy( stpcpy(krn, krprefix), krfp);
 /*@-moduncon -noeffectuncon @*/
-	(void) add_key("user", krn, b, blen, keyring);
+	(void) add_key("user", krn, iob->b, iob->blen, keyring);
 /*@=moduncon =noeffectuncon @*/
     }
 #endif
-    b = _free(b);
+    iob = rpmiobFree(iob);
     return RPMRC_OK;
 }
 

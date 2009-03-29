@@ -17,7 +17,7 @@ static void rpmiobFini(void * _iob)
 {
     rpmiob iob = _iob;
 
-	iob->b = _free(iob->b);
+    iob->b = _free(iob->b);
     iob->blen = 0;
     iob->allocated = 0;
 }
@@ -47,7 +47,7 @@ rpmiob rpmiobNew(size_t len)
     iob->allocated = len;
     iob->blen = 0;
     iob->b = xcalloc(iob->allocated+1, sizeof(*iob->b));
-    return iob;
+    return rpmiobLink(iob);
 }
 
 rpmiob rpmiobEmpty(rpmiob iob)

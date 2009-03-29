@@ -11,6 +11,7 @@
 
 #include <netinet/in.h>
 
+#define	_RPMIOB_INTERNAL
 #include <rpmio_internal.h>
 #include <rpmcb.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
@@ -160,8 +161,7 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
-    uint8_t * b = NULL;
-    size_t blen = 0;
+    rpmiob iob = NULL;
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
     int xx;
 
@@ -190,8 +190,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
     /* Try keyutils keyring lookup. */
     if (ts->pkpkt == NULL) {
-	b = NULL;
-	switch (rpmkuFindPubkey(sigp, &b, &blen)) {
+	iob = NULL;
+	switch (rpmkuFindPubkey(sigp, &iob)) {
 	case RPMRC_NOTFOUND:
 	case RPMRC_FAIL:
 	case RPMRC_NOTTRUSTED:
@@ -200,8 +200,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	case RPMRC_OK:
 	    pubkeysource = xstrdup("keyutils");
 	    krcache = 0;	/* XXX don't bother caching. */
-	    ts->pkpkt = memcpy(xmalloc(blen), b, blen);
-	    ts->pkpktlen = blen;
+	    ts->pkpkt = memcpy(xmalloc(iob->blen), iob->b, iob->blen);
+	    ts->pkpktlen = iob->blen;
 	    break;
 	}
     }
@@ -310,11 +310,11 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	/* Save the pubkey in the keyutils keyring. */
 	if (krcache) {
-	    if (b == NULL) {
-		b = memcpy(xmalloc(ts->pkpktlen), ts->pkpkt, ts->pkpktlen);
-		blen = ts->pkpktlen;
+	    if (iob == NULL) {
+		iob = rpmiobNew(ts->pkpktlen);
+		iob->b = memcpy(iob->b, ts->pkpkt, iob->blen);
 	    }
-	    (void) rpmkuStorePubkey(sigp, b, blen);
+	    (void) rpmkuStorePubkey(sigp, iob);
 	}
 
 	/* Pubkey packet looks good, save the signer id. */
