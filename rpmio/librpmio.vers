@@ -165,12 +165,14 @@ LIBRPMIO_0
     lzdio;
     max_macro_depth;
     _mire_debug;
+    _mirePool;
     mireAppend;
     mireApply;
     mireClean;
     _mireEL;
     mireFree;
     mireFreeAll;
+    mireGetPool;
     _mireGLOBoptions;
     mireLoadPatterns;
     mireNew;

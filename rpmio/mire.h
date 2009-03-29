@@ -23,6 +23,9 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 extern int _mire_debug;
 /*@=exportlocal@*/
 
+/*@unchecked@*/
+extern rpmioPool _mirePool;
+
 /**
  */
 /*@unchecked@*/ /*@null@*/ /*@shared@*/
@@ -49,6 +52,7 @@ extern int _mireREGEXoptions;
 /** PCRE default: 0 */
 /*@unchecked@*/
 extern int _mirePCREoptions;
+
 /**
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct miRE_s * miRE;
@@ -85,6 +89,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /**
  */
 struct miRE_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmMireMode	mode;		/*!< pattern match mode */
 /*@only@*/ /*@relnull@*/
     const char *pattern;	/*!< pattern string */
@@ -111,8 +116,10 @@ struct miRE_s {
     int eoptions;	/*!< pcre_exec(3) options. */
     int notmatch;		/*!< non-zero: negative match, like "grep -v" */
     int tag;			/*!< sort identifier (e.g. an rpmTag) */
+#if defined(__LCLINT__)
 /*@refs@*/
-    int nrefs;			/*!< Reference count. */
+    int nrefs;				/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* defined(_MIRE_INTERNAL) */
 
@@ -127,6 +134,15 @@ extern "C" {
  */
 int mireClean(/*@null@*/ miRE mire)
 	/*@modifies mire @*/;
+
+/**
+ * Allocate a miRE container from the pool.
+ * @param pool		mire pool
+ * @return		miRE container
+ */
+miRE mireGetPool(/*@null@*/ rpmioPool pool)
+        /*@globals _mirePool, fileSystem @*/
+        /*@modifies pool, _mirePool, fileSystem @*/;
 
 /*@-exportlocal@*/
 /*@null@*/

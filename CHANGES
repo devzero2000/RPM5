@@ -1,5 +1,8 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: convert mire to usage mutex with refcounts
+	(unifying array <-> element mutexes by copying use/pool
+	pointers throughout the array).
     - jbj: rpmku: rework rpmiob handling to avoid extra malloc's.
     - jbj: rpmiob: fix: add a newref in rpmiobNew.
     - jbj: yarn: convert rpmiob to usage mutex with refcounts.

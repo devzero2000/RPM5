@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <rpmiotypes.h>
+#include <rpmio.h>
 #include <rpmlog.h>
 
 #define	_MIRE_INTERNAL
@@ -68,44 +69,41 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
 
 miRE XmireUnlink(miRE mire, const char * msg, const char * fn, unsigned ln)
 {
-    if (mire == NULL) return NULL;
-
-/*@-modfilesys@*/
-if (_mire_debug && msg != NULL)
-fprintf(stderr, "--> mire %p -- %d %s at %s:%u\n", mire, mire->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-
-    mire->nrefs--;
+    (void)rpmioUnlinkPoolItem((rpmioItem)mire, msg, fn, ln);
     return NULL;
 }
 
 miRE XmireLink(miRE mire, const char * msg, const char * fn, unsigned ln)
 {
-    if (mire == NULL) return NULL;
-    mire->nrefs++;
+    mire = (miRE) rpmioLinkPoolItem((rpmioItem)mire, msg, fn, ln);
+    return mire;
+}
 
-/*@-modfilesys@*/
-if (_mire_debug && msg != NULL)
-fprintf(stderr, "--> mire %p ++ %d %s at %s:%u\n", mire, mire->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
+static void mireFini(void * _mire)
+{
+    miRE mire = _mire;
+    (void) mireClean(mire);
+}
 
-    /*@-refcounttrans@*/ return mire; /*@=refcounttrans@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _mirePool;
+
+miRE mireGetPool(rpmioPool pool)
+{
+    miRE mire;
+
+    if (_mirePool == NULL) {
+	_mirePool = rpmioNewPool("mire", sizeof(*mire), -1, _mire_debug,
+			NULL, NULL, mireFini);
+	pool = _mirePool;
+    }
+    return (miRE) rpmioGetPool(pool, sizeof(*mire));
 }
 
 miRE mireFree(miRE mire)
 {
-    if (mire == NULL)
-	return NULL;
-
-    if (mire->nrefs > 1)
-	return mireUnlink(mire, "mireFree");
-
-    (void) mireClean(mire);
-    (void) mireUnlink(mire, "mireFree");
-/*@-refcounttrans -usereleased @*/
-    memset(mire, 0, sizeof(*mire));
-    mire = _free(mire);
-/*@=refcounttrans =usereleased @*/
+    mireFini(mire);
+    mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
 }
 
@@ -116,7 +114,9 @@ void * mireFreeAll(miRE mire, int nmire)
 	int i;
 	for (i = 0; i < nmire; i++)
 	    (void) mireClean(mire + i);
-	mire = _free(mire);
+	/* XXX only the 1st element in the array has a usage mutex. */
+	mire = xrealloc(mire, sizeof(*mire));
+	mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
     }
     return NULL;
 }
@@ -124,10 +124,10 @@ void * mireFreeAll(miRE mire, int nmire)
 
 miRE mireNew(rpmMireMode mode, int tag)
 {
-    miRE mire = xcalloc(1, sizeof(*mire));
+    miRE mire = mireGetPool(_mirePool);
     mire->mode = mode;
     mire->tag = tag;
-    return mireLink(mire,"mireNew");
+    return mireLink(mire, "mireNew");
 }
 
 int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
@@ -493,14 +493,27 @@ fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, va
 int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 		const unsigned char * table, miRE * mirep, int * nmirep)
 {
-/*@-refcounttrans@*/
-    miRE mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
-/*@=refcounttrans@*/
+    miRE mire;
     int xx;
 
-    (*mirep) = mire;
-    mire += (*nmirep)++;
-    memset(mire, 0, sizeof(*mire));
+    if (*mirep == NULL) {
+	mire = mireGetPool(_mirePool);
+	(*mirep) = mire;
+    } else {
+	void *use =  (*mirep)->_item.use;
+	void *pool = (*mirep)->_item.pool;
+
+	/* XXX only the 1st element in the array has a usage mutex. */
+	mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
+	(*mirep) = mire;
+	mire += (*nmirep);
+	memset(mire, 0, sizeof(*mire));
+        /* XXX ensure no segfault, copy the use/pool from 1st item. */
+        mire->_item.use = use;
+        mire->_item.pool = pool;
+    }
+
+    (*nmirep)++;
     xx = mireSetCOptions(mire, mode, tag, 0, table);
     return mireRegcomp(mire, pattern);
 }
