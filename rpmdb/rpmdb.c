@@ -2471,6 +2471,12 @@ next:
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),
 		mi->mi_offset);
+	/* damaged header should not be reused */
+	if (mi->mi_h) {
+	    (void)headerFree(mi->mi_h);
+	    mi->mi_h = NULL;
+	}
+	/* TODO: skip more mi_set records */
 	goto next;
     }
 
