@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: rpmku: rework rpmiob handling to avoid extra malloc's.
+    - jbj: rpmiob: fix: add a newref in rpmiobNew.
     - jbj: yarn: convert rpmiob to usage mutex with refcounts.
     - rse: add RPM Lua function rpm.hostname()
     - jbj: fix: handle ./../foo paths correctly (#491388).

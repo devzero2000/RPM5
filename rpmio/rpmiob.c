@@ -47,7 +47,7 @@ rpmiob rpmiobNew(size_t len)
     iob->allocated = len;
     iob->blen = 0;
     iob->b = xcalloc(iob->allocated+1, sizeof(*iob->b));
-    return iob;
+    return rpmiobLink(iob);
 }
 
 rpmiob rpmiobEmpty(rpmiob iob)

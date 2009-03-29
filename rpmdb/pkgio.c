@@ -312,10 +312,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	/* Save the pubkey in the keyutils keyring. */
 	if (krcache) {
 	    if (iob == NULL) {
-		iob = xcalloc(1, sizeof(*iob));
-		iob->b = memcpy(xmalloc(ts->pkpktlen), ts->pkpkt, ts->pkpktlen);
-		iob->blen = ts->pkpktlen;
-		iob->allocated = ts->pkpktlen;
+		iob = rpmiobNew(ts->pkpktlen);
+		iob->b = memcpy(iob->b, ts->pkpkt, iob->blen);
 	    }
 	    (void) rpmkuStorePubkey(sigp, iob);
 	}

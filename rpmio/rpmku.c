@@ -168,9 +168,8 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 	key = keyctl_search(keyring, "user", krn, 0);
 	xx = keyctl_read(key, NULL, 0);
 	if (xx > 0) {
-	    rpmiob iob = xcalloc(1, sizeof(*iob));
-	    iob->allocated = iob->blen = xx;
-	    xx = keyctl_read_alloc(key, (void **)&iob->b);
+	    rpmiob iob = rpmiobNew(xx);
+	    xx = keyctl_read(key, (char *)iob->b, iob->blen);
 	    if (xx > 0) {
 #ifdef	NOTYET
 		pubkeysource = xstrdup(krn);
@@ -182,8 +181,10 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 	    if (iob != NULL && iobp != NULL) {
 		*iobp = iob;
 		return RPMRC_OK;
-	    } else
+	    } else {
+		iob = rpmiobFree(iob);
 		return RPMRC_NOTFOUND;
+	    }
 	} else
 	    return RPMRC_NOTFOUND;
     } else
