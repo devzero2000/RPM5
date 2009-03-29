@@ -261,7 +261,7 @@ static const char * _tagName(rpmTag tag)
 		/* Make sure that the bsearch retrieve is stable. */
 		while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
 		    i--;
-		t = _rpmTags.byValue[i];
+		    t = _rpmTags.byValue[i];
 		}
 		s = (*_rpmTags.tagCanonicalize) (t->name);
 		strncpy(nameBuf, s, nameBufLen);
@@ -435,7 +435,7 @@ tagStore_t tagStoreFree(tagStore_t dbiTags, size_t dbiNTags)
 	size_t i;
 	for (i = 0; i < dbiNTags; i++) {
 	    dbiTags[i].str = _free(dbiTags[i].str);
-	    dbiTags[i].val = freeStringBuf(dbiTags[i].val);
+	    dbiTags[i].iob = rpmiobFree(dbiTags[i].iob);
 	}
 	dbiTags = _free(dbiTags);
     }

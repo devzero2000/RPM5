@@ -32,7 +32,7 @@ int parseDescription(Spec spec)
 	/*@modifies name, lang @*/
 {
     rpmParseState nextPart = (rpmParseState) RPMRC_FAIL; /* assume error */
-    StringBuf sb;
+    rpmiob iob;
     int flag = PART_SUBNAME;
     Package pkg;
     int rc, argc;
@@ -59,7 +59,7 @@ int parseDescription(Spec spec)
     lang = RPMBUILD_DEFAULT_LANG;
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0)
-	;
+	{;}
     if (name != NULL)
 	flag = PART_NAME;
 
@@ -100,7 +100,7 @@ int parseDescription(Spec spec)
 
     t = stashSt(spec, pkg->header, RPMTAG_DESCRIPTION, lang);
     
-    sb = newStringBuf();
+    iob = rpmiobNew(0);
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
@@ -110,7 +110,7 @@ int parseDescription(Spec spec)
 	    goto exit;
 	}
 	while ((nextPart = isPart(spec)) == PART_NONE) {
-	    appendLineStringBuf(sb, spec->line);
+	    iob = rpmiobAppend(iob, spec->line, 1);
 	    if (t) t->t_nlines++;
 	    if ((rc =
 		readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
@@ -124,13 +124,13 @@ int parseDescription(Spec spec)
 	}
     }
     
-    stripTrailingBlanksStringBuf(sb);
+    iob = rpmiobRTrim(iob);
     if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
-			getStringBuf(sb), lang);
+			rpmiobStr(iob), lang);
     }
     
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
      
 exit:
     argv = _free(argv);

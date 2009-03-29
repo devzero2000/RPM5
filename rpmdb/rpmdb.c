@@ -65,8 +65,7 @@ static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;
 
-
-/* Use a path uniquifier in the upper 16 bits of tagNum? */
+/* Use a path uniqifier in the upper 16 bits of tagNum? */
 /* XXX Note: one cannot just choose a value, rpmdb tagNum's need fixing too */
 #define	_DB_TAGGED_FILE_INDICES	1
 /*@unchecked@*/
@@ -233,7 +232,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
     dbiTags = xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
     dbiTags[dbiNTags].tag = RPMDBI_PACKAGES;
-    dbiTags[dbiNTags].val = NULL;
+    dbiTags[dbiNTags].iob = NULL;
     dbiNTags++;
 
     for (o = dbiTagStr; o && *o; o = oe) {
@@ -265,7 +264,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	dbiTags = xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = rpmtag;
-	dbiTags[dbiNTags].val = NULL;
+	dbiTags[dbiNTags].iob = NULL;
 	dbiNTags++;
     }
 
@@ -314,6 +313,7 @@ static struct _dbiVec *mydbvecs[] = {
 /*@=nullassign@*/
 
 static inline int checkfd(const char * devnull, int fdno, int flags)
+	/*@*/
 {
     struct stat sb;
     int ret = 0;

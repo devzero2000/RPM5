@@ -6,10 +6,13 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX fdGetFp, fdInitDigest, fdFiniDigest */
+
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_ANY */
 #define _RPMTAG_INTERNAL
 #include <rpmbuild.h>
+
+#include <pkgio.h>
 #include "signature.h"		/* XXX rpmTempFile */
 
 #include "rpmfi.h"
@@ -17,15 +20,12 @@
 
 #include "buildio.h"
 
-#include "signature.h"
-#include <pkgio.h>
 #include "debug.h"
 
 /*@access rpmts @*/
 /*@access rpmfi @*/	/* compared with NULL */
 /*@access Header @*/	/* compared with NULL */
 /*@access FD_t @*/	/* compared with NULL */
-/*@access StringBuf @*/	/* compared with NULL */
 /*@access CSA_t @*/
 
 /**
@@ -109,8 +109,8 @@ static rpmRC cpio_copy(FD_t fdo, CSA_t csa)
 
 /**
  */
-static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
-		const char * file, /*@only@*/ StringBuf sb)
+static /*@only@*/ /*@null@*/ rpmiob addFileToTagAux(Spec spec,
+		const char * file, /*@only@*/ rpmiob iob)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -124,24 +124,24 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     fd = Fopen(fn, "r.fdio");
     if (fn != buf) fn = _free(fn);
     if (fd == NULL || Ferror(fd)) {
-	sb = freeStringBuf(sb);
+	iob = rpmiobFree(iob);
 	return NULL;
     }
     /*@-type@*/ /* FIX: cast? */
     if ((f = fdGetFp(fd)) != NULL)
     /*@=type@*/
-    while (fgets(buf, sizeof(buf), f)) {
+    while (fgets(buf, (int)sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
-	    sb = freeStringBuf(sb);
+	    iob = rpmiobFree(iob);
 	    break;
 	}
-	appendStringBuf(sb, buf);
+	iob = rpmiobAppend(iob, buf, 0);
     }
     (void) Fclose(fd);
 
-    return sb;
+    return iob;
 }
 
 /**
@@ -151,27 +151,27 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    StringBuf sb = newStringBuf();
+    rpmiob iob = rpmiobNew(0);
     int xx;
 
     he->tag = tag;
     xx = headerGet(h, he, 0);
     if (xx) {
-	appendLineStringBuf(sb, he->p.str);
+	iob = rpmiobAppend(iob, he->p.str, 1);
 	xx = headerDel(h, he, 0);
     }
     he->p.ptr = _free(he->p.ptr);
 
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
+    if ((iob = addFileToTagAux(spec, file, iob)) == NULL)
 	return 1;
     
     he->tag = tag;
     he->t = RPM_STRING_TYPE;
-    he->p.str = getStringBuf(sb);
+    he->p.str = rpmiobStr(iob);
     he->c = 1;
     xx = headerPut(h, he, 0);
 
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
     return 0;
 }
 
@@ -182,14 +182,14 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    StringBuf sb = newStringBuf();
+    rpmiob iob = rpmiobNew(0);
     const char *s;
     int xx;
 
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
+    if ((iob = addFileToTagAux(spec, file, iob)) == NULL)
 	return 1;
 
-    s = getStringBuf(sb);
+    s = rpmiobStr(iob);
 
     he->tag = tag;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -199,7 +199,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
     xx = headerPut(h, he, 0);
     he->append = 0;
 
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
     return 0;
 }
 
@@ -229,7 +229,7 @@ rpmRC processScriptFiles(Spec spec, Package pkg)
     if (pkg->preTransFile) {
 	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PreIn file: %s\n"), pkg->preTransFile);
+		     _("Could not open PreTrans file: %s\n"), pkg->preTransFile);
 	    return RPMRC_FAIL;
 	}
     }
@@ -250,7 +250,7 @@ rpmRC processScriptFiles(Spec spec, Package pkg)
     if (pkg->postTransFile) {
 	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PostUn file: %s\n"), pkg->postTransFile);
+		     _("Could not open PostTrans file: %s\n"), pkg->postTransFile);
 	    return RPMRC_FAIL;
 	}
     }

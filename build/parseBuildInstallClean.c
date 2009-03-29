@@ -9,55 +9,53 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/*@access StringBuf @*/
-
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
     rpmParseState nextPart;
-    StringBuf *sbp = NULL;
+    rpmiob *iobp = NULL;
     const char *name = NULL;
     rpmRC rc;
 
     if (parsePart == PART_BUILD) {
-	sbp = &spec->build;
+	iobp = &spec->build;
 	name = "build";
     } else if (parsePart == PART_INSTALL) {
-	sbp = &spec->install;
+	iobp = &spec->install;
 	name = "install";
     } else if (parsePart == PART_CHECK) {
-	sbp = &spec->check;
+	iobp = &spec->check;
 	name = "check";
     } else if (parsePart == PART_CLEAN) {
-	sbp = &spec->clean;
+	iobp = &spec->clean;
 	name = "clean";
     } else if (parsePart == PART_ARBITRARY) {
 assert(spec->nfoo > 0);
-	sbp = &spec->foo[spec->nfoo-1].val;
+	iobp = &spec->foo[spec->nfoo-1].iob;
 	name = spec->foo[spec->nfoo-1].str;
     }
     
-    if (*sbp != NULL) {
+    if (*iobp != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %%%s section\n"),
 		spec->lineNum, name);
 	return RPMRC_FAIL;
     }
     
-    *sbp = newStringBuf();
+    *iobp = rpmiobNew(0);
 
     /* Make sure the buildroot is removed where needed. */
     if (parsePart == PART_INSTALL) {
 	const char * s = rpmExpand("%{!?__spec_install_pre:%{?buildroot:%{__rm} -rf '%{buildroot}'\n%{__mkdir_p} '%{buildroot}'\n}}\n", NULL);
 	if (s && *s)
-	    appendStringBuf(*sbp, s);
+	    *iobp = rpmiobAppend(*iobp, s, 0);
 	s = _free(s);
     } else if (parsePart == PART_CLEAN) {
 	const char * s = rpmExpand("%{?__spec_clean_body}%{!?__spec_clean_body:%{?buildroot:rm -rf '%{buildroot}'\n}}\n", NULL);
 	if (s && *s)
-	    appendStringBuf(*sbp, s);
+	    *iobp = rpmiobAppend(*iobp, s, 0);
 	s = _free(s);
 #if !defined(RPM_VENDOR_OPENPKG) /* still-support-section-clean */
 	/* OpenPKG still wishes to use "%clean" script/section */
-	sbp = NULL;	/* XXX skip %clean from spec file. */
+	iobp = NULL;	/* XXX skip %clean from spec file. */
 #endif
     }
 
@@ -68,8 +66,8 @@ assert(spec->nfoo > 0);
 	return rc;
     
     while ((nextPart = isPart(spec)) == PART_NONE) {
-	if (sbp)
-	    appendStringBuf(*sbp, spec->line);
+	if (iobp)
+	    *iobp = rpmiobAppend(*iobp, spec->line, 0);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	    return PART_NONE;
 	if (rc)

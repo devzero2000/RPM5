@@ -9,7 +9,6 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/*@access StringBuf @*/		/* compared with NULL */
 /*@access poptContext @*/	/* compared with NULL */
 
 /* These have to be global scope to make up for *stupid* compilers */
@@ -95,7 +94,7 @@ int parseFiles(Spec spec)
 	pkg->fileFile = rpmGetPath(file, NULL);
     }
 
-    pkg->fileList = newStringBuf();
+    pkg->fileList = rpmiobNew(0);
     
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
@@ -103,7 +102,7 @@ int parseFiles(Spec spec)
 	if (rc)
 	    goto exit;
 	while ((nextPart = isPart(spec)) == PART_NONE) {
-	    appendStringBuf(pkg->fileList, spec->line);
+	    pkg->fileList = rpmiobAppend(pkg->fileList, spec->line, 0);
 	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;

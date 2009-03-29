@@ -94,10 +94,10 @@ struct rpmfc_s {
 /*@relnull@*/
     rpmds requires;	/*!< (no. requires) package requires */
 
-    StringBuf sb_java;	/*!< concatenated list of java colored files. */
-    StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
-    StringBuf sb_python;/*!< concatenated list of python colored files. */
-    StringBuf sb_php;	/*!< concatenated list of php colored files. */
+    rpmiob iob_java;	/*!< concatenated list of java colored files. */
+    rpmiob iob_perl;	/*!< concatenated list of perl colored files. */
+    rpmiob iob_python;	/*!< concatenated list of python colored files. */
+    rpmiob iob_php;	/*!< concatenated list of php colored files. */
 
 };
 
@@ -117,16 +117,16 @@ extern "C" {
 /**
  * Return helper output.
  * @param av		helper argv (with possible macros)
- * @param sb_stdin	helper input
- * @retval *sb_stdoutp	helper output
+ * @param iob_stdin	helper input
+ * @retval *iob_stdoutp	helper output
  * @param failnonzero	Is non-zero helper exit status a failure?
  */
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
+int rpmfcExec(ARGV_t av, rpmiob iob_stdin, /*@out@*/ rpmiob * iob_stdoutp,
 		int failnonzero)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *sb_stdoutp, rpmGlobalMacroContext,
+	/*@modifies *iob_stdoutp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-        /*@requires maxSet(sb_stdoutp) >= 0 @*/;
+        /*@requires maxSet(iob_stdoutp) >= 0 @*/;
 
 /**
  * Return file color given file(1) string.

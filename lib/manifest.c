@@ -9,11 +9,8 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 
-#include "stringbuf.h"
 #include "manifest.h"
 #include "debug.h"
-
-/*@access StringBuf @*/
 
 char * rpmPermsString(int mode)
 {
@@ -65,7 +62,7 @@ char * rpmPermsString(int mode)
 /**@todo Infinite loops through manifest files exist, operator error for now. */
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
-    StringBuf sb = newStringBuf();
+    rpmiob iob = rpmiobNew(0);
     char * s = NULL;
     char * se;
     int ac = 0;
@@ -122,7 +119,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	/* Insure that file contains only ASCII */
 	if (*s < 32) {
 	    rpmlog(RPMLOG_ERR, _("reading %s manifest, non-printable characters found\n"),
-			fdGetOPath(xfd));
+		fdGetOPath(xfd));
+
 	    rpmrc = RPMRC_FAIL;	/* XXX reject non-printable manifests. */
 	    goto exit;
 	}
@@ -130,11 +128,11 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	/* Concatenate next line in buffer. */
 	*se++ = ' ';
 	*se = '\0';
-	appendStringBuf(sb, s);
+	iob = rpmiobAppend(iob, s, 0);
     }
 
     if (s == NULL)		/* XXX always true */
-	s = getStringBuf(sb);
+	s = rpmiobStr(iob);
 
     if (!(s && *s)) {
 	rpmrc = RPMRC_FAIL;	/* XXX force manifests to have content. */
@@ -196,8 +194,8 @@ exit:
 	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
 	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
-    sb = freeStringBuf(sb);
-    /*@-nullstate@*/ /* FIX: *argvPtr may be NULL. */
+    iob = rpmiobFree(iob);
+/*@-nullstate@*/ /* FIX: *argvPtr may be NULL. */
     return rpmrc;
-    /*@=nullstate@*/
+/*@=nullstate@*/
 }

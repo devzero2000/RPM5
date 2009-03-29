@@ -17,6 +17,7 @@
 #define	_RPMIOB_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <fts.h>
+#include <argv.h>
 
 #include "iosm.h"
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
@@ -24,20 +25,17 @@
 #define	_RPMTE_INTERNAL
 #include <rpmbuild.h>
 
-#include "argv.h"
 #include "rpmfc.h"
 
 #include "buildio.h"
 
 #include "legacy.h"	/* XXX dodigest */
-#include "misc.h"	/* for splitString, freeSplitString */
 #include "debug.h"
 
 /*@access Header @*/
 /*@access rpmfi @*/
 /*@access rpmte @*/
 /*@access FD_t @*/
-/*@access StringBuf @*/		/* compared with NULL */
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -111,7 +109,7 @@ static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
 
 /* list of files */
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-static StringBuf check_fileList = NULL;
+static rpmiob check_fileList = NULL;
 
 /**
  * Package file tree walk data.
@@ -1030,21 +1028,20 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 	    	char *compress_doc;
 	    	char *mkdir_p;
 
-		pkg->specialDoc = newStringBuf();
-		appendStringBuf(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"");
-		appendLineStringBuf(pkg->specialDoc, buf);
-		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, "rm -rf \"$DOCDIR\"");
+		pkg->specialDoc = rpmiobNew(0);
+		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"", 0);
+		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, buf, 1);
+		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "export DOCDIR", 1);
 		mkdir_p = rpmExpand("%{?__mkdir_p}%{!?__mkdir_p:mkdir -p}", NULL);
 		if (!mkdir_p)
 		    mkdir_p = xstrdup("mkdir -p");
-		appendStringBuf(pkg->specialDoc, mkdir_p);
+		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, mkdir_p, 0);
 		mkdir_p = _free(mkdir_p);
-		appendLineStringBuf(pkg->specialDoc, " \"$DOCDIR\"");
+		pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " \"$DOCDIR\"", 1);
 
 		compress_doc = rpmExpand("%{__compress_doc}", NULL);
 		if (compress_doc && *compress_doc != '%')
-	    	    appendLineStringBuf(pkg->specialDoc, compress_doc);
+	    	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, compress_doc, 1);
 		compress_doc = _free(compress_doc);
 
 		/*@-temptrans@*/
@@ -1054,9 +1051,9 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		fl->isSpecialDoc = 1;
 	    }
 
-	    appendStringBuf(pkg->specialDoc, "cp -pr ");
-	    appendStringBuf(pkg->specialDoc, specialDocBuf);
-	    appendLineStringBuf(pkg->specialDoc, " \"$DOCDIR\"");
+	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "cp -pr ", 0);
+	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, specialDocBuf, 0);
+	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " \"$DOCDIR\"", 1);
 	}
     }
 
@@ -1926,8 +1923,7 @@ static int addFile(FileList fl, const char * diskURL,
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
 	const char * diskfn = NULL;
 	(void) urlPath(diskURL, &diskfn);
-	appendStringBuf(check_fileList, diskfn);
-	appendStringBuf(check_fileList, "\n");
+	check_fileList = rpmiobAppend(check_fileList, diskfn, 1);
     }
 
     /* Add to the file list */
@@ -2225,7 +2221,8 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct FileList_s fl;
-    char *s, **files, **fp;
+    ARGV_t files = NULL;
+    ARGV_t fp;
     const char *fileName;
     char buf[BUFSIZ];
     struct AttrRec_s arbuf;
@@ -2237,7 +2234,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
     pkg->cpioList = NULL;
 
     if (pkg->fileFile) {
-	char *saveptr;
+	char *saveptr = NULL;
 	char *filesFiles = xstrdup(pkg->fileFile);
 /*@-unrecog@*/
 	char *token = strtok_r(filesFiles, ",", &saveptr);
@@ -2269,13 +2266,13 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 
 	    /*@+voidabstract@*/ f = fdGetFp(fd); /*@=voidabstract@*/
 	    if (f != NULL) {
-		while (fgets(buf, sizeof(buf), f)) {
+		while (fgets(buf, (int)sizeof(buf), f)) {
 		    handleComments(buf);
 		    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 			rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 			return RPMRC_FAIL;
 	    	    }
-	    	    appendStringBuf(pkg->fileList, buf);
+	    	    pkg->fileList = rpmiobAppend(pkg->fileList, buf, 0);
 		}
 	    }
 	    (void) Fclose(fd);
@@ -2343,10 +2340,10 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
     fl.fileListRecsAlloced = 0;
     fl.fileListRecsUsed = 0;
 
-    s = getStringBuf(pkg->fileList);
-    files = splitString(s, strlen(s), '\n');
+    xx = argvSplit(&files, rpmiobStr(pkg->fileList), "\n");
 
     for (fp = files; *fp != NULL; fp++) {
+	const char * s;
 	s = *fp;
 	SKIPSPACE(s);
 	if (*s == '\0')
@@ -2467,7 +2464,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	specialDoc = _free(specialDoc);
     }
     
-    freeSplitString(files);
+    files = argvFree(files);
 
     if (fl.processingFailed)
 	goto exit;
@@ -2504,11 +2501,11 @@ exit:
     return (fl.processingFailed ? RPMRC_FAIL : RPMRC_OK);
 }
 
-int initSourceHeader(Spec spec, StringBuf *sfp)
+int initSourceHeader(Spec spec, rpmiob *sfp)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
-    StringBuf sourceFiles;
+    rpmiob sourceFiles;
     struct Source *srcPtr;
     static rpmTag classTag = 0xffffffff;
     int xx;
@@ -2576,10 +2573,10 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     for (i = 0; i < spec->nfoo; i++) {
 	const char * str = spec->foo[i].str;
 	rpmTag tag = spec->foo[i].tag;
-	StringBuf sb = spec->foo[i].val;
+	rpmiob iob = spec->foo[i].iob;
 	char * s;
 
-	if (str == NULL || sb == NULL)
+	if (str == NULL || iob == NULL)
 	    continue;
 
 	/* XXX Special case %track interpreter for now. */
@@ -2596,7 +2593,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    he->p.str = _free(he->p.str);
 	}
 
-	s = getStringBuf(sb);
+	s = rpmiobStr(iob);
 	he->tag = tag;
 	he->append = headerIsEntry(spec->sourceHeader, tag);
 	if (he->append) {
@@ -2616,10 +2613,10 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     if (sfp != NULL && *sfp != NULL)
 	sourceFiles = *sfp;
     else
-	sourceFiles = newStringBuf();
+	sourceFiles = rpmiobNew(0);
 
     /* Construct the source/patch tag entries */
-    appendLineStringBuf(sourceFiles, spec->specFile);
+    sourceFiles = rpmiobAppend(sourceFiles, spec->specFile, 1);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
       {	const char * sfn;
@@ -2631,7 +2628,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 		getSourceDir(srcPtr->flags), srcPtr->source, NULL);
 #endif
 /*@=nullpass@*/
-	appendLineStringBuf(sourceFiles, sfn);
+	sourceFiles = rpmiobAppend(sourceFiles, sfn, 1);
 	sfn = _free(sfn);
       }
 
@@ -2677,7 +2674,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     }
 
     if (sfp == NULL)
-	sourceFiles = freeStringBuf(sourceFiles);
+	sourceFiles = rpmiobFree(sourceFiles);
 
     spec->sourceHdrInit = 1;
 
@@ -2686,26 +2683,28 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 
 int processSourceFiles(Spec spec)
 {
-    StringBuf sourceFiles, *sfp = &sourceFiles;
+    rpmiob sourceFiles, *sfp = &sourceFiles;
     int x, isSpec = 1;
     struct FileList_s fl;
-    char **files, **fp;
+    ARGV_t files = NULL;
+    ARGV_t fp;
     int rc;
     /* srcdefattr: needed variables */
     char _srcdefattr_buf[BUFSIZ];
     char *_srcdefattr;
+    int xx;
 
     _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
 
-    *sfp = newStringBuf();
+    *sfp = rpmiobNew(0);
     x = initSourceHeader(spec, sfp);
 
     /* srcdefattr: initialize file list structure */
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr && *_srcdefattr) {
-        snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
+	xx = snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
 	_srcdefattr_buf[sizeof(_srcdefattr_buf)-1] = '\0';
-        parseForAttr(_srcdefattr_buf, &fl);
+	xx = parseForAttr(_srcdefattr_buf, &fl);
     }
 
     /* Construct the SRPM file list. */
@@ -2716,9 +2715,7 @@ int processSourceFiles(Spec spec)
     fl.prefix = NULL;
     fl.buildRootURL = NULL;
 
-    {	const char *s = getStringBuf(*sfp);
-	files = splitString(s, strlen(s), '\n');
-    }
+    xx = argvSplit(&files, rpmiobStr(*sfp), "\n");
 
     /* The first source file is the spec file */
     x = 0;
@@ -2781,7 +2778,7 @@ int processSourceFiles(Spec spec)
 	x++;
     }
     fl.fileListRecsUsed = x;
-    freeSplitString(files);
+    files = argvFree(files);
 
     if (rc)
 	goto exit;
@@ -2790,7 +2787,7 @@ int processSourceFiles(Spec spec)
     genCpioListAndHeader(&fl, &spec->sourceCpioList, spec->sourceHeader, 1);
 
 exit:
-    *sfp = freeStringBuf(*sfp);
+    *sfp = rpmiobFree(*sfp);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     return rc;
 }
@@ -2800,14 +2797,14 @@ exit:
  * @param fileList	packaged file list
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
-static int checkFiles(StringBuf fileList)
+static int checkFiles(rpmiob fileList)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 /*@-readonlytrans@*/
     static const char * av_ckfile[] = { "%{?__check_files}", NULL };
 /*@=readonlytrans@*/
-    StringBuf sb_stdout = NULL;
+    rpmiob iob_stdout = NULL;
     const char * s;
     int rc;
     
@@ -2820,16 +2817,16 @@ static int checkFiles(StringBuf fileList)
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
-    rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
+    rc = rpmfcExec(av_ckfile, fileList, &iob_stdout, 0);
     if (rc < 0)
 	goto exit;
     
-    if (sb_stdout) {
+    if (iob_stdout) {
 	int _unpackaged_files_terminate_build =
 		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
 	const char * t;
 
-	t = getStringBuf(sb_stdout);
+	t = rpmiobStr(iob_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
 	    rpmlog((rc ? RPMLOG_ERR : RPMLOG_WARNING),
@@ -2838,7 +2835,7 @@ static int checkFiles(StringBuf fileList)
     }
     
 exit:
-    sb_stdout = freeStringBuf(sb_stdout);
+    iob_stdout = rpmiobFree(iob_stdout);
     s = _free(s);
     return rc;
 }
@@ -2853,7 +2850,7 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     rpmRC res = RPMRC_OK;
     int xx;
     
-    check_fileList = newStringBuf();
+    check_fileList = rpmiobNew(0);
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	int rc;
@@ -2894,7 +2891,7 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	    res = RPMRC_FAIL;
     }
     
-    check_fileList = freeStringBuf(check_fileList);
+    check_fileList = rpmiobFree(check_fileList);
     
     return res;
 }

@@ -5,7 +5,6 @@ const char *__progname;
 #include <rpmcli.h>
 #include <argv.h>
 #include <rpmds.h>
-#include <stringbuf.h>
 #define	_RPMFC_INTERNAL		/* XXX for debugging */
 #include <rpmfc.h>
 

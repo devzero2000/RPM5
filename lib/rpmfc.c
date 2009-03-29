@@ -44,7 +44,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
     return 0;
 }
 
-/** \ingroup rpmbuild
+/**
  * Return output from helper script.
  * @todo Use poll(2) rather than select(2), if available.
  * @param dir		directory to run in (or NULL)
@@ -55,7 +55,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  * @return		buffered stdout from script, NULL on error
  */     
 /*@null@*/
-static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
+static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
                         const char * writePtr, int writeBytesLeft,
                         int failNonZero)
         /*@globals h_errno, fileSystem, internalState@*/
@@ -66,7 +66,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     int fromProg[2];
     int status;
     void *oldhandler;
-    StringBuf readBuff;
+    rpmiob iob = NULL;
     int done;
 
     /*@-type@*/ /* FIX: cast? */
@@ -74,9 +74,11 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     /*@=type@*/
 
     toProg[0] = toProg[1] = 0;
-    (void) pipe(toProg);
     fromProg[0] = fromProg[1] = 0;
-    (void) pipe(fromProg);
+    if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
+	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
+	return NULL;
+    }
     
     if (!(child = fork())) {
 	(void) close(toProg[1]);
@@ -115,7 +117,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     (void) fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
     (void) fcntl(toProg[1], F_SETFL, O_NONBLOCK);
     
-    readBuff = newStringBuf();
+    iob = rpmiobNew(0);
 
     do {
 	fd_set ibits, obits;
@@ -166,7 +168,7 @@ top:
 	{   char buf[BUFSIZ+1];
 	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
 		buf[nbr] = '\0';
-		appendStringBuf(readBuff, buf);
+		iob = rpmiobAppend(iob, buf, 0);
 	    }
 	}
 
@@ -180,9 +182,9 @@ top:
     	(void) close(toProg[1]);
     if (fromProg[0] >= 0)
 	(void) close(fromProg[0]);
-    /*@-type@*/ /* FIX: cast? */
+/*@-type@*/ /* FIX: cast? */
     (void) signal(SIGPIPE, oldhandler);
-    /*@=type@*/
+/*@=type@*/
 
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
@@ -195,16 +197,18 @@ top:
 
 	rpmlog(RPMLOG_ERR, _("Command \"%s\" failed, exit(%d)\n"), cmd, rc);
 	cmd = _free(cmd);
+	iob = rpmiobFree(iob);
 	return NULL;
     }
     if (writeBytesLeft) {
 	rpmlog(RPMLOG_ERR, _("failed to write all data to %s\n"), argv[0]);
+	iob = rpmiobFree(iob);
 	return NULL;
     }
-    return readBuff;
+    return iob;
 }
 
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+int rpmfcExec(ARGV_t av, rpmiob iob_stdin, rpmiob * iob_stdoutp,
 		int failnonzero)
 {
     const char * s = NULL;
@@ -212,13 +216,13 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     ARGV_t pav = NULL;
     int pac = 0;
     int ec = -1;
-    StringBuf sb = NULL;
+    rpmiob iob = NULL;
     const char * buf_stdin = NULL;
-    int buf_stdin_len = 0;
+    size_t buf_stdin_len = 0;
     int xx;
 
-    if (sb_stdoutp)
-	*sb_stdoutp = NULL;
+    if (iob_stdoutp)
+	*iob_stdoutp = NULL;
     if (!(av && *av))
 	goto exit;
 
@@ -239,23 +243,23 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     if (av[1])
 	xx = rpmfcExpandAppend(&xav, av + 1);
 
-    if (sb_stdin != NULL) {
-	buf_stdin = getStringBuf(sb_stdin);
-	buf_stdin_len = strlen(buf_stdin);
+    if (iob_stdin != NULL) {
+	buf_stdin = rpmiobStr(iob_stdin);
+	buf_stdin_len = rpmiobLen(iob_stdin);
     }
 
     /* Read output from exec'd helper. */
-    sb = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
+    iob = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
 
-    if (sb_stdoutp != NULL) {
-	*sb_stdoutp = sb;
-	sb = NULL;	/* XXX don't free */
+    if (iob_stdoutp != NULL) {
+	*iob_stdoutp = iob;
+	iob = NULL;	/* XXX don't free */
     }
 
     ec = 0;
 
 exit:
-    sb = freeStringBuf(sb);
+    iob = rpmiobFree(iob);
     xav = argvFree(xav);
     pav = _free(pav);	/* XXX popt mallocs in single blob. */
     s = _free(s);
@@ -279,7 +283,7 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
 
 /**
  */
-static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
+static char * rpmfcFileDep(/*@returned@*/ char * buf, size_t ix,
 		/*@null@*/ rpmds ds)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/
@@ -321,8 +325,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 {
     const char * fn = fc->fn[fc->ix];
     char buf[BUFSIZ];
-    StringBuf sb_stdout = NULL;
-    StringBuf sb_stdin;
+    rpmiob iob_stdout = NULL;
+    rpmiob iob_stdin;
     const char *av[2];
     rpmds * depsp, ds;
     const char * N;
@@ -361,15 +365,15 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     av[0] = buf;
     av[1] = NULL;
 
-    sb_stdin = newStringBuf();
-    appendLineStringBuf(sb_stdin, fn);
-    sb_stdout = NULL;
-    xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0);
-    sb_stdin = freeStringBuf(sb_stdin);
+    iob_stdin = rpmiobNew(0);
+    iob_stdin = rpmiobAppend(iob_stdin, fn, 1);
+    iob_stdout = NULL;
+    xx = rpmfcExec(av, iob_stdin, &iob_stdout, 0);
+    iob_stdin = rpmiobFree(iob_stdin);
 
-    if (xx == 0 && sb_stdout != NULL) {
+    if (xx == 0 && iob_stdout != NULL) {
 	pav = NULL;
-	xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
+	xx = argvSplit(&pav, rpmiobStr(iob_stdout), " \t\n\r");
 	pac = argvCount(pav);
 	if (pav)
 	for (i = 0; i < pac; i++) {
@@ -425,7 +429,7 @@ assert(EVR != NULL);
 
 	pav = argvFree(pav);
     }
-    sb_stdout = freeStringBuf(sb_stdout);
+    iob_stdout = rpmiobFree(iob_stdout);
 
     return 0;
 }
@@ -473,7 +477,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { "Java ",			RPMFC_JAVA|RPMFC_INCLUDE },
 
-  { "PE executable",            RPMFC_MONO|RPMFC_INCLUDE },
+  { "Mono/.Net assembly",	RPMFC_MONO|RPMFC_INCLUDE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
@@ -1201,8 +1205,8 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    StringBuf sb_stdin;
-    StringBuf sb_stdout;
+    rpmiob iob_stdin;
+    rpmiob iob_stdout;
     DepMsg_t dm;
     int failnonzero = 0;
     rpmRC rc = RPMRC_OK;
@@ -1210,11 +1214,11 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
     /*
      * Create file manifest buffer to deliver to dependency finder.
      */
-    sb_stdin = newStringBuf();
+    iob_stdin = rpmiobNew(0);
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0)
-	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
+	iob_stdin = rpmiobAppend(iob_stdin, rpmfiFN(fi), 1);
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
 	rpmTag tag;
@@ -1244,7 +1248,7 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
+	xx = rpmfcExec(dm->argv, iob_stdin, &iob_stdout, failnonzero);
 	if (xx == -1)
 	    continue;
 
@@ -1253,7 +1257,7 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 		(s ? s : ""));
 	s = _free(s);
 
-	if (sb_stdout == NULL) {
+	if (iob_stdout == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
 	    rc = RPMRC_FAIL;
 	    break;
@@ -1261,9 +1265,9 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 
 	/* Parse dependencies into header */
 	if (spec->_parseRCPOT)
-	    rc = spec->_parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag,
+	    rc = spec->_parseRCPOT(spec, pkg, rpmiobStr(iob_stdout), tag,
 				0, tagflags);
-	sb_stdout = freeStringBuf(sb_stdout);
+	iob_stdout = rpmiobFree(iob_stdout);
 
 	if (rc) {
 	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
@@ -1271,7 +1275,7 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	}
     }
 
-    sb_stdin = freeStringBuf(sb_stdin);
+    iob_stdin = rpmiobFree(iob_stdin);
 
     return rc;
 }
@@ -1305,8 +1309,8 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
         /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    StringBuf sb_stdin = newStringBuf();
-    StringBuf sb_stdout = NULL;
+    rpmiob iob_stdin = rpmiobNew(0);
+    rpmiob iob_stdout = NULL;
     DepMsg_t dm;
     int failnonzero = 0;
     int rc = 0;
@@ -1334,22 +1338,22 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	xx = headerGet(pkg->header, he, 0);
 	if (!xx || he->p.str == NULL)
 	    continue;
-	truncStringBuf(sb_stdin);
-	appendLineStringBuf(sb_stdin, he->p.str);
-	stripTrailingBlanksStringBuf(sb_stdin);
+	iob_stdin = rpmiobEmpty(iob_stdin);
+	iob_stdin = rpmiobAppend(iob_stdin, he->p.str, 1);
+	iob_stdin = rpmiobRTrim(iob_stdin);
 	he->p.ptr = _free(he->p.ptr);
 
-	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
+	xx = rpmfcExec(dm->argv, iob_stdin, &iob_stdout, failnonzero);
 	if (xx == -1)
 	    continue;
 
 	/* Parse dependencies into header */
-	s = getStringBuf(sb_stdout);
+	s = rpmiobStr(iob_stdout);
 	if (s != NULL && *s != '\0') {
 	    char * se = s;
 	    /* XXX Convert "executable(/path/to/file)" to "/path/to/file". */
 	    while ((se = strstr(se, "executable(/")) != NULL) {
-/*@-modobserver@*/	/* FIX: getStringBuf should not be observer */
+/*@-modobserver@*/	/* FIX: rpmiobStr should not be observer */
 		se = stpcpy(se,     "           ");
 		*se = '/';	/* XXX stpcpy truncates the '/' */
 /*@=modobserver@*/
@@ -1361,11 +1365,11 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	    if (spec->_parseRCPOT)
 		rc = spec->_parseRCPOT(spec, pkg, s, tag, 0, tagflags);
 	}
-	sb_stdout = freeStringBuf(sb_stdout);
+	iob_stdout = rpmiobFree(iob_stdout);
 
     }
 
-    sb_stdin = freeStringBuf(sb_stdin);
+    iob_stdin = rpmiobFree(iob_stdin);
 
     return rc;
 }
@@ -1656,10 +1660,10 @@ static void rpmfcFini(void * _fc)
     (void)rpmdsFree(fc->requires);
     fc->requires = NULL;
 
-    fc->sb_java = freeStringBuf(fc->sb_java);
-    fc->sb_perl = freeStringBuf(fc->sb_perl);
-    fc->sb_python = freeStringBuf(fc->sb_python);
-    fc->sb_php = freeStringBuf(fc->sb_php);
+    fc->iob_java = rpmiobFree(fc->iob_java);
+    fc->iob_perl = rpmiobFree(fc->iob_perl);
+    fc->iob_python = rpmiobFree(fc->iob_python);
+    fc->iob_php = rpmiobFree(fc->iob_php);
 }
 /*@=mustmod@*/
 

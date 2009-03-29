@@ -5,8 +5,8 @@
  * \file rpmdb/rpmtag.h
  */
 
+#include <rpmiotypes.h>
 #include <rpmsw.h>
-#include <stringbuf.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -511,7 +511,7 @@ struct tagStore_s {
 /*@only@*/
     const char * str;           /*!< Tag string (might be arbitrary). */
     rpmTag tag;                 /*!< Tag number. */
-    StringBuf val;		/*!< Tag contents. */
+    rpmiob iob;			/*!< Tag contents. */
 };  
 #endif	/* _RPMTAG_INTERNAL */
 

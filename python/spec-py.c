@@ -24,8 +24,8 @@
  * \code
  *  import rpm
  *  rpm.addMacro("_topdir","/path/to/topdir")
- *  ts=rpm.ts()
- *  s=ts.parseSpec("foo.spec")
+ *  ts = rpm.ts()
+ *  s = ts.parseSpec("foo.spec")
  *  print s.prep()
  * \endcode
  *
@@ -33,15 +33,13 @@
  *
  */
 
-
 static void 
 spec_dealloc(specObject * s) 
     /*@modifies s @*/
 {
-        if (s->spec) {
-            s->spec=freeSpec(s->spec);
-        }
-        PyObject_Del(s);
+    if (s->spec)
+	s->spec=freeSpec(s->spec);
+    PyObject_Del(s);
 }
 
 static int
@@ -71,14 +69,8 @@ spec_get_prep(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec != NULL && spec->prep) {
-        StringBuf sb = newStringBuf();
-        sb=spec->prep;
-        return Py_BuildValue("s",getStringBuf(sb));
-    }
-     else {
-         return NULL;
-     }
+    return (spec != NULL && spec->prep != NULL)
+	? Py_BuildValue("s", rpmiobStr(spec->prep)) : NULL;
 }
 
 static PyObject * 
@@ -86,14 +78,8 @@ spec_get_build(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec != NULL && spec->build) {
-        StringBuf sb = newStringBuf();
-        sb=spec->build;
-        return Py_BuildValue("s",getStringBuf(sb));
-    }
-     else {
-         return NULL;
-     }
+    return (spec != NULL && spec->build != NULL)
+	? Py_BuildValue("s", rpmiobStr(spec->build)) : NULL;
 }
 
 static PyObject * 
@@ -101,14 +87,17 @@ spec_get_install(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec != NULL && spec->install) {
-        StringBuf sb = newStringBuf();
-        sb=spec->install;
-        return Py_BuildValue("s",getStringBuf(sb));
-    }
-     else {
-         return NULL;
-     }
+    return (spec != NULL && spec->install != NULL)
+	? Py_BuildValue("s", rpmiobStr(spec->install)) : NULL;
+}
+
+static PyObject * 
+spec_get_check(specObject * s) 
+    /*@*/
+{
+    Spec spec = specFromSpec(s);
+    return (spec != NULL && spec->check != NULL)
+	? Py_BuildValue("s", rpmiobStr(spec->check)) : NULL;
 }
 
 static PyObject * 
@@ -116,14 +105,8 @@ spec_get_clean(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec != NULL && spec->clean) {
-        StringBuf sb = newStringBuf();
-        sb=spec->clean;
-        return Py_BuildValue("s",getStringBuf(sb));
-    }
-     else {
-         return NULL;
-     }
+    return (spec != NULL && spec->clean != NULL)
+	? Py_BuildValue("s", rpmiobStr(spec->clean)) : NULL;
 }
 
 static PyObject *
@@ -167,6 +150,7 @@ static PyMethodDef spec_Spec_methods[] = {
     {"prep",   (PyCFunction) spec_get_prep, METH_VARARGS,  NULL },
     {"build",   (PyCFunction) spec_get_build, METH_VARARGS,  NULL },
     {"install",   (PyCFunction) spec_get_install, METH_VARARGS,  NULL },
+    {"check",   (PyCFunction) spec_get_check, METH_VARARGS,  NULL },
     {"clean",   (PyCFunction) spec_get_clean, METH_VARARGS,  NULL },
     {"buildRoot",   (PyCFunction) spec_get_buildroot, METH_VARARGS,  NULL },
     {NULL}  /* Sentinel */

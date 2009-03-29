@@ -98,7 +98,7 @@ rpmParseState isPart(Spec spec)
 		spec->foo = xrealloc(spec->foo, (spec->nfoo + 1) * sizeof(*spec->foo));
 		spec->foo[spec->nfoo].str = xstrdup(s);
 		spec->foo[spec->nfoo].tag = tagGenerate(s);
-		spec->foo[spec->nfoo].val = NULL;
+		spec->foo[spec->nfoo].iob = NULL;
 		spec->nfoo++;
                 nextPart = PART_ARBITRARY;
 	    }
@@ -300,7 +300,7 @@ retry:
 	/*@-type@*/ /* FIX: cast? */
 	FILE * f = fdGetFp(ofi->fd);
 	/*@=type@*/
-	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
+	if (f == NULL || !fgets(ofi->readBuf, (int)sizeof(ofi->readBuf), f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));

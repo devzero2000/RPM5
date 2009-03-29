@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: rpmiob: backport the remainder of rpmiob, eliminate StringBuf.
     - jbj: backport HAVE_PTHREADS_H -> WITH_PTHREADS AutoFu logic.
     - jbj: more hack-o-rounds for LUA <-> PCRE, add --disable-static for now.
     - jbj: backport rpmiotypes.h/rpmiob.c, use rpmiobSlurp instead.
