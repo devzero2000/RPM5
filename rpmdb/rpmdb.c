@@ -2366,6 +2366,9 @@ next:
 	mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	mi->mi_setx++;
+	/* If next header is identical, return it now. */
+	if (mi->mi_offset == mi->mi_prevoffset && mi->mi_h != NULL)
+	    return mi->mi_h;
 	/* Fetch header by offset. */
 	mi_offset.ui = mi->mi_offset;
 	if (dbiByteSwapped(dbi) == 1)
