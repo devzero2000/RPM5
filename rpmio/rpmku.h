@@ -22,7 +22,8 @@ extern "C" {
  * @return		RPMRC_OK on success
  */
 rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
-	/*@modifies *iobp @*/;
+	/*@globals fileSystem @*/
+	/*@modifies *iobp, fileSystem @*/;
 
 /**
  * Store pubkey in keyutils keyring.
@@ -31,7 +32,8 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
  * @return		RPMRC_OK on success
  */
 rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
-	/*@modifies iob @*/;
+	/*@globals fileSystem @*/
+	/*@modifies iob, fileSystem @*/;
 
 /**
  * Return pass phrase from keyutils keyring.

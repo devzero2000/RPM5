@@ -39,6 +39,8 @@
 
 #include "debug.h"
 
+/*@access rpmiob @*/
+
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
 			    const char * fmt, va_list ap)
@@ -702,6 +704,7 @@ void rpmluaInteractive(rpmlua _lua)
 /* Lua API */
 
 static int rpm_macros(lua_State *L)
+	/*@modifies L @*/
 {
     const char ** av = NULL;
     int ac = 0;
@@ -797,7 +800,7 @@ typedef struct rpmluaHookData_s {
 } * rpmluaHookData;
 
 static int rpmluaHookWrapper(rpmhookArgs args, void *data)
-    /*@*/
+	/*@*/
 {
     rpmluaHookData hookdata = (rpmluaHookData)data;
     lua_State *L = hookdata->L;
@@ -1071,8 +1074,8 @@ static int rpm_sleep(lua_State *L)
 }
 
 static int rpm_realpath(lua_State *L)
-    /*@globals internalState @*/
-    /*@modifies L, internalState @*/
+    /*@globals fileSystem, internalState @*/
+    /*@modifies L, fileSystem, internalState @*/
 {
     const char *pn;
     char rp_buf[PATH_MAX];
@@ -1084,33 +1087,32 @@ static int rpm_realpath(lua_State *L)
         (void)luaL_argerror(L, 1, "pathname");
         return 0;
     }
-#if !defined(__LCLINT__) /* XXX LCL: realpath(3) annotations are buggy. */
-    if ((rp = realpath(pn, rp_buf)) == NULL) {
+    if ((rp = Realpath(pn, rp_buf)) == NULL) {
         (void)luaL_error(L, "failed to resolve path via realpath(3): %s", strerror(errno));
         return 0;
     }
-#endif
     lua_pushstring(L, (const char *)rp);
     return 1;
 }
 
 static int rpm_hostname(lua_State *L)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
+	/*@globals h_errno, internalState @*/
+	/*@modifies L, h_errno, internalState @*/
 {
     char hostname[1024];
     struct hostent *hbn;
     char *h;
 
+/*@-multithreaded@*/
     (void)gethostname(hostname, sizeof(hostname));
     if ((hbn = gethostbyname(hostname)) != NULL)
         h = hbn->h_name;
     else
         h = "localhost";
+/*@=multithreaded@*/
     lua_pushstring(L, (const char *)h);
     return 1;
 }
-
 
 /*@-readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/

@@ -3123,10 +3123,10 @@ void rpmioClean(void)
     extern rpmioPool _digPool;
     extern rpmioPool _rpmiobPool;
 /*@-shadow@*/
+    extern rpmioPool _mirePool;
     extern rpmioPool _htPool;
 /*@=shadow@*/
     extern rpmioPool _rpmmgPool;
-    extern rpmioPool _mirePool;
 /*@=nestedextern@*/
 
 #if defined(WITH_LUA)

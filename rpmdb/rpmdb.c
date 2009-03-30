@@ -2150,8 +2150,10 @@ assert(nmire != NULL);
 	mire = mi->mi_re + mi->mi_nre;
 	memset(mire, 0, sizeof(*mire));
 	/* XXX ensure no segfault, copy the use/pool from 1st item. */
+/*@-assignexpose@*/
 	mire->_item.use = use;
 	mire->_item.pool = pool;
+/*@=assignexpose@*/
     }
     mi->mi_nre++;
     

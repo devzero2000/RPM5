@@ -93,17 +93,17 @@ assert(iob != NULL);
 rpmuint8_t * rpmiobBuf(rpmiob iob)
 {
 assert(iob != NULL);
-/*@-retalias -usereleased @*/
+/*@-retalias -retexpose -usereleased @*/
     return iob->b;
-/*@=retalias =usereleased @*/
+/*@=retalias =retexpose =usereleased @*/
 }
 
 char * rpmiobStr(rpmiob iob)
 {
 assert(iob != NULL);
-/*@-retalias -usereleased @*/
+/*@-retalias -retexpose -usereleased @*/
     return (char *) iob->b;
-/*@=retalias =usereleased @*/
+/*@=retalias =retexpose =usereleased @*/
 }
 
 size_t rpmiobLen(rpmiob iob)

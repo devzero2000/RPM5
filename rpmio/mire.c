@@ -80,6 +80,7 @@ miRE XmireLink(miRE mire, const char * msg, const char * fn, unsigned ln)
 }
 
 static void mireFini(void * _mire)
+	/*@modifies _mire @*/
 {
     miRE mire = _mire;
     (void) mireClean(mire);
@@ -497,25 +498,28 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     int xx;
 
     if (*mirep == NULL) {
-	mire = mireGetPool(_mirePool);
-	(*mirep) = mire;
+	(*mirep) = mireGetPool(_mirePool);
+	mire = (*mirep);
     } else {
 	void *use =  (*mirep)->_item.use;
 	void *pool = (*mirep)->_item.pool;
 
 	/* XXX only the 1st element in the array has a usage mutex. */
-	mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
-	(*mirep) = mire;
-	mire += (*nmirep);
+	(*mirep) = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
+	mire = (*mirep) + (*nmirep);
 	memset(mire, 0, sizeof(*mire));
         /* XXX ensure no segfault, copy the use/pool from 1st item. */
+/*@-assignexpose@*/
         mire->_item.use = use;
         mire->_item.pool = pool;
+/*@=assignexpose@*/
     }
 
     (*nmirep)++;
     xx = mireSetCOptions(mire, mode, tag, 0, table);
+/*@-usereleased@*/
     return mireRegcomp(mire, pattern);
+/*@=usereleased@*/
 }
 /*@=onlytrans@*/
 

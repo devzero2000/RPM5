@@ -19,6 +19,7 @@
 #include "debug.h"
 
 /*@access pgpDigParams@ */
+/*@access rpmiob @*/
 
 #if defined(HAVE_KEYUTILS_H)
 /*@unchecked@*/
