@@ -1440,7 +1440,7 @@ exit:
     if (ec > PGPARMOR_NONE) {
 	if (pkt)	*pkt = iob->b;
 	if (pktlen)	*pktlen = iob->blen;
-	iob = _free(iob);	/* XXX iob->b has been stolen */
+	iob->b = NULL;	/* XXX iob->b has been stolen */
     } else {
 	if (pkt)	*pkt = NULL;
 	if (pktlen)	*pktlen = 0;
