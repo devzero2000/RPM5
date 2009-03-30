@@ -180,6 +180,18 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	ia->noDeps = 1;
 	break;
 
+    case RPMCLI_POPT_NOCONTEXTS:
+	ia->transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	break;
+
+    case RPMCLI_POPT_NOSCRIPTS:
+	ia->transFlags |= (_noTransScripts|_noTransTriggers);
+	break;
+
+    case RPMCLI_POPT_NOFDIGESTS:
+	ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
+	break;
+
     }
 }
 
@@ -218,19 +230,31 @@ struct poptOption rpmInstallPoptTable[] = {
  { "nodocs", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NODOCS,
 	N_("do not install documentation"), NULL},
+#ifdef	NOTYET	/* XXX multiple identical options forces popt callback. */
  { "nocontexts", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOCONTEXTS,
 	N_("don't install file security contexts"), NULL},
  { "nofdigests", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOFDIGESTS,
 	N_("don't verify file digests"), NULL },
+#else
+  { "nocontexts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCONTEXTS,
+	N_("don't verify file security contexts"), NULL },
+  { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
+#endif
  { "norpmdb", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NORPMDB,
 	N_("don't register headers in rpmdb"), NULL},
 
+#ifdef	NOTYET	/* XXX multiple identical options forces popt callback. */
  { "noscripts", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, (_noTransScripts|_noTransTriggers),
 	N_("do not execute package scriptlet(s)"), NULL },
+#else
+  { "noscripts", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
+	N_("do not execute package scriptlet(s)"), NULL },
+#endif
  { "nopretrans", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOPRETRANS,
 	N_("do not execute %%pretrans scriptlet (if any)"), NULL },

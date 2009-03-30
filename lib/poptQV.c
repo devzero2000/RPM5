@@ -288,6 +288,8 @@ static void queryArgCallback(poptContext con,
 {
     QVA_t qva = &rpmQVKArgs;
 
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
     switch (opt->val) {
     case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
     case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
