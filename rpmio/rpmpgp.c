@@ -18,6 +18,7 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access pgpPkt @*/
+/*@access rpmiob @*/
 
 /*@unchecked@*/
 int _pgp_debug = 0;

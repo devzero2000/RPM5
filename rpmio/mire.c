@@ -79,6 +79,7 @@ miRE XmireLink(miRE mire, const char * msg, const char * fn, unsigned ln)
 }
 
 static void mireFini(void * _mire)
+	/*@modifies _mire @*/
 {
     miRE mire = _mire;
     (void) mireClean(mire);

@@ -36,7 +36,7 @@ typedef struct rpmioPool_s * rpmioPool;
 
 /** \ingroup rpmio
  */
-typedef struct rpmiob_s * rpmiob;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmiob_s * rpmiob;
 
 /** \ingroup rpmio
  */
@@ -252,7 +252,8 @@ const char * xstrtolocale(/*@only@*/ const char *str)
  */
 /*@unused@*/ /*@null@*/
 rpmiob rpmiobUnlink (/*@killref@*/ /*@null@*/ rpmiob iob)
-	/*@modifies iob @*/;
+	/*@globals fileSystem @*/
+	/*@modifies iob, fileSystem @*/;
 #define	rpmiobUnlink(_iob)	\
     ((rpmiob)rpmioUnlinkPoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
 
@@ -263,7 +264,8 @@ rpmiob rpmiobUnlink (/*@killref@*/ /*@null@*/ rpmiob iob)
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmiob rpmiobLink (/*@null@*/ rpmiob iob)
-	/*@modifies iob @*/;
+	/*@globals fileSystem @*/
+	/*@modifies iob, fileSystem @*/;
 #define	rpmiobLink(_iob)	\
     ((rpmiob)rpmioLinkPoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
 
@@ -273,8 +275,9 @@ rpmiob rpmiobLink (/*@null@*/ rpmiob iob)
  * @return		NULL on last dereference
  */
 /*@null@*/
-rpmiob rpmiobFree( /*@only@*/ rpmiob iob)
-	/*@modifies iob @*/;
+rpmiob rpmiobFree( /*@killref@*/ rpmiob iob)
+	/*@globals fileSystem @*/
+	/*@modifies iob, fileSystem @*/;
 #define	rpmiobFree(_iob)	\
     ((rpmiob)rpmioFreePoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
 
@@ -283,9 +286,10 @@ rpmiob rpmiobFree( /*@only@*/ rpmiob iob)
  * @param len		no. of octets to allocate
  * @return		new I/O buffer
  */
-/*@only@*/
+/*@newref@*/ /*@null@*/
 rpmiob rpmiobNew(size_t len)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Empty an I/O buffer.

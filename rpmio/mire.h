@@ -23,7 +23,7 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 extern int _mire_debug;
 /*@=exportlocal@*/
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 extern rpmioPool _mirePool;
 
 /**
@@ -147,7 +147,8 @@ miRE mireGetPool(/*@null@*/ rpmioPool pool)
 /*@null@*/
 miRE XmireUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies mire @*/;
+        /*@globals fileSystem @*/
+        /*@modifies mire, fileSystem @*/;
 /*@=exportlocal@*/
 #define	mireUnlink(_mire, _msg)	XmireUnlink(_mire, _msg, __FILE__, __LINE__)
 
@@ -165,7 +166,8 @@ miRE mireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg)
 /*@newref@*/ /*@null@*/
 miRE XmireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
-        /*@modifies mire @*/;
+        /*@globals fileSystem @*/
+        /*@modifies mire, fileSystem @*/;
 #define	mireLink(_mire, _msg)	XmireLink(_mire, _msg, __FILE__, __LINE__)
 
 /**
@@ -175,7 +177,8 @@ miRE XmireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg,
  */
 /*@null@*/
 miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
-	/*@modifies mire @*/;
+        /*@globals fileSystem @*/
+        /*@modifies mire, fileSystem @*/;
 
 /**
  * Destroy compiled patterns.
@@ -185,7 +188,8 @@ miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
  */
 /*@null@*/
 void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nmire)
-	/*@modifies mire @*/;
+        /*@globals fileSystem @*/
+        /*@modifies mire, fileSystem @*/;
 
 /**
  * Create pattern container.
@@ -195,7 +199,8 @@ void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nmire)
  */
 /*@null@*/
 miRE mireNew(rpmMireMode mode, int tag)
-	/*@*/;
+        /*@globals fileSystem @*/
+        /*@modifies fileSystem @*/;
 
 /**
  * Initialize pattern compile options.
@@ -276,7 +281,8 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 		/*@null@*/ const unsigned char * table,
 		miRE * mirep, int * nmirep)
-	/*@modifies *mirep, *nmirep @*/;
+        /*@globals fileSystem @*/
+        /*@modifies *mirep, *nmirep, fileSystem @*/;
 
 /**
  * Load patterns from string array.
@@ -292,7 +298,8 @@ int mireLoadPatterns(rpmMireMode mode, int tag,
 		/*@null@*/ const char ** patterns,
 		/*@null@*/ const unsigned char * table,
 		miRE * mirep, int * nmirep)
-	/*@modifies *mirep, *nmirep @*/;
+        /*@globals fileSystem @*/
+        /*@modifies *mirep, *nmirep, fileSystem @*/;
 
 /**
  * Apply array of patterns to a string.

@@ -31,6 +31,8 @@
 
 #include "debug.h"
 
+/*@access rpmiob @*/
+
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
 			    const char * fmt, va_list ap)
@@ -687,6 +689,7 @@ void rpmluaInteractive(rpmlua _lua)
 /* Lua API */
 
 static int rpm_macros(lua_State *L)
+	/*@modifies L @*/
 {
     const char ** av = NULL;
     int ac = 0;
@@ -1056,8 +1059,8 @@ static int rpm_sleep(lua_State *L)
 }
 
 static int rpm_realpath(lua_State *L)
-    /*@globals internalState @*/
-    /*@modifies L, internalState @*/
+    /*@globals fileSystem, internalState @*/
+    /*@modifies L, fileSystem, internalState @*/
 {
     const char *pn;
     char rp_buf[PATH_MAX];
@@ -1074,6 +1077,25 @@ static int rpm_realpath(lua_State *L)
         return 0;
     }
     lua_pushstring(L, (const char *)rp);
+    return 1;
+}
+
+static int rpm_hostname(lua_State *L)
+	/*@globals h_errno, internalState @*/
+	/*@modifies L, h_errno, internalState @*/
+{
+    char hostname[1024];
+    struct hostent *hbn;
+    char *h;
+
+/*@-multithreaded@*/
+    (void)gethostname(hostname, sizeof(hostname));
+    if ((hbn = gethostbyname(hostname)) != NULL)
+        h = hbn->h_name;
+    else
+        h = "localhost";
+/*@=multithreaded@*/
+    lua_pushstring(L, (const char *)h);
     return 1;
 }
 
@@ -1095,6 +1117,7 @@ static const luaL_reg rpmlib[] = {
     {"slurp", rpm_slurp},
     {"sleep", rpm_sleep},
     {"realpath", rpm_realpath},
+    {"hostname", rpm_hostname},
     {NULL, NULL}
 };
 /*@=readonlytrans =nullassign @*/
