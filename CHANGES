@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: PCRE in -lrpmmisc, LUA in -lrpmio linking -lrpmmisc, instead.
     - jbj: fix: --noscripts/--nofdigests/--nocontexts need to use popt callback.
     - jbj: rpmiob: fix: return iob to _rpmiobPool instead.
     - jbj: yarn: convert mire to usage mutex with refcounts

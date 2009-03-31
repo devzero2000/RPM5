@@ -87,7 +87,8 @@ librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
 librpmio_la_LIBADD =
 if ENABLE_BUILD_INTLIBDEP
-librpmio_la_LIBADD += \
+librpmio_la_LDFLAGS += @WITH_LUA_LDFLAGS@
+librpmio_la_LIBADD += @WITH_LUA_LIBS@ \
 	$(top_builddir)/misc/librpmmisc.la
 endif
 if ENABLE_BUILD_MAXEXTLIBDEP

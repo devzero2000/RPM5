@@ -53,12 +53,12 @@ endif
 SUBDIRS += \
 	@WITH_DB_SUBDIR@ \
 	@WITH_ZLIB_SUBDIR@ \
-	@WITH_LUA_SUBDIR@ \
 	@WITH_FILE_SUBDIR@ \
 	@WITH_PCRE_SUBDIR@ \
 	@WITH_XAR_SUBDIR@ \
 	@WITH_XZ_SUBDIR@ \
 	misc \
+	@WITH_LUA_SUBDIR@ \
 	rpmio \
 	rpmdb \
 	lib \
