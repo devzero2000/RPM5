@@ -34,7 +34,7 @@
 
 #include "rpmlock.h"
 
-#include "misc.h" /* XXX (free)splitString, currentDirectory */
+#include "misc.h" /* XXX currentDirectory */
 
 #if defined(RPM_VENDOR_MANDRIVA)
 #include "filetriggers.h" /* XXX mayAddToFilesAwaitingFiletriggers, rpmRunFileTriggers */
