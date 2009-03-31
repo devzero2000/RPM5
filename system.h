@@ -757,4 +757,9 @@ static inline const char *rcsid(const char *p) { \
  */
 #undef	SUPPORT_AR_PAYLOADS
 
+/**
+ * Use a refcnt on the set of packages tracked by -debuginfo when upgrading.
+ */
+#define	SUPPORT_DEBUGINFO_UPGRADE_MODEL	1
+
 #endif	/* H_SYSTEM */

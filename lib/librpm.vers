@@ -11,7 +11,6 @@ LIBRPM_0
     _fini;
     _fps_debug;
     freeFSM;
-    freeSplitString;
     _fsm_debug;
     fsmGetFi;
     fsmGetTs;
@@ -311,6 +310,7 @@ LIBRPM_0
     rpmteSetNpreds;
     rpmteSetParent;
     rpmteSetTree;
+    rpmteSourcerpm;
     rpmteTree;
     rpmteTSI;
     rpmteType;
@@ -393,7 +393,6 @@ LIBRPM_0
     showQueryPackage;
     showVerifyPackage;
     specedit;
-    splitString;
     strict_erasures;
     XrpmtsiInit;
   local:

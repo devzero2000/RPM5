@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: finish backport and enable SUPPORT_DEBUGINFO_UPGRADE_MODEL.
+    - jbj: misc: get rid of splitFoo prototypes, bury the last use in rpmfi.c.
     - jbj: PCRE in -lrpmmisc, LUA in -lrpmio linking -lrpmmisc, instead.
     - jbj: update file manifests with backported files.
     - jbj: perl: fix: no need to include stringbuf.h any more.

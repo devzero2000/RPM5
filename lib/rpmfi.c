@@ -27,7 +27,6 @@
 #include "rpmte.h"
 #include "rpmts.h"
 
-#include "misc.h"	/* XXX stripTrailingChar */
 #include "rpmmacro.h"	/* XXX rpmCleanPath */
 
 #include "debug.h"
@@ -37,6 +36,24 @@
 
 /*@unchecked@*/
 int _rpmfi_debug = 0;
+
+/**
+ * Remove occurences of trailing character from string.
+ * @param s		string
+ * @param c		character to strip
+ * @return 		string
+ */
+static /*@only@*/
+char * stripTrailingChar(/*@only@*/ char * s, char c)
+	/*@modifies *s */
+{
+    char * t;
+/*@-boundswrite@*/
+    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
+	*t = '\0';
+/*@=boundswrite@*/
+    return s;
+}
 
 int rpmfiFC(rpmfi fi)
 {

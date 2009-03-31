@@ -63,6 +63,7 @@ static void delTE(rpmte p)
     p->NEVRA = _free(p->NEVRA);
     p->pkgid = _free(p->pkgid);
     p->hdrid = _free(p->hdrid);
+    p->sourcerpm = _free(p->sourcerpm);
 
     p->replaced = _free(p->replaced);
 
@@ -120,6 +121,10 @@ assert(he->p.str != NULL);
     he->tag = RPMTAG_HDRID;
     xx = headerGet(h, he, 0);
     p->hdrid = (xx ? he->p.str : xstrdup("?RPMTAG_HDRID?"));
+
+    he->tag = RPMTAG_SOURCERPM;
+    xx = headerGet(h, he, 0);
+    p->sourcerpm = (xx ? he->p.str : NULL);
 
     he->tag = RPMTAG_PKGID;
     xx = headerGet(h, he, 0);
@@ -530,6 +535,11 @@ const char * rpmtePkgid(rpmte te)
 const char * rpmteHdrid(rpmte te)
 {
     return (te != NULL ? te->hdrid : NULL);
+}
+
+const char * rpmteSourcerpm(rpmte te)
+{
+    return (te != NULL ? te->sourcerpm : NULL);
 }
 
 FD_t rpmteFd(rpmte te)

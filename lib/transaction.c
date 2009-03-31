@@ -655,8 +655,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     uint32_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
-    char ** netsharedPaths = NULL;
-    const char ** languages;
+    ARGV_t netsharedPaths = NULL;
+    ARGV_t languages = NULL;
     const char * dn, * bn;
     size_t dnlen, bnlen;
     int ix;
@@ -665,6 +665,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     char * dff;
     int dc;
     int i, j;
+    int xx;
 
 #if defined(RPM_VENDOR_OPENPKG) /* allow-excludedocs-default */
     /* The "%_excludedocs" macro is intended to set the _default_ if
@@ -679,7 +680,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
     {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
 	if (tmpPath && *tmpPath != '%')
-	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+	    xx = argvSplit(&netsharedPaths, tmpPath, ":");
 	tmpPath = _free(tmpPath);
     }
 
@@ -687,10 +688,9 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (!(s && *s != '%'))
 	s = _free(s);
     if (s) {
-	languages = (const char **) splitString(s, strlen(s), ':');
+	xx = argvSplit(&languages, s, ":");
 	s = _free(s);
-    } else
-	languages = NULL;
+    }
 
     /* Compute directory refcount, skip directory if now empty. */
     dc = rpmfiDC(fi);
@@ -703,7 +703,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0)
     {
-	char ** nsp;
+	ARGV_t nsp;
 
 	bn = rpmfiBN(fi);
 	bnlen = strlen(bn);
@@ -773,7 +773,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 * Skip i18n language specific files.
 	 */
 	if (languages != NULL && fi->flangs != NULL && *fi->flangs[i]) {
-	    const char **lang, *l, *le;
+	    ARGV_t lang;
+	    const char *l, *le;
 	    for (lang = languages; *lang != NULL; lang++) {
 		if (!strcmp(*lang, "all"))
 		    /*@innerbreak@*/ break;
@@ -866,8 +867,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     }
 
 /*@-dependenttrans@*/
-    if (netsharedPaths) freeSplitString(netsharedPaths);
-    if (languages) freeSplitString((char **)languages);
+    netsharedPaths = argvFree(netsharedPaths);
+    languages = argvFree(languages);
 /*@=dependenttrans@*/
 }
 /*@=nullpass@*/
