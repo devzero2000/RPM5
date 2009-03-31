@@ -1137,7 +1137,7 @@ dnl # PCRE
 WITH_PCRE_INTERNAL=false
 RPM_CHECK_LIB(
     [PCRE], [pcre],
-    [pcre], [pcre_compile], [pcre.h],
+    [pcreposix pcre], [pcre_compile], [pcre.h],
     [yes,internal:external:none], [pcre],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_PCRE_INTERNAL=true
@@ -1145,7 +1145,7 @@ RPM_CHECK_LIB(
 	  dnl XXX why isn't this set by RPM_CHECK_LIB?!?
 	  AC_DEFINE(HAVE_LIBPCRE, 1, [Define to 1 if you have the 'pcre' library (-lpcre).])
           AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
-	  WITH_PCRE_LIBS="-lpcreposix ${WITH_PCRE_LIBS}"
+	  WITH_PCRE_LIBS="-lpcreposix"
 	  AC_SUBST(WITH_PCRE_LIBS)
       else
 	dnl # make sure PCRE POSIX API can be really _USED_ by RPM
