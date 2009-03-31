@@ -583,6 +583,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/ar.h \
                          @top_srcdir@/rpmio/argv.c \
                          @top_srcdir@/rpmio/argv.h \
+                         @top_srcdir@/rpmio/bzdio.c \
                          @top_srcdir@/rpmio/cpio.c \
                          @top_srcdir@/rpmio/cpio.h \
                          @top_srcdir@/rpmio/crc.c \
@@ -594,29 +595,30 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/fts.h \
                          @top_srcdir@/rpmio/glob.c \
                          @top_srcdir@/rpmio/glob.h \
+                         @top_srcdir@/rpmio/gzdio.c \
                          @top_srcdir@/rpmio/iosm.c \
                          @top_srcdir@/rpmio/iosm.h \
                          @top_srcdir@/rpmio/lookup3.c \
-                         @top_srcdir@/rpmio/lzdio.c \
                          @top_srcdir@/rpmio/macro.c \
                          @top_srcdir@/rpmio/mire.c \
                          @top_srcdir@/rpmio/mire.h \
                          @top_srcdir@/rpmio/mount.c \
                          @top_srcdir@/rpmio/poptIO.c \
+                         @top_srcdir@/rpmio/poptIO.h \
                          @top_srcdir@/rpmio/rpmbc.c \
                          @top_srcdir@/rpmio/rpmbc.h \
+                         @top_srcdir@/rpmio/rpmbz.h \
                          @top_srcdir@/rpmio/rpmcb.h \
                          @top_srcdir@/rpmio/rpmdav.c \
                          @top_srcdir@/rpmio/rpmdav.h \
                          @top_srcdir@/rpmio/rpmgc.c \
                          @top_srcdir@/rpmio/rpmgc.h \
-                         @top_srcdir@/rpmio/rpmgrep.c \
                          @top_srcdir@/rpmio/rpmhash.c \
                          @top_srcdir@/rpmio/rpmhash.h \
                          @top_srcdir@/rpmio/rpmhook.c \
                          @top_srcdir@/rpmio/rpmhook.h \
-                         @top_srcdir@/rpmio/rpmImpl.c \
-                         @top_srcdir@/rpmio/rpmImpl.h \
+                         @top_srcdir@/rpmio/rpmiob.c \
+                         @top_srcdir@/rpmio/rpmiob.h \
                          @top_srcdir@/rpmio/rpmio.c \
                          @top_srcdir@/rpmio/rpmio.h \
                          @top_srcdir@/rpmio/rpmio_internal.h \
@@ -646,6 +648,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmuuid.h \
                          @top_srcdir@/rpmio/rpmxar.c \
                          @top_srcdir@/rpmio/rpmxar.h \
+                         @top_srcdir@/rpmio/rpmzlog.c \
+                         @top_srcdir@/rpmio/rpmzlog.h \
                          @top_srcdir@/rpmio/strcasecmp.c \
                          @top_srcdir@/rpmio/stringbuf.c \
                          @top_srcdir@/rpmio/stringbuf.h \
@@ -655,6 +659,9 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/ugid.c \
                          @top_srcdir@/rpmio/ugid.h \
                          @top_srcdir@/rpmio/url.c \
+                         @top_srcdir@/rpmio/xzdio.c \
+                         @top_srcdir@/rpmio/yarn.c \
+                         @top_srcdir@/rpmio/yarn.h \
                          @top_srcdir@/python/header-py.c \
                          @top_srcdir@/python/header-py.h \
                          @top_srcdir@/python/spec-py.c \
