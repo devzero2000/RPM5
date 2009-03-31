@@ -10,7 +10,6 @@
 #include "rpmio.h"
 #include "rpmlib.h"
 #include "rpmcli.h"
-#include "stringbuf.h"
 #include "rpmmacro.h"
 #include "rpmspec.h"
 #include "rpmbuild.h"

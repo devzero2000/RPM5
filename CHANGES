@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: perl: fix: no need to include stringbuf.h any more.
     - jbj: fix: --noscripts/--nofdigests/--nocontexts need to use popt callback.
     - jbj: rpmiob: fix: return iob to _rpmiobPool instead.
     - rse: add RPM Lua function rpm.hostname()
