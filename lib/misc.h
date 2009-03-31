@@ -3,7 +3,6 @@
 
 /**
  * \file lib/misc.h
- *
  */
 
 #include <string.h>
@@ -22,41 +21,6 @@ extern "C" {
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
-
-/**
- * Split string into fields separated by a character.
- * @param str		string
- * @param length	length of string
- * @param sep		separator character
- * @return		(malloc'd) argv array
- */
-/*@only@*/ char ** splitString(const char * str, int length, char sep)
-	/*@*/;
-
-/**
- * Free split string argv array.
- * @param list		argv array
- */
-void freeSplitString( /*@only@*/ char ** list)
-	/*@modifies list @*/;
-
-/**
- * Remove occurences of trailing character from string.
- * @param s		string
- * @param c		character to strip
- * @return 		string
- */
-/*@unused@*/ static inline
-/*@only@*/ char * stripTrailingChar(/*@only@*/ char * s, char c)
-	/*@modifies *s */
-{
-    char * t;
-/*@-boundswrite@*/
-    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
-	*t = '\0';
-/*@=boundswrite@*/
-    return s;
-}
 
 /**
  * Like the libc function, but malloc()'s the space needed.

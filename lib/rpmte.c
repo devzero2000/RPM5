@@ -726,7 +726,7 @@ static void rpmtsiFini(void * _tsi)
 {
     rpmtsi tsi = _tsi;
 /*@-internalglobs@*/
-    (void)rpmtsFree(tsi->ts); 
+    (void)rpmtsFree(tsi->ts);
     tsi->ts = NULL;
 /*@=internalglobs@*/
 }
