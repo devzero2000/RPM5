@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yaml: mix syck into the misc melange ...
     - jbj: misc: get rid of splitFoo prototypes, bury the last use in rpmfi.c.
     - jbj: PCRE in -lrpmmisc, LUA in -lrpmio linking -lrpmmisc, instead.
     - jbj: fix: --noscripts/--nofdigests/--nocontexts need to use popt callback.

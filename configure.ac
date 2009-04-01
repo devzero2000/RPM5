@@ -1324,6 +1324,16 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # Syck
+RPM_CHECK_LIB(
+    [Syck], [syck],
+    [syck], [syckparse], [syck.h],
+    [no,internal:external:none], [syck:lib:lib],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          AC_DEFINE(HAVE_SYCK_H, 1, [Have <syck.h> header])
+      fi
+    ], [])
+
 dnl # XAR
 RPM_CHECK_LIB(
     [XAR], [xar],
