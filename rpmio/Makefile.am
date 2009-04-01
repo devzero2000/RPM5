@@ -41,6 +41,7 @@ AM_CPPFLAGS = \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
+	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_XZ_CPPFLAGS@
@@ -73,14 +74,14 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	ar.c argv.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
-	getdate.c gzdio.c glob.c iosm.c xzdio.c \
+	getdate.c gzdio.c glob.c iosm.c lsyck.c \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmkeyring.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
-	strcasecmp.c strtolocale.c tar.c url.c ugid.c yarn.c
+	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers

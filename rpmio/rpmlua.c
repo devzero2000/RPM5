@@ -16,6 +16,10 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#ifdef	WITH_SYCK
+LUALIB_API int luaopen_syck(lua_State *L)
+	/*@modifies L @*/;
+#endif	/* WITH_SYCK */
 #ifdef WITH_LUA_INTERNAL
 #include <llocal.h>
 #include <lposix.h>
@@ -96,6 +100,9 @@ rpmlua rpmluaNew()
 	{LUA_STRLIBNAME, luaopen_string},
 	{LUA_MATHLIBNAME, luaopen_math},
 	{LUA_DBLIBNAME, luaopen_debug},
+#ifdef	WITH_SYCK
+	{"lsyck", luaopen_syck},
+#endif	/* WITH_SYCK */
 	/* local LUA libraries (RPM only) */
 #ifdef WITH_LUA_INTERNAL
 	{"posix", luaopen_posix},
