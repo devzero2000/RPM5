@@ -16,11 +16,11 @@
 /* XXX CACHE_DEPENDENCY_RESULT deprecated, functionality being reimplemented */
 #undef	CACHE_DEPENDENCY_RESULT
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. DBT used below */
-#include "rpmdb.h"
+#include <rpmdb.h>
 
 #define	_RPMEVR_INTERNAL
-#include "rpmds.h"
-#include "rpmfi.h"
+#include <rpmds.h>
+#include <rpmfi.h>
 
 #include "debug.h"
 
@@ -142,7 +142,8 @@ static int removePackage(rpmts ts, Header h, int dboffset,
  * @return		1 if headers are identical, 0 otherwise
  */
 static int rpmHeadersIdentical(Header first, Header second)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
@@ -2081,6 +2082,7 @@ static inline int addRelation(rpmts ts,
     /* Avoid certain NS dependencies. */
     switch (NSType) {
     case RPMNS_TYPE_RPMLIB:
+    case RPMNS_TYPE_CONFIG:
     case RPMNS_TYPE_CPUINFO:
     case RPMNS_TYPE_GETCONF:
     case RPMNS_TYPE_UNAME:
@@ -2102,13 +2104,6 @@ static inline int addRelation(rpmts ts,
 	/*@notreached@*/ break;
     default:
 	break;
-    }
-
-    {	const char * Name = rpmdsN(requires);
-
-	/* Avoid package config dependencies. */
-	if (Name == NULL || !strncmp(Name, "config(", sizeof("config(")-1))
-	    return 0;
     }
 
     pkgKey = RPMAL_NOMATCH;
@@ -2422,7 +2417,7 @@ int rpmtsOrder(rpmts ts)
 	qi = rpmtsiInit(ts);
 	while ((q = rpmtsiNext(qi, TR_ADDED)) != NULL) {
 	    if (strcmp(q->pkgid, p->flink.Pkgid[0]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    requires = rpmdsFromPRCO(q->PRCO, RPMTAG_NAME);
 	    if (requires != NULL) {
 		/* XXX disable erased arrow reversal. */

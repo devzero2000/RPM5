@@ -505,7 +505,7 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 
 	/* XXX only the 1st element in the array has a usage mutex. */
 	(*mirep) = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
-	mire += (*mirep) + (*nmirep);
+	mire = (*mirep) + (*nmirep);
 	memset(mire, 0, sizeof(*mire));
         /* XXX ensure no segfault, copy the use/pool from 1st item. */
 /*@-assignexpose@*/
