@@ -105,6 +105,7 @@ dnl ##
 
 AC_MSG_HEADER([TOOL-CHAIN CHECKS])
 
+AC_PROG_CC_STDC
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
@@ -1173,6 +1174,16 @@ RPM_CHECK_LIB(
     [ dnl # enable OSSP uuid native API support for embedded Lua
       if test ".$WITH_LUA" = .yes; then
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_UUID"
+      fi
+    ], [])
+
+dnl # Syck
+RPM_CHECK_LIB(
+    [Syck], [syck],
+    [syck], [syckparse], [syck.h],
+    [no,internal:external:none], [syck:lib:lib],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          AC_DEFINE(HAVE_SYCK_H, 1, [Have <syck.h> header])
       fi
     ], [])
 

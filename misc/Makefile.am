@@ -36,6 +36,7 @@ librpmmisc_la_LDFLAGS += \
 	@WITH_XZ_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
 	@WITH_PCRE_LDFLAGS@ \
+	@WITH_SYCK_LDFLAGS@ \
 	@WITH_XAR_LDFLAGS@
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
@@ -44,6 +45,7 @@ librpmmisc_la_LIBADD = \
 	@WITH_XZ_LIBS@ \
 	@WITH_FILE_LIBS@ \
 	@WITH_PCRE_LIBS@ \
+	@WITH_SYCK_LIBS@ \
 	@WITH_XAR_LIBS@
 if ENABLE_BUILD_EXTLIBDEP
 librpmmisc_la_LDFLAGS += $(LDFLAGS)

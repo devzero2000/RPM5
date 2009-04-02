@@ -2,7 +2,7 @@
 
 #   configure the requirements
 AMV="automake (GNU automake) 1.10"
-ACV="autoconf (GNU Autoconf) 2.62"
+ACV="autoconf (GNU Autoconf) 2.63"
 LTV="libtoolize (GNU libtool) 2.2.6"
 GTT="gettextize (GNU gettext-tools) 0.17"
 USAGE="
@@ -49,6 +49,9 @@ echo "<=== xz"
 echo "===> file"
 ( cd file && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== file"
+echo "===> syck"
+( cd syck && sh ./autogen.sh --noconfigure "$@" )
+echo "<=== syck"
 echo "===> xar"
 ( cd xar && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== xar"
