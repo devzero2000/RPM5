@@ -136,11 +136,11 @@ struct poptOption rpmioDigestPoptTable[] = {
  { "adler32",'\0', POPT_ARG_VAL,&rpmioDigestHashAlgo, PGPHASHALGO_ADLER32,
 	N_("ADLER-32 checksum"), NULL },
  { "jlu32",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_JLU32,
-	N_("lookup3 hash"), NULL },
+	N_("Lookup3 hash"), NULL },
  { "nodigest",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmioDigestHashAlgo, PGPHASHALGO_NONE,
-	N_("no hash algorithm"), NULL },
+	N_("No hash algorithm"), NULL },
  { "alldigests",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmioDigestHashAlgo, 256,
-	N_("all hash algorithm(s)"), NULL },
+	N_("All hash algorithm(s)"), NULL },
     POPT_TABLEEND
 };
 
@@ -327,7 +327,7 @@ struct poptOption rpmioAllPoptTable[] = {
 /*@=type@*/
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,
-        N_("Debug generic operations"), NULL },
+	N_("Debug generic operations"), NULL },
 
 #ifdef	NOTYET
  { "define", 'D', POPT_ARG_STRING, NULL, (int)'D',
@@ -388,7 +388,7 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug FTP/HTTP data stream"), NULL},
  { "ftsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fts_debug, -1,
 	N_("Debug Fts(3) traverse"), NULL},
- { "htdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fts_debug, -1,
+ { "htdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ht_debug, -1,
 	N_("Debug hash tables"), NULL},
  { "iosmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_iosm_debug, -1,
 	N_("Debug I/O state machine"), NULL},

@@ -792,7 +792,7 @@ typedef struct rpmluaHookData_s {
 } * rpmluaHookData;
 
 static int rpmluaHookWrapper(rpmhookArgs args, void *data)
-    /*@*/
+	/*@*/
 {
     rpmluaHookData hookdata = (rpmluaHookData)data;
     lua_State *L = hookdata->L;

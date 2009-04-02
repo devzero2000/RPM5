@@ -78,18 +78,18 @@ static void rpmxarFini(void * _xar)
         /*@modifies _xar, fileSystem @*/
 {
     rpmxar xar =_xar;
-	if (xar->i) {
-	    xar_iter_free(xar->i);
-	    xar->i = NULL;
-	}
-	if (xar->x) {
-	    int xx;
-	    xx = xar_close(xar->x);
-	    xar->x = NULL;
-	}
+    if (xar->i) {
+	xar_iter_free(xar->i);
+	xar->i = NULL;
+    }
+    if (xar->x) {
+	int xx;
+	xx = xar_close(xar->x);
+	xar->x = NULL;
+    }
 
-	xar->member = _free(xar->member);
-	xar->b = _free(xar->b);
+    xar->member = _free(xar->member);
+    xar->b = _free(xar->b);
 }
 /*@=globuse =mustmod@*/
 

@@ -127,7 +127,7 @@ miRE mireNew(rpmMireMode mode, int tag)
     miRE mire = mireGetPool(_mirePool);
     mire->mode = mode;
     mire->tag = tag;
-    return mireLink(mire,"mireNew");
+    return mireLink(mire, "mireNew");
 }
 
 int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
@@ -497,20 +497,21 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     int xx;
 
     if (*mirep == NULL) {
-	mire = mireGetPool(_mirePool);
-	(*mirep) = mire;
+	(*mirep) = mireGetPool(_mirePool);
+	mire = (*mirep);
     } else {
 	void *use =  (*mirep)->_item.use;
 	void *pool = (*mirep)->_item.pool;
 
 	/* XXX only the 1st element in the array has a usage mutex. */
-	mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
-    (*mirep) = mire;
-	mire += (*nmirep);
-    memset(mire, 0, sizeof(*mire));
+	(*mirep) = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
+	mire += (*mirep) + (*nmirep);
+	memset(mire, 0, sizeof(*mire));
         /* XXX ensure no segfault, copy the use/pool from 1st item. */
+/*@-assignexpose@*/
         mire->_item.use = use;
         mire->_item.pool = pool;
+/*@=assignexpose@*/
     }
 
     (*nmirep)++;
@@ -572,10 +573,10 @@ int mireStudy(miRE mire, int nmires)
     /* Study the PCRE regex's, as we will be running them many times */
     if (mire)		/* note rc=0 return with no mire's. */
     for (j = 0; j < nmires; mire++, j++) {
-	const char * error;
 	if (mire->mode != RPMMIRE_PCRE)
 	    continue;
 #if defined(WITH_PCRE)
+      {	const char * error;
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[32];
@@ -584,10 +585,13 @@ int mireStudy(miRE mire, int nmires)
 		__progname, s, error);
 	    goto exit;
 	}
+      }
 #endif
     }
     rc = 0;
 
+#if defined(WITH_PCRE)
 exit:
+#endif
     return rc;
 }

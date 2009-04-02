@@ -253,7 +253,11 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 	argv[c++] = xstrdup(s);
     }
     argv[c] = NULL;
-    *argvp = argv;
+    if (argvp)
+	*argvp = argv;
+    else
+	argv = argvFree(argv);
+    dest = _free(dest);
 /*@-nullstate@*/
     return 0;
 /*@=nullstate@*/

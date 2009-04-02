@@ -1778,8 +1778,9 @@ int Glob_error(/*@unused@*/ const char * epath,
 }
 
 int Glob(const char *pattern, int flags,
-	int errfunc(const char * epath, int eerrno), glob_t *pglob)
+	int errfunc(const char * epath, int eerrno), void *_pglob)
 {
+    glob_t *pglob = _pglob;
     const char * lpath;
     int ut = urlPath(pattern, &lpath);
     const char *home = getenv("HOME");
@@ -1820,8 +1821,9 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
     return glob(pattern, flags, errfunc, pglob);
 }
 
-void Globfree(glob_t *pglob)
+void Globfree(void *_pglob)
 {
+    glob_t *pglob = _pglob;
 if (_rpmio_debug)
 fprintf(stderr, "*** Globfree(%p)\n", pglob);
     globfree(pglob);
