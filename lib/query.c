@@ -124,10 +124,11 @@ static void printFileInfo(char * te, const char * name,
        more width and at the same time reduce the nlink and size fields
        more to typical sizes within OpenPKG. */
     sprintf(te, "%s %d %-13s %-13s %8s %s %s", perms,
+	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
 #else
     sprintf(te, "%s %4d %-7s %-8s %10s %s %s", perms,
-#endif
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
+#endif
     perms = _free(perms);
 }
 
@@ -187,17 +188,13 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     if (qva->qva_queryFormat != NULL) {
 	const char * str;
 
-#ifdef	NOTYET	/* XXX necessary for --whatneeds/--needswhat */
 /*@-type@*/	/* FIX rpmtsGetRDB()? */
 	(void) headerSetRpmdb(h, ts->rdb);
 /*@=type@*/
-#endif
 
 	str = queryHeader(h, qva->qva_queryFormat);
 
-#ifdef	NOTYET	/* XXX necessary for --whatneeds/--needswhat */
 	(void) headerSetRpmdb(h, NULL);
-#endif
 
 	if (str) {
 	    size_t tx = (te - t);
@@ -471,9 +468,9 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     switch (qva->qva_source) {
 #ifdef	NOTYET
     default:
+#endif
     case RPMQV_GROUP:
     case RPMQV_TRIGGEREDBY:
-#endif
     case RPMQV_WHATCONFLICTS:
     case RPMQV_WHATOBSOLETES:
 	qva->qva_mi = rpmtsInitIterator(ts, qva->qva_source, arg, 0);
@@ -507,6 +504,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		? qva->qva_specQuery(ts, qva, arg) : 1);
 	break;
 
+#ifdef	DYING
     case RPMQV_GROUP:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (qva->qva_mi == NULL) {
@@ -525,6 +523,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	} else
 	    res = rpmcliShowMatches(qva, ts);
 	break;
+#endif
 
     case RPMQV_SOURCEPKGID:
     case RPMQV_PKGID:

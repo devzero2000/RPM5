@@ -208,23 +208,23 @@ static void rpmsxFini(void * _sx)
     rpmsx sx = _sx;
     int i;
 
-	if (sx->Count > 0)
-	for (i = 0; i < sx->Count; i++) {
-	    rpmsxp sxp = sx->sxp + i;
-	    sxp->pattern = _free(sxp->pattern);
-	    sxp->type = _free(sxp->type);
-	    sxp->context = _free(sxp->context);
-/*@i@*/	    regfree(sxp->preg);
-/*@i@*/	    sxp->preg = _free(sxp->preg);
-	}
-	sx->sxp = _free(sx->sxp);
+    if (sx->Count > 0)
+    for (i = 0; i < sx->Count; i++) {
+	rpmsxp sxp = sx->sxp + i;
+	sxp->pattern = _free(sxp->pattern);
+	sxp->type = _free(sxp->type);
+	sxp->context = _free(sxp->context);
+/*@i@*/	regfree(sxp->preg);
+/*@i@*/	sxp->preg = _free(sxp->preg);
+    }
+    sx->sxp = _free(sx->sxp);
 
-	if (sx->nsxs > 0)
-	for (i = 0; i < sx->nsxs; i++) {
-	    rpmsxs sxs = sx->sxs + i;
-	    sxs->stem = _free(sxs->stem);
-	}
-	sx->sxs = _free(sx->sxs);
+    if (sx->nsxs > 0)
+    for (i = 0; i < sx->nsxs; i++) {
+	rpmsxs sxs = sx->sxs + i;
+	sxs->stem = _free(sxs->stem);
+    }
+    sx->sxs = _free(sx->sxs);
 }
 /*@=mustmod@*/
 

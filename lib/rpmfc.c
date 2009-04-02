@@ -58,8 +58,8 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
                         const char * writePtr, int writeBytesLeft,
                         int failNonZero)
-        /*@globals h_errno, fileSystem, internalState@*/
-        /*@modifies fileSystem, internalState@*/
+	/*@globals h_errno, fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
     pid_t child, reaped;
     int toProg[2];
@@ -189,7 +189,7 @@ top:
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
     rpmlog(RPMLOG_DEBUG, D_("\twaitpid(%d) rc %d status %x\n"),
-        (unsigned)child, (unsigned)reaped, status);
+	(unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	const char *cmd = argvJoin(argv);
@@ -1043,7 +1043,7 @@ assert(ftype != NULL);	/* XXX never happens, rpmmgFile() returns "" */
 	}
 
 	se = ftype;
-        rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, se);
+	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, se);
 
 	/* Save the path. */
 	xx = argvAdd(&fc->fn, s);
@@ -1203,7 +1203,7 @@ static void printDeps(Header h)
  */
 static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-        /*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmiob iob_stdin;
     rpmiob iob_stdout;
@@ -1306,7 +1306,7 @@ static DepMsg_t ScriptMsgs = scriptMsgs;
  */
 static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-        /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmiob iob_stdin = rpmiobNew(0);

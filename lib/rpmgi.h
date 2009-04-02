@@ -104,7 +104,7 @@ rpmgi rpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
 		/*@null@*/ const char * msg)
 	/*@modifies gi @*/;
 #define	rpmgiUnlink(_gi, _msg)	\
-	((rpmgi)rpmioUnlinkPoolItem((rpmioItem)(_gi), _msg, __FILE__, __LINE__))
+    ((rpmgi)rpmioUnlinkPoolItem((rpmioItem)(_gi), _msg, __FILE__, __LINE__))
 
 /**
  * Reference a generalized iterator instance.
@@ -116,7 +116,7 @@ rpmgi rpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
 rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
 	/*@modifies gi @*/;
 #define	rpmgiLink(_gi, _msg)	\
-	((rpmgi)rpmioLinkPoolItem((rpmioItem)(_gi), _msg, __FILE__, __LINE__))
+    ((rpmgi)rpmioLinkPoolItem((rpmioItem)(_gi), _msg, __FILE__, __LINE__))
 
 /** Destroy a generalized iterator.
  * @param gi		generalized iterator
