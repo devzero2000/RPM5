@@ -7,6 +7,8 @@
  * Copyright (C) 2005 Zachary P. Landau <kapheine@divineinvasion.net>
  */
 
+#if defined(WITH_SYCK)
+
 #include <syck.h>
 #include <string.h>
 #include <stdlib.h>
@@ -260,3 +262,5 @@ LUALIB_API int luaopen_syck(lua_State *L)
 	luaL_openlib(L, "syck", sycklib, 0);
 	return 1;
 }
+
+#endif	/* defined(WITH_SYCK) */
