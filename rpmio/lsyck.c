@@ -7,6 +7,8 @@
  * Copyright (C) 2005 Zachary P. Landau <kapheine@divineinvasion.net>
  */
 
+#include "system.h"
+
 #if defined(WITH_SYCK)
 
 #include <syck.h>
