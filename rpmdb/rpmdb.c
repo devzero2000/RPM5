@@ -1019,7 +1019,7 @@ int rpmdbClose(rpmdb db)
     int rc = 0;
 
     if (db == NULL)
-	goto exit;
+	return rc;
 
     yarnPossess(db->_item.use);
 /*@-modfilesys@*/
@@ -1129,7 +1129,7 @@ static const char * rpmdbURIPath(const char *uri)
 	char dn[PATH_MAX];
 	char *t;
 	dn[0] = '\0';
-	if ((t = realpath(".", dn)) != NULL) {
+	if ((t = Realpath(".", dn)) != NULL) {
 	    t += strlen(dn);
 	    if (t > dn && t[-1] != '/')
 		*t++ = '/';
