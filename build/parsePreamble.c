@@ -1187,7 +1187,7 @@ assert(lastpkg != NULL);
     /* Add Epoch: 0 to package header if it was not set by spec */
     he->tag = RPMTAG_NAME;
     if (headerGet(spec->packages->header, he, 0) == 0) {
-    	uint32_t num = 0;
+    	rpmuint32_t num = 0;
 
 	he->tag = RPMTAG_EPOCH;
 	he->t = RPM_UINT32_TYPE;
