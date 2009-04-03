@@ -1,5 +1,6 @@
 5.1.7 -> 5.1.8:
     - jbj: eliminate rpmal debugging code.
+    - jbj: PLD: rpm-epoch0: Always add Epoch: 0 to packages.
     - jbj: handle "config(N) = E:V-R" within rpmns.c (but treat as a string).
     - jbj: yaml: backport the YAML analogue tag extensions to repo-md XML.
     - jbj: yaml: permit --without-syck, add some mac os x AutoFu/gcc fiddle-ups.
