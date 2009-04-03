@@ -587,6 +587,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     int addsig = 0;
     int isSource;
     rpmRC rc = RPMRC_OK;
+    size_t nbr;
+    size_t nbw;
     int xx;
 
     /* Transfer header reference form *hdrp to h. */
@@ -880,16 +882,15 @@ assert(0);
     }
 	
     /* Write the payload into the package. */
-    while ((xx = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
-	if (xx <= -1 || Ferror(ifd)) {
+    while ((nbr = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
+	if (Ferror(ifd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	count = (uint32_t) xx;
-	xx = Fwrite(buf, sizeof(buf[0]), count, fd);
-	if ((uint32_t)xx != count || Ferror(fd)) {
+	nbw = Fwrite(buf, sizeof(buf[0]), nbr, fd);
+	if (nbr != nbw || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
