@@ -14,8 +14,10 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmiotypes.h>
+#include <rpmlog.h>
+
 #include <rpmbuild.h>
-#include <rpmlib.h>
 
 #include "debug.h"
 
@@ -32,11 +34,11 @@
  * Encapsulation of a "value"
  */
 typedef struct _value {
-  enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
-  union {
-    const char *s;
-    int i;
-  } data;
+    enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
+    union {
+	const char *s;
+	int i;
+    } data;
 } *Value;
 
 /**
@@ -44,12 +46,12 @@ typedef struct _value {
 static Value valueMakeInteger(int i)
 	/*@*/
 {
-  Value v;
+    Value v;
 
-  v = (Value) xmalloc(sizeof(*v));
-  v->type = VALUE_TYPE_INTEGER;
-  v->data.i = i;
-  return v;
+    v = (Value) xmalloc(sizeof(*v));
+    v->type = VALUE_TYPE_INTEGER;
+    v->data.i = i;
+    return v;
 }
 
 /**
@@ -57,12 +59,12 @@ static Value valueMakeInteger(int i)
 static Value valueMakeString(/*@only@*/ const char *s)
 	/*@*/
 {
-  Value v;
+    Value v;
 
-  v = (Value) xmalloc(sizeof(*v));
-  v->type = VALUE_TYPE_STRING;
-  v->data.s = s;
-  return v;
+    v = (Value) xmalloc(sizeof(*v));
+    v->type = VALUE_TYPE_STRING;
+    v->data.s = s;
+    return v;
 }
 
 /**
@@ -70,26 +72,26 @@ static Value valueMakeString(/*@only@*/ const char *s)
 static void valueFree( /*@only@*/ Value v)
 	/*@modifies v @*/
 {
-  if (v) {
-    if (v->type == VALUE_TYPE_STRING)
-	v->data.s = _free(v->data.s);
-    v = _free(v);
-  }
+    if (v) {
+	if (v->type == VALUE_TYPE_STRING)
+	    v->data.s = _free(v->data.s);
+	v = _free(v);
+    }
 }
 
 #ifdef DEBUG_PARSER
 static void valueDump(const char *msg, Value v, FILE *fp)
 	/*@*/
 {
-  if (msg)
-    fprintf(fp, "%s ", msg);
-  if (v) {
-    if (v->type == VALUE_TYPE_INTEGER)
-      fprintf(fp, "INTEGER %d\n", v->data.i);
-    else
-      fprintf(fp, "STRING '%s'\n", v->data.s);
-  } else
-    fprintf(fp, "NULL\n");
+    if (msg)
+	fprintf(fp, "%s ", msg);
+    if (v) {
+	if (v->type == VALUE_TYPE_INTEGER)
+	    fprintf(fp, "INTEGER %d\n", v->data.i);
+	else
+	    fprintf(fp, "STRING '%s'\n", v->data.s);
+    } else
+	fprintf(fp, "NULL\n");
 }
 #endif
 
@@ -186,228 +188,228 @@ static const char *prToken(int val)
  * @param state		expression parser state
  */
 static int rdToken(ParseState state)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, internalState @*/
 {
-  int token;
-  Value v = NULL;
-  char *p = state->p;
+    int token;
+    Value v = NULL;
+    char *p = state->p;
 
-  /* Skip whitespace before the next token. */
-  while (*p && xisspace(*p)) p++;
+    /* Skip whitespace before the next token. */
+    while (*p && xisspace(*p)) p++;
 
-  switch (*p) {
-  case '\0':
-    token = TOK_EOF;
-    p--;
-    break;
-  case '+':
-    token = TOK_ADD;
-    break;
-  case '-':
-    token = TOK_MINUS;
-    break;
-  case '*':
-    token = TOK_MULTIPLY;
-    break;
-  case '/':
-    token = TOK_DIVIDE;
-    break;
-  case '(':
-    token = TOK_OPEN_P;
-    break;
-  case ')':
-    token = TOK_CLOSE_P;
-    break;
-  case '=':
-    if (p[1] == '=') {
-      token = TOK_EQ;
-      p++;
-    } else {
-      rpmlog(RPMLOG_ERR, _("syntax error while parsing ==\n"));
-      return -1;
+    switch (*p) {
+    case '\0':
+	token = TOK_EOF;
+	p--;
+	break;
+    case '+':
+	token = TOK_ADD;
+	break;
+    case '-':
+	token = TOK_MINUS;
+	break;
+    case '*':
+	token = TOK_MULTIPLY;
+	break;
+    case '/':
+	token = TOK_DIVIDE;
+	break;
+    case '(':
+	token = TOK_OPEN_P;
+	break;
+    case ')':
+	token = TOK_CLOSE_P;
+	break;
+    case '=':
+	if (p[1] == '=') {
+	    token = TOK_EQ;
+	    p++;
+	} else {
+	    rpmlog(RPMLOG_ERR, _("syntax error while parsing ==\n"));
+	    return -1;
+	}
+	break;
+    case '!':
+	if (p[1] == '=') {
+	    token = TOK_NEQ;
+	    p++;
+	} else
+	    token = TOK_NOT;
+	break;
+    case '<':
+	if (p[1] == '=') {
+	    token = TOK_LE;
+	    p++;
+	} else
+	    token = TOK_LT;
+	break;
+    case '>':
+	if (p[1] == '=') {
+	    token = TOK_GE;
+	    p++;
+	} else
+	    token = TOK_GT;
+	break;
+    case '&':
+	if (p[1] == '&') {
+	    token = TOK_LOGICAL_AND;
+	    p++;
+	} else {
+	    rpmlog(RPMLOG_ERR, _("syntax error while parsing &&\n"));
+	    return -1;
+	}
+	break;
+    case '|':
+	if (p[1] == '|') {
+	    token = TOK_LOGICAL_OR;
+	    p++;
+	} else {
+	    rpmlog(RPMLOG_ERR, _("syntax error while parsing ||\n"));
+	    return -1;
+	}
+	break;
+
+    default:
+	if (xisdigit(*p)) {
+	    char temp[EXPRBUFSIZ], *t = temp;
+
+	    temp[0] = '\0';
+	    while (*p && xisdigit(*p))
+		*t++ = *p++;
+	    *t++ = '\0';
+	    p--;
+
+	    token = TOK_INTEGER;
+	    v = valueMakeInteger(atoi(temp));
+
+	} else if (xisalpha(*p)) {
+	    char temp[EXPRBUFSIZ], *t = temp;
+
+	    temp[0] = '\0';
+	    while (*p && (xisalnum(*p) || *p == '_'))
+		*t++ = *p++;
+	    *t++ = '\0';
+	    p--;
+
+	    token = TOK_IDENTIFIER;
+	    v = valueMakeString( xstrdup(temp) );
+
+	} else if (*p == '\"') {
+	    char temp[EXPRBUFSIZ], *t = temp;
+
+	    temp[0] = '\0';
+	    p++;
+	    while (*p && *p != '\"')
+		*t++ = *p++;
+	    *t++ = '\0';
+
+	    token = TOK_STRING;
+	    v = valueMakeString( rpmExpand(temp, NULL) );
+
+	} else {
+	    rpmlog(RPMLOG_ERR, _("parse error in expression\n"));
+	    return -1;
+	}
     }
-    break;
-  case '!':
-    if (p[1] == '=') {
-      token = TOK_NEQ;
-      p++;
-    } else
-      token = TOK_NOT;
-    break;
-  case '<':
-    if (p[1] == '=') {
-      token = TOK_LE;
-      p++;
-    } else
-      token = TOK_LT;
-    break;
-  case '>':
-    if (p[1] == '=') {
-      token = TOK_GE;
-      p++;
-    } else
-      token = TOK_GT;
-    break;
-  case '&':
-    if (p[1] == '&') {
-      token = TOK_LOGICAL_AND;
-      p++;
-    } else {
-      rpmlog(RPMLOG_ERR, _("syntax error while parsing &&\n"));
-      return -1;
-    }
-    break;
-  case '|':
-    if (p[1] == '|') {
-      token = TOK_LOGICAL_OR;
-      p++;
-    } else {
-      rpmlog(RPMLOG_ERR, _("syntax error while parsing ||\n"));
-      return -1;
-    }
-    break;
 
-  default:
-    if (xisdigit(*p)) {
-      char temp[EXPRBUFSIZ], *t = temp;
+    state->p = p + 1;
+    state->nextToken = token;
+    state->tokenValue = v;
 
-      temp[0] = '\0';
-      while (*p && xisdigit(*p))
-	*t++ = *p++;
-      *t++ = '\0';
-      p--;
+    DEBUG(printf("rdToken: \"%s\" (%d)\n", prToken(token), token));
+    DEBUG(valueDump("rdToken:", state->tokenValue, stdout));
 
-      token = TOK_INTEGER;
-      v = valueMakeInteger(atoi(temp));
-
-    } else if (xisalpha(*p)) {
-      char temp[EXPRBUFSIZ], *t = temp;
-
-      temp[0] = '\0';
-      while (*p && (xisalnum(*p) || *p == '_'))
-	*t++ = *p++;
-      *t++ = '\0';
-      p--;
-
-      token = TOK_IDENTIFIER;
-      v = valueMakeString( xstrdup(temp) );
-
-    } else if (*p == '\"') {
-      char temp[EXPRBUFSIZ], *t = temp;
-
-      temp[0] = '\0';
-      p++;
-      while (*p && *p != '\"')
-	*t++ = *p++;
-      *t++ = '\0';
-
-      token = TOK_STRING;
-      v = valueMakeString( rpmExpand(temp, NULL) );
-
-    } else {
-      rpmlog(RPMLOG_ERR, _("parse error in expression\n"));
-      return -1;
-    }
-  }
-
-  state->p = p + 1;
-  state->nextToken = token;
-  state->tokenValue = v;
-
-  DEBUG(printf("rdToken: \"%s\" (%d)\n", prToken(token), token));
-  DEBUG(valueDump("rdToken:", state->tokenValue, stdout));
-
-  return 0;
+    return 0;
 }
 
 /*@null@*/
 static Value doLogical(ParseState state)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
-		rpmGlobalMacroContext @*/;
+		rpmGlobalMacroContext, internalState @*/;
 
 /**
  * @param state		expression parser state
  */
 /*@null@*/
 static Value doPrimary(ParseState state)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, internalState @*/
 {
-  Value v;
+    Value v;
 
-  DEBUG(printf("doPrimary()\n"));
+    DEBUG(printf("doPrimary()\n"));
 
-  switch (state->nextToken) {
-  case TOK_OPEN_P:
-    if (rdToken(state))
-      return NULL;
-    v = doLogical(state);
-    if (state->nextToken != TOK_CLOSE_P) {
-      rpmlog(RPMLOG_ERR, _("unmatched (\n"));
-      return NULL;
-    }
-    if (rdToken(state))
-      return NULL;
-    break;
+    switch (state->nextToken) {
+    case TOK_OPEN_P:
+	if (rdToken(state))
+	    return NULL;
+	v = doLogical(state);
+	if (state->nextToken != TOK_CLOSE_P) {
+	    rpmlog(RPMLOG_ERR, _("unmatched (\n"));
+	    return NULL;
+	}
+	if (rdToken(state))
+	    return NULL;
+	break;
 
-  case TOK_INTEGER:
-  case TOK_STRING:
-    v = state->tokenValue;
-    if (rdToken(state))
-      return NULL;
-    break;
+    case TOK_INTEGER:
+    case TOK_STRING:
+	v = state->tokenValue;
+	if (rdToken(state))
+	    return NULL;
+	break;
 
-  case TOK_IDENTIFIER: {
-    const char *name = state->tokenValue->data.s;
+    case TOK_IDENTIFIER: {
+	const char *name = state->tokenValue->data.s;
 
-    v = valueMakeString( rpmExpand(name, NULL) );
-    if (rdToken(state))
-      return NULL;
-    break;
-  }
-
-  case TOK_MINUS:
-    if (rdToken(state))
-      return NULL;
-
-    v = doPrimary(state);
-    if (v == NULL)
-      return NULL;
-
-    if (! valueIsInteger(v)) {
-      rpmlog(RPMLOG_ERR, _("- only on numbers\n"));
-      return NULL;
+	v = valueMakeString( rpmExpand(name, NULL) );
+	if (rdToken(state))
+	    return NULL;
+	break;
     }
 
-    v = valueMakeInteger(- v->data.i);
-    break;
+    case TOK_MINUS:
+	if (rdToken(state))
+	    return NULL;
 
-  case TOK_NOT:
-    if (rdToken(state))
-      return NULL;
+	v = doPrimary(state);
+	if (v == NULL)
+	    return NULL;
 
-    v = doPrimary(state);
-    if (v == NULL)
-      return NULL;
+	if (! valueIsInteger(v)) {
+	    rpmlog(RPMLOG_ERR, _("- only on numbers\n"));
+	    return NULL;
+	}
 
-    if (! valueIsInteger(v)) {
-      rpmlog(RPMLOG_ERR, _("! only on numbers\n"));
-      return NULL;
+	v = valueMakeInteger(- v->data.i);
+	break;
+
+    case TOK_NOT:
+	if (rdToken(state))
+	    return NULL;
+
+	v = doPrimary(state);
+	if (v == NULL)
+	    return NULL;
+
+	if (! valueIsInteger(v)) {
+	    rpmlog(RPMLOG_ERR, _("! only on numbers\n"));
+	    return NULL;
+	}
+
+	v = valueMakeInteger(! v->data.i);
+	break;
+    default:
+	return NULL;
+	/*@notreached@*/ break;
     }
 
-    v = valueMakeInteger(! v->data.i);
-    break;
-  default:
-    return NULL;
-    /*@notreached@*/ break;
-  }
-
-  DEBUG(valueDump("doPrimary:", v, stdout));
-  return v;
+    DEBUG(valueDump("doPrimary:", v, stdout));
+    return v;
 }
 
 /**
@@ -415,52 +417,53 @@ static Value doPrimary(ParseState state)
  */
 /*@null@*/
 static Value doMultiplyDivide(ParseState state)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, internalState @*/
 {
-  Value v1, v2 = NULL;
+    Value v1, v2 = NULL;
 
-  DEBUG(printf("doMultiplyDivide()\n"));
+    DEBUG(printf("doMultiplyDivide()\n"));
 
-  v1 = doPrimary(state);
-  if (v1 == NULL)
-    return NULL;
+    v1 = doPrimary(state);
+    if (v1 == NULL)
+	return NULL;
 
-  while (state->nextToken == TOK_MULTIPLY
-	 || state->nextToken == TOK_DIVIDE) {
-    int op = state->nextToken;
+    while (state->nextToken == TOK_MULTIPLY
+	 || state->nextToken == TOK_DIVIDE)
+    {
+	int op = state->nextToken;
 
-    if (rdToken(state))
-      return NULL;
+	if (rdToken(state))
+	    return NULL;
+
+	if (v2) valueFree(v2);
+
+	v2 = doPrimary(state);
+	if (v2 == NULL)
+	    return NULL;
+
+	if (! valueSameType(v1, v2)) {
+	    rpmlog(RPMLOG_ERR, _("types must match\n"));
+	    return NULL;
+	}
+
+	if (valueIsInteger(v1)) {
+	    int i1 = v1->data.i, i2 = v2->data.i;
+
+	    valueFree(v1);
+	    if (op == TOK_MULTIPLY)
+		v1 = valueMakeInteger(i1 * i2);
+	    else
+		v1 = valueMakeInteger(i1 / i2);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("* / not suported for strings\n"));
+	    return NULL;
+	}
+    }
 
     if (v2) valueFree(v2);
-
-    v2 = doPrimary(state);
-    if (v2 == NULL)
-      return NULL;
-
-    if (! valueSameType(v1, v2)) {
-      rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
-    }
-
-    if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i;
-
-      valueFree(v1);
-      if (op == TOK_MULTIPLY)
-	v1 = valueMakeInteger(i1 * i2);
-      else
-	v1 = valueMakeInteger(i1 / i2);
-    } else {
-      rpmlog(RPMLOG_ERR, _("* / not suported for strings\n"));
-      return NULL;
-    }
-  }
-
-  if (v2) valueFree(v2);
-  return v1;
+    return v1;
 }
 
 /**
@@ -468,61 +471,61 @@ static Value doMultiplyDivide(ParseState state)
  */
 /*@null@*/
 static Value doAddSubtract(ParseState state)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, internalState @*/
 {
-  Value v1, v2 = NULL;
+    Value v1, v2 = NULL;
 
-  DEBUG(printf("doAddSubtract()\n"));
+    DEBUG(printf("doAddSubtract()\n"));
 
-  v1 = doMultiplyDivide(state);
-  if (v1 == NULL)
-    return NULL;
+    v1 = doMultiplyDivide(state);
+    if (v1 == NULL)
+	return NULL;
 
-  while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
-    int op = state->nextToken;
+    while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
+	int op = state->nextToken;
 
-    if (rdToken(state))
-      return NULL;
+	if (rdToken(state))
+	    return NULL;
+
+	if (v2) valueFree(v2);
+
+	v2 = doMultiplyDivide(state);
+	if (v2 == NULL)
+	    return NULL;
+
+	if (! valueSameType(v1, v2)) {
+	    rpmlog(RPMLOG_ERR, _("types must match\n"));
+	    return NULL;
+	}
+
+	if (valueIsInteger(v1)) {
+	    int i1 = v1->data.i, i2 = v2->data.i;
+
+	    valueFree(v1);
+	    if (op == TOK_ADD)
+		v1 = valueMakeInteger(i1 + i2);
+	    else
+		v1 = valueMakeInteger(i1 - i2);
+	} else {
+	    char *copy;
+
+	    if (op == TOK_MINUS) {
+		rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
+		return NULL;
+	    }
+
+	    copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
+	    (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
+
+	    valueFree(v1);
+	    v1 = valueMakeString(copy);
+	}
+    }
 
     if (v2) valueFree(v2);
-
-    v2 = doMultiplyDivide(state);
-    if (v2 == NULL)
-      return NULL;
-
-    if (! valueSameType(v1, v2)) {
-      rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
-    }
-
-    if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i;
-
-      valueFree(v1);
-      if (op == TOK_ADD)
-	v1 = valueMakeInteger(i1 + i2);
-      else
-	v1 = valueMakeInteger(i1 - i2);
-    } else {
-      char *copy;
-
-      if (op == TOK_MINUS) {
-	rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
-	return NULL;
-      }
-
-      copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
-      (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
-
-      valueFree(v1);
-      v1 = valueMakeString(copy);
-    }
-  }
-
-  if (v2) valueFree(v2);
-  return v1;
+    return v1;
 }
 
 /**
@@ -530,94 +533,94 @@ static Value doAddSubtract(ParseState state)
  */
 /*@null@*/
 static Value doRelational(ParseState state)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, internalState @*/
 {
-  Value v1, v2 = NULL;
+    Value v1, v2 = NULL;
 
-  DEBUG(printf("doRelational()\n"));
+    DEBUG(printf("doRelational()\n"));
 
-  v1 = doAddSubtract(state);
-  if (v1 == NULL)
-    return NULL;
+    v1 = doAddSubtract(state);
+    if (v1 == NULL)
+	return NULL;
 
-  while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
-    int op = state->nextToken;
+    while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
+	int op = state->nextToken;
 
-    if (rdToken(state))
-      return NULL;
+	if (rdToken(state))
+	    return NULL;
+
+	if (v2) valueFree(v2);
+
+	v2 = doAddSubtract(state);
+	if (v2 == NULL)
+	    return NULL;
+
+	if (! valueSameType(v1, v2)) {
+	    rpmlog(RPMLOG_ERR, _("types must match\n"));
+	    return NULL;
+	}
+
+	if (valueIsInteger(v1)) {
+	    int i1 = v1->data.i, i2 = v2->data.i, r = 0;
+	    switch (op) {
+	    case TOK_EQ:
+		r = (i1 == i2);
+		/*@switchbreak@*/ break;
+	    case TOK_NEQ:
+		r = (i1 != i2);
+		/*@switchbreak@*/ break;
+	    case TOK_LT:
+		r = (i1 < i2);
+		/*@switchbreak@*/ break;
+	    case TOK_LE:
+		r = (i1 <= i2);
+		/*@switchbreak@*/ break;
+	    case TOK_GT:
+		r = (i1 > i2);
+		/*@switchbreak@*/ break;
+	    case TOK_GE:
+		r = (i1 >= i2);
+		/*@switchbreak@*/ break;
+	    default:
+		/*@switchbreak@*/ break;
+	    }
+	    valueFree(v1);
+	    v1 = valueMakeInteger(r);
+	} else {
+	    const char * s1 = v1->data.s;
+	    const char * s2 = v2->data.s;
+	    int r = 0;
+	    switch (op) {
+	    case TOK_EQ:
+		r = (strcmp(s1,s2) == 0);
+		/*@switchbreak@*/ break;
+	    case TOK_NEQ:
+		r = (strcmp(s1,s2) != 0);
+		/*@switchbreak@*/ break;
+	    case TOK_LT:
+		r = (strcmp(s1,s2) < 0);
+		/*@switchbreak@*/ break;
+	    case TOK_LE:
+		r = (strcmp(s1,s2) <= 0);
+		/*@switchbreak@*/ break;
+	    case TOK_GT:
+		r = (strcmp(s1,s2) > 0);
+		/*@switchbreak@*/ break;
+	    case TOK_GE:
+		r = (strcmp(s1,s2) >= 0);
+		/*@switchbreak@*/ break;
+	    default:
+		/*@switchbreak@*/ break;
+	    }
+	    valueFree(v1);
+	    v1 = valueMakeInteger(r);
+	}
+    }
 
     if (v2) valueFree(v2);
-
-    v2 = doAddSubtract(state);
-    if (v2 == NULL)
-      return NULL;
-
-    if (! valueSameType(v1, v2)) {
-      rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
-    }
-
-    if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i, r = 0;
-      switch (op) {
-      case TOK_EQ:
-	r = (i1 == i2);
-	/*@switchbreak@*/ break;
-      case TOK_NEQ:
-	r = (i1 != i2);
-	/*@switchbreak@*/ break;
-      case TOK_LT:
-	r = (i1 < i2);
-	/*@switchbreak@*/ break;
-      case TOK_LE:
-	r = (i1 <= i2);
-	/*@switchbreak@*/ break;
-      case TOK_GT:
-	r = (i1 > i2);
-	/*@switchbreak@*/ break;
-      case TOK_GE:
-	r = (i1 >= i2);
-	/*@switchbreak@*/ break;
-      default:
-	/*@switchbreak@*/ break;
-      }
-      valueFree(v1);
-      v1 = valueMakeInteger(r);
-    } else {
-      const char * s1 = v1->data.s;
-      const char * s2 = v2->data.s;
-      int r = 0;
-      switch (op) {
-      case TOK_EQ:
-	r = (strcmp(s1,s2) == 0);
-	/*@switchbreak@*/ break;
-      case TOK_NEQ:
-	r = (strcmp(s1,s2) != 0);
-	/*@switchbreak@*/ break;
-      case TOK_LT:
-	r = (strcmp(s1,s2) < 0);
-	/*@switchbreak@*/ break;
-      case TOK_LE:
-	r = (strcmp(s1,s2) <= 0);
-	/*@switchbreak@*/ break;
-      case TOK_GT:
-	r = (strcmp(s1,s2) > 0);
-	/*@switchbreak@*/ break;
-      case TOK_GE:
-	r = (strcmp(s1,s2) >= 0);
-	/*@switchbreak@*/ break;
-      default:
-	/*@switchbreak@*/ break;
-      }
-      valueFree(v1);
-      v1 = valueMakeInteger(r);
-    }
-  }
-
-  if (v2) valueFree(v2);
-  return v1;
+    return v1;
 }
 
 /**
@@ -628,142 +631,143 @@ static Value doLogical(ParseState state)
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
-  Value v1, v2 = NULL;
+    Value v1, v2 = NULL;
 
-  DEBUG(printf("doLogical()\n"));
+    DEBUG(printf("doLogical()\n"));
 
-  v1 = doRelational(state);
-  if (v1 == NULL)
-    return NULL;
+    v1 = doRelational(state);
+    if (v1 == NULL)
+	return NULL;
 
-  while (state->nextToken == TOK_LOGICAL_AND
-	 || state->nextToken == TOK_LOGICAL_OR) {
-    int op = state->nextToken;
+    while (state->nextToken == TOK_LOGICAL_AND
+	|| state->nextToken == TOK_LOGICAL_OR)
+    {
+	int op = state->nextToken;
 
-    if (rdToken(state))
-      return NULL;
+	if (rdToken(state))
+	    return NULL;
+
+	if (v2) valueFree(v2);
+
+	v2 = doRelational(state);
+	if (v2 == NULL)
+	    return NULL;
+
+	if (! valueSameType(v1, v2)) {
+	    rpmlog(RPMLOG_ERR, _("types must match\n"));
+	    return NULL;
+	}
+
+	if (valueIsInteger(v1)) {
+	    int i1 = v1->data.i, i2 = v2->data.i;
+
+	    valueFree(v1);
+	    if (op == TOK_LOGICAL_AND)
+		v1 = valueMakeInteger(i1 && i2);
+	    else
+		v1 = valueMakeInteger(i1 || i2);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("&& and || not suported for strings\n"));
+	    return NULL;
+	}
+    }
 
     if (v2) valueFree(v2);
-
-    v2 = doRelational(state);
-    if (v2 == NULL)
-      return NULL;
-
-    if (! valueSameType(v1, v2)) {
-      rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
-    }
-
-    if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i;
-
-      valueFree(v1);
-      if (op == TOK_LOGICAL_AND)
-	v1 = valueMakeInteger(i1 && i2);
-      else
-	v1 = valueMakeInteger(i1 || i2);
-    } else {
-      rpmlog(RPMLOG_ERR, _("&& and || not suported for strings\n"));
-      return NULL;
-    }
-  }
-
-  if (v2) valueFree(v2);
-  return v1;
+    return v1;
 }
 
 int parseExpressionBoolean(Spec spec, const char *expr)
 {
-  struct _parseState state;
-  int result = -1;
-  Value v;
+    struct _parseState state;
+    int result = -1;
+    Value v;
 
-  DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
+    DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
 
-  /* Initialize the expression parser state. */
-  state.p = state.str = xstrdup(expr);
-  state.spec = spec;
-  state.nextToken = 0;
-  state.tokenValue = NULL;
-  (void) rdToken(&state);
+    /* Initialize the expression parser state. */
+    state.p = state.str = xstrdup(expr);
+    state.spec = spec;
+    state.nextToken = 0;
+    state.tokenValue = NULL;
+    (void) rdToken(&state);
 
-  /* Parse the expression. */
-  v = doLogical(&state);
-  if (!v) {
+    /* Parse the expression. */
+    v = doLogical(&state);
+    if (!v) {
+	state.str = _free(state.str);
+	return -1;
+    }
+
+    /* If the next token is not TOK_EOF, we have a syntax error. */
+    if (state.nextToken != TOK_EOF) {
+	rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
+	state.str = _free(state.str);
+	return -1;
+    }
+
+    DEBUG(valueDump("parseExprBoolean:", v, stdout));
+
+    switch (v->type) {
+    case VALUE_TYPE_INTEGER:
+	result = v->data.i != 0;
+	break;
+    case VALUE_TYPE_STRING:
+	result = v->data.s[0] != '\0';
+	break;
+    default:
+	break;
+    }
+
     state.str = _free(state.str);
-    return -1;
-  }
-
-  /* If the next token is not TOK_EOF, we have a syntax error. */
-  if (state.nextToken != TOK_EOF) {
-    rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
-    state.str = _free(state.str);
-    return -1;
-  }
-
-  DEBUG(valueDump("parseExprBoolean:", v, stdout));
-
-  switch (v->type) {
-  case VALUE_TYPE_INTEGER:
-    result = v->data.i != 0;
-    break;
-  case VALUE_TYPE_STRING:
-    result = v->data.s[0] != '\0';
-    break;
-  default:
-    break;
-  }
-
-  state.str = _free(state.str);
-  valueFree(v);
-  return result;
+    valueFree(v);
+    return result;
 }
 
 char * parseExpressionString(Spec spec, const char *expr)
 {
-  struct _parseState state;
-  char *result = NULL;
-  Value v;
+    struct _parseState state;
+    char *result = NULL;
+    Value v;
 
-  DEBUG(printf("parseExprString(?, '%s')\n", expr));
+    DEBUG(printf("parseExprString(?, '%s')\n", expr));
 
-  /* Initialize the expression parser state. */
-  state.p = state.str = xstrdup(expr);
-  state.spec = spec;
-  state.nextToken = 0;
-  state.tokenValue = NULL;
-  (void) rdToken(&state);
+    /* Initialize the expression parser state. */
+    state.p = state.str = xstrdup(expr);
+    state.spec = spec;
+    state.nextToken = 0;
+    state.tokenValue = NULL;
+    (void) rdToken(&state);
 
-  /* Parse the expression. */
-  v = doLogical(&state);
-  if (!v) {
+    /* Parse the expression. */
+    v = doLogical(&state);
+    if (!v) {
+	state.str = _free(state.str);
+	return NULL;
+    }
+
+    /* If the next token is not TOK_EOF, we have a syntax error. */
+    if (state.nextToken != TOK_EOF) {
+	rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
+	state.str = _free(state.str);
+	return NULL;
+    }
+
+    DEBUG(valueDump("parseExprString:", v, stdout));
+
+    switch (v->type) {
+    case VALUE_TYPE_INTEGER: {
+	char buf[128];
+	sprintf(buf, "%d", v->data.i);
+	result = xstrdup(buf);
+    } break;
+    case VALUE_TYPE_STRING:
+	result = xstrdup(v->data.s);
+	break;
+    default:
+	break;
+    }
+
     state.str = _free(state.str);
-    return NULL;
-  }
-
-  /* If the next token is not TOK_EOF, we have a syntax error. */
-  if (state.nextToken != TOK_EOF) {
-    rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
-    state.str = _free(state.str);
-    return NULL;
-  }
-
-  DEBUG(valueDump("parseExprString:", v, stdout));
-
-  switch (v->type) {
-  case VALUE_TYPE_INTEGER: {
-    char buf[128];
-    sprintf(buf, "%d", v->data.i);
-    result = xstrdup(buf);
-  } break;
-  case VALUE_TYPE_STRING:
-    result = xstrdup(v->data.s);
-    break;
-  default:
-    break;
-  }
-
-  state.str = _free(state.str);
-  valueFree(v);
-  return result;
+    valueFree(v);
+    return result;
 }
