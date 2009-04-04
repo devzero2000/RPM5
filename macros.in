@@ -310,7 +310,9 @@ package or when debugging this package.\
 
 #	The PATH put into the environment before running %pre/%post et al.
 #
-%_install_script_path	/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
+%_install_helpers %{rpmhome}/helpers
+%_helperpath   %{?_install_helpers:%{_install_helpers}:}
+%_install_script_path  %{_helperpath}/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
 
 #	A colon separated list of desired locales to be installed;
 #	"all" means install all locale specific files.
@@ -525,6 +527,8 @@ print (t)\
 #	107	ADLER-32
 #	108	CRC-64 (ECMA-182 polynomial, untested uint64_t problems)
 #	109	Jenkins lookup3.c hashlittle()
+#	111	RIPEMD-256
+#	112	RIPEMD-320
 #
 # Note: choosing anything but MD5 introduces instant legacy incompatibility.
 %_build_file_digest_algo	1
@@ -537,6 +541,7 @@ print (t)\
 
 #
 # Colon separated list of permitted arbitrary tag names
+%_arbitrary_tags_debian        Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
 %_arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
 
 #
