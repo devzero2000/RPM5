@@ -61,7 +61,7 @@ int parseDescription(Spec spec)
     lang = RPMBUILD_DEFAULT_LANG;
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0)
-	{};
+	{;}
     if (name != NULL)
 	flag = PART_NAME;
 
