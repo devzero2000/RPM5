@@ -1341,6 +1341,7 @@ rpmfi rpmfiNew(const void * _ts, Header h, rpmTag tagN, int flags)
     rpmfi fi = NULL;
     const char * Type;
     unsigned char * t;
+    pgpHashAlgo dalgo;
     int xx;
     int i;
 
@@ -1448,37 +1449,47 @@ if (fi->actions == NULL)
     _fdupedata(h, RPMTAG_FILELINKTOS, fi->flinks);
     _fdupedata(h, RPMTAG_FILELANGS, fi->flangs);
 
-    fi->digestalgo = PGPHASHALGO_MD5;
-    fi->digestlen = 16;
+    dalgo = PGPHASHALGO_ERROR;
     fi->fdigestalgos = NULL;
     _fdupedata(h, RPMTAG_FILEDIGESTALGOS, fi->fdigestalgos);
     if (fi->fdigestalgos) {
-	rpmuint32_t dalgo = 0;
 	/* XXX Insure that all algorithms are either 0 or constant. */
 	for (i = 0; i < (int)fi->fc; i++) {
 	    if (fi->fdigestalgos[i] == 0)
 		continue;
-	    if (dalgo == 0)
-		dalgo = fi->fdigestalgos[i];
+	    if (dalgo == PGPHASHALGO_ERROR)
+		dalgo = (fi->fdigestalgos[i] & 0xff);
 	    else
 assert(dalgo == fi->fdigestalgos[i]);
 	}
-	fi->digestalgo = dalgo;
-	switch (dalgo) {
-	case PGPHASHALGO_MD5:		fi->digestlen = 128/8;	break;
-	case PGPHASHALGO_SHA1:		fi->digestlen = 160/8;	break;
-	case PGPHASHALGO_RIPEMD128:	fi->digestlen = 128/8;	break;
-	case PGPHASHALGO_RIPEMD160:	fi->digestlen = 160/8;	break;
-	case PGPHASHALGO_SHA256:	fi->digestlen = 256/8;	break;
-	case PGPHASHALGO_SHA384:	fi->digestlen = 384/8;	break;
-	case PGPHASHALGO_SHA512:	fi->digestlen = 512/8;	break;
-	case PGPHASHALGO_CRC32:		fi->digestlen = 32/8;	break;
-	}
 	fi->fdigestalgos = _free(fi->fdigestalgos);
+    } else {
+	he->tag = RPMTAG_FILEDIGESTALGO;
+	xx = headerGet(h, he, 0);
+	if (xx)
+	    dalgo = he->p.ui32p[0];
+	he->p.ptr = _free(he->p.ptr);
     }
 
-    _fdupedata(h, RPMTAG_FILEDIGESTS, fi->fdigests);
+    switch (dalgo) {
+    default: dalgo = PGPHASHALGO_MD5;	fi->digestlen = 128/8; break;
+    case PGPHASHALGO_MD2:	fi->digestlen = 128/8;	break;
+    case PGPHASHALGO_MD5:	fi->digestlen = 128/8;	break;
+    case PGPHASHALGO_SHA1:	fi->digestlen = 160/8;	break;
+    case PGPHASHALGO_RIPEMD128:	fi->digestlen = 128/8;	break;
+    case PGPHASHALGO_RIPEMD160:	fi->digestlen = 160/8;	break;
+    case PGPHASHALGO_RIPEMD256:	fi->digestlen = 256/8;	break;
+    case PGPHASHALGO_RIPEMD320:	fi->digestlen = 320/8;	break;
+    case PGPHASHALGO_SHA224:	fi->digestlen = 224/8;	break;
+    case PGPHASHALGO_SHA256:	fi->digestlen = 256/8;	break;
+    case PGPHASHALGO_SHA384:	fi->digestlen = 384/8;	break;
+    case PGPHASHALGO_SHA512:	fi->digestlen = 512/8;	break;
+    case PGPHASHALGO_CRC32:	fi->digestlen = 32/8;	break;
+    }
+    fi->digestalgo = dalgo;
+
     fi->digests = NULL;
+    _fdupedata(h, RPMTAG_FILEDIGESTS, fi->fdigests);
     if (fi->fdigests) {
 	t = xmalloc(fi->fc * fi->digestlen);
 	fi->digests = t;
@@ -1498,7 +1509,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 	fi->fdigests = _free(fi->fdigests);
     }
 
-    /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
+    /* XXX TR_REMOVED doesn't need fmtimes, frdevs, finodes, or fcontexts */
     _fdupedata(h, RPMTAG_FILEMTIMES, fi->fmtimes);
     _fdupedata(h, RPMTAG_FILERDEVS, fi->frdevs);
     _fdupedata(h, RPMTAG_FILEINODES, fi->finodes);

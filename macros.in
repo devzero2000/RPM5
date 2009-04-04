@@ -536,6 +536,8 @@ print (t)\
 #	107	ADLER-32
 #	108	CRC-64 (ECMA-182 polynomial, untested uint64_t problems)
 #	109	Jenkins lookup3.c hashlittle()
+#	111	RIPEMD-256
+#	112	RIPEMD-320
 #
 # Note: choosing anything but MD5 introduces instant legacy incompatibility.
 %_build_file_digest_algo	1

@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: wire-up RPMTAG_FILEDIGESTALGO. wotta waste to pretend "compatible" ...
     - jbj: yaml: add build scriptlet tags for --yaml/--xml display.
     - jbj: yaml: permit --without-syck, add some mac os x AutoFu/gcc fiddle-ups.
     - jbj: yaml: add lsyck lua module to parse YAML.

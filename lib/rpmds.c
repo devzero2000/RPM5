@@ -1488,6 +1488,9 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(FileDigestParameterized)",    "4.4.6-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("file digests can be other than MD5.") },
+    { "rpmlib(FileDigests)",    "4.6.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("file digests can be other than MD5.") },
 #if defined(SUPPORT_AR_PAYLOADS)
     { "rpmlib(PayloadIsAr)",		"5.1-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
