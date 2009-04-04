@@ -1,4 +1,7 @@
 5.1.7 -> 5.1.8:
+    - jbj: enable the PLD dependency filtering.
+    - jbj: PLD: rpm-pld-autodep: add run-time disablers, attempt miRE's instead.
+    - jbj: PLD: rpm-pld-autodep: merge and simplify. entirely dysfunctional ...
     - jbj: lib: start reducing random line noise, diff'ing against HEAD.
     - jbj: add prototypes to remove compiler warnings.
     - jbj: bury file actions into iosm, replace XFA_SKIPPING with a

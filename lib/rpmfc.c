@@ -4,17 +4,20 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmmg.h>
+#include <argv.h>
+#define	_MIRE_INTERNAL
+#include <mire.h>
+
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
-#include <argv.h>
-#include <rpmmg.h>
-
-#define	_RPMFC_INTERNAL
-#include <rpmfc.h>
 
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
+
+#define	_RPMFC_INTERNAL
+#include <rpmfc.h>
 
 #define	_RPMDS_INTERNAL
 #include <rpmds.h>
@@ -23,6 +26,12 @@
 #include "debug.h"
 
 /*@access rpmds @*/
+/*@access miRE @*/
+
+/*@unchecked@*/
+static int _filter_values = 1;
+/*@unchecked@*/
+static int _filter_execs = 1;
 
 /**
  */
@@ -56,8 +65,8 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  */     
 /*@null@*/
 static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
-                        const char * writePtr, int writeBytesLeft,
-                        int failNonZero)
+			const char * writePtr, size_t writeBytesLeft,
+			int failNonZero)
 	/*@globals h_errno, fileSystem, internalState@*/
 	/*@modifies fileSystem, internalState@*/
 {
@@ -95,7 +104,7 @@ static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 	}
 	
 	rpmlog(RPMLOG_DEBUG, D_("\texecv(%s) pid %d\n"),
-                        argv[0], (unsigned)getpid());
+			argv[0], (unsigned)getpid());
 
 	unsetenv("MALLOC_CHECK_");
 	(void) execvp(argv[0], (char *const *)argv);
@@ -122,7 +131,9 @@ static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     do {
 	fd_set ibits, obits;
 	struct timeval tv;
-	int nfd, nbw, nbr;
+	int nfd;
+	ssize_t nbr;
+	ssize_t nbw;
 	int rc;
 
 	done = 0;
@@ -147,9 +158,10 @@ top:
 
 	/* Write any data to program */
 	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
-          if (writePtr && writeBytesLeft > 0) {
+	  if (writePtr && writeBytesLeft > 0) {
 	    if ((nbw = write(toProg[1], writePtr,
-		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
+		    ((size_t)1024<writeBytesLeft) ? (size_t)1024 : writeBytesLeft)) < 0)
+	    {
 	        if (errno != EAGAIN) {
 		    perror("getOutputFrom()");
 	            exit(EXIT_FAILURE);
@@ -285,8 +297,8 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
  */
 static char * rpmfcFileDep(/*@returned@*/ char * buf, size_t ix,
 		/*@null@*/ rpmds ds)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies buf, fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies buf, internalState @*/
 	/*@requires maxSet(buf) >= 0 @*/
 {
     rpmTag tagN = rpmdsTagN(ds);
@@ -306,11 +318,81 @@ assert(0);
     }
 /*@-nullpass@*/
     if (ds != NULL)
-	sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
+	sprintf(buf, "%08u%c %s %s 0x%08x", (unsigned)ix, deptype,
 		rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
 /*@=nullpass@*/
     return buf;
 };
+
+/*@null@*/
+static void * rpmfcExpandRegexps(const char * str, int * nmirep)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies *nmirep, rpmGlobalMacroContext, internalState @*/
+{
+    ARGV_t av = NULL;
+    int ac = 0;
+    miRE mire = NULL;
+    int nmire = 0;
+    const char * s;
+    int xx;
+    int i;
+
+    s = rpmExpand(str, NULL);
+    if (s) {
+    	xx = poptParseArgvString(s, &ac, (const char ***)&av);
+	s = _free(s);
+    }
+    if (ac == 0 || av == NULL || *av == NULL)
+	goto exit;
+
+    for (i = 0; i < ac; i++) {
+	xx = mireAppend(RPMMIRE_REGEX, 0, av[i], NULL, &mire, &nmire);
+	/* XXX add REG_NOSUB? better error msg?  */
+	if (xx) {
+	    rpmlog(RPMLOG_NOTICE, 
+			_("Compilation of pattern '%s'"
+		        " (expanded from '%s') failed. Skipping ...\n"),
+			av[i], str);
+	    nmire--;	/* XXX does this actually skip?!? */
+	}
+    }
+    if (nmire == 0)
+	mire = mireFree(mire);
+
+exit:
+    av = _free(av);
+    if (nmirep)
+	*nmirep = nmire;
+    return mire;
+}
+
+static int rpmfcMatchRegexps(void * mires, int nmire,
+		const char * str, char deptype)
+	/*@modifies mires @*/
+{
+    miRE mire = mires;
+    int xx;
+    int i;
+
+    for (i = 0; i < nmire; i++) {
+	rpmlog(RPMLOG_DEBUG, D_("Checking %c: '%s'\n"), deptype, str);
+	if ((xx = mireRegexec(mire + i, str, 0)) < 0)
+	    continue;
+	rpmlog(RPMLOG_NOTICE, _("Skipping %c: '%s'\n"), deptype, str);
+	return 1;
+    }
+    return 0;
+}
+
+/*@null@*/
+static void * rpmfcFreeRegexps(/*@only@*/ void * mires, int nmire)
+	/*@modifies mires @*/
+{
+    miRE mire = mires;
+/*@-refcounttrans@*/
+    return mireFreeAll(mire, nmire);
+/*@=refcounttrans@*/
+}
 
 /**
  * Run per-interpreter dependency helper.
@@ -323,6 +405,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    miRE mire = NULL;
+    int nmire = 0;
     const char * fn = fc->fn[fc->ix];
     char buf[BUFSIZ];
     rpmiob iob_stdout = NULL;
@@ -351,6 +435,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
+	mire = fc->Pmires;
+	nmire = fc->Pnmire;
 	break;
     case 'R':
 	if (fc->skipReq)
@@ -359,6 +445,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
 	tagN = RPMTAG_REQUIRENAME;
+	mire = fc->Rmires;
+	nmire = fc->Rnmire;
 	break;
     }
     buf[sizeof(buf)-1] = '\0';
@@ -403,6 +491,8 @@ assert(*s != '\0');
 assert(EVR != NULL);
 	    }
 
+	    if (_filter_values && rpmfcMatchRegexps(mire, nmire, N, deptype))
+		continue;
 
 	    /* Add tracking dependency for versioned Provides: */
 	    if (!fc->tracked && deptype == 'P' && *EVR != '\0') {
@@ -436,6 +526,7 @@ assert(EVR != NULL);
 
 /**
  */
+/*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
@@ -535,6 +626,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { NULL,			RPMFC_BLACK }
 };
+/*@=nullassign@*/
 
 int rpmfcColoring(const char * fmstr)
 {
@@ -651,7 +743,7 @@ static int rpmfcSCRIPT(rpmfc fc)
     {	struct stat sb, * st = &sb;
 	if (stat(fn, st) != 0)
 	    return -1;
-	is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+	is_executable = (int)(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
     }
 
     fp = fopen(fn, "r");
@@ -685,6 +777,9 @@ static int rpmfcSCRIPT(rpmfc fc)
 	*se = '\0';
 	se++;
 
+	if (!_filter_values
+	 || (!fc->skipReq
+	  && !rpmfcMatchRegexps(fc->Rmires, fc->Rnmire, s, 'R')))
 	if (is_executable) {
 	    /* Add to package requires. */
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
@@ -763,7 +858,6 @@ static int rpmfcSCRIPT(rpmfc fc)
     return 0;
 }
 
-
 /**
  * Merge provides/requires dependencies into a rpmfc container.
  * @param context	merge dependency set(s) container
@@ -776,28 +870,39 @@ static int rpmfcMergePR(void * context, rpmds ds)
 {
     rpmfc fc = context;
     char buf[BUFSIZ];
-    int rc = -1;
+    int rc = 0;
 
 if (_rpmfc_debug < 0)
 fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(ds)));
     switch(rpmdsTagN(ds)) {
     default:
+	rc = -1;
 	break;
     case RPMTAG_PROVIDENAME:
-	/* Add to package provides. */
-	rc = rpmdsMerge(&fc->provides, ds);
+	if (!_filter_values
+	 || (!fc->skipProv
+	  && !rpmfcMatchRegexps(fc->Pmires, fc->Pnmire, ds->N[0], 'P')))
+	{
+	    /* Add to package provides. */
+	    rc = rpmdsMerge(&fc->provides, ds);
 
-	/* Add to file dependencies. */
-	buf[0] = '\0';
-	rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	    /* Add to file dependencies. */
+	    buf[0] = '\0';
+	    rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	}
 	break;
     case RPMTAG_REQUIRENAME:
-	/* Add to package requires. */
-	rc = rpmdsMerge(&fc->requires, ds);
+	if (!_filter_values
+	 || (!fc->skipReq
+	  && !rpmfcMatchRegexps(fc->Rmires, fc->Rnmire, ds->N[0], 'R')))
+	{
+	    /* Add to package requires. */
+	    rc = rpmdsMerge(&fc->requires, ds);
 
-	/* Add to file dependencies. */
-	buf[0] = '\0';
-	rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	    /* Add to file dependencies. */
+	    buf[0] = '\0';
+	    rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	}
 	break;
     }
     return rc;
@@ -831,12 +936,14 @@ typedef struct rpmfcApplyTbl_s {
 /**
  * XXX Having two entries for rpmfcSCRIPT may be unnecessary duplication.
  */
+/*@-nullassign@*/
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO) },
     { NULL, 0 }
 };
+/*@=nullassign@*/
 
 rpmRC rpmfcApply(rpmfc fc)
 {
@@ -844,6 +951,7 @@ rpmRC rpmfcApply(rpmfc fc)
     const char * s;
     char * se;
     rpmds ds;
+    const char * fn;
     const char * N;
     const char * EVR;
     evrFlags Flags;
@@ -857,6 +965,25 @@ rpmRC rpmfcApply(rpmfc fc)
     int xx;
     int skipping;
 
+    miRE mire;
+    int skipProv = fc->skipProv;
+    int skipReq = fc->skipReq;
+    int j;
+
+    if (_filter_execs) {
+	fc->Pnmire = 0;
+	fc->PFnmire = 0;
+	fc->Rnmire = 0;
+	fc->RFnmire = 0;
+    
+	fc->PFmires = rpmfcExpandRegexps("%{__noautoprovfiles}", &fc->PFnmire);
+	fc->RFmires = rpmfcExpandRegexps("%{__noautoreqfiles}", &fc->RFnmire);
+	fc->Pmires = rpmfcExpandRegexps("%{__noautoprov}", &fc->Pnmire);
+	fc->Rmires = rpmfcExpandRegexps("%{__noautoreq}", &fc->Rnmire);
+	rpmlog(RPMLOG_DEBUG, D_("%i _noautoprov patterns.\n"), fc->Pnmire);
+	rpmlog(RPMLOG_DEBUG, D_("%i _noautoreq patterns.\n"), fc->Rnmire);
+    }
+
 /* Make sure something didn't go wrong previously! */
 assert(fc->fn != NULL);
     /* Generate package and per-file dependencies. */
@@ -864,7 +991,7 @@ assert(fc->fn != NULL);
 
 	/* XXX Insure that /usr/lib{,64}/python files are marked RPMFC_PYTHON */
 	/* XXX HACK: classification by path is intrinsically stupid. */
-	{   const char *fn = strstr(fc->fn[fc->ix], "/usr/lib");
+	{   fn = strstr(fc->fn[fc->ix], "/usr/lib");
 	    if (fn) {
 		fn += sizeof("/usr/lib")-1;
 		if ((fn[0] == '3' && fn[1] == '2') || 
@@ -879,9 +1006,44 @@ assert(fc->fn != NULL);
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		/*@innercontinue@*/ continue;
+
+	    if (_filter_execs) {
+		fc->skipProv = skipProv;
+		fc->skipReq = skipReq;
+		if ((mire = fc->PFmires) != NULL)
+		for (j = 0; j < fc->PFnmire; j++, mire++) {
+		    fn = fc->fn[fc->ix] + fc->brlen;
+		    if ((xx = mireRegexec(mire, fn, 0)) < 0)
+			/*@innercontinue@*/ continue;
+		    rpmlog(RPMLOG_NOTICE, _("skipping %s provides detection\n"),
+				fn);
+		    fc->skipProv = 1;
+		    /*@innerbreak@*/ break;
+		}
+		if ((mire = fc->RFmires) != NULL)
+		for (j = 0; j < fc->RFnmire; j++, mire++) {
+		    fn = fc->fn[fc->ix] + fc->brlen;
+		    if ((xx = mireRegexec(mire, fn, 0)) < 0)
+			/*@innercontinue@*/ continue;
+		    rpmlog(RPMLOG_NOTICE, _("skipping %s requires detection\n"),
+				fn);
+		    fc->skipReq = 1;
+		    /*@innerbreak@*/ break;
+		}
+	    }
+
 	    xx = (*fcat->func) (fc);
 	}
     }
+
+    if (_filter_execs) {
+	fc->PFmires = rpmfcFreeRegexps(fc->PFmires, fc->PFnmire);
+	fc->RFmires = rpmfcFreeRegexps(fc->RFmires, fc->RFnmire);
+	fc->Pmires = rpmfcFreeRegexps(fc->Pmires, fc->Pnmire);
+	fc->Rmires = rpmfcFreeRegexps(fc->Rmires, fc->Rnmire);
+    }
+    fc->skipProv = skipProv;
+    fc->skipReq = skipReq;
 
     /* Generate per-file indices into package dependencies. */
     nddict = argvCount(fc->ddict);
@@ -1053,7 +1215,7 @@ assert(ftype != NULL);	/* XXX never happens, rpmmgFile() returns "" */
 
 	/* Add (filtered) entry to sorted class dictionary. */
 	fcolor = rpmfcColoring(se);
-	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
+	xx = argiAdd(&fc->fcolor, (int)fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    xx = rpmfcSaveArg(&fc->cdict, se);
@@ -1072,10 +1234,10 @@ assert(se != NULL);
 
 	dav = argvSearch(fc->cdict, se, NULL);
 	if (dav) {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
+	    xx = argiAdd(&fc->fcdictx, (int)fc->ix, (dav - fc->cdict));
 	    fc->fknown++;
 	} else {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, 0);
+	    xx = argiAdd(&fc->fcdictx, (int)fc->ix, 0);
 	    fc->fwhite++;
 	}
     }
@@ -1108,6 +1270,7 @@ struct DepMsg_s {
 
 /**
  */
+/*@-nullassign@*/
 /*@unchecked@*/
 static struct DepMsg_s depMsgs[] = {
   { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
@@ -1145,6 +1308,7 @@ static struct DepMsg_s depMsgs[] = {
 	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
+/*@=nullassign@*/
 
 /*@unchecked@*/
 static DepMsg_t DepMsgs = depMsgs;
@@ -1282,6 +1446,7 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 
 /**
  */
+/*@-nullassign@*/
 /*@unchecked@*/
 static struct DepMsg_s scriptMsgs[] = {
   { "Requires(pre)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
@@ -1298,6 +1463,7 @@ static struct DepMsg_s scriptMsgs[] = {
 	RPMSENSE_SCRIPT_POSTUN, 0 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
+/*@=nullassign@*/
 
 /*@unchecked@*/
 static DepMsg_t ScriptMsgs = scriptMsgs;

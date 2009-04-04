@@ -58,7 +58,7 @@ IDTX IDTXnew(void)
 {
     IDTX idtx = xcalloc(1, sizeof(*idtx));
     idtx->delta = 10;
-    idtx->size = sizeof(*((IDT)0));
+    idtx->size = (int)sizeof(*((IDT)0));
     return idtx;
 }
 
@@ -531,7 +531,6 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	(void) rpmtsSetFlags(ts, transFlags);
 	(void) rpmtsSetDFlags(ts, depFlags);
 	ts->probs = rpmpsFree(ts->probs);
-	ts->probs = rpmpsCreate();
 
 	/* Install the previously erased packages for this transaction. 
 	 */

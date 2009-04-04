@@ -98,9 +98,9 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 {
 /*@-abstract -castexpose @*/
     Header h = (Header) arg;
@@ -119,6 +119,16 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
 	fd = Fopen(filename, "r%{?_rpmgio}");
+
+       /* XXX Retry once to handle http:// server timeout reopen's. */
+	if (Ferror(fd)) {
+	    int ut = urlPath(filename, NULL);
+	    if (ut == URL_IS_HTTP || ut == URL_IS_HTTPS) {
+		/* XXX HACK: Fclose(fd) no workie here. */
+		fd = Fopen(filename, "r%{?_rpmgio}");
+	    }
+	}
+
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,
@@ -311,8 +321,8 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 }
 
 static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmdbMatchIterator mi;
     Header h;
@@ -338,8 +348,8 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 }
 
 static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies mire, fileSystem, internalState @*/
 {
     /* XXX use global ftsOpts? */
     /* XXX changing FTS_LOGICAL to FTS_PHYSICAL prevents symlink follow. */
@@ -398,8 +408,8 @@ exit:
 
 static const char * rpmcliInstallElementPath(/*@unused@*/ rpmts ts,
 		const char * arg)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     /* A glob pattern list to match repository directories. */
     const char * fn = rpmExpand(
@@ -473,6 +483,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     int numRPMS = 0;
     rpmRelocation relocations = NULL;
     rpmVSFlags vsflags, ovsflags;
+    rpmRC rpmrc;
     int rc;
     int xx;
 
@@ -534,7 +545,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, _giFlags);
-    while (rpmgiNext(gi) == RPMRC_OK) {
+    while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	Header h;
 
 	fn = _free(fn);
@@ -555,7 +566,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    fn = nfn;
 	    /* XXX hack into rpmgi innards for now ... */
 	    h = rpmgiReadHeader(gi, fn);
-	    if (h)
+	    if (h != NULL)
 		gi->h = headerLink(h);
 	    (void)headerFree(h);
 	    h = NULL;
@@ -667,6 +678,8 @@ assert(xx != 0 && he->p.str != NULL);
 	    numFailed += (rc < 0 ? numRPMS : rc);
     }
 
+    /* XXX exit if the iteration failed. */
+    if (rpmrc == RPMRC_FAIL) numFailed = numRPMS;
     if (numFailed) goto exit;
 
 exit:

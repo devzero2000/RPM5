@@ -397,35 +397,35 @@ rpmProblem rpmpsGetProblem(rpmps ps, int num)
 	num = ps->numProblems - 1;
     if (num >= ps->numProblems)
         return(NULL);
-    return(ps->probs + num);
+    return (ps->probs + num);
 }
 
 char * rpmProblemGetPkgNEVR(rpmProblem prob)
 {
-    return(prob->pkgNEVR);
+    return prob->pkgNEVR;
 }
 
 char * rpmProblemGetAltNEVR(rpmProblem prob)
 {
-    return(prob->altNEVR);
+    return prob->altNEVR;
 }
 
 char * rpmProblemGetStr(rpmProblem prob)
 {
-    return(prob->str1);
+    return prob->str1;
 }
 
 uint64_t rpmProblemGetLong(rpmProblem prob)
 {
-    return(prob->ulong1);
+    return prob->ulong1;
 }
 
 rpmProblemType rpmProblemGetType(rpmProblem prob)
 {
-    return(prob->type);
+    return prob->type;
 }
 
 fnpyKey rpmProblemKey(rpmProblem prob)
 {
-    return(prob->key);
+    return prob->key;
 }

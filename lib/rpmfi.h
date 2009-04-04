@@ -680,6 +680,7 @@ int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
  * @param name		directory path
  * @return		NULL on error
  */
+/*@null@*/
 DIR * rpmfiOpendir(rpmfi fi, const char * name)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fi, fileSystem, internalState @*/;
