@@ -82,6 +82,8 @@ int rpmEVRcmp(const char * a, const char * b)
     const char * ae = NULL, * be = NULL;
     int rc = 0;		/* assume equal */
 
+assert(a != NULL);
+assert(b != NULL);
     /* Compare version strings segment by segment. */
     for (; *a && *b && rc == 0; a = ae, b = be) {
 
@@ -137,10 +139,11 @@ int rpmEVRcmp(const char * a, const char * b)
 }
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
-static const char * _evr_tuple_match = "^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
-/*@unchecked@*/ /*@null@*/
+static const char * _evr_tuple_match =
+	"^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
+/*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
 const char * evr_tuple_match = NULL;
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@refcounted@*/ /*@null@*/
 miRE evr_tuple_mire = NULL;
 /*@unchecked@*/
 static int evr_tuple_nmire;
@@ -148,6 +151,7 @@ static int evr_tuple_nmire;
 static miRE rpmEVRmire(void)
 	/*@*/
 {
+/*@-globs -internalglobs -mods @*/
     if (evr_tuple_mire == NULL) {
 	int xx;
 	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
@@ -164,6 +168,7 @@ static miRE rpmEVRmire(void)
 #endif
 
     }
+/*@=globs =internalglobs =mods @*/
 assert(evr_tuple_match != NULL && evr_tuple_mire != NULL);
 /*@-globstate -retalias@*/
     return evr_tuple_mire;
@@ -240,7 +245,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 
 	switch (i/2) {
 	default:
-	case 0:	continue;	/*@notreached@*/ break;
+	case 0:	continue;	/*@notreached@*/ /*@switchbreak@*/ break;
 	case 1:	ix = RPMEVR_E;	/*@switchbreak@*/break;
 	case 2:	ix = RPMEVR_V;	/*@switchbreak@*/break;
 	case 3:	ix = RPMEVR_R;	/*@switchbreak@*/break;
@@ -294,7 +299,7 @@ static int compare_values(const char *a, const char *b)
     return rpmvercmp(a, b);
 }
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
 static const char * evr_tuple_order = NULL;
 
 /**
@@ -305,11 +310,13 @@ static const char * evr_tuple_order = NULL;
 static const char * rpmEVRorder(void)
 	/*@*/
 {
+/*@-globs -internalglobs -mods @*/
     if (evr_tuple_order == NULL) {
 	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
 	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
 	    evr_tuple_order = xstrdup("EVR");
     }
+/*@=globs =internalglobs =mods @*/
 assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
     return evr_tuple_order;
 }
@@ -328,10 +335,10 @@ assert(b->F[RPMEVR_V] != NULL);
 assert(b->F[RPMEVR_R] != NULL);
 assert(b->F[RPMEVR_D] != NULL);
 
-    for (s = rpmEVRorder(); *s; s++) {
+    for (s = rpmEVRorder(); *s != '\0'; s++) {
 	int ix;
 	switch ((int)*s) {
-	default:	continue;	/*@notreached@*/ break;
+	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
 	case 'E':	ix = RPMEVR_E;	/*@switchbreak@*/break;
 	case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
 	case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
@@ -438,9 +445,9 @@ int rpmVersionCompare(Header A, Header B)
     int rc = 0;
     int xx;
 
-    for (s = rpmEVRorder(); *s; s++) {
+    for (s = rpmEVRorder(); *s != '\0'; s++) {
 	switch ((int)*s) {
-	default:	continue;	/*@notreached@*/ break;
+	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
 	case 'E':
 	    Ahe->tag = RPMTAG_EPOCH;
 	    xx = headerGet(A, Ahe, 0);

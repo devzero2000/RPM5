@@ -107,35 +107,35 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 {
     Header h = _h;
 
-	if (h->index != NULL) {
-	    indexEntry entry = h->index;
-	    size_t i;
-	    for (i = 0; i < h->indexUsed; i++, entry++) {
+    if (h->index != NULL) {
+	indexEntry entry = h->index;
+	size_t i;
+	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
-		    if (entry->length > 0) {
-			uint32_t * ei = entry->data;
-			if ((ei - 2) == h->blob)
-			    h->blob = _free(h->blob);
-			entry->data = NULL;
-		    }
-		} else if (!ENTRY_IN_REGION(entry)) {
-		    entry->data = _free(entry->data);
+		if (entry->length > 0) {
+		    uint32_t * ei = entry->data;
+		    if ((ei - 2) == h->blob)
+			h->blob = _free(h->blob);
+		    entry->data = NULL;
 		}
-		entry->data = NULL;
+	    } else if (!ENTRY_IN_REGION(entry)) {
+		    entry->data = _free(entry->data);
 	    }
-	    h->index = _free(h->index);
+	    entry->data = NULL;
 	}
-	h->origin = _free(h->origin);
-	h->baseurl = _free(h->baseurl);
-	h->digest = _free(h->digest);
+	h->index = _free(h->index);
+    }
+    h->origin = _free(h->origin);
+    h->baseurl = _free(h->baseurl);
+    h->digest = _free(h->digest);
 
 /*@-nullstate@*/
-	if (_hdr_stats) {
-	    if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
-		(void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
-	    if (_hdr_getops)	/* RPMTS_OP_HDRGET */
-		(void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
-	}
+    if (_hdr_stats) {
+	if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
+	    (void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
+	if (_hdr_getops)	/* RPMTS_OP_HDRGET */
+	    (void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
+    }
 /*@=nullstate@*/
 }
 /*@=mustmod@*/

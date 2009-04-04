@@ -132,6 +132,7 @@ assert(fn != NULL);
 	}
 
 	wf->l = wf->b;
+assert(wf->l != NULL);
 	wf->nl = 96;
 
 	wf->s = wf->l + wf->nl;
@@ -190,19 +191,19 @@ static void rpmwfScrub(void *_wf)
 {
     rpmwf wf = _wf;
 
-	if (wf->b == NULL) {
+    if (wf->b == NULL) {
 /*@-dependenttrans -onlytrans @*/	/* rpm needs dependent, xar needs only */
-	    wf->l = _free(wf->l);
-	    wf->s = _free(wf->s);
-	    wf->h = _free(wf->h);
-	    wf->p = _free(wf->p);
+	wf->l = _free(wf->l);
+	wf->s = _free(wf->s);
+	wf->h = _free(wf->h);
+	wf->p = _free(wf->p);
 /*@=dependenttrans =onlytrans @*/
-	}
+    }
 
-	wf->xar = rpmxarFree(wf->xar, "rpmwfFree");
-	(void) rpmwfFini(wf);
+    wf->xar = rpmxarFree(wf->xar, "rpmwfFree");
+    (void) rpmwfFini(wf);
 
-	wf->fn = _free(wf->fn);
+    wf->fn = _free(wf->fn);
 }
 /*@=mustmod@*/
 

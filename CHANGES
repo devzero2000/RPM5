@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: random line noise reduction, diff'ing against HEAD.
     - jbj: wire-up RPMTAG_FILEDIGESTALGO. wotta waste to pretend "compatible" ...
     - jbj: yaml: add build scriptlet tags for --yaml/--xml display.
     - jbj: eliminate rpmal debugging code.

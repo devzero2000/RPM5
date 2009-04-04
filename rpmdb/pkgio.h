@@ -48,8 +48,8 @@ size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, *msg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/;
 
 /**
  * Read item from file descriptor.
@@ -61,8 +61,8 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
  */
 rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
 		const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *ptr, *msg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, *ptr, *msg, fileSystem, internalState @*/;
 
 /**
  * Verify item integrity.
@@ -73,8 +73,8 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies ptr, *msg, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ptr, *msg, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

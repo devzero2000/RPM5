@@ -56,12 +56,12 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
 	/*@modifies wf, fileSystem @*/;
 
 rpmRC rpmwfFini(rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 rpmRC rpmwfInit(rpmwf wf, const char * fn, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
 	/*@globals fileSystem @*/
@@ -89,36 +89,38 @@ rpmwf rpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmwf rpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg)
 	/*@modifies wf @*/;
-#define       rpmwfLink(_wf, _msg)    \
+#define	rpmwfLink(_wf, _msg)	\
     ((rpmwf)rpmioLinkPoolItem((rpmioItem)(_wf), _msg, __FILE__, __LINE__))
 
 /*@null@*/
 rpmwf rpmwfFree(/*@only@*/ rpmwf wf)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
-#define       rpmwfFree(_wf)  \
+#define	rpmwfFree(_wf)	\
     ((rpmwf)rpmioFreePoolItem((rpmioItem)(_wf), __FUNCTION__, __FILE__, __LINE__))
 
 /*@relnull@*/
 rpmwf rpmwfNew(const char * fn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
+/*@relnull@*/
 rpmwf rdRPM(const char * rpmfn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
+/*@relnull@*/
 rpmwf rdXAR(const char * xarfn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 rpmRC wrXAR(const char * xarfn, rpmwf wf)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
 
 rpmRC wrRPM(const char * rpmfn, rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies wf, fileSystem, internalState @*/;
 
 
 #ifdef __cplusplus
