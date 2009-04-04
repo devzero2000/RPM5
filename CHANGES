@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: yaml: add build scriptlet tags for --yaml/--xml display.
     - jbj: eliminate rpmal debugging code.
     - jbj: PLD: rpm-epoch0: Always add Epoch: 0 to packages.
     - jbj: handle "config(N) = E:V-R" within rpmns.c (but treat as a string).

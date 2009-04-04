@@ -423,12 +423,26 @@ enum rpmTag_e {
     RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
     RPMTAG_DISTEPOCH		= 1218, /* s */
 
+    RPMTAG_FILEDIGESTALGO       = 5011, /* i file checksum algorithm */
+
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG,	/*!< internal */
 /*@=enummemuse@*/
 
     RPMTAG_PACKAGETRANSFLAGS	= 0x4efaafd9, /* s[] arbitrary */
     RPMTAG_PACKAGEDEPFLAGS	= 0x748a8314, /* s[] arbitrary */
+
+    RPMTAG_BUILDPREPPROG	= 0x4ba37c9e, /* s[] arbitrary */
+    RPMTAG_BUILDPREP		= 0x799c0b4d, /* s[] arbitrary */
+    RPMTAG_BUILDBUILDPROG	= 0x6fb46014, /* s[] arbitrary */
+    RPMTAG_BUILDBUILD		= 0x5bae1a5a, /* s[] arbitrary */
+    RPMTAG_BUILDINSTALLPROG	= 0x70d4ab6f, /* s[] arbitrary */
+    RPMTAG_BUILDINSTALL		= 0x567f5983, /* s[] arbitrary */
+    RPMTAG_BUILDCHECKPROG	= 0x488a60ce, /* s[] arbitrary */
+    RPMTAG_BUILDCHECK		= 0x7f3b97b5, /* s[] arbitrary */
+    RPMTAG_BUILDCLEANPROG	= 0x42c93d41, /* s[] arbitrary */
+    RPMTAG_BUILDCLEAN		= 0x566042bf, /* s[] arbitrary */
+
     RPMTAG_LASTARBITRARY_TAG	= 0x80000000  /*!< internal */
 };
 
