@@ -6143,10 +6143,14 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
+#ifdef	DYING	/* XXX tagName() does this now */
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
+#else
+		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
+#endif
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
 assert(tagN != NULL);	/* XXX can't happen */
@@ -6160,10 +6164,14 @@ assert(tagN != NULL);	/* XXX can't happen */
 		const char * tagN;
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
+#ifdef	DYING	/* XXX tagName() does this now */
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				(unsigned) tag->tagno[0]);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
+#else
+		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
+#endif
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 		} else
