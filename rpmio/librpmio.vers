@@ -140,6 +140,7 @@ LIBRPMIO_0
     htHasEntry;
     _init;
     _iosm_debug;
+    iosmFileActionSkipped;
     iosmFileActionString;
     iosmFileStageString;
     _iosmNext;

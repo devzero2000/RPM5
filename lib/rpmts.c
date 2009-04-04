@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <iosm.h>		/* XXX iosmFileAction */
 #include <rpmurl.h>
 #include <rpmpgp.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
@@ -61,8 +62,8 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
 
-/*@access rpmps @*/
 /*@access rpmDiskSpaceInfo @*/
+/*@access rpmps @*/
 /*@access rpmsx @*/
 /*@access rpmte @*/
 /*@access rpmtsi @*/
@@ -496,9 +497,10 @@ rpmps rpmtsProblems(rpmts ts)
     static const char msg[] = "rpmtsProblems";
     rpmps ps = NULL;
     if (ts) {
+	if (ts->probs == NULL)
+	    ts->probs = rpmpsCreate();
 /*@-castexpose@*/
-	if (ts->probs)
-	    ps = rpmpsLink(ts->probs, msg);
+	ps = rpmpsLink(ts->probs, msg);
 /*@=castexpose@*/
     }
     return ps;
@@ -696,6 +698,8 @@ rpmVSFlags rpmtsVSFlags(/*@unused@*/ rpmts ts)
 }
 
 rpmVSFlags rpmtsSetVSFlags(/*@unused@*/ rpmts ts, rpmVSFlags vsflags)
+	/*@globals pgpDigVSFlags @*/
+	/*@modifies pgpDigVSFlags @*/
 {
     rpmVSFlags ovsflags;
     ovsflags = pgpDigVSFlags;
@@ -977,7 +981,7 @@ int rpmtsInitDSI(const rpmts ts)
 	dsi->f_fsid = sfb.f_fsid;
 #endif
 	dsi->f_flag = sfb.f_flag;
-	dsi->f_favail = sfb.f_favail;
+	dsi->f_favail = (long long) sfb.f_favail;
 	dsi->f_namemax = sfb.f_namemax;
 #elif defined(__APPLE__) && defined(__MACH__) && !defined(_SYS_STATVFS_H_)
 	dsi->f_fsid = 0; /* "Not meaningful in this implementation." */
@@ -991,10 +995,10 @@ int rpmtsInitDSI(const rpmts ts)
 #endif
 
 	dsi->f_bsize = sfb.f_bsize;
-	dsi->f_blocks = sfb.f_blocks;
-	dsi->f_bfree = sfb.f_bfree;
-	dsi->f_files = sfb.f_files;
-	dsi->f_ffree = sfb.f_ffree;
+	dsi->f_blocks = (unsigned long long)sfb.f_blocks;
+	dsi->f_bfree = (unsigned long long)sfb.f_bfree;
+	dsi->f_files = (unsigned long long)sfb.f_files;
+	dsi->f_ffree = (unsigned long long)sfb.f_ffree;
 
 	dsi->bneeded = 0;
 	dsi->ineeded = 0;
@@ -1032,7 +1036,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
 		int _action)
 {
-    fileAction action = _action;
+    iosmFileAction action = _action;
     rpmDiskSpaceInfo dsi;
     uint64_t bneeded;
 
@@ -1177,7 +1181,15 @@ rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
 
 rpmtransFlags rpmtsFlags(rpmts ts)
 {
-    return (ts != NULL ? ts->transFlags : 0);
+    rpmtransFlags transFlags = 0;
+    if (ts != NULL) {
+	transFlags = ts->transFlags;
+	if (rpmtsSELinuxEnabled(ts) > 0)
+	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	else
+	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
+    }
+    return transFlags;
 }
 
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
@@ -1185,6 +1197,10 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     rpmtransFlags otransFlags = 0;
     if (ts != NULL) {
 	otransFlags = ts->transFlags;
+	if (rpmtsSELinuxEnabled(ts) > 0)
+	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	else
+	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
 	ts->transFlags = transFlags;
     }
     return otransFlags;

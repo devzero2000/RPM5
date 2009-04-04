@@ -41,6 +41,10 @@
 
 /*@access rpmfi @*/
 
+/*@access rpmsx @*/	/* XXX cast */
+/*@access rpmte @*/	/* XXX cast */
+/*@access rpmts @*/	/* XXX cast */
+
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 #define	_FSM_DEBUG	0
@@ -322,7 +326,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t fsm,
 	/* Identify parent directories not skipped. */
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
 	while ((i = rpmfiNext(fi)) >= 0) {
-            if (!XFA_SKIPPING(fi->actions[i])) dnli->active[fi->dil[i]] = 1;
+            if (!iosmFileActionSkipped(fi->actions[i])) dnli->active[fi->dil[i]] = 1;
 	}
 
 	/* Exclude parent directories that are explicitly included. */
@@ -501,7 +505,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 
 	for (j = fsm->li->linksLeft - 1; j >= 0; j--) {
 	    ix = fsm->li->filex[j];
-	    if (ix < 0 || XFA_SKIPPING(fi->actions[ix]))
+	    if (ix < 0 || iosmFileActionSkipped(fi->actions[ix]))
 		continue;
 	    break;
 	}
@@ -615,8 +619,10 @@ int fsmSetup(void * _fsm, iosmFileStage goal, const char * afmt,
 		unsigned int * archiveSize, const char ** failedFile)
 {
     IOSM_t fsm = _fsm;
+/*@-castexpose@*/
     const rpmts ts = (const rpmts) _ts;
     const rpmfi fi = (const rpmfi) _fi;
+/*@=castexpose@*/
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
     int adding = (rpmteType(fi->te) == TR_ADDED);
@@ -1272,7 +1278,7 @@ static int fsmMakeLinks(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 	fsm->ix = fsm->li->filex[i];
 	fsm->path = _free(fsm->path);
 	rc = fsmNext(fsm, IOSM_MAP);
-	if (XFA_SKIPPING(fsm->action)) continue;
+	if (iosmFileActionSkipped(fsm->action)) continue;
 
 	rc = fsmUNSAFE(fsm, IOSM_VERIFY);
 	if (!rc) continue;
@@ -1330,7 +1336,7 @@ static int fsmCommitLinks(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 	if (fsm->li->filex[i] < 0) continue;
 	fsm->ix = fsm->li->filex[i];
 	rc = fsmNext(fsm, IOSM_MAP);
-	if (!XFA_SKIPPING(fsm->action))
+	if (!iosmFileActionSkipped(fsm->action))
 	    rc = fsmNext(fsm, IOSM_COMMIT);
 	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
@@ -1853,7 +1859,7 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	rc = fsmMapAttrs(fsm);
 	if (rc) break;
 
-	fsm->postpone = XFA_SKIPPING(fsm->action);
+	fsm->postpone = iosmFileActionSkipped(fsm->action);
 	if (fsm->goal == IOSM_PKGINSTALL || fsm->goal == IOSM_PKGBUILD) {
 	    /*@-evalorder@*/ /* FIX: saveHardLink can modify fsm */
 	    if (S_ISREG(st->st_mode) && st->st_nlink > 1)

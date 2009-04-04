@@ -31,8 +31,13 @@
 
 #include "debug.h"
 
+/*@access IOSM_t @*/	/* XXX cast */
+
 /*@access rpmte @*/
+/*@access rpmts @*/	/* XXX cast */
+
 /*@access FSM_t @*/	/* XXX fsm->repackaged */
+/*@access DIR @*/
 
 /*@unchecked@*/
 int _rpmfi_debug = 0;
@@ -139,7 +144,7 @@ const char * rpmfiFN(rpmfi fi)
 	const char *dn;
 	char * t;
 	if (fi->fn == NULL)
-	    fi->fn = xmalloc(fi->fnlen);
+	    fi->fn = xmalloc(fi->fnlen + 1);
 	FN = t = fi->fn;
 	(void) urlPath(fi->dnl[fi->dil[fi->i]], &dn);
 	*t = '\0';
@@ -414,16 +419,6 @@ const char * rpmfiFGroup(rpmfi fi)
     return fgroup;
 }
 
-int rpmfiSetFAction(rpmfi fi, int action)
-{
-    iosmFileAction oaction = FA_UNKNOWN;
-    if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
-	oaction = fi->actions[fi->i];
-	fi->actions[fi->i] = action;
-    }
-    return oaction;
-}
-
 void * rpmfiExclude(const rpmfi fi)
 {
     return (fi != NULL ? fi->exclude : NULL);
@@ -589,7 +584,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     return 0;
 }
 
-fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+int rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
@@ -662,7 +657,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLink(ofi);
 	if (diskWhat == LINK) {
-	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+	    if (Readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 		return FA_CREATE;	/* assume file has been removed */
 	    buffer[sizeof(buffer)-1] = '\0';
 	    if (oFLink && !strcmp(oFLink, buffer))
@@ -708,7 +703,7 @@ const char * rpmfiTypeString(rpmfi fi)
  */
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
-		Header origH, fileAction * actions)
+		Header origH, iosmFileAction * actions)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		internalState @*/
 	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
@@ -829,7 +824,7 @@ assert(p != NULL);
 		ps = rpmpsFree(ps);
 	    }
 	    del =
-		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
+		(int)strlen(relocations[i].newPath) - (int)strlen(relocations[i].oldPath);
 	    /*@=nullpass@*/
 
 	    if (del > reldel)
@@ -1434,7 +1429,6 @@ if (fi->actions == NULL)
     fi->fdigestalgos = NULL;
     _fdupedata(h, RPMTAG_FILEDIGESTALGOS, fi->fdigestalgos);
     if (fi->fdigestalgos) {
-	uint32_t dalgo = 0;
 	/* XXX Insure that all algorithms are either 0 or constant. */
 	for (i = 0; i < (int)fi->fc; i++) {
 	    if (fi->fdigestalgos[i] == 0)
@@ -1442,7 +1436,7 @@ if (fi->actions == NULL)
 	    if (dalgo == PGPHASHALGO_ERROR)
 		dalgo = (fi->fdigestalgos[i] & 0xff);
 	    else
-assert(dalgo == fi->fdigestalgos[i]);
+assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
 	}
 	fi->fdigestalgos = _free(fi->fdigestalgos);
     } else {
@@ -1549,7 +1543,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 	/*@-compdef@*/ /* FIX: fi->digests undefined */
-	foo = relocateFileList(ts, fi, h, fi->actions);
+	foo = relocateFileList(ts, fi, h, (iosmFileAction *) fi->actions);
 	/*@=compdef@*/
 	(void)headerFree(fi->h);
 	fi->h = NULL;
@@ -1688,8 +1682,10 @@ int rpmfiStat(rpmfi fi, const char * path, struct stat * st)
 	break;
     }
 
+/*@-modfilesys@*/
 if (_rpmfi_debug)
 fprintf(stderr, "*** rpmfiStat(%p, %s, %p) rc %d\n", fi, path, st, rc);
+/*@=modfilesys@*/
 
     return rc;
 }
@@ -1730,8 +1726,10 @@ DIR * rpmfiOpendir(rpmfi fi, const char * name)
     fnames = argvFree(fnames);
     fmodes = _free(fmodes);
 
+/*@-modfilesys +voidabstract @*/
 if (_rpmfi_debug)
 fprintf(stderr, "*** rpmfiOpendir(%p, %s) dir %p\n", fi, name, dir);
+/*@=modfilesys =voidabstract @*/
 
     return dir;
 }
@@ -1867,7 +1865,7 @@ void rpmfiBuildFSContexts(Header h,
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
 	const char *fn;
-	security_context_t scon;
+	security_context_t scon = NULL;
 
 	fn = rpmfiFN(fi);
 	fcnb[ac] = lgetfilecon(fn, &scon);

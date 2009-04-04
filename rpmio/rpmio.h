@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include <rpmiotypes.h>
+#include <yarn.h>
 #include <rpmzlog.h>
 
 /** \ingroup rpmio

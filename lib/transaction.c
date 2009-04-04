@@ -156,7 +156,7 @@ assert(he->p.str != NULL);
 	    continue;
 #endif
 
-	if (XFA_SKIPPING(fi->actions[fileNum]))
+	if (iosmFileActionSkipped(fi->actions[fileNum]))
 	    continue;
 
 	/* Remove setuid/setgid bits on other (possibly hardlinked) files. */
@@ -195,7 +195,7 @@ assert(he->p.str != NULL);
 	    }
 
 	    /* Save file identifier to mark as state REPLACED. */
-	    if ( !(((FFlags | oFFlags) & RPMFILE_CONFIG) || XFA_SKIPPING(fi->actions[fileNum])) ) {
+	    if ( !(((FFlags | oFFlags) & RPMFILE_CONFIG) || iosmFileActionSkipped(fi->actions[fileNum])) ) {
 		/*@-assignexpose@*/
 		if (!shared->isRemoved)
 		    p->replaced[p->nreplaced++] = *shared;
@@ -207,7 +207,7 @@ assert(he->p.str != NULL);
 	if (((FFlags | oFFlags) & RPMFILE_CONFIG)) {
 	    int skipMissing =
 		((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
-	    fileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
+	    iosmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	    fi->actions[fileNum] = action;
 	}
 	fi->replacedSizes[fileNum] = rpmfiFSize(otherFi);
@@ -386,7 +386,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	const rpmfi * recs;
 	int numRecs;
 
-	if (XFA_SKIPPING(fi->actions[i]))
+	if (iosmFileActionSkipped(fi->actions[i]))
 	    continue;
 
 	fn = rpmfiFN(fi);
@@ -488,7 +488,7 @@ assert(otherFi != NULL);
 		if (tscolor != 0) {
 		    if (FColor & prefcolor) {
 			/* ... last file of preferred colour is installed ... */
-			if (!XFA_SKIPPING(fi->actions[i])) {
+			if (!iosmFileActionSkipped(fi->actions[i])) {
 			    /* XXX static helpers are order dependent. Ick. */
 			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
 			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
@@ -499,7 +499,7 @@ assert(otherFi != NULL);
 		    } else
 		    if (oFColor & prefcolor) {
 			/* ... first file of preferred colour is installed ... */
-			if (XFA_SKIPPING(fi->actions[i]))
+			if (iosmFileActionSkipped(fi->actions[i]))
 			    otherFi->actions[otherFileNum] = FA_CREATE;
 			fi->actions[i] = FA_SKIPCOLOR;
 			rConflicts = 0;
@@ -547,7 +547,7 @@ assert(otherFi != NULL);
 		/* Here is an overlapped removed file: skip in previous. */
 		otherFi->actions[otherFileNum] = FA_SKIP;
 	    }
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (iosmFileActionSkipped(fi->actions[i]))
 		/*@switchbreak@*/ break;
 	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
 		/*@switchbreak@*/ break;
@@ -716,7 +716,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	drc[ix]++;
 
 	/* Don't bother with skipped files */
-	if (XFA_SKIPPING(fi->actions[i])) {
+	if (iosmFileActionSkipped(fi->actions[i])) {
 	    drc[ix]--; dff[ix] = 1;
 	    continue;
 	}
@@ -843,7 +843,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    const char * fdn, * fbn;
 	    uint16_t fFMode;
 
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (iosmFileActionSkipped(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 
 	    fFMode = rpmfiFMode(fi);
@@ -1461,7 +1461,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
  	fi = rpmfiInit(fi, 0);
  	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (iosmFileActionSkipped(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 	    /*@-dependenttrans@*/
 	    htAddEntry(ts->ht, fi->fps + i, (void *) fi);
@@ -1808,7 +1808,7 @@ assert(psm != NULL);
 		psm->fi = rpmfiFree(psm->fi);
 		{
 		    uint8_t * fstates = fi->fstates;
-		    fileAction * actions = fi->actions;
+		    iosmFileAction * actions = (iosmFileAction *) fi->actions;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;
 		    int scareMem = 0;
@@ -1828,7 +1828,7 @@ assert(psm != NULL);
 			fi->fstates = _free(fi->fstates);
 			fi->fstates = fstates;
 			fi->actions = _free(fi->actions);
-			fi->actions = actions;
+			fi->actions = (int *) actions;
 			if (mapflags & IOSM_SBIT_CHECK)
 			    fi->mapflags |= IOSM_SBIT_CHECK;
 			p->fi = fi;

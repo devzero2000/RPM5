@@ -79,9 +79,15 @@ typedef enum rpmParseState_e {
     PART_LAST		= 34+PART_BASE  /*!< */
 } rpmParseState;
 
-#define STRIP_NOTHING             0
-#define STRIP_TRAILINGSPACE (1 << 0)
-#define STRIP_COMMENTS      (1 << 1)
+/** \ingroup rpmbuild
+ * Spec file parser stripping flags.
+ */
+typedef enum rpmStripFlags_e {
+    STRIP_NOTHING	= 0,
+    STRIP_TRAILINGSPACE	= (1 << 0),
+    STRIP_COMMENTS	= (1 << 1),
+    STRIP_NOEXPAND	= (1 << 2)
+} rpmStripFlags;
 
 /*@unchecked@*/
 extern int _rpmbuildFlags;

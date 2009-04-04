@@ -1068,7 +1068,6 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use
     } else
 	yarnTwist(db->_item.use, BY, -1);
 
-exit:
     (void) rpmsqEnable(-SIGHUP,	NULL);
     (void) rpmsqEnable(-SIGINT,	NULL);
     (void) rpmsqEnable(-SIGTERM,NULL);

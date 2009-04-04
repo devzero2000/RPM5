@@ -323,7 +323,10 @@ static inline int chkSuffix(const char * fn, const char * suffix)
  * @param pkgKey	added package key (erasure uses RPMAL_NOKEY)
  * @return		no. of references from build set
  */
-static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h, alKey pkgKey)
+static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
+		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const void *keyval = NULL;
@@ -398,7 +401,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     (void)headerFree(debuginfoHeader);
     debuginfoHeader = NULL;
 
-    return nrefs;
+    return (int)nrefs;
 }
 #endif	/* SUPPORT_DEBUGINFO_UPGRADE_MODEL */
 
@@ -410,6 +413,8 @@ assert(lastx >= 0 && lastx < ts->orderCount);
  * @return		0 on success
  */
 static int rpmtsAddObsoletes(rpmts ts, rpmte p, uint32_t hcolor)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     uint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);
@@ -826,6 +831,8 @@ static rpmds getconfP = NULL;
 static rpmds unameP = NULL;
 
 void rpmnsClean(void)
+	/*@globals sysinfo_path, _sysinfo_path, rpmlibP, cpuinfoP, getconfP, unameP @*/
+	/*@modifies sysinfo_path, _sysinfo_path, rpmlibP, cpuinfoP, getconfP, unameP @*/
 {
     (void)rpmdsFree(rpmlibP);
     rpmlibP = NULL;
@@ -847,10 +854,10 @@ void rpmnsClean(void)
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
-	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, dep, _cacheDependsRC, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		sysinfo_path, fileSystem, internalState @*/
+	/*@modifies ts, dep, rpmGlobalMacroContext,
+		sysinfo_path, fileSystem, internalState @*/
 {
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));
@@ -2785,7 +2792,6 @@ int rpmtsCheck(rpmts ts)
 	goto exit;
 
     ts->probs = rpmpsFree(ts->probs);
-    ts->probs = rpmpsCreate();
 
     rpmalMakeIndex(ts->addedPackages);
 

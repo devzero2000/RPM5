@@ -50,6 +50,7 @@ int _psm_threads = 0;
 
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access Header @*/		/* XXX void * arg */
+/*@access miRE @*/
 
 /*@access rpmpsm @*/
 
@@ -675,7 +676,7 @@ assert(he->p.str != NULL);
 	psm->NVRA = NVRA = he->p.str;
     }
 
-    if (Phe->p.argv && strcmp(Phe->p.argv[0], "<lua>") == 0) {
+    if (Phe->p.argv && Phe->p.argv[0] && strcmp(Phe->p.argv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),
@@ -1035,7 +1036,7 @@ static rpmTag _trigger_tag;
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH, int arg2)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
-	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
+	/*@modifies psm, sourceH, triggeredH,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int scareMem = 0;
@@ -1124,9 +1125,9 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		    const char * N = rpmdsN(ds);
 		    xx = mireRegexec(mire, N, 0);
 		    if (xx < 0)
-			continue;
+			/*@innercontinue@*/ continue;
 		    bingo = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 		(void)rpmdsFree(ds);
 		ds = NULL;
@@ -1277,12 +1278,12 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 		    depName[nName] = (pattern[npattern-1] == '/') ? '/' : '\0';
 		}
 		if (mireRegexec(mire, depName, 0) < 0)
-		    continue;
+		    /*@innercontinue@*/ continue;
 
 		/* Reset the primary retrieval key to the pattern. */
 		depName = _free(depName);
 		depName = xstrdup(pattern);
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
 
@@ -1298,7 +1299,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
-		continue;
+		/*@innercontinue@*/ continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
 	    prev = instance;
 	    xx = argiAdd(&instances, -1, instance);
@@ -1434,7 +1435,7 @@ assert(fi->h != NULL);
     if (triggers != NULL)
     while ((i = rpmdsNext(triggers)) >= 0) {
 	evrFlags Flags = rpmdsFlags(triggers);
-	const char * Name = rpmdsN(triggers);
+	const char * N = rpmdsN(triggers);
 	const char * EVR = rpmdsEVR(triggers);
 
 	/* Skip triggers that are not in this context. */
@@ -1444,15 +1445,15 @@ assert(fi->h != NULL);
 	/* If not limited to NEVRA triggers, use file/dir index. */
 	if (tagno != RPMTAG_NAME) {
 	    /* XXX if trigger name ends with '/', use dirnames instead. */
-	    if (Name[0] == '/') 
-		tagno = (Name[strlen(Name)-1] == '/')
+	    if (N[0] == '/') 
+		tagno = (N[strlen(N)-1] == '/')
 			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
 	}
 	/* XXX For now, permit globs only in unversioned triggers. */
-	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(Name, 0))
-	    xx = rpmdbMireApply(rpmtsGetRdb(ts), tagno, RPMMIRE_GLOB, Name, &keys);
+	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(N, 0))
+	    xx = rpmdbMireApply(rpmtsGetRdb(ts), tagno, RPMMIRE_GLOB, N, &keys);
 	else
-	    xx = argvAdd(&keys, Name);
+	    xx = argvAdd(&keys, N);
     }
     (void)rpmdsFree(triggers);
     triggers = NULL;
@@ -1486,7 +1487,7 @@ assert(fi->h != NULL);
 	    /* Skip headers that have already been processed. */
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    rc |= handleOneTrigger(psm, sourceH, fi->h,
 				rpmdbGetIteratorCount(mi));
@@ -2451,8 +2452,8 @@ assert(psm->te != NULL);
 
 	}
 	if (psm->goal == PSM_PKGSAVE) {
-	    fileAction * actions = fi->actions;
-	    fileAction action = fi->action;
+	    iosmFileAction * actions = (iosmFileAction *) fi->actions;
+	    iosmFileAction action = (iosmFileAction) fi->action;
 
 	    fi->action = FA_COPYOUT;
 	    fi->actions = NULL;
@@ -2491,8 +2492,8 @@ assert(psm->te != NULL);
 	    psm->total = psm->amount;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    fi->action = action;
-	    fi->actions = actions;
+	    fi->action = (int) action;
+	    fi->actions = (int *) actions;
 	}
 	break;
     case PSM_POST:
@@ -2625,7 +2626,7 @@ psm->te->h = NULL;
 	    if (fi->h != NULL) {
 		(void)headerFree(fi->h);
 		fi->h = NULL;
- 	}
+ 	    }
  	}
 	(void)headerFree(psm->oh);
 	psm->oh = NULL;
