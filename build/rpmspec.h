@@ -37,7 +37,7 @@ struct TriggerFileEntry {
 struct Source {
 /*@owned@*/
     const char * fullSource;
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     const char * source;	/* Pointer into fullSource */
     int flags;
     uint32_t num;
@@ -60,6 +60,7 @@ typedef struct ReadLevelEntry {
 typedef struct OpenFileInfo {
 /*@only@*/
     const char * fileName;
+/*@relnull@*/
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
@@ -244,16 +245,18 @@ extern "C" {
  * Create and initialize Spec structure.
  * @return spec		spec file control structure
  */
-/*@only@*/ Spec newSpec(void)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+/*@only@*/
+Spec newSpec(void)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmbuild
  * Destroy Spec structure.
  * @param spec		spec file control structure
  * @return		NULL always
  */
-/*@null@*/ Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
+/*@null@*/
+Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies spec, fileSystem, internalState @*/;
 
@@ -284,7 +287,8 @@ struct OpenFileInfo * newOpenFileInfo(void)
  * @return		ptr to saved entry
  */
 spectag stashSt(Spec spec, Header h, rpmTag tag, const char * lang)
-	/*@modifies spec->st @*/;
+	/*@globals internalState @*/
+	/*@modifies spec->st, internalState @*/;
 
 /** \ingroup rpmbuild
  * addSource.
@@ -295,10 +299,10 @@ spectag stashSt(Spec spec, Header h, rpmTag tag, const char * lang)
  * @return		0 on success
  */
 int addSource(Spec spec, Package pkg, const char * field, rpmTag tag)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		rpmGlobalMacroContext, fileSystem @*/;
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * parseNoSource.

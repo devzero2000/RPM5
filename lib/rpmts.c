@@ -1003,9 +1003,9 @@ int rpmtsInitDSI(const rpmts ts)
 	dsi->bneeded = 0;
 	dsi->ineeded = 0;
 #ifdef STATFS_HAS_F_BAVAIL
-	dsi->f_bavail = sfb.f_bavail ? sfb.f_bavail : 1;
+	dsi->f_bavail = (long long)(sfb.f_bavail ? sfb.f_bavail : 1);
 	if (sfb.f_ffree > 0 && sfb.f_files > 0 && sfb.f_favail > 0)
-	    dsi->f_favail = sfb.f_favail;
+	    dsi->f_favail = (long long)sfb.f_favail;
 	else	/* XXX who knows what evil lurks here? */
 	    dsi->f_favail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				?  (signed long long) sfb.f_ffree : -1;
@@ -1340,10 +1340,10 @@ rpmts rpmtsCreate(void)
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    {   struct timeval tv;
+    {	struct timeval tv;
 	xx = gettimeofday(&tv, NULL);
 	ts->tid[0] = (uint32_t) tv.tv_sec;
-        ts->tid[1] = (uint32_t) tv.tv_usec;
+	ts->tid[1] = (uint32_t) tv.tv_usec;
     }
     ts->delta = 5;
 

@@ -21,6 +21,10 @@ struct rpmQVKArguments_s rpmIArgs = {
 };
 /*@=fullinitblock@*/
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
+
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
@@ -56,7 +60,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	/*@modifies rpmIArgs, stderr, fileSystem @*/
 {
     QVA_t ia = &rpmIArgs;
-
+    int xx;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -69,13 +73,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
     case POPT_EXCLUDEPATH:
 	if (arg == NULL || *arg != '/') 
 	    argerror(_("exclude paths must begin with a /"));
-	ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-/*@-temptrans@*/
-	ia->relocations[ia->numRelocations].oldPath = xstrdup(arg);
-/*@=temptrans@*/
-	ia->relocations[ia->numRelocations].newPath = NULL;
-	ia->numRelocations++;
+	xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations, arg, NULL);
 	break;
     case POPT_RELOCATE:
       { char * oldPath = NULL;
@@ -91,15 +89,9 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	*newPath++ = '\0';
 	if (*newPath != '/') 
 	    argerror(_("relocations must have a / following the ="));
-	ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-/*@-temptrans@*/
-	ia->relocations[ia->numRelocations].oldPath = oldPath;
-/*@=temptrans@*/
-/*@-kepttrans -usereleased @*/
-	ia->relocations[ia->numRelocations].newPath = newPath;
-/*@=kepttrans =usereleased @*/
-	ia->numRelocations++;
+	xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			oldPath, newPath);
+	oldPath = _free(oldPath);
       }	break;
 
     case POPT_ROLLBACK_EXCLUDE:
@@ -240,9 +232,9 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("don't verify file digests"), NULL },
 #else
  { "nocontexts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCONTEXTS,
-        N_("don't verify file security contexts"), NULL },
+	N_("don't verify file security contexts"), NULL },
  { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
-        N_("don't verify file digests"), NULL },
+	N_("don't verify file digests"), NULL },
 #endif
  { "norpmdb", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NORPMDB,

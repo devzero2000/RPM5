@@ -286,7 +286,7 @@ extern const char * __etcrpm;
 #endif
 
 static void setDefaults(void)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 

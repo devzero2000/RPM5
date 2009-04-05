@@ -573,7 +573,6 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    uint32_t count;
     uint32_t sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;

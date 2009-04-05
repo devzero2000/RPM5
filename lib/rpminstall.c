@@ -473,6 +473,15 @@ exit:
     return fn;
 }
 
+/**
+ */
+struct rpmRelocation_s {
+/*@only@*/ /*@null@*/
+    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
+/*@only@*/ /*@null@*/
+    const char * newPath;	/*!< NULL means to omit the file completely! */
+};
+
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
@@ -656,6 +665,8 @@ assert(xx != 0 && he->p.str != NULL);
 
  }	/* end-of-transaction-build */
 
+    /* XXX exit if the iteration failed. */
+    if (rpmrc == RPMRC_FAIL) numFailed = numRPMS;
     if (numFailed) goto exit;
 
     if (numRPMS) {
@@ -678,8 +689,6 @@ assert(xx != 0 && he->p.str != NULL);
 	    numFailed += (rc < 0 ? numRPMS : rc);
     }
 
-    /* XXX exit if the iteration failed. */
-    if (rpmrc == RPMRC_FAIL) numFailed = numRPMS;
     if (numFailed) goto exit;
 
 exit:

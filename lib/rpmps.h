@@ -172,7 +172,7 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi)
  * @return		iterator index, -1 on termination
  */
 int rpmpsNextIterator(rpmpsi psi)
-	/*@*/;
+	/*@modifies psi @*/;
 
 /**
  * Return current problem from problem set

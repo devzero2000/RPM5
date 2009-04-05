@@ -792,6 +792,37 @@ const char * rpmfiTypeString(rpmfi fi)
 	/*@*/;
 /*@=redef@*/
 
+/**
+ * Free relocation array.
+ * @param relocs	relocation array
+ * @return		NULL always
+ */
+/*@null@*/
+rpmRelocation rpmfiFreeRelocations(/*@only@*/ rpmRelocation relocs)
+	/*@modifies relocs@*/;
+
+/**
+ * Duplicate a relocation array.
+ * @param relocs	relocation array
+ * @retval *nrelocsp	no. of elements
+ * @return		duplicate relocation array
+ */
+/*@only@*/ /*@null@*/
+rpmRelocation rpmfiDupeRelocations(rpmRelocation relocs, int * nrelocsp)
+	/*@modifies *nrelocsp @*/;
+
+/**
+ * Add relocation element to array.
+ * @retval *relocations		relocation array
+ * @retval *nrelocations	no. of elements
+ * @param oldPath		old path
+ * @param newPath		new path
+ * @return			0 on success
+ */
+int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
+		const char * oldPath, const char * newPath)
+	/*@modifies *relp, *nrelp @*/;
+
 /*@}*/
 #endif	/* _RPMFI_NOMETHODS */
 

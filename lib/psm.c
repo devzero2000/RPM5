@@ -500,7 +500,7 @@ static pid_t psmWait(rpmpsm psm)
  * @param arg2		ditto, but for the target package
  * @return		RPMRC_OK on success
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
+static rpmRC runLuaScript(rpmpsm psm, /*@unused@*/ Header h, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
@@ -1203,7 +1203,8 @@ exit:
 
 /* Retrieve trigger patterns from rpmdb. */
 static int rpmdbTriggerGlobs(rpmpsm psm)
-	/*@ modifies psm @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies psm, rpmGlobalMacroContext @*/
 {
     const rpmts ts = psm->ts;
     ARGV_t keys = NULL;
@@ -2800,6 +2801,7 @@ assert(psm->mi == NULL);
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 	if (fi->isSource)	break;	/* XXX never add SRPM's */
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
@@ -2829,6 +2831,7 @@ assert(psm->te != NULL);
     case PSM_RPMDB_REMOVE:
     {	
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);

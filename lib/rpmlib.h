@@ -185,14 +185,6 @@ void rpmFreeRpmrc(void)
  * We pass these around as an array with a sentinel.
  */
 typedef struct rpmRelocation_s * rpmRelocation;
-#if !defined(SWIG)
-struct rpmRelocation_s {
-/*@only@*/ /*@null@*/
-    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
-/*@only@*/ /*@null@*/
-    const char * newPath;	/*!< NULL means to omit the file completely! */
-};
-#endif
 
 /**
  * Compare headers to determine which header is "newer".

@@ -102,13 +102,13 @@ struct rpmte_s {
     const char * hdrid;		/*!< Package header identifier (header sha1). */
 /*@only@*/ /*@null@*/
     const char * sourcerpm;	/*!< Source package. */
-/*@owned@*/
+/*@only@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
     char * epoch;
-/*@dependent@*/ /*@null@*/
+/*@only@*/ /*@null@*/
     char * version;		/*!< Version: */
-/*@dependent@*/ /*@null@*/
+/*@only@*/ /*@null@*/
     char * release;		/*!< Release: */
 /*@only@*/ /*@null@*/
     const char * arch;		/*!< Architecture hint. */
@@ -195,6 +195,7 @@ struct rpmtsi_s {
 extern "C" {
 #endif
 
+#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  * Destroy a transaction element.
  * @param te		transaction element
@@ -226,6 +227,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#endif	/* _RPMTE_INTERNAL */
 
 /** \ingroup rpmte
  * Retrieve header from transaction element.
@@ -362,6 +364,7 @@ uint32_t rpmtePkgFileSize(rpmte te)
  * @param te		transaction element
  * @return		origin time
  */
+/*@observer@*/
 uint32_t * rpmteOriginTid(rpmte te)
 	/*@*/;
 
@@ -370,6 +373,7 @@ uint32_t * rpmteOriginTid(rpmte te)
  * @param te		transaction element
  * @return		origin time
  */
+/*@observer@*/
 uint32_t * rpmteOriginTime(rpmte te)
 	/*@*/;
 
@@ -507,6 +511,7 @@ void rpmteNewTSI(rpmte te)
 void rpmteCleanDS(rpmte te)
 	/*@modifies te @*/;
 
+#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  * Retrieve pkgKey of TR_ADDED transaction element.
  * @param te		transaction element
@@ -526,6 +531,7 @@ alKey rpmteAddedKey(rpmte te)
 alKey rpmteSetAddedKey(rpmte te,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey npkgKey)
 	/*@modifies te @*/;
+#endif	/* _RPMTE_INTERNAL */
 
 /** \ingroup rpmte
  * Retrieve rpmdb instance of TR_REMOVED transaction element.
@@ -642,7 +648,8 @@ void rpmteColorDS(rpmte te, rpmTag tag)
  * @return		0 on success
  */
 int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
-	/*@modifies p, q, oh @*/;
+	/*@globals internalState @*/
+	/*@modifies p, q, oh, internalState @*/;
 
 #define	RPMTE_CHAIN_END	"CHAIN END"	/*!< End of chain marker. */
 
@@ -698,8 +705,8 @@ rpmtsi XrpmtsiInit(rpmts ts,
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
         /*@modifies tsi @*/;
 
+#if	defined(DYING)
 #if !defined(SWIG)
-#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  */
 static inline void rpmtePrintID(rpmte p)

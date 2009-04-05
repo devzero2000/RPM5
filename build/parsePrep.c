@@ -647,7 +647,8 @@ static rpmRC doPatchMacro(Spec spec, const char * line)
 
 static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
 		/*@unused@*/ struct stat *st)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     char *buf;
     size_t buf_len;

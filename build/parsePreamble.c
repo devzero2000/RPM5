@@ -1197,7 +1197,6 @@ assert(lastpkg != NULL);
 	/* also declare %{epoch} to be same */
 	addMacro(spec->macros, "epoch", NULL, "0", RMIL_SPEC);
     }
-
 #endif /* RPM_VENDOR_PLD rpm-epoch0 */
 
     if (checkForRequired(pkg->header, NVR) != RPMRC_OK)

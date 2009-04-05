@@ -359,23 +359,6 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Verify file attributes (including file digest).
- * @todo gnorpm and python bindings prevent this from being static.
- * @param ts		transaction set
- * @param fi		file info (with linked header and current file index)
- * @retval *res		bit(s) returned to indicate failure
- * @param omitMask	bit(s) to disable verify checks
- * @return		0 on success (or not installed), 1 on error
- */
-/*@-incondefs@*/
-int rpmVerifyFile(const rpmts ts, rpmfi fi,
-		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, *res, fileSystem, internalState @*/
-	/*@requires maxSet(res) >= 0 @*/;
-/*@=incondefs@*/
-
-/** \ingroup rpmcli
  * Display results of package verify.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
@@ -395,9 +378,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  * @return		0 on success, 1 on failure
  */
 int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies qva, ts, _fd, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies qva, ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Verify package install.
@@ -503,8 +485,8 @@ int rpmInstallSource(rpmts ts, const char * arg,
  * @return		no. of (added) packages
  */
 int rpmcliInstallProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Report packages(if any) that satisfy unresolved dependencies.
@@ -512,8 +494,8 @@ int rpmcliInstallProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
  * @return		0 always
  */
 int rpmcliInstallSuggests(rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies ts, internalState @*/;
 
 /** \ingroup rpmcli
  * Check package element dependencies in a transaction set, reporting problems.
@@ -708,7 +690,7 @@ extern struct poptOption rpmDatabasePoptTable[];
  */
 rpmRC rpmcliImportPubkey(const rpmts ts,
 		const unsigned char * pkt, ssize_t pktlen)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -742,7 +724,7 @@ extern struct poptOption rpmSignPoptTable[];
  * @return		0 on success
  */
 int rpmcliSign(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -801,12 +783,12 @@ struct rpmQVKArguments_s {
     uint32_t rbtid;		/*!< from --rollback */
     uint32_t *rbtidExcludes;	/*!< from --rollback */
     int numrbtidExcludes;	/*!< from --rollback */
-    int numRelocations;
     int noDeps;
     int incldocs;
     int no_rollback_links;
-/*@owned@*/ /*@null@*/
+/*@owned@*/ /*@relnull@*/
     rpmRelocation relocations;
+    int nrelocations;
 
     /* database mode arguments */
     int init;			/*!< from --initdb */

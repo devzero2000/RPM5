@@ -21,6 +21,7 @@
 int _rpmte_debug = 0;
 
 /*@access alKey @*/
+/*@access rpmts @*/	/* XXX cast */
 /*@access rpmtsi @*/
 
 void rpmteCleanDS(rpmte te)
@@ -36,15 +37,7 @@ static void delTE(rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
-    rpmRelocation r;
-
-    if (p->relocs) {
-	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-	    r->oldPath = _free(r->oldPath);
-	    r->newPath = _free(r->newPath);
-	}
-	p->relocs = _free(p->relocs);
-    }
+    p->relocs = rpmfiFreeRelocations(p->relocs);
 
     rpmteCleanDS(p);
 
@@ -118,14 +111,6 @@ assert(he->p.str != NULL);
     
     p->db_instance = 0;
 
-    he->tag = RPMTAG_HDRID;
-    xx = headerGet(h, he, 0);
-    p->hdrid = (xx ? he->p.str : xstrdup("?RPMTAG_HDRID?"));
-
-    he->tag = RPMTAG_SOURCERPM;
-    xx = headerGet(h, he, 0);
-    p->sourcerpm = (xx ? he->p.str : NULL);
-
     he->tag = RPMTAG_PKGID;
     xx = headerGet(h, he, 0);
     if (he->p.ui8p != NULL) {
@@ -142,6 +127,14 @@ assert(he->p.str != NULL);
 	he->p.ptr = _free(he->p.ptr);
     } else
 	p->pkgid = NULL;
+
+    he->tag = RPMTAG_HDRID;
+    xx = headerGet(h, he, 0);
+    p->hdrid = (xx ? he->p.str : xstrdup("?RPMTAG_HDRID?"));
+
+    he->tag = RPMTAG_SOURCERPM;
+    xx = headerGet(h, he, 0);
+    p->sourcerpm = (xx ? he->p.str : NULL);
 
     he->tag = RPMTAG_ARCH;
     xx = headerGet(h, he, 0);
@@ -168,23 +161,7 @@ assert(he->p.str != NULL);
 
     p->installed = 0;
 
-    p->nrelocs = 0;
-    p->relocs = NULL;
-    if (relocs != NULL) {
-	rpmRelocation r;
-	int i;
-
-	for (r = relocs; r->oldPath || r->newPath; r++)
-	    p->nrelocs++;
-	p->relocs = xmalloc((p->nrelocs + 1) * sizeof(*p->relocs));
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
-	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
-	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
-	}
-	p->relocs[i].oldPath = NULL;
-	p->relocs[i].newPath = NULL;
-    }
+    p->relocs = rpmfiDupeRelocations(relocs, &p->nrelocs);
     p->autorelocatex = -1;
 
     p->key = key;

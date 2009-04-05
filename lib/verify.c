@@ -24,8 +24,20 @@
 /*@unchecked@*/
 extern int _rpmds_unspecified_epoch_noise;
 
-int rpmVerifyFile(const rpmts ts, const rpmfi fi,
-		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+/** \ingroup rpmcli
+ * Verify file attributes (including file digest).
+ * @todo gnorpm and python bindings prevent this from being static.
+ * @param ts		transaction set
+ * @param fi		file info (with linked header and current file index)
+ * @retval *res		bit(s) returned to indicate failure
+ * @param omitMask	bit(s) to disable verify checks
+ * @return		0 on success (or not installed), 1 on error
+ */
+static int rpmVerifyFile(const rpmts ts, const rpmfi fi,
+		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fi, *res, fileSystem, internalState @*/
+	/*@requires maxSet(res) >= 0 @*/
 {
     unsigned short fmode = rpmfiFMode(fi);
     rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
@@ -261,7 +273,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
  */
 static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, fileSystem, internalState  @*/
+	/*@modifies fi, fileSystem, internalState  @*/
 {
     rpmVerifyAttrs verifyResult = 0;
     /*@-type@*/ /* FIX: union? */
@@ -422,6 +434,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		pkgNEVR = rpmProblemGetPkgNEVR(prob);
 
 	    altNEVR = rpmProblemGetAltNEVR(prob);
+assert(altNEVR != NULL);
 	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
 		nb += sizeof("\tRequires: ")-1;
 	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')

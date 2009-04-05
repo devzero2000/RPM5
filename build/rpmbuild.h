@@ -337,7 +337,8 @@ int parsePrep(Spec spec, int verify)
  */
 rpmRC parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
 		uint32_t index, rpmsenseFlags tagflags)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Parse %%pre et al scriptlets from a spec file.
@@ -360,8 +361,8 @@ int parseScript(Spec spec, int parsePart)
  * @return
  */
 int parseExpressionBoolean(Spec spec, const char * expr)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmbuild
  * Evaluate string expression.
@@ -371,8 +372,8 @@ int parseExpressionBoolean(Spec spec, const char * expr)
  */
 /*@unused@*/ /*@null@*/
 char * parseExpressionString(Spec spec, const char * expr)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
@@ -401,7 +402,9 @@ rpmRC doScript(Spec spec, int what, /*@null@*/ const char * name,
  */
 rpmRC lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
 		/*@out@*/ Package * pkg)
-	/*@modifies spec->packages, *pkg @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies spec->packages, *pkg, rpmGlobalMacroContext,
+		internalState @*/;
 
 /** \ingroup rpmbuild
  * Create and initialize package control structure.
@@ -446,7 +449,8 @@ Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
 int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
 
 /**
  * Append files (if any) to scriptlet tags.
@@ -465,7 +469,8 @@ rpmRC processScriptFiles(Spec spec, Package pkg)
  * @param h             header
  */
 void providePackageNVR(Header h)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
 
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
@@ -475,7 +480,8 @@ void providePackageNVR(Header h)
  * @return		0 always
  */
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
-	/*@modifies h @*/;
+	/*@globals internalState @*/
+	/*@modifies h, internalState @*/;
 
 /** \ingroup rpmbuild
  * Post-build processing for binary package(s).
@@ -498,11 +504,11 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
  * @return		0 always
  */
 int initSourceHeader(Spec spec, /*@null@*/ rpmiob *sfp)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceHdrInit,
 		spec->BANames, *sfp,
 		spec->packages->header,
-		rpmGlobalMacroContext @*/;
+		rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmbuild
  * Post-build processing for source package.

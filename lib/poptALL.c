@@ -30,6 +30,10 @@ const char *__localedir = LOCALEDIR;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 extern unsigned int * keyids;
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
+
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
@@ -83,7 +87,6 @@ extern int _rpmds_debug;
 /*@unchecked@*/
 extern rpmioPool _rpmdsPool;
 
-/* XXX avoid -lrpmbuild linkage. */
 /*@unchecked@*/
        int _rpmfc_debug;
 /*@unchecked@*/
@@ -308,34 +311,34 @@ int global_depFlags;
 /*@unchecked@*/
 struct poptOption rpmcliDepFlagsPoptTable[] = {
  { "aid", '\0', POPT_BIT_SET, &global_depFlags, RPMDEPS_FLAG_ADDINDEPS,
-	N_("add suggested packages to transaction"), NULL },
+	N_("Add suggested packages to transaction"), NULL },
  { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
  	&global_depFlags, RPMDEPS_FLAG_ANACONDA|RPMDEPS_FLAG_DEPLOOPS,
-	N_("use anaconda \"presentation order\""), NULL},
+	N_("Use anaconda \"presentation order\""), NULL},
  { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
  	&global_depFlags, RPMDEPS_FLAG_DEPLOOPS,
-	N_("print dependency loops as warning"), NULL},
+	N_("Print dependency loops as warning"), NULL},
  { "nosuggest", '\0', POPT_BIT_SET,
 	&global_depFlags, RPMDEPS_FLAG_NOSUGGEST,
-	N_("do not suggest missing dependency resolution(s)"), NULL},
+	N_("Do not suggest missing dependency resolution(s)"), NULL},
  { "noconflicts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOCONFLICTS,
-	N_("do not check added package conflicts"), NULL},
+	N_("Do not check added package conflicts"), NULL},
  { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOLINKTOS,
-	N_("ignore added package requires on symlink targets"), NULL},
+	N_("Ignore added package requires on symlink targets"), NULL},
  { "noobsoletes", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOOBSOLETES,
-	N_("ignore added package obsoletes"), NULL},
+	N_("Ignore added package obsoletes"), NULL},
  { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
-	N_("ignore added package requires on file parent directory"), NULL},
+	N_("Ignore added package requires on file parent directory"), NULL},
  { "norequires", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOREQUIRES,
-	N_("do not check added package requires"), NULL},
+	N_("Do not check added package requires"), NULL},
  { "noupgrade", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOUPGRADE,
-	N_("ignore added package upgrades"), NULL},
+	N_("Ignore added package upgrades"), NULL},
    POPT_TABLEEND
 };
 
@@ -351,46 +354,46 @@ struct poptOption rpmcliAllPoptTable[] = {
         NULL, NULL },
 
  { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_PREDEFINE,
-	N_("predefine MACRO with value EXPR"),
+	N_("Predefine MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
 
  { "define", 'D', POPT_ARG_STRING, NULL, 'D',
-	N_("define MACRO with value EXPR"),
+	N_("Define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
  { "undefine", '\0', POPT_ARG_STRING, NULL, POPT_UNDEFINE,
-	N_("undefine MACRO"),
+	N_("Undefine MACRO"),
 	N_("'MACRO'") },
  { "eval", 'E', POPT_ARG_STRING, NULL, 'E',
-	N_("print macro expansion of EXPR"),
+	N_("Print macro expansion of EXPR"),
 	N_("'EXPR'") },
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
-	N_("read <FILE:...> instead of default file(s)"),
+	N_("Read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
 #ifdef WITH_LUA
  { "rpmlua", '\0', POPT_ARG_STRING, &rpmluaFiles, 0,
-	N_("read <FILE:...> instead of default RPM Lua file(s)"),
+	N_("Read <FILE:...> instead of default RPM Lua file(s)"),
 	N_("<FILE:...>") },
 #endif
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
-	N_("read <FILE:...> instead of default POPT file(s)"),
+	N_("Read <FILE:...> instead of default POPT file(s)"),
 	N_("<FILE:...>") },
 
  { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
-        N_("specify target platform"), N_("CPU-VENDOR-OS") },
+        N_("Specify target platform"), N_("CPU-VENDOR-OS") },
 
  { "nodigest", '\0', 0, NULL, RPMCLI_POPT_NODIGEST,
-        N_("don't verify package digest(s)"), NULL },
+        N_("Don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOHDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
+        N_("Don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', 0, NULL, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
+        N_("Don't verify package signature(s)"), NULL },
 
  { "querytags", '\0', 0, NULL, POPT_QUERYTAGS,
-        N_("display known query tags"), NULL },
+        N_("Display known query tags"), NULL },
  { "showrc", '\0', 0, NULL, POPT_SHOWRC,
-	N_("display macro and configuration values"), NULL },
+	N_("Display macro and configuration values"), NULL },
  { "version", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_SHOWVERSION,
-	N_("print the version"), NULL },
+	N_("Print the version"), NULL },
 
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
@@ -410,9 +413,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
 	NULL, NULL},
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
-	N_("debug package state machine"), NULL},
+	N_("Debug package state machine"), NULL},
  { "psmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_threads, -1,
-	N_("use threads for package state machine"), NULL},
+	N_("Use threads for package state machine"), NULL},
  { "rpmaldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmal_debug, -1,
 	NULL, NULL},
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,

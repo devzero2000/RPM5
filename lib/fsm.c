@@ -682,11 +682,13 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
+/*@-mods@*/	/* LCL: avoid void * _ts/_fi annotations for now. */
     fsm->iter = mapInitIterator(fi, reverse);
 /*@-assignexpose -castexpose @*/
     fsm->iter->ts = rpmtsLink(ts, "mapIterator");
 /*@=assignexpose =castexpose @*/
     fsm->nofcontexts = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS);
+/*@=mods@*/
     fsm->nofdigests =
 	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
 			? 0 : 1;
@@ -718,10 +720,14 @@ fprintf(stderr, "\tcpio vectors set\n");
     }
 
     ec = fsm->rc = 0;
+/*@-mods@*/	/* LCL: avoid void * _fsm annotations for now. */
     rc = fsmUNSAFE(fsm, IOSM_CREATE);
+/*@=mods@*/
     if (rc && !ec) ec = rc;
 
+/*@-mods@*/	/* LCL: avoid void * _fsm annotations for now. */
     rc = fsmUNSAFE(fsm, fsm->goal);
+/*@=mods@*/
     if (rc && !ec) ec = rc;
 
     if (fsm->archiveSize && ec == 0)
@@ -887,8 +893,8 @@ int fsmMapAttrs(IOSM_t fsm)
 
     if (fi && i >= 0 && i < (int) fi->fc) {
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
-	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
-	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
+	mode_t finalMode = (fi->fmodes ? (mode_t)fi->fmodes[i] : perms);
+	dev_t finalRdev = (dev_t)(fi->frdevs ? fi->frdevs[i] : 0);
 	uint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;
@@ -1508,7 +1514,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 			    D_("%s directory created with perms %04o, context %s.\n"),
 			    fsm->path, (unsigned)(st->st_mode & 07777),
 			    fsm->fcontext);
-		    fsm->fcontext = NULL;
+			fsm->fcontext = NULL;
 			scon = _free(scon);
 		    }
 		}
@@ -1616,7 +1622,7 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
-		(fsm->path ? apath + fsm->astriplen : ""),
+		(apath ? apath + fsm->astriplen : ""),
 		_fafilter(fsm->action));
     }
 #undef	_fafilter
