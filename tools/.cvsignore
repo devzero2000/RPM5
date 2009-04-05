@@ -16,4 +16,5 @@ rpmdigest
 rpmgrep
 rpmmtree
 rpmrepo
+rpmspecdump
 txar
