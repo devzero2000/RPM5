@@ -130,6 +130,31 @@ rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
 	--POPTdesc=$"list prerequisite packages of args"
 
 #==============================================================================
+rpm	alias --deb:Packages --qf @USRLIBRPM@/qf/deb_Packages \
+	--POPTdesc=$"display Debian Packages file"
+
+rpm	alias --deb:Sources --qf @USRLIBRPM@/qf/deb_Sources \
+	--POPTdesc=$"display Debian Sources file"
+
+rpm	alias --deb:control --qf @USRLIBRPM@/qf/deb_control \
+	--POPTdesc=$"display binary debian/control file"
+
+rpm	alias --deb:preinst --qf @USRLIBRPM@/qf/deb_preinst \
+	--POPTdesc=$"display debian/preinst script"
+
+rpm	alias --deb:postinst --qf @USRLIBRPM@/qf/deb_postinst \
+	--POPTdesc=$"display debian/postinst script"
+
+rpm	alias --deb:prerm --qf @USRLIBRPM@/qf/deb_prerm \
+	--POPTdesc=$"display debian/prerm script"
+
+rpm	alias --deb:postrm --qf @USRLIBRPM@/qf/deb_postrm \
+	--POPTdesc=$"display debian/postrm script"
+
+rpm	alias --deb:md5sums --qf @USRLIBRPM@/qf/deb_md5sums \
+	--POPTdesc=$"display debian/md5sums manifest"
+
+#==============================================================================
 rpm	alias --yum:primary.xml --qf @USRLIBRPM@/qf/yum_primary_xml \
 	--POPTdesc=$"display yum primary.xml markup"
 
@@ -255,7 +280,6 @@ rpm	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
-
 
 # RPM_VENDOR_PLD /* rpm-popt-aliases */
 rpm    alias --downgrade       --oldpackage \
