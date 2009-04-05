@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: install/use yum:{primary,filelists,other}.sqlite queryformats.
+    - jbj: install/use yum:{primary,filelists,other}.xml queryformats.
     - jbj: install/use wnh:{primary,filelists,other}.yaml queryformats.
     - jbj: use poptReadFile with retrofit for popt < 1.15.
     - devzero2000: fix --orphandirs port alias ; add --danglinglink popt alias
