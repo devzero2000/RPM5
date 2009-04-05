@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: rude & crude backing store for --queryformat templates.
     - jbj: PLD: rpm-popt-aliases: Add --downgrade/--norepackage aliases.
     - jbj: PLD: rpm-notsc: Don't use rdtsc timing.
     - jbj: enable the PLD dependency filtering.
