@@ -50,7 +50,8 @@ extern int sqlite3_close(sqlite3 * db)
 #include <poptIO.h>
 
 #include <rpmtag.h>
-#include <rpmlib.h>		/* XXX for rpmts typedef */
+#include <rpmlib.h>
+#include <pkgio.h>
 #include <rpmts.h>
 
 #include "debug.h"
@@ -82,6 +83,28 @@ struct rpmrfile_s {
     const char ** sql_init;
 /*@observer@*/
     const char * sql_qfmt;
+#ifdef	NOTYET	/* XXX char **?!? */
+/*@observer@*/
+    const char ** sql_fini;
+#endif
+/*@observer@*/
+    const char * yaml_init;
+/*@observer@*/
+    const char * yaml_qfmt;
+/*@observer@*/
+    const char * yaml_fini;
+/*@observer@*/
+    const char * Packages_init;
+/*@observer@*/
+    const char * Packages_qfmt;
+/*@observer@*/
+    const char * Packages_fini;
+/*@observer@*/
+    const char * Sources_init;
+/*@observer@*/
+    const char * Sources_qfmt;
+/*@observer@*/
+    const char * Sources_fini;
 /*@relnull@*/
     FD_t fd;
 #if defined(WITH_SQLITE)
@@ -199,116 +222,45 @@ static const char repomd_xml_init[] = "\
 static const char repomd_xml_fini[] = "</repomd>\n";
 
 /* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
-/* XXX todo: change to "... installed=\"%{SIZE}\" ..." */
 /*@unchecked@*/ /*@observer@*/
-static const char primary_xml_qfmt[] = "\
-<package type=\"rpm\">\
-\n  <name>%{NAME:cdata}</name>\
-\n  <arch>%{ARCH:cdata}</arch>\
-\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-\n  <checksum type=\"sha\" pkgid=\"YES\">%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|</checksum>\
-\n  <summary>%{SUMMARY:cdata}</summary>\
-\n  <description>%{DESCRIPTION:cdata}</description>\
-\n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
-\n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
-\n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
-\n  <size package=\"%{PACKAGESIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
-\n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href=\"%{PACKAGEORIGIN:bncdata}\"/>\
-\n  <format>\
-%|license?{\
-\n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
-}:{\
-\n    <rpm:license/>\
-}|\
-%|vendor?{\
-\n    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\
-}:{\
-\n    <rpm:vendor/>\
-}|\
-%|group?{\
-\n    <rpm:group>%{GROUP:cdata}</rpm:group>\
-}:{\
-\n    <rpm:group/>\
-}|\
-%|buildhost?{\
-\n    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\
-}:{\
-\n    <rpm:buildhost/>\
-}|\
-%|sourcerpm?{\
-\n    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\
-}|\
-\n    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\
-%|providexmlentry?{\
-\n    <rpm:provides>\
-[\
-\n      %{providexmlentry}\
-]\
-\n    </rpm:provides>\
-}:{\
-\n    <rpm:provides/>\
-}|\
-%|requirexmlentry?{\
-\n    <rpm:requires>\
-[\
-\n      %{requirexmlentry}\
-]\
-\n    </rpm:requires>\
-}:{\
-\n    <rpm:requires/>\
-}|\
-%|conflictxmlentry?{\
-\n    <rpm:conflicts>\
-[\
-\n      %{conflictxmlentry}\
-]\
-\n    </rpm:conflicts>\
-}:{\
-\n    <rpm:conflicts/>\
-}|\
-%|obsoletexmlentry?{\
-\n    <rpm:obsoletes>\
-[\
-\n      %{obsoletexmlentry}\
-]\
-\n    </rpm:obsoletes>\
-}:{\
-\n    <rpm:obsoletes/>\
-}|\
-%|filesxmlentry1?{\
-[\
-\n    %{filesxmlentry1}\
-]\
-}|\
-\n  </format>\
-\n</package>\
-\n";
+static const char primary_xml_qfmt[] =
+#include "yum_primary_xml"
+;
 
 /*@unchecked@*/ /*@observer@*/
-static const char filelists_xml_qfmt[] = "\
-<package pkgid=\"%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
-\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-%|filesxmlentry2?{\
-[\
-\n  %{filesxmlentry2}\
-]\
-}|\
-\n</package>\
-\n";
+static const char filelists_xml_qfmt[] =
+#include "yum_filelists_xml"
+;
 
 /*@unchecked@*/ /*@observer@*/
-static const char other_xml_qfmt[] = "\
-<package pkgid=\"%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
-\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-%|changelogname?{\
-[\
-\n  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\
-]\
-}:{\
-\n  <changelog/>\
-}|\
-\n</package>\
-\n";
+static const char other_xml_qfmt[] =
+#include "yum_other_xml"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char primary_yaml_qfmt[] =
+#include "wnh_primary_yaml"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char filelists_yaml_qfmt[] =
+#include "wnh_filelists_yaml"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char other_yaml_qfmt[] =
+#include "wnh_other_yaml"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char Packages_qfmt[] =
+#include "deb_Packages"
+;
+
+/*@unchecked@*/ /*@observer@*/
+static const char Sources_qfmt[] =
+#include "deb_Sources"
+;
 
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
@@ -437,61 +389,9 @@ static const char *other_sql_init[] = {
 /* files      3 type TEXT */
 
 /*@unchecked@*/ /*@observer@*/
-static const char primary_sql_qfmt[] = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
-,\n '%{NAME:sqlescape}'\
-, '%{ARCH:sqlescape}'\
-, '%{VERSION:sqlescape}'\
-, '%|EPOCH?{%{EPOCH}}:{0}|'\
-, '%{RELEASE:sqlescape}'\
-,\n '%{SUMMARY:sqlescape}'\
-,\n '%{DESCRIPTION:sqlescape}'\
-,\n '%|URL?{%{URL:sqlescape}}|'\
-, '%{PACKAGETIME}'\
-, '%{BUILDTIME}'\
-, '%|license?{%{LICENSE:sqlescape}}|'\
-,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
-, '%|group?{%{GROUP:sqlescape}}|'\
-,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
-, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
-,\n '%{HEADERSTARTOFF}'\
-, '%{HEADERENDOFF}'\
-, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{PACKAGESIZE}'\
-, '%{SIZE}'\
-, '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:bncdata}'\
-,\n '%{PACKAGEBASEURL:sqlescape}'\
-, 'sha'\
-);\
-%|obsoletename?{[\
-\nINSERT into obsoletes values (\
-%{obsoletesqlentry}\
-);\
-]}|\
-%|providename?{[\
-\nINSERT into provides values (\
-%{providesqlentry}\
-);\
-]}|\
-%|conflictname?{[\
-\nINSERT into conflicts values (\
-%{conflictsqlentry}\
-);\
-]}|\
-%|requirename?{[\
-\nINSERT into requires values (\
-%{requiresqlentry}\
-);\
-]}|\
-%|basenames?{[\
-\nINSERT into files values (\
-%{filessqlentry1}\
-);\
-]}|\
-";
+static const char primary_sql_qfmt[] =
+#include "yum_primary_sqlite"
+;
 
 /* packages  1 pkgKey INTEGER PRIMARY KEY */
 /* packages  2 pkgId TEXT */
@@ -500,17 +400,9 @@ INSERT into packages values (\
 /* filelist  3 type TEXT */
 
 /*@unchecked@*/ /*@observer@*/
-static const char filelists_sql_qfmt[] = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
-);\
-%|basenames?{[\
-\nINSERT into filelist values (\
-%{filessqlentry2}\
-);\
-]}|\
-";
+static const char filelists_sql_qfmt[] =
+#include "yum_filelists_sqlite"
+;
 
 /* packages  1 pkgKey INTEGER PRIMARY KEY */
 /* packages  2 pkgId TEXT */
@@ -520,22 +412,9 @@ INSERT into packages values (\
 /* changelog 4 changelog TEXT */
 
 /*@unchecked@*/ /*@observer@*/
-static const char other_sql_qfmt[] = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
-);\
-%|changelogname?{[\
-\nINSERT into changelog values (\
-'XXX'\
-, '%{CHANGELOGNAME:sqlescape}'\
-, '%{CHANGELOGTIME}'\
-, '%{CHANGELOGTEXT:sqlescape}'\
-);\
-]}:{\
-\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
-}|\
-";
+static const char other_sql_qfmt[] =
+#include "yum_other_sqlite"
+;
 
 /*@-fullinitblock@*/
 /*@unchecked@*/
@@ -556,7 +435,19 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= primary_xml_qfmt,
 	.xml_fini= primary_xml_fini,
 	.sql_init= primary_sql_init,
-	.sql_qfmt= primary_sql_qfmt
+	.sql_qfmt= primary_sql_qfmt,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= primary_yaml_qfmt,
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= NULL,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= NULL,
+	.Sources_fini= NULL
     },
     .filelists	= {
 	.type	= "filelists",
@@ -564,7 +455,19 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= filelists_xml_qfmt,
 	.xml_fini= filelists_xml_fini,
 	.sql_init= filelists_sql_init,
-	.sql_qfmt= filelists_sql_qfmt
+	.sql_qfmt= filelists_sql_qfmt,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= filelists_yaml_qfmt,
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= NULL,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= NULL,
+	.Sources_fini= NULL
     },
     .other	= {
 	.type	= "other",
@@ -572,7 +475,19 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= other_xml_qfmt,
 	.xml_fini= other_xml_fini,
 	.sql_init= other_sql_init,
-	.sql_qfmt= other_sql_qfmt
+	.sql_qfmt= other_sql_qfmt,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= other_yaml_qfmt,
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= NULL,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= NULL,
+	.Sources_fini= NULL
     },
     .repomd	= {
 	.type	= "repomd",
@@ -580,7 +495,19 @@ static struct rpmrepo_s __rpmrepo = {
 	.xml_qfmt= NULL,
 	.xml_fini= repomd_xml_fini,
 	.sql_init= NULL,
-	.sql_qfmt= NULL
+	.sql_qfmt= NULL,
+#ifdef	NOTYET	/* XXX char **?!? */
+	.sql_fini= NULL,
+#endif
+	.yaml_init= NULL,
+	.yaml_qfmt= NULL,
+	.yaml_fini= NULL,
+	.Packages_init= NULL,
+	.Packages_qfmt= Packages_qfmt,
+	.Packages_fini= NULL,
+	.Sources_init= NULL,
+	.Sources_qfmt= Sources_qfmt,
+	.Sources_fini= NULL
     }
 };
 /*@=fullinitblock@*/
@@ -1898,7 +1825,89 @@ static int repoDoFinalMove(rpmrepo repo)
 
 /*==============================================================*/
 
-#if !defined(POPT_ARG_ARGV)
+#if 0
+#if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
+#define	POPT_READFILE_TRIMNEWLINES	1
+/**
+ * Read a file into a buffer.
+ * @param fn		file name
+ * @retval *bp		buffer (malloc'd)
+ * @retval *nbp		no. of bytes in buffer (including final NUL)
+ * @param flags		1 to trim escaped newlines
+ * return		0 on success
+ */
+static int poptReadFile(const char * fn, char ** bp, size_t * nbp, int flags)
+{
+    int fdno;
+    char * b = NULL;
+    off_t nb = 0;
+    char * s, * t, * se;
+    int rc = POPT_ERROR_ERRNO;	/* assume failure */
+
+    fdno = open(fn, O_RDONLY);
+    if (fdno < 0)
+	goto exit;
+
+    if ((nb = lseek(fdno, 0, SEEK_END)) == (off_t)-1
+     || lseek(fdno, 0, SEEK_SET) == (off_t)-1
+     || (b = calloc(sizeof(*b), (size_t)nb + 1)) == NULL
+     || read(fdno, (char *)b, (size_t)nb) != (ssize_t)nb)
+    {
+	int oerrno = errno;
+	(void) close(fdno);
+	errno = oerrno;
+	goto exit;
+    }
+    if (close(fdno) == -1)
+	goto exit;
+    if (b == NULL) {
+	rc = POPT_ERROR_MALLOC;
+	goto exit;
+    }
+    rc = 0;
+
+   /* Trim out escaped newlines. */
+/*@-bitwisesigned@*/
+    if (flags & POPT_READFILE_TRIMNEWLINES)
+/*@=bitwisesigned@*/
+    {
+	for (t = b, s = b, se = b + nb; *s && s < se; s++) {
+	    switch (*s) {
+	    case '\\':
+		if (s[1] == '\n') {
+		    s++;
+		    continue;
+		}
+		/*@fallthrough@*/
+	    default:
+		*t++ = *s;
+		/*@switchbreak@*/ break;
+	    }
+	}
+	*t++ = '\0';
+	nb = (off_t)(t - b);
+    }
+
+exit:
+    if (rc == 0) {
+	*bp = b;
+	*nbp = (size_t) nb;
+    } else {
+/*@-usedef@*/
+	if (b)
+	    free(b);
+/*@=usedef@*/
+	*bp = NULL;
+	*nbp = 0;
+    }
+/*@-compdef -nullstate @*/	/* XXX cannot annotate char ** correctly */
+    return rc;
+/*@=compdef =nullstate @*/
+}
+#endif /* !defined(POPT_READFILE_TRIMNEWLINES) */
+#endif
+
+#if !defined(POPT_ARG_ARGV)		/* XXX popt < 1.14 */
 /**
  */
 static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)

@@ -9,11 +9,13 @@ SUBDIRS = # tests
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
+	-I$(top_builddir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	-I$(top_srcdir)/build \
 	@WITH_DB_CPPFLAGS@ \
-	@WITH_PCRE_CPPFLAGS@
+	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
 EXTRA_DIST =	hashtab.h
@@ -68,6 +70,7 @@ rpmmtree_SOURCES =	rpmmtree.c
 rpmmtree_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmrepo_SOURCES =	rpmrepo.c
+rpmrepo_CPPFLAGS =	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts $(CPPFLAGS)
 rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
 
 ##

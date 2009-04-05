@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: rpmrepo: compile in queryformat strings.
     - jbj: install/use deb:{md5sums,preinst,postinst,prerm,postrm} queryformats.
     - jbj: install/use yum:{primary,filelists,other}.sqlite queryformats.
     - jbj: install/use yum:{primary,filelists,other}.xml queryformats.
