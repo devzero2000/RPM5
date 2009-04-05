@@ -19,6 +19,10 @@ struct rpmQVKArguments_s rpmQVKArgs;
 /*@unchecked@*/
 int specedit = 0;
 
+#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
+#define	POPT_ARGFLAG_TOGGLE	0
+#endif
+
 #define POPT_QUERYFORMAT	-1000
 #define POPT_WHATREQUIRES	-1001
 #define POPT_WHATPROVIDES	-1002
@@ -190,6 +194,89 @@ struct poptOption rpmQVSourcePoptTable[] = {
    POPT_TABLEEND
 };
 
+#if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
+#define	POPT_READFILE_TRIMNEWLINES	1
+
+/**
+ * Read a file into a buffer.
+ * @param fn		file name
+ * @retval *bp		buffer (malloc'd)
+ * @retval *nbp		no. of bytes in buffer (including final NUL)
+ * @param flags		1 to trim escaped newlines
+ * return		0 on success
+ */
+static int poptReadFile(const char * fn, char ** bp, size_t * nbp, int flags)
+	/*@globals errno @*/
+	/*@modifies *bp, *nbp, errno @*/
+{
+    int fdno;
+    char * b = NULL;
+    off_t nb = 0;
+    char * s, * t, * se;
+    int rc = POPT_ERROR_ERRNO;	/* assume failure */
+
+    fdno = open(fn, O_RDONLY);
+    if (fdno < 0)
+	goto exit;
+
+    if ((nb = lseek(fdno, 0, SEEK_END)) == (off_t)-1
+     || lseek(fdno, 0, SEEK_SET) == (off_t)-1
+     || (b = calloc(sizeof(*b), (size_t)nb + 1)) == NULL
+     || read(fdno, (char *)b, (size_t)nb) != (ssize_t)nb)
+    {
+	int oerrno = errno;
+	(void) close(fdno);
+	errno = oerrno;
+	goto exit;
+    }
+    if (close(fdno) == -1)
+	goto exit;
+    if (b == NULL) {
+	rc = POPT_ERROR_MALLOC;
+	goto exit;
+    }
+    rc = 0;
+
+   /* Trim out escaped newlines. */
+/*@-bitwisesigned@*/
+    if (flags & POPT_READFILE_TRIMNEWLINES)
+/*@=bitwisesigned@*/
+    {
+	for (t = b, s = b, se = b + nb; *s && s < se; s++) {
+	    switch (*s) {
+	    case '\\':
+		if (s[1] == '\n') {
+		    s++;
+		    continue;
+		}
+		/*@fallthrough@*/
+	    default:
+		*t++ = *s;
+		/*@switchbreak@*/ break;
+	    }
+	}
+	*t++ = '\0';
+	nb = (off_t)(t - b);
+    }
+
+exit:
+    if (rc == 0) {
+	*bp = b;
+	*nbp = (size_t) nb;
+    } else {
+/*@-usedef@*/
+	if (b)
+	    free(b);
+/*@=usedef@*/
+	*bp = NULL;
+	*nbp = 0;
+    }
+/*@-compdef -nullstate @*/	/* XXX cannot annotate char ** correctly */
+    return rc;
+/*@=compdef =nullstate @*/
+}
+#endif /* !defined(POPT_READFILE_TRIMNEWLINES) */
+
 /* ========== Query specific popt args */
 
 static void queryArgCallback(poptContext con,
@@ -215,6 +302,30 @@ static void queryArgCallback(poptContext con,
     case POPT_QUERYFORMAT:
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
+	    char * b = NULL;
+	    size_t nb = 0;
+
+	    /* Read queryformat from file. */
+	    if (arg[0] == '/') {
+		const char * fn = arg;
+		int rc;
+
+		rc = poptReadFile(fn, &b, &nb, POPT_READFILE_TRIMNEWLINES);
+		if (rc != 0)
+		    goto _qfexit;
+		if (b == NULL || nb == 0)	/* XXX can't happen */
+		    goto _qfexit;
+		/* XXX trim double quotes */
+		if (*b == '"') {
+		    while (nb > 0 && b[nb] != '"')
+			b[nb--] = '\0';
+		    b[nb] = '\0';
+		    arg = b + 1;
+		} else
+		    arg = b;
+	    }
+
+	    /* Append to existing queryformat. */
 	    if (qf) {
 		size_t len = strlen(qf) + strlen(arg) + 1;
 		qf = xrealloc(qf, len);
@@ -224,6 +335,9 @@ static void queryArgCallback(poptContext con,
 		strcpy(qf, arg);
 	    }
 	    qva->qva_queryFormat = qf;
+
+	_qfexit:
+	    b = _free(b);
 	}
 	break;
 
