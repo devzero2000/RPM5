@@ -97,6 +97,11 @@ struct _FD_s {
 #define	FDDIGEST_MAX	32
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
+/*null@*/
+    const char *contentType;	/* ufdio: (HTTP) */
+/*null@*/
+    const char *contentDisposition;	/* ufdio: (HTTP) */
+    time_t	lastModified;	/* ufdio: (HTTP) */
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
     unsigned long long	fd_cpioPos;	/* cpio: */
 #if defined(__LCLINT__)

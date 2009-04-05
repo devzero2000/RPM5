@@ -14,6 +14,7 @@ extern const char *__progname;
 #endif
 
 #if defined(RPM_VENDOR_OPENPKG) /* integrity-checking */
+#define	_RPMIOB_INTERNAL	/* XXX rpmiobSlurp */
 #include "rpmio_internal.h"
 #endif
 
@@ -214,6 +215,8 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     char *pkey_fn = NULL;
     char *spec = NULL;
     char *proc = NULL;
+    rpmiob spec_iob = NULL;
+    rpmiob proc_iob = NULL;
     const char *result = NULL;
     const char *error = NULL;
     int xx;
@@ -259,22 +262,22 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     }
 
     /* load integrity configuration specification file */
-    spec = NULL;
-	xx = rpmioSlurp(spec_fn, (uint8_t **)&spec, NULL);
-	if (!(xx == 0 && spec != NULL)) {
+    xx = rpmiobSlurp(spec_fn, &spec_iob);
+    if (!(xx == 0 && spec_iob != NULL)) {
         integrity_check_message("ERROR: Unable to load Integrity Configuration Specification file.\n"
             "rpm: HINT: Check file \"%s\".\n", spec_fn);
         goto failure;
     }
+    spec = rpmiobStr(spec_iob);
 
     /* load integrity validation processor file */
-    proc = NULL;
-	xx = rpmioSlurp(proc_fn, (uint8_t **)&proc, NULL);
-	if (!(xx == 0 && proc != NULL)) {
+    xx = rpmiobSlurp(proc_fn, &proc_iob);
+    if (!(xx == 0 && proc_iob != NULL)) {
         integrity_check_message("ERROR: Unable to load Integrity Validation Processor file.\n"
             "rpm: HINT: Check file \"%s\".\n", proc_fn);
         goto failure;
     }
+    proc = rpmiobStr(proc_iob);
 
     /* provision program name and mode */
     if (progname == NULL || progname[0] == '\0')
@@ -345,14 +348,14 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     /* cleanup processing */
     failure:
     if (lua != NULL)
-        rpmluaFree(lua);
+	rpmluaFree(lua);
     if (ts != NULL)
-        (void)rpmtsFree(ts);
+	(void)rpmtsFree(ts);
     ts = NULL;
-    if (spec != NULL)
-        spec = _free(spec);
-    if (proc != NULL)
-        proc = _free(proc);
+    if (spec_iob != NULL)
+	spec_iob = rpmiobFree(spec_iob);
+    if (proc_iob != NULL)
+	proc_iob = rpmiobFree(proc_iob);
 
     /* final result handling */
     if (rc != INTEGRITY_OK) {
@@ -411,7 +414,7 @@ int main(int argc, const char ** argv)
     int status;
     int p[2];
 #ifdef	IAM_RPMEIU
-    int i;
+    int xx;
 #endif
 	
 #if !defined(__GLIBC__) && !defined(__LCLINT__)
@@ -720,7 +723,10 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
     if (rpmioPipeOutput) {
-	(void) pipe(p);
+	if (pipe(p) < 0) {
+	    fprintf(stderr, _("creating a pipe for --pipe failed: %m\n"));
+	    goto exit;
+	}
 
 	if (!(pipeChild = fork())) {
 	    (void) close(p[1]);
@@ -927,16 +933,13 @@ ia->rbRun = rpmcliInstallRun;
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
 	if (ia->qva_prefix) {
-	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
-	    ia->relocations[0].oldPath = NULL;   /* special case magic */
-	    ia->relocations[0].newPath = ia->qva_prefix;
-	    ia->relocations[1].oldPath = NULL;
-	    ia->relocations[1].newPath = NULL;
+	    xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			NULL, ia->qva_prefix);
+	    xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			NULL, NULL);
 	} else if (ia->relocations) {
-	    ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-	    ia->relocations[ia->numRelocations].oldPath = NULL;
-	    ia->relocations[ia->numRelocations].newPath = NULL;
+	    xx = rpmfiAddRelocation(&ia->relocations, &ia->nrelocations,
+			NULL, NULL);
 	}
 	/*@=branchstate@*/
 
@@ -1052,10 +1055,7 @@ exit:
 #endif
 
 #ifdef	IAM_RPMEIU
-    if (ia->relocations != NULL)
-    for (i = 0; i < ia->numRelocations; i++)
-	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
-    ia->relocations = _free(ia->relocations);
+    ia->relocations = rpmfiFreeRelocations(ia->relocations);
 #endif
 
     optCon = rpmcliFini(optCon);

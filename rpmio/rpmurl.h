@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <rpmio.h>
+#include <rpmsw.h>
 
 /**
  * Supported URL types.
@@ -24,7 +25,19 @@ typedef enum urltype_e {
 #define	URLMAGIC	0xd00b1ed0U
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
+/**
+ */
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
+
+/**
+ */
+extern int (*urlNotify) (const urlinfo u, unsigned status)
+	/*@*/;
+
+/**
+ */
+/*@unchecked@*/ /*@null@*/ /*@shared@*/
+extern void * urlNotifyArg;
 
 /**
  * URL control structure.
@@ -68,14 +81,30 @@ struct urlinfo_s {
     off_t current;		/*!< neon: current body offset. */
     off_t total;		/*!< neon: total body length. */
     int connstatus;		/*!< neon: connection status. */
-#ifdef  REFERENCE
-typedef enum {
-    ne_conn_namelookup,	/* lookup up hostname (info = hostname) */
-    ne_conn_connecting,	/* connecting to host (info = hostname) */
-    ne_conn_connected,	/* connected to host (info = hostname) */
-    ne_conn_secure	/* connection now secure (info = crypto level) */
-} ne_conn_status;
-#endif
+
+/*@null@*/
+    const char * location;	/*!< Location: tag. */
+/*@null@*/
+    const char * etag;		/*!< ETag: tag. */
+/*@null@*/
+    int (*notify) (const urlinfo u, unsigned status);
+/*@null@*/ /*@shared@*/
+    void * arg;
+    struct fdNotify_s {
+	unsigned status;
+/*@null@*/
+	const char * hostname;
+/*@null@*/
+	const char * address;
+	int64_t progress;
+	int64_t total;
+    } info;
+/*@null@*/
+    rpmop rop;			/*!< Receive accumulator. */
+/*@null@*/
+    rpmop sop;			/*!< Send accumulator. */
+/*@null@*/
+    rpmop top;			/*!< Total accumulator. */
 
     int bufAlloced;		/*!< sizeof I/O buffer */
 /*@owned@*/
@@ -123,11 +152,12 @@ extern int _url_debug;		/*!< URL debugging? */
  * @param msg		debugging identifier (unused)
  * @return		new instance
  */
-/*@unused@*/ /*@newref@*/
-urlinfo	urlNew(const char * msg)	/*@*/;
+/*@unused@*/ /*@null@*/
+urlinfo	urlNew(const char * msg)
+	/*@*/;
 
 /** @todo Remove debugging entry from the ABI. */
-/*@newref@*/
+/*@null@*/
 urlinfo	XurlNew(const char * msg, const char * fn, unsigned ln)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
@@ -151,11 +181,11 @@ urlinfo	urlLink(/*@returned@*/ urlinfo u, const char * msg)
  * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/;
-#define	urlFree(_u, _msg)       \
+#define	urlFree(_u, _msg)	\
 	((urlinfo)rpmioFreePoolItem((rpmioItem)(_u), _msg, __FILE__, __LINE__))
 
 /**
