@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: backport rpmspecdump from HEAD.
     - jbj: lib: more random line noise reduction, diff'ing against HEAD.
     - jbj: delete ancient header+payload RSA signatures too using GPG (#488953).
     - jbj: rpmrepo: compile in queryformat strings.
