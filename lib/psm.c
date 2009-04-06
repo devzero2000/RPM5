@@ -12,6 +12,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 #include <rpmlua.h>
+#include <rpmtcl.h>
 #include <rpmtag.h>
 #include <rpmtypes.h>
 #include <rpmlib.h>
@@ -493,7 +494,6 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  * @param psm		package state machine data
- * @param h		header
  * @param sln		name of scriptlet section
  * @param Phe		scriptlet args, Phe->p.argv[0] is interpreter to use
  * @param script	scriptlet body
@@ -502,47 +502,15 @@ static pid_t psmWait(rpmpsm psm)
  * @param arg2		ditto, but for the target package
  * @return		RPMRC_OK on success
  */
-static rpmRC runLuaScript(rpmpsm psm, /*@unused@*/ Header h, const char * sln, HE_t Phe,
+static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    const rpmts ts = psm->ts;
-    const char * NVRA = psm->NVRA;
-    int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
-    int i;
     int xx;
-    rpmlua lua = NULL; /* Global state. */
+    rpmlua lua = NULL;	/* Global state. */
     rpmluav var;
-    int * ssp = NULL;
-    int inChroot = 0; /* Are we already in a chroot? */
-
-    if (psm->sstates != NULL)
-	ssp = psm->sstates + tag2slx(psm->scriptTag);
-    if (ssp != NULL)
-	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
-
-    /* Save the current working directory. */
-/*@-nullpass@*/
-    rootFdno = open(".", O_RDONLY, 0);
-/*@=nullpass@*/
-
-    /* Get into the chroot. */
-    if (!rpmtsChrootDone(ts)) {
-	const char *rootDir = rpmtsRootDir(ts);
-	inChroot = 0;
-	/*@-modobserver @*/
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
-	    xx = Chroot(rootDir);
-	/*@=modobserver @*/
-	    xx = rpmtsSetChrootDone(ts, 1);
-	}
-    } else
-       inChroot = 1;
-
-    /* All lua scripts run with CWD == "/". */
-    xx = Chdir("/");
 
     /* Create arg variable */
     rpmluaPushTable(lua, "arg");
@@ -550,6 +518,7 @@ static rpmRC runLuaScript(rpmpsm psm, /*@unused@*/ Header h, const char * sln, H
     rpmluavSetListMode(var, 1);
 /*@+relaxtypes@*/
     if (Phe->p.argv) {
+	int i;
 	for (i = 0; i < (int)Phe->c && Phe->p.argv[i]; i++) {
 	    rpmluavSetValue(var, RPMLUAV_STRING, Phe->p.argv[i]);
 	    rpmluaSetVar(lua, var);
@@ -569,33 +538,69 @@ static rpmRC runLuaScript(rpmpsm psm, /*@unused@*/ Header h, const char * sln, H
 /*@=moduncon@*/
     rpmluaPop(lua);
 
-    {
-	char buf[BUFSIZ];
-	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, NVRA);
+    {	char buf[BUFSIZ];
+	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, psm->NVRA);
 	xx = rpmluaRunScript(lua, script, buf);
 	if (xx == -1) {
-	    void * ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+	    void * ptr = rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 psm->scriptTag, 1);
 	    ptr = ptr;	/* XXX keep gcc happy. */
 	    rc = RPMRC_FAIL;
-	}
-	if (ssp != NULL) {
-	    *ssp &= ~0xffff;
-	    *ssp |= (xx & 0xffff);
-	    *ssp |= RPMSCRIPT_STATE_REAPED;
-	}
+	} else
+	    rc = RPMRC_OK;
     }
-
     rpmluaDelVar(lua, "arg");
 
-    /* Get out of chroot. */
-    if (rpmtsChrootDone(ts) && !inChroot) {
+    return rc;
+}
+#endif	/* WITH_LUA */
+
+#if defined(WITH_LUA) || defined(WITH_TCL)
+static int enterChroot(rpmpsm psm, int * fdnop)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *fdnop, fileSystem, internalState @*/
+{
+    const rpmts ts = psm->ts;
+    int inChroot;
+    int xx;
+
+    /* Save the current working directory. */
+    if (fdnop)
+	(*fdnop) = open(".", O_RDONLY, 0);
+
+    /* Get into the chroot. */
+    if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
+	inChroot = 0;
+	/*@-modobserver @*/
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
+	    xx = Chroot(rootDir);
+	/*@=modobserver @*/
+	    xx = rpmtsSetChrootDone(ts, 1);
+	}
+    } else
+       inChroot = 1;
+
+    /* All lua scripts run with CWD == "/". */
+    xx = Chdir("/");
+
+    return inChroot;
+}
+
+static int exitChroot(rpmpsm psm, int inChroot, int rootFdno)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    const rpmts ts = psm->ts;
+    const char *rootDir = rpmtsRootDir(ts);
+    int xx;
+
+    if (rpmtsChrootDone(ts) && !inChroot) {
 	xx = fchdir(rootFdno);
-	/*@-modobserver@*/
+/*@-modobserver@*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    xx = Chroot(".");
-	/*@=modobserver@*/
+/*@=modobserver@*/
 	    xx = rpmtsSetChrootDone(ts, 0);
 	}
     } else
@@ -603,9 +608,65 @@ static rpmRC runLuaScript(rpmpsm psm, /*@unused@*/ Header h, const char * sln, H
 
     xx = close(rootFdno);
 
+    return 0;
+}
+
+/**
+ * Run embedded interpreter script.
+ * @param psm		package state machine data
+ * @param sln		name of scriptlet section
+ * @param Phe		scriptlet args, Phe->p.argv[0] is interpreter to use
+ * @param script	scriptlet body
+ * @param arg1		no. instances of package installed after scriptlet exec
+ *			(-1 is no arg)
+ * @param arg2		ditto, but for the target package
+ * @return		RPMRC_OK on success
+ */
+static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
+		   const char *script, int arg1, int arg2)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
+{
+    int rootFdno = -1;
+    rpmRC rc = RPMRC_OK;
+    int xx;
+    int * ssp = NULL;
+    int inChroot = enterChroot(psm, &rootFdno);
+
+    if (psm->sstates != NULL)
+	ssp = psm->sstates + tag2slx(psm->scriptTag);
+    if (ssp != NULL)
+	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
+
+#if defined(WITH_LUA)
+    if (!strcmp(Phe->p.argv[0], "<lua>")) {
+	rc = runLuaScript(psm, sln, Phe, script, arg1, arg2);
+    } else
+#endif
+#if defined(WITH_TCL)
+    if (!strcmp(Phe->p.argv[0], "<tcl>")) {
+	rpmtcl tcl = rpmtclNew(NULL, 0);
+	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
+	if (rpmtclRun(tcl, script, NULL) == RPMRC_OK)
+	    rc = RPMRC_OK;
+	else
+	    rc = RPMRC_FAIL;
+	tcl = rpmtclFree(tcl);
+    } else
+#endif
+	rc = RPMRC_NOTFOUND;
+
+    if (ssp != NULL) {
+	*ssp &= ~0xffff;
+	*ssp |= (xx & 0xffff);
+	*ssp |= RPMSCRIPT_STATE_REAPED;
+    }
+
+    xx = exitChroot(psm, inChroot, rootFdno);
+
     return rc;
 }
-#endif
+#endif	/* defined(WITH_LUA) || defined(WITH_TCL) */
 
 /**
  */
@@ -678,12 +739,13 @@ assert(he->p.str != NULL);
 	psm->NVRA = NVRA = he->p.str;
     }
 
-    if (Phe->p.argv && Phe->p.argv[0] && strcmp(Phe->p.argv[0], "<lua>") == 0) {
-#ifdef WITH_LUA
+    if (Phe->p.argv && Phe->p.argv[0])
+    if (!strcmp(Phe->p.argv[0], "<lua>") || !strcmp(Phe->p.argv[0], "<tcl>")) {
+#if defined(WITH_LUA) || defined(WITH_TCL)
 	rpmlog(RPMLOG_DEBUG,
-		D_("%s: %s(%s) running <lua> scriptlet.\n"),
-		psm->stepName, tag2sln(psm->scriptTag), NVRA);
-	rc = runLuaScript(psm, h, sln, Phe, body, arg1, arg2);
+		D_("%s: %s(%s) running %s scriptlet.\n"),
+		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);
+	rc = runEmbeddedScript(psm, sln, Phe, body, arg1, arg2);
 #endif
 	goto exit;
     }

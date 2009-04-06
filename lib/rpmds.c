@@ -1472,7 +1472,12 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 #if defined(WITH_LUA)
     { "rpmlib(BuiltinLuaScripts)",    "4.2.2-1",
 	(                RPMSENSE_EQUAL),
-    N_("internal support for lua scripts.") },
+    N_("internal embedded lua scripts.") },
+#endif
+#if defined(WITH_TCL)
+    { "rpmlib(BuiltinTclScripts)",    "5.2-1",
+	(                RPMSENSE_EQUAL),
+    N_("internal embedded tcl scripts.") },
 #endif
     { "rpmlib(HeaderTagTypeInt64)",    "4.4.3-1",
 	(                RPMSENSE_EQUAL),

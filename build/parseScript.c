@@ -313,6 +313,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinLuaScripts", "4.2.2-1");
     } else
 #endif
+#ifdef WITH_TCL
+    if (!strcmp(progArgv[0], "<tcl>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinTclScripts", "5.2-1");
+    } else
+#endif
     if (progArgv[0][0] == '<') {
 	rpmlog(RPMLOG_ERR,
 		 _("line %d: unsupported internal script: %s\n"),
