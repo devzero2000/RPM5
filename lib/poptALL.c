@@ -202,6 +202,91 @@ void rpmcliConfigured(void)
 	exit(EXIT_FAILURE);
 }
 
+#if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
+#define	POPT_READFILE_TRIMNEWLINES	1
+
+/**
+ * Read a file into a buffer.
+ * @param fn		file name
+ * @retval *bp		buffer (malloc'd)
+ * @retval *nbp		no. of bytes in buffer (including final NUL)
+ * @param flags		1 to trim escaped newlines
+ * return		0 on success
+ */
+static int poptReadFile(const char * fn, char ** bp, size_t * nbp, int flags)
+	/*@globals errno @*/
+	/*@modifies *bp, *nbp, errno @*/
+{
+    int fdno;
+    char * b = NULL;
+    off_t nb = 0;
+    char * s, * t, * se;
+    int rc = POPT_ERROR_ERRNO;	/* assume failure */
+
+    fdno = open(fn, O_RDONLY);
+    if (fdno < 0)
+	goto exit;
+
+    if ((nb = lseek(fdno, 0, SEEK_END)) == (off_t)-1
+     || lseek(fdno, 0, SEEK_SET) == (off_t)-1
+     || (b = calloc(sizeof(*b), (size_t)nb + 1)) == NULL
+     || read(fdno, (char *)b, (size_t)nb) != (ssize_t)nb)
+    {
+	int oerrno = errno;
+	(void) close(fdno);
+	errno = oerrno;
+	goto exit;
+    }
+    if (close(fdno) == -1)
+	goto exit;
+    if (b == NULL) {
+	rc = POPT_ERROR_MALLOC;
+	goto exit;
+    }
+    rc = 0;
+
+   /* Trim out escaped newlines. */
+/*@-bitwisesigned@*/
+    if (flags & POPT_READFILE_TRIMNEWLINES)
+/*@=bitwisesigned@*/
+    {
+	for (t = b, s = b, se = b + nb; *s && s < se; s++) {
+	    switch (*s) {
+	    case '\\':
+		if (s[1] == '\n') {
+		    s++;
+		    continue;
+		}
+		/*@fallthrough@*/
+	    default:
+		*t++ = *s;
+		/*@switchbreak@*/ break;
+	    }
+	}
+	*t++ = '\0';
+	nb = (off_t)(t - b);
+    }
+
+exit:
+    if (rc == 0) {
+	*bp = b;
+	*nbp = (size_t) nb;
+    } else {
+/*@-usedef@*/
+	if (b)
+	    free(b);
+/*@=usedef@*/
+	*bp = NULL;
+	*nbp = 0;
+    }
+/*@-compdef -nullstate @*/	/* XXX cannot annotate char ** correctly */
+    return rc;
+/*@=compdef =nullstate @*/
+}
+#endif /* !defined(POPT_READFILE_TRIMNEWLINES) */
+
+/* ========== all-rpm-modes popt args */
+
 /**
  */
 static void rpmcliAllArgCallback(poptContext con,
@@ -256,17 +341,28 @@ static void rpmcliAllArgCallback(poptContext con,
 	s = _free(s);
     }	break;
     case 'E':
+    {	const char * val = NULL;
+	size_t val_len = 0;
+
+assert(arg != NULL);
 	rpmcliConfigured();
-	{   const char *val = rpmExpand(arg, NULL);
-            size_t val_len;
-            val_len = strlen(val);
-            if (val[val_len - 1] == '\n')
-                val_len = fwrite(val, val_len, 1, stdout);
-            else
-		fprintf(stdout, "%s\n", val);
-	    val = _free(val);
-	}
-	break;
+	/* Read lua script from a file. */
+	if (arg[0] == '/') {
+	    char * b = NULL;
+	    size_t nb = 0;
+	    int flags = 0;
+	    int rc = poptReadFile(arg, &b, &nb, flags);
+	    if (rc == 0 && b != NULL && nb > 0)
+		val = rpmExpand("%{lua:", b, "}", NULL);
+	    b = _free(b);
+	} else
+	    val = rpmExpand(arg, NULL);
+	val_len = strlen(val);
+	val_len = fwrite(val, val_len, 1, stdout);
+	if (val[val_len - 1] != '\n')
+	    fprintf(stdout, "\n");
+	val = _free(val);
+    }	break;
     case POPT_SHOWVERSION:
 	printVersion(stdout);
 /*@i@*/	con = rpmcliFini(con);
