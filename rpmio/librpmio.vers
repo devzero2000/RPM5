@@ -416,6 +416,7 @@ LIBRPMIO_0
     rpmswSub;
     _rpmtcl_debug;
     rpmtclNew;
+    rpmtclRun;
     rpmtclRunFile;
     rpmUndefineMacro;
     rpmxarNew;

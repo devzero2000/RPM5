@@ -70,6 +70,11 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmlua.h>
 #endif
 
+#ifdef	WITH_TCL
+#define	_RPMTCL_INTERNAL	/* XXX lua->printbuf access */
+#include <rpmtcl.h>
+#endif
+
 #endif
 
 #include <rpmuuid.h>
@@ -90,6 +95,7 @@ extern const unsigned short int **__ctype_b_loc (void) /*@*/;
 /*@access MacroContext @*/
 /*@access MacroEntry@ */
 /*@access rpmlua @*/
+/*@access rpmtcl @*/
 
 static struct MacroContext_s rpmGlobalMacroContext_s;
 /*@-compmempass@*/
@@ -1705,6 +1711,33 @@ expandMacro(MacroBuf mb)
 		lua->printbufused = olua->printbufused;
 
 		free(scriptbuf);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_TCL
+	if (STREQ("tcl", f, fn)) {
+		rpmtcl tcl = rpmtclNew(NULL, 0);
+		const char *ls = s+sizeof("{tcl:")-1;
+		const char *lse = se-sizeof("}")+1;
+		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char * result = NULL;
+
+		memcpy(scriptbuf, ls, lse-ls);
+		scriptbuf[lse-ls] = '\0';
+		if (rpmtclRun(tcl, scriptbuf, &result) != RPMRC_OK)
+		    rc = 1;
+		else if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		}
+		scriptbuf = _free(scriptbuf);
+		tcl = rpmtclFree(tcl);
 		s = se;
 		continue;
 	}

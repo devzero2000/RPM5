@@ -53,13 +53,32 @@ rpmtcl rpmtclNew(const char * fn, int flags)
     return rpmtclLink(tcl);
 }
 
-rpmRC rpmtclRunFile(rpmtcl tcl, const char * fn)
+rpmRC rpmtclRunFile(rpmtcl tcl, const char * fn, const char ** resultp)
 {
-    int rc;
+    rpmRC rc = RPMRC_FAIL;
 
 if (_rpmtcl_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, tcl, fn);
 
-    rc = (fn != NULL ? Tcl_EvalFile(tcl->I, fn) : 0);
-    return (rc == TCL_OK ? RPMRC_OK : RPMRC_FAIL);
+    if (fn != NULL && Tcl_EvalFile(tcl->I, fn) == TCL_OK) {
+	rc = RPMRC_OK;
+	if (resultp)
+	    *resultp = Tcl_GetStringResult(tcl->I); /* XXX Tcl_GetObjResult */
+    }
+    return rc;
+}
+
+rpmRC rpmtclRun(rpmtcl tcl, const char * str, const char ** resultp)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+if (_rpmtcl_debug)
+fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, tcl, str);
+
+    if (str != NULL && Tcl_Eval(tcl->I, str) == TCL_OK) {
+	rc = RPMRC_OK;
+	if (resultp)
+	    *resultp = Tcl_GetStringResult(tcl->I); /* XXX Tcl_GetObjResult */
+    }
+    return rc;
 }

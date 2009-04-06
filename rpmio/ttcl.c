@@ -37,9 +37,13 @@ main(int argc, char *argv[])
     }
 
     while ((fn = *av++) != NULL) {
+	const char * result;
 	rpmRC ret;
-	if ((ret = rpmtclRunFile(tcl, fn)) != RPMRC_OK)
+	result = NULL;
+	if ((ret = rpmtclRunFile(tcl, fn, &result)) != RPMRC_OK)
 	    goto exit;
+	if (result != NULL && *result != '\0')
+	    fprintf(stdout, "%s\n", result);
     }
     rc = 0;
 

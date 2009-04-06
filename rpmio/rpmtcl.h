@@ -77,11 +77,25 @@ rpmtcl rpmtclNew(/*@null@*/ const char * fn, int flags)
  * Execute tcl from a file.
  * @param tcl		tcl interpreter
  * @param fn		tcl file to run (or NULL)
+ * @param *resultp	tcl exec result
  * @return		RPMRC_OK on success
  */
-rpmRC rpmtclRunFile(rpmtcl tcl, /*@null@*/ const char * fn)
+rpmRC rpmtclRunFile(rpmtcl tcl, /*@null@*/ const char * fn,
+		/*@null@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@modifies tcl, fileSystem, internalState @*/;
+
+/**
+ * Execute tcl string.
+ * @param tcl		tcl interpreter
+ * @param str		tcl string to execute (or NULL)
+ * @param *resultp	tcl exec result
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmtclRun(rpmtcl tcl, /*@null@*/ const char * str,
+		/*@null@*/ const char ** resultp)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies tcl, *resultp, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
