@@ -512,11 +512,9 @@ rpmcliFini(poptContext optCon)
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
 
-    rpmioClean();
+    rpmFreeRpmrc();	/* XXX mireFreeAll(platpat) before rpmioFreePool. */
 
     rpmnsClean();
-
-    rpmFreeRpmrc();
 
     rpmFreeFilesystems();
 /*@i@*/	rpmcliTargets = _free(rpmcliTargets);
@@ -524,6 +522,8 @@ rpmcliFini(poptContext optCon)
     keyids = _free(keyids);
 
     tagClean(NULL);	/* Free header tag indices. */
+
+    rpmioClean();	/* XXX rpmioFreePool()'s after everything else. */
 
     optCon = poptFreeContext(optCon);
 

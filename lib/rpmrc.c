@@ -971,7 +971,8 @@ void rpmFreeRpmrc(void)
 {
     int i, j, k;
 
-    platpat = mireFreeAll(platpat, nplatpat);
+    (void)mireFreeAll(platpat, nplatpat);
+    platpat = NULL;
     nplatpat = 0;
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
