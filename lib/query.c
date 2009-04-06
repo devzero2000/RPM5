@@ -125,10 +125,11 @@ static void printFileInfo(char * te, const char * name,
        more width and at the same time reduce the nlink and size fields
        more to typical sizes within OpenPKG. */
     sprintf(te, "%s %d %-13s %-13s %8s %s %s", perms,
+	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
 #else
     sprintf(te, "%s %4d %-7s %-8s %10s %s %s", perms,
-#endif
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
+#endif
     perms = _free(perms);
 }
 

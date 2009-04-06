@@ -93,7 +93,7 @@ int htHasEntry(hashTable ht, const void * key)
 /**
  * Unreference a hash table instance.
  * @param ht		hash table
- * @return		NULL if free'd
+ * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
 hashTable htUnlink (/*@killref@*/ /*@null@*/ hashTable ht)

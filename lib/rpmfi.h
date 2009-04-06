@@ -831,7 +831,6 @@ int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
 		const char * oldPath, const char * newPath)
 	/*@modifies *relp, *nrelp @*/;
 
-
 /*@}*/
 #endif	/* _RPMFI_NOMETHODS */
 

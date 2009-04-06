@@ -8,7 +8,7 @@
 #include <argv.h>
 
 /**
-*/
+ */
 /*@unchecked@*/
 extern int rpmioHttpReadTimeoutSecs;
 /*@unchecked@*/

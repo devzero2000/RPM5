@@ -755,14 +755,6 @@ assert(p != NULL);
 
     ts->teInstall = ts->order[oc];
 
-#if 0
-    {	rpmTag tag = RPMTAG_SOURCERPM;
-	const char * sourcerpm = rpmteSourcerpm(p);
-if (sourcerpm) 
-fprintf(stderr, "*** %s: %d in %s\n", rpmteNEVRA(p), rpmdbCount(rpmtsGetRdb(ts), tag, sourcerpm, 0), sourcerpm);
-    }
-#endif
-
     /* XXX rpmgi hack: Save header in transaction element if requested. */
     if (upgrade & 0x2)
 	(void) rpmteSetHeader(p, h);

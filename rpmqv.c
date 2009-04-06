@@ -14,7 +14,7 @@ extern const char *__progname;
 #endif
 
 #if defined(RPM_VENDOR_OPENPKG) /* integrity-checking */
-#define _RPMIOB_INTERNAL /* XXX rpmiobSlurp */
+#define	_RPMIOB_INTERNAL	/* XXX rpmiobSlurp */
 #include "rpmio_internal.h"
 #endif
 
@@ -31,10 +31,10 @@ extern const char *__progname;
 #endif
 
 #if defined(RPM_VENDOR_OPENPKG) /* integrity-checking */
+#include "rpmns.h"
 #define _RPMLUA_INTERNAL
 #include "rpmlua.h"
 #include "rpmluaext.h"
-#include "rpmns.h"
 #endif
 
 #include "rpmversion.h"
@@ -354,14 +354,14 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     /* cleanup processing */
     failure:
     if (lua != NULL)
-        rpmluaFree(lua);
+	rpmluaFree(lua);
     if (ts != NULL)
-        (void)rpmtsFree(ts); 
+	(void)rpmtsFree(ts);
     ts = NULL;
     if (spec_iob != NULL)
-        spec_iob = rpmiobFree(spec_iob);
+	spec_iob = rpmiobFree(spec_iob);
     if (proc_iob != NULL)
-        proc_iob = rpmiobFree(proc_iob);
+	proc_iob = rpmiobFree(proc_iob);
 
     /* final result handling */
     if (rc != INTEGRITY_OK) {

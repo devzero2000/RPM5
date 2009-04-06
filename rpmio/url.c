@@ -64,7 +64,7 @@ int _url_debug = 0;
 /*@only@*/ /*@null@*/
 urlinfo *_url_cache = NULL;
 
-static void urlFini(void *_u)
+static void urlFini(void * _u)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _u, fileSystem, internalState @*/
 {

@@ -2672,7 +2672,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 }
 /*@=compmempass@*/
 
-#define IOSM_SKIPPING(_a)	\
+#define	IOSM_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
 int iosmFileActionSkipped(iosmFileAction action)

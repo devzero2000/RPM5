@@ -332,7 +332,7 @@ struct poptOption rpmioAllPoptTable[] = {
 /*@=type@*/
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,
-	N_("Debug generic operations"), NULL},
+	N_("Debug generic operations"), NULL },
 
 #ifdef	NOTYET
  { "define", 'D', POPT_ARG_STRING, NULL, (int)'D',

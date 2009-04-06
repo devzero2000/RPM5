@@ -2004,14 +2004,14 @@ mtreeSWalk(NODE *t1, NODE *t2, const char *path)
 	}
 /*@-noeffectuncon -unrecog@*/
 	if (c1 == NULL && c2->type == F_DIR) {
-	    if(asprintf(&np, "%s%s/", path, c2->name)) {
+	    if (asprintf(&np, "%s%s/", path, c2->name)) {
 		perror("asprintf");
 	    }
 	    i = mtreeSWalk(c1, c2, np);
 	    free(np);
 	    i += compare_nodes(c1, c2, path);
 	} else if (c2 == NULL && c1->type == F_DIR) {
-	    if(asprintf(&np, "%s%s/", path, c1->name)) {
+	    if (asprintf(&np, "%s%s/", path, c1->name)) {
 		perror("asprintf");
 	    }
 	    i = mtreeSWalk(c1, c2, np);
@@ -2020,7 +2020,7 @@ mtreeSWalk(NODE *t1, NODE *t2, const char *path)
 	} else if (c1 == NULL || c2 == NULL) {
 	    i = compare_nodes(c1, c2, path);
 	} else if (c1->type == F_DIR && c2->type == F_DIR) {
-	    if(asprintf(&np, "%s%s/", path, c1->name)) {
+	    if (asprintf(&np, "%s%s/", path, c1->name)) {
 		perror("asprintf");
 	    }
 	    i = mtreeSWalk(c1, c2, np);

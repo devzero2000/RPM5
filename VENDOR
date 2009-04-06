@@ -601,3 +601,14 @@
      Change:         rpm-epoch0
      Purpose:        Explictly add Epoch: 0 in all packages.
      Reason:         Avoids compatibility issues with ancient versions of RPM
+     ________________________________________________________________________
+
+     Change:         rpm-notsc
+     Purpose:        Don't use rdtsc instruction for timing.
+     Reason:         Avoids compatibility issues with i386 processors.
+     ________________________________________________________________________
+
+     Change:         rpm-popt-aliases
+     Purpose:        Add --downgrade and --norepackage options.
+     Reason:         Cosmetic configuration sugary sweetness.
+

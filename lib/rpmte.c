@@ -39,7 +39,6 @@ static void delTE(rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
-
     p->relocs = rpmfiFreeRelocations(p->relocs);
 
     rpmteCleanDS(p);
@@ -112,10 +111,10 @@ assert(he->p.str != NULL);
     p->name = (xx ? he->p.str : xstrdup("?RPMTAG_NAME?"));
     he->tag = RPMTAG_VERSION;
     xx = headerGet(h, he, 0);
-    p->version = (char*)(xx ? he->p.str : xstrdup("?RPMTAG_VERSION?"));
+    p->version = (char *)(xx ? he->p.str : xstrdup("?RPMTAG_VERSION?"));
     he->tag = RPMTAG_RELEASE;
     xx = headerGet(h, he, 0);
-    p->release = (char*)(xx ? he->p.str : xstrdup("?RPMTAG_RELEASE?"));
+    p->release = (char *)(xx ? he->p.str : xstrdup("?RPMTAG_RELEASE?"));
     
     p->db_instance = 0;
 

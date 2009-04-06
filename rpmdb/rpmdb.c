@@ -67,7 +67,7 @@ static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;
 
-/* Use a path uniquifier in the upper 16 bits of tagNum? */
+/* Use a path uniqifier in the upper 16 bits of tagNum? */
 /* XXX Note: one cannot just choose a value, rpmdb tagNum's need fixing too */
 #define	_DB_TAGGED_FILE_INDICES	1
 /*@unchecked@*/

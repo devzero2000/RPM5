@@ -18,11 +18,6 @@
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
 
-/*@unchecked@*/
-static int _filter_values = 1;
-/*@unchecked@*/
-static int _filter_execs = 1;
-
 #define	_RPMFC_INTERNAL
 #include <rpmfc.h>
 
@@ -34,6 +29,11 @@ static int _filter_execs = 1;
 
 /*@access rpmds @*/
 /*@access miRE @*/
+
+/*@unchecked@*/
+static int _filter_values = 1;
+/*@unchecked@*/
+static int _filter_execs = 1;
 
 /**
  */
@@ -721,6 +721,7 @@ assert(ix < nrequires);
 	}
     }
 }
+
 /**
  * Extract script dependencies.
  * @param fc		file classifier
@@ -1808,7 +1809,7 @@ rpmfcPrint(msg, fc, NULL);
 }
 
 /*@-mustmod@*/
-static void rpmfcFini(void *_fc)
+static void rpmfcFini(void * _fc)
 	/*@modifies _fc @*/
 {
     rpmfc fc = _fc;

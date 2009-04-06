@@ -32,6 +32,7 @@ struct rpmQVKArguments_s rpmIArgs = {
 #if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
 #define	POPT_ARGFLAG_TOGGLE	0
 #endif
+
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023

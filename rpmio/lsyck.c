@@ -259,6 +259,7 @@ static const luaL_reg sycklib[] = {
 	{NULL, NULL}
 };
 
+LUALIB_API int luaopen_syck(lua_State *L);
 LUALIB_API int luaopen_syck(lua_State *L)
 {
 	luaL_openlib(L, "syck", sycklib, 0);

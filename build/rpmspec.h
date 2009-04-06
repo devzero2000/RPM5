@@ -245,7 +245,8 @@ extern "C" {
  * Create and initialize Spec structure.
  * @return spec		spec file control structure
  */
-/*@only@*/ Spec newSpec(void)
+/*@only@*/
+Spec newSpec(void)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
@@ -254,7 +255,8 @@ extern "C" {
  * @param spec		spec file control structure
  * @return		NULL always
  */
-/*@null@*/ Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
+/*@null@*/
+Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies spec, fileSystem, internalState @*/;
 

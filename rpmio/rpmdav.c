@@ -429,6 +429,7 @@ static void davNotify(void * userdata,
     char buf[64];
     urlinfo u = userdata;
     ne_session * sess;
+
 assert(u != NULL);
     sess = u->sess;
 assert(sess != NULL);
@@ -714,7 +715,7 @@ static int davConnect(urlinfo u)
 	/* HACK: "302 Found" if URI is missing pesky trailing '/'. */
 	if (!strncmp("302 ", ne_get_error(u->sess), sizeof("302 ")-1)) {
 	    char * t;
-	    if ((t = strchr(u->url, '\0') != NULL)
+	    if ((t = strchr(u->url, '\0')) != NULL)
 		*t = '/';
 	    break;
 	}
@@ -2335,7 +2336,7 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
     if (fd) {
         fdSetIo(fd, ufdio);
         fd->ftpFileDoneNeeded = 0;
-        fd->rd_timeoutsecs = rpmioHttpReadTimeoutSecs;
+	fd->rd_timeoutsecs = rpmioHttpReadTimeoutSecs;
         fd->contentLength = fd->bytesRemain = -1;
         fd->url = urlLink(u, "url (httpOpen)");
         fd = fdLink(fd, "grab data (httpOpen)");
@@ -2388,7 +2389,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     else
 	uri = xstrdup(path);
 /*@=globs =mods@*/
-	
+
     /* Load DAV collection into argv. */
     /* XXX HACK: davHEAD needs ctx->st. */
     ctx = avContextCreate(uri, st);

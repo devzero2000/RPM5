@@ -1399,10 +1399,10 @@ rpmts rpmtsCreate(void)
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    {   struct timeval tv;
+    {	struct timeval tv;
 	xx = gettimeofday(&tv, NULL);
 	ts->tid[0] = (rpmuint32_t) tv.tv_sec;
-        ts->tid[1] = (rpmuint32_t) tv.tv_usec;
+	ts->tid[1] = (rpmuint32_t) tv.tv_usec;
     }
     ts->delta = 5;
 

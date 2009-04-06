@@ -575,7 +575,7 @@ assert(fi != NULL);
 
 	psm = rpmpsmFree(psm);
 	fi = rpmfiFree(fi);
-	(void)rpmtsFree(ts); 
+	(void)rpmtsFree(ts);
 	ts = NULL;
     }
 

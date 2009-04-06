@@ -38,6 +38,7 @@ extern unsigned int * keyids;
 #if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
 #define	POPT_ARGFLAG_TOGGLE	0
 #endif
+
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
@@ -95,7 +96,6 @@ extern int _rpmds_debug;
 /*@unchecked@*/
 extern rpmioPool _rpmdsPool;
 
-/* XXX avoid -lrpmbuild linkage. */
 /*@unchecked@*/
        int _rpmfc_debug;
 /*@unchecked@*/

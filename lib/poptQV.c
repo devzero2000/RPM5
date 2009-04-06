@@ -24,6 +24,7 @@ int specedit = 0;
 #if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
 #define	POPT_ARGFLAG_TOGGLE	0
 #endif
+
 #define POPT_QUERYFORMAT	-1000
 #define POPT_WHATREQUIRES	-1001
 #define POPT_WHATPROVIDES	-1002
@@ -197,6 +198,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
 #if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
 #define	POPT_READFILE_TRIMNEWLINES	1
+
 /**
  * Read a file into a buffer.
  * @param fn		file name

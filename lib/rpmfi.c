@@ -1460,7 +1460,7 @@ if (fi->actions == NULL)
 	    if (dalgo == PGPHASHALGO_ERROR)
 		dalgo = (fi->fdigestalgos[i] & 0xff);
 	    else
-assert(dalgo == fi->fdigestalgos[i]);
+assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
 	}
 	fi->fdigestalgos = _free(fi->fdigestalgos);
     } else {
@@ -1667,11 +1667,11 @@ rpmRelocation rpmfiFreeRelocations(rpmRelocation relocs)
 {
     if (relocs) {
 	rpmRelocation r;
-        for (r = relocs; (r->oldPath || r->newPath); r++) {
-            r->oldPath = _free(r->oldPath);
-            r->newPath = _free(r->newPath);
-        }
-        relocs = _free(relocs);
+	for (r = relocs; (r->oldPath || r->newPath); r++) {
+	    r->oldPath = _free(r->oldPath);
+	    r->newPath = _free(r->newPath);
+	}
+	relocs = _free(relocs);
     }
     return NULL;
 }
