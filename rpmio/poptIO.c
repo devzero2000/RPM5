@@ -68,6 +68,8 @@ extern int _rpmiob_debug;
 /*@unchecked@*/
 extern int _rpmsq_debug;
 /*@unchecked@*/
+extern int _rpmtcl_debug;
+/*@unchecked@*/
 extern int _rpmzq_debug;
 /*@unchecked@*/
 extern int _tar_debug;
@@ -409,6 +411,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmmg magic"), NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	N_("Debug rpmsq Signal Queue"), NULL},
+ { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,
+	N_("Debug rpmtcl TCL interpreter"), NULL},
  { "rpmzqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmzq_debug, -1,
 	N_("Debug rpmzq Job Queuing"), NULL},
  { "xardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_xar_debug, -1,

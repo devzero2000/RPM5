@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: tcl: add --with-tcl for embedding tcl.
     - jbj: lua: hack up --eval /path/to/file.lua to run scripts from a file.
     - jbj: mire: teardown for platpat on exit needs to be done in order.
     - jbj: rpmwget: move to tools.

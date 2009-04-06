@@ -18,7 +18,7 @@ EXTRA_PROGRAMS = rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
-	tput tpw trpmio tsw dumpasn1 lookup3
+	tput tpw trpmio tsw ttcl dumpasn1 lookup3
 
 bin_PROGRAMS =
 man_MANS =
@@ -67,7 +67,7 @@ noinst_HEADERS = \
 	poptIO.h rpmbc.h rpmbz.h rpmdav.h \
 	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmsq.h rpmssl.h \
-	rpmio-stub.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	rpmio-stub.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h
 
 usrlibdir = $(libdir)
@@ -80,7 +80,7 @@ librpmio_la_SOURCES = \
 	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmkeyring.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
-	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
+	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmtcl.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
@@ -329,6 +329,9 @@ trpmio_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)
+
+ttcl_SOURCES = ttcl.c
+ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
 
 dumpasn1_SOURCES = dumpasn1.c
 

@@ -5,7 +5,6 @@
  * \file rpmio/rpmmg.h
  */
 
-
 /** \ingroup rpmio
  */
 /*@unchecked@*/

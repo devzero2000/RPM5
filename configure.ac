@@ -1250,6 +1250,14 @@ AC_ARG_WITH([dbapi],
 ])
 AC_SUBST(DBAPI)
 
+dnl # Tcl
+RPM_CHECK_LIB(
+    [Tcl], [tcl],
+    [tcl], [Tcl_CreateInterp], [tcl.h],
+    [no,external:none], [],
+    [
+    ], [])
+
 dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
 WITH_LUA_SUBDIR_LIB=""
