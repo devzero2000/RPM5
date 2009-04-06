@@ -394,7 +394,7 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug I/O state machine"), NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	N_("Debug miRE patterns"), NULL},
-  { "pgpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_debug, -1,
+ { "pgpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_debug, -1,
 	N_("Debug PGP usage"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("Debug rpmio I/O"), NULL},

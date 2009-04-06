@@ -305,6 +305,10 @@ LIBRPMIO_0
     rpmioFtsOpts;
     rpmioFtsPoptTable;
     rpmioGetPool;
+    rpmioHttpAccept;
+    rpmioHttpConnectTimeoutSecs;
+    rpmioHttpReadTimeoutSecs;
+    rpmioHttpUserAgent;
     rpmioInit;
     rpmioLinkPoolItem;
     rpmioMkpath;
@@ -313,7 +317,6 @@ LIBRPMIO_0
     rpmioPutPool;
     rpmioRootDir;
     rpmioUnlinkPoolItem;
-    rpmioSlurp;
     _kuKeyring;
     rpmkuFindPubkey;
     rpmkuStorePubkey;
@@ -433,6 +436,8 @@ LIBRPMIO_0
     urlGetFile;
     _url_iobuf_size;
     urlIsURL;
+    urlNotify;
+    urlNotifyArg;
     urlPath;
     urlSetCallback;
     urlSplit;

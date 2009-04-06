@@ -24,18 +24,4 @@
 #define	rpmIsDebug()		\
 	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMLOG_DEBUG ))
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- */
-/*@unused@*/
-void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
-		int notifyCount);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif  /* H_RPMCB */

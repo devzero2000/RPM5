@@ -33,6 +33,18 @@
 
 /**
  */
+/*@-redecl@*/
+int (*urlNotify) (const urlinfo u, unsigned status)
+        /*@*/;
+/*@=redecl@*/
+
+/**
+ */
+/*@unchecked@*/ /*@null@*/
+void * urlNotifyArg;
+
+/**
+ */
 /*@unchecked@*/
 int _url_iobuf_size = RPMURL_IOBUF_SIZE;
 
@@ -102,6 +114,11 @@ static void urlFini(void * _u)
 #ifdef WITH_NEON
     xx = davFree(u);
 #endif
+    u->etag = _free(u->etag);
+    u->location = _free(u->location);
+    u->rop = _free(u->rop);
+    u->sop = _free(u->sop);
+    u->top = _free(u->top);
     u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);
@@ -130,7 +147,7 @@ static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
     urlinfo u;
 
     if (_urlPool == NULL) {
-	_urlPool = rpmioNewPool(" u", sizeof(*u), -1, _url_debug,
+	_urlPool = rpmioNewPool("u", sizeof(*u), -1, _url_debug,
 			NULL, NULL, urlFini);
 	pool = _urlPool;
     }
@@ -146,6 +163,15 @@ urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
     u->urltype = URL_IS_UNKNOWN;
     u->ctrl = NULL;
     u->data = NULL;
+    u->location = NULL;
+    u->etag = NULL;
+    u->notify = urlNotify;
+/*@-assignexpose@*/
+    u->arg = urlNotifyArg;
+/*@=assignexpose@*/
+    u->rop = xcalloc(1, sizeof(*u->rop));
+    u->sop = xcalloc(1, sizeof(*u->sop));
+    u->top = xcalloc(1, sizeof(*u->top));
     u->bufAlloced = 0;
     u->buf = NULL;
     u->allow = RPMURL_SERVER_HASRANGE;

@@ -1430,9 +1430,7 @@ fprintf(stderr, "*** Fstat(%p,%p) path %s\n", fd, st, path);
 	}
 	st->st_ino = hashFunctionString(0, path, 0);;
 	st->st_size = fd->contentLength;
-#ifdef NOTYET	/* XXX needs transport changes from HEAD. */
 	st->st_mtime = fd->lastModified;
-#endif
 
 	st->st_atime = st->st_ctime = st->st_mtime;
 	st->st_blksize = 4 * 1024;  /* HACK correct for linux ext */
@@ -1452,7 +1450,7 @@ int Chown(const char * path, uid_t owner, gid_t group)
     int ut = urlPath(path, &lpath);
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Chown(%s,%d,%d)\n", path, (int)owner, (int)group);
+fprintf(stderr, "*** Chown(%s,%u,%u)\n", path, (unsigned)owner, (unsigned)group);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;
@@ -1478,7 +1476,7 @@ int Lchown(const char * path, uid_t owner, gid_t group)
     int ut = urlPath(path, &lpath);
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Lchown(%s,%d,%d)\n", path, (int)owner, (int)group);
+fprintf(stderr, "*** Lchown(%s,%u,%u)\n", path, (unsigned)owner, (unsigned)group);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;

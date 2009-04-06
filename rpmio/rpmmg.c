@@ -26,12 +26,12 @@ static void rpmmgFini(void * _mg)
     rpmmg mg = _mg;
 
 #if defined(HAVE_MAGIC_H)
-	if (mg->ms) {
-	    magic_close(mg->ms);
-	    mg->ms = NULL;
-	}
+    if (mg->ms) {
+	magic_close(mg->ms);
+	mg->ms = NULL;
+    }
 #endif
-	mg->fn = _free(mg->fn);
+    mg->fn = _free(mg->fn);
 }
 /*@=mustmod@*/
 

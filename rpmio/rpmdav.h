@@ -7,6 +7,17 @@
 
 #include <argv.h>
 
+/**
+ */ 
+/*@unchecked@*/
+extern int rpmioHttpReadTimeoutSecs;
+/*@unchecked@*/
+extern int rpmioHttpConnectTimeoutSecs;
+/*@unchecked@*/ /*@null@*/
+extern const char * rpmioHttpAccept;
+/*@unchecked@*/ /*@null@*/
+extern const char * rpmioHttpUserAgent;
+
 #if defined(_RPMDAV_INTERNAL)
 struct __dirstream {
     int fd;			/* File descriptor.  */
@@ -15,7 +26,7 @@ struct __dirstream {
     size_t size;		/* Total valid data in the block.  */
     size_t offset;		/* Current offset into the block.  */
     off_t filepos;		/* Position of next entry to read.  */
-#if defined(HAVE_PTHREAD_H)
+#if defined(WITH_PTHREADS)
     pthread_mutex_t lock;	/* Mutex lock for this structure.  */
 #endif
 };
@@ -70,7 +81,7 @@ struct avContext_s {
     int ac;
     int nalloced;
     ARGV_t av;
-/*@null@*/ /*@shared@*/
+/*@relnull@*/ /*@shared@*/
     struct stat *st;
     uint16_t * modes;	/* XXX sizeof(mode_t) != sizeof(rpmmode_t) */
     size_t * sizes;
@@ -132,12 +143,25 @@ DIR * avOpendir(const char * path,
 #endif
 
 /**
+ * Close active neon transfer(s) (if any).
+ * @param _u		URL container
+ * @return		0 on sucess
+ */
+int davDisconnect(void * _u)
+	/*@globals internalState @*/
+	/*@modifies _u, internalState @*/;
+
+/**
+ * Free persistent neon session state.
+ * @param u		URL container
+ * @return		0 on success
  */
 int davFree(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies u, internalState @*/;
 
 /**
+ * Free global neon+openSSL state memory.
  */
 void davDestroy(void)
 	/*@globals internalState @*/
@@ -190,7 +214,7 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 /**
  */
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
-        /*@globals fileSystem, internalState @*/
+        /*@globals errno, fileSystem, internalState @*/
         /*@modifies buf, errno, fileSystem, internalState @*/;
 
 /**

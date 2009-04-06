@@ -947,7 +947,7 @@ int iosmMapAttrs(IOSM_t iosm)
 
     if (fi && i >= 0 && i < (int)fi->fc) {
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
-	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
+	mode_t finalMode = (fi->fmodes ? (mode_t)fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
 	uint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
@@ -1679,7 +1679,7 @@ int iosmStage(IOSM_t iosm, iosmFileStage stage)
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
-		(iosm->path ? apath + iosm->astriplen : ""),
+		(apath ? apath + iosm->astriplen : ""),
 		_fafilter(iosm->action));
     }
 #undef	_fafilter

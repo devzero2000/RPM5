@@ -338,8 +338,6 @@ static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
 
 /*@null@*/
 FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
 {
     FD_t fd = fdGetPool(_fdPool);
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -394,7 +392,10 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL) {
 #ifdef WITH_NEON
-	rc = davRead(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	if (fd->req != (void *)-1)
+	    rc = davRead(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	else
+	    rc = -1;
 #else
 	rc = -1;
 #endif
@@ -437,7 +438,10 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     /* HACK: flimsy wiring for davWrite */
     if (fd->req != NULL)
 #ifdef WITH_NEON
-	rc = davWrite(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	if (fd->req != (void *)-1)
+	    rc = davWrite(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
+	else
+	    rc = -1;
 #else
 	rc = -1;
 #endif
@@ -566,7 +570,7 @@ int fdWritable(FD_t fd, int secs)
 	
     /* HACK: flimsy wiring for davWrite */
     if (fd->req != NULL)
-	return 1;
+	return (fd->req == (void *)-1 ? -1 : 1);
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
@@ -621,7 +625,7 @@ int fdReadable(FD_t fd, int secs)
 
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL)
-	return 1;
+	return (fd->req == (void *)-1 ? -1 : 1);
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
@@ -2497,6 +2501,10 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 		if (fp) {
 		    /* HACK: flimsy Keepalive wiring. */
 		    if (hadreqpersist) {
+#ifdef	NOTYET	/* XXX not quite right yet. */
+			(void) davDisconnect(fd);
+			fd->req = NULL;
+#endif
 			fd->nfps--;
 /*@-exposetrans@*/
 			fdSetFp(fd, fp);
@@ -2864,7 +2872,7 @@ int Ferror(FD_t fd)
     if (fd == NULL) return -1;
     if (fd->req != NULL) {
 	/* HACK: flimsy wiring for neon errors. */
-	rc = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	rc = (fd->req == (void *)-1 || fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
     } else
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
@@ -2890,7 +2898,7 @@ int Ferror(FD_t fd)
 	    i--;	/* XXX fdio under lzdio always has fdno == -1 */
 	} else if (fps->io == xzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
-	    i--;        /* XXX fdio under xzdio always has fdno == -1 */
+	    i--;	/* XXX fdio under xzdio always has fdno == -1 */
 #endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */

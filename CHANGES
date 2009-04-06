@@ -1,4 +1,6 @@
 5.1.7 -> 5.1.8:
+    - jbj: rpmio: more random line noise reduction, diff'ing against HEAD.
+    - jbj: rpmio: backport HTTP transport from HEAD.
     - jbj: rpmio: add additional data elements for HTTP transport.
     - jbj: rpmiob: yet another place to use rpmiobSlurp instead.
     - jbj: backport rpmspecdump from HEAD.

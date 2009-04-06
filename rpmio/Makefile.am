@@ -14,7 +14,7 @@ EXTRA_DIST = \
 	librpmio.vers testit.sh
 
 EXTRA_PROGRAMS = rpmcpio \
-	rpmmtree rpmrepo rpmtar \
+	rpmmtree rpmrepo rpmtar rpmwget \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
@@ -226,6 +226,9 @@ rpmrepo_LDADD = $(RPM_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)
+
+rpmwget_SOURCES = rpmwget.c
+rpmwget_LDADD = $(RPMIO_LDADD_COMMON)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
