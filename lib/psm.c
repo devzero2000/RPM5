@@ -13,6 +13,7 @@
 #include <rpmurl.h>
 #include <rpmlua.h>
 #include <rpmperl.h>
+#include <rpmpython.h>
 #include <rpmtcl.h>
 #include <rpmtag.h>
 #include <rpmtypes.h>
@@ -655,6 +656,17 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	perl = rpmperlFree(perl);
     } else
 #endif
+#if defined(WITH_PYTHONEMBED)
+    if (!strcmp(Phe->p.argv[0], "<python>")) {
+	rpmpython python = rpmpythonNew(NULL, 0);
+	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
+	if (rpmpythonRun(python, script, NULL) == RPMRC_OK)
+	    rc = RPMRC_OK;
+	else
+	    rc = RPMRC_FAIL;
+	python = rpmpythonFree(python);
+    } else
+#endif
 #if defined(WITH_TCL)
     if (!strcmp(Phe->p.argv[0], "<tcl>")) {
 	rpmtcl tcl = rpmtclNew(NULL, 0);
@@ -754,9 +766,10 @@ assert(he->p.str != NULL);
     if (Phe->p.argv && Phe->p.argv[0])
     if (!strcmp(Phe->p.argv[0], "<lua>")
      || !strcmp(Phe->p.argv[0], "<perl>")
+     || !strcmp(Phe->p.argv[0], "<python>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED)
+#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);

@@ -1763,7 +1763,7 @@ expandMacro(MacroBuf mb)
 		if (rpmpythonRun(python, scriptbuf, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  result = "FIXME";
+		  if (result == NULL) result = "FIXME";
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)

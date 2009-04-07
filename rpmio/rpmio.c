@@ -3146,7 +3146,7 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
-#if defined(WITH_PYTHON)
+#if defined(WITH_PYTHONEMBED)
     _rpmpythonPool = rpmioFreePool(_rpmpythonPool);
 #endif
 #if defined(WITH_PERLEMBED)
