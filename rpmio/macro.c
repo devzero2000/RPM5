@@ -74,6 +74,10 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmperl.h>
 #endif
 
+#ifdef	WITH_PYTHONEMBED
+#include <rpmpython.h>
+#endif
+
 #ifdef	WITH_TCL
 #include <rpmtcl.h>
 #endif
@@ -1741,6 +1745,36 @@ expandMacro(MacroBuf mb)
 		}
 		scriptbuf = _free(scriptbuf);
 		perl = rpmperlFree(perl);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_PYTHONEMBED
+	if (STREQ("python", f, fn)) {
+		rpmpython python = rpmpythonNew(NULL, 0);
+		const char *ls = s+sizeof("{python:")-1;
+		const char *lse = se-sizeof("}")+1;
+		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char * result = NULL;
+
+		memcpy(scriptbuf, ls, lse-ls);
+		scriptbuf[lse-ls] = '\0';
+		if (rpmpythonRun(python, scriptbuf, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		  }
+		}
+		scriptbuf = _free(scriptbuf);
+		python = rpmpythonFree(python);
 		s = se;
 		continue;
 	}

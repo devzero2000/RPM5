@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: python: wire-up %{python:...}. the string result is bogus, todo++.
     - jbj: python: add --with-pythonembed for embedding python.
     - jbj: perl: wire-up %post -p <perl>. arg1/arg2, persistent interp, todo++.
     - jbj: perl: wire-up %{perl:...} with a string result.
