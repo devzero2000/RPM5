@@ -12,6 +12,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 #include <rpmlua.h>
+#include <rpmperl.h>
 #include <rpmtcl.h>
 #include <rpmtag.h>
 #include <rpmtypes.h>
@@ -555,7 +556,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -581,7 +582,7 @@ static int enterChroot(rpmpsm psm, int * fdnop)
     } else
        inChroot = 1;
 
-    /* All lua scripts run with CWD == "/". */
+    /* All embedded scriptlets run with CWD == "/". */
     xx = Chdir("/");
 
     return inChroot;
@@ -641,6 +642,17 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_LUA)
     if (!strcmp(Phe->p.argv[0], "<lua>")) {
 	rc = runLuaScript(psm, sln, Phe, script, arg1, arg2);
+    } else
+#endif
+#if defined(WITH_PERLEMBED)
+    if (!strcmp(Phe->p.argv[0], "<perl>")) {
+	rpmperl perl = rpmperlNew(NULL, 0);
+	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
+	if (rpmperlRun(perl, script, NULL) == RPMRC_OK)
+	    rc = RPMRC_OK;
+	else
+	    rc = RPMRC_FAIL;
+	perl = rpmperlFree(perl);
     } else
 #endif
 #if defined(WITH_TCL)
@@ -740,8 +752,11 @@ assert(he->p.str != NULL);
     }
 
     if (Phe->p.argv && Phe->p.argv[0])
-    if (!strcmp(Phe->p.argv[0], "<lua>") || !strcmp(Phe->p.argv[0], "<tcl>")) {
-#if defined(WITH_LUA) || defined(WITH_TCL)
+    if (!strcmp(Phe->p.argv[0], "<lua>")
+     || !strcmp(Phe->p.argv[0], "<perl>")
+     || !strcmp(Phe->p.argv[0], "<tcl>"))
+    {
+#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);

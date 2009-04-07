@@ -313,6 +313,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinLuaScripts", "4.2.2-1");
     } else
 #endif
+#ifdef WITH_PERLEMBED
+    if (!strcmp(progArgv[0], "<perl>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinPerlScripts", "5.2-1");
+    } else
+#endif
 #ifdef WITH_TCL
     if (!strcmp(progArgv[0], "<tcl>")) {
 	(void) rpmlibNeedsFeature(pkg->header,

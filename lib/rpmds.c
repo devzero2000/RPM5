@@ -1474,6 +1474,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(                RPMSENSE_EQUAL),
     N_("internal embedded lua scripts.") },
 #endif
+#if defined(WITH_PERLEMBED)
+    { "rpmlib(BuiltinPerlScripts)",    "5.2-1",
+	(                RPMSENSE_EQUAL),
+    N_("internal embedded perl scripts.") },
+#endif
 #if defined(WITH_TCL)
     { "rpmlib(BuiltinTclScripts)",    "5.2-1",
 	(                RPMSENSE_EQUAL),
