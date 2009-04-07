@@ -70,8 +70,11 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmlua.h>
 #endif
 
+#ifdef	WITH_PERLEMBED
+#include <rpmperl.h>
+#endif
+
 #ifdef	WITH_TCL
-#define	_RPMTCL_INTERNAL	/* XXX lua->printbuf access */
 #include <rpmtcl.h>
 #endif
 
@@ -1711,6 +1714,33 @@ expandMacro(MacroBuf mb)
 		lua->printbufused = olua->printbufused;
 
 		free(scriptbuf);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_PERLEMBED
+	if (STREQ("perl", f, fn)) {
+		rpmperl perl = rpmperlNew(NULL, 0);
+		const char *ls = s+sizeof("{perl:")-1;
+		const char *lse = se-sizeof("}")+1;
+		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char * result = NULL;
+
+		memcpy(scriptbuf, ls, lse-ls);
+		scriptbuf[lse-ls] = '\0';
+		if (rpmperlRun(perl, scriptbuf, &result) != RPMRC_OK)
+		    rc = 1;
+		else if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		}
+		scriptbuf = _free(scriptbuf);
+		perl = rpmperlFree(perl);
 		s = se;
 		continue;
 	}
