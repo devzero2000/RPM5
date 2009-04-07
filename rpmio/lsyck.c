@@ -9,7 +9,7 @@
 
 #include "system.h"
 
-#if defined(WITH_SYCK)
+#if defined(WITH_SYCK) && defined(WITH_LUA)
 
 #include <syck.h>
 #include <string.h>
@@ -266,4 +266,4 @@ LUALIB_API int luaopen_syck(lua_State *L)
 	return 1;
 }
 
-#endif	/* defined(WITH_SYCK) */
+#endif	/* defined(WITH_SYCK) && defined(WITH_LUA) */
