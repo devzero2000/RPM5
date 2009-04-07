@@ -3,8 +3,8 @@
 #include <rpmio_internal.h>
 #include <poptIO.h>
 
-#define	_RPMTCL_INTERNAL
-#include <rpmtcl.h>
+#define	_RPMPYTHON_INTERNAL
+#include <rpmpython.h>
 
 #include "debug.h"
 
@@ -22,9 +22,9 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    const char * tclFN = NULL;
-    int tclFlags = 0;
-    rpmtcl tcl = rpmtclNew(tclFN, tclFlags);
+    const char * pythonFN = NULL;
+    int pythonFlags = 0;
+    rpmpython python = rpmpythonNew(pythonFN, pythonFlags);
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
     const char * fn;
@@ -39,7 +39,7 @@ main(int argc, char *argv[])
 	const char * result;
 	rpmRC ret;
 	result = NULL;
-	if ((ret = rpmtclRunFile(tcl, fn, &result)) != RPMRC_OK)
+	if ((ret = rpmpythonRunFile(python, fn, &result)) != RPMRC_OK)
 	    goto exit;
 	if (result != NULL && *result != '\0')
 	    fprintf(stdout, "%s\n", result);
@@ -47,7 +47,7 @@ main(int argc, char *argv[])
     rc = 0;
 
 exit:
-    tcl = rpmtclFree(tcl);
+    python = rpmpythonFree(python);
     optCon = rpmioFini(optCon);
 
     return rc;

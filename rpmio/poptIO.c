@@ -66,6 +66,10 @@ extern int _rpmio_debug;
 /*@unchecked@*/
 extern int _rpmiob_debug;
 /*@unchecked@*/
+extern int _rpmperl_debug;
+/*@unchecked@*/
+extern int _rpmpython_debug;
+/*@unchecked@*/
 extern int _rpmsq_debug;
 /*@unchecked@*/
 extern int _rpmtcl_debug;
@@ -409,11 +413,19 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmio I/O buffers"), NULL},
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
+#ifdef WITH_PERLEMBED
+ { "rpmperldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmperl_debug, -1,
+	N_("Debug embedded Perl interpreter"), NULL},
+#endif
+#ifdef WITH_PYTHON
+ { "rpmpythondebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmpython_debug, -1,
+	N_("Debug embedded Python interpreter"), NULL},
+#endif
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	N_("Debug rpmsq Signal Queue"), NULL},
 #ifdef WITH_TCL
  { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,
-	N_("Debug rpmtcl TCL interpreter"), NULL},
+	N_("Debug embedded TCL interpreter"), NULL},
 #endif
  { "rpmzqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmzq_debug, -1,
 	N_("Debug rpmzq Job Queuing"), NULL},

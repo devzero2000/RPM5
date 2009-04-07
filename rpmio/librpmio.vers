@@ -394,6 +394,10 @@ LIBRPMIO_0
     _rpmperl_debug;
     rpmperlNew;
     rpmperlRun;
+    _rpmpython_debug;
+    rpmpythonNew;
+    rpmpythonRun;
+    rpmpythonRunFile;
     _rpmsq_debug;
     rpmsqAction;
     rpmsqCaught;

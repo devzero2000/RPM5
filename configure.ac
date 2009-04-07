@@ -1248,6 +1248,14 @@ RPM_CHECK_LIB(
     [
     ], [])
 
+dnl # Python embedding
+RPM_CHECK_LIB(
+    [Python embedding], [pythonembed],
+    [python], [Py_Initialize], [Python.h],
+    [no,external:none], [],
+    [
+    ], [])
+
 dnl # Tcl
 RPM_CHECK_LIB(
     [Tcl], [tcl],
@@ -1794,7 +1802,6 @@ AC_MSG_RESULT([$RPMLUAFILES])
 
 dnl # determine whether to build using a specific vendor's changes or not
 AC_MSG_CHECKING([if building for a specfic vendor])
-
 AC_ARG_WITH(
     [vendor],
     AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora]),
