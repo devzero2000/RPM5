@@ -3144,7 +3144,9 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
+#if defined(WITH_TCL)
     _rpmtclPool = rpmioFreePool(_rpmtclPool);
+#endif
     _mirePool = rpmioFreePool(_mirePool);
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
     _htPool = rpmioFreePool(_htPool);

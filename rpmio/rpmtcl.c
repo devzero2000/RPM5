@@ -1,5 +1,6 @@
 #include "system.h"
 
+#ifdef	WITH_TCL
 #define _RPMTCL_INTERNAL
 #include "rpmtcl.h"
 
@@ -82,3 +83,4 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, tcl, str);
     }
     return rc;
 }
+#endif	/* WITH_TCL */
