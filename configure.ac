@@ -6,9 +6,9 @@ dnl ##
 dnl ## ==== REQUIREMENTS & INITIALIZATION ====
 dnl ##
 
-AC_PREREQ(2.60)
+AC_PREREQ(2.63)
 AC_DEFUN([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT(rpm, [5.2.DEVEL], [PACKAGE_BUGREPORT_DEFAULT])
+AC_INIT([rpm],[5.2.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2008" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
@@ -276,9 +276,7 @@ case "${host}" in
 esac
 AC_ARG_ENABLE(
     [build-versionscript],
-    AC_HELP_STRING(
-        [--enable-build-versionscript],
-        [enable/disable use of GNU ld(1) version script (default is system dependent)]),
+    AS_HELP_STRING([--enable-build-versionscript],[enable/disable use of GNU ld(1) version script (default is system dependent)]),
     [have_ld_version_script=$enableval], [:])
 AM_CONDITIONAL(
     [HAVE_LD_VERSION_SCRIPT],
@@ -287,9 +285,7 @@ AM_CONDITIONAL(
 dnl # support implicit internal library dependencies
 AC_ARG_ENABLE(
     [build-intlibdep],
-    AC_HELP_STRING(
-        [--disable-build-intlibdep],
-        [disable use of implicit internal library dependencies]),
+    AS_HELP_STRING([--disable-build-intlibdep],[disable use of implicit internal library dependencies]),
     [ do_build_intlibdep=$enableval ],
     [ do_build_intlibdep=yes ])
 AM_CONDITIONAL(
@@ -299,9 +295,7 @@ AM_CONDITIONAL(
 dnl # support implicit external library dependencies
 AC_ARG_ENABLE(
     [build-extlibdep],
-    AC_HELP_STRING(
-        [--disable-build-extlibdep],
-        [disable use of implicit external library dependencies]),
+    AS_HELP_STRING([--disable-build-extlibdep],[disable use of implicit external library dependencies]),
     [ do_build_extlibdep=$enableval ],
     [ do_build_extlibdep=yes ])
 AM_CONDITIONAL(
@@ -311,9 +305,7 @@ AM_CONDITIONAL(
 dnl # support implicit maximum external library dependencies
 AC_ARG_ENABLE(
     [build-maxextlibdep],
-    AC_HELP_STRING(
-        [--disable-build-maxextlibdep],
-        [disable use of implicit maximum external library dependencies]),
+    AS_HELP_STRING([--disable-build-maxextlibdep],[disable use of implicit maximum external library dependencies]),
     [ do_build_maxextlibdep=$enableval ],
     [ do_build_maxextlibdep=yes ])
 AM_CONDITIONAL(
@@ -323,9 +315,7 @@ AM_CONDITIONAL(
 dnl # support removal of GNU libtool *.la files
 AC_ARG_ENABLE(
     [build-lafiles],
-    AC_HELP_STRING(
-        [--disable-build-lafiles],
-        [disable the removal of GNU libtool *.la files on installation]),
+    AS_HELP_STRING([--disable-build-lafiles],[disable the removal of GNU libtool *.la files on installation]),
     [ do_build_lafiles=$enableval ],
     [ do_build_lafiles=yes ])
 AM_CONDITIONAL(
@@ -528,7 +518,7 @@ dnl ##
 AC_MSG_HEADER([API CHECKS])
 
 dnl # platform specific checks
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 
 dnl # standard checks
 AM_C_PROTOTYPES
@@ -1540,7 +1530,7 @@ AC_SUBST(NCPUS_COMMAND)
 dnl # support for versioned installation paths
 AC_ARG_WITH(
     [path-versioned],
-    AC_HELP_STRING([--with-path-versioned], [install with versioned paths]),
+    AS_HELP_STRING([--with-path-versioned],[install with versioned paths]),
     [WITH_PATH_VERSIONED=$withval],
     [WITH_PATH_VERSIONED=no])
 AM_CONDITIONAL(

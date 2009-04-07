@@ -576,7 +576,7 @@ m4_define(__va_copy_check, [
 [/* Predefined possible va_copy() implementation (id: $1) */
 #define __VA_COPY_USE_$1(d, s) $2])
     if test ".$ac_cv_va_copy" = .; then
-        AC_TRY_RUN(__va_copy_test($2), [ac_cv_va_copy="$1"])
+        AC_RUN_IFELSE([AC_LANG_SOURCE([[__va_copy_test($2)]])],[ac_cv_va_copy="$1"],[],[])
     fi
 ])
 
