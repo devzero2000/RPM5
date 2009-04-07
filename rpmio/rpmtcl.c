@@ -22,7 +22,6 @@ static void rpmtclFini(void * _tcl)
 #endif
     tcl->I = NULL;
 }
-/*@=mustmod@*/
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtclPool;

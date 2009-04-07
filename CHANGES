@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: perl: add --with-perlembed for embedding perl.
     - jbj: tcl: wire-up %post -p <tcl>. arg1/arg2, persistent interp, todo++.
     - jbj: tcl: wire-up %{tcl:...} with a string result.
     - jbj: tcl: add --with-tcl for embedding tcl.

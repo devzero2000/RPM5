@@ -918,8 +918,8 @@ if test ".$WITH_PTHREADS" = .yes; then
 fi
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]), [
     if test ".$withval" != .no; then
-	    PERL_INSTALLDIRS=""
-	    if test "$withval" == "vendor"; then
+	PERL_INSTALLDIRS=""
+	   if test "$withval" == "vendor"; then
 		    PERL_INSTALLDIRS="'INSTALLDIRS'	=> 'vendor',"
 	    fi
 	    if test "$withval" == "site"; then
@@ -1239,6 +1239,14 @@ AC_ARG_WITH([dbapi],
     esac
 ])
 AC_SUBST(DBAPI)
+
+dnl # Perl ExtUtils::Embed
+RPM_CHECK_LIB(
+    [Perl ExtUtils::Embed], [perlembed],
+    [perl], [perl_alloc], [perl.h],
+    [no,external:none], [],
+    [
+    ], [])
 
 dnl # Tcl
 RPM_CHECK_LIB(

@@ -64,8 +64,8 @@ rpmtcl rpmtclFree(/*@killref@*/ /*@null@*/rpmtcl tcl)
 
 /**
  * Create and load a tcl interpreter.
- * @param fn		tcl file to load (or NULL)
- * @param flags		tcl interpretr flags
+ * @param fn		(unimplemented) tcl file to load (or NULL)
+ * @param flags		(unimplemented) tcl interpreter flags
  * @return		new tcl interpreter
  */
 /*@newref@*/ /*@null@*/

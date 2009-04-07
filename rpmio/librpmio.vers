@@ -391,9 +391,12 @@ LIBRPMIO_0
     rpmmgFile;
     rpmmgBuffer;
     rpmnssImplVecs;
+    _rpmperl_debug;
+    rpmperlNew;
+    rpmperlRun;
+    _rpmsq_debug;
     rpmsqAction;
     rpmsqCaught;
-    _rpmsq_debug;
     rpmsqEnable;
     rpmsqExecve;
     rpmsqFork;
