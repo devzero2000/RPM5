@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: ruby: add --with-ruby for embedding ruby.
     - jbj: yarn: convert rpmluav to usage mutex with refcounts
     - jbj: yarn: convert rpmlua to usage mutex with refcounts
     - jbj: python: wire-up %post -p <python>. arg1/arg2, persistent interp, todo++.

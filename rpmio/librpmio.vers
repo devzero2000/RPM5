@@ -398,6 +398,10 @@ LIBRPMIO_0
     rpmpythonNew;
     rpmpythonRun;
     rpmpythonRunFile;
+    _rpmruby_debug;
+    rpmrubyNew;
+    rpmrubyRun;
+    rpmrubyRunFile;
     _rpmsq_debug;
     rpmsqAction;
     rpmsqCaught;

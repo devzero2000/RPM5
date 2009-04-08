@@ -72,6 +72,8 @@ extern int _rpmperl_debug;
 /*@unchecked@*/
 extern int _rpmpython_debug;
 /*@unchecked@*/
+extern int _rpmruby_debug;
+/*@unchecked@*/
 extern int _rpmsq_debug;
 /*@unchecked@*/
 extern int _rpmtcl_debug;
@@ -426,6 +428,10 @@ struct poptOption rpmioAllPoptTable[] = {
 #ifdef WITH_PYTHONEMBED
  { "rpmpythondebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmpython_debug, -1,
 	N_("Debug embedded Python interpreter"), NULL},
+#endif
+#ifdef WITH_RUBY
+ { "rpmrubydebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmruby_debug, -1,
+	N_("Debug embedded Ruby interpreter"), NULL},
 #endif
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	N_("Debug rpmsq Signal Queue"), NULL},

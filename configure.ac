@@ -1256,6 +1256,14 @@ RPM_CHECK_LIB(
     [
     ], [])
 
+dnl # Ruby embedding
+RPM_CHECK_LIB(
+    [Ruby embedding], [ruby],
+    [ruby], [ruby_init], [ruby.h],
+    [no,external:none], [],
+    [
+    ], [])
+
 dnl # Tcl
 RPM_CHECK_LIB(
     [Tcl], [tcl],
