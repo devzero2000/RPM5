@@ -13,6 +13,7 @@ typedef enum rpmluavType_e {
 #include <lua.h>
 
 struct rpmlua_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     lua_State *L;
     int pushsize;
     int storeprint;
@@ -23,6 +24,7 @@ struct rpmlua_s {
 };
 
 struct rpmluav_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmluavType keyType;
     rpmluavType valueType;
     union {

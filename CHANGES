@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: yarn: convert rpmluav to usage mutex with refcounts
+    - jbj: yarn: convert rpmlua to usage mutex with refcounts
     - jbj: python: wire-up %post -p <python>. arg1/arg2, persistent interp, todo++.
     - jbj: python: wire-up %{python:...}. the string result is bogus, todo++.
     - jbj: python: add --with-pythonembed for embedding python.
