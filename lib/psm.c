@@ -14,6 +14,7 @@
 #include <rpmlua.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
+#include <rpmruby.h>
 #include <rpmtcl.h>
 #include <rpmtag.h>
 #include <rpmtypes.h>
@@ -557,7 +558,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERL)
+#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -667,6 +668,17 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	python = rpmpythonFree(python);
     } else
 #endif
+#if defined(WITH_RUBY)
+    if (!strcmp(Phe->p.argv[0], "<ruby>")) {
+	rpmruby ruby = rpmrubyNew(NULL, 0);
+	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
+	if (rpmrubyRun(ruby, script, NULL) == RPMRC_OK)
+	    rc = RPMRC_OK;
+	else
+	    rc = RPMRC_FAIL;
+	ruby = rpmrubyFree(ruby);
+    } else
+#endif
 #if defined(WITH_TCL)
     if (!strcmp(Phe->p.argv[0], "<tcl>")) {
 	rpmtcl tcl = rpmtclNew(NULL, 0);
@@ -690,7 +702,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 
     return rc;
 }
-#endif	/* defined(WITH_LUA) || defined(WITH_TCL) */
+#endif
 
 /**
  */
@@ -767,9 +779,10 @@ assert(he->p.str != NULL);
     if (!strcmp(Phe->p.argv[0], "<lua>")
      || !strcmp(Phe->p.argv[0], "<perl>")
      || !strcmp(Phe->p.argv[0], "<python>")
+     || !strcmp(Phe->p.argv[0], "<ruby>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED)
+#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);

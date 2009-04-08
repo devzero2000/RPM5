@@ -1484,6 +1484,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(                RPMSENSE_EQUAL),
     N_("internal embedded python scripts.") },
 #endif
+#if defined(WITH_RUBY)
+    { "rpmlib(BuiltinRubyScripts)",	"5.2-1",
+	(                RPMSENSE_EQUAL),
+    N_("internal embedded ruby scripts.") },
+#endif
 #if defined(WITH_TCL)
     { "rpmlib(BuiltinTclScripts)",	"5.2-1",
 	(                RPMSENSE_EQUAL),

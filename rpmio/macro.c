@@ -78,6 +78,10 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmpython.h>
 #endif
 
+#ifdef	WITH_RUBY
+#include <rpmruby.h>
+#endif
+
 #ifdef	WITH_TCL
 #include <rpmtcl.h>
 #endif
@@ -1735,13 +1739,16 @@ expandMacro(MacroBuf mb)
 		scriptbuf[lse-ls] = '\0';
 		if (rpmperlRun(perl, scriptbuf, &result) != RPMRC_OK)
 		    rc = 1;
-		else if (result != NULL && *result != '\0') {
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
 			len = mb->nb;
 		    memcpy(mb->t, result, len);
 		    mb->t += len;
 		    mb->nb -= len;
+		 }
 		}
 		scriptbuf = _free(scriptbuf);
 		perl = rpmperlFree(perl);
@@ -1775,6 +1782,36 @@ expandMacro(MacroBuf mb)
 		}
 		scriptbuf = _free(scriptbuf);
 		python = rpmpythonFree(python);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_RUBY
+	if (STREQ("ruby", f, fn)) {
+		rpmruby ruby = rpmrubyNew(NULL, 0);
+		const char *ls = s+sizeof("{ruby:")-1;
+		const char *lse = se-sizeof("}")+1;
+		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char * result = NULL;
+
+		memcpy(scriptbuf, ls, lse-ls);
+		scriptbuf[lse-ls] = '\0';
+		if (rpmrubyRun(ruby, scriptbuf, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		  }
+		}
+		scriptbuf = _free(scriptbuf);
+		ruby = rpmrubyFree(ruby);
 		s = se;
 		continue;
 	}
