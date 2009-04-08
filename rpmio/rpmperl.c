@@ -7,7 +7,7 @@
 
 #include "debug.h"
 
-#define	my_perl	(perl->I)
+#define	my_perl	((PerlInterpreter *)perl->I)
 
 /*@unchecked@*/
 int _rpmperl_debug = 0;
@@ -26,7 +26,7 @@ static void rpmperlFini(void * _perl)
     perl_destruct(my_perl);
     perl_free(my_perl);
 #endif
-    my_perl = NULL;
+    perl->I = NULL;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/

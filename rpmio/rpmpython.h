@@ -14,7 +14,9 @@ typedef /*@abstract@*/ struct rpmpython_s * rpmpython;
 extern int _rpmpython_debug;
 
 #if defined(_RPMPYTHON_INTERNAL)
+#if defined(WITH_PYTHONEMBED)
 #include <Python.h>
+#endif
 
 struct rpmpython_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */

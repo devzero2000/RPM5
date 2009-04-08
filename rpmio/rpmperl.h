@@ -14,14 +14,16 @@ typedef /*@abstract@*/ struct rpmperl_s * rpmperl;
 extern int _rpmperl_debug;
 
 #if defined(_RPMPERL_INTERNAL)
+#if defined(WITH_PERLEMBED)
 #include <EXTERN.h>
 #include <perl.h>
+#endif
 
 struct rpmperl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     int flags;
-    PerlInterpreter * I;
+    void * I;
 };
 #endif /* _RPMPERL_INTERNAL */
 

@@ -1,3 +1,5 @@
+#include "system.h"
+
 /* XXX grrr, ruby.h includes its own config.h too. */
 #ifdef	HAVE_CONFIG_H
 #include "config.h"
@@ -8,7 +10,9 @@
 #undef	PACKAGE_STRING
 #undef	PACKAGE_BUGREPORT
 
+#if defined(WITH_RUBY)
 #include <ruby.h>
+#endif
 
 #define _RPMRUBY_INTERNAL
 #include "rpmruby.h"
