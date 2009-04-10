@@ -3127,12 +3127,22 @@ void rpmioClean(void)
     extern rpmioPool _htPool;
 /*@=shadow@*/
     extern rpmioPool _rpmmgPool;
+#if defined(WITH_LUA)
     extern rpmioPool _rpmluavPool;
     extern rpmioPool _rpmluaPool;
+#endif
+#if defined(WITH_TCL)
     extern rpmioPool _rpmtclPool;
+#endif
+#if defined(WITH_PERLEMBED)
     extern rpmioPool _rpmperlPool;
+#endif
+#if defined(WITH_PYTHONEMBED)
     extern rpmioPool _rpmpythonPool;
+#endif
+#if defined(WITH_RUBY)
     extern rpmioPool _rpmrubyPool;
+#endif
 /*@=nestedextern@*/
 
 #if defined(WITH_LUA)
