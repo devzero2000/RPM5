@@ -6013,7 +6013,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies hsa, token, rpmGlobalMacroContext, internalState @*/
 {
+#ifdef	DYING	/* XXX tagName() does this now */
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
+#endif
     char * t, * te;
     size_t i, j;
     size_t numElements;
