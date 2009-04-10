@@ -86,7 +86,7 @@ rpmlua rpmluaGetGlobalState(void)
 /*@=globstate@*/
 }
 
-void rpmluaFini(void * _lua)
+static void rpmluaFini(void * _lua)
 	/*@globals globalLuaState @*/
 	/*@modifies globalLuaState @*/
 {
