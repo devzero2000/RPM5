@@ -665,7 +665,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     xx = headerPut(h, he, 0);
     he->p.ptr = _free(he->p.ptr);
 
-    /* XXX W2DO: tag value inheirited from parent? */
+    /* XXX W2DO: tag value inherited from parent? */
     he->tag = RPMTAG_BUILDHOST;
     he->t = RPM_STRING_TYPE;
     he->p.str = xstrdup(buildhost);
@@ -679,7 +679,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 	he->p.ui32p = &tid;
 	he->c = 1;
 	xx = headerPut(h, he, 0);
-	/* XXX W2DO: tag value inheirited from parent? */
+	/* XXX W2DO: tag value inherited from parent? */
 	he->tag = RPMTAG_BUILDTIME;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
@@ -688,7 +688,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     }
 
 #ifdef	NOTYET
-    /* XXX W2DO: tag value inheirited from parent? */
+    /* XXX W2DO: tag value inherited from parent? */
     he->tag = RPMTAG_SOURCERPM;
     he->t = RPM_STRING_TYPE;
     he->p.str = fn;
