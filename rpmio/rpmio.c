@@ -3147,6 +3147,10 @@ void rpmioClean(void)
 /*@=shadow@*/
     extern rpmioPool _rpmmgPool;
 /*@=nestedextern@*/
+#if defined(WITH_LUA)
+    extern rpmioPool _rpmluavPool;
+    extern rpmioPool _rpmluaPool;
+#endif
 
 #if defined(WITH_LUA)
     (void) rpmluaFree(NULL);
@@ -3162,6 +3166,10 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
+#if defined(WITH_LUA)
+    _rpmluavPool = rpmioFreePool(_rpmluavPool);
+    _rpmluaPool = rpmioFreePool(_rpmluaPool);
+#endif
     _mirePool = rpmioFreePool(_mirePool);
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
     _htPool = rpmioFreePool(_htPool);

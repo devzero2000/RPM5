@@ -37,6 +37,9 @@ LUALIB_API int luaopen_syck(lua_State *L)
 
 /*@access rpmiob @*/
 
+/*@unchecked@*/
+int _rpmlua_debug = 0;
+
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
 			    const char * fmt, va_list ap)
@@ -75,10 +78,46 @@ rpmlua rpmluaGetGlobalState(void)
 /*@=globstate@*/
 }
 
-/*@-globs -mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
-rpmlua rpmluaNew()
+static void rpmluaFini(void * _lua)
+	/*@globals globalLuaState @*/
+	/*@modifies globalLuaState @*/
 {
-    rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
+    rpmlua lua = _lua;
+
+    if (lua->L) lua_close(lua->L);
+    lua->L = NULL;
+    lua->printbuf = _free(lua->printbuf);
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmluaPool;
+
+static rpmlua rpmluaGetPool(/*@null@*/ rpmioPool pool)
+        /*@globals _rpmluaPool, fileSystem @*/
+        /*@modifies pool, _rpmluaPool, fileSystem @*/
+{
+    rpmlua lua;
+
+    if (_rpmluaPool == NULL) {
+        _rpmluaPool = rpmioNewPool("lua", sizeof(*lua), -1, _rpmlua_debug,
+                        NULL, NULL, rpmluaFini);
+        pool = _rpmluaPool;
+    }
+    return (rpmlua) rpmioGetPool(pool, sizeof(*lua));
+}
+
+void *rpmluaFree(rpmlua lua)
+{
+    if (lua == NULL) lua = globalLuaState;
+    (void)rpmioFreePoolItem((rpmioItem)lua, __FUNCTION__, __FILE__, __LINE__);
+    if (lua == globalLuaState) globalLuaState = NULL;
+    return NULL;
+}
+
+/*@-globs -mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
+rpmlua rpmluaNew(void)
+{
+    rpmlua lua = rpmluaGetPool(_rpmluaPool);
     lua_State *L = lua_open();
     /*@-readonlytrans -nullassign @*/
     /*@observer@*/ /*@unchecked@*/
@@ -102,6 +141,13 @@ rpmlua rpmluaNew()
 	{"rex_pcre", luaopen_rex_pcre},
 	{"uuid", luaopen_uuid},
 	{"wrs", luaopen_wrs},
+#ifdef	USE_LUA_CRYPTO		/* XXX external lua modules instead. */
+	{"crypto", luaopen_crypto},
+	{"lxp", luaopen_lxp},
+#endif
+#ifdef	USE_LUA_SOCKET		/* XXX external lua modules instead. */
+	{"socket", luaopen_socket_core},
+#endif
 	{"local", luaopen_local},
 #endif
 	{"rpm", luaopen_rpm},
@@ -123,7 +169,7 @@ rpmlua rpmluaNew()
 /*@=noeffectuncon@*/
     }
     {	const char * _lua_path = rpmGetPath(rpmluaPath, NULL);
-	if (_lua_path != NULL) {
+ 	if (_lua_path != NULL) {
 	    lua_pushliteral(L, "LUA_PATH");
 	    lua_pushstring(L, _lua_path);
 	    _lua_path = _free(_lua_path);
@@ -178,26 +224,9 @@ rpmlua rpmluaNew()
     }
     path_buf = _free(path_buf);
 
-    return lua;
+    return ((rpmlua)rpmioLinkPoolItem((rpmioItem)lua, __FUNCTION__, __FILE__, __LINE__));
 }
 /*@=globs =mods@*/
-
-void *rpmluaFree(rpmlua lua)
-	/*@globals globalLuaState @*/
-	/*@modifies globalLuaState @*/
-{
-    if (lua == NULL)
-	lua = globalLuaState;
-    if (lua) {
-	if (lua->L) lua_close(lua->L);
-	lua->printbuf = _free(lua->printbuf);
-	if (lua == globalLuaState) globalLuaState = NULL;
-	lua = _free(lua);
-    }
-/*@-globstate@*/
-    return NULL;
-/*@=globstate@*/
-}
 
 void rpmluaSetData(rpmlua _lua, const char *key, const void *data)
 {
@@ -437,16 +466,33 @@ void rpmluaPop(rpmlua _lua)
     lua_pop(lua->L, 1);
 }
 
-rpmluav rpmluavNew(void)
-{
-    rpmluav var = (rpmluav) xcalloc(1, sizeof(*var));
-    return var;
-}
-
 void *rpmluavFree(rpmluav var)
 {
-    var = _free(var);
+    (void)rpmioFreePoolItem((rpmioItem)var, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmluavPool;
+
+static rpmluav rpmluavGetPool(/*@null@*/ rpmioPool pool)
+        /*@globals _rpmluavPool, fileSystem @*/
+        /*@modifies pool, _rpmluavPool, fileSystem @*/
+{
+    rpmluav luav;
+
+    if (_rpmluavPool == NULL) {
+        _rpmluavPool = rpmioNewPool("luav", sizeof(*luav), -1, _rpmlua_debug,
+                        NULL, NULL, NULL);
+        pool = _rpmluavPool;
+    }
+    return (rpmluav) rpmioGetPool(pool, sizeof(*luav));
+}
+
+rpmluav rpmluavNew(void)
+{
+    rpmluav var = rpmluavGetPool(_rpmluavPool);
+    return ((rpmluav)rpmioLinkPoolItem((rpmioItem)var, __FUNCTION__, __FILE__, __LINE__));
 }
 
 void rpmluavSetListMode(rpmluav var, int flag)

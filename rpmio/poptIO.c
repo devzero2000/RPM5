@@ -63,6 +63,8 @@ extern int _rpmio_debug;
 /*@unchecked@*/
 extern int _rpmiob_debug;
 /*@unchecked@*/
+extern int _rpmlua_debug;
+/*@unchecked@*/
 extern int _rpmsq_debug;
 /*@unchecked@*/
 extern int _tar_debug;
@@ -400,6 +402,10 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
+#ifdef WITH_LUA
+ { "rpmluadebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmlua_debug, -1,
+	N_("Debug embedded Lua interpreter"), NULL},
+#endif
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
