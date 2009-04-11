@@ -215,9 +215,9 @@ rpmlua rpmluaNew(void)
             if (fn[0] == '@' /* attention */) {
                 fn++;
 #if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
-                if (!rpmSecuritySaneFile(fn))
+		if (!rpmSecuritySaneFile(fn))
 #else
-                if (!poptSaneFile(fn))
+		if (!poptSaneFile(fn))
 #endif
 		{
                     rpmlog(RPMLOG_WARNING, "existing RPM Lua script file \"%s\" considered INSECURE -- not loaded\n", fn);

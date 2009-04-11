@@ -91,9 +91,6 @@ static void rpmborgArgCallback(poptContext con,
 /*==============================================================*/
 
 #define	POPT_XXX		0
-#if !defined(POPT_BIT_TOGGLE)
-#define	POPT_BIT_TOGGLE	(POPT_ARG_VAL|POPT_ARGFLAG_XOR)
-#endif
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmborgCommandsPoptTable[] = {

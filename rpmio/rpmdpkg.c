@@ -14,10 +14,6 @@
 
 #include "debug.h"
 
-#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
-#define	POPT_ARGFLAG_TOGGLE	0
-#endif
-
 /*==============================================================*/
 
 #define _KFB(n) (1U << (n))
@@ -127,9 +123,6 @@ static void rpmdpkgArgCallback(poptContext con,
 /*==============================================================*/
 
 #define	POPT_XXX	0
-#if !defined(POPT_BIT_TOGGLE)
-#define	POPT_BIT_TOGGLE	(POPT_ARG_VAL|POPT_ARGFLAG_XOR)
-#endif
 
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption rpmdpkgCommandsPoptTable[] = {
