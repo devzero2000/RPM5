@@ -127,7 +127,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 	goto exit;
     }
     sb.st_size = 0;
-    if ((xx = Fstat(fd, &sb)) < 0)
+    if ((xx = Fstat(fd, &sb)) < 0 || sb.st_size == 0)
 	sb.st_size = blenmax;
 #if defined(__linux__)
     /* XXX st->st_size = 0 for /proc files on linux, see stat(2). */
