@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - jbj: EVRtuple: eliminate the old EVR parser.
     - jbj: yarn: convert rpmluav to usage mutex with refcounts
     - jbj: yarn: convert rpmlua to usage mutex with refcounts
     - jbj: popt: remove retrofits for popt < 1.14. use popt internal if needed.
