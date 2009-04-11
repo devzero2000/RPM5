@@ -1825,110 +1825,6 @@ static int repoDoFinalMove(rpmrepo repo)
 
 /*==============================================================*/
 
-#if 0
-#if !defined(POPT_READFILE_TRIMNEWLINES)	/* XXX popt < 1.15 */
-#define	POPT_READFILE_TRIMNEWLINES	1
-/**
- * Read a file into a buffer.
- * @param fn		file name
- * @retval *bp		buffer (malloc'd)
- * @retval *nbp		no. of bytes in buffer (including final NUL)
- * @param flags		1 to trim escaped newlines
- * return		0 on success
- */
-static int poptReadFile(const char * fn, char ** bp, size_t * nbp, int flags)
-{
-    int fdno;
-    char * b = NULL;
-    off_t nb = 0;
-    char * s, * t, * se;
-    int rc = POPT_ERROR_ERRNO;	/* assume failure */
-
-    fdno = open(fn, O_RDONLY);
-    if (fdno < 0)
-	goto exit;
-
-    if ((nb = lseek(fdno, 0, SEEK_END)) == (off_t)-1
-     || lseek(fdno, 0, SEEK_SET) == (off_t)-1
-     || (b = calloc(sizeof(*b), (size_t)nb + 1)) == NULL
-     || read(fdno, (char *)b, (size_t)nb) != (ssize_t)nb)
-    {
-	int oerrno = errno;
-	(void) close(fdno);
-	errno = oerrno;
-	goto exit;
-    }
-    if (close(fdno) == -1)
-	goto exit;
-    if (b == NULL) {
-	rc = POPT_ERROR_MALLOC;
-	goto exit;
-    }
-    rc = 0;
-
-   /* Trim out escaped newlines. */
-/*@-bitwisesigned@*/
-    if (flags & POPT_READFILE_TRIMNEWLINES)
-/*@=bitwisesigned@*/
-    {
-	for (t = b, s = b, se = b + nb; *s && s < se; s++) {
-	    switch (*s) {
-	    case '\\':
-		if (s[1] == '\n') {
-		    s++;
-		    continue;
-		}
-		/*@fallthrough@*/
-	    default:
-		*t++ = *s;
-		/*@switchbreak@*/ break;
-	    }
-	}
-	*t++ = '\0';
-	nb = (off_t)(t - b);
-    }
-
-exit:
-    if (rc == 0) {
-	*bp = b;
-	*nbp = (size_t) nb;
-    } else {
-/*@-usedef@*/
-	if (b)
-	    free(b);
-/*@=usedef@*/
-	*bp = NULL;
-	*nbp = 0;
-    }
-/*@-compdef -nullstate @*/	/* XXX cannot annotate char ** correctly */
-    return rc;
-/*@=compdef =nullstate @*/
-}
-#endif /* !defined(POPT_READFILE_TRIMNEWLINES) */
-#endif
-
-#if !defined(POPT_ARG_ARGV)		/* XXX popt < 1.14 */
-/**
- */
-static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
-	/*@*/
-{
-    ARGV_t argv;
-    int argc = 0;
-    if (argvp == NULL)
-	return -1;
-    if (*argvp)
-    while ((*argvp)[argc] != NULL)
-	argc++;
-    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
-    if ((argv = *argvp) != NULL) {
-	argv[argc++] = xstrdup(val);
-	argv[argc  ] = NULL;
-    }
-    return 0;
-}
-#endif
-
 /**
  */
 static void repoArgCallback(poptContext con,
@@ -1943,21 +1839,6 @@ static void repoArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-#if !defined(POPT_ARG_ARGV)
-	int xx;
-    case 'x':			/* --excludes */
-assert(arg != NULL);
-        xx = _poptSaveString(&repo->exclude_patterns, opt->argInfo, arg);
-	break;
-    case 'i':			/* --includes */
-assert(arg != NULL);
-        xx = _poptSaveString(&repo->include_patterns, opt->argInfo, arg);
-	break;
-    case 'l':			/* --pkglist */
-assert(arg != NULL);
-        xx = _poptSaveString(&repo->manifests, opt->argInfo, arg);
-	break;
-#endif
 
     case 'v':			/* --verbose */
 	repo->verbose++;
@@ -2005,20 +1886,10 @@ static struct poptOption optionsTable[] = {
 	N_("output more debugging info."), NULL },
  { "dryrun", '\0', POPT_ARG_VAL,		&__rpmrepo.dryrun, 1,
 	N_("sanity check arguments, don't create metadata"), NULL },
-#if defined(POPT_ARG_ARGV)
  { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
 	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
-#else
- { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
-	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
-#endif
-#if defined(POPT_ARG_ARGV)
  { "includes", 'i', POPT_ARG_ARGV,		&__rpmrepo.include_patterns, 0,
 	N_("glob PATTERN(s) to include"), N_("PATTERN") },
-#else
- { "includes", 'i', POPT_ARG_STRING,		NULL, 'i',
-	N_("glob PATTERN(s) to include"), N_("PATTERN") },
-#endif
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
@@ -2037,13 +1908,8 @@ static struct poptOption optionsTable[] = {
 #endif
  { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
-#if defined(POPT_ARG_ARGV)
  { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.manifests, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
-#else
- { "pkglist", 'l', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'l',
-	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
-#endif
  { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
  { "skip-symlinks", 'S', POPT_ARG_VAL,		&__rpmrepo.nofollow, 1,

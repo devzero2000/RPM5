@@ -313,28 +313,6 @@ static struct rpmop_s dc_digestops;
 
 /*==============================================================*/
 
-#if !defined(POPT_ARG_ARGV)
-static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
-	/*@*/
-{
-    ARGV_t argv;
-    int argc = 0;
-    if (argvp == NULL)
-	return -1;
-    if (*argvp)
-    while ((*argvp)[argc] != NULL)
-	argc++;
-    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
-    if ((argv = *argvp) != NULL) {
-	argv[argc++] = xstrdup(val);
-	argv[argc  ] = NULL;
-    }
-    return 0;
-}
-#endif
-
-/*==============================================================*/
-
 /*@exits@*/
 static void
 mtree_error(const char *fmt, ...)
@@ -3544,12 +3522,6 @@ static void mtreeArgCallback(poptContext con,
 	}
 /*@=unrecog@*/
 	break;
-#if !defined(POPT_ARG_ARGV)
-    case 'p':
-assert(arg != NULL);
-	(void) _poptSaveString(&_rpmfts->paths, opt->argInfo, arg);
-	break;
-#endif
 
     /* XXX redundant with --logical. */
     case 'L':
@@ -3608,13 +3580,8 @@ static struct poptOption optionsTable[] = {
 	N_("Loose permissions check"), NULL },
   { "nocomment",'n', POPT_BIT_SET,	&mtreeFlags, MTREE_FLAGS_NOCOMMENT,
 	N_("Don't include sub-directory comments"), NULL },
-#if defined(POPT_ARG_ARGV)
   { "path",'p', POPT_ARG_ARGV,	&__rpmfts.paths, 0,
 	N_("Use <path> rather than current directory"), N_("<path>") },
-#else
-  { "path",'p', POPT_ARG_STRING,	NULL, 'p',
-	N_("Use <path> rather than current directory"), N_("<path>") },
-#endif
   /* XXX --quiet collides w poptIO */
   { "quiet",'q', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_QUIET,
 	N_("Quiet mode"), NULL },

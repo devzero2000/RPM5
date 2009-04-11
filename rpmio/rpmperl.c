@@ -58,7 +58,7 @@ rpmperl rpmperlNew(const char * fn, int flags)
 
 
 #if defined(WITH_PERLEMBED)
-    my_perl = perl_alloc();
+    perl->I = perl_alloc();
     PERL_SET_CONTEXT(my_perl);
     PL_perl_destruct_level = 1;
     perl_construct(my_perl);

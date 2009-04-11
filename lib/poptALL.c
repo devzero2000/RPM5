@@ -35,10 +35,6 @@ const char *__localedir = LOCALEDIR;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 extern unsigned int * keyids;
 
-#if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
-#define	POPT_ARGFLAG_TOGGLE	0
-#endif
-
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997

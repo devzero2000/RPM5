@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: popt: remove retrofits for popt < 1.14. use popt internal if needed.
     - jbj: ruby: wire-up %post -p <ruby>. arg1/arg2, persistent interp, todo++.
     - jbj: ruby: wire-up %{ruby:...}. the string result is bogus, todo++.
     - jbj: ruby: add --with-ruby for embedding ruby.

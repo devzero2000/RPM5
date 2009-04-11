@@ -257,74 +257,14 @@ exit:
     return rc;
 }
 
-#if !defined(POPT_ARG_ARGV)
-static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
-	/*@*/
-{
-    ARGV_t argv;
-    int argc = 0;
-    if (argvp == NULL)
-	return -1;
-    if (*argvp)
-    while ((*argvp)[argc] != NULL)
-	argc++;
-    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
-    if ((argv = *argvp) != NULL) {
-	argv[argc++] = xstrdup(val);
-	argv[argc  ] = NULL;
-    }
-    return 0;
-}
-
-/**
- */
-static void rpmdcArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, /*@unused@*/ const char * arg,
-                /*@unused@*/ void * data)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    if (opt->arg == NULL)
-    switch (opt->val) {
-	int xx;
-    case 'c':
-assert(arg != NULL);
-	xx = _poptSaveString(&_dc.manifests, opt->argInfo, arg);
-	break;
-
-    default:
-	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
-	poptPrintUsage(con, stderr, 0);
-/*@-exitarg@*/
-	exit(2);
-/*@=exitarg@*/
-	/*@notreached@*/ break;
-    }
-}
-#endif	/* POPT_ARG_ARGV */
-
 static struct poptOption optionsTable[] = {
-#if !defined(POPT_ARG_ARGV)
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmdcArgCallback, 0, NULL, NULL },
-/*@=type@*/
-#endif	/* POPT_ARG_ARGV */
 
   { "binary", 'b', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_BINARY,
 	N_("read in binary mode"), NULL },
 
-#if !defined(POPT_ARG_ARGV)
-  { "check", 'c', POPT_ARG_STRING,	NULL, 'c',
-	N_("read digests from MANIFEST file and verify (may be used more than once)"),
-	N_("MANIFEST") },
-#else
   { "check", 'c', POPT_ARG_ARGV,	&_dc.manifests, 0,
 	N_("read digests from MANIFEST file and verify (may be used more than once)"),
 	N_("MANIFEST") },
-#endif
 
   { "text", 't', POPT_BIT_CLR,		&_dc.flags, RPMDC_FLAGS_BINARY,
 	N_("read in text mode (default)"), NULL },

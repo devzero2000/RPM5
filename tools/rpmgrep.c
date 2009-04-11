@@ -65,26 +65,6 @@ static inline void fwrite_check(const void *ptr, size_t size, size_t nmemb, FILE
 	perror("fwrite");
 }
 
-#if !defined(POPT_ARG_ARGV)
-static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
-	/*@*/
-{
-    ARGV_t argv;
-    int argc = 0;
-    if (argvp == NULL)
-	return -1;
-    if (*argvp)
-    while ((*argvp)[argc] != NULL)
-	argc++;
-    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
-    if ((argv = *argvp) != NULL) {
-	argv[argc++] = xstrdup(val);
-	argv[argc  ] = NULL;
-    }
-    return 0;
-}
-#endif
-
 /*************************************************
 *               Global variables                 *
 *************************************************/
@@ -1228,10 +1208,6 @@ exit:
 
 /* Options without a single-letter equivalent get a negative value. This can be
 used to identify them. */
-#if !defined(POPT_ARG_ARGV)
-#define POPT_EXCLUDE	(-2)
-#define POPT_INCLUDE	(-4)
-#endif
 
 /**
  */
@@ -1245,25 +1221,6 @@ static void grepArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-#if !defined(POPT_ARG_ARGV)
-	int xx;
-    case 'f':
-assert(arg != NULL);
-	xx = _poptSaveString(&pattern_filenames, opt->argInfo, arg);
-	break;
-    case POPT_INCLUDE:
-assert(arg != NULL);
-	xx = _poptSaveString(&include_patterns, opt->argInfo, arg);
-	break;
-    case POPT_EXCLUDE:
-assert(arg != NULL);
-	xx = _poptSaveString(&exclude_patterns, opt->argInfo, arg);
-	break;
-    case 'e':
-assert(arg != NULL);
-	xx = _poptSaveString(&patterns, opt->argInfo, arg);
-	break;
-#endif
 
     case 'd':
 	if (!strcmp(arg, "read")) dee_action = dee_READ;
@@ -1355,24 +1312,13 @@ static struct poptOption optionsTable[] = {
 	N_("device, FIFO, or socket action (read|skip)"), N_("=action") },
   { "directories", 'd',	POPT_ARG_STRING,	NULL, (int)'d',
 	N_("directory action (read|skip|recurse)"), N_("=action") },
-#if defined(POPT_ARG_ARGV)
   { "regex", 'e', POPT_ARG_ARGV,		&patterns, 0,
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
-#else
-  { "regex", 'e', POPT_ARG_STRING,		NULL, 'e',
-	N_("specify pattern (may be used more than once)"), N_("(p)") },
-#endif
   { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
 	N_("patterns are sets of newline-separated strings"), NULL },
-#if defined(POPT_ARG_ARGV)
   { "file", 'f', POPT_ARG_ARGV,		&pattern_filenames, 0,
 	N_("read patterns from file (may be used more than once)"),
 	N_("=path") },
-#else
-  { "file", 'f', POPT_ARG_STRING,		NULL, 'f',
-	N_("read patterns from file (may be used more than once)"),
-	N_("=path") },
-#endif
   { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
   { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
@@ -1405,21 +1351,12 @@ static struct poptOption optionsTable[] = {
 	N_("suppress output, just set return code"), NULL },
   { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
 	N_("recursively scan sub-directories"), NULL },
-#if defined(POPT_ARG_ARGV)
   { "exclude", '\0', POPT_ARG_ARGV,		&exclude_patterns, 0,
 	N_("exclude matching files when recursing (may be used more than once)"),
 	N_("=pattern") },
   { "include", '\0', POPT_ARG_ARGV,		&include_patterns, 0,
 	N_("include matching files when recursing (may be used more than once)"),
 	N_("=pattern") },
-#else
-  { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
-	N_("exclude matching files when recursing (may be used more than once)"),
-	N_("=pattern") },
-  { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
-	N_("include matching files when recursing (may be used more than once)"),
-	N_("=pattern") },
-#endif
   { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
   { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
@@ -1566,11 +1503,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 		poptPrintUsage(optCon, stderr, 0);
 		goto errxit;
 	    }
-#if defined(POPT_ARG_ARGV)
 	    xx = poptSaveString(&patterns, POPT_ARG_ARGV, av[i]);
-#else
-	    xx = _poptSaveString(&patterns, 0, av[i]);
-#endif
 	    i++;
 	}
 
