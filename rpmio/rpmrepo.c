@@ -1863,28 +1863,6 @@ static int repoDoFinalMove(rpmrepo repo)
 
 /*==============================================================*/
 
-#if !defined(POPT_ARG_ARGV)
-/**
- */
-static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
-	/*@*/
-{
-    ARGV_t argv;
-    int argc = 0;
-    if (argvp == NULL)
-	return -1;
-    if (*argvp)
-    while ((*argvp)[argc] != NULL)
-	argc++;
-    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
-    if ((argv = *argvp) != NULL) {
-	argv[argc++] = xstrdup(val);
-	argv[argc  ] = NULL;
-    }
-    return 0;
-}
-#endif
-
 /**
  */
 static void repoArgCallback(poptContext con,
@@ -1899,22 +1877,6 @@ static void repoArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-#if !defined(POPT_ARG_ARGV)
-	int xx;
-    case 'x':			/* --excludes */
-assert(arg != NULL);
-        xx = _poptSaveString(&repo->exclude_patterns, opt->argInfo, arg);
-	break;
-    case 'i':			/* --includes */
-assert(arg != NULL);
-        xx = _poptSaveString(&repo->include_patterns, opt->argInfo, arg);
-	break;
-    case 'l':			/* --pkglist */
-assert(arg != NULL);
-        xx = _poptSaveString(&repo->manifests, opt->argInfo, arg);
-	break;
-#endif
-
     case 'v':			/* --verbose */
 	repo->verbose++;
 	break;
@@ -1959,20 +1921,10 @@ static struct poptOption optionsTable[] = {
 	N_("output more debugging info."), NULL },
  { "dryrun", '\0', POPT_ARG_VAL,		&__rpmrepo.dryrun, 1,
 	N_("sanity check arguments, don't create metadata"), NULL },
-#if defined(POPT_ARG_ARGV)
  { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
 	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
-#else
- { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
-	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
-#endif
-#if defined(POPT_ARG_ARGV)
  { "includes", 'i', POPT_ARG_ARGV,		&__rpmrepo.include_patterns, 0,
 	N_("glob PATTERN(s) to include"), N_("PATTERN") },
-#else
- { "includes", 'i', POPT_ARG_STRING,		NULL, 'i',
-	N_("glob PATTERN(s) to include"), N_("PATTERN") },
-#endif
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
@@ -1991,13 +1943,8 @@ static struct poptOption optionsTable[] = {
 #endif
  { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
-#if defined(POPT_ARG_ARGV)
  { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.manifests, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
-#else
- { "pkglist", 'l', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'l',
-	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
-#endif
  { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
  { "skip-symlinks", 'S', POPT_ARG_VAL,		&__rpmrepo.nofollow, 1,
