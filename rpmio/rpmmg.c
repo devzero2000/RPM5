@@ -37,7 +37,7 @@ static void rpmmgFini(void * _mg)
 /*@=mustmod@*/
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmmgPool;
+rpmioPool _rpmmgPool = NULL;
 
 static rpmmg rpmmgGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmmgPool, fileSystem @*/

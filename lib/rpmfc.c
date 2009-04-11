@@ -1836,7 +1836,7 @@ static void rpmfcFini(void * _fc)
 /*@=mustmod@*/
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmfcPool;
+rpmioPool _rpmfcPool = NULL;
 
 static rpmfc rpmfcGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmfcPool, fileSystem, internalState @*/
