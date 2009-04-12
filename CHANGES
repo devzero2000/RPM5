@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: ruby: attach $stdout to macro expansion buffer using StringIO.
     - jbj: python: attach sys.stdout to macro expansion buffer using cStringIO.
     - jbj: tpython: permit interactive shells.
     - jbj: fix: permit rpmiobSlurp() to be used on stdin.

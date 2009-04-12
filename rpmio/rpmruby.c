@@ -54,6 +54,11 @@ static rpmruby rpmrubyGetPool(/*@null@*/ rpmioPool pool)
     return (rpmruby) rpmioGetPool(pool, sizeof(*ruby));
 }
 
+static const char * rpmrubyInitStringIO = "\
+require 'stringio'\n\
+$stdout = StringIO.new($result, \"w+\")\n\
+";
+
 rpmruby rpmrubyNew(const char * fn, int flags)
 {
     rpmruby ruby = rpmrubyGetPool(_rpmrubyPool);
@@ -64,7 +69,10 @@ rpmruby rpmrubyNew(const char * fn, int flags)
 
 #if defined(WITH_RUBY)
     ruby_init();
+    ruby_init_loadpath();
     ruby_script("rpmruby");
+    rb_gv_set("$result", rb_str_new2(""));
+    (void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
 #endif
 
     return rpmrubyLink(ruby);
@@ -81,11 +89,9 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, ruby, fn);
 #if defined(WITH_RUBY)
 	rb_load_file(fn);
 	ruby->state = ruby_exec();
+	if (resultp != NULL)
+	    *resultp = RSTRING_PTR(rb_gv_get("$result"));
 	rc = RPMRC_OK;
-#ifdef	NOTYET
-	if (resultp)
-	    *resultp = Tcl_GetStringResult(ruby->I);
-#endif
 #endif
     }
     return rc;
@@ -96,16 +102,14 @@ rpmRC rpmrubyRun(rpmruby ruby, const char * str, const char ** resultp)
     rpmRC rc = RPMRC_FAIL;
 
 if (_rpmruby_debug)
-fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, ruby, str);
+fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, ruby, str, resultp);
 
     if (str != NULL) {
 #if defined(WITH_RUBY)
 	ruby->state = rb_eval_string(str);
+	if (resultp != NULL)
+	    *resultp = RSTRING_PTR(rb_gv_get("$result"));
 	rc = RPMRC_OK;
-#ifdef	NOTYET
-	if (resultp)
-	    *resultp = Tcl_GetStringResult(ruby->I);
-#endif
 #endif
     }
     return rc;

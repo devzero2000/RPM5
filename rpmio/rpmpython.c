@@ -43,7 +43,7 @@ static rpmpython rpmpythonGetPool(/*@null@*/ rpmioPool pool)
     return (rpmpython) rpmioGetPool(pool, sizeof(*python));
 }
 
-static const char * initStringIO = "\
+static const char * rpmpythonInitStringIO = "\
 import rpm\n\
 import sys\n\
 from cStringIO import StringIO\n\
@@ -63,7 +63,7 @@ rpmpython rpmpythonNew(const char * fn, int flags)
     Py_Initialize();
     if (PycStringIO == NULL)
 	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
-    (void) rpmpythonRun(python, initStringIO, NULL);
+    (void) rpmpythonRun(python, rpmpythonInitStringIO, NULL);
 #endif
 
     return rpmpythonLink(python);
