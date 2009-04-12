@@ -2449,6 +2449,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
      || (file_len > 5 && strcasecmp(file+file_len-5, ".lzma") == 0)) {
         *compressed = COMPRESSED_LZMA;
         return 0;
+    } else
     if (file_len > 4 && strcasecmp(file+file_len-3, ".xz") == 0) {
 	*compressed = COMPRESSED_XZ;
 	return 0;
