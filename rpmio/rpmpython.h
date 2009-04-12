@@ -16,6 +16,7 @@ extern int _rpmpython_debug;
 #if defined(_RPMPYTHON_INTERNAL)
 #if defined(WITH_PYTHONEMBED)
 #include <Python.h>
+#include <cStringIO.h>
 #endif
 
 struct rpmpython_s {

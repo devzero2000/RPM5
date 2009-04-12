@@ -1,5 +1,7 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: python: attach sys.stdout to macro expansion buffer using cStringIO.
+    - jbj: tpython: permit interactive shells.
     - jbj: fix: permit rpmiobSlurp() to be used on stdin.
     - jbj: lua: revert -E /path/to/file.lua wrapping.
     - jbj: popt: remove retrofits for popt < 1.14. use popt internal if needed.

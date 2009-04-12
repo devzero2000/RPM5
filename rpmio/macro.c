@@ -1762,12 +1762,12 @@ expandMacro(MacroBuf mb)
 		rpmpython python = rpmpythonNew(NULL, 0);
 		const char *ls = s+sizeof("{python:")-1;
 		const char *lse = se-sizeof("}")+1;
-		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		char *script = (char *)xmalloc((lse-ls)+1);
 		const char * result = NULL;
 
-		memcpy(scriptbuf, ls, lse-ls);
-		scriptbuf[lse-ls] = '\0';
-		if (rpmpythonRun(python, scriptbuf, &result) != RPMRC_OK)
+		memcpy(script, ls, lse-ls);
+		script[lse-ls] = '\0';
+		if (rpmpythonRun(python, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
 		  if (result == NULL) result = "FIXME";
@@ -1780,7 +1780,7 @@ expandMacro(MacroBuf mb)
 		    mb->nb -= len;
 		  }
 		}
-		scriptbuf = _free(scriptbuf);
+		script = _free(script);
 		python = rpmpythonFree(python);
 		s = se;
 		continue;
