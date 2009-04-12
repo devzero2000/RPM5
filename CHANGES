@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - jbj: tcl: attach rpmtclIO to macro expansion buffer with Tcl_StackChannel.
     - jbj: ruby: attach $stdout to macro expansion buffer using StringIO.
     - jbj: python: attach sys.stdout to macro expansion buffer using cStringIO.
     - jbj: tpython: permit interactive shells.

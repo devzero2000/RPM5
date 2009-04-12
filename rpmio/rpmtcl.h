@@ -21,6 +21,8 @@ struct rpmtcl_s {
     const char * fn;
     int flags;
     Tcl_Interp * I;
+    void * tclout;
+    rpmiob iob;
 };
 #endif /* _RPMTCL_INTERNAL */
 
