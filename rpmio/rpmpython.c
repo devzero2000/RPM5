@@ -10,7 +10,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmpython_debug = 1;
+int _rpmpython_debug = 0;
 
 static void rpmpythonFini(void * _python)
         /*@globals fileSystem @*/
@@ -44,6 +44,7 @@ static rpmpython rpmpythonGetPool(/*@null@*/ rpmioPool pool)
 }
 
 static const char * initStringIO = "\
+import rpm\n\
 import sys\n\
 from cStringIO import StringIO\n\
 stdout = sys.stdout\n\
@@ -59,10 +60,10 @@ rpmpython rpmpythonNew(const char * fn, int flags)
     python->flags = flags;
 
 #if defined(WITH_PYTHONEMBED)
-	Py_Initialize();
-	if (PycStringIO == NULL)
-	    PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
-	(void) rpmpythonRun(python, initStringIO, NULL);
+    Py_Initialize();
+    if (PycStringIO == NULL)
+	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
+    (void) rpmpythonRun(python, initStringIO, NULL);
 #endif
 
     return rpmpythonLink(python);
