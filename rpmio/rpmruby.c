@@ -54,6 +54,7 @@ static rpmruby rpmrubyGetPool(/*@null@*/ rpmioPool pool)
     return (rpmruby) rpmioGetPool(pool, sizeof(*ruby));
 }
 
+/*@unchecked@*/
 static const char * rpmrubyInitStringIO = "\
 require 'stringio'\n\
 $stdout = StringIO.new($result, \"w+\")\n\

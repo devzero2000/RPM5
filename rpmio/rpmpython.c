@@ -43,6 +43,7 @@ static rpmpython rpmpythonGetPool(/*@null@*/ rpmioPool pool)
     return (rpmpython) rpmioGetPool(pool, sizeof(*python));
 }
 
+/*@unchecked@*/
 static const char * rpmpythonInitStringIO = "\
 import rpm\n\
 import sys\n\
