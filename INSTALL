@@ -28,7 +28,7 @@ Name            Type      Minimum Used    URL
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
 Perl            mandatory 5.8.0   5.10.0  http://www.perl.com/
-POPT            mandatory 1.9     1.14    http://rpm5.org/files/popt/
+POPT            mandatory 1.9     1.15    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.0     4.1.2   http://beecrypt.sourceforge.net/
 Mozilla NSS     optional  3.11    3.11.7  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   0.9.8k  http://www.openssl.org/
