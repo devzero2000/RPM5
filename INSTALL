@@ -10,7 +10,7 @@ Component       Component Version Version Component
 Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
-Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
+Perl            mandatory 5.8.0   5.10.0  http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.12  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.63    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.10    http://www.gnu.org/software/automake/
@@ -31,10 +31,10 @@ Perl            mandatory 5.8.0   5.10.0  http://www.perl.com/
 POPT            mandatory 1.9     1.14    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.0     4.1.2   http://beecrypt.sourceforge.net/
 Mozilla NSS     optional  3.11    3.11.7  http://www.mozilla.org/projects/security/pki/nss/
-OpenSSL         optional  0.9.8   0.9.8j  http://www.openssl.org/
+OpenSSL         optional  0.9.8   0.9.8k  http://www.openssl.org/
 Neon            optional  0.26.0  0.28.4  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
-SQLite      [1] optional  3.3     3.6.11  http://www.sqlite.org/
+SQLite      [1] optional  3.3     3.6.12  http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
@@ -42,7 +42,7 @@ XZ Utils    [3] optional  4.999.8 4.999.8 http://tukaani.org/xz/
 File/magic  [4] optional  4.00    5.00    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
-PCRE            mandatory 7.0     7.8     http://www.pcre.org/
+PCRE            mandatory 7.0     7.9     http://www.pcre.org/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
