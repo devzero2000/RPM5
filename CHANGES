@@ -1,4 +1,5 @@
 5.1.7 -> 5.1.8:
+    - rse: upgrade devtool.conf and INSTALL to the latest tools from HEAD
     - jbj: EVRtuple: eliminate the old EVR parser.
     - jbj: yarn: convert rpmluav to usage mutex with refcounts
     - jbj: yarn: convert rpmlua to usage mutex with refcounts
