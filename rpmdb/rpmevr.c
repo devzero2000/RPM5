@@ -145,8 +145,6 @@ static const char * _evr_tuple_match =
 const char * evr_tuple_match = NULL;
 /*@unchecked@*/ /*@refcounted@*/ /*@null@*/
 miRE evr_tuple_mire = NULL;
-/*@unchecked@*/
-static int evr_tuple_nmire;
 
 static miRE rpmEVRmire(void)
 	/*@*/
