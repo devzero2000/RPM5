@@ -20,6 +20,7 @@ LIBRPMMISC_0
     luaL_loadbuffer;
     luaL_loadfile;
     luaL_newstate;
+    lua_newthread;
     luaL_openlib;
     luaL_ref;
     luaL_unref;
@@ -60,10 +61,16 @@ LIBRPMMISC_0
     lua_remove;
     lua_settable;
     lua_settop;
+    lua_toboolean;
     lua_tolstring;
     lua_tonumber;
     lua_touserdata;
     lua_type;
+    lua_xmove;
+    luaL_addlstring;
+    luaL_buffinit;
+    luaL_pushresult;
+    luaL_typerror;
     lzma_alone_encoder;
     lzma_auto_decoder;
     lzma_code;
