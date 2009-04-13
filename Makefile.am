@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	db db3/configure xar xz pcre \
+	db db3/configure xar xz pcre syck \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
