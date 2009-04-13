@@ -44,6 +44,7 @@ static rpmpython rpmpythonGetPool(/*@null@*/ rpmioPool pool)
 }
 
 /*@unchecked@*/
+#if defined(WITH_PYTHONEMBED)
 static const char * rpmpythonInitStringIO = "\
 import rpm\n\
 import sys\n\
@@ -51,6 +52,7 @@ from cStringIO import StringIO\n\
 stdout = sys.stdout\n\
 sys.stdout = StringIO()\n\
 ";
+#endif
 
 rpmpython rpmpythonNew(const char * fn, int flags)
 {

@@ -222,7 +222,6 @@ static const char * rpmcliEvalSlurp(const char * arg)
 	iob = rpmiobAppend(rpmiobNew(strlen(arg)+1), arg, 0);
     }
 
-exit:
     val = rpmExpand(pre, iob->b, post, NULL);
     iob = rpmiobFree(iob);
     return val;

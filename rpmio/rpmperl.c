@@ -77,6 +77,7 @@ select $io;\n\
 ";
 #else
 #define	xs_init	NULL
+#if defined(WITH_PERLEMBED)
 /*@unchecked@*/
 static const char * rpmperlInitStringIO = "\
 use IO::String;\n\
@@ -85,12 +86,15 @@ select $io;\n\
 ";
 
 #endif
+#endif
 
 rpmperl rpmperlNew(const char * fn, int flags)
 {
+#if defined(WITH_PERLEMBED)
     static char *embedding[] = { "", "-e", "0" };
-    rpmperl perl = rpmperlGetPool(_rpmperlPool);
     int xx;
+#endif
+    rpmperl perl = rpmperlGetPool(_rpmperlPool);
 
     if (fn)
 	perl->fn = xstrdup(fn);

@@ -55,10 +55,12 @@ static rpmruby rpmrubyGetPool(/*@null@*/ rpmioPool pool)
 }
 
 /*@unchecked@*/
+#if defined(WITH_RUBYEMBED)
 static const char * rpmrubyInitStringIO = "\
 require 'stringio'\n\
 $stdout = StringIO.new($result, \"w+\")\n\
 ";
+#endif
 
 rpmruby rpmrubyNew(const char * fn, int flags)
 {

@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - rse: eliminate compile-time warnings introduced with recent embedded language support
     - afb: rename --with-ruby to --with-rubyembed, to match Perl/Python.
     - jbj: perl: attach stdout to macro expansion buffer with IO::String.
     - rse: use new POPT 1.15 from devtool environment
