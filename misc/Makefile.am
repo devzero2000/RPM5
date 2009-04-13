@@ -34,6 +34,7 @@ librpmmisc_la_LDFLAGS += \
 	@WITH_DB_LDFLAGS@ \
 	@WITH_ZLIB_LDFLAGS@ \
 	@WITH_XZ_LDFLAGS@ \
+	@WITH_LUA_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
 	@WITH_PCRE_LDFLAGS@ \
 	@WITH_SYCK_LDFLAGS@ \
@@ -43,6 +44,7 @@ librpmmisc_la_LIBADD = \
 	@WITH_DB_LIBS@ \
 	@WITH_ZLIB_LIBS@ \
 	@WITH_XZ_LIBS@ \
+	@WITH_LUA_LIBS@ \
 	@WITH_FILE_LIBS@ \
 	@WITH_PCRE_LIBS@ \
 	@WITH_SYCK_LIBS@ \
@@ -53,8 +55,8 @@ librpmmisc_la_LIBADD  += $(LIBS)
 endif
 librpmmisc_la_DEPENDENCIES = \
 	@ALLOCA@
-#librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
-#	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
+librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
+	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES

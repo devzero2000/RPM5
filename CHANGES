@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - rse: forward port all build infrastructure fixes from RPM 5.1
     - rse: eliminate compile-time warnings introduced with recent embedded language support
     - afb: rename --with-ruby to --with-rubyembed, to match Perl/Python.
     - jbj: perl: attach stdout to macro expansion buffer with IO::String.

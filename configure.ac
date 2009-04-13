@@ -1307,16 +1307,25 @@ AM_CONDITIONAL(USE_LUA_CRYPTO, [ test ".$USE_LUA_CRYPTO" = .yes ])
 AM_CONDITIONAL(USE_LUA_SOCKET, [ test ".$USE_LUA_SOCKET" = .yes ])
 
 dnl # PCRE
+dnl # use cases:
+dnl # - RPM under WITH_PCRE uses <pcre.h>+libpcre in addition to <regex.h>
+dnl # - RPM under WITH_PCRE+WITH_PCRE_POSIX uses <pcreposix.h>+libpcreposix instead of <regex.h>
+dnl # - RPM/Lua under LUA_USE_PCRE uses <pcre.h>+libpcre in addition to <regex.h>
+dnl # attention:
+dnl # - In the locally bundled PCRE all libpcre objects are embedded into libpcreposix
+dnl #   because of s/lib/noinst/ changes in pcre/Makefile.am. Here we have to link
+dnl #   against libpcreposix only!
 WITH_PCRE_INTERNAL=false
 RPM_CHECK_LIB(
     [PCRE], [pcre],
-    [pcreposix pcre], [pcre_compile], [pcre.h],
+    [pcre], [pcre_compile], [pcre.h],
     [yes,internal:external:none], [pcre],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_PCRE_INTERNAL=true
           AC_DEFINE(HAVE_PCRE_H, 1, [Define to 1 if you have <pcre.h>])
 	  AC_DEFINE(HAVE_LIBPCRE, 1, [Define to 1 if you have the 'pcre' library (-lpcre).])
           AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
+	  WITH_PCRE_LIBS="-lpcreposix" # override, not prepend! (see attention above)
 	  AC_SUBST(WITH_PCRE_LIBS)
       else
 	dnl # make sure PCRE POSIX API can be really _USED_ by RPM

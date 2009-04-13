@@ -15,6 +15,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_DB_CPPFLAGS@
 
 bin_PROGRAMS = rpmconstant
