@@ -1,5 +1,6 @@
 
 5.2a3 -> 5.2a4:
+    - rse: fix building without BZip2
     - rse: fix release tarball rolling after recent addition of local copies of XZ, PCRE and Syck
     - rse: forward port all build infrastructure fixes from RPM 5.1
     - rse: eliminate compile-time warnings introduced with recent embedded language support

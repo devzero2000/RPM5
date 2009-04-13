@@ -439,8 +439,10 @@ struct poptOption rpmioAllPoptTable[] = {
  { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,
 	N_("Debug embedded TCL interpreter"), NULL},
 #endif
+#idef HAVE_BZLIB_H
  { "rpmzqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmzq_debug, -1,
 	N_("Debug rpmzq Job Queuing"), NULL},
+#endif
  { "xardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_xar_debug, -1,
 	N_("Debug xar archives"), NULL},
  { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
