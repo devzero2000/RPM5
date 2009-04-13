@@ -429,7 +429,7 @@ struct poptOption rpmioAllPoptTable[] = {
  { "rpmpythondebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmpython_debug, -1,
 	N_("Debug embedded Python interpreter"), NULL},
 #endif
-#ifdef WITH_RUBY
+#ifdef WITH_RUBYEMBED
  { "rpmrubydebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmruby_debug, -1,
 	N_("Debug embedded Ruby interpreter"), NULL},
 #endif

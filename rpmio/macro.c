@@ -78,7 +78,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmpython.h>
 #endif
 
-#ifdef	WITH_RUBY
+#ifdef	WITH_RUBYEMBED
 #include <rpmruby.h>
 #endif
 
@@ -1787,7 +1787,7 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
-#ifdef	WITH_RUBY
+#ifdef	WITH_RUBYEMBED
 	if (STREQ("ruby", f, fn)) {
 		rpmruby ruby = rpmrubyNew(NULL, 0);
 		const char *ls = s+sizeof("{ruby:")-1;

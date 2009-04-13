@@ -3140,7 +3140,7 @@ void rpmioClean(void)
 #if defined(WITH_PYTHONEMBED)
     extern rpmioPool _rpmpythonPool;
 #endif
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
     extern rpmioPool _rpmrubyPool;
 #endif
 /*@=nestedextern@*/
@@ -3159,7 +3159,7 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
     _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
 #endif
 #if defined(WITH_PYTHONEMBED)

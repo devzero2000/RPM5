@@ -1258,7 +1258,7 @@ RPM_CHECK_LIB(
 
 dnl # Ruby embedding
 RPM_CHECK_LIB(
-    [Ruby embedding], [ruby],
+    [Ruby embedding], [rubyembed],
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
     [

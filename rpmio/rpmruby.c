@@ -10,7 +10,7 @@
 #undef	PACKAGE_STRING
 #undef	PACKAGE_BUGREPORT
 
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
 #include <ruby.h>
 #endif
 
@@ -30,7 +30,7 @@ static void rpmrubyFini(void * _ruby)
 
     ruby->fn = _free(ruby->fn);
     ruby->flags = 0;
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
     ruby_finalize();
     ruby_cleanup(0);
 #endif
@@ -68,7 +68,7 @@ rpmruby rpmrubyNew(const char * fn, int flags)
 	ruby->fn = strdup(fn);
     ruby->flags = flags;
 
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
     ruby_init();
     ruby_init_loadpath();
     ruby_script("rpmruby");
@@ -87,7 +87,7 @@ if (_rpmruby_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, ruby, fn);
 
     if (fn != NULL) {
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
 	rb_load_file(fn);
 	ruby->state = ruby_exec();
 	if (resultp != NULL)
@@ -106,7 +106,7 @@ if (_rpmruby_debug)
 fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, ruby, str, resultp);
 
     if (str != NULL) {
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
 	ruby->state = rb_eval_string(str);
 	if (resultp != NULL)
 	    *resultp = RSTRING_PTR(rb_gv_get("$result"));
