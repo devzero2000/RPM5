@@ -91,7 +91,7 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 assert(pool->made == count);
 #else
 if (pool->made != count)
-fprintf(stderr, "==> FIXME: pool %s: made %d count %d\n", pool->name, pool->made, count);
+rpmlog(RPMLOG_DEBUG, D_("pool %s: FIXME: made %d, count %d\n"), pool->name, pool->made, count);
 #endif
 	pool = _free(pool);
     }
