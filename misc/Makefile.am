@@ -55,8 +55,8 @@ librpmmisc_la_LIBADD  += $(LIBS)
 endif
 librpmmisc_la_DEPENDENCIES = \
 	@ALLOCA@
-#librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
-#	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
+librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
+	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
