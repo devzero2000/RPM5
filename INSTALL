@@ -34,7 +34,7 @@ Mozilla NSS     optional  3.11    3.11.7  http://www.mozilla.org/projects/securi
 OpenSSL         optional  0.9.8   0.9.8k  http://www.openssl.org/
 Neon            optional  0.26.0  0.28.4  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
-SQLite      [1] optional  3.3     3.6.12  http://www.sqlite.org/
+SQLite      [1] optional  3.3     3.6.13  http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
