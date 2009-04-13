@@ -1,4 +1,5 @@
 5.1.8 -> 5.1.9:
+    - rse: fix release tarball rolling after recent addition of local copies of XZ, PCRE and Syck
 
 5.1.7 -> 5.1.8:
     - jbj: adjust loader maps for lua.
