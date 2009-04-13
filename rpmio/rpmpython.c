@@ -3,7 +3,7 @@
 #define _RPMPYTHON_INTERNAL
 #include "rpmpython.h"
 
-#if defined(WITH_PYTHON_EMBED)
+#if defined(WITH_PYTHONEMBED)
 #include <cStringIO.h>
 #endif
 
