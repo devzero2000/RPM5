@@ -1,4 +1,6 @@
 
+5.2a4 -> 5.2b1:
+
 5.2a3 -> 5.2a4:
     - rse: fix building without BZip2
     - rse: fix release tarball rolling after recent addition of local copies of XZ, PCRE and Syck
