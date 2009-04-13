@@ -824,6 +824,151 @@
 
 =============================================================================
 
+5.1.7 -> 5.1.8:
+    - jbj: adjust loader maps for lua.
+    - rse: fix building under all combinations (none/internal/external) of Lua and PCRE
+    - rse: upgrade devtool.conf and INSTALL to the latest tools from HEAD
+    - jbj: EVRtuple: eliminate the old EVR parser.
+    - jbj: yarn: convert rpmluav to usage mutex with refcounts
+    - jbj: yarn: convert rpmlua to usage mutex with refcounts
+    - jbj: popt: remove retrofits for popt < 1.14. use popt internal if needed.
+    - jbj: mire: teardown for platpat on exit needs to be done in order.
+    - jbj: rpmwget: move to tools.
+    - jbj: rpmio: more random line noise reduction, diff'ing against HEAD.
+    - jbj: rpmio: backport HTTP transport from HEAD.
+    - jbj: rpmio: add additional data elements for HTTP transport.
+    - jbj: rpmiob: yet another place to use rpmiobSlurp instead.
+    - jbj: backport rpmspecdump from HEAD.
+    - jbj: lib: more random line noise reduction, diff'ing against HEAD.
+    - jbj: delete ancient header+payload RSA signatures too using GPG (#488953).
+    - jbj: rpmrepo: compile in queryformat strings.
+    - jbj: install/use deb:{md5sums,preinst,postinst,prerm,postrm} queryformats.
+    - jbj: install/use yum:{primary,filelists,other}.sqlite queryformats.
+    - jbj: install/use yum:{primary,filelists,other}.xml queryformats.
+    - jbj: install/use wnh:{primary,filelists,other}.yaml queryformats.
+    - jbj: use poptReadFile with retrofit for popt < 1.15.
+    - devzero2000: fix --orphandirs port alias ; add --danglinglink popt alias
+    - jbj: fix: eliminate a argvSplit() memory leak.
+    - jbj: stub-in /usr/lib/rpm/helpers/makeshlibs proof-of-concept.
+    - jbj: rude & crude backing store for --queryformat templates.
+    - jbj: PLD: rpm-popt-aliases: Add --downgrade/--norepackage aliases.
+    - jbj: PLD: rpm-notsc: Don't use rdtsc timing.
+    - jbj: enable the PLD dependency filtering.
+    - jbj: PLD: rpm-pld-autodep: add run-time disablers, attempt miRE's instead.
+    - jbj: PLD: rpm-pld-autodep: merge and simplify. entirely dysfunctional ...
+    - jbj: lib: start reducing random line noise, diff'ing against HEAD.
+    - jbj: add prototypes to remove compiler warnings.
+    - jbj: bury file actions into iosm, replace XFA_SKIPPING with a
+        iosmFileActionSkipped() call.
+    - jbj: rpmdb: random line noise reduction, diff'ing against HEAD.
+    - jbj: wire-up RPMTAG_FILEDIGESTALGO. wotta waste to pretend "compatible" ...
+    - jbj: yaml: add build scriptlet tags for --yaml/--xml display.
+    - jbj: eliminate rpmal debugging code.
+    - jbj: PLD: rpm-epoch0: Always add Epoch: 0 to packages.
+    - jbj: handle "config(N) = E:V-R" within rpmns.c (but treat as a string).
+    - jbj: yaml: backport the YAML analogue tag extensions to repo-md XML.
+    - jbj: yaml: permit --without-syck, add some mac os x AutoFu/gcc fiddle-ups.
+    - jbj: yaml: add lsyck lua module to parse YAML.
+    - jbj: finish backport and enable SUPPORT_DEBUGINFO_UPGRADE_MODEL.
+    - jbj: misc: get rid of splitFoo prototypes, bury the last use in rpmfi.c.
+    - jbj: PCRE in -lrpmmisc, LUA in -lrpmio linking -lrpmmisc, instead.
+    - jbj: update file manifests with backported files.
+    - jbj: perl: fix: no need to include stringbuf.h any more.
+    - jbj: fix: --noscripts/--nofdigests/--nocontexts need to use popt callback.
+    - jbj: rpmiob: fix: return iob to _rpmiobPool instead.
+    - rse: add RPM Lua function rpm.hostname()
+    - jbj: yarn: convert mire to usage mutex with refcounts
+	(unifying array <-> element mutexes by copying use/pool
+	pointers throughout the array).
+    - jbj: rpmku: rework rpmiob handling to avoid extra malloc's.
+    - jbj: rpmiob: fix: add a newref in rpmiobNew.
+    - jbj: rpmiob: backport the rpmiob interface into rpmku too.
+    - jbj: rpmiob: backport the remainder of rpmiob, eliminate StringBuf.
+    - jbj: backport HAVE_PTHREADS_H -> WITH_PTHREADS AutoFu logic.
+    - jbj: more hack-o-rounds for LUA <-> PCRE, add --disable-static for now.
+    - jbj: backport rpmiotypes.h/rpmiob.c, use rpmiobSlurp instead.
+    - jbj: fix: handle ./../foo paths correctly (#491388).
+    - jbj: rpmlib: rescusitate splint annotations.
+    - jbj: rpmdb: rescusitate splint annotations.
+    - jbj: rpmtsOrder: fully enable parentdir deps when ordering.
+    - jbj: rpmtsOrder: enable parentdir/linkto ordering relations.
+    - jbj: initialize ts->PRCO lazily (measured 20.4% rpm -qa speedup ymmv).
+    - jbj: EVRtuple: fix: dig out the one time mire allocation leak.
+    - jbj: use rpmioFreePoolItem for rpmds, eliminate rpmdsFree.
+    - jbj: finish up using rpmioFreePoolItem() for rpmts and Header objects.
+    - devzero2000: continuing for refcount rewrite : add define of fooFree to rpmioFreePoolItem
+    - devzero2000: begin change programming style for refcount : rpmtsFree and h
+eaderFree
+    - jbj: rpmio: rescusitate splint annotations.
+    - jbj: getdate: ignore internalState changes.
+    - jbj: zlog: use struct rpmioItem_s use/pool container.
+    - jbj: poptIO: add --htdebug.
+    - jbj: yarn: convert rpmfc to usage mutex with refcounts.
+    - jbj: yarn: convert hashTable to usage mutex with refcounts.
+    - jbj: yarn: convert rpmmg to usage mutex with refcounts.
+    - jbj: yarn: convert rpmwf refcount to usage mutex.
+    - jbj: rpmdb: don't bother with the silly structure assignment initialize.
+    - jbj: yarn: wire up rpmdsFini, mark rpmdsFree for destruction.
+    - jbj: yarn: wire up rpmtsFini, mark rpmtsFree for destruction.
+    - jbj: yarn: for now, don't assert fail, just print FIXME.
+    - jbj: yarn: wire up headerScrub, eliminate header{Link,Unlink}.
+    - jbj: make misc identical to HEAD (hmm @WITH_PCRE_LDFLAGS@ is AWOL)
+    - devzero2000: add mkdtemp portability function to -lrpmmisc
+    - jbj: yarn: wire up rpmteFini, eliminate rpmteFree.
+    - jbj: yarn: wire up rpmsxFini, eliminate rpmsxFree.
+    - jbj: yarn: wire up rpmfiFini, eliminate rpmfiFree.
+    - jbj: yarn: wire up rpmgiFini, eliminate rpmgiFree.
+    - jbj: rpmtsi: use __FUNCTION__ rather than adding a 2nd arg everywhere.
+    - jbj: pgpDig: fix: rpmioFreePoolItem() can return non-NULL, clear ts->dig.
+    - jbj: rpmio: add --pgpdebug for pgpDig debugging.
+    - jbj: yarn: wire up rpmtsiFini, eliminate rpmtsiFree.
+    - jbj: yarn: wire up rpmpsmFini, eliminate rpmpsmFree.
+    - jbj: yarn: wire up rpmxarFini, eliminate rpmxarFree.
+    - jbj: yarn: wire up pgpDigFini, eliminate pgpDigFree.
+    - jbj: yarn: wire up urlFini, eliminate XurlFree.
+    - jbj: yarn: wire up fdFini, eliminate XfdFree.
+    - jbj: url: fix: u->use clobbers the lock from the pool.
+    - jbj: rpmds: fix: rpmdsDup needs to go through rpmdsGetPool() too.
+    - jbj: yarn: use void * use, not yarnLock use, to hide the details.
+    - jbj: yarn: wrap use/pool into a per-object "struct rpmioItem_s _item".
+    - jbj: yarn: stub in (*init)() and (*fini)() pool item methods.
+    - jbj: yarn: add a (*dbg)() formatter to make fdLink() generic.
+    - jbj: yarn: stub-in rpmmi pool handling under NOTYET.
+    - jbj: QNX: avoid conflicting db defines for __mutex_lock/__mutex_unlock.
+    - jbj: yarn: convert rpmdb refcount to usage mutex.
+    - jbj: yarn: convert psm refcount to usage mutex.
+    - jbj: yarn: convert rpmxar refcount to usage mutex.
+    - jbj: yarn: convert pgpDig refcount to usage mutex (avoid recurse deadlock).
+    - jbj: yarn: convert rpmts refcount to usage mutex (avoid recurse deadlock).
+    - jbj: rpmps: fix: avoid reusing items from pool for now.
+    - jbj: yarn: convert rpmtsi refcount to usage mutex.
+    - jbj: yarn: convert rpmsx refcount to usage mutex.
+    - jbj: yarn: convert rpmps refcount to usage mutex.
+    - jbj: rpmds: fix: avoid pooling rpmdsThis/rpmdsSingle for now ...
+    - jbj: headerReload: fix: don't free the header blob.
+    - jbj: yarn: convert rpmte to a usage mutex (no refcounts).
+    - jbj: yarn: convert rpmgi refcount to usage mutex.
+    - jbj: yarn: use the pool changes where possible.
+    - jbj: yarn: add generic Link/Unlink refcount diddlers.
+    - jbj: yarn: add debugging, reuse counter, and zlog to rpmioPool.
+    - jbj: yarn: trick up a __FILE__:__LINE__ from caller when failing too.
+    - jbj: yarn: use EINVAL, not -1, for --without-pthreads portability.
+    - jbj: yarn: glibc pthreads (at least) returns errno's, strrerror decodes.
+    - jbj: yarn: fix: assert fail instead of exit on error.
+    - jbj: yarn: use the pool allocator.
+    - jbj: yarn: add a pool allocator.
+    - jbj: yarn: convert rpmfi refcounts to usage mutexes.
+    - jbj: yarn: convert rpmds refcounts to usage mutexes.
+    - jbj: yarn: convert Header refcounts to usage mutexes.
+    - jbj: yarn: convert urlInfo refcounts to usage mutexes.
+    - jbj: yarn: convert FD_t refcounts to usage mutexes.
+    - jbj: zlog: backport from HEAD.
+    - jbj: yarn: backport from HEAD (likely --with-pthreads needed todo++).
+    - jbj: bzdio: handle multiblock compressed payloads transparently.
+    - jbj: xzdio: backport the remaining xzdio contexxtual changes. worksforme.
+    - jbj: xzdio: backport XZ changes from HEAD.
+    - jbj: rename lzdio.c -> xzdio.c.
+
 5.1.6 -> 5.1.7:
     - jbj: update po files (Translation Project).
     - jbj: eleminate duplicate rpmVersionCompare() routines.
