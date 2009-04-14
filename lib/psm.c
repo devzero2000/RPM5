@@ -649,8 +649,11 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_PERLEMBED)
     if (!strcmp(Phe->p.argv[0], "<perl>")) {
 	rpmperl perl = rpmperlNew(NULL, 0);
-	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
-	if (rpmperlRun(perl, script, NULL) == RPMRC_OK)
+	char args[128];
+	(void)snprintf(args, sizeof(args), "@arg = (%d,%d);", arg1, arg2);
+	args[sizeof(args)-1] = '\0';
+	if (rpmperlRun(perl, args, NULL) == RPMRC_OK
+	 && rpmperlRun(perl, script, NULL) == RPMRC_OK)
 	    rc = RPMRC_OK;
 	else
 	    rc = RPMRC_FAIL;
@@ -660,8 +663,11 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_PYTHONEMBED)
     if (!strcmp(Phe->p.argv[0], "<python>")) {
 	rpmpython python = rpmpythonNew(NULL, 0);
-	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
-	if (rpmpythonRun(python, script, NULL) == RPMRC_OK)
+	char args[128];
+	(void)snprintf(args, sizeof(args), "arg = (%d,%d)", arg1, arg2);
+	args[sizeof(args)-1] = '\0';
+	if (rpmpythonRun(python, args, NULL) == RPMRC_OK
+	 && rpmpythonRun(python, script, NULL) == RPMRC_OK)
 	    rc = RPMRC_OK;
 	else
 	    rc = RPMRC_FAIL;
@@ -671,8 +677,11 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_RUBY)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
 	rpmruby ruby = rpmrubyNew(NULL, 0);
-	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
-	if (rpmrubyRun(ruby, script, NULL) == RPMRC_OK)
+	char args[128];
+	(void)snprintf(args, sizeof(args), "arg = [%d,%d]", arg1, arg2);
+	args[sizeof(args)-1] = '\0';
+	if (rpmrubyRun(ruby, args, NULL) == RPMRC_OK
+	 && rpmrubyRun(ruby, script, NULL) == RPMRC_OK)
 	    rc = RPMRC_OK;
 	else
 	    rc = RPMRC_FAIL;
@@ -682,8 +691,11 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_TCL)
     if (!strcmp(Phe->p.argv[0], "<tcl>")) {
 	rpmtcl tcl = rpmtclNew(NULL, 0);
-	/* XXX TODO: wire up arg1 and arg2, handle other args too. */
-	if (rpmtclRun(tcl, script, NULL) == RPMRC_OK)
+	char args[128];
+	(void)snprintf(args, sizeof(args), "set arg { %d %d }", arg1, arg2);
+	args[sizeof(args)-1] = '\0';
+	if (rpmtclRun(tcl, args, NULL) == RPMRC_OK
+	 && rpmtclRun(tcl, script, NULL) == RPMRC_OK)
 	    rc = RPMRC_OK;
 	else
 	    rc = RPMRC_FAIL;
