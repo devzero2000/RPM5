@@ -46,46 +46,28 @@ static rpmperl rpmperlGetPool(/*@null@*/ rpmioPool pool)
     return (rpmperl) rpmioGetPool(pool, sizeof(*perl));
 }
 
-#if defined(NOTYET)
-EXTERN_C void xs_init (pTHX);
+#if defined(WITH_PERLEMBED)
+EXTERN_C void xs_init (PerlInterpreter * _my_perl PERL_UNUSED_DECL);
 
-EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
+EXTERN_C void boot_DynaLoader (PerlInterpreter* _my_perl, CV* cv);
 
 EXTERN_C void
-xs_init(pTHX)
+xs_init(PerlInterpreter* _my_perl PERL_UNUSED_DECL)
 {
 	char *file = __FILE__;
 	dXSUB_SYS;
 
 	/* DynaLoader is a special case */
-	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+	Perl_newXS(_my_perl, "DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
 
 /*@unchecked@*/
 static const char * rpmperlInitStringIO = "\
-use RPM::Constant;\n\
-use RPM::Header;\n\
-use RPM::Transaction;\n\
-use RPM::PackageIterator;\n\
-use RPM::Problems;\n\
-use RPM::Files;\n\
-use RPM::Dependencies;\n\
-use RPM::Spec;\n\
+use RPM;\n\
 use IO::String;\n\
 $io = IO::String->new;\n\
 select $io;\n\
 ";
-#else
-#define	xs_init	NULL
-#if defined(WITH_PERLEMBED)
-/*@unchecked@*/
-static const char * rpmperlInitStringIO = "\
-use IO::String;\n\
-$io = IO::String->new;\n\
-select $io;\n\
-";
-
-#endif
 #endif
 
 rpmperl rpmperlNew(const char * fn, int flags)
