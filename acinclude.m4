@@ -99,6 +99,7 @@ dnl ##    <with-arg-default>   ::= <with-arg-mode> "," <with-arg-location>
 dnl ##    <with-arg-mode>      ::= "yes" | "no"
 dnl ##    <with-arg-location>  ::= <with-arg-location> ":" <with-arg-location>
 dnl ##                           | <directory-path>
+dnl ##                           | "system"
 dnl ##                           | "external"
 dnl ##                           | "internal"
 dnl ##                           | "none"
@@ -298,6 +299,23 @@ AC_DEFUN([RPM_CHECK_LIB], [
                             break
                         fi
                     fi
+                elif test ".${__rcl_location}" = .system; then
+                    dnl # detection of library in external locations controlled
+                    dnl # by explicit build flags or in standard system locations
+                    dnl # (usually /usr/include and /usr/lib)
+                    __rcl_found_hdr=no
+                    __rcl_found_lib=no
+                    AC_PREPROC_IFELSE([AC_LANG_SOURCE([@%:@include <$5>])], [ __rcl_found_hdr=yes ])
+                    m4_foreach_w([__rcl_lib], [$3], [
+                        __rcl_safe_LIBS="${LIBS}"
+                        LIBS="-l[]m4_defn([__rcl_lib]) ${LIBS}"
+                        AC_LINK_IFELSE([AC_LANG_CALL([], [$4])], [ __rcl_found_lib=yes ])
+                        LIBS="${__rcl_safe_LIBS}"
+                    ])
+                    if test ".${__rcl_found_hdr}:${__rcl_found_lib}" = ".yes:yes"; then
+                        __rcl_result_hint="system: explicitly controlled or system location"
+                        break
+                    fi
                 elif test -d "${__rcl_location}"; then
                     dnl # detection of library in particular external location
                     __rcl_found=no
@@ -428,6 +446,8 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     if test ".${__rcl_found}" = .yes; then
                         break
                     fi
+                else
+                    AC_MSG_ERROR(
                 fi
             done
             IFS="${__rcl_IFS}"
