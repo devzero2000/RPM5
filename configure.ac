@@ -1251,7 +1251,7 @@ RPM_CHECK_LIB(
 dnl # Python embedding
 RPM_CHECK_LIB(
     [Python embedding], [pythonembed],
-    [python], [Py_Initialize], [Python.h],
+    [python2.6 python2.5 python], [Py_Initialize], [Python.h],
     [no,external:none], [],
     [
     ], [])
