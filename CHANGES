@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - rse: let Lua's lregex_lposix to build against PCRE POSIX out of the box
     - jbj: inject $1/$2 into embedded tcl/perl/python/ruby interpreter contexts.
     - jbj: perl: add use RPM; so that perl bindings are available.
 

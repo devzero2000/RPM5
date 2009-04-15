@@ -1311,6 +1311,7 @@ dnl # use cases:
 dnl # - RPM under WITH_PCRE uses <pcre.h>+libpcre in addition to <regex.h>
 dnl # - RPM under WITH_PCRE+WITH_PCRE_POSIX uses <pcreposix.h>+libpcreposix instead of <regex.h>
 dnl # - RPM/Lua under LUA_USE_PCRE uses <pcre.h>+libpcre in addition to <regex.h>
+dnl # - RPM/Lua under REX_POSIX_INCLUDE uses <pcreposix.h>+libposixpcre instead of <regex.h>
 dnl # attention:
 dnl # - In the locally bundled PCRE all libpcre objects are embedded into libpcreposix
 dnl #   because of s/lib/noinst/ changes in pcre/Makefile.am. Here we have to link
@@ -1326,6 +1327,9 @@ RPM_CHECK_LIB(
 	  AC_DEFINE(HAVE_LIBPCRE, 1, [Define to 1 if you have the 'pcre' library (-lpcre).])
           AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
 	  WITH_PCRE_LIBS="-lpcreposix" # override, not prepend! (see attention above)
+          if test ".$WITH_LUA" = .yes; then
+              WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DREX_POSIX_INCLUDE=\"<pcreposix.h>\""
+          fi
 	  AC_SUBST(WITH_PCRE_LIBS)
       else
 	dnl # make sure PCRE POSIX API can be really _USED_ by RPM
@@ -1335,6 +1339,9 @@ RPM_CHECK_LIB(
           AC_LANG_PROGRAM([#include <pcreposix.h>], [(void)regcomp(0, 0, 0)])
 	], [
           AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
+          if test ".$WITH_LUA" = .yes; then
+              WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DREX_POSIX_INCLUDE=\"<pcreposix.h>\""
+          fi
 	], [
           LIBS="$LIBS_SAVED"
 	])
