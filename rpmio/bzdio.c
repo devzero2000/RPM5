@@ -8,7 +8,7 @@
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
-#if defined(HAVE_BZLIB_H)
+#if defined(WITH_BZIP2)
 
 #define	_RPMBZ_INTERNAL
 #include "rpmbz.h"

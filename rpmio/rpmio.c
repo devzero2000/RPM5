@@ -212,7 +212,7 @@ const char * fdbg(FD_t fd)
 	} else if (fps->io == gzdio) {
 	    sprintf(be, "GZD %p fdno %d", fps->fp, fps->fdno);
 #endif
-#if defined(HAVE_BZLIB_H)
+#if defined(WITH_BZIP2)
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
@@ -2326,11 +2326,11 @@ static const char * getFdErrstr (FD_t fd)
     } else
 #endif	/* WITH_ZLIB */
 
-#ifdef	HAVE_BZLIB_H
+#if defined(WITH_BZIP2)
     if (fdGetIo(fd) == bzdio) {
 	errstr = fd->errcookie;
     } else
-#endif	/* HAVE_BZLIB_H */
+#endif
 
 #ifdef	HAVE_LZMA_H
     if (fdGetIo(fd) == lzdio) {
@@ -2655,7 +2655,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    fd = iof->_fdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
-#if defined(HAVE_BZLIB_H)
+#if defined(WITH_BZIP2)
 	} else if (!strcmp(end, "bzdio")) {
 	    iof = bzdio;
 	    /*@-internalglobs@*/
@@ -2832,7 +2832,7 @@ int Fflush(FD_t fd)
     if (vh && fdGetIo(fd) == gzdio && gzdio->_flush != NULL)
 	return (*gzdio->_flush) ((void *)fd);
 #endif
-#if defined(HAVE_BZLIB_H)
+#if defined(WITH_BZIP2)
     if (vh && fdGetIo(fd) == bzdio && bzdio->_flush != NULL)
 	return (*bzdio->_flush) ((void *)fd);
 #endif
@@ -2868,7 +2868,7 @@ int Ferror(FD_t fd)
 	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
 #endif
-#if defined(HAVE_BZLIB_H)
+#if defined(WITH_BZIP2)
 	} else if (fps->io == bzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */

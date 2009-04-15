@@ -38,7 +38,7 @@
 
 #include "system.h"
 
-#if defined(HAVE_BZLIB_H)
+#if defined(WITH_BZIP2)
 
 #include <rpmiotypes.h>
 #include <rpmlog.h>
@@ -990,4 +990,4 @@ void rpmzqVerify(rpmzQueue zq)
     rpmzqVerifySEQ(zq->_zw.q);
 }
 
-#endif /* HAVE_BZLIB_H */
+#endif /* WITH_BZIP2 */

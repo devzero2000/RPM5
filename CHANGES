@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - rse: place BZip2 code under WITH_BZIP2 (RPM_CHECK_LIB based) instead of HAVE_BZLIB_H (standard Autoconf header check)
     - rse: RPM_CHECK_LIB: support --with-<name>=system to enable a library but control detection via flags only
     - rse: let Lua's lregex_lposix to build against PCRE POSIX out of the box
     - jbj: inject $1/$2 into embedded tcl/perl/python/ruby interpreter contexts.
