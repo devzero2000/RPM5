@@ -58,7 +58,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 # include <netinet/in_systm.h>
 #endif
 
-#if defined(HAVE_LZMA_H)
+#if defined(WITH_XZ)
 #include <lzma.h>
 #endif
 
@@ -216,7 +216,7 @@ const char * fdbg(FD_t fd)
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
-#if defined(HAVE_LZMA_H)
+#if defined(WITH_XZ)
 	} else if (fps->io == lzdio) {
 	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
 	} else if (fps->io == xzdio) {
@@ -2332,7 +2332,7 @@ static const char * getFdErrstr (FD_t fd)
     } else
 #endif
 
-#ifdef	HAVE_LZMA_H
+#if defined(WITH_XZ)
     if (fdGetIo(fd) == lzdio) {
 	errstr = fd->errcookie;
     } else
@@ -2662,7 +2662,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    fd = iof->_fdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
-#if defined(HAVE_LZMA_H)
+#if defined(WITH_XZ)
 	} else if (!strcmp(end, "lzdio")) {
 	    iof = lzdio;
 	    fd = iof->_fdopen(fd, zstdio);
@@ -2836,7 +2836,7 @@ int Fflush(FD_t fd)
     if (vh && fdGetIo(fd) == bzdio && bzdio->_flush != NULL)
 	return (*bzdio->_flush) ((void *)fd);
 #endif
-#if defined(HAVE_LZMA_H)
+#if defined(WITH_XZ)
     if (vh && fdGetIo(fd) == lzdio && lzdio->_flush != NULL)
 	return (*lzdio->_flush) ((void *)fd);
     if (vh && fdGetIo(fd) == xzdio && xzdio->_flush != NULL)
@@ -2873,7 +2873,7 @@ int Ferror(FD_t fd)
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
 #endif
-#if defined(HAVE_LZMA_H)
+#if defined(WITH_XZ)
 	} else if (fps->io == lzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under lzdio always has fdno == -1 */

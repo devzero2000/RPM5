@@ -8,7 +8,7 @@
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
-#if defined(HAVE_LZMA_H)
+#if defined(WITH_XZ)
 
 /* provide necessary defines for inclusion of <lzma.h>
    similar to LZMAUtils's internal <common.h> and as
