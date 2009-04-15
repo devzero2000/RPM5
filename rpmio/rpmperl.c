@@ -26,7 +26,6 @@ static void rpmperlFini(void * _perl)
 {
     rpmperl perl = _perl;
 
-    perl->fn = _free(perl->fn);
     perl->flags = 0;
 #if defined(WITH_PERLEMBED)
     PERL_SET_CONTEXT(my_perl);
@@ -78,7 +77,7 @@ select $io;\n\
 ";
 #endif
 
-rpmperl rpmperlNew(const char * fn, int flags)
+rpmperl rpmperlNew(const char ** av, int flags)
 {
 #if defined(WITH_PERLEMBED)
     static char *embedding[] = { "", "-e", "0" };
@@ -86,8 +85,6 @@ rpmperl rpmperlNew(const char * fn, int flags)
 #endif
     rpmperl perl = rpmperlGetPool(_rpmperlPool);
 
-    if (fn)
-	perl->fn = xstrdup(fn);
     perl->flags = flags;
 
 #if defined(WITH_PERLEMBED)

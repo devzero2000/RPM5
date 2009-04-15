@@ -63,6 +63,7 @@ const char * rpmMacrofiles = MACROFILES;
 
 #include <rpmio_internal.h>
 #include <rpmlog.h>
+#include <argv.h>
 #include <mire.h>
 
 #ifdef	WITH_LUA
@@ -1442,6 +1443,45 @@ static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
     return rc;
 }
 
+
+/**
+ * Parse args and string for PHP like %{foo <args> : <string> } syntax.
+ * @param s		"{ ... }" construct to parse
+ * @param nb		no. of bytes
+ * @retval *avp		invocation args
+ * @return		script string
+ */
+static char * parseEmbedded(const char * s, size_t nb, const char *** avp)
+	/*@*/
+{
+    char * args = NULL;
+    char * script = NULL;
+    const char * se;
+
+    /* XXX FIXME: args might have embedded : too. */
+    for (se = s + 1; se < (s+nb); se++)
+    switch (*se) {
+    default:	continue;	/*@notreached@*/ break;
+    case ':':	goto bingo;	/*@notreached@*/ break;
+    }
+
+bingo:
+    {	size_t na = (size_t)(se-s-1);
+	int xx;
+
+	args = memcpy(xmalloc(na+1), s+1, na);
+	args[na] = '\0';
+	xx = argvSplit(avp, args, NULL);
+	args = _free(args);
+	nb -= na;
+    }
+
+    nb -= 3;
+    script = memcpy(xmalloc(nb+1), se+1, nb+1);
+    script[nb] = '\0';
+    return script;
+}
+
 /**
  * The main macro recursion loop.
  * @todo Dynamically reallocate target buffer.
@@ -1721,15 +1761,12 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_PERLEMBED
 	if (STREQ("perl", f, fn)) {
-		rpmperl perl = (!_globalI ? rpmperlNew(NULL, 0) : NULL);
-		const char *ls = s+sizeof("{perl:")-1;
-		const char *lse = se-sizeof("}")+1;
-		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmperl perl = rpmperlNew(av, _globalI);
 		const char * result = NULL;
 
-		memcpy(scriptbuf, ls, lse-ls);
-		scriptbuf[lse-ls] = '\0';
-		if (rpmperlRun(perl, scriptbuf, &result) != RPMRC_OK)
+		if (rpmperlRun(perl, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
 		  if (result == NULL) result = "FIXME";
@@ -1742,8 +1779,9 @@ expandMacro(MacroBuf mb)
 		    mb->nb -= len;
 		 }
 		}
-		scriptbuf = _free(scriptbuf);
 		perl = rpmperlFree(perl);
+		av = argvFree(av);
+		script = _free(script);
 		s = se;
 		continue;
 	}
@@ -1751,14 +1789,11 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_PYTHONEMBED
 	if (STREQ("python", f, fn)) {
-		rpmpython python = (!_globalI ? rpmpythonNew(NULL, 0) : NULL);
-		const char *ls = s+sizeof("{python:")-1;
-		const char *lse = se-sizeof("}")+1;
-		char *script = (char *)xmalloc((lse-ls)+1);
+		const char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmpython python = rpmpythonNew(av, _globalI);
 		const char * result = NULL;
 
-		memcpy(script, ls, lse-ls);
-		script[lse-ls] = '\0';
 		if (rpmpythonRun(python, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
@@ -1772,8 +1807,9 @@ expandMacro(MacroBuf mb)
 		    mb->nb -= len;
 		  }
 		}
-		script = _free(script);
 		python = rpmpythonFree(python);
+		av = argvFree(av);
+		script = _free(script);
 		s = se;
 		continue;
 	}
@@ -1781,15 +1817,12 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_RUBYEMBED
 	if (STREQ("ruby", f, fn)) {
-		rpmruby ruby = (!_globalI ? rpmrubyNew(NULL, 0) : NULL);
-		const char *ls = s+sizeof("{ruby:")-1;
-		const char *lse = se-sizeof("}")+1;
-		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmruby ruby = rpmrubyNew(av, _globalI);
 		const char * result = NULL;
 
-		memcpy(scriptbuf, ls, lse-ls);
-		scriptbuf[lse-ls] = '\0';
-		if (rpmrubyRun(ruby, scriptbuf, &result) != RPMRC_OK)
+		if (rpmrubyRun(ruby, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
 		  if (result == NULL) result = "FIXME";
@@ -1802,8 +1835,9 @@ expandMacro(MacroBuf mb)
 		    mb->nb -= len;
 		  }
 		}
-		scriptbuf = _free(scriptbuf);
 		ruby = rpmrubyFree(ruby);
+		av = argvFree(av);
+		script = _free(script);
 		s = se;
 		continue;
 	}
@@ -1811,15 +1845,12 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_TCL
 	if (STREQ("tcl", f, fn)) {
-		rpmtcl tcl = (!_globalI ? rpmtclNew(NULL, 0) : NULL);
-		const char *ls = s+sizeof("{tcl:")-1;
-		const char *lse = se-sizeof("}")+1;
-		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmtcl tcl = rpmtclNew(av, _globalI);
 		const char * result = NULL;
 
-		memcpy(scriptbuf, ls, lse-ls);
-		scriptbuf[lse-ls] = '\0';
-		if (rpmtclRun(tcl, scriptbuf, &result) != RPMRC_OK)
+		if (rpmtclRun(tcl, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
@@ -1829,8 +1860,9 @@ expandMacro(MacroBuf mb)
 		    mb->t += len;
 		    mb->nb -= len;
 		}
-		scriptbuf = _free(scriptbuf);
 		tcl = rpmtclFree(tcl);
+		av = argvFree(av);
+		script = _free(script);
 		s = se;
 		continue;
 	}

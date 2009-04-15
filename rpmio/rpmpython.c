@@ -22,7 +22,6 @@ static void rpmpythonFini(void * _python)
 {
     rpmpython python = _python;
 
-    python->fn = _free(python->fn);
     python->flags = 0;
 #if defined(WITH_PYTHONEMBED)
     Py_Finalize();
@@ -58,12 +57,10 @@ sys.stdout = StringIO()\n\
 ";
 #endif
 
-rpmpython rpmpythonNew(const char * fn, int flags)
+rpmpython rpmpythonNew(const char ** av, int flags)
 {
     rpmpython python = rpmpythonGetPool(_rpmpythonPool);
 
-    if (fn)
-	python->fn = xstrdup(fn);
     python->flags = flags;
 
 #if defined(WITH_PYTHONEMBED)

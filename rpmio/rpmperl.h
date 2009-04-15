@@ -19,7 +19,6 @@ extern rpmperl _rpmperlI;
 #if defined(_RPMPERL_INTERNAL)
 struct rpmperl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
     int flags;
     void * I;
 };
@@ -65,19 +64,19 @@ rpmperl rpmperlFree(/*@killref@*/ /*@null@*/rpmperl perl)
 
 /**
  * Create and load a perl interpreter.
- * @param fn		(unimplemented) perl file to load (or NULL)
- * @param flags		(unimplemented) perl interpreter flags
+ * @param av		perl interpreter args (or NULL)
+ * @param flags		perl interpreter flags (1 == use global interpreter)
  * @return		new perl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmperl rpmperlNew(/*@null@*/ const char * fn, int flags)
+rpmperl rpmperlNew(/*@null@*/ const char ** av, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Execute perl string.
- * @param perl		perl interpreter
- * @param str		perl string to execute (or NULL)
+ * @param perl		perl interpreter (NULL uses global interpreter)
+ * @param str		perl string to execute (NULL returns RPMRC_FAIL)
  * @param *resultp	perl exec result
  * @return		RPMRC_OK on success
  */

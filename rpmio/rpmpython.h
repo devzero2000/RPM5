@@ -19,7 +19,6 @@ extern rpmpython _rpmpythonI;
 #if defined(_RPMPYTHON_INTERNAL)
 struct rpmpython_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
     int flags;
     void * I;			/* (unused) */
 };
@@ -65,19 +64,19 @@ rpmpython rpmpythonFree(/*@killref@*/ /*@null@*/rpmpython python)
 
 /**
  * Create and load a python interpreter.
- * @param fn		(unimplemented) python file to load (or NULL)
- * @param flags		(unimplemented) python interpreter flags
+ * @param fn		python interpreter args (or NULL)
+ * @param flags		python interpreter flags (1 == use global interpreter)
  * @return		new python interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmpython rpmpythonNew(/*@null@*/ const char * fn, int flags)
+rpmpython rpmpythonNew(/*@null@*/ const char ** av, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Execute python from a file.
- * @param python	python interpreter
- * @param fn		python file to run (or NULL)
+ * @param python	python interpreter (NULL uses global interpreter)
+ * @param fn		python file to run (NULL returns RPMRC_FAIL)
  * @param *resultp	python exec result
  * @return		RPMRC_OK on success
  */
@@ -88,8 +87,8 @@ rpmRC rpmpythonRunFile(rpmpython python, /*@null@*/ const char * fn,
 
 /**
  * Execute python string.
- * @param python	python interpreter
- * @param str		python string to execute (or NULL)
+ * @param python	python interpreter (NULL uses global interpreter)
+ * @param str		python string to execute (NULL returns RPMRC_FAIL)
  * @param *resultp	python exec result
  * @return		RPMRC_OK on success
  */

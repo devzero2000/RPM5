@@ -20,7 +20,6 @@ static void rpmtclFini(void * _tcl)
 {
     rpmtcl tcl = _tcl;
 
-    tcl->fn = _free(tcl->fn);
     tcl->flags = 0;
 #if defined(WITH_TCL)
     Tcl_DeleteInterp((Tcl_Interp *)tcl->I);
@@ -105,12 +104,10 @@ static Tcl_ChannelType rpmtclIO = {
 };
 #endif
 
-rpmtcl rpmtclNew(const char * fn, int flags)
+rpmtcl rpmtclNew(const char ** av, int flags)
 {
     rpmtcl tcl = rpmtclGetPool(_rpmtclPool);
 
-    if (fn)
-	tcl->fn = xstrdup(fn);
     tcl->flags = flags;
 
 #if defined(WITH_TCL)

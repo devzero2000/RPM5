@@ -31,7 +31,6 @@ static void rpmrubyFini(void * _ruby)
 {
     rpmruby ruby = _ruby;
 
-    ruby->fn = _free(ruby->fn);
     ruby->flags = 0;
 #if defined(WITH_RUBYEMBED)
     ruby_finalize();
@@ -65,12 +64,10 @@ $stdout = StringIO.new($result, \"w+\")\n\
 ";
 #endif
 
-rpmruby rpmrubyNew(const char * fn, int flags)
+rpmruby rpmrubyNew(const char ** av, int flags)
 {
     rpmruby ruby = rpmrubyGetPool(_rpmrubyPool);
 
-    if (fn)
-	ruby->fn = strdup(fn);
     ruby->flags = flags;
 
 #if defined(WITH_RUBYEMBED)

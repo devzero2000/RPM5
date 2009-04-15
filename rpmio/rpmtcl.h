@@ -21,7 +21,6 @@ extern rpmtcl _rpmtclI;
 
 struct rpmtcl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
     int flags;
     void * I;			/* Tcl_Interp */
     void * tclout;		/* Tcl_Channel */
@@ -69,19 +68,19 @@ rpmtcl rpmtclFree(/*@killref@*/ /*@null@*/rpmtcl tcl)
 
 /**
  * Create and load a tcl interpreter.
- * @param fn		(unimplemented) tcl file to load (or NULL)
- * @param flags		(unimplemented) tcl interpreter flags
+ * @param av		tcl interpreter args (or NULL)
+ * @param flags		tcl interpreter flags (1 == use global interpreter)
  * @return		new tcl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmtcl rpmtclNew(/*@null@*/ const char * fn, int flags)
+rpmtcl rpmtclNew(/*@null@*/ const char ** av, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Execute tcl from a file.
- * @param tcl		tcl interpreter
- * @param fn		tcl file to run (or NULL)
+ * @param tcl		tcl interpreter (NULL uses global interpreter)
+ * @param fn		tcl file to run (NULL returns RPMRC_FAIL)
  * @param *resultp	tcl exec result
  * @return		RPMRC_OK on success
  */
@@ -92,8 +91,8 @@ rpmRC rpmtclRunFile(rpmtcl tcl, /*@null@*/ const char * fn,
 
 /**
  * Execute tcl string.
- * @param tcl		tcl interpreter
- * @param str		tcl string to execute (or NULL)
+ * @param tcl		tcl interpreter (NULL uses global interpreter)
+ * @param str		tcl string to execute (NULL returns RPMRC_FAIL)
  * @param *resultp	tcl exec result
  * @return		RPMRC_OK on success
  */

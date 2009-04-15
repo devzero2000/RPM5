@@ -19,7 +19,6 @@ extern rpmruby _rpmrubyI;
 #if defined(_RPMRUBY_INTERNAL)
 struct rpmruby_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
     int flags;
     void * I;
     unsigned long state;
@@ -66,19 +65,19 @@ rpmruby rpmrubyFree(/*@killref@*/ /*@null@*/rpmruby ruby)
 
 /**
  * Create and load a ruby interpreter.
- * @param fn		(unimplemented) ruby file to load (or NULL)
- * @param flags		(unimplemented) ruby interpreter flags
+ * @param av		ruby interpreter args (or NULL)
+ * @param flags		ruby interpreter flags (1 == use global interpreter)
  * @return		new ruby interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmruby rpmrubyNew(/*@null@*/ const char * fn, int flags)
+rpmruby rpmrubyNew(/*@null@*/ const char ** av, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Execute ruby from a file.
- * @param ruby		ruby interpreter
- * @param fn		ruby file to run (or NULL)
+ * @param ruby		ruby interpreter (NULL uses global interpreter)
+ * @param fn		ruby file to run (NULL returns RPMRC_FAIL)
  * @param *resultp	ruby exec result
  * @return		RPMRC_OK on success
  */
@@ -89,8 +88,8 @@ rpmRC rpmrubyRunFile(rpmruby ruby, /*@null@*/ const char * fn,
 
 /**
  * Execute ruby string.
- * @param ruby		ruby interpreter
- * @param str		ruby string to execute (or NULL)
+ * @param ruby		ruby interpreter (NULL uses global interpreter)
+ * @param str		ruby string to execute (NULL returns RPMRC_FAIL)
  * @param *resultp	ruby exec result
  * @return		RPMRC_OK on success
  */
