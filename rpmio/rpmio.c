@@ -65,6 +65,10 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmiotypes.h>
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
+#include <rpmperl.h>
+#include <rpmpython.h>
+#include <rpmruby.h>
+#include <rpmtcl.h>
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
@@ -3127,22 +3131,12 @@ void rpmioClean(void)
     extern rpmioPool _htPool;
 /*@=shadow@*/
     extern rpmioPool _rpmmgPool;
-#if defined(WITH_LUA)
     extern rpmioPool _rpmluavPool;
     extern rpmioPool _rpmluaPool;
-#endif
-#if defined(WITH_TCL)
     extern rpmioPool _rpmtclPool;
-#endif
-#if defined(WITH_PERLEMBED)
     extern rpmioPool _rpmperlPool;
-#endif
-#if defined(WITH_PYTHONEMBED)
     extern rpmioPool _rpmpythonPool;
-#endif
-#if defined(WITH_RUBYEMBED)
     extern rpmioPool _rpmrubyPool;
-#endif
 /*@=nestedextern@*/
 
 #if defined(WITH_LUA)
@@ -3159,22 +3153,16 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
-#if defined(WITH_RUBYEMBED)
+    _rpmrubyI = rpmrubyFree(_rpmrubyI);
     _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
-#endif
-#if defined(WITH_PYTHONEMBED)
+    _rpmpythonI = rpmpythonFree(_rpmpythonI);
     _rpmpythonPool = rpmioFreePool(_rpmpythonPool);
-#endif
-#if defined(WITH_PERLEMBED)
+    _rpmperlI = rpmperlFree(_rpmperlI);
     _rpmperlPool = rpmioFreePool(_rpmperlPool);
-#endif
-#if defined(WITH_TCL)
+    _rpmtclI = rpmtclFree(_rpmtclI);
     _rpmtclPool = rpmioFreePool(_rpmtclPool);
-#endif
-#if defined(WITH_LUA)
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);
-#endif
     _mirePool = rpmioFreePool(_mirePool);
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
     _htPool = rpmioFreePool(_htPool);

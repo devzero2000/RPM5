@@ -13,6 +13,9 @@ typedef /*@abstract@*/ struct rpmtcl_s * rpmtcl;
 /*@unchecked@*/
 extern int _rpmtcl_debug;
 
+/*@unchecked@*/ /*@relnull@*/
+extern rpmtcl _rpmtclI;
+
 #if defined(_RPMTCL_INTERNAL)
 #include <tcl.h>
 
@@ -20,8 +23,8 @@ struct rpmtcl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     int flags;
-    Tcl_Interp * I;
-    void * tclout;
+    void * I;			/* Tcl_Interp */
+    void * tclout;		/* Tcl_Channel */
     rpmiob iob;
 };
 #endif /* _RPMTCL_INTERNAL */

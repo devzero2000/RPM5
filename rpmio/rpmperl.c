@@ -5,12 +5,20 @@
 #define _RPMPERL_INTERNAL
 #include "rpmperl.h"
 
-#include "debug.h"
+#if defined(WITH_PERLEMBED)
+#include <EXTERN.h>
+#include <perl.h>
+#endif
 
-#define	my_perl	((PerlInterpreter *)perl->I)
+#include "debug.h"
 
 /*@unchecked@*/
 int _rpmperl_debug = 0;
+
+/*@unchecked@*/ /*@relnull@*/
+rpmperl _rpmperlI = NULL;
+
+#define	my_perl	((PerlInterpreter *)perl->I)
 
 static void rpmperlFini(void * _perl)
         /*@globals fileSystem @*/
@@ -98,12 +106,23 @@ rpmperl rpmperlNew(const char * fn, int flags)
     return rpmperlLink(perl);
 }
 
+static rpmperl rpmperlI(void)
+	/*@globals _rpmperlI @*/
+	/*@modifies _rpmperlI @*/
+{
+    if (_rpmperlI == NULL)
+	_rpmperlI = rpmperlNew(NULL, 0);
+    return _rpmperlI;
+}
+
 rpmRC rpmperlRun(rpmperl perl, const char * str, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
 if (_rpmperl_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, perl, str);
+
+    if (perl == NULL) perl = rpmperlI();
 
     if (str != NULL) {
 #if defined(WITH_PERLEMBED)

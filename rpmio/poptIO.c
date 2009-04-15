@@ -25,6 +25,11 @@
 #include <rpmssl.h>
 #endif
 
+#include <rpmperl.h>
+#include <rpmpython.h>
+#include <rpmruby.h>
+#include <rpmtcl.h>
+
 #include "debug.h"
 
 const char *__progname;
@@ -68,15 +73,7 @@ extern int _rpmiob_debug;
 /*@unchecked@*/
 extern int _rpmlua_debug;
 /*@unchecked@*/
-extern int _rpmperl_debug;
-/*@unchecked@*/
-extern int _rpmpython_debug;
-/*@unchecked@*/
-extern int _rpmruby_debug;
-/*@unchecked@*/
 extern int _rpmsq_debug;
-/*@unchecked@*/
-extern int _rpmtcl_debug;
 /*@unchecked@*/
 extern int _rpmzq_debug;
 /*@unchecked@*/
@@ -421,24 +418,16 @@ struct poptOption rpmioAllPoptTable[] = {
 #endif
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
-#ifdef WITH_PERLEMBED
  { "rpmperldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmperl_debug, -1,
 	N_("Debug embedded Perl interpreter"), NULL},
-#endif
-#ifdef WITH_PYTHONEMBED
  { "rpmpythondebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmpython_debug, -1,
 	N_("Debug embedded Python interpreter"), NULL},
-#endif
-#ifdef WITH_RUBYEMBED
  { "rpmrubydebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmruby_debug, -1,
 	N_("Debug embedded Ruby interpreter"), NULL},
-#endif
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	N_("Debug rpmsq Signal Queue"), NULL},
-#ifdef WITH_TCL
  { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,
 	N_("Debug embedded TCL interpreter"), NULL},
-#endif
 #ifdef WITH_BZIP2
  { "rpmzqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmzq_debug, -1,
 	N_("Debug rpmzq Job Queuing"), NULL},

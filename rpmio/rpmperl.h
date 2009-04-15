@@ -13,12 +13,10 @@ typedef /*@abstract@*/ struct rpmperl_s * rpmperl;
 /*@unchecked@*/
 extern int _rpmperl_debug;
 
-#if defined(_RPMPERL_INTERNAL)
-#if defined(WITH_PERLEMBED)
-#include <EXTERN.h>
-#include <perl.h>
-#endif
+/*@unchecked@*/ /*@relnull@*/
+extern rpmperl _rpmperlI;
 
+#if defined(_RPMPERL_INTERNAL)
 struct rpmperl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;

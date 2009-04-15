@@ -70,21 +70,10 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmlua.h>
 #endif
 
-#ifdef	WITH_PERLEMBED
 #include <rpmperl.h>
-#endif
-
-#ifdef	WITH_PYTHONEMBED
 #include <rpmpython.h>
-#endif
-
-#ifdef	WITH_RUBYEMBED
 #include <rpmruby.h>
-#endif
-
-#ifdef	WITH_TCL
 #include <rpmtcl.h>
-#endif
 
 #endif
 
@@ -94,6 +83,9 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmmacro.h>
 
 #include "debug.h"
+
+/*@unchecked@*/
+static int _globalI = 1;
 
 #if defined(__LCLINT__)
 /*@-exportheader@*/
@@ -1729,7 +1721,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_PERLEMBED
 	if (STREQ("perl", f, fn)) {
-		rpmperl perl = rpmperlNew(NULL, 0);
+		rpmperl perl = (!_globalI ? rpmperlNew(NULL, 0) : NULL);
 		const char *ls = s+sizeof("{perl:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
@@ -1759,7 +1751,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_PYTHONEMBED
 	if (STREQ("python", f, fn)) {
-		rpmpython python = rpmpythonNew(NULL, 0);
+		rpmpython python = (!_globalI ? rpmpythonNew(NULL, 0) : NULL);
 		const char *ls = s+sizeof("{python:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *script = (char *)xmalloc((lse-ls)+1);
@@ -1789,7 +1781,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_RUBYEMBED
 	if (STREQ("ruby", f, fn)) {
-		rpmruby ruby = rpmrubyNew(NULL, 0);
+		rpmruby ruby = (!_globalI ? rpmrubyNew(NULL, 0) : NULL);
 		const char *ls = s+sizeof("{ruby:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
@@ -1819,7 +1811,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_TCL
 	if (STREQ("tcl", f, fn)) {
-		rpmtcl tcl = rpmtclNew(NULL, 0);
+		rpmtcl tcl = (!_globalI ? rpmtclNew(NULL, 0) : NULL);
 		const char *ls = s+sizeof("{tcl:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);

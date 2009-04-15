@@ -13,6 +13,9 @@ typedef /*@abstract@*/ struct rpmruby_s * rpmruby;
 /*@unchecked@*/
 extern int _rpmruby_debug;
 
+/*@unchecked@*/ /*@relnull@*/
+extern rpmruby _rpmrubyI;
+
 #if defined(_RPMRUBY_INTERNAL)
 struct rpmruby_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */

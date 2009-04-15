@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: map NULL interp to lazily instantiated globally persistent instance.
     - rse: RPM_CHECK_LIB: correctly handle library names like "libpython2.6" and "libdb-4.7"
     - rse: place XZ code under WITH_XZ (RPM_CHECK_LIB based) instead of HAVE_LZMA_H (standard Autoconf header check)
     - rse: place BZip2 code under WITH_BZIP2 (RPM_CHECK_LIB based) instead of HAVE_BZLIB_H (standard Autoconf header check)

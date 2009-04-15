@@ -1,6 +1,7 @@
 #include "system.h"
 
 #ifdef	WITH_TCL
+#include <tcl.h>
 #define _RPMTCL_INTERNAL
 #include "rpmtcl.h"
 
@@ -8,6 +9,9 @@
 
 /*@unchecked@*/
 int _rpmtcl_debug = 0;
+
+/*@unchecked@*/ /*@relnull@*/
+rpmtcl _rpmtclI = NULL;
 
 static void rpmtclFini(void * _tcl)
         /*@globals fileSystem @*/
@@ -18,7 +22,7 @@ static void rpmtclFini(void * _tcl)
     tcl->fn = _free(tcl->fn);
     tcl->flags = 0;
 #if defined(WITH_TCL)
-    Tcl_DeleteInterp(tcl->I);
+    Tcl_DeleteInterp((Tcl_Interp *)tcl->I);
 #endif
     tcl->I = NULL;
     (void)rpmiobFree(tcl->iob);
@@ -109,14 +113,25 @@ rpmtcl rpmtclNew(const char * fn, int flags)
     tcl->flags = flags;
 
 #if defined(WITH_TCL)
-    tcl->I = Tcl_CreateInterp();
-    tcl->tclout = Tcl_GetStdChannel(TCL_STDOUT);
-    Tcl_SetChannelOption(tcl->I, tcl->tclout, "-translation", "auto");
-    Tcl_StackChannel(tcl->I, &rpmtclIO, tcl, TCL_WRITABLE, tcl->tclout);
+    {	Tcl_Interp * tclI = Tcl_CreateInterp();
+	tcl->I = tclI;
+	tcl->tclout = Tcl_GetStdChannel(TCL_STDOUT);
+	Tcl_SetChannelOption(tclI, tcl->tclout, "-translation", "auto");
+	Tcl_StackChannel(tclI, &rpmtclIO, tcl, TCL_WRITABLE, tcl->tclout);
+    }
 #endif
     tcl->iob = rpmiobNew(0);
 
     return rpmtclLink(tcl);
+}
+
+static rpmtcl rpmtclI(void)
+	/*@globals _rpmtclI @*/
+	/*@modifies _rpmtclI @*/
+{
+    if (_rpmtclI == NULL)
+	_rpmtclI = rpmtclNew(NULL, 0);
+    return _rpmtclI;
 }
 
 rpmRC rpmtclRunFile(rpmtcl tcl, const char * fn, const char ** resultp)
@@ -126,8 +141,10 @@ rpmRC rpmtclRunFile(rpmtcl tcl, const char * fn, const char ** resultp)
 if (_rpmtcl_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, tcl, fn);
 
+    if (tcl == NULL) tcl = rpmtclI();
+
 #if defined(WITH_TCL)
-    if (fn != NULL && Tcl_EvalFile(tcl->I, fn) == TCL_OK) {
+    if (fn != NULL && Tcl_EvalFile((Tcl_Interp *)tcl->I, fn) == TCL_OK) {
 	rc = RPMRC_OK;
 	if (resultp)
 	    *resultp = rpmiobStr(tcl->iob);
@@ -143,8 +160,10 @@ rpmRC rpmtclRun(rpmtcl tcl, const char * str, const char ** resultp)
 if (_rpmtcl_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, tcl, str);
 
+    if (tcl == NULL) tcl = rpmtclI();
+
 #if defined(WITH_TCL)
-    if (str != NULL && Tcl_Eval(tcl->I, str) == TCL_OK) {
+    if (str != NULL && Tcl_Eval((Tcl_Interp *)tcl->I, str) == TCL_OK) {
 	rc = RPMRC_OK;
 	if (resultp)
 	    *resultp = rpmiobStr(tcl->iob);

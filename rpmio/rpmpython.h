@@ -13,17 +13,15 @@ typedef /*@abstract@*/ struct rpmpython_s * rpmpython;
 /*@unchecked@*/
 extern int _rpmpython_debug;
 
-#if defined(_RPMPYTHON_INTERNAL)
-#if defined(WITH_PYTHONEMBED)
-#include <Python.h>
-#include <cStringIO.h>
-#endif
+/*@unchecked@*/ /*@relnull@*/
+extern rpmpython _rpmpythonI;
 
+#if defined(_RPMPYTHON_INTERNAL)
 struct rpmpython_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     int flags;
-    void * I;
+    void * I;			/* (unused) */
 };
 #endif /* _RPMPYTHON_INTERNAL */
 

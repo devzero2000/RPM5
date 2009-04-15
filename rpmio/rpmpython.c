@@ -4,6 +4,7 @@
 #include "rpmpython.h"
 
 #if defined(WITH_PYTHONEMBED)
+#include <Python.h>
 #include <cStringIO.h>
 #endif
 
@@ -11,6 +12,9 @@
 
 /*@unchecked@*/
 int _rpmpython_debug = 0;
+
+/*@unchecked@*/ /*@relnull@*/
+rpmpython _rpmpythonI = NULL;
 
 static void rpmpythonFini(void * _python)
         /*@globals fileSystem @*/
@@ -72,6 +76,15 @@ rpmpython rpmpythonNew(const char * fn, int flags)
     return rpmpythonLink(python);
 }
 
+static rpmpython rpmpythonI(void)
+	/*@globals _rpmpythonI @*/
+	/*@modifies _rpmpythonI @*/
+{
+    if (_rpmpythonI == NULL)
+	_rpmpythonI = rpmpythonNew(NULL, 0);
+    return _rpmpythonI;
+}
+
 rpmRC rpmpythonRunFile(rpmpython python, const char * fn, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -79,6 +92,8 @@ rpmRC rpmpythonRunFile(rpmpython python, const char * fn, const char ** resultp)
 
 if (_rpmpython_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, python, fn);
+
+    if (python == NULL) python = rpmpythonI();
 
     if (fn != NULL) {
 #if defined(WITH_PYTHONEMBED)
@@ -102,6 +117,8 @@ rpmRC rpmpythonRun(rpmpython python, const char * str, const char ** resultp)
 
 if (_rpmpython_debug)
 fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
+
+    if (python == NULL) python = rpmpythonI();
 
     if (str != NULL) {
 #if defined(WITH_PYTHONEMBED)
