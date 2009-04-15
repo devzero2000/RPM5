@@ -2,6 +2,7 @@
 
 #ifdef	WITH_TCL
 #include <tcl.h>
+#endif
 #define _RPMTCL_INTERNAL
 #include "rpmtcl.h"
 
@@ -171,4 +172,3 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, tcl, str);
 #endif
     return rc;
 }
-#endif	/* WITH_TCL */
