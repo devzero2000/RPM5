@@ -472,7 +472,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     AC_CHECK_LIB(m4_defn([__rcl_lib]), [$4])
                     dnl # manually check for success (do not use third argument to AC_CHECK_LIB
                     dnl # here as this would no longer set the LIBS variable (the default action)
-                    test ".${ac_cv_lib_[]m4_defn([__rcl_lib])_$4}" = .yes && __rcl_found_lib=yes
+                    test ".${m4_translit(ac_cv_lib_[]m4_defn([__rcl_lib])_$4,[.-,],[___])}" = .yes && __rcl_found_lib=yes
                 ])
                 test ".${__rcl_found_lib}" = .no && __rcl_found="no"
                 dnl # determine final results
