@@ -447,7 +447,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         break
                     fi
                 else
-                    AC_MSG_ERROR(
+                    AC_MSG_ERROR([Unknown location specification $__rcl_location])
                 fi
             done
             IFS="${__rcl_IFS}"
