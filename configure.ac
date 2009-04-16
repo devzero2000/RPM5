@@ -1272,6 +1272,17 @@ RPM_CHECK_LIB(
     [
     ], [])
 
+dnl # JavaScript
+RPM_CHECK_LIB(
+    [JavaScript], [javascript],
+    [js], [JS_NewContext], [jsstddef.h],
+    [no,internal:none], [js:src/Linux_All_DBG.OBJ],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          AC_DEFINE(HAVE_JSSTDDEF_H, 1, [Define to 1 if you have <jsstddef.h>])
+	  AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
+      fi
+    ], [])
+
 dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
 WITH_LUA_SUBDIR_LIB=""
