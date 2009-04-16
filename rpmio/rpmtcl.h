@@ -21,7 +21,6 @@ extern rpmtcl _rpmtclI;
 
 struct rpmtcl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    int flags;
     void * I;			/* Tcl_Interp */
     void * tclout;		/* Tcl_Channel */
     rpmiob iob;

@@ -679,15 +679,9 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_TCL)
     if (!strcmp(Phe->p.argv[0], "<tcl>")) {
-	rpmtcl tcl = rpmtclNew(NULL, 0);
-	char args[128];
-	(void)snprintf(args, sizeof(args), "set arg { %d %d }", arg1, arg2);
-	args[sizeof(args)-1] = '\0';
-	if (rpmtclRun(tcl, args, NULL) == RPMRC_OK
-	 && rpmtclRun(tcl, script, NULL) == RPMRC_OK)
-	    rc = RPMRC_OK;
-	else
-	    rc = RPMRC_FAIL;
+	rpmtcl tcl = rpmtclNew(av, 0);
+	rc = rpmtclRun(tcl, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
 	tcl = rpmtclFree(tcl);
     } else
 #endif

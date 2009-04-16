@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <argv.h>
+
 #ifdef	WITH_TCL
 #include <tcl.h>
 #endif
@@ -20,7 +22,6 @@ static void rpmtclFini(void * _tcl)
 {
     rpmtcl tcl = _tcl;
 
-    tcl->flags = 0;
 #if defined(WITH_TCL)
     Tcl_DeleteInterp((Tcl_Interp *)tcl->I);
 #endif
@@ -70,7 +71,13 @@ static int rpmtclIOwrite(ClientData CD, const char *b, int nb, int *errnop)
     rpmtcl tcl = (rpmtcl) CD;
 if (_rpmtcl_debug)
 fprintf(stderr, "==> %s(%p, %p[%d], %p)\n", __FUNCTION__, CD, b, nb, errnop);
-    (void) rpmiobAppend(tcl->iob, b, (size_t)nb);
+    if (nb > 0) {
+	char * t = (char *)b;
+	int c = t[nb];
+	if (c) t[nb] = '\0';
+	(void) rpmiobAppend(tcl->iob, b, 0);
+	if (c) t[nb] = c;
+    }
     return nb;
 }
 
@@ -108,15 +115,25 @@ rpmtcl rpmtclNew(const char ** av, int flags)
 {
     rpmtcl tcl = rpmtclGetPool(_rpmtclPool);
 
-    tcl->flags = flags;
-
 #if defined(WITH_TCL)
-    {	Tcl_Interp * tclI = Tcl_CreateInterp();
-	tcl->I = tclI;
-	tcl->tclout = Tcl_GetStdChannel(TCL_STDOUT);
-	Tcl_SetChannelOption(tclI, tcl->tclout, "-translation", "auto");
-	Tcl_StackChannel(tclI, &rpmtclIO, tcl, TCL_WRITABLE, tcl->tclout);
-    }
+    static const char * _av[] = { "rpmtcl", NULL };
+    Tcl_Interp * tclI = Tcl_CreateInterp();
+    char b[32];
+    int ac;
+
+    if (av == NULL) av = _av;
+    ac = argvCount(av);
+
+    Tcl_SetVar(tclI, "argv", Tcl_Merge(ac-1, av+1), TCL_GLOBAL_ONLY);
+    (void)sprintf(b, "%d", ac-1);
+    Tcl_SetVar(tclI, "argc", b, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(tclI, "argv0", av[0], TCL_GLOBAL_ONLY);
+    Tcl_SetVar(tclI, "tcl_interactive", "0", TCL_GLOBAL_ONLY);
+
+    tcl->I = tclI;
+    tcl->tclout = Tcl_GetStdChannel(TCL_STDOUT);
+    Tcl_SetChannelOption(tclI, tcl->tclout, "-translation", "auto");
+    Tcl_StackChannel(tclI, &rpmtclIO, tcl, TCL_WRITABLE, tcl->tclout);
 #endif
     tcl->iob = rpmiobNew(0);
 
