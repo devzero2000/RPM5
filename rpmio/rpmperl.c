@@ -1,7 +1,8 @@
 #include "system.h"
 
-#undef	_	/* XXX everyone gotta be different */
+#include <argv.h>
 
+#undef	_	/* XXX everyone gotta be different */
 #define _RPMPERL_INTERNAL
 #include "rpmperl.h"
 
@@ -26,12 +27,13 @@ static void rpmperlFini(void * _perl)
 {
     rpmperl perl = _perl;
 
-    perl->flags = 0;
 #if defined(WITH_PERLEMBED)
     PERL_SET_CONTEXT(my_perl);
     PL_perl_destruct_level = 1;
     perl_destruct(my_perl);
     perl_free(my_perl);
+    if (perl == _rpmperlI)	/* XXX necessary on HP-UX? */
+	PERL_SYS_TERM();
 #endif
     perl->I = NULL;
 }
@@ -70,34 +72,50 @@ xs_init(PerlInterpreter* _my_perl PERL_UNUSED_DECL)
 
 /*@unchecked@*/
 static const char * rpmperlInitStringIO = "\
-use RPM;\n\
+use strict;\n\
 use IO::String;\n\
-$io = IO::String->new;\n\
+our $io = IO::String->new;\n\
 select $io;\n\
+use RPM;\n\
 ";
 #endif
 
 rpmperl rpmperlNew(const char ** av, int flags)
 {
-#if defined(WITH_PERLEMBED)
-    static char *embedding[] = { "", "-e", "0" };
-    int xx;
-#endif
     rpmperl perl = rpmperlGetPool(_rpmperlPool);
-
-    perl->flags = flags;
-
 #if defined(WITH_PERLEMBED)
+    static const char * _av[] = { "rpmperl", NULL };
+    static int initialized = 0;
+    ARGV_t argv = NULL;
+    int argc = 0;
+    int xx;
+
+    if (av == NULL) av = _av;
+
+    /* Build argv(argc) for the interpreter. */
+    xx = argvAdd(&argv, av[0]);
+    xx = argvAdd(&argv, "-e");
+    xx = argvAdd(&argv, rpmperlInitStringIO);
+    if (av[1])
+	xx = argvAppend(&argv, av+1);
+    argc = argvCount(argv);
+
+    if (!initialized) {
+	/* XXX claimed necessary on HP-UX */
+	PERL_SYS_INIT3(&argc, (char ***)&argv, &environ);
+	initialized++;
+    }
     perl->I = perl_alloc();
     PERL_SET_CONTEXT(my_perl);
     PL_perl_destruct_level = 1;
     perl_construct(my_perl);
 
     PL_origalen = 1; /* don't let $0 assignment update proctitle/embedding[0] */
-    xx = perl_parse(my_perl, xs_init, 3, embedding, NULL);
+    xx = perl_parse(my_perl, xs_init, argc, (char **)argv, NULL);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     perl_run(my_perl);
-    (void) rpmperlRun(perl, rpmperlInitStringIO, NULL);
+
+    argv = argvFree(argv);
 #endif
 
     return rpmperlLink(perl);
@@ -125,14 +143,25 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, perl, str);
 #if defined(WITH_PERLEMBED)
 	STRLEN n_a;
 	SV * retSV;
-	PERL_SET_CONTEXT(my_perl);
+
 	retSV = Perl_eval_pv(my_perl, str, TRUE);
-	if (resultp) {
-	    retSV = Perl_eval_pv(my_perl, "${$io->string_ref}", TRUE);
-	    *resultp = SvPV(retSV, n_a);
+	if (SvTRUE(ERRSV)) {
+	    fprintf(stderr, "==> FIXME #1: %d %s\n",
+		(int)SvTRUE(ERRSV), SvPV(ERRSV, n_a));
+	} else {
+	    if (resultp) {
+		retSV = Perl_eval_pv(my_perl, "${$io->string_ref}", TRUE);
+		if (SvTRUE(ERRSV)) {
+		    fprintf(stderr, "==> FIXME #2: %d %s\n",
+			(int)SvTRUE(ERRSV), SvPV(ERRSV, n_a));
+		} else {
+		    *resultp = SvPV(retSV, n_a);
+		    rc = RPMRC_OK;
+		}
+	    } else
+		rc = RPMRC_OK;
 	}
 #endif
-	rc = RPMRC_OK;
     }
     return rc;
 }

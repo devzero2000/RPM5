@@ -558,7 +558,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY)
+#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -655,15 +655,9 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_PERLEMBED)
     if (!strcmp(Phe->p.argv[0], "<perl>")) {
-	rpmperl perl = rpmperlNew(NULL, 0);
-	char args[128];
-	(void)snprintf(args, sizeof(args), "@arg = (%d,%d);", arg1, arg2);
-	args[sizeof(args)-1] = '\0';
-	if (rpmperlRun(perl, args, NULL) == RPMRC_OK
-	 && rpmperlRun(perl, script, NULL) == RPMRC_OK)
-	    rc = RPMRC_OK;
-	else
-	    rc = RPMRC_FAIL;
+	rpmperl perl = rpmperlNew((const char **)av, 0);
+	rc = rpmperlRun(perl, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
 	perl = rpmperlFree(perl);
     } else
 #endif
@@ -675,7 +669,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	python = rpmpythonFree(python);
     } else
 #endif
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
 	rpmruby ruby = rpmrubyNew(av, 0);
 	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK

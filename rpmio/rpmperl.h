@@ -19,7 +19,6 @@ extern rpmperl _rpmperlI;
 #if defined(_RPMPERL_INTERNAL)
 struct rpmperl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    int flags;
     void * I;
 };
 #endif /* _RPMPERL_INTERNAL */
