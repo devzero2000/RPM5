@@ -1,4 +1,5 @@
 #include "system.h"
+#include <argv.h>
 
 /* XXX grrr, ruby.h includes its own config.h too. */
 #ifdef	HAVE_CONFIG_H
@@ -31,7 +32,6 @@ static void rpmrubyFini(void * _ruby)
 {
     rpmruby ruby = _ruby;
 
-    ruby->flags = 0;
 #if defined(WITH_RUBYEMBED)
     ruby_finalize();
     ruby_cleanup(0);
@@ -66,14 +66,16 @@ $stdout = StringIO.new($result, \"w+\")\n\
 
 rpmruby rpmrubyNew(const char ** av, int flags)
 {
+    static const char * _av[] = { "rpmpython", NULL };
     rpmruby ruby = rpmrubyGetPool(_rpmrubyPool);
 
-    ruby->flags = flags;
+    if (av == NULL) av = _av;
 
 #if defined(WITH_RUBYEMBED)
     ruby_init();
     ruby_init_loadpath();
-    ruby_script("rpmruby");
+    ruby_script((char *)av[0]);
+    ruby_set_argv(argvCount(av)-1, (char **)av+1);
     rb_gv_set("$result", rb_str_new2(""));
     (void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
 #endif

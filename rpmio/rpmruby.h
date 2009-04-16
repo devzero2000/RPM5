@@ -19,7 +19,6 @@ extern rpmruby _rpmrubyI;
 #if defined(_RPMRUBY_INTERNAL)
 struct rpmruby_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    int flags;
     void * I;
     unsigned long state;
 };

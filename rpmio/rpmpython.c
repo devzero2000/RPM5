@@ -121,6 +121,30 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, python, fn);
     return rc;
 }
 
+static const char * rpmpythonSlurp(const char * arg)
+	/*@*/
+{
+    rpmiob iob = NULL;
+    const char * val = NULL;
+    struct stat sb;
+    int xx;
+
+    if (!strcmp(arg, "-")) {	/* Macros from stdin arg. */
+	xx = rpmiobSlurp(arg, &iob);
+    } else
+    if ((arg[0] == '/' || strchr(arg, ' ') == NULL)
+     && !Stat(arg, &sb)
+     && S_ISREG(sb.st_mode)) {	/* Macros from a file arg. */
+	xx = rpmiobSlurp(arg, &iob);
+    } else {			/* Macros from string arg. */
+	iob = rpmiobAppend(rpmiobNew(strlen(arg)+1), arg, 0);
+    }
+
+    val = xstrdup(rpmiobStr(iob));
+    iob = rpmiobFree(iob);
+    return val;
+}
+
 rpmRC rpmpythonRun(rpmpython python, const char * str, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -131,11 +155,12 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
     if (python == NULL) python = rpmpythonI();
 
     if (str != NULL) {
+	const char * val = rpmpythonSlurp(str);
 #if defined(WITH_PYTHONEMBED)
 	PyCompilerFlags cf = { .cf_flags = 0 };
 	PyObject * m = PyImport_AddModule("__main__");
 	PyObject * d = (m ? PyModule_GetDict(m) : NULL);
-	PyObject * v = (m ? PyRun_StringFlags(str, Py_file_input, d, d, &cf) : NULL);
+	PyObject * v = (m ? PyRun_StringFlags(val, Py_file_input, d, d, &cf) : NULL);
 
         if (v == NULL) {
 	    PyErr_Print();
@@ -148,13 +173,13 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 		} else
 		    *resultp = "";
 	    }
-	   
 	    Py_DECREF(v);
 	    if (Py_FlushLine())
 		PyErr_Clear();
 	    rc = RPMRC_OK;
 	}
 #endif
+	val = _free(val);
     }
     return rc;
 }

@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: ruby: load and use ARGV. Note that shell $1 ends up in ruby ARGV[0].
     - jbj: python: load and use sys.argv.
     - jbj: ruby: finish converting to WITH_RUBYEMBED.
     - jbj: use poptParseArgvString, not argvSplit, for shell arg escaping.

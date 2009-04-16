@@ -677,15 +677,9 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_RUBY)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
-	rpmruby ruby = rpmrubyNew(NULL, 0);
-	char args[128];
-	(void)snprintf(args, sizeof(args), "arg = [%d,%d]", arg1, arg2);
-	args[sizeof(args)-1] = '\0';
-	if (rpmrubyRun(ruby, args, NULL) == RPMRC_OK
-	 && rpmrubyRun(ruby, script, NULL) == RPMRC_OK)
-	    rc = RPMRC_OK;
-	else
-	    rc = RPMRC_FAIL;
+	rpmruby ruby = rpmrubyNew(av, 0);
+	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
 	ruby = rpmrubyFree(ruby);
     } else
 #endif
