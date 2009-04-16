@@ -63,7 +63,6 @@ const char * rpmMacrofiles = MACROFILES;
 
 #include <rpmio_internal.h>
 #include <rpmlog.h>
-#include <argv.h>
 #include <mire.h>
 
 #ifdef	WITH_LUA
@@ -1443,6 +1442,123 @@ static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
     return rc;
 }
 
+#if !defined(DEBUG_MACROS)
+/* =============================================================== */
+/* XXX dupe'd to avoid change in linkage conventions. */
+
+#define POPT_ERROR_NOARG        -10     /*!< missing argument */
+#define POPT_ERROR_BADQUOTE     -15     /*!< error in paramter quoting */
+#define POPT_ERROR_MALLOC       -21     /*!< memory allocation failed */
+
+#define POPT_ARGV_ARRAY_GROW_DELTA 5
+
+static int XpoptDupArgv(int argc, const char **argv,
+		int * argcPtr, const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/
+{
+    size_t nb = (argc + 1) * sizeof(*argv);
+    const char ** argv2;
+    char * dst;
+    int i;
+
+    if (argc <= 0 || argv == NULL)	/* XXX can't happen */
+	return POPT_ERROR_NOARG;
+    for (i = 0; i < argc; i++) {
+	if (argv[i] == NULL)
+	    return POPT_ERROR_NOARG;
+	nb += strlen(argv[i]) + 1;
+    }
+	
+    dst = xmalloc(nb);
+    if (dst == NULL)			/* XXX can't happen */
+	return POPT_ERROR_MALLOC;
+    argv2 = (void *) dst;
+    dst += (argc + 1) * sizeof(*argv);
+
+    for (i = 0; i < argc; i++) {
+	argv2[i] = dst;
+	dst += strlen(strcpy(dst, argv[i])) + 1;
+    }
+    argv2[argc] = NULL;
+
+    if (argvPtr) {
+	*argvPtr = argv2;
+    } else {
+	free(argv2);
+	argv2 = NULL;
+    }
+    if (argcPtr)
+	*argcPtr = argc;
+    return 0;
+}
+
+static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/
+{
+    const char * src;
+    char quote = '\0';
+    int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
+    const char ** argv = xmalloc(sizeof(*argv) * argvAlloced);
+    int argc = 0;
+    size_t buflen = strlen(s) + 1;
+    char * buf = memset(alloca(buflen), 0, buflen);
+    int rc = POPT_ERROR_MALLOC;
+
+    if (argv == NULL) return rc;
+    argv[argc] = buf;
+
+    for (src = s; *src != '\0'; src++) {
+	if (quote == *src) {
+	    quote = '\0';
+	} else if (quote != '\0') {
+	    if (*src == '\\') {
+		src++;
+		if (!*src) {
+		    rc = POPT_ERROR_BADQUOTE;
+		    goto exit;
+		}
+		if (*src != quote) *buf++ = '\\';
+	    }
+	    *buf++ = *src;
+	} else if (isspace(*src)) {
+	    if (*argv[argc] != '\0') {
+		buf++, argc++;
+		if (argc == argvAlloced) {
+		    argvAlloced += POPT_ARGV_ARRAY_GROW_DELTA;
+		    argv = realloc(argv, sizeof(*argv) * argvAlloced);
+		    if (argv == NULL) goto exit;
+		}
+		argv[argc] = buf;
+	    }
+	} else switch (*src) {
+	  case '"':
+	  case '\'':
+	    quote = *src;
+	    /*@switchbreak@*/ break;
+	  case '\\':
+	    src++;
+	    if (!*src) {
+		rc = POPT_ERROR_BADQUOTE;
+		goto exit;
+	    }
+	    /*@fallthrough@*/
+	  default:
+	    *buf++ = *src;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    if (strlen(argv[argc])) {
+	argc++, buf++;
+    }
+
+    rc = XpoptDupArgv(argc, argv, argcPtr, argvPtr);
+
+exit:
+    if (argv) free(argv);
+    return rc;
+}
+#endif	/* !defined(DEBUG_MACROS) */
 
 /**
  * Parse args and string for PHP like %{foo <args> : <string> } syntax.
@@ -1454,7 +1570,6 @@ static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
 static char * parseEmbedded(const char * s, size_t nb, const char *** avp)
 	/*@*/
 {
-    char * args = NULL;
     char * script = NULL;
     const char * se;
 
@@ -1467,11 +1582,15 @@ static char * parseEmbedded(const char * s, size_t nb, const char *** avp)
 
 bingo:
     {	size_t na = (size_t)(se-s-1);
-	int xx;
+	char * args = NULL;
+	int ac;
+	int rc;
 
 	args = memcpy(xmalloc(na+1), s+1, na);
 	args[na] = '\0';
-	xx = argvSplit(avp, args, NULL);
+
+	ac = 0;
+	rc = XpoptParseArgvString(args, &ac, avp);
 	args = _free(args);
 	nb -= na;
     }
@@ -1780,7 +1899,7 @@ expandMacro(MacroBuf mb)
 		 }
 		}
 		perl = rpmperlFree(perl);
-		av = argvFree(av);
+		av = _free(av);
 		script = _free(script);
 		s = se;
 		continue;
@@ -1808,7 +1927,7 @@ expandMacro(MacroBuf mb)
 		  }
 		}
 		python = rpmpythonFree(python);
-		av = argvFree(av);
+		av = _free(av);
 		script = _free(script);
 		s = se;
 		continue;
@@ -1836,7 +1955,7 @@ expandMacro(MacroBuf mb)
 		  }
 		}
 		ruby = rpmrubyFree(ruby);
-		av = argvFree(av);
+		av = _free(av);
 		script = _free(script);
 		s = se;
 		continue;
@@ -1861,7 +1980,7 @@ expandMacro(MacroBuf mb)
 		    mb->nb -= len;
 		}
 		tcl = rpmtclFree(tcl);
-		av = argvFree(av);
+		av = _free(av);
 		script = _free(script);
 		s = se;
 		continue;
@@ -2036,122 +2155,6 @@ int rpmSecuritySaneFile(const char *filename)
 #endif
 
 #if !defined(DEBUG_MACROS)
-/* =============================================================== */
-/* XXX dupe'd to avoid change in linkage conventions. */
-
-#define POPT_ERROR_NOARG        -10     /*!< missing argument */
-#define POPT_ERROR_BADQUOTE     -15     /*!< error in paramter quoting */
-#define POPT_ERROR_MALLOC       -21     /*!< memory allocation failed */
-
-#define POPT_ARGV_ARRAY_GROW_DELTA 5
-
-static int XpoptDupArgv(int argc, const char **argv,
-		int * argcPtr, const char *** argvPtr)
-	/*@modifies *argcPtr, *argvPtr @*/
-{
-    size_t nb = (argc + 1) * sizeof(*argv);
-    const char ** argv2;
-    char * dst;
-    int i;
-
-    if (argc <= 0 || argv == NULL)	/* XXX can't happen */
-	return POPT_ERROR_NOARG;
-    for (i = 0; i < argc; i++) {
-	if (argv[i] == NULL)
-	    return POPT_ERROR_NOARG;
-	nb += strlen(argv[i]) + 1;
-    }
-	
-    dst = xmalloc(nb);
-    if (dst == NULL)			/* XXX can't happen */
-	return POPT_ERROR_MALLOC;
-    argv2 = (void *) dst;
-    dst += (argc + 1) * sizeof(*argv);
-
-    for (i = 0; i < argc; i++) {
-	argv2[i] = dst;
-	dst += strlen(strcpy(dst, argv[i])) + 1;
-    }
-    argv2[argc] = NULL;
-
-    if (argvPtr) {
-	*argvPtr = argv2;
-    } else {
-	free(argv2);
-	argv2 = NULL;
-    }
-    if (argcPtr)
-	*argcPtr = argc;
-    return 0;
-}
-
-static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
-	/*@modifies *argcPtr, *argvPtr @*/
-{
-    const char * src;
-    char quote = '\0';
-    int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
-    const char ** argv = xmalloc(sizeof(*argv) * argvAlloced);
-    int argc = 0;
-    size_t buflen = strlen(s) + 1;
-    char * buf = memset(alloca(buflen), 0, buflen);
-    int rc = POPT_ERROR_MALLOC;
-
-    if (argv == NULL) return rc;
-    argv[argc] = buf;
-
-    for (src = s; *src != '\0'; src++) {
-	if (quote == *src) {
-	    quote = '\0';
-	} else if (quote != '\0') {
-	    if (*src == '\\') {
-		src++;
-		if (!*src) {
-		    rc = POPT_ERROR_BADQUOTE;
-		    goto exit;
-		}
-		if (*src != quote) *buf++ = '\\';
-	    }
-	    *buf++ = *src;
-	} else if (isspace(*src)) {
-	    if (*argv[argc] != '\0') {
-		buf++, argc++;
-		if (argc == argvAlloced) {
-		    argvAlloced += POPT_ARGV_ARRAY_GROW_DELTA;
-		    argv = realloc(argv, sizeof(*argv) * argvAlloced);
-		    if (argv == NULL) goto exit;
-		}
-		argv[argc] = buf;
-	    }
-	} else switch (*src) {
-	  case '"':
-	  case '\'':
-	    quote = *src;
-	    /*@switchbreak@*/ break;
-	  case '\\':
-	    src++;
-	    if (!*src) {
-		rc = POPT_ERROR_BADQUOTE;
-		goto exit;
-	    }
-	    /*@fallthrough@*/
-	  default:
-	    *buf++ = *src;
-	    /*@switchbreak@*/ break;
-	}
-    }
-
-    if (strlen(argv[argc])) {
-	argc++, buf++;
-    }
-
-    rc = XpoptDupArgv(argc, argv, argcPtr, argvPtr);
-
-exit:
-    if (argv) free(argv);
-    return rc;
-}
-
 /* =============================================================== */
 /*@unchecked@*/
 static int _debug = 0;

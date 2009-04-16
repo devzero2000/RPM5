@@ -630,6 +630,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
+    char * av[] = { NULL, NULL, NULL, NULL };
     int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -640,6 +641,12 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
     if (ssp != NULL)
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
+
+    av[0] = (char *) Phe->p.argv[0];
+    if (arg1 >= 0)
+	(void) sprintf((av[1] = alloca(32)), "%d", arg1);
+    if (arg2 >= 0)
+	(void) sprintf((av[2] = alloca(32)), "%d", arg2);
 
 #if defined(WITH_LUA)
     if (!strcmp(Phe->p.argv[0], "<lua>")) {
@@ -662,15 +669,9 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_PYTHONEMBED)
     if (!strcmp(Phe->p.argv[0], "<python>")) {
-	rpmpython python = rpmpythonNew(NULL, 0);
-	char args[128];
-	(void)snprintf(args, sizeof(args), "arg = (%d,%d)", arg1, arg2);
-	args[sizeof(args)-1] = '\0';
-	if (rpmpythonRun(python, args, NULL) == RPMRC_OK
-	 && rpmpythonRun(python, script, NULL) == RPMRC_OK)
-	    rc = RPMRC_OK;
-	else
-	    rc = RPMRC_FAIL;
+	rpmpython python = rpmpythonNew((const char **)av, 0);
+	rc = rpmpythonRun(python, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
 	python = rpmpythonFree(python);
     } else
 #endif

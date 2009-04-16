@@ -19,7 +19,6 @@ extern rpmpython _rpmpythonI;
 #if defined(_RPMPYTHON_INTERNAL)
 struct rpmpython_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    int flags;
     void * I;			/* (unused) */
 };
 #endif /* _RPMPYTHON_INTERNAL */

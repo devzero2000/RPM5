@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <argv.h>
+
 #define _RPMPYTHON_INTERNAL
 #include "rpmpython.h"
 
@@ -22,7 +24,6 @@ static void rpmpythonFini(void * _python)
 {
     rpmpython python = _python;
 
-    python->flags = 0;
 #if defined(WITH_PYTHONEMBED)
     Py_Finalize();
 #endif
@@ -49,29 +50,12 @@ static rpmpython rpmpythonGetPool(/*@null@*/ rpmioPool pool)
 /*@unchecked@*/
 #if defined(WITH_PYTHONEMBED)
 static const char * rpmpythonInitStringIO = "\
-import rpm\n\
 import sys\n\
 from cStringIO import StringIO\n\
-stdout = sys.stdout\n\
 sys.stdout = StringIO()\n\
+import rpm\n\
 ";
 #endif
-
-rpmpython rpmpythonNew(const char ** av, int flags)
-{
-    rpmpython python = rpmpythonGetPool(_rpmpythonPool);
-
-    python->flags = flags;
-
-#if defined(WITH_PYTHONEMBED)
-    Py_Initialize();
-    if (PycStringIO == NULL)
-	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
-    (void) rpmpythonRun(python, rpmpythonInitStringIO, NULL);
-#endif
-
-    return rpmpythonLink(python);
-}
 
 static rpmpython rpmpythonI(void)
 	/*@globals _rpmpythonI @*/
@@ -80,6 +64,35 @@ static rpmpython rpmpythonI(void)
     if (_rpmpythonI == NULL)
 	_rpmpythonI = rpmpythonNew(NULL, 0);
     return _rpmpythonI;
+}
+
+rpmpython rpmpythonNew(const char ** av, int flags)
+{
+    static const char * _av[] = { "rpmpython", NULL };
+    int initialize = (!flags || _rpmpythonI == NULL);
+    rpmpython python = (flags ? rpmpythonI() : rpmpythonGetPool(_rpmpythonPool));
+
+if (_rpmpython_debug)
+fprintf(stderr, "==> %s(%p, %d) python %p\n", __FUNCTION__, av, flags, python);
+
+    if (av == NULL) av = _av;
+
+#if defined(WITH_PYTHONEMBED)
+    if (!Py_IsInitialized()) {
+	Py_SetProgramName((char *)_av[0]);
+	Py_Initialize();
+    }
+    if (PycStringIO == NULL)
+	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
+
+    if (initialize) {
+	int ac = argvCount(av);
+	(void) PySys_SetArgv(ac, (char **)av);
+	(void) rpmpythonRun(python, rpmpythonInitStringIO, NULL);
+    }
+#endif
+
+    return rpmpythonLink(python);
 }
 
 rpmRC rpmpythonRunFile(rpmpython python, const char * fn, const char ** resultp)

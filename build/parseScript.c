@@ -325,7 +325,7 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinPythonScripts", "5.2-1");
     } else
 #endif
-#ifdef WITH_RUBY
+#ifdef WITH_RUBYEMBED
     if (!strcmp(progArgv[0], "<ruby>")) {
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinRubyScripts", "5.2-1");

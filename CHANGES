@@ -1,5 +1,8 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: python: load and use sys.argv.
+    - jbj: ruby: finish converting to WITH_RUBYEMBED.
+    - jbj: use poptParseArgvString, not argvSplit, for shell arg escaping.
     - jbj: rework the embedded interpreter API's preparing to handle args.
     - jbj: permit args in PHP like %{python a b c:...} syntax.
     - jbj: map NULL interp to lazily instantiated globally persistent instance.
