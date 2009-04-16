@@ -17,8 +17,6 @@ extern int _rpmtcl_debug;
 extern rpmtcl _rpmtclI;
 
 #if defined(_RPMTCL_INTERNAL)
-#include <tcl.h>
-
 struct rpmtcl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;			/* Tcl_Interp */
