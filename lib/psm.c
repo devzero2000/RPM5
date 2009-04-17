@@ -11,11 +11,13 @@
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 #include <rpmurl.h>
+#include <rpmjs.h>
 #include <rpmlua.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
 #include <rpmtcl.h>
+
 #include <rpmtag.h>
 #include <rpmtypes.h>
 #include <rpmlib.h>
@@ -558,7 +560,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED)
+#if defined(WITH_LUA) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -651,6 +653,14 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_LUA)
     if (!strcmp(Phe->p.argv[0], "<lua>")) {
 	rc = runLuaScript(psm, sln, Phe, script, arg1, arg2);
+    } else
+#endif
+#if defined(WITH_JS)
+    if (!strcmp(Phe->p.argv[0], "<js>")) {
+	rpmjs js = rpmjsNew((const char **)av, 0);
+	rc = rpmjsRun(js, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	js = rpmjsFree(js);
     } else
 #endif
 #if defined(WITH_PERLEMBED)
@@ -772,12 +782,13 @@ assert(he->p.str != NULL);
 
     if (Phe->p.argv && Phe->p.argv[0])
     if (!strcmp(Phe->p.argv[0], "<lua>")
+     || !strcmp(Phe->p.argv[0], "<js>")
      || !strcmp(Phe->p.argv[0], "<perl>")
      || !strcmp(Phe->p.argv[0], "<python>")
      || !strcmp(Phe->p.argv[0], "<ruby>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_TCL) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY)
+#if defined(WITH_LUA) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY) || defined(WITH_TCL)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);

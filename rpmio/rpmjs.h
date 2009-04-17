@@ -19,7 +19,9 @@ extern rpmjs _rpmjsI;
 #if defined(_RPMJS_INTERNAL)
 struct rpmjs_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    void * I;
+    void * rt;
+    void * cx;
+    void * glob;
 };
 #endif /* _RPMJS_INTERNAL */
 

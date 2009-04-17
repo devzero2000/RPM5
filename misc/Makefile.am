@@ -32,23 +32,25 @@ librpmmisc_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmmisc.vers
 endif
 librpmmisc_la_LDFLAGS += \
 	@WITH_DB_LDFLAGS@ \
-	@WITH_ZLIB_LDFLAGS@ \
-	@WITH_XZ_LDFLAGS@ \
-	@WITH_LUA_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
+	@WITH_JS_LDFLAGS@/Linux_All_DBG.OBJ \
+	@WITH_LUA_LDFLAGS@ \
 	@WITH_PCRE_LDFLAGS@ \
 	@WITH_SYCK_LDFLAGS@ \
-	@WITH_XAR_LDFLAGS@
+	@WITH_XAR_LDFLAGS@ \
+	@WITH_XZ_LDFLAGS@ \
+	@WITH_ZLIB_LDFLAGS@
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
 	@WITH_DB_LIBS@ \
-	@WITH_ZLIB_LIBS@ \
-	@WITH_XZ_LIBS@ \
-	@WITH_LUA_LIBS@ \
 	@WITH_FILE_LIBS@ \
+	@WITH_JS_LIBS@ \
+	@WITH_LUA_LIBS@ \
 	@WITH_PCRE_LIBS@ \
 	@WITH_SYCK_LIBS@ \
-	@WITH_XAR_LIBS@
+	@WITH_XAR_LIBS@ \
+	@WITH_XZ_LIBS@ \
+	@WITH_ZLIB_LIBS@
 if ENABLE_BUILD_EXTLIBDEP
 librpmmisc_la_LDFLAGS += $(LDFLAGS)
 librpmmisc_la_LIBADD  += $(LIBS)

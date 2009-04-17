@@ -25,6 +25,7 @@
 #include <rpmssl.h>
 #endif
 
+#include <rpmjs.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -412,6 +413,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
+ { "rpmjsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmjs_debug, -1,
+	N_("Debug embedded JavaScript interpreter"), NULL},
 #ifdef WITH_LUA
  { "rpmluadebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmlua_debug, -1,
 	N_("Debug embedded Lua interpreter"), NULL},

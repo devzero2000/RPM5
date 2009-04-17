@@ -1,5 +1,7 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: js: wire-up %post -p <js>. much more todo++.
+    - jbj: js: wire-up %{js:...}. much more todo++.
     - jbj: js: stub-in a javascript interpreter wrapper.
     - jbj: tcl: load and use $argv and $argc.
     - jbj: tcl: fix: don't append multiple newlines.

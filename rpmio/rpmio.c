@@ -65,6 +65,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmiotypes.h>
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
+#include <rpmjs.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -3133,10 +3134,11 @@ void rpmioClean(void)
     extern rpmioPool _rpmmgPool;
     extern rpmioPool _rpmluavPool;
     extern rpmioPool _rpmluaPool;
-    extern rpmioPool _rpmtclPool;
+    extern rpmioPool _rpmjsPool;
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
+    extern rpmioPool _rpmtclPool;
 /*@=nestedextern@*/
 
 #if defined(WITH_LUA)
@@ -3153,14 +3155,16 @@ void rpmioClean(void)
 #endif
     urlFreeCache();
 
+    _rpmtclI = rpmtclFree(_rpmtclI);
+    _rpmtclPool = rpmioFreePool(_rpmtclPool);
     _rpmrubyI = rpmrubyFree(_rpmrubyI);
     _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
     _rpmpythonI = rpmpythonFree(_rpmpythonI);
     _rpmpythonPool = rpmioFreePool(_rpmpythonPool);
     _rpmperlI = rpmperlFree(_rpmperlI);
     _rpmperlPool = rpmioFreePool(_rpmperlPool);
-    _rpmtclI = rpmtclFree(_rpmtclI);
-    _rpmtclPool = rpmioFreePool(_rpmtclPool);
+    _rpmjsI = rpmperlFree(_rpmjsI);
+    _rpmjsPool = rpmioFreePool(_rpmjsPool);
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);
     _mirePool = rpmioFreePool(_mirePool);

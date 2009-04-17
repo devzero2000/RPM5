@@ -321,6 +321,9 @@ LIBRPMIO_0
     rpmioPutPool;
     rpmioRootDir;
     rpmioUnlinkPoolItem;
+    _rpmjs_debug;
+    rpmjsNew;
+    rpmjsRun;
     rpmKeyringAddKey;
     rpmKeyringFindKeyid;
     rpmKeyringFree;
