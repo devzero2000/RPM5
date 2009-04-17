@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: ficl: capture stdout from ficl vm.
     - jbj: ficl: wire-up %post -p <ficl>.
     - jbj: ficl: wire-up %{ficl:...}. capturing stdout todo++ ...
     - jbj: ficl: add a FICL interpreter wrapper.

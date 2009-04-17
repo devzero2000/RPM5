@@ -11,10 +11,23 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmficl_debug = 1;
+int _rpmficl_debug = 0;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmficl _rpmficlI = NULL;
+
+#if defined(WITH_FICL)
+/* Capture stdout from FICL VM in a buffer. */
+static void rpmficlTextOut(ficlCallback *callback, char *text)
+	/*@*/
+{
+    rpmficl ficl = (rpmficl) callback->context;
+
+    if (ficl->iob == NULL)
+	ficl->iob = rpmiobNew(0);
+    (void) rpmiobAppend(ficl->iob, text, 0);
+}
+#endif
 
 static void rpmficlFini(void * _ficl)
         /*@globals fileSystem @*/
@@ -26,8 +39,10 @@ static void rpmficlFini(void * _ficl)
     ficlSystem * sys = ficl->sys;
     ficlSystemDestroy(sys);
 #endif
-    ficl->vm = NULL;
     ficl->sys = NULL;
+    ficl->vm = NULL;
+    (void) rpmiobFree(ficl->iob);
+    ficl->iob = NULL;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -53,6 +68,7 @@ rpmficl rpmficlNew(const char ** av, int flags)
 
 #if defined(WITH_FICL)
     static const char * _av[] = { "rpmficl", NULL };
+    ficlSystemInformation fsi;
     ficlSystem *sys;
     ficlVm *vm;
     int ac;
@@ -61,13 +77,18 @@ rpmficl rpmficlNew(const char ** av, int flags)
     if (av == NULL) av = _av;
     ac = argvCount(av);
 
-    sys = ficlSystemCreate(NULL);
+    ficlSystemInformationInitialize(&fsi);
+    fsi.context = (void *)ficl;
+    fsi.textOut = rpmficlTextOut;
+
+    sys = ficlSystemCreate(&fsi);
     ficl->sys = sys;
     ficlSystemCompileExtras(sys);
     vm = ficlSystemCreateVm(sys);
     ficl->vm = vm;
 
     xx = ficlVmEvaluate(vm, ".ver .( " __DATE__ " ) cr quit");
+
 #ifdef	NOTYET
     if (ac > 1) {
 	char b[256];
@@ -76,6 +97,12 @@ rpmficl rpmficlNew(const char ** av, int flags)
     }
 #endif
 
+    if (ficl->iob) {
+	const char * s = rpmiobStr(ficl->iob);
+if (_rpmficl_debug && s && *s)
+fprintf(stderr, "%s", s);
+	(void)rpmiobEmpty(ficl->iob);
+    }
 #endif
 
     return rpmficlLink(ficl);
@@ -119,8 +146,15 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, ficl, str);
     if (str != NULL) {
 #if defined(WITH_FICL)
 	ficlVm *vm = ficl->vm;
-	int xx = ficlVmEvaluate(vm, (char *)str);
-	rc = (xx ? RPMRC_OK : RPMRC_FAIL);
+	switch (ficlVmEvaluate(vm, (char *)str)) {
+	default:
+	    break;
+	case FICL_VM_STATUS_OUT_OF_TEXT:
+	    rc = RPMRC_OK;
+	    if (resultp && ficl->iob)
+		*resultp = rpmiobStr(ficl->iob);
+	    break;
+	}
 #endif
     }
     return rc;

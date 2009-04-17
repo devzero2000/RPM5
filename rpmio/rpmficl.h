@@ -19,8 +19,9 @@ extern rpmficl _rpmficlI;
 #if defined(_RPMFICL_INTERNAL)
 struct rpmficl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    void * vm;			/* ficlVm */
     void * sys;			/* ficlSystem */
+    void * vm;			/* ficlVm */
+    rpmiob iob;
 };
 #endif /* _RPMFICL_INTERNAL */
 
