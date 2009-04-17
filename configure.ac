@@ -1276,7 +1276,7 @@ dnl # FICL
 RPM_CHECK_LIB(
     [FICL], [ficl],
     [ficl], [ficlSystemCreate], [ficl.h],
-    [no,internal:none], [ficl],
+    [no,external:internal:none], [ficl],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_FICL_H, 1, [Define to 1 if you have <ficl.h>])
 	  AC_DEFINE(HAVE_LIBFICL, 1, [Define to 1 if you have the 'ficl' library (-lficl).])
