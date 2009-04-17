@@ -6,6 +6,11 @@ LIBRPMMISC_0
     db_env_set_func_fsync_rpmdb;
     db_strerror_rpmdb;
     db_create_rpmdb;
+    ficlSystemCompileExtras;
+    ficlSystemCreate;
+    ficlSystemCreateVm;
+    ficlSystemDestroy;
+    ficlVmEvaluate;
     lua_call;
     lua_close;
     lua_concat;

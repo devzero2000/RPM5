@@ -271,6 +271,9 @@ LIBRPMIO_0
     rpmDumpMacroTable;
     rpmExpand;
     rpmExpandNumeric;
+    _rpmficl_debug;
+    rpmficlNew;
+    rpmficlRun;
     rpmFreeMacros;
     rpmgcImplVecs;
     rpmGenPath;

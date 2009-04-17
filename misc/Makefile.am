@@ -33,6 +33,7 @@ endif
 librpmmisc_la_LDFLAGS += \
 	@WITH_DB_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
+	@WITH_FICL_LDFLAGS@ \
 	@WITH_JS_LDFLAGS@/Linux_All_DBG.OBJ \
 	@WITH_LUA_LDFLAGS@ \
 	@WITH_PCRE_LDFLAGS@ \
@@ -43,6 +44,7 @@ librpmmisc_la_LDFLAGS += \
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
 	@WITH_DB_LIBS@ \
+	@WITH_FICL_LIBS@ \
 	@WITH_FILE_LIBS@ \
 	@WITH_JS_LIBS@ \
 	@WITH_LUA_LIBS@ \

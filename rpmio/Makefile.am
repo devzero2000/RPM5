@@ -38,6 +38,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
 	@WITH_DB_CPPFLAGS@ \
+	@WITH_FICL_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_JS_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
@@ -65,7 +66,7 @@ noinst_HEADERS = \
 	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
-	poptIO.h rpmbc.h rpmbz.h rpmdav.h \
+	poptIO.h rpmbc.h rpmbz.h rpmdav.h rpmficl.h \
 	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h rpmruby.h rpmsq.h \
 	rpmssl.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
@@ -79,8 +80,9 @@ librpmio_la_SOURCES = \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
-	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
-	rpmjs.c rpmkeyring.c rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c \
+	rpmbc.c rpmdav.c rpmficl.c rpmgc.c rpmhash.c rpmhook.c \
+	rpmio.c rpmiob.c rpmio-stub.c rpmjs.c rpmkeyring.c \
+	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsq.c \
 	rpmssl.c rpmsw.c rpmtcl.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c

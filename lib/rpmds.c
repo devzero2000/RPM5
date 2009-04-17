@@ -1474,6 +1474,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(                RPMSENSE_EQUAL),
     N_("internal embedded lua scripts.") },
 #endif
+#if defined(WITH_FICL)
+    { "rpmlib(BuiltinFiclScripts)",	"5.2-1",
+	(                RPMSENSE_EQUAL),
+    N_("internal embedded FICL.") },
+#endif
 #if defined(WITH_JS)
     { "rpmlib(BuiltinJavaScript)",	"5.2-1",
 	(                RPMSENSE_EQUAL),

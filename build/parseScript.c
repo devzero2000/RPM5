@@ -313,6 +313,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinLuaScripts", "4.2.2-1");
     } else
 #endif
+#ifdef WITH_FICL
+    if (!strcmp(progArgv[0], "<ficl>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinFiclScripts", "5.2-1");
+    } else
+#endif
 #ifdef WITH_JS
     if (!strcmp(progArgv[0], "<js>")) {
 	(void) rpmlibNeedsFeature(pkg->header,

@@ -11,6 +11,8 @@
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 #include <rpmurl.h>
+
+#include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmlua.h>
 #include <rpmperl.h>
@@ -560,7 +562,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -655,6 +657,14 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	rc = runLuaScript(psm, sln, Phe, script, arg1, arg2);
     } else
 #endif
+#if defined(WITH_FICL)
+    if (!strcmp(Phe->p.argv[0], "<ficl>")) {
+	rpmficl ficl = rpmficlNew((const char **)av, 0);
+	rc = rpmficlRun(ficl, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	ficl = rpmficlFree(ficl);
+    } else
+#endif
 #if defined(WITH_JS)
     if (!strcmp(Phe->p.argv[0], "<js>")) {
 	rpmjs js = rpmjsNew((const char **)av, 0);
@@ -681,7 +691,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_RUBYEMBED)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
-	rpmruby ruby = rpmrubyNew(av, 0);
+	rpmruby ruby = rpmrubyNew((const char **)av, 0);
 	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	ruby = rpmrubyFree(ruby);
@@ -689,7 +699,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_TCL)
     if (!strcmp(Phe->p.argv[0], "<tcl>")) {
-	rpmtcl tcl = rpmtclNew(av, 0);
+	rpmtcl tcl = rpmtclNew((const char **)av, 0);
 	rc = rpmtclRun(tcl, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	tcl = rpmtclFree(tcl);
@@ -782,13 +792,14 @@ assert(he->p.str != NULL);
 
     if (Phe->p.argv && Phe->p.argv[0])
     if (!strcmp(Phe->p.argv[0], "<lua>")
+     || !strcmp(Phe->p.argv[0], "<ficl>")
      || !strcmp(Phe->p.argv[0], "<js>")
      || !strcmp(Phe->p.argv[0], "<perl>")
      || !strcmp(Phe->p.argv[0], "<python>")
      || !strcmp(Phe->p.argv[0], "<ruby>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY) || defined(WITH_TCL)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);
