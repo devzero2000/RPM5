@@ -156,6 +156,8 @@ assert(cx != NULL);
     glob = JS_NewObject(cx, &global_class, NULL, NULL);
     xx = JS_InitStandardClasses(cx, glob);
     xx = JS_DefineFunctions(cx, glob, shell_functions);
+    js->glob = glob;
+
 #ifdef	NOTYET
     {	JSObject * env =
 		JS_DefineObject(cx, glob, "environment", &env_class, NULL, 0);
@@ -164,8 +166,21 @@ assert(env != NULL);
 	js->env = env;
     }
 #endif
-    js->glob = glob;
-#endif
+
+    {	JSObject * args = JS_NewArrayObject(cx, 0, NULL);
+	int i;
+
+assert(args != NULL);
+	xx = JS_DefineProperty(cx, glob, "arguments", OBJECT_TO_JSVAL(args),
+		NULL, NULL, 0);
+	for (i = 0; i < ac; i++) {
+	    JSString *str = JS_NewStringCopyZ(cx, av[i]);
+assert(str != NULL);
+	    xx = JS_DefineElement(cx, args, i, STRING_TO_JSVAL(str),
+                              NULL, NULL, JSPROP_ENUMERATE);
+	}
+    }
+#endif	/* WITH_JS */
 
     return rpmjsLink(js);
 }
