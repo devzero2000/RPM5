@@ -37,6 +37,134 @@ rpmjs _rpmjsI = NULL;
 
 #if defined(WITH_JS)
 
+static JSBool
+Version(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    *rval = (argc > 0 && JSVAL_IS_INT(argv[0]))
+	? INT_TO_JSVAL(JS_SetVersion(cx, (JSVersion) JSVAL_TO_INT(argv[0])))
+	: INT_TO_JSVAL(JS_GetVersion(cx));
+    return JS_TRUE;
+}
+
+static struct {
+    const char  *name;
+    uint32      flag;
+} js_options[] = {
+    {"strict",		JSOPTION_STRICT},
+    {"werror",		JSOPTION_WERROR},
+    {"atline",		JSOPTION_ATLINE},
+    {"xml",		JSOPTION_XML},
+    {"relimit",		JSOPTION_RELIMIT},
+    {"anonfunfix",	JSOPTION_ANONFUNFIX},
+    {NULL,		0}
+};
+
+static JSBool
+Options(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    uint32 optset = 0;
+    uintN found = 0;
+    uintN i, j;
+    JSString *str;
+    const char *opt;
+    char *names = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+#ifdef	REFERENCE	/* XXX needs to be set globally. */
+	case 'o':
+	    for (j = 0; js_options[j].name; ++j) {
+		if (strcmp(js_options[j].name, argv[i]))
+		    continue;
+		JS_ToggleOptions(cx, js_options[j].flag);
+		break;
+	    }
+	    break;
+#endif
+    for (i = 0; i < argc; i++) {
+	if ((str = JS_ValueToString(cx, argv[i])) == NULL)
+	    goto exit;
+	opt = JS_GetStringBytes(str);
+	for (j = 0; js_options[j].name; j++) {
+	    if (strcmp(js_options[j].name, opt))
+		continue;
+	    optset |= js_options[j].flag;
+	    break;
+	}
+    }
+    optset = JS_ToggleOptions(cx, optset);
+
+    while (optset != 0) {
+	uint32 flag = optset;
+	optset &= optset - 1;
+	flag &= ~optset;
+	for (j = 0; js_options[j].name; j++) {
+	    if (js_options[j].flag != flag)
+		continue;
+	    names = JS_sprintf_append(names, "%s%s",
+				names ? "," : "", js_options[j].name);
+	    found++;
+	    break;
+	}
+    }
+    if (!found)
+	names = xstrdup("");
+
+    if ((str = JS_NewString(cx, names, strlen(names))) == NULL)
+	goto exit;
+    *rval = STRING_TO_JSVAL(str);
+    ok = JS_TRUE;
+exit:
+    if (!ok)
+	names = _free(names);
+    return ok;
+}
+
+static JSBool compileOnly = JS_FALSE;
+
+static JSBool
+Load(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    uintN i;
+    JSBool ok = JS_FALSE;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    for (i = 0; i < argc; i++) {
+	JSString *str;
+	JSScript *script;
+	const char *fn;
+	uint32 oldopts;
+	jsval result;	/* XXX why not returned through *rval?!? */
+
+	if ((str = JS_ValueToString(cx, argv[i])) == NULL)
+	    goto exit;
+	argv[i] = STRING_TO_JSVAL(str);
+	fn = JS_GetStringBytes(str);
+	errno = 0;
+	oldopts = JS_GetOptions(cx);
+	JS_SetOptions(cx, oldopts | JSOPTION_COMPILE_N_GO);
+	if ((script = JS_CompileFile(cx, obj, fn)) == NULL)
+	    goto exit;
+	ok = !compileOnly
+		? JS_ExecuteScript(cx, obj, script, &result)
+		: JS_TRUE;
+	JS_DestroyScript(cx, script);
+	JS_SetOptions(cx, oldopts);
+	if (!ok)
+	    goto exit;
+    }
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
 FILE *gErrFile = NULL;
 FILE *gOutFile = NULL;
 
@@ -52,11 +180,11 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     for (i = 0; i < argc; i++) {
 	JSString *str;
 	char *bytes;
-        if ((str = JS_ValueToString(cx, argv[i])) == NULL
-         || (bytes = JS_EncodeString(cx, str)) == NULL)
-            return JS_FALSE;
-        fprintf(fp, "%s%s", i ? " " : "", bytes);
-        JS_free(cx, bytes);
+	if ((str = JS_ValueToString(cx, argv[i])) == NULL
+	 || (bytes = JS_EncodeString(cx, str)) == NULL)
+	    return JS_FALSE;
+	fprintf(fp, "%s%s", i ? " " : "", bytes);
+	JS_free(cx, bytes);
     }
     fputc('\n', fp);
     fflush(fp);
@@ -64,7 +192,10 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 }
 
 static JSFunctionSpec shell_functions[] = {
-    JS_FS("print",          Print,          0,0,0),
+    JS_FS("version",	Version,	0,0,0),
+    JS_FS("options",	Options,	0,0,0),
+    JS_FS("load",	Load,		1,0,0),
+    JS_FS("print",	Print,		0,0,0),
     JS_FS_END
 };
 
@@ -76,7 +207,7 @@ env_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     JSBool ok = JS_FALSE;
 
 if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p,%p,%p,%p)\n", __FUNCTION__, cx, obj, id, vp);
+fprintf(stderr, "==> %s(%p,%p,0x%llx,%p)\n", __FUNCTION__, cx, obj, (unsigned long long)id, vp);
 
     if (idstr && valstr) {
 	const char * name = JS_GetStringBytes(idstr);
@@ -110,13 +241,13 @@ fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 	JSString *valstr;
 
 	if ((value = strchr(name, '=')) == NULL)
-            continue;
+	    continue;
 	*value++ = '\0';
 	if ((valstr = JS_NewStringCopyZ(cx, value)) != NULL)
-            ok = JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-                                   NULL, NULL, JSPROP_ENUMERATE);
-        value[-1] = '=';
-        if (!ok)
+	    ok = JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
+			NULL, NULL, JSPROP_ENUMERATE);
+	value[-1] = '=';
+	if (!ok)
 	    goto exit;
     }
 
@@ -127,17 +258,17 @@ exit:
 }
 
 static JSBool
-env_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
-            JSObject **objp)
+env_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags, JSObject **objp)
 {
     JSString *idstr, *valstr;
     const char *name, *value;
     JSBool ok = JS_FALSE;
 
 if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p,%p,%p,%u,%p)\n", __FUNCTION__, cx, obj, id, flags, objp);
+fprintf(stderr, "==> %s(%p,%p,0x%llx,%u,%p)\n", __FUNCTION__, cx, obj, (unsigned long long)id, flags, objp);
+
     if (flags & JSRESOLVE_ASSIGNING)
-        return JS_TRUE;
+	return JS_TRUE;
 
     if ((idstr = JS_ValueToString(cx, id)) == NULL)
 	goto exit;
@@ -145,7 +276,7 @@ fprintf(stderr, "==> %s(%p,%p,%p,%u,%p)\n", __FUNCTION__, cx, obj, id, flags, ob
     if ((value = getenv(name)) != NULL) {
 	if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
 	 || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-                               NULL, NULL, JSPROP_ENUMERATE))
+			NULL, NULL, JSPROP_ENUMERATE))
 	    goto exit;
 	*objp = obj;
     }
@@ -180,14 +311,15 @@ static void reportError(JSContext *cx, const char *msg, JSErrorReport *report)
 #endif
 
 static void rpmjsFini(void * _js)
-        /*@globals fileSystem @*/
-        /*@modifies *_js, fileSystem @*/
+	/*@globals fileSystem @*/
+	/*@modifies *_js, fileSystem @*/
 {
     rpmjs js = _js;
 
 #if defined(WITH_JS)
 if (_rpmjs_debug)
 fprintf(stderr, "==> %s(%p) glob %p cx %p rt %p\n", __FUNCTION__, js, js->glob, js->cx, js->rt);
+
 #ifdef	NOTYET
     JS_EndRequest((JSContext *)js->cx);
 #endif
@@ -201,15 +333,15 @@ fprintf(stderr, "==> %s(%p) glob %p cx %p rt %p\n", __FUNCTION__, js, js->glob, 
 rpmioPool _rpmjsPool;
 
 static rpmjs rpmjsGetPool(/*@null@*/ rpmioPool pool)
-        /*@globals _rpmjsPool, fileSystem @*/
-        /*@modifies pool, _rpmjsPool, fileSystem @*/
+	/*@globals _rpmjsPool, fileSystem @*/
+	/*@modifies pool, _rpmjsPool, fileSystem @*/
 {
     rpmjs js;
 
     if (_rpmjsPool == NULL) {
-        _rpmjsPool = rpmioNewPool("js", sizeof(*js), -1, _rpmjs_debug,
-                        NULL, NULL, rpmjsFini);
-        pool = _rpmjsPool;
+	_rpmjsPool = rpmioNewPool("js", sizeof(*js), -1, _rpmjs_debug,
+			NULL, NULL, rpmjsFini);
+	pool = _rpmjsPool;
     }
     return (rpmjs) rpmioGetPool(pool, sizeof(*js));
 }
@@ -267,7 +399,7 @@ assert(args != NULL);
 	    JSString *str = JS_NewStringCopyZ(cx, av[i]);
 assert(str != NULL);
 	    xx = JS_DefineElement(cx, args, i, STRING_TO_JSVAL(str),
-                              NULL, NULL, JSPROP_ENUMERATE);
+			NULL, NULL, JSPROP_ENUMERATE);
 	}
     }
 #endif	/* WITH_JS */
@@ -295,11 +427,21 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, js, fn);
 
     if (fn != NULL) {
 #if defined(WITH_JS)
-	rc = RPMRC_OK;
-#ifdef	NOTYET
-	if (resultp)
-	    *resultp = rpmiobStr(js->iob);
-#endif
+	JSContext *cx = js->cx;
+	JSObject *glob = js->glob;
+	JSScript *script = JS_CompileFile(cx, glob, fn);
+	jsval rval;
+
+	if (script) {
+	    if (JS_ExecuteScript(cx, glob, script, &rval)) {
+		rc = RPMRC_OK;
+		if (resultp) {
+		    JSString *rstr = JS_ValueToString(cx, rval);
+		    *resultp = JS_GetStringBytes(rstr);
+		}
+	    }
+	    JS_DestroyScript(cx, script);
+	}
 #endif
     }
     return rc;
@@ -326,8 +468,8 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, js, str);
 	if (ok) {
 	    rc = RPMRC_OK;
 	    if (resultp) {
-		JSString *str = JS_ValueToString(cx, rval);
-		*resultp = JS_GetStringBytes(str);
+		JSString *rstr = JS_ValueToString(cx, rval);
+		*resultp = JS_GetStringBytes(rstr);
 	    }
 	}
 #endif

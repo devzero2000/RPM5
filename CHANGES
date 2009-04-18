@@ -1,7 +1,8 @@
 
 5.2a4 -> 5.2b1:
-    - jbj: js: add an "environment" object (swiped from SpiderMonkey js shell).
-    - jbj: js: add a "arguments" array (swiped from SpiderMonkey js shell).
+    - jbj: js: add version/options/load methods (SpiderMonkey).
+    - jbj: js: add an "environment" object (SpiderMonkey).
+    - jbj: js: add a "arguments" array (SpiderMonkey).
     - jbj: js: add a print method (swiped from SpiderMonkey js shell).
     - rse: RPM_VENDOR_OPENPKG: stick with local RPM sanity checking for reasonable warning messages
     - jbj: js: simplify the embedding to the JSAPI examples, not the js shell.
