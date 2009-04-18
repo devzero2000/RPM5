@@ -1900,7 +1900,7 @@ expandMacro(MacroBuf mb)
 		    mb->nb -= len;
 		 }
 		}
-		ficl = rpmjsFree(ficl);
+		ficl = rpmficlFree(ficl);
 		av = _free(av);
 		script = _free(script);
 		s = se;
