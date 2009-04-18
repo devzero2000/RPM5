@@ -214,7 +214,8 @@ rpmlua rpmluaNew(void)
             const char *fn = av[i];
             if (fn[0] == '@' /* attention */) {
                 fn++;
-#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
+#if defined(RPM_VENDOR_OPENPKG) /* stick-with-rpm-file-sanity-checking */ || \
+    !defined(POPT_ERROR_BADCONFIG)	/* XXX POPT 1.15 retrofit */
 		if (!rpmSecuritySaneFile(fn))
 #else
 		if (!poptSaneFile(fn))

@@ -679,7 +679,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
 
-#if !defined(POPT_ERROR_BADCONFIG)	/* XXX popt-1.15- retrofit */
+#if defined(RPM_VENDOR_OPENPKG) /* stick-with-rpm-file-sanity-checking */ || \
+    !defined(POPT_ERROR_BADCONFIG)	/* XXX POPT 1.15 retrofit */
   { char * path_buf = xstrdup(rpmpoptfiles);
     char *path;
     char *path_next;

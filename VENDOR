@@ -423,6 +423,24 @@
                      just ignored.
      ________________________________________________________________________
 
+     Change:         stick-with-rpm-file-sanity-checking
+     Purpose:        Use file sanity checking code of RPM instead of POPT
+     Reason:         POPT >= 1.15 contains the poptSaneFile() function which
+                     is equivalent to rpmSecuritySaneFile(). And POPT >=
+                     1.15 also contains a poptReadConfigFiles() which
+                     returns POPT_ERROR_BADCONFIG in case poptSaneFile()
+                     says a file is not sane. This is all fine from a
+                     raw sanity checking point of view. Unfortunately,
+                     in the error reporting it is absolutely vital to
+                     know _WHICH_ file is considered insecure. Until
+                     POPT provides an error reporting callback or other
+                     means for RPM to provide again reasonable warning
+                     messages, we stick with the RPM sanity checking
+                     code. So, this is not because OpenPKG is using
+                     POPT < 1.15, but because we need proper warning
+                     messages!
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
