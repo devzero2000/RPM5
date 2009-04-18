@@ -30,12 +30,44 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmjs_debug = 0;
+int _rpmjs_debug = 1;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmjs _rpmjsI = NULL;
 
 #if defined(WITH_JS)
+
+FILE *gErrFile = NULL;
+FILE *gOutFile = NULL;
+
+static JSBool
+Print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    FILE * fp = (gOutFile ? gOutFile : stdout);
+    uintN i;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    for (i = 0; i < argc; i++) {
+	JSString *str;
+	char *bytes;
+        if ((str = JS_ValueToString(cx, argv[i])) == NULL
+         || (bytes = JS_EncodeString(cx, str)) == NULL)
+            return JS_FALSE;
+        fprintf(fp, "%s%s", i ? " " : "", bytes);
+        JS_free(cx, bytes);
+    }
+    fputc('\n', fp);
+    fflush(fp);
+    return JS_TRUE;
+}
+
+static JSFunctionSpec shell_functions[] = {
+    JS_FS("print",          Print,          0,0,0),
+    JS_FS_END
+};
+
 /*@unchecked@*/ /*@observer@*/
 static JSClass global_class = {
     "global", JSCLASS_GLOBAL_FLAGS,
@@ -61,6 +93,11 @@ static void rpmjsFini(void * _js)
     rpmjs js = _js;
 
 #if defined(WITH_JS)
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p) glob %p cx %p rt %p\n", __FUNCTION__, js, js->glob, js->cx, js->rt);
+#ifdef	NOTYET
+    JS_EndRequest((JSContext *)js->cx);
+#endif
     JS_DestroyContext((JSContext *)js->cx);	js->cx = NULL;
     JS_DestroyRuntime((JSRuntime *)js->rt);	js->rt = NULL;
     JS_ShutDown();
@@ -94,21 +131,39 @@ rpmjs rpmjsNew(const char ** av, int flags)
     JSContext *cx;
     JSObject *glob;
     int ac;
+    int xx;
 
     if (av == NULL) av = _av;
     ac = argvCount(av);
 
     rt = JS_NewRuntime(8L * 1024L * 1024L);
+assert(rt != NULL);
+#ifdef	NOTYET
+    JS_SetContextCallback(rt, ContextCallback);
+#endif
     js->rt = rt;
 
     cx = JS_NewContext(rt, 8192);
+assert(cx != NULL);
+#ifdef	NOTYET
+    JS_BeginRequest(cx);
+#endif
     JS_SetOptions(cx, JSOPTION_VAROBJFIX);
     JS_SetVersion(cx, JSVERSION_LATEST);
     JS_SetErrorReporter(cx, reportError);
     js->cx = cx;
 
     glob = JS_NewObject(cx, &global_class, NULL, NULL);
-    JS_InitStandardClasses(cx, glob);
+    xx = JS_InitStandardClasses(cx, glob);
+    xx = JS_DefineFunctions(cx, glob, shell_functions);
+#ifdef	NOTYET
+    {	JSObject * env =
+		JS_DefineObject(cx, glob, "environment", &env_class, NULL, 0);
+assert(env != NULL);
+	xx = JS_SetPrivate(cx, env, environ);
+	js->env = env;
+    }
+#endif
     js->glob = glob;
 #endif
 
