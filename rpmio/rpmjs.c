@@ -68,6 +68,99 @@ static JSFunctionSpec shell_functions[] = {
     JS_FS_END
 };
 
+static JSBool
+env_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    JSString *idstr = JS_ValueToString(cx, id);
+    JSString *valstr = JS_ValueToString(cx, *vp);
+    JSBool ok = JS_FALSE;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p,%p,%p)\n", __FUNCTION__, cx, obj, id, vp);
+
+    if (idstr && valstr) {
+	const char * name = JS_GetStringBytes(idstr);
+	const char * value = JS_GetStringBytes(valstr);
+
+	if (setenv(name, value, 1) < 0)
+	    JS_ReportError(cx, "can't set envvar %s to %s", name, value);
+	else {
+	    *vp = STRING_TO_JSVAL(valstr);
+	    ok = JS_TRUE;
+	}
+    }
+    return ok;
+}
+
+static JSBool
+env_enumerate(JSContext *cx, JSObject *obj)
+{
+    static JSBool reflected;
+    char **evp, *name;
+    JSBool ok = JS_FALSE;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+
+    if (reflected)
+	return JS_TRUE;
+
+    for (evp = (char **)JS_GetPrivate(cx, obj); (name = *evp) != NULL; evp++) {
+	char *value;
+	JSString *valstr;
+
+	if ((value = strchr(name, '=')) == NULL)
+            continue;
+	*value++ = '\0';
+	if ((valstr = JS_NewStringCopyZ(cx, value)) != NULL)
+            ok = JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
+                                   NULL, NULL, JSPROP_ENUMERATE);
+        value[-1] = '=';
+        if (!ok)
+	    goto exit;
+    }
+
+    reflected = JS_TRUE;
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+env_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+            JSObject **objp)
+{
+    JSString *idstr, *valstr;
+    const char *name, *value;
+    JSBool ok = JS_FALSE;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p,%p,%u,%p)\n", __FUNCTION__, cx, obj, id, flags, objp);
+    if (flags & JSRESOLVE_ASSIGNING)
+        return JS_TRUE;
+
+    if ((idstr = JS_ValueToString(cx, id)) == NULL)
+	goto exit;
+    name = JS_GetStringBytes(idstr);
+    if ((value = getenv(name)) != NULL) {
+	if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
+	 || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
+                               NULL, NULL, JSPROP_ENUMERATE))
+	    goto exit;
+	*objp = obj;
+    }
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSClass env_class = {
+    "environment", JSCLASS_HAS_PRIVATE | JSCLASS_NEW_RESOLVE,
+    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub,  env_setProperty,
+    env_enumerate, (JSResolveOp) env_resolve, JS_ConvertStub,   JS_FinalizeStub,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+};
+
 /*@unchecked@*/ /*@observer@*/
 static JSClass global_class = {
     "global", JSCLASS_GLOBAL_FLAGS,
@@ -158,14 +251,11 @@ assert(cx != NULL);
     xx = JS_DefineFunctions(cx, glob, shell_functions);
     js->glob = glob;
 
-#ifdef	NOTYET
     {	JSObject * env =
 		JS_DefineObject(cx, glob, "environment", &env_class, NULL, 0);
 assert(env != NULL);
 	xx = JS_SetPrivate(cx, env, environ);
-	js->env = env;
     }
-#endif
 
     {	JSObject * args = JS_NewArrayObject(cx, 0, NULL);
 	int i;
