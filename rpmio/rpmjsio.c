@@ -41,10 +41,18 @@
 /*
  * JS File object
  */
+#include "system.h"
+
+#include        <rpmiotypes.h>
+#include        <rpmio.h>
+
+#define XP_UNIX 1
+#define JS_HAS_FILE_OBJECT      1
+
 #if JS_HAS_FILE_OBJECT
 
 #include "jsstddef.h"
-#include "jsfile.h"
+#include "rpmjsio.h"
 
 /* ----------------- Platform-specific includes and defines ----------------- */
 #if defined(XP_WIN) || defined(XP_OS2)
@@ -52,16 +60,13 @@
 #   include <io.h>
 #   include <sys/types.h>
 #   include <sys/stat.h>
+#include <string.h>
 #   define FILESEPARATOR        '\\'
 #   define FILESEPARATOR2       '/'
 #   define CURRENT_DIR          "c:\\"
 #   define POPEN                _popen
 #   define PCLOSE               _pclose
 #elif defined(XP_UNIX) || defined(XP_BEOS)
-#   include <strings.h>
-#   include <stdio.h>
-#   include <stdlib.h>
-#   include <unistd.h>
 #   define FILESEPARATOR        '/'
 #   define FILESEPARATOR2       '\0'
 #   define CURRENT_DIR          "/"
@@ -85,11 +90,100 @@
 #include "jsscript.h"
 #include "jsstr.h"
 #include "jsutil.h" /* Added by JSIFY */
-#include <string.h>
 
 /* NSPR dependencies */
+#if defined(WITH_NSPR)
 #include "prio.h"
 #include "prerror.h"
+#define d_name  name    /* XXX retrofit dirent d_name into PRDirEntry */
+#else
+
+typedef DIR    PRDir;
+#define PR_OpenDir(_name)       Opendir(_name)
+#define PR_CloseDir(_dir)       Closedir(_dir)
+typedef struct dirent PRDirEntry;
+#define PR_ReadDir(_dir, _foo)  Readdir(_dir)
+
+#define PR_MkDir(_path, _mode)  Mkdir((_path), (_mode))
+#define PR_RmDir(_path)         Rmdir(_path)
+
+#define PR_Rename(_from, _to)   Rename((_from), (_to))
+#define PR_Delete(_path)        Unlink(_path)
+
+typedef enum PRDirFlags {
+    PR_SKIP_NONE = 0x0,
+    PR_SKIP_DOT = 0x1,
+    PR_SKIP_DOT_DOT = 0x2,
+    PR_SKIP_BOTH = 0x3,
+    PR_SKIP_HIDDEN = 0x4
+} PRDirFlags;
+
+#define PR_SUCCESS      0
+
+/* Open flags */
+#define PR_RDONLY       0x01
+#define PR_WRONLY       0x02
+#define PR_RDWR         0x04
+#define PR_CREATE_FILE  0x08
+#define PR_APPEND       0x10
+#define PR_TRUNCATE     0x20
+#define PR_SYNC         0x40
+#define PR_EXCL         0x80
+
+/* File mode bits */
+#define PR_IRWXU 00700  /* read, write, execute/search by owner */
+#define PR_IRUSR 00400  /* read permission, owner */
+#define PR_IWUSR 00200  /* write permission, owner */
+#define PR_IXUSR 00100  /* execute/search permission, owner */
+#define PR_IRWXG 00070  /* read, write, execute/search by group */
+#define PR_IRGRP 00040  /* read permission, group */
+#define PR_IWGRP 00020  /* write permission, group */
+#define PR_IXGRP 00010  /* execute/search permission, group */
+#define PR_IRWXO 00007  /* read, write, execute/search by others */
+#define PR_IROTH 00004  /* read permission, others */
+#define PR_IWOTH 00002  /* write permission, others */
+#define PR_IXOTH 00001  /* execute/search permission, others */
+
+static inline
+FD_t PR_Open(const char * name, int flags, int mode)
+{
+    char fmode[8], *t = fmode;
+    FD_t fd = NULL;
+
+    /* XXX stub in the basics */
+    if (flags & PR_RDWR)
+        t = stpcpy(t, "w+");
+    else if (flags & PR_WRONLY)
+        t = stpcpy(t, "w");
+    else
+        t = stpcpy(t, "r");
+    fd = Fopen(name, fmode);
+    return fd;
+}
+
+static inline
+int32_t PR_Read(FD_t fd, void *buf, int32_t amount)
+{
+    size_t nr = Fread(buf, 1, amount, fd);
+    return (Ferror(fd) ? -1 : (int)nr);
+}
+
+static inline
+int32_t PR_Write(FD_t fd, const void *buf, int32_t amount)
+{
+    size_t nw = Fwrite(buf, 1, amount, fd);
+    return (Ferror(fd) ? -1 : (int)nw);
+}
+
+static inline
+int32_t PR_Close(FD_t fd)
+{
+    return Fclose(fd);
+}
+
+#endif
+
+#include "debug.h"
 
 #define SPECIAL_FILE_STRING     "Special File"
 #define CURRENTDIR_PROPERTY     "currentDir"
@@ -121,7 +215,7 @@
 typedef enum JSFileErrNum {
 #define MSG_DEF(name, number, count, exception, format) \
     name = number,
-#include "jsfile.msg"
+#include "rpmjsio.msg"
 #undef MSG_DEF
     JSFileErr_Limit
 #undef MSGDEF
@@ -137,11 +231,11 @@ JSErrorFormatString JSFile_ErrorFormatString[JSFileErr_Limit] = {
 #define MSG_DEF(name, number, count, exception, format) \
     { NULL, count },
 #endif
-#include "jsfile.msg"
+#include "rpmjsio.msg"
 #undef MSG_DEF
 };
 
-const JSErrorFormatString *
+static const JSErrorFormatString *
 JSFile_GetErrorMessage(void *userRef, const char *locale,
                                                         const uintN errorNumber)
 {
@@ -234,7 +328,11 @@ typedef struct JSFile {
     JSBool      hasAutoflush;   /* should we force a flush for each line break? */
     JSBool      isNative;       /* if the file is using OS-specific file FILE type */
     /* We can actually put the following two in a union since they should never be used at the same time */
+#if defined(WITH_NSPR)
     PRFileDesc  *handle;        /* the handle for the file, if open.  */
+#else
+    FD_t        handle;
+#endif
     FILE        *nativehandle;  /* native handle, for stuff NSPR doesn't do. */
     JSBool      isPipe;         /* if the file is really an OS pipe */
 } JSFile;
@@ -800,7 +898,7 @@ js_BufferedRead(JSFile *f, unsigned char *buf, int32 len)
     if (len > 0) {
         count += (!f->isNative)
                  ? PR_Read(f->handle, buf, len)
-                 : fread(buf, 1, len, f->nativehandle);
+                 : (int)fread(buf, 1, len, f->nativehandle);
     }
     return count;
 }
@@ -900,7 +998,11 @@ js_FileSeek(JSContext *cx, JSFile *file, int32 len, int32 mode)
 
     switch (mode) {
       case ASCII:
+#if defined(WITH_NSPR)
         count = PR_Seek(file->handle, len, PR_SEEK_CUR);
+#else
+        count = lseek(Fileno(file->handle), len, SEEK_CUR);
+#endif
         break;
 
       case UTF8:
@@ -936,7 +1038,11 @@ js_FileSeek(JSContext *cx, JSFile *file, int32 len, int32 mode)
         break;
 
       case UCS2:
+#if defined(WITH_NSPR)
         count = PR_Seek(file->handle, len*2, PR_SEEK_CUR)/2;
+#else
+        count = lseek(Fileno(file->handle), len*2, SEEK_CUR)/2;
+#endif
         break;
 
       default:
@@ -970,7 +1076,7 @@ js_FileWrite(JSContext *cx, JSFile *file, jschar *buf, int32 len, int32 mode)
 
         count = (!file->isNative)
                 ? PR_Write(file->handle, aux, len)
-                : fwrite(aux, 1, len, file->nativehandle);
+                : (int)fwrite(aux, 1, len, file->nativehandle);
 
         if (count==-1) {
             JS_free(cx, aux);
@@ -994,7 +1100,7 @@ js_FileWrite(JSContext *cx, JSFile *file, jschar *buf, int32 len, int32 mode)
         }
         j = (!file->isNative)
             ? PR_Write(file->handle, utfbuf, i)
-            : fwrite(utfbuf, 1, i, file->nativehandle);
+            : (int)fwrite(utfbuf, 1, i, file->nativehandle);
 
         if (j<i) {
             JS_free(cx, utfbuf);
@@ -1006,7 +1112,7 @@ js_FileWrite(JSContext *cx, JSFile *file, jschar *buf, int32 len, int32 mode)
       case UCS2:
         count = (!file->isNative)
                 ? PR_Write(file->handle, buf, len*2) >> 1
-                : fwrite(buf, 1, len*2, file->nativehandle) >> 1;
+                : (int)fwrite(buf, 1, len*2, file->nativehandle) >> 1;
 
         if (count == -1)
             return 0;
@@ -1034,7 +1140,11 @@ js_exists(JSContext *cx, JSFile *file)
         return JS_FALSE;
     }
 
+#if defined(WITH_NSPR)
     return PR_Access(file->path, PR_ACCESS_EXISTS) == PR_SUCCESS;
+#else
+    return Access(file->path, F_OK) == 0;
+#endif
 }
 
 static JSBool
@@ -1043,7 +1153,11 @@ js_canRead(JSContext *cx, JSFile *file)
     if (!file->isNative) {
         if (file->isOpen && !(file->mode & PR_RDONLY))
             return JS_FALSE;
+#if defined(WITH_NSPR)
         return PR_Access(file->path, PR_ACCESS_READ_OK) == PR_SUCCESS;
+#else
+        return Access(file->path, R_OK) == 0;
+#endif
     }
 
     if (file->isPipe) {
@@ -1060,7 +1174,11 @@ js_canWrite(JSContext *cx, JSFile *file)
     if (!file->isNative) {
         if (file->isOpen && !(file->mode & PR_WRONLY))
             return JS_FALSE;
+#if defined(WITH_NSPR)
         return PR_Access(file->path, PR_ACCESS_WRITE_OK) == PR_SUCCESS;
+#else
+        return Access(file->path, W_OK) == 0;
+#endif
     }
 
     if(file->isPipe) {
@@ -1076,6 +1194,7 @@ static JSBool
 js_isFile(JSContext *cx, JSFile *file)
 {
     if (!file->isNative) {
+#if defined(WITH_NSPR)
         PRFileInfo info;
 
         if (file->isOpen
@@ -1087,6 +1206,17 @@ js_isFile(JSContext *cx, JSFile *file)
         }
 
         return info.type == PR_FILE_FILE;
+#else
+        struct stat sb;
+        int rc = file->isOpen
+                ? Fstat(file->handle, &sb) : Stat(file->path, &sb);
+        if (rc < 0) {
+            JS_ReportErrorNumber(cx, JSFile_GetErrorMessage, NULL,
+                                 JSFILEMSG_CANNOT_ACCESS_FILE_STATUS, file->path);
+            return JS_FALSE;
+        }
+        return S_ISREG(sb.st_mode);
+#endif
     }
 
     /* This doesn't make sense for a pipe of stdstream. */
@@ -1097,6 +1227,7 @@ static JSBool
 js_isDirectory(JSContext *cx, JSFile *file)
 {
     if(!file->isNative){
+#if defined(WITH_NSPR)
         PRFileInfo info;
 
         /* Hack needed to get get_property to work. */
@@ -1112,6 +1243,17 @@ js_isDirectory(JSContext *cx, JSFile *file)
         }
 
         return info.type == PR_FILE_DIRECTORY;
+#else
+        struct stat sb;
+        int rc = file->isOpen
+                ? Fstat(file->handle, &sb) : Stat(file->path, &sb);
+        if (rc < 0) {
+            JS_ReportErrorNumber(cx, JSFile_GetErrorMessage, NULL,
+                                 JSFILEMSG_CANNOT_ACCESS_FILE_STATUS, file->path);
+            return JS_FALSE;
+        }
+        return S_ISDIR(sb.st_mode);
+#endif
     }
 
     /* This doesn't make sense for a pipe of stdstream. */
@@ -1121,6 +1263,7 @@ js_isDirectory(JSContext *cx, JSFile *file)
 static jsval
 js_size(JSContext *cx, JSFile *file)
 {
+#if defined(WITH_NSPR)
     PRFileInfo info;
 
     JSFILE_CHECK_NATIVE("size");
@@ -1134,6 +1277,20 @@ js_size(JSContext *cx, JSFile *file)
     }
 
     return INT_TO_JSVAL(info.size);
+#else
+    struct stat sb;
+    int rc;
+
+    JSFILE_CHECK_NATIVE("size");
+
+    rc = file->isOpen ? Fstat(file->handle, &sb) : Stat(file->path, &sb);
+    if (rc < 0) {
+        JS_ReportErrorNumber(cx, JSFile_GetErrorMessage, NULL,
+                             JSFILEMSG_CANNOT_ACCESS_FILE_STATUS, file->path);
+        return JSVAL_VOID;
+    }
+    return INT_TO_JSVAL((int)sb.st_size);
+#endif
 
 out:
     return JSVAL_VOID;
@@ -1456,7 +1613,11 @@ file_copyTo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSFile      *file = JS_GetInstancePrivate(cx, obj, &js_FileClass, NULL);
     char        *dest = NULL;
+#if defined(WITH_NSPR)
     PRFileDesc  *handle = NULL;
+#else
+    FD_t        handle = NULL;
+#endif
     char        *buffer;
     jsval		count, size;
     JSBool      fileInitiallyOpen=JS_FALSE;
@@ -1584,7 +1745,12 @@ file_flush(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSFILE_CHECK_NATIVE("flush");
     JSFILE_CHECK_OPEN("flush");
 
-    if (PR_Sync(file->handle)==PR_SUCCESS){
+#if defined(WITH_NSPR)
+    if (PR_Sync(file->handle)==PR_SUCCESS)
+#else
+    if (fsync(Fileno(file->handle)) == 0)
+#endif
+    {
       *rval = JSVAL_TRUE;
       return JS_TRUE;
     }else{
@@ -1935,11 +2101,15 @@ file_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     len = 0;
 
     while ((entry = PR_ReadDir(dir, PR_SKIP_BOTH))!=NULL) {
+#if !defined(WITH_NPRS)
+        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+            continue;
+#endif
         /* first, check if we have a regexp */
         if (re!=NULL) {
             size_t index = 0;
 
-            str = JS_NewStringCopyZ(cx, entry->name);
+            str = JS_NewStringCopyZ(cx, entry->d_name);
             if(!js_ExecuteRegExp(cx, re, str, &index, JS_TRUE, &v)){
                 /* don't report anything here */
                 goto out;
@@ -1950,7 +2120,7 @@ file_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
             }
         }else
         if (func!=NULL) {
-            str = JS_NewStringCopyZ(cx, entry->name);
+            str = JS_NewStringCopyZ(cx, entry->d_name);
             args[0] = STRING_TO_JSVAL(str);
             if(!JS_CallFunction(cx, obj, func, 1, args, &v)){
                 goto out;
@@ -1961,7 +2131,7 @@ file_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
             }
         }
 
-        filePath = js_combinePath(cx, file->path, (char*)entry->name);
+        filePath = js_combinePath(cx, file->path, (char*)entry->d_name);
 
         eachFile = js_NewFileObject(cx, filePath);
         JS_free(cx, filePath);
@@ -1971,7 +2141,7 @@ file_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
         }
         v = OBJECT_TO_JSVAL(eachFile);
         JS_SetElement(cx, array, len, &v);
-        JS_SetProperty(cx, array, entry->name, &v);
+        JS_SetProperty(cx, array, entry->d_name, &v);
         len++;
     }
 
@@ -2288,9 +2458,11 @@ file_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     char        *bytes;
     JSString    *str;
     jsint       tiny;
-    PRFileInfo  info;
     JSBool      flag;
+#if defined(WITH_NSPR)
+    PRFileInfo  info;
     PRExplodedTime expandedTime;
+#endif
 
     tiny = JSVAL_TO_INT(id);
     if (!file)
@@ -2428,6 +2600,7 @@ file_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case FILE_CREATED:
         SECURITY_CHECK(cx, NULL, "creationTime", file);
         JSFILE_CHECK_NATIVE("creationTime");
+#if defined(WITH_NSPR)
         if(((file->isOpen)?
                         PR_GetOpenFileInfo(file->handle, &info):
                         PR_GetFileInfo(file->path, &info))!=PR_SUCCESS){
@@ -2443,10 +2616,31 @@ file_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
                                     expandedTime.tm_hour,
                                     expandedTime.tm_min,
                                     expandedTime.tm_sec));
+#else
+    {   struct stat sb;
+        struct tm *tm;
+        int rc = file->isOpen
+                ? Fstat(file->handle, &sb) : Stat(file->path, &sb);
+        if (rc < 0) {
+            JS_ReportErrorNumber(cx, JSFile_GetErrorMessage, NULL,
+                JSFILEMSG_CANNOT_ACCESS_FILE_STATUS, file->path);
+            goto out;
+        }
+        tm = gmtime((time_t *)&sb.st_ctime);
+        *vp = OBJECT_TO_JSVAL(js_NewDateObject(cx,
+                                    tm->tm_year,
+                                    tm->tm_mon,
+                                    tm->tm_mday,
+                                    tm->tm_hour,
+                                    tm->tm_min,
+                                    tm->tm_sec));
+    }
+#endif
         break;
     case FILE_MODIFIED:
         SECURITY_CHECK(cx, NULL, "lastModified", file);
         JSFILE_CHECK_NATIVE("lastModified");
+#if defined(WITH_NSPR)
         if(((file->isOpen)?
                         PR_GetOpenFileInfo(file->handle, &info):
                         PR_GetFileInfo(file->path, &info))!=PR_SUCCESS){
@@ -2462,6 +2656,26 @@ file_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
                                     expandedTime.tm_hour,
                                     expandedTime.tm_min,
                                     expandedTime.tm_sec));
+#else
+    {   struct stat sb;
+        struct tm *tm;
+        int rc = file->isOpen
+                ? Fstat(file->handle, &sb) : Stat(file->path, &sb);
+        if (rc < 0) {
+            JS_ReportErrorNumber(cx, JSFile_GetErrorMessage, NULL,
+                JSFILEMSG_CANNOT_ACCESS_FILE_STATUS, file->path);
+            goto out;
+        }
+        tm = gmtime((time_t *)&sb.st_mtime);
+        *vp = OBJECT_TO_JSVAL(js_NewDateObject(cx,
+                                    tm->tm_year,
+                                    tm->tm_mon,
+                                    tm->tm_mday,
+                                    tm->tm_hour,
+                                    tm->tm_min,
+                                    tm->tm_sec));
+    }
+#endif
         break;
     case FILE_SIZE:
         SECURITY_CHECK(cx, NULL, "size", file);
@@ -2517,7 +2731,11 @@ file_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
         }
 
         if (file->isOpen && js_isFile(cx, file)) {
+#if defined(WITH_NSPR)
             int pos = PR_Seek(file->handle, 0, PR_SEEK_CUR);
+#else
+            int pos = lseek(Fileno(file->handle), 0, SEEK_CUR);
+#endif
             if(pos!=-1){
                 *vp = INT_TO_JSVAL(pos);
             }else{
@@ -2555,7 +2773,7 @@ file_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
             }
 
             while ((entry = PR_ReadDir(dir, PR_SKIP_NONE)) != NULL) {
-                if (!strcmp(entry->name, prop_name)){
+                if (!strcmp(entry->d_name, prop_name)){
                     bytes = js_combinePath(cx, file->path, prop_name);
                     *vp = OBJECT_TO_JSVAL(js_NewFileObject(cx, bytes));
                     PR_CloseDir(dir);
@@ -2606,7 +2824,11 @@ file_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 				goto out;
 			}
 
+#if defined(WITH_NSPR)
 			pos = PR_Seek(file->handle, offset, PR_SEEK_SET);
+#else
+			pos = lseek(Fileno(file->handle), offset, SEEK_SET);
+#endif
 
             if(pos!=-1){
                 *vp = INT_TO_JSVAL(pos);
