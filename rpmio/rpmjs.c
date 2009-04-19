@@ -8,6 +8,7 @@
 
 #ifdef	WITH_JS
 #define	XP_UNIX	1
+#define	JS_HAS_FILE_OBJECT	1
 #include "jsstddef.h"
 #include "jstypes.h"
 #include "jsarena.h"
@@ -27,6 +28,9 @@
 #include "jsparse.h"
 #include "jsscope.h"
 #include "jsscript.h"
+#ifdef	JS_HAS_FILE_OBJECT
+#include "rpmjsio.h"
+#endif
 #endif
 #define _RPMJS_INTERNAL
 #include "rpmjs.h"
@@ -623,6 +627,9 @@ assert(cx != NULL);
 
     glob = JS_NewObject(cx, &global_class, NULL, NULL);
     xx = JS_InitStandardClasses(cx, glob);
+#ifdef	JS_HAS_FILE_OBJECT
+    xx = js_InitFileClass(cx, glob);
+#endif
     xx = JS_DefineFunctions(cx, glob, shell_functions);
     js->glob = glob;
 
