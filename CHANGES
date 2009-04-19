@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: js: add toy uuid.{generate,describe} object and methods.
     - jbj: js: add version/options/load methods (SpiderMonkey).
     - jbj: js: add an "environment" object (SpiderMonkey).
     - jbj: js: add a "arguments" array (SpiderMonkey).
