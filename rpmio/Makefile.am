@@ -9,7 +9,7 @@ SUBDIRS = # tests
 EXTRA_DIST = \
 	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
-	rpmtar.c rpmtar.h \
+	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
@@ -66,8 +66,8 @@ noinst_HEADERS = \
 	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
-	poptIO.h rpmbc.h rpmbz.h rpmdav.h rpmficl.h \
-	rpmgc.h rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmkeyring.h rpmku.h \
+	poptIO.h rpmbc.h rpmbz.h rpmdav.h rpmficl.h rpmgc.h rpmhash.h \
+	rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h rpmku.h \
 	rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h rpmruby.h rpmsq.h \
 	rpmssl.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h rpmio-stub.h
@@ -81,7 +81,7 @@ librpmio_la_SOURCES = \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmficl.c rpmgc.c rpmhash.c rpmhook.c \
-	rpmio.c rpmiob.c rpmio-stub.c rpmjs.c rpmkeyring.c \
+	rpmio.c rpmiob.c rpmio-stub.c rpmjs.c rpmjsio.c rpmkeyring.c \
 	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsq.c \
 	rpmssl.c rpmsw.c rpmtcl.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
