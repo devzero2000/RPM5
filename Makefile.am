@@ -10,7 +10,8 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
-    perl/typemap \
+	js/Makefile.* js/*.[ch] \
+	perl/typemap \
 	perl/Makefile.PL.in \
 	perl/t/00.pod.t perl/t/00.pod.coverage.t \
 	perl/rpmxs.c perl/rpmxs.h \
@@ -65,6 +66,7 @@ SUBDIRS += \
 	lib \
 	build \
 	rpmconstant \
+	@WITH_JS_SUBDIR@ \
 	@WITH_PYTHON_SUBDIR@ \
 	@WITH_PERL_SUBDIR@ \
 	tools \

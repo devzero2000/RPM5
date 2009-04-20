@@ -1889,7 +1889,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/Makefile scripts/macros.perl scripts/macros.php
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
-    doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
+    doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile js/Makefile python/Makefile
     scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile tests/Makefile
     tests/macros
 ])
