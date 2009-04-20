@@ -4,8 +4,6 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST =
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
@@ -20,6 +18,30 @@ AM_CPPFLAGS = -I. \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
+
+EXTRA_DIST =
+
+EXTRA_PROGRAMS = tjs
+
+RPMMISC_LDADD_COMMON = \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
+RPMIO_LDADD_COMMON = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(RPMMISC_LDADD_COMMON)
+
+RPMDB_LDADD_COMMON = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD_COMMON)
+
+RPM_LDADD_COMMON = \
+	$(top_builddir)/lib/librpm.la \
+	$(RPMDB_LDADD_COMMON)
+
+RPMBUILD_LDADD_COMMON = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(RPM_LDADD_COMMON)
 
 noinst_HEADERS =
 
@@ -42,3 +64,7 @@ rpmjsm_la_SOURCES = \
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(rpmjs_la_sources)
+
+tjs_SOURCES = tjs.c
+tjs_LDADD = rpmjsm.la $(RPM_LDADD_COMMON)
+

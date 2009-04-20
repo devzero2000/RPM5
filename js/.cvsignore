@@ -6,3 +6,7 @@ Makefile.in
 *.gcno
 *.la
 *.lo
+README
+jsd
+src
+tjs
