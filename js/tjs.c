@@ -6,6 +6,9 @@
 #define	_RPMJS_INTERNAL
 #include <rpmjs.h>
 
+#include <rpmts-js.h>
+#include <uuid-js.h>
+
 #include <rpmcli.h>
 
 #include "debug.h"
@@ -33,6 +36,17 @@ main(int argc, char *argv[])
     if (ac < 1) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
+    }
+
+_rpmts_debug = -1;
+
+    /* XXX FIXME: resultp != NULL to actually execute?!? */
+    (void) rpmjsRun(NULL, "print(\"loading RPM classes:\");", &result);
+    {	rpmjs js = _rpmjsI;
+	(void) rpmjs_InitUuidClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tUuid\");", &result);
+	(void) rpmjs_InitTsClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tTs\");", &result);
     }
 
     while ((fn = *av++) != NULL) {

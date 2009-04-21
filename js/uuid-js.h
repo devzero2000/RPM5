@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 extern JSObject*
-js_InitUuidClass(JSContext *cx, JSObject* obj);
+rpmjs_InitUuidClass(JSContext *cx, JSObject* obj);
 
 #ifdef __cplusplus      
 }

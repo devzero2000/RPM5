@@ -65,6 +65,6 @@ rpmjsm_la_SOURCES = \
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(rpmjs_la_sources)
 
-tjs_SOURCES = tjs.c
+tjs_SOURCES = tjs.c rpmjsm.la
 tjs_LDADD = rpmjsm.la $(RPM_LDADD_COMMON)
 

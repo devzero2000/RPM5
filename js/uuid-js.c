@@ -97,6 +97,7 @@ uuid_describe(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
     const char *uuid_str = NULL;
     uuid_rc_t rc;
     char *b = NULL;
+    size_t blen = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
@@ -108,7 +109,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 
     if ((rc = uuid_create(&uuid)) == UUID_RC_OK
      && (rc = uuid_import(uuid, UUID_FMT_STR, uuid_str, strlen(uuid_str))) == UUID_RC_OK
-     && (rc = uuid_export(uuid, UUID_FMT_TXT, &b, NULL)) == UUID_RC_OK)
+     && (rc = uuid_export(uuid, UUID_FMT_TXT, &b, &blen)) == UUID_RC_OK)
     {	JSString *str;
 	if ((str = JS_NewStringCopyZ(cx, b)) != NULL) {
 	    *rval = STRING_TO_JSVAL(str);
@@ -117,6 +118,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     }
 
 exit:
+    b = _free(b);
     if (uuid != NULL)
 	uuid_destroy(uuid);
     return ok;
@@ -139,16 +141,46 @@ static JSPropertySpec uuid_props[] = {
 };
 
 static JSBool
+uuid_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+
+    return JS_TRUE;
+}
+
+static JSBool
+uuid_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+
+    return JS_TRUE;
+}
+
+static JSBool
 uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (unsigned long long)id, vp, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
-    /* XXX return JS_TRUE if private == NULL */
+    if (JSVAL_IS_STRING(id)) {
+	char * str = JS_GetStringBytes(JSVAL_TO_STRING(id));
+	const JSFunctionSpec *fsp;
+	for (fsp = uuid_funcs; fsp->name != NULL; fsp++) {
+	    if (strcmp(fsp->name, str))
+		continue;
+	    ok = JS_TRUE;
+	    break;
+	}
+	goto exit;
+    }
 
     switch (tiny) {
     case _DEBUG:
@@ -157,6 +189,13 @@ fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (uns
 	break;
     default:
 	break;
+    }
+exit:
+    if (!ok) {
+if (_debug) {
+fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
+}
     }
     return ok;
 }
@@ -168,11 +207,6 @@ uuid_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     jsint tiny = JSVAL_TO_INT(id);
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (unsigned long long)id, vp, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
-    /* XXX return JS_TRUE if ... ? */
-
     switch (tiny) {
     case _DEBUG:
 	if (JS_ValueToInt32(cx, *vp, &_debug))
@@ -181,7 +215,72 @@ fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (uns
     default:
 	break;
     }
+
+    if (!ok) {
+if (_debug) {
+fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
+}
+    }
     return ok;
+}
+
+static JSBool
+uuid_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+		  jsval *statep, jsid *idp)
+{
+    JSObject *iterator;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%d,%p,%p)\n", __FUNCTION__, cx, obj, op, statep, idp);
+
+    switch (op) {
+    case JSENUMERATE_INIT:
+	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
+	    goto exit;
+	*statep = OBJECT_TO_JSVAL(iterator);
+	if (idp)
+	    *idp = JSVAL_ZERO;
+	break;
+    case JSENUMERATE_NEXT:
+	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
+	if (!JS_NextProperty(cx, iterator, idp))
+	    goto exit;
+	if (*idp != JSVAL_VOID)
+	    break;
+	/*@fallthrough@*/
+    case JSENUMERATE_DESTROY:
+	/* Allow our iterator object to be GC'd. */
+	*statep = JSVAL_NULL;
+	break;
+    }
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+uuid_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+	JSObject **objp)
+{
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
+		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
+		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
+		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
+		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
+		(flags & JSRESOLVE_DETECTING) ? "declaring" : "",
+		(flags & JSRESOLVE_DETECTING) ? "classname" : "");
+    return JS_TRUE;
+}
+
+static JSBool
+uuid_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
+{
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, type, vp, JS_GetTypeName(cx, type));
+    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */
@@ -224,17 +323,23 @@ exit:
 
 /* --- Class initialization */
 JSClass uuidClass = {
-    "Uuid", JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
-    JS_PropertyStub,  JS_PropertyStub,  uuid_getprop,   uuid_setprop,
-    JS_EnumerateStub, JS_ResolveStub,	JS_ConvertStub,	uuid_dtor
+    "Uuid", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
+    uuid_addprop,   uuid_delprop, uuid_getprop, uuid_setprop,
+    (JSEnumerateOp)uuid_enumerate, (JSResolveOp)uuid_resolve,
+    uuid_convert,	uuid_dtor,
+    JSCLASS_NO_OPTIONAL_MEMBERS
 };
 
 JSObject *
-js_InitUuidClass(JSContext *cx, JSObject* obj)
+rpmjs_InitUuidClass(JSContext *cx, JSObject* obj)
 {
     JSObject * o;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+
     o = JS_InitClass(cx, obj, NULL, &uuidClass, uuid_ctor, 1,
-        uuid_props, uuid_funcs, NULL, NULL);
+		uuid_props, uuid_funcs, NULL, NULL);
 assert(o != NULL);
     return o;
 }

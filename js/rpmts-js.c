@@ -84,7 +84,7 @@ rpmts_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
     (void) rpmtsFree((rpmts)ptr);
 }
@@ -126,8 +126,12 @@ JSObject *
 rpmjs_InitTsClass(JSContext *cx, JSObject* obj)
 {
     JSObject * o;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+
     o = JS_InitClass(cx, obj, NULL, &rpmtsClass, rpmts_ctor, 1,
-        rpmts_props, rpmts_funcs, NULL, NULL);
+		rpmts_props, rpmts_funcs, NULL, NULL);
 assert(o != NULL);
     return o;
 }
