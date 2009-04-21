@@ -91,7 +91,7 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 assert(pool->made == count);
 #else
 if (pool->made != count)
-rpmlog(RPMLOG_DEBUG, D_("pool %s: FIXME: made %d, count %d\n"), pool->name, pool->made, count);
+rpmlog(RPMLOG_WARNING, D_("pool %s: FIXME: made %d, count %d\nNote: This is a harmless memory leak discovered while exiting, relax ...\n"), pool->name, pool->made, count);
 #endif
 	pool = _free(pool);
     }
