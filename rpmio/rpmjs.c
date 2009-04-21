@@ -1,3 +1,12 @@
+#if defined(__APPLE__)
+/* workaround for "uuid_t" type conflict, between <unistd.h> and "uuid.h" */
+#define _UUID_T
+#define uuid_t __darwin_uuid_t
+#include <unistd.h>
+#undef uuid_t
+#undef _UUID_T
+#endif
+
 #include "system.h"
 
 #include <argv.h>
