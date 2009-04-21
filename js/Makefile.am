@@ -43,8 +43,6 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-noinst_HEADERS =
-
 noinst_LTLIBRARIES = rpmjsm.la
 
 rpmjsm_la_CFLAGS = -fno-strict-aliasing
@@ -55,11 +53,13 @@ rpmjsm_la_LIBADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
-	$(top_builddir)/$(WITH_JS_SUBDIR)/Linux_All_DBG.OBJ/libjs.a
 	@LTLIBINTL@
 
+noinst_HEADERS = \
+	rpmts-js.h uuid-js.h
+
 rpmjsm_la_SOURCES = \
-	rpmts-js.c
+	rpmts-js.c uuid-js.c
 
 .PHONY:	lint
 lint:

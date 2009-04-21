@@ -11,41 +11,41 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _rpmjs_debug = 0;
+extern int _rpmjs_debug;
 
 /*@unchecked@*/
-extern int _rpmts_debug;
+static int _debug = 1;
 
 /* --- Object methods */
 static JSFunctionSpec rpmts_funcs[] = {
-    {0}
+    JS_FS_END
 };
 
 /* --- Object properties */
 enum rpmts_tinyid {
-    TSID_DEBUG		= -2,
+    _DEBUG		= -2,
 };
 
 static JSPropertySpec rpmts_props[] = {
-   {"debug",		TSID_DEBUG,	JSPROP_ENUMERATE },
-   {0}
+    {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {NULL, 0, 0, NULL, NULL}
 };
 
 static JSBool
 rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    JSBool ok = (ts ? JS_FALSE : JS_TRUE);
+    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
-if (_rpmjs_debug)
+if (_debug)
 fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (unsigned long long)id, vp, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 
     /* XXX return JS_TRUE if private == NULL */
 
     switch (tiny) {
-    case TSID_DEBUG:
-	*vp = INT_TO_JSVAL(_rpmts_debug);
+    case _DEBUG:
+	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
     default:
@@ -57,18 +57,18 @@ fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (uns
 static JSBool
 rpmts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    JSBool ok = (ts ? JS_FALSE : JS_TRUE);
+    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
-if (_rpmjs_debug)
+if (_debug)
 fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (unsigned long long)id, vp, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 
     /* XXX return JS_TRUE if ... ? */
 
     switch (tiny) {
-    case TSID_DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_rpmts_debug))
+    case _DEBUG:
+	if (JS_ValueToInt32(cx, *vp, &_debug))
 	    ok = JS_TRUE;
 	break;
     default:
@@ -81,12 +81,12 @@ fprintf(stderr, "==> %s(%p,%p,0x%llx,%p) %s = %s\n", __FUNCTION__, cx, obj, (uns
 static void
 rpmts_dtor(JSContext *cx, JSObject *obj)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
 
-if (_rpmjs_debug)
+if (_debug)
 fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 
-    (void)rpmtsFree(ts);
+    (void) rpmtsFree((rpmts)ptr);
 }
 
 static JSBool
@@ -94,14 +94,14 @@ rpmts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
 
-if (_rpmjs_debug)
+if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	rpmts ts = rpmtsCreate();
+	void * ptr = rpmtsCreate();
 
-	if (ts == NULL || !JS_SetPrivate(cx, obj, ts)) {
-	    (void) rpmtsFree(ts);
+	if (ptr == NULL || !JS_SetPrivate(cx, obj, ptr)) {
+	    (void) rpmtsFree((void *)ptr);
 	    goto exit;
 	}
     } else {
@@ -125,9 +125,9 @@ JSClass rpmtsClass = {
 JSObject *
 rpmjs_InitTsClass(JSContext *cx, JSObject* obj)
 {
-    JSObject * tso;
-    tso = JS_InitClass(cx, obj, NULL, &rpmtsClass, rpmts_ctor, 1,
+    JSObject * o;
+    o = JS_InitClass(cx, obj, NULL, &rpmtsClass, rpmts_ctor, 1,
         rpmts_props, rpmts_funcs, NULL, NULL);
-assert(tso != NULL);
-    return tso;
+assert(o != NULL);
+    return o;
 }
