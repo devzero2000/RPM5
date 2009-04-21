@@ -341,9 +341,10 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     case 3:
     case 5:
 	if (uuid_ns_str == NULL || data == NULL
-	 || (rc = uuid_create(&uuid_ns)) != UUID_RC_OK
-         || (rc = uuid_load(uuid_ns, uuid_ns_str)) != UUID_RC_OK
-	 || (rc = uuid_import(uuid_ns, UUID_FMT_STR, uuid_ns_str, strlen(uuid_ns_str))) != UUID_RC_OK)
+	 || (rc = uuid_create(&uuid_ns)) != UUID_RC_OK)
+	    goto exit;
+        if ((rc = uuid_load(uuid_ns, uuid_ns_str)) != UUID_RC_OK
+	 && (rc = uuid_import(uuid_ns, UUID_FMT_STR, uuid_ns_str, strlen(uuid_ns_str))) != UUID_RC_OK)
 	    goto exit;
 	break;
     }
@@ -637,7 +638,7 @@ assert(cx != NULL);
     glob = JS_NewObject(cx, &global_class, NULL, NULL);
     xx = JS_InitStandardClasses(cx, glob);
 #ifdef	JS_HAS_FILE_OBJECT
-    xx = js_InitFileClass(cx, glob);
+    (void) js_InitFileClass(cx, glob);
 #endif
     xx = JS_DefineFunctions(cx, glob, shell_functions);
     js->glob = glob;
