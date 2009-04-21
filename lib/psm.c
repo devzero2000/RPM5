@@ -799,7 +799,7 @@ assert(he->p.str != NULL);
      || !strcmp(Phe->p.argv[0], "<ruby>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBY) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);
