@@ -46,6 +46,7 @@
 #include        <rpmiotypes.h>
 #include        <rpmio.h>
 
+#ifdef	WITH_JS
 #define XP_UNIX 1
 #define JS_HAS_FILE_OBJECT      1
 
@@ -2956,3 +2957,4 @@ js_InitFileClass(JSContext *cx, JSObject* obj)
     return file;
 }
 #endif /* JS_HAS_FILE_OBJECT */
+#endif
