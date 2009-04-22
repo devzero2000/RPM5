@@ -265,7 +265,7 @@ uuid_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
+fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), (unsigned)flags, objp,
 		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
 		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
 		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",

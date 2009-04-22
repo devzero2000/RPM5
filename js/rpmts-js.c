@@ -311,22 +311,36 @@ static JSBool
 rpmts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    JSString *idstr;
+    JSBool ok = JS_FALSE;
+
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
+fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],0x%x,%p) ptr %p property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), (unsigned)flags, objp, ptr,
 		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
 		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
 		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
 		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
 		(flags & JSRESOLVE_DETECTING) ? "declaring" : "",
 		(flags & JSRESOLVE_DETECTING) ? "classname" : "");
-    return JS_TRUE;
+
+    if (flags & JSRESOLVE_ASSIGNING)
+	ok = JS_TRUE;
+    else if ((idstr = JS_ValueToString(cx, id)) != NULL) {
+	ok = JS_TRUE;
+    } else
+	ok = JS_TRUE;
+
+exit:
+    return ok;
 }
 
 static JSBool
 rpmts_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, type, vp, JS_GetTypeName(cx, type));
+fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", __FUNCTION__, cx, obj, type, vp, ptr, JS_GetTypeName(cx, type));
     return JS_TRUE;
 }
 
@@ -335,13 +349,14 @@ static void
 rpmts_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-#ifdef	NOTYET	/* XXX FIXME: avoid yarn assertion failure. */
-    (void) rpmtsFree((rpmts)ptr);
-#endif
+    if (ts)
+	ts->_item.pool = NULL;	/* XXX FIXME: avoid yarn assertion failure. */
+    (void) rpmtsFree(ts);
 }
 
 static JSBool
@@ -372,7 +387,7 @@ exit:
 
 /* --- Class initialization */
 JSClass rpmtsClass = {
-    "Ts", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
+    "Ts", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE  | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
     rpmts_addprop,   rpmts_delprop, rpmts_getprop, rpmts_setprop,
     (JSEnumerateOp)rpmts_enumerate, (JSResolveOp)rpmts_resolve,
     rpmts_convert,	rpmts_dtor,
