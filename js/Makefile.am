@@ -16,6 +16,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_JS_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
+	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
 
@@ -56,10 +57,10 @@ rpmjsm_la_LIBADD = \
 	@LTLIBINTL@
 
 noinst_HEADERS = \
-	rpmts-js.h uuid-js.h
+	rpmjsfile.h rpmts-js.h uuid-js.h # syck-js.h
 
 rpmjsm_la_SOURCES = \
-	rpmts-js.c uuid-js.c
+	rpmjsfile.c rpmts-js.c uuid-js.c # syck-js.c
 
 .PHONY:	lint
 lint:

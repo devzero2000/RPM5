@@ -6,8 +6,10 @@
 #define	_RPMJS_INTERNAL
 #include <rpmjs.h>
 
-#include <rpmts-js.h>
-#include <uuid-js.h>
+#include "rpmts-js.h"
+#include "uuid-js.h"
+#include "syck-js.h"
+#include "rpmjsfile.h"
 
 #include <rpmcli.h>
 
@@ -43,10 +45,16 @@ _rpmts_debug = -1;
     /* XXX FIXME: resultp != NULL to actually execute?!? */
     (void) rpmjsRun(NULL, "print(\"loading RPM classes:\");", &result);
     {	rpmjs js = _rpmjsI;
+#if 0
+	(void) rpmjs_InitSyckClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tSyck\");", &result);
 	(void) rpmjs_InitUuidClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tUuid\");", &result);
 	(void) rpmjs_InitTsClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tTs\");", &result);
+#endif
+	(void) js_InitFileClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tFile\");", &result);
     }
 
     while ((fn = *av++) != NULL) {
