@@ -50,9 +50,9 @@ _rpmts_debug = -1;
 	(void) rpmjsRun(NULL, "print(\"\tSyck\");", &result);
 	(void) rpmjs_InitUuidClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tUuid\");", &result);
+#endif
 	(void) rpmjs_InitTsClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tTs\");", &result);
-#endif
 	(void) js_InitFileClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tFile\");", &result);
     }
