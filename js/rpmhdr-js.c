@@ -1,15 +1,10 @@
 /** \ingroup js_c
- * \file js/rpmmi-js.c
+ * \file js/rpmhdr-js.c
  */
 
 #include "system.h"
 
-#include "rpmts-js.h"
-#include "rpmmi-js.h"
 #include "rpmhdr-js.h"
-
-#include <rpmdb.h>
-#include <rpmts.h>
 
 #include "debug.h"
 
@@ -20,46 +15,24 @@ extern int _rpmjs_debug;
 static int _debug = 1;
 
 /* --- Object methods */
-static JSBool
-rpmmi_next(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
-    Header h;
-    JSBool ok = JS_FALSE;
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
-
-    if ((h = rpmdbNextIterator(mi)) != NULL) {
-	JSObject *Hdr = rpmjs_NewHdrObject(cx, h);
-	*rval = OBJECT_TO_JSVAL(Hdr);
-    }
-    ok = JS_TRUE;
-
-exit:
-    return ok;
-}
-
-static JSFunctionSpec rpmmi_funcs[] = {
-    {"next",	rpmmi_next,		0,0,0},
+static JSFunctionSpec rpmhdr_funcs[] = {
     JS_FS_END
 };
 
 /* --- Object properties */
-enum rpmmi_tinyid {
+enum rpmhdr_tinyid {
     _DEBUG	= -2,
 };
 
-static JSPropertySpec rpmmi_props[] = {
+static JSPropertySpec rpmhdr_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
 static JSBool
-rpmmi_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmhdr_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
@@ -68,9 +41,9 @@ fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx,
 }
 
 static JSBool
-rpmmi_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmhdr_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
@@ -78,9 +51,9 @@ fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx,
     return JS_TRUE;
 }
 static JSBool
-rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -92,11 +65,11 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	break;
 #ifdef	REFERENCE
     case _ARBGOAL:
-	*vp = INT_TO_JSVAL((jsint)rpmmiARBGoal(ts));
+	*vp = INT_TO_JSVAL((jsint)rpmhdrARBGoal(ts));
 	ok = JS_TRUE;
 	break;
     case _ROOTDIR:
-	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmmiRootDir(ts)));
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmhdrRootDir(ts)));
 	ok = JS_TRUE;
 	break;
 #endif
@@ -114,9 +87,9 @@ ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
 }
 
 static JSBool
-rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmhdr_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -130,11 +103,11 @@ rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _ARBGOAL:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
-	(void) rpmmiSetARBGoal(ts, (uint32_t)myint);
+	(void) rpmhdrSetARBGoal(ts, (uint32_t)myint);
 	ok = JS_TRUE;
 	break;
     case _ROOTDIR:
-	(void) rpmmiSetRootDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+	(void) rpmhdrSetRootDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 	ok = JS_TRUE;
 	break;
 #endif
@@ -152,7 +125,7 @@ ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
 }
 
 static JSBool
-rpmmi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+rpmhdr_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
     JSObject *iterator = NULL;
@@ -190,7 +163,7 @@ exit:
 }
 
 static JSBool
-rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmhdr_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
 if (_debug)
@@ -205,7 +178,7 @@ fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,
 }
 
 static JSBool
-rpmmi_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
+rpmhdr_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
 {
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, type, vp, JS_GetTypeName(cx, type));
@@ -213,37 +186,37 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, ty
 }
 
 /* --- Object ctors/dtors */
-static rpmdbMatchIterator
-rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, void * _key, int _keylen)
+static Header
+rpmhdr_init(JSContext *cx, JSObject *obj, void * _h)
 {
-    rpmdbMatchIterator mi;
+    Header h = (_h ? headerLink(_h) : headerNew());
 
-    if ((mi = rpmtsInitIterator(ts, _tag, _key, _keylen)) == NULL)
+    if (h == NULL)
 	return NULL;
-    if (!JS_SetPrivate(cx, obj, (void *)mi)) {
+    if (!JS_SetPrivate(cx, obj, (void *)h)) {
 	/* XXX error msg */
-	mi = rpmdbFreeIterator(mi);
+	h = headerFree(h);
 	return NULL;
     }
-    return mi;
+    return h;
 }
 
 static void
-rpmmi_dtor(JSContext *cx, JSObject *obj)
+rpmhdr_dtor(JSContext *cx, JSObject *obj)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
-    mi = rpmdbFreeIterator(mi);
+    h = headerFree(h);
 #endif
 }
 
 static JSBool
-rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmhdr_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
     JSObject *tso = NULL;
@@ -257,14 +230,10 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 fprintf(stderr, "\ttso %p ptr %p\n", tso, JS_GetPrivate(cx, tso));
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
-	rpmTag tag = RPMDBI_PACKAGES;
-	char * key = NULL;
-	int keylen = 0;
-	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, key, keylen))
+	if (rpmhdr_init(cx, obj, NULL))
 	    goto exit;
     } else {
-	if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL)
+	if ((obj = JS_NewObject(cx, &rpmhdrClass, NULL, NULL)) == NULL)
 	    goto exit;
 	*rval = OBJECT_TO_JSVAL(obj);
     }
@@ -275,39 +244,39 @@ exit:
 }
 
 /* --- Class initialization */
-JSClass rpmmiClass = {
-    "Mi", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
-    rpmmi_addprop,   rpmmi_delprop, rpmmi_getprop, rpmmi_setprop,
-    (JSEnumerateOp)rpmmi_enumerate, (JSResolveOp)rpmmi_resolve,
-    rpmmi_convert,	rpmmi_dtor,
+JSClass rpmhdrClass = {
+    "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
+    rpmhdr_addprop,   rpmhdr_delprop, rpmhdr_getprop, rpmhdr_setprop,
+    (JSEnumerateOp)rpmhdr_enumerate, (JSResolveOp)rpmhdr_resolve,
+    rpmhdr_convert,	rpmhdr_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 
 JSObject *
-rpmjs_InitMiClass(JSContext *cx, JSObject* obj)
+rpmjs_InitHdrClass(JSContext *cx, JSObject* obj)
 {
     JSObject * o;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 
-    o = JS_InitClass(cx, obj, NULL, &rpmmiClass, rpmmi_ctor, 1,
-		rpmmi_props, rpmmi_funcs, NULL, NULL);
+    o = JS_InitClass(cx, obj, NULL, &rpmhdrClass, rpmhdr_ctor, 1,
+		rpmhdr_props, rpmhdr_funcs, NULL, NULL);
 assert(o != NULL);
     return o;
 }
 
 JSObject *
-rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, void *_key, int _keylen)
+rpmjs_NewHdrObject(JSContext *cx, void * _h)
 {
     JSObject *obj;
-    rpmdbMatchIterator mi;
+    Header h;
 
-    if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL) {
+    if ((obj = JS_NewObject(cx, &rpmhdrClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((mi = rpmmi_init(cx, obj, _ts, _tag, _key, _keylen)) == NULL) {
+    if ((h = rpmhdr_init(cx, obj, _h)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

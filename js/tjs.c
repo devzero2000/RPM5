@@ -8,6 +8,7 @@
 
 #include "rpmts-js.h"
 #include "rpmmi-js.h"
+#include "rpmhdr-js.h"
 #include "uuid-js.h"
 #include "syck-js.h"
 #include "rpmjsfile.h"
@@ -52,6 +53,8 @@ _rpmts_debug = -1;
 	(void) rpmjs_InitUuidClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tUuid\");", &result);
 #endif
+	(void) rpmjs_InitHdrClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tHdr\");", &result);
 	(void) rpmjs_InitMiClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tMi\");", &result);
 	(void) rpmjs_InitTsClass(js->cx, js->glob);
