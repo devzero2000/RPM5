@@ -57,10 +57,10 @@ rpmjsm_la_LIBADD = \
 	@LTLIBINTL@
 
 noinst_HEADERS = \
-	rpmjsfile.h rpmts-js.h uuid-js.h # syck-js.h
+	rpmjsfile.h rpmts-js.h rpmmi-js.h uuid-js.h # syck-js.h
 
 rpmjsm_la_SOURCES = \
-	rpmjsfile.c rpmts-js.c uuid-js.c # syck-js.c
+	rpmjsfile.c rpmts-js.c rpmmi-js.c uuid-js.c # syck-js.c
 
 .PHONY:	lint
 lint:

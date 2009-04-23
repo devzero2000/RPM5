@@ -13,8 +13,11 @@ extern JSClass rpmtsClass;
 extern "C" {
 #endif
 
-extern JSObject*
+extern JSObject *
 rpmjs_InitTsClass(JSContext *cx, JSObject* obj);
+
+extern JSObject *
+rpmjs_NewTsObject(JSContext *cx);
 
 #ifdef __cplusplus      
 }

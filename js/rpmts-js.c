@@ -57,7 +57,43 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p NVRA %p\n", __FUNCTION__, cx, obj, ptr, NV
 }
 
 /* --- Object methods */
+
+static JSBool
+rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    JSObject *TagN = NULL;
+    rpmTag tag = RPMDBI_PACKAGES;
+    JSObject *Key = NULL;
+    char * key = NULL;
+    int keylen = 0;
+    JSObject *Mi;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/oo", &TagN, &Key)))
+        goto exit;
+
+    if (TagN) {
+    }
+
+    if (Key) {
+    }
+
+    if ((Mi = rpmjs_NewMiObject(cx, ts, tag, key, keylen)) == NULL)
+	goto exit;
+
+    *rval = OBJECT_TO_JSVAL(Mi);
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
 static JSFunctionSpec rpmts_funcs[] = {
+    {"mi",	rpmts_mi,		0,0,0},
     JS_FS_END
 };
 
@@ -209,6 +245,7 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    JSObject * NVRA = rpmtsLoadNVRA(cx, obj);
 	    *vp = OBJECT_TO_JSVAL(NVRA);
 	    ok = JS_TRUE;
+	    break;
 	}
       }	break;
     }
@@ -432,6 +469,21 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", __FUNCTION__, cx, 
 }
 
 /* --- Object ctors/dtors */
+static rpmts
+rpmts_init(JSContext *cx, JSObject *obj)
+{
+    rpmts ts;
+
+    if ((ts = rpmtsCreate()) == NULL)
+	return NULL;
+    if (!JS_SetPrivate(cx, obj, (void *)ts)) {
+	/* XXX error msg */
+	(void) rpmtsFree(ts);
+	return NULL;
+    }
+    return ts;
+}
+
 static void
 rpmts_dtor(JSContext *cx, JSObject *obj)
 {
@@ -455,12 +507,8 @@ if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	void * ptr = rpmtsCreate();
-
-	if (ptr == NULL || !JS_SetPrivate(cx, obj, ptr)) {
-	    (void) rpmtsFree((void *)ptr);
+	if (rpmts_init(cx, obj) == NULL)
 	    goto exit;
-	}
     } else {
 	if ((obj = JS_NewObject(cx, &rpmtsClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -503,4 +551,21 @@ fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 		rpmts_props, rpmts_funcs, NULL, NULL);
 assert(o != NULL);
     return o;
+}
+
+JSObject *
+rpmjs_NewTsObject(JSContext *cx)
+{
+    JSObject *obj;
+    rpmts ts;
+
+    if ((obj = JS_NewObject(cx, &rpmtsClass, NULL, NULL)) == NULL) {
+	/* XXX error msg */
+	return NULL;
+    }
+    if ((ts = rpmts_init(cx, obj)) == NULL) {
+	/* XXX error msg */
+	return NULL;
+    }
+    return obj;
 }
