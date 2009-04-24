@@ -225,14 +225,100 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", __FUNCTION__, cx, 
 }
 
 /* --- Object ctors/dtors */
-static rpmds
-rpmds_init(JSContext *cx, JSObject *obj, Header h, int _tagN)
-{
-    rpmds ds;
-    int flags = 0;
+#define	OBJ_IS_STRING(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &js_StringClass)
+#define	OBJ_IS_HEADER(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmhdrClass)
 
-    if ((ds = rpmdsNew(h, _tagN, flags)) == NULL)
+static rpmds
+rpmds_init(JSContext *cx, JSObject *obj, JSObject *o, int _tagN)
+{
+    rpmds ds = NULL;
+    int xx;
+
+    if (OBJ_IS_HEADER(cx, o)) {
+	Header h = JS_GetPrivate(cx, o);
+	int flags = 0;
+	if (_tagN == RPMTAG_NAME) {
+	    flags = RPMSENSE_EQUAL;
+	    _tagN = RPMTAG_PROVIDENAME;
+	    ds = rpmdsThis(h, _tagN, flags);
+if (_debug)
+fprintf(stderr, "\trpmdsThis(%p, %s(%d), 0x%x) ds %p\n", h, tagName(_tagN), _tagN, flags, ds);
+	} else {
+	    ds = rpmdsNew(h, _tagN, flags);
+if (_debug)
+fprintf(stderr, "\trpmdsNew(%p, %s(%d), 0x%x) ds %p\n", h, tagName(_tagN), _tagN, flags, ds);
+	}
+	if (ds == NULL)
+	    return NULL;
+    } else
+    if (OBJ_IS_STRING(cx, o)) {
+	const char * s =
+		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(o)));
+	if (!strcmp(s, "cpuinfo")) {
+	    xx = rpmdsCpuinfo(&ds, NULL);
+if (_debug)
+fprintf(stderr, "\trpmdsCpuinfo() ret %d ds %p\n", xx, ds);
+	} else
+	if (!strcmp(s, "rpmlib")) {
+	    xx = rpmdsRpmlib(&ds, NULL);
+if (_debug)
+fprintf(stderr, "\trpmdsRpmlib() ret %d ds %p\n", xx, ds);
+	} else
+	if (!strcmp(s, "getconf")) {
+	    xx = rpmdsGetconf(&ds, NULL);
+if (_debug)
+fprintf(stderr, "\trpmdsGetconf() ret %d ds %p\n", xx, ds);
+	} else
+	if (!strcmp(s, "uname")) {
+	    xx = rpmdsUname(&ds, NULL);
+if (_debug)
+fprintf(stderr, "\trpmdsUname() ret %d ds %p\n", xx, ds);
+	} else {
+if (_debug)
+fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
+	    return NULL;
+	}
+    } else
+    if (OBJ_IS_ARRAY(cx, o)) {
+	jsuint length = 0;
+	jsuint i;
+	JSBool ok = JS_GetArrayLength(cx, o, &length);
+	const char * N = NULL;
+	const char * EVR = NULL;
+	uint32_t F = 0;
+
+	if (!ok)
+	    return NULL;
+	if (length != 3)
+	    return NULL;
+	for (i = 0; i < length; i++) {
+	    jsval v;
+	    if (!(ok = JS_GetElement(cx, o, (jsint)i, &v)))
+		return NULL;
+	    switch (i) {
+	    default:
+		return NULL;
+		/*@notreached@*/ break;
+	    case 0:
+		N = JS_GetStringBytes(JSVAL_TO_STRING(v));
+		break;
+	    case 1:
+		EVR = JS_GetStringBytes(JSVAL_TO_STRING(v));
+		break;
+	    case 2:
+		F = JSVAL_TO_INT(v);
+		break;
+	    }
+	}
+	ds = rpmdsSingle(_tagN, N, EVR, F);
+if (_debug)
+fprintf(stderr, "\trpmdsSingle(%s(%d), %s, %s, 0x%x) ds %p\n", tagName(_tagN), _tagN, N, EVR, F, ds);
 	return NULL;
+    } else {
+if (_debug)
+fprintf(stderr, "\tobject class %p is unknown. ds %p\n", OBJ_GET_CLASS(cx, o), ds);
+	return NULL;
+    }
     if (!JS_SetPrivate(cx, obj, (void *)ds)) {
 	/* XXX error msg */
 	(void) rpmdsFree(ds);
@@ -257,18 +343,17 @@ static JSBool
 rpmds_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
-    JSObject *hdro = NULL;
+    JSObject *o = NULL;
     int tagN = RPMTAG_REQUIRENAME;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &hdro, &tagN)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &o, &tagN)))
 	goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	Header h = JS_GetInstancePrivate(cx, hdro, &rpmhdrClass, NULL);
-	if (rpmds_init(cx, obj, h, tagN) == NULL)
+	if (rpmds_init(cx, obj, o, tagN) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) == NULL)
@@ -315,7 +400,7 @@ assert(o != NULL);
 }
 
 JSObject *
-rpmjs_NewDsObject(JSContext *cx, void * _h, int _tagN)
+rpmjs_NewDsObject(JSContext *cx, JSObject *o, int _tagN)
 {
     JSObject *obj;
     rpmds ds;
@@ -324,7 +409,7 @@ rpmjs_NewDsObject(JSContext *cx, void * _h, int _tagN)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((ds = rpmds_init(cx, obj, _h, _tagN)) == NULL) {
+    if ((ds = rpmds_init(cx, obj, o, _tagN)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

@@ -14,6 +14,7 @@
 #define	XP_UNIX	1
 #include "jsapi.h"
 #include "jscntxt.h"	/* XXX JSFRAME_CONSTRUCTING */
+#include "jsarray.h"	/* XXX js_ArrayClass */
 
 #ifdef	NOTYET
 #include "jsapi.h"

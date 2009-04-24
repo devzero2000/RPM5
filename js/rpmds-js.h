@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitDsClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewDsObject(JSContext *cx, void * _h, int _tagN);
+rpmjs_NewDsObject(JSContext *cx, JSObject *o, int _tagN);
 
 #ifdef __cplusplus      
 }

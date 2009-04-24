@@ -46,7 +46,7 @@ main(int argc, char *argv[])
 	goto exit;
     }
 
-_rpmts_debug = -1;
+_rpmts_debug = 0;
 
     /* XXX FIXME: resultp != NULL to actually execute?!? */
     (void) rpmjsRun(NULL, "print(\"loading RPM classes:\");", &result);
