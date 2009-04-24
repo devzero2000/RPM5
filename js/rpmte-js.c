@@ -1,10 +1,11 @@
 /** \ingroup js_c
- * \file js/rpmfi-js.c
+ * \file js/rpmte-js.c
  */
 
 #include "system.h"
 
-#include "rpmfi-js.h"
+#include "rpmts-js.h"
+#include "rpmte-js.h"
 #include "rpmhdr-js.h"
 
 #include <argv.h>
@@ -12,7 +13,10 @@
 
 #include <rpmdb.h>
 
-#include <rpmfi.h>
+#include <rpmal.h>
+#include <rpmts.h>
+#define	_RPMTE_INTERNAL		/* XXX for rpmteNew/rpmteFree */
+#include <rpmte.h>
 
 #include "debug.h"
 
@@ -24,24 +28,24 @@ static int _debug = 1;
 
 /* --- Object methods */
 
-static JSFunctionSpec rpmfi_funcs[] = {
+static JSFunctionSpec rpmte_funcs[] = {
     JS_FS_END
 };
 
 /* --- Object properties */
-enum rpmfi_tinyid {
+enum rpmte_tinyid {
     _DEBUG	= -2,
 };
 
-static JSPropertySpec rpmfi_props[] = {
+static JSPropertySpec rpmte_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
 static JSBool
-rpmfi_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmte_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
 
 if (_debug < 0)
 fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
@@ -50,9 +54,9 @@ fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx,
 }
 
 static JSBool
-rpmfi_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmte_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
@@ -60,10 +64,10 @@ fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx,
     return JS_TRUE;
 }
 static JSBool
-rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
-    rpmfi fi = ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
+    rpmte te = ptr;
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -87,10 +91,10 @@ ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
 }
 
 static JSBool
-rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmte_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
-    rpmfi fi = (rpmfi)ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
+    rpmte te = (rpmte)ptr;
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -115,10 +119,10 @@ ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
 }
 
 static JSBool
-rpmfi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmte_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     static char hex[] = "0123456789abcdef";
     JSString *idstr;
     const char * name;
@@ -161,7 +165,7 @@ exit:
 }
 
 static JSBool
-rpmfi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+rpmte_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
     JSObject *iterator;
@@ -216,65 +220,69 @@ exit:
 }
 
 static JSBool
-rpmfi_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
+rpmte_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", __FUNCTION__, cx, obj, type, vp, ptr, JS_GetTypeName(cx, type));
     return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */
-static rpmfi
-rpmfi_init(JSContext *cx, JSObject *obj, rpmts ts, Header h, int _tagN)
+static rpmte
+rpmte_init(JSContext *cx, JSObject *obj, rpmts ts, Header h)
 {
-    rpmfi fi;
-    int flags = 0;
+    rpmte te;
+    rpmElementType etype = TR_ADDED;
+    fnpyKey key = NULL;
+    rpmRelocation relocs = NULL;
+    int dboffset = 0;
+    alKey pkgKey = NULL;
 
-    if ((fi = rpmfiNew(ts, h, _tagN, flags)) == NULL)
+    if ((te = rpmteNew(ts, h, etype, key, relocs, dboffset, pkgKey)) == NULL)
 	return NULL;
-    if (!JS_SetPrivate(cx, obj, (void *)fi)) {
+    if (!JS_SetPrivate(cx, obj, (void *)te)) {
 	/* XXX error msg */
-	(void) rpmfiFree(fi);
+	(void) rpmteFree(te);
 	return NULL;
     }
-    return fi;
+    return te;
 }
 
 static void
-rpmfi_dtor(JSContext *cx, JSObject *obj)
+rpmte_dtor(JSContext *cx, JSObject *obj)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
-    rpmfi fi = ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
+    rpmte te = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
-    (void) rpmfiFree(fi);
+    (void) rpmteFree(te);
 #endif
 }
 
 static JSBool
-rpmfi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmte_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
-    rpmts ts = NULL;	/* XXX FIXME: should be a ts method? */
+    JSObject *tso = NULL;
     JSObject *hdro = NULL;
-    int tagN = RPMTAG_BASENAMES;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &hdro, &tagN)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "oo", &tso, &hdro)))
 	goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 	Header h = JS_GetInstancePrivate(cx, hdro, &rpmhdrClass, NULL);
-	if (rpmfi_init(cx, obj, ts, h, tagN) == NULL)
+	if (rpmte_init(cx, obj, ts, h) == NULL)
 	    goto exit;
     } else {
-	if ((obj = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) == NULL)
+	if ((obj = JS_NewObject(cx, &rpmteClass, NULL, NULL)) == NULL)
 	    goto exit;
 	*rval = OBJECT_TO_JSVAL(obj);
     }
@@ -286,49 +294,48 @@ exit:
 
 /* --- Class initialization */
 #ifdef	HACKERY
-JSClass rpmfiClass = {
-    "Fi", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
-    rpmfi_addprop,   rpmfi_delprop, rpmfi_getprop, rpmfi_setprop,
-    (JSEnumerateOp)rpmfi_enumerate, (JSResolveOp)rpmfi_resolve,
-    rpmfi_convert,	rpmfi_dtor,
+JSClass rpmteClass = {
+    "Te", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
+    rpmte_addprop,   rpmte_delprop, rpmte_getprop, rpmte_setprop,
+    (JSEnumerateOp)rpmte_enumerate, (JSResolveOp)rpmte_resolve,
+    rpmte_convert,	rpmte_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 #else
-JSClass rpmfiClass = {
-    "Fi", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,   JS_PropertyStub, rpmfi_getprop, JS_PropertyStub,
-    (JSEnumerateOp)rpmfi_enumerate, (JSResolveOp)rpmfi_resolve,
-    JS_ConvertStub,	rpmfi_dtor,
+JSClass rpmteClass = {
+    "Te", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    JS_PropertyStub,   JS_PropertyStub, rpmte_getprop, JS_PropertyStub,
+    (JSEnumerateOp)rpmte_enumerate, (JSResolveOp)rpmte_resolve,
+    JS_ConvertStub,	rpmte_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 #endif
 
 JSObject *
-rpmjs_InitFiClass(JSContext *cx, JSObject* obj)
+rpmjs_InitTeClass(JSContext *cx, JSObject* obj)
 {
     JSObject * o;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 
-    o = JS_InitClass(cx, obj, NULL, &rpmfiClass, rpmfi_ctor, 1,
-		rpmfi_props, rpmfi_funcs, NULL, NULL);
+    o = JS_InitClass(cx, obj, NULL, &rpmteClass, rpmte_ctor, 1,
+		rpmte_props, rpmte_funcs, NULL, NULL);
 assert(o != NULL);
     return o;
 }
 
 JSObject *
-rpmjs_NewFiObject(JSContext *cx, void * _h, int _tagN)
+rpmjs_NewTeObject(JSContext *cx, void * _ts, void * _h)
 {
     JSObject *obj;
-    rpmts ts = NULL;	/* XXX FIXME: should be a ts method? */
-    rpmfi fi;
+    rpmte te;
 
-    if ((obj = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) == NULL) {
+    if ((obj = JS_NewObject(cx, &rpmteClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((fi = rpmfi_init(cx, obj, ts, _h, _tagN)) == NULL) {
+    if ((te = rpmte_init(cx, obj, _ts, _h)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

@@ -12,7 +12,6 @@
 
 #include <rpmdb.h>
 
-#define	_RPMTS_INTERNAL
 #include <rpmds.h>
 
 #include "debug.h"
@@ -266,7 +265,7 @@ rpmds_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &hdro, tagN)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &hdro, &tagN)))
 	goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
