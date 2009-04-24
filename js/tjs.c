@@ -6,6 +6,8 @@
 #define	_RPMJS_INTERNAL
 #include <rpmjs.h>
 
+#include "rpmds-js.h"
+#include "rpmfi-js.h"
 #include "rpmts-js.h"
 #include "rpmmi-js.h"
 #include "rpmhdr-js.h"
@@ -59,6 +61,10 @@ _rpmts_debug = -1;
 	(void) rpmjsRun(NULL, "print(\"\tMi\");", &result);
 	(void) rpmjs_InitTsClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tTs\");", &result);
+	(void) rpmjs_InitDsClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tDs\");", &result);
+	(void) rpmjs_InitFiClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tFi\");", &result);
 	(void) js_InitFileClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tFile\");", &result);
     }
