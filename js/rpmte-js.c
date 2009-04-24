@@ -258,9 +258,7 @@ rpmte_dtor(JSContext *cx, JSObject *obj)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-#ifdef	BUGGY
     (void) rpmteFree(te);
-#endif
 }
 
 static JSBool

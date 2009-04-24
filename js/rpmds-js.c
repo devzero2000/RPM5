@@ -250,9 +250,7 @@ rpmds_dtor(JSContext *cx, JSObject *obj)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-#ifdef	BUGGY
     (void) rpmdsFree(ds);
-#endif
 }
 
 static JSBool

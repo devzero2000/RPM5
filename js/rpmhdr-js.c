@@ -312,7 +312,7 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, ty
 static Header
 rpmhdr_init(JSContext *cx, JSObject *obj, void * _h)
 {
-    Header h = (_h ? headerLink(_h) : headerNew());
+    Header h = (_h ? _h : headerNew());
 
     if (h == NULL)
 	return NULL;
@@ -332,9 +332,7 @@ rpmhdr_dtor(JSContext *cx, JSObject *obj)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-#ifdef	BUGGY
     (void) headerFree((Header)ptr);
-#endif
 }
 
 static JSBool

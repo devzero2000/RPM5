@@ -282,7 +282,7 @@ rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, void *_key, int _keylen)
     rpmdbMatchIterator mi;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%s(%u),%p[%u]) _key %s\n", __FUNCTION__, cx, _ts, tagName(_tag), (unsigned)_tag, _key, (unsigned)_keylen, (_key ? _key : ""));
+fprintf(stderr, "==> %s(%p,%p,%s(%u),%p[%u]) _key %s\n", __FUNCTION__, cx, _ts, tagName(_tag), (unsigned)_tag, _key, (unsigned)_keylen, (const char *)(_key ? _key : ""));
 
     if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */

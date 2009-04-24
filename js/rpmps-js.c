@@ -228,7 +228,7 @@ rpmps_init(JSContext *cx, JSObject *obj)
 
     if ((ps = rpmpsCreate()) == NULL)
 	return NULL;
-    if (!JS_SetPrivate(cx, obj, (void *)ps)) {
+    if (!JS_SetPrivate(cx, obj, ps)) {
 	/* XXX error msg */
 	(void) rpmpsFree(ps);
 	return NULL;
@@ -245,9 +245,7 @@ rpmps_dtor(JSContext *cx, JSObject *obj)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-#ifdef	BUGGY
     (void) rpmpsFree(ps);
-#endif
 }
 
 static JSBool
