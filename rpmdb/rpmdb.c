@@ -718,6 +718,7 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 }
 
 struct rpmdbMatchIterator_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@dependent@*/ /*@null@*/
     rpmdbMatchIterator	mi_next;
 /*@refcounted@*/
@@ -1936,37 +1937,46 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
-    prev = &rpmmiRock;
-    while ((next = *prev) != NULL && next != mi)
-	prev = &next->mi_next;
-    if (next) {
-/*@i@*/	*prev = next->mi_next;
-	next->mi_next = NULL;
-    }
+    yarnPossess(mi->_item.use);
+/*@-modfilesys@*/
+if (_rpmdb_debug)
+fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", mi, yarnPeekLock(mi->_item.use), __FUNCTION__, __FILE__, __LINE__);
 
-    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
-    if (dbi == NULL)	/* XXX can't happen */
-	return NULL;
+    /*@-usereleased@*/
+    if (yarnPeekLock(mi->_item.use) <= 1L) {
 
-    xx = miFreeHeader(mi, dbi);
+	prev = &rpmmiRock;
+	while ((next = *prev) != NULL && next != mi)
+	    prev = &next->mi_next;
+	if (next) {
+/*@i@*/	    *prev = next->mi_next;
+	    next->mi_next = NULL;
+	}
 
-    if (mi->mi_dbc)
-	xx = dbiCclose(dbi, mi->mi_dbc, 0);
-    mi->mi_dbc = NULL;
+	dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
+assert(dbi != NULL);
 
-    mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
+	xx = miFreeHeader(mi, dbi);
 
-    mi->mi_set = dbiFreeIndexSet(mi->mi_set);
-    /* XXX rpmdbUnlink will not do.
-     * NB: must be called after rpmmiRock cleanup. */
-    (void) rpmdbClose(mi->mi_db);
-    mi->mi_db = NULL;
+	if (mi->mi_dbc)
+	    xx = dbiCclose(dbi, mi->mi_dbc, 0);
+	mi->mi_dbc = NULL;
 
-    mi = _free(mi);
+	mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
+
+	mi->mi_set = dbiFreeIndexSet(mi->mi_set);
+	/* XXX rpmdbUnlink will not do.
+	* NB: must be called after rpmmiRock cleanup. */
+	(void) rpmdbClose(mi->mi_db);
+	mi->mi_db = NULL;
+
+	mi = (rpmdbMatchIterator)rpmioPutPool((rpmioItem)mi);
+    } else
+	yarnTwist(mi->_item.use, BY, -1);
 
     (void) rpmdbCheckSignals();
 
-    return mi;
+    return NULL;
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
@@ -2646,6 +2656,26 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
+/*@unchecked@*/
+int _rpmmi_debug = 0;
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmmiPool;
+
+static rpmdbMatchIterator rpmmiGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmdbPool, fileSystem @*/
+	/*@modifies pool, _rpmdbPool, fileSystem @*/
+{
+    rpmdbMatchIterator mi;
+
+    if (_rpmmiPool == NULL) {
+	_rpmmiPool = rpmioNewPool("mi", sizeof(*mi), -1, _rpmmi_debug,
+			NULL, NULL, NULL);
+	pool = _rpmmiPool;
+    }
+    return (rpmdbMatchIterator) rpmioGetPool(pool, sizeof(*mi));
+}
+
 rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag tag,
 		const void * keyp, size_t keylen)
 	/*@globals rpmmiRock @*/
@@ -2671,7 +2701,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag tag,
     if (dbi == NULL)
 	return NULL;
 
-    mi = xcalloc(1, sizeof(*mi));
+    mi = rpmmiGetPool(_rpmmiPool);
+    (void)rpmioLinkPoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
     /* Chain cursors for teardown on abnormal exit. */
     mi->mi_next = rpmmiRock;
@@ -2743,7 +2774,7 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	    set = dbiFreeIndexSet(set);
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
-	    mi = _free(mi);
+	    mi = (rpmdbMatchIterator)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 	    return NULL;
 	}
     }

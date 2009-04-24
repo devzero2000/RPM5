@@ -493,9 +493,7 @@ rpmcliFini(poptContext optCon)
 /*@-nestedextern@*/
     extern rpmioPool _rpmjsPool;
     extern rpmioPool _headerPool;
-#ifdef	NOTYET
     extern rpmioPool _rpmmiPool;
-#endif
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmwfPool;
     extern const char * evr_tuple_order;
@@ -514,6 +512,7 @@ rpmcliFini(poptContext optCon)
     _rpmjsPool = rpmioFreePool(_rpmjsPool);
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
+    _rpmmiPool = rpmioFreePool(_rpmmiPool);
 
     _psmPool = rpmioFreePool(_psmPool);
     _rpmtsiPool = rpmioFreePool(_rpmtsiPool);
@@ -527,9 +526,6 @@ rpmcliFini(poptContext optCon)
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
 
-#ifdef	NOTYET
-    _rpmmiPool = rpmioFreePool(_rpmmiPool);
-#endif
     _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _headerPool = rpmioFreePool(_headerPool);
