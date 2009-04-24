@@ -11,6 +11,7 @@
 #include "rpmte-js.h"
 #include "rpmts-js.h"
 #include "rpmmi-js.h"
+#include "rpmps-js.h"
 #include "rpmhdr-js.h"
 #include "uuid-js.h"
 #include "syck-js.h"
@@ -60,6 +61,8 @@ _rpmts_debug = -1;
 	(void) rpmjsRun(NULL, "print(\"\tHdr\");", &result);
 	(void) rpmjs_InitMiClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tMi\");", &result);
+	(void) rpmjs_InitPsClass(js->cx, js->glob);
+	(void) rpmjsRun(NULL, "print(\"\tPs\");", &result);
 	(void) rpmjs_InitTsClass(js->cx, js->glob);
 	(void) rpmjsRun(NULL, "print(\"\tTs\");", &result);
 	(void) rpmjs_InitTeClass(js->cx, js->glob);
