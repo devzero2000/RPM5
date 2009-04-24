@@ -90,16 +90,6 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
-#ifdef	REFERENCE
-    case _ARBGOAL:
-	*vp = INT_TO_JSVAL((jsint)rpmmiARBGoal(ts));
-	ok = JS_TRUE;
-	break;
-    case _ROOTDIR:
-	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmmiRootDir(ts)));
-	ok = JS_TRUE;
-	break;
-#endif
     default:
 	break;
     }
@@ -126,18 +116,6 @@ rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (JS_ValueToInt32(cx, *vp, &_debug))
 	    ok = JS_TRUE;
 	break;
-#ifdef	REFERENCE
-    case _ARBGOAL:
-	if (!JS_ValueToInt32(cx, *vp, &myint))
-	    break;
-	(void) rpmmiSetARBGoal(ts, (uint32_t)myint);
-	ok = JS_TRUE;
-	break;
-    case _ROOTDIR:
-	(void) rpmmiSetRootDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-	ok = JS_TRUE;
-	break;
-#endif
     default:
 	break;
     }
@@ -194,7 +172,7 @@ rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
+fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
 		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
 		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
 		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
@@ -302,6 +280,9 @@ rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, void *_key, int _keylen)
 {
     JSObject *obj;
     rpmdbMatchIterator mi;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%s(%u),%p[%u]) _key %s\n", __FUNCTION__, cx, _ts, tagName(_tag), (unsigned)_tag, _key, (unsigned)_keylen, (_key ? _key : ""));
 
     if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */

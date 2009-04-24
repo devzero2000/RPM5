@@ -14,6 +14,115 @@ extern int _rpmjs_debug;
 /*@unchecked@*/
 static int _debug = 1;
 
+static JSObject *
+rpmhdrLoadTag(JSContext *cx, JSObject *obj, Header h, const char * name, jsval *vp)
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    JSString * valstr;
+    JSObject * arr;
+    JSObject * retobj = NULL;
+    jsval * vec = NULL;
+    int i;
+
+    if (!strcmp(name, "toString")
+     || !strcmp(name, "valueOf")
+     || !strcmp(name, "__iterator__")
+     || !strcmp(name, "toJSON"))
+	goto exit;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p,%s)\n", __FUNCTION__, cx, obj, h, name);
+
+    he->tag = tagValue(name);
+    if (headerGet(h, he, 0)) {
+if (_debug < 0)
+fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t, he->p.ptr, (unsigned)he->c);
+	switch (he->t) {
+	case RPM_BIN_TYPE:		/* XXX FIXME */
+	case RPM_I18NSTRING_TYPE:	/* XXX FIXME */
+	default:
+	    goto exit;
+	    /*@notreached@*/ break;
+	case RPM_UINT8_TYPE:
+	    vec = xmalloc(he->c * sizeof(he->c));
+	    for (i = 0; i < (int)he->c; i++)
+		vec[i] = INT_TO_JSVAL(he->p.ui8p[i]);
+	    arr = JS_NewArrayObject(cx, he->c, vec);
+	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
+				NULL, NULL, JSPROP_ENUMERATE))
+		goto exit;
+	    retobj = obj;
+	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    break;
+	case RPM_UINT16_TYPE:
+	    vec = xmalloc(he->c * sizeof(he->c));
+	    for (i = 0; i < (int)he->c; i++)
+		vec[i] = INT_TO_JSVAL(he->p.ui16p[i]);
+	    arr = JS_NewArrayObject(cx, he->c, vec);
+	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
+				NULL, NULL, JSPROP_ENUMERATE))
+		goto exit;
+	    retobj = obj;
+	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    break;
+	case RPM_UINT32_TYPE:
+	    vec = xmalloc(he->c * sizeof(he->c));
+	    for (i = 0; i < (int)he->c; i++)
+		vec[i] = INT_TO_JSVAL(he->p.ui32p[i]);
+	    arr = JS_NewArrayObject(cx, he->c, vec);
+	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
+				NULL, NULL, JSPROP_ENUMERATE))
+		goto exit;
+	    retobj = obj;
+	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    break;
+	case RPM_UINT64_TYPE:
+	    vec = xmalloc(he->c * sizeof(he->c));
+	    for (i = 0; i < (int)he->c; i++)
+		vec[i] = INT_TO_JSVAL(he->p.ui64p[i]);
+	    arr = JS_NewArrayObject(cx, he->c, vec);
+	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
+				NULL, NULL, JSPROP_ENUMERATE))
+		goto exit;
+	    retobj = obj;
+	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    break;
+	case RPM_STRING_ARRAY_TYPE:
+	    vec = xmalloc(he->c * sizeof(he->c));
+	    for (i = 0; i < (int)he->c; i++)
+		vec[i] = STRING_TO_JSVAL(he->p.argv[i]);
+	    arr = JS_NewArrayObject(cx, he->c, vec);
+	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
+				NULL, NULL, JSPROP_ENUMERATE))
+		goto exit;
+	    retobj = obj;
+	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    break;
+	case RPM_STRING_TYPE:
+	    if ((valstr = JS_NewStringCopyZ(cx, he->p.str)) == NULL) {
+if (_debug < 0)
+fprintf(stderr, "\tvalstr %p\n", valstr);
+		goto exit;
+	    }
+	    if (!JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
+				NULL, NULL, JSPROP_ENUMERATE)) {
+if (_debug < 0)
+fprintf(stderr, "\tJS_DefineProperty: %s = %p\n", name, valstr);
+		goto exit;
+	    }
+	    retobj = obj;
+	    if (vp) *vp = STRING_TO_JSVAL(valstr);
+	    break;
+	}
+    }
+
+exit:
+    vec = _free(vec);
+if (_debug < 0)
+fprintf(stderr, "\tretobj %p vp %p *vp 0x%lx(%u)\n", retobj, vp, (unsigned long)(vp ? *vp : 0), (unsigned)(vp ? JSVAL_TAG(*vp) : 0));
+    return retobj;
+}
+
 /* --- Object methods */
 static JSFunctionSpec rpmhdr_funcs[] = {
     JS_FS_END
@@ -54,6 +163,7 @@ static JSBool
 rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -63,18 +173,14 @@ rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
-#ifdef	REFERENCE
-    case _ARBGOAL:
-	*vp = INT_TO_JSVAL((jsint)rpmhdrARBGoal(ts));
-	ok = JS_TRUE;
-	break;
-    case _ROOTDIR:
-	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmhdrRootDir(ts)));
-	ok = JS_TRUE;
-	break;
-#endif
     default:
-	break;
+      {	JSString * str = JS_ValueToString(cx, id);
+	JSObject * retobj = rpmhdrLoadTag(cx, obj, h, JS_GetStringBytes(str), vp);
+	if (retobj != NULL) {
+            ok = JS_TRUE;
+            break;
+        }
+      } break;
     }
 
     if (!ok) {
@@ -99,18 +205,6 @@ rpmhdr_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (JS_ValueToInt32(cx, *vp, &_debug))
 	    ok = JS_TRUE;
 	break;
-#ifdef	REFERENCE
-    case _ARBGOAL:
-	if (!JS_ValueToInt32(cx, *vp, &myint))
-	    break;
-	(void) rpmhdrSetARBGoal(ts, (uint32_t)myint);
-	ok = JS_TRUE;
-	break;
-    case _ROOTDIR:
-	(void) rpmhdrSetRootDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-	ok = JS_TRUE;
-	break;
-#endif
     default:
 	break;
     }
@@ -166,15 +260,44 @@ static JSBool
 rpmhdr_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
+    JSString *idstr;
+    char * name;
+    JSObject * retobj = NULL;
+    JSBool ok = JS_FALSE;
+
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) poperty %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
+fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
 		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
 		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
 		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
 		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
 		(flags & JSRESOLVE_DETECTING) ? "declaring" : "",
 		(flags & JSRESOLVE_DETECTING) ? "classname" : "");
-    return JS_TRUE;
+
+   if (flags & JSRESOLVE_ASSIGNING) {
+	ok = JS_TRUE;
+	goto exit;
+    }
+
+    if ((idstr = JS_ValueToString(cx, id)) == NULL)
+	goto exit;
+
+    name = JS_GetStringBytes(idstr);
+    if (!strcmp(name, "toString")
+     || !strcmp(name, "valueOf")
+     || !strcmp(name, "__iterator__")
+     || !strcmp(name, "toJSON"))
+	goto exit;
+
+    if ((retobj = rpmhdrLoadTag(cx, obj, h, name, NULL)) == NULL)
+	goto exit;
+    *objp = retobj;
+    ok = JS_TRUE;
+
+exit:
+    return ok;
 }
 
 static JSBool
@@ -205,13 +328,12 @@ static void
 rpmhdr_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
-    Header h = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
-    h = headerFree(h);
+    (void) headerFree((Header)ptr);
 #endif
 }
 
@@ -244,6 +366,7 @@ exit:
 }
 
 /* --- Class initialization */
+#ifdef	HACKERY
 JSClass rpmhdrClass = {
     "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmhdr_addprop,   rpmhdr_delprop, rpmhdr_getprop, rpmhdr_setprop,
@@ -251,6 +374,15 @@ JSClass rpmhdrClass = {
     rpmhdr_convert,	rpmhdr_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
+#else
+JSClass rpmhdrClass = {
+    "Hdr", JSCLASS_HAS_PRIVATE,
+    JS_PropertyStub,   JS_PropertyStub, rpmhdr_getprop, JS_PropertyStub,
+    (JSEnumerateOp)JS_EnumerateStub, (JSResolveOp)JS_ResolveStub,
+    JS_ConvertStub,	rpmhdr_dtor,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+};
+#endif
 
 JSObject *
 rpmjs_InitHdrClass(JSContext *cx, JSObject* obj)
@@ -271,6 +403,9 @@ rpmjs_NewHdrObject(JSContext *cx, void * _h)
 {
     JSObject *obj;
     Header h;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, _h);
 
     if ((obj = JS_NewObject(cx, &rpmhdrClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
