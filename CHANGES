@@ -1,5 +1,7 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: js: fix: global interpreter with contained object refcnts needs
+	early cleanup in rpmcliFini(), not in rpmioClean().
     - jbj: rpmio: re-enable the memory leak warning with included explanation.
     - jbj: js: stub-in a rpmts class.
     - jbj: js: start js module for RPM objects.
