@@ -273,8 +273,8 @@ fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) property %s flags 0x%x{%s,%s,%s,%s
 		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
 		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
 		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
-		(flags & JSRESOLVE_DETECTING) ? "declaring" : "",
-		(flags & JSRESOLVE_DETECTING) ? "classname" : "");
+		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
+		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
 
    if (flags & JSRESOLVE_ASSIGNING) {
 	ok = JS_TRUE;

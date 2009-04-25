@@ -6,6 +6,7 @@
 #define	_RPMJS_INTERNAL
 #include <rpmjs.h>
 
+
 #include "rpmds-js.h"
 #include "rpmfi-js.h"
 #include "rpmte-js.h"
