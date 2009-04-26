@@ -61,7 +61,7 @@ rpmmi_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
 
-if (_debug)
+if (_debug < 0)
 fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 
     return JS_TRUE;
@@ -72,7 +72,7 @@ rpmmi_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
 
-if (_debug)
+if (_debug < 0)
 fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 
     return JS_TRUE;

@@ -205,6 +205,8 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
         ok = JS_TRUE;
         break;
     default:
+	if (tiny >= 0 && tiny < rpmdsCount(ds))
+	    ok = JS_TRUE;
 	break;
     }
 
@@ -274,6 +276,7 @@ rpmds_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = ptr;
+    jsint ix;
     JSBool ok = JS_FALSE;
 
 if (_debug < 0)
@@ -285,43 +288,44 @@ fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],0x%x,%p) ptr %p property %s flags 0x%x{%
 		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
 		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
 
-#ifdef	NOTYET
-    if (flags & JSRESOLVE_ASSIGNING) {
+
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (ds == NULL)) {	/* don't resolve to parent prototypes objects. */
+	*objp = NULL;
 	ok = JS_TRUE;
 	goto exit;
     }
 
-    if (JSVAL_IS_OBJECT(id) && OBJ_IS_ARRAY(cx, JSVAL_TO_OBJECT(id))) {
-	ok = JS_DefineProperty(cx, obj, "tuple", id,
-			NULL, NULL, JSPROP_ENUMERATE);
-fprintf(stderr, "\tok %d %s = [%s]\n", ok, "tuple", JS_GetStringBytes(JS_ValueToString(cx, id)));
-	ok = JS_TRUE;
-	goto exit;
-    }
-
-    {   JSString *valstr;
+    if (JSVAL_IS_INT(id) && (ix = JSVAL_TO_INT(id)) == rpmdsIx(ds)) {
+	JSObject * arr = JS_NewArrayObject(cx, 3, NULL);
+	JSString *valstr;
 	const char *N = rpmdsN(ds);
 	const char *EVR = rpmdsEVR(ds);
 	unsigned Flags = rpmdsFlags(ds);
 
+	if (!JS_DefineElement(cx, obj, ix, OBJECT_TO_JSVAL(arr),
+			NULL, NULL, JSPROP_ENUMERATE))
+	    goto exit;
 	if ((valstr = JS_NewStringCopyZ(cx, N)) == NULL
-	 || !JS_DefineProperty(cx, obj, "N", STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
+         || !JS_DefineElement(cx, arr, 0, STRING_TO_JSVAL(valstr),
+                        NULL, NULL, JSPROP_ENUMERATE))
 	    goto exit;
  	if ((valstr = JS_NewStringCopyZ(cx, EVR)) == NULL
-	 || !JS_DefineProperty(cx, obj, "EVR", STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
+         || !JS_DefineElement(cx, arr, 1, STRING_TO_JSVAL(valstr),
+                        NULL, NULL, JSPROP_ENUMERATE))
 	    goto exit;
- 	if (!JS_DefineProperty(cx, obj, "F", INT_TO_JSVAL(Flags),
-				NULL, NULL, JSPROP_ENUMERATE))
+        if (!JS_DefineElement(cx, arr, 2, INT_TO_JSVAL(Flags),
+                        NULL, NULL, JSPROP_ENUMERATE))
 	    goto exit;
-    }
-#endif
+	*objp = obj;
+    } else
+	*objp = NULL;
 
     ok = JS_TRUE;
 exit:
     return ok;
 }
+
 static JSBool
 rpmds_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
@@ -332,7 +336,7 @@ rpmds_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
     JSBool ok = JS_FALSE;
     int ix;
 
-if (_debug)
+if (_debug < 0)
 fprintf(stderr, "==> %s(%p,%p,%d,%p,%p) *statep 0x%lx *idp 0x%lx\n", __FUNCTION__, cx, obj, op, statep, idp, (unsigned long)(statep ? *statep : 0xfeedface), (unsigned long)(idp ? *idp : 0xdeadbeef));
 
     switch (op) {
@@ -345,25 +349,7 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p,%p) *statep 0x%lx *idp 0x%lx\n", __FUNCTION_
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
 	if ((ix = rpmdsNext(ds)) >= 0) {
-	    JSObject * arr = JS_NewArrayObject(cx, 3, NULL);
-	    JSString *valstr;
-	    jsval v;
-	    const char *N = rpmdsN(ds);
-	    const char *EVR = rpmdsEVR(ds);
-	    unsigned Flags = rpmdsFlags(ds);
-
-	    if ((valstr = JS_NewStringCopyZ(cx, N)) == NULL)
-		goto exit;
-	    v = STRING_TO_JSVAL(valstr);
-	    JS_SetElement(cx, arr, 0, &v);
- 	    if ((valstr = JS_NewStringCopyZ(cx, EVR)) == NULL)
-		goto exit;
-	    v = STRING_TO_JSVAL(valstr);
-	    JS_SetElement(cx, arr, 1, &v);
-	    v = INT_TO_JSVAL(Flags);
-	    JS_SetElement(cx, arr, 2, &v);
-	    v = OBJECT_TO_JSVAL(arr);
-	    JS_ValueToId(cx, v, idp);
+	    JS_ValueToId(cx, INT_TO_JSVAL(ix), idp);
 	} else
 	    *idp = JSVAL_VOID;
         if (*idp != JSVAL_VOID)
