@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmts-js.h"
+#include "rpmmi-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
@@ -166,7 +167,6 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     case _VSFLAGS:
 	*vp = INT_TO_JSVAL((jsint)rpmtsVSFlags(ts));
@@ -508,9 +508,9 @@ JSClass rpmtsClass = {
 };
 #else
 JSClass rpmtsClass = {
-    "Ts", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    "Ts", JSCLASS_HAS_PRIVATE,
     JS_PropertyStub,   JS_PropertyStub, rpmts_getprop, JS_PropertyStub,
-    (JSEnumerateOp)rpmts_enumerate, (JSResolveOp)rpmts_resolve,
+    (JSEnumerateOp)JS_EnumerateStub, (JSResolveOp)JS_ResolveStub,
     JS_ConvertStub,	rpmts_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
