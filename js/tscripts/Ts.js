@@ -1,14 +1,15 @@
 var ts = new Ts();
-print(ts)
+ack("typeof ts;", "object");
+ack("ts instanceof Ts;", true);
+ack("ts.debug = 0;", 0);
+ack("ts.debug = 1;", 1);
 
-print("ts.debug:\t", ts.debug);
-ts.debug = 1;
-print("ts.debug = 1:\t", ts.debug);
+var rootdir = "/path/to/rootdir";
+ack("ts.rootdir = rootdir", rootdir);
+ack("ts.rootdir = \"/\"", "/");
 
-// print("ts.rootdir #0:", ts.rootdir);
-// ts.rootdir = "/path/to/rootdir";
-// print("ts.rootdir #1:", ts.rootdir);
+var vsflags = 0x1234;
+ack("ts.vsflags = vsflags", vsflags);
+ack("ts.vsflags = 0", 0);
 
-// print("ts.vsflags #0:", ts.vsflags);
-// ts.vsflags = 0x1234;
-// print("ts.vsflags #1:", ts.vsflags);
+ack("ts.NVRA[37]", false);

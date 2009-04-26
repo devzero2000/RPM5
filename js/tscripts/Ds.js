@@ -1,26 +1,20 @@
-var ds = new Ds('uname');
+var ds = new Ds('rpmlib');
+ack("typeof ds;", "object");
+ack("ds instanceof Ds;", true);
+ack("ds.debug = 0;", 0);
+ack("ds.debug = 1;", 1);
 
-print(ds)
+ack("ds.length", 22);
+ack("ds.type", "Provides");
+ack("ds.buildtime = 1234;", 1234);
+ack("ds.color = 4;", 4);
+ack("ds.nopromote = 1;", 1);
+ack("ds.nopromote = 0;", 0);
 
-print("ds.debug:\t", ds.debug);
-ds.debug = 1;
-print("ds.debug = 1:\t", ds.debug);
-
-delete ds;
-
-var cpuinfo = new Ds('cpuinfo');
-var rpmlib = new Ds('rpmlib');
-var getconf = new Ds('getconf');
-var uname = new Ds('uname');
-print(JSON.stringify(uname));
-
-var RPMSENSE_ANY        = 0;
-var RPMSENSE_LESS       = (1 << 1);
-var RPMSENSE_GREATER    = (1 << 2);
-var RPMSENSE_EQUAL      = (1 << 3);
-
-var RPMSENSE_LE = (RPMSENSE_EQUAL|RPMSENSE_LESS);
-var RPMSENSE_GE = (RPMSENSE_EQUAL|RPMSENSE_GREATER);
-
-var single = new Ds(["N", "EVR", RPMSENSE_LE]);
-print(JSON.stringify(single));
+ack("ds.ix = -1;", -1);
+ack("ds.ix++;", -1);
+ack("++ds.ix;", 1);
+ack("ds.N", "BuiltinJavaScript");
+ack("ds.EVR", "5.2-1");
+ack("ds.F", 8);
+ack("ds.DNEVR", "P rpmlib(BuiltinJavaScript) = 5.2-1");
