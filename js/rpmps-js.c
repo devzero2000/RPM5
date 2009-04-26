@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmps-js.h"
+#include "rpmjs-debug.h"
 
 #define	_RPMPS_INTERNAL
 #include <rpmps.h>
@@ -12,10 +13,9 @@
 #include "debug.h"
 
 /*@unchecked@*/
-extern int _rpmjs_debug;
-
-/*@unchecked@*/
 static int _debug = 1;
+
+/* --- helpers */
 
 /* --- Object methods */
 
@@ -37,10 +37,7 @@ static JSBool
 rpmps_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
+_PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
 
@@ -48,10 +45,7 @@ static JSBool
 rpmps_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
+_PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
 static JSBool
@@ -73,10 +67,7 @@ rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 
     if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
+_PROP_DEBUG_EXIT(_debug);
     }
     return ok;
 }
@@ -101,10 +92,7 @@ rpmps_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 
     if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
+_PROP_DEBUG_EXIT(_debug);
     }
     return ok;
 }
@@ -121,14 +109,7 @@ rpmps_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     char value[5];
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],0x%x,%p) ptr %p property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), (unsigned)flags, objp, ptr,
-		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
-		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
-		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
-		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
-		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
-		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
+_RESOLVE_DEBUG_ENTRY(_debug);
 
     if (flags & JSRESOLVE_ASSIGNING) {
 	ok = JS_TRUE;
@@ -162,8 +143,7 @@ rpmps_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
     JSObject *iterator;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p,%p)\n", __FUNCTION__, cx, obj, op, statep, idp);
+_ENUMERATE_DEBUG_ENTRY(_debug);
 
 #ifdef	DYING
     switch (op) {
@@ -214,8 +194,7 @@ static JSBool
 rpmps_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", __FUNCTION__, cx, obj, type, vp, ptr, JS_GetTypeName(cx, type));
+_CONVERT_DEBUG_ENTRY(_debug);
     return JS_TRUE;
 }
 

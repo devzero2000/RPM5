@@ -7,6 +7,7 @@
 #include "rpmts-js.h"
 #include "rpmmi-js.h"
 #include "rpmhdr-js.h"
+#include "rpmjs-debug.h"
 
 #include <rpmdb.h>
 #include <rpmts.h>
@@ -14,10 +15,9 @@
 #include "debug.h"
 
 /*@unchecked@*/
-extern int _rpmjs_debug;
-
-/*@unchecked@*/
 static int _debug = 1;
+
+/* --- helpers */
 
 /* --- Object methods */
 static JSBool
@@ -60,10 +60,7 @@ static JSBool
 rpmmi_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
+_PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
 
@@ -71,10 +68,7 @@ static JSBool
 rpmmi_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
+_PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
 static JSBool
@@ -95,10 +89,7 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 
     if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
+_PROP_DEBUG_EXIT(_debug);
     }
     return ok;
 }
@@ -121,23 +112,29 @@ rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 
     if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
+_PROP_DEBUG_EXIT(_debug);
     }
     return ok;
+}
+
+static JSBool
+rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+	JSObject **objp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+_RESOLVE_DEBUG_ENTRY(_debug);
+    return JS_TRUE;
 }
 
 static JSBool
 rpmmi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     JSObject *iterator = NULL;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p,%p)\n", __FUNCTION__, cx, obj, op, statep, idp);
+_ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
@@ -168,25 +165,10 @@ exit:
 }
 
 static JSBool
-rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
-	JSObject **objp)
-{
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%llx,0x%x,%p) property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long long)id, (unsigned)flags, objp,
-		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
-		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
-		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
-		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
-		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
-		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
-    return JS_TRUE;
-}
-
-static JSBool
 rpmmi_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
 {
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, type, vp, JS_GetTypeName(cx, type));
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+_CONVERT_DEBUG_ENTRY(_debug);
     return JS_TRUE;
 }
 

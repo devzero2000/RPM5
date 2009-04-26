@@ -6,6 +6,7 @@
 
 #include "rpmds-js.h"
 #include "rpmhdr-js.h"
+#include "rpmjs-debug.h"
 
 #include <argv.h>
 #include <mire.h>
@@ -18,27 +19,13 @@
 #include "debug.h"
 
 /*@unchecked@*/
-extern int _rpmjs_debug;
-
-/*@unchecked@*/
 static int _debug = 1;
 
-static const char * v2s(JSContext *cx, jsval v)
-{
-    if (JSVAL_IS_NULL(v))	return "null";
-    if (JSVAL_IS_VOID(v))	return "void";
-    if (JSVAL_IS_INT(v))	return "integer";
-    if (JSVAL_IS_DOUBLE(v))	return "double";
-    if (JSVAL_IS_STRING(v))	return "string";
-    if (JSVAL_IS_BOOLEAN(v))	return "boolean";
-    if (JSVAL_IS_OBJECT(v)) {
-	return OBJ_GET_CLASS(cx, JSVAL_TO_OBJECT(v))->name;
-    }
-    return "other";
-}
+/* --- helpers */
 
 /* --- Object methods */
 
+#ifdef	NOTYET
 static JSBool
 rpmds_next(JSContext *cx, uintN argc, jsval *vp)
 {
@@ -73,6 +60,7 @@ fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp
 exit:
     return ok;
 }
+#endif
 
 static JSBool
 rpmds_self(JSContext *cx, uintN argc, jsval *vp)
@@ -134,8 +122,7 @@ rpmds_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
 
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+_PROP_DEBUG_ENTRY(_debug < 0);
 
     return JS_TRUE;
 }
@@ -145,8 +132,7 @@ rpmds_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
 
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+_PROP_DEBUG_ENTRY(_debug < 0);
 
     return JS_TRUE;
 }
@@ -211,10 +197,7 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 
     if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
+_PROP_DEBUG_EXIT(_debug);
     }
 
     return ok;
@@ -262,10 +245,7 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 
     if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
+_PROP_DEBUG_EXIT(_debug);
     }
     return ok;
 }
@@ -279,15 +259,7 @@ rpmds_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     jsint ix;
     JSBool ok = JS_FALSE;
 
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],0x%x,%p) ptr %p property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), (unsigned)flags, objp, ptr,
-		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
-		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
-		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
-		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
-		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
-		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
-
+_RESOLVE_DEBUG_ENTRY(_debug < 0);
 
     if ((flags & JSRESOLVE_ASSIGNING)
      || (ds == NULL)) {	/* don't resolve to parent prototypes objects. */
@@ -336,8 +308,7 @@ rpmds_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
     JSBool ok = JS_FALSE;
     int ix;
 
-if (_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,%d,%p,%p) *statep 0x%lx *idp 0x%lx\n", __FUNCTION__, cx, obj, op, statep, idp, (unsigned long)(statep ? *statep : 0xfeedface), (unsigned long)(idp ? *idp : 0xdeadbeef));
+_ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
@@ -368,22 +339,20 @@ static JSBool
 rpmds_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", __FUNCTION__, cx, obj, type, vp, ptr, JS_GetTypeName(cx, type));
+
+_CONVERT_DEBUG_ENTRY(_debug);
+
     return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */
-#define	OBJ_IS_STRING(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &js_StringClass)
-#define	OBJ_IS_HEADER(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmhdrClass)
-
 static rpmds
 rpmds_init(JSContext *cx, JSObject *obj, JSObject *o, int _tagN)
 {
     rpmds ds = NULL;
     int xx;
 
-    if (OBJ_IS_HEADER(cx, o)) {
+    if (OBJ_IS_RPMHDR(cx, o)) {
 	Header h = JS_GetPrivate(cx, o);
 	int flags = 0;
 	if (_tagN == RPMTAG_NAME) {
@@ -422,7 +391,8 @@ fprintf(stderr, "\trpmdsGetconf() ret %d ds %p\n", xx, ds);
 	    xx = rpmdsUname(&ds, NULL);
 if (_debug)
 fprintf(stderr, "\trpmdsUname() ret %d ds %p\n", xx, ds);
-	} else {
+	} else
+	{
 if (_debug)
 fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
 	    return NULL;
@@ -516,15 +486,6 @@ exit:
 }
 
 /* --- Class initialization */
-#ifdef	HACKERY
-JSClass rpmdsClass = {
-    "Ds", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
-    rpmds_addprop,   rpmds_delprop, rpmds_getprop, rpmds_setprop,
-    (JSEnumerateOp)rpmds_enumerate, (JSResolveOp)rpmds_resolve,
-    rpmds_convert,	rpmds_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-#else
 JSClass rpmdsClass = {
     "Ds", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmds_addprop,   rpmds_delprop, rpmds_getprop, rpmds_setprop,
@@ -532,7 +493,6 @@ JSClass rpmdsClass = {
     rpmds_convert,	rpmds_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
-#endif
 
 JSObject *
 rpmjs_InitDsClass(JSContext *cx, JSObject* obj)
