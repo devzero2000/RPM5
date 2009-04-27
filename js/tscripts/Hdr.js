@@ -68,4 +68,16 @@ ack("h.requirename", undefined);
 ack("h.conflictname", undefined);
 ack("h.obsoletesname", undefined);
 
+ack("h.keys()", undefined);
+legacyHeader = true;
+ack("h.unload(legacyHeader)", undefined);
+origin = "http://rpm5.org/files/popt/popt-1.14-1.i386.rpm";
+ack("h.setorigin(origin)", origin);
+ack("h.getorigin()", origin);
+qfmt = "%{buildtime:date}";
+ack("h.sprintf(qfmt)", undefined);
+ack("h.dsOfHeader()", undefined);
+ack("h.dsFromHeader(tag,flags)", undefined);
+ack("h.fiFromHeader(this)", undefined);
+
 if (loglvl) print("<-- Hdr.js");
