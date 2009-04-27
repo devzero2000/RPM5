@@ -20,6 +20,8 @@ typedef struct uuid_s {
     uuid_t  * ns;
 } * JSUuid;
 
+/* --- helpers */
+
 /* --- Object methods */
 
 static JSBool
@@ -187,6 +189,7 @@ exit:
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+ok = JS_TRUE;  /* XXX avoid immediate interp exit by always succeeding. */
     return ok;
 }
 
@@ -217,8 +220,22 @@ uuid_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
+    JSBool ok = JS_FALSE;
+
 _RESOLVE_DEBUG_ENTRY(_debug);
-    return JS_TRUE;
+
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (ptr == NULL)) { /* don't resolve to parent prototypes objects. */
+	*objp = NULL;
+	ok = JS_TRUE;
+	goto exit;
+    }
+
+    *objp = obj;        /* XXX always resolve in this object. */
+
+    ok = JS_TRUE;
+exit;
+    return ok;
 }
 
 static JSBool
@@ -304,7 +321,7 @@ exit:
 
 /* --- Class initialization */
 JSClass uuidClass = {
-    "Uuid", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
+    "Uuid", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     uuid_addprop,   uuid_delprop, uuid_getprop, uuid_setprop,
     (JSEnumerateOp)uuid_enumerate, (JSResolveOp)uuid_resolve,
     uuid_convert,	uuid_dtor,
