@@ -31,10 +31,52 @@ static JSFunctionSpec rpmfi_funcs[] = {
 /* --- Object properties */
 enum rpmfi_tinyid {
     _DEBUG	= -2,
+    _LENGTH     = -3,
+    _FC		= -4,
+    _FX		= -5,
+    _DC		= -6,
+    _DX		= -7,
+    _BN		= -8,
+    _DN		= -9,
+    _FN		= -10,
+    _VFLAGS	= -11,
+    _FFLAGS	= -12,
+    _FMODE	= -13,
+    _FSTATE	= -14,
+    _FDIGEST	= -15,
+    _FLINK	= -16,
+    _FSIZE	= -17,
+    _FRDEV	= -18,
+    _FMTIME	= -19,
+    _FUSER	= -20,
+    _FGROUP	= -21,
+    _FCOLOR	= -22,
+    _FCLASS	= -23,
 };
 
 static JSPropertySpec rpmfi_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"length",	_LENGTH,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fc",	_FC,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fx",	_FX,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dc",	_DC,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dx",	_DX,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"bn",	_BN,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dn",	_DN,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fn",	_FN,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"vflags",	_VFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fflags",	_FFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fmode",	_FMODE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fstate",	_FSTATE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fdigest",	_FDIGEST,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"flink",	_FLINK,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fsize",	_FSIZE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"frdev",	_FRDEV,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fmtime",	_FMTIME,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fuser",	_FUSER,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fgroup",	_FGROUP,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fcolor",	_FCOLOR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fclass",	_FCLASS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -67,6 +109,110 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
+    case _LENGTH:
+    case _FC:
+	*vp = INT_TO_JSVAL(rpmfiFC(fi));
+	ok = JS_TRUE;
+	break;
+    case _FX:
+	*vp = INT_TO_JSVAL(rpmfiFX(fi));
+	ok = JS_TRUE;
+	break;
+    case _DC:
+	*vp = INT_TO_JSVAL(rpmfiDC(fi));
+	ok = JS_TRUE;
+	break;
+    case _DX:
+	*vp = INT_TO_JSVAL(rpmfiDX(fi));
+	ok = JS_TRUE;
+	break;
+    case _BN:
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiBN(fi)));
+        ok = JS_TRUE;
+        break;
+    case _DN:
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiDN(fi)));
+        ok = JS_TRUE;
+        break;
+    case _FN:
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFN(fi)));
+        ok = JS_TRUE;
+        break;
+    case _VFLAGS:
+	*vp = INT_TO_JSVAL(rpmfiVFlags(fi));
+	ok = JS_TRUE;
+	break;
+    case _FFLAGS:
+	*vp = INT_TO_JSVAL(rpmfiFFlags(fi));
+	ok = JS_TRUE;
+	break;
+    case _FMODE:
+	*vp = INT_TO_JSVAL(rpmfiFMode(fi));
+	ok = JS_TRUE;
+	break;
+    case _FSTATE:
+	*vp = INT_TO_JSVAL(rpmfiFState(fi));
+	ok = JS_TRUE;
+	break;
+    case _FDIGEST:
+      {	int dalgo = 0;
+	size_t dlen = 0;
+	const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
+	const unsigned char * s = digest;
+	size_t nb = 2 * dlen;
+	char * fdigest = memset(alloca(nb+1), 0, nb+1);
+	char *t = fdigest;
+	int i;
+
+	for (i = 0, s = digest, t = fdigest; i < dlen; i++, s++, t+= 2) {
+	    static const char hex[] = "0123456789abcdef";
+	    t[0] = hex[(s[0] >> 4) & 0xf];
+	    t[1] = hex[(s[0]     ) & 0xf];
+	}
+	*t = '\0';
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, fdigest));
+        ok = JS_TRUE;
+      }	break;
+    case _FLINK:
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFLink(fi)));
+        ok = JS_TRUE;
+        break;
+    case _FSIZE:
+	*vp = INT_TO_JSVAL(rpmfiFSize(fi));
+	ok = JS_TRUE;
+	break;
+    case _FRDEV:
+	*vp = INT_TO_JSVAL(rpmfiFRdev(fi));
+	ok = JS_TRUE;
+	break;
+    case _FMTIME:
+	*vp = INT_TO_JSVAL(rpmfiFMtime(fi));
+	ok = JS_TRUE;
+	break;
+    case _FUSER:
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFUser(fi)));
+	ok = JS_TRUE;
+	break;
+    case _FGROUP:
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFGroup(fi)));
+	ok = JS_TRUE;
+	break;
+    case _FCOLOR:
+	*vp = INT_TO_JSVAL(rpmfiFColor(fi));
+	ok = JS_TRUE;
+	break;
+    case _FCLASS:
+      {	const char * FClass = rpmfiFClass(fi);
+	char * t;
+	if (FClass == NULL) FClass = "";
+	/* XXX spot fix for known embedded single quotes. */
+	t = xstrdup(FClass);
+	if (!strncmp(t, "symbolic link to `", sizeof("symbolic link to `")-1))
+	   t[sizeof("symbolic link")-1] = '\0';
+        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, t));
+	t = _free(t);
+	ok = JS_TRUE;
+      }	break;
     default:
 	break;
     }
@@ -74,6 +220,7 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+ok = JS_TRUE;  /* XXX avoid immediate interp exit by always succeeding. */
     return ok;
 }
 
@@ -92,6 +239,26 @@ rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (JS_ValueToInt32(cx, *vp, &_debug))
 	    ok = JS_TRUE;
 	break;
+    case _FX:
+	if (!JS_ValueToInt32(cx, *vp, &myint))
+	    break;
+	if (myint != rpmfiFX(fi)) {
+	    (void) rpmfiSetFX(fi, myint-1);
+	    /* XXX flush and recreate a {BN,DN,FN} with a rpmfiNext() step */
+	    (void) rpmfiNext(fi);
+	}
+	ok = JS_TRUE;
+        break;
+    case _DX:
+	if (!JS_ValueToInt32(cx, *vp, &myint))
+	    break;
+	if (myint != rpmfiDX(fi)) {
+	    (void) rpmfiSetDX(fi, myint-1);
+	    /* XXX flush and recreate a {BN,DN,FN} with a rpmfiNext() step */
+	    (void) rpmfiNextD(fi);
+	}
+	ok = JS_TRUE;
+        break;
     default:
 	break;
     }
@@ -107,35 +274,20 @@ rpmfi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
-    static char hex[] = "0123456789abcdef";
-    JSString *idstr;
-    const char * name;
-    JSString * valstr;
-    char value[5];
+    rpmfi fi = ptr;
     JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
-    if (flags & JSRESOLVE_ASSIGNING) {
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (fi == NULL)) { /* don't resolve to parent prototypes objects. */
+	*objp = NULL;
 	ok = JS_TRUE;
 	goto exit;
     }
 
-    if ((idstr = JS_ValueToString(cx, id)) == NULL)
-	goto exit;
+    *objp = obj;        /* XXX always resolve in this object. */
 
-    name = JS_GetStringBytes(idstr);
-    if (name[1] == '\0' && xisalpha(name[0])) {
-	value[0] = '0'; value[1] = 'x';
-	value[2] = hex[(name[0] >> 4) & 0xf];
-	value[3] = hex[(name[0]     ) & 0xf];
-	value[4] = '\0';
- 	if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
-	 || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-	    goto exit;
-	*objp = obj;
-    }
     ok = JS_TRUE;
 exit:
     return ok;
@@ -273,9 +425,9 @@ JSClass rpmfiClass = {
 #else
 JSClass rpmfiClass = {
     "Fi", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,   JS_PropertyStub, rpmfi_getprop, JS_PropertyStub,
+    rpmfi_addprop, rpmfi_delprop, rpmfi_getprop, rpmfi_setprop,
     (JSEnumerateOp)rpmfi_enumerate, (JSResolveOp)rpmfi_resolve,
-    JS_ConvertStub,	rpmfi_dtor,
+    rpmfi_convert,	rpmfi_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 #endif

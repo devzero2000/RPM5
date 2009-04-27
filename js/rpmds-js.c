@@ -13,7 +13,6 @@
 
 #include <rpmdb.h>
 
-#define	_RPMDS_INTERNAL
 #include <rpmds.h>
 
 #include "debug.h"
@@ -34,7 +33,7 @@ rpmds_next(JSContext *cx, uintN argc, jsval *vp)
     JSBool ok = (rpmdsNext(ds) >= 0) ? JS_TRUE : JS_FALSE;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp, ds, ds->i, ds->Count, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp, ds, rpmdsIx(ds), rpmdsCount(ds), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 
     if (!ok)
 	goto exit;
@@ -73,7 +72,7 @@ rpmds_self(JSContext *cx, uintN argc, jsval *vp)
     *vp = JS_THIS(cx, vp);
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp, ds, ds->i, ds->Count, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp, ds, rpmdsIx(ds), rpmdsCount(ds), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
 
     return !JSVAL_IS_NULL(*vp);
 }
@@ -221,9 +220,9 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _IX:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
-	if (myint != ds->i) {
+	if (myint != rpmdsIx(ds)) {
 	    (void) rpmdsSetIx(ds, myint-1);
-	    /* XXX flush and recreate N and DNEVR with s rpmdsNext() step */
+	    /* XXX flush and recreate N and DNEVR with a rpmdsNext() step */
 	    (void) rpmdsNext(ds);
 	}
 	ok = JS_TRUE;
