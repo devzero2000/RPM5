@@ -49,10 +49,16 @@ static JSFunctionSpec rpmmi_funcs[] = {
 /* --- Object properties */
 enum rpmmi_tinyid {
     _DEBUG	= -2,
+    _LENGTH	= -3,
+    _COUNT	= -4,	/* XXX is _LENGTH enuf? */
+    _INSTANCE	= -5,
 };
 
 static JSPropertySpec rpmmi_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"length",	_LENGTH,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"count",	_COUNT,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"instance",_INSTANCE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -75,6 +81,7 @@ static JSBool
 rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmdbMatchIterator mi = ptr;
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -84,6 +91,15 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
+    case _LENGTH:
+    case _COUNT:	/* XXX is _LENGTH enuf? */
+	*vp = INT_TO_JSVAL(rpmdbGetIteratorCount(mi));
+	ok = JS_TRUE;
+        break;
+    case _INSTANCE:
+	*vp = INT_TO_JSVAL(rpmdbGetIteratorOffset(mi));
+	ok = JS_TRUE;
+        break;
     default:
 	break;
     }
@@ -91,6 +107,7 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
     return ok;
 }
 
@@ -122,7 +139,22 @@ rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmdbMatchIterator mi = ptr;
+    JSBool ok = JS_FALSE;
+
 _RESOLVE_DEBUG_ENTRY(_debug);
+
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (mi == NULL)) {	/* don't resolve to parent prototypes objects. */
+	*objp = NULL;
+	ok = JS_TRUE;
+	goto exit;
+    }
+
+    *objp = obj;	/* XXX always resolve in this object. */
+
+    ok = JS_TRUE;
+exit:
     return JS_TRUE;
 }
 
@@ -205,11 +237,11 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 static JSBool
 rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    JSBool ok = JS_FALSE;
     JSObject *tso = NULL;
     rpmTag tag = RPMDBI_PACKAGES;
     char * key = NULL;
     int keylen = 0;
+    JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
@@ -217,12 +249,13 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/is", &tso, &tag, &key)))
 	goto exit;
 
+    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
+
 	/* XXX TODO: permit string tag names */
 	/* XXX TODO: permit integer keys */
 	/* XXX TODO: make sure both tag and key were specified. */
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, key, keylen))
 	    goto exit;
     } else {
@@ -238,7 +271,7 @@ exit:
 
 /* --- Class initialization */
 JSClass rpmmiClass = {
-    "Mi", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
+    "Mi", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
     rpmmi_addprop,   rpmmi_delprop, rpmmi_getprop, rpmmi_setprop,
     (JSEnumerateOp)rpmmi_enumerate, (JSResolveOp)rpmmi_resolve,
     rpmmi_convert,	rpmmi_dtor,

@@ -60,14 +60,24 @@ static const char tscripts[] = "./tscripts/";
 /*@unchecked@*/
 static const char * _acknack = "\
 function ack(cmd, expected) {\n\
-  actual = eval(cmd);\n\
+  try {\n\
+    actual = eval(cmd);\n\
+  } catch(e) {\n\
+    print(\"NACK:  ack(\"+cmd+\")\tcaught '\"+e+\"'\");\n\
+    return;\n\
+  }\n\
   if (actual != expected && expected != undefined)\n\
     print(\"NACK:  ack(\"+cmd+\")\tgot '\"+actual+\"' not '\"+expected+\"'\");\n\
   else if (loglvl)\n\
     print(\"       ack(\"+cmd+\")\tgot '\"+actual+\"'\");\n\
 }\n\
 function nack(cmd, expected) {\n\
-  actual = eval(cmd);\n\
+  try {\n\
+    actual = eval(cmd);\n\
+  } catch(e) {\n\
+    print(\" ACK: nack(\"+cmd+\")\tcaught '\"+e+\"'\");\n\
+    return;\n\
+  }\n\
   if (actual == expected)\n\
     print(\" ACK: nack(\"+cmd+\")\tgot '\"+actual+\"' not '\"+expected+\"'\");\n\
   else if (loglvl)\n\
