@@ -22,7 +22,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 1;
+static int _debug = 0;
 
 /*@unchecked@*/
 static int _test = 1;
@@ -42,10 +42,8 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Hdr",		rpmjs_InitHdrClass,	12 },
     { "Mi",		rpmjs_InitMiClass,	11 },
     { "Ps",		rpmjs_InitPsClass,	16 },
-#ifdef	NOTYET
-    { "Syck",		rpmjs_InitSyckClass,	0 },
-#endif
-    { "Te",		rpmjs_InitTeClass,	15 },
+    { "Syck",		rpmjs_InitSyckClass,	3 },
+    { "Te",		rpmjs_InitTeClass,	-15 },
     { "Ts",		rpmjs_InitTsClass,	10 },
     { "Uuid",		rpmjs_InitUuidClass,	2 },
 };
@@ -60,7 +58,7 @@ static const char tscripts[] = "./tscripts/";
 static const char * _acknack = "\
 function ack(cmd, expected) {\n\
   actual = eval(cmd);\n\
-  if (actual != expected)\n\
+  if (actual != expected && expected != undefined)\n\
     print(\"NACK: eval(\"+cmd+\") got '\"+actual+\"' not '\"+expected+\"'\");\n\
 }\n\
 function nack(cmd, expected) {\n\
@@ -81,7 +79,7 @@ rpmjsLoadFile(rpmjs js, const char * pre, const char * fn)
 	pre = "";
     str = rpmExpand(pre, "load(\"", fn, "\");", NULL);
 if (_debug)
-fprintf(stderr, "\trunning:\n%s\n", str);
+fprintf(stderr, "\trunning:%s%s\n", (*pre ? "\n" : " "), str);
     result = NULL;
     ret = rpmjsRun(NULL, str, &result);
     if (result != NULL && *result != '\0')
@@ -111,8 +109,6 @@ rpmjsLoadClasses(void)
     for (i = 0, tbl = classTable; i < nclassTable; i++, tbl++) {
 	if (tbl->ix <= 0)
 	    continue;
-if (_debug < 0)
-fprintf(stderr, "==> order[%2d] = %2d %s\n", (tbl->ix & (norder -1)), i, tbl->name);
 	order[tbl->ix & (norder - 1)] = i + 1;
     }
 
@@ -124,8 +120,6 @@ fprintf(stderr, "==> order[%2d] = %2d %s\n", (tbl->ix & (norder -1)), i, tbl->na
 	    continue;
 	ix = order[i] - 1;
 	tbl = &classTable[ix];
-if (_debug < 0)
-fprintf(stderr, "<== order[%2d] = %2d %s\n", i, ix, tbl->name);
 	if (tbl->init != NULL)
 	    (void) (*tbl->init) (js->cx, js->glob);
 	fn = rpmGetPath(tscripts, "/", tbl->name, ".js", NULL);
@@ -180,6 +174,7 @@ _rpmjs_debug = 1;
     rc = 0;
 
 exit:
+_rpmjs_debug = 0;
     optCon = rpmcliFini(optCon);
 
     return rc;

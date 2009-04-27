@@ -1,13 +1,14 @@
 var dn = "/tmp";
 var bn = "xyzzy";
 var fn = dn+"/"+bn;
+
 var f = new File(fn);
 ack("typeof f", "object");
 ack("f instanceof File;", true);
 
 ack("f.path", fn);
 ack("f.isOpen", false);
-ack("File.currentDir", "unknown");
+ack("File.currentDir", undefined);
 ack("File.input", "Standard input stream");
 ack("File.output", "Standard output stream");
 ack("File.error", "Standard error stream");
@@ -29,7 +30,7 @@ ack("f.isDirectory", false);
 ack("f.isFile", true);
 ack("f.isNative", false);
 ack("f.isOpen", true);
-ack("f.lastModified", "unknown");
+ack("f.lastModified", undefined);
 ack("f.length", 15);
 ack("f.mode", "read,write,readWrite,append,create");
 ack("f.name", bn);

@@ -10,7 +10,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 1;
+static int _debug = 0;
 
 /* --- helpers */
 static JSObject *

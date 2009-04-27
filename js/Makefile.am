@@ -60,13 +60,13 @@ noinst_HEADERS = \
 	rpmjsfile.h \
 	rpmds-js.h rpmfi-js.h rpmhdr-js.h rpmmi-js.h rpmps-js.h \
 	rpmte-js.h rpmts-js.h \
-	uuid-js.h # syck-js.h
+	syck-js.h uuid-js.h
 
 rpmjsm_la_SOURCES = \
 	rpmjsfile.c \
 	rpmds-js.c rpmfi-js.c rpmhdr-js.c rpmmi-js.c rpmps-js.c \
 	rpmte-js.c rpmts-js.c \
-	uuid-js.c # syck-js.c
+	syck-js.c uuid-js.c
 
 .PHONY:	lint
 lint:

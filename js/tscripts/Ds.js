@@ -1,8 +1,8 @@
 var ds = new Ds('rpmlib');
 ack("typeof ds;", "object");
 ack("ds instanceof Ds;", true);
-ack("ds.debug = 0;", 0);
 ack("ds.debug = 1;", 1);
+ack("ds.debug = 0;", 0);
 
 ack("ds.length", 22);
 ack("ds.type", "Provides");

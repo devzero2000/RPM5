@@ -13,7 +13,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 1;
+static int _debug = 0;
 
 typedef struct uuid_s {
     const char * ns_str;
