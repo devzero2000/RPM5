@@ -34,6 +34,7 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	default:
 	    goto exit;
 	    /*@notreached@*/ break;
+	case RPM_BIN_TYPE:	/* XXX return as array of octets for now. */
 	case RPM_UINT8_TYPE:
 	    vec = xmalloc(he->c * sizeof(he->c));
 	    for (i = 0; i < (int)he->c; i++)
@@ -92,16 +93,20 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    retobj = obj;
 	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
 	    break;
-	case RPM_I18NSTRING_TYPE:	/* XXX FIXME? is this ever seen */
-	case RPM_BIN_TYPE:		/* XXX FIXME */
-fprintf(stderr, "==> %s(%d) t %d %p[%u]\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->c);
+	case RPM_I18NSTRING_TYPE:	/* XXX FIXME: is this ever seen? */
+fprintf(stderr, "==> FIXME: %s(%d) t %d %p[%u]\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->c);
+#ifdef	DYING
 	    if ((valstr = JS_NewStringCopyZ(cx, "FIXME")) == NULL
 	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
 				NULL, NULL, JSPROP_ENUMERATE))
 		goto exit;
 	    retobj = obj;
 	    if (vp) *vp = STRING_TO_JSVAL(valstr);
-
+	    break;
+#else
+	    /*@fallthrough@*/
+#endif
+	
 	case RPM_STRING_TYPE:
 	    if ((valstr = JS_NewStringCopyZ(cx, he->p.str)) == NULL
 	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
