@@ -1,22 +1,71 @@
 if (loglvl) print("--> Hdr.js");
 
-// var RPMTAG_NAME = 1000;
-// var ts = new Ts();
-// var mi = ts.mi(RPMTAG_NAME, 'popt');
-// var mi = new Mi(ts, RPMTAG_NAME, 'popt');
+var RPMTAG_NAME = 1000;
+var N = "popt";
 
-// var h = mi.next()
-var h = new Hdr();
+var ts = new Ts();
+// var mi = ts.mi(RPMTAG_NAME, 'popt');
+var mi = new Mi(ts, RPMTAG_NAME, N);
+ack("mi.length", 1);
+ack("mi.count", 1);
+ack("mi.instance", 0);  // zero before iterating
+
+// var h = new Hdr();
+var h = mi.next()
+nack("mi.instance", 0); // non-zero when iterating
+
 ack("typeof h;", "object");
 ack("h instanceof Hdr;", true);
 ack("h.debug = 1;", 1);
 ack("h.debug = 0;", 0);
 
-// ack("h.name", "popt");
-// ack("h.epoch", false);
-// ack("h.version", undefined);
-// ack("h.release", undefined);
-// ack("h.arch", undefined);
-// ack("h.os", undefined);
+ack("h.name", N);
+ack("h.epoch", undefined);
+ack("h.version", undefined);
+ack("h.release", undefined);
+ack("h.summary", undefined);
+ack("h.description", undefined);
+ack("h.buildtime", undefined);
+ack("h.buildhost", undefined);
+ack("h.installtime", undefined);
+ack("h.size", undefined);
+ack("h.distribution", undefined);
+ack("h.vendor", undefined);
+ack("h.license", undefined);
+ack("h.packager", undefined);
+ack("h.group", undefined);
+
+ack("h.changelogtime", undefined);
+ack("h.changelogname", undefined);
+
+ack("h.url", undefined);
+ack("h.os", undefined);
+ack("h.arch", undefined);
+
+ack("h.prein", undefined);
+ack("h.preinprog", undefined);
+ack("h.postin", undefined);
+ack("h.postinprog", undefined);
+ack("h.preun", undefined);
+ack("h.preunprog", undefined);
+ack("h.postun", undefined);
+ack("h.postunprog", undefined);
+
+// ack("h.filenames", undefined);
+ack("h.dirnames", undefined);
+ack("h.basenames", undefined);
+
+ack("h.filesizes", undefined);
+ack("h.filestates", undefined);
+ack("h.filemodes", undefined);
+ack("h.filerdevs", undefined);
+
+ack("h.sourcerpm", undefined);
+ack("h.archivesize", undefined);
+
+ack("h.providename", undefined);
+ack("h.requirename", undefined);
+ack("h.conflictname", undefined);
+ack("h.obsoletesname", undefined);
 
 if (loglvl) print("<-- Hdr.js");

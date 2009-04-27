@@ -23,12 +23,6 @@ rpmhdrLoadTag(JSContext *cx, JSObject *obj, Header h, const char * name, jsval *
     jsval * vec = NULL;
     int i;
 
-    if (!strcmp(name, "toString")
-     || !strcmp(name, "valueOf")
-     || !strcmp(name, "__iterator__")
-     || !strcmp(name, "toJSON"))
-	goto exit;
-
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p,%s)\n", __FUNCTION__, cx, obj, h, name);
 
@@ -37,8 +31,6 @@ fprintf(stderr, "==> %s(%p,%p,%p,%s)\n", __FUNCTION__, cx, obj, h, name);
 if (_debug < 0)
 fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t, he->p.ptr, (unsigned)he->c);
 	switch (he->t) {
-	case RPM_BIN_TYPE:		/* XXX FIXME */
-	case RPM_I18NSTRING_TYPE:	/* XXX FIXME */
 	default:
 	    goto exit;
 	    /*@notreached@*/ break;
@@ -88,8 +80,11 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    break;
 	case RPM_STRING_ARRAY_TYPE:
 	    vec = xmalloc(he->c * sizeof(he->c));
-	    for (i = 0; i < (int)he->c; i++)
-		vec[i] = STRING_TO_JSVAL(he->p.argv[i]);
+	    for (i = 0; i < (int)he->c; i++) {
+		if ((valstr = JS_NewStringCopyZ(cx, he->p.argv[i])) == NULL)
+		    goto exit;
+		vec[i] = STRING_TO_JSVAL(valstr);
+	    }
 	    arr = JS_NewArrayObject(cx, he->c, vec);
 	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
 				NULL, NULL, JSPROP_ENUMERATE))
@@ -97,18 +92,21 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    retobj = obj;
 	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
 	    break;
+	case RPM_I18NSTRING_TYPE:	/* XXX FIXME? is this ever seen */
+	case RPM_BIN_TYPE:		/* XXX FIXME */
+fprintf(stderr, "==> %s(%d) t %d %p[%u]\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->c);
+	    if ((valstr = JS_NewStringCopyZ(cx, "FIXME")) == NULL
+	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
+				NULL, NULL, JSPROP_ENUMERATE))
+		goto exit;
+	    retobj = obj;
+	    if (vp) *vp = STRING_TO_JSVAL(valstr);
+
 	case RPM_STRING_TYPE:
-	    if ((valstr = JS_NewStringCopyZ(cx, he->p.str)) == NULL) {
-if (_debug < 0)
-fprintf(stderr, "\tvalstr %p\n", valstr);
+	    if ((valstr = JS_NewStringCopyZ(cx, he->p.str)) == NULL
+	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
+				NULL, NULL, JSPROP_ENUMERATE))
 		goto exit;
-	    }
-	    if (!JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE)) {
-if (_debug < 0)
-fprintf(stderr, "\tJS_DefineProperty: %s = %p\n", name, valstr);
-		goto exit;
-	    }
 	    retobj = obj;
 	    if (vp) *vp = STRING_TO_JSVAL(valstr);
 	    break;
@@ -179,6 +177,7 @@ rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+ok = JS_TRUE;  /* XXX avoid immediate interp exit by always succeeding. */
     return ok;
 }
 
@@ -211,33 +210,20 @@ rpmhdr_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
     Header h = ptr;
-    JSString *idstr;
-    char * name;
-    JSObject * retobj = NULL;
     JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
-   if (flags & JSRESOLVE_ASSIGNING) {
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (h == NULL)) {	/* don't resolve to parent prototypes objects. */
+	*objp = NULL;
 	ok = JS_TRUE;
 	goto exit;
     }
 
-    if ((idstr = JS_ValueToString(cx, id)) == NULL)
-	goto exit;
+    *objp = obj;	/* XXX always resolve in this object. */
 
-    name = JS_GetStringBytes(idstr);
-    if (!strcmp(name, "toString")
-     || !strcmp(name, "valueOf")
-     || !strcmp(name, "__iterator__")
-     || !strcmp(name, "toJSON"))
-	goto exit;
-
-    if ((retobj = rpmhdrLoadTag(cx, obj, h, name, NULL)) == NULL)
-	goto exit;
-    *objp = retobj;
     ok = JS_TRUE;
-
 exit:
     return ok;
 }
@@ -352,10 +338,10 @@ JSClass rpmhdrClass = {
 };
 #else
 JSClass rpmhdrClass = {
-    "Hdr", JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,   JS_PropertyStub, rpmhdr_getprop, JS_PropertyStub,
-    (JSEnumerateOp)JS_EnumerateStub, (JSResolveOp)JS_ResolveStub,
-    JS_ConvertStub,	rpmhdr_dtor,
+    "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    rpmhdr_addprop, rpmhdr_delprop, rpmhdr_getprop, rpmhdr_setprop,
+    (JSEnumerateOp)rpmhdr_enumerate, (JSResolveOp)rpmhdr_resolve,
+    rpmhdr_convert,	rpmhdr_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 #endif

@@ -155,7 +155,7 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 exit:
-    return JS_TRUE;
+    return ok;
 }
 
 static JSBool

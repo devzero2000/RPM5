@@ -16,7 +16,7 @@ ack("mi.instance", 0);	// zero before iterating
 ack("mi.pattern(RPMTAG_NAME, 0, N)", false);
 
 var h = mi.next()
-ack("h.name", N);
 nack("mi.instance", 0);	// non-zero when iterating
+ack("h.name", N);
 
 if (loglvl) print("<-- Mi.js");
