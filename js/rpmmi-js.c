@@ -207,18 +207,22 @@ rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
     JSObject *tso = NULL;
+    rpmTag tag = RPMDBI_PACKAGES;
+    char * key = NULL;
+    int keylen = 0;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &tso)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/is", &tso, &tag, &key)))
 	goto exit;
+
+	/* XXX TODO: permit string tag names */
+	/* XXX TODO: permit integer keys */
+	/* XXX TODO: make sure both tag and key were specified. */
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
-	rpmTag tag = RPMDBI_PACKAGES;
-	char * key = NULL;
-	int keylen = 0;
 	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, key, keylen))
 	    goto exit;
     } else {

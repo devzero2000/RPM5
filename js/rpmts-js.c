@@ -74,14 +74,17 @@ rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/oo", &TagN, &Key)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/is", &tag, &key)))
         goto exit;
 
     if (TagN) {
+	/* XXX TODO: permit string tag names */
     }
 
     if (Key) {
+	/* XXX TODO: permit integer keys */
     }
+    /* XXX TODO: make sure both tag and key were specified. */
 
     if ((Mi = rpmjs_NewMiObject(cx, ts, tag, key, keylen)) == NULL)
 	goto exit;

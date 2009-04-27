@@ -1,3 +1,5 @@
+if (loglvl) print("--> Ts.js");
+
 var ts = new Ts();
 ack("typeof ts;", "object");
 ack("ts instanceof Ts;", true);
@@ -13,3 +15,5 @@ ack("ts.vsflags = vsflags", vsflags);
 ack("ts.vsflags = 0", 0);
 
 ack("ts.NVRA[37]", undefined);
+
+if (loglvl) print("<-- Ts.js");

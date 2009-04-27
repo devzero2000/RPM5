@@ -1,3 +1,5 @@
+if (loglvl) print("--> Ds.js");
+
 var ds = new Ds('rpmlib');
 ack("typeof ds;", "object");
 ack("ds instanceof Ds;", true);
@@ -18,3 +20,5 @@ ack("ds.N", "BuiltinJavaScript");
 ack("ds.EVR", "5.2-1");
 ack("ds.F", 8);
 ack("ds.DNEVR", "P rpmlib(BuiltinJavaScript) = 5.2-1");
+
+if (loglvl) print("<-- Ds.js");

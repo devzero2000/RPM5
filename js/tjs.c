@@ -25,6 +25,9 @@
 static int _debug = 0;
 
 /*@unchecked@*/
+static int _loglvl = 0;
+
+/*@unchecked@*/
 static int _test = 1;
 
 typedef struct rpmjsClassTable_s {
@@ -59,12 +62,16 @@ static const char * _acknack = "\
 function ack(cmd, expected) {\n\
   actual = eval(cmd);\n\
   if (actual != expected && expected != undefined)\n\
-    print(\"NACK: eval(\"+cmd+\") got '\"+actual+\"' not '\"+expected+\"'\");\n\
+    print(\"NACK:  ack(\"+cmd+\")\tgot '\"+actual+\"' not '\"+expected+\"'\");\n\
+  else if (loglvl)\n\
+    print(\"       ack(\"+cmd+\")\tgot '\"+actual+\"'\");\n\
 }\n\
 function nack(cmd, expected) {\n\
   actual = eval(cmd);\n\
   if (actual == expected)\n\
-    print(\" ACK: eval(\"+cmd+\") got '\"+actual+\"' not '\"+expected+\"'\");\n\
+    print(\" ACK: nack(\"+cmd+\")\tgot '\"+actual+\"' not '\"+expected+\"'\");\n\
+  else if (loglvl)\n\
+    print(\"      nack(\"+cmd+\")\tgot '\"+actual+\"'\");\n\
 }\n\
 ";
 
@@ -91,7 +98,7 @@ fprintf(stderr, "\trunning:%s%s\n", (*pre ? "\n" : " "), str);
 static void
 rpmjsLoadClasses(void)
 {
-    const char * acknack = _acknack;
+    const char * pre = NULL;
     int * order = NULL;
     size_t norder = 64;
     rpmjsClassTable tbl;
@@ -103,6 +110,17 @@ rpmjsLoadClasses(void)
     i = norder * sizeof(*order);
     order = memset(alloca(i), 0, i);
 
+    /* Inject _debug and _loglvl into the interpreter context. */
+    {	char dstr[32];
+	char lstr[32];
+	sprintf(dstr, "%d", _debug);
+	sprintf(lstr, "%d", _loglvl);
+	pre = rpmExpand("var debug = ", dstr, ";\n"
+			"var loglvl = ", lstr, ";\n",
+			_acknack, NULL);
+    }
+
+    /* Load requested classes and initialize the test order. */
     /* XXX FIXME: resultp != NULL to actually execute?!? */
     (void) rpmjsRun(NULL, "print(\"loading RPM classes.\");", &result);
     js = _rpmjsI;
@@ -110,8 +128,11 @@ rpmjsLoadClasses(void)
 	if (tbl->ix <= 0)
 	    continue;
 	order[tbl->ix & (norder - 1)] = i + 1;
+	if (tbl->init != NULL)
+	    (void) (*tbl->init) (js->cx, js->glob);
     }
 
+    /* Test requested classes in order. */
     for (i = 0; i < norder; i++) {
 	const char * fn;
 	struct stat sb;
@@ -120,16 +141,15 @@ rpmjsLoadClasses(void)
 	    continue;
 	ix = order[i] - 1;
 	tbl = &classTable[ix];
-	if (tbl->init != NULL)
-	    (void) (*tbl->init) (js->cx, js->glob);
 	fn = rpmGetPath(tscripts, "/", tbl->name, ".js", NULL);
 	if (Stat(fn, &sb) == 0) {
-	    (void) rpmjsLoadFile(NULL, acknack, fn);
-	    acknack = NULL;
+	    (void) rpmjsLoadFile(NULL, pre, fn);
+	    pre = _free(pre);
 	}
 	fn = _free(fn);
     }
 
+    pre = _free(pre);
     return;
 }
 
@@ -161,6 +181,7 @@ main(int argc, char *argv[])
 _rpmts_debug = 0;
 
 _rpmjs_debug = 0;
+    if (_debug && !_loglvl) _loglvl = 1;
     rpmjsLoadClasses();
 _rpmjs_debug = 1;
 

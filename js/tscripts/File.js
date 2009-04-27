@@ -1,3 +1,5 @@
+if (loglvl) print("--> File.js");
+
 var dn = "/tmp";
 var bn = "xyzzy";
 var fn = dn+"/"+bn;
@@ -41,3 +43,5 @@ ack("f.type", "text");
 
 f.close()
 ack("f.isOpen", false);
+
+if (loglvl) print("<-- File.js");

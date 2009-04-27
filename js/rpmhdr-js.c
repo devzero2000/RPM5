@@ -324,10 +324,8 @@ rpmhdr_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &tso)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &tso)))
 	goto exit;
-
-fprintf(stderr, "\ttso %p ptr %p\n", tso, JS_GetPrivate(cx, tso));
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
 	if (rpmhdr_init(cx, obj, NULL))
