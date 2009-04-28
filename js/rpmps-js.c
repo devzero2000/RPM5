@@ -62,8 +62,8 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 }
 
 static JSFunctionSpec rpmps_funcs[] = {
-    { "push",	rpmps_push,		0,0,0},
-    { "print",	rpmps_print,		0,0,0},
+    {"push",	rpmps_push,		0,0,0},
+    {"print",	rpmps_print,		0,0,0},
     JS_FS_END
 };
 

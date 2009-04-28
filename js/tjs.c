@@ -45,7 +45,7 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Fi",		rpmjs_InitFiClass,	 14 },
     { "File",		   js_InitFileClass,	  1 },
     { "Hdr",		rpmjs_InitHdrClass,	 12 },
-    { "Macro",		rpmjs_InitMacroClass,	  4 },
+    { "Macro",		rpmjs_InitMacroClass,	 24 },
     { "Mi",		rpmjs_InitMiClass,	 11 },
     { "Ps",		rpmjs_InitPsClass,	 16 },
     { "Syck",		rpmjs_InitSyckClass,	  3 },
