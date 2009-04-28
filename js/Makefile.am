@@ -58,13 +58,13 @@ rpmjsm_la_LIBADD = \
 
 noinst_HEADERS = \
 	rpmjsfile.h \
-	rpmds-js.h rpmfi-js.h rpmhdr-js.h rpmmacro-js.h rpmmi-js.h rpmps-js.h \
+	rpmds-js.h rpmfi-js.h rpmhdr-js.h rpmmc-js.h rpmmi-js.h rpmps-js.h \
 	rpmte-js.h rpmts-js.h \
 	syck-js.h uuid-js.h
 
 rpmjsm_la_SOURCES = \
 	rpmjsfile.c \
-	rpmds-js.c rpmfi-js.c rpmhdr-js.c rpmmacro-js.c rpmmi-js.c rpmps-js.c \
+	rpmds-js.c rpmfi-js.c rpmhdr-js.c rpmmc-js.c rpmmi-js.c rpmps-js.c \
 	rpmte-js.c rpmts-js.c \
 	syck-js.c uuid-js.c
 
