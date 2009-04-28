@@ -7,6 +7,7 @@
 #include "rpmmc-js.h"
 #include "rpmjs-debug.h"
 
+#define	_MACRO_INTERNAL
 #include <rpmmacro.h>
 
 #include "debug.h"
@@ -63,6 +64,43 @@ exit:
 }
 
 static JSBool
+rpmmc_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
+    rpmmc mc = ptr;
+    void * _mire = NULL;
+    int used = -1;
+    const char ** av = NULL;
+    int ac = 0;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+/*@-globs@*/
+    ac = rpmGetMacroEntries(mc, _mire, used, &av);
+/*@=globs@*/
+    if (ac > 0 && av != NULL && av[0] != NULL) {
+	jsval *vec = xmalloc(ac * sizeof(*vec));
+	JSString *valstr;
+	int i;
+	for (i = 0; i < ac; i++) {
+	    /* XXX lua splits into {name,opts,body} triple. */
+	    if ((valstr = JS_NewStringCopyZ(cx, av[i])) == NULL)
+		goto exit;
+	    vec[i] = STRING_TO_JSVAL(valstr);
+	}
+	*rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, ac, vec));
+	vec = _free(vec);
+    } else
+	*rval = JSVAL_NULL;	/* XXX JSVAL_VOID? */
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
 rpmmc_expand(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
@@ -78,8 +116,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &s)))
         goto exit;
 
-    /* XXX FIXME: expand in given context, don't assume global. */
-    t = rpmExpand(s, NULL);
+    t = rpmMCExpand(mc, s, NULL);
 
     if ((valstr = JS_NewStringCopyZ(cx, t)) == NULL)
 	goto exit;
@@ -94,6 +131,7 @@ exit:
 static JSFunctionSpec rpmmc_funcs[] = {
     {"add",	rpmmc_add,		0,0,0},
     {"del",	rpmmc_del,		0,0,0},
+    {"list",	rpmmc_list,		0,0,0},
     {"expand",	rpmmc_expand,		0,0,0},
     JS_FS_END
 };
@@ -242,6 +280,31 @@ rpmmc_init(JSContext *cx, JSObject *obj, JSObject *o)
 {
     rpmmc mc = NULL;	/* XXX FIXME: only global context for now. */
 
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p) mc %p\n", __FUNCTION__, cx, obj, o, mc);
+
+    if (o == NULL) {
+if (_debug)
+fprintf(stderr, "\tinitMacros() mc %p\n", mc);
+    } else
+    if (OBJ_IS_STRING(cx, o)) {
+	const char * s =
+		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(o)));
+        if (!strcmp(s, "global"))
+            mc = rpmGlobalMacroContext;
+	else if (!strcmp(s, "cli"))
+            mc = rpmCLIMacroContext;
+	else {
+	    mc = xcalloc(1, sizeof(*mc));
+	    if (s && *s)
+		rpmInitMacros(mc, s);
+	    else
+		s = "";
+	}
+if (_debug)
+fprintf(stderr, "\tinitMacros(\"%s\") mc %p\n", s, mc);
+    }
+
     if (!JS_SetPrivate(cx, obj, (void *)mc)) {
 	/* XXX error msg */
 	return NULL;
@@ -253,10 +316,14 @@ static void
 rpmmc_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
+    rpmmc mc = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-
+    if (!(mc == rpmGlobalMacroContext || mc == rpmCLIMacroContext)) {
+	rpmFreeMacros(mc);
+	mc = _free(mc);
+    }
 }
 
 static JSBool
@@ -268,8 +335,11 @@ rpmmc_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &o)))
+        goto exit;
+
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmmc_init(cx, obj, NULL);
+	(void) rpmmc_init(cx, obj, o);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmcClass, NULL, NULL)) == NULL)
 	    goto exit;

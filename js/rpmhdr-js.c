@@ -36,7 +36,7 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    /*@notreached@*/ break;
 	case RPM_BIN_TYPE:	/* XXX return as array of octets for now. */
 	case RPM_UINT8_TYPE:
-	    vec = xmalloc(he->c * sizeof(he->c));
+	    vec = xmalloc(he->c * sizeof(*vec));
 	    for (i = 0; i < (int)he->c; i++)
 		vec[i] = INT_TO_JSVAL(he->p.ui8p[i]);
 	    arr = JS_NewArrayObject(cx, he->c, vec);
@@ -47,7 +47,7 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
 	    break;
 	case RPM_UINT16_TYPE:
-	    vec = xmalloc(he->c * sizeof(he->c));
+	    vec = xmalloc(he->c * sizeof(*vec));
 	    for (i = 0; i < (int)he->c; i++)
 		vec[i] = INT_TO_JSVAL(he->p.ui16p[i]);
 	    arr = JS_NewArrayObject(cx, he->c, vec);
@@ -58,7 +58,7 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
 	    break;
 	case RPM_UINT32_TYPE:
-	    vec = xmalloc(he->c * sizeof(he->c));
+	    vec = xmalloc(he->c * sizeof(*vec));
 	    for (i = 0; i < (int)he->c; i++)
 		vec[i] = INT_TO_JSVAL(he->p.ui32p[i]);
 	    arr = JS_NewArrayObject(cx, he->c, vec);
@@ -69,7 +69,7 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
 	    break;
 	case RPM_UINT64_TYPE:
-	    vec = xmalloc(he->c * sizeof(he->c));
+	    vec = xmalloc(he->c * sizeof(*vec));
 	    for (i = 0; i < (int)he->c; i++)
 		vec[i] = INT_TO_JSVAL(he->p.ui64p[i]);
 	    arr = JS_NewArrayObject(cx, he->c, vec);
@@ -80,7 +80,7 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
 	    break;
 	case RPM_STRING_ARRAY_TYPE:
-	    vec = xmalloc(he->c * sizeof(he->c));
+	    vec = xmalloc(he->c * sizeof(*vec));
 	    for (i = 0; i < (int)he->c; i++) {
 		if ((valstr = JS_NewStringCopyZ(cx, he->p.argv[i])) == NULL)
 		    goto exit;
