@@ -234,6 +234,20 @@ char * rpmExpand(/*@null@*/ const char * arg, ...)
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /**
+ * Return (malloc'ed) concatenated macro expansion(s) in a context.
+ * @param mc		macro context
+ * @param arg		macro(s) to expand (NULL terminates list)
+ * @return		macro expansion (malloc'ed)
+ */
+char * rpmMCExpand(/*@null@*/ MacroContext mc, /*@null@*/ const char * arg, ...)
+#if defined(__GNUC__) && __GNUC__ >= 4
+	/* issue a warning if the list is not  NULL-terminated */
+	__attribute__((sentinel))
+#endif
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
+
+/**
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
  * @return		pointer to path

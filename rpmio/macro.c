@@ -2771,8 +2771,46 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 /* =============================================================== */
 
 /*@-modfilesys@*/
+/* XXX TODO: merge rpmExpand and rpmMCExpand. gud enuf for now ... */
 char * 
 rpmExpand(const char *arg, ...)
+{
+    MacroContext mc = NULL;
+    const char *s;
+    char *t, *te;
+    size_t sn, tn;
+    size_t bufn = 8 * _macro_BUFSIZ;
+
+    va_list ap;
+
+    if (arg == NULL)
+	return xstrdup("");
+
+    t = xmalloc(bufn + strlen(arg) + 1);
+    *t = '\0';
+    te = stpcpy(t, arg);
+
+    va_start(ap, arg);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	sn = strlen(s);
+	tn = (te - t);
+	t = xrealloc(t, tn + sn + bufn + 1);
+	te = t + tn;
+	te = stpcpy(te, s);
+    }
+    va_end(ap);
+
+    *te = '\0';
+    tn = (te - t);
+    (void) expandMacros(NULL, mc, t, tn + bufn + 1);
+    t[tn + bufn] = '\0';
+    t = xrealloc(t, strlen(t) + 1);
+    
+    return t;
+}
+
+char * 
+rpmMCExpand(MacroContext mc, const char *arg, ...)
 {
     const char *s;
     char *t, *te;
@@ -2800,7 +2838,7 @@ rpmExpand(const char *arg, ...)
 
     *te = '\0';
     tn = (te - t);
-    (void) expandMacros(NULL, NULL, t, tn + bufn + 1);
+    (void) expandMacros(NULL, mc, t, tn + bufn + 1);
     t[tn + bufn] = '\0';
     t = xrealloc(t, strlen(t) + 1);
     

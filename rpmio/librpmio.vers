@@ -270,6 +270,7 @@ LIBRPMIO_0
     rpmDigestUpdate;
     rpmDumpMacroTable;
     rpmExpand;
+    rpmMCExpand;
     rpmExpandNumeric;
     _rpmficl_debug;
     rpmficlNew;
