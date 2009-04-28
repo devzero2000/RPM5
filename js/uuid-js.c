@@ -234,7 +234,7 @@ _RESOLVE_DEBUG_ENTRY(_debug);
     *objp = obj;        /* XXX always resolve in this object. */
 
     ok = JS_TRUE;
-exit;
+exit:
     return ok;
 }
 

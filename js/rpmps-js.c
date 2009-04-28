@@ -18,18 +18,64 @@ static int _debug = 0;
 /* --- helpers */
 
 /* --- Object methods */
+static JSBool
+rpmps_push(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
+    rpmps ps = ptr;
+    char *pkgNEVR;
+    char *altNEVR;
+    JSObject *o;
+    rpmProblemType type;
+    char *dn;
+    char *bn;
+    uint32 ui;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ssoissu",
+		&pkgNEVR, &altNEVR, &o, &type, &dn, &bn, &ui)))
+	goto exit;
+    rpmpsAppend(ps, type, pkgNEVR, o, dn, bn, altNEVR, ui);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmps_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
+    rpmps ps = ptr;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    rpmpsPrint(NULL, ps);
+
+    ok = JS_TRUE;
+    return ok;
+}
 
 static JSFunctionSpec rpmps_funcs[] = {
+    { "push",	rpmps_push,		0,0,0},
+    { "print",	rpmps_print,		0,0,0},
     JS_FS_END
 };
 
 /* --- Object properties */
 enum rpmps_tinyid {
     _DEBUG	= -2,
+    _LENGTH	= -3,
 };
 
 static JSPropertySpec rpmps_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"length",	_LENGTH,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -62,6 +108,10 @@ rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
+    case _LENGTH:
+	*vp = INT_TO_JSVAL(rpmpsNumProblems(ps));
+	ok = JS_TRUE;
+	break;
     default:
 	break;
     }
@@ -69,6 +119,7 @@ rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
     return ok;
 }
 
@@ -102,35 +153,20 @@ rpmps_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-    static char hex[] = "0123456789abcdef";
-    JSString *idstr;
-    const char * name;
-    JSString * valstr;
-    char value[5];
+    rpmps ps = ptr;
     JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
-    if (flags & JSRESOLVE_ASSIGNING) {
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (ps == NULL)) {	/* don't resolve to parent prototypes objects. */
+	*objp = NULL;
 	ok = JS_TRUE;
 	goto exit;
     }
 
-    if ((idstr = JS_ValueToString(cx, id)) == NULL)
-	goto exit;
+    *objp = obj;	/* XXX always resolve in this object. */
 
-    name = JS_GetStringBytes(idstr);
-    if (name[1] == '\0' && xisalpha(name[0])) {
-	value[0] = '0'; value[1] = 'x';
-	value[2] = hex[(name[0] >> 4) & 0xf];
-	value[3] = hex[(name[0]     ) & 0xf];
-	value[4] = '\0';
- 	if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
-	 || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-	    goto exit;
-	*objp = obj;
-    }
     ok = JS_TRUE;
 exit:
     return ok;
@@ -203,7 +239,6 @@ static rpmps
 rpmps_init(JSContext *cx, JSObject *obj)
 {
     rpmps ps;
-    int flags = 0;
 
     if ((ps = rpmpsCreate()) == NULL)
 	return NULL;
@@ -261,9 +296,9 @@ JSClass rpmpsClass = {
 #else
 JSClass rpmpsClass = {
     "Ps", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,   JS_PropertyStub, rpmps_getprop, JS_PropertyStub,
+    rpmps_addprop,   rpmps_delprop, rpmps_getprop, rpmps_setprop,
     (JSEnumerateOp)rpmps_enumerate, (JSResolveOp)rpmps_resolve,
-    JS_ConvertStub,	rpmps_dtor,
+    rpmps_convert,	rpmps_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 #endif

@@ -8,13 +8,15 @@
 
 #include "rpmds-js.h"
 #include "rpmfi-js.h"
-#include "rpmte-js.h"
-#include "rpmts-js.h"
+#include "rpmmacro-js.h"
+#include "rpmhdr-js.h"
 #include "rpmmi-js.h"
 #include "rpmps-js.h"
-#include "rpmhdr-js.h"
-#include "uuid-js.h"
+#include "rpmte-js.h"
+#include "rpmts-js.h"
 #include "syck-js.h"
+#include "uuid-js.h"
+
 #include "rpmjsfile.h"
 
 #include <rpmcli.h>
@@ -39,16 +41,17 @@ typedef struct rpmjsClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
-    { "Ds",		rpmjs_InitDsClass,	13 },
-    { "Fi",		rpmjs_InitFiClass,	14 },
-    { "File",		   js_InitFileClass,	1 },
-    { "Hdr",		rpmjs_InitHdrClass,	12 },
-    { "Mi",		rpmjs_InitMiClass,	11 },
-    { "Ps",		rpmjs_InitPsClass,	16 },
-    { "Syck",		rpmjs_InitSyckClass,	3 },
+    { "Ds",		rpmjs_InitDsClass,	 13 },
+    { "Fi",		rpmjs_InitFiClass,	 14 },
+    { "File",		   js_InitFileClass,	  1 },
+    { "Hdr",		rpmjs_InitHdrClass,	 12 },
+    { "Macro",		rpmjs_InitMacroClass,	  4 },
+    { "Mi",		rpmjs_InitMiClass,	 11 },
+    { "Ps",		rpmjs_InitPsClass,	 16 },
+    { "Syck",		rpmjs_InitSyckClass,	  3 },
     { "Te",		rpmjs_InitTeClass,	-15 },
-    { "Ts",		rpmjs_InitTsClass,	10 },
-    { "Uuid",		rpmjs_InitUuidClass,	2 },
+    { "Ts",		rpmjs_InitTsClass,	 10 },
+    { "Uuid",		rpmjs_InitUuidClass,	  2 },
 };
 
 /*@unchecked@*/
