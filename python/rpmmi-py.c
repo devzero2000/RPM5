@@ -157,7 +157,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
     int type;
     char * pattern;
     rpmTag tag;
-    char * kwlist[] = {"tag", "type", "patern", NULL};
+    char * kwlist[] = {"tag", "type", "pattern", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "Ois:Pattern", kwlist,
 	    &TagN, &type, &pattern))
