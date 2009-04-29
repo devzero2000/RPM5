@@ -31,11 +31,34 @@ rpmmi_next(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
 
-    if ((h = rpmdbNextIterator(mi)) != NULL) {
-	JSObject *Hdr = rpmjs_NewHdrObject(cx, h);
-	*rval = OBJECT_TO_JSVAL(Hdr);
-    }
+    if ((h = rpmdbNextIterator(mi)) != NULL)
+	*rval = OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h));
     ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmmi_pattern(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmdbMatchIterator mi = ptr;
+    int tag = RPMTAG_NAME;
+    rpmMireMode type = RPMMIRE_REGEX;
+    char * pattern = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "is", &tag, &pattern)))
+	goto exit;
+
+    rpmdbSetIteratorRE(mi, tag, type, pattern);
+
+    ok = JS_TRUE;
+    *rval = BOOLEAN_TO_JSVAL(ok);
 
 exit:
     return ok;
@@ -43,6 +66,7 @@ exit:
 
 static JSFunctionSpec rpmmi_funcs[] = {
     {"next",	rpmmi_next,		0,0,0},
+    {"pattern",	rpmmi_pattern,		0,0,0},
     JS_FS_END
 };
 

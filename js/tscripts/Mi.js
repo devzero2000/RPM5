@@ -13,7 +13,7 @@ ack("mi.debug = 0;", 0);
 ack("mi.length", 1);
 ack("mi.count", 1);
 ack("mi.instance", 0);	// zero before iterating
-ack("mi.pattern(RPMTAG_NAME, 0, N)", false);
+ack("mi.pattern(RPMTAG_NAME, N)", true);
 
 var h = mi.next()
 nack("mi.instance", 0);	// non-zero when iterating
