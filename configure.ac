@@ -709,8 +709,8 @@ AC_FUNC_MMAP
 
 dnl checks for library functions (generic)
 AC_CHECK_FUNCS([dnl
-    asprintf basename getaddrinfo getcwd getnameinfo getwd iconv inet_aton confstr dnl
-    mtrace putenv realpath setenv clearenv stpcpy stpncpy strcspn strdup dnl
+    asprintf basename fallocate getaddrinfo getcwd getnameinfo getwd iconv inet_aton confstr dnl
+    mtrace posix_fallocate putenv realpath setenv clearenv stpcpy stpncpy strcspn strdup dnl
     strndup strerror strtol strtoul strspn strstr sighold sigrelse sigpause dnl
     sigprocmask sigemptyset sigaddset sigdelset sigsuspend madvise dnl
     __secure_getenv regcomp ftok mkdtemp mkstemp setlocale getpassphrase dnl
