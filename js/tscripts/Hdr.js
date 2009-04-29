@@ -1,6 +1,9 @@
 if (loglvl) print("--> Hdr.js");
 
 var RPMTAG_NAME = 1000;
+var RPMTAG_REQUIRENAME = 1049;
+var RPMTAG_BASENAMES = 1117;
+
 var N = "popt";
 
 var ts = new Ts();
@@ -18,6 +21,23 @@ ack("typeof h;", "object");
 ack("h instanceof Hdr;", true);
 ack("h.debug = 1;", 1);
 ack("h.debug = 0;", 0);
+
+var ds = h.ds();
+ack("typeof ds;", "object");
+ack("ds instanceof Ds;", true);
+var ds = h.ds(RPMTAG_NAME);
+ack("typeof ds;", "object");
+ack("ds instanceof Ds;", true);
+var ds = h.ds(RPMTAG_REQUIRENAME);
+ack("typeof ds;", "object");
+ack("ds instanceof Ds;", true);
+
+var fi = h.fi();
+ack("typeof fi;", "object");
+ack("fi instanceof Fi;", true);
+var fi = h.fi(RPMTAG_BASENAMES);
+ack("typeof fi;", "object");
+ack("fi instanceof Fi;", true);
 
 ack("h.name", N);
 ack("h.epoch", undefined);
@@ -76,8 +96,5 @@ ack("h.setorigin(origin)", origin);
 ack("h.getorigin()", origin);
 qfmt = "%{buildtime:date}";
 ack("h.sprintf(qfmt)", undefined);
-ack("h.dsOfHeader()", undefined);
-ack("h.dsFromHeader(tag,flags)", undefined);
-ack("h.fiFromHeader(this)", undefined);
 
 if (loglvl) print("<-- Hdr.js");

@@ -7,6 +7,8 @@
 #include "rpmhdr-js.h"
 #include "rpmjs-debug.h"
 
+#include <rpmcli.h>	/* XXX rpmHeaderFormats */
+
 #include "debug.h"
 
 /*@unchecked@*/
@@ -126,7 +128,112 @@ fprintf(stderr, "\tretobj %p vp %p *vp 0x%lx(%u)\n", retobj, vp, (unsigned long)
 }
 
 /* --- Object methods */
+static JSBool
+rpmhdr_ds(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
+    rpmTag tagN = RPMTAG_NAME;
+    int flags = 0;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
+        goto exit;
+    *rval = OBJECT_TO_JSVAL(rpmjs_NewDsObject(cx, obj, tagN));
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmhdr_fi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
+    rpmTag tagN = RPMTAG_BASENAMES;
+    int flags = 0;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
+        goto exit;
+    *rval = OBJECT_TO_JSVAL(rpmjs_NewFiObject(cx, h, tagN));
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmhdr_sprintf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
+    char * qfmt = NULL;
+    char * s = NULL;
+    const char * errstr = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &qfmt)))
+        goto exit;
+
+    if ((s = headerSprintf(h, qfmt, NULL, rpmHeaderFormats, &errstr)) == NULL)
+	s = errstr; 	/* XXX FIXME: returning errstr in-band. */
+    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, s));
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmhdr_getorigin(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, headerGetOrigin(h)));
+    ok = JS_TRUE;
+    return ok;
+}
+
+static JSBool
+rpmhdr_setorigin(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+    Header h = ptr;
+    char * s = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &s)))
+        goto exit;
+
+    (void) headerSetOrigin(h, s);
+    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, headerGetOrigin(h)));
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
 static JSFunctionSpec rpmhdr_funcs[] = {
+    {"ds",		rpmhdr_ds,		0,0,0},
+    {"fi",		rpmhdr_fi,		0,0,0},
+    {"sprintf",		rpmhdr_sprintf,		0,0,0},
+    {"getorigin",	rpmhdr_getorigin,	0,0,0},
+    {"setorigin",	rpmhdr_setorigin,	0,0,0},
     JS_FS_END
 };
 
@@ -155,6 +262,7 @@ rpmhdr_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 _PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
+
 static JSBool
 rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
