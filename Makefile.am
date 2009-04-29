@@ -11,6 +11,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
 	js/Makefile.* js/*.[ch] \
+	ruby/Makefile.* ruby/*.[ch] \
 	perl/typemap \
 	perl/Makefile.PL.in \
 	perl/t/00.pod.t perl/t/00.pod.coverage.t \
@@ -67,6 +68,7 @@ SUBDIRS += \
 	build \
 	rpmconstant \
 	@WITH_JS_SUBDIR@ \
+	@WITH_RUBY_SUBDIR@ \
 	@WITH_PYTHON_SUBDIR@ \
 	@WITH_PERL_SUBDIR@ \
 	tools \

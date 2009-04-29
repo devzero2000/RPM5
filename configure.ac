@@ -1256,13 +1256,15 @@ RPM_CHECK_LIB(
     [
     ], [])
 
-dnl # Ruby embedding
+dnl # Ruby
+WITH_RUBY_SUBDIR=""
 RPM_CHECK_LIB(
-    [Ruby embedding], [rubyembed],
+    [Ruby], [ruby],
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
-    [
+    [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
     ], [])
+AC_SUBST(WITH_RUBY_SUBDIR)
 
 dnl # Tcl
 RPM_CHECK_LIB(
@@ -1890,8 +1892,8 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile js/Makefile python/Makefile
-    scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile tests/Makefile
-    tests/macros
+    ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
+    tests/Makefile tests/macros
 ])
 
 dnl # final step: generate output
