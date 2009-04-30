@@ -168,7 +168,7 @@ rpmjsLoadClasses(void)
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
- { "test", 'd', POPT_ARG_VAL,	&_test, -1,		NULL, NULL },
+ { "test", 't', POPT_ARG_VAL,	&_test, -1,		NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm executables:"), NULL },
