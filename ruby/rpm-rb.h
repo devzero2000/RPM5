@@ -11,4 +11,17 @@
 #include <rpmtypes.h>
 #include <rpmtag.h>
 
+extern VALUE rpmModule;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void
+Init_rpm(void);
+
+#ifdef __cplusplus      
+}
+#endif
+
 #endif	/* H_RPM_RB */

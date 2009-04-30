@@ -6,6 +6,8 @@
 #define	_RPMRUBY_INTERNAL
 #include <rpmruby.h>
 
+#include "rpm-rb.h"
+
 #ifdef	NOTYET
 #include "rpmds-rb.h"
 #include "rpmfi-rb.h"
@@ -14,7 +16,11 @@
 #include "rpmmi-rb.h"
 #include "rpmps-rb.h"
 #include "rpmte-rb.h"
+#endif
+
 #include "rpmts-rb.h"
+
+#ifdef	NOTYET
 #include "syck-rb.h"
 #include "uuid-rb.h"
 #endif
@@ -35,12 +41,14 @@ static int _test = 1;
 typedef struct rpmrbClassTable_s {
 /*@observer@*/
     const char *name;
-    void * (*init) (void * _foocx, void * _fooglob);
+    void (*init) (void);
     int ix;
 } * rpmrbClassTable;
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmrbClassTable_s classTable[] = {
+    { "Ts",		   Init_rpmts,	  2 },
+    { "Rpm",		   Init_rpm,	  1 },
 };
 
 /*@unchecked@*/
@@ -88,6 +96,7 @@ rpmrbLoadClasses(void)
     i = norder * sizeof(*order);
     order = memset(alloca(i), 0, i);
 
+#ifdef	NOTYET
     /* Inject _debug and _loglvl into the interpreter context. */
     {	char dstr[32];
 	char lstr[32];
@@ -97,19 +106,18 @@ rpmrbLoadClasses(void)
 			"var loglvl = ", lstr, ";\n",
 			_acknack, NULL);
     }
+#endif
 
     /* Load requested classes and initialize the test order. */
     /* XXX FIXME: resultp != NULL to actually execute?!? */
-    (void) rpmrubyRun(NULL, "print(\"loading RPM classes.\");", &result);
+    (void) rpmrubyRun(NULL, "puts \"loading RPM classes.\";", &result);
     rb = _rpmrubyI;
     for (i = 0, tbl = classTable; i < nclassTable; i++, tbl++) {
 	if (tbl->ix <= 0)
 	    continue;
 	order[tbl->ix & (norder - 1)] = i + 1;
-#ifdef	NOTYET
 	if (tbl->init != NULL)
-	    (void) (*tbl->init) (rb->cx, rb->glob);
-#endif
+	    (void) (*tbl->init) ();
     }
 
     /* Test requested classes in order. */
@@ -135,7 +143,7 @@ rpmrbLoadClasses(void)
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
- { "test", 'd', POPT_ARG_VAL,	&_test, -1,		NULL, NULL },
+ { "test", 't', POPT_ARG_VAL,	&_test, -1,		NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm executables:"), NULL },
