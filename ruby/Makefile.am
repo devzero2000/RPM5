@@ -22,7 +22,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =
 
-EXTRA_PROGRAMS = # trb
+EXTRA_PROGRAMS = trb
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -56,14 +56,16 @@ rpmrbm_la_LIBADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	rpm-rb.h
 
-rpmrbm_la_SOURCES =
+rpmrbm_la_SOURCES = \
+	rpm-rb.c
 
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(rpmrb_la_sources)
 
-# trb_SOURCES = trb.c rpmrbm.la
-# trb_LDADD = rpmrbm.la $(RPM_LDADD_COMMON)
+trb_SOURCES = trb.c rpmrbm.la
+trb_LDADD = rpmrbm.la $(RPM_LDADD_COMMON)
 

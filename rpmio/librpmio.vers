@@ -407,6 +407,7 @@ LIBRPMIO_0
     rpmpythonNew;
     rpmpythonRun;
     rpmpythonRunFile;
+    _rpmrubyI;
     _rpmruby_debug;
     rpmrubyNew;
     rpmrubyRun;
