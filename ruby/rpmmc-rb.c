@@ -7,11 +7,7 @@
 #include "rpm-rb.h"
 #include "rpmmc-rb.h"
 
-#ifdef	NOTYET
-#include <argv.h>
-#include <mire.h>
-#endif
-
+#define	_MACRO_INTERNAL
 #include <rpmmacro.h>
 
 #include "../debug.h"
@@ -33,10 +29,71 @@ rpmmc_ptr(VALUE s)
 }
 
 /* --- Object methods */
+static VALUE
+rpmmc_add(VALUE s, VALUE v)
+{
+    void *ptr = rpmmc_ptr(s);
+    rpmmc mc = ptr;
+    int lvl = 0;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
+    (void) rpmDefineMacro(mc, StringValueCStr(v), lvl);
+    return Qtrue;
+}
+
+static VALUE
+rpmmc_del(VALUE s, VALUE v)
+{
+    void *ptr = rpmmc_ptr(s);
+    rpmmc mc = ptr;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
+    (void) rpmUndefineMacro(mc, StringValueCStr(v));
+    return Qtrue;
+}
+
+static VALUE
+rpmmc_list(VALUE s)
+{
+    void *ptr = rpmmc_ptr(s);
+    rpmmc mc = ptr;
+    VALUE v = rb_ary_new();
+    void * _mire = NULL;
+    int used = -1;
+    const char ** av = NULL;
+    int ac = rpmGetMacroEntries(mc, _mire, used, &av);
+
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+
+    if (ac > 0 && av != NULL && av[0] != NULL) {
+	int i;
+	for (i = 0; i < ac; i++) {
+	    /* XXX lua splits into {name,opts,body} triple. */
+	    rb_ary_push(v, rb_str_new2(av[i]));
+	}
+    }
+    return v;
+}
+
+static VALUE
+rpmmc_expand(VALUE s, VALUE v)
+{
+    void *ptr = rpmmc_ptr(s);
+    rpmmc mc = ptr;
+    char * vstr = StringValueCStr(v);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p \"%s\"\n", __FUNCTION__, s, v, ptr, vstr);
+    return rb_str_new2(rpmMCExpand(mc, vstr, NULL));
+}
 
 static void
 initMethods(VALUE klass)
 {
+    rb_define_method(klass, "add", rpmmc_add, 1);
+    rb_define_method(klass, "del", rpmmc_del, 1);
+    rb_define_method(klass, "list", rpmmc_list, 0);
+    rb_define_method(klass, "expand", rpmmc_expand, 1);
 }
 
 /* --- Object properties */
@@ -56,61 +113,11 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, s, v);
     return INT2FIX(_debug = FIX2INT(v));
 }
 
-#ifdef	NOTYET
-static VALUE
-rpmmc_rootdir_get(VALUE s)
-{
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return rb_str_new2(rpmmcRootDir(mc));
-}
-
-static VALUE
-rpmmc_rootdir_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmmcSetRootDir(mc, StringValueCStr(v));
-    return rb_str_new2(rpmmcRootDir(mc));
-}
-
-static VALUE
-rpmmc_vsflags_get(VALUE s)
-{
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return INT2FIX(_debug);
-}
-
-static VALUE
-rpmmc_vsflags_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmmcSetVSFlags(mc, FIX2INT(v));
-    return INT2FIX(rpmmcVSFlags(mc));
-}
-#endif	/* NOTYET */
-
 static void
 initProperties(VALUE klass)
 {
     rb_define_method(klass, "debug", rpmmc_debug_get, 0);
     rb_define_method(klass, "debug=", rpmmc_debug_set, 1);
-#ifdef	NOTYET
-    rb_define_method(klass, "rootdir", rpmmc_rootdir_get, 0);
-    rb_define_method(klass, "rootdir=", rpmmc_rootdir_set, 1);
-    rb_define_method(klass, "vsflags", rpmmc_vsflags_get, 0);
-    rb_define_method(klass, "vsflags=", rpmmc_vsflags_set, 1);
-#endif	/* NOTYET */
 }
 
 /* --- Object ctors/dtors */
@@ -119,21 +126,17 @@ rpmmc_free(rpmmc mc)
 {
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mc);
-#ifdef	NOTYET
-    mc = rpmmcFree(mc);
-#else
-    mc = _free(mc);
-#endif
+
+    if (!(mc == rpmGlobalMacroContext || mc == rpmCLIMacroContext)) {
+	rpmFreeMacros(mc);
+	mc = _free(mc);
+    }
 }
 
 static VALUE
 rpmmc_alloc(VALUE klass)
 {
-#ifdef	NOTYET
-    rpmmc mc = NULL;
-#else
-    rpmmc mc = xcalloc(1, sizeof(void *));
-#endif
+    rpmmc mc = xcalloc(1, sizeof(*mc));
     VALUE obj = Data_Wrap_Struct(klass, 0, rpmmc_free, mc);
 if (_debug)
 fprintf(stderr, "==> %s(0x%lx) obj 0x%lx mc %p\n", __FUNCTION__, klass, obj, mc);

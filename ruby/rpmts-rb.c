@@ -36,7 +36,6 @@ rpmtsLoadNVRA(VALUE s)
 {
     void *ptr = rpmts_ptr(s);
     rpmts ts = ptr;
-
     VALUE NVRA = rb_ary_new();
     ARGV_t keys = NULL;
     int nkeys;

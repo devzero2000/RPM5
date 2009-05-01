@@ -153,3 +153,8 @@ fprintf(stderr, "==> %s() rpmmiClass 0x%lx\n", __FUNCTION__, rpmmiClass);
     initProperties(rpmmiClass);
     initMethods(rpmmiClass);
 }
+
+VALUE
+rpmrb_NewMi(VALUE s, void * _ts, int _tag, void * _key, int _keylen)
+{
+}

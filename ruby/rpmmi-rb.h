@@ -13,8 +13,11 @@ extern VALUE rpmmiClass;
 extern "C" {
 #endif
 
-void
+extern void
 Init_rpmmi(void);
+
+extern VALUE
+rpmrb_NewMi(VALUE s, void * _ts, int _tag, void * _key, int _keylen);
 
 #ifdef __cplusplus      
 }
