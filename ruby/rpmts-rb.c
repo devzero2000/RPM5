@@ -56,6 +56,7 @@ rpmtsLoadNVRA(VALUE s)
 if (_debug)
 fprintf(stderr, "==> %s(0x%lx) ptr %p NVRA 0x%lx\n", __FUNCTION__, s, ptr, NVRA);
 
+    keys = argvFree(keys);
     return NVRA;
 }
 

@@ -44,11 +44,11 @@ typedef struct rpmrbClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmrbClassTable_s classTable[] = {
-    { "Ps",		   Init_rpmps,	  9 },
-    { "Mc",		   Init_rpmmc,	  8 },
-    { "Te",		   Init_rpmte,	  7 },
-    { "Fi",		   Init_rpmfi,	  6 },
-    { "Ds",		   Init_rpmds,	  5 },
+    { "Ps",		   Init_rpmps,	  -9 },
+    { "Mc",		   Init_rpmmc,	  -8 },
+    { "Te",		   Init_rpmte,	  -7 },
+    { "Fi",		   Init_rpmfi,	  -6 },
+    { "Ds",		   Init_rpmds,	  -5 },
     { "Hdr",		   Init_rpmhdr,	  4 },
     { "Mi",		   Init_rpmmi,	  3 },
     { "Ts",		   Init_rpmts,	  2 },
