@@ -138,6 +138,6 @@ Init_rpmts(void)
 if (_debug)
 fprintf(stderr, "==> %s() rpmtsClass 0x%lx\n", __FUNCTION__, rpmtsClass);
     rb_define_alloc_func(rpmtsClass, rpmts_alloc);
-    initProperties(rpmts_Class);
-    initMethods(rpmts_Class);
+    initProperties(rpmtsClass);
+    initMethods(rpmtsClass);
 }

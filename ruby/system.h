@@ -29,9 +29,6 @@
 #undef	xmalloc
 #define	xmalloc		_xmalloc
 #undef	_xmalloc
-#undef	xcalloc
-#define	xcalloc		_xcalloc
-#undef	_xcalloc
 #undef	xrealloc
 #define	xrealloc	_xrealloc
 #undef	_xrealloc

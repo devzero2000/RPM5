@@ -57,10 +57,10 @@ rpmrbm_la_LIBADD = \
 	@LTLIBINTL@
 
 noinst_HEADERS = \
-	rpm-rb.h rpmts-rb.h
+	rpm-rb.h rpmts-rb.h rpmmi-rb.h rpmhdr-rb.h rpmds-rb.h rpmfi-rb.h rpmte-rb.h rpmmc-rb.h rpmps-rb.h
 
 rpmrbm_la_SOURCES = \
-	rpm-rb.c rpmts-rb.c
+	rpm-rb.c rpmts-rb.c rpmmi-rb.c rpmhdr-rb.c rpmds-rb.c rpmfi-rb.c rpmte-rb.c rpmmc-rb.c rpmps-rb.c
 
 .PHONY:	lint
 lint:
