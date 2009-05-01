@@ -59,6 +59,19 @@ static const char tscripts[] = "./tscripts/";
 
 /*@unchecked@*/
 static const char * _acknack = "\
+def ack(cmd, expected)\n\
+  begin\n\
+    actual = eval(cmd)\n\
+  rescue\n\
+    print(\"NACK:  ack(\"+cmd.to_s+\")\tcaught '\"+\"#{$!}\"+\"'\n\")\n\
+    return\n\
+  end\n\
+  if (actual != expected && expected != nil)\n\
+    print(\"NACK:  ack(\"+cmd.to_s+\")\tgot '\"+actual.to_s+\"' not '\"+expected.to_s+\"'\n\")\n\
+  elsif ($loglvl)\n\
+    print(\"       ack(\"+cmd.to_s+\")\tgot '\"+actual.to_s+\"'\n\")\n\
+  end\n\
+end\n\
 ";
 
 static rpmRC
@@ -96,17 +109,15 @@ rpmrbLoadClasses(void)
     i = norder * sizeof(*order);
     order = memset(alloca(i), 0, i);
 
-#ifdef	NOTYET
     /* Inject _debug and _loglvl into the interpreter context. */
     {	char dstr[32];
 	char lstr[32];
 	sprintf(dstr, "%d", _debug);
 	sprintf(lstr, "%d", _loglvl);
-	pre = rpmExpand("var debug = ", dstr, ";\n"
-			"var loglvl = ", lstr, ";\n",
+	pre = rpmExpand("$debug = ", dstr, "\n"
+			"$loglvl = ", lstr, "\n",
 			_acknack, NULL);
     }
-#endif
 
     /* Load requested classes and initialize the test order. */
     /* XXX FIXME: resultp != NULL to actually execute?!? */
