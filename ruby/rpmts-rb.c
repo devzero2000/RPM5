@@ -30,11 +30,69 @@ static int _debug = -1;
 
 /* --- Object properties */
 static VALUE
-rpmts_debug(VALUE self)
+rpmts_debug_get(VALUE self)
 {
 if (_debug)
 fprintf(stderr, "==> %s(0x%lx)\n", __FUNCTION__, self);
-    return rb_int_new(_debug);
+    return INT2FIX(_debug);
+}
+
+static VALUE
+rpmts_debug_set(VALUE self, VALUE v)
+{
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, self, v);
+    return INT2FIX(_debug = FIX2INT(v));
+}
+
+static VALUE
+rpmts_rootdir_get(VALUE self)
+{
+    void *ptr;
+    rpmts ts;
+    Data_Get_Struct(self, void, ptr);
+    ts = ptr;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, self, ptr);
+    return rb_str_new2(rpmtsRootDir(ts));
+}
+
+static VALUE
+rpmts_rootdir_set(VALUE self, VALUE v)
+{
+    void *ptr;
+    rpmts ts;
+    Data_Get_Struct(self, void, ptr);
+    ts = ptr;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, self, v, ptr);
+    rpmtsSetRootDir(ts, StringValueCStr(v));
+    return rb_str_new2(rpmtsRootDir(ts));
+}
+
+static VALUE
+rpmts_vsflags_get(VALUE self)
+{
+    void *ptr;
+    rpmts ts;
+    Data_Get_Struct(self, void, ptr);
+    ts = ptr;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, self, ptr);
+    return INT2FIX(_debug);
+}
+
+static VALUE
+rpmts_vsflags_set(VALUE self, VALUE v)
+{
+    void *ptr;
+    rpmts ts;
+    Data_Get_Struct(self, void, ptr);
+    ts = ptr;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, self, v, ptr);
+    rpmtsSetVSFlags(ts, FIX2INT(v));
+    return INT2FIX(rpmtsVSFlags(ts));
 }
 
 /* --- Object ctors/dtors */
@@ -62,9 +120,14 @@ fprintf(stderr, "==> %s(0x%lx) obj 0x%lx ts %p\n", __FUNCTION__, klass, obj, ts)
 void
 Init_rpmts(void)
 {
+    rpmtsClass = rb_define_class("Ts", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmtsClass 0x%lx\n", __FUNCTION__, rpmtsClass);
-    rpmtsClass = rb_define_class("Ts", rb_cObject);
     rb_define_alloc_func(rpmtsClass, rpmts_alloc);
-    rb_define_method(rpmtsClass, "debug", rpmts_debug, 1);
+    rb_define_method(rpmtsClass, "debug", rpmts_debug_get, 0);
+    rb_define_method(rpmtsClass, "debug=", rpmts_debug_set, 1);
+    rb_define_method(rpmtsClass, "rootdir", rpmts_rootdir_get, 0);
+    rb_define_method(rpmtsClass, "rootdir=", rpmts_rootdir_set, 1);
+    rb_define_method(rpmtsClass, "vsflags", rpmts_vsflags_get, 0);
+    rb_define_method(rpmtsClass, "vsflags=", rpmts_vsflags_set, 1);
 }

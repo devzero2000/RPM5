@@ -1,0 +1,33 @@
+$loglvl = 1
+
+def ack(cmd, expected)
+  begin
+    actual = eval(cmd);
+  rescue
+    print("NACK:  ack("+cmd.to_s+")\tcaught '"+"#{$!}"+"'\n")
+    return
+  end
+  if (actual != expected && expected != nil)
+    print("NACK:  ack("+cmd.to_s+")\tgot '"+actual.to_s+"' not '"+expected.to_s+"'\n")
+  elsif ($loglvl)
+    print("       ack("+cmd.to_s+")\tgot '"+actual.to_s+"'\n")
+  end
+end
+
+$ts = Ts.new
+ack("$ts.instance_of?(Ts)", true)
+ack("$ts.kind_of?(Ts)", true)
+ack("$ts.class.to_s", "Ts")
+
+ack("$ts.debug", -1)
+ack("$ts.debug = 1", 1)
+ack("$ts.debug = 0", 0)
+
+ack("$ts.rootdir = '/path/to/rootdir'", '/path/to/rootdir')
+ack("$ts.rootdir = '/'", '/')
+
+ack("$ts.vsflags = 0x1234", 0x1234)
+ack("$ts.vsflags = 0", 0)
+
+# $ts.methods.each {|x| puts x}
+# puts $ts.methods
