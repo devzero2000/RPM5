@@ -15,6 +15,8 @@ ack("$ts.rootdir = '/'", '/')
 ack("$ts.vsflags = 0x1234", 0x1234)
 ack("$ts.vsflags = 0", 0)
 
+ack("$ts.NVRA[37]", nil);
+
 # $ts.methods.each {|x| puts x}
 # puts $ts.methods
 

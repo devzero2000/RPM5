@@ -7,12 +7,10 @@
 #include "rpm-rb.h"
 #include "rpmts-rb.h"
 
-#ifdef	NOTYET
 #include <argv.h>
 #include <mire.h>
 
 #include <rpmdb.h>
-#endif
 
 #define	_RPMTS_INTERNAL
 #include <rpmts.h>
@@ -31,6 +29,35 @@ rpmts_ptr(VALUE s)
     void *ptr;
     Data_Get_Struct(s, void, ptr);
     return ptr;
+}
+
+static VALUE
+rpmtsLoadNVRA(VALUE s)
+{
+    void *ptr = rpmts_ptr(s);
+    rpmts ts = ptr;
+
+    VALUE NVRA = rb_ary_new();
+    ARGV_t keys = NULL;
+    int nkeys;
+    int xx;
+    int i;
+
+    if (ts->rdb == NULL)
+	(void) rpmtsOpenDB(ts, O_RDONLY);
+
+    xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_NVRA,
+		RPMMIRE_STRCMP, NULL, &keys);
+    nkeys = argvCount(keys);
+
+    if (keys)
+    for (i = 0; i < nkeys; i++)
+	rb_ary_push(NVRA, rb_str_new2(keys[i]));
+
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p NVRA 0x%lx\n", __FUNCTION__, s, ptr, NVRA);
+
+    return NVRA;
 }
 
 /* --- Object methods */
@@ -85,7 +112,7 @@ rpmts_vsflags_get(VALUE s)
     rpmts ts = ptr;
 if (_debug)
 fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return INT2FIX(_debug);
+    return INT2FIX(rpmtsVSFlags(ts));
 }
 
 static VALUE
@@ -99,6 +126,12 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
     return INT2FIX(rpmtsVSFlags(ts));
 }
 
+static VALUE
+rpmts_NVRA_get(VALUE s)
+{
+    return rpmtsLoadNVRA(s);
+}
+
 static void
 initProperties(VALUE klass)
 {
@@ -108,6 +141,7 @@ initProperties(VALUE klass)
     rb_define_method(klass, "rootdir=", rpmts_rootdir_set, 1);
     rb_define_method(klass, "vsflags", rpmts_vsflags_get, 0);
     rb_define_method(klass, "vsflags=", rpmts_vsflags_set, 1);
+    rb_define_method(klass, "NVRA", rpmts_NVRA_get, 0);
 }
 
 /* --- Object ctors/dtors */
