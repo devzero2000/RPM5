@@ -5,14 +5,16 @@
 #include "system.h"
 
 #include "rpm-rb.h"
+#include "rpmts-rb.h"
 #include "rpmmi-rb.h"
 
 #ifdef	NOTYET
 #include <argv.h>
-#include <mire.h>
 #endif
+#include <mire.h>
 
 #include <rpmdb.h>
+#include <rpmts.h>
 
 #include "../debug.h"
 
@@ -33,10 +35,60 @@ rpmmi_ptr(VALUE s)
 }
 
 /* --- Object methods */
+static VALUE
+rpmmi_each(VALUE s)
+{
+    rpmmi mi = rpmmi_ptr(s);
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    Header h;
+    while((h = rpmdbNextIterator(mi)) != NULL) {
+	VALUE v;
+	he->tag = RPMTAG_NVRA;
+	if (!headerGet(h, he, 0))
+	    break;
+	v = rb_str_new2(he->p.str);
+	he->p.ptr = _free(he->p.ptr);
+	rb_yield (v);
+    }
+    return Qnil;
+}
+
+static VALUE
+rpmmi_next(VALUE s)
+{
+    rpmmi mi = rpmmi_ptr(s);
+    Header h = rpmdbNextIterator(mi);
+    VALUE v_ret = Qnil;
+    if (h != NULL) {
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	he->tag = RPMTAG_NVRA;
+	if (headerGet(h, he, 0))
+	    v_ret = rb_str_new2(he->p.str);
+	he->p.ptr = _free(he->p.ptr);
+    }
+    return v_ret;
+}
+
+static VALUE
+rpmmi_pattern(int argc, VALUE *argv, VALUE s)
+{
+    rpmmi mi = rpmmi_ptr(s);
+    VALUE v_tag, v_pattern;
+
+    rb_scan_args(argc, argv, "20", &v_tag, &v_pattern);
+
+    rpmdbSetIteratorRE(mi, FIX2INT(v_tag), RPMMIRE_REGEX,
+		StringValueCStr(v_pattern));
+
+    return Qtrue;
+}
 
 static void
 initMethods(VALUE klass)
 {
+    rb_define_method(klass, "each", rpmmi_each, 0);
+    rb_define_method(klass, "next", rpmmi_next, 0);
+    rb_define_method(klass, "pattern", rpmmi_pattern, -1);
 }
 
 /* --- Object properties */
@@ -51,66 +103,32 @@ fprintf(stderr, "==> %s(0x%lx)\n", __FUNCTION__, s);
 static VALUE
 rpmmi_debug_set(VALUE s, VALUE v)
 {
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, s, v);
     return INT2FIX(_debug = FIX2INT(v));
 }
 
-#ifdef	NOTYET
 static VALUE
-rpmmi_rootdir_get(VALUE s)
+rpmmi_count_get(VALUE s)
 {
-    void *ptr = rpmmi_ptr(s);
-    rpmmi mi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return rb_str_new2(rpmmiRootDir(mi));
+    rpmmi mi = rpmmi_ptr(s);
+    return INT2FIX(rpmdbGetIteratorCount(mi));
 }
 
 static VALUE
-rpmmi_rootdir_set(VALUE s, VALUE v)
+rpmmi_offset_get(VALUE s)
 {
-    void *ptr = rpmmi_ptr(s);
-    rpmmi mi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmmiSetRootDir(mi, StringValueCStr(v));
-    return rb_str_new2(rpmmiRootDir(mi));
+    rpmmi mi = rpmmi_ptr(s);
+    return INT2FIX(rpmdbGetIteratorOffset(mi));
 }
-
-static VALUE
-rpmmi_vsflags_get(VALUE s)
-{
-    void *ptr = rpmmi_ptr(s);
-    rpmmi mi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return INT2FIX(_debug);
-}
-
-static VALUE
-rpmmi_vsflags_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmmi_ptr(s);
-    rpmmi mi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmmiSetVSFlags(mi, FIX2INT(v));
-    return INT2FIX(rpmmiVSFlags(mi));
-}
-#endif	/* NOTYET */
 
 static void
 initProperties(VALUE klass)
 {
     rb_define_method(klass, "debug", rpmmi_debug_get, 0);
     rb_define_method(klass, "debug=", rpmmi_debug_set, 1);
-#ifdef	NOTYET
-    rb_define_method(klass, "rootdir", rpmmi_rootdir_get, 0);
-    rb_define_method(klass, "rootdir=", rpmmi_rootdir_set, 1);
-    rb_define_method(klass, "vsflags", rpmmi_vsflags_get, 0);
-    rb_define_method(klass, "vsflags=", rpmmi_vsflags_set, 1);
-#endif	/* NOTYET */
+    rb_define_method(klass, "length", rpmmi_count_get, 0);
+    rb_define_method(klass, "count", rpmmi_count_get, 0);
+    rb_define_method(klass, "offset", rpmmi_offset_get, 0);
+    rb_define_method(klass, "instance", rpmmi_offset_get, 0);
 }
 
 /* --- Object ctors/dtors */
@@ -119,26 +137,32 @@ rpmmi_free(rpmmi mi)
 {
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mi);
-
-#ifdef	BUGGY
     mi = rpmdbFreeIterator(mi);
-#else
-    mi = _free(mi);
-#endif
 }
 
 static VALUE
-rpmmi_alloc(VALUE klass)
+rpmmi_new(int argc, VALUE *argv, VALUE s)
 {
-#ifdef	NOTYET
-    rpmmi mi = rpmtsInitIterator(ts, _tag, _key, _len);
-#else
-    rpmmi mi = xcalloc(1, sizeof(void *));
-#endif	/* NOTYET */
-    VALUE obj = Data_Wrap_Struct(klass, 0, rpmmi_free, mi);
+    VALUE v_ts, v_tag, v_key;
+    rpmts ts;
+    rpmTag _tag = RPMDBI_PACKAGES;
+    void * _key = NULL;
+    int _len = 0;
+    rpmmi mi;
+
+    rb_scan_args(argc, argv, "12", &v_ts, &v_tag, &v_key);
+
+    ts = rpmmi_ptr(v_ts);
+    if (!NIL_P(v_tag))
+	_tag = FIX2INT(v_tag);
+    if (!NIL_P(v_key))
+	_key = StringValueCStr(v_key);
+
+    mi = rpmtsInitIterator(ts, _tag, _key, _len);
+
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) obj 0x%lx mi %p\n", __FUNCTION__, klass, obj, mi);
-    return obj;
+fprintf(stderr, "==> %s(%p[%d], 0x%lx) mi %p\n", __FUNCTION__, argv, argc, s, mi);
+    return Data_Wrap_Struct(s, 0, rpmmi_free, mi);
 }
 
 /* --- Class initialization */
@@ -149,12 +173,15 @@ Init_rpmmi(void)
     rpmmiClass = rb_define_class("Mi", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmmiClass 0x%lx\n", __FUNCTION__, rpmmiClass);
-    rb_define_alloc_func(rpmmiClass, rpmmi_alloc);
+    rb_include_module(rpmmiClass, rb_mEnumerable);
+    rb_define_singleton_method(rpmmiClass, "new", rpmmi_new, -1);
     initProperties(rpmmiClass);
     initMethods(rpmmiClass);
 }
 
 VALUE
-rpmrb_NewMi(VALUE s, void * _ts, int _tag, void * _key, int _keylen)
+rpmrb_NewMi(void * _ts, int _tag, void * _key, int _len)
 {
+    rpmmi mi = rpmtsInitIterator(_ts, _tag, _key, _len);
+    return Data_Wrap_Struct(rpmmiClass, 0, rpmmi_free, mi);
 }

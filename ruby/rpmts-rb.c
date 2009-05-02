@@ -6,6 +6,7 @@
 
 #include "rpm-rb.h"
 #include "rpmts-rb.h"
+#include "rpmmi-rb.h"
 
 #include <argv.h>
 #include <mire.h>
@@ -61,10 +62,29 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p NVRA 0x%lx\n", __FUNCTION__, s, ptr, NVRA)
 }
 
 /* --- Object methods */
+static VALUE
+rpmts_mi(int argc, VALUE *argv, VALUE s)
+{
+    VALUE v_tag, v_key;
+    rpmts ts = rpmts_ptr(s);
+    rpmTag _tag = RPMDBI_PACKAGES;
+    void * _key = NULL;
+    int _len = 0;
+
+    rb_scan_args(argc, argv, "02", &v_tag, &v_key);
+
+    if (!NIL_P(v_tag))
+        _tag = FIX2INT(v_tag);
+    if (!NIL_P(v_key))
+        _key = StringValueCStr(v_key);
+
+    return rpmrb_NewMi(ts, _tag, _key, _len);
+}
 
 static void
 initMethods(VALUE klass)
 {
+    rb_define_method(klass, "mi", rpmts_mi, -1);
 }
 
 /* --- Object properties */
@@ -154,13 +174,24 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, ts);
 }
 
 static VALUE
-rpmts_alloc(VALUE klass)
+rpmts_new(int argc, VALUE *argv, VALUE s)
 {
-    rpmts ts = rpmtsCreate();
-    VALUE obj = Data_Wrap_Struct(klass, 0, rpmts_free, ts);
+    VALUE v_rootdir;
+    char * _rootdir = "/";
+    rpmts ts;
+
+    rb_scan_args(argc, argv, "01", &v_rootdir);
+
+    if (!NIL_P(v_rootdir))
+        _rootdir = StringValueCStr(v_rootdir);
+
+    ts = rpmtsCreate();
+    rpmtsSetRootDir(ts, _rootdir);
+
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) obj 0x%lx ts %p\n", __FUNCTION__, klass, obj, ts);
-    return obj;
+fprintf(stderr, "==> %s(%p[%d], 0x%lx) ts %p\n", __FUNCTION__, argv, argc, s, ts
+);
+    return Data_Wrap_Struct(s, 0, rpmts_free, ts);
 }
 
 /* --- Class initialization */
@@ -171,7 +202,10 @@ Init_rpmts(void)
     rpmtsClass = rb_define_class("Ts", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmtsClass 0x%lx\n", __FUNCTION__, rpmtsClass);
-    rb_define_alloc_func(rpmtsClass, rpmts_alloc);
+#ifdef	NOTYET
+    rb_include_module(rpmtsClass, rb_mEnumerable);
+#endif
+    rb_define_singleton_method(rpmtsClass, "new", rpmts_new, -1);
     initProperties(rpmtsClass);
     initMethods(rpmtsClass);
 }

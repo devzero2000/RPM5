@@ -17,7 +17,7 @@ extern void
 Init_rpmmi(void);
 
 extern VALUE
-rpmrb_NewMi(VALUE s, void * _ts, int _tag, void * _key, int _keylen);
+rpmrb_NewMi(void * _ts, int _tag, void * _key, int _len);
 
 #ifdef __cplusplus      
 }
