@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#if defined(SUPPORT_LIBCPUINFO)
+#if defined(WITH_CPUINFO)
 #include <cpuinfo.h>
 #endif
 
@@ -1192,7 +1192,7 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
     ds = NULL;
 }
 
-#if defined(SUPPORT_LIBCPUINFO)
+#if defined(WITH_CPUINFO)
 int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 {
     const char * NS = "cpuinfo";

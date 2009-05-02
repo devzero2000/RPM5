@@ -753,13 +753,4 @@ static inline const char *rcsid(const char *p) { \
  */
 #undef	SUPPORT_AR_PAYLOADS
 
-/**
- * Permit architecture detection through libcpuinfo. Disabled while under development.
- */
-#if defined(RPM_VENDOR_MANDRIVA)
-#define	SUPPORT_LIBCPUINFO 1
-#else
-#undef	SUPPORT_LIBCPUINFO
-#endif
-
 #endif	/* H_SYSTEM */

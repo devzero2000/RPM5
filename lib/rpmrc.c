@@ -502,7 +502,7 @@ exit:
 }
 /*@=onlytrans@*/
 
-#if defined(SUPPORT_LIBCPUINFO)
+#if defined(WITH_CPUINFO)
 static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds cpuinfo)
 {
     rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, EVR, RPMSENSE_PROBE);
@@ -712,7 +712,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (cp == NULL || cp[0] == '\0')
 	    cp = _platform;
 	if (rpmPlatform(cp) == RPMRC_OK) {
-#elif defined(SUPPORT_LIBCPUINFO)
+#elif defined(WITH_CPUINFO)
 	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK) {
 #else
 	if (rpmPlatform(_platform) == RPMRC_OK) {
@@ -853,7 +853,7 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 	if (name) *name = canon->short_name;
     } else {
 	if (num) *num = 255;
-#if defined(SUPPORT_LIBCPUINFO)
+#if defined(WITH_CPUINFO)
 	if (name)
 	{
 	    if(type == ARCH)
@@ -1202,7 +1202,7 @@ int rpmShowRC(FILE * fp)
 
 	xx = rpmdsCpuinfo(&ds, NULL);
 	if (ds != NULL) {
-#if defined(SUPPORT_LIBCPUINFO)
+#if defined(WITH_CPUINFO)
 	    const char * fn = "libcpuinfo";
 #else
 	    const char * fn = (_cpuinfo_path ? _cpuinfo_path : "/proc/cpuinfo");
