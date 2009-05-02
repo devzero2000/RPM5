@@ -1286,15 +1286,18 @@ RPM_CHECK_LIB(
     ], [])
 
 dnl # JavaScript
+WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
     [JavaScript], [js],
     [js], [JS_NewContext], [jsstddef.h],
-    [no,internal:none], [js/src:Linux_All_DBG.OBJ],
+    [no,internal:none], [js:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+	  WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
           AC_DEFINE(HAVE_JSSTDDEF_H, 1, [Define to 1 if you have <jsstddef.h>])
 	  AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
       fi
     ], [])
+AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
 
 dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
@@ -1891,7 +1894,8 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/Makefile scripts/macros.perl scripts/macros.php
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
-    doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile js/Makefile python/Makefile
+    doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
+    js/Makefile js/src/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
     tests/Makefile tests/macros
 ])

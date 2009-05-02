@@ -22,6 +22,7 @@ const char *__localedir = LOCALEDIR;
 #include <poptIO.h>
 
 #include <rpmjs.h>
+#include <rpmruby.h>
 
 #include <rpmtag.h>
 #include <rpmtypes.h>
@@ -492,6 +493,7 @@ rpmcliFini(poptContext optCon)
 {
 /*@-nestedextern@*/
     extern rpmioPool _rpmjsPool;
+    extern rpmioPool _rpmrubyPool;
     extern rpmioPool _headerPool;
     extern rpmioPool _rpmmiPool;
     extern rpmioPool _rpmdbPool;
@@ -507,9 +509,11 @@ rpmcliFini(poptContext optCon)
     evr_tuple_mire = mireFree(evr_tuple_mire);
 
 /*@-onlyunqglobaltrans@*/
-    /* Realease (and dereference) js objects first. */
+    /* Realease (and dereference) embedded interpreter global objects first. */
     _rpmjsI = rpmjsFree(_rpmjsI);
     _rpmjsPool = rpmioFreePool(_rpmjsPool);
+    _rpmrubyI = rpmrubyFree(_rpmrubyI);
+    _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
     _rpmmiPool = rpmioFreePool(_rpmmiPool);
