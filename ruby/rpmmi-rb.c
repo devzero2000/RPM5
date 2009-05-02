@@ -7,6 +7,7 @@
 #include "rpm-rb.h"
 #include "rpmts-rb.h"
 #include "rpmmi-rb.h"
+#include "rpmhdr-rb.h"
 
 #ifdef	NOTYET
 #include <argv.h>
@@ -39,17 +40,9 @@ static VALUE
 rpmmi_each(VALUE s)
 {
     rpmmi mi = rpmmi_ptr(s);
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
-    while((h = rpmdbNextIterator(mi)) != NULL) {
-	VALUE v;
-	he->tag = RPMTAG_NVRA;
-	if (!headerGet(h, he, 0))
-	    break;
-	v = rb_str_new2(he->p.str);
-	he->p.ptr = _free(he->p.ptr);
-	rb_yield (v);
-    }
+    while((h = rpmdbNextIterator(mi)) != NULL)
+	rb_yield (rpmrb_NewHdr(headerLink(h)));
     return Qnil;
 }
 
@@ -58,15 +51,7 @@ rpmmi_next(VALUE s)
 {
     rpmmi mi = rpmmi_ptr(s);
     Header h = rpmdbNextIterator(mi);
-    VALUE v_ret = Qnil;
-    if (h != NULL) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-	he->tag = RPMTAG_NVRA;
-	if (headerGet(h, he, 0))
-	    v_ret = rb_str_new2(he->p.str);
-	he->p.ptr = _free(he->p.ptr);
-    }
-    return v_ret;
+    return (h != NULL ? rpmrb_NewHdr(headerLink(h)) : Qnil);
 }
 
 static VALUE

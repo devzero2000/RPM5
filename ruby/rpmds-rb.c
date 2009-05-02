@@ -238,14 +238,27 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, ds);
 }
 
 static VALUE
-rpmds_alloc(VALUE klass)
+rpmds_new(int argc, VALUE *argv, VALUE s)
 {
-    rpmds ds = NULL;
-    int xx = rpmdsRpmlib(&ds, NULL);
-    VALUE obj = Data_Wrap_Struct(klass, 0, rpmds_free, ds);
+    VALUE v_hdr, v_tag;
+    rpmTag tag = RPMTAG_NAME;
+    int flags = 0;
+    rpmds ds;
+
+    rb_scan_args(argc, argv, "02", &v_hdr, &v_tag);
+
+    if (!NIL_P(v_tag))
+	tag = FIX2INT(v_tag);
+
+    if (!NIL_P(v_hdr)) {
+	Header h = rpmds_ptr(v_hdr);
+	ds = rpmdsNew(h, tag, flags);
+    } else
+	(void) rpmdsRpmlib(&ds, NULL);
+
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) obj 0x%lx ds %p\n", __FUNCTION__, klass, obj, ds);
-    return obj;
+fprintf(stderr, "==> %s(%p[%d], 0x%lx) mi %p\n", __FUNCTION__, argv, argc, s, ds);
+    return Data_Wrap_Struct(s, 0, rpmds_free, ds);
 }
 
 /* --- Class initialization */
@@ -256,7 +269,17 @@ Init_rpmds(void)
     rpmdsClass = rb_define_class("Ds", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmdsClass 0x%lx\n", __FUNCTION__, rpmdsClass);
-    rb_define_alloc_func(rpmdsClass, rpmds_alloc);
+#ifdef  NOTYET
+    rb_include_module(rpmdsClass, rb_mEnumerable);
+#endif
+    rb_define_singleton_method(rpmdsClass, "new", rpmds_new, -1);
     initProperties(rpmdsClass);
     initMethods(rpmdsClass);
 }
+
+VALUE
+rpmrb_NewDs(void *_ds)
+{
+    return Data_Wrap_Struct(rpmdsClass, 0, rpmds_free, _ds);
+}
+

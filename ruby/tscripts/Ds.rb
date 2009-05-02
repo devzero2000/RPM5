@@ -3,7 +3,7 @@ if ($loglvl)
 end
 
 # $ds = Ds.new('rpmlib')
-$ds = Ds.new
+$ds = Ds.new();
 ack("$ds.instance_of?(Ds)", true)
 ack("$ds.kind_of?(Ds)", true)
 ack("$ds.class.to_s", "Ds")

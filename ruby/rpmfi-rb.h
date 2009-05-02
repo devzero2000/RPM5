@@ -13,8 +13,11 @@ extern VALUE rpmfiClass;
 extern "C" {
 #endif
 
-void
+extern void
 Init_rpmfi(void);
+
+extern VALUE
+rpmrb_NewFi(void *_fi);
 
 #ifdef __cplusplus      
 }

@@ -13,8 +13,11 @@ extern VALUE rpmdsClass;
 extern "C" {
 #endif
 
-void
+extern void
 Init_rpmds(void);
+
+extern VALUE
+rpmrb_NewDs(void *_ds);
 
 #ifdef __cplusplus      
 }

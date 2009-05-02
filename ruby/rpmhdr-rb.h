@@ -13,8 +13,11 @@ extern VALUE rpmhdrClass;
 extern "C" {
 #endif
 
-void
+extern void
 Init_rpmhdr(void);
+
+extern VALUE
+rpmrb_NewHdr(void *_h);
 
 #ifdef __cplusplus      
 }

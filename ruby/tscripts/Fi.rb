@@ -5,7 +5,7 @@ end
 $RPMTAG_NAME = 1000;
 $N = "popt";
 
-$fi = Fi.new
+$fi = Fi.new($ts, $h);
 ack("$fi.instance_of?(Fi)", true)
 ack("$fi.kind_of?(Fi)", true)
 ack("$fi.class.to_s", "Fi")

@@ -5,6 +5,8 @@
 #include "system.h"
 
 #include "rpm-rb.h"
+#include "rpmds-rb.h"
+#include "rpmfi-rb.h"
 #include "rpmhdr-rb.h"
 
 #ifdef	NOTYET
@@ -12,11 +14,12 @@
 #include <mire.h>
 #endif
 
+#include <rpmds.h>
+#include <rpmfi.h>
+
 #include <rpmcli.h>	/* XXX rpmHeaderFormats */
 
 #include "../debug.h"
-
-typedef	Header rpmhdr;
 
 VALUE rpmhdrClass;
 
@@ -88,18 +91,16 @@ exit:
     return v;
 }
 /* --- Object methods */
-
 static VALUE
 rpmhdr_sprintf(VALUE s, VALUE v)
 {
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
-    char * qfmt = StringValueCStr(v);
-    char * q;
+    Header h = rpmhdr_ptr(s);
+    const char *qfmt = StringValueCStr(v);
+    const char *q;
     const char *errstr = NULL;
 
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) h %p\n", __FUNCTION__, s, v, h);
 
     if ((q = headerSprintf(h, qfmt, NULL, rpmHeaderFormats, &errstr)) == NULL)
 	q = errstr;
@@ -110,11 +111,10 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
 static VALUE
 rpmhdr_getorigin(VALUE s)
 {
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
+    Header h = rpmhdr_ptr(s);
 
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) h %p\n", __FUNCTION__, s, h);
 
     return rb_str_new2(headerGetOrigin(h));
 }
@@ -122,22 +122,61 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
 static VALUE
 rpmhdr_setorigin(VALUE s, VALUE v)
 {
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
+    Header h = rpmhdr_ptr(s);
 
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
+fprintf(stderr, "==> %s(0x%lx, 0x%lx) h %p\n", __FUNCTION__, s, v, h);
 
     (void) headerSetOrigin(h, StringValueCStr(v));
     return rb_str_new2(headerGetOrigin(h));
 }
 
+static VALUE
+rpmhdr_ds(int argc, VALUE *argv, VALUE s)
+{
+    VALUE v_tag;
+    Header h = rpmhdr_ptr(s);
+    rpmTag tag = RPMTAG_PROVIDENAME;
+    int flags = 0;
+
+    rb_scan_args(argc, argv, "01", &v_tag);
+
+    if (!NIL_P(v_tag))
+	tag = FIX2INT(v_tag);
+
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) h %p\n", __FUNCTION__, s, h);
+
+    return rpmrb_NewDs( rpmdsNew(h, tag, flags) );
+}
+
+static VALUE
+rpmhdr_fi(int argc, VALUE *argv, VALUE s)
+{
+    VALUE v_tag;
+    Header h = rpmhdr_ptr(s);
+    rpmTag tag = RPMTAG_BASENAMES;
+    int flags = 0;
+
+    rb_scan_args(argc, argv, "01", &v_tag);
+
+    if (!NIL_P(v_tag))
+	tag = FIX2INT(v_tag);
+
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) h %p\n", __FUNCTION__, s, h);
+
+    return rpmrb_NewFi( rpmfiNew(NULL, h, tag, flags) );
+}
+
 static void
 initMethods(VALUE klass)
 {
-    rb_define_method(klass, "sprintf", rpmhdr_sprintf, 1);
+    rb_define_method(klass, "sprintf",	 rpmhdr_sprintf, 1);
     rb_define_method(klass, "getorigin", rpmhdr_getorigin, 0);
     rb_define_method(klass, "setorigin", rpmhdr_setorigin, 1);
+    rb_define_method(klass, "ds",	 rpmhdr_ds, -1);
+    rb_define_method(klass, "fi",	 rpmhdr_fi, -1);
 }
 
 /* --- Object properties */
@@ -160,8 +199,7 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, s, v);
 static VALUE
 rpmhdr__get(VALUE s, VALUE v)
 {
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
+    Header h = rpmhdr_ptr(s);
     char * vstr = StringValueCStr(v);
     
 if (_debug)
@@ -170,67 +208,17 @@ fprintf(stderr, "==> %s(0x%lx) %s\n", __FUNCTION__, s, vstr);
     return rpmhdrLoadTag(h, vstr);
 }
 
-#ifdef	NOTYET
-static VALUE
-rpmhdr_rootdir_get(VALUE s)
-{
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return rb_str_new2(rpmhdrRootDir(h));
-}
-
-static VALUE
-rpmhdr_rootdir_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmhdrSetRootDir(h, StringValueCStr(v));
-    return rb_str_new2(rpmhdrRootDir(h));
-}
-
-static VALUE
-rpmhdr_vsflags_get(VALUE s)
-{
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return INT2FIX(_debug);
-}
-
-static VALUE
-rpmhdr_vsflags_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmhdr_ptr(s);
-    rpmhdr h = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmhdrSetVSFlags(h, FIX2INT(v));
-    return INT2FIX(rpmhdrVSFlags(h));
-}
-#endif	/* NOTYET */
-
 static void
 initProperties(VALUE klass)
 {
     rb_define_method(klass, "debug", rpmhdr_debug_get, 0);
     rb_define_method(klass, "debug=", rpmhdr_debug_set, 1);
     rb_define_method(klass, "[]", rpmhdr__get, 1);
-#ifdef	NOTYET
-    rb_define_method(klass, "rootdir", rpmhdr_rootdir_get, 0);
-    rb_define_method(klass, "rootdir=", rpmhdr_rootdir_set, 1);
-    rb_define_method(klass, "vsflags", rpmhdr_vsflags_get, 0);
-    rb_define_method(klass, "vsflags=", rpmhdr_vsflags_set, 1);
-#endif	/* NOTYET */
 }
 
 /* --- Object ctors/dtors */
 static void
-rpmhdr_free(rpmhdr h)
+rpmhdr_free(Header h)
 {
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, h);
@@ -239,28 +227,36 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, h);
 }
 
 static VALUE
-rpmhdr_alloc(VALUE klass)
+rpmhdr_new(int argc, VALUE *argv, VALUE s)
 {
-#ifdef	NOTYET
-    rpmhdr h = NULL;
-#else
-    rpmhdr h = headerNew();
-#endif	/* NOTYET */
-    VALUE obj = Data_Wrap_Struct(klass, 0, rpmhdr_free, h);
+    Header h;
+
+    rb_scan_args(argc, argv, "00");
+
+    h = headerNew();
+
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) obj 0x%lx h %p\n", __FUNCTION__, klass, obj, h);
-    return obj;
+fprintf(stderr, "==> %s(%p[%d], 0x%lx) mi %p\n", __FUNCTION__, argv, argc, s, h);
+    return Data_Wrap_Struct(s, 0, rpmhdr_free, h);
 }
 
 /* --- Class initialization */
-
 void
 Init_rpmhdr(void)
 {
     rpmhdrClass = rb_define_class("Hdr", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmhdrClass 0x%lx\n", __FUNCTION__, rpmhdrClass);
-    rb_define_alloc_func(rpmhdrClass, rpmhdr_alloc);
+#ifdef	NOTYET
+    rb_include_module(rpmhdrClass, rb_mEnumerable);
+#endif
+    rb_define_singleton_method(rpmhdrClass, "new", rpmhdr_new, -1);
     initProperties(rpmhdrClass);
     initMethods(rpmhdrClass);
+}
+
+VALUE
+rpmrb_NewHdr(void *_h)
+{
+    return Data_Wrap_Struct(rpmhdrClass, 0, rpmhdr_free, _h);
 }

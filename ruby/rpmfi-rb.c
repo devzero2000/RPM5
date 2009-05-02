@@ -13,6 +13,7 @@
 #endif
 
 #include <rpmfi.h>
+#include <rpmts.h>
 
 #include "../debug.h"
 
@@ -54,61 +55,11 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, s, v);
     return INT2FIX(_debug = FIX2INT(v));
 }
 
-#ifdef	NOTYET
-static VALUE
-rpmfi_rootdir_get(VALUE s)
-{
-    void *ptr = rpmfi_ptr(s);
-    rpmfi fi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return rb_str_new2(rpmfiRootDir(fi));
-}
-
-static VALUE
-rpmfi_rootdir_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmfi_ptr(s);
-    rpmfi fi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmfiSetRootDir(fi, StringValueCStr(v));
-    return rb_str_new2(rpmfiRootDir(fi));
-}
-
-static VALUE
-rpmfi_vsflags_get(VALUE s)
-{
-    void *ptr = rpmfi_ptr(s);
-    rpmfi fi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
-    return INT2FIX(_debug);
-}
-
-static VALUE
-rpmfi_vsflags_set(VALUE s, VALUE v)
-{
-    void *ptr = rpmfi_ptr(s);
-    rpmfi fi = ptr;
-if (_debug)
-fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n", __FUNCTION__, s, v, ptr);
-    rpmfiSetVSFlags(fi, FIX2INT(v));
-    return INT2FIX(rpmfiVSFlags(fi));
-}
-#endif	/* NOTYET */
-
 static void
 initProperties(VALUE klass)
 {
     rb_define_method(klass, "debug", rpmfi_debug_get, 0);
     rb_define_method(klass, "debug=", rpmfi_debug_set, 1);
-#ifdef	NOTYET
-    rb_define_method(klass, "rootdir", rpmfi_rootdir_get, 0);
-    rb_define_method(klass, "rootdir=", rpmfi_rootdir_set, 1);
-    rb_define_method(klass, "vsflags", rpmfi_vsflags_get, 0);
-    rb_define_method(klass, "vsflags=", rpmfi_vsflags_set, 1);
-#endif	/* NOTYET */
 }
 
 /* --- Object ctors/dtors */
@@ -117,25 +68,32 @@ rpmfi_free(rpmfi fi)
 {
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, fi);
-#ifdef	NOTYET
     fi = rpmfiFree(fi);
-#else
-    fi = _free(fi);
-#endif
 }
 
 static VALUE
-rpmfi_alloc(VALUE klass)
+rpmfi_new(int argc, VALUE *argv, VALUE s)
 {
-#ifdef	NOTYET
-    rpmfi fi = NULL;
-#else
-    rpmfi fi = xcalloc(1, sizeof(void *));
-#endif
-    VALUE obj = Data_Wrap_Struct(klass, 0, rpmfi_free, fi);
+    VALUE v_ts, v_hdr, v_tag;
+    rpmts ts;
+    Header h;
+    rpmTag tag = RPMTAG_BASENAMES;
+    int flags = 0;
+    rpmfi fi;
+
+    rb_scan_args(argc, argv, "21", &v_ts, &v_hdr, &v_tag);
+
+    ts = rpmfi_ptr(v_ts);
+    h = rpmfi_ptr(v_hdr);
+
+    if (!NIL_P(v_tag))
+	tag = FIX2INT(v_tag);
+
+    fi = rpmfiNew(ts, h, tag, flags);
+
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) obj 0x%lx fi %p\n", __FUNCTION__, klass, obj, fi);
-    return obj;
+fprintf(stderr, "==> %s(%p[%d], 0x%lx) mi %p\n", __FUNCTION__, argv, argc, s, fi);
+    return Data_Wrap_Struct(s, 0, rpmfi_free, fi);
 }
 
 /* --- Class initialization */
@@ -146,7 +104,17 @@ Init_rpmfi(void)
     rpmfiClass = rb_define_class("Fi", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmfiClass 0x%lx\n", __FUNCTION__, rpmfiClass);
-    rb_define_alloc_func(rpmfiClass, rpmfi_alloc);
+#ifdef  NOTYET
+    rb_include_module(rpmfiClass, rb_mEnumerable);
+#endif
+    rb_define_singleton_method(rpmfiClass, "new", rpmfi_new, -1);
     initProperties(rpmfiClass);
     initMethods(rpmfiClass);
 }
+
+VALUE
+rpmrb_NewFi(void *_fi)
+{
+    return Data_Wrap_Struct(rpmfiClass, 0, rpmfi_free, _fi);
+}
+

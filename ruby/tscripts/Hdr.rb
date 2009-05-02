@@ -9,43 +9,47 @@ $RPMTAG_BASENAMES = 1117;
 $N = "popt";
 
 $ts = Ts.new();
-## $mi = $ts.mi($RPMTAG_NAME, $N);
-#$mi = Mi.new($ts, $RPMTAG_NAME, $NN);
-#ack("$mi.instance_of?(Hdr)", true)
-#ack("$mi.kind_of?(Hdr)", true)
-#ack("$mi.class.to_s", "Hdr")
-#ack("$mi.length", 1);
-#ack("$mi.count", 1);
-#ack("$mi.instance", 0);  # zero before iterating
+$mi = $ts.mi($RPMTAG_NAME, $N);
+# $mi = Mi.new($ts, $RPMTAG_NAME, $NN);
+ack("$mi.instance_of?(Mi)", true)
+ack("$mi.kind_of?(Mi)", true)
+ack("$mi.class.to_s", "Mi")
 
-$h = Hdr.new();
-# $h = $mi.next()
-## nack("$mi.instance", 0); # non-zero when iterating
+ack("$mi.length", 1);
+ack("$mi.count", 1);
+ack("$mi.instance", 0);  # zero before iterating
 
-#$ds = $h.ds();
-#ack("$ds.instance_of?(Ds)", true)
-#ack("$ds.kind_of?(Ds)", true)
-#ack("$ds.class.to_s", "Ds")
+# $h = Hdr.new();
+$h = $mi.next()
+ack("$h.instance_of?(Hdr)", true)
+ack("$h.kind_of?(Hdr)", true)
+ack("$h.class.to_s", "Hdr")
+ack("$mi.instance", 0); # non-zero when iterating
 
-#$ds = $h.ds($RPMTAG_NAME);
-#ack("$ds.instance_of?(Ds)", true)
-#ack("$ds.kind_of?(Ds)", true)
-#ack("$ds.class.to_s", "Ds")
+$ds = $h.ds();
+ack("$ds.instance_of?(Ds)", true)
+ack("$ds.kind_of?(Ds)", true)
+ack("$ds.class.to_s", "Ds")
 
-#$ds = $h.ds($RPMTAG_REQUIRENAME);
-#ack("$ds.instance_of?(Ds)", true)
-#ack("$ds.kind_of?(Ds)", true)
-#ack("$ds.class.to_s", "Ds")
+$ds = $h.ds($RPMTAG_NAME);
+ack("$ds.instance_of?(Ds)", true)
+ack("$ds.kind_of?(Ds)", true)
+ack("$ds.class.to_s", "Ds")
 
-#$fi = $h.fi();
-#ack("$fi.instance_of?(Fi)", true)
-#ack("$fi.kind_of?(Fi)", true)
-#ack("$fi.class.to_s", "Fi")
+$ds = $h.ds($RPMTAG_REQUIRENAME);
+ack("$ds.instance_of?(Ds)", true)
+ack("$ds.kind_of?(Ds)", true)
+ack("$ds.class.to_s", "Ds")
 
-#$fi = $h.fi($RPMTAG_BASENAMES);
-#ack("$fi.instance_of?(Fi)", true)
-#ack("$fi.kind_of?(Fi)", true)
-#ack("$fi.class.to_s", "Fi")
+$fi = $h.fi();
+ack("$fi.instance_of?(Fi)", true)
+ack("$fi.kind_of?(Fi)", true)
+ack("$fi.class.to_s", "Fi")
+
+$fi = $h.fi($RPMTAG_BASENAMES);
+ack("$fi.instance_of?(Fi)", true)
+ack("$fi.kind_of?(Fi)", true)
+ack("$fi.class.to_s", "Fi")
 
 ack("$h['name']", $N);
 ack("$h['epoch']", nil);
