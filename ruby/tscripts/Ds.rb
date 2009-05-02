@@ -19,8 +19,8 @@ ack("$ds.nopromote = 1;", 1);
 ack("$ds.nopromote = 0;", 0);
 
 ack("$ds.ix = -1;", -1);
-# ack("$ds.ix++;", -1);
-# ack("++$ds.ix;", 1);
+ack("$ds.ix += 1;", 0);
+ack("$ds.ix += 1;", 1);
 ack("$ds.ix = 1;", 1);
 
 ack("$ds.N", "BuiltinJavaScript");

@@ -20,7 +20,7 @@
 VALUE rpmfiClass;
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* --- helpers */
 static void *
@@ -55,11 +55,271 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, s, v);
     return INT2FIX(_debug = FIX2INT(v));
 }
 
+static VALUE
+rpmfi_FC_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFC(fi));
+}
+
+static VALUE
+rpmfi_FX_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFX(fi));
+}
+
+static VALUE
+rpmfi_FX_set(VALUE s, VALUE v)
+{
+    rpmfi fi = rpmfi_ptr(s);
+    int ix = FIX2INT(v);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    if (ix != rpmfiFX(fi)) {
+        (void) rpmfiSetFX(fi, ix-1);
+	/* XXX flush and recreate {BN,DN,FN} with a rpmfiNext() step */
+        (void) rpmfiNext(fi);
+    }
+    return INT2FIX(rpmfiFX(fi));
+}
+
+static VALUE
+rpmfi_DC_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiDC(fi));
+}
+
+static VALUE
+rpmfi_DX_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiDX(fi));
+}
+
+static VALUE
+rpmfi_DX_set(VALUE s, VALUE v)
+{
+    rpmfi fi = rpmfi_ptr(s);
+    int ix = FIX2INT(v);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    (void) rpmfiSetDX(fi, ix);
+    if (ix != rpmfiDX(fi)) {
+        (void) rpmfiSetDX(fi, ix-1);
+	/* XXX flush and recreate {BN,DN,FN} with a rpmfiNextD() step */
+        (void) rpmfiNextD(fi);
+    }
+    return INT2FIX(rpmfiDX(fi));
+}
+
+static VALUE
+rpmfi_BN_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return rb_str_new2(rpmfiBN(fi));
+}
+
+static VALUE
+rpmfi_DN_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return rb_str_new2(rpmfiDN(fi));
+}
+
+static VALUE
+rpmfi_FN_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return rb_str_new2(rpmfiFN(fi));
+}
+
+static VALUE
+rpmfi_VFlags_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiVFlags(fi));
+}
+
+static VALUE
+rpmfi_FFlags_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFFlags(fi));
+}
+
+static VALUE
+rpmfi_FMode_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFMode(fi));
+}
+
+static VALUE
+rpmfi_FState_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFState(fi));
+}
+
+static VALUE
+rpmfi_FDigest_get(VALUE self)
+{
+    rpmfi fi = rpmfi_ptr(self);
+    int dalgo = 0;
+    size_t dlen = 0;
+    const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
+    const unsigned char * s = digest;
+    size_t nb = 2 * dlen;
+    char * fdigest = memset(alloca(nb+1), 0, nb+1);
+    char *t = fdigest;
+    int i;
+
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, self, fi);
+    for (i = 0, s = digest, t = fdigest; i < (int)dlen; i++, s++, t+= 2) {
+	static const char hex[] = "0123456789abcdef";
+	t[0] = hex[(s[0] >> 4) & 0xf];
+	t[1] = hex[(s[0]     ) & 0xf];
+    }
+    *t = '\0';
+
+    return rb_str_new2(fdigest);
+}
+
+static VALUE
+rpmfi_FLink_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFLink(fi));
+}
+
+static VALUE
+rpmfi_FSize_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFSize(fi));
+}
+
+static VALUE
+rpmfi_FRdev_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFRdev(fi));
+}
+
+static VALUE
+rpmfi_FMtime_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFMtime(fi));
+}
+
+static VALUE
+rpmfi_FUser_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return rb_str_new2(rpmfiFUser(fi));
+}
+
+static VALUE
+rpmfi_FGroup_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return rb_str_new2(rpmfiFGroup(fi));
+}
+
+static VALUE
+rpmfi_FColor_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    return INT2FIX(rpmfiFColor(fi));
+}
+
+static VALUE
+rpmfi_FClass_get(VALUE s)
+{
+    rpmfi fi = rpmfi_ptr(s);
+    const char * FClass = rpmfiFClass(fi);
+    char * t;
+    VALUE v;
+if (_debug)
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, fi);
+    if (FClass == NULL) FClass = "";
+    /* XXX spot fix for known embedded single quotes. */
+    t = xstrdup(FClass);
+    if (!strncmp(t, "symbolic link to `", sizeof("symbolic link to `")-1))
+	t[sizeof("symbolic link")-1] = '\0';
+    v = rb_str_new2(FClass);
+    t = _free(t);
+    return v;
+}
+
 static void
 initProperties(VALUE klass)
 {
     rb_define_method(klass, "debug", rpmfi_debug_get, 0);
     rb_define_method(klass, "debug=", rpmfi_debug_set, 1);
+    rb_define_method(klass, "length", rpmfi_FC_get, 0);
+    rb_define_method(klass, "fc", rpmfi_FC_get, 0);
+    rb_define_method(klass, "fx", rpmfi_FX_get, 0);
+    rb_define_method(klass, "fx=", rpmfi_FX_set, 1);
+    rb_define_method(klass, "dc", rpmfi_DC_get, 0);
+    rb_define_method(klass, "dx", rpmfi_DX_get, 0);
+    rb_define_method(klass, "dx=", rpmfi_DX_set, 1);
+    rb_define_method(klass, "bn", rpmfi_BN_get, 0);
+    rb_define_method(klass, "dn", rpmfi_DN_get, 0);
+    rb_define_method(klass, "fn", rpmfi_FN_get, 0);
+    rb_define_method(klass, "vflags", rpmfi_VFlags_get, 0);
+    rb_define_method(klass, "fflags", rpmfi_FFlags_get, 0);
+    rb_define_method(klass, "fmode", rpmfi_FMode_get, 0);
+    rb_define_method(klass, "fstate", rpmfi_FState_get, 0);
+    rb_define_method(klass, "fdigest", rpmfi_FDigest_get, 0);
+    rb_define_method(klass, "flink", rpmfi_FLink_get, 0);
+    rb_define_method(klass, "fsize", rpmfi_FSize_get, 0);
+    rb_define_method(klass, "frdev", rpmfi_FRdev_get, 0);
+    rb_define_method(klass, "fmtime", rpmfi_FMtime_get, 0);
+    rb_define_method(klass, "fuser", rpmfi_FUser_get, 0);
+    rb_define_method(klass, "fgroup", rpmfi_FGroup_get, 0);
+    rb_define_method(klass, "fcolor", rpmfi_FColor_get, 0);
+    rb_define_method(klass, "fclass", rpmfi_FClass_get, 0);
 }
 
 /* --- Object ctors/dtors */

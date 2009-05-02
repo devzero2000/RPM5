@@ -21,10 +21,12 @@ ack("$mi.instance", 0);  # zero before iterating
 
 # $h = Hdr.new();
 $h = $mi.next()
+ack("$mi.instance", 0); # non-zero when iterating
 ack("$h.instance_of?(Hdr)", true)
 ack("$h.kind_of?(Hdr)", true)
 ack("$h.class.to_s", "Hdr")
-ack("$mi.instance", 0); # non-zero when iterating
+ack("$ds.debug = 1;", 1);
+ack("$ds.debug = 0;", 0);
 
 $ds = $h.ds();
 ack("$ds.instance_of?(Ds)", true)

@@ -44,9 +44,9 @@ typedef struct rpmrbClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmrbClassTable_s classTable[] = {
-    { "Ps",		   Init_rpmps,	  -9 },
-    { "Mc",		   Init_rpmmc,	  -8 },
-    { "Te",		   Init_rpmte,	  -7 },
+    { "Ps",		   Init_rpmps,	  9 },
+    { "Mc",		   Init_rpmmc,	  8 },
+    { "Te",		   Init_rpmte,	  7 },
     { "Fi",		   Init_rpmfi,	  6 },
     { "Ds",		   Init_rpmds,	  5 },
     { "Hdr",		   Init_rpmhdr,	  4 },
@@ -118,8 +118,8 @@ rpmrbLoadClasses(void)
 	char lstr[32];
 	sprintf(dstr, "%d", _debug);
 	sprintf(lstr, "%d", _loglvl);
-	pre = rpmExpand("$debug = ", dstr, "\n"
-			"$loglvl = ", lstr, "\n",
+	pre = rpmExpand("$debug = ", dstr, ";\n"
+			"$loglvl = ", lstr, ";\n",
 			_acknack, NULL);
     }
 

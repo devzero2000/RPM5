@@ -19,7 +19,7 @@
 VALUE rpmdsClass;
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* --- helpers */
 static void *
@@ -57,10 +57,9 @@ fprintf(stderr, "==> %s(0x%lx, 0x%lx)\n", __FUNCTION__, s, v);
 static VALUE
 rpmds_Count_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return INT2FIX(rpmdsCount(ds));
 }
 
@@ -68,31 +67,28 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
 static VALUE
 rpmds_Type_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return rb_str_new2(rpmdsType(ds));
 }
 
 static VALUE
 rpmds_Ix_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return INT2FIX(rpmdsIx(ds));
 }
 
 static VALUE
 rpmds_Ix_set(VALUE s, VALUE v)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
     int ix = FIX2INT(v);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     if (ix != rpmdsIx(ds)) {
 	(void) rpmdsSetIx(ds, ix-1);
 	/* XXX flush and recreate N and DNEVR with a rpmdsNext() step */
@@ -104,21 +100,19 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
 static VALUE
 rpmds_BT_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return INT2FIX(rpmdsBT(ds));
 }
 
 static VALUE
 rpmds_BT_set(VALUE s, VALUE v)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
     int BT = FIX2INT(v);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     (void) rpmdsSetBT(ds, BT);
     return INT2FIX(rpmdsBT(ds));
 }
@@ -126,21 +120,19 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
 static VALUE
 rpmds_Color_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return INT2FIX(rpmdsColor(ds));
 }
 
 static VALUE
 rpmds_Color_set(VALUE s, VALUE v)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
     int color = FIX2INT(v);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     (void) rpmdsSetColor(ds, color);
     return INT2FIX(rpmdsColor(ds));
 }
@@ -148,21 +140,19 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
 static VALUE
 rpmds_NoPromote_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return INT2FIX(rpmdsNoPromote(ds));
 }
 
 static VALUE
 rpmds_NoPromote_set(VALUE s, VALUE v)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
     int nopromote = FIX2INT(v);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     (void) rpmdsSetNoPromote(ds, nopromote);
     return INT2FIX(rpmdsNoPromote(ds));
 }
@@ -170,40 +160,36 @@ fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
 static VALUE
 rpmds_N_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return rb_str_new2(rpmdsN(ds));
 }
 
 static VALUE
 rpmds_EVR_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return rb_str_new2(rpmdsEVR(ds));
 }
 
 static VALUE
 rpmds_Flags_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return INT2FIX(rpmdsFlags(ds));
 }
 
 static VALUE
 rpmds_DNEVR_get(VALUE s)
 {
-    void *ptr = rpmds_ptr(s);
-    rpmds ds = ptr;
+    rpmds ds = rpmds_ptr(s);
 if (_debug)
-fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ds);
     return rb_str_new2(rpmdsDNEVR(ds));
 }
 
