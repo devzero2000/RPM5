@@ -34,8 +34,8 @@ var A = "ARCH/";
 var O = "OS";
 
 ack("ps.length", 0);
-// ack("ps.push(PKG, ALT', KEY, RPMPROB_BADARCH, dn, bn, ui)", undefined);
-// ack("ps.push(PKG, ALT', KEY, RPMPROB_BADOS, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_BADARCH, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_BADOS, dn, bn, ui)", undefined);
 ack("ps.push(PKG, ALT, KEY, RPMPROB_PKG_INSTALLED, dn, bn, ui)", undefined);
 ack("ps.push(PKG, ALT, KEY, RPMPROB_BADRELOCATE, dn, bn, ui)", undefined);
 ack("ps.push(PKG,   R, KEY, RPMPROB_REQUIRES, dn, bn, ui)", undefined);

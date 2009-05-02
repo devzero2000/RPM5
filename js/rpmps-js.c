@@ -259,7 +259,7 @@ rpmps_dtor(JSContext *cx, JSObject *obj)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-    (void) rpmpsFree(ps);
+    ps = rpmpsFree(ps);
 }
 
 static JSBool
@@ -285,15 +285,6 @@ exit:
 }
 
 /* --- Class initialization */
-#ifdef	HACKERY
-JSClass rpmpsClass = {
-    "Ps", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
-    rpmps_addprop,   rpmps_delprop, rpmps_getprop, rpmps_setprop,
-    (JSEnumerateOp)rpmps_enumerate, (JSResolveOp)rpmps_resolve,
-    rpmps_convert,	rpmps_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-#else
 JSClass rpmpsClass = {
     "Ps", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
     rpmps_addprop,   rpmps_delprop, rpmps_getprop, rpmps_setprop,
@@ -301,7 +292,6 @@ JSClass rpmpsClass = {
     rpmps_convert,	rpmps_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
-#endif
 
 JSObject *
 rpmjs_InitPsClass(JSContext *cx, JSObject* obj)

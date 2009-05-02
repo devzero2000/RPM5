@@ -441,15 +441,6 @@ exit:
 }
 
 /* --- Class initialization */
-#ifdef	HACKERY
-JSClass rpmhdrClass = {
-    "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
-    rpmhdr_addprop,   rpmhdr_delprop, rpmhdr_getprop, rpmhdr_setprop,
-    (JSEnumerateOp)rpmhdr_enumerate, (JSResolveOp)rpmhdr_resolve,
-    rpmhdr_convert,	rpmhdr_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-#else
 JSClass rpmhdrClass = {
     "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
     rpmhdr_addprop, rpmhdr_delprop, rpmhdr_getprop, rpmhdr_setprop,
@@ -457,7 +448,6 @@ JSClass rpmhdrClass = {
     rpmhdr_convert,	rpmhdr_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
-#endif
 
 JSObject *
 rpmjs_InitHdrClass(JSContext *cx, JSObject* obj)

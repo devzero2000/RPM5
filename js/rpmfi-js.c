@@ -244,7 +244,7 @@ rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    break;
 	if (myint != rpmfiFX(fi)) {
 	    (void) rpmfiSetFX(fi, myint-1);
-	    /* XXX flush and recreate a {BN,DN,FN} with a rpmfiNext() step */
+	    /* XXX flush and recreate {BN,DN,FN} with a rpmfiNext() step */
 	    (void) rpmfiNext(fi);
 	}
 	ok = JS_TRUE;
@@ -254,7 +254,7 @@ rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    break;
 	if (myint != rpmfiDX(fi)) {
 	    (void) rpmfiSetDX(fi, myint-1);
-	    /* XXX flush and recreate a {BN,DN,FN} with a rpmfiNext() step */
+	    /* XXX flush and recreate {BN,DN,FN} with a rpmfiNextD() step */
 	    (void) rpmfiNextD(fi);
 	}
 	ok = JS_TRUE;
