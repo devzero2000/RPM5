@@ -42,15 +42,15 @@ typedef struct rpmjsClassTable_s {
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
     { "Ds",		rpmjs_InitDsClass,	 13 },
-    { "Fi",		rpmjs_InitFiClass,	 -14 },
+    { "Fi",		rpmjs_InitFiClass,	 14 },
     { "File",		   js_InitFileClass,	  -1 },
-    { "Hdr",		rpmjs_InitHdrClass,	 -12 },
+    { "Hdr",		rpmjs_InitHdrClass,	 12 },
     { "Mc",		rpmjs_InitMcClass,	 -24 },
-    { "Mi",		rpmjs_InitMiClass,	 -11 },
+    { "Mi",		rpmjs_InitMiClass,	 11 },
     { "Ps",		rpmjs_InitPsClass,	 -16 },
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
     { "Te",		rpmjs_InitTeClass,	-15 },
-    { "Ts",		rpmjs_InitTsClass,	 -10 },
+    { "Ts",		rpmjs_InitTsClass,	 10 },
     { "Uuid",		rpmjs_InitUuidClass,	 -2 },
 };
 

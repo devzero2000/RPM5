@@ -20,6 +20,23 @@ ack("fi instanceof Fi;", true);
 ack("fi.debug = 1;", 1);
 ack("fi.debug = 0;", 0);
 
+var files = new Array();
+var ix = 0;
+for (let [key,val] in Iterator(fi)) {
+  files[ix++] = val;
+}
+ack("ix == fi.length", true);
+
+ix = 0
+for (var [key,val] in Iterator(fi)) {
+    ack("key == ix", true);
+    ack("files[key] == val", true);
+    ack("fi[key] == val", true);
+    ack("fi[key] == files[key]", true);
+    ix++;
+}
+ack("ix == fi.length", true);
+
 ack("fi.fc", undefined);
 ack("fi.fx", undefined);
 ack("fi.dc", undefined);
@@ -30,8 +47,8 @@ ack("++fi.dx;", 1);
 ack("++fi.dx;", 2);
 
 ack("fi.fx = -1;", -1);
-ack("++fi.fx;", 0);
-ack("++fi.fx;", 1);
+ack("fi.fx += 1;", 0);
+ack("fi.fx += 1;", 1);
 
 ack("fi.bn", undefined);
 ack("fi.dn", undefined);
@@ -49,5 +66,10 @@ ack("fi.fuser", undefined);
 ack("fi.fgroup", undefined);
 ack("fi.fcolor", undefined);
 nack("fi.fclass", "symbolic link to `libpopt.so.0.0.0'");
+
+// for (var [key,val] in Iterator(fi))
+//     print(key+": "+val);
+
+// print(JSON.stringify(fi));
 
 if (loglvl) print("<-- Fi.js");

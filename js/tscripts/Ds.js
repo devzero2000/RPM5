@@ -72,4 +72,9 @@ ack("ds.NS == RPMNS_TYPE_RPMLIB", true);
 ack("ds.refs += 1;", 1);
 ack("ds.result = 1;", 1);
 
+// for (var [key,val] in Iterator(ds))
+//     print(key+": "+val);
+
+// print(JSON.stringify(ds));
+
 if (loglvl) print("<-- Ds.js");

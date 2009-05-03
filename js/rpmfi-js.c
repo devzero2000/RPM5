@@ -103,6 +103,7 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    int ix;
 
     switch (tiny) {
     case _DEBUG:
@@ -127,34 +128,42 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	ok = JS_TRUE;
 	break;
     case _BN:
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiBN(fi)));
-        ok = JS_TRUE;
-        break;
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiBN(fi)));
+	ok = JS_TRUE;
+	break;
     case _DN:
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiDN(fi)));
-        ok = JS_TRUE;
-        break;
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiDN(fi)));
+	ok = JS_TRUE;
+	break;
     case _FN:
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFN(fi)));
-        ok = JS_TRUE;
-        break;
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFN(fi)));
+	ok = JS_TRUE;
+	break;
     case _VFLAGS:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiVFlags(fi));
 	ok = JS_TRUE;
 	break;
     case _FFLAGS:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFFlags(fi));
 	ok = JS_TRUE;
 	break;
     case _FMODE:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFMode(fi));
 	ok = JS_TRUE;
 	break;
     case _FSTATE:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFState(fi));
 	ok = JS_TRUE;
 	break;
     case _FDIGEST:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
       {	int dalgo = 0;
 	size_t dlen = 0;
 	const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
@@ -164,44 +173,52 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	char *t = fdigest;
 	int i;
 
-	for (i = 0, s = digest, t = fdigest; i < dlen; i++, s++, t+= 2) {
+	for (i = 0, s = digest, t = fdigest; i < (int)dlen; i++, s++, t+= 2) {
 	    static const char hex[] = "0123456789abcdef";
 	    t[0] = hex[(s[0] >> 4) & 0xf];
 	    t[1] = hex[(s[0]     ) & 0xf];
 	}
 	*t = '\0';
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, fdigest));
-        ok = JS_TRUE;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, fdigest));
+	ok = JS_TRUE;
       }	break;
     case _FLINK:
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFLink(fi)));
-        ok = JS_TRUE;
-        break;
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFLink(fi)));
+	ok = JS_TRUE;
+	break;
     case _FSIZE:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFSize(fi));
 	ok = JS_TRUE;
 	break;
     case _FRDEV:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFRdev(fi));
 	ok = JS_TRUE;
 	break;
     case _FMTIME:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFMtime(fi));
 	ok = JS_TRUE;
 	break;
     case _FUSER:
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFUser(fi)));
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFUser(fi)));
 	ok = JS_TRUE;
 	break;
     case _FGROUP:
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFGroup(fi)));
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmfiFGroup(fi)));
 	ok = JS_TRUE;
 	break;
     case _FCOLOR:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
 	*vp = INT_TO_JSVAL(rpmfiFColor(fi));
 	ok = JS_TRUE;
 	break;
     case _FCLASS:
+	if ((ix = rpmfiFX(fi)) < 0 || ix >= rpmfiFC(fi)) break;
       {	const char * FClass = rpmfiFClass(fi);
 	char * t;
 	if (FClass == NULL) FClass = "";
@@ -209,11 +226,13 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	t = xstrdup(FClass);
 	if (!strncmp(t, "symbolic link to `", sizeof("symbolic link to `")-1))
 	   t[sizeof("symbolic link")-1] = '\0';
-        *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, t));
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, t));
 	t = _free(t);
 	ok = JS_TRUE;
       }	break;
     default:
+	if (tiny < 0 || tiny >= rpmfiFC(fi)) break;
+	ok = JS_TRUE;
 	break;
     }
 
@@ -248,7 +267,7 @@ rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    (void) rpmfiNext(fi);
 	}
 	ok = JS_TRUE;
-        break;
+	break;
     case _DX:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
@@ -258,7 +277,7 @@ rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    (void) rpmfiNextD(fi);
 	}
 	ok = JS_TRUE;
-        break;
+	break;
     default:
 	break;
     }
@@ -266,6 +285,7 @@ rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+ok = JS_TRUE;  /* XXX avoid immediate interp exit by always succeeding. */
     return ok;
 }
 
@@ -276,6 +296,7 @@ rpmfi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
     rpmfi fi = ptr;
     JSBool ok = JS_FALSE;
+    int ix;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
@@ -286,7 +307,29 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	goto exit;
     }
 
-    *objp = obj;        /* XXX always resolve in this object. */
+    if (JSVAL_IS_INT(id)
+     && (ix = JSVAL_TO_INT(id)) >= 0 && ix < rpmfiFC(fi))
+    {
+	JSObject * arr = JS_NewArrayObject(cx, 1, NULL);
+	JSString *valstr;
+
+	if (ix != rpmfiFX(fi)) {
+if (_debug < 0)
+fprintf(stderr, "\trpmfiSetFX(%p, %d)\n", fi, ix);
+	    (void) rpmfiSetFX(fi, ix-1);
+	    (void) rpmfiNext(fi);
+	}
+
+	if (!JS_DefineElement(cx, obj, ix, OBJECT_TO_JSVAL(arr),
+			NULL, NULL, JSPROP_ENUMERATE))
+	    goto exit;
+	if ((valstr = JS_NewStringCopyZ(cx, rpmfiFN(fi))) == NULL
+	 || !JS_DefineElement(cx, arr, 0, STRING_TO_JSVAL(valstr),
+			NULL, NULL, JSPROP_ENUMERATE))
+	    goto exit;
+	*objp = obj;
+    } else
+	*objp = NULL;
 
     ok = JS_TRUE;
 exit:
@@ -297,53 +340,34 @@ static JSBool
 rpmfi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    JSObject *iterator;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
+    rpmfi fi = ptr;
     JSBool ok = JS_FALSE;
+    int ix;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
-#ifdef	DYING
     switch (op) {
     case JSENUMERATE_INIT:
-	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
-	    goto exit;
-	*statep = OBJECT_TO_JSVAL(iterator);
+	*statep = JSVAL_VOID;
+	(void) rpmfiInit(fi, 0);
 	if (idp)
 	    *idp = JSVAL_ZERO;
 	break;
     case JSENUMERATE_NEXT:
-	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
-	if (!JS_NextProperty(cx, iterator, idp))
-	    goto exit;
+	*statep = JSVAL_VOID;
+	if ((ix = rpmfiNext(fi)) >= 0) {
+	    JS_ValueToId(cx, INT_TO_JSVAL(ix), idp);
+	} else
+	    *idp = JSVAL_VOID;
 	if (*idp != JSVAL_VOID)
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
-	/* Allow our iterator object to be GC'd. */
 	*statep = JSVAL_NULL;
 	break;
     }
-#else
-    {	static const char hex[] = "0123456789abcdef";
-	const char * s;
-	char name[2];
-	JSString * valstr;
-	char value[5];
-	for (s = "AaBbCc"; *s != '\0'; s++) {
-	    name[0] = s[0]; name[1] = '\0';
-	    value[0] = '0'; value[1] = 'x';
-	    value[2] = hex[(name[0] >> 4) & 0xf];
-	    value[3] = hex[(name[0]     ) & 0xf];
-	    value[4] = '\0';
- 	    if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
-	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-		goto exit;
-	}
-    }
-#endif
     ok = JS_TRUE;
-exit:
     return ok;
 }
 
@@ -414,23 +438,13 @@ exit:
 }
 
 /* --- Class initialization */
-#ifdef	HACKERY
 JSClass rpmfiClass = {
-    "Fi", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
-    rpmfi_addprop,   rpmfi_delprop, rpmfi_getprop, rpmfi_setprop,
-    (JSEnumerateOp)rpmfi_enumerate, (JSResolveOp)rpmfi_resolve,
-    rpmfi_convert,	rpmfi_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-#else
-JSClass rpmfiClass = {
-    "Fi", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    "Fi", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmfi_addprop, rpmfi_delprop, rpmfi_getprop, rpmfi_setprop,
     (JSEnumerateOp)rpmfi_enumerate, (JSResolveOp)rpmfi_resolve,
     rpmfi_convert,	rpmfi_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
-#endif
 
 JSObject *
 rpmjs_InitFiClass(JSContext *cx, JSObject* obj)
