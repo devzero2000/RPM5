@@ -23,66 +23,7 @@ static int _debug = 0;
 /* --- helpers */
 
 /* --- Object methods */
-
-#ifdef	NOTYET
-static JSBool
-rpmds_next(JSContext *cx, uintN argc, jsval *vp)
-{
-    JSObject * obj = JS_THIS_OBJECT(cx, vp);
-    rpmds ds = (rpmds)JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
-    JSBool ok = (rpmdsNext(ds) >= 0) ? JS_TRUE : JS_FALSE;
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp, ds, rpmdsIx(ds), rpmdsCount(ds), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
-    if (!ok)
-	goto exit;
-
-    {   JSString *valstr;
-	const char *N = rpmdsN(ds);
-	const char *EVR = rpmdsEVR(ds);
-	unsigned Flags = rpmdsFlags(ds);
-
-	if ((valstr = JS_NewStringCopyZ(cx, N)) == NULL
-	 || !JS_DefineProperty(cx, obj, "N", STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-	    goto exit;
- 	if ((valstr = JS_NewStringCopyZ(cx, EVR)) == NULL
-	 || !JS_DefineProperty(cx, obj, "EVR", STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-	    goto exit;
- 	if (!JS_DefineProperty(cx, obj, "F", INT_TO_JSVAL(Flags),
-				NULL, NULL, JSPROP_ENUMERATE))
-	    goto exit;
-    }
-
-exit:
-    return ok;
-}
-#endif
-
-static JSBool
-rpmds_self(JSContext *cx, uintN argc, jsval *vp)
-{
-    JSObject * obj = JS_THIS_OBJECT(cx, vp);
-    rpmds ds = (rpmds) JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
-
-    ds = rpmdsInit(ds);
-
-    *vp = JS_THIS(cx, vp);
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%u,%p) ds %p[%d:%d] %s\n", __FUNCTION__, cx, argc, vp, ds, rpmdsIx(ds), rpmdsCount(ds), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
-    return !JSVAL_IS_NULL(*vp);
-}
-
 static JSFunctionSpec rpmds_funcs[] = {
-#ifdef	NOTYET
-#define	JSPROP_ROPERM	(JSPROP_READONLY | JSPROP_PERMANENT)
-    JS_FN(js_iterator_str,	rpmds_self,	0,0,JSPROP_ROPERM),
-    JS_FN(js_next_str,		rpmds_next,	0,0,JSPROP_ROPERM),
-#endif
     JS_FS_END
 };
 
@@ -143,7 +84,9 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    int ix;
 
+_PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
@@ -174,19 +117,23 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
         ok = JS_TRUE;
         break;
     case _N:
-	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsN(ds)));
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsN(ds)));
         ok = JS_TRUE;
         break;
     case _EVR:
-	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsEVR(ds)));
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsEVR(ds)));
         ok = JS_TRUE;
         break;
     case _F:
-	*vp = INT_TO_JSVAL(rpmdsFlags(ds));
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = INT_TO_JSVAL(rpmdsFlags(ds));
         ok = JS_TRUE;
         break;
     case _DNEVR:
-	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsDNEVR(ds)));
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsDNEVR(ds)));
         ok = JS_TRUE;
         break;
     default:
@@ -198,6 +145,8 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+
+ok = JS_TRUE;   /* XXX avoid immediate interp exit by always succeeding. */
 
     return ok;
 }
@@ -212,6 +161,7 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int myint;
 
+_PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
 	if (JS_ValueToInt32(cx, *vp, &_debug))
@@ -220,8 +170,13 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _IX:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
-	if (myint != rpmdsIx(ds)) {
-	    (void) rpmdsSetIx(ds, myint-1);
+	if (myint < 0 || myint >= rpmdsCount(ds))
+	    (void)rpmdsInit(ds);
+	else {
+if (_debug < 0)
+fprintf(stderr, "\trpmdsSetIx(%p, %d)\n", ds, myint);
+	    if ((myint-1) != rpmdsIx(ds))
+		(void) rpmdsSetIx(ds, myint-1);
 	    /* XXX flush and recreate N and DNEVR with a rpmdsNext() step */
 	    (void) rpmdsNext(ds);
 	}
@@ -231,6 +186,12 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmdsSetBT(ds, myint);
+	ok = JS_TRUE;
+        break;
+    case _COLOR:
+	if (!JS_ValueToInt32(cx, *vp, &myint))
+	    break;
+	(void) rpmdsSetColor(ds, myint);
 	ok = JS_TRUE;
         break;
     case _NOPROMOTE:
@@ -267,12 +228,21 @@ _RESOLVE_DEBUG_ENTRY(_debug < 0);
 	goto exit;
     }
 
-    if (JSVAL_IS_INT(id) && (ix = JSVAL_TO_INT(id)) == rpmdsIx(ds)) {
+    if (JSVAL_IS_INT(id)
+     && (ix = JSVAL_TO_INT(id)) >= 0 && ix < rpmdsCount(ds))
+    {
 	JSObject * arr = JS_NewArrayObject(cx, 3, NULL);
 	JSString *valstr;
 	const char *N = rpmdsN(ds);
 	const char *EVR = rpmdsEVR(ds);
 	unsigned Flags = rpmdsFlags(ds);
+
+	if (ix != rpmdsIx(ds)) {
+if (_debug < 0)
+fprintf(stderr, "\trpmdsSetIx(%p, %d)\n", ds, ix);
+	    (void) rpmdsSetIx(ds, ix-1);
+	    (void) rpmdsNext(ds);
+	}
 
 	if (!JS_DefineElement(cx, obj, ix, OBJECT_TO_JSVAL(arr),
 			NULL, NULL, JSPROP_ENUMERATE))
@@ -303,7 +273,6 @@ rpmds_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = (rpmds)ptr;
-    JSObject *iterobj;
     JSBool ok = JS_FALSE;
     int ix;
 
@@ -330,7 +299,6 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
         break;
     }
     ok = JS_TRUE;
-exit:
     return ok;
 }
 
