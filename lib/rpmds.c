@@ -1096,7 +1096,7 @@ assert(ods->Flags != NULL);
 	ds->Flags = Flags;
 /*@=nullderef =nullpass =nullptrarith @*/
 
-	ds->i = ds->Count;
+	ds->i = -1;
 	ds->Count++;
 
     }
@@ -1458,54 +1458,54 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package name-version-release is not implicitly provided.") },
     { "rpmlib(HeaderLoadSortsTags)",	"4.0.1-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("header tags are always sorted after being loaded.") },
     { "rpmlib(ScriptletInterpreterArgs)",    "4.0.3-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("the scriptlet interpreter can use arguments from header.") },
     { "rpmlib(PartialHardlinkSets)",	"4.0.4-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("a hardlink file set may be installed without being complete.") },
     { "rpmlib(ConcurrentAccess)",	"4.1-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package scriptlets may access the rpm database while installing.") },
 #if defined(WITH_LUA)
     { "rpmlib(BuiltinLuaScripts)",	"4.2.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded lua scripts.") },
 #endif
 #if defined(WITH_FICL)
     { "rpmlib(BuiltinFiclScripts)",	"5.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded FICL.") },
 #endif
 #if defined(WITH_JS)
     { "rpmlib(BuiltinJavaScript)",	"5.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JavaScript.") },
 #endif
 #if defined(WITH_PERLEMBED)
     { "rpmlib(BuiltinPerlScripts)",	"5.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded perl scripts.") },
 #endif
 #if defined(WITH_PYTHONEMBED)
     { "rpmlib(BuiltinPythonScripts)",	"5.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded python scripts.") },
 #endif
 #if defined(WITH_RUBYEMBED)
     { "rpmlib(BuiltinRubyScripts)",	"5.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded ruby scripts.") },
 #endif
 #if defined(WITH_TCL)
     { "rpmlib(BuiltinTclScripts)",	"5.2-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded tcl scripts.") },
 #endif
     { "rpmlib(HeaderTagTypeInt64)",	"4.4.3-1",
-	(                RPMSENSE_EQUAL),
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("header tag data can be of type uint64_t.") },
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),

@@ -1,5 +1,10 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: add RPMSENSE_RPMLIB to new tracking dependencies. at least its
+	consistent even if useless.
+    - jbj: fix: rpmdsMerge() shouldn't leave a result that seems to have
+	active iteration in progress. There are side effects from macro
+	expanding {N,EVR} that aren't correct.
     - proyvind: cpuinfo: change name of '%_prefer_buildarchs' macro to '%_prefer_target_cpu'.
     - proyvind: cpuinfo: change delimiter for %_prefer_buildarchs from ':' to ' '.
     - jbj: js: add AutoFu to build --with-js=internal.
