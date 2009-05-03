@@ -33,13 +33,17 @@ enum rpmds_tinyid {
     _LENGTH	= -3,
     _TYPE	= -4,
     _IX		= -5,
-    _BUILDTIME	= -6,
-    _COLOR	= -7,
-    _NOPROMOTE	= -8,
-    _N		= -9,
-    _EVR	= -10,
-    _F		= -11,
-    _DNEVR	= -12,
+    _A		= -6,
+    _BUILDTIME	= -7,
+    _COLOR	= -8,
+    _NOPROMOTE	= -9,
+    _N		= -11,
+    _EVR	= -12,
+    _F		= -13,
+    _DNEVR	= -14,
+    _NS		= -15,
+    _REFS	= -16,
+    _RESULT	= -17,
 };
 
 static JSPropertySpec rpmds_props[] = {
@@ -50,10 +54,14 @@ static JSPropertySpec rpmds_props[] = {
     {"buildtime",_BUILDTIME,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"color",	_COLOR,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"nopromote",_NOPROMOTE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"A",	_A,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"N",	_N,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"EVR",	_EVR,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"F",	_F,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"DNEVR",	_DNEVR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"NS",	_NS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"refs",	_REFS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"result",	_RESULT,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -104,6 +112,10 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	*vp = INT_TO_JSVAL(rpmdsIx(ds));
         ok = JS_TRUE;
         break;
+    case _A:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsA(ds)));
+        ok = JS_TRUE;
+        break;
     case _BUILDTIME:
 	*vp = INT_TO_JSVAL(rpmdsBT(ds));
         ok = JS_TRUE;
@@ -136,6 +148,21 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsDNEVR(ds)));
         ok = JS_TRUE;
         break;
+    case _NS:
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = INT_TO_JSVAL(rpmdsNSType(ds));
+        ok = JS_TRUE;
+        break;
+    case _REFS:
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = INT_TO_JSVAL(rpmdsRefs(ds));
+        ok = JS_TRUE;
+        break;
+    case _RESULT:
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    *vp = INT_TO_JSVAL(rpmdsResult(ds));
+        ok = JS_TRUE;
+        break;
     default:
 	if (tiny >= 0 && tiny < rpmdsCount(ds))
 	    ok = JS_TRUE;
@@ -160,6 +187,7 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int myint;
+    int ix;
 
 _PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
@@ -200,6 +228,20 @@ fprintf(stderr, "\trpmdsSetIx(%p, %d)\n", ds, myint);
 	(void) rpmdsSetNoPromote(ds, myint);
 	ok = JS_TRUE;
         break;
+    case _REFS:
+	if (!JS_ValueToInt32(cx, *vp, &myint))
+	    break;
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    (void) rpmdsSetRefs(ds, myint);
+	ok = JS_TRUE;
+        break;
+    case _RESULT:
+	if (!JS_ValueToInt32(cx, *vp, &myint))
+	    break;
+	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
+	    (void) rpmdsSetResult(ds, myint);
+	ok = JS_TRUE;
+        break;
     default:
 	break;
     }
@@ -207,6 +249,9 @@ fprintf(stderr, "\trpmdsSetIx(%p, %d)\n", ds, myint);
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+
+ok = JS_TRUE;   /* XXX avoid immediate interp exit by always succeeding. */
+
     return ok;
 }
 
