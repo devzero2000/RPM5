@@ -860,7 +860,7 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 	    {
 		int i, j, n;
 	    	ARGV_t archs = NULL;
-		char *pref = rpmExpand("%{?_prefer_targetarchs}", NULL);
+		char *pref = rpmExpand("%{?_prefer_target_cpu}", NULL);
 
 		(void) argvSplit(&archs, pref, " ");
 		for(i = 0, n = argvCount(archs); (i < n && !*name); i++)
