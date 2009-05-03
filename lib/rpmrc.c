@@ -862,7 +862,7 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 	    	ARGV_t archs = NULL;
 		char *pref = rpmExpand("%{?_prefer_buildarchs}", NULL);
 
-		(void) argvSplit(&archs, pref, ":");
+		(void) argvSplit(&archs, pref, " ");
 		for(i = 0, n = argvCount(archs); (i < n && !*name); i++)
     		    if((j = rpmPlatformScore(archs[i], platpat, nplatpat)) > 0)
     			*name = ((miRE)platpat)[j-1].pattern;
