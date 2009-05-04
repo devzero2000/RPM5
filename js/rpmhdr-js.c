@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* --- helpers */
 static JSObject *
@@ -354,37 +354,73 @@ exit:
     return ok;
 }
 
+static void
+rpmhi_dtor(JSContext *cx, JSObject *obj)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhiClass, NULL);
+    HeaderIterator hi = ptr;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+
+    hi = headerFini(hi);
+}
+
+JSClass rpmhiClass = {
+    "Hi",
+    JSCLASS_HAS_PRIVATE,
+    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
+    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  rpmhi_dtor,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+};
+
 static JSBool
 rpmhdr_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-#ifdef	UNUSED
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
-#endif
-    JSObject *iterator = NULL;
+    Header h = ptr;
+    HeaderIterator hi = NULL;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    JSObject *ho = NULL;
     JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
-	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
+	if ((ho = js_NewObject(cx, &rpmhiClass, NULL, obj, 0)) == NULL)
 	    goto exit;
-	*statep = OBJECT_TO_JSVAL(iterator);
+	if ((hi = headerInit(h)) == NULL)
+	    goto exit;
+	if (!JS_SetPrivate(cx, ho, (void *)hi)) {
+	    hi = headerFini(hi);
+	    goto exit;
+	}
+	*statep = OBJECT_TO_JSVAL(ho);
 	if (idp)
 	    *idp = JSVAL_ZERO;
-fprintf(stderr, "\tINIT iter %p\n", iterator);
+if (_debug)
+fprintf(stderr, "\tINIT ho %p hi %p\n", ho, hi);
 	break;
     case JSENUMERATE_NEXT:
-	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
-fprintf(stderr, "\tNEXT iter %p\n", iterator);
-	if (!JS_NextProperty(cx, iterator, idp))
-	    goto exit;
+	ho = (JSObject *) JSVAL_TO_OBJECT(*statep);
+	hi = JS_GetInstancePrivate(cx, ho, &rpmhiClass, NULL);
+if (_debug)
+fprintf(stderr, "\tNEXT ho %p hi %p\n", ho, hi);
+	if (headerNext(hi, he, 0)) {
+	    JS_ValueToId(cx, INT_TO_JSVAL(he->tag), idp);
+	    he->p.ptr = _free(he->p.ptr);
+	} else
+	    *idp = JSVAL_VOID;
 	if (*idp != JSVAL_VOID)
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
-fprintf(stderr, "\tFINI iter %p\n", iterator);
+	ho = (JSObject *) JSVAL_TO_OBJECT(*statep);
+	hi = JS_GetInstancePrivate(cx, ho, &rpmhiClass, NULL);
+if (_debug)
+fprintf(stderr, "\tFINI ho %p hi %p\n", ho, hi);
 	/* Allow our iterator object to be GC'd. */
 	*statep = JSVAL_NULL;
 	break;

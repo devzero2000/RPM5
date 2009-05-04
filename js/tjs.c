@@ -43,7 +43,7 @@ typedef struct rpmjsClassTable_s {
 static struct rpmjsClassTable_s classTable[] = {
     { "Ds",		rpmjs_InitDsClass,	 13 },
     { "Fi",		rpmjs_InitFiClass,	 14 },
-    { "File",		   js_InitFileClass,	  -1 },
+    { "File",		   js_InitFileClass,	 -1 },
     { "Hdr",		rpmjs_InitHdrClass,	 12 },
     { "Mc",		rpmjs_InitMcClass,	 -24 },
     { "Mi",		rpmjs_InitMiClass,	 11 },

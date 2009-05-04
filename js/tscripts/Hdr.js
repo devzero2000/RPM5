@@ -22,6 +22,9 @@ ack("h instanceof Hdr;", true);
 ack("h.debug = 1;", 1);
 ack("h.debug = 0;", 0);
 
+// for (var key in Iterator(h))
+//     print(JSON.stringify(key));
+
 var ds = h.ds();
 ack("typeof ds;", "object");
 ack("ds instanceof Ds;", true);
@@ -40,9 +43,12 @@ ack("typeof fi;", "object");
 ack("fi instanceof Fi;", true);
 
 ack("h.name", N);
+ack("h[RPMTAG_NAME]", N);
+// ack("h['name']", N);	// not yet ...
 ack("h.epoch", undefined);
 ack("h.version", undefined);
 ack("h.release", undefined);
+
 ack("h.summary", undefined);
 ack("h.description", undefined);
 ack("h.buildtime", undefined);
@@ -71,7 +77,7 @@ ack("h.preunprog", undefined);
 ack("h.postun", undefined);
 ack("h.postunprog", undefined);
 
-// ack("h.filenames", undefined);
+ack("h.filenames", undefined);
 ack("h.dirnames", undefined);
 ack("h.basenames", undefined);
 
@@ -88,13 +94,13 @@ ack("h.requirename", undefined);
 ack("h.conflictname", undefined);
 ack("h.obsoletesname", undefined);
 
-ack("h.keys()", undefined);
-legacyHeader = true;
-ack("h.unload(legacyHeader)", undefined);
-origin = "http://rpm5.org/files/popt/popt-1.14-1.i386.rpm";
+// ack("h.keys()", undefined);
+// var legacyHeader = true;
+// ack("h.unload(legacyHeader)", undefined);
+var origin = "http://rpm5.org/files/popt/popt-1.14-1.i386.rpm";
 ack("h.setorigin(origin)", origin);
 ack("h.getorigin()", origin);
-qfmt = "%{buildtime:date}";
+var qfmt = "%{buildtime:date}";
 ack("h.sprintf(qfmt)", undefined);
 
 if (loglvl) print("<-- Hdr.js");
