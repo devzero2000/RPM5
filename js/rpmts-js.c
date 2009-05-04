@@ -17,6 +17,8 @@
 #include <rpmts.h>
 #include <rpmte.h>
 
+#include <rpmcli.h>	/* XXX rpmcliInstall{Check,Order,Run} */
+
 #include "debug.h"
 
 /*@unchecked@*/
@@ -84,9 +86,12 @@ rpmts_check(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     JSObject *po = NULL;
     JSBool ok = JS_FALSE;
+    int xx;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    xx = rpmcliInstallCheck(ts);	/* XXX print ps for now */
 
     ok = JS_TRUE;
 exit:
@@ -99,9 +104,12 @@ rpmts_order(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     JSObject *po = NULL;
     JSBool ok = JS_FALSE;
+    int xx;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    xx = rpmcliInstallOrder(ts);	/* XXX print ps for now */
 
     ok = JS_TRUE;
 exit:
@@ -114,9 +122,12 @@ rpmts_run(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     JSObject *po = NULL;
     JSBool ok = JS_FALSE;
+    int xx;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    xx = rpmcliInstallRun(ts, NULL, 0);	/* XXX print ps for now */
 
     ok = JS_TRUE;
 exit:

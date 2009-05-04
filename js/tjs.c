@@ -1,6 +1,8 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmlog.h>
+#include <rpmcb.h>
 #include <argv.h>
 
 #define	_RPMJS_INTERNAL
@@ -191,7 +193,13 @@ main(int argc, char *argv[])
 	goto exit;
     }
 
+if (_debug) {
+_rpmts_debug = 1;
+rpmSetVerbosity(RPMLOG_DEBUG);
+} else {
 _rpmts_debug = 0;
+rpmSetVerbosity(RPMLOG_NOTICE);
+}
 
 _rpmjs_debug = 0;
     if (_debug && !_loglvl) _loglvl = 1;
