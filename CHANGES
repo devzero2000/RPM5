@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - proyvind: get rid of parallel %___NVRDA macro, just merge it with %___NVRA in stead.
     - jbj: add RPMSENSE_RPMLIB to new tracking dependencies. at least its
 	consistent even if useless.
     - jbj: fix: rpmdsMerge() shouldn't leave a result that seems to have
