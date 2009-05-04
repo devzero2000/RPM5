@@ -20,10 +20,11 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 /* --- helpers */
 
+#ifdef	DYING
 static JSObject *
 rpmtsLoadNVRA(JSContext *cx, JSObject *obj)
 {
@@ -57,8 +58,71 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p NVRA %p\n", __FUNCTION__, cx, obj, ptr, NV
 
     return NVRA;
 }
+#endif
 
 /* --- Object methods */
+static JSBool
+rpmts_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    JSObject *po = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &po)))
+        goto exit;
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmts_check(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    JSObject *po = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmts_order(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    JSObject *po = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmts_run(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    JSObject *po = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
 static JSBool
 rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -95,7 +159,11 @@ exit:
 }
 
 static JSFunctionSpec rpmts_funcs[] = {
-    JS_FS("mi",	rpmts_mi,		0,0,0),
+    JS_FS("add",	rpmts_add,		0,0,0),
+    JS_FS("check",	rpmts_check,		0,0,0),
+    JS_FS("order",	rpmts_order,		0,0,0),
+    JS_FS("run",	rpmts_run,		0,0,0),
+    JS_FS("mi",		rpmts_mi,		0,0,0),
     JS_FS_END
 };
 
@@ -234,6 +302,7 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	ok = JS_TRUE;
 	break;
     default:
+#ifdef	DYING
       {	JSString * str = JS_ValueToString(cx, id);
 	const char * name = JS_GetStringBytes(str);
 	if (!strcmp(name, "NVRA")) {
@@ -242,7 +311,9 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    ok = JS_TRUE;
 	    break;
 	}
-      }	break;
+      }
+#endif
+	break;
     }
 
     if (!ok) {

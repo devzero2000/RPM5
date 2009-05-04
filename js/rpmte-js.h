@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitTeClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewTeObject(JSContext *cx, void * _ts, void * _h);
+rpmjs_NewTeObject(JSContext *cx, void * _ts, void * _hdro);
 
 #ifdef __cplusplus      
 }

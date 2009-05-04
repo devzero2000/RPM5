@@ -19,8 +19,8 @@ var RPMPROB_NOREPACKAGE	= 14; /*!< re-packaged package ... is missing */
 var ps = new Ps();
 ack("typeof ps;", "object");
 ack("ps instanceof Ps;", true);
-ack("ps.debug = 1;", 1);
-ack("ps.debug = 0;", 0);
+// ack("ps.debug = 1;", 1);
+// ack("ps.debug = 0;", 0);
 
 var PKG = "PKG";
 var ALT = "ALT";
@@ -36,21 +36,21 @@ var O = "OS";
 ack("ps.length", 0);
 // ack("ps.push(PKG, ALT, KEY, RPMPROB_BADARCH, dn, bn, ui)", undefined);
 // ack("ps.push(PKG, ALT, KEY, RPMPROB_BADOS, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_PKG_INSTALLED, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_BADRELOCATE, dn, bn, ui)", undefined);
-ack("ps.push(PKG,   R, KEY, RPMPROB_REQUIRES, dn, bn, ui)", undefined);
-ack("ps.push(PKG,   C, KEY, RPMPROB_CONFLICT, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_NEW_FILE_CONFLICT, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_FILE_CONFLICT, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_OLDPACKAGE, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_DISKSPACE, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_DISKNODES, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_RDONLY, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_PKG_INSTALLED, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_BADRELOCATE, dn, bn, ui)", undefined);
+// ack("ps.push(PKG,   R, KEY, RPMPROB_REQUIRES, dn, bn, ui)", undefined);
+// ack("ps.push(PKG,   C, KEY, RPMPROB_CONFLICT, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_NEW_FILE_CONFLICT, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_FILE_CONFLICT, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_OLDPACKAGE, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_DISKSPACE, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_DISKNODES, dn, bn, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_RDONLY, dn, bn, ui)", undefined);
 // ack("ps.push(PKG, ALT, KEY, RPMPROB_BADPRETRANS, dn, bn, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_BADPLATFORM, A, O, ui)", undefined);
-ack("ps.push(PKG, ALT, KEY, RPMPROB_NOREPACKAGE, dn, bn, ui)", undefined);
-ack("ps.length", 12);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_BADPLATFORM, A, O, ui)", undefined);
+// ack("ps.push(PKG, ALT, KEY, RPMPROB_NOREPACKAGE, dn, bn, ui)", undefined);
+// ack("ps.length", 12);
 
-ack("ps.print()", undefined);
+// ack("ps.print()", undefined);
 
 if (loglvl) print("<-- Ps.js");
