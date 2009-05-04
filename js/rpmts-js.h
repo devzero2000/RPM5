@@ -8,6 +8,7 @@
 #include "rpm-js.h"
 
 extern JSClass rpmtsClass;
+extern JSClass rpmtsiClass;
 
 #ifdef __cplusplus
 extern "C" {

@@ -288,6 +288,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 
 	if (!JSVAL_IS_VOID(tagid)) {
+	    /* XXX TODO: handle key object as non-string. */
 	    /* XXX TODO: make sure both tag and key were specified. */
 	    tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)

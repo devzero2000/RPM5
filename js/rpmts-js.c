@@ -15,6 +15,7 @@
 
 #define	_RPMTS_INTERNAL
 #include <rpmts.h>
+#include <rpmte.h>
 
 #include "debug.h"
 
@@ -58,14 +59,12 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p NVRA %p\n", __FUNCTION__, cx, obj, ptr, NV
 }
 
 /* --- Object methods */
-
 static JSBool
 rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-    JSObject *TagN = NULL;
+    jsval tagid = JSVAL_VOID;
     rpmTag tag = RPMDBI_PACKAGES;
-    JSObject *Key = NULL;
     char * key = NULL;
     int keylen = 0;
     JSObject *Mi;
@@ -74,17 +73,16 @@ rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/is", &tag, &key)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/vs", &tagid, &key)))
         goto exit;
 
-    if (TagN) {
-	/* XXX TODO: permit string tag names */
+    if (!JSVAL_IS_VOID(tagid)) {
+	/* XXX TODO: handle key object as non-string. */
+	/* XXX TODO: make sure both tag and key were specified. */
+	tag = JSVAL_IS_INT(tagid)
+		? (rpmTag) JSVAL_TO_INT(tagid)
+		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
     }
-
-    if (Key) {
-	/* XXX TODO: permit integer keys */
-    }
-    /* XXX TODO: make sure both tag and key were specified. */
 
     if ((Mi = rpmjs_NewMiObject(cx, ts, tag, key, keylen)) == NULL)
 	goto exit;
@@ -250,6 +248,9 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+
+ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
+
     return ok;
 }
 
@@ -343,6 +344,9 @@ rpmts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     if (!ok) {
 _PROP_DEBUG_EXIT(_debug);
     }
+
+ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
+
     return ok;
 }
 
@@ -351,11 +355,6 @@ rpmts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-    static char hex[] = "0123456789abcdef";
-    JSString *idstr;
-    const char * name;
-    JSString * valstr;
-    char value[5];
     JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
@@ -365,78 +364,85 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	goto exit;
     }
 
-    if ((idstr = JS_ValueToString(cx, id)) == NULL)
-	goto exit;
+    *objp = obj;	/* XXX always resolve in this object. */
 
-    name = JS_GetStringBytes(idstr);
-    if (ptr != NULL && !strcmp(name, "NVRA"))
-	*objp = rpmtsLoadNVRA(cx, obj);
-    else
-    if (name[1] == '\0' && xisalpha(name[0])) {
-	value[0] = '0'; value[1] = 'x';
-	value[2] = hex[(name[0] >> 4) & 0xf];
-	value[3] = hex[(name[0]     ) & 0xf];
-	value[4] = '\0';
- 	if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
-	 || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-	    goto exit;
-	*objp = obj;
-    }
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
+static void
+rpmtsi_dtor(JSContext *cx, JSObject *obj)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsiClass, NULL);
+    rpmtsi tsi = ptr;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+
+    tsi = rpmtsiFree(tsi);
+}
+
+JSClass rpmtsiClass = {
+    "Tsi",
+    JSCLASS_HAS_PRIVATE,
+    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
+    JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  rpmtsi_dtor,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+};
+
 static JSBool
 rpmts_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    JSObject *iterator;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
+    rpmtsi tsi;
+    rpmte te;
+    JSObject *tsio = NULL;
     JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
-#ifdef	DYING
     switch (op) {
     case JSENUMERATE_INIT:
-	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
+	if ((tsio = JS_NewObject(cx, &rpmtsiClass, NULL, obj)) == NULL)
 	    goto exit;
-	*statep = OBJECT_TO_JSVAL(iterator);
+	if ((tsi = rpmtsiInit(ts)) == NULL)
+	    goto exit;
+	if (!JS_SetPrivate(cx, tsio, (void *)tsi)) {
+	    tsi = rpmtsiFree(tsi);
+	    goto exit;
+	}
+	*statep = OBJECT_TO_JSVAL(tsio);
 	if (idp)
 	    *idp = JSVAL_ZERO;
+if (_debug)
+fprintf(stderr, "\tINIT tsio %p tsi %p\n", tsio, tsi);
 	break;
     case JSENUMERATE_NEXT:
-	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
-	if (!JS_NextProperty(cx, iterator, idp))
-	    goto exit;
+	tsio = (JSObject *) JSVAL_TO_OBJECT(*statep);
+	tsi = JS_GetInstancePrivate(cx, tsio, &rpmtsiClass, NULL);
+if (_debug)
+fprintf(stderr, "\tNEXT tsio %p tsi %p\n", tsio, tsi);
+#ifdef	NOTYET
+	if ((te = rpmtsiNext(tsi, 0)) != NULL) {
+	    JS_ValueToId(cx, INT_TO_JSVAL(he->tag), idp);
+	} else
+#endif
+	    *idp = JSVAL_VOID;
 	if (*idp != JSVAL_VOID)
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
+	tsio = (JSObject *) JSVAL_TO_OBJECT(*statep);
+	tsi = JS_GetInstancePrivate(cx, tsio, &rpmtsiClass, NULL);
+if (_debug)
+fprintf(stderr, "\tFINI tsio %p tsi %p\n", tsio, tsi);
 	/* Allow our iterator object to be GC'd. */
 	*statep = JSVAL_NULL;
 	break;
     }
-#else
-    {	static const char hex[] = "0123456789abcdef";
-	const char * s;
-	char name[2];
-	JSString * valstr;
-	char value[5];
-	for (s = "AaBbCc"; *s != '\0'; s++) {
-	    name[0] = s[0]; name[1] = '\0';
-	    value[0] = '0'; value[1] = 'x';
-	    value[2] = hex[(name[0] >> 4) & 0xf];
-	    value[3] = hex[(name[0]     ) & 0xf];
-	    value[4] = '\0';
- 	    if ((valstr = JS_NewStringCopyZ(cx, value)) == NULL
-	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-		goto exit;
-	}
-    }
-#endif
     ok = JS_TRUE;
 exit:
     return ok;
@@ -501,23 +507,13 @@ exit:
 }
 
 /* --- Class initialization */
-#ifdef	HACKERY
 JSClass rpmtsClass = {
-    "Ts", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE | JSCLASS_HAS_CACHED_PROTO(JSProto_Object),
+    "Ts", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmts_addprop,   rpmts_delprop, rpmts_getprop, rpmts_setprop,
     (JSEnumerateOp)rpmts_enumerate, (JSResolveOp)rpmts_resolve,
     rpmts_convert,	rpmts_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
-#else
-JSClass rpmtsClass = {
-    "Ts", JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,   JS_PropertyStub, rpmts_getprop, JS_PropertyStub,
-    (JSEnumerateOp)JS_EnumerateStub, (JSResolveOp)JS_ResolveStub,
-    JS_ConvertStub,	rpmts_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-#endif
 
 JSObject *
 rpmjs_InitTsClass(JSContext *cx, JSObject* obj)
