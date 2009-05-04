@@ -331,7 +331,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
-	*statep = JSVAL_VOID;
+	*statep = JSVAL_VOID;		/* XXX needed? */
 	if ((ix = rpmdsNext(ds)) >= 0) {
 	    JS_ValueToId(cx, INT_TO_JSVAL(ix), idp);
 	} else
@@ -340,6 +340,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
+	/* XXX Allow our iterator object to be GC'd. */
 	*statep = JSVAL_NULL;
         break;
     }

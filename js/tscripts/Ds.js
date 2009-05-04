@@ -26,9 +26,9 @@ ack("ix == ds.length", true);
 ix = 0
 for (var [key,val] in Iterator(ds)) {
     ack("key == ix", true);
-    ack("deps[key] == val", true);
-    ack("ds[key] == val", true);
-    ack("ds[key] == deps[key]", true);
+    ack("deps[ix] == val", true);
+    ack("ds[ix] == val", true);
+    ack("ds[ix] == deps[ix]", true);
     ix++;
 }
 ack("ix == ds.length", true);

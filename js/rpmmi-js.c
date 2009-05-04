@@ -21,25 +21,6 @@ static int _debug = 0;
 
 /* --- Object methods */
 static JSBool
-rpmmi_next(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
-    Header h;
-    JSBool ok = JS_FALSE;
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
-
-    if ((h = rpmdbNextIterator(mi)) != NULL)
-	*rval = OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h));
-    ok = JS_TRUE;
-
-exit:
-    return ok;
-}
-
-static JSBool
 rpmmi_pattern(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
@@ -65,7 +46,6 @@ exit:
 }
 
 static JSFunctionSpec rpmmi_funcs[] = {
-    JS_FS("next",	rpmmi_next,		0,0,0),
     JS_FS("pattern",	rpmmi_pattern,		0,0,0),
     JS_FS_END
 };
@@ -110,6 +90,7 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
+_PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
@@ -125,7 +106,16 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	ok = JS_TRUE;
         break;
     default:
-	break;
+      {	JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
+	Header h = JS_GetInstancePrivate(cx, o, &rpmhdrClass, NULL);
+	rpmuint32_t ix = headerGetInstance(h);
+	if (ix != 0) {
+	    *vp = id;
+	    ok = JS_TRUE;
+if (_debug)
+fprintf(stderr, "\tGET  %p[%d] h %p\n", mi, ix, h);
+	}
+      }	break;
     }
 
     if (!ok) {
@@ -164,6 +154,8 @@ rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmdbMatchIterator mi = ptr;
+    JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
+    JSClass *c = (o ? OBJ_GET_CLASS(cx, o) : NULL);
     JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
@@ -175,7 +167,21 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	goto exit;
     }
 
-    *objp = obj;	/* XXX always resolve in this object. */
+    if (c == &rpmhdrClass) {
+	Header h = JS_GetInstancePrivate(cx, o, &rpmhdrClass, NULL);
+	rpmuint32_t ix = headerGetInstance(h);
+	if (ix == 0
+	 || !JS_DefineElement(cx, obj, ix, id, NULL, NULL, JSPROP_ENUMERATE))
+	{
+	    *objp = NULL;
+	    ok = JS_TRUE;
+            goto exit;
+	}
+if (_debug)
+fprintf(stderr, "\tRESOLVE %p[%d] h %p\n", mi, ix, h);
+	*objp = obj;
+    } else
+	*objp = NULL;
 
     ok = JS_TRUE;
 exit:
@@ -187,36 +193,39 @@ rpmmi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    JSObject *iterator = NULL;
+    rpmdbMatchIterator mi = ptr;
+    Header h;
     JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
-	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
-	    goto exit;
-	*statep = OBJECT_TO_JSVAL(iterator);
+	*statep = JSVAL_VOID;
 	if (idp)
 	    *idp = JSVAL_ZERO;
-fprintf(stderr, "\tINIT iter %p\n", iterator);
+if (_debug)
+fprintf(stderr, "\tINIT mi %p\n", mi);
 	break;
     case JSENUMERATE_NEXT:
-	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
-fprintf(stderr, "\tNEXT iter %p\n", iterator);
-	if (!JS_NextProperty(cx, iterator, idp))
-	    goto exit;
+	*statep = JSVAL_VOID;		/* XXX needed? */
+	if ((h = rpmdbNextIterator(mi)) != NULL) {
+            JS_ValueToId(cx, OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h)), idp);
+if (_debug)
+fprintf(stderr, "\tNEXT mi %p h %p\n", mi, h);
+	} else
+	    *idp = JSVAL_VOID;
 	if (*idp != JSVAL_VOID)
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
-fprintf(stderr, "\tFINI iter %p\n", iterator);
-	/* Allow our iterator object to be GC'd. */
+if (_debug)
+fprintf(stderr, "\tFINI mi %p\n", mi);
+	/* XXX Allow our iterator object to be GC'd. */
 	*statep = JSVAL_NULL;
 	break;
     }
     ok = JS_TRUE;
-exit:
     return ok;
 }
 
@@ -248,13 +257,14 @@ static void
 rpmmi_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
-    mi = rpmdbFreeIterator(mi);
+    {	rpmdbMatchIterator mi = ptr;
+	mi = rpmdbFreeIterator(mi);
+    }
 #endif
 }
 
@@ -262,6 +272,7 @@ static JSBool
 rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSObject *tso = NULL;
+    jsval tagid = JSVAL_VOID;
     rpmTag tag = RPMDBI_PACKAGES;
     char * key = NULL;
     int keylen = 0;
@@ -270,18 +281,21 @@ rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/is", &tso, &tag, &key)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/vs", &tso, &tagid, &key)))
 	goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 
-	/* XXX TODO: permit string tag names */
-	/* XXX TODO: permit integer keys */
-	/* XXX TODO: make sure both tag and key were specified. */
+	if (!JSVAL_IS_VOID(tagid)) {
+	    /* XXX TODO: make sure both tag and key were specified. */
+	    tag = JSVAL_IS_INT(tagid)
+		? (rpmTag) JSVAL_TO_INT(tagid)
+		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+	}
 
 	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, key, keylen))
-	    goto exit;
+	    goto exit;		/* XXX error msg */
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -295,7 +309,7 @@ exit:
 
 /* --- Class initialization */
 JSClass rpmmiClass = {
-    "Mi", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    "Mi", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmmi_addprop,   rpmmi_delprop, rpmmi_getprop, rpmmi_setprop,
     (JSEnumerateOp)rpmmi_enumerate, (JSResolveOp)rpmmi_resolve,
     rpmmi_convert,	rpmmi_dtor,

@@ -15,8 +15,9 @@ ack("mi.count", 1);
 ack("mi.instance", 0);	// zero before iterating
 ack("mi.pattern(RPMTAG_NAME, N)", true);
 
-var h = mi.next()
-nack("mi.instance", 0);	// non-zero when iterating
-ack("h.name", N);
+for (var [key,h] in Iterator(mi)) {
+    nack("mi.instance", 0);	// non-zero when iterating
+    ack("h.name", N);
+}
 
 if (loglvl) print("<-- Mi.js");

@@ -14,93 +14,94 @@ ack("mi.count", 1);
 ack("mi.instance", 0);  // zero before iterating
 
 // var h = new Hdr();
-var h = mi.next()
-nack("mi.instance", 0); // non-zero when iterating
+for (let [dbkey,h] in Iterator(mi)) {
+    nack("mi.instance", 0); // non-zero when iterating
 
-ack("typeof h;", "object");
-ack("h instanceof Hdr;", true);
-ack("h.debug = 1;", 1);
-ack("h.debug = 0;", 0);
+    ack("typeof h;", "object");
+    ack("h instanceof Hdr;", true);
+    ack("h.debug = 1;", 1);
+    ack("h.debug = 0;", 0);
 
-// for (var key in Iterator(h))
-//     print(JSON.stringify(key));
+// for (var [tagno,tagval] in Iterator(h,true))
+//     print(h.tag(tagno),JSON.stringify(tagval));
 
-var ds = h.ds();
-ack("typeof ds;", "object");
-ack("ds instanceof Ds;", true);
-var ds = h.ds(RPMTAG_NAME);
-ack("typeof ds;", "object");
-ack("ds instanceof Ds;", true);
-var ds = h.ds(RPMTAG_REQUIRENAME);
-ack("typeof ds;", "object");
-ack("ds instanceof Ds;", true);
+    var ds = h.ds();
+    ack("typeof ds;", "object");
+    ack("ds instanceof Ds;", true);
+    var ds = h.ds(RPMTAG_NAME);
+    ack("typeof ds;", "object");
+    ack("ds instanceof Ds;", true);
+    var ds = h.ds(RPMTAG_REQUIRENAME);
+    ack("typeof ds;", "object");
+    ack("ds instanceof Ds;", true);
 
-var fi = h.fi();
-ack("typeof fi;", "object");
-ack("fi instanceof Fi;", true);
-var fi = h.fi(RPMTAG_BASENAMES);
-ack("typeof fi;", "object");
-ack("fi instanceof Fi;", true);
+    var fi = h.fi();
+    ack("typeof fi;", "object");
+    ack("fi instanceof Fi;", true);
+    var fi = h.fi(RPMTAG_BASENAMES);
+    ack("typeof fi;", "object");
+    ack("fi instanceof Fi;", true);
 
-ack("h.name", N);
-ack("h[RPMTAG_NAME]", N);
-// ack("h['name']", N);	// not yet ...
-ack("h.epoch", undefined);
-ack("h.version", undefined);
-ack("h.release", undefined);
+    ack("h.name", N);
+    ack("h[RPMTAG_NAME]", N);
+//  ack("h['name']", N);	// not yet ...
+    ack("h.epoch", undefined);
+    ack("h.version", undefined);
+    ack("h.release", undefined);
 
-ack("h.summary", undefined);
-ack("h.description", undefined);
-ack("h.buildtime", undefined);
-ack("h.buildhost", undefined);
-ack("h.installtime", undefined);
-ack("h.size", undefined);
-ack("h.distribution", undefined);
-ack("h.vendor", undefined);
-ack("h.license", undefined);
-ack("h.packager", undefined);
-ack("h.group", undefined);
+    ack("h.summary", undefined);
+    ack("h.description", undefined);
+    ack("h.buildtime", undefined);
+    ack("h.buildhost", undefined);
+    ack("h.installtime", undefined);
+    ack("h.size", undefined);
+    ack("h.distribution", undefined);
+    ack("h.vendor", undefined);
+    ack("h.license", undefined);
+    ack("h.packager", undefined);
+    ack("h.group", undefined);
 
-ack("h.changelogtime", undefined);
-ack("h.changelogname", undefined);
+    ack("h.changelogtime", undefined);
+    ack("h.changelogname", undefined);
 
-ack("h.url", undefined);
-ack("h.os", undefined);
-ack("h.arch", undefined);
+    ack("h.url", undefined);
+    ack("h.os", undefined);
+    ack("h.arch", undefined);
 
-ack("h.prein", undefined);
-ack("h.preinprog", undefined);
-ack("h.postin", undefined);
-ack("h.postinprog", undefined);
-ack("h.preun", undefined);
-ack("h.preunprog", undefined);
-ack("h.postun", undefined);
-ack("h.postunprog", undefined);
+    ack("h.prein", undefined);
+    ack("h.preinprog", undefined);
+    ack("h.postin", undefined);
+    ack("h.postinprog", undefined);
+    ack("h.preun", undefined);
+    ack("h.preunprog", undefined);
+    ack("h.postun", undefined);
+    ack("h.postunprog", undefined);
 
-ack("h.filenames", undefined);
-ack("h.dirnames", undefined);
-ack("h.basenames", undefined);
+    ack("h.filenames", undefined);
+    ack("h.dirnames", undefined);
+    ack("h.basenames", undefined);
 
-ack("h.filesizes", undefined);
-ack("h.filestates", undefined);
-ack("h.filemodes", undefined);
-ack("h.filerdevs", undefined);
+    ack("h.filesizes", undefined);
+    ack("h.filestates", undefined);
+    ack("h.filemodes", undefined);
+    ack("h.filerdevs", undefined);
 
-ack("h.sourcerpm", undefined);
-ack("h.archivesize", undefined);
+    ack("h.sourcerpm", undefined);
+    ack("h.archivesize", undefined);
 
-ack("h.providename", undefined);
-ack("h.requirename", undefined);
-ack("h.conflictname", undefined);
-ack("h.obsoletesname", undefined);
+    ack("h.providename", undefined);
+    ack("h.requirename", undefined);
+    ack("h.conflictname", undefined);
+    ack("h.obsoletesname", undefined);
 
-// ack("h.keys()", undefined);
-// var legacyHeader = true;
-// ack("h.unload(legacyHeader)", undefined);
-var origin = "http://rpm5.org/files/popt/popt-1.14-1.i386.rpm";
-ack("h.setorigin(origin)", origin);
-ack("h.getorigin()", origin);
-var qfmt = "%{buildtime:date}";
-ack("h.sprintf(qfmt)", undefined);
+//  ack("h.keys()", undefined);
+//  var legacyHeader = true;
+//  ack("h.unload(legacyHeader)", undefined);
+    var origin = "http://rpm5.org/files/popt/popt-1.14-1.i386.rpm";
+    ack("h.setorigin(origin)", origin);
+    ack("h.getorigin()", origin);
+    var qfmt = "%{buildtime:date}";
+    ack("h.sprintf(qfmt)", undefined);
+}
 
 if (loglvl) print("<-- Hdr.js");
