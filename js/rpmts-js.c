@@ -97,7 +97,7 @@ exit:
 }
 
 static JSFunctionSpec rpmts_funcs[] = {
-    {"mi",	rpmts_mi,		0,0,0},
+    JS_FS("mi",	rpmts_mi,		0,0,0),
     JS_FS_END
 };
 

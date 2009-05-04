@@ -65,8 +65,8 @@ exit:
 }
 
 static JSFunctionSpec rpmmi_funcs[] = {
-    {"next",	rpmmi_next,		0,0,0},
-    {"pattern",	rpmmi_pattern,		0,0,0},
+    JS_FS("next",	rpmmi_next,		0,0,0),
+    JS_FS("pattern",	rpmmi_pattern,		0,0,0),
     JS_FS_END
 };
 

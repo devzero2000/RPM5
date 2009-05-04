@@ -274,9 +274,9 @@ exit:
 }
 
 static JSFunctionSpec syck_funcs[] = {
-    {"load",		syck_load,		0,0,0},
-    {"dump",		syck_dump,		0,0,0},
-    {NULL,		NULL,			0,0,0}
+    JS_FS("load",	syck_load,		0,0,0),
+    JS_FS("dump",	syck_dump,		0,0,0),
+    JS_FS_END
 };
 
 /* --- Object properties */

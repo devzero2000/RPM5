@@ -126,9 +126,9 @@ exit:
 }
 
 static JSFunctionSpec uuid_funcs[] = {
-    {"generate",	uuid_generate,		0,0,0},
-    {"describe",	uuid_describe,		0,0,0},
-    {NULL,		NULL,			0,0,0}
+    JS_FS("generate",	uuid_generate,		0,0,0),
+    JS_FS("describe",	uuid_describe,		0,0,0),
+    JS_FS_END
 };
 
 /* --- Object properties */

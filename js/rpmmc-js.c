@@ -129,10 +129,10 @@ exit:
 }
 
 static JSFunctionSpec rpmmc_funcs[] = {
-    {"add",	rpmmc_add,		0,0,0},
-    {"del",	rpmmc_del,		0,0,0},
-    {"list",	rpmmc_list,		0,0,0},
-    {"expand",	rpmmc_expand,		0,0,0},
+    JS_FS("",	rpmmc_add,		0,0,0),
+    JS_FS("",	rpmmc_del,		0,0,0),
+    JS_FS("",	rpmmc_list,		0,0,0),
+    JS_FS("",	rpmmc_expand,		0,0,0),
     JS_FS_END
 };
 

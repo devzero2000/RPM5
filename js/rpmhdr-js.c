@@ -229,11 +229,11 @@ exit:
 }
 
 static JSFunctionSpec rpmhdr_funcs[] = {
-    {"ds",		rpmhdr_ds,		0,0,0},
-    {"fi",		rpmhdr_fi,		0,0,0},
-    {"sprintf",		rpmhdr_sprintf,		0,0,0},
-    {"getorigin",	rpmhdr_getorigin,	0,0,0},
-    {"setorigin",	rpmhdr_setorigin,	0,0,0},
+    JS_FS("ds",		rpmhdr_ds,		0,0,0),
+    JS_FS("fi",		rpmhdr_fi,		0,0,0),
+    JS_FS("sprintf",	rpmhdr_sprintf,		0,0,0),
+    JS_FS("getorigin",	rpmhdr_getorigin,	0,0,0),
+    JS_FS("setorigin",	rpmhdr_setorigin,	0,0,0),
     JS_FS_END
 };
 
@@ -389,7 +389,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
-	if ((ho = js_NewObject(cx, &rpmhiClass, NULL, obj, 0)) == NULL)
+	if ((ho = JS_NewObject(cx, &rpmhiClass, NULL, obj)) == NULL)
 	    goto exit;
 	if ((hi = headerInit(h)) == NULL)
 	    goto exit;
