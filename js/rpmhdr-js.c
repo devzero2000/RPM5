@@ -5,6 +5,8 @@
 #include "system.h"
 
 #include "rpmhdr-js.h"
+#include "rpmds-js.h"
+#include "rpmfi-js.h"
 #include "rpmjs-debug.h"
 
 #include <rpmcli.h>	/* XXX rpmHeaderFormats */
@@ -12,23 +14,24 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 /* --- helpers */
 static JSObject *
-rpmhdrLoadTag(JSContext *cx, JSObject *obj, Header h, const char * name, jsval *vp)
+rpmhdrLoadTag(JSContext *cx, JSObject *obj, Header h, rpmTag tag, jsval *vp)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     JSString * valstr;
     JSObject * arr;
     JSObject * retobj = NULL;
     jsval * vec = NULL;
+const char * name = tagName(tag);
     int i;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p,%s)\n", __FUNCTION__, cx, obj, h, name);
 
-    he->tag = tagValue(name);
+    he->tag = tag;
     if (headerGet(h, he, 0)) {
 if (_debug < 0)
 fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t, he->p.ptr, (unsigned)he->c);
@@ -132,9 +135,7 @@ static JSBool
 rpmhdr_ds(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
-    Header h = ptr;
     rpmTag tagN = RPMTAG_NAME;
-    int flags = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
@@ -154,7 +155,6 @@ rpmhdr_fi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
     Header h = ptr;
     rpmTag tagN = RPMTAG_BASENAMES;
-    int flags = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
@@ -174,7 +174,7 @@ rpmhdr_sprintf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
     Header h = ptr;
     char * qfmt = NULL;
-    char * s = NULL;
+    const char * s = NULL;
     const char * errstr = NULL;
     JSBool ok = JS_FALSE;
 
@@ -272,18 +272,18 @@ rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
+_PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
-    default:
-      {	JSString * str = JS_ValueToString(cx, id);
-	JSObject * retobj = rpmhdrLoadTag(cx, obj, h, JS_GetStringBytes(str), vp);
-	if (retobj != NULL) {
+    default: {
+	rpmTag tag = JSVAL_IS_INT(id)
+		? (rpmTag) JSVAL_TO_INT(id)
+		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, id)));
+	if (rpmhdrLoadTag(cx, obj, h, tag, vp) != NULL)
             ok = JS_TRUE;
-            break;
-        }
       } break;
     }
 
@@ -302,6 +302,7 @@ rpmhdr_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
+_PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
 	if (JS_ValueToInt32(cx, *vp, &_debug))
@@ -334,8 +335,20 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	goto exit;
     }
 
-    *objp = obj;	/* XXX always resolve in this object. */
+    if (JSVAL_IS_INT(id) || JSVAL_IS_STRING(id)) {
+	rpmTag tag = JSVAL_IS_INT(id)
+		? (rpmTag) JSVAL_TO_INT(id)
+		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, id)));
+	JSObject * arr = rpmhdrLoadTag(cx, obj, h, tag, NULL);
 
+	if (!JS_DefineElement(cx, obj, tag, OBJECT_TO_JSVAL(arr),
+			NULL, NULL, JSPROP_ENUMERATE)) {
+	    *objp = NULL;
+	    goto exit;
+	}
+	*objp = obj;
+    } else
+	*objp = NULL;
     ok = JS_TRUE;
 exit:
     return ok;
@@ -345,7 +358,9 @@ static JSBool
 rpmhdr_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
+#ifdef	UNUSED
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
+#endif
     JSObject *iterator = NULL;
     JSBool ok = JS_FALSE;
 
@@ -442,7 +457,7 @@ exit:
 
 /* --- Class initialization */
 JSClass rpmhdrClass = {
-    "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    "Hdr", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmhdr_addprop, rpmhdr_delprop, rpmhdr_getprop, rpmhdr_setprop,
     (JSEnumerateOp)rpmhdr_enumerate, (JSResolveOp)rpmhdr_resolve,
     rpmhdr_convert,	rpmhdr_dtor,
