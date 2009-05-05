@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmts-js.h"
+#include "rpmte-js.h"
 #include "rpmmi-js.h"
 #include "rpmjs-debug.h"
 
@@ -17,12 +18,23 @@
 #include <rpmts.h>
 #include <rpmte.h>
 
+#ifdef	NOTYET
+/* XXX FIXME: deadlock if used. ts holds implcit reference currently. */
+#define rpmteLink(_te)    \
+    ((rpmte)rpmioLinkPoolItem((rpmioItem)(_te), __FUNCTION__, __FILE__, __LINE__))
+#define rpmteUnlink(_te)    \
+    ((rpmte)rpmioUnlinkPoolItem((rpmioItem)(_te), __FUNCTION__, __FILE__, __LINE__))
+#else
+#define	rpmteLink(_te)		(_te)
+#define	rpmteUnlink(_te)	(_te)
+#endif
+
 #include <rpmcli.h>	/* XXX rpmcliInstall{Check,Order,Run} */
 
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* --- helpers */
 
@@ -67,16 +79,39 @@ static JSBool
 rpmts_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-    JSObject *po = NULL;
+    char * pkgN = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &po)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &pkgN)))
         goto exit;
+
+    if (pkgN != NULL) {
+	rpmdbMatchIterator mi;
+	Header h;
+	int upgrade = 0;
+	int xx;
+
+	switch (*pkgN) {
+	case '-':	pkgN++;		upgrade = -1;	break;
+	case '+':	pkgN++;		upgrade = 1;	break;
+	default:			upgrade = 1;	break;
+	}
+	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, pkgN, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    xx = (upgrade >= 0)
+	        ? rpmtsAddInstallElement(ts, h, (fnpyKey)pkgN, upgrade, NULL)
+		: rpmtsAddEraseElement(ts, h, rpmdbGetIteratorOffset(mi));
+	    break;
+	}
+	mi = rpmdbFreeIterator(mi);
+    }
+
     ok = JS_TRUE;
 exit:
+    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
     return ok;
 }
 
@@ -84,17 +119,15 @@ static JSBool
 rpmts_check(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-    JSObject *po = NULL;
     JSBool ok = JS_FALSE;
-    int xx;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    xx = rpmcliInstallCheck(ts);	/* XXX print ps for now */
-
+    (void) rpmcliInstallCheck(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
-exit:
+
+    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
     return ok;
 }
 
@@ -102,17 +135,15 @@ static JSBool
 rpmts_order(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-    JSObject *po = NULL;
     JSBool ok = JS_FALSE;
-    int xx;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    xx = rpmcliInstallOrder(ts);	/* XXX print ps for now */
-
+    (void) rpmcliInstallOrder(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
-exit:
+
+    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
     return ok;
 }
 
@@ -120,17 +151,20 @@ static JSBool
 rpmts_run(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-    JSObject *po = NULL;
     JSBool ok = JS_FALSE;
-    int xx;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    xx = rpmcliInstallRun(ts, NULL, 0);	/* XXX print ps for now */
-
+#ifdef	NOTYET
+    /* XXX force --test instead. */
+    (void) rpmcliInstallRun(ts, NULL, 0);	/* XXX print ps for now */
+#else
+    rpmtsEmpty(ts);
+#endif
     ok = JS_TRUE;
-exit:
+
+    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
     return ok;
 }
 
@@ -181,26 +215,28 @@ static JSFunctionSpec rpmts_funcs[] = {
 /* --- Object properties */
 enum rpmts_tinyid {
     _DEBUG	= -2,
-    _VSFLAGS	= -3,
-    _TYPE	= -4,
-    _ARBGOAL	= -5,
-    _ROOTDIR	= -6,
-    _CURRDIR	= -7,
-    _SELINUX	= -8,
-    _CHROOTDONE	= -9,
-    _TID	= -10,
-    _NELEMENTS	= -11,
-    _PROBFILTER	= -12,
-    _FLAGS	= -13,
-    _DFLAGS	= -14,
-    _GOAL	= -15,
-    _DBMODE	= -16,
-    _COLOR	= -17,
-    _PREFCOLOR	= -18,
+    _LENGTH	= -3,
+    _VSFLAGS	= -4,
+    _TYPE	= -5,
+    _ARBGOAL	= -6,
+    _ROOTDIR	= -7,
+    _CURRDIR	= -8,
+    _SELINUX	= -9,
+    _CHROOTDONE	= -10,
+    _TID	= -11,
+    _NELEMENTS	= -12,
+    _PROBFILTER	= -13,
+    _FLAGS	= -14,
+    _DFLAGS	= -15,
+    _GOAL	= -16,
+    _DBMODE	= -17,
+    _COLOR	= -18,
+    _PREFCOLOR	= -19,
 };
 
 static JSPropertySpec rpmts_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"length",	_LENGTH,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"vsflags",	_VSFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"type",	_TYPE,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"arbgoal",	_ARBGOAL,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -244,9 +280,13 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
+_PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
+	break;
+    case _LENGTH:
+	*vp = INT_TO_JSVAL(rpmtsNElements(ts));
 	break;
     case _VSFLAGS:
 	*vp = INT_TO_JSVAL((jsint)rpmtsVSFlags(ts));
@@ -313,16 +353,31 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	ok = JS_TRUE;
 	break;
     default:
-#ifdef	DYING
-      {	JSString * str = JS_ValueToString(cx, id);
-	const char * name = JS_GetStringBytes(str);
-	if (!strcmp(name, "NVRA")) {
-	    JSObject * NVRA = rpmtsLoadNVRA(cx, obj);
-	    *vp = OBJECT_TO_JSVAL(NVRA);
-	    ok = JS_TRUE;
+	if (JSVAL_IS_INT(id)) {
+	    int oc = JSVAL_TO_INT(id);
+	    JSObject *teo = NULL;
+	    rpmte te = NULL;
+	    /* XXX rpmteLink/rpmteUnlink are no-ops */
+	    if ((te = rpmtsElement(ts, oc)) != NULL
+	     && (teo = JS_NewObject(cx, &rpmteClass, NULL, NULL)) != NULL
+	     && JS_SetPrivate(cx, teo, rpmteLink(rpmtsElement(ts, oc))))
+	    {
+		*vp = OBJECT_TO_JSVAL(teo);
+		ok = JS_TRUE;
+	    }
 	    break;
 	}
-      }
+#ifdef	DYING
+	if (JSVAL_IS_STRING(id)) {
+	    JSString * str = JS_ValueToString(cx, id);
+	    const char * name = JS_GetStringBytes(str);
+	    if (!strcmp(name, "NVRA")) {
+		JSObject * NVRA = rpmtsLoadNVRA(cx, obj);
+		*vp = OBJECT_TO_JSVAL(NVRA);
+		ok = JS_TRUE;
+	    }
+	    break;
+	}
 #endif
 	break;
     }
@@ -437,7 +492,9 @@ rpmts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
     JSBool ok = JS_FALSE;
+    int oc;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
@@ -446,7 +503,24 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	goto exit;
     }
 
-    *objp = obj;	/* XXX always resolve in this object. */
+    if (JSVAL_IS_INT(id) && (oc = JSVAL_TO_INT(id)) >= 0 && oc < ts->orderCount)
+    {
+	int oc = JSVAL_TO_INT(id);
+	JSObject *teo = NULL; 
+	rpmte te = NULL;
+	/* XXX rpmteLink/rpmteUnlink are no-ops */
+	if ((te = rpmtsElement(ts, oc)) == NULL
+	 || (teo = JS_NewObject(cx, &rpmteClass, NULL, NULL)) == NULL
+	 || !JS_SetPrivate(cx, teo, rpmteLink(te))
+         || !JS_DefineElement(cx, obj, oc, OBJECT_TO_JSVAL(teo),
+                        NULL, NULL, JSPROP_ENUMERATE))
+	{
+            *objp = NULL;
+            goto exit;
+        }
+        *objp = obj;
+    } else
+        *objp = NULL;
 
     ok = JS_TRUE;
 exit:
@@ -480,7 +554,6 @@ rpmts_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     rpmtsi tsi;
-    rpmte te;
     JSObject *tsio = NULL;
     JSBool ok = JS_FALSE;
 
@@ -505,13 +578,12 @@ fprintf(stderr, "\tINIT tsio %p tsi %p\n", tsio, tsi);
     case JSENUMERATE_NEXT:
 	tsio = (JSObject *) JSVAL_TO_OBJECT(*statep);
 	tsi = JS_GetInstancePrivate(cx, tsio, &rpmtsiClass, NULL);
+	if (rpmtsiNext(tsi, 0) != NULL) {
+	    int oc = rpmtsiOc(tsi);
 if (_debug)
-fprintf(stderr, "\tNEXT tsio %p tsi %p\n", tsio, tsi);
-#ifdef	NOTYET
-	if ((te = rpmtsiNext(tsi, 0)) != NULL) {
-	    JS_ValueToId(cx, INT_TO_JSVAL(he->tag), idp);
+fprintf(stderr, "\tNEXT tsio %p tsi %p[%d]\n", tsio, tsi, oc);
+	    JS_ValueToId(cx, INT_TO_JSVAL(oc), idp);
 	} else
-#endif
 	    *idp = JSVAL_VOID;
 	if (*idp != JSVAL_VOID)
 	    break;

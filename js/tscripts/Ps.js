@@ -19,8 +19,8 @@ var RPMPROB_NOREPACKAGE	= 14; /*!< re-packaged package ... is missing */
 var ps = new Ps();
 ack("typeof ps;", "object");
 ack("ps instanceof Ps;", true);
-// ack("ps.debug = 1;", 1);
-// ack("ps.debug = 0;", 0);
+ack("ps.debug = 1;", 1);
+ack("ps.debug = 0;", 0);
 
 var PKG = "PKG";
 var ALT = "ALT";
