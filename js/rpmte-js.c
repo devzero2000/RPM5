@@ -6,6 +6,8 @@
 
 #include "rpmts-js.h"
 #include "rpmte-js.h"
+#include "rpmds-js.h"
+#include "rpmfi-js.h"
 #include "rpmhdr-js.h"
 #include "rpmjs-debug.h"
 
@@ -27,18 +29,115 @@ static int _debug = 0;
 /* --- helpers */
 
 /* --- Object methods */
+static JSBool
+rpmte_ds(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
+    rpmte te = ptr;
+    rpmTag tagN = RPMTAG_NAME;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
+        goto exit;
+    {	rpmds ds = NULL;
+	JSObject *dso = NULL;
+	if ((ds = rpmteDS(te, tagN)) != NULL
+	 && (dso = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) != NULL
+	 && JS_SetPrivate(cx, dso, ds))
+	    *rval = OBJECT_TO_JSVAL(dso);
+    }
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmte_fi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
+    rpmte te = ptr;
+    rpmTag tagN = RPMTAG_BASENAMES;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
+        goto exit;
+    {	rpmfi fi = NULL;
+	JSObject *fio = NULL;
+	if ((fi = rpmteFI(te, tagN)) != NULL
+	 && (fio = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) != NULL
+	 && JS_SetPrivate(cx, fio, fi))
+	    *rval = OBJECT_TO_JSVAL(fio);
+    }
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
 
 static JSFunctionSpec rpmte_funcs[] = {
+    JS_FS("ds",		rpmte_ds,		0,0,0),
+    JS_FS("fi",		rpmte_fi,		0,0,0),
     JS_FS_END
 };
 
 /* --- Object properties */
 enum rpmte_tinyid {
     _DEBUG	= -2,
+    _TYPE	= -3,
+    _N		= -4,
+    _E		= -5,
+    _V		= -6,
+    _R		= -7,
+    _A		= -8,
+    _O		= -9,
+    _NEVR	= -10,
+    _NEVRA	= -11,
+    _PKGID	= -12,
+    _HDRID	= -13,
+    _COLOR	= -14,
+    _PKGFSIZE	= -15,
+    _BREADTH	= -16,
+    _DEPTH	= -17,
+    _NPREDS	= -18,
+    _DEGREE	= -19,
+    _PARENT	= -20,
+    _TREE	= -21,
+    _ADDEDKEY	= -22,
+    _DBOFFSET	= -23,
+    _KEY	= -24,
 };
 
 static JSPropertySpec rpmte_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"type",	_TYPE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"N",	_N,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"E",	_E,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"V",	_V,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"R",	_R,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"A",	_A,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"O",	_O,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"NEVR",	_NEVR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"NEVRA",	_NEVRA,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pkgid",	_PKGID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"hdrid",	_HDRID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"color",	_COLOR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pkgfsize",_PKGFSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"breadth",	_BREADTH,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"depth",	_DEPTH,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"npreds",	_NPREDS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"degree",	_DEGREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"parent",	_PARENT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"tree",	_TREE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"addedkey",_ADDEDKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dboffset",_DBOFFSET,	JSPROP_ENUMERATE,	NULL,	NULL},
+#ifdef	NOTYET
+    {"key",	_KEY,		JSPROP_ENUMERATE,	NULL,	NULL},
+#endif
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -62,6 +161,7 @@ static JSBool
 rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
+    rpmte te = ptr;
     jsint tiny = JSVAL_TO_INT(id);
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
@@ -71,6 +171,96 @@ rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	ok = JS_TRUE;
 	break;
+    case _TYPE:
+	*vp = INT_TO_JSVAL(rpmteType(te));	/* XXX should be string */
+	ok = JS_TRUE;
+	break;
+    case _N:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteN(te)));
+	ok = JS_TRUE;
+	break;
+    case _E:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteE(te)));
+	ok = JS_TRUE;
+	break;
+    case _V:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteV(te)));
+	ok = JS_TRUE;
+	break;
+    case _R:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteR(te)));
+	ok = JS_TRUE;
+	break;
+    case _A:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteA(te)));
+	ok = JS_TRUE;
+	break;
+    case _O:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteO(te)));
+	ok = JS_TRUE;
+	break;
+    case _NEVR:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteNEVR(te)));
+	ok = JS_TRUE;
+	break;
+    case _NEVRA:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteNEVRA(te)));
+	ok = JS_TRUE;
+	break;
+    case _PKGID:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmtePkgid(te)));
+	ok = JS_TRUE;
+	break;
+    case _HDRID:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteHdrid(te)));
+	ok = JS_TRUE;
+	break;
+    case _COLOR:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _PKGFSIZE:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _BREADTH:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _DEPTH:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _NPREDS:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _DEGREE:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _PARENT:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _TREE:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _ADDEDKEY:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+    case _DBOFFSET:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+#ifdef	NOTYET
+    case _KEY:
+	*vp = INT_TO_JSVAL(rpmteColor(te));
+	ok = JS_TRUE;
+	break;
+#endif
     default:
 	break;
     }

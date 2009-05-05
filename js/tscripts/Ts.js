@@ -1,5 +1,9 @@
 if (loglvl) print("--> Ts.js");
 
+var RPMTAG_NAME		= 1000;
+var RPMTAG_PROVIDENAME	= 1047;
+var RPMTAG_BASENAMES	= 1117;
+
 var ts = new Ts();
 ack("typeof ts;", "object");
 ack("ts instanceof Ts;", true);
@@ -15,20 +19,26 @@ ack("ts.vsflags = vsflags", vsflags);
 ack("ts.vsflags = 0", 0);
 
 ack("ts.add('-popt')", true);
+ack("ts[ts.length-1].N", "popt");
 ack("ts.add('+bash')", true);
+ack("ts[ts.length-1].N", "bash");
 ack("ts.add('glibc')", true);
+ack("ts[ts.length-1].N", "glibc");
 
 var ix = 0;
 for (var [key,te] in Iterator(ts)) {
     ack("typeof te;", "object");
     ack("te instanceof Te;", true);
     ack("key == ix", true);
+//  print(JSON.stringify(te.ds(RPMTAG_NAME)));
+//  print(JSON.stringify(te.ds(RPMTAG_PROVIDENAME)));
+//  print(JSON.stringify(te.fi(RPMTAG_BASENAMES)));
     ix++;
 }
 ack("ts.length == ix", true);
 
-ack("ts.check()", true);
-ack("ts.order()", true);
-ack("ts.run()", true);
+// ack("ts.check()", true);
+// ack("ts.order()", true);
+// ack("ts.run()", true);
 
 if (loglvl) print("<-- Ts.js");
