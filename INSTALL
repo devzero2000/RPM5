@@ -49,6 +49,7 @@ DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
 System libelf   optional  -       -       e.g. http://www.mr511.de/software/english.html
+CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
 --------------- --------- ------- ------- -------------------------------------
 
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
