@@ -28,6 +28,8 @@
 
 #include <rpmcli.h>
 
+#include <rpmsyck.h>
+
 #include "debug.h"
 
 /*@access miRE@*/
@@ -502,7 +504,7 @@ exit:
 }
 /*@=onlytrans@*/
 
-#if defined(WITH_CPUINFO)
+#if defined(WITH_CPUINFO) && defined(WITH_SYCK)
 static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds cpuinfo)
 {
     rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, EVR, RPMSENSE_PROBE);
@@ -515,67 +517,96 @@ static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds 
 static rpmRC rpmCpuinfo(void)
 {
     rpmRC rc = RPMRC_FAIL;
-    const char *cpu;
+    const char *cpu, *_cpuinfo_path;
     miRE mi_re = NULL;
-    int mi_nre = 0;
-    int xx;
+    int mi_nre = 0, xx, i;
     CVOG_t cvog = NULL;
     rpmds cpuinfo = NULL;
+    struct stat st;
+    char *yaml; 
+    rpmsyck_node *tmp, node;    
+    FD_t fd;
+    hashTable map;
+
+    _cpuinfo_path = rpmGetPath("%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/cpuinfo.yaml", NULL);
+    if(Stat(_cpuinfo_path, &st))
+	return rc;
+
+    fd = Fopen(_cpuinfo_path, "r");
+    _cpuinfo_path = _free(_cpuinfo_path);
+    yaml = xcalloc(st.st_size+1, 1);
+    Fread (yaml, 1, st.st_size, fd);
 
     xx = rpmdsCpuinfo(&cpuinfo, NULL);
 
-    if(rpmCpuinfoMatch("cpuinfo([x86])", "", cpuinfo)) {
-	if(rpmCpuinfoMatch("cpuinfo(64bit)", "", cpuinfo))
-	{
-    	    xx = mireAppend(RPMMIRE_REGEX, 0, "x86_64", NULL, &mi_re, &mi_nre);
-    	    xx = mireAppend(RPMMIRE_REGEX, 0, "amd64", NULL, &mi_re, &mi_nre);
-	}
-    	if(rpmCpuinfoMatch("cpuinfo(cmov)", "", cpuinfo)) {
-    	    if(rpmCpuinfoMatch("cpuinfo(mmx)", "", cpuinfo)) {
-		if(rpmCpuinfoMatch("cpuinfo(sse)", "", cpuinfo)) {
-		    if(rpmCpuinfoMatch("cpuinfo(sse2)", "", cpuinfo))
-			xx = mireAppend(RPMMIRE_REGEX, 0, "pentium4", NULL, &mi_re, &mi_nre);
-		    xx = mireAppend(RPMMIRE_REGEX, 0, "pentium3", NULL, &mi_re, &mi_nre);
+    map = rpmSyckLoad(yaml)[0].value.map;
+    htGetEntry(map, "cpuinfo", &tmp, NULL, NULL);
+    node = tmp[0]->value.seq;
+
+    /* TODO: cleanup.. */
+    for(i = 0; node[i].type != T_END; i++) {
+	if(node[i].type == T_MAP) {
+	    rpmsyck_node *tmp;
+	    if(htHasEntry(node[i].value.map, "Family")) {
+		htGetEntry(node[i].value.map, "Family", &tmp, NULL, NULL);
+		const char *family = tmp[0]->key;
+		int j;
+		hashTable cpus = NULL; 
+		if(rpmCpuinfoMatch(family, "", cpuinfo)) {
+		    if(htHasEntry(node[i].value.map, "Arch")) {
+			htGetEntry(node[i].value.map, "Arch", &tmp, NULL, NULL);
+			rpmsyck_node arch = tmp[0]->value.seq;
+			cpus = htCreate(15*2, 0, 0, NULL, NULL);
+			for(j = 0; arch[j].type != T_END; j++) {
+			    if(htHasEntry(arch[j].value.map, "Extends")) {
+				if(htGetEntry(arch[j].value.map, "Extends", &tmp, NULL, NULL) &&
+					tmp[0]->type == T_STR && !htHasEntry(cpus, tmp[0]->key))
+				    continue;
+			    }
+			    if(htHasEntry(arch[j].value.map, "Features")) {
+				htGetEntry(arch[j].value.map, "Features", &tmp, NULL, NULL);
+				rpmsyck_node features = tmp[0]->value.seq;
+				int k, match = 0;
+				for(k = 0; features[k].type != T_END; k++)
+				    if(features[k].type == T_STR && !(match = rpmCpuinfoMatch(features[k].key, "", cpuinfo))) break;
+				if(!match) continue;
+			    }
+			    if(htHasEntry(arch[j].value.map, "Name")) {
+				htGetEntry(arch[j].value.map, "Name", &tmp, NULL, NULL);
+				if(tmp[0]->type != T_STR) continue;
+				const char *name = tmp[0]->key;
+				rpmsyck_node alias = NULL;
+				if(htHasEntry(arch[j].value.map, "Alias")) {
+				    htGetEntry(arch[j].value.map, "Alias", &tmp, NULL, NULL);
+				    alias = tmp[0]->value.seq;
+				}
+				else {
+				    alias = xmalloc(sizeof(struct rpmsyck_node_s));
+				    alias[0].type = T_END;
+				}
+
+				htAddEntry(cpus, name, alias);
+			    }
+			}
+		    }
+		    if(htHasEntry(node[i].value.map, "Priority")) {
+			htGetEntry(node[i].value.map, "Priority", &tmp, NULL, NULL);
+			rpmsyck_node priority = tmp[0]->value.seq;
+			int j;
+			for(j = 0; priority[j].type != T_END; j++)
+			    if(htHasEntry(cpus, priority[j].key)) {
+				xx = mireAppend(RPMMIRE_REGEX, 0, priority[j].key, NULL, &mi_re, &mi_nre);
+
+				htGetEntry(cpus, priority[j].key, &tmp, NULL, NULL);
+				rpmsyck_node alias = tmp[0];
+				int k;
+				for(k = 0; alias[k].type != T_END; k++)
+				    xx = mireAppend(RPMMIRE_REGEX, 0, alias[k].key, NULL, &mi_re, &mi_nre);
+			    }
+		    }
 		}
-		if(rpmCpuinfoMatch("cpuinfo(3dnowext)", "", cpuinfo))
-		    xx = mireAppend(RPMMIRE_REGEX, 0, "athlon", NULL, &mi_re, &mi_nre);
-		xx = mireAppend(RPMMIRE_REGEX, 0, "pentium2", NULL, &mi_re, &mi_nre);
 	    }
-	    xx = mireAppend(RPMMIRE_REGEX, 0, "i686", NULL, &mi_re, &mi_nre);
 	}
-	if(rpmCpuinfoMatch("cpuinfo(3dnow)", "", cpuinfo) && rpmCpuinfoMatch("cpuinfo(mmx)", "", cpuinfo))
-	    xx = mireAppend(RPMMIRE_REGEX, 0, "geode", NULL, &mi_re, &mi_nre);
-	if(rpmCpuinfoMatch("cpuinfo(tsc)", "", cpuinfo))
-	    xx = mireAppend(RPMMIRE_REGEX, 0, "i586", NULL, &mi_re, &mi_nre);
-	if(rpmCpuinfoMatch("cpuinfo(ac)", "", cpuinfo))
-	    xx = mireAppend(RPMMIRE_REGEX, 0, "i486", NULL, &mi_re, &mi_nre);
-	xx = mireAppend(RPMMIRE_REGEX, 0, "i386", NULL, &mi_re, &mi_nre);
-	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
-    }
-
-    if(rpmCpuinfoMatch("cpuinfo([ppc])", "", cpuinfo)) {
-	if(rpmCpuinfoMatch("cpuinfo(64bit)", "", cpuinfo))
-    	    xx = mireAppend(RPMMIRE_REGEX, 0, "ppc64", NULL, &mi_re, &mi_nre);
-	xx = mireAppend(RPMMIRE_REGEX, 0, "ppc", NULL, &mi_re, &mi_nre);
-	xx = mireAppend(RPMMIRE_REGEX, 0, "fat", NULL, &mi_re, &mi_nre);
-    }
-
-    if(rpmCpuinfoMatch("cpuinfo([ia64])", "", cpuinfo))
-	xx = mireAppend(RPMMIRE_REGEX, 0, "ia64", NULL, &mi_re, &mi_nre);
-
-    /* XXX: libcpuinfo only have irix support for now.. */
-    if(rpmCpuinfoMatch("cpuinfo([mips])", "", cpuinfo)) {
-	int bit64 = rpmCpuinfoMatch("cpuinfo(64bit)", "", cpuinfo);
-	if(rpmCpuinfoMatch("cpuinfo(endianness)", "big", cpuinfo)) {
-    	    if(bit64)
-		xx = mireAppend(RPMMIRE_REGEX, 0, "mips64", NULL, &mi_re, &mi_nre);
-	    xx = mireAppend(RPMMIRE_REGEX, 0, "mips", NULL, &mi_re, &mi_nre);
-	}
-	else if(rpmCpuinfoMatch("cpuinfo(endianness)",  "little", cpuinfo)) {
-    	    if(bit64)
-		xx = mireAppend(RPMMIRE_REGEX, 0, "mips64el", NULL, &mi_re, &mi_nre);
-	    xx = mireAppend(RPMMIRE_REGEX, 0, "mipsel", NULL, &mi_re, &mi_nre);
-    	}
     }
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
@@ -591,9 +622,9 @@ static rpmRC rpmCpuinfo(void)
 	    addMacro(NULL, "_host_vendor", NULL, cvog->vendor, -1);
 	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
 	}
-    	if (cvog) {
-	   cvog->str = _free(cvog->str);
-   	   cvog = _free(cvog);
+	if (cvog) {
+	    cvog->str = _free(cvog->str);
+	    cvog = _free(cvog);
 	}
 
 	rc = RPMRC_OK;
@@ -712,7 +743,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (cp == NULL || cp[0] == '\0')
 	    cp = _platform;
 	if (rpmPlatform(cp) == RPMRC_OK) {
-#elif defined(WITH_CPUINFO)
+#elif defined(WITH_CPUINFO) && defined(WITH_SYCK)
 	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK) {
 #else
 	if (rpmPlatform(_platform) == RPMRC_OK) {
