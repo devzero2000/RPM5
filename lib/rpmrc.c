@@ -28,7 +28,9 @@
 
 #include <rpmcli.h>
 
+#if defined(WITH_CPUINFO)
 #include <rpmsyck.h>
+#endif
 
 #include "debug.h"
 

@@ -71,7 +71,8 @@ rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
     return syck_add_sym( p, (char *) tn );
 }
 
-rpmsyck_node rpmSyckLoad(char *yaml) {
+rpmsyck_node rpmSyckLoad(char *yaml)
+{
     SyckParser *parser;
     SYMID v;
     rpmsyck_node nodes;
