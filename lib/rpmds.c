@@ -1204,7 +1204,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
      	unsigned char uc[4];
     };
     static union _dbswap orderedbytes = { .ui = 0x11223344 };
-    const char * endianness = NULL;
+    const char * endian = NULL;
 
     snprintf(tmp, 19, "%d", cpuinfo_get_frequency(cip));
     tmp[19] = '\0';
@@ -1215,12 +1215,12 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     rpmdsNSAdd(dsp, NS, "cpu_threads", tmp, RPMSENSE_PROBE|RPMSENSE_EQUAL);
 
     if(orderedbytes.uc[0] == 0x44)
-	endianness = "little";
+	endian = "little";
     else if(orderedbytes.uc[0] == 0x11)
-	endianness = "big";
+	endian = "big";
     else if(orderedbytes.uc[0] == 0x22)
-	endianness = "pdp";
-    rpmdsNSAdd(dsp, NS, "endianness", endianness, RPMSENSE_PROBE|RPMSENSE_EQUAL);
+	endian = "pdp";
+    rpmdsNSAdd(dsp, NS, "endian", endian, RPMSENSE_PROBE|RPMSENSE_EQUAL);
 
     for (feature = cpuinfo_feature_common; feature != cpuinfo_feature_architecture_max; feature++) {
 	if(feature == cpuinfo_feature_common_max)
