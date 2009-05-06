@@ -1155,7 +1155,7 @@ static int rpm_hostname(lua_State *L)
     if ((hbn = gethostbyname(hostname)) != NULL)
         h = hbn->h_name;
     else
-        h = "localhost";
+        h = hostname;
 /*@=multithreaded@*/
     lua_pushstring(L, (const char *)h);
     return 1;
