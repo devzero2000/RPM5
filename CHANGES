@@ -1,4 +1,5 @@
 5.1.9 -> 5.1.10:
+    - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
 
 5.1.8 -> 5.1.9:
     - rse: fix release tarball rolling after recent addition of local copies of XZ, PCRE and Syck
