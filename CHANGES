@@ -1,5 +1,10 @@
 
+5.2b1 -> 5.3a1
+
+=============================================================================
+
 5.2a4 -> 5.2b1:
+    [...]
     - proyvind: cpuinfo: move out cpuinfo feature dependencies to YAML.
     - proyvind: rpmsyck: first shot at YAML parser in pure C.
     - proyvind: get rid of parallel %___NVRDA macro, just merge it with %___NVRA in stead.
