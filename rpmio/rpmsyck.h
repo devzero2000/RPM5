@@ -1,11 +1,10 @@
 #ifndef H_RPMSYCK
 #define H_RPMSYCK
 
-#if defined(WITH_SYCK)
-
-#include <syck.h>
 #include <rpmhash.h>
 
+/**
+ */
 typedef enum {
     T_STR,
     T_SEQ,
@@ -13,8 +12,13 @@ typedef enum {
     T_END
 } syck_type_t; 
 
+/**
+ */
 typedef struct rpmsyck_node_s * rpmsyck_node;
 
+#if defined(_RPMSYCK_INTERNAL)
+/**
+ */
 struct rpmsyck_node_s {
     syck_type_t type;
     char *tag;
@@ -24,9 +28,11 @@ struct rpmsyck_node_s {
 	hashTable map;
     } value;
 };
-
-rpmsyck_node rpmSyckLoad(char *yaml);
-
 #endif
+
+/**
+ */
+rpmsyck_node rpmSyckLoad(char *yaml)
+	/*@*/;
 
 #endif /* H_RPMSYCK */

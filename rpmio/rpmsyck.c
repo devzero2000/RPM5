@@ -4,8 +4,8 @@
 
 #include <syck.h>
 #include <rpmhash.h>
+#define	_RPMSYCK_INTERNAL
 #include <rpmsyck.h>
-
 
 static SYMID
 rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
