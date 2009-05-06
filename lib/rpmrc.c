@@ -524,9 +524,8 @@ static rpmRC rpmCpuinfo(void)
     rpmds cpuinfo = NULL;
     struct stat st;
     char *yaml; 
-    rpmsyck_node *tmp, node;    
+    rpmsyck_node *tmp, cpuinfoYaml, node;
     FD_t fd;
-    hashTable map;
 
     _cpuinfo_path = rpmGetPath("%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/cpuinfo.yaml", NULL);
     if(Stat(_cpuinfo_path, &st))
@@ -539,8 +538,9 @@ static rpmRC rpmCpuinfo(void)
 
     xx = rpmdsCpuinfo(&cpuinfo, NULL);
 
-    map = rpmSyckLoad(yaml)[0].value.map;
-    htGetEntry(map, "cpuinfo", &tmp, NULL, NULL);
+    cpuinfoYaml = rpmSyckLoad(yaml);
+    yaml = _free(yaml);
+    htGetEntry(cpuinfoYaml[0].value.map, "cpuinfo", &tmp, NULL, NULL);
     node = tmp[0]->value.seq;
 
     /* TODO: cleanup.. */
@@ -556,7 +556,8 @@ static rpmRC rpmCpuinfo(void)
 		    if(htHasEntry(node[i].value.map, "Arch")) {
 			htGetEntry(node[i].value.map, "Arch", &tmp, NULL, NULL);
 			rpmsyck_node arch = tmp[0]->value.seq;
-			cpus = htCreate(15*2, 0, 0, NULL, NULL);
+			for(j = 0; arch[j].type != T_END; j++);
+			cpus = htCreate(j*2, 0, 1, NULL, NULL);
 			for(j = 0; arch[j].type != T_END; j++) {
 			    if(htHasEntry(arch[j].value.map, "Extends")) {
 				if(htGetEntry(arch[j].value.map, "Extends", &tmp, NULL, NULL) &&
@@ -605,14 +606,14 @@ static rpmRC rpmCpuinfo(void)
 			    }
 		    }
 		}
+		if(cpus) cpus = htFree(cpus);
 	    }
 	}
     }
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
-    (void)rpmdsFree(cpuinfo);
-    cpuinfo = NULL;
+    cpuinfo = rpmdsFree(cpuinfo);
 
     cpu = mi_re[0].pattern;
     if(cpu != NULL)
