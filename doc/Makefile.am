@@ -6,7 +6,7 @@ SUBDIRS		+= fr ja ko pl ru sk
 endif
 
 man_MANS	= gendiff.1 rpm.8 rpmbuild.8 rpmcache.8 rpmdeps.8 \
-		rpmgraph.8 rpm2cpio.8 rpmconstant.8 rpmmtree.8
+		rpm2cpio.8 rpmconstant.8 rpmmtree.8 # rpmgraph.8
 
 EXTRA_DIST	= $(man_MANS)
 
