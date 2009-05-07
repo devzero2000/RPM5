@@ -75,6 +75,7 @@ LIBRPM_0
     rpmcliSign;
     rpmcliTargets;
     rpmcliVerify;
+    rpmdsA;
     rpmdsAnyMatchesDep;
     rpmdsBT;
     rpmdsColor;
@@ -318,6 +319,7 @@ LIBRPM_0
     rpmteTSI;
     rpmteType;
     rpmteV;
+    rpmtsARBGoal;
     rpmtsAcquireLock;
     rpmtsAddEraseElement;
     rpmtsAddInstallElement;
@@ -356,6 +358,7 @@ LIBRPM_0
     rpmtsOpenSDB;
     rpmtsOrder;
     rpmtsPRCO;
+    rpmtsPrefColor;
     rpmtsProblems;
     rpmtsRebuildDB;
     rpmtsRelocateElement;
@@ -363,6 +366,7 @@ LIBRPM_0
     rpmtsRun;
     rpmtsScriptFd;
     rpmtsSELinuxEnabled;
+    rpmtsSetARBGoal;
     rpmtsSetChrootDone;
     rpmtsSetColor;
     rpmtsSetCurrDir;
@@ -382,6 +386,7 @@ LIBRPM_0
     rpmtsSetVSFlags;
     rpmtsSolve;
     rpmtsSpec;
+    rpmtsType;
     _rpmts_debug;
     _rpmts_macros;
     _rpmts_stats;
