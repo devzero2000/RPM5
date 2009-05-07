@@ -809,22 +809,22 @@ print (t)\
 #
 %__gpg_check_password_cmd	%{__gpg} \
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
-%__pgp_check_password_cmd	%{__pgp} \
-	pgp +batchmode=on +verbose=0 "%{_pgp_name}" -sf
-%__pgp5_check_password_cmd	%{__pgp} \
-	pgps +batchmode=on +verbose=0 +armor=off "%{_pgp_name}" -f
+#%__pgp_check_password_cmd	%{__pgp} \
+#	pgp +batchmode=on +verbose=0 "%{_pgp_name}" -sf
+#%__pgp5_check_password_cmd	%{__pgp} \
+#	pgps +batchmode=on +verbose=0 +armor=off "%{_pgp_name}" -f
 
 %__gpg_sign_cmd			%{__gpg} \
 	gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning \
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
-%__pgp_sign_cmd			%{__pgp} \
-	pgp +batchmode=on +verbose=0 +armor=off \
-	"+myname=%{_pgp_name}" -sb %{__plaintext_filename} %{__signature_filename}
-%__pgp5_sign_cmd		%{__pgp} \
-	pgps +batchmode=on +verbose=0 +armor=off \
-	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
+#%__pgp_sign_cmd			%{__pgp} \
+#	pgp +batchmode=on +verbose=0 +armor=off \
+#	"+myname=%{_pgp_name}" -sb %{__plaintext_filename} %{__signature_filename}
+#%__pgp5_sign_cmd		%{__pgp} \
+#	pgps +batchmode=on +verbose=0 +armor=off \
+#	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
 
-# rpm-4.1 and later verifies signatures using beecrypt.
+# rpm-5.0 and later verifies signatures internally using beecrypt/NSS/openssl
 #%__gpg_verify_cmd		%{__gpg} \
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}
@@ -868,6 +868,7 @@ print (t)\
 #		0	uncolored (i.e. use only arch as install hint)
 #		1	Elf32 permitted
 #		2	Elf64 permitted
+#		4	MIPS reserved
 %_transaction_color	@RPMCANONCOLOR@
 
 #	A default autorelocation path prefixed to file paths of packages
@@ -875,15 +876,15 @@ print (t)\
 #	/emul/ia32 to i386 file paths, and nowhere else (yet).
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_autorelocate_path	@autorelocate_path@
+#%_autorelocate_path	@autorelocate_path@
 
 #	A default directory color to choose when directories are
 #	auto-relocated.
-%_autorelocate_dcolor @autorelocate_dcolor@
+#%_autorelocate_dcolor @autorelocate_dcolor@
 
 #	Open all indices before doing chroot(2).
 #
-%_openall_before_chroot	0
+#%_openall_before_chroot	0
 
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-vendor location. The macro is usually defined in
@@ -1004,7 +1005,7 @@ print (t)\
 #
 # XXX Note: the suggested file name is __db.000 to expedite
 # support issues, because users typically do "rm -f /var/lib/rpm/__db*",
-# which will clean up the fcntl lock.
+# which will clean up the fcntl lock at the same time.
 #%_rpmlock_path	%{_dbpath}/__db.000
 
 #==============================================================================
@@ -1129,13 +1130,13 @@ print (t)\
 # (runtime loader) list of directories it searches for shared objects.
 # Only used on platforms that don't have a configurable loader search
 # path via ldconfig, crle, or something similar. 
-%_rpmds_rld_search_path	/lib:/usr/lib
+#%_rpmds_rld_search_path	/lib:/usr/lib
 
 #
 # Full path and arguments to Solaris' command to list what directories
 # the runtime loader searches.  Needs to include `-64' for LP64 Solaris
 # systems.
-%_rpmds_crle_cmd		/usr/bin/crle
+#%_rpmds_crle_cmd		/usr/bin/crle
 
 #
 %_rpmds_getconf_path	/
@@ -1604,13 +1605,13 @@ done \
 #------------------------------------------------------------------------
 # lua macros
 #
-%rpm_license_check	%{expand:%%define rpm_license_check %{lua:\
-f = io.open("/dev/tty", "w")\
-if f then\
-    f:write ("\\nJust checking to see who is using rpm-@VERSION@.\\nThe RPM Package Manager license is LGPL, as always.\\nRelax ...\\n")\
-    f:close()\
-end\
-}1}%{rpm_license_check}
+#%rpm_license_check	%{expand:%%define rpm_license_check %{lua:\
+#f = io.open("/dev/tty", "w")\
+#if f then\
+#    f:write ("\\nJust checking to see who is using rpm-@VERSION@.\\nThe RPM Package Manager license is LGPL, as always.\\nRelax ...\\n")\
+#    f:close()\
+#end\
+#}1}%{rpm_license_check}
 
 #------------------------------------------------------------------------
 # perl(...) configuration
