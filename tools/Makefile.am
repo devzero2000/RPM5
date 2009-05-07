@@ -20,7 +20,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit rpmkey txar
+EXTRA_PROGRAMS = debugedit
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -42,12 +42,13 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-bin_PROGRAMS =		rpm2cpio rpmcache rpmdigest rpmgrep rpmmtree \
-	rpmrepo rpmspecdump rpmwget
-dist_man_MANS =		rpmgrep.1
+bin_PROGRAMS =		rpm2cpio
 
-pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmcmp rpmdeps @WITH_LIBELF_DEBUGEDIT@
+pkgbindir =		@USRLIBRPM@/bin
+pkgbin_PROGRAMS =	\
+	rpmcache rpmdigest grep mtree rpmrepo rpmspecdump wget \
+	rpmcmp rpmdeps rpmkey txar @WITH_LIBELF_DEBUGEDIT@
+dist_man_MANS =		rpmgrep.1
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(RPM_LDADD_COMMON)
@@ -64,11 +65,11 @@ rpmdeps_LDADD =		$(RPM_LDADD_COMMON)
 rpmdigest_SOURCES =	rpmdigest.c
 rpmdigest_LDADD =	$(RPMIO_LDADD_COMMON)
 
-rpmgrep_SOURCES =	rpmgrep.c
-rpmgrep_LDADD =		$(RPMIO_LDADD_COMMON)
+grep_SOURCES =		rpmgrep.c
+grep_LDADD =		$(RPMIO_LDADD_COMMON)
 
-rpmmtree_SOURCES =	rpmmtree.c
-rpmmtree_LDADD =	$(RPM_LDADD_COMMON)
+mtree_SOURCES =		rpmmtree.c
+mtree_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmrepo_SOURCES =	rpmrepo.c
 rpmrepo_CPPFLAGS =	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts $(CPPFLAGS)
@@ -77,8 +78,8 @@ rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
 rpmspecdump_SOURCES =	rpmspecdump.c
 rpmspecdump_LDADD =	$(RPMBUILD_LDADD_COMMON)
 
-rpmwget_SOURCES = rpmwget.c
-rpmwget_LDADD = $(RPMIO_LDADD_COMMON)
+wget_SOURCES =		rpmwget.c
+wget_LDADD =		$(RPMIO_LDADD_COMMON)
 
 ##
 ## Traditional rpm2cpio
@@ -105,7 +106,7 @@ txar_LIBS =		@WITH_XAR_LIBS@
 
 if WITH_DB_INTERNAL
 if WITH_DB_TOOLS_INTEGRATED
-pkglib_PROGRAMS += db_tool
+pkgbin_PROGRAMS += db_tool
 db_tool_SOURCES = db_tool.c
 db_tool_CPPFLAGS = \
 	-I$(top_builddir)/db3 \
@@ -153,18 +154,19 @@ endif
 install-data-local:
 if WITH_DB_INTERNAL
 if WITH_DB_TOOLS_INTEGRATED
-	$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkglibPROGRAMS_INSTALL) \
-		$(builddir)/db_tool $(DESTDIR)$(pkglibdir)/db_tool
+	@[ -d $(pkgbindir) ] || $(mkinstalldirs) $(pkgbindir)
+	$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkgbinPROGRAMS_INSTALL) \
+		$(builddir)/db_tool $(DESTDIR)$(pkgbindir)/db_tool
 	for tool in . $(my_DB_TOOLS); do \
 		test ".$$tool" = .. && continue; \
-		rm -f $(DESTDIR)$(pkglibdir)/$$tool; \
-		ln $(DESTDIR)$(pkglibdir)/db_tool $(DESTDIR)$(pkglibdir)/$$tool; \
+		rm -f $(DESTDIR)$(pkgbindir)/$$tool; \
+		ln $(DESTDIR)$(pkgbindir)/db_tool $(DESTDIR)$(pkgbindir)/$$tool; \
 	done
 else
 	for tool in . $(my_DB_TOOLS); do \
 		test ".$$tool" = .. && continue; \
-		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkglibPROGRAMS_INSTALL) \
-		$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkglibdir)/$$tool; \
+		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkgbinPROGRAMS_INSTALL) \
+		$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkgbindir)/$$tool; \
 	done
 endif
 endif

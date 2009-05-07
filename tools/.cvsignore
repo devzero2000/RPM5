@@ -13,9 +13,9 @@ rpmcache
 rpmcmp
 rpmdeps
 rpmdigest
-rpmgrep
-rpmmtree
+grep
+mtree
 rpmrepo
 rpmspecdump
-rpmwget
+wget
 txar
