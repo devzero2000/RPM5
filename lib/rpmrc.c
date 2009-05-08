@@ -28,7 +28,11 @@
 
 #include <rpmcli.h>
 
+#if defined(WITH_CPUINFO) && defined(WITH_SYCK)
+#include <syck.h>
+#define	_RPMSYCK_INTERNAL
 #include <rpmsyck.h>
+#endif
 
 #include "debug.h"
 
