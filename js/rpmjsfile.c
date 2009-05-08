@@ -53,7 +53,7 @@
 #if JS_HAS_FILE_OBJECT
 
 #include "jsstddef.h"
-#include "rpmjsio.h"
+#include "rpmjsfile.h"
 
 /* ----------------- Platform-specific includes and defines ----------------- */
 #if defined(XP_WIN) || defined(XP_OS2)
@@ -216,7 +216,7 @@ int32_t PR_Close(FD_t fd)
 typedef enum JSFileErrNum {
 #define MSG_DEF(name, number, count, exception, format) \
     name = number,
-#include "rpmjsio.msg"
+#include "rpmjsfile.msg"
 #undef MSG_DEF
     JSFileErr_Limit
 #undef MSGDEF
@@ -232,7 +232,7 @@ JSErrorFormatString JSFile_ErrorFormatString[JSFileErr_Limit] = {
 #define MSG_DEF(name, number, count, exception, format) \
     { NULL, count },
 #endif
-#include "rpmjsio.msg"
+#include "rpmjsfile.msg"
 #undef MSG_DEF
 };
 
