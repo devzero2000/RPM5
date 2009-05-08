@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+     - proyvind: remove %distepoch from %provideversion as it will break
+	compatibility with rpm <= 4.5.
      - proyvind: rpm4compat: add a wrapper function for headerFormat().
      - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
 
