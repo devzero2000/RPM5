@@ -21,8 +21,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_ZLIB_CPPFLAGS@
 
 EXTRA_DIST =
-
-EXTRA_PROGRAMS = trb
+EXTRA_PROGRAMS =
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -44,7 +43,11 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-noinst_LTLIBRARIES = rpmrbm.la
+pkglibdir =     @USRLIBRPM@/lib
+pkgbindir =     @USRLIBRPM@/bin
+
+pkgbin_PROGRAMS =       trb
+pkglib_LTLIBRARIES =    rpmrbm.la
 
 rpmrbm_la_CFLAGS = -fno-strict-aliasing
 rpmrbm_la_LDFLAGS = -module -avoid-version
