@@ -128,9 +128,14 @@ LIBRPMMISC_0
     syck_new_parser;
     syck_output_handler;
     syck_parse;
+    syck_parser_error_handler;
     syck_parser_handler;
+    syck_parser_implicit_typing;
     syck_parser_str;
+    syck_parser_str_auto;
+    syck_parser_taguri_expansion;
     syck_seq_read;
+    syck_strndup;
     xar_add_frombuffer;
     xar_close;
     xar_extract_tobuffersz;
