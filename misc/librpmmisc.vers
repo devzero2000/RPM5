@@ -110,6 +110,7 @@ LIBRPMMISC_0
     pcre_maketables;
     pcre_study;
     pcre_version;
+    rc_main;
     syck_add_sym;
     syck_emit;
     syck_emit_end;

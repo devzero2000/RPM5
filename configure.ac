@@ -712,7 +712,7 @@ AC_CHECK_FUNCS([dnl
     asprintf basename fallocate getaddrinfo getcwd getnameinfo getwd iconv inet_aton confstr dnl
     mtrace posix_fallocate putenv realpath setenv clearenv stpcpy stpncpy strcspn strdup dnl
     strndup strerror strtol strtoul strspn strstr sighold sigrelse sigpause dnl
-    sigprocmask sigemptyset sigaddset sigdelset sigsuspend madvise dnl
+    sigprocmask sigemptyset sigaddset sigdelset sigsuspend sigaction madvise dnl
     __secure_getenv regcomp ftok mkdtemp mkstemp setlocale getpassphrase dnl
     mempcpy getmode setmode dnl
 ])
@@ -1298,6 +1298,27 @@ RPM_CHECK_LIB(
       fi
     ], [])
 AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
+
+dnl # Rc
+RPM_CHECK_LIB(
+    [Rc], [rc],
+    [rc], [rc_main], [rc.h],
+    [no,internal:none], [rc],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          AC_DEFINE(HAVE_RC_H, 1, [Define to 1 if you have <rc.h>])
+	  AC_DEFINE(HAVE_LIBRC, 1, [Define to 1 if you have the 'rc' library (-lrc).])
+      fi
+    ], [])
+
+dnl # Bash
+RPM_CHECK_LIB(
+    [Bash], [bash],
+    [bash], [bash_main], [bashtypes.h],
+    [no,internal:none], [bash],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+	  AC_DEFINE(HAVE_LIBBASH, 1, [Define to 1 if you have the 'bash' library (-lbash).])
+      fi
+    ], [])
 
 dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
