@@ -115,9 +115,13 @@ void * mireFreeAll(miRE mire, int nmire)
 	int i;
 	for (i = 0; i < nmire; i++)
 	    (void) mireClean(mire + i);
-	/* XXX only the 1st element in the array has a usage mutex. */
-	mire = xrealloc(mire, sizeof(*mire));
-	mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
+	/* XXX rpmgrep doesn't use mire pools yet. retrofit a fix. */
+	if (mire->_item.use != NULL && mire->_item.pool != NULL) {
+	    /* XXX only the 1st element in the array has a usage mutex. */
+	    mire = xrealloc(mire, sizeof(*mire));
+	    mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
+	} else
+	    mire = _free(mire);
     }
     return NULL;
 }

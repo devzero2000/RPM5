@@ -1,9 +1,10 @@
 
 5.2b1 -> 5.3a1
-     - proyvind: remove %distepoch from %provideversion as it will break
+    - jbj: grep: fix: don't segfault if no usage mutex or pool attached.
+    - proyvind: remove %distepoch from %provideversion as it will break
 	compatibility with rpm <= 4.5.
-     - proyvind: rpm4compat: add a wrapper function for headerFormat().
-     - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
+    - proyvind: rpm4compat: add a wrapper function for headerFormat().
+    - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
 
 =============================================================================
 

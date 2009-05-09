@@ -1486,6 +1486,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
     /* Get memory to store the pattern and hints lists. */
+    /* XXX FIXME: rpmmireNew needs to be used here. */
     pattern_list = xcalloc(MAX_PATTERN_COUNT, sizeof(*pattern_list));
 
     /*
