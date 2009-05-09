@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: grep: fix: don't segfault if no usage mutex or pool attached.
     - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
     - proyvind: cpuinfo: move out cpuinfo feature dependencies to YAML.
     - proyvind: rpmsyck: first shot at YAML parser in pure C.
