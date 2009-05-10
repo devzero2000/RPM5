@@ -66,7 +66,7 @@ $stdout = StringIO.new($result, \"w+\")\n\
 
 rpmruby rpmrubyNew(const char ** av, int flags)
 {
-    static const char * _av[] = { "rpmpython", NULL };
+    static const char * _av[] = { "rpmruby", NULL };
     rpmruby ruby = rpmrubyGetPool(_rpmrubyPool);
 
     if (av == NULL) av = _av;
