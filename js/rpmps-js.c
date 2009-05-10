@@ -15,6 +15,10 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+#define	rpmps_addprop	JS_PropertyStub
+#define	rpmps_delprop	JS_PropertyStub
+#define	rpmps_convert	JS_ConvertStub
+
 /* --- helpers */
 
 /* --- Object methods */
@@ -79,21 +83,6 @@ static JSPropertySpec rpmps_props[] = {
     {NULL, 0, 0, NULL, NULL}
 };
 
-static JSBool
-rpmps_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
-
-static JSBool
-rpmps_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
 static JSBool
 rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
@@ -224,14 +213,6 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
     ok = JS_TRUE;
 exit:
     return ok;
-}
-
-static JSBool
-rpmps_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-_CONVERT_DEBUG_ENTRY(_debug);
-    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

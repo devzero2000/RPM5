@@ -15,6 +15,10 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+#define	uuid_addprop	JS_PropertyStub
+#define	uuid_delprop	JS_PropertyStub
+#define	uuid_convert	JS_ConvertStub
+
 typedef struct uuid_s {
     const char * ns_str;
     uuid_t  * ns;
@@ -142,22 +146,6 @@ static JSPropertySpec uuid_props[] = {
 };
 
 static JSBool
-uuid_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
-
-static JSBool
-uuid_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
-
-static JSBool
 uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
@@ -271,14 +259,6 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
     ok = JS_TRUE;
 exit:
     return ok;
-}
-
-static JSBool
-uuid_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
-_CONVERT_DEBUG_ENTRY(_debug);
-    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

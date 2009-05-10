@@ -36,6 +36,11 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+
+#define	rpmts_addprop	JS_PropertyStub
+#define	rpmts_delprop	JS_PropertyStub
+#define	rpmts_convert	JS_ConvertStub
+
 /* --- helpers */
 
 #ifdef	DYING
@@ -256,21 +261,6 @@ static JSPropertySpec rpmts_props[] = {
     {NULL, 0, 0, NULL, NULL}
 };
 
-static JSBool
-rpmts_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
-
-static JSBool
-rpmts_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
 static JSBool
 rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
@@ -600,14 +590,6 @@ fprintf(stderr, "\tFINI tsio %p tsi %p\n", tsio, tsi);
     ok = JS_TRUE;
 exit:
     return ok;
-}
-
-static JSBool
-rpmts_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
-_CONVERT_DEBUG_ENTRY(_debug);
-    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */
