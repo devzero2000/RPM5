@@ -56,7 +56,7 @@ cpuinfo:
       - Name: pentium3
         Extends: pentium2
         Features:
-          - cpuinfo(sse2)
+          - cpuinfo(sse)
 
       - Name: pentium4
         Extends: pentium3
