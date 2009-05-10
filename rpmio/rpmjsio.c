@@ -48,7 +48,7 @@
 
 #ifdef	WITH_JS
 #define XP_UNIX 1
-#define JS_HAS_FILE_OBJECT      1
+#undef JS_HAS_FILE_OBJECT
 
 #if JS_HAS_FILE_OBJECT
 
