@@ -16,6 +16,10 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+#define	rpmhdr_addprop	JS_PropertyStub
+#define	rpmhdr_delprop	JS_PropertyStub
+#define	rpmhdr_convert	JS_ConvertStub
+
 /* --- helpers */
 static JSObject *
 rpmhdrLoadTag(JSContext *cx, JSObject *obj, Header h, rpmTag tag, jsval *vp)
@@ -248,22 +252,6 @@ static JSPropertySpec rpmhdr_props[] = {
 };
 
 static JSBool
-rpmhdr_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
-
-static JSBool
-rpmhdr_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
-_PROP_DEBUG_ENTRY(_debug < 0);
-    return JS_TRUE;
-}
-
-static JSBool
 rpmhdr_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
@@ -428,14 +416,6 @@ fprintf(stderr, "\tFINI ho %p hi %p\n", ho, hi);
     ok = JS_TRUE;
 exit:
     return ok;
-}
-
-static JSBool
-rpmhdr_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmhdrClass, NULL);
-_CONVERT_DEBUG_ENTRY(_debug);
-    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

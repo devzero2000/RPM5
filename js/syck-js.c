@@ -17,6 +17,10 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+#define	syck_addprop	JS_PropertyStub
+#define	syck_delprop	JS_PropertyStub
+#define	syck_convert	JS_ConvertStub
+
 typedef struct syck_s {
     void * P;
 } * JSSyck;
@@ -290,28 +294,6 @@ static JSPropertySpec syck_props[] = {
 };
 
 static JSBool
-syck_addprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
-    return JS_TRUE;
-}
-
-static JSBool
-syck_delprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
-
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-
-    return JS_TRUE;
-}
-
-static JSBool
 syck_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
@@ -421,14 +403,6 @@ fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],0x%x,%p) property %s flags 0x%x{%s,%s,%s
 		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
 		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
 		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
-    return JS_TRUE;
-}
-
-static JSBool
-syck_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
-{
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%d,%p) convert to %s\n", __FUNCTION__, cx, obj, type, vp, JS_GetTypeName(cx, type));
     return JS_TRUE;
 }
 
