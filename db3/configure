@@ -23,7 +23,7 @@ while [ "$1" != "eoa_marker" ]; do
            -e 's%--with-db-largefile%--enable-largefile%' \
            -e 's%--without-db-largefile%--disable-largefile%' \
            -e 's%--with-db-mutex=\(.*\)%--with-mutex=\1%' \
-           -e 's%--with-tcl%%' \
+           -e 's%--with-tcl[^ ]*%%' \
            -e 's%--with-db-mutex%%' \
            -e 's%--without-db-mutex%%' \
    `
