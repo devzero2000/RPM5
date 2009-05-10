@@ -49,9 +49,18 @@ echo "<=== xz"
 echo "===> file"
 ( cd file && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== file"
-echo "===> rc"
-( cd rc && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== rc"
+
+if [ -d rc ]; then
+    echo "===> rc"
+    ( cd rc && sh ./autogen.sh --noconfigure "$@" )
+    echo "<=== rc"
+fi
+if [ -d bash ]; then
+    echo "===> bash"
+    ( cd bash && sh ./autogen.sh --noconfigure "$@" )
+    echo "<=== bash"
+fi
+
 echo "===> syck"
 ( cd syck && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== syck"
