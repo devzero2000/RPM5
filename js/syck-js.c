@@ -38,10 +38,14 @@ struct parser_xtra {
 static SYMID
 js_syck_parser_handler(SyckParser *p, SyckNode *n)
 {
+#ifdef	NOTYET
     struct parser_xtra *bonus = (struct parser_xtra *)p->bonus;
-    int o, o2, o3 = -1;
-    SYMID oid;
+    int o2;
+    int o3 = -1;
     int i;
+#endif
+    int o;
+    SYMID oid;
 
     switch (n->kind) {
     case syck_str_kind:
@@ -158,8 +162,8 @@ static void js_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 
 static void js_syck_mark_emitter(SyckEmitter *e, int idx)
 {
-    struct emitter_xtra *bonus = (struct emitter_xtra *)e->bonus;
 #ifdef	NOTYET
+    struct emitter_xtra *bonus = (struct emitter_xtra *)e->bonus;
     int type = lua_type(bonus->L, idx);
 
     switch (type) {
@@ -298,8 +302,10 @@ syck_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     if (JSVAL_IS_STRING(id)) {
 	char * str = JS_GetStringBytes(JSVAL_TO_STRING(id));
@@ -307,7 +313,6 @@ syck_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	for (fsp = syck_funcs; fsp->name != NULL; fsp++) {
 	    if (strcmp(fsp->name, str))
 		continue;
-	    ok = JS_TRUE;
 	    break;
 	}
 	goto exit;
@@ -316,19 +321,12 @@ syck_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     default:
 	break;
     }
 exit:
-    if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -336,24 +334,21 @@ syck_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-if (_debug) {
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],%p) ptr %p %s = %s\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), vp, ptr, JS_GetStringBytes(JS_ValueToString(cx, id)), JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */
-}
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool

@@ -76,23 +76,23 @@ rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmdbMatchIterator mi = ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     case _LENGTH:
     case _COUNT:	/* XXX is _LENGTH enuf? */
 	*vp = INT_TO_JSVAL(rpmdbGetIteratorCount(mi));
-	ok = JS_TRUE;
         break;
     case _INSTANCE:
 	*vp = INT_TO_JSVAL(rpmdbGetIteratorOffset(mi));
-	ok = JS_TRUE;
         break;
     default:
       {	JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
@@ -100,18 +100,13 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	rpmuint32_t ix = headerGetInstance(h);
 	if (ix != 0) {
 	    *vp = id;
-	    ok = JS_TRUE;
 if (_debug)
 fprintf(stderr, "\tGET  %p[%d] h %p\n", mi, ix, h);
 	}
       }	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -119,22 +114,21 @@ rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -145,14 +139,12 @@ rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     rpmdbMatchIterator mi = ptr;
     JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
     JSClass *c = (o ? OBJ_GET_CLASS(cx, o) : NULL);
-    JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
     if ((flags & JSRESOLVE_ASSIGNING)
      || (mi == NULL)) {	/* don't resolve to parent prototypes objects. */
 	*objp = NULL;
-	ok = JS_TRUE;
 	goto exit;
     }
 
@@ -163,7 +155,6 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	 || !JS_DefineElement(cx, obj, ix, id, NULL, NULL, JSPROP_ENUMERATE))
 	{
 	    *objp = NULL;
-	    ok = JS_TRUE;
             goto exit;
 	}
 if (_debug)
@@ -172,9 +163,8 @@ fprintf(stderr, "\tRESOLVE %p[%d] h %p\n", mi, ix, h);
     } else
 	*objp = NULL;
 
-    ok = JS_TRUE;
 exit:
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -184,7 +174,6 @@ rpmmi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmdbMatchIterator mi = ptr;
     Header h;
-    JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
@@ -214,8 +203,7 @@ fprintf(stderr, "\tFINI mi %p\n", mi);
 	*statep = JSVAL_NULL;
 	break;
     }
-    ok = JS_TRUE;
-    return ok;
+    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

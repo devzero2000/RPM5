@@ -150,8 +150,10 @@ uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     if (JSVAL_IS_STRING(id)) {
 	char * str = JS_GetStringBytes(JSVAL_TO_STRING(id));
@@ -159,7 +161,6 @@ uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	for (fsp = uuid_funcs; fsp->name != NULL; fsp++) {
 	    if (strcmp(fsp->name, str))
 		continue;
-	    ok = JS_TRUE;
 	    break;
 	}
 	goto exit;
@@ -168,17 +169,12 @@ uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     default:
 	break;
     }
 exit:
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-ok = JS_TRUE;  /* XXX avoid immediate interp exit by always succeeding. */
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -186,21 +182,21 @@ uuid_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -208,22 +204,19 @@ uuid_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
-    JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
     if ((flags & JSRESOLVE_ASSIGNING)
      || (ptr == NULL)) { /* don't resolve to parent prototypes objects. */
 	*objp = NULL;
-	ok = JS_TRUE;
 	goto exit;
     }
 
     *objp = obj;        /* XXX always resolve in this object. */
 
-    ok = JS_TRUE;
 exit:
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool

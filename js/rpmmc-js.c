@@ -133,10 +133,10 @@ exit:
 }
 
 static JSFunctionSpec rpmmc_funcs[] = {
-    JS_FS("",	rpmmc_add,		0,0,0),
-    JS_FS("",	rpmmc_del,		0,0,0),
-    JS_FS("",	rpmmc_list,		0,0,0),
-    JS_FS("",	rpmmc_expand,		0,0,0),
+    JS_FS("add",	rpmmc_add,		0,0,0),
+    JS_FS("del",	rpmmc_del,		0,0,0),
+    JS_FS("list",	rpmmc_list,		0,0,0),
+    JS_FS("expand",	rpmmc_expand,		0,0,0),
     JS_FS_END
 };
 
@@ -155,25 +155,20 @@ rpmmc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-
-ok = JS_TRUE;   /* XXX avoid immediate interp exit by always succeeding. */
-
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -181,23 +176,22 @@ rpmmc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int myint;
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -205,22 +199,19 @@ rpmmc_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
-    JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug < 0);
 
     if ((flags & JSRESOLVE_ASSIGNING)
      || (ptr == NULL)) { /* don't resolve to parent prototypes objects. */
 	*objp = NULL;
-	ok = JS_TRUE;
 	goto exit;
     }
 
     *objp = obj;	/* XXX always resolve in this object. */
 
-    ok = JS_TRUE;
 exit:
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -228,7 +219,6 @@ rpmmc_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
-    JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
@@ -247,9 +237,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 	*statep = JSVAL_NULL;
         break;
     }
-    ok = JS_TRUE;
-exit:
-    return ok;
+    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

@@ -267,10 +267,13 @@ rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
@@ -280,67 +283,51 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	break;
     case _VSFLAGS:
 	*vp = INT_TO_JSVAL((jsint)rpmtsVSFlags(ts));
-	ok = JS_TRUE;
 	break;
     case _TYPE:
 	*vp = INT_TO_JSVAL((jsint)rpmtsType(ts));
-	ok = JS_TRUE;
 	break;
     case _ARBGOAL:
 	*vp = INT_TO_JSVAL((jsint)rpmtsARBGoal(ts));
-	ok = JS_TRUE;
 	break;
     case _ROOTDIR:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmtsRootDir(ts)));
-	ok = JS_TRUE;
 	break;
     case _CURRDIR:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmtsCurrDir(ts)));
-	ok = JS_TRUE;
 	break;
     case _SELINUX:
 	*vp = INT_TO_JSVAL((jsint)rpmtsSELinuxEnabled(ts));
-	ok = JS_TRUE;
 	break;
     case _CHROOTDONE:
 	*vp = INT_TO_JSVAL((jsint)rpmtsChrootDone(ts));
-	ok = JS_TRUE;
 	break;
     case _TID:
 	*vp = INT_TO_JSVAL((jsint)rpmtsGetTid(ts));
-	ok = JS_TRUE;
 	break;
     case _NELEMENTS:
 	*vp = INT_TO_JSVAL((jsint)rpmtsNElements(ts));
-	ok = JS_TRUE;
 	break;
     case _PROBFILTER:
 	*vp = INT_TO_JSVAL((jsint)rpmtsFilterFlags(ts));
-	ok = JS_TRUE;
 	break;
     case _FLAGS:
 	*vp = INT_TO_JSVAL((jsint)rpmtsFlags(ts));
-	ok = JS_TRUE;
 	break;
     case _DFLAGS:
 	*vp = INT_TO_JSVAL((jsint)rpmtsDFlags(ts));
-	ok = JS_TRUE;
 	break;
     case _GOAL:
 	*vp = INT_TO_JSVAL((jsint)rpmtsGoal(ts));
-	ok = JS_TRUE;
 	break;
     case _DBMODE:
 	*vp = INT_TO_JSVAL((jsint)rpmtsDBMode(ts));
-	ok = JS_TRUE;
 	break;
     case _COLOR:
 	*vp = INT_TO_JSVAL((jsint)rpmtsColor(ts));
-	ok = JS_TRUE;
 	break;
     case _PREFCOLOR:
 	*vp = INT_TO_JSVAL((jsint)rpmtsPrefColor(ts));
-	ok = JS_TRUE;
 	break;
     default:
 	if (JSVAL_IS_INT(id)) {
@@ -353,7 +340,6 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	     && JS_SetPrivate(cx, teo, rpmteLink(rpmtsElement(ts, oc))))
 	    {
 		*vp = OBJECT_TO_JSVAL(teo);
-		ok = JS_TRUE;
 	    }
 	    break;
 	}
@@ -364,7 +350,6 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	    if (!strcmp(name, "NVRA")) {
 		JSObject * NVRA = rpmtsLoadNVRA(cx, obj);
 		*vp = OBJECT_TO_JSVAL(NVRA);
-		ok = JS_TRUE;
 	    }
 	    break;
 	}
@@ -372,13 +357,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-
-ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
-
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -387,94 +366,78 @@ rpmts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = (rpmts)ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int myint;
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     case _VSFLAGS:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetVSFlags(ts, (rpmVSFlags)myint);
-	ok = JS_TRUE;
 	break;
     case _TYPE:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetType(ts, (rpmTSType)myint);
-	ok = JS_TRUE;
 	break;
     case _ARBGOAL:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetARBGoal(ts, (uint32_t)myint);
-	ok = JS_TRUE;
 	break;
     case _ROOTDIR:
 	(void) rpmtsSetRootDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-	ok = JS_TRUE;
 	break;
     case _CURRDIR:
 	(void) rpmtsSetCurrDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
-	ok = JS_TRUE;
 	break;
     case _CHROOTDONE:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetChrootDone(ts, myint);
-	ok = JS_TRUE;
 	break;
     case _TID:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetTid(ts, (uint32_t)myint);
-	ok = JS_TRUE;
 	break;
     case _FLAGS:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetFlags(ts, myint);
-	ok = JS_TRUE;
 	break;
     case _DFLAGS:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetDFlags(ts, (rpmdepFlags)myint);
-	ok = JS_TRUE;
 	break;
     case _GOAL:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetGoal(ts, (tsmStage)myint);
-	ok = JS_TRUE;
 	break;
     case _DBMODE:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetDBMode(ts, myint);
-	ok = JS_TRUE;
 	break;
     case _COLOR:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmtsSetColor(ts, (uint32_t)(myint & 0x0f));
-	ok = JS_TRUE;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-
-ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
-
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
