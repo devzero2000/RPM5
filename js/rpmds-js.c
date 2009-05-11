@@ -75,92 +75,72 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int ix;
 
 _PROP_DEBUG_ENTRY(_debug < 0);
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     case _LENGTH:
 	*vp = INT_TO_JSVAL(rpmdsCount(ds));
-	ok = JS_TRUE;
 	break;
     case _TYPE:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsType(ds)));
-        ok = JS_TRUE;
         break;
     case _IX:
 	*vp = INT_TO_JSVAL(rpmdsIx(ds));
-        ok = JS_TRUE;
         break;
     case _A:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsA(ds)));
-        ok = JS_TRUE;
         break;
     case _BUILDTIME:
 	*vp = INT_TO_JSVAL(rpmdsBT(ds));
-        ok = JS_TRUE;
         break;
     case _COLOR:
 	*vp = INT_TO_JSVAL(rpmdsColor(ds));
-        ok = JS_TRUE;
         break;
     case _NOPROMOTE:
 	*vp = INT_TO_JSVAL(rpmdsNoPromote(ds));
-        ok = JS_TRUE;
         break;
     case _N:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsN(ds)));
-        ok = JS_TRUE;
         break;
     case _EVR:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsEVR(ds)));
-        ok = JS_TRUE;
         break;
     case _F:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = INT_TO_JSVAL(rpmdsFlags(ds));
-        ok = JS_TRUE;
         break;
     case _DNEVR:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmdsDNEVR(ds)));
-        ok = JS_TRUE;
         break;
     case _NS:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = INT_TO_JSVAL(rpmdsNSType(ds));
-        ok = JS_TRUE;
         break;
     case _REFS:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = INT_TO_JSVAL(rpmdsRefs(ds));
-        ok = JS_TRUE;
         break;
     case _RESULT:
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    *vp = INT_TO_JSVAL(rpmdsResult(ds));
-        ok = JS_TRUE;
         break;
     default:
-	if (tiny >= 0 && tiny < rpmdsCount(ds))
-	    ok = JS_TRUE;
+	if (!(tiny >= 0 && tiny < rpmdsCount(ds)))
+	    break;
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-
-ok = JS_TRUE;   /* XXX avoid immediate interp exit by always succeeding. */
-
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -177,8 +157,8 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 _PROP_DEBUG_ENTRY(_debug < 0);
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     case _IX:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
@@ -193,51 +173,39 @@ fprintf(stderr, "\trpmdsSetIx(%p, %d)\n", ds, myint);
 	    /* XXX flush and recreate N and DNEVR with a rpmdsNext() step */
 	    (void) rpmdsNext(ds);
 	}
-	ok = JS_TRUE;
         break;
     case _BUILDTIME:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmdsSetBT(ds, myint);
-	ok = JS_TRUE;
         break;
     case _COLOR:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmdsSetColor(ds, myint);
-	ok = JS_TRUE;
         break;
     case _NOPROMOTE:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	(void) rpmdsSetNoPromote(ds, myint);
-	ok = JS_TRUE;
         break;
     case _REFS:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    (void) rpmdsSetRefs(ds, myint);
-	ok = JS_TRUE;
         break;
     case _RESULT:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
 	    break;
 	if ((ix = rpmdsIx(ds)) >= 0 && ix < rpmdsCount(ds))
 	    (void) rpmdsSetResult(ds, myint);
-	ok = JS_TRUE;
         break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-
-ok = JS_TRUE;   /* XXX avoid immediate interp exit by always succeeding. */
-
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -303,7 +271,6 @@ rpmds_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = (rpmds)ptr;
-    JSBool ok = JS_FALSE;
     int ix;
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
@@ -329,8 +296,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 	*statep = JSVAL_NULL;
         break;
     }
-    ok = JS_TRUE;
-    return ok;
+    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

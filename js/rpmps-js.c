@@ -89,27 +89,23 @@ rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = ptr;
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     case _LENGTH:
 	*vp = INT_TO_JSVAL(rpmpsNumProblems(ps));
-	ok = JS_TRUE;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-ok = JS_TRUE;	/* XXX avoid immediate interp exit by always succeeding. */
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -118,23 +114,22 @@ rpmps_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = (rpmps)ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int myint;
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -143,22 +138,19 @@ rpmps_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = ptr;
-    JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
     if ((flags & JSRESOLVE_ASSIGNING)
      || (ps == NULL)) {	/* don't resolve to parent prototypes objects. */
 	*objp = NULL;
-	ok = JS_TRUE;
 	goto exit;
     }
 
     *objp = obj;	/* XXX always resolve in this object. */
 
-    ok = JS_TRUE;
 exit:
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -210,9 +202,8 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 	}
     }
 #endif
-    ok = JS_TRUE;
 exit:
-    return ok;
+    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */

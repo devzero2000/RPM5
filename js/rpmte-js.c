@@ -152,114 +152,88 @@ rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     rpmte te = ptr;
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
-	ok = JS_TRUE;
 	break;
     case _TYPE:
 	*vp = INT_TO_JSVAL(rpmteType(te));	/* XXX should be string */
-	ok = JS_TRUE;
 	break;
     case _N:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteN(te)));
-	ok = JS_TRUE;
 	break;
     case _E:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteE(te)));
-	ok = JS_TRUE;
 	break;
     case _V:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteV(te)));
-	ok = JS_TRUE;
 	break;
     case _R:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteR(te)));
-	ok = JS_TRUE;
 	break;
     case _A:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteA(te)));
-	ok = JS_TRUE;
 	break;
     case _O:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteO(te)));
-	ok = JS_TRUE;
 	break;
     case _NEVR:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteNEVR(te)));
-	ok = JS_TRUE;
 	break;
     case _NEVRA:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteNEVRA(te)));
-	ok = JS_TRUE;
 	break;
     case _PKGID:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmtePkgid(te)));
-	ok = JS_TRUE;
 	break;
     case _HDRID:
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteHdrid(te)));
-	ok = JS_TRUE;
 	break;
     case _COLOR:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _PKGFSIZE:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _BREADTH:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _DEPTH:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _NPREDS:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _DEGREE:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _PARENT:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _TREE:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _ADDEDKEY:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
     case _DBOFFSET:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
 #ifdef	NOTYET
     case _KEY:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
-	ok = JS_TRUE;
 	break;
 #endif
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-
-ok = JS_TRUE;  /* XXX avoid immediate interp exit by always succeeding. */
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -267,22 +241,21 @@ rpmte_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
+    if (ptr == NULL)
+	return JS_TRUE;
 
     switch (tiny) {
     case _DEBUG:
-	if (JS_ValueToInt32(cx, *vp, &_debug))
-	    ok = JS_TRUE;
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
 	break;
     default:
 	break;
     }
 
-    if (!ok) {
-_PROP_DEBUG_EXIT(_debug);
-    }
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
@@ -290,28 +263,24 @@ rpmte_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
-    JSBool ok = JS_FALSE;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
     if (flags & JSRESOLVE_ASSIGNING) {
 	*objp = NULL;
-	ok = JS_TRUE;
 	goto exit;
     }
 
     *objp = obj;        /* XXX always resolve in this object. */
 
-    ok = JS_TRUE;
 exit:
-    return ok;
+    return JS_TRUE;
 }
 
 static JSBool
 rpmte_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
@@ -331,8 +300,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 	break;
     }
 
-    ok = JS_TRUE;
-    return ok;
+    return JS_TRUE;
 }
 
 /* --- Object ctors/dtors */
