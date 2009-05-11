@@ -81,6 +81,14 @@ int htGetEntry(hashTable ht, const void * key,
 	/*@modifies *data, *dataCount, *tableKey @*/;
 
 /**
+ * Retrieve keys from hash table.
+ * @param ht		pointer to hash table
+ * @return		array of key values terminated by a NULL pointer
+ */
+const void ** htGetKeys(hashTable ht)
+	/*@*/;
+
+/**
  * Check for key in hash table.
  * @param ht            pointer to hash table
  * @param key           pointer to key value

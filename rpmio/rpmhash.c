@@ -196,6 +196,27 @@ int htGetEntry(hashTable ht, const void * key, const void * data,
     return 0;
 }
 
+const void ** htGetKeys(hashTable ht)
+{
+    const void ** keys = xcalloc(ht->numBuckets+1, sizeof(const void*));
+    const void ** keypointer = keys;
+    hashBucket b, n;
+    int i;
+
+    for (i = 0; i < ht->numBuckets; i++) {
+	b = ht->buckets[i];
+	if (b == NULL)
+	    continue;
+	if (b->data)
+	    *(keys++) = b->key;
+	do {
+	    n = b->next;
+	} while ((b = n) != NULL);
+    }
+
+    return keypointer;
+}
+
 /*@-mustmod@*/	/* XXX splint on crack */
 static void htFini(void * _ht)
 	/*@modifies _ht @*/
