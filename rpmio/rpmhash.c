@@ -211,6 +211,8 @@ const void ** htGetKeys(hashTable ht)
 	    *(keys++) = b->key;
 	do {
 	    n = b->next;
+	    if(n != NULL)
+    		*(keys++) = n->key;
 	} while ((b = n) != NULL);
     }
 
