@@ -349,7 +349,8 @@ LIBRPMIO_0
     rpmPubkeyUnlink;
     rpmLoadMacroFile;
     rpmLoadMacros;
-    rpmlog;
+    _rpmlog;
+    vrpmlog;
     rpmlogClose;
     rpmlogCode;
     rpmlogGetNrecs;

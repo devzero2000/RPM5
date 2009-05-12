@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: inline rpmlog() to avoid arglist overhead when -O2 is used.
     - jbj: add --with-valgrind homeopathy to measure existing RPM
 	insturmentation effects on performance.
     - jbj: don't reset to -O0 with --enable-build-debug and GCC.
