@@ -176,7 +176,7 @@ AC_ARG_ENABLE(build-debug,
     if test ".$enableval" = .yes; then
         if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
-            CFLAGS="$CFLAGS -O0 -g3"
+            CFLAGS="$CFLAGS -g3"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
             CFLAGS="$CFLAGS -xO0 -g"
