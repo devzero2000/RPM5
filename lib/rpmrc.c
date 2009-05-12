@@ -583,9 +583,6 @@ static rpmRC rpmCpuinfo(void)
 				    htGetEntry(arch[j].value.map, "Alias", &tmp, NULL, NULL);
 				    alias = tmp[0]->value.seq;
 				}
-				else {
-				    alias = tmp[0];
-				}
 				htAddEntry(cpus, name, alias);
 			    }
 			}
@@ -594,15 +591,16 @@ static rpmRC rpmCpuinfo(void)
 			htGetEntry(node[i].value.map, "Priority", &tmp, NULL, NULL);
 			rpmsyck_node priority = tmp[0]->value.seq;
 			int j;
-			for(j = 0; (j == 0 || priority[j].type == T_SEQ) && priority[j].type != T_END; j++)
+			for(j = 0; priority[j].type != T_END; j++)
 			    if(htHasEntry(cpus, priority[j].value.key)) {
 				xx = mireAppend(RPMMIRE_REGEX, 0, priority[j].value.key, NULL, &mi_re, &mi_nre);
-
 				htGetEntry(cpus, priority[j].value.key, &tmp, NULL, NULL);
-				rpmsyck_node alias = tmp[0];
-				int k;
-				for(k = 0; alias[k].type != T_END; k++)
-				    xx = mireAppend(RPMMIRE_REGEX, 0, alias[k].value.key, NULL, &mi_re, &mi_nre);
+				if(tmp[0]) {
+				    rpmsyck_node alias = tmp[0];
+				    int k;
+				    for(k = 0; alias[k].type != T_END; k++)
+					xx = mireAppend(RPMMIRE_REGEX, 0, alias[k].value.key, NULL, &mi_re, &mi_nre);
+				}
 			    }
 		    }
 		}
