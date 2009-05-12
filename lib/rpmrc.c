@@ -538,6 +538,8 @@ static rpmRC rpmCpuinfo(void)
     Fread(yaml, 1, st.st_size, fd);
     Fclose(fd);
 
+    /* XXX: Probably not right..? */
+    cpuinfo = rpmdsSingle(RPMTAG_PROVIDENAME, "", "", RPMSENSE_PROBE);
     xx = rpmdsCpuinfo(&cpuinfo, NULL);
 
     cpuinfoYaml = rpmSyckLoad(yaml);
@@ -611,9 +613,10 @@ static rpmRC rpmCpuinfo(void)
 
     cpuinfoYaml = rpmSyckFree(cpuinfoYaml);
 
-    xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
+    (void)rpmdsFree(cpuinfo);
+    cpuinfo = NULL;
 
-    cpuinfo = rpmdsFree(cpuinfo);
+    xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
     cpu = mi_re[0].pattern;
     if(cpu != NULL)
