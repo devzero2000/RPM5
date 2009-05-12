@@ -437,6 +437,7 @@ LIBRPMIO_0
     rpmswNow;
     rpmswPrint;
     rpmswSub;
+    rpmSyckFree;
     rpmSyckLoad;
     _rpmtcl_debug;
     rpmtclNew;
