@@ -17,4 +17,15 @@
 #include <dmalloc.h>
 #endif
 
+#if defined(WITH_VALGRIND) && defined(HAVE_VALGRIND_VALGRIND_H)
+#include <valgrind/valgrind.h>
+#else
+#define CALLGRIND_DUMP_STATS
+#define CALLGRIND_DUMP_STATS_AT(pos_str)
+#define CALLGRIND_ZERO_STATS
+#define CALLGRIND_TOGGLE_COLLECT
+#define CALLGRIND_START_INSTRUMENTATION
+#define CALLGRIND_STOP_INSTRUMENTATION
+#endif
+
 #endif	/* H_DEBUG */

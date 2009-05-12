@@ -198,6 +198,14 @@ AC_ARG_ENABLE(build-gcov,
     fi
 ])
 
+dnl # optional valgrind/cachegrind support
+AC_ARG_WITH(valgrind, AS_HELP_STRING([--with-valgrind], [build RPM insturmented for valgrind tools]), [
+    if test ".$withval" = .yes; then
+	AC_CHECK_HEADERS(valgrind/valgrind.h)
+        AC_DEFINE(WITH_VALGRIND, 1, [Build with valgrind support?])
+    fi
+])
+
 dnl # RPM tries hard to use adaptive "feature tests" instead of
 dnl # problematic "platform tests". Nevertheless for some extremely
 dnl # platform specific parts of the code, we have to know for what
