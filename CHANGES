@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: don't reset to -O0 with --enable-build-debug and GCC.
     - proyvind: rpmsyck: clean up, use rpmioPool and add destructor.
     - proyvind: rpmhash: add htGetKeys() for retrieving the keys of the hash table.
     - jbj: bash: wire-up internal bash build with RPM AutoFu.
