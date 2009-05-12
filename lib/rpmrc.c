@@ -509,6 +509,7 @@ static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds 
 {
     rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, EVR, RPMSENSE_PROBE);
     int ret = rpmdsMatch(cpufeature, cpuinfo);
+
     (void)rpmdsFree(cpufeature);
     cpufeature = NULL;
     return ret;
@@ -521,7 +522,7 @@ static rpmRC rpmCpuinfo(void)
     miRE mi_re = NULL;
     int mi_nre = 0, xx, i;
     CVOG_t cvog = NULL;
-    rpmds cpuinfo = NULL;
+    extern rpmds cpuinfoP;
     struct stat st;
     char *yaml;
     rpmsyck_node *tmp, node;
@@ -538,10 +539,6 @@ static rpmRC rpmCpuinfo(void)
     Fread(yaml, 1, st.st_size, fd);
     Fclose(fd);
 
-    /* XXX: Probably not right..? */
-    cpuinfo = rpmdsSingle(RPMTAG_PROVIDENAME, "", "", RPMSENSE_PROBE);
-    xx = rpmdsCpuinfo(&cpuinfo, NULL);
-
     cpuinfoYaml = rpmSyckLoad(yaml);
     yaml = _free(yaml);
     htGetEntry(cpuinfoYaml->firstNode->value.map, "cpuinfo", &tmp, NULL, NULL);
@@ -556,7 +553,7 @@ static rpmRC rpmCpuinfo(void)
 		const char *family = tmp[0]->value.key;
 		int j;
 		hashTable cpus = NULL; 
-		if(rpmCpuinfoMatch(family, "", cpuinfo)) {
+		if(rpmCpuinfoMatch(family, "", cpuinfoP)) {
 		    if(htHasEntry(node[i].value.map, "Arch")) {
 			htGetEntry(node[i].value.map, "Arch", &tmp, NULL, NULL);
 			rpmsyck_node arch = tmp[0]->value.seq;
@@ -573,7 +570,7 @@ static rpmRC rpmCpuinfo(void)
 				rpmsyck_node features = tmp[0]->value.seq;
 				int k, match = 0;
 				for(k = 0; features[k].type != T_END; k++)
-				    if(features[k].type == T_STR && !(match = rpmCpuinfoMatch(features[k].value.key, "", cpuinfo))) break;
+				    if(features[k].type == T_STR && !(match = rpmCpuinfoMatch(features[k].value.key, "", cpuinfoP))) break;
 				if(!match) continue;
 			    }
 			    if(htHasEntry(arch[j].value.map, "Name")) {
@@ -612,9 +609,6 @@ static rpmRC rpmCpuinfo(void)
     }
 
     cpuinfoYaml = rpmSyckFree(cpuinfoYaml);
-
-    (void)rpmdsFree(cpuinfo);
-    cpuinfo = NULL;
 
     xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
