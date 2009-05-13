@@ -1,5 +1,9 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: rpmds: dereference/flush global items earlier, before pool teardown.
+    - jbj: rpmds: use _rpmdsPool, not heap, for rpmdsThis/rpmdsSingle as well.
+    - jbj: rpmds: fix: rpmdsThis/rpmdsSingle assume ds->i = 0
+	(i.e. actively iterating).
     - bero: adjust find-debuginfo.sh to new location of debugedit
     - jbj: don't reset to -O0 with --enable-build-debug and GCC.
     - jbj: grep: fix: don't segfault if no usage mutex or pool attached.
