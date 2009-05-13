@@ -45,6 +45,9 @@ void * platpat = NULL;
 /*@unchecked@*/
 int nplatpat = 0;
 
+extern rpmds cpuinfoP;
+
+
 
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
@@ -522,7 +525,6 @@ static rpmRC rpmCpuinfo(void)
     miRE mi_re = NULL;
     int mi_nre = 0, xx, i;
     CVOG_t cvog = NULL;
-    extern rpmds cpuinfoP;
     struct stat st;
     char *yaml;
     rpmsyck_node *tmp, node;
@@ -539,6 +541,7 @@ static rpmRC rpmCpuinfo(void)
     Fread(yaml, 1, st.st_size, fd);
     Fclose(fd);
 
+    xx = rpmdsCpuinfo(&cpuinfoP, NULL);
     cpuinfoYaml = rpmSyckLoad(yaml);
     yaml = _free(yaml);
     htGetEntry(cpuinfoYaml->firstNode->value.map, "cpuinfo", &tmp, NULL, NULL);
@@ -1229,8 +1232,9 @@ int rpmShowRC(FILE * fp)
 	ds = NULL;
 	fprintf(fp, "\n");
 
-	xx = rpmdsCpuinfo(&ds, NULL);
-	if (ds != NULL) {
+	if(cpuinfoP == NULL)
+	    xx = rpmdsCpuinfo(&cpuinfoP, NULL);
+	if (cpuinfoP != NULL) {
 #if defined(WITH_CPUINFO)
 	    const char * fn = "libcpuinfo";
 #else
@@ -1238,14 +1242,15 @@ int rpmShowRC(FILE * fp)
 #endif
 	    fprintf(fp,
 		_("Features provided by current cpuinfo (from %s):\n"), fn);
-	    ds = rpmdsInit(ds);
-	    while (rpmdsNext(ds) >= 0) {
-		const char * DNEVR = rpmdsDNEVR(ds);
+	    cpuinfoP = rpmdsInit(cpuinfoP);
+	    while (rpmdsNext(cpuinfoP) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(cpuinfoP);
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    (void)rpmdsFree(ds);
-	    ds = NULL;
+	    (void)rpmdsFree(cpuinfoP);
+	    cpuinfoP = NULL;
+
 	    fprintf(fp, "\n");
 	}
     }

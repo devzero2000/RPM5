@@ -1336,7 +1336,7 @@ retry:
     if (NSType == RPMNS_TYPE_CPUINFO) {
 	static int oneshot = -1;
 
-	if (oneshot)
+	if (oneshot && cpuinfoP == NULL)
 	    oneshot = rpmdsCpuinfo(&cpuinfoP, NULL);
 	if (cpuinfoP == NULL)
 	    goto unsatisfied;
