@@ -2368,7 +2368,7 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
     tbuf = alloca(slen + 1);
-    memset(tbuf, 0, (slen + 1));
+    tbuf[0] = '\0';
 
     mb->s = sbuf;
     mb->t = tbuf;
