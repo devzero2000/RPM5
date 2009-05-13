@@ -144,42 +144,40 @@ miRE mireGetPool(/*@null@*/ rpmioPool pool)
         /*@globals _mirePool, fileSystem @*/
         /*@modifies pool, _mirePool, fileSystem @*/;
 
-/*@-exportlocal@*/
-/*@null@*/
-miRE XmireUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+/**
+ * Unreference a pattern container instance.
+ * @param mire		pattern container
+ * @return		new pattern container reference
+ */
+/*@unused@*/ /*@null@*/
+miRE mireUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
         /*@globals fileSystem @*/
         /*@modifies mire, fileSystem @*/;
-/*@=exportlocal@*/
-#define	mireUnlink(_mire, _msg)	XmireUnlink(_mire, _msg, __FILE__, __LINE__)
+#define	mireUnlink(_mire)	\
+    (miRE)rpmioUnlinkPoolItem((rpmioItem)_mire, __FUNCTION__, __FILE__, __LINE__)
 
 /**
  * Reference a pattern container instance.
  * @param mire		pattern container
- * @param msg
  * @return		new pattern container reference
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/
-miRE mireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg)
+miRE mireLink (/*@null@*/ miRE mire)
 	/*@modifies mire @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-miRE XmireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@globals fileSystem @*/
-        /*@modifies mire, fileSystem @*/;
-#define	mireLink(_mire, _msg)	XmireLink(_mire, _msg, __FILE__, __LINE__)
+#define	mireLink(_mire)	\
+    (miRE)rpmioLinkPoolItem((rpmioItem)_mire, __FUNCTION__, __FILE__, __LINE__)
 
 /**
  * Free pattern container.
  * @param mire		pattern container
- * @return		NULL always
+ * @return		NULL on last derefernce
  */
 /*@null@*/
 miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
         /*@globals fileSystem @*/
         /*@modifies mire, fileSystem @*/;
+#define	mireFree(_mire)	\
+    (miRE)rpmioFreePoolItem((rpmioItem)_mire, __FUNCTION__, __FILE__, __LINE__)
 
 /**
  * Destroy compiled patterns.

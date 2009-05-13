@@ -67,18 +67,6 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
     return 0;
 }
 
-miRE XmireUnlink(miRE mire, const char * msg, const char * fn, unsigned ln)
-{
-    (void)rpmioUnlinkPoolItem((rpmioItem)mire, msg, fn, ln);
-    return NULL;
-}
-
-miRE XmireLink(miRE mire, const char * msg, const char * fn, unsigned ln)
-{
-    mire = (miRE) rpmioLinkPoolItem((rpmioItem)mire, msg, fn, ln);
-    return mire;
-}
-
 static void mireFini(void * _mire)
 	/*@modifies _mire @*/
 {
@@ -99,13 +87,6 @@ miRE mireGetPool(rpmioPool pool)
 	pool = _mirePool;
     }
     return (miRE) rpmioGetPool(pool, sizeof(*mire));
-}
-
-miRE mireFree(miRE mire)
-{
-    mireFini(mire);
-    mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
 }
 
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
@@ -132,7 +113,7 @@ miRE mireNew(rpmMireMode mode, int tag)
     miRE mire = mireGetPool(_mirePool);
     mire->mode = mode;
     mire->tag = tag;
-    return mireLink(mire, "mireNew");
+    return mireLink(mire);
 }
 
 int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
