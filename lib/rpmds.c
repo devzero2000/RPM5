@@ -564,11 +564,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     V = _free(V);
     R = _free(R);
 
-#ifdef	BUGGY
     ds = rpmdsGetPool(_rpmdsPool);
-#else
-    ds = rpmdsGetPool(NULL);
-#endif
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
@@ -589,6 +585,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 	pre[0] = ds->Type[0];
 	pre[1] = '\0';
 	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
+	ds->i = 0;	/* XXX rpmdsNewN() needs ds->i = 0, not -1 */
 /*@i@*/	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
 	/*@=nullstate@*/
     }
@@ -598,16 +595,9 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 
 rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 {
-    rpmds ds = NULL;
-    const char * Type;
+    rpmds ds = rpmdsGetPool(_rpmdsPool);
+    const char * Type = rpmdsTagName(tagN);
 
-    Type = rpmdsTagName(tagN);
-
-#ifdef	BUGGY
-    ds = rpmdsGetPool(_rpmdsPool);
-#else
-    ds = rpmdsGetPool(NULL);
-#endif
     ds->Type = Type;
     ds->tagN = tagN;
     ds->A = NULL;
@@ -623,6 +613,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     {	char t[2];
 	t[0] = ds->Type[0];
 	t[1] = '\0';
+	ds->i = 0;	/* XXX rpmdsNewN() needs ds->i = 0, not -1 */
 /*@i@*/	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
 
@@ -950,11 +941,7 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
 static rpmds rpmdsDup(const rpmds ods)
 	/*@modifies ods @*/
 {
-#ifdef	BUGGY
     rpmds ds = rpmdsGetPool(_rpmdsPool);
-#else
-    rpmds ds = rpmdsGetPool(NULL);
-#endif
     size_t nb;
 
 /*@-assignexpose -castexpose @*/
