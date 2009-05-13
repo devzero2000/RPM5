@@ -527,6 +527,9 @@ rpmcliFini(poptContext optCon)
 
     _rpmfcPool = rpmioFreePool(_rpmfcPool);
     _rpmsxPool = rpmioFreePool(_rpmsxPool);
+
+    rpmnsClean();
+
     _rpmdsPool = rpmioFreePool(_rpmdsPool);
     _rpmfiPool = rpmioFreePool(_rpmfiPool);
 
@@ -542,8 +545,6 @@ rpmcliFini(poptContext optCon)
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
 
     rpmFreeRpmrc();	/* XXX mireFreeAll(platpat) before rpmioFreePool. */
-
-    rpmnsClean();
 
     rpmFreeFilesystems();
 /*@i@*/	rpmcliTargets = _free(rpmcliTargets);
