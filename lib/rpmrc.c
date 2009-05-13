@@ -1088,6 +1088,33 @@ static int rpmReadRC(void)
     return rc;
 }
 
+/* Since %{_prefer_target_cpu} hasn't been read before rpmReadRC(), we need to
+ * reread platform specific macros again to be sure to get the right ones.. */
+static inline void rpmRereadTargetMacros(const char *cpu) {
+#if defined(WITH_CPUINFO)
+    if(strcmp(current[ARCH], cpu) != 0) {
+	ARGV_t macroArgv = NULL;
+	int i, n;
+	const char delim[] = ":";
+	char *macrofiles = xcalloc(strlen(rpmMacrofiles), 1);
+
+	(void) argvSplit(&macroArgv, rpmMacrofiles, delim);
+	for(i = 0, n = argvCount(macroArgv); i < n; i++) {
+	    const char *macrofile = rpmExpand(macroArgv[i], NULL);
+	    if(strcmp(macroArgv[i], macrofile) != 0 && strstr(macrofile, cpu) != NULL) {
+		if(strlen(macrofiles) > 0)
+		    strncat(macrofiles, delim, strlen(delim));
+		strncat(macrofiles, macrofile, strlen(macrofile));
+	    }
+	    macrofile = _free(macrofile);
+	}
+	if(strlen(macrofiles) > 0)
+	    rpmInitMacros(NULL, macrofiles);
+	macroArgv = argvFree(macroArgv);
+    }
+#endif
+}
+
 int rpmReadConfigFiles(/*@unused@*/ const char * file,
 		const char * target)
 	/*@globals configTarget @*/
@@ -1115,8 +1142,10 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file,
 
     /* Finally set target platform */
     {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
+	rpmRereadTargetMacros(cpu);
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
+
 	cpu = _free(cpu);
 	os = _free(os);
     }
