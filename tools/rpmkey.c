@@ -76,7 +76,7 @@ static void calc_perms(char *pretty, key_perm_t perm, uid_t uid, gid_t gid)
 		goto write_mask;
 	}
 
-	if (gid != -1) {
+	if (gid != (gid_t)-1) {
 		if (gid == mygid) {
 			perms |= (perm & KEY_GRP_ALL) >> 8;
 			goto write_mask;
@@ -141,7 +141,7 @@ static int dump_key_tree_aux(key_serial_t key, int depth, int more)
 		return 0;
 	}
 
-	desclen = ret < desclen ? ret : desclen;
+	desclen = (size_t)ret < desclen ? (size_t)ret : desclen;
 
 	desc[desclen] = 0;
 
@@ -190,7 +190,7 @@ static int dump_key_tree_aux(key_serial_t key, int depth, int more)
 		if (ret < 0)
 			rpmkeyError("keyctl_read");
 
-		ringlen = ret < ringlen ? ret : ringlen;
+		ringlen = (size_t)ret < ringlen ? (size_t)ret : ringlen;
 		kcount = ringlen / sizeof(key_serial_t);
 
 		/* walk the keyring */
@@ -284,7 +284,8 @@ static key_serial_t get_key_id(const char *arg)
 static char *grab_stdin(void)
 {
 	static char input[65536 + 1];
-	int n, tmp;
+	size_t n;
+	int tmp;
 
 	n = 0;
 	do {
@@ -1287,7 +1288,7 @@ main(int argc, char *argv[])
     mygid = getegid();
     myngroups = getgroups(0, NULL);
 
-    if (myuid == -1 || mygid == -1 || myngroups == -1)
+    if (myuid == (uid_t)-1 || mygid == (uid_t)-1 || myngroups == -1)
 	rpmkeyError("Unable to get UID/GID/#Groups\n");
 
     mygroups = calloc(myngroups, sizeof(gid_t));
