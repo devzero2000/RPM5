@@ -2976,7 +2976,6 @@ static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
     size_t nb;
 
@@ -2984,34 +2983,37 @@ static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
     if (he->t == RPM_INT32_TYPE) {
 	nb = 20;
 	val = xmalloc(nb);
-	snprintf(val, nb, "%d", data.i32p[0]);
+	snprintf(val, nb, "%d", he->p.i32p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_INT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
-	snprintf(val, nb, "%lld", data.i64p[0]);
+	snprintf(val, nb, "%lld", he->p.i64p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_STRING_TYPE) {
-	const char * s = data.str;
+	const char * s = he->p.str;
 	char * t;
 	int c;
 
-	nb = strlen(data.str) + 1;
-	/* XXX count no. of escapes instead. */
-	t = xmalloc(4 * nb + 3);
+	nb = 0;
+	for (s = he->p.str; (c = (int)*s) != 0; s++)  {
+	    nb++;
+	    if (c == (int)'\'')
+		nb += 3;
+	}
+	nb += 3;
+	t = val = xmalloc(nb);
 	*t++ = '\'';
-	while ((c = *s++) != 0) {
-	    if (c == '\'') {
+	for (s = he->p.str; (c = (int)*s) != 0; s++)  {
+	    if (c == (int)'\'') {
 		*t++ = '\'';
 		*t++ = '\\';
 		*t++ = '\'';
 	    }
-	    *t++ = c;
+	    *t++ = (char) c;
 	}
 	*t++ = '\'';
 	*t = '\0';
-	nb = strlen(t) + 1;
-	val = xrealloc(t, nb);
     } else
 	val = xstrdup(_("invalid type"));
 

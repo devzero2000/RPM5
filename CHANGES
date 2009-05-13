@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: merge :shescape from rpm5 trunk (code in this branch read out of buffer bounds)
 	- proyvind: fix segfault with relative paths due to missing header inclusion.
 	- proyvind: fix build breakage without selinux due to unresolved matchpathcon_fini().
 	- proyvind: backport xz/lzma payload support through liblzma.
