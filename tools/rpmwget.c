@@ -293,7 +293,7 @@ static const char * wgetTstamp(rpmwget wget, time_t t)
  */
 static int wgetLog(rpmwget wget, const char * fmt, ...)
 {
-    int rc;
+    int rc = 0;
     va_list ap;
 
     if (wget->lfd == NULL) {
