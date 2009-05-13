@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: mire: handle items from _mirePool like all other pools.
     - bero: adjust find-debuginfo.sh to new location of debugedit
     - jbj: rpmds: dereference/flush global items earlier, before pool teardown.
     - jbj: rpmds: use _rpmdsPool, not heap, for rpmdsThis/rpmdsSingle as well.

@@ -171,7 +171,6 @@ LIBRPMIO_0
     mireApply;
     mireClean;
     _mireEL;
-    mireFree;
     mireFreeAll;
     mireGetPool;
     _mireGLOBoptions;
