@@ -15,6 +15,7 @@ rpmdeps
 rpmdigest
 grep
 mtree
+rpmkey
 rpmrepo
 rpmspecdump
 wget
