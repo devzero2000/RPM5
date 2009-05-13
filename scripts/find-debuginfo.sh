@@ -199,7 +199,7 @@ while read nlinks inum f; do
   fi
 
   echo "extracting debug info from $f"
-  id=$(/usr/lib/rpm/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
+  id=$(/usr/lib/rpm/bin/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
 			      -i -l "$SOURCEFILE" "$f") || exit
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
