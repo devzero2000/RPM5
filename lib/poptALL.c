@@ -112,6 +112,9 @@ extern int _rpmgi_debug;
 extern rpmioPool _rpmgiPool;
 
 /*@unchecked@*/
+extern int _rpmmi_debug;
+
+/*@unchecked@*/
 extern int _rpmps_debug;
 /*@unchecked@*/
 extern rpmioPool _rpmpsPool;
@@ -464,6 +467,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("Debug rpmfi File Info"), NULL},
  { "rpmgidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
 	N_("Debug rpmgi Generalized Iterator"), NULL},
+ { "rpmmidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmi_debug, -1,
+	N_("Debug rpmmi Match Iterator"), NULL},
  { "rpmnsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmns_debug, -1,
 	N_("Debug rpmns Name Space"), NULL},
  { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,
