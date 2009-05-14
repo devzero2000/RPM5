@@ -28,7 +28,7 @@ static JSBool
 rpmmi_pattern(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
+    rpmmi mi = ptr;
     int tag = RPMTAG_NAME;
     rpmMireMode type = RPMMIRE_REGEX;
     char * pattern = NULL;
@@ -74,7 +74,7 @@ static JSBool
 rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
+    rpmmi mi = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
@@ -136,7 +136,7 @@ rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
+    rpmmi mi = ptr;
     JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
     JSClass *c = (o ? OBJ_GET_CLASS(cx, o) : NULL);
 
@@ -172,7 +172,7 @@ rpmmi_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
-    rpmdbMatchIterator mi = ptr;
+    rpmmi mi = ptr;
     Header h;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
@@ -207,10 +207,10 @@ fprintf(stderr, "\tFINI mi %p\n", mi);
 }
 
 /* --- Object ctors/dtors */
-static rpmdbMatchIterator
+static rpmmi
 rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, void * _key, int _keylen)
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
 
     if ((mi = rpmtsInitIterator(ts, _tag, _key, _keylen)) == NULL)
 	return NULL;
@@ -231,7 +231,7 @@ if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
-    {	rpmdbMatchIterator mi = ptr;
+    {	rpmmi mi = ptr;
 	mi = rpmdbFreeIterator(mi);
     }
 #endif
@@ -304,7 +304,7 @@ JSObject *
 rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, void *_key, int _keylen)
 {
     JSObject *obj;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%s(%u),%p[%u]) _key %s\n", __FUNCTION__, cx, _ts, tagName(_tag), (unsigned)_tag, _key, (unsigned)_keylen, (const char *)(_key ? _key : ""));

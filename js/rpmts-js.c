@@ -94,7 +94,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
         goto exit;
 
     if (pkgN != NULL) {
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 	Header h;
 	int upgrade = 0;
 	int xx;

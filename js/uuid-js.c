@@ -223,7 +223,6 @@ static JSBool
 uuid_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     JSObject *iterator;
     JSBool ok = JS_FALSE;
 

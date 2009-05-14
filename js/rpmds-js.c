@@ -78,9 +78,11 @@ rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     int ix;
 
 _PROP_DEBUG_ENTRY(_debug < 0);
+
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
+
     switch (tiny) {
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
@@ -149,12 +151,15 @@ rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = (rpmds)ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
-    JSBool ok = (ptr ? JS_FALSE : JS_TRUE);
     int myint;
     int ix;
 
 _PROP_DEBUG_ENTRY(_debug < 0);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
