@@ -325,6 +325,10 @@ static inline Header headerRead(void * _fd, __attribute__((unused)) enum hMagic 
 	return h;
 }
 
+static inline char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) {
+    return headerSprintf(h, fmt, NULL, NULL, errmsg);
+}
+
 static inline int rpmMachineScore(__attribute__((unused)) int type, const char * name) {
 	char * platform = rpmExpand(name, "-%{_target_vendor}-%{_target_os}%{?_gnu}", NULL);
 	int score = rpmPlatformScore(platform, NULL, 0);

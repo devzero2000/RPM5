@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - proyvind: rpm4compat: add a wrapper function for headerFormat().
     - jbj: mire: handle items from _mirePool like all other pools.
     - jbj: rpmds: dereference/flush global items earlier, before pool teardown.
     - jbj: rpmds: use _rpmdsPool, not heap, for rpmdsThis/rpmdsSingle as well.
