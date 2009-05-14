@@ -10,6 +10,18 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL cpuinfo.yaml \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
+	js/*.[ch] js/Makefile.in js/Makefile.am \
+	js/src/*.[ch] js/src/*.mk js/src/*.js js/src/*.sed js/src/Makefile.in js/src/Makefile.am \
+	js/src/editline/*.[ch3] js/src/editline/Makefile.ref js/src/editline/README \
+	js/src/fdlibm/*.[ch] js/src/fdlibm/Makefile.in js/src/fdlibm/Makefile.ref \
+	js/src/fdlibm/*mak js/src/fdlibm/*mdp \
+	js/src/liveconnect/*.[ch] js/src/liveconnect/*.cpp js/src/liveconnect/*.msg js/src/liveconnect/*.html \
+	js/src/liveconnect/*.dsp js/src/liveconnect/Makefile.in js/src/liveconnect/Makefile.ref \
+	js/src/liveconnect/classes/Makefile.in js/src/liveconnect/classes/Makefile.ref \
+	js/src/liveconnect/classes/netscape/Makefile.ref js/src/liveconnect/classes/netscape/javascript/*.java \
+	js/src/liveconnect/classes/netscape/javascript/Makefile.ref \
+	js/src/liveconnect/config/*.mk js/src/liveconnect/_jni/*.h \
+	ruby/*.[ch] ruby/Makefile.in ruby/Makefile.am \
 	perl/typemap \
 	perl/Makefile.PL.in \
 	perl/t/00.pod.t perl/t/00.pod.coverage.t \
