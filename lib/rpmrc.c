@@ -28,11 +28,7 @@
 
 #include <rpmcli.h>
 
-#if defined(WITH_CPUINFO) && defined(WITH_SYCK)
-#include <syck.h>
-#define	_RPMSYCK_INTERNAL
 #include <rpmsyck.h>
-#endif
 
 #include "debug.h"
 
@@ -48,6 +44,9 @@ static const char * platform = SYSCONFIGDIR "/platform";
 void * platpat = NULL;
 /*@unchecked@*/
 int nplatpat = 0;
+
+extern rpmds cpuinfoP;
+
 
 
 /** \ingroup rpmrc
@@ -513,6 +512,7 @@ static inline int rpmCpuinfoMatch(const char * feature, const char * EVR, rpmds 
 {
     rpmds cpufeature = rpmdsSingle(RPMTAG_REQUIRENAME, feature, EVR, RPMSENSE_PROBE);
     int ret = rpmdsMatch(cpufeature, cpuinfo);
+
     (void)rpmdsFree(cpufeature);
     cpufeature = NULL;
     return ret;
@@ -525,10 +525,10 @@ static rpmRC rpmCpuinfo(void)
     miRE mi_re = NULL;
     int mi_nre = 0, xx, i;
     CVOG_t cvog = NULL;
-    rpmds cpuinfo = NULL;
     struct stat st;
-    char *yaml; 
-    rpmsyck_node *tmp, cpuinfoYaml, node;
+    char *yaml;
+    rpmsyck_node *tmp, node;
+    rpmSyck cpuinfoYaml;
     FD_t fd;
 
     _cpuinfo_path = rpmGetPath("%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/cpuinfo.yaml", NULL);
@@ -538,13 +538,13 @@ static rpmRC rpmCpuinfo(void)
     fd = Fopen(_cpuinfo_path, "r");
     _cpuinfo_path = _free(_cpuinfo_path);
     yaml = xcalloc(st.st_size+1, 1);
-    Fread (yaml, 1, st.st_size, fd);
+    Fread(yaml, 1, st.st_size, fd);
+    Fclose(fd);
 
-    xx = rpmdsCpuinfo(&cpuinfo, NULL);
-
+    xx = rpmdsCpuinfo(&cpuinfoP, NULL);
     cpuinfoYaml = rpmSyckLoad(yaml);
     yaml = _free(yaml);
-    htGetEntry(cpuinfoYaml[0].value.map, "cpuinfo", &tmp, NULL, NULL);
+    htGetEntry(cpuinfoYaml->firstNode->value.map, "cpuinfo", &tmp, NULL, NULL);
     node = tmp[0]->value.seq;
 
     /* TODO: cleanup.. */
@@ -553,19 +553,19 @@ static rpmRC rpmCpuinfo(void)
 	    rpmsyck_node *tmp;
 	    if(htHasEntry(node[i].value.map, "Family")) {
 		htGetEntry(node[i].value.map, "Family", &tmp, NULL, NULL);
-		const char *family = tmp[0]->key;
+		const char *family = tmp[0]->value.key;
 		int j;
 		hashTable cpus = NULL; 
-		if(rpmCpuinfoMatch(family, "", cpuinfo)) {
+		if(rpmCpuinfoMatch(family, "", cpuinfoP)) {
 		    if(htHasEntry(node[i].value.map, "Arch")) {
 			htGetEntry(node[i].value.map, "Arch", &tmp, NULL, NULL);
 			rpmsyck_node arch = tmp[0]->value.seq;
 			for(j = 0; arch[j].type != T_END; j++);
-			cpus = htCreate(j*2, 0, 1, NULL, NULL);
+			cpus = htCreate(j*2, 0, 0, NULL, NULL);
 			for(j = 0; arch[j].type != T_END; j++) {
 			    if(htHasEntry(arch[j].value.map, "Extends")) {
 				if(htGetEntry(arch[j].value.map, "Extends", &tmp, NULL, NULL) &&
-					tmp[0]->type == T_STR && !htHasEntry(cpus, tmp[0]->key))
+					tmp[0]->type == T_STR && !htHasEntry(cpus, tmp[0]->value.key))
 				    continue;
 			    }
 			    if(htHasEntry(arch[j].value.map, "Features")) {
@@ -573,23 +573,18 @@ static rpmRC rpmCpuinfo(void)
 				rpmsyck_node features = tmp[0]->value.seq;
 				int k, match = 0;
 				for(k = 0; features[k].type != T_END; k++)
-				    if(features[k].type == T_STR && !(match = rpmCpuinfoMatch(features[k].key, "", cpuinfo))) break;
+				    if(features[k].type == T_STR && !(match = rpmCpuinfoMatch(features[k].value.key, "", cpuinfoP))) break;
 				if(!match) continue;
 			    }
 			    if(htHasEntry(arch[j].value.map, "Name")) {
 				htGetEntry(arch[j].value.map, "Name", &tmp, NULL, NULL);
 				if(tmp[0]->type != T_STR) continue;
-				const char *name = tmp[0]->key;
+				const char *name = tmp[0]->value.key;
 				rpmsyck_node alias = NULL;
 				if(htHasEntry(arch[j].value.map, "Alias")) {
 				    htGetEntry(arch[j].value.map, "Alias", &tmp, NULL, NULL);
 				    alias = tmp[0]->value.seq;
 				}
-				else {
-				    alias = xmalloc(sizeof(struct rpmsyck_node_s));
-				    alias[0].type = T_END;
-				}
-
 				htAddEntry(cpus, name, alias);
 			    }
 			}
@@ -599,14 +594,15 @@ static rpmRC rpmCpuinfo(void)
 			rpmsyck_node priority = tmp[0]->value.seq;
 			int j;
 			for(j = 0; priority[j].type != T_END; j++)
-			    if(htHasEntry(cpus, priority[j].key)) {
-				xx = mireAppend(RPMMIRE_REGEX, 0, priority[j].key, NULL, &mi_re, &mi_nre);
-
-				htGetEntry(cpus, priority[j].key, &tmp, NULL, NULL);
-				rpmsyck_node alias = tmp[0];
-				int k;
-				for(k = 0; alias[k].type != T_END; k++)
-				    xx = mireAppend(RPMMIRE_REGEX, 0, alias[k].key, NULL, &mi_re, &mi_nre);
+			    if(htHasEntry(cpus, priority[j].value.key)) {
+				xx = mireAppend(RPMMIRE_REGEX, 0, priority[j].value.key, NULL, &mi_re, &mi_nre);
+				htGetEntry(cpus, priority[j].value.key, &tmp, NULL, NULL);
+				if(tmp[0]) {
+				    rpmsyck_node alias = tmp[0];
+				    int k;
+				    for(k = 0; alias[k].type != T_END; k++)
+					xx = mireAppend(RPMMIRE_REGEX, 0, alias[k].value.key, NULL, &mi_re, &mi_nre);
+				}
 			    }
 		    }
 		}
@@ -615,9 +611,9 @@ static rpmRC rpmCpuinfo(void)
 	}
     }
 
-    xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
+    cpuinfoYaml = rpmSyckFree(cpuinfoYaml);
 
-    cpuinfo = rpmdsFree(cpuinfo);
+    xx = mireAppend(RPMMIRE_REGEX, 0, "noarch", NULL, &mi_re, &mi_nre);
 
     cpu = mi_re[0].pattern;
     if(cpu != NULL)
@@ -1121,6 +1117,7 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file,
     {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
+
 	cpu = _free(cpu);
 	os = _free(os);
     }
@@ -1236,8 +1233,9 @@ int rpmShowRC(FILE * fp)
 	ds = NULL;
 	fprintf(fp, "\n");
 
-	xx = rpmdsCpuinfo(&ds, NULL);
-	if (ds != NULL) {
+	if(cpuinfoP == NULL)
+	    xx = rpmdsCpuinfo(&cpuinfoP, NULL);
+	if (cpuinfoP != NULL) {
 #if defined(WITH_CPUINFO)
 	    const char * fn = "libcpuinfo";
 #else
@@ -1245,14 +1243,15 @@ int rpmShowRC(FILE * fp)
 #endif
 	    fprintf(fp,
 		_("Features provided by current cpuinfo (from %s):\n"), fn);
-	    ds = rpmdsInit(ds);
-	    while (rpmdsNext(ds) >= 0) {
-		const char * DNEVR = rpmdsDNEVR(ds);
+	    cpuinfoP = rpmdsInit(cpuinfoP);
+	    while (rpmdsNext(cpuinfoP) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(cpuinfoP);
 		if (DNEVR != NULL)
 		    fprintf(fp, "    %s\n", DNEVR+2);
 	    }
-	    (void)rpmdsFree(ds);
-	    ds = NULL;
+	    (void)rpmdsFree(cpuinfoP);
+	    cpuinfoP = NULL;
+
 	    fprintf(fp, "\n");
 	}
     }

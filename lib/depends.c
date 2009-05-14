@@ -821,7 +821,7 @@ static char *sysinfo_path = NULL;
 /*@refcounted@*/ /*@null@*/ /*@unchecked@*/
 static rpmds rpmlibP = NULL;
 /*@refcounted@*/ /*@null@*/ /*@unchecked@*/
-static rpmds cpuinfoP = NULL;
+rpmds cpuinfoP = NULL;
 /*@refcounted@*/ /*@null@*/ /*@unchecked@*/
 static rpmds getconfP = NULL;
 /*@refcounted@*/ /*@null@*/ /*@unchecked@*/
@@ -1336,7 +1336,7 @@ retry:
     if (NSType == RPMNS_TYPE_CPUINFO) {
 	static int oneshot = -1;
 
-	if (oneshot)
+	if (oneshot && cpuinfoP == NULL)
 	    oneshot = rpmdsCpuinfo(&cpuinfoP, NULL);
 	if (cpuinfoP == NULL)
 	    goto unsatisfied;
