@@ -1,5 +1,7 @@
 #include "system.h"
 
+#define	_RPMIOB_INTERNAL	/* XXX necessary? */
+#include <rpmiotypes.h>
 #include <argv.h>
 
 #define _RPMPYTHON_INTERNAL
