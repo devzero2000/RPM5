@@ -1926,7 +1926,7 @@ assert(v.data != NULL);
 /*@=nullstate@*/
 }
 
-static void rpmdbFiniIterator(void * _mi)
+static void rpmmiFini(void * _mi)
 	/*@globals rpmmiRock @*/
 	/*@modifies _mi, rpmmiRock @*/
 {
@@ -1943,14 +1943,17 @@ static void rpmdbFiniIterator(void * _mi)
 	next->mi_next = NULL;
     }
 
-    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
+    /* XXX there's code that traverses here w mi->mi_db == NULL. b0rked imho. */
+    if (mi->mi_db) {
+	dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
 assert(dbi != NULL);
 
-    xx = miFreeHeader(mi, dbi);
+	xx = miFreeHeader(mi, dbi);
 
-    if (mi->mi_dbc)
-	xx = dbiCclose(dbi, mi->mi_dbc, 0);
-    mi->mi_dbc = NULL;
+	if (mi->mi_dbc)
+	    xx = dbiCclose(dbi, mi->mi_dbc, 0);
+	mi->mi_dbc = NULL;
+    }
 
     mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
 
@@ -1976,7 +1979,7 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 
     if (_rpmmiPool == NULL) {
 	_rpmmiPool = rpmioNewPool("mi", sizeof(*mi), -1, _rpmmi_debug,
-			NULL, NULL, NULL);
+			NULL, NULL, rpmmiFini);
 	pool = _rpmmiPool;
     }
     return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
@@ -1986,20 +1989,8 @@ rpmmi rpmmiFree(rpmmi mi)
 	/*@globals rpmmiRock @*/
 	/*@modifies rpmmiRock @*/
 {
-    if (mi == NULL)
-	return NULL;
-
-    yarnPossess(mi->_item.use);
-/*@-modfilesys@*/
-if (_rpmdb_debug)
-fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", mi, yarnPeekLock(mi->_item.use), __FUNCTION__, __FILE__, __LINE__);
-
-    /*@-usereleased@*/
-    if (yarnPeekLock(mi->_item.use) <= 1L) {
-	rpmdbFiniIterator(mi);
-	mi = (rpmmi)rpmioPutPool((rpmioItem)mi);
-    } else
-	yarnTwist(mi->_item.use, BY, -1);
+    if (mi != NULL)
+	mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
     (void) rpmdbCheckSignals();
 
