@@ -637,7 +637,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
     char * av[] = { NULL, NULL, NULL, NULL };
     int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
-    int xx;
+    int xx = 0;
     int * ssp = NULL;
     int inChroot = enterChroot(psm, &rootFdno);
 
