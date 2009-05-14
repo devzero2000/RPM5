@@ -453,10 +453,6 @@ void providePackageNVR(Header h)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
-#ifdef RPM_VENDOR_MANDRIVA
-    const char *D;
-    int gotD;
-#endif
     rpmuint32_t E;
     int gotE;
     const char *pEVR;
@@ -477,12 +473,6 @@ void providePackageNVR(Header h)
 	return;
 
     nb = 21 + strlen(V) + 1 + strlen(R) + 1;
-#ifdef	RPM_VENDOR_MANDRIVA
-    he->tag = RPMTAG_DISTEPOCH;
-    gotD = headerGet(h, he, 0);
-    D = (he->p.str ? he->p.str : NULL);
-    nb += (gotD ? strlen(D) + 1 : 0);
-#endif
     pEVR = p = alloca(nb);
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
@@ -494,12 +484,6 @@ void providePackageNVR(Header h)
 	p += strlen(p);
     }
     p = stpcpy( stpcpy( stpcpy(p, V) , "-") , R);
-#ifdef	RPM_VENDOR_MANDRIVA
-    if (gotD) {
-	p = stpcpy( stpcpy( p, ":"), D);
-    	D = _free(D);
-    }
-#endif
     V = _free(V);
     R = _free(R);
 
