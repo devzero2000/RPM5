@@ -1062,8 +1062,8 @@ void rpmFreeRpmrc(void)
  * Read macro configuration file(s).
  * @return		0 on success
  */
-static int rpmReadRC(void)
-	/*@globals defaultsInitialized, rpmMacrofiles,
+static int rpmReadRC(const char *macrofiles)
+	/*@globals defaultsInitialized,
 		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
@@ -1077,7 +1077,7 @@ static int rpmReadRC(void)
     }
 
     /* Read macro files. */
-    {	const char *mfpath = rpmExpand(rpmMacrofiles, NULL);
+    {	const char *mfpath = rpmExpand(macrofiles, NULL);
 	    
 	if (mfpath != NULL) {
 	    rpmInitMacros(NULL, mfpath);
@@ -1090,10 +1090,14 @@ static int rpmReadRC(void)
 
 int rpmReadConfigFiles(/*@unused@*/ const char * file,
 		const char * target)
-	/*@globals configTarget @*/
+	/*@globals configTarget, rpmMacrofiles @*/
 	/*@modifies configTarget @*/
 {
     mode_t mode = 0022;
+
+#ifdef PREMACROFILES
+    if (rpmReadRC(PREMACROFILES)) return -1;
+#endif
 
     /* Reset umask to its default umask(2) value. */
     mode = umask(mode);
@@ -1106,7 +1110,7 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file,
 
     /* Read the files */
 /*@-globs@*/
-    if (rpmReadRC()) return -1;
+    if (rpmReadRC(rpmMacrofiles)) return -1;
 /*@=globs@*/
 
     /* Reset target macros */
