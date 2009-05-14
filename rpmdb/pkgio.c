@@ -211,7 +211,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
     if (ts->pkpkt == NULL) {
 	unsigned hx = 0xffffffff;
 	unsigned ix = 0xffffffff;
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 	Header h;
 
 	/* XXX Do a lazy open if not done already. */
@@ -228,9 +228,9 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	/* Retrieve the pubkey that matches the signature. */
 	he->tag = RPMTAG_PUBKEYS;
 /*@-nullstate@*/
-	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
+	mi = rpmmiInit(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 /*@=nullstate@*/
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	while ((h = rpmmiNext(mi)) != NULL) {
 	    if (!headerGet(h, he, 0))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
@@ -243,7 +243,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
 
 	if (ix < 0xffffffff) {
 	    char hnum[32];

@@ -47,13 +47,13 @@ new(class, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
 
 void
 DESTROY(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     CODE:
     mi = rpmdbFreeIterator(mi);
 
 void
 prune(mi, ...)
-    rpmdbMatchIterator mi
+    rpmmi mi
     PREINIT:
     int * exclude = NULL;
     int exclude_count = 0;
@@ -70,7 +70,7 @@ prune(mi, ...)
     
 unsigned int
 getoffset(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     CODE:
     RETVAL = rpmdbGetIteratorOffset(mi);
     OUTPUT:
@@ -78,7 +78,7 @@ getoffset(mi)
 
 int
 count(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     CODE:
     RETVAL = rpmdbGetIteratorCount(mi);
     OUTPUT:
@@ -86,7 +86,7 @@ count(mi)
 
 void
 next(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     PREINIT:
     Header header = NULL;
     PPCODE:

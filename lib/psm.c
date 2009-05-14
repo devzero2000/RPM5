@@ -84,7 +84,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     rpmfi fi = psm->fi;
     sharedFileInfo replaced = (te ? te->replaced : NULL);
     sharedFileInfo sfi;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     int * offsets;
     rpmuint32_t prev;
@@ -119,7 +119,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     xx = rpmdbSetIteratorRewrite(mi, 1);
 
     sfi = replaced;
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	int modified;
 
 	modified = 0;
@@ -147,7 +147,7 @@ assert(sfi->otherFileNum < he->c);
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return RPMRC_OK;
 }
@@ -1367,7 +1367,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
     rpmds ds = rpmdsNew(fi->h, tagno, scareMem);
     char * depName = NULL;
     ARGI_t instances = NULL;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header triggeredH;
     rpmRC rc = RPMRC_OK;
     int i;
@@ -1419,7 +1419,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
 
 	prev = 0;
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	while((triggeredH = rpmmiNext(mi)) != NULL) {
 	    instance = rpmdbGetIteratorOffset(mi);
 	    if (prev == instance)
 		/*@innercontinue@*/ continue;
@@ -1429,7 +1429,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	    xx = argiSort(instances, NULL);
 	}
 
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     instances = argiFree(instances);
@@ -1521,7 +1521,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     rpmds triggers = NULL;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     ARGV_t keys = NULL;
     ARGI_t instances = NULL;
     Header sourceH = NULL;
@@ -1605,7 +1605,7 @@ assert(fi->h != NULL);
 	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
 
 	prev = 0;
-	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+	while((sourceH = rpmmiNext(mi)) != NULL) {
 
 	    /* Skip headers that have already been processed. */
 	    instance = rpmdbGetIteratorOffset(mi);
@@ -1621,7 +1621,7 @@ assert(fi->h != NULL);
 	    xx = argiSort(instances, NULL);
 	}
 
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
 exit:
@@ -2153,12 +2153,12 @@ assert(psm->mi == NULL);
 		}
 	    }
 
-	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
+	    while ((psm->oh = rpmmiNext(psm->mi)) != NULL) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
 		psm->oh = NULL;
 		/*@loopbreak@*/ break;
 	    }
-	    psm->mi = rpmdbFreeIterator(psm->mi);
+	    psm->mi = rpmmiFree(psm->mi);
 
 	    rc = RPMRC_OK;
 
@@ -2912,12 +2912,12 @@ psm->te->h = NULL;
 assert(psm->mi == NULL);
 	psm->mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
-	fi->h = rpmdbNextIterator(psm->mi);
+	fi->h = rpmmiNext(psm->mi);
 /*@-castexpose@*/
 	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
 /*@=castexpose@*/
-	psm->mi = rpmdbFreeIterator(psm->mi);
+	psm->mi = rpmmiFree(psm->mi);
 
 	if (fi->h != NULL) {
 	    (void) headerSetInstance(fi->h, fi->record);

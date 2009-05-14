@@ -56,7 +56,7 @@ typedef	rpmuint32_t	u_int32_t;
 /*@access dbiIndexItem@*/
 /*@access miRE@*/
 /*@access Header@*/		/* XXX compared with NULL */
-/*@access rpmdbMatchIterator@*/
+/*@access rpmmi@*/
 /*@access rpmts@*/		/* XXX compared with NULL */
 
 /*@unchecked@*/
@@ -717,10 +717,10 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
     return set;
 }
 
-struct rpmdbMatchIterator_s {
+struct rpmmi_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@dependent@*/ /*@null@*/
-    rpmdbMatchIterator	mi_next;
+    rpmmi		mi_next;
 /*@refcounted@*/
     rpmdb		mi_db;
     rpmTag		mi_rpmtag;
@@ -749,7 +749,7 @@ struct rpmdbMatchIterator_s {
 static rpmdb rpmdbRock;
 
 /*@unchecked@*/ /*@exposed@*/ /*@null@*/
-static rpmdbMatchIterator rpmmiRock;
+static rpmmi rpmmiRock;
 
 int rpmdbCheckTerminate(int terminate)
 	/*@globals rpmdbRock, rpmmiRock @*/
@@ -777,12 +777,12 @@ int rpmdbCheckTerminate(int terminate)
 
     if (terminating) {
 	rpmdb db;
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 
 	while ((mi = rpmmiRock) != NULL) {
 /*@i@*/	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
-/*@i@*/	    mi = rpmdbFreeIterator(mi);
+/*@i@*/	    mi = rpmmiFree(mi);
 	}
 
 /*@-newreftrans@*/
@@ -1518,12 +1518,12 @@ if (rc == 0)
 	unsigned int prevoff;
 	Header h;
 
-	{   rpmdbMatchIterator mi;
-	    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
-	    h = rpmdbNextIterator(mi);
+	{   rpmmi mi;
+	    mi = rpmmiInit(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
+	    h = rpmmiNext(mi);
 	    if (h)
 		h = headerLink(h);
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 
 	if (h == NULL) {
@@ -1698,13 +1698,13 @@ key->size = (UINT32_T) strlen(name);
     /* Make sure the version and release match. */
     for (i = 0; i < dbiIndexSetCount(*matches); i++) {
 	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 	Header h;
 
 	if (recoff == 0)
 	    continue;
 
-	mi = rpmdbInitIterator(dbi->dbi_rpmdb,
+	mi = rpmmiInit(dbi->dbi_rpmdb,
 			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 
 	/* Set iterator selectors for version/release if available. */
@@ -1721,12 +1721,12 @@ key->size = (UINT32_T) strlen(name);
 	    goto exit;
 	}
 
-	h = rpmdbNextIterator(mi);
+	h = rpmmiNext(mi);
 	if (h)
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
 	else
 	    (*matches)->recs[i].hdrNum = 0;
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     if (gotMatches) {
@@ -1865,7 +1865,7 @@ void * dbiStatsAccumulator(dbiIndex dbi, int opx)
  * @param dbi		index database handle
  * @return 		0 on success
  */
-static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
+static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies mi, dbi, fileSystem, internalState @*/
 {
@@ -1930,8 +1930,8 @@ static void rpmdbFiniIterator(void * _mi)
 	/*@globals rpmmiRock @*/
 	/*@modifies _mi, rpmmiRock @*/
 {
-    rpmdbMatchIterator mi = _mi;
-    rpmdbMatchIterator * prev, next;
+    rpmmi mi = _mi;
+    rpmmi * prev, next;
     dbiIndex dbi;
     int xx;
 
@@ -1968,21 +1968,21 @@ int _rpmmi_debug = 0;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmmiPool;
 
-static rpmdbMatchIterator rpmmiGetPool(/*@null@*/ rpmioPool pool)
+static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmdbPool, fileSystem @*/
 	/*@modifies pool, _rpmdbPool, fileSystem @*/
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
 
     if (_rpmmiPool == NULL) {
 	_rpmmiPool = rpmioNewPool("mi", sizeof(*mi), -1, _rpmmi_debug,
 			NULL, NULL, NULL);
 	pool = _rpmmiPool;
     }
-    return (rpmdbMatchIterator) rpmioGetPool(pool, sizeof(*mi));
+    return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
 }
 
-rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
+rpmmi rpmmiFree(rpmmi mi)
 	/*@globals rpmmiRock @*/
 	/*@modifies rpmmiRock @*/
 {
@@ -1997,7 +1997,7 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", mi, yarnPeekLock(mi->_item.use
     /*@-usereleased@*/
     if (yarnPeekLock(mi->_item.use) <= 1L) {
 	rpmdbFiniIterator(mi);
-	mi = (rpmdbMatchIterator)rpmioPutPool((rpmioItem)mi);
+	mi = (rpmmi)rpmioPutPool((rpmioItem)mi);
     } else
 	yarnTwist(mi->_item.use, BY, -1);
 
@@ -2006,15 +2006,15 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", mi, yarnPeekLock(mi->_item.use
     return NULL;
 }
 
-unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
+unsigned int rpmdbGetIteratorOffset(rpmmi mi) {
     return (mi ? mi->mi_offset : 0);
 }
 
-unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
+unsigned int rpmdbGetIteratorFileNum(rpmmi mi) {
     return (mi ? mi->mi_filenum : 0);
 }
 
-int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
+int rpmdbGetIteratorCount(rpmmi mi) {
     return (mi && mi->mi_set ?  mi->mi_set->count : 0);
 }
 
@@ -2131,7 +2131,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
     return pat;
 }
 
-int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
+int rpmdbSetIteratorRE(rpmmi mi, rpmTag tag,
 		rpmMireMode mode, const char * pattern)
 {
     static rpmMireMode defmode = (rpmMireMode)-1;
@@ -2221,7 +2221,7 @@ exit:
  * @return		1 if header should be skipped
  */
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-static int mireSkip (const rpmdbMatchIterator mi)
+static int mireSkip (const rpmmi mi)
 	/*@globals internalState @*/
 	/*@modifies mi->mi_re, internalState @*/
 {
@@ -2342,7 +2342,7 @@ assert(he->p.ptr != NULL);
 }
 /*@=onlytrans@*/
 
-int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite)
+int rpmdbSetIteratorRewrite(rpmmi mi, int rewrite)
 {
     int rc;
     if (mi == NULL)
@@ -2355,7 +2355,7 @@ int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite)
     return rc;
 }
 
-int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
+int rpmdbSetIteratorModified(rpmmi mi, int modified)
 {
     int rc;
     if (mi == NULL)
@@ -2365,7 +2365,7 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
     return rc;
 }
 
-int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts)
+int rpmdbSetHdrChk(rpmmi mi, rpmts ts)
 {
     int rc = 0;
     if (mi == NULL)
@@ -2376,7 +2376,7 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts)
     return rc;
 }
 
-Header rpmdbNextIterator(rpmdbMatchIterator mi)
+Header rpmmiNext(rpmmi mi)
 {
     dbiIndex dbi;
     DBT k = DBT_INIT;
@@ -2544,7 +2544,7 @@ next:
 /*@=compdef =retalias =retexpose =usereleased @*/
 }
 
-static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
+static void rpmdbSortIterator(/*@null@*/ rpmmi mi)
 	/*@modifies mi @*/
 {
     if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
@@ -2563,7 +2563,7 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
     }
 }
 
-static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum,
+static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
 		unsigned int exclude, unsigned int tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -2661,7 +2661,7 @@ fprintf(stderr, "+++ %d = %d + %d\t\"%s\"\n", (mi->mi_set->count + set->count), 
     return rc;
 }
 
-int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
+int rpmdbPruneIterator(rpmmi mi, int * hdrNums,
 	int nHdrNums, int sorted)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
@@ -2672,7 +2672,7 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
     return 0;
 }
 
-int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums)
+int rpmdbAppendIterator(rpmmi mi, const int * hdrNums, int nHdrNums)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
 	return 1;
@@ -2683,12 +2683,12 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag tag,
+rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 		const void * keyp, size_t keylen)
 	/*@globals rpmmiRock @*/
 	/*@modifies rpmmiRock @*/
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     int isLabel = 0;
@@ -2781,7 +2781,7 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	    set = dbiFreeIndexSet(set);
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
-	    mi = (rpmdbMatchIterator)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
+	    mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 	    return NULL;
 	}
     }
@@ -2876,12 +2876,12 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
     if (db == NULL)
 	return 0;
 
-    {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
-	h = rpmdbNextIterator(mi);
+    {	rpmmi mi;
+	mi = rpmmiInit(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
+	h = rpmmiNext(mi);
 	if (h)
 	    h = headerLink(h);
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     if (h == NULL) {
@@ -3626,14 +3626,14 @@ int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList,
 DBT * key;
 DBT * data;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     fingerPrintCache fpc;
     Header h;
     int i, xx;
 
     if (db == NULL) return 0;
 
-    mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, NULL, 0);
+    mi = rpmmiInit(db, RPMTAG_BASENAMES, NULL, 0);
 assert(mi != NULL);	/* XXX will never happen. */
     if (mi == NULL)
 	return 2;
@@ -3659,7 +3659,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
     }
 
     if ((i = rpmdbGetIteratorCount(mi)) == 0) {
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
 	return 0;
     }
     fpc = fpCacheCreate(i);
@@ -3669,7 +3669,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     /* For all installed headers with matching basename's ... */
     if (mi != NULL)
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
@@ -3733,7 +3733,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	mi->mi_setx = end;
     }
 
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     fpc = fpCacheFree(fpc);
 
@@ -4065,14 +4065,14 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     _dbapi_rebuild = newdb->db_api;
     
     {	Header h = NULL;
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
-	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
+	mi = rpmmiInit(olddb, RPMDBI_PACKAGES, NULL, 0);
 	if (ts)
 	    (void) rpmdbSetHdrChk(mi, ts);
 
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	while ((h = rpmmiNext(mi)) != NULL) {
 
 	    /* let's sanity check this record a bit, otherwise just skip it */
 	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
@@ -4102,17 +4102,17 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 		(void) headerNEVRA(h, &name, NULL, &version, &release, NULL);
 
 		/*@-shadow@*/
-		{   rpmdbMatchIterator mi;
-		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
+		{   rpmmi mi;
+		    mi = rpmmiInit(newdb, RPMTAG_NAME, name, 0);
 		    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
 				RPMMIRE_DEFAULT, version);
 		    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
 				RPMMIRE_DEFAULT, release);
-		    while (rpmdbNextIterator(mi)) {
+		    while (rpmmiNext(mi)) {
 			skip = 1;
 			/*@innerbreak@*/ break;
 		    }
-		    mi = rpmdbFreeIterator(mi);
+		    mi = rpmmiFree(mi);
 		}
 		/*@=shadow@*/
 
@@ -4136,7 +4136,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    }
 	}
 
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
 
     }
 

@@ -84,8 +84,8 @@ rpmmi_iternext(rpmmiObject * s)
 {
     Header h;
 
-    if (s->mi == NULL || (h = rpmdbNextIterator(s->mi)) == NULL) {
-	s->mi = rpmdbFreeIterator(s->mi);
+    if (s->mi == NULL || (h = rpmmiNext(s->mi)) == NULL) {
+	s->mi = rpmmiFree(s->mi);
 	return NULL;
     }
     return (PyObject *) hdr_Wrap(h);
@@ -203,7 +203,7 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
     if (s) {
-	s->mi = rpmdbFreeIterator(s->mi);
+	s->mi = rpmmiFree(s->mi);
 	PyObject_Del(s);
     }
 }
@@ -276,7 +276,7 @@ PyTypeObject rpmmi_Type = {
 };
 /*@=fullinitblock@*/
 
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
+rpmmiObject * rpmmi_Wrap(rpmmi mi)
 {
     rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
 

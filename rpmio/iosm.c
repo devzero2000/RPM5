@@ -1,5 +1,5 @@
 /** \ingroup payload
- * \file lib/iosm.c
+ * \file rpmmi/iosm.c
  * File state machine to handle a payload from a package.
  */
 
@@ -44,7 +44,7 @@ typedef /*@abstract@*/ void * alKey;
 #endif
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
-typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
+typedef /*@abstract@*/ struct rpmmi_s * rpmmi;
 typedef struct rpmPRCO_s * rpmPRCO;
 typedef struct Spec_s * Spec;
 #undef	_USE_RPMTS

@@ -1,12 +1,12 @@
 TYPEMAP
-rpmdb			    O_OBJECT_rpmdb
-rpmdbMatchIterator	O_OBJECT_rpmmi
-Header              O_OBJECT_header
+rpmdb			O_OBJECT_rpmdb
+rpmmi			O_OBJECT_rpmmi
+Header			O_OBJECT_header
 rpmts	    		O_OBJECT_rpmts
-rpmps               O_OBJECT_rpmps
-rpmfi               O_OBJECT_rpmfi
-rpmds               O_OBJECT_rpmds
-Spec                O_OBJECT_rpmspec
+rpmps			O_OBJECT_rpmps
+rpmfi			O_OBJECT_rpmfi
+rpmds			O_OBJECT_rpmds
+Spec			O_OBJECT_rpmspec
 rpmprobFilterFlags	T_IV
 rpmElementType		T_IV
 

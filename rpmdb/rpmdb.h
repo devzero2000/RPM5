@@ -36,7 +36,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 /** \ingroup rpmdb
  * Database iterator.
  */
-typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
+typedef /*@abstract@*/ struct rpmmi_s * rpmmi;
 #endif
 
 /**
@@ -1031,14 +1031,14 @@ int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
  * @param mi		rpm database iterator
  * @return		current header join key
  */
-unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmdbMatchIterator mi)
+unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
  * Return header tag index join key for current position of rpmdb iterator.
  * @param mi		rpm database iterator
  */
-unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
+unsigned int rpmdbGetIteratorFileNum(rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
@@ -1046,7 +1046,7 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmdbGetIteratorCount(/*@null@*/ rpmdbMatchIterator mi)
+int rpmdbGetIteratorCount(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
@@ -1056,7 +1056,7 @@ int rpmdbGetIteratorCount(/*@null@*/ rpmdbMatchIterator mi)
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
+int rpmdbAppendIterator(/*@null@*/ rpmmi mi,
 		/*@null@*/ const int * hdrNums, int nHdrNums)
 	/*@modifies mi @*/;
 
@@ -1069,7 +1069,7 @@ int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
  * @param sorted	is the array sorted? (array will be sorted on return)
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
+int rpmdbPruneIterator(/*@null@*/ rpmmi mi,
 		/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
 	/*@modifies mi, hdrNums @*/;
 
@@ -1081,19 +1081,19 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
  * @param pattern	pattern to match
  * @return		0 on success
  */
-int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
+int rpmdbSetIteratorRE(/*@null@*/ rpmmi mi, rpmTag tag,
 		rpmMireMode mode, /*@null@*/ const char * pattern)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies mi, mode, rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmdb
  * Prepare iterator for lazy writes.
- * @note Must be called before rpmdbNextIterator() with CDB model database.
+ * @note Must be called before rpmmiNext() with CDB model database.
  * @param mi		rpm database iterator
  * @param rewrite	new value of rewrite
  * @return		previous value
  */
-int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
+int rpmdbSetIteratorRewrite(/*@null@*/ rpmmi mi, int rewrite)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -1102,7 +1102,7 @@ int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
  * @param modified	new value of modified
  * @return		previous value
  */
-int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
+int rpmdbSetIteratorModified(/*@null@*/ rpmmi mi, int modified)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -1111,7 +1111,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @param ts		transaction set
  * @return		0 always
  */
-int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts)
+int rpmdbSetHdrChk(/*@null@*/ rpmmi mi, /*@null@*/ rpmts ts)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -1123,7 +1123,7 @@ int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag tag,
+rpmmi rpmmiInit(/*@null@*/ rpmdb db, rpmTag tag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -1134,7 +1134,7 @@ rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag tag,
  * @return		NULL on end of iteration.
  */
 /*@null@*/
-Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
+Header rpmmiNext(/*@null@*/ rpmmi mi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -1166,7 +1166,7 @@ int rpmdbCheckSignals(void)
  * @return		NULL always
  */
 /*@null@*/
-rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
+rpmmi rpmmiFree(/*@only@*/ /*@null@*/rpmmi mi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

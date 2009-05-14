@@ -319,7 +319,7 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param arg		name of source to query/verify
- * @return		showPackage() result, 1 if rpmdbInitIterator() is NULL
+ * @return		showPackage() result, 1 if rpmmiInit() is NULL
  */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -641,7 +641,7 @@ struct rpmQVKArguments_s {
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
     rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
 /*@only@*/ /*@null@*/
-    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
+    rpmmi qva_mi;		/*!< Match iterator on selected headers. */
 /*@refccounted@*/ /*@relnull@*/
     rpmgi qva_gi;		/*!< Generalized iterator on args. */
     rpmRC qva_rc;		/*!< Current return code. */

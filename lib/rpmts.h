@@ -477,7 +477,7 @@ int rpmtsVerifyDB(rpmts ts)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
+rpmmi rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;

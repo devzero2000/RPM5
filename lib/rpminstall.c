@@ -333,7 +333,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -342,7 +342,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     if (mi == NULL)
 	return RPMRC_NOTFOUND;
 
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
 	if (recOffset == 0) {	/* XXX can't happen. */
@@ -351,7 +351,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 	}
 	xx = rpmtsAddEraseElement(ts, h, recOffset);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return 0;
 }
@@ -634,7 +634,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 
 	/* === On --freshen, verify package is installed and newer. */
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
-	    rpmdbMatchIterator mi;
+	    rpmmi mi;
 	    Header oldH;
 	    int count;
 
@@ -644,14 +644,14 @@ assert(xx != 0 && he->p.str != NULL);
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, he->p.str, 0);
 	    he->p.ptr = _free(he->p.ptr);
 	    count = rpmdbGetIteratorCount(mi);
-	    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+	    while ((oldH = rpmmiNext(mi)) != NULL) {
 		if (rpmVersionCompare(oldH, h) < 0)
 		    /*@innercontinue@*/ continue;
 		/* same or newer package already installed */
 		count = 0;
 		/*@innerbreak@*/ break;
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	    if (count == 0)
 		continue;
 	    /* Package is newer than those currently installed. */
@@ -760,7 +760,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     (void) rpmtsSetGoal(ts, TSM_ERASE);
 
     for (arg = argv; *arg; arg++) {
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
@@ -770,7 +770,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
 	    count = 0;
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
 		if (!(count++ == 0 || (ia->installInterfaceFlags & INSTALL_ALLMATCHES))) {
@@ -785,7 +785,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 		}
 	    }
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     if (numFailed == 0 && numRPMS > 0) {

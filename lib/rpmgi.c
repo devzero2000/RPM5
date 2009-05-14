@@ -27,7 +27,7 @@
 
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access fnpyKey @*/
-/*@access rpmdbMatchIterator @*/
+/*@access rpmmi @*/
 /*@access rpmts @*/
 /*@access rpmps @*/
 
@@ -447,7 +447,7 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
 	if (res == 0)
 	    continue;
 
-	gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX odd side effect? */
+	gi->mi = rpmmiFree(gi->mi);	/* XXX odd side effect? */
 	rpmrc = RPMRC_FAIL;
 	break;
     }
@@ -479,7 +479,7 @@ static void rpmgiFini(void * _gi)
 	gi->fd = NULL;
     }
     gi->tsi = rpmtsiFree(gi->tsi);
-    gi->mi = rpmdbFreeIterator(gi->mi);
+    gi->mi = rpmmiFree(gi->mi);
     (void)rpmtsFree(gi->ts); 
     gi->ts = NULL;
 }
@@ -571,7 +571,7 @@ nextkey:
 		goto enditer;
 	    rpmrc = rpmgiInitFilter(gi);
 	    if (rpmrc != RPMRC_OK || gi->mi == NULL) {
-		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
+		gi->mi = rpmmiFree(gi->mi);	/* XXX unnecessary */
 		gi->i++;
 		goto nextkey;
 	    }
@@ -579,7 +579,7 @@ nextkey:
 	    gi->active = 1;
 	}
 	if (gi->mi != NULL) {	/* XXX unnecessary */
-	    Header h = rpmdbNextIterator(gi->mi);
+	    Header h = rpmmiNext(gi->mi);
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
@@ -590,7 +590,7 @@ nextkey:
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
-	    gi->mi = rpmdbFreeIterator(gi->mi);
+	    gi->mi = rpmmiFree(gi->mi);
 	    goto nextkey;
 	}
 	break;
@@ -598,14 +598,14 @@ nextkey:
 	if (!gi->active) {
 	    rpmrc = rpmgiInitFilter(gi);
 	    if (rpmrc != RPMRC_OK) {
-		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
+		gi->mi = rpmmiFree(gi->mi);	/* XXX unnecessary */
 		goto enditer;
 	    }
 	    rpmrc = RPMRC_NOTFOUND;	/* XXX hack */
 	    gi->active = 1;
 	}
 	if (gi->mi != NULL) {	/* XXX unnecessary */
-	    Header h = rpmdbNextIterator(gi->mi);
+	    Header h = rpmmiNext(gi->mi);
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
@@ -616,7 +616,7 @@ nextkey:
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
-	    gi->mi = rpmdbFreeIterator(gi->mi);
+	    gi->mi = rpmmiFree(gi->mi);
 	    goto enditer;
 	}
 	break;

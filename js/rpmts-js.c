@@ -105,13 +105,13 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 	default:			upgrade = 1;	break;
 	}
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, pkgN, 0);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	while ((h = rpmmiNext(mi)) != NULL) {
 	    xx = (upgrade >= 0)
 	        ? rpmtsAddInstallElement(ts, h, (fnpyKey)pkgN, upgrade, NULL)
 		: rpmtsAddEraseElement(ts, h, rpmdbGetIteratorOffset(mi));
 	    break;
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     ok = JS_TRUE;

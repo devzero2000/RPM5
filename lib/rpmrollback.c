@@ -101,7 +101,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     rpmuint32_t tid;
     int xx;
@@ -110,7 +110,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 #ifdef	NOTYET
     (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
 #endif
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	he->tag = tag;
 	xx = headerGet(h, he, 0);
 	if (!xx || he->p.ui32p == NULL)
@@ -141,7 +141,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 	}
 	idtx->nidt++;
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return IDTXsort(idtx);
 }

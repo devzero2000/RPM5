@@ -49,7 +49,7 @@ static const char * rpmgiPathOrQF(const rpmgi gi)
 
 static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -58,7 +58,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     if (mi == NULL)
 	return RPMRC_NOTFOUND;
 
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
 	if (recOffset == 0) {	/* XXX can't happen. */
@@ -67,7 +67,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 	}
 	xx = rpmtsAddEraseElement(ts, h, recOffset);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return 0;
 }

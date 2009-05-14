@@ -19,8 +19,6 @@
 
 #include "../debug.h"
 
-typedef	rpmdbMatchIterator rpmmi;
-
 VALUE rpmmiClass;
 
 /*@unchecked@*/
@@ -41,7 +39,7 @@ rpmmi_each(VALUE s)
 {
     rpmmi mi = rpmmi_ptr(s);
     Header h;
-    while((h = rpmdbNextIterator(mi)) != NULL)
+    while((h = rpmmiNext(mi)) != NULL)
 	rb_yield (rpmrb_NewHdr(headerLink(h)));
     return Qnil;
 }
@@ -50,7 +48,7 @@ static VALUE
 rpmmi_next(VALUE s)
 {
     rpmmi mi = rpmmi_ptr(s);
-    Header h = rpmdbNextIterator(mi);
+    Header h = rpmmiNext(mi);
     return (h != NULL ? rpmrb_NewHdr(headerLink(h)) : Qnil);
 }
 
@@ -122,7 +120,7 @@ rpmmi_free(rpmmi mi)
 {
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mi);
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 }
 
 static VALUE

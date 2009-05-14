@@ -100,14 +100,14 @@ LIBRPMDB_0
     rpmdbCount;
     rpmdbCountPackages;
     rpmdbFindFpList;
-    rpmdbFreeIterator;
+    rpmmiFree;
     rpmdbGetIteratorCount;
     rpmdbGetIteratorFileNum;
     rpmdbGetIteratorOffset;
     rpmdbInit;
-    rpmdbInitIterator;
+    rpmmiInit;
     rpmdbMireApply;
-    rpmdbNextIterator;
+    rpmmiNext;
     rpmdbNew;
     rpmdbOpen;
     rpmdbOpenAll;

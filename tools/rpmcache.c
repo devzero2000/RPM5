@@ -116,7 +116,7 @@ static int ftsCacheUpdate(rpmts ts)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tid = rpmtsGetTid(ts);
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     unsigned char * md5;
     int rc = 0;
     int xx;
@@ -149,7 +149,7 @@ static int ftsCacheUpdate(rpmts ts)
         mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, 16);
 	md5 = _free(md5);
 	rc = rpmdbGetIteratorCount(mi);
-        mi = rpmdbFreeIterator(mi);
+        mi = rpmmiFree(mi);
 	if (rc) {
 	    rc = 0;
 	    continue;

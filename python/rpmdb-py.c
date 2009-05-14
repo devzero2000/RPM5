@@ -129,7 +129,7 @@ rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    return rpmmi_Wrap( rpmdbInitIterator(s->db, tag, key, len) );
+    return rpmmi_Wrap( rpmmiInit(s->db, tag, key, len) );
 }
 
 /*@}*/
@@ -153,13 +153,13 @@ rpmdb_length(rpmdbObject * s)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     int count = 0;
 
-    mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
-    while (rpmdbNextIterator(mi) != NULL)
+    mi = rpmmiInit(s->db, RPMDBI_PACKAGES, NULL, 0);
+    while (rpmmiNext(mi) != NULL)
 	count++;
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return count;
 }
@@ -175,7 +175,7 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
     int offset;
     hdrObject * ho;
     Header h;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
 
     if (!PyInt_Check(key)) {
 	PyErr_SetString(PyExc_TypeError, "integer expected");
@@ -184,9 +184,9 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
 
     offset = (int) PyInt_AsLong(key);
 
-    mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
-    if (!(h = rpmdbNextIterator(mi))) {
-	mi = rpmdbFreeIterator(mi);
+    mi = rpmmiInit(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
+    if (!(h = rpmmiNext(mi))) {
+	mi = rpmmiFree(mi);
 	PyErr_SetString(pyrpmError, "cannot read rpmdb entry");
 	return NULL;
     }

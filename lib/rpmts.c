@@ -159,10 +159,10 @@ int rpmtsVerifyDB(rpmts ts)
 }
 
 /*@-compdef@*/ /* keyp might not be defined. */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
+rpmmi rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     const char * arch = NULL;
     int xx;
 
@@ -226,7 +226,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	}
     }
 
-    mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
+    mi = rpmmiInit(ts->rdb, rpmtag, keyp, keylen);
 
     /* Verify header signature/digest during retrieve (if not disabled). */
     if (mi && !(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
@@ -305,7 +305,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     const char * errstr;
     const char * str = NULL;
     const char * qfmt;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header bh = NULL;
     Header h = NULL;
     size_t bhnamelen = 0;
@@ -342,8 +342,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
     /* Look for a matching Provides: in suggested universe. */
     rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
-    mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    mi = rpmmiInit(ts->sdb, rpmtag, keyp, keylen);
+    while ((h = rpmmiNext(mi)) != NULL) {
 	size_t hnamelen;
 	time_t htime;
 
@@ -375,7 +375,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	bhtime = htime;
 	bhnamelen = hnamelen;
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     /* Is there a suggested resolution? */
     if (bh == NULL)

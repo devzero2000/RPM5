@@ -187,7 +187,7 @@ fprintf(stderr, "\tINIT mi %p\n", mi);
 	break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;		/* XXX needed? */
-	if ((h = rpmdbNextIterator(mi)) != NULL) {
+	if ((h = rpmmiNext(mi)) != NULL) {
             JS_ValueToId(cx, OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h)), idp);
 if (_debug)
 fprintf(stderr, "\tNEXT mi %p h %p\n", mi, h);
@@ -216,7 +216,7 @@ rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, void * _key, int _k
 	return NULL;
     if (!JS_SetPrivate(cx, obj, (void *)mi)) {
 	/* XXX error msg */
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
 	return NULL;
     }
     return mi;
@@ -232,7 +232,7 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
     {	rpmmi mi = ptr;
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 #endif
 }

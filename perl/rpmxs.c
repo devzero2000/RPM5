@@ -98,7 +98,7 @@ void _rpm2header(rpmts ts, char * filename, int checkmode) {
 }
 
 void _newiterator(rpmts ts, SV * sv_tagname, SV * sv_tagvalue, int keylen) {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     int tag = RPMDBI_PACKAGES;
     void * value = NULL;
     int i = 0;

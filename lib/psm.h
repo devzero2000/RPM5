@@ -140,7 +140,7 @@ struct rpmpsm_s {
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage header. */
 /*@null@*/
-    rpmdbMatchIterator mi;	/*!< An rpmdb iterator for this psm's use. */
+    rpmmi mi;			/*!< An rpmdb iterator for this psm's use. */
 /*@observer@*/
     const char * stepName;	/*!< The current PSM step (for display). */
 /*@only@*/ /*@null@*/

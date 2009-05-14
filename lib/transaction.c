@@ -111,13 +111,13 @@ static int handleInstInstalledFiles(const rpmts ts,
     int xx;
     int i;
 
-    {	rpmdbMatchIterator mi;
+    {	rpmmi mi;
 	Header h;
 	int scareMem = 0;
 
 	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	while ((h = rpmmiNext(mi)) != NULL) {
 	    he->tag = RPMTAG_NVRA;
 	    xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
@@ -125,7 +125,7 @@ assert(he->p.str != NULL);
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     /* Compute package color. */
@@ -249,13 +249,13 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
     const unsigned char * otherStates;
     int i, xx;
 
-    rpmdbMatchIterator mi;
+    rpmmi mi;
 
     mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
-    h = rpmdbNextIterator(mi);
+    h = rpmmiNext(mi);
     if (h == NULL) {
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
 	return 1;
     }
 
@@ -276,7 +276,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	fi->actions[fileNum] = FA_SKIP;
     }
     he->p.ptr = _free(he->p.ptr);
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return 0;
 }
@@ -1263,7 +1263,7 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
     pi = rpmtsiInit(ts);
     /* XXX Only added packages need be checked. */
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 	int fc;
 
 	if (p->isSource) continue;
@@ -1274,9 +1274,9 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-	    while ((h = rpmdbNextIterator(mi)) != NULL)
+	    while ((h = rpmmiNext(mi)) != NULL)
 		xx = ensureOlder(ts, p, h);
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
@@ -1298,14 +1298,14 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 				rpmteO(p));
 	    }
 
-	    while (rpmdbNextIterator(mi) != NULL) {
+	    while (rpmmiNext(mi) != NULL) {
 		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
 			rpmteNEVR(p), rpmteKey(p),
 			NULL, NULL,
 			NULL, 0);
 		/*@innerbreak@*/ break;
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 
 	/* Count no. of files (if any). */

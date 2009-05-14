@@ -108,7 +108,7 @@ typedef struct rpmRelocation_s * rpmRelocation;
 #include "../lib/rpmfi.h"
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
-typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
+typedef /*@abstract@*/ struct rpmmi_s * rpmmi;
 typedef struct rpmPRCO_s * rpmPRCO;
 typedef struct Spec_s * Spec;
 #include "../lib/rpmts.h"

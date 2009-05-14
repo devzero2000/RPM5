@@ -2668,7 +2668,7 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     rpmdb _rpmdb = (rpmdb) headerGetRpmdb(h);
     const char * key = PNhe->p.argv[PNhe->ix];
     size_t keylen = 0;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     rpmTag tagN = RPMTAG_REQUIRENAME;
     rpmTag tagEVR = RPMTAG_REQUIREVERSION;
     rpmTag tagF = RPMTAG_REQUIREFLAGS;
@@ -2692,10 +2692,10 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     REVRhe->tag = tagEVR;
     RFhe->tag = tagF;
 
-    mi = rpmdbInitIterator(_rpmdb, tagN, key, keylen);
+    mi = rpmmiInit(_rpmdb, tagN, key, keylen);
     if (hitp && *hitp)
 	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
-    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+    while ((oh = rpmmiNext(mi)) != NULL) {
 	if (!headerGet(oh, RNhe, 0))
 	    goto bottom;
 	if (PEVRhe != NULL) {
@@ -2744,7 +2744,7 @@ bottom:
 	RFhe->p.ptr = _free(RFhe->p.ptr);
 	NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     Pevr = rpmEVRfree(Pevr);
 
@@ -2844,7 +2844,7 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     rpmdb _rpmdb = (rpmdb) headerGetRpmdb(h);
     const char * key = RNhe->p.argv[RNhe->ix];
     size_t keylen = 0;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     rpmTag tagN = tagN = (*RNhe->p.argv[RNhe->ix] == '/')
 	? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME;
     rpmTag tagEVR = RPMTAG_PROVIDEVERSION;
@@ -2869,10 +2869,10 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     PEVRhe->tag = tagEVR;
     PFhe->tag = tagF;
 
-    mi = rpmdbInitIterator(_rpmdb, tagN, key, keylen);
+    mi = rpmmiInit(_rpmdb, tagN, key, keylen);
     if (hitp && *hitp)
 	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
-    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+    while ((oh = rpmmiNext(mi)) != NULL) {
 	if (!headerGet(oh, PNhe, 0))
 	    goto bottom;
 	if (REVRhe != NULL) {
@@ -2921,7 +2921,7 @@ bottom:
 	PFhe->p.ptr = _free(PFhe->p.ptr);
 	NVRAhe->p.ptr = _free(NVRAhe->p.ptr);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     Revr = rpmEVRfree(Revr);
 

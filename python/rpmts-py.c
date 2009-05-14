@@ -460,7 +460,7 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * o;
     int count;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     char * kwlist[] = {"name", NULL};
 
 if (_rpmts_debug)
@@ -475,37 +475,37 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
 	count = rpmdbGetIteratorCount(mi);
 	if (count <= 0) {
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	    PyErr_SetString(pyrpmError, "package not installed");
 	    return NULL;
 	} else { /* XXX: Note that we automatically choose to remove all matches */
 	    Header h;
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset)
 		    rpmtsAddEraseElement(s->ts, h, recOffset);
 	    }
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     } else
     if (PyInt_Check(o)) {
 	uint32_t instance = PyInt_AsLong(o);
 
 	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &instance, sizeof(instance));
 	if (instance == 0 || mi == NULL) {
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	    PyErr_SetString(pyrpmError, "package not installed");
 	    return NULL;
 	} else {
 	    Header h;
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		uint32_t recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset)
 		    rpmtsAddEraseElement(s->ts, h, recOffset);
 		break;
 	    }
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     Py_INCREF(Py_None);
