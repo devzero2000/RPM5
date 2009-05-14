@@ -1963,6 +1963,9 @@ assert(dbi != NULL);
      */
     (void) rpmdbClose(mi->mi_db);
     mi->mi_db = NULL;
+
+    /* XXX this needs to be done elsewhere, not within destructor. */
+    (void) rpmdbCheckSignals();
 }
 
 /*@unchecked@*/
@@ -1983,18 +1986,6 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 	pool = _rpmmiPool;
     }
     return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
-}
-
-rpmmi rpmmiFree(rpmmi mi)
-	/*@globals rpmmiRock @*/
-	/*@modifies rpmmiRock @*/
-{
-    if (mi != NULL)
-	mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
-
-    (void) rpmdbCheckSignals();
-
-    return NULL;
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmmi mi) {

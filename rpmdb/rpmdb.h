@@ -1161,6 +1161,30 @@ int rpmdbCheckSignals(void)
 	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
+ * Unreference a rpm database iterator.
+ * @param mi		rpm database iterator
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmmi rpmmiUnlink(/*@only@*/ /*@null@*/rpmmi mi)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#define rpmmiUnlink(_mi)  \
+    ((rpmmi)rpmioUnlinkPoolItem((rpmioItem)(_mi), __FUNCTION__, __FILE__, __LINE__))
+
+/** \ingroup rpmdb
+ * Reference a rpm database iterator.
+ * @param mi		rpm database iterator
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmmi rpmmiLink(/*@only@*/ /*@null@*/rpmmi mi)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#define rpmmiLink(_mi)  \
+    ((rpmmi)rpmioLinkPoolItem((rpmioItem)(_mi), __FUNCTION__, __FILE__, __LINE__))
+
+/** \ingroup rpmdb
  * Destroy rpm database iterator.
  * @param mi		rpm database iterator
  * @return		NULL always
@@ -1169,6 +1193,8 @@ int rpmdbCheckSignals(void)
 rpmmi rpmmiFree(/*@only@*/ /*@null@*/rpmmi mi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#define rpmmiFree(_mi)  \
+    ((rpmmi)rpmioFreePoolItem((rpmioItem)(_mi), __FUNCTION__, __FILE__, __LINE__))
 
 /** \ingroup rpmdb
  * Return array of keys matching a pattern.
