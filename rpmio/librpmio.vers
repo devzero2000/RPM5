@@ -141,6 +141,7 @@ LIBRPMIO_0
     htCreate;
     htFree;
     htGetEntry;
+    htGetKeys;
     htHasEntry;
     _init;
     _iosm_debug;
