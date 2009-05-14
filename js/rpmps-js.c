@@ -112,9 +112,7 @@ static JSBool
 rpmps_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
-    rpmps ps = (rpmps)ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    int myint;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -157,8 +155,6 @@ static JSBool
 rpmps_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    JSObject *iterator;
-    JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 

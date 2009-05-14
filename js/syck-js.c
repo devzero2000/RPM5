@@ -44,7 +44,7 @@ js_syck_parser_handler(SyckParser *p, SyckNode *n)
     int o3 = -1;
     int i;
 #endif
-    int o;
+    int o = 0;
     SYMID oid;
 
     switch (n->kind) {

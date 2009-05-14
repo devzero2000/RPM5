@@ -176,7 +176,6 @@ rpmmc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    int myint;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -218,7 +217,6 @@ static JSBool
 rpmmc_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 

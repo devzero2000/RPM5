@@ -56,8 +56,8 @@ static const char * v2s(JSContext *cx, jsval v)
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,%d,%p,%p) *statep 0x%lx *idp 0x%lx\n", \
 	    __FUNCTION__, cx, obj, op, statep, idp, \
-	    (unsigned long)(statep ? *statep : 0xfeedface), \
-	    (unsigned long)(idp ? *idp : 0xdeadbeef))
+	    (statep ? (unsigned long)*statep : 0xfeedfaceUL), \
+	    (idp ? (unsigned long)*idp : 0xdeadbeefUL))
 
 #define	_CONVERT_DEBUG_ENTRY(_test) \
     if (_test) \
