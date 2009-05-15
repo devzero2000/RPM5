@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - proyvind: make it possible to set macro files to load predefines from by
+	defining PREMACROFILES at build time.
     - jbj: rpmmi: rename the typedef and rpmmi{Init,Next,Free} methods.
     - jbj: rpmmi: split out a pool destructor (prior to using).
     - jbj: mire: handle items from _mirePool like all other pools.

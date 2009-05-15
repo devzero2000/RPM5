@@ -1062,8 +1062,8 @@ void rpmFreeRpmrc(void)
  * Read macro configuration file(s).
  * @return		0 on success
  */
-static int rpmReadRC(void)
-	/*@globals defaultsInitialized, rpmMacrofiles,
+static int rpmReadRC(const char *macrofiles)
+	/*@globals defaultsInitialized,
 		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
@@ -1077,7 +1077,7 @@ static int rpmReadRC(void)
     }
 
     /* Read macro files. */
-    {	const char *mfpath = rpmExpand(rpmMacrofiles, NULL);
+    {	const char *mfpath = rpmExpand(macrofiles, NULL);
 	    
 	if (mfpath != NULL) {
 	    rpmInitMacros(NULL, mfpath);
@@ -1088,39 +1088,16 @@ static int rpmReadRC(void)
     return rc;
 }
 
-#if defined(WITH_CPUINFO)
-/* Since %{_prefer_target_cpu} hasn't been read before rpmReadRC(), we need to
- * reread platform specific macros again to be sure to get the right ones.. */
-static inline void rpmRereadTargetMacros(const char *cpu) {
-    if(strcmp(current[ARCH], cpu) != 0) {
-	ARGV_t macroArgv = NULL;
-	int i, n;
-	const char delim[] = ":";
-	char *macrofiles = xcalloc(strlen(rpmMacrofiles), 1);
-
-	(void) argvSplit(&macroArgv, rpmMacrofiles, delim);
-	for(i = 0, n = argvCount(macroArgv); i < n; i++) {
-	    const char *macrofile = rpmExpand(macroArgv[i], NULL);
-	    if(strcmp(macroArgv[i], macrofile) != 0 && strstr(macrofile, cpu) != NULL) {
-		if(strlen(macrofiles) > 0)
-		    strncat(macrofiles, delim, strlen(delim));
-		strncat(macrofiles, macrofile, strlen(macrofile));
-	    }
-	    macrofile = _free(macrofile);
-	}
-	if(strlen(macrofiles) > 0)
-	    rpmInitMacros(NULL, macrofiles);
-	macroArgv = argvFree(macroArgv);
-    }
-}
-#endif
-
 int rpmReadConfigFiles(/*@unused@*/ const char * file,
 		const char * target)
-	/*@globals configTarget @*/
+	/*@globals configTarget, rpmMacrofiles @*/
 	/*@modifies configTarget @*/
 {
     mode_t mode = 0022;
+
+#ifdef PREMACROFILES
+    if (rpmReadRC(PREMACROFILES)) return -1;
+#endif
 
     /* Reset umask to its default umask(2) value. */
     mode = umask(mode);
@@ -1133,7 +1110,7 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file,
 
     /* Read the files */
 /*@-globs@*/
-    if (rpmReadRC()) return -1;
+    if (rpmReadRC(rpmMacrofiles)) return -1;
 /*@=globs@*/
 
     /* Reset target macros */
@@ -1142,9 +1119,6 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file,
 
     /* Finally set target platform */
     {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
-#if defined(WITH_CPUINFO)
-	rpmRereadTargetMacros(cpu);
-#endif
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
 
