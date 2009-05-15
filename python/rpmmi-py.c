@@ -125,7 +125,7 @@ rpmmi_Instance(rpmmiObject * s)
     int rc = 0;
 
     if (s->mi != NULL)
-	rc = rpmdbGetIteratorOffset(s->mi);
+	rc = rpmmiInstance(s->mi);
 
     return Py_BuildValue("i", rc);
 }
@@ -140,7 +140,7 @@ rpmmi_Count(rpmmiObject * s)
     int rc = 0;
 
     if (s->mi != NULL)
-	rc = rpmdbGetIteratorCount(s->mi);
+	rc = rpmmiCount(s->mi);
 
     return Py_BuildValue("i", rc);
 }
@@ -168,7 +168,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    rpmdbSetIteratorRE(s->mi, tag, type, pattern);
+    rpmmiAddPattern(s->mi, tag, type, pattern);
 
     Py_INCREF (Py_None);
     return Py_None;

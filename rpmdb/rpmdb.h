@@ -1031,14 +1031,14 @@ int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
  * @param mi		rpm database iterator
  * @return		current header join key
  */
-unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmmi mi)
+unsigned int rpmmiInstance(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
  * Return header tag index join key for current position of rpmdb iterator.
  * @param mi		rpm database iterator
  */
-unsigned int rpmdbGetIteratorFileNum(rpmmi mi)
+unsigned int rpmmiFilenum(rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
@@ -1046,7 +1046,7 @@ unsigned int rpmdbGetIteratorFileNum(rpmmi mi)
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmdbGetIteratorCount(/*@null@*/ rpmmi mi)
+int rpmmiCount(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
@@ -1056,7 +1056,7 @@ int rpmdbGetIteratorCount(/*@null@*/ rpmmi mi)
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbAppendIterator(/*@null@*/ rpmmi mi,
+int rpmmiGrow(/*@null@*/ rpmmi mi,
 		/*@null@*/ const int * hdrNums, int nHdrNums)
 	/*@modifies mi @*/;
 
@@ -1069,7 +1069,7 @@ int rpmdbAppendIterator(/*@null@*/ rpmmi mi,
  * @param sorted	is the array sorted? (array will be sorted on return)
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(/*@null@*/ rpmmi mi,
+int rpmmiPrune(/*@null@*/ rpmmi mi,
 		/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
 	/*@modifies mi, hdrNums @*/;
 
@@ -1081,7 +1081,7 @@ int rpmdbPruneIterator(/*@null@*/ rpmmi mi,
  * @param pattern	pattern to match
  * @return		0 on success
  */
-int rpmdbSetIteratorRE(/*@null@*/ rpmmi mi, rpmTag tag,
+int rpmmiAddPattern(/*@null@*/ rpmmi mi, rpmTag tag,
 		rpmMireMode mode, /*@null@*/ const char * pattern)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies mi, mode, rpmGlobalMacroContext, internalState @*/;
@@ -1093,7 +1093,7 @@ int rpmdbSetIteratorRE(/*@null@*/ rpmmi mi, rpmTag tag,
  * @param rewrite	new value of rewrite
  * @return		previous value
  */
-int rpmdbSetIteratorRewrite(/*@null@*/ rpmmi mi, int rewrite)
+int rpmmiSetRewrite(/*@null@*/ rpmmi mi, int rewrite)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -1102,7 +1102,7 @@ int rpmdbSetIteratorRewrite(/*@null@*/ rpmmi mi, int rewrite)
  * @param modified	new value of modified
  * @return		previous value
  */
-int rpmdbSetIteratorModified(/*@null@*/ rpmmi mi, int modified)
+int rpmmiSetModified(/*@null@*/ rpmmi mi, int modified)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -1111,7 +1111,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmmi mi, int modified)
  * @param ts		transaction set
  * @return		0 always
  */
-int rpmdbSetHdrChk(/*@null@*/ rpmmi mi, /*@null@*/ rpmts ts)
+int rpmmiSetHdrChk(/*@null@*/ rpmmi mi, /*@null@*/ rpmts ts)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb

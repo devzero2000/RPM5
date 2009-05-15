@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmmi: rename the other methods for the match iterator object.
     - proyvind: make it possible to set macro files to load predefines from by
 	defining PREMACROFILES at build time.
     - jbj: rpmmi: rename the typedef and rpmmi{Init,Next,Free} methods.

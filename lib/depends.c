@@ -285,7 +285,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 
 	/* Create an erasure element. */
 	lastx = -1;
-	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+	xx = removePackage(ts, oh, rpmmiInstance(mi), &lastx, pkgKey);
 assert(lastx >= 0 && lastx < ts->orderCount);
 	q = ts->order[lastx];
 
@@ -357,7 +357,7 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
 
     /* Count remaining members in build set, excluding -debuginfo (if any). */
     mi = rpmtsInitIterator(ts, _debuginfo_tag, keyval, keylen);
-    xx = rpmdbPruneIterator(mi, ts->removedPackages, ts->numRemovedPackages, 1);
+    xx = rpmmiPrune(mi, ts->removedPackages, ts->numRemovedPackages, 1);
     while((oh = rpmmiNext(mi)) != NULL) {
 	/* Skip identical packages. */
 	if (rpmHeadersIdentical(h, oh))
@@ -369,7 +369,7 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
 	    continue;
 	/* Save the -debuginfo member. */
 	if (chkSuffix(he->p.str, "-debuginfo")) {
-	    debuginfoInstance = rpmdbGetIteratorOffset(mi);
+	    debuginfoInstance = rpmmiInstance(mi);
 	    debuginfoHeader = headerLink(oh);
 	} else
 	    nrefs++;
@@ -462,8 +462,7 @@ static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
 	else
 	    mi = rpmtsInitIterator(ts, _obsolete_tag, Name, 0);
 
-	xx = rpmdbPruneIterator(mi,
-	    ts->removedPackages, ts->numRemovedPackages, 1);
+	xx = rpmmiPrune(mi, ts->removedPackages, ts->numRemovedPackages, 1);
 
 	while((oh = rpmmiNext(mi)) != NULL) {
 	    int lastx;
@@ -487,7 +486,7 @@ static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
 
 	    /* Create an erasure element. */
 	    lastx = -1;
-	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+	    xx = removePackage(ts, oh, rpmmiInstance(mi), &lastx, pkgKey);
 assert(lastx >= 0 && lastx < ts->orderCount);
 	    q = ts->order[lastx];
 
@@ -1430,7 +1429,7 @@ retry:
 	    /* depFlags better be 0! */
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-	    (void) rpmdbPruneIterator(mi,
+	    (void) rpmmiPrune(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	    while ((h = rpmmiNext(mi)) != NULL) {
 		rpmdsNotify(dep, _("(db files)"), rc);
@@ -1441,7 +1440,7 @@ retry:
 	}
 
 	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-	(void) rpmdbPruneIterator(mi,
+	(void) rpmmiPrune(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmmiNext(mi)) != NULL) {
 	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
@@ -1754,7 +1753,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
     int terminate = 2;		/* XXX terminate if rc >= terminate */
     int ourrc = 0;
 
-    (void) rpmdbPruneIterator(mi,
+    (void) rpmmiPrune(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while (ourrc < terminate && (h = rpmmiNext(mi)) != NULL) {
 	rpmds requires = NULL;

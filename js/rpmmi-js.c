@@ -40,7 +40,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "is", &tag, &pattern)))
 	goto exit;
 
-    rpmdbSetIteratorRE(mi, tag, type, pattern);
+    rpmmiAddPattern(mi, tag, type, pattern);
 
     ok = JS_TRUE;
     *rval = BOOLEAN_TO_JSVAL(ok);
@@ -89,10 +89,10 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	break;
     case _LENGTH:
     case _COUNT:	/* XXX is _LENGTH enuf? */
-	*vp = INT_TO_JSVAL(rpmdbGetIteratorCount(mi));
+	*vp = INT_TO_JSVAL(rpmmiCount(mi));
         break;
     case _INSTANCE:
-	*vp = INT_TO_JSVAL(rpmdbGetIteratorOffset(mi));
+	*vp = INT_TO_JSVAL(rpmmiInstance(mi));
         break;
     default:
       {	JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);

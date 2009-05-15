@@ -473,7 +473,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	char * name = PyString_AsString(o);
 
 	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
-	count = rpmdbGetIteratorCount(mi);
+	count = rpmmiCount(mi);
 	if (count <= 0) {
 	    mi = rpmmiFree(mi);
 	    PyErr_SetString(pyrpmError, "package not installed");
@@ -481,7 +481,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else { /* XXX: Note that we automatically choose to remove all matches */
 	    Header h;
 	    while ((h = rpmmiNext(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+		unsigned int recOffset = rpmmiInstance(mi);
 		if (recOffset)
 		    rpmtsAddEraseElement(s->ts, h, recOffset);
 	    }
@@ -499,7 +499,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else {
 	    Header h;
 	    while ((h = rpmmiNext(mi)) != NULL) {
-		uint32_t recOffset = rpmdbGetIteratorOffset(mi);
+		uint32_t recOffset = rpmmiInstance(mi);
 		if (recOffset)
 		    rpmtsAddEraseElement(s->ts, h, recOffset);
 		break;

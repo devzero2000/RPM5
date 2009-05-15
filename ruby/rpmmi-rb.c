@@ -60,7 +60,7 @@ rpmmi_pattern(int argc, VALUE *argv, VALUE s)
 
     rb_scan_args(argc, argv, "20", &v_tag, &v_pattern);
 
-    rpmdbSetIteratorRE(mi, FIX2INT(v_tag), RPMMIRE_REGEX,
+    rpmmiAddPattern(mi, FIX2INT(v_tag), RPMMIRE_REGEX,
 		StringValueCStr(v_pattern));
 
     return Qtrue;
@@ -93,14 +93,14 @@ static VALUE
 rpmmi_count_get(VALUE s)
 {
     rpmmi mi = rpmmi_ptr(s);
-    return INT2FIX(rpmdbGetIteratorCount(mi));
+    return INT2FIX(rpmmiCount(mi));
 }
 
 static VALUE
 rpmmi_offset_get(VALUE s)
 {
     rpmmi mi = rpmmi_ptr(s);
-    return INT2FIX(rpmdbGetIteratorOffset(mi));
+    return INT2FIX(rpmmiInstance(mi));
 }
 
 static void

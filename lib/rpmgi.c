@@ -439,7 +439,7 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 	    if (!res) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
-		res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+		res = rpmmiAddPattern(gi->mi, tag, RPMMIRE_DEFAULT, pat);
 	    }
 	    a = _free(a);
 	}
@@ -583,7 +583,7 @@ nextkey:
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		sprintf(hnum, "%u", rpmmiInstance(gi->mi));
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
@@ -609,7 +609,7 @@ nextkey:
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		sprintf(hnum, "%u", rpmmiInstance(gi->mi));
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */

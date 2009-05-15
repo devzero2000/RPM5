@@ -230,11 +230,11 @@ rpmmi rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 
     /* Verify header signature/digest during retrieve (if not disabled). */
     if (mi && !(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	(void) rpmdbSetHdrChk(mi, ts);
+	(void) rpmmiSetHdrChk(mi, ts);
 
     /* Select specified arch only. */
     if (arch != NULL)
-	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
+	xx = rpmmiAddPattern(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
     return mi;
 }
 /*@=compdef@*/

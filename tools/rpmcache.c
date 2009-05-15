@@ -148,7 +148,7 @@ static int ftsCacheUpdate(rpmts ts)
 	}
         mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, 16);
 	md5 = _free(md5);
-	rc = rpmdbGetIteratorCount(mi);
+	rc = rpmmiCount(mi);
         mi = rpmmiFree(mi);
 	if (rc) {
 	    rc = 0;

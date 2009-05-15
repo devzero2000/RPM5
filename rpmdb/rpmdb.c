@@ -1709,13 +1709,13 @@ key->size = (UINT32_T) strlen(name);
 
 	/* Set iterator selectors for version/release if available. */
 	if (version &&
-	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
+	    rpmmiAddPattern(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
 	{
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	if (release &&
-	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
+	    rpmmiAddPattern(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
 	{
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -1988,15 +1988,15 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
     return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
 }
 
-unsigned int rpmdbGetIteratorOffset(rpmmi mi) {
+unsigned int rpmmiInstance(rpmmi mi) {
     return (mi ? mi->mi_offset : 0);
 }
 
-unsigned int rpmdbGetIteratorFileNum(rpmmi mi) {
+unsigned int rpmmiFilenum(rpmmi mi) {
     return (mi ? mi->mi_filenum : 0);
 }
 
-int rpmdbGetIteratorCount(rpmmi mi) {
+int rpmmiCount(rpmmi mi) {
     return (mi && mi->mi_set ?  mi->mi_set->count : 0);
 }
 
@@ -2113,7 +2113,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
     return pat;
 }
 
-int rpmdbSetIteratorRE(rpmmi mi, rpmTag tag,
+int rpmmiAddPattern(rpmmi mi, rpmTag tag,
 		rpmMireMode mode, const char * pattern)
 {
     static rpmMireMode defmode = (rpmMireMode)-1;
@@ -2324,7 +2324,7 @@ assert(he->p.ptr != NULL);
 }
 /*@=onlytrans@*/
 
-int rpmdbSetIteratorRewrite(rpmmi mi, int rewrite)
+int rpmmiSetRewrite(rpmmi mi, int rewrite)
 {
     int rc;
     if (mi == NULL)
@@ -2337,7 +2337,7 @@ int rpmdbSetIteratorRewrite(rpmmi mi, int rewrite)
     return rc;
 }
 
-int rpmdbSetIteratorModified(rpmmi mi, int modified)
+int rpmmiSetModified(rpmmi mi, int modified)
 {
     int rc;
     if (mi == NULL)
@@ -2347,7 +2347,7 @@ int rpmdbSetIteratorModified(rpmmi mi, int modified)
     return rc;
 }
 
-int rpmdbSetHdrChk(rpmmi mi, rpmts ts)
+int rpmmiSetHdrChk(rpmmi mi, rpmts ts)
 {
     int rc = 0;
     if (mi == NULL)
@@ -2643,8 +2643,7 @@ fprintf(stderr, "+++ %d = %d + %d\t\"%s\"\n", (mi->mi_set->count + set->count), 
     return rc;
 }
 
-int rpmdbPruneIterator(rpmmi mi, int * hdrNums,
-	int nHdrNums, int sorted)
+int rpmmiPrune(rpmmi mi, int * hdrNums, int nHdrNums, int sorted)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
 	return 1;
@@ -2654,7 +2653,7 @@ int rpmdbPruneIterator(rpmmi mi, int * hdrNums,
     return 0;
 }
 
-int rpmdbAppendIterator(rpmmi mi, const int * hdrNums, int nHdrNums)
+int rpmmiGrow(rpmmi mi, const int * hdrNums, int nHdrNums)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
 	return 1;
@@ -2715,7 +2714,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     }
     else if (keyp == NULL) {
 	/* XXX Special case #3: they want empty iterator,
-	 * for use with rpmdbAppendIterator(). */
+	 * for use with rpmmiGrow(). */
 	assert(keylen == 0);
     }
     else {
@@ -3640,7 +3639,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     }
 
-    if ((i = rpmdbGetIteratorCount(mi)) == 0) {
+    if ((i = rpmmiCount(mi)) == 0) {
 	mi = rpmmiFree(mi);
 	return 0;
     }
@@ -4048,11 +4047,11 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     
     {	Header h = NULL;
 	rpmmi mi;
-#define	_RECNUM	rpmdbGetIteratorOffset(mi)
+#define	_RECNUM	rpmmiInstance(mi)
 
 	mi = rpmmiInit(olddb, RPMDBI_PACKAGES, NULL, 0);
 	if (ts)
-	    (void) rpmdbSetHdrChk(mi, ts);
+	    (void) rpmmiSetHdrChk(mi, ts);
 
 	while ((h = rpmmiNext(mi)) != NULL) {
 
@@ -4086,9 +4085,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 		/*@-shadow@*/
 		{   rpmmi mi;
 		    mi = rpmmiInit(newdb, RPMTAG_NAME, name, 0);
-		    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
+		    (void) rpmmiAddPattern(mi, RPMTAG_VERSION,
 				RPMMIRE_DEFAULT, version);
-		    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
+		    (void) rpmmiAddPattern(mi, RPMTAG_RELEASE,
 				RPMMIRE_DEFAULT, release);
 		    while (rpmmiNext(mi)) {
 			skip = 1;

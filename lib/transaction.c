@@ -1281,20 +1281,20 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
+	    xx = rpmmiAddPattern(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 				rpmteE(p));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
+	    xx = rpmmiAddPattern(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 				rpmteV(p));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
+	    xx = rpmmiAddPattern(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 				rpmteR(p));
 #ifdef	RPM_VENDOR_MANDRIVA
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
+	    xx = rpmmiAddPattern(mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
 				rpmteD(p));
 #endif
 	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
+		xx = rpmmiAddPattern(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
 				rpmteA(p));
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
+		xx = rpmmiAddPattern(mi, RPMTAG_OS, RPMMIRE_STRCMP,
 				rpmteO(p));
 	    }
 

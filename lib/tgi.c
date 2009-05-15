@@ -59,7 +59,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 	return RPMRC_NOTFOUND;
 
     while ((h = rpmmiNext(mi)) != NULL) {
-	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+	unsigned int recOffset = rpmmiInstance(mi);
 
 	if (recOffset == 0) {	/* XXX can't happen. */
 	    rc = RPMRC_FAIL;

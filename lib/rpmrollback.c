@@ -108,7 +108,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
 #ifdef	NOTYET
-    (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
+    (void) rpmmiAddPattern(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
 #endif
     while ((h = rpmmiNext(mi)) != NULL) {
 	he->tag = tag;
@@ -136,7 +136,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 	    idt->done = 0;
 	    idt->h = headerLink(h);
 	    idt->key = NULL;
-	    idt->instance = rpmdbGetIteratorOffset(mi);
+	    idt->instance = rpmmiInstance(mi);
 	    idt->val.u32 = tid;
 	}
 	idtx->nidt++;

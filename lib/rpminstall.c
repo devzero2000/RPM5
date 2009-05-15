@@ -343,7 +343,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 	return RPMRC_NOTFOUND;
 
     while ((h = rpmmiNext(mi)) != NULL) {
-	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+	unsigned int recOffset = rpmmiInstance(mi);
 
 	if (recOffset == 0) {	/* XXX can't happen. */
 	    rc = RPMRC_FAIL;
@@ -643,7 +643,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 assert(xx != 0 && he->p.str != NULL);
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, he->p.str, 0);
 	    he->p.ptr = _free(he->p.ptr);
-	    count = rpmdbGetIteratorCount(mi);
+	    count = rpmmiCount(mi);
 	    while ((oldH = rpmmiNext(mi)) != NULL) {
 		if (rpmVersionCompare(oldH, h) < 0)
 		    /*@innercontinue@*/ continue;
@@ -771,7 +771,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	    Header h;	/* XXX iterator owns the reference */
 	    count = 0;
 	    while ((h = rpmmiNext(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+		unsigned int recOffset = rpmmiInstance(mi);
 
 		if (!(count++ == 0 || (ia->installInterfaceFlags & INSTALL_ALLMATCHES))) {
 		    rpmlog(RPMLOG_ERR, _("\"%s\" specifies multiple packages\n"),

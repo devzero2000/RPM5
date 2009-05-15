@@ -2694,7 +2694,7 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 
     mi = rpmmiInit(_rpmdb, tagN, key, keylen);
     if (hitp && *hitp)
-	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+	xx = rpmmiPrune(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
     while ((oh = rpmmiNext(mi)) != NULL) {
 	if (!headerGet(oh, RNhe, 0))
 	    goto bottom;
@@ -2734,7 +2734,7 @@ bingo:
 	    xx = argvAdd(avp, NVRAhe->p.str);
 	    xx = argvSort(*avp, NULL);
 	    if (hitp != NULL)
-		xx = argiAdd(hitp, -1, rpmdbGetIteratorOffset(mi));
+		xx = argiAdd(hitp, -1, rpmmiInstance(mi));
 	    rc++;
 	}
 
@@ -2871,7 +2871,7 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 
     mi = rpmmiInit(_rpmdb, tagN, key, keylen);
     if (hitp && *hitp)
-	xx = rpmdbPruneIterator(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+	xx = rpmmiPrune(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
     while ((oh = rpmmiNext(mi)) != NULL) {
 	if (!headerGet(oh, PNhe, 0))
 	    goto bottom;
@@ -2911,7 +2911,7 @@ bingo:
 	    xx = argvAdd(avp, NVRAhe->p.str);
 	    xx = argvSort(*avp, NULL);
 	    if (hitp != NULL)
-		xx = argiAdd(hitp, -1, rpmdbGetIteratorOffset(mi));
+		xx = argiAdd(hitp, -1, rpmmiInstance(mi));
 	    rc++;
 	}
 
