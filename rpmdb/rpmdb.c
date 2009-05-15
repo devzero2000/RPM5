@@ -1432,16 +1432,18 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t BN = memset(alloca(sizeof(*BN)), 0, sizeof(*BN));
+    HE_t DN = memset(alloca(sizeof(*DN)), 0, sizeof(*DN));
+    HE_t DI = memset(alloca(sizeof(*DI)), 0, sizeof(*DI));
     const char * dirName;
     const char * baseName;
     fingerPrintCache fpc;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
-    DBC * dbcursor;
     dbiIndexSet allMatches = NULL;
-    dbiIndexItem rec = NULL;
-    int i;
+    rpmmi mi = NULL;
+    unsigned int prevoff = 0;
+    Header h;
     int rc;
     int xx;
 
@@ -1469,7 +1471,9 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
-	dbcursor = NULL;
+	DBC * dbcursor = NULL;
+	int i;
+
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
 /*@-temptrans@*/
@@ -1496,7 +1500,6 @@ if (rc == 0)
 	}
 
 	xx = dbiCclose(dbi, dbcursor, 0);
-	dbcursor = NULL;
     } else
 	rc = -2;
 
@@ -1506,80 +1509,55 @@ if (rc == 0)
 	return rc;
     }
 
-    *matches = xcalloc(1, sizeof(**matches));
-    rec = dbiIndexNewItem(0, 0);
-    i = 0;
-    if (allMatches != NULL)
-    while (i < allMatches->count) {
-	const char ** baseNames;
-	const char ** dirNames;
-	rpmuint32_t * dirIndexes;
-	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
-	unsigned int prevoff;
-	Header h;
+    /* Create an iterator for the matches. */
+    mi = rpmmiInit(db, RPMDBI_PACKAGES, NULL, 0);
+assert(allMatches != NULL);
+    mi->mi_set = allMatches;
 
-	{   rpmmi mi;
-	    mi = rpmmiInit(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
-	    h = rpmmiNext(mi);
-	    if (h)
-		h = headerLink(h);
-	    mi = rpmmiFree(mi);
+    prevoff = 0;
+    BN->tag = RPMTAG_BASENAMES;
+    DN->tag = RPMTAG_DIRNAMES;
+    DI->tag = RPMTAG_DIRINDEXES;
+
+    /* Find the file(s) with the same fingerprint. */
+    while ((h = rpmmiNext(mi)) != NULL) {
+	fingerPrint fp2;
+	int num;
+
+	/* Reload tags when header changes. */
+	if (prevoff != rpmmiInstance(mi)) {
+	    prevoff = rpmmiInstance(mi);
+	    BN->p.ptr = _free(BN->p.ptr);
+	    xx = headerGet(h, BN, 0);
+	    DN->p.ptr = _free(DN->p.ptr);
+	    xx = headerGet(h, DN, 0);
+	    DI->p.ptr = _free(DI->p.ptr);
+	    xx = headerGet(h, DI, 0);
 	}
 
-	if (h == NULL) {
-	    i++;
-	    continue;
+	num = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx-1);
+assert(num >= 0 && num < (int)BN->c);
+	fp2 = fpLookup(fpc, DN->p.argv[DI->p.ui32p[num]], BN->p.argv[num], 1);
+
+	/*@-nullpass@*/
+	if (FP_EQUAL(fp1, fp2))
+	/*@=nullpass@*/
+	{
+	    dbiIndexItem rec = &mi->mi_set->recs[mi->mi_setx-1];
+	    if (*matches == NULL)
+		*matches = xcalloc(1, sizeof(**matches));
+	    xx = dbiAppendSet(*matches, rec, 1, sizeof(*rec), 0);
 	}
-
-	he->tag = RPMTAG_BASENAMES;
-	xx = headerGet(h, he, 0);
-	baseNames = he->p.argv;
-	he->tag = RPMTAG_DIRNAMES;
-	xx = headerGet(h, he, 0);
-	dirNames = he->p.argv;
-	he->tag = RPMTAG_DIRINDEXES;
-	xx = headerGet(h, he, 0);
-	dirIndexes = he->p.ui32p;
-
-	do {
-	    fingerPrint fp2;
-	    int num = dbiIndexRecordFileNumber(allMatches, i);
-
-	    fp2 = fpLookup(fpc, dirNames[dirIndexes[num]], baseNames[num], 1);
-	    /*@-nullpass@*/
-	    if (FP_EQUAL(fp1, fp2)) {
-	    /*@=nullpass@*/
-		rec->hdrNum = dbiIndexRecordOffset(allMatches, i);
-		rec->tagNum = dbiIndexRecordFileNumber(allMatches, i);
-		xx = dbiAppendSet(*matches, rec, 1, sizeof(*rec), 0);
-	    }
-
-	    prevoff = offset;
-	    i++;
-	    if (i < allMatches->count)
-		offset = dbiIndexRecordOffset(allMatches, i);
-	} while (i < allMatches->count && offset == prevoff);
-
-	baseNames = _free(baseNames);
-/*@-usereleased@*/
-	dirNames = _free(dirNames);
-/*@=usereleased@*/
-	dirIndexes = _free(dirIndexes);
-	(void)headerFree(h);
-	h = NULL;
     }
 
-    rec = _free(rec);
-    allMatches = dbiFreeIndexSet(allMatches);
+    BN->p.ptr = _free(BN->p.ptr);
+    DN->p.ptr = _free(DN->p.ptr);
+    DI->p.ptr = _free(DI->p.ptr);
+    mi = rpmmiFree(mi);
 
     fpc = fpCacheFree(fpc);
 
-    if ((*matches)->count == 0) {
-	*matches = dbiFreeIndexSet(*matches);
-	return 1;
-    }
-
-    return 0;
+    return (*matches != NULL ? 0 : 1);
 }
 
 int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)

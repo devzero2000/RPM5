@@ -30,11 +30,11 @@ int _hdr_debug = 0;
 
 /* Compute tag data store size using offsets? */
 /*@unchecked@*/
-int _hdr_fastdatalength = 0;
+int _hdr_fastdatalength = 1;
 
 /* Swab tag data only when accessed through headerGet()? */
 /*@unchecked@*/
-int _hdr_lazytagswab = 0;
+int _hdr_lazytagswab = 1;
 
 /** \ingroup header
  */

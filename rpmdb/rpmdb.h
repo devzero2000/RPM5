@@ -59,8 +59,6 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 #if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /** \ingroup dbi
  * A single item from an index database (i.e. the "data returned").
- * Note: In rpm-3.0.4 and earlier, this structure was passed by value,
- * and was identical to the "data saved" structure below.
  */
 struct _dbiIndexItem {
     rpmuint32_t hdrNum;			/*!< header instance in db */
