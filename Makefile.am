@@ -11,7 +11,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL cpuinfo.yaml \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
 	js/*.[ch] js/Makefile.in js/Makefile.am \
-	js/src/*.[ch] js/src/*.mk js/src/*.js js/src/*.sed js/src/Makefile.in js/src/Makefile.am \
+	js/src/*.[ch] js/src/*.mk js/src/*.js js/src/*.sed js/src/*.tbl js/src/Makefile.in js/src/Makefile.am \
 	js/src/editline/*.[ch3] js/src/editline/Makefile.ref js/src/editline/README \
 	js/src/fdlibm/*.[ch] js/src/fdlibm/Makefile.in js/src/fdlibm/Makefile.ref \
 	js/src/fdlibm/*mak js/src/fdlibm/*mdp \
