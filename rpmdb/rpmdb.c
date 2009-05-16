@@ -73,6 +73,11 @@ static int _db_filter_dups = 0;
 /*@unchecked@*/
 static int _db_tagged_file_indices = _DB_TAGGED_FILE_INDICES;
 
+/* Use a path uniqifier while doing -qf? */
+#define	_DB_TAGGED_FINDBYFILE	1
+/*@unchecked@*/
+static int _db_tagged_findbyfile = _DB_TAGGED_FINDBYFILE;
+
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
@@ -1440,7 +1445,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
     fingerPrintCache fpc;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
-    dbiIndexSet allMatches = NULL;
+    dbiIndexSet set = NULL;
     rpmmi mi = NULL;
     unsigned int prevoff = 0;
     Header h;
@@ -1463,16 +1468,12 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 	dirName = "";
 	baseName = filespec;
     }
-    if (baseName == NULL)
-	return -2;
-
-    fpc = fpCacheCreate(20);
-    fp1 = fpLookup(fpc, dirName, baseName, 1);
+assert(*dirName != '\0');
+assert(baseName != NULL);
 
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
 	DBC * dbcursor = NULL;
-	int i;
 
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
@@ -1490,29 +1491,54 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	}
 
 if (rc == 0)
-(void) dbt2set(dbi, data, &allMatches);
-
-	/* strip off directory tags */
-	if (_db_tagged_file_indices && allMatches != NULL)
-	for (i = 0; i < allMatches->count; i++) {
-	    if (allMatches->recs[i].tagNum & 0x80000000)
-		allMatches->recs[i].tagNum &= 0x0000ffff;
-	}
+(void) dbt2set(dbi, data, &set);
 
 	xx = dbiCclose(dbi, dbcursor, 0);
     } else
 	rc = -2;
 
-    if (rc) {
-	allMatches = dbiFreeIndexSet(allMatches);
-	fpc = fpCacheFree(fpc);
+    if (rc)
 	return rc;
+
+assert(set != NULL);
+assert(set->count > 0);
+
+    if (_db_tagged_file_indices) {
+	int i;
+	if (_db_tagged_findbyfile && set->count > 1 && *dirName != '\0') {
+	    unsigned int tag = taghash(dirName);
+	    int j = 0;
+
+	    /* Prune the set using the directory tag. */
+	    for (i = 0; i < set->count; i++) {
+		if (set->recs[i].tagNum & 0x80000000) {
+		    unsigned int ctag = (set->recs[i].tagNum & 0xffff0000);
+		    set->recs[i].tagNum &= 0x0000ffff;
+		    if (ctag != tag)
+			continue;
+		}
+		if (i > j)
+		    set->recs[j] = set->recs[i]; /* structure assignment */
+		j++;
+	    }
+	    /* If set was shortened by dir tagging, reset the count. */
+	    if (j > 0 && j < set->count)
+		set->count = j;
+	} else {
+	    /* Strip off directory tags. */
+	    for (i = 0; i < set->count; i++) {
+		if (set->recs[i].tagNum & 0x80000000)
+		    set->recs[i].tagNum &= 0x0000ffff;
+	    }
+	}
     }
+
+    fpc = fpCacheCreate(20);
+    fp1 = fpLookup(fpc, dirName, baseName, 1);
 
     /* Create an iterator for the matches. */
     mi = rpmmiInit(db, RPMDBI_PACKAGES, NULL, 0);
-assert(allMatches != NULL);
-    mi->mi_set = allMatches;
+    mi->mi_set = set;
 
     prevoff = 0;
     BN->tag = RPMTAG_BASENAMES;
@@ -1931,16 +1957,16 @@ assert(dbi != NULL);
 	if (mi->mi_dbc)
 	    xx = dbiCclose(dbi, mi->mi_dbc, 0);
 	mi->mi_dbc = NULL;
+	/* XXX rpmdbUnlink will not do.
+	 * NB: must be called after rpmmiRock cleanup.
+	 */
+	(void) rpmdbClose(mi->mi_db);
+	mi->mi_db = NULL;
     }
 
     mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
-    /* XXX rpmdbUnlink will not do.
-     * NB: must be called after rpmmiRock cleanup.
-     */
-    (void) rpmdbClose(mi->mi_db);
-    mi->mi_db = NULL;
 
     /* XXX this needs to be done elsewhere, not within destructor. */
     (void) rpmdbCheckSignals();
