@@ -34,7 +34,7 @@ int _hdr_fastdatalength = 1;
 
 /* Swab tag data only when accessed through headerGet()? */
 /*@unchecked@*/
-int _hdr_lazytagswab = 1;
+int _hdr_lazytagswab = 0;
 
 /** \ingroup header
  */
@@ -499,6 +499,14 @@ static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmui
     size_t tdel = 0;
     size_t tl = dl;
     struct indexEntry_s ieprev;
+    int _fast = _hdr_fastdatalength;
+
+    /* XXX il = 1 needs dataEnd != NULL for sizing */
+    if (il == 1 && dataEnd == NULL) _fast = 0;
+    /* XXX headerGet() for RPMTAG_HEADERIMMUTABLE (at least) */
+    if (entry == NULL && regionid == 0) _fast = 0;
+
+    assert(dl == 0);	/* XXX eliminate dl argument (its always 0) */
 
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
@@ -528,7 +536,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	pend.ui8p = (rpmuint8_t *) dataEnd;
 
 	/* Find the length of the tag data store. */
-	if (dataEnd && _hdr_fastdatalength) {
+	if (_fast) {
 	    /* Compute the tag data store length using offsets. */
 	    if (il > 1)
 		ie.length = ((rpmuint32_t) ntohl(pe[1].offset) - ie.info.offset);
