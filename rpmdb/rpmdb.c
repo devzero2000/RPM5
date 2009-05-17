@@ -1422,6 +1422,53 @@ static inline unsigned taghash(const char * s)
 }
 
 /**
+ * Return the intersection of dirName <=> baseName index sets.
+ * @param tag		dirName hash tag.
+ * @param dnset		dirName's set.
+ * @baram bnset		baseName's set.
+ * @retval *matches	intersection of dnset and bnset (NULL if disjoint).
+ * @return		no. of matches
+ */
+static int dbiIntersect(unsigned int tag, dbiIndexSet dnset, dbiIndexSet bnset,
+			dbiIndexSet *matches)
+	/*@modifies *matches @*/
+{
+    dbiIndexItem drec = dnset->recs;
+    dbiIndexItem brec = bnset->recs;
+    dbiIndexItem rec = alloca(sizeof(*rec));
+    int i = 0;
+    int j = 0;
+    int xx;
+
+    *matches = NULL;
+    while (i < dnset->count) {
+	while (j < bnset->count && brec->hdrNum <= drec->hdrNum) {
+	    if (brec->hdrNum == drec->hdrNum
+	     && tag == (brec->tagNum & 0xffff0000))
+		break;
+	    brec++;
+	    j++;
+	}
+	if (j >= bnset->count)
+	    break;
+	if (brec->hdrNum == drec->hdrNum
+	 && tag == (brec->tagNum & 0xffff0000))
+	{
+	    *rec = *brec;	/* structure assignment */
+	    rec->tagNum &= 0x0000ffff;
+	    if (*matches == NULL)
+		*matches = xcalloc(1, sizeof(**matches));
+	    xx = dbiAppendSet(*matches, rec, 1, sizeof(*rec), 0);
+	    brec++;
+	    j++;
+	}
+	drec++;
+	i++;
+    }
+    return (*matches ? (*matches)->count : 0);
+}
+
+/**
  * Find file matches in database.
  * @param db		rpm database
  * @param filespec
@@ -1437,30 +1484,22 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-    HE_t BN = memset(alloca(sizeof(*BN)), 0, sizeof(*BN));
-    HE_t DN = memset(alloca(sizeof(*DN)), 0, sizeof(*DN));
-    HE_t DI = memset(alloca(sizeof(*DI)), 0, sizeof(*DI));
     const char * dirName;
     const char * baseName;
-    fingerPrintCache fpc;
-    fingerPrint fp1;
-    dbiIndex dbi = NULL;
-    dbiIndexSet set = NULL;
-    rpmmi mi = NULL;
-    unsigned int prevoff = 0;
-    Header h;
+    dbiIndex dbi;
+    DBC * dbcursor;
+    dbiIndexSet bnset = NULL;
+    int bingo;
     int rc;
     int xx;
+    int i;
 
     *matches = NULL;
     if (filespec == NULL) return -2;
 
     if ((baseName = strrchr(filespec, '/')) != NULL) {
-    	char * t;
-	size_t len;
-
-    	len = baseName - filespec + 1;
-	t = strncpy(alloca(len + 1), filespec, len);
+	size_t len = baseName - filespec + 1;
+    	char * t = strncpy(alloca(len + 1), filespec, len);
 	t[len] = '\0';
 	dirName = t;
 	baseName++;
@@ -1471,16 +1510,57 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 assert(*dirName != '\0');
 assert(baseName != NULL);
 
-    dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
-    if (dbi != NULL) {
-	DBC * dbcursor = NULL;
+    /* Load the basenames index set. */
+    if ((dbi = dbiOpen(db, RPMTAG_BASENAMES, 0)) == NULL)
+	return -2;
 
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    dbcursor = NULL;
+    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
 /*@-temptrans@*/
 key->data = (void *) baseName;
 /*@=temptrans@*/
 key->size = (UINT32_T) strlen(baseName);
+if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+
+    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+    if (rc > 0) {
+	rpmlog(RPMLOG_ERR,
+		_("error(%d) getting records from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
+    } else
+    if (rc == 0)
+	(void) dbt2set(dbi, data, &bnset);
+    xx = dbiCclose(dbi, dbcursor, 0);
+    if (rc)
+	return rc;
+assert(bnset != NULL);
+assert(bnset->count > 0);
+
+    /* Check that all basenames are dir tagged. */
+    if (_db_tagged_file_indices) {
+	bingo = 1;
+	for (i = 0; i < bnset->count; i++) {
+	    if (bnset->recs[i].tagNum & 0x80000000)
+		continue;
+	    bingo = 0;
+	    break;
+	}
+    } else
+	bingo = 0;
+
+    /* Plan A: Attempt dirName <-> baseName intersection using index keys. */
+    if (bingo && (dbi = dbiOpen(db, RPMTAG_DIRNAMES, 0)) != NULL) {
+	dbiIndexSet dnset = NULL;
+
+	/* Load the dirnames index set. */
+	dbcursor = NULL;
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
+/*@-temptrans@*/
+key->data = (void *) dirName;
+/*@=temptrans@*/
+key->size = (UINT32_T) strlen(dirName);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -1489,56 +1569,64 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		_("error(%d) getting records from %s index\n"),
 		rc, tagName(dbi->dbi_rpmtag));
 	}
-
-if (rc == 0)
-(void) dbt2set(dbi, data, &set);
-
+	if (rc == 0)
+	    (void) dbt2set(dbi, data, &dnset);
 	xx = dbiCclose(dbi, dbcursor, 0);
-    } else
-	rc = -2;
 
-    if (rc)
-	return rc;
+	/* If dnset is non-empty, then attempt Plan A intersection. */
+	if (rc == 0 && dnset && dnset->count > 0) {
+	    unsigned int tag = taghash(dirName);
+	    xx = dbiIntersect(tag, dnset, bnset, matches);
+	    bnset = dbiFreeIndexSet(bnset);
+	    dnset = dbiFreeIndexSet(dnset);
+	    return (*matches != NULL ? 0 : 1);
+	}
+	dnset = dbiFreeIndexSet(dnset);
+    }
 
-assert(set != NULL);
-assert(set->count > 0);
-
+    /* Plan B: Reduce the size of the index set before loading headers. */
     if (_db_tagged_file_indices) {
-	int i;
-	if (_db_tagged_findbyfile && set->count > 1 && *dirName != '\0') {
+	if (_db_tagged_findbyfile && bnset->count > 1 && *dirName != '\0') {
 	    unsigned int tag = taghash(dirName);
 	    int j = 0;
 
-	    /* Prune the set using the directory tag. */
-	    for (i = 0; i < set->count; i++) {
-		if (set->recs[i].tagNum & 0x80000000) {
-		    unsigned int ctag = (set->recs[i].tagNum & 0xffff0000);
-		    set->recs[i].tagNum &= 0x0000ffff;
+	    /* Prune the bnset using the directory tag. */
+	    for (i = 0; i < bnset->count; i++) {
+		if (bnset->recs[i].tagNum & 0x80000000) {
+		    unsigned int ctag = (bnset->recs[i].tagNum & 0xffff0000);
+		    bnset->recs[i].tagNum &= 0x0000ffff;
 		    if (ctag != tag)
 			continue;
 		}
 		if (i > j)
-		    set->recs[j] = set->recs[i]; /* structure assignment */
+		    bnset->recs[j] = bnset->recs[i]; /* structure assignment */
 		j++;
 	    }
-	    /* If set was shortened by dir tagging, reset the count. */
-	    if (j > 0 && j < set->count)
-		set->count = j;
+	    /* If bnset was shortened by dir tagging, reset the count. */
+	    if (j > 0 && j < bnset->count)
+		bnset->count = j;
 	} else {
 	    /* Strip off directory tags. */
-	    for (i = 0; i < set->count; i++) {
-		if (set->recs[i].tagNum & 0x80000000)
-		    set->recs[i].tagNum &= 0x0000ffff;
+	    for (i = 0; i < bnset->count; i++) {
+		if (bnset->recs[i].tagNum & 0x80000000)
+		    bnset->recs[i].tagNum &= 0x0000ffff;
 	    }
 	}
     }
 
-    fpc = fpCacheCreate(20);
-    fp1 = fpLookup(fpc, dirName, baseName, 1);
+    /* OK, find the file using fingerprints and loading headers. */
+  { HE_t BN = memset(alloca(sizeof(*BN)), 0, sizeof(*BN));
+    HE_t DN = memset(alloca(sizeof(*DN)), 0, sizeof(*DN));
+    HE_t DI = memset(alloca(sizeof(*DI)), 0, sizeof(*DI));
+    fingerPrintCache fpc = fpCacheCreate(20);
+    fingerPrint fp1 = fpLookup(fpc, dirName, baseName, 1);
+    rpmmi mi = NULL;
+    unsigned int prevoff = 0;
+    Header h;
 
     /* Create an iterator for the matches. */
     mi = rpmmiInit(db, RPMDBI_PACKAGES, NULL, 0);
-    mi->mi_set = set;
+    mi->mi_set = bnset;
 
     prevoff = 0;
     BN->tag = RPMTAG_BASENAMES;
@@ -1582,6 +1670,7 @@ assert(num >= 0 && num < (int)BN->c);
     mi = rpmmiFree(mi);
 
     fpc = fpCacheFree(fpc);
+  }
 
     return (*matches != NULL ? 0 : 1);
 }
