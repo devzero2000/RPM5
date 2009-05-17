@@ -87,6 +87,7 @@ struct headerToken_s {
     unsigned char magic[8];	/*!< Header magic. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
+    size_t bloblen;		/*!< Header region blob length (in bytes). */
 /*@only@*/ /*@null@*/
     const char * origin;	/*!< Header origin (e.g. path or URL). */
 /*@only@*/ /*@null@*/
@@ -98,19 +99,20 @@ struct headerToken_s {
     struct stat sb;		/*!< Header stat(2) (from origin *.rpm file) */
     rpmuint32_t instance;	/*!< Header instance (if from rpmdb). */
     rpmuint32_t startoff;	/*!< Header starting byte offset in package. */
-    rpmuint32_t endoff;		/*!< Header ending byte offset in package. */
+    rpmuint32_t endoff;	/*!< Header ending byte offset in package. */
     struct rpmop_s h_loadops;
     struct rpmop_s h_getops;
 /*@owned@*/
-    indexEntry index;		/*!< Array of tags. */
-    size_t indexUsed;		/*!< Current size of tag array. */
+    indexEntry index;	/*!< Array of tags. */
+    size_t indexUsed;	/*!< Current size of tag array. */
     size_t indexAlloced;	/*!< Allocated size of tag array. */
     rpmuint32_t flags;
-#define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
-#define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
-#define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
+#define HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
+#define HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
+#define HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 #define HEADERFLAG_SIGNATURE	(1 << 4) /*!< Signature header? */
+#define HEADERFLAG_MAPPED	(1 << 5) /*!< Is 1st header region mmap'd? */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

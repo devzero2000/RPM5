@@ -30,7 +30,7 @@ int _hdr_debug = 0;
 
 /* Compute tag data store size using offsets? */
 /*@unchecked@*/
-int _hdr_fastdatalength = 1;
+int _hdr_fastdatalength = 0;
 
 /* Swab tag data only when accessed through headerGet()? */
 /*@unchecked@*/
@@ -115,8 +115,10 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
 		    rpmuint32_t * ei = entry->data;
-		    if ((ei - 2) == h->blob)
+		    if ((ei - 2) == h->blob) {
 			h->blob = _free(h->blob);
+			h->bloblen = 0;
+		    }
 		    entry->data = NULL;
 		}
 	    } else if (!ENTRY_IN_REGION(entry)) {
@@ -164,6 +166,7 @@ Header headerNew(void)
 
     (void) memcpy(h->magic, header_magic, sizeof(h->magic));
     h->blob = NULL;
+    h->bloblen = 0;
     h->origin = NULL;
     h->baseurl = NULL;
     h->digest = NULL;
@@ -1036,6 +1039,7 @@ Header headerLoad(void * uh)
     }
     /*@-assignexpose -kepttrans@*/
     h->blob = uh;
+    h->bloblen = 0;
     /*@=assignexpose =kepttrans@*/
     h->indexAlloced = il + 1;
     h->indexUsed = il;
