@@ -47,7 +47,7 @@ bin_PROGRAMS =		rpm2cpio
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	rpmcache rpmdigest grep mtree rpmrepo rpmspecdump wget \
-	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ txar @WITH_LIBELF_DEBUGEDIT@
+	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 
 debugedit_SOURCES =	debugedit.c hashtab.c
@@ -96,9 +96,13 @@ rpmkey_LDADD =          $(RPM_LDADD_COMMON) -lkeyutils
 ##
 ## XAR <-> RPM package converter
 ##
+
+if WITH_XAR
+pkgbin_PROGRAMS += txar
 txar_SOURCES =		txar.c
 txar_LDADD =		$(RPM_LDADD_COMMON) @WITH_XAR_LDFLAGS@
 txar_LIBS =		@WITH_XAR_LIBS@
+endif
 
 ##
 ##  provide Berkeley-DB tools
