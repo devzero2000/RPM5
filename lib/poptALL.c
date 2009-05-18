@@ -445,7 +445,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "hdrfastdatalength", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_fastdatalength, 1,
 	NULL, NULL},
- { "hdrlazytagswab", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_lazytagswab, 1,
+ { "nohdrlazytagswab", '\0', POPT_BIT_CLR|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_lazytagswab, 1,
 	NULL, NULL},
  { "macrosused", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_macros, -1,
 	N_("Display macros used"), NULL},
