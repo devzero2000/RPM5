@@ -47,7 +47,7 @@ bin_PROGRAMS =		rpm2cpio
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	rpmcache rpmdigest grep mtree rpmrepo rpmspecdump wget \
-	rpmcmp rpmdeps rpmkey txar @WITH_LIBELF_DEBUGEDIT@
+	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ txar @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 
 debugedit_SOURCES =	debugedit.c hashtab.c
