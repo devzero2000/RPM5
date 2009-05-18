@@ -34,7 +34,7 @@ int _hdr_fastdatalength = 0;
 
 /* Swab tag data only when accessed through headerGet()? */
 /*@unchecked@*/
-int _hdr_lazytagswab = 0;
+int _hdr_lazytagswab = 1;
 
 /** \ingroup header
  */
@@ -379,6 +379,7 @@ static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
     switch (he->t) {
     case RPM_UINT64_TYPE:
     {	rpmuint32_t * tt = (rpmuint32_t *)t;
+assert(nb == (he->c * sizeof(*tt)));
 	for (i = 0; i < he->c; i++) {
 	    rpmuint32_t j = 2 * i;
 	    rpmuint32_t b = (rpmuint32_t) htonl(he->p.ui32p[j]);
@@ -388,11 +389,13 @@ static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
     }   break;
     case RPM_UINT32_TYPE:
     {	rpmuint32_t * tt = (rpmuint32_t *)t;
+assert(nb == (he->c * sizeof(*tt)));
 	for (i = 0; i < he->c; i++)
 	    tt[i] = (rpmuint32_t) htonl(he->p.ui32p[i]);
     }   break;
     case RPM_UINT16_TYPE:
     {	rpmuint16_t * tt = (rpmuint16_t *)t;
+assert(nb == (he->c * sizeof(*tt)));
 	for (i = 0; i < he->c; i++)
 	    tt[i] = (rpmuint16_t) htons(he->p.ui16p[i]);
     }   break;
@@ -1400,13 +1403,14 @@ static Header headerMap(const void * uh, int map)
 		NULL, pvlen, prot, flags, fdno, (unsigned)off,
 		errno, strerror(errno));
 	memcpy(nuh, uh, pvlen);
-	if ((nh = headerLoad(nuh)) != NULL) {
+	if (mprotect(nuh, pvlen, PROT_READ) != 0)
+	    fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
+			nuh, pvlen, PROT_READ,
+			errno, strerror(errno));
+	nh = headerLoad(nuh);
+	if (nh != NULL) {
 assert(nh->bloblen == pvlen);
 	    nh->flags |= HEADERFLAG_MAPPED;
-	    if (mprotect(nh->blob, nh->bloblen, PROT_READ) != 0)
-		fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
-			nh->blob, nh->bloblen, PROT_READ,
-			errno, strerror(errno));
 	    nh->flags |= HEADERFLAG_RDONLY;
 	} else {
 	    if (munmap(nuh, pvlen) != 0)
@@ -1726,7 +1730,7 @@ static int intGetEntry(Header h, HE_t he, int flags)
     }
 
     /* XXX 1 on success */
-    return ((rc == 1) ? 1 : 0);
+    return (rc == 1 ? 1 : 0);
 }
 
 /**
