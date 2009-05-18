@@ -1,15 +1,17 @@
 #include "system.h"
 
 #if defined(WITH_SYCK)
-
 #include <syck.h>
 #include <rpmhash.h>
 #include <rpmsyck.h>
+#endif
 #include <rpmio.h>
 
 int _rpmsyck_debug = 0;
 
-rpmioPool _rpmsyckPool;
+rpmioPool _rpmsyckPool = NULL;
+
+#if defined(WITH_SYCK)
 
 static int rpmSyckFreeNode(char *key, rpmsyck_node node, char *arg) {
     switch (node->type) {
