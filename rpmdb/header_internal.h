@@ -113,6 +113,7 @@ struct headerToken_s {
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 #define HEADERFLAG_SIGNATURE	(1 << 4) /*!< Signature header? */
 #define HEADERFLAG_MAPPED	(1 << 5) /*!< Is 1st header region mmap'd? */
+#define HEADERFLAG_RDONLY	(1 << 6) /*!< Is 1st header region rdonly? */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

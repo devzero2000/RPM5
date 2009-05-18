@@ -109,14 +109,23 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
     Header h = _h;
 
     if (h->index != NULL) {
+	int mask = (HEADERFLAG_ALLOCATED | HEADERFLAG_MAPPED);
 	indexEntry entry = h->index;
 	size_t i;
 	for (i = 0; i < h->indexUsed; i++, entry++) {
-	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
+	    if ((h->flags & mask) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
 		    rpmuint32_t * ei = entry->data;
 		    if ((ei - 2) == h->blob) {
-			h->blob = _free(h->blob);
+			if (h->flags & HEADERFLAG_MAPPED) {
+			    if (munmap(h->blob, h->bloblen) != 0)
+				fprintf(stderr,
+					"==> munmap(%p[%u]) error(%d): %s\n",
+					h->blob, h->bloblen,
+					errno, strerror(errno));
+			    h->blob = NULL;
+			} else
+			    h->blob = _free(h->blob);
 			h->bloblen = 0;
 		    }
 		    entry->data = NULL;
@@ -125,6 +134,7 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 		entry->data = _free(entry->data);
 	    }
 	    entry->data = NULL;
+	    entry->length = 0;
 	}
 	h->index = _free(h->index);
     }
@@ -1039,7 +1049,7 @@ Header headerLoad(void * uh)
     }
     /*@-assignexpose -kepttrans@*/
     h->blob = uh;
-    h->bloblen = 0;
+    h->bloblen = pvlen;
     /*@=assignexpose =kepttrans@*/
     h->indexAlloced = il + 1;
     h->indexUsed = il;
@@ -1361,27 +1371,63 @@ Header headerReload(Header h, int tag)
     return nh;
 }
 
-Header headerCopyLoad(const void * uh)
+static Header headerMap(const void * uh, int map)
+	/*@*/
 {
     rpmuint32_t * ei = (rpmuint32_t *) uh;
-    rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);		/* index length */
-    rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);		/* data length */
+    rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);	/* index length */
+    rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);	/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
 			(il * sizeof(struct entryInfo_s)) + dl;
     /*@=sizeoftype@*/
     void * nuh = NULL;
-    Header h = NULL;
+    Header nh = NULL;
 
     /* Sanity checks on header intro. */
-    if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
+    if (hdrchkTags(il) || hdrchkData(dl) || pvlen >= headerMaxbytes)
+	return NULL;
+
+    if (map) {
+	static const int prot = PROT_READ | PROT_WRITE;
+	static const int flags = MAP_PRIVATE| MAP_ANONYMOUS;
+	static const int fdno = -1;
+	static const off_t off = 0;
+	nuh = mmap(NULL, pvlen, prot, flags, fdno, off);
+	if (nuh == NULL || nuh == (void *)-1)
+	    fprintf(stderr,
+		"==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
+		NULL, pvlen, prot, flags, fdno, (unsigned)off,
+		errno, strerror(errno));
+	memcpy(nuh, uh, pvlen);
+	if ((nh = headerLoad(nuh)) != NULL) {
+assert(nh->bloblen == pvlen);
+	    nh->flags |= HEADERFLAG_MAPPED;
+	    if (mprotect(nh->blob, nh->bloblen, PROT_READ) != 0)
+		fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
+			nh->blob, nh->bloblen, PROT_READ,
+			errno, strerror(errno));
+	    nh->flags |= HEADERFLAG_RDONLY;
+	} else {
+	    if (munmap(nuh, pvlen) != 0)
+		fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
+		nuh, pvlen, errno, strerror(errno));
+	}
+    } else {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
-	if ((h = headerLoad(nuh)) != NULL)
-	    h->flags |= HEADERFLAG_ALLOCATED;
+	if ((nh = headerLoad(nuh)) != NULL)
+	    nh->flags |= HEADERFLAG_ALLOCATED;
+	else
+	    nuh = _free(nuh);
     }
-    if (h == NULL)
-	nuh = _free(nuh);
-    return h;
+
+    return nh;
+}
+
+Header headerCopyLoad(const void * uh)
+{
+    static const int map = 1;
+    return headerMap(uh, map);
 }
 
 int headerIsEntry(Header h, rpmTag tag)
