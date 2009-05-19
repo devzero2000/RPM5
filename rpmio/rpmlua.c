@@ -45,8 +45,20 @@ LUALIB_API int luaopen_syck(lua_State *L)
 
 /*@access rpmiob @*/
 
+#else /* WITH_LUA */
+#include <rpmio.h>
+#endif
+
 /*@unchecked@*/
 int _rpmlua_debug = 0;
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmluaPool = NULL;
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmluavPool = NULL;
+
+#ifdef	WITH_LUA
 
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
@@ -96,9 +108,6 @@ static void rpmluaFini(void * _lua)
     lua->L = NULL;
     lua->printbuf = _free(lua->printbuf);
 }
-
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmluaPool;
 
 static rpmlua rpmluaGetPool(/*@null@*/ rpmioPool pool)
         /*@globals _rpmluaPool, fileSystem @*/
@@ -480,9 +489,6 @@ void *rpmluavFree(rpmluav var)
     (void)rpmioFreePoolItem((rpmioItem)var, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
 }
-
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmluavPool;
 
 static rpmluav rpmluavGetPool(/*@null@*/ rpmioPool pool)
         /*@globals _rpmluavPool, fileSystem @*/
