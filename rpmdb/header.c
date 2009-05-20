@@ -845,45 +845,8 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
 	case RPM_UINT64_TYPE:
-	{   rpmuint32_t b[2];
-	    count = entry->info.count;
-	    src = entry->data;
-	    while (count--) {
-		b[1] = (rpmuint32_t) htonl(((rpmuint32_t *)src)[0]);
-		b[0] = (rpmuint32_t) htonl(((rpmuint32_t *)src)[1]);
-		if (b[1] == ((rpmuint32_t *)src)[0])
-		    memcpy(te, src, sizeof(b));
-		else
-		    memcpy(te, b, sizeof(b));
-		te += sizeof(b);
-		src += sizeof(b);
-	    }
-	}   /*@switchbreak@*/ break;
-
 	case RPM_UINT32_TYPE:
-	    count = entry->info.count;
-	    src = entry->data;
-	    while (count--) {
-		*((rpmuint32_t *)te) = (rpmuint32_t) htonl(*((rpmuint32_t *)src));
-		/*@-sizeoftype@*/
-		te += sizeof(rpmuint32_t);
-		src += sizeof(rpmuint32_t);
-		/*@=sizeoftype@*/
-	    }
-	    /*@switchbreak@*/ break;
-
 	case RPM_UINT16_TYPE:
-	    count = entry->info.count;
-	    src = entry->data;
-	    while (count--) {
-		*((rpmuint16_t *)te) = (rpmuint16_t) htons(*((rpmuint16_t *)src));
-		/*@-sizeoftype@*/
-		te += sizeof(rpmuint16_t);
-		src += sizeof(rpmuint16_t);
-		/*@=sizeoftype@*/
-	    }
-	    /*@switchbreak@*/ break;
-
 	default:
 	    memcpy(te, entry->data, entry->length);
 	    te += entry->length;
