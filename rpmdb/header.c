@@ -30,7 +30,7 @@ int _hdr_debug = 0;
 
 /* Compute tag data store size using offsets? */
 /*@unchecked@*/
-int _hdr_fastdatalength = 0;
+int _hdr_fastdatalength = 1;
 
 /* Swab tag data only when accessed through headerGet()? */
 /*@unchecked@*/
@@ -517,12 +517,9 @@ static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmui
     struct indexEntry_s ieprev;
     int _fast = _hdr_fastdatalength;
 
-    /* XXX il = 1 needs dataEnd != NULL for sizing */
-    if (il == 1 && dataEnd == NULL) _fast = 0;
-    /* XXX headerGet() for RPMTAG_HEADERIMMUTABLE (at least) */
-    if (entry == NULL && regionid == 0) _fast = 0;
-
-    assert(dl == 0);	/* XXX eliminate dl argument (its always 0) */
+assert(dataEnd != NULL);
+assert(entry != NULL);
+assert(dl == 0);	/* XXX eliminate dl argument (its always 0) */
 
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
@@ -555,9 +552,11 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	if (_fast) {
 	    /* Compute the tag data store length using offsets. */
 	    if (il > 1)
-		ie.length = ((rpmuint32_t) ntohl(pe[1].offset) - ie.info.offset);
-	    else
-		ie.length = (dataEnd - t);
+		ie.length = ((rpmuint32_t)ntohl(pe[1].offset) - ie.info.offset);
+	    else {
+		/* XXX (dataEnd - t) +/- REGION_TAG_COUNT forces dataLength() */
+		ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
+	    }
 	} else {
 	    /* Compute the tag data store length by counting. */
 /*@-nullstate@*/	/* pend.ui8p derived from dataLength may be null */
@@ -583,13 +582,17 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	    size_t diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if ((int)diff != typeSizes[type]) {
 		dl += diff;
-		if (ieprev.info.type == RPM_I18NSTRING_TYPE)
+#ifdef	DYING
+		if (!_fast && ieprev.info.type == RPM_I18NSTRING_TYPE)
 		    ieprev.length += diff;
+#endif
 	    }
 	}
 	tdel = (tprev ? (t - tprev) : 0);
-	if (ieprev.info.type == RPM_I18NSTRING_TYPE)
+#ifdef	DYING
+	if (!_fast && ieprev.info.type == RPM_I18NSTRING_TYPE)
 	    tdel = ieprev.length;
+#endif
 
 	if (ie.info.tag >= HEADER_I18NTABLE) {
 	    tprev = t;
@@ -794,10 +797,6 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		ril++;
 		rdlen += entry->info.count;
 
-		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
-		if (count != (rpmuint32_t)rdlen)
-		    goto errxit;
-
 	    } else {
 
 		memcpy(pe+1, src + sizeof(*pe), ((ril-1) * sizeof(*pe)));
@@ -812,9 +811,6 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		}
 		te += entry->info.count + drlen;
 
-		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
-		if (count != (rpmuint32_t)(rdlen + entry->info.count + drlen))
-		    goto errxit;
 	    }
 
 	    /* Skip rest of entries in region. */
@@ -1453,7 +1449,6 @@ static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 	/*@modifies he @*/
 {
     rpmTagCount count = entry->info.count;
-    rpmuint32_t rdlen;
     int rc = 1;		/* XXX 1 on success. */
 
     switch (entry->info.type) {
@@ -1470,7 +1465,6 @@ static int copyEntry(const indexEntry entry, HE_t he, int minMem)
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    /*@=castexpose@*/
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
-	    unsigned char * dataEnd;
 	    rpmuint32_t rdl;
 	    rpmuint32_t ril;
 
@@ -1496,15 +1490,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
 	    /*@=castexpose@*/
 
-	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
-	    dataEnd = dataStart + rdl;
-	    /*@=sizeoftype@*/
-
-	    rdlen = regionSwab(NULL, ril, 0, pe, dataStart, dataEnd, 0);
-	    /* XXX 1 on success. */
-	    rc = (rdlen == 0) ? 0 : 1;
-	    if (rc == 0)
-		he->p.ptr = _free(he->p.ptr);
+	    (void) memcpy(pe + ril, dataStart, rdl);
 	} else {
 	    count = (rpmTagCount)entry->length;
 	    he->p.ptr = (!minMem
