@@ -61,7 +61,7 @@ extern char *nl_langinfo (nl_item __item)
 #include "debug.h"
 
 /*@unchecked@*/
-extern int _hdr_debug;
+int _hdrqf_debug;
 
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
@@ -5023,7 +5023,7 @@ static char escapedChar(const char ch)
 	/*@*/
 {
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\t\t\\%c\n", ch);
 /*@=modfilesys@*/
     switch (ch) {
@@ -5399,7 +5399,7 @@ static const char *pstates[] = {
     int xx;
 
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, str, formatPtr, numTokensPtr, endPtr, pstates[(state & 0x3)]);
 /*@=modfilesys@*/
 
@@ -5468,7 +5468,7 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
 	    }
 
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\tchptr *%p = NUL\n", chptr);
 /*@=modfilesys@*/
 	    *chptr++ = '\0';
@@ -5501,7 +5501,7 @@ fprintf(stderr, "\tchptr *%p = NUL\n", chptr);
 		return 1;
 	    }
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\tnext *%p = NUL\n", next);
 /*@=modfilesys@*/
 	    *next++ = '\0';
@@ -5541,7 +5541,7 @@ fprintf(stderr, "\tnext *%p = NUL\n", next);
 		    } else
 			xx = argvAdd(&token->u.tag.params, "");
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\tformat \"%s\" params \"%s\"\n", chptr, (t ? t : ""));
 /*@=modfilesys@*/
 		    xx = argvAdd(&token->u.tag.av, chptr);
@@ -5569,14 +5569,14 @@ fprintf(stderr, "\tformat \"%s\" params \"%s\"\n", chptr, (t ? t : ""));
 
 	    dst = start = next;
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\tdst = start = next %p\n", dst);
 /*@=modfilesys@*/
 	    /*@switchbreak@*/ break;
 
 	case '[':
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\t%s => %s *%p = NUL\n", pstates[(state & 0x3)], pstates[PARSER_IN_ARRAY], start);
 /*@=modfilesys@*/
 	    *start++ = '\0';
@@ -5599,7 +5599,7 @@ fprintf(stderr, "\t%s => %s *%p = NUL\n", pstates[(state & 0x3)], pstates[PARSER
 
 	    dst = start;
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\tdst = start %p\n", dst);
 /*@=modfilesys@*/
 
@@ -5615,7 +5615,7 @@ fprintf(stderr, "\tdst = start %p\n", dst);
 	    }
 	    *start++ = '\0';
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 /*@=modfilesys@*/
 	    if (endPtr) *endPtr = start;
@@ -5630,7 +5630,7 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 	    }
 	    *start++ = '\0';
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 /*@=modfilesys@*/
 	    if (endPtr) *endPtr = start;
@@ -5647,7 +5647,7 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 	    }
 
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\t*%p = *%p \"%.30s\"\n", dst, start, start);
 /*@=modfilesys@*/
 	    if (start[0] == '\\' && start[1] != '\0') {
@@ -5694,7 +5694,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     char * end;
 
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "-->   parseExpression(%p, %p, \"%.20s...\", %p)\n", hsa, token, str, endPtr);
 /*@=modfilesys@*/
 
@@ -5950,7 +5950,7 @@ assert(0);	/* XXX keep gcc quiet. */
 	    nval = fmt(vhe, av);
 
 /*@-castfcnptr -modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], (tag->params ? tag->params[i] : NULL), (void *)fmt, (void *)vhe, (void *)(av ? av : NULL), (val ? val : "(null)"));
 /*@=castfcnptr =modfilesys@*/
 
@@ -6272,7 +6272,7 @@ char * headerSprintf(Header h, const char * fmt,
     int need;
 
 /*@-modfilesys@*/
-if (_hdr_debug)
+if (_hdrqf_debug)
 fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, exts, errmsg);
 /*@=modfilesys@*/
 

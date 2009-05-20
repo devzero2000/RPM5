@@ -26,9 +26,8 @@ LIBRPMDB_0
     fpLookup;
     fpLookupList;
     _hdr_debug;
-    _hdr_fastdatalength;
+    _hdrqf_debug;
     _hdr_getops;
-    _hdr_lazytagswab;
     _hdr_loadops;
     _hdr_stats;
     headerAddI18NString;

@@ -28,14 +28,6 @@ int _hdr_debug = 0;
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
-/* Compute tag data store size using offsets? */
-/*@unchecked@*/
-int _hdr_fastdatalength = 1;
-
-/* Swab tag data only when accessed through headerGet()? */
-/*@unchecked@*/
-int _hdr_lazytagswab = 1;
-
 /** \ingroup header
  */
 /*@-type@*/
@@ -455,15 +447,11 @@ assert(0);	/* XXX stop unimplemented oversights. */
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
 	void * ptr = xmalloc(nb);
-	if (_hdr_lazytagswab) {
-	    if (tagSwab(ptr, he, nb) != NULL)
-		he->p.ptr = ptr;
-	    else {
-		ptr = _free(ptr);
-		rc = 0;
-	    }
-	} else {
-	    he->p.ptr = memcpy(ptr, he->p.ptr, nb);
+	if (tagSwab(ptr, he, nb) != NULL)
+	    he->p.ptr = ptr;
+	else {
+	    ptr = _free(ptr);
+	    rc = 0;
 	}
     }
 
@@ -515,7 +503,6 @@ static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmui
     size_t tdel = 0;
     size_t tl = dl;
     struct indexEntry_s ieprev;
-    int _fast = _hdr_fastdatalength;
 
 assert(dataEnd != NULL);
 assert(entry != NULL);
@@ -548,21 +535,14 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	p.ptr = ie.data;
 	pend.ui8p = (rpmuint8_t *) dataEnd;
 
-	/* Find the length of the tag data store. */
-	if (_fast) {
-	    /* Compute the tag data store length using offsets. */
-	    if (il > 1)
-		ie.length = ((rpmuint32_t)ntohl(pe[1].offset) - ie.info.offset);
-	    else {
-		/* XXX (dataEnd - t) +/- REGION_TAG_COUNT forces dataLength() */
-		ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
-	    }
-	} else {
-	    /* Compute the tag data store length by counting. */
-/*@-nullstate@*/	/* pend.ui8p derived from dataLength may be null */
+	/* Compute the tag data store length using offsets. */
+	if (il > 1)
+	    ie.length = ((rpmuint32_t)ntohl(pe[1].offset) - ie.info.offset);
+	else {
+	    /* XXX (dataEnd - t) +/- REGION_TAG_COUNT forces dataLength() */
 	    ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
-/*@=nullstate@*/
 	}
+
 	if (ie.length == 0 || hdrchkData(ie.length))
 	    return 0;
 
@@ -583,14 +563,14 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	    if ((int)diff != typeSizes[type]) {
 		dl += diff;
 #ifdef	DYING
-		if (!_fast && ieprev.info.type == RPM_I18NSTRING_TYPE)
+		if (ieprev.info.type == RPM_I18NSTRING_TYPE)
 		    ieprev.length += diff;
 #endif
 	    }
 	}
 	tdel = (tprev ? (t - tprev) : 0);
 #ifdef	DYING
-	if (!_fast && ieprev.info.type == RPM_I18NSTRING_TYPE)
+	if (ieprev.info.type == RPM_I18NSTRING_TYPE)
 	    tdel = ieprev.length;
 #endif
 
@@ -605,19 +585,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	    /*@=sizeoftype@*/
 	}
 
-	/* Perform endian conversions */
-	if (_hdr_lazytagswab)
-	    t += ie.length;
-	else {
-	    he->tag = ie.info.tag;
-	    he->t = ie.info.type;
-/*@-kepttrans@*/
-	    he->p.ptr = t;
-/*@=kepttrans@*/
-	    he->c = ie.info.count;
-	    if ((t = tagSwab(t, he, ie.length)) == NULL)
-		return 0;
-	}
+	t += ie.length;
 
 	dl += ie.length;
 	if (dataEnd && (dataStart + dl) > dataEnd) return 0;
@@ -840,18 +808,10 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	    }
 	}
 
+	/* Move tag data into header data store. */
 	pe->offset = (rpmint32_t) htonl(te - dataStart);
-
-	/* copy data w/ endian conversions */
-	switch (entry->info.type) {
-	case RPM_UINT64_TYPE:
-	case RPM_UINT32_TYPE:
-	case RPM_UINT16_TYPE:
-	default:
-	    memcpy(te, entry->data, entry->length);
-	    te += entry->length;
-	    /*@switchbreak@*/ break;
-	}
+	memcpy(te, entry->data, entry->length);
+	te += entry->length;
 	pe++;
     }
    
