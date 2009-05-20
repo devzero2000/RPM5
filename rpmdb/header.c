@@ -721,7 +721,6 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
 	unsigned char *t;
-	rpmuint32_t count;
 	size_t rdlen;
 
 	if (entry->data == NULL || entry->length == 0)
