@@ -256,10 +256,6 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <sys/mman.h>
 #endif
 
-#if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
-#define MAP_ANONYMOUS MAP_ANON
-#endif
-
 /* XXX FIXME: popt on sunos4.1.3: <sys/resource.h> requires <sys/time.h> */
 #if defined(HAVE_SYS_RESOURCE_H) && defined(HAVE_SYS_TIME_H)
 #include <sys/resource.h>
