@@ -210,7 +210,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 /*@-modfilesys@*/
 /*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
-static void vrpmlog (unsigned code, const char *fmt, va_list ap)
+void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	/*@globals nrecs, recs, internalState @*/
 	/*@modifies nrecs, recs, internalState @*/
 {
@@ -291,7 +291,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 /*@=compmempass =nullstate@*/
 /*@=modfilesys@*/
 
-void rpmlog (int code, const char *fmt, ...)
+void _rpmlog (int code, const char *fmt, ...)
 {
     va_list ap;
 

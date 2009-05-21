@@ -277,13 +277,37 @@ int rpmlogSetMask (int mask)
 
 /**
  * Generate a log message using FMT string and option arguments.
+ * Note: inline'd to avoid debugging insturmentation overhead.
  */
-/*@mayexit@*/ /*@printflike@*/ void rpmlog (int code, const char *fmt, ...)
+/*@mayexit@*/ /*@printflike@*/
+void _rpmlog (int code, const char *fmt, ...)
 #if defined(__GNUC__) && __GNUC__ >= 2
 	/* issue a warning if the format string doesn't match arguments */
 	__attribute__((format (printf, 2, 3)))
 #endif
 	/*@*/;
+
+/**
+ * Same as _rpmlog with stdarg argument list.
+ */
+void vrpmlog (unsigned code, const char * fmt, va_list ap)
+	/*@*/;
+
+/*@mayexit@*/ /*@printflike@*/
+static inline
+void rpmlog (int code, const char *fmt, ...)
+	/*@*/
+{
+    unsigned pri = RPMLOG_PRI(code);
+    unsigned mask = RPMLOG_MASK(pri);
+
+    if (mask & rpmlogSetMask(0)) {
+	va_list ap;
+	va_start(ap, fmt);
+	vrpmlog(code, fmt, ap);
+	va_end(ap);
+    }
+}
 
 /*@-exportlocal@*/
 /**

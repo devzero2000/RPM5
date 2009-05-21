@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: rpmlog: use an inline to test for debugging before rpmlog() call.
     - jbj: bump sonames to libfoo-5.2.
     - proyvind: make it possible to set macro files to load predefines from by
 	defining PREMACROFILES at build time.
