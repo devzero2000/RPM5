@@ -644,6 +644,7 @@ print (t)\
 #   lockdbfd		(always on for Packages) Use fcntl(2) locking ?
 #   nofsync		Disable fsync(2) call performed after db3 writes?
 #   temporary		Unlink file when closing.
+#   thread_count=64	Track pid/tid of locks in dbenv for stale lock removal
 #
 
 # XXX Use transactions and logs for rpmdb durability (no clue yet):
