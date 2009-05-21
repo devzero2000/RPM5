@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: bump sonames to libfoo-5.2.
     - jbj: rpmmi: rename the other methods for the match iterator object.
     - proyvind: make it possible to set macro files to load predefines from by
 	defining PREMACROFILES at build time.
