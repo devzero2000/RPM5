@@ -551,7 +551,7 @@ print (t)\
 #
 # Colon separated list of permitted arbitrary tag names
 %_arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
-%_arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{arbitrary_tags_debian}
+%_arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
 
 #
 # Byte size of line buffer for .spec file parsing
