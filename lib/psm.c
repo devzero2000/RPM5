@@ -84,7 +84,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     rpmfi fi = psm->fi;
     sharedFileInfo replaced = (te ? te->replaced : NULL);
     sharedFileInfo sfi;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     int * offsets;
     rpmuint32_t prev;
@@ -115,11 +115,11 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     }
 
     mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-    xx = rpmdbAppendIterator(mi, offsets, num);
-    xx = rpmdbSetIteratorRewrite(mi, 1);
+    xx = rpmmiGrow(mi, offsets, num);
+    xx = rpmmiSetRewrite(mi, 1);
 
     sfi = replaced;
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	int modified;
 
 	modified = 0;
@@ -130,7 +130,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	if (!xx)
 	    continue;
 	
-	prev = rpmdbGetIteratorOffset(mi);
+	prev = rpmmiInstance(mi);
 	num = 0;
 	while (sfi->otherPkg && sfi->otherPkg == prev) {
 assert(sfi->otherFileNum < he->c);
@@ -139,7 +139,7 @@ assert(sfi->otherFileNum < he->c);
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
-		    xx = rpmdbSetIteratorModified(mi, modified);
+		    xx = rpmmiSetModified(mi, modified);
 		}
 		num++;
 	    }
@@ -147,7 +147,7 @@ assert(sfi->otherFileNum < he->c);
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return RPMRC_OK;
 }
@@ -1367,7 +1367,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
     rpmds ds = rpmdsNew(fi->h, tagno, scareMem);
     char * depName = NULL;
     ARGI_t instances = NULL;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header triggeredH;
     rpmRC rc = RPMRC_OK;
     int i;
@@ -1416,11 +1416,11 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
-	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+	    xx = rpmmiPrune(mi, (int *)vals, nvals, 1);
 
 	prev = 0;
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    instance = rpmdbGetIteratorOffset(mi);
+	while((triggeredH = rpmmiNext(mi)) != NULL) {
+	    instance = rpmmiInstance(mi);
 	    if (prev == instance)
 		/*@innercontinue@*/ continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
@@ -1429,7 +1429,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	    xx = argiSort(instances, NULL);
 	}
 
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     instances = argiFree(instances);
@@ -1521,7 +1521,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     rpmds triggers = NULL;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     ARGV_t keys = NULL;
     ARGI_t instances = NULL;
     Header sourceH = NULL;
@@ -1602,18 +1602,17 @@ assert(fi->h != NULL);
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
-	    xx = rpmdbPruneIterator(mi, (int *)vals, nvals, 1);
+	    xx = rpmmiPrune(mi, (int *)vals, nvals, 1);
 
 	prev = 0;
-	while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+	while((sourceH = rpmmiNext(mi)) != NULL) {
 
 	    /* Skip headers that have already been processed. */
-	    instance = rpmdbGetIteratorOffset(mi);
+	    instance = rpmmiInstance(mi);
 	    if (prev == instance)
 		/*@innercontinue@*/ continue;
 
-	    rc |= handleOneTrigger(psm, sourceH, fi->h,
-				rpmdbGetIteratorCount(mi));
+	    rc |= handleOneTrigger(psm, sourceH, fi->h, rpmmiCount(mi));
 
 	    /* Mark header instance as processed. */
 	    prev = instance;
@@ -1621,7 +1620,7 @@ assert(fi->h != NULL);
 	    xx = argiSort(instances, NULL);
 	}
 
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
 exit:
@@ -2135,30 +2134,30 @@ assert(psm->mi == NULL);
 		psm->mi = rpmtsInitIterator(ts, RPMTAG_SHA1HEADER, hdrid, 0);
 	    } else {
 		psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te),0);
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
+		xx = rpmmiAddPattern(psm->mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 			rpmteE(psm->te));
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
+		xx = rpmmiAddPattern(psm->mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 			rpmteV(psm->te));
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
+		xx = rpmmiAddPattern(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 			rpmteR(psm->te));
 #ifdef	RPM_VENDOR_MANDRIVA
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
+		xx = rpmmiAddPattern(psm->mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
 			rpmteD(psm->te));
 #endif
 		if (tscolor) {
-		    xx = rpmdbSetIteratorRE(psm->mi,RPMTAG_ARCH, RPMMIRE_STRCMP,
+		    xx = rpmmiAddPattern(psm->mi,RPMTAG_ARCH, RPMMIRE_STRCMP,
 			rpmteA(psm->te));
-		    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_STRCMP,
+		    xx = rpmmiAddPattern(psm->mi, RPMTAG_OS, RPMMIRE_STRCMP,
 			rpmteO(psm->te));
 		}
 	    }
 
-	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
-		fi->record = rpmdbGetIteratorOffset(psm->mi);
+	    while ((psm->oh = rpmmiNext(psm->mi)) != NULL) {
+		fi->record = rpmmiInstance(psm->mi);
 		psm->oh = NULL;
 		/*@loopbreak@*/ break;
 	    }
-	    psm->mi = rpmdbFreeIterator(psm->mi);
+	    psm->mi = rpmmiFree(psm->mi);
 
 	    rc = RPMRC_OK;
 
@@ -2912,12 +2911,12 @@ psm->te->h = NULL;
 assert(psm->mi == NULL);
 	psm->mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
-	fi->h = rpmdbNextIterator(psm->mi);
+	fi->h = rpmmiNext(psm->mi);
 /*@-castexpose@*/
 	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
 /*@=castexpose@*/
-	psm->mi = rpmdbFreeIterator(psm->mi);
+	psm->mi = rpmmiFree(psm->mi);
 
 	if (fi->h != NULL) {
 	    (void) headerSetInstance(fi->h, fi->record);

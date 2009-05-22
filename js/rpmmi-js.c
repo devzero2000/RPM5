@@ -17,8 +17,6 @@
 /*@unchecked@*/
 static int _debug = 0;
 
-typedef rpmdbMatchIterator rpmmi;
-
 #define	rpmmi_addprop	JS_PropertyStub
 #define	rpmmi_delprop	JS_PropertyStub
 #define	rpmmi_convert	JS_ConvertStub
@@ -42,7 +40,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "is", &tag, &pattern)))
 	goto exit;
 
-    rpmdbSetIteratorRE(mi, tag, type, pattern);
+    rpmmiAddPattern(mi, tag, type, pattern);
 
     ok = JS_TRUE;
     *rval = BOOLEAN_TO_JSVAL(ok);
@@ -91,10 +89,10 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	break;
     case _LENGTH:
     case _COUNT:	/* XXX is _LENGTH enuf? */
-	*vp = INT_TO_JSVAL(rpmdbGetIteratorCount(mi));
+	*vp = INT_TO_JSVAL(rpmmiCount(mi));
         break;
     case _INSTANCE:
-	*vp = INT_TO_JSVAL(rpmdbGetIteratorOffset(mi));
+	*vp = INT_TO_JSVAL(rpmmiInstance(mi));
         break;
     default:
       {	JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
@@ -189,7 +187,7 @@ fprintf(stderr, "\tINIT mi %p\n", mi);
 	break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;		/* XXX needed? */
-	if ((h = rpmdbNextIterator(mi)) != NULL) {
+	if ((h = rpmmiNext(mi)) != NULL) {
             JS_ValueToId(cx, OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h)), idp);
 if (_debug)
 fprintf(stderr, "\tNEXT mi %p h %p\n", mi, h);
@@ -218,7 +216,7 @@ rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, void * _key, int _k
 	return NULL;
     if (!JS_SetPrivate(cx, obj, (void *)mi)) {
 	/* XXX error msg */
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
 	return NULL;
     }
     return mi;
@@ -234,7 +232,7 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
 #ifdef	BUGGY
     {	rpmmi mi = ptr;
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 #endif
 }

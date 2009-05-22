@@ -17,7 +17,7 @@ typedef struct rpmmiObject_s rpmmiObject;
 struct rpmmiObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
-    rpmdbMatchIterator mi;
+    rpmmi mi;
 } ;
 
 /** \ingroup py_c
@@ -32,7 +32,7 @@ extern "C" {
 /** \ingroup py_c
  */
 /*@null@*/
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
+rpmmiObject * rpmmi_Wrap(rpmmi mi)
 	/*@*/;
 
 #ifdef __cplusplus      

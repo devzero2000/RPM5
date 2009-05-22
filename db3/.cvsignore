@@ -5,6 +5,7 @@ Makefile.in
 .libs
 *.la
 *.lo
+*.loT
 config.cache
 config.log
 libtool

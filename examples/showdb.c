@@ -33,7 +33,7 @@ void headerDump(Header h, FILE *f, int flags,
 
 int main( int argc, char **argv )
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     int_32 type, count;
     char *name;
@@ -46,8 +46,8 @@ int main( int argc, char **argv )
 	exit(EXIT_FAILURE);
     }
 
-    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    mi = rpmmiInit(db, RPMDBI_PACKAGES, NULL, 0);
+    while ((h = rpmmiNext(mi)) != NULL) {
 
 	headerGetEntry( h, RPMTAG_NAME, &type, (void**)&name, &count );
 	if( strcmp(name,argv[1]) == 0 )
@@ -59,7 +59,7 @@ int main( int argc, char **argv )
 	 */
 
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     rpmdbClose( db );
 

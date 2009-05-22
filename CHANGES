@@ -1,7 +1,9 @@
 
 5.2a4 -> 5.2b1:
-    - jbj: rpmlog: use an inline to test for debugging before rpmlog() call.
     - jbj: bump sonames to libfoo-5.2.
+    - jbj: rpmmi: rename the other methods for the match iterator object.
+    - jbj: rpmmi: rename the typedef and rpmmi{Init,Next,Free} methods.
+    - jbj: inline rpmlog() to avoid arglist overhead when -O2 is used.
     - proyvind: make it possible to set macro files to load predefines from by
 	defining PREMACROFILES at build time.
     - proyvind: rpmhash: add htGetKeys() for retrieving the keys of the hash table.

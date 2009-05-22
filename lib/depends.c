@@ -203,7 +203,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
     rpmuint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);
     rpmuint32_t ohcolor;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header oh;
     int xx;
 
@@ -216,7 +216,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
     }
 
     mi = rpmtsInitIterator(ts, _upgrade_tag, rpmteN(p), 0);
-    while((oh = rpmdbNextIterator(mi)) != NULL) {
+    while((oh = rpmmiNext(mi)) != NULL) {
 	int lastx;
 	rpmte q;
 
@@ -285,7 +285,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 
 	/* Create an erasure element. */
 	lastx = -1;
-	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+	xx = removePackage(ts, oh, rpmmiInstance(mi), &lastx, pkgKey);
 assert(lastx >= 0 && lastx < ts->orderCount);
 	q = ts->order[lastx];
 
@@ -297,7 +297,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 /*@=nullptrarith@*/
 
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return 0;
 }
@@ -335,7 +335,7 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
     size_t nrefs = 0;
     rpmuint32_t debuginfoInstance = 0;
     Header debuginfoHeader = NULL;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header oh;
     int xx;
 
@@ -357,8 +357,8 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
 
     /* Count remaining members in build set, excluding -debuginfo (if any). */
     mi = rpmtsInitIterator(ts, _debuginfo_tag, keyval, keylen);
-    xx = rpmdbPruneIterator(mi, ts->removedPackages, ts->numRemovedPackages, 1);
-    while((oh = rpmdbNextIterator(mi)) != NULL) {
+    xx = rpmmiPrune(mi, ts->removedPackages, ts->numRemovedPackages, 1);
+    while((oh = rpmmiNext(mi)) != NULL) {
 	/* Skip identical packages. */
 	if (rpmHeadersIdentical(h, oh))
 	    continue;
@@ -369,13 +369,13 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
 	    continue;
 	/* Save the -debuginfo member. */
 	if (chkSuffix(he->p.str, "-debuginfo")) {
-	    debuginfoInstance = rpmdbGetIteratorOffset(mi);
+	    debuginfoInstance = rpmmiInstance(mi);
 	    debuginfoHeader = headerLink(oh);
 	} else
 	    nrefs++;
 	he->p.str = _free(he->p.str);
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     /* Remove -debuginfo package when last build member is erased. */
     if (nrefs == 0 && debuginfoInstance > 0 && debuginfoHeader != NULL) {
@@ -421,7 +421,7 @@ static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
     rpmuint32_t ohcolor;
     rpmds obsoletes;
     rpmuint32_t dscolor;
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header oh;
     int xx;
 
@@ -462,10 +462,10 @@ static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
 	else
 	    mi = rpmtsInitIterator(ts, _obsolete_tag, Name, 0);
 
-	xx = rpmdbPruneIterator(mi,
+	xx = rpmmiPrune(mi,
 	    ts->removedPackages, ts->numRemovedPackages, 1);
 
-	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	while((oh = rpmmiNext(mi)) != NULL) {
 	    int lastx;
 	    rpmte q;
 
@@ -487,7 +487,7 @@ static int rpmtsAddObsoletes(rpmts ts, rpmte p, rpmuint32_t hcolor)
 
 	    /* Create an erasure element. */
 	    lastx = -1;
-	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+	    xx = removePackage(ts, oh, rpmmiInstance(mi), &lastx, pkgKey);
 assert(lastx >= 0 && lastx < ts->orderCount);
 	    q = ts->order[lastx];
 
@@ -499,7 +499,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
 /*@=nullptrarith@*/
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
     (void)rpmdsFree(obsoletes);
     obsoletes = NULL;
@@ -860,7 +860,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 {
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     nsType NSType;
     const char * Name;
     rpmuint32_t Flags;
@@ -1141,7 +1141,7 @@ retry:
 		mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	    else				/* -V probe */
 		mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		if (!(Name[0] == '/' || !strcmp(Name, "*")))
 		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
 		    continue;
@@ -1149,7 +1149,7 @@ retry:
 		if (xx)
 		    rc = 1;
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 
 	if (Flags & RPMSENSE_MISSINGOK)
@@ -1253,7 +1253,7 @@ retry:
 	rc = 1;		/* assume failure */
 	if (rpmtsGetRdb(ts) != NULL) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
 		    continue;
 		rc = (headerIsEntry(h, RPMTAG_SANITYCHECK) == 0);
@@ -1262,7 +1262,7 @@ retry:
 		    break;
 		}
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
@@ -1274,7 +1274,7 @@ retry:
 	rc = 1;		/* assume failure */
 	if (rpmtsGetRdb(ts) != NULL) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
 		    continue;
 		rc = (headerIsEntry(h, RPMTAG_TRACK) == 0);
@@ -1283,7 +1283,7 @@ retry:
 		    break;
 		}
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
@@ -1430,27 +1430,27 @@ retry:
 	    /* depFlags better be 0! */
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-	    (void) rpmdbPruneIterator(mi,
+	    (void) rpmmiPrune(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    while ((h = rpmmiNext(mi)) != NULL) {
 		rpmdsNotify(dep, _("(db files)"), rc);
-		mi = rpmdbFreeIterator(mi);
+		mi = rpmmiFree(mi);
 		goto exit;
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    mi = rpmmiFree(mi);
 	}
 
 	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-	(void) rpmdbPruneIterator(mi,
+	(void) rpmmiPrune(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	while ((h = rpmmiNext(mi)) != NULL) {
 	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, _("(db provides)"), rc);
-		mi = rpmdbFreeIterator(mi);
+		mi = rpmmiFree(mi);
 		goto exit;
 	    }
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     /*
@@ -1742,7 +1742,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
  * @return		0 no problems found
  */
 static int checkPackageSet(rpmts ts, const char * depName,
-		/*@only@*/ /*@null@*/ rpmdbMatchIterator mi, int adding)
+		/*@only@*/ /*@null@*/ rpmmi mi, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1754,9 +1754,9 @@ static int checkPackageSet(rpmts ts, const char * depName,
     int terminate = 2;		/* XXX terminate if rc >= terminate */
     int ourrc = 0;
 
-    (void) rpmdbPruneIterator(mi,
+    (void) rpmmiPrune(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
-    while (ourrc < terminate && (h = rpmdbNextIterator(mi)) != NULL) {
+    while (ourrc < terminate && (h = rpmmiNext(mi)) != NULL) {
 	rpmds requires = NULL;
 	rpmds conflicts = NULL;
 	rpmds dirnames = NULL;
@@ -1803,7 +1803,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	if (rc > ourrc)
 	    ourrc = rc;
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     return ourrc;
 }
@@ -1822,7 +1822,7 @@ static int checkDependentPackages(rpmts ts, const char * depName)
 
     /* XXX rpmdb can be closed here, avoid error msg. */
     if (rpmtsGetRdb(ts) != NULL) {
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, depName, 0);
 	rc = checkPackageSet(ts, depName, mi, 0);
     }
@@ -1843,7 +1843,7 @@ static int checkDependentConflicts(rpmts ts, const char * depName)
 
     /* XXX rpmdb can be closed here, avoid error msg. */
     if (rpmtsGetRdb(ts) != NULL) {
-	rpmdbMatchIterator mi;
+	rpmmi mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, depName, 0);
 	rc = checkPackageSet(ts, depName, mi, 1);
     }
@@ -2791,7 +2791,7 @@ int rpmtsCheck(rpmts ts)
     const char * depName = NULL;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     rpmuint32_t tscolor = rpmtsColor(ts);
-    rpmdbMatchIterator mi = NULL;
+    rpmmi mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
     int xx;
@@ -2947,7 +2947,7 @@ int rpmtsCheck(rpmts ts)
 	goto exit;
 
 exit:
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
     pi = rpmtsiFree(pi);
     depName = _free(depName);
 

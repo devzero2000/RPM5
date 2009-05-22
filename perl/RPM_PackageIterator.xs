@@ -47,13 +47,13 @@ new(class, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
 
 void
 DESTROY(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     CODE:
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
 void
 prune(mi, ...)
-    rpmdbMatchIterator mi
+    rpmmi mi
     PREINIT:
     int * exclude = NULL;
     int exclude_count = 0;
@@ -65,32 +65,32 @@ prune(mi, ...)
         if (!SvIOK(ST(i))) { /* TODO: */ }
         exclude[i - 1] = SvIV(ST(i));
     }
-    rpmdbPruneIterator(mi, exclude, exclude_count, 0);
+    rpmmiPrune(mi, exclude, exclude_count, 0);
     _free(exclude);
     
 unsigned int
 getoffset(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     CODE:
-    RETVAL = rpmdbGetIteratorOffset(mi);
+    RETVAL = rpmmiInstance(mi);
     OUTPUT:
     RETVAL
 
 int
 count(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     CODE:
-    RETVAL = rpmdbGetIteratorCount(mi);
+    RETVAL = rpmmiCount(mi);
     OUTPUT:
     RETVAL
 
 void
 next(mi)
-    rpmdbMatchIterator mi
+    rpmmi mi
     PREINIT:
     Header header = NULL;
     PPCODE:
-    header = rpmdbNextIterator(mi);
+    header = rpmmiNext(mi);
     if (header) {
         XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", headerLink(header))));
     }

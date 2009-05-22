@@ -27,7 +27,7 @@
 
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access fnpyKey @*/
-/*@access rpmdbMatchIterator @*/
+/*@access rpmmi @*/
 /*@access rpmts @*/
 /*@access rpmps @*/
 
@@ -439,7 +439,7 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 	    if (!res) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
-		res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+		res = rpmmiAddPattern(gi->mi, tag, RPMMIRE_DEFAULT, pat);
 	    }
 	    a = _free(a);
 	}
@@ -447,7 +447,7 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
 	if (res == 0)
 	    continue;
 
-	gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX odd side effect? */
+	gi->mi = rpmmiFree(gi->mi);	/* XXX odd side effect? */
 	rpmrc = RPMRC_FAIL;
 	break;
     }
@@ -479,7 +479,7 @@ static void rpmgiFini(void * _gi)
 	gi->fd = NULL;
     }
     gi->tsi = rpmtsiFree(gi->tsi);
-    gi->mi = rpmdbFreeIterator(gi->mi);
+    gi->mi = rpmmiFree(gi->mi);
     (void)rpmtsFree(gi->ts); 
     gi->ts = NULL;
 }
@@ -571,7 +571,7 @@ nextkey:
 		goto enditer;
 	    rpmrc = rpmgiInitFilter(gi);
 	    if (rpmrc != RPMRC_OK || gi->mi == NULL) {
-		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
+		gi->mi = rpmmiFree(gi->mi);	/* XXX unnecessary */
 		gi->i++;
 		goto nextkey;
 	    }
@@ -579,18 +579,18 @@ nextkey:
 	    gi->active = 1;
 	}
 	if (gi->mi != NULL) {	/* XXX unnecessary */
-	    Header h = rpmdbNextIterator(gi->mi);
+	    Header h = rpmmiNext(gi->mi);
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		sprintf(hnum, "%u", rpmmiInstance(gi->mi));
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
-	    gi->mi = rpmdbFreeIterator(gi->mi);
+	    gi->mi = rpmmiFree(gi->mi);
 	    goto nextkey;
 	}
 	break;
@@ -598,25 +598,25 @@ nextkey:
 	if (!gi->active) {
 	    rpmrc = rpmgiInitFilter(gi);
 	    if (rpmrc != RPMRC_OK) {
-		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
+		gi->mi = rpmmiFree(gi->mi);	/* XXX unnecessary */
 		goto enditer;
 	    }
 	    rpmrc = RPMRC_NOTFOUND;	/* XXX hack */
 	    gi->active = 1;
 	}
 	if (gi->mi != NULL) {	/* XXX unnecessary */
-	    Header h = rpmdbNextIterator(gi->mi);
+	    Header h = rpmmiNext(gi->mi);
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		sprintf(hnum, "%u", rpmmiInstance(gi->mi));
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
 	    }
 	}
 	if (rpmrc != RPMRC_OK) {
-	    gi->mi = rpmdbFreeIterator(gi->mi);
+	    gi->mi = rpmmiFree(gi->mi);
 	    goto enditer;
 	}
 	break;

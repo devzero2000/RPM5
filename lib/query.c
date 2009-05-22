@@ -420,7 +420,7 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
     int ec = 1;
 
     qva->qva_showFAIL = qva->qva_showOK = 0;
-    while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
+    while ((h = rpmmiNext(qva->qva_mi)) != NULL) {
 	ec = qva->qva_showPackage(qva, ts, h);
 	if (ec)
 	    qva->qva_showFAIL++;
@@ -429,7 +429,7 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }
-    qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
+    qva->qva_mi = rpmmiFree(qva->qva_mi);
     return ec;
 }
 

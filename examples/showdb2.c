@@ -33,7 +33,7 @@ void headerDump(Header h, FILE *f, int flags,
 
 int main( int argc, char **argv )
 {
-    rpmdbMatchIterator mi;
+    rpmmi mi;
     Header h;
     rpmdb db;
 
@@ -49,8 +49,8 @@ int main( int argc, char **argv )
 	exit( 1 );
     }
 
-    mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, argv[1], 0);
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    mi = rpmmiInit(db, RPMTAG_BASENAMES, argv[1], 0);
+    while ((h = rpmmiNext(mi)) != NULL) {
 
 	headerDump( h, stdout, HEADER_DUMP_INLINE, rpmTagTable );
 
@@ -59,7 +59,7 @@ int main( int argc, char **argv )
 	 * so no headerFree() is necessary.
 	 */
     }
-    mi = rpmdbFreeIterator(mi);
+    mi = rpmmiFree(mi);
 
     rpmdbClose( db );
 

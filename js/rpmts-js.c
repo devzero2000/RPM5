@@ -36,8 +36,6 @@
 /*@unchecked@*/
 static int _debug = 0;
 
-typedef	rpmdbMatchIterator rpmmi;
-
 #define	rpmts_addprop	JS_PropertyStub
 #define	rpmts_delprop	JS_PropertyStub
 #define	rpmts_convert	JS_ConvertStub
@@ -106,13 +104,13 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 	default:			upgrade = 1;	break;
 	}
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, pkgN, 0);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	while ((h = rpmmiNext(mi)) != NULL) {
 	    xx = (upgrade >= 0)
 	        ? rpmtsAddInstallElement(ts, h, (fnpyKey)pkgN, upgrade, NULL)
-		: rpmtsAddEraseElement(ts, h, rpmdbGetIteratorOffset(mi));
+		: rpmtsAddEraseElement(ts, h, rpmmiInstance(mi));
 	    break;
 	}
-	mi = rpmdbFreeIterator(mi);
+	mi = rpmmiFree(mi);
     }
 
     ok = JS_TRUE;
