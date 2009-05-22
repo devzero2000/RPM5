@@ -1,5 +1,8 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: remove (unused) --hdrfastdatalength and --hdrlazytagswab.
+    - jbj: use PROT_READ for header blob's.
+    - jbj: add --rpmmidebug.
     - jbj: bump sonames to libfoo-5.2.
     - jbj: rpmmi: rename the other methods for the match iterator object.
     - jbj: rpmmi: rename the typedef and rpmmi{Init,Next,Free} methods.

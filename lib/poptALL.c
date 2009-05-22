@@ -67,9 +67,7 @@ extern int _fsm_threads;
 /*@unchecked@*/
 extern int _hdr_debug;
 /*@unchecked@*/
-extern int _hdr_fastdatalength;
-/*@unchecked@*/
-extern int _hdr_lazytagswab;
+extern int _hdrqf_debug;
 
 /*@unchecked@*/
 extern int _pkgio_debug;
@@ -110,6 +108,9 @@ extern rpmioPool _rpmfiPool;
 extern int _rpmgi_debug;
 /*@unchecked@*/
 extern rpmioPool _rpmgiPool;
+
+/*@unchecked@*/
+extern int _rpmmi_debug;
 
 /*@unchecked@*/
 extern int _rpmps_debug;
@@ -440,9 +441,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("Use threads for File State Machine"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
- { "hdrfastdatalength", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_fastdatalength, -1,
-	NULL, NULL},
- { "hdrlazytagswab", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_lazytagswab, -1,
+ { "hdrqfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdrqf_debug, -1,
 	NULL, NULL},
  { "macrosused", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_macros, -1,
 	N_("Display macros used"), NULL},
@@ -464,6 +463,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("Debug rpmfi File Info"), NULL},
  { "rpmgidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
 	N_("Debug rpmgi Generalized Iterator"), NULL},
+ { "rpmmidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmi_debug, -1,
+	N_("Debug rpmmi Match Iterator"), NULL},
  { "rpmnsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmns_debug, -1,
 	N_("Debug rpmns Name Space"), NULL},
  { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,

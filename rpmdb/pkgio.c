@@ -677,6 +677,7 @@ rpmxar xar = fdGetXAR(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     rpmuint32_t i;
+    static int map = 1;
 
 if (_pkgio_debug)
 fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
@@ -731,7 +732,24 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 /*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
-    ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
+    if (map) {
+	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
+        static const int prot = PROT_READ | PROT_WRITE;
+        static const int flags = MAP_PRIVATE| MAP_ANONYMOUS;
+        static const int fdno = -1;
+        static const off_t off = 0;
+
+	ei = mmap(NULL, pvlen, prot, flags, fdno, off);
+	if (ei == NULL || ei == (void *)-1)
+            fprintf(stderr,
+                "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
+                NULL, pvlen, prot, flags, fdno, (unsigned)off,
+                errno, strerror(errno));
+    } else {
+	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
+	ei = xmalloc(pvlen);
+    }
+
     if ((xx = (int) timedRead(fd, (void *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%u): BAD, read returned %d"), (unsigned) nb, xx);
@@ -739,6 +757,15 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
     }
     ei[0] = block[2];
     ei[1] = block[3];
+
+    if (map) {
+	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
+        if (mprotect(ei, pvlen, PROT_READ) != 0)
+            fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
+                        ei, pvlen, PROT_READ,
+                        errno, strerror(errno));
+    }
+
     pe = (entryInfo) &ei[2];
     dataStart = (unsigned char *) (pe + il);
     
@@ -828,7 +855,11 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	(void) snprintf(buf, sizeof(buf), _("sigh load: BAD"));
 	goto exit;
     }
-    sigh->flags |= HEADERFLAG_ALLOCATED;
+    if (map) {
+	sigh->flags |= HEADERFLAG_MAPPED;
+	sigh->flags |= HEADERFLAG_RDONLY;
+    } else
+	sigh->flags |= HEADERFLAG_ALLOCATED;
     sigh->flags |= HEADERFLAG_SIGNATURE;
 
     {	size_t sigSize = headerSizeof(sigh);
@@ -1252,7 +1283,7 @@ rpmxar xar = fdGetXAR(fd);
     rpmuint32_t il;
     rpmuint32_t dl;
     rpmuint32_t * ei = NULL;
-    size_t uc;
+    size_t uc = 0;
     unsigned char * b;
     size_t startoff;
     size_t nb;
@@ -1260,6 +1291,7 @@ rpmxar xar = fdGetXAR(fd);
     const char * origin = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
+    static int map = 1;
 
 if (_pkgio_debug)
 fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
@@ -1326,7 +1358,22 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
-    ei = (rpmuint32_t *) xmalloc(uc);
+    if (map) {
+        static const int prot = PROT_READ | PROT_WRITE;
+        static const int flags = MAP_PRIVATE| MAP_ANONYMOUS;
+        static const int fdno = -1;
+        static const off_t off = 0;
+
+	ei = mmap(NULL, uc, prot, flags, fdno, off);
+	if (ei == NULL || ei == (void *)-1)
+            fprintf(stderr,
+                "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
+                NULL, uc, prot, flags, fdno, (unsigned)off,
+                errno, strerror(errno));
+    } else {
+	ei = (rpmuint32_t *) xmalloc(uc);
+    }
+
     if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr blob(%u): BAD, read returned %d"), (unsigned)nb, xx);
@@ -1334,6 +1381,13 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     }
     ei[0] = block[2];
     ei[1] = block[3];
+
+    if (map) {
+        if (mprotect(ei, uc, PROT_READ) != 0)
+            fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
+                        ei, uc, PROT_READ,
+                        errno, strerror(errno));
+    }
 
     /* Sanity check header tags */
     rc = headerCheck(dig, ei, uc, msg);
@@ -1346,7 +1400,11 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
         goto exit;
     }
-    h->flags |= HEADERFLAG_ALLOCATED;
+    if (map) {
+	h->flags |= HEADERFLAG_MAPPED;
+	h->flags |= HEADERFLAG_RDONLY;
+    } else
+	h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
 
     /* Save the opened path as the header origin. */
@@ -1376,7 +1434,15 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-    ei = _free(ei);
+    if (ei != NULL && uc > 0) {
+	if (map) {
+            if (munmap(ei, uc) != 0)
+                fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
+                ei, uc, errno, strerror(errno));
+	    ei = NULL;
+	} else
+	    ei = _free(ei);
+    }
     dig = pgpDigFree(dig, "rpmReadHeader");
     (void)headerFree(h);
     h = NULL;
