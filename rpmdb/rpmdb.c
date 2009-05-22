@@ -1926,33 +1926,25 @@ assert(v.data != NULL);
 /*@=nullstate@*/
 }
 
-rpmmi rpmmiFree(rpmmi mi)
+static void rpmmiFini(void * _mi)
 	/*@globals rpmmiRock @*/
-	/*@modifies rpmmiRock @*/
+	/*@modifies _mi, rpmmiRock @*/
 {
+    rpmmi mi = _mi;
     rpmmi * prev, next;
     dbiIndex dbi;
     int xx;
 
-    if (mi == NULL)
-	return NULL;
+    prev = &rpmmiRock;
+    while ((next = *prev) != NULL && next != mi)
+	prev = &next->mi_next;
+    if (next) {
+/*@i@*/	*prev = next->mi_next;
+	next->mi_next = NULL;
+    }
 
-    yarnPossess(mi->_item.use);
-/*@-modfilesys@*/
-if (_rpmdb_debug)
-fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", mi, yarnPeekLock(mi->_item.use), __FUNCTION__, __FILE__, __LINE__);
-
-    /*@-usereleased@*/
-    if (yarnPeekLock(mi->_item.use) <= 1L) {
-
-	prev = &rpmmiRock;
-	while ((next = *prev) != NULL && next != mi)
-	    prev = &next->mi_next;
-	if (next) {
-/*@i@*/	    *prev = next->mi_next;
-	    next->mi_next = NULL;
-	}
-
+    /* XXX there's code that traverses here w mi->mi_db == NULL. b0rked imho. */
+    if (mi->mi_db) {
 	dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
 assert(dbi != NULL);
 
@@ -1961,22 +1953,39 @@ assert(dbi != NULL);
 	if (mi->mi_dbc)
 	    xx = dbiCclose(dbi, mi->mi_dbc, 0);
 	mi->mi_dbc = NULL;
-
-	mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
-
-	mi->mi_set = dbiFreeIndexSet(mi->mi_set);
 	/* XXX rpmdbUnlink will not do.
-	* NB: must be called after rpmmiRock cleanup. */
+	 * NB: must be called after rpmmiRock cleanup.
+	 */
 	(void) rpmdbClose(mi->mi_db);
 	mi->mi_db = NULL;
+    }
 
-	mi = (rpmmi)rpmioPutPool((rpmioItem)mi);
-    } else
-	yarnTwist(mi->_item.use, BY, -1);
+    mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
 
+    mi->mi_set = dbiFreeIndexSet(mi->mi_set);
+
+    /* XXX this needs to be done elsewhere, not within destructor. */
     (void) rpmdbCheckSignals();
+}
 
-    return NULL;
+/*@unchecked@*/
+int _rpmmi_debug = 0;
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmmiPool;
+
+static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmdbPool, fileSystem @*/
+	/*@modifies pool, _rpmdbPool, fileSystem @*/
+{
+    rpmmi mi;
+
+    if (_rpmmiPool == NULL) {
+	_rpmmiPool = rpmioNewPool("mi", sizeof(*mi), -1, _rpmmi_debug,
+			NULL, NULL, rpmmiFini);
+	pool = _rpmmiPool;
+    }
+    return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
 }
 
 unsigned int rpmmiInstance(rpmmi mi) {
@@ -2634,8 +2643,7 @@ fprintf(stderr, "+++ %d = %d + %d\t\"%s\"\n", (mi->mi_set->count + set->count), 
     return rc;
 }
 
-int rpmmiPrune(rpmmi mi, int * hdrNums,
-	int nHdrNums, int sorted)
+int rpmmiPrune(rpmmi mi, int * hdrNums, int nHdrNums, int sorted)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
 	return 1;
@@ -2654,26 +2662,6 @@ int rpmmiGrow(rpmmi mi, const int * hdrNums, int nHdrNums)
 	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
     (void) dbiAppendSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
     return 0;
-}
-
-/*@unchecked@*/
-int _rpmmi_debug = 0;
-
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmmiPool;
-
-static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
-	/*@globals _rpmdbPool, fileSystem @*/
-	/*@modifies pool, _rpmdbPool, fileSystem @*/
-{
-    rpmmi mi;
-
-    if (_rpmmiPool == NULL) {
-	_rpmmiPool = rpmioNewPool("mi", sizeof(*mi), -1, _rpmmi_debug,
-			NULL, NULL, NULL);
-	pool = _rpmmiPool;
-    }
-    return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
 }
 
 rpmmi rpmmiInit(rpmdb db, rpmTag tag,
