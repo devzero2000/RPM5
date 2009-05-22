@@ -65,7 +65,7 @@ static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 {
     rpmbz bz;
     int level = -1;	/* XXX use _bzdB default */
-    mode_t omode;
+    mode_t omode = O_RDONLY;
     int small = -1;	/* XXX use _bzdS default */
     int verbosity = -1;	/* XXX use _bzdV default */
     const char * s = fmode;

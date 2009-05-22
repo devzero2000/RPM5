@@ -35,7 +35,9 @@ SYMID
 lua_syck_parser_handler(SyckParser *p, SyckNode *n)
 {
 	struct parser_xtra *bonus = (struct parser_xtra *)p->bonus;
-	int o, o2, o3 = -1;
+	int o = -1;
+	int o2 = -1;
+	int o3 = -1;
 	SYMID oid;
 	int i;
 

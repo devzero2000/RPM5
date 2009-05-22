@@ -1,5 +1,5 @@
 /** \ingroup payload
- * \file lib/iosm.c
+ * \file rpmio/iosm.c
  * File state machine to handle a payload from a package.
  */
 
