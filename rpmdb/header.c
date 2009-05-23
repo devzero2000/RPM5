@@ -1333,7 +1333,7 @@ assert(nh->bloblen == pvlen);
 	} else {
 	    if (munmap(nuh, pvlen) != 0)
 		fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
-		nuh, pvlen, errno, strerror(errno));
+			nuh, pvlen, errno, strerror(errno));
 	}
     } else {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);

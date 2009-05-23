@@ -4,8 +4,6 @@
 
 #include "system.h"
 
-#define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
-
 #include <sys/file.h>
 
 #include <rpmiotypes.h>
@@ -2451,6 +2449,55 @@ int rpmmiSetHdrChk(rpmmi mi, rpmts ts)
     return rc;
 }
 
+static int _rpmmi_usermem = 1;
+
+static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * vp,
+                unsigned int flags)
+{
+    int map;
+    int rc;
+
+    switch (dbi->dbi_rpmdb->db_api) {
+    default:	map = 0;		break;
+    case 3:	map = _rpmmi_usermem;	break;	/* Berkeley DB */
+    }
+
+    if (map) {
+	static const int _prot = PROT_READ | PROT_WRITE;
+	static const int _flags = MAP_PRIVATE| MAP_ANONYMOUS;
+	static const int _fdno = -1;
+	static const off_t _off = 0;
+
+	vp->flags |= DB_DBT_USERMEM;
+	rc = dbiGet(dbi, dbcursor, kp, vp, flags);
+	if (rc == DB_BUFFER_SMALL) {
+	    size_t uhlen = vp->size;
+	    void * uh = mmap(NULL, uhlen, _prot, _flags, _fdno, _off);
+	    if (uh == NULL || uh == (void *)-1)
+		fprintf(stderr,
+		    "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
+		    NULL, uhlen, _prot, _flags, _fdno, (unsigned)_off,
+		    errno, strerror(errno));
+
+	    vp->ulen = (u_int32_t)uhlen;
+	    vp->data = uh;
+	    rc = dbiGet(dbi, dbcursor, kp, vp, DB_SET);
+	    if (rc == 0) {
+		if (mprotect(uh, uhlen, PROT_READ) != 0)
+		    fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
+			uh, uhlen, PROT_READ,
+			errno, strerror(errno));
+	    } else {
+		if (munmap(uh, uhlen) != 0)
+		    fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
+                	uh, uhlen, errno, strerror(errno));
+	    }
+	}
+    } else
+	rc = dbiGet(dbi, dbcursor, kp, vp, flags);
+    return rc;
+}
+
 Header rpmmiNext(rpmmi mi)
 {
     dbiIndex dbi;
@@ -2459,6 +2506,7 @@ Header rpmmiNext(rpmmi mi)
     union _dbswap mi_offset;
     void * uh;
     size_t uhlen;
+    int map;
     int rc;
     int xx;
 
@@ -2468,6 +2516,11 @@ Header rpmmiNext(rpmmi mi)
     dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
+
+    switch (dbi->dbi_rpmdb->db_api) {
+    default:	map = 0;		break;
+    case 3:	map = _rpmmi_usermem;	break;	/* Berkeley DB */
+    }
 
     /*
      * Cursors are per-iterator, not per-dbi, so get a cursor for the
@@ -2497,23 +2550,17 @@ next:
 	k.data = &mi_offset.ui;
 /*@=immediatetrans@*/
 	k.size = (u_int32_t)sizeof(mi_offset.ui);
-#if !defined(_USE_COPY_LOAD)
-	v.flags |= DB_DBT_MALLOC;
-#endif
-	rc = dbiGet(dbi, mi->mi_dbc, &k, &v, DB_SET);
+	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, DB_SET);
     }
     else {
 	/* Iterating Packages database. */
 	assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 
 	/* Fetch header with DB_NEXT. */
-#if !defined(_USE_COPY_LOAD)
-	v.flags |= DB_DBT_MALLOC;
-#endif
 	/* Instance 0 is the largest header instance in the database,
 	 * and should be skipped. */
 	do {
-	    rc = dbiGet(dbi, mi->mi_dbc, &k, &v, DB_NEXT);
+	    rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, DB_NEXT);
 	    if (rc == 0) {
 		memcpy(&mi_offset, k.data, sizeof(mi_offset.ui));
 		if (dbiByteSwapped(dbi) == 1)
@@ -2523,6 +2570,7 @@ next:
 	} while (rc == 0 && mi_offset.ui == 0);
     }
 
+    /* Did the header blob load correctly? */
     if (rc)
 	return NULL;
 
@@ -2577,16 +2625,17 @@ next:
 	}
     }
 
-    /* Did the header blob load correctly? */
-#if !defined(_USE_COPY_LOAD)
+    if (map) {
 /*@-onlytrans@*/
-    mi->mi_h = headerLoad(uh);
+	mi->mi_h = headerLoad(uh);
 /*@=onlytrans@*/
-    if (mi->mi_h)
-	mi->mi_h->flags |= HEADERFLAG_ALLOCATED;
-#else
-    mi->mi_h = headerCopyLoad(uh);
-#endif
+	if (mi->mi_h) {
+	    mi->mi_h->flags |= HEADERFLAG_MAPPED;
+	    mi->mi_h->flags |= HEADERFLAG_RDONLY;
+	}
+    } else
+	mi->mi_h = headerCopyLoad(uh);
+
     if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),

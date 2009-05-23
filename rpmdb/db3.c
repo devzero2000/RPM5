@@ -765,6 +765,8 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	rc = dbcursor->get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	/* XXX Permit DB_BUFFER_SMALL to be returned (more restrictive?) */
+	_printit = (rc == DB_BUFFER_SMALL ? 0 : _printit);
 	rc = cvtdberr(dbi, "dbcursor->get", rc, _printit);
 #else
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
