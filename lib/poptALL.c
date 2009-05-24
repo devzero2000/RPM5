@@ -56,6 +56,9 @@ static int _debug = 0;
 extern int _rpmds_nopromote;
 
 /*@unchecked@*/
+extern int _dbi_debug;
+
+/*@unchecked@*/
 extern int _fps_debug;
 
 /*@unchecked@*/
@@ -455,6 +458,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("Use threads for Package State Machine"), NULL},
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,
 	N_("Debug rpmdb DataBase"), NULL},
+ { "rpmdbidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dbi_debug, -1,
+	N_("Debug dbiIndex DataBase Index"), NULL},
  { "rpmdsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_debug, -1,
 	N_("Debug rpmds Dependency Set"), NULL},
  { "rpmfcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,
@@ -497,6 +502,7 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _rpmrubyPool;
     extern rpmioPool _headerPool;
     extern rpmioPool _rpmmiPool;
+    extern rpmioPool _dbiPool;
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmwfPool;
     extern const char * evr_tuple_order;
@@ -536,6 +542,7 @@ rpmcliFini(poptContext optCon)
 
     _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
+    _dbiPool = rpmioFreePool(_dbiPool);
     _headerPool = rpmioFreePool(_headerPool);
 /*@=onlyunqglobaltrans@*/
 /*@=mods@*/

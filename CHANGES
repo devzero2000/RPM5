@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: yarn: convert dbiIndex to usage mutex with refcounts.
     - jbj: yarn: convert Package to usage mutex with refcounts.
     - jbj: yarn: convert Spec to usage mutex with refcounts.
     - jbj: yarn: convert DIGEST_CTX to usage mutex with refcounts.

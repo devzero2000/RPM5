@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmio.h>
 #include <popt.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
@@ -16,6 +17,9 @@
 /*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
+
+/*@unchecked@*/
+int _dbi_debug;
 
 #if defined(WITH_DB) || defined(WITH_SQLITE)
 
@@ -634,6 +638,15 @@ DB_STAT_CLEAR		mutex_stat*
 
 dbiIndex db3Free(dbiIndex dbi)
 {
+    if (dbi != NULL)
+	(void)rpmioFreePoolItem((rpmioItem)dbi, __FUNCTION__, __FILE__, __LINE__);
+    return NULL;
+}
+
+static void dbiFini(void * _dbi)
+	/*@modifies _dbi @*/
+{
+    dbiIndex dbi = _dbi;
     if (dbi) {
 	dbi->dbi_root = _free(dbi->dbi_root);
 	dbi->dbi_home = _free(dbi->dbi_home);
@@ -644,9 +657,22 @@ dbiIndex db3Free(dbiIndex dbi)
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
-	dbi = _free(dbi);
     }
-    return dbi;
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _dbiPool;
+
+static dbiIndex dbiGetPool(rpmioPool pool)
+{
+    dbiIndex dbi;
+
+    if (_dbiPool == NULL) {
+	_dbiPool = rpmioNewPool("dbi", sizeof(*dbi), -1, _dbi_debug,
+			NULL, NULL, dbiFini);
+	pool = _dbiPool;
+    }
+    return (dbiIndex) rpmioGetPool(pool, sizeof(*dbi));
 }
 
 /*@observer@*/ /*@unchecked@*/
@@ -655,7 +681,7 @@ static const char *db3_config_default =
 
 dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 {
-    dbiIndex dbi = xcalloc(1, sizeof(*dbi));
+    dbiIndex dbi = dbiGetPool(_dbiPool);
     char * dbOpts = rpmExpand("%{_dbi_config_", tagName(tag), "}", NULL);
 
     if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
@@ -785,9 +811,15 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 
     dbOpts = _free(dbOpts);
 
-    /*@-assignexpose@*/
+/*@-assignexpose@*/
+    {	void *use =  dbi->_item.use;
+        void *pool = dbi->_item.pool;
 /*@i@*/	*dbi = db3dbi;	/* structure assignment */
-    /*@=assignexpose@*/
+        dbi->_item.use = use;
+        dbi->_item.pool = pool;
+    }
+/*@=assignexpose@*/
+
     memset(&db3dbi, 0, sizeof(db3dbi));
 
     if (!(dbi->dbi_perms & 0600))
@@ -828,7 +860,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 #endif
 
     /*@-globstate@*/ /* FIX: *(rdbOptions->arg) reachable */
-    return dbi;
+    return (dbiIndex)rpmioLinkPoolItem((rpmioItem)dbi, __FUNCTION__, __FILE__, __LINE__);
     /*@=globstate@*/
 }
 
