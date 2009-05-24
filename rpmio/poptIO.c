@@ -55,6 +55,8 @@ extern int _av_debug;
 /*@unchecked@*/
 extern int _cpio_debug;
 /*@unchecked@*/
+extern int _ctx_debug;
+/*@unchecked@*/
 extern int _dav_debug;
 /*@unchecked@*/
 extern int _ftp_debug;
@@ -396,6 +398,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug argv collections"), NULL},
  { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
 	N_("Debug cpio archives"), NULL},
+ { "ctxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ctx_debug, -1,
+	N_("Debug digest contexts"), NULL},
  { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
 	N_("Debug WebDAV data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,

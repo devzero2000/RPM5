@@ -22,8 +22,11 @@
 
 #include "debug.h"
 
-#ifdef	SHA_DEBUG
-#define	DPRINTF(_a)	fprintf _a
+/*@unchecked@*/
+int _ctx_debug = 0;
+
+#ifdef	_DIGEST_DEBUG
+#define	DPRINTF(_a)	if (_ctx_debug < 0) fprintf _a
 #else
 #define	DPRINTF(_a)
 #endif
@@ -35,9 +38,10 @@
 /*@access DIGEST_CTX@*/
 
 /**
- * MD5/SHA1 digest private data.
+ * Digest private data.
  */
 struct DIGEST_CTX_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@observer@*/
     const char * name;		/*!< Digest name. */
     size_t paramsize;		/*!< No. bytes of digest parameters. */
@@ -46,7 +50,7 @@ struct DIGEST_CTX_s {
     int (*Reset) (void * param)
 	/*@modifies param @*/;	/*!< Digest initialize. */
     int (*Update) (void * param, const byte * data, size_t size)
-	/*@modifies param @*/;	/*!< Digest transform. */
+	/*@modifies param @*/;	/*!< Digest update. */
     int (*Digest) (void * param, /*@out@*/ byte * digest)
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
     pgpHashAlgo hashalgo;	/*!< RFC 2440/4880 hash algorithm id. */
@@ -55,6 +59,30 @@ struct DIGEST_CTX_s {
     const char * asn1;		/*!< RFC 3447 ASN1 oid string (in hex). */
     void * param;		/*!< Digest parameters. */
 };
+
+static void ctxFini(void * _ctx)
+	/*@modifies _ctx @*/
+{
+    DIGEST_CTX ctx = _ctx;
+    if (ctx->param != NULL && ctx->paramsize > 0)
+	memset(ctx->param, 0, ctx->paramsize);	/* In case it's sensitive */
+    ctx->param = _free(ctx->param);
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _ctxPool;
+
+static DIGEST_CTX ctxGetPool(rpmioPool pool)
+{
+    DIGEST_CTX ctx;
+
+    if (_ctxPool == NULL) {
+	_ctxPool = rpmioNewPool("ctx", sizeof(*ctx), -1, _ctx_debug,
+			NULL, NULL, ctxFini);
+	pool = _ctxPool;
+    }
+    return (DIGEST_CTX) rpmioGetPool(pool, sizeof(*ctx));
+}
 
 pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
 {
@@ -71,20 +99,29 @@ const char * rpmDigestASN1(DIGEST_CTX ctx)
     return (ctx != NULL ? ctx->asn1 : NULL);
 }
 
-
 DIGEST_CTX
 rpmDigestDup(DIGEST_CTX octx)
 {
-    DIGEST_CTX nctx;
-    nctx = memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
+    DIGEST_CTX nctx = ctxGetPool(_ctxPool);
+
+    nctx->name = octx->name;
+    nctx->digestsize = octx->digestsize;
+    nctx->datasize = octx->datasize;
+    nctx->paramsize = octx->paramsize;
+    nctx->Reset = octx->Reset;
+    nctx->Update = octx->Update;
+    nctx->Digest = octx->Digest;
+    nctx->hashalgo = octx->hashalgo;
+    nctx->flags = octx->flags;
+    nctx->asn1 = octx->asn1;
     nctx->param = memcpy(xcalloc(1, nctx->paramsize), octx->param, nctx->paramsize);
-    return nctx;
+    return (DIGEST_CTX)rpmioLinkPoolItem((rpmioItem)nctx, __FUNCTION__, __FILE__, __LINE__);
 }
 
 DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 {
-    DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
+    DIGEST_CTX ctx = ctxGetPool(_ctxPool);
     int xx;
 
     ctx->hashalgo = hashalgo;
@@ -385,15 +422,15 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 #endif
     case PGPHASHALGO_HAVAL_5_160:
     default:
-	free(ctx);
+	(void)rpmioFreePoolItem((rpmioItem)ctx, __FUNCTION__, __FILE__, __LINE__);
 	return NULL;
 	/*@notreached@*/ break;
     }
 
     xx = (*ctx->Reset) (ctx->param);
 
-DPRINTF((stderr, "*** Init(%x) ctx %p param %p\n", flags, ctx, ctx->param));
-    return ctx;
+DPRINTF((stderr, "==> ctx %p ==== Init(%s, %x) param %p\n", ctx, ctx->name, flags, ctx->param));
+    return (DIGEST_CTX)rpmioLinkPoolItem((rpmioItem)ctx, __FUNCTION__, __FILE__, __LINE__);
 }
 
 /*@-mustmod@*/ /* LCL: ctx->param may be modified, but ctx is abstract @*/
@@ -403,7 +440,7 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
     if (ctx == NULL)
 	return -1;
 
-DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->param, ((char *)data)));
+DPRINTF((stderr, "==> ctx %p ==== Update(%s,%p[%u]) param %p\n", ctx, ctx->name, data, (unsigned)len, ctx->param));
     return (*ctx->Update) (ctx->param, data, len);
 }
 /*@=mustmod@*/
@@ -418,7 +455,7 @@ rpmDigestFinal(DIGEST_CTX ctx, void * datap, size_t *lenp, int asAscii)
 	return -1;
     digest = xmalloc(ctx->digestsize);
 
-DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp, asAscii, ctx->param, digest));
+DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p\n", ctx, ctx->name, datap, lenp, asAscii, ctx->param, digest));
 /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
 /*@=noeffectuncon@*/
@@ -449,9 +486,6 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	memset(digest, 0, ctx->digestsize);	/* In case it's sensitive */
 	free(digest);
     }
-    memset(ctx->param, 0, ctx->paramsize);	/* In case it's sensitive */
-    free(ctx->param);
-    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
-    free(ctx);
+    (void)rpmioFreePoolItem((rpmioItem)ctx, __FUNCTION__, __FILE__, __LINE__);
     return 0;
 }
