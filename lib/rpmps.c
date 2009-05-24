@@ -7,7 +7,6 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmtypes.h>
-#include <yarn.h>
 
 #define	_RPMPS_INTERNAL
 #include "rpmps.h"
@@ -20,6 +19,22 @@
 /*@unchecked@*/
 int _rpmps_debug = 0;
 
+static void rpmpsFini(void * _ps)
+{
+    rpmps ps = _ps;
+    int i;
+
+    if (ps == NULL) return;
+    if (ps->probs)
+    for (i = 0; i < ps->numProblems; i++) {
+	rpmProblem p = ps->probs + i;
+	p->pkgNEVR = _free(p->pkgNEVR);
+	p->altNEVR = _free(p->altNEVR);
+	p->str1 = _free(p->str1);
+    }
+    ps->probs = _free(ps->probs);
+}
+
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmpsPool;
 
@@ -31,10 +46,19 @@ static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
 
     if (_rpmpsPool == NULL) {
 	_rpmpsPool = rpmioNewPool("ps", sizeof(*ps), -1, _rpmps_debug,
-			NULL, NULL, NULL);
+			NULL, NULL, rpmpsFini);
 	pool = _rpmpsPool;
     }
     return (rpmps) rpmioGetPool(pool, sizeof(*ps));
+}
+
+rpmps rpmpsCreate(void)
+{
+    rpmps ps = rpmpsGetPool(_rpmpsPool);
+    ps->numProblems = 0;
+    ps->numProblemsAlloced = 0;
+    ps->probs = NULL;
+    return rpmpsLink(ps, "create");
 }
 
 int rpmpsNumProblems(rpmps ps)
@@ -88,41 +112,6 @@ rpmProblem rpmpsProblem(rpmpsi psi)
 	p = psi->ps->probs + psi->ix;
     } 
     return p;
-}
-
-rpmps rpmpsCreate(void)
-{
-#ifdef	BUGGY
-    rpmps ps = rpmpsGetPool(_rpmpsPool);
-#else
-    rpmps ps = rpmpsGetPool(NULL);
-#endif
-    return rpmpsLink(ps, "create");
-}
-
-rpmps rpmpsFree(rpmps ps)
-{
-    if (ps == NULL) return NULL;
-    yarnPossess(ps->_item.use);
-/*@-modfilesys@*/
-if (_rpmps_debug)
-fprintf(stderr, "--> ps %p -- %ld %s at %s:%u\n", ps, yarnPeekLock(ps->_item.use), "rpmpsFree", __FILE__, __LINE__);
-/*@=modfilesys@*/
-    if (yarnPeekLock(ps->_item.use) <= 1L) {
-	if (ps->probs) {
-	    int i;
-	    for (i = 0; i < ps->numProblems; i++) {
-		rpmProblem p = ps->probs + i;
-		p->pkgNEVR = _free(p->pkgNEVR);
-		p->altNEVR = _free(p->altNEVR);
-		p->str1 = _free(p->str1);
-	    }
-	    ps->probs = _free(ps->probs);
-	}
-	ps = (rpmps) rpmioPutPool((rpmioItem)ps);
-    } else
-	yarnTwist(ps->_item.use, BY, -1);
-    return NULL;
 }
 
 void rpmpsAppend(rpmps ps, rpmProblemType type,

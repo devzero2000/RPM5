@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmps: fix: remove the hack-o-round, handle rpmps like other pools.
     - jbj: yarn: convert dbiIndex to usage mutex with refcounts.
     - jbj: yarn: convert Package to usage mutex with refcounts.
     - jbj: yarn: convert Spec to usage mutex with refcounts.

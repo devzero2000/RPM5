@@ -227,7 +227,6 @@ LIBRPM_0
     rpmpsAppend;
     rpmpsCreate;
     _rpmps_debug;
-    rpmpsFree;
     rpmpsFreeIterator;
     rpmpsInitIterator;
     rpmpsNextIterator;

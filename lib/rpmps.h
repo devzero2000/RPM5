@@ -143,6 +143,17 @@ rpmps rpmpsLink (rpmps ps, const char * msg)
 	((rpmps)rpmioLinkPoolItem((rpmioItem)(_ps), _msg, __FILE__, __LINE__))
 
 /**
+ * Destroy a problem set.
+ * @param ps		problem set
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)
+	/*@modifies ps @*/;
+#define	rpmpsFree(_ps)	\
+	((rpmps)rpmioFreePoolItem((rpmioItem)(_ps), __FUNCTION__, __FILE__, __LINE__))
+
+/**
  * Return number of problems in set.
  * @param ps		problem set
  * @return		number of problems
@@ -189,15 +200,6 @@ rpmProblem rpmpsProblem(rpmpsi psi)
  */
 rpmps rpmpsCreate(void)
 	/*@*/;
-
-/**
- * Destroy a problem set.
- * @param ps		problem set
- * @return		NULL on last dereference
- */
-/*@null@*/
-rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)
-	/*@modifies ps @*/;
 
 /**
  * Print problems to file handle.
