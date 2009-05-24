@@ -173,7 +173,12 @@ Header headerNew(void)
     h->baseurl = NULL;
     h->digest = NULL;
     h->rpmdb = NULL;
+    memset(&h->sb, 0, sizeof(h->sb));
     h->instance = 0;
+    h->startoff = 0;
+    h->endoff = 0;
+    memset(&h->h_loadops, 0, sizeof(h->h_loadops));
+    memset(&h->h_getops, 0, sizeof(h->h_getops));
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
     h->flags |= HEADERFLAG_SORTED;
@@ -963,6 +968,7 @@ Header headerLoad(void * uh)
     dataEnd = dataStart + dl;
 
     h = headerGetPool(_headerPool);
+    memset(&h->h_loadops, 0, sizeof(h->h_loadops));
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
 	(void) rpmswEnter(sw, 0);
     {	unsigned char * hmagic = header_magic;
@@ -972,12 +978,19 @@ Header headerLoad(void * uh)
     h->blob = uh;
     h->bloblen = pvlen;
     /*@=assignexpose =kepttrans@*/
+    h->origin = NULL;
+    h->baseurl = NULL;
+    h->digest = NULL;
+    h->rpmdb = NULL;
+    memset(&h->sb, 0, sizeof(h->sb));
+    h->instance = 0;
+    h->startoff = 0;
+    h->endoff = (rpmuint32_t) pvlen;
+    memset(&h->h_getops, 0, sizeof(h->h_getops));
     h->indexAlloced = il + 1;
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
-    h->startoff = 0;
-    h->endoff = (rpmuint32_t) pvlen;
     h = headerLink(h);
 assert(h != NULL);
 
