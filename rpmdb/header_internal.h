@@ -136,25 +136,6 @@ extern "C" {
 int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv, int negate)
 	/*@modifies *iv @*/;
 
-/** \ingroup header
- * Return header reference count.
- * @param h		header
- * @return		no. of references
- */
-/*@-type@*/ /* FIX: cast? */
-/*@unused@*/ static inline
-int headerUsageCount(Header h)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    int nrefs = 0;
-    yarnPossess(h->_item.use);
-    nrefs = (int)yarnPeekLock(h->_item.use);
-    yarnRelease(h->_item.use);
-    return nrefs;
-}
-/*@=type@*/
-
 #ifdef __cplusplus
 }   
 #endif

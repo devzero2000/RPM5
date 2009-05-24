@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: pick-up some orphan check-ins.
+    - jbj: header: remove (unused) headerUsageCount.
     - jbj: header: fix: re-initialize headers from pool more carefully.
     - jbj: rpmps: fix: remove the hack-o-round, handle rpmps like other pools.
     - jbj: yarn: convert dbiIndex to usage mutex with refcounts.

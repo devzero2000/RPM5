@@ -271,6 +271,7 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@relnull@*/
     const char * dbi_root;	/*!< chroot(2) component of path */
 /*@null@*/
