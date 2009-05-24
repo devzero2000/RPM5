@@ -21,6 +21,11 @@
 #include "debug.h"
 
 /*@unchecked@*/
+extern int _pkg_debug;
+/*@unchecked@*/
+extern int _spec_debug;
+
+/*@unchecked@*/
 struct rpmBuildArguments_s         rpmBTArgs;
 
 #define	POPT_USECATALOG		-1011
@@ -217,6 +222,11 @@ struct poptOption rpmBuildPoptTable[] = {
         N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
+
+ { "pkgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pkg_debug, -1,
+	N_("Debug Package objects"), NULL},
+ { "specdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_spec_debug, -1,
+	N_("Debug Spec objects"), NULL},
 
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
 	N_("do not accept i18n msgstr's from specfile"), NULL},

@@ -104,6 +104,7 @@ typedef struct speclines_s {
  * The structure used to store values parsed from a spec file.
  */
 struct Spec_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@only@*/
     const char * specFile;	/*!< Name of the spec file. */
 /*@only@*/
@@ -194,6 +195,7 @@ struct Spec_s {
  * The structure used to store values for a package.
  */
 struct Package_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@refcounted@*/
     Header header;
 /*@refcounted@*/
