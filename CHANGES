@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: fix: resuscitate --nodigest/--nosignature w --rebuilddb.
     - jbj: pick-up some orphan check-ins.
     - jbj: header: remove (unused) headerUsageCount.
     - jbj: header: fix: re-initialize headers from pool more carefully.

@@ -460,9 +460,10 @@ exit:
 static dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
 	/*@*/
 {
-    dbiIndexItem rec = xcalloc(1, sizeof(*rec));
+    dbiIndexItem rec = xmalloc(sizeof(*rec));
     rec->hdrNum = hdrNum;
     rec->tagNum = tagNum;
+    rec->fpNum = 0;
     return rec;
 }
 
@@ -1966,6 +1967,7 @@ static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
+	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -1979,7 +1981,7 @@ static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	}
 
 	/* Check header digest/signature on blob export (if requested). */
-	if (mi->mi_ts) {
+	if (mi->mi_ts && chkhdr) {
 	    const char * msg = NULL;
 	    int lvl;
 
@@ -2506,6 +2508,7 @@ Header rpmmiNext(rpmmi mi)
     union _dbswap mi_offset;
     void * uh;
     size_t uhlen;
+    int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
     int map;
     int rc;
     int xx;
@@ -2584,7 +2587,7 @@ next:
     xx = miFreeHeader(mi, dbi);
 
     /* Check header digest/signature once (if requested). */
-    if (mi->mi_ts) {
+    if (mi->mi_ts && chkhdr) {
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 
 	/* Don't bother re-checking a previously read header. */
@@ -3423,6 +3426,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
     if (hdrNum)
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
 
 	/* Save the header instance. */
 	(void) headerSetInstance(h, hdrNum);
@@ -3478,7 +3482,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 		}
 
 		/* Check header digest/signature on blob export. */
-		if (ts) {
+		if (ts && chkhdr && !(h->flags & HEADERFLAG_RDONLY)) {
 		    const char * msg = NULL;
 		    int lvl;
 
@@ -3536,9 +3540,9 @@ assert(v.data != NULL);
 		const char * s = he->p.str;
 		char * t;
 		he->c = 1;
-		he->p.argv = xcalloc(1, sizeof(*he->p.argv)+strlen(s)+1);
+		he->p.argv = xmalloc(sizeof(*he->p.argv)+strlen(s)+1);
 		he->p.argv[0] = t = (char *) &he->p.argv[1];
-		(void) strcpy(t, s);
+		t = stpcpy(t, s);
 		s = _free(s);
 	    }
 
@@ -3626,7 +3630,7 @@ assert(v.data != NULL);
 			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
-			bin = t = xcalloc(1, dlen);
+			bin = t = xmalloc(dlen);
 /*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
 			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
@@ -3638,7 +3642,7 @@ assert((dlen & 1) == 0);
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
 			int nbin;
-			bin = xcalloc(1, 32);
+			bin = xmalloc(32);
 			nbin = pgpExtractPubkeyFingerprint(he->p.argv[i], bin);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;

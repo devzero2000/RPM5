@@ -761,7 +761,12 @@ int main(int argc, const char ** argv)
 
     case MODE_REBUILDDB:
     {   rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
-	rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, vsflags);
+	rpmVSFlags ovsflags;
+	if (rpmcliQueryFlags & VERIFY_DIGEST)
+	    vsflags |= _RPMVSF_NODIGESTS;
+	if (rpmcliQueryFlags & VERIFY_SIGNATURE)
+	    vsflags |= _RPMVSF_NOSIGNATURES;
+	ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	ec = rpmtsRebuildDB(ts);
 	vsflags = rpmtsSetVSFlags(ts, ovsflags);
     }	break;
