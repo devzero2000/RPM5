@@ -1,5 +1,4 @@
 5.1.9 -> 5.1.10:
-    - jbj: fix: remove duplicated zProvides: from pubkey headers.
     - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
 
 5.1.8 -> 5.1.9:

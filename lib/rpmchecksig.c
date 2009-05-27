@@ -623,9 +623,27 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
     he->append = 1;
 
+    /* Provides: gpg(IDENTITY) = PUBKEYVERSIONTYPE:PUBKEYID-CREATION */
     he->tag = RPMTAG_PROVIDENAME;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &u;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_PROVIDEVERSION;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &evr;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_PROVIDEFLAGS;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &pflags;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    /* Provides: gpg(PUBKEYID) = PUBKEYVERSION:PUBKEYID-CREATION */
+    he->tag = RPMTAG_PROVIDENAME;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &n;
     he->c = 1;
     xx = headerPut(h, he, 0);
     he->tag = RPMTAG_PROVIDEVERSION;
