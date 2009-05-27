@@ -181,7 +181,7 @@ Header headerNew(void)
     memset(&h->h_getops, 0, sizeof(h->h_getops));
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
-    h->flags |= HEADERFLAG_SORTED;
+    h->flags = HEADERFLAG_SORTED;
 
     h->index = (h->indexAlloced
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
@@ -990,7 +990,7 @@ Header headerLoad(void * uh)
     h->indexAlloced = il + 1;
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
-    h->flags |= HEADERFLAG_SORTED;
+    h->flags = HEADERFLAG_SORTED;
     h = headerLink(h);
 assert(h != NULL);
 
@@ -1280,6 +1280,7 @@ Header headerReload(Header h, int tag)
 	uh = _free(uh);
 	return NULL;
     }
+    nh->flags &= ~(HEADERFLAG_MAPPED|HEADERFLAG_RDONLY); /* XXX unnecessary */
     nh->flags |= HEADERFLAG_ALLOCATED;
     if (ENTRY_IS_REGION(nh->index)) {
 	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE)
@@ -1302,6 +1303,8 @@ Header headerReload(Header h, int tag)
 /*@=assignexpose@*/
     (void) headerSetRpmdb(nh, rpmdb);
     xx = (int) headerSetInstance(nh, instance);
+if (_hdr_debug)
+fprintf(stderr, "--> h %p ==== %s: blob %p[%u] flags 0x%x\n", nh, __FUNCTION__, nh->blob, nh->bloblen, nh->flags);
     return nh;
 }
 
