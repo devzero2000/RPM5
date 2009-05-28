@@ -624,6 +624,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
     he->append = 1;
 
+    /* Provides: gpg(IDENTITY) = PUBKEYVERSIONTYPE:PUBKEYID-CREATION */
     he->tag = RPMTAG_PROVIDENAME;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &u;
@@ -640,6 +641,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->c = 1;
     xx = headerPut(h, he, 0);
 
+    /* Provides: gpg(PUBKEYID) = PUBKEYVERSION:PUBKEYID-CREATION */
     he->tag = RPMTAG_PROVIDENAME;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &n;
@@ -695,6 +697,38 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->c = 1;
     xx = headerPut(h, he, 0);
 #endif
+
+    /* Reallocate the pubkey header into an immutable region. */
+    he->tag = RPMTAG_HEADERIMMUTABLE;
+    h = headerReload(h, he->tag);
+    {	size_t length = 0;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = headerUnload(h, &length);
+	he->c = length;
+    }
+
+    /* Calculate the header-only SHA1 digest. */
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	unsigned char * hmagic = NULL;
+	size_t nmagic = 0;
+	const char * SHA1 = NULL;
+	
+	(void) headerGetMagic(NULL, &hmagic, &nmagic);
+	if (hmagic && nmagic > 0)
+	    (void) rpmDigestUpdate(ctx, hmagic, nmagic);
+	(void) rpmDigestUpdate(ctx, he->p.ptr, he->c);
+	(void) rpmDigestFinal(ctx, &SHA1, NULL, 1);
+	he->p.ptr = _free(he->p.ptr);
+
+        if (SHA1 == NULL)
+            goto exit;
+        he->tag = RPMTAG_SHA1HEADER;
+        he->t = RPM_STRING_TYPE;
+        he->p.str = SHA1;
+        he->c = 1;
+        xx = headerPut(h, he, 0);
+        SHA1 = _free(SHA1);
+    }
 
     /* Add header to database. */
     xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL);

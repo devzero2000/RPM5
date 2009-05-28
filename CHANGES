@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: add RPMTAG_SHA1HEADER to rpmdb pubkeys.
     - jbj: remove first (of 3) rpm-5.2.0 release process be-bugging flaws.
     - jbj: fix: resuscitate --nodigest/--nosignature w --rebuilddb.
     - jbj: pick-up some orphan check-ins.
