@@ -458,6 +458,17 @@ extern void muntrace (void)
 /*@unchecked@*/
 extern const char *__progname;
 
+/* XXX limit the fiddle up to linux for now. */
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+extern int initproctitle(int argc, char *argv[], char *envp[])
+	/*@globals environ @*/
+	/*@modifies environ @*/;
+
+extern int setproctitle (const char *fmt, ...)
+        __attribute__ ((__format__ (__printf__, 1, 2)))
+	/*@*/;
+#endif
+
 #if defined(HAVE_NETDB_H)
 #include <netdb.h>
 #endif

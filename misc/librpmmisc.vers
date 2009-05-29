@@ -11,6 +11,8 @@ LIBRPMMISC_0
     ficlSystemCreateVm;
     ficlSystemDestroy;
     ficlVmEvaluate;
+    initproctitle;
+    setproctitle;
     JS_*;
     js_*;
     lua_call;

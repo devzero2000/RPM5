@@ -19,20 +19,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdarg.h>
+#include "system.h"
 
-#include "setproctitle.h"
+#if !defined(HAVE_SETPROCTITLE)
 
-extern int _init(int argc, char *argv[], char *envp[]);
-
-static char *title_buffer = 0;
 static size_t title_buffer_size = 0;
-static char *title_progname, *title_progname_full;
+static char *title_buffer = 0;
+static char *title_progname;
+static char *title_progname_full;
 
 int
 setproctitle(const char *fmt, ...)
@@ -87,8 +81,11 @@ setproctitle(const char *fmt, ...)
 */
 
 int
-_init(int argc, char *argv[], char *envp[])
+initproctitle(int argc, char *argv[], char *envp[])
 {
+
+/* XXX limit the fiddle up to linux for now. */
+#if defined(__linux__)
 	char   *begin_of_buffer = 0, *end_of_buffer = 0;
 	int     i;
 
@@ -149,5 +146,7 @@ _init(int argc, char *argv[], char *envp[])
 	for (--i; i >= 0; --i)
 		free(new_environ[i]);
 	free(new_environ);
+#endif	/* defined(__linux__) */
 	return 0;
 }
+#endif	/* !defined(HAVE_SETPROCTITLE) */
