@@ -4120,6 +4120,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+#endif
     const char * myprefix = NULL;
     rpmdb olddb;
     const char * dbpath = NULL;
@@ -4238,6 +4241,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
 	while ((h = rpmmiNext(mi)) != NULL) {
 
+#if defined(SUPPORT_REBUILDDB_SANITY)
 	    /* let's sanity check this record a bit, otherwise just skip it */
 	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
 		headerIsEntry(h, RPMTAG_VERSION) &&
@@ -4257,7 +4261,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 			_RECNUM);
 		continue;
 	    }
+#endif
 
+#if defined(SUPPORT_REBUILDDB_FILTER)
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 	    if (_db_filter_dups || newdb->db_filter_dups) {
 		const char * name, * version, * release;
@@ -4283,6 +4289,16 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 		if (skip)
 		    continue;
 	    }
+#endif
+
+/* XXX limit the fiddle up to linux for now. */
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+	    he->tag = RPMTAG_NVRA;
+	    if (headerGet(h, he, 0)) {
+		setproctitle("%s", he->p.str);
+		he->p.ptr = _free(he->p.ptr);
+	    }
+#endif
 
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)

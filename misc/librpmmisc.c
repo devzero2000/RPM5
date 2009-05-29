@@ -32,6 +32,11 @@
 #include "setenv.c"
 #endif
 
+/* XXX limit the fiddle up to linux for now. */
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+#include "setproctitle.c"
+#endif
+
 #if !defined(HAVE_STPCPY)
 #include "stpcpy.c"
 #endif

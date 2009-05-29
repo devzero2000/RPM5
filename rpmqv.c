@@ -425,6 +425,11 @@ int main(int argc, const char ** argv)
 	
 #if !defined(__GLIBC__) && !defined(__LCLINT__)
     environ = envp;
+#else
+/* XXX limit the fiddle up to linux for now. */
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+    (void) initproctitle(argc, (char **)argv, environ);
+#endif
 #endif  
 
     /* Set the major mode based on argv[0] */
