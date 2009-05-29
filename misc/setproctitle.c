@@ -71,6 +71,21 @@ setproctitle(const char *fmt, ...)
 
 	written = strlen(title_buffer);
 	memset(title_buffer + written, '\0', title_buffer_size - written);
+#if defined(__linux__)
+    {	char procname[16+1];
+	const char * s;
+	if ((s = strchr(title_buffer, ' ')) != NULL)
+	    s++;
+	else
+	    s = title_buffer;
+	strncpy(procname, s, sizeof(procname));
+	procname[sizeof(procname)-1] = '\0';
+#if !defined(PR_SET_NAME)
+#define	PR_SET_NAME	15
+#endif
+	(void)prctl(PR_SET_NAME, procname, 0UL, 0UL, 0UL);
+    }
+#endif
 
 	return 0;
 }
