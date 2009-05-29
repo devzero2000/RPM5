@@ -301,13 +301,13 @@ rpmtime_t rpmswSub(rpmop to, rpmop from)
     return usecs;
 }
 
-void rpmswPrint(const char * name, /*@null@*/ rpmop op)
-        /*@globals fileSystem @*/
-        /*@modifies fileSystem @*/
+void rpmswPrint(const char * name, rpmop op, FILE * fp)
 {
     static unsigned int scale = (1000 * 1000);
+    if (fp == NULL)
+	fp = stderr;
     if (op != NULL && op->count > 0)
-        fprintf(stderr, "   %s %8d %6lu.%06lu MB %6lu.%06lu secs\n",
+        fprintf(fp, "   %s %8d %6lu.%06lu MB %6lu.%06lu secs\n",
                 name, op->count,
                 (unsigned long)op->bytes/scale, (unsigned long)op->bytes%scale,
                 op->usecs/scale, op->usecs%scale);

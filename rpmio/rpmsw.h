@@ -144,10 +144,11 @@ rpmtime_t rpmswSub(rpmop to, rpmop from)
  * Print operation statistics.
  * @param name			operation name
  * @param op			operation statistics
+ * @param fp			file handle (NULL uses stderr)
  */
-void rpmswPrint(const char * name, /*@null@*/ rpmop op)
+void rpmswPrint(const char * name, /*@null@*/ rpmop op, /*@null@*/ FILE * fp)
         /*@globals fileSystem @*/
-        /*@modifies fileSystem @*/;
+        /*@modifies fp, fileSystem @*/;
 
 #ifdef __cplusplus
 }

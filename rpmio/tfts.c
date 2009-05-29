@@ -166,7 +166,7 @@ exit:
 fprintf(stderr, "===== (%d/%d) dirs/files in:\n", fts->ndirs, fts->nfiles);
     argvPrint(NULL, fts->paths, NULL);
     if (_rpmsw_stats)
-	rpmswPrint("fts:", op);
+	rpmswPrint("fts:", op, NULL);
 
     return rc;
 }

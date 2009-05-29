@@ -3807,9 +3807,9 @@ main(int argc, char *argv[])
 
     (void) rpmswExit(&dc_totalops, 0);
     if (_rpmsw_stats) {
-        rpmswPrint(" total:", &dc_totalops);
-        rpmswPrint("  read:", &dc_readops);
-        rpmswPrint("digest:", &dc_digestops);
+        rpmswPrint(" total:", &dc_totalops, NULL);
+        rpmswPrint("  read:", &dc_readops, NULL);
+        rpmswPrint("digest:", &dc_digestops, NULL);
     }
 
 exit:

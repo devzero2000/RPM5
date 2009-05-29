@@ -99,11 +99,11 @@ static int tgetFini(rpmtget tget)
     int rc = 0;
 
     if (tget->sop) {
-	rpmswPrint("stat:", tget->sop);
+	rpmswPrint("stat:", tget->sop, NULL);
 	tget->sop = _free(tget->sop);
     }
     if (tget->gop) {
-	rpmswPrint(" get:", tget->gop);
+	rpmswPrint(" get:", tget->gop, NULL);
 	tget->gop = _free(tget->gop);
     }
 

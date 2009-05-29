@@ -1000,9 +1000,9 @@ assert(dc->digest != NULL);
 
     rpmswExit(&dc->totalops, 0);
     if (_rpmsw_stats) {
-	rpmswPrint(" total:", &dc->totalops);
-	rpmswPrint("  read:", &dc->readops);
-	rpmswPrint("digest:", &dc->digestops);
+	rpmswPrint(" total:", &dc->totalops, NULL);
+	rpmswPrint("  read:", &dc->readops, NULL);
+	rpmswPrint("digest:", &dc->digestops, NULL);
     }
 
     optCon = rpmioFini(optCon);

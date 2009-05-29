@@ -46,7 +46,7 @@ exit:
 
 fprintf(stderr, "===== %s: %d entries\n", dn, nentries);
     if (_rpmsw_stats)
-	rpmswPrint("opendir:", op);
+	rpmswPrint("opendir:", op, NULL);
     return rc;
 }
 

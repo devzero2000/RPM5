@@ -103,6 +103,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     const char **argv = NULL;
     FILE * fp = NULL;
     urlinfo u = NULL;
+    void * sw = NULL;
 
     FD_t fd;
     FD_t xfd;
@@ -116,6 +117,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_PREP:
 	name = "%prep";
 	iob = spec->prep;
+	sw = &spec->sw_prep;
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
@@ -123,6 +125,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_BUILD:
 	name = "%build";
 	iob = spec->build;
+	sw = &spec->sw_build;
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
 	mCmd = "%{__spec_build_cmd}";
@@ -130,6 +133,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_INSTALL:
 	name = "%install";
 	iob = spec->install;
+	sw = &spec->sw_install;
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	mCmd = "%{__spec_install_cmd}";
@@ -137,6 +141,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_CHECK:
 	name = "%check";
 	iob = spec->check;
+	sw = &spec->sw_check;
 	mTemplate = "%{__spec_check_template}";
 	mPost = "%{__spec_check_post}";
 	mCmd = "%{__spec_check_cmd}";
@@ -264,6 +269,10 @@ fprintf(stderr, "*** addMacros\n");
     buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
+    /* Start the stopwatch on a build scriptlet. */
+    if (sw != NULL)
+	(void) rpmswEnter(sw, 0);
+
     if (what != RPMBUILD_TRACK)		/* support "%track" script/section */
 	rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
@@ -280,6 +289,12 @@ fprintf(stderr, "*** addMacros\n");
     }
 
     pid = waitpid(child, &status, 0);
+
+    /* End the stopwatch on a build scriptlet. */
+    if (sw != NULL) {
+	(void) rpmswExit(sw, 0);
+	rpmswPrint(scriptName, sw, NULL);
+    }
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),

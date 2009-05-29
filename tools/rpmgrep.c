@@ -1600,8 +1600,8 @@ exit:
 
     xx = rpmswExit(&grep_totalops, 0);
     if (_rpmsw_stats) {
-	rpmswPrint(" total:", &grep_totalops);
-	rpmswPrint("  read:", &grep_readops);
+	rpmswPrint(" total:", &grep_totalops, NULL);
+	rpmswPrint("  read:", &grep_readops, NULL);
     }
 
     optCon = rpmioFini(optCon);

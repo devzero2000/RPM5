@@ -36,7 +36,7 @@ fprintf(stderr, "*** Glob rc %d\n", rc);
     xx = rpmswExit(op, 0);
 
     if (_rpmsw_stats)
-	rpmswPrint("glob:", op);
+	rpmswPrint("glob:", op, NULL);
     return rc;
 }
 

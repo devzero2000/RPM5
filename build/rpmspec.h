@@ -174,12 +174,16 @@ struct Spec_s {
 
 /*@only@*/
     rpmiob prep;		/*!< %prep scriptlet. */
+    struct rpmop_s sw_prep;
 /*@only@*/
     rpmiob build;		/*!< %build scriptlet. */
+    struct rpmop_s sw_build;
 /*@only@*/
     rpmiob install;		/*!< %install scriptlet. */
+    struct rpmop_s sw_install;
 /*@only@*/
     rpmiob check;		/*!< %check scriptlet. */
+    struct rpmop_s sw_check;
 /*@only@*/
     rpmiob clean;		/*!< %clean scriptlet. */
 
