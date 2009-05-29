@@ -292,6 +292,13 @@ int Fstat(FD_t fd, /*@out@*/ struct stat * st)
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
+ * posix_fallocate(3)/fallocate(2) clone.
+ */
+int Fallocate(FD_t fd, off_t offset, off_t length)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
  * chown(2) clone.
  * @todo Implement remotely.
  */

@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: wrap posix_fallocate(3) / fallocate(2) (for rpmdb creation).
+    - jbj: eliminate useless rebuilddb legacy "sanity check" hysteria.
     - jbj: display rebuilddb progress using ps(1) and top(1).
     - jbj: mark rebuilddb legacy hysteria for destruction.
     - jbj: add RPMTAG_SHA1HEADER to rpmdb pubkeys.

@@ -75,6 +75,7 @@ LIBRPMIO_0
     delMacro;
     expandMacros;
     _fsmNext;
+    Fallocate;
     Fchmod;
     _Fchmod;
     Fchown;

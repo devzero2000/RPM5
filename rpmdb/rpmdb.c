@@ -62,8 +62,6 @@ int _rpmdb_debug = 0;
 
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
-/*@unchecked@*/
-static int _db_filter_dups = 0;
 
 /* Use a path uniqifier in the upper 16 bits of tagNum? */
 /* XXX Note: one cannot just choose a value, rpmdb tagNum's need fixing too */
@@ -1208,22 +1206,15 @@ assert(fn != NULL);
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@globals _db_filter_dups @*/
-	/*@modifies _db_filter_dups @*/
+	/*@*/
 {
     rpmdb db = rpmdbGetPool(_rpmdbPool);
     const char * epfx = _DB_ERRPFX;
-    static int oneshot = 0;
 
 /*@-modfilesys@*/ /*@-nullpass@*/
 if (_rpmdb_debug)
 fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mode, perms, flags, db);
 /*@=modfilesys@*/ /*@=nullpass@*/
-
-    if (!oneshot) {
-	_db_filter_dups = rpmExpandNumeric("%{?_filterdbdups}");
-	oneshot = 1;
-    }
 
     db->db_api = _DB_MAJOR;
 
@@ -1249,7 +1240,6 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_export = rpmdbExportInfo;
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     db->db_remove_env = 0;
-    db->db_filter_dups = _db_filter_dups;
     dbiTagsInit(&db->db_tags, &db->db_ndbi);
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     /*@-globstate@*/
@@ -4240,56 +4230,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    (void) rpmmiSetHdrChk(mi, ts);
 
 	while ((h = rpmmiNext(mi)) != NULL) {
-
-#if defined(SUPPORT_REBUILDDB_SANITY)
-	    /* let's sanity check this record a bit, otherwise just skip it */
-	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
-		headerIsEntry(h, RPMTAG_VERSION) &&
-		headerIsEntry(h, RPMTAG_RELEASE) &&
-		headerIsEntry(h, RPMTAG_BUILDTIME)))
-	    {
-		rpmlog(RPMLOG_WARNING,
-			_("header #%u in the database is bad -- skipping.\n"),
-			_RECNUM);
-		continue;
-	    }
-	    if (!headerIsEntry(h, RPMTAG_SOURCERPM)
-	     &&  headerIsEntry(h, RPMTAG_ARCH))
-	    {
-		rpmlog(RPMLOG_WARNING,
-			_("header #%u in the database is SRPM -- skipping.\n"),
-			_RECNUM);
-		continue;
-	    }
-#endif
-
-#if defined(SUPPORT_REBUILDDB_FILTER)
-	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-	    if (_db_filter_dups || newdb->db_filter_dups) {
-		const char * name, * version, * release;
-		int skip = 0;
-
-		(void) headerNEVRA(h, &name, NULL, &version, &release, NULL);
-
-		/*@-shadow@*/
-		{   rpmmi mi;
-		    mi = rpmmiInit(newdb, RPMTAG_NAME, name, 0);
-		    (void) rpmmiAddPattern(mi, RPMTAG_VERSION,
-				RPMMIRE_DEFAULT, version);
-		    (void) rpmmiAddPattern(mi, RPMTAG_RELEASE,
-				RPMMIRE_DEFAULT, release);
-		    while (rpmmiNext(mi)) {
-			skip = 1;
-			/*@innerbreak@*/ break;
-		    }
-		    mi = rpmmiFree(mi);
-		}
-		/*@=shadow@*/
-
-		if (skip)
-		    continue;
-	    }
-#endif
 
 /* XXX limit the fiddle up to linux for now. */
 #if !defined(HAVE_SETPROCTITLE) && defined(__linux__)

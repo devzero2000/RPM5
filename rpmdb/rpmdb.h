@@ -433,7 +433,6 @@ struct rpmdb_s {
     const char * db_errpfx;	/*!< Berkeley DB error msg prefix. */
 
     int		db_remove_env;	/*!< Discard dbenv on close? */
-    int		db_filter_dups;	/*!< Skip duplicate headers with --rebuilddb? */
     int		db_verifying;
 
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */

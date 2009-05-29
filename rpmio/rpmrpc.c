@@ -1444,6 +1444,131 @@ fprintf(stderr, "*** Fstat(%p,%p) path %s\n", fd, st, path);
     return fstat(Fileno(fd), st);
 }
 
+int Fallocate(FD_t fd, off_t offset, off_t len)
+{
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+    int fdno = Fileno(fd);
+    int rc;
+
+if (_rpmio_debug)
+fprintf(stderr, "*** %s(%p,0x%x,0x%x) fdno %d path %s\n", __FUNCTION__, fd, (unsigned)offset, (unsigned)len, fdno, path);
+
+    /* XXX errno is not set by fallocate/posix_fallocate */
+    if (fd == NULL || fdno < 0) {
+	rc = EBADF;
+	return rc;
+    }
+
+    switch (ut) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    default:
+	rc = ENODEV;	
+	return rc;
+	/*@notreached@*/ break;
+    }
+
+#if defined(HAVE_FALLOCATE)
+    /* XXX linux FALLOC_FL_KEEP_SIZE zeroes allocated blocks */
+    rc = (int) fallocate(fdno, 0, (loff_t)offset, (loff_t)len);
+#elif defined(HAVE_POSIX_FALLOCATE)
+    rc = posix_fallocate(fdno, offset, len);
+#else
+    rc = ENOSYS;
+#endif
+
+    if (rc != 0)
+	rpmlog(RPMLOG_DEBUG, _("%s(%d,0x%x,0x%x) failed: rc %d\n"),
+		__FUNCTION__, fdno, (unsigned)offset, (unsigned)len, rc);
+
+    return rc;
+}
+
+#ifdef	NOTYET	/* XXX figger mmap or posix_memalign first */
+void *Mmap(void *addr, size_t length, int prot, int flags,
+                  FD_t fd, off_t offset)
+{
+    int fdno = (fd ? Fileno(fd) : -1);
+    void * ret = mmap(addr, length, prot, flags, fdno, offset);
+if (_rpmio_debug)
+fprintf(stderr, "*** %s(%p[%u],0x%x,0x%x,%p,0x%x) ret %p\n", __FUNCTION__, addr, (unsigned)len, prot, flags, fd, (unsigned)offset, ret);
+    if (ret == NULL || ret == (void *)-1)
+	rpmlog(RPMLOG_ERR, _("%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"),
+		__FUNCTION__, addr, (unsigned)len, prot, flags, fd,
+		(unsigned)offset);
+    return ret;
+}
+
+int Munmap(const void * addr, size_t len)
+{
+    int rc = munmap(addr, len);
+if (_rpmio_debug)
+fprintf(stderr, "*** %s(%p[%u]) rc %d\n", __FUNCTION__, addr, (unsigned)len, rc);
+    if (rc < 0)
+	rpmlog(RPMLOG_ERR, _("%s(%p[%u]) failed: %m\n"),
+		__FUNCTION__, addr, (unsigned)len);
+    return rc;
+}
+
+int Mprotect(const void * addr, size_t len, int prot)
+{
+    int rc = mprotect(addr, len, prot);
+if (_rpmio_debug)
+fprintf(stderr, "*** %s(%p[%u],%d) rc %d\n", __FUNCTION__, addr, len, prot, rc);
+    if (rc < 0)
+	rpmlog(RPMLOG_ERR, _("%s(%p[%u],%d) failed: %m\n"),
+		__FUNCTION__, addr, (unsigned)len, prot);
+    return rc;
+}
+#endif
+
+#ifdef	NOTYET	/* XXX figger posix_fadvise or posix_madvise first */
+int Madvise(void *addr, size_t len, int advice)
+{
+    int rc = madvise(addr, len, advice);
+if (_rpmio_debug)
+fprintf(stderr, "*** %s(%p[%u],%d) rc %d\n", __FUNCTION__, addr, len, advice, rc);
+    if (rc < 0)
+	rpmlog(RPMLOG_ERR, _("%s(%p[%u],%d) failed: %m\n"),
+		__FUNCTION__, addr, (unsigned)len, advice);
+    return rc;
+}
+
+int Fadvise(FD_t fd, off_t offset, off_t len, int advice)
+{
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+    int fdno = Fileno(fd);
+    int rc;
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Fadvise(%p,0x%x,0x%x,%d) fdno %d path %s\n", fd, (unsigned)offset, (unsigned)len, advice, fdno, path);
+    if (fd == NULL || fdno < 0) {
+	errno = EBADF;
+	return -2;
+    }
+
+    switch (ut) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    default:
+	errno = EINVAL;	
+	return -1;
+	/*@notreached@*/ break;
+    }
+    rc = posix_fadvise(fdno, offset, len, advice);
+    if (rc != 0)
+	rpmlog(RPMLOG_ERR, _("%s(%d,%d,0x%x,0x%x) failed: %m\n"),
+		__FUNCTION__, fdno, (unsigned)offset, (unsigned)len, advice);
+    return rc;
+}
+#endif
+
 int Chown(const char * path, uid_t owner, gid_t group)
 {
     const char * lpath;
