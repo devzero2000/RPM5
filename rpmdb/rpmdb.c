@@ -385,7 +385,7 @@ fprintf(stderr, "==> dbiOpen(%p, %s(%u), 0x%x)\n", db, tagName(tag), tag, flags)
     default:
 	_dbapi = _dbapi_wanted;
 	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
-            rpmlog(RPMLOG_DEBUG, D_("dbiOpen: _dbiapi failed\n"));
+            rpmlog(RPMLOG_DEBUG, D_("dbiOpen: _dbapi failed\n"));
 	    return NULL;
 	}
 	errno = 0;
@@ -2506,6 +2506,7 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * vp,
 	static const int _fdno = -1;
 	static const off_t _off = 0;
 
+	memset(vp, 0, sizeof(*vp));
 	vp->flags |= DB_DBT_USERMEM;
 	rc = dbiGet(dbi, dbcursor, kp, vp, flags);
 	if (rc == DB_BUFFER_SMALL) {
