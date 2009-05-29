@@ -5,10 +5,20 @@ BLINKHDRID             1165 argv array
 BLINKNEVRA             1166 argv array
 BLINKPKGID             1164 argv array
 BUILDARCHS             1089 argv array
+BUILDBUILD           1538136666 argv array
+BUILDBUILDPROG       1874092052 argv array
+BUILDCHECK           2134611893 argv array
+BUILDCHECKPROG       1217028302 argv array
+BUILDCLEAN           1449149119 argv array
+BUILDCLEANPROG       1120484673 argv array
 BUILDCPUCLOCK          1176 uint32
 BUILDHOST              1007 string
+BUILDINSTALL         1451186563 argv array
+BUILDINSTALLPROG     1892985711 argv array
 BUILDMACROS            1111 argv array
 BUILDPLATFORMS         1183 argv array
+BUILDPREP            2040269645 argv array
+BUILDPREPPROG        1269005470 argv array
 BUILDTIME              1006 uint32
 C                      1054 argv array
 CACHECTIME             1136 uint32
@@ -34,6 +44,7 @@ DEPENDSDICT            1145 uint32 array
 DESCRIPTION            1005 i18nstring
 DIRINDEXES             1116 uint32 array
 DIRNAMES               1118 argv array
+DISTEPOCH              1218 string
 DISTRIBUTION           1010 string
 DISTTAG                1155 string
 DISTURL                1123 string
@@ -54,6 +65,7 @@ FILECONTEXTS           1147 argv array
 FILEDEPENDSN           1144 uint32 array
 FILEDEPENDSX           1143 uint32 array
 FILEDEVICES            1095 uint32 array
+FILEDIGESTALGO         5011 uint32
 FILEDIGESTALGOS        1177 uint32 array
 FILEDIGESTS            1035 argv array
 FILEFLAGS              1037 uint32 array

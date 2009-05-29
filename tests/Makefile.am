@@ -12,9 +12,9 @@ rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
-rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
+mtree =		$(abs_top_builddir)/tools/mtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
-rpmwget =	wget
+rpmwget =	$(abs_top_builddir)/tools/wget
 cpio =		cpio
 
 .PHONY:	check-init
@@ -28,7 +28,7 @@ check-init: macros
 	@-diff -u {tmp,ref}/showrc || cp {tmp,ref}/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 	@-diff -u {tmp,ref}/.alldigests || cp {tmp,ref}/.alldigests
-	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
+	@${mtree} -c -p ref | ${mtree} -p ref
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
@@ -71,12 +71,12 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb --nodeps edos-test/*.rpm
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -U -- edos-test/glass-1-*
-	@${rpm} -U -- +car +turbo +engine +wheel +window +door
+	@${rpm} -U -- +car +turbo edos-test/engine-1-* edos-test/wheel-2-* +window +door
 	@${rpm} -qaT > tmp/edos.qa.1
 	@diff -u {tmp,ref}/edos.qa.1 || cp {tmp,ref}/edos.qa.1
 	@${rpm} -U -- edos-test/engine-2-* -turbo
 	@${rpm} -U -- edos-test/{wheel-3,tyre-1}-*
-	@${rpm} -U -- edos-test/{door-2,window-1,glass-2}-*
+	@${rpm} -F -- edos-test/{door-2,window-1,glass-2}-*
 	@${rpm} -qaT > tmp/edos.qa.2
 	@diff -u {tmp,ref}/edos.qa.2 || cp {tmp,ref}/edos.qa.2
 	@${rpm} -e car engine wheel door tyre window glass
