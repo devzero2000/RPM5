@@ -1165,7 +1165,31 @@ rpmRC packageSources(Spec spec)
     he->c = 1;
     xx = headerPut(spec->sourceHeader, he, 0);
 #endif
+
+    /* Add build scriptlet status/time (if any) to SRPM's. */
+    {	int ix;
+	for (ix = 0; ix < RPMSCRIPT_MAX; ix++) {
+	    if (spec->sstates[ix] == 0)
+		continue;
+	    if (spec->smetrics[ix] == 0)
+		continue;
+	    break;
+	}
+	if (ix >= 0 && ix < RPMSCRIPT_MAX) {
+	    he->tag = RPMTAG_SCRIPTSTATES;
+	    he->t = RPM_UINT32_TYPE;
+	    he->p.ui32p = spec->sstates;
+	    he->c = RPMSCRIPT_MAX;
+	    xx = headerPut(spec->sourceHeader, he, 0);
+	    he->tag = RPMTAG_SCRIPTMETRICS;
+	    he->t = RPM_UINT32_TYPE;
+	    he->p.ui32p = spec->smetrics;
+	    he->c = RPMSCRIPT_MAX;
+	    xx = headerPut(spec->sourceHeader, he, 0);
+	}
+    }
 	
+    /* Add macros used during build to SRPM's. */
     {	const char ** av = NULL;
 	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 	if (av != NULL && av[0] != NULL) {

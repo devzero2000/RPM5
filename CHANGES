@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: build: add build scriptlet status/duration to SRPM headers.
     - jbj: build: use rpmsqExecve to run build scriptlets.
     - jbj: build: tear down _pkgPool/_specPool before exiting.
     - jbj: rpmsw: add an output FILE * argument.

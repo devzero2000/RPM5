@@ -103,6 +103,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     FILE * fp = NULL;
     urlinfo u = NULL;
     rpmop op = NULL;
+    int ix = -1;
 
     FD_t fd;
     FD_t xfd;
@@ -115,6 +116,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	name = "%prep";
 	iob = spec->prep;
 	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+	ix = RPMSCRIPT_PREP;
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
@@ -123,6 +125,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	name = "%build";
 	iob = spec->build;
 	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+	ix = RPMSCRIPT_BUILD;
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
 	mCmd = "%{__spec_build_cmd}";
@@ -131,6 +134,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	name = "%install";
 	iob = spec->install;
 	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+	ix = RPMSCRIPT_INSTALL;
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	mCmd = "%{__spec_install_cmd}";
@@ -139,6 +143,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	name = "%check";
 	iob = spec->check;
 	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+	ix = RPMSCRIPT_CHECK;
 	mTemplate = "%{__spec_check_template}";
 	mPost = "%{__spec_check_post}";
 	mCmd = "%{__spec_check_cmd}";
@@ -270,6 +275,9 @@ assert(name != NULL);
 	(void) rpmswEnter(op, 0);
 
     status = rpmsqExecve(argv);
+    if (ix >= 0 && ix < RPMSCRIPT_MAX)
+	spec->sstates[ix] =
+	    (RPMSCRIPT_STATE_EXEC | RPMSCRIPT_STATE_REAPED) | (status & 0xffff);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
@@ -279,8 +287,11 @@ assert(name != NULL);
 	rc = RPMRC_OK;
 
     if (op != NULL) {
+	static unsigned int scale = 1000;
 	(void) rpmswExit(op, 0);
 	rpmswPrint(name, op, NULL);
+	if (ix >= 0 && ix < RPMSCRIPT_MAX)
+	    spec->smetrics[ix] = op->usecs * scale;
     }
 
 exit:
