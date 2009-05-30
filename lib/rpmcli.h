@@ -736,7 +736,6 @@ struct rpmBuildArguments_s {
     int noLang;			/*!< from --nolang */
     int shortCircuit;		/*!< from --short-circuit */
     int sign;			/*!< from --sign */
-    int useCatalog;		/*!< from --usecatalog */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
 /*@observer@*/ /*@null@*/

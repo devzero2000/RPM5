@@ -28,16 +28,7 @@ extern int _spec_debug;
 /*@unchecked@*/
 struct rpmBuildArguments_s         rpmBTArgs;
 
-#define	POPT_USECATALOG		-1011
 #define	POPT_NOLANG		-1012
-#define	POPT_RMSOURCE		-1013
-#define	POPT_RMBUILD		-1014
-	/* XXX was POPT_BUILDROOT -1015 */
-
-#define	POPT_NOBUILD		-1017
-#define	POPT_SHORTCIRCUIT	-1018
-#define	POPT_RMSPEC		-1019
-#define	POPT_SIGN		-1020
 
 #define	POPT_REBUILD		0x4220
 #define	POPT_RECOMPILE		0x4320
@@ -65,12 +56,6 @@ int _rpmbuildFlags = 3;
 /*@unchecked@*/
 int noLang = 0;
 /*@=exportlocal@*/
-
-/*@unchecked@*/
-static int signIt = 0;
-
-/*@unchecked@*/
-static int useCatalog = 0;
 
 /**
  */
@@ -107,14 +92,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	}
 	break;
 
-    case POPT_NOBUILD: rba->noBuild = 1; break;
     case POPT_NOLANG: rba->noLang = 1; break;
-    case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
-    case POPT_SIGN: rba->sign = 1; break;
-    case POPT_USECATALOG: rba->useCatalog = 1; break;
-    case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
-    case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
-    case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
 
     case RPMCLI_POPT_NODIGEST:
 	rba->qva_flags |= VERIFY_DIGEST;
@@ -131,7 +109,6 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case RPMCLI_POPT_NODEPS:
 	rba->noDeps = 1;
 	break;
-
     }
 }
 
@@ -203,12 +180,13 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("build through %install (%prep, %build, then install) from <source package>"),
 	N_("<source package>") },
 
- { "clean", '\0', 0, NULL, POPT_RMBUILD,
+ { "clean", '\0', POPT_BIT_SET, &rpmBTArgs.buildAmount, RPMBUILD_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "nobuild", '\0', 0, NULL, POPT_NOBUILD,
+ { "nobuild", '\0', POPT_ARG_VAL, &rpmBTArgs.noBuild, 1,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
+
  { "noautoprov", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildFlags, 1,
 	N_("disable automagic Provides: extraction"), NULL },
  { "noautoreq", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildFlags, 2,
@@ -217,11 +195,11 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("disable tags forbidden by LSB"), NULL },
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NODIGEST,
-        N_("don't verify package digest(s)"), NULL },
+	N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOHDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
+	N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
+	N_("don't verify package signature(s)"), NULL },
 
  { "pkgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pkg_debug, -1,
 	N_("Debug Package objects"), NULL},
@@ -230,18 +208,16 @@ struct poptOption rpmBuildPoptTable[] = {
 
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
 	N_("do not accept i18n msgstr's from specfile"), NULL},
- { "rmsource", '\0', 0, NULL, POPT_RMSOURCE,
+ { "rmsource", '\0', POPT_BIT_SET, &rpmBTArgs.buildAmount, RPMBUILD_RMSOURCE,
 	N_("remove sources when done"), NULL},
- { "rmspec", '\0', 0, NULL, POPT_RMSPEC,
+ { "rmspec", '\0', POPT_BIT_SET, &rpmBTArgs.buildAmount, RPMBUILD_RMSPEC,
 	N_("remove specfile when done"), NULL},
- { "short-circuit", '\0', 0, NULL,  POPT_SHORTCIRCUIT,
+ { "short-circuit", '\0', POPT_ARG_VAL, &rpmBTArgs.shortCircuit,  1,
 	N_("skip straight to specified stage (only for c,i)"), NULL },
- { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &signIt, POPT_SIGN,
+ { "sign", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmBTArgs.sign, 1,
 	N_("generate PGP/GPG signature"), NULL },
  { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
 	N_("override target platform"), N_("CPU-VENDOR-OS") },
- { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
-	N_("look up i18n strings in specfile catalog"), NULL},
 
    POPT_TABLEEND
 };
