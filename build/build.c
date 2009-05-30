@@ -102,7 +102,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     const char **argv = NULL;
     FILE * fp = NULL;
     urlinfo u = NULL;
-    void * sw = NULL;
+    rpmop op = NULL;
 
     FD_t fd;
     FD_t xfd;
@@ -114,7 +114,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_PREP:
 	name = "%prep";
 	iob = spec->prep;
-	sw = &spec->sw_prep;
+	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
@@ -122,7 +122,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_BUILD:
 	name = "%build";
 	iob = spec->build;
-	sw = &spec->sw_build;
+	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
 	mCmd = "%{__spec_build_cmd}";
@@ -130,7 +130,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_INSTALL:
 	name = "%install";
 	iob = spec->install;
-	sw = &spec->sw_install;
+	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	mCmd = "%{__spec_install_cmd}";
@@ -138,7 +138,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
     case RPMBUILD_CHECK:
 	name = "%check";
 	iob = spec->check;
-	sw = &spec->sw_check;
+	op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
 	mTemplate = "%{__spec_check_template}";
 	mPost = "%{__spec_check_post}";
 	mCmd = "%{__spec_check_cmd}";
@@ -266,8 +266,8 @@ assert(name != NULL);
 	rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
 
     /* Run the script with a stopwatch. */
-    if (sw != NULL)
-	(void) rpmswEnter(sw, 0);
+    if (op != NULL)
+	(void) rpmswEnter(op, 0);
 
     status = rpmsqExecve(argv);
 
@@ -278,9 +278,9 @@ assert(name != NULL);
     } else
 	rc = RPMRC_OK;
 
-    if (sw != NULL) {
-	(void) rpmswExit(sw, 0);
-	rpmswPrint(name, sw, NULL);
+    if (op != NULL) {
+	(void) rpmswExit(op, 0);
+	rpmswPrint(name, op, NULL);
     }
 
 exit:

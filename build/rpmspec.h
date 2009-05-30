@@ -172,18 +172,17 @@ struct Spec_s {
     rpmRC (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
                rpmuint32_t index, rpmsenseFlags tagflags);
 
+    rpmuint32_t sstates[RPMSCRIPT_MAX];		/*!< scriptlet states. */
+    rpmuint32_t smetrics[RPMSCRIPT_MAX];	/*!< scriptlet time metrics. */
+
 /*@only@*/
     rpmiob prep;		/*!< %prep scriptlet. */
-    struct rpmop_s sw_prep;
 /*@only@*/
     rpmiob build;		/*!< %build scriptlet. */
-    struct rpmop_s sw_build;
 /*@only@*/
     rpmiob install;		/*!< %install scriptlet. */
-    struct rpmop_s sw_install;
 /*@only@*/
     rpmiob check;		/*!< %check scriptlet. */
-    struct rpmop_s sw_check;
 /*@only@*/
     rpmiob clean;		/*!< %clean scriptlet. */
 

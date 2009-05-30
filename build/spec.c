@@ -668,6 +668,10 @@ Spec newSpec(void)
     spec->readStack->reading = 1;
 
     spec->rootURL = NULL;
+
+    memset(&spec->sstates, 0, sizeof(spec->sstates));
+    memset(&spec->smetrics, 0, sizeof(spec->smetrics));
+
     spec->prep = NULL;
     spec->build = NULL;
     spec->install = NULL;
