@@ -289,9 +289,8 @@ assert(name != NULL);
     if (op != NULL) {
 	static unsigned int scale = 1000;
 	(void) rpmswExit(op, 0);
-	rpmswPrint(name, op, NULL);
 	if (ix >= 0 && ix < RPMSCRIPT_MAX)
-	    spec->smetrics[ix] = op->usecs * scale;
+	    spec->smetrics[ix] += op->usecs * scale;
     }
 
 exit:
