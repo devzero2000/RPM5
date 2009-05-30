@@ -434,6 +434,10 @@ static /*@observer@*/ const char * tag2sln(rpmTag tag)
     case RPMTAG_TRIGGERPOSTUN:	return "%triggerpostun";
     case RPMTAG_VERIFYSCRIPT:	return "%verify";
     case RPMTAG_SANITYCHECK:	return "%sanitycheck";
+    case RPMTAG_BUILDPREP:	return "%prep";
+    case RPMTAG_BUILDBUILD:	return "%build";
+    case RPMTAG_BUILDINSTALL:	return "%install";
+    case RPMTAG_BUILDCHECK:	return "%check";
     default:	break;
     }
     return "%unknownscript";
@@ -460,9 +464,13 @@ static rpmScriptID tag2slx(rpmTag tag)
     case RPMTAG_TRIGGERPOSTUN:	return RPMSCRIPT_TRIGGERPOSTUN;
     case RPMTAG_VERIFYSCRIPT:	return RPMSCRIPT_VERIFY;
     case RPMTAG_SANITYCHECK:	return RPMSCRIPT_SANITYCHECK;
+    case RPMTAG_BUILDPREP:	return RPMSCRIPT_PREP;
+    case RPMTAG_BUILDBUILD:	return RPMSCRIPT_BUILD;
+    case RPMTAG_BUILDINSTALL:	return RPMSCRIPT_INSTALL;
+    case RPMTAG_BUILDCHECK:	return RPMSCRIPT_CHECK;
     default:	break;
     }
-    return RPMSCRIPT_UNKNOWN;
+    return RPMSCRIPT_MAX;
 }
 
 /**
@@ -644,7 +652,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
     if (psm->sstates != NULL)
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
     if (ssp != NULL)
-	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
+	*ssp |= (RPMSCRIPT_STATE_EMBEDDED|RPMSCRIPT_STATE_EXEC);
 
     av[0] = (char *) Phe->p.argv[0];
     if (arg1 >= 0)

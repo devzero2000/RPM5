@@ -344,11 +344,11 @@ struct poptOption rpmInstallPoptTable[] = {
 	NULL},
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NODIGEST,
-        N_("don't verify package digest(s)"), NULL },
+	N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOHDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
+	N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
+	N_("don't verify package signature(s)"), NULL },
 
  { "oldpackage", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_OLDPACKAGE,

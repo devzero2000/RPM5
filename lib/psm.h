@@ -69,20 +69,25 @@ typedef enum pkgStage_e {
  * Scriptlet identifiers.
  */
 typedef enum rpmScriptID_e {
-    RPMSCRIPT_UNKNOWN		=  0,	/*!< unknown scriptlet */
-    RPMSCRIPT_PRETRANS		=  1,	/*!< %pretrans scriptlet */
-    RPMSCRIPT_TRIGGERPREIN	=  2,	/*!< %triggerprein scriptlet */
-    RPMSCRIPT_PREIN		=  3,	/*!< %pre scriptlet */
-    RPMSCRIPT_POSTIN		=  4,	/*!< %post scriptlet  */
-    RPMSCRIPT_TRIGGERIN		=  5,	/*!< %triggerin scriptlet  */
-    RPMSCRIPT_TRIGGERUN		=  6,	/*!< %triggerun scriptlet  */
-    RPMSCRIPT_PREUN		=  7,	/*!< %preun scriptlet  */
-    RPMSCRIPT_POSTUN		=  8,	/*!< %postun scriptlet  */
-    RPMSCRIPT_TRIGGERPOSTUN	=  9,	/*!< %triggerpostun scriptlet  */
-    RPMSCRIPT_POSTTRANS		= 10,	/*!< %posttrans scriptlet  */
-	/* 11-15 unused */
-    RPMSCRIPT_VERIFY		= 16,	/*!< %verify scriptlet  */
-    RPMSCRIPT_SANITYCHECK	= 17,	/*!< %sanitycheck scriptlet  */
+    RPMSCRIPT_PRETRANS		=  0,	/*!< %pretrans scriptlet */
+    RPMSCRIPT_TRIGGERPREIN	=  1,	/*!< %triggerprein scriptlet */
+    RPMSCRIPT_PREIN		=  2,	/*!< %pre scriptlet */
+    RPMSCRIPT_POSTIN		=  3,	/*!< %post scriptlet */
+    RPMSCRIPT_TRIGGERIN		=  4,	/*!< %triggerin scriptlet */
+    RPMSCRIPT_TRIGGERUN		=  5,	/*!< %triggerun scriptlet */
+    RPMSCRIPT_PREUN		=  6,	/*!< %preun scriptlet */
+    RPMSCRIPT_POSTUN		=  7,	/*!< %postun scriptlet */
+    RPMSCRIPT_TRIGGERPOSTUN	=  8,	/*!< %triggerpostun scriptlet */
+    RPMSCRIPT_POSTTRANS		=  9,	/*!< %posttrans scriptlet */
+	/* 10-15 unused */
+    RPMSCRIPT_VERIFY		= 16,	/*!< %verify scriptlet */
+    RPMSCRIPT_SANITYCHECK	= 17,	/*!< %sanitycheck scriptlet */
+	/* 18-23 unused */
+    RPMSCRIPT_PREP		= 24,	/*!< %prep build scriptlet */
+    RPMSCRIPT_BUILD		= 25,	/*!< %build build scriptlet */
+    RPMSCRIPT_INSTALL		= 26,	/*!< %install build scriptlet */
+    RPMSCRIPT_CHECK		= 27,	/*!< %check build scriptlet */
+	/* 28-31 unused */
     RPMSCRIPT_MAX		= 32
 } rpmScriptID;
 
@@ -96,8 +101,8 @@ typedef enum rpmScriptState_e {
     RPMSCRIPT_STATE_REAPED	= (1 << 17), /*!< scriptlet was reaped */
 	/* 18-23 unused */
     RPMSCRIPT_STATE_SELINUX	= (1 << 24), /*!< scriptlet exec by SELinux */
-    RPMSCRIPT_STATE_EMULATOR	= (1 << 25), /*!< scriptlet exec in emulator */
-    RPMSCRIPT_STATE_LUA		= (1 << 26)  /*!< scriptlet exec with lua */
+    RPMSCRIPT_STATE_EMBEDDED	= (1 << 25), /*!< scriptlet exec by lua et al */
+	/* 26-31 unused */
 } rpmScriptState;
 
 /**
