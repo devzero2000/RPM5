@@ -91,9 +91,30 @@ setproctitle(const char *fmt, ...)
 }
 
 /*
-  It has to be _init function, because __attribute__((constructor))
-  functions gets called without arguments.
-*/
+ * Rename to _init/_fini for automagic ELF weak symbol library symbol override.
+ * Note: __attribute__((constructor)) on _init function is
+ * called without arguments.
+ */
+
+int
+finiproctitle(void)
+{
+/* XXX limit the fiddle up to linux for now. */
+#if defined(__linux__)
+    if (title_buffer != NULL) {
+	char ** envp;
+	for (envp = environ; *envp != NULL; envp++) {
+	    free(*envp);
+	    *envp = NULL;
+	}
+	free(environ);
+	environ = NULL;
+	free(title_progname_full);
+	title_progname_full = NULL;
+    }
+#endif
+    return 0;
+}
 
 int
 initproctitle(int argc, char *argv[], char *envp[])

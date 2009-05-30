@@ -11,6 +11,7 @@ LIBRPMMISC_0
     ficlSystemCreateVm;
     ficlSystemDestroy;
     ficlVmEvaluate;
+    finiproctitle;
     initproctitle;
     setproctitle;
     JS_*;

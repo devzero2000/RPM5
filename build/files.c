@@ -1576,8 +1576,7 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 	
 	/* Add file security context to package. */
-	if (!(_rpmbuildFlags & 4))
-	{
+	if (sxfn != NULL && *sxfn != '\0' && !(_rpmbuildFlags & 4)) {
 	    /*@observer@*/
 	    static char *nocon = "";
 /*@-moduncon@*/
@@ -2707,10 +2706,9 @@ int processSourceFiles(Spec spec)
     int rc;
     /* srcdefattr: needed variables */
     char _srcdefattr_buf[BUFSIZ];
-    char *_srcdefattr;
+    char * _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
     int xx;
 
-    _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
 
     *sfp = rpmiobNew(0);
     x = initSourceHeader(spec, sfp);
@@ -2805,6 +2803,7 @@ int processSourceFiles(Spec spec)
 exit:
     *sfp = rpmiobFree(*sfp);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+    _srcdefattr = _free(_srcdefattr);
     return rc;
 }
 

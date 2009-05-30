@@ -1082,6 +1082,11 @@ exit:
 
     optCon = rpmcliFini(optCon);
 
+/* XXX limit the fiddle up to linux for now. */
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+    (void) finiproctitle();
+#endif
+
     /* XXX don't overflow single byte exit status */
     /* XXX status 255 is special to xargs(1) */
     if (ec > 254) ec = 254;

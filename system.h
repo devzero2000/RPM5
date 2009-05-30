@@ -460,6 +460,9 @@ extern const char *__progname;
 
 /* XXX limit the fiddle up to linux for now. */
 #if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+extern int finiproctitle(void)
+	/*@globals environ @*/
+	/*@modifies environ @*/;
 extern int initproctitle(int argc, char *argv[], char *envp[])
 	/*@globals environ @*/
 	/*@modifies environ @*/;
