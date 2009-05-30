@@ -149,32 +149,6 @@ assert(xx != 0 && he->p.str != NULL);
 
 Package freePackage(Package pkg)
 {
-#ifdef	DYING
-    if (pkg == NULL) return NULL;
-    
-    pkg->preInFile = _free(pkg->preInFile);
-    pkg->postInFile = _free(pkg->postInFile);
-    pkg->preUnFile = _free(pkg->preUnFile);
-    pkg->postUnFile = _free(pkg->postUnFile);
-    pkg->verifyFile = _free(pkg->verifyFile);
-    pkg->sanityCheckFile = _free(pkg->sanityCheckFile);
-
-    (void)headerFree(pkg->header);
-    pkg->header = NULL;
-    (void)rpmdsFree(pkg->ds);
-    pkg->ds = NULL;
-    pkg->fileList = rpmiobFree(pkg->fileList);
-    pkg->fileFile = _free(pkg->fileFile);
-    if (pkg->cpioList != NULL) {
-	rpmfi fi = pkg->cpioList;
-	pkg->cpioList = NULL;
-	fi = rpmfiFree(fi);
-    }
-
-    pkg->specialDoc = rpmiobFree(pkg->specialDoc);
-    pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
-#endif
-
     (void)rpmioFreePoolItem((rpmioItem)pkg, __FUNCTION__, __FILE__, __LINE__);
     return NULL;
 }
@@ -579,79 +553,7 @@ static inline /*@null@*/ spectags freeSt(/*@only@*/ /*@null@*/ spectags st)
 
 Spec freeSpec(Spec spec)
 {
-#ifdef	DYING
-    struct ReadLevelEntry *rl;
-
-    if (spec == NULL) return NULL;
-
-    spec->lbuf = _free(spec->lbuf);
-
-    spec->sl = freeSl(spec->sl);
-    spec->st = freeSt(spec->st);
-
-    spec->prep = rpmiobFree(spec->prep);
-    spec->build = rpmiobFree(spec->build);
-    spec->install = rpmiobFree(spec->install);
-    spec->check = rpmiobFree(spec->check);
-    spec->clean = rpmiobFree(spec->clean);
-    spec->foo = tagStoreFree(spec->foo, spec->nfoo);
-    spec->nfoo = 0;
-
-    spec->buildSubdir = _free(spec->buildSubdir);
-    spec->rootURL = _free(spec->rootURL);
-    spec->specFile = _free(spec->specFile);
-
-    closeSpec(spec);
-
-    while (spec->readStack) {
-	rl = spec->readStack;
-	/*@-dependenttrans@*/
-	spec->readStack = rl->next;
-	/*@=dependenttrans@*/
-	rl->next = NULL;
-	rl = _free(rl);
-    }
-    
-    spec->sourceRpmName = _free(spec->sourceRpmName);
-    spec->sourcePkgId = _free(spec->sourcePkgId);
-    spec->sourceHeader = headerFree(spec->sourceHeader);
-
-    if (spec->sourceCpioList != NULL) {
-	rpmfi fi = spec->sourceCpioList;
-	spec->sourceCpioList = NULL;
-	fi = rpmfiFree(fi);
-    }
-    
-    if (!spec->recursing) {
-	if (spec->BASpecs != NULL)
-	while (spec->BACount--) {
-	    /*@-unqualifiedtrans@*/
-	    spec->BASpecs[spec->BACount] =
-			freeSpec(spec->BASpecs[spec->BACount]);
-	    /*@=unqualifiedtrans@*/
-	}
-	/*@-compdef@*/
-	spec->BASpecs = _free(spec->BASpecs);
-	/*@=compdef@*/
-    }
-    spec->BANames = _free(spec->BANames);
-
-    spec->passPhrase = _free(spec->passPhrase);
-    spec->cookie = _free(spec->cookie);
-
-#ifdef WITH_LUA
-    {	rpmlua lua = NULL; /* global state */
-	rpmluaDelVar(lua, "patches");
-	rpmluaDelVar(lua, "sources");	
-    }
-#endif
-
-    spec->sources = freeSources(spec->sources);
-    spec->packages = freePackages(spec->packages);
-#endif
-    
     (void)rpmioFreePoolItem((rpmioItem)spec, __FUNCTION__, __FILE__, __LINE__);
-
     return NULL;
 }
 

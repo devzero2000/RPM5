@@ -1068,6 +1068,12 @@ exit:
 
 #ifdef	IAM_RPMBT
     freeNames();
+    /* XXX _specPool/_pkgPool teardown should be done somewhere else. */
+    {	extern rpmioPool _pkgPool;
+	extern rpmioPool _specPool;
+	_pkgPool = rpmioFreePool(_pkgPool);
+	_specPool = rpmioFreePool(_specPool);
+    }
 #endif
 
 #ifdef	IAM_RPMEIU

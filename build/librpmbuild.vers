@@ -44,6 +44,7 @@ LIBRPMBUILD_0
     parseRCPOT;
     parseScript;
     parseSpec;
+    _pkgPool;
     processBinaryFiles;
     processSourceFiles;
     readLine;
@@ -52,6 +53,7 @@ LIBRPMBUILD_0
     rpmBuildPoptTable;
     rpmlibNeedsFeature;
     rpmspecQuery;
+    _specPool;
     stashSt;
     verifyAttrs;
     virtualFileAttributes;
