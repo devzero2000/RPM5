@@ -7,14 +7,13 @@
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
+#include <rpmsq.h>
+
 #define	_RPMTAG_INTERNAL
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */
 
 #include "debug.h"
-
-/*@unchecked@*/
-static int _build_debug = 0;
 
 /**
  */
@@ -62,7 +61,7 @@ static void doRmSource(Spec spec)
 {
     struct Source *sp;
     int rc;
-    
+
 #if 0
     rc = Unlink(spec->specFile);
 #endif
@@ -107,12 +106,10 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 
     FD_t fd;
     FD_t xfd;
-    pid_t pid;
-    pid_t child;
     int status;
     rpmRC rc;
     size_t i;
-    
+
     switch (what) {
     case RPMBUILD_PREP:
 	name = "%prep";
@@ -183,14 +180,14 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	mCmd = "%{___build_cmd}";
 	break;
     }
-    if (name == NULL)	/* XXX shouldn't happen */
-	name = "???";
+
+assert(name != NULL);
 
     if ((what != RPMBUILD_RMBUILD) && iob == NULL) {
 	rc = RPMRC_OK;
 	goto exit;
     }
-    
+
     if (rpmTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	rc = RPMRC_FAIL;
@@ -208,7 +205,7 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	goto exit;
     }
     /*@=type@*/
-    
+
     (void) urlPath(rootURL, &rootDir);
     if (*rootDir == '\0') rootDir = "/";
 
@@ -230,16 +227,14 @@ rpmRC doScript(Spec spec, int what, const char *name, rpmiob iob, int test)
 	fprintf(fp, "%s", rpmiobStr(iob));
 
     (void) fputs(buildPost, fp);
-    
+
     (void) Fclose(xfd);
 
     if (test) {
 	rc = RPMRC_OK;
 	goto exit;
     }
-    
-if (_build_debug)
-fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
+
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
 	rc = RPMRC_FAIL;
@@ -250,8 +245,6 @@ fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
-if (_build_debug)
-fprintf(stderr, "*** addMacros\n");
 	    addMacro(spec->macros, "_remsh", NULL, "%{__remsh}", RMIL_SPEC);
 	    addMacro(spec->macros, "_remhost", NULL, u->host, RMIL_SPEC);
 	    if (strcmp(rootDir, "/"))
@@ -269,32 +262,14 @@ fprintf(stderr, "*** addMacros\n");
     buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
-    /* Start the stopwatch on a build scriptlet. */
+    if (what != RPMBUILD_TRACK)		/* support "%track" script/section */
+	rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
+
+    /* Run the script with a stopwatch. */
     if (sw != NULL)
 	(void) rpmswEnter(sw, 0);
 
-    if (what != RPMBUILD_TRACK)		/* support "%track" script/section */
-	rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
-    if (!(child = fork())) {
-
-	/*@-mods@*/
-	errno = 0;
-	/*@=mods@*/
-	(void) execvp(argv[0], (char *const *)argv);
-
-	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
-		scriptName, name, strerror(errno));
-
-	_exit(-1);
-    }
-
-    pid = waitpid(child, &status, 0);
-
-    /* End the stopwatch on a build scriptlet. */
-    if (sw != NULL) {
-	(void) rpmswExit(sw, 0);
-	rpmswPrint(name, sw, NULL);
-    }
+    status = rpmsqExecve(argv);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
@@ -302,7 +277,12 @@ fprintf(stderr, "*** addMacros\n");
 	rc = RPMRC_FAIL;
     } else
 	rc = RPMRC_OK;
-    
+
+    if (sw != NULL) {
+	(void) rpmswExit(sw, 0);
+	rpmswPrint(name, sw, NULL);
+    }
+
 exit:
     if (scriptName) {
 #if defined(RPM_VENDOR_OPENPKG) /* always-remove-tempfiles */
@@ -322,8 +302,6 @@ exit:
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
-if (_build_debug)
-fprintf(stderr, "*** delMacros\n");
 	    delMacro(spec->macros, "_remsh");
 	    delMacro(spec->macros, "_remhost");
 	    if (strcmp(rootDir, "/"))
@@ -342,7 +320,6 @@ fprintf(stderr, "*** delMacros\n");
     buildTemplate = _free(buildTemplate);
     buildPost = _free(buildPost);
     buildDirURL = _free(buildDirURL);
-
     return rc;
 }
 
