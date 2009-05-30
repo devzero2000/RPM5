@@ -194,10 +194,8 @@ main(int argc, char *argv[])
     }
 
 if (_debug) {
-_rpmts_debug = 1;
 rpmSetVerbosity(RPMLOG_DEBUG);
 } else {
-_rpmts_debug = 0;
 rpmSetVerbosity(RPMLOG_NOTICE);
 }
 
