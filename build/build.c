@@ -35,18 +35,18 @@ const char * getSourceDir(rpmfileAttrs attr)
     {
 	fn = rpmGetPath("%{_specdir}/", filename, NULL);
 	if (access(fn, F_OK) == 0)
-		dir = "%{_specdir}/";
+	    dir = "%{_specdir}/";
 	fn = _free(fn);
     }
     if (dir != NULL) {
     } else
 #endif
     if (attr & RPMFILE_SOURCE)
-        dir = "%{_sourcedir}/";
+	dir = "%{_sourcedir}/";
     else if (attr & RPMFILE_PATCH)
-        dir = "%{_patchdir}/";
+	dir = "%{_patchdir}/";
     else if (attr & RPMFILE_ICON)
-        dir = "%{_icondir}/";
+	dir = "%{_icondir}/";
 
     return dir;
 }
@@ -69,14 +69,14 @@ static void doRmSource(Spec spec)
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	const char *dn, *fn;
-    if (sp->flags & RPMFILE_GHOST)
-        continue;
+	if (sp->flags & RPMFILE_GHOST)
+	    continue;
 #if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
-    if (! (dn = getSourceDir(sp->flags, sp->source)))
+	if (! (dn = getSourceDir(sp->flags, sp->source)))
 #else
-    if (! (dn = getSourceDir(sp->flags)))
+	if (! (dn = getSourceDir(sp->flags)))
 #endif
-        continue;
+	    continue;
 	fn = rpmGenPath(NULL, dn, sp->source);
 	rc = Unlink(fn);
 	fn = _free(fn);
@@ -293,7 +293,7 @@ fprintf(stderr, "*** addMacros\n");
     /* End the stopwatch on a build scriptlet. */
     if (sw != NULL) {
 	(void) rpmswExit(sw, 0);
-	rpmswPrint(scriptName, sw, NULL);
+	rpmswPrint(name, sw, NULL);
     }
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
@@ -426,16 +426,16 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
        directories (if they are empty) and just ignore removal failures
        (if they are still not empty). */
     if (what & RPMBUILD_RMSOURCE) {
-        const char *pn;
-        pn = rpmGetPath("%{_sourcedir}", NULL);
-        Rmdir(pn); /* ignore error, it is ok if it fails (usually with ENOTEMPTY) */
-        pn = _free(pn);
+	const char *pn;
+	pn = rpmGetPath("%{_sourcedir}", NULL);
+	Rmdir(pn); /* ignore error, it is ok if it fails (usually with ENOTEMPTY) */
+	pn = _free(pn);
     }
     if (what & RPMBUILD_RMSPEC) {
-        const char *pn;
-        pn = rpmGetPath("%{_specdir}", NULL);
-        Rmdir(pn); /* ignore error, it is ok if it fails (usually with ENOTEMPTY) */
-        pn = _free(pn);
+	const char *pn;
+	pn = rpmGetPath("%{_specdir}", NULL);
+	Rmdir(pn); /* ignore error, it is ok if it fails (usually with ENOTEMPTY) */
+	pn = _free(pn);
     }
 #endif
 
