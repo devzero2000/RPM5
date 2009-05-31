@@ -984,7 +984,8 @@ print (t)\
 	pam>coreutils			\
 	pam>initscripts			\
 	glibc-common>glibc		\
-	glibc>nscd
+	glibc>nscd			\
+	filesystem>setup
 
 %_dependency_whiteout			\
 	%{?_dependency_whiteout_caos_core} \

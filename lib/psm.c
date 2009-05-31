@@ -496,7 +496,7 @@ static pid_t psmWait(rpmpsm psm)
 	(unsigned)msecs/1000, (unsigned)msecs%1000);
 
     if (psm->sstates != NULL)
-    {	int * ssp = psm->sstates + tag2slx(psm->scriptTag);
+    {	rpmuint32_t * ssp = psm->sstates + tag2slx(psm->scriptTag);
 	*ssp &= ~0xffff;
 	*ssp |= (psm->sq.status & 0xffff);
 	*ssp |= RPMSCRIPT_STATE_REAPED;
@@ -646,7 +646,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
     int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
     int xx = 0;
-    int * ssp = NULL;
+    rpmuint32_t * ssp = NULL;
     int inChroot = enterChroot(psm, &rootFdno);
 
     if (psm->sstates != NULL)
@@ -773,7 +773,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
     FD_t out = NULL;		/* exit: expects this to be initialized. */
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     const char * body = NULL;
-    int * ssp = NULL;
+    rpmuint32_t * ssp = NULL;
     pid_t pid;
     int xx;
     int i;
@@ -1697,7 +1697,6 @@ static void rpmpsmFini(void * _psm)
     psm->ts = NULL;
 /*@=internalglobs@*/
 
-    psm->sstates = _free(psm->sstates);
     psm->IPhe->p.ptr = _free(psm->IPhe->p.ptr);
     psm->IPhe = _free(psm->IPhe);
     psm->NVRA = _free(psm->NVRA);
@@ -1744,7 +1743,8 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
     psm->triggers = NULL;
     psm->NVRA = NULL;
     psm->IPhe = xcalloc(1, sizeof(*psm->IPhe));
-    psm->sstates = xcalloc(RPMSCRIPT_MAX, sizeof(*psm->sstates));
+    memset(psm->sstates, 0, sizeof(psm->sstates));
+    memset(psm->smetrics, 0, sizeof(psm->smetrics));
 
     return rpmpsmLink(psm, msg);
 }

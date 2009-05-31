@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: performance tweaks.
+    - jbj: change default dep whiteout to ensure filessystem before setup.
+    - jbj: prepare to save install scriptlet states/metrics.
     - jbj: build: add build scriptlet status/duration to SRPM headers.
     - jbj: build: use rpmsqExecve to run build scriptlets.
     - jbj: build: tear down _pkgPool/_specPool before exiting.

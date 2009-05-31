@@ -362,79 +362,57 @@ assert(u != NULL);
 /*@observer@*/ /*@unchecked@*/
 static struct urlstring {
 /*@observer@*/ /*@null@*/
-    const char * leadin;
+    const char *leadin;
+    size_t	len;
     urltype	ret;
 } urlstrings[] = {
-    { "file://",	URL_IS_PATH },
-    { "ftp://",		URL_IS_FTP },
-    { "hkp://",		URL_IS_HKP },
-    { "http://",	URL_IS_HTTP },
-    { "https://",	URL_IS_HTTPS },
-    { "-",		URL_IS_DASH },
-    { NULL,		URL_IS_UNKNOWN }
+    { "file://",	sizeof("file://")-1,	URL_IS_PATH },
+    { "ftp://",		sizeof("ftp://")-1,	URL_IS_FTP },
+    { "hkp://",		sizeof("hkp://")-1,	URL_IS_HKP },
+    { "http://",	sizeof("http://")-1,	URL_IS_HTTP },
+    { "https://",	sizeof("https://")-1,	URL_IS_HTTPS },
+    { "-",		sizeof("-")-1,		URL_IS_DASH },
+    { NULL,		0,			URL_IS_UNKNOWN }
 };
 
 urltype urlIsURL(const char * url)
 {
     struct urlstring *us;
+    int ut = URL_IS_UNKNOWN;;
 
-    if (url && *url) {
-	for (us = urlstrings; us->leadin != NULL; us++) {
-	    if (strncmp(url, us->leadin, strlen(us->leadin)))
-		continue;
-	    return us->ret;
-	}
+    if (url && *url && *url != '/')
+    for (us = urlstrings; us->leadin != NULL; us++) {
+	if (strncmp(url, us->leadin, us->len))
+	    continue;
+	ut = us->ret;
+	break;
     }
-
-    return URL_IS_UNKNOWN;
+    return ut;
 }
 
 /* Return path portion of url (or pointer to NUL if url == NULL) */
 urltype urlPath(const char * url, const char ** pathp)
 {
-    const char *path;
-    int urltype;
+    static const char empty[] = "";
+    const char *path = (url ? url : empty);
+    int ut = URL_IS_UNKNOWN;
 
-    path = url;
-    urltype = urlIsURL(url);
-    switch (urltype) {
-    case URL_IS_FTP:
-	url += sizeof("ftp://") - 1;
-	path = strchr(url, '/');
-	if (path == NULL) path = url + strlen(url);
-	break;
-    case URL_IS_PATH:
-	url += sizeof("file://") - 1;
-	path = strchr(url, '/');
-	if (path == NULL) path = url + strlen(url);
-	break;
-    case URL_IS_HKP:
-	url += sizeof("hkp://") - 1;
-	path = strchr(url, '/');
-	if (path == NULL) path = url + strlen(url);
-	break;
-    case URL_IS_HTTP:
-	url += sizeof("http://") - 1;
-	path = strchr(url, '/');
-	if (path == NULL) path = url + strlen(url);
-	break;
-    case URL_IS_HTTPS:
-	url += sizeof("https://") - 1;
-	path = strchr(url, '/');
-	if (path == NULL) path = url + strlen(url);
-	break;
-    case URL_IS_UNKNOWN:
-	if (path == NULL) path = "";
-	break;
-    case URL_IS_DASH:
-	path = "";
-	break;
+    if (*path != '\0' && *path != '/') {
+	struct urlstring *us;
+	for (us = urlstrings; us->leadin != NULL; us++) {
+	    if (strncmp(url, us->leadin, us->len))
+		continue;
+	    if ((path = strchr(url+us->len, '/')) == NULL)
+		path = empty;
+	    ut = us->ret;
+	    break;
+	}
     }
+/*@-observertrans@*/
     if (pathp)
-	/*@-observertrans@*/
 	*pathp = path;
-	/*@=observertrans@*/
-    return urltype;
+/*@=observertrans@*/
+    return ut;
 }
 
 /**

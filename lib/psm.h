@@ -119,7 +119,8 @@ struct rpmpsm_s {
 /*@dependent@*/
     const char * pkgfn;		/*!< Repackage file name. */
 /*@only@*/ /*@null@*/
-    int *sstates;		/*!< Scriptlet states and return codes. */
+    rpmuint32_t sstates[RPMSCRIPT_MAX];	/*!< Scriptlet return codes. */
+    rpmuint32_t smetrics[RPMSCRIPT_MAX];/*!< Scriptlet time metrics. */
     rpmTag scriptTag;		/*!< Scriptlet data tag. */
     rpmTag progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
