@@ -87,7 +87,9 @@ const char * rpmMacrofiles = MACROFILES;
 #include "debug.h"
 
 /*@unchecked@*/
+#if defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
 static int _globalI = 1;
+#endif
 
 #if defined(__LCLINT__)
 /*@-exportheader@*/
@@ -1569,6 +1571,7 @@ exit:
  * @retval *avp		invocation args
  * @return		script string
  */
+#if defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
 static char * parseEmbedded(const char * s, size_t nb, const char *** avp)
 	/*@*/
 {
@@ -1602,6 +1605,7 @@ bingo:
     script[nb] = '\0';
     return script;
 }
+#endif
 
 /**
  * The main macro recursion loop.
