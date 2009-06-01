@@ -10,9 +10,7 @@ LIBRPMBUILD_0
     doScript;
     _fini;
     freeNames;
-    freePackage;
     freePackages;
-    freeSpec;
     getBuildTime;
     getGidS;
     getGname;

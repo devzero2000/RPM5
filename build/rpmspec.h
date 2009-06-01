@@ -247,6 +247,19 @@ extern "C" {
 #endif
 
 /** \ingroup rpmbuild
+ * Destroy a spec file control structure.
+ * @todo Rename to specFree.
+ * @param spec		spec file control structure
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+Spec freeSpec(/*@killref@*/ /*@null@*/ Spec spec)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies spec, fileSystem, internalState @*/;
+#define	freeSpec(_spec)	\
+    ((Spec)rpmioFreePoolItem((rpmioItem)(_spec), __FUNCTION__, __FILE__, __LINE__))
+
+/** \ingroup rpmbuild
  * Create and initialize Spec structure.
  * @return spec		spec file control structure
  */
@@ -254,16 +267,6 @@ extern "C" {
 Spec newSpec(void)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
-
-/** \ingroup rpmbuild
- * Destroy Spec structure.
- * @param spec		spec file control structure
- * @return		NULL always
- */
-/*@null@*/
-Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies spec, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * Function to query spec file(s).

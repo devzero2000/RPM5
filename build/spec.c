@@ -147,12 +147,6 @@ assert(xx != 0 && he->p.str != NULL);
     return ((lastp == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
-Package freePackage(Package pkg)
-{
-    (void)rpmioFreePoolItem((rpmioItem)pkg, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
-}
-
 static void pkgFini(void * _pkg)
 	/*@modifies _pkg @*/
 {
@@ -551,12 +545,6 @@ static inline /*@null@*/ spectags freeSt(/*@only@*/ /*@null@*/ spectags st)
     return _free(st);
 }
 
-Spec freeSpec(Spec spec)
-{
-    (void)rpmioFreePoolItem((rpmioItem)spec, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
-}
-
 static void specFini(void * _spec)
 	/*@modifies _spec @*/
 {
@@ -649,6 +637,8 @@ static Spec specGetPool(rpmioPool pool)
 
 Spec newSpec(void)
 {
+    static const char _spec_line_buffer_size[] =
+	"%{?_spec_line_buffer_size}%{!?_spec_line_buffer_size:100000}";
     Spec spec = specGetPool(_specPool);
     
     spec->specFile = NULL;
@@ -657,13 +647,14 @@ Spec newSpec(void)
     spec->st = newSt();
 
     spec->fileStack = NULL;
-    spec->lbuf_len = (size_t)rpmExpandNumeric("%{?_spec_line_buffer_size}%{!?_spec_line_buffer_size:100000}");
-    spec->lbuf = (char *)xcalloc(1, spec->lbuf_len);
+    spec->lbuf_len = (size_t)rpmExpandNumeric(_spec_line_buffer_size);
+    spec->lbuf = (char *)xmalloc(spec->lbuf_len);
+    spec->lbuf[0] = '\0';
     spec->line = spec->lbuf;
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
     spec->lineNum = 0;
-    spec->readStack = xcalloc(1, sizeof(*spec->readStack));
+    spec->readStack = xmalloc(sizeof(*spec->readStack));
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
 

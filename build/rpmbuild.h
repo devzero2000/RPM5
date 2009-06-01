@@ -410,15 +410,6 @@ rpmRC lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
 		internalState @*/;
 
 /** \ingroup rpmbuild
- * Create and initialize package control structure.
- * @param spec		spec file control structure
- * @return		package control structure
- */
-/*@only@*/
-Package newPackage(Spec spec)
-	/*@modifies spec->packages, spec->packages->next @*/;
-
-/** \ingroup rpmbuild
  * Destroy all packages associated with spec file.
  * @param packages	package control structure chain
  * @return		NULL
@@ -429,14 +420,26 @@ Package freePackages(/*@only@*/ /*@null@*/ Package packages)
 	/*@modifies packages, fileSystem @*/;
 
 /** \ingroup rpmbuild
- * Destroy package control structure.
+ * Destroy a package control structure.
+ * @todo Rename to pkgFree.
  * @param pkg		package control structure
- * @return		NULL
+ * @return		NULL on last dereference
  */
 /*@null@*/
-Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
+Package freePackage(/*@killref@*/ /*@null@*/ Package pkg)
 	/*@globals fileSystem @*/
 	/*@modifies pkg, fileSystem @*/;
+#define	freePackage(_pkg)	\
+    ((Package)rpmioFreePoolItem((rpmioItem)(_pkg), __FUNCTION__, __FILE__, __LINE__))
+
+/** \ingroup rpmbuild
+ * Create and initialize package control structure.
+ * @param spec		spec file control structure
+ * @return		package control structure
+ */
+/*@only@*/
+Package newPackage(Spec spec)
+	/*@modifies spec->packages, spec->packages->next @*/;
 
 /** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.
