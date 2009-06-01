@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
     - jbj: save %pre/%post scriptlet's exit code and duration.
     - jbj: add header to rpmdb after, not before, %post is run.
     - jbj: replace freeSpec/freePackage with defines, eliminate symbols in ABI.
