@@ -112,7 +112,7 @@ endif
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
-	$(pkgincHEADERS_INSTALL) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
+	$(INSTALL_HEADER) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 
 check-local:
 
