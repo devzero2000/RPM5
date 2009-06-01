@@ -94,6 +94,8 @@ struct headerToken_s {
     const char * baseurl;	/*!< Header base URL (e.g. path or URL). */
 /*@only@*/ /*@null@*/
     const char * digest;	/*!< Header digest (from origin *.rpm file) */
+/*@only@*/ /*@null@*/
+    const char * parent;	/*!< Parent package (e.g. parent NVRA) */
 /*@null@*/
     void * rpmdb;		/*!< rpmdb pointer (or NULL). */
     struct stat sb;		/*!< Header stat(2) (from origin *.rpm file) */

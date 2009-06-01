@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: header: add getter/setter for header parent.
     - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
     - jbj: save %pre/%post scriptlet's exit code and duration.
     - jbj: add header to rpmdb after, not before, %post is run.

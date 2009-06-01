@@ -1005,6 +1005,24 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * Return header parent identifier (e.g parent's NVRA).
+ * @param h		header
+ * @return		header parent
+ */
+/*@observer@*/ /*@null@*/
+const char * headerGetParent(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header parent (e.g parent's NVRA).
+ * @param h		header
+ * @param parent	new header parent
+ * @return		0 always
+ */
+int headerSetParent(/*@null@*/ Header h, const char * parent)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header base URL (e.g path or URL).
  * @param h		header
  * @return		header origin

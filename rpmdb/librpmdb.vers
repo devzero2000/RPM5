@@ -52,6 +52,8 @@ LIBRPMDB_0
     headerGetMagic;
     headerGetOrigin;
     headerSetOrigin;
+    headerGetParent;
+    headerSetParent;
     headerGetEndOff;
     headerSetEndOff;
     headerGetStartOff;

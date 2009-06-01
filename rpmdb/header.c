@@ -133,6 +133,7 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
     h->origin = _free(h->origin);
     h->baseurl = _free(h->baseurl);
     h->digest = _free(h->digest);
+    h->parent = _free(h->parent);
 
 /*@-nullstate@*/
     if (_hdr_stats) {
@@ -172,6 +173,7 @@ Header headerNew(void)
     h->origin = NULL;
     h->baseurl = NULL;
     h->digest = NULL;
+    h->parent = NULL;
     h->rpmdb = NULL;
     memset(&h->sb, 0, sizeof(h->sb));
     h->instance = 0;
@@ -981,6 +983,7 @@ Header headerLoad(void * uh)
     h->origin = NULL;
     h->baseurl = NULL;
     h->digest = NULL;
+    h->parent = NULL;
     h->rpmdb = NULL;
     memset(&h->sb, 0, sizeof(h->sb));
     h->instance = 0;
@@ -1158,6 +1161,20 @@ int headerSetOrigin(Header h, const char * origin)
     return 0;
 }
 
+const char * headerGetParent(Header h)
+{
+    return (h != NULL ? h->parent : NULL);
+}
+
+int headerSetParent(Header h, const char * parent)
+{
+    if (h != NULL) {
+	h->parent = _free(h->parent);
+	h->parent = xstrdup(parent);
+    }
+    return 0;
+}
+
 const char * headerGetBaseURL(Header h)
 {
 /*@-retexpose@*/
@@ -1261,6 +1278,7 @@ Header headerReload(Header h, int tag)
     Header nh;
     void * uh;
     const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
+    const char * parent = (h->parent != NULL ? xstrdup(h->parent) : NULL);
     const char * baseurl = (h->baseurl != NULL ? xstrdup(h->baseurl) : NULL);
     const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
     struct stat sb = h->sb;	/* structure assignment */
@@ -1289,6 +1307,10 @@ Header headerReload(Header h, int tag)
     if (origin != NULL) {
 	xx = headerSetOrigin(nh, origin);
 	origin = _free(origin);
+    }
+    if (parent != NULL) {
+	xx = headerSetParent(nh, parent);
+	parent = _free(parent);
     }
     if (baseurl != NULL) {
 	xx = headerSetBaseURL(nh, baseurl);
