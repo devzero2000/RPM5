@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #   configure the requirements
-AMV="automake (GNU automake) 1.10"
+AMV="automake (GNU automake) 1.11"
 ACV="autoconf (GNU Autoconf) 2.63"
 LTV="libtoolize (GNU libtool) 2.2.6"
 GTT="gettextize (GNU gettext-tools) 0.17"

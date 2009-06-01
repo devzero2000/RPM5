@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - rse: upgrade build environment to GNU automake 1.11 and GNU m4 1.4.13
     - jbj: performance tweaks.
     - jbj: change default dep whiteout to ensure filessystem before setup.
     - jbj: prepare to save install scriptlet states/metrics.
