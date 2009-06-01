@@ -1098,7 +1098,7 @@ exit:
 	static unsigned int scale = 1000;
 	(void) rpmswExit(op, 0);
         if (ix >= 0 && ix < RPMSCRIPT_MAX)
-            psm->smetrics[ix] += op->usecs * scale;
+            psm->smetrics[ix] += op->usecs / scale;
     }
 
     if (out)
