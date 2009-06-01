@@ -21,7 +21,7 @@
 
 #include "manifest.h"
 
-#include <rpmlib.h>
+#include <rpmcli.h>	/* XXX rpmcliInstallFoo() */
 
 #include "debug.h"
 
@@ -512,7 +512,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 /*@-assignexpose -castexpose @*/
     gi->ts = rpmtsLink(ts, "rpmgiNew");
 /*@=assignexpose =castexpose @*/
-    gi->tsOrder = rpmtsOrder;
+    gi->tsOrder = rpmcliInstallOrder;
     gi->tag = (rpmTag) tag;
 /*@-assignexpose@*/
     gi->keyp = keyp;
@@ -743,8 +743,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 enditer:
     if (gi->flags & RPMGI_TSORDER) {
 	rpmts ts = gi->ts;
-	rpmps ps;
-	int i;
 
 	/* Block access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
@@ -756,7 +754,9 @@ enditer:
 	    (void) rpmtsSetGoal(ts, TSM_ERASE);
 	}
 
-	xx = rpmtsCheck(ts);
+	/* XXX query/verify will need the glop added to a buffer instead. */
+	xx = rpmcliInstallCheck(ts);
+	xx = rpmcliInstallSuggests(ts);
 
 	/* Permit access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
@@ -764,34 +764,6 @@ enditer:
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMTAG_BASENAMES);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
 	}
-
-	/* XXX query/verify will need the glop added to a buffer instead. */
-	ps = rpmtsProblems(ts);
-	if (rpmpsNumProblems(ps) > 0) {
-	    /* XXX rpminstall will need RPMLOG_ERR */
-	    rpmlog(RPMLOG_INFO, _("Failed dependencies:\n"));
-	    if (rpmIsVerbose())
-		rpmpsPrint(NULL, ps);
-
-	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmlog(RPMLOG_INFO, _("    Suggested resolutions:\n"));
-		for (i = 0; i < ts->nsuggests; i++) {
-		    const char * str = ts->suggests[i];
-
-		    if (str == NULL)
-			break;
-
-		    rpmlog(RPMLOG_INFO, "\t%s\n", str);
-		
-		    ts->suggests[i] = NULL;
-		    str = _free(str);
-		}
-		ts->suggests = _free(ts->suggests);
-	    }
-
-	}
-	ps = rpmpsFree(ps);
-	ts->probs = rpmpsFree(ts->probs);	/* XXX hackery */
 
 	/* XXX Display dependency loops with rpm -qvT. */
 	if (rpmIsVerbose())
