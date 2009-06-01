@@ -71,7 +71,9 @@ static rpmpython rpmpythonI(void)
 rpmpython rpmpythonNew(const char ** av, int flags)
 {
     static const char * _av[] = { "rpmpython", NULL };
+#if defined(WITH_PYTHONEMBED)
     int initialize = (!flags || _rpmpythonI == NULL);
+#endif
     rpmpython python = (flags ? rpmpythonI() : rpmpythonGetPool(_rpmpythonPool));
 
 if (_rpmpython_debug)
