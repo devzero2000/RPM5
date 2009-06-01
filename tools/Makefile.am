@@ -20,7 +20,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit
+EXTRA_PROGRAMS = debugedit rpmkey
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -47,7 +47,7 @@ bin_PROGRAMS =		rpm2cpio
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	rpmcache rpmdigest grep mtree rpmrepo rpmspecdump wget \
-	rpmcmp rpmdeps rpmkey txar @WITH_LIBELF_DEBUGEDIT@
+	rpmcmp rpmdeps txar @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 
 debugedit_SOURCES =	debugedit.c hashtab.c
