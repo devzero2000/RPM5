@@ -773,13 +773,15 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
     FD_t out = NULL;		/* exit: expects this to be initialized. */
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     const char * body = NULL;
+    rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+    int ix = tag2slx(psm->scriptTag);
     rpmuint32_t * ssp = NULL;
     pid_t pid;
     int xx;
     int i;
 
-    if (psm->sstates != NULL)
-	ssp = psm->sstates + tag2slx(psm->scriptTag);
+    if (psm->sstates != NULL && ix >= 0 && ix < RPMSCRIPT_MAX)
+	ssp = psm->sstates + ix;
     if (ssp != NULL)
 	*ssp = RPMSCRIPT_STATE_UNKNOWN;
 
@@ -798,6 +800,9 @@ assert(he->p.str != NULL);
 	psm->NVRA = NVRA = he->p.str;
     }
 
+    if (op != NULL)
+	(void) rpmswEnter(op, 0);
+    
     if (Phe->p.argv && Phe->p.argv[0])
     if (!strcmp(Phe->p.argv[0], "<lua>")
      || !strcmp(Phe->p.argv[0], "<ficl>")
@@ -1089,6 +1094,13 @@ assert(he->p.str != NULL);
     rc = RPMRC_OK;
 
 exit:
+    if (op != NULL) {
+	static unsigned int scale = 1000;
+	(void) rpmswExit(op, 0);
+        if (ix >= 0 && ix < RPMSCRIPT_MAX)
+            psm->smetrics[ix] += op->usecs * scale;
+    }
+
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
@@ -2036,13 +2048,26 @@ assert(fi->h != NULL);
  * @return		0 always
  */
 static int postPopulateInstallHeader(/*@unused@*/ const rpmts ts,
-		/*@unused@*/ const rpmte te, rpmfi fi)
+		const rpmpsm psm, rpmfi fi)
 	/*@modifies fi @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int fc = rpmfiFC(fi);
     int xx = 1;
 
+    /* Add the (install) scriptlet status/metrics. */
+    he->tag = RPMTAG_SCRIPTSTATES;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = psm->sstates;
+    he->c = RPMSCRIPT_MAX;
+    xx = headerPut(fi->h, he, 0);
+    he->tag = RPMTAG_SCRIPTMETRICS;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = psm->smetrics;
+    he->c = RPMSCRIPT_MAX;
+    xx = headerPut(fi->h, he, 0);
+
+    /* Add file states to install header. */
     if (fi->fstates != NULL && fc > 0) {
 	he->tag = RPMTAG_FILESTATES;
 	he->t = RPM_UINT8_TYPE;
@@ -2635,21 +2660,6 @@ assert(psm->te != NULL);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 
-	    /*
-	     * If this header has already been installed, remove it from
-	     * the database before adding the new header.
-	     */
-	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
-		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
-		if (rc) break;
-	    }
-
-	    /* Add fi->fstates to install header. */
-	    xx = postPopulateInstallHeader(ts, psm->te, fi);
-
-	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
-	    if (rc) break;
-
 	    psm->scriptTag = RPMTAG_POSTIN;
 	    psm->progTag = RPMTAG_POSTINPROG;
 	    psm->sense = RPMSENSE_TRIGGERIN;
@@ -2668,6 +2678,21 @@ assert(psm->te != NULL);
 		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
+
+	    /*
+	     * If this header has already been installed, remove it from
+	     * the database before adding the new header.
+	     */
+	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
+		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
+		if (rc) break;
+	    }
+
+	    /* Add scriptlet/file states to install header. */
+	    xx = postPopulateInstallHeader(ts, psm, fi);
+
+	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
+	    if (rc) break;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
 		rc = markReplacedFiles(psm);
