@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: squirrel: add --with-squirrel for embedding squirrel.
     - jbj: rpmgi: remove duplicated code.
     - jbj: header: add getter/setter for header parent.
     - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.

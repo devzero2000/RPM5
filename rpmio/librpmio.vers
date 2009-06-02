@@ -428,6 +428,10 @@ LIBRPMIO_0
     rpmsqThread;
     rpmsqThreadEqual;
     rpmsqWait;
+    _rpmsquirrel_debug;
+    rpmsquirrelNew;
+    rpmsquirrelRun;
+    rpmsquirrelRunFile;
     rpmsslImplVecs;
     _rpmsw_stats;
     rpmswAdd;

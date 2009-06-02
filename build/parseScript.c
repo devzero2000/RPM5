@@ -343,6 +343,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinRubyScripts", "5.2-1");
     } else
 #endif
+#ifdef WITH_SQUIRREL
+    if (!strcmp(progArgv[0], "<squirrel>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinSquirrelScripts", "5.2-1");
+    } else
+#endif
 #ifdef WITH_TCL
     if (!strcmp(progArgv[0], "<tcl>")) {
 	(void) rpmlibNeedsFeature(pkg->header,

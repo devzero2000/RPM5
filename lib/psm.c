@@ -18,6 +18,7 @@
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
 #include <rpmtag.h>
@@ -570,7 +571,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -697,12 +698,20 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	python = rpmpythonFree(python);
     } else
 #endif
-#if defined(WITH_RUBYEMBED)
+#if defined(WITH_RUBY)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
 	rpmruby ruby = rpmrubyNew((const char **)av, 0);
 	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	ruby = rpmrubyFree(ruby);
+    } else
+#endif
+#if defined(WITH_SQUIRREL)
+    if (!strcmp(Phe->p.argv[0], "<squirrel>")) {
+	rpmsquirrel squirrel = rpmsquirrelNew((const char **)av, 0);
+	rc = rpmsquirrelRun(squirrel, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	squirrel = rpmsquirrelFree(squirrel);
     } else
 #endif
 #if defined(WITH_TCL)
@@ -810,9 +819,10 @@ assert(he->p.str != NULL);
      || !strcmp(Phe->p.argv[0], "<perl>")
      || !strcmp(Phe->p.argv[0], "<python>")
      || !strcmp(Phe->p.argv[0], "<ruby>")
+     || !strcmp(Phe->p.argv[0], "<squirrel>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);

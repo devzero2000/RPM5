@@ -1274,6 +1274,14 @@ RPM_CHECK_LIB(
     ], [])
 AC_SUBST(WITH_RUBY_SUBDIR)
 
+dnl # Squirrel
+RPM_CHECK_LIB(
+    [Squirrel], [squirrel],
+    [squirrel], [sq_open], [squirrel.h],
+    [no,external:none], [],
+    [
+    ], [])
+
 dnl # Tcl
 RPM_CHECK_LIB(
     [Tcl], [tcl],

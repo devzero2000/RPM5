@@ -71,6 +71,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
@@ -3143,6 +3144,7 @@ void rpmioClean(void)
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
+    extern rpmioPool _rpmsquirrelPool;
     extern rpmioPool _rpmtclPool;
 /*@=nestedextern@*/
 
@@ -3162,6 +3164,8 @@ void rpmioClean(void)
 
     _rpmtclI = rpmtclFree(_rpmtclI);
     _rpmtclPool = rpmioFreePool(_rpmtclPool);
+    _rpmsquirrelI = rpmsquirrelFree(_rpmsquirrelI);
+    _rpmsquirrelPool = rpmioFreePool(_rpmsquirrelPool);
     _rpmrubyI = rpmrubyFree(_rpmrubyI);
     _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
     _rpmpythonI = rpmpythonFree(_rpmpythonI);
