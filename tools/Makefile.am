@@ -155,7 +155,7 @@ install-data-local:
 	@[ -d $(DESTDIR)$(pkgbindir) ] || $(mkinstalldirs) $(DESTDIR)$(pkgbindir)
 if WITH_DB_INTERNAL
 if WITH_DB_TOOLS_INTEGRATED
-	$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkgbinPROGRAMS_INSTALL) \
+	$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
 		$(builddir)/db_tool $(DESTDIR)$(pkgbindir)/db_tool
 	for tool in . $(my_DB_TOOLS); do \
 		test ".$$tool" = .. && continue; \
@@ -165,7 +165,7 @@ if WITH_DB_TOOLS_INTEGRATED
 else
 	for tool in . $(my_DB_TOOLS); do \
 		test ".$$tool" = .. && continue; \
-		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkgbinPROGRAMS_INSTALL) \
+		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
 		$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkgbindir)/$$tool; \
 	done
 endif
