@@ -50,10 +50,14 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Mc",		rpmjs_InitMcClass,	 24 },
     { "Mi",		rpmjs_InitMiClass,	 11 },
     { "Ps",		rpmjs_InitPsClass,	 16 },
+#ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
+#endif
     { "Te",		rpmjs_InitTeClass,	 15 },
     { "Ts",		rpmjs_InitTsClass,	 10 },
+#ifdef WITH_UUID
     { "Uuid",		rpmjs_InitUuidClass,	  2 },
+#endif
 };
 
 /*@unchecked@*/
