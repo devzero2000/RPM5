@@ -1463,11 +1463,13 @@ RPM_CHECK_LIB(
     [], [])
 
 dnl # Linux keyutils
+WITH_KEYUTILS_RPMKEY=""
 RPM_CHECK_LIB(
     [Linux keyutils], [keyutils],
     [keyutils], [keyctl_read], [keyutils.h],
     [no,external:none], [],
-    [], [])
+    [WITH_KEYUTILS_RPMKEY="rpmkey"], [])
+AC_SUBST(WITH_KEYUTILS_RPMKEY)
 
 # later..
 dnl # CPUInfo
