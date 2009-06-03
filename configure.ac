@@ -1442,11 +1442,14 @@ RPM_CHECK_LIB(
     [XAR], [xar],
     [xar], [xar_open], [xar.h],
     [no,internal:external:none], [xar:include:lib],
-    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+    [ AM_CONDITIONAL(WITH_XAR, [ true ])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_XAR_H, 1, [Have <xar.h> header])
       fi
       AC_MSG_WARN([XAR support is under development])
-    ], [])
+    ],
+    [ AM_CONDITIONAL(WITH_XAR, [ false ])
+    ])
 
 dnl # DMalloc
 RPM_CHECK_LIB(
