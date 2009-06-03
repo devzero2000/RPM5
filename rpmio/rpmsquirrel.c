@@ -26,6 +26,8 @@ static void rpmsquirrelFini(void * _squirrel)
     sq_close((HSQUIRRELVM)squirrel->I);
 #endif
     squirrel->I = NULL;
+    (void)rpmiobFree(squirrel->iob);
+    squirrel->iob = NULL;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -48,10 +50,26 @@ static rpmsquirrel rpmsquirrelGetPool(/*@null@*/ rpmioPool pool)
 #if defined(WITH_SQUIRREL)
 static void rpmsquirrelPrint(HSQUIRRELVM v, const SQChar *s, ...)
 {
+    rpmsquirrel squirrel = sq_getforeignptr(v);
+    size_t nb = 1024;
+    char * b = xmalloc(nb);
     va_list va;
+
     va_start(va, s);
-    (void) vfprintf(stdout, s, va);
+    while(1) {
+	int nw = vsnprintf(b, nb, s, va);
+	if (nw > -1 && (size_t)nw < nb)
+	    break;
+	if (nb > -1)		/* glibc 2.1 (and later) */
+	    nb = nw+1;
+	else			/* glibc 2.0 */
+	    nb *= 2;
+	b = xrealloc(b, nb);
+    }
     va_end(va);
+
+    (void) rpmiobAppend(squirrel->iob, b, 0);
+    b = _free(b);
 }
 #endif
 
@@ -69,6 +87,7 @@ rpmsquirrel rpmsquirrelNew(const char ** av, int flags)
     ac = argvCount(av);
 
     squirrel->I = v;
+    sq_setforeignptr(v, squirrel);
     sq_setprintfunc(v, rpmsquirrelPrint);
 
 #ifdef	NOTYET
@@ -85,6 +104,7 @@ rpmsquirrel rpmsquirrelNew(const char ** av, int flags)
     }
 #endif
 #endif
+    squirrel->iob = rpmiobNew(0);
 
     return rpmsquirrelLink(squirrel);
 }
@@ -144,10 +164,8 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, squirrel, str);
 	    sq_settop(v, oldtop);
 	}
 	rc = RPMRC_OK;
-#ifdef	NOTYET
 	if (resultp)
 	    *resultp = rpmiobStr(squirrel->iob);
-#endif
     }
 #endif
     return rc;

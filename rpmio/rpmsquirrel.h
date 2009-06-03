@@ -20,6 +20,8 @@ extern rpmsquirrel _rpmsquirrelI;
 struct rpmsquirrel_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;			/* HSQUIRRELVM */
+    rpmiob iob;
+
 };
 #endif /* _RPMSQUIRREL_INTERNAL */
 
