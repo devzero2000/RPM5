@@ -229,11 +229,22 @@ int Rmdir(const char * path)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+extern const char * _chroot_prefix;
+
 /**
  * chroot(2) clone.
  * @todo Implement remotely.
  */
 int Chroot(const char * path)
+	/*@globals _chroot_prefix, errno, fileSystem, internalState @*/
+	/*@modifies _chroot_prefix, errno, fileSystem, internalState @*/;
+
+/**
+ * open(2) clone.
+ * @todo Implement remotely.
+ */
+int Open(const char * path, int flags, mode_t mode)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 

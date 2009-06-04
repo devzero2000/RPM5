@@ -110,6 +110,8 @@ LIBRPMIO_0
     Mkfifo;
     Mknod;
     noLibio;
+    Open;
+    _Open;
     Opendir;
     pgpArmorKeyTbl;
     pgpArmorTbl;

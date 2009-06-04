@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+	- jbj: ensure that PLD setup & FHS packages install correctly.
+	- jbj: wrapper for open(2).
 	- glen: merge :shescape from rpm5 trunk (code in this branch read out of buffer bounds)
 	- proyvind: fix segfault with relative paths due to missing header inclusion.
 	- proyvind: fix build breakage without selinux due to unresolved matchpathcon_fini().
