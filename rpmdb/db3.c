@@ -281,7 +281,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
     if (!oneshot) {
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
-	xx = db_env_set_func_open(Open);
+	xx = db_env_set_func_open((int (*)(const char *, int, ...))Open);
 	xx = cvtdberr(dbi, "db_env_set_func_open", xx, _debug);
 #endif
 	oneshot++;
