@@ -48,6 +48,7 @@ pkgbindir =     @USRLIBRPM@/bin
 
 pkgbin_PROGRAMS =	tjs
 pkglib_LTLIBRARIES =	rpmjsm.la
+pkglib_LTLIBRARIES +=	librpmjsm.la
 
 rpmjsm_la_CFLAGS = -fno-strict-aliasing
 rpmjsm_la_LDFLAGS = -module -avoid-version
@@ -58,6 +59,8 @@ rpmjsm_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
+
+librpmjsm_la_LIBADD = $(rpmjsm_la_LIBADD)
 
 noinst_HEADERS = \
 	rpmjsfile.h \
@@ -71,10 +74,12 @@ rpmjsm_la_SOURCES = \
 	rpmte-js.c rpmts-js.c \
 	syck-js.c uuid-js.c
 
+librpmjsm_la_SOURCES = $(rpmjsm_la_SOURCES)
+
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(rpmjs_la_sources)
 
-tjs_SOURCES = tjs.c rpmjsm.la
-tjs_LDADD = rpmjsm.la $(RPM_LDADD_COMMON)
+tjs_SOURCES = tjs.c librpmjsm.la
+tjs_LDADD = librpmjsm.la $(RPM_LDADD_COMMON)
 
