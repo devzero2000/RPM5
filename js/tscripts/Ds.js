@@ -8,7 +8,7 @@ ack("ds instanceof Ds;", true);
 ack("ds.debug = 1;", 1);
 ack("ds.debug = 0;", 0);
 
-ack("ds.length", 22);
+ack("ds.length", 23);
 ack("ds.type", "Provides");
 ack("ds.A", undefined);
 ack("ds.buildtime = 1234;", 1234);
