@@ -1,4 +1,6 @@
 5.1.9 -> 5.1.10:
+    - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
+    - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
     - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
 
 5.1.8 -> 5.1.9:
