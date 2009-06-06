@@ -823,7 +823,8 @@ assert(0);
     /* Pad the signature header to put the metadata header at known offset. */
     {	size_t slen = 0;
 	void * uh = headerUnload(sigh, &slen);
-	size_t nb = 512 - 96 - 16 - 16;
+	static const size_t align = 1024;
+	size_t nb = align - 96 - 16 - 16;
 	rpmuint8_t * b;
 
 	uh = _free(uh);
