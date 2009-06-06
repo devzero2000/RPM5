@@ -1,5 +1,7 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
+    - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
     - jbj: header: fix: re-initialize headers from pool more carefully.
     - jbj: fix: remove duplicated Provides: from pubkey headers.
     - jbj: eliminate (unused) DB_DBT_MALLOC flag while loading rpmdb headers.
