@@ -43,9 +43,9 @@ for (var [dbkey,h] in Iterator(mi)) {
     ack("fi.dc", undefined);
     ack("fi.dx", undefined);
 
-    ack("fi.dx = 0;", 0);
+    ack("fi.dx = -1;", -1);
+    ack("++fi.dx;", 0);
     ack("++fi.dx;", 1);
-    ack("++fi.dx;", 2);
 
     ack("fi.fx = -1;", -1);
     ack("fi.fx += 1;", 0);
