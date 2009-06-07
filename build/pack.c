@@ -776,6 +776,26 @@ assert(0);
 	goto exit;
     }
 
+    /* Pad the signature header to put the metadata header at known offset. */
+    {	size_t slen = 0;
+	void * uh = headerUnload(sigh, &slen);
+	static const size_t align = 1024;
+	size_t nb = align - 96 - 16 - 16;
+	uint8_t * b;
+
+	uh = _free(uh);
+assert(slen < nb);
+	nb -= slen;
+	b = memset(alloca(nb), 0, nb);
+	he->tag = (rpmTag) RPMSIGTAG_PADDING;
+	he->t = RPM_BIN_TYPE;
+	he->p.ui8p = b;
+	he->c = nb;
+	xx = headerPut(sigh, he, 0);
+	sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
+assert(sigh != NULL);
+    }
+
     /* Open the output file */
     fd = Fopen(fileName, "w.fdio");
     if (fd == NULL || Ferror(fd)) {
@@ -1113,6 +1133,7 @@ rpmRC packageSources(Spec spec)
     xx = headerPut(spec->sourceHeader, he, 0);
 #endif
 	
+    /* Add macros used during build to SRPM's. */
     {	const char ** av = NULL;
 	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 	if (av != NULL && av[0] != NULL) {
