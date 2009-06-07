@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+	- jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
+	- jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
 	- jbj: ensure that PLD setup & FHS packages install correctly.
 	- jbj: wrapper for open(2).
 	- glen: merge :shescape from rpm5 trunk (code in this branch read out of buffer bounds)

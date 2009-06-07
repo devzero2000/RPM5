@@ -707,6 +707,22 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	goto exit;
     }
 
+    /* Pad the signature header to put the metadata header at known offset. */
+    {	size_t slen = headerSizeof(sig, HEADER_MAGIC_YES);
+	void * uh = headerUnload(sig);
+	static const size_t align = 1024;
+	size_t nb = align - 96 - 16 - 8;
+	unsigned char * b;
+
+	uh = _free(uh);
+assert(slen < nb);
+	nb -= slen;
+	b = memset(alloca(nb), 0, nb);
+	(void) headerAddEntry(sig, RPMSIGTAG_PADDING, RPM_BIN_TYPE, b, nb);
+	sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+assert(sig != NULL);
+    }
+
     /* Open the output file */
     fd = Fopen(fileName, "w");
     if (fd == NULL || Ferror(fd)) {
