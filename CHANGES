@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: add the Fedorable tag(s) for file digests.
     - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
     - jbj: squirrel: capture stdout in an iob.
     - jbj: squirrel: add --with-squirrel for embedding squirrel.

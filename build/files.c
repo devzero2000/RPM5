@@ -1254,6 +1254,57 @@ exit:
     xx = headerDel(h, he, 0);
 }
 
+static rpmuint32_t getDigestAlgo(Header h, int isSrc)
+	/*@modifies h @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    static rpmuint32_t source_file_dalgo = 0;
+    static rpmuint32_t binary_file_dalgo = 0;
+    static int oneshot = 0;
+    rpmuint32_t dalgo = 0;
+    int xx;
+
+    if (!oneshot) {
+	source_file_dalgo =
+		rpmExpandNumeric("%{?_build_source_file_digest_algo}");
+	binary_file_dalgo =
+		rpmExpandNumeric("%{?_build_binary_file_digest_algo}");
+	oneshot++;
+    }
+
+    dalgo = (isSrc ? source_file_dalgo : binary_file_dalgo);
+    switch (dalgo) {
+    case PGPHASHALGO_SHA1:
+    case PGPHASHALGO_MD2:
+    case PGPHASHALGO_SHA256:
+    case PGPHASHALGO_SHA384:
+    case PGPHASHALGO_SHA512:
+	(void) rpmlibNeedsFeature(h, "FileDigests", "4.6.0-1");
+	he->tag = RPMTAG_FILEDIGESTALGO;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &dalgo;
+	he->c = 1;
+	xx = headerPut(h, he, 0);
+	/*@fallthgrough@*/
+    case PGPHASHALGO_RIPEMD160:
+    case PGPHASHALGO_TIGER192:
+    case PGPHASHALGO_MD4:
+    case PGPHASHALGO_RIPEMD128:
+    case PGPHASHALGO_CRC32:
+    case PGPHASHALGO_ADLER32:
+    case PGPHASHALGO_CRC64:
+	(void) rpmlibNeedsFeature(h, "FileDigestParameterized", "4.4.6-1");
+	    /*@switchbreak@*/ break;
+    case PGPHASHALGO_MD5:
+    case PGPHASHALGO_HAVAL_5_160:		/* XXX unimplemented */
+    default:
+	dalgo = PGPHASHALGO_MD5;
+	/*@switchbreak@*/ break;
+    }
+
+    return dalgo;
+}
+
 /**
  * Add file entries to header.
  * @todo Should directories have %doc/%config attributes? (#14531)
@@ -1281,9 +1332,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     security_context_t scon = NULL;
     const char * sxfn;
     FileListRec flp;
+    rpmuint32_t dalgo = getDigestAlgo(h, isSrc);
     char buf[BUFSIZ];
     int i, xx;
-    
+
     /* Sort the big list */
     qsort(fl->fileList, fl->fileListRecsUsed,
 	  sizeof(*(fl->fileList)), compareFileListRecs);
@@ -1459,42 +1511,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-      { static rpmuint32_t source_file_dalgo = 0;
-	static rpmuint32_t binary_file_dalgo = 0;
-	static int oneshot = 0;
-	rpmuint32_t dalgo = 0;
-
-	if (!oneshot) {
-	    source_file_dalgo =
-		rpmExpandNumeric("%{?_build_source_file_digest_algo}");
-	    binary_file_dalgo =
-		rpmExpandNumeric("%{?_build_binary_file_digest_algo}");
-	    oneshot++;
-	}
-
-	dalgo = (isSrc ? source_file_dalgo : binary_file_dalgo);
-	switch (dalgo) {
-	case PGPHASHALGO_SHA1:
-	case PGPHASHALGO_RIPEMD160:
-	case PGPHASHALGO_MD2:
-	case PGPHASHALGO_TIGER192:
-	case PGPHASHALGO_SHA256:
-	case PGPHASHALGO_SHA384:
-	case PGPHASHALGO_SHA512:
-	case PGPHASHALGO_MD4:
-	case PGPHASHALGO_RIPEMD128:
-	case PGPHASHALGO_CRC32:
-	case PGPHASHALGO_ADLER32:
-	case PGPHASHALGO_CRC64:
-	    (void) rpmlibNeedsFeature(h, "FileDigestParameterized", "4.4.6-1");
-	    /*@switchbreak@*/ break;
-	case PGPHASHALGO_MD5:
-	case PGPHASHALGO_HAVAL_5_160:		/* XXX unimplemented */
-	default:
-	    dalgo = PGPHASHALGO_MD5;
-	    /*@switchbreak@*/ break;
-	}
-	    
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
 	    (void) dodigest(dalgo, flp->diskURL, (unsigned char *)buf, 1, NULL);
@@ -1518,7 +1534,6 @@ if (!(_rpmbuildFlags & 4)) {
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 }
-      }
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
