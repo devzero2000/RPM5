@@ -1,4 +1,5 @@
 5.1.9 -> 5.1.10:
+    - jbj: change default dep whiteout to ensure filessystem before setup.
     - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
     - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
     - rse: align semantics of Lua function rpm.hostname() with the C API function buildHost()
@@ -152,6 +153,7 @@ eaderFree
     - jbj: rename lzdio.c -> xzdio.c.
 
 5.1.6 -> 5.1.7:
+    - jbj: add the Fedorable tag(s) for file digests.
     - jbj: update po files (Translation Project).
     - jbj: eleminate duplicate rpmVersionCompare() routines.
     - afb: backport macosx ldflags fixes.
