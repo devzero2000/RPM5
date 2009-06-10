@@ -50,6 +50,7 @@ for (var [dbkey,h] in Iterator(mi)) {
     ack("fi.fx = -1;", -1);
     ack("fi.fx += 1;", 0);
     ack("fi.fx += 1;", 1);
+    ack("fi.fx += 1;", 2);
 
     ack("fi.bn", undefined);
     ack("fi.dn", undefined);
