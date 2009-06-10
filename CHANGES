@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: add the Fedorable tag(s) for file digests.
     - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
     - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
     - jbj: header: fix: re-initialize headers from pool more carefully.
