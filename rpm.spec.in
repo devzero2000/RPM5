@@ -19,7 +19,7 @@ Version: @VERSION@
 Release: 0.1
 Group: System Environment/Base
 URL: http://rpm5.org
-Source0: http://rpm5.org/files/rpm/rpm-5.0/rpm-%{version}.tar.gz
+Source0: http://rpm5.org/files/rpm/rpm-5.2/rpm-%{version}.tar.gz
 Source1: cpu-os-macros.tar.gz
 License: LGPL
 Requires: fileutils shadow-utils
@@ -29,6 +29,8 @@ Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 BuildRequires: elfutils-libelf
 BuildRequires: elfutils-devel
 BuildRequires: zlib-devel
+BuildRequires: popt-devel >= 1.15
+BuildRequires: pcre-devel >= 7.0
 
 BuildRequires: beecrypt-devel >= 4.1.2
 Requires: beecrypt >= 4.1.2
@@ -180,6 +182,13 @@ WITH_PERL="--with-perl"
 WITH_PERL="--without-perl"
 %endif
 
+%ifarch x86_64
+CFLAGS="$CFLAGS -DHAVE_VA_COPY -DVA_COPY=va_copy"; export CFLAGS
+%endif
+%ifos linux
+LDFLAGS="$LDFLAGS -lacl -lcrypto"; export LDFLAGS
+%endif
+
 ./configure \
         --verbose \
         --prefix=/usr \
@@ -192,14 +201,16 @@ WITH_PERL="--without-perl"
         --with-zlib=external \
         --with-file=internal \
         --with-lua=internal \
+        --with-js=internal \
         --with-sqlite=external \
         --with-beecrypt=external \
         --with-nss=external \
         --with-neon=external \
         --with-xar=internal \
-	$WITH_BZIP2 \
-	$WITH_XZ \
+        $WITH_BZIP2 \
+        $WITH_XZ \
         --with-popt=external \
+        --with-pcre=external \
         --with-keyutils=external \
         --with-libelf \
         --with-selinux \
