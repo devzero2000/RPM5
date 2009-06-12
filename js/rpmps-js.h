@@ -23,4 +23,4 @@ rpmjs_NewPsObject(JSContext *cx);
 }
 #endif
 
-#endif	/* H_RPMDS_JS */
+#endif	/* H_RPMPS_JS */

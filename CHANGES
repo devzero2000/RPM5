@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: stub-in a Aug class.
     - jbj: augeas: stub-in rpmaug object with ctors/dtors.
     - jbj: augeas: add AutoFu to find augeas libraries.
     - jbj: js: stub-in requires/loadModule global methods.

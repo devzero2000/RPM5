@@ -8,6 +8,7 @@
 #define	_RPMJS_INTERNAL
 #include <rpmjs.h>
 
+#include "rpmaug-js.h"
 #include "rpmds-js.h"
 #include "rpmfi-js.h"
 #include "rpmhdr-js.h"
@@ -43,6 +44,7 @@ typedef struct rpmjsClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
+    { "Aug",		rpmjs_InitAugClass,	 25 },
     { "Ds",		rpmjs_InitDsClass,	 13 },
     { "Fi",		rpmjs_InitFiClass,	 14 },
     { "File",		   js_InitFileClass,	  1 },
