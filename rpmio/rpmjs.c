@@ -138,6 +138,32 @@ exit:
     return ok;
 }
 
+FILE *gErrFile = NULL;
+FILE *gOutFile = NULL;
+
+static JSBool
+Print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    FILE * fp = (gOutFile ? gOutFile : stdout);
+    uintN i;
+
+if (_rpmjs_debug < 0)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+
+    for (i = 0; i < argc; i++) {
+	JSString *str;
+	char *bytes;
+	if ((str = JS_ValueToString(cx, argv[i])) == NULL
+	 || (bytes = JS_EncodeString(cx, str)) == NULL)
+	    return JS_FALSE;
+	fprintf(fp, "%s%s", i ? " " : "", bytes);
+	JS_free(cx, bytes);
+    }
+    fputc('\n', fp);
+    fflush(fp);
+    return JS_TRUE;
+}
+
 static JSBool compileOnly = JS_FALSE;
 
 static JSBool
@@ -178,37 +204,23 @@ exit:
     return ok;
 }
 
-FILE *gErrFile = NULL;
-FILE *gOutFile = NULL;
-
 static JSBool
-Print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+Require(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    FILE * fp = (gOutFile ? gOutFile : stdout);
-    uintN i;
 
 if (_rpmjs_debug < 0)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    for (i = 0; i < argc; i++) {
-	JSString *str;
-	char *bytes;
-	if ((str = JS_ValueToString(cx, argv[i])) == NULL
-	 || (bytes = JS_EncodeString(cx, str)) == NULL)
-	    return JS_FALSE;
-	fprintf(fp, "%s%s", i ? " " : "", bytes);
-	JS_free(cx, bytes);
-    }
-    fputc('\n', fp);
-    fflush(fp);
     return JS_TRUE;
 }
 
 static JSFunctionSpec shell_functions[] = {
     JS_FS("version",	Version,	0,0,0),
     JS_FS("options",	Options,	0,0,0),
-    JS_FS("load",	Load,		1,0,0),
     JS_FS("print",	Print,		0,0,0),
+    JS_FS("load",	Load,		1,0,0),
+    JS_FS("loadModule",	Require,	0,0,0),
+    JS_FS("require",	Require,	0,0,0),
     JS_FS_END
 };
 
@@ -376,13 +388,18 @@ rpmjs rpmjsNew(const char ** av, int flags)
     if (av == NULL) av = _av;
     ac = argvCount(av);
 
+    /* Initialize JS runtime. */
     rt = JS_NewRuntime(8L * 1024L * 1024L);
 assert(rt != NULL);
 #ifdef	NOTYET
     JS_SetContextCallback(rt, ContextCallback);
 #endif
+    /* Set maximum memory for JS engine to infinite. */
+    JS_SetGCParameter(rt, JSGC_MAX_BYTES, (size_t)-1);
+    JS_SetRuntimePrivate(rt, js);
     js->rt = rt;
 
+    /* Initialize JS context. */
     cx = JS_NewContext(rt, 8192);
 assert(cx != NULL);
 #ifdef	NOTYET
@@ -391,9 +408,19 @@ assert(cx != NULL);
     JS_SetOptions(cx, JSOPTION_VAROBJFIX);
     JS_SetVersion(cx, JSVERSION_LATEST);
     JS_SetErrorReporter(cx, reportError);
+#ifdef	NOTYET
+    JS_CStringsAreUTF8();
+#endif
     js->cx = cx;
 
+    /* Initialize JS global object. */
     glob = JS_NewObject(cx, &global_class, NULL, NULL);
+assert(glob != NULL);
+
+#ifdef	NOTYET
+    JS_AddNamedRoot(cx, &glob, "glob");
+#endif
+
     xx = JS_InitStandardClasses(cx, glob);
 #ifdef	JS_HAS_FILE_OBJECT
     (void) js_InitFileClass(cx, glob);
