@@ -1248,6 +1248,14 @@ AC_ARG_WITH([dbapi],
 ])
 AC_SUBST(DBAPI)
 
+dnl # Augeas
+RPM_CHECK_LIB(
+    [Augeas], [augeas],
+    [augeas], [aug_init], [augeas.h],
+    [no,external:none], [],
+    [
+    ], [])
+
 dnl # Perl ExtUtils::Embed
 RPM_CHECK_LIB(
     [Perl ExtUtils::Embed], [perlembed],
