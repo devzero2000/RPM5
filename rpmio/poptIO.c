@@ -25,6 +25,7 @@
 #include <rpmssl.h>
 #endif
 
+#include <rpmaug.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmperl.h>
@@ -419,6 +420,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
+ { "rpmaugdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmaug_debug, -1,
+	N_("Debug embedded Augeas interpreter"), NULL},
  { "rpmficldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmficl_debug, -1,
 	N_("Debug embedded FICL interpreter"), NULL},
  { "rpmjsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmjs_debug, -1,

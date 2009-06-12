@@ -1,0 +1,63 @@
+/** \ingroup rpmio
+ * \file rpmio/rpmaug.c
+ */
+
+#include "system.h"
+
+#if defined(HAVE_AUGEAS_H)
+#include "augeas.h"
+#endif
+
+#include <rpmiotypes.h>
+#include <rpmio.h>	/* for *Pool methods */
+#include <rpmlog.h>
+#define	_RPMAUG_INTERNAL
+#include <rpmaug.h>
+
+#include "debug.h"
+
+/*@unchecked@*/
+int _rpmaug_debug = 0;
+
+/*@-mustmod@*/	/* XXX splint on crack */
+static void rpmaugFini(void * _aug)
+	/*@globals fileSystem @*/
+	/*@modifies *_aug, fileSystem @*/
+{
+    rpmaug aug = _aug;
+
+#if defined(WITH_AUGEAS)
+#endif
+    aug->fn = _free(aug->fn);
+}
+/*@=mustmod@*/
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmaugPool = NULL;
+
+static rpmaug rpmaugGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmaugPool, fileSystem @*/
+	/*@modifies pool, _rpmaugPool, fileSystem @*/
+{
+    rpmaug aug;
+
+    if (_rpmaugPool == NULL) {
+	_rpmaugPool = rpmioNewPool("aug", sizeof(*aug), -1, _rpmaug_debug,
+			NULL, NULL, rpmaugFini);
+	pool = _rpmaugPool;
+    }
+    return (rpmaug) rpmioGetPool(pool, sizeof(*aug));
+}
+
+rpmaug rpmaugNew(const char * fn, int flags)
+{
+    rpmaug aug = rpmaugGetPool(_rpmaugPool);
+    int xx;
+
+    if (fn)
+	aug->fn = xstrdup(fn);
+#if defined(WITH_AUGEAS)
+#endif
+
+    return rpmaugLink(aug);
+}
