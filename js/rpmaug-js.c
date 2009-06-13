@@ -141,7 +141,7 @@ rpmaug_init(JSContext *cx, JSObject *obj)
 {
     rpmaug aug;
 
-    if ((aug = rpmaugNew(NULL, 0)) == NULL)
+    if ((aug = rpmaugNew(NULL, NULL, 0)) == NULL)
 	return NULL;
     if (!JS_SetPrivate(cx, obj, aug)) {
 	/* XXX error msg */

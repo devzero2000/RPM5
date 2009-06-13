@@ -19,8 +19,9 @@ typedef /*@refcounted@*/ struct rpmaug_s * rpmaug;
  */
 struct rpmaug_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
-    int flags;
+    const char * root;
+    const char * loadpath;
+    unsigned int flags;
 /*@relnull@*/
     void * I;
 #if defined(__LCLINT__)
@@ -70,12 +71,14 @@ rpmaug rpmaugFree(/*@killref@*/ /*@null@*/rpmaug aug)
 
 /**
  * Create and load a augeas wrapper.
- * @param fn		augeas file
+ * @param root		augeas filesystem root
+ * @param loadpath	augeas load path (colon separated)
  * @param flags		augeas flags
  * @return		new augeas wrapper
  */
 /*@newref@*/ /*@null@*/
-rpmaug rpmaugNew(const char * fn, int flags)
+rpmaug rpmaugNew(/*@null@*/ const char * root, /*@null@*/ const char * loadpath,
+		unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

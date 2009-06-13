@@ -256,6 +256,8 @@ LIBRPMIO_0
     _RequestPass;
     Rmdir;
     _Rmdir;
+    _rpmaug_debug;
+    rpmaugNew;
     rpmbcImplVecs;
     rpmCleanPath;
     rpmCLIMacroContext;

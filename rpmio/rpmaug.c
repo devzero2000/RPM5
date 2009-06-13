@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#if defined(HAVE_AUGEAS_H)
+#if defined(WITH_AUGEAS) && defined(HAVE_AUGEAS_H)
 #include "augeas.h"
 #endif
 
@@ -27,8 +27,11 @@ static void rpmaugFini(void * _aug)
     rpmaug aug = _aug;
 
 #if defined(WITH_AUGEAS)
+    (void) aug_close(aug->I);
+    aug->I = NULL;
 #endif
-    aug->fn = _free(aug->fn);
+    aug->root = _free(aug->root);
+    aug->loadpath = _free(aug->loadpath);
 }
 /*@=mustmod@*/
 
@@ -49,14 +52,26 @@ static rpmaug rpmaugGetPool(/*@null@*/ rpmioPool pool)
     return (rpmaug) rpmioGetPool(pool, sizeof(*aug));
 }
 
-rpmaug rpmaugNew(const char * fn, int flags)
+/*@unchecked@*/
+static const char _root[] = "/";
+/*@unchecked@*/
+static const char _loadpath[] = "";	/* XXX /usr/lib/rpm/lib? */
+
+rpmaug rpmaugNew(const char * root, const char * loadpath, unsigned int flags)
 {
     rpmaug aug = rpmaugGetPool(_rpmaugPool);
     int xx;
 
-    if (fn)
-	aug->fn = xstrdup(fn);
+    if (root == NULL)
+	root = _root;
+    if (loadpath == NULL)
+	loadpath = _loadpath;
+    aug->root = xstrdup(root);
+    aug->loadpath = xstrdup(loadpath);
+    aug->flags = flags;
 #if defined(WITH_AUGEAS)
+    aug->I = (void *) aug_init(aug->root, aug->loadpath, aug->flags);
+assert(aug->I != NULL);
 #endif
 
     return rpmaugLink(aug);
