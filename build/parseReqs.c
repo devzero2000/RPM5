@@ -20,10 +20,14 @@
 rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	       rpmuint32_t index, rpmsenseFlags tagflags)
 {
+    EVR_t evr = alloca(sizeof(*evr));
     const char *r, *re, *v, *ve;
-    char * N, * EVR;
+    char * N = NULL;
+    char * EVR = NULL;
     rpmsenseFlags Flags;
     Header h;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    int ix;
 
     switch (tagN) {
     case RPMTAG_PROVIDEFLAGS:
@@ -95,23 +99,25 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
-	/* Tokens must begin with alphanumeric, _, or / */
-	nr = strlen(r);
-	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/'
-	 || (nr > 2 && r[0] == '!')
-	 || (nr > 3 && r[0] == '%' && r[1] == '{' && r[nr-1] == '}')))
-	{
-	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"),
-		     spec->lineNum, spec->line, r);
-	    return RPMRC_FAIL;
-	}
-
 	re = r;
 	SKIPNONWHITE(re);
 	N = xmalloc((re-r) + 1);
 	strncpy(N, r, (re-r));
 	N[re-r] = '\0';
+
+	/* N must begin with alphanumeric, _, or /, or a macro. */
+	nr = strlen(N);
+	ix = 0;
+	if (N[ix] == '!')
+	    ix++;
+	if (!(xisalnum(N[ix]) || N[ix] == '_' || N[ix] == '/'
+	 || (nr > 5 && N[ix] == '%' && N[ix+1] == '{' && N[nr-1] == '}')))
+	{
+	    rpmlog(RPMLOG_ERR,
+		     _("line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"),
+		     spec->lineNum, N, spec->line);
+	    goto exit;
+	}
 
 	/* Parse EVR */
 	v = re;
@@ -130,7 +136,7 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	    if (F) {
 		/* now parse EVR */
@@ -144,33 +150,44 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	}
 
  	if (Flags & RPMSENSE_SENSEMASK) {
-	    if (*v == '\0' || ve == v) {
-		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
-			spec->lineNum, spec->line);
-		return RPMRC_FAIL;
+	    char * t;
+
+	    EVR = t = xmalloc((ve-v) + 1);
+	    nr = 0;
+	    while (v < ve && *v != '\0')
+	    switch ((int)*v) {
+	    case '-':   nr++;	/*@fallthrough@*/
+	    default:    *t++ = *v++;    break;
 	    }
-	    EVR = xmalloc((ve-v) + 1);
-	    strncpy(EVR, v, (ve-v));
-	    EVR[ve-v] = '\0';
+	    *t = '\0';
+
+	    if (*EVR == '\0') {
+		rpmlog(RPMLOG_ERR, _("line %d: %s must be specified: %s\n"),
+			spec->lineNum, "EVR", spec->line);
+		goto exit;
+	    }
+	    if (nr > 1) {
+		rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
+			spec->lineNum, "EVR", spec->line);
+		goto exit;
+            }
+	    /* EVR must be parseable (or a macro). */
+	    ix = 0;
+	    nr = strlen(EVR);
+	    if (!(nr > 3 && EVR[0] == '%' && EVR[1] == '{' && EVR[nr-1] == '}'))
+	    {
+		memset(evr, 0, sizeof(*evr));
+		ix = rpmEVRparse(xstrdup(EVR), evr);
+		evr->str = _free(evr->str);
+	    }
+	    if (ix != 0) {
+		rpmlog(RPMLOG_ERR, _("line %d: %s does not parse: %s\n"),
+			 spec->lineNum, "EVR", spec->line);
+		goto exit;
+	    }
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
-
-	/* Make sure that EVR is parseable during install. */
-	if (EVR != NULL) {
-	    EVR_t evr = memset(alloca(sizeof(*evr)), 0, sizeof(*evr));
-	    int xx = rpmEVRparse(xstrdup(EVR), evr);
-
-	    evr->str = _free(evr->str);
-	    if (xx != 0) {
-		rpmlog(RPMLOG_ERR,
-			 _("line %d: EVR does not parse: %s\n"),
-			 spec->lineNum, spec->line);
-		N = _free(N);
-		EVR = _free(EVR);
-		return RPMRC_FAIL;
-	    }
-	}
 
 	(void) addReqProv(spec, h, tagN, N, EVR, Flags, index);
 
@@ -178,6 +195,10 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	EVR = _free(EVR);
 
     }
+    rc = RPMRC_OK;
 
-    return RPMRC_OK;
+exit:
+    N = _free(N);
+    EVR = _free(EVR);
+    return rc;
 }
