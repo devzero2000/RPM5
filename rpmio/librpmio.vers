@@ -257,7 +257,18 @@ LIBRPMIO_0
     Rmdir;
     _Rmdir;
     _rpmaug_debug;
+    rpmaugDefnode;
+    rpmaugDefvar;
+    rpmaugGet;
+    rpmaugInsert;
+    rpmaugLoad;
+    rpmaugMatch;
+    rpmaugMv;
     rpmaugNew;
+    rpmaugPrint;
+    rpmaugRm;
+    rpmaugSave;
+    rpmaugSet;
     rpmbcImplVecs;
     rpmCleanPath;
     rpmCLIMacroContext;

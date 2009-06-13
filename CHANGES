@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augeas: add "no brainer" rpmaug wrappings onto augeas methods.
     - jbj: rpmbuild: fix: ensure dependency EVR strings have only 0 or 1 dashes.
     - jbj: augeas: add aug_init() and aug_close() calls to the rpmaug wrapper.
     - jbj: js: stub-in a Aug class.
