@@ -20,16 +20,95 @@
  * Author: David Lutterkort <dlutter@redhat.com>
  */
 
-#include <config.h>
-#include "augeas.h"
-#include "augtool.h"
+#include "system.h"
 
+#include "augeas.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <argz.h>
 #include <getopt.h>
-#include <limits.h>
-#include <ctype.h>
+
+#include "debug.h"
+
+/* ===== internal.h */
+
+#if !defined(SEP)
+#define	SEP	'/'
+#endif
+
+#define DATADIR "/usr/share"
+
+/* Define: AUGEAS_LENS_DIR
+ * The default location for lens definitions */
+#define AUGEAS_LENS_DIR DATADIR "/augeas/lenses"
+
+/* The directory where we install lenses distribute with Augeas */
+#define AUGEAS_LENS_DIST_DIR DATADIR "/augeas/lenses/dist"
+
+/* Define: AUGEAS_ROOT_ENV
+ * The env var that points to the chroot holding files we may modify.
+ * Mostly useful for testing */
+#define AUGEAS_ROOT_ENV "AUGEAS_ROOT"
+
+/* Define: AUGEAS_FILES_TREE
+ * The root for actual file contents */
+#define AUGEAS_FILES_TREE "/files"
+
+/* Define: AUGEAS_META_TREE
+ * Augeas reports some information in this subtree */
+#define AUGEAS_META_TREE "/augeas"
+
+/* Define: AUGEAS_META_FILES
+ * Information about files */
+#define AUGEAS_META_FILES AUGEAS_META_TREE AUGEAS_FILES_TREE
+
+/* Define: AUGEAS_META_ROOT
+ * The root directory */
+#define AUGEAS_META_ROOT AUGEAS_META_TREE "/root"
+
+/* Define: AUGEAS_META_SAVE_MODE
+ * How we save files. One of 'backup', 'overwrite' or 'newfile' */
+#define AUGEAS_META_SAVE_MODE AUGEAS_META_TREE "/save"
+
+/* Define: AUGEAS_CLONE_IF_RENAME_FAILS
+ * Control what save does when renaming the temporary file to its final
+ * destination fails with EXDEV or EBUSY: when this tree node exists, copy
+ * the file contents. If it is not present, simply give up and report an
+ * error.  */
+#define AUGEAS_COPY_IF_RENAME_FAILS \
+    AUGEAS_META_SAVE_MODE "/copy_if_rename_fails"
+
+/* A hierarchy where we record certain 'events', e.g. which tree
+ * nodes actually gotsaved into files */
+#define AUGEAS_EVENTS AUGEAS_META_TREE "/events"
+
+#define AUGEAS_EVENTS_SAVED AUGEAS_EVENTS "/saved"
+
+/* Where to put information about parsing of path expressions */
+#define AUGEAS_META_PATHX AUGEAS_META_TREE "/pathx"
+
+/* Define: AUGEAS_LENS_ENV
+ * Name of env var that contains list of paths to search for additional
+   spec files */
+#define AUGEAS_LENS_ENV "AUGEAS_LENS_LIB"
+
+/* Define: MAX_ENV_SIZE
+ * Fairly arbitrary bound on the length of the path we
+ *  accept from AUGEAS_SPEC_ENV */
+#define MAX_ENV_SIZE 4096
+
+/* Define: PATH_SEP_CHAR
+ * Character separating paths in a list of paths */
+#define PATH_SEP_CHAR ':'
+
+/* Constants for setting the save mode via the augeas path at
+ * AUGEAS_META_SAVE_MODE */
+#define AUG_SAVE_BACKUP_TEXT "backup"
+#define AUG_SAVE_NEWFILE_TEXT "newfile"
+#define AUG_SAVE_NOOP_TEXT "noop"
+#define AUG_SAVE_OVERWRITE_TEXT "overwrite"
+
+/* ===== */
 
 struct command {
     const char *name;
@@ -48,7 +127,6 @@ static unsigned int flags = AUG_NONE;
 const char *root = NULL;
 char *loadpath = NULL;
 
-
 static char *cleanstr(char *path, const char sep) {
     if (path == NULL || strlen(path) == 0)
         return path;
@@ -60,26 +138,6 @@ static char *cleanstr(char *path, const char sep) {
 
 static char *cleanpath(char *path) {
     return cleanstr(path, SEP);
-}
-
-/*
- * Dup PATH and split it into a directory and basename. The returned value
- * points to the copy of PATH. Adding strlen(PATH)+1 to it gives the
- * basename.
- *
- * If PATH can not be split, returns NULL
- */
-ATTRIBUTE_UNUSED
-static char *pathsplit(const char *path) {
-    char *ppath = strdup(path);
-    char *pend = strrchr(ppath, SEP);
-
-    if (pend == NULL || pend == ppath) {
-        free(ppath);
-        return NULL;
-    }
-    *pend = '\0';
-    return ppath;
 }
 
 static char *ls_pattern(const char *path) {
@@ -158,7 +216,7 @@ static int cmd_match(char *args[]) {
         if (val == NULL)
             val = "(none)";
         if (filter) {
-            if (STREQ(args[1], val))
+            if (!strcmp(args[1], val))
                 printf("%s\n", matches[i]);
         } else {
             printf("%s = %s\n", matches[i], val);
@@ -258,7 +316,7 @@ static int cmd_print(char *args[]) {
     return aug_print(aug, stdout, cleanpath(args[0]));
 }
 
-static int cmd_save(ATTRIBUTE_UNUSED char *args[]) {
+static int cmd_save(/*@unused@*/ char *args[]) {
     int r;
     r = aug_save(aug);
     if (r == -1) {
@@ -274,7 +332,7 @@ static int cmd_save(ATTRIBUTE_UNUSED char *args[]) {
     return r;
 }
 
-static int cmd_load(ATTRIBUTE_UNUSED char *args[]) {
+static int cmd_load(/*@unused@*/ char *args[]) {
     int r;
     r = aug_load(aug);
     if (r == -1) {
@@ -297,9 +355,9 @@ static int cmd_ins(char *args[]) {
     int before;
     int r;
 
-    if (STREQ(where, "after"))
+    if (!strcmp(where, "after"))
         before = 0;
-    else if (STREQ(where, "before"))
+    else if (!strcmp(where, "before"))
         before = 1;
     else {
         printf("The <WHERE> argument must be either 'before' or 'after'.");
@@ -312,7 +370,7 @@ static int cmd_ins(char *args[]) {
     return r;
 }
 
-static int cmd_help(ATTRIBUTE_UNUSED char *args[]) {
+static int cmd_help(/*@unused@*/ char *args[]) {
     const struct command *c;
 
     printf("Commands:\n\n");
@@ -372,7 +430,7 @@ static char *parseline(char *line, int maxargs, char *args[]) {
     char *cmd;
     int argc;
 
-    MEMZERO(args, maxargs);
+    memset(args, 0, maxargs * sizeof(*args));
     cmd = nexttoken(&line);
 
     for (argc=0; argc < maxargs; argc++) {
@@ -453,11 +511,11 @@ static int run_command(char *cmd, int maxargs, char **args) {
     int r = 0;
     const struct command *c;
 
-    if (STREQ("exit", cmd) || STREQ("quit", cmd)) {
+    if (!strcmp("exit", cmd) || !strcmp("quit", cmd)) {
         exit(EXIT_SUCCESS);
     }
     for (c = commands; c->name; c++) {
-        if (STREQ(cmd, c->name))
+        if (!strcmp(cmd, c->name))
             break;
     }
     if (c->name) {
@@ -486,7 +544,7 @@ static char *readline_path_generator(const char *text, int state) {
                 return NULL;
         } else {
             end += 1;
-            CALLOC(path, end - text + 2);
+	    path = xcalloc(1, end - text + 2);
             if (path == NULL)
                 return NULL;
             strncpy(path, text, end - text);
@@ -504,7 +562,7 @@ static char *readline_path_generator(const char *text, int state) {
     while (current < nchildren) {
         char *child = children[current];
         current += 1;
-        if (STREQLEN(child, text, strlen(text))) {
+        if (!strncmp(child, text, strlen(text))) {
             if (child_count(child) > 0) {
                 char *c = realloc(child, strlen(child)+2);
                 if (c == NULL)
@@ -532,7 +590,7 @@ static char *readline_command_generator(const char *text, int state) {
     rl_completion_append_character = ' ';
     while ((name = commands[current].name) != NULL) {
         current += 1;
-        if (STREQLEN(text, name, strlen(text)))
+        if (!strncmp(text, name, strlen(text)))
             return strdup(name);
     }
     return NULL;
@@ -541,14 +599,13 @@ static char *readline_command_generator(const char *text, int state) {
 #define	HAVE_RL_COMPLETION_MATCHES	/* XXX no AutoFu yet */
 #ifndef HAVE_RL_COMPLETION_MATCHES
 typedef char *rl_compentry_func_t(const char *, int);
-static char **rl_completion_matches(ATTRIBUTE_UNUSED const char *text,
-                           ATTRIBUTE_UNUSED rl_compentry_func_t *func) {
+static char **rl_completion_matches(/*@unused@*/ const char *text,
+                           /*@unused@*/ rl_compentry_func_t *func) {
     return NULL;
 }
 #endif
 
-static char **readline_completion(const char *text, int start,
-                                  ATTRIBUTE_UNUSED int end) {
+static char **readline_completion(const char *text, int start, /*@unused@*/ int end) {
     if (start == 0)
         return rl_completion_matches(text, readline_command_generator);
     else
@@ -685,7 +742,8 @@ static int main_loop(void) {
     }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     int r;
 
     parse_opts(argc, argv);
@@ -705,13 +763,3 @@ int main(int argc, char **argv) {
 
     return r == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

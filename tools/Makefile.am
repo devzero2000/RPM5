@@ -18,7 +18,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
-EXTRA_DIST =	augtool.h hashtab.h
+EXTRA_DIST =	hashtab.h
 
 EXTRA_PROGRAMS = augtool debugedit rpmkey
 
