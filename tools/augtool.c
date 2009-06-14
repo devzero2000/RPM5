@@ -122,7 +122,7 @@ struct command {
     const char *name;
     int minargs;
     int maxargs;
-    int(*handler) (char *args[]);
+    int(*handler) (int ac, char *av[]);
     const char *synopsis;
     const char *help;
 };
@@ -179,11 +179,16 @@ static int child_count(const char *path)
     return cnt;
 }
 
-static int cmd_ls(char *args[])
+static int cmd_quit(int ac, char *av[])
 {
-    int cnt;
-    char *path = cleanpath(args[0]);
+    exit(EXIT_SUCCESS);
+}
+
+static int cmd_ls(int ac, char *av[])
+{
+    char *path = cleanpath(av[0]);
     char **paths;
+    int cnt;
     int i;
 
     path = ls_pattern(path);
@@ -191,29 +196,27 @@ static int cmd_ls(char *args[])
         return -1;
     cnt = rpmaugMatch(aug, path, &paths);
     for (i=0; i < cnt; i++) {
-        const char *val;
         const char *basnam = strrchr(paths[i], SEP);
         int dir = child_count(paths[i]);
+        const char *val;
         rpmaugGet(aug, paths[i], &val);
         basnam = (basnam == NULL) ? paths[i] : basnam + 1;
         if (val == NULL)
             val = "(none)";
         printf("%s%s= %s\n", basnam, dir ? "/ " : " ", val);
-        free(paths[i]);
     }
-    if (cnt > 0)
-        free(paths);
-    free(path);
+    (void) argvFree((const char **)paths);
+    path = _free(path);
     return 0;
 }
 
-static int cmd_match(char *args[])
+static int cmd_match(int ac, char *av[])
 {
-    int cnt;
-    const char *pattern = cleanpath(args[0]);
-    char **matches;
-    int filter = (args[1] != NULL) && (strlen(args[1]) > 0);
+    const char *pattern = cleanpath(av[0]);
+    int filter = (av[1] != NULL) && (strlen(av[1]) > 0);
     int result = 0;
+    char **matches = NULL;
+    int cnt;
     int i;
 
     cnt = rpmaugMatch(aug, pattern, &matches);
@@ -233,155 +236,134 @@ static int cmd_match(char *args[])
         if (val == NULL)
             val = "(none)";
         if (filter) {
-            if (!strcmp(args[1], val))
+            if (!strcmp(av[1], val))
                 printf("%s\n", matches[i]);
         } else {
             printf("%s = %s\n", matches[i], val);
         }
     }
  done:
-    for (i=0; i < cnt; i++)
-        free(matches[i]);
-    free(matches);
+    (void) argvFree((const char **)matches);
     return result;
 }
 
-static int cmd_rm(char *args[])
+static int cmd_rm(int ac, char *av[])
 {
+    const char *path = cleanpath(av[0]);
     int cnt;
-    const char *path = cleanpath(args[0]);
+
     printf("rm : %s", path);
     cnt = rpmaugRm(aug, path);
     printf(" %d\n", cnt);
     return 0;
 }
 
-static int cmd_mv(char *args[])
+static int cmd_mv(int ac, char *av[])
 {
-    const char *src = cleanpath(args[0]);
-    const char *dst = cleanpath(args[1]);
-    int r;
+    const char *src = cleanpath(av[0]);
+    const char *dst = cleanpath(av[1]);
+    int r = rpmaugMv(aug, src, dst);
 
-    r = rpmaugMv(aug, src, dst);
-    if (r == -1)
-        printf("Failed\n");
     return r;
 }
 
-static int cmd_set(char *args[])
+static int cmd_set(int ac, char *av[])
 {
-    const char *path = cleanpath(args[0]);
-    const char *val = args[1];
-    int r;
+    const char *path = cleanpath(av[0]);
+    const char *val = av[1];
+    int r = rpmaugSet(aug, path, val);
 
-    r = rpmaugSet(aug, path, val);
-    if (r == -1)
-        printf ("Failed\n");
     return r;
 }
 
-static int cmd_defvar(char *args[])
+static int cmd_defvar(int ac, char *av[])
 {
-    const char *name = args[0];
-    const char *path = cleanpath(args[1]);
-    int r;
+    const char *name = av[0];
+    const char *path = cleanpath(av[1]);
+    int r = rpmaugDefvar(aug, name, path);
 
-    r = rpmaugDefvar(aug, name, path);
-    if (r == -1)
-        printf ("Failed\n");
     return r;
 }
 
-static int cmd_defnode(char *args[])
+static int cmd_defnode(int ac, char *av[])
 {
-    const char *name = args[0];
-    const char *path = cleanpath(args[1]);
-    const char *value = args[2];
+    const char *name = av[0];
+    const char *path = cleanpath(av[1]);
+    const char *value = av[2];
     int r;
 
     /* Our simple minded line parser treats non-existant and empty values
      * the same. We choose to take the empty string to mean NULL */
-    if (value != NULL && strlen(value) == 0)
+    if (value != NULL && value[0] == '\0')
         value = NULL;
+
     r = rpmaugDefnode(aug, name, path, value, NULL);
-    if (r == -1)
-        printf ("Failed\n");
+
     return r;
 }
 
-static int cmd_clear(char *args[])
+static int cmd_clear(int ac, char *av[])
 {
-    const char *path = cleanpath(args[0]);
-    int r;
+    const char *path = cleanpath(av[0]);
+    int r = rpmaugSet(aug, path, NULL);
 
-    r = rpmaugSet(aug, path, NULL);
-    if (r == -1)
-        printf ("Failed\n");
     return r;
 }
 
-static int cmd_get(char *args[])
+static int cmd_get(int ac, char *av[])
 {
-    const char *path = cleanpath(args[0]);
+    const char *path = cleanpath(av[0]);
     const char *val;
 
     printf("%s", path);
-    if (rpmaugGet(aug, path, &val) != 1) {
+    if (rpmaugGet(aug, path, &val) != 1)
         printf(" (o)\n");
-    } else if (val == NULL) {
+    else if (val == NULL)
         printf(" (none)\n");
-    } else {
+    else
         printf(" = %s\n", val);
-    }
     return 0;
 }
 
-static int cmd_print(char *args[])
+static int cmd_print(int ac, char *av[])
 {
-    return rpmaugPrint(aug, stdout, cleanpath(args[0]));
+    return rpmaugPrint(aug, stdout, cleanpath(av[0]));
 }
 
-static int cmd_save(/*@unused@*/ char *args[])
+static int cmd_save(int ac, /*@unused@*/ char *av[])
 {
-    int r;
-    r = rpmaugSave(aug);
-    if (r == -1) {
-        printf("Saving failed\n");
-    } else {
+    int r = rpmaugSave(aug);
+
+    if (r != -1) {
         r = rpmaugMatch(aug, "/augeas/events/saved", NULL);
-        if (r > 0) {
+        if (r > 0)
             printf("Saved %d file(s)\n", r);
-        } else if (r < 0) {
+        else if (r < 0)
             printf("Error during match: %d\n", r);
-        }
     }
     return r;
 }
 
-static int cmd_load(/*@unused@*/ char *args[])
+static int cmd_load(int ac, /*@unused@*/ char *av[])
 {
-    int r;
-    r = rpmaugLoad(aug);
-    if (r == -1) {
-        printf("Loading failed\n");
-    } else {
+    int r = rpmaugLoad(aug);
+    if (r != -1) {
         r = rpmaugMatch(aug, "/augeas/events/saved", NULL);
-        if (r > 0) {
+        if (r > 0)
             printf("Saved %d file(s)\n", r);
-        } else if (r < 0) {
+        else if (r < 0)
             printf("Error during match: %d\n", r);
-        }
     }
     return r;
 }
 
-static int cmd_ins(char *args[])
+static int cmd_ins(int ac, char *av[])
 {
-    const char *label = args[0];
-    const char *where = args[1];
-    const char *path = cleanpath(args[2]);
+    const char *label = av[0];
+    const char *where = av[1];
+    const char *path = cleanpath(av[2]);
     int before;
-    int r;
+    int r = -1;	/* assume failure */
 
     if (!strcmp(where, "after"))
         before = 0;
@@ -389,21 +371,20 @@ static int cmd_ins(char *args[])
         before = 1;
     else {
         printf("The <WHERE> argument must be either 'before' or 'after'.");
-        return -1;
+	goto exit;
     }
 
     r = rpmaugInsert(aug, path, label, before);
-    if (r == -1)
-        printf ("Failed\n");
+
+exit:
     return r;
 }
 
-static int cmd_help(/*@unused@*/ char *args[])
+static int cmd_help(int ac, /*@unused@*/ char *av[])
 {
     const struct command *c;
 
     printf("Commands:\n\n");
-    printf("    exit, quit\n        Exit the program\n\n");
     for (c=commands; c->name != NULL; c++) {
         printf("    %s\n        %s\n\n", c->synopsis, c->help);
     }
@@ -414,68 +395,13 @@ static int cmd_help(/*@unused@*/ char *args[])
     return 0;
 }
 
-static int chk_args(const struct command *cmd, int maxargs, char *args[])
-{
-    int i;
-
-    for (i=0; i < cmd->minargs; i++) {
-        if (args[i] == NULL || strlen(args[i]) == 0) {
-            fprintf(stderr, "Not enough arguments for %s\n", cmd->name);
-            return -1;
-        }
-    }
-    for (i = cmd->maxargs; i < maxargs; i++) {
-        if (args[i] != NULL && strlen(args[i]) > 0) {
-            fprintf(stderr, "Too many arguments for %s\n", cmd->name);
-            return -1;
-        }
-    }
-    return 0;
-}
-
-static char *nexttoken(char **line)
-{
-    char *r, *s;
-    char quot = '\0';
-
-    s = *line;
-
-    while (*s && isblank(*s)) s+= 1;
-    if (*s == '\'' || *s == '"') {
-        quot = *s;
-        s += 1;
-    }
-    r = s;
-    while (*s) {
-        if ((quot && *s == quot) || (!quot && isblank(*s)))
-            break;
-        s += 1;
-    }
-    if (*s)
-        *s++ = '\0';
-    *line = s;
-    return r;
-}
-
-static char *parseline(char *line, int maxargs, char *args[])
-{
-    char *cmd;
-    int argc;
-
-    memset(args, 0, maxargs * sizeof(*args));
-    cmd = nexttoken(&line);
-
-    for (argc=0; argc < maxargs; argc++) {
-        args[argc] = nexttoken(&line);
-    }
-
-    if (*line) {
-        fprintf(stderr, "Too many arguments: '%s' not used\n", line);
-    }
-    return cmd;
-}
-
 static const struct command const commands[] = {
+    { "exit",  0, 0, cmd_quit, "exit",
+      "Exit the program"
+    },
+    { "quit",  0, 0, cmd_quit, "quit",
+      "Exit the program"
+    },
     { "ls",  1, 1, cmd_ls, "ls <PATH>",
       "List the direct children of PATH"
     },
@@ -539,28 +465,36 @@ static const struct command const commands[] = {
     { NULL, -1, -1, NULL, NULL, NULL }
 };
 
-static int run_command(const char *cmd, int maxargs, char *args[])
+static int run_command(int ac, char *av[])
 {
-    int r = 0;
     const struct command *c;
+    int r = -1;		/* assume failure */
 
-    if (!strcmp("exit", cmd) || !strcmp("quit", cmd)) {
-        exit(EXIT_SUCCESS);
-    }
     for (c = commands; c->name; c++) {
-        if (!strcmp(cmd, c->name))
+        if (!strcmp(av[0], c->name))
             break;
     }
-    if (c->name) {
-        r = chk_args(c, maxargs, args);
-        if (r == 0) {
-            r = (*c->handler)(args);
-        }
-    } else {
-        fprintf(stderr, "Unknown command '%s'\n", cmd);
-        r = -1;
+    if (c->name == NULL) {
+        fprintf(stderr, "Unknown command '%s'\n", av[0]);
+	goto exit;
+    }
+    if ((ac - 1) < c->minargs) {
+	fprintf(stderr, "Not enough arguments for %s\n", c->name);
+	goto exit;
+    }
+    if ((ac - 1) > c->maxargs) {
+	fprintf(stderr, "Too many arguments for %s\n", c->name);
+	goto exit;
     }
 
+    r = (*c->handler)(ac-1, av+1);
+    if (r == -1) {
+	const char * cmd = argvJoin((const char **)av, ' ');
+        printf ("Failed(%d): %s\n", r, cmd);
+	cmd = _free(cmd);
+    }
+
+exit:
     return r;
 }
 
@@ -661,14 +595,14 @@ static void readline_init(void)
 
 static int main_loop(void)
 {
-    static const int maxargs = 3;
     char *line = NULL;
-    char *cmd, *args[maxargs];
-    int ret = 0;
     size_t len = 0;
+    const char ** av = NULL;
+    int ac = 0;
+    int ret = 0;
 
     while(1) {
-        char *dup_line;
+	int xx;
 
         if (isatty(fileno(stdin))) {
             line = readline("augtool> ");
@@ -683,22 +617,19 @@ static int main_loop(void)
         if (line[0] == '#')
             continue;
 
-        dup_line = strdup(line);
-        if (dup_line == NULL) {
-            fprintf(stderr, "Out of memory\n");
-            return -1;
-        }
+	xx = poptParseArgvString(line, &ac, &av);
+assert(xx == 0);
 
-        cmd = parseline(dup_line, maxargs, args);
-        if (cmd != NULL && strlen(cmd) > 0) {
+        if (av[0] != NULL && strlen(av[0]) > 0) {
             int r;
-            r = run_command(cmd, maxargs, args);
+            r = run_command(ac, (char **)av);
             if (r < 0)
                 ret = -1;
             if (isatty(fileno(stdin)))
                 add_history(line);
         }
-        free(dup_line);
+	av = _free(av);		/* XXX popt allocates contiguous argv */
+	ac = 0;
     }
 }
 
@@ -772,7 +703,7 @@ int main(int argc, char **argv)
     ac = argvCount(av);
     if (ac > 0) {
         // Accept one command from the command line
-        r = run_command(av[0], ac-1, (char **)av+1);
+        r = run_command(ac, (char **)av);
     } else {
         r = main_loop();
     }
