@@ -24,12 +24,11 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <argz.h>
-#include <getopt.h>
 
 #define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <poptIO.h>
+#include <argv.h>
 
 #include <augeas.h>
 #define	_RPMAUG_INTERNAL
@@ -52,6 +51,7 @@
 /* The directory where we install lenses distribute with Augeas */
 #define AUGEAS_LENS_DIST_DIR DATADIR "/augeas/lenses/dist"
 
+#if defined(REFERENCE)
 /* Define: AUGEAS_ROOT_ENV
  * The env var that points to the chroot holding files we may modify.
  * Mostly useful for testing */
@@ -104,16 +104,17 @@
  *  accept from AUGEAS_SPEC_ENV */
 #define MAX_ENV_SIZE 4096
 
-/* Define: PATH_SEP_CHAR
- * Character separating paths in a list of paths */
-#define PATH_SEP_CHAR ':'
-
 /* Constants for setting the save mode via the augeas path at
  * AUGEAS_META_SAVE_MODE */
 #define AUG_SAVE_BACKUP_TEXT "backup"
 #define AUG_SAVE_NEWFILE_TEXT "newfile"
 #define AUG_SAVE_NOOP_TEXT "noop"
 #define AUG_SAVE_OVERWRITE_TEXT "overwrite"
+#endif	/* REFERENCE */
+
+/* Define: PATH_SEP_CHAR
+ * Character separating paths in a list of paths */
+#define PATH_SEP_CHAR ':'
 
 /* ===== */
 
@@ -133,8 +134,9 @@ static rpmaug aug;
 
 static const char *const progname = "augtool";
 static unsigned int flags = AUG_NONE;
-const char *root = NULL;
-char *loadpath = NULL;
+const char *root;
+char *loadpath;
+static const char ** loadargv;
 
 static char *cleanstr(char *path, const char sep)
 {
@@ -537,7 +539,7 @@ static const struct command const commands[] = {
     { NULL, -1, -1, NULL, NULL, NULL }
 };
 
-static int run_command(char *cmd, int maxargs, char **args)
+static int run_command(const char *cmd, int maxargs, char *args[])
 {
     int r = 0;
     const struct command *c;
@@ -700,6 +702,7 @@ static int main_loop(void)
     }
 }
 
+#if defined(REFERENCE)
 __attribute__((noreturn))
 static void usage(void)
 {
@@ -721,72 +724,42 @@ static void usage(void)
 
     exit(EXIT_FAILURE);
 }
+#endif
 
-static void parse_opts(int argc, char **argv)
-{
-    int opt;
-    size_t loadpathlen = 0;
-    enum {
-        VAL_NO_STDINC = CHAR_MAX + 1,
-        VAL_NO_LOAD = VAL_NO_STDINC + 1,
-        VAL_NO_AUTOLOAD = VAL_NO_LOAD + 1
-    };
-    struct option options[] = {
-        { "help",      0, 0, 'h' },
-        { "typecheck", 0, 0, 'c' },
-        { "backup",    0, 0, 'b' },
-        { "new",       0, 0, 'n' },
-        { "root",      1, 0, 'r' },
-        { "include",   1, 0, 'I' },
-        { "nostdinc",  0, 0, VAL_NO_STDINC },
-        { "noload",    0, 0, VAL_NO_LOAD },
-        { "noautoload", 0, 0, VAL_NO_AUTOLOAD },
-        { 0, 0, 0, 0}
-    };
-    int idx;
+static struct poptOption _optionsTable[] = {
+    /* XXX POPT_ARGFLAG_TOGGLE? */
+    { "typecheck",'c', POPT_BIT_SET,		&flags, AUG_TYPE_CHECK,
+	N_("type check lenses"), NULL },
+    { "backup", 'b',POPT_BIT_SET,		&flags, AUG_SAVE_BACKUP,
+	N_("backup modified files with suffix '.augsave'"), NULL },
+    { "new", 'n', POPT_BIT_SET,			&flags, AUG_SAVE_NEWFILE,
+	N_("save modified files with suffix '.augnew'"), NULL },
+    { "root", 'r', POPT_ARG_STRING,		&root, 0,
+	N_("use ROOT as the root of the filesystem"), N_("ROOT") },
+    { "include", 'I', POPT_ARG_ARGV,		&loadargv, 0,
+	N_("search DIR for modules"), N_("DIR") },
+    { "nostdinc", '\0', POPT_BIT_SET,		&flags, AUG_NO_STDINC,
+	N_("do not search default modules path"), NULL },
+    { "noload", '\0', POPT_BIT_SET,		&flags, AUG_NO_LOAD,
+	N_("do not load files into tree on startup"), NULL },
+    { "noautoload", '\0', POPT_BIT_SET,		&flags, AUG_NO_MODL_AUTOLOAD,
+	N_("do not autoload modules from the search path"), NULL },
+    POPT_AUTOALIAS
+    POPT_AUTOHELP
+    POPT_TABLEEND
+};
 
-    while ((opt = getopt_long(argc, argv, "hnbcr:I:", options, &idx)) != -1) {
-        switch(opt) {
-        case 'c':
-            flags |= AUG_TYPE_CHECK;
-            break;
-        case 'b':
-            flags |= AUG_SAVE_BACKUP;
-            break;
-        case 'n':
-            flags |= AUG_SAVE_NEWFILE;
-            break;
-        case 'h':
-            usage();
-            break;
-        case 'r':
-            root = optarg;
-            break;
-        case 'I':
-            argz_add(&loadpath, &loadpathlen, optarg);
-            break;
-        case VAL_NO_STDINC:
-            flags |= AUG_NO_STDINC;
-            break;
-        case VAL_NO_LOAD:
-            flags |= AUG_NO_LOAD;
-            break;
-        case VAL_NO_AUTOLOAD:
-            flags |= AUG_NO_MODL_AUTOLOAD;
-            break;
-        default:
-            usage();
-            break;
-        }
-    }
-    argz_stringify(loadpath, loadpathlen, PATH_SEP_CHAR);
-}
+static struct poptOption *optionsTable = &_optionsTable[0];
 
 int main(int argc, char **argv)
 {
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    const char ** av = NULL;
+    int ac;
     int r;
 
-    parse_opts(argc, argv);
+    if (loadargv != NULL)
+	loadpath = argvJoin(loadargv, PATH_SEP_CHAR);
 
     aug = rpmaugNew(root, loadpath, flags);
     if (aug == NULL) {
@@ -794,14 +767,21 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     readline_init();
-    if (optind < argc) {
+
+    av = poptGetArgs(optCon);
+    ac = argvCount(av);
+    if (ac > 0) {
         // Accept one command from the command line
-        r = run_command(argv[optind], argc - optind, argv+optind+1);
+        r = run_command(av[0], ac-1, (char **)av+1);
     } else {
         r = main_loop();
     }
 
+    loadargv = argvFree(loadargv);
+    loadpath = _free(loadpath);
     aug = rpmaugFree(aug);
+
+    optCon = rpmioFini(optCon);
 
     return r == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
