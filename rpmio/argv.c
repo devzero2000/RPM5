@@ -263,7 +263,7 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 /*@=nullstate@*/
 }
 
-char * argvJoin(ARGV_t argv)
+char * argvJoin(ARGV_t argv, char sep)
 {
     size_t nb = 0;
     int argc;
@@ -280,7 +280,7 @@ char * argvJoin(ARGV_t argv)
     *te = '\0';
     for (argc = 0; argv[argc] != NULL; argc++) {
 	if (argc != 0)
-	    *te++ = ' ';
+	    *te++ = sep;
 	te = stpcpy(te, argv[argc]);
     }
     *te = '\0';

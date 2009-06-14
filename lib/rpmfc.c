@@ -206,7 +206,7 @@ top:
 	(unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	const char *cmd = argvJoin(argv);
+	const char *cmd = argvJoin(argv, ' ');
 	int rc = (WIFEXITED(status) ? WEXITSTATUS(status) : -1);
 
 	rpmlog(RPMLOG_ERR, _("Command \"%s\" failed, exit(%d)\n"), cmd, rc);

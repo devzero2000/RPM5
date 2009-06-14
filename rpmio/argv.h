@@ -219,10 +219,11 @@ int argvSplit(ARGV_t * argvp, const char * str, /*@null@*/ const char * seps)
 /**
  * Concatenate an argv array into a string.
  * @param argv		argv array
+ * @param sep		arg separator
  * @return		concatenated string
  */
 /*@only@*/
-char * argvJoin(ARGV_t argv)
+char * argvJoin(ARGV_t argv, char sep)
 	/*@*/;
 
 /**
