@@ -129,14 +129,7 @@ struct command {
 
 static const struct command const commands[];
 
-/*@unchecked@*/
-static rpmaug aug;
-
 static const char *const progname = "augtool";
-static unsigned int flags = AUG_NONE;
-const char *root;
-char *loadpath;
-static const char ** loadargv;
 
 static char *cleanstr(char *path, const char sep)
 {
@@ -174,7 +167,7 @@ static int child_count(const char *path)
 
     if (q == NULL)
         return 0;
-    cnt = rpmaugMatch(aug, q, NULL);
+    cnt = rpmaugMatch(_rpmaugI, q, NULL);
     free(q);
     return cnt;
 }
@@ -194,12 +187,12 @@ static int cmd_ls(int ac, char *av[])
     path = ls_pattern(path);
     if (path == NULL)
         return -1;
-    cnt = rpmaugMatch(aug, path, &paths);
+    cnt = rpmaugMatch(_rpmaugI, path, &paths);
     for (i=0; i < cnt; i++) {
         const char *basnam = strrchr(paths[i], SEP);
         int dir = child_count(paths[i]);
         const char *val;
-        rpmaugGet(aug, paths[i], &val);
+        rpmaugGet(_rpmaugI, paths[i], &val);
         basnam = (basnam == NULL) ? paths[i] : basnam + 1;
         if (val == NULL)
             val = "(none)";
@@ -219,7 +212,7 @@ static int cmd_match(int ac, char *av[])
     int cnt;
     int i;
 
-    cnt = rpmaugMatch(aug, pattern, &matches);
+    cnt = rpmaugMatch(_rpmaugI, pattern, &matches);
     if (cnt < 0) {
         printf("  (error matching %s)\n", pattern);
         result = -1;
@@ -232,7 +225,7 @@ static int cmd_match(int ac, char *av[])
 
     for (i=0; i < cnt; i++) {
         const char *val;
-        rpmaugGet(aug, matches[i], &val);
+        rpmaugGet(_rpmaugI, matches[i], &val);
         if (val == NULL)
             val = "(none)";
         if (filter) {
@@ -253,7 +246,7 @@ static int cmd_rm(int ac, char *av[])
     int cnt;
 
     printf("rm : %s", path);
-    cnt = rpmaugRm(aug, path);
+    cnt = rpmaugRm(_rpmaugI, path);
     printf(" %d\n", cnt);
     return 0;
 }
@@ -262,7 +255,7 @@ static int cmd_mv(int ac, char *av[])
 {
     const char *src = cleanpath(av[0]);
     const char *dst = cleanpath(av[1]);
-    int r = rpmaugMv(aug, src, dst);
+    int r = rpmaugMv(_rpmaugI, src, dst);
 
     return r;
 }
@@ -271,7 +264,7 @@ static int cmd_set(int ac, char *av[])
 {
     const char *path = cleanpath(av[0]);
     const char *val = av[1];
-    int r = rpmaugSet(aug, path, val);
+    int r = rpmaugSet(_rpmaugI, path, val);
 
     return r;
 }
@@ -280,7 +273,7 @@ static int cmd_defvar(int ac, char *av[])
 {
     const char *name = av[0];
     const char *path = cleanpath(av[1]);
-    int r = rpmaugDefvar(aug, name, path);
+    int r = rpmaugDefvar(_rpmaugI, name, path);
 
     return r;
 }
@@ -297,7 +290,7 @@ static int cmd_defnode(int ac, char *av[])
     if (value != NULL && value[0] == '\0')
         value = NULL;
 
-    r = rpmaugDefnode(aug, name, path, value, NULL);
+    r = rpmaugDefnode(_rpmaugI, name, path, value, NULL);
 
     return r;
 }
@@ -305,7 +298,7 @@ static int cmd_defnode(int ac, char *av[])
 static int cmd_clear(int ac, char *av[])
 {
     const char *path = cleanpath(av[0]);
-    int r = rpmaugSet(aug, path, NULL);
+    int r = rpmaugSet(_rpmaugI, path, NULL);
 
     return r;
 }
@@ -316,7 +309,7 @@ static int cmd_get(int ac, char *av[])
     const char *val;
 
     printf("%s", path);
-    if (rpmaugGet(aug, path, &val) != 1)
+    if (rpmaugGet(_rpmaugI, path, &val) != 1)
         printf(" (o)\n");
     else if (val == NULL)
         printf(" (none)\n");
@@ -327,15 +320,15 @@ static int cmd_get(int ac, char *av[])
 
 static int cmd_print(int ac, char *av[])
 {
-    return rpmaugPrint(aug, stdout, cleanpath(av[0]));
+    return rpmaugPrint(_rpmaugI, stdout, cleanpath(av[0]));
 }
 
 static int cmd_save(int ac, /*@unused@*/ char *av[])
 {
-    int r = rpmaugSave(aug);
+    int r = rpmaugSave(_rpmaugI);
 
     if (r != -1) {
-        r = rpmaugMatch(aug, "/augeas/events/saved", NULL);
+        r = rpmaugMatch(_rpmaugI, "/augeas/events/saved", NULL);
         if (r > 0)
             printf("Saved %d file(s)\n", r);
         else if (r < 0)
@@ -346,9 +339,9 @@ static int cmd_save(int ac, /*@unused@*/ char *av[])
 
 static int cmd_load(int ac, /*@unused@*/ char *av[])
 {
-    int r = rpmaugLoad(aug);
+    int r = rpmaugLoad(_rpmaugI);
     if (r != -1) {
-        r = rpmaugMatch(aug, "/augeas/events/saved", NULL);
+        r = rpmaugMatch(_rpmaugI, "/augeas/events/saved", NULL);
         if (r > 0)
             printf("Saved %d file(s)\n", r);
         else if (r < 0)
@@ -374,7 +367,7 @@ static int cmd_ins(int ac, char *av[])
 	goto exit;
     }
 
-    r = rpmaugInsert(aug, path, label, before);
+    r = rpmaugInsert(_rpmaugI, path, label, before);
 
 exit:
     return r;
@@ -522,7 +515,7 @@ static char *readline_path_generator(const char *text, int state)
         for (;current < nchildren; current++)
             free((void *) children[current]);
         free((void *) children);
-        nchildren = rpmaugMatch(aug, path, &children);
+        nchildren = rpmaugMatch(_rpmaugI, path, &children);
         current = 0;
         free(path);
     }
@@ -633,49 +626,22 @@ assert(xx == 0);
     }
 }
 
-#if defined(REFERENCE)
-__attribute__((noreturn))
-static void usage(void)
-{
-    fprintf(stderr, "Usage: %s [OPTIONS] [COMMAND]\n", progname);
-    fprintf(stderr, "Load the Augeas tree and modify it. If no COMMAND is given, run interactively\n");
-    fprintf(stderr, "Run '%s help' to get a list of possible commands.\n",
-            progname);
-    fprintf(stderr, "\nOptions:\n\n");
-    fprintf(stderr, "  -c, --typecheck    typecheck lenses\n");
-    fprintf(stderr, "  -b, --backup       preserve originals of modified files with\n"
-                    "                     extension '.augsave'\n");
-    fprintf(stderr, "  -n, --new          save changes in files with extension '.augnew',\n"
-                    "                     leave original unchanged\n");
-    fprintf(stderr, "  -r, --root ROOT    use ROOT as the root of the filesystem\n");
-    fprintf(stderr, "  -I, --include DIR  search DIR for modules; can be given mutiple times\n");
-    fprintf(stderr, "  --nostdinc         do not search the builtin default directories for modules\n");
-    fprintf(stderr, "  --noload           do not load any files into the tree on startup\n");
-    fprintf(stderr, "  --noautoload       do not autoload modules from the search path\n");
-
-    exit(EXIT_FAILURE);
-}
-#endif
+/*@unchecked@*/ /*@null@*/
+extern const char ** _rpmaugLoadargv;
 
 static struct poptOption _optionsTable[] = {
-    /* XXX POPT_ARGFLAG_TOGGLE? */
-    { "typecheck",'c', POPT_BIT_SET,		&flags, AUG_TYPE_CHECK,
-	N_("type check lenses"), NULL },
-    { "backup", 'b',POPT_BIT_SET,		&flags, AUG_SAVE_BACKUP,
-	N_("backup modified files with suffix '.augsave'"), NULL },
-    { "new", 'n', POPT_BIT_SET,			&flags, AUG_SAVE_NEWFILE,
-	N_("save modified files with suffix '.augnew'"), NULL },
-    { "root", 'r', POPT_ARG_STRING,		&root, 0,
-	N_("use ROOT as the root of the filesystem"), N_("ROOT") },
-    { "include", 'I', POPT_ARG_ARGV,		&loadargv, 0,
-	N_("search DIR for modules"), N_("DIR") },
-    { "nostdinc", '\0', POPT_BIT_SET,		&flags, AUG_NO_STDINC,
-	N_("do not search default modules path"), NULL },
-    { "noload", '\0', POPT_BIT_SET,		&flags, AUG_NO_LOAD,
-	N_("do not load files into tree on startup"), NULL },
-    { "noautoload", '\0', POPT_BIT_SET,		&flags, AUG_NO_MODL_AUTOLOAD,
-	N_("do not autoload modules from the search path"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmaugPoptTable, 0,
+        N_("Options:"), NULL },
+
+#ifdef	NOTYET	/* XXX dueling --root options */
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options for all rpmio executables:"),
+        NULL },
+
     POPT_AUTOALIAS
+#endif
+
     POPT_AUTOHELP
     POPT_TABLEEND
 };
@@ -689,11 +655,11 @@ int main(int argc, char **argv)
     int ac;
     int r;
 
-    if (loadargv != NULL)
-	loadpath = argvJoin(loadargv, PATH_SEP_CHAR);
+    if (_rpmaugLoadargv != NULL)
+	_rpmaugLoadpath = argvJoin(_rpmaugLoadargv, PATH_SEP_CHAR);
 
-    aug = rpmaugNew(root, loadpath, flags);
-    if (aug == NULL) {
+    _rpmaugI = rpmaugNew(_rpmaugRoot, _rpmaugLoadpath, _rpmaugFlags);
+    if (_rpmaugI == NULL) {
         fprintf(stderr, "Failed to initialize Augeas\n");
         exit(EXIT_FAILURE);
     }
@@ -708,9 +674,10 @@ int main(int argc, char **argv)
         r = main_loop();
     }
 
-    loadargv = argvFree(loadargv);
-    loadpath = _free(loadpath);
-    aug = rpmaugFree(aug);
+    if (_rpmaugLoadargv)
+	_rpmaugLoadpath = _free(_rpmaugLoadpath);
+    _rpmaugLoadargv = argvFree(_rpmaugLoadargv);
+    _rpmaugI = rpmaugFree(_rpmaugI);
 
     optCon = rpmioFini(optCon);
 

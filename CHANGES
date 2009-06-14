@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augtool: use rpmaug globals where useful.
+    - jbj: rpmaug: add rpmaugPoptTable and global parameters.
+    - jbj: rpmaug: add global augtool interpreter.
     - jbj: argv: add a separator character argument to argvJoin.
     - jbj: augeas: add "no brainer" rpmaug wrappings onto augeas methods.
     - jbj: rpmbuild: fix: ensure dependency EVR strings have only 0 or 1 dashes.

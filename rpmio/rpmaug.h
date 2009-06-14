@@ -5,14 +5,28 @@
  * \file rpmio/rpmaug.h
  */
 
+#include <rpmiotypes.h>
+#include <rpmio.h>
+#include <popt.h>
+
+/** \ingroup rpmio
+ */
+typedef /*@refcounted@*/ struct rpmaug_s * rpmaug;
+
 /** \ingroup rpmio
  */
 /*@unchecked@*/
 extern int _rpmaug_debug;
 
-/** \ingroup rpmio
- */
-typedef /*@refcounted@*/ struct rpmaug_s * rpmaug;
+/*@unchecked@*/ /*@relnull@*/
+extern rpmaug _rpmaugI;
+
+/*@unchecked@*/ /*@relnull@*/
+extern const char *_rpmaugRoot;
+/*@unchecked@*/ /*@relnull@*/
+extern const char *_rpmaugLoadpath;
+/*@unchecked@*/
+extern unsigned int _rpmaugFlags;
 
 #if defined(_RPMAUG_INTERNAL)
 /** \ingroup rpmio
@@ -34,6 +48,12 @@ struct rpmaug_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \ingroup rpmio
+ * Popt option table for options to configure Augeas augtool.
+ */
+/*@unchecked@*/ /*@observer@*/
+extern struct poptOption	rpmaugPoptTable[];
 
 /**
  * Unreference a augeas wrapper instance.
@@ -84,112 +104,113 @@ rpmaug rpmaugNew(/*@null@*/ const char * root, /*@null@*/ const char * loadpath,
 
 /**
  * Define an augeas variable.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param name		variable name
  * @param expr		expression to be evaluated
  * @return		-1 on error, or no. nodes in nodeset
  */
-int rpmaugDefvar(rpmaug aug, const char * name, const char * expr)
+int rpmaugDefvar(/*@null@*/ rpmaug aug, const char * name, const char * expr)
 	/*@modifies aug @*/;
 
 /**
  * Define an augeas node.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param name		variable name
  * @param expr		expression to be evaluated (must eval to a nodeset)
  * @param value		initial node value (if creating)
  * @retval *created	1 if node was created
  * @return		-1 on error, or no. nodes in set
  */
-int rpmaugDefnode(rpmaug aug, const char * name, const char * expr,
+int rpmaugDefnode(/*@null@*/ rpmaug aug, const char * name, const char * expr,
 		const char * value, /*@out@*/ /*@null@*/ int * created)
 	/*@modifies aug, *created @*/;
 
 /**
  * Get the value associated with a path.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param path		path to lookup
  * @retval *value	returned value (malloc'd)
  * @return		-1 if multiple paths, 0 if none, 1 on success
  */
-int rpmaugGet(rpmaug aug, const char * path,
+int rpmaugGet(/*@null@*/ rpmaug aug, const char * path,
 		/*@out@*/ /*@null@*/ const char ** value)
 	/*@modifies aug, *value @*/;
 
 /**
  * Set the value associated with a path.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param path		path to lookup
  * @param value		value
  * @return		-1 if multiple paths, 0 if none, 1 on success
  */
-int rpmaugSet(rpmaug aug, const char * path, const char * value)
+int rpmaugSet(/*@null@*/ rpmaug aug, const char * path, const char * value)
 	/*@modifies aug @*/;
 
 /**
  * Insert new sibling node before/after a given node.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param path		path to node in tree
  * @param label		label to insert
  * @param before	insert label into tree before path? (else after)
  * @return		-1 on failure, 0 on success
  */
-int rpmaugInsert(rpmaug aug, const char * path, const char * label, int before)
+int rpmaugInsert(/*@null@*/ rpmaug aug, const char * path, const char * label,
+		int before)
 	/*@modifies aug @*/;
 
 /**
  * Remove node and associated sub-tree.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param path		path to node in tree to remove
  * @return		-1 on failure, 0 on success
  */
-int rpmaugRm(rpmaug aug, const char * path)
+int rpmaugRm(/*@null@*/ rpmaug aug, const char * path)
 	/*@modifies aug @*/;
 
 /**
  * Move src node to dst node.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param src		src path to node in tree
  * @param dst		dst path to node in tree
  * @return		-1 on failure, 0 on success
  */
-int rpmaugMv(rpmaug aug, const char * src, const char * dst)
+int rpmaugMv(/*@null@*/ rpmaug aug, const char * src, const char * dst)
 	/*@modifies aug @*/;
 
 /**
  * Return path(s) in tree that match an expression.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param path		path expression to match
  * @retval *matches	paths that match
  * @return		no. of matches
  */
-int rpmaugMatch(rpmaug aug, const char * path,
+int rpmaugMatch(/*@null@*/ rpmaug aug, const char * path,
 		/*@out@*/ /*@null@*/ char *** matches)
 	/*@modifies aug, *matches @*/;
 
 /**
  * Save changed files to disk, appending .augnew or .augsave as requested.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @return		-1 on error, 0 on success
  */
-int rpmaugSave(rpmaug aug)
+int rpmaugSave(/*@null@*/ rpmaug aug)
 	/*@modifies aug @*/;
 
 /**
  * Load files/lenses from disk.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @return		-1 on error, 0 on success
  */
-int rpmaugLoad(rpmaug aug)
+int rpmaugLoad(/*@null@*/ rpmaug aug)
 	/*@modifies aug @*/;
 
 /**
  * Print node paths that match an expression.
- * @param aug		augeas wrapper
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param out		ouput file (NULL uses stdout)
  * @return		0 on success, <0 on error
  */
-int rpmaugPrint(rpmaug aug, /*@null@*/ FILE * out, const char * path)
+int rpmaugPrint(/*@null@*/ rpmaug aug, /*@null@*/ FILE * out, const char * path)
 	/*@modifies aug, *out @*/;
 
 #ifdef __cplusplus
