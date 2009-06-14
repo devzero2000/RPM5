@@ -18,9 +18,9 @@ AM_CPPFLAGS = -I. \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
-EXTRA_DIST =	hashtab.h
+EXTRA_DIST =	augtool.h hashtab.h
 
-EXTRA_PROGRAMS = rpmkey debugedit
+EXTRA_PROGRAMS = augtool debugedit rpmkey
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -49,6 +49,9 @@ pkgbin_PROGRAMS =	\
 	rpmcache rpmdigest grep mtree rpmrepo rpmspecdump wget \
 	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
+
+augtool_SOURCES =	augtool.c
+augtool_LDADD =		$(RPM_LDADD_COMMON) -lreadline
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(RPM_LDADD_COMMON)

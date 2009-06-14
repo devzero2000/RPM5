@@ -5,6 +5,7 @@ Makefile.in
 .libs
 *.gcda
 *.gcno
+augtool
 convertdb1
 db_tool
 debugedit
