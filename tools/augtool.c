@@ -22,11 +22,18 @@
 
 #include "system.h"
 
-#include "augeas.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <argz.h>
 #include <getopt.h>
+
+#define	_RPMIOB_INTERNAL
+#include <rpmiotypes.h>
+#include <poptIO.h>
+
+#include <augeas.h>
+#define	_RPMAUG_INTERNAL
+#include <rpmaug.h>
 
 #include "debug.h"
 
@@ -121,13 +128,16 @@ struct command {
 
 static const struct command const commands[];
 
-static augeas *aug = NULL;
+/*@unchecked@*/
+static rpmaug aug;
+
 static const char *const progname = "augtool";
 static unsigned int flags = AUG_NONE;
 const char *root = NULL;
 char *loadpath = NULL;
 
-static char *cleanstr(char *path, const char sep) {
+static char *cleanstr(char *path, const char sep)
+{
     if (path == NULL || strlen(path) == 0)
         return path;
     char *e = path + strlen(path) - 1;
@@ -136,11 +146,13 @@ static char *cleanstr(char *path, const char sep) {
     return path;
 }
 
-static char *cleanpath(char *path) {
+static char *cleanpath(char *path)
+{
     return cleanstr(path, SEP);
 }
 
-static char *ls_pattern(const char *path) {
+static char *ls_pattern(const char *path)
+{
     char *q;
     int r;
 
@@ -153,18 +165,20 @@ static char *ls_pattern(const char *path) {
     return q;
 }
 
-static int child_count(const char *path) {
+static int child_count(const char *path)
+{
     char *q = ls_pattern(path);
     int cnt;
 
     if (q == NULL)
         return 0;
-    cnt = aug_match(aug, q, NULL);
+    cnt = rpmaugMatch(aug, q, NULL);
     free(q);
     return cnt;
 }
 
-static int cmd_ls(char *args[]) {
+static int cmd_ls(char *args[])
+{
     int cnt;
     char *path = cleanpath(args[0]);
     char **paths;
@@ -173,12 +187,12 @@ static int cmd_ls(char *args[]) {
     path = ls_pattern(path);
     if (path == NULL)
         return -1;
-    cnt = aug_match(aug, path, &paths);
+    cnt = rpmaugMatch(aug, path, &paths);
     for (i=0; i < cnt; i++) {
         const char *val;
         const char *basnam = strrchr(paths[i], SEP);
         int dir = child_count(paths[i]);
-        aug_get(aug, paths[i], &val);
+        rpmaugGet(aug, paths[i], &val);
         basnam = (basnam == NULL) ? paths[i] : basnam + 1;
         if (val == NULL)
             val = "(none)";
@@ -191,7 +205,8 @@ static int cmd_ls(char *args[]) {
     return 0;
 }
 
-static int cmd_match(char *args[]) {
+static int cmd_match(char *args[])
+{
     int cnt;
     const char *pattern = cleanpath(args[0]);
     char **matches;
@@ -199,7 +214,7 @@ static int cmd_match(char *args[]) {
     int result = 0;
     int i;
 
-    cnt = aug_match(aug, pattern, &matches);
+    cnt = rpmaugMatch(aug, pattern, &matches);
     if (cnt < 0) {
         printf("  (error matching %s)\n", pattern);
         result = -1;
@@ -212,7 +227,7 @@ static int cmd_match(char *args[]) {
 
     for (i=0; i < cnt; i++) {
         const char *val;
-        aug_get(aug, matches[i], &val);
+        rpmaugGet(aug, matches[i], &val);
         if (val == NULL)
             val = "(none)";
         if (filter) {
@@ -229,49 +244,54 @@ static int cmd_match(char *args[]) {
     return result;
 }
 
-static int cmd_rm(char *args[]) {
+static int cmd_rm(char *args[])
+{
     int cnt;
     const char *path = cleanpath(args[0]);
     printf("rm : %s", path);
-    cnt = aug_rm(aug, path);
+    cnt = rpmaugRm(aug, path);
     printf(" %d\n", cnt);
     return 0;
 }
 
-static int cmd_mv(char *args[]) {
+static int cmd_mv(char *args[])
+{
     const char *src = cleanpath(args[0]);
     const char *dst = cleanpath(args[1]);
     int r;
 
-    r = aug_mv(aug, src, dst);
+    r = rpmaugMv(aug, src, dst);
     if (r == -1)
         printf("Failed\n");
     return r;
 }
 
-static int cmd_set(char *args[]) {
+static int cmd_set(char *args[])
+{
     const char *path = cleanpath(args[0]);
     const char *val = args[1];
     int r;
 
-    r = aug_set(aug, path, val);
+    r = rpmaugSet(aug, path, val);
     if (r == -1)
         printf ("Failed\n");
     return r;
 }
 
-static int cmd_defvar(char *args[]) {
+static int cmd_defvar(char *args[])
+{
     const char *name = args[0];
     const char *path = cleanpath(args[1]);
     int r;
 
-    r = aug_defvar(aug, name, path);
+    r = rpmaugDefvar(aug, name, path);
     if (r == -1)
         printf ("Failed\n");
     return r;
 }
 
-static int cmd_defnode(char *args[]) {
+static int cmd_defnode(char *args[])
+{
     const char *name = args[0];
     const char *path = cleanpath(args[1]);
     const char *value = args[2];
@@ -281,28 +301,30 @@ static int cmd_defnode(char *args[]) {
      * the same. We choose to take the empty string to mean NULL */
     if (value != NULL && strlen(value) == 0)
         value = NULL;
-    r = aug_defnode(aug, name, path, value, NULL);
+    r = rpmaugDefnode(aug, name, path, value, NULL);
     if (r == -1)
         printf ("Failed\n");
     return r;
 }
 
-static int cmd_clear(char *args[]) {
+static int cmd_clear(char *args[])
+{
     const char *path = cleanpath(args[0]);
     int r;
 
-    r = aug_set(aug, path, NULL);
+    r = rpmaugSet(aug, path, NULL);
     if (r == -1)
         printf ("Failed\n");
     return r;
 }
 
-static int cmd_get(char *args[]) {
+static int cmd_get(char *args[])
+{
     const char *path = cleanpath(args[0]);
     const char *val;
 
     printf("%s", path);
-    if (aug_get(aug, path, &val) != 1) {
+    if (rpmaugGet(aug, path, &val) != 1) {
         printf(" (o)\n");
     } else if (val == NULL) {
         printf(" (none)\n");
@@ -312,17 +334,19 @@ static int cmd_get(char *args[]) {
     return 0;
 }
 
-static int cmd_print(char *args[]) {
-    return aug_print(aug, stdout, cleanpath(args[0]));
+static int cmd_print(char *args[])
+{
+    return rpmaugPrint(aug, stdout, cleanpath(args[0]));
 }
 
-static int cmd_save(/*@unused@*/ char *args[]) {
+static int cmd_save(/*@unused@*/ char *args[])
+{
     int r;
-    r = aug_save(aug);
+    r = rpmaugSave(aug);
     if (r == -1) {
         printf("Saving failed\n");
     } else {
-        r = aug_match(aug, "/augeas/events/saved", NULL);
+        r = rpmaugMatch(aug, "/augeas/events/saved", NULL);
         if (r > 0) {
             printf("Saved %d file(s)\n", r);
         } else if (r < 0) {
@@ -332,13 +356,14 @@ static int cmd_save(/*@unused@*/ char *args[]) {
     return r;
 }
 
-static int cmd_load(/*@unused@*/ char *args[]) {
+static int cmd_load(/*@unused@*/ char *args[])
+{
     int r;
-    r = aug_load(aug);
+    r = rpmaugLoad(aug);
     if (r == -1) {
         printf("Loading failed\n");
     } else {
-        r = aug_match(aug, "/augeas/events/saved", NULL);
+        r = rpmaugMatch(aug, "/augeas/events/saved", NULL);
         if (r > 0) {
             printf("Saved %d file(s)\n", r);
         } else if (r < 0) {
@@ -348,7 +373,8 @@ static int cmd_load(/*@unused@*/ char *args[]) {
     return r;
 }
 
-static int cmd_ins(char *args[]) {
+static int cmd_ins(char *args[])
+{
     const char *label = args[0];
     const char *where = args[1];
     const char *path = cleanpath(args[2]);
@@ -364,13 +390,14 @@ static int cmd_ins(char *args[]) {
         return -1;
     }
 
-    r = aug_insert(aug, path, label, before);
+    r = rpmaugInsert(aug, path, label, before);
     if (r == -1)
         printf ("Failed\n");
     return r;
 }
 
-static int cmd_help(/*@unused@*/ char *args[]) {
+static int cmd_help(/*@unused@*/ char *args[])
+{
     const struct command *c;
 
     printf("Commands:\n\n");
@@ -385,7 +412,8 @@ static int cmd_help(/*@unused@*/ char *args[]) {
     return 0;
 }
 
-static int chk_args(const struct command *cmd, int maxargs, char *args[]) {
+static int chk_args(const struct command *cmd, int maxargs, char *args[])
+{
     int i;
 
     for (i=0; i < cmd->minargs; i++) {
@@ -403,7 +431,8 @@ static int chk_args(const struct command *cmd, int maxargs, char *args[]) {
     return 0;
 }
 
-static char *nexttoken(char **line) {
+static char *nexttoken(char **line)
+{
     char *r, *s;
     char quot = '\0';
 
@@ -426,7 +455,8 @@ static char *nexttoken(char **line) {
     return r;
 }
 
-static char *parseline(char *line, int maxargs, char *args[]) {
+static char *parseline(char *line, int maxargs, char *args[])
+{
     char *cmd;
     int argc;
 
@@ -507,7 +537,8 @@ static const struct command const commands[] = {
     { NULL, -1, -1, NULL, NULL, NULL }
 };
 
-static int run_command(char *cmd, int maxargs, char **args) {
+static int run_command(char *cmd, int maxargs, char **args)
+{
     int r = 0;
     const struct command *c;
 
@@ -531,7 +562,8 @@ static int run_command(char *cmd, int maxargs, char **args) {
     return r;
 }
 
-static char *readline_path_generator(const char *text, int state) {
+static char *readline_path_generator(const char *text, int state)
+{
     static int current = 0;
     static char **children = NULL;
     static int nchildren = 0;
@@ -554,7 +586,7 @@ static char *readline_path_generator(const char *text, int state) {
         for (;current < nchildren; current++)
             free((void *) children[current]);
         free((void *) children);
-        nchildren = aug_match(aug, path, &children);
+        nchildren = rpmaugMatch(aug, path, &children);
         current = 0;
         free(path);
     }
@@ -580,7 +612,8 @@ static char *readline_path_generator(const char *text, int state) {
     return NULL;
 }
 
-static char *readline_command_generator(const char *text, int state) {
+static char *readline_command_generator(const char *text, int state)
+{
     static int current = 0;
     const char *name;
 
@@ -600,12 +633,15 @@ static char *readline_command_generator(const char *text, int state) {
 #ifndef HAVE_RL_COMPLETION_MATCHES
 typedef char *rl_compentry_func_t(const char *, int);
 static char **rl_completion_matches(/*@unused@*/ const char *text,
-                           /*@unused@*/ rl_compentry_func_t *func) {
+                           /*@unused@*/ rl_compentry_func_t *func)
+{
     return NULL;
 }
 #endif
 
-static char **readline_completion(const char *text, int start, /*@unused@*/ int end) {
+static char **readline_completion(const char *text, int start,
+		/*@unused@*/ int end)
+{
     if (start == 0)
         return rl_completion_matches(text, readline_command_generator);
     else
@@ -614,14 +650,59 @@ static char **readline_completion(const char *text, int start, /*@unused@*/ int 
     return NULL;
 }
 
-static void readline_init(void) {
+static void readline_init(void)
+{
     rl_readline_name = "augtool";
     rl_attempted_completion_function = readline_completion;
     rl_completion_entry_function = readline_path_generator;
 }
 
+static int main_loop(void)
+{
+    static const int maxargs = 3;
+    char *line = NULL;
+    char *cmd, *args[maxargs];
+    int ret = 0;
+    size_t len = 0;
+
+    while(1) {
+        char *dup_line;
+
+        if (isatty(fileno(stdin))) {
+            line = readline("augtool> ");
+        } else if (getline(&line, &len, stdin) == -1) {
+            return ret;
+        }
+        cleanstr(line, '\n');
+        if (line == NULL) {
+            printf("\n");
+            return ret;
+        }
+        if (line[0] == '#')
+            continue;
+
+        dup_line = strdup(line);
+        if (dup_line == NULL) {
+            fprintf(stderr, "Out of memory\n");
+            return -1;
+        }
+
+        cmd = parseline(dup_line, maxargs, args);
+        if (cmd != NULL && strlen(cmd) > 0) {
+            int r;
+            r = run_command(cmd, maxargs, args);
+            if (r < 0)
+                ret = -1;
+            if (isatty(fileno(stdin)))
+                add_history(line);
+        }
+        free(dup_line);
+    }
+}
+
 __attribute__((noreturn))
-static void usage(void) {
+static void usage(void)
+{
     fprintf(stderr, "Usage: %s [OPTIONS] [COMMAND]\n", progname);
     fprintf(stderr, "Load the Augeas tree and modify it. If no COMMAND is given, run interactively\n");
     fprintf(stderr, "Run '%s help' to get a list of possible commands.\n",
@@ -641,7 +722,8 @@ static void usage(void) {
     exit(EXIT_FAILURE);
 }
 
-static void parse_opts(int argc, char **argv) {
+static void parse_opts(int argc, char **argv)
+{
     int opt;
     size_t loadpathlen = 0;
     enum {
@@ -700,55 +782,13 @@ static void parse_opts(int argc, char **argv) {
     argz_stringify(loadpath, loadpathlen, PATH_SEP_CHAR);
 }
 
-static int main_loop(void) {
-    static const int maxargs = 3;
-    char *line = NULL;
-    char *cmd, *args[maxargs];
-    int ret = 0;
-    size_t len = 0;
-
-    while(1) {
-        char *dup_line;
-
-        if (isatty(fileno(stdin))) {
-            line = readline("augtool> ");
-        } else if (getline(&line, &len, stdin) == -1) {
-            return ret;
-        }
-        cleanstr(line, '\n');
-        if (line == NULL) {
-            printf("\n");
-            return ret;
-        }
-        if (line[0] == '#')
-            continue;
-
-        dup_line = strdup(line);
-        if (dup_line == NULL) {
-            fprintf(stderr, "Out of memory\n");
-            return -1;
-        }
-
-        cmd = parseline(dup_line, maxargs, args);
-        if (cmd != NULL && strlen(cmd) > 0) {
-            int r;
-            r = run_command(cmd, maxargs, args);
-            if (r < 0)
-                ret = -1;
-            if (isatty(fileno(stdin)))
-                add_history(line);
-        }
-        free(dup_line);
-    }
-}
-
 int main(int argc, char **argv)
 {
     int r;
 
     parse_opts(argc, argv);
 
-    aug = aug_init(root, loadpath, flags);
+    aug = rpmaugNew(root, loadpath, flags);
     if (aug == NULL) {
         fprintf(stderr, "Failed to initialize Augeas\n");
         exit(EXIT_FAILURE);
@@ -760,6 +800,8 @@ int main(int argc, char **argv)
     } else {
         r = main_loop();
     }
+
+    aug = rpmaugFree(aug);
 
     return r == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
