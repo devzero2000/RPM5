@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augtool: capture stdout in aut->iob, return through rpmaugRun().
     - jbj: debugedit: handle DWARF-3 changes (#505774).
     - jbj: augtool: use rpmaug globals where useful.
     - jbj: rpmaug: add rpmaugPoptTable and global parameters.

@@ -37,7 +37,8 @@ struct rpmaug_s {
     const char * loadpath;
     unsigned int flags;
 /*@relnull@*/
-    void * I;
+    void * I;			/* XXX struct augeas * */
+    rpmiob iob;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
@@ -212,6 +213,14 @@ int rpmaugLoad(/*@null@*/ rpmaug aug)
  */
 int rpmaugPrint(/*@null@*/ rpmaug aug, /*@null@*/ FILE * out, const char * path)
 	/*@modifies aug, *out @*/;
+
+/**
+ * Append output to an iob.
+ * @param aug		augeas wrapper (NULL uses global interpreter)
+ * @param fmt		format to use
+ */
+void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
+	/*@modifies aug @*/;
 
 #ifdef __cplusplus
 }

@@ -261,6 +261,7 @@ LIBRPMIO_0
     rpmaugDefnode;
     rpmaugDefvar;
     _rpmaugFlags;
+    rpmaugFprintf;
     rpmaugGet;
     rpmaugInsert;
     rpmaugLoad;

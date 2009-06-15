@@ -31,8 +31,10 @@ static void rpmaugFini(void * _aug)
 
 #if defined(WITH_AUGEAS)
     (void) aug_close(aug->I);
-    aug->I = NULL;
 #endif
+    aug->I = NULL;
+    (void)rpmiobFree(aug->iob);
+    aug->iob = NULL;
     aug->root = _free(aug->root);
     aug->loadpath = _free(aug->loadpath);
 }
@@ -128,6 +130,7 @@ rpmaug rpmaugNew(const char * root, const char * loadpath, unsigned int flags)
     aug->I = (void *) aug_init(aug->root, aug->loadpath, aug->flags);
 assert(aug->I != NULL);
 #endif
+    aug->iob = rpmiobNew(0);
 
     return rpmaugLink(aug);
 }
@@ -252,4 +255,30 @@ int rpmaugPrint(rpmaug aug, FILE *out, const char * path)
     rc = aug_print(aug->I, out, path);
 #endif
     return rc;
+}
+
+void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
+{
+#if defined(WITH_AUGEAS)
+    size_t nb = 1024;
+    char * b = xmalloc(nb);
+    va_list va;
+
+    va_start(va, fmt);
+    while(1) {
+	int nw = vsnprintf(b, nb, fmt, va);
+	if (nw > -1 && (size_t)nw < nb)
+	    break;
+	if (nb > -1)		/* glibc 2.1 (and later) */
+	    nb = nw+1;
+	else			/* glibc 2.0 */
+	    nb *= 2;
+	b = xrealloc(b, nb);
+    }
+    va_end(va);
+
+    if (aug == NULL) aug = rpmaugI();
+    (void) rpmiobAppend(aug->iob, b, 0);
+    b = _free(b);
+#endif
 }

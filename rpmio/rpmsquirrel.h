@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmsquirrel_s * rpmsquirrel;
+typedef /*@refcounted@*/ struct rpmsquirrel_s * rpmsquirrel;
 
 /*@unchecked@*/
 extern int _rpmsquirrel_debug;
@@ -21,7 +21,10 @@ struct rpmsquirrel_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;			/* HSQUIRRELVM */
     rpmiob iob;
-
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMSQUIRREL_INTERNAL */
 

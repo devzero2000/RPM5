@@ -195,7 +195,7 @@ static int cmd_ls(int ac, char *av[])
         basnam = (basnam == NULL) ? paths[i] : basnam + 1;
         if (val == NULL)
             val = "(none)";
-        printf("%s%s= %s\n", basnam, dir ? "/ " : " ", val);
+        rpmaugFprintf(NULL, "%s%s= %s\n", basnam, dir ? "/ " : " ", val);
     }
     (void) argvFree((const char **)paths);
     path = _free(path);
@@ -213,12 +213,12 @@ static int cmd_match(int ac, char *av[])
 
     cnt = rpmaugMatch(NULL, pattern, &matches);
     if (cnt < 0) {
-        printf("  (error matching %s)\n", pattern);
+        rpmaugFprintf(NULL, "  (error matching %s)\n", pattern);
         result = -1;
         goto done;
     }
     if (cnt == 0) {
-        printf("  (no matches)\n");
+        rpmaugFprintf(NULL, "  (no matches)\n");
         goto done;
     }
 
@@ -229,9 +229,9 @@ static int cmd_match(int ac, char *av[])
             val = "(none)";
         if (filter) {
             if (!strcmp(av[1], val))
-                printf("%s\n", matches[i]);
+                rpmaugFprintf(NULL, "%s\n", matches[i]);
         } else {
-            printf("%s = %s\n", matches[i], val);
+            rpmaugFprintf(NULL, "%s = %s\n", matches[i], val);
         }
     }
  done:
@@ -244,9 +244,9 @@ static int cmd_rm(int ac, char *av[])
     const char *path = cleanpath(av[0]);
     int cnt;
 
-    printf("rm : %s", path);
+    rpmaugFprintf(NULL, "rm : %s", path);
     cnt = rpmaugRm(NULL, path);
-    printf(" %d\n", cnt);
+    rpmaugFprintf(NULL, " %d\n", cnt);
     return 0;
 }
 
@@ -307,13 +307,13 @@ static int cmd_get(int ac, char *av[])
     const char *path = cleanpath(av[0]);
     const char *val;
 
-    printf("%s", path);
+    rpmaugFprintf(NULL, "%s", path);
     if (rpmaugGet(NULL, path, &val) != 1)
-        printf(" (o)\n");
+        rpmaugFprintf(NULL, " (o)\n");
     else if (val == NULL)
-        printf(" (none)\n");
+        rpmaugFprintf(NULL, " (none)\n");
     else
-        printf(" = %s\n", val);
+        rpmaugFprintf(NULL, " = %s\n", val);
     return 0;
 }
 
@@ -329,9 +329,9 @@ static int cmd_save(int ac, /*@unused@*/ char *av[])
     if (r != -1) {
         r = rpmaugMatch(NULL, "/augeas/events/saved", NULL);
         if (r > 0)
-            printf("Saved %d file(s)\n", r);
+            rpmaugFprintf(NULL, "Saved %d file(s)\n", r);
         else if (r < 0)
-            printf("Error during match: %d\n", r);
+            rpmaugFprintf(NULL, "Error during match: %d\n", r);
     }
     return r;
 }
@@ -342,9 +342,9 @@ static int cmd_load(int ac, /*@unused@*/ char *av[])
     if (r != -1) {
         r = rpmaugMatch(NULL, "/augeas/events/saved", NULL);
         if (r > 0)
-            printf("Saved %d file(s)\n", r);
+            rpmaugFprintf(NULL, "Saved %d file(s)\n", r);
         else if (r < 0)
-            printf("Error during match: %d\n", r);
+            rpmaugFprintf(NULL, "Error during match: %d\n", r);
     }
     return r;
 }
@@ -362,7 +362,7 @@ static int cmd_ins(int ac, char *av[])
     else if (!strcmp(where, "before"))
         before = 1;
     else {
-        printf("The <WHERE> argument must be either 'before' or 'after'.");
+        rpmaugFprintf(NULL, "The <WHERE> argument must be either 'before' or 'after'.");
 	goto exit;
     }
 
@@ -376,13 +376,13 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
 {
     const struct command *c;
 
-    printf("Commands:\n\n");
+    rpmaugFprintf(NULL, "Commands:\n\n");
     for (c=commands; c->name != NULL; c++) {
-        printf("    %s\n        %s\n\n", c->synopsis, c->help);
+        rpmaugFprintf(NULL, "    %s\n        %s\n\n", c->synopsis, c->help);
     }
-    printf("\nEnvironment:\n\n");
-    printf("    AUGEAS_ROOT\n        the file system root, defaults to '/'\n\n");
-    printf("    AUGEAS_LENS_LIB\n        colon separated list of directories with lenses,\n\
+    rpmaugFprintf(NULL, "\nEnvironment:\n\n");
+    rpmaugFprintf(NULL, "    AUGEAS_ROOT\n        the file system root, defaults to '/'\n\n");
+    rpmaugFprintf(NULL, "    AUGEAS_LENS_LIB\n        colon separated list of directories with lenses,\n\
         defaults to " AUGEAS_LENS_DIR "\n\n");
     return 0;
 }
@@ -457,40 +457,6 @@ static const struct command const commands[] = {
     { NULL, -1, -1, NULL, NULL, NULL }
 };
 
-static int run_command(int ac, char *av[])
-{
-    const struct command *c;
-    int r = -1;		/* assume failure */
-
-    for (c = commands; c->name; c++) {
-        if (!strcmp(av[0], c->name))
-            break;
-    }
-    if (c->name == NULL) {
-        fprintf(stderr, "Unknown command '%s'\n", av[0]);
-	goto exit;
-    }
-    if ((ac - 1) < c->minargs) {
-	fprintf(stderr, "Not enough arguments for %s\n", c->name);
-	goto exit;
-    }
-    if ((ac - 1) > c->maxargs) {
-	fprintf(stderr, "Too many arguments for %s\n", c->name);
-	goto exit;
-    }
-
-    r = (*c->handler)(ac-1, av+1);
-
-    if (r == -1) {
-	const char * cmd = argvJoin((const char **)av, ' ');
-        printf ("Failed(%d): %s\n", r, cmd);
-	cmd = _free(cmd);
-    }
-
-exit:
-    return r;
-}
-
 static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
 {
     static char whitespace[] = " \t\n\r";
@@ -502,6 +468,7 @@ static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
     rpmRC rc = RPMRC_OK;	/* assume success */
     int xx;
 
+    if (aug == NULL)	aug = _rpmaugI;
     if (resultp)
 	*resultp = NULL;
     if (buf && *buf)
@@ -517,12 +484,37 @@ static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
 assert(xx == 0);
 
 	if (av[0] != NULL && strlen(av[0]) > 0) {
-	    if (run_command(ac, (char **)av) < 0)
+	    const struct command *c;
+
+	    for (c = commands; c->name; c++) {
+	        if (!strcmp(av[0], c->name))
+	            break;
+	    }
+	    if (c->name == NULL) {
+	        rpmaugFprintf(NULL, "Unknown command '%s'\n", av[0]);
 		rc = RPMRC_FAIL;
+	    } else
+	    if ((ac - 1) < c->minargs) {
+		rpmaugFprintf(NULL, "Not enough arguments for %s\n", c->name);
+		rc = RPMRC_FAIL;
+	    } else
+	    if ((ac - 1) > c->maxargs) {
+		rpmaugFprintf(NULL, "Too many arguments for %s\n", c->name);
+		rc = RPMRC_FAIL;
+	    } else
+	    if ((xx = (*c->handler)(ac-1, (char **)av+1)) < 0) {
+	        rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, b);
+		rc = RPMRC_FAIL;
+	    }
 	}
 	av = _free(av);		/* XXX popt allocates contiguous argv */
 	if (rc != RPMRC_OK)
 	    break;
+    }
+    {	rpmiob iob = aug->iob;
+	if (resultp)
+	    *resultp = rpmiobStr(iob);
+	iob->blen = 0;
     }
     buf = _free(buf);
     return rc;
@@ -630,6 +622,8 @@ static int main_loop(void)
     int ret = 0;	/* assume success */
 
     while (1) {
+	const char *buf;
+
         if (isatty(fileno(stdin))) {
             line = readline("augtool> ");
         } else if (getline(&line, &len, stdin) == -1) {
@@ -643,12 +637,13 @@ static int main_loop(void)
         if (line[0] == '#')
             continue;
 
-	/* XXX fill in 1st/3rd args */
-	if (rpmaugRun(NULL, line, NULL) == RPMRC_OK) {
+	buf = NULL;
+	if (rpmaugRun(NULL, line, &buf) == RPMRC_OK) {
 	    if (isatty(fileno(stdin)))
 		add_history(line);
-	} else
-	    ret = -1;
+	}
+	if (buf && *buf)
+	    fprintf(stdout, "%s", buf);
     }
     line = _free(line);
     return ret;
@@ -695,9 +690,14 @@ int main(int argc, char **argv)
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
-    if (ac > 0) {
-        // Accept one command from the command line
-        r = run_command(ac, (char **)av);
+    if (ac > 0) {	// Accept one command from the command line
+	const char * cmd = argvJoin((const char **)av, ' ');
+	const char *buf;
+
+        r = rpmaugRun(NULL, cmd, &buf);
+	cmd = _free(cmd);
+	if (buf && *buf)
+	    fprintf(stdout, "%s", buf);
     } else {
         r = main_loop();
     }
