@@ -30,7 +30,6 @@
 #include <poptIO.h>
 #include <argv.h>
 
-#include <augeas.h>
 #define	_RPMAUG_INTERNAL
 #include <rpmaug.h>
 
@@ -133,11 +132,11 @@ static const char *const progname = "augtool";
 
 static char *cleanstr(char *path, const char sep)
 {
-    if (path == NULL || strlen(path) == 0)
-        return path;
-    char *e = path + strlen(path) - 1;
-    while (e >= path && (*e == sep || isspace(*e)))
-        *e-- = '\0';
+    if (path && *path) {
+	char *e = path + strlen(path) - 1;
+	while (e >= path && (*e == sep || xisspace(*e)))
+	    *e-- = '\0';
+    }
     return path;
 }
 
@@ -167,7 +166,7 @@ static int child_count(const char *path)
 
     if (q == NULL)
         return 0;
-    cnt = rpmaugMatch(_rpmaugI, q, NULL);
+    cnt = rpmaugMatch(NULL, q, NULL);
     free(q);
     return cnt;
 }
@@ -187,12 +186,12 @@ static int cmd_ls(int ac, char *av[])
     path = ls_pattern(path);
     if (path == NULL)
         return -1;
-    cnt = rpmaugMatch(_rpmaugI, path, &paths);
+    cnt = rpmaugMatch(NULL, path, &paths);
     for (i=0; i < cnt; i++) {
         const char *basnam = strrchr(paths[i], SEP);
         int dir = child_count(paths[i]);
         const char *val;
-        rpmaugGet(_rpmaugI, paths[i], &val);
+        rpmaugGet(NULL, paths[i], &val);
         basnam = (basnam == NULL) ? paths[i] : basnam + 1;
         if (val == NULL)
             val = "(none)";
@@ -212,7 +211,7 @@ static int cmd_match(int ac, char *av[])
     int cnt;
     int i;
 
-    cnt = rpmaugMatch(_rpmaugI, pattern, &matches);
+    cnt = rpmaugMatch(NULL, pattern, &matches);
     if (cnt < 0) {
         printf("  (error matching %s)\n", pattern);
         result = -1;
@@ -225,7 +224,7 @@ static int cmd_match(int ac, char *av[])
 
     for (i=0; i < cnt; i++) {
         const char *val;
-        rpmaugGet(_rpmaugI, matches[i], &val);
+        rpmaugGet(NULL, matches[i], &val);
         if (val == NULL)
             val = "(none)";
         if (filter) {
@@ -246,7 +245,7 @@ static int cmd_rm(int ac, char *av[])
     int cnt;
 
     printf("rm : %s", path);
-    cnt = rpmaugRm(_rpmaugI, path);
+    cnt = rpmaugRm(NULL, path);
     printf(" %d\n", cnt);
     return 0;
 }
@@ -255,7 +254,7 @@ static int cmd_mv(int ac, char *av[])
 {
     const char *src = cleanpath(av[0]);
     const char *dst = cleanpath(av[1]);
-    int r = rpmaugMv(_rpmaugI, src, dst);
+    int r = rpmaugMv(NULL, src, dst);
 
     return r;
 }
@@ -264,7 +263,7 @@ static int cmd_set(int ac, char *av[])
 {
     const char *path = cleanpath(av[0]);
     const char *val = av[1];
-    int r = rpmaugSet(_rpmaugI, path, val);
+    int r = rpmaugSet(NULL, path, val);
 
     return r;
 }
@@ -273,7 +272,7 @@ static int cmd_defvar(int ac, char *av[])
 {
     const char *name = av[0];
     const char *path = cleanpath(av[1]);
-    int r = rpmaugDefvar(_rpmaugI, name, path);
+    int r = rpmaugDefvar(NULL, name, path);
 
     return r;
 }
@@ -290,7 +289,7 @@ static int cmd_defnode(int ac, char *av[])
     if (value != NULL && value[0] == '\0')
         value = NULL;
 
-    r = rpmaugDefnode(_rpmaugI, name, path, value, NULL);
+    r = rpmaugDefnode(NULL, name, path, value, NULL);
 
     return r;
 }
@@ -298,7 +297,7 @@ static int cmd_defnode(int ac, char *av[])
 static int cmd_clear(int ac, char *av[])
 {
     const char *path = cleanpath(av[0]);
-    int r = rpmaugSet(_rpmaugI, path, NULL);
+    int r = rpmaugSet(NULL, path, NULL);
 
     return r;
 }
@@ -309,7 +308,7 @@ static int cmd_get(int ac, char *av[])
     const char *val;
 
     printf("%s", path);
-    if (rpmaugGet(_rpmaugI, path, &val) != 1)
+    if (rpmaugGet(NULL, path, &val) != 1)
         printf(" (o)\n");
     else if (val == NULL)
         printf(" (none)\n");
@@ -320,15 +319,15 @@ static int cmd_get(int ac, char *av[])
 
 static int cmd_print(int ac, char *av[])
 {
-    return rpmaugPrint(_rpmaugI, stdout, cleanpath(av[0]));
+    return rpmaugPrint(NULL, stdout, cleanpath(av[0]));
 }
 
 static int cmd_save(int ac, /*@unused@*/ char *av[])
 {
-    int r = rpmaugSave(_rpmaugI);
+    int r = rpmaugSave(NULL);
 
     if (r != -1) {
-        r = rpmaugMatch(_rpmaugI, "/augeas/events/saved", NULL);
+        r = rpmaugMatch(NULL, "/augeas/events/saved", NULL);
         if (r > 0)
             printf("Saved %d file(s)\n", r);
         else if (r < 0)
@@ -339,9 +338,9 @@ static int cmd_save(int ac, /*@unused@*/ char *av[])
 
 static int cmd_load(int ac, /*@unused@*/ char *av[])
 {
-    int r = rpmaugLoad(_rpmaugI);
+    int r = rpmaugLoad(NULL);
     if (r != -1) {
-        r = rpmaugMatch(_rpmaugI, "/augeas/events/saved", NULL);
+        r = rpmaugMatch(NULL, "/augeas/events/saved", NULL);
         if (r > 0)
             printf("Saved %d file(s)\n", r);
         else if (r < 0)
@@ -367,7 +366,7 @@ static int cmd_ins(int ac, char *av[])
 	goto exit;
     }
 
-    r = rpmaugInsert(_rpmaugI, path, label, before);
+    r = rpmaugInsert(NULL, path, label, before);
 
 exit:
     return r;
@@ -481,6 +480,7 @@ static int run_command(int ac, char *av[])
     }
 
     r = (*c->handler)(ac-1, av+1);
+
     if (r == -1) {
 	const char * cmd = argvJoin((const char **)av, ' ');
         printf ("Failed(%d): %s\n", r, cmd);
@@ -489,6 +489,43 @@ static int run_command(int ac, char *av[])
 
 exit:
     return r;
+}
+
+static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
+{
+    static char whitespace[] = " \t\n\r";
+    char *buf = xstrdup(str);
+    char *b;
+    char *be;
+    const char ** av = NULL;
+    int ac = 0;
+    rpmRC rc = RPMRC_OK;	/* assume success */
+    int xx;
+
+    if (resultp)
+	*resultp = NULL;
+    if (buf && *buf)
+    for (b = buf; *b != '\0'; b = be) {
+	/* XXX popt doesn't need ltrim, but hurts nothing. */
+	while (*b && strchr(whitespace, *b)) b++;
+	if ((be = strchr(b, '\n')) != NULL)
+	    *be++ = '\0';
+	else
+	    be = b + strlen(b);
+
+	xx = poptParseArgvString(b, &ac, &av);
+assert(xx == 0);
+
+	if (av[0] != NULL && strlen(av[0]) > 0) {
+	    if (run_command(ac, (char **)av) < 0)
+		rc = RPMRC_FAIL;
+	}
+	av = _free(av);		/* XXX popt allocates contiguous argv */
+	if (rc != RPMRC_OK)
+	    break;
+    }
+    buf = _free(buf);
+    return rc;
 }
 
 static char *readline_path_generator(const char *text, int state)
@@ -515,7 +552,7 @@ static char *readline_path_generator(const char *text, int state)
         for (;current < nchildren; current++)
             free((void *) children[current]);
         free((void *) children);
-        nchildren = rpmaugMatch(_rpmaugI, path, &children);
+        nchildren = rpmaugMatch(NULL, path, &children);
         current = 0;
         free(path);
     }
@@ -590,40 +627,31 @@ static int main_loop(void)
 {
     char *line = NULL;
     size_t len = 0;
-    const char ** av = NULL;
-    int ac = 0;
-    int ret = 0;
+    int ret = 0;	/* assume success */
 
-    while(1) {
-	int xx;
-
+    while (1) {
         if (isatty(fileno(stdin))) {
             line = readline("augtool> ");
         } else if (getline(&line, &len, stdin) == -1) {
-            return ret;
+	    break;
         }
         cleanstr(line, '\n');
         if (line == NULL) {
             printf("\n");
-            return ret;
+	    break;
         }
         if (line[0] == '#')
             continue;
 
-	xx = poptParseArgvString(line, &ac, &av);
-assert(xx == 0);
-
-        if (av[0] != NULL && strlen(av[0]) > 0) {
-            int r;
-            r = run_command(ac, (char **)av);
-            if (r < 0)
-                ret = -1;
-            if (isatty(fileno(stdin)))
-                add_history(line);
-        }
-	av = _free(av);		/* XXX popt allocates contiguous argv */
-	ac = 0;
+	/* XXX fill in 1st/3rd args */
+	if (rpmaugRun(NULL, line, NULL) == RPMRC_OK) {
+	    if (isatty(fileno(stdin)))
+		add_history(line);
+	} else
+	    ret = -1;
     }
+    line = _free(line);
+    return ret;
 }
 
 /*@unchecked@*/ /*@null@*/
