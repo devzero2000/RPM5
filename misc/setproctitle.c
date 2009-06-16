@@ -20,6 +20,8 @@
 */
 
 #include "system.h"
+#include <stdarg.h>
+#include <sys/prctl.h>
 
 #if !defined(HAVE_SETPROCTITLE)
 
