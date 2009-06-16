@@ -21,7 +21,10 @@
 
 #include "system.h"
 #include <stdarg.h>
+
+#ifdef HAVE_SYS_PRCTL_H
 #include <sys/prctl.h>
+#endif
 
 #if !defined(HAVE_SETPROCTITLE)
 
