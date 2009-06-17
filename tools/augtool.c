@@ -142,7 +142,7 @@ static char *cleanstr(char *path, const char sep)
 
 static char *cleanpath(char *path)
 {
-    return cleanstr(path, SEP);
+    return cleanstr(path, SEP);		/* XXX strip pesky trailing slashes */
 }
 
 static char *ls_pattern(const char *path)
@@ -457,66 +457,130 @@ static const struct command const commands[] = {
     { NULL, -1, -1, NULL, NULL, NULL }
 };
 
-static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
+#if 0
+/**
+ * Return text between pl and matching pr characters.
+ * @param p		start of text
+ * @param pl		left char, i.e. '[', '(', '{', etc.
+ * @param pr		right char, i.e. ']', ')', '}', etc.
+ * @return		address of last char before pr (or NULL)
+ */
+/*@null@*/
+static const char *
+matchchar(const char * p, char pl, char pr)
+        /*@*/
+{
+    int lvl = 0;
+    char c;
+
+    while ((c = *p++) != '\0') {
+        if (c == '\\') {                /* Ignore escaped chars */
+            p++;
+            continue;
+        }
+        if (c == pr) {
+            if (--lvl <= 0)     return --p;
+        } else if (c == pl)
+            lvl++;
+    }
+    return (const char *)NULL;
+}
+#endif
+
+typedef struct rpmaup_s {
+    char * str;
+    char * b;
+    char * be;
+    int ac;
+    const char ** av;
+} * rpmaugP;
+
+static rpmRC rpmaugParse(rpmaugP *Pptr, const char * str)
 {
     static char whitespace[] = " \t\n\r";
-    char *buf = xstrdup(str);
-    char *b;
-    char *be;
-    const char ** av = NULL;
-    int ac = 0;
+    rpmaugP P;
+    rpmRC rc;
+
+    if ((P = *Pptr) == NULL)
+	*Pptr = P = xcalloc(1, sizeof(*P));
+
+    if (str != NULL) {
+	P->str = _free(P->str);
+	P->str = xstrdup(str);
+	P->be = P->b = P->str;
+    } else {
+	P->b = P->be;
+	if (P->b == NULL || *P->be == '\0')
+	    return RPMRC_NOTFOUND;
+    }
+
+    /* XXX popt doesn't need ltrim, but hurts nothing. */
+    while (*P->b && strchr(whitespace, *P->b)) P->b++;
+
+    if ((P->be = strchr(P->b, '\n')) != NULL)
+	    *P->be++ = '\0';
+	else
+	    P->be = P->b + strlen(P->b);
+
+    P->av = _free(P->av);		/* XXX popt allocates contiguous argv */
+    P->ac = 0;
+    rc = (poptParseArgvString(P->b, &P->ac, &P->av) != 0
+		? RPMRC_FAIL : RPMRC_OK);
+
+    return rc;
+}
+
+static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
+{
+    rpmaugP P = NULL;
     rpmRC rc = RPMRC_OK;	/* assume success */
     int xx;
 
     if (aug == NULL)	aug = _rpmaugI;
+
     if (resultp)
 	*resultp = NULL;
-    if (buf && *buf)
-    for (b = buf; *b != '\0'; b = be) {
-	/* XXX popt doesn't need ltrim, but hurts nothing. */
-	while (*b && strchr(whitespace, *b)) b++;
-	if ((be = strchr(b, '\n')) != NULL)
-	    *be++ = '\0';
-	else
-	    be = b + strlen(b);
 
-	xx = poptParseArgvString(b, &ac, &av);
-assert(xx == 0);
+    while (rpmaugParse(&P, str) == RPMRC_OK) {
+	const struct command *c;
+	str = NULL;
 
-	if (av[0] != NULL && strlen(av[0]) > 0) {
-	    const struct command *c;
+	if (P->av[0] != NULL && strlen(P->av[0]) > 0) {
 
 	    for (c = commands; c->name; c++) {
-	        if (!strcmp(av[0], c->name))
+	        if (!strcmp(P->av[0], c->name))
 	            break;
 	    }
 	    if (c->name == NULL) {
-	        rpmaugFprintf(NULL, "Unknown command '%s'\n", av[0]);
+	        rpmaugFprintf(NULL, "Unknown command '%s'\n", P->av[0]);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((ac - 1) < c->minargs) {
+	    if ((P->ac - 1) < c->minargs) {
 		rpmaugFprintf(NULL, "Not enough arguments for %s\n", c->name);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((ac - 1) > c->maxargs) {
+	    if ((P->ac - 1) > c->maxargs) {
 		rpmaugFprintf(NULL, "Too many arguments for %s\n", c->name);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((xx = (*c->handler)(ac-1, (char **)av+1)) < 0) {
-	        rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, b);
+	    if ((xx = (*c->handler)(P->ac-1, (char **)P->av+1)) < 0) {
+	        rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, P->b);
 		rc = RPMRC_FAIL;
 	    }
 	}
-	av = _free(av);		/* XXX popt allocates contiguous argv */
+	P->av = _free(P->av);		/* XXX popt allocates contiguous argv */
 	if (rc != RPMRC_OK)
 	    break;
     }
     {	rpmiob iob = aug->iob;
-	if (resultp)
+	if (resultp && iob->blen > 0)	/* XXX return result iff bytes appended */
 	    *resultp = rpmiobStr(iob);
-	iob->blen = 0;
+	iob->blen = 0;			/* XXX reset the print buffer */
     }
-    buf = _free(buf);
+    if (P != NULL) {
+	P->str = _free(P->str);
+	P = _free(P);
+    }
     return rc;
 }
 
