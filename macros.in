@@ -1400,10 +1400,11 @@ print (t)\
 #
 %_prefix		@prefix@
 %_exec_prefix		%{_prefix}
+%_datarootdir		%{_prefix}/share
 %_bindir		%{_exec_prefix}/bin
 %_sbindir		%{_exec_prefix}/sbin
 %_libexecdir		%{_exec_prefix}/libexec
-%_datadir		%{_prefix}/share
+%_datadir		%{_datarootdir}
 %_sysconfdir		%{_prefix}/etc
 %_sharedstatedir	%{_prefix}/com
 %_localstatedir		%{_prefix}/var
@@ -1411,9 +1412,10 @@ print (t)\
 %_libdir		%{_exec_prefix}/%{_lib}
 %_includedir		%{_prefix}/include
 %_oldincludedir		/usr/include
-%_infodir		%{_prefix}/info
-%_mandir		%{_prefix}/man
-%_localedir		%{_datadir}/locale
+%_infodir		%{_datarootdir}/info
+%_mandir		%{_datarootdir}/man
+%_localedir		%{_datarootdir}/locale
+%_lispdir		%{_datarootdir}/emacs/site-lisp
 
 %_initrddir		%{_sysconfdir}/rc.d/init.d
 
