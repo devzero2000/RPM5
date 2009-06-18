@@ -12,6 +12,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
+#include <rpmaug.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmlua.h>
@@ -571,7 +572,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -664,6 +665,15 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_LUA)
     if (!strcmp(Phe->p.argv[0], "<lua>")) {
 	rc = runLuaScript(psm, sln, Phe, script, arg1, arg2);
+    } else
+#endif
+#if defined(WITH_AUGEAS)
+    if (!strcmp(Phe->p.argv[0], "<augtool>")) {
+	/* XXX change rpmaugNew() to common embedded interpreter API */
+	rpmaug aug = NULL;
+	rc = rpmaugRun(aug, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	aug = rpmaugFree(aug);
     } else
 #endif
 #if defined(WITH_FICL)

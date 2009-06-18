@@ -44,6 +44,20 @@ struct rpmaug_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
+
+/** \ingroup rpmio
+ */
+typedef struct rpmaugC_s {
+    const char *name;
+    int minargs;
+    int maxargs;
+    int(*handler) (int ac, char *av[]);
+    const char *synopsis;
+    const char *help;
+} * rpmaugC;
+
+extern struct rpmaugC_s const _rpmaugCommands[];
+
 #endif	/* _RPMAUG_INTERNAL */
 
 #ifdef __cplusplus
@@ -92,6 +106,7 @@ rpmaug rpmaugFree(/*@killref@*/ /*@null@*/rpmaug aug)
 
 /**
  * Create and load a augeas wrapper.
+ * @todo Change to common RPM embedded interpreter API.
  * @param root		augeas filesystem root
  * @param loadpath	augeas load path (colon separated)
  * @param flags		augeas flags
@@ -215,12 +230,21 @@ int rpmaugPrint(/*@null@*/ rpmaug aug, /*@null@*/ FILE * out, const char * path)
 	/*@modifies aug, *out @*/;
 
 /**
- * Append output to an iob.
+ * Append augeas output to an iob.
  * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param fmt		format to use
  */
 void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
 	/*@modifies aug @*/;
+
+/**
+ * Run augeas commands from a buffer.
+ * @param str		augeas commands to run
+ * @retval *resultp	output running augeas commands
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
+	/*@modifies aug, *resultp @*/;
 
 #ifdef __cplusplus
 }

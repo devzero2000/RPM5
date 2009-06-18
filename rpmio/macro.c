@@ -70,6 +70,8 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmlua.h>
 #endif
 
+#define	_RPMAUG_INTERNAL	/* XXX for _rpmaugFoo globals */
+#include <rpmaug.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmperl.h>
@@ -88,7 +90,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include "debug.h"
 
 /*@unchecked@*/
-#if defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int _globalI = 1;
 #endif
 
@@ -1572,7 +1574,7 @@ exit:
  * @retval *avp		invocation args
  * @return		script string
  */
-#if defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static char * parseEmbedded(const char * s, size_t nb, const char *** avp)
 	/*@*/
 {
@@ -1880,6 +1882,42 @@ expandMacro(MacroBuf mb)
 		lua->printbufused = olua->printbufused;
 
 		free(scriptbuf);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_AUGEAS
+	if (STREQ("augtool", f, fn)) {
+		/* XXX change rpmaugNew() to common embedded interpreter API */
+#ifdef	NOTYET
+		const char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+#else
+		char * script = strndup(g, (size_t)(se-g-1));
+#endif
+		rpmaug aug = (_globalI ? NULL
+		    : rpmaugNew(_rpmaugRoot, _rpmaugLoadpath, _rpmaugFlags));
+		const char * result = NULL;
+
+		if (rpmaugRun(aug, script, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		 }
+		}
+		aug = rpmaugFree(aug);
+#ifdef	NOTYET
+		av = _free(av);
+#endif
+		script = _free(script);
 		s = se;
 		continue;
 	}

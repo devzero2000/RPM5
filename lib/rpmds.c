@@ -1461,6 +1461,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded lua scripts.") },
 #endif
+#if defined(WITH_AUGEAS)
+    { "rpmlib(BuiltinAugeasScripts)",	"5.3-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("internal embedded Augeas.") },
+#endif
 #if defined(WITH_FICL)
     { "rpmlib(BuiltinFiclScripts)",	"5.2-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),

@@ -257,12 +257,13 @@ LIBRPMIO_0
     Rmdir;
     _Rmdir;
     _rpmaug_debug;
-    _rpmaugI;
+    _rpmaugCommands;
     rpmaugDefnode;
     rpmaugDefvar;
     _rpmaugFlags;
     rpmaugFprintf;
     rpmaugGet;
+    _rpmaugI;
     rpmaugInsert;
     rpmaugLoad;
     _rpmaugLoadargv;
@@ -274,6 +275,7 @@ LIBRPMIO_0
     rpmaugPrint;
     rpmaugRm;
     _rpmaugRoot;
+    rpmaugRun;
     rpmaugSave;
     rpmaugSet;
     rpmbcImplVecs;

@@ -313,6 +313,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinLuaScripts", "4.2.2-1");
     } else
 #endif
+#ifdef WITH_AUGEAS
+    if (!strcmp(progArgv[0], "<augtool>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinAugeasScripts", "5.3-1");
+    } else
+#endif
 #ifdef WITH_FICL
     if (!strcmp(progArgv[0], "<ficl>")) {
 	(void) rpmlibNeedsFeature(pkg->header,

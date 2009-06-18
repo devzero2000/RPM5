@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augtool: finish proof-of-concept embedding. stdout capture todo++.
     - devzero2000: macros.in: add _datarootdir e _lispdir for GNU standard
     - jbj: augtool: capture stdout in aut->iob, return through rpmaugRun().
     - jbj: debugedit: handle DWARF-3 changes (#505774).
