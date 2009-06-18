@@ -457,24 +457,23 @@ static const struct command const commands[] = {
     { NULL, -1, -1, NULL, NULL, NULL }
 };
 
-#if 0
 /**
  * Return text between pl and matching pr characters.
  * @param p		start of text
  * @param pl		left char, i.e. '[', '(', '{', etc.
  * @param pr		right char, i.e. ']', ')', '}', etc.
- * @return		address of last char before pr (or NULL)
+ * @return		pointer to matching pr char in string (or NULL)
  */
 /*@null@*/
-static const char *
-matchchar(const char * p, char pl, char pr)
+static char *
+matchchar(char * p, char pl, char pr)
         /*@*/
 {
     int lvl = 0;
     char c;
 
     while ((c = *p++) != '\0') {
-        if (c == '\\') {                /* Ignore escaped chars */
+        if (c == '\\') {	/* Ignore escaped chars */
             p++;
             continue;
         }
@@ -483,50 +482,105 @@ matchchar(const char * p, char pl, char pr)
         } else if (c == pl)
             lvl++;
     }
-    return (const char *)NULL;
+    return (char *)NULL;
 }
-#endif
 
 typedef struct rpmaup_s {
     char * str;
-    char * b;
-    char * be;
-    int ac;
+    char * next;
     const char ** av;
+    int ac;
 } * rpmaugP;
 
-static rpmRC rpmaugParse(rpmaugP *Pptr, const char * str)
+static rpmRC rpmaugCommand(rpmaugP *Pptr, const char * str)
 {
     static char whitespace[] = " \t\n\r";
     rpmaugP P;
     rpmRC rc;
+    char *b;
+    char *be;
+    int xx;
+    int c;
 
     if ((P = *Pptr) == NULL)
 	*Pptr = P = xcalloc(1, sizeof(*P));
 
     if (str != NULL) {
 	P->str = _free(P->str);
-	P->str = xstrdup(str);
-	P->be = P->b = P->str;
-    } else {
-	P->b = P->be;
-	if (P->b == NULL || *P->be == '\0')
-	    return RPMRC_NOTFOUND;
+	P->next = P->str = xstrdup(str);
     }
 
-    /* XXX popt doesn't need ltrim, but hurts nothing. */
-    while (*P->b && strchr(whitespace, *P->b)) P->b++;
+    /* Ltrim whitespace. Anything left to parse? */
+    if ((b = P->next) != NULL)
+    while (*b && strchr(whitespace, *b))
+	*b++ = '\0';
+    if (b == NULL || *b == '\0')
+	return RPMRC_NOTFOUND;
 
-    if ((P->be = strchr(P->b, '\n')) != NULL)
-	    *P->be++ = '\0';
-	else
-	    P->be = P->b + strlen(P->b);
-
-    P->av = _free(P->av);		/* XXX popt allocates contiguous argv */
+    /* Parse next command into an argv. */
     P->ac = 0;
-    rc = (poptParseArgvString(P->b, &P->ac, &P->av) != 0
-		? RPMRC_FAIL : RPMRC_OK);
+    P->av = argvFree(P->av);
+    if ((be = b) != NULL)
+  while (1) {
+    c = *be++;
+    switch (c) {
+    default:
+	break;
+    case '\\':		/* escaped character. */
+	if (*be != '\0')
+	    be++;
+	break;
+    case '\0':		/* end-of-command termination. */
+    case '\n':
+    case '\r':
+    case ';':	
+	if (be[-1] != '\0')
+	    be[-1] = '\0';
+	else
+	    be--;			/* XXX one too far */
+	if ((be - b) > 1) {
+	    xx = argvAdd(&P->av, b);
+	    P->ac++;
+	}
+	goto exit;
+	break;
+    case '[':		/* XPath construct with '[' balancing. */
+	if ((be = matchchar(be, '[', ']')) == NULL) {
+	    be += strlen(b);	/* XXX unmatched ']' */
+	    goto exit;
+	}
+	be++;
+	break;
+    case '"':		/* quoted string */
+	while (1) {
+	    if ((be = strchr(be, '"')) == NULL) {
+		be += strlen(b);	/* XXX unmatched '"' */
+		goto exit;
+	    }
+	    be++;
+	    if (be[-2] == '\\')	/* escaped quote */
+		continue;
+	    break;
+	}
+	break;
+    case ' ':		/* argument separator */
+    case '\t':
+	be[-1] = '\0';
+	if ((be - b) > 1) {
+	    xx = argvAdd(&P->av, b);
+	    P->ac++;
+	}
+	b = be;
+	while (*b && (*b == ' ' || *b == '\t'))
+	    *b++ = '\0';
+	be = b;
+	break;
+    }
+  }
+    rc = RPMRC_OK;
 
+exit:
+    P->next = be;
     return rc;
 }
 
@@ -541,11 +595,11 @@ static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
     if (resultp)
 	*resultp = NULL;
 
-    while (rpmaugParse(&P, str) == RPMRC_OK) {
+    while (rpmaugCommand(&P, str) != RPMRC_NOTFOUND) {	/* XXX exit on EOS */
 	const struct command *c;
 	str = NULL;
 
-	if (P->av[0] != NULL && strlen(P->av[0]) > 0) {
+	if (P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0) {
 
 	    for (c = commands; c->name; c++) {
 	        if (!strcmp(P->av[0], c->name))
@@ -564,21 +618,21 @@ static rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
 		rc = RPMRC_FAIL;
 	    } else
 	    if ((xx = (*c->handler)(P->ac-1, (char **)P->av+1)) < 0) {
-	        rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, P->b);
+	        rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, P->av[0]);
 		rc = RPMRC_FAIL;
 	    }
 	}
-	P->av = _free(P->av);		/* XXX popt allocates contiguous argv */
 	if (rc != RPMRC_OK)
 	    break;
     }
     {	rpmiob iob = aug->iob;
-	if (resultp && iob->blen > 0)	/* XXX return result iff bytes appended */
+	if (resultp && iob->blen > 0) /* XXX return result iff bytes appended */
 	    *resultp = rpmiobStr(iob);
 	iob->blen = 0;			/* XXX reset the print buffer */
     }
     if (P != NULL) {
 	P->str = _free(P->str);
+	P->av = argvFree(P->av);
 	P = _free(P);
     }
     return rc;
