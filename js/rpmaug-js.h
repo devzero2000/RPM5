@@ -17,7 +17,8 @@ extern JSObject *
 rpmjs_InitAugClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewAugObject(JSContext *cx);
+rpmjs_NewAugObject(JSContext *cx, const char *_root,
+		const char *_loadpath, unsigned int _flags);
 
 #ifdef __cplusplus      
 }
