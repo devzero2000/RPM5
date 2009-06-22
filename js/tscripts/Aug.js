@@ -1,10 +1,33 @@
 if (loglvl) print("--> Aug.js");
 
-var aug = new Aug();
+const AUG_NONE = 0;
+const AUG_SAVE_BACKUP	= (1 << 0);	/* Keep original file as *.augsave */
+const AUG_SAVE_NEWFILE	= (1 << 1);	/* Save new file as *.augnew */
+const AUG_TYPE_CHECK	= (1 << 2);	/* Typecheck lenses (expensive) */
+const AUG_NO_STDINC	= (1 << 3);	/* Do not use the builtin load path */
+const AUG_SAVE_NOOP	= (1 << 4);	/* Record (but don't perform) save */
+const AUG_NO_LOAD	= (1 << 5);	/* Do not load the tree from AUG_INIT */
+const AUG_NO_MODL_AUTOLOAD = (1 << 6);
+
+var aug = new Aug("", "", (AUG_NO_LOAD|AUG_SAVE_NEWFILE));
 ack("typeof aug;", "object");
 ack("aug instanceof Aug;", true);
 // ack("aug = 1;", 1);
 // ack("aug = 0;", 0);
+
+var _defvar = "/augeas/version/defvar";
+aug.print(_defvar);
+ack("aug.defvar('foo', 'bar')", "foo");
+aug.print(_defvar);
+ack("aug.defvar('foo')", "foo");
+aug.print(_defvar);
+
+ack("aug.hosts = '/files/etc/hosts/*'", undefined);
+aug.print(_defvar);
+aug.localhost = "'127.0.0.1'";
+aug.print(_defvar);
+
+ack("aug.load()", true);
 
 var passwd = "/files/etc/passwd";
 var rpc = passwd+"/rpc";
@@ -28,5 +51,8 @@ var newrpcnewname = newrpc+"/"+newname;
 ack("aug.mv(rpc, newrpc)", true);
 ack("aug.get(newrpcnewname)", "George");
 ack("aug.rm(newrpc)", true);
+
+// XXX return depends on root in order to rewrite changed files. */
+ack("aug.save()", undefined);
 
 if (loglvl) print("<-- Aug.js");

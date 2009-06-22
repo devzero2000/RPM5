@@ -7,7 +7,7 @@
 #include "rpmaug-js.h"
 #include "rpmjs-debug.h"
 
-#define	_RPMPS_INTERNAL
+#include <rpmmacro.h>
 #include <rpmaug.h>
 
 #include "debug.h"
@@ -19,9 +19,45 @@ static int _debug = 0;
 #define	rpmaug_delprop	JS_PropertyStub
 #define	rpmaug_convert	JS_ConvertStub
 
+#define	AUGEAS_META_TREE	"/augeas"
+/*@unchecked@*/
+static const char _defvar[] = AUGEAS_META_TREE "/version/defvar";
+
 /* --- helpers */
 
 /* --- Object methods */
+/* XXX does aug_defnode() need binding? */
+/* XXX unclear whether aug.defvar("foo", "bar") or aug.foo = "bar" is better */
+static JSBool
+rpmaug_defvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
+    rpmaug aug = ptr;
+    JSBool ok = JS_FALSE;
+    const char * _name = NULL;
+    const char * _expr = NULL;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    /* XXX note optional EXPR. If EXPR is NULL, then NAME is deleted. */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/s", &_name, &_expr)))
+        goto exit;
+
+    switch (rpmaugDefvar(aug, _name, _expr)) {
+    default:
+    case 0:	/* failure (but success if EXPR was NULL?) */
+    case 1:	/* success */
+	/* XXX return NAME or EXPR on success?  or bool for success/failure? */
+	/* XXX hmmm, bool and string mixed returns. */
+	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _name));
+	break;
+    }
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
 static JSBool
 rpmaug_get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -39,8 +75,6 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 
     switch (rpmaugGet(aug, _path, &_value)) {
     case 1:	/* found */
-if (_debug)
-fprintf(stderr, "\tgot \"%s\"\n", _value);
 	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
 #ifdef	NOTYET
 	_value = _free(_value);
@@ -74,8 +108,6 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 
     switch (rpmaugSet(aug, _path, _value)) {
     case 0:	/* found */
-if (_debug)
-fprintf(stderr, "\tput \"%s\"\n", _value);
 	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
 	break;
     default:
@@ -291,6 +323,7 @@ exit:
 }
 
 static JSFunctionSpec rpmaug_funcs[] = {
+    JS_FS("defvar",	rpmaug_defvar,		0,0,0),
     JS_FS("get",	rpmaug_get,		0,0,0),
     JS_FS("set",	rpmaug_set,		0,0,0),
     JS_FS("insert",	rpmaug_insert,		0,0,0),
@@ -320,10 +353,10 @@ static JSBool
 rpmaug_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
-#ifdef	NOTYET
     rpmaug aug = ptr;
-#endif
     jsint tiny = JSVAL_TO_INT(id);
+
+_PROP_DEBUG_ENTRY(_debug < 0);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -334,6 +367,16 @@ rpmaug_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	break;
     default:
+        if (JSVAL_IS_STRING(id) && *vp == JSVAL_VOID) {
+	    const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
+	    const char * _path = rpmGetPath(_defvar, "/", name, NULL);
+	    const char * _value = NULL;
+	    if (rpmaugGet(aug, _path, &_value) >= 0 && _value != NULL)
+		*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
+	    _path = _free(_path);
+	    _value = _free(_value);
+            break;
+        }
 	break;
     }
 
@@ -344,7 +387,10 @@ static JSBool
 rpmaug_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
+    rpmaug aug = ptr;
     jsint tiny = JSVAL_TO_INT(id);
+
+_PROP_DEBUG_ENTRY(_debug < 0);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -356,6 +402,15 @@ rpmaug_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    break;
 	break;
     default:
+	/* XXX expr = undefined same as deleting? */
+        if (JSVAL_IS_STRING(id)) {
+            const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
+            const char * expr = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+	    /* XXX should *setprop be permitted to delete NAME?!? */
+	    /* XXX return is no. nodes in EXPR match. */
+	    (void) rpmaugDefvar(aug, name, expr);
+            break;
+        }
 	break;
     }
 
@@ -371,12 +426,55 @@ rpmaug_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
-    if ((flags & JSRESOLVE_ASSIGNING)
-     || (aug == NULL)) { /* don't resolve to parent prototypes objects. */
+    if (ptr == NULL) {	/* don't resolve to parent prototypes objects. */
 	*objp = NULL;
 	goto exit;
     }
 
+    /* Lazily resolve new strings, with duplication to Augeas defvar too. */
+    if ((flags & JSRESOLVE_ASSIGNING) && JSVAL_IS_STRING(id)) {
+        const char *name = JS_GetStringBytes(JS_ValueToString(cx, id));
+	const char * _path;
+	const char * _value;
+	int xx;
+	JSFunctionSpec *fsp;
+
+	/* XXX avoid "aug.print" method namess duped into defvar space? */
+	for (fsp = rpmaug_funcs; fsp->name != NULL; fsp++) {
+	    if (!strcmp(fsp->name, name)) {
+		*objp = obj;	/* XXX always resolve in this object. */
+		goto exit;
+	    }
+	}
+
+	/* See if NAME exists in DEFVAR path. */
+	_path = rpmGetPath(_defvar, "/", name, NULL);
+	_value = NULL;
+
+	switch (rpmaugGet(aug, _path, &_value)) {
+	/* XXX For now, force all defvar's to be single valued strings. */
+	case -1:/* multiply defined */
+	case 0:	/* not found */
+	    /* Create an empty Augeas defvar for NAME */
+	    xx = rpmaugDefvar(aug, name, "");
+	    /*@fallthrough@*/
+	case 1:	/* found */
+	    /* Reflect the Augeas defvar NAME into JS Aug properties. */
+	    if (JS_DefineProperty(cx, obj, name,
+			(_value != NULL
+			    ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value))
+			    : JSVAL_VOID),
+                        NULL, NULL, JSPROP_ENUMERATE))
+		break;
+	    /*@fallthrough@*/
+	default:
+assert(0);
+	    break;
+	}
+
+	_path = _free(_path);
+	_value = _free(_value);
+    }
     *objp = obj;	/* XXX always resolve in this object. */
 
 exit:
@@ -390,6 +488,21 @@ rpmaug_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 
 _ENUMERATE_DEBUG_ENTRY(_debug);
 
+    switch (op) {
+    case JSENUMERATE_INIT:
+	*statep = JSVAL_VOID;
+	if (idp)
+	    *idp = JSVAL_ZERO;
+        break;
+    case JSENUMERATE_NEXT:
+	*statep = JSVAL_VOID;
+	if (*idp != JSVAL_VOID)
+	    break;
+        /*@fallthrough@*/
+    case JSENUMERATE_DESTROY:
+	*statep = JSVAL_NULL;
+        break;
+    }
     return JS_TRUE;
 }
 
@@ -454,7 +567,7 @@ exit:
 /* --- Class initialization */
 JSClass rpmaugClass = {
     /* XXX class should be "Augeas" eventually, avoid name conflicts for now */
-    "Aug", JSCLASS_NEW_RESOLVE | JSCLASS_HAS_PRIVATE,
+    "Aug", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmaug_addprop,   rpmaug_delprop, rpmaug_getprop, rpmaug_setprop,
     (JSEnumerateOp)rpmaug_enumerate, (JSResolveOp)rpmaug_resolve,
     rpmaug_convert,	rpmaug_dtor,
