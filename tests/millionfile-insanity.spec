@@ -16,7 +16,7 @@ Trivial standalone test of a 1 million file package
 for ((i=0;i<1000;i+=1)); do
     mkdir -p %{buildroot}/tmp/${i}
     for ((j=0;j<1000;j+=1)); do
-        echo "%{buildroot}/tmp/${i}/${j}" > %{buildroot}/tmp/${i}/${j}
+        echo "/tmp/${i}/${j}" > %{buildroot}/tmp/${i}/${j}
     done
 done
 
