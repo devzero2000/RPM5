@@ -1244,9 +1244,9 @@ rpmtransFlags rpmtsFlags(rpmts ts)
     if (ts != NULL) {
 	transFlags = ts->transFlags;
 	if (rpmtsSELinuxEnabled(ts) > 0)
-	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
-	else
 	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
+	else
+	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
     }
     return transFlags;
 }
@@ -1257,9 +1257,9 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     if (ts != NULL) {
 	otransFlags = ts->transFlags;
 	if (rpmtsSELinuxEnabled(ts) > 0)
-	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
-	else
 	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
+	else
+	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
 	ts->transFlags = transFlags;
     }
     return otransFlags;
