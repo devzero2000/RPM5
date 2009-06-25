@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: selinux: fix: disabler bit toggle sense was inverted.
     - jbj: js: add getters/setters to handle defvar() variables.
     - jbj: js: add methods and unit tests for the Aug class.
     - jbj: augtool: finish proof-of-concept embedding. stdout capture todo++.
