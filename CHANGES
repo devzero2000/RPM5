@@ -1,4 +1,5 @@
 5.1.9 -> 5.1.10:
+    - jbj: selinux: fix: disabler bit toggle sense was inverted.
     - jbj: change default dep whiteout to ensure filessystem before setup.
     - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
     - jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
