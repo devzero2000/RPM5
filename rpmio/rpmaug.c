@@ -156,6 +156,8 @@ int rpmaugDefvar(rpmaug aug, const char * name, const char * expr)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_defvar(aug->I, name, expr);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, name, expr, rc);
     return rc;
 }
 
@@ -167,6 +169,8 @@ int rpmaugDefnode(rpmaug aug, const char * name, const char * expr,
     if (aug == NULL) aug = rpmaugI();
     rc = aug_defnode(aug->I, name, expr, value, created);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\",\"%s\",\"%s\",%p) rc %d *created %d\n", __FUNCTION__, aug, name, expr, value, created, rc, (created ? *created : 0));
     return rc;
 }
 
@@ -177,6 +181,8 @@ int rpmaugGet(rpmaug aug, const char * path, const char ** value)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_get(aug->I, path, value);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\",%p) rc %d *value \"%s\"\n", __FUNCTION__, aug, path, value, rc, (value ? *value : NULL));
     return rc;
 }
 
@@ -187,6 +193,8 @@ int rpmaugSet(rpmaug aug, const char * path, const char * value)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_set(aug->I, path, value);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, path, value, rc);
     return rc;
 }
 
@@ -207,6 +215,8 @@ int rpmaugRm(rpmaug aug, const char * path)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_rm(aug->I, path);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\") rc %d\n", __FUNCTION__, aug, path, rc);
     return rc;
 }
 
@@ -217,6 +227,8 @@ int rpmaugMv(rpmaug aug, const char * src, const char * dst)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_mv(aug->I, src, dst);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, src, dst, rc);
     return rc;
 }
 
@@ -227,6 +239,8 @@ int rpmaugMatch(rpmaug aug, const char * path, char *** matches)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_match(aug->I, path, matches);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p,\"%s\",%p) rc %d *matches %p\n", __FUNCTION__, aug, path, matches, rc, (matches ? *matches : NULL));
     return rc;
 }
 
@@ -237,6 +251,8 @@ int rpmaugSave(rpmaug aug)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_save(aug->I);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p) rc %d\n", __FUNCTION__, aug, rc);
     return rc;
 }
 
@@ -247,6 +263,8 @@ int rpmaugLoad(rpmaug aug)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_load(aug->I);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p) rc %d\n", __FUNCTION__, aug, rc);
     return rc;
 }
 
@@ -255,8 +273,12 @@ int rpmaugPrint(rpmaug aug, FILE *out, const char * path)
     int rc = -1;
 #ifdef	WITH_AUGEAS
     if (aug == NULL) aug = rpmaugI();
+    if (out == NULL) out = stderr;
     rc = aug_print(aug->I, out, path);
+    (void) fflush(out);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "--> %s(%p, %p, \"%s\") rc %d\n", __FUNCTION__, aug, out, path, rc);
     return rc;
 }
 
@@ -449,7 +471,7 @@ static int cmd_set(int ac, char *av[])
 static int cmd_defvar(int ac, char *av[])
 {
     const char *name = av[0];
-    const char *path = cleanpath(av[1]);
+    const char *path = (av[1] && *av[1] ? cleanpath(av[1]) : NULL);
     int r = rpmaugDefvar(NULL, name, path);
 
     return r;
@@ -616,7 +638,7 @@ const struct rpmaugC_s const _rpmaugCommands[] = {
     { "load", 0, 0, cmd_load, "load",
       "Load files accordig to the transforms in /augeas/load."
     },
-    { "defvar", 2, 2, cmd_defvar, "defvar <NAME> <EXPR>",
+    { "defvar", 1, 2, cmd_defvar, "defvar <NAME> <EXPR>",
       "Define the variable NAME to the result of evalutating EXPR. The\n"
       "        variable can be used in path expressions as $NAME. Note that EXPR\n"
       "        is evaluated when the variable is defined, not when it is used."
