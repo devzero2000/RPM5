@@ -279,6 +279,13 @@ LIBRPMIO_0
     rpmaugSave;
     rpmaugSet;
     rpmbcImplVecs;
+    _rpmbf_debug;
+    rpmbfFree;
+    rpmbfNew;
+    rpmbfAdd;
+    rpmbfChk;
+    rpmbfClr;
+    rpmbfDel;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;

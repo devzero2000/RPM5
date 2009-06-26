@@ -66,11 +66,12 @@ noinst_HEADERS = \
 	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
-	poptIO.h rpmaug.h rpmbc.h rpmbz.h rpmdav.h rpmficl.h rpmgc.h rpmhash.h \
-	rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h rpmku.h \
-	rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h rpmruby.h rpmsq.h \
-	rpmsquirrel.h rpmssl.h rpmsyck.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h \
-	rpmz.h rpmzq.h tar.h ugid.h rpmio-stub.h
+	poptIO.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h rpmdav.h rpmficl.h rpmgc.h \
+	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
+	rpmku.h rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h \
+	rpmruby.h rpmsq.h rpmsquirrel.h rpmssl.h rpmsyck.h rpmtcl.h \
+	rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
@@ -80,8 +81,9 @@ librpmio_la_SOURCES = \
 	macro.c mire.c mount.c poptIO.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
-	rpmaug.c rpmbc.c rpmdav.c rpmficl.c rpmgc.c rpmhash.c rpmhook.c \
-	rpmio.c rpmiob.c rpmio-stub.c rpmjs.c rpmjsio.c rpmkeyring.c \
+	rpmaug.c rpmbc.c rpmbf.c rpmdav.c rpmficl.c rpmgc.c \
+	rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
+	rpmjs.c rpmjsio.c rpmkeyring.c \
 	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsq.c \
 	rpmsquirrel.c rpmssl.c rpmsyck.c rpmsw.c rpmtcl.c rpmuuid.c rpmxar.c \

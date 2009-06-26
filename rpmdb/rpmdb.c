@@ -15,6 +15,9 @@
 #include <rpmsq.h>
 #include <argv.h>
 
+#define	_RPMBF_INTERNAL
+#include <rpmbf.h>		/* pbm_set macros */
+
 #include <rpmtypes.h>
 
 #define	_RPMTAG_INTERNAL
@@ -77,54 +80,6 @@ static int _db_tagged_findbyfile = _DB_TAGGED_FINDBYFILE;
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
-
-/* Bit mask macros. */
-/*@-exporttype@*/
-typedef	unsigned int __pbm_bits;
-/*@=exporttype@*/
-#define	__PBM_NBITS		/*@-sizeoftype@*/(8 * sizeof(__pbm_bits))/*@=sizeoftype@*/
-#define	__PBM_IX(d)		((d) / __PBM_NBITS)
-#define __PBM_MASK(d)		((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
-/*@-exporttype@*/
-typedef struct {
-    __pbm_bits bits[1];
-} pbm_set;
-/*@=exporttype@*/
-#define	__PBM_BITS(set)	((set)->bits)
-
-#define	PBM_FREE(s)	_free(s);
-#define PBM_SET(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] |= __PBM_MASK (d))
-#define PBM_CLR(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] &= ~__PBM_MASK (d))
-#define PBM_ISSET(d, s) ((__PBM_BITS (s)[__PBM_IX (d)] & __PBM_MASK (d)) != 0)
-
-#define	PBM_ALLOC(d)	xcalloc(__PBM_IX (d) + 1, __PBM_NBITS/8)
-
-/**
- * Reallocate a bit map.
- * @retval sp		address of bit map pointer
- * @retval odp		no. of bits in map
- * @param nd		desired no. of bits
- */
-/*@unused@*/
-static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
-	/*@modifies *sp, *odp @*/
-{
-    int i, nb;
-
-    if (nd > (*odp)) {
-	nd *= 2;
-	nb = __PBM_IX(nd) + 1;
-/*@-unqualifiedtrans@*/
-	*sp = xrealloc(*sp, nb * (__PBM_NBITS/8));
-/*@=unqualifiedtrans@*/
-	for (i = __PBM_IX(*odp) + 1; i < nb; i++)
-	    __PBM_BITS(*sp)[i] = 0;
-	*odp = nd;
-    }
-/*@-compdef -retalias -usereleased@*/
-    return *sp;
-/*@=compdef =retalias =usereleased@*/
-}
 
 /**
  * Convert hex to binary nibble.

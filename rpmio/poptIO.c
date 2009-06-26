@@ -25,6 +25,8 @@
 #include <rpmssl.h>
 #endif
 
+#include <rpmbf.h>
+
 #include <rpmaug.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
@@ -416,10 +418,13 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug miRE patterns"), NULL},
  { "pgpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_debug, -1,
 	N_("Debug PGP usage"), NULL},
+ { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
+	N_("Debug Bloom filters"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
+
  { "rpmaugdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmaug_debug, -1,
 	N_("Debug embedded Augeas interpreter"), NULL},
  { "rpmficldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmficl_debug, -1,
