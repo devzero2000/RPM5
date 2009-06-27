@@ -47,7 +47,7 @@ extern "C" {
 #define	__PBM_NBITS /*@-sizeoftype@*/(8 * sizeof(__pbm_bits))/*@=sizeoftype@*/
 #define	__PBM_IX(d)	((d) / __PBM_NBITS)
 #define __PBM_MASK(d)	((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
-#define	__PBM_BITS(set)	((set)->bits)
+#define	__PBM_BITS(set)	((__pbm_bits *)(set)->bits)
 
 #define	PBM_FREE(s)	_free(s);
 #define PBM_SET(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] |= __PBM_MASK (d))
