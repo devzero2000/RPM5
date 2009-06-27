@@ -111,6 +111,10 @@ typedef struct AttrRec_s {
 static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
 /*@=readonlytrans@*/
 
+/* list of files */
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+static rpmiob check_fileList = NULL;
+
 /**
  * Package file tree walk data.
  */
@@ -269,7 +273,7 @@ static void timeCheck(int tc, Header h)
 	/*@modifies internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmuint32_t currentTime = (rpmuint32_t) time(NULL);
+    rpmuint32_t currentTime = time(NULL);
     rpmuint32_t * mtime;
     int xx;
     size_t i;
@@ -810,8 +814,8 @@ static rpmRC parseForLang(char * buf, FileList fl)
 /**
  */
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies *lang, rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies *lang, rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -865,7 +869,6 @@ static VFA_t virtualFileAttributes[] = {
 	{ "%pubkey",	0,	RPMFILE_PUBKEY },
 	{ "%policy",	0,	RPMFILE_POLICY },
 	{ "%optional",	0,	RPMFILE_OPTIONAL },
-	{ "%remove",	0,	RPMFILE_REMOVE },
 
 #if WHY_NOT
 	{ "%icon",	0,	RPMFILE_ICON },
@@ -890,13 +893,12 @@ static VFA_t virtualFileAttributes[] = {
  */
 static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		char * buf, FileList fl, /*@out@*/ const char ** fileName)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
 		fl->passedSpecialDoc, fl->isSpecialDoc,
-		pkg->header, pkg->specialDoc,
-		rpmGlobalMacroContext, internalState @*/
+		pkg->header, pkg->specialDoc, rpmGlobalMacroContext @*/
 {
     char *s, *t;
     int specialDoc = 0;
@@ -1125,7 +1127,7 @@ static int checkHardLinks(FileList fl)
 	    if (ilp->fl_dev != jlp->fl_dev)
 		/*@innercontinue@*/ continue;
 	    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
-		/*@innercontinue@*/ continue;
+		continue;
 	    return 1;
 	}
     }
@@ -1149,8 +1151,7 @@ static int dncmp(const void * a, const void * b)
  * @param h             header
  */
 static void compressFilelist(Header h)
-	/*@globals internalState @*/
-	/*@modifies h, internalState @*/
+	/*@modifies h @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
@@ -1318,7 +1319,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * fip, Header h, int isSrc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
-		fl->totalFileSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1331,6 +1331,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     int skipLen = 0;
     security_context_t scon = NULL;
     const char * sxfn;
+    size_t fnlen;
     FileListRec flp;
     rpmuint32_t dalgo = getDigestAlgo(h, isSrc);
     char buf[BUFSIZ];
@@ -1431,7 +1432,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->append = 0;
 
 /*@-sizeoftype@*/
-	ui32 = (rpmuint32_t) flp->fl_size;
+	ui32 = flp->fl_size;
 	he->tag = RPMTAG_FILESIZES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1456,7 +1457,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = (rpmuint32_t) flp->fl_mtime;
+	ui32 = flp->fl_mtime;
 	he->tag = RPMTAG_FILEMTIMES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1474,7 +1475,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui16 = (rpmuint16_t) flp->fl_rdev;
+	ui16 = flp->fl_rdev;
 	he->tag = RPMTAG_FILERDEVS;
 	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
@@ -1483,7 +1484,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = (rpmuint32_t) flp->fl_dev;
+	ui32 = flp->fl_dev;
 	he->tag = RPMTAG_FILEDEVICES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1492,7 +1493,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = (rpmuint32_t) flp->fl_ino;
+	ui32 = flp->fl_ino;
 	he->tag = RPMTAG_FILEINODES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1591,9 +1592,8 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 	
 	/* Add file security context to package. */
-	if (!(_rpmbuildFlags & 4))
+if (!(_rpmbuildFlags & 4))
 	{
-	    /*@observer@*/
 	    static char *nocon = "";
 /*@-moduncon@*/
 	    if (matchpathcon(flp->fileURL, flp->fl_mode, &scon) || scon == NULL)
@@ -1630,7 +1630,7 @@ if (_rpmbuildFlags & 4) {
     compressFilelist(h);
 
   { int scareMem = 0;
-    void * ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
+    rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     char * a, * d;
 
@@ -1687,16 +1687,8 @@ if (_rpmbuildFlags & 4) {
 	    continue;
 	}
 
-	{
-	    /* this fi uses diskURL (with buildroot), not fileURL */
-	    size_t fnlen = strlen(flp->diskURL);
-	    if (fnlen > fi->fnlen) {
-		/* fnlen-sized buffer must not be allocated yet */
-		assert(fi->fn == NULL);
-		fi->fnlen = fnlen;
-	    }
-	}
-
+	if ((fnlen = strlen(flp->diskURL) + 1) > fi->fnlen)
+	    fi->fnlen = fnlen;
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
@@ -1740,31 +1732,23 @@ if (_rpmbuildFlags & 4) {
 		FileListRec jlp = flp + 1;
 		int j = i + 1;
 		for (; (unsigned)j < fi->fc; j++, jlp++) {
-		    /* follow outer loop logic */
-		    while (((jlp - fl->fileList) < (fl->fileListRecsUsed - 1)) &&
-			    !strcmp(jlp->fileURL, jlp[1].fileURL))
-			jlp++;
-		    if (jlp->flags & RPMFILE_EXCLUDE) {
-			j--;
-			/*@innercontinue@*/ continue;
-		    }
-		    if (jlp->flags & RPMFILE_GHOST)
-		        /*@innercontinue@*/ continue;
 		    if (!S_ISREG(jlp->fl_mode))
-			/*@innercontinue@*/ continue;
+			continue;
 		    if (flp->fl_nlink != jlp->fl_nlink)
-			/*@innercontinue@*/ continue;
+			continue;
 		    if (flp->fl_ino != jlp->fl_ino)
-			/*@innercontinue@*/ continue;
+			continue;
 		    if (flp->fl_dev != jlp->fl_dev)
-			/*@innercontinue@*/ continue;
+			continue;
+		    if (jlp->flags & (RPMFILE_EXCLUDE | RPMFILE_GHOST))
+		        continue;
 		    bingo = 0;	/* don't tally hardlink yet. */
-		    /*@innerbreak@*/ break;
+		    break;
 		}
 	    }
 	    if (bingo)
 		fl->totalFileSize += flp->fl_size;
-	}
+    }
     }
 
     ui32 = fl->totalFileSize;
@@ -1800,12 +1784,12 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 
 /* forward ref */
 static rpmRC recurseDir(FileList fl, const char * diskURL)
-	/*@globals rpmGlobalMacroContext, h_errno,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		rpmGlobalMacroContext,
+		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /**
@@ -1817,12 +1801,12 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  */
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals rpmGlobalMacroContext, h_errno,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
-		rpmGlobalMacroContext,
+		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     const char *fn = xstrdup(diskURL);
@@ -1954,6 +1938,13 @@ static int addFile(FileList fl, const char * diskURL,
     if (fileGname == NULL)
 	fileGname = getGname(getgid());
     
+    /* S_XXX macro must be consistent with type in find call at check-files script */
+    if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
+	const char * diskfn = NULL;
+	(void) urlPath(diskURL, &diskfn);
+	check_fileList = rpmiobAppend(check_fileList, diskfn, 1);
+    }
+
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
 	fl->fileListRecsAlloced += 128;
@@ -2073,12 +2064,12 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  */
 static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		rpmTag tag)
-	/*@globals rpmGlobalMacroContext, h_errno,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies pkg->header, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
-		rpmGlobalMacroContext,
+		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -2106,7 +2097,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	goto exit;
 	/*@notreached@*/ break;
     case RPMTAG_PUBKEYS:
-	if ((xx = pgpReadPkts(fn, &pkt, (size_t *)&pktlen)) <= 0) {
+	if ((xx = pgpReadPkts(fn, (rpmuint8_t **)&pkt, (size_t *)&pktlen)) <= 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: public key read failed.\n"), fn);
 	    goto exit;
 	}
@@ -2552,7 +2543,6 @@ int initSourceHeader(Spec spec, rpmiob *sfp)
 	case RPMTAG_NAME:
 	case RPMTAG_VERSION:
 	case RPMTAG_RELEASE:
-	case RPMTAG_DISTEPOCH:
 	case RPMTAG_EPOCH:
 	case RPMTAG_SUMMARY:
 	case RPMTAG_DESCRIPTION:
@@ -2707,9 +2697,7 @@ int initSourceHeader(Spec spec, rpmiob *sfp)
 
     spec->sourceHdrInit = 1;
 
-/*@-usereleased@*/
     return 0;
-/*@=usereleased@*/
 }
 
 int processSourceFiles(Spec spec)
@@ -2733,9 +2721,9 @@ int processSourceFiles(Spec spec)
     /* srcdefattr: initialize file list structure */
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr && *_srcdefattr) {
-        xx = snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
+	xx = snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
 	_srcdefattr_buf[sizeof(_srcdefattr_buf)-1] = '\0';
-        xx = parseForAttr(_srcdefattr_buf, &fl);
+	xx = parseForAttr(_srcdefattr_buf, &fl);
     }
 
     /* Construct the SRPM file list. */
@@ -2824,14 +2812,13 @@ exit:
 }
 
 /**
- * Check for unpackaged files against what's in the build root.
- * @param spec		spec file control structure
+ * Check packaged file list against what's in the build root.
+ * @param fileList	packaged file list
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
-static int checkUnpackagedFiles(Spec spec)
+static int checkFiles(rpmiob fileList)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *spec->packages,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 /*@-readonlytrans@*/
     static const char * av_ckfile[] = { "%{?__check_files}", NULL };
@@ -2839,9 +2826,6 @@ static int checkUnpackagedFiles(Spec spec)
     rpmiob iob_stdout = NULL;
     const char * s;
     int rc;
-    rpmiob fileList = NULL;
-    Package pkg;
-    int n = 0;
     
     s = rpmExpand(av_ckfile[0], NULL);
     if (!(s && *s)) {
@@ -2849,26 +2833,6 @@ static int checkUnpackagedFiles(Spec spec)
 	goto exit;
     }
     rc = 0;
-
-    /* initialize fileList */
-    fileList = rpmiobNew(0);
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	int i;
-	rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
-	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    const char *fn = rpmfiFN(fi);
-	    fileList = rpmiobAppend(fileList, fn, 1);
-	    n++;
-	}
-	fi = rpmfiFree(fi);
-    }
-    if (n == 0) {
-	/* no packaged files, and buildroot may not exist -
-	 * no need to run check */
-	rc = -1;
-	goto exit;
-    }
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
@@ -2890,230 +2854,22 @@ static int checkUnpackagedFiles(Spec spec)
     }
     
 exit:
-    fileList = rpmiobFree(fileList);
     iob_stdout = rpmiobFree(iob_stdout);
     s = _free(s);
     return rc;
 }
 
-/* auxiliary function for checkDuplicateFiles() */
-/* XXX need to pass Header because fi->h is NULL */
-static int fiIntersect(/*@null@*/ rpmfi fi1, /*@null@*/ rpmfi fi2, Header h1, Header h2)
-	/*@globals internalState @*/
-	/*@modifies fi1, fi2, internalState @*/
-{
-    int n = 0;
-    int i1, i2;
-    const char *fn1, *fn2;
-    rpmiob dups = NULL;
-
-    if ((fi1 = rpmfiInit(fi1, 0)) != NULL)
-    while ((i1 = rpmfiNext(fi1)) >= 0) {
-	if (S_ISDIR(rpmfiFMode(fi1)))
-	    continue;
-	fn1 = rpmfiFN(fi1);
-	if ((fi2 = rpmfiInit(fi2, 0)) != NULL)
-	while ((i2 = rpmfiNext(fi2)) >= 0) {
-	    if (S_ISDIR(rpmfiFMode(fi2)))
-		/*@innercontinue@*/ continue;
-	    fn2 = rpmfiFN(fi2);
-	    if (strcmp(fn1, fn2))
-		/*@innercontinue@*/ continue;
-	    if (!dups)
-		dups = rpmiobNew(0);
-	    dups = rpmiobAppend(dups, "\t", 0);
-	    dups = rpmiobAppend(dups, fn1, 1);
-	    n++;
-	}
-    }
-
-    if (n > 0) {
-	const char *N1, *N2;
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-
-	he->tag = RPMTAG_NVRA;
-	N1 = (headerGet(h1, he, 0) ? he->p.str : NULL);
-	he->tag = RPMTAG_NVRA;
-	N2 = (headerGet(h2, he, 0) ? he->p.str : NULL);
-
-	rpmlog(RPMLOG_WARNING,
-	       _("File(s) packaged into both %s and %s:\n%s"),
-	       N1, N2, rpmiobStr(dups));
-
-	N1 = _free(N1);
-	N2 = _free(N2);
-	dups = rpmiobFree(dups);
-    }
-
-    return n;
-}
-
-/**
- * Check if the same files are packaged into a few sub-packages.
- * @param spec		spec file control structure
- * @return		number of duplicate files
- */
-static int checkDuplicateFiles(Spec spec)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *spec->packages,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int n = 0;
-    Package pkg1, pkg2;
-
-    for (pkg1 = spec->packages; pkg1->next; pkg1 = pkg1->next) {
-	rpmfi fi1 = rpmfiNew(NULL, pkg1->header, RPMTAG_BASENAMES, 0);
-	for (pkg2 = pkg1->next; pkg2; pkg2 = pkg2->next) {
-	    rpmfi fi2 = rpmfiNew(NULL, pkg2->header, RPMTAG_BASENAMES, 0);
-	    n += fiIntersect(fi1, fi2, pkg1->header, pkg2->header);
-	    fi2 = rpmfiFree(fi2);
-	}
-	fi1 = rpmfiFree(fi1);
-    }
-    return n;
-}
-
-/* auxiliary function: check if directory d is packaged */
-static int packagedDir(Package pkg, const char *d)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies pkg->header,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int i;
-    int found = 0;
-    const char *fn;
-    rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
-
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
-	if (!S_ISDIR(rpmfiFMode(fi)))
-	    continue;
-	fn = rpmfiFN(fi);
-	if (strcmp(fn, d) == 0) {
-	    found = 1;
-	    break;
-	}
-    }
-    fi = rpmfiFree(fi);
-    return found;
-}
-
-/* auxiliary function: find unpackaged subdirectories
- *
- * E.g. consider this %files section:
- *       %dir /A
- *       /A/B/C/D
- * Now directories "/A/B" and "/A/B/C" should also be packaged.
- */
-static int pkgUnpackagedSubdirs(Package pkg)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies pkg->header,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int n = 0;
-    int i, j;
-    char **unpackaged = NULL;
-    char *fn;
-    rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
-
-    if (rpmfiFC(fi) <= 1) {
-	fi = rpmfiFree(fi);
-	return 0;
-    }
-    fn = alloca(rpmfiFNMaxLen(fi) + 1);
-
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
-	int found = 0;
-	/* make local copy of file name */
-	char *p = fn;
-	strcpy(fn, rpmfiFN(fi));
-	/* find the first path component that is packaged */
-	while ((p = strchr(p + 1, '/'))) {
-	    *p = '\0';
-	    found = packagedDir(pkg, fn);
-	    *p = '/';
-	    if (found)
-		/*@innerbreak@*/ break;
-	}
-	if (!found)
-	    continue;
-	/* other path components should be packaged, too */
-	if (p != NULL)
-	while ((p = strchr(p + 1, '/'))) {
-	    *p = '\0';
-	    if (packagedDir(pkg, fn)) {
-		*p = '/';
-		/*@innercontinue@*/ continue;
-	    }
-	    /* might be already added */
-	    found = 0;
-	    for (j = 0; j < n; j++)
-		if (strcmp(fn, unpackaged[j]) == 0) {
-		    found = 1;
-		    /*@innerbreak@*/ break;
-		}
-	    if (found) {
-		*p = '/';
-		/*@innercontinue@*/ continue;
-	    }
-	    unpackaged = xrealloc(unpackaged, sizeof(*unpackaged) * (n + 1));
-	    unpackaged[n++] = xstrdup(fn);
-	    *p = '/';
-	}
-    }
-    fi = rpmfiFree(fi);
-
-    if (n > 0) {
-	const char *N;
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-	rpmiob list = rpmiobNew(0);
-
-	he->tag = RPMTAG_NVRA;
-	N = (headerGet(pkg->header, he, 0) ? he->p.str : NULL);
-
-	for (i = 0; i < n; i++) {
-	    list = rpmiobAppend(list, "\t", 0);
-	    list = rpmiobAppend(list, unpackaged[i], 1);
-	    unpackaged[i] = _free(unpackaged[i]);
-	}
-	unpackaged = _free(unpackaged);
-
-	rpmlog(RPMLOG_WARNING,
-	       _("Unpackaged subdir(s) in %s:\n%s"),
-	       N, rpmiobStr(list));
-
-	N = _free(N);
-	list = rpmiobFree(list);
-    }	
-
-    return n;
-}
-
-/**
- * Check for unpackaged subdirectories.
- * @param spec		spec file control structure
- * @return		number of unpackaged subdirectories
- */
-static int checkUnpackagedSubdirs(Spec spec)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *spec->packages,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int n = 0;
-    Package pkg;
-
-    for (pkg = spec->packages; pkg; pkg = pkg->next)
-	n += pkgUnpackagedSubdirs(pkg);
-    return n;
-}
-
 /*@-incondefs@*/
 rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
+	/*@globals check_fileList @*/
+	/*@modifies check_fileList @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     rpmRC res = RPMRC_OK;
+    int xx;
+    
+    check_fileList = rpmiobNew(0);
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	int rc;
@@ -3124,28 +2880,19 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosLoad(pkg->header);
 
 	he->tag = RPMTAG_NVRA;
-	rc = headerGet(pkg->header, he, 0);
+	xx = headerGet(pkg->header, he, 0);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he->p.str);
 	he->p.ptr = _free(he->p.ptr);
 		   
-	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test))) {
+	if ((xx = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = RPMRC_FAIL;
-	    (void) headerMacrosUnload(pkg->header);
-	    break;
-	}
 
 	/* Finalize package scriptlets before extracting dependencies. */
-	if ((rc = processScriptFiles(spec, pkg))) {
+	if ((rc = processScriptFiles(spec, pkg)))
 	    res = rc;
-	    (void) headerMacrosUnload(pkg->header);
-	    break;
-	}
 
-	if ((rc = rpmfcGenerateDepends(spec, pkg))) {
+	if ((xx = rpmfcGenerateDepends(spec, pkg)))
 	    res = RPMRC_FAIL;
-	    (void) headerMacrosUnload(pkg->header);
-	    break;
-	}
 
 	/* XXX this should be earlier for deps to be entirely sorted. */
 	providePackageNVR(pkg->header);
@@ -3153,12 +2900,17 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosUnload(pkg->header);
     }
 
-    if (res == RPMRC_OK) {
-	if (checkUnpackagedFiles(spec) > 0)
+    /* Now we have in fileList list of files from all packages.
+     * We pass it to a script which does the work of finding missing
+     * and duplicated files.
+     */
+    
+    if (checkFiles(check_fileList) > 0) {
+	if (res == RPMRC_OK)
 	    res = RPMRC_FAIL;
-	(void) checkDuplicateFiles(spec);
-	(void) checkUnpackagedSubdirs(spec);
     }
+    
+    check_fileList = rpmiobFree(check_fileList);
     
     return res;
 }

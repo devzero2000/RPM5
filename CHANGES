@@ -1,5 +1,6 @@
 
 5.2a4 -> 5.2b1:
+    - jbj: revert checkfiles behavior to last known good (rpm-5.1.9).
     - jbj: rpmfc: reduce the amount of debugging noise with lots of files.
     - jbj: selinux: fix: disabler bit toggle sense was inverted.
     - jbj: add the Fedorable tag(s) for file digests.
