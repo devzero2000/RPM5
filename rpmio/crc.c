@@ -12,10 +12,11 @@ rpmuint32_t __crc32(rpmuint32_t crc, const rpmuint8_t * data, size_t size)
     static rpmuint32_t polynomial = 0xedb88320;    /* reflected 0x04c11db7 */
     static rpmuint32_t xorout = 0xffffffff;
     static rpmuint32_t table[256];
+    static int oneshot = 0;
 
     crc ^= xorout;
 
-    if (data == NULL) {
+    if (!oneshot) {
 	/* generate the table of CRC remainders for all possible bytes */
 	rpmuint32_t c;
 	rpmuint32_t i, j;
@@ -29,7 +30,9 @@ rpmuint32_t __crc32(rpmuint32_t crc, const rpmuint8_t * data, size_t size)
 	    }
 	    table[i] = c;
 	}
-    } else
+	oneshot = 1;
+    }
+    if (data != NULL)
     while (size) {
 	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
 	size--;
@@ -140,10 +143,11 @@ rpmuint64_t __crc64(rpmuint64_t crc, const rpmuint8_t * data, size_t size)
 	0xc96c5795d7870f42ULL;	/* reflected 0x42f0e1eba9ea3693ULL */
     static rpmuint64_t xorout = 0xffffffffffffffffULL;
     static rpmuint64_t table[256];
+    static int oneshot = 0;
 
     crc ^= xorout;
 
-    if (data == NULL) {
+    if (!oneshot) {
 	/* generate the table of CRC remainders for all possible bytes */
 	rpmuint64_t c;
 	rpmuint32_t i, j;
@@ -157,7 +161,9 @@ rpmuint64_t __crc64(rpmuint64_t crc, const rpmuint8_t * data, size_t size)
 	    }
 	    table[i] = c;
 	}
-    } else
+	oneshot = 1;
+    }
+    if (data != NULL)
     while (size) {
 	crc = table[(crc ^ *data) & 0xff] ^ (crc >> 8);
 	size--;
