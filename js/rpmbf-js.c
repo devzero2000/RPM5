@@ -70,7 +70,7 @@ rpmbf_clr(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
 
-    *rval = (rpmbfClr(bf) ? JSVAL_TRUE : JSVAL_FALSE);
+    *rval = (rpmbfClr(bf) ? JSVAL_FALSE : JSVAL_TRUE);
     ok = JS_TRUE;
 exit:
     return ok;
@@ -90,7 +90,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfDel(bf, _s) ? JSVAL_TRUE : JSVAL_FALSE);
+    *rval = (rpmbfDel(bf, _s) ? JSVAL_FALSE : JSVAL_TRUE);
     ok = JS_TRUE;
 exit:
     return ok;
@@ -122,7 +122,9 @@ rpmbf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     rpmbf bf = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
+#ifdef	NOTYET
 _PROP_DEBUG_ENTRY(_debug < 0);
+#endif
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -158,7 +160,9 @@ rpmbf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     rpmbf bf = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
+#ifdef	NOTYET
 _PROP_DEBUG_ENTRY(_debug < 0);
+#endif
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -194,9 +198,9 @@ rpmbf_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
 #ifdef	NOTYET
     rpmbf bf = ptr;
-#endif
 
 _RESOLVE_DEBUG_ENTRY(_debug);
+#endif
 
     if (ptr == NULL) {	/* don't resolve to parent prototypes objects. */
 	*objp = NULL;

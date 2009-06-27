@@ -45,22 +45,22 @@ typedef struct rpmjsClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
-    { "Aug",		rpmjs_InitAugClass,	 -25 },
+    { "Aug",		rpmjs_InitAugClass,	 25 },
     { "Bf",		rpmjs_InitBfClass,	 26 },
-    { "Ds",		rpmjs_InitDsClass,	 -13 },
-    { "Fi",		rpmjs_InitFiClass,	 -14 },
-    { "File",		   js_InitFileClass,	  -1 },
-    { "Hdr",		rpmjs_InitHdrClass,	 -12 },
-    { "Mc",		rpmjs_InitMcClass,	 -24 },
-    { "Mi",		rpmjs_InitMiClass,	 -11 },
-    { "Ps",		rpmjs_InitPsClass,	 -16 },
+    { "Ds",		rpmjs_InitDsClass,	 13 },
+    { "Fi",		rpmjs_InitFiClass,	 14 },
+    { "File",		   js_InitFileClass,	  1 },
+    { "Hdr",		rpmjs_InitHdrClass,	 12 },
+    { "Mc",		rpmjs_InitMcClass,	 24 },
+    { "Mi",		rpmjs_InitMiClass,	 11 },
+    { "Ps",		rpmjs_InitPsClass,	 16 },
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
-    { "Te",		rpmjs_InitTeClass,	 -15 },
-    { "Ts",		rpmjs_InitTsClass,	 -10 },
+    { "Te",		rpmjs_InitTeClass,	 15 },
+    { "Ts",		rpmjs_InitTsClass,	 10 },
 #ifdef WITH_UUID
-    { "Uuid",		rpmjs_InitUuidClass,	  -2 },
+    { "Uuid",		rpmjs_InitUuidClass,	  2 },
 #endif
 };
 
