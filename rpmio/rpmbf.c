@@ -11,10 +11,11 @@
 #define	_RPMBF_INTERNAL
 #include <rpmbf.h>
 
-#include <rpmhash.h>
-#include <crc.h>
-
 #include "debug.h"
+
+/* Any pair of 32 bit hashes can be used. lookup3.c generates pairs, will do. */
+#define	_JLU3_jlu32lpair	1
+#include "lookup3.c"
 
 /*@unchecked@*/
 int _rpmbf_debug = 0;
@@ -51,43 +52,75 @@ rpmbf rpmbfNew(size_t n, size_t m, size_t k, unsigned flags)
 {
     rpmbf bf = rpmbfGetPool(_rpmbfPool);
 
-    bf->n = (n > 0 ? n : 1024);
-    bf->m = (m > 0 ? m : 8192);
-    bf->k = (k > 0 ? k : 2);
-    bf->bits = PBM_ALLOC(bf->m);
+    if (n == 0)	n = 1024;
+    if (k == 0) k = 16;
+    if (m == 0) m = (3 * n * k) / 2;
+
+    bf->n = n;
+    bf->k = k;
+    bf->m = m;
+    bf->bits = PBM_ALLOC(bf->m-1);
 
     return rpmbfLink(bf);
 }
 
 int rpmbfAdd(rpmbf bf, const char * s)
 {
-    rpmuint32_t ix = hashFunctionString(0, s, 0) % bf->m;
-    rpmuint32_t jx = __crc32(0, (const rpmuint8_t *)s, 0) % bf->m;
-    PBM_SET(ix, bf);
-    PBM_SET(jx, bf);
+    size_t ns = (s ? strlen(s) : 0);
+    rpmuint32_t h0 = 0;
+    rpmuint32_t h1 = 0;
+
+assert(ns > 0);
+    jlu32lpair(s, ns, &h0, &h1);
+
+    for (ns = 0; ns < bf->k; ns++) {
+	rpmuint32_t h = h0 + ns * h1;
+	rpmuint32_t ix = (h % bf->m);
+	PBM_SET(ix, bf);
+    }
     return 0;
 }
 
 int rpmbfChk(rpmbf bf, const char * s)
 {
-    rpmuint32_t ix;
+    size_t ns = (s ? strlen(s) : 0);
+    rpmuint32_t h0 = 0;
+    rpmuint32_t h1 = 0;
+    int rc = 1;
 
-    ix = hashFunctionString(0, s, 0) % bf->m;
-    if (!PBM_ISSET(ix, bf))
-	return 0;
-    ix = __crc32(0, (const rpmuint8_t *)s, 0) % bf->m;
-    if (!PBM_ISSET(ix, bf))
-	return 0;
-    return 1;
+assert(ns > 0);
+    jlu32lpair(s, ns, &h0, &h1);
+
+    for (ns = 0; ns < bf->k; ns++) {
+	rpmuint32_t h = h0 + ns * h1;
+	rpmuint32_t ix = (h % bf->m);
+	if (PBM_ISSET(ix, bf))
+	    continue;
+	rc = 0;
+	break;
+    }
+    return rc;
 }
 
 int rpmbfClr(rpmbf bf)
 {
-    memset(__PBM_BITS(bf), 0, (__PBM_IX(bf->m) + 1) * (__PBM_NBITS/8));
+    memset(__PBM_BITS(bf), 0, (__PBM_IX(bf->m-1) + 1) * (__PBM_NBITS/8));
     return 0;
 }
 
 int rpmbfDel(rpmbf bf, const char * s)
 {
+    size_t ns = (s ? strlen(s) : 0);
+    rpmuint32_t h0 = 0;
+    rpmuint32_t h1 = 0;
+
+assert(ns > 0);
+    jlu32lpair(s, ns, &h0, &h1);
+
+    for (ns = 0; ns < bf->k; ns++) {
+	rpmuint32_t h = h0 + ns * h1;
+	rpmuint32_t ix = (h % bf->m);
+	PBM_CLR(ix, bf);
+    }
     return 0;
 }
