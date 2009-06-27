@@ -1128,6 +1128,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpmuint16_t * fmode)
     magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
     if (magicfile == NULL || *magicfile == '\0')
 	magicfile = _free(magicfile);
+
     mg = rpmmgNew(magicfile, 0);
 assert(mg != NULL);	/* XXX figger a proper return path. */
 
@@ -1207,6 +1208,8 @@ assert(ftype != NULL);	/* XXX never happens, rpmmgFile() returns "" */
 	}
 
 	se = ftype;
+
+if (_rpmfc_debug)	/* XXX noisy */
 	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, se);
 
 	/* Save the path. */
@@ -1247,6 +1250,9 @@ assert(se != NULL);
     fcav = argvFree(fcav);
 
     mg = rpmmgFree(mg);
+    rpmlog(RPMLOG_DEBUG,
+		D_("categorized %d files into %d classes (using %s).\n"),
+		fc->nfiles, argvCount(fc->cdict), magicfile);
     magicfile = _free(magicfile);
 
     return RPMRC_OK;
