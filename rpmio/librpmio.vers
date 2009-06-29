@@ -286,6 +286,8 @@ LIBRPMIO_0
     rpmbfChk;
     rpmbfClr;
     rpmbfDel;
+    rpmbfIntersect;
+    rpmbfUnion;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;

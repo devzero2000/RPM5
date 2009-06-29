@@ -17,8 +17,7 @@ extern JSObject *
 rpmjs_InitBfClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewBfObject(JSContext *cx, size_t _n, size_t _m, size_t _k,
-		unsigned int _flags);
+rpmjs_NewBfObject(JSContext *cx, size_t _m, size_t _k, unsigned int _flags);
 
 #ifdef __cplusplus      
 }

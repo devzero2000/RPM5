@@ -96,11 +96,61 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmbf_intersect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
+    rpmbf _a = ptr;
+    JSObject * o = NULL;
+    rpmbf _b = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    *rval = JSVAL_FALSE;
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
+     || (_b = JS_GetInstancePrivate(cx, o, &rpmbfClass, NULL)) == NULL)
+        goto exit;
+
+    if (!rpmbfIntersect(_a, _b))
+	*rval = JSVAL_TRUE;
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmbf_union(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
+    rpmbf _a = ptr;
+    JSObject * o = NULL;
+    rpmbf _b = NULL;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    *rval = JSVAL_FALSE;
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
+     || (_b = JS_GetInstancePrivate(cx, o, &rpmbfClass, NULL)) == NULL)
+        goto exit;
+
+    if (!rpmbfUnion(_a, _b))
+	*rval = JSVAL_TRUE;
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
 static JSFunctionSpec rpmbf_funcs[] = {
     JS_FS("add",	rpmbf_add,		0,0,0),
     JS_FS("chk",	rpmbf_chk,		0,0,0),
     JS_FS("clr",	rpmbf_clr,		0,0,0),
     JS_FS("del",	rpmbf_del,		0,0,0),
+    JS_FS("intersect",	rpmbf_intersect,	0,0,0),
+    JS_FS("union",	rpmbf_union,		0,0,0),
     JS_FS_END
 };
 
@@ -286,12 +336,12 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
 /* --- Object ctors/dtors */
 static rpmbf
-rpmbf_init(JSContext *cx, JSObject *obj, size_t _n, size_t _m, size_t _k,
+rpmbf_init(JSContext *cx, JSObject *obj, size_t _m, size_t _k,
 		unsigned int _flags)
 {
     rpmbf bf;
 
-    if ((bf = rpmbfNew(_n, _m, _k, _flags)) == NULL)
+    if ((bf = rpmbfNew(_m, _k, _flags)) == NULL)
 	return NULL;
     if (!JS_SetPrivate(cx, obj, bf)) {
 	/* XXX error msg */
@@ -316,22 +366,19 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 static JSBool
 rpmbf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    unsigned int _m = 0;
+    unsigned int _k = 0;
+    unsigned int _flags = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-#ifdef	NOTYET
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ssu", &_root, &_loadpath, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/uuu", &_m, &_k, &_flags)))
 	goto exit;
-#endif
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	size_t _n = 0;
-	size_t _m = 0;
-	size_t _k = 0;
-	unsigned int _flags = 0;
-	if (rpmbf_init(cx, obj, _n, _m, _k, _flags) == NULL)
+	if (rpmbf_init(cx, obj, _m, _k, _flags) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmbfClass, NULL, NULL)) == NULL)
@@ -369,8 +416,7 @@ assert(o != NULL);
 }
 
 JSObject *
-rpmjs_NewBfObject(JSContext *cx, size_t _n, size_t _m, size_t _k,
-		unsigned int _flags)
+rpmjs_NewBfObject(JSContext *cx, size_t _m, size_t _k, unsigned int _flags)
 {
     JSObject *obj;
     rpmbf bf;
@@ -379,7 +425,7 @@ rpmjs_NewBfObject(JSContext *cx, size_t _n, size_t _m, size_t _k,
 	/* XXX error msg */
 	return NULL;
     }
-    if ((bf = rpmbf_init(cx, obj, _n, _m, _k, _flags)) == NULL) {
+    if ((bf = rpmbf_init(cx, obj, _m, _k, _flags)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

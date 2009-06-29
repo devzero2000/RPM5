@@ -48,17 +48,17 @@ static rpmbf rpmbfGetPool(/*@null@*/ rpmioPool pool)
     return (rpmbf) rpmioGetPool(pool, sizeof(*bf));
 }
 
-rpmbf rpmbfNew(size_t n, size_t m, size_t k, unsigned flags)
+rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
 {
+    static size_t nestimate = 1024;	/* XXX default estimated population. */
     rpmbf bf = rpmbfGetPool(_rpmbfPool);
 
-    if (n == 0)	n = 1024;
     if (k == 0) k = 16;
-    if (m == 0) m = (3 * n * k) / 2;
+    if (m == 0) m = (3 * nestimate * k) / 2;
 
-    bf->n = n;
     bf->k = k;
     bf->m = m;
+    bf->n = 0;
     bf->bits = PBM_ALLOC(bf->m-1);
 
     return rpmbfLink(bf);
@@ -78,6 +78,9 @@ assert(ns > 0);
 	rpmuint32_t ix = (h % bf->m);
 	PBM_SET(ix, bf);
     }
+    bf->n++;
+if (_rpmbf_debug)
+fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return 0;
 }
 
@@ -99,12 +102,20 @@ assert(ns > 0);
 	rc = 0;
 	break;
     }
+if (_rpmbf_debug)
+fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return rc;
 }
 
 int rpmbfClr(rpmbf bf)
 {
-    memset(__PBM_BITS(bf), 0, (__PBM_IX(bf->m-1) + 1) * (__PBM_NBITS/8));
+    __pbm_bits * bits = __PBM_BITS(bf);
+    static size_t nbw = (__PBM_NBITS/8);
+    size_t nw = (__PBM_IX(bf->m-1) + 1);
+    memset(bits, 0, nw * nbw);
+    bf->n = 0;
+if (_rpmbf_debug)
+fprintf(stderr, "--> %s(%p) bf{%u,%u}[%u]\n", __FUNCTION__, bf, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return 0;
 }
 
@@ -122,5 +133,43 @@ assert(ns > 0);
 	rpmuint32_t ix = (h % bf->m);
 	PBM_CLR(ix, bf);
     }
+    if (bf->n != 0)
+	bf->n--;
+if (_rpmbf_debug)
+fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
+    return 0;
+}
+
+int rpmbfIntersect(rpmbf a, const rpmbf b)
+{
+    __pbm_bits * abits = __PBM_BITS(a);
+    __pbm_bits * bbits = __PBM_BITS(b);
+    size_t nw = (__PBM_IX(a->m-1) + 1);
+    size_t i;
+
+    if (!(a->m == b->m && a->k == b->k))
+	return -1;
+    for (i = 0; i < nw; i++)
+	abits[i] &= bbits[i];
+    a->n = 1;		/* XXX what is population estimate? */
+if (_rpmbf_debug)
+fprintf(stderr, "--> %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
+    return 0;
+}
+
+int rpmbfUnion(rpmbf a, const rpmbf b)
+{
+    __pbm_bits * abits = __PBM_BITS(a);
+    __pbm_bits * bbits = __PBM_BITS(b);
+    size_t nw = (__PBM_IX(a->m-1) + 1);
+    size_t i;
+
+    if (!(a->m == b->m && a->k == b->k))
+	return -1;
+    for (i = 0; i < nw; i++)
+	abits[i] |= bbits[i];
+    a->n += b->n;
+if (_rpmbf_debug)
+fprintf(stderr, "--> %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
     return 0;
 }

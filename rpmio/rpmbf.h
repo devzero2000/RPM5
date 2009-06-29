@@ -120,14 +120,13 @@ rpmbf rpmbfFree(/*@killref@*/ /*@null@*/rpmbf bf)
 
 /**
  * Create a Bloom filter.
- * @param n
  * @param m
  * @param k
  * @param flags		flags
  * @return		new Bloom filter
  */
 /*@newref@*/ /*@null@*/
-rpmbf rpmbfNew(size_t n, size_t m, size_t k, unsigned flags)
+rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
 	/*@*/;
 
 /**
@@ -165,6 +164,24 @@ int rpmbfChk(rpmbf bf, const char * s)
  */
 int rpmbfDel(rpmbf bf, const char * s)
 	/*@modifies bf @*/;
+
+/**
+ * Return intersection of two Bloom filters.
+ * @retval a		Bloom filter
+ * @param b		Bloom filter
+ * @return		0 on success, -1 if {m,k} disagree.
+ */
+int rpmbfIntersect(rpmbf a, const rpmbf b)
+	/*@modifies a @*/;
+
+/**
+ * Return union of two Bloom filters.
+ * @retval a		Bloom filter
+ * @param b		Bloom filter
+ * @return		0 on success, -1 if {m,k} disagree.
+ */
+int rpmbfUnion(rpmbf a, const rpmbf b)
+	/*@modifies a @*/;
 
 #ifdef __cplusplus
 }
