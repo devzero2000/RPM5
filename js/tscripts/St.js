@@ -20,7 +20,7 @@ print("  atime: " + st.atime);
 print("  mtime: " + st.mtime);
 print("  ctime: " + st.ctime);
 
-var st = new St('file:///');
+var st = new St('/');
 print("    dev: " + st.dev);
 print("    ino: " + st.ino);
 print("   mode: " + st.mode);
@@ -35,7 +35,8 @@ print("  atime: " + st.atime);
 print("  mtime: " + st.mtime);
 print("  ctime: " + st.ctime);
 
-var st = new St('http://rpm5.org/files/popt/popt-1.14.tar.gz');
+// var st = new St('http://rpm5.org/files/popt/popt-1.14.tar.gz');
+var st = new St('file:///');
 print("    dev: " + st.dev);
 print("    ino: " + st.ino);
 print("   mode: " + st.mode);
