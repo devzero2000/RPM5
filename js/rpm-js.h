@@ -15,6 +15,7 @@
 #include "jsapi.h"
 #include "jscntxt.h"	/* XXX JSFRAME_CONSTRUCTING */
 #include "jsarray.h"	/* XXX js_ArrayClass */
+#include "jsdate.h"	/* XXX js_NewDateObject */
 
 #ifdef	NOTYET
 #include "jsapi.h"
