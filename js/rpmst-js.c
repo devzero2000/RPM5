@@ -183,37 +183,19 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 static rpmst
 rpmst_init(JSContext *cx, JSObject *obj, JSObject *o)
 {
-    rpmst st = NULL;	/* XXX FIXME: only global context for now. */
+    rpmst st = xcalloc(1, sizeof(*st));
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p) st %p\n", __FUNCTION__, cx, obj, o, st);
 
-#ifdef	NOTYET
-    if (o == NULL) {
-if (_debug)
-fprintf(stderr, "\tinitMacros() st %p\n", st);
-    } else
-    if (OBJ_IS_STRING(cx, o)) {
-	const char * s =
+    if (o && OBJ_IS_STRING(cx, o)) {
+	const char * fn =
 		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(o)));
-        if (!strcmp(s, "global"))
-            st = rpmGlobalMacroContext;
-	else if (!strcmp(s, "cli"))
-            st = rpmCLIMacroContext;
-	else {
-	    st = xcalloc(1, sizeof(*st));
-	    if (s && *s)
-		rpmInitMacros(st, s);
-	    else
-		s = "";
-	}
-if (_debug)
-fprintf(stderr, "\tinitMacros(\"%s\") st %p\n", s, st);
+	(void) Stat(fn, st);
+	/* XXX error msg */
+    } else {
+	/* XXX empty stat(2) returned. */
     }
-#else
-    st = xcalloc(1, sizeof(*st));
-    (void) Stat(".", st);
-#endif
 
     if (!JS_SetPrivate(cx, obj, (void *)st)) {
 	/* XXX error msg */
