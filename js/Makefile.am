@@ -64,14 +64,16 @@ librpmjsm_la_LIBADD = $(rpmjsm_la_LIBADD)
 
 noinst_HEADERS = \
 	rpmjsfile.h \
-	rpmaug-js.h rpmbf-js.h rpmdc-js.h rpmds-js.h rpmfi-js.h rpmhdr-js.h \
-	rpmmc-js.h rpmmi-js.h rpmps-js.h rpmst-js.h rpmte-js.h rpmts-js.h \
+	rpmaug-js.h rpmbf-js.h rpmdc-js.h rpmdir-js.h rpmds-js.h \
+	rpmfi-js.h rpmhdr-js.h rpmmc-js.h rpmmi-js.h rpmps-js.h \
+	rpmst-js.h rpmte-js.h rpmts-js.h \
 	syck-js.h uuid-js.h
 
 rpmjsm_la_SOURCES = \
 	rpmjsfile.c \
-	rpmaug-js.c rpmbf-js.c rpmdc-js.c rpmds-js.c rpmfi-js.c rpmhdr-js.c \
-	rpmmc-js.c rpmmi-js.c rpmps-js.c rpmst-js.c rpmte-js.c rpmts-js.c \
+	rpmaug-js.c rpmbf-js.c rpmdc-js.c rpmdir-js.c rpmds-js.c \
+	rpmfi-js.c rpmhdr-js.c rpmmc-js.c rpmmi-js.c rpmps-js.c \
+	rpmst-js.c rpmte-js.c rpmts-js.c \
 	syck-js.c uuid-js.c
 
 librpmjsm_la_SOURCES = $(rpmjsm_la_SOURCES)

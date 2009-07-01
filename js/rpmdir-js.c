@@ -1,0 +1,241 @@
+/** \ingroup js_c
+ * \file js/rpmdir-js.c
+ */
+
+#include "system.h"
+
+#include "rpmdir-js.h"
+#include "rpmjs-debug.h"
+
+#include "debug.h"
+
+/*@unchecked@*/
+static int _debug = -1;
+
+#define	rpmdir_addprop	JS_PropertyStub
+#define	rpmdir_delprop	JS_PropertyStub
+#define	rpmdir_convert	JS_ConvertStub
+
+/* --- helpers */
+
+/* --- Object methods */
+
+static JSFunctionSpec rpmdir_funcs[] = {
+    JS_FS_END
+};
+
+/* --- Object properties */
+enum rpmdir_tinyid {
+    _DEBUG	= -2,
+};
+
+static JSPropertySpec rpmdir_props[] = {
+    {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {NULL, 0, 0, NULL, NULL}
+};
+
+static JSBool
+rpmdir_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    jsint tiny = JSVAL_TO_INT(id);
+
+_PROP_DEBUG_ENTRY(_debug < 0);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
+    switch (tiny) {
+    case _DEBUG:	*vp = INT_TO_JSVAL(_debug);		break;
+    default:
+	break;
+    }
+
+    return JS_TRUE;
+}
+
+static JSBool
+rpmdir_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    jsint tiny = JSVAL_TO_INT(id);
+
+_PROP_DEBUG_ENTRY(_debug < 0);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
+    switch (tiny) {
+    case _DEBUG:
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
+	break;
+    default:
+	break;
+    }
+
+    return JS_TRUE;
+}
+
+static JSBool
+rpmdir_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+	JSObject **objp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+
+_RESOLVE_DEBUG_ENTRY(_debug < 0);
+
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (ptr == NULL)) { /* don't resolve to parent prototypes objects. */
+	*objp = NULL;
+	goto exit;
+    }
+
+    *objp = obj;	/* XXX always resolve in this object. */
+
+exit:
+    return JS_TRUE;
+}
+
+static JSBool
+rpmdir_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+		  jsval *statep, jsid *idp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    DIR * dir = ptr;
+    struct dirent * dp;
+    unsigned int ix = 0;
+
+_ENUMERATE_DEBUG_ENTRY(_debug < 0);
+
+    switch (op) {
+    case JSENUMERATE_INIT:
+        if (idp)
+            *idp = JSVAL_ZERO;
+	*statep = INT_TO_JSVAL(ix);
+if (_debug)
+fprintf(stderr, "\tINIT dir %p\n", dir);
+        break;
+    case JSENUMERATE_NEXT:
+	ix = JSVAL_TO_INT(*statep);
+	if ((dp = Readdir(dir)) != NULL) {
+	    (void) JS_DefineElement(cx, obj,
+			ix, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, dp->d_name)),
+			NULL, NULL, JSPROP_ENUMERATE);
+	    JS_ValueToId(cx, *statep, idp);
+if (_debug)
+fprintf(stderr, "\tNEXT dir %p[%u] dirent %p \"%s\"\n", dir, ix, dp, dp->d_name);
+	    *statep = INT_TO_JSVAL(ix+1);
+	} else
+	    *idp = JSVAL_VOID;
+        if (*idp != JSVAL_VOID)
+            break;
+        /*@fallthrough@*/
+    case JSENUMERATE_DESTROY:
+	ix = JSVAL_TO_INT(*statep);
+	(void) JS_DefineProperty(cx, obj, "length", INT_TO_JSVAL(ix),
+			NULL, NULL, JSPROP_ENUMERATE);
+if (_debug)
+fprintf(stderr, "\tFINI dir %p[%u]\n", dir, ix);
+	*statep = JSVAL_NULL;
+        break;
+    }
+    return JS_TRUE;
+}
+
+/* --- Object ctors/dtors */
+static DIR *
+rpmdir_init(JSContext *cx, JSObject *obj, const char * _dn)
+{
+    DIR * dir = Opendir(_dn);
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,\"%s\") dir %p\n", __FUNCTION__, cx, obj, _dn, dir);
+
+    if (!JS_SetPrivate(cx, obj, (void *)dir)) {
+	/* XXX error msg */
+	return NULL;
+    }
+    return dir;
+}
+
+static void
+rpmdir_dtor(JSContext *cx, JSObject *obj)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    DIR * dir = ptr;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+    if (dir) {
+	(void) Closedir(dir);
+	/* XXX error msg */
+    }
+}
+
+static JSBool
+rpmdir_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    JSBool ok = JS_FALSE;
+    const char * _dn = NULL;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_dn)))
+        goto exit;
+
+    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+	(void) rpmdir_init(cx, obj, _dn);
+    } else {
+	if ((obj = JS_NewObject(cx, &rpmdirClass, NULL, NULL)) == NULL)
+	    goto exit;
+	*rval = OBJECT_TO_JSVAL(obj);
+    }
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+/* --- Class initialization */
+JSClass rpmdirClass = {
+    "Dir", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
+    rpmdir_addprop,   rpmdir_delprop, rpmdir_getprop, rpmdir_setprop,
+    (JSEnumerateOp)rpmdir_enumerate, (JSResolveOp)rpmdir_resolve,
+    rpmdir_convert,	rpmdir_dtor,
+    JSCLASS_NO_OPTIONAL_MEMBERS
+};
+
+JSObject *
+rpmjs_InitDirClass(JSContext *cx, JSObject* obj)
+{
+    JSObject *proto;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+
+    proto = JS_InitClass(cx, obj, NULL, &rpmdirClass, rpmdir_ctor, 1,
+		rpmdir_props, rpmdir_funcs, NULL, NULL);
+assert(proto != NULL);
+    return proto;
+}
+
+JSObject *
+rpmjs_NewDirObject(JSContext *cx, const char * _dn)
+{
+    JSObject *obj;
+    DIR * dir;
+
+    if ((obj = JS_NewObject(cx, &rpmdirClass, NULL, NULL)) == NULL) {
+	/* XXX error msg */
+	return NULL;
+    }
+    if ((dir = rpmdir_init(cx, obj, _dn)) == NULL) {
+	/* XXX error msg */
+	return NULL;
+    }
+    return obj;
+}
