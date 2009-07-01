@@ -50,9 +50,17 @@ extern int (*_Glob) (const char * pattern, int flags,
 		int errfunc(const char * epath, int eerrno),
 		glob_t * pglob);
 extern void (*_Globfree) (glob_t * pglob);
+
+extern int (*_Closedir) (DIR * dir);
 extern DIR * (*_Opendir) (const char * path);
 extern struct dirent * (*_Readdir) (DIR * dir);
-extern int (*_Closedir) (DIR * dir);
+extern void (*_Rewinddir) (DIR *dir);
+extern void (*_Scandir) (const char * path, struct dirent *** nl,
+                int (*filter) (const struct dirent *),
+                int (*compar) (const void *, const void *));
+extern void (*_Seekdir) (DIR *dir, off_t offset);
+extern off_t (*_Telldir) (DIR *dir);
+
 extern char * (*_Realpath) (const char * path, char * resolved_path);
 extern off_t (*_Lseek) (int fdno, off_t offset, int whence);
 

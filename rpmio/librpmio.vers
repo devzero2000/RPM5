@@ -253,6 +253,8 @@ LIBRPMIO_0
     _Realpath;
     Rename;
     _Rename;
+    Rewinddir;
+    _Rewinddir;
     _RequestPass;
     Rmdir;
     _Rmdir;
@@ -523,6 +525,12 @@ LIBRPMIO_0
     rpmzqVerify;
     rpmzqVerifyFIFO;
     rpmzqVerifySEQ;
+    Scandir;
+    _Scandir;
+    Alphasort;
+    Versionsort;
+    Seekdir;
+    _Seekdir;
     Stat;
     _Stat;
     Symlink;
@@ -531,6 +539,8 @@ LIBRPMIO_0
     tarHeaderRead;
     tarHeaderWrite;
     tarTrailerWrite;
+    Telldir;
+    _Telldir;
     ufdClose;
     ufdCopy;
     ufdGetFile;

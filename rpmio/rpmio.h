@@ -8,12 +8,12 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include <rpmiotypes.h>
+#include <rpmdir.h>
 #include <rpmzlog.h>
 
 /** \ingroup rpmio
@@ -450,29 +450,6 @@ void Globfree( /*@only@*/ void * _pglob)
 	/*@globals fileSystem @*/
 	/*@modifies *_pglob, fileSystem @*/;
 
-
-/**
- * opendir(3) clone.
- */
-/*@null@*/
-DIR * Opendir(const char * path)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/;
-
-/**
- * readdir(3) clone.
- */
-/*@dependent@*/ /*@null@*/
-struct dirent * Readdir(DIR * dir)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *dir, errno, fileSystem @*/;
-
-/**
- * closedir(3) clone.
- */
-int Closedir(/*@only@*/ DIR * dir)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *dir, errno, fileSystem @*/;
 
 /**
  * realpath(3) clone.

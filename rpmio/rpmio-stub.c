@@ -61,6 +61,7 @@ int (*_Symlink) (const char * oldpath, const char * newpath) = Symlink;
 int (*_Readlink) (const char * path, char * buf, size_t bufsiz) = Readlink;
 /*@=type@*/
 int (*_Access) (const char * path, int amode) = Access;
+
 int (*_Glob_pattern_p) (const char *pattern, int quote) = Glob_pattern_p;
 int (*_Glob_error) (const char * epath, int eerrno) = Glob_error;
 /*@-type@*/
@@ -69,10 +70,18 @@ int (*_Glob) (const char * pattern, int flags,
 		glob_t * pglob) = Glob;
 void (*_Globfree) (glob_t * pglob) = Globfree;
 /*@=type@*/
+
+int (*_Closedir) (DIR * dir) = Closedir;
 DIR * (*_Opendir) (const char * path) = Opendir;
 struct dirent * (*_Readdir) (DIR * dir) = Readdir;
+void (*_Rewinddir) (DIR *dir) = Rewinddir;
+void (*_Scandir) (const char * path, struct dirent *** nl,
+                int (*filter) (const struct dirent *),
+                int (*compar) (const void *, const void *)) = Scandir;
+void (*_Seekdir) (DIR *dir, off_t offset) = Seekdir;
+off_t (*_Telldir) (DIR *dir) = Telldir;
+
 /*@-type@*/
-int (*_Closedir) (DIR * dir) = Closedir;
 char * (*_Realpath) (const char * path, char * resolved_path) = Realpath;
 /*@=type@*/
 off_t (*_Lseek) (int fdno, off_t offset, int whence) = Lseek;

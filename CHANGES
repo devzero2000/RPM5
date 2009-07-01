@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: add DIR stream positioning wrappers.
+    - jbj: rpmio: add rpmdir.[ch] to refactor DIR handling routines.
     - jbj: rpmbf: add union/intersect of filters.
     - jbj: rpmfc: reduce the amount of debugging noise with lots of files.
     - jbj: rpmbf: use lookup3.c hash pairs with k linear combinations.

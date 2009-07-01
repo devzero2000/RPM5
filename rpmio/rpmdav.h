@@ -140,6 +140,17 @@ DIR * avOpendir(const char * path,
 		/*@null@*/ const char ** av, /*@null@*/ rpmuint16_t * modes)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Create an argv directory from an ftp:// URI.
+ * @param path		ftp:// directory path
+ * @return 		argv DIR
+ */
+/*@null@*/
+DIR * ftpOpendir(const char * path)
+	/*@globals h_errno, errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
 #endif
 
 /**

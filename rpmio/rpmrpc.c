@@ -1216,12 +1216,9 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
     return rc;
 }
 
-/*@null@*/
-static DIR * ftpOpendir(const char * path)
-	/*@globals ftpBufAlloced, ftpBuf, h_errno, errno,
-		fileSystem, internalState @*/
-	/*@modifies ftpBufAlloced, ftpBuf, errno,
-		fileSystem, internalState @*/
+DIR * ftpOpendir(const char * path)
+	/*@globals ftpBufAlloced, ftpBuf @*/
+	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     AVDIR avdir;
     avContext ctx;
@@ -2004,63 +2001,6 @@ void Globfree(void *_pglob)
 if (_rpmio_debug)
 fprintf(stderr, "*** Globfree(%p)\n", pglob);
     globfree(pglob);
-}
-
-DIR * Opendir(const char * path)
-	/*@globals ftpBufAlloced, ftpBuf @*/
-	/*@modifies ftpBufAlloced, ftpBuf @*/
-{
-    const char * lpath;
-    int ut = urlPath(path, &lpath);
-
-if (_rpmio_debug)
-fprintf(stderr, "*** Opendir(%s)\n", path);
-    switch (ut) {
-    case URL_IS_FTP:
-	return ftpOpendir(path);
-	/*@notreached@*/ break;
-    case URL_IS_HTTPS:	
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davOpendir(path);
-#endif
-	/*@notreached@*/ break;
-    case URL_IS_PATH:
-	path = lpath;
-	/*@fallthrough@*/
-    case URL_IS_UNKNOWN:
-	break;
-    case URL_IS_DASH:
-    case URL_IS_HKP:
-    default:
-	return NULL;
-	/*@notreached@*/ break;
-    }
-    /*@-dependenttrans@*/
-    return opendir(path);
-    /*@=dependenttrans@*/
-}
-
-struct dirent * Readdir(DIR * dir)
-{
-if (_rpmio_debug)
-fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
-    if (dir == NULL)
-	return NULL;
-    if (ISAVMAGIC(dir))
-	return avReaddir(dir);
-    return readdir(dir);
-}
-
-int Closedir(DIR * dir)
-{
-if (_rpmio_debug)
-fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
-    if (dir == NULL)
-	return 0;
-    if (ISAVMAGIC(dir))
-	return avClosedir(dir);
-    return closedir(dir);
 }
 
 char * Realpath(const char * path, /*@null@*/ char * resolved_path)

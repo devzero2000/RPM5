@@ -590,6 +590,7 @@ AC_CHECK_FUNC(clock_gettime, [], [ AC_CHECK_LIB(rt, clock_gettime) ])
 
 dnl # specific functions (generic)
 AC_CHECK_FUNCS(vsnprintf snprintf)
+AC_CHECK_FUNCS(strcoll strverscmp)
 
 dnl # Error API
 AC_CHECK_HEADERS(error.h)
