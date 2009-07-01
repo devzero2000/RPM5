@@ -10,11 +10,29 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
-#define	rpmdir_addprop	JS_PropertyStub
-#define	rpmdir_delprop	JS_PropertyStub
-#define	rpmdir_convert	JS_ConvertStub
+/* Required JSClass vectors */
+#define	rpmdir_addprop		JS_PropertyStub
+#define	rpmdir_delprop		JS_PropertyStub
+#define	rpmdir_convert		JS_ConvertStub
+
+/* Optional JSClass vectors */
+#define	rpmdir_getobjectops	NULL
+#define	rpmdir_checkaccess	NULL
+#define	rpmdir_call		rpmdir_call
+#define	rpmdir_construct	rpmdir_ctor
+#define	rpmdir_xdrobject	NULL
+#define	rpmdir_hasinstance	NULL
+#define	rpmdir_mark		NULL
+#define	rpmdir_reserveslots	NULL
+
+/* Extended JSClass vectors */
+#define rpmdir_equality		NULL
+#define rpmdir_outerobject	NULL
+#define rpmdir_innerobject	NULL
+#define rpmdir_iteratorobject	NULL
+#define rpmdir_wrappedobject	NULL
 
 /* --- helpers */
 
@@ -149,15 +167,24 @@ fprintf(stderr, "\tFINI dir %p[%u]\n", dir, ix);
 static DIR *
 rpmdir_init(JSContext *cx, JSObject *obj, const char * _dn)
 {
-    DIR * dir = Opendir(_dn);
+    DIR * dir = NULL;
+
+    if (_dn) {
+	dir = Opendir(_dn);
+	/* XXX error msg */
+	if (!JS_SetPrivate(cx, obj, (void *)dir)) {
+	    /* XXX error msg */
+	    if (dir) {
+		(void) Closedir(dir);
+		/* XXX error msg */
+	    }
+	    dir = NULL;
+	}
+    }
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,\"%s\") dir %p\n", __FUNCTION__, cx, obj, _dn, dir);
 
-    if (!JS_SetPrivate(cx, obj, (void *)dir)) {
-	/* XXX error msg */
-	return NULL;
-    }
     return dir;
 }
 
@@ -184,7 +211,7 @@ rpmdir_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_dn)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
@@ -200,25 +227,58 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    DIR * dir = ptr;
+    JSBool ok = JS_FALSE;
+    const char * _dn = NULL;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
+        goto exit;
+
+    if (dir) {
+	(void) Closedir(dir);
+	/* XXX error msg */
+	dir = ptr = NULL;
+    }
+
+    dir = ptr = rpmdir_init(cx, obj, _dn);
+
+    *rval = OBJECT_TO_JSVAL(obj);
+
+    ok = JS_TRUE;
+
+exit:
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    return ok;
+}
+
 /* --- Class initialization */
 JSClass rpmdirClass = {
     "Dir", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
     rpmdir_addprop,   rpmdir_delprop, rpmdir_getprop, rpmdir_setprop,
     (JSEnumerateOp)rpmdir_enumerate, (JSResolveOp)rpmdir_resolve,
     rpmdir_convert,	rpmdir_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
+
+    rpmdir_getobjectops,rpmdir_checkaccess,
+    rpmdir_call,	rpmdir_construct,
+    rpmdir_xdrobject,	rpmdir_hasinstance,
+    rpmdir_mark,	rpmdir_reserveslots,
 };
 
 JSObject *
 rpmjs_InitDirClass(JSContext *cx, JSObject* obj)
 {
-    JSObject *proto;
+    JSObject * proto = JS_InitClass(cx, obj, NULL, &rpmdirClass, rpmdir_ctor, 1,
+		rpmdir_props, rpmdir_funcs, NULL, NULL);
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+fprintf(stderr, "==> %s(%p,%p) proto %p\n", __FUNCTION__, cx, obj, proto);
 
-    proto = JS_InitClass(cx, obj, NULL, &rpmdirClass, rpmdir_ctor, 1,
-		rpmdir_props, rpmdir_funcs, NULL, NULL);
 assert(proto != NULL);
     return proto;
 }

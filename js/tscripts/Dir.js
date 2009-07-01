@@ -1,23 +1,38 @@
 if (loglvl) print("--> Dir.js");
 
-var dir = new Dir("./tscripts");
+var dn = "./tscripts";
+var ix = 0;
+
+var dir = new Dir(dn);
 ack("typeof dir;", "object");
 ack("dir instanceof Dir;", true);
 ack("dir.debug = 1;", 1);
 ack("dir.debug = 0;", 0);
 
-// XXX needs JSClass.call populated
-// for (var [key,val] in Dir("./tscripts")) {
-//     print("key: "+key, "val: "+val);
-// }
-
+// XXX must be immediately after ctor
 print(JSON.stringify(dir));
 
-var dir = new Dir("./tscripts");
-print("length: "+dir.length);
+ack("dir();", dir);		// XXX closedir
+ack("dir(dn);", dir);		// XXX not quite same as ctor yet
+dir = new Dir(dn);
+
+ix = 0;
+ack("dir.length", ix);		// XXX undefined until iterated
 for (var [key,val] in Iterator(dir)) {
     print("key: "+key, "val: "+val);
+    ix++;
 }
-print("length: "+dir.length);
+ack("dir.length", ix);
+
+ack("dir(dn);", dir);		// XXX not quite same as ctor yet
+dir = new Dir(dn);
+
+ix = 0;
+ack("dir.length", ix);		// XXX undefined until iterated
+for (var [key,val] in Iterator(dir)) {
+    print("key: "+key, "val: "+val);
+    ix++;
+}
+ack("dir.length", ix);
 
 if (loglvl) print("<-- Dir.js");
