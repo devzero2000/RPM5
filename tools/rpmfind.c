@@ -333,7 +333,7 @@ dumpmode(BITCMD *set)
 		if (saveset != NULL)				\
 			free(saveset);				\
 		saveset = NULL;					\
-		return (NULL);					\
+		return NULL;					\
 	}							\
 	set = newset + (set - saveset);				\
 	saveset = newset;					\
@@ -460,7 +460,7 @@ setmode(const char * p)
     long perml;
 
     if (!*p)
-	return (NULL);
+	return NULL;
 
     /*
      * Get a copy of the mask for the permissions that are mask relative.
@@ -477,7 +477,7 @@ setmode(const char * p)
     setlen = SET_LEN + 2;
 	
     if ((set = malloc((unsigned)(sizeof(*set) * setlen))) == NULL)
-	return (NULL);
+	return NULL;
     saveset = set;
     endset = set + (setlen - 2);
 
@@ -492,16 +492,16 @@ setmode(const char * p)
 /*@=unrecog@*/
 	{
 	    free(saveset);
-	    return (NULL);
+	    return NULL;
 	}
 	perm = (int)(mode_t)perml;
 	while (*++p != '\0')
 	    if (*p < '0' || *p > '7') {
 		free(saveset);
-		return (NULL);
+		return NULL;
 	    }
 	ADDCMD((int)'=', (int)(STANDARD_BITS|S_ISTXT), perm, (unsigned)mask);
-	return (saveset);
+	return saveset;
     }
 
     /*
@@ -531,7 +531,7 @@ setmode(const char * p)
 
 getop:	if ((op = *p++) != '+' && op != '-' && op != '=') {
 	    free(saveset);
-	    return (NULL);
+	    return NULL;
 	}
 	if (op == '=')
 	    equalopdone = 0;
@@ -641,15 +641,13 @@ apply:	if (!*p)
 static void
 brace_subst(char *orig, char **store, char *path, int len)
 {
-	int plen;
+	int plen = strlen(path);
 	char ch, *p;
 
-	plen = strlen(path);
 	for (p = *store; (ch = *orig) != '\0'; ++orig)
 		if (ch == '{' && orig[1] == '}') {
 			while ((p - *store) + plen > len)
-				if (!(*store = realloc(*store, len *= 2)))
-					err(1, NULL);
+				*store = xrealloc(*store, len *= 2);
 			memmove(p, path, plen);
 			p += plen;
 			++orig;
@@ -784,10 +782,10 @@ yanknode(PLAN **planp)
 	PLAN *node;		/* top node removed from the plan */
 
 	if ((node = (*planp)) == NULL)
-		return (NULL);
+		return NULL;
 	(*planp) = (*planp)->next;
 	node->next = NULL;
-	return (node);
+	return node;
 }
 
 /*
@@ -806,7 +804,7 @@ yankexpr(PLAN **planp)
 
 	/* first pull the top node from the plan */
 	if ((node = yanknode(planp)) == NULL)
-		return (NULL);
+		return NULL;
 
 	/*
 	 * If the node is an '(' then we recursively slurp up expressions
@@ -841,7 +839,7 @@ yankexpr(PLAN **planp)
 				tail->next = NULL;
 			}
 		}
-	return (node);
+	return node;
 }
 
 /*
@@ -852,10 +850,9 @@ static PLAN *
 paren_squish(PLAN *plan)
 {
 	PLAN *expr;		/* pointer to next expression */
-	PLAN *tail;		/* pointer to tail of result plan */
-	PLAN *result;		/* pointer to head of result plan */
+	PLAN *tail = NULL;	/* pointer to tail of result plan */
+	PLAN *result = NULL;	/* pointer to head of result plan */
 
-	result = tail = NULL;
 
 	/*
 	 * the basic idea is to have yankexpr do all our work and just
@@ -878,7 +875,7 @@ paren_squish(PLAN *plan)
 		}
 		tail->next = NULL;
 	}
-	return (result);
+	return result;
 }
 
 /*
@@ -890,10 +887,8 @@ not_squish(PLAN *plan)
 {
 	PLAN *next;		/* next node being processed */
 	PLAN *node;		/* temporary node used in f_not processing */
-	PLAN *tail;		/* pointer to tail of result plan */
-	PLAN *result;		/* pointer to head of result plan */
-
-	tail = result = NULL;
+	PLAN *tail = NULL;	/* pointer to tail of result plan */
+	PLAN *result = NULL;	/* pointer to head of result plan */
 
 	while ((next = yanknode(&plan))) {
 		/*
@@ -941,7 +936,7 @@ not_squish(PLAN *plan)
 		}
 		tail->next = NULL;
 	}
-	return (result);
+	return result;
 }
 
 /*
@@ -952,10 +947,8 @@ static PLAN *
 or_squish(PLAN *plan)
 {
 	PLAN *next;		/* next node being processed */
-	PLAN *tail;		/* pointer to tail of result plan */
-	PLAN *result;		/* pointer to head of result plan */
-
-	tail = result = next = NULL;
+	PLAN *tail = NULL;	/* pointer to tail of result plan */
+	PLAN *result = NULL;	/* pointer to head of result plan */
 
 	while ((next = yanknode(&plan)) != NULL) {
 		/*
@@ -981,7 +974,7 @@ or_squish(PLAN *plan)
 			next->p_data[1] = or_squish(plan);
 			if (next->p_data[1] == NULL)
 				errx(1, "-o: no expression after -o");
-			return (next);
+			return next;
 		}
 
 		/* add the node to our result plan */
@@ -993,7 +986,7 @@ or_squish(PLAN *plan)
 		}
 		tail->next = NULL;
 	}
-	return (result);
+	return result;
 }
 
 /* Derived from the print routines in the ls(1) source code. */
@@ -1092,13 +1085,14 @@ static int strmode(mode_t mode, char *perms)
 static void
 printlong(char *name, char *accpath, struct stat *sb)
 {
+	static int ugwidth = 8;
 	char modep[15];
 
 	(void)printf("%6lu %8"PRId64" ", (u_long) sb->st_ino, (long long)sb->st_blocks);
 	(void)strmode(sb->st_mode, modep);
-	(void)printf("%s %3u %-*s %-*s ", modep, sb->st_nlink, MAXLOGNAME - 1,
-	    user_from_uid(sb->st_uid, 0), MAXLOGNAME - 1,
-	    group_from_gid(sb->st_gid, 0));
+	(void)printf("%s %3u %-*s %-*s ", modep, sb->st_nlink,
+	    ugwidth, user_from_uid(sb->st_uid, 0),
+	    ugwidth, group_from_gid(sb->st_gid, 0));
 
 	if (S_ISCHR(sb->st_mode) || S_ISBLK(sb->st_mode))
 		(void)printf("%3d, %3d ", major(sb->st_rdev),
@@ -1160,10 +1154,8 @@ static PLAN *lastexecplus = NULL;
 static PLAN *
 palloc(OPTION *option)
 {
-	PLAN *new;
+	PLAN *new = xmalloc(sizeof(*new));
 
-	if ((new = malloc(sizeof(PLAN))) == NULL)
-		err(1, NULL);
 	new->execute = option->execute;
 	new->flags = option->flags;
 	new->next = NULL;
@@ -1219,10 +1211,10 @@ static long long
 find_parsetime(PLAN *plan, const char *option, char *vp)
 {
 	long long secs, value;
-	char *str, *unit;	/* Pointer to character ending conversion. */
+	char * str = vp;
+	char *unit;		/* Pointer to character ending conversion. */
 
 	/* Determine comparison from leading + or -. */
-	str = vp;
 	switch (*str) {
 	case '+':
 		++str;
@@ -1344,13 +1336,11 @@ f_Xmin(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_Xmin(OPTION *option, char ***argvp)
 {
-	char *nmins;
-	PLAN *new;
+	char * nmins = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 
-	nmins = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	new->t_data = find_parsenum(new, option->name, nmins, NULL);
 	TIME_CORRECT(new);
 	return new;
@@ -1392,13 +1382,11 @@ f_Xtime(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_Xtime(OPTION *option, char ***argvp)
 {
-	char *value;
-	PLAN *new;
+	char * value = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 
-	value = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	new->t_data = find_parsetime(new, option->name, value);
 	if (!(new->flags & F_EXACTTIME))
 		TIME_CORRECT(new);
@@ -1417,15 +1405,13 @@ c_Xtime(OPTION *option, char ***argvp)
 static PLAN *
 c_mXXdepth(OPTION *option, char ***argvp)
 {
-	char *dstr;
-	PLAN *new;
+	char * dstr = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 
-	dstr = nextarg(option, argvp);
 	if (dstr[0] == '-')
 		/* all other errors handled by find_parsenum() */
 		errx(1, "%s: %s: value must be positive", option->name, dstr);
 
-	new = palloc(option);
 	if (option->flags & F_MAXDEPTH)
 		maxdepth = find_parsenum(new, option->name, dstr, NULL);
 	else
@@ -1481,7 +1467,7 @@ static PLAN *
 c_acl(OPTION *option, char ***argvp __unused)
 {
 	ftsoptions &= ~FTS_NOSTAT;
-	return (palloc(option));
+	return palloc(option);
 }
 
 /*
@@ -1576,12 +1562,9 @@ f_depth(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_depth(OPTION *option, char ***argvp)
 {
-	PLAN *new;
-	char *str;
+	char * str = **argvp;
+	PLAN * new = palloc(option);
 
-	new = palloc(option);
-
-	str = **argvp;
 	if (str && !(new->flags & F_DEPTH)) {
 		/* skip leading + or - */
 		if (*str == '+' || *str == '-')
@@ -1671,7 +1654,7 @@ f_exec(PLAN *plan, FTSENT *entry)
 
 	if (entry == NULL && plan->flags & F_EXECPLUS) {
 		if (plan->e_ppos == plan->e_pbnum)
-			return (1);
+			return 1;
 		plan->e_argv[plan->e_ppos] = NULL;
 		goto doexec;
 	}
@@ -1690,7 +1673,7 @@ f_exec(PLAN *plan, FTSENT *entry)
 		plan->e_psize += plan->e_len[plan->e_ppos];
 		if (++plan->e_ppos < plan->e_pnummax &&
 		    plan->e_psize < plan->e_psizemax)
-			return (1);
+			return 1;
 		plan->e_argv[plan->e_ppos] = NULL;
 	} else {
 		for (cnt = 0; plan->e_argv[cnt]; ++cnt)
@@ -1741,18 +1724,15 @@ doexec:	if ((plan->flags & F_NEEDOK) && !queryuser(plan->e_argv))
 static PLAN *
 c_exec(OPTION *option, char ***argvp)
 {
-	PLAN *new;			/* node returned */
+	PLAN * new = palloc(option);
 	long argmax;
 	int cnt, i;
 	char **argv, **ap, **ep, *p;
 
-	/* XXX - was in c_execdir, but seems unnecessary!?
+#if 0	/* XXX - was in c_execdir, but seems unnecessary!? */
 	ftsoptions &= ~FTS_NOSTAT;
-	*/
+#endif
 	isoutput = 1;
-
-	/* XXX - this is a change from the previous coding */
-	new = palloc(option);
 
 	for (ap = argv = *argvp;; ++ap) {
 		if (!*ap)
@@ -1790,12 +1770,9 @@ c_exec(OPTION *option, char ***argvp)
 		new->e_next = lastexecplus;
 		lastexecplus = new;
 	}
-	if ((new->e_argv = malloc(cnt * sizeof(char *))) == NULL)
-		err(1, NULL);
-	if ((new->e_orig = malloc(cnt * sizeof(char *))) == NULL)
-		err(1, NULL);
-	if ((new->e_len = malloc(cnt * sizeof(int))) == NULL)
-		err(1, NULL);
+	new->e_argv = xmalloc(cnt * sizeof(*new->e_argv));
+	new->e_orig = xmalloc(cnt * sizeof(*new->e_orig));
+	new->e_len = xmalloc(cnt * sizeof(*new->e_len));
 
 	for (argv = *argvp, cnt = 0; argv < ap; ++argv, ++cnt) {
 		new->e_orig[cnt] = *argv;
@@ -1804,9 +1781,7 @@ c_exec(OPTION *option, char ***argvp)
 		for (p = *argv; *p; ++p)
 			if (!(new->flags & F_EXECPLUS) && p[0] == '{' &&
 			    p[1] == '}') {
-				if ((new->e_argv[cnt] =
-				    malloc(MAXPATHLEN)) == NULL)
-					err(1, NULL);
+				new->e_argv[cnt] = xmalloc(MAXPATHLEN);
 				new->e_len[cnt] = MAXPATHLEN;
 				break;
 			}
@@ -1838,11 +1813,8 @@ finish_execplus(void)
 {
 	PLAN *p;
 
-	p = lastexecplus;
-	while (p != NULL) {
+	for(p = lastexecplus; p != NULL; p = p->e_next)
 		(p->execute)(p, NULL);
-		p = p->e_next;
-	}
 }
 
 static int
@@ -1869,14 +1841,12 @@ f_flags(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_flags(OPTION *option, char ***argvp)
 {
-	char *flags_str;
-	PLAN *new;
+	char * flags_str = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	u_long flags, notflags;
 
-	flags_str = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 
 	if (*flags_str == '-') {
 		new->flags |= F_ATLEAST;
@@ -1987,16 +1957,13 @@ f_fstype(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_fstype(OPTION *option, char ***argvp)
 {
-	PLAN *new;
-	char *fsname;
+	char * fsname = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 #if defined(HAVE_ST_FLAGS)	/* XXX HACK */
 	struct xvfsconf vfc;
 #endif
 
-	fsname = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
-
-	new = palloc(option);
 
 #if defined(HAVE_ST_FLAGS)	/* XXX HACK */
 	/*
@@ -2055,15 +2022,13 @@ f_group(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_group(OPTION *option, char ***argvp)
 {
-	char *gname;
-	PLAN *new;
+	char * gname = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	struct group *g;
 	gid_t gid;
 
-	gname = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	g = getgrnam(gname);
 	if (g == NULL) {
 		char* cp = gname;
@@ -2094,13 +2059,11 @@ f_inum(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_inum(OPTION *option, char ***argvp)
 {
-	char *inum_str;
-	PLAN *new;
+	char * inum_str = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 
-	inum_str = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	new->i_data = find_parsenum(new, option->name, inum_str, NULL);
 	return new;
 }
@@ -2115,14 +2078,12 @@ c_inum(OPTION *option, char ***argvp)
 static PLAN *
 c_samefile(OPTION *option, char ***argvp)
 {
-	char *fn;
-	PLAN *new;
+	char * fn = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	struct stat sb;
 
-	fn = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	if (stat(fn, &sb))
 		err(1, "%s", fn);
 	new->i_data = sb.st_ino;
@@ -2143,13 +2104,11 @@ f_links(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_links(OPTION *option, char ***argvp)
 {
-	char *nlinks;
-	PLAN *new;
+	char * nlinks = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 
-	nlinks = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	new->l_data = (nlink_t)find_parsenum(new, option->name, nlinks, NULL);
 	return new;
 }
@@ -2200,11 +2159,9 @@ f_name(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_name(OPTION *option, char ***argvp)
 {
-	char *pattern;
-	PLAN *new;
+	char * pattern = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 
-	pattern = nextarg(option, argvp);
-	new = palloc(option);
 	new->c_data = pattern;
 	return new;
 }
@@ -2234,14 +2191,12 @@ f_newer(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_newer(OPTION *option, char ***argvp)
 {
-	char *fn_or_tspec;
-	PLAN *new;
+	char * fn_or_tspec = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	struct stat sb;
 
-	fn_or_tspec = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	/* compare against what */
 	if (option->flags & F_TIME2_T) {
 		new->t_data = get_date(fn_or_tspec, (struct timeb *) 0);
@@ -2341,14 +2296,11 @@ f_perm(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_perm(OPTION *option, char ***argvp)
 {
-	char *perm;
-	PLAN *new;
+	char * perm = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	mode_t *set;
 
-	perm = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
-
-	new = palloc(option);
 
 	if (*perm == '-') {
 		new->flags |= F_ATLEAST;
@@ -2427,25 +2379,16 @@ f_prune(PLAN *plan __unused, FTSENT *entry)
 static int
 f_regex(PLAN *plan, FTSENT *entry)
 {
-	char *str;
-	int len;
-	regex_t *pre;
-	regmatch_t pmatch;
-	int errcode;
-	char errbuf[LINE_MAX];
-	int matched;
+	regex_t * pre = plan->re_data;
+	char * str = entry->fts_path;
+	int len = strlen(str);
+	regmatch_t pmatch = { .rm_so = 0, .rm_eo = len };
+	int errcode = regexec(pre, str, 1, &pmatch, REG_STARTEND);
+	int matched = 0;
 
-	pre = plan->re_data;
-	str = entry->fts_path;
-	len = strlen(str);
-	matched = 0;
-
-	pmatch.rm_so = 0;
-	pmatch.rm_eo = len;
-
-	errcode = regexec(pre, str, 1, &pmatch, REG_STARTEND);
 
 	if (errcode != 0 && errcode != REG_NOMATCH) {
+		char errbuf[LINE_MAX];
 		regerror(errcode, pre, errbuf, sizeof errbuf);
 		errx(1, "%s: %s",
 		     plan->flags & F_IGNCASE ? "-iregex" : "-regex", errbuf);
@@ -2460,28 +2403,22 @@ f_regex(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_regex(OPTION *option, char ***argvp)
 {
-	PLAN *new;
-	char *pattern;
-	regex_t *pre;
+	regex_t * pre = xmalloc(sizeof(*pre));
+	char * pattern = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	int errcode;
-	char errbuf[LINE_MAX];
-
-	if ((pre = malloc(sizeof(regex_t))) == NULL)
-		err(1, NULL);
-
-	pattern = nextarg(option, argvp);
 
 	if ((errcode = regcomp(pre, pattern,
-	    regexp_flags | (option->flags & F_IGNCASE ? REG_ICASE : 0))) != 0) {
+	    regexp_flags | (option->flags & F_IGNCASE ? REG_ICASE : 0))) != 0)
+	{
+		char errbuf[LINE_MAX];
 		regerror(errcode, pre, errbuf, sizeof errbuf);
 		errx(1, "%s: %s: %s",
 		     option->flags & F_IGNCASE ? "-iregex" : "-regex",
 		     pattern, errbuf);
 	}
 
-	new = palloc(option);
 	new->re_data = pre;
-
 	return new;
 }
 
@@ -2517,15 +2454,13 @@ f_size(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_size(OPTION *option, char ***argvp)
 {
-	char *size_str;
-	PLAN *new;
+	char * size_str = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	char endch;
 	long long scale;
 
-	size_str = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	endch = 'c';
 	new->o_data = find_parsenum(new, option->name, size_str, &endch);
 	if (endch != '\0') {
@@ -2579,11 +2514,10 @@ f_type(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_type(OPTION *option, char ***argvp)
 {
-	char *typestring;
-	PLAN *new;
+	char * typestring = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	mode_t  mask;
 
-	typestring = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
 	switch (typestring[0]) {
@@ -2617,8 +2551,6 @@ c_type(OPTION *option, char ***argvp)
 	default:
 		errx(1, "%s: %s: unknown type", option->name, typestring);
 	}
-
-	new = palloc(option);
 	new->m_data = mask;
 	return new;
 }
@@ -2639,15 +2571,13 @@ f_user(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_user(OPTION *option, char ***argvp)
 {
-	char *username;
-	PLAN *new;
+	char * username = nextarg(option, argvp);
+	PLAN * new = palloc(option);
 	struct passwd *p;
 	uid_t uid;
 
-	username = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
 
-	new = palloc(option);
 	p = getpwnam(username);
 	if (p == NULL) {
 		char* cp = username;
@@ -2784,7 +2714,7 @@ static OPTION const options[] = {
 static int
 typecompare(const void *a, const void *b)
 {
-	return (strcmp(((const OPTION *)a)->name, ((const OPTION *)b)->name));
+	return strcmp(((const OPTION *)a)->name, ((const OPTION *)b)->name);
 }
 
 static OPTION *
@@ -2810,9 +2740,7 @@ find_create(char ***argvp)
 {
 	OPTION *p;
 	PLAN *new;
-	char **argv;
-
-	argv = *argvp;
+	char ** argv = *argvp;
 
 	if ((p = lookup_option(*argv)) == NULL)
 		errx(1, "%s: unknown option", *argv);
@@ -2820,7 +2748,7 @@ find_create(char ***argvp)
 
 	new = (p->create)(p, &argv);
 	*argvp = argv;
-	return (new);
+	return new;
 }
 
 /*
@@ -2833,7 +2761,7 @@ static int
 find_compare(const FTSENT * const *s1, const FTSENT * const *s2)
 {
 
-	return (strcoll((*s1)->fts_name, (*s2)->fts_name));
+	return strcoll((*s1)->fts_name, (*s2)->fts_name);
 }
 
 /*
@@ -2844,7 +2772,9 @@ find_compare(const FTSENT * const *s1, const FTSENT * const *s2)
 static PLAN *
 find_formplan(char *argv[])
 {
-	PLAN *plan, *tail, *new;
+	PLAN *plan = NULL;
+	PLAN *tail = NULL;
+	PLAN *new;
 
 	/*
 	 * for each argument in the command line, determine what kind of node
@@ -2862,7 +2792,7 @@ find_formplan(char *argv[])
 	 * by c_name() with an argument of foo and `-->' represents the
 	 * plan->next pointer.
 	 */
-	for (plan = tail = NULL; *argv;) {
+	while (*argv) {
 		if (!(new = find_create(&argv)))
 			continue;
 		if (plan == NULL)
@@ -2928,7 +2858,7 @@ find_formplan(char *argv[])
 	plan = paren_squish(plan);		/* ()'s */
 	plan = not_squish(plan);		/* !'s */
 	plan = or_squish(plan);			/* -o's */
-	return (plan);
+	return plan;
 }
 
 /*
@@ -2941,13 +2871,13 @@ find_execute(PLAN *plan, char *paths[])
 {
 	FTSENT *entry;
 	PLAN *p;
-	int rval;
+	int rval = 0;
 
 	tree = Fts_open(paths, ftsoptions, (issort ? find_compare : NULL));
 	if (tree == NULL)
 		err(1, "Fts_open");
 
-	for (rval = 0; (entry = Fts_read(tree)) != NULL;) {
+	while ((entry = Fts_read(tree)) != NULL) {
 		if (maxdepth != -1 && entry->fts_level >= maxdepth) {
 			if (Fts_set(tree, entry, FTS_SKIP))
 				err(1, "%s", entry->fts_path);
@@ -2996,7 +2926,7 @@ find_execute(PLAN *plan, char *paths[])
 	finish_execplus();
 	if (errno)
 		err(1, "Fts_read");
-	return (rval);
+	return rval;
 }
 
 /*==============================================================*/
@@ -3023,7 +2953,7 @@ main(int argc, char *argv[])
 	p = start = argv;
 	Hflag = Lflag = 0;
 	ftsoptions = FTS_NOSTAT | FTS_PHYSICAL;
-	while ((ch = getopt(argc, argv, "EHLPXdf:sx")) != -1)
+	while ((ch = getopt(argc, argv, "+EHLPXdf:sx")) != -1)
 		switch (ch) {
 		case 'E':
 			regexp_flags |= REG_EXTENDED;
