@@ -99,6 +99,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 
     ok = JS_TRUE;
 exit:
+    s = _free(s);
     return ok;
 }
 
