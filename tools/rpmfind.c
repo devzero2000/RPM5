@@ -67,6 +67,7 @@ char copyright[] =
 #define	HAVE_ST_FLAGS	1	/* XXX TODO: should be AutoFu test */
 #else
 #undef	HAVE_ST_FLAGS		/* XXX TODO: should be AutoFu test */
+#define	st_birthtime	st_ctime
 #endif
 
 #if !defined(MAXLOGNAME)	/* XXX HACK */
@@ -1322,11 +1323,9 @@ f_Xmin(PLAN *plan, FTSENT *entry)
 	} else if (plan->flags & F_TIME_A) {
 		COMPARE((now - entry->fts_statp->st_atime +
 		    60 - 1) / 60, plan->t_data);
-#if defined(HAVE_ST_FLAGS)
 	} else if (plan->flags & F_TIME_B) {
 		COMPARE((now - entry->fts_statp->st_birthtime +
 		    60 - 1) / 60, plan->t_data);
-#endif
 	} else {
 		COMPARE((now - entry->fts_statp->st_mtime +
 		    60 - 1) / 60, plan->t_data);
@@ -1364,10 +1363,8 @@ f_Xtime(PLAN *plan, FTSENT *entry)
 
 	if (plan->flags & F_TIME_A)
 		xtime = entry->fts_statp->st_atime;
-#if defined(HAVE_ST_FLAGS)
 	else if (plan->flags & F_TIME_B)
 		xtime = entry->fts_statp->st_birthtime;
-#endif
 	else if (plan->flags & F_TIME_C)
 		xtime = entry->fts_statp->st_ctime;
 	else
@@ -2180,10 +2177,8 @@ f_newer(PLAN *plan, FTSENT *entry)
 		return entry->fts_statp->st_ctime > plan->t_data;
 	else if (plan->flags & F_TIME_A)
 		return entry->fts_statp->st_atime > plan->t_data;
-#if defined(HAVE_ST_FLAGS)
 	else if (plan->flags & F_TIME_B)
 		return entry->fts_statp->st_birthtime > plan->t_data;
-#endif
 	else
 		return entry->fts_statp->st_mtime > plan->t_data;
 }
