@@ -41,43 +41,25 @@ char copyright[] =
 	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
+#include "system.h"
+
 #include <sys/cdefs.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <err.h>
-#include <errno.h>
 #include <fts.h>
 #include </usr/include/regex.h>	/* XXX HACK */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include <sys/param.h>
 #include <sys/acl.h>
-#include <sys/wait.h>
 #include <sys/mount.h>
 #include <sys/timeb.h>
 
-#include <dirent.h>
-#include <fnmatch.h>
-#include <grp.h>
-#include <limits.h>
-#include <pwd.h>
-#include <unistd.h>
-#include <ctype.h>
-
 #include <inttypes.h>
 #include <langinfo.h>
-#include <time.h>
-
-#include <fcntl.h>
-#include <locale.h>
 
 #include <ugid.h>		/* XXX HACK */
 #define	user_from_uid(_a, _b)	uidToUname(_a)
 #define	group_from_gid(_a, _b)	gidToGname(_a)
+
+#include "debug.h"
 
 #define	__unused	__attribute__((__unused__))
 
@@ -228,6 +210,427 @@ typedef struct _option {
 	exec_f *execute;		/* execute function */
 	int flags;
 } OPTION;
+
+/*==============================================================*/
+
+/* XXX *BSD systems already have getmode(3) and setmode(3) */
+#if defined(__linux__) || defined(__LCLINT__) || defined(__QNXNTO__)
+#if !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE)
+
+#define	SET_LEN	6		/* initial # of bitcmd struct to malloc */
+#define	SET_LEN_INCR 4		/* # of bitcmd structs to add as needed */
+
+typedef struct bitcmd {
+    char	cmd;
+    char	cmd2;
+    mode_t	bits;
+} BITCMD;
+
+#define	CMD2_CLR	0x01
+#define	CMD2_SET	0x02
+#define	CMD2_GBITS	0x04
+#define	CMD2_OBITS	0x08
+#define	CMD2_UBITS	0x10
+
+#if !defined(HAVE_GETMODE)
+/*
+ * Given the old mode and an array of bitcmd structures, apply the operations
+ * described in the bitcmd structures to the old mode, and return the new mode.
+ * Note that there is no '=' command; a strict assignment is just a '-' (clear
+ * bits) followed by a '+' (set bits).
+ */
+static mode_t
+getmode(const void * bbox, mode_t omode)
+	/*@*/
+{
+    const BITCMD *set;
+    mode_t clrval, newmode, value;
+
+    set = (const BITCMD *)bbox;
+    newmode = omode;
+    for (value = 0;; set++)
+	switch(set->cmd) {
+	/*
+	 * When copying the user, group or other bits around, we "know"
+	 * where the bits are in the mode so that we can do shifts to
+	 * copy them around.  If we don't use shifts, it gets real
+	 * grundgy with lots of single bit checks and bit sets.
+	 */
+	case 'u':
+	    value = (newmode & S_IRWXU) >> 6;
+	    goto common;
+
+	case 'g':
+	    value = (newmode & S_IRWXG) >> 3;
+	    goto common;
+
+	case 'o':
+	    value = newmode & S_IRWXO;
+common:	    if ((set->cmd2 & CMD2_CLR) != '\0') {
+		clrval = (set->cmd2 & CMD2_SET) != '\0' ?  S_IRWXO : value;
+		if ((set->cmd2 & CMD2_UBITS) != '\0')
+		    newmode &= ~((clrval<<6) & set->bits);
+		if ((set->cmd2 & CMD2_GBITS) != '\0')
+		    newmode &= ~((clrval<<3) & set->bits);
+		if ((set->cmd2 & CMD2_OBITS) != '\0')
+		    newmode &= ~(clrval & set->bits);
+	    }
+	    if ((set->cmd2 & CMD2_SET) != '\0') {
+		if ((set->cmd2 & CMD2_UBITS) != '\0')
+		    newmode |= (value<<6) & set->bits;
+		if ((set->cmd2 & CMD2_GBITS) != '\0')
+		    newmode |= (value<<3) & set->bits;
+		if ((set->cmd2 & CMD2_OBITS) != '\0')
+		    newmode |= value & set->bits;
+	    }
+	    /*@switchbreak@*/ break;
+
+	case '+':
+	    newmode |= set->bits;
+	    /*@switchbreak@*/ break;
+
+	case '-':
+	    newmode &= ~set->bits;
+	    /*@switchbreak@*/ break;
+
+	case 'X':
+	    if (omode & (S_IFDIR|S_IXUSR|S_IXGRP|S_IXOTH))
+			newmode |= set->bits;
+	    /*@switchbreak@*/ break;
+
+	case '\0':
+	default:
+#ifdef SETMODE_DEBUG
+	    (void) printf("getmode:%04o -> %04o\n", omode, newmode);
+#endif
+	    return newmode;
+	}
+}
+#endif	/* !defined(HAVE_GETMODE) */
+
+#if !defined(HAVE_SETMODE)
+#ifdef SETMODE_DEBUG
+static void
+dumpmode(BITCMD *set)
+{
+    for (; set->cmd; ++set)
+	(void) printf("cmd: '%c' bits %04o%s%s%s%s%s%s\n",
+	    set->cmd, set->bits, set->cmd2 ? " cmd2:" : "",
+	    set->cmd2 & CMD2_CLR ? " CLR" : "",
+	    set->cmd2 & CMD2_SET ? " SET" : "",
+	    set->cmd2 & CMD2_UBITS ? " UBITS" : "",
+	    set->cmd2 & CMD2_GBITS ? " GBITS" : "",
+	    set->cmd2 & CMD2_OBITS ? " OBITS" : "");
+}
+#endif
+
+#define	ADDCMD(a, b, c, d)					\
+    if (set >= endset) {					\
+	BITCMD *newset;						\
+	setlen += SET_LEN_INCR;					\
+	newset = realloc(saveset, sizeof(*newset) * setlen);	\
+	if (newset == NULL) {					\
+		if (saveset != NULL)				\
+			free(saveset);				\
+		saveset = NULL;					\
+		return (NULL);					\
+	}							\
+	set = newset + (set - saveset);				\
+	saveset = newset;					\
+	endset = newset + (setlen - 2);				\
+    }								\
+    set = addcmd(set, (a), (b), (c), (d))
+
+#define	STANDARD_BITS	(S_ISUID|S_ISGID|S_IRWXU|S_IRWXG|S_IRWXO)
+
+static BITCMD *
+addcmd(/*@returned@*/ BITCMD *set, int op, int who, int oparg, unsigned mask)
+	/*@modifies set @*/
+{
+    switch (op) {
+    case '=':
+	set->cmd = '-';
+	set->bits = who ? who : (int) STANDARD_BITS;
+	set++;
+
+	op = (int)'+';
+	/*@fallthrough@*/
+    case '+':
+    case '-':
+    case 'X':
+	set->cmd = (char)op;
+	set->bits = (who ? (unsigned)who : mask) & oparg;
+	break;
+
+    case 'u':
+    case 'g':
+    case 'o':
+	set->cmd = (char)op;
+	if (who) {
+	    set->cmd2 = (char)( ((who & S_IRUSR) ? CMD2_UBITS : 0) |
+				((who & S_IRGRP) ? CMD2_GBITS : 0) |
+				((who & S_IROTH) ? CMD2_OBITS : 0));
+	    set->bits = (mode_t)~0;
+	} else {
+	    set->cmd2 =(char)(CMD2_UBITS | CMD2_GBITS | CMD2_OBITS);
+	    set->bits = mask;
+	}
+	
+	if (oparg == (int)'+')
+	    set->cmd2 |= CMD2_SET;
+	else if (oparg == (int)'-')
+	    set->cmd2 |= CMD2_CLR;
+	else if (oparg == (int)'=')
+	    set->cmd2 |= CMD2_SET|CMD2_CLR;
+	break;
+    }
+    return set + 1;
+}
+
+/*
+ * Given an array of bitcmd structures, compress by compacting consecutive
+ * '+', '-' and 'X' commands into at most 3 commands, one of each.  The 'u',
+ * 'g' and 'o' commands continue to be separate.  They could probably be
+ * compacted, but it's not worth the effort.
+ */
+static void
+compress_mode(/*@out@*/ BITCMD *set)
+	/*@modifies set @*/
+{
+    BITCMD *nset;
+    int setbits, clrbits, Xbits, op;
+
+    for (nset = set;;) {
+	/* Copy over any 'u', 'g' and 'o' commands. */
+	while ((op = (int)nset->cmd) != (int)'+' && op != (int)'-' && op != (int)'X') {
+	    *set++ = *nset++;
+	    if (!op)
+		return;
+	}
+
+	for (setbits = clrbits = Xbits = 0;; nset++) {
+	    if ((op = (int)nset->cmd) == (int)'-') {
+		clrbits |= nset->bits;
+		setbits &= ~nset->bits;
+		Xbits &= ~nset->bits;
+	    } else if (op == (int)'+') {
+		setbits |= nset->bits;
+		clrbits &= ~nset->bits;
+		Xbits &= ~nset->bits;
+	    } else if (op == (int)'X')
+		Xbits |= nset->bits & ~setbits;
+	    else
+		/*@innerbreak@*/ break;
+	}
+	if (clrbits) {
+	    set->cmd = '-';
+	    set->cmd2 = '\0';
+	    set->bits = clrbits;
+	    set++;
+	}
+	if (setbits) {
+	    set->cmd = '+';
+	    set->cmd2 = '\0';
+	    set->bits = setbits;
+	    set++;
+	}
+	if (Xbits) {
+	    set->cmd = 'X';
+	    set->cmd2 = '\0';
+	    set->bits = Xbits;
+	    set++;
+	}
+    }
+}
+
+/*@-usereleased@*/
+/*@null@*/
+static void *
+setmode(const char * p)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    int perm, who;
+    char op;
+    BITCMD *set, *saveset, *endset;
+    sigset_t sigset, sigoset;
+    mode_t mask;
+    int equalopdone = 0;
+    int permXbits, setlen;
+    long perml;
+
+    if (!*p)
+	return (NULL);
+
+    /*
+     * Get a copy of the mask for the permissions that are mask relative.
+     * Flip the bits, we want what's not set.  Since it's possible that
+     * the caller is opening files inside a signal handler, protect them
+     * as best we can.
+     */
+    (void) sigfillset(&sigset);
+    (void) sigprocmask(SIG_BLOCK, &sigset, &sigoset);
+    (void) umask(mask = umask(0));
+    mask = ~mask;
+    (void) sigprocmask(SIG_SETMASK, &sigoset, NULL);
+
+    setlen = SET_LEN + 2;
+	
+    if ((set = malloc((unsigned)(sizeof(*set) * setlen))) == NULL)
+	return (NULL);
+    saveset = set;
+    endset = set + (setlen - 2);
+
+    /*
+     * If an absolute number, get it and return; disallow non-octal digits
+     * or illegal bits.
+     */
+    if (isdigit(*p)) {
+	perml = strtol(p, NULL, 8);
+/*@-unrecog@*/
+	if (perml < 0 || (perml & ~(STANDARD_BITS|S_ISTXT)))
+/*@=unrecog@*/
+	{
+	    free(saveset);
+	    return (NULL);
+	}
+	perm = (int)(mode_t)perml;
+	while (*++p != '\0')
+	    if (*p < '0' || *p > '7') {
+		free(saveset);
+		return (NULL);
+	    }
+	ADDCMD((int)'=', (int)(STANDARD_BITS|S_ISTXT), perm, (unsigned)mask);
+	return (saveset);
+    }
+
+    /*
+     * Build list of structures to set/clear/copy bits as described by
+     * each clause of the symbolic mode.
+     */
+    for (;;) {
+	/* First, find out which bits might be modified. */
+	for (who = 0;; ++p) {
+	    switch (*p) {
+	    case 'a':
+		who |= STANDARD_BITS;
+		/*@switchbreak@*/ break;
+	    case 'u':
+		who |= S_ISUID|S_IRWXU;
+		/*@switchbreak@*/ break;
+	    case 'g':
+		who |= S_ISGID|S_IRWXG;
+		/*@switchbreak@*/ break;
+	    case 'o':
+		who |= S_IRWXO;
+		/*@switchbreak@*/ break;
+	    default:
+		goto getop;
+	    }
+	}
+
+getop:	if ((op = *p++) != '+' && op != '-' && op != '=') {
+	    free(saveset);
+	    return (NULL);
+	}
+	if (op == '=')
+	    equalopdone = 0;
+
+	who &= ~S_ISTXT;
+	for (perm = 0, permXbits = 0;; ++p) {
+	    switch (*p) {
+	    case 'r':
+		perm |= S_IRUSR|S_IRGRP|S_IROTH;
+		/*@switchbreak@*/ break;
+	    case 's':
+		/*
+		 * If specific bits where requested and
+		 * only "other" bits ignore set-id.
+		 */
+		if (who == 0 || (who & ~S_IRWXO))
+		    perm |= S_ISUID|S_ISGID;
+		/*@switchbreak@*/ break;
+	    case 't':
+		/*
+		 * If specific bits where requested and
+		 * only "other" bits ignore sticky.
+		 */
+		if (who == 0 || (who & ~S_IRWXO)) {
+		    who |= S_ISTXT;
+		    perm |= S_ISTXT;
+		}
+		/*@switchbreak@*/ break;
+	    case 'w':
+		perm |= S_IWUSR|S_IWGRP|S_IWOTH;
+		/*@switchbreak@*/ break;
+	    case 'X':
+		permXbits = (int)(S_IXUSR|S_IXGRP|S_IXOTH);
+		/*@switchbreak@*/ break;
+	    case 'x':
+		perm |= S_IXUSR|S_IXGRP|S_IXOTH;
+		/*@switchbreak@*/ break;
+	    case 'u':
+	    case 'g':
+	    case 'o':
+		/*
+		 * When ever we hit 'u', 'g', or 'o', we have
+		 * to flush out any partial mode that we have,
+		 * and then do the copying of the mode bits.
+		 */
+		if (perm) {
+		    ADDCMD((int)op, who, perm, (unsigned)mask);
+		    perm = 0;
+		}
+		if (op == '=')
+		    equalopdone = 1;
+		if (op == '+' && permXbits) {
+		    ADDCMD((int)'X', who, permXbits, (unsigned)mask);
+		    permXbits = 0;
+		}
+		ADDCMD((int)*p, who, (int)op, (unsigned)mask);
+		/*@switchbreak@*/ break;
+
+	    default:
+		/*
+		 * Add any permissions that we haven't already
+		 * done.
+		 */
+		if (perm || (op == '=' && !equalopdone)) {
+		    if (op == '=')
+			equalopdone = 1;
+		    ADDCMD((int)op, who, perm, (unsigned)mask);
+		    perm = 0;
+		}
+		if (permXbits) {
+		    ADDCMD((int)'X', who, permXbits, (unsigned)mask);
+		    permXbits = 0;
+		}
+		goto apply;
+	    }
+	}
+
+apply:	if (!*p)
+	    break;
+	if (*p != ',')
+	    goto getop;
+	++p;
+    }
+    set->cmd = '\0';
+#ifdef SETMODE_DEBUG
+    (void) printf("Before compress_mode()\n");
+    dumpmode(saveset);
+#endif
+    compress_mode(saveset);
+#ifdef SETMODE_DEBUG
+    (void) printf("After compress_mode()\n");
+    dumpmode(saveset);
+#endif
+    return saveset;
+}
+/*@=usereleased@*/
+#endif	/* !defined(HAVE_SETMODE) */
+#endif	/* !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE) */
+#endif	/* __linux__ */
 
 /*==============================================================*/
 
@@ -1940,9 +2343,7 @@ c_perm(OPTION *option, char ***argvp)
 {
 	char *perm;
 	PLAN *new;
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
 	mode_t *set;
-#endif
 
 	perm = nextarg(option, argvp);
 	ftsoptions &= ~FTS_NOSTAT;
@@ -1957,15 +2358,11 @@ c_perm(OPTION *option, char ***argvp)
 		++perm;
 	}
 
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
 	if ((set = setmode(perm)) == NULL)
 		errx(1, "%s: %s: illegal mode string", option->name, perm);
 
 	new->m_data = getmode(set, 0);
 	free(set);
-#else
-	new->m_data = 0;	/* XXX HACK */
-#endif
 	return new;
 }
 
@@ -2548,7 +2945,7 @@ find_execute(PLAN *plan, char *paths[])
 
 	tree = Fts_open(paths, ftsoptions, (issort ? find_compare : NULL));
 	if (tree == NULL)
-		err(1, "ftsopen");
+		err(1, "Fts_open");
 
 	for (rval = 0; (entry = Fts_read(tree)) != NULL;) {
 		if (maxdepth != -1 && entry->fts_level >= maxdepth) {
