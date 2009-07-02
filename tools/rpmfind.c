@@ -43,18 +43,15 @@ char copyright[] =
 
 #include "system.h"
 
-#include <sys/cdefs.h>
-
-#include <fts.h>
-#include </usr/include/regex.h>	/* XXX HACK */
-
 #include <sys/acl.h>
 #include <sys/mount.h>
-#include <sys/timeb.h>
 
-#include <inttypes.h>
 #include <langinfo.h>
 
+#include <rpmio.h>
+#include <fts.h>
+#define	_MIRE_INTERNAL
+#include <mire.h>
 #include <ugid.h>		/* XXX HACK */
 #define	user_from_uid(_a, _b)	uidToUname(_a)
 #define	group_from_gid(_a, _b)	gidToGname(_a)
@@ -67,23 +64,11 @@ char copyright[] =
 #define	HAVE_ST_FLAGS	1	/* XXX TODO: should be AutoFu test */
 #else
 #undef	HAVE_ST_FLAGS		/* XXX TODO: should be AutoFu test */
-#define	st_birthtime	st_ctime
+#define	st_birthtime	st_ctime	/* Use st_ctime if no st_birthtime. */
 #endif
 
-#if !defined(MAXLOGNAME)	/* XXX HACK */
-#define	MAXLOGNAME	255
-#endif
-
-#if !defined(QUAD_MAX)		/* XXX HACK */
-#define	QUAD_MAX	LLONG_MAX
-#endif
-
-#if !defined(S_ISTXT)		/* XXX HACK */
+#if !defined(S_ISTXT)
 #define	S_ISTXT	S_ISVTX
-#endif
-
-#if !defined(REG_BASIC)		/* XXX HACK */
-#define	REG_BASIC	0
 #endif
 
 time_t now;			/* time find was run */
@@ -95,12 +80,13 @@ int isoutput;			/* user specified output operator */
 int issort;         		/* do hierarchies in lexicographical order */
 int isxargs;			/* don't permit xargs delimiting chars */
 int mindepth = -1, maxdepth = -1; /* minimum and maximum depth */
-int regexp_flags = REG_BASIC;	/* use the "basic" regexp by default*/
+int regexp_flags = 0;		/* use the REG_BASIC "basic" regexp by default*/
 
 FTS *tree;			/* pointer to top of FTS hierarchy */
 
 extern char **environ;
 
+struct timeb;		/* XXX #include <sys/timeb.h> ? */
 extern time_t	 get_date(char *, struct timeb *);
 
 /*==============================================================*/
@@ -1089,7 +1075,7 @@ printlong(char *name, char *accpath, struct stat *sb)
 	static int ugwidth = 8;
 	char modep[15];
 
-	(void)printf("%6lu %8"PRId64" ", (u_long) sb->st_ino, (long long)sb->st_blocks);
+	(void)printf("%6lu %8lld ", (unsigned long) sb->st_ino, (long long)sb->st_blocks);
 	(void)strmode(sb->st_mode, modep);
 	(void)printf("%s %3u %-*s %-*s ", modep, sb->st_nlink,
 	    ugwidth, user_from_uid(sb->st_uid, 0),
@@ -1099,7 +1085,7 @@ printlong(char *name, char *accpath, struct stat *sb)
 		(void)printf("%3d, %3d ", major(sb->st_rdev),
 		    minor(sb->st_rdev));
 	else
-		(void)printf("%8"PRId64" ", (long long)sb->st_size);
+		(void)printf("%8lld ", (long long)sb->st_size);
 	printtime(sb->st_mtime);
 	(void)printf("%s", name);
 	if (S_ISLNK(sb->st_mode))
@@ -1463,8 +1449,9 @@ f_acl(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_acl(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_NOSTAT;
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -1519,12 +1506,11 @@ f_delete(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_delete(OPTION *option, char ***argvp __unused)
 {
-
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_NOSTAT;	/* no optimise */
 	isoutput = 1;			/* possible output */
 	isdepth = 1;			/* -depth implied */
-
-	return palloc(option);
+	return new;
 }
 
 
@@ -1621,9 +1607,9 @@ f_empty(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_empty(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_NOSTAT;
-
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -1874,10 +1860,10 @@ c_flags(OPTION *option, char ***argvp)
 static PLAN *
 c_follow(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_PHYSICAL;
 	ftsoptions |= FTS_LOGICAL;
-
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -1986,7 +1972,7 @@ c_fstype(OPTION *option, char ***argvp)
 	case 'r':
 		if (!strcmp(fsname, "rdonly")) {
 			new->flags |= F_MTFLAG;
-#if defined(MNT_RDONLY)	/* XXX HACK */
+#if defined(MNT_RDONLY)	/* XXX HACK: map to MS_RDONLY? */
 			new->mt_data = MNT_RDONLY;
 #endif
 			return new;
@@ -2125,10 +2111,10 @@ f_ls(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_ls(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_NOSTAT;
 	isoutput = 1;
-
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -2194,11 +2180,11 @@ c_newer(OPTION *option, char ***argvp)
 
 	/* compare against what */
 	if (option->flags & F_TIME2_T) {
-		new->t_data = get_date(fn_or_tspec, (struct timeb *) 0);
+		new->t_data = get_date(fn_or_tspec, NULL);
 		if (new->t_data == (time_t) -1)
 			errx(1, "Can't parse date/time: %s", fn_or_tspec);
 	} else {
-		if (stat(fn_or_tspec, &sb))
+		if (Stat(fn_or_tspec, &sb))
 			err(1, "%s", fn_or_tspec);
 		if (option->flags & F_TIME2_C)
 			new->t_data = sb.st_ctime;
@@ -2225,9 +2211,9 @@ f_nogroup(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_nogroup(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_NOSTAT;
-
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -2245,9 +2231,9 @@ f_nouser(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_nouser(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions &= ~FTS_NOSTAT;
-
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -2329,9 +2315,9 @@ f_print(PLAN *plan __unused, FTSENT *entry)
 static PLAN *
 c_print(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	isoutput = 1;
-
-	return palloc(option);
+	return new;
 }
 
 /*
@@ -2398,9 +2384,9 @@ f_regex(PLAN *plan, FTSENT *entry)
 static PLAN *
 c_regex(OPTION *option, char ***argvp)
 {
-	regex_t * pre = xmalloc(sizeof(*pre));
 	char * pattern = nextarg(option, argvp);
 	PLAN * new = palloc(option);
+	regex_t * pre = xmalloc(sizeof(*pre));
 	int errcode;
 
 	if ((errcode = regcomp(pre, pattern,
@@ -2422,7 +2408,8 @@ c_regex(OPTION *option, char ***argvp)
 static PLAN *
 c_simple(OPTION *option, char ***argvp __unused)
 {
-	return palloc(option);
+	PLAN * new = palloc(option);
+	return new;
 }
 
 /*
@@ -2485,7 +2472,7 @@ c_size(OPTION *option, char ***argvp)
 				option->name, size_str);
 			break;
 		}
-		if (new->o_data > QUAD_MAX / scale)
+		if (new->o_data > (LLONG_MAX / scale))
 			errx(1, "%s: %s: value too large",
 				option->name, size_str);
 		new->o_data *= scale;
@@ -2598,9 +2585,9 @@ c_user(OPTION *option, char ***argvp)
 static PLAN *
 c_xdev(OPTION *option, char ***argvp __unused)
 {
+	PLAN * new = palloc(option);
 	ftsoptions |= FTS_XDEV;
-
-	return palloc(option);
+	return new;
 }
 
 /*==============================================================*/
