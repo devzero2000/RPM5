@@ -1,11 +1,13 @@
 /** \ingroup js_c
- * \file js/rpmdir-js.c
+ * \file js/rpmfts-js.c
  */
 
 #include "system.h"
 
-#include "rpmdir-js.h"
+#include "rpmfts-js.h"
 #include "rpmjs-debug.h"
+
+#include <fts.h>
 
 #include "debug.h"
 
@@ -13,49 +15,49 @@
 static int _debug = 0;
 
 /* Required JSClass vectors */
-#define	rpmdir_addprop		JS_PropertyStub
-#define	rpmdir_delprop		JS_PropertyStub
-#define	rpmdir_convert		JS_ConvertStub
+#define	rpmfts_addprop		JS_PropertyStub
+#define	rpmfts_delprop		JS_PropertyStub
+#define	rpmfts_convert		JS_ConvertStub
 
 /* Optional JSClass vectors */
-#define	rpmdir_getobjectops	NULL
-#define	rpmdir_checkaccess	NULL
-#define	rpmdir_call		rpmdir_call
-#define	rpmdir_construct	rpmdir_ctor
-#define	rpmdir_xdrobject	NULL
-#define	rpmdir_hasinstance	NULL
-#define	rpmdir_mark		NULL
-#define	rpmdir_reserveslots	NULL
+#define	rpmfts_getobjectops	NULL
+#define	rpmfts_checkaccess	NULL
+#define	rpmfts_call		rpmfts_call
+#define	rpmfts_construct	rpmfts_ctor
+#define	rpmfts_xdrobject	NULL
+#define	rpmfts_hasinstance	NULL
+#define	rpmfts_mark		NULL
+#define	rpmfts_reserveslots	NULL
 
 /* Extended JSClass vectors */
-#define rpmdir_equality		NULL
-#define rpmdir_outerobject	NULL
-#define rpmdir_innerobject	NULL
-#define rpmdir_iteratorobject	NULL
-#define rpmdir_wrappedobject	NULL
+#define rpmfts_equality		NULL
+#define rpmfts_outerobject	NULL
+#define rpmfts_innerobject	NULL
+#define rpmfts_iteratorobject	NULL
+#define rpmfts_wrappedobject	NULL
 
 /* --- helpers */
 
 /* --- Object methods */
 
-static JSFunctionSpec rpmdir_funcs[] = {
+static JSFunctionSpec rpmfts_funcs[] = {
     JS_FS_END
 };
 
 /* --- Object properties */
-enum rpmdir_tinyid {
+enum rpmfts_tinyid {
     _DEBUG	= -2,
 };
 
-static JSPropertySpec rpmdir_props[] = {
+static JSPropertySpec rpmfts_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
 static JSBool
-rpmdir_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmfts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
@@ -74,9 +76,9 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmdir_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmfts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
@@ -98,10 +100,10 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmdir_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmfts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 		JSObject **objp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
 
 _RESOLVE_DEBUG_ENTRY(_debug < 0);
 
@@ -118,12 +120,12 @@ exit:
 }
 
 static JSBool
-rpmdir_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+rpmfts_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
-    DIR * dir = ptr;
-    struct dirent * dp;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    FTSENT * p;
     unsigned int ix = 0;
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
@@ -134,17 +136,17 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
             *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
 if (_debug)
-fprintf(stderr, "\tINIT dir %p\n", dir);
+fprintf(stderr, "\tINIT fts %p\n", fts);
         break;
     case JSENUMERATE_NEXT:
 	ix = JSVAL_TO_INT(*statep);
-	if ((dp = Readdir(dir)) != NULL) {
+	if ((p = Fts_read(fts)) != NULL) {
 	    (void) JS_DefineElement(cx, obj,
-			ix, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, dp->d_name)),
+			ix, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, p->fts_name)),
 			NULL, NULL, JSPROP_ENUMERATE);
 	    JS_ValueToId(cx, *statep, idp);
 if (_debug)
-fprintf(stderr, "\tNEXT dir %p[%u] dirent %p \"%s\"\n", dir, ix, dp, dp->d_name);
+fprintf(stderr, "\tNEXT fts %p[%u] ftsent %p \"%s\"\n", fts, ix, p, p->fts_name);
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
@@ -156,7 +158,7 @@ fprintf(stderr, "\tNEXT dir %p[%u] dirent %p \"%s\"\n", dir, ix, dp, dp->d_name)
 	(void) JS_DefineProperty(cx, obj, "length", INT_TO_JSVAL(ix),
 			NULL, NULL, JSPROP_ENUMERATE);
 if (_debug)
-fprintf(stderr, "\tFINI dir %p[%u]\n", dir, ix);
+fprintf(stderr, "\tFINI fts %p[%u]\n", fts, ix);
 	*statep = JSVAL_NULL;
         break;
     }
@@ -164,46 +166,51 @@ fprintf(stderr, "\tFINI dir %p[%u]\n", dir, ix);
 }
 
 /* --- Object ctors/dtors */
-static DIR *
-rpmdir_init(JSContext *cx, JSObject *obj, const char * _dn)
+static FTS *
+rpmfts_init(JSContext *cx, JSObject *obj, const char * _dn)
 {
-    DIR * dir = NULL;
+    FTS * fts = NULL;
 
     if (_dn) {
-	dir = Opendir(_dn);
+	static int ftsoptions = FTS_NOSTAT;
+	const char *paths[2];
+	
+	paths[0] = _dn;
+	paths[1] = NULL;
+	fts = Fts_open(paths, ftsoptions, NULL);
 	/* XXX error msg */
-	if (!JS_SetPrivate(cx, obj, (void *)dir)) {
+	if (!JS_SetPrivate(cx, obj, (void *)fts)) {
 	    /* XXX error msg */
-	    if (dir) {
-		(void) Closedir(dir);
+	    if (fts) {
+		(void) Fts_close(fts);
 		/* XXX error msg */
 	    }
-	    dir = NULL;
+	    fts = NULL;
 	}
     }
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,\"%s\") dir %p\n", __FUNCTION__, cx, obj, _dn, dir);
+fprintf(stderr, "==> %s(%p,%p,\"%s\") fts %p\n", __FUNCTION__, cx, obj, _dn, fts);
 
-    return dir;
+    return fts;
 }
 
 static void
-rpmdir_dtor(JSContext *cx, JSObject *obj)
+rpmfts_dtor(JSContext *cx, JSObject *obj)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
-    DIR * dir = ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    if (dir) {
-	(void) Closedir(dir);
+    if (fts) {
+	(void) Fts_close(fts);
 	/* XXX error msg */
     }
 }
 
 static JSBool
-rpmdir_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
@@ -215,9 +222,9 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (uns
         goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmdir_init(cx, obj, _dn);
+	(void) rpmfts_init(cx, obj, _dn);
     } else {
-	if ((obj = JS_NewObject(cx, &rpmdirClass, NULL, NULL)) == NULL)
+	if ((obj = JS_NewObject(cx, &rpmftsClass, NULL, NULL)) == NULL)
 	    goto exit;
 	*rval = OBJECT_TO_JSVAL(obj);
     }
@@ -228,23 +235,23 @@ exit:
 }
 
 static JSBool
-rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
-    DIR * dir = ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
-    if (dir) {
-	(void) Closedir(dir);
+    if (fts) {
+	(void) Fts_close(fts);
 	/* XXX error msg */
-	dir = ptr = NULL;
+	fts = ptr = NULL;
     }
 
-    dir = ptr = rpmdir_init(cx, obj, _dn);
+    fts = ptr = rpmfts_init(cx, obj, _dn);
 
     *rval = OBJECT_TO_JSVAL(obj);
 
@@ -258,23 +265,23 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 }
 
 /* --- Class initialization */
-JSClass rpmdirClass = {
-    "Dir", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
-    rpmdir_addprop,   rpmdir_delprop, rpmdir_getprop, rpmdir_setprop,
-    (JSEnumerateOp)rpmdir_enumerate, (JSResolveOp)rpmdir_resolve,
-    rpmdir_convert,	rpmdir_dtor,
+JSClass rpmftsClass = {
+    "Fts", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
+    rpmfts_addprop,   rpmfts_delprop, rpmfts_getprop, rpmfts_setprop,
+    (JSEnumerateOp)rpmfts_enumerate, (JSResolveOp)rpmfts_resolve,
+    rpmfts_convert,	rpmfts_dtor,
 
-    rpmdir_getobjectops,rpmdir_checkaccess,
-    rpmdir_call,	rpmdir_construct,
-    rpmdir_xdrobject,	rpmdir_hasinstance,
-    rpmdir_mark,	rpmdir_reserveslots,
+    rpmfts_getobjectops,rpmfts_checkaccess,
+    rpmfts_call,	rpmfts_construct,
+    rpmfts_xdrobject,	rpmfts_hasinstance,
+    rpmfts_mark,	rpmfts_reserveslots,
 };
 
 JSObject *
-rpmjs_InitDirClass(JSContext *cx, JSObject* obj)
+rpmjs_InitFtsClass(JSContext *cx, JSObject* obj)
 {
-    JSObject * proto = JS_InitClass(cx, obj, NULL, &rpmdirClass, rpmdir_ctor, 1,
-		rpmdir_props, rpmdir_funcs, NULL, NULL);
+    JSObject * proto = JS_InitClass(cx, obj, NULL, &rpmftsClass, rpmfts_ctor, 1,
+		rpmfts_props, rpmfts_funcs, NULL, NULL);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) proto %p\n", __FUNCTION__, cx, obj, proto);
@@ -284,16 +291,16 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewDirObject(JSContext *cx, const char * _dn)
+rpmjs_NewFtsObject(JSContext *cx, const char * _dn)
 {
     JSObject *obj;
-    DIR * dir;
+    FTS * fts;
 
-    if ((obj = JS_NewObject(cx, &rpmdirClass, NULL, NULL)) == NULL) {
+    if ((obj = JS_NewObject(cx, &rpmftsClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((dir = rpmdir_init(cx, obj, _dn)) == NULL) {
+    if ((fts = rpmfts_init(cx, obj, _dn)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
