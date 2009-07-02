@@ -126,12 +126,13 @@ rpmdir_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
     struct dirent * dp;
     unsigned int ix = 0;
 
+    /* XXX VG: JS_Enumerate (jsobj.c:4211) doesn't initialize some fields. */
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
-        if (idp)
-            *idp = JSVAL_ZERO;
+	if (idp)
+	    *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
 if (_debug)
 fprintf(stderr, "\tINIT dir %p\n", dir);
@@ -183,7 +184,7 @@ rpmdir_init(JSContext *cx, JSObject *obj, const char * _dn)
     }
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,\"%s\") dir %p\n", __FUNCTION__, cx, obj, _dn, dir);
+fprintf(stderr, "<== %s(%p,%p,\"%s\") dir %p\n", __FUNCTION__, cx, obj, _dn, dir);
 
     return dir;
 }
@@ -230,11 +231,15 @@ exit:
 static JSBool
 rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
+    /* XXX obj is the global object so lookup "this" object. */
+    JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
+    void * ptr = JS_GetInstancePrivate(cx, o, &rpmdirClass, NULL);
     DIR * dir = ptr;
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
 
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
@@ -242,17 +247,18 @@ rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	(void) Closedir(dir);
 	/* XXX error msg */
 	dir = ptr = NULL;
+	(void) JS_SetPrivate(cx, o, (void *)dir);
     }
 
-    dir = ptr = rpmdir_init(cx, obj, _dn);
+    dir = ptr = rpmdir_init(cx, o, _dn);
 
-    *rval = OBJECT_TO_JSVAL(obj);
+    *rval = OBJECT_TO_JSVAL(o);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
 
     return ok;
 }
@@ -277,7 +283,7 @@ rpmjs_InitDirClass(JSContext *cx, JSObject* obj)
 		rpmdir_props, rpmdir_funcs, NULL, NULL);
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p) proto %p\n", __FUNCTION__, cx, obj, proto);
+fprintf(stderr, "<== %s(%p,%p) proto %p\n", __FUNCTION__, cx, obj, proto);
 
 assert(proto != NULL);
     return proto;
