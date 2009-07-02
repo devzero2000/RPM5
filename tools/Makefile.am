@@ -20,7 +20,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = augtool debugedit rpmkey
+EXTRA_PROGRAMS = augtool debugedit find rpmkey
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -67,6 +67,9 @@ rpmdeps_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmdigest_SOURCES =	rpmdigest.c
 rpmdigest_LDADD =	$(RPMIO_LDADD_COMMON)
+
+find_SOURCES =		rpmfind.c
+find_LDADD =		$(RPMIO_LDADD_COMMON)
 
 grep_SOURCES =		rpmgrep.c
 grep_LDADD =		$(RPMIO_LDADD_COMMON)
