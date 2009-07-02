@@ -17,6 +17,7 @@
 #include "rpmfts-js.h"
 #include "rpmhdr-js.h"
 #include "rpmmc-js.h"
+#include "rpmmg-js.h"
 #include "rpmmi-js.h"
 #include "rpmps-js.h"
 #include "rpmst-js.h"
@@ -59,6 +60,7 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Fts",		rpmjs_InitFtsClass,	 30 },
     { "Hdr",		rpmjs_InitHdrClass,	 12 },
     { "Mc",		rpmjs_InitMcClass,	 24 },
+    { "Mg",		rpmjs_InitMgClass,	 31 },
     { "Mi",		rpmjs_InitMiClass,	 11 },
     { "Ps",		rpmjs_InitPsClass,	 16 },
     { "St",		rpmjs_InitStClass,	 27 },
