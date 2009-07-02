@@ -142,11 +142,11 @@ fprintf(stderr, "\tINIT fts %p\n", fts);
 	ix = JSVAL_TO_INT(*statep);
 	if ((p = Fts_read(fts)) != NULL) {
 	    (void) JS_DefineElement(cx, obj,
-			ix, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, p->fts_name)),
+			ix, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, p->fts_path)),
 			NULL, NULL, JSPROP_ENUMERATE);
 	    JS_ValueToId(cx, *statep, idp);
 if (_debug)
-fprintf(stderr, "\tNEXT fts %p[%u] ftsent %p \"%s\"\n", fts, ix, p, p->fts_name);
+fprintf(stderr, "\tNEXT fts %p[%u] ftsent %p \"%s\"\n", fts, ix, p, p->fts_path);
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
@@ -190,7 +190,7 @@ rpmfts_init(JSContext *cx, JSObject *obj, const char * _dn)
     }
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,\"%s\") fts %p\n", __FUNCTION__, cx, obj, _dn, fts);
+fprintf(stderr, "<== %s(%p,%p,\"%s\") fts %p\n", __FUNCTION__, cx, obj, _dn, fts);
 
     return fts;
 }
@@ -237,7 +237,9 @@ exit:
 static JSBool
 rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    /* XXX obj is the global object so lookup "this" object. */
+    JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
+    void * ptr = JS_GetInstancePrivate(cx, o, &rpmftsClass, NULL);
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
@@ -249,17 +251,18 @@ rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	(void) Fts_close(fts);
 	/* XXX error msg */
 	fts = ptr = NULL;
+	(void) JS_SetPrivate(cx, o, (void *)fts);
     }
 
-    fts = ptr = rpmfts_init(cx, obj, _dn);
+    fts = ptr = rpmfts_init(cx, o, _dn);
 
-    *rval = OBJECT_TO_JSVAL(obj);
+    *rval = OBJECT_TO_JSVAL(o);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
 
     return ok;
 }
