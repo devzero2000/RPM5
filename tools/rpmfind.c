@@ -49,6 +49,7 @@ char copyright[] =
 #include <langinfo.h>
 
 #include <rpmio.h>
+#include <rpmdir.h>
 #include <fts.h>
 #define	_MIRE_INTERNAL
 #include <mire.h>
