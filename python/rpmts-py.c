@@ -999,7 +999,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 
     dig = pgpDigNew(rpmtsVSFlags(s->ts));
     rpmrc = headerCheck(dig, uh, uc, &msg);
-    dig = pgpDigFree(dig, "rpmts_HdrCheck");
+    dig = pgpDigFree(dig);
 
     switch (rpmrc) {
     case RPMRC_OK:

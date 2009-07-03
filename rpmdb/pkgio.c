@@ -367,7 +367,7 @@ void rpmtsCleanDig(rpmts ts)
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 /*@-onlytrans@*/
-	(void) pgpDigFree(ts->dig, "rpmtsCleanDig");
+	(void) pgpDigFree(ts->dig);
 	ts->dig = NULL;		/* XXX make sure the ptr is __REALLY__ gone */
 /*@=onlytrans@*/
     }
@@ -1277,7 +1277,7 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
         /*@modifies fd, *hdrp, *msg, fileSystem, internalState @*/
 {
 rpmxar xar = fdGetXAR(fd);
-    pgpDig dig = pgpDigLink(fdGetDig(fd), "rpmReadHeader");
+    pgpDig dig = pgpDigLink(fdGetDig(fd));
     char buf[BUFSIZ];
     rpmuint32_t block[4];
     rpmuint32_t il;
@@ -1443,7 +1443,7 @@ exit:
 	} else
 	    ei = _free(ei);
     }
-    dig = pgpDigFree(dig, "rpmReadHeader");
+    dig = pgpDigFree(dig);
     (void)headerFree(h);
     h = NULL;
 

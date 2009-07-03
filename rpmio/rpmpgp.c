@@ -1109,7 +1109,7 @@ pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
     pgpDig dig = digGetPool(_digPool);
     dig->vsflags = pgpDigVSFlags;
     dig->impl = pgpImplInit();
-    return pgpDigLink(dig, "pgpDigNew");
+    return pgpDigLink(dig);
 }
 
 pgpDigParams pgpGetSignature(pgpDig dig)
@@ -1248,7 +1248,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     int i;
 
     _pgp_print = printing;
-    _dig = pgpDigLink(dig, "pgpPrtPkts");
+    _dig = pgpDigLink(dig);
     if (dig != NULL && (val & 0x80)) {
 	pgpTag tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
 	_digp = (tag == PGPTAG_SIGNATURE) ? &_dig->signature : &_dig->pubkey;
@@ -1257,7 +1257,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	_digp = NULL;
 
     if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts) || ppkts == NULL) {
-	_dig = pgpDigFree(_dig, "pgpPrtPkts");
+	_dig = pgpDigFree(_dig);
 	return -1;
     }
 
@@ -1274,7 +1274,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     } else
 	ppkts = _free(ppkts);
 
-    _dig = pgpDigFree(_dig, "pgpPrtPkts");
+    _dig = pgpDigFree(_dig);
     return 0;
 }
 /*@=globstate =incondefs =nullderef @*/

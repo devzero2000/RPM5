@@ -303,7 +303,7 @@ assert(fd != NULL);
 #ifdef WITH_XAR
     fd->xar = rpmxarFree(fd->xar, "fdFini");
 #endif
-    fd->dig = pgpDigFree(fd->dig, "fdFini");
+    fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
 }
 

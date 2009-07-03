@@ -163,7 +163,7 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
 	}
      
 	he->p.ptr = _free(he->p.ptr);
-	dig = pgpDigFree(dig, "getSignid");
+	dig = pgpDigFree(dig);
     }
     return rc;
 }
@@ -740,7 +740,7 @@ exit:
     /* Clean up. */
     (void)headerFree(h);
     h = NULL;
-    dig = pgpDigFree(dig, "rpmcliImportPubkey");
+    dig = pgpDigFree(dig);
     n = _free(n);
     u = _free(u);
     v = _free(v);

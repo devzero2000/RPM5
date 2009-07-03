@@ -280,7 +280,7 @@ assert(0);	/* XXX never happens. */
 	break;
     }
 
-    dig = pgpDigFree(dig, "makeGPGSignature");
+    dig = pgpDigFree(dig);
 
     return 0;
 }

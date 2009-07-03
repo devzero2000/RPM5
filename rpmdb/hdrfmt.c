@@ -1197,7 +1197,7 @@ assert(ix == 0);
 		goto again;
 	    t = stpcpy(t, tempstr);
 
-	    dig = pgpDigFree(dig, "pgpsigFormat");
+	    dig = pgpDigFree(dig);
 	}
     }
 

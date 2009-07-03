@@ -115,16 +115,6 @@ struct _FD_s {
 
 #define	FDSANE(fd)	assert(fd != NULL && fd->magic == FDMAGIC)
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _ftp_debug;
-/*@=redecl@*/
-
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _dav_debug;
-/*@=redecl@*/
-
 #define DBG(_f, _m, _x) \
     /*@-modfilesys@*/ \
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
@@ -233,8 +223,8 @@ void fdSetDig(FD_t fd, pgpDig dig)
 {
     FDSANE(fd);
 /*@-assignexpose -castexpose @*/
-    fd->dig = pgpDigFree(fd->dig, "fdSetDig");
-    fd->dig = pgpDigLink(dig, "fdSetDig");
+    fd->dig = pgpDigFree(fd->dig);
+    fd->dig = pgpDigLink(dig);
 /*@=assignexpose =castexpose @*/
 }
 
