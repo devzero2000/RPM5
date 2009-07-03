@@ -45,6 +45,7 @@
 
 #include        <rpmiotypes.h>
 #include        <rpmio.h>
+#include        <rpmdir.h>
 
 #ifdef	WITH_JS
 #define XP_UNIX 1

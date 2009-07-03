@@ -6,6 +6,7 @@
 
 #include "rpmdir-js.h"
 #include "rpmjs-debug.h"
+#include <rpmdir.h>
 
 #include "debug.h"
 
