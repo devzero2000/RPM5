@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
+#include <rpmdir.h>
 #include <poptIO.h>
 
 #include "debug.h"

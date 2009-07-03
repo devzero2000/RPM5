@@ -1,6 +1,9 @@
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmdir.h>
+#include <rpmdav.h>
+#include <rpmpgp.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
 #include <popt.h>
@@ -43,7 +46,7 @@ static unsigned int keyids[] = {
 static int readKeys(const char * uri)
 {
     unsigned int * kip;
-    const rpmuint8_t * pkt;
+    rpmuint8_t * pkt;
     size_t pktlen;
     rpmuint8_t keyid[8];
     char fn[BUFSIZ];
@@ -109,7 +112,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
     int rc;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {

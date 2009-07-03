@@ -1,6 +1,8 @@
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmdir.h>
+#include <rpmdav.h>
 #include <poptIO.h>
 #include <mire.h>
 
@@ -322,7 +324,7 @@ main(int argc, char *argv[])
     rpmtget tget = xcalloc(1, sizeof(*tget));
     ARGV_t av = NULL;
     int ac;
-    int rc;
+    int rc = 0;
     int xx;
 
     if (__debug) {
@@ -343,7 +345,6 @@ _rpmio_debug = -1;
     tget->pattern = hrefpat;
     xx = mireAppend(RPMMIRE_PCRE, 0, tget->pattern, NULL, &tget->mires, &tget->nmires);
 
-    rc = 0;
     while (rc == 0 && (tget->uri = *av++) != NULL)
 	rc = readFile(tget);
 

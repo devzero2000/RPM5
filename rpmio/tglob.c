@@ -1,6 +1,8 @@
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmdir.h>
+#include <rpmdav.h>
 #include <poptIO.h>
 
 #include "debug.h"
@@ -58,7 +60,7 @@ main(int argc, char *argv[])
     ARGV_t av;
     int ac;
     const char * dn;
-    int rc;
+    int rc = 0;
 
     if (__debug) {
 _av_debug = -1;
@@ -75,7 +77,6 @@ _rpmio_debug = -1;
 	goto exit;
     }
 
-    rc = 0;
     while (rc == 0 && (dn = *av++) != NULL)
 	rc = printGlob(dn);
 

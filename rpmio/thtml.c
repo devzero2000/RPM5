@@ -13,7 +13,9 @@
 
 #include <stdarg.h>
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmdir.h>
+#include <rpmdav.h>
 #include <rpmcb.h>
 #include <argv.h>
 #include <popt.h>
@@ -830,9 +832,9 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
     ARGV_t av = NULL;
     int rc;
 

@@ -4,11 +4,15 @@
 /** \ingroup rpmio
  * \file rpmio/rpmdav.h
  */
-
-#include <argv.h>
+#include <rpmio.h>
+#include <rpmurl.h>
 
 /**
  */
+/*@unchecked@*/
+extern int _ftp_debug;
+/*@unchecked@*/
+extern int _dav_debug;
 /*@unchecked@*/
 extern int rpmioHttpReadTimeoutSecs;
 /*@unchecked@*/

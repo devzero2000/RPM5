@@ -9,6 +9,8 @@
 #include <rpmiotypes.h>	/* XXX fnpyKey */
 #include <rpmlog.h>
 #include <rpmurl.h>	/* XXX urlGetPath */
+#define	_RPMDIR_INTERNAL
+#include <rpmdir.h>
 #include <rpmmacro.h>	/* XXX rpmCleanPath */
 #include <ugid.h>
 

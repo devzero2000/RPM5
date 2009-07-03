@@ -1,7 +1,8 @@
 #include "system.h"
-#include <fts.h>
 
-#include <rpmio_internal.h>
+#include <fts.h>
+#include <rpmdir.h>
+#include <rpmdav.h>
 #include <poptIO.h>
 
 #include "debug.h"
