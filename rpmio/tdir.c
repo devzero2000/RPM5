@@ -7,7 +7,7 @@
 
 #include "debug.h"
 
-static void printDir(struct dirent * dp, int nentry)
+static void printDir(struct dirent * dp, off_t offset, int nentry)
 {
     if (rpmIsDebug()) {
 	unsigned d_off = 0;
@@ -15,7 +15,8 @@ static void printDir(struct dirent * dp, int nentry)
     !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
 	d_off = (unsigned) dp->d_off,
 #endif
-	fprintf(stderr, "%5d (0x%08x,0x%08x) 0x%04x ", nentry,
+	fprintf(stderr, "0x%08x %5d (0x%08x,0x%08x) 0x%04x ",
+		(unsigned)offset, nentry,
 		(unsigned) dp->d_ino, d_off, (unsigned) dp->d_reclen);
     }
     if (rpmIsVerbose()) {
@@ -31,16 +32,30 @@ static int dirWalk(const char * dn)
     rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
     struct dirent * dp;
     DIR * dir;
-    int nentries;
+    off_t d_off = -1;
+    int nentries = 0;
     int rc = 1;
     int xx;
 
     xx = rpmswEnter(op, 0);
-    nentries = 0;
     if ((dir = Opendir(dn)) == NULL)
 	goto exit;
+    while ((dp = Readdir(dir)) != NULL) {
+	if (nentries == 0)
+	    d_off = Telldir(dir);
+	printDir(dp, Telldir(dir), nentries++);
+    }
+#ifdef	NOISY
+    nentries = 0;
+    Rewinddir(dir);
     while ((dp = Readdir(dir)) != NULL)
-	printDir(dp, nentries++);
+	printDir(dp, Telldir(dir), nentries++);
+    Seekdir(dir, d_off);
+    while ((dp = Readdir(dir)) != NULL) {
+	printDir(dp, Telldir(dir), 0);
+	break;
+    }
+#endif
     rc = Closedir(dir);
 
 exit:

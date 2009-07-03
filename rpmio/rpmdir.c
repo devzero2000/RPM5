@@ -220,7 +220,7 @@ struct dirent * avReaddir(DIR * dir)
 
 #if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__) || defined(__QNXNTO__))
 #if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__) && !defined(__OpenBSD__)
-    dp->d_off = 0;		/* W2DO? */
+    dp->d_off = (off_t)i;
 #endif
     dp->d_type = dt[i];
 #endif
@@ -236,6 +236,10 @@ fprintf(stderr, "*** avReaddir(%p) %p %s\n", (void *)avdir, dp, dp->d_name);
 static void avRewinddir(DIR * dir)
 	/*@*/
 {
+    AVDIR avdir = (AVDIR)dir;
+
+    if (avdir != NULL && ISAVMAGIC(avdir))
+	avdir->offset = (off_t)-1;
     return;
 }
 
@@ -251,6 +255,23 @@ static int avScandir(const char * path, struct dirent *** nl,
 static void avSeekdir(DIR * dir, off_t offset)
 	/*@*/
 {
+    AVDIR avdir = (AVDIR)dir;
+    struct dirent * dp;
+    const char ** av;
+    int ac;
+
+    if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL)
+	return;
+
+    dp = (struct dirent *) avdir->data;
+    av = (const char **) (dp + 1);
+    ac = (int)avdir->size;
+
+    if (offset < 0 || offset >= ac || av[offset] == NULL)
+	return;
+
+    avdir->offset = offset - 1;		/* XXX set to previous entry */
+
     return;
 }
 
@@ -258,8 +279,22 @@ static off_t avTelldir(DIR * dir)
 	/*@globals errno @*/
 	/*@modifies errno @*/
 {
+    AVDIR avdir = (AVDIR)dir;
     off_t offset = -1;
-    errno = EBADF;
+    struct dirent * dp;
+    const char ** av;
+    int ac;
+
+    if (avdir != NULL && ISAVMAGIC(avdir) && avdir->data != NULL) {
+	dp = (struct dirent *) avdir->data;
+	av = (const char **) (dp + 1);
+	ac = (int)avdir->size;
+	offset = avdir->offset;
+    }
+
+    if (offset < 0 || offset >= ac || av[offset] == NULL)
+	errno = EBADF;
+
     return offset;
 }
 
