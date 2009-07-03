@@ -122,8 +122,10 @@ rpmaug rpmaugNew(const char * root, const char * loadpath, unsigned int flags)
 {
     rpmaug aug = rpmaugGetPool(_rpmaugPool);
 
-    if (root == NULL)
+    if (root == NULL || *root == '\0')
 	root = _rpmaugRoot;
+    if (root == NULL || *root == '\0')
+	root = "/";
     if (loadpath == NULL)
 	loadpath = _rpmaugLoadpath;
     aug->root = xstrdup(root);

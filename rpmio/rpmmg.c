@@ -83,6 +83,8 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
 {
     const char * t = NULL;
 
+if (_rpmmg_debug)
+fprintf(stderr, "--> rpmmgFile(%p, %s)\n", mg, (fn ? fn : "(nil)"));
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
 	t = magic_file(mg->ms, fn);
@@ -100,7 +102,7 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
     t = xstrdup(t);
 
 if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgFile(%p, %s) %s\n", mg, (fn ? fn : "(nil)"), t);
+fprintf(stderr, "<-- rpmmgFile(%p, %s) %s\n", mg, (fn ? fn : "(nil)"), t);
     return t;
 }
 
@@ -108,6 +110,9 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
 {
     const char * t = NULL;
 
+if (_rpmmg_debug)
+fprintf(stderr, "--> rpmmgBuffer(%p, %p[%d])\n", mg, b, (int)nb);
+    if (nb == 0) nb = strlen(b);
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
 	t = magic_buffer(mg->ms, b, nb);
@@ -125,6 +130,6 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
     t = xstrdup(t);
 
 if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgBuffer(%p, %p[%d]) %s\n", mg, b, (int)nb, t);
+fprintf(stderr, "<-- rpmmgBuffer(%p, %p[%d]) %s\n", mg, b, (int)nb, t);
     return t;
 }
