@@ -7,7 +7,8 @@
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
 
-#define	_RPMAV_INTERNAL
+#define	_RPMDIR_INTERNAL
+#include <rpmdir.h>
 #define	_RPMDAV_INTERNAL
 #include <rpmdav.h>
 

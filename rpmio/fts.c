@@ -127,15 +127,19 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #if !defined(_D_EXACT_NAMLEN)
 #   define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
 #endif
+
 #include "fts.h"
-#include "rpmio.h"
-#include "rpmurl.h"
+#include <rpmio.h>
+#include <rpmurl.h>
+#include <rpmdir.h>
+
 #include "debug.h"
+
 #   define __set_errno(val) (*__errno_location ()) = (val)
 #   define __open	open
 #   define __close	close
 #   define __fchdir	fchdir
-#endif
+#endif	/* defined(_LIBC) */
 
 #if !defined(USHRT_MAX)
 #define	USHRT_MAX	65535

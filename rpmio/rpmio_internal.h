@@ -117,16 +117,6 @@ struct _FD_s {
 
 /*@-redecl@*/
 /*@unchecked@*/
-extern int _rpmio_debug;
-/*@=redecl@*/
-
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _av_debug;
-/*@=redecl@*/
-
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _ftp_debug;
 /*@=redecl@*/
 

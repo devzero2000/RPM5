@@ -4,6 +4,7 @@
 #define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <rpmio_internal.h>
+#include <rpmdir.h>		/* _av_debug */
 #include <rpmdav.h>
 #include <poptIO.h>
 

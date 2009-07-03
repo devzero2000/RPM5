@@ -18,128 +18,9 @@ extern const char * rpmioHttpAccept;
 /*@unchecked@*/ /*@null@*/
 extern const char * rpmioHttpUserAgent;
 
-#if defined(_RPMDAV_INTERNAL)
-struct __dirstream {
-    int fd;			/* File descriptor.  */
-    char * data;		/* Directory block.  */
-    size_t allocation;		/* Space allocated for the block.  */
-    size_t size;		/* Total valid data in the block.  */
-    size_t offset;		/* Current offset into the block.  */
-    off_t filepos;		/* Position of next entry to read.  */
-#if defined(WITH_PTHREADS)
-    pthread_mutex_t lock;	/* Mutex lock for this structure.  */
-#endif
-};
-#endif
-
-#if !defined(DT_DIR) || defined(__APPLE__)
-# define DT_UNKNOWN	0
-# define DT_FIFO	1
-# define DT_CHR		2
-# define DT_DIR		4
-# define DT_BLK		6
-# define DT_REG		8
-# define DT_LNK		10
-# define DT_SOCK	12
-# define DT_WHT		14
-typedef struct __dirstream *	AVDIR;
-typedef struct __dirstream *	DAVDIR;
-#else
-# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
-typedef struct __dirstream *	AVDIR;
-typedef struct __dirstream *	DAVDIR;
-#else	/* __FreeBSD__ */
-typedef DIR *			AVDIR;
-typedef DIR *			DAVDIR;
-#endif	/* __FreeBSD__ */
-#endif
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#if defined(_RPMAV_INTERNAL)
-/**
- */
-typedef struct avContext_s * avContext;
-
-/**
- */
-/*@unchecked@*/
-extern int avmagicdir;
-#define ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
-
-/**
- */
-struct avContext_s {
-/*@relnull@*/ /*@dependent@*/
-    void ** resrock;
-    const char *uri;
-/*@refcounted@*/
-    urlinfo u;
-    int ac;
-    int nalloced;
-    ARGV_t av;
-/*@relnull@*/ /*@shared@*/
-    struct stat *st;
-    rpmuint16_t * modes;	/* XXX sizeof(mode_t) != sizeof(rpmmode_t) */
-    size_t * sizes;
-    time_t * mtimes;
-};
-
-/**
- */
-/*@null@*/
-void * avContextDestroy(/*@only@*/ /*@null@*/ avContext ctx)
-        /*@globals internalState @*/
-        /*@modifies ctx, internalState @*/;
-
-/**
- */
-/*@null@*/
-void * avContextCreate(const char *uri, /*@null@*/ struct stat *st)
-        /*@globals internalState @*/
-        /*@modifies *st, internalState @*/;
-
-/**
- */
-int avContextAdd(avContext ctx, const char * path,
-		mode_t mode, size_t size, time_t mtime)
-        /*@globals internalState @*/
-        /*@modifies ctx, internalState @*/;
-
-/**
- * Close an argv directory.
- * @param dir		argv DIR
- * @return 		0 always
- */
-int avClosedir(/*@only@*/ DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies dir, fileSystem @*/;
-
-/**
- * Return next entry from an argv directory.
- * @param dir		argv DIR
- * @return 		next entry
- */
-/*@dependent@*/ /*@null@*/
-struct dirent * avReaddir(DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- * Create an argv directory from an argv array.
- * @param path		directory path
- * @param av		argv array
- * @param modes		element modes (NULL will use pesky trailing '/')
- * @return 		argv DIR
- */
-/*@null@*/
-DIR * avOpendir(const char * path,
-		/*@null@*/ const char ** av, /*@null@*/ rpmuint16_t * modes)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Create an argv directory from an ftp:// URI.
@@ -150,8 +31,6 @@ DIR * avOpendir(const char * path,
 DIR * ftpOpendir(const char * path)
 	/*@globals h_errno, errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
-
-#endif
 
 /**
  * Close active neon transfer(s) (if any).

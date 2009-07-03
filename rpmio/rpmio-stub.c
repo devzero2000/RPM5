@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <rpmio.h>
+#include <rpmdir.h>
 #include "rpmio-stub.h"
 #include "debug.h"
 

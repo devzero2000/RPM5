@@ -13,7 +13,6 @@
 #include <unistd.h>
 
 #include <rpmiotypes.h>
-#include <rpmdir.h>
 #include <rpmzlog.h>
 
 /** \ingroup rpmio
@@ -33,6 +32,11 @@ typedef off_t 		_libio_off_t;
 typedef off_t 		_libio_pos_t;
 #endif
 /*@}*/
+
+/** \ingroup rpmio
+ */
+/*@unchecked@*/
+extern int _rpmio_debug;
 
 /** \ingroup rpmio
  */
