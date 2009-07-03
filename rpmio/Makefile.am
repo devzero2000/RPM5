@@ -64,7 +64,7 @@ pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
 	rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
 	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
-	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	md2.h md4.h \
 	salsa10.h salsa20.h tiger.h \
 	poptIO.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
 	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
@@ -79,7 +79,7 @@ librpmio_la_SOURCES = \
 	ar.c argv.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
 	getdate.c gzdio.c glob.c iosm.c lsyck.c \
 	macro.c mire.c mount.c poptIO.c \
-	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
+	md2.c md4.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmaug.c rpmbc.c rpmbf.c rpmdav.c rpmdir.c rpmficl.c rpmgc.c \
 	rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \

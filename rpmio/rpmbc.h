@@ -22,7 +22,12 @@
 #include <beecrypt/mp.h>
 #include <beecrypt/rsa.h>
 #include <beecrypt/rsapk.h>
+#include <beecrypt/ripemd128.h>
+#include <beecrypt/ripemd160.h>
+#include <beecrypt/ripemd256.h>
+#include <beecrypt/ripemd320.h>
 #include <beecrypt/sha1.h>
+#include <beecrypt/sha224.h>
 #include <beecrypt/sha256.h>
 #include <beecrypt/sha384.h>
 #include <beecrypt/sha512.h>

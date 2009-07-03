@@ -11,11 +11,6 @@
 #include "crc.h"
 #include "md2.h"
 #include "md4.h"
-#include "sha224.h"
-#include "rmd128.h"
-#include "rmd160.h"
-#include "rmd256.h"
-#include "rmd320.h"
 #include "salsa10.h"
 #include "salsa20.h"
 #include "tiger.h"
@@ -163,13 +158,13 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestsize = 128/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(rmd128Param);
+	ctx->paramsize = sizeof(ripemd128Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
-	ctx->Reset = (int (*)(void *)) rmd128Reset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd128Update;
-	ctx->Digest = (int (*)(void *, byte *)) rmd128Digest;
+	ctx->Reset = (int (*)(void *)) ripemd128Reset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd128Update;
+	ctx->Digest = (int (*)(void *, byte *)) ripemd128Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD160:
@@ -177,13 +172,13 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestsize = 160/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(rmd160Param);
+	ctx->paramsize = sizeof(ripemd160Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
-	ctx->Reset = (int (*)(void *)) rmd160Reset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd160Update;
-	ctx->Digest = (int (*)(void *, byte *)) rmd160Digest;
+	ctx->Reset = (int (*)(void *)) ripemd160Reset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd160Update;
+	ctx->Digest = (int (*)(void *, byte *)) ripemd160Digest;
 /*@=type@*/
 	ctx->asn1 = "3021300906052b2403020105000414";
 	break;
@@ -192,13 +187,13 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestsize = 256/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(rmd256Param);
+	ctx->paramsize = sizeof(ripemd256Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
-	ctx->Reset = (int (*)(void *)) rmd256Reset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd256Update;
-	ctx->Digest = (int (*)(void *, byte *)) rmd256Digest;
+	ctx->Reset = (int (*)(void *)) ripemd256Reset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd256Update;
+	ctx->Digest = (int (*)(void *, byte *)) ripemd256Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD320:
@@ -206,13 +201,13 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->digestsize = 320/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(rmd320Param);
+	ctx->paramsize = sizeof(ripemd320Param);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
-	ctx->Reset = (int (*)(void *)) rmd320Reset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd320Update;
-	ctx->Digest = (int (*)(void *, byte *)) rmd320Digest;
+	ctx->Reset = (int (*)(void *)) ripemd320Reset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd320Update;
+	ctx->Digest = (int (*)(void *, byte *)) ripemd320Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SALSA10:
