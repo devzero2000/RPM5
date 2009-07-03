@@ -60,7 +60,7 @@ static void rpmsquirrelPrint(HSQUIRRELVM v, const SQChar *s, ...)
 	int nw = vsnprintf(b, nb, s, va);
 	if (nw > -1 && (size_t)nw < nb)
 	    break;
-	if (nb > -1)		/* glibc 2.1 (and later) */
+	if (nw > -1)		/* glibc 2.1 (and later) */
 	    nb = nw+1;
 	else			/* glibc 2.0 */
 	    nb *= 2;
