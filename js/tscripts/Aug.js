@@ -9,7 +9,7 @@ const AUG_SAVE_NOOP	= (1 << 4);	/* Record (but don't perform) save */
 const AUG_NO_LOAD	= (1 << 5);	/* Do not load the tree from AUG_INIT */
 const AUG_NO_MODL_AUTOLOAD = (1 << 6);
 
-var aug = new Aug("", "", (AUG_NO_LOAD|AUG_SAVE_NEWFILE));
+var aug = new Aug("/", "", (AUG_NO_LOAD|AUG_SAVE_NEWFILE));
 ack("typeof aug;", "object");
 ack("aug instanceof Aug;", true);
 // ack("aug = 1;", 1);

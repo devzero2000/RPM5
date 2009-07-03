@@ -232,15 +232,11 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 	int i;
 	for (i = 0; i < nmatches; i++) {
 	    vec[i] = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _matches[i]));
-#ifdef	NOTYET
 	    _matches[i] = _free(_matches[i]);
-#endif
 	}
 	*rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, nmatches, vec));
-#ifdef	NOTYET
 	_matches = _free(_matches);
 	vec = _free(vec);
-#endif
     }
     ok = JS_TRUE;
 exit:
@@ -548,7 +544,6 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (uns
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ssu", &_root, &_loadpath, &_flags)))
 	goto exit;
-
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
 	if (rpmaug_init(cx, obj, _root, _loadpath, _flags) == NULL)
