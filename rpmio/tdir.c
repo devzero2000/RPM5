@@ -30,14 +30,13 @@ static void printDir(struct dirent * dp, off_t offset, int nentry)
 static int dirWalk(const char * dn)
 {
     rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
-    struct dirent * dp;
+    int xx = rpmswEnter(op, 0);
     DIR * dir;
+    struct dirent * dp;
     off_t d_off = -1;
     int nentries = 0;
     int rc = 1;
-    int xx;
 
-    xx = rpmswEnter(op, 0);
     if ((dir = Opendir(dn)) == NULL)
 	goto exit;
     while ((dp = Readdir(dir)) != NULL) {
@@ -57,6 +56,20 @@ static int dirWalk(const char * dn)
     }
 #endif
     rc = Closedir(dir);
+
+#ifdef	REFERENCE
+    {	struct dirent ** dirents = NULL;
+	int i;
+
+	nentries = Scandir(dn, &dirents, NULL, Alphasort);
+	for (i = 0; i < nentries; i++) {
+	    dp = dirents[i];
+	    printDir(dp, dp->d_off, i);
+	    dirents[i] = _free(dirents[i]);
+	}
+	dirents = _free(dirents);
+    }
+#endif
 
 exit:
     xx = rpmswExit(op, nentries);

@@ -248,7 +248,32 @@ static int avScandir(const char * path, struct dirent *** nl,
 		int (*compar) (const void *, const void *))
 	/*@*/
 {
-    int rc = -1;
+    DIR * dir;
+    struct dirent * dp;
+    int rc = -1;	/* assume failure */
+
+    if ((dir = Opendir(path)) == NULL)
+	goto exit;
+
+    rc = 0;
+    while ((dp = Readdir(dir)) != NULL) {
+	if (filter != NULL && !(*filter)(dp))
+	    continue;
+	rc++;
+	if (nl == NULL)
+	    continue;
+	*nl = (rc == 1
+		? xmalloc(rc * sizeof(**nl))
+		: xrealloc(*nl, rc * sizeof(**nl)));
+	(*nl)[rc - 1] = memcpy(xmalloc(sizeof(*dp)), dp, sizeof(*dp));
+    }
+
+    (void) Closedir(dir);
+
+    if (compar != NULL && rc > 1)
+	qsort(*nl, rc, sizeof(**nl), compar);
+
+exit:
     return rc;
 }
 
@@ -399,23 +424,23 @@ fprintf(stderr, "*** Scandir(\"%s\", %p, %p, %p) rc %d\n", path, nl, filter, com
 
 int Alphasort(const void * a, const void * b)
 {
-    const struct dirent * adp = a;
-    const struct dirent * bdp = b;
+    const struct dirent ** adp = a;
+    const struct dirent ** bdp = b;
 #if defined(HAVE_STRCOLL)
-    return strcoll(adp->d_name, bdp->d_name);
+    return strcoll((*adp)->d_name, (*bdp)->d_name);
 #else
-    return strcmp(adp->d_name, bdp->d_name);
+    return strcmp((*adp)->d_name, (*bdp)->d_name);
 #endif
 }
 
 int Versionsort(const void * a, const void * b)
 {
-    const struct dirent * adp = a;
-    const struct dirent * bdp = b;
+    const struct dirent ** adp = a;
+    const struct dirent ** bdp = b;
 #if defined(HAVE_STRVERSCMP)
-    return strverscmp(adp->d_name, bdp->d_name);
+    return strverscmp((*adp)->d_name, (*bdp)->d_name);
 #else
-    return strcmp(adp->d_name, bdp->d_name);
+    return strcmp((*adp)->d_name, (*bdp)->d_name);
 #endif
 }
 
