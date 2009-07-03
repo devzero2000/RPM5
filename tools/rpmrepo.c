@@ -44,6 +44,7 @@ extern int sqlite3_close(sqlite3 * db)
 #endif
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
+#include <rpmdir.h>
 #include <fts.h>
 #include <argv.h>
 #include <mire.h>
