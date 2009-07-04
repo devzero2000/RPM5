@@ -190,7 +190,7 @@ static int      fts_safe_changedir(FTS * sp, FTSENT * p, int fd,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-#define	ISDOT(a)	(a[0] == '.' && (!a[1] || (a[1] == '.' && !a[2])))
+#define	ISDOT(a)	(a[0] == '.' && (!a[1] || (a[1] == '/' && !a[2]) || (a[1] == '.' && (!a[2] || (a[2] == '/' && !a[3])))))
 
 #define CLR(opt)	(sp->fts_options &= ~(opt))
 #define	ISSET(opt)	(sp->fts_options & (opt))
@@ -216,7 +216,7 @@ Fts_open(char * const * argv, int options,
 
 /*@-formattype -modfilesys@*/
 if (_fts_debug)
-fprintf(stderr, "*** Fts_open(%p, 0x%x, %p) av[0] %s\n", argv, options, compar, argv[0]);
+fprintf(stderr, "--> Fts_open(%p, 0x%x, %p) av[0] %s\n", argv, options, compar, argv[0]);
 /*@=formattype =modfilesys@*/
 
 	/* Options check. */
@@ -382,7 +382,7 @@ Fts_close(FTS * sp)
 	int saved_errno;
 
 if (_fts_debug)
-fprintf(stderr, "*** Fts_close(%p)\n", sp);
+fprintf(stderr, "--> Fts_close(%p)\n", sp);
 
 	if (sp == NULL)
 		return 0;
@@ -427,6 +427,33 @@ fprintf(stderr, "*** Fts_close(%p)\n", sp);
 	return (0);
 }
 
+static int indent = 2;
+
+static const char * ftsInfoStrings[] = {
+    "UNKNOWN",	
+    "D",
+    "DC",
+    "DEFAULT",
+    "DNR",
+    "DOT",
+    "DP",
+    "ERR",
+    "F",
+    "INIT",
+    "NS",
+    "NSOK",
+    "SL",
+    "SLNONE",
+    "W",
+};
+
+static const char * ftsInfoStr(int fts_info)
+{
+    if (!(fts_info >= 1 && fts_info <= 14))
+	fts_info = 0;
+    return ftsInfoStrings[ fts_info ];
+}
+
 /*
  * Special case of "/" at the end of the path so that slashes aren't
  * appended which would cause paths to be written as "....//foo".
@@ -445,11 +472,12 @@ Fts_read(FTS * sp)
 	int saved_errno;
 
 if (_fts_debug)
-fprintf(stderr, "*** Fts_read(%p)\n", sp);
-
+fprintf(stderr, "--> Fts_read(%p)\n", sp);
 	/* If finished or unrecoverable error, return NULL. */
-	if (sp == NULL || sp->fts_cur == NULL || ISSET(FTS_STOP))
-		return (NULL);
+	if (sp == NULL || sp->fts_cur == NULL || ISSET(FTS_STOP)) {
+		p = NULL;
+		goto exit;
+	}
 
 	/* Set current node pointer. */
 	p = sp->fts_cur;
@@ -461,7 +489,7 @@ fprintf(stderr, "*** Fts_read(%p)\n", sp);
 	/* Any type of file may be re-visited; re-stat and re-turn. */
 	if (instr == FTS_AGAIN) {
 		p->fts_info = fts_stat(sp, p, 0);
-		return (p);
+		goto exit;
 	}
 
 	/*
@@ -480,7 +508,7 @@ fprintf(stderr, "*** Fts_read(%p)\n", sp);
 			} else
 				p->fts_flags |= FTS_SYMFOLLOW;
 		}
-		return (p);
+		goto exit;
 	}
 
 	/* Directory in pre-order. */
@@ -495,7 +523,7 @@ fprintf(stderr, "*** Fts_read(%p)\n", sp);
 				sp->fts_child = NULL;
 			}
 			p->fts_info = FTS_DP;
-			return (p);
+			goto exit;
 		}
 
 		/* Rebuild if only read the names and now traversing. */
@@ -527,9 +555,11 @@ fprintf(stderr, "*** Fts_read(%p)\n", sp);
 					    p->fts_parent->fts_accpath;
 			}
 		} else if ((sp->fts_child = fts_build(sp, BREAD)) == NULL) {
-			if (ISSET(FTS_STOP))
-				return (NULL);
-			return (p);
+			if (ISSET(FTS_STOP)) {
+				p = NULL;
+				goto exit;
+			}
+			goto exit;
 		}
 		p = sp->fts_child;
 		sp->fts_child = NULL;
@@ -550,10 +580,11 @@ next:	tmp = p;
 		if (p->fts_level == FTS_ROOTLEVEL) {
 			if (FCHDIR(sp, sp->fts_rfd)) {
 				SET(FTS_STOP);
-				return (NULL);
+				p = NULL;
+				goto exit;
 			}
 			fts_load(sp, p);
-			return (p);
+			goto exit;
 		}
 
 		/*
@@ -579,7 +610,7 @@ next:	tmp = p;
 name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 		*t++ = '/';
 		memmove(t, p->fts_name, p->fts_namelen + 1);
-		return (p);
+		goto exit;
 	}
 
 	/* Move up to the parent node. */
@@ -594,7 +625,8 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 		 */
 		free(p);
 		__set_errno (0);
-		return (sp->fts_cur = NULL);
+		sp->fts_cur = p = NULL;
+		goto exit;
 	}
 
 	/* NUL terminate the pathname. */
@@ -608,7 +640,8 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 	if (p->fts_level == FTS_ROOTLEVEL) {
 		if (FCHDIR(sp, sp->fts_rfd)) {
 			SET(FTS_STOP);
-			return (NULL);
+			p = NULL;
+			goto exit;
 		}
 	} else if (p->fts_flags & FTS_SYMFOLLOW) {
 		if (FCHDIR(sp, p->fts_symfd)) {
@@ -616,15 +649,27 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 			(void)__close(p->fts_symfd);
 			__set_errno (saved_errno);
 			SET(FTS_STOP);
-			return (NULL);
+			p = NULL;
+			goto exit;
 		}
 		(void)__close(p->fts_symfd);
 	} else if (!(p->fts_flags & FTS_DONTCHDIR) &&
 		   fts_safe_changedir(sp, p->fts_parent, -1, "..")) {
 		SET(FTS_STOP);
-		return (NULL);
+		p = NULL;
+		goto exit;
 	}
 	p->fts_info = p->fts_errno ? FTS_ERR : FTS_DP;
+
+exit:
+  if (_fts_debug) {
+    fprintf(stderr, "<-- Fts_read(%p) ret %p", sp, p);
+    if (p)
+	fprintf(stderr, " FTS_%s\t%*s %s", ftsInfoStr(p->fts_info),
+		indent * (p->fts_level < 0 ? 0 : p->fts_level), "",
+		(p->fts_name[0] != '\0' ? p->fts_name : p->fts_path));
+    fprintf(stderr, "\n");
+  }
 	return (p);
 }
 
@@ -639,7 +684,7 @@ Fts_set(/*@unused@*/ FTS * sp, FTSENT * p, int instr)
 {
 /*@-modfilesys@*/
 if (_fts_debug)
-fprintf(stderr, "*** Fts_set(%p, %p, 0x%x)\n", sp, p, instr);
+fprintf(stderr, "--> Fts_set(%p, %p, 0x%x)\n", sp, p, instr);
 /*@=modfilesys@*/
 
 	if (instr != 0 && instr != FTS_AGAIN && instr != FTS_FOLLOW &&
@@ -659,7 +704,7 @@ Fts_children(FTS * sp, int instr)
 
 /*@-modfilesys@*/
 if (_fts_debug)
-fprintf(stderr, "*** Fts_children(%p, 0x%x)\n", sp, instr);
+fprintf(stderr, "--> Fts_children(%p, 0x%x)\n", sp, instr);
 /*@=modfilesys@*/
 
 	if (instr != 0 && instr != FTS_NAMEONLY) {
