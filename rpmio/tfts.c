@@ -173,6 +173,7 @@ fprintf(stderr, "===== (%d/%d) dirs/files in:\n", fts->ndirs, fts->nfiles);
 }
 
 
+#ifdef	NOTYET
 /**
  * Use absolute paths since Chdir(2) is problematic with remote URI's.
  */
@@ -214,7 +215,7 @@ assert(rpath != NULL);
 	default:
 	    strncpy(fullpath, fts->paths[i], nb);
 	    fullpath[nb] = '\0';
-	    rpath = rpmGenPath(fullpath, lpath, NULL);
+	    rpath = rpmGetPath(fullpath, lpath, NULL);
 	    lpath = _free(lpath);
 	    /*@switchbreak@*/ break;
 	}
@@ -229,6 +230,7 @@ assert(rpath != NULL);
 
     return 0;
 }
+#endif
 
 static struct poptOption optionsTable[] = {
  { "pattern", '\0', POPT_ARG_STRING,	&__rpmfts.mirePattern, 0,
@@ -259,7 +261,7 @@ int
 main(int argc, char *argv[])
 {
     rpmfts fts = _rpmfts;
-    poptContext optCon;
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     int ac = 0;
     ARGV_t dav;
     const char * dn;
@@ -267,7 +269,6 @@ main(int argc, char *argv[])
     int xx;
 
     /* Process options. */
-    optCon = rpmioInit(argc, argv, optionsTable);
 
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
@@ -277,6 +278,7 @@ main(int argc, char *argv[])
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;
+_fts_debug = -1;
 _url_debug = -1;
 _rpmio_debug = -1;
 _rpmmg_debug = 1;
@@ -304,7 +306,9 @@ _mire_debug = 1;
     /* XXX Add pesky trailing '/' to http:// URI's */
     while ((dn = *dav++) != NULL)
 	xx = argvAdd(&fts->paths, dn);
+#ifdef	NOTYET
     xx = ftsAbsPaths(fts);
+#endif
 
     rc = ftsWalk(fts);
 

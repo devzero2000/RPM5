@@ -216,7 +216,7 @@ Fts_open(char * const * argv, int options,
 
 /*@-formattype -modfilesys@*/
 if (_fts_debug)
-fprintf(stderr, "*** Fts_open(%p, 0x%x, %p)\n", argv, options, compar);
+fprintf(stderr, "*** Fts_open(%p, 0x%x, %p) av[0] %s\n", argv, options, compar, argv[0]);
 /*@=formattype =modfilesys@*/
 
 	/* Options check. */

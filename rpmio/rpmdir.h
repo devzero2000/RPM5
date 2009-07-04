@@ -56,11 +56,12 @@ struct __dirstream {
 
 /**
  */
-typedef struct avContext_s * avContext;
+typedef struct rpmavx_s * rpmavx;
 
 /**
  */
-struct avContext_s {
+struct rpmavx_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@relnull@*/ /*@dependent@*/
     void ** resrock;
     const char *uri;
@@ -74,6 +75,10 @@ struct avContext_s {
     rpmuint16_t * modes;	/* XXX sizeof(mode_t) != sizeof(rpmmode_t) */
     size_t * sizes;
     time_t * mtimes;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif	/* _RPMDIR_INTERNAL */
 
@@ -83,25 +88,52 @@ extern "C" {
 
 #if defined(_RPMDIR_INTERNAL)
 /**
+ * Unreference a argv directory context instance.
+ * @param avx		argv directory context
+ * @return		NULL on last dereference
+ */
+/*@unused@*/ /*@null@*/
+rpmavx rpmavxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmavx avx)
+	/*@modifies avx @*/;
+#define	rpmavxUnlink(_avx)	\
+    ((rpmavx)rpmioUnlinkPoolItem((rpmioItem)(_avx), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a argv directory context instance.
+ * @param avx		argv directory context
+ * @return		new argv directory context reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmavx rpmavxLink (/*@null@*/ rpmavx avx)
+	/*@modifies avx @*/;
+#define	rpmavxLink(_avx)	\
+    ((rpmavx)rpmioLinkPoolItem((rpmioItem)(_avx), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Destroy a argv directory context instance.
+ * @param avx		argv directory context
+ * @return		NULL on last dereference
  */
 /*@null@*/
-void * avContextDestroy(/*@only@*/ /*@null@*/ avContext ctx)
-        /*@globals internalState @*/
-        /*@modifies ctx, internalState @*/;
+rpmavx rpmavxFree(/*@killref@*/ /*@null@*/rpmavx avx)
+	/*@globals internalState @*/
+	/*@modifies avx, internalState @*/;
+#define	rpmavxFree(_avx)	\
+    ((rpmavx)rpmioFreePoolItem((rpmioItem)(_avx), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  */
 /*@null@*/
-void * avContextCreate(const char *uri, /*@null@*/ struct stat *st)
+void * rpmavxNew(const char *uri, /*@null@*/ struct stat *st)
         /*@globals internalState @*/
         /*@modifies *st, internalState @*/;
 
 /**
  */
-int avContextAdd(avContext ctx, const char * path,
+int rpmavxAdd(rpmavx avx, const char * path,
 		mode_t mode, size_t size, time_t mtime)
         /*@globals internalState @*/
-        /*@modifies ctx, internalState @*/;
+        /*@modifies avx, internalState @*/;
 
 /**
  * Close an argv directory.

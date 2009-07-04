@@ -18,25 +18,43 @@
 /*@access DIR @*/
 
 /* =============================================================== */
-void * avContextDestroy(avContext ctx)
+static void avxFini(void * _avx)
 {
-    if (ctx == NULL)
-	return NULL;
-    if (ctx->av != NULL)
-	ctx->av = argvFree(ctx->av);
-    ctx->modes = _free(ctx->modes);
-    ctx->sizes = _free(ctx->sizes);
-    ctx->mtimes = _free(ctx->mtimes);
-    ctx->u = urlFree(ctx->u, "avContextDestroy");
-    ctx->uri = _free(ctx->uri);
-    memset(ctx, 0, sizeof(*ctx));	/* trash & burn */
-    ctx = _free(ctx);
-    return NULL;
+    rpmavx avx = _avx;
+
+    avx->mtimes = _free(avx->mtimes);
+    avx->sizes = _free(avx->sizes);
+    avx->modes = _free(avx->modes);
+    avx->st = NULL;
+    avx->av = argvFree(avx->av);
+    avx->nalloced = 0;
+    avx->ac = 0;
+    (void) urlFree(avx->u, __FUNCTION__);
+    avx->u = NULL;
+    avx->uri = _free(avx->uri);
+    avx->resrock = NULL;
 }
 
-void * avContextCreate(const char *uri, struct stat *st)
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _avxPool;
+
+static rpmavx avxGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _avxPool, fileSystem @*/
+	/*@modifies pool, _avxPool, fileSystem @*/
 {
-    avContext ctx;
+    rpmavx avx;
+
+    if (_avxPool == NULL) {
+	_avxPool = rpmioNewPool("avx", sizeof(*avx), -1, _av_debug,
+			NULL, NULL, avxFini);
+	pool = _avxPool;
+    }
+    return (rpmavx) rpmioGetPool(pool, sizeof(*avx));
+}
+
+void * rpmavxNew(const char *uri, struct stat *st)
+{
+    rpmavx avx;
     urlinfo u;
 
 /*@-globs@*/	/* FIX: h_errno annoyance. */
@@ -44,42 +62,45 @@ void * avContextCreate(const char *uri, struct stat *st)
 	return NULL;
 /*@=globs@*/
 
-    ctx = xcalloc(1, sizeof(*ctx));
-    ctx->uri = xstrdup(uri);
-    ctx->u = urlLink(u, "avContextCreate");
+    avx = avxGetPool(_avxPool);
+    avxFini(avx);		/* XXX trash-and-burn */
+
+    avx->uri = xstrdup(uri);
+    avx->u = urlLink(u, __FUNCTION__);
 /*@-temptrans@*/	/* XXX note the assignment */
-    if ((ctx->st = st) != NULL)
-	memset(ctx->st, 0, sizeof(*ctx->st));
+    if ((avx->st = st) != NULL)
+	memset(avx->st, 0, sizeof(*avx->st));
 /*@=temptrans@*/
-    return ctx;
+    
+    return rpmavxLink(avx);
 }
 
-int avContextAdd(avContext ctx, const char * path,
+int rpmavxAdd(rpmavx avx, const char * path,
 		mode_t mode, size_t size, time_t mtime)
 {
     int xx;
 
 if (_av_debug < 0)
-fprintf(stderr, "*** avContextAdd(%p,\"%s\", %06o, 0x%x, 0x%x)\n", ctx, path, (unsigned)mode, (unsigned)size, (unsigned)mtime);
+fprintf(stderr, "*** %s(%p,\"%s\", %06o, 0x%x, 0x%x)\n", __FUNCTION__, avx, path, (unsigned)mode, (unsigned)size, (unsigned)mtime);
 
-    xx = argvAdd(&ctx->av, path);
+    xx = argvAdd(&avx->av, path);
 
-    while (ctx->ac >= ctx->nalloced) {
-	if (ctx->nalloced <= 0)
-	    ctx->nalloced = 1;
-	ctx->nalloced *= 2;
-	ctx->modes = xrealloc(ctx->modes,
-				(sizeof(*ctx->modes) * ctx->nalloced));
-	ctx->sizes = xrealloc(ctx->sizes,
-				(sizeof(*ctx->sizes) * ctx->nalloced));
-	ctx->mtimes = xrealloc(ctx->mtimes,
-				(sizeof(*ctx->mtimes) * ctx->nalloced));
+    while (avx->ac >= avx->nalloced) {
+	if (avx->nalloced <= 0)
+	    avx->nalloced = 1;
+	avx->nalloced *= 2;
+	avx->modes = xrealloc(avx->modes,
+				(sizeof(*avx->modes) * avx->nalloced));
+	avx->sizes = xrealloc(avx->sizes,
+				(sizeof(*avx->sizes) * avx->nalloced));
+	avx->mtimes = xrealloc(avx->mtimes,
+				(sizeof(*avx->mtimes) * avx->nalloced));
     }
 
-    ctx->modes[ctx->ac] = (rpmuint16_t)mode;
-    ctx->sizes[ctx->ac] = size;
-    ctx->mtimes[ctx->ac] = mtime;
-    ctx->ac++;
+    avx->modes[avx->ac] = (rpmuint16_t)mode;
+    avx->sizes[avx->ac] = size;
+    avx->mtimes[avx->ac] = mtime;
+    avx->ac++;
     return 0;
 }
 
@@ -424,8 +445,8 @@ fprintf(stderr, "*** Scandir(\"%s\", %p, %p, %p) rc %d\n", path, nl, filter, com
 
 int Alphasort(const void * a, const void * b)
 {
-    const struct dirent ** adp = a;
-    const struct dirent ** bdp = b;
+    struct dirent *const * adp = a;
+    struct dirent *const * bdp = b;
 #if defined(HAVE_STRCOLL)
     return strcoll((*adp)->d_name, (*bdp)->d_name);
 #else
@@ -435,8 +456,8 @@ int Alphasort(const void * a, const void * b)
 
 int Versionsort(const void * a, const void * b)
 {
-    const struct dirent ** adp = a;
-    const struct dirent ** bdp = b;
+    struct dirent *const * adp = a;
+    struct dirent *const * bdp = b;
 #if defined(HAVE_STRVERSCMP)
     return strverscmp((*adp)->d_name, (*bdp)->d_name);
 #else

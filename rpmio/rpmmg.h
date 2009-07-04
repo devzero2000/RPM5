@@ -42,7 +42,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmmg rpmmgUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmmg mg)
 	/*@modifies mg @*/;
-#define	rpmmgUnlink(_ds)	\
+#define	rpmmgUnlink(_mg)	\
     ((rpmmg)rpmioUnlinkPoolItem((rpmioItem)(_mg), __FUNCTION__, __FILE__, __LINE__))
 
 /**

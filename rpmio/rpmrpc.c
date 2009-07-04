@@ -1222,7 +1222,7 @@ DIR * ftpOpendir(const char * path)
 	/*@modifies ftpBufAlloced, ftpBuf @*/
 {
     AVDIR avdir;
-    avContext ctx;
+    rpmavx avx;
     struct stat * st = NULL;
     const char * s, * sb, * se;
     int nac;
@@ -1233,9 +1233,9 @@ if (_ftp_debug)
 fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 
     /* Load FTP collection into argv. */
-    ctx = avContextCreate(path, st);
-    if (ctx == NULL) {
-        errno = ENOENT;         /* Note: ctx is NULL iff urlSplit() fails. */
+    avx = rpmavxNew(path, st);
+    if (avx == NULL) {
+        errno = ENOENT;         /* Note: avx is NULL iff urlSplit() fails. */
         return NULL;
     }
 
@@ -1267,8 +1267,8 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	}
     }
 
-    ctx->av = xcalloc(nac+1, sizeof(*ctx->av));
-    ctx->modes = xcalloc(nac, sizeof(*ctx->modes));
+    avx->av = xcalloc(nac+1, sizeof(*avx->av));
+    avx->modes = xcalloc(nac, sizeof(*avx->modes));
 
     nac = 0;
     sb = NULL;
@@ -1281,23 +1281,23 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    /*@switchbreak@*/ break;
 	case '\r':
 	    if (sb == NULL) {
-		ctx->modes[nac] = (*s == 'd' ? 0755 : 0644);
+		avx->modes[nac] = (*s == 'd' ? 0755 : 0644);
 		/*@-unrecog@*/
 		switch(*s) {
-		case 'p': ctx->modes[nac] |= S_IFIFO; /*@innerbreak@*/ break;
-		case 'c': ctx->modes[nac] |= S_IFCHR; /*@innerbreak@*/ break;
-		case 'd': ctx->modes[nac] |= S_IFDIR; /*@innerbreak@*/ break;
-		case 'b': ctx->modes[nac] |= S_IFBLK; /*@innerbreak@*/ break;
-		case '-': ctx->modes[nac] |= S_IFREG; /*@innerbreak@*/ break;
-		case 'l': ctx->modes[nac] |= S_IFLNK; /*@innerbreak@*/ break;
-		case 's': ctx->modes[nac] |= S_IFSOCK; /*@innerbreak@*/ break;
-		default:  ctx->modes[nac] |= S_IFREG; /*@innerbreak@*/ break;
+		case 'p': avx->modes[nac] |= S_IFIFO; /*@innerbreak@*/ break;
+		case 'c': avx->modes[nac] |= S_IFCHR; /*@innerbreak@*/ break;
+		case 'd': avx->modes[nac] |= S_IFDIR; /*@innerbreak@*/ break;
+		case 'b': avx->modes[nac] |= S_IFBLK; /*@innerbreak@*/ break;
+		case '-': avx->modes[nac] |= S_IFREG; /*@innerbreak@*/ break;
+		case 'l': avx->modes[nac] |= S_IFLNK; /*@innerbreak@*/ break;
+		case 's': avx->modes[nac] |= S_IFSOCK; /*@innerbreak@*/ break;
+		default:  avx->modes[nac] |= S_IFREG; /*@innerbreak@*/ break;
 		}
 		/*@=unrecog@*/
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
-	    ctx->av[nac++] = strncpy(xcalloc(1, (se-sb-1)+1), sb, (se-sb-1));
+	    avx->av[nac++] = strncpy(xcalloc(1, (se-sb-1)+1), sb, (se-sb-1));
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
@@ -1307,9 +1307,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	}
     }
 
-    avdir = (AVDIR) avOpendir(path, ctx->av, ctx->modes);
+    avdir = (AVDIR) avOpendir(path, avx->av, avx->modes);
 
-    ctx = avContextDestroy(ctx);
+    avx = rpmavxFree(avx);
 
 /*@-kepttrans@*/
     return (DIR *) avdir;

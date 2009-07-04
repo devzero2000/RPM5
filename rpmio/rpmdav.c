@@ -758,7 +758,7 @@ static void fetch_results(void *userdata, void *uarg,
 #endif
 	/*@*/
 {
-    avContext ctx = userdata;
+    rpmavx avx = userdata;
     struct fetch_resource_s *current, *previous, *newres;
     const char *clength, *modtime, *isexec;
     const char *checkin, *checkout;
@@ -778,9 +778,9 @@ static void fetch_results(void *userdata, void *uarg,
     newres = ne_propset_private(set);
 
 if (_dav_debug < 0)
-fprintf(stderr, "==> %s in uri %s\n", path, ctx->uri);
+fprintf(stderr, "==> %s in uri %s\n", path, avx->uri);
 
-    if (ne_path_compare(ctx->uri, path) == 0) {
+    if (ne_path_compare(avx->uri, path) == 0) {
 	/* This is the target URI */
 if (_dav_debug < 0)
 fprintf(stderr, "==> %s skipping target resource.\n", path);
@@ -848,8 +848,8 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 	newres->is_vcr = 0;
     }
 
-    current = *(struct fetch_resource_s **)ctx->resrock;
-    for (current = *ctx->resrock, previous = NULL; current != NULL;
+    current = *(struct fetch_resource_s **)avx->resrock;
+    for (current = *avx->resrock, previous = NULL; current != NULL;
 	previous = current, current = current->next)
     {
 	if (fetch_compare(current, newres) >= 0) {
@@ -860,15 +860,15 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 	previous->next = newres;
     } else {
 /*@-dependenttrans @*/
-        *(struct fetch_resource_s **)ctx->resrock = newres;
+        *(struct fetch_resource_s **)avx->resrock = newres;
 /*@=dependenttrans @*/
     }
     newres->next = current;
 }
 
-static int davFetch(const urlinfo u, avContext ctx)
+static int davFetch(const urlinfo u, rpmavx avx)
 	/*@globals internalState @*/
-	/*@modifies ctx, internalState @*/
+	/*@modifies avx, internalState @*/
 {
     const char * path = NULL;
     int depth = 1;					/* XXX passed arg? */
@@ -880,18 +880,18 @@ static int davFetch(const urlinfo u, avContext ctx)
     int xx;
 
     (void) urlPath(u->url, &path);
-    pfh = ne_propfind_create(u->sess, ctx->uri, depth);
+    pfh = ne_propfind_create(u->sess, avx->uri, depth);
 
     /* HACK: need to set RPMURL_SERVER_HASRANGE in u->allow here. */
 
-    ctx->resrock = (void **) &resitem;
+    avx->resrock = (void **) &resitem;
 
     ne_xml_push_handler(ne_propfind_get_parser(pfh),
                         fetch_startelm, NULL, NULL, pfh);
 
     ne_propfind_set_private(pfh, fetch_create_item, NULL);
 
-    rc = ne_propfind_named(pfh, fetch_props, fetch_results, ctx);
+    rc = ne_propfind_named(pfh, fetch_props, fetch_results, avx);
 
     ne_propfind_destroy(pfh);
 
@@ -935,12 +935,12 @@ static int davFetch(const urlinfo u, avContext ctx)
 	    /*@switchbreak@*/ break;
 	}
 
-	xx = avContextAdd(ctx, val, st_mode, current->size, current->modtime);
+	xx = rpmavxAdd(avx, val, st_mode, current->size, current->modtime);
 	ne_free(val);
 
 	current = fetch_destroy_item(current);
     }
-    ctx->resrock = NULL;	/* HACK: avoid leaving stack reference. */
+    avx->resrock = NULL;	/* HACK: avoid leaving stack reference. */
     /* HACK realloc to truncate modes/sizes/mtimes */
 
     return rc;
@@ -1078,7 +1078,7 @@ typedef struct rpmhtml_s * rpmhtml;
  */
 struct rpmhtml_s {
 /*@kept@*/
-    avContext ctx;
+    rpmavx avx;
     ne_request *req;
 
 /*@observer@*/
@@ -1107,7 +1107,7 @@ rpmhtml htmlFree(/*@only@*/ rpmhtml html)
 	}
 	html->buf = _free(html->buf);
 	html->nbuf = 0;
-	html->ctx = NULL;
+	html->avx = NULL;
     }
     return NULL;
 }
@@ -1115,11 +1115,11 @@ rpmhtml htmlFree(/*@only@*/ rpmhtml html)
 /**
  */
 static
-rpmhtml htmlNew(urlinfo u, /*@kept@*/ avContext ctx) 
+rpmhtml htmlNew(urlinfo u, /*@kept@*/ rpmavx avx) 
 	/*@*/
 {
     rpmhtml html = xcalloc(1, sizeof(*html));
-    html->ctx = ctx;
+    html->avx = avx;
     html->nbuf = BUFSIZ;	/* XXX larger buffer? */
     html->buf = xmalloc(html->nbuf + 1 + 1);
     html->req = ne_request_create(u->sess, "GET", u->url);
@@ -1253,7 +1253,7 @@ assert(html->b != NULL);
 	    case URL_IS_FTP:
 	    case URL_IS_HTTPS:
 	    case URL_IS_HTTP:
-#ifdef	NOTYET	/* XXX avContext needs to save linktos first. */
+#ifdef	NOTYET	/* XXX rpmavx needs to save linktos first. */
 		st_mode = S_IFLNK | 0755;
 		/*@switchbreak@*/ break;
 #endif
@@ -1290,7 +1290,7 @@ fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
 	    /*
 	     * Heuristics to identify HTML sub-directories:
 	     *   Avoid empty strings.
-	     *   Both "." and ".." will be added by avContext.
+	     *   Both "." and ".." will be added by rpmavx.
 	     *
 	     * Assume (case insensitive) basename(href) == basename(URI) is
 	     * a subdirectory.
@@ -1300,7 +1300,7 @@ fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
 	    if (!strcasecmp(hbn, gbn)) {
 		size_t _st_size = (size_t)0;	/* XXX HACK */
 		time_t _st_mtime = (time_t)0;	/* XXX HACK */
-		xx = avContextAdd(html->ctx, gbn, st_mode, _st_size, _st_mtime);
+		xx = rpmavxAdd(html->avx, gbn, st_mode, _st_size, _st_mtime);
 	    }
 
 	    gbn = _free(gbn);
@@ -1332,15 +1332,15 @@ fprintf(stderr, "*** htmlParse(%p) rc %d\n", html, rc);
 
 /* HACK htmlNLST() should be rewritten to use davReq/davResp w callbacks. */
 /*@-mustmod@*/
-static int htmlNLST(urlinfo u, avContext ctx) 
+static int htmlNLST(urlinfo u, rpmavx avx) 
 	/*@globals hrefpat, internalState @*/
-	/*@modifies ctx, internalState @*/
+	/*@modifies avx, internalState @*/
 {
-    rpmhtml html = htmlNew(u, ctx);
+    rpmhtml html = htmlNew(u, avx);
     int rc = 0;
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** htmlNLST(%p, %p) html %p\n", u, ctx, html);
+fprintf(stderr, "*** htmlNLST(%p, %p) html %p\n", u, avx, html);
 
     do {
 	rc = ne_begin_request(html->req);
@@ -1359,16 +1359,16 @@ exit:
 }
 /*@=mustmod@*/
 
-static int davNLST(avContext ctx)
+static int davNLST(rpmavx avx)
 	/*@globals hrefpat, internalState @*/
-	/*@modifies ctx, internalState @*/
+	/*@modifies avx, internalState @*/
 {
     urlinfo u = NULL;
     int rc;
     int xx;
 
 retry:
-    rc = davInit(ctx->uri, &u);
+    rc = davInit(avx->uri, &u);
     if (rc || u == NULL)
 	goto exit;
 
@@ -1378,14 +1378,14 @@ retry:
      * followed by GET through htmlNLST() to find the contained href's.
      */
     if (u->allow & RPMURL_SERVER_HASDAV)
-	rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
+	rc = davFetch(u, avx);	/* use PROPFIND to get contentLength */
     else {
-/*@-nullpass@*/	/* XXX annotate ctx->st correctly */
-	rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
+/*@-nullpass@*/	/* XXX annotate avx->st correctly */
+	rc = davHEAD(u, avx->st);	/* use HEAD to get contentLength */
 /*@=nullpass@*/
 	/* Parse directory elements. */
-	if (rc == NE_OK && S_ISDIR(ctx->st->st_mode))
-	    rc = htmlNLST(u, ctx);
+	if (rc == NE_OK && S_ISDIR(avx->st->st_mode))
+	    rc = htmlNLST(u, avx);
     }
 
     switch (rc) {
@@ -1972,7 +1972,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals hrefpat, fileSystem, internalState @*/
 	/*@modifies *st, fileSystem, internalState @*/
 {
-    avContext ctx = NULL;
+    rpmavx avx = NULL;
     char buf[1024];
     int rc = -1;
 
@@ -1980,21 +1980,21 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 	errno = ENOENT;
 	goto exit;
     }
-    ctx = avContextCreate(path, st);
-    if (ctx == NULL) {
-	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
+    avx = rpmavxNew(path, st);
+    if (avx == NULL) {
+	errno = ENOENT;		/* Note: avx is NULL iff urlSplit() fails. */
 	goto exit;
     }
-    rc = davNLST(ctx);
+    rc = davNLST(avx);
     if (rc) {
 /* HACK: errno = ??? */
 	goto exit;
     }
 
     if (st->st_mode == 0)
-	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
-    st->st_size = (ctx->sizes ? ctx->sizes[0] : (size_t)st->st_size);
-    st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
+	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
+    st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
+    st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
     st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
@@ -2013,7 +2013,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 exit:
 if (_dav_debug < 0)
 fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
-    ctx = avContextDestroy(ctx);
+    avx = rpmavxFree(avx);
     return rc;
 }
 
@@ -2021,7 +2021,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals hrefpat, fileSystem, internalState @*/
 	/*@modifies *st, fileSystem, internalState @*/
 {
-    avContext ctx = NULL;
+    rpmavx avx = NULL;
     char buf[1024];
     int rc = -1;
 
@@ -2029,21 +2029,21 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	errno = ENOENT;
 	goto exit;
     }
-    ctx = avContextCreate(path, st);
-    if (ctx == NULL) {
-	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
+    avx = rpmavxNew(path, st);
+    if (avx == NULL) {
+	errno = ENOENT;		/* Note: avx is NULL iff urlSplit() fails. */
 	goto exit;
     }
-    rc = davNLST(ctx);
+    rc = davNLST(avx);
     if (rc) {
 /* HACK: errno = ??? */
 	goto exit;
     }
 
     if (st->st_mode == 0)
-	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
-    st->st_size = (ctx->sizes ? ctx->sizes[0] : (size_t)st->st_size);
-    st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
+	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
+    st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
+    st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
     st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
@@ -2062,7 +2062,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 if (_dav_debug < 0)
 fprintf(stderr, "*** davLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 exit:
-    ctx = avContextDestroy(ctx);
+    avx = rpmavxFree(avx);
     return rc;
 }
 
@@ -2154,8 +2154,8 @@ DIR * davOpendir(const char * path)
 	/*@globals hrefpat @*/
 {
     AVDIR avdir = NULL;
-    avContext ctx = NULL;
-    struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs ctx->st. */
+    rpmavx avx = NULL;
+    struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs avx->st. */
     const char * uri = NULL;
     int rc;
 
@@ -2176,23 +2176,23 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 /*@=globs =mods@*/
 
     /* Load DAV collection into argv. */
-    /* XXX HACK: davHEAD needs ctx->st. */
-    ctx = avContextCreate(uri, st);
-    if (ctx == NULL) {
-	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
+    /* XXX HACK: davHEAD needs avx->st. */
+    avx = rpmavxNew(uri, st);
+    if (avx == NULL) {
+	errno = ENOENT;		/* Note: avx is NULL iff urlSplit() fails. */
 	goto exit;
     }
 
-    rc = davNLST(ctx);
+    rc = davNLST(avx);
     if (rc) {
 /* HACK: errno = ??? */
 	goto exit;
     } else
-	avdir = (AVDIR) avOpendir(uri, ctx->av, ctx->modes);
+	avdir = (AVDIR) avOpendir(uri, avx->av, avx->modes);
 
 exit:
     uri = _free(uri);
-    ctx = avContextDestroy(ctx);
+    avx = rpmavxFree(avx);
 /*@-kepttrans@*/
     return (DIR *) avdir;
 /*@=kepttrans@*/

@@ -3127,6 +3127,7 @@ int _rpmnss_init = 0;
 void rpmioClean(void)
 {
 /*@-nestedextern@*/
+    extern rpmioPool _avxPool;
     extern rpmioPool _urlPool;
     extern rpmioPool _xarPool;
     extern rpmioPool _digPool;
@@ -3193,6 +3194,7 @@ void rpmioClean(void)
     _rpmiobPool = rpmioFreePool(_rpmiobPool);
     _digPool = rpmioFreePool(_digPool);
     _xarPool = rpmioFreePool(_xarPool);
+    _avxPool = rpmioFreePool(_avxPool);
     _urlPool = rpmioFreePool(_urlPool);
     _fdPool = rpmioFreePool(_fdPool);
 
