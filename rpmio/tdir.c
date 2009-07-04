@@ -20,10 +20,11 @@ static void printDir(struct dirent * dp, off_t offset, int nentry)
 		(unsigned) dp->d_ino, d_off, (unsigned) dp->d_reclen);
     }
     if (rpmIsVerbose()) {
+	size_t nb = strlen(dp->d_name);
 	if (!rpmIsDebug())
 	    fprintf(stderr, "\t");
 	fprintf(stderr, "%s%s\n", dp->d_name,
-	    (dp->d_type == 0x04 ? "/" : ""));
+	    (dp->d_type == DT_DIR && dp->d_name[nb-1] != '/' ? "/" : ""));
     }
 }
 
