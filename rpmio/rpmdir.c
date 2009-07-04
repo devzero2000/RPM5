@@ -81,7 +81,7 @@ int rpmavxAdd(rpmavx avx, const char * path,
     int xx;
 
 if (_av_debug < 0)
-fprintf(stderr, "*** %s(%p,\"%s\", %06o, 0x%x, 0x%x)\n", __FUNCTION__, avx, path, (unsigned)mode, (unsigned)size, (unsigned)mtime);
+fprintf(stderr, "--> %s(%p,\"%s\", %06o, 0x%x, 0x%x)\n", __FUNCTION__, avx, path, (unsigned)mode, (unsigned)size, (unsigned)mtime);
 
     xx = argvAdd(&avx->av, path);
 
@@ -109,7 +109,7 @@ int avClosedir(/*@only@*/ DIR * dir)
     AVDIR avdir = (AVDIR)dir;
 
 if (_av_debug)
-fprintf(stderr, "*** avClosedir(%p)\n", avdir);
+fprintf(stderr, "--> avClosedir(%p)\n", avdir);
 
 #if defined(WITH_PTHREADS)
 /*@-moduncon -noeffectuncon @*/
@@ -132,7 +132,7 @@ DIR * avOpendir(const char * path, const char ** av, rpmuint16_t * modes)
     int ac, nac;
 
 if (_av_debug)
-fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
+fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
 
     nb = 0;
     ac = 0;
@@ -207,16 +207,20 @@ fprintf(stderr, "*** avOpendir(%s, %p, %p)\n", path, av, modes);
 
 struct dirent * avReaddir(DIR * dir)
 {
+    /* XXX Enabling breaks Readdir(3) compatibility. */
+    static int _append_pesky_trailing_slash = 0;
     AVDIR avdir = (AVDIR)dir;
     struct dirent * dp;
     const char ** av;
     unsigned char * dt;
+    char * t;
     int ac;
     int i;
 
     if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
-	/* XXX TODO: EBADF errno. */
-	return NULL;
+	errno = EFAULT;		/* XXX better errno's */
+	dp = NULL;
+	goto exit;
     }
 
     dp = (struct dirent *) avdir->data;
@@ -225,8 +229,11 @@ struct dirent * avReaddir(DIR * dir)
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
-    if (i < 0 || i >= ac || av[i] == NULL)
-	return NULL;
+    if (i < 0 || i >= ac || av[i] == NULL) {
+	errno = EFAULT;		/* XXX better errno's */
+	dp = NULL;
+	goto exit;
+    }
 
     avdir->offset = i;
 
@@ -247,9 +254,26 @@ struct dirent * avReaddir(DIR * dir)
 #endif
 /*@=type@*/
 
-    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
+    t = stpncpy(dp->d_name, av[i], sizeof(dp->d_name));
+
+    /* XXX Always append the pesky trailing '/'? */
+    if (_append_pesky_trailing_slash) {
+	size_t nt = (t - dp->d_name);
+	if (nt > 0 && nt < sizeof(dp->d_name))
+	switch (dt[i]) {
+	case DT_DIR:
+	    if (t[nt-1] != '/')
+		*t++ = '/';
+	    *t = '\0';
+	    /*@fallthrough@*/
+	default:
+	    break;
+	}
+    }
+
+exit:
 if (_av_debug)
-fprintf(stderr, "*** avReaddir(%p) %p %s\n", (void *)avdir, dp, dp->d_name);
+fprintf(stderr, "<-- avReaddir(%p) %p %s\n", (void *)avdir, dp, (dp ? dp->d_name : ""));
 
     return dp;
 }
