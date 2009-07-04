@@ -173,7 +173,6 @@ fprintf(stderr, "===== (%d/%d) dirs/files in:\n", fts->ndirs, fts->nfiles);
 }
 
 
-#ifdef	NOTYET
 /**
  * Use absolute paths since Chdir(2) is problematic with remote URI's.
  */
@@ -215,7 +214,7 @@ assert(rpath != NULL);
 	default:
 	    strncpy(fullpath, fts->paths[i], nb);
 	    fullpath[nb] = '\0';
-	    rpath = rpmGetPath(fullpath, lpath, NULL);
+	    rpath = rpmGenPath(fullpath, lpath, NULL);
 	    lpath = _free(lpath);
 	    /*@switchbreak@*/ break;
 	}
@@ -230,7 +229,6 @@ assert(rpath != NULL);
 
     return 0;
 }
-#endif
 
 static struct poptOption optionsTable[] = {
  { "pattern", '\0', POPT_ARG_STRING,	&__rpmfts.mirePattern, 0,
@@ -306,9 +304,7 @@ _mire_debug = 1;
     /* XXX Add pesky trailing '/' to http:// URI's */
     while ((dn = *dav++) != NULL)
 	xx = argvAdd(&fts->paths, dn);
-#ifdef	NOTYET
     xx = ftsAbsPaths(fts);
-#endif
 
     rc = ftsWalk(fts);
 

@@ -3080,7 +3080,7 @@ const char * rpmGenPath(const char * urlroot, const char * urlmdir,
 /*@dependent@*/ const char * file = xfile;
     const char * result;
     const char * url = NULL;
-    int nurl = 0;
+    size_t nurl = 0;
     int ut;
 
 #if 0
@@ -3089,9 +3089,11 @@ if (_debug) fprintf(stderr, "*** RGP xroot %s xmdir %s xfile %s\n", xroot, xmdir
     ut = urlPath(xroot, &root);
     if (url == NULL && ut > URL_IS_DASH) {
 	url = xroot;
-	nurl = root - xroot;
+	nurl = strlen(url);
+	if (root >= url && root <= url+nurl)
+	    nurl -= strlen(root);
 #if 0
-if (_debug) fprintf(stderr, "*** RGP ut %d root %s nurl %d\n", ut, root, nurl);
+if (_debug) fprintf(stderr, "*** RGP ut %d root %s nurl %u\n", ut, root, (unsigned)nurl);
 #endif
     }
     if (root == NULL || *root == '\0') root = "/";
@@ -3099,9 +3101,11 @@ if (_debug) fprintf(stderr, "*** RGP ut %d root %s nurl %d\n", ut, root, nurl);
     ut = urlPath(xmdir, &mdir);
     if (url == NULL && ut > URL_IS_DASH) {
 	url = xmdir;
-	nurl = mdir - xmdir;
+	nurl = strlen(url);
+	if (mdir >= url && mdir <= url+nurl)
+	    nurl -= strlen(mdir);
 #if 0
-if (_debug) fprintf(stderr, "*** RGP ut %d mdir %s nurl %d\n", ut, mdir, nurl);
+if (_debug) fprintf(stderr, "*** RGP ut %d mdir %s nurl %u\n", ut, mdir, (unsigned)nurl);
 #endif
     }
     if (mdir == NULL || *mdir == '\0') mdir = "/";
@@ -3109,9 +3113,11 @@ if (_debug) fprintf(stderr, "*** RGP ut %d mdir %s nurl %d\n", ut, mdir, nurl);
     ut = urlPath(xfile, &file);
     if (url == NULL && ut > URL_IS_DASH) {
 	url = xfile;
-	nurl = file - xfile;
+	nurl = strlen(url);
+	if (file >= url && file <= url+nurl)
+	    nurl -= strlen(file);
 #if 0
-if (_debug) fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
+if (_debug) fprintf(stderr, "*** RGP ut %d file %s nurl %u\n", ut, file, (unsigned)nurl);
 #endif
     }
 

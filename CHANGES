@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: fix: compute url length in rpmGenPath() w/o using pointers.
     - jbj: yarn: convert rpmavx to usage mutex with refcounts.
     - jbj: rename avContext to rpmavx.
     - jbj: rpmio: functional dir stream positioning.
