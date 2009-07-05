@@ -9,6 +9,7 @@
 #include "rpmjs-debug.h"
 
 #include <fts.h>
+#include <argv.h>
 
 #include "debug.h"
 
@@ -39,18 +40,33 @@ static int _debug = 0;
 
 /* --- helpers */
 static FTS *
-rpmfts_init(JSContext *cx, JSObject *obj, const char * _dn, int _options)
+rpmfts_init(JSContext *cx, JSObject *obj, JSObject *dno, int _options)
 {
     FTS * fts = NULL;
 
-    if (_dn) {
-	char *const paths[2] = { (char *)_dn, NULL };
+    if (dno) {
+	ARGV_t av = NULL;
+	if (OBJ_IS_ARRAY(cx, dno)) {
+	    jsuint length = 0;
+	    jsuint i;
+
+	    if (JS_GetArrayLength(cx, dno, &length))
+	    for (i = 0; i < length; i++) {
+		jsval v;
+		if (JS_GetElement(cx, dno, (jsint)i, &v))
+		    argvAdd(&av, JS_GetStringBytes(JSVAL_TO_STRING(v)));
+	    }
+	} else
+	    argvAdd(&av, 
+                JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(dno))));
 	
 	if (_options == -1) _options = 0;
 	_options &= FTS_OPTIONMASK;
 	/* XXX FIXME: validate _options */
-	fts = Fts_open(paths, _options, NULL);
-	/* XXX error msg */
+	if (av)
+	    fts = Fts_open((char *const *)av, _options, NULL);
+	    /* XXX error msg */
+	av = argvFree(av);
 	if (!JS_SetPrivate(cx, obj, (void *)fts)) {
 	    /* XXX error msg */
 	    if (fts) {
@@ -62,7 +78,7 @@ rpmfts_init(JSContext *cx, JSObject *obj, const char * _dn, int _options)
     }
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,\"%s\") fts %p\n", __FUNCTION__, cx, obj, _dn, fts);
+fprintf(stderr, "<== %s(%p,%p,%p) fts %p\n", __FUNCTION__, cx, obj, dno, fts);
 
     return fts;
 }
@@ -120,14 +136,14 @@ rpmfts_open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
-    char * _dn = NULL;
+    JSObject *dno = NULL;
     int _options = -1;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_dn, &_options)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &dno, &_options)))
         goto exit;
 
     if (fts) {
@@ -138,7 +154,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv,
 	(void) JS_SetPrivate(cx, obj, (void *)fts);
     }
 
-    fts = ptr = rpmfts_init(cx, obj, _dn, _options);
+    fts = ptr = rpmfts_init(cx, obj, dno, _options);
 
     *rval = OBJECT_TO_JSVAL(obj);
 
@@ -487,17 +503,17 @@ static JSBool
 rpmfts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
-    const char * _dn = NULL;
+    JSObject *dno = NULL;
     int _options = 0;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_dn, &_options)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ou", &dno, &_options)))
         goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmfts_init(cx, obj, _dn, _options);
+	(void) rpmfts_init(cx, obj, dno, _options);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmftsClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -517,10 +533,10 @@ rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmftsClass, NULL);
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
-    const char * _dn = NULL;
+    JSObject *dno = NULL;
     int _options = -1;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_dn, &_options)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ou", &dno, &_options)))
         goto exit;
 
     if (fts) {
@@ -531,7 +547,7 @@ rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	(void) JS_SetPrivate(cx, o, (void *)fts);
     }
 
-    fts = ptr = rpmfts_init(cx, o, _dn, _options);
+    fts = ptr = rpmfts_init(cx, o, dno, _options);
 
     *rval = OBJECT_TO_JSVAL(o);
 
@@ -571,7 +587,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewFtsObject(JSContext *cx, const char * _dn, int _options)
+rpmjs_NewFtsObject(JSContext *cx, JSObject * dno, int _options)
 {
     JSObject *obj;
     FTS * fts;
@@ -580,7 +596,7 @@ rpmjs_NewFtsObject(JSContext *cx, const char * _dn, int _options)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((fts = rpmfts_init(cx, obj, _dn, _options)) == NULL) {
+    if ((fts = rpmfts_init(cx, obj, dno, _options)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

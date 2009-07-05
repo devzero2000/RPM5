@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitFtsClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewFtsObject(JSContext *cx, const char * _dn, int _options);
+rpmjs_NewFtsObject(JSContext *cx, JSObject *dno, int _options);
 
 #ifdef __cplusplus      
 }
