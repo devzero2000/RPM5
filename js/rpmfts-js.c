@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmfts-js.h"
+#include "rpmst-js.h"
 #include "rpmjs-debug.h"
 
 #include <fts.h>
@@ -37,27 +38,246 @@ static int _debug = 0;
 #define rpmfts_wrappedobject	NULL
 
 /* --- helpers */
+static FTS *
+rpmfts_init(JSContext *cx, JSObject *obj, const char * _dn, int _options)
+{
+    FTS * fts = NULL;
+
+    if (_dn) {
+	char *const paths[2] = { (char *)_dn, NULL };
+	
+	if (_options == -1) _options = 0;
+	_options &= FTS_OPTIONMASK;
+	/* XXX FIXME: validate _options */
+	fts = Fts_open(paths, _options, NULL);
+	/* XXX error msg */
+	if (!JS_SetPrivate(cx, obj, (void *)fts)) {
+	    /* XXX error msg */
+	    if (fts) {
+		(void) Fts_close(fts);
+		/* XXX error msg */
+	    }
+	    fts = NULL;
+	}
+    }
+
+if (_debug)
+fprintf(stderr, "<== %s(%p,%p,\"%s\") fts %p\n", __FUNCTION__, cx, obj, _dn, fts);
+
+    return fts;
+}
 
 /* --- Object methods */
+static JSBool
+rpmfts_children(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    FTSENT * p;
+    int _instr = FTS_NOINSTR;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_instr)))
+        goto exit;
+
+    /* XXX FIXME: FTS_children() return? */
+    *rval = (fts && (p = Fts_children(fts, _instr)) != NULL
+		? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmfts_close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    /* XXX FIXME: _options are not persistent across fts.close() */
+    if (fts) {
+	(void) Fts_close(fts);
+	/* XXX error msg */
+	fts = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, (void *)fts);
+    }
+    *rval = OBJECT_TO_JSVAL(obj);
+
+    ok = JS_TRUE;
+    return ok;
+}
+
+static JSBool
+rpmfts_open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    char * _dn = NULL;
+    int _options = -1;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_dn, &_options)))
+        goto exit;
+
+    if (fts) {
+	if (_options == -1) _options = fts->fts_options;
+	(void) Fts_close(fts);
+	/* XXX error msg */
+	fts = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, (void *)fts);
+    }
+
+    fts = ptr = rpmfts_init(cx, obj, _dn, _options);
+
+    *rval = OBJECT_TO_JSVAL(obj);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmfts_read(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    *rval = (fts && Fts_read(fts) ? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
+
+    ok = JS_TRUE;
+    return ok;
+}
+
+static JSBool
+rpmfts_set(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    FTSENT * p = (fts ? fts->fts_cur : NULL);
+    int _instr = FTS_NOINSTR;
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_instr)))
+        goto exit;
+
+    *rval = (fts && p && !Fts_set(fts, p, _instr)
+		? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
 
 static JSFunctionSpec rpmfts_funcs[] = {
+    JS_FS("children",	rpmfts_children,	0,0,0),
+    JS_FS("close",	rpmfts_close,		0,0,0),
+    JS_FS("open",	rpmfts_open,		0,0,0),
+    JS_FS("read",	rpmfts_read,		0,0,0),
+    JS_FS("set",	rpmfts_set,		0,0,0),
     JS_FS_END
 };
 
 /* --- Object properties */
 enum rpmfts_tinyid {
     _DEBUG	= -2,
+
+    /* FTS fields */
+    _CURRENT	= -10,
+    _CHILD	= -11,
+    _ARRAY	= -12,
+    _ROOTDEV	= -13,
+    _ROOT	= -14,
+    _ROOTLEN	= -15,
+    _NITEMS	= -16,
+    _OPTIONS	= -17,
+
+    /* FTSENT fields */
+    _CYCLE	= -20,
+    _PARENT	= -21,
+    _LINK	= -22,
+    _NUMBER	= -23,
+    _POINTER	= -24,
+    _ACCPATH	= -25,
+    _PATH	= -26,
+    _ERRNO	= -27,
+    _PATHLEN	= -28,
+    _NAMELEN	= -29,
+    _INO	= -30,
+    _DEV	= -31,
+    _NLINK	= -32,
+    _LEVEL	= -33,
+    _INFO	= -34,
+    _FLAGS	= -35,
+    _INSTR	= -36,
+    _STATP	= -37,
+    _NAME	= -38,
 };
 
 static JSPropertySpec rpmfts_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+
+    /* FTS fields */
+    {"current",	_CURRENT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"child",	_CHILD,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"array",	_ARRAY,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"rootdev",	_ROOTDEV,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"root",	_ROOT,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"rootlen",	_ROOTLEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"nitems",	_NITEMS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"options",	_OPTIONS,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+    /* FTSENT fields */
+    {"cycle",	_CYCLE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"parent",	_PARENT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"link",	_LINK,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"number",	_NUMBER,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pointer",	_POINTER,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"accpath",	_ACCPATH,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"path",	_PATH,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errno",	_ERRNO,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pathlen",	_PATHLEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"namelen",	_NAMELEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"ino",	_INO,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dev",	_DEV,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"nlink",	_NLINK,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"level",	_LEVEL,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"info",	_INFO,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"instr",	_INSTR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st",	_STATP,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"name",	_NAME,		JSPROP_ENUMERATE,	NULL,	NULL},
+
     {NULL, 0, 0, NULL, NULL}
 };
+
+#define	_GET_I(_p, _f)   ((_p) ? INT_TO_JSVAL((int)(_p)->_f) : JSVAL_VOID)
+#define	_GET_S(_p, _f) \
+    ((_p) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_p)->_f)) : JSVAL_VOID)
 
 static JSBool
 rpmfts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    FTSENT * p = (fts ? fts->fts_cur : NULL);
     jsint tiny = JSVAL_TO_INT(id);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
@@ -68,6 +288,51 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 
     switch (tiny) {
     case _DEBUG:	*vp = INT_TO_JSVAL(_debug);		break;
+
+    /* FTS fields */
+    case _CURRENT:	break;	/* unimplemented */
+    case _CHILD:	break;	/* unimplemented */
+    case _ARRAY:	break;	/* unimplemented */
+    case _ROOTDEV:	*vp = _GET_I(fts, fts_dev);		break;
+    case _ROOT:		*vp = _GET_S(fts, fts_path);		break;
+    case _ROOTLEN:	*vp = _GET_I(fts, fts_pathlen);		break;
+    case _NITEMS:	*vp = _GET_I(fts, fts_nitems);		break;
+    case _OPTIONS:	*vp = _GET_I(fts, fts_options);		break;
+
+    /* FTSENT fields */
+    case _CYCLE:	break;	/* unimplemented */
+    case _PARENT:	break;	/* unimplemented */
+    case _LINK:		break;	/* unimplemented */
+    case _NUMBER:	*vp = _GET_I(p, fts_number);		break;
+    case _POINTER:	break;	/* unimplemented */
+    case _ACCPATH:	*vp = _GET_S(p, fts_accpath);		break;
+    case _PATH:		*vp = _GET_S(p, fts_path);		break;
+    case _ERRNO:	*vp = _GET_I(p, fts_errno);		break;
+    case _PATHLEN:	*vp = _GET_I(p, fts_pathlen);		break;
+    case _NAMELEN:	*vp = _GET_I(p, fts_namelen);		break;
+    case _INO:		*vp = _GET_I(p, fts_ino);		break;
+    case _DEV:		*vp = _GET_I(p, fts_dev);		break;
+    case _NLINK:	*vp = _GET_I(p, fts_nlink);		break;
+    case _LEVEL:	*vp = _GET_I(p, fts_level);		break;
+    case _INFO:		*vp = _GET_I(p, fts_info);		break;
+    case _FLAGS:	*vp = _GET_I(p, fts_flags);		break;
+    case _INSTR:	*vp = _GET_I(p, fts_instr);		break;
+    case _STATP:
+	if (fts && p && p->fts_statp) {
+	    JSObject *o;
+	    struct stat *st;
+	    size_t nb = sizeof(*st);
+	    if ((st = memcpy(xmalloc(nb), p->fts_statp, nb)) != NULL
+	     && (o = JS_NewObject(cx, &rpmstClass, NULL, NULL)) != NULL
+	     && JS_SetPrivate(cx, o, (void *)st))
+		*vp = OBJECT_TO_JSVAL(o);
+	    else
+		*vp = JSVAL_VOID;
+	} else
+	    *vp = JSVAL_VOID;
+	break;
+    case _NAME:		*vp = _GET_S(p, fts_name);		break;
+
     default:
 	break;
     }
@@ -75,11 +340,17 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
 
+#define	_SET_I(_p, _f) \
+    if ((_p) && JS_ValueToInt32(cx, *vp, &myint)) (_p)->_f = myint
+
 static JSBool
 rpmfts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
+    FTS * fts = ptr;
+    FTSENT * p = (fts ? fts->fts_cur : NULL);
     jsint tiny = JSVAL_TO_INT(id);
+    int myint = 0;
 
 _PROP_DEBUG_ENTRY(_debug < 0);
 
@@ -92,6 +363,38 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
 	    break;
 	break;
+
+    /* FTS fields */
+    case _CURRENT:	break;	/* unimplemented */
+    case _CHILD:	break;	/* unimplemented */
+    case _ARRAY:	break;	/* unimplemented */
+    case _ROOTDEV:	break;	/* unimplemented */
+    case _ROOT:		break;	/* unimplemented */
+    case _ROOTLEN:	break;	/* unimplemented */
+    case _NITEMS:	break;	/* unimplemented */
+    case _OPTIONS:	break;	/* unimplemented */
+
+    /* FTSENT fields */
+    case _CYCLE:	break;	/* unimplemented */
+    case _PARENT:	break;	/* unimplemented */
+    case _LINK:		break;	/* unimplemented */
+    case _NUMBER:	_SET_I(p, fts_number);		break;
+    case _POINTER:	break;	/* unimplemented */
+    case _ACCPATH:	break;	/* unimplemented */
+    case _PATH:		break;	/* unimplemented */
+    case _ERRNO:	break;	/* unimplemented */
+    case _PATHLEN:	break;	/* unimplemented */
+    case _NAMELEN:	break;	/* unimplemented */
+    case _INO:		break;	/* unimplemented */
+    case _DEV:		break;	/* unimplemented */
+    case _NLINK:	break;	/* unimplemented */
+    case _LEVEL:	break;	/* unimplemented */
+    case _INFO:		break;	/* unimplemented */
+    case _FLAGS:	break;	/* unimplemented */
+    case _INSTR:	break;	/* unimplemented */
+    case _STATP:	break;	/* unimplemented */
+    case _NAME:		break;	/* unimplemented */
+
     default:
 	break;
     }
@@ -166,35 +469,6 @@ fprintf(stderr, "\tFINI fts %p[%u]\n", fts, ix);
 }
 
 /* --- Object ctors/dtors */
-static FTS *
-rpmfts_init(JSContext *cx, JSObject *obj, const char * _dn)
-{
-    FTS * fts = NULL;
-
-    if (_dn) {
-	static int ftsoptions = FTS_NOSTAT;
-	const char *paths[2];
-	
-	paths[0] = _dn;
-	paths[1] = NULL;
-	fts = Fts_open(paths, ftsoptions, NULL);
-	/* XXX error msg */
-	if (!JS_SetPrivate(cx, obj, (void *)fts)) {
-	    /* XXX error msg */
-	    if (fts) {
-		(void) Fts_close(fts);
-		/* XXX error msg */
-	    }
-	    fts = NULL;
-	}
-    }
-
-if (_debug)
-fprintf(stderr, "<== %s(%p,%p,\"%s\") fts %p\n", __FUNCTION__, cx, obj, _dn, fts);
-
-    return fts;
-}
-
 static void
 rpmfts_dtor(JSContext *cx, JSObject *obj)
 {
@@ -214,15 +488,16 @@ rpmfts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
+    int _options = 0;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_dn, &_options)))
         goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmfts_init(cx, obj, _dn);
+	(void) rpmfts_init(cx, obj, _dn, _options);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmftsClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -243,18 +518,20 @@ rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
+    int _options = -1;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_dn, &_options)))
         goto exit;
 
     if (fts) {
+	if (_options == -1) _options = fts->fts_options;
 	(void) Fts_close(fts);
 	/* XXX error msg */
 	fts = ptr = NULL;
 	(void) JS_SetPrivate(cx, o, (void *)fts);
     }
 
-    fts = ptr = rpmfts_init(cx, o, _dn);
+    fts = ptr = rpmfts_init(cx, o, _dn, _options);
 
     *rval = OBJECT_TO_JSVAL(o);
 
@@ -294,7 +571,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewFtsObject(JSContext *cx, const char * _dn)
+rpmjs_NewFtsObject(JSContext *cx, const char * _dn, int _options)
 {
     JSObject *obj;
     FTS * fts;
@@ -303,7 +580,7 @@ rpmjs_NewFtsObject(JSContext *cx, const char * _dn)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((fts = rpmfts_init(cx, obj, _dn)) == NULL) {
+    if ((fts = rpmfts_init(cx, obj, _dn, _options)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
