@@ -610,6 +610,8 @@ static int davInit(const char * url, urlinfo * uret)
     }
 
 exit:
+if (_dav_debug < 0)
+fprintf(stderr, "<-- %s(%s) u->url %s\n", __FUNCTION__, url, u->url);
     if (uret != NULL)
 	*uret = urlLink(u, "davInit");
     u = urlFree(u, "urlSplit (davInit)");
@@ -1364,6 +1366,7 @@ static int davNLST(rpmavx avx)
 	/*@modifies avx, internalState @*/
 {
     urlinfo u = NULL;
+const char * u_url = NULL;	/* XXX FIXME: urlFind should save current URI */
     int rc;
     int xx;
 
@@ -1372,6 +1375,10 @@ retry:
     if (rc || u == NULL)
 	goto exit;
 
+if (u_url == NULL) {		/* XXX FIXME: urlFind should save current URI */
+u_url = u->url;
+u->url = avx->uri;
+}
     /*
      * Do PROPFIND through davFetch iff server supports.
      * Otherwise, do HEAD to get Content-length/ETag/Last-Modified,
@@ -1417,6 +1424,10 @@ retry:
 		    *te = '\0';
 		    u->location = _free(u->location);
 		    /* XXX retry here needed iff ContentLength:. */
+if (u_url != NULL) {		/* XXX FIXME: urlFind should save current URI */
+u->url = u_url;
+u_url = NULL;
+}
 		    xx = davFree(u);
 		    goto retry;
 		    /*@notreached@*/ break;
@@ -1434,6 +1445,10 @@ fprintf(stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
     }
 
 exit:
+if (u_url != NULL) {		/* XXX FIXME: urlFind should save current URI */
+u->url = u_url;
+u_url = NULL;
+}
     xx = davFree(u);
     return rc;
 }
@@ -1976,6 +1991,8 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     char buf[1024];
     int rc = -1;
 
+if (_dav_debug < 0)
+fprintf(stderr, "--> davStat(%s)\n", path);
     if (path == NULL || *path == '\0') {
 	errno = ENOENT;
 	goto exit;
@@ -2012,7 +2029,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 
 exit:
 if (_dav_debug < 0)
-fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
+fprintf(stderr, "<-- davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
     avx = rpmavxFree(avx);
     return rc;
 }
