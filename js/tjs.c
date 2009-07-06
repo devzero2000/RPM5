@@ -52,29 +52,29 @@ typedef struct rpmjsClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
-    { "Aug",		rpmjs_InitAugClass,	 25 },
-    { "Bf",		rpmjs_InitBfClass,	 26 },
-    { "Dc",		rpmjs_InitDcClass,	 28 },
-    { "Dir",		rpmjs_InitDirClass,	 29 },
-    { "Ds",		rpmjs_InitDsClass,	 13 },
-    { "Fi",		rpmjs_InitFiClass,	 14 },
-    { "File",		   js_InitFileClass,	  1 },
-    { "Fts",		rpmjs_InitFtsClass,	 30 },
-    { "Hdr",		rpmjs_InitHdrClass,	 12 },
+    { "Aug",		rpmjs_InitAugClass,	 -25 },
+    { "Bf",		rpmjs_InitBfClass,	 -26 },
+    { "Dc",		rpmjs_InitDcClass,	 -28 },
+    { "Dir",		rpmjs_InitDirClass,	 -29 },
+    { "Ds",		rpmjs_InitDsClass,	 -13 },
+    { "Fi",		rpmjs_InitFiClass,	 -14 },
+    { "File",		   js_InitFileClass,	  -1 },
+    { "Fts",		rpmjs_InitFtsClass,	 -30 },
+    { "Hdr",		rpmjs_InitHdrClass,	 -12 },
     { "Io",		rpmjs_InitIoClass,	 32 },
-    { "Mc",		rpmjs_InitMcClass,	 24 },
-    { "Mg",		rpmjs_InitMgClass,	 31 },
-    { "Mi",		rpmjs_InitMiClass,	 11 },
-    { "Ps",		rpmjs_InitPsClass,	 16 },
+    { "Mc",		rpmjs_InitMcClass,	 -24 },
+    { "Mg",		rpmjs_InitMgClass,	 -31 },
+    { "Mi",		rpmjs_InitMiClass,	 -11 },
+    { "Ps",		rpmjs_InitPsClass,	 -16 },
     { "St",		rpmjs_InitStClass,	 27 },
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
     { "Sys",		rpmjs_InitSysClass,	 33 },
-    { "Te",		rpmjs_InitTeClass,	 15 },
-    { "Ts",		rpmjs_InitTsClass,	 10 },
+    { "Te",		rpmjs_InitTeClass,	 -15 },
+    { "Ts",		rpmjs_InitTsClass,	 -10 },
 #ifdef WITH_UUID
-    { "Uuid",		rpmjs_InitUuidClass,	  2 },
+    { "Uuid",		rpmjs_InitUuidClass,	  -2 },
 #endif
 };
 

@@ -93,8 +93,7 @@ rpmfts_children(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
     int _instr = FTS_NOINSTR;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_instr)))
         goto exit;
@@ -115,8 +114,7 @@ rpmfts_close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     /* XXX FIXME: _options are not persistent across fts.close() */
     if (fts) {
@@ -140,8 +138,7 @@ rpmfts_open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     int _options = -1;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &dno, &_options)))
         goto exit;
@@ -170,8 +167,7 @@ rpmfts_read(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     *rval = (fts && Fts_read(fts) ? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
 
@@ -188,8 +184,7 @@ rpmfts_set(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     int _instr = FTS_NOINSTR;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_instr)))
         goto exit;

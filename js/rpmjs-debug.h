@@ -23,6 +23,11 @@ static const char * v2s(JSContext *cx, jsval v)
     return "other";
 }
 
+#define	_METHOD_DEBUG_ENTRY(_test) \
+    if (_test) \
+	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", \
+	    __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr)
+
 #define	_PROP_DEBUG_ENTRY(_test)\
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", \
