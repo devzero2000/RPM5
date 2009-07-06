@@ -12,8 +12,8 @@ const AUG_NO_MODL_AUTOLOAD = (1 << 6);
 var aug = new Aug("/", "", (AUG_NO_LOAD|AUG_SAVE_NEWFILE));
 ack("typeof aug;", "object");
 ack("aug instanceof Aug;", true);
-// ack("aug = 1;", 1);
-// ack("aug = 0;", 0);
+// ack("aug.debug = 1;", 1);
+// ack("aug.debug = 0;", 0);
 
 var _defvar = "/augeas/version/defvar";
 aug.print(_defvar);
