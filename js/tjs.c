@@ -22,6 +22,7 @@
 #include "rpmmi-js.h"
 #include "rpmps-js.h"
 #include "rpmst-js.h"
+#include "rpmsys-js.h"
 #include "rpmte-js.h"
 #include "rpmts-js.h"
 #include "syck-js.h"
@@ -69,6 +70,7 @@ static struct rpmjsClassTable_s classTable[] = {
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
+    { "Sys",		rpmjs_InitSysClass,	 33 },
     { "Te",		rpmjs_InitTeClass,	 15 },
     { "Ts",		rpmjs_InitTsClass,	 10 },
 #ifdef WITH_UUID
