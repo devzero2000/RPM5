@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitStClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewStObject(JSContext *cx, JSObject *o);
+rpmjs_NewStObject(JSContext *cx, JSObject *fno);
 
 #ifdef __cplusplus      
 }

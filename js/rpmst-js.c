@@ -12,11 +12,27 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+/* Required JSClass vectors */
 #define	rpmst_addprop	JS_PropertyStub
 #define	rpmst_delprop	JS_PropertyStub
 #define	rpmst_convert	JS_ConvertStub
 
-typedef	struct stat * rpmst;
+/* Optional JSClass vectors */
+#define	rpmst_getobjectops	NULL
+#define	rpmst_checkaccess	NULL
+#define	rpmst_call		rpmst_call
+#define	rpmst_construct		rpmst_ctor
+#define	rpmst_xdrobject		NULL
+#define	rpmst_hasinstance	NULL
+#define	rpmst_mark		NULL
+#define	rpmst_reserveslots	NULL
+
+/* Extended JSClass vectors */
+#define rpmst_equality		NULL
+#define rpmst_outerobject	NULL
+#define rpmst_innerobject	NULL
+#define rpmst_iteratorobject	NULL
+#define rpmst_wrappedobject	NULL
 
 /* --- helpers */
 
@@ -61,13 +77,15 @@ static JSPropertySpec rpmst_props[] = {
     {NULL, 0, 0, NULL, NULL}
 };
 
+#define	_GET_I(_p, _f)   ((_p) ? INT_TO_JSVAL((int)(_p)->_f) : JSVAL_VOID)
+
 static JSBool
 rpmst_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmstClass, NULL);
-    rpmst st = ptr;
+    struct stat * st = ptr;
     jsint tiny = JSVAL_TO_INT(id);
-    struct tm *tm = NULL;
+    time_t mytime = (time_t)0xffffffff;
 
 _PROP_DEBUG_ENTRY(_debug < 0);
 
@@ -77,23 +95,25 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 
     switch (tiny) {
     case _DEBUG:	*vp = INT_TO_JSVAL(_debug);		break;
-    case _DEV:		*vp = INT_TO_JSVAL(st->st_dev);		break;
-    case _INO:		*vp = INT_TO_JSVAL(st->st_ino);		break;
-    case _MODE:		*vp = INT_TO_JSVAL(st->st_mode);	break;
-    case _NLINK:	*vp = INT_TO_JSVAL(st->st_nlink);	break;
-    case _UID:		*vp = INT_TO_JSVAL(st->st_uid);		break;
-    case _GID:		*vp = INT_TO_JSVAL(st->st_gid);		break;
-    case _RDEV:		*vp = INT_TO_JSVAL(st->st_rdev);	break;
-    case _SIZE:		*vp = INT_TO_JSVAL(st->st_size);	break;
-    case _BLKSIZE:	*vp = INT_TO_JSVAL(st->st_blksize);	break;
-    case _BLOCKS:	*vp = INT_TO_JSVAL(st->st_blocks);	break;
-    case _ATIME:	tm = gmtime((time_t *)&st->st_atime);	break;
-    case _MTIME:	tm = gmtime((time_t *)&st->st_mtime);	break;
-    case _CTIME:	tm = gmtime((time_t *)&st->st_ctime);	break;
+    case _DEV:		*vp = _GET_I(st, st_dev);		break;
+    case _INO:		*vp = _GET_I(st, st_ino);		break;
+    case _MODE:		*vp = _GET_I(st, st_mode);	break;
+    case _NLINK:	*vp = _GET_I(st, st_nlink);	break;
+    case _UID:		*vp = _GET_I(st, st_uid);		break;
+    case _GID:		*vp = _GET_I(st, st_gid);		break;
+    case _RDEV:		*vp = _GET_I(st, st_rdev);	break;
+    case _SIZE:		*vp = _GET_I(st, st_size);	break;
+    case _BLKSIZE:	*vp = _GET_I(st, st_blksize);	break;
+    case _BLOCKS:	*vp = _GET_I(st, st_blocks);	break;
+    case _ATIME:	if (st) mytime = st->st_atime;	break;
+    case _MTIME:	if (st) mytime = st->st_mtime;	break;
+    case _CTIME:	if (st) mytime = st->st_ctime;	break;
     default:
 	break;
     }
-    if (tm)
+
+    if (mytime != (time_t)0xffffffff) {
+	struct tm *tm = gmtime(&mytime);
 	*vp = OBJECT_TO_JSVAL(js_NewDateObject(cx,
 					tm->tm_year,
 					tm->tm_mon,
@@ -101,6 +121,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 					tm->tm_hour,
 					tm->tm_min,
 					tm->tm_sec));
+    }
 
     return JS_TRUE;
 }
@@ -180,26 +201,28 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 #endif
 
 /* --- Object ctors/dtors */
-static rpmst
-rpmst_init(JSContext *cx, JSObject *obj, JSObject *o)
+static struct stat *
+rpmst_init(JSContext *cx, JSObject *obj, JSObject *fno)
 {
-    rpmst st = xcalloc(1, sizeof(*st));
+    struct stat * st = xcalloc(1, sizeof(*st));
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p) st %p\n", __FUNCTION__, cx, obj, o, st);
+fprintf(stderr, "==> %s(%p,%p,%p) st %p\n", __FUNCTION__, cx, obj, fno, st);
 
-    if (o && OBJ_IS_STRING(cx, o)) {
+    if (fno && OBJ_IS_STRING(cx, fno)) {
 	const char * fn =
-		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(o)));
-	(void) Stat(fn, st);
-	/* XXX error msg */
+		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
+	if (Stat(fn, st) < 0) {
+	    /* XXX error msg */
+	    st = _free(st);
+	}
     } else {
-	/* XXX empty stat(2) returned. */
+	st = _free(st);
     }
 
     if (!JS_SetPrivate(cx, obj, (void *)st)) {
 	/* XXX error msg */
-	return NULL;
+	st = _free(st);
     }
     return st;
 }
@@ -208,7 +231,7 @@ static void
 rpmst_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmstClass, NULL);
-    rpmst st = ptr;
+    struct stat * st = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
@@ -219,16 +242,16 @@ static JSBool
 rpmst_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
-    JSObject *o = NULL;
+    JSObject *fno = NULL;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &o)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &fno)))
         goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmst_init(cx, obj, o);
+	(void) rpmst_init(cx, obj, fno);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmstClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -237,6 +260,38 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (uns
     ok = JS_TRUE;
 
 exit:
+    return ok;
+}
+
+static JSBool
+rpmst_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    /* XXX obj is the global object so lookup "this" object. */
+    JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
+    void * ptr = JS_GetInstancePrivate(cx, o, &rpmstClass, NULL);
+    struct stat * st = ptr;
+    JSBool ok = JS_FALSE;
+    JSObject *_fno = NULL;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &_fno)))
+        goto exit;
+
+    if (st) {
+	st = _free(st);
+	st = ptr = NULL;
+	(void) JS_SetPrivate(cx, o, (void *)st);
+    }
+
+    st = ptr = rpmst_init(cx, o, _fno);
+
+    *rval = OBJECT_TO_JSVAL(o);
+
+    ok = JS_TRUE;
+
+exit:
+if (_debug)
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+
     return ok;
 }
 
@@ -251,7 +306,11 @@ JSClass rpmstClass = {
     rpmst_addprop,   rpmst_delprop, rpmst_getprop, rpmst_setprop,
     (JSEnumerateOp)rpmst_enumerate, (JSResolveOp)rpmst_resolve,
     rpmst_convert,	rpmst_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
+
+    rpmst_getobjectops,	rpmst_checkaccess,
+    rpmst_call,		rpmst_construct,
+    rpmst_xdrobject,	rpmst_hasinstance,
+    rpmst_mark,		rpmst_reserveslots,
 };
 
 JSObject *
@@ -269,16 +328,16 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewStObject(JSContext *cx, JSObject *o)
+rpmjs_NewStObject(JSContext *cx, JSObject *fno)
 {
     JSObject *obj;
-    rpmst st;
+    struct stat * st;
 
     if ((obj = JS_NewObject(cx, &rpmstClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((st = rpmst_init(cx, obj, o)) == NULL) {
+    if ((st = rpmst_init(cx, obj, fno)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
