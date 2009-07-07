@@ -83,12 +83,12 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p NVRA %p\n", __FUNCTION__, cx, obj, ptr, NV
 static JSBool
 rpmts_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
     char * pkgN = 0;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &pkgN)))
         goto exit;
@@ -123,11 +123,11 @@ exit:
 static JSBool
 rpmts_check(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
     (void) rpmcliInstallCheck(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
@@ -139,11 +139,11 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 static JSBool
 rpmts_order(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
     (void) rpmcliInstallOrder(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
@@ -155,11 +155,11 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 static JSBool
 rpmts_run(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
 #ifdef	NOTYET
     /* XXX force --test instead. */
@@ -176,7 +176,8 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 static JSBool
 rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-    rpmts ts = (rpmts) JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
     jsval tagid = JSVAL_VOID;
     rpmTag tag = RPMDBI_PACKAGES;
     char * key = NULL;
@@ -184,8 +185,7 @@ rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject *Mi;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/vs", &tagid, &key)))
         goto exit;

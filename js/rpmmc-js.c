@@ -33,8 +33,7 @@ rpmmc_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     int lvl = 0;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &s)))
         goto exit;
@@ -54,8 +53,7 @@ rpmmc_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     char * s = NULL;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &s)))
         goto exit;
@@ -78,8 +76,7 @@ rpmmc_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     int ac = 0;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
 /*@-globs@*/
     ac = rpmGetMacroEntries(mc, _mire, used, &av);
@@ -114,8 +111,7 @@ rpmmc_expand(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSString *valstr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &s)))
         goto exit;

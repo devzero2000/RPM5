@@ -37,8 +37,7 @@ rpmaug_defvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
     const char * _name = NULL;
     const char * _expr = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     /* XXX note optional EXPR. If EXPR is NULL, then NAME is deleted. */
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/s", &_name, &_expr)))
@@ -67,8 +66,7 @@ rpmaug_get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _path = NULL;
     const char * _value = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_path)))
         goto exit;
@@ -100,8 +98,7 @@ rpmaug_set(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _path = NULL;
     const char * _value = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "ss", &_path, &_value)))
         goto exit;
@@ -130,8 +127,7 @@ rpmaug_insert(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
     const char * _label = NULL;
     int _before;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "ssi", &_path, &_label, &_before)))
         goto exit;
@@ -158,8 +154,7 @@ rpmaug_rm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
     const char * _path = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_path)))
         goto exit;
@@ -187,8 +182,7 @@ rpmaug_mv(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _src = NULL;
     const char * _dst = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "ss", &_src, &_dst)))
         goto exit;
@@ -217,8 +211,7 @@ rpmaug_match(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     char ** _matches = NULL;
     int nmatches;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_path)))
         goto exit;
@@ -250,8 +243,7 @@ rpmaug_save(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugSave(aug)) {
     case 0:	/* success */
@@ -273,8 +265,7 @@ rpmaug_load(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugLoad(aug)) {
     case 0:	/* success */
@@ -298,8 +289,7 @@ rpmaug_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
     const char * _path = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_path)))
         goto exit;

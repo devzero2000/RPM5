@@ -27,8 +27,7 @@ rpmbf_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
     const char * _s = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
@@ -48,8 +47,7 @@ rpmbf_chk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
     const char * _s = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
@@ -67,12 +65,10 @@ rpmbf_clr(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     *rval = (rpmbfClr(bf) ? JSVAL_FALSE : JSVAL_TRUE);
     ok = JS_TRUE;
-exit:
     return ok;
 }
 
@@ -84,8 +80,7 @@ rpmbf_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
     const char * _s = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
@@ -105,8 +100,7 @@ rpmbf_intersect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
     rpmbf _b = NULL;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     *rval = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
@@ -129,8 +123,7 @@ rpmbf_union(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmbf _b = NULL;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     *rval = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
@@ -169,10 +162,10 @@ static JSBool
 rpmbf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
-    rpmbf bf = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
 #ifdef	NOTYET
+    rpmbf bf = ptr;
 _PROP_DEBUG_ENTRY(_debug < 0);
 #endif
 
@@ -207,10 +200,10 @@ static JSBool
 rpmbf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
-    rpmbf bf = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
 #ifdef	NOTYET
+    rpmbf bf = ptr;
 _PROP_DEBUG_ENTRY(_debug < 0);
 #endif
 

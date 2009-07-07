@@ -42,8 +42,7 @@ rpmte_ds(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmTag tagN = RPMTAG_NAME;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
         goto exit;
@@ -67,8 +66,7 @@ rpmte_fi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmTag tagN = RPMTAG_BASENAMES;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
         goto exit;

@@ -36,8 +36,7 @@ rpmps_push(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     uint32 ui;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "ssoissu",
 		&pkgNEVR, &altNEVR, &o, &type, &dn, &bn, &ui)))
@@ -56,8 +55,7 @@ rpmps_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmps ps = ptr;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     rpmpsPrint(NULL, ps);
 

@@ -30,8 +30,7 @@ rpmdc_Init(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     unsigned int _dalgo = PGPHASHALGO_MD5;
     unsigned int _flags = RPMDIGEST_NONE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/uu", &_dalgo, &_flags)))
         goto exit;
@@ -58,8 +57,7 @@ rpmdc_Update(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * s = NULL;
     size_t ns = 0;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     *rval = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &s)))
@@ -85,8 +83,7 @@ rpmdc_Fini(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * s = NULL;
     size_t ns = 0;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr);
+_METHOD_DEBUG_ENTRY(_debug);
 
     *rval = JSVAL_FALSE;
     if (dc == NULL)

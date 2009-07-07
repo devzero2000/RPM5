@@ -40,6 +40,7 @@ typedef struct uuid_s {
 static JSBool
 uuid_generate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     int32 version = 0;
     const char *uuid_ns_str = NULL;
     const char *data = NULL;
@@ -51,8 +52,7 @@ uuid_generate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
     size_t blen = sizeof(buf);
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_ConvertArguments(cx, argc, argv, "i/ss",
 		&version, &uuid_ns_str, &data);
@@ -107,6 +107,7 @@ exit:
 static JSBool
 uuid_describe(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     uuid_t *uuid = NULL;
     const char *uuid_str = NULL;
     uuid_rc_t rc;
@@ -114,8 +115,7 @@ uuid_describe(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
     size_t blen = 0;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_ConvertArguments(cx, argc, argv, "s", &uuid_str);
     if (!ok)
