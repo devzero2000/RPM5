@@ -147,6 +147,35 @@ _METHOD_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
+rpmio_fdopen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
+    FD_t fd = ptr;
+    const char * _fmode = "r.ufdio";
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fmode)))
+        goto exit;
+
+    /* XXX needs checking */
+    if (fd && (fd = Fdopen(fd, _fmode)) != NULL) {
+	JSObject *o;
+	if ((o = JS_NewObject(cx, &rpmioClass, NULL, NULL)) != NULL
+	 && JS_SetPrivate(cx, o, (void *)fd))
+	    *rval = OBJECT_TO_JSVAL(obj);
+	else
+	    *rval = JSVAL_VOID;
+    } else
+	*rval = JSVAL_VOID;
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
 rpmio_ferror(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
@@ -192,7 +221,7 @@ rpmio_fopen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_fn, &_fmode)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/s", &_fn, &_fmode)))
         goto exit;
 
     if (fd) {
@@ -312,6 +341,7 @@ static JSFunctionSpec rpmio_funcs[] = {
     JS_FS("digestfini",	rpmio_digestfini,	0,0,0),
     JS_FS("fchown",	rpmio_fchown,		0,0,0),
     JS_FS("fclose",	rpmio_fclose,		0,0,0),
+    JS_FS("fdopen",	rpmio_fdopen,		0,0,0),
     JS_FS("ferror",	rpmio_ferror,		0,0,0),
     JS_FS("fileno",	rpmio_fileno,		0,0,0),
     JS_FS("fflush",	rpmio_fflush,		0,0,0),
@@ -332,7 +362,10 @@ enum rpmio_tinyid {
     _RDTIMEOUT	= -7,
     _CPIOPOS	= -8,
     _BYTESREMAIN= -9,
-    _CONTENTLENGTH= -10,
+    _LASTMODIFIED= -10,
+    _CONTENTTYPE= -11,
+    _CONTENTLENGTH= -12,
+    _CONTENTDISPOSITION= -13,
 };
 
 static JSPropertySpec rpmio_props[] = {
@@ -344,14 +377,16 @@ static JSPropertySpec rpmio_props[] = {
     {"rdtimeout",_RDTIMEOUT,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"cpioPos",	_CPIOPOS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"bytesRemain",_BYTESREMAIN,JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lastModified",_LASTMODIFIED,JSPROP_ENUMERATE,	NULL,	NULL},
+    {"contentType",_CONTENTTYPE,JSPROP_ENUMERATE,	NULL,	NULL},
     {"contentLength",_CONTENTLENGTH,JSPROP_ENUMERATE,	NULL,	NULL},
+    {"contentDisposition",_CONTENTDISPOSITION,JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
 #define _GET_I(_p, _f)   ((_p) ? INT_TO_JSVAL((int)(_p)->_f) : JSVAL_VOID)
-#define _GET_S(_p, _f) \
-    ((_p) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_p)->_f)) : JSVAL_VOID)
-
+#define _GET_S(_p, _f) ((_p) && (_p)->_f \
+	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_p)->_f)) : JSVAL_VOID)
 
 static JSBool
 rpmio_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
@@ -372,10 +407,13 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     case _FLAGS:	*vp = _GET_I(fd, oflags);		break;
     case _MODE:		*vp = _GET_I(fd, omode);		break;
     case _NDIGESTS:	*vp = _GET_I(fd, ndigests);		break;
-    case _RDTIMEOUT:	*vp = _GET_I(fd, rd_timeoutsecs);		break;
+    case _RDTIMEOUT:	*vp = _GET_I(fd, rd_timeoutsecs);	break;
     case _CPIOPOS:	*vp = _GET_I(fd, fd_cpioPos);		break;
     case _BYTESREMAIN:	*vp = _GET_I(fd, bytesRemain);		break;
+    case _LASTMODIFIED:	*vp = _GET_I(fd, lastModified);		break;
+    case _CONTENTTYPE:	*vp = _GET_S(fd, contentType);		break;
     case _CONTENTLENGTH:*vp = _GET_I(fd, contentLength);	break;
+    case _CONTENTDISPOSITION:	*vp = _GET_S(fd, contentDisposition);	break;
     default:
 	break;
     }

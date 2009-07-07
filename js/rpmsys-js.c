@@ -8,6 +8,9 @@
 #include "rpmst-js.h"
 #include "rpmjs-debug.h"
 #include <rpmio.h>
+#if defined(HAVE_PTHREAD_H)
+#include <pthread.h>
+#endif
 
 #include "debug.h"
 
@@ -409,21 +412,46 @@ static JSFunctionSpec rpmsys_funcs[] = {
 /* --- Object properties */
 enum rpmsys_tinyid {
     _DEBUG	= -2,
-    _EGID	= -3,
-    _EUID	= -4,
-    _GID	= -5,
-    _PID	= -6,
-    _PPID	= -7,
-    _UID	= -8,
+    _CWD	= -3,
+    _DOMAINNAME	= -4,
+    _EGID	= -5,
+    _EUID	= -6,
+    _GID	= -7,
+    _HOSTID	= -8,
+    _HOSTNAME	= -9,
+    _PGID	= -10,
+    _PID	= -11,
+    _PPID	= -12,
+    _SID	= -13,
+    _TID	= -14,
+    _TIME	= -15,
+    _UID	= -16,
+    _UMASK	= -17,
+
+    _GROUPS	= -20,	/* todo++ */
+    _RLIMIT	= -21,	/* todo++ */
+    _RUSAGE	= -22,	/* todo++ */
+    _TIMEOFDAY	= -23,	/* todo++ */
+    _UNAME	= -24,	/* todo++ */
 };
 
 static JSPropertySpec rpmsys_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"cwd",	_CWD,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"domainname",_DOMAINNAME,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"egid",	_EGID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"euid",	_EUID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"gid",	_GID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"hostid",	_HOSTID,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"hostname",_HOSTNAME,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pgid",	_PGID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"pid",	_PID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"ppid",	_PPID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"sid",	_TID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"tid",	_TID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"time",	_TIME,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"uid",	_UID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"umask",	_UMASK,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -441,11 +469,38 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 
     switch (tiny) {
     case _DEBUG:	*vp = INT_TO_JSVAL(_debug);		break;
+    case _CWD:
+    {	char b[PATH_MAX+1];
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, getcwd(b, sizeof(b))));
+    }	break;
+    case _DOMAINNAME:
+    {	char b[PATH_MAX+1];
+	*vp = (!getdomainname(b, sizeof(b))
+	    ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b)) : JSVAL_NULL);
+    }	break;
     case _EGID:		*vp = INT_TO_JSVAL((int)getegid());	break;
     case _EUID:		*vp = INT_TO_JSVAL((int)geteuid());	break;
+    case _GID:		*vp = INT_TO_JSVAL((int)getgid());	break;
+    case _HOSTID:	*vp = INT_TO_JSVAL((int)gethostid());	break;/* XXX */
+    case _HOSTNAME:
+    {	char b[PATH_MAX+1];
+	*vp = (!gethostname(b, sizeof(b))
+	    ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b)) : JSVAL_NULL);
+    }	break;
+    case _PGID:		*vp = INT_TO_JSVAL((int)getpgid((pid_t)0));	break;
     case _PID:		*vp = INT_TO_JSVAL((int)getpid());	break;
     case _PPID:		*vp = INT_TO_JSVAL((int)getppid());	break;
+    case _SID:		*vp = INT_TO_JSVAL((int)getsid((pid_t)0));	break;
+#if defined(WITH_PTHREADS)
+    case _TID:		*vp = INT_TO_JSVAL((int)pthread_self());	break;
+#endif
+    case _TIME:		*vp = INT_TO_JSVAL((int)time(NULL));	break;
     case _UID:		*vp = INT_TO_JSVAL((int)getuid());	break;
+    case _UMASK:
+    {	mode_t mode = umask(0000);
+	(void) umask(mode);
+	*vp = INT_TO_JSVAL(mode);
+    }	break;
     default:
 	break;
     }
