@@ -25,10 +25,10 @@ static JSObject *
 rpmhdrLoadTag(JSContext *cx, JSObject *obj, Header h, rpmTag tag, jsval *vp)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    JSString * valstr;
     JSObject * arr;
+    jsval v;
     JSObject * retobj = NULL;
-    jsval * vec = NULL;
+    JSBool ok;
 const char * name = tagName(tag);
     int i;
 
@@ -45,90 +45,96 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    /*@notreached@*/ break;
 	case RPM_BIN_TYPE:	/* XXX return as array of octets for now. */
 	case RPM_UINT8_TYPE:
-	    vec = xmalloc(he->c * sizeof(*vec));
-	    for (i = 0; i < (int)he->c; i++)
-		vec[i] = INT_TO_JSVAL(he->p.ui8p[i]);
-	    arr = JS_NewArrayObject(cx, he->c, vec);
-	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
-				NULL, NULL, JSPROP_ENUMERATE))
+	    arr = JS_NewArrayObject(cx, 0, NULL);
+	    ok = JS_AddRoot(cx, &arr);
+	    for (i = 0; i < (int)he->c; i++) {
+		v = INT_TO_JSVAL(he->p.ui8p[i]);
+		ok = JS_SetElement(cx, arr, i, &v);
+	    }
+	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),
+				NULL, NULL, JSPROP_ENUMERATE);
+	    (void) JS_RemoveRoot(cx, &arr);
+	    if (!ok)
 		goto exit;
 	    retobj = obj;
-	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    if (vp) *vp = v;
 	    break;
 	case RPM_UINT16_TYPE:
-	    vec = xmalloc(he->c * sizeof(*vec));
-	    for (i = 0; i < (int)he->c; i++)
-		vec[i] = INT_TO_JSVAL(he->p.ui16p[i]);
-	    arr = JS_NewArrayObject(cx, he->c, vec);
-	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
-				NULL, NULL, JSPROP_ENUMERATE))
+	    arr = JS_NewArrayObject(cx, 0, NULL);
+	    ok = JS_AddRoot(cx, &arr);
+	    for (i = 0; i < (int)he->c; i++) {
+		v = INT_TO_JSVAL(he->p.ui16p[i]);
+		ok = JS_SetElement(cx, arr, i, &v);
+	    }
+	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),
+				NULL, NULL, JSPROP_ENUMERATE);
+	    (void) JS_RemoveRoot(cx, &arr);
+	    if (!ok)
 		goto exit;
 	    retobj = obj;
-	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    if (vp) *vp = v;
 	    break;
 	case RPM_UINT32_TYPE:
-	    vec = xmalloc(he->c * sizeof(*vec));
-	    for (i = 0; i < (int)he->c; i++)
-		vec[i] = INT_TO_JSVAL(he->p.ui32p[i]);
-	    arr = JS_NewArrayObject(cx, he->c, vec);
-	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
-				NULL, NULL, JSPROP_ENUMERATE))
+	    arr = JS_NewArrayObject(cx, 0, NULL);
+	    ok = JS_AddRoot(cx, &arr);
+	    for (i = 0; i < (int)he->c; i++) {
+		v = INT_TO_JSVAL(he->p.ui32p[i]);
+		ok = JS_SetElement(cx, arr, i, &v);
+	    }
+	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),
+				NULL, NULL, JSPROP_ENUMERATE);
+	    (void) JS_RemoveRoot(cx, &arr);
+	    if (!ok)
 		goto exit;
 	    retobj = obj;
-	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    if (vp) *vp = v;
 	    break;
 	case RPM_UINT64_TYPE:
-	    vec = xmalloc(he->c * sizeof(*vec));
-	    for (i = 0; i < (int)he->c; i++)
-		vec[i] = INT_TO_JSVAL(he->p.ui64p[i]);
-	    arr = JS_NewArrayObject(cx, he->c, vec);
-	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
-				NULL, NULL, JSPROP_ENUMERATE))
+	    arr = JS_NewArrayObject(cx, 0, NULL);
+	    ok = JS_AddRoot(cx, &arr);
+	    for (i = 0; i < (int)he->c; i++) {
+		v = INT_TO_JSVAL(he->p.ui64p[i]);
+		ok = JS_SetElement(cx, arr, i, &v);
+	    }
+	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),
+				NULL, NULL, JSPROP_ENUMERATE);
+	    (void) JS_RemoveRoot(cx, &arr);
+	    if (!ok)
 		goto exit;
 	    retobj = obj;
-	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    if (vp) *vp = v;
 	    break;
 	case RPM_STRING_ARRAY_TYPE:
-	    vec = xmalloc(he->c * sizeof(*vec));
+	    arr = JS_NewArrayObject(cx, 0, NULL);
+	    ok = JS_AddRoot(cx, &arr);
 	    for (i = 0; i < (int)he->c; i++) {
-		if ((valstr = JS_NewStringCopyZ(cx, he->p.argv[i])) == NULL)
-		    goto exit;
-		vec[i] = STRING_TO_JSVAL(valstr);
+		v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, he->p.argv[i]));
+		ok = JS_SetElement(cx, arr, i, &v);
 	    }
-	    arr = JS_NewArrayObject(cx, he->c, vec);
-	    if (!JS_DefineProperty(cx, obj, name, OBJECT_TO_JSVAL(arr),
-				NULL, NULL, JSPROP_ENUMERATE))
+	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),
+				NULL, NULL, JSPROP_ENUMERATE);
+	    (void) JS_RemoveRoot(cx, &arr);
+	    if (!ok)
 		goto exit;
 	    retobj = obj;
-	    if (vp) *vp = OBJECT_TO_JSVAL(arr);
+	    if (vp) *vp = v;
 	    break;
 	case RPM_I18NSTRING_TYPE:	/* XXX FIXME: is this ever seen? */
 fprintf(stderr, "==> FIXME: %s(%d) t %d %p[%u]\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->c);
-#ifdef	DYING
-	    if ((valstr = JS_NewStringCopyZ(cx, "FIXME")) == NULL
-	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
-		goto exit;
-	    retobj = obj;
-	    if (vp) *vp = STRING_TO_JSVAL(valstr);
-	    break;
-#else
 	    /*@fallthrough@*/
-#endif
-	
 	case RPM_STRING_TYPE:
-	    if ((valstr = JS_NewStringCopyZ(cx, he->p.str)) == NULL
-	     || !JS_DefineProperty(cx, obj, name, STRING_TO_JSVAL(valstr),
-				NULL, NULL, JSPROP_ENUMERATE))
+	     ok = JS_DefineProperty(cx, obj, name,
+			(v=STRING_TO_JSVAL(JS_NewStringCopyZ(cx, he->p.str))),
+			NULL, NULL, JSPROP_ENUMERATE);
+	    if (!ok)
 		goto exit;
 	    retobj = obj;
-	    if (vp) *vp = STRING_TO_JSVAL(valstr);
+	    if (vp) *vp = v;
 	    break;
 	}
     }
 
 exit:
-    vec = _free(vec);
 if (_debug < 0)
 fprintf(stderr, "\tretobj %p vp %p *vp 0x%lx(%u)\n", retobj, vp, (unsigned long)(vp ? *vp : 0), (unsigned)(vp ? JSVAL_TAG(*vp) : 0));
     return retobj;

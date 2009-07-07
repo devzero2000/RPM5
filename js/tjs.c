@@ -43,6 +43,9 @@ static int _loglvl = 0;
 /*@unchecked@*/
 static int _test = 1;
 
+/*@unchecked@*/
+static int _zeal = 1;
+
 typedef struct rpmjsClassTable_s {
 /*@observer@*/
     const char *name;
@@ -52,29 +55,29 @@ typedef struct rpmjsClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
-    { "Aug",		rpmjs_InitAugClass,	 -25 },
-    { "Bf",		rpmjs_InitBfClass,	 -26 },
-    { "Dc",		rpmjs_InitDcClass,	 -28 },
-    { "Dir",		rpmjs_InitDirClass,	 -29 },
-    { "Ds",		rpmjs_InitDsClass,	 -13 },
-    { "Fi",		rpmjs_InitFiClass,	 -14 },
-    { "File",		   js_InitFileClass,	  -1 },
-    { "Fts",		rpmjs_InitFtsClass,	 -30 },
-    { "Hdr",		rpmjs_InitHdrClass,	 -12 },
+    { "Aug",		rpmjs_InitAugClass,	 25 },
+    { "Bf",		rpmjs_InitBfClass,	 26 },
+    { "Dc",		rpmjs_InitDcClass,	 28 },
+    { "Dir",		rpmjs_InitDirClass,	 29 },
+    { "Ds",		rpmjs_InitDsClass,	 13 },
+    { "Fi",		rpmjs_InitFiClass,	 14 },
+    { "File",		   js_InitFileClass,	  1 },
+    { "Fts",		rpmjs_InitFtsClass,	 30 },
+    { "Hdr",		rpmjs_InitHdrClass,	 12 },
     { "Io",		rpmjs_InitIoClass,	 32 },
-    { "Mc",		rpmjs_InitMcClass,	 -24 },
-    { "Mg",		rpmjs_InitMgClass,	 -31 },
-    { "Mi",		rpmjs_InitMiClass,	 -11 },
-    { "Ps",		rpmjs_InitPsClass,	 -16 },
+    { "Mc",		rpmjs_InitMcClass,	 24 },
+    { "Mg",		rpmjs_InitMgClass,	 31 },
+    { "Mi",		rpmjs_InitMiClass,	 11 },
+    { "Ps",		rpmjs_InitPsClass,	 16 },
     { "St",		rpmjs_InitStClass,	 27 },
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
     { "Sys",		rpmjs_InitSysClass,	 33 },
-    { "Te",		rpmjs_InitTeClass,	 -15 },
-    { "Ts",		rpmjs_InitTsClass,	 -10 },
+    { "Te",		rpmjs_InitTeClass,	 15 },
+    { "Ts",		rpmjs_InitTsClass,	 10 },
 #ifdef WITH_UUID
-    { "Uuid",		rpmjs_InitUuidClass,	  -2 },
+    { "Uuid",		rpmjs_InitUuidClass,	  2 },
 #endif
 };
 
@@ -161,6 +164,7 @@ rpmjsLoadClasses(void)
     /* XXX FIXME: resultp != NULL to actually execute?!? */
     (void) rpmjsRun(NULL, "print(\"loading RPM classes.\");", &result);
     js = _rpmjsI;
+    (void) JS_SetGCZeal(js->cx, _zeal);
     for (i = 0, tbl = classTable; i < nclassTable; i++, tbl++) {
 	if (tbl->ix <= 0)
 	    continue;
@@ -193,6 +197,7 @@ rpmjsLoadClasses(void)
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
  { "test", 't', POPT_ARG_VAL,	&_test, -1,		NULL, NULL },
+ { "zeal", 'z', POPT_ARG_INT,	&_zeal, 0,		NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm executables:"), NULL },

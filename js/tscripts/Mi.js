@@ -20,4 +20,6 @@ for (var [key,h] in Iterator(mi)) {
     ack("h.name", N);
 }
 
+delete mi;	// GCZeal?
+
 if (loglvl) print("<-- Mi.js");

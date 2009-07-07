@@ -70,6 +70,8 @@ for (var [dbkey,h] in Iterator(mi)) {
     nack("fi.fclass", "symbolic link to `libpopt.so.0.0.0'");
 }
 
+delete mi;	// GCZeal?
+
 // for (var [key,val] in Iterator(fi))
 //     print(key+": "+val);
 

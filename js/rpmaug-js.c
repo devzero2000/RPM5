@@ -221,15 +221,16 @@ _METHOD_DEBUG_ENTRY(_debug);
 	*rval = JSVAL_VOID;
 	goto exit;
     } else {
-	jsval * vec = xmalloc(nmatches * sizeof(*vec));
+	JSObject *o;
+	jsval v;
 	int i;
+	*rval = OBJECT_TO_JSVAL(o=JS_NewArrayObject(cx, 0, NULL));
 	for (i = 0; i < nmatches; i++) {
-	    vec[i] = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _matches[i]));
+	    v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _matches[i]));
+	    ok = JS_SetElement(cx, o, i, &v);
 	    _matches[i] = _free(_matches[i]);
 	}
-	*rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, nmatches, vec));
 	_matches = _free(_matches);
-	vec = _free(vec);
     }
     ok = JS_TRUE;
 exit:

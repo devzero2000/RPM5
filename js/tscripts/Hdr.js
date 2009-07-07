@@ -104,4 +104,6 @@ for (let [dbkey,h] in Iterator(mi)) {
     ack("h.sprintf(qfmt)", undefined);
 }
 
+delete mi;	// GCZeal?
+
 if (loglvl) print("<-- Hdr.js");
