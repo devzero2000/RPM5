@@ -18,6 +18,24 @@ var lfn = tmpdir + "/sys.link";
 var rfn = tmpdir + "/sys.rename";
 var sfn = tmpdir + "/sys.symlink";
 
+ack("sys.ctermid", '/dev/tty');
+print("     ctime: "+sys.ctime);
+print("       cwd: "+sys.cwd);
+ack("sys.domainname", null);
+ack("sys.egid", sys.gid);
+ack("sys.euid", sys.uid);
+ack("sys.gid", sys.egid);
+ack("sys.gid", sys.groups[0]);
+nack("sys.hostid", 0x00000000);
+print("  hostname: "+sys.hostname);
+ack("sys.pid", sys.pgid);
+nack("sys.pid", sys.ppid);
+ack("sys.sid", sys.tid);
+ack("sys.time", sys.timeofday[0]);	// timeval class?
+ack("sys.uid", sys.euid);
+ack("sys.umask", 0022);
+// print("     uname: "+sys.uname);	// BUGGY
+
 nack("sys.access(dn, F_OK);", 0);
 ack("sys.mkdir(dn);", 0);
 ack("sys.access(dn, F_OK);", 0);

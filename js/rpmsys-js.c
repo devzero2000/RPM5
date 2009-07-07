@@ -412,36 +412,41 @@ static JSFunctionSpec rpmsys_funcs[] = {
 /* --- Object properties */
 enum rpmsys_tinyid {
     _DEBUG	= -2,
-    _CWD	= -3,
-    _DOMAINNAME	= -4,
-    _EGID	= -5,
-    _EUID	= -6,
-    _GID	= -7,
-    _HOSTID	= -8,
-    _HOSTNAME	= -9,
-    _PGID	= -10,
-    _PID	= -11,
-    _PPID	= -12,
-    _SID	= -13,
-    _TID	= -14,
-    _TIME	= -15,
-    _UID	= -16,
-    _UMASK	= -17,
+    _CTERMID	= -3,
+    _CTIME	= -4,
+    _CWD	= -5,
+    _DOMAINNAME	= -6,
+    _EGID	= -7,
+    _EUID	= -8,
+    _GID	= -9,
+    _GROUPS	= -10,
+    _HOSTID	= -11,
+    _HOSTNAME	= -12,
+    _PGID	= -13,
+    _PID	= -14,
+    _PPID	= -15,
+    _SID	= -16,
+    _TID	= -17,
+    _TIME	= -18,
+    _TIMEOFDAY	= -19,
+    _UID	= -20,
+    _UMASK	= -21,
+    _UNAME	= -22,
 
-    _GROUPS	= -20,	/* todo++ */
-    _RLIMIT	= -21,	/* todo++ */
-    _RUSAGE	= -22,	/* todo++ */
-    _TIMEOFDAY	= -23,	/* todo++ */
-    _UNAME	= -24,	/* todo++ */
+    _RLIMIT	= -31,	/* todo++ */
+    _RUSAGE	= -32,	/* todo++ */
 };
 
 static JSPropertySpec rpmsys_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"ctermid",	_CTERMID,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"ctime",	_CTIME,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"cwd",	_CWD,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"domainname",_DOMAINNAME,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"egid",	_EGID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"euid",	_EUID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"gid",	_GID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"groups",	_GROUPS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"hostid",	_HOSTID,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"hostname",_HOSTNAME,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"pgid",	_PGID,		JSPROP_ENUMERATE,	NULL,	NULL},
@@ -450,8 +455,10 @@ static JSPropertySpec rpmsys_props[] = {
     {"sid",	_TID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"tid",	_TID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"time",	_TIME,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"timeofday",_TIMEOFDAY,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"uid",	_UID,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"umask",	_UMASK,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"uname",	_UNAME,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -469,6 +476,17 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 
     switch (tiny) {
     case _DEBUG:	*vp = INT_TO_JSVAL(_debug);		break;
+    case _CTERMID:
+    {	char b[L_ctermid+1];
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, ctermid(b)));
+    }	break;
+    case _CTIME:
+    {	char b[128];
+	time_t secs = time(NULL);
+	char * t = strchr(ctime_r(&secs, b), '\n');
+	if (t) *t = '\0';
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b));
+    }	break;
     case _CWD:
     {	char b[PATH_MAX+1];
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, getcwd(b, sizeof(b))));
@@ -481,6 +499,18 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     case _EGID:		*vp = INT_TO_JSVAL((int)getegid());	break;
     case _EUID:		*vp = INT_TO_JSVAL((int)geteuid());	break;
     case _GID:		*vp = INT_TO_JSVAL((int)getgid());	break;
+    case _GROUPS:
+    {	gid_t gids[NGROUPS_MAX];
+	int ng = getgroups(NGROUPS_MAX, gids);
+	if (ng > 0) {
+	    jsval jsvec[NGROUPS_MAX];
+	    int i;
+	    for (i = 0; i < ng; i++)
+		jsvec[i] = INT_TO_JSVAL((int)gids[i]);
+	    *vp = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, ng, jsvec));
+	} else
+	    *vp = JSVAL_NULL;
+    }	break;
     case _HOSTID:	*vp = INT_TO_JSVAL((int)gethostid());	break;/* XXX */
     case _HOSTNAME:
     {	char b[PATH_MAX+1];
@@ -495,11 +525,39 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     case _TID:		*vp = INT_TO_JSVAL((int)pthread_self());	break;
 #endif
     case _TIME:		*vp = INT_TO_JSVAL((int)time(NULL));	break;
+    case _TIMEOFDAY:
+    {	struct timeval tv;
+	if (!gettimeofday(&tv, NULL)) {
+	    jsval jsvec[2];
+	    jsvec[0] = INT_TO_JSVAL((int)tv.tv_sec);
+	    jsvec[1] = INT_TO_JSVAL((int)tv.tv_usec);
+	    *vp = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, 2, jsvec));
+	} else
+	    *vp = JSVAL_NULL;
+    }	break;
     case _UID:		*vp = INT_TO_JSVAL((int)getuid());	break;
     case _UMASK:
     {	mode_t mode = umask(0000);
 	(void) umask(mode);
 	*vp = INT_TO_JSVAL(mode);
+    }	break;
+    case _UNAME:	/* XXX FIXME */
+    {	struct utsname uts;
+	if (!uname(&uts)) {
+	    jsval jsvec[5];
+	    jsvec[0] = STRING_TO_JSVAL(
+		JS_NewStringCopyN(cx, uts.sysname, sizeof(uts.sysname)));
+	    jsvec[1] = STRING_TO_JSVAL(
+		JS_NewStringCopyN(cx, uts.nodename, sizeof(uts.nodename)));
+	    jsvec[2] = STRING_TO_JSVAL(
+		JS_NewStringCopyN(cx, uts.release, sizeof(uts.release)));
+	    jsvec[3] = STRING_TO_JSVAL(
+		JS_NewStringCopyN(cx, uts.version, sizeof(uts.version)));
+	    jsvec[4] = STRING_TO_JSVAL(
+		JS_NewStringCopyN(cx, uts.machine, sizeof(uts.machine)));
+	    *vp = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, 5, jsvec));
+	} else
+	    *vp = JSVAL_NULL;
     }	break;
     default:
 	break;
