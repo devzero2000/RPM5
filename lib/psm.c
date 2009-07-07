@@ -154,7 +154,11 @@ assert(sfi->otherFileNum < he->c);
     return RPMRC_OK;
 }
 
+#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
+static rpmRC createDir(rpmfi fi, rpmts ts, const char ** fn, const char * name)
+#else
 static rpmRC createDir(rpmts ts, const char ** fn, const char * name)
+#endif
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *fn, rpmGlobalMacroContext @*/
 {
@@ -325,12 +329,21 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 	}
     }
 
+#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
+    if(createDir(fi, ts, NULL, "%{_topdir}") ||
+	    createDir(fi, ts, NULL, "%{_builddir}") ||
+	    createDir(fi, ts, NULL, "%{_rpmdir}") ||
+	    createDir(fi, ts, NULL, "%{_srcrpmdir}") ||
+	    createDir(fi, ts, &_sourcedir, "%{_sourcedir}") ||
+	    createDir(fi, ts, &_specdir, "%{_specdir}"))
+#else
     if(createDir(ts, NULL, "%{_topdir}") ||
 	    createDir(ts, NULL, "%{_builddir}") ||
 	    createDir(ts, NULL, "%{_rpmdir}") ||
 	    createDir(ts, NULL, "%{_srcrpmdir}") ||
 	    createDir(ts, &_sourcedir, "%{_sourcedir}") ||
 	    createDir(ts, &_specdir, "%{_specdir}"))
+#endif
 	goto exit;
 
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
