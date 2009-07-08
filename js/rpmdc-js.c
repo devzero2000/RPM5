@@ -12,11 +12,32 @@
 /*@unchecked@*/
 static int _debug = 0;
 
-#define	rpmdc_addprop	JS_PropertyStub
-#define	rpmdc_delprop	JS_PropertyStub
-#define	rpmdc_convert	JS_ConvertStub
+/* Required JSClass vectors */
+#define	rpmdc_addprop		JS_PropertyStub
+#define	rpmdc_delprop		JS_PropertyStub
+#define	rpmdc_convert		JS_ConvertStub
+
+/* Optional JSClass vectors */
+#define	rpmdc_getobjectops	NULL
+#define	rpmdc_checkaccess	NULL
+#define	rpmdc_call		rpmdc_call
+#define	rpmdc_construct		rpmdc_ctor
+#define	rpmdc_xdrobject		NULL
+#define	rpmdc_hasinstance	NULL
+#define	rpmdc_mark		NULL
+#define	rpmdc_reserveslots	NULL
+
+/* Extended JSClass vectors */
+#define rpmdc_equality		NULL
+#define rpmdc_outerobject	NULL
+#define rpmdc_innerobject	NULL
+#define rpmdc_iteratorobject	NULL
+#define rpmdc_wrappedobject	NULL
 
 typedef	DIGEST_CTX rpmdc;	/* XXX use rpmdc from tools/digest.c instead */
+
+/*@uncehcked@*/
+static pgpHashAlgo _dalgo_default = PGPHASHALGO_MD5;
 
 /* --- helpers */
 
@@ -27,7 +48,7 @@ rpmdc_Init(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdcClass, NULL);
     rpmdc dc = ptr;
     JSBool ok = JS_FALSE;
-    unsigned int _dalgo = PGPHASHALGO_MD5;
+    unsigned int _dalgo = PGPHASHALGO_NONE;
     unsigned int _flags = RPMDIGEST_NONE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -36,9 +57,11 @@ _METHOD_DEBUG_ENTRY(_debug);
         goto exit;
 
     if (dc) {
+	if (_dalgo == PGPHASHALGO_NONE) _dalgo = rpmDigestAlgo(dc);
 	(void) rpmDigestFinal(dc, NULL, NULL, 0);
 	(void) JS_SetPrivate(cx, obj, (void *)NULL);
     }
+    if (_dalgo == PGPHASHALGO_NONE) _dalgo = _dalgo_default;
     dc = rpmDigestInit(_dalgo, _flags);
     (void) JS_SetPrivate(cx, obj, (void *)dc);
 
@@ -110,17 +133,29 @@ static JSFunctionSpec rpmdc_funcs[] = {
 /* --- Object properties */
 enum rpmdc_tinyid {
     _DEBUG	= -2,
+    _ALGO	= -3,
+    _ASN1	= -4,
+    _NAME	= -5,
 };
 
 static JSPropertySpec rpmdc_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"algo",	_ALGO,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"asn1",	_ASN1,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"name",	_NAME,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
+
+/* XXX rpm digest getters handle NULL already */
+#define	_GET_I(_p, _f)   ((_p) ? INT_TO_JSVAL((int)(_f)) : JSVAL_VOID)
+#define	_GET_S(_p, _f) \
+    ((_p) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_f))) : JSVAL_VOID)
 
 static JSBool
 rpmdc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdcClass, NULL);
+    rpmdc dc = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
@@ -131,6 +166,9 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 
     switch (tiny) {
     case _DEBUG:	*vp = INT_TO_JSVAL(_debug);		break;
+    case _ALGO:		*vp = _GET_I(dc, rpmDigestAlgo(dc));	break;
+    case _ASN1:		*vp = _GET_S(dc, rpmDigestASN1(dc));	break;
+    case _NAME:		*vp = _GET_S(dc, rpmDigestName(dc));	break;
     default:
 	break;
     }
@@ -268,6 +306,58 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmdc_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    /* XXX obj is the global object so lookup "this" object. */
+    JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
+    void * ptr = JS_GetInstancePrivate(cx, o, &rpmdcClass, NULL);
+    rpmdc dc = ptr;
+    JSBool ok = JS_FALSE;
+    const char * s = NULL;
+    unsigned int _dalgo = PGPHASHALGO_NONE;
+    unsigned int _flags = RPMDIGEST_NONE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &s)))
+        goto exit;
+
+    if (dc) {
+	if (_dalgo == PGPHASHALGO_NONE) _dalgo = rpmDigestAlgo(dc);
+	(void) rpmDigestFinal(dc, NULL, NULL, 0);
+	/* XXX error msg */
+	dc = ptr = NULL;
+	(void) JS_SetPrivate(cx, o, (void *)dc);
+    }
+
+    if (_dalgo == PGPHASHALGO_NONE) _dalgo = _dalgo_default;
+    dc = ptr = rpmdc_init(cx, o, _dalgo, _flags);
+
+    if (dc && s != NULL) {
+	size_t ns = strlen(s);
+	(void) rpmDigestUpdate(dc, s, ns);
+	s = NULL;
+	ns = 0;
+	if (!rpmDigestFinal(dc, &s, &ns, 1)) {
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, s));
+	} else
+	    *rval = JSVAL_VOID;
+	s = _free(s);
+
+	/* XXX reinitialize so that _dalgo is persistent */
+	dc = ptr = NULL;
+	(void) JS_SetPrivate(cx, o, (void *)dc);
+	dc = ptr = rpmdc_init(cx, o, _dalgo, _flags);
+    } else
+	*rval = JSVAL_VOID;
+
+    ok = JS_TRUE;
+
+exit:
+if (_debug)
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+
+    return ok;
+}
 /* --- Class initialization */
 JSClass rpmdcClass = {
     /* XXX class should be "Digest" eventually, avoid name conflicts for now */
@@ -279,7 +369,11 @@ JSClass rpmdcClass = {
     rpmdc_addprop,   rpmdc_delprop, rpmdc_getprop, rpmdc_setprop,
     (JSEnumerateOp)rpmdc_enumerate, (JSResolveOp)rpmdc_resolve,
     rpmdc_convert,	rpmdc_dtor,
-    JSCLASS_NO_OPTIONAL_MEMBERS
+
+    rpmdc_getobjectops,	rpmdc_checkaccess,
+    rpmdc_call,		rpmdc_construct,
+    rpmdc_xdrobject,	rpmdc_hasinstance,
+    rpmdc_mark,		rpmdc_reserveslots,
 };
 
 JSObject *

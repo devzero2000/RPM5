@@ -29,12 +29,177 @@ ack("dc instanceof Dc;", true);
 ack("dc.debug = 1;", 1);
 ack("dc.debug = 0;", 0);
 
-ack("dc.init(PGPHASHALGO_MD5);", true);
-ack("dc.update('abc');", true);
-ack("dc.fini();", '900150983cd24fb0d6963f7d28e17f72');
+var str = 'abc';
 
-ack("dc.init(PGPHASHALGO_SHA1);", true);
-ack("dc.update('abc');", true);
-ack("dc.fini();", 'a9993e364706816aba3e25717850c26c9cd0d89d');
+var md2 = new Dc(PGPHASHALGO_MD2);
+ack("md2(str);", 'da853b0d3f88d99b30283a69e6ded6bb');
+ack("md2.init(PGPHASHALGO_MD2);", true);
+ack("md2.algo", PGPHASHALGO_MD2);
+ack("md2.asn1", "3020300c06082a864886f70d020205000410");
+ack("md2.name", "MD2");
+ack("md2.update(str);", true);
+ack("md2.fini();", 'da853b0d3f88d99b30283a69e6ded6bb');
+
+var md4 = new Dc(PGPHASHALGO_MD4);
+ack("md4(str);", 'a448017aaf21d8525fc10ae87aa6729d');
+ack("md4.init(PGPHASHALGO_MD4);", true);
+ack("md4.algo", PGPHASHALGO_MD4);
+ack("md4.asn1", null);
+ack("md4.name", "MD4");
+ack("md4.update(str);", true);
+ack("md4.fini();", 'a448017aaf21d8525fc10ae87aa6729d');
+
+var md5 = new Dc(PGPHASHALGO_MD5);
+ack("md5(str);", '900150983cd24fb0d6963f7d28e17f72');
+ack("md5.init(PGPHASHALGO_MD5);", true);
+ack("md5.algo", PGPHASHALGO_MD5);
+ack("md5.asn1", "3020300c06082a864886f70d020505000410");
+ack("md5.name", "MD5");
+ack("md5.update(str);", true);
+ack("md5.fini();", '900150983cd24fb0d6963f7d28e17f72');
+
+var sha1 = new Dc(PGPHASHALGO_SHA1);
+ack("sha1(str);", 'a9993e364706816aba3e25717850c26c9cd0d89d');
+ack("sha1.init(PGPHASHALGO_SHA1);", true);
+ack("sha1.algo", PGPHASHALGO_SHA1);
+ack("sha1.asn1", "3021300906052b0e03021a05000414");
+ack("sha1.name", "SHA1");
+ack("sha1.update(str);", true);
+ack("sha1.fini();", 'a9993e364706816aba3e25717850c26c9cd0d89d');
+
+var sha224 = new Dc(PGPHASHALGO_SHA224);
+ack("sha224(str);", '23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7');
+ack("sha224.init(PGPHASHALGO_SHA224);", true);
+ack("sha224.algo", PGPHASHALGO_SHA224);
+ack("sha224.asn1", "302d300d06096086480165030402040500041C");
+ack("sha224.name", "SHA224");
+ack("sha224.update(str);", true);
+ack("sha224.fini();", '23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7');
+
+var sha256 = new Dc(PGPHASHALGO_SHA256);
+ack("sha256(str);", 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+ack("sha256.init(PGPHASHALGO_SHA256);", true);
+ack("sha256.algo", PGPHASHALGO_SHA256);
+ack("sha256.asn1", "3031300d060960864801650304020105000420");
+ack("sha256.name", "SHA256");
+ack("sha256.update(str);", true);
+ack("sha256.fini();", 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+
+var sha384 = new Dc(PGPHASHALGO_SHA384);
+ack("sha384(str);", 'cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7');
+ack("sha384.init(PGPHASHALGO_SHA384);", true);
+ack("sha384.algo", PGPHASHALGO_SHA384);
+ack("sha384.asn1", "3041300d060960864801650304020205000430");
+ack("sha384.name", "SHA384");
+ack("sha384.update(str);", true);
+ack("sha384.fini();", 'cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7');
+
+var sha512 = new Dc(PGPHASHALGO_SHA512);
+ack("sha512(str);", 'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f');
+ack("sha512.init(PGPHASHALGO_SHA512);", true);
+ack("sha512.algo", PGPHASHALGO_SHA512);
+ack("sha512.asn1", "3051300d060960864801650304020305000440");
+ack("sha512.name", "SHA512");
+ack("sha512.update(str);", true);
+ack("sha512.fini();", 'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f');
+
+var salsa10 = new Dc(PGPHASHALGO_SALSA10);
+ack("salsa10(str);", '699d0db4d264ce8ba8a1bf74734a29372b689d64c985aa5a037c6e11cbdf328270d58c699523ffc2d10bcc6f9ce167fb63528ea4ef0681fe8172297f9c92d72f');
+ack("salsa10.init(PGPHASHALGO_SALSA10);", true);
+ack("salsa10.algo", PGPHASHALGO_SALSA10);
+ack("salsa10.asn1", null);
+ack("salsa10.name", "SALSA10");
+ack("salsa10.update(str);", true);
+ack("salsa10.fini();", '699d0db4d264ce8ba8a1bf74734a29372b689d64c985aa5a037c6e11cbdf328270d58c699523ffc2d10bcc6f9ce167fb63528ea4ef0681fe8172297f9c92d72f');
+
+var salsa20 = new Dc(PGPHASHALGO_SALSA20);
+ack("salsa20(str);", 'fc4f496bb7a2fbe942d170dd42ebaaf6aec7fd9d6563d0563f81ffed6e6ff5cb595237462577ab41efd8c3815f20205a905ad5fd647de1ce2d37894e6671d6a7');
+ack("salsa20.init(PGPHASHALGO_SALSA20);", true);
+ack("salsa20.algo", PGPHASHALGO_SALSA20);
+ack("salsa20.asn1", null);
+ack("salsa20.name", "SALSA20");
+ack("salsa20.update(str);", true);
+ack("salsa20.fini();", 'fc4f496bb7a2fbe942d170dd42ebaaf6aec7fd9d6563d0563f81ffed6e6ff5cb595237462577ab41efd8c3815f20205a905ad5fd647de1ce2d37894e6671d6a7');
+
+var ripemd128 = new Dc(PGPHASHALGO_RIPEMD128);
+ack("ripemd128(str);", 'c14a12199c66e4ba84636b0f69144c77');
+ack("ripemd128.init(PGPHASHALGO_RIPEMD128);", true);
+ack("ripemd128.algo", PGPHASHALGO_RIPEMD128);
+ack("ripemd128.asn1", null);
+ack("ripemd128.name", "RIPEMD128");
+ack("ripemd128.update(str);", true);
+ack("ripemd128.fini();", 'c14a12199c66e4ba84636b0f69144c77');
+
+var ripemd160 = new Dc(PGPHASHALGO_RIPEMD160);
+ack("ripemd160(str);", '8eb208f7e05d987a9b044a8e98c6b087f15a0bfc');
+ack("ripemd160.init(PGPHASHALGO_RIPEMD160);", true);
+ack("ripemd160.algo", PGPHASHALGO_RIPEMD160);
+ack("ripemd160.asn1", "3021300906052b2403020105000414");
+ack("ripemd160.name", "RIPEMD160");
+ack("ripemd160.update(str);", true);
+ack("ripemd160.fini();", '8eb208f7e05d987a9b044a8e98c6b087f15a0bfc');
+
+var ripemd256 = new Dc(PGPHASHALGO_RIPEMD256);
+ack("ripemd256(str);", 'afbd6e228b9d8cbbcef5ca2d03e6dba10ac0bc7dcbe4680e1e42d2e975459b65');
+ack("ripemd256.init(PGPHASHALGO_RIPEMD256);", true);
+ack("ripemd256.algo", PGPHASHALGO_RIPEMD256);
+ack("ripemd256.asn1", null);
+ack("ripemd256.name", "RIPEMD256");
+ack("ripemd256.update(str);", true);
+ack("ripemd256.fini();", 'afbd6e228b9d8cbbcef5ca2d03e6dba10ac0bc7dcbe4680e1e42d2e975459b65');
+
+var ripemd320 = new Dc(PGPHASHALGO_RIPEMD320);
+ack("ripemd320(str);", 'de4c01b3054f8930a79d09ae738e92301e5a17085beffdc1b8d116713e74f82fa942d64cdbc4682d');
+ack("ripemd320.init(PGPHASHALGO_RIPEMD320);", true);
+ack("ripemd320.algo", PGPHASHALGO_RIPEMD320);
+ack("ripemd320.asn1", null);
+ack("ripemd320.name", "RIPEMD320");
+ack("ripemd320.update(str);", true);
+ack("ripemd320.fini();", 'de4c01b3054f8930a79d09ae738e92301e5a17085beffdc1b8d116713e74f82fa942d64cdbc4682d');
+
+var tiger192 = new Dc(PGPHASHALGO_TIGER192);
+ack("tiger192(str);", '2aab1484e8c158f2bfb8c5ff41b57a525129131c957b5f93');
+ack("tiger192.init(PGPHASHALGO_TIGER192);", true);
+ack("tiger192.algo", PGPHASHALGO_TIGER192);
+ack("tiger192.asn1", "3029300d06092b06010401da470c0205000418");
+ack("tiger192.name", "TIGER192");
+ack("tiger192.update(str);", true);
+ack("tiger192.fini();", '2aab1484e8c158f2bfb8c5ff41b57a525129131c957b5f93');
+
+var crc32 = new Dc(PGPHASHALGO_CRC32);
+ack("crc32(str);", '352441c2');
+ack("crc32.init(PGPHASHALGO_CRC32);", true);
+ack("crc32.algo", PGPHASHALGO_CRC32);
+ack("crc32.asn1", null);
+ack("crc32.name", "CRC32");
+ack("crc32.update(str);", true);
+ack("crc32.fini();", '352441c2');
+
+var crc64 = new Dc(PGPHASHALGO_CRC64);
+ack("crc64(str);", '2cd8094a1a277627');
+ack("crc64.init(PGPHASHALGO_CRC64);", true);
+ack("crc64.algo", PGPHASHALGO_CRC64);
+ack("crc64.asn1", null);
+ack("crc64.name", "CRC64");
+ack("crc64.update(str);", true);
+ack("crc64.fini();", '2cd8094a1a277627');
+
+var adler32 = new Dc(PGPHASHALGO_ADLER32);
+ack("adler32(str);", '024d0127');
+ack("adler32.init(PGPHASHALGO_ADLER32);", true);
+ack("adler32.algo", PGPHASHALGO_ADLER32);
+ack("adler32.asn1", null);
+ack("adler32.name", "ADLER32");
+ack("adler32.update(str);", true);
+ack("adler32.fini();", '024d0127');
+
+var jlu32 = new Dc(PGPHASHALGO_JLU32);
+ack("jlu32(str);", '110255fd');
+ack("jlu32.init(PGPHASHALGO_JLU32);", true);
+ack("jlu32.algo", PGPHASHALGO_JLU32);
+ack("jlu32.asn1", null);
+ack("jlu32.name", "JLU32");
+ack("jlu32.update(str);", true);
+ack("jlu32.fini();", '110255fd');
 
 if (loglvl) print("<-- Dc.js");
