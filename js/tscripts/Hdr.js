@@ -105,5 +105,6 @@ for (let [dbkey,h] in Iterator(mi)) {
 }
 
 delete mi;	// GCZeal?
+delete ts;	// GCZeal?
 
 if (loglvl) print("<-- Hdr.js");

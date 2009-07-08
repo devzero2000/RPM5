@@ -1,0 +1,238 @@
+/** \ingroup js_c
+ * \file js/rpmxar-js.c
+ */
+
+#include "system.h"
+
+#include "rpmxar-js.h"
+#include "rpmjs-debug.h"
+
+#define	_RPMSX_INTERNAL
+#include <rpmxar.h>
+
+#include "debug.h"
+
+/*@unchecked@*/
+static int _debug = 0;
+
+/* Required JSClass vectors */
+#define	rpmxar_addprop		JS_PropertyStub
+#define	rpmxar_delprop		JS_PropertyStub
+#define	rpmxar_convert		JS_ConvertStub
+
+/* Optional JSClass vectors */
+#define	rpmxar_getobjectops	NULL
+#define	rpmxar_checkaccess	NULL
+#define	rpmxar_call		NULL
+#define	rpmxar_construct		rpmxar_ctor
+#define	rpmxar_xdrobject		NULL
+#define	rpmxar_hasinstance	NULL
+#define	rpmxar_mark		NULL
+#define	rpmxar_reserveslots	NULL
+
+/* Extended JSClass vectors */
+#define rpmxar_equality		NULL
+#define rpmxar_outerobject	NULL
+#define rpmxar_innerobject	NULL
+#define rpmxar_iteratorobject	NULL
+#define rpmxar_wrappedobject	NULL
+
+/* --- helpers */
+
+/* --- Object methods */
+
+static JSFunctionSpec rpmxar_funcs[] = {
+    JS_FS_END
+};
+
+/* --- Object properties */
+enum rpmxar_tinyid {
+    _DEBUG	= -2,
+};
+
+static JSPropertySpec rpmxar_props[] = {
+    {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {NULL, 0, 0, NULL, NULL}
+};
+
+static JSBool
+rpmxar_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmxarClass, NULL);
+    jsint tiny = JSVAL_TO_INT(id);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
+    switch (tiny) {
+    case _DEBUG:
+	*vp = INT_TO_JSVAL(_debug);
+	break;
+    default:
+	break;
+    }
+
+    return JS_TRUE;
+}
+
+static JSBool
+rpmxar_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmxarClass, NULL);
+    jsint tiny = JSVAL_TO_INT(id);
+
+    /* XXX the class has ptr == NULL, instances have ptr != NULL. */
+    if (ptr == NULL)
+	return JS_TRUE;
+
+    switch (tiny) {
+    case _DEBUG:
+	if (!JS_ValueToInt32(cx, *vp, &_debug))
+	    break;
+	break;
+    default:
+	break;
+    }
+
+    return JS_TRUE;
+}
+
+static JSBool
+rpmxar_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+	JSObject **objp)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmxarClass, NULL);
+
+_RESOLVE_DEBUG_ENTRY(_debug < 0);
+
+    if ((flags & JSRESOLVE_ASSIGNING)
+     || (ptr == NULL)) { /* don't resolve to parent prototypes objects. */
+	*objp = NULL;
+	goto exit;
+    }
+
+    *objp = obj;	/* XXX always resolve in this object. */
+
+exit:
+    return JS_TRUE;
+}
+
+static JSBool
+rpmxar_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+		  jsval *statep, jsid *idp)
+{
+
+_ENUMERATE_DEBUG_ENTRY(_debug < 0);
+
+    switch (op) {
+    case JSENUMERATE_INIT:
+	*statep = JSVAL_VOID;
+        if (idp)
+            *idp = JSVAL_ZERO;
+        break;
+    case JSENUMERATE_NEXT:
+	*statep = JSVAL_VOID;
+        if (*idp != JSVAL_VOID)
+            break;
+        /*@fallthrough@*/
+    case JSENUMERATE_DESTROY:
+	*statep = JSVAL_NULL;
+        break;
+    }
+    return JS_TRUE;
+}
+
+/* --- Object ctors/dtors */
+static rpmxar
+rpmxar_init(JSContext *cx, JSObject *obj)
+{
+    const char * _fn = "popt-1.14.xar";
+    const char * _fmode = "r";
+    rpmxar xar = rpmxarNew(_fn, _fmode);
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p) xar %p\n", __FUNCTION__, cx, obj, xar);
+
+    if (!JS_SetPrivate(cx, obj, (void *)xar)) {
+	/* XXX error msg */
+	return NULL;
+    }
+    return xar;
+}
+
+static void
+rpmxar_dtor(JSContext *cx, JSObject *obj)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmxarClass, NULL);
+    rpmxar xar = ptr;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+    xar = rpmxarFree(xar, __FUNCTION__);
+}
+
+static JSBool
+rpmxar_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    JSBool ok = JS_FALSE;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+
+    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+	(void) rpmxar_init(cx, obj);
+    } else {
+	if ((obj = JS_NewObject(cx, &rpmxarClass, NULL, NULL)) == NULL)
+	    goto exit;
+	*rval = OBJECT_TO_JSVAL(obj);
+    }
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+/* --- Class initialization */
+JSClass rpmxarClass = {
+    "Xar", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
+    rpmxar_addprop,   rpmxar_delprop, rpmxar_getprop, rpmxar_setprop,
+    (JSEnumerateOp)rpmxar_enumerate, (JSResolveOp)rpmxar_resolve,
+    rpmxar_convert,	rpmxar_dtor,
+
+    rpmxar_getobjectops,	rpmxar_checkaccess,
+    rpmxar_call,		rpmxar_construct,
+    rpmxar_xdrobject,	rpmxar_hasinstance,
+    rpmxar_mark,		rpmxar_reserveslots,
+};
+
+JSObject *
+rpmjs_InitXarClass(JSContext *cx, JSObject* obj)
+{
+    JSObject *proto;
+
+if (_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
+
+    proto = JS_InitClass(cx, obj, NULL, &rpmxarClass, rpmxar_ctor, 1,
+		rpmxar_props, rpmxar_funcs, NULL, NULL);
+assert(proto != NULL);
+    return proto;
+}
+
+JSObject *
+rpmjs_NewXarObject(JSContext *cx)
+{
+    JSObject *obj;
+    rpmxar xar;
+
+    if ((obj = JS_NewObject(cx, &rpmxarClass, NULL, NULL)) == NULL) {
+	/* XXX error msg */
+	return NULL;
+    }
+    if ((xar = rpmxar_init(cx, obj)) == NULL) {
+	/* XXX error msg */
+	return NULL;
+    }
+    return obj;
+}

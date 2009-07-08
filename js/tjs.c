@@ -9,22 +9,30 @@
 #include <rpmjs.h>
 
 #include "rpmaug-js.h"
+#include "rpmbc-js.h"
 #include "rpmbf-js.h"
 #include "rpmdc-js.h"
+#include "rpmdig-js.h"
 #include "rpmdir-js.h"
 #include "rpmds-js.h"
+#include "rpmfc-js.h"
 #include "rpmfi-js.h"
 #include "rpmfts-js.h"
+#include "rpmgi-js.h"
 #include "rpmhdr-js.h"
 #include "rpmio-js.h"
+#include "rpmiob-js.h"
 #include "rpmmc-js.h"
 #include "rpmmg-js.h"
 #include "rpmmi-js.h"
 #include "rpmps-js.h"
 #include "rpmst-js.h"
+#include "rpmsw-js.h"
+#include "rpmsx-js.h"
 #include "rpmsys-js.h"
 #include "rpmte-js.h"
 #include "rpmts-js.h"
+#include "rpmxar-js.h"
 #include "syck-js.h"
 #include "uuid-js.h"
 
@@ -44,7 +52,7 @@ static int _loglvl = 0;
 static int _test = 1;
 
 /*@unchecked@*/
-static int _zeal = 1;
+static int _zeal = 2;
 
 typedef struct rpmjsClassTable_s {
 /*@observer@*/
@@ -55,29 +63,37 @@ typedef struct rpmjsClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
-    { "Aug",		rpmjs_InitAugClass,	 25 },
-    { "Bf",		rpmjs_InitBfClass,	 26 },
-    { "Dc",		rpmjs_InitDcClass,	 28 },
-    { "Dir",		rpmjs_InitDirClass,	 29 },
-    { "Ds",		rpmjs_InitDsClass,	 13 },
-    { "Fi",		rpmjs_InitFiClass,	 14 },
-    { "File",		   js_InitFileClass,	  1 },
-    { "Fts",		rpmjs_InitFtsClass,	 30 },
-    { "Hdr",		rpmjs_InitHdrClass,	 12 },
-    { "Io",		rpmjs_InitIoClass,	 32 },
-    { "Mc",		rpmjs_InitMcClass,	 24 },
-    { "Mg",		rpmjs_InitMgClass,	 31 },
-    { "Mi",		rpmjs_InitMiClass,	 11 },
-    { "Ps",		rpmjs_InitPsClass,	 16 },
-    { "St",		rpmjs_InitStClass,	 27 },
+    { "Aug",		rpmjs_InitAugClass,	 -25 },
+    { "Bc",		rpmjs_InitBcClass,	 40 },
+    { "Bf",		rpmjs_InitBfClass,	 -26 },
+    { "Dc",		rpmjs_InitDcClass,	 -28 },
+    { "Dig",		rpmjs_InitDigClass,	 37 },
+    { "Dir",		rpmjs_InitDirClass,	 -29 },
+    { "Ds",		rpmjs_InitDsClass,	 -13 },
+    { "Fc",		rpmjs_InitFcClass,	 34 },
+    { "Fi",		rpmjs_InitFiClass,	 -14 },
+    { "File",		   js_InitFileClass,	  -1 },
+    { "Fts",		rpmjs_InitFtsClass,	 -30 },
+    { "Gi",		rpmjs_InitGiClass,	 35 },
+    { "Hdr",		rpmjs_InitHdrClass,	 -12 },
+    { "Io",		rpmjs_InitIoClass,	 -32 },
+    { "Iob",		rpmjs_InitIobClass,	 36 },
+    { "Mc",		rpmjs_InitMcClass,	 -24 },
+    { "Mg",		rpmjs_InitMgClass,	 -31 },
+    { "Mi",		rpmjs_InitMiClass,	 -11 },
+    { "Ps",		rpmjs_InitPsClass,	 -16 },
+    { "St",		rpmjs_InitStClass,	 -27 },
+    { "Sw",		rpmjs_InitSwClass,	 38 },
+    { "Sx",		rpmjs_InitSxClass,	 39 },
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
-    { "Sys",		rpmjs_InitSysClass,	 33 },
-    { "Te",		rpmjs_InitTeClass,	 15 },
-    { "Ts",		rpmjs_InitTsClass,	 10 },
+    { "Sys",		rpmjs_InitSysClass,	 -33 },
+    { "Te",		rpmjs_InitTeClass,	 -15 },
+    { "Ts",		rpmjs_InitTsClass,	 -10 },
+    { "Xar",		rpmjs_InitXarClass,	 41 },
 #ifdef WITH_UUID
-    { "Uuid",		rpmjs_InitUuidClass,	  2 },
+    { "Uuid",		rpmjs_InitUuidClass,	  -2 },
 #endif
 };
 

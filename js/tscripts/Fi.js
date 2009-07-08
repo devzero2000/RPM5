@@ -71,6 +71,7 @@ for (var [dbkey,h] in Iterator(mi)) {
 }
 
 delete mi;	// GCZeal?
+delete ts;	// GCZeal?
 
 // for (var [key,val] in Iterator(fi))
 //     print(key+": "+val);

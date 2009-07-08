@@ -41,4 +41,6 @@ ack("ts.length == ix", true);
 // ack("ts.order()", true);
 // ack("ts.run()", true);
 
+delete ts;	// GCZeal?
+
 if (loglvl) print("<-- Ts.js");
