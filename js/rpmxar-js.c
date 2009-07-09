@@ -5,9 +5,10 @@
 #include "system.h"
 
 #include "rpmxar-js.h"
+#include "rpmst-js.h"
 #include "rpmjs-debug.h"
 
-#define	_RPMSX_INTERNAL
+#define	_RPMXAR_INTERNAL
 #include <rpmxar.h>
 
 #include "debug.h"
@@ -122,21 +123,62 @@ static JSBool
 rpmxar_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmxarClass, NULL);
+    rpmxar xar = ptr;
+    int ix = 0;
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
-	*statep = JSVAL_VOID;
-        if (idp)
-            *idp = JSVAL_ZERO;
+	if (idp)
+	    *idp = JSVAL_ZERO;
+	*statep = INT_TO_JSVAL(ix);
+if (_debug)
+fprintf(stderr, "\tINIT xar %p\n", xar);
         break;
     case JSENUMERATE_NEXT:
-	*statep = JSVAL_VOID;
+	ix = JSVAL_TO_INT(*statep);
+	if (!rpmxarNext(xar)) {
+	    const char * path = rpmxarPath(xar);
+	    struct stat * st = xmalloc(sizeof(*st));
+	    JSObject * arr = JS_NewArrayObject(cx, 0, NULL);
+	    JSBool ok = JS_AddRoot(cx, &arr);
+	    JSObject * o;
+	    jsval v;
+
+	    v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, path));
+	    ok = JS_SetElement(cx, arr, 0, &v);
+	    if (!rpmxarStat(xar, st)
+	     && (o = JS_NewObject(cx, &rpmstClass, NULL, NULL)) != NULL
+             && JS_SetPrivate(cx, o, (void *)st))
+		v = OBJECT_TO_JSVAL(o);
+	    else {
+		st = _free(st);
+		v = JSVAL_NULL;
+	    }
+	    ok = JS_SetElement(cx, arr, 1, &v);
+
+	    v = OBJECT_TO_JSVAL(arr);
+	    ok = JS_DefineElement(cx, obj, ix, v, NULL, NULL, JSPROP_ENUMERATE);
+
+	    (void) JS_RemoveRoot(cx, &arr);
+if (_debug)
+fprintf(stderr, "\tNEXT xar %p[%u] \"%s\"\n", xar, ix, path);
+	    path = _free(path);
+	    JS_ValueToId(cx, *statep, idp);
+	    *statep = INT_TO_JSVAL(ix+1);
+	} else
+	    *idp = JSVAL_VOID;
         if (*idp != JSVAL_VOID)
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
+	ix = JSVAL_TO_INT(*statep);
+	(void) JS_DefineProperty(cx, obj, "length", INT_TO_JSVAL(ix),
+			NULL, NULL, JSPROP_ENUMERATE);
+if (_debug)
+fprintf(stderr, "\tFINI xar %p[%u]\n", xar, ix);
 	*statep = JSVAL_NULL;
         break;
     }
@@ -145,19 +187,22 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static rpmxar
-rpmxar_init(JSContext *cx, JSObject *obj)
+rpmxar_init(JSContext *cx, JSObject *obj, const char * _fn, const char * _fmode)
 {
-    const char * _fn = "popt-1.14.xar";
-    const char * _fmode = "r";
-    rpmxar xar = rpmxarNew(_fn, _fmode);
+    rpmxar xar = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) xar %p\n", __FUNCTION__, cx, obj, xar);
+    if (_fn) {
+	if (_fmode == NULL) _fmode = "r";
+	xar = rpmxarNew(_fn, _fmode);
+    }
 
     if (!JS_SetPrivate(cx, obj, (void *)xar)) {
 	/* XXX error msg */
 	return NULL;
     }
+
+if (_debug)
+fprintf(stderr, "<== %s(%p,%p) xar(%s,%s) %p\n", __FUNCTION__, cx, obj, _fn, _fmode, xar);
     return xar;
 }
 
@@ -175,13 +220,18 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 static JSBool
 rpmxar_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    const char * _fn = "popt-1.14.xar";
+    const char * _fmode = "r";
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ss", &_fn, &_fmode)))
+	goto exit;
+
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmxar_init(cx, obj);
+	(void) rpmxar_init(cx, obj, _fn, _fmode);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmxarClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -221,7 +271,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewXarObject(JSContext *cx)
+rpmjs_NewXarObject(JSContext *cx, const char * _fn, const char *_fmode)
 {
     JSObject *obj;
     rpmxar xar;
@@ -230,7 +280,7 @@ rpmjs_NewXarObject(JSContext *cx)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((xar = rpmxar_init(cx, obj)) == NULL) {
+    if ((xar = rpmxar_init(cx, obj, _fn, _fmode)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

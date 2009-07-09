@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitXarClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewXarObject(JSContext *cx);
+rpmjs_NewXarObject(JSContext *cx, const char * _fn, const char *_fmode);
 
 #ifdef __cplusplus      
 }
