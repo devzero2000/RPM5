@@ -484,8 +484,10 @@ LIBRPMIO_0
     rpmUndefineMacro;
     rpmxarNew;
     rpmxarNext;
-    rpmxarPush;
+    rpmxarPath;
     rpmxarPull;
+    rpmxarPush;
+    rpmxarStat;
     rpmxarSwapBuf;
     rpmuuidMake;
     rpmzLogAdd;

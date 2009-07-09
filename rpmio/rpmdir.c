@@ -11,7 +11,7 @@
 #define	_RPMDIR_INTERNAL
 #include <rpmdir.h>
 #include <rpmdav.h>		/* ftpOpendir/davOpendir */
-#include <rpmhash.h>		/* rpmHashFunctionString */
+#include <rpmhash.h>		/* hashFunctionString */
 
 #include "debug.h"
 

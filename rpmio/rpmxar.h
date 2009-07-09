@@ -66,6 +66,12 @@ rpmxar rpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg)
 #define	rpmxarLink(_xar, _msg)	\
     ((rpmxar)rpmioLinkPoolItem((rpmioItem)(_xar), _msg, __FILE__, __LINE__))
 
+/**
+ * Destroy a xar archive instance.
+ * @param xar		xar archive
+ * @param msg
+ * @return		NULL on last dereference
+ */
 /*@unused@*/ /*@null@*/
 rpmxar rpmxarFree(/*@killref@*/ /*@only@*/ rpmxar xar,
 		/*@null@*/ const char * msg)
@@ -73,6 +79,12 @@ rpmxar rpmxarFree(/*@killref@*/ /*@only@*/ rpmxar xar,
 #define	rpmxarFree(_xar, _msg)	\
     ((rpmxar)rpmioFreePoolItem((rpmioItem)(_xar), _msg, __FILE__, __LINE__))
 
+/**
+ * Create a xar archive instance.
+ * @param fn		xar file
+ * @param fmode		"r" for reading, "w" for writing
+ * @return		new xar instance
+ */
 /*@-globuse@*/
 /*@relnull@*/
 rpmxar rpmxarNew(const char * fn, const char * fmode)
@@ -80,6 +92,11 @@ rpmxar rpmxarNew(const char * fn, const char * fmode)
 	/*@modifies fileSystem @*/;
 /*@=globuse@*/
 
+/**
+ * Iterate a xar archive instance.
+ * @param xar		xar archive
+ * @return		0 on SUCCESS, 1 on end-of-iteration
+ */
 int rpmxarNext(rpmxar xar)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
@@ -103,6 +120,26 @@ ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)
         /*@modifies buf, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/;
 /*@=incondefs@*/
+
+/**
+ * Return path of current archive member.
+ * @param xar		xar archive
+ * @return		path of xar member
+ */
+/*@null@*/
+const char * rpmxarPath(rpmxar xar)
+	/*@globals fileSystem @*/
+	/*@modifies xar, fileSystem @*/;
+
+/**
+ * Return stat(2) of current archive member.
+ * @param xar		xar archive
+ * @retval *st		stat(2) of current member
+ * @return		0 on success
+ */
+int rpmxarStat(rpmxar xar, struct stat * st)
+	/*@globals fileSystem @*/
+	/*@modifies xar, *st, fileSystem @*/;
 
 #ifdef __cplusplus
 }

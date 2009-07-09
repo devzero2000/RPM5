@@ -59,6 +59,8 @@ char *xar_get_path(xar_file_t f)
 #define	_RPMXAR_INTERNAL
 #include <rpmxar.h>
 #include <rpmio_internal.h>	/* for fdGetXAR */
+#include <rpmhash.h>		/* hashFunctionString */
+#include <ugid.h>
 
 #include "debug.h"
 
@@ -179,7 +181,7 @@ int rpmxarPull(rpmxar xar, const char * fn)
 if (_xar_debug) {
 unsigned char * b = xar->b;
 size_t bsize = xar->bsize;
-fprintf(stderr, "--> rpmxarPull(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+fprintf(stderr, "<-- rpmxarPull(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 }
 /*@=charint =nullpass =nullderef @*/
 
@@ -238,7 +240,148 @@ assert(xar->b != NULL);
 	rc = 0;
 
 if (_xar_debug)
-fprintf(stderr, "--> xarRead(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", cookie, buf, (unsigned)count, (xar->member ? xar->member : "(nil)"), xar->b, (unsigned)xar->bx, (unsigned)xar->bsize, (unsigned)rc);
+fprintf(stderr, "<-- %s(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", __FUNCTION__, cookie, buf, (unsigned)count, (xar->member ? xar->member : "(nil)"), xar->b, (unsigned)xar->bx, (unsigned)xar->bsize, (unsigned)rc);
 
+    return rc;
+}
+
+const char * rpmxarPath(rpmxar xar)
+{
+    const char * path = (xar && xar->f ? xar_get_path(xar->f) : NULL);
+if (_xar_debug)
+fprintf(stderr, "<-- %s(%p) %s\n", __FUNCTION__, xar, path);
+    return path;
+}
+
+static mode_t xarMode(rpmxar xar)
+	/*@*/
+{
+    const char * t = NULL;
+    mode_t m;
+
+    xar_prop_get(xar->f, "mode", &t);
+    m = (t ? (mode_t) strtoll(t, NULL, 8) : 0);
+
+    xar_prop_get(xar->f, "type", &t);
+    if (!strcmp(t, "file"))
+	m |= S_IFREG;
+    else if (!strcmp(t, "hardlink"))
+	m |= S_IFREG;
+    else if (!strcmp(t, "directory"))
+	m |= S_IFDIR;
+    else if (!strcmp(t, "symlink"))
+	m |= S_IFLNK;
+    else if (!strcmp(t, "fifo"))
+	m |= S_IFIFO;
+    else if (!strcmp(t, "character special"))
+	m |= S_IFCHR;
+    else if (!strcmp(t, "block special"))
+	m |= S_IFBLK;
+    else if (!strcmp(t, "socket"))
+	m |= S_IFSOCK;
+#ifdef S_IFWHT
+    else if (!strcmp(t, "whiteout"))
+	m |= S_IFWHT;
+#endif
+
+    return m;
+}
+
+static dev_t xarDev(rpmxar xar)
+	/*@*/
+{
+    const char *t = NULL;
+    unsigned major;
+    unsigned minor;
+
+    xar_prop_get(xar->f, "device/major", &t);
+    major = (t ? (unsigned) strtoll(t, NULL, 0) : 0);
+    xar_prop_get(xar->f, "device/minor", &t);
+    minor = (t ? (unsigned) strtoll(t, NULL, 0) : 0);
+#ifdef makedev
+    return makedev(major, minor);
+#else
+    return (major << 8) | minor;
+#endif
+}
+
+static long long xarSize(rpmxar xar)
+	/*@*/
+{
+    char * t = xar_get_size(xar->x, xar->f);
+    long long ll = strtoll(t, NULL, 0);
+    t = _free(t);
+    return ll;
+}
+
+static uid_t xarUid(rpmxar xar)
+	/*@*/
+{
+    const char * t = NULL;
+    uid_t u;
+    xar_prop_get(xar->f, "user", &t);
+    if (t == NULL || unameToUid(t, &u) < 0) {
+	xar_prop_get(xar->f, "uid", &t);
+	u = (t ? (uid_t) strtoll(t, NULL, 0) : getuid());
+    }
+    return u;
+}
+
+static gid_t xarGid(rpmxar xar)
+	/*@*/
+{
+    const char * t = NULL;
+    gid_t g;
+    xar_prop_get(xar->f, "group", &t);
+    if (t == NULL || gnameToGid(t, &g) < 0) {
+	xar_prop_get(xar->f, "gid", &t);
+	g = (t ? (gid_t) strtoll(t, NULL, 0) : getgid());
+    }
+    return g;
+}
+
+static void xarTime(rpmxar xar, const char * tprop, struct timeval *tv)
+	/*@modifies *tvp */
+{
+    const char * t = NULL;
+    xar_prop_get(xar->f, tprop, &t);
+    if (t) {
+	struct tm tm;
+	strptime(t, "%FT%T", &tm);
+	tv->tv_sec = timegm(&tm);
+	tv->tv_usec = 0;
+    } else {
+	tv->tv_sec = time(NULL);
+	tv->tv_usec = 0;
+    }
+}
+
+int rpmxarStat(rpmxar xar, struct stat * st)
+{
+    int rc = -1;	/* assume failure */
+
+    if (xar && xar->f) {
+	const char * path = rpmxarPath(xar);
+	memset(st, 0, sizeof(*st));
+	st->st_dev = (dev_t)0;
+	st->st_ino = hashFunctionString(0, path, 0);;
+	path = _free(path);
+	st->st_mode = xarMode(xar);
+	st->st_nlink = (S_ISDIR(st->st_mode) ? 2 : 1);	/* XXX FIXME */
+	st->st_uid = xarUid(xar);
+	st->st_gid = xarGid(xar);
+	st->st_rdev = (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
+		? xarDev(xar) : (dev_t)0;
+	st->st_size = xarSize(xar);
+	st->st_blksize = (blksize_t) 0;
+	st->st_blocks = (blkcnt_t) 0;
+	xarTime(xar, "atime", (struct timeval *)&st->st_atime);
+	xarTime(xar, "ctime", (struct timeval *)&st->st_ctime);
+	xarTime(xar, "mtime", (struct timeval *)&st->st_mtime);
+	rc = 0;
+    }
+
+if (_xar_debug)
+fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, xar, st, rc);
     return rc;
 }
