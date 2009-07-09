@@ -155,7 +155,7 @@ int davFree(urlinfo u)
 		ne_lockstore_destroy(u->lockstore);
 	    u->lockstore = NULL;
 	    u->info.status = 0;
-	    ne_sock_exit();
+	    ne_sock_exit();	/* XXX refcounted. oneshot? */
 	    break;
 	}
     }
@@ -554,7 +554,7 @@ static int davInit(const char * url, urlinfo * uret)
 	rc = ((_dav_debug < 0) ? NE_DBG_HTTP : 0);
 	ne_debug_init(stderr, rc);		/* XXX oneshot? */
 /*@=noeffect@*/
-	rc = ne_sock_init();			/* XXX oneshot? */
+	rc = ne_sock_init();	/* XXX refcounted. oneshot? */
 
 	u->lockstore = ne_lockstore_create();	/* XXX oneshot? */
 
@@ -1284,8 +1284,9 @@ assert(html->b != NULL);
 	    while (h > f && h[-1] != '"')
 		h--;
 	    /* [h:he) contains the href. */
+assert(he > h);
 	    nh = (size_t)(he - h);
-	    href = t = xmalloc(nh + 1 + 1);
+	    href = t = xmalloc(nh + 1 + 1);	/* XXX +1 for trailing '/' */
 	    while (h < he) {
 		char c = *h++;
 		switch (c) {
@@ -1307,6 +1308,7 @@ assert(html->b != NULL);
 	    case URL_IS_UNKNOWN:
 	    default:
 		/* XXX verify "same tree" as root URI. */
+assert(nh > 0);
 		if (href[nh-1] == '/') {
 		    st_mode = S_IFDIR | 0755;
 		    href[nh-1] = '\0';
@@ -1374,12 +1376,13 @@ fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
 	    html->nb -= offsets[1];
 	} else {
 	    size_t nb = html->nb;
-	    if (nr > 0) nb -= 128;	/* XXX overlap a bit if filling. */
+	    if (nr > 0) nb -= 256;	/* XXX overlap a bit if filling. */
 	    html->b += nb;
 	    html->nb -= nb;
 	}
 
-	if (nr > 0)
+	/* XXX Refill iff lowater reaches nbuf/4 (~2kB) */
+	if (nr > 0 && html->nb < (html->nbuf/4))
 	    nr = htmlFill(html);
     }
 
