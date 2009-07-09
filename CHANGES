@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: yarn: convert rpmhtml to usage mutex with refcounts.
     - rse: fix building under RPM_VENDOR_OPENPKG/switch-from-susr-to-musr-on-srpm-install
     - jbj: rpmio: fix: compute url length in rpmGenPath() w/o using pointers.
     - jbj: yarn: convert rpmavx to usage mutex with refcounts.

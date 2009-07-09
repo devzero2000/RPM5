@@ -69,6 +69,8 @@ extern int _fts_debug;
 /*@unchecked@*/
 extern int _ht_debug;
 /*@unchecked@*/
+extern int _html_debug;
+/*@unchecked@*/
 extern int _iosm_debug;
 /*@unchecked@*/
 extern int noLibio;
@@ -412,6 +414,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug Fts(3) traverse"), NULL},
  { "htdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ht_debug, -1,
 	N_("Debug hash tables"), NULL},
+ { "htmldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_html_debug, -1,
+	N_("Debug HTML parsing"), NULL},
  { "iosmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_iosm_debug, -1,
 	N_("Debug I/O state machine"), NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,

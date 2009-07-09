@@ -1076,9 +1076,12 @@ static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
  */
 typedef struct rpmhtml_s * rpmhtml;
 
+int _html_debug = 0;
+
 /**
  */
 struct rpmhtml_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@kept@*/
     rpmavx avx;
     ne_request *req;
@@ -1094,24 +1097,77 @@ struct rpmhtml_s {
 /*@null@*/
     char * b;
     size_t nb;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /**
+ * Unreference a html wrapper instance.
+ * @param html		html wrapper
+ * @return		NULL on last derefernce
  */
-static /*@null@*/
-rpmhtml htmlFree(/*@only@*/ rpmhtml html)
-	/*@modifies html @*/
+/*@unused@*/ /*@null@*/
+rpmhtml htmlUnlink (/*@null@*/ rpmhtml html)
+        /*@modifies html @*/;
+#define htmlUnlink(_html)  \
+    ((rpmhtml)rpmioUnlinkPoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a html wrapper instance.
+ * @param html		html wrapper
+ * @return		new html wrapper reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmhtml htmlLink (/*@null@*/ rpmhtml html)
+        /*@modifies html @*/;
+#define htmlLink(_html)  \
+    ((rpmhtml)rpmioLinkPoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Destroy a html wrapper instance.
+ * @param html		html wrapper
+ * @return		NULL on last derefernce
+ */
+/*@null@*/
+rpmhtml htmlFree (/*@null@*/ rpmhtml html)
+        /*@modifies html @*/;
+#define htmlFree(_html)  \
+    ((rpmhtml)rpmioFreePoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ */
+static void htmlFini(void * _html)
+	/*@globals fileSystem @*/
+	/*@modifies *_html, fileSystem @*/
 {
-    if (html != NULL) {
-	if (html->req != NULL) {
-	    ne_request_destroy(html->req);
-	    html->req = NULL;
-	}
-	html->buf = _free(html->buf);
-	html->nbuf = 0;
-	html->avx = NULL;
+    rpmhtml html = _html;
+
+    if (html->req != NULL) {
+	ne_request_destroy(html->req);
+	html->req = NULL;
     }
-    return NULL;
+    html->buf = _free(html->buf);
+    html->nbuf = 0;
+    html->avx = NULL;
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _htmlPool = NULL;
+
+static rpmhtml htmlGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _htmlPool, fileSystem @*/
+	/*@modifies pool, _htmlPool, fileSystem @*/
+{
+    rpmhtml html;
+
+    if (_htmlPool == NULL) {
+	_htmlPool = rpmioNewPool("html", sizeof(*html), -1, _html_debug,
+			NULL, NULL, htmlFini);
+	pool = _htmlPool;
+    }
+    return (rpmhtml) rpmioGetPool(pool, sizeof(*html));
 }
 
 /**
@@ -1120,12 +1176,12 @@ static
 rpmhtml htmlNew(urlinfo u, /*@kept@*/ rpmavx avx) 
 	/*@*/
 {
-    rpmhtml html = xcalloc(1, sizeof(*html));
+    rpmhtml html = htmlGetPool(_htmlPool);
     html->avx = avx;
     html->nbuf = BUFSIZ;	/* XXX larger buffer? */
     html->buf = xmalloc(html->nbuf + 1 + 1);
     html->req = ne_request_create(u->sess, "GET", u->url);
-    return html;
+    return htmlLink(html);
 }
 
 /**
@@ -1137,20 +1193,25 @@ static ssize_t htmlFill(rpmhtml html)
     size_t nb = html->nbuf;
     ssize_t rc;
 
-if (_dav_debug < 0)
-fprintf(stderr, "*** htmlFill(%p) %p[%u]\n", html, b, (unsigned)nb);
     if (html->b != NULL && html->nb > 0 && html->b > html->buf) {
 	memmove(html->buf, html->b, html->nb);
 	b += html->nb;
 	nb -= html->nb;
     }
+if (_dav_debug < 0)
+fprintf(stderr, "--> htmlFill(%p) %p[%u]\n", html, b, (unsigned)nb);
 
     /* XXX FIXME: "server awol" segfaults here. gud enuf atm ... */
     rc = ne_read_response_block(html->req, b, nb) ;
-    if (rc > 0)
+    if (rc > 0) {
 	html->nb += rc;
+	b += rc;
+	nb -= rc;
+    }
     html->b = html->buf;
 
+if (_dav_debug < 0)
+fprintf(stderr, "<-- htmlFill(%p) %p[%u] rc %d\n", html, b, (unsigned)nb, (int)rc);
     return rc;
 }
 
@@ -1189,7 +1250,7 @@ static int htmlParse(rpmhtml html)
     int xx;
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->nbuf);
+fprintf(stderr, "--> htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->nbuf);
     html->pattern = hrefpat;
     xx = mireAppend(RPMMIRE_PCRE, 0, html->pattern, NULL, &html->mires, &html->nmires);
     mire = html->mires;
@@ -1328,7 +1389,7 @@ fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
     html->nmires = 0;
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** htmlParse(%p) rc %d\n", html, rc);
+fprintf(stderr, "<-- htmlParse(%p) rc %d\n", html, rc);
     return rc;
 }
 
@@ -1340,9 +1401,6 @@ static int htmlNLST(urlinfo u, rpmavx avx)
 {
     rpmhtml html = htmlNew(u, avx);
     int rc = 0;
-
-if (_dav_debug < 0)
-fprintf(stderr, "*** htmlNLST(%p, %p) html %p\n", u, avx, html);
 
     do {
 	rc = ne_begin_request(html->req);
