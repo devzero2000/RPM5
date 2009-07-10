@@ -65,7 +65,10 @@ void * rpmavxNew(const char *uri, struct stat *st)
     avx = avxGetPool(_avxPool);
     avxFini(avx);		/* XXX trash-and-burn */
 
-    avx->uri = xstrdup(uri);
+    /* XXX +1 byte for pesky trailing '/' */
+    avx->uri = xmalloc(strlen(uri) + 1 + 1);
+    (void) stpcpy(avx->uri, uri);
+
     avx->u = urlLink(u, __FUNCTION__);
 /*@-temptrans@*/	/* XXX note the assignment */
     if ((avx->st = st) != NULL)
@@ -208,7 +211,8 @@ fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
 struct dirent * avReaddir(DIR * dir)
 {
     /* XXX Enabling breaks Readdir(3) compatibility. */
-    static int _append_pesky_trailing_slash = 0;
+    /* XXX Disabling triggers 302 retries with forced reconnects. */
+    static int _append_pesky_trailing_slash = 1;
     AVDIR avdir = (AVDIR)dir;
     struct dirent * dp;
     const char ** av;

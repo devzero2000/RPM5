@@ -964,7 +964,6 @@ int printing = 0;
 	st->st_mode = (u->url[nb-1] == '/' ? S_IFDIR : S_IFREG);
     }
     st->st_blksize = 4 * 1024;	/* HACK correct for linux ext */
-    st->st_size = -1;
     st->st_atime = -1;
     st->st_mtime = -1;
     st->st_ctime = -1;
@@ -1010,6 +1009,7 @@ fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code,
 	u->location = xstrdup(value);
     }
 
+/* XXX Content-Length: is returned only for files. */
     htag = "Content-Length";
     value = ne_get_response_header(req, htag); 
     if (value) {
@@ -1021,6 +1021,9 @@ fprintf(stderr, "Length: %s", value);
 	st->st_size = strtoll(value, NULL, 10);
 /*@=unrecog@*/
 	st->st_blocks = (st->st_size + 511)/512;
+    } else {
+	st->st_size = 0;
+	st->st_blocks = 0;
     }
 
     htag = "Content-Type";
@@ -1144,13 +1147,16 @@ static void htmlFini(void * _html)
 {
     rpmhtml html = _html;
 
+    html->avx = NULL;
     if (html->req != NULL) {
 	ne_request_destroy(html->req);
 	html->req = NULL;
     }
-    html->buf = _free(html->buf);
-    html->nbuf = 0;
-    html->avx = NULL;
+    html->pattern = NULL;
+    html->mires = NULL;
+    html->nmires = 0;
+    html->b = html->buf = _free(html->buf);
+    html->nb = html->nbuf = 0;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -1178,9 +1184,14 @@ rpmhtml htmlNew(urlinfo u, /*@kept@*/ rpmavx avx)
 {
     rpmhtml html = htmlGetPool(_htmlPool);
     html->avx = avx;
+    html->req = ne_request_create(u->sess, "GET", u->url);
+    html->pattern = NULL;
+    html->mires = NULL;
+    html->nmires = 0;
     html->nbuf = BUFSIZ;	/* XXX larger buffer? */
     html->buf = xmalloc(html->nbuf + 1 + 1);
-    html->req = ne_request_create(u->sess, "GET", u->url);
+    html->b = NULL;
+    html->nb = 0;
     return htmlLink(html);
 }
 
@@ -1242,15 +1253,23 @@ static int htmlParse(rpmhtml html)
 	/*@globals hrefpat, internalState @*/
 	/*@modifies html, internalState @*/
 {
+    struct stat * st = html->avx->st;
     miRE mire;
     int noffsets = 3;
     int offsets[3];
     ssize_t nr = (html->b != NULL ? (ssize_t)html->nb : htmlFill(html));
+    size_t contentLength = (nr >= 0 ? nr : 0);
     int rc = 0;
     int xx;
 
 if (_dav_debug < 0)
 fprintf(stderr, "--> htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->nbuf);
+
+    if (st) {
+	st->st_mode |= 0755;	/* htmlParse() is always a directory. */
+	st->st_nlink = 2;	/* count . and .. links */
+    }
+
     html->pattern = hrefpat;
     xx = mireAppend(RPMMIRE_PCRE, 0, html->pattern, NULL, &html->mires, &html->nmires);
     mire = html->mires;
@@ -1260,6 +1279,7 @@ fprintf(stderr, "--> htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
     while (html->nb > 0) {
 	char * gbn, * href;
 	const char * hbn, * lpath;
+	char * be;
 	char * f, * fe;
 	char * g, * ge;
 	size_t ng;
@@ -1269,6 +1289,8 @@ fprintf(stderr, "--> htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 	mode_t st_mode;
 	int ut;
 
+	be = html->b + html->nb;
+	*be = '\0';
 assert(html->b != NULL);
 	offsets[0] = offsets[1] = -1;
 	xx = mireRegexec(mire, html->b, html->nb);
@@ -1287,6 +1309,7 @@ assert(html->b != NULL);
 assert(he > h);
 	    nh = (size_t)(he - h);
 	    href = t = xmalloc(nh + 1 + 1);	/* XXX +1 for trailing '/' */
+	    *t = '\0';
 	    while (h < he) {
 		char c = *h++;
 		switch (c) {
@@ -1308,7 +1331,6 @@ assert(he > h);
 	    case URL_IS_UNKNOWN:
 	    default:
 		/* XXX verify "same tree" as root URI. */
-assert(nh > 0);
 		if (href[nh-1] == '/') {
 		    st_mode = S_IFDIR | 0755;
 		    href[nh-1] = '\0';
@@ -1336,11 +1358,19 @@ assert(hbn != NULL);
 
 	    /* Parse the URI path. */
 	    g = fe;
-	    while (*g != '>')
+	    while (g < be && *g && *g != '>')
 		g++;
+	    if (*g != '>') {
+		href = _free(href);
+		goto refill;
+	    }
 	    ge = ++g;
-	    while (*ge != '<')
+	    while (ge < be && *ge && *ge != '<')
 		ge++;
+	    if (*ge != '<') {	
+		href = _free(href);
+		goto refill;
+	    }
 	    /* [g:ge) contains the URI basename. */
 	    ng = (size_t)(ge - g);
 	    gbn = t = xmalloc(ng + 1 + 1);
@@ -1366,6 +1396,8 @@ fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
 		size_t _st_size = (size_t)0;	/* XXX HACK */
 		time_t _st_mtime = (time_t)0;	/* XXX HACK */
 		xx = rpmavxAdd(html->avx, gbn, st_mode, _st_size, _st_mtime);
+		/* count subdir links */
+		if (st && S_ISDIR(st_mode)) st->st_nlink++;
 	    }
 
 	    gbn = _free(gbn);
@@ -1382,8 +1414,19 @@ fprintf(stderr, "\t[%s] != [%s]\n", hbn, gbn);
 	}
 
 	/* XXX Refill iff lowater reaches nbuf/4 (~2kB) */
-	if (nr > 0 && html->nb < (html->nbuf/4))
-	    nr = htmlFill(html);
+	if (nr <= 0 || html->nb >= (html->nbuf/4))
+	    continue;
+refill:
+	if ((nr = htmlFill(html)) >= 0)
+	    contentLength += nr;
+    }
+
+    /* XXX Set directory length to no. of bytes of HTML parsed. */
+    if (st) {
+	if (st->st_size == 0) {
+	    st->st_size = contentLength;
+	    st->st_blocks = (st->st_size + 511)/512;
+	}
     }
 
     xx = mireSetEOptions(mire, NULL, 0);
@@ -1510,7 +1553,9 @@ if (u_url != NULL) {		/* XXX FIXME: urlFind should save current URI */
 u->url = u_url;
 u_url = NULL;
 }
-    xx = davFree(u);
+    /* XXX Destroy the session iff not OK, otherwise persist. */
+    if (rc)
+	xx = davFree(u);
     return rc;
 }
 
@@ -2032,7 +2077,7 @@ static const char * statstr(const struct stat * st,
 	/*@modifies *buf @*/
 {
     sprintf(buf,
-	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
+	"*** dev 0x%x ino 0x%x mode 0%0o nlink %d uid %d gid %d rdev 0x%x size %u\n",
 	(unsigned)st->st_dev,
 	(unsigned)st->st_ino,
 	(unsigned)st->st_mode,
@@ -2071,16 +2116,17 @@ fprintf(stderr, "--> davStat(%s)\n", path);
 
     if (st->st_mode == 0)
 	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
-    st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
-    st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
-    st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
-    if (S_ISDIR(st->st_mode)) {
-	st->st_nlink = 2;
-	st->st_mode |= 0755;
-    } else
-    if (S_ISREG(st->st_mode)) {
-	st->st_nlink = 1;
-	st->st_mode |= 0644;
+    if ((st->st_mode & 0777) == 0) {
+	if (S_ISDIR(st->st_mode)) {
+	    if (st->st_nlink == 0)
+		st->st_nlink = 2;
+	    st->st_mode |= 0755;
+	} else
+	if (S_ISREG(st->st_mode)) {
+	    if (st->st_nlink == 0)
+		st->st_nlink = 1;
+	    st->st_mode |= 0644;
+	}
     }
 
     /* XXX Fts(3) needs/uses st_ino. */
@@ -2120,16 +2166,17 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 
     if (st->st_mode == 0)
 	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
-    st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
-    st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
-    st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
-    if (S_ISDIR(st->st_mode)) {
-	st->st_nlink = 2;
-	st->st_mode |= 0755;
-    } else
-    if (S_ISREG(st->st_mode)) {
-	st->st_nlink = 1;
-	st->st_mode |= 0644;
+    if ((st->st_mode & 0777) == 0) {
+	if (S_ISDIR(st->st_mode)) {
+	    if (st->st_nlink == 0)
+		st->st_nlink = 2;
+	    st->st_mode |= 0755;
+	} else
+	if (S_ISREG(st->st_mode)) {
+	    if (st->st_nlink == 0)
+		st->st_nlink = 1;
+	    st->st_mode |= 0644;
+	}
     }
 
     /* XXX fts(3) needs/uses st_ino. */
