@@ -2114,19 +2114,26 @@ fprintf(stderr, "--> davStat(%s)\n", path);
 	goto exit;
     }
 
+    /* XXX this should be WebDAV only now. */
     if (st->st_mode == 0)
 	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
-    if ((st->st_mode & 0777) == 0) {
-	if (S_ISDIR(st->st_mode)) {
-	    if (st->st_nlink == 0)
-		st->st_nlink = 2;
+    if (S_ISDIR(st->st_mode)) {
+	if (st->st_nlink == 0)
+	    st->st_nlink = 2;
+	if ((st->st_mode & 0777) == 0)
 	    st->st_mode |= 0755;
-	} else
-	if (S_ISREG(st->st_mode)) {
-	    if (st->st_nlink == 0)
-		st->st_nlink = 1;
+    } else
+    if (S_ISREG(st->st_mode)) {
+	if (st->st_nlink == 0)
+	    st->st_nlink = 1;
+	if ((st->st_mode & 0777) == 0)
 	    st->st_mode |= 0644;
-	}
+    }
+    if (st->st_mtime == 0) {
+	st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
+	st->st_blocks = (st->st_size + 511)/512;
+	st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
+	st->st_atime = st->st_ctime = st->st_mtime;        /* HACK */
     }
 
     /* XXX Fts(3) needs/uses st_ino. */
@@ -2164,19 +2171,26 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
+    /* XXX this should be WebDAV only now. */
     if (st->st_mode == 0)
 	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
-    if ((st->st_mode & 0777) == 0) {
-	if (S_ISDIR(st->st_mode)) {
-	    if (st->st_nlink == 0)
-		st->st_nlink = 2;
+    if (S_ISDIR(st->st_mode)) {
+	if (st->st_nlink == 0)
+	    st->st_nlink = 2;
+	if ((st->st_mode & 0777) == 0)
 	    st->st_mode |= 0755;
-	} else
-	if (S_ISREG(st->st_mode)) {
-	    if (st->st_nlink == 0)
-		st->st_nlink = 1;
+    } else
+    if (S_ISREG(st->st_mode)) {
+	if (st->st_nlink == 0)
+	    st->st_nlink = 1;
+	if ((st->st_mode & 0777) == 0)
 	    st->st_mode |= 0644;
-	}
+    }
+    if (st->st_mtime == 0) {
+	st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
+	st->st_blocks = (st->st_size + 511)/512;
+	st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
+	st->st_atime = st->st_ctime = st->st_mtime;        /* HACK */
     }
 
     /* XXX fts(3) needs/uses st_ino. */
