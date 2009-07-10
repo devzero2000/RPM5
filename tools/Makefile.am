@@ -20,7 +20,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = augtool debugedit find rpmkey
+EXTRA_PROGRAMS = augtool debugedit rpmkey
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -46,7 +46,8 @@ bin_PROGRAMS =		rpm2cpio
 
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
-	rpmcache rpmdigest grep mtree rpmrepo rpmspecdump wget \
+	find grep mtree wget \
+	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 

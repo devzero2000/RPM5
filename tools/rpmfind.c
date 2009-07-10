@@ -1075,7 +1075,7 @@ printlong(char *name, char *accpath, struct stat *sb)
     static int ugwidth = 8;
     char modep[15];
 
-    (void)printf("%6lu %8lld ", (unsigned long) sb->st_ino, (long long)sb->st_blocks);
+    (void)printf("%10lu %8lld ", (unsigned long) sb->st_ino, (long long)sb->st_blocks);
     (void)strmode(sb->st_mode, modep);
     (void)printf("%s %3u %-*s %-*s ", modep, sb->st_nlink,
 	    ugwidth, user_from_uid(sb->st_uid, 0),
