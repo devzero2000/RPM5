@@ -2848,7 +2848,7 @@ find_execute(PLAN *plan, char *paths[])
     PLAN *p;
     int rval = 0;
 
-    tree = Fts_open(paths, ftsoptions, (issort ? find_compare : NULL));
+    tree = Fts_open(paths, ftsoptions, (issort ? (int (*)(const FTSENT **, const FTSENT **))find_compare : NULL));
     if (tree == NULL)
 	err(1, "Fts_open");
 
