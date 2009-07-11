@@ -148,7 +148,8 @@ static rpmsx
 rpmsx_init(JSContext *cx, JSObject *obj)
 {
     const char * _fn = NULL;
-    rpmsx sx = rpmsxNew(_fn);
+    int _flags = 0;
+    rpmsx sx = rpmsxNew(_fn, _flags);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) sx %p\n", __FUNCTION__, cx, obj, sx);

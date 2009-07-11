@@ -708,6 +708,7 @@ void rpmfiBuildFClasses(Header h,
 	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
+#ifdef	DYING
 /**
  * Retrieve file security contexts from header.
  *
@@ -752,6 +753,7 @@ void rpmfiBuildREContexts(Header h,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
+#endif
 
 /**
  * Retrieve per-file dependencies from header.

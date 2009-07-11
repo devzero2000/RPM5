@@ -12,6 +12,7 @@
 #include <rpmpgp.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 #include <rpmkeyring.h>
+#include <rpmsx.h>
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
@@ -72,7 +73,6 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access rpmDiskSpaceInfo @*/
 /*@access rpmKeyring @*/
 /*@access rpmps @*/
-/*@access rpmsx @*/
 /*@access rpmte @*/
 /*@access rpmtsi @*/
 /*@access fnpyKey @*/
@@ -644,8 +644,6 @@ static void rpmtsFini(void * _ts)
     (void) rpmtsCloseDB(ts);
 
     (void) rpmtsCloseSDB(ts);
-
-    ts->sx = rpmsxFree(ts->sx);
 
     ts->removedPackages = _free(ts->removedPackages);
 
@@ -1419,7 +1417,7 @@ rpmts rpmtsCreate(void)
     ts->currDir = NULL;
     ts->chrootDone = 0;
 
-    ts->selinuxEnabled = is_selinux_enabled();
+    ts->selinuxEnabled = rpmsxEnabled(NULL);
 
     ts->numAddedPackages = 0;
     ts->addedPackages = NULL;

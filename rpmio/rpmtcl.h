@@ -22,6 +22,10 @@ struct rpmtcl_s {
     void * I;			/* Tcl_Interp */
     void * tclout;		/* Tcl_Channel */
     rpmiob iob;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMTCL_INTERNAL */
 

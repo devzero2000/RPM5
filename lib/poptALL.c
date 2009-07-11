@@ -124,11 +124,6 @@ extern rpmioPool _rpmpsPool;
 extern int _rpmsq_debug;
 
 /*@unchecked@*/
-extern int _rpmsx_debug;
-/*@unchecked@*/
-extern rpmioPool _rpmsxPool;
-
-/*@unchecked@*/
 extern int _rpmte_debug;
 /*@unchecked@*/
 extern rpmioPool _rpmtePool;
@@ -474,8 +469,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("Debug rpmns Name Space"), NULL},
  { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,
 	N_("Debug rpmps Problem Set"), NULL},
- { "rpmsxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsx_debug, -1,
-	N_("Debug rpmsx SELinux Xattrs"), NULL},
  { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
 	N_("Debug rpmte Transaction Element"), NULL},
  { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
@@ -533,7 +526,6 @@ rpmcliFini(poptContext optCon)
     _rpmpsPool = rpmioFreePool(_rpmpsPool);
 
     _rpmfcPool = rpmioFreePool(_rpmfcPool);
-    _rpmsxPool = rpmioFreePool(_rpmsxPool);
 
     rpmnsClean();
 

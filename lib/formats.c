@@ -121,6 +121,7 @@ static int fileclassTag(Header h, HE_t he)
     return 0;
 }
 
+#ifdef	DYING
 /**
  * Retrieve file contexts from header.
  * @param h		header
@@ -171,6 +172,7 @@ static int recontextsTag(Header h, HE_t he)
     he->freeData = 1;
     return 0;
 }
+#endif
 
 /**
  * Retrieve file provides.
@@ -270,20 +272,26 @@ static struct headerSprintfExtension_s _rpmHeaderFormats[] = {
 	{ .tagFunction = missingokTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECLASS",
 	{ .tagFunction = fileclassTag } },
+#ifdef	DYING
     { HEADER_EXT_TAG, "RPMTAG_FILECONTEXTS",
 	{ .tagFunction = filecontextsTag } },
+#endif
     { HEADER_EXT_TAG, "RPMTAG_FILEPROVIDE",
 	{ .tagFunction = fileprovideTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILEREQUIRE",
 	{ .tagFunction = filerequireTag } },
+#ifdef	DYING
     { HEADER_EXT_TAG, "RPMTAG_FSCONTEXTS",
 	{ .tagFunction = fscontextsTag } },
+#endif
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES",	
 	{ .tagFunction = fsnamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES",
 	{ .tagFunction = fssizesTag } },
+#ifdef	DYING
     { HEADER_EXT_TAG, "RPMTAG_RECONTEXTS",
 	{ .tagFunction = recontextsTag } },
+#endif
     { HEADER_EXT_TAG, "RPMTAG_SUGGESTS",
 	{ .tagFunction = missingokTag } },
     { HEADER_EXT_MORE, NULL,		{ (void *) &headerCompoundFormats } }

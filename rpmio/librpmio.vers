@@ -475,10 +475,13 @@ LIBRPMIO_0
     rpmswNow;
     rpmswPrint;
     rpmswSub;
-    _rpmsex_debug;
-    rpmsexExec;
-    rpmsexMatch;
-    rpmsexNew;
+    _rpmsx_debug;
+    rpmsxEnabled;
+    rpmsxExec;
+    rpmsxLsetfilecon;
+    rpmsxMatch;
+    rpmsxNew;
+    rpmsxSetfilecon;
     rpmSyckFree;
     rpmSyckLoad;
     _rpmtcl_debug;

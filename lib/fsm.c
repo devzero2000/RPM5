@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>	/* XXX urlPath, fdGetCpioPos */
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmsx.h>
 #include <rpmtag.h>
 #include <rpmtypes.h>
 
@@ -775,16 +776,9 @@ static int fsmMapFContext(IOSM_t fsm)
 {
     fsm->fcontext = NULL;
     if (!fsm->nofcontexts) {
-	security_context_t scon = NULL;
-/*@-moduncon@*/
-	int xx = matchpathcon(fsm->path, fsm->sb.st_mode, &scon);
-/*@=moduncon@*/
-
-	if (!xx && scon != NULL)
-	    fsm->fcontext = scon;
+	fsm->fcontext = rpmsxMatch(NULL, fsm->path, fsm->sb.st_mode);
 #ifdef	DYING	/* XXX SELinux file contexts not set from package content. */
-	else {
-	    rpmfi fi = fsmGetFi(fsm);
+	{   rpmfi fi = fsmGetFi(fsm);
 	    int i = fsm->ix;
 
 	    /* Get file security context from package. */
@@ -1494,31 +1488,20 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
 		rc = fsmNext(fsm, IOSM_MKDIR);
 		if (!rc) {
-		    security_context_t scon = NULL;
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-/*@-moduncon@*/
-		    if (!fsm->nofcontexts
-		     && !matchpathcon(fsm->path, st->st_mode, &scon)
-		     && scon != NULL)
-/*@=moduncon@*/
-		    {
-			fsm->fcontext = scon;
-			rc = fsmNext(fsm, IOSM_LSETFCON);
+		    if (!fsm->nofcontexts) {
+			fsm->fcontext =
+				rpmsxMatch(NULL, fsm->path, st->st_mode);
+			if (fsm->fcontext != NULL)
+			    rc = fsmNext(fsm, IOSM_LSETFCON);
 		    } else
 			fsm->fcontext = NULL;
-		    if (fsm->fcontext == NULL)
-			rpmlog(RPMLOG_DEBUG,
-			    D_("%s directory created with perms %04o, no context.\n"),
-			    fsm->path, (unsigned)(st->st_mode & 07777));
-		    else {
-			rpmlog(RPMLOG_DEBUG,
-			    D_("%s directory created with perms %04o, context %s.\n"),
-			    fsm->path, (unsigned)(st->st_mode & 07777),
-			    fsm->fcontext);
-			fsm->fcontext = NULL;
-			scon = _free(scon);
-		    }
+		    rpmlog(RPMLOG_DEBUG,
+			D_("%s directory created with perms %04o, context %s.\n"),
+			fsm->path, (unsigned)(st->st_mode & 07777),
+			(fsm->fcontext ? fsm->fcontext : "(no context)"));
+		    fsm->fcontext = _free(fsm->fcontext);
 		}
 		*te = '/';
 	    }
@@ -2161,7 +2144,7 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 		rc = fsmMapFContext(fsm);
 		if (!rc)
 		    rc = fsmNext(fsm, IOSM_LSETFCON);
-		fsm->fcontext = NULL;
+		fsm->fcontext = _free(fsm->fcontext);
 	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())

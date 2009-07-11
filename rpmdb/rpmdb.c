@@ -13,6 +13,7 @@
 #define	_MIRE_INTERNAL
 #include <rpmmacro.h>
 #include <rpmsq.h>
+#include <rpmsx.h>
 #include <argv.h>
 
 #define	_RPMBF_INTERNAL
@@ -3946,9 +3947,6 @@ static int rpmdbMoveDatabase(const char * prefix,
     const char * ofn, * nfn;
     int rc = 0;
     int xx;
-/*@-moduncon -noeffectuncon@*/
-    int selinux = is_selinux_enabled() > 0 && (matchpathcon_init(NULL) != -1);
-/*@=moduncon =noeffectuncon@*/
     sigset_t sigMask;
  
     (void) blockSignals(NULL, &sigMask);
@@ -4012,15 +4010,8 @@ static int rpmdbMoveDatabase(const char * prefix,
 /*@=type@*/
 		xx = Utime(nfn, &stamp);
 	    }
-/*@-moduncon -noeffectuncon@*/
-	    if (selinux) {
-		security_context_t scon = NULL;
-		if (matchpathcon(nfn, nst->st_mode, &scon) != -1)
-		    xx = setfilecon(nfn, scon);
-		if (scon != NULL)
-		    freecon(scon);
-	    }
-/*@=moduncon =noeffectuncon@*/
+
+	    xx = rpmsxSetfilecon(NULL, nfn, nst->st_mode, NULL);
 
 bottom:
 	    ofn = _free(ofn);
@@ -4054,10 +4045,6 @@ bottom:
     }
     (void) unblockSignals(NULL, &sigMask);
 
-/*@-moduncon -noeffectuncon@*/
-    if (selinux)
-	matchpathcon_fini();
-/*@=moduncon =noeffectuncon@*/
     return rc;
 }
 

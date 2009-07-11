@@ -1857,6 +1857,7 @@ exit:
     if (fcp) *fcp = ac;
 }
 
+#ifdef	DYING
 void rpmfiBuildFContexts(Header h,
 	/*@out@*/ const char *** fcontextp, /*@out@*/ rpmuint32_t * fcp)
 {
@@ -2061,6 +2062,7 @@ exit:
 	av = _free(av);
     if (fcp) *fcp = ac;
 }
+#endif
 
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	/*@out@*/ const char *** fdepsp, /*@out@*/ rpmuint32_t * fcp)

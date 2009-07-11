@@ -38,7 +38,7 @@ EXTRA_PROGRAMS = tevr tgi tpgp tsbt
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	rpmcli.h rpmversion.h rpmds.h rpmfi.h rpmps.h \
-	rpmrc.h rpmte.h rpmsx.h rpmts.h rpm4compat.h
+	rpmrc.h rpmte.h rpmts.h rpm4compat.h
 noinst_HEADERS = \
 	filetriggers.h fs.h fsm.h manifest.h misc.h psm.h rpmal.h \
 	rpmfc.h rpmgi.h rpmlib.h rpmlock.h rpmluaext.h rpmrollback.h
@@ -51,7 +51,7 @@ librpm_la_SOURCES = \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfc.c \
 	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c rpmversion.c \
-	rpmlock.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
+	rpmlock.c rpmps.c rpmrc.c rpmte.c rpmts.c \
 	transaction.c verify.c rpmluaext.c
 librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT

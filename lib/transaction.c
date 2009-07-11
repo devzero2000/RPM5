@@ -8,6 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
+#include <rpmsx.h>
 #include "fprint.h"
 
 #include <rpmtypes.h>
@@ -1152,6 +1153,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     fingerPrintCache fpc;
     rpmps ps;
     rpmpsm psm;
+    rpmsx sx = NULL;
     rpmtsi pi;	rpmte p;
     rpmtsi qi;	rpmte q;
     int numAdded;
@@ -1202,13 +1204,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	const char * fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-/*@-moduncon@*/
-	int xx = matchpathcon_init(fn);
-/*@=moduncon@*/
-        if (xx == -1)
+	sx = rpmsxNew("%{?_install_file_context_path}", 0);
+        if (sx == NULL)
 	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
-	fn = _free(fn);
     }
 
     ts->probs = rpmpsFree(ts->probs);
@@ -1993,10 +1991,8 @@ assert(psm != NULL);
 	pi = rpmtsiFree(pi);
     }
 
-/*@-moduncon -noeffectuncon @*/
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-	matchpathcon_fini();
-/*@=moduncon =noeffectuncon @*/
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && sx)
+	sx = rpmsxFree(sx);
 
     lock = rpmtsFreeLock(lock);
 

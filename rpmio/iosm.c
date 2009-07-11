@@ -11,6 +11,7 @@
 
 #include <rpmsq.h>		/* XXX rpmsqJoin()/rpmsqThread() */
 #include <rpmsw.h>		/* XXX rpmswAdd() */
+#include <rpmsx.h>
 
 #include "../rpmdb/rpmtag.h"
 
@@ -831,15 +832,9 @@ static int iosmMapFContext(IOSM_t iosm)
      */
     iosm->fcontext = NULL;
     if (!iosm->nofcontexts) {
-	security_context_t scon = NULL;
-	int xx = matchpathcon(iosm->path, iosm->sb.st_mode, &scon);
-
-/*@-moduncon@*/
-	if (!xx && scon != NULL)
-	    iosm->fcontext = scon;
+	iosm->fcontext = rpmsxMatch(NULL, iosm->path, iosm->sb.st_mode);
 #ifdef	DYING	/* XXX SELinux file contexts not set from package content. */
-	else {
-	    rpmfi fi = iosmGetFi(iosm);
+	{   rpmfi fi = iosmGetFi(iosm);
 	    int i = iosm->ix;
 
 	    /* Get file security context from package. */
@@ -1551,32 +1546,23 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 		rc = iosmNext(iosm, IOSM_MKDIR);
 		if (!rc) {
 #if defined(_USE_RPMSX)
-		    security_context_t scon = NULL;
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (!fsm->nofcontexts
-		     && !matchpathcon(iosm->path, st->st_mode, &scon)
-		     && scon != NULL)
-		    {
-			iosm->fcontext = scon;
-			rc = iosmNext(iosm, IOSM_LSETFCON);
+		    if (!fsm->nofcontexts) {
+			iosm->fcontext =
+				rpmsxMatch(NULL, iosm->path, st->st_mode);
+			if (iosm->fcontext != NULL)
+			    rc = iosmNext(iosm, IOSM_LSETFCON);
 		    } else
 #endif
 			iosm->fcontext = NULL;
-		    if (iosm->fcontext == NULL)
-			rpmlog(RPMLOG_DEBUG,
-			    D_("%s directory created with perms %04o, no context.\n"),
-			    iosm->path, (unsigned)(st->st_mode & 07777));
-		    else {
-			rpmlog(RPMLOG_DEBUG,
-			    D_("%s directory created with perms %04o, context %s.\n"),
-			    iosm->path, (unsigned)(st->st_mode & 07777),
-			    iosm->fcontext);
+		    rpmlog(RPMLOG_DEBUG,
+			D_("%s directory created with perms %04o, context %s.\n"),
+			iosm->path, (unsigned)(st->st_mode & 07777),
+			(iosm->fcontext ? iosm->fcontext : "(no context)"));
 #if defined(_USE_RPMSX)
-			iosm->fcontext = NULL;
-			scon = _free(scon);
+		    iosm->fcontext = _free(iosm->fcontext);
 #endif
-		    }
 		}
 		*te = '/';
 	    }
@@ -2414,7 +2400,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	 || !strcmp(iosm->fcontext, "<<none>>"))
 	    break;
 	(void) urlPath(iosm->path, &iosmpath);	/* XXX iosm->path */
-	rc = lsetfilecon(iosmpath, (security_context_t)iosm->fcontext);
+	rc = rpmsxLsetfilecon(NULL, iosmpath, 0, iosm->fcontext);
 	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		iosm->path, iosm->fcontext,

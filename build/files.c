@@ -18,6 +18,7 @@
 #include <rpmiotypes.h>
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
+#include <rpmsx.h>
 #include <fts.h>
 #include <argv.h>
 
@@ -1329,8 +1330,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
-    security_context_t scon = NULL;
-    const char * sxfn;
+    rpmsx sx = rpmsxNew("%{?_build_file_context_path}", 0);
     FileListRec flp;
     rpmuint32_t dalgo = getDigestAlgo(h, isSrc);
     char buf[BUFSIZ];
@@ -1346,12 +1346,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (fl->prefix)
 	    skipLen += strlen(fl->prefix);
     }
-
-    sxfn = rpmGetPath("%{?_build_file_context_path}", NULL);
-/*@-moduncon@*/
-    if (sxfn != NULL && *sxfn != '\0')
-	xx = matchpathcon_init(sxfn);
-/*@=moduncon@*/
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
 	const char *s;
@@ -1591,35 +1585,22 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 	
 	/* Add file security context to package. */
-	if (sxfn != NULL && *sxfn != '\0' && !(_rpmbuildFlags & 4)) {
-	    /*@observer@*/
-	    static char *nocon = "";
-/*@-moduncon@*/
-	    if (matchpathcon(flp->fileURL, flp->fl_mode, &scon) || scon == NULL)
-		scon = nocon;
-/*@=moduncon@*/
-
-	    he->tag = RPMTAG_FILECONTEXTS;
-	    he->t = RPM_STRING_ARRAY_TYPE;
-	    he->p.argv = (const char **)&scon;	/* XXX NOCAST */
-	    he->c = 1;
-	    he->append = 1;
-	    xx = headerPut(h, he, 0);
-	    he->append = 0;
-
-/*@-modobserver@*/	/* observer nocon not modified. */
-	    if (scon != nocon) {
-		freecon(scon);
+	if (sx && !(_rpmbuildFlags & 4)) {
+	    const char * scon = rpmsxMatch(sx, flp->fileURL, flp->fl_mode);
+	    if (scon) {
+		he->tag = RPMTAG_FILECONTEXTS;
+		he->t = RPM_STRING_ARRAY_TYPE;
+		he->p.argv = &scon;
+		he->c = 1;
+		he->append = 1;
+		xx = headerPut(h, he, 0);
+		he->append = 0;
 	    }
-/*@=modobserver@*/
+	    scon = _free(scon);		/* XXX freecon(scon) instead()? */
 	}
     }
-/*@-moduncon -noeffectuncon @*/
-    if (sxfn != NULL && *sxfn != '\0') {
-	matchpathcon_fini();
-    }
-/*@=moduncon =noeffectuncon @*/
-    sxfn = _free(sxfn);
+
+    sx = rpmsxFree(sx);
 
 if (_rpmbuildFlags & 4) {
 (void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");

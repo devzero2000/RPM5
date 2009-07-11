@@ -8,7 +8,6 @@
 
 #include "rpmps.h"
 #include "rpmsw.h"
-#include "rpmsx.h"
 #include <rpmpgp.h>		/* XXX pgpVSFlags */
 
 /*@-exportlocal@*/
@@ -262,9 +261,6 @@ struct rpmts_s {
     rpmal availablePackages;	/*!< Universe of available packages. */
     int numAvailablePackages;	/*!< No. available package instances. */
 #endif
-
-/*@refcounted@*/ /*@null@*/
-    rpmsx sx;			/*!< Security context patterns. */
 
 /*@null@*/
     rpmte relocateElement;	/*!< Element to use when relocating packages. */

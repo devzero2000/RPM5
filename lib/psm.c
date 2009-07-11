@@ -9,6 +9,7 @@
 
 #include <rpmio_internal.h>	/* XXX FDSTAT_READ */
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmsx.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
@@ -1072,9 +1073,7 @@ assert(he->p.str != NULL);
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
 		if (ssp != NULL)
 		    *ssp |= RPMSCRIPT_STATE_SELINUX;
-/*@-moduncon@*/
-		xx = rpm_execcon(0, argv[0], (char *const *)argv, environ);
-/*@=moduncon@*/
+		xx = rpmsxExec(NULL, 0, argv);
 	    } else {
 /*@-nullstate@*/
 		xx = execv(argv[0], (char *const *)argv);

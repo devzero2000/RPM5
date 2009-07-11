@@ -1,106 +1,233 @@
 /** \ingroup rpmio
- * \file rpmio/rpmsex.c
+ * \file rpmio/rpmsx.c
  */
 
 #include "system.h"
 
 #if defined(WITH_SELINUX)
 #include <selinux/selinux.h>
+#if defined(__LCLINT__)
+/*@-incondefs@*/
+extern void freecon(/*@only@*/ security_context_t con)
+	/*@modifies con @*/;
+
+extern int getfilecon(const char *path, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int lgetfilecon(const char *path, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int fgetfilecon(int fd, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+
+extern int setfilecon(const char *path, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int lsetfilecon(const char *path, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int fsetfilecon(int fd, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+extern int getcon(/*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int getexeccon(/*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int setexeccon(security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+extern int security_check_context(security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int security_getenforce(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+extern int is_selinux_enabled(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+/*@=incondefs@*/
+#endif
 #endif
 
-#include <rpmiotypes.h>
-#include <rpmio.h>	/* for *Pool methods */
-#include <rpmmacro.h>
-#include <rpmlog.h>
 #define	_RPMSEX_INTERNAL
 #include <rpmsx.h>
+#include <rpmlog.h>
+#include <rpmmacro.h>
 
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmsex_debug = 0;
+int _rpmsx_debug = 0;
 
-static void rpmsexFini(void * _sex)
+/*@unchecked@*/ /*@relnull@*/
+rpmsx _rpmsxI = NULL;
+
+static void rpmsxFini(void * _sx)
 	/*@globals fileSystem @*/
-	/*@modifies *_sex, fileSystem @*/
+	/*@modifies *_sx, fileSystem @*/
 {
-    rpmsex sex = _sex;
+    rpmsx sx = _sx;
 
 #if defined(WITH_SELINUX)
-    if (sex->fn)
+    if (sx->fn)
 	(void) matchpathcon_fini();
 #endif
-    sex->flags = 0;
-    sex->fn = _free(sex->fn);
+    sx->flags = 0;
+    sx->fn = _free(sx->fn);
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmsexPool = NULL;
+rpmioPool _rpmsxPool = NULL;
 
-static rpmsex rpmsexGetPool(/*@null@*/ rpmioPool pool)
-	/*@globals _rpmsexPool, fileSystem @*/
-	/*@modifies pool, _rpmsexPool, fileSystem @*/
+static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmsxPool, fileSystem @*/
+	/*@modifies pool, _rpmsxPool, fileSystem @*/
 {
-    rpmsex sex;
+    rpmsx sx;
 
-    if (_rpmsexPool == NULL) {
-	_rpmsexPool = rpmioNewPool("sex", sizeof(*sex), -1, _rpmsex_debug,
-			NULL, NULL, rpmsexFini);
-	pool = _rpmsexPool;
+    if (_rpmsxPool == NULL) {
+	_rpmsxPool = rpmioNewPool("sx", sizeof(*sx), -1, _rpmsx_debug,
+			NULL, NULL, rpmsxFini);
+	pool = _rpmsxPool;
     }
-    return (rpmsex) rpmioGetPool(pool, sizeof(*sex));
+    return (rpmsx) rpmioGetPool(pool, sizeof(*sx));
 }
 
-rpmsex rpmsexNew(const char * fn, int flags)
+rpmsx rpmsxNew(const char * fn, int flags)
 {
-    rpmsex sex = rpmsexGetPool(_rpmsexPool);
+    rpmsx sx = rpmsxGetPool(_rpmsxPool);
 
-    if (fn)
-	sex->fn = rpmGetPath(fn, NULL);
+    sx->fn = NULL;
+    sx->flags = flags;
+
 #if defined(WITH_SELINUX)
-    if (sex->fn && *sex->fn && *sex->fn != '%')
-	(void) matchpathcon_init(sex->fn);
+    sx->fn = (fn ? rpmGetPath(fn,NULL) : xstrdup(selinux_file_context_path()));
+    if (sx->fn && *sx->fn && *sx->fn != '%')
+	(void) matchpathcon_init(sx->fn);
     else
+	sx->fn = _free(sx->fn);
 #endif
-	sex->fn = _free(sex->fn);
-    sex->flags = flags;
-    return rpmsexLink(sex);
+    return rpmsxLink(sx);
 }
 
-const char * rpmsexMatch(rpmsex sex, const char *fn, mode_t mode)
+/*@unchecked@*/ /*@null@*/
+static const char * _rpmsxI_fn;
+/*@unchecked@*/
+static int _rpmsxI_flags;
+
+static rpmsx rpmsxI(void)
+	/*@globals _rpmsxI @*/
+	/*@modifies _rpmsxI @*/
+{
+    if (_rpmsxI == NULL)
+	_rpmsxI = rpmsxNew(_rpmsxI_fn, _rpmsxI_flags);
+    return _rpmsxI;
+}
+
+int rpmsxEnabled(/*@null@*/ rpmsx sx)
+{
+    int rc = 0;
+
+#if defined(WITH_SELINUX)
+    rc = is_selinux_enabled();
+#endif
+
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sx, rc);
+    return rc;
+}
+
+const char * rpmsxMatch(rpmsx sx, const char *fn, mode_t mode)
 {
     const char * scon = NULL;
 
-if (_rpmsex_debug)
-fprintf(stderr, "--> %s(%p,%s,0%o)\n", __FUNCTION__, sex, (fn ? fn : "(nil)"), mode);
+    if (sx == NULL) sx = rpmsxI();
+
+if (_rpmsx_debug)
+fprintf(stderr, "--> %s(%p,%s,0%o)\n", __FUNCTION__, sx, fn, mode);
 
 #if defined(WITH_SELINUX)
-    if (sex->fn) {
+    if (sx->fn) {
 	static char nocon[] = "";
-/*@-moduncon@*/
-	if (matchpathcon(fn, mode, (security_context_t *)&scon) || scon == NULL)
+	if (matchpathcon(fn, mode, (security_context_t *)&scon) < 0)
 	    scon = xstrdup(nocon);
-/*@=moduncon@*/
     }
 #endif
 
-if (_rpmsex_debug)
-fprintf(stderr, "<-- %s(%p,%s,0%o) %s\n", __FUNCTION__, sex, (fn ? fn : "(nil)"), mode, scon);
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p,%s,0%o) %s\n", __FUNCTION__, sx, fn, mode, scon);
     return scon;
 }
 
-int rpmsexExec(rpmsex sex, int verified, const char ** argv)
+int rpmsxSetfilecon(rpmsx sx, const char *fn, mode_t mode,
+		const char * scon)
+{
+    int rc = 0;
+
+    if (sx == NULL) sx = rpmsxI();
+
+if (_rpmsx_debug)
+fprintf(stderr, "--> %s(%p,%s,0%o,%s)\n", __FUNCTION__, sx, fn, mode, scon);
+
+#if defined(WITH_SELINUX)
+    if (sx->fn) {
+	security_context_t _scon = (security_context_t)
+		(scon ? scon : rpmsxMatch(sx, fn, mode));
+	rc = setfilecon(fn, _scon);
+	if (scon == NULL) {
+	    freecon(_scon);
+	    _scon = NULL;
+	}
+    }
+#endif
+
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc);
+    return rc;
+}
+
+int rpmsxLsetfilecon(rpmsx sx, const char *fn, mode_t mode,
+		const char * scon)
+{
+    int rc = 0;
+
+    if (sx == NULL) sx = rpmsxI();
+
+if (_rpmsx_debug)
+fprintf(stderr, "--> %s(%p,%s,0%o,%s)\n", __FUNCTION__, sx, fn, mode, scon);
+
+#if defined(WITH_SELINUX)
+    if (sx->fn) {
+	security_context_t _scon = (security_context_t)
+		(scon ? scon : rpmsxMatch(sx, fn, mode));
+	rc = lsetfilecon(fn, _scon);
+	if (scon == NULL) {
+	    freecon(_scon);
+	    _scon = NULL;
+	}
+    }
+#endif
+
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc);
+    return rc;
+}
+
+int rpmsxExec(rpmsx sx, int verified, const char ** argv)
 {
     int rc = -1;
 
-if (_rpmsex_debug)
-fprintf(stderr, "--> %s(%p,%d,%p)\n", __FUNCTION__, sex, verified, argv);
+    if (sx == NULL) sx = rpmsxI();
+
+if (_rpmsx_debug)
+fprintf(stderr, "--> %s(%p,%d,%p)\n", __FUNCTION__, sx, verified, argv);
 
 #if defined(WITH_SELINUX)
     rc = rpm_execcon(verified, argv[0], (char *const *)argv, environ);
 #endif
 
-if (_rpmsex_debug)
-fprintf(stderr, "<-- %s(%p,%d,%p) rc %d\n", __FUNCTION__, sex, verified, argv, rc);
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p,%d,%p) rc %d\n", __FUNCTION__, sx, verified, argv, rc);
     return rc;
 }
