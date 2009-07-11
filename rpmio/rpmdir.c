@@ -66,8 +66,7 @@ void * rpmavxNew(const char *uri, struct stat *st)
     avxFini(avx);		/* XXX trash-and-burn */
 
     /* XXX +1 byte for pesky trailing '/' */
-    avx->uri = xmalloc(strlen(uri) + 1 + 1);
-    (void) stpcpy(avx->uri, uri);
+    avx->uri = strcpy(xmalloc(strlen(uri) + 1 + 1), uri);
 
     avx->u = urlLink(u, __FUNCTION__);
 /*@-temptrans@*/	/* XXX note the assignment */
