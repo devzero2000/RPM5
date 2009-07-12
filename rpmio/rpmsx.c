@@ -160,6 +160,31 @@ fprintf(stderr, "<-- %s(%p,%s,0%o) %s\n", __FUNCTION__, sx, fn, mode, scon);
     return scon;
 }
 
+const char * rpmsxGetfilecon(rpmsx sx, const char *fn)
+{
+    const char * scon = NULL;
+
+    if (sx == NULL) sx = rpmsxI();
+
+if (_rpmsx_debug)
+fprintf(stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn);
+
+#if defined(WITH_SELINUX)
+    if (sx->fn && fn) {
+	security_context_t _con = NULL;
+	int rc = getfilecon(fn, &_con);
+	if (rc > 0 && _con != NULL)
+	    scon = (const char *) _con;
+	else
+	    freecon(_con);
+    }
+#endif
+
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p,%s) scon %s\n", __FUNCTION__, sx, fn, scon);
+    return scon;
+}
+
 int rpmsxSetfilecon(rpmsx sx, const char *fn, mode_t mode,
 		const char * scon)
 {
@@ -168,16 +193,16 @@ int rpmsxSetfilecon(rpmsx sx, const char *fn, mode_t mode,
     if (sx == NULL) sx = rpmsxI();
 
 if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s,0%o,%s)\n", __FUNCTION__, sx, fn, mode, scon);
+fprintf(stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, scon, sx->fn);
 
 #if defined(WITH_SELINUX)
     if (sx->fn) {
-	security_context_t _scon = (security_context_t)
+	security_context_t _con = (security_context_t)
 		(scon ? scon : rpmsxMatch(sx, fn, mode));
-	rc = setfilecon(fn, _scon);
-	if (scon == NULL) {
-	    freecon(_scon);
-	    _scon = NULL;
+	rc = setfilecon(fn, _con);
+	if (scon == NULL) {	/* XXX free lazy rpmsxMatch() string */
+	    freecon(_con);
+	    _con = NULL;
 	}
     }
 #endif
@@ -185,6 +210,31 @@ fprintf(stderr, "--> %s(%p,%s,0%o,%s)\n", __FUNCTION__, sx, fn, mode, scon);
 if (_rpmsx_debug)
 fprintf(stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc);
     return rc;
+}
+
+const char * rpmsxLgetfilecon(rpmsx sx, const char *fn)
+{
+    const char * scon = NULL;
+
+    if (sx == NULL) sx = rpmsxI();
+
+if (_rpmsx_debug)
+fprintf(stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn);
+
+#if defined(WITH_SELINUX)
+    if (sx->fn && fn) {
+	security_context_t _con = NULL;
+	int rc = lgetfilecon(fn, &_con);
+	if (rc > 0 && _con != NULL)
+	    scon = (const char *) _con;
+	else
+	    freecon(_con);
+    }
+#endif
+
+if (_rpmsx_debug)
+fprintf(stderr, "<-- %s(%p,%s) scon %s\n", __FUNCTION__, sx, fn, scon);
+    return scon;
 }
 
 int rpmsxLsetfilecon(rpmsx sx, const char *fn, mode_t mode,
@@ -195,16 +245,16 @@ int rpmsxLsetfilecon(rpmsx sx, const char *fn, mode_t mode,
     if (sx == NULL) sx = rpmsxI();
 
 if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s,0%o,%s)\n", __FUNCTION__, sx, fn, mode, scon);
+fprintf(stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, scon, sx->fn);
 
 #if defined(WITH_SELINUX)
     if (sx->fn) {
-	security_context_t _scon = (security_context_t)
+	security_context_t _con = (security_context_t)
 		(scon ? scon : rpmsxMatch(sx, fn, mode));
-	rc = lsetfilecon(fn, _scon);
-	if (scon == NULL) {
-	    freecon(_scon);
-	    _scon = NULL;
+	rc = lsetfilecon(fn, _con);
+	if (scon == NULL) {	/* XXX free lazy rpmsxMatch() string */
+	    freecon(_con);
+	    _con = NULL;
 	}
     }
 #endif

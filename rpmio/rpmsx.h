@@ -100,6 +100,21 @@ const char * rpmsxMatch(/*@null@*/ rpmsx sx, const char * fn, mode_t mode)
 	/*@modifies sx, fileSystem, internalState @*/;
 
 /**
+ * Get security context for a file.
+ * @param sx		SELinux wrapper (NULL uses active context)
+ * @param fn		file path
+ * @return		file security context (NULL on error/disabled)
+ */
+/*@null@*/
+const char * rpmsxGetfilecon(/*@null@*/ rpmsx sx, const char *fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+/*@null@*/
+const char * rpmsxLgetfilecon(/*@null@*/ rpmsx sx, const char *fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
  * Set security context for a file.
  * @param sx		SELinux wrapper (NULL uses active context)
  * @param fn		file path

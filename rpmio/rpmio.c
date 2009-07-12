@@ -75,6 +75,8 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
+#include <rpmsx.h>
+
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
@@ -3138,7 +3140,7 @@ void rpmioClean(void)
     extern rpmioPool _htmlPool;
     extern rpmioPool _htPool;
     extern rpmioPool _ctxPool;
-    extern rpmioPool _rpmsexPool;
+    extern rpmioPool _rpmsxPool;
     extern rpmioPool _rpmsyckPool;
 /*@=shadow@*/
     extern rpmioPool _rpmaugPool;
@@ -3187,13 +3189,15 @@ void rpmioClean(void)
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);
 
+    _rpmsxI = rpmsxFree(_rpmsxI);
+    _rpmsxPool = rpmioFreePool(_rpmsxPool);
+
     _htmlPool = rpmioFreePool(_htmlPool);
     _mirePool = rpmioFreePool(_mirePool);
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
     _rpmbfPool = rpmioFreePool(_rpmbfPool);
     _htPool = rpmioFreePool(_htPool);
     _ctxPool = rpmioFreePool(_ctxPool);
-    _rpmsexPool = rpmioFreePool(_rpmsexPool);
     _rpmsyckPool = rpmioFreePool(_rpmsyckPool);
     _rpmiobPool = rpmioFreePool(_rpmiobPool);
     _digPool = rpmioFreePool(_digPool);

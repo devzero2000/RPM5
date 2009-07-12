@@ -478,6 +478,8 @@ LIBRPMIO_0
     _rpmsx_debug;
     rpmsxEnabled;
     rpmsxExec;
+    rpmsxGetfilecon;
+    rpmsxLgetfilecon;
     rpmsxLsetfilecon;
     rpmsxMatch;
     rpmsxNew;
