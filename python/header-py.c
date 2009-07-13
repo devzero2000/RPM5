@@ -530,7 +530,10 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
 
     case RPM_STRING_TYPE:
-	o = PyString_FromString(he->p.str);
+	if (he->p.str != NULL)
+	    o = PyString_FromString(he->p.str);
+	else
+	    o = PyString_FromString("");
 	break;
 
     default:
