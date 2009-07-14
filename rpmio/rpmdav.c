@@ -901,10 +901,6 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
     ne_propfind_destroy(pfh);
 
-    /* XXX fts(3) needs/uses st_ino. */
-    /* Hash the path to generate a st_ino analogue. */
-    st->st_ino = hashFunctionString(0, avx->uri, 0);
-
     for (current = resitem; current != NULL; current = next) {
 	const char *s, *se;
 	char * val;
@@ -2150,6 +2146,10 @@ fprintf(stderr, "--> davStat(%s)\n", path);
 	goto exit;
     }
 
+    /* XXX fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
+    st->st_ino = hashFunctionString(0, path, 0);
+
 exit:
 if (_dav_debug < 0)
 fprintf(stderr, "<-- davStat(%s) rc %d\n\t%s\n", path, rc, statstr(st, buf));
@@ -2180,6 +2180,10 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	rc = -1;
 	goto exit;
     }
+
+    /* XXX fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
+    st->st_ino = hashFunctionString(0, path, 0);
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davLstat(%s) rc %d\n\t%s\n", path, rc, statstr(st, buf));
