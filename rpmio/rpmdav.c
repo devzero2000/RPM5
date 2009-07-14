@@ -78,9 +78,11 @@ extern void CRYPTO_mem_leaks(void * ptr);
 
 /* HACK: reasonable value needed (wget uses 900 as default). */
 #if 0
-#define TIMEOUT_SECS 60
+#define READ_TIMEOUT_SECS	120	/* neon-0.28.5 default */
+#define CONNECT_TIMEOUT_SECS	0	/* neon-0.28.5 default */
 #else
-#define TIMEOUT_SECS 5
+#define READ_TIMEOUT_SECS	120
+#define CONNECT_TIMEOUT_SECS	0	/* connect(2) EINPROGRESS if too low. */
 #endif
 
 /*@unchecked@*/ /*@observer@*/
@@ -89,9 +91,9 @@ static const char _rpmioHttpUserAgent[] = PACKAGE "/" PACKAGE_VERSION;
 /*@unchecked@*/
 static int rpmioHttpPersist = 1;
 /*@unchecked@*/
-int rpmioHttpReadTimeoutSecs = TIMEOUT_SECS;
+int rpmioHttpReadTimeoutSecs = READ_TIMEOUT_SECS;
 /*@unchecked@*/
-int rpmioHttpConnectTimeoutSecs = TIMEOUT_SECS;
+int rpmioHttpConnectTimeoutSecs = CONNECT_TIMEOUT_SECS;
 #ifdef	NOTYET
 int rpmioHttpRetries = 20;
 int rpmioHttpRecurseMax = 5;
@@ -586,6 +588,7 @@ static int davInit(const char * url, urlinfo * uret)
 	ne_set_persist(u->sess, rpmioHttpPersist);
 #endif
 	ne_set_read_timeout(u->sess, rpmioHttpReadTimeoutSecs);
+	ne_set_connect_timeout(u->sess, rpmioHttpConnectTimeoutSecs);
 	ne_set_useragent(u->sess,
 	    (rpmioHttpUserAgent ? rpmioHttpUserAgent : _rpmioHttpUserAgent));
 
@@ -1289,9 +1292,9 @@ fprintf(stderr, "--> htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 	mode_t st_mode;
 	int ut;
 
+assert(html->b != NULL);
 	be = html->b + html->nb;
 	*be = '\0';
-assert(html->b != NULL);
 	offsets[0] = offsets[1] = -1;
 	xx = mireRegexec(mire, html->b, html->nb);
 	if (xx == 0 && offsets[0] != -1 && offsets[1] != -1) {
@@ -1360,14 +1363,14 @@ assert(hbn != NULL);
 	    g = fe;
 	    while (g < be && *g && *g != '>')
 		g++;
-	    if (*g != '>') {
+	    if (g >= be || *g != '>') {
 		href = _free(href);
 		goto refill;
 	    }
 	    ge = ++g;
 	    while (ge < be && *ge && *ge != '<')
 		ge++;
-	    if (*ge != '<') {	
+	    if (ge >= be || *ge != '<') {	
 		href = _free(href);
 		goto refill;
 	    }
@@ -1451,7 +1454,16 @@ static int htmlNLST(urlinfo u, rpmavx avx)
     do {
 	rc = ne_begin_request(html->req);
 	rc = my_result("ne_begin_req(html->req)", rc, NULL);
-	if (rc != NE_OK) goto exit;
+	switch (rc) {
+	case NE_OK:
+	    /*@switchbreak@*/ break;
+	case NE_TIMEOUT:
+	    errno = ETIMEDOUT;
+	    /*@fallthrough@*/
+	default:
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	}
 
 	(void) htmlParse(html);		/* XXX error code needs handling. */
 
@@ -2110,7 +2122,8 @@ fprintf(stderr, "--> davStat(%s)\n", path);
     }
     rc = davNLST(avx);
     if (rc) {
-/* HACK: errno = ??? */
+	if (errno == 0)	errno = EAGAIN;	/* HACK: errno = ??? */
+	rc = -1;
 	goto exit;
     }
 
@@ -2167,7 +2180,8 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
     }
     rc = davNLST(avx);
     if (rc) {
-/* HACK: errno = ??? */
+	if (errno == 0)	errno = EAGAIN;	/* HACK: errno = ??? */
+	rc = -1;
 	goto exit;
     }
 
@@ -2324,7 +2338,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     rc = davNLST(avx);
     if (rc) {
-/* HACK: errno = ??? */
+	if (errno == 0)	errno = EAGAIN;	/* HACK: errno = ??? */
 	goto exit;
     } else
 	avdir = (AVDIR) avOpendir(uri, avx->av, avx->modes);
