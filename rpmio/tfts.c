@@ -48,6 +48,13 @@ static struct rpmfts_s __rpmfts = {
 /*@unchecked@*/
 static rpmfts _rpmfts = &__rpmfts;
 
+static struct e_s {
+    unsigned int total;
+    unsigned int timedout;
+    unsigned int again;
+    unsigned int unknown;
+} e;
+
 #ifdef	DYING
 extern int _dav_nooptions;
 #endif
@@ -86,7 +93,7 @@ static int ftsPrint(rpmfts fts)
     if (rpmIsDebug())
 	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->p->fts_info),
 		indent * (fts->p->fts_level < 0 ? 0 : fts->p->fts_level), "",
-		fts->p->fts_name);
+		(fts->p->fts_level > 0 ? fts->p->fts_name : fts->p->fts_accpath));
 
     switch (fts->p->fts_info) {
     case FTS_D:		/* preorder directory */
@@ -129,6 +136,14 @@ static int ftsPrint(rpmfts fts)
     case FTS_NS:	/* stat(2) failed */
     case FTS_DNR:	/* unreadable directory */
     case FTS_ERR:	/* error; errno is set */
+	fprintf(stderr, "error: %s: %s\n", fts->p->fts_accpath,
+		strerror(fts->p->fts_errno));
+	e.total++;
+	switch (fts->p->fts_errno) {
+	case ETIMEDOUT:		e.timedout++;	/*@innerbreak@*/ break;
+	case EAGAIN:		e.again++;	/*@innerbreak@*/ break;
+	default:		e.unknown++;	/*@innerbreak@*/ break;
+	}
 	break;
     case FTS_DC:	/* directory that causes cycles */
     case FTS_DEFAULT:	/* none of the above */
@@ -164,7 +179,7 @@ static int ftsWalk(rpmfts fts)
 exit:
     xx = rpmswExit(op, fts->ndirs);
 
-fprintf(stderr, "===== (%d/%d) dirs/files in:\n", fts->ndirs, fts->nfiles);
+fprintf(stderr, "===== (%d/%d) dirs/files, errors %u = timedout(%u)+again(%u)+unknown(%u) in:\n", fts->ndirs, fts->nfiles, e.total, e.timedout, e.again, e.unknown);
     argvPrint(NULL, fts->paths, NULL);
     if (_rpmsw_stats)
 	rpmswPrint("fts:", op, NULL);
