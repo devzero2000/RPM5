@@ -880,6 +880,7 @@ static int davFetch(const urlinfo u, rpmavx avx)
     struct fetch_resource_s * resitem = NULL;
     ne_propfind_handler *pfh;
     struct fetch_resource_s *current, *next;
+    struct stat * st = avx->st;
     mode_t st_mode;
     int rc = 0;
     int xx;
@@ -900,6 +901,10 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
     ne_propfind_destroy(pfh);
 
+    /* XXX fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
+    st->st_ino = hashFunctionString(0, avx->uri, 0);
+
     for (current = resitem; current != NULL; current = next) {
 	const char *s, *se;
 	char * val;
@@ -911,6 +916,13 @@ static int davFetch(const urlinfo u, rpmavx avx)
 	se = current->uri + strlen(current->uri);
 	if (se[-1] == '/') {
 	    if (strlen(current->uri) <= strlen(path)) {
+		st->st_mode = (S_IFDIR|0755);
+		st->st_nlink += 2;
+		/* XXX TODO: current-size is 0 here. */
+		st->st_size = current->size;
+		st->st_blocks = (st->st_size + 511)/512;
+		st->st_mtime = current->modtime;
+		st->st_atime = st->st_ctime = st->st_mtime;        /* HACK */
 		current = fetch_destroy_item(current);
 		continue;
 	    }
@@ -928,10 +940,12 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
 	switch (current->type) {
 	case resr_normal:
-	    st_mode = S_IFREG;
+	    st_mode = S_IFREG | 0644;
 	    /*@switchbreak@*/ break;
 	case resr_collection:
-	    st_mode = S_IFDIR;
+	    st_mode = S_IFDIR | 0755;
+	    if (S_ISDIR(st->st_mode))
+		st->st_nlink++;
 	    /*@switchbreak@*/ break;
 	case resr_reference:
 	case resr_error:
@@ -942,6 +956,15 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
 	xx = rpmavxAdd(avx, val, st_mode, current->size, current->modtime);
 	ne_free(val);
+
+	if (current == resitem && next == NULL) {
+	    st->st_mode = st_mode;
+	    st->st_nlink = S_ISDIR(st_mode) ? 2 : 1;
+	    st->st_size = current->size;
+	    st->st_blocks = (st->st_size + 511)/512;
+	    st->st_mtime = current->modtime;
+	    st->st_atime = st->st_ctime = st->st_mtime;        /* HACK */
+	}
 
 	current = fetch_destroy_item(current);
     }
@@ -2089,7 +2112,7 @@ static const char * statstr(const struct stat * st,
 	/*@modifies *buf @*/
 {
     sprintf(buf,
-	"*** dev 0x%x ino 0x%x mode 0%0o nlink %d uid %d gid %d rdev 0x%x size %u\n",
+	"dev 0x%x ino 0x%x mode 0%0o nlink %d uid %d gid %d rdev 0x%x size %u",
 	(unsigned)st->st_dev,
 	(unsigned)st->st_ino,
 	(unsigned)st->st_mode,
@@ -2127,36 +2150,9 @@ fprintf(stderr, "--> davStat(%s)\n", path);
 	goto exit;
     }
 
-    /* XXX this should be WebDAV only now. */
-    if (st->st_mode == 0)
-	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
-    if (S_ISDIR(st->st_mode)) {
-	if (st->st_nlink == 0)
-	    st->st_nlink = 2;
-	if ((st->st_mode & 0777) == 0)
-	    st->st_mode |= 0755;
-    } else
-    if (S_ISREG(st->st_mode)) {
-	if (st->st_nlink == 0)
-	    st->st_nlink = 1;
-	if ((st->st_mode & 0777) == 0)
-	    st->st_mode |= 0644;
-    }
-    if (st->st_mtime == 0) {
-	st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
-	st->st_blocks = (st->st_size + 511)/512;
-	st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
-	st->st_atime = st->st_ctime = st->st_mtime;        /* HACK */
-    }
-
-    /* XXX Fts(3) needs/uses st_ino. */
-    /* Hash the path to generate a st_ino analogue. */
-    if (st->st_ino == 0)
-	st->st_ino = hashFunctionString(0, path, 0);
-
 exit:
 if (_dav_debug < 0)
-fprintf(stderr, "<-- davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
+fprintf(stderr, "<-- davStat(%s) rc %d\n\t%s\n", path, rc, statstr(st, buf));
     avx = rpmavxFree(avx);
     return rc;
 }
@@ -2185,35 +2181,8 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
-    /* XXX this should be WebDAV only now. */
-    if (st->st_mode == 0)
-	st->st_mode = (avx->ac > 1 ? S_IFDIR : S_IFREG);
-    if (S_ISDIR(st->st_mode)) {
-	if (st->st_nlink == 0)
-	    st->st_nlink = 2;
-	if ((st->st_mode & 0777) == 0)
-	    st->st_mode |= 0755;
-    } else
-    if (S_ISREG(st->st_mode)) {
-	if (st->st_nlink == 0)
-	    st->st_nlink = 1;
-	if ((st->st_mode & 0777) == 0)
-	    st->st_mode |= 0644;
-    }
-    if (st->st_mtime == 0) {
-	st->st_size = (avx->sizes ? avx->sizes[0] : (size_t)st->st_size);
-	st->st_blocks = (st->st_size + 511)/512;
-	st->st_mtime = (avx->mtimes ? avx->mtimes[0] : st->st_mtime);
-	st->st_atime = st->st_ctime = st->st_mtime;        /* HACK */
-    }
-
-    /* XXX fts(3) needs/uses st_ino. */
-    /* Hash the path to generate a st_ino analogue. */
-    if (st->st_ino == 0)
-	st->st_ino = hashFunctionString(0, path, 0);
-
 if (_dav_debug < 0)
-fprintf(stderr, "*** davLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
+fprintf(stderr, "*** davLstat(%s) rc %d\n\t%s\n", path, rc, statstr(st, buf));
 exit:
     avx = rpmavxFree(avx);
     return rc;
