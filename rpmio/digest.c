@@ -10,7 +10,6 @@
 
 #include "crc.h"
 #include "md2.h"
-#include "md4.h"
 #include "salsa10.h"
 #include "salsa20.h"
 #include "tiger.h"

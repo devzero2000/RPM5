@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: eliminate md4, use beecrypt-4.2.0 instead.
     - jbj: rpmsx: wrap getfilecon/lgetfilecon.
     - jbj: rpmsx: add persistent/lazy matchpathcon_{init,free}.
     - jbj: rpmsx: refactor the existing SELinux implementation.

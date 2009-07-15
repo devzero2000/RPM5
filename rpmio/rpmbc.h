@@ -18,6 +18,7 @@
 #include <beecrypt/base64.h>
 #include <beecrypt/dsa.h>
 #include <beecrypt/endianness.h>
+#include <beecrypt/md4.h>
 #include <beecrypt/md5.h>
 #include <beecrypt/mp.h>
 #include <beecrypt/rsa.h>
