@@ -200,15 +200,25 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */
     PGPHASHALGO_SALSA20		= 114,	/*!< (private) SALSA-20 */
 
+    PGPHASHALGO_SKEIN256	= 115,	/*!< SKEIN-256 */
+    PGPHASHALGO_SKEIN512	= 116,	/*!< SKEIN-512 */
+    PGPHASHALGO_SKEIN1024	= 117,	/*!< SKEIN-1024 */
+
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
-    RPMDIGEST_NONE	= 0
+    RPMDIGEST_NONE	=    0,
+    RPMDIGEST_FLAGS_128	=  128,
+    RPMDIGEST_FLAGS_160	=  160,
+    RPMDIGEST_FLAGS_224	=  224,
+    RPMDIGEST_FLAGS_256	=  256,
+    RPMDIGEST_FLAGS_384	=  384,
+    RPMDIGEST_FLAGS_512	=  512,
+    RPMDIGEST_FLAGS_1024= 1024,
 } rpmDigestFlags;
-
 
 #if defined(_RPMIOB_INTERNAL)
 /** \ingroup rpmio

@@ -12,6 +12,7 @@
 #include "md2.h"
 #include "salsa10.h"
 #include "salsa20.h"
+#include "skein.h"
 #include "tiger.h"
 
 #include "debug.h"
@@ -110,6 +111,11 @@ rpmDigestDup(DIGEST_CTX octx)
     nctx->asn1 = octx->asn1;
     nctx->param = memcpy(xcalloc(1, nctx->paramsize), octx->param, nctx->paramsize);
     return (DIGEST_CTX)rpmioLinkPoolItem((rpmioItem)nctx, __FUNCTION__, __FILE__, __LINE__);
+}
+
+static int noopReset(void * param)
+{
+    return 0;
 }
 
 DIGEST_CTX
@@ -414,6 +420,86 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->asn1 = "3051300d060960864801650304020305000440";
 	break;
 #endif
+    case PGPHASHALGO_SKEIN256:
+	ctx->name = "SKEIN256";
+	switch (ctx->flags) {
+	default:
+	case RPMDIGEST_FLAGS_1024:
+	case RPMDIGEST_FLAGS_512:
+	case RPMDIGEST_FLAGS_384:
+	    ctx->flags = RPMDIGEST_FLAGS_256;
+	    /*@fallthrough@*/
+	case RPMDIGEST_FLAGS_256:
+	case RPMDIGEST_FLAGS_224:
+	case RPMDIGEST_FLAGS_160:
+	case RPMDIGEST_FLAGS_128:
+	    break;
+	}
+	ctx->digestsize = ctx->flags/8;
+	ctx->datasize = SKEIN_256_BLOCK_BYTES;	/*  4*sizeof(uint64_t) */
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(Skein_256_Ctxt_t);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) Skein_256_Init((Skein_256_Ctxt_t *)ctx->param, (size_t)ctx->flags);
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein_256_Update;
+	ctx->Digest = (int (*)(void *, byte *)) Skein_256_Final;
+	break;
+    case PGPHASHALGO_SKEIN512:
+	ctx->name = "SKEIN512";
+	switch (ctx->flags) {
+	default:
+	case RPMDIGEST_FLAGS_1024:
+	    ctx->flags = RPMDIGEST_FLAGS_512;
+	    /*@fallthrough@*/
+	case RPMDIGEST_FLAGS_512:
+	case RPMDIGEST_FLAGS_384:
+	case RPMDIGEST_FLAGS_256:
+	case RPMDIGEST_FLAGS_224:
+	case RPMDIGEST_FLAGS_160:
+	case RPMDIGEST_FLAGS_128:
+	    break;
+	}
+	ctx->digestsize = ctx->flags/8;
+	ctx->datasize = SKEIN_512_BLOCK_BYTES;	/*  8*sizeof(uint64_t) */
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(Skein_512_Ctxt_t);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) Skein_512_Init((Skein_512_Ctxt_t *)ctx->param, (size_t)ctx->flags);
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein_512_Update;
+	ctx->Digest = (int (*)(void *, byte *)) Skein_512_Final;
+	break;
+    case PGPHASHALGO_SKEIN1024:
+	ctx->name = "SKEIN1024";
+	switch (ctx->flags) {
+	default:
+	    ctx->flags = RPMDIGEST_FLAGS_1024;
+	    /*@fallthrough@*/
+	case RPMDIGEST_FLAGS_1024:
+	case RPMDIGEST_FLAGS_512:
+	case RPMDIGEST_FLAGS_384:
+#ifdef	NOTYET	/* XXX Do these outputs make sense? */
+	case RPMDIGEST_FLAGS_256:
+	case RPMDIGEST_FLAGS_224:
+	case RPMDIGEST_FLAGS_160:
+	case RPMDIGEST_FLAGS_128:
+#endif
+	    break;
+	}
+	ctx->digestsize = ctx->flags/8;
+	ctx->digestsize = 1024/8;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(Skein1024_Ctxt_t);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) Skein1024_Init((Skein1024_Ctxt_t *)ctx->param, (size_t)ctx->flags);
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein1024_Update;
+	ctx->Digest = (int (*)(void *, byte *)) Skein1024_Final;
+	break;
     case PGPHASHALGO_HAVAL_5_160:
     default:
 	(void)rpmioFreePoolItem((rpmioItem)ctx, __FUNCTION__, __FILE__, __LINE__);
