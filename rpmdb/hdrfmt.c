@@ -5407,7 +5407,7 @@ fprintf(stderr, "-->     parseFormat(%p, \"%.20s...\", %p, %p, %p, %s)\n", hsa, 
     numTokens = 0;
     if (str != NULL)
     for (chptr = str; *chptr != '\0'; chptr++)
-	if (*chptr == '%') numTokens++;
+	if (*chptr == '%' || *chptr == '[') numTokens++;
     numTokens = numTokens * 2 + 1;
 
     format = xcalloc(numTokens, sizeof(*format));
