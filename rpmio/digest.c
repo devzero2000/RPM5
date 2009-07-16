@@ -84,6 +84,11 @@ pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
     return (ctx != NULL ? ctx->hashalgo : PGPHASHALGO_NONE);
 }
 
+rpmDigestFlags rpmDigestF(DIGEST_CTX ctx)
+{
+    return (ctx != NULL ? ctx->flags : RPMDIGEST_NONE);
+}
+
 const char * rpmDigestName(DIGEST_CTX ctx)
 {
     return (ctx != NULL ? ctx->name : "UNKNOWN");
@@ -490,7 +495,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    break;
 	}
 	ctx->digestsize = ctx->flags/8;
-	ctx->digestsize = 1024/8;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein1024_Ctxt_t);
 /*@=sizeoftype@*/
@@ -535,7 +539,7 @@ rpmDigestFinal(DIGEST_CTX ctx, void * datap, size_t *lenp, int asAscii)
 	return -1;
     digest = xmalloc(ctx->digestsize);
 
-DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p\n", ctx, ctx->name, datap, lenp, asAscii, ctx->param, digest));
+DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", ctx, ctx->name, datap, lenp, asAscii, ctx->param, digest, (unsigned)ctx->digestsize));
 /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
 /*@=noeffectuncon@*/

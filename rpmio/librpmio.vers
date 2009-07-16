@@ -296,6 +296,7 @@ LIBRPMIO_0
     rpmDigestAlgo;
     rpmDigestASN1;
     rpmDigestDup;
+    rpmDigestF;
     rpmDigestFinal;
     rpmDigestHashAlgo;
     rpmDigestInit;

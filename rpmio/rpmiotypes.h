@@ -200,9 +200,9 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */
     PGPHASHALGO_SALSA20		= 114,	/*!< (private) SALSA-20 */
 
-    PGPHASHALGO_SKEIN256	= 115,	/*!< SKEIN-256 */
-    PGPHASHALGO_SKEIN512	= 116,	/*!< SKEIN-512 */
-    PGPHASHALGO_SKEIN1024	= 117,	/*!< SKEIN-1024 */
+    PGPHASHALGO_SKEIN256	= 115,	/*!< (private) SKEIN-256 */
+    PGPHASHALGO_SKEIN512	= 116,	/*!< (private) SKEIN-512 */
+    PGPHASHALGO_SKEIN1024	= 117,	/*!< (private) SKEIN-1024 */
 
 } pgpHashAlgo;
 
@@ -245,6 +245,14 @@ extern "C" {
  * @return		digest hash algorithm identifier
  */
 pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
+	/*@*/;
+
+/** \ingroup rpmpgp
+ * Return digest flags.
+ * @param ctx		digest context
+ * @return		digest flags
+ */
+rpmDigestFlags rpmDigestF(DIGEST_CTX ctx)
 	/*@*/;
 
 /** \ingroup rpmpgp

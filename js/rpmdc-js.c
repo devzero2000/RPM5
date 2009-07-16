@@ -322,7 +322,9 @@ rpmdc_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
         goto exit;
 
     if (dc) {
-	if (_dalgo == PGPHASHALGO_NONE) _dalgo = rpmDigestAlgo(dc);
+	/* XXX retrieve current settings for persistence. */
+	_dalgo = rpmDigestAlgo(dc);
+	_flags = rpmDigestF(dc);
 	(void) rpmDigestFinal(dc, NULL, NULL, 0);
 	/* XXX error msg */
 	dc = ptr = NULL;
