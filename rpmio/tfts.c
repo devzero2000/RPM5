@@ -5,6 +5,8 @@
 #include <rpmdav.h>
 #include <poptIO.h>
 
+#include <magic.h>
+
 #include "debug.h"
 
 /**
@@ -42,7 +44,8 @@ struct rpmfts_s {
 
 /*@unchecked@*/
 static struct rpmfts_s __rpmfts = {
-    .mireMode = RPMMIRE_REGEX,
+    .mireMode	= RPMMIRE_REGEX,
+    .mgFlags	= MAGIC_CHECK | MAGIC_MIME,
 };
 
 /*@unchecked@*/
@@ -50,6 +53,7 @@ static rpmfts _rpmfts = &__rpmfts;
 
 static struct e_s {
     unsigned int total;
+    unsigned int retries;
     unsigned int timedout;
     unsigned int again;
     unsigned int unknown;
@@ -91,7 +95,7 @@ static int ftsPrint(rpmfts fts)
     int xx;
 
     if (rpmIsDebug())
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->p->fts_info),
+	fprintf(stderr, "FTS_%s\t%*s%s\n", ftsInfoStr(fts->p->fts_info),
 		indent * (fts->p->fts_level < 0 ? 0 : fts->p->fts_level), "",
 		(fts->p->fts_level > 0 ? fts->p->fts_name : fts->p->fts_accpath));
 
@@ -115,7 +119,11 @@ static int ftsPrint(rpmfts fts)
 	    fts->mireNExecs++;
 	    xx = mireRegexec(fts->mire, fts->p->fts_path, 0);
 	    if (xx >= 0) {
-		fprintf(stdout, " mire: %s\n", fts->p->fts_path);
+		fprintf(stdout, " mire:\t%*s%s\n",
+			indent * (fts->p->fts_level < 0
+				? 0 : fts->p->fts_level), "",
+			fts->p->fts_path);
+		fflush(stdout);
 		fts->mireNMatches++;
 	    } else {
 		fts->mireNFails++;
@@ -124,8 +132,12 @@ static int ftsPrint(rpmfts fts)
 	if (fts->mg) {
 	    const char * s = rpmmgFile(fts->mg, fts->p->fts_accpath);
 	    fts->mgNFiles++;
-	    if (s != NULL) {
-		fprintf(stdout, "magic: %s: %s\n", fts->p->fts_path, s);
+	    if (s != NULL && *s != '\0') {
+		fprintf(stdout, "magic:\t%*s%s\n",
+			indent * (fts->p->fts_level < 0
+				? 0 : fts->p->fts_level), "",
+			s);
+		fflush(stdout);
 		fts->mgNMatches++;
 	    } else {
 		fts->mgNFails++;
@@ -136,6 +148,13 @@ static int ftsPrint(rpmfts fts)
     case FTS_NS:	/* stat(2) failed */
     case FTS_DNR:	/* unreadable directory */
     case FTS_ERR:	/* error; errno is set */
+	/* XXX Attempt a retry on network errors. */
+	if (fts->p->fts_number == 0) {
+	    (void) Fts_set(fts->t, fts->p, FTS_AGAIN);
+	    fts->p->fts_number++;
+	    e.retries++;
+	    break;
+	}
 	fprintf(stderr, "error: %s: %s\n", fts->p->fts_accpath,
 		strerror(fts->p->fts_errno));
 	e.total++;
@@ -179,7 +198,7 @@ static int ftsWalk(rpmfts fts)
 exit:
     xx = rpmswExit(op, fts->ndirs);
 
-fprintf(stderr, "===== (%d/%d) dirs/files, errors %u = timedout(%u)+again(%u)+unknown(%u) in:\n", fts->ndirs, fts->nfiles, e.total, e.timedout, e.again, e.unknown);
+fprintf(stderr, "===== (%d/%d) dirs/files, errors(%u)/retries(%u) timedout(%u)/again(%u)/unknown(%u) in:\n", fts->ndirs, fts->nfiles, e.total, e.retries, e.timedout, e.again, e.unknown);
     argvPrint(NULL, fts->paths, NULL);
     if (_rpmsw_stats)
 	rpmswPrint("fts:", op, NULL);
