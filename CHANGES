@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdigest: add cubehash 224/256/384/512.
+    - jbj: rpmdigest: add keccak 224/256/384/512.
     - jbj: rpmdigest: add edon-r 224/256/384/512.
     - rpm.org: don't segfault with empty --qf '[]lala' iterator.
     - jbj: rpmdigest: add skein 256/512/1024.

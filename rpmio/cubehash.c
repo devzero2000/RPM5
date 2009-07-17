@@ -1,11 +1,14 @@
 #define CUBEHASH_ROUNDS 8
 #define CUBEHASH_BLOCKBYTES 1
 
+#include <string.h>
 #include "cubehash.h"
+
+typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 } HashReturn;
 
 #define ROTATE(a,b) (((a) << (b)) | ((a) >> (32 - b)))
 
-static void transform(hashState *state)
+static void transform(cubehash_hashState *state)
 {
   int i;
   int r;
@@ -27,7 +30,7 @@ static void transform(hashState *state)
   }
 }
 
-HashReturn cubehash_Init(hashState *state, int hashbitlen)
+int cubehash_Init(cubehash_hashState *state, int hashbitlen)
 {
   int i;
   int j;
@@ -46,9 +49,10 @@ HashReturn cubehash_Init(hashState *state, int hashbitlen)
   return SUCCESS;
 }
 
-HashReturn cubehash_Update(hashState *state, const BitSequence *data,
-                  DataLength databitlen)
+int cubehash_Update(cubehash_hashState *state, const unsigned char *data, size_t _len)
 {
+  unsigned long long databitlen = 8 * _len;
+
   /* caller promises us that previous data had integral number of bytes */
   /* so state->pos is a multiple of 8 */
 
@@ -73,7 +77,7 @@ HashReturn cubehash_Update(hashState *state, const BitSequence *data,
   return SUCCESS;
 }
 
-HashReturn cubehash_Final(hashState *state, BitSequence *hashval)
+int cubehash_Final(cubehash_hashState *state, unsigned char *hashval)
 {
   int i;
   myuint32 u;
@@ -89,11 +93,11 @@ HashReturn cubehash_Final(hashState *state, BitSequence *hashval)
   return SUCCESS;
 }
 
-HashReturn cubehash_Hash(int hashbitlen, const BitSequence *data,
-                DataLength databitlen, BitSequence *hashval)
+int cubehash_Hash(int hashbitlen, const unsigned char *data,
+                size_t _len, unsigned char *hashval)
 {
-  hashState state;
-  if (cubehash_Init(&state,hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
-  cubehash_Update(&state,data,databitlen);
-  return cubehash_Final(&state,hashval);
+  cubehash_hashState state;
+  if (cubehash_Init(&state, hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
+  cubehash_Update(&state, data, _len);
+  return cubehash_Final(&state, hashval);
 }

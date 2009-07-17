@@ -29,6 +29,7 @@ const PGPHASHALGO_SKEIN1024       = 117;  /*!< (private) SKEIN-1024 */
 
 const PGPHASHALGO_EDONR           = 118;  /*!< (private) EDON-R */
 const PGPHASHALGO_KECCAK          = 119;  /*!< (private) KECCAK */
+const PGPHASHALGO_CUBEHASH        = 120;  /*!< (private) CUBEHASH */
 
 const RPMDIGEST_FLAGS_128 =  128;
 const RPMDIGEST_FLAGS_160 =  160;
@@ -288,6 +289,42 @@ ack("keccak512.asn1", null);
 ack("keccak512.name", "KECCAK");
 ack("keccak512.update('');", true);
 ack("keccak512.fini();", '8596f8df2e856ec888823da8ccc914139f31baee6aa5c37dbe30bddbfd75c63cdc205f15f30faa348e27b5f90495b339a606e3c84bfcdcd55e88b0e178b56feb');
+
+var cubehash224 = new Dc(PGPHASHALGO_CUBEHASH, RPMDIGEST_FLAGS_224);
+ack("cubehash224('');", 'b5a6f6cb6d4100dcda8f575c694f15b2f7c8c5ed145608a42a89c7ca');
+ack("cubehash224.init(PGPHASHALGO_CUBEHASH, RPMDIGEST_FLAGS_224);", true);
+ack("cubehash224.algo", PGPHASHALGO_CUBEHASH);
+ack("cubehash224.asn1", null);
+ack("cubehash224.name", "CUBEHASH");
+ack("cubehash224.update('');", true);
+ack("cubehash224.fini();", 'b5a6f6cb6d4100dcda8f575c694f15b2f7c8c5ed145608a42a89c7ca');
+
+var cubehash256 = new Dc(PGPHASHALGO_CUBEHASH);
+ack("cubehash256('');", '38d1e8a22d7baac6fd5262d83de89cacf784a02caa866335299987722aeabc59');
+ack("cubehash256.init(PGPHASHALGO_CUBEHASH);", true);
+ack("cubehash256.algo", PGPHASHALGO_CUBEHASH);
+ack("cubehash256.asn1", null);
+ack("cubehash256.name", "CUBEHASH");
+ack("cubehash256.update('');", true);
+ack("cubehash256.fini();", '38d1e8a22d7baac6fd5262d83de89cacf784a02caa866335299987722aeabc59');
+
+var cubehash384 = new Dc(PGPHASHALGO_CUBEHASH, RPMDIGEST_FLAGS_384);
+ack("cubehash384('');", '235e819ebb93af765f7d86df6c6ff283ab24e98a07858a7d1c72604bb10c794d4721ef9ddfccaa93072eee9b53fdc69c');
+ack("cubehash384.init(PGPHASHALGO_CUBEHASH, RPMDIGEST_FLAGS_384);", true);
+ack("cubehash384.algo", PGPHASHALGO_CUBEHASH);
+ack("cubehash384.asn1", null);
+ack("cubehash384.name", "CUBEHASH");
+ack("cubehash384.update('');", true);
+ack("cubehash384.fini();", '235e819ebb93af765f7d86df6c6ff283ab24e98a07858a7d1c72604bb10c794d4721ef9ddfccaa93072eee9b53fdc69c');
+
+var cubehash512 = new Dc(PGPHASHALGO_CUBEHASH, RPMDIGEST_FLAGS_512);
+ack("cubehash512('');", '90bc3f2948f7374065a811f1e47a208a53b1a2f3be1c0072759ed49c9c6c7f28f26eb30d5b0658c563077d599da23f97df0c2c0ac6cce734ffe87b2e76ff7294');
+ack("cubehash512.init(PGPHASHALGO_CUBEHASH, RPMDIGEST_FLAGS_512);", true);
+ack("cubehash512.algo", PGPHASHALGO_CUBEHASH);
+ack("cubehash512.asn1", null);
+ack("cubehash512.name", "CUBEHASH");
+ack("cubehash512.update('');", true);
+ack("cubehash512.fini();", '90bc3f2948f7374065a811f1e47a208a53b1a2f3be1c0072759ed49c9c6c7f28f26eb30d5b0658c563077d599da23f97df0c2c0ac6cce734ffe87b2e76ff7294');
 
 var tiger192 = new Dc(PGPHASHALGO_TIGER192);
 ack("tiger192(str);", '2aab1484e8c158f2bfb8c5ff41b57a525129131c957b5f93');

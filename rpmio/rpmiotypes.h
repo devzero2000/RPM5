@@ -206,6 +206,7 @@ typedef enum pgpHashAlgo_e {
 
     PGPHASHALGO_EDONR		= 118,	/*!< (private) EDON-R */
     PGPHASHALGO_KECCAK		= 119,	/*!< (private) KECCAK */
+    PGPHASHALGO_CUBEHASH	= 120,	/*!< (private) CUBEHASH */
 
 } pgpHashAlgo;
 

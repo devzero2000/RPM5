@@ -149,6 +149,8 @@ struct poptOption rpmioDigestPoptTable[] = {
 	N_("EdonR-256 digest"), NULL },
  { "keccak",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_KECCAK,
 	N_("Keccak-256 digest"), NULL },
+ { "cubehash",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_CUBEHASH,
+	N_("CubeHash-512 digest"), NULL },
  { "salsa10",'\0', POPT_ARG_VAL,&rpmioDigestHashAlgo, PGPHASHALGO_SALSA10,
 	N_("SALSA-10 hash"), NULL },
  { "salsa20",'\0', POPT_ARG_VAL,&rpmioDigestHashAlgo, PGPHASHALGO_SALSA20,
