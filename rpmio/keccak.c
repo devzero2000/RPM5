@@ -14,6 +14,8 @@ http://keccak.noekeon.org/
 #include <string.h>
 #include "keccak.h"
 
+typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2 } HashReturn;
+
 /* ===== "KeccakPermutationInterface.h" */
 
 /*
@@ -444,7 +446,7 @@ void KeccakExtract512bits(const unsigned char *state, unsigned char *data)
 
 /* ===== */
 
-HashReturn keccak_Init(hashState *state, int hashbitlen)
+int keccak_Init(keccak_hashState *state, int hashbitlen)
 {
     KeccakInitialize();
     switch(hashbitlen) {
@@ -478,7 +480,7 @@ HashReturn keccak_Init(hashState *state, int hashbitlen)
     return SUCCESS;
 }
 
-static void AbsorbQueue(hashState *state)
+static void AbsorbQueue(keccak_hashState *state)
 {
     #ifdef KeccakReference
     displayBytes(1, "Data to be absorbed", state->dataQueue, state->bitsInQueue/8);
@@ -492,12 +494,14 @@ static void AbsorbQueue(hashState *state)
     state->bitsInQueue = 0;
 }
 
-HashReturn keccak_Update(hashState *state, const BitSequence *data, DataLength databitlen)
+int keccak_Update(keccak_hashState *state, const void *_data, size_t _len)
 {
-    DataLength i, j;
-    DataLength partialBlock, partialByte, wholeBlocks;
-    BitSequence lastByte;
-    const BitSequence *curData;
+    const unsigned char *data = _data;
+    const unsigned long long databitlen = 8 * _len;
+    unsigned long long i, j;
+    unsigned long long partialBlock, partialByte, wholeBlocks;
+    unsigned char lastByte;
+    const unsigned char *curData;
 
     if ((state->bitsInQueue % 8) != 0)
         return FAIL; // Only the last call may contain a partial byte
@@ -550,7 +554,7 @@ HashReturn keccak_Update(hashState *state, const BitSequence *data, DataLength d
     return SUCCESS;
 }
 
-static void PadAndSwitchToSqueezingPhase(hashState *state)
+static void PadAndSwitchToSqueezingPhase(keccak_hashState *state)
 {
     if ((state->bitsInQueue % 8) != 0) {
         // The bits are numbered from 0=LSB to 7=MSB
@@ -587,7 +591,7 @@ static void PadAndSwitchToSqueezingPhase(hashState *state)
     state->squeezing = 1;
 }
 
-HashReturn keccak_Final(hashState *state, BitSequence *hashval)
+int keccak_Final(keccak_hashState *state, unsigned char *hashval)
 {
     if (state->squeezing)
         return FAIL; // Too late, we are already squeezing
@@ -597,10 +601,10 @@ HashReturn keccak_Final(hashState *state, BitSequence *hashval)
     return SUCCESS;
 }
 
-HashReturn keccak_Squeeze(hashState *state, BitSequence *output, DataLength outputLength)
+int keccak_Squeeze(keccak_hashState *state, unsigned char *output, unsigned long long outputLength)
 {
-    DataLength i;
-    DataLength partialBlock;
+    unsigned long long i;
+    unsigned long long partialBlock;
 
     if (!state->squeezing)
         return FAIL; // Too early, we are still absorbing
@@ -630,17 +634,17 @@ HashReturn keccak_Squeeze(hashState *state, BitSequence *output, DataLength outp
     return SUCCESS;
 }
 
-HashReturn keccak_Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval)
+int keccak_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *hashval)
 {
-    hashState state;
-    HashReturn result;
+    keccak_hashState state;
+    int result;
 
     if (hashbitlen == 0)
         return BAD_HASHLEN; // Arbitrary length output not available through this API
     result = keccak_Init(&state, hashbitlen);
     if (result != SUCCESS)
         return result;
-    result = keccak_Update(&state, data, databitlen);
+    result = keccak_Update(&state, _data, _len);
     if (result != SUCCESS)
         return result;
     result = keccak_Final(&state, hashval);

@@ -10,6 +10,7 @@
 
 #include "crc.h"
 #include "edon-r.h"
+#include "keccak.h"
 #include "md2.h"
 #include "salsa10.h"
 #include "salsa20.h"
@@ -528,6 +529,29 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) edonr_Update;
 	ctx->Digest = (int (*)(void *, byte *)) edonr_Final;
+	break;
+    case PGPHASHALGO_KECCAK:
+	ctx->name = "KECCAK";
+	switch (ctx->flags) {
+	default:
+	    ctx->flags = RPMDIGEST_FLAGS_256;
+	    /*@fallthrough@*/
+	case RPMDIGEST_FLAGS_512:
+	case RPMDIGEST_FLAGS_384:
+	case RPMDIGEST_FLAGS_256:
+	case RPMDIGEST_FLAGS_224:
+	    break;
+	}
+	ctx->digestsize = ctx->flags/8;
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(keccak_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) keccak_Init((keccak_hashState *)ctx->param, (size_t)ctx->flags);
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) keccak_Update;
+	ctx->Digest = (int (*)(void *, byte *)) keccak_Final;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
     default:

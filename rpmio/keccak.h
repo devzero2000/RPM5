@@ -14,10 +14,6 @@ http://keccak.noekeon.org/
 #ifndef _KeccakNISTInterface_h_
 #define _KeccakNISTInterface_h_
 
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
-typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2 } HashReturn;
-
 #define KeccakPermutationSize 1600
 #define KeccakPermutationSizeInBytes (KeccakPermutationSize/8)
 #define KeccakMaximumRate 1024
@@ -33,7 +29,7 @@ typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2 } HashReturn;
 
 ALIGN typedef struct {
     ALIGN unsigned char state[KeccakPermutationSizeInBytes];
-    ALIGN BitSequence dataQueue[KeccakMaximumRateInBytes];
+    ALIGN unsigned char dataQueue[KeccakMaximumRateInBytes];
     unsigned int rate;
     unsigned int capacity;
     unsigned char diversifier;
@@ -41,13 +37,13 @@ ALIGN typedef struct {
     unsigned int bitsInQueue;
     int squeezing;
     unsigned int bitsAvailableForSqueezing;
-} hashState;
+} keccak_hashState;
 
-HashReturn keccak_Init(hashState *state, int hashbitlen);
-HashReturn keccak_Update(hashState *state, const BitSequence *data, DataLength databitlen);
-HashReturn keccak_Final(hashState *state, BitSequence *hashval);
-HashReturn keccak_Squeeze(hashState *state, BitSequence *output, DataLength outputLength);
+int keccak_Init(keccak_hashState *state, int hashbitlen);
+int keccak_Update(keccak_hashState *state, const void *_data, size_t _len);
+int keccak_Final(keccak_hashState *state, unsigned char *_hashval);
+int keccak_Squeeze(keccak_hashState *state, unsigned char *_output, unsigned long long _outputLength);
 
-HashReturn keccak_Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+int keccak_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *hashval);
 
 #endif

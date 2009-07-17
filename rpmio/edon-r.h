@@ -8,15 +8,6 @@ typedef unsigned long long u_int64_t;
 #include <sys/types.h>
 #endif
 
-// General SHA-3 definitions
-typedef unsigned char BitSequence;
-typedef u_int64_t DataLength; // a typical 64-bit value
-typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_UPDATE = 3 } HashReturn;
-// EdonR allows to call Update() function consecutively only if the total length of stored 
-// unprocessed data and the new supplied data is less than or equal to the BLOCK_SIZE on which the 
-// compression functions operates. Otherwise BAD_CONSECUTIVE_CALL_TO_UPDATE is returned.
-
-
 // Specific algorithm definitions
 #define EdonR224_DIGEST_SIZE  28
 #define EdonR224_BLOCK_SIZE   64
@@ -30,12 +21,12 @@ typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_U
 typedef struct
 {
 	u_int32_t DoublePipe[32];
-	BitSequence LastPart[EdonR256_BLOCK_SIZE * 2];
+	unsigned char LastPart[EdonR256_BLOCK_SIZE * 2];
 } Data256;
 typedef struct
 {
 	u_int64_t DoublePipe[32];
-	BitSequence LastPart[EdonR512_BLOCK_SIZE * 2];
+	unsigned char LastPart[EdonR512_BLOCK_SIZE * 2];
 } Data512;
 
 typedef struct {
@@ -51,7 +42,7 @@ typedef struct {
 	int unprocessed_bits;
 } edonr_hashState;
 
-HashReturn edonr_Init(edonr_hashState *state, int hashbitlen);
-HashReturn edonr_Update(edonr_hashState *state, const void *_data, size_t _len);
-HashReturn edonr_Final(edonr_hashState *state, BitSequence *hashval);
-HashReturn edonr_Hash(int hashbitlen, const void *_data, size_t _len, BitSequence *hashval);
+int edonr_Init(edonr_hashState *state, int hashbitlen);
+int edonr_Update(edonr_hashState *state, const void *_data, size_t _len);
+int edonr_Final(edonr_hashState *state, unsigned char *hashval);
+int edonr_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *hashval);

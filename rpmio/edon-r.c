@@ -2,6 +2,11 @@
 #include <string.h> 
 #include "edon-r.h"
 
+// EdonR allows to call Update() function consecutively only if the total length of stored 
+// unprocessed data and the new supplied data is less than or equal to the BLOCK_SIZE on which the 
+// compression functions operates. Otherwise BAD_CONSECUTIVE_CALL_TO_UPDATE is returned.
+typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_UPDATE = 3 } HashReturn;
+
 #define rotl32(x,n)   (((x) << n) | ((x) >> (32 - n)))
 #define rotr32(x,n)   (((x) >> n) | ((x) << (32 - n)))
 
@@ -205,7 +210,7 @@ const u_int64_t i512p2[16] =
 }
 
 
-HashReturn edonr_Init(edonr_hashState *state, int hashbitlen)
+int edonr_Init(edonr_hashState *state, int hashbitlen)
 {
 	switch(hashbitlen)
 	{
@@ -244,10 +249,10 @@ HashReturn edonr_Init(edonr_hashState *state, int hashbitlen)
 
 
 
-HashReturn edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
+int edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 {
-	const BitSequence *data = _data;
-	DataLength databitlen = 8 * _len;
+	const unsigned char *data = _data;
+	unsigned long long databitlen = 8 * _len;
 	u_int32_t *data32, *p256;
 	u_int32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
 	u_int32_t t8,  t9, t10, t11, t12, t13, t14, t15;
@@ -448,7 +453,7 @@ HashReturn edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 }
 
 
-HashReturn edonr_Final(edonr_hashState *state, BitSequence *hashval)
+int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 {
 	u_int32_t *data32, *p256 = NULL;
 	u_int32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
@@ -458,7 +463,7 @@ HashReturn edonr_Final(edonr_hashState *state, BitSequence *hashval)
 	u_int64_t tt0,  tt1,  tt2,  tt3,  tt4,  tt5,  tt6,  tt7; 
 	u_int64_t tt8,  tt9, tt10, tt11, tt12, tt13, tt14, tt15; 
 
-	DataLength databitlen;
+	unsigned long long databitlen;
 
 	int LastByte, PadOnePosition;
 
@@ -656,9 +661,9 @@ HashReturn edonr_Final(edonr_hashState *state, BitSequence *hashval)
 	}
 }
 
-HashReturn edonr_Hash(int hashbitlen, const void *_data, size_t _len, BitSequence *hashval)
+int edonr_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *hashval)
 {
-	HashReturn qq;
+	int qq;
 	edonr_hashState state;
 
 	qq = edonr_Init(&state, hashbitlen);
