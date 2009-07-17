@@ -200,13 +200,31 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */
     PGPHASHALGO_SALSA20		= 114,	/*!< (private) SALSA-20 */
 
-    PGPHASHALGO_SKEIN256	= 115,	/*!< (private) SKEIN-256 */
-    PGPHASHALGO_SKEIN512	= 116,	/*!< (private) SKEIN-512 */
-    PGPHASHALGO_SKEIN1024	= 117,	/*!< (private) SKEIN-1024 */
+    PGPHASHALGO_MD6_224		= 128+0,/*!< (private) MD6-224 */
+    PGPHASHALGO_MD6_256		= 128+1,/*!< (private) MD6-256 */
+    PGPHASHALGO_MD6_384		= 128+2,/*!< (private) MD6-384 */
+    PGPHASHALGO_MD6_512		= 128+3,/*!< (private) MD6-512 */
 
-    PGPHASHALGO_EDONR		= 118,	/*!< (private) EDON-R */
-    PGPHASHALGO_KECCAK		= 119,	/*!< (private) KECCAK */
-    PGPHASHALGO_CUBEHASH	= 120,	/*!< (private) CUBEHASH */
+    PGPHASHALGO_CUBEHASH_224	= 136+0,/*!< (private) CUBEHASH-224 */
+    PGPHASHALGO_CUBEHASH_256	= 136+1,/*!< (private) CUBEHASH-256 */
+    PGPHASHALGO_CUBEHASH_384	= 136+2,/*!< (private) CUBEHASH-384 */
+    PGPHASHALGO_CUBEHASH_512	= 136+3,/*!< (private) CUBEHASH-512 */
+
+    PGPHASHALGO_KECCAK_224	= 144+0,/*!< (private) KECCAK-224 */
+    PGPHASHALGO_KECCAK_256	= 144+1,/*!< (private) KECCAK-256 */
+    PGPHASHALGO_KECCAK_384	= 144+2,/*!< (private) KECCAK-384 */
+    PGPHASHALGO_KECCAK_512	= 144+3,/*!< (private) KECCAK-384 */
+
+    PGPHASHALGO_EDONR_224	= 152+0,/*!< (private) EDON-R-224 */
+    PGPHASHALGO_EDONR_256	= 152+1,/*!< (private) EDON-R-256 */
+    PGPHASHALGO_EDONR_384	= 152+2,/*!< (private) EDON-R-384 */
+    PGPHASHALGO_EDONR_512	= 152+3,/*!< (private) EDON-R-512 */
+
+    PGPHASHALGO_SKEIN_224	= 160+0,/*!< (private) SKEIN-224 */
+    PGPHASHALGO_SKEIN_256	= 160+1,/*!< (private) SKEIN-256 */
+    PGPHASHALGO_SKEIN_384	= 160+2,/*!< (private) SKEIN-384 */
+    PGPHASHALGO_SKEIN_512	= 160+3,/*!< (private) SKEIN-512 */
+    PGPHASHALGO_SKEIN_1024	= 160+4,/*!< (private) SKEIN-1024 */
 
 } pgpHashAlgo;
 
@@ -215,13 +233,6 @@ typedef enum pgpHashAlgo_e {
  */
 typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	=    0,
-    RPMDIGEST_FLAGS_128	=  128,
-    RPMDIGEST_FLAGS_160	=  160,
-    RPMDIGEST_FLAGS_224	=  224,
-    RPMDIGEST_FLAGS_256	=  256,
-    RPMDIGEST_FLAGS_384	=  384,
-    RPMDIGEST_FLAGS_512	=  512,
-    RPMDIGEST_FLAGS_1024= 1024,
 } rpmDigestFlags;
 
 #if defined(_RPMIOB_INTERNAL)

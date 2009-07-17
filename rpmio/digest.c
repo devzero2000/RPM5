@@ -13,6 +13,7 @@
 #include "edon-r.h"
 #include "keccak.h"
 #include "md2.h"
+#include "md6.h"
 #include "salsa10.h"
 #include "salsa20.h"
 #include "skein.h"
@@ -62,6 +63,16 @@ static void ctxFini(void * _ctx)
 	/*@modifies _ctx @*/
 {
     DIGEST_CTX ctx = _ctx;
+    ctx->name = NULL;
+    ctx->paramsize = 0;
+    ctx->datasize = 0;
+    ctx->digestsize = 0;
+    ctx->Reset = NULL;
+    ctx->Update = NULL;
+    ctx->Digest = NULL;
+    ctx->hashalgo = 0;
+    ctx->flags = 0;
+    ctx->asn1 = NULL;
     if (ctx->param != NULL && ctx->paramsize > 0)
 	memset(ctx->param, 0, ctx->paramsize);	/* In case it's sensitive */
     ctx->param = _free(ctx->param);
@@ -124,6 +135,12 @@ rpmDigestDup(DIGEST_CTX octx)
 static int noopReset(void * param)
 {
     return 0;
+}
+
+/* XXX impedance match bytes -> bits length. */
+static int md6_Update(void * param, const byte * _data, size_t _len)
+{
+    return md6_update(param, (unsigned char *) _data, (rpmuint64_t)(8 * _len));
 }
 
 DIGEST_CTX
@@ -428,154 +445,119 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->asn1 = "3051300d060960864801650304020305000440";
 	break;
 #endif
-    case PGPHASHALGO_SKEIN256:
+    case PGPHASHALGO_SKEIN_224: ctx->digestsize = 224/8; goto skein256;
+    case PGPHASHALGO_SKEIN_256: ctx->digestsize = 256/8; goto skein256;
+skein256:
 	ctx->name = "SKEIN256";
-	switch (ctx->flags) {
-	default:
-	case RPMDIGEST_FLAGS_1024:
-	case RPMDIGEST_FLAGS_512:
-	case RPMDIGEST_FLAGS_384:
-	    ctx->flags = RPMDIGEST_FLAGS_256;
-	    /*@fallthrough@*/
-	case RPMDIGEST_FLAGS_256:
-	case RPMDIGEST_FLAGS_224:
-	case RPMDIGEST_FLAGS_160:
-	case RPMDIGEST_FLAGS_128:
-	    break;
-	}
-	ctx->digestsize = ctx->flags/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_256_Ctxt_t);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) Skein_256_Init((Skein_256_Ctxt_t *)ctx->param, (size_t)ctx->flags);
+	(void) Skein_256_Init((Skein_256_Ctxt_t *)ctx->param,
+				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein_256_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein_256_Final;
 	break;
-    case PGPHASHALGO_SKEIN512:
+    case PGPHASHALGO_SKEIN_384: ctx->digestsize = 384/8; goto skein512;
+    case PGPHASHALGO_SKEIN_512: ctx->digestsize = 512/8; goto skein512;
+skein512:
 	ctx->name = "SKEIN512";
-	switch (ctx->flags) {
-	default:
-	case RPMDIGEST_FLAGS_1024:
-	    ctx->flags = RPMDIGEST_FLAGS_512;
-	    /*@fallthrough@*/
-	case RPMDIGEST_FLAGS_512:
-	case RPMDIGEST_FLAGS_384:
-	case RPMDIGEST_FLAGS_256:
-	case RPMDIGEST_FLAGS_224:
-	case RPMDIGEST_FLAGS_160:
-	case RPMDIGEST_FLAGS_128:
-	    break;
-	}
-	ctx->digestsize = ctx->flags/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_512_Ctxt_t);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) Skein_512_Init((Skein_512_Ctxt_t *)ctx->param, (size_t)ctx->flags);
+	(void) Skein_512_Init((Skein_512_Ctxt_t *)ctx->param,
+				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein_512_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein_512_Final;
 	break;
-    case PGPHASHALGO_SKEIN1024:
+    case PGPHASHALGO_SKEIN_1024:
 	ctx->name = "SKEIN1024";
-	switch (ctx->flags) {
-	default:
-	    ctx->flags = RPMDIGEST_FLAGS_1024;
-	    /*@fallthrough@*/
-	case RPMDIGEST_FLAGS_1024:
-	case RPMDIGEST_FLAGS_512:
-	case RPMDIGEST_FLAGS_384:
-#ifdef	NOTYET	/* XXX Do these outputs make sense? */
-	case RPMDIGEST_FLAGS_256:
-	case RPMDIGEST_FLAGS_224:
-	case RPMDIGEST_FLAGS_160:
-	case RPMDIGEST_FLAGS_128:
-#endif
-	    break;
-	}
-	ctx->digestsize = ctx->flags/8;
+	ctx->digestsize = 1024/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein1024_Ctxt_t);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) Skein1024_Init((Skein1024_Ctxt_t *)ctx->param, (size_t)ctx->flags);
+	(void) Skein1024_Init((Skein1024_Ctxt_t *)ctx->param,
+				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein1024_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein1024_Final;
 	break;
-    case PGPHASHALGO_EDONR:
+    case PGPHASHALGO_EDONR_224: ctx->digestsize = 224/8; goto edonr;
+    case PGPHASHALGO_EDONR_256: ctx->digestsize = 256/8; goto edonr;
+    case PGPHASHALGO_EDONR_384: ctx->digestsize = 384/8; goto edonr;
+    case PGPHASHALGO_EDONR_512: ctx->digestsize = 512/8; goto edonr;
+edonr:
 	ctx->name = "EDON-R";
-	switch (ctx->flags) {
-	default:
-	    ctx->flags = RPMDIGEST_FLAGS_256;
-	    /*@fallthrough@*/
-	case RPMDIGEST_FLAGS_512:
-	case RPMDIGEST_FLAGS_384:
-	case RPMDIGEST_FLAGS_256:
-	case RPMDIGEST_FLAGS_224:
-	    break;
-	}
-	ctx->digestsize = ctx->flags/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(edonr_hashState);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) edonr_Init((edonr_hashState *)ctx->param, (size_t)ctx->flags);
+	(void) edonr_Init((edonr_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) edonr_Update;
 	ctx->Digest = (int (*)(void *, byte *)) edonr_Final;
 	break;
-    case PGPHASHALGO_KECCAK:
+    case PGPHASHALGO_KECCAK_224: ctx->digestsize = 224/8; goto keccak;
+    case PGPHASHALGO_KECCAK_256: ctx->digestsize = 256/8; goto keccak;
+    case PGPHASHALGO_KECCAK_384: ctx->digestsize = 384/8; goto keccak;
+    case PGPHASHALGO_KECCAK_512: ctx->digestsize = 512/8; goto keccak;
+keccak:
 	ctx->name = "KECCAK";
-	switch (ctx->flags) {
-	default:
-	    ctx->flags = RPMDIGEST_FLAGS_256;
-	    /*@fallthrough@*/
-	case RPMDIGEST_FLAGS_512:
-	case RPMDIGEST_FLAGS_384:
-	case RPMDIGEST_FLAGS_256:
-	case RPMDIGEST_FLAGS_224:
-	    break;
-	}
-	ctx->digestsize = ctx->flags/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(keccak_hashState);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) keccak_Init((keccak_hashState *)ctx->param, (size_t)ctx->flags);
+	(void) keccak_Init((keccak_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) keccak_Update;
 	ctx->Digest = (int (*)(void *, byte *)) keccak_Final;
 	break;
-    case PGPHASHALGO_CUBEHASH:
+    case PGPHASHALGO_CUBEHASH_224: ctx->digestsize = 224/8; goto cubehash;
+    case PGPHASHALGO_CUBEHASH_256: ctx->digestsize = 256/8; goto cubehash;
+    case PGPHASHALGO_CUBEHASH_384: ctx->digestsize = 384/8; goto cubehash;
+    case PGPHASHALGO_CUBEHASH_512: ctx->digestsize = 512/8; goto cubehash;
+cubehash:
 	ctx->name = "CUBEHASH";
-	switch (ctx->flags) {
-	default:
-	    ctx->flags = RPMDIGEST_FLAGS_256;
-	    /*@fallthrough@*/
-	case RPMDIGEST_FLAGS_512:
-	case RPMDIGEST_FLAGS_384:
-	case RPMDIGEST_FLAGS_256:
-	case RPMDIGEST_FLAGS_224:
-	    break;
-	}
-	ctx->digestsize = ctx->flags/8;
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(cubehash_hashState);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) cubehash_Init((cubehash_hashState *)ctx->param, (size_t)ctx->flags);
+	(void) cubehash_Init((cubehash_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) cubehash_Update;
 	ctx->Digest = (int (*)(void *, byte *)) cubehash_Final;
+	break;
+    case PGPHASHALGO_MD6_224: ctx->digestsize = 224/8; goto md6;
+    case PGPHASHALGO_MD6_256: ctx->digestsize = 256/8; goto md6;
+    case PGPHASHALGO_MD6_384: ctx->digestsize = 384/8; goto md6;
+    case PGPHASHALGO_MD6_512: ctx->digestsize = 512/8; goto md6;
+md6:
+	ctx->name = "MD6";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(md6_state);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) md6_init((md6_state *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	((md6_state *)ctx->param)->hashbitlen =		/* XXX WATCHOUT */
+				(int)(8 * ctx->digestsize);
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) md6_Update;
+	ctx->Digest = (int (*)(void *, byte *)) md6_final;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
     default:

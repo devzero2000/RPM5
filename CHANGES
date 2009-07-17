@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdigest: re-assign digest algo numbers, handle 224/256/384/512/1024
+	parameters within the digest algo name.
+    - jbj: rpmdigest: add md6 224/256/384/512 (tests failing atm, todo++).
     - jbj: rpmdigest: add cubehash 224/256/384/512.
     - jbj: rpmdigest: add keccak 224/256/384/512.
     - jbj: rpmdigest: add edon-r 224/256/384/512.
