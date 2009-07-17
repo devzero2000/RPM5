@@ -95,6 +95,7 @@ LIBRPMIO_0
     _Ferror;
     Fflush;
     _Fflush;
+    Fgetpos;
     Fileno;
     _Fileno;
     _fini;
@@ -105,10 +106,12 @@ LIBRPMIO_0
     _Fread;
     Fseek;
     _Fseek;
+    Fsetpos;
     Fstat;
     _Fstat;
     Fstrerror;
     _Fstrerror;
+    Ftell;
     ftpCmd;
     _ftp_debug;
     ftpOpen;
@@ -253,6 +256,7 @@ LIBRPMIO_0
     _Realpath;
     Rename;
     _Rename;
+    Rewind;
     Rewinddir;
     _Rewinddir;
     _RequestPass;

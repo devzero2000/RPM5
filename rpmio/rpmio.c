@@ -2426,7 +2426,8 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
     return (size_t) rc;
 }
 
-int Fseek(FD_t fd, _libio_off_t offset, int whence) {
+int Fseek(FD_t fd, _libio_off_t offset, int whence)
+{
     fdio_seek_function_t _seek;
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t o64 = offset;
@@ -2440,21 +2441,65 @@ int Fseek(FD_t fd, _libio_off_t offset, int whence) {
     FDSANE(fd);
 DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(fd)));
 
-    if (fdGetIo(fd) == fpio) {
-	FILE *fp;
-
-	/*@+voidabstract -nullpass@*/
-	fp = fdGetFILE(fd);
-	rc = fseek(fp, (long)offset, whence);
-	/*@=voidabstract =nullpass@*/
-	return rc;
-    }
+    if (fdGetIo(fd) == fpio)
+	return fseek(fdGetFILE(fd), (long)offset, whence);
 
     /*@-nullderef@*/
     _seek = FDIOVEC(fd, seek);
     /*@=nullderef@*/
 
     rc = (_seek ? _seek(fd, pos, whence) : -2);
+    return rc;
+}
+
+long Ftell(FD_t fd)
+{
+    long int rc = -2;
+
+    FDSANE(fd);
+
+    if (fdGetIo(fd) == fpio)
+	rc = ftell(fdGetFILE(fd));
+    else
+	errno = EBADF;
+DBGIO(fd, (stderr, "<== Ftell(%p) rc %ld %s\n", fd, rc, fdbg(fd)));
+    return rc;
+}
+
+void Rewind(FD_t fd)
+{
+    FDSANE(fd);
+DBGIO(fd, (stderr, "==> Rewind(%p) %s\n", fd, fdbg(fd)));
+
+    if (fdGetIo(fd) == fpio)
+	rewind(fdGetFILE(fd));
+}
+
+int Fgetpos(FD_t fd, fpos_t *pos)
+{
+    int rc = -2;
+
+    FDSANE(fd);
+
+    if (fdGetIo(fd) == fpio)
+	rc = fgetpos(fdGetFILE(fd), pos);
+    else
+	errno = EBADF;
+DBGIO(fd, (stderr, "<== Fgetpos(%p,%p) rc %d %s\n", fd, pos, rc, fdbg(fd)));
+    return rc;
+}
+
+int Fsetpos(FD_t fd, fpos_t *pos)
+{
+    int rc = -2;
+
+    FDSANE(fd);
+
+    if (fdGetIo(fd) == fpio)
+	return fgetpos(fdGetFILE(fd), pos);
+
+    errno = EBADF;
+DBGIO(fd, (stderr, "<== Fsetpos(%p,%p) rc %d %s\n", fd, pos, rc, fdbg(fd)));
     return rc;
 }
 

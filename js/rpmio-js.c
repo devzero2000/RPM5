@@ -197,6 +197,29 @@ _METHOD_DEBUG_ENTRY(_debug);
     return JS_TRUE;
 }
 
+#ifdef	NOTYET
+static JSBool
+rpmio_fgetpos(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
+    FD_t fd = ptr;
+    JSBool ok = JSVAL_TRUE;
+    int rc = -3;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+_rpmio_debug = -1;
+    if (fd) {
+	fpos_t pos = 0;
+	if (!Fgetpos(fd, &pos))
+	    rc = pos;
+    }
+_rpmio_debug = 0;
+    *rval = INT_TO_JSVAL(rc);
+    return ok;
+}
+#endif
+
 static JSBool
 rpmio_fileno(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -278,6 +301,43 @@ exit:
 }
 
 static JSBool
+rpmio_fseek(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
+    FD_t fd = ptr;
+    JSBool ok;
+    jsint _offset = 0;
+    jsint _whence = SEEK_CUR;
+    int rc = -3;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "/ii", &_offset, _whence)))
+	rc = (fd ? Fseek(fd, _offset, _whence) : -3);
+    *rval = INT_TO_JSVAL(rc);
+    return ok;
+}
+
+#ifdef	NOTYET
+static JSBool
+rpmio_fsetpos(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
+    FD_t fd = ptr;
+    JSBool ok;
+    jsint _offset = 0;
+    int rc = -3;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "i", &_offset))) {
+	fpos_t pos = _offset;
+	rc = (fd ? Fsetpos(fd, &pos) : -3);
+    }
+    *rval = INT_TO_JSVAL(rc);
+    return ok;
+}
+#endif
+
+static JSBool
 rpmio_fstat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
@@ -303,6 +363,20 @@ _METHOD_DEBUG_ENTRY(_debug);
 	*rval = JSVAL_VOID;		/* XXX goofy? */
 
     ok = JS_TRUE;
+    return ok;
+}
+
+static JSBool
+rpmio_ftell(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
+    FD_t fd = ptr;
+    JSBool ok = JSVAL_TRUE;
+    int rc = -3;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    rc = (int)(fd ? Ftell(fd) : -3);
+    *rval = INT_TO_JSVAL(rc);
     return ok;
 }
 
@@ -336,6 +410,23 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmio_rewind(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
+    FD_t fd = ptr;
+    JSBool ok = JSVAL_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    /* XXX should return fd object */
+    if (fd) {
+	Rewind(fd);
+	*rval = JSVAL_TRUE;
+    } else
+	*rval = JSVAL_FALSE;
+    return ok;
+}
+
 static JSFunctionSpec rpmio_funcs[] = {
     JS_FS("digestinit",	rpmio_digestinit,	0,0,0),
     JS_FS("digestfini",	rpmio_digestfini,	0,0,0),
@@ -343,12 +434,21 @@ static JSFunctionSpec rpmio_funcs[] = {
     JS_FS("fclose",	rpmio_fclose,		0,0,0),
     JS_FS("fdopen",	rpmio_fdopen,		0,0,0),
     JS_FS("ferror",	rpmio_ferror,		0,0,0),
-    JS_FS("fileno",	rpmio_fileno,		0,0,0),
     JS_FS("fflush",	rpmio_fflush,		0,0,0),
+#ifdef	NOTYET
+    JS_FS("fgetpos",	rpmio_fgetpos,		0,0,0),
+#endif
+    JS_FS("fileno",	rpmio_fileno,		0,0,0),
     JS_FS("fopen",	rpmio_fopen,		0,0,0),
     JS_FS("fread",	rpmio_fread,		0,0,0),
+    JS_FS("fseek",	rpmio_fseek,		0,0,0),
+#ifdef	NOTYET
+    JS_FS("fsetpos",	rpmio_fsetpos,		0,0,0),
+#endif
     JS_FS("fstat",	rpmio_fstat,		0,0,0),
+    JS_FS("ftell",	rpmio_ftell,		0,0,0),
     JS_FS("fwrite",	rpmio_fwrite,		0,0,0),
+    JS_FS("rewind",	rpmio_rewind,		0,0,0),
     JS_FS_END
 };
 

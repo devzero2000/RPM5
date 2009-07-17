@@ -65,4 +65,34 @@ ack("io.contentType", null);
 ack("io.contentDisposition", null);
 ack("io() instanceof Io;", true);
 
+ack("io(fn, 'r.fpio') instanceof Io;", true);
+ack("io.path", fn);
+ack("io.flags", 0x0);
+ack("io.mode", 0666);
+ack("io.cpioPos", 0);
+ack("io.bytesRemain", -1);
+ack("io.lastModified", 0);
+ack("io.contentLength", -1);
+ack("io.contentType", null);
+ack("io.contentDisposition", null);
+
+ack("io.fseek(5);", 0);
+ack("io.ftell();", 5);
+ack("io.rewind();", true);
+ack("io.ftell();", 0);
+
+ack("io.fread();", yadda);
+ack("io.fstat() instanceof St;", true);
+ack("io.fchown(-1,-1);", 0);
+ack("io.ferror();", true);
+ack("io.fileno();", 3);
+
+ack("io.cpioPos", 0);
+ack("io.bytesRemain", -1);
+ack("io.lastModified", 0);
+ack("io.contentLength", -1);
+ack("io.contentType", null);
+ack("io.contentDisposition", null);
+ack("io() instanceof Io;", true);
+
 if (loglvl) print("<-- Io.js");

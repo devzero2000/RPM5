@@ -155,6 +155,14 @@ size_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd)
 int Fseek(FD_t fd, _libio_off_t offset, int whence)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+long Ftell(FD_t fd)
+	/*@*/;
+void Rewind(FD_t fd)
+	/*@*/;
+int Fgetpos(FD_t fd, fpos_t *pos)
+	/*@*/;
+int Fsetpos(FD_t fd, fpos_t *pos)
+	/*@*/;
 
 /**
  * fclose(3) clone.
