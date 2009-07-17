@@ -204,6 +204,8 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SKEIN512	= 116,	/*!< (private) SKEIN-512 */
     PGPHASHALGO_SKEIN1024	= 117,	/*!< (private) SKEIN-1024 */
 
+    PGPHASHALGO_EDONR		= 118,	/*!< (private) EDON-R */
+
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp

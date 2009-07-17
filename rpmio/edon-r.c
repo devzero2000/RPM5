@@ -205,7 +205,7 @@ const u_int64_t i512p2[16] =
 }
 
 
-HashReturn edonr_Init(hashState *state, int hashbitlen)
+HashReturn edonr_Init(edonr_hashState *state, int hashbitlen)
 {
 	switch(hashbitlen)
 	{
@@ -244,8 +244,10 @@ HashReturn edonr_Init(hashState *state, int hashbitlen)
 
 
 
-HashReturn edonr_Update(hashState *state, const BitSequence *data, DataLength databitlen)
+HashReturn edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 {
+	const BitSequence *data = _data;
+	DataLength databitlen = 8 * _len;
 	u_int32_t *data32, *p256;
 	u_int32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
 	u_int32_t t8,  t9, t10, t11, t12, t13, t14, t15;
@@ -446,13 +448,13 @@ HashReturn edonr_Update(hashState *state, const BitSequence *data, DataLength da
 }
 
 
-HashReturn edonr_Final(hashState *state, BitSequence *hashval)
+HashReturn edonr_Final(edonr_hashState *state, BitSequence *hashval)
 {
-	u_int32_t *data32, *p256;
+	u_int32_t *data32, *p256 = NULL;
 	u_int32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
 	u_int32_t t8,  t9, t10, t11, t12, t13, t14, t15;
 
-	u_int64_t *data64, *p512;
+	u_int64_t *data64, *p512 = NULL;
 	u_int64_t tt0,  tt1,  tt2,  tt3,  tt4,  tt5,  tt6,  tt7; 
 	u_int64_t tt8,  tt9, tt10, tt11, tt12, tt13, tt14, tt15; 
 
@@ -654,14 +656,14 @@ HashReturn edonr_Final(hashState *state, BitSequence *hashval)
 	}
 }
 
-HashReturn edonr_Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval)
+HashReturn edonr_Hash(int hashbitlen, const void *_data, size_t _len, BitSequence *hashval)
 {
 	HashReturn qq;
-	hashState state;
+	edonr_hashState state;
 
 	qq = edonr_Init(&state, hashbitlen);
 	if (qq != SUCCESS) return(qq);
-	qq = edonr_Update(&state, data, databitlen);
+	qq = edonr_Update(&state, _data, _len);
 	if (qq != SUCCESS) return(qq);
 	qq = edonr_Final(&state, hashval);
 	return(qq);

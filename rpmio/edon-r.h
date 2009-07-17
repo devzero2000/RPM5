@@ -49,9 +49,9 @@ typedef struct {
 		Data512  p512[1];
     } pipe[1];
 	int unprocessed_bits;
-} hashState;
+} edonr_hashState;
 
-HashReturn edonr_Init(hashState *state, int hashbitlen);
-HashReturn edonr_Update(hashState *state, const BitSequence *data, DataLength databitlen);
-HashReturn edonr_Final(hashState *state, BitSequence *hashval);
-HashReturn edonr_Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+HashReturn edonr_Init(edonr_hashState *state, int hashbitlen);
+HashReturn edonr_Update(edonr_hashState *state, const void *_data, size_t _len);
+HashReturn edonr_Final(edonr_hashState *state, BitSequence *hashval);
+HashReturn edonr_Hash(int hashbitlen, const void *_data, size_t _len, BitSequence *hashval);

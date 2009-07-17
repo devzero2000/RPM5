@@ -9,6 +9,7 @@
 #include <rpmbc.h>
 
 #include "crc.h"
+#include "edon-r.h"
 #include "md2.h"
 #include "salsa10.h"
 #include "salsa20.h"
@@ -441,7 +442,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    break;
 	}
 	ctx->digestsize = ctx->flags/8;
-	ctx->datasize = SKEIN_256_BLOCK_BYTES;	/*  4*sizeof(uint64_t) */
+	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_256_Ctxt_t);
 /*@=sizeoftype@*/
@@ -467,7 +468,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    break;
 	}
 	ctx->digestsize = ctx->flags/8;
-	ctx->datasize = SKEIN_512_BLOCK_BYTES;	/*  8*sizeof(uint64_t) */
+	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_512_Ctxt_t);
 /*@=sizeoftype@*/
@@ -495,6 +496,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	    break;
 	}
 	ctx->digestsize = ctx->flags/8;
+	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein1024_Ctxt_t);
 /*@=sizeoftype@*/
@@ -503,6 +505,29 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein1024_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein1024_Final;
+	break;
+    case PGPHASHALGO_EDONR:
+	ctx->name = "EDON-R";
+	switch (ctx->flags) {
+	default:
+	    ctx->flags = RPMDIGEST_FLAGS_256;
+	    /*@fallthrough@*/
+	case RPMDIGEST_FLAGS_512:
+	case RPMDIGEST_FLAGS_384:
+	case RPMDIGEST_FLAGS_256:
+	case RPMDIGEST_FLAGS_224:
+	    break;
+	}
+	ctx->digestsize = ctx->flags/8;
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(edonr_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) edonr_Init((edonr_hashState *)ctx->param, (size_t)ctx->flags);
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) edonr_Update;
+	ctx->Digest = (int (*)(void *, byte *)) edonr_Final;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
     default:
