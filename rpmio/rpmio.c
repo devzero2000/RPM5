@@ -305,6 +305,15 @@ assert(fd != NULL);
 #ifdef WITH_XAR
     fd->xar = rpmxarFree(fd->xar, "fdFini");
 #endif
+#ifdef WITH_NEON
+#ifndef	NOTYET
+if (fd->req != NULL)
+fprintf(stderr, "*** %s: fd->req %p\n", __FUNCTION__, fd->req);
+fd->req = NULL;
+#else
+assert(fd->req == NULL);
+#endif
+#endif
     fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
 }
