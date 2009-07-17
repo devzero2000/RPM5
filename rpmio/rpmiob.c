@@ -17,6 +17,8 @@ static void rpmiobFini(void * _iob)
 {
     rpmiob iob = _iob;
 
+if (_rpmiob_debug)
+fprintf(stderr, "--> %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
     iob->b = _free(iob->b);
     iob->blen = 0;
     iob->allocated = 0;
@@ -42,6 +44,8 @@ static rpmiob rpmiobGetPool(/*@null@*/ rpmioPool pool)
 rpmiob rpmiobNew(size_t len)
 {
     rpmiob iob = rpmiobGetPool(_rpmiobPool);
+if (_rpmiob_debug)
+fprintf(stderr, "--> %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
     if (len == 0)
 	len = _rpmiob_chunk;
     iob->allocated = len;
@@ -55,6 +59,8 @@ rpmiob rpmiobEmpty(rpmiob iob)
 assert(iob != NULL);
     iob->b[0] = '\0';
     iob->blen = 0;
+if (_rpmiob_debug)
+fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
     return iob;
 }
 
@@ -64,6 +70,8 @@ rpmiob rpmiobRTrim(rpmiob iob)
 assert(iob != NULL);
     while (iob->blen > 0 && xisspace((int)iob->b[iob->blen-1]))
 	iob->b[--iob->blen] = (rpmuint8_t) '\0';
+if (_rpmiob_debug)
+fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
     return iob;
 }
 
@@ -87,12 +95,16 @@ assert(iob != NULL);
 	*tail = (rpmuint8_t) '\0';
     }
     iob->blen += ns;
+if (_rpmiob_debug)
+fprintf(stderr, "<-- %s(%p,%p,%u) %p[%u:%u] \"%s\"\n", __FUNCTION__, iob, s, (unsigned)nl, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated, s);
     return iob;
 }
 
 rpmuint8_t * rpmiobBuf(rpmiob iob)
 {
 assert(iob != NULL);
+if (_rpmiob_debug)
+fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
 /*@-retalias -retexpose -usereleased @*/
     return iob->b;
 /*@=retalias =retexpose =usereleased @*/
@@ -101,6 +113,8 @@ assert(iob != NULL);
 char * rpmiobStr(rpmiob iob)
 {
 assert(iob != NULL);
+if (_rpmiob_debug)
+fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n===============\n%s\n===============\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated, iob->b);
 /*@-retalias -retexpose -usereleased @*/
     return (char *) iob->b;
 /*@=retalias =retexpose =usereleased @*/
@@ -108,6 +122,8 @@ assert(iob != NULL);
 
 size_t rpmiobLen(rpmiob iob)
 {
+if (_rpmiob_debug)
+fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
     return (iob != NULL ? iob->blen : 0);
 }
 
