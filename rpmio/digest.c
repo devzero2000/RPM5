@@ -10,6 +10,18 @@
 
 #include "crc.h"
 
+#include "bmw.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	Data256
+#undef	Data512
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "cubehash.h"
 #undef	BitSequence
 #undef	DataLength
@@ -508,6 +520,23 @@ skein512:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein1024_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein1024_Final;
+	break;
+    case PGPHASHALGO_BMW_224: ctx->digestsize = 224/8; goto bmw;
+    case PGPHASHALGO_BMW_256: ctx->digestsize = 256/8; goto bmw;
+    case PGPHASHALGO_BMW_384: ctx->digestsize = 384/8; goto bmw;
+    case PGPHASHALGO_BMW_512: ctx->digestsize = 512/8; goto bmw;
+bmw:
+	ctx->name = "BMW";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(bmw_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) bmw_Init((bmw_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _bmw_Update;
+	ctx->Digest = (int (*)(void *, byte *)) bmw_Final;
 	break;
     case PGPHASHALGO_EDONR_224: ctx->digestsize = 224/8; goto edonr;
     case PGPHASHALGO_EDONR_256: ctx->digestsize = 256/8; goto edonr;

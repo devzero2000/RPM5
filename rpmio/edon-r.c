@@ -14,6 +14,7 @@ typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_U
 #define rotr64(x,n)   (((x) >> n) | ((x) << (64 - n)))
 
 /* EdonR224 initial double chaining pipe */
+static
 const u_int32_t i224p2[16] =
 {   0x00010203ul, 0x04050607ul, 0x08090a0bul, 0x0c0d0e0ful,
     0x10111213ul, 0x14151617ul, 0x18191a1bul, 0x1c1d1e1ful,
@@ -21,6 +22,7 @@ const u_int32_t i224p2[16] =
     0x30313233ul, 0x34353637ul, 0x38393a3bul, 0x3c3d3e3ful,
 };
 /* EdonR256 initial double chaining pipe */
+static
 const u_int32_t i256p2[16] =
 {   0x40414243ul, 0x44454647ul, 0x48494a4bul, 0x4c4d4e4ful,
     0x50515253ul, 0x54555657ul, 0x58595a5bul, 0x5c5d5e5ful,
@@ -29,6 +31,7 @@ const u_int32_t i256p2[16] =
 };
 
 /* EdonR384 initial double chaining pipe */
+static
 const u_int64_t i384p2[16] =
 {
     0x0001020304050607ull, 0x08090a0b0c0d0e0full,
@@ -42,6 +45,7 @@ const u_int64_t i384p2[16] =
 };
 
 /* EdonR512 initial double chaining pipe */
+static
 const u_int64_t i512p2[16] =
 {
     0x8081828384858687ull, 0x88898a8b8c8d8e8full,
