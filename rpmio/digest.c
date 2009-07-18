@@ -535,7 +535,9 @@ cubehash:
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
 	(void) cubehash_Init((cubehash_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
+				(int)(8 * ctx->digestsize),
+				(int)((ctx->flags >> 8) & 0xff),
+				(int)((ctx->flags     ) & 0xff));
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _cubehash_Update;
 	ctx->Digest = (int (*)(void *, byte *)) cubehash_Final;

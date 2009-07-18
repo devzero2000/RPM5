@@ -28,6 +28,8 @@ typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 } HashReturn;
 
 typedef struct {
   int hashbitlen;
+  int rounds;
+  int blockbytes;
   int pos; /* number of bits read into x from current block */
 #if defined(OPTIMIZE_SSE2)
   __m128i x[8];
@@ -36,7 +38,7 @@ typedef struct {
 #endif
 } hashState;
 
-HashReturn Init(hashState *state, int hashbitlen);
+HashReturn Init(hashState *state, int hashbitlen, int rounds, int blockbytes);
 
 HashReturn Update(hashState *state, const BitSequence *data,
                   DataLength databitlen);

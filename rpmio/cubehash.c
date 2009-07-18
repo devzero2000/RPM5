@@ -34,7 +34,7 @@ static void transform(hashState *state)
   x6 = _mm_load_si128(6 + state->x);
   x7 = _mm_load_si128(7 + state->x);
 
-  for (r = 0;r < CUBEHASH_ROUNDS;++r) {
+  for (r = 0;r < state->rounds;++r) {
     x4 = _mm_add_epi32(x0,x4);
     x5 = _mm_add_epi32(x1,x5);
     x6 = _mm_add_epi32(x2,x6);
@@ -97,7 +97,7 @@ static void transform(hashState *state)
   int r;
   myuint32 y[16];
 
-  for (r = 0;r < CUBEHASH_ROUNDS;++r) {
+  for (r = 0;r < state->rounds;++r) {
     for (i = 0;i < 16;++i) state->x[i + 16] += state->x[i];
     for (i = 0;i < 16;++i) y[i ^ 8] = state->x[i];
     for (i = 0;i < 16;++i) state->x[i] = ROTATE(y[i],7);
@@ -114,24 +114,29 @@ static void transform(hashState *state)
 }
 #endif	/* OPTIMIZE_SSE2 */
 
-HashReturn Init(hashState *state, int hashbitlen)
+HashReturn Init(hashState *state, int hashbitlen, int rounds, int blockbytes)
 {
   int i;
-  int j;
 
   if (hashbitlen < 8) return BAD_HASHBITLEN;
   if (hashbitlen > 512) return BAD_HASHBITLEN;
   if (hashbitlen != 8 * (hashbitlen / 8)) return BAD_HASHBITLEN;
 
+  /* Sanity checks */
+  if (rounds <= 0 || rounds > 32) rounds = CUBEHASH_ROUNDS;
+  if (blockbytes <= 0 || blockbytes >= 256) blockbytes = CUBEHASH_BLOCKBYTES;
+
   state->hashbitlen = hashbitlen;
+  state->rounds = rounds;
+  state->blockbytes = blockbytes;
 #if defined(OPTIMIZE_SSE2)
   for (i = 0;i < 8;++i) state->x[i] = _mm_set_epi32(0,0,0,0);
-  state->x[0] = _mm_set_epi32(0,CUBEHASH_ROUNDS,CUBEHASH_BLOCKBYTES,hashbitlen / 8);
+  state->x[0] = _mm_set_epi32(0,state->rounds,state->blockbytes,hashbitlen / 8);
 #else
   for (i = 0;i < 32;++i) state->x[i] = 0;
   state->x[0] = hashbitlen / 8;
-  state->x[1] = CUBEHASH_BLOCKBYTES;
-  state->x[2] = CUBEHASH_ROUNDS;
+  state->x[1] = state->blockbytes;
+  state->x[2] = state->rounds;
 #endif
   for (i = 0;i < 10;++i) transform(state);
   state->pos = 0;
@@ -155,7 +160,7 @@ HashReturn Update(hashState *state, const BitSequence *data,
     data += 1;
     databitlen -= 8;
     state->pos += 8;
-    if (state->pos == 8 * CUBEHASH_BLOCKBYTES) {
+    if (state->pos == 8 * state->blockbytes) {
       transform(state);
       state->pos = 0;
     }
@@ -204,7 +209,7 @@ HashReturn Hash(int hashbitlen, const BitSequence *data,
                 DataLength databitlen, BitSequence *hashval)
 {
   hashState state;
-  if (Init(&state,hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
+  if (Init(&state,hashbitlen,0,0) != SUCCESS) return BAD_HASHBITLEN;
   Update(&state,data,databitlen);
   return Final(&state,hashval);
 }
