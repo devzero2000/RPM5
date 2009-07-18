@@ -46,6 +46,17 @@
 
 #include "md2.h"
 #include "md6.h"
+
+#include "shabal.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "salsa10.h"
 #include "salsa20.h"
 #include "skein.h"
@@ -619,6 +630,23 @@ md6:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md6_Update;
 	ctx->Digest = (int (*)(void *, byte *)) md6_final;
+	break;
+    case PGPHASHALGO_SHABAL_224: ctx->digestsize = 224/8; goto shabal;
+    case PGPHASHALGO_SHABAL_256: ctx->digestsize = 256/8; goto shabal;
+    case PGPHASHALGO_SHABAL_384: ctx->digestsize = 384/8; goto shabal;
+    case PGPHASHALGO_SHABAL_512: ctx->digestsize = 512/8; goto shabal;
+shabal:
+	ctx->name = "SHABAL";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(shabal_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) shabal_Init((shabal_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _shabal_Update;
+	ctx->Digest = (int (*)(void *, byte *)) shabal_Final;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
     default:

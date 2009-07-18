@@ -231,6 +231,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_BMW_384		= 168+2,/*!< (private) BMW-384 */
     PGPHASHALGO_BMW_512		= 168+3,/*!< (private) BMW-512 */
 
+    PGPHASHALGO_SHABAL_224	= 176+0,/*!< (private) SHABAL-224 */
+    PGPHASHALGO_SHABAL_256	= 176+1,/*!< (private) SHABAL-256 */
+    PGPHASHALGO_SHABAL_384	= 176+2,/*!< (private) SHABAL-384 */
+    PGPHASHALGO_SHABAL_512	= 176+3,/*!< (private) SHABAL-512 */
+
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp
