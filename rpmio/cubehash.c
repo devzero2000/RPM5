@@ -5,8 +5,6 @@
 
 #if defined(OPTIMIZE_SSE2)
 
-#include <emmintrin.h>
-
 static void transform(hashState *state)
 {
   int r;
@@ -27,14 +25,14 @@ static void transform(hashState *state)
   __m128i y6;
   __m128i y7;
 
-  x0 = _mm_loadu_si128(0 + (__m128i *) state->x);
-  x1 = _mm_loadu_si128(1 + (__m128i *) state->x);
-  x2 = _mm_loadu_si128(2 + (__m128i *) state->x);
-  x3 = _mm_loadu_si128(3 + (__m128i *) state->x);
-  x4 = _mm_loadu_si128(4 + (__m128i *) state->x);
-  x5 = _mm_loadu_si128(5 + (__m128i *) state->x);
-  x6 = _mm_loadu_si128(6 + (__m128i *) state->x);
-  x7 = _mm_loadu_si128(7 + (__m128i *) state->x);
+  x0 = _mm_load_si128(0 + state->x);
+  x1 = _mm_load_si128(1 + state->x);
+  x2 = _mm_load_si128(2 + state->x);
+  x3 = _mm_load_si128(3 + state->x);
+  x4 = _mm_load_si128(4 + state->x);
+  x5 = _mm_load_si128(5 + state->x);
+  x6 = _mm_load_si128(6 + state->x);
+  x7 = _mm_load_si128(7 + state->x);
 
   for (r = 0;r < CUBEHASH_ROUNDS;++r) {
     x4 = _mm_add_epi32(x0,x4);
@@ -79,14 +77,14 @@ static void transform(hashState *state)
     x7 = _mm_shuffle_epi32(x7,0xb1);
   }
 
-  _mm_storeu_si128(0 + (__m128i *) state->x,x0);
-  _mm_storeu_si128(1 + (__m128i *) state->x,x1);
-  _mm_storeu_si128(2 + (__m128i *) state->x,x2);
-  _mm_storeu_si128(3 + (__m128i *) state->x,x3);
-  _mm_storeu_si128(4 + (__m128i *) state->x,x4);
-  _mm_storeu_si128(5 + (__m128i *) state->x,x5);
-  _mm_storeu_si128(6 + (__m128i *) state->x,x6);
-  _mm_storeu_si128(7 + (__m128i *) state->x,x7);
+  _mm_store_si128(0 + state->x,x0);
+  _mm_store_si128(1 + state->x,x1);
+  _mm_store_si128(2 + state->x,x2);
+  _mm_store_si128(3 + state->x,x3);
+  _mm_store_si128(4 + state->x,x4);
+  _mm_store_si128(5 + state->x,x5);
+  _mm_store_si128(6 + state->x,x6);
+  _mm_store_si128(7 + state->x,x7);
 }
 
 #else	/* OPTIMIZE_SSE2 */
@@ -126,25 +124,34 @@ HashReturn Init(hashState *state, int hashbitlen)
   if (hashbitlen != 8 * (hashbitlen / 8)) return BAD_HASHBITLEN;
 
   state->hashbitlen = hashbitlen;
+#if defined(OPTIMIZE_SSE2)
+  for (i = 0;i < 8;++i) state->x[i] = _mm_set_epi32(0,0,0,0);
+  state->x[0] = _mm_set_epi32(0,CUBEHASH_ROUNDS,CUBEHASH_BLOCKBYTES,hashbitlen / 8);
+#else
   for (i = 0;i < 32;++i) state->x[i] = 0;
   state->x[0] = hashbitlen / 8;
   state->x[1] = CUBEHASH_BLOCKBYTES;
   state->x[2] = CUBEHASH_ROUNDS;
+#endif
   for (i = 0;i < 10;++i) transform(state);
   state->pos = 0;
   return SUCCESS;
 }
 
 HashReturn Update(hashState *state, const BitSequence *data,
-		DataLength databitlen)
+                  DataLength databitlen)
 {
   /* caller promises us that previous data had integral number of bytes */
   /* so state->pos is a multiple of 8 */
 
   while (databitlen >= 8) {
+#if defined(OPTIMIZE_SSE2)
+    ((unsigned char *) state->x)[state->pos / 8] ^= *data;
+#else
     myuint32 u = *data;
     u <<= 8 * ((state->pos / 8) % 4);
     state->x[state->pos / 32] ^= u;
+#endif
     data += 1;
     databitlen -= 8;
     state->pos += 8;
@@ -154,9 +161,13 @@ HashReturn Update(hashState *state, const BitSequence *data,
     }
   }
   if (databitlen > 0) {
+#if defined(OPTIMIZE_SSE2)
+    ((unsigned char *) state->x)[state->pos / 8] ^= *data;
+#else
     myuint32 u = *data;
     u <<= 8 * ((state->pos / 8) % 4);
     state->x[state->pos / 32] ^= u;
+#endif
     state->pos += databitlen;
   }
   return SUCCESS;
@@ -165,6 +176,15 @@ HashReturn Update(hashState *state, const BitSequence *data,
 HashReturn Final(hashState *state, BitSequence *hashval)
 {
   int i;
+
+#if defined(OPTIMIZE_SSE2)
+  ((unsigned char *) state->x)[state->pos / 8] ^= (128 >> (state->pos % 8));
+  transform(state);
+  state->x[7] = _mm_xor_si128(state->x[7],_mm_set_epi32(1,0,0,0));
+  for (i = 0;i < 10;++i) transform(state);
+  for (i = 0;i < state->hashbitlen / 8;++i)
+    hashval[i] = ((unsigned char *) state->x)[i];
+#else
   myuint32 u;
 
   u = (128 >> (state->pos % 8));
@@ -173,7 +193,9 @@ HashReturn Final(hashState *state, BitSequence *hashval)
   transform(state);
   state->x[31] ^= 1;
   for (i = 0;i < 10;++i) transform(state);
-  for (i = 0;i < state->hashbitlen / 8;++i) hashval[i] = state->x[i / 4] >> (8 * (i % 4));
+  for (i = 0;i < state->hashbitlen / 8;++i)
+    hashval[i] = state->x[i / 4] >> (8 * (i % 4));
+#endif
 
   return SUCCESS;
 }
@@ -182,7 +204,7 @@ HashReturn Hash(int hashbitlen, const BitSequence *data,
                 DataLength databitlen, BitSequence *hashval)
 {
   hashState state;
-  if (Init(&state, hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
-  Update(&state, data, databitlen);
-  return Final(&state, hashval);
+  if (Init(&state,hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
+  Update(&state,data,databitlen);
+  return Final(&state,hashval);
 }

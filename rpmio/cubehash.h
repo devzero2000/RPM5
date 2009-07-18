@@ -12,16 +12,28 @@
 #define	Final		cubehash_Final
 #define	Hash		cubehash_Hash
 
+#if defined(__SSE2__)
+#define	OPTIMIZE_SSE2
+#endif
+
+#if defined(OPTIMIZE_SSE2)
+#include <emmintrin.h>
+#else
+typedef unsigned int myuint32; /* must be exactly 32 bits */
+#endif
+
 typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;
 typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 } HashReturn;
 
-typedef unsigned int myuint32; /* must be exactly 32 bits */
-
 typedef struct {
   int hashbitlen;
   int pos; /* number of bits read into x from current block */
+#if defined(OPTIMIZE_SSE2)
+  __m128i x[8];
+#else
   myuint32 x[32];
+#endif
 } hashState;
 
 HashReturn Init(hashState *state, int hashbitlen);
