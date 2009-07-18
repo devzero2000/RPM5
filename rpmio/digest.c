@@ -537,7 +537,7 @@ cubehash:
 	(void) cubehash_Init((cubehash_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) cubehash_Update;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _cubehash_Update;
 	ctx->Digest = (int (*)(void *, byte *)) cubehash_Final;
 	break;
     case PGPHASHALGO_MD6_224: ctx->digestsize = 224/8; goto md6;

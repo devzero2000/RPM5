@@ -1,14 +1,11 @@
 #define CUBEHASH_ROUNDS 8
 #define CUBEHASH_BLOCKBYTES 1
 
-#include <string.h>
 #include "cubehash.h"
-
-typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 } HashReturn;
 
 #define ROTATE(a,b) (((a) << (b)) | ((a) >> (32 - b)))
 
-static void transform(cubehash_hashState *state)
+static void transform(hashState *state)
 {
   int i;
   int r;
@@ -30,7 +27,7 @@ static void transform(cubehash_hashState *state)
   }
 }
 
-int cubehash_Init(cubehash_hashState *state, int hashbitlen)
+HashReturn Init(hashState *state, int hashbitlen)
 {
   int i;
   int j;
@@ -49,10 +46,9 @@ int cubehash_Init(cubehash_hashState *state, int hashbitlen)
   return SUCCESS;
 }
 
-int cubehash_Update(cubehash_hashState *state, const unsigned char *data, size_t _len)
+HashReturn Update(hashState *state, const BitSequence *data,
+		DataLength databitlen)
 {
-  unsigned long long databitlen = 8 * _len;
-
   /* caller promises us that previous data had integral number of bytes */
   /* so state->pos is a multiple of 8 */
 
@@ -77,7 +73,7 @@ int cubehash_Update(cubehash_hashState *state, const unsigned char *data, size_t
   return SUCCESS;
 }
 
-int cubehash_Final(cubehash_hashState *state, unsigned char *hashval)
+HashReturn Final(hashState *state, BitSequence *hashval)
 {
   int i;
   myuint32 u;
@@ -93,11 +89,11 @@ int cubehash_Final(cubehash_hashState *state, unsigned char *hashval)
   return SUCCESS;
 }
 
-int cubehash_Hash(int hashbitlen, const unsigned char *data,
-                size_t _len, unsigned char *hashval)
+HashReturn Hash(int hashbitlen, const BitSequence *data,
+                DataLength databitlen, BitSequence *hashval)
 {
-  cubehash_hashState state;
-  if (cubehash_Init(&state, hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
-  cubehash_Update(&state, data, _len);
-  return cubehash_Final(&state, hashval);
+  hashState state;
+  if (Init(&state, hashbitlen) != SUCCESS) return BAD_HASHBITLEN;
+  Update(&state, data, databitlen);
+  return Final(&state, hashval);
 }
