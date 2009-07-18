@@ -9,9 +9,29 @@
 #include <rpmbc.h>
 
 #include "crc.h"
+
 #include "cubehash.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "edon-r.h"
+
 #include "keccak.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "md2.h"
 #include "md6.h"
 #include "salsa10.h"
@@ -520,7 +540,7 @@ keccak:
 	(void) keccak_Init((keccak_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) keccak_Update;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _keccak_Update;
 	ctx->Digest = (int (*)(void *, byte *)) keccak_Final;
 	break;
     case PGPHASHALGO_CUBEHASH_224: ctx->digestsize = 224/8; goto cubehash;

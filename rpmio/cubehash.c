@@ -3,6 +3,8 @@
 
 #include "cubehash.h"
 
+enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 };
+
 #if defined(OPTIMIZE_SSE2)
 
 static void transform(hashState *state)

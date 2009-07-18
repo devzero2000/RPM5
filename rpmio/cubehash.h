@@ -4,8 +4,8 @@
 #include <string.h>
 #define	BitSequence	cubehash_BitSequence
 #define	DataLength	cubehash_DataLength
-#define	HashReturn	cubehash_HashReturn
 #define	hashState	cubehash_hashState
+#define	HashReturn	int
 
 #define	Init		cubehash_Init
 #define	Update		cubehash_Update
@@ -24,7 +24,6 @@ typedef unsigned int myuint32; /* must be exactly 32 bits */
 
 typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;
-typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 } HashReturn;
 
 typedef struct {
   int hashbitlen;

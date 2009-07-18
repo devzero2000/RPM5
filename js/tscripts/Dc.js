@@ -270,8 +270,8 @@ ack("keccak224.init(PGPHASHALGO_KECCAK_224);", true);
 ack("keccak224.algo", PGPHASHALGO_KECCAK_224);
 ack("keccak224.asn1", null);
 ack("keccak224.name", "KECCAK");
-ack("keccak224.update('');", true);
-ack("keccak224.fini();", '6c60c1d4dc10aee01988c45a33b38bc3045971724ce7e83cdda61635');
+ack("keccak224.update(str);", true);
+ack("keccak224.fini();", '78e64e68f6be46a65dfc1a255c3c5ad6e1ab24be22260ddf059d8dd7');
 
 var keccak256 = new Dc(PGPHASHALGO_KECCAK_256);
 ack("keccak256('');", 'bcde039a63f98b125e7fe5cb8999c05dab163f857bcae719fb09b8d5e1da6f0c');
@@ -279,8 +279,8 @@ ack("keccak256.init(PGPHASHALGO_KECCAK_256);", true);
 ack("keccak256.algo", PGPHASHALGO_KECCAK_256);
 ack("keccak256.asn1", null);
 ack("keccak256.name", "KECCAK");
-ack("keccak256.update('');", true);
-ack("keccak256.fini();", 'bcde039a63f98b125e7fe5cb8999c05dab163f857bcae719fb09b8d5e1da6f0c');
+ack("keccak256.update(str);", true);
+ack("keccak256.fini();", '4e51e1369fe550ba6daeba7068701a653c1216762f41427d976789345687f056');
 
 var keccak384 = new Dc(PGPHASHALGO_KECCAK_384);
 ack("keccak384('');", '3f65c0fbe79d43f11d844a448a61b8316db1b681c252f9f5f3fd4da255a655187cff6c0ef96c8c9e7df899a36aa783a9');
@@ -288,8 +288,8 @@ ack("keccak384.init(PGPHASHALGO_KECCAK_384);", true);
 ack("keccak384.algo", PGPHASHALGO_KECCAK_384);
 ack("keccak384.asn1", null);
 ack("keccak384.name", "KECCAK");
-ack("keccak384.update('');", true);
-ack("keccak384.fini();", '3f65c0fbe79d43f11d844a448a61b8316db1b681c252f9f5f3fd4da255a655187cff6c0ef96c8c9e7df899a36aa783a9');
+ack("keccak384.update(str);", true);
+ack("keccak384.fini();", 'bf1c5ae872a458211fbe9fd263da97341697003d36f315148d17f7d407caad126443581a2c7c86aa91f5de4ee6375963');
 
 var keccak512 = new Dc(PGPHASHALGO_KECCAK_512);
 ack("keccak512('');", '8596f8df2e856ec888823da8ccc914139f31baee6aa5c37dbe30bddbfd75c63cdc205f15f30faa348e27b5f90495b339a606e3c84bfcdcd55e88b0e178b56feb');
@@ -297,8 +297,8 @@ ack("keccak512.init(PGPHASHALGO_KECCAK_512);", true);
 ack("keccak512.algo", PGPHASHALGO_KECCAK_512);
 ack("keccak512.asn1", null);
 ack("keccak512.name", "KECCAK");
-ack("keccak512.update('');", true);
-ack("keccak512.fini();", '8596f8df2e856ec888823da8ccc914139f31baee6aa5c37dbe30bddbfd75c63cdc205f15f30faa348e27b5f90495b339a606e3c84bfcdcd55e88b0e178b56feb');
+ack("keccak512.update(str);", true);
+ack("keccak512.fini();", '4a2e21878d2785dffb751bb0c635e1f5780152922ffe7ef5342f7442d877754a3f866cd5b2d9f2711b02b24f64e437e4484a8d24b7878d288e9c550729ff954e');
 
 var cubehash224 = new Dc(PGPHASHALGO_CUBEHASH_224);
 ack("cubehash224('');", 'b5a6f6cb6d4100dcda8f575c694f15b2f7c8c5ed145608a42a89c7ca');

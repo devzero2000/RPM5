@@ -14,6 +14,19 @@ http://keccak.noekeon.org/
 #ifndef _KeccakNISTInterface_h_
 #define _KeccakNISTInterface_h_
 
+#define	BitSequence	keccak_BitSequence
+#define	DataLength	keccak_DataLength
+#define	hashState	keccak_hashState
+#define	HashReturn	int
+
+#define	Init		keccak_Init
+#define	Update		keccak_Update
+#define	Final		keccak_Final
+#define	Hash		keccak_Hash
+
+typedef unsigned char BitSequence;
+typedef unsigned long long DataLength;
+
 #define KeccakPermutationSize 1600
 #define KeccakPermutationSizeInBytes (KeccakPermutationSize/8)
 #define KeccakMaximumRate 1024
@@ -37,13 +50,20 @@ ALIGN typedef struct {
     unsigned int bitsInQueue;
     int squeezing;
     unsigned int bitsAvailableForSqueezing;
-} keccak_hashState;
+} hashState;
 
-int keccak_Init(keccak_hashState *state, int hashbitlen);
-int keccak_Update(keccak_hashState *state, const void *_data, size_t _len);
-int keccak_Final(keccak_hashState *state, unsigned char *_hashval);
-int keccak_Squeeze(keccak_hashState *state, unsigned char *_output, unsigned long long _outputLength);
+HashReturn Init(hashState *state, int hashbitlen);
+HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
+HashReturn Final(hashState *state, BitSequence *_hashval);
+HashReturn Squeeze(hashState *state, BitSequence *output, DataLength outputLength);
 
-int keccak_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *hashval);
+HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+
+/* Impedance match bytes -> bits length. */
+static inline
+int _keccak_Update(void * param, const void * _data, size_t _len)
+{
+    return Update(param, _data, (DataLength)(8 * _len));
+}
 
 #endif
