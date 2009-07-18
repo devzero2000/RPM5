@@ -49,6 +49,11 @@ const PGPHASHALGO_SKEIN_384	= 160+2;	/*!< (private) SKEIN-384 */
 const PGPHASHALGO_SKEIN_512	= 160+3;	/*!< (private) SKEIN-512 */
 const PGPHASHALGO_SKEIN_1024	= 160+4;	/*!< (private) SKEIN-1024 */
 
+const PGPHASHALGO_BMW_224	= 168+0;	/*!< (private) BMW-224 */
+const PGPHASHALGO_BMW_256	= 168+1;	/*!< (private) BMW-256 */
+const PGPHASHALGO_BMW_384	= 168+2;	/*!< (private) BMW-384 */
+const PGPHASHALGO_BMW_512	= 168+3;	/*!< (private) BMW-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -227,6 +232,42 @@ ack("skein1024.asn1", null);
 ack("skein1024.name", "SKEIN1024");
 ack("skein1024.update('');", true);
 ack("skein1024.fini();", '7bc3ce31c035df3c7a7d559bc9d9454f879f48497cc39e6d14e8190498455f396f45590405c4a15bd0ab29f5467d9132802f4354376ee864ad9f200e39a3d09b9ad06e9d0f656cf91ed9deac13a7a67a82ab983f52133129cac2a4dc13fd29c36ca6c72d6dcc6c82c66797f6b7607cb0e0f9006a27b83b60c59e4ba18de233e0');
+
+var bmw224 = new Dc(PGPHASHALGO_BMW_224);
+ack("bmw224('');", 'bdf29a829d3f42d50604acb5ad1a851a8ec684a86ff7c4e791aad501');
+ack("bmw224.init(PGPHASHALGO_BMW_224);", true);
+ack("bmw224.algo", PGPHASHALGO_BMW_224);
+ack("bmw224.asn1", null);
+ack("bmw224.name", "BMW");
+ack("bmw224.update(str);", true);
+ack("bmw224.fini();", '26088053c93cbc480ad53c34fc66fff0b4f1341adb855154fa15ee54');
+
+var bmw256 = new Dc(PGPHASHALGO_BMW_256);
+ack("bmw256('');", '4c10f8ad695fff1fb275d175b44cbe41c40a53a166d0470b45bab2d9afb6e5c5');
+ack("bmw256.init(PGPHASHALGO_BMW_256);", true);
+ack("bmw256.algo", PGPHASHALGO_BMW_256);
+ack("bmw256.asn1", null);
+ack("bmw256.name", "BMW");
+ack("bmw256.update(str);", true);
+ack("bmw256.fini();", '919905e2d111e6f57cb42e5e31c9240eb0670c1919718a5c1b10e61fc5124d25');
+
+var bmw384 = new Dc(PGPHASHALGO_BMW_384);
+ack("bmw384('');", '62f300cced944e44fdd4e51e809c09eeefd31ee58bf977f29b0f475cb16c2f557b723553b9ab563e01d21a11e9d728e2');
+ack("bmw384.init(PGPHASHALGO_BMW_384);", true);
+ack("bmw384.algo", PGPHASHALGO_BMW_384);
+ack("bmw384.asn1", null);
+ack("bmw384.name", "BMW");
+ack("bmw384.update(str);", true);
+ack("bmw384.fini();", '1ef8b57640c0419e1f8c0d7ebc4196ea31fdb5fb9d2350c80db002882f59d3d1005899cd98353751840e34f619ec7abc');
+
+var bmw512 = new Dc(PGPHASHALGO_BMW_512);
+ack("bmw512('');", '73db7b1dc6def4ddf2f94a22e1f6d2162b3123828369ff4fd750832aede94e52d4d5c8b866860424991527175b6f62dbe0f764ac18290b92a26812d641cd5287');
+ack("bmw512.init(PGPHASHALGO_BMW_512);", true);
+ack("bmw512.algo", PGPHASHALGO_BMW_512);
+ack("bmw512.asn1", null);
+ack("bmw512.name", "BMW");
+ack("bmw512.update(str);", true);
+ack("bmw512.fini();", 'ded83592522d34271257b338337559204949bc4dbd9a6e66148393575673bae87334b76a3a3fc2734138f3074985ac8af8ff71ce0ca31cd7645df30849936dcf');
 
 var edonr224 = new Dc(PGPHASHALGO_EDONR_224);
 ack("edonr224('');", 'a9c2bc54208be171cdfd054d21d97c1f4c79e822d8d9fcdbcb1d602f');
