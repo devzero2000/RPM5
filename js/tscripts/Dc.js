@@ -336,41 +336,42 @@ ack("cubehash512.name", "CUBEHASH");
 ack("cubehash512.update('');", true);
 ack("cubehash512.fini();", '90bc3f2948f7374065a811f1e47a208a53b1a2f3be1c0072759ed49c9c6c7f28f26eb30d5b0658c563077d599da23f97df0c2c0ac6cce734ffe87b2e76ff7294');
 
+// XXX md6sum, not NIST, values used as test vectors.
 var md6_224 = new Dc(PGPHASHALGO_MD6_224);
-ack("md6_224('');", '');
+ack("md6_224('');", 'd2091aa2ad17f38c51ade2697f24cafc3894c617c77ffe10fdc7abcb');
 ack("md6_224.init(PGPHASHALGO_MD6_224);", true);
 ack("md6_224.algo", PGPHASHALGO_MD6_224);
 ack("md6_224.asn1", null);
 ack("md6_224.name", "MD6");
 ack("md6_224.update('');", true);
-ack("md6_224.fini();", '');
+ack("md6_224.fini();", 'd2091aa2ad17f38c51ade2697f24cafc3894c617c77ffe10fdc7abcb');
 
 var md6_256 = new Dc(PGPHASHALGO_MD6_256);
-ack("md6_256('');", '');
+ack("md6_256('');", 'bca38b24a804aa37d821d31af00f5598230122c5bbfc4c4ad5ed40e4258f04ca');
 ack("md6_256.init(PGPHASHALGO_MD6_256);", true);
 ack("md6_256.algo", PGPHASHALGO_MD6_256);
 ack("md6_256.asn1", null);
 ack("md6_256.name", "MD6");
 ack("md6_256.update('');", true);
-ack("md6_256.fini();", '');
+ack("md6_256.fini();", 'bca38b24a804aa37d821d31af00f5598230122c5bbfc4c4ad5ed40e4258f04ca');
 
 var md6_384 = new Dc(PGPHASHALGO_MD6_384);
-ack("md6_384('');", '');
+ack("md6_384('');", 'b0bafffceebe856c1eff7e1ba2f539693f828b532ebf60ae9c16cbc3499020401b942ac25b310b2227b2954ccacc2f1f');
 ack("md6_384.init(PGPHASHALGO_MD6_384);", true);
 ack("md6_384.algo", PGPHASHALGO_MD6_384);
 ack("md6_384.asn1", null);
 ack("md6_384.name", "MD6");
 ack("md6_384.update('');", true);
-ack("md6_384.fini();", '');
+ack("md6_384.fini();", 'b0bafffceebe856c1eff7e1ba2f539693f828b532ebf60ae9c16cbc3499020401b942ac25b310b2227b2954ccacc2f1f');
 
 var md6_512 = new Dc(PGPHASHALGO_MD6_512);
-ack("md6_512('');", '');
+ack("md6_512('');", '6b7f33821a2c060ecdd81aefddea2fd3c4720270e18654f4cb08ece49ccb469f8beeee7c831206bd577f9f2630d9177979203a9489e47e04df4e6deaa0f8e0c0');
 ack("md6_512.init(PGPHASHALGO_MD6_512);", true);
 ack("md6_512.algo", PGPHASHALGO_MD6_512);
 ack("md6_512.asn1", null);
 ack("md6_512.name", "MD6");
 ack("md6_512.update('');", true);
-ack("md6_512.fini();", '');
+ack("md6_512.fini();", '6b7f33821a2c060ecdd81aefddea2fd3c4720270e18654f4cb08ece49ccb469f8beeee7c831206bd577f9f2630d9177979203a9489e47e04df4e6deaa0f8e0c0');
 
 var tiger192 = new Dc(PGPHASHALGO_TIGER192);
 ack("tiger192(str);", '2aab1484e8c158f2bfb8c5ff41b57a525129131c957b5f93');

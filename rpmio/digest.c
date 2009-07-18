@@ -551,10 +551,21 @@ md6:
 	ctx->paramsize = sizeof(md6_state);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
+#ifndef	DYING	/* XXX the default md6_init() is gud enuf. */
 	(void) md6_init((md6_state *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	((md6_state *)ctx->param)->hashbitlen =		/* XXX WATCHOUT */
 				(int)(8 * ctx->digestsize);
+#else
+	{   int d = (8 * ctx->digestsize);	/* no. of bits in digest */
+	    int L = md6_default_L;		/* no. of parallel passes */
+	    unsigned char *K = NULL;		/* key */
+	    int keylen = 0;			/* key length (bytes) */
+	    int r = md6_default_r(d, keylen);	/* no. of rounds */
+	    (void) md6_full_init((md6_state *)ctx->param,
+			d, K, keylen, L, r);
+	}
+#endif
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md6_Update;
 	ctx->Digest = (int (*)(void *, byte *)) md6_final;
