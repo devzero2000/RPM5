@@ -256,6 +256,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_ARIRANG_384	= 208+2,/*!< (private) ARIRANG-384 */
     PGPHASHALGO_ARIRANG_512	= 208+3,/*!< (private) ARIRANG-512 */
 
+    PGPHASHALGO_LUFFA_224	= 216+0,/*!< (private) LUFFA-224 */
+    PGPHASHALGO_LUFFA_256	= 216+1,/*!< (private) LUFFA-256 */
+    PGPHASHALGO_LUFFA_384	= 216+2,/*!< (private) LUFFA-384 */
+    PGPHASHALGO_LUFFA_512	= 216+3,/*!< (private) LUFFA-512 */
+
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp

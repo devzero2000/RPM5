@@ -79,6 +79,11 @@ const PGPHASHALGO_ARIRANG_256	= 208+1;	/*!< (private) ARIRANG-256 */
 const PGPHASHALGO_ARIRANG_384	= 208+2;	/*!< (private) ARIRANG-384 */
 const PGPHASHALGO_ARIRANG_512	= 208+3;	/*!< (private) ARIRANG-512 */
 
+const PGPHASHALGO_LUFFA_224	= 216+0;	/*!< (private) LUFFA-224 */
+const PGPHASHALGO_LUFFA_256	= 216+1;	/*!< (private) LUFFA-256 */
+const PGPHASHALGO_LUFFA_384	= 216+2;	/*!< (private) LUFFA-384 */
+const PGPHASHALGO_LUFFA_512	= 216+3;	/*!< (private) LUFFA-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -437,6 +442,42 @@ ack("keccak512.asn1", null);
 ack("keccak512.name", "KECCAK");
 ack("keccak512.update(str);", true);
 ack("keccak512.fini();", '4a2e21878d2785dffb751bb0c635e1f5780152922ffe7ef5342f7442d877754a3f866cd5b2d9f2711b02b24f64e437e4484a8d24b7878d288e9c550729ff954e');
+
+var luffa_224 = new Dc(PGPHASHALGO_LUFFA_224);
+ack("luffa_224('');", 'd69dcfd468dc331d5159c5c40cd1877e9b8ea2a50e6a7245630286ed');
+ack("luffa_224.init(PGPHASHALGO_LUFFA_224);", true);
+ack("luffa_224.algo", PGPHASHALGO_LUFFA_224);
+ack("luffa_224.asn1", null);
+ack("luffa_224.name", "LUFFA");
+ack("luffa_224.update(str);", true);
+ack("luffa_224.fini();", 'f1d566a4b469a38ea31717dbb35d1bb9ac184ec2c08ee58c31bfcbc6');
+
+var luffa_256 = new Dc(PGPHASHALGO_LUFFA_256);
+ack("luffa_256('');", 'd69dcfd468dc331d5159c5c40cd1877e9b8ea2a50e6a7245630286edb5924b2e');
+ack("luffa_256.init(PGPHASHALGO_LUFFA_256);", true);
+ack("luffa_256.algo", PGPHASHALGO_LUFFA_256);
+ack("luffa_256.asn1", null);
+ack("luffa_256.name", "LUFFA");
+ack("luffa_256.update(str);", true);
+ack("luffa_256.fini();", 'f1d566a4b469a38ea31717dbb35d1bb9ac184ec2c08ee58c31bfcbc641645526');
+
+var luffa_384 = new Dc(PGPHASHALGO_LUFFA_384);
+ack("luffa_384('');", '7404fa448793341a9e0ef5361b7388136d44bbb65f7925d2a6600e4e2f2aca5ab5a7d6fead4f4762b2c60fea5f2d3779');
+ack("luffa_384.init(PGPHASHALGO_LUFFA_384);", true);
+ack("luffa_384.algo", PGPHASHALGO_LUFFA_384);
+ack("luffa_384.asn1", null);
+ack("luffa_384.name", "LUFFA");
+ack("luffa_384.update(str);", true);
+ack("luffa_384.fini();", 'b13b97f6739ad0d575972c1c81a242f747ac1029f19a87f35e1ce16568b4e73054a962fade288e43452395cf05737ff9');
+
+var luffa_512 = new Dc(PGPHASHALGO_LUFFA_512);
+ack("luffa_512('');", '2a490f6bb9c236cee38717e6d8655f78aaecf4ffe2fe29d06383d8d6151c4c81eed9064831825ffc0c5da6b6adb1ebdcfdd8ab7434cd2f27df5df58b8b958a7f');
+ack("luffa_512.init(PGPHASHALGO_LUFFA_512);", true);
+ack("luffa_512.algo", PGPHASHALGO_LUFFA_512);
+ack("luffa_512.asn1", null);
+ack("luffa_512.name", "LUFFA");
+ack("luffa_512.update(str);", true);
+ack("luffa_512.fini();", '4c1faae4bda064ee9c50b6952eb95c3e1026c6840b9e498c2514eb9378377fe9ef2d6d1e17bc395346982d1cbb8ce6855f4602c8bf2ed11bfcd3e453314b1feb');
 
 var cubehash224 = new Dc(PGPHASHALGO_CUBEHASH_224);
 ack("cubehash224('');", 'b5a6f6cb6d4100dcda8f575c694f15b2f7c8c5ed145608a42a89c7ca');

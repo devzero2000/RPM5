@@ -64,6 +64,16 @@
 #undef	Final
 #undef	Hash
 
+#include "luffa.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "md2.h"
 #include "md6.h"
 
@@ -657,6 +667,23 @@ keccak:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _keccak_Update;
 	ctx->Digest = (int (*)(void *, byte *)) keccak_Final;
+	break;
+    case PGPHASHALGO_LUFFA_224: ctx->digestsize = 224/8; goto luffa;
+    case PGPHASHALGO_LUFFA_256: ctx->digestsize = 256/8; goto luffa;
+    case PGPHASHALGO_LUFFA_384: ctx->digestsize = 384/8; goto luffa;
+    case PGPHASHALGO_LUFFA_512: ctx->digestsize = 512/8; goto luffa;
+luffa:
+	ctx->name = "LUFFA";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(luffa_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) luffa_Init((luffa_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _luffa_Update;
+	ctx->Digest = (int (*)(void *, byte *)) luffa_Final;
 	break;
     case PGPHASHALGO_CUBEHASH_224: ctx->digestsize = 224/8; goto cubehash;
     case PGPHASHALGO_CUBEHASH_256: ctx->digestsize = 256/8; goto cubehash;
