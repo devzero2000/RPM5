@@ -74,6 +74,11 @@ const PGPHASHALGO_SIMD_256	= 200+1;	/*!< (private) SIMD-256 */
 const PGPHASHALGO_SIMD_384	= 200+2;	/*!< (private) SIMD-384 */
 const PGPHASHALGO_SIMD_512	= 200+3;	/*!< (private) SIMD-512 */
 
+const PGPHASHALGO_ARIRANG_224	= 208+0;	/*!< (private) ARIRANG-224 */
+const PGPHASHALGO_ARIRANG_256	= 208+1;	/*!< (private) ARIRANG-256 */
+const PGPHASHALGO_ARIRANG_384	= 208+2;	/*!< (private) ARIRANG-384 */
+const PGPHASHALGO_ARIRANG_512	= 208+3;	/*!< (private) ARIRANG-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -252,6 +257,42 @@ ack("skein1024.asn1", null);
 ack("skein1024.name", "SKEIN1024");
 ack("skein1024.update('');", true);
 ack("skein1024.fini();", '7bc3ce31c035df3c7a7d559bc9d9454f879f48497cc39e6d14e8190498455f396f45590405c4a15bd0ab29f5467d9132802f4354376ee864ad9f200e39a3d09b9ad06e9d0f656cf91ed9deac13a7a67a82ab983f52133129cac2a4dc13fd29c36ca6c72d6dcc6c82c66797f6b7607cb0e0f9006a27b83b60c59e4ba18de233e0');
+
+var arirang_224 = new Dc(PGPHASHALGO_ARIRANG_224);
+ack("arirang_224('');", '');
+ack("arirang_224.init(PGPHASHALGO_ARIRANG_224);", true);
+ack("arirang_224.algo", PGPHASHALGO_ARIRANG_224);
+ack("arirang_224.asn1", null);
+ack("arirang_224.name", "ARIRANG");
+ack("arirang_224.update(str);", true);
+ack("arirang_224.fini();", '');
+
+var arirang_256 = new Dc(PGPHASHALGO_ARIRANG_256);
+ack("arirang_256('');", '');
+ack("arirang_256.init(PGPHASHALGO_ARIRANG_256);", true);
+ack("arirang_256.algo", PGPHASHALGO_ARIRANG_256);
+ack("arirang_256.asn1", null);
+ack("arirang_256.name", "ARIRANG");
+ack("arirang_256.update(str);", true);
+ack("arirang_256.fini();", '');
+
+var arirang_384 = new Dc(PGPHASHALGO_ARIRANG_384);
+ack("arirang_384('');", '');
+ack("arirang_384.init(PGPHASHALGO_ARIRANG_384);", true);
+ack("arirang_384.algo", PGPHASHALGO_ARIRANG_384);
+ack("arirang_384.asn1", null);
+ack("arirang_384.name", "ARIRANG");
+ack("arirang_384.update(str);", true);
+ack("arirang_384.fini();", '');
+
+var arirang_512 = new Dc(PGPHASHALGO_ARIRANG_512);
+ack("arirang_512('');", '');
+ack("arirang_512.init(PGPHASHALGO_ARIRANG_512);", true);
+ack("arirang_512.algo", PGPHASHALGO_ARIRANG_512);
+ack("arirang_512.asn1", null);
+ack("arirang_512.name", "ARIRANG");
+ack("arirang_512.update(str);", true);
+ack("arirang_512.fini();", '');
 
 var blake224 = new Dc(PGPHASHALGO_BLAKE_224);
 ack("blake224('');", '');

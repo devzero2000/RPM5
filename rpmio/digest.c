@@ -10,6 +10,16 @@
 
 #include "crc.h"
 
+#include "arirang.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "blake.h"
 #undef	BitSequence
 #undef	DataLength
@@ -562,6 +572,23 @@ skein512:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein1024_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein1024_Final;
+	break;
+    case PGPHASHALGO_ARIRANG_224: ctx->digestsize = 224/8; goto arirang;
+    case PGPHASHALGO_ARIRANG_256: ctx->digestsize = 256/8; goto arirang;
+    case PGPHASHALGO_ARIRANG_384: ctx->digestsize = 384/8; goto arirang;
+    case PGPHASHALGO_ARIRANG_512: ctx->digestsize = 512/8; goto arirang;
+arirang:
+	ctx->name = "ARIRANG";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(arirang_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) arirang_Init((arirang_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _arirang_Update;
+	ctx->Digest = (int (*)(void *, byte *)) arirang_Final;
 	break;
     case PGPHASHALGO_BLAKE_224: ctx->digestsize = 224/8; goto blake;
     case PGPHASHALGO_BLAKE_256: ctx->digestsize = 256/8; goto blake;
