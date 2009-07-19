@@ -89,6 +89,11 @@ const PGPHASHALGO_CHI_256	= 224+1;	/*!< (private) CHI-256 */
 const PGPHASHALGO_CHI_384	= 224+2;	/*!< (private) CHI-384 */
 const PGPHASHALGO_CHI_512	= 224+3;	/*!< (private) CHI-512 */
 
+const PGPHASHALGO_JH_224	= 232+0;	/*!< (private) JH-224 */
+const PGPHASHALGO_JH_256	= 232+1;	/*!< (private) JH-256 */
+const PGPHASHALGO_JH_384	= 232+2;	/*!< (private) JH-384 */
+const PGPHASHALGO_JH_512	= 232+3;	/*!< (private) JH-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -447,6 +452,42 @@ ack("edonr512.asn1", null);
 ack("edonr512.name", "EDON-R");
 ack("edonr512.update(str);", true);
 ack("edonr512.fini();", '1b14db155f1d406594b8cef70a4362ec6b5de6a5daf50ec999e987c19d3049e2de5977bb05b1bb220050a1ea5b46a9f1740acafbf6b45032adc90c628372c22b');
+
+var jh224 = new Dc(PGPHASHALGO_JH_224);
+ack("jh224('');", '12c53596fb61ad2865c0a39b7efe88166f9eb1f5fc5b434b9c45057e');
+ack("jh224.init(PGPHASHALGO_JH_224);", true);
+ack("jh224.algo", PGPHASHALGO_JH_224);
+ack("jh224.asn1", null);
+ack("jh224.name", "JH");
+ack("jh224.update(str);", true);
+ack("jh224.fini();", '31fcf15a8e9bc7c4feae367e1bbd08c5861b389cbe369024f6024666');
+
+var jh256 = new Dc(PGPHASHALGO_JH_256);
+ack("jh256('');", '020cdd61951fdcadcc544096176332b213b4604ac42dfa82026b7cd750a0a90b');
+ack("jh256.init(PGPHASHALGO_JH_256);", true);
+ack("jh256.algo", PGPHASHALGO_JH_256);
+ack("jh256.asn1", null);
+ack("jh256.name", "JH");
+ack("jh256.update(str);", true);
+ack("jh256.fini();", '76804776ead1964566b1918f96deed2936d7648666660128820d73531e29aae6');
+
+var jh384 = new Dc(PGPHASHALGO_JH_384);
+ack("jh384('');", '604cb69a44994b89d8d25ade362d7e3304532862ecde225dfbff8c76dc9a236754e6c662463b19b7e8d034f3da0b4b41');
+ack("jh384.init(PGPHASHALGO_JH_384);", true);
+ack("jh384.algo", PGPHASHALGO_JH_384);
+ack("jh384.asn1", null);
+ack("jh384.name", "JH");
+ack("jh384.update(str);", true);
+ack("jh384.fini();", 'e936ff1633661dd71de4e59f46980893cdd13cce315cc633d6b9dd3b2411b6063662cf5c9cb52b37d385e3f6f5489b9c');
+
+var jh512 = new Dc(PGPHASHALGO_JH_512);
+ack("jh512('');", '96d728dd0c96091d228c962b5013a9e4248af4a6eee112d71ee02930a62c8a9a0adcd4f710e297c8f6c24342106ef276f8e4cf45d220e0cc39aed85bd071c31f');
+ack("jh512.init(PGPHASHALGO_JH_512);", true);
+ack("jh512.algo", PGPHASHALGO_JH_512);
+ack("jh512.asn1", null);
+ack("jh512.name", "JH");
+ack("jh512.update(str);", true);
+ack("jh512.fini();", '4d604cbc28a6c0e457baeec929a0fbfe750fd446d66c6353aba51940c49f98aae3ca95d08cf1acd96d348917f2fc37ab6a561e272e9566251873e293bbce2578');
 
 var keccak224 = new Dc(PGPHASHALGO_KECCAK_224);
 ack("keccak224('');", '6c60c1d4dc10aee01988c45a33b38bc3045971724ce7e83cdda61635');

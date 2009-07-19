@@ -266,6 +266,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_CHI_384		= 224+2,/*!< (private) CHI-384 */
     PGPHASHALGO_CHI_512		= 224+3,/*!< (private) CHI-512 */
 
+    PGPHASHALGO_JH_224		= 232+0,/*!< (private) JH-224 */
+    PGPHASHALGO_JH_256		= 232+1,/*!< (private) JH-256 */
+    PGPHASHALGO_JH_384		= 232+2,/*!< (private) JH-384 */
+    PGPHASHALGO_JH_512		= 232+3,/*!< (private) JH-512 */
+
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp

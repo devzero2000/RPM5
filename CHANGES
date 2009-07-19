@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdigest: add JH 224/256/384/512.
     - jbj: rpmdigest: add CHI 224/256/384/512.
     - jbj: rpmdigest: add LUFFA 224/256/384/512.
     - jbj: rpmdigest: add ARIRANG 224/256/384/512 (all test vectors fail, todo++).
