@@ -67,6 +67,16 @@
 #undef	Final
 #undef	Hash
 
+#include "simd.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "salsa10.h"
 #include "salsa20.h"
 #include "skein.h"
@@ -685,6 +695,23 @@ shabal:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _shabal_Update;
 	ctx->Digest = (int (*)(void *, byte *)) shabal_Final;
+	break;
+    case PGPHASHALGO_SIMD_224: ctx->digestsize = 224/8; goto simd;
+    case PGPHASHALGO_SIMD_256: ctx->digestsize = 256/8; goto simd;
+    case PGPHASHALGO_SIMD_384: ctx->digestsize = 384/8; goto simd;
+    case PGPHASHALGO_SIMD_512: ctx->digestsize = 512/8; goto simd;
+simd:
+	ctx->name = "SIMD";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(simd_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) simd_Init((simd_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _simd_Update;
+	ctx->Digest = (int (*)(void *, byte *)) simd_Final;
 	break;
     case PGPHASHALGO_TIB3_224: ctx->digestsize = 224/8; goto tib3;
     case PGPHASHALGO_TIB3_256: ctx->digestsize = 256/8; goto tib3;

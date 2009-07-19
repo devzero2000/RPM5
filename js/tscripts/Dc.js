@@ -69,6 +69,11 @@ const PGPHASHALGO_TIB3_256	= 192+1;	/*!< (private) TIB3-256 */
 const PGPHASHALGO_TIB3_384	= 192+2;	/*!< (private) TIB3-384 */
 const PGPHASHALGO_TIB3_512	= 192+3;	/*!< (private) TIB3-512 */
 
+const PGPHASHALGO_SIMD_224	= 200+0;	/*!< (private) SIMD-224 */
+const PGPHASHALGO_SIMD_256	= 200+1;	/*!< (private) SIMD-256 */
+const PGPHASHALGO_SIMD_384	= 200+2;	/*!< (private) SIMD-384 */
+const PGPHASHALGO_SIMD_512	= 200+3;	/*!< (private) SIMD-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -500,6 +505,42 @@ ack("shabal512.asn1", null);
 ack("shabal512.name", "SHABAL");
 ack("shabal512.update(str);", true);
 ack("shabal512.fini();", '4a7f0f707c1b0c1d12ddcfa8aa0f9d2410dd9bab57c2d56705fc1acb02066f99678738cedb20a2aba94842a441e77bc02656fe5690f98b421d029bfc4df09f91');
+
+var simd_224 = new Dc(PGPHASHALGO_SIMD_224);
+ack("simd_224('');", '3a6b867e2fb0c448370e2855f3794b557124c81077373311103d0c64');
+ack("simd_224.init(PGPHASHALGO_SIMD_224);", true);
+ack("simd_224.algo", PGPHASHALGO_SIMD_224);
+ack("simd_224.asn1", null);
+ack("simd_224.name", "SIMD");
+ack("simd_224.update(str);", true);
+ack("simd_224.fini();", '1b7ef70809f56f20d5584491ffbf422ec4526f283664a9cb58bcc687');
+
+var simd_256 = new Dc(PGPHASHALGO_SIMD_256);
+ack("simd_256('');", '1a53c82220377d3e9a783b106210995a0f3931b6d002f99c243accd15dac587d');
+ack("simd_256.init(PGPHASHALGO_SIMD_256);", true);
+ack("simd_256.algo", PGPHASHALGO_SIMD_256);
+ack("simd_256.asn1", null);
+ack("simd_256.name", "SIMD");
+ack("simd_256.update(str);", true);
+ack("simd_256.fini();", 'a9569ffe053db1533641b631ea2a589114992564ad106fbe67edb7abfbadd91b');
+
+var simd_384 = new Dc(PGPHASHALGO_SIMD_384);
+ack("simd_384('');", 'c5f08c18d50448edf6924ec71616a3626687db426a99c1606f36918913a83b59411b58a6033447f005dc5153d7af0482');
+ack("simd_384.init(PGPHASHALGO_SIMD_384);", true);
+ack("simd_384.algo", PGPHASHALGO_SIMD_384);
+ack("simd_384.asn1", null);
+ack("simd_384.name", "SIMD");
+ack("simd_384.update(str);", true);
+ack("simd_384.fini();", 'd725c6408e188f482209982ae6129df43a7c562e2f9b84fb0281730e9de6db4d83cf0606f1cdd5c066522e15d8253d4b');
+
+var simd_512 = new Dc(PGPHASHALGO_SIMD_512);
+ack("simd_512('');", '426ab39fe63816339e65d100e34ddd593038852edc60e5eb166f3173b35a5124587c1d8bcc29b0cbb0930cf6eccac44a40f21895bb1bb7dd89c67e1f77010243');
+ack("simd_512.init(PGPHASHALGO_SIMD_512);", true);
+ack("simd_512.algo", PGPHASHALGO_SIMD_512);
+ack("simd_512.asn1", null);
+ack("simd_512.name", "SIMD");
+ack("simd_512.update(str);", true);
+ack("simd_512.fini();", '1c42e151ab96e0c9e378b7e8c8140aedcc553a3744a081eab8fd9c16bf4557f242d4a5fd7bc26ca71d38339387cfc57fd4cc79411d5258d0427b7ef9cf355429');
 
 var tib3_224 = new Dc(PGPHASHALGO_TIB3_224);
 ack("tib3_224('');", '0bb081f80b8d738cea5fde2ca9975ba4a5ad83196731b2432d8b3a18');
