@@ -84,6 +84,11 @@ const PGPHASHALGO_LUFFA_256	= 216+1;	/*!< (private) LUFFA-256 */
 const PGPHASHALGO_LUFFA_384	= 216+2;	/*!< (private) LUFFA-384 */
 const PGPHASHALGO_LUFFA_512	= 216+3;	/*!< (private) LUFFA-512 */
 
+const PGPHASHALGO_CHI_224	= 224+0;	/*!< (private) CHI-224 */
+const PGPHASHALGO_CHI_256	= 224+1;	/*!< (private) CHI-256 */
+const PGPHASHALGO_CHI_384	= 224+2;	/*!< (private) CHI-384 */
+const PGPHASHALGO_CHI_512	= 224+3;	/*!< (private) CHI-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -371,14 +376,50 @@ ack("bmw512.name", "BMW");
 ack("bmw512.update(str);", true);
 ack("bmw512.fini();", 'ded83592522d34271257b338337559204949bc4dbd9a6e66148393575673bae87334b76a3a3fc2734138f3074985ac8af8ff71ce0ca31cd7645df30849936dcf');
 
+var chi_224 = new Dc(PGPHASHALGO_CHI_224);
+ack("chi_224('');", '532af150697beba8ac038c53fac985a367701991a34f5c6502cfb7f0');
+ack("chi_224.init(PGPHASHALGO_CHI_224);", true);
+ack("chi_224.algo", PGPHASHALGO_CHI_224);
+ack("chi_224.asn1", null);
+ack("chi_224.name", "CHI");
+ack("chi_224.update(str);", true);
+ack("chi_224.fini();", '2a09fb790d6817e825e37933fb5fdc74e05cd74df7a7f2d6cc903176');
+
+var chi_256 = new Dc(PGPHASHALGO_CHI_256);
+ack("chi_256('');", 'fa11172a4a65e8efe6ec9c5ddafac765935fab6be89604edb17902b507302270');
+ack("chi_256.init(PGPHASHALGO_CHI_256);", true);
+ack("chi_256.algo", PGPHASHALGO_CHI_256);
+ack("chi_256.asn1", null);
+ack("chi_256.name", "CHI");
+ack("chi_256.update(str);", true);
+ack("chi_256.fini();", 'cf01da4d76a83ccc4003805be462cd898e243fb36ada110209661aad7d19ed37');
+
+var chi_384 = new Dc(PGPHASHALGO_CHI_384);
+ack("chi_384('');", '841eae69ce0d7edc0ab1b3038eb7fd62bd3b73b8e3481798243cf14e258dee93e433e5202e806a18f44f4383b3168f59');
+ack("chi_384.init(PGPHASHALGO_CHI_384);", true);
+ack("chi_384.algo", PGPHASHALGO_CHI_384);
+ack("chi_384.asn1", null);
+ack("chi_384.name", "CHI");
+ack("chi_384.update(str);", true);
+ack("chi_384.fini();", '924ba150d5fcf6862d4570cff69f03c343c6dea3e6db429f1883534b19d06f60157f972063e6fa162ca3337b73872790');
+
+var chi_512 = new Dc(PGPHASHALGO_CHI_512);
+ack("chi_512('');", '5ee66ada5094be5d8b822716bb5bdad19f58a632be85a1643f535fca6e109467cd609f16f1f46de6afd16a41a2a4ab932e997e261a4bf71931d804ea8dabcd1a');
+ack("chi_512.init(PGPHASHALGO_CHI_512);", true);
+ack("chi_512.algo", PGPHASHALGO_CHI_512);
+ack("chi_512.asn1", null);
+ack("chi_512.name", "CHI");
+ack("chi_512.update(str);", true);
+ack("chi_512.fini();", '0a71c7e78234e628509d7737ba22e03eea2731ace5d9e3d219641d2b5e71fc957d4bb09e9d40925ebe3e69b7077a64825188662aaccd858d3a8c6e9b6b3af3e3');
+
 var edonr224 = new Dc(PGPHASHALGO_EDONR_224);
 ack("edonr224('');", 'a9c2bc54208be171cdfd054d21d97c1f4c79e822d8d9fcdbcb1d602f');
 ack("edonr224.init(PGPHASHALGO_EDONR_224);", true);
 ack("edonr224.algo", PGPHASHALGO_EDONR_224);
 ack("edonr224.asn1", null);
 ack("edonr224.name", "EDON-R");
-ack("edonr224.update('');", true);
-ack("edonr224.fini();", 'a9c2bc54208be171cdfd054d21d97c1f4c79e822d8d9fcdbcb1d602f');
+ack("edonr224.update(str);", true);
+ack("edonr224.fini();", '5663c4939520faf6123165a466f25601952ea9e424ddc96befd04094');
 
 var edonr256 = new Dc(PGPHASHALGO_EDONR_256);
 ack("edonr256('');", '3b71fd43dade942c07842b181f4d987e78d2ac7e3a7e8bb06fec99a60b60eaba');
@@ -386,8 +427,8 @@ ack("edonr256.init(PGPHASHALGO_EDONR_256);", true);
 ack("edonr256.algo", PGPHASHALGO_EDONR_256);
 ack("edonr256.asn1", null);
 ack("edonr256.name", "EDON-R");
-ack("edonr256.update('');", true);
-ack("edonr256.fini();", '3b71fd43dade942c07842b181f4d987e78d2ac7e3a7e8bb06fec99a60b60eaba');
+ack("edonr256.update(str);", true);
+ack("edonr256.fini();", '54d78b13c74eda5aedc271cc881fb22f8399afd3040b6a392d739405508dd851');
 
 var edonr384 = new Dc(PGPHASHALGO_EDONR_384);
 ack("edonr384('');", 'ccd8e612b93a3f8c24867eb204c1dc3f2de24bd54d92908c5f5a73c6a4da14c8742a5fc3a6b5428658e85f0175de95a7');
@@ -395,8 +436,8 @@ ack("edonr384.init(PGPHASHALGO_EDONR_384);", true);
 ack("edonr384.algo", PGPHASHALGO_EDONR_384);
 ack("edonr384.asn1", null);
 ack("edonr384.name", "EDON-R");
-ack("edonr384.update('');", true);
-ack("edonr384.fini();", 'ccd8e612b93a3f8c24867eb204c1dc3f2de24bd54d92908c5f5a73c6a4da14c8742a5fc3a6b5428658e85f0175de95a7');
+ack("edonr384.update(str);", true);
+ack("edonr384.fini();", '0e7cd7857877e0895b1cdf49f41d209c727d2e579b9b9adc60279782b99072ec7eced3165f477548fa60727e01c77cc6');
 
 var edonr512 = new Dc(PGPHASHALGO_EDONR_512);
 ack("edonr512('');", 'c57f7e17fdc1ce5074cc748c9bd38f9f51ebe88fbe6eda3190c4314cafb1abb2980fac582d6e4ba8c641947d944bc56b74fb15de5546ad4f77934fca00052719');
@@ -404,8 +445,8 @@ ack("edonr512.init(PGPHASHALGO_EDONR_512);", true);
 ack("edonr512.algo", PGPHASHALGO_EDONR_512);
 ack("edonr512.asn1", null);
 ack("edonr512.name", "EDON-R");
-ack("edonr512.update('');", true);
-ack("edonr512.fini();", 'c57f7e17fdc1ce5074cc748c9bd38f9f51ebe88fbe6eda3190c4314cafb1abb2980fac582d6e4ba8c641947d944bc56b74fb15de5546ad4f77934fca00052719');
+ack("edonr512.update(str);", true);
+ack("edonr512.fini();", '1b14db155f1d406594b8cef70a4362ec6b5de6a5daf50ec999e987c19d3049e2de5977bb05b1bb220050a1ea5b46a9f1740acafbf6b45032adc90c628372c22b');
 
 var keccak224 = new Dc(PGPHASHALGO_KECCAK_224);
 ack("keccak224('');", '6c60c1d4dc10aee01988c45a33b38bc3045971724ce7e83cdda61635');

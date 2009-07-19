@@ -42,6 +42,16 @@
 #undef	Final
 #undef	Hash
 
+#include "chi.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "cubehash.h"
 #undef	BitSequence
 #undef	DataLength
@@ -633,6 +643,23 @@ bmw:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _bmw_Update;
 	ctx->Digest = (int (*)(void *, byte *)) bmw_Final;
+	break;
+    case PGPHASHALGO_CHI_224: ctx->digestsize = 224/8; goto chi;
+    case PGPHASHALGO_CHI_256: ctx->digestsize = 256/8; goto chi;
+    case PGPHASHALGO_CHI_384: ctx->digestsize = 384/8; goto chi;
+    case PGPHASHALGO_CHI_512: ctx->digestsize = 512/8; goto chi;
+chi:
+	ctx->name = "CHI";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(chi_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) chi_Init((chi_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _chi_Update;
+	ctx->Digest = (int (*)(void *, byte *)) chi_Final;
 	break;
     case PGPHASHALGO_EDONR_224: ctx->digestsize = 224/8; goto edonr;
     case PGPHASHALGO_EDONR_256: ctx->digestsize = 256/8; goto edonr;
