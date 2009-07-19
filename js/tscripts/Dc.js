@@ -59,6 +59,11 @@ const PGPHASHALGO_SHABAL_256	= 176+1;	/*!< (private) SHABAL-256 */
 const PGPHASHALGO_SHABAL_384	= 176+2;	/*!< (private) SHABAL-384 */
 const PGPHASHALGO_SHABAL_512	= 176+3;	/*!< (private) SHABAL-512 */
 
+const PGPHASHALGO_BLAKE_224	= 184+0;	/*!< (private) BLAKE-224 */
+const PGPHASHALGO_BLAKE_256	= 184+1;	/*!< (private) BLAKE-256 */
+const PGPHASHALGO_BLAKE_384	= 184+2;	/*!< (private) BLAKE-384 */
+const PGPHASHALGO_BLAKE_512	= 184+3;	/*!< (private) BLAKE-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -237,6 +242,42 @@ ack("skein1024.asn1", null);
 ack("skein1024.name", "SKEIN1024");
 ack("skein1024.update('');", true);
 ack("skein1024.fini();", '7bc3ce31c035df3c7a7d559bc9d9454f879f48497cc39e6d14e8190498455f396f45590405c4a15bd0ab29f5467d9132802f4354376ee864ad9f200e39a3d09b9ad06e9d0f656cf91ed9deac13a7a67a82ab983f52133129cac2a4dc13fd29c36ca6c72d6dcc6c82c66797f6b7607cb0e0f9006a27b83b60c59e4ba18de233e0');
+
+var blake224 = new Dc(PGPHASHALGO_BLAKE_224);
+ack("blake224('');", '');
+ack("blake224.init(PGPHASHALGO_BLAKE_224);", true);
+ack("blake224.algo", PGPHASHALGO_BLAKE_224);
+ack("blake224.asn1", null);
+ack("blake224.name", "BLAKE");
+ack("blake224.update(str);", true);
+ack("blake224.fini();", '');
+
+var blake256 = new Dc(PGPHASHALGO_BLAKE_256);
+ack("blake256('');", '');
+ack("blake256.init(PGPHASHALGO_BLAKE_256);", true);
+ack("blake256.algo", PGPHASHALGO_BLAKE_256);
+ack("blake256.asn1", null);
+ack("blake256.name", "BLAKE");
+ack("blake256.update(str);", true);
+ack("blake256.fini();", '');
+
+var blake384 = new Dc(PGPHASHALGO_BLAKE_384);
+ack("blake384('');", 'e0820c066f522138d5cb3a5773dea16db434afa95e1c48e060de466928bb7044391b3ee77e2bbff6c0cf1e07a8295100');
+ack("blake384.init(PGPHASHALGO_BLAKE_384);", true);
+ack("blake384.algo", PGPHASHALGO_BLAKE_384);
+ack("blake384.asn1", null);
+ack("blake384.name", "BLAKE");
+ack("blake384.update(str);", true);
+ack("blake384.fini();", 'e22ddc662dd6c55ca5928fc954f55d5a288dcd69afd67971b90a383f0e2ef5d086dbca48186b6696dc041c78a4dd202c');
+
+var blake512 = new Dc(PGPHASHALGO_BLAKE_512);
+ack("blake512('');", '223d88a8c8308c15d479d1668ba97b1b2737aad82debd7d05d32f77a13f820651c36fc9eb18e2101b8e992717e671400be6a7f158cdd64afed6f81e62bf15c37');
+ack("blake512.init(PGPHASHALGO_BLAKE_512);", true);
+ack("blake512.algo", PGPHASHALGO_BLAKE_512);
+ack("blake512.asn1", null);
+ack("blake512.name", "BLAKE");
+ack("blake512.update(str);", true);
+ack("blake512.fini();", '73d4b67de1bedd9f4c7864d5e8b388a0c317d032c3e82df534f614dc5e91ca5b8a2e8310d92845909193f47a73bb2205a996952abe1e89978e907cd4027c35bb');
 
 var bmw224 = new Dc(PGPHASHALGO_BMW_224);
 ack("bmw224('');", 'bdf29a829d3f42d50604acb5ad1a851a8ec684a86ff7c4e791aad501');

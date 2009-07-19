@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdigest: add Blake 224/256/384/512 (224/256 fail test vectors, todo++).
     - jbj: rpmdigest: add Shabal 224/256/384/512.
     - jbj: rpmdigest: add BlueMidnightWish 224/256/384/512.
     - jbj: keccak: optimizations for 32/64 bit merged.

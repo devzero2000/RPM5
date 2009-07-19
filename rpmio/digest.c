@@ -10,6 +10,16 @@
 
 #include "crc.h"
 
+#include "blake.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "bmw.h"
 #undef	BitSequence
 #undef	DataLength
@@ -531,6 +541,23 @@ skein512:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) Skein1024_Update;
 	ctx->Digest = (int (*)(void *, byte *)) Skein1024_Final;
+	break;
+    case PGPHASHALGO_BLAKE_224: ctx->digestsize = 224/8; goto blake;
+    case PGPHASHALGO_BLAKE_256: ctx->digestsize = 256/8; goto blake;
+    case PGPHASHALGO_BLAKE_384: ctx->digestsize = 384/8; goto blake;
+    case PGPHASHALGO_BLAKE_512: ctx->digestsize = 512/8; goto blake;
+blake:
+	ctx->name = "BLAKE";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(blake_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) blake_Init((blake_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _blake_Update;
+	ctx->Digest = (int (*)(void *, byte *)) blake_Final;
 	break;
     case PGPHASHALGO_BMW_224: ctx->digestsize = 224/8; goto bmw;
     case PGPHASHALGO_BMW_256: ctx->digestsize = 256/8; goto bmw;
