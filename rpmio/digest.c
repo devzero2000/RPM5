@@ -70,6 +70,17 @@
 #include "salsa10.h"
 #include "salsa20.h"
 #include "skein.h"
+
+#include "tib3.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "tiger.h"
 
 #include "debug.h"
@@ -674,6 +685,23 @@ shabal:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _shabal_Update;
 	ctx->Digest = (int (*)(void *, byte *)) shabal_Final;
+	break;
+    case PGPHASHALGO_TIB3_224: ctx->digestsize = 224/8; goto tib3;
+    case PGPHASHALGO_TIB3_256: ctx->digestsize = 256/8; goto tib3;
+    case PGPHASHALGO_TIB3_384: ctx->digestsize = 384/8; goto tib3;
+    case PGPHASHALGO_TIB3_512: ctx->digestsize = 512/8; goto tib3;
+tib3:
+	ctx->name = "TIB3";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(tib3_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) tib3_Init((tib3_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _tib3_Update;
+	ctx->Digest = (int (*)(void *, byte *)) tib3_Final;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
     default:

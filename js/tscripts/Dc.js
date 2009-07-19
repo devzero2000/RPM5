@@ -64,6 +64,11 @@ const PGPHASHALGO_BLAKE_256	= 184+1;	/*!< (private) BLAKE-256 */
 const PGPHASHALGO_BLAKE_384	= 184+2;	/*!< (private) BLAKE-384 */
 const PGPHASHALGO_BLAKE_512	= 184+3;	/*!< (private) BLAKE-512 */
 
+const PGPHASHALGO_TIB3_224	= 192+0;	/*!< (private) TIB3-224 */
+const PGPHASHALGO_TIB3_256	= 192+1;	/*!< (private) TIB3-256 */
+const PGPHASHALGO_TIB3_384	= 192+2;	/*!< (private) TIB3-384 */
+const PGPHASHALGO_TIB3_512	= 192+3;	/*!< (private) TIB3-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -495,6 +500,42 @@ ack("shabal512.asn1", null);
 ack("shabal512.name", "SHABAL");
 ack("shabal512.update(str);", true);
 ack("shabal512.fini();", '4a7f0f707c1b0c1d12ddcfa8aa0f9d2410dd9bab57c2d56705fc1acb02066f99678738cedb20a2aba94842a441e77bc02656fe5690f98b421d029bfc4df09f91');
+
+var tib3_224 = new Dc(PGPHASHALGO_TIB3_224);
+ack("tib3_224('');", '0bb081f80b8d738cea5fde2ca9975ba4a5ad83196731b2432d8b3a18');
+ack("tib3_224.init(PGPHASHALGO_TIB3_224);", true);
+ack("tib3_224.algo", PGPHASHALGO_TIB3_224);
+ack("tib3_224.asn1", null);
+ack("tib3_224.name", "TIB3");
+ack("tib3_224.update(str);", true);
+ack("tib3_224.fini();", '096169965ba26b60e075c40cb5666d289d142ba6b5eb5bfeaee07186');
+
+var tib3_256 = new Dc(PGPHASHALGO_TIB3_256);
+ack("tib3_256('');", '67fcdaea6c8af476fa5f46fbc6f74bb7c47d1989170855385114b88c7be73677');
+ack("tib3_256.init(PGPHASHALGO_TIB3_256);", true);
+ack("tib3_256.algo", PGPHASHALGO_TIB3_256);
+ack("tib3_256.asn1", null);
+ack("tib3_256.name", "TIB3");
+ack("tib3_256.update(str);", true);
+ack("tib3_256.fini();", 'd14c723a5e6676afc53a92ffdf9ae66fdcfaca1ecef72a60dfafbec316f266e4');
+
+var tib3_384 = new Dc(PGPHASHALGO_TIB3_384);
+ack("tib3_384('');", '6968b5191ba3ccad2dab7a7cc4cc8ab4ea27c71a5a9868ec3c987909c8385345813fa5ad4097d0df7decfbff178b6671');
+ack("tib3_384.init(PGPHASHALGO_TIB3_384);", true);
+ack("tib3_384.algo", PGPHASHALGO_TIB3_384);
+ack("tib3_384.asn1", null);
+ack("tib3_384.name", "TIB3");
+ack("tib3_384.update(str);", true);
+ack("tib3_384.fini();", 'c59874e7a57724266238e9841ddbec63d67af12399eed11fc598f485b5ba0e779f41d0b10aa9eb0a5bd91647d618675b');
+
+var tib3_512 = new Dc(PGPHASHALGO_TIB3_512);
+ack("tib3_512('');", 'ca9b25aee65a2effb5fc6946a0bbae32055dd8e2f108f8411b4d4ea5f891a58766d10d5ebfa7bfcafb16502a5fc557120e8130d32bd9d80b67c45bdaeea8de58');
+ack("tib3_512.init(PGPHASHALGO_TIB3_512);", true);
+ack("tib3_512.algo", PGPHASHALGO_TIB3_512);
+ack("tib3_512.asn1", null);
+ack("tib3_512.name", "TIB3");
+ack("tib3_512.update(str);", true);
+ack("tib3_512.fini();", '98b174141294cfa25463777e2f37299aa4584f6d1156c631146ac75a84d9c05a06b33cec49cd2900dec9ae961bc8f27dae566f2c9d6ebf3702d0ce8f173524e7');
 
 var tiger192 = new Dc(PGPHASHALGO_TIGER192);
 ack("tiger192(str);", '2aab1484e8c158f2bfb8c5ff41b57a525129131c957b5f93');
