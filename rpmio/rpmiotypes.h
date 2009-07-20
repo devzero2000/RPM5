@@ -215,6 +215,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_KECCAK_384	= 144+2,/*!< (private) KECCAK-384 */
     PGPHASHALGO_KECCAK_512	= 144+3,/*!< (private) KECCAK-384 */
 
+    PGPHASHALGO_ECHO_224	= 148+0,/*!< (private) ECHO-224 */
+    PGPHASHALGO_ECHO_256	= 148+1,/*!< (private) ECHO-256 */
+    PGPHASHALGO_ECHO_384	= 148+2,/*!< (private) ECHO-384 */
+    PGPHASHALGO_ECHO_512	= 148+3,/*!< (private) ECHO-384 */
+
     PGPHASHALGO_EDONR_224	= 152+0,/*!< (private) EDON-R-224 */
     PGPHASHALGO_EDONR_256	= 152+1,/*!< (private) EDON-R-256 */
     PGPHASHALGO_EDONR_384	= 152+2,/*!< (private) EDON-R-384 */
