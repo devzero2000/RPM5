@@ -24,11 +24,11 @@ typedef union {
 typedef hash32_s* hash32_p;
 
 typedef struct {
-    int        n;   /* columns in output */
-    int        s;   /* columns in state */
-    int        k;   /* number of smix's per TIX or round */
-    int        r;   /* number of G1 rounds in final part */
-    int        t;   /* number of G2 rounds in final part */
+    int        n;	/* columns in output */
+    int        s;	/* columns in state */
+    int        k;	/* number of smix's per TIX or round */
+    int        r;	/* number of G1 rounds in final part */
+    int        t;	/* number of G2 rounds in final part */
 } hashCfg;
 
 typedef struct {
@@ -41,12 +41,9 @@ typedef struct {
 } hashState;
 
 HashReturn Init(hashState *state, int hashbitlen);
-
 HashReturn Update(hashState *state, const BitSequence *data,
                   DataLength databitlen);
-
 HashReturn Final(hashState *state, BitSequence *hashval);
-
 HashReturn Hash(int hashbitlen, const BitSequence *data,
                 DataLength databitlen, BitSequence *hashval);
 

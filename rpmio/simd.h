@@ -13,27 +13,19 @@
 #define	Final		simd_Final
 #define	Hash		simd_Hash
 
-/*
- * NIST API Specific types.
- */
-
 typedef unsigned char BitSequence;
 typedef uint64_t DataLength;
 
 typedef struct {
-  unsigned int hashbitlen;
-  unsigned int blocksize;
-  unsigned int n_feistels;
+    unsigned int hashbitlen;
+    unsigned int blocksize;
+    unsigned int n_feistels;
 
-  uint64_t count;
+    uint64_t count;
 
-  uint32_t *A, *B, *C, *D;
-  unsigned char* buffer;
+    uint32_t *A, *B, *C, *D;
+    unsigned char* buffer;
 } hashState;
-
-/* 
- * NIST API
- */
 
 HashReturn Init(hashState *state, int hashbitlen);
 HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);

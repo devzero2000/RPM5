@@ -19,12 +19,12 @@ typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;  
 
 typedef struct {
-	int hashbitlen;				    /*the message digest size*/
-	unsigned long long databitlen;  /*the message size in bits*/
-	unsigned char H[128];			/*the hash value H; 128 bytes;*/
-	unsigned char A[256];			/*the temporary round value; 256 4-bit elements*/
-    unsigned char roundconstant[64];/*round constant for one round; 64 4-bit elements*/
-	unsigned char buffer[64];		/*the message block to be hashed; 64 bytes*/
+    int hashbitlen;			/* message digest size*/
+    unsigned long long databitlen;	/* message size in bits*/
+    unsigned char H[128];		/* hash value H; 128 bytes;*/
+    unsigned char A[256];		/* temporary round value; 256 4-bit elements*/
+    unsigned char roundconstant[64];	/* round constant for one round; 64 4-bit elements*/
+    unsigned char buffer[64];		/* message block to be hashed; 64 bytes*/
 } hashState;
 
 HashReturn Init(hashState *state, int hashbitlen);

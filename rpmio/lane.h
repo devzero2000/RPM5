@@ -1,10 +1,7 @@
 /* laneref.h   v1.1   October 2008
  * Reference ANSI C implementation of LANE
- *
  * Based on the AES reference implementation of Paulo Barreto and Vincent Rijmen.
- *
  * Author: Nicky Mouha
- *
  * This code is placed in the public domain.
  */
 
@@ -23,39 +20,23 @@
 
 #include <stdint.h>
 
-typedef uint8_t  BitSequence;        /* an unsigned  8-bit integer */
-typedef uint64_t DataLength;         /* an unsigned 64-bit integer */
+typedef uint8_t  BitSequence;
+typedef uint64_t DataLength;
 
 typedef struct {
-  int hashbitlen;          /* length in bits of the hash value */
-  DataLength databitcount; /* number of data bits processed so far */
-  uint8_t buffer[128];     /* space for one block of data to be hashed */
-  uint8_t hash[64];        /* intermediate hash value */
+    int hashbitlen;		/* length in bits of the hash value */
+    DataLength databitcount;	/* number of data bits processed so far */
+    uint8_t buffer[128];	/* space for one block of data to be hashed */
+    uint8_t hash[64];		/* intermediate hash value */
 } hashState;
 
-/* Initialize the hashState structure. */
-HashReturn Init(hashState *state, /* structure that holds hashState information */
-                int hashbitlen);  /* length in bits of the hash value */
+HashReturn Init(hashState *state, int hashbitlen);
+HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
 
-/* Process data using the algorithm's compression function.
- * Precondition: Init() has been called.
- */
-HashReturn Update(hashState *state,        /* structure that holds hashState information */
-                  const BitSequence *data, /* the data to be hashed */
-                  DataLength databitlen);  /* length of the data to be hashed, in bits */
+HashReturn Final(hashState *state, BitSequence *hashval);
 
-/* Perform post processing and output filtering and return the final hash value.
- * Precondition: Init() has been called.
- * Final() may only be called once.
- */
-HashReturn Final(hashState *state,       /* structure that holds hashState information */
-                 BitSequence *hashval);  /* storage for the final hash value */
-
-/* Hash the supplied data and provide the resulting hash code. */
-HashReturn Hash(int hashbitlen,          /* length in bits of the hash value */
-                const BitSequence *data, /* the data to be hashed */
-                DataLength databitlen,   /* length of the data to be hashed, in bits */
-                BitSequence *hashval);   /* resulting hash value */
+HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen,
+                BitSequence *hashval);
 
 /* Impedance match bytes -> bits length. */
 static inline

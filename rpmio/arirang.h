@@ -15,6 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #define	BitSequence	arirang_BitSequence
 #define	DataLength	arirang_DataLength
@@ -38,11 +39,6 @@
 #define ARIRANG512_BLOCK_LEN	128
 #define ARIRANG512_DIGEST_LEN	64
 
-typedef unsigned char		BYTE;		//  8-bit data type
-typedef unsigned short int	WORD;		// 16-bit data type
-typedef unsigned int		DWORD;		// 32-bit data type
-typedef unsigned long long	QWORD;		// 64-bit data type
-
 typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;
 
@@ -52,22 +48,22 @@ typedef struct {
 	int hashbitlen;
 	
 	// Counter
-	QWORD counter[2];
+	uint64_t counter[2];
 
 	// Count
-	QWORD count[2];
+	uint64_t count[2];
 
 	// Message block
-	BYTE block[ARIRANG512_BLOCK_LEN];
+	uint8_t block[ARIRANG512_BLOCK_LEN];
 
 	// Working variables
-	QWORD workingvar[8];
+	uint64_t workingvar[8];
 
 	// hash block length
-	DWORD blocklen;
+	uint32_t blocklen;
 
 	// bit_length % 7
-	DWORD remainderbit;
+	uint32_t remainderbit;
 
 } hashState;
 
@@ -75,7 +71,7 @@ HashReturn Init(hashState *state, int hashbitlen);
 
 HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
 
-HashReturn Final(hashState *state, BYTE *hashval);
+HashReturn Final(hashState *state, uint8_t *hashval);
 
 HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength *databitlen, BitSequence *hashval);
 

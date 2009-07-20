@@ -29,37 +29,16 @@
 #define	Final		shabal_Final
 #define	Hash		shabal_Hash
 
-#if defined __STDC__ && __STDC_VERSION__ >= 199901L
 #include <stdint.h>
-#ifdef UINT32_MAX
 typedef uint32_t shabal_word32;
-#else
-typedef uint_fast32_t shabal_word32;
-#endif
-#else
-#if ((UINT_MAX >> 11) >> 11) >= 0x3FF
-typedef unsigned int shabal_word32;
-#else
-typedef unsigned long shabal_word32;
-#endif
-#endif
 
 #define SHABAL_BLOCK_SIZE   16
 #ifndef SHABAL_PARAM_R
 #define SHABAL_PARAM_R      12
 #endif
 
-/*
- * Input messages and hash outputs are sequences of bits, stored
- * in arrays of C bytes.
- */
 typedef unsigned char BitSequence;
-
-#ifdef ULLONG_MAX
 typedef unsigned long long DataLength;
-#else
-typedef unsigned long DataLength;
-#endif
 
 /*
  * State structure for Shabal. A structure instance holds the running
@@ -79,14 +58,14 @@ typedef unsigned long DataLength;
  * and should not be accessed externally.
  */
 typedef struct {
-	BitSequence buffer[SHABAL_BLOCK_SIZE * 4];
-	size_t buffer_ptr;
-	unsigned last_byte_significant_bits;
-	int hashbitlen;
-	shabal_word32 A[SHABAL_PARAM_R];
-	shabal_word32 B[SHABAL_BLOCK_SIZE];
-	shabal_word32 C[SHABAL_BLOCK_SIZE];
-	shabal_word32 Whigh, Wlow;
+    BitSequence buffer[SHABAL_BLOCK_SIZE * 4];
+    size_t buffer_ptr;
+    unsigned last_byte_significant_bits;
+    int hashbitlen;
+    shabal_word32 A[SHABAL_PARAM_R];
+    shabal_word32 B[SHABAL_BLOCK_SIZE];
+    shabal_word32 C[SHABAL_BLOCK_SIZE];
+    shabal_word32 Whigh, Wlow;
 } hashState;
 
 /*
@@ -156,7 +135,6 @@ HashReturn Final(hashState *state, BitSequence *hashval);
  */
 HashReturn Hash(int hashbitlen, const BitSequence *data,
 	DataLength databitlen, BitSequence *hashval);
-
 
 /* Impedance match bytes -> bits length. */
 static inline

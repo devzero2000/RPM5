@@ -1,8 +1,28 @@
 #include <string.h>
 #include "tib3.h"
 
-
 enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 };
+
+/* prototypes of functions for each bit length */
+HashReturn Init256 (hashState256 *state);
+HashReturn Update256 (hashState256 *state , const BitSequence *data, DataLength databitlen);
+HashReturn Final256 (hashState256 *state, BitSequence *hashval);
+HashReturn Hash256(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+
+HashReturn Init224 (hashState256 *state);
+#define Update224 Update256
+HashReturn Final224 (hashState256 *state, BitSequence *hashval);
+HashReturn Hash224(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+
+HashReturn Init512 (hashState512 *state);
+HashReturn Update512 (hashState512 *state , const BitSequence *data, DataLength databitlen);
+HashReturn Final512 (hashState512 *state, BitSequence *hashval);
+HashReturn Hash512(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+
+HashReturn Init384 (hashState512 *state);
+#define Update384 Update512
+HashReturn Final384 (hashState512 *state, BitSequence *hashval);
+HashReturn Hash384(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
 
 /* Processes 4 64 bits words, and returns one.
  * Used by EXPANSION_256

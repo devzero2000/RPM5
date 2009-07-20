@@ -28,31 +28,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 
-/*
- * BitSequence type for Message Data
- */
 typedef unsigned char BitSequence;
-
-/*
- * DataLength type big, for big data lengths!.
- */
 typedef unsigned long long DataLength;
 
-#define _256_STATE_N    6       /* The number of words in the internal state
-                                 * for the 256 bit hash.
-                                 */
-#define _512_STATE_N    9       /* The number of words in the internal state
-                                 * for the 512 bit hash.
-                                 */
-/*
- * Structure that stores the hash state.
- */
+#define	_256_STATE_N	6	/* no. words in internal state (256 bit hash) */
+#define	_512_STATE_N	9	/* no. words in internal state (512 bit hash) */
+
 typedef struct {
     union {
-        uint64_t small[_256_STATE_N];
-        uint64_t large[_512_STATE_N];
-        uint32_t small32[2*_256_STATE_N];
-        uint32_t large32[2*_512_STATE_N];
+	uint64_t small[_256_STATE_N];
+	uint64_t large[_512_STATE_N];
+	uint32_t small32[2*_256_STATE_N];
+	uint32_t large32[2*_512_STATE_N];
     } hs_State;                     /* Contents of internal state             */
 
     int         hs_HashBitLen;      /* Length of the Hash.  Passed into Init. */
@@ -73,9 +60,6 @@ typedef struct {
     BitSequence hs_DataBuffer[128]; /* Buffer for accumulating message.       */
 } hashState;
 
-/*
- * External Interface
- */
 HashReturn Init(hashState*, int); 
 HashReturn Update(hashState*, const BitSequence*, DataLength); 
 HashReturn Final(hashState*, BitSequence*); 

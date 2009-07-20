@@ -3,6 +3,32 @@
 
 enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_UPDATE = 3 };
 
+// Blue Midnight Wish allows to call Update() function consecutively only if the total length of stored 
+// unprocessed data and the new supplied data is less than or equal to the BLOCK_SIZE on which the 
+// compression functions operates. Otherwise BAD_CONSECUTIVE_CALL_TO_UPDATE is returned.
+
+
+// Here we define the default Blue Midnight Wish tunable security parameters.
+// The parameters are named EXPAND_1_ROUNDS and EXPAND_2_ROUNDS.
+// Since Blue Midnight Wish has 16 rounds in its message expansion part, the 
+// following relation for these parameters should be satisfied:
+//
+//          EXPAND_1_ROUNDS + EXPAND_2_ROUNDS = 16
+//
+// Blue Midnight Wish in its message expansion part uses 2 different functions: 
+// expand_1 and expand_2.
+//
+// expand_1 is the more complex and more time consuming, but offers the fastest
+// diffusion of bit differences and produces variables that have the most complex
+// nonlinear relations with previous 16 variables in the message expansion part.
+//
+// expand_2 is faster than expand_1, and uses faster and simpler functions than 
+// expand_1. The produced variables still have complex nonlinear relations with 
+// previous 16 variables in the message expansion part.
+//
+#define EXPAND_1_ROUNDS 2
+#define EXPAND_2_ROUNDS 14
+
 #define rotl32(x,n)   (((x) << n) | ((x) >> (32 - n)))
 #define rotr32(x,n)   (((x) >> n) | ((x) << (32 - n)))
 //#define rotl32 _lrotl
@@ -18,7 +44,7 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_UPDATE = 
 
 /* BlueMidnightWish224 initial double chaining pipe */
 static
-const u_int32_t i224p2[16] =
+const uint32_t i224p2[16] =
 {   0x00010203ul, 0x04050607ul, 0x08090a0bul, 0x0c0d0e0ful,
     0x10111213ul, 0x14151617ul, 0x18191a1bul, 0x1c1d1e1ful,
     0x20212223ul, 0x24252627ul, 0x28292a2bul, 0x2c2d2e2ful,
@@ -27,7 +53,7 @@ const u_int32_t i224p2[16] =
 
 /* BlueMidnightWish256 initial double chaining pipe */
 static
-const u_int32_t i256p2[16] =
+const uint32_t i256p2[16] =
 {   0x40414243ul, 0x44454647ul, 0x48494a4bul, 0x4c4d4e4ful,
     0x50515253ul, 0x54555657ul, 0x58595a5bul, 0x5c5d5e5ful,
     0x60616263ul, 0x64656667ul, 0x68696a6bul, 0x6c6d6e6ful,
@@ -36,7 +62,7 @@ const u_int32_t i256p2[16] =
 
 /* BlueMidnightWish384 initial double chaining pipe */
 static
-const u_int64_t i384p2[16] =
+const uint64_t i384p2[16] =
 {
     0x0001020304050607ull, 0x08090a0b0c0d0e0full,
     0x1011121314151617ull, 0x18191a1b1c1d1e1full,
@@ -50,7 +76,7 @@ const u_int64_t i384p2[16] =
 
 /* BlueMidnightWish512 initial double chaining pipe */
 static
-const u_int64_t i512p2[16] =
+const uint64_t i512p2[16] =
 {
     0x8081828384858687ull, 0x88898a8b8c8d8e8full,
     0x9091929394959697ull, 0x98999a9b9c9d9e9full,
@@ -486,7 +512,7 @@ HashReturn Init(hashState *state, int hashbitlen)
 		// #1 Between comments #1 and #2 add algorithm specific initialization
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState224(state)->DoublePipe, i224p2,  16 * sizeof(u_int32_t));
+		memcpy(hashState224(state)->DoublePipe, i224p2,  16 * sizeof(uint32_t));
 		// #2 Between comments #1 and #2 add algorithm specific initialization
 		return(SUCCESS);
 
@@ -495,7 +521,7 @@ HashReturn Init(hashState *state, int hashbitlen)
 		// #1 Between comments #1 and #2 add algorithm specific initialization
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState256(state)->DoublePipe, i256p2,  16 * sizeof(u_int32_t));
+		memcpy(hashState256(state)->DoublePipe, i256p2,  16 * sizeof(uint32_t));
 		// #2 Between comments #1 and #2 add algorithm specific initialization
 		return(SUCCESS);
 
@@ -504,7 +530,7 @@ HashReturn Init(hashState *state, int hashbitlen)
 		// #1 Between comments #1 and #2 add algorithm specific initialization
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState384(state)->DoublePipe, i384p2,  16 * sizeof(u_int64_t));
+		memcpy(hashState384(state)->DoublePipe, i384p2,  16 * sizeof(uint64_t));
 		// #2 Between comments #1 and #2 add algorithm specific initialization
 		return(SUCCESS);
 
@@ -513,7 +539,7 @@ HashReturn Init(hashState *state, int hashbitlen)
 		// #1 Between comments #1 and #2 add algorithm specific initialization
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState224(state)->DoublePipe, i512p2,  16 * sizeof(u_int64_t));
+		memcpy(hashState224(state)->DoublePipe, i512p2,  16 * sizeof(uint64_t));
 		// #2 Between comments #1 and #2 add algorithm specific initialization
 		return(SUCCESS);
 
@@ -524,19 +550,19 @@ HashReturn Init(hashState *state, int hashbitlen)
 
 HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen)
 {
-	u_int32_t *data32, *p256;
-	u_int32_t XL32, XH32, TempEven32, TempOdd32;
-    u_int32_t p256_00, p256_01, p256_02, p256_03, p256_04, p256_05, p256_06, p256_07;
-    u_int32_t p256_08, p256_09, p256_10, p256_11, p256_12, p256_13, p256_14, p256_15;
-    u_int32_t p256_16, p256_17, p256_18, p256_19, p256_20, p256_21, p256_22, p256_23;
-    u_int32_t p256_24, p256_25, p256_26, p256_27, p256_28, p256_29, p256_30, p256_31;
+	uint32_t *data32, *p256;
+	uint32_t XL32, XH32, TempEven32, TempOdd32;
+    uint32_t p256_00, p256_01, p256_02, p256_03, p256_04, p256_05, p256_06, p256_07;
+    uint32_t p256_08, p256_09, p256_10, p256_11, p256_12, p256_13, p256_14, p256_15;
+    uint32_t p256_16, p256_17, p256_18, p256_19, p256_20, p256_21, p256_22, p256_23;
+    uint32_t p256_24, p256_25, p256_26, p256_27, p256_28, p256_29, p256_30, p256_31;
 
-	u_int64_t *data64, *p512;
-	u_int64_t XL64, XH64, TempEven64, TempOdd64;
-    u_int64_t p512_00, p512_01, p512_02, p512_03, p512_04, p512_05, p512_06, p512_07;
-    u_int64_t p512_08, p512_09, p512_10, p512_11, p512_12, p512_13, p512_14, p512_15;
-    u_int64_t p512_16, p512_17, p512_18, p512_19, p512_20, p512_21, p512_22, p512_23;
-    u_int64_t p512_24, p512_25, p512_26, p512_27, p512_28, p512_29, p512_30, p512_31;
+	uint64_t *data64, *p512;
+	uint64_t XL64, XH64, TempEven64, TempOdd64;
+    uint64_t p512_00, p512_01, p512_02, p512_03, p512_04, p512_05, p512_06, p512_07;
+    uint64_t p512_08, p512_09, p512_10, p512_11, p512_12, p512_13, p512_14, p512_15;
+    uint64_t p512_16, p512_17, p512_18, p512_19, p512_20, p512_21, p512_22, p512_23;
+    uint64_t p512_24, p512_25, p512_26, p512_27, p512_28, p512_29, p512_30, p512_31;
 
 	int LastBytes;
 
@@ -556,11 +582,11 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 					memcpy(hashState256(state)->LastPart + (state->unprocessed_bits >> 3), data, LastBytes );
 					state->unprocessed_bits += (int)databitlen;
 					databitlen = state->unprocessed_bits;
-					data32 = (u_int32_t *)hashState256(state)->LastPart;
+					data32 = (uint32_t *)hashState256(state)->LastPart;
 				}
 			}
 			else 
-				data32 = (u_int32_t *)data;
+				data32 = (uint32_t *)data;
 
 			p256   = hashState256(state)->DoublePipe;
 			while (databitlen >= BlueMidnightWish256_BLOCK_SIZE * 8)
@@ -596,11 +622,11 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 					memcpy(hashState512(state)->LastPart + (state->unprocessed_bits >> 3), data, LastBytes );
 					state->unprocessed_bits += (int)databitlen;
 					databitlen = state->unprocessed_bits;
-					data64 = (u_int64_t *)hashState512(state)->LastPart;
+					data64 = (uint64_t *)hashState512(state)->LastPart;
 				}
 			}
 			else 
-				data64 = (u_int64_t *)data;
+				data64 = (uint64_t *)data;
 
 			p512   = hashState512(state)->DoublePipe;
 			while (databitlen >= BlueMidnightWish512_BLOCK_SIZE * 8)
@@ -628,19 +654,19 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 
 HashReturn Final(hashState *state, BitSequence *hashval)
 {
-	u_int32_t *data32, *p256 = NULL;
-	u_int32_t XL32, XH32, TempEven32, TempOdd32;
-    u_int32_t p256_00, p256_01, p256_02, p256_03, p256_04, p256_05, p256_06, p256_07;
-    u_int32_t p256_08, p256_09, p256_10, p256_11, p256_12, p256_13, p256_14, p256_15;
-    u_int32_t p256_16, p256_17, p256_18, p256_19, p256_20, p256_21, p256_22, p256_23;
-    u_int32_t p256_24, p256_25, p256_26, p256_27, p256_28, p256_29, p256_30, p256_31;
+	uint32_t *data32, *p256 = NULL;
+	uint32_t XL32, XH32, TempEven32, TempOdd32;
+    uint32_t p256_00, p256_01, p256_02, p256_03, p256_04, p256_05, p256_06, p256_07;
+    uint32_t p256_08, p256_09, p256_10, p256_11, p256_12, p256_13, p256_14, p256_15;
+    uint32_t p256_16, p256_17, p256_18, p256_19, p256_20, p256_21, p256_22, p256_23;
+    uint32_t p256_24, p256_25, p256_26, p256_27, p256_28, p256_29, p256_30, p256_31;
 
-	u_int64_t *data64, *p512 = NULL;
-	u_int64_t XL64, XH64, TempEven64, TempOdd64;
-    u_int64_t p512_00, p512_01, p512_02, p512_03, p512_04, p512_05, p512_06, p512_07;
-    u_int64_t p512_08, p512_09, p512_10, p512_11, p512_12, p512_13, p512_14, p512_15;
-    u_int64_t p512_16, p512_17, p512_18, p512_19, p512_20, p512_21, p512_22, p512_23;
-    u_int64_t p512_24, p512_25, p512_26, p512_27, p512_28, p512_29, p512_30, p512_31;
+	uint64_t *data64, *p512 = NULL;
+	uint64_t XL64, XH64, TempEven64, TempOdd64;
+    uint64_t p512_00, p512_01, p512_02, p512_03, p512_04, p512_05, p512_06, p512_07;
+    uint64_t p512_08, p512_09, p512_10, p512_11, p512_12, p512_13, p512_14, p512_15;
+    uint64_t p512_16, p512_17, p512_18, p512_19, p512_20, p512_21, p512_22, p512_23;
+    uint64_t p512_24, p512_25, p512_26, p512_27, p512_28, p512_29, p512_30, p512_31;
 
 	DataLength databitlen;
 
@@ -654,7 +680,7 @@ HashReturn Final(hashState *state, BitSequence *hashval)
 			PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
 			hashState256(state)->LastPart[LastByte] = hashState256(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
 				                                    ^ (0x01 << PadOnePosition);
-			data64 = (u_int64_t *)hashState256(state)->LastPart;
+			data64 = (uint64_t *)hashState256(state)->LastPart;
 
 			if (state->unprocessed_bits < 448)
 			{
@@ -669,7 +695,7 @@ HashReturn Final(hashState *state, BitSequence *hashval)
 				data64[15] = state->bits_processed + state->unprocessed_bits;
 			}
 
-			data32   = (u_int32_t *)hashState256(state)->LastPart;
+			data32   = (uint32_t *)hashState256(state)->LastPart;
 			p256     = hashState256(state)->DoublePipe;
 			while (databitlen >= BlueMidnightWish256_BLOCK_SIZE * 8)
 			{
@@ -688,7 +714,7 @@ HashReturn Final(hashState *state, BitSequence *hashval)
 			PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
 			hashState512(state)->LastPart[LastByte] = hashState512(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
 				                                    ^ (0x01 << PadOnePosition);
-			data64 = (u_int64_t *)hashState512(state)->LastPart;
+			data64 = (uint64_t *)hashState512(state)->LastPart;
 
 			if (state->unprocessed_bits < 960)
 			{

@@ -15,7 +15,7 @@ typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_U
 
 /* EdonR224 initial double chaining pipe */
 static
-const u_int32_t i224p2[16] =
+const uint32_t i224p2[16] =
 {   0x00010203ul, 0x04050607ul, 0x08090a0bul, 0x0c0d0e0ful,
     0x10111213ul, 0x14151617ul, 0x18191a1bul, 0x1c1d1e1ful,
     0x20212223ul, 0x24252627ul, 0x28292a2bul, 0x2c2d2e2ful,
@@ -23,7 +23,7 @@ const u_int32_t i224p2[16] =
 };
 /* EdonR256 initial double chaining pipe */
 static
-const u_int32_t i256p2[16] =
+const uint32_t i256p2[16] =
 {   0x40414243ul, 0x44454647ul, 0x48494a4bul, 0x4c4d4e4ful,
     0x50515253ul, 0x54555657ul, 0x58595a5bul, 0x5c5d5e5ful,
     0x60616263ul, 0x64656667ul, 0x68696a6bul, 0x6c6d6e6ful,
@@ -32,7 +32,7 @@ const u_int32_t i256p2[16] =
 
 /* EdonR384 initial double chaining pipe */
 static
-const u_int64_t i384p2[16] =
+const uint64_t i384p2[16] =
 {
     0x0001020304050607ull, 0x08090a0b0c0d0e0full,
     0x1011121314151617ull, 0x18191a1b1c1d1e1full,
@@ -46,7 +46,7 @@ const u_int64_t i384p2[16] =
 
 /* EdonR512 initial double chaining pipe */
 static
-const u_int64_t i512p2[16] =
+const uint64_t i512p2[16] =
 {
     0x8081828384858687ull, 0x88898a8b8c8d8e8full,
     0x9091929394959697ull, 0x98999a9b9c9d9e9full,
@@ -222,28 +222,28 @@ int edonr_Init(edonr_hashState *state, int hashbitlen)
 		state->hashbitlen = 224;
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState224(state)->DoublePipe, i224p2,  16 * sizeof(u_int32_t));
+		memcpy(hashState224(state)->DoublePipe, i224p2,  16 * sizeof(uint32_t));
 		return(SUCCESS);
 
 		case 256:
 		state->hashbitlen = 256;
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState256(state)->DoublePipe, i256p2,  16 * sizeof(u_int32_t));
+		memcpy(hashState256(state)->DoublePipe, i256p2,  16 * sizeof(uint32_t));
 		return(SUCCESS);
 
 		case 384:		
 		state->hashbitlen = 384;
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState384(state)->DoublePipe, i384p2,  16 * sizeof(u_int64_t));
+		memcpy(hashState384(state)->DoublePipe, i384p2,  16 * sizeof(uint64_t));
 		return(SUCCESS);
 
 		case 512:
 		state->hashbitlen = 512;
 		state->bits_processed = 0;
 		state->unprocessed_bits = 0;
-		memcpy(hashState224(state)->DoublePipe, i512p2,  16 * sizeof(u_int64_t));
+		memcpy(hashState224(state)->DoublePipe, i512p2,  16 * sizeof(uint64_t));
 		return(SUCCESS);
 
         default:    return(BAD_HASHLEN);
@@ -257,13 +257,13 @@ int edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 {
 	const unsigned char *data = _data;
 	unsigned long long databitlen = 8 * _len;
-	u_int32_t *data32, *p256;
-	u_int32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
-	u_int32_t t8,  t9, t10, t11, t12, t13, t14, t15;
+	uint32_t *data32, *p256;
+	uint32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
+	uint32_t t8,  t9, t10, t11, t12, t13, t14, t15;
 
-	u_int64_t *data64, *p512;
-	u_int64_t tt0,  tt1,  tt2,  tt3,  tt4,  tt5,  tt6,  tt7; 
-	u_int64_t tt8,  tt9, tt10, tt11, tt12, tt13, tt14, tt15; 
+	uint64_t *data64, *p512;
+	uint64_t tt0,  tt1,  tt2,  tt3,  tt4,  tt5,  tt6,  tt7; 
+	uint64_t tt8,  tt9, tt10, tt11, tt12, tt13, tt14, tt15; 
 
 	int LastBytes;
 
@@ -283,11 +283,11 @@ int edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 					memcpy(hashState256(state)->LastPart + (state->unprocessed_bits >> 3), data, LastBytes );
 					state->unprocessed_bits += (int)databitlen;
 					databitlen = state->unprocessed_bits;
-					data32 = (u_int32_t *)hashState256(state)->LastPart;
+					data32 = (uint32_t *)hashState256(state)->LastPart;
 				}
 			}
 			else 
-				data32 = (u_int32_t *)data;
+				data32 = (uint32_t *)data;
 
 			p256   = hashState256(state)->DoublePipe;
 			while (databitlen >= EdonR256_BLOCK_SIZE * 8)
@@ -375,11 +375,11 @@ int edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 					memcpy(hashState512(state)->LastPart + (state->unprocessed_bits >> 3), data, LastBytes );
 					state->unprocessed_bits += (int)databitlen;
 					databitlen = state->unprocessed_bits;
-					data64 = (u_int64_t *)hashState512(state)->LastPart;
+					data64 = (uint64_t *)hashState512(state)->LastPart;
 				}
 			}
 			else 
-				data64 = (u_int64_t *)data;
+				data64 = (uint64_t *)data;
 
 			p512   = hashState512(state)->DoublePipe;
 			while (databitlen >= EdonR512_BLOCK_SIZE * 8)
@@ -459,13 +459,13 @@ int edonr_Update(edonr_hashState *state, const void *_data, size_t _len)
 
 int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 {
-	u_int32_t *data32, *p256 = NULL;
-	u_int32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
-	u_int32_t t8,  t9, t10, t11, t12, t13, t14, t15;
+	uint32_t *data32, *p256 = NULL;
+	uint32_t t0,  t1,  t2,  t3,  t4,  t5,  t6,  t7;
+	uint32_t t8,  t9, t10, t11, t12, t13, t14, t15;
 
-	u_int64_t *data64, *p512 = NULL;
-	u_int64_t tt0,  tt1,  tt2,  tt3,  tt4,  tt5,  tt6,  tt7; 
-	u_int64_t tt8,  tt9, tt10, tt11, tt12, tt13, tt14, tt15; 
+	uint64_t *data64, *p512 = NULL;
+	uint64_t tt0,  tt1,  tt2,  tt3,  tt4,  tt5,  tt6,  tt7; 
+	uint64_t tt8,  tt9, tt10, tt11, tt12, tt13, tt14, tt15; 
 
 	unsigned long long databitlen;
 
@@ -479,7 +479,7 @@ int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 			PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
 			hashState256(state)->LastPart[LastByte] = hashState256(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
 				                                    ^ (0x01 << PadOnePosition);
-			data64 = (u_int64_t *)hashState256(state)->LastPart;
+			data64 = (uint64_t *)hashState256(state)->LastPart;
 
 			if (state->unprocessed_bits < 448)
 			{
@@ -494,7 +494,7 @@ int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 				data64[15] = state->bits_processed + state->unprocessed_bits;
 			}
 
-			data32   = (u_int32_t *)hashState256(state)->LastPart;
+			data32   = (uint32_t *)hashState256(state)->LastPart;
 			p256     = hashState256(state)->DoublePipe;
 			while (databitlen >= EdonR256_BLOCK_SIZE * 8)
 			{
@@ -565,7 +565,7 @@ int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 			PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
 			hashState512(state)->LastPart[LastByte] = hashState512(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
 				                                    ^ (0x01 << PadOnePosition);
-			data64 = (u_int64_t *)hashState512(state)->LastPart;
+			data64 = (uint64_t *)hashState512(state)->LastPart;
 
 			if (state->unprocessed_bits < 960)
 			{

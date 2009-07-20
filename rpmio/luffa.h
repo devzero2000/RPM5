@@ -21,12 +21,12 @@ typedef unsigned long long DataLength;
 
 typedef struct {
     int hashbitlen;
-    int width;        /* The number of blocks in chaining values*/
-    int limit;        /* The limit of message lengthin in unit of 64bit*/
-    uint64_t bitlen[2]; /* Message length in bits */
-    uint32_t rembitlen; /* Length of buffer data to be hashed */
-    uint32_t buffer[8]; /* Buffer to be hashed */
-    uint32_t chainv[40];   /* Chaining values */
+    int width;			/* Number of blocks in chaining values */
+    int limit;			/* Limit of message length in unit of 64bit */
+    uint64_t bitlen[2];		/* Message length in bits */
+    uint32_t rembitlen;		/* Length of buffer data to be hashed */
+    uint32_t buffer[8];		/* Buffer to be hashed */
+    uint32_t chainv[40];	/* Chaining values */
 } hashState;
 
 HashReturn Init(hashState *state, int hashbitlen);

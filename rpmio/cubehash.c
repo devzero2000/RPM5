@@ -97,7 +97,7 @@ static void transform(hashState *state)
 {
   int i;
   int r;
-  myuint32 y[16];
+  uint32_t y[16];
 
   for (r = 0;r < state->rounds;++r) {
     for (i = 0;i < 16;++i) state->x[i + 16] += state->x[i];
@@ -155,7 +155,7 @@ HashReturn Update(hashState *state, const BitSequence *data,
 #if defined(OPTIMIZE_SSE2)
     ((unsigned char *) state->x)[state->pos / 8] ^= *data;
 #else
-    myuint32 u = *data;
+    uint32_t u = *data;
     u <<= 8 * ((state->pos / 8) % 4);
     state->x[state->pos / 32] ^= u;
 #endif
@@ -171,7 +171,7 @@ HashReturn Update(hashState *state, const BitSequence *data,
 #if defined(OPTIMIZE_SSE2)
     ((unsigned char *) state->x)[state->pos / 8] ^= *data;
 #else
-    myuint32 u = *data;
+    uint32_t u = *data;
     u <<= 8 * ((state->pos / 8) % 4);
     state->x[state->pos / 32] ^= u;
 #endif
@@ -192,7 +192,7 @@ HashReturn Final(hashState *state, BitSequence *hashval)
   for (i = 0;i < state->hashbitlen / 8;++i)
     hashval[i] = ((unsigned char *) state->x)[i];
 #else
-  myuint32 u;
+  uint32_t u;
 
   u = (128 >> (state->pos % 8));
   u <<= 8 * ((state->pos / 8) % 4);

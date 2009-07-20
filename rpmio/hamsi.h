@@ -29,10 +29,10 @@ typedef struct {
     int PFROUNDS;
 } hashState;
 
-HashReturn   Init(hashState *state, int hashbitlen);
-HashReturn Update(hashState *state, const BitSequence* data, DataLength databitlen);
-HashReturn  Final(hashState *state, BitSequence* hashval);
-HashReturn   Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+HashReturn Init(hashState *state, int hashbitlen);
+HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
+HashReturn Final(hashState *state, BitSequence *hashval);
+HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
 
 /* Impedance match bytes -> bits length. */
 static inline

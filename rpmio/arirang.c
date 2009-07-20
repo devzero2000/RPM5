@@ -15,7 +15,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-
 #include <memory.h>
 
 #include "arirang.h"
@@ -38,30 +37,30 @@ enum {SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2};
 #endif
 
 // Left and rigth rotation
-#define ROTL_DWORD(x, n) ( (DWORD)((x) << (n)) | (DWORD)((x) >> (32-(n))) )
-#define ROTL_QWORD(x, n) ( (QWORD)((x) << (n)) | (QWORD)((x) >> (64-(n))) )
+#define ROTL_DWORD(x, n) ( (uint32_t)((x) << (n)) | (uint32_t)((x) >> (32-(n))) )
+#define ROTL_QWORD(x, n) ( (uint64_t)((x) << (n)) | (uint64_t)((x) >> (64-(n))) )
 
-// Reverse the byte order of DWORD and WORD.
+// Reverse the byte order of uint32_t and uint16_t.
 #define ENDIAN_REVERSE_DWORD(dwS)	( (ROTL_DWORD((dwS),  8) & 0x00ff00ff) | (ROTL_DWORD((dwS), 24) & 0xff00ff00) )
 #define ENDIAN_REVERSE_QWORD(w, x)  {														\
-     QWORD tmp = (w);																		\
+     uint64_t tmp = (w);																		\
      tmp = (tmp >> 32) | (tmp << 32);														\
      tmp = ((tmp & 0xff00ff00ff00ff00ULL) >> 8) | ((tmp & 0x00ff00ff00ff00ffULL) << 8);		\
      (x) = ((tmp & 0xffff0000ffff0000ULL) >> 16) | ((tmp & 0x0000ffff0000ffffULL) << 16);	\
  }
 
-// Move DWORD type to BYTE type and BYTE type to DWORD type
+// Move uint32_t type to uint8_t type and uint8_t type to uint32_t type
 #if defined(BIG_ENDIAN)
-	#define BIG_B2D(B, D)		D = *(DWORD *)(B)
-	#define BIG_D2B(D, B)		*(DWORD *)(B) = (DWORD)(D)
-	#define LITTLE_B2D(B, D)	D = ENDIAN_REVERSE_DWORD(*(DWORD *)(B))
-	#define LITTLE_D2B(D, B)	*(DWORD *)(B) = ENDIAN_REVERSE_DWORD(D)
+	#define BIG_B2D(B, D)		D = *(uint32_t *)(B)
+	#define BIG_D2B(D, B)		*(uint32_t *)(B) = (uint32_t)(D)
+	#define LITTLE_B2D(B, D)	D = ENDIAN_REVERSE_DWORD(*(uint32_t *)(B))
+	#define LITTLE_D2B(D, B)	*(uint32_t *)(B) = ENDIAN_REVERSE_DWORD(D)
 #elif defined(LITTLE_ENDIAN)
-	#define BIG_B2D(B, D)		D = ENDIAN_REVERSE_DWORD(*(DWORD *)(B))
-	#define BIG_Q2B(D, B)		ENDIAN_REVERSE_QWORD(D, *(QWORD *)(B))
-	#define BIG_D2B(D, B)		*(DWORD *)(B) = ENDIAN_REVERSE_DWORD(D)
-	#define LITTLE_B2D(B, D)	D = *(DWORD *)(B)
-	#define LITTLE_D2B(D, B)	*(DWORD *)(B) = (DWORD)(D)
+	#define BIG_B2D(B, D)		D = ENDIAN_REVERSE_DWORD(*(uint32_t *)(B))
+	#define BIG_Q2B(D, B)		ENDIAN_REVERSE_QWORD(D, *(uint64_t *)(B))
+	#define BIG_D2B(D, B)		*(uint32_t *)(B) = ENDIAN_REVERSE_DWORD(D)
+	#define LITTLE_B2D(B, D)	D = *(uint32_t *)(B)
+	#define LITTLE_D2B(D, B)	*(uint32_t *)(B) = (uint32_t)(D)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,29 +68,29 @@ enum {SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2};
 // Macro
 
 #define ff_mult(a, b)	(a && b ? pow_tab[(log_tab[a] + log_tab[b]) % 255] : 0)
-#define byte(x, n)		((BYTE)((x) >> (8 * n)))
+#define byte(x, n)		((uint8_t)((x) >> (8 * n)))
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Constant
 
-static const DWORD K256[16] = {	0x517cc1b7, 0x76517cc1, 0xbd76517c, 0x2dbd7651,
+static const uint32_t K256[16] = {	0x517cc1b7, 0x76517cc1, 0xbd76517c, 0x2dbd7651,
 				0x272dbd76, 0xcb272dbd, 0x90cb272d, 0x0a90cb27,
 				0xec0a90cb, 0x5bec0a90, 0x9a5bec0a, 0xe69a5bec,
 				0xb7e69a5b, 0xc1b7e69a, 0x7cc1b7e6, 0x517cc1b7};
 
-static const QWORD K512[16] = {	0x517cc1b727220a94ULL, 0x2db6517cc1b72722ULL, 0xe6952db6517cc1b7ULL, 0x90cbe6952db6517cULL,
+static const uint64_t K512[16] = {	0x517cc1b727220a94ULL, 0x2db6517cc1b72722ULL, 0xe6952db6517cc1b7ULL, 0x90cbe6952db6517cULL,
 				0x7cca90cbe6952db6ULL, 0xcb237cca90cbe695ULL, 0x765ecb237cca90cbULL, 0xec01765ecb237ccaULL,
 				0xb7e9ec01765ecb23ULL, 0xbd7db7e9ec01765eULL, 0x9a5fbd7db7e9ec01ULL, 0x5be89a5fbd7db7e9ULL,
 				0x0a945be89a5fbd7dULL, 0x27220a945be89a5fULL, 0xc1b727220a945be8ULL, 0x517cc1b727220a94ULL};
 
-BYTE	sbx[256];  // Prepare S-box
-BYTE	F2[256];   // i*2 in GF(256)
-BYTE	F3[256];   // i*3 in GF(256)
-BYTE	F4[256];   // i*4 in GF(256)
-BYTE	F8[256];   // i*8 in GF(256)
-BYTE	F9[256];   // i*9 in GF(256)
-BYTE    FA[256];   // i*10 in GF(256)
+uint8_t	sbx[256];  // Prepare S-box
+uint8_t	F2[256];   // i*2 in GF(256)
+uint8_t	F3[256];   // i*3 in GF(256)
+uint8_t	F4[256];   // i*4 in GF(256)
+uint8_t	F8[256];   // i*8 in GF(256)
+uint8_t	F9[256];   // i*9 in GF(256)
+uint8_t FA[256];   // i*10 in GF(256)
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -109,17 +108,17 @@ static
 void gen_tabs(void)
 {
 	int i;
-	BYTE p, q;
-	BYTE log_tab[256];
-	BYTE pow_tab[256];
+	uint8_t p, q;
+	uint8_t log_tab[256];
+	uint8_t pow_tab[256];
 
 
 	/* log and power tables for GF(2**8) finite field with  */
 	/* 0x011b as modular polynomial - the simplest primitive */
 	/* root is 0x03, used here to generate the tables       */
 	for(i = 0,p = 1;i<256;i++){
-		pow_tab[i] = (BYTE)p;
-		log_tab[p] = (BYTE)i;
+		pow_tab[i] = (uint8_t)p;
+		log_tab[p] = (uint8_t)i;
 		p = p ^ (p << 1) ^ (p & 0x80 ? 0x01b : 0);
 	}
 
@@ -162,28 +161,28 @@ void gen_tabs(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 static
-void step256(DWORD R[8], DWORD M1, DWORD M2){
+void step256(uint32_t R[8], uint32_t M1, uint32_t M2){
 
-	DWORD temp1,temp2;
+	uint32_t temp1,temp2;
 
 	// Message XOR
 	R[0] ^= M1;
 	R[4] ^= M2;
 
 	// Sub-byte
-	temp1 =    (DWORD)(sbx[byte(R[0], 0)]) ^ ((DWORD)(sbx[byte(R[0], 1)]) <<  8) ^ ((DWORD)(sbx[byte(R[0], 2)]) << 16) ^ ((DWORD)(sbx[byte(R[0], 3)]) << 24);
-	temp2 =    (DWORD)(sbx[byte(R[4], 0)]) ^ ((DWORD)(sbx[byte(R[4], 1)]) <<  8) ^ ((DWORD)(sbx[byte(R[4], 2)]) << 16) ^ ((DWORD)(sbx[byte(R[4], 3)]) << 24);
+	temp1 =    (uint32_t)(sbx[byte(R[0], 0)]) ^ ((uint32_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[0], 3)]) << 24);
+	temp2 =    (uint32_t)(sbx[byte(R[4], 0)]) ^ ((uint32_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[4], 3)]) << 24);
 
 	// MDS transformation
-	temp1 =  ( (DWORD)(F2[byte(temp1,0)]) ^ (DWORD)(F3[byte(temp1,1)]) ^ (DWORD)(   byte(temp1,2) ) ^ (DWORD)(   byte(temp1,3) )       ) ^
-		     (((DWORD)(   byte(temp1,0) ) ^ (DWORD)(F2[byte(temp1,1)]) ^ (DWORD)(F3[byte(temp1,2)]) ^ (DWORD)(   byte(temp1,3) )) <<  8) ^
-		     (((DWORD)(   byte(temp1,0) ) ^ (DWORD)(   byte(temp1,1) ) ^ (DWORD)(F2[byte(temp1,2)]) ^ (DWORD)(F3[byte(temp1,3)])) << 16) ^
-		     (((DWORD)(F3[byte(temp1,0)]) ^ (DWORD)(   byte(temp1,1) ) ^ (DWORD)(   byte(temp1,2) ) ^ (DWORD)(F2[byte(temp1,3)])) << 24);
+	temp1 =  ( (uint32_t)(F2[byte(temp1,0)]) ^ (uint32_t)(F3[byte(temp1,1)]) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(   byte(temp1,3) )       ) ^
+		     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(F2[byte(temp1,1)]) ^ (uint32_t)(F3[byte(temp1,2)]) ^ (uint32_t)(   byte(temp1,3) )) <<  8) ^
+		     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(F2[byte(temp1,2)]) ^ (uint32_t)(F3[byte(temp1,3)])) << 16) ^
+		     (((uint32_t)(F3[byte(temp1,0)]) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(F2[byte(temp1,3)])) << 24);
 
-	temp2 =  ( (DWORD)(F2[byte(temp2,0)]) ^ (DWORD)(F3[byte(temp2,1)]) ^ (DWORD)(   byte(temp2,2) ) ^ (DWORD)(   byte(temp2,3) )       ) ^
-		     (((DWORD)(   byte(temp2,0) ) ^ (DWORD)(F2[byte(temp2,1)]) ^ (DWORD)(F3[byte(temp2,2)]) ^ (DWORD)(   byte(temp2,3) )) <<  8) ^
-		     (((DWORD)(   byte(temp2,0) ) ^ (DWORD)(   byte(temp2,1) ) ^ (DWORD)(F2[byte(temp2,2)]) ^ (DWORD)(F3[byte(temp2,3)])) << 16) ^
-		     (((DWORD)(F3[byte(temp2,0)]) ^ (DWORD)(   byte(temp2,1) ) ^ (DWORD)(   byte(temp2,2) ) ^ (DWORD)(F2[byte(temp2,3)])) << 24);
+	temp2 =  ( (uint32_t)(F2[byte(temp2,0)]) ^ (uint32_t)(F3[byte(temp2,1)]) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(   byte(temp2,3) )       ) ^
+		     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(F2[byte(temp2,1)]) ^ (uint32_t)(F3[byte(temp2,2)]) ^ (uint32_t)(   byte(temp2,3) )) <<  8) ^
+		     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(F2[byte(temp2,2)]) ^ (uint32_t)(F3[byte(temp2,3)])) << 16) ^
+		     (((uint32_t)(F3[byte(temp2,0)]) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(F2[byte(temp2,3)])) << 24);
 
 	R[1] ^= temp1;
 	R[2] ^= ROTL_DWORD(temp1, 13);
@@ -210,38 +209,38 @@ void step256(DWORD R[8], DWORD M1, DWORD M2){
 //
 ////////////////////////////////////////////////////////////////////////////////
 static
-void step512(QWORD R[8], QWORD M1, QWORD M2){
+void step512(uint64_t R[8], uint64_t M1, uint64_t M2){
 
-	QWORD temp1,temp2;
+	uint64_t temp1,temp2;
 
 	// Message XOR
 	R[0] ^= M1;
 	R[4] ^= M2;
 
 	// Sub-byte
-	temp1 =     (QWORD)(sbx[byte(R[0], 0)])         ^ ((QWORD)(sbx[byte(R[0], 1)]) <<  8) ^ ((QWORD)(sbx[byte(R[0], 2)]) << 16) ^ ((QWORD)(sbx[byte(R[0], 3)]) << 24) ^
-			   ((QWORD)(sbx[byte(R[0], 4)]) <<  32) ^ ((QWORD)(sbx[byte(R[0], 5)]) << 40) ^ ((QWORD)(sbx[byte(R[0], 6)]) << 48) ^ ((QWORD)(sbx[byte(R[0], 7)]) << 56);
-	temp2 =     (QWORD)(sbx[byte(R[4], 0)])         ^ ((QWORD)(sbx[byte(R[4], 1)]) <<  8) ^ ((QWORD)(sbx[byte(R[4], 2)]) << 16) ^ ((QWORD)(sbx[byte(R[4], 3)]) << 24) ^
-			   ((QWORD)(sbx[byte(R[4], 4)]) <<  32) ^ ((QWORD)(sbx[byte(R[4], 5)]) << 40) ^ ((QWORD)(sbx[byte(R[4], 6)]) << 48) ^ ((QWORD)(sbx[byte(R[4], 7)]) << 56);
+	temp1 =     (uint64_t)(sbx[byte(R[0], 0)])         ^ ((uint64_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[0], 3)]) << 24) ^
+			   ((uint64_t)(sbx[byte(R[0], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[0], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[0], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[0], 7)]) << 56);
+	temp2 =     (uint64_t)(sbx[byte(R[4], 0)])         ^ ((uint64_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[4], 3)]) << 24) ^
+			   ((uint64_t)(sbx[byte(R[4], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[4], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[4], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[4], 7)]) << 56);
 
 	// MDS transformation
-	temp1 = ( (QWORD)(   byte(temp1,0) ) ^ (QWORD)(F2[byte(temp1,1)]) ^ (QWORD)(FA[byte(temp1,2)]) ^ (QWORD)(F9[byte(temp1,3)]) ^ (QWORD)(F8[byte(temp1,4)]) ^ (QWORD)(   byte(temp1,5) ) ^ (QWORD)(F4[byte(temp1,6)]) ^ (QWORD)(   byte(temp1,7) )        ) ^
-			(((QWORD)(   byte(temp1,0) ) ^ (QWORD)(   byte(temp1,1) ) ^ (QWORD)(F2[byte(temp1,2)]) ^ (QWORD)(FA[byte(temp1,3)]) ^ (QWORD)(F9[byte(temp1,4)]) ^ (QWORD)(F8[byte(temp1,5)]) ^ (QWORD)(   byte(temp1,6) ) ^ (QWORD)(F4[byte(temp1,7)])) <<  8 ) ^
-			(((QWORD)(F4[byte(temp1,0)]) ^ (QWORD)(   byte(temp1,1) ) ^ (QWORD)(   byte(temp1,2) ) ^ (QWORD)(F2[byte(temp1,3)]) ^ (QWORD)(FA[byte(temp1,4)]) ^ (QWORD)(F9[byte(temp1,5)]) ^ (QWORD)(F8[byte(temp1,6)]) ^ (QWORD)(   byte(temp1,7) )) << 16 ) ^
-			(((QWORD)(   byte(temp1,0) ) ^ (QWORD)(F4[byte(temp1,1)]) ^ (QWORD)(   byte(temp1,2) ) ^ (QWORD)(   byte(temp1,3) ) ^ (QWORD)(F2[byte(temp1,4)]) ^ (QWORD)(FA[byte(temp1,5)]) ^ (QWORD)(F9[byte(temp1,6)]) ^ (QWORD)(F8[byte(temp1,7)])) << 24 ) ^
-			(((QWORD)(F8[byte(temp1,0)]) ^ (QWORD)(   byte(temp1,1) ) ^ (QWORD)(F4[byte(temp1,2)]) ^ (QWORD)(   byte(temp1,3) ) ^ (QWORD)(   byte(temp1,4) ) ^ (QWORD)(F2[byte(temp1,5)]) ^ (QWORD)(FA[byte(temp1,6)]) ^ (QWORD)(F9[byte(temp1,7)])) << 32 ) ^
-			(((QWORD)(F9[byte(temp1,0)]) ^ (QWORD)(F8[byte(temp1,1)]) ^ (QWORD)(   byte(temp1,2) ) ^ (QWORD)(F4[byte(temp1,3)]) ^ (QWORD)(   byte(temp1,4) ) ^ (QWORD)(   byte(temp1,5) ) ^ (QWORD)(F2[byte(temp1,6)]) ^ (QWORD)(FA[byte(temp1,7)])) << 40 ) ^
-			(((QWORD)(FA[byte(temp1,0)]) ^ (QWORD)(F9[byte(temp1,1)]) ^ (QWORD)(F8[byte(temp1,2)]) ^ (QWORD)(   byte(temp1,3) ) ^ (QWORD)(F4[byte(temp1,4)]) ^ (QWORD)(   byte(temp1,5) ) ^ (QWORD)(   byte(temp1,6) ) ^ (QWORD)(F2[byte(temp1,7)])) << 48 ) ^
-			(((QWORD)(F2[byte(temp1,0)]) ^ (QWORD)(FA[byte(temp1,1)]) ^ (QWORD)(F9[byte(temp1,2)]) ^ (QWORD)(F8[byte(temp1,3)]) ^ (QWORD)(   byte(temp1,4) ) ^ (QWORD)(F4[byte(temp1,5)]) ^ (QWORD)(   byte(temp1,6) ) ^ (QWORD)(   byte(temp1,7) )) << 56 );
+	temp1 = ( (uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F2[byte(temp1,1)]) ^ (uint64_t)(FA[byte(temp1,2)]) ^ (uint64_t)(F9[byte(temp1,3)]) ^ (uint64_t)(F8[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F4[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )        ) ^
+			(((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F2[byte(temp1,2)]) ^ (uint64_t)(FA[byte(temp1,3)]) ^ (uint64_t)(F9[byte(temp1,4)]) ^ (uint64_t)(F8[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F4[byte(temp1,7)])) <<  8 ) ^
+			(((uint64_t)(F4[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F2[byte(temp1,3)]) ^ (uint64_t)(FA[byte(temp1,4)]) ^ (uint64_t)(F9[byte(temp1,5)]) ^ (uint64_t)(F8[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )) << 16 ) ^
+			(((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F4[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F2[byte(temp1,4)]) ^ (uint64_t)(FA[byte(temp1,5)]) ^ (uint64_t)(F9[byte(temp1,6)]) ^ (uint64_t)(F8[byte(temp1,7)])) << 24 ) ^
+			(((uint64_t)(F8[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F4[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F2[byte(temp1,5)]) ^ (uint64_t)(FA[byte(temp1,6)]) ^ (uint64_t)(F9[byte(temp1,7)])) << 32 ) ^
+			(((uint64_t)(F9[byte(temp1,0)]) ^ (uint64_t)(F8[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F4[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F2[byte(temp1,6)]) ^ (uint64_t)(FA[byte(temp1,7)])) << 40 ) ^
+			(((uint64_t)(FA[byte(temp1,0)]) ^ (uint64_t)(F9[byte(temp1,1)]) ^ (uint64_t)(F8[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F4[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F2[byte(temp1,7)])) << 48 ) ^
+			(((uint64_t)(F2[byte(temp1,0)]) ^ (uint64_t)(FA[byte(temp1,1)]) ^ (uint64_t)(F9[byte(temp1,2)]) ^ (uint64_t)(F8[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F4[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(   byte(temp1,7) )) << 56 );
 
-	temp2 = ( (QWORD)(   byte(temp2,0) ) ^ (QWORD)(F2[byte(temp2,1)]) ^ (QWORD)(FA[byte(temp2,2)]) ^ (QWORD)(F9[byte(temp2,3)]) ^ (QWORD)(F8[byte(temp2,4)]) ^ (QWORD)(   byte(temp2,5) ) ^ (QWORD)(F4[byte(temp2,6)]) ^ (QWORD)(   byte(temp2,7) )        ) ^
-			(((QWORD)(   byte(temp2,0) ) ^ (QWORD)(   byte(temp2,1) ) ^ (QWORD)(F2[byte(temp2,2)]) ^ (QWORD)(FA[byte(temp2,3)]) ^ (QWORD)(F9[byte(temp2,4)]) ^ (QWORD)(F8[byte(temp2,5)]) ^ (QWORD)(   byte(temp2,6) ) ^ (QWORD)(F4[byte(temp2,7)])) <<  8 ) ^
-			(((QWORD)(F4[byte(temp2,0)]) ^ (QWORD)(   byte(temp2,1) ) ^ (QWORD)(   byte(temp2,2) ) ^ (QWORD)(F2[byte(temp2,3)]) ^ (QWORD)(FA[byte(temp2,4)]) ^ (QWORD)(F9[byte(temp2,5)]) ^ (QWORD)(F8[byte(temp2,6)]) ^ (QWORD)(   byte(temp2,7) )) << 16 ) ^
-			(((QWORD)(   byte(temp2,0) ) ^ (QWORD)(F4[byte(temp2,1)]) ^ (QWORD)(   byte(temp2,2) ) ^ (QWORD)(   byte(temp2,3) ) ^ (QWORD)(F2[byte(temp2,4)]) ^ (QWORD)(FA[byte(temp2,5)]) ^ (QWORD)(F9[byte(temp2,6)]) ^ (QWORD)(F8[byte(temp2,7)])) << 24 ) ^
-			(((QWORD)(F8[byte(temp2,0)]) ^ (QWORD)(   byte(temp2,1) ) ^ (QWORD)(F4[byte(temp2,2)]) ^ (QWORD)(   byte(temp2,3) ) ^ (QWORD)(   byte(temp2,4) ) ^ (QWORD)(F2[byte(temp2,5)]) ^ (QWORD)(FA[byte(temp2,6)]) ^ (QWORD)(F9[byte(temp2,7)])) << 32 ) ^
-			(((QWORD)(F9[byte(temp2,0)]) ^ (QWORD)(F8[byte(temp2,1)]) ^ (QWORD)(   byte(temp2,2) ) ^ (QWORD)(F4[byte(temp2,3)]) ^ (QWORD)(   byte(temp2,4) ) ^ (QWORD)(   byte(temp2,5) ) ^ (QWORD)(F2[byte(temp2,6)]) ^ (QWORD)(FA[byte(temp2,7)])) << 40 ) ^
-			(((QWORD)(FA[byte(temp2,0)]) ^ (QWORD)(F9[byte(temp2,1)]) ^ (QWORD)(F8[byte(temp2,2)]) ^ (QWORD)(   byte(temp2,3) ) ^ (QWORD)(F4[byte(temp2,4)]) ^ (QWORD)(   byte(temp2,5) ) ^ (QWORD)(   byte(temp2,6) ) ^ (QWORD)(F2[byte(temp2,7)])) << 48 ) ^
-			(((QWORD)(F2[byte(temp2,0)]) ^ (QWORD)(FA[byte(temp2,1)]) ^ (QWORD)(F9[byte(temp2,2)]) ^ (QWORD)(F8[byte(temp2,3)]) ^ (QWORD)(   byte(temp2,4) ) ^ (QWORD)(F4[byte(temp2,5)]) ^ (QWORD)(   byte(temp2,6) ) ^ (QWORD)(   byte(temp2,7) )) << 56 );
+	temp2 = ( (uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F2[byte(temp2,1)]) ^ (uint64_t)(FA[byte(temp2,2)]) ^ (uint64_t)(F9[byte(temp2,3)]) ^ (uint64_t)(F8[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F4[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )        ) ^
+			(((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F2[byte(temp2,2)]) ^ (uint64_t)(FA[byte(temp2,3)]) ^ (uint64_t)(F9[byte(temp2,4)]) ^ (uint64_t)(F8[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F4[byte(temp2,7)])) <<  8 ) ^
+			(((uint64_t)(F4[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F2[byte(temp2,3)]) ^ (uint64_t)(FA[byte(temp2,4)]) ^ (uint64_t)(F9[byte(temp2,5)]) ^ (uint64_t)(F8[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )) << 16 ) ^
+			(((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F4[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F2[byte(temp2,4)]) ^ (uint64_t)(FA[byte(temp2,5)]) ^ (uint64_t)(F9[byte(temp2,6)]) ^ (uint64_t)(F8[byte(temp2,7)])) << 24 ) ^
+			(((uint64_t)(F8[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F4[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F2[byte(temp2,5)]) ^ (uint64_t)(FA[byte(temp2,6)]) ^ (uint64_t)(F9[byte(temp2,7)])) << 32 ) ^
+			(((uint64_t)(F9[byte(temp2,0)]) ^ (uint64_t)(F8[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F4[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F2[byte(temp2,6)]) ^ (uint64_t)(FA[byte(temp2,7)])) << 40 ) ^
+			(((uint64_t)(FA[byte(temp2,0)]) ^ (uint64_t)(F9[byte(temp2,1)]) ^ (uint64_t)(F8[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F4[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F2[byte(temp2,7)])) << 48 ) ^
+			(((uint64_t)(F2[byte(temp2,0)]) ^ (uint64_t)(FA[byte(temp2,1)]) ^ (uint64_t)(F9[byte(temp2,2)]) ^ (uint64_t)(F8[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F4[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(   byte(temp2,7) )) << 56 );
 
 	R[1] ^= temp1;
 	R[2] ^= ROTL_QWORD(temp1, 29);
@@ -269,12 +268,12 @@ void step512(QWORD R[8], QWORD M1, QWORD M2){
 static
 void Arirang_Compression256(hashState *state)
 {
-	DWORD	R[8], W[32];
+	uint32_t	R[8], W[32];
 	int i;
 
 	// Counter Addition
-	state->workingvar[0] ^= ((DWORD*)state->counter)[1];
-	state->workingvar[4] ^= ((DWORD*)state->counter)[0];
+	state->workingvar[0] ^= ((uint32_t*)state->counter)[1];
+	state->workingvar[4] ^= ((uint32_t*)state->counter)[0];
 
 	// Compression function
 	#if defined(BIG_ENDIAN)
@@ -285,7 +284,7 @@ void Arirang_Compression256(hashState *state)
 
 	// Message Schedue
 	for (i = 0; i < 16; i++)
-		W[i] = GetData(((DWORD*)state->block)[i]);
+		W[i] = GetData(((uint32_t*)state->block)[i]);
 
 	W[16] = ROTL_DWORD((W[ 9] ^ W[11] ^ W[13] ^ W[15] ^ K256[ 0]),  5);
 	W[17] = ROTL_DWORD((W[ 8] ^ W[10] ^ W[12] ^ W[14] ^ K256[ 1]), 11);
@@ -309,7 +308,7 @@ void Arirang_Compression256(hashState *state)
 
 
 	// Register Initialize
-	for(i=0;i<8;i++)	R[i] = (DWORD)state->workingvar[i];
+	for(i=0;i<8;i++)	R[i] = (uint32_t)state->workingvar[i];
 
 	// 1 Round
 	step256(R, W[16], W[17]);
@@ -386,7 +385,7 @@ void Arirang_Compression256(hashState *state)
 static
 void Arirang_Compression512(hashState *state)
 {
-	QWORD	R[8], W[32];
+	uint64_t	R[8], W[32];
 	int i;
 
 	// Counter Addition
@@ -403,7 +402,7 @@ void Arirang_Compression512(hashState *state)
 
 	// Message Scheduling
 	for (i = 0; i < 16; i++)
-		W[i] = (QWORD)(GetData(((DWORD*)state->block)[2*i+1])) | ((QWORD)(GetData(((DWORD*)state->block)[2*i])) << 32);
+		W[i] = (uint64_t)(GetData(((uint32_t*)state->block)[2*i+1])) | ((uint64_t)(GetData(((uint32_t*)state->block)[2*i])) << 32);
 
 	W[16] = ROTL_QWORD((W[ 9] ^ W[11] ^ W[13] ^ W[15] ^ K512[ 0]), 11);
 	W[17] = ROTL_QWORD((W[ 8] ^ W[10] ^ W[12] ^ W[14] ^ K512[ 1]), 23);
@@ -585,8 +584,8 @@ HashReturn Init(hashState *state, int hashbitlen)
 
 HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen)
 {
-	DWORD RemainedLen, PartLen;
-	QWORD databytelen, temp;
+	uint32_t RemainedLen, PartLen;
+	uint64_t databytelen, temp;
 
 	// If length of data is not multiple of 8, databytelen = databitlen / 8 + 1;
 	databytelen = ( databitlen >> 3) + (state->remainderbit != 0);
@@ -612,7 +611,7 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 		RemainedLen = 0;
 
 		while( (databytelen > state->blocklen) || ((databytelen == state->blocklen) && (state->remainderbit == 0)) ) {
-			memcpy((BYTE *)state->block, data, (int)state->blocklen);
+			memcpy((uint8_t *)state->block, data, (int)state->blocklen);
 			if(state->hashbitlen <257) Arirang_Compression256(state);
 			else Arirang_Compression512(state);
 
@@ -622,7 +621,7 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 	}
 
 	//	Buffer remaining input
-	memcpy((BYTE *)state->block + RemainedLen, data, (int)databytelen);
+	memcpy((uint8_t *)state->block + RemainedLen, data, (int)databytelen);
 
 	return SUCCESS;
 }
@@ -642,11 +641,11 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-HashReturn Final(hashState *state, BYTE *hashval)
+HashReturn Final(hashState *state, uint8_t *hashval)
 {
-	DWORD i, dwIndex;
-	DWORD temp=(state->blocklen >> 3);
-	QWORD count[2];
+	uint32_t i, dwIndex;
+	uint32_t temp=(state->blocklen >> 3);
+	uint64_t count[2];
 
 	// Padding the message
 	if(state->remainderbit){
@@ -666,29 +665,29 @@ HashReturn Final(hashState *state, BYTE *hashval)
 	}
 
 	if (dwIndex > (state->blocklen - temp)){
-		memset((BYTE *)state->block + dwIndex, 0, (int)(state->blocklen - dwIndex));
+		memset((uint8_t *)state->block + dwIndex, 0, (int)(state->blocklen - dwIndex));
 		if(state->hashbitlen <257) Arirang_Compression256(state);
 		else Arirang_Compression512(state);
 
-		memset((BYTE *)state->block, 0, (int)state->blocklen - temp);
+		memset((uint8_t *)state->block, 0, (int)state->blocklen - temp);
 	}
 	else
-		memset((BYTE *)state->block + dwIndex, 0, (int)(state->blocklen - dwIndex - temp));
+		memset((uint8_t *)state->block + dwIndex, 0, (int)(state->blocklen - dwIndex - temp));
 
 	#if defined(LITTLE_ENDIAN)
-		count[0] = ENDIAN_REVERSE_DWORD(((DWORD*)count)[1])| ((QWORD)(ENDIAN_REVERSE_DWORD(((DWORD*)count)[0])) << 32);
-		count[1] = ENDIAN_REVERSE_DWORD(((DWORD*)count)[3])| ((QWORD)(ENDIAN_REVERSE_DWORD(((DWORD*)count)[2])) << 32);
+		count[0] = ENDIAN_REVERSE_DWORD(((uint32_t*)count)[1])| ((uint64_t)(ENDIAN_REVERSE_DWORD(((uint32_t*)count)[0])) << 32);
+		count[1] = ENDIAN_REVERSE_DWORD(((uint32_t*)count)[3])| ((uint64_t)(ENDIAN_REVERSE_DWORD(((uint32_t*)count)[2])) << 32);
 	#endif
 
 	// Fixed counter value for the last message block
 	if(state->hashbitlen > 257){
-		((QWORD *)state->block)[state->blocklen/8-2] = count[1];
-		((QWORD *)state->block)[state->blocklen/8-1] = count[0];
+		((uint64_t *)state->block)[state->blocklen/8-2] = count[1];
+		((uint64_t *)state->block)[state->blocklen/8-1] = count[0];
 		state->counter[1]=0xb7e151628aed2a6aULL;
 		state->counter[0]=0xbf7158809cf4f3c7ULL;
 	}
 	else{
-		((QWORD *)state->block)[state->blocklen/8-1] = count[0];
+		((uint64_t *)state->block)[state->blocklen/8-1] = count[0];
 		state->counter[0]=0xb7e151628aed2a6aULL;
 	}
 
@@ -734,7 +733,7 @@ HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength *databitlen,
 		return hash_return;
 
 	i=0,j=0;
-	while((j < databitlen[1]) && (i < ((DWORD*)databitlen)[1])){
+	while((j < databitlen[1]) && (i < ((uint32_t*)databitlen)[1])){
 		if ( (hash_return = Update(&State, UpdatedData, UpdatedDataLengthbit)) != SUCCESS)
 			return hash_return;
 		UpdatedData+=0x2000000;

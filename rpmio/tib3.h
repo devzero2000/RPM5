@@ -59,10 +59,7 @@ typedef unsigned long long DataLength;
 #define HASH_BYTES_384		48
 #define HASH_BITLEN_384		384
 
-#define Update224 Update256
-#define Update384 Update512
-
-/* hash state for 224 and 256 bits versions */
+/* hash state for 224/256 bit versions */
 typedef struct {
     uint64_t state[STATE_DWORDS_256];		/* internal state */
     uint64_t bits_processed;			
@@ -72,7 +69,7 @@ typedef struct {
     uint32_t bits_waiting_for_process;		/* bits awaiting for process in the next call to Update() or Final() */
 } hashState256;
 
-/* hash state for 384 and 512 bits versions */
+/* hash state for 384/512 bit versions */
 typedef struct {
     uint64_t state[STATE_DWORDS_512];
     uint64_t bits_processed;
@@ -91,32 +88,10 @@ typedef struct {
     } uu[1];
 } hashState;
 
-
-/* prototypes of functions required by the API */
 HashReturn Init (hashState *state, int hashbitlen);
 HashReturn Update (hashState *state , const BitSequence *data, DataLength databitlen);
 HashReturn Final (hashState *state, BitSequence *hashval);
 HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-
-/* prototypes of functions for each bit length */
-HashReturn Init256 (hashState256 *state);
-HashReturn Update256 (hashState256 *state , const BitSequence *data, DataLength databitlen);
-HashReturn Final256 (hashState256 *state, BitSequence *hashval);
-HashReturn Hash256(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-HashReturn Init224 (hashState256 *state);
-HashReturn Final224 (hashState256 *state, BitSequence *hashval);
-HashReturn Hash224(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-HashReturn Init512 (hashState512 *state);
-HashReturn Update512 (hashState512 *state , const BitSequence *data, DataLength databitlen);
-HashReturn Final512 (hashState512 *state, BitSequence *hashval);
-HashReturn Hash512(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-HashReturn Init384 (hashState512 *state);
-HashReturn Final384 (hashState512 *state, BitSequence *hashval);
-HashReturn Hash384(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
 
 /* Impedance match bytes -> bits length. */
 static inline

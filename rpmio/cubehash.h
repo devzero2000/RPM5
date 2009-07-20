@@ -2,6 +2,8 @@
 #define cubehash_h
 
 #include <string.h>
+#include <stdint.h>
+
 #define	BitSequence	cubehash_BitSequence
 #define	DataLength	cubehash_DataLength
 #define	hashState	cubehash_hashState
@@ -18,22 +20,20 @@
 
 #if defined(OPTIMIZE_SSE2)
 #include <emmintrin.h>
-#else
-typedef unsigned int myuint32; /* must be exactly 32 bits */
 #endif
 
 typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;
 
 typedef struct {
-  int hashbitlen;
-  int rounds;
-  int blockbytes;
-  int pos; /* number of bits read into x from current block */
+    int hashbitlen;
+    int rounds;
+    int blockbytes;
+    int pos;		/* number of bits read into x from current block */
 #if defined(OPTIMIZE_SSE2)
-  __m128i x[8];
+    __m128i x[8];
 #else
-  myuint32 x[32];
+    uint32_t x[32];
 #endif
 } hashState;
 

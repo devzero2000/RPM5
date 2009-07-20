@@ -5,10 +5,8 @@
 /*                                                                 */
 /*******************************************************************/
 
-/* definitions imposed by the API */
-
-#ifndef SHA3API_H
-#define SHA3API_H
+#ifndef H_SHAVITE3
+#define H_SHAVITE3
 
 #include <string.h>
 

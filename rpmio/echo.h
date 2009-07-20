@@ -26,32 +26,28 @@ typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;
 
 typedef struct {
-	uint8_t tab [4][4][4][4];
-	uint8_t tab_backup [4][4][4][4];
-	uint8_t k1 [4][4];
-	uint8_t k2 [4][4];
-	uint8_t * Addresses[256];
-	int index;
-	int bit_index;
-	int hashbitlen;
-	int cv_size;
-	int message_size;
-	int messlenhi;
-	int messlenlo;
-	int counter_hi;
-	int counter_lo;
-	int rounds;
-	int Computed;
+    uint8_t tab [4][4][4][4];
+    uint8_t tab_backup [4][4][4][4];
+    uint8_t k1 [4][4];
+    uint8_t k2 [4][4];
+    uint8_t * Addresses[256];
+    int index;
+    int bit_index;
+    int hashbitlen;
+    int cv_size;
+    int message_size;
+    int messlenhi;
+    int messlenlo;
+    int counter_hi;
+    int counter_lo;
+    int rounds;
+    int Computed;
 } hashState;
 
 
 HashReturn Init(hashState *state, int hashbitlen);
-
-HashReturn Update(hashState *state,
-                  const BitSequence *data, DataLength databitlen);
-
+HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
 HashReturn Final(hashState *state, BitSequence *hashval);
-
 HashReturn Hash(int hashbitlen, const BitSequence *data,
                 DataLength databitlen, BitSequence *hashval);
 
