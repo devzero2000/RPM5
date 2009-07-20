@@ -64,6 +64,16 @@
 
 #include "edon-r.h"
 
+#include "groestl.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "jh.h"
 #undef	BitSequence
 #undef	DataLength
@@ -687,6 +697,23 @@ edonr:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) edonr_Update;
 	ctx->Digest = (int (*)(void *, byte *)) edonr_Final;
+	break;
+    case PGPHASHALGO_GROESTL_224: ctx->digestsize = 224/8; goto groestl;
+    case PGPHASHALGO_GROESTL_256: ctx->digestsize = 256/8; goto groestl;
+    case PGPHASHALGO_GROESTL_384: ctx->digestsize = 384/8; goto groestl;
+    case PGPHASHALGO_GROESTL_512: ctx->digestsize = 512/8; goto groestl;
+groestl:
+	ctx->name = "GROESTL";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(groestl_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) groestl_Init((groestl_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _groestl_Update;
+	ctx->Digest = (int (*)(void *, byte *)) groestl_Final;
 	break;
     case PGPHASHALGO_JH_224: ctx->digestsize = 224/8; goto jh;
     case PGPHASHALGO_JH_256: ctx->digestsize = 256/8; goto jh;
