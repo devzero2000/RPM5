@@ -74,6 +74,16 @@
 #undef	Final
 #undef	Hash
 
+#include "hamsi.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "jh.h"
 #undef	BitSequence
 #undef	DataLength
@@ -714,6 +724,23 @@ groestl:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _groestl_Update;
 	ctx->Digest = (int (*)(void *, byte *)) groestl_Final;
+	break;
+    case PGPHASHALGO_HAMSI_224: ctx->digestsize = 224/8; goto hamsi;
+    case PGPHASHALGO_HAMSI_256: ctx->digestsize = 256/8; goto hamsi;
+    case PGPHASHALGO_HAMSI_384: ctx->digestsize = 384/8; goto hamsi;
+    case PGPHASHALGO_HAMSI_512: ctx->digestsize = 512/8; goto hamsi;
+hamsi:
+	ctx->name = "HAMSI";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(hamsi_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) hamsi_Init((hamsi_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _hamsi_Update;
+	ctx->Digest = (int (*)(void *, byte *)) hamsi_Final;
 	break;
     case PGPHASHALGO_JH_224: ctx->digestsize = 224/8; goto jh;
     case PGPHASHALGO_JH_256: ctx->digestsize = 256/8; goto jh;

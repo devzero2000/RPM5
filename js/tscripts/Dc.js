@@ -99,6 +99,11 @@ const PGPHASHALGO_GROESTL_256	= 240+1;	/*!< (private) GROESTL-256 */
 const PGPHASHALGO_GROESTL_384	= 240+2;	/*!< (private) GROESTL-384 */
 const PGPHASHALGO_GROESTL_512	= 240+3;	/*!< (private) GROESTL-512 */
 
+const PGPHASHALGO_HAMSI_224	= 248+0;	/*!< (private) HAMSI-224 */
+const PGPHASHALGO_HAMSI_256	= 248+1;	/*!< (private) HAMSI-256 */
+const PGPHASHALGO_HAMSI_384	= 248+2;	/*!< (private) HAMSI-384 */
+const PGPHASHALGO_HAMSI_512	= 248+3;	/*!< (private) HAMSI-512 */
+
 var dc = new Dc();
 ack("typeof dc;", "object");
 ack("dc instanceof Dc;", true);
@@ -422,6 +427,42 @@ ack("chi_512.name", "CHI");
 ack("chi_512.update(str);", true);
 ack("chi_512.fini();", '0a71c7e78234e628509d7737ba22e03eea2731ace5d9e3d219641d2b5e71fc957d4bb09e9d40925ebe3e69b7077a64825188662aaccd858d3a8c6e9b6b3af3e3');
 
+var cubehash224 = new Dc(PGPHASHALGO_CUBEHASH_224);
+ack("cubehash224('');", 'b5a6f6cb6d4100dcda8f575c694f15b2f7c8c5ed145608a42a89c7ca');
+ack("cubehash224.init(PGPHASHALGO_CUBEHASH_224);", true);
+ack("cubehash224.algo", PGPHASHALGO_CUBEHASH_224);
+ack("cubehash224.asn1", null);
+ack("cubehash224.name", "CUBEHASH");
+ack("cubehash224.update(str);", true);
+ack("cubehash224.fini();", '50151e3b6b2d13a9da38aa1422ab2dacc3500bebd4215d036fdcd5ce');
+
+var cubehash256 = new Dc(PGPHASHALGO_CUBEHASH_256);
+ack("cubehash256('');", '38d1e8a22d7baac6fd5262d83de89cacf784a02caa866335299987722aeabc59');
+ack("cubehash256.init(PGPHASHALGO_CUBEHASH_256);", true);
+ack("cubehash256.algo", PGPHASHALGO_CUBEHASH_256);
+ack("cubehash256.asn1", null);
+ack("cubehash256.name", "CUBEHASH");
+ack("cubehash256.update(str);", true);
+ack("cubehash256.fini();", '8de2181ab5ae4365a506cdf748f3af4b52a7b838a2c82550b8329bb6339914d7');
+
+var cubehash384 = new Dc(PGPHASHALGO_CUBEHASH_384);
+ack("cubehash384('');", '235e819ebb93af765f7d86df6c6ff283ab24e98a07858a7d1c72604bb10c794d4721ef9ddfccaa93072eee9b53fdc69c');
+ack("cubehash384.init(PGPHASHALGO_CUBEHASH_384);", true);
+ack("cubehash384.algo", PGPHASHALGO_CUBEHASH_384);
+ack("cubehash384.asn1", null);
+ack("cubehash384.name", "CUBEHASH");
+ack("cubehash384.update(str);", true);
+ack("cubehash384.fini();", 'a6cd4e9e01f83d75a3c5b30f7c9700216a453a2c9a9399181a0ad7c52a902f12f0a3301fec05428cda66abc16c5ca7e3');
+
+var cubehash512 = new Dc(PGPHASHALGO_CUBEHASH_512);
+ack("cubehash512('');", '90bc3f2948f7374065a811f1e47a208a53b1a2f3be1c0072759ed49c9c6c7f28f26eb30d5b0658c563077d599da23f97df0c2c0ac6cce734ffe87b2e76ff7294');
+ack("cubehash512.init(PGPHASHALGO_CUBEHASH_512);", true);
+ack("cubehash512.algo", PGPHASHALGO_CUBEHASH_512);
+ack("cubehash512.asn1", null);
+ack("cubehash512.name", "CUBEHASH");
+ack("cubehash512.update(str);", true);
+ack("cubehash512.fini();", 'f83d39f3f4213dbe240aa14740b214741163f37be49750cc9bf64aaa58be8f8adee7874186475cec08f7993ca7e35839291816ccc377d6173987eb95e355ee73');
+
 var edonr224 = new Dc(PGPHASHALGO_EDONR_224);
 ack("edonr224('');", 'a9c2bc54208be171cdfd054d21d97c1f4c79e822d8d9fcdbcb1d602f');
 ack("edonr224.init(PGPHASHALGO_EDONR_224);", true);
@@ -493,6 +534,42 @@ ack("groestl_512.asn1", null);
 ack("groestl_512.name", "GROESTL");
 ack("groestl_512.update(str);", true);
 ack("groestl_512.fini();", '1f2dcaa986d01d212fb633886fcb11f8aaeea18ba7ddd5a251cfc490f9b2850b78ab5ca7870014d21f880dac4cce07e66ba125071a6a30a3b3e35f19cbd15a20');
+
+var hamsi_224 = new Dc(PGPHASHALGO_GROESTL_224);
+ack("hamsi_224('');", '');
+ack("hamsi_224.init(PGPHASHALGO_GROESTL_224);", true);
+ack("hamsi_224.algo", PGPHASHALGO_GROESTL_224);
+ack("hamsi_224.asn1", null);
+ack("hamsi_224.name", "GROESTL");
+ack("hamsi_224.update(str);", true);
+ack("hamsi_224.fini();", '');
+
+var hamsi_256 = new Dc(PGPHASHALGO_GROESTL_256);
+ack("hamsi_256('');", '');
+ack("hamsi_256.init(PGPHASHALGO_GROESTL_256);", true);
+ack("hamsi_256.algo", PGPHASHALGO_GROESTL_256);
+ack("hamsi_256.asn1", null);
+ack("hamsi_256.name", "GROESTL");
+ack("hamsi_256.update(str);", true);
+ack("hamsi_256.fini();", '');
+
+var hamsi_384 = new Dc(PGPHASHALGO_GROESTL_384);
+ack("hamsi_384('');", '');
+ack("hamsi_384.init(PGPHASHALGO_GROESTL_384);", true);
+ack("hamsi_384.algo", PGPHASHALGO_GROESTL_384);
+ack("hamsi_384.asn1", null);
+ack("hamsi_384.name", "GROESTL");
+ack("hamsi_384.update(str);", true);
+ack("hamsi_384.fini();", '');
+
+var hamsi_512 = new Dc(PGPHASHALGO_GROESTL_512);
+ack("hamsi_512('');", '');
+ack("hamsi_512.init(PGPHASHALGO_GROESTL_512);", true);
+ack("hamsi_512.algo", PGPHASHALGO_GROESTL_512);
+ack("hamsi_512.asn1", null);
+ack("hamsi_512.name", "GROESTL");
+ack("hamsi_512.update(str);", true);
+ack("hamsi_512.fini();", '');
 
 var jh224 = new Dc(PGPHASHALGO_JH_224);
 ack("jh224('');", '12c53596fb61ad2865c0a39b7efe88166f9eb1f5fc5b434b9c45057e');
@@ -601,42 +678,6 @@ ack("luffa_512.asn1", null);
 ack("luffa_512.name", "LUFFA");
 ack("luffa_512.update(str);", true);
 ack("luffa_512.fini();", '4c1faae4bda064ee9c50b6952eb95c3e1026c6840b9e498c2514eb9378377fe9ef2d6d1e17bc395346982d1cbb8ce6855f4602c8bf2ed11bfcd3e453314b1feb');
-
-var cubehash224 = new Dc(PGPHASHALGO_CUBEHASH_224);
-ack("cubehash224('');", 'b5a6f6cb6d4100dcda8f575c694f15b2f7c8c5ed145608a42a89c7ca');
-ack("cubehash224.init(PGPHASHALGO_CUBEHASH_224);", true);
-ack("cubehash224.algo", PGPHASHALGO_CUBEHASH_224);
-ack("cubehash224.asn1", null);
-ack("cubehash224.name", "CUBEHASH");
-ack("cubehash224.update(str);", true);
-ack("cubehash224.fini();", '50151e3b6b2d13a9da38aa1422ab2dacc3500bebd4215d036fdcd5ce');
-
-var cubehash256 = new Dc(PGPHASHALGO_CUBEHASH_256);
-ack("cubehash256('');", '38d1e8a22d7baac6fd5262d83de89cacf784a02caa866335299987722aeabc59');
-ack("cubehash256.init(PGPHASHALGO_CUBEHASH_256);", true);
-ack("cubehash256.algo", PGPHASHALGO_CUBEHASH_256);
-ack("cubehash256.asn1", null);
-ack("cubehash256.name", "CUBEHASH");
-ack("cubehash256.update(str);", true);
-ack("cubehash256.fini();", '8de2181ab5ae4365a506cdf748f3af4b52a7b838a2c82550b8329bb6339914d7');
-
-var cubehash384 = new Dc(PGPHASHALGO_CUBEHASH_384);
-ack("cubehash384('');", '235e819ebb93af765f7d86df6c6ff283ab24e98a07858a7d1c72604bb10c794d4721ef9ddfccaa93072eee9b53fdc69c');
-ack("cubehash384.init(PGPHASHALGO_CUBEHASH_384);", true);
-ack("cubehash384.algo", PGPHASHALGO_CUBEHASH_384);
-ack("cubehash384.asn1", null);
-ack("cubehash384.name", "CUBEHASH");
-ack("cubehash384.update(str);", true);
-ack("cubehash384.fini();", 'a6cd4e9e01f83d75a3c5b30f7c9700216a453a2c9a9399181a0ad7c52a902f12f0a3301fec05428cda66abc16c5ca7e3');
-
-var cubehash512 = new Dc(PGPHASHALGO_CUBEHASH_512);
-ack("cubehash512('');", '90bc3f2948f7374065a811f1e47a208a53b1a2f3be1c0072759ed49c9c6c7f28f26eb30d5b0658c563077d599da23f97df0c2c0ac6cce734ffe87b2e76ff7294');
-ack("cubehash512.init(PGPHASHALGO_CUBEHASH_512);", true);
-ack("cubehash512.algo", PGPHASHALGO_CUBEHASH_512);
-ack("cubehash512.asn1", null);
-ack("cubehash512.name", "CUBEHASH");
-ack("cubehash512.update(str);", true);
-ack("cubehash512.fini();", 'f83d39f3f4213dbe240aa14740b214741163f37be49750cc9bf64aaa58be8f8adee7874186475cec08f7993ca7e35839291816ccc377d6173987eb95e355ee73');
 
 // XXX md6sum, not NIST, values used as test vectors.
 var md6_224 = new Dc(PGPHASHALGO_MD6_224);
