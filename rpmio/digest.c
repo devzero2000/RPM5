@@ -104,6 +104,16 @@
 #undef	Final
 #undef	Hash
 
+#include "lane.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "luffa.h"
 #undef	BitSequence
 #undef	DataLength
@@ -691,6 +701,25 @@ chi:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _chi_Update;
 	ctx->Digest = (int (*)(void *, byte *)) chi_Final;
 	break;
+    case PGPHASHALGO_CUBEHASH_224: ctx->digestsize = 224/8; goto cubehash;
+    case PGPHASHALGO_CUBEHASH_256: ctx->digestsize = 256/8; goto cubehash;
+    case PGPHASHALGO_CUBEHASH_384: ctx->digestsize = 384/8; goto cubehash;
+    case PGPHASHALGO_CUBEHASH_512: ctx->digestsize = 512/8; goto cubehash;
+cubehash:
+	ctx->name = "CUBEHASH";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(cubehash_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) cubehash_Init((cubehash_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize),
+				(int)((ctx->flags >> 8) & 0xff),
+				(int)((ctx->flags     ) & 0xff));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _cubehash_Update;
+	ctx->Digest = (int (*)(void *, byte *)) cubehash_Final;
+	break;
     case PGPHASHALGO_EDONR_224: ctx->digestsize = 224/8; goto edonr;
     case PGPHASHALGO_EDONR_256: ctx->digestsize = 256/8; goto edonr;
     case PGPHASHALGO_EDONR_384: ctx->digestsize = 384/8; goto edonr;
@@ -776,6 +805,23 @@ keccak:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _keccak_Update;
 	ctx->Digest = (int (*)(void *, byte *)) keccak_Final;
 	break;
+    case PGPHASHALGO_LANE_224: ctx->digestsize = 224/8; goto lane;
+    case PGPHASHALGO_LANE_256: ctx->digestsize = 256/8; goto lane;
+    case PGPHASHALGO_LANE_384: ctx->digestsize = 384/8; goto lane;
+    case PGPHASHALGO_LANE_512: ctx->digestsize = 512/8; goto lane;
+lane:
+	ctx->name = "LANE";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(lane_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) lane_Init((lane_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _lane_Update;
+	ctx->Digest = (int (*)(void *, byte *)) lane_Final;
+	break;
     case PGPHASHALGO_LUFFA_224: ctx->digestsize = 224/8; goto luffa;
     case PGPHASHALGO_LUFFA_256: ctx->digestsize = 256/8; goto luffa;
     case PGPHASHALGO_LUFFA_384: ctx->digestsize = 384/8; goto luffa;
@@ -792,25 +838,6 @@ luffa:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _luffa_Update;
 	ctx->Digest = (int (*)(void *, byte *)) luffa_Final;
-	break;
-    case PGPHASHALGO_CUBEHASH_224: ctx->digestsize = 224/8; goto cubehash;
-    case PGPHASHALGO_CUBEHASH_256: ctx->digestsize = 256/8; goto cubehash;
-    case PGPHASHALGO_CUBEHASH_384: ctx->digestsize = 384/8; goto cubehash;
-    case PGPHASHALGO_CUBEHASH_512: ctx->digestsize = 512/8; goto cubehash;
-cubehash:
-	ctx->name = "CUBEHASH";
-	ctx->datasize = 64;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(cubehash_hashState);
-/*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) cubehash_Init((cubehash_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize),
-				(int)((ctx->flags >> 8) & 0xff),
-				(int)((ctx->flags     ) & 0xff));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _cubehash_Update;
-	ctx->Digest = (int (*)(void *, byte *)) cubehash_Final;
 	break;
     case PGPHASHALGO_MD6_224: ctx->digestsize = 224/8; goto md6;
     case PGPHASHALGO_MD6_256: ctx->digestsize = 256/8; goto md6;
