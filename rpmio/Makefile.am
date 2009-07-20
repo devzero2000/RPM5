@@ -65,7 +65,7 @@ pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
 noinst_HEADERS = \
 	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h edon-r.h groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h \
-	salsa10.h salsa20.h shabal.h simd.h skein.h tib3.h tiger.h \
+	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	poptIO.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
 	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
 	rpmku.h rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h \
@@ -80,7 +80,7 @@ librpmio_la_SOURCES = \
 	getdate.c gzdio.c glob.c iosm.c lsyck.c \
 	macro.c mire.c mount.c poptIO.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c edon-r.c groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
-	salsa10.c salsa20.c shabal.c simd.c skein.c tib3.c tiger.c \
+	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
 	rpmaug.c rpmbc.c rpmbf.c rpmdav.c rpmdir.c rpmficl.c rpmgc.c \
 	rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \

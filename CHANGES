@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdigest: add SHAVITE3 224/256/384/512.
     - jbj: rpmdigest: add LANE 224/256/384/512.
     - jbj: rpmdigest: add HAMSI 224/256/384/512.
     - jbj: rpmdigest: add GROESTL 224/256/384/512.

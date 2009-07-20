@@ -59,6 +59,11 @@ const PGPHASHALGO_SHABAL_256	= 176+1;	/*!< (private) SHABAL-256 */
 const PGPHASHALGO_SHABAL_384	= 176+2;	/*!< (private) SHABAL-384 */
 const PGPHASHALGO_SHABAL_512	= 176+3;	/*!< (private) SHABAL-512 */
 
+const PGPHASHALGO_SHAVITE3_224	= 180+0;	/*!< (private) SHAVITE3-224 */
+const PGPHASHALGO_SHAVITE3_256	= 180+1;	/*!< (private) SHAVITE3-256 */
+const PGPHASHALGO_SHAVITE3_384	= 180+2;	/*!< (private) SHAVITE3-384 */
+const PGPHASHALGO_SHAVITE3_512	= 180+3;	/*!< (private) SHAVITE3-512 */
+
 const PGPHASHALGO_BLAKE_224	= 184+0;	/*!< (private) BLAKE-224 */
 const PGPHASHALGO_BLAKE_256	= 184+1;	/*!< (private) BLAKE-256 */
 const PGPHASHALGO_BLAKE_384	= 184+2;	/*!< (private) BLAKE-384 */
@@ -792,6 +797,42 @@ ack("shabal512.asn1", null);
 ack("shabal512.name", "SHABAL");
 ack("shabal512.update(str);", true);
 ack("shabal512.fini();", '4a7f0f707c1b0c1d12ddcfa8aa0f9d2410dd9bab57c2d56705fc1acb02066f99678738cedb20a2aba94842a441e77bc02656fe5690f98b421d029bfc4df09f91');
+
+var shavite3_224 = new Dc(PGPHASHALGO_SHAVITE3_224);
+ack("shavite3_224('');", '401d9f7dda63265b7b0c1cfebc196c1ce0cbe994dc6595bd0bb07fb4');
+ack("shavite3_224.init(PGPHASHALGO_SHAVITE3_224);", true);
+ack("shavite3_224.algo", PGPHASHALGO_SHAVITE3_224);
+ack("shavite3_224.asn1", null);
+ack("shavite3_224.name", "SHAVITE3");
+ack("shavite3_224.update(str);", true);
+ack("shavite3_224.fini();", 'ab74fc01e9fe46826bafb4383b3374174aeac9dbd2bdd0b2d18cf90f');
+
+var shavite3_256 = new Dc(PGPHASHALGO_SHAVITE3_256);
+ack("shavite3_256('');", '6646a740fd2bf0d79752627538777f32be04e22c3849d6c79fbbbcc2e68f4500');
+ack("shavite3_256.init(PGPHASHALGO_SHAVITE3_256);", true);
+ack("shavite3_256.algo", PGPHASHALGO_SHAVITE3_256);
+ack("shavite3_256.asn1", null);
+ack("shavite3_256.name", "SHAVITE3");
+ack("shavite3_256.update(str);", true);
+ack("shavite3_256.fini();", 'b89f6ce5ef30aa6a2da80ef1767ed90ef2e169f9fdd7b2d07b05157e9a59b04f');
+
+var shavite3_384 = new Dc(PGPHASHALGO_SHAVITE3_384);
+ack("shavite3_384('');", 'ac40319f6ebdb57a820d2dbc29218f9c58a319df0651d2550cda83a6778a57620aeb53762a677d8df6fda419f1d9a349');
+ack("shavite3_384.init(PGPHASHALGO_SHAVITE3_384);", true);
+ack("shavite3_384.algo", PGPHASHALGO_SHAVITE3_384);
+ack("shavite3_384.asn1", null);
+ack("shavite3_384.name", "SHAVITE3");
+ack("shavite3_384.update(str);", true);
+ack("shavite3_384.fini();", '7951ee74b2c791b96ea23678f9e1202f04fa4a328c65199e896aba4b33e739957eeeef81b19f9d67b82b0846af40fe0c');
+
+var shavite3_512 = new Dc(PGPHASHALGO_SHAVITE3_512);
+ack("shavite3_512('');", 'c25c67d74d00d9c69468c6b9e23b2d8732f953bf097fd79de15a828907bc3cbd640b8ee7ed3a456e6a840887ede15df6f4ba8c9771f5422267df667e26156e55');
+ack("shavite3_512.init(PGPHASHALGO_SHAVITE3_512);", true);
+ack("shavite3_512.algo", PGPHASHALGO_SHAVITE3_512);
+ack("shavite3_512.asn1", null);
+ack("shavite3_512.name", "SHAVITE3");
+ack("shavite3_512.update(str);", true);
+ack("shavite3_512.fini();", '6c7d3d688ecccbd285d6e7bb3cf00b10d292a45ec90f2b85426ece62eb068748e3a293c787196a920550ea0ac4b8d00e77a6066fb1c5952610d356dc8d0f589d');
 
 var simd_224 = new Dc(PGPHASHALGO_SIMD_224);
 ack("simd_224('');", '3a6b867e2fb0c448370e2855f3794b557124c81077373311103d0c64');

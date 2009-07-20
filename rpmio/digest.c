@@ -137,6 +137,16 @@
 #undef	Final
 #undef	Hash
 
+#include "shavite3.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "simd.h"
 #undef	BitSequence
 #undef	DataLength
@@ -884,6 +894,23 @@ shabal:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) _shabal_Update;
 	ctx->Digest = (int (*)(void *, byte *)) shabal_Final;
+	break;
+    case PGPHASHALGO_SHAVITE3_224: ctx->digestsize = 224/8; goto shavite3;
+    case PGPHASHALGO_SHAVITE3_256: ctx->digestsize = 256/8; goto shavite3;
+    case PGPHASHALGO_SHAVITE3_384: ctx->digestsize = 384/8; goto shavite3;
+    case PGPHASHALGO_SHAVITE3_512: ctx->digestsize = 512/8; goto shavite3;
+shavite3:
+	ctx->name = "SHAVITE3";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(shavite3_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) shavite3_Init((shavite3_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _shavite3_Update;
+	ctx->Digest = (int (*)(void *, byte *)) shavite3_Final;
 	break;
     case PGPHASHALGO_SIMD_224: ctx->digestsize = 224/8; goto simd;
     case PGPHASHALGO_SIMD_256: ctx->digestsize = 256/8; goto simd;

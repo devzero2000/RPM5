@@ -236,6 +236,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SHABAL_384	= 176+2,/*!< (private) SHABAL-384 */
     PGPHASHALGO_SHABAL_512	= 176+3,/*!< (private) SHABAL-512 */
 
+    PGPHASHALGO_SHAVITE3_224	= 180+0,/*!< (private) SHAVITE3-224 */
+    PGPHASHALGO_SHAVITE3_256	= 180+1,/*!< (private) SHAVITE3-256 */
+    PGPHASHALGO_SHAVITE3_384	= 180+2,/*!< (private) SHAVITE3-384 */
+    PGPHASHALGO_SHAVITE3_512	= 180+3,/*!< (private) SHAVITE3-512 */
+
     PGPHASHALGO_BLAKE_224	= 184+0,/*!< (private) BLAKE-224 */
     PGPHASHALGO_BLAKE_256	= 184+1,/*!< (private) BLAKE-256 */
     PGPHASHALGO_BLAKE_384	= 184+2,/*!< (private) BLAKE-384 */
