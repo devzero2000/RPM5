@@ -220,6 +220,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_EDONR_384	= 152+2,/*!< (private) EDON-R-384 */
     PGPHASHALGO_EDONR_512	= 152+3,/*!< (private) EDON-R-512 */
 
+    PGPHASHALGO_FUGUE_224	= 156+0,/*!< (private) FUGUE-224 */
+    PGPHASHALGO_FUGUE_256	= 156+1,/*!< (private) FUGUE-256 */
+    PGPHASHALGO_FUGUE_384	= 156+2,/*!< (private) FUGUE-384 */
+    PGPHASHALGO_FUGUE_512	= 156+3,/*!< (private) FUGUE-512 */
+
     PGPHASHALGO_SKEIN_224	= 160+0,/*!< (private) SKEIN-224 */
     PGPHASHALGO_SKEIN_256	= 160+1,/*!< (private) SKEIN-256 */
     PGPHASHALGO_SKEIN_384	= 160+2,/*!< (private) SKEIN-384 */

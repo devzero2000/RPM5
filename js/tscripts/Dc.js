@@ -43,6 +43,11 @@ const PGPHASHALGO_EDONR_256	= 152+1;	/*!< (private) EDONR-256 */
 const PGPHASHALGO_EDONR_384	= 152+2;	/*!< (private) EDONR-384 */
 const PGPHASHALGO_EDONR_512	= 152+3;	/*!< (private) EDONR-512 */
 
+const PGPHASHALGO_FUGUE_224	= 156+0;	/*!< (private) FUGUE-224 */
+const PGPHASHALGO_FUGUE_256	= 156+1;	/*!< (private) FUGUE-256 */
+const PGPHASHALGO_FUGUE_384	= 156+2;	/*!< (private) FUGUE-384 */
+const PGPHASHALGO_FUGUE_512	= 156+3;	/*!< (private) FUGUE-512 */
+
 const PGPHASHALGO_SKEIN_224	= 160+0;	/*!< (private) SKEIN-224 */
 const PGPHASHALGO_SKEIN_256	= 160+1;	/*!< (private) SKEIN-256 */
 const PGPHASHALGO_SKEIN_384	= 160+2;	/*!< (private) SKEIN-384 */
@@ -508,6 +513,42 @@ ack("edonr512.asn1", null);
 ack("edonr512.name", "EDON-R");
 ack("edonr512.update(str);", true);
 ack("edonr512.fini();", '1b14db155f1d406594b8cef70a4362ec6b5de6a5daf50ec999e987c19d3049e2de5977bb05b1bb220050a1ea5b46a9f1740acafbf6b45032adc90c628372c22b');
+
+var fugue_224 = new Dc(PGPHASHALGO_FUGUE_224);
+ack("fugue_224('');", 'e2cd30d51a913c4ed2388a141f90caa4914de43010849e7b8a7a9ccd');
+ack("fugue_224.init(PGPHASHALGO_FUGUE_224);", true);
+ack("fugue_224.algo", PGPHASHALGO_FUGUE_224);
+ack("fugue_224.asn1", null);
+ack("fugue_224.name", "FUGUE");
+ack("fugue_224.update(str);", true);
+ack("fugue_224.fini();", '5e12f2cfb0b72d27c81a50d591741625138500a3151edea3d72813f8');
+
+var fugue_256 = new Dc(PGPHASHALGO_FUGUE_256);
+ack("fugue_256('');", 'd6ec528980c130aad1d1acd28b9dd8dbdeae0d79eded1fca72c2af9f37c2246f');
+ack("fugue_256.init(PGPHASHALGO_FUGUE_256);", true);
+ack("fugue_256.algo", PGPHASHALGO_FUGUE_256);
+ack("fugue_256.asn1", null);
+ack("fugue_256.name", "FUGUE");
+ack("fugue_256.update(str);", true);
+ack("fugue_256.fini();", '2b6cca67a397ecd4f27a0bed242b04f328b89ff5c51c61da1e69cc5a7419084c');
+
+var fugue_384 = new Dc(PGPHASHALGO_FUGUE_384);
+ack("fugue_384('');", '466d05f6812b58b8628e53816b2a99d173b804a964de971829159c3791ac8b524eebbf5fc73ba40ea8eea446d5424a30');
+ack("fugue_384.init(PGPHASHALGO_FUGUE_384);", true);
+ack("fugue_384.algo", PGPHASHALGO_FUGUE_384);
+ack("fugue_384.asn1", null);
+ack("fugue_384.name", "FUGUE");
+ack("fugue_384.update(str);", true);
+ack("fugue_384.fini();", '5e5e10e8b19c2895d406a998ca860cb5698ec950fb4c65bbc41b9f4f53737750e38ff896998df9968066899c3ad5431f');
+
+var fugue_512 = new Dc(PGPHASHALGO_FUGUE_512);
+ack("fugue_512('');", '3124f0cbb5a1c2fb3ce747ada63ed2ab3bcd74795cef2b0e805d5319fcc360b4617b6a7eb631d66f6d106ed0724b56fa8c1110f9b8df1c6898e7ca3c2dfccf79');
+ack("fugue_512.init(PGPHASHALGO_FUGUE_512);", true);
+ack("fugue_512.algo", PGPHASHALGO_FUGUE_512);
+ack("fugue_512.asn1", null);
+ack("fugue_512.name", "FUGUE");
+ack("fugue_512.update(str);", true);
+ack("fugue_512.fini();", '6d3c8217e4ddcb6ad1e651ff24be6a50b177c11e0df51ddcf7e90787274927bf1d77bf870d74551c00818fd1d049f384f8c56a8c2c040de2febef2637dc4b20f');
 
 var groestl_224 = new Dc(PGPHASHALGO_GROESTL_224);
 ack("groestl_224('');", '07f3750f4831d8ad1763cd46ab6b40c6c49f1cdcc78bb64f8d40c7df');

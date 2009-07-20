@@ -64,6 +64,16 @@
 
 #include "edon-r.h"
 
+#include "fugue.h"
+#undef	BitSequence
+#undef	DataLength
+#undef	HashReturn
+#undef	hashState
+#undef	Init
+#undef	Update
+#undef	Final
+#undef	Hash
+
 #include "groestl.h"
 #undef	BitSequence
 #undef	DataLength
@@ -746,6 +756,23 @@ edonr:
 	ctx->Reset = (int (*)(void *)) noopReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) edonr_Update;
 	ctx->Digest = (int (*)(void *, byte *)) edonr_Final;
+	break;
+    case PGPHASHALGO_FUGUE_224: ctx->digestsize = 224/8; goto fugue;
+    case PGPHASHALGO_FUGUE_256: ctx->digestsize = 256/8; goto fugue;
+    case PGPHASHALGO_FUGUE_384: ctx->digestsize = 384/8; goto fugue;
+    case PGPHASHALGO_FUGUE_512: ctx->digestsize = 512/8; goto fugue;
+fugue:
+	ctx->name = "FUGUE";
+	ctx->datasize = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(fugue_hashState);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramsize);
+	(void) fugue_Init((fugue_hashState *)ctx->param,
+				(int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) noopReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) _fugue_Update;
+	ctx->Digest = (int (*)(void *, byte *)) fugue_Final;
 	break;
     case PGPHASHALGO_GROESTL_224: ctx->digestsize = 224/8; goto groestl;
     case PGPHASHALGO_GROESTL_256: ctx->digestsize = 256/8; goto groestl;
