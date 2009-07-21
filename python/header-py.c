@@ -943,6 +943,16 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 	return NULL;
     }
 
+    /* XXX HACK: postpone committing to single "missing" value for now. */
+    if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
+    if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
+    if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
+    if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
+    if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
+    if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
+    if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
+    if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
+
     rc = rpmEVRcompare(a, b);
 
     a = rpmEVRfree(a);
