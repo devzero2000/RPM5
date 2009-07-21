@@ -25,9 +25,9 @@ typedef uint64_t DataLength;
 
 typedef struct {
     int hashbitlen;		/* length in bits of the hash value */
-    DataLength databitcount;	/* number of data bits processed so far */
+    uint64_t ctr;		/* number of data bits processed so far */
+    uint32_t h[64/4];		/* intermediate hash value */
     uint8_t buffer[128];	/* space for one block of data to be hashed */
-    uint8_t hash[64];		/* intermediate hash value */
 } hashState;
 
 HashReturn Init(hashState *state, int hashbitlen);
