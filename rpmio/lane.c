@@ -19,6 +19,7 @@ enum { SUCCESS        = 0, /* Execution successful */
        BAD_DATABITLEN = 3  /* Incomplete byte before last call to Update() */
 };
 
+#define	OPTIMIZED
 #ifdef	OPTIMIZED
 #define T8(x) ((x) & 0xff)
 #define B0(x) (T8((x)      ))
@@ -27,7 +28,10 @@ enum { SUCCESS        = 0, /* Execution successful */
 #define B3(x) (T8((x) >> 24))
 #define MSB32(x) ((uint32_t)((((uint64_t)(x))>>32) & 0xffffffff))
 #define LSB32(x) ((uint32_t)((((uint64_t)(x))    ) & 0xffffffff))
-#ifdef LANE_BIG_ENDIAN
+
+#include <endian.h>
+
+#if	__BYTE_ORDER == __BIG_ENDIAN
 #define U8TO32_BIG(c)  (((uint32_t*)(c))[0])
 #define U32TO8_BIG(c, v) ((uint32_t*)(c))[0]=v
 #else
@@ -43,7 +47,9 @@ enum { SUCCESS        = 0, /* Execution successful */
 		tmp_portable_h_d[2] = T8(tmp_portable_h_x >> 8); \
 		tmp_portable_h_d[3] = T8(tmp_portable_h_x); \
 	} while (0)
-#endif /* LANE_BIG_ENDIAN */
+#endif
+
+typedef void (*Transform_t) (const uint8_t *m, uint32_t *h, const uint32_t ctrh, const uint32_t ctrl);
 
 static const uint32_t T0[256] = {
     0xc66363a5U, 0xf87c7c84U, 0xee777799U, 0xf67b7b8dU,
@@ -1934,7 +1940,7 @@ void lane512_compress(const uint8_t m[128], uint32_t h[16],
 #else	/* OPTIMIZED */
 typedef uint8_t aes_state[4][4]; /* a 4x4 byte array containing the AES state */
 
-typedef void (*Transform_t) (hashState *state, const uint8_t *buffer, const DataLength counter);
+typedef void (*Transform_t) (hashState *state, const uint8_t *buffer, const uint64_t counter);
 
 /* ===== "tables.h" */
 static const uint8_t S[256] = {
@@ -2089,7 +2095,7 @@ uint8_t select_byte_32(uint32_t word, int idx)
 
 /* Select a byte from a 64-bit word, most significant byte has index 0. */
 static
-uint8_t select_byte_64(DataLength word, int idx)
+uint8_t select_byte_64(uint64_t word, int idx)
 {
   return (word >> (7-idx)*8) & 0xFF;
 }
@@ -2132,7 +2138,7 @@ void AddConstants256(int r, lane256_state a)
  * This operation is performed for each part of the LANE state.
  */
 static
-void AddCounter256(int r, lane256_state a, DataLength counter)
+void AddCounter256(int r, lane256_state a, uint64_t counter)
 {
   int j;
   for(j=0; j!=4; j++) {
@@ -2224,7 +2230,7 @@ void SwapColumns256(lane256_state a)
  * @param counter	counter value used by AddCounter()
  */
 static
-void PermuteP256(int j, lane256_state a, DataLength counter)
+void PermuteP256(int j, lane256_state a, uint64_t counter)
 {
   int i, r;
 
@@ -2252,7 +2258,7 @@ void PermuteP256(int j, lane256_state a, DataLength counter)
  * @param counter	counter value used by AddCounter()
  */
 static
-void PermuteQ256(int j, lane256_state a, DataLength counter)
+void PermuteQ256(int j, lane256_state a, uint64_t counter)
 {
   int i, r;
 
@@ -2359,7 +2365,7 @@ void StoreHash256(uint8_t *hashval, lane256_state W0)
 
 /* Apply the algorithm's compression function to one block of input. */
 static
-void Lane256Transform(hashState *state, const uint8_t buffer[64], const DataLength counter)
+void Lane256Transform(hashState *state, const uint8_t buffer[64], const uint64_t counter)
 {
   lane256_state W0, W1, W2, W3, W4, W5;
 
@@ -2416,7 +2422,7 @@ void AddConstants512(int r, lane512_state a)
  * This operation is performed for each part of the LANE state.
  */
 static
-void AddCounter512(int r, lane512_state a, DataLength counter)
+void AddCounter512(int r, lane512_state a, uint64_t counter)
 {
   int j;
   for(j=0; j!=4; j++) {
@@ -2512,7 +2518,7 @@ void SwapColumns512(lane512_state a)
  * @param counter	counter value used by AddCounter()
  */
 static
-void PermuteP512(int j, lane512_state a, DataLength counter)
+void PermuteP512(int j, lane512_state a, uint64_t counter)
 {
   int i, r;
 
@@ -2540,7 +2546,7 @@ void PermuteP512(int j, lane512_state a, DataLength counter)
  * @param counter	counter value used by AddCounter()
  */
 static
-void PermuteQ512(int j, lane512_state a, DataLength counter)
+void PermuteQ512(int j, lane512_state a, uint64_t counter)
 {
   int i, r;
 
@@ -2674,7 +2680,7 @@ void StoreHash512(uint8_t *hashval, lane512_state W0)
 
 /* Apply the algorithm's compression function to one block of input. */
 static
-void Lane512Transform(hashState *state, const uint8_t buffer[128], const DataLength counter)
+void Lane512Transform(hashState *state, const uint8_t buffer[128], const uint64_t counter)
 {
   lane512_state W0, W1, W2, W3, W4, W5;
 
@@ -2734,19 +2740,25 @@ HashReturn Init(hashState *state, int hashbitlen)
 #ifdef	OPTIMIZED
     default:
     case 224:
-    case 256:	lane256_compress(state->buffer, state->h, 0, 0);	break;
+    case 256:	Transform = lane256_compress;
+	Transform(state->buffer, state->h, 0, 0);
+	break;
     case 384:
-    case 512:	lane512_compress(state->buffer, state->h, 0, 0);	break;
+    case 512:	Transform = lane512_compress;
+	Transform(state->buffer, state->h, 0, 0);
+	break;
 #else
     default:
     case 224:
-    case 256:	Transform = Lane256Transform;		break;
+    case 256:	Transform = Lane256Transform;
+	Transform(state, state->buffer, 0);
+	break;
     case 384:
-    case 512:	Transform = Lane512Transform;		break;
+    case 512:	Transform = Lane512Transform;
+	Transform(state, state->buffer, 0);
+	break;
 #endif
     }
-
-    Transform(state, state->buffer, 0);
 
     return SUCCESS;
 }
@@ -2758,7 +2770,7 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 {
     uint64_t bytes = databitlen >> 3;
     uint64_t buffill;
-    int BLOCKSIZE;
+    unsigned BLOCKSIZE;
     Transform_t Transform;
 
     /* Only the last call to Update() may contain a fractional byte */
@@ -2766,39 +2778,107 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 	return BAD_DATABITLEN; /* last call to Update() was already performed */
 
     switch (state->hashbitlen) {
+#ifdef	OPTIMIZED
     default:
     case 224:
     case 256:
-	buffill = (state->ctr >> 3) & 0x3f;
 	BLOCKSIZE = 64;
-	Transform = Lane256Transform;
+	Transform = lane256_compress;
+	buffill = (state->ctr >> 3) & (BLOCKSIZE-1);
+	/* Process pending partial block (if any). */
+	if (buffill) {
+	    const uint64_t n = buffill +
+			(bytes > BLOCKSIZE ? BLOCKSIZE-buffill : bytes);
+	    memcpy(state->buffer + buffill, data, n);
+	    state->ctr += n << 3;
+	    if (buffill + n == BLOCKSIZE)
+		Transform(state->buffer, state->h, MSB32(state->ctr), LSB32(state->ctr));
+	    data += n;
+	    bytes -= n;
+	}
+	/* Process as many full blocks as possible. */
+	while (bytes >= BLOCKSIZE) {
+	    state->ctr += BLOCKSIZE << 3;
+	    Transform(data, state->h, MSB32(state->ctr), LSB32(state->ctr));
+	    data += BLOCKSIZE;
+	    bytes -= BLOCKSIZE;
+	}
 	break;
     case 384:
     case 512:
-	buffill = (state->ctr >> 3) & 0x7f;
+	BLOCKSIZE = 128;
+	Transform = lane512_compress;
+	buffill = (state->ctr >> 3) & (BLOCKSIZE-1);
+	/* Process pending partial block (if any). */
+	if (buffill) {
+	    const uint64_t n = buffill +
+			(bytes > BLOCKSIZE ? BLOCKSIZE-buffill : bytes);
+	    memcpy(state->buffer + buffill, data, n);
+	    state->ctr += n << 3;
+	    if (buffill + n == BLOCKSIZE)
+		Transform(state->buffer, state->h, MSB32(state->ctr), LSB32(state->ctr));
+	    data += n;
+	    bytes -= n;
+	}
+	/* Process as many full blocks as possible. */
+	while (bytes >= BLOCKSIZE) {
+	    state->ctr += BLOCKSIZE << 3;
+	    Transform(data, state->h, MSB32(state->ctr), LSB32(state->ctr));
+	    data += BLOCKSIZE;
+	    bytes -= BLOCKSIZE;
+	}
+	break;
+#else
+    default:
+    case 224:
+    case 256:
+	BLOCKSIZE = 64;
+	Transform = Lane256Transform;
+	buffill = (state->ctr >> 3) & (BLOCKSIZE-1);
+	/* Process pending partial block (if any). */
+	if (buffill) {
+	    const uint64_t n = buffill +
+			(bytes > BLOCKSIZE ? BLOCKSIZE-buffill : bytes);
+	    memcpy(state->buffer + buffill, data, n);
+	    state->ctr += n << 3;
+	    if (buffill + n == BLOCKSIZE)
+		Transform(state, state->buffer, state->ctr);
+	    data += n;
+	    bytes -= n;
+	}
+	/* Process as many full blocks as possible. */
+	while (bytes >= BLOCKSIZE) {
+	    state->ctr += BLOCKSIZE << 3;
+	    Transform(state, state->buffer, state->ctr);
+	    data += BLOCKSIZE;
+	    bytes -= BLOCKSIZE;
+	}
+	break;
+    case 384:
+    case 512:
 	BLOCKSIZE = 128;
 	Transform = Lane512Transform;
-	break;
-    }
-
-    /* Process pending partial block (if any). */
-    if (buffill) {
-	const uint64_t n = buffill + bytes > BLOCKSIZE
-			? BLOCKSIZE-buffill : bytes;
-	memcpy(state->buffer + buffill, data, n);
-	state->ctr += n << 3;
-	if (buffill + n == BLOCKSIZE)
+	buffill = (state->ctr >> 3) & (BLOCKSIZE-1);
+	/* Process pending partial block (if any). */
+	if (buffill) {
+	    const uint64_t n = buffill +
+			(bytes > BLOCKSIZE ? BLOCKSIZE-buffill : bytes);
+	    memcpy(state->buffer + buffill, data, n);
+	    state->ctr += n << 3;
+	    if (buffill + n == BLOCKSIZE)
+		Transform(state, state->buffer, state->ctr);
+	    data += n;
+	    bytes -= n;
+	}
+	/* Process as many full blocks as possible. */
+	while (bytes >= BLOCKSIZE) {
+	    state->ctr += BLOCKSIZE << 3;
 	    Transform(state, state->buffer, state->ctr);
-	data += n;
-	bytes -= n;
-    }
-
-    /* Process as many full blocks as possible. */
-    while (bytes >= BLOCKSIZE) {
-	state->ctr += BLOCKSIZE << 3;
-	Transform(state, state->buffer, state->ctr);
-	data += BLOCKSIZE;
-	bytes -= BLOCKSIZE;
+	    data += BLOCKSIZE;
+	    bytes -= BLOCKSIZE;
+	}
+	break;
+#endif
     }
 
     /* And finally, save the last, incomplete message block */
@@ -2816,61 +2896,178 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
  */
 HashReturn Final(hashState *state, BitSequence *hashval)
 {
-    int BLOCKSIZE;
+    unsigned BLOCKSIZE;
     Transform_t Transform;
 
     switch (state->hashbitlen) {
+#ifdef	OPTIMIZED
+    default:
+    case 224:
+    case 256:
+	BLOCKSIZE = 64;
+	Transform = lane256_compress;
+	/* Zero-pad and compress the last block (if any).*/
+	if (state->ctr & (8*BLOCKSIZE-1)) {
+	    const uint64_t n = (((state->ctr - 1) >> 3) + 1) & (BLOCKSIZE-1);
+	    if (n < BLOCKSIZE)
+		memset(state->buffer + n, 0, BLOCKSIZE-n);
+	    /* zero-pad partial byte */
+	    state->buffer[(state->ctr >> 3)&(BLOCKSIZE-1)] &=
+				~(0xff >> (state->ctr & 0x7));
+	    Transform(state->buffer, state->h, MSB32(state->ctr), LSB32(state->ctr));
+	}
+
+	/* output transformation */
+	memset(state->buffer, 0, BLOCKSIZE);
+	/* flag byte 0x00: output transformation without seed */
+	state->buffer[0] = 0x00;
+	/* BIG_ENDIAN message length */
+	state->buffer[1] = T8(state->ctr >> 56);
+	state->buffer[2] = T8(state->ctr >> 48);
+	state->buffer[3] = T8(state->ctr >> 40);
+	state->buffer[4] = T8(state->ctr >> 32);
+	state->buffer[5] = T8(state->ctr >> 24);
+	state->buffer[6] = T8(state->ctr >> 16);
+	state->buffer[7] = T8(state->ctr >>  8);
+	state->buffer[8] = T8(state->ctr >>  0);
+	Transform(state->buffer, state->h, 0, 0);
+
+	/* write back result */
+	switch (state->hashbitlen) {
+	case  8*32:	U32TO8_BIG(hashval+28, state->h[7]);
+	case  7*32:	U32TO8_BIG(hashval+24, state->h[6]);
+	case  6*32:	U32TO8_BIG(hashval+20, state->h[5]);
+	case  5*32:	U32TO8_BIG(hashval+16, state->h[4]);
+	case  4*32:	U32TO8_BIG(hashval+12, state->h[3]);
+	case  3*32:	U32TO8_BIG(hashval+8,  state->h[2]);
+	case  2*32:	U32TO8_BIG(hashval+4,  state->h[1]);
+	case  1*32:	U32TO8_BIG(hashval,    state->h[0]);
+	case  0*32:	break;
+	    break;
+	}
+	break;
+    case 384:
+    case 512:
+	BLOCKSIZE = 128;
+	Transform = lane512_compress;
+	/* Zero-pad and compress the last block (if any).*/
+	if (state->ctr & (8*BLOCKSIZE-1)) {
+	    const uint64_t n = (((state->ctr - 1) >> 3) + 1) & (BLOCKSIZE-1);
+	    if (n < BLOCKSIZE)
+		memset(state->buffer + n, 0, BLOCKSIZE-n);
+	    /* zero-pad partial byte */
+	    state->buffer[(state->ctr >> 3)&(BLOCKSIZE-1)] &=
+				~(0xff >> (state->ctr & 0x7));
+	    Transform(state->buffer, state->h, MSB32(state->ctr), LSB32(state->ctr));
+	}
+
+	/* output transformation */
+	memset(state->buffer, 0, BLOCKSIZE);
+	/* flag byte 0x00: output transformation without seed */
+	state->buffer[0] = 0x00;
+	/* BIG_ENDIAN message length */
+	state->buffer[1] = T8(state->ctr >> 56);
+	state->buffer[2] = T8(state->ctr >> 48);
+	state->buffer[3] = T8(state->ctr >> 40);
+	state->buffer[4] = T8(state->ctr >> 32);
+	state->buffer[5] = T8(state->ctr >> 24);
+	state->buffer[6] = T8(state->ctr >> 16);
+	state->buffer[7] = T8(state->ctr >>  8);
+	state->buffer[8] = T8(state->ctr >>  0);
+	Transform(state->buffer, state->h, 0, 0);
+
+	/* write back result */
+	switch (state->hashbitlen) {
+	case 16*32:	U32TO8_BIG(hashval+60, state->h[15]);
+	case 15*32:	U32TO8_BIG(hashval+56, state->h[14]);
+	case 14*32:	U32TO8_BIG(hashval+52, state->h[13]);
+	case 13*32:	U32TO8_BIG(hashval+48, state->h[12]);
+	case 12*32:	U32TO8_BIG(hashval+44, state->h[11]);
+	case 11*32:	U32TO8_BIG(hashval+40, state->h[10]);
+	case 10*32:	U32TO8_BIG(hashval+36, state->h[ 9]);
+	case  9*32:	U32TO8_BIG(hashval+32, state->h[ 8]);
+	case  8*32:	U32TO8_BIG(hashval+28, state->h[ 7]);
+	case  7*32:	U32TO8_BIG(hashval+24, state->h[ 6]);
+	case  6*32:	U32TO8_BIG(hashval+20, state->h[ 5]);
+	case  5*32:	U32TO8_BIG(hashval+16, state->h[ 4]);
+	case  4*32:	U32TO8_BIG(hashval+12, state->h[ 3]);
+	case  3*32:	U32TO8_BIG(hashval+8,  state->h[ 2]);
+	case  2*32:	U32TO8_BIG(hashval+4,  state->h[ 1]);
+	case  1*32:	U32TO8_BIG(hashval,    state->h[ 0]);
+	case  0*32:	break;
+	}
+	break;
+#else
     default:
     case 224:
     case 256:
 	BLOCKSIZE = 64;
 	Transform = Lane256Transform;
 	/* Zero-pad and compress the last block (if any).*/
-	if (state->ctr & 0x1ff) {
-	    const DataLength n = (((state->ctr - 1) >> 3) + 1) & 0x3f;
+	if (state->ctr & (8*BLOCKSIZE - 1)) {
+	    const uint64_t n = (((state->ctr - 1) >> 3) + 1) & (BLOCKSIZE-1);
 	    if (n < BLOCKSIZE)
 		memset(state->buffer + n, 0, BLOCKSIZE-n);
 	    /* zero-pad partial byte */
-	    state->buffer[(state->ctr >> 3) & 0x3f] &=
+	    state->buffer[(state->ctr >> 3) & (BLOCKSIZE-1)] &=
 				~(0xff >> (state->ctr & 0x7));
 	    Transform(state, state->buffer, state->ctr);
 	}
+
+	/* output transformation */
+	memset(state->buffer, 0, BLOCKSIZE);
+	/* flag byte 0x00: output transformation without salt */
+	state->buffer[0] = 0x00;
+	/* BIG_ENDIAN message length */
+	state->buffer[1] = select_byte_64(state->ctr, 0);
+	state->buffer[2] = select_byte_64(state->ctr, 1);
+	state->buffer[3] = select_byte_64(state->ctr, 2);
+	state->buffer[4] = select_byte_64(state->ctr, 3);
+	state->buffer[5] = select_byte_64(state->ctr, 4);
+	state->buffer[6] = select_byte_64(state->ctr, 5);
+	state->buffer[7] = select_byte_64(state->ctr, 6);
+	state->buffer[8] = select_byte_64(state->ctr, 7);
+	Transform(state, state->buffer, 0);
+
+	/* write back result */
+	memcpy(hashval, state->h, state->hashbitlen/8);
 	break;
     case 384:
     case 512:
 	BLOCKSIZE = 128;
 	Transform = Lane512Transform;
 	/* Zero-pad and compress the last block (if any).*/
-	if (state->ctr & 0x3ff) {
-	    const DataLength n = (((state->ctr - 1) >> 3) + 1) & 0x7f;
+	if (state->ctr & (8*BLOCKSIZE - 1)) {
+	    const uint64_t n = (((state->ctr - 1) >> 3) + 1) & (BLOCKSIZE-1);
 	    if (n < BLOCKSIZE)
 		memset(state->buffer + n, 0, BLOCKSIZE-n);
 	    /* zero-pad partial byte */
-	    state->buffer[(state->ctr >> 3) & 0x7f] &=
+	    state->buffer[(state->ctr >> 3) & (BLOCKSIZE-1)] &=
 				~(0xff >> (state->ctr & 0x7));
 	    Transform(state, state->buffer, state->ctr);
 	}
+
+	/* output transformation */
+	memset(state->buffer, 0, BLOCKSIZE);
+	/* flag byte 0x00: output transformation without salt */
+	state->buffer[0] = 0x00;
+	/* BIG_ENDIAN message length */
+	state->buffer[1] = select_byte_64(state->ctr, 0);
+	state->buffer[2] = select_byte_64(state->ctr, 1);
+	state->buffer[3] = select_byte_64(state->ctr, 2);
+	state->buffer[4] = select_byte_64(state->ctr, 3);
+	state->buffer[5] = select_byte_64(state->ctr, 4);
+	state->buffer[6] = select_byte_64(state->ctr, 5);
+	state->buffer[7] = select_byte_64(state->ctr, 6);
+	state->buffer[8] = select_byte_64(state->ctr, 7);
+
+	Transform(state, state->buffer, 0);
+
+	/* write back result */
+	memcpy(hashval, state->h, state->hashbitlen/8);
 	break;
+#endif
     }
-
-    /* output transformation */
-    memset(state->buffer, 0, BLOCKSIZE);
-
-    state->buffer[0] = 0x00; /* flag byte 0x00: output transformation without salt */
-    /* BIG_ENDIAN message length */
-    state->buffer[1] = select_byte_64(state->ctr, 0);
-    state->buffer[2] = select_byte_64(state->ctr, 1);
-    state->buffer[3] = select_byte_64(state->ctr, 2);
-    state->buffer[4] = select_byte_64(state->ctr, 3);
-    state->buffer[5] = select_byte_64(state->ctr, 4);
-    state->buffer[6] = select_byte_64(state->ctr, 5);
-    state->buffer[7] = select_byte_64(state->ctr, 6);
-    state->buffer[8] = select_byte_64(state->ctr, 7);
-
-    Transform(state, state->buffer, 0);
-
-    /* write back result */
-    memcpy(hashval, state->h, state->hashbitlen/8);
 
     return SUCCESS;
 }
