@@ -7,6 +7,8 @@
 #include <string.h>
 #include "luffa.h"
 
+#define	OPTIMIZED
+
 enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
 
 /*********************************/
@@ -14,20 +16,17 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
 #define MSG_BLOCK_BIT_LEN 256  /* The bit length of a message block */
 #define MSG_BLOCK_BYTE_LEN (MSG_BLOCK_BIT_LEN >> 3) /* The byte length
                                                      * of a message block*/
-
 /* The number of blocks in Luffa */
 #define WIDTH_224 3
 #define WIDTH_256 3
 #define WIDTH_384 4
 #define WIDTH_512 5
-
 /* The limit of the length of message */
 #define LIMIT_224 64
 #define LIMIT_256 64
 #define LIMIT_384 128
 #define LIMIT_512 128
 /*********************************/
-
 #include <endian.h>
 
 #if	__BYTE_ORDER == __BIG_ENDIAN
@@ -38,7 +37,7 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
     ((x << 24) | ((x & 0x0000ff00) << 8) | ((x & 0x00ff0000) >> 8) | (x >> 24))
 
 # define BYTES_SWAP64(x)                                                \
-    (((u64)(BYTES_SWAP32((u32)(x))) << 32) | (u64)(BYTES_SWAP32((u32)((x) >> 32))))
+    (((uint64_t)(BYTES_SWAP32((uint32_t)(x))) << 32) | (uint64_t)(BYTES_SWAP32((uint32_t)((x) >> 32))))
 #endif
 
 /* BYTES_SWAP256(x) stores each 32-bit word of 256 bits data in little-endian convention */
@@ -51,16 +50,8 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
 	int _i = 8; while(_i--) { x[_i] = BYTES_SWAP64(x[_i]); }\
     }
 
-/* initial values of constant generators */
-const uint32_t CNS[10] = {
-    0x181cca53, 0x380cde06,
-    0x5b6f0876, 0xf16f8594,
-    0x7e106ce9, 0x38979cb0,
-    0xbb62f364, 0x92e93c29,
-    0x9a025047, 0xcff2a940
-};
-
 /* initial values of chaining variables */
+static
 const uint32_t IV[40] = {
     0x6d251e69, 0x44b051e0, 0x4eaa6fb4, 0xdbf78465,
     0x6e292011, 0x90152df4, 0xee058139, 0xdef610bb,
@@ -71,12 +62,48 @@ const uint32_t IV[40] = {
     0x858075d5, 0x36d79cce, 0xe571f7d7, 0x204b1f67,
     0x35870c6a, 0x57e9e923, 0x14bcb808, 0x7cde72ce,
     0x6c68e9be, 0x5ec41e22, 0xc825b7c7, 0xaffb4363,
-    0xf5df3999, 0x0fc688f1, 0xb07224cc, 0x03e86cea};
+    0xf5df3999, 0x0fc688f1, 0xb07224cc, 0x03e86cea
+};
+
+/* initial values of constant generators */
+#ifdef	OPTIMIZED
+static
+const uint32_t CNS[80] = {
+    0x303994a6, 0xe0337818, 0xc0e65299, 0x441ba90d,
+    0x6cc33a12, 0x7f34d442, 0xdc56983e, 0x9389217f,
+    0x1e00108f, 0xe5a8bce6, 0x7800423d, 0x5274baf4,
+    0x8f5b7882, 0x26889ba7, 0x96e1db12, 0x9a226e9d,
+    0xb6de10ed, 0x01685f3d, 0x70f47aae, 0x05a17cf4,
+    0x0707a3d4, 0xbd09caca, 0x1c1e8f51, 0xf4272b28,
+    0x707a3d45, 0x144ae5cc, 0xaeb28562, 0xfaa7ae2b,
+    0xbaca1589, 0x2e48f1c1, 0x40a46f3e, 0xb923c704,
+    0xfc20d9d2, 0xe25e72c1, 0x34552e25, 0xe623bb72,
+    0x7ad8818f, 0x5c58a4a4, 0x8438764a, 0x1e38e2e7,
+    0xbb6de032, 0x78e38b9d, 0xedb780c8, 0x27586719,
+    0xd9847356, 0x36eda57f, 0xa2c78434, 0x703aace7,
+    0xb213afa5, 0xe028c9bf, 0xc84ebe95, 0x44756f91,
+    0x4e608a22, 0x7e8fce32, 0x56d858fe, 0x956548be,
+    0x343b138f, 0xfe191be2, 0xd0ec4e3d, 0x3cb226e5,
+    0x2ceb4882, 0x5944a28e, 0xb3ad2208, 0xa1c4c355,
+    0xf0d2e9e3, 0x5090d577, 0xac11d7fa, 0x2d1925ab,
+    0x1bcb66f2, 0xb46496ac, 0x6f2d9bc9, 0xd1925ab0,
+    0x78602649, 0x29131ab6, 0x8edae952, 0x0fc053c3,
+    0x3b6ba548, 0x3f014f0c, 0xedae9520, 0xfc053c31
+};
+#else
+static
+const uint32_t CNS[10] = {
+    0x181cca53, 0x380cde06, 0x5b6f0876, 0xf16f8594,
+    0x7e106ce9, 0x38979cb0, 0xbb62f364, 0x92e93c29,
+    0x9a025047, 0xcff2a940
+};
+
+#endif
 
 /***************************************************/
 /* Multiplication by 2 on GF(2^8)^32 */
 /* a[8]: chaining value */
-static
+static inline
 void mult2(uint32_t a[8])
 {
     uint32_t tmp;
@@ -97,7 +124,7 @@ void mult2(uint32_t a[8])
 /***************************************************/
 /* Message Insertion function */
 /* state: hash context     */
-static
+static inline
 void mi(hashState *state)
 {
     uint32_t t[40];
@@ -130,7 +157,7 @@ void mi(hashState *state)
     }
 
     /* mixing layer w=4,5 */
-    if (state->width>=4) {
+    if (state->width >= 4) {
 	for (j = 0; j < state->width; j++) {
 	    for (i = 0; i < 8; i++)
 		t[i+8*j] = state->chainv[i+8*j];
@@ -153,8 +180,15 @@ void mi(hashState *state)
 }
 
 /***************************************************/
+#ifdef	OPTIMIZED
+#define TWEAK(a,j)                           \
+  { *(a+4) = (*(a+4)<<(j))|(*(a+4)>>(32-j)); \
+    *(a+5) = (*(a+5)<<(j))|(*(a+5)>>(32-j)); \
+    *(a+6) = (*(a+6)<<(j))|(*(a+6)>>(32-j)); \
+    *(a+7) = (*(a+7)<<(j))|(*(a+7)>>(32-j)); }
+#else
 /* Tweaks */
-static
+static inline
 void tweak(hashState *state) {
     int i,j;
 
@@ -166,12 +200,34 @@ void tweak(hashState *state) {
 
     return;
 }
+#endif
 
 /***************************************************/
 /* SubCrumb function                              */
 /* a[4]: input and output of SubCrumb             */
 /* (a[0],a[1],a[2],a[3]) -> (a[0],a[1],a[2],a[3]) */
-static
+#ifdef	OPTIMIZED
+#define SUBCRUMB(a0,a1,a2,a3,a4) \
+  { a4  = a0; \
+    a2 ^= a1; \
+    a0 &= a1; \
+    a0 ^= a2; \
+    a1  = ~a1;\
+    a2 |= a4; \
+    a2 ^= a3; \
+    a4 ^= a0; \
+    a3 &= a0; \
+    a3 ^= a1; \
+    a4  = ~a4;\
+    a1 |= a2; \
+    a4 ^= a1; \
+    a0 ^= a3; \
+    a1 &= a2; \
+    a1 ^= a3; \
+    a2  = a3; \
+    a3  = a4; }
+#else
+static inline
 void subcrumb(uint32_t *a)
 {
     uint32_t tmp;
@@ -197,12 +253,24 @@ void subcrumb(uint32_t *a)
   
     return;
 }
+#endif
 
 /***************************************************/
 /* MixWord function                                 */
 /* a[0],a[4]: input and outputs of MixWord function */
 /* (a[0],a[4]) -> (a[0],a[4])                       */
-static
+#ifdef	OPTIMIZED
+#define MIXWORD(a0,a4)\
+  { a4 ^= a0; \
+    a0  = (a0<<2) | (a0>>(30)); \
+    a0 ^= a4; \
+    a4  = (a4<<14) | (a4>>(18));\
+    a4 ^= a0; \
+    a0  = (a0<<10) | (a0>>(22));\
+    a0 ^= a4; \
+    a4  = (a4<<1) | (a4>>(31)); }
+#else
+static inline
 void mixword(uint32_t *a)
 {
     a[4] ^= a[0];
@@ -216,12 +284,18 @@ void mixword(uint32_t *a)
 
     return;
 }
+#endif
 
 /***************************************************/
 /* AddConstant function */
 /* a[0],a[4]: chaining values */
 /* cns[2]: round constants */
-static
+#ifdef	OPTIMIZED
+#define ADD_CONSTANT(a0, b0, c) \
+  { a0 ^= *c;\
+    b0 ^= *(c+1); }
+#else
+static inline
 void addconstant(uint32_t *a, uint32_t *cns)
 {
     a[0] ^= cns[0];
@@ -229,6 +303,7 @@ void addconstant(uint32_t *a, uint32_t *cns)
   
     return;
 }
+#endif
 
 /***************************************************/
 /* Constant Generator */
@@ -237,7 +312,8 @@ void addconstant(uint32_t *a, uint32_t *cns)
 /* c[2]: the variables which LFSR possess at the round. */
 /* cns[2]: the round constants at the round which are generated
    through two LFSR-round calculation. */
-static
+#if !defined(OPTIMIZED)
+static inline
 void genconstant(uint32_t *c, uint32_t *cns)
 {
     if(c[0] >> 31) {
@@ -263,12 +339,23 @@ void genconstant(uint32_t *c, uint32_t *cns)
   
     return;
 }
+#endif
 
 /***************************************************/
 /* Step function of a Sub-Permutation              */
 /* a[8]: chaining values of a Sub-Permutation line */
 /* c[2] : constant of a Sub-Permutation line       */
-static
+#ifdef	OPTIMIZED
+#define STEP_PART(a, c, tmp)                        \
+  { SUBCRUMB(*a,*(a+1),*(a+2),*(a+3),tmp);          \
+    SUBCRUMB(*(a+4),*(a+5),*(a+6),*(a+7),tmp);      \
+    MIXWORD(*a,*(a+4));                             \
+    MIXWORD(*(a+1),*(a+5));                         \
+    MIXWORD(*(a+2),*(a+6));                         \
+    MIXWORD(*(a+3),*(a+7));                         \
+    ADD_CONSTANT(*a,*(a+4),c); }
+#else
+static inline
 void step_part(uint32_t *a, uint32_t *c)
 {
     uint32_t cns[2];
@@ -284,13 +371,14 @@ void step_part(uint32_t *a, uint32_t *c)
   
     return;
 }
-
+#endif
 
 /***************************************************/
+#if !defined(OPTIMIZED)
 /* Step function          */
-/* state: hash context */
+/* state: hash context    */
 /* c[6] : constant        */
-static
+static inline
 void step(hashState *state, uint32_t *c)
 {
     int j;
@@ -300,13 +388,525 @@ void step(hashState *state, uint32_t *c)
 
     return;
 }
-
+#endif
 
 /***************************************************/
-/* Round function         */
+/* Round function(s)      */
 /* state: hash context    */
 /* c[6] : constant        */
-static
+#ifdef	OPTIMIZED
+static inline
+void rnd256(hashState *state)
+{
+    int i,j;
+    uint32_t t[8];
+    uint32_t chainv[24];
+    uint32_t buffer[8];
+
+    for (i = 0; i < 24;i++)
+        chainv[i] = state->chainv[i];
+
+    for (i = 0; i < 8; i++) {
+        t[i] = 0;
+        for (j = 0; j < 3; j++)
+            t[i] ^= chainv[i+8*j];
+    }
+
+    t[3] ^= t[7];
+    t[2] ^= t[7];
+    t[0] ^= t[7];
+
+    chainv[ 0] ^= t[7];
+    chainv[ 8] ^= t[7];
+    chainv[16] ^= t[7];
+    chainv[ 1] ^= t[0];
+    chainv[ 9] ^= t[0];
+    chainv[17] ^= t[0];
+    chainv[ 2] ^= t[1];
+    chainv[10] ^= t[1];
+    chainv[18] ^= t[1];
+    chainv[ 3] ^= t[2];
+    chainv[11] ^= t[2];
+    chainv[19] ^= t[2];
+    chainv[ 4] ^= t[3];
+    chainv[12] ^= t[3];
+    chainv[20] ^= t[3];
+    chainv[ 5] ^= t[4];
+    chainv[13] ^= t[4];
+    chainv[21] ^= t[4];
+    chainv[ 6] ^= t[5];
+    chainv[14] ^= t[5];
+    chainv[22] ^= t[5];
+    chainv[ 7] ^= t[6];
+    chainv[15] ^= t[6];
+    chainv[23] ^= t[6];
+
+    for (i = 0; i < 8; i++)
+        buffer[i] = state->buffer[i];
+
+    chainv[ 0] ^= buffer[0];
+    chainv[ 1] ^= buffer[1];
+    chainv[ 2] ^= buffer[2];
+    chainv[ 3] ^= buffer[3];
+    chainv[ 4] ^= buffer[4];
+    chainv[ 5] ^= buffer[5];
+    chainv[ 6] ^= buffer[6];
+    chainv[ 7] ^= buffer[7];
+    chainv[ 8] ^= buffer[7];
+    chainv[ 9] ^= buffer[7];
+    chainv[ 9] ^= buffer[0];
+    chainv[10] ^= buffer[1];
+    chainv[11] ^= buffer[2];
+    chainv[11] ^= buffer[7];
+    chainv[12] ^= buffer[7];
+    chainv[12] ^= buffer[3];
+    chainv[13] ^= buffer[4];
+    chainv[14] ^= buffer[5];
+    chainv[15] ^= buffer[6];
+    chainv[16] ^= buffer[6];
+    chainv[17] ^= buffer[6];
+    chainv[17] ^= buffer[7];
+    chainv[18] ^= buffer[7];
+    chainv[18] ^= buffer[0];
+    chainv[19] ^= buffer[1];
+    chainv[19] ^= buffer[6];
+    chainv[20] ^= buffer[6];
+    chainv[20] ^= buffer[2];
+    chainv[20] ^= buffer[7];
+    chainv[21] ^= buffer[7];
+    chainv[21] ^= buffer[3];
+    chainv[22] ^= buffer[4];
+    chainv[23] ^= buffer[5];
+      
+    for (j = 0; j < 3; j++) {
+        TWEAK(&chainv[8*j],j);
+        for (i = 0; i < 8; i++)
+            STEP_PART(&chainv[8*j], &CNS[2*i + 16*j], t[0]);
+    }
+
+    for (i = 0; i < 24; i++)
+        state->chainv[i] = chainv[i];
+
+    return;
+}
+
+static inline
+void rnd384(hashState *state)
+{
+    int i,j;
+    uint32_t t[9];
+    uint32_t chainv[32];
+    uint32_t buffer[8];
+
+    for (i = 0; i < 32; i++)
+        chainv[i] = state->chainv[i];
+
+    for (i = 0; i < 8; i++) {
+        t[i]=0;
+        for (j = 0; j < 4; j++)
+            t[i] ^= chainv[i+8*j];
+    }
+
+    t[3] ^= t[7];
+    t[2] ^= t[7];
+    t[0] ^= t[7];
+
+    chainv[ 0] ^= t[7];
+    chainv[ 8] ^= t[7];
+    chainv[16] ^= t[7];
+    chainv[24] ^= t[7];
+    chainv[ 1] ^= t[0];
+    chainv[ 9] ^= t[0];
+    chainv[17] ^= t[0];
+    chainv[25] ^= t[0];
+    chainv[ 2] ^= t[1];
+    chainv[10] ^= t[1];
+    chainv[18] ^= t[1];
+    chainv[26] ^= t[1];
+    chainv[ 3] ^= t[2];
+    chainv[11] ^= t[2];
+    chainv[19] ^= t[2];
+    chainv[27] ^= t[2];
+    chainv[ 4] ^= t[3];
+    chainv[12] ^= t[3];
+    chainv[20] ^= t[3];
+    chainv[28] ^= t[3];
+    chainv[ 5] ^= t[4];
+    chainv[13] ^= t[4];
+    chainv[21] ^= t[4];
+    chainv[29] ^= t[4];
+    chainv[ 6] ^= t[5];
+    chainv[14] ^= t[5];
+    chainv[22] ^= t[5];
+    chainv[30] ^= t[5];
+    chainv[ 7] ^= t[6];
+    chainv[15] ^= t[6];
+    chainv[23] ^= t[6];
+    chainv[31] ^= t[6];
+
+    t[7] = chainv[7];
+    chainv[7] = chainv[6] ^ chainv[31];
+    t[6] = chainv[6];
+    chainv[6] = chainv[5] ^ chainv[30];
+    t[5] = chainv[5];
+    chainv[5] = chainv[4] ^ chainv[29];
+    t[4] = chainv[4];
+    chainv[4] = chainv[3] ^ t[7] ^ chainv[28];
+    t[3] = chainv[3];
+    chainv[3] = chainv[2] ^ t[7] ^ chainv[27];
+    t[2] = chainv[2];
+    chainv[2] = chainv[1] ^ chainv[26];
+    t[1] = chainv[1];
+    chainv[1] = chainv[0] ^ t[7] ^ chainv[25];
+    t[0] = chainv[0];
+    chainv[0] = t[7] ^ chainv[24];
+
+    t[8] = chainv[31];
+    chainv[31] = chainv[30] ^ chainv[23];
+    chainv[30] = chainv[29] ^ chainv[22];
+    chainv[29] = chainv[28] ^ chainv[21];
+    chainv[28] = chainv[27] ^ t[8] ^ chainv[20];
+    chainv[27] = chainv[26] ^ t[8] ^ chainv[19];
+    chainv[26] = chainv[25] ^ chainv[18];
+    chainv[25] = chainv[24] ^ t[8] ^ chainv[17];
+    chainv[24] = t[8] ^ chainv[16];
+
+    t[8] = chainv[23];
+    chainv[23] = chainv[22] ^ chainv[15];
+    chainv[22] = chainv[21] ^ chainv[14];
+    chainv[21] = chainv[20] ^ chainv[13];
+    chainv[20] = chainv[19] ^ t[8] ^ chainv[12];
+    chainv[19] = chainv[18] ^ t[8] ^ chainv[11];
+    chainv[18] = chainv[17] ^ chainv[10];
+    chainv[17] = chainv[16] ^ t[8] ^ chainv[9];
+    chainv[16] = t[8] ^ chainv[8];
+
+    t[8] = chainv[15];
+    chainv[15] = chainv[14] ^ t[7];
+    chainv[14] = chainv[13] ^ t[6];
+    chainv[13] = chainv[12] ^ t[5];
+    chainv[12] = chainv[11] ^ t[8] ^ t[4];
+    chainv[11] = chainv[10] ^ t[8] ^ t[3];
+    chainv[10] = chainv[9] ^ t[2];
+    chainv[9] = chainv[8] ^ t[8] ^ t[1];
+    chainv[8] = t[8] ^ t[0];
+
+    for (i = 0; i < 8; i++)
+        buffer[i] = state->buffer[i];
+
+    chainv[ 0] ^= buffer[0];
+    chainv[ 2] ^= buffer[2];
+    chainv[ 3] ^= buffer[3];
+
+    buffer[ 0] ^= buffer[7];
+    buffer[ 2] ^= buffer[7];
+    buffer[ 3] ^= buffer[7];
+
+    chainv[ 7] ^= buffer[7];
+    chainv[ 8] ^= buffer[7];
+    chainv[ 1] ^= buffer[1];
+    chainv[10] ^= buffer[1];
+    chainv[11] ^= buffer[2];
+
+    buffer[ 7] ^= buffer[6];
+    buffer[ 1] ^= buffer[6];
+    buffer[ 2] ^= buffer[6];
+
+    chainv[ 6] ^= buffer[6];
+    chainv[15] ^= buffer[6];
+    chainv[16] ^= buffer[6];
+    chainv[ 9] ^= buffer[0];
+    chainv[18] ^= buffer[0];
+    chainv[19] ^= buffer[1];
+
+    buffer[ 6] ^= buffer[5];
+    buffer[ 0] ^= buffer[5];
+    buffer[ 1] ^= buffer[5];
+
+    chainv[ 5] ^= buffer[5];
+    chainv[14] ^= buffer[5];
+    chainv[23] ^= buffer[5];
+    chainv[24] ^= buffer[5];
+    chainv[25] ^= buffer[6];
+    chainv[17] ^= buffer[7];
+    chainv[26] ^= buffer[7];
+    chainv[27] ^= buffer[0];
+    chainv[28] ^= buffer[1];
+    chainv[20] ^= buffer[2];
+    chainv[29] ^= buffer[2];
+    chainv[12] ^= buffer[3];
+    chainv[21] ^= buffer[3];
+    chainv[30] ^= buffer[3];
+    chainv[ 4] ^= buffer[4];
+    chainv[13] ^= buffer[4];
+    chainv[22] ^= buffer[4];
+    chainv[31] ^= buffer[4];
+
+    for (j = 0; j < 4; j++) {
+        TWEAK(&chainv[8*j],j);
+        for (i = 0; i < 8; i++)
+            STEP_PART(&chainv[8*j], &CNS[2*i + 16*j], t[0]);
+    }
+
+    for (i = 0; i < 32; i++)
+        state->chainv[i] = chainv[i];
+
+    return;
+}
+
+static inline
+void rnd512(hashState *state)
+{
+    int i,j;
+    uint32_t t[9];
+    uint32_t chainv[40];
+    uint32_t buffer[8];
+
+    for (i = 0; i < 40; i++)
+        chainv[i] = state->chainv[i];
+
+    for (i = 0; i < 8; i++) {
+        t[i] = 0;
+        for (j = 0; j < 5; j++)
+            t[i] ^= chainv[i+8*j];
+    }
+
+    t[3] ^= t[7];
+    t[2] ^= t[7];
+    t[0] ^= t[7];
+
+    chainv[ 0] ^= t[7];
+    chainv[ 8] ^= t[7];
+    chainv[16] ^= t[7];
+    chainv[24] ^= t[7];
+    chainv[32] ^= t[7];
+    chainv[ 1] ^= t[0];
+    chainv[ 9] ^= t[0];
+    chainv[17] ^= t[0];
+    chainv[25] ^= t[0];
+    chainv[33] ^= t[0];
+    chainv[ 2] ^= t[1];
+    chainv[10] ^= t[1];
+    chainv[18] ^= t[1];
+    chainv[26] ^= t[1];
+    chainv[34] ^= t[1];
+    chainv[ 3] ^= t[2];
+    chainv[11] ^= t[2];
+    chainv[19] ^= t[2];
+    chainv[27] ^= t[2];
+    chainv[35] ^= t[2];
+    chainv[36] ^= t[3];
+    chainv[ 4] ^= t[3];
+    chainv[12] ^= t[3];
+    chainv[20] ^= t[3];
+    chainv[28] ^= t[3];
+    chainv[ 5] ^= t[4];
+    chainv[13] ^= t[4];
+    chainv[21] ^= t[4];
+    chainv[29] ^= t[4];
+    chainv[37] ^= t[4];
+    chainv[ 6] ^= t[5];
+    chainv[14] ^= t[5];
+    chainv[22] ^= t[5];
+    chainv[30] ^= t[5];
+    chainv[38] ^= t[5];
+    chainv[ 7] ^= t[6];
+    chainv[15] ^= t[6];
+    chainv[23] ^= t[6];
+    chainv[31] ^= t[6];
+    chainv[39] ^= t[6];
+
+    t[7] = chainv[7];
+    chainv[7] = chainv[6] ^ chainv[15];
+    t[6] = chainv[6];
+    chainv[6] = chainv[5] ^ chainv[14];
+    t[5] = chainv[5];
+    chainv[5] = chainv[4] ^ chainv[13];
+    t[4] = chainv[4];
+    chainv[4] = chainv[3] ^ t[7] ^ chainv[12];
+    t[3] = chainv[3];
+    chainv[3] = chainv[2] ^ t[7] ^ chainv[11];
+    t[2] = chainv[2];
+    chainv[2] = chainv[1] ^ chainv[10];
+    t[1] = chainv[1];
+    chainv[1] = chainv[0] ^ t[7] ^ chainv[9];
+    t[0] = chainv[0];
+    chainv[0] = t[7] ^ chainv[8];
+
+    t[8] = chainv[15];
+    chainv[15] = chainv[14] ^ chainv[23];
+    chainv[14] = chainv[13] ^ chainv[22];
+    chainv[13] = chainv[12] ^ chainv[21];
+    chainv[12] = chainv[11] ^ t[8] ^ chainv[20];
+    chainv[11] = chainv[10] ^ t[8] ^ chainv[19];
+    chainv[10] = chainv[9] ^ chainv[18];
+    chainv[9] = chainv[8] ^ t[8] ^ chainv[17];
+    chainv[8] = t[8] ^ chainv[16];
+
+    t[8] = chainv[23];
+    chainv[23] = chainv[22] ^ chainv[31];
+    chainv[22] = chainv[21] ^ chainv[30];
+    chainv[21] = chainv[20] ^ chainv[29];
+    chainv[20] = chainv[19] ^ t[8] ^ chainv[28];
+    chainv[19] = chainv[18] ^ t[8] ^ chainv[27];
+    chainv[18] = chainv[17] ^ chainv[26];
+    chainv[17] = chainv[16] ^ t[8] ^ chainv[25];
+    chainv[16] = t[8] ^ chainv[24];
+
+    t[8] = chainv[31];
+    chainv[31] = chainv[30] ^ chainv[39];
+    chainv[30] = chainv[29] ^ chainv[38];
+    chainv[29] = chainv[28] ^ chainv[37];
+    chainv[28] = chainv[27] ^ t[8] ^ chainv[36];
+    chainv[27] = chainv[26] ^ t[8] ^ chainv[35];
+    chainv[26] = chainv[25] ^ chainv[34];
+    chainv[25] = chainv[24] ^ t[8] ^ chainv[33];
+    chainv[24] = t[8] ^ chainv[32];
+
+    t[8] = chainv[39];
+    chainv[39] = chainv[38] ^ t[7];
+    chainv[38] = chainv[37] ^ t[6];
+    chainv[37] = chainv[36] ^ t[5];
+    chainv[36] = chainv[35] ^ t[8] ^ t[4];
+    chainv[35] = chainv[34] ^ t[8] ^ t[3];
+    chainv[34] = chainv[33] ^ t[2];
+    chainv[33] = chainv[32] ^ t[8] ^ t[1];
+    chainv[32] = t[8] ^ t[0];
+
+    t[7] = chainv[7];
+    chainv[7] = chainv[6] ^ chainv[39];
+    t[6] = chainv[6];
+    chainv[6] = chainv[5] ^ chainv[38];
+    t[5] = chainv[5];
+    chainv[5] = chainv[4] ^ chainv[37];
+    t[4] = chainv[4];
+    chainv[4] = chainv[3] ^ t[7] ^ chainv[36];
+    t[3] = chainv[3];
+    chainv[3] = chainv[2] ^ t[7] ^ chainv[35];
+    t[2] = chainv[2];
+    chainv[2] = chainv[1] ^ chainv[34];
+    t[1] = chainv[1];
+    chainv[1] = chainv[0] ^ t[7] ^ chainv[33];
+    t[0] = chainv[0];
+    chainv[0] = t[7] ^ chainv[32];
+
+    t[8] = chainv[39];
+    chainv[39] = chainv[38] ^ chainv[31];
+    chainv[38] = chainv[37] ^ chainv[30];
+    chainv[37] = chainv[36] ^ chainv[29];
+    chainv[36] = chainv[35] ^ t[8] ^ chainv[28];
+    chainv[35] = chainv[34] ^ t[8] ^ chainv[27];
+    chainv[34] = chainv[33] ^ chainv[26];
+    chainv[33] = chainv[32] ^ t[8] ^ chainv[25];
+    chainv[32] = t[8] ^ chainv[24];
+
+    t[8] = chainv[31];
+    chainv[31] = chainv[30] ^ chainv[23];
+    chainv[30] = chainv[29] ^ chainv[22];
+    chainv[29] = chainv[28] ^ chainv[21];
+    chainv[28] = chainv[27] ^ t[8] ^ chainv[20];
+    chainv[27] = chainv[26] ^ t[8] ^ chainv[19];
+    chainv[26] = chainv[25] ^ chainv[18];
+    chainv[25] = chainv[24] ^ t[8] ^ chainv[17];
+    chainv[24] = t[8] ^ chainv[16];
+
+    t[8] = chainv[23];
+    chainv[23] = chainv[22] ^ chainv[15];
+    chainv[22] = chainv[21] ^ chainv[14];
+    chainv[21] = chainv[20] ^ chainv[13];
+    chainv[20] = chainv[19] ^ t[8] ^ chainv[12];
+    chainv[19] = chainv[18] ^ t[8] ^ chainv[11];
+    chainv[18] = chainv[17] ^ chainv[10];
+    chainv[17] = chainv[16] ^ t[8] ^ chainv[9];
+    chainv[16] = t[8] ^ chainv[8];
+
+    t[8] = chainv[15];
+    chainv[15] = chainv[14] ^ t[7];
+    chainv[14] = chainv[13] ^ t[6];
+    chainv[13] = chainv[12] ^ t[5];
+    chainv[12] = chainv[11] ^ t[8] ^ t[4];
+    chainv[11] = chainv[10] ^ t[8] ^ t[3];
+    chainv[10] = chainv[9] ^ t[2];
+    chainv[9] = chainv[8] ^ t[8] ^ t[1];
+    chainv[8] = t[8] ^ t[0];
+
+    for (i = 0; i < 8; i++)
+        buffer[i] = state->buffer[i];
+
+    chainv[ 0] ^= buffer[0];
+    chainv[ 2] ^= buffer[2];
+    chainv[ 3] ^= buffer[3];
+
+    buffer[ 0] ^= buffer[7];
+    buffer[ 2] ^= buffer[7];
+    buffer[ 3] ^= buffer[7];
+
+    chainv[ 7] ^= buffer[7];
+    chainv[ 8] ^= buffer[7];
+    chainv[ 1] ^= buffer[1];
+    chainv[10] ^= buffer[1];
+    chainv[11] ^= buffer[2];
+
+    buffer[ 7] ^= buffer[6];
+    buffer[ 1] ^= buffer[6];
+    buffer[ 2] ^= buffer[6];
+
+    chainv[ 6] ^= buffer[6];
+    chainv[15] ^= buffer[6];
+    chainv[16] ^= buffer[6];
+    chainv[ 9] ^= buffer[0];
+    chainv[18] ^= buffer[0];
+    chainv[19] ^= buffer[1];
+
+    buffer[ 6] ^= buffer[5];
+    buffer[ 0] ^= buffer[5];
+    buffer[ 1] ^= buffer[5];
+
+    chainv[ 5] ^= buffer[5];
+    chainv[14] ^= buffer[5];
+    chainv[23] ^= buffer[5];
+    chainv[24] ^= buffer[5];
+    chainv[17] ^= buffer[7];
+    chainv[26] ^= buffer[7];
+    chainv[27] ^= buffer[0];
+
+    buffer[ 5] ^= buffer[4];
+    buffer[ 7] ^= buffer[4];
+    buffer[ 0] ^= buffer[4];
+
+    chainv[ 4] ^= buffer[4];
+    chainv[13] ^= buffer[4];
+    chainv[22] ^= buffer[4];
+    chainv[31] ^= buffer[4];
+    chainv[32] ^= buffer[4];
+    chainv[33] ^= buffer[5];
+    chainv[25] ^= buffer[6];
+    chainv[34] ^= buffer[6];
+    chainv[35] ^= buffer[7];
+    chainv[36] ^= buffer[0];
+    chainv[28] ^= buffer[1];
+    chainv[37] ^= buffer[1];
+    chainv[20] ^= buffer[2];
+    chainv[29] ^= buffer[2];
+    chainv[38] ^= buffer[2];
+    chainv[12] ^= buffer[3];
+    chainv[21] ^= buffer[3];
+    chainv[30] ^= buffer[3];
+    chainv[39] ^= buffer[3];
+
+    for (j = 0; j < 5; j++) {
+        TWEAK(&chainv[8*j],j);
+        for (i = 0; i < 8; i++)
+            STEP_PART(&chainv[8*j], &CNS[2*i + 16*j], t[0]);
+    }
+
+    for (i = 0; i < 40; i++)
+        state->chainv[i] = chainv[i];
+
+    return;
+}
+#else
+static inline
 void rnd(hashState *state, uint32_t *c)
 {
     int i;
@@ -320,12 +920,124 @@ void rnd(hashState *state, uint32_t *c)
   
     return;
 }
+#endif
 
 /***************************************************/
-/* Finalization function  */
-/* state: hash context */
-/* b[8]: hash values      */
-static
+/* Finalization function(s) */
+/* state: hash context      */
+/* b[8]: hash values        */
+#ifdef	OPTIMIZED
+static inline
+void finalization224(hashState *state, uint32_t *b)
+{
+    int i,j;
+
+    if (state->bitlen[0] >= 256) {
+        /*---- blank round with m=0 ----*/
+        for (i = 0; i < 8; i++)
+	    state->buffer[i] =0;
+        rnd256(state);
+    }
+
+    for (i = 0; i < 7; i++) {
+        b[i] = 0;
+        for (j = 0; j < 3; j++)
+            b[i] ^= state->chainv[i+8*j];
+        b[i] = BYTES_SWAP32((b[i]));
+    }
+
+    return;
+}
+
+static inline
+void finalization256(hashState *state, uint32_t *b)
+{
+    int i,j;
+
+    if (state->bitlen[0] >= 256) {
+        /*---- blank round with m=0 ----*/
+        for (i = 0; i < 8; i++)
+	    state->buffer[i] = 0;
+        rnd256(state);
+    }
+
+    for (i = 0; i < 8; i++) {
+	b[i] = 0;
+	for (j = 0; j < 3; j++)
+	    b[i] ^= state->chainv[i+8*j];
+	b[i] = BYTES_SWAP32((b[i]));
+    }
+
+    return;
+}
+
+static inline
+void finalization384(hashState *state, uint32_t *b)
+{
+    int i,j;
+
+    if (state->bitlen[0] || state->bitlen[1] >= 256) {
+        /*---- blank round with m=0 ----*/
+        for (i = 0; i < 8; i++)
+	    state->buffer[i] = 0;
+        rnd384(state);
+    }
+
+    for (i = 0; i < 8; i++) {
+            b[i] = 0;
+            for (j = 0; j < 4; j++)
+                b[i] ^= state->chainv[i+8*j];
+            b[i] = BYTES_SWAP32((b[i]));
+    }
+
+    for (i = 0; i < 8; i++)
+	state->buffer[i] = 0;
+    rnd384(state);
+
+    for (i = 0; i < 4; i++) {
+            b[8+i] = 0;
+            for (j = 0; j < 4; j++)
+                b[8+i] ^= state->chainv[i+8*j];
+            b[8+i] = BYTES_SWAP32((b[8+i]));
+    }
+
+    return;
+}
+
+static inline
+void finalization512(hashState *state, uint32_t *b)
+{
+    int i,j;
+
+    if (state->bitlen[0] || state->bitlen[1] >= 256) {
+        /*---- blank round with m=0 ----*/
+        for (i = 0; i < 8; i++)
+	    state->buffer[i] = 0;
+        rnd512(state);
+    }
+
+    for (i = 0; i < 8; i++) {
+            b[i] = 0;
+            for (j = 0; j < 5; j++)
+                b[i] ^= state->chainv[i+8*j];
+            b[i] = BYTES_SWAP32((b[i]));
+    }
+
+    for (i = 0; i < 8; i++)
+	state->buffer[i] = 0;
+    rnd512(state);
+
+    for (i = 0; i < 8; i++) {
+            b[8+i] = 0;
+            for (j = 0; j < 5; j++)
+                b[8+i] ^= state->chainv[i+8*j];
+            b[8+i] = BYTES_SWAP32((b[8+i]));
+    }
+
+    return;
+}
+#else
+static inline
 void finalization(hashState *state, uint32_t *b)
 {
     int i, j, branch = 0;
@@ -399,13 +1111,94 @@ void finalization(hashState *state, uint32_t *b)
 
     return;
 }
+#endif
 
 /***************************************************/
 /* Process of the last blocks */
 /* a[24]: chaining values */
 /* msg[] : message in byte sequence */
 /* msg_len: the length of the message in bit */
-static
+#ifdef	OPTIMIZED
+static inline
+void process_last_msgs256(hashState *state)
+{
+    uint32_t tail_len = ((uint32_t)state->bitlen[0]) % MSG_BLOCK_BIT_LEN;
+    int i = tail_len/8;
+
+    if (!(tail_len % 8))
+        ((uint8_t*)state->buffer)[i] = 0x80;
+    else {
+        ((uint8_t*)state->buffer)[i] &= (0xff << (8-(tail_len % 8)));
+        ((uint8_t*)state->buffer)[i] |= (0x80 >> (tail_len % 8));
+    }
+
+    i++;
+
+    for (; i < 32; i++)
+        ((uint8_t*)state->buffer)[i] = 0;
+  
+    for (i = 0; i < 8; i++)
+        state->buffer[i] = BYTES_SWAP32((state->buffer[i]));
+
+    rnd256(state);
+
+    return;
+}
+
+static inline
+void process_last_msgs384(hashState *state)
+{
+    uint32_t tail_len = ((uint32_t) state->bitlen[1]) % MSG_BLOCK_BIT_LEN;
+    int i = tail_len/8;
+
+    if (!(tail_len % 8))
+        ((uint8_t*)state->buffer)[i] = 0x80;
+    else {
+        ((uint8_t*)state->buffer)[i] &= (0xff << (8-(tail_len % 8)));
+        ((uint8_t*)state->buffer)[i] |= (0x80 >> (tail_len % 8));
+    }
+
+    i++;
+
+    for (; i < 32; i++)
+        ((uint8_t*)state->buffer)[i] = 0;
+  
+    for (i = 0; i < 8; i++)
+        state->buffer[i] = BYTES_SWAP32((state->buffer[i]));
+
+    rnd384(state);
+
+    return;
+}
+
+static inline
+void process_last_msgs512(hashState *state)
+{
+    uint32_t tail_len = ((uint32_t)state->bitlen[1]) % MSG_BLOCK_BIT_LEN;
+    int i = tail_len/8;
+
+    if (!(tail_len % 8))
+        ((uint8_t*)state->buffer)[i] = 0x80;
+    else {
+        ((uint8_t*)state->buffer)[i] &= (0xff << (8-(tail_len % 8)));
+        ((uint8_t*)state->buffer)[i] |= (0x80 >> (tail_len % 8));
+    }
+
+    i++;
+
+    for (; i < 32; i++)
+        ((uint8_t*)state->buffer)[i] = 0;
+  
+    for (i = 0; i < 8; i++)
+        state->buffer[i] = BYTES_SWAP32((state->buffer[i]));
+
+    rnd512(state);
+
+    return;
+  
+}
+#else
+static inline
 void process_last_msgs(hashState *state)
 {
     int i;
@@ -491,14 +1284,45 @@ void process_last_msgs(hashState *state)
 
     return;
 }
+#endif
 
 /***************************************************/
 
 HashReturn Init(hashState *state, int hashbitlen)
 {
     state->hashbitlen = hashbitlen;
+#ifdef	OPTIMIZED
+    int i;
+#endif
 
     switch(hashbitlen) {
+#ifdef	OPTIMIZED
+    case 224:
+        state->bitlen[0] = 0;
+        for (i = 0; i < 24; i++)
+	    state->chainv[i] = IV[i];
+        break;
+
+    case 256:
+        state->bitlen[0] = 0;
+        for (i = 0; i < 24; i++)
+	    state->chainv[i] = IV[i];
+        break;
+
+    case 384:
+        state->bitlen[0] = 0;
+        state->bitlen[1] = 0;
+        for (i = 0; i < 32; i++)
+	    state->chainv[i] = IV[i];
+        break;
+
+    case 512:
+        state->bitlen[0] = 0;
+        state->bitlen[1] = 0;
+        for (i = 0; i < 40; i++)
+	    state->chainv[i] = IV[i];
+        break;
+#else
     case 224:
 	state->limit = LIMIT_224/64;
 	memset(state->bitlen, 0, LIMIT_224/8);
@@ -523,41 +1347,217 @@ HashReturn Init(hashState *state, int hashbitlen)
 	state->width = WIDTH_512;
 	memcpy(state->chainv, IV, WIDTH_512*32);
 	break;
+#endif
     default:
 	return BAD_HASHBITLEN;
     }
 
     state->rembitlen = 0;
 
+#ifdef	OPTIMIZED
+    for (i = 0; i < 8; i++)
+	state->buffer[i] = 0;
+#else
     memset(state->buffer, 0, MSG_BLOCK_BYTE_LEN);
+#endif
 
     return SUCCESS;
 }
 
+#ifdef	OPTIMIZED
+static
+void Update256(hashState *state, const BitSequence *data, DataLength databitlen)
+{
+    uint8_t *p = (uint8_t*)state->buffer;
+    int i;
+
+    state->bitlen[0] += databitlen;
+
+    if (state->rembitlen + databitlen >= MSG_BLOCK_BIT_LEN) {
+	uint32_t cpylen = MSG_BLOCK_BYTE_LEN - (state->rembitlen >> 3);
+
+        if (!state->rembitlen)
+	    for (i = 0; i < 8; i++)
+		state->buffer[i] = ((uint32_t*)data)[i];
+        else
+	    for (i = 0; i < (int)cpylen; i++)
+		((uint8_t*)state->buffer)[(state->rembitlen>>3)+i] = data[i];
+
+        BYTES_SWAP256(state->buffer);
+
+        rnd256(state);
+
+        databitlen -= (cpylen << 3);
+        data += cpylen;
+        state->rembitlen = 0;
+
+        while (databitlen >= MSG_BLOCK_BIT_LEN) {
+	    for (i = 0; i < 8; i++)
+		state->buffer[i] = ((uint32_t*)data)[i];
+
+	    BYTES_SWAP256(state->buffer);
+
+	    rnd256(state);
+
+	    databitlen -= MSG_BLOCK_BIT_LEN;
+	    data += MSG_BLOCK_BYTE_LEN;
+        }
+    }
+
+    /* All remaining data copy to buffer */
+    if (databitlen) {
+	uint32_t len = databitlen >> 3;
+
+	if (databitlen % 8 != 0)
+	    len += 1;
+
+	for (i = 0; i < (int)len; i++)
+	    p[state->rembitlen/8+i] = data[i];
+	state->rembitlen += databitlen;
+    }
+
+    return;
+}
+
+static
+void Update384(hashState *state, const BitSequence *data, DataLength databitlen)
+{
+    uint8_t *p = (uint8_t*)state->buffer;
+    int i;
+
+    if ((state->bitlen[1] += databitlen) < databitlen)
+        state->bitlen[0] += 1;
+
+    if (state->rembitlen + databitlen >= MSG_BLOCK_BIT_LEN) {
+	uint32_t cpylen = MSG_BLOCK_BYTE_LEN - (state->rembitlen >> 3);
+
+        if (!state->rembitlen)
+	    for (i = 0; i < 8; i++)
+		state->buffer[i] = ((uint32_t*)data)[i];
+        else
+	    for (i = 0; i < (int)cpylen; i++)
+		((uint8_t*)state->buffer)[(state->rembitlen>>3)+i] = data[i];
+
+        BYTES_SWAP256(state->buffer);
+
+        rnd384(state);
+
+	databitlen -= (cpylen << 3);
+	data += cpylen;
+	state->rembitlen = 0;
+
+	while (databitlen >= MSG_BLOCK_BIT_LEN) {
+	    for (i = 0; i < 8; i++)
+		state->buffer[i] = ((uint32_t*)data)[i];
+
+	    BYTES_SWAP256(state->buffer);
+
+	    rnd384(state);
+
+	    databitlen -= MSG_BLOCK_BIT_LEN;
+	    data += MSG_BLOCK_BYTE_LEN;
+	}
+    }
+
+    /* All remaining data copy to buffer */
+    if (databitlen) {
+	uint32_t len = databitlen >> 3;
+
+	if (databitlen % 8 != 0)
+	    len += 1;
+
+	for (i = 0; i < (int)len; i++)
+	    p[state->rembitlen/8+i] = data[i];
+	state->rembitlen += databitlen;
+    }
+
+    return;
+}
+
+static
+void Update512(hashState *state, const BitSequence *data, DataLength databitlen)
+{
+    uint8_t *p = (uint8_t*)state->buffer;
+    int i;
+
+    if ((state->bitlen[1] += databitlen) < databitlen)
+        state->bitlen[0] += 1;
+
+    if (state->rembitlen + databitlen >= MSG_BLOCK_BIT_LEN) {
+	uint32_t cpylen = MSG_BLOCK_BYTE_LEN - (state->rembitlen >> 3);
+
+        if (!state->rembitlen)
+	    for (i = 0; i < 8; i++)
+		state->buffer[i] = ((uint32_t*)data)[i];
+        else
+	    for (i = 0; i < (int)cpylen; i++)
+		((uint8_t*)state->buffer)[(state->rembitlen>>3)+i] = data[i];
+
+        BYTES_SWAP256(state->buffer);
+
+        rnd512(state);
+
+	databitlen -= (cpylen << 3);
+	data += cpylen;
+	state->rembitlen = 0;
+
+	while (databitlen >= MSG_BLOCK_BIT_LEN) {
+	    for (i = 0; i < 8; i++)
+		state->buffer[i] = ((uint32_t*)data)[i];
+
+	    BYTES_SWAP256(state->buffer);
+
+	    rnd512(state);
+
+	    databitlen -= MSG_BLOCK_BIT_LEN;
+	    data += MSG_BLOCK_BYTE_LEN;
+	}
+    }
+
+    /* All remaining data copy to buffer */
+    if (databitlen) {
+	uint32_t len = databitlen >> 3;
+
+	if (databitlen % 8 != 0)
+	    len += 1;
+
+	for (i = 0; i < (int)len; i++)
+	    p[state->rembitlen/8+i] = data[i];
+	state->rembitlen += databitlen;
+    }
+
+    return;
+}
+#endif
 
 HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen)
 {
-    HashReturn ret;
-    int i;
-    uint8_t *p = (uint8_t*)state->buffer;
-    uint32_t cpylen;
-    uint32_t len;
-    uint32_t c[10];
+    HashReturn ret = SUCCESS;
 
     switch(state->hashbitlen) {
+#ifdef	OPTIMIZED
+    case 224:
+    case 256:	Update256(state, data, databitlen);	break;
+    case 384:	Update384(state, data, databitlen);	break;
+    case 512:	Update512(state, data, databitlen);	break;
+#else
     case 224:
     case 256:
     case 384:
     case 512:
-	if (state->hashbitlen==224||state->hashbitlen==256)
+    {	uint8_t *p = (uint8_t*)state->buffer;
+
+	if (state->hashbitlen == 224 || state->hashbitlen == 256)
 	    state->bitlen[0] += databitlen;
 	else {
 	    if ((state->bitlen[1] += databitlen) < databitlen)
-		state->bitlen[0] +=1;
+		state->bitlen[0] += 1;
 	}
 
 	if (state->rembitlen + databitlen >= MSG_BLOCK_BIT_LEN) {
-	    cpylen = MSG_BLOCK_BYTE_LEN - (state->rembitlen >> 3);
+	    uint32_t cpylen = MSG_BLOCK_BYTE_LEN - (state->rembitlen >> 3);
+	    uint32_t c[10];
+	    int i;
 
 	    memcpy(p + (state->rembitlen >> 3), data, cpylen);
 
@@ -587,16 +1587,15 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 
 	/* All remaining data copy to buffer */
 	if (databitlen) {
-	    len = databitlen >> 3;
+	    uint32_t len = databitlen >> 3;
 	    if (databitlen % 8 != 0)
 		len += 1;
 
 	    memcpy(p + (state->rembitlen >> 3), data, len);
 	    state->rembitlen += databitlen;
 	}
-
-	ret = SUCCESS;
-	break;
+    }	break;
+#endif
     default:
 	ret = BAD_HASHBITLEN;
 	break;
@@ -606,17 +1605,35 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 
 HashReturn Final(hashState *state, BitSequence *hashval) 
 {
-    HashReturn ret;
+    HashReturn ret = SUCCESS;
 
     switch(state->hashbitlen) {
+#ifdef	OPTIMIZED
+    case 224:
+        process_last_msgs256(state);
+        finalization224(state, (uint32_t *)hashval);
+        break;
+    case 256:
+        process_last_msgs256(state);
+        finalization256(state, (uint32_t *)hashval);
+        break;
+    case 384:
+        process_last_msgs384(state);
+        finalization384(state, (uint32_t *)hashval);
+        break;
+    case 512:
+        process_last_msgs512(state);
+        finalization512(state, (uint32_t *)hashval);
+        break;
+#else
     case 224:
     case 256:
     case 384:
     case 512:
 	process_last_msgs(state);
 	finalization(state, (uint32_t *)hashval);
-	ret = SUCCESS;
 	break;
+#endif
     default:
 	ret = BAD_HASHBITLEN;
 	break;
