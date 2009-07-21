@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - proyvind: python: handle DISTEPOCH in labelCompare().
     - jbj: rpmdigest: add ECHO 224/256/384/512.
     - jbj: rpmdigest: add FUGUE 224/256/384/512.
     - jbj: rpmdigest: add SHAVITE3 224/256/384/512.

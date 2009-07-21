@@ -930,11 +930,13 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     EVR_t a = rpmEVRnew(RPMSENSE_EQUAL, 1);
     EVR_t b = rpmEVRnew(RPMSENSE_EQUAL, 1);
     int rc;
+    PyObject *aTuple, *bTuple;
 
-    /* XXX FIXME: labelCompare cannot specify Distepoch: field */
-    if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&a->F[RPMEVR_E], &a->F[RPMEVR_V], &a->F[RPMEVR_R],
-			&b->F[RPMEVR_E], &b->F[RPMEVR_V], &b->F[RPMEVR_R]))
+    if (!PyArg_ParseTuple(args, "OO", &aTuple, &bTuple) ||
+	    !PyArg_ParseTuple(aTuple, "zzz|z",
+		&a->F[RPMEVR_E], &a->F[RPMEVR_V], &a->F[RPMEVR_R], &a->F[RPMEVR_D]) ||
+	    !PyArg_ParseTuple(bTuple, "zzz|z",
+		&b->F[RPMEVR_E], &b->F[RPMEVR_V], &b->F[RPMEVR_R], &b->F[RPMEVR_D]))
     {
 	a = rpmEVRfree(a);
 	b = rpmEVRfree(b);
