@@ -21,21 +21,6 @@ enum { SUCCESS        = 0, /* Execution successful */
 
 typedef uint8_t aes_state[4][4]; /* a 4x4 byte array containing the AES state */
 
-/* Swap two bytes. */
-void swap_bytes(uint8_t *a, uint8_t *b);
-
-/* Select a byte from a 32-bit word, most significant byte has index 0. */
-uint8_t select_byte_32(uint32_t word, int idx);
-
-/* Select a byte from a 64-bit word, most significant byte has index 0. */
-uint8_t select_byte_64(DataLength word, int idx);
-
-/* Multiply an element of GF(2^m) by 3, needed for MixColumns256() and MixColumns512(). */
-uint8_t mul2(uint8_t a);
-
-/* Multiply an element of GF(2^m) by 3, needed for MixColumns256() and MixColumns512(). */
-uint8_t mul3(uint8_t a);
-
 /* ===== "tables.h" */
 static const uint8_t S[256] = {
 0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76, 
@@ -170,73 +155,48 @@ static const uint32_t k[768] = {
 };
 /* ===== */
 
+/* Swap two bytes. */
+static
+void swap_bytes(uint8_t *a, uint8_t *b) {
+  uint8_t tmp;
+  tmp = *a;
+  *a = *b;
+  *b = tmp;
+}
+
+/* Select a byte from a 32-bit word, most significant byte has index 0. */
+static
+uint8_t select_byte_32(uint32_t word, int idx) {
+  return (word >> (3-idx)*8) & 0xFF;
+}
+
+/* Select a byte from a 64-bit word, most significant byte has index 0. */
+static
+uint8_t select_byte_64(DataLength word, int idx) {
+  return (word >> (7-idx)*8) & 0xFF;
+}
+
+/* Multiply an element of GF(2^m) by 2, needed for MixColumns256() and MixColumns512(). */
+static
+uint8_t mul2(uint8_t a) {
+  return a&0x80 ? (a<<1) ^ 0x1B : a<<1;
+}
+
+/* Multiply an element of GF(2^m) by 3, needed for MixColumns256() and MixColumns512(). */
+static
+uint8_t mul3(uint8_t a) {
+  return mul2(a)^a;
+}
+
 /* ===== "laneref256.h" */
 typedef aes_state lane256_state[2];  /* a LANE-256 state consists of four AES states */
 
 /* Adds a 32-bit constant to each column of the state.
  * This operation is performed for each part of the LANE state.
  */
-void AddConstants256(int r, lane256_state a);
-
-/* Adds part of the 64-bit counter to the state.
- * This operation is performed for each part of the LANE state.
- */
-void AddCounter256(int r, lane256_state a, DataLength counter);
-
-/* Row 0 remains unchanged, the other three rows are shifted a variable amount.
- * This operation is performed for each part of the LANE state.
- */
-void ShiftRows256(lane256_state a);
-
-/* Replace every byte of the input by the byte at that place in the nonlinear S-box.
- * This operation is performed for each part of the LANE state.
- */
-void SubBytes256(lane256_state a);
-
-/* Mix the four bytes of every column in a linear way
- * This operation is performed for each part of the LANE state.
- */
-void MixColumns256(lane256_state a);
-
-/* XOR all the elements of two LANE states together, put the result in the first one */
-void XorLaneState256(lane256_state a, lane256_state b);
-
-/* Reorder the columns of a LANE state. */
-void SwapColumns256(lane256_state a);
-
-/* Apply permutation P to the input LANE state. */
-void PermuteP256(int j,               /* permutation number */
-                 lane256_state a,     /* the input LANE state */
-                 DataLength counter); /* the counter value used by AddCounter() */
-
-/* Apply permutation Q to the input LANE state. */
-void PermuteQ256(int j,               /* permutation number */
-                 lane256_state a,     /* the input LANE state */
-                 DataLength counter); /* the counter value used by AddCounter() */
-
-/* Perform the message expansion. */
-void ExpandMessage256(uint8_t *hashval,      /* storage for the intermediate hash value */
-                   const uint8_t buffer[64], /* the block to be hashed */
-                   lane256_state W0,       /* W0 */
-                   lane256_state W1,       /* W1 */
-                   lane256_state W2,       /* W2 */
-                   lane256_state W3,       /* W3 */
-                   lane256_state W4,       /* W4 */
-                   lane256_state W5);      /* W5 */
-
-/* Store the hash value. */
-void StoreHash256(uint8_t *hashval,    /* storage for the intermediate hash value */
-                  lane256_state W0); /* W0 */
-
-/* Apply the algorithm's compression function to one block of input. */
-void Lane256Transform(hashState *state, /* structure that holds hashState information */
-                      const uint8_t buffer[64],    /* the block to be hashed */
-                      const DataLength counter); /* counter value */
-
-/* Adds a 32-bit constant to each column of the state.
- * This operation is performed for each part of the LANE state.
- */
-void AddConstants256(int r, lane256_state a) {
+static
+void AddConstants256(int r, lane256_state a)
+{
   int i, j, m;
 
   for(m=0; m!=2; m++) { /* for each AES state of the LANE-256 state */
@@ -251,6 +211,7 @@ void AddConstants256(int r, lane256_state a) {
 /* Adds part of the 64-bit counter to the state
  * This operation is performed for each part of the LANE state.
  */
+static
 void AddCounter256(int r, lane256_state a, DataLength counter) {
   int j;
   for(j=0; j!=4; j++) {
@@ -261,6 +222,7 @@ void AddCounter256(int r, lane256_state a, DataLength counter) {
 /* Row 0 remains unchanged, the other three rows are shifted a variable amount.
  * This operation is performed for each part of the LANE state.
  */
+static
 void ShiftRows256(lane256_state a) {
 
   uint8_t tmp[4];
@@ -277,6 +239,7 @@ void ShiftRows256(lane256_state a) {
 /* Replace every byte of the input by the byte at that place in the nonlinear S-box.
  * This operation is performed for each part of the LANE state.
  */
+static
 void SubBytes256(lane256_state a) {
   int i, j, m;
 
@@ -292,6 +255,7 @@ void SubBytes256(lane256_state a) {
 /* Mix the four bytes of every column in a linear way
  * This operation is performed for each part of the LANE state.
  */
+static
 void MixColumns256(lane256_state a) {
   uint8_t b[4][4];
   int i, j, m;
@@ -309,6 +273,7 @@ void MixColumns256(lane256_state a) {
 }
 
 /* XOR all the elements of two LANE states together, put the result in the first one */
+static
 void XorLaneState256(lane256_state a, lane256_state b) {
   int i, j, m;
   for(m=0; m!=2; m++) /* for each AES state of the LANE-256 state */
@@ -318,6 +283,7 @@ void XorLaneState256(lane256_state a, lane256_state b) {
 }
 
 /* Reorder the columns of a LANE state. */
+static
 void SwapColumns256(lane256_state a) {
   int i;
   for (i=0; i!=4; i++) {
@@ -327,6 +293,7 @@ void SwapColumns256(lane256_state a) {
 }
 
 /* Apply permutation P to the input LANE state. */
+static
 void PermuteP256(int j,                /* permutation number */
                  lane256_state a,      /* the input LANE state */
                  DataLength counter) { /* the counter value used by AddCounter() */
@@ -350,6 +317,7 @@ void PermuteP256(int j,                /* permutation number */
 }
 
 /* Apply permutation Q to the input LANE state. */
+static
 void PermuteQ256(int j,                /* permutation number */
                  lane256_state a,      /* the input LANE state */
                  DataLength counter) { /* the counter value used by AddCounter() */
@@ -373,6 +341,7 @@ void PermuteQ256(int j,                /* permutation number */
 }
 
 /* Perform the message expansion. */
+static
 void ExpandMessage256(uint8_t *hashval, /* storage for the intermediate hash value */
                       const uint8_t buffer[64], /* the block to be hashed */
                       lane256_state W0,       /* W0 */
@@ -449,6 +418,7 @@ void ExpandMessage256(uint8_t *hashval, /* storage for the intermediate hash val
 
 }
 /* Store the hash value. */
+static
 void StoreHash256(uint8_t *hashval,     /* storage for the intermediate hash value */
                   lane256_state W0) { /* W0 */
   int i, j, m;
@@ -459,6 +429,7 @@ void StoreHash256(uint8_t *hashval,     /* storage for the intermediate hash val
 }
 
 /* Apply the algorithm's compression function to one block of input. */
+static
 void Lane256Transform(hashState *state, /* structure that holds hashState information */
                       const uint8_t buffer[64],     /* the block to be hashed */
                       const DataLength counter) { /* counter value */
@@ -499,66 +470,7 @@ typedef aes_state lane512_state[4];  /* a LANE-512 state consists of four AES st
 /* Adds a 32-bit constant to each column of the state.
  * This operation is performed for each part of the LANE state.
  */
-void AddConstants512(int r, lane512_state a);
-
-/* Adds part of the 64-bit counter to the state.
- * This operation is performed for each part of the LANE state.
- */
-void AddCounter512(int r, lane512_state a, DataLength counter);
-
-/* Row 0 remains unchanged, the other three rows are shifted a variable amount.
- * This operation is performed for each part of the LANE state.
- */
-void ShiftRows512(lane512_state a);
-
-/* Replace every byte of the input by the byte at that place in the nonlinear S-box.
- * This operation is performed for each part of the LANE state.
- */
-void SubBytes512(lane512_state a);
-
-/* Mix the four bytes of every column in a linear way
- * This operation is performed for each part of the LANE state.
- */
-void MixColumns512(lane512_state a);
-
-/* XOR all the elements of two LANE states together, put the result in the first one */
-void XorLaneState512(lane512_state a, lane512_state b);
-
-/* Reorder the columns of a LANE state. */
-void SwapColumns512(lane512_state a);
-
-/* Apply permutation P to the input LANE state. */
-void PermuteP512(int j,               /* permutation number */
-                 lane512_state a,     /* the input LANE state */
-                 DataLength counter); /* the counter value used by AddCounter() */
-
-/* Apply permutation Q to the input LANE state. */
-void PermuteQ512(int j,               /* permutation number */
-                 lane512_state a,     /* the input LANE state */
-                 DataLength counter); /* the counter value used by AddCounter() */
-
-/* Perform the message expansion. */
-void ExpandMessage512(uint8_t *hashval,       /* storage for the intermediate hash value */
-                   const uint8_t buffer[128], /* the block to be hashed */
-                   lane512_state W0,        /* W0 */
-                   lane512_state W1,        /* W1 */
-                   lane512_state W2,        /* W2 */
-                   lane512_state W3,        /* W3 */
-                   lane512_state W4,        /* W4 */
-                   lane512_state W5);       /* W5 */
-
-/* Store the hash value. */
-void StoreHash512(uint8_t* hashval,    /* storage for the intermediate hash value */
-                  lane512_state W0); /* W0 */
-
-/* Apply the algorithm's compression function to one block of input. */
-void Lane512Transform(hashState *state, /* structure that holds hashState information */
-                      const uint8_t buffer[128],   /* the block to be hashed */
-                      const DataLength counter); /* counter value */
-
-/* Adds a 32-bit constant to each column of the state.
- * This operation is performed for each part of the LANE state.
- */
+static
 void AddConstants512(int r, lane512_state a) {
   int i, j, m;
 
@@ -574,6 +486,7 @@ void AddConstants512(int r, lane512_state a) {
 /* Adds part of the 64-bit counter to the state
  * This operation is performed for each part of the LANE state.
  */
+static
 void AddCounter512(int r, lane512_state a, DataLength counter) {
   int j;
   for(j=0; j!=4; j++) {
@@ -584,6 +497,7 @@ void AddCounter512(int r, lane512_state a, DataLength counter) {
 /* Row 0 remains unchanged, the other three rows are shifted a variable amount.
  * This operation is performed for each part of the LANE state.
  */
+static
 void ShiftRows512(lane512_state a) {
 
   uint8_t tmp[4];
@@ -600,6 +514,7 @@ void ShiftRows512(lane512_state a) {
 /* Replace every byte of the input by the byte at that place in the nonlinear S-box.
  * This operation is performed for each part of the LANE state.
  */
+static
 void SubBytes512(lane512_state a) {
   int i, j, m;
 
@@ -615,6 +530,7 @@ void SubBytes512(lane512_state a) {
 /* Mix the four bytes of every column in a linear way
  * This operation is performed for each part of the LANE state.
  */
+static
 void MixColumns512(lane512_state a) {
   uint8_t b[4][4];
   int i, j, m;
@@ -632,6 +548,7 @@ void MixColumns512(lane512_state a) {
 }
 
 /* XOR all the elements of two LANE states together, put the result in the first one */
+static
 void XorLaneState512(lane512_state a, lane512_state b) {
   int i, j, m;
   for(m=0; m!=4; m++) /* for each AES state of the LANE-512 state */
@@ -641,6 +558,7 @@ void XorLaneState512(lane512_state a, lane512_state b) {
 }
 
 /* Reorder the columns of a LANE state. */
+static
 void SwapColumns512(lane512_state a) {
   int i;
   for (i=0; i!=4; i++) {
@@ -654,6 +572,7 @@ void SwapColumns512(lane512_state a) {
 }
 
 /* Apply permutation P to the input LANE state. */
+static
 void PermuteP512(int j,                /* permutation number */
                  lane512_state a,      /* the input LANE state */
                  DataLength counter) { /* the counter value used by AddCounter() */
@@ -677,6 +596,7 @@ void PermuteP512(int j,                /* permutation number */
 }
 
 /* Apply permutation Q to the input LANE state. */
+static
 void PermuteQ512(int j,                /* permutation number */
                  lane512_state a,      /* the input LANE state */
                  DataLength counter) { /* the counter value used by AddCounter() */
@@ -700,6 +620,7 @@ void PermuteQ512(int j,                /* permutation number */
 }
 
 /* Perform the message expansion. */
+static
 void ExpandMessage512(uint8_t *hashval, /* storage for the intermediate hash value */
                       const uint8_t buffer[128], /* the block to be hashed */
                       lane512_state W0,        /* W0 */
@@ -803,6 +724,7 @@ void ExpandMessage512(uint8_t *hashval, /* storage for the intermediate hash val
 
 }
 /* Store the hash value. */
+static
 void StoreHash512(uint8_t *hashval,     /* storage for the intermediate hash value */
                   lane512_state W0) { /* W0 */
   int i, j, m;
@@ -813,6 +735,7 @@ void StoreHash512(uint8_t *hashval,     /* storage for the intermediate hash val
 }
 
 /* Apply the algorithm's compression function to one block of input. */
+static
 void Lane512Transform(hashState *state, /* structure that holds hashState information */
                       const uint8_t buffer[128],    /* the block to be hashed */
                       const DataLength counter) { /* counter value */
@@ -846,34 +769,6 @@ void Lane512Transform(hashState *state, /* structure that holds hashState inform
 
 }
 /* ===== */
-
-/* Swap two bytes. */
-void swap_bytes(uint8_t *a, uint8_t *b) {
-  uint8_t tmp;
-  tmp = *a;
-  *a = *b;
-  *b = tmp;
-}
-
-/* Select a byte from a 32-bit word, most significant byte has index 0. */
-uint8_t select_byte_32(uint32_t word, int idx) {
-  return (word >> (3-idx)*8) & 0xFF;
-}
-
-/* Select a byte from a 64-bit word, most significant byte has index 0. */
-uint8_t select_byte_64(DataLength word, int idx) {
-  return (word >> (7-idx)*8) & 0xFF;
-}
-
-/* Multiply an element of GF(2^m) by 2, needed for MixColumns256() and MixColumns512(). */
-uint8_t mul2(uint8_t a) {
-  return a&0x80 ? (a<<1) ^ 0x1B : a<<1;
-}
-
-/* Multiply an element of GF(2^m) by 3, needed for MixColumns256() and MixColumns512(). */
-uint8_t mul3(uint8_t a) {
-  return mul2(a)^a;
-}
 
 /* Initialize the hashState structure. */
 HashReturn Init(hashState *state, /* structure that holds hashState information */
