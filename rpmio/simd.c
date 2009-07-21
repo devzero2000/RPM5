@@ -719,13 +719,13 @@ HashReturn InitIV(hashState *state, int hashbitlen, const u32 *IV) {
   state->count_high = 0;
 #endif  
 
-  state->buffer = malloc(16*n + 16);
+  state->b = state->buffer = malloc(16*n + 16);
   /*
    * Align the buffer to a 128 bit boundary.
    */
   state->buffer += ((unsigned char*)NULL - state->buffer)&15;
 
-  state->A = malloc((4*n+4)*sizeof(u32));
+  state->a = state->A = malloc((4*n+4)*sizeof(u32));
   /*
    * Align the buffer to a 128 bit boundary.
    */
@@ -908,6 +908,11 @@ HashReturn Final(hashState *state, BitSequence *hashval) {
     BitSequence mask = 0xff << (8 - (state->hashbitlen%8));
     hashval[state->hashbitlen/8 + 1] = bs[state->hashbitlen/8 + 1] & mask;
   }
+
+  free(state->b);
+  state->b = state->buffer = NULL;
+  free(state->a);
+  state->a = state->A = state->B = state->C = state->D = NULL;
 
   return SUCCESS;
 }

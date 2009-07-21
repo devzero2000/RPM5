@@ -23,8 +23,13 @@ typedef struct {
 
     uint64_t count;
 
-    uint32_t *A, *B, *C, *D;
-    unsigned char* buffer;
+    uint32_t *a;		/* malloc'd */
+    uint32_t *A;		/* 128 bit aligned adjustment of a */
+    uint32_t *B;
+    uint32_t *C;
+    uint32_t *D;
+    unsigned char * b;		/* malloc'd */
+    unsigned char * buffer;	/* 128 bit aligned adjustment of b */
 } hashState;
 
 HashReturn Init(hashState *state, int hashbitlen);
