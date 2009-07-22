@@ -73,7 +73,7 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 
 HashReturn Final(hashState *state, uint8_t *hashval);
 
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength *databitlen, BitSequence *hashval);
+HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
 
 /* Impedance match bytes -> bits length. */
 static inline
