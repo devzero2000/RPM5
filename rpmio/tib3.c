@@ -3,35 +3,13 @@
 
 enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2 };
 
-/* prototypes of functions for each bit length */
-HashReturn Init256 (hashState256 *state);
-HashReturn Update256 (hashState256 *state , const BitSequence *data, DataLength databitlen);
-HashReturn Final256 (hashState256 *state, BitSequence *hashval);
-HashReturn Hash256(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-HashReturn Init224 (hashState256 *state);
-#define Update224 Update256
-HashReturn Final224 (hashState256 *state, BitSequence *hashval);
-HashReturn Hash224(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-HashReturn Init512 (hashState512 *state);
-HashReturn Update512 (hashState512 *state , const BitSequence *data, DataLength databitlen);
-HashReturn Final512 (hashState512 *state, BitSequence *hashval);
-HashReturn Hash512(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-HashReturn Init384 (hashState512 *state);
-#define Update384 Update512
-HashReturn Final384 (hashState512 *state, BitSequence *hashval);
-HashReturn Hash384(const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
 /* Processes 4 64 bits words, and returns one.
- * Used by EXPANSION_256
  * Input words:
  *	di10, di8, di3, di2
  * Output word:
  *	di
  */
-#define PSI_256(di,di10,di8,di3,di2) \
+#define PSI(di,di10,di8,di3,di2) \
 	di=(di3+(di2<<32))^di10^di8^(di2>>32);\
 	di+=(di<<32)+(di<<43);\
 	di^=(di>>39);
@@ -45,23 +23,23 @@ HashReturn Hash384(const BitSequence *data, DataLength databitlen, BitSequence *
  *	D: the array with the 32 words filled
  */
 #define EXPANSION_256(D,pk,bits) \
-   PSI_256(D[8],(D[3]^pk[0]),(D[4]^pk[1]),(D[5]^pk[2]),(D[1]^pk[3]));\
-   PSI_256(D[9],(D[2]^0x428a2f98d728ae22ULL^pk[4]),(D[7]^bits^pk[5]),(D[6]^pk[7]),(D[0]^pk[6]));\
+   PSI(D[8],(D[3]^pk[0]),(D[4]^pk[1]),(D[5]^pk[2]),(D[1]^pk[3]));\
+   PSI(D[9],(D[2]^0x428a2f98d728ae22ULL^pk[4]),(D[7]^bits^pk[5]),(D[6]^pk[7]),(D[0]^pk[6]));\
    for( i = 10; i!=32;i++) {\
-     PSI_256(D[i],D[i-10],D[i-8],D[i-3],D[i-2]);\
+     PSI(D[i],D[i-10],D[i-8],D[i-3],D[i-2]);\
    }
 
 /* Macros used in the round function */
-#define F_256(X,Y,Z) ((~X)^(Y&(~Z)))
-#define G_256(X,Y,Z) (Z^((~X)&(~Y)))
-#define H_256(X,Y,Z) (Y^(X&Z))
+#define F(X,Y,Z) ((~X)^(Y&(~Z)))
+#define G(X,Y,Z) (Z^((~X)&(~Y)))
+#define H(X,Y,Z) (Y^(X&Z))
 
 /* Bitsliced Sbox_256 */
 #define Sbox_256(m0,m1,m2)    \
 { register uint64_t temp0, temp1;\
-        temp0=F_256(m0,m1,m2);         \
-        temp1=G_256(m0,m1,m2);         \
-        m2=H_256(m0,m1,m2);         \
+        temp0=F(m0,m1,m2);         \
+        temp1=G(m0,m1,m2);         \
+        m2=H(m0,m1,m2);         \
         m0=temp0;                  \
 	    m1=temp1; }
 
@@ -169,13 +147,12 @@ void Encrypt256(uint64_t hsh[4], uint64_t k[8], uint64_t pk[8],
 /* ===== encrypt512.c */
 
 /* Processes 8 64 bits words, and returns 2.
- * Used by EXPANSION_512
  * Input words:
  *	wi20,wi19,wi16,wi15,wi6,wi5,wi4,wi3
  * Output words:
  *	wi,wim1
  */
-#define PHI_512(wi,wim1,wi20,wi19,wi16,wi15,wi6,wi5,wi4,wi3) \
+#define PHI(wi,wim1,wi20,wi19,wi16,wi15,wi6,wi5,wi4,wi3) \
       wi=wi20^wi16^wi6^wi3;\
       wim1=((wi5+wi4)^wi19^wi15)+wi+(wi<<23);\
       wi^=(wim1>>15);
@@ -189,22 +166,18 @@ void Encrypt256(uint64_t hsh[4], uint64_t k[8], uint64_t pk[8],
  *	W: the array with the 64 words filled
  */
 #define EXPANSION_512(W,pk,bits) \
-	PHI_512(W[16],W[17],(W[6]^pk[0]),(W[7]^pk[1]),(W[8]^pk[2]),(W[9]^pk[3]),(W[10]^pk[4]),(W[11]^pk[5]),(W[2]^pk[6]),(W[3]^pk[7]));\
-    PHI_512(W[18],W[19],(W[4]^0x428a2f98d728ae22ULL^pk[8]),(W[5]^pk[9]),(W[14]^bits^pk[10]),(W[15]^pk[11]),(W[12]^pk[14]),(W[13]^pk[15]),(W[0]^pk[12]),(W[1]^pk[13]));\
+	PHI(W[16],W[17],(W[6]^pk[0]),(W[7]^pk[1]),(W[8]^pk[2]),(W[9]^pk[3]),(W[10]^pk[4]),(W[11]^pk[5]),(W[2]^pk[6]),(W[3]^pk[7]));\
+    PHI(W[18],W[19],(W[4]^0x428a2f98d728ae22ULL^pk[8]),(W[5]^pk[9]),(W[14]^bits^pk[10]),(W[15]^pk[11]),(W[12]^pk[14]),(W[13]^pk[15]),(W[0]^pk[12]),(W[1]^pk[13]));\
     for( i = 20; i!=64; i=i+2) {\
-        PHI_512(W[i],W[i+1],W[i-20],W[i-19],W[i-16],W[i-15],W[i-6],W[i-5],W[i-4],W[i-3]);\
+        PHI(W[i],W[i+1],W[i-20],W[i-19],W[i-16],W[i-15],W[i-6],W[i-5],W[i-4],W[i-3]);\
     }
-
-#define F_512(X,Y,Z) ((~X)^(Y&(~Z)))
-#define G_512(X,Y,Z) (Z^((~X)&(~Y)))
-#define H_512(X,Y,Z) (Y^(X&Z))
 
 /*Sbox_512 in bitslice mode */
 #define Sbox_512(m0,m1,m2) \
   { register uint64_t temp0, temp1;\
-		temp0=F_512(m0,m1,m2);\
-        temp1=G_512(m0,m1,m2);\
-        m2=H_512(m0,m1,m2);\
+		temp0=F(m0,m1,m2);\
+        temp1=G(m0,m1,m2);\
+        m2=H(m0,m1,m2);\
         m0=temp0;\
 		m1=temp1; }
 
@@ -329,15 +302,12 @@ void Encrypt512(uint64_t hsh[8], uint64_t k[16], uint64_t pk[16],
  */
 #define UPDATEBITS_256   state->bits_processed += 512;
 
-void Encrypt256(uint64_t hsh[STATE_DWORDS_256], uint64_t k[BLOCK_DWORDS_256],uint64_t pk[BLOCK_DWORDS_256],uint64_t bits);
-void Transform256(hashState256* state);
-
 /* Bitmask for zeroing the unused bits of the last byte of the message */
 static
-const unsigned char BITMASK_256[] = {0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
+const unsigned char BITMASK[] = {0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
 /* Bitmask for adding a 1 after the last bit of the message */
 static
-const unsigned char BITPADDING_256[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
+const unsigned char BITPADDING[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 
 /* IV for the 256 bit version */
 static
@@ -353,40 +323,30 @@ const uint64_t  i224[STATE_DWORDS_256] = {
     0x1f83d9abfb41bd6bULL, 0x5be0cd19137e2179ULL,
 };
 
-/* Initializes a hashState256 with the appropriate values for the 256 bit hash.
+/* Process the block stored in the buffer. 
  * Parameters:
  *	state: a structure that holds the hashState256 information
- * Returns:
- *	SUCCESS - on success
  */
-HashReturn Init256(hashState256 *state)
+static
+void Transform256(hashState256* state)
 {
-	state->previous_block = state->buffer; /* previous_block points to the first half of the buffer */
-	state->data_block = state->buffer+BLOCK_DWORDS_256; /* data_block points to the second half of the buffer */
-	state->bits_processed = 0; /* No bits, yet */
-	state->bits_waiting_for_process = 0; /* No bits waiting */
-	memcpy(state->state, i256, STATE_BYTES_256); /* Copying the IV */
-	memcpy(state->previous_block, i224, STATE_BYTES_256); /* Initial state of the previous block. We copy the 224 bit IV, twice */
-	memcpy(state->previous_block+STATE_DWORDS_256, i224, STATE_BYTES_256);
-	return SUCCESS;
-}
+	uint64_t temp[STATE_DWORDS_256];  /* Temporal state, so we can apply the final xor */
+	uint64_t* swap_aux;
+	int i;
+	/* We copy the state to the temp state, and call Encrypt256 */
+	memcpy(temp,state->state,STATE_BYTES_256);
+	Encrypt256(temp, state->data_block, state->previous_block,state->bits_processed);
 
-/* Initializes a hashState224 with the appropriate values for the 224 bit hash.
- * Parameters:
- *	state: a structure that holds the hashState224 information
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Init224(hashState256 *state)
-{
-	state->previous_block = state->buffer; /* previous_block points to the first half of the buffer */
-	state->data_block = state->buffer+BLOCK_DWORDS_256; /* data_block points to the second half of the buffer */
-	state->bits_processed = 0; /* No bits, yet */
-	state->bits_waiting_for_process = 0;  /* No bits waiting */
-	memcpy(state->state, i224, STATE_BYTES_256); /* Copying the IV */
-	memcpy(state->previous_block, i256, STATE_BYTES_256);/* Initial state of the previous block. We copy the 256 bit IV, twice */
-	memcpy(state->previous_block+STATE_DWORDS_256, i256, STATE_BYTES_256);
-	return SUCCESS;
+	/* Now we perform the xor between the words of the original state,
+	 * and the output of Encrypt256
+	 */
+	for (i = 0; i < STATE_DWORDS_256; i++)
+		state->state[i] ^= temp[i];
+
+	/* We swap the pointers, so the current data_block becomes the previous_block */
+	swap_aux = state->data_block;
+	state->data_block = state->previous_block;
+	state->previous_block = swap_aux; /* now previous_block points to the block just processed */
 }
 
 /* Process the supplied data.
@@ -398,6 +358,7 @@ HashReturn Init224(hashState256 *state)
  * Returns:
  *	SUCCESS - on success
  */
+static
 HashReturn Update256(hashState256 *state, const BitSequence *data,
 		DataLength databitlen)
 {
@@ -447,33 +408,7 @@ HashReturn Update256(hashState256 *state, const BitSequence *data,
 	return SUCCESS;
 }
 
-/* Process the block stored in the buffer. 
- * Parameters:
- *	state: a structure that holds the hashState256 information
- */
-void Transform256(hashState256* state)
-{
-	uint64_t temp[STATE_DWORDS_256];  /* Temporal state, so we can apply the final xor */
-	uint64_t* swap_aux;
-	int i;
-	/* We copy the state to the temp state, and call Encrypt256 */
-	memcpy(temp,state->state,STATE_BYTES_256);
-	Encrypt256(temp, state->data_block, state->previous_block,state->bits_processed);
-
-	/* Now we perform the xor between the words of the original state,
-	 * and the output of Encrypt256
-	 */
-	for (i = 0; i < STATE_DWORDS_256; i++)
-		state->state[i] ^= temp[i];
-
-	/* We swap the pointers, so the current data_block becomes the previous_block */
-	swap_aux = state->data_block;
-	state->data_block = state->previous_block;
-	state->previous_block = swap_aux; /* now previous_block points to the block just processed */
-}
-
 /* Perform post processing and output filtering and return the final hash value.
- * This function is called from Final256() or Final224()
  * Parameters:
  *	state: a structure that holds the hashState256 information
  *	hashval: the storage for the final hash value to be returned
@@ -500,7 +435,7 @@ HashReturn _Final256 (hashState256 *state, BitSequence *hashval, int hashbytes)
 		byte_buffer = (BitSequence*) state->data_block;
 
 		/* We zero the unused bits of the last byte, and set the fist unused bit to 1 */
-		byte_buffer[index] = (byte_buffer[index] & BITMASK_256[bits]) | BITPADDING_256[bits];
+		byte_buffer[index] = (byte_buffer[index] & BITMASK[bits]) | BITPADDING[bits];
 		index++;
 		memset(byte_buffer+index, 0, BLOCK_BYTES_256 - index); /* We fill the rest of the block with zeros */
 
@@ -529,82 +464,10 @@ HashReturn _Final256 (hashState256 *state, BitSequence *hashval, int hashbytes)
 	return SUCCESS;
 }
 
-/* Perform post processing and output filtering and return the final 256 bit hash value.
- * Parameters:
- *	state: a structure that holds the hashState256 information
- *	hashval: the storage for the final hash value to be returned
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Final256(hashState256 *state, BitSequence *hashval)
-{
-	return _Final256(state,hashval,HASH_BYTES_256);
-}
-
-/* Perform post processing and output filtering and return the final 224 bit hash value.
- * Parameters:
- *	state: a structure that holds the hashState256 information
- *	hashval: the storage for the final hash value to be returned
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Final224(hashState256 *state, BitSequence *hashval)
-{
-	return _Final256(state,hashval,HASH_BYTES_224);
-}
-
-/* Hash the supplied data and provide the resulting hash value. 256 bit version.
- * Parameters:
- *	data: the data to be hashed
- *	databitlen: the length, in bits, of the data to be hashed
- *	hashval: the resulting hash value of the provided data
- * Returns:
- *	SUCCESS - on success
-*/
-HashReturn Hash256(const BitSequence *data, DataLength databitlen, BitSequence *hashval)
-{
-	hashState256 state;
-	HashReturn status;
-	status = Init256(&state);
-	if (status != SUCCESS) return status;
-	status = Update256(&state, data, databitlen);
-	if (status != SUCCESS) return status;
-	return _Final256(&state, hashval,HASH_BYTES_256);
-}
-
-/* Hash the supplied data and provide the resulting hash value. 224 bit version
- * Parameters:
- *	data: the data to be hashed
- *	databitlen: the length, in bits, of the data to be hashed
- *	hashval: the resulting hash value of the provided data
- * Returns:
- *	SUCCESS - on success
-*/
-HashReturn Hash224(const BitSequence *data, DataLength databitlen, BitSequence *hashval)
-{
-	hashState256 state;
-	HashReturn status;
-	status = Init224(&state);
-	if (status != SUCCESS) return status;
-	status = Update256(&state, data, databitlen);
-	if (status != SUCCESS) return status;
-	return _Final256(&state, hashval,HASH_BYTES_224);
-}
-
 /* Updates the bits processed before calling Transform. 
  * The increment is BLOCK_BITS_512 in all the blocks except the last.
  */
 #define UPDATEBITS_512   state->bits_processed += 1024;
-
-void Encrypt512(uint64_t hsh[STATE_DWORDS_512], uint64_t k[BLOCK_DWORDS_512],uint64_t pk[BLOCK_DWORDS_512],uint64_t bits);
-void Transform512(hashState512* state);
-
-/* Bitmask for zeroing the unused bits of the last byte of the message */
-static
-const unsigned char BITMASK_512[] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
-/* Bitmask for adding a 1 after the last bit of the message */
-static
-const unsigned char BITPADDING_512[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 
 /* IV for the 512 bit version */
 static
@@ -624,40 +487,30 @@ const uint64_t  i384[STATE_DWORDS_512] = {
     0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL
 };
 
-/* Initializes a hashState512 with the appropriate values for the 512 bit hash.
+/* Process the block stored in the buffer. 
  * Parameters:
  *	state: a structure that holds the hashState512 information
- * Returns:
- *	SUCCESS - on success
  */
-HashReturn Init512(hashState512 *state)
+static
+void Transform512(hashState512* state)
 {
-	state->previous_block = state->buffer; /* previous_block points to the first half of the buffer */
-	state->data_block = state->buffer+BLOCK_DWORDS_512; /* data_block points to the second half of the buffer */
-	state->bits_processed = 0; /* No bits, yet */
-	state->bits_waiting_for_process = 0; /* No bits waiting */
-	memcpy(state->state, i512, STATE_BYTES_512); /* Copying the IV */
-	memcpy(state->previous_block, i384, STATE_BYTES_512); /* Initial state of the previous block. We copy the 384 bit IV, twice */
-	memcpy(state->previous_block+STATE_DWORDS_512, i384, STATE_BYTES_512);
-	return SUCCESS;
-}
+	uint64_t temp[STATE_DWORDS_512];  /* Temporal state, so we can apply the final xor */
+	uint64_t* swap_aux;
+	int i;
+	/* We copy the state to the temp state, and call Encrypt512 */
+	memcpy(temp,state->state,STATE_BYTES_512);
+	Encrypt512(temp, state->data_block, state->previous_block,state->bits_processed);
 
-/* Initializes a hashState512 with the appropriate values for the 384 bit hash.
- * Parameters:
- *	state: a structure that holds the hashState512 information
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Init384(hashState512 *state)
-{
-	state->previous_block = state->buffer; /* previous_block points to the first half of the buffer */
-	state->data_block = state->buffer+BLOCK_DWORDS_512; /* data_block points to the second half of the buffer */
-	state->bits_processed = 0; /* No bits, yet */
-	state->bits_waiting_for_process = 0; /* No bits waiting */
-	memcpy(state->state, i384, STATE_BYTES_512); /* Copying the IV */
-	memcpy(state->previous_block, i512, STATE_BYTES_512); /* Initial state of the previous block. We copy the 512 bit IV, twice */
-	memcpy(state->previous_block+STATE_DWORDS_512, i512, STATE_BYTES_512);
-	return SUCCESS;
+	/* Now we perform the xor between the words of the original state,
+	 * and the output of Encrypt512
+	 */
+	for (i = 0; i < STATE_DWORDS_512; i++)
+		state->state[i] ^= temp[i];
+
+	/* We swap the pointers, so the current data_block becomes the previous_block */
+	swap_aux = state->data_block;
+	state->data_block = state->previous_block;
+	state->previous_block = swap_aux; /* now previous_block points to the block just processed */
 }
 
 /* Process the supplied data.
@@ -669,6 +522,7 @@ HashReturn Init384(hashState512 *state)
  * Returns:
  *	SUCCESS - on success
  */
+static
 HashReturn Update512(hashState512 *state, const BitSequence *data,
 		DataLength databitlen)
 {
@@ -718,33 +572,7 @@ HashReturn Update512(hashState512 *state, const BitSequence *data,
 	return SUCCESS;
 }
 
-/* Process the block stored in the buffer. 
- * Parameters:
- *	state: a structure that holds the hashState512 information
- */
-void Transform512(hashState512* state)
-{
-	uint64_t temp[STATE_DWORDS_512];  /* Temporal state, so we can apply the final xor */
-	uint64_t* swap_aux;
-	int i;
-	/* We copy the state to the temp state, and call Encrypt512 */
-	memcpy(temp,state->state,STATE_BYTES_512);
-	Encrypt512(temp, state->data_block, state->previous_block,state->bits_processed);
-
-	/* Now we perform the xor between the words of the original state,
-	 * and the output of Encrypt512
-	 */
-	for (i = 0; i < STATE_DWORDS_512; i++)
-		state->state[i] ^= temp[i];
-
-	/* We swap the pointers, so the current data_block becomes the previous_block */
-	swap_aux = state->data_block;
-	state->data_block = state->previous_block;
-	state->previous_block = swap_aux; /* now previous_block points to the block just processed */
-}
-
 /* Perform post processing and output filtering and return the final hash value.
- * This function is called from Final512() or Final384()
  * Parameters:
  *	state: a structure that holds the hashState512 information
  *	hashval: the storage for the final hash value to be returned
@@ -771,7 +599,7 @@ HashReturn _Final512 (hashState512 *state, BitSequence *hashval, int hashbytes)
 
 		/* We zero the unused bits of the last byte, and set the fist unused bit to 1 */
 		byte_buffer = (BitSequence*) state->data_block;
-		byte_buffer[index] = (byte_buffer[index] & BITMASK_512[bits]) | BITPADDING_512[bits];
+		byte_buffer[index] = (byte_buffer[index] & BITMASK[bits]) | BITPADDING[bits];
 		index++;
 		memset(byte_buffer+index, 0, BLOCK_BYTES_512 - index); /* We fill the rest of the block with zeros */
 
@@ -799,150 +627,82 @@ HashReturn _Final512 (hashState512 *state, BitSequence *hashval, int hashbytes)
 	return SUCCESS;
 }
 
-/* Perform post processing and output filtering and return the final 512 bit hash value.
- * Parameters:
- *	state: a structure that holds the hashState512 information
- *	hashval: the storage for the final hash value to be returned
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Final512(hashState512 *state, BitSequence *hashval)
-{
-	return _Final512(state,hashval,HASH_BYTES_512);
-}
-
-/* Perform post processing and output filtering and return the final 384 bit hash value.
- * Parameters:
- *	state: a structure that holds the hashState512 information
- *	hashval: the storage for the final hash value to be returned
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Final384(hashState512 *state, BitSequence *hashval)
-{
-	return _Final512(state,hashval,HASH_BYTES_384);
-}
-
-/* Hash the supplied data and provide the resulting hash value. Set return code as
- * appropriate. 512 bit version.
- * Parameters:
- *	data: the data to be hashed
- *	databitlen: the length, in bits, of the data to be hashed
- *	hashval: the resulting hash value of the provided data
- * Returns:
- *	SUCCESS - on success
-*/
-HashReturn Hash512(const BitSequence *data, DataLength databitlen, BitSequence *hashval)
-{
-	hashState512 state;
-	HashReturn status;
-	status = Init512(&state);
-	if (status != SUCCESS) return status;
-	status = Update512(&state, data, databitlen);
-	if (status != SUCCESS) return status;
-	return _Final512(&state, hashval,HASH_BYTES_512);
-}
-
-/* Hash the supplied data and provide the resulting hash value. Set return code as
- * appropriate. 384 bit version.
- * Parameters:
- *	data: the data to be hashed
- *	databitlen: the length, in bits, of the data to be hashed
- *	hashval: the resulting hash value of the provided data
- * Returns:
- *	SUCCESS - on success
-*/
-HashReturn Hash384(const BitSequence *data, DataLength databitlen, BitSequence *hashval)
-{
-	hashState512 state;
-	HashReturn status;
-	status = Init384(&state);
-	if (status != SUCCESS) return status;
-	status = Update512(&state, data, databitlen);
-	if (status != SUCCESS) return status;
-	return _Final512(&state, hashval,HASH_BYTES_384);
-}
-
-/* Initializes a hashState with the intended hash length of this particular instantiation,
- * and calls the right initializacion function for that length.
- * Parameters:
- *	state: a structure that holds the hashState information
- *	hashbitlen: an integer value that indicates the length of the hash output in bits.
- * Returns:
- *	SUCCESS - on success
- *	BAD_HASHBITLEN - hashbitlen is invalid (e.g. is not one of 224, 256, 384, 512)
- */
 HashReturn Init(hashState *state, int hashbitlen)
 {
-	switch (hashbitlen){
-	case 256: 	state->hashbitlen = 256;
-				return Init256(state->uu->state256);
-	case 224: 	state->hashbitlen = 224;
-				return Init224(state->uu->state256);
-	case 512: 	state->hashbitlen = 512;
-				return Init512(state->uu->state512);
-	case 384: 	state->hashbitlen = 384;
-				return Init384(state->uu->state512);
-	default: return BAD_HASHBITLEN;
-	}
+    HashReturn ret = SUCCESS;
+
+    state->hashbitlen = hashbitlen;
+
+    switch (hashbitlen) {
+    case 224:
+    case 256:
+    {	hashState256 *hs = state->uu->state256;
+	const uint64_t * iv  = (hashbitlen == 224 ? i224 : i256);
+	const uint64_t * oiv = (hashbitlen == 224 ? i256 : i224);
+	memset(hs, 0, sizeof(*hs));
+	hs->previous_block = hs->buffer;
+	hs->data_block = hs->buffer+BLOCK_DWORDS_256;
+	memcpy(hs->state, iv, STATE_BYTES_256);
+	/* Use 2 copies of the other IV to initialize previous block. */
+	memcpy(hs->previous_block, oiv, STATE_BYTES_256);
+	memcpy(hs->previous_block+STATE_DWORDS_256, oiv, STATE_BYTES_256);
+    }	break;
+    case 384:
+    case 512:
+    {	hashState512 *hs = state->uu->state512;
+	const uint64_t * iv  = (hashbitlen == 384 ? i384 : i512);
+	const uint64_t * oiv = (hashbitlen == 384 ? i512 : i384);
+	memset(hs, 0, sizeof(*hs));
+	hs->previous_block = hs->buffer;
+	hs->data_block = hs->buffer+BLOCK_DWORDS_512;
+	memcpy(hs->state, iv, STATE_BYTES_512);
+	/* Use 2 copies of the other IV to initialize previous block. */
+	memcpy(hs->previous_block, oiv, STATE_BYTES_512);
+	memcpy(hs->previous_block+STATE_DWORDS_512, oiv, STATE_BYTES_512);
+    }	break;
+    default:	ret = BAD_HASHBITLEN;	break;
+    }
+    return ret;
 }
 
-/* Process the supplied data. 
- * Parameters:
- *	state: a structure that holds the hashState information
- *	data: the data to be hashed
- *	databitlen: the length, in bits, of the data to be hashed. 
- *	It must be a multiple of 8, except, possibly, in the last call
- * Returns:
- *	SUCCESS - on success
- */
-HashReturn Update(hashState *state ,const BitSequence *data, DataLength databitlen)
+HashReturn Update(hashState *state , const BitSequence *data, DataLength databitlen)
 {
-	switch (state->hashbitlen){
-	case 224:
-	case 256: return Update256(state->uu->state256, data, databitlen);
-	case 384:
-	case 512: return Update512(state->uu->state512, data, databitlen);
-	default: return BAD_HASHBITLEN;
-	}
+    HashReturn ret;
+    switch (state->hashbitlen){
+    case 224:
+    case 256:	ret =  Update256(state->uu->state256, data, databitlen);	break;
+    case 384:
+    case 512:	ret =  Update512(state->uu->state512, data, databitlen);	break;
+    default:	ret =  BAD_HASHBITLEN;	break;
+    }
+    return ret;
 }
 
-/* Perform post processing and output filtering and return the final hash value.
- * Parameters:
- *	state: a structure that holds the hashState information
- *	hashval: the storage for the final hash value to be returned
- * Returns:
- *	SUCCESS - on success
- */
 HashReturn Final(hashState *state, BitSequence *hashval)
 {
-	switch (state->hashbitlen){
-	case 256: return Final256(state->uu->state256, hashval);
-	case 224: return Final224(state->uu->state256, hashval);
-	case 512: return Final512(state->uu->state512, hashval);
-	case 384: return Final384(state->uu->state512, hashval);
-	default: return BAD_HASHBITLEN;
-	}
+    HashReturn ret;
+    switch (state->hashbitlen) {
+    case 224:
+    case 256:
+	ret = _Final256(state->uu->state256, hashval, (state->hashbitlen/8));
+	break;
+    case 384:
+    case 512:
+	ret = _Final512(state->uu->state512, hashval, (state->hashbitlen/8));
+	break;
+    default:	ret = BAD_HASHBITLEN;	break;
+    }
+    return ret;
 }
 
-/* Hash the supplied data and provide the resulting hash value. Set return code as
- * appropriate.
- * Parameters:
- *	hashbitlen: the length in bits of the desired hash value
- *	data: the data to be hashed
- *	databitlen: the length, in bits, of the data to be hashed
- *	hashval: the resulting hash value of the provided data
- * Returns:
- *	SUCCESS - on success
- *	BAD_HASHBITLEN  unknown hashbitlen requested
-*/
 HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval)
 {
-	hashState state;
-	HashReturn status;
-	status = Init(&state, hashbitlen);
-	if (status != SUCCESS) return status;
-	status = Update(&state, data, databitlen);
-	if (status != SUCCESS) return status;
-	return Final(&state, hashval);
+    hashState state;
+    HashReturn ret;
+
+    if ((ret = Init(&state, hashbitlen)) != SUCCESS)
+	return ret;
+    if ((ret = Update(&state, data, databitlen)) != SUCCESS)
+	return ret;
+    return Final(&state, hashval);
 }

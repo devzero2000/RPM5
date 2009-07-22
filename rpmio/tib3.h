@@ -11,20 +11,9 @@
 #define	Final		tib3_Final
 #define	Hash		tib3_Hash
 
-/* Header file for the reference implementation of the candidate algorithm. 
- * All data structures use 64 bits integers 
- *
- * We call a 32 bit integer a WORD, and a 64 bit integer a DWORD
- */
-
-/* Data types mandated by the API (see http://csrc.nist.gov/groups/ST/hash/documents/SHA3-C-API.pdf) */
 typedef unsigned char BitSequence;
 typedef unsigned long long DataLength;
 
-/* typedefs for 32 and 64 bits unsigned integers, as in C99. They should be replaced
- * by including stdint.h when available, or changed to the suitable values for a
- * given platform. 
- */
 #include <stdint.h>
 
 /* 256 bits */
@@ -32,34 +21,25 @@ typedef unsigned long long DataLength;
 #define STATE_BYTES_256		32 /* Size of the internal state, in bytes */
 #define BLOCK_DWORDS_256	8 /* Size of the block, in 64 bits units */
 #define BLOCK_BYTES_256		64 /* Size of the block, in bytes */
-#define HASH_BYTES_256		32 /* Length of the final hash, in bytes */
-#define HASH_BITLEN_256		256 /* Length of the final hash, in bits */
 
 /* 224 bits */
 #define STATE_DWORDS_224	STATE_DWORDS_256
 #define STATE_BYTES_224		STATE_BYTES_256
 #define BLOCK_DWORDS_224	BLOCK_DWORDS_256
 #define BLOCK_BYTES_224		BLOCK_BYTES_256
-#define HASH_BYTES_224		28
-#define HASH_BITLEN_224		224
 
 /* 512 bits */
 #define STATE_DWORDS_512	8
 #define STATE_BYTES_512		64
 #define BLOCK_DWORDS_512	16
 #define BLOCK_BYTES_512		128
-#define HASH_BYTES_512		64
-#define HASH_BITLEN_512		512
 
 /* 384 bits */
 #define STATE_DWORDS_384	STATE_DWORDS_512
 #define STATE_BYTES_384		STATE_BYTES_512
 #define BLOCK_DWORDS_384	BLOCK_DWORDS_512
 #define BLOCK_BYTES_384		BLOCK_BYTES_512
-#define HASH_BYTES_384		48
-#define HASH_BITLEN_384		384
 
-/* hash state for 224/256 bit versions */
 typedef struct {
     uint64_t state[STATE_DWORDS_256];		/* internal state */
     uint64_t bits_processed;			
@@ -69,7 +49,6 @@ typedef struct {
     uint32_t bits_waiting_for_process;		/* bits awaiting for process in the next call to Update() or Final() */
 } hashState256;
 
-/* hash state for 384/512 bit versions */
 typedef struct {
     uint64_t state[STATE_DWORDS_512];
     uint64_t bits_processed;
@@ -79,7 +58,6 @@ typedef struct {
     uint32_t bits_waiting_for_process;
 } hashState512;
 
-/* This is the struct mandated by the the API (see http://csrc.nist.gov/groups/ST/hash/documents/SHA3-C-API.pdf) */
 typedef struct {
     int hashbitlen;
     union {
