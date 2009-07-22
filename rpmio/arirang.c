@@ -1,33 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// PROJECT : ARIRANG family(ARIRANG-224,ARIRANG-256,ARIRANG-384,ARIRANG-512)
-//
-// DATE    : 2008.10.23
-//
-////////////////////////////////////////////////////////////////////////////////
-//
-// FILE  : ARIRANG_Ref64.c
-//
-// NOTES : Reference code of ARIRANG family
-//
-//         Based on 64-bit platform
-//
-////////////////////////////////////////////////////////////////////////////////
+/* Reference code of ARIRANG 224/256/284/512 family (64 bit). */
 
-#include <stdio.h>
-#include <memory.h>
-#include <assert.h>
+#define BEECRYPT_DLL_EXPORT
 
 #include "arirang.h"
-
-enum {SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2};
-
-#include <endian.h>
-#if __BYTE_ORDER == __BIG_ENDIAN
-#define	WORDS_BIGENDIAN	1
-#else
-#define	WORDS_BIGENDIAN	0
-#endif
 
 // Left and right rotation
 #define ROTL_DWORD(x, n) ( (uint32_t)((x) << (n)) | (uint32_t)((x) >> (32-(n))) )
@@ -66,6 +41,16 @@ enum {SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2};
 
 #endif
 
+const hashFunction arirang256 = {
+    .name = "ARIRANG-256",
+    .paramsize = sizeof(arirangParam),
+    .blocksize = 64,
+    .digestsize = 256/8,	/* XXX default to ARIRANG-256 */
+    .reset = (hashFunctionReset) arirangReset,
+    .update = (hashFunctionUpdate) arirangUpdate,
+    .digest = (hashFunctionDigest) arirangDigest
+};
+
 static const uint32_t K256[16] = {
     0x517cc1b7, 0x76517cc1, 0xbd76517c, 0x2dbd7651,
     0x272dbd76, 0xcb272dbd, 0x90cb272d, 0x0a90cb27,
@@ -83,95 +68,6 @@ static const uint64_t K512[16] = {
     0x0a945be89a5fbd7dULL, 0x27220a945be89a5fULL,
     0xc1b727220a945be8ULL, 0x517cc1b727220a94ULL
 };
-
-#ifdef DYING
-uint8_t	sbx[256];  // Prepare S-box
-uint8_t	F2[256];   // i*2 in GF(256)
-uint8_t	F3[256];   // i*3 in GF(256)
-uint8_t	F4[256];   // i*4 in GF(256)
-uint8_t	F8[256];   // i*8 in GF(256)
-uint8_t	F9[256];   // i*9 in GF(256)
-uint8_t FA[256];   // i*10 in GF(256)
-
-static void prt_tab(const char *N, uint8_t *b)
-{
-    int i, j;
-    fprintf(stdout, "static const uint8_t %s[] = {", N);
-    for (i = 0; i < 16; i++) {
-	fprintf(stdout, "\n");
-	for (j = 0; j < 16; j++) {
-	    fprintf(stdout, "0x%02x,", b[16*i + j]);
-	}
-    }
-    fprintf(stdout, "\n};\n");
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// FUNCTION NAME  : gen_tabs
-//
-// DESCRIPTION    : Generate the s-box table and field multiplication table
-//
-// PARAMETERS     : void
-//
-//
-// RETURNS        : void
-//
-////////////////////////////////////////////////////////////////////////////////
-static
-void gen_tabs(void)
-{
-#ifndef __GEN_TABS__
-#define __GEN_TABS__ 100
-    int i;
-    uint8_t p, q;
-    uint8_t log_tab[256];
-    uint8_t pow_tab[256];
-
-    /* log and power tables for GF(2**8) finite field with  */
-    /* 0x011b as modular polynomial - the simplest primitive*/
-    /* root is 0x03, used here to generate the tables       */
-    for (i = 0, p = 1; i < 256; i++) {
-	pow_tab[i] = (uint8_t)p;
-	log_tab[p] = (uint8_t)i;
-	p = p ^ (p << 1) ^ (p & 0x80 ? 0x01b : 0);
-    }
-
-    /* note that the affine byte transformation matrix in   */
-    /* ARIRANG specification is in big endian format with   */
-    /* bit 0 as the most significant bit. In the remainder  */
-    /* of the specification the bits are numbered from the  */
-    /* least significant end of a byte.                     */
-    for (i = 0; i < 256; i++) {
-	p = (i ? pow_tab[255 - log_tab[i]] : 0); q = p;
-	q = (q >> 7) | (q << 1); p ^= q;
-	q = (q >> 7) | (q << 1); p ^= q;
-	q = (q >> 7) | (q << 1); p ^= q;
-	q = (q >> 7) | (q << 1); p ^= q ^ 0x63;
-	sbx[i] = p;
-    }
-
-#define ff_mult(a, b)	(a && b ? pow_tab[(log_tab[a] + log_tab[b]) % 255] : 0)
-    for (i = 0; i < 256; i++) {
-	F2[i] = ff_mult(i, 2);
-	F3[i] = ff_mult(i, 3);
-	F4[i] = ff_mult(i, 4);
-	F8[i] = ff_mult(i, 8);
-	F9[i] = ff_mult(i, 9);
-	FA[i] = ff_mult(i,10);
-    }
-#undef	ff_mult
-    prt_tab("sbx", sbx);
-    prt_tab("F2", F2);
-    prt_tab("F3", F3);
-    prt_tab("F4", F4);
-    prt_tab("F8", F8);
-    prt_tab("F9", F9);
-    prt_tab("FA", FA);
-#endif
-}
-
-#else	/* DYING */
 
 static const uint8_t sbx[] = {	/* Prepare S-box */
 0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
@@ -305,7 +201,6 @@ static const uint8_t FA[] = {	/* i*10 in GF(256) */
 0x9a,0x90,0x8e,0x84,0xb2,0xb8,0xa6,0xac,0xca,0xc0,0xde,0xd4,0xe2,0xe8,0xf6,0xfc,
 0x3a,0x30,0x2e,0x24,0x12,0x18,0x06,0x0c,0x6a,0x60,0x7e,0x74,0x42,0x48,0x56,0x5c,
 };
-#endif	/* DYING */
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -328,24 +223,24 @@ void step256(uint32_t R[8], uint32_t M1, uint32_t M2)
     R[0] ^= M1;
     R[4] ^= M2;
 
-#define byte(x, n)	((uint8_t)((x) >> (8 * n)))
+#define bx(x, n)	((uint8_t)((x) >> (8 * n)))
 
     // Sub-byte
-    temp1 =    (uint32_t)(sbx[byte(R[0], 0)]) ^ ((uint32_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[0], 3)]) << 24);
-    temp2 =    (uint32_t)(sbx[byte(R[4], 0)]) ^ ((uint32_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[4], 3)]) << 24);
+    temp1 =    (uint32_t)(sbx[bx(R[0], 0)]) ^ ((uint32_t)(sbx[bx(R[0], 1)]) <<  8) ^ ((uint32_t)(sbx[bx(R[0], 2)]) << 16) ^ ((uint32_t)(sbx[bx(R[0], 3)]) << 24);
+    temp2 =    (uint32_t)(sbx[bx(R[4], 0)]) ^ ((uint32_t)(sbx[bx(R[4], 1)]) <<  8) ^ ((uint32_t)(sbx[bx(R[4], 2)]) << 16) ^ ((uint32_t)(sbx[bx(R[4], 3)]) << 24);
 
     // MDS transformation
-    temp1 =  ( (uint32_t)(F2[byte(temp1,0)]) ^ (uint32_t)(F3[byte(temp1,1)]) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(   byte(temp1,3) )       ) ^
-	     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(F2[byte(temp1,1)]) ^ (uint32_t)(F3[byte(temp1,2)]) ^ (uint32_t)(   byte(temp1,3) )) <<  8) ^
-	     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(F2[byte(temp1,2)]) ^ (uint32_t)(F3[byte(temp1,3)])) << 16) ^
-	     (((uint32_t)(F3[byte(temp1,0)]) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(F2[byte(temp1,3)])) << 24);
+    temp1 =  ( (uint32_t)(F2[bx(temp1,0)]) ^ (uint32_t)(F3[bx(temp1,1)]) ^ (uint32_t)(   bx(temp1,2) ) ^ (uint32_t)(   bx(temp1,3) )       ) ^
+	     (((uint32_t)(   bx(temp1,0) ) ^ (uint32_t)(F2[bx(temp1,1)]) ^ (uint32_t)(F3[bx(temp1,2)]) ^ (uint32_t)(   bx(temp1,3) )) <<  8) ^
+	     (((uint32_t)(   bx(temp1,0) ) ^ (uint32_t)(   bx(temp1,1) ) ^ (uint32_t)(F2[bx(temp1,2)]) ^ (uint32_t)(F3[bx(temp1,3)])) << 16) ^
+	     (((uint32_t)(F3[bx(temp1,0)]) ^ (uint32_t)(   bx(temp1,1) ) ^ (uint32_t)(   bx(temp1,2) ) ^ (uint32_t)(F2[bx(temp1,3)])) << 24);
 
-    temp2 =  ( (uint32_t)(F2[byte(temp2,0)]) ^ (uint32_t)(F3[byte(temp2,1)]) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(   byte(temp2,3) )       ) ^
-	     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(F2[byte(temp2,1)]) ^ (uint32_t)(F3[byte(temp2,2)]) ^ (uint32_t)(   byte(temp2,3) )) <<  8) ^
-	     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(F2[byte(temp2,2)]) ^ (uint32_t)(F3[byte(temp2,3)])) << 16) ^
-	     (((uint32_t)(F3[byte(temp2,0)]) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(F2[byte(temp2,3)])) << 24);
+    temp2 =  ( (uint32_t)(F2[bx(temp2,0)]) ^ (uint32_t)(F3[bx(temp2,1)]) ^ (uint32_t)(   bx(temp2,2) ) ^ (uint32_t)(   bx(temp2,3) )       ) ^
+	     (((uint32_t)(   bx(temp2,0) ) ^ (uint32_t)(F2[bx(temp2,1)]) ^ (uint32_t)(F3[bx(temp2,2)]) ^ (uint32_t)(   bx(temp2,3) )) <<  8) ^
+	     (((uint32_t)(   bx(temp2,0) ) ^ (uint32_t)(   bx(temp2,1) ) ^ (uint32_t)(F2[bx(temp2,2)]) ^ (uint32_t)(F3[bx(temp2,3)])) << 16) ^
+	     (((uint32_t)(F3[bx(temp2,0)]) ^ (uint32_t)(   bx(temp2,1) ) ^ (uint32_t)(   bx(temp2,2) ) ^ (uint32_t)(F2[bx(temp2,3)])) << 24);
 
-#undef	byte
+#undef	bx
 
     R[1] ^= temp1;
     R[2] ^= ROTL_DWORD(temp1, 13);
@@ -387,34 +282,34 @@ void step512(uint64_t R[8], uint64_t M1, uint64_t M2)
     R[0] ^= M1;
     R[4] ^= M2;
 
-#define byte(x, n)	((uint8_t)((x) >> (8 * n)))
+#define bx(x, n)	((uint8_t)((x) >> (8 * n)))
 
     // Sub-byte
-    temp1 =      (uint64_t)(sbx[byte(R[0], 0)])         ^ ((uint64_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[0], 3)]) << 24) ^
-		((uint64_t)(sbx[byte(R[0], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[0], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[0], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[0], 7)]) << 56);
-    temp2 =      (uint64_t)(sbx[byte(R[4], 0)])         ^ ((uint64_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[4], 3)]) << 24) ^
-		((uint64_t)(sbx[byte(R[4], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[4], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[4], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[4], 7)]) << 56);
+    temp1 =      (uint64_t)(sbx[bx(R[0], 0)])         ^ ((uint64_t)(sbx[bx(R[0], 1)]) <<  8) ^ ((uint64_t)(sbx[bx(R[0], 2)]) << 16) ^ ((uint64_t)(sbx[bx(R[0], 3)]) << 24) ^
+		((uint64_t)(sbx[bx(R[0], 4)]) <<  32) ^ ((uint64_t)(sbx[bx(R[0], 5)]) << 40) ^ ((uint64_t)(sbx[bx(R[0], 6)]) << 48) ^ ((uint64_t)(sbx[bx(R[0], 7)]) << 56);
+    temp2 =      (uint64_t)(sbx[bx(R[4], 0)])         ^ ((uint64_t)(sbx[bx(R[4], 1)]) <<  8) ^ ((uint64_t)(sbx[bx(R[4], 2)]) << 16) ^ ((uint64_t)(sbx[bx(R[4], 3)]) << 24) ^
+		((uint64_t)(sbx[bx(R[4], 4)]) <<  32) ^ ((uint64_t)(sbx[bx(R[4], 5)]) << 40) ^ ((uint64_t)(sbx[bx(R[4], 6)]) << 48) ^ ((uint64_t)(sbx[bx(R[4], 7)]) << 56);
 
     // MDS transformation
-    temp1 = ( (uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F2[byte(temp1,1)]) ^ (uint64_t)(FA[byte(temp1,2)]) ^ (uint64_t)(F9[byte(temp1,3)]) ^ (uint64_t)(F8[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F4[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )        ) ^
-	    (((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F2[byte(temp1,2)]) ^ (uint64_t)(FA[byte(temp1,3)]) ^ (uint64_t)(F9[byte(temp1,4)]) ^ (uint64_t)(F8[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F4[byte(temp1,7)])) <<  8 ) ^
-	    (((uint64_t)(F4[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F2[byte(temp1,3)]) ^ (uint64_t)(FA[byte(temp1,4)]) ^ (uint64_t)(F9[byte(temp1,5)]) ^ (uint64_t)(F8[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )) << 16 ) ^
-	    (((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F4[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F2[byte(temp1,4)]) ^ (uint64_t)(FA[byte(temp1,5)]) ^ (uint64_t)(F9[byte(temp1,6)]) ^ (uint64_t)(F8[byte(temp1,7)])) << 24 ) ^
-	    (((uint64_t)(F8[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F4[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F2[byte(temp1,5)]) ^ (uint64_t)(FA[byte(temp1,6)]) ^ (uint64_t)(F9[byte(temp1,7)])) << 32 ) ^
-	    (((uint64_t)(F9[byte(temp1,0)]) ^ (uint64_t)(F8[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F4[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F2[byte(temp1,6)]) ^ (uint64_t)(FA[byte(temp1,7)])) << 40 ) ^
-	    (((uint64_t)(FA[byte(temp1,0)]) ^ (uint64_t)(F9[byte(temp1,1)]) ^ (uint64_t)(F8[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F4[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F2[byte(temp1,7)])) << 48 ) ^
-	    (((uint64_t)(F2[byte(temp1,0)]) ^ (uint64_t)(FA[byte(temp1,1)]) ^ (uint64_t)(F9[byte(temp1,2)]) ^ (uint64_t)(F8[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F4[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(   byte(temp1,7) )) << 56 );
+    temp1 = ( (uint64_t)(   bx(temp1,0) ) ^ (uint64_t)(F2[bx(temp1,1)]) ^ (uint64_t)(FA[bx(temp1,2)]) ^ (uint64_t)(F9[bx(temp1,3)]) ^ (uint64_t)(F8[bx(temp1,4)]) ^ (uint64_t)(   bx(temp1,5) ) ^ (uint64_t)(F4[bx(temp1,6)]) ^ (uint64_t)(   bx(temp1,7) )        ) ^
+	    (((uint64_t)(   bx(temp1,0) ) ^ (uint64_t)(   bx(temp1,1) ) ^ (uint64_t)(F2[bx(temp1,2)]) ^ (uint64_t)(FA[bx(temp1,3)]) ^ (uint64_t)(F9[bx(temp1,4)]) ^ (uint64_t)(F8[bx(temp1,5)]) ^ (uint64_t)(   bx(temp1,6) ) ^ (uint64_t)(F4[bx(temp1,7)])) <<  8 ) ^
+	    (((uint64_t)(F4[bx(temp1,0)]) ^ (uint64_t)(   bx(temp1,1) ) ^ (uint64_t)(   bx(temp1,2) ) ^ (uint64_t)(F2[bx(temp1,3)]) ^ (uint64_t)(FA[bx(temp1,4)]) ^ (uint64_t)(F9[bx(temp1,5)]) ^ (uint64_t)(F8[bx(temp1,6)]) ^ (uint64_t)(   bx(temp1,7) )) << 16 ) ^
+	    (((uint64_t)(   bx(temp1,0) ) ^ (uint64_t)(F4[bx(temp1,1)]) ^ (uint64_t)(   bx(temp1,2) ) ^ (uint64_t)(   bx(temp1,3) ) ^ (uint64_t)(F2[bx(temp1,4)]) ^ (uint64_t)(FA[bx(temp1,5)]) ^ (uint64_t)(F9[bx(temp1,6)]) ^ (uint64_t)(F8[bx(temp1,7)])) << 24 ) ^
+	    (((uint64_t)(F8[bx(temp1,0)]) ^ (uint64_t)(   bx(temp1,1) ) ^ (uint64_t)(F4[bx(temp1,2)]) ^ (uint64_t)(   bx(temp1,3) ) ^ (uint64_t)(   bx(temp1,4) ) ^ (uint64_t)(F2[bx(temp1,5)]) ^ (uint64_t)(FA[bx(temp1,6)]) ^ (uint64_t)(F9[bx(temp1,7)])) << 32 ) ^
+	    (((uint64_t)(F9[bx(temp1,0)]) ^ (uint64_t)(F8[bx(temp1,1)]) ^ (uint64_t)(   bx(temp1,2) ) ^ (uint64_t)(F4[bx(temp1,3)]) ^ (uint64_t)(   bx(temp1,4) ) ^ (uint64_t)(   bx(temp1,5) ) ^ (uint64_t)(F2[bx(temp1,6)]) ^ (uint64_t)(FA[bx(temp1,7)])) << 40 ) ^
+	    (((uint64_t)(FA[bx(temp1,0)]) ^ (uint64_t)(F9[bx(temp1,1)]) ^ (uint64_t)(F8[bx(temp1,2)]) ^ (uint64_t)(   bx(temp1,3) ) ^ (uint64_t)(F4[bx(temp1,4)]) ^ (uint64_t)(   bx(temp1,5) ) ^ (uint64_t)(   bx(temp1,6) ) ^ (uint64_t)(F2[bx(temp1,7)])) << 48 ) ^
+	    (((uint64_t)(F2[bx(temp1,0)]) ^ (uint64_t)(FA[bx(temp1,1)]) ^ (uint64_t)(F9[bx(temp1,2)]) ^ (uint64_t)(F8[bx(temp1,3)]) ^ (uint64_t)(   bx(temp1,4) ) ^ (uint64_t)(F4[bx(temp1,5)]) ^ (uint64_t)(   bx(temp1,6) ) ^ (uint64_t)(   bx(temp1,7) )) << 56 );
 
-    temp2 = ( (uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F2[byte(temp2,1)]) ^ (uint64_t)(FA[byte(temp2,2)]) ^ (uint64_t)(F9[byte(temp2,3)]) ^ (uint64_t)(F8[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F4[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )        ) ^
-	    (((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F2[byte(temp2,2)]) ^ (uint64_t)(FA[byte(temp2,3)]) ^ (uint64_t)(F9[byte(temp2,4)]) ^ (uint64_t)(F8[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F4[byte(temp2,7)])) <<  8 ) ^
-	    (((uint64_t)(F4[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F2[byte(temp2,3)]) ^ (uint64_t)(FA[byte(temp2,4)]) ^ (uint64_t)(F9[byte(temp2,5)]) ^ (uint64_t)(F8[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )) << 16 ) ^
-	    (((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F4[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F2[byte(temp2,4)]) ^ (uint64_t)(FA[byte(temp2,5)]) ^ (uint64_t)(F9[byte(temp2,6)]) ^ (uint64_t)(F8[byte(temp2,7)])) << 24 ) ^
-	    (((uint64_t)(F8[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F4[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F2[byte(temp2,5)]) ^ (uint64_t)(FA[byte(temp2,6)]) ^ (uint64_t)(F9[byte(temp2,7)])) << 32 ) ^
-	    (((uint64_t)(F9[byte(temp2,0)]) ^ (uint64_t)(F8[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F4[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F2[byte(temp2,6)]) ^ (uint64_t)(FA[byte(temp2,7)])) << 40 ) ^
-	    (((uint64_t)(FA[byte(temp2,0)]) ^ (uint64_t)(F9[byte(temp2,1)]) ^ (uint64_t)(F8[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F4[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F2[byte(temp2,7)])) << 48 ) ^
-	    (((uint64_t)(F2[byte(temp2,0)]) ^ (uint64_t)(FA[byte(temp2,1)]) ^ (uint64_t)(F9[byte(temp2,2)]) ^ (uint64_t)(F8[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F4[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(   byte(temp2,7) )) << 56 );
+    temp2 = ( (uint64_t)(   bx(temp2,0) ) ^ (uint64_t)(F2[bx(temp2,1)]) ^ (uint64_t)(FA[bx(temp2,2)]) ^ (uint64_t)(F9[bx(temp2,3)]) ^ (uint64_t)(F8[bx(temp2,4)]) ^ (uint64_t)(   bx(temp2,5) ) ^ (uint64_t)(F4[bx(temp2,6)]) ^ (uint64_t)(   bx(temp2,7) )        ) ^
+	    (((uint64_t)(   bx(temp2,0) ) ^ (uint64_t)(   bx(temp2,1) ) ^ (uint64_t)(F2[bx(temp2,2)]) ^ (uint64_t)(FA[bx(temp2,3)]) ^ (uint64_t)(F9[bx(temp2,4)]) ^ (uint64_t)(F8[bx(temp2,5)]) ^ (uint64_t)(   bx(temp2,6) ) ^ (uint64_t)(F4[bx(temp2,7)])) <<  8 ) ^
+	    (((uint64_t)(F4[bx(temp2,0)]) ^ (uint64_t)(   bx(temp2,1) ) ^ (uint64_t)(   bx(temp2,2) ) ^ (uint64_t)(F2[bx(temp2,3)]) ^ (uint64_t)(FA[bx(temp2,4)]) ^ (uint64_t)(F9[bx(temp2,5)]) ^ (uint64_t)(F8[bx(temp2,6)]) ^ (uint64_t)(   bx(temp2,7) )) << 16 ) ^
+	    (((uint64_t)(   bx(temp2,0) ) ^ (uint64_t)(F4[bx(temp2,1)]) ^ (uint64_t)(   bx(temp2,2) ) ^ (uint64_t)(   bx(temp2,3) ) ^ (uint64_t)(F2[bx(temp2,4)]) ^ (uint64_t)(FA[bx(temp2,5)]) ^ (uint64_t)(F9[bx(temp2,6)]) ^ (uint64_t)(F8[bx(temp2,7)])) << 24 ) ^
+	    (((uint64_t)(F8[bx(temp2,0)]) ^ (uint64_t)(   bx(temp2,1) ) ^ (uint64_t)(F4[bx(temp2,2)]) ^ (uint64_t)(   bx(temp2,3) ) ^ (uint64_t)(   bx(temp2,4) ) ^ (uint64_t)(F2[bx(temp2,5)]) ^ (uint64_t)(FA[bx(temp2,6)]) ^ (uint64_t)(F9[bx(temp2,7)])) << 32 ) ^
+	    (((uint64_t)(F9[bx(temp2,0)]) ^ (uint64_t)(F8[bx(temp2,1)]) ^ (uint64_t)(   bx(temp2,2) ) ^ (uint64_t)(F4[bx(temp2,3)]) ^ (uint64_t)(   bx(temp2,4) ) ^ (uint64_t)(   bx(temp2,5) ) ^ (uint64_t)(F2[bx(temp2,6)]) ^ (uint64_t)(FA[bx(temp2,7)])) << 40 ) ^
+	    (((uint64_t)(FA[bx(temp2,0)]) ^ (uint64_t)(F9[bx(temp2,1)]) ^ (uint64_t)(F8[bx(temp2,2)]) ^ (uint64_t)(   bx(temp2,3) ) ^ (uint64_t)(F4[bx(temp2,4)]) ^ (uint64_t)(   bx(temp2,5) ) ^ (uint64_t)(   bx(temp2,6) ) ^ (uint64_t)(F2[bx(temp2,7)])) << 48 ) ^
+	    (((uint64_t)(F2[bx(temp2,0)]) ^ (uint64_t)(FA[bx(temp2,1)]) ^ (uint64_t)(F9[bx(temp2,2)]) ^ (uint64_t)(F8[bx(temp2,3)]) ^ (uint64_t)(   bx(temp2,4) ) ^ (uint64_t)(F4[bx(temp2,5)]) ^ (uint64_t)(   bx(temp2,6) ) ^ (uint64_t)(   bx(temp2,7) )) << 56 );
 
-#undef	byte
+#undef	bx
 
     R[1] ^= temp1;
     R[2] ^= ROTL_QWORD(temp1, 29);
@@ -687,48 +582,37 @@ static const uint64_t _init_512[] = {
 int arirangInit(arirangParam *sp, int hashbitlen)
 {
     const uint64_t *iv = NULL;
+    uint32_t blocklen = 0;
 
-#ifdef	DYING
-    gen_tabs();
-#endif
-
-    // Setting the Hash Length
-    sp->hashbitlen = hashbitlen;
-
-    // Setting the Counter Values
-    sp->counter[0] = sp->counter[1] = 0;
-
-    // Initialize the Data Length
-    sp->count[0] = sp->count[1] = 0;
-
-    switch (sp->hashbitlen) {
+    switch (hashbitlen) {
     case 224:
-assert(sizeof(sp->workingvar) == sizeof(_init_224));
 	iv = _init_224;
-	sp->blocklen = ARIRANG256_BLOCK_LEN;
+	blocklen = 64;		/* ARIRANG224_BLOCK_LEN */
 	break;
     case 256:
-assert(sizeof(sp->workingvar) == sizeof(_init_256));
 	iv = _init_256;
-	sp->blocklen = ARIRANG256_BLOCK_LEN;
+	blocklen = 64;		/* ARIRANG256_BLOCK_LEN */
 	break;
     case 384:
-assert(sizeof(sp->workingvar) == sizeof(_init_384));
 	iv = _init_384;
-	sp->blocklen = ARIRANG512_BLOCK_LEN;
+	blocklen = 128;		/* ARIRANG384_BLOCK_LEN */
 	break;
     case 512:
-assert(sizeof(sp->workingvar) == sizeof(_init_512));
 	iv = _init_512;
-	sp->blocklen = ARIRANG512_BLOCK_LEN;
+	blocklen = 128;		/* ARIRANG512_BLOCK_LEN */
 	break;
     default:
-	return BAD_HASHLEN;
+	return 2;	/* BAD_HASHLEN */
 	break;
     }
+
+    memset(sp, 0, sizeof(*sp));
+    sp->hashbitlen = hashbitlen;
+    sp->blocklen = blocklen;
+
     if (iv)
 	memcpy(sp->workingvar, iv, sizeof(sp->workingvar));
-    return SUCCESS;
+    return 0;
 }
 
 int
@@ -787,7 +671,7 @@ int arirangUpdate(arirangParam *sp, const byte *data, size_t size)
     //	Buffer remaining input
     memcpy((uint8_t *)sp->block + RemainedLen, data, (int)databytelen);
 
-    return SUCCESS;
+    return 0;
 }
 
 int arirangDigest(arirangParam *sp, byte *digest)
@@ -849,5 +733,5 @@ int arirangDigest(arirangParam *sp, byte *digest)
 	for (i = 0; i < (sp->hashbitlen >> 3); i += 8)
 	    BIG_Q2B((sp->workingvar)[i / 8], &digest[i]);
 
-    return SUCCESS;
+    return 0;
 }
