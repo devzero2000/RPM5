@@ -21,69 +21,50 @@
 
 enum {SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2};
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Macro
-
-// Define the Endianness
-#define	USER_LITTLE_ENDIAN
-
-#undef BIG_ENDIAN
-#undef LITTLE_ENDIAN
-
-#if defined(USER_BIG_ENDIAN)
-	#define BIG_ENDIAN
-#elif defined(USER_LITTLE_ENDIAN)
-	#define LITTLE_ENDIAN
+#include <endian.h>
+#if __BYTE_ORDER == __BIG_ENDIAN
+#define	WORDS_BIGENDIAN	1
 #else
-	#if 0
-		#define BIG_ENDIAN
-	#elif defined(_MSC_VER)
-		#define LITTLE_ENDIAN
-	#else
-		#error
-	#endif
+#define	WORDS_BIGENDIAN	0
 #endif
 
-// Left and rigth rotation
+// Left and right rotation
 #define ROTL_DWORD(x, n) ( (uint32_t)((x) << (n)) | (uint32_t)((x) >> (32-(n))) )
 #define ROTL_QWORD(x, n) ( (uint64_t)((x) << (n)) | (uint64_t)((x) >> (64-(n))) )
 
 // Reverse the byte order of uint32_t and uint16_t.
 #define ENDIAN_REVERSE_DWORD(dwS)	( (ROTL_DWORD((dwS),  8) & 0x00ff00ff) | (ROTL_DWORD((dwS), 24) & 0xff00ff00) )
-#define ENDIAN_REVERSE_QWORD(w, x)  { \
-     uint64_t tmp = (w); \
+#define ENDIAN_REVERSE_QWORD(w, x) \
+ {   uint64_t tmp = (w); \
      tmp = (tmp >> 32) | (tmp << 32); \
      tmp = ((tmp & 0xff00ff00ff00ff00ULL) >> 8) | ((tmp & 0x00ff00ff00ff00ffULL) << 8); \
      (x) = ((tmp & 0xffff0000ffff0000ULL) >> 16) | ((tmp & 0x0000ffff0000ffffULL) << 16); \
  }
 
 // Move uint32_t type to uint8_t type and uint8_t type to uint32_t type
-#if defined(BIG_ENDIAN)
+#if WORDS_BIGENDIAN
+
 #define BIG_B2D(B, D)		D = *(uint32_t *)(B)
 #define BIG_D2B(D, B)		*(uint32_t *)(B) = (uint32_t)(D)
 #define LITTLE_B2D(B, D)	D = ENDIAN_REVERSE_DWORD(*(uint32_t *)(B))
 #define LITTLE_D2B(D, B)	*(uint32_t *)(B) = ENDIAN_REVERSE_DWORD(D)
 
-#elif defined(LITTLE_ENDIAN)
+// Compression function
+#define GetData(x) x
+
+#else
 
 #define BIG_B2D(B, D)		D = ENDIAN_REVERSE_DWORD(*(uint32_t *)(B))
 #define BIG_Q2B(D, B)		ENDIAN_REVERSE_QWORD(D, *(uint64_t *)(B))
 #define BIG_D2B(D, B)		*(uint32_t *)(B) = ENDIAN_REVERSE_DWORD(D)
 #define LITTLE_B2D(B, D)	D = *(uint32_t *)(B)
 #define LITTLE_D2B(D, B)	*(uint32_t *)(B) = (uint32_t)(D)
+
+// Compression function
+#define GetData(x) ENDIAN_REVERSE_DWORD(x)
+
 #endif
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// Macro
-
-#define ff_mult(a, b)	(a && b ? pow_tab[(log_tab[a] + log_tab[b]) % 255] : 0)
-#define byte(x, n)		((uint8_t)((x) >> (8 * n)))
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// Constant
 static const uint32_t K256[16] = {
     0x517cc1b7, 0x76517cc1, 0xbd76517c, 0x2dbd7651,
     0x272dbd76, 0xcb272dbd, 0x90cb272d, 0x0a90cb27,
@@ -133,22 +114,20 @@ void gen_tabs(void)
     uint8_t pow_tab[256];
 
     /* log and power tables for GF(2**8) finite field with  */
-    /* 0x011b as modular polynomial - the simplest primitive */
+    /* 0x011b as modular polynomial - the simplest primitive*/
     /* root is 0x03, used here to generate the tables       */
-
-    for(i = 0,p = 1;i<256;i++) {
+    for (i = 0, p = 1; i < 256; i++) {
 	pow_tab[i] = (uint8_t)p;
 	log_tab[p] = (uint8_t)i;
 	p = p ^ (p << 1) ^ (p & 0x80 ? 0x01b : 0);
     }
 
     /* note that the affine byte transformation matrix in   */
-    /* ARIRANG specification is in big endian format with  */
+    /* ARIRANG specification is in big endian format with   */
     /* bit 0 as the most significant bit. In the remainder  */
     /* of the specification the bits are numbered from the  */
     /* least significant end of a byte.                     */
-
-    for(i=0;i<256;i++) {
+    for (i = 0; i < 256; i++) {
 	p = (i ? pow_tab[255 - log_tab[i]] : 0); q = p;
 	q = (q >> 7) | (q << 1); p ^= q;
 	q = (q >> 7) | (q << 1); p ^= q;
@@ -157,14 +136,16 @@ void gen_tabs(void)
 	sbx[i] = p;
     }
 
-    for(i=0;i<256;i++) {
-	F2[i] = ff_mult(i,2);
-	F3[i] = ff_mult(i,3);
-	F4[i] = ff_mult(i,4);
-	F8[i] = ff_mult(i,8);
-	F9[i] = ff_mult(i,9);
+#define ff_mult(a, b)	(a && b ? pow_tab[(log_tab[a] + log_tab[b]) % 255] : 0)
+    for (i = 0; i < 256; i++) {
+	F2[i] = ff_mult(i, 2);
+	F3[i] = ff_mult(i, 3);
+	F4[i] = ff_mult(i, 4);
+	F8[i] = ff_mult(i, 8);
+	F9[i] = ff_mult(i, 9);
 	FA[i] = ff_mult(i,10);
     }
+#undef	ff_mult
 #endif
 }
 
@@ -189,20 +170,24 @@ void step256(uint32_t R[8], uint32_t M1, uint32_t M2)
     R[0] ^= M1;
     R[4] ^= M2;
 
+#define byte(x, n)	((uint8_t)((x) >> (8 * n)))
+
     // Sub-byte
-	temp1 =    (uint32_t)(sbx[byte(R[0], 0)]) ^ ((uint32_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[0], 3)]) << 24);
-	temp2 =    (uint32_t)(sbx[byte(R[4], 0)]) ^ ((uint32_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[4], 3)]) << 24);
+    temp1 =    (uint32_t)(sbx[byte(R[0], 0)]) ^ ((uint32_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[0], 3)]) << 24);
+    temp2 =    (uint32_t)(sbx[byte(R[4], 0)]) ^ ((uint32_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint32_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint32_t)(sbx[byte(R[4], 3)]) << 24);
 
     // MDS transformation
-	temp1 =  ( (uint32_t)(F2[byte(temp1,0)]) ^ (uint32_t)(F3[byte(temp1,1)]) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(   byte(temp1,3) )       ) ^
-		     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(F2[byte(temp1,1)]) ^ (uint32_t)(F3[byte(temp1,2)]) ^ (uint32_t)(   byte(temp1,3) )) <<  8) ^
-		     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(F2[byte(temp1,2)]) ^ (uint32_t)(F3[byte(temp1,3)])) << 16) ^
-		     (((uint32_t)(F3[byte(temp1,0)]) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(F2[byte(temp1,3)])) << 24);
+    temp1 =  ( (uint32_t)(F2[byte(temp1,0)]) ^ (uint32_t)(F3[byte(temp1,1)]) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(   byte(temp1,3) )       ) ^
+	     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(F2[byte(temp1,1)]) ^ (uint32_t)(F3[byte(temp1,2)]) ^ (uint32_t)(   byte(temp1,3) )) <<  8) ^
+	     (((uint32_t)(   byte(temp1,0) ) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(F2[byte(temp1,2)]) ^ (uint32_t)(F3[byte(temp1,3)])) << 16) ^
+	     (((uint32_t)(F3[byte(temp1,0)]) ^ (uint32_t)(   byte(temp1,1) ) ^ (uint32_t)(   byte(temp1,2) ) ^ (uint32_t)(F2[byte(temp1,3)])) << 24);
 
-	temp2 =  ( (uint32_t)(F2[byte(temp2,0)]) ^ (uint32_t)(F3[byte(temp2,1)]) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(   byte(temp2,3) )       ) ^
-		     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(F2[byte(temp2,1)]) ^ (uint32_t)(F3[byte(temp2,2)]) ^ (uint32_t)(   byte(temp2,3) )) <<  8) ^
-		     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(F2[byte(temp2,2)]) ^ (uint32_t)(F3[byte(temp2,3)])) << 16) ^
-		     (((uint32_t)(F3[byte(temp2,0)]) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(F2[byte(temp2,3)])) << 24);
+    temp2 =  ( (uint32_t)(F2[byte(temp2,0)]) ^ (uint32_t)(F3[byte(temp2,1)]) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(   byte(temp2,3) )       ) ^
+	     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(F2[byte(temp2,1)]) ^ (uint32_t)(F3[byte(temp2,2)]) ^ (uint32_t)(   byte(temp2,3) )) <<  8) ^
+	     (((uint32_t)(   byte(temp2,0) ) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(F2[byte(temp2,2)]) ^ (uint32_t)(F3[byte(temp2,3)])) << 16) ^
+	     (((uint32_t)(F3[byte(temp2,0)]) ^ (uint32_t)(   byte(temp2,1) ) ^ (uint32_t)(   byte(temp2,2) ) ^ (uint32_t)(F2[byte(temp2,3)])) << 24);
+
+#undef	byte
 
     R[1] ^= temp1;
     R[2] ^= ROTL_DWORD(temp1, 13);
@@ -212,8 +197,15 @@ void step256(uint32_t R[8], uint32_t M1, uint32_t M2)
     R[7] ^= ROTL_DWORD(temp2, 7);
 
     // Register swap
-    temp1=R[7];	 R[7]=R[6];	 R[6]=R[5];	 R[5]=R[4]; R[4]=R[3];
-    R[3]=R[2];	R[2]=R[1];	R[1]=R[0];	R[0]=temp1;
+    temp1 = R[7];
+    R[7] = R[6];
+    R[6] = R[5];
+    R[5] = R[4];
+    R[4] = R[3];
+    R[3] = R[2];
+    R[2] = R[1];
+    R[1] = R[0];
+    R[0] = temp1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -231,36 +223,40 @@ void step256(uint32_t R[8], uint32_t M1, uint32_t M2)
 static
 void step512(uint64_t R[8], uint64_t M1, uint64_t M2)
 {
-    uint64_t temp1,temp2;
+    uint64_t temp1, temp2;
 
     // Message XOR
     R[0] ^= M1;
     R[4] ^= M2;
 
+#define byte(x, n)	((uint8_t)((x) >> (8 * n)))
+
     // Sub-byte
-	temp1 =     (uint64_t)(sbx[byte(R[0], 0)])         ^ ((uint64_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[0], 3)]) << 24) ^
-			   ((uint64_t)(sbx[byte(R[0], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[0], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[0], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[0], 7)]) << 56);
-	temp2 =     (uint64_t)(sbx[byte(R[4], 0)])         ^ ((uint64_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[4], 3)]) << 24) ^
-			   ((uint64_t)(sbx[byte(R[4], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[4], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[4], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[4], 7)]) << 56);
+    temp1 =      (uint64_t)(sbx[byte(R[0], 0)])         ^ ((uint64_t)(sbx[byte(R[0], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[0], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[0], 3)]) << 24) ^
+		((uint64_t)(sbx[byte(R[0], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[0], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[0], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[0], 7)]) << 56);
+    temp2 =      (uint64_t)(sbx[byte(R[4], 0)])         ^ ((uint64_t)(sbx[byte(R[4], 1)]) <<  8) ^ ((uint64_t)(sbx[byte(R[4], 2)]) << 16) ^ ((uint64_t)(sbx[byte(R[4], 3)]) << 24) ^
+		((uint64_t)(sbx[byte(R[4], 4)]) <<  32) ^ ((uint64_t)(sbx[byte(R[4], 5)]) << 40) ^ ((uint64_t)(sbx[byte(R[4], 6)]) << 48) ^ ((uint64_t)(sbx[byte(R[4], 7)]) << 56);
 
-	// MDS transformation
-	temp1 = ( (uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F2[byte(temp1,1)]) ^ (uint64_t)(FA[byte(temp1,2)]) ^ (uint64_t)(F9[byte(temp1,3)]) ^ (uint64_t)(F8[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F4[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )        ) ^
-			(((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F2[byte(temp1,2)]) ^ (uint64_t)(FA[byte(temp1,3)]) ^ (uint64_t)(F9[byte(temp1,4)]) ^ (uint64_t)(F8[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F4[byte(temp1,7)])) <<  8 ) ^
-			(((uint64_t)(F4[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F2[byte(temp1,3)]) ^ (uint64_t)(FA[byte(temp1,4)]) ^ (uint64_t)(F9[byte(temp1,5)]) ^ (uint64_t)(F8[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )) << 16 ) ^
-			(((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F4[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F2[byte(temp1,4)]) ^ (uint64_t)(FA[byte(temp1,5)]) ^ (uint64_t)(F9[byte(temp1,6)]) ^ (uint64_t)(F8[byte(temp1,7)])) << 24 ) ^
-			(((uint64_t)(F8[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F4[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F2[byte(temp1,5)]) ^ (uint64_t)(FA[byte(temp1,6)]) ^ (uint64_t)(F9[byte(temp1,7)])) << 32 ) ^
-			(((uint64_t)(F9[byte(temp1,0)]) ^ (uint64_t)(F8[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F4[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F2[byte(temp1,6)]) ^ (uint64_t)(FA[byte(temp1,7)])) << 40 ) ^
-			(((uint64_t)(FA[byte(temp1,0)]) ^ (uint64_t)(F9[byte(temp1,1)]) ^ (uint64_t)(F8[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F4[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F2[byte(temp1,7)])) << 48 ) ^
-			(((uint64_t)(F2[byte(temp1,0)]) ^ (uint64_t)(FA[byte(temp1,1)]) ^ (uint64_t)(F9[byte(temp1,2)]) ^ (uint64_t)(F8[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F4[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(   byte(temp1,7) )) << 56 );
+    // MDS transformation
+    temp1 = ( (uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F2[byte(temp1,1)]) ^ (uint64_t)(FA[byte(temp1,2)]) ^ (uint64_t)(F9[byte(temp1,3)]) ^ (uint64_t)(F8[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F4[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )        ) ^
+	    (((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F2[byte(temp1,2)]) ^ (uint64_t)(FA[byte(temp1,3)]) ^ (uint64_t)(F9[byte(temp1,4)]) ^ (uint64_t)(F8[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F4[byte(temp1,7)])) <<  8 ) ^
+	    (((uint64_t)(F4[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F2[byte(temp1,3)]) ^ (uint64_t)(FA[byte(temp1,4)]) ^ (uint64_t)(F9[byte(temp1,5)]) ^ (uint64_t)(F8[byte(temp1,6)]) ^ (uint64_t)(   byte(temp1,7) )) << 16 ) ^
+	    (((uint64_t)(   byte(temp1,0) ) ^ (uint64_t)(F4[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F2[byte(temp1,4)]) ^ (uint64_t)(FA[byte(temp1,5)]) ^ (uint64_t)(F9[byte(temp1,6)]) ^ (uint64_t)(F8[byte(temp1,7)])) << 24 ) ^
+	    (((uint64_t)(F8[byte(temp1,0)]) ^ (uint64_t)(   byte(temp1,1) ) ^ (uint64_t)(F4[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F2[byte(temp1,5)]) ^ (uint64_t)(FA[byte(temp1,6)]) ^ (uint64_t)(F9[byte(temp1,7)])) << 32 ) ^
+	    (((uint64_t)(F9[byte(temp1,0)]) ^ (uint64_t)(F8[byte(temp1,1)]) ^ (uint64_t)(   byte(temp1,2) ) ^ (uint64_t)(F4[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(F2[byte(temp1,6)]) ^ (uint64_t)(FA[byte(temp1,7)])) << 40 ) ^
+	    (((uint64_t)(FA[byte(temp1,0)]) ^ (uint64_t)(F9[byte(temp1,1)]) ^ (uint64_t)(F8[byte(temp1,2)]) ^ (uint64_t)(   byte(temp1,3) ) ^ (uint64_t)(F4[byte(temp1,4)]) ^ (uint64_t)(   byte(temp1,5) ) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(F2[byte(temp1,7)])) << 48 ) ^
+	    (((uint64_t)(F2[byte(temp1,0)]) ^ (uint64_t)(FA[byte(temp1,1)]) ^ (uint64_t)(F9[byte(temp1,2)]) ^ (uint64_t)(F8[byte(temp1,3)]) ^ (uint64_t)(   byte(temp1,4) ) ^ (uint64_t)(F4[byte(temp1,5)]) ^ (uint64_t)(   byte(temp1,6) ) ^ (uint64_t)(   byte(temp1,7) )) << 56 );
 
-	temp2 = ( (uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F2[byte(temp2,1)]) ^ (uint64_t)(FA[byte(temp2,2)]) ^ (uint64_t)(F9[byte(temp2,3)]) ^ (uint64_t)(F8[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F4[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )        ) ^
-			(((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F2[byte(temp2,2)]) ^ (uint64_t)(FA[byte(temp2,3)]) ^ (uint64_t)(F9[byte(temp2,4)]) ^ (uint64_t)(F8[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F4[byte(temp2,7)])) <<  8 ) ^
-			(((uint64_t)(F4[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F2[byte(temp2,3)]) ^ (uint64_t)(FA[byte(temp2,4)]) ^ (uint64_t)(F9[byte(temp2,5)]) ^ (uint64_t)(F8[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )) << 16 ) ^
-			(((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F4[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F2[byte(temp2,4)]) ^ (uint64_t)(FA[byte(temp2,5)]) ^ (uint64_t)(F9[byte(temp2,6)]) ^ (uint64_t)(F8[byte(temp2,7)])) << 24 ) ^
-			(((uint64_t)(F8[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F4[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F2[byte(temp2,5)]) ^ (uint64_t)(FA[byte(temp2,6)]) ^ (uint64_t)(F9[byte(temp2,7)])) << 32 ) ^
-			(((uint64_t)(F9[byte(temp2,0)]) ^ (uint64_t)(F8[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F4[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F2[byte(temp2,6)]) ^ (uint64_t)(FA[byte(temp2,7)])) << 40 ) ^
-			(((uint64_t)(FA[byte(temp2,0)]) ^ (uint64_t)(F9[byte(temp2,1)]) ^ (uint64_t)(F8[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F4[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F2[byte(temp2,7)])) << 48 ) ^
-			(((uint64_t)(F2[byte(temp2,0)]) ^ (uint64_t)(FA[byte(temp2,1)]) ^ (uint64_t)(F9[byte(temp2,2)]) ^ (uint64_t)(F8[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F4[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(   byte(temp2,7) )) << 56 );
+    temp2 = ( (uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F2[byte(temp2,1)]) ^ (uint64_t)(FA[byte(temp2,2)]) ^ (uint64_t)(F9[byte(temp2,3)]) ^ (uint64_t)(F8[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F4[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )        ) ^
+	    (((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F2[byte(temp2,2)]) ^ (uint64_t)(FA[byte(temp2,3)]) ^ (uint64_t)(F9[byte(temp2,4)]) ^ (uint64_t)(F8[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F4[byte(temp2,7)])) <<  8 ) ^
+	    (((uint64_t)(F4[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F2[byte(temp2,3)]) ^ (uint64_t)(FA[byte(temp2,4)]) ^ (uint64_t)(F9[byte(temp2,5)]) ^ (uint64_t)(F8[byte(temp2,6)]) ^ (uint64_t)(   byte(temp2,7) )) << 16 ) ^
+	    (((uint64_t)(   byte(temp2,0) ) ^ (uint64_t)(F4[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F2[byte(temp2,4)]) ^ (uint64_t)(FA[byte(temp2,5)]) ^ (uint64_t)(F9[byte(temp2,6)]) ^ (uint64_t)(F8[byte(temp2,7)])) << 24 ) ^
+	    (((uint64_t)(F8[byte(temp2,0)]) ^ (uint64_t)(   byte(temp2,1) ) ^ (uint64_t)(F4[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F2[byte(temp2,5)]) ^ (uint64_t)(FA[byte(temp2,6)]) ^ (uint64_t)(F9[byte(temp2,7)])) << 32 ) ^
+	    (((uint64_t)(F9[byte(temp2,0)]) ^ (uint64_t)(F8[byte(temp2,1)]) ^ (uint64_t)(   byte(temp2,2) ) ^ (uint64_t)(F4[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(F2[byte(temp2,6)]) ^ (uint64_t)(FA[byte(temp2,7)])) << 40 ) ^
+	    (((uint64_t)(FA[byte(temp2,0)]) ^ (uint64_t)(F9[byte(temp2,1)]) ^ (uint64_t)(F8[byte(temp2,2)]) ^ (uint64_t)(   byte(temp2,3) ) ^ (uint64_t)(F4[byte(temp2,4)]) ^ (uint64_t)(   byte(temp2,5) ) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(F2[byte(temp2,7)])) << 48 ) ^
+	    (((uint64_t)(F2[byte(temp2,0)]) ^ (uint64_t)(FA[byte(temp2,1)]) ^ (uint64_t)(F9[byte(temp2,2)]) ^ (uint64_t)(F8[byte(temp2,3)]) ^ (uint64_t)(   byte(temp2,4) ) ^ (uint64_t)(F4[byte(temp2,5)]) ^ (uint64_t)(   byte(temp2,6) ) ^ (uint64_t)(   byte(temp2,7) )) << 56 );
+
+#undef	byte
 
     R[1] ^= temp1;
     R[2] ^= ROTL_QWORD(temp1, 29);
@@ -270,8 +266,15 @@ void step512(uint64_t R[8], uint64_t M1, uint64_t M2)
     R[7] ^= ROTL_QWORD(temp2, 13);
 
     // Register swap
-    temp1=R[7];	 R[7]=R[6];	 R[6]=R[5];	 R[5]=R[4]; R[4]=R[3];
-    R[3]=R[2];	 R[2]=R[1];	 R[1]=R[0];	 R[0]=temp1;
+    temp1 = R[7];
+    R[7] = R[6];
+    R[6] = R[5];
+    R[5] = R[4];
+    R[4] = R[3];
+    R[3] = R[2];
+    R[2] = R[1];
+    R[1] = R[0];
+    R[0] = temp1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -294,13 +297,6 @@ void Arirang_Compression256(hashState *state)
     // Counter Addition
     state->workingvar[0] ^= ((uint32_t*)state->counter)[1];
     state->workingvar[4] ^= ((uint32_t*)state->counter)[0];
-
-    // Compression function
-#if defined(BIG_ENDIAN)
-#define GetData(x) x
-#else
-#define GetData(x) ENDIAN_REVERSE_DWORD(x)
-#endif
 
     // Message Schedue
     for (i = 0; i < 16; i++)
@@ -326,9 +322,9 @@ void Arirang_Compression256(hashState *state)
     W[30] = ROTL_DWORD((W[ 2] ^ W[ 8] ^ W[14] ^ W[ 4] ^ K256[14]), 19);
     W[31] = ROTL_DWORD((W[ 7] ^ W[13] ^ W[ 3] ^ W[ 9] ^ K256[15]), 31);
 
-
     // Register Initialize
-    for(i=0;i<8;i++)	R[i] = (uint32_t)state->workingvar[i];
+    for (i = 0; i < 8; i++)
+	R[i] = (uint32_t)state->workingvar[i];
 
     // 1 Round
     step256(R, W[16], W[17]);
@@ -357,7 +353,8 @@ void Arirang_Compression256(hashState *state)
     step256(R, W[13], W[ 0]);
 
     // Feedforward_1
-    for(i=0;i<8;i++)	R[i] ^= state->workingvar[i];
+    for (i = 0; i < 8; i++)
+	R[i] ^= state->workingvar[i];
 
     // 3 Round
     step256(R, W[24], W[25]);
@@ -386,7 +383,8 @@ void Arirang_Compression256(hashState *state)
     step256(R, W[ 1], W[12]);
 
     // Feedforward_2
-    for(i=0;i<8;i++)	state->workingvar[i] ^= R[i];
+    for (i = 0; i < 8; i++)
+	state->workingvar[i] ^= R[i];
 
     state->counter[0]++;
 }
@@ -412,13 +410,6 @@ void Arirang_Compression512(hashState *state)
     state->workingvar[0] ^= state->counter[1];
     state->workingvar[4] ^= state->counter[0];
 
-    // Compression function
-#if defined(BIG_ENDIAN)
-#define GetData(x) x
-#else
-#define GetData(x) ENDIAN_REVERSE_DWORD(x)
-#endif
-
     // Message Scheduling
     for (i = 0; i < 16; i++)
 	W[i] = (uint64_t)(GetData(((uint32_t*)state->block)[2*i+1])) | ((uint64_t)(GetData(((uint32_t*)state->block)[2*i])) << 32);
@@ -443,10 +434,9 @@ void Arirang_Compression512(hashState *state)
     W[30] = ROTL_QWORD((W[ 2] ^ W[ 8] ^ W[14] ^ W[ 4] ^ K512[14]), 37);
     W[31] = ROTL_QWORD((W[ 7] ^ W[13] ^ W[ 3] ^ W[ 9] ^ K512[15]), 59);
 
-
-
     // Register Initialize
-    for(i=0;i<8;i++)	R[i] = state->workingvar[i];
+    for (i = 0; i < 8; i++)
+	R[i] = state->workingvar[i];
 
     // 1 Round
     step512(R, W[16], W[17]);
@@ -475,7 +465,8 @@ void Arirang_Compression512(hashState *state)
     step512(R, W[13], W[ 0]);
 
     // Feedforward_1
-    for(i=0;i<8;i++)	R[i] ^= state->workingvar[i];
+    for (i = 0; i < 8; i++)
+	R[i] ^= state->workingvar[i];
 
     // 3 Round
     step512(R, W[24], W[25]);
@@ -504,10 +495,11 @@ void Arirang_Compression512(hashState *state)
     step512(R, W[ 1], W[12]);
 
     // Feedforward_2
-    for(i=0;i<8;i++)	state->workingvar[i] ^= R[i];
+    for (i = 0; i < 8; i++)
+	state->workingvar[i] ^= R[i];
 
     // Increment Counter
-    state->counter[0]++; if(state->counter[0] == 0) state->counter[1]++;
+    state->counter[0]++; if (state->counter[0] == 0) state->counter[1]++;
 }
 
 HashReturn Init(hashState *state, int hashbitlen)
@@ -536,8 +528,8 @@ HashReturn Init(hashState *state, int hashbitlen)
 	state->workingvar[6] = 0xdb0c2e0d;
 	state->workingvar[7] = 0x47b5481d;
 	state->blocklen = ARIRANG256_BLOCK_LEN;
-    }
-    else if (state->hashbitlen == 256) {
+    } else
+    if (state->hashbitlen == 256) {
 	state->workingvar[0] = 0x6a09e667;
 	state->workingvar[1] = 0xbb67ae85;
 	state->workingvar[2] = 0x3c6ef372;
@@ -548,8 +540,8 @@ HashReturn Init(hashState *state, int hashbitlen)
 	state->workingvar[7] = 0x5be0cd19;
 	state->blocklen = ARIRANG256_BLOCK_LEN;
 
-    }
-    else if (hashbitlen == 384) {
+    } else
+    if (hashbitlen == 384) {
 	state->workingvar[0] = 0xcbbb9d5dc1059ed8ULL;
 	state->workingvar[1] = 0x629a292a367cd507ULL;
 	state->workingvar[2] = 0x9159015a3070dd17ULL;
@@ -559,9 +551,8 @@ HashReturn Init(hashState *state, int hashbitlen)
 	state->workingvar[6] = 0xdb0c2e0d64f98fa7ULL;
 	state->workingvar[7] = 0x47b5481dbefa4fa4ULL;
 	state->blocklen = ARIRANG512_BLOCK_LEN;
-
-    }
-    else if (hashbitlen == 512) {
+    } else
+    if (hashbitlen == 512) {
 	state->workingvar[0] = 0x6a09e667f3bcc908ULL;
 	state->workingvar[1] = 0xbb67ae8584caa73bULL;
 	state->workingvar[2] = 0x3c6ef372fe94f82bULL;
@@ -595,21 +586,25 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
 
     // Update count (number of toatl data bits)
     temp = state->count[0] + (databytelen << 3);
-    if( temp  < state->count[0] )	state->count[1]++;
+    if (temp < state->count[0])	state->count[1]++;
     state->count[0]=temp;
 
-    if ((databytelen > PartLen) || ((databytelen == PartLen) && (state->remainderbit == 0)) ) {
+    if (databytelen > PartLen
+     || (databytelen == PartLen && state->remainderbit == 0))
+    {
 	memcpy(state->block + RemainedLen, data, (int)PartLen);
-	if(state->hashbitlen <257) Arirang_Compression256(state);
+	if (state->hashbitlen < 257) Arirang_Compression256(state);
 	else Arirang_Compression512(state);
 
 	data += PartLen;
 	databytelen -= PartLen;
 	RemainedLen = 0;
 
-	while( (databytelen > state->blocklen) || ((databytelen == state->blocklen) && (state->remainderbit == 0)) ) {
+	while (databytelen > state->blocklen
+	   || (databytelen == state->blocklen && state->remainderbit == 0))
+	{
 	    memcpy((uint8_t *)state->block, data, (int)state->blocklen);
-	    if(state->hashbitlen <257) Arirang_Compression256(state);
+	    if (state->hashbitlen < 257) Arirang_Compression256(state);
 	    else Arirang_Compression512(state);
 
 	    data += state->blocklen;
@@ -630,7 +625,7 @@ HashReturn Final(hashState *state, uint8_t *hashval)
     uint64_t count[2];
 
     // Padding the message
-    if(state->remainderbit){
+    if (state->remainderbit) {
 	// Length of data isn't multiple of 8
 	count[0] = state->count[0] + state->remainderbit - 8;
 	count[1] = state->count[1];
@@ -647,36 +642,40 @@ HashReturn Final(hashState *state, uint8_t *hashval)
 
     if (dwIndex > (state->blocklen - temp)) {
 	memset((uint8_t *)state->block + dwIndex, 0, (int)(state->blocklen - dwIndex));
-	if(state->hashbitlen <257) Arirang_Compression256(state);
+	if (state->hashbitlen < 257) Arirang_Compression256(state);
 	else Arirang_Compression512(state);
 
 	memset((uint8_t *)state->block, 0, (int)state->blocklen - temp);
     } else
 	memset((uint8_t *)state->block + dwIndex, 0, (int)(state->blocklen - dwIndex - temp));
 
-#if defined(LITTLE_ENDIAN)
-    count[0] = ENDIAN_REVERSE_DWORD(((uint32_t*)count)[1])| ((uint64_t)(ENDIAN_REVERSE_DWORD(((uint32_t*)count)[0])) << 32);
-    count[1] = ENDIAN_REVERSE_DWORD(((uint32_t*)count)[3])| ((uint64_t)(ENDIAN_REVERSE_DWORD(((uint32_t*)count)[2])) << 32);
+#if !WORDS_BIGENDIAN
+    count[0] = ENDIAN_REVERSE_DWORD(((uint32_t*)count)[1])
+	| ((uint64_t)(ENDIAN_REVERSE_DWORD(((uint32_t*)count)[0])) << 32);
+    count[1] = ENDIAN_REVERSE_DWORD(((uint32_t*)count)[3])
+	| ((uint64_t)(ENDIAN_REVERSE_DWORD(((uint32_t*)count)[2])) << 32);
 #endif
 
     // Fixed counter value for the last message block
-    if(state->hashbitlen > 257){
+    if (state->hashbitlen > 257) {
 	((uint64_t *)state->block)[state->blocklen/8-2] = count[1];
 	((uint64_t *)state->block)[state->blocklen/8-1] = count[0];
-	state->counter[1]=0xb7e151628aed2a6aULL;
-	state->counter[0]=0xbf7158809cf4f3c7ULL;
+	state->counter[1] = 0xb7e151628aed2a6aULL;
+	state->counter[0] = 0xbf7158809cf4f3c7ULL;
     } else {
 	((uint64_t *)state->block)[state->blocklen/8-1] = count[0];
-	state->counter[0]=0xb7e151628aed2a6aULL;
+	state->counter[0] = 0xb7e151628aed2a6aULL;
     }
 
-    if(state->hashbitlen <257) Arirang_Compression256(state);
+    if (state->hashbitlen <257) Arirang_Compression256(state);
     else Arirang_Compression512(state);
 
-    if(state->hashbitlen <257)
-	for (i = 0; i < (state->hashbitlen >> 3); i += 4)	BIG_D2B((state->workingvar)[(i*2) / 8], &(hashval[i]));
+    if (state->hashbitlen <257)
+	for (i = 0; i < (state->hashbitlen >> 3); i += 4)
+	    BIG_D2B((state->workingvar)[(i*2) / 8], &(hashval[i]));
     else
-	for (i = 0; i < (state->hashbitlen >> 3); i += 8)	BIG_Q2B((state->workingvar)[i / 8], &(hashval[i]));
+	for (i = 0; i < (state->hashbitlen >> 3); i += 8)
+	    BIG_Q2B((state->workingvar)[i / 8], &(hashval[i]));
 
     return SUCCESS;
 }
@@ -686,13 +685,13 @@ HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, 
     hashState State;
     HashReturn hash_return;
 
-    if ( (hash_return = Init(&State, hashbitlen)) != SUCCESS )
+    if ((hash_return = Init(&State, hashbitlen)) != SUCCESS)
 	return hash_return;
 
-    if ( (hash_return = Update(&State, data, databitlen)) != SUCCESS)
+    if ((hash_return = Update(&State, data, databitlen)) != SUCCESS)
 	return hash_return;
 
-    if ( (hash_return = Final(&State, hashval)) !=SUCCESS)
+    if ((hash_return = Final(&State, hashval)) !=SUCCESS)
 	return hash_return;
 
     return SUCCESS;
