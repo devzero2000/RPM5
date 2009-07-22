@@ -14,133 +14,65 @@
  * <thomas.pornin@cryptolog.com>
  */
 
-#ifndef SHABAL_H__
-#define SHABAL_H__
+#ifndef _SHABAL_H
+#define _SHABAL_H
+
+#include "beecrypt/beecrypt.h"
 
 #include <limits.h>
-
-#define	BitSequence	shabal_BitSequence
-#define	DataLength	shabal_DataLength
-#define	hashState	shabal_hashState
-#define	HashReturn	int
-
-#define	Init		shabal_Init
-#define	Update		shabal_Update
-#define	Final		shabal_Final
-#define	Hash		shabal_Hash
-
 #include <stdint.h>
-typedef uint32_t shabal_word32;
 
 #define SHABAL_BLOCK_SIZE   16
 #ifndef SHABAL_PARAM_R
 #define SHABAL_PARAM_R      12
 #endif
 
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
-
-/*
- * State structure for Shabal. A structure instance holds the running
- * state for a hash computation. The function implementation is
- * thread-safe and reentrant, as long as the different has computations
- * use distinct instances of this structure. State structures are
- * meant to be allocated by the caller; allocation can be performed
- * in any suitable memory area, including local variables, global
- * variables, and the heap. The structure contains no pointer value
- * and thus can be moved, duplicated (with memcpy()) or serialized
- * at will. In particular, making a copy of a structure instance takes
- * a "snapshot" of the hash computation at that point, which can be
- * resumed later on with alternate subsequence input data.
- *
- * The "hashbitlen" field contains the intended output length, in bits.
- * It is initialized in the Init() function. The other fields are private
- * and should not be accessed externally.
+/*!\brief Holds all the parameters necessary for the SHABAL algorithm.
+ * \ingroup HASH_shabal_m
  */
-typedef struct {
-    BitSequence buffer[SHABAL_BLOCK_SIZE * 4];
+#ifdef __cplusplus
+struct BEECRYPTAPI shabalParam
+#else
+struct _shabalParam
+#endif
+{
+    byte buffer[SHABAL_BLOCK_SIZE * 4];
     size_t buffer_ptr;
     unsigned last_byte_significant_bits;
     int hashbitlen;
-    shabal_word32 A[SHABAL_PARAM_R];
-    shabal_word32 B[SHABAL_BLOCK_SIZE];
-    shabal_word32 C[SHABAL_BLOCK_SIZE];
-    shabal_word32 Whigh, Wlow;
-} hashState;
+    uint32_t A[SHABAL_PARAM_R];
+    uint32_t B[SHABAL_BLOCK_SIZE];
+    uint32_t C[SHABAL_BLOCK_SIZE];
+    uint32_t Whigh, Wlow;
+};
 
-/*
- * Initialize a state structure for a new hash computation. The intended
- * output length (in bits) is provided as the "hashbitlen" parameter;
- * supported output bit lengths are 192, 224, 256, 384 and 512. The
- * "state" pointer should reference a state structure allocated with
- * the proper alignment.
- *
- * Returned value is SUCCESS (0) on success, or a non-zero error code
- * otherwise (namely BAD_HASHBITLEN if the specified "hashbitlen" is
- * not one of the supported output lengths). On failure, the structure
- * contents are indeterminate.
+#ifndef __cplusplus
+typedef struct _shabalParam shabalParam;
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var shabal256
+ * \brief Holds the full API description of the SHABAL algorithm.
  */
-HashReturn Init(hashState *state, int hashbitlen);
+extern BEECRYPTAPI const hashFunction shabal256;
 
-/*
- * Continue a running hash computation. The state structure is provided.
- * The additional input data is a sequence of bits; the "data"
- * parameter points to the start of that sequence, and the "databitlen"
- * contains the sequence length, expressed in bits.
- *
- * The bits within a byte are ordered from most significant to least
- * significant. The input bit sequence MUST begin with the most
- * significant bit of the first byte pointed to by "data". The bit
- * sequence length MUST be a multiple of 8 if this call is not the
- * last Update() call performed for this hash computation. In other
- * words, the input message chunks MUST consist of entire and aligned
- * bytes, except for the very last input byte, which may be "partial".
- *
- * Returned value is SUCCESS (0) on success, or a non-zero error code
- * otherwise.
- */
-HashReturn Update(hashState *state,
-	const BitSequence *data, DataLength databitlen);
+BEECRYPTAPI
+int shabalInit(shabalParam* sp, int hashbitlen);
 
-/*
- * Terminate a running hash computation. The state structure is provided.
- * The hash output is written out in the buffer pointed to by "hashval";
- * the hash output length was specified when the structure was initialized.
- * The same bit ordering conventions than for input data are used in the
- * hash data output; since all supported lengths are multiple of 8, the
- * hash output necessarily consists of an integral number of bytes.
- *
- * After this call, the state structure contents are indeterminate. If
- * the structure is to be used for a new hash computation, then it
- * shall be initialized again with Init().
- *
- * Returned value is SUCCESS (0) on success, or a non-zero error code
- * otherwise.
- */
-HashReturn Final(hashState *state, BitSequence *hashval);
+BEECRYPTAPI
+int shabalReset(shabalParam* sp);
 
-/*
- * Perform a complete hash computation. This combines calls to Init(),
- * Update() and Final(), with a state structure which this function
- * allocates and releases itself. This function can thus be called
- * independantly of any other runnimg hash computation. The parameters
- * are:
- * - hashbitlen    the output length, in bits (192, 224, 256, 384 or 512)
- * - data          pointer to the input message start
- * - databitlen    input message length, in bits
- * - hashval       pointer to the buffer which receives the hash output
- *
- * Returned value is SUCCESS (0) on success, or a non-zero error code
- * otherwise.
- */
-HashReturn Hash(int hashbitlen, const BitSequence *data,
-	DataLength databitlen, BitSequence *hashval);
+BEECRYPTAPI
+int shabalUpdate(shabalParam* sp, const byte *data, size_t size);
 
-/* Impedance match bytes -> bits length. */
-static inline
-int _shabal_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+BEECRYPTAPI
+int shabalDigest(shabalParam* sp, byte *digest);
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif

@@ -148,14 +148,6 @@
 #include "md6.h"
 
 #include "shabal.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "shavite3.h"
 #undef	BitSequence
@@ -932,6 +924,9 @@ md6:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md6_Update;
 	ctx->Digest = (int (*)(void *, byte *)) md6_final;
 	break;
+#ifdef	NOTYET
+    case PGPHASHALGO_SHABAL_192: ctx->digestsize = 192/8; goto shabal;
+#endif
     case PGPHASHALGO_SHABAL_224: ctx->digestsize = 224/8; goto shabal;
     case PGPHASHALGO_SHABAL_256: ctx->digestsize = 256/8; goto shabal;
     case PGPHASHALGO_SHABAL_384: ctx->digestsize = 384/8; goto shabal;
@@ -940,14 +935,13 @@ shabal:
 	ctx->name = "SHABAL";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(shabal_hashState);
+	ctx->paramsize = sizeof(shabalParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) shabal_Init((shabal_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _shabal_Update;
-	ctx->Digest = (int (*)(void *, byte *)) shabal_Final;
+	(void) shabalInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) shabalReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) shabalUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) shabalDigest;
 	break;
     case PGPHASHALGO_SHAVITE3_224: ctx->digestsize = 224/8; goto shavite3;
     case PGPHASHALGO_SHAVITE3_256: ctx->digestsize = 256/8; goto shavite3;
