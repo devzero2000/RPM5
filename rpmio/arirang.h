@@ -1,31 +1,9 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// PROJECT : Arirang family
-//
-// DATE    : 2008.10.23
-//
-////////////////////////////////////////////////////////////////////////////////
-//
-// FILE  : Arirang_Ref64.h
-//
-// NOTES : Reference code of Arirang family
-// 
-//         Based on 64-bit platform
-//
-////////////////////////////////////////////////////////////////////////////////
+/* Reference code of Arirang family (64 bit). */
+#ifndef	_ARIRANG_H
+#define	_ARIRANG_H
 
-#include <stdlib.h>
 #include <stdint.h>
-
-#define	BitSequence	arirang_BitSequence
-#define	DataLength	arirang_DataLength
-#define	hashState	arirang_hashState
-#define	HashReturn	int
-
-#define	Init		arirang_Init
-#define	Update		arirang_Update
-#define	Final		arirang_Final
-#define	Hash		arirang_Hash
+#include "beecrypt/beecrypt.h"
 
 #define ARIRANG224_BLOCK_LEN	64
 #define ARIRANG224_DIGEST_LEN	28
@@ -39,45 +17,38 @@
 #define ARIRANG512_BLOCK_LEN	128
 #define ARIRANG512_DIGEST_LEN	64
 
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
+struct _arirangParam {
+    int hashbitlen;		// Hash length
+    uint64_t counter[2];	// Counter
+    uint64_t count[2];		// Count
+    uint8_t block[128];		// Message block
+    uint64_t workingvar[8];	// Working variables
+    uint32_t blocklen;		// hash block length
+    uint32_t remainderbit;	// bit_length % 7
+};
 
-typedef struct {
+#ifndef __cplusplus
+typedef struct _arirangParam arirangParam;
+#endif
 
-	// Hash length
-	int hashbitlen;
-	
-	// Counter
-	uint64_t counter[2];
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	// Count
-	uint64_t count[2];
+BEECRYPTAPI
+int arirangInit(arirangParam* sp, int hashbitlen);
 
-	// Message block
-	uint8_t block[ARIRANG512_BLOCK_LEN];
+BEECRYPTAPI
+int arirangReset(arirangParam* sp);
 
-	// Working variables
-	uint64_t workingvar[8];
+BEECRYPTAPI
+int arirangUpdate(arirangParam* sp, const byte *data, size_t size);
 
-	// hash block length
-	uint32_t blocklen;
+BEECRYPTAPI
+int arirangDigest(arirangParam* sp, byte *digest);
 
-	// bit_length % 7
-	uint32_t remainderbit;
-
-} hashState;
-
-HashReturn Init(hashState *state, int hashbitlen);
-
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
-
-HashReturn Final(hashState *state, uint8_t *hashval);
-
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
-
-/* Impedance match bytes -> bits length. */
-static inline
-int _arirang_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+#ifdef __cplusplus
 }
+#endif
+
+#endif
