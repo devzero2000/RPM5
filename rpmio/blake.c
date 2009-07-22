@@ -4,6 +4,7 @@
 
 enum { SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2  };
 
+
 #define NB_ROUNDS32 10
 #define NB_ROUNDS64 14
 
@@ -32,6 +33,7 @@ enum { SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2  };
     U32TO8_BE((p),     (uint32_t)((v) >> 32));	\
     U32TO8_BE((p) + 4, (uint32_t)((v)      ));	\
   } while (0)
+
 
 /*
   adds a salt to the hash function (OPTIONAL)
@@ -144,28 +146,28 @@ static const uint64_t IV64[8]={
 };
 
 
-static  HashReturn compress32( hashState * state, const BitSequence * datablock )
+static HashReturn compress32( hashState * state, const BitSequence * datablock )
 {
-
-#define ROT32(x,n) (((x)<<(32-n))|( (x)>>(n)))
-#define ADD32(x,y)   ((uint32_t)((x) + (y)))
-#define XOR32(x,y)    ((uint32_t)((x) ^ (y)))
-
-#define G32(a,b,c,d,i) \
-  do {\
-    v[a] = XOR32(m[sigma[round][i]], c32[sigma[round][i+1]])+ADD32(v[a],v[b]);\
-    v[d] = ROT32(XOR32(v[d],v[a]),16);\
-    v[c] = ADD32(v[c],v[d]);\
-    v[b] = ROT32(XOR32(v[b],v[c]),12);\
-    v[a] = XOR32(m[sigma[round][i+1]], c32[sigma[round][i]])+ADD32(v[a],v[b]); \
-    v[d] = ROT32(XOR32(v[d],v[a]), 8);\
-    v[c] = ADD32(v[c],v[d]);\
-    v[b] = ROT32(XOR32(v[b],v[c]), 7);\
-  } while (0)
 
   uint32_t v[16];
   uint32_t m[16];
   int round;
+
+#define ROT32(x,n) (((x)<<(32-n))|( (x)>>(n)))
+#define ADD32(x,y)   ((uint32_t)((x) + (y)))
+#define XOR32(x,y)    ((uint32_t)((x) ^ (y)))
+  
+#define G32(a,b,c,d,i)\
+  do { \
+    v[a] = ADD32(v[a],v[b])+XOR32(m[sigma[round][2*i]], c32[sigma[round][2*i+1]]);\
+    v[d] = ROT32(XOR32(v[d],v[a]),16);\
+    v[c] = ADD32(v[c],v[d]);\
+    v[b] = ROT32(XOR32(v[b],v[c]),12);\
+    v[a] = ADD32(v[a],v[b])+XOR32(m[sigma[round][2*i+1]], c32[sigma[round][2*i]]);\
+    v[d] = ROT32(XOR32(v[d],v[a]), 8);\
+    v[c] = ADD32(v[c],v[d]);\
+    v[b] = ROT32(XOR32(v[b],v[c]), 7);\
+  } while (0)
 
   /* get message */
   m[ 0] = U8TO32_BE(datablock + 0);
@@ -185,7 +187,6 @@ static  HashReturn compress32( hashState * state, const BitSequence * datablock 
   m[14] = U8TO32_BE(datablock +56);
   m[15] = U8TO32_BE(datablock +60);
 
-
   /* initialization */
   v[ 0] = state->h32[0];
   v[ 1] = state->h32[1];
@@ -195,63 +196,49 @@ static  HashReturn compress32( hashState * state, const BitSequence * datablock 
   v[ 5] = state->h32[5];
   v[ 6] = state->h32[6];
   v[ 7] = state->h32[7];
-  v[ 8] = state->salt32[0];
-  v[ 8] ^= 0x243F6A88;
-  v[ 9] = state->salt32[1];
-  v[ 9] ^= 0x85A308D3;
-  v[10] = state->salt32[2];
-  v[10] ^= 0x13198A2E;
-  v[11] = state->salt32[3];
-  v[11] ^= 0x03707344;
-  v[12] =  0xA4093822;
-  v[13] =  0x299F31D0;
-  v[14] =  0x082EFA98;
-  v[15] =  0xEC4E6C89;
-  if (state->nullt == 0) { 
-    v[12] ^= state->t32[0];
-    v[13] ^= state->t32[0];
-    v[14] ^= state->t32[1];
-    v[15] ^= state->t32[1];
+  v[ 8] = state->salt32[0] ^ c32[0];
+  v[ 9] = state->salt32[1] ^ c32[1];
+  v[10] = state->salt32[2] ^ c32[2];
+  v[11] = state->salt32[3] ^ c32[3];
+  if (state->nullt) { /* special case t=0 for the last block */
+    v[12] =  c32[4];
+    v[13] =  c32[5];
+    v[14] =  c32[6];
+    v[15] =  c32[7];
+  }
+  else {
+    v[12] = state->t32[0] ^ c32[4];
+    v[13] = state->t32[0] ^ c32[5];
+    v[14] = state->t32[1] ^ c32[6];
+    v[15] = state->t32[1] ^ c32[7];
   }
 
+  /*  do 10 rounds */
   for(round=0; round<NB_ROUNDS32; ++round) {
 
+    /* column step */
     G32( 0, 4, 8,12, 0);
-    G32( 1, 5, 9,13, 2);
-    G32( 2, 6,10,14, 4);
-    G32( 3, 7,11,15, 6);
+    G32( 1, 5, 9,13, 1);
+    G32( 2, 6,10,14, 2);
+    G32( 3, 7,11,15, 3);    
 
-    G32( 3, 4, 9,14,14);   
-    G32( 2, 7, 8,13,12);
-    G32( 0, 5,10,15, 8);
-    G32( 1, 6,11,12,10);
+    /* diagonal step */
+    G32( 0, 5,10,15, 4);
+    G32( 1, 6,11,12, 5);
+    G32( 2, 7, 8,13, 6);
+    G32( 3, 4, 9,14, 7);
 
   }
 
-  state->h32[0] ^= v[ 0]; 
-  state->h32[1] ^= v[ 1];    
-  state->h32[2] ^= v[ 2];    
-  state->h32[3] ^= v[ 3];    
-  state->h32[4] ^= v[ 4];    
-  state->h32[5] ^= v[ 5];    
-  state->h32[6] ^= v[ 6];    
-  state->h32[7] ^= v[ 7];
-  state->h32[0] ^= v[ 8]; 
-  state->h32[1] ^= v[ 9];    
-  state->h32[2] ^= v[10];    
-  state->h32[3] ^= v[11];    
-  state->h32[4] ^= v[12];    
-  state->h32[5] ^= v[13];    
-  state->h32[6] ^= v[14];    
-  state->h32[7] ^= v[15];
-  state->h32[0] ^= state->salt32[0];
-  state->h32[1] ^= state->salt32[1];    
-  state->h32[2] ^= state->salt32[2];    
-  state->h32[3] ^= state->salt32[3];    
-  state->h32[4] ^= state->salt32[0];    
-  state->h32[5] ^= state->salt32[1];    
-  state->h32[6] ^= state->salt32[2];    
-  state->h32[7] ^= state->salt32[3];      
+  /* finalization */
+  state->h32[0] ^= v[ 0]^v[ 8]^state->salt32[0];
+  state->h32[1] ^= v[ 1]^v[ 9]^state->salt32[1];
+  state->h32[2] ^= v[ 2]^v[10]^state->salt32[2];
+  state->h32[3] ^= v[ 3]^v[11]^state->salt32[3];
+  state->h32[4] ^= v[ 4]^v[12]^state->salt32[0];
+  state->h32[5] ^= v[ 5]^v[13]^state->salt32[1];
+  state->h32[6] ^= v[ 6]^v[14]^state->salt32[2];
+  state->h32[7] ^= v[ 7]^v[15]^state->salt32[3];
 
   return SUCCESS;
 }
@@ -260,26 +247,25 @@ static  HashReturn compress32( hashState * state, const BitSequence * datablock 
 static HashReturn compress64( hashState * state, const BitSequence * datablock )
 {
 
+  uint64_t v[16];
+  uint64_t m[16];
+  int round;
+
 #define ROT64(x,n) (((x)<<(64-n))|( (x)>>(n)))
 #define ADD64(x,y)   ((uint64_t)((x) + (y)))
 #define XOR64(x,y)    ((uint64_t)((x) ^ (y)))
   
 #define G64(a,b,c,d,i)\
   do { \
-    v[a] = ADD64(v[a],v[b])+XOR64(m[sigma[round][i]], c64[sigma[round][i+1]]);\
+    v[a] = ADD64(v[a],v[b])+XOR64(m[sigma[round][2*i]], c64[sigma[round][2*i+1]]);\
     v[d] = ROT64(XOR64(v[d],v[a]),32);\
     v[c] = ADD64(v[c],v[d]);\
     v[b] = ROT64(XOR64(v[b],v[c]),25);\
-    v[a] = ADD64(v[a],v[b])+XOR64(m[sigma[round][i+1]], c64[sigma[round][i]]);\
+    v[a] = ADD64(v[a],v[b])+XOR64(m[sigma[round][2*i+1]], c64[sigma[round][2*i]]);\
     v[d] = ROT64(XOR64(v[d],v[a]),16);\
     v[c] = ADD64(v[c],v[d]);\
     v[b] = ROT64(XOR64(v[b],v[c]),11);\
   } while (0)
-
-  uint64_t v[16];
-  uint64_t m[16];
-  int round;
-
 
   /* get message */
   m[ 0] = U8TO64_BE(datablock +  0);
@@ -299,7 +285,6 @@ static HashReturn compress64( hashState * state, const BitSequence * datablock )
   m[14] = U8TO64_BE(datablock +112);
   m[15] = U8TO64_BE(datablock +120);
 
-
   /* initialization */
   v[ 0] = state->h64[0];
   v[ 1] = state->h64[1];
@@ -309,69 +294,52 @@ static HashReturn compress64( hashState * state, const BitSequence * datablock )
   v[ 5] = state->h64[5];
   v[ 6] = state->h64[6];
   v[ 7] = state->h64[7];
-  v[ 8] = state->salt64[0];
-  v[ 8] ^= 0x243F6A8885A308D3ULL;
-  v[ 9] = state->salt64[1];
-  v[ 9] ^= 0x13198A2E03707344ULL;
-  v[10] = state->salt64[2];
-  v[10] ^= 0xA4093822299F31D0ULL;
-  v[11] = state->salt64[3];
-  v[11] ^= 0x082EFA98EC4E6C89ULL;
-
-
-  v[12] =  0x452821E638D01377ULL;
-  v[13] =  0xBE5466CF34E90C6CULL;
-  v[14] =  0xC0AC29B7C97C50DDULL;
-  v[15] =  0x3F84D5B5B5470917ULL;
-
-  if (state->nullt == 0) { 
-    v[12] ^= state->t64[0];
-    v[13] ^= state->t64[0];
-    v[14] ^= state->t64[1];
-    v[15] ^= state->t64[1];
+  v[ 8] = state->salt64[0] ^ c64[0];
+  v[ 9] = state->salt64[1] ^ c64[1];
+  v[10] = state->salt64[2] ^ c64[2];
+  v[11] = state->salt64[3] ^ c64[3];
+  if (state->nullt) { 
+    v[12] =  c64[4];
+    v[13] =  c64[5];
+    v[14] =  c64[6];
+    v[15] =  c64[7];
   }
+  else {
+    v[12] = state->t64[0] ^ c64[4];
+    v[13] = state->t64[0] ^ c64[5];
+    v[14] = state->t64[1] ^ c64[6];
+    v[15] = state->t64[1] ^ c64[7];
+  }  
 
+  /*  do 14 rounds */
   for(round=0; round<NB_ROUNDS64; ++round) {
-    
+
+    /* column step */
     G64( 0, 4, 8,12, 0);
-    G64( 1, 5, 9,13, 2);
-    G64( 2, 6,10,14, 4);
-    G64( 3, 7,11,15, 6);    
-
-    G64( 3, 4, 9,14,14);   
-    G64( 2, 7, 8,13,12);
-    G64( 0, 5,10,15, 8);
-    G64( 1, 6,11,12,10);
-
+    G64( 1, 5, 9,13, 1);
+    G64( 2, 6,10,14, 2);
+    G64( 3, 7,11,15, 3);    
+    /* diagonal step */
+    G64( 0, 5,10,15, 4);
+    G64( 1, 6,11,12, 5);
+    G64( 2, 7, 8,13, 6);
+    G64( 3, 4, 9,14, 7);
   }
 
-  state->h64[0] ^= v[ 0]; 
-  state->h64[1] ^= v[ 1];    
-  state->h64[2] ^= v[ 2];    
-  state->h64[3] ^= v[ 3];    
-  state->h64[4] ^= v[ 4];    
-  state->h64[5] ^= v[ 5];    
-  state->h64[6] ^= v[ 6];    
-  state->h64[7] ^= v[ 7];
-  state->h64[0] ^= v[ 8]; 
-  state->h64[1] ^= v[ 9];    
-  state->h64[2] ^= v[10];    
-  state->h64[3] ^= v[11];    
-  state->h64[4] ^= v[12];    
-  state->h64[5] ^= v[13];    
-  state->h64[6] ^= v[14];    
-  state->h64[7] ^= v[15];
-  state->h64[0] ^= state->salt64[0];
-  state->h64[1] ^= state->salt64[1];    
-  state->h64[2] ^= state->salt64[2];    
-  state->h64[3] ^= state->salt64[3];    
-  state->h64[4] ^= state->salt64[0];    
-  state->h64[5] ^= state->salt64[1];    
-  state->h64[6] ^= state->salt64[2];    
-  state->h64[7] ^= state->salt64[3];   
+
+  /* finalization */
+  state->h64[0] ^= v[ 0]^v[ 8]^state->salt64[0];
+  state->h64[1] ^= v[ 1]^v[ 9]^state->salt64[1];
+  state->h64[2] ^= v[ 2]^v[10]^state->salt64[2];
+  state->h64[3] ^= v[ 3]^v[11]^state->salt64[3];
+  state->h64[4] ^= v[ 4]^v[12]^state->salt64[0];
+  state->h64[5] ^= v[ 5]^v[13]^state->salt64[1];
+  state->h64[6] ^= v[ 6]^v[14]^state->salt64[2];
+  state->h64[7] ^= v[ 7]^v[15]^state->salt64[3];
 
   return SUCCESS;
 }
+
 
 
 HashReturn Init( hashState * state, int hashbitlen )
