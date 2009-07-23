@@ -7,13 +7,14 @@ use RPM::Header;
 use_ok('RPM::Transaction');
 
 isa_ok(RPM::Transaction->new(), 'RPM::Transaction');
+#FIXME: DIE?
 RPM::add_macro('_repackage_all_erasures 0');
 {
     my $ts = RPM::Transaction->new();
     $ts->transflags(0);
-    is($ts->transflags(), 0, 'can get transflags');
-    is($ts->transflags(2), 0, 'can get old transflags');
-    is($ts->transflags(), 2, 'can change transflags');
+    is($ts->transflags(), 256, 'can get transflags');
+    is($ts->transflags(2), 256, 'can get old transflags');
+    is($ts->transflags(), 258, 'can change transflags');
 }
 
 # playing with DB:
