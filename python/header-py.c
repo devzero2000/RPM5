@@ -930,16 +930,28 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     EVR_t a = rpmEVRnew(RPMSENSE_EQUAL, 1);
     EVR_t b = rpmEVRnew(RPMSENSE_EQUAL, 1);
     int rc;
+    PyObject *aTuple, *bTuple;
 
-    /* XXX FIXME: labelCompare cannot specify Distepoch: field */
-    if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&a->F[RPMEVR_E], &a->F[RPMEVR_V], &a->F[RPMEVR_R],
-			&b->F[RPMEVR_E], &b->F[RPMEVR_V], &b->F[RPMEVR_R]))
+    if (!PyArg_ParseTuple(args, "OO", &aTuple, &bTuple) ||
+	    !PyArg_ParseTuple(aTuple, "zzz|z",
+		&a->F[RPMEVR_E], &a->F[RPMEVR_V], &a->F[RPMEVR_R], &a->F[RPMEVR_D]) ||
+	    !PyArg_ParseTuple(bTuple, "zzz|z",
+		&b->F[RPMEVR_E], &b->F[RPMEVR_V], &b->F[RPMEVR_R], &b->F[RPMEVR_D]))
     {
 	a = rpmEVRfree(a);
 	b = rpmEVRfree(b);
 	return NULL;
     }
+
+    /* XXX HACK: postpone committing to single "missing" value for now. */
+    if (a->F[RPMEVR_E] == NULL)	a->F[RPMEVR_E] = "0";
+    if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
+    if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
+    if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
+    if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
+    if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
+    if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";
+    if (b->F[RPMEVR_D] == NULL)	b->F[RPMEVR_D] = "";
 
     rc = rpmEVRcompare(a, b);
 
