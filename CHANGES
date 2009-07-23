@@ -1,4 +1,5 @@
 5.2.0 -> 5.2.1:
+    - proyvind: python: add te.D() to return element distepoch.
     - proyvind: python: handle None values in labelCompare() again.
     - proyvind: python: handle DISTEPOCH in labelCompare().
     - jbj: python: fix: missing changelog in repo-md can segfault (David Smid).
