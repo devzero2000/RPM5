@@ -33,6 +33,11 @@ typedef struct _hamsiParam hamsiParam;
 extern "C" {
 #endif
 
+/*!\var hamsi256
+ * \brief Holds the full API description of the HAMSI algorithm.
+ */
+extern BEECRYPTAPI const hashFunction hamsi256;
+
 BEECRYPTAPI
 int hamsiInit(hamsiParam* sp, int hashbitlen);
 

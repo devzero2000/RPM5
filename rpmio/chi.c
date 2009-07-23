@@ -13,11 +13,20 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #include <assert.h>
-#include <string.h>
-#include <stdio.h>
 
 #include "chi.h"
+
+const hashFunction chi256 = {
+    .name = "CHI-256",
+    .paramsize = sizeof(chiParam),
+    .blocksize = 64,
+    .digestsize = 256/8,	/* XXX default to CHI-256 */
+    .reset = (hashFunctionReset) chiReset,
+    .update = (hashFunctionUpdate) chiUpdate,
+    .digest = (hashFunctionDigest) chiDigest
+};
 
 /*
  * Error code for external Interface

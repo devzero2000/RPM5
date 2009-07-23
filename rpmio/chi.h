@@ -64,6 +64,11 @@ typedef struct _chiParam chiParam;
 extern "C" {
 #endif
 
+/*!\var chi256
+ * \brief Holds the full API description of the CHI algorithm.
+ */
+extern BEECRYPTAPI const hashFunction chi256;
+
 BEECRYPTAPI
 int chiInit(chiParam* sp, int hashbitlen); 
 

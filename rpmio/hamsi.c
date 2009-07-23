@@ -1,7 +1,6 @@
-#include <string.h>
-#include <stdlib.h>
 
 #include "hamsi.h"
+
 enum { SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2 };
 
 #ifdef	UNUSED
@@ -9,6 +8,16 @@ enum { SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2 };
 typedef unsigned int   Row __attribute__ ((vector_size (16))); // 128 bits
 /* ===== */
 #endif
+
+const hashFunction hamsi256 = {
+    .name = "HAMSI-256",
+    .paramsize = sizeof(hamsiParam),
+    .blocksize = 64,
+    .digestsize = 256/8,	/* XXX default to HAMSI-256 */
+    .reset = (hashFunctionReset) hamsiReset,
+    .update = (hashFunctionUpdate) hamsiUpdate,
+    .digest = (hashFunctionDigest) hamsiDigest
+};
 
 /* ===== "hamsi-tables.h" */
 // round constants
