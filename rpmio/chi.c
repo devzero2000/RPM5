@@ -40,24 +40,8 @@ enum {
  * BAD_HASHVALPTR       Pointer for returning hash value invalid.
  */
 
-typedef uint32_t WORD32;
-typedef uint64_t WORD64;
-
-/*
- * Function inlining
- */
-#if !defined(USE_INLINE) && !defined(DONT_USE_INLINE)
-#   define USE_INLINE
-#endif
-
-#ifdef USE_INLINE
-#   if defined(_WIN32) || defined(_WIN64)
-#       define INLINE __inline
-#   else
-#       define INLINE inline
-#   endif
-#else
-#   define INLINE
+#if !defined(INLINE)
+#define	INLINE	inline
 #endif
 
 /*
@@ -106,8 +90,7 @@ typedef enum {
 /*
  * Step constants
  */
-static const WORD64
-K[] = {
+static const uint64_t K[] = {
     0x9B05688C2B3E6C1FULL, 0xDBD99E6FF3C90BDCULL,
     0x4DBC64712A5BB168ULL, 0x767E27C3CF76C8E7ULL,
     0x21EE9AC5EF4C823AULL, 0xB36CCFC1204A9BD8ULL,
@@ -153,22 +136,19 @@ K[] = {
 /*
  * Initial state values for different bit lengths
  */
-static const WORD64
-_224_init[] = {
+static const uint64_t _224_init[] = {
     0xA54FF53A5F1D36F1ULL, 0xCEA7E61FC37A20D5ULL,
     0x4A77FE7B78415DFCULL, 0x8E34A6FE8E2DF92AULL,
     0x4E5B408C9C97D4D8ULL, 0x24A05EEE29922401ULL
 };
 
-static const WORD64
-_256_init[] = {
+static const uint64_t _256_init[] = {
     0x510E527FADE682D1ULL, 0xDE49E330E42B4CBBULL,
     0x29BA5A455316E0C6ULL, 0x5507CD18E9E51E69ULL,
     0x4F9B11C81009A030ULL, 0xE3D3775F155385C6ULL
 };
 
-static const WORD64
-_384_init[] = {
+static const uint64_t _384_init[] = {
     0xA54FF53A5F1D36F1ULL, 0xCEA7E61FC37A20D5ULL,
     0x4A77FE7B78415DFCULL, 0x8E34A6FE8E2DF92AULL,
     0x4E5B408C9C97D4D8ULL, 0x24A05EEE29922401ULL,
@@ -176,8 +156,7 @@ _384_init[] = {
     0x8A074C0F4D999610ULL
 };
 
-static const WORD64
-_512_init[] = {
+static const uint64_t _512_init[] = {
     0x510E527FADE682D1ULL, 0xDE49E330E42B4CBBULL,
     0x29BA5A455316E0C6ULL, 0x5507CD18E9E51E69ULL,
     0x4F9B11C81009A030ULL, 0xE3D3775F155385C6ULL,
@@ -185,71 +164,54 @@ _512_init[] = {
     0x9AF94A7C48BBD5B6ULL
 };
 
-
 /*
  * Regardless of endian-ness converts a byte to / from a big endian array of
  * bytes.
  */
 #define BYTE2WORD(b) (                          \
-          (((WORD64)(b)[0] & 0xFF) << 56)       \
-        | (((WORD64)(b)[1] & 0xFF) << 48)       \
-        | (((WORD64)(b)[2] & 0xFF) << 40)       \
-        | (((WORD64)(b)[3] & 0xFF) << 32)       \
-        | (((WORD64)(b)[4] & 0xFF) << 24)       \
-        | (((WORD64)(b)[5] & 0xFF) << 16)       \
-        | (((WORD64)(b)[6] & 0xFF) << 8)        \
-        | (((WORD64)(b)[7] & 0xFF))             \
+          (((uint64_t)(b)[0] & 0xFF) << 56)       \
+        | (((uint64_t)(b)[1] & 0xFF) << 48)       \
+        | (((uint64_t)(b)[2] & 0xFF) << 40)       \
+        | (((uint64_t)(b)[3] & 0xFF) << 32)       \
+        | (((uint64_t)(b)[4] & 0xFF) << 24)       \
+        | (((uint64_t)(b)[5] & 0xFF) << 16)       \
+        | (((uint64_t)(b)[6] & 0xFF) << 8)        \
+        | (((uint64_t)(b)[7] & 0xFF))             \
     )
 
 /*
- * Rotate WORD32 to the right by r
+ * Rotate uint32_t to the right by r
  */
-static INLINE WORD32
-rotr32
-(
-    WORD32  X,
-    int     r
-)
+static INLINE
+uint32_t rotr32(uint32_t X, int r)
 {
     return (X >> r) | (X << (32 - r));
 }
 
 /*
- * Rotate WORD64 to the right by r
+ * Rotate uint64_t to the right by r
  */
-static INLINE WORD64
-rotr64
-(
-    WORD64  X,
-    int     r
-)
+static INLINE
+uint64_t rotr64(uint64_t X, int r)
 {
     return (X >> r) | (X << (64 - r));
 }
 
 /*
- * Rotate Upper and Lower 32 bits of WORD64 to
+ * Rotate Upper and Lower 32 bits of uint64_t to
  * the right by r1 and r2 respectively.
  */
-static INLINE WORD64
-drotr32
-(
-    WORD64  X,
-    int     r1,
-    int     r2
-)
+static INLINE
+uint64_t drotr32(uint64_t X, int r1, int r2)
 {
-    return (WORD64)rotr32((WORD32)(X >> 32), r1) << 32 | rotr32((WORD32)X, r2);
+    return (uint64_t)rotr32((uint32_t)(X >> 32), r1) << 32 | rotr32((uint32_t)X, r2);
 }
 
 /*
  * Byte swap
  */
-static INLINE WORD64
-swap8
-(
-    WORD64 X
-)
+static INLINE
+uint64_t swap8(uint64_t X)
 {
     X = (X & 0xFFFFFFFF00000000ULL) >> 32 | (X & 0x00000000FFFFFFFFULL) << 32;
     X = (X & 0xFFFF0000FFFF0000ULL) >> 16 | (X & 0x0000FFFF0000FFFFULL) << 16;
@@ -259,25 +221,16 @@ swap8
 }
 
 /*
- * Swap the Upper and Lower 32 bits of WORD64
+ * Swap the Upper and Lower 32 bits of uint64_t
  */
-static INLINE WORD64
-swap32
-(
-    WORD64 X
-)
+static INLINE
+uint64_t swap32(uint64_t X)
 {
     return rotr64(X, 32);
 }
 
-static INLINE WORD64
-map0
-(
-    WORD64  R,
-    WORD64  S,
-    WORD64  T,
-    WORD64  U
-)
+static INLINE
+uint64_t map0(uint64_t R, uint64_t S, uint64_t T, uint64_t U)
 {
     return    ( R & ~S &  T &  U)
             | (     ~S & ~T & ~U)
@@ -286,14 +239,8 @@ map0
             | ( R      & ~T & ~U);
 }
 
-static INLINE WORD64
-map1
-(
-    WORD64  R,
-    WORD64  S,
-    WORD64  T,
-    WORD64  U
-)
+static INLINE
+uint64_t map1(uint64_t R, uint64_t S, uint64_t T, uint64_t U)
 {
     return    ( R &  S &  T & ~U)
             | ( R & ~S & ~T & ~U)
@@ -302,14 +249,8 @@ map1
             | (~R           &  U);
 }
 
-static INLINE WORD64
-map2
-(
-    WORD64  R,
-    WORD64  S,
-    WORD64  T,
-    WORD64  U
-)
+static INLINE
+uint64_t map2(uint64_t R, uint64_t S, uint64_t T, uint64_t U)
 {
     return    (~R & ~S &  T &  U)
             | (~R &  S &  T & ~U)
@@ -322,20 +263,11 @@ map2
 /*
  * Non-linear MAP function.
  */
-static INLINE void
-map
-(
-    WORD64  R,
-    WORD64  S,
-    WORD64  T,
-    WORD64  U,
-    WORD64  *X,
-    WORD64  *Y,
-    WORD64  *Z,
-    int     i
-)
+static INLINE
+void map(uint64_t R, uint64_t S, uint64_t T, uint64_t U,
+		uint64_t *X, uint64_t *Y, uint64_t *Z, int i)
 {
-    WORD64  M[3];
+    uint64_t  M[3];
 
     M[0] = map0(R, S, T, U);
     M[1] = map1(R, S, T, U);
@@ -351,47 +283,32 @@ map
  */
 #define _256_MAP map
 
-static INLINE WORD64
-_256_theta0
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _256_theta0(uint64_t X)
 {
     return drotr32(X, 21, 21) ^ drotr32(X, 26, 26) ^ drotr32(X, 30, 30);
 }
 
-static INLINE WORD64
-_256_theta1
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _256_theta1(uint64_t X)
 {
     return drotr32(X, 14, 14) ^ drotr32(X, 24, 24) ^ drotr32(X, 31, 31);
 }
 
-static INLINE WORD64
-_256_mu0
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _256_mu0(uint64_t X)
 {
     return rotr64(X, 36) ^ rotr64(X, 18) ^ (X >> 1);
 }
 
-static INLINE WORD64
-_256_mu1
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _256_mu1(uint64_t X)
 {
     return rotr64(X, 59) ^ rotr64(X, 37) ^ (X >> 10);
 }
 
-static void
-_256_message_expansion
-(
-    WORD64  *W
-)
+static
+void _256_message_expansion(uint64_t *W)
 {
     int     i;
 
@@ -399,18 +316,9 @@ _256_message_expansion
         W[i] = W[i - 8] ^ _256_mu0(W[i - 7]) ^ _256_mu1(W[i - 2]);
 }
 
-static INLINE void
-_256_premix
-(
-    WORD64  A,
-    WORD64  B,
-    WORD64  D,
-    WORD64  E,
-    WORD64  *preR,
-    WORD64  *preS,
-    WORD64  *preT,
-    WORD64  *preU
-)
+static INLINE
+void _256_premix(uint64_t A, uint64_t B, uint64_t D, uint64_t E,
+		uint64_t *preR, uint64_t *preS, uint64_t *preT, uint64_t *preU)
 {
     *preR = drotr32(B, 8, 8)          ^ drotr32(swap32(D),  5,  1);
     *preS = A                         ^ drotr32(swap32(D), 18, 17);
@@ -418,20 +326,10 @@ _256_premix
     *preU = drotr32(A, 17, 12)        ^ drotr32(swap32(E),  2, 23);
 }
 
-static INLINE void
-_256_datainput
-(
-    WORD64  preR,
-    WORD64  preS,
-    WORD64  preT,
-    WORD64  preU,
-    WORD64  V0,
-    WORD64  V1,
-    WORD64  *R,
-    WORD64  *S,
-    WORD64  *T,
-    WORD64  *U
-)
+static INLINE
+void _256_datainput(uint64_t preR, uint64_t preS, uint64_t preT, uint64_t preU,
+		uint64_t V0, uint64_t V1,
+		uint64_t *R, uint64_t *S, uint64_t *T, uint64_t *U)
 {
     *R = preR ^ V0;
     *S = preS ^ V1;
@@ -439,18 +337,10 @@ _256_datainput
     *U = preU ^ _256_theta1(V1);
 }
 
-static INLINE void
-_256_postmix
-(
-    WORD64  X,
-    WORD64  Y,
-    WORD64  Z,
-    WORD64  *XX,
-    WORD64  *YY,
-    WORD64  *ZZ,
-    WORD64  *AA,
-    WORD64  *DD
-)
+static INLINE
+void _256_postmix(uint64_t X, uint64_t Y, uint64_t Z,
+		uint64_t *XX, uint64_t *YY, uint64_t *ZZ,
+		uint64_t *AA, uint64_t *DD)
 {
     *XX = X;
     *YY = swap8(drotr32(Y, 5, 5));
@@ -463,35 +353,30 @@ _256_postmix
  * 256 bit update routine.  Called from hash().
  *
  * Parameters:
- *      state   The hash state.
+ *      sp      The hash state.
  *      final   1 for the final block in the hash, 0 for intermediate blocks.
  */
-static void
-_256_update
-(
-    hashState   *state,
-    int         final
-)
+static
+void _256_update(chiParam *sp, int final)
 {
     int         i;
 
-    WORD64      W[2*_256_STEPS];
-    WORD64      A, B, C, D, E, F;
-    WORD64      preR, preS, preT, preU;
-    WORD64      V0, V1;
-    WORD64      R, S, T, U;
-    WORD64      X, Y, Z, XX, YY, ZZ;
-    WORD64      AA, DD, newA, newD;
+    uint64_t      W[2*_256_STEPS];
+    uint64_t      A, B, C, D, E, F;
+    uint64_t      preR, preS, preT, preU;
+    uint64_t      V0, V1;
+    uint64_t      R, S, T, U;
+    uint64_t      X, Y, Z, XX, YY, ZZ;
+    uint64_t      AA, DD, newA, newD;
 
-    A = state->hs_State.small[0];
-    B = state->hs_State.small[1];
-    C = state->hs_State.small[2];
-    D = state->hs_State.small[3];
-    E = state->hs_State.small[4];
-    F = state->hs_State.small[5];
+    A = sp->hs_State.small[0];
+    B = sp->hs_State.small[1];
+    C = sp->hs_State.small[2];
+    D = sp->hs_State.small[3];
+    E = sp->hs_State.small[4];
+    F = sp->hs_State.small[5];
 
-    if (final)
-    {
+    if (final) {
         A = rotr64(A, 1);
         B = rotr64(B, 1);
         C = rotr64(C, 1);
@@ -501,11 +386,10 @@ _256_update
     }
 
     for (i = 0; i < _256_MSG_N; ++i)
-        W[i] = BYTE2WORD(state->hs_DataBuffer + 8 * i);
+        W[i] = BYTE2WORD(sp->hs_DataBuffer + 8 * i);
     _256_message_expansion(W);
 
-    for (i = 0; i < _256_STEPS; ++i)
-    {
+    for (i = 0; i < _256_STEPS; ++i) {
         _256_premix(A, B, D, E, &preR, &preS, &preT, &preU);
         V0 = W[2*i  ] ^ K[2*i  ];
         V1 = W[2*i+1] ^ K[2*i+1];
@@ -523,66 +407,49 @@ _256_update
         C = B; B = A; A = newA;
     }
 
-    state->hs_State.small[0] = rotr64(state->hs_State.small[0], 1) ^ A;
-    state->hs_State.small[1] = rotr64(state->hs_State.small[1], 1) ^ B;
-    state->hs_State.small[2] = rotr64(state->hs_State.small[2], 1) ^ C;
-    state->hs_State.small[3] = rotr64(state->hs_State.small[3], 1) ^ D;
-    state->hs_State.small[4] = rotr64(state->hs_State.small[4], 1) ^ E;
-    state->hs_State.small[5] = rotr64(state->hs_State.small[5], 1) ^ F;
+    sp->hs_State.small[0] = rotr64(sp->hs_State.small[0], 1) ^ A;
+    sp->hs_State.small[1] = rotr64(sp->hs_State.small[1], 1) ^ B;
+    sp->hs_State.small[2] = rotr64(sp->hs_State.small[2], 1) ^ C;
+    sp->hs_State.small[3] = rotr64(sp->hs_State.small[3], 1) ^ D;
+    sp->hs_State.small[4] = rotr64(sp->hs_State.small[4], 1) ^ E;
+    sp->hs_State.small[5] = rotr64(sp->hs_State.small[5], 1) ^ F;
 }
-
 
 /*
  * CHI-512
  */
 #define _512_MAP map
 
-static INLINE WORD64
-_512_theta0
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _512_theta0(uint64_t X)
 {
     return rotr64(X,  5) ^ rotr64(X,  6) ^ rotr64(X, 43);
 }
 
-static INLINE WORD64
-_512_theta1
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _512_theta1(uint64_t X)
 {
     return rotr64(X, 20) ^ rotr64(X, 30) ^ rotr64(X, 49);
 }
 
-static INLINE WORD64
-_512_mu0
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _512_mu0(uint64_t X)
 {
     return rotr64(X, 36) ^ rotr64(X, 18) ^ (X >> 1);
 }
 
-static INLINE WORD64
-_512_mu1
-(
-    WORD64  X
-)
+static INLINE
+uint64_t _512_mu1(uint64_t X)
 {
     return rotr64(X, 60) ^ rotr64(X, 30) ^ (X >> 3);
 }
 
-static void
-_512_message_expansion
-(
-    WORD64  *W
-)
+static
+void _512_message_expansion(uint64_t  *W)
 {
     int     i;
 
-    for (i = 16; i < 2 * _512_STEPS; ++i)
-    {
+    for (i = 16; i < 2 * _512_STEPS; ++i) {
         W[i] = W[i - 16]
              ^ W[i -  7]
              ^ _512_mu0(W[i - 15])
@@ -590,20 +457,10 @@ _512_message_expansion
     }
 }
 
-static INLINE void
-_512_premix
-(
-    WORD64 A,
-    WORD64 B,
-    WORD64 D,
-    WORD64 E,
-    WORD64 G,
-    WORD64 P,
-    WORD64 *preR,
-    WORD64 *preS,
-    WORD64 *preT,
-    WORD64 *preU
-)
+static INLINE
+void _512_premix(uint64_t A, uint64_t B, uint64_t D, uint64_t E,
+		uint64_t G, uint64_t P,
+		uint64_t *preR, uint64_t *preS, uint64_t *preT, uint64_t *preU)
 {
     *preR = rotr64(B, 11) ^ rotr64(D,  8) ^ rotr64(G, 13);
     *preS = A             ^ rotr64(D, 21) ^ rotr64(G, 29);
@@ -611,20 +468,10 @@ _512_premix
     *preU = rotr64(A, 26) ^ rotr64(E, 40) ^ rotr64(G, 50);
 }
 
-static INLINE void
-_512_datainput
-(
-    WORD64 preR,
-    WORD64 preS,
-    WORD64 preT,
-    WORD64 preU,
-    WORD64 V0,
-    WORD64 V1,
-    WORD64 *R,
-    WORD64 *S,
-    WORD64 *T,
-    WORD64 *U
-)
+static INLINE
+void _512_datainput(uint64_t preR, uint64_t preS, uint64_t preT, uint64_t preU,
+		uint64_t V0, uint64_t V1, uint64_t *R, uint64_t *S, uint64_t *T,
+		uint64_t *U)
 {
     *R = preR ^ V0;
     *S = preS ^ V1;
@@ -632,21 +479,12 @@ _512_datainput
     *U = preU ^ _512_theta1(V1);
 }
 
-static INLINE void
-_512_postmix
-(
-    WORD64 X,
-    WORD64 Y,
-    WORD64 Z,
-    WORD64 *XX,
-    WORD64 *YY,
-    WORD64 *ZZ,
-    WORD64 *AA,
-    WORD64 *DD,
-    WORD64 *GG
-)
+static INLINE
+void _512_postmix(uint64_t X, uint64_t Y, uint64_t Z,
+		uint64_t *XX, uint64_t *YY, uint64_t *ZZ,
+		uint64_t *AA, uint64_t *DD, uint64_t *GG)
 {
-    WORD64 temp;
+    uint64_t temp;
 
     *XX = X;
     *YY = swap8(rotr64(Y, 31));
@@ -666,38 +504,33 @@ _512_postmix
  * 512 bit update routine.  Called from hash().
  *
  * Parameters:
- *      state   The hash state.
+ *      sp      The hash state.
  *      final   1 for the final block in the hash, 0 for intermediate blocks.
  */
-static void
-_512_update
-(
-    hashState   *state,
-    int         final
-)
+static
+void _512_update(chiParam *sp, int final)
 {
     int         i;
 
-    WORD64      W[2*_512_STEPS];
-    WORD64      A, B, C, D, E, F, G, P, Q;
-    WORD64      preR, preS, preT, preU;
-    WORD64      V0, V1;
-    WORD64      R, S, T, U;
-    WORD64      X, Y, Z, XX, YY, ZZ;
-    WORD64      AA, DD, GG, newA, newD, newG;
+    uint64_t      W[2*_512_STEPS];
+    uint64_t      A, B, C, D, E, F, G, P, Q;
+    uint64_t      preR, preS, preT, preU;
+    uint64_t      V0, V1;
+    uint64_t      R, S, T, U;
+    uint64_t      X, Y, Z, XX, YY, ZZ;
+    uint64_t      AA, DD, GG, newA, newD, newG;
 
-    A = state->hs_State.large[0];
-    B = state->hs_State.large[1];
-    C = state->hs_State.large[2];
-    D = state->hs_State.large[3];
-    E = state->hs_State.large[4];
-    F = state->hs_State.large[5];
-    G = state->hs_State.large[6];
-    P = state->hs_State.large[7];
-    Q = state->hs_State.large[8];
+    A = sp->hs_State.large[0];
+    B = sp->hs_State.large[1];
+    C = sp->hs_State.large[2];
+    D = sp->hs_State.large[3];
+    E = sp->hs_State.large[4];
+    F = sp->hs_State.large[5];
+    G = sp->hs_State.large[6];
+    P = sp->hs_State.large[7];
+    Q = sp->hs_State.large[8];
 
-    if (final)
-    {
+    if (final) {
         A = rotr64(A, 1);
         B = rotr64(B, 1);
         C = rotr64(C, 1);
@@ -710,11 +543,10 @@ _512_update
     }
 
     for (i = 0; i < _512_MSG_N; ++i)
-        W[i] = BYTE2WORD(state->hs_DataBuffer + 8*i);
+        W[i] = BYTE2WORD(sp->hs_DataBuffer + 8*i);
     _512_message_expansion(W);
 
-    for (i = 0; i < _512_STEPS; ++i)
-    {
+    for (i = 0; i < _512_STEPS; ++i) {
         _512_premix(A, B, D, E, G, P, &preR, &preS, &preT, &preU);
         V0 = W[2*i  ] ^ K[2*i  ];
         V1 = W[2*i+1] ^ K[2*i+1];
@@ -734,15 +566,15 @@ _512_update
         C = B; B = A; A = newA;
     }
 
-    state->hs_State.large[0] = rotr64(state->hs_State.large[0], 1) ^ A;
-    state->hs_State.large[1] = rotr64(state->hs_State.large[1], 1) ^ B;
-    state->hs_State.large[2] = rotr64(state->hs_State.large[2], 1) ^ C;
-    state->hs_State.large[3] = rotr64(state->hs_State.large[3], 1) ^ D;
-    state->hs_State.large[4] = rotr64(state->hs_State.large[4], 1) ^ E;
-    state->hs_State.large[5] = rotr64(state->hs_State.large[5], 1) ^ F;
-    state->hs_State.large[6] = rotr64(state->hs_State.large[6], 1) ^ G;
-    state->hs_State.large[7] = rotr64(state->hs_State.large[7], 1) ^ P;
-    state->hs_State.large[8] = rotr64(state->hs_State.large[8], 1) ^ Q;
+    sp->hs_State.large[0] = rotr64(sp->hs_State.large[0], 1) ^ A;
+    sp->hs_State.large[1] = rotr64(sp->hs_State.large[1], 1) ^ B;
+    sp->hs_State.large[2] = rotr64(sp->hs_State.large[2], 1) ^ C;
+    sp->hs_State.large[3] = rotr64(sp->hs_State.large[3], 1) ^ D;
+    sp->hs_State.large[4] = rotr64(sp->hs_State.large[4], 1) ^ E;
+    sp->hs_State.large[5] = rotr64(sp->hs_State.large[5], 1) ^ F;
+    sp->hs_State.large[6] = rotr64(sp->hs_State.large[6], 1) ^ G;
+    sp->hs_State.large[7] = rotr64(sp->hs_State.large[7], 1) ^ P;
+    sp->hs_State.large[8] = rotr64(sp->hs_State.large[8], 1) ^ Q;
 }
 
 /* chi-common.c: CHI hash common functions */
@@ -750,7 +582,7 @@ _512_update
 /*
  * Byte i of 64 bit x.  i==0 returns top byte.
  */
-#define BYTE(x, i) ((BitSequence)(((x) >> (8 * (7 - i))) & 0xFF))
+#define BYTE(x, i) ((byte)(((x) >> (8 * (7 - i))) & 0xFF))
 
 #define WORD2BYTE(w, b)         \
     do {                        \
@@ -767,26 +599,20 @@ _512_update
 /*
  * Hashes the bytes in hs_DataBuffer.  Either calls te 256 or 512 hash.
  *
- * state    The current state.
+ * sp       The current state.
  * final    1 for final block in hash, 0 for intermediate blocks.
  */
-static void
-hash
-(
-    hashState   *state,
-    int         final
-)
+static
+void hash(chiParam *sp, int final)
 {
-    switch (state->hs_HashBitLen)
-    {
+    switch (sp->hs_HashBitLen) {
     case 224:
     case 256:
-        _256_update(state, final);
+        _256_update(sp, final);
         break;
-
     case 384:
     case 512:
-        _512_update(state, final);
+        _512_update(sp, final);
         break;
     }
 }
@@ -795,33 +621,27 @@ hash
  * Small routine for incrementing total input data length by hs_DataLen.
  *
  * Parameters:
- *      state       A structure that holds the hashState information
+ *      sp          A structure that holds the chiParam information
  *
  * Returns:
  *      SUCCESS         - on success.
  *      TOO_MUCH_DATA   - on overflow.
  */
-static INLINE HashReturn
-inc_total_len
-(
-    hashState   *state
-)
+static INLINE
+int inc_total_len(chiParam *sp)
 {
     uint64_t    old_len;
 
-    old_len = state->hs_TotalLenLow;
-    state->hs_TotalLenLow += state->hs_DataLen;
-    if (old_len > state->hs_TotalLenLow)
-    {
-        switch (state->hs_HashBitLen)
-        {
+    old_len = sp->hs_TotalLenLow;
+    sp->hs_TotalLenLow += sp->hs_DataLen;
+    if (old_len > sp->hs_TotalLenLow) {
+        switch (sp->hs_HashBitLen) {
         case 224:
         case 256:
             return TOO_MUCH_DATA;
-
         case 384:
         case 512:
-            if (++state->hs_TotalLenHigh == 0)
+            if (++sp->hs_TotalLenHigh == 0)
                 return TOO_MUCH_DATA;
         }
     }
@@ -830,13 +650,13 @@ inc_total_len
 }
 
 /*
- * Initializes a hashState with the intended hash length of this particular
+ * Initializes a chiParam with the intended hash length of this particular
  * instantiation.
  *
  * Additionally, any data independent setup is performed.
  *
  * Parameters:
- *     state        A structure that holds the hashState information
+ *     sp           A structure that holds the chiParam information
  *     hashbitlen   An integer value that indicates the length of the hash
  *                  output in bits.
  *
@@ -845,57 +665,53 @@ inc_total_len
  *     BAD_HASHBITLEN - hashbitlen is invalid (e.g., unknown value)
  *
  */
-HashReturn
-Init
-(
-    hashState   *state,
-    int         hashbitlen
-)
+int chiInit(chiParam *sp, int hashbitlen)
 {
-    if (state == NULL)
+    if (sp == NULL)
        return BAD_STATE;
 
-    switch (hashbitlen)
-    {
+    switch (hashbitlen) {
     default:
         return BAD_HASHLEN;
-
     case 224:
-        memcpy(state->hs_State.small, _224_init, _256_STATE_N * sizeof(WORD64));
-        state->hs_MessageLen = _256_MSG_BLK_LEN;
+        memcpy(sp->hs_State.small, _224_init, _256_STATE_N * sizeof(uint64_t));
+        sp->hs_MessageLen = _256_MSG_BLK_LEN;
         break;
-
     case 256:
-        memcpy(state->hs_State.small, _256_init, _256_STATE_N * sizeof(WORD64));
-        state->hs_MessageLen = _256_MSG_BLK_LEN;
+        memcpy(sp->hs_State.small, _256_init, _256_STATE_N * sizeof(uint64_t));
+        sp->hs_MessageLen = _256_MSG_BLK_LEN;
         break;
-
     case 384:
-        memcpy(state->hs_State.large, _384_init, _512_STATE_N * sizeof(WORD64));
-        state->hs_MessageLen = _512_MSG_BLK_LEN;
+        memcpy(sp->hs_State.large, _384_init, _512_STATE_N * sizeof(uint64_t));
+        sp->hs_MessageLen = _512_MSG_BLK_LEN;
         break;
-
     case 512:
-        memcpy(state->hs_State.large, _512_init, _512_STATE_N * sizeof(WORD64));
-        state->hs_MessageLen = _512_MSG_BLK_LEN;
+        memcpy(sp->hs_State.large, _512_init, _512_STATE_N * sizeof(uint64_t));
+        sp->hs_MessageLen = _512_MSG_BLK_LEN;
         break;
     }
 
-    state->hs_HashBitLen = (HashBitLen)hashbitlen;
-    state->hs_DataLen      = 0;
-    state->hs_TotalLenLow  = 0;
-    state->hs_TotalLenHigh = 0;
+    sp->hs_HashBitLen = (HashBitLen)hashbitlen;
+    sp->hs_DataLen      = 0;
+    sp->hs_TotalLenLow  = 0;
+    sp->hs_TotalLenHigh = 0;
    
     return SUCCESS;
+}
+
+int
+chiReset(chiParam *sp)
+{
+    return chiInit(sp, sp->hs_HashBitLen);
 }
 
 /*
  * Process the supplied data.
  *
  * Parameters:
- *    state         A structure that holds the hashState information
+ *    sp            A structure that holds the chiParam information
  *    data          The data to be hashed
- *    databitlen    The length, in bits, of the data to be hashed
+ *    size          The length, in bytes, of the data to be hashed
  *
  * Returns:
  *    SUCCESS  - on success
@@ -903,20 +719,16 @@ Init
  *               call passed in a partial byte.
  *
  */
-HashReturn Update
-(
-    hashState           *state,
-    const BitSequence   *data,
-    DataLength          databitlen
-)
+int chiUpdate(chiParam *sp, const byte *data, size_t size)
 {
-    HashReturn          ret;
+    uint64_t databitlen = 8 * size;
+    int          ret;
     uint32_t            cs;
     /*
      * cs       Amount of data copied out of data into hash block.
      */
 
-    if (state == NULL)
+    if (sp == NULL)
        return BAD_STATE;
     if (data == NULL)
         return BAD_DATA;
@@ -924,28 +736,26 @@ HashReturn Update
     /*
      * Handle partial bytes only if last call to update
      */
-    if ((state->hs_DataLen & 0x7) != 0)
+    if ((sp->hs_DataLen & 0x7) != 0)
         return BAD_DATA;
 
-    while (databitlen > 0)
-    {
-        cs = MIN((uint32_t)databitlen, state->hs_MessageLen - state->hs_DataLen);
+    while (databitlen > 0) {
+        cs = MIN((uint32_t)databitlen, sp->hs_MessageLen - sp->hs_DataLen);
 
-        memcpy(state->hs_DataBuffer+state->hs_DataLen / 8, data, (cs + 7) / 8);
+        memcpy(sp->hs_DataBuffer+sp->hs_DataLen / 8, data, (cs + 7) / 8);
         data += cs / 8;
         databitlen -= cs;
-        state->hs_DataLen += cs;
+        sp->hs_DataLen += cs;
 
-        if (state->hs_DataLen >= (uint32_t)state->hs_MessageLen)
-        {
+        if (sp->hs_DataLen >= (uint32_t)sp->hs_MessageLen) {
             /*
              * Hash hs_DataBuffer
              */
-            hash(state, 0);
-            ret = inc_total_len(state);
+            hash(sp, 0);
+            ret = inc_total_len(sp);
             if (ret != SUCCESS)
                 return ret;
-            state->hs_DataLen = 0;
+            sp->hs_DataLen = 0;
         }
     }
 
@@ -957,21 +767,16 @@ HashReturn Update
  * the final hash value.
  *
  * Parameters:
- *     state    A structure that holds the hashState information
- *     hashval  The storage for the final hash value to be returned
+ *     sp       A structure that holds the chiParam information
+ *     digest   The storage for the final hash value to be returned
  *
  * Returns:
  *     SUCCESS - on success
  *
  */
-HashReturn
-Final
-(
-    hashState   *state,
-    BitSequence *hashval
-)
+int chiDigest(chiParam *sp, byte *digest)
 {
-    HashReturn  ret;
+    int  ret;
     uint32_t    whole_bytes;
     uint32_t    last_byte_bits;
     uint32_t    left_over_bytes;
@@ -986,168 +791,120 @@ Final
      *                  message to store the message length.
      */
 
-    if (state == NULL)
+    if (sp == NULL)
        return BAD_STATE;
-    if (hashval == NULL)
+    if (digest == NULL)
        return BAD_HASHVALPTR;
 
-    ret = inc_total_len(state);
+    ret = inc_total_len(sp);
     if (ret != SUCCESS)
         return ret;
 
-    switch (state->hs_HashBitLen)
-    {
+    switch (sp->hs_HashBitLen) {
     case 224:
     case 256:
-        length_bytes = sizeof (WORD64);
+        length_bytes = sizeof (uint64_t);
         break;
 
     default: /* Suppress compiler warning. */
         assert(0);
     case 384:
     case 512:
-        length_bytes = sizeof (WORD64) * 2;
+        length_bytes = sizeof (uint64_t) * 2;
         break;
     }
 
-    whole_bytes = state->hs_DataLen / 8;
-    last_byte_bits = state->hs_DataLen % 8;
+    whole_bytes = sp->hs_DataLen / 8;
+    last_byte_bits = sp->hs_DataLen % 8;
    
     /*
      * Padding
      *
      * Append a 1 to end of buffer and pad byte with zeros.
      */
-    state->hs_DataBuffer[whole_bytes] &= ~((1 << (7-last_byte_bits)) - 1);
-    state->hs_DataBuffer[whole_bytes] |= (1 << (7-last_byte_bits));
+    sp->hs_DataBuffer[whole_bytes] &= ~((1 << (7-last_byte_bits)) - 1);
+    sp->hs_DataBuffer[whole_bytes] |= (1 << (7-last_byte_bits));
 
     /*
      * Skip to end of byte
      */
-    state->hs_DataLen += (8 - last_byte_bits);
+    sp->hs_DataLen += (8 - last_byte_bits);
 
-    left_over_bytes = (state->hs_MessageLen - state->hs_DataLen) / 8;
+    left_over_bytes = (sp->hs_MessageLen - sp->hs_DataLen) / 8;
 
-    if (left_over_bytes < length_bytes)
-    {
+    if (left_over_bytes < length_bytes) {
         /*
          * length doesn't fit in the end of this block.  Pad this block to the
          * end using zeros then write the length in the next block.
          */
-        memset(state->hs_DataBuffer + state->hs_DataLen/8, 0, left_over_bytes);
-        hash(state, 0);
-        state->hs_DataLen = 0;
-        left_over_bytes = state->hs_MessageLen / 8;
+        memset(sp->hs_DataBuffer + sp->hs_DataLen/8, 0, left_over_bytes);
+        hash(sp, 0);
+        sp->hs_DataLen = 0;
+        left_over_bytes = sp->hs_MessageLen / 8;
     }
 
-    memset(state->hs_DataBuffer + state->hs_DataLen / 8, 0, left_over_bytes);
+    memset(sp->hs_DataBuffer + sp->hs_DataLen / 8, 0, left_over_bytes);
 
     /*
      * Write 64 bit or 128 bit message length.
      */
-    whole_bytes = state->hs_MessageLen / 8 - length_bytes;
-    if (length_bytes == sizeof (WORD64) * 2)
-    {
-        WORD2BYTE(state->hs_TotalLenHigh, state->hs_DataBuffer + whole_bytes);
-        whole_bytes += sizeof (WORD64);
-    }
-    else
-    {
-        assert(state->hs_TotalLenHigh == 0);
-        if (state->hs_TotalLenHigh != 0)
+    whole_bytes = sp->hs_MessageLen / 8 - length_bytes;
+    if (length_bytes == sizeof (uint64_t) * 2) {
+        WORD2BYTE(sp->hs_TotalLenHigh, sp->hs_DataBuffer + whole_bytes);
+        whole_bytes += sizeof (uint64_t);
+    } else {
+        assert(sp->hs_TotalLenHigh == 0);
+        if (sp->hs_TotalLenHigh != 0)
             return BAD_STATE;
     }
 
-    WORD2BYTE(state->hs_TotalLenLow, state->hs_DataBuffer + whole_bytes);
-    state->hs_DataLen = state->hs_MessageLen;
+    WORD2BYTE(sp->hs_TotalLenLow, sp->hs_DataBuffer + whole_bytes);
+    sp->hs_DataLen = sp->hs_MessageLen;
 
     /*
      * Hash final block
      * */
-    hash(state, 1);
-    state->hs_DataLen = 0;
+    hash(sp, 1);
+    sp->hs_DataLen = 0;
 
     /*
      * Write hash output into buffer in network byte order.
      */
-    switch (state->hs_HashBitLen)
-    {
+    switch (sp->hs_HashBitLen) {
     case 224:
-        WORD2BYTE(state->hs_State.large[0],hashval);
-        WORD2BYTE(state->hs_State.large[1],hashval + 8);
-        WORD2BYTE(state->hs_State.large[3],hashval + 16);
-        hashval[24] = BYTE(state->hs_State.large[4], 0);
-        hashval[25] = BYTE(state->hs_State.large[4], 1);
-        hashval[26] = BYTE(state->hs_State.large[4], 2);
-        hashval[27] = BYTE(state->hs_State.large[4], 3);
+        WORD2BYTE(sp->hs_State.large[0],digest);
+        WORD2BYTE(sp->hs_State.large[1],digest + 8);
+        WORD2BYTE(sp->hs_State.large[3],digest + 16);
+        digest[24] = BYTE(sp->hs_State.large[4], 0);
+        digest[25] = BYTE(sp->hs_State.large[4], 1);
+        digest[26] = BYTE(sp->hs_State.large[4], 2);
+        digest[27] = BYTE(sp->hs_State.large[4], 3);
         break;
-
     case 256:
-        WORD2BYTE(state->hs_State.large[0],hashval);
-        WORD2BYTE(state->hs_State.large[1],hashval + 8);
-        WORD2BYTE(state->hs_State.large[3],hashval + 16);
-        WORD2BYTE(state->hs_State.large[4],hashval + 24);
+        WORD2BYTE(sp->hs_State.large[0],digest);
+        WORD2BYTE(sp->hs_State.large[1],digest + 8);
+        WORD2BYTE(sp->hs_State.large[3],digest + 16);
+        WORD2BYTE(sp->hs_State.large[4],digest + 24);
         break;
-
     case 384:
-        WORD2BYTE(state->hs_State.large[0],hashval);
-        WORD2BYTE(state->hs_State.large[1],hashval + 8);
-        WORD2BYTE(state->hs_State.large[2],hashval + 16);
-        WORD2BYTE(state->hs_State.large[3],hashval + 24);
-        WORD2BYTE(state->hs_State.large[4],hashval + 32);
-        WORD2BYTE(state->hs_State.large[5],hashval + 40);
+        WORD2BYTE(sp->hs_State.large[0],digest);
+        WORD2BYTE(sp->hs_State.large[1],digest + 8);
+        WORD2BYTE(sp->hs_State.large[2],digest + 16);
+        WORD2BYTE(sp->hs_State.large[3],digest + 24);
+        WORD2BYTE(sp->hs_State.large[4],digest + 32);
+        WORD2BYTE(sp->hs_State.large[5],digest + 40);
         break;
-
     case 512:
-        WORD2BYTE(state->hs_State.large[0],hashval);
-        WORD2BYTE(state->hs_State.large[1],hashval + 8);
-        WORD2BYTE(state->hs_State.large[2],hashval + 16);
-        WORD2BYTE(state->hs_State.large[3],hashval + 24);
-        WORD2BYTE(state->hs_State.large[4],hashval + 32);
-        WORD2BYTE(state->hs_State.large[5],hashval + 40);
-        WORD2BYTE(state->hs_State.large[6],hashval + 48);
-        WORD2BYTE(state->hs_State.large[7],hashval + 56);
+        WORD2BYTE(sp->hs_State.large[0],digest);
+        WORD2BYTE(sp->hs_State.large[1],digest + 8);
+        WORD2BYTE(sp->hs_State.large[2],digest + 16);
+        WORD2BYTE(sp->hs_State.large[3],digest + 24);
+        WORD2BYTE(sp->hs_State.large[4],digest + 32);
+        WORD2BYTE(sp->hs_State.large[5],digest + 40);
+        WORD2BYTE(sp->hs_State.large[6],digest + 48);
+        WORD2BYTE(sp->hs_State.large[7],digest + 56);
         break;
     }
 
     return SUCCESS;
 }
-
-/*
- * Hash the supplied data and provide the resulting hash value. Set return
- * code as appropriate.
- *
- * Parameters:
- *    hashbitlen    The length in bits of the desired hash value
- *    data          The data to be hashed
- *    databitlen    The length, in bits, of the data to be hashed
- *    hashval       The resulting hash value of the provided data
- *
- * Returns:
- *    SUCCESS - on success
- *    FAIL – arbitrary failure
- *    BAD_HASHLEN – unknown hashbitlen requested
- */
-HashReturn
-Hash
-(
-    int                 hashbitlen,
-    const BitSequence   *data,
-    DataLength          databitlen,
-    BitSequence         *hashval
-)
-{
-    hashState           hs;
-    HashReturn          ret_code;
-
-    if ((ret_code = Init(&hs, hashbitlen)) != SUCCESS)
-        return ret_code;
-
-    if ((ret_code = Update(&hs, data, databitlen)) != SUCCESS)
-        return ret_code;
-
-    ret_code = Final(&hs, hashval);
-
-    return ret_code;
-}
-

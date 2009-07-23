@@ -16,25 +16,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _CHI_H
 #define _CHI_H
 
-#define	BitSequence	chi_BitSequence
-#define	DataLength	chi_DataLength
-#define	hashState	chi_hashState
-#define	HashReturn	int
-
-#define	Init		chi_Init
-#define	Update		chi_Update
-#define	Final		chi_Final
-#define	Hash		chi_Hash
-
 #include <stdint.h>
-
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
+#include "beecrypt/beecrypt.h"
 
 #define	_256_STATE_N	6	/* no. words in internal state (256 bit hash) */
 #define	_512_STATE_N	9	/* no. words in internal state (512 bit hash) */
 
-typedef struct {
+/*!\brief Holds all the parameters necessary for the CHI algorithm.
+ * \ingroup HASH_chi_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI chiParam
+#else
+struct _chiParam
+#endif
+{
     union {
 	uint64_t small[_256_STATE_N];
 	uint64_t large[_512_STATE_N];
@@ -57,19 +53,31 @@ typedef struct {
     uint32_t    hs_DataLen;         /* Number of unprocess bits in
                                      * hs_DataBuffer.
                                      */
-    BitSequence hs_DataBuffer[128]; /* Buffer for accumulating message.       */
+    uint8_t hs_DataBuffer[128];     /* Buffer for accumulating message.       */
 } hashState;
 
-HashReturn Init(hashState*, int); 
-HashReturn Update(hashState*, const BitSequence*, DataLength); 
-HashReturn Final(hashState*, BitSequence*); 
-HashReturn Hash(int, const BitSequence*, DataLength, BitSequence*);
+#ifndef __cplusplus
+typedef struct _chiParam chiParam;
+#endif
 
-/* Impedance match bytes -> bits length. */
-static inline
-int _chi_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+BEECRYPTAPI
+int chiInit(chiParam* sp, int hashbitlen); 
+
+BEECRYPTAPI
+int chiReset(chiParam* sp);
+
+BEECRYPTAPI
+int chiUpdate(chiParam* sp, const byte *data, size_t size); 
+
+BEECRYPTAPI
+int chiDigest(chiParam* sp, byte *digest); 
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* _CHI_H */
