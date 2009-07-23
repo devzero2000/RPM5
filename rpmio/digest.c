@@ -23,16 +23,6 @@
 #undef	Hash
 
 #include "bmw.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	Data256
-#undef	Data512
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "chi.h"
 
@@ -664,14 +654,13 @@ bmw:
 	ctx->name = "BMW";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(bmw_hashState);
+	ctx->paramsize = sizeof(bmwParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) bmw_Init((bmw_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _bmw_Update;
-	ctx->Digest = (int (*)(void *, byte *)) bmw_Final;
+	(void) bmwInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) bmwReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) bmwUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) bmwDigest;
 	break;
     case PGPHASHALGO_CHI_224: ctx->digestsize = 224/8; goto chi;
     case PGPHASHALGO_CHI_256: ctx->digestsize = 256/8; goto chi;

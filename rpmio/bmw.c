@@ -1,5 +1,14 @@
-#include <string.h> 
 #include "bmw.h"
+
+const hashFunction bmw256 = {
+    .name = "BMW-256",
+    .paramsize = sizeof(bmwParam),
+    .blocksize = 64,
+    .digestsize = 256/8,        /* XXX default to BMW-256 */
+    .reset = (hashFunctionReset) bmwReset,
+    .update = (hashFunctionUpdate) bmwUpdate,
+    .digest = (hashFunctionDigest) bmwDigest
+};
 
 enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2, BAD_CONSECUTIVE_CALL_TO_UPDATE = 3 };
 
@@ -88,10 +97,10 @@ const uint64_t i512p2[16] =
     0xf0f1f2f3f4f5f6f7ull, 0xf8f9fafbfcfdfeffull
 };
 
-#define hashState224(x)  ((x)->pipe->p256)
-#define hashState256(x)  ((x)->pipe->p256)
-#define hashState384(x)  ((x)->pipe->p512)
-#define hashState512(x)  ((x)->pipe->p512)
+#define bmw224(x)  ((x)->pipe->p256)
+#define bmw256(x)  ((x)->pipe->p256)
+#define bmw384(x)  ((x)->pipe->p512)
+#define bmw512(x)  ((x)->pipe->p512)
 
 /* Components used for 224 and 256 bit version */
 #define s32_0(x)  (shr((x), 1) ^ shl((x), 3) ^ rotl32((x),  4) ^ rotl32((x), 19))
@@ -503,26 +512,26 @@ const uint64_t i512p2[16] =
 				p512[15] = rotl64(p512[3],16) + (    XH64     ^     p512_31    ^ data64[15]) + (shr(XL64,2) ^ p512_22 ^ p512_15);\
 }
 
-HashReturn Init(hashState *state, int hashbitlen)
+int bmwInit(bmwParam *sp, int hashbitlen)
 {
-    HashReturn ret = SUCCESS;
+    int ret = SUCCESS;
 
-    state->hashbitlen = hashbitlen;
-    state->bits_processed = 0;
-    state->unprocessed_bits = 0;
+    sp->hashbitlen = hashbitlen;
+    sp->bits_processed = 0;
+    sp->unprocessed_bits = 0;
 
     switch (hashbitlen) {
     case 224:
-	memcpy(hashState224(state)->DoublePipe, i224p2,  16 * sizeof(uint32_t));
+	memcpy(bmw224(sp)->DoublePipe, i224p2,  16 * sizeof(uint32_t));
 	break;
     case 256:
-	memcpy(hashState256(state)->DoublePipe, i256p2,  16 * sizeof(uint32_t));
+	memcpy(bmw256(sp)->DoublePipe, i256p2,  16 * sizeof(uint32_t));
 	break;
     case 384:		
-	memcpy(hashState384(state)->DoublePipe, i384p2,  16 * sizeof(uint64_t));
+	memcpy(bmw384(sp)->DoublePipe, i384p2,  16 * sizeof(uint64_t));
 	break;
     case 512:
-	memcpy(hashState224(state)->DoublePipe, i512p2,  16 * sizeof(uint64_t));
+	memcpy(bmw512(sp)->DoublePipe, i512p2,  16 * sizeof(uint64_t));
 	break;
     default:
 	ret = BAD_HASHLEN;
@@ -531,8 +540,15 @@ HashReturn Init(hashState *state, int hashbitlen)
     return ret;
 }
 
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen)
+int
+bmwReset(bmwParam *sp)
 {
+    return bmwInit(sp, sp->hashbitlen);
+}
+
+int bmwUpdate(bmwParam *sp, const byte *data, size_t size)
+{
+    uint64_t databitlen = 8 * size;
     uint32_t *data32, *p256;
     uint32_t XL32, XH32, TempEven32, TempOdd32;
     uint32_t p256_00, p256_01, p256_02, p256_03, p256_04, p256_05, p256_06, p256_07;
@@ -547,64 +563,64 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
     uint64_t p512_16, p512_17, p512_18, p512_19, p512_20, p512_21, p512_22, p512_23;
     uint64_t p512_24, p512_25, p512_26, p512_27, p512_28, p512_29, p512_30, p512_31;
 
-    HashReturn ret = SUCCESS;
+    int ret = SUCCESS;
     int LastBytes;
 
-    switch (state->hashbitlen) {
+    switch (sp->hashbitlen) {
     case 224:
     case 256:
-	if (state->unprocessed_bits > 0) {
-	    if ( state->unprocessed_bits + databitlen > BlueMidnightWish256_BLOCK_SIZE * 8) {
+	if (sp->unprocessed_bits > 0) {
+	    if ( sp->unprocessed_bits + databitlen > BlueMidnightWish256_BLOCK_SIZE * 8) {
 		ret = BAD_CONSECUTIVE_CALL_TO_UPDATE;
 		break;
 	    }
 	    LastBytes = (int)databitlen >> 3; // LastBytes = databitlen / 8
-	    memcpy(hashState256(state)->LastPart + (state->unprocessed_bits >> 3), data, LastBytes );
-	    state->unprocessed_bits += (int)databitlen;
-	    databitlen = state->unprocessed_bits;
-	    data32 = (uint32_t *)hashState256(state)->LastPart;
+	    memcpy(bmw256(sp)->LastPart + (sp->unprocessed_bits >> 3), data, LastBytes );
+	    sp->unprocessed_bits += (int)databitlen;
+	    databitlen = sp->unprocessed_bits;
+	    data32 = (uint32_t *)bmw256(sp)->LastPart;
 	} else 
 	    data32 = (uint32_t *)data;
 
-	p256   = hashState256(state)->DoublePipe;
+	p256   = bmw256(sp)->DoublePipe;
 	while (databitlen >= BlueMidnightWish256_BLOCK_SIZE * 8) {
 	    databitlen -= BlueMidnightWish256_BLOCK_SIZE * 8;
-	    state->bits_processed += BlueMidnightWish256_BLOCK_SIZE * 8;
+	    sp->bits_processed += BlueMidnightWish256_BLOCK_SIZE * 8;
 	    Compression256();
 	    data32 += 16;
 	}
-	state->unprocessed_bits = (int)databitlen;
+	sp->unprocessed_bits = (int)databitlen;
 	if (databitlen > 0) {
 	    LastBytes = ((~(((- (int)databitlen)>>3) & 0x01ff)) + 1) & 0x01ff;  // LastBytes = Ceil(databitlen / 8)
-	    memcpy(hashState256(state)->LastPart, data32, LastBytes );
+	    memcpy(bmw256(sp)->LastPart, data32, LastBytes );
 	}
 	break;
     case 384:
     case 512:
-	if (state->unprocessed_bits > 0) {
-	    if ( state->unprocessed_bits + databitlen > BlueMidnightWish512_BLOCK_SIZE * 8) {
+	if (sp->unprocessed_bits > 0) {
+	    if ( sp->unprocessed_bits + databitlen > BlueMidnightWish512_BLOCK_SIZE * 8) {
 		ret = BAD_CONSECUTIVE_CALL_TO_UPDATE;
 		break;
 	    }
 	    LastBytes = (int)databitlen >> 3; // LastBytes = databitlen / 8
-	    memcpy(hashState512(state)->LastPart + (state->unprocessed_bits >> 3), data, LastBytes );
-	    state->unprocessed_bits += (int)databitlen;
-	    databitlen = state->unprocessed_bits;
-	    data64 = (uint64_t *)hashState512(state)->LastPart;
+	    memcpy(bmw512(sp)->LastPart + (sp->unprocessed_bits >> 3), data, LastBytes );
+	    sp->unprocessed_bits += (int)databitlen;
+	    databitlen = sp->unprocessed_bits;
+	    data64 = (uint64_t *)bmw512(sp)->LastPart;
 	} else 
 	    data64 = (uint64_t *)data;
 
-	p512   = hashState512(state)->DoublePipe;
+	p512   = bmw512(sp)->DoublePipe;
 	while (databitlen >= BlueMidnightWish512_BLOCK_SIZE * 8) {
 	    databitlen -= BlueMidnightWish512_BLOCK_SIZE * 8;
-	    state->bits_processed += BlueMidnightWish512_BLOCK_SIZE * 8;
+	    sp->bits_processed += BlueMidnightWish512_BLOCK_SIZE * 8;
 	    Compression512();
 	    data64 += 16;
 	}
-	state->unprocessed_bits = (int)databitlen;
+	sp->unprocessed_bits = (int)databitlen;
 	if (databitlen > 0) {
 	    LastBytes = ((~(((- (int)databitlen)>>3) & 0x03ff)) + 1) & 0x03ff; // LastBytes = Ceil(databitlen / 8)
-	    memcpy(hashState512(state)->LastPart, data64, LastBytes );
+	    memcpy(bmw512(sp)->LastPart, data64, LastBytes );
 	}
 	break;
     default:
@@ -614,7 +630,7 @@ HashReturn Update(hashState *state, const BitSequence *data, DataLength databitl
     return ret;
 }
 
-HashReturn Final(hashState *state, BitSequence *hashval)
+int bmwDigest(bmwParam *sp, byte *digest)
 {
     uint32_t *data32, *p256 = NULL;
     uint32_t XL32, XH32, TempEven32, TempOdd32;
@@ -630,32 +646,32 @@ HashReturn Final(hashState *state, BitSequence *hashval)
     uint64_t p512_16, p512_17, p512_18, p512_19, p512_20, p512_21, p512_22, p512_23;
     uint64_t p512_24, p512_25, p512_26, p512_27, p512_28, p512_29, p512_30, p512_31;
 
-    DataLength databitlen;
+    uint64_t databitlen;
 
-    HashReturn ret = SUCCESS;
+    int ret = SUCCESS;
     int LastByte, PadOnePosition;
 
-    switch(state->hashbitlen) {
+    switch(sp->hashbitlen) {
     case 224:
     case 256:
-	LastByte = (int)state->unprocessed_bits >> 3;
-	PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
-	hashState256(state)->LastPart[LastByte] = hashState256(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
+	LastByte = (int)sp->unprocessed_bits >> 3;
+	PadOnePosition = 7 - (sp->unprocessed_bits & 0x07);
+	bmw256(sp)->LastPart[LastByte] = bmw256(sp)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
 		                                    ^ (0x01 << PadOnePosition);
-	data64 = (uint64_t *)hashState256(state)->LastPart;
+	data64 = (uint64_t *)bmw256(sp)->LastPart;
 
-	if (state->unprocessed_bits < 448) {
-	    memset( (hashState256(state)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish256_BLOCK_SIZE - LastByte - 9 );
+	if (sp->unprocessed_bits < 448) {
+	    memset( (bmw256(sp)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish256_BLOCK_SIZE - LastByte - 9 );
 	    databitlen = BlueMidnightWish256_BLOCK_SIZE * 8;
-	    data64[7] = state->bits_processed + state->unprocessed_bits;
+	    data64[7] = sp->bits_processed + sp->unprocessed_bits;
 	} else {
-	    memset( (hashState256(state)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish256_BLOCK_SIZE * 2 - LastByte - 9 );
+	    memset( (bmw256(sp)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish256_BLOCK_SIZE * 2 - LastByte - 9 );
 	    databitlen = BlueMidnightWish256_BLOCK_SIZE * 16;
-	    data64[15] = state->bits_processed + state->unprocessed_bits;
+	    data64[15] = sp->bits_processed + sp->unprocessed_bits;
 	}
 
-	data32   = (uint32_t *)hashState256(state)->LastPart;
-	p256     = hashState256(state)->DoublePipe;
+	data32   = (uint32_t *)bmw256(sp)->LastPart;
+	p256     = bmw256(sp)->DoublePipe;
 	while (databitlen >= BlueMidnightWish256_BLOCK_SIZE * 8) {
 	    databitlen -= BlueMidnightWish256_BLOCK_SIZE * 8;
 	    Compression256();
@@ -664,23 +680,23 @@ HashReturn Final(hashState *state, BitSequence *hashval)
 	break;
     case 384:
     case 512:
-	LastByte = (int)state->unprocessed_bits >> 3;
-	PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
-	hashState512(state)->LastPart[LastByte] = hashState512(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
+	LastByte = (int)sp->unprocessed_bits >> 3;
+	PadOnePosition = 7 - (sp->unprocessed_bits & 0x07);
+	bmw512(sp)->LastPart[LastByte] = bmw512(sp)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
 		                                    ^ (0x01 << PadOnePosition);
-	data64 = (uint64_t *)hashState512(state)->LastPart;
+	data64 = (uint64_t *)bmw512(sp)->LastPart;
 
-	if (state->unprocessed_bits < 960) {
-	    memset( (hashState512(state)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish512_BLOCK_SIZE - LastByte - 9 );
+	if (sp->unprocessed_bits < 960) {
+	    memset( (bmw512(sp)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish512_BLOCK_SIZE - LastByte - 9 );
 	    databitlen = BlueMidnightWish512_BLOCK_SIZE * 8;
-	    data64[15] = state->bits_processed + state->unprocessed_bits;
+	    data64[15] = sp->bits_processed + sp->unprocessed_bits;
 	} else {
-	    memset( (hashState512(state)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish512_BLOCK_SIZE * 2 - LastByte - 9 );
+	    memset( (bmw512(sp)->LastPart) + LastByte + 1, 0x00, BlueMidnightWish512_BLOCK_SIZE * 2 - LastByte - 9 );
 	    databitlen = BlueMidnightWish512_BLOCK_SIZE * 16;
-	    data64[31] = state->bits_processed + state->unprocessed_bits;
+	    data64[31] = sp->bits_processed + sp->unprocessed_bits;
 	}
 
-	p512   = hashState512(state)->DoublePipe;
+	p512   = bmw512(sp)->DoublePipe;
 	while (databitlen >= BlueMidnightWish512_BLOCK_SIZE * 8) {
 	    databitlen -= BlueMidnightWish512_BLOCK_SIZE * 8;
 	    Compression512();
@@ -693,34 +709,22 @@ HashReturn Final(hashState *state, BitSequence *hashval)
     }
 
     if (ret == SUCCESS)
-    switch (state->hashbitlen) {
+    switch (sp->hashbitlen) {
     case 224:
-	memcpy(hashval, p256 + 9, BlueMidnightWish224_DIGEST_SIZE );
+	memcpy(digest, p256 + 9, BlueMidnightWish224_DIGEST_SIZE );
 	break;
     case 256:
-	memcpy(hashval, p256 + 8, BlueMidnightWish256_DIGEST_SIZE );
+	memcpy(digest, p256 + 8, BlueMidnightWish256_DIGEST_SIZE );
 	break;
     case 384:
-	memcpy(hashval, p512 + 10, BlueMidnightWish384_DIGEST_SIZE );
+	memcpy(digest, p512 + 10, BlueMidnightWish384_DIGEST_SIZE );
 	break;
     case 512:
-	memcpy(hashval, p512 + 8,  BlueMidnightWish512_DIGEST_SIZE );
+	memcpy(digest, p512 + 8,  BlueMidnightWish512_DIGEST_SIZE );
 	break;
     default:
 	ret = BAD_HASHLEN;
 	break;
     }
     return ret;
-}
-
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval)
-{
-    HashReturn ret;
-    hashState state;
-
-    if ((ret = Init(&state, hashbitlen)) != SUCCESS)
-	return ret;
-    if ((ret = Update(&state, data, databitlen)) != SUCCESS)
-	return ret;
-    return Final(&state, hashval);
 }

@@ -1,19 +1,8 @@
+#ifndef _BMW_H
+#define _BMW_H
+
 #include <stdint.h>
-
-#define	BitSequence	bmw_BitSequence
-#define	DataLength	bmw_DataLength
-#define	Data256		bmw_Data256
-#define	Data512		bmw_Data512
-#define	hashState	bmw_hashState
-#define	HashReturn	int
-
-#define	Init		bmw_Init
-#define	Update		bmw_Update
-#define	Final		bmw_Final
-#define	Hash		bmw_Hash
-
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
+#include "beecrypt/beecrypt.h"
 
 // Specific algorithm definitions
 #define BlueMidnightWish224_DIGEST_SIZE  28
@@ -27,33 +16,60 @@ typedef unsigned long long DataLength;
 
 typedef struct {
     uint32_t DoublePipe[32];
-    BitSequence LastPart[BlueMidnightWish256_BLOCK_SIZE * 2];
-} Data256;
+    byte LastPart[BlueMidnightWish256_BLOCK_SIZE * 2];
+} bmwData256;
 typedef struct {
     uint64_t DoublePipe[32];
-    BitSequence LastPart[BlueMidnightWish512_BLOCK_SIZE * 2];
-} Data512;
+    byte LastPart[BlueMidnightWish512_BLOCK_SIZE * 2];
+} bmwData512;
 
-typedef struct {
+/*!\brief Holds all the parameters necessary for the BlueMidnightWish algorithm.
+ * \ingroup HASH_bmw_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI bmwParam
+#else
+struct _bmwParam
+#endif
+{
     int hashbitlen;
 
     // + algorithm specific parameters
     uint64_t bits_processed;
     union { 
-	Data256  p256[1];
-	Data512  p512[1];
+	bmwData256  p256[1];
+	bmwData512  p512[1];
     } pipe[1];
     int unprocessed_bits;
-} hashState;
+};
 
-HashReturn Init(hashState *state, int hashbitlen);
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
-HashReturn Final(hashState *state, BitSequence *hashval);
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+#ifndef __cplusplus
+typedef struct _bmwParam bmwParam;
+#endif
 
-/* Impedance match bytes -> bits length. */
-static inline
-int _bmw_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var bmw256
+ * \brief Holds the full API description of the BlueMidnightWish algorithm.
+ */
+extern BEECRYPTAPI const hashFunction bmw256;
+
+BEECRYPTAPI
+int bmwInit(bmwParam* sp, int hashbitlen);
+
+BEECRYPTAPI
+int bmwReset(bmwParam* sp);
+
+BEECRYPTAPI
+int bmwUpdate(bmwParam* sp, const byte *data, size_t size);
+
+BEECRYPTAPI
+int bmwDigest(bmwParam* sp, byte *digest);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* _BMW_H */
