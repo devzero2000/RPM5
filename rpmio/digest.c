@@ -81,14 +81,6 @@
 #include "hamsi.h"
 
 #include "jh.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "keccak.h"
 #undef	BitSequence
@@ -808,14 +800,13 @@ jh:
 	ctx->name = "JH";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(jh_hashState);
+	ctx->paramsize = sizeof(jhParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) jh_Init((jh_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _jh_Update;
-	ctx->Digest = (int (*)(void *, byte *)) jh_Final;
+	(void) jhInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) jhReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) jhUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) jhDigest;
 	break;
     case PGPHASHALGO_KECCAK_224: ctx->digestsize = 224/8; goto keccak;
     case PGPHASHALGO_KECCAK_256: ctx->digestsize = 256/8; goto keccak;

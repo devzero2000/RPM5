@@ -1,40 +1,58 @@
-/*This program gives the reference implementation of JH.
-  1) The description given in this program is suitable for implementation in hardware
-  2) All the operations are operated on bytes, so the description is suitable for implementation on 8-bit processor
-*/
+/* This program gives the reference implementation of JH.
+ * 1) The description given in this program is suitable for implementation in hardware
+ * 2) All the operations are operated on bytes, so the description is suitable for implementation on 8-bit processor
+ */
 
-#include <string.h>
+#ifndef _JH_H
+#define _JH_H
 
-#define	BitSequence	jh_BitSequence
-#define	DataLength	jh_DataLength
-#define	hashState	jh_hashState
-#define	HashReturn	int
+#include <stdint.h>
+#include "beecrypt/beecrypt.h"
 
-#define	Init		jh_Init
-#define	Update		jh_Update
-#define	Final		jh_Final
-#define	Hash		jh_Hash
-
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;  
-
-typedef struct {
-    int hashbitlen;			/* message digest size*/
-    unsigned long long databitlen;	/* message size in bits*/
-    unsigned char H[128];		/* hash value H; 128 bytes;*/
-    unsigned char A[256];		/* temporary round value; 256 4-bit elements*/
-    unsigned char roundconstant[64];	/* round constant for one round; 64 4-bit elements*/
-    unsigned char buffer[64];		/* message block to be hashed; 64 bytes*/
-} hashState;
-
-HashReturn Init(hashState *state, int hashbitlen);
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
-HashReturn Final(hashState *state, BitSequence *hashval);
-HashReturn Hash(int hashbitlen, const BitSequence *data,DataLength databitlen, BitSequence *hashval);
-
-/* Impedance match bytes -> bits length. */
-static inline
-int _jh_Update(void * param, const void * _data, size_t _len)
+/*!\brief Holds all the parameters necessary for the JH algorithm.
+ * \ingroup HASH_jh_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI jhParam
+#else
+struct _jhParam
+#endif
 {
-    return Update(param, _data, (DataLength)(8 * _len));
+    int hashbitlen;		/* message digest size*/
+    uint64_t databitlen;	/* message size in bits*/
+    uint8_t H[128];		/* hash value H; 128 bytes;*/
+    uint8_t A[256];		/* temporary round value; 256 4-bit elements*/
+    unsigned char roundconstant[64];	/* round constant for one round; 64 4-bit elements*/
+    unsigned char buffer[64];	/* message block to be hashed; 64 bytes*/
+};
+
+#ifndef __cplusplus
+typedef struct _jhParam jhParam;
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var jh256
+ * \brief Holds the full API description of the JH algorithm.
+ */
+extern BEECRYPTAPI const hashFunction jh256;
+
+BEECRYPTAPI
+int jhInit(jhParam* sp, int hashbitlen);
+
+BEECRYPTAPI
+int jhReset(jhParam* sp);
+
+BEECRYPTAPI
+int jhUpdate(jhParam* sp, const byte *data, size_t size);
+
+BEECRYPTAPI
+int jhDigest(jhParam* sp, byte *digest);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* _JH_H */
