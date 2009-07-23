@@ -297,7 +297,7 @@ static void mayStartFiletrigger(const char * rootDir,
 	if (dn == NULL)
 	    return;
 
-	cmd = rpmGetPath(dn, "/", trigger->name, NULL);
+	cmd = rpmGetPath(dn, "/", trigger->name, ".script", NULL);
 	rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s %s\n",
 			cmd, trigger->filename);
 	trigger->command_pipe = popen_with_root(rootDir, cmd,
