@@ -50,6 +50,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmtag.h>
+#include <rpm/rpmdb.h>
 #include <rpm/rpmevr.h>
 #include <rpm/pkgio.h>
 
@@ -105,6 +106,8 @@ typedef enum urltype_e {
     URL_IS_HTTPS        = 5,    /*!< https://... */
     URL_IS_HKP          = 6     /*!< hkp://... */
 } urltype;
+
+typedef rpmmi	rpmdbMatchIterator;
 
 urltype urlPath(const char * url, /*@out@*/ const char ** pathp);
 
@@ -349,6 +352,60 @@ static inline off_t fdSize(FD_t fd){
 	struct stat sb;
 	Fstat(fd, &sb);
 	return sb.st_size;
+}
+
+
+static inline unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
+    return rpmmiInstance(mi);
+}
+
+static inline unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
+    return rpmmiFilenum(mi);
+}
+
+static inline int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
+    return rpmmiCount(mi);
+}
+
+static inline int rpmdbAppendIterator(rpmdbMatchIterator mi,
+	const int * hdrNums, int nHdrNums) {
+    return rpmmiGrow(mi, hdrNums, nHdrNums);
+}
+
+static inline int rpmdbPruneIterator(rpmdbMatchIterator mi,
+		int * hdrNums, int nHdrNums, int sorted) {
+    return rpmmiPrune(mi, hdrNums, nHdrNums, sorted);
+}
+
+static inline int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
+		rpmMireMode mode, const char * pattern) {
+    return rpmmiAddPattern(mi, tag, mode, pattern);
+}
+
+static inline int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite) {
+    return rpmmiSetRewrite(mi, rewrite);
+}
+
+static inline int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
+    return rpmmiSetModified(mi, modified);
+}
+
+static inline int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
+	rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, char ** msg)) {
+    return rpmmiSetHdrChk(mi, ts);
+}
+
+static inline rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag tag,
+	const void * keyp, size_t keylen) {
+    return rpmmiInit(db, tag, keyp, keylen);
+}
+
+static inline Header rpmdbNextIterator(rpmdbMatchIterator mi) {
+    return rpmmiNext(mi);
+}
+
+static inline rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi) {
+    return rpmmiFree(mi);
 }
 
 #ifdef __cplusplus
