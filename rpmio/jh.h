@@ -9,6 +9,17 @@
 #include <stdint.h>
 #include "beecrypt/beecrypt.h"
 
+#if defined(__SSE2__)
+#define OPTIMIZE_SSE2
+#endif
+
+#if defined(OPTIMIZE_SSE2)
+#include <emmintrin.h>
+#define DECLSPEC16      __declspec(align(16))
+#else
+#define DECLSPEC16
+#endif
+
 /*!\brief Holds all the parameters necessary for the JH algorithm.
  * \ingroup HASH_jh_m
  */
@@ -20,9 +31,14 @@ struct _jhParam
 {
     int hashbitlen;		/* message digest size*/
     uint64_t databitlen;	/* message size in bits*/
+#if defined(OPTIMIZE_SSE2)
+    /* Only the x0/x1/x2/x3 are used for JH-224 and JH-256 */
+    __m128i  x0,x1,x2,x3,x4,x5,x6,x7;
+#else
     uint8_t H[128];		/* hash value H; 128 bytes;*/
     uint8_t A[256];		/* temporary round value; 256 4-bit elements*/
     unsigned char roundconstant[64];	/* round constant for one round; 64 4-bit elements*/
+#endif
     unsigned char buffer[64];	/* message block to be hashed; 64 bytes*/
 };
 
