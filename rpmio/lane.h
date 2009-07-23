@@ -8,41 +8,51 @@
 #ifndef H_LANE
 #define H_LANE
 
-#define	BitSequence	lane_BitSequence
-#define	DataLength	lane_DataLength
-#define	hashState	lane_hashState
-#define	HashReturn	int
-
-#define	Init		lane_Init
-#define	Update		lane_Update
-#define	Final		lane_Final
-#define	Hash		lane_Hash
-
 #include <stdint.h>
+#include "beecrypt/beecrypt.h"
 
-typedef uint8_t  BitSequence;
-typedef uint64_t DataLength;
-
-typedef struct {
+/*!\brief Holds all the parameters necessary for the LANE algorithm.
+ * \ingroup HASH_lane_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI laneParam
+#else
+struct _laneParam
+#endif
+{
     int hashbitlen;		/* length in bits of the hash value */
     uint64_t ctr;		/* number of data bits processed so far */
     uint32_t h[64/4];		/* intermediate hash value */
     uint8_t buffer[128];	/* space for one block of data to be hashed */
-} hashState;
+};
 
-HashReturn Init(hashState *state, int hashbitlen);
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
+#ifndef __cplusplus
+typedef struct _laneParam laneParam;
+#endif
 
-HashReturn Final(hashState *state, BitSequence *hashval);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen,
-                BitSequence *hashval);
+/*!\var chi256
+ * \brief Holds the full API description of the LANE algorithm.
+ */
+extern BEECRYPTAPI const hashFunction lane256;
 
-/* Impedance match bytes -> bits length. */
-static inline
-int _lane_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+BEECRYPTAPI
+int laneInit(laneParam* sp, int hashbitlen);
+
+BEECRYPTAPI
+int laneReset(laneParam* sp);
+
+BEECRYPTAPI
+int laneUpdate(laneParam* sp, const byte *data, size_t size);
+
+BEECRYPTAPI
+int laneDigest(laneParam* sp, byte *digest);
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* H_LANE */

@@ -83,14 +83,6 @@
 #undef	Hash
 
 #include "lane.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "luffa.h"
 #undef	BitSequence
@@ -822,14 +814,13 @@ lane:
 	ctx->name = "LANE";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(lane_hashState);
+	ctx->paramsize = sizeof(laneParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) lane_Init((lane_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _lane_Update;
-	ctx->Digest = (int (*)(void *, byte *)) lane_Final;
+	(void) laneInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) laneReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) laneUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) laneDigest;
 	break;
     case PGPHASHALGO_LUFFA_224: ctx->digestsize = 224/8; goto luffa;
     case PGPHASHALGO_LUFFA_256: ctx->digestsize = 256/8; goto luffa;
