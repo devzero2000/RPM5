@@ -51,8 +51,7 @@ AM_CPPFLAGS = \
 RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@ \
-	@WITH_JS_LIBS@
+	@LTLIBINTL@
 
 RPM_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -87,14 +86,16 @@ librpmio_la_SOURCES = \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsq.c \
 	rpmssl.c rpmsyck.c rpmsw.c rpmtcl.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
-librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
+librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION) \
+		      @WITH_JS_LDFLAGS@
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
-librpmio_la_LIBADD =
+librpmio_la_LIBADD = @WITH_JS_LIBS@
 if ENABLE_BUILD_INTLIBDEP
 librpmio_la_LIBADD +=
 	$(top_builddir)/misc/librpmmisc.la
+
 endif
 if ENABLE_BUILD_MAXEXTLIBDEP
 librpmio_la_LDFLAGS += $(LDFLAGS)
