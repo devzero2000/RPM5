@@ -2,21 +2,17 @@
 #define HAMSI_H
 
 #include <stdint.h>
+#include "beecrypt/beecrypt.h"
 
-#define	BitSequence	hamsi_BitSequence
-#define	DataLength	hamsi_DataLength
-#define	hashState	hamsi_hashState
-#define	HashReturn	int
-
-#define	Init		hamsi_Init
-#define	Update		hamsi_Update
-#define	Final		hamsi_Final
-#define	Hash		hamsi_Hash
-
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
-
-typedef struct {
+/*!\brief Holds all the parameters necessary for the HAMSI algorithm.
+ * \ingroup HASH_hamsi_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI hamsiParam
+#else
+struct _hamsiParam
+#endif
+{
     int hashbitlen;
     int leftbits;
     uint8_t leftdata[8];
@@ -27,18 +23,30 @@ typedef struct {
     // int blocksize;
     int ROUNDS;
     int PFROUNDS;
-} hashState;
+};
 
-HashReturn Init(hashState *state, int hashbitlen);
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
-HashReturn Final(hashState *state, BitSequence *hashval);
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+#ifndef __cplusplus
+typedef struct _hamsiParam hamsiParam;
+#endif
 
-/* Impedance match bytes -> bits length. */
-static inline
-int _hamsi_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+BEECRYPTAPI
+int hamsiInit(hamsiParam* sp, int hashbitlen);
+
+BEECRYPTAPI
+int hamsiReset(hamsiParam* sp);
+
+BEECRYPTAPI
+int hamsiUpdate(hamsiParam* sp, const byte *data, size_t size);
+
+BEECRYPTAPI
+int hamsiDigest(hamsiParam* sp, byte *digest);
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif

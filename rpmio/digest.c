@@ -11,14 +11,6 @@
 #include "crc.h"
 
 #include "arirang.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "blake.h"
 #undef	BitSequence
@@ -43,14 +35,6 @@
 #undef	Hash
 
 #include "chi.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "cubehash.h"
 #undef	BitSequence
@@ -95,14 +79,6 @@
 #undef	Hash
 
 #include "hamsi.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "jh.h"
 #undef	BitSequence
@@ -663,14 +639,13 @@ arirang:
 	ctx->name = "ARIRANG";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(arirang_hashState);
+	ctx->paramsize = sizeof(arirangParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) arirang_Init((arirang_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _arirang_Update;
-	ctx->Digest = (int (*)(void *, byte *)) arirang_Final;
+	(void) arirangInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) arirangReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) arirangUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) arirangDigest;
 	break;
     case PGPHASHALGO_BLAKE_224: ctx->digestsize = 224/8; goto blake;
     case PGPHASHALGO_BLAKE_256: ctx->digestsize = 256/8; goto blake;
@@ -714,14 +689,13 @@ chi:
 	ctx->name = "CHI";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(chi_hashState);
+	ctx->paramsize = sizeof(chiParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) chi_Init((chi_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _chi_Update;
-	ctx->Digest = (int (*)(void *, byte *)) chi_Final;
+	(void) chiInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) chiReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) chiUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) chiDigest;
 	break;
     case PGPHASHALGO_CUBEHASH_224: ctx->digestsize = 224/8; goto cubehash;
     case PGPHASHALGO_CUBEHASH_256: ctx->digestsize = 256/8; goto cubehash;
@@ -818,14 +792,13 @@ hamsi:
 	ctx->name = "HAMSI";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(hamsi_hashState);
+	ctx->paramsize = sizeof(hamsiParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) hamsi_Init((hamsi_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _hamsi_Update;
-	ctx->Digest = (int (*)(void *, byte *)) hamsi_Final;
+	(void) hamsiInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) hamsiReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) hamsiUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) hamsiDigest;
 	break;
     case PGPHASHALGO_JH_224: ctx->digestsize = 224/8; goto jh;
     case PGPHASHALGO_JH_256: ctx->digestsize = 256/8; goto jh;

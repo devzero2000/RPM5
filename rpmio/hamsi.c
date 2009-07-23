@@ -4,17 +4,15 @@
 #include "hamsi.h"
 enum { SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2 };
 
+#ifdef	UNUSED
 /* ===== "words.h" */
-typedef unsigned char  Byte;            //  8 bits
-typedef unsigned int   Word;            // 32 bits
-typedef unsigned long long int U64;     // 64 bits
 typedef unsigned int   Row __attribute__ ((vector_size (16))); // 128 bits
 /* ===== */
+#endif
 
 /* ===== "hamsi-tables.h" */
 // round constants
-static
-const Word alpha[2][4][8] = {
+static const uint32_t alpha[2][4][8] = {
   {
     {0xff00f0f0, 0xccccaaaa, 0xf0f0cccc, 0xff00aaaa, 0xccccaaaa, 0xf0f0ff00, 0xaaaacccc, 0xf0f0ff00},
     {0xf0f0cccc, 0xaaaaff00, 0xccccff00, 0xaaaaf0f0, 0xaaaaf0f0, 0xff00cccc, 0xccccf0f0, 0xff00aaaa},
@@ -29,30 +27,25 @@ const Word alpha[2][4][8] = {
 };
 
 // IV's
-static
-const Word iv224[8] = { 
+static const uint32_t iv224[8] = { 
     0x3c967a67, 0x3cbc6c20, 0xb4c343c3, 0xa73cbc6b, 0x2c204b61, 0x74686f6c, 0x69656b65, 0x20556e69
 };
 
-static
-const Word iv256[8] = { 
+static const uint32_t iv256[8] = { 
     0x76657273, 0x69746569, 0x74204c65, 0x7576656e, 0x2c204465, 0x70617274, 0x656d656e, 0x7420456c
 };
 
-static
-const Word iv384[16] = { 
+static const uint32_t iv384[16] = { 
     0x656b7472, 0x6f746563, 0x686e6965, 0x6b2c2043, 0x6f6d7075, 0x74657220, 0x53656375, 0x72697479, 
     0x20616e64, 0x20496e64, 0x75737472, 0x69616c20, 0x43727970, 0x746f6772, 0x61706879, 0x2c204b61
 };
 
-static
-const Word iv512[16] = { 
+static const uint32_t iv512[16] = { 
     0x73746565, 0x6c706172, 0x6b204172, 0x656e6265, 0x72672031, 0x302c2062, 0x75732032, 0x3434362c, 
     0x20422d33, 0x30303120, 0x4c657576, 0x656e2d48, 0x65766572, 0x6c65652c, 0x2042656c, 0x6769756d
 };
 
-static
-const Word T256[4][256][8] = {
+static const uint32_t T256[4][256][8] = {
     {
 	{0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000},
 	{0x74951000,0x5a2b467e,0x88fd1d2b,0x1ee68292,0xcba90000,0x90273769,0xbbdcf407,0xd0f4af61},
@@ -1084,8 +1077,7 @@ const Word T256[4][256][8] = {
     }
 };
 
-static
-const Word T512[8][256][16] = {
+static const uint32_t T512[8][256][16] = {
     {
 	{0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000},
 	{0xfc0e05c0,0x419e0000,0xcfa50000,0xde010000,0x233002b8,0xe8aa8ce8,0x3018a3e8,0x9b46f1b0,0x246d0140,0x82750000,0x8ad10000,0x4afd0000,0x78860214,0x494e6249,0xb9274e7a,0x05f69189},
@@ -3147,12 +3139,12 @@ const Word T512[8][256][16] = {
 /* ===== */
 
 /* ===== "hamsi.h" */
-#define MOV(r,y) for (i=0; i<arrlen; ++i) s[r][i] =  s[y][i];
-#define XOR(r,y) for (i=0; i<arrlen; ++i) s[r][i] ^= s[y][i];
-#define  OR(r,y) for (i=0; i<arrlen; ++i) s[r][i] |= s[y][i];
-#define AND(r,y) for (i=0; i<arrlen; ++i) s[r][i] &= s[y][i];
-#define MOT(r,y) for (i=0; i<arrlen; ++i) s[r][i] = ~s[y][i];
-#define NOT(r)   for (i=0; i<arrlen; ++i) s[r][i] = ~s[r][i];
+#define MOV(r,y) for (i = 0; i < arrlen; ++i) s[r][i] =  s[y][i];
+#define XOR(r,y) for (i = 0; i < arrlen; ++i) s[r][i] ^= s[y][i];
+#define  OR(r,y) for (i = 0; i < arrlen; ++i) s[r][i] |= s[y][i];
+#define AND(r,y) for (i = 0; i < arrlen; ++i) s[r][i] &= s[y][i];
+#define MOT(r,y) for (i = 0; i < arrlen; ++i) s[r][i] = ~s[y][i];
+#define NOT(r)   for (i = 0; i < arrlen; ++i) s[r][i] = ~s[r][i];
 
 // From "Speeding up Serpent", by Dag Arne Osvik, University of Bergen
 #define SUBST(size,s)                   \
@@ -3177,19 +3169,21 @@ const Word T512[8][256][16] = {
 
 #define INLINE
 
-static
-INLINE void subst256(Word s[5][4]) {
+static INLINE
+void subst256(uint32_t s[5][4])
+{
     SUBST(256,s);
 }
 
-static
-INLINE void subst512(Word s[5][8]) {
+static INLINE
+void subst512(uint32_t s[5][8])
+{
     SUBST(512,s);
 }
 
-#define ROTL32(v, n) (((v) << (n)) | ((v) >> (32 - (n))))
-static
-INLINE void Mix(Word* a,Word* b,Word* c,Word* d) {
+static INLINE
+void Mix(uint32_t * a, uint32_t * b, uint32_t * c, uint32_t * d)
+{
     *a = ROTL32(*a,13);
     *c = ROTL32(*c,3);
     *b ^= *a ^ *c;
@@ -3206,8 +3200,9 @@ INLINE void Mix(Word* a,Word* b,Word* c,Word* d) {
 
 #define L Mix
 #define S(r,c) &s[r][c]
-static
-INLINE void diffuse256(Word s[4][4]) {
+static INLINE
+void diffuse256(uint32_t s[4][4])
+{
     // const int line=4;
     L(S(0,0),S(1,1),S(2,2),S(3,3));
     L(S(0,1),S(1,2),S(2,3),S(3,0));
@@ -3215,8 +3210,8 @@ INLINE void diffuse256(Word s[4][4]) {
     L(S(0,3),S(1,0),S(2,1),S(3,2));
 }
 
-static
-INLINE void diffuse512(Word s[4][8]) {
+static INLINE void diffuse512(uint32_t s[4][8])
+{
     // const int line=8;
     L(S(0,0),S(1,1),S(2,2),S(3,3));
     L(S(0,1),S(1,2),S(2,3),S(3,4));
@@ -3241,9 +3236,10 @@ INLINE void diffuse512(Word s[4][8]) {
 #define Exp512(i) (T5(0)^T5(1)^T5(2)^T5(3))
 
 static
-int hash256(const int ROUNDS, Word*cv, const Byte*d, int lastiter) {
-    const int arrlen=4;
-    static Word s[5][4];
+int hash256(const int ROUNDS, uint32_t * cv, const uint8_t * d, int lastiter)
+{
+    const int arrlen = 4;
+    uint32_t s[5][4];
     int i;
 
     // Concatenation
@@ -3252,25 +3248,31 @@ int hash256(const int ROUNDS, Word*cv, const Byte*d, int lastiter) {
         s[i/2][(i+2)%4] = cv[i];    // from chain value
     }
 
-    for (i=0; i<ROUNDS; ++i) {
+    for (i = 0; i < ROUNDS; ++i) {
         int r,c;
         // Add Constants
-        for (r=0; r<4; ++r) for (c=0; c<arrlen; ++c) s[r][c] ^= alpha[lastiter][r][c];
+        for (r = 0; r < 4; ++r)
+	    for (c = 0; c < arrlen; ++c)
+		s[r][c] ^= alpha[lastiter][r][c];
         s[0][1] ^= i;
         subst256(s);
         diffuse256(s);
     }
 
     // truncation
-    for (i=0; i<arrlen; ++i) { cv[i] ^= s[0][i]; cv[i+arrlen] ^= s[2][i]; }
+    for (i = 0; i < arrlen; ++i) {
+	cv[i] ^= s[0][i];
+	cv[i+arrlen] ^= s[2][i];
+    }
 
     return 0;
 }
 
 static
-int hash512(const int ROUNDS, Word*cv, const Byte*d, int lastiter) {
+int hash512(const int ROUNDS, uint32_t * cv, const uint8_t * d, int lastiter)
+{
     const int arrlen=8;
-    static Word s[5][8];
+    uint32_t s[5][8];
     int i;
 
     // Concatenation
@@ -3295,125 +3297,134 @@ int hash512(const int ROUNDS, Word*cv, const Byte*d, int lastiter) {
 }
 /* ===== */
 
-HashReturn Init(hashState *state,int hashbitlen) {
-    int size=(hashbitlen<=256)?1:2;
-    state->leftbits    = 0;
-    state->counter     = 0;
-    state->hashbitlen  = hashbitlen;
-    state->ROUNDS      = 3*size;
-    state->PFROUNDS    = 6*size;
-    state->cvsize      = 256*size;
+int hamsiInit(hamsiParam *sp, int hashbitlen)
+{
+    int size = (hashbitlen <= 256) ? 1 : 2;
 
-    if (hashbitlen==224)      { memcpy(state->state,iv224,32); }
-    else if (hashbitlen==256) { memcpy(state->state,iv256,32); }
-    else if (hashbitlen==384) { memcpy(state->state,iv384,64); }
-    else if (hashbitlen==512) { memcpy(state->state,iv512,64); }
-    else return BAD_HASHBITLEN;
+    sp->leftbits    = 0;
+    sp->counter     = 0;
+    sp->hashbitlen  = hashbitlen;
+    sp->ROUNDS      = 3 * size;
+    sp->PFROUNDS    = 6 * size;
+    sp->cvsize      = 256 * size;
 
-    memset(state->leftdata,'\0',8);
+    switch (hashbitlen) {
+    case 224:	memcpy(sp->state, iv224, 32);	break;
+    case 256:	memcpy(sp->state, iv256, 32);	break;
+    case 384:	memcpy(sp->state, iv384, 64);	break;
+    case 512:	memcpy(sp->state, iv512, 64);	break;
+    default:	return BAD_HASHBITLEN;	break;
+    }
+
+    memset(sp->leftdata, 0, 8);
 
     return SUCCESS;
 }
 
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen) {
-    HashReturn ret=SUCCESS;
-    int bits2hash=databitlen;
+int
+hamsiReset(hamsiParam *sp)
+{
+    return hamsiInit(sp, sp->hashbitlen);
+}
+
+int hamsiUpdate(hamsiParam *sp, const byte *data, size_t size)
+{
+    uint64_t databitlen = 8 * size;
+    int ret = SUCCESS;
+    int bits2hash = databitlen;
     int i;
-    const BitSequence* block=data;
-    const int s_blocksize=(state->cvsize/8);
+    const byte * block = data;
+    const int s_blocksize = sp->cvsize/8;
+
     // Do first imcomplete block
-    if (state->leftbits) {
-        if ((state->leftbits+bits2hash) < s_blocksize) {
+    if (sp->leftbits) {
+        if ((sp->leftbits + bits2hash) < s_blocksize) {
             // just copy, update leftbits
-            for (i=0; i<((bits2hash+7)/8); ++i) state->leftdata[(state->leftbits/8)+i]=block[i];
-            if (bits2hash%8) state->leftdata[(state->leftbits+bits2hash)/8] &= (0xff << (8-(bits2hash%8)));
-            state->leftbits += bits2hash;
+            for (i = 0; i < (bits2hash+7)/8; ++i)
+		sp->leftdata[(sp->leftbits/8)+i] = block[i];
+            if (bits2hash % 8)
+		sp->leftdata[(sp->leftbits+bits2hash)/8] &= (0xff << (8 - (bits2hash%8)));
+            sp->leftbits += bits2hash;
         } else {
             // copy and do first block from leftdata
-            block += (s_blocksize - state->leftbits)/8;
-            bits2hash -= (s_blocksize - state->leftbits);
-            if (state->cvsize==256) {
-                hash256(state->ROUNDS,state->state,state->leftdata,0);
-            } else if (state->cvsize==512) {
-                hash512(state->ROUNDS,state->state,state->leftdata,0);
-            }
-            state->leftbits=0;
+            block += (s_blocksize - sp->leftbits)/8;
+            bits2hash -= (s_blocksize - sp->leftbits);
+            if (sp->cvsize == 256)
+                hash256(sp->ROUNDS, sp->state, sp->leftdata, 0);
+            else if (sp->cvsize == 512)
+                hash512(sp->ROUNDS, sp->state, sp->leftdata, 0);
+            sp->leftbits = 0;
         }
     }
 
     // do all complete blocks
-    for (; bits2hash >= s_blocksize; bits2hash-=s_blocksize) {
-        if (state->cvsize==256) {
-            hash256(state->ROUNDS,state->state,block,0);
-        } else if (state->cvsize==512) {
-            hash512(state->ROUNDS,state->state,block,0);
-        }
+    for (; bits2hash >= s_blocksize; bits2hash -= s_blocksize) {
+        if (sp->cvsize == 256)
+            hash256(sp->ROUNDS, sp->state, block, 0);
+        else if (sp->cvsize == 512)
+            hash512(sp->ROUNDS, sp->state, block, 0);
         block += (s_blocksize/8);
-        ++(state->counter);
+        ++(sp->counter);
     }
 
     // copy leftover data, update leftbits
-    state->leftbits = bits2hash;
-    for (i=0; i<((bits2hash+7)/8); ++i) state->leftdata[i]=block[i];
+    sp->leftbits = bits2hash;
+    for (i = 0; i < (bits2hash+7)/8; ++i)
+	sp->leftdata[i]=block[i];
 
     return ret;
 }
  
-static
-inline void HV(BitSequence *h,int i,Word w) {
-    h[4*(i)]=((w)>>24)&0xff;
-    h[4*(i)+1]=((w)>>16)&0xff;
-  
-    h[4*(i)+2]=((w)>>8)&0xff;
-    h[4*(i)+3]=w&0xff;
+static inline
+void HV(byte *h, int i, uint32_t w)
+{
+    h[4*i]   = (w >> 24) & 0xff;
+    h[4*i+1] = (w >> 16) & 0xff;
+ 
+    h[4*i+2] = (w >>  8) & 0xff;
+    h[4*i+3] = (w      ) & 0xff;
 }
 
-HashReturn Final(hashState* state, BitSequence *hashval) {
-  const int block_bytes=(state->cvsize/8)/8;
-  int i;
-  U64 length = ((U64)(state->cvsize)*state->counter)+state->leftbits;
-  BitSequence lenbytes[8];
+int hamsiDigest(hamsiParam *sp, byte *digest)
+{
+    const int block_bytes = (sp->cvsize/8)/8;
+    int i;
+    uint64_t length = ((uint64_t)(sp->cvsize)*sp->counter) + sp->leftbits;
+    byte lenbytes[8];
+    int ret = SUCCESS;
 
-  HashReturn ret=SUCCESS;
+    // Padding
+    sp->leftdata[sp->leftbits/8] &= (0xff<<(8-(sp->leftbits%8)));
+    sp->leftdata[sp->leftbits/8] |= (1<<(7-(sp->leftbits%8)));
+    for (i = (sp->leftbits/8)+1; i < block_bytes; ++i)
+	sp->leftdata[i] = 0;
 
-  // Padding
-  state->leftdata[state->leftbits/8] &= (0xff<<(8-(state->leftbits%8)));
-  state->leftdata[state->leftbits/8] |= (1<<(7-(state->leftbits%8)));
-  for (i=(state->leftbits/8)+1; i<block_bytes; ++i) state->leftdata[i]=0;
+    // position data length in lenbytes, BIG endian
+    for (i = 0; i < 8; ++i)
+	lenbytes[i] = (length>>(8*(7-i)))&0xff;
 
-  // position data length in lenbytes, BIG endian
-  for (i=0; i<8; ++i) lenbytes[i] = (length>>(8*(7-i)))&0xff;
+    // Processing padding and length
+    if (sp->cvsize == 256) {
+	hash256(sp->ROUNDS, sp->state, sp->leftdata, 0);
+	hash256(sp->ROUNDS, sp->state, lenbytes, 0);
+	hash256(sp->PFROUNDS, sp->state, lenbytes+4, 1);
+    } else if (sp->cvsize == 512) {
+	hash512(sp->ROUNDS, sp->state, sp->leftdata, 0);
+	hash512(sp->PFROUNDS, sp->state, lenbytes, 1);
+    }
 
-  // Processing padding and length
-  if (state->cvsize==256) {
-      hash256(state->ROUNDS,state->state,state->leftdata,0);
-      hash256(state->ROUNDS,state->state,lenbytes,0);
-      hash256(state->PFROUNDS,state->state,lenbytes+4,1);
-  } else if (state->cvsize==512) {
-      hash512(state->ROUNDS,state->state,state->leftdata,0);
-      hash512(state->PFROUNDS,state->state,lenbytes,1);
-  }
+    // Truncation
+    if (sp->hashbitlen == 384) {
+	int T_384[12] = { 0, 1, 3, 4, 5, 6, 8, 9, 10, 12, 13, 15 };
+	for (i = 0; i < 12; ++i)
+	    HV(digest, i, sp->state[T_384[i]]);
+	    // digest[i] = sp->state[T_384[i]];
+    } else {
+	//memcpy(digest, sp->state, sp->hashbitlen/8);
+	for (i = 0; i < (sp->hashbitlen/32); ++i)
+	    HV(digest, i, sp->state[i]);
+	    // digest[i] = sp->state[i];
+    }
 
-  // Truncation
-  if (state->hashbitlen==384) {
-      int T_384[12] = { 0, 1, 3, 4, 5, 6, 8, 9, 10, 12, 13, 15 };
-      for (i=0; i<12; ++i) HV(hashval,i,state->state[T_384[i]]);
-          // hashval[i] = state->state[T_384[i]];
-  } else
-      //memcpy(hashval,state->state,state->hashbitlen/8);
-      for (i=0; i<(state->hashbitlen/32); ++i)
-          HV(hashval,i,state->state[i]);
-          // hashval[i] = state->state[i];
-
-  return ret;
-}
-
-HashReturn Hash(int hashbitlen, const BitSequence* data, DataLength databitlen, BitSequence *hashval) {
-    static hashState MyState;
-    HashReturn ret;
-    ret = Init(&MyState,hashbitlen);
-    if (ret) return ret;
-    ret = Update(&MyState,data,databitlen);
-    if (ret) return ret;
-    else return Final(&MyState,hashval);
+    return ret;
 }
