@@ -264,18 +264,12 @@ uint64_t map2(uint64_t R, uint64_t S, uint64_t T, uint64_t U)
  * Non-linear MAP function.
  */
 static INLINE
-void map(uint64_t R, uint64_t S, uint64_t T, uint64_t U,
-		uint64_t *X, uint64_t *Y, uint64_t *Z, int i)
+void map(uint64_t R, uint64_t S, uint64_t T, uint64_t U, uint64_t *X)
 {
-    uint64_t  M[3];
-
-    M[0] = map0(R, S, T, U);
-    M[1] = map1(R, S, T, U);
-    M[2] = map2(R, S, T, U);
-
-    *X = M[(i + 0) % 3];
-    *Y = M[(i + 1) % 3];
-    *Z = M[(i + 2) % 3];
+    uint64_t  i = (T | U) ^ R;
+    X[0] = (i &  S) | ((~T ^ (U & R)) & ~S);
+    X[1] = (i & ~S) | (( U ^ (R & T)) &  S);
+    X[2] = ( U & (S ^ (T & ~R))) | (~U & (R ^ (T &  S)));
 }
 
 /*
@@ -286,13 +280,23 @@ void map(uint64_t R, uint64_t S, uint64_t T, uint64_t U,
 static INLINE
 uint64_t _256_theta0(uint64_t X)
 {
-    return drotr32(X, 21, 21) ^ drotr32(X, 26, 26) ^ drotr32(X, 30, 30);
+    uint32_t U = (uint32_t)(X >> 32);
+    uint32_t L = (uint32_t)X;
+    U = rotr32(U, 21) ^ rotr32(U, 26) ^ rotr32(U, 30);
+    L = rotr32(L, 21) ^ rotr32(L, 26) ^ rotr32(L, 30);
+
+    return (uint64_t)U << 32 | L;
 }
 
 static INLINE
 uint64_t _256_theta1(uint64_t X)
 {
-    return drotr32(X, 14, 14) ^ drotr32(X, 24, 24) ^ drotr32(X, 31, 31);
+    uint32_t U = (uint32_t)(X >> 32);
+    uint32_t L = (uint32_t)X;
+    U = rotr32(U, 14) ^ rotr32(U, 24) ^ rotr32(U, 31);
+    L = rotr32(L, 14) ^ rotr32(L, 24) ^ rotr32(L, 31);
+
+    return (uint64_t)U << 32 | L;
 }
 
 static INLINE
@@ -307,47 +311,93 @@ uint64_t _256_mu1(uint64_t X)
     return rotr64(X, 59) ^ rotr64(X, 37) ^ (X >> 10);
 }
 
-static
-void _256_message_expansion(uint64_t *W)
-{
-    int     i;
-
-    for (i = 8; i < 2 * _256_STEPS; ++i)
-        W[i] = W[i - 8] ^ _256_mu0(W[i - 7]) ^ _256_mu1(W[i - 2]);
-}
-
 static INLINE
 void _256_premix(uint64_t A, uint64_t B, uint64_t D, uint64_t E,
-		uint64_t *preR, uint64_t *preS, uint64_t *preT, uint64_t *preU)
+		uint64_t *R, uint64_t *S, uint64_t *T, uint64_t *U)
 {
-    *preR = drotr32(B, 8, 8)          ^ drotr32(swap32(D),  5,  1);
-    *preS = A                         ^ drotr32(swap32(D), 18, 17);
-    *preT = drotr32(swap32(A), 7, 26) ^ drotr32(D, 14, 22);
-    *preU = drotr32(A, 17, 12)        ^ drotr32(swap32(E),  2, 23);
+    uint64_t dswap;
+
+    *T = drotr32(swap32(A), 7, 26) ^ drotr32(D, 14, 22);
+    dswap = swap32(D);
+    *R = drotr32(B, 8, 8)          ^ drotr32(dswap, 5, 1);
+    *S = A                         ^ drotr32(dswap, 18, 17);
+    *U = drotr32(A, 17, 12)        ^ drotr32(swap32(E), 2, 23);
 }
 
 static INLINE
-void _256_datainput(uint64_t preR, uint64_t preS, uint64_t preT, uint64_t preU,
+void _256_datainput(uint64_t V0, uint64_t V1,
+		uint64_t *R, uint64_t *S, uint64_t *T, uint64_t *U)
+{
+    *R ^= V0;
+    *S ^= V1;
+    *T ^= _256_theta0(V0);
+    *U ^= _256_theta1(V1);
+}
+
+
+static INLINE
+void _256_premix_and_di(uint64_t A, uint64_t B, uint64_t D, uint64_t E,
 		uint64_t V0, uint64_t V1,
 		uint64_t *R, uint64_t *S, uint64_t *T, uint64_t *U)
 {
-    *R = preR ^ V0;
-    *S = preS ^ V1;
-    *T = preT ^ _256_theta0(V0);
-    *U = preU ^ _256_theta1(V1);
+    uint64_t dswap;
+
+    *T = drotr32(D, 14, 22) ^ drotr32(swap32(A), 7, 26) ^ _256_theta0(V0);
+    dswap = swap32(D);
+    *R = drotr32(B,  8,  8) ^ drotr32(dswap,     5,  1) ^ V0;
+    *S = A                  ^ drotr32(dswap,    18, 17) ^ V1;
+    *U = drotr32(A, 17, 12) ^ drotr32(swap32(E), 2, 23) ^ _256_theta1(V1);
 }
 
 static INLINE
-void _256_postmix(uint64_t X, uint64_t Y, uint64_t Z,
-		uint64_t *XX, uint64_t *YY, uint64_t *ZZ,
-		uint64_t *AA, uint64_t *DD)
+void _256_postmix(uint64_t X, uint64_t Y, uint64_t Z, uint64_t *F, uint64_t *C)
 {
-    *XX = X;
-    *YY = swap8(drotr32(Y, 5, 5));
-    *ZZ = swap32(Z);
-    *AA = rotr64(*XX + *YY, 16);
-    *DD = rotr64(*YY + *ZZ, 48);
+    uint64_t  YY;
+
+    YY = swap8(drotr32(Y, 5, 5));
+    *F ^= rotr64(X + YY, 16);
+    *C ^= rotr64(swap32(Z) + YY, 48);
 }
+
+#define _256_STEP(A, B, C, D, E, F, i)                                         \
+    do {                                                                       \
+        _256_premix(A, B, D, E, &R, &S, &T, &U);                               \
+        _256_datainput(W[2*(i)]^K[2*(i)], W[2*(i)+1]^K[2*(i)+1], &R,&S,&T,&U); \
+        _256_MAP(R, S, T, U, M);                                               \
+        _256_postmix(M[(i)%3], M[((i)+1)%3], M[((i)+2)%3], &F, &C);            \
+    } while(0)
+
+#define _256_STEP_2(A, B, C, D, E, F, i)                                       \
+    do {                                                                       \
+        _256_STEP(A, B, C, D, E, F, (i) + 0);                                  \
+        _256_STEP(F, A, B, C, D, E, (i) + 1);                                  \
+    } while(0)
+
+#define _256_STEP_6(A, B, C, D, E, F, i)                                       \
+    do {                                                                       \
+        _256_STEP(A, B, C, D, E, F, (i) + 0);                                  \
+        _256_STEP(F, A, B, C, D, E, (i) + 1);                                  \
+        _256_STEP(E, F, A, B, C, D, (i) + 2);                                  \
+        _256_STEP(D, E, F, A, B, C, (i) + 3);                                  \
+        _256_STEP(C, D, E, F, A, B, (i) + 4);                                  \
+        _256_STEP(B, C, D, E, F, A, (i) + 5);                                  \
+    } while(0)
+
+#define _256_MSG(W, i) (W[(i)-8] ^ _256_mu0(W[(i)-7]) ^ _256_mu1(W[(i)-2]))
+
+#define _256_MSG_EXP(W, b)                                                     \
+    do {int i;                                                                 \
+        W[0] = BYTE2WORD(b + 8*0);                                             \
+        W[1] = BYTE2WORD(b + 8*1);                                             \
+        W[2] = BYTE2WORD(b + 8*2);                                             \
+        W[3] = BYTE2WORD(b + 8*3);                                             \
+        W[4] = BYTE2WORD(b + 8*4);                                             \
+        W[5] = BYTE2WORD(b + 8*5);                                             \
+        W[6] = BYTE2WORD(b + 8*6);                                             \
+        W[7] = BYTE2WORD(b + 8*7);                                             \
+        for (i = 8; i < 2 * _256_STEPS; i++)                                   \
+            W[i] = _256_MSG(W, i);                                             \
+    } while(0)
 
 /*
  * 256 bit update routine.  Called from hash().
@@ -359,60 +409,41 @@ void _256_postmix(uint64_t X, uint64_t Y, uint64_t Z,
 static
 void _256_update(chiParam *sp, int final)
 {
-    int         i;
+    uint64_t    W[2*_256_STEPS];
 
-    uint64_t      W[2*_256_STEPS];
-    uint64_t      A, B, C, D, E, F;
-    uint64_t      preR, preS, preT, preU;
-    uint64_t      V0, V1;
-    uint64_t      R, S, T, U;
-    uint64_t      X, Y, Z, XX, YY, ZZ;
-    uint64_t      AA, DD, newA, newD;
-
-    A = sp->hs_State.small[0];
-    B = sp->hs_State.small[1];
-    C = sp->hs_State.small[2];
-    D = sp->hs_State.small[3];
-    E = sp->hs_State.small[4];
-    F = sp->hs_State.small[5];
+    uint64_t    A, B, C, D, E, F;
+    uint64_t    R, S, T, U;
+    uint64_t    M[3];
 
     if (final) {
-        A = rotr64(A, 1);
-        B = rotr64(B, 1);
-        C = rotr64(C, 1);
-        D = rotr64(D, 1);
-        E = rotr64(E, 1);
-        F = rotr64(F, 1);
+        A = sp->hs_State.small[0] = rotr64(sp->hs_State.small[0], 1);
+        B = sp->hs_State.small[1] = rotr64(sp->hs_State.small[1], 1);
+        C = sp->hs_State.small[2] = rotr64(sp->hs_State.small[2], 1);
+        D = sp->hs_State.small[3] = rotr64(sp->hs_State.small[3], 1);
+        E = sp->hs_State.small[4] = rotr64(sp->hs_State.small[4], 1);
+        F = sp->hs_State.small[5] = rotr64(sp->hs_State.small[5], 1);
+    } else {
+        sp->hs_State.small[0] = rotr64(A = sp->hs_State.small[0], 1);
+        sp->hs_State.small[1] = rotr64(B = sp->hs_State.small[1], 1);
+        sp->hs_State.small[2] = rotr64(C = sp->hs_State.small[2], 1);
+        sp->hs_State.small[3] = rotr64(D = sp->hs_State.small[3], 1);
+        sp->hs_State.small[4] = rotr64(E = sp->hs_State.small[4], 1);
+        sp->hs_State.small[5] = rotr64(F = sp->hs_State.small[5], 1);
     }
 
-    for (i = 0; i < _256_MSG_N; ++i)
-        W[i] = BYTE2WORD(sp->hs_DataBuffer + 8 * i);
-    _256_message_expansion(W);
+    _256_MSG_EXP(W, sp->hs_DataBuffer);
 
-    for (i = 0; i < _256_STEPS; ++i) {
-        _256_premix(A, B, D, E, &preR, &preS, &preT, &preU);
-        V0 = W[2*i  ] ^ K[2*i  ];
-        V1 = W[2*i+1] ^ K[2*i+1];
-        _256_datainput(preR, preS, preT, preU, V0, V1, &R, &S, &T, &U);
-        _256_MAP(R, S, T, U, &X, &Y, &Z, i);
-        _256_postmix(X, Y, Z, &XX, &YY, &ZZ, &AA, &DD);
+    _256_STEP_6(A, B, C, D, E, F,  0);
+    _256_STEP_6(A, B, C, D, E, F,  6);
+    _256_STEP_6(A, B, C, D, E, F, 12);
+    _256_STEP_2(A, B, C, D, E, F, 18);
 
-        newA = AA ^ F;
-        newD = DD ^ C;
-        
-        /*
-         * Shift
-         */
-        F = E; E = D; D = newD;
-        C = B; B = A; A = newA;
-    }
-
-    sp->hs_State.small[0] = rotr64(sp->hs_State.small[0], 1) ^ A;
-    sp->hs_State.small[1] = rotr64(sp->hs_State.small[1], 1) ^ B;
-    sp->hs_State.small[2] = rotr64(sp->hs_State.small[2], 1) ^ C;
-    sp->hs_State.small[3] = rotr64(sp->hs_State.small[3], 1) ^ D;
-    sp->hs_State.small[4] = rotr64(sp->hs_State.small[4], 1) ^ E;
-    sp->hs_State.small[5] = rotr64(sp->hs_State.small[5], 1) ^ F;
+    sp->hs_State.small[0] ^= E;
+    sp->hs_State.small[1] ^= F;
+    sp->hs_State.small[2] ^= A;
+    sp->hs_State.small[3] ^= B;
+    sp->hs_State.small[4] ^= C;
+    sp->hs_State.small[5] ^= D;
 }
 
 /*
@@ -444,65 +475,102 @@ uint64_t _512_mu1(uint64_t X)
     return rotr64(X, 60) ^ rotr64(X, 30) ^ (X >> 3);
 }
 
-static
-void _512_message_expansion(uint64_t  *W)
-{
-    int     i;
-
-    for (i = 16; i < 2 * _512_STEPS; ++i) {
-        W[i] = W[i - 16]
-             ^ W[i -  7]
-             ^ _512_mu0(W[i - 15])
-             ^ _512_mu1(W[i - 2]);
-    }
-}
-
 static INLINE
 void _512_premix(uint64_t A, uint64_t B, uint64_t D, uint64_t E,
 		uint64_t G, uint64_t P,
-		uint64_t *preR, uint64_t *preS, uint64_t *preT, uint64_t *preU)
+		uint64_t *R, uint64_t *S, uint64_t *T, uint64_t *U)
 {
-    *preR = rotr64(B, 11) ^ rotr64(D,  8) ^ rotr64(G, 13);
-    *preS = A             ^ rotr64(D, 21) ^ rotr64(G, 29);
-    *preT = rotr64(A, 11) ^ rotr64(D, 38) ^ P;
-    *preU = rotr64(A, 26) ^ rotr64(E, 40) ^ rotr64(G, 50);
+    *T = P;
+    *S = A;
+    *T ^= rotr64(A, 11);
+    *U = rotr64(A, 26);
+    *R = rotr64(B, 11);
+    *R ^= rotr64(D, 8);
+    *S ^= rotr64(D, 21);
+    *T ^= rotr64(D, 38);
+    *U ^= rotr64(E, 40);
+    *R ^= rotr64(G, 13);
+    *S ^= rotr64(G, 29);
+    *U ^= rotr64(G, 50);
 }
 
 static INLINE
-void _512_datainput(uint64_t preR, uint64_t preS, uint64_t preT, uint64_t preU,
-		uint64_t V0, uint64_t V1, uint64_t *R, uint64_t *S, uint64_t *T,
-		uint64_t *U)
+void _512_datainput(uint64_t V0, uint64_t V1,
+		uint64_t *R, uint64_t *S, uint64_t *T, uint64_t *U)
 {
-    *R = preR ^ V0;
-    *S = preS ^ V1;
-    *T = preT ^ _512_theta0(V0);
-    *U = preU ^ _512_theta1(V1);
+    *R ^= V0;
+    *S ^= V1;
+    *T ^= _512_theta0(V0);
+    *U ^= _512_theta1(V1);
 }
 
 static INLINE
 void _512_postmix(uint64_t X, uint64_t Y, uint64_t Z,
-		uint64_t *XX, uint64_t *YY, uint64_t *ZZ,
-		uint64_t *AA, uint64_t *DD, uint64_t *GG)
+		uint64_t *Q, uint64_t *F, uint64_t *C)
 {
-    uint64_t temp;
+    uint64_t  YY, ZZ;
 
-    *XX = X;
-    *YY = swap8(rotr64(Y, 31));
-    *ZZ = swap32(Z);
-
-    temp = *XX + *YY;
-    *AA = rotr64(temp, 16);
-
-    temp = *YY + *ZZ;
-    *DD = rotr64(temp, 48);
-
-    temp = *ZZ + (*XX << 1);
-    *GG = temp;
+    YY = swap8(rotr64(Y, 31));
+    ZZ = swap32(Z);
+    *Q ^= rotr64( X + YY, 16);
+    *C ^= rotr64(ZZ + YY, 48);
+    *F ^= ZZ + (X << 1);
 }
 
+#define _512_STEP(A, B, C, D, E, F, G, P, Q, i)                                \
+    do {                                                                       \
+        _512_premix(A, B, D, E, G, P, &R, &S, &T, &U);                         \
+        _512_datainput(W[2*(i)]^K[2*(i)], W[2*(i)+1]^K[2*(i)+1],&R,&S,&T,&U);  \
+        _512_MAP(R, S, T, U, M);                                               \
+        _512_postmix(M[(i)%3], M[((i)+1)%3], M[((i)+2)%3], Q, F, C);           \
+    } while(0)
+
+#define _512_STEP_4(A, B, C, D, E, F, G, P, Q, i)                              \
+    do {                                                                       \
+        _512_STEP(A, B, &C, D, E, &F, G, P, &Q, (i) + 0);                      \
+        _512_STEP(Q, A, &B, C, D, &E, F, G, &P, (i) + 1);                      \
+        _512_STEP(P, Q, &A, B, C, &D, E, F, &G, (i) + 2);                      \
+        _512_STEP(G, P, &Q, A, B, &C, D, E, &F, (i) + 3);                      \
+    } while(0)
+
+#define _512_STEP_9(A, B, C, D, E, F, G, P, Q, i)                              \
+    do {                                                                       \
+        _512_STEP(A, B, &C, D, E, &F, G, P, &Q, (i) + 0);                      \
+        _512_STEP(Q, A, &B, C, D, &E, F, G, &P, (i) + 1);                      \
+        _512_STEP(P, Q, &A, B, C, &D, E, F, &G, (i) + 2);                      \
+        _512_STEP(G, P, &Q, A, B, &C, D, E, &F, (i) + 3);                      \
+        _512_STEP(F, G, &P, Q, A, &B, C, D, &E, (i) + 4);                      \
+        _512_STEP(E, F, &G, P, Q, &A, B, C, &D, (i) + 5);                      \
+        _512_STEP(D, E, &F, G, P, &Q, A, B, &C, (i) + 6);                      \
+        _512_STEP(C, D, &E, F, G, &P, Q, A, &B, (i) + 7);                      \
+        _512_STEP(B, C, &D, E, F, &G, P, Q, &A, (i) + 8);                      \
+    } while(0)
+
+#define _512_MSG(W,i) (W[i-16] ^ W[i-7] ^ _512_mu0(W[i-15]) ^ _512_mu1(W[i-2]))
+
+#define _512_MSG_EXP(W, b)                                                     \
+    do {int i;                                                                 \
+        W[0] = BYTE2WORD(b + 8*0);                                             \
+        W[1] = BYTE2WORD(b + 8*1);                                             \
+        W[2] = BYTE2WORD(b + 8*2);                                             \
+        W[3] = BYTE2WORD(b + 8*3);                                             \
+        W[4] = BYTE2WORD(b + 8*4);                                             \
+        W[5] = BYTE2WORD(b + 8*5);                                             \
+        W[6] = BYTE2WORD(b + 8*6);                                             \
+        W[7] = BYTE2WORD(b + 8*7);                                             \
+        W[8] = BYTE2WORD(b + 8*8);                                             \
+        W[9] = BYTE2WORD(b + 8*9);                                             \
+        W[10] = BYTE2WORD(b + 8*10);                                           \
+        W[11] = BYTE2WORD(b + 8*11);                                           \
+        W[12] = BYTE2WORD(b + 8*12);                                           \
+        W[13] = BYTE2WORD(b + 8*13);                                           \
+        W[14] = BYTE2WORD(b + 8*14);                                           \
+        W[15] = BYTE2WORD(b + 8*15);                                           \
+        for (i = 16; i < 2 * _512_STEPS; i++)                                  \
+            W[i] = _512_MSG(W, i);                                             \
+    } while(0)
+
 /*
- * 512 bit update routine.  Called from hash().
- *
  * Parameters:
  *      sp      The hash state.
  *      final   1 for the final block in the hash, 0 for intermediate blocks.
@@ -510,71 +578,50 @@ void _512_postmix(uint64_t X, uint64_t Y, uint64_t Z,
 static
 void _512_update(chiParam *sp, int final)
 {
-    int         i;
-
     uint64_t      W[2*_512_STEPS];
     uint64_t      A, B, C, D, E, F, G, P, Q;
-    uint64_t      preR, preS, preT, preU;
-    uint64_t      V0, V1;
     uint64_t      R, S, T, U;
-    uint64_t      X, Y, Z, XX, YY, ZZ;
-    uint64_t      AA, DD, GG, newA, newD, newG;
-
-    A = sp->hs_State.large[0];
-    B = sp->hs_State.large[1];
-    C = sp->hs_State.large[2];
-    D = sp->hs_State.large[3];
-    E = sp->hs_State.large[4];
-    F = sp->hs_State.large[5];
-    G = sp->hs_State.large[6];
-    P = sp->hs_State.large[7];
-    Q = sp->hs_State.large[8];
+    uint64_t      M[3];
 
     if (final) {
-        A = rotr64(A, 1);
-        B = rotr64(B, 1);
-        C = rotr64(C, 1);
-        D = rotr64(D, 1);
-        E = rotr64(E, 1);
-        F = rotr64(F, 1);
-        G = rotr64(G, 1);
-        P = rotr64(P, 1);
-        Q = rotr64(Q, 1);
+        A = sp->hs_State.large[0] = rotr64(sp->hs_State.large[0], 1);
+        B = sp->hs_State.large[1] = rotr64(sp->hs_State.large[1], 1);
+        C = sp->hs_State.large[2] = rotr64(sp->hs_State.large[2], 1);
+        D = sp->hs_State.large[3] = rotr64(sp->hs_State.large[3], 1);
+        E = sp->hs_State.large[4] = rotr64(sp->hs_State.large[4], 1);
+        F = sp->hs_State.large[5] = rotr64(sp->hs_State.large[5], 1);
+        G = sp->hs_State.large[6] = rotr64(sp->hs_State.large[6], 1);
+        P = sp->hs_State.large[7] = rotr64(sp->hs_State.large[7], 1);
+        Q = sp->hs_State.large[8] = rotr64(sp->hs_State.large[8], 1);
+    } else {
+        sp->hs_State.large[0] = rotr64(A = sp->hs_State.large[0], 1);
+        sp->hs_State.large[1] = rotr64(B = sp->hs_State.large[1], 1);
+        sp->hs_State.large[2] = rotr64(C = sp->hs_State.large[2], 1);
+        sp->hs_State.large[3] = rotr64(D = sp->hs_State.large[3], 1);
+        sp->hs_State.large[4] = rotr64(E = sp->hs_State.large[4], 1);
+        sp->hs_State.large[5] = rotr64(F = sp->hs_State.large[5], 1);
+        sp->hs_State.large[6] = rotr64(G = sp->hs_State.large[6], 1);
+        sp->hs_State.large[7] = rotr64(P = sp->hs_State.large[7], 1);
+        sp->hs_State.large[8] = rotr64(Q = sp->hs_State.large[8], 1);
     }
 
-    for (i = 0; i < _512_MSG_N; ++i)
-        W[i] = BYTE2WORD(sp->hs_DataBuffer + 8*i);
-    _512_message_expansion(W);
+    _512_MSG_EXP(W, sp->hs_DataBuffer);
 
-    for (i = 0; i < _512_STEPS; ++i) {
-        _512_premix(A, B, D, E, G, P, &preR, &preS, &preT, &preU);
-        V0 = W[2*i  ] ^ K[2*i  ];
-        V1 = W[2*i+1] ^ K[2*i+1];
-        _512_datainput(preR, preS, preT, preU, V0, V1, &R, &S, &T, &U);
-        _512_MAP(R, S, T, U, &X, &Y, &Z, i);
-        _512_postmix(X, Y, Z, &XX, &YY, &ZZ, &AA, &DD, &GG);
+    _512_STEP_9(A, B, C, D, E, F, G, P, Q, 0);
+    _512_STEP_9(A, B, C, D, E, F, G, P, Q, 9);
+    _512_STEP_9(A, B, C, D, E, F, G, P, Q,18);
+    _512_STEP_9(A, B, C, D, E, F, G, P, Q,27);
+    _512_STEP_4(A, B, C, D, E, F, G, P, Q,36);
 
-        newA = AA ^ Q;
-        newD = DD ^ C;
-        newG = GG ^ F;
-        
-        /*
-         * Shift
-         */
-        Q = P; P = G; G = newG;
-        F = E; E = D; D = newD;
-        C = B; B = A; A = newA;
-    }
-
-    sp->hs_State.large[0] = rotr64(sp->hs_State.large[0], 1) ^ A;
-    sp->hs_State.large[1] = rotr64(sp->hs_State.large[1], 1) ^ B;
-    sp->hs_State.large[2] = rotr64(sp->hs_State.large[2], 1) ^ C;
-    sp->hs_State.large[3] = rotr64(sp->hs_State.large[3], 1) ^ D;
-    sp->hs_State.large[4] = rotr64(sp->hs_State.large[4], 1) ^ E;
-    sp->hs_State.large[5] = rotr64(sp->hs_State.large[5], 1) ^ F;
-    sp->hs_State.large[6] = rotr64(sp->hs_State.large[6], 1) ^ G;
-    sp->hs_State.large[7] = rotr64(sp->hs_State.large[7], 1) ^ P;
-    sp->hs_State.large[8] = rotr64(sp->hs_State.large[8], 1) ^ Q;
+    sp->hs_State.large[0] ^= F;
+    sp->hs_State.large[1] ^= G;
+    sp->hs_State.large[2] ^= P;
+    sp->hs_State.large[3] ^= Q;
+    sp->hs_State.large[4] ^= A;
+    sp->hs_State.large[5] ^= B;
+    sp->hs_State.large[6] ^= C;
+    sp->hs_State.large[7] ^= D;
+    sp->hs_State.large[8] ^= E;
 }
 
 /* chi-common.c: CHI hash common functions */
