@@ -22,24 +22,31 @@
 
 #define	BEECRYPT_DLL_EXPORT
 
-#include <stddef.h>
-#include <string.h>
 #include "shabal.h"
 
+#if !defined(INLINE)
+#define	INLINE	inline
+#endif
+
 const hashFunction shabal256 = {
-	.name = "SHABAL",
-	.paramsize = sizeof(shabalParam),
-	.blocksize = 64,
-	.digestsize = 256/8,	/* XXX default to SHABAL-256 */
-	.reset = (hashFunctionReset) shabalReset,
-	.update = (hashFunctionUpdate) shabalUpdate,
-	.digest = (hashFunctionDigest) shabalDigest
+    .name = "SHABAL-256",
+    .paramsize = sizeof(shabalParam),
+    .blocksize = 64,
+    .digestsize = 256/8,	/* XXX default to SHABAL-256 */
+    .reset = (hashFunctionReset) shabalReset,
+    .update = (hashFunctionUpdate) shabalUpdate,
+    .digest = (hashFunctionDigest) shabalDigest
 };
 
 /*
  * Part of this code was automatically generated (the part between
  * the "BEGIN" and "END" markers). See optgen.c for details.
  */
+
+#define	SHABAL_BLOCK_SIZE 16
+#ifndef SHABAL_PARAM_R
+#define SHABAL_PARAM_R    12
+#endif
 
 /*
  * If the "p" and "e" parameters are modified for research purpose,
@@ -70,8 +77,6 @@ const hashFunction shabal256 = {
 #define O1   13
 #define O2    9
 #define O3    6
-
-#define	INLINE	inline
 
 /*
  * Decode a 32-bit word with little-endian convention, assuming that

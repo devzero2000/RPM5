@@ -17,15 +17,8 @@
 #ifndef _SHABAL_H
 #define _SHABAL_H
 
-#include "beecrypt/beecrypt.h"
-
-#include <limits.h>
 #include <stdint.h>
-
-#define SHABAL_BLOCK_SIZE   16
-#ifndef SHABAL_PARAM_R
-#define SHABAL_PARAM_R      12
-#endif
+#include "beecrypt/beecrypt.h"
 
 /*!\brief Holds all the parameters necessary for the SHABAL algorithm.
  * \ingroup HASH_shabal_m
@@ -36,13 +29,13 @@ struct BEECRYPTAPI shabalParam
 struct _shabalParam
 #endif
 {
-    byte buffer[SHABAL_BLOCK_SIZE * 4];
+    byte buffer[16 * 4];	/* SHABAL_BLOCK_SIZE */
     size_t buffer_ptr;
     unsigned last_byte_significant_bits;
     int hashbitlen;
-    uint32_t A[SHABAL_PARAM_R];
-    uint32_t B[SHABAL_BLOCK_SIZE];
-    uint32_t C[SHABAL_BLOCK_SIZE];
+    uint32_t A[12];		/* SHABAL_PARAM_R */
+    uint32_t B[16];		/* SHABAL_BLOCK_SIZE */
+    uint32_t C[16];		/* SHABAL_BLOCK_SIZE */
     uint32_t Whigh, Wlow;
 };
 
