@@ -54,7 +54,7 @@ struct _chiParam
                                      * hs_DataBuffer.
                                      */
     uint8_t hs_DataBuffer[128];     /* Buffer for accumulating message.       */
-} hashState;
+};
 
 #ifndef __cplusplus
 typedef struct _chiParam chiParam;
