@@ -4,22 +4,21 @@
 /* Made by Hitachi Ltd.        */
 /*******************************/
 
+#ifndef _LUFFA_H
+#define _LUFFA_H
+
 #include <stdint.h>
+#include "beecrypt/beecrypt.h"
 
-#define	BitSequence	luffa_BitSequence
-#define	DataLength	luffa_DataLength
-#define	hashState	luffa_hashState
-#define	HashReturn	int
-
-#define	Init		luffa_Init
-#define	Update		luffa_Update
-#define	Final		luffa_Final
-#define	Hash		luffa_Hash
-
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
-
-typedef struct {
+/*!\brief Holds all the parameters necessary for the LUFFA algorithm.
+ * \ingroup HASH_luffa_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI luffaParam
+#else
+struct _luffaParam
+#endif
+{
     int hashbitlen;
     int width;			/* Number of blocks in chaining values */
     int limit;			/* Limit of message length in unit of 64bit */
@@ -27,16 +26,35 @@ typedef struct {
     uint32_t rembitlen;		/* Length of buffer data to be hashed */
     uint32_t buffer[8];		/* Buffer to be hashed */
     uint32_t chainv[40];	/* Chaining values */
-} hashState;
+};
 
-HashReturn Init(hashState *state, int hashbitlen);
-HashReturn Update(hashState *state, const BitSequence *data, DataLength databitlen);
-HashReturn Final(hashState *state, BitSequence *hashval);
-HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, BitSequence *hashval);
+#ifndef __cplusplus
+typedef struct _luffaParam luffaParam;
+#endif
 
-/* Impedance match bytes -> bits length. */
-static inline
-int _luffa_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var luffa256
+ * \brief Holds the full API description of the LUFFA algorithm.
+ */
+extern BEECRYPTAPI const hashFunction luffa256;
+
+BEECRYPTAPI
+int luffaInit(luffaParam* sp, int hashbitlen);
+
+BEECRYPTAPI
+int luffaReset(luffaParam* sp);
+
+BEECRYPTAPI
+int luffaUpdate(luffaParam* sp, const byte *data, size_t size);
+
+BEECRYPTAPI
+int luffaDigest(luffaParam* sp, byte *digest);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* _LUFFA_H */

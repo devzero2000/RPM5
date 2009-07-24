@@ -85,14 +85,6 @@
 #include "lane.h"
 
 #include "luffa.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "md2.h"
 #include "md6.h"
@@ -830,14 +822,13 @@ luffa:
 	ctx->name = "LUFFA";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(luffa_hashState);
+	ctx->paramsize = sizeof(luffaParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) luffa_Init((luffa_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _luffa_Update;
-	ctx->Digest = (int (*)(void *, byte *)) luffa_Final;
+	(void) luffaInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) luffaReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) luffaUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) luffaDigest;
 	break;
     case PGPHASHALGO_MD6_224: ctx->digestsize = 224/8; goto md6;
     case PGPHASHALGO_MD6_256: ctx->digestsize = 256/8; goto md6;
