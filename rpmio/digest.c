@@ -13,14 +13,6 @@
 #include "arirang.h"
 
 #include "blake.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "bmw.h"
 
@@ -621,14 +613,13 @@ blake:
 	ctx->name = "BLAKE";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(blake_hashState);
+	ctx->paramsize = sizeof(blakeParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) blake_Init((blake_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _blake_Update;
-	ctx->Digest = (int (*)(void *, byte *)) blake_Final;
+	(void) blakeInit(ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) blakeReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) blakeUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) blakeDigest;
 	break;
     case PGPHASHALGO_BMW_224: ctx->digestsize = 224/8; goto bmw;
     case PGPHASHALGO_BMW_256: ctx->digestsize = 256/8; goto bmw;
