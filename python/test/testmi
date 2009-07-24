@@ -3,18 +3,16 @@ import rpm
 
 def printresult (name, mi):
     print name
-    h = mi.next()
-    while h:
+    for h in mi:
         print "\t%(name)s-%(version)s-%(release)s" % h
-        h = mi.next()    
 
-db = rpm.opendb(0)
-printresult ('provides', db.match ('providename', 'libc.so.6.1'))
-printresult ('requires', db.match ('requirename', 'libGL.so.1'))
-# segfault
-#printresult ('obsoletes', db.match ('obsoletes', 'gimp-data-min'))
-printresult ('name', db.match ('name', 'gimp'))
-printresult ('basenames', db.match ('basenames', '/etc/passwd'))
+ts = rpm.ts()
+db = ts.openDB()
+printresult ('provides', ts.dbMatch ('providename', 'libc.so.6'))
+printresult ('requires', ts.dbMatch ('requirename', 'libGL.so.1'))
+printresult ('obsoletes', ts.dbMatch ('obsoletes', 'gimp-data-min'))
+printresult ('name', ts.dbMatch ('name', 'gimp'))
+printresult ('basenames', ts.dbMatch ('basenames', '/etc/passwd'))
 
-print db[db.findbyname ('gimp')[0]]['name']
+#print db[db.findbyname ('gimp')[0]]['name']
 
