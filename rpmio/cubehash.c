@@ -1,6 +1,6 @@
 /* CubeHash 16/32 is recommended for SHA-3 "normal", 16/1 for "formal" */
-#define CUBEHASH_ROUNDS 8
-#define CUBEHASH_BLOCKBYTES 1
+#define CUBEHASH_ROUNDS	16
+#define CUBEHASH_BLOCKBYTES 32
 
 #include "cubehash.h"
 
