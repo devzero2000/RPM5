@@ -277,6 +277,7 @@ LIBRPM_0
     rpmteCleanDS;
     rpmteColor;
     rpmteColorDS;
+    rpmteD;
     rpmteDBInstance;
     rpmteDBOffset;
     _rpmte_debug;
