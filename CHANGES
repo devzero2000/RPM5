@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - proyvind: js: fix internal build on Linux.
     - proyvind: filetriggers: fix missing file suffix for scripts. (from unity linux).
     - proyvind: rpm4compat: add wrappers for renamed rpmdb*->rpmmi* functions.
     - proyvind: python: add te.D() to return element distepoch.
