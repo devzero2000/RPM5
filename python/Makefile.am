@@ -59,3 +59,7 @@ splint_srcs = \
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(splint_srcs)
+
+# FIXME: using .libs/ is not really correct, but whatever
+check-local:
+	PYTHONPATH=$(PYTHONPATH):$(shell pwd):$(shell pwd)/.libs/ python test/test_rpm.py
