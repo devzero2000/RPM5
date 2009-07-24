@@ -19,14 +19,6 @@
 #include "chi.h"
 
 #include "cubehash.h"
-#undef	BitSequence
-#undef	DataLength
-#undef	HashReturn
-#undef	hashState
-#undef	Init
-#undef	Update
-#undef	Final
-#undef	Hash
 
 #include "echo.h"
 #undef	BitSequence
@@ -661,16 +653,15 @@ cubehash:
 	ctx->name = "CUBEHASH";
 	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
-	ctx->paramsize = sizeof(cubehash_hashState);
+	ctx->paramsize = sizeof(cubehashParam);
 /*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramsize);
-	(void) cubehash_Init((cubehash_hashState *)ctx->param,
-				(int)(8 * ctx->digestsize),
+	(void) cubehashInit(ctx->param, (int)(8 * ctx->digestsize),
 				(int)((ctx->flags >> 8) & 0xff),
 				(int)((ctx->flags     ) & 0xff));
-	ctx->Reset = (int (*)(void *)) noopReset;
-	ctx->Update = (int (*)(void *, const byte *, size_t)) _cubehash_Update;
-	ctx->Digest = (int (*)(void *, byte *)) cubehash_Final;
+	ctx->Reset = (int (*)(void *)) cubehashReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) cubehashUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) cubehashDigest;
 	break;
     case PGPHASHALGO_ECHO_224: ctx->digestsize = 224/8; goto echo;
     case PGPHASHALGO_ECHO_256: ctx->digestsize = 256/8; goto echo;

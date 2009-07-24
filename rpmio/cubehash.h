@@ -1,18 +1,8 @@
-#ifndef cubehash_h
-#define cubehash_h
+#ifndef H_CUBEHASH
+#define H_CUBEHASH
 
-#include <string.h>
 #include <stdint.h>
-
-#define	BitSequence	cubehash_BitSequence
-#define	DataLength	cubehash_DataLength
-#define	hashState	cubehash_hashState
-#define	HashReturn	int
-
-#define	Init		cubehash_Init
-#define	Update		cubehash_Update
-#define	Final		cubehash_Final
-#define	Hash		cubehash_Hash
+#include "beecrypt/beecrypt.h"
 
 #if defined(__SSE2__)
 #define	OPTIMIZE_SSE2
@@ -22,10 +12,15 @@
 #include <emmintrin.h>
 #endif
 
-typedef unsigned char BitSequence;
-typedef unsigned long long DataLength;
-
-typedef struct {
+/*!\brief Holds all the parameters necessary for the CUBEHASH algorithm.
+ * \ingroup HASH_cubehash_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI cubehashParam
+#else
+struct _cubehashParam
+#endif
+{
     int hashbitlen;
     int rounds;
     int blockbytes;
@@ -35,23 +30,35 @@ typedef struct {
 #else
     uint32_t x[32];
 #endif
-} hashState;
+};
 
-HashReturn Init(hashState *state, int hashbitlen, int rounds, int blockbytes);
-
-HashReturn Update(hashState *state, const BitSequence *data,
-                  DataLength databitlen);
-
-HashReturn Final(hashState *state, BitSequence *hashval);
-
-HashReturn Hash(int hashbitlen, const BitSequence *data,
-                DataLength databitlen, BitSequence *hashval);
-
-/* Impedance match bytes -> bits length. */
-static inline
-int _cubehash_Update(void * param, const void * _data, size_t _len)
-{
-    return Update(param, _data, (DataLength)(8 * _len));
-}
-
+#ifndef __cplusplus
+typedef struct _cubehashParam cubehashParam;
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!\var cubehash256
+ * \brief Holds the full API description of the CUBEHASH algorithm.
+ */
+extern BEECRYPTAPI const hashFunction cubehash256;
+
+BEECRYPTAPI
+int cubehashInit(cubehashParam* sp, int hashbitlen, int rounds, int blockbytes);
+
+BEECRYPTAPI
+int cubehashReset(cubehashParam* sp);
+
+BEECRYPTAPI
+int cubehashUpdate(cubehashParam* sp, const byte *data, size_t size);
+
+BEECRYPTAPI
+int cubehashDigest(cubehashParam* sp, byte *digest);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* H_CUBEHASH */
