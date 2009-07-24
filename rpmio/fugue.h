@@ -28,12 +28,12 @@ struct BEECRYPTAPI fugueParam
 struct _fugueParam
 #endif
 {
-    int        hashbitlen;
-    hashCfg*   Cfg;
-    int        Base;
-    hash32_s   State[36];
-    uint32_t     Partial[1];
-    uint64_t     TotalBits;
+    int            hashbitlen;
+    const hashCfg* Cfg;
+    int            Base;
+    hash32_s       State[36];
+    uint32_t       Partial[1];
+    uint64_t       TotalBits;
 };
 
 #ifndef __cplusplus
