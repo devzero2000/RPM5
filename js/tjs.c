@@ -25,6 +25,7 @@
 #include "rpmmc-js.h"
 #include "rpmmg-js.h"
 #include "rpmmi-js.h"
+#include "rpmmpw-js.h"
 #include "rpmps-js.h"
 #include "rpmst-js.h"
 #include "rpmsw-js.h"
@@ -64,34 +65,35 @@ typedef struct rpmjsClassTable_s {
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
     { "Aug",		rpmjs_InitAugClass,	 -25 },
-    { "Bc",		rpmjs_InitBcClass,	 40 },
+    { "Bc",		rpmjs_InitBcClass,	 -40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 -26 },
     { "Dc",		rpmjs_InitDcClass,	 -28 },
-    { "Dig",		rpmjs_InitDigClass,	 37 },
+    { "Dig",		rpmjs_InitDigClass,	 -37 },	/* todo++ */
     { "Dir",		rpmjs_InitDirClass,	 -29 },
     { "Ds",		rpmjs_InitDsClass,	 -13 },
-    { "Fc",		rpmjs_InitFcClass,	 34 },
+    { "Fc",		rpmjs_InitFcClass,	 -34 },	/* todo++ */
     { "Fi",		rpmjs_InitFiClass,	 -14 },
     { "File",		   js_InitFileClass,	  -1 },
     { "Fts",		rpmjs_InitFtsClass,	 -30 },
-    { "Gi",		rpmjs_InitGiClass,	 35 },
+    { "Gi",		rpmjs_InitGiClass,	 -35 },	/* todo++ */
     { "Hdr",		rpmjs_InitHdrClass,	 -12 },
     { "Io",		rpmjs_InitIoClass,	 -32 },
-    { "Iob",		rpmjs_InitIobClass,	 36 },
+    { "Iob",		rpmjs_InitIobClass,	 -36 },	/* todo++ */
     { "Mc",		rpmjs_InitMcClass,	 -24 },
     { "Mg",		rpmjs_InitMgClass,	 -31 },
     { "Mi",		rpmjs_InitMiClass,	 -11 },
+    { "Mpw",		rpmjs_InitMpwClass,	 41 },	/* todo++ */
     { "Ps",		rpmjs_InitPsClass,	 -16 },
     { "St",		rpmjs_InitStClass,	 -27 },
-    { "Sw",		rpmjs_InitSwClass,	 38 },
-    { "Sx",		rpmjs_InitSxClass,	 39 },
+    { "Sw",		rpmjs_InitSwClass,	 -38 },	/* todo++ */
+    { "Sx",		rpmjs_InitSxClass,	 -39 },
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
     { "Sys",		rpmjs_InitSysClass,	 -33 },
     { "Te",		rpmjs_InitTeClass,	 -15 },
     { "Ts",		rpmjs_InitTsClass,	 -10 },
-    { "Xar",		rpmjs_InitXarClass,	 41 },
+    { "Xar",		rpmjs_InitXarClass,	 -41 },	/* todo++ */
 #ifdef WITH_UUID
     { "Uuid",		rpmjs_InitUuidClass,	  -2 },
 #endif
