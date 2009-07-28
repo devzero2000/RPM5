@@ -12,7 +12,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* Required JSClass vectors */
 #define	rpmmpw_addprop		JS_PropertyStub
@@ -22,9 +22,9 @@ static int _debug = -1;
 /* Optional JSClass vectors */
 #define	rpmmpw_getobjectops	NULL
 #define	rpmmpw_checkaccess	NULL
-#define	rpmmpw_call		NULL
-#define	rpmmpw_construct		rpmmpw_ctor
-#define	rpmmpw_xdrobject		NULL
+#define	rpmmpw_call		rpmmpw_call
+#define	rpmmpw_construct	rpmmpw_ctor
+#define	rpmmpw_xdrobject	NULL
 #define	rpmmpw_hasinstance	NULL
 #define	rpmmpw_mark		NULL
 #define	rpmmpw_reserveslots	NULL
@@ -949,9 +949,9 @@ fprintf(stderr, "<== %s(%g) z %p\n\t", __FUNCTION__, dval, z), mpfprintln(stderr
     return z;
 }
 
-#ifdef	NOTYET
+#define	_CHARMASK(_a)	(_a)
 static mpwObject *
-mpw_FromString(const char * str, char ** sep, int base)
+mpw_FromString(const char * str, const char ** sep, int base)
 	/*@*/
 {
     const char * s = str, * se;
@@ -960,11 +960,13 @@ mpw_FromString(const char * str, char ** sep, int base)
     int sign = 1;
     int ndigits;
 
+#ifdef	FIXME
     if ((base != 0 && base < 2) || base > 36) {
 	PyErr_SetString(PyExc_ValueError, "mpw() arg 2 must be >= 2 and <= 36");
 	return NULL;
     }
-    while (*s != '\0' && isspace(Py_CHARMASK(*s)))
+#endif
+    while (*s != '\0' && isspace(_CHARMASK(*s)))
 	s++;
     if (*s == '+')
 	++s;
@@ -972,7 +974,7 @@ mpw_FromString(const char * str, char ** sep, int base)
 	++s;
 	sign = -1;
     }
-    while (*s != '\0' && isspace(Py_CHARMASK(*s)))
+    while (*s != '\0' && isspace(_CHARMASK(*s)))
 	s++;
     if (base == 0) {
 	if (s[0] != '0')
@@ -1007,7 +1009,7 @@ mpw_FromString(const char * str, char ** sep, int base)
 
     if (*se == 'L' || *se == 'l')
 	se++; 
-    while (*se && isspace(Py_CHARMASK(*se)))
+    while (*se && isspace(_CHARMASK(*se)))
 	se++;
     if (sep)
 	*sep = se;
@@ -1033,11 +1035,13 @@ mpw_FromString(const char * str, char ** sep, int base)
     return z;
 
 onError:
+#ifdef	FIXME
     PyErr_Format(PyExc_ValueError, "invalid literal for mpw(): %.200s", str);
     Py_XDECREF(z);
+#endif
     return NULL;
 }
-#endif
+#undef	_CHARMASK
 
 static mpwObject *
 mpw_FromHEX(const char * hex)
@@ -1108,9 +1112,7 @@ mpw_FromLongObject(PyLongObject *lo)
 
 /* ---------- */
 
-/** \ingroup py_c
- * Compute 2 argument operations.
- */
+/** Compute 2 argument operations. */
 static mpwObject *
 mpw_ops2(const char *fname, char op, mpwObject *x, mpwObject *m)
         /*@*/
@@ -1420,9 +1422,7 @@ exit:
     return z;
 }
 
-/** \ingroup py_c
- * Compute 3 argument operations.
- */
+/** Compute 3 argument operations. */
 static mpwObject *
 mpw_ops3(const char *fname, char op,
 		mpwObject *x, mpwObject *y, mpwObject *m)
@@ -1498,7 +1498,7 @@ exit:
 }
 
 static JSBool
-mpw_wrap(JSContext *cx, mpwObject * z, jsval *rval)
+mpw_wrap(JSContext * cx, jsval * rval, mpwObject * z)
 {
     JSObject *o;
     JSBool ok = JS_FALSE;
@@ -1541,11 +1541,10 @@ mpw_i2mpw(JSContext *cx, JSObject * obj)
 }
 
 /* --- Object methods */
-/**
- * Convert to string.
- */
+
+/** Convert to string. */
 static JSBool
-mpw_ToString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     mpwObject * a = ptr;
@@ -1560,9 +1559,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     return ok;
 }
 
-/**
- * Compute gcd(x, y).
- */
+/** Compute gcd(x, y). */
 static JSBool
 mpw_Gcd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1574,33 +1571,30 @@ mpw_Gcd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo))) {
 	void * z = mpw_ops2("Gcd", 'G', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo));
-	ok = mpw_wrap(cx, z, rval);
+	ok = mpw_wrap(cx, rval, z);
     }
     return ok;
 }
 
-/**
- * Compute inverse (modulo m) of x.
- */
+/** Compute inverse (modulo m) of x. */
 static JSBool
 mpw_Invm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSObject * xo;
+    JSObject *xo;
     JSObject * mo;
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &mo))) {
-	void * z = mpw_ops2("Invm", 'I', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+_debug = -1;
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &mo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("Invm", 'I', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo)));
+_debug = 0;
     return ok;
 }
 
-/**
- * Compute x*x (modulo m).
- */
+/** Compute x*x (modulo m). */
 static JSBool
 mpw_Sqrm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1610,16 +1604,13 @@ mpw_Sqrm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &mo))) {
-	void * z = mpw_ops2("Sqrm", 'S', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &mo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("Sqrm", 'S', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo)));
     return ok;
 }
 
-/**
- * Compute x+y (modulo m).
- */
+/** Compute x+y (modulo m). */
 static JSBool
 mpw_Addm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1630,17 +1621,14 @@ mpw_Addm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo))) {
-	void * z = mpw_ops3("Addm", '+',
-		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo)))
+	ok = mpw_wrap(cx, rval,
+	    mpw_ops3("Addm", '+',
+		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo)));
     return ok;
 }
 
-/**
- * Compute x-y (modulo m).
- */
+/** Compute x-y (modulo m). */
 static JSBool
 mpw_Subm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1651,17 +1639,14 @@ mpw_Subm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo))) {
-	void * z = mpw_ops3("Subm", '-',
-		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo)))
+	ok = mpw_wrap(cx, rval,
+	    mpw_ops3("Subm", '-',
+		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo)));
     return ok;
 }
 
-/**
- * Compute x*y (modulo m).
- */
+/** Compute x*y (modulo m). */
 static JSBool
 mpw_Mulm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1672,17 +1657,14 @@ mpw_Mulm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo))) {
-	void * z = mpw_ops3("Mulm", '*',
-		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo)))
+	ok = mpw_wrap(cx, rval,
+	    mpw_ops3("Mulm", '*',
+		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo)));
     return ok;
 }
 
-/**
- * Compute x**y (modulo m).
- */
+/** Compute x**y (modulo m). */
 static JSBool
 mpw_Powm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1693,11 +1675,10 @@ mpw_Powm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo))) {
-	void * z = mpw_ops3("Powm", 'P',
-		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "ooo", &xo, &yo, &mo)))
+	ok = mpw_wrap(cx, rval,
+	    mpw_ops3("Powm", 'P',
+		mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo), mpw_i2mpw(cx, mo)));
     return ok;
 }
 
@@ -1714,16 +1695,193 @@ mpw_Rndm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &mo, &xo))) {
-	void * z = mpw_ops2("Rndm", 'R', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo));
-	ok = mpw_wrap(cx, z, rval);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &mo, &xo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("Rndm", 'R', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo)));
     return ok;
 }
 #endif
 
+/** Compute x+y. */
+static JSBool
+mpw_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("add", '+', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x-y. */
+static JSBool
+mpw_sub(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("sub", '-', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x*y. */
+static JSBool
+mpw_mul(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("mul", '*', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x/y. */
+static JSBool
+mpw_div(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    /* XXX check for divide-by-zero */
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("div", '/', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x%y. */
+static JSBool
+mpw_mod(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("rem", '%', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x**y. */
+static JSBool
+mpw_pow(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("pow", 'P', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x<<y. */
+static JSBool
+mpw_lshift(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("lshift", '<', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x>>y. */
+static JSBool
+mpw_rshift(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("rshift", '>', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x&y. */
+static JSBool
+mpw_and(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("and", '&', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x^y. */
+static JSBool
+mpw_xor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("xor", '^', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
+/** Compute x|y. */
+static JSBool
+mpw_or(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSObject * xo;
+    JSObject * yo;
+    JSBool ok;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("or", '|', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
+    return ok;
+}
+
 static JSFunctionSpec rpmmpw_funcs[] = {
-    JS_FS("toString",	mpw_ToString,		0,0,0),
+    JS_FS("toString",	mpw_toString,		0,0,0),
+
     JS_FS("gcd",	mpw_Gcd,		0,0,0),
     JS_FS("invm",	mpw_Invm,		0,0,0),
     JS_FS("sqrm",	mpw_Sqrm,		0,0,0),
@@ -1731,6 +1889,18 @@ static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("subm",	mpw_Subm,		0,0,0),
     JS_FS("mulm",	mpw_Mulm,		0,0,0),
     JS_FS("powm",	mpw_Powm,		0,0,0),
+
+    JS_FS("__add__",	mpw_add,		0,0,0),
+    JS_FS("__sub__",	mpw_sub,		0,0,0),
+    JS_FS("__mul__",	mpw_mul,		0,0,0),
+    JS_FS("__div__",	mpw_div,		0,0,0),
+    JS_FS("__mod__",	mpw_mod,		0,0,0),
+    JS_FS("__pow__",	mpw_pow,		0,0,0),
+    JS_FS("__lshift__",	mpw_lshift,		0,0,0),
+    JS_FS("__rshift__",	mpw_rshift,		0,0,0),
+    JS_FS("__and__",	mpw_and,		0,0,0),
+    JS_FS("__xor__",	mpw_xor,		0,0,0),
+    JS_FS("__or__",	mpw_or,			0,0,0),
     JS_FS_END
 };
 
@@ -1894,6 +2064,32 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (uns
     ok = JS_TRUE;
 
 exit:
+    return ok;
+}
+
+static JSBool
+rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    /* XXX obj is the global object so lookup "this" object. */
+    JSObject * o = NULL;
+    void * ptr = NULL;
+    mpwObject * z = ptr;
+    JSBool ok = JS_FALSE;
+    jsval v = JSVAL_NULL;
+    
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &v)))
+        goto exit;
+
+    /* Return a new Mpw object. */
+    if ((o = rpmjs_NewMpwObject(cx, v)) != NULL)
+	ptr = z = JS_GetInstancePrivate(cx, o, &rpmmpwClass, NULL);
+    *rval = OBJECT_TO_JSVAL(o);
+    ok = JS_TRUE;
+
+exit:
+if (_debug)
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\t", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
     return ok;
 }
 
