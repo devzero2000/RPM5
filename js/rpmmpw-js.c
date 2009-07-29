@@ -1,4 +1,4 @@
-/** \ingroup js_c
+/**
  * \file js/rpmmpw-js.c
  */
 
@@ -540,7 +540,7 @@ fprintf(stderr, "==> %s(%p,%d,%d):\t", __FUNCTION__, z, base, addL), mpfprintln(
 	i += 2;		/* space to hold e.g. '6#' */
     }
 
-    s = xcalloc(1, i);
+    s = xcalloc(1, i+1);
 
     /* get the beginning of the string memory and start copying things */
     te = s;
@@ -1503,6 +1503,7 @@ mpw_wrap(JSContext * cx, jsval * rval, mpwObject * z)
     JSObject *o;
     JSBool ok = JS_FALSE;
 
+assert(z != NULL);
     if ((o = JS_NewObject(cx, &rpmmpwClass, NULL, NULL)) != NULL
      && JS_SetPrivate(cx, o, (void *)z))
     {
@@ -1569,10 +1570,9 @@ mpw_Gcd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo))) {
-	void * z = mpw_ops2("Gcd", 'G', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo));
-	ok = mpw_wrap(cx, rval, z);
-    }
+    if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &yo)))
+	ok = mpw_wrap(cx, rval,
+		mpw_ops2("Gcd", 'G', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, yo)));
     return ok;
 }
 
@@ -1879,6 +1879,99 @@ _METHOD_DEBUG_ENTRY(_debug);
     return ok;
 }
 
+static JSBool
+mpw_neg(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * a = ptr;
+    mpwObject * z = mpw_Copy(a);
+    JSBool ok = JSVAL_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (z != NULL)
+	z->ob_size = -(a->ob_size);
+
+    ok = mpw_wrap(cx, rval, z);
+
+if (z != NULL && _debug)
+fprintf(stderr, "<== mpw_neg %p[%d]\t", MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
+    return ok;
+}
+
+static JSBool
+mpw_pos(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * a = ptr;
+    mpwObject * z = mpw_Copy(a);
+    JSBool ok = JSVAL_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    ok = mpw_wrap(cx, rval, z);
+
+if (z != NULL && _debug)
+fprintf(stderr, "<== mpw_pos %p[%d]\t", MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
+    return ok;
+}
+
+static JSBool
+mpw_abs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * a = ptr;
+    JSBool ok = JSVAL_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (a->ob_size < 0)
+	ok = mpw_neg(cx, obj, argc, argv, rval);
+    else
+	ok = mpw_pos(cx, obj, argc, argv, rval);
+
+    return ok;
+}
+
+static JSBool
+mpw_nonzero(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * a = ptr;
+    JSBool ok = JSVAL_TRUE;
+    int i = ABS(a->ob_size);
+
+_METHOD_DEBUG_ENTRY(_debug);
+    while (--i >= 0) {
+	if (a->data[i] != 0)
+	    break;
+    }
+    *rval = i >= 0 ? JSVAL_TRUE : JSVAL_FALSE;
+    return ok;
+}
+		
+static JSBool
+mpw_invert(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * a = ptr;
+    mpwObject * z = mpw_Copy(a);
+    JSBool ok = JSVAL_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    /* Implement ~z as -(z+1) */
+    if (z != NULL) {
+	mpw val = 1;
+	int carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), 1, &val);
+	carry = carry;	/* XXX gcc warning */
+	z->ob_size = -(a->ob_size);
+    }
+
+    ok = mpw_wrap(cx, rval, z);
+
+    return ok;
+}
+
 static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("toString",	mpw_toString,		0,0,0),
 
@@ -1901,6 +1994,13 @@ static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("__and__",	mpw_and,		0,0,0),
     JS_FS("__xor__",	mpw_xor,		0,0,0),
     JS_FS("__or__",	mpw_or,			0,0,0),
+
+    JS_FS("__neg__",	mpw_neg,		0,0,0),
+    JS_FS("__pos__",	mpw_pos,		0,0,0),
+    JS_FS("__abs__",	mpw_abs,		0,0,0),
+    JS_FS("__nonzero__",mpw_nonzero,		0,0,0),
+    JS_FS("__invert__",	mpw_invert,		0,0,0),
+    JS_FS("__not__",	mpw_invert,		0,0,0),
     JS_FS_END
 };
 
