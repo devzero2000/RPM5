@@ -43,8 +43,7 @@ ack('x.toString(10)', '7');
 var y = mpw(13);
 ack('y.toString(10)', '13');
 
-// FIXME
-// ack('mpw.invm(x, m).toString(10)', '4');
+ack('mpw.invm(x, m).toString(10)', '4');
 
 ack('mpw.sqrm(x, m).toString(10)', '4');
 ack('mpw.addm(x, y, m).toString(10)', '5');
@@ -180,5 +179,98 @@ for (var i in bases) {
 	}
     }
 }
+
+// ===== RSA example (from "Handbook of Applied Cryptography" 11.20 p434).
+// Keygen RSA
+var p = mpw(7927);
+var q = mpw(6997);
+var n = mpw(p, q, "*");
+ack('n.toString(10)', '55465219');
+var phi = mpw(p, mpw(1), "-", q, mpw(1), "-", "*");
+ack('phi.toString(10)', '55450296');
+var e = mpw(5);
+ack('e.toString(10)', '5');
+// print("gcd(e, phi) = "+mpw.gcd(e, phi));
+ack('mpw.gcd(e, phi).toString(10)', '1');
+var d = mpw.invm(e, phi);
+// print("mulm(e, d, phi) = "+mpw.mulm(e, d, phi));
+ack('mpw.mulm(e, d, phi).toString(10)', '1');
+ack('d.toString(10)', '44360237');
+
+// print("n = "+n.toString(10) + " e = "+e.toString(10) + " d = "+d.toString(10));
+
+// Sign RSA
+var m = mpw(31229978);
+var s = mpw.powm(m, d, n);
+ack('s.toString(10)', '30729435');
+
+// Verify RSA
+var mtwiddle = mpw.powm(s, e, n);
+ack('mtwiddle.toString(10)', m.toString(10));
+
+// ===== DSA example (from "Handbook of Applied Cryptography" 11.57 p453).
+// Keygen DSA
+var p = mpw(124540019);
+var q = mpw(17389);
+ack('mpw(p, mpw(1), "-", q, "%").toString(10)', '0');
+var pdivq = mpw(p, mpw(1), "-", q, "/");
+ack('pdivq.toString(10)', '7162');
+var g = mpw(110217528);
+var alpha = mpw.powm(g, pdivq, p);
+ack('alpha.toString(10)', '10083255');
+var a = mpw(12496);
+var y = mpw.powm(alpha, a, p);
+ack('y.toString(10)', '119946265');
+
+// Sign DSA
+var k = mpw(9557);
+var r = mpw(mpw.powm(alpha, k, p), q, "%");
+ack('r.toString(10)', '34');
+var kinv = mpw.invm(k, q);
+ack('kinv.toString(10)', '7631');
+var hm = mpw(5246);
+var s = mpw.mulm(kinv, mpw(hm, a, r, "*", "+"), q);
+ack('s.toString(10)', '13049');
+
+// Verify DSA
+var w = mpw.invm(s, q);
+ack('w.toString(10)', '1799');
+var u1 = mpw.mulm(w, hm, q);
+ack('u1.toString(10)', '12716');
+var u2 = mpw.mulm(r, w, q);
+ack('u2.toString(10)', '8999');
+var v1 = mpw.powm(alpha, u1, p);
+var v2 = mpw.powm(y, u2, p);
+var v3 = mpw.mulm(v1, v2, p);
+ack('v3.toString(10)', '27039929');
+var v = mpw(v3, q, "%");
+ack('v.toString(10)', r.toString(10));
+
+// ===== ElGamal example (from "Handbook of Applied Cryptography" 11.65 p455).
+// Keygen ElGamal
+var p = mpw(2357);
+var alpha = mpw(2);
+var a = mpw(1751);
+var y = mpw.powm(alpha, a, p);
+ack('y.toString(10)', '1185');
+
+// Sign ElGamal
+var hm = mpw(1463);
+var k = mpw(1529);
+var r = mpw.powm(alpha, k, p);
+ack('r.toString(10)', '1490');
+var pm1 = mpw(p, mpw(1), "-");
+var kinv = mpw.invm(k, pm1);
+ack('kinv.toString(10)', '245');
+var s = mpw.mulm(kinv, mpw.subm(hm, mpw.mulm(a, r, pm1), pm1), pm1);
+ack('s.toString(10)', '1777');
+
+// Verify ElGamal
+var ytor = mpw.powm(y, r, p);
+var rtos = mpw.powm(r, s, p);
+var v1 = mpw.mulm(ytor, rtos, p);
+ack('v1.toString(10)', '1072');
+var v2 = mpw.powm(alpha, hm, p);
+ack('v2.toString(10)', v1.toString(10));
 
 if (loglvl) print("<-- Mpw.js");

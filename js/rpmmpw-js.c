@@ -1392,9 +1392,9 @@ fprintf(stderr, "sub ++: borrow\n");
 	mpgcd_w(xsize, xdata, mdata, MPW_DATA(z), wksp);
 	break;
     case 'I':
-	wksp = alloca((7*msize+6)*sizeof(*wksp));
+	wksp = alloca((6*msize+6)*sizeof(*wksp));
 	z = mpw_New(msize);
-	(void) mpextgcd_w(msize, wksp, mdata, MPW_DATA(z), wksp+msize);
+	(void) mpextgcd_w(msize, mdata, xdata, MPW_DATA(z), wksp+msize);
 	break;
 #ifdef	DYING
     case 'R':
@@ -1581,11 +1581,9 @@ mpw_Invm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
-_debug = -1;
     if ((ok = JS_ConvertArguments(cx, argc, argv, "oo", &xo, &mo)))
 	ok = mpw_wrap(cx, rval,
 		mpw_ops2('I', mpw_i2mpw(cx, xo), mpw_i2mpw(cx, mo)));
-_debug = 0;
     return ok;
 }
 
