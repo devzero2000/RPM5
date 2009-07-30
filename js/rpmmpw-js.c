@@ -1392,7 +1392,7 @@ fprintf(stderr, "sub ++: borrow\n");
 	mpgcd_w(xsize, xdata, mdata, MPW_DATA(z), wksp);
 	break;
     case 'I':
-	wksp = alloca((6*msize+6)*sizeof(*wksp));
+	wksp = alloca((7*msize+6)*sizeof(*wksp));
 	z = mpw_New(msize);
 	(void) mpextgcd_w(msize, mdata, xdata, MPW_DATA(z), wksp+msize);
 	break;
