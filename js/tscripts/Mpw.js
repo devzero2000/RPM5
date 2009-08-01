@@ -43,9 +43,9 @@ ack('x.toString(10)', '7');
 var y = mpw(13);
 ack('y.toString(10)', '13');
 
-ack('mpw(x, m, "invm").toString(10)', '4');
-
+ack('mpw(x, m, "invm").toString(10)', '13');
 ack('mpw(x, m, "sqrm").toString(10)', '4');
+
 ack('mpw(x, y, m, "addm").toString(10)', '5');
 ack('mpw(x, y, m, "subm").toString(10)', '9');
 ack('mpw(x, y, m, "mulm").toString(10)', '1');
@@ -55,31 +55,25 @@ var zx = 2*3*5*19;
 var zy = 7*11*13*19;
 ack('mpw(mpw(zx), mpw(zy), "gcd").toString(10)', '19');
 
-// y = mpw(0);
-// ack('x.__nonzero__()', true);
-// ack('y.__nonzero__()', false);
-// x = x.__neg__();
-// zx = -zx;
-// ack('x.toString(10)', zx.toString(10));
-// x = x.__abs__();
-// zx = Math.abs(zx);
-// ack('x.toString(10)', zx.toString(10));
-// x = x.__pos__();
-// zx = +zx;
-// ack('x.toString(10)', zx.toString(10));
-// x = x.__invert__();
-// zx = ~zx;
-// ack('x.toString(10)', zx.toString(10));
+x = mpw(zx, "neg");
+zx = -zx;
+ack('x.toString(10)', zx.toString(10));
+x = mpw(zx, "abs");
+zx = Math.abs(zx);
+ack('x.toString(10)', zx.toString(10));
+x = mpw(zx, "~");
+zx = ~zx;
+ack('x.toString(10)', zx.toString(10));
 
 // ===== Carry/borrow tests
 var a = 0x7fffffff;
-wa = mpw(mpw(-a), mpw(-a), "+");
+wa = mpw(-a, -a, "+");
 var za = (-a) + (-a);
 wb = mpw(-1);
 var zb = -1;
 wc = mpw(1);
 var zc = 1;
-wd = mpw(mpw(a), mpw(a), "+");
+wd = mpw(a, a, "+");
 var zd = a + a;
 
 ack('mpw(wa, wa, "+").toString(10)', (za + za).toString(10));
@@ -93,7 +87,7 @@ ack('mpw(wc, wd, "-").toString(10)', (zc - zd).toString(10));
 // ===== Signs
 var wpa = mpw(13);
 var wma = mpw(-13);
-var wpb = mpw(wpa, mpw(3), "-");	// FIXME: coerce args
+var wpb = mpw(wpa, 3, "-");
 var wmb = mpw(-10);
 var zpa = 13;
 var zma = -zpa;

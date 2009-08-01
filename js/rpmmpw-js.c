@@ -899,18 +899,6 @@ mpw_FromMPW(size_t size, mpw* data, int normalize)
 }
 
 static mpwObject *
-mpw_Copy(mpwObject *a)
-	/*@*/
-{
-    mpwObject * z;
-
-    z = mpw_FromMPW(MPW_SIZE(a), MPW_DATA(a), 1);
-    if (z != NULL)
-	z->ob_size = a->ob_size;
-    return z;
-}
-
-static mpwObject *
 mpw_FromLong(long ival)
 	/*@*/
 {
@@ -1113,6 +1101,50 @@ mpw_FromLongObject(PyLongObject *lo)
 #endif	/* NOTYET */
 
 /* ---------- */
+
+/** Compute 1 argument operations. */
+static mpwObject *
+mpw_ops1(char op, mpwObject *x)
+        /*@*/
+{
+    mpwObject * z = NULL;
+
+    if (x == NULL)
+	goto exit;
+
+if (_debug < 0) {
+prtmpw("a", x);
+}
+
+    z = mpw_FromMPW(MPW_SIZE(x), MPW_DATA(x), 0);
+    z->ob_size = x->ob_size;
+
+    switch (op) {
+    default:
+	goto exit;
+	/*@notreached@*/ break;
+    case 'N':
+	z->ob_size = -z->ob_size;
+	break;
+    case 'A':
+	if (z->ob_size < 0)
+	    z->ob_size = -z->ob_size;
+	break;
+    case '~':	/* Implement ~z as -(z+1) */
+    {	mpw val = 1;
+	int carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), 1, &val);
+	carry = carry;	/* XXX gcc warning */
+	if (x->ob_size > 0)
+	    z->ob_size = -z->ob_size;
+    }	break;
+    }
+
+if (_debug < 0)
+fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
+exit:
+    return z;
+}
 
 /** Compute 2 argument operations. */
 static mpwObject *
@@ -1564,108 +1596,8 @@ assert(argc == 2);
 }
 #endif
 
-static JSBool
-mpw_neg(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    mpwObject * a = ptr;
-    mpwObject * z = mpw_Copy(a);
-    JSBool ok = JSVAL_TRUE;
-
-_METHOD_DEBUG_ENTRY(_debug);
-    if (z != NULL)
-	z->ob_size = -(a->ob_size);
-
-    ok = mpw_wrap(cx, rval, z);
-
-if (z != NULL && _debug)
-fprintf(stderr, "<== mpw_neg %p[%d]\t", MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
-
-    return ok;
-}
-
-static JSBool
-mpw_pos(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    mpwObject * a = ptr;
-    mpwObject * z = mpw_Copy(a);
-    JSBool ok = JSVAL_TRUE;
-
-_METHOD_DEBUG_ENTRY(_debug);
-
-    ok = mpw_wrap(cx, rval, z);
-
-if (z != NULL && _debug)
-fprintf(stderr, "<== mpw_pos %p[%d]\t", MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
-
-    return ok;
-}
-
-static JSBool
-mpw_abs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    mpwObject * a = ptr;
-    JSBool ok = JSVAL_TRUE;
-
-_METHOD_DEBUG_ENTRY(_debug);
-    if (a->ob_size < 0)
-	ok = mpw_neg(cx, obj, argc, argv, rval);
-    else
-	ok = mpw_pos(cx, obj, argc, argv, rval);
-
-    return ok;
-}
-
-static JSBool
-mpw_nonzero(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    mpwObject * a = ptr;
-    JSBool ok = JSVAL_TRUE;
-    int i = ABS(a->ob_size);
-
-_METHOD_DEBUG_ENTRY(_debug);
-    while (--i >= 0) {
-	if (a->data[i] != 0)
-	    break;
-    }
-    *rval = i >= 0 ? JSVAL_TRUE : JSVAL_FALSE;
-    return ok;
-}
-		
-static JSBool
-mpw_invert(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    mpwObject * a = ptr;
-    mpwObject * z = mpw_Copy(a);
-    JSBool ok = JSVAL_TRUE;
-
-_METHOD_DEBUG_ENTRY(_debug);
-    /* Implement ~z as -(z+1) */
-    if (z != NULL) {
-	mpw val = 1;
-	int carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), 1, &val);
-	carry = carry;	/* XXX gcc warning */
-	z->ob_size = -(a->ob_size);
-    }
-
-    ok = mpw_wrap(cx, rval, z);
-
-    return ok;
-}
-
 static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("toString",	mpw_toString,		0,0,0),
-
-    JS_FS("__neg__",	mpw_neg,		0,0,0),
-    JS_FS("__pos__",	mpw_pos,		0,0,0),
-    JS_FS("__abs__",	mpw_abs,		0,0,0),
-    JS_FS("__nonzero__",mpw_nonzero,		0,0,0),
-    JS_FS("__invert__",	mpw_invert,		0,0,0),
-    JS_FS("__not__",	mpw_invert,		0,0,0),
     JS_FS_END
 };
 
@@ -1870,6 +1802,9 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 		if (!strcmp(s, "**")) c = (int)'P';
 		if (!strcmp(s, "<<")) c = (int)'<';
 		if (!strcmp(s, ">>")) c = (int)'>';
+		if (!strcmp(s, "abs")) c = (int)'A';
+		if (!strcmp(s, "not")) c = (int)'~';
+		if (!strcmp(s, "negate")) c = (int)'N';
 		if (!strcmp(s, "gcd")) c = (int)'G';	/* gcd(x, y). */
 		if (!strcmp(s, "invm")) c = (int)'I';	/* inverse of x (modulo m). */
 		if (!strcmp(s, "sqrm")) c = (int)'S';	/* x*x (modulo m). */
@@ -1878,6 +1813,11 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 #endif
 
 		switch (c) {
+		case 'A':
+		case 'N':
+		case '~':
+		    stack[ix] = mpw_ops1(c, stack[ix]);
+		    break;
 		case '%':
 		case '/':
 		    /* XXX divide-by-zero check. */
