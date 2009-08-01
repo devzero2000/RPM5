@@ -38,10 +38,13 @@ ack('mpw(wa, wb, "|").toString(10)', (za | zb).toString(10));
 
 var m = mpw(15);
 ack('m.toString(10)', '15');
+ack('m.toString(10)', m.valueOf());
 var x = mpw(7);
 ack('x.toString(10)', '7');
+ack('x.toString(10)', x.valueOf());
 var y = mpw(13);
 ack('y.toString(10)', '13');
+ack('y.toString(10)', y.valueOf());
 
 ack('mpw(x, m, "invm").toString(10)', '13');
 ack('mpw(x, m, "sqrm").toString(10)', '4');
@@ -53,7 +56,7 @@ ack('mpw(x, y, m, "powm").toString(10)', '7');
  
 var zx = 2*3*5*19;
 var zy = 7*11*13*19;
-ack('mpw(mpw(zx), mpw(zy), "gcd").toString(10)', '19');
+ack('mpw(zx, zy, "gcd").toString(10)', '19');
 
 x = mpw(zx, "neg");
 zx = -zx;
@@ -122,13 +125,13 @@ ack('mpw(wmb, wpa, "/").toString(10)', Math.floor(zmb/zpa).toString(10));
 ack('mpw(wpb, wma, "/").toString(10)', Math.floor(zpb/zma).toString(10));
 ack('mpw(wpb, wpa, "/").toString(10)', Math.floor(zpb/zpa).toString(10));
  
-ack('mpw(wma, wmb, "**").toString(10)', Math.pow(zma, zmb).toString(10));
+ack('mpw(wma, wmb, "**").toString(10)', Math.floor(Math.pow(zma, zmb)).toString(10));
 ack('mpw(wma, wpb, "**").toString(10)', Math.pow(zma, zpb).toString(10));
-ack('mpw(wpa, wmb, "**").toString(10)', Math.pow(zpa, zmb).toString(10));
+ack('mpw(wpa, wmb, "**").toString(10)', Math.floor(Math.pow(zpa, zmb)).toString(10));
 ack('mpw(wpa, wpb, "**").toString(10)', Math.pow(zpa, zpb).toString(10));
-ack('mpw(wmb, wma, "**").toString(10)', Math.pow(zmb, zma).toString(10));
+ack('mpw(wmb, wma, "**").toString(10)', Math.floor(Math.abs(Math.pow(zmb, zma))).toString(10));
 ack('mpw(wmb, wpa, "**").toString(10)', Math.pow(zmb, zpa).toString(10));
-ack('mpw(wpb, wma, "**").toString(10)', Math.pow(zpb, zma).toString(10));
+ack('mpw(wpb, wma, "**").toString(10)', Math.floor(Math.pow(zpb, zma)).toString(10));
 ack('mpw(wpb, wpa, "**").toString(10)', Math.pow(zpb, zpa).toString(10));
  
 ack('mpw(wma, wmb, "%").toString(10)', (zma % zmb).toString(10));
@@ -141,35 +144,34 @@ ack('mpw(wpb, wma, "%").toString(10)', (zpb % zma).toString(10));
 ack('mpw(wpb, wpa, "%").toString(10)', (zpb % zpa).toString(10));
 
 // ===== Knuth poly
-var w1 = mpw(1);
 var lo = 2;
-var wm = mpw(lo);
-var hi = 15;
-var wn = mpw(hi);
-
-// var bases = [3, 5, 7, 8, 10, 11, 13, 16];
-var bases = [13];
+var hi = 20;
+var bases = [8, 10, 16];
 
 for (var i in bases) {
     var t = bases[i];
-    var wt = mpw(t);
     var tm1 = (t - 1);
     var tm2 = (t - 2);
     print("=====\t("+t+"**m - 1) * ("+t+"**n - 1), m,n in ["+lo+","+hi+")");
     for (var m = lo; m < hi; m++) {
-	wm = mpw(m);
-	wb = mpw(wt, wm, "**");
-	wb = mpw(wb, w1, "-");
+	wb = mpw(t, m, "**", 1, "-");
 	for (var n = m+1; n < hi+1; n++) {
-	    wn = mpw(n);
-	    wc = mpw(wt, wn, "**");
-	    wc = mpw(wc, w1, "-");
+	    wc = mpw(t, n, "**", 1, "-");
 	    wa = mpw(wb, wc, "*");
-	    print(wa.toString(t));
-//	    zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
-//	    if ws != zs:
-//		print "(%d**%d - 1) * (%d**%d - 1)\t%s" % (self.t,m,self.t,n,ws)
-//		assert ws == zs
+//	    print(wa.toString(t));
+	    switch (t) {
+	    case 8:	zs = '0';	break;
+	    case 10:	zs = '';	break;
+	    case 16:	zs = '0x';	break;
+	    default:	zs = t.toString(10) + "#";	break;
+	    }
+	    for (var j = 0; j < (m - 1); j++) zs += (t - 1).toString(t);
+	    zs += (t - 2).toString(t);
+	    for (var j = 0; j < (n - m); j++) zs += (t - 1).toString(t);
+	    for (var j = 0; j < (m - 1); j++) zs += "0";
+	    zs += "1";
+//	    print(zs);
+	    ack('wa.toString(t)', zs);
 	}
     }
 }

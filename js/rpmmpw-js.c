@@ -1330,11 +1330,16 @@ fprintf(stderr, "sub ++: borrow\n");
 
 	zsize = asize;
 	zdata = alloca(zsize * sizeof(*zdata));
+#ifdef	DYING	/* XXX Python dares to be different. */
 	zsign = x->ob_size * m->ob_size;
+#else
+	zsign = x->ob_size;
+#endif
 	wksp = alloca((2*bsize+1) * sizeof(*wksp));
 
 	mpmod(zdata, asize, adata, bsize, bdata, wksp);
 
+#ifdef	DYING	/* XXX Python dares to be different. */
 	if (zsign < 0) {
 	    if (m->ob_size < 0) {
 		(void) mpsubx(zsize, zdata, bsize, bdata);
@@ -1345,13 +1350,16 @@ fprintf(stderr, "sub ++: borrow\n");
 		(void) mpaddx(zsize, zdata, bsize, bdata);
 	    }
 	}
+#endif
 	z = mpw_FromMPW(zsize, zdata, 1);
-	if (zsign < 0) {
+	if (zsign < 0)
 	    z->ob_size = -z->ob_size;
-	} else if (zsign > 0) {
+#ifdef	DYING	/* XXX Python dares to be different. */
+	else if (zsign > 0) {
 	    if (x->ob_size < 0)
 		z->ob_size = -z->ob_size;
 	}
+#endif
 	break;
     case '<':
 	/* XXX FIXME: enlarge? negative count? sign?. */
@@ -1568,15 +1576,28 @@ static JSBool
 mpw_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    mpwObject * a = ptr;
     jsuint _base = 10;
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "/u", &_base))) {
-	*rval = mpw_format(cx, a, _base, 0);
+	/* XXX FIXME check _base is 0 or [2,36] */
+	*rval = mpw_format(cx, ptr, _base, 0);
     } else
 	*rval = JSVAL_VOID;
+    return ok;
+}
+
+/** Convert to string in base 10. */
+static JSBool
+mpw_valueOf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    jsuint _base = 10;
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    *rval = mpw_format(cx, ptr, _base, 0);
     return ok;
 }
 
@@ -1597,7 +1618,15 @@ assert(argc == 2);
 #endif
 
 static JSFunctionSpec rpmmpw_funcs[] = {
+#ifdef	NOTYET
+    JS_FS("toExponential", mpw_toExponential,	0,0,0),
+    JS_FS("toFixed",	mpw_toFixed,		0,0,0),
+    JS_FS("toLocaleString", mpw_toLocaleString,	0,0,0),
+    JS_FS("toSource",	mpw_toSource,		0,0,0),
+    JS_FS("toJSON",	mpw_toJSON,		0,0,0),
+#endif
     JS_FS("toString",	mpw_toString,		0,0,0),
+    JS_FS("valueOf",	mpw_valueOf,		0,0,0),
     JS_FS_END
 };
 
