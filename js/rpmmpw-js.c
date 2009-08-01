@@ -1548,114 +1548,8 @@ _METHOD_DEBUG_ENTRY(_debug);
     return ok;
 }
 
-/** Compute gcd(x, y). */
-static JSBool
-mpw_Gcd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 2);
-    ok = mpw_wrap(cx, rval,
-		mpw_ops2('G', mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1])));
-    return ok;
-}
-
-/** Compute inverse (modulo m) of x. */
-static JSBool
-mpw_Invm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 2);
-    ok = mpw_wrap(cx, rval,
-		mpw_ops2('I', mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1])));
-    return ok;
-}
-
-/** Compute x*x (modulo m). */
-static JSBool
-mpw_Sqrm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 2);
-_debug = -1;
-    ok = mpw_wrap(cx, rval,
-		mpw_ops2('S', mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1])));
-_debug = 0;
-    return ok;
-}
-
-/** Compute x+y (modulo m). */
-static JSBool
-mpw_Addm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 3);
-    ok = mpw_wrap(cx, rval,
-	    mpw_ops3('+',
-		mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1]), mpw_j2mpw(cx, argv[2])));
-    return ok;
-}
-
-/** Compute x-y (modulo m). */
-static JSBool
-mpw_Subm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 3);
-    ok = mpw_wrap(cx, rval,
-	    mpw_ops3('-',
-		mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1]), mpw_j2mpw(cx, argv[2])));
-    return ok;
-}
-
-/** Compute x*y (modulo m). */
-static JSBool
-mpw_Mulm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 3);
-    ok = mpw_wrap(cx, rval,
-	    mpw_ops3('*',
-		mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1]), mpw_j2mpw(cx, argv[2])));
-    return ok;
-}
-
-/** Compute x**y (modulo m). */
-static JSBool
-mpw_Powm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    JSBool ok;
-
-_METHOD_DEBUG_ENTRY(_debug);
-assert(argc == 3);
-    ok = mpw_wrap(cx, rval,
-	    mpw_ops3('P',
-		mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1]), mpw_j2mpw(cx, argv[2])));
-    return ok;
-}
-
 #ifdef DYING
-/**
- * Return random number 1 < r < b-1.
- */
+/** Return random number 1 < r < b-1. */
 static JSBool
 mpw_Rndm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1765,14 +1659,6 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("toString",	mpw_toString,		0,0,0),
-
-    JS_FS("gcd",	mpw_Gcd,		0,0,0),
-    JS_FS("invm",	mpw_Invm,		0,0,0),
-    JS_FS("sqrm",	mpw_Sqrm,		0,0,0),
-    JS_FS("addm",	mpw_Addm,		0,0,0),
-    JS_FS("subm",	mpw_Subm,		0,0,0),
-    JS_FS("mulm",	mpw_Mulm,		0,0,0),
-    JS_FS("powm",	mpw_Powm,		0,0,0),
 
     JS_FS("__neg__",	mpw_neg,		0,0,0),
     JS_FS("__pos__",	mpw_pos,		0,0,0),
@@ -1955,9 +1841,6 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     mpwObject * z = ptr;
     JSBool ok = JS_TRUE;
     jsval v = JSVAL_NULL;
-    const char * s;
-    size_t ns;
-    int c;
     void ** stack = memset(alloca(argc*sizeof(*stack)), 0, (argc*sizeof(*stack)));
     int ix = -1;
     uintN i;
@@ -1977,23 +1860,22 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 	    /* Check for operations. */
 	    if (JSVAL_IS_STRING(v)) {
-		s = JS_GetStringBytes(JSVAL_TO_STRING(v));
-		ns = strlen(s);
+		const char * s = JS_GetStringBytes(JSVAL_TO_STRING(v));
+		size_t ns = strlen(s);
+		int c = (ns == 1 ? *s : 0);
+
 		if (ns == 0)
 		    continue;
 
-		if (ns > 2) {
-assert(++ix < (int)argc);
-		    stack[ix] = mpw_j2mpw(cx, v);
-		    continue;
-		}
-
-		c = *s;
-		if (ns == 2) {
-		    if (!strcmp(s, "**")) c = (int)'P';
-		    if (!strcmp(s, "<<")) c = (int)'<';
-		    if (!strcmp(s, ">>")) c = (int)'>';
-		}
+		if (!strcmp(s, "**")) c = (int)'P';
+		if (!strcmp(s, "<<")) c = (int)'<';
+		if (!strcmp(s, ">>")) c = (int)'>';
+		if (!strcmp(s, "gcd")) c = (int)'G';	/* gcd(x, y). */
+		if (!strcmp(s, "invm")) c = (int)'I';	/* inverse of x (modulo m). */
+		if (!strcmp(s, "sqrm")) c = (int)'S';	/* x*x (modulo m). */
+#ifdef	DYING
+		if (!strcmp(s, "rndm")) c = (int)'R';	/** random 1 < r < b-1. */
+#endif
 
 		switch (c) {
 		case '%':
@@ -2002,9 +1884,12 @@ assert(++ix < (int)argc);
 		case '+':
 		case '-':
 		case '*':
-		case 'P':
-		case '<':
-		case '>':
+		case 'P':	/* x ** y */
+		case 'G':	/* gcd(x, y). */
+		case 'I':	/* inverse of x (modulo m). */
+		case 'S':	/* x*x (modulo m). */
+		case '<':	/* x << y */
+		case '>':	/* x >> y */
 		case '&':
 		case '^':
 		case '|':
@@ -2012,7 +1897,20 @@ assert(--ix >= 0);
 		    stack[ix] = mpw_ops2(c, stack[ix], stack[ix+1]);
 		    break;
 		default:
-		    /* XXX FIXME */
+		case 0:
+		    if (!strcmp(s, "addm")) c = (int)'+';	/* x+x (modulo m). */
+		    if (!strcmp(s, "subm")) c = (int)'-';	/* x-x (modulo m). */
+		    if (!strcmp(s, "mulm")) c = (int)'*';	/* x*x (modulo m). */
+		    if (!strcmp(s, "powm")) c = (int)'P';	/* x**x (modulo m). */
+		    if (c) {
+assert(--ix >= 0);
+assert(--ix >= 0);
+			stack[ix] = mpw_ops3(c, stack[ix], stack[ix+1], stack[ix+2]);
+		    } else {
+assert(++ix < (int)argc);
+			stack[ix] = mpw_j2mpw(cx, v);
+		    }
+		    
 		    break;
 		}
 	    } else {
