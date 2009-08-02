@@ -331,6 +331,19 @@ var v3 = mpw(v1, v2, p, "mulm");
 var v  = mpw('636155ac9a4633b4665d179f9e4117df68601f34');
 ack('mpw(v3, q, "%").toString(16)', v.toString(16));
 
+// =======================================================
+// Return y^2 - x^3 + 3x (modulo p)
+function vfycurve(p, x, y) {
+    var t1 = mpw(y, y, "*");
+    var t2 = mpw(mpw(mpw(x, x, "*"), p, "%"), x, "*");
+    t1 = mpw(t1, t2, "-");
+    t1 = mpw(t1, x, "+");
+    t1 = mpw(t1, x, "+");
+    t1 = mpw(t1, x, "+");
+    t1 = mpw(t1, p, "%");
+    return t1;
+}
+
 // ===== secp 112r1
 print("===== SECP 112r1");
 var p    = mpw('db7c2abf62e35e668076bead208b');
@@ -339,11 +352,8 @@ var b    = mpw('659ef8ba043916eede8911702b22');
 var n    = mpw('db7c2abf62e35e7628dfac6561c5');
 var gx   = mpw('09487239995a5ee76b55f9c2f098');
 var gy   = mpw('a89ce5af8724c0a23e0e0ff77500');
-
-var gy2  = mpw(gy, p, "sqrm");
-var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-var gx32 = mpw(gx, 3, p, "mulm");
-ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+ack('t1.toString(16)', b.toString(16));
 
 // ===== SECP 128r1
 print("===== SECP 128r1");
@@ -353,11 +363,8 @@ var b    = mpw('e87579c11079f43dd824993c2cee5ed3');
 var n    = mpw('fffffffe0000000075a30d1b9038a115');
 var gx   = mpw('161ff7528b899b2d0c28607ca52c5b86');
 var gy   = mpw('cf5ac8395bafeb13c02da292dded7a83');
-
-var gy2  = mpw(gy, p, "sqrm");
-var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-var gx32 = mpw(gx, 3, p, "mulm");
-ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+ack('t1.toString(16)', b.toString(16));
 
 // ===== SECP 160r1
 print("===== SECP 160r1");
@@ -367,11 +374,9 @@ var b    = mpw('1c97befc54bd7a8b65acf89f81d4d4adc565fa45');
 var n    = mpw('0100000000000000000001f4c8f927aed3ca752257');
 var gx   = mpw('4a96b5688ef573284664698968c38bb913cbfc82');
 var gy   = mpw('23a628553168947d59dcc912042351377ac5fb32');
-
-var gy2  = mpw(gy, p, "sqrm");
-var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-var gx32 = mpw(gx, 3, p, "mulm");
-ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 // ===== ECDSA P-192 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -387,19 +392,16 @@ ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toStrin
 
 var gx   = mpw('188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012');
 var gy   = mpw('07192b95ffc8da78631011ed6b24cdd573f977a11e794811');
-var gy2  = mpw(gy, p, "sqrm");
-var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-var gx32 = mpw(gx, 3, p, "mulm");
-ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
-// FIXME: wrong answer
-// var qy2  = mpw(qy, p, "sqrm");
-// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-// var qx32 = mpw(qx, 3, p, "mulm");
-// ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, qx, qy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 var k    = mpw('d06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847');
 var msg  = "Example of ECDSA with P-192";
@@ -427,24 +429,18 @@ ack('n.toString(10)', '269599466671506397946670150870196259404578077144243917216
 
 var c    = mpw('5b056c7e11dd68f40469ee7f3c7a7d74f7d121116506d031218291fb');
 var b    = mpw('b4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4');
-// FIXME: floating point exception
-// ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toString(10));
+ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").toString(10));
 var gx   = mpw('b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21');
 var gy   = mpw('bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34');
-// FIXME: floating point exceptions
-// var gy2  = mpw(gy, p, "sqrm");
-// var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-// var gx32 = mpw(gx, 3, p, "mulm");
-// ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+ack('t1.toString(16)', b.toString(16));
 
 var d    = mpw('3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8');
 var qx   = mpw('e84fb0b8e7000cb657d7973cf6b42ed78b301674276df744af130b3e');
 var qy   = mpw('4376675c6fc5612c21a0ff2d2a89d2987df7a2bc52183b5982298555');
-// FIXME: floating point exceptions
-// var qy2  = mpw(qy, p, "sqrm");
-// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-// var qx32 = mpw(qx, 3, p, "mulm");
-// ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, qx, qy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 var k    = mpw('a548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937');
 var msg  = "Example of ECDSA with P-224";
@@ -479,19 +475,16 @@ var b    = mpw('5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b
 ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toString(10));
 var gx   = mpw('6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296');
 var gy   = mpw('4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5');
-var gy2  = mpw(gy, p, "sqrm");
-var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-var gx32 = mpw(gx, 3, p, "mulm");
-ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 var d    = mpw('c477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96');
 var qx   = mpw('b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19');
 var qy   = mpw('3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09');
-// FIXME: wrong answer
-// var qy2  = mpw(qy, p, "sqrm");
-// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-// var qx32 = mpw(qx, 3, p, "mulm");
-// ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, qx, qy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 var k    = mpw('7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae');
 var msg  = "Example of ECDSA with P-256";
@@ -500,16 +493,13 @@ var kinv = mpw('62159e5ba9e712fb098cce8fe20f1bed8346554e98ef3c7c1fc3332ba67d87ef
 ack('mpw(k, n, "invm").toString(16)', kinv.toString(16));
 var r    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
 var s    = mpw('dc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1');
-// FIXME floating point exception
-// ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
+ack('mpw(mpw(mpw(r, d, "*", n, "%"), e, "+", n, "%"), kinv, "*", n, "%").toString(16)', s.toString(16));
 
 var w    = mpw(s, n, "invm");
 var u1   = mpw('b807bf3281dd13849958f444fd9aea808d074c2c48ee8382f6c47a435389a17e');
-// FIXME floating point exception
-// ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
+ack('mpw(e, w, "*", n, "%").toString(16)', u1.toString(16));
 var u2   = mpw('1777f73443a4d68c23d1fc4cb5f8b7f2554578ee87f04c253df44efd181c184c');
-// FIXME floating point exception
-// ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
+ack('mpw(r, w, "*", n, "%").toString(16)', u2.toString(16));
 var v    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
 
 // ===== ECDSA P-384 example from 
@@ -526,24 +516,17 @@ ack('n.toString(10)', '394020061963944792122790401001436138050797392704654466679
 
 var c    = mpw('79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a495e8042ea5f744f6e184667cc722483');
 var b    = mpw('b3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef');
-// FIXME: floating point exception
-// ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toString(10));
+ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").toString(10));
 var gx   = mpw('aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760ab7');
 var gy   = mpw('3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5f');
-// FIXME: floating point exception
-// var gy2  = mpw(gy, p, "sqrm");
-// var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-// var gx32 = mpw(gx, 3, p, "mulm");
-// ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+ack('t1.toString(16)', b.toString(16));
 
 var d    = mpw('f92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08');
 var qx   = mpw('3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471fb9d2ab74657b82f9086489d9ef0f5cb5');
 var qy   = mpw('d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295ffe5382d00cfcda30344a9b5b68db855');
-// FIXME: floating point exceptions
-// var qy2  = mpw(qy, p, "sqrm");
-// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-// var qx32 = mpw(qx, 3, p, "mulm");
-// ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, qx, qy);
+ack('t1.toString(16)', b.toString(16));
 
 var k    = mpw('2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef');
 var msg  = "Example of ECDSA with P-384";
@@ -575,19 +558,15 @@ var b    = mpw('051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef10
 // ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toString(10));
 var gx   = mpw('c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66');
 var gy   = mpw('11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650');
-var gy2  = mpw(gy, p, "sqrm");
-var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
-var gx32 = mpw(gx, 3, p, "mulm");
-ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, gx, gy);
+t1 = mpw(t1, p, "+");
+ack('t1.toString(16)', b.toString(16));
 
 var d    = mpw('0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722');
 var qx   = mpw('0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cca16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4');
 var qy   = mpw('0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef17be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e');
-// FIXME: wrong answer
-// var qy2  = mpw(qy, p, "sqrm");
-// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-// var qx32 = mpw(qx, 3, p, "mulm");
-// ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
+var t1 = vfycurve(p, qx, qy);
+ack('t1.toString(16)', b.toString(16));
 
 var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf');
 var msg  = "Example of ECDSA with P-512";
