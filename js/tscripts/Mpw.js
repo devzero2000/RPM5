@@ -145,8 +145,9 @@ ack('mpw(wpb, wpa, "%").toString(10)', (zpb % zpa).toString(10));
 
 // ===== Knuth poly
 var lo = 2;
-var hi = 20;
-var bases = [8, 10, 16];
+var hi = 10;
+// var bases = [8, 10, 16];
+var bases = [13];
 
 for (var i in bases) {
     var t = bases[i];
@@ -268,6 +269,7 @@ ack('v2.toString(10)', v1.toString(10));
 // ===== DSA example from 
 //     http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/DSA2_All.pdf
 // Keygen DSA
+print("===== DSA");
 var p = mpw('e0a67598cd1b763b'+
 	'c98c8abb333e5dda0cd3aa0e5e1fb5ba8a7b4eabc10ba338'+
 	'fae06dd4b90fda70d7cf0cb0c638be3341bec0af8a7330a3'+
@@ -330,6 +332,7 @@ var v  = mpw('636155ac9a4633b4665d179f9e4117df68601f34');
 ack('mpw(v3, q, "%").toString(16)', v.toString(16));
 
 // ===== secp 112r1
+print("===== SECP 112r1");
 var p    = mpw('db7c2abf62e35e668076bead208b');
 ack('mpw(mpw(mpw(2, 128, "**"), 3, "-"), 76439, "/").toString(16)', p.toString(16));
 var b    = mpw('659ef8ba043916eede8911702b22');
@@ -342,7 +345,8 @@ var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
 var gx32 = mpw(gx, 3, p, "mulm");
 ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
 
-// ===== secp 128r1
+// ===== SECP 128r1
+print("===== SECP 128r1");
 var p    = mpw('fffffffdffffffffffffffffffffffff');
 ack('mpw(mpw(mpw(2, 128, "**"), mpw(2, 97, "**"), "-"), 1, "-").toString(16)', p.toString(16));
 var b    = mpw('e87579c11079f43dd824993c2cee5ed3');
@@ -355,7 +359,8 @@ var gx31 = mpw(mpw(gx, gx, p, "mulm"), gx, p, "mulm");
 var gx32 = mpw(gx, 3, p, "mulm");
 ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
 
-// ===== secp 160r1
+// ===== SECP 160r1
+print("===== SECP 160r1");
 var p    = mpw('ffffffffffffffffffffffffffffffff7fffffff');
 ack('mpw(mpw(mpw(2, 160, "**"), mpw(2, 31, "**"), "-"), 1, "-").toString(16)', p.toString(16));
 var b    = mpw('1c97befc54bd7a8b65acf89f81d4d4adc565fa45');
@@ -370,6 +375,7 @@ ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(1
 
 // ===== ECDSA P-192 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
+print("===== P-192");
 var p    = mpw(mpw(mpw(2, 192, "**"), mpw(2, 64, "**"), "-"), 1, "-");
 ack('p.toString(10)', '6277101735386680763835789423207666416083908700390324961279');
 var n    = mpw('ffffffffffffffffffffffff99def836146bc9b1b4d22831');
@@ -389,10 +395,10 @@ ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(1
 var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
-var qy2  = mpw(qy, p, "sqrm");
-var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-var qx32 = mpw(qx, 3, p, "mulm");
 // FIXME: wrong answer
+// var qy2  = mpw(qy, p, "sqrm");
+// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
+// var qx32 = mpw(qx, 3, p, "mulm");
 // ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
 
 var k    = mpw('d06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847');
@@ -413,6 +419,7 @@ var v    = mpw('f0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821');
 
 // ===== ECDSA P-224 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
+print("===== P-224");
 var p    = mpw(mpw(mpw(2, 224, "**"), mpw(2, 96, "**"), "-"), 1, "+");
 ack('p.toString(10)', '26959946667150639794667015087019630673557916260026308143510066298881');
 var n    = mpw('ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d');
@@ -457,6 +464,7 @@ var v    = mpw('c3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380');
 
 // ===== ECDSA P-256 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
+print("===== P-256");
 var p    = mpw(2, 256, "**");
 p = mpw(p, mpw(2, 224, "**"), "-");
 p = mpw(p, mpw(2, 192, "**"), "+");
@@ -479,10 +487,10 @@ ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(1
 var d    = mpw('c477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96');
 var qx   = mpw('b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19');
 var qy   = mpw('3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09');
-var qy2  = mpw(qy, p, "sqrm");
-var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-var qx32 = mpw(qx, 3, p, "mulm");
 // FIXME: wrong answer
+// var qy2  = mpw(qy, p, "sqrm");
+// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
+// var qx32 = mpw(qx, 3, p, "mulm");
 // ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
 
 var k    = mpw('7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae');
@@ -506,6 +514,7 @@ var v    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f
 
 // ===== ECDSA P-384 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
+print("===== P-384");
 var p    = mpw(2, 384, "**");
 p = mpw(p, mpw(2, 128, "**"), "-");
 p = mpw(p, mpw(2,  96, "**"), "-");
@@ -554,6 +563,7 @@ var v    = mpw('30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a
 
 // ===== ECDSA P-521 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
+print("===== P-521");
 var p    = mpw(mpw(2, 521, "**"), 1, "-");
 ack('p.toString(10)', '6864797660130609714981900799081393217269435300143305409394463459185543183397656052122559640661454554977296311391480858037121987999716643812574028291115057151');
 var n    = mpw('01fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409');
@@ -573,10 +583,10 @@ ack('mpw(mpw(gx31, gx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(1
 var d    = mpw('0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722');
 var qx   = mpw('0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cca16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4');
 var qy   = mpw('0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef17be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e');
-var qy2  = mpw(qy, p, "sqrm");
-var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
-var qx32 = mpw(qx, 3, p, "mulm");
 // FIXME: wrong answer
+// var qy2  = mpw(qy, p, "sqrm");
+// var qx31 = mpw(mpw(qx, qx, p, "mulm"), qx, p, "mulm");
+// var qx32 = mpw(qx, 3, p, "mulm");
 // ack('mpw(mpw(qx31, qx32, p, "subm"), b, p, "addm").toString(10)', gy2.toString(10));
 
 var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf');
