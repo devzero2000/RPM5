@@ -38,6 +38,7 @@ ack('mpw(wa, wb, "|").toString(10)', (za | zb).toString(10));
 
 var m = mpw(15);
 ack('m.toString(10)', '15');
+ack('m.isPrime()', false);
 ack('m.toString(10)', m.valueOf());
 var x = mpw(7);
 ack('x.toString(10)', '7');
@@ -177,99 +178,220 @@ for (var i in bases) {
     }
 }
 
+// =======================================================
+function RSA(p, q, e) {
+  this.p = mpw(p);
+  ack('mpw(p).isPrime()', true);
+  this.q = mpw(q);
+  ack('mpw(q).isPrime()', true);
+  this.e = mpw(e);
+  this.n = mpw(p, q, "*");
+  this.phi = mpw(p, 1, "-", q, 1, "-", "*");
+  ack('mpw(this.e, this.phi, "gcd").toString(10)', '1');
+  this.d = mpw(this.e, this.phi, "invm");
+  ack('mpw(this.e, this.d, this.phi, "mulm").toString(10)', '1');
+  this.sign =
+    function (hm) {
+	this.hm = mpw(hm);
+	this.s = mpw(this.hm, this.d, this.n, "powm");
+	return this.s;
+    };
+  this.verify =
+    function (hm, s) {
+	return (mpw(s, this.e, this.n, "powm").toString(10) == hm.toString(10)
+		? true : false);
+    }
+  return true;
+}
+
 // ===== RSA example (from "Handbook of Applied Cryptography" 11.20 p434).
-// Keygen RSA
-var p = mpw(7927);
-var q = mpw(6997);
-var n = mpw(p, q, "*");
-ack('n.toString(10)', '55465219');
-var phi = mpw(p, mpw(1), "-", q, mpw(1), "-", "*");
-ack('phi.toString(10)', '55450296');
-var e = mpw(5);
-ack('e.toString(10)', '5');
-ack('mpw(e, phi, "gcd").toString(10)', '1');
-var d = mpw(e, phi, "invm");
-ack('mpw(e, d, phi, "mulm").toString(10)', '1');
-ack('d.toString(10)', '44360237');
+print("===== RSA");
+var p   = 7927;
+var q   = 6997;
+var n   = 55465219;
+ack('p * q', n);
+var e   = 5;
+var phi = 55450296;
+ack('(p - 1) * (q - 1)', phi);
+var d   = 44360237;
+var hm  = 31229978;
+var s   = 30729435;
 
-// Sign RSA
-var m = mpw(31229978);
-var s = mpw(m, d, n, "powm");
-ack('s.toString(10)', '30729435');
+var rsa = new RSA(p, q, e);
 
-// Verify RSA
-var mtwiddle = mpw(s, e, n, "powm");
-ack('mtwiddle.toString(10)', m.toString(10));
+ack('rsa.verify(hm, rsa.sign(hm))', true);
 
-// ===== DSA example (from "Handbook of Applied Cryptography" 11.57 p453).
-// Keygen DSA
-var p = mpw(124540019);
-var q = mpw(17389);
-ack('mpw(p, mpw(1), "-", q, "%").toString(10)', '0');
-var pdivq = mpw(p, mpw(1), "-", q, "/");
-ack('pdivq.toString(10)', '7162');
-var g = mpw(110217528);
-var alpha = mpw(g, pdivq, p, "powm");
-ack('alpha.toString(10)', '10083255');
-var a = mpw(12496);
-var y = mpw(alpha, a, p, "powm");
-ack('y.toString(10)', '119946265');
+ack('rsa.p.toString(10)', p.toString(10));
+ack('rsa.q.toString(10)', q.toString(10));
+ack('rsa.n.toString(10)', n.toString(10));
+ack('rsa.e.toString(10)', e.toString(10));
+ack('rsa.phi.toString(10)', phi.toString(10));
+ack('rsa.d.toString(10)', d.toString(10));
+ack('rsa.hm.toString(10)', hm.toString(10));
+ack('rsa.s.toString(10)', s.toString(10));
 
-// Sign DSA
-var k = mpw(9557);
-var r = mpw(mpw(alpha, k, p, "powm"), q, "%");
-ack('r.toString(10)', '34');
-var kinv = mpw(k, q, "invm");
-ack('kinv.toString(10)', '7631');
-var hm = mpw(5246);
-var s = mpw(kinv, mpw(hm, a, r, "*", "+"), q, "mulm");
-ack('s.toString(10)', '13049');
+delete rsa;
 
-// Verify DSA
-var w = mpw(s, q, "invm");
-ack('w.toString(10)', '1799');
-var u1 = mpw(w, hm, q, "mulm");
-ack('u1.toString(10)', '12716');
-var u2 = mpw(r, w, q, "mulm");
-ack('u2.toString(10)', '8999');
-var v1 = mpw(alpha, u1, p, "powm");
-var v2 = mpw(y, u2, p, "powm");
-var v3 = mpw(v1, v2, p, "mulm");
-ack('v3.toString(10)', '27039929');
-var v = mpw(v3, q, "%");
-ack('v.toString(10)', r.toString(10));
+// =======================================================
+function ElGamal(p, alpha, a, k) {
+  this.p = mpw(p);
+  ack('mpw(p).isPrime()', true);
+  this.pm1 = mpw(p, 1, "-");
+  this.alpha = mpw(alpha);
+  this.a = mpw(a);
+  this.k = mpw(k);
+
+  this.y = mpw(this.alpha, this.a, this.p, "powm");
+
+  this.sign =
+    function (hm) {
+	this.hm = mpw(hm);
+	this.r = mpw(this.alpha, this.k, this.p, "powm");
+	this.kinv = mpw(this.k, this.pm1, "invm");
+//	ack('mpw(this.k, this.kinv, this.pm1, "mulm").toString(10)', '1');
+	this.s = mpw(this.hm, this.a, this.r, this.pm1, "mulm", this.pm1, "subm", this.kinv, this.pm1, "mulm");
+	return true;
+    };
+
+  this.verify =
+    function (hm) {
+	this.hm = mpw(hm);
+	this.v1 = mpw(this.y, this.r, this.p, "powm", this.r, this.s, this.p, "powm", this.p, "mulm");
+	this.v2 = mpw(this.alpha, this.hm, this.p, "powm");
+	return (elgamal.v2.toString(10) == elgamal.v1.toString(10)
+		? true : false);
+    }
+
+  return true;
+}
 
 // ===== ElGamal example (from "Handbook of Applied Cryptography" 11.65 p455).
 // Keygen ElGamal
-var p = mpw(2357);
-var alpha = mpw(2);
-var a = mpw(1751);
-var y = mpw(alpha, a, p, "powm");
-ack('y.toString(10)', '1185');
+print("===== ElGamal");
+var p     = 2357;
+var alpha = 2;
+var a     = 1751;
+var y     = 1185;
+var hm    = 1463;
+var k     = 1529;
+var r     = 1490;
+var s     = 1777;
+var v1    = 1072;
 
-// Sign ElGamal
-var hm = mpw(1463);
-var k = mpw(1529);
-var r = mpw(alpha, k, p, "powm");
-ack('r.toString(10)', '1490');
-var pm1 = mpw(p, mpw(1), "-");
+var pm1 = p - 1;
+
+var elgamal = new ElGamal(p, alpha, a, k);
+ack('elgamal.p.toString(10)', p.toString(10));
+ack('elgamal.alpha.toString(10)', alpha.toString(10));
+ack('elgamal.a.toString(10)', a.toString(10));
+ack('elgamal.k.toString(10)', k.toString(10));
+ack('elgamal.y.toString(10)', y.toString(10));
+
+ack('elgamal.sign(hm)', true);
+ack('elgamal.r.toString(10)', r.toString(10));
 var kinv = mpw(k, pm1, "invm");
-ack('kinv.toString(10)', '245');
-var s = mpw(kinv, mpw(hm, mpw(a, r, pm1, "mulm"), pm1, "subm"), pm1, "mulm");
-ack('s.toString(10)', '1777');
+ack('elgamal.kinv.toString(10)', kinv.toString(10));
+ack('elgamal.s.toString(10)', s.toString(10));
 
-// Verify ElGamal
-var ytor = mpw(y, r, p, "powm");
-var rtos = mpw(r, s, p, "powm");
-var v1 = mpw(ytor, rtos, p, "mulm");
-ack('v1.toString(10)', '1072');
-var v2 = mpw(alpha, hm, p, "powm");
-ack('v2.toString(10)', v1.toString(10));
+ack('elgamal.verify(hm)', true);
+ack('elgamal.v1.toString(10)', v1.toString(10));
+ack('elgamal.v2.toString(10)', v1.toString(10));
+
+delete elgamal;
+
+// =======================================================
+function DSA(p, q, g, a, k) {
+  this.p = mpw(p);
+  ack('mpw(p).isPrime()', true);
+  this.q = mpw(q);
+  ack('mpw(q).isPrime()', true);
+  this.g = mpw(g);
+  this.a = mpw(a);
+  this.k = mpw(k);
+
+  ack('mpw(this.p, 1, "-", this.q, "%").toString(10)', '0');
+  this.pdivq = mpw(this.p, 1, "-", this.q, "/");
+  this.alpha = mpw(this.g, this.pdivq, this.p, "powm");
+//  this.x = mpw(this.c, this.q, 1, "-", "%", 1, "+");
+//  ack('mpw(this.c, this.q, 1, "-", "%", 1, "+").toString(16)', this.x.toString(16));
+  this.y = mpw(this.alpha, this.a, this.p, "powm");
+//  ack('mpw(this.g, this.x, this.p, "powm").toString(16)', this.y.toString(16));
+
+  this.sign =
+    function (hm) {
+	this.hm = mpw(hm);
+	this.r = mpw(mpw(this.alpha, this.k, this.p, "powm"), this.q, "%");
+	this.kinv = mpw(this.k, this.q, "invm");
+	ack('mpw(this.k, this.kinv, this.q, "mulm").toString(10)', '1');
+	this.s = mpw(this.kinv, mpw(this.hm, this.a, this.r, "*", "+"), this.q, "mulm");
+	return true;
+    };
+
+  this.verify =
+    function (hm) {
+	this.hm = mpw(hm);
+	this.w = mpw(this.s, this.q, "invm");
+	this.u1 = mpw(this.w, this.hm, this.q, "mulm");
+	this.u2 = mpw(this.r, this.w, this.q, "mulm");
+	this.v1 = mpw(this.g, this.u1, this.p, "powm");
+	this.v2 = mpw(this.y, this.u2, this.p, "powm");
+	this.v = mpw(this.alpha, this.u1, this.p, "powm", this.v2, this.p, "mulm");
+
+	return (mpw(this.v, this.q, "%").toString(10) == this.r.toString(10)
+		? true : false);
+    }
+  return true;
+}
+
+// ===== DSA example (from "Handbook of Applied Cryptography" 11.57 p453).
+print("===== DSA");
+var p     = 124540019;
+var q     = 17389;
+var g     = 110217528;
+var a     = 12496;
+var pdivq = 7162;
+var alpha = 10083255;
+var y     = 119946265;
+
+var hm    = 5246;
+var k     = 9557;
+var r     = 34;
+var kinv  = 7631;
+var s     = 13049;
+
+var w     = 1799;
+var u1    = 12716;
+var u2    = 8999;
+var v     = 27039929;
+
+var dsa = new DSA(p, q, g, a, k);
+
+ack('dsa.p.toString(10)', p.toString(10));
+ack('dsa.q.toString(10)', q.toString(10));
+ack('dsa.g.toString(10)', g.toString(10));
+ack('dsa.a.toString(10)', a.toString(10));
+ack('dsa.k.toString(10)', k.toString(10));
+ack('dsa.pdivq.toString(10)', pdivq.toString(10));
+ack('dsa.alpha.toString(10)', alpha.toString(10));
+ack('dsa.y.toString(10)', y.toString(10));
+
+ack('dsa.sign(hm)', true);
+ack('dsa.hm.toString(10)', hm.toString(10));
+ack('dsa.r.toString(10)', r.toString(10));
+ack('dsa.kinv.toString(10)', kinv.toString(10));
+ack('dsa.s.toString(10)', s.toString(10));
+
+ack('dsa.verify(hm)', true);
+ack('dsa.w.toString(10)', w.toString(10));
+ack('dsa.u1.toString(10)', u1.toString(10));
+ack('dsa.u2.toString(10)', u2.toString(10));
+ack('dsa.v.toString(10)', v.toString(10));
+
+delete dsa;
 
 // ===== DSA example from 
 //     http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/DSA2_All.pdf
 // Keygen DSA
-print("===== DSA");
 var p = mpw('e0a67598cd1b763b'+
 	'c98c8abb333e5dda0cd3aa0e5e1fb5ba8a7b4eabc10ba338'+
 	'fae06dd4b90fda70d7cf0cb0c638be3341bec0af8a7330a3'+
@@ -277,7 +399,7 @@ var p = mpw('e0a67598cd1b763b'+
 	'c4a7cf0235b5316bfc6efb9a248411258b30b839af172440'+
 	'f32563056cb67a861158ddd90e6a894c72a5bbef9e286c6b');
 var q = mpw('e950511eab424b9a19a2aeb4e159b7844c589c4f');
-ack('mpw(p, mpw(1), "-", q, "%").toString(10)', '0');
+ack('mpw(p, 1, "-", q, "%").toString(10)', '0');
 var g = mpw('d29d5121b0423c27'+
 	'69ab21843e5a3240ff19cacc792264e3bb6be4f78edd1b15'+
 	'c4dff7f1d905431f0ab16790e1f773b5ce01c804e509066a'+
@@ -287,7 +409,7 @@ var g = mpw('d29d5121b0423c27'+
 var c = mpw('f3b4c192'+
 	'385620feec46cb7f5d55fe0c231b0404a61539729ea1291c');
 var x = mpw('d0ec4e50bb290a42e9e355c73d8809345de2e139');
-ack('mpw(c, q, mpw(1), "-", "%", mpw(1), "+").toString(16)', x.toString(16));
+ack('mpw(c, q, 1, "-", "%", 1, "+").toString(16)', x.toString(16));
 var y = mpw('25282217f5730501'+
 	'dd8dba3edfcf349aaffec20921128d70fac44110332201bb'+
 	'a3f10986140cbb97c726938060473c8ec97b4731db004293'+

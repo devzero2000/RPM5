@@ -8,6 +8,7 @@
 #include "rpmjs-debug.h"
 
 #include <rpmbc.h>
+#include "beecrypt/mpprime.h"	/* mpptrials() */
 
 #include "debug.h"
 
@@ -1588,6 +1589,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     return ok;
 }
 
+#ifdef	NOTYET
 /** Convert to string in base 10. */
 static JSBool
 mpw_valueOf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -1598,6 +1600,43 @@ mpw_valueOf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
     *rval = mpw_format(cx, ptr, _base, 0);
+    return ok;
+}
+#endif
+
+/** Miller-Rabin prime test. */
+static JSBool
+mpw_isPrime(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * z = ptr;
+    size_t zsize = (z ? MPW_SIZE(z) : 0);
+    mpw * zdata = (z ? MPW_DATA(z) : NULL);
+    jsuint _trials = mpptrials(MP_WORDS_TO_BITS(zsize));
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (z == NULL || zsize == 0 || zdata == NULL
+     || (ok = JS_ConvertArguments(cx, argc, argv, "/u", &_trials)))
+    {
+	/* XXX select "FIPS 186" or "Mersenne Twister" */
+	const randomGenerator* rng = randomGeneratorDefault();
+	randomGeneratorContext rngc;
+
+	if (!randomGeneratorContextInit(&rngc, rng)) {
+	    mpw * wksp = alloca((8*zsize+2) * sizeof(*wksp));
+	    mpbarrett b;
+
+	    mpbzero(&b);
+	    mpbset(&b, zsize, zdata);
+	    *rval = mpbpprime_w(&b, &rngc, _trials, wksp)
+		? JSVAL_TRUE : JSVAL_FALSE;
+	    mpbfree(&b);
+	} else
+	    *rval = JSVAL_FALSE;
+	randomGeneratorContextFree(&rngc);
+    } else
+	*rval = JSVAL_FALSE;
     return ok;
 }
 
@@ -1624,9 +1663,10 @@ static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("toLocaleString", mpw_toLocaleString,	0,0,0),
     JS_FS("toSource",	mpw_toSource,		0,0,0),
     JS_FS("toJSON",	mpw_toJSON,		0,0,0),
+    JS_FS("valueOf",	mpw_valueOf,		0,0,0),
 #endif
     JS_FS("toString",	mpw_toString,		0,0,0),
-    JS_FS("valueOf",	mpw_valueOf,		0,0,0),
+    JS_FS("isPrime",	mpw_isPrime,		0,0,0),
     JS_FS_END
 };
 
@@ -1893,9 +1933,12 @@ assert(++ix < (int)argc);
 	    o = NULL;
 	    ptr = z = NULL;
 	} else {
-	    ok = mpw_wrap(cx, rval, stack[ix]);
+	    mpwObject * x = stack[ix];
+	    ptr = z = mpw_FromMPW(MPW_SIZE(x), MPW_DATA(x), 0);
+	    if (x->ob_size < 0)
+		z->ob_size = -z->ob_size;
+	    ok = mpw_wrap(cx, rval, z);
 	    o = JSVAL_TO_OBJECT(*rval);
-	    ptr = z = JS_GetInstancePrivate(cx, o, &rpmmpwClass, NULL);
 	}
 	break;
     }
