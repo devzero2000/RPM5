@@ -261,7 +261,7 @@ static inline void initSourceHeader_RPMorg(rpmSpec spec)
     initSourceHeader(spec, NULL);
 }
 
-int parseSpec_RPMorg(rpmts ts, const char * specFile,
+static inline int parseSpec_RPMorg(rpmts ts, const char * specFile,
 		const char * rootDir,
 		__attribute__((unused)) const char * buildRoot,
 		int recursing,
