@@ -181,7 +181,7 @@ static inline rpmuint64_t *rpmtdNextUint64(rpmtd td)
     return res;
 }
 
-const char *rpmtdNextString(rpmtd td)
+static inline const char *rpmtdNextString(rpmtd td)
 {
     const char *res = NULL;
     assert(td != NULL);
