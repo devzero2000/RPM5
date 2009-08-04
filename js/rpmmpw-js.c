@@ -37,6 +37,8 @@ static int _debug = 0;
 #define rpmmpw_iteratorobject	NULL
 #define rpmmpw_wrappedobject	NULL
 
+#define	OBJ_IS_MPW(cx,obj)	(OBJ_GET_CLASS(cx, obj) == &rpmmpwClass)
+
 /* --- helpers */
 typedef struct mpwObject_s {
     int ob_size;
@@ -1110,6 +1112,7 @@ mpw_ops1(char op, mpwObject *x)
 {
     mpwObject * z = NULL;
 
+assert(x);
     if (x == NULL)
 	goto exit;
 
@@ -1124,26 +1127,27 @@ prtmpw("a", x);
     default:
 	goto exit;
 	/*@notreached@*/ break;
-    case 'N':
+    case '_':
 	z->ob_size = -z->ob_size;
 	break;
-    case 'A':
+    case '!':
 	if (z->ob_size < 0)
 	    z->ob_size = -z->ob_size;
 	break;
-    case '~':	/* Implement ~z as -(z+1) */
+    case '~':  /* Implement ~z as -(z+1) */
     {	mpw val = 1;
 	int carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), 1, &val);
-	carry = carry;	/* XXX gcc warning */
+	carry = carry;  /* XXX gcc warning */
 	if (x->ob_size > 0)
 	    z->ob_size = -z->ob_size;
-    }	break;
+    }  break;
     }
 
 if (_debug < 0)
 fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 exit:
+assert(z);
     return z;
 }
 
@@ -1171,6 +1175,8 @@ mpw_ops2(char op, mpwObject *x, mpwObject *m)
     int zsign = 0;
 
     mpbzero(&b);
+assert(x);
+assert(m);
     if (x == NULL || m == NULL)
 	goto exit;
 
@@ -1430,14 +1436,16 @@ fprintf(stderr, "sub ++: borrow\n");
 	    z->ob_size = -z->ob_size;
     }	break;
     case 'G':
+	/* XXX this scaling is not correct. */
 	wksp = alloca((xsize) * sizeof(*wksp));
 	z = mpw_New(msize);
 	mpgcd_w(xsize, xdata, mdata, MPW_DATA(z), wksp);
 	break;
     case 'I':
-	wksp = alloca((6*msize+6)*sizeof(*wksp));
-	z = mpw_New(msize);
-	(void) mpextgcd_w(msize, mdata, xdata, MPW_DATA(z), wksp);
+	wksp = alloca(((1+1+6)*msize+6)*sizeof(*wksp));
+	mpsetx(msize, wksp+msize, xsize, xdata);
+	(void) mpextgcd_w(msize, mdata, wksp+msize, wksp, wksp+2*msize);
+	z = mpw_FromMPW(msize, wksp, 0);
 	break;
 #ifdef	DYING
     case 'R':
@@ -1450,6 +1458,7 @@ fprintf(stderr, "sub ++: borrow\n");
     }	break;
 #endif
     case 'S':
+	/* XXX is scaling correct if xsize > msize? */
 	wksp = alloca((4*msize+2)*sizeof(*wksp));
 	mpbset(&b, msize, mdata);
 	z = mpw_New(msize);
@@ -1462,6 +1471,7 @@ fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z
 
 exit:
     mpbfree(&b);
+assert(z);
     return z;
 }
 
@@ -1483,6 +1493,9 @@ mpw_ops3(char op, mpwObject *x, mpwObject *y, mpwObject *m)
     mpw* wksp;
 
     mpbzero(&b);
+assert(x);
+assert(y);
+assert(m);
     if (x == NULL || y == NULL || m == NULL)
 	goto exit;
 
@@ -1503,6 +1516,18 @@ prtmpw("c", m);
 
     zsize = b.size;
     zdata = alloca(zsize * sizeof(*zdata));
+
+#ifdef	NOTYET	/* XXX no known scaling problems (yet) */
+    wksp = alloca(zsize * sizeof(*zdata));
+    mpsetx(zsize, wksp, xsize, xdata);
+    xsize = zsize;
+    xdata = wksp;
+    wksp = alloca(zsize * sizeof(*zdata));
+    mpsetx(zsize, wksp, ysize, ydata);
+    ysize = zsize;
+    ydata = wksp;
+#endif
+
     wksp = alloca((4*zsize+2)*sizeof(*wksp));
 
     switch (op) {
@@ -1532,6 +1557,7 @@ fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z
 
 exit:
     mpbfree(&b);
+assert(z);
     return z;
 }
 
@@ -1560,13 +1586,19 @@ mpw_j2mpw(JSContext *cx, jsval v)
     mpwObject * z = NULL;
     if (JSVAL_IS_INT(v))
 	z = mpw_FromLong(JSVAL_TO_INT(v));
-    if (JSVAL_IS_DOUBLE(v))
+    else if (JSVAL_IS_DOUBLE(v))
 	z = mpw_FromDouble(*JSVAL_TO_DOUBLE(v));
-    if (JSVAL_IS_STRING(v))
+    else if (JSVAL_IS_STRING(v))
 	z = mpw_FromHEX(JS_GetStringBytes(JSVAL_TO_STRING(v)));
-    if (JSVAL_IS_OBJECT(v))
-	z = JS_GetInstancePrivate(cx, JSVAL_TO_OBJECT(v), &rpmmpwClass, NULL);
+    else if (JSVAL_IS_OBJECT(v)) {
+	JSObject *o = JSVAL_TO_OBJECT(v);
+	if (OBJ_IS_MPW(cx, o))
+	    z = JS_GetInstancePrivate(cx, o, &rpmmpwClass, NULL);
+    }
+if (z == NULL) {
+fprintf(stderr, "*** %s: 0x%x[%s]\n", __FUNCTION__, (unsigned)v, v2s(cx, v));
 assert(z != NULL);
+}
     return z;
 }
 
@@ -1843,6 +1875,7 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_TRUE;
     jsval v = JSVAL_NULL;
     void ** stack = memset(alloca(argc*sizeof(*stack)), 0, (argc*sizeof(*stack)));
+    char * freeme = memset(alloca(argc*sizeof(*freeme)), 0, (argc*sizeof(*freeme)));
     int ix = -1;
     uintN i;
     
@@ -1871,9 +1904,9 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 		if (!strcmp(s, "**")) c = (int)'P';
 		if (!strcmp(s, "<<")) c = (int)'<';
 		if (!strcmp(s, ">>")) c = (int)'>';
-		if (!strcmp(s, "abs")) c = (int)'A';
+		if (!strcmp(s, "abs")) c = (int)'!';
 		if (!strcmp(s, "not")) c = (int)'~';
-		if (!strcmp(s, "negate")) c = (int)'N';
+		if (!strcmp(s, "neg")) c = (int)'_';
 		if (!strcmp(s, "gcd")) c = (int)'G';	/* gcd(x, y). */
 		if (!strcmp(s, "invm")) c = (int)'I';	/* inverse of x (modulo m). */
 		if (!strcmp(s, "sqrm")) c = (int)'S';	/* x*x (modulo m). */
@@ -1882,49 +1915,74 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 #endif
 
 		switch (c) {
-		case 'A':
-		case 'N':
-		case '~':
-		    stack[ix] = mpw_ops1(c, stack[ix]);
+		case '!':	/* abs(x) */
+		case '_':	/* -x */
+		case '~':	/* ~x */
+assert(ix >= 0);
+		    z = stack[ix];
+		    stack[ix] = mpw_ops1(c, z);
+		    if (freeme[ix]) z = _free(z);
+		    freeme[ix] = 1;
 		    break;
-		case '%':
-		case '/':
+		case '%':	/* x % y */
+		case '/':	/* x / y */
 		    /* XXX divide-by-zero check. */
-		case '+':
-		case '-':
-		case '*':
+assert(ix > 0);
+		    z = stack[ix];
+assert(mpz(MPW_SIZE(z), MPW_DATA(z)) == 0);
+		    /*@fallthrough@*/
+		case '+':	/* x + y */
+		case '-':	/* x - y */
+		case '*':	/* x * y */
 		case 'P':	/* x ** y */
-		case 'G':	/* gcd(x, y). */
-		case 'I':	/* inverse of x (modulo m). */
-		case 'S':	/* x*x (modulo m). */
+		case 'G':	/* gcd(x, y) */
+		case 'I':	/* inverse of x (modulo m) */
+		case 'S':	/* x * x (modulo m) */
 		case '<':	/* x << y */
 		case '>':	/* x >> y */
-		case '&':
-		case '^':
-		case '|':
+		case '&':	/* x & y */
+		case '^':	/* x ^ y */
+		case '|':	/* x | y */
 assert(--ix >= 0);
-		    stack[ix] = mpw_ops2(c, stack[ix], stack[ix+1]);
+		    z = stack[ix];
+		    stack[ix] = mpw_ops2(c, z, stack[ix+1]);
+		    if (freeme[ix+1]) stack[ix+1] = _free(stack[ix+1]); freeme[ix+1] = 0;
+		    if (freeme[ix]) z = _free(z);
+		    freeme[ix] = 1;
 		    break;
 		default:
 		case 0:
-		    if (!strcmp(s, "addm")) c = (int)'+';	/* x+x (modulo m). */
-		    if (!strcmp(s, "subm")) c = (int)'-';	/* x-x (modulo m). */
-		    if (!strcmp(s, "mulm")) c = (int)'*';	/* x*x (modulo m). */
-		    if (!strcmp(s, "powm")) c = (int)'P';	/* x**x (modulo m). */
+		    if (!strcmp(s, "addm")) c = (int)'+';	/* x+x (modulo m) */
+		    if (!strcmp(s, "subm")) c = (int)'-';	/* x-x (modulo m) */
+		    if (!strcmp(s, "mulm")) c = (int)'*';	/* x*x (modulo m) */
+		    if (!strcmp(s, "powm")) c = (int)'P';	/* x**x (modulo m) */
 		    if (c) {
 assert(--ix >= 0);
 assert(--ix >= 0);
-			stack[ix] = mpw_ops3(c, stack[ix], stack[ix+1], stack[ix+2]);
+			z = stack[ix];
+			stack[ix] = mpw_ops3(c, z, stack[ix+1], stack[ix+2]);
+			if (freeme[ix+2]) stack[ix+2] = _free(stack[ix+2]); freeme[ix+2] = 0;
+			if (freeme[ix+1]) stack[ix+1] = _free(stack[ix+1]); freeme[ix+1] = 0;
+			if (freeme[ix]) z = _free(z);
+			freeme[ix] = 1;
 		    } else {
 assert(++ix < (int)argc);
 			stack[ix] = mpw_j2mpw(cx, v);
+			freeme[ix] = 1;
 		    }
 		    
 		    break;
 		}
 	    } else {
+		if (JSVAL_IS_OBJECT(v)) {
+		    o = JSVAL_TO_OBJECT(v);
+		    if (!OBJ_IS_MPW(cx, o))
+			o = NULL;
+		} else
+		    o = NULL;
 assert(++ix < (int)argc);
 		stack[ix] = mpw_j2mpw(cx, v);
+		freeme[ix] = (o == NULL ? 1 : 0);
 	    }
 	}
 	if (ix < 0) {
@@ -1939,6 +1997,10 @@ assert(++ix < (int)argc);
 		z->ob_size = -z->ob_size;
 	    ok = mpw_wrap(cx, rval, z);
 	    o = JSVAL_TO_OBJECT(*rval);
+	}
+	while (ix >= 0) {
+	    if (freeme[ix]) stack[ix] = _free(stack[ix]); freeme[ix] = 0;
+	    ix--;
 	}
 	break;
     }

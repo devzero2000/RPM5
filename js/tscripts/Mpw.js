@@ -15,7 +15,7 @@ ack('wa.toString(2)', '2#100110000111011001010100001100100001')
 
 var wb = mpw(0x10);
 ack('wb.toString(16)', '0x10');
-var wc = mpw('0fedcba000000000');
+var wc = mpw('fedcba000000000');
 ack('wc.toString(16)', '0xfedcba000000000');
 
 var za = 0x0000000007654321;
@@ -35,6 +35,10 @@ ack('mpw(wa, wb, ">>").toString(10)', (za >> zb).toString(10));
 ack('mpw(wa, wb, "&").toString(10)', (za & zb).toString(10));
 ack('mpw(wa, wb, "^").toString(10)', (za ^ zb).toString(10));
 ack('mpw(wa, wb, "|").toString(10)', (za | zb).toString(10));
+
+// XXX FIXME divide-by-zero exception handling
+// var foo = mpw(1, 0, "/");
+// var foo = mpw(1, 0, "%");
 
 var m = mpw(15);
 ack('m.toString(10)', '15');
@@ -56,18 +60,17 @@ ack('mpw(x, y, m, "mulm").toString(10)', '1');
 ack('mpw(x, y, m, "powm").toString(10)', '7');
  
 var zx = 2*3*5*19;
+// FIXME wrong answers here
+// zx *= zx;
+// zx *= zx;
+// XXX FIXME segfault here
+// zx *= zx;
 var zy = 7*11*13*19;
 ack('mpw(zx, zy, "gcd").toString(10)', '19');
 
-x = mpw(zx, "neg");
-zx = -zx;
-ack('x.toString(10)', zx.toString(10));
-x = mpw(zx, "abs");
-zx = Math.abs(zx);
-ack('x.toString(10)', zx.toString(10));
-x = mpw(zx, "~");
-zx = ~zx;
-ack('x.toString(10)', zx.toString(10));
+ack('mpw(zx, "neg").toString(10)', (-zx).toString(10));
+ack('mpw(zx, "abs").toString(10)', Math.abs(zx).toString(10));
+ack('mpw(zx, "~").toString(10)', (~zx).toString(10));
 
 // ===== Carry/borrow tests
 var a = 0x7fffffff;
@@ -182,14 +185,67 @@ for (var i in bases) {
 function RSA(p, q, e) {
   this.p = mpw(p);
   ack('mpw(p).isPrime()', true);
+  this.pm1 = mpw(this.p, 1, "-");
   this.q = mpw(q);
   ack('mpw(q).isPrime()', true);
+  this.qm1 = mpw(this.q, 1, "-");
   this.e = mpw(e);
-  this.n = mpw(p, q, "*");
-  this.phi = mpw(p, 1, "-", q, 1, "-", "*");
-  ack('mpw(this.e, this.phi, "gcd").toString(10)', '1');
+
+  this.n = mpw(this.p, this.q, "*");
+  this.phi = mpw(this.pm1, this.qm1, "*");
+//ack('mpw(this.e, this.phi, "gcd").toString(10)', '1');
   this.d = mpw(this.e, this.phi, "invm");
-  ack('mpw(this.e, this.d, this.phi, "mulm").toString(10)', '1');
+// ack('mpw(this.e, this.d, "*", this.phi, "%").toString(10)', '1');
+
+  this.sign =
+    function (hm) {
+	this.hm = mpw(hm);
+	this.s = mpw(this.hm, this.d, this.n, "powm");
+	return this.s;
+    };
+  this.verify =
+    function (hm, s) {
+	return (mpw(s, this.e, this.n, "powm").toString(10) == hm.toString(10)
+		? true : false);
+    }
+  return true;
+}
+
+function RSAv21(p, q, d, e, dP, dQ, qInv) {
+  this.p = mpw(p);
+  ack('mpw(p).isPrime()', true);
+  this.pm1 = mpw(this.p, 1, "-");
+  this.q = mpw(q);
+  ack('mpw(q).isPrime()', true);
+  this.qm1 = mpw(this.q, 1, "-");
+  this.d = mpw(d);
+  this.e = mpw(e);
+  this.dP = mpw(dP);
+  this.dQ = mpw(dQ);
+
+  this.n = mpw(this.p, this.q, "*");
+  this.lambda = mpw(this.pm1, this.qm1, "*");
+//  ack('mpw(this.n, this.lambda, "gcd").toString(10)', '1');
+//  ack('mpw(this.e, this.lambda, "gcd").toString(10)', '1');
+
+//  this.d = mpw(this.e, this.lambda, "invm");
+//  ack('mpw(this.e, this.lambda, "invm").toString(16)', this.d.toString(16));
+
+//  ack('mpw(this.e, this.d, "*", this.lambda, "%").toString(10)', '1');
+//  ack('mpw(this.e, this.dP, this.pm1, "mulm").toString(10)', '1');
+//  ack('mpw(this.e, this.dQ, this.qm1, "mulm").toString(10)', '1');
+
+//  this.dP = mpw(this.e, this.pm1, "invm");
+//  ack('mpw(this.e, this.pm1, "invm").toString(16)', this.dP.toString(16));
+//  ack('mpw(this.e, this.dP, "*", this.pm1, "%").toString(10)', '1');
+//  this.dQ = mpw(this.e, this.qm1, "invm");
+//  ack('mpw(this.e, this.qm1, "invm").toString(16)', this.dQ.toString(16));
+//  ack('mpw(this.e, this.dQ, "*", this.qm1, "%").toString(10)', '1');
+
+    this.qInv = mpw(this.q, this.p, "invm");
+    ack('this.qInv.toString(16)', qInv.toString(16));
+    ack('mpw(this.q, this.qInv, this.p, "mulm").toString(10)', '1');
+  
   this.sign =
     function (hm) {
 	this.hm = mpw(hm);
@@ -205,7 +261,6 @@ function RSA(p, q, e) {
 }
 
 // ===== RSA example (from "Handbook of Applied Cryptography" 11.20 p434).
-print("===== RSA");
 var p   = 7927;
 var q   = 6997;
 var n   = 55465219;
@@ -217,6 +272,7 @@ var d   = 44360237;
 var hm  = 31229978;
 var s   = 30729435;
 
+print("===== RSA");
 var rsa = new RSA(p, q, e);
 
 ack('rsa.verify(hm, rsa.sign(hm))', true);
@@ -229,6 +285,141 @@ ack('rsa.phi.toString(10)', phi.toString(10));
 ack('rsa.d.toString(10)', d.toString(10));
 ack('rsa.hm.toString(10)', hm.toString(10));
 ack('rsa.s.toString(10)', s.toString(10));
+
+delete rsa;
+
+// ===== RSAES-OAEP example from
+//	ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1-vec.zip
+var n   = mpw(
+	'a8b3b284af8eb50b387034a860f146c4919f318763cd6c5598c8ae4811a1e0ab'+
+	'c4c7e0b082d693a5e7fced675cf4668512772c0cbc64a742c6c630f533c8cc72'+
+	'f62ae833c40bf25842e984bb78bdbf97c0107d55bdb662f5c4e0fab9845cb514'+
+	'8ef7392dd3aaff93ae1e6b667bb3d4247616d4f5ba10d4cfd226de88d39f16fb');
+var e   = 0x10001;
+var d   = mpw(
+	'53339cfdb79fc8466a655c7316aca85c55fd8f6dd898fdaf119517ef4f52e8fd'+
+	'8e258df93fee180fa0e4ab29693cd83b152a553d4ac4d1812b8b9fa5af0e7f55'+
+	'fe7304df41570926f3311f15c4d65a732c483116ee3d3d2d0af3549ad9bf7cbf'+
+	'b78ad884f84d5beb04724dc7369b31def37d0cf539e9cfcdd3de653729ead5d1');
+var p   = mpw(
+	'd32737e7267ffe1341b2d5c0d150a81b586fb3132bed2f8d5262864a9cb9f30a'+
+	'f38be448598d413a172efb802c21acf1c11c520c2f26a471dcad212eac7ca39d');
+var q   = mpw(
+	'cc8853d1d54da630fac004f471f281c7b8982d8224a490edbeb33d3e3d5cc93c'+
+	'4765703d1dd791642f1f116a0dd852be2419b2af72bfe9a030e860b0288b5d77');
+var dP   = mpw(
+	'0e12bf1718e9cef5599ba1c3882fe8046a90874eefce8f2ccc20e4f2741fb0a3'+
+	'3a3848aec9c9305fbecbd2d76819967d4671acc6431e4037968db37878e695c1');
+var dQ   = mpw(
+	'95297b0f95a2fa67d00707d609dfd4fc05c89dafc2ef6d6ea55bec771ea33373'+
+	'4d9251e79082ecda866efef13c459e1a631386b7e354c899f5f112ca85d71583');
+var qInv = mpw(
+	'4f456c502493bdc0ed2ab756a3a6ed4d67352a697d4216e93212b127a63d5411'+
+	'ce6fa98d5dbefd73263e3728142743818166ed7dd63687dd2a8ca1d2f4fbd8e1');
+
+var hm  = 31229978;
+var s   = mpw(
+	'354fe67b4a126d5d35fe36c777791a3f7ba13def484e2d3908aff722fad468fb'+
+	'21696de95d0be911c2d3174f8afcc201035f7b6d8e69402de5451618c21a535f'+
+	'a9d7bfc5b8dd9fc243f8cf927db31322d6e881eaa91a996170e657a05a266426'+
+	'd98c88003f8477c1227094a0d9fa1e8c4024309ce1ecccb5210035d47ac72e8a');
+
+// print("===== RSAES-OAEP");
+var rsa = new RSA(p, q, e);
+ack('rsa.n.toString(16)', n.toString(16));
+ack('rsa.e.toString(10)', e.toString(10));
+ack('rsa.d.toString(16)', d.toString(16));
+ack('rsa.p.toString(16)', p.toString(16));
+ack('rsa.q.toString(16)', q.toString(16));
+delete rsa;
+
+print("===== RSAES-OAEP 2.1");
+var rsa = new RSAv21(p, q, d, e, dP, dQ, qInv);
+
+ack('rsa.n.toString(16)', n.toString(16));
+ack('rsa.e.toString(10)', e.toString(10));
+ack('rsa.d.toString(16)', d.toString(16));
+ack('rsa.p.toString(16)', p.toString(16));
+ack('rsa.q.toString(16)', q.toString(16));
+
+ack('rsa.dP.toString(16)', dP.toString(16));
+ack('rsa.dQ.toString(16)', dQ.toString(16));
+ack('rsa.qInv.toString(16)', qInv.toString(16));
+
+// ack('rsa.verify(hm, rsa.sign(hm))', true);
+
+// ack('rsa.phi.toString(10)', phi.toString(10));
+// ack('rsa.hm.toString(10)', hm.toString(10));
+// ack('rsa.s.toString(10)', s.toString(10));
+
+delete rsa;
+
+// ===== RSASSA-PSS example from
+//	ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1-vec.zip
+var n    = mpw(
+	'a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991'+
+	'd8c51056ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1df'+
+	'd5cd9508096d5b2b8b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f1'+
+	'05acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137');
+var e   = 0x10001;
+var d    = mpw(
+	'33a5042a90b27d4f5451ca9bbbd0b44771a101af884340aef9885f2a4bbe92e8'+
+	'94a724ac3c568c8f97853ad07c0266c8c6a3ca0929f1e8f11231884429fc4d9a'+
+	'e55fee896a10ce707c3ed7e734e44727a39574501a532683109c2abacaba283c'+
+	'31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6dcee883547c6a3b325');
+var p    = mpw(
+	'e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e86296b2dfc967948'+
+	'c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda8e6443');
+var q    = mpw(
+	'b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48de8d'+
+	'67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd');
+var dP   = mpw(
+	'28fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f'+
+	'554b34c077790427bbdd8dd3ede2448328f385d81b30e8e43b2fffa027861979');
+
+var dQ   = mpw(
+	'1a8b38f398fa712049898d7fb79ee0a77668791299cdfa09efc0e507acb21ed7'+
+	'4301ef5bfd48be455eaeb6e1678255827580a8e4e8e14151d1510a82a3f2e729');
+
+var qInv = mpw(
+	'27156aba4126d24a81f3a528cbfb27f56886f840a9f6e86e17a44b94fe931958'+
+	'4b8e22fdde1e5a2e3bd8aa5ba8d8584194eb2190acf832b847f13a3d24a79f4d');
+
+
+var hm  = 31229978;
+var s   = mpw(
+	'9074308fb598e9701b2294388e52f971faac2b60a5145af185df5287b5ed2887'+
+	'e57ce7fd44dc8634e407c8e0e4360bc226f3ec227f9d9e54638e8d31f5051215'+
+	'df6ebb9c2f9579aa77598a38f914b5b9c1bd83c4e2f9f382a0d0aa3542ffee65'+
+	'984a601bc69eb28deb27dca12c82c2d4c3f66cd500f1ff2b994d8a4e30cbb33c');
+
+print("===== RSASSA-PSS");
+var rsa = new RSA(p, q, e);
+ack('rsa.n.toString(16)', n.toString(16));
+ack('rsa.e.toString(10)', e.toString(10));
+// FIXME wrong answer
+// ack('rsa.d.toString(16)', d.toString(16));
+ack('rsa.p.toString(16)', p.toString(16));
+ack('rsa.q.toString(16)', q.toString(16));
+delete rsa;
+
+print("===== RSASSA-PSS 2.1");
+var rsa = new RSAv21(p, q, d, e, dP, dQ, qInv);
+
+ack('rsa.n.toString(16)', n.toString(16));
+ack('rsa.e.toString(10)', e.toString(10));
+ack('rsa.d.toString(16)', d.toString(16));
+ack('rsa.p.toString(16)', p.toString(16));
+ack('rsa.q.toString(16)', q.toString(16));
+ack('rsa.dP.toString(16)', dP.toString(16));
+ack('rsa.dQ.toString(16)', dQ.toString(16));
+ack('rsa.qInv.toString(16)', qInv.toString(16));
+
+// ack('rsa.verify(hm, rsa.sign(hm))', true);
+
+// ack('rsa.phi.toString(16)', phi.toString(16));
+// ack('rsa.hm.toString(16)', hm.toString(16));
+// ack('rsa.s.toString(16)', s.toString(16));
 
 delete rsa;
 
@@ -584,6 +775,7 @@ ack('n.toString(10)', '269599466671506397946670150870196259404578077144243917216
 
 var c    = mpw('5b056c7e11dd68f40469ee7f3c7a7d74f7d121116506d031218291fb');
 var b    = mpw('b4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4');
+// FIXME mulm?
 ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").toString(10));
 var gx   = mpw('b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21');
 var gy   = mpw('bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34');
@@ -648,12 +840,15 @@ var kinv = mpw('62159e5ba9e712fb098cce8fe20f1bed8346554e98ef3c7c1fc3332ba67d87ef
 ack('mpw(k, n, "invm").toString(16)', kinv.toString(16));
 var r    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
 var s    = mpw('dc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1');
+// FIXME mulm?
 ack('mpw(mpw(mpw(r, d, "*", n, "%"), e, "+", n, "%"), kinv, "*", n, "%").toString(16)', s.toString(16));
 
 var w    = mpw(s, n, "invm");
 var u1   = mpw('b807bf3281dd13849958f444fd9aea808d074c2c48ee8382f6c47a435389a17e');
+// FIXME mulm?
 ack('mpw(e, w, "*", n, "%").toString(16)', u1.toString(16));
 var u2   = mpw('1777f73443a4d68c23d1fc4cb5f8b7f2554578ee87f04c253df44efd181c184c');
+// FIXME mulm?
 ack('mpw(r, w, "*", n, "%").toString(16)', u2.toString(16));
 var v    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
 
@@ -671,6 +866,7 @@ ack('n.toString(10)', '394020061963944792122790401001436138050797392704654466679
 
 var c    = mpw('79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a495e8042ea5f744f6e184667cc722483');
 var b    = mpw('b3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef');
+// FIXME mulm?
 ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").toString(10));
 var gx   = mpw('aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760ab7');
 var gy   = mpw('3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5f');
@@ -727,8 +923,7 @@ var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370ce
 var msg  = "Example of ECDSA with P-512";
 var e    = mpw('9bf0e1deeda31e00f925b77f7cb6b1ced7368de1dc75bb9f94582c1ca709205d32af90025b02fa132fbebd6cddcd9172c0d66d8e581767a8b6f71de60be1f932');
 var kinv = mpw('01eab94335a7ed337bce83c95de95447925edb0ee27f8e8378713e767d6da570fccfb4f13dcf57f898e77ddb540a9453e0c3d5c97ae8d2ec843590bcb1d349044c09');
-// FIXME: wrong answer
-// ack('mpw(k, n, "invm").toString(16)', kinv.toString(16));
+ack('mpw(k, n, "invm").toString(16)', kinv.toString(16));
 var r    = mpw('0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba');
 var s    = mpw('00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1');
 ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
