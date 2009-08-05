@@ -188,20 +188,20 @@ main(int argc, char *const argv[])
 
 	/* Split E:V-R into components. */
 	xx = rpmEVRparse(arg, evr);
-	if (evr->E == NULL) {
-	    evr->E = "0";
+	if (evr->F[RPMEVR_E] == NULL) {
+	    evr->F[RPMEVR_E] = "0";
 	    s.Emiss++;
 	}
-	if (evr->R == NULL) {
-	    evr->R = "";
+	if (evr->F[RPMEVR_R] == NULL) {
+	    evr->F[RPMEVR_R] = "";
 	    s.Rmiss++;
 	}
-	rpmdictAdd(dict, evr->E);
-	rpmdictAdd(dict, evr->V);
-	rpmdictAdd(dict, evr->R);
+	rpmdictAdd(dict, evr->F[RPMEVR_E]);
+	rpmdictAdd(dict, evr->F[RPMEVR_V]);
+	rpmdictAdd(dict, evr->F[RPMEVR_R]);
 
 if (__debug)
-fprintf(stderr, "%5d: %s => %s:%s-%s\n", s.total, arg, evr->E, evr->V, evr->R);
+fprintf(stderr, "%5d: %s => %s:%s-%s\n", s.total, arg, evr->F[RPMEVR_E], evr->F[RPMEVR_V], evr->F[RPMEVR_R]);
 
 	evr->str = _free(evr->str);
     }
