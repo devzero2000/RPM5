@@ -193,7 +193,7 @@ function RSA(p, q, e) {
 
   this.n = mpw(this.p, this.q, "*");
   this.phi = mpw(this.pm1, this.qm1, "*");
-//ack('mpw(this.e, this.phi, "gcd").toString(10)', '1');
+// ack('mpw(this.e, this.phi, "gcd").toString(10)', '1');
   this.d = mpw(this.e, this.phi, "invm");
 // ack('mpw(this.e, this.d, "*", this.phi, "%").toString(10)', '1');
 
@@ -220,27 +220,26 @@ function RSAv21(p, q, d, e, dP, dQ, qInv) {
   this.qm1 = mpw(this.q, 1, "-");
   this.d = mpw(d);
   this.e = mpw(e);
-  this.dP = mpw(dP);
-  this.dQ = mpw(dQ);
 
   this.n = mpw(this.p, this.q, "*");
-  this.lambda = mpw(this.pm1, this.qm1, "*");
+  this.lambda = mpw(this.p, 1, "-", this.q, 1, "-", "*");
 //  ack('mpw(this.n, this.lambda, "gcd").toString(10)', '1');
 //  ack('mpw(this.e, this.lambda, "gcd").toString(10)', '1');
 
 //  this.d = mpw(this.e, this.lambda, "invm");
-//  ack('mpw(this.e, this.lambda, "invm").toString(16)', this.d.toString(16));
+//  ack('mpw(this.e, this.lambda, "invm").toString(16)', d.toString(16));
 
-//  ack('mpw(this.e, this.d, "*", this.lambda, "%").toString(10)', '1');
-//  ack('mpw(this.e, this.dP, this.pm1, "mulm").toString(10)', '1');
-//  ack('mpw(this.e, this.dQ, this.qm1, "mulm").toString(10)', '1');
+//  ack('mpw(this.e, this.d, this.lambda, "mulm").toString(10)', '1');
 
-//  this.dP = mpw(this.e, this.pm1, "invm");
-//  ack('mpw(this.e, this.pm1, "invm").toString(16)', this.dP.toString(16));
-//  ack('mpw(this.e, this.dP, "*", this.pm1, "%").toString(10)', '1');
-//  this.dQ = mpw(this.e, this.qm1, "invm");
-//  ack('mpw(this.e, this.qm1, "invm").toString(16)', this.dQ.toString(16));
-//  ack('mpw(this.e, this.dQ, "*", this.qm1, "%").toString(10)', '1');
+    this.dP = mpw(this.e, this.p, 1, "-", "invm");
+    ack('mpw(this.e, this.p, 1, "-", "invm").toString(16)', dP.toString(16));
+    ack('mpw(this.e, this.dP, this.p, 1, "-", "mulm").toString(10)', '1');
+    ack('mpw(this.e, this.dP, "*", this.p, 1, "-", "%").toString(10)', '1');
+
+    this.dQ = mpw(this.e, this.q, 1, "-", "invm");
+    ack('mpw(this.e, this.q, 1, "-", "invm").toString(16)', dQ.toString(16));
+    ack('mpw(this.e, this.dQ, this.q, 1, "-", "mulm").toString(10)', '1');
+    ack('mpw(this.e, this.dQ, "*", this.q, 1, "-", "%").toString(10)', '1');
 
     this.qInv = mpw(this.q, this.p, "invm");
     ack('this.qInv.toString(16)', qInv.toString(16));
@@ -286,51 +285,200 @@ ack('rsa.d.toString(10)', d.toString(10));
 ack('rsa.hm.toString(10)', hm.toString(10));
 ack('rsa.s.toString(10)', s.toString(10));
 
+// ====== RSA using PKCS #1 v1.5 examples from
+// 	http://www.wigiwigi.com/index.php?title=RSA_in_32bits
+
+// ===== Encryption
+rsa.n = mpw(
+	'a9e167983f39d55ff2a093415ea6798985c8355d9a915bfb1d01da197026170f'+
+	'bda522d035856d7a986614415ccfb7b7083b09c991b81969376df9651e7bd9a9'+
+	'3324a37f3bbbaf460186363432cb07035952fc858b3104b8cc18081448e64f1c'+
+	'fb5d60c4e05c1f53d37f53d86901f105f87a70d1be83c65f38cf1c2caa6aa7eb');
+rsa.e = 0x10001;
+rsa.d = mpw(
+	'67cd484c9a0d8f98c21b65ff22839c6df0a6061dbceda7038894f21c6b0f8b35'+
+	'de0e827830cbe7ba6a56ad77c6eb517970790aa0f4fe45e0a9b2f419da8798d6'+
+	'308474e4fc596cc1c677dca991d07c30a0a2c5085e217143fc0d073df0fa6d14'+
+	'9e4e63f01758791c4b981c3d3db01bdffa253ba3c02c9805f61009d887db0319');
+
+var PS =    '257f48fd1f1793b7e5e02306f2d3228f5c95adf5f31566729f132aa12009'+
+	'e3fc9b2b475cd6944ef191e3f59545e671e474b555799fe3756099f044964038'+
+	'b16b2148e9a2f9c6f44bb5c52e3c6c8061cf694145fafdb24402ad1819eacedf'+
+	'4a36c6e4d2cd8fc1d62e5a1268f496';
+var D = '4e636af98e40f3adcfccb698f4e80b9f';
+
+//	em = 00 || 02 || PS || 00 || D
+var em = mpw('00' + '02' + PS + '00' + D);
+var c = mpw(
+	'3d2ab25b1eb667a40f504cc4d778ec399a899c8790edecef062cd739492c9ce5'+
+	'8b92b9ecf32af4aac7a61eaec346449891f49a722378e008eff0b0a8dbc6e621'+
+	'edc90cec64cf34c640f5b36c48ee9322808af8f4a0212b28715c76f3cb99ac7e'+
+	'609787adce055839829e0142c44b676d218111ffe69f9d41424e177cba3a435b');
+
+ack('mpw(em, rsa.e, rsa.n, "powm").toString(16)',  c.toString(16));
+ack('mpw( c, rsa.d, rsa.n, "powm").toString(16)', em.toString(16));
+
+// ===== Signing
+rsa.n = mpw(
+	'E08973398DD8F5F5E88776397F4EB005BB5383DE0FB7ABDC7DC775290D052E6D'+
+	'12DFA68626D4D26FAA5829FC97ECFA82510F3080BEB1509E4644F12CBBD832CF'+
+	'C6686F07D9B060ACBEEE34096A13F5F7050593DF5EBA3556D961FF197FC981E6'+
+	'F86CEA874070EFAC6D2C749F2DFA553AB9997702A648528C4EF357385774575F');
+rsa.e = 0x10001;
+rsa.d = mpw(
+	'00A403C327477634346CA686B57949014B2E8AD2C862B2C7D748096A8B91F736'+
+	'F275D6E8CD15906027314735644D95CD6763CEB49F56AC2F376E1CEE0EBF282D'+
+	'F439906F34D86E085BD5656AD841F313D72D395EFE33CBFF29E4030B3D05A28F'+
+	'B7F18EA27637B07957D32F2BDE8706227D04665EC91BAF8B1AC3EC9144AB7F21');
+
+var M = 'abc';
+var PS =    'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'+
+	'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'+
+	'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
+var asn1 = '3021300906052B0E03021A05000414';
+var hm = 'A9993E364706816ABA3E25717850C26C9CD0D89D';
+var T = asn1 + hm;
+
+//	eb = 00 || 01 || PS || 00 || T
+var eb = mpw('00' + '01' + PS + '00' + T);
+var c = mpw(
+	'60AD5A78FB4A4030EC542C8974CD15F55384E836554CEDD9A322D5F4135C6267'+
+	'A9D20970C54E6651070B0144D43844C899320DD8FA7819F7EBC6A7715287332E'+
+	'C8675C136183B3F8A1F81EF969418267130A756FDBB2C71D9A667446E34E0EAD'+
+	'9CF31BFB66F816F319D0B7E430A5F2891553986E003720261C7E9022C0D9F11F');
+
+ack('mpw(eb, rsa.d, rsa.n, "powm").toString(16)',  c.toString(16));
+ack('mpw( c, rsa.e, rsa.n, "powm").toString(16)', eb.toString(16));
+
 delete rsa;
 
-// ===== RSAES-OAEP example from
+// ===== RSAES-OAEP examples from
 //	ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1-vec.zip
+// var n   = mpw(
+// 	'a8b3b284af8eb50b387034a860f146c4919f318763cd6c5598c8ae4811a1e0ab'+
+// 	'c4c7e0b082d693a5e7fced675cf4668512772c0cbc64a742c6c630f533c8cc72'+
+// 	'f62ae833c40bf25842e984bb78bdbf97c0107d55bdb662f5c4e0fab9845cb514'+
+// 	'8ef7392dd3aaff93ae1e6b667bb3d4247616d4f5ba10d4cfd226de88d39f16fb');
+// var e   = 0x10001;
+// var d   = mpw(
+// 	'53339cfdb79fc8466a655c7316aca85c55fd8f6dd898fdaf119517ef4f52e8fd'+
+// 	'8e258df93fee180fa0e4ab29693cd83b152a553d4ac4d1812b8b9fa5af0e7f55'+
+// 	'fe7304df41570926f3311f15c4d65a732c483116ee3d3d2d0af3549ad9bf7cbf'+
+// 	'b78ad884f84d5beb04724dc7369b31def37d0cf539e9cfcdd3de653729ead5d1');
+// var p   = mpw(
+// 	'd32737e7267ffe1341b2d5c0d150a81b586fb3132bed2f8d5262864a9cb9f30a'+
+// 	'f38be448598d413a172efb802c21acf1c11c520c2f26a471dcad212eac7ca39d');
+// var q   = mpw(
+// 	'cc8853d1d54da630fac004f471f281c7b8982d8224a490edbeb33d3e3d5cc93c'+
+// 	'4765703d1dd791642f1f116a0dd852be2419b2af72bfe9a030e860b0288b5d77');
+// var dP   = mpw(
+// 	'0e12bf1718e9cef5599ba1c3882fe8046a90874eefce8f2ccc20e4f2741fb0a3'+
+// 	'3a3848aec9c9305fbecbd2d76819967d4671acc6431e4037968db37878e695c1');
+// var dQ   = mpw(
+// 	'95297b0f95a2fa67d00707d609dfd4fc05c89dafc2ef6d6ea55bec771ea33373'+
+// 	'4d9251e79082ecda866efef13c459e1a631386b7e354c899f5f112ca85d71583');
+// var qInv = mpw(
+// 	'4f456c502493bdc0ed2ab756a3a6ed4d67352a697d4216e93212b127a63d5411'+
+// 	'ce6fa98d5dbefd73263e3728142743818166ed7dd63687dd2a8ca1d2f4fbd8e1');
+// var m    = mpw('6628194e12073db03ba94cda9ef9532397d50dba79b987004afefe34');
+// var h    = mpw('8176326046e571e18464d875262420772782ac3a');
+// var seed = mpw('18b776ea21069d69776a33e96bad48e1dda0a5ef');
+// var s    = mpw(
+// 	'354fe67b4a126d5d35fe36c777791a3f7ba13def484e2d3908aff722fad468fb'+
+// 	'21696de95d0be911c2d3174f8afcc201035f7b6d8e69402de5451618c21a535f'+
+// 	'a9d7bfc5b8dd9fc243f8cf927db31322d6e881eaa91a996170e657a05a266426'+
+// 	'd98c88003f8477c1227094a0d9fa1e8c4024309ce1ecccb5210035d47ac72e8a');
+
+//=================
 var n   = mpw(
-	'a8b3b284af8eb50b387034a860f146c4919f318763cd6c5598c8ae4811a1e0ab'+
-	'c4c7e0b082d693a5e7fced675cf4668512772c0cbc64a742c6c630f533c8cc72'+
-	'f62ae833c40bf25842e984bb78bdbf97c0107d55bdb662f5c4e0fab9845cb514'+
-	'8ef7392dd3aaff93ae1e6b667bb3d4247616d4f5ba10d4cfd226de88d39f16fb');
-var e   = 0x10001;
+	'bbf82f090682ce9c2338ac2b9da871f7368d07eed41043a440d6b6f07454f51f'+
+	'b8dfbaaf035c02ab61ea48ceeb6fcd4876ed520d60e1ec4619719d8a5b8b807f'+
+	'afb8e0a3dfc737723ee6b4b7d93a2584ee6a649d060953748834b2454598394e'+
+	'e0aab12d7b61a51f527a9a41f6c1687fe2537298ca2a8f5946f8e5fd091dbdcb');
+var e   = 0x11;
 var d   = mpw(
-	'53339cfdb79fc8466a655c7316aca85c55fd8f6dd898fdaf119517ef4f52e8fd'+
-	'8e258df93fee180fa0e4ab29693cd83b152a553d4ac4d1812b8b9fa5af0e7f55'+
-	'fe7304df41570926f3311f15c4d65a732c483116ee3d3d2d0af3549ad9bf7cbf'+
-	'b78ad884f84d5beb04724dc7369b31def37d0cf539e9cfcdd3de653729ead5d1');
+	'a5dafc5341faf289c4b988db30c1cdf83f31251e0668b42784813801579641b2'+
+	'9410b3c7998d6bc465745e5c392669d6870da2c082a939e37fdcb82ec93edac9'+
+	'7ff3ad5950accfbc111c76f1a9529444e56aaf68c56c092cd38dc3bef5d20a93'+
+	'9926ed4f74a13eddfbe1a1cecc4894af9428c2b7b8883fe4463a4bc85b1cb3c1');
 var p   = mpw(
-	'd32737e7267ffe1341b2d5c0d150a81b586fb3132bed2f8d5262864a9cb9f30a'+
-	'f38be448598d413a172efb802c21acf1c11c520c2f26a471dcad212eac7ca39d');
+	'eecfae81b1b9b3c908810b10a1b5600199eb9f44aef4fda493b81a9e3d84f632'+
+	'124ef0236e5d1e3b7e28fae7aa040a2d5b252176459d1f397541ba2a58fb6599');
 var q   = mpw(
-	'cc8853d1d54da630fac004f471f281c7b8982d8224a490edbeb33d3e3d5cc93c'+
-	'4765703d1dd791642f1f116a0dd852be2419b2af72bfe9a030e860b0288b5d77');
+	'c97fb1f027f453f6341233eaaad1d9353f6c42d08866b1d05a0f2035028b9d86'+
+	'9840b41666b42e92ea0da3b43204b5cfce3352524d0416a5a441e700af461503');
 var dP   = mpw(
-	'0e12bf1718e9cef5599ba1c3882fe8046a90874eefce8f2ccc20e4f2741fb0a3'+
-	'3a3848aec9c9305fbecbd2d76819967d4671acc6431e4037968db37878e695c1');
+	'54494ca63eba0337e4e24023fcd69a5aeb07dddc0183a4d0ac9b54b051f2b13e'+
+	'd9490975eab77414ff59c1f7692e9a2e202b38fc910a474174adc93c1f67c981');
 var dQ   = mpw(
-	'95297b0f95a2fa67d00707d609dfd4fc05c89dafc2ef6d6ea55bec771ea33373'+
-	'4d9251e79082ecda866efef13c459e1a631386b7e354c899f5f112ca85d71583');
+	'471e0290ff0af0750351b7f878864ca961adbd3a8a7e991c5c0556a94c3146a7'+
+	'f9803f8f6f8ae342e931fd8ae47a220d1b99a495849807fe39f9245a9836da3d');
 var qInv = mpw(
-	'4f456c502493bdc0ed2ab756a3a6ed4d67352a697d4216e93212b127a63d5411'+
-	'ce6fa98d5dbefd73263e3728142743818166ed7dd63687dd2a8ca1d2f4fbd8e1');
+	'b06c4fdabb6301198d265bdbae9423b380f271f73453885093077fcd39e2119f'+
+	'c98632154f5883b167a967bf402b4e9e2e0f9656e698ea3666edfb25798039f7');
+var msg   = mpw('d436e99569fd32a7c8a05bbc90d32c49');
+var lhash = mpw('da39a3ee5e6b4b0d3255bfef95601890afd80709');
+var db = mpw(
+	'da39a3ee5e6b4b0d3255bfef95601890afd80709000000000000000000000000'+
+	'0000000000000000000000000000000000000000000000000000000000000000'+
+	'000000000000000000000000000000000000000000000000000001d436e99569'+
+	'fd32a7c8a05bbc90d32c49');
+var seed = mpw('aafd12f659cae63489b479e5076ddec2f06cb58f');
 
-var hm  = 31229978;
-var s   = mpw(
-	'354fe67b4a126d5d35fe36c777791a3f7ba13def484e2d3908aff722fad468fb'+
-	'21696de95d0be911c2d3174f8afcc201035f7b6d8e69402de5451618c21a535f'+
-	'a9d7bfc5b8dd9fc243f8cf927db31322d6e881eaa91a996170e657a05a266426'+
-	'd98c88003f8477c1227094a0d9fa1e8c4024309ce1ecccb5210035d47ac72e8a');
+var em = mpw(
+	'00eb7a19ace9e3006350e329504b45e2ca82310b26dcd87d5c68f1eea8f55267'+
+	'c31b2e8bb4251f84d7e0b2c04626f5aff93edcfb25c9c2b3ff8ae10e839a2ddb'+
+	'4cdcfe4ff47728b4a1b7c1362baad29ab48d2869d5024121435811591be392f9'+
+	'82fb3e87d095aeb40448db972f3ac14f7bc275195281ce32d2f1b76d4d353e2d');
+var c    = mpw(
+	'1253e04dc0a5397bb44a7ab87e9bf2a039a33d1e996fc82a94ccd30074c95df7'+
+	'63722017069e5268da5d1c0b4f872cf653c11df82314a67968dfeae28def04bb'+
+	'6d84b1c31d654a1970e5783bd6eb96a024c2ca2f4a90fe9f2ef5c9c140e5bb48'+
+	'da9536ad8700c84fc9130adea74e558d51a74ddf85d8b50de96838d6063e0955');
+var cmodp = mpw(
+	'de63d4723566faa759bfe408821dd52572ec92854ddf87a2b664d44daa37ca34'+
+	'6a05203d82ff2de8e36cec1d34f98eb605e2a7d26de7af369ce4ecae14e35633');
+var cmodq = mpw(
+	'a2d924ded9c36d623ed9a65b5d862cfbec8b199c64279c5414e641196ef1c93c'+
+	'507a9b5213881aad05b4ccfa028ac1ec61420974bf1625836b0b7d05fbb75336');
+var m1 = mpw(
+	'896ca26cd7e4871c7fc968a8edea11e271824f0e0365521794f1e9e943b4a44b'+
+	'57c9e395a1467478f526496b4bb91f1cbaea900ffc602cf0c6636eba84fc9ff7');
+var m2 = mpw(
+	'4ebb227585f0c1312dca19e0b541db1499fbf14e270e698e239a8c27a96cda9a'+
+	'740974de937b5c9c93ead9462c6575021a23d46499dc9f6b35897559608f19be');
+var h = mpw(
+	'012b2b24150e76e159bd8ddb4276e07bfac188e08d6047cf0efb8ae2aebdf251'+
+	'c40ebc23dcfd4a34424394ada92cfcbe1b2effbb60fdfb03359a95368d980925');
+var m = mpw(
+	'00eb7a19ace9e3006350e329504b45e2ca82310b26dcd87d5c68f1eea8f55267'+
+	'c31b2e8bb4251f84d7e0b2c04626f5aff93edcfb25c9c2b3ff8ae10e839a2ddb'+
+	'4cdcfe4ff47728b4a1b7c1362baad29ab48d2869d5024121435811591be392f9'+
+	'82fb3e87d095aeb40448db972f3ac14f7bc275195281ce32d2f1b76d4d353e2d');
 
-// print("===== RSAES-OAEP");
+print("===== RSAES-OAEP");
 var rsa = new RSA(p, q, e);
 ack('rsa.n.toString(16)', n.toString(16));
 ack('rsa.e.toString(10)', e.toString(10));
 ack('rsa.d.toString(16)', d.toString(16));
 ack('rsa.p.toString(16)', p.toString(16));
 ack('rsa.q.toString(16)', q.toString(16));
+
+ack('mpw(em, rsa.e, rsa.n, "powm").toString(16)',  c.toString(16));
+ack('mpw( c, rsa.d, rsa.n, "powm").toString(16)', em.toString(16));
+
+ack('mpw(c, rsa.p, "%").toString(16)', cmodp.toString(16));
+ack('mpw(c, rsa.q, "%").toString(16)', cmodq.toString(16));
+
+// ack('mpw(c, rsa.dP, rsa.p, "powm").toString(16)', m1.toString(16));
+// ack('mpw(cmodp, rsa.dP, rsa.p, "powm").toString(16)', m1.toString(16));
+// ack('mpw(c, rsa.dQ, rsa.q, "powm").toString(16)', m2.toString(16));
+// ack('mpw(cmodq, rsa.dQ, rsa.q, "powm").toString(16)', m2.toString(16));
+
+// ack('mpw(m1, m2, "-", rsa.qInv, "*", rsa.p, "%").toString(16)', h.toString(16));
+
+ack('mpw(m2, rsa.q, h, "*", "+").toString(16)', em.toString(16));
+
 delete rsa;
 
 print("===== RSAES-OAEP 2.1");
@@ -347,6 +495,8 @@ ack('rsa.dQ.toString(16)', dQ.toString(16));
 ack('rsa.qInv.toString(16)', qInv.toString(16));
 
 // ack('rsa.verify(hm, rsa.sign(hm))', true);
+ack('mpw(em, rsa.e, rsa.n, "powm").toString(16)',  c.toString(16));
+ack('mpw( c, rsa.d, rsa.n, "powm").toString(16)', em.toString(16));
 
 // ack('rsa.phi.toString(10)', phi.toString(10));
 // ack('rsa.hm.toString(10)', hm.toString(10));
@@ -356,51 +506,105 @@ delete rsa;
 
 // ===== RSASSA-PSS example from
 //	ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1-vec.zip
+// var n    = mpw(
+// 	'a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991'+
+// 	'd8c51056ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1df'+
+// 	'd5cd9508096d5b2b8b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f1'+
+// 	'05acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137');
+// var e   = 0x10001;
+// var d    = mpw(
+// 	'33a5042a90b27d4f5451ca9bbbd0b44771a101af884340aef9885f2a4bbe92e8'+
+// 	'94a724ac3c568c8f97853ad07c0266c8c6a3ca0929f1e8f11231884429fc4d9a'+
+// 	'e55fee896a10ce707c3ed7e734e44727a39574501a532683109c2abacaba283c'+
+// 	'31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6dcee883547c6a3b325');
+// var p    = mpw(
+// 	'e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e86296b2dfc967948'+
+// 	'c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda8e6443');
+// var q    = mpw(
+// 	'b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48de8d'+
+// 	'67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd');
+// var dP   = mpw(
+// 	'28fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f'+
+// 	'554b34c077790427bbdd8dd3ede2448328f385d81b30e8e43b2fffa027861979');
+// var dQ   = mpw(
+// 	'1a8b38f398fa712049898d7fb79ee0a77668791299cdfa09efc0e507acb21ed7'+
+// 	'4301ef5bfd48be455eaeb6e1678255827580a8e4e8e14151d1510a82a3f2e729');
+// var qInv = mpw(
+// 	'27156aba4126d24a81f3a528cbfb27f56886f840a9f6e86e17a44b94fe931958'+
+// 	'4b8e22fdde1e5a2e3bd8aa5ba8d8584194eb2190acf832b847f13a3d24a79f4d');
+// var hm  = 31229978;
+// var s   = mpw(
+// 	'9074308fb598e9701b2294388e52f971faac2b60a5145af185df5287b5ed2887'+
+// 	'e57ce7fd44dc8634e407c8e0e4360bc226f3ec227f9d9e54638e8d31f5051215'+
+// 	'df6ebb9c2f9579aa77598a38f914b5b9c1bd83c4e2f9f382a0d0aa3542ffee65'+
+// 	'984a601bc69eb28deb27dca12c82c2d4c3f66cd500f1ff2b994d8a4e30cbb33c');
+
+//=================
 var n    = mpw(
-	'a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991'+
-	'd8c51056ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1df'+
-	'd5cd9508096d5b2b8b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f1'+
-	'05acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137');
+	'a2ba40ee07e3b2bd2f02ce227f36a195024486e49c19cb41bbbdfbba98b22b0e'+
+	'577c2eeaffa20d883a76e65e394c69d4b3c05a1e8fadda27edb2a42bc000fe88'+
+	'8b9b32c22d15add0cd76b3e7936e19955b220dd17d4ea904b1ec102b2e4de775'+
+	'1222aa99151024c7cb41cc5ea21d00eeb41f7c800834d2c6e06bce3bce7ea9a5');
 var e   = 0x10001;
 var d    = mpw(
-	'33a5042a90b27d4f5451ca9bbbd0b44771a101af884340aef9885f2a4bbe92e8'+
-	'94a724ac3c568c8f97853ad07c0266c8c6a3ca0929f1e8f11231884429fc4d9a'+
-	'e55fee896a10ce707c3ed7e734e44727a39574501a532683109c2abacaba283c'+
-	'31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6dcee883547c6a3b325');
+	'50e2c3e38d886110288dfc68a9533e7e12e27d2aa56d2cdb3fb6efa990bcff29'+
+	'e1d2987fb711962860e7391b1ce01ebadb9e812d2fbdfaf25df4ae26110a6d7a'+
+	'26f0b810f54875e17dd5c9fb6d641761245b81e79f8c88f0e55a6dcd5f133abd'+
+	'35f8f4ec80adf1bf86277a582894cb6ebcd2162f1c7534f1f4947b129151b71');
 var p    = mpw(
-	'e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e86296b2dfc967948'+
-	'c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda8e6443');
+	'd17f655bf27c8b16d35462c905cc04a26f37e2a67fa9c0ce0dced472394a0df7'+
+	'43fe7f929e378efdb368eddff453cf007af6d948e0ade757371f8a711e278f6b');
 var q    = mpw(
-	'b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48de8d'+
-	'67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd');
+	'c6d92b6fee7414d1358ce1546fb62987530b90bd15e0f14963a5e2635adb6934'+
+	'7ec0c01b2ab1763fd8ac1a592fb22757463a982425bb97a3a437c5bf86d03f2f');
 var dP   = mpw(
-	'28fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f'+
-	'554b34c077790427bbdd8dd3ede2448328f385d81b30e8e43b2fffa027861979');
-
+	'9d0dbf83e5ce9e4b1754dcd5cd05bcb7b55f1508330ea49f14d4e889550f8256'+
+	'cb5f806dff34b17ada44208853577d08e4262890acf752461cea05547601bc4f');
 var dQ   = mpw(
-	'1a8b38f398fa712049898d7fb79ee0a77668791299cdfa09efc0e507acb21ed7'+
-	'4301ef5bfd48be455eaeb6e1678255827580a8e4e8e14151d1510a82a3f2e729');
-
+	'1291a524c6b7c059e90e46dc83b2171eb3fa98818fd179b6c8bf6cecaa476303'+
+	'abf283fe05769cfc495788fe5b1ddfde9e884a3cd5e936b7e955ebf97eb563b1');
 var qInv = mpw(
-	'27156aba4126d24a81f3a528cbfb27f56886f840a9f6e86e17a44b94fe931958'+
-	'4b8e22fdde1e5a2e3bd8aa5ba8d8584194eb2190acf832b847f13a3d24a79f4d');
-
-
-var hm  = 31229978;
-var s   = mpw(
-	'9074308fb598e9701b2294388e52f971faac2b60a5145af185df5287b5ed2887'+
-	'e57ce7fd44dc8634e407c8e0e4360bc226f3ec227f9d9e54638e8d31f5051215'+
-	'df6ebb9c2f9579aa77598a38f914b5b9c1bd83c4e2f9f382a0d0aa3542ffee65'+
-	'984a601bc69eb28deb27dca12c82c2d4c3f66cd500f1ff2b994d8a4e30cbb33c');
+	'a63f1da38b950c9ad1c67ce0d677ec2914cd7d40062df42a67eb198a176f9742'+
+	'aac7c5fea14f2297662b84812c4defc49a8025ab4382286be4c03788dd01d69f');
+var msg  = mpw(
+	'859eef2fd78aca00308bdc471193bf55bf9d78db8f8a672b484634f3c9c26e64'+
+	'78ae10260fe0dd8c082e53a5293af2173cd50c6d5d354febf78b26021c25c027'+
+	'12e78cd4694c9f469777e451e7f8e9e04cd3739c6bbfedae487fb55644e9ca74'+
+	'ff77a53cb729802f6ed4a5ffa8ba159890fc');
+var mhash = mpw('37b66ae0445843353d47ecb0b4fd14c110e62d6a');
+var salt = mpw('e3b5d5d002c1bce50c2b65ef88a188d83bce7e61');
+var em = mpw(
+	'66e4672e836ad121ba244bed6576b867d9a447c28a6e66a5b87dee7fbc7e65af'+
+	'5057f86fae8984d9ba7f969ad6fe02a4d75f7445fefdd85b6d3a477c28d24ba1'+
+	'e3756f792dd1dce8ca94440ecb5279ecd3183a311fc896da1cb39311af37ea4a'+
+	'75e24bdbfd5c1da0de7cecdf1a896f9d8bc816d97cd7a2c43bad546fbe8cfebc');
+var c = mpw(
+	'8daa627d3de7595d63056c7ec659e54406f10610128baae821c8b2a0f3936d54'+
+	'dc3bdce46689f6b7951bb18e840542769718d5715d210d85efbb596192032c42'+
+	'be4c29972c856275eb6d5a45f05f51876fc6743deddd28caec9bb30ea99e02c3'+
+	'488269604fe497f74ccd7c7fca1671897123cbd30def5d54a2b5536ad90a747e');
+var cmodp = mpw(
+	'3e4f9f1d6075fe401607694fee634b4115d42d06d6d627987204610da92a8e1a'+
+	'2056fb78fe627fea87e6622eb6fa0461e398153ed978e56add8df1f5a6c31c19');
+var cmodq = mpw(
+	'25710bf7a5d3c479bc36e783b2be445281d0c7ac5c3a9fcacd94f45e7a183c55'+
+	'2d931040c6f7b3bcd1a0e43ae22322dfe71e1b3af7cab021f6915178f9744199');
 
 print("===== RSASSA-PSS");
 var rsa = new RSA(p, q, e);
 ack('rsa.n.toString(16)', n.toString(16));
 ack('rsa.e.toString(10)', e.toString(10));
-// FIXME wrong answer
-// ack('rsa.d.toString(16)', d.toString(16));
+ack('rsa.d.toString(16)', d.toString(16));
 ack('rsa.p.toString(16)', p.toString(16));
 ack('rsa.q.toString(16)', q.toString(16));
+
+// ack('rsa.verify(hm, rsa.sign(hm))', true);
+ack('mpw(em, rsa.d, rsa.n, "powm").toString(16)',  c.toString(16));
+ack('mpw( c, rsa.e, rsa.n, "powm").toString(16)', em.toString(16));
+
+ack('mpw(c, rsa.p, "%").toString(16)', cmodp.toString(16));
+ack('mpw(c, rsa.q, "%").toString(16)', cmodq.toString(16));
+
 delete rsa;
 
 print("===== RSASSA-PSS 2.1");
@@ -416,10 +620,11 @@ ack('rsa.dQ.toString(16)', dQ.toString(16));
 ack('rsa.qInv.toString(16)', qInv.toString(16));
 
 // ack('rsa.verify(hm, rsa.sign(hm))', true);
+ack('mpw(em, rsa.d, rsa.n, "powm").toString(16)', c.toString(16));
+ack('mpw( c, rsa.e, rsa.n, "powm").toString(16)', em.toString(16));
 
-// ack('rsa.phi.toString(16)', phi.toString(16));
-// ack('rsa.hm.toString(16)', hm.toString(16));
-// ack('rsa.s.toString(16)', s.toString(16));
+ack('mpw(c, rsa.p, "%").toString(16)', cmodp.toString(16));
+ack('mpw(c, rsa.q, "%").toString(16)', cmodq.toString(16));
 
 delete rsa;
 
