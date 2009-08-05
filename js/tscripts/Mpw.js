@@ -696,30 +696,30 @@ ack('elgamal.v2.toString(10)', v1.toString(10));
 delete elgamal;
 
 // =======================================================
-function DSA(p, q, g, a, k) {
+function DSA(p, q, g) {
   this.p = mpw(p);
   ack('mpw(p).isPrime()', true);
   this.q = mpw(q);
   ack('mpw(q).isPrime()', true);
   this.g = mpw(g);
-  this.a = mpw(a);
-  this.k = mpw(k);
 
-  ack('mpw(this.p, 1, "-", this.q, "%").toString(10)', '0');
-  this.pdivq = mpw(this.p, 1, "-", this.q, "/");
-  this.alpha = mpw(this.g, this.pdivq, this.p, "powm");
+//  ack('mpw(this.p, 1, "-", this.q, "%").toString(10)', '0');
+//  this.pdivq = mpw(this.p, 1, "-", this.q, "/");
+//  this.alpha = mpw(this.g, this.pdivq, this.p, "powm");
+
 //  this.x = mpw(this.c, this.q, 1, "-", "%", 1, "+");
 //  ack('mpw(this.c, this.q, 1, "-", "%", 1, "+").toString(16)', this.x.toString(16));
-  this.y = mpw(this.alpha, this.a, this.p, "powm");
+//  this.y = mpw(this.alpha, this.a, this.p, "powm");
 //  ack('mpw(this.g, this.x, this.p, "powm").toString(16)', this.y.toString(16));
 
   this.sign =
     function (hm) {
 	this.hm = mpw(hm);
-	this.r = mpw(mpw(this.alpha, this.k, this.p, "powm"), this.q, "%");
-	this.kinv = mpw(this.k, this.q, "invm");
+//	this.k = this.q.randomK();
+//	this.kinv = mpw(this.k, this.q, "invm");
 	ack('mpw(this.k, this.kinv, this.q, "mulm").toString(10)', '1');
-	this.s = mpw(this.kinv, mpw(this.hm, this.a, this.r, "*", "+"), this.q, "mulm");
+	this.r = mpw(this.g, this.k, this.p, "powm", this.q, "%");
+	this.s = mpw(this.x, this.r, this.q, "mulm", this.hm, this.q, "addm", this.kinv, this.q, "mulm");
 	return true;
     };
 
@@ -731,63 +731,63 @@ function DSA(p, q, g, a, k) {
 	this.u2 = mpw(this.r, this.w, this.q, "mulm");
 	this.v1 = mpw(this.g, this.u1, this.p, "powm");
 	this.v2 = mpw(this.y, this.u2, this.p, "powm");
-	this.v = mpw(this.alpha, this.u1, this.p, "powm", this.v2, this.p, "mulm");
+	this.v = mpw(this.v1, this.v2, this.p, "mulm", this.q, "%");
 
-	return (mpw(this.v, this.q, "%").toString(10) == this.r.toString(10)
+	return (this.v.toString(10) == this.r.toString(10)
 		? true : false);
     }
   return true;
 }
 
 // ===== DSA example (from "Handbook of Applied Cryptography" 11.57 p453).
-print("===== DSA");
-var p     = 124540019;
-var q     = 17389;
-var g     = 110217528;
-var a     = 12496;
-var pdivq = 7162;
-var alpha = 10083255;
-var y     = 119946265;
-
-var hm    = 5246;
-var k     = 9557;
-var r     = 34;
-var kinv  = 7631;
-var s     = 13049;
-
-var w     = 1799;
-var u1    = 12716;
-var u2    = 8999;
-var v     = 27039929;
-
-var dsa = new DSA(p, q, g, a, k);
-
-ack('dsa.p.toString(10)', p.toString(10));
-ack('dsa.q.toString(10)', q.toString(10));
-ack('dsa.g.toString(10)', g.toString(10));
-ack('dsa.a.toString(10)', a.toString(10));
-ack('dsa.k.toString(10)', k.toString(10));
-ack('dsa.pdivq.toString(10)', pdivq.toString(10));
-ack('dsa.alpha.toString(10)', alpha.toString(10));
-ack('dsa.y.toString(10)', y.toString(10));
-
-ack('dsa.sign(hm)', true);
-ack('dsa.hm.toString(10)', hm.toString(10));
-ack('dsa.r.toString(10)', r.toString(10));
-ack('dsa.kinv.toString(10)', kinv.toString(10));
-ack('dsa.s.toString(10)', s.toString(10));
-
-ack('dsa.verify(hm)', true);
-ack('dsa.w.toString(10)', w.toString(10));
-ack('dsa.u1.toString(10)', u1.toString(10));
-ack('dsa.u2.toString(10)', u2.toString(10));
-ack('dsa.v.toString(10)', v.toString(10));
-
-delete dsa;
+// print("===== DSA");
+// var p     = 124540019;
+// var q     = 17389;
+// var g     = 110217528;
+// var a     = 12496;
+// var pdivq = 7162;
+// var alpha = 10083255;
+// var y     = 119946265;
+ 
+// var hm    = 5246;
+// var k     = 9557;
+// var r     = 34;
+// var kinv  = 7631;
+// var s     = 13049;
+ 
+// var w     = 1799;
+// var u1    = 12716;
+// var u2    = 8999;
+// var v     = 27039929;
+ 
+// var dsa = new DSA(p, q, g, a, k);
+ 
+// ack('dsa.p.toString(10)', p.toString(10));
+// ack('dsa.q.toString(10)', q.toString(10));
+// ack('dsa.g.toString(10)', g.toString(10));
+// ack('dsa.a.toString(10)', a.toString(10));
+// ack('dsa.k.toString(10)', k.toString(10));
+// ack('dsa.pdivq.toString(10)', pdivq.toString(10));
+// ack('dsa.alpha.toString(10)', alpha.toString(10));
+// ack('dsa.y.toString(10)', y.toString(10));
+ 
+// ack('dsa.sign(hm)', true);
+// ack('dsa.hm.toString(10)', hm.toString(10));
+// ack('dsa.r.toString(10)', r.toString(10));
+// ack('dsa.kinv.toString(10)', kinv.toString(10));
+// ack('dsa.s.toString(10)', s.toString(10));
+ 
+// ack('dsa.verify(hm)', true);
+// ack('dsa.w.toString(10)', w.toString(10));
+// ack('dsa.u1.toString(10)', u1.toString(10));
+// ack('dsa.u2.toString(10)', u2.toString(10));
+// ack('dsa.v.toString(10)', v.toString(10));
+ 
+// delete dsa;
 
 // ===== DSA example from 
 //     http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/DSA2_All.pdf
-// Keygen DSA
+print("===== DSA");
 var p = mpw('e0a67598cd1b763b'+
 	'c98c8abb333e5dda0cd3aa0e5e1fb5ba8a7b4eabc10ba338'+
 	'fae06dd4b90fda70d7cf0cb0c638be3341bec0af8a7330a3'+
@@ -795,7 +795,6 @@ var p = mpw('e0a67598cd1b763b'+
 	'c4a7cf0235b5316bfc6efb9a248411258b30b839af172440'+
 	'f32563056cb67a861158ddd90e6a894c72a5bbef9e286c6b');
 var q = mpw('e950511eab424b9a19a2aeb4e159b7844c589c4f');
-ack('mpw(p, 1, "-", q, "%").toString(10)', '0');
 var g = mpw('d29d5121b0423c27'+
 	'69ab21843e5a3240ff19cacc792264e3bb6be4f78edd1b15'+
 	'c4dff7f1d905431f0ab16790e1f773b5ce01c804e509066a'+
@@ -804,50 +803,87 @@ var g = mpw('d29d5121b0423c27'+
 	'3d7ba87011a701ce8ee7bfe49486ed4527b7186ca4610a75');
 var c = mpw('f3b4c192'+
 	'385620feec46cb7f5d55fe0c231b0404a61539729ea1291c');
+
+var dsa = new DSA(p, q, g);
+
 var x = mpw('d0ec4e50bb290a42e9e355c73d8809345de2e139');
-ack('mpw(c, q, 1, "-", "%", 1, "+").toString(16)', x.toString(16));
 var y = mpw('25282217f5730501'+
 	'dd8dba3edfcf349aaffec20921128d70fac44110332201bb'+
 	'a3f10986140cbb97c726938060473c8ec97b4731db004293'+
 	'b5e730363609df9780f8d883d8c4d41ded6a2f1e1bbbdc97'+
 	'9e1b9d6d3c940301f4e978d65b19041fcf1e8b518f5c0576'+
 	'c770fe5a7a485d8329ee2914a2de1b5da4a6128ceab70f79');
-ack('mpw(g, x, p, "powm").toString(16)', y.toString(16));
+dsa.c = mpw(c);
+dsa.x = mpw(dsa.c, dsa.q, 1, "-", "%", 1, "+");
+dsa.y = mpw(dsa.g, dsa.x, dsa.p, "powm");
+ack('dsa.x.toString(16)', x.toString(16));
+ack('dsa.y.toString(16)', y.toString(16));
 
-// Sign DSA
+var hm   = mpw('a9993e364706816aba3e25717850c26c9cd0d89d');
 var k    = mpw('349c55648dcf992f3f33e8026cfac87c1d2ba075');
 var kinv = mpw('d557a1b4e7346c4a55427a28d47191381c269bde');
-ack('mpw(k, q, "invm").toString(16)', kinv.toString(16));
 var r    = mpw('636155ac9a4633b4665d179f9e4117df68601f34');
-ack('mpw(mpw(g, k, p, "powm"), q, "%").toString(16)', r.toString(16));
-var hm   = mpw('a9993e364706816aba3e25717850c26c9cd0d89d');
 var s    = mpw('6c540b02d9d4852f89df8cfc99963204f4347704');
-ack('mpw(kinv, mpw(hm, mpw(x, r, q, "mulm"), q, "addm"), q, "mulm").toString(16)', s.toString(16));
 
-// Verify DSA
+dsa.k = mpw(k);
+dsa.kinv = mpw(kinv);
+ack('dsa.sign(hm)', true);
+ack('dsa.r.toString(16)', r.toString(16));
+ack('dsa.s.toString(16)', s.toString(16));
+
 var w  = mpw('7e4f353b71d1a3dc2946f6bae3b9285ef736ce34');
-ack('mpw(s, q, "invm").toString(16)', w.toString(16));
 var u1 = mpw('00abfd278373edf8ce08347d49cd81308880103e');
-ack('mpw(w, hm, q, "mulm").toString(16)', u1.toString(16));
 var u2 = mpw('0da3ab84ae3ff412d703a63b41d1ec61d64b061c');
-ack('mpw(r, w, q, "mulm").toString(16)', u2.toString(16));
 var v1 = mpw('9c26b54969e24166'+
 	'd89b06f5bec3b0df8179e4f9cf7606f67162edd150f73a1f'+
 	'9e09e49d21ab0d04b4a02e2446c47bc9311e38c80effd862'+
 	'fb69fe39eab9fc270b494a575e0d0862bef45df1a826a448'+
 	'8bac5b3757e9c3513dd4d965e6b0ee18811bc711013cf4ea'+
 	'beb578878c133783f80342cafa147b0c1cc6e51e937c8d11');
-ack('mpw(g, u1, p, "powm").toString(16)', v1.toString(16));
 var v2 = mpw('841232c0aa641d81'+
 	'74aa4619826357f66fdf66e9a9b2a7c832e901d04b07b0e3'+
 	'7c35596fe9e873e7888af879aa4795f558d9be9aa6cc302c'+
 	'b29b9ccb03d72c5ebcfda30e03f3ab574d3c31c161b2fa41'+
 	'd31f49f9d2df72a5a91378455b0a852614b6e40b3c4d1cfe'+
 	'81e28ea6ce9d563b7506413cd29bfb7bde64e2f14828a631');
-ack('mpw(y, u2, p, "powm").toString(16)', v2.toString(16));
 var v3 = mpw(v1, v2, p, "mulm");
 var v  = mpw('636155ac9a4633b4665d179f9e4117df68601f34');
-ack('mpw(v3, q, "%").toString(16)', v.toString(16));
+
+ack('dsa.verify(hm)', true);
+ack('dsa.w.toString(16)', w.toString(16));
+ack('dsa.u1.toString(16)', u1.toString(16));
+ack('dsa.u2.toString(16)', u2.toString(16));
+ack('dsa.v1.toString(16)', v1.toString(16));
+ack('dsa.v2.toString(16)', v2.toString(16));
+ack('dsa.v.toString(16)', v.toString(16));
+
+dsa.p = mpw(
+	'8ca8d2c0c04101b8bd0e079dd8bae6890c60ecfee4be2600c43de5401906f20a'+
+	'9c25870a3c2544c33ba6080eaa1e442f0c148f20c3cc52b2e068fcb7ffaa7203');
+dsa.q = mpw('f37f99c87899a57e9af91beb78e47bde64028309');
+dsa.g = mpw(
+	'1d667d15baae47abd369b8fcff5a80ec874b10ce204cc636843c74c5b9fac935'+
+	'd4f279b79bb05f2abdc75df9eeb884c585041b4dc8d883ae0e7e45843b7e36ce');
+
+var hm = mpw('f49a5dac15284e7fc72d66f85dbf3d1a5b97b575');
+dsa.x = mpw('ac19b8c465a05b2bbca71e8e36ee70d31ad5e946');
+dsa.y = mpw(
+	'1bfdc2e1627153415eaf74aeb89a938e9352b50a601d5fbdfaffe3d8d1f5ef99'+
+	'7e93675d10a10b9a882475d7bf9756f8d75b5dd9cd0185a28fdaaeabdf28946e');
+dsa.r = mpw('11f0065438ec658438caa16178250c93d4bb750f');
+dsa.s = mpw('47693a4c58b1564590afe893272a4c6672af2656');
+ack('dsa.verify(hm)', true);
+
+var hm = mpw('82153920a1378c06ba9a34b99b4704ab622064a1');
+dsa.x = mpw('83f10c8644a9390d6b6c05539ef0731159973870');
+dsa.y = mpw(
+	'0a79f8fbc27416188f3996ee1e68749859337cc0330b1e598e75301e4f1bb02c'+
+	'd5bd9467d96f28d7aab0847641ff3b32111bc52ca6fdd62c7f1b2995cc4c2887');
+dsa.r = mpw('593aea363bbe8479cd3ac77018d5f799215fd784');
+dsa.s = mpw('369642bf2850334eeeb045db96f77a7733aefb7e');
+ack('dsa.verify(hm)', true);
+
+delete dsa
 
 // =======================================================
 // Return y^2 - x^3 + 3x (modulo p)

@@ -1672,6 +1672,39 @@ _METHOD_DEBUG_ENTRY(_debug);
     return ok;
 }
 
+/** Return random k invertible modulo q. */
+static JSBool
+mpw_randomK(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    mpwObject * q = ptr;
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (q) {
+	/* XXX select "FIPS 186" or "Mersenne Twister" */
+	const randomGenerator* rng = randomGeneratorDefault();
+	randomGeneratorContext rngc;
+
+	if (!randomGeneratorContextInit(&rngc, rng)) {
+	    size_t qsize = MPW_SIZE(q);
+	    mpw *qdata = MPW_DATA(q);
+	    mpw *wksp = alloca(((1+1+6)*qsize+6) * sizeof(*wksp));
+	    mpbarrett b;
+
+	    mpbzero(&b);
+	    mpbset(&b, qsize, qdata);
+	    mpbrndinv_w(&b, &rngc, wksp, wksp+qsize, wksp+2*qsize);
+	    ok = mpw_wrap(cx, rval, mpw_FromMPW(qsize, wksp, 0));
+	    mpbfree(&b);
+	} else
+	    *rval = JSVAL_NULL;
+	randomGeneratorContextFree(&rngc);
+    } else
+	*rval = JSVAL_NULL;
+    return ok;
+}
+
 #ifdef DYING
 /** Return random number 1 < r < b-1. */
 static JSBool
@@ -1699,6 +1732,7 @@ static JSFunctionSpec rpmmpw_funcs[] = {
 #endif
     JS_FS("toString",	mpw_toString,		0,0,0),
     JS_FS("isPrime",	mpw_isPrime,		0,0,0),
+    JS_FS("randomK",	mpw_randomK,		0,0,0),
     JS_FS_END
 };
 
