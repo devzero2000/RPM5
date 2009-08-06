@@ -59,3 +59,8 @@ splint_srcs = \
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(splint_srcs)
+
+# FIXME: using .libs/ is not really correct, but whatever
+check-local:
+	@export PYTHONPATH=$(PYTHONPATH):$(shell pwd):$(shell pwd)/.libs/ && \
+	cd test && python test_rpm.py
