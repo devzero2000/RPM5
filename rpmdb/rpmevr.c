@@ -212,7 +212,13 @@ assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
 
     }
 
-    evr->Elong = evr->F[RPMEVR_E] ? strtoul(evr->F[RPMEVR_E], NULL, 10) : 0;
+    /* XXX HACK: postpone committing to single "missing" value for now. */
+    if (evr->F[RPMEVR_E] == NULL) evr->F[RPMEVR_E] = "0";
+    if (evr->F[RPMEVR_V] == NULL) evr->F[RPMEVR_V] = "";
+    if (evr->F[RPMEVR_R] == NULL) evr->F[RPMEVR_R] = "";
+    if (evr->F[RPMEVR_D] == NULL) evr->F[RPMEVR_D] = "";
+
+    evr->Elong = strtoul(evr->F[RPMEVR_E], NULL, 10);
 
     xx = mireSetEOptions(mire, NULL, 0);
 
