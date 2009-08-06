@@ -197,6 +197,10 @@ static inline rpmTagType rpmtdType(rpmtd td)
     return td->type;
 }
 
+static inline char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) {
+    return headerSprintf(h, fmt, NULL, NULL, errmsg);
+}
+
 static inline int headerGet_RPMorg(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 {
     int rc;
