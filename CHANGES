@@ -1,4 +1,5 @@
 5.2.0 -> 5.2.1:
+    - proyvind: rpmevr: make rpmEVRparse() work with missing values.
     - proyvind: rpm46compat: Implement RPM 4.6 API wrapper providing ~seamless
 	API compatibility for the function wrappers provided. :)
     - proyvind: python: start on implementing proper regression tests.
