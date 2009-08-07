@@ -1104,10 +1104,24 @@ mpw_FromLongObject(PyLongObject *lo)
 #endif	/* NOTYET */
 
 /* ---------- */
+#define	_c2i(_a, _b)	((int)(((_a)<<8)+(_b)))
+#define	ADDM	_c2i('M', '+')
+#define	SUBM	_c2i('M', '-')
+#define	MULM	_c2i('M', '*')
+#define	DIVM	_c2i('M', '/')	/* XXX unimplemented */
+#define	MODM	_c2i('M', '%')	/* XXX unimplemented */
+#define	POWM	_c2i('M', '^')
+
+#define	ADDP	_c2i('P', '+')
+#define	SUBP	_c2i('P', '-')
+#define	MULP	_c2i('P', '*')
+#define	DIVP	_c2i('P', '/')	/* XXX unimplemented */
+#define	MODP	_c2i('P', '%')	/* XXX unimplemented */
+#define	POWP	_c2i('P', '^')
 
 /** Compute 1 argument operations. */
 static mpwObject *
-mpw_ops1(char op, mpwObject *x)
+mpw_ops1(int op, mpwObject *x)
         /*@*/
 {
     mpwObject * z = NULL;
@@ -1144,7 +1158,7 @@ prtmpw("a", x);
     }
 
 if (_debug < 0)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 exit:
 assert(z);
@@ -1153,7 +1167,7 @@ assert(z);
 
 /** Compute 2 argument operations. */
 static mpwObject *
-mpw_ops2(char op, mpwObject *x, mpwObject *m)
+mpw_ops2(int op, mpwObject *x, mpwObject *m)
         /*@*/
 {
     mpwObject * z = NULL;
@@ -1467,7 +1481,7 @@ fprintf(stderr, "sub ++: borrow\n");
     }
 
 if (_debug)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 exit:
     mpbfree(&b);
@@ -1477,7 +1491,7 @@ assert(z);
 
 /** Compute 3 argument operations. */
 static mpwObject *
-mpw_ops3(char op, mpwObject *x, mpwObject *y, mpwObject *m)
+mpw_ops3(int op, mpwObject *x, mpwObject *y, mpwObject *m)
         /*@*/
 {
     mpwObject * z = NULL;
@@ -1531,32 +1545,92 @@ prtmpw("c", m);
     wksp = alloca((4*zsize+2)*sizeof(*wksp));
 
     switch (op) {
-    case '/':
-    case '%':
+    case DIVM:	/* XXX unimplemented */
+    case MODM:	/* XXX unimplemented */
     default:
 	goto exit;
 	/*@notreached@*/ break;
-    case '+':
+    case ADDM:
 	mpbaddmod_w(&b, xsize, xdata, ysize, ydata, zdata, wksp);
 	break;
-    case '-':
+    case SUBM:
 	mpbsubmod_w(&b, xsize, xdata, ysize, ydata, zdata, wksp);
 	break;
-    case '*':
+    case MULM:
 	mpbmulmod_w(&b, xsize, xdata, ysize, ydata, zdata, wksp);
 	break;
-    case 'P':
+    case POWM:
 	mpbpowmod_w(&b, xsize, xdata, ysize, ydata, zdata, wksp);
 	break;
     }
 
     z = mpw_FromMPW(zsize, zdata, 1);
 
+exit:
 if (_debug < 0)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, op, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
+    mpbfree(&b);
+assert(z);
+    return z;
+}
+
+#ifdef	NOTYET
+static uint32_t ceillog2(uint32_t v)
+{
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+}
+#endif
+
+/** Compute 3 argument polynomial operations. */
+static mpwObject *
+mpw_pops3(int op, mpwObject *x, mpwObject *y, mpwObject *m)
+        /*@*/
+{
+    mpwObject * z = NULL;
+
+assert(x);
+assert(y);
+assert(m);
+    if (x == NULL || y == NULL || m == NULL)
+	goto exit;
+
+    /* Handle GF(2^m) extension field polynomial arithmetic. */
+    switch (op) {
+    case DIVP:	/* XXX unimplemented */
+    case MODP:	/* XXX unimplemented */
+    default:
+assert(0);
+	/*@notreached@*/ break;
+    case ADDP:
+	z = mpw_ops2('^', x, y);
+	/* XXX reduce modulo p */
+	break;
+    case SUBP:
+	z = mpw_ops2('^', x, y);
+	/* XXX reduce modulo p */
+	break;
+    case MULP:
+	z = mpw_ops3(MULM, x, y, m);	/* FIXME */
+	/* XXX reduce modulo p */
+	break;
+    case POWP:
+	z = mpw_ops3(POWM, x, y, m);	/* FIXME */
+	/* XXX reduce modulo p */
+	break;
+    }
 
 exit:
-    mpbfree(&b);
+if (_debug < 0)
+fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
 assert(z);
     return z;
 }
@@ -1986,15 +2060,34 @@ assert(--ix >= 0);
 		    break;
 		default:
 		case 0:
-		    if (!strcmp(s, "addm")) c = (int)'+';	/* x+x (modulo m) */
-		    if (!strcmp(s, "subm")) c = (int)'-';	/* x-x (modulo m) */
-		    if (!strcmp(s, "mulm")) c = (int)'*';	/* x*x (modulo m) */
-		    if (!strcmp(s, "powm")) c = (int)'P';	/* x**x (modulo m) */
+		    if (!strcmp(s, "addm")) c = ADDM;	/* x+x (modulo m) */
+		    if (!strcmp(s, "subm")) c = SUBM;	/* x-x (modulo m) */
+		    if (!strcmp(s, "mulm")) c = MULM;	/* x*x (modulo m) */
+		    if (!strcmp(s, "powm")) c = POWM;	/* x**x (modulo m) */
+		    if (!strcmp(s, "addp")) c = ADDP;	/* x+x (modulo p) */
+		    if (!strcmp(s, "subp")) c = SUBP;	/* x-x (modulo p) */
+		    if (!strcmp(s, "mulp")) c = MULP;	/* x*x (modulo p) */
+		    if (!strcmp(s, "powp")) c = POWP;	/* x**x (modulo p) */
 		    if (c) {
 assert(--ix >= 0);
 assert(--ix >= 0);
 			z = stack[ix];
-			stack[ix] = mpw_ops3(c, z, stack[ix+1], stack[ix+2]);
+
+			switch (c) {
+			case ADDM:
+			case SUBM:
+			case MULM:
+			case POWM:
+			    stack[ix] = mpw_ops3(c, z, stack[ix+1], stack[ix+2]);
+			    break;
+			case ADDP:
+			case SUBP:
+			case MULP:
+			case POWP:
+			    stack[ix] = mpw_pops3(c, z, stack[ix+1], stack[ix+2]);
+			    break;
+			}
+		    
 			if (freeme[ix+2]) stack[ix+2] = _free(stack[ix+2]); freeme[ix+2] = 0;
 			if (freeme[ix+1]) stack[ix+1] = _free(stack[ix+1]); freeme[ix+1] = 0;
 			if (freeme[ix]) z = _free(z);
