@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+#include <math.h>
 
 #include "rpmmpw-js.h"
 #include "rpmjs-debug.h"
@@ -852,6 +853,55 @@ fprintf(stderr, "*** pbits %d xbits %d nsize %d size %d\n", pbits, xbits, nsize,
 
 }
 
+/** z = sqrt(x). */
+static void mpsqrt(mpw* zdata, size_t xsize, const mpw* xdata)
+{
+	size_t size = MP_BITS_TO_WORDS(mpbits(xsize, xdata) + MP_WBITS);
+	mpw * ydata = alloca(size * sizeof(*ydata));
+	mpw * wdata = alloca(size * sizeof(*wdata));
+	mpw * vdata = alloca(size * sizeof(*vdata));
+
+	/* XXX check x < 0 and raise exception */
+	if (mpleone(xsize, xdata)) {
+		mpsetx(xsize, zdata, xsize, xdata);
+		return;
+	}
+
+//	short op = num;
+	mpsetx(size, ydata, xsize, xdata);
+//	short res = 0;
+	mpzero(xsize, zdata);
+//	short one = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
+	mpzero(size, wdata);
+	mpsetmsb(size, wdata);
+	mpdivtwo(size, wdata);
+
+//	while (one > op)
+//	    one >>= 2;
+	while (mpgt(size, wdata, ydata))
+		mprshift(size, wdata, 2);
+
+//	while (one != 0)
+	while (!mpz(size, wdata)) {
+//	    if (op >= res + one)
+	    mpsetx(size, vdata, xsize, zdata);
+	    mpadd(size, vdata, wdata);
+	    if (mpge(size, ydata, vdata)) {
+//		op -= res + one;
+		mpsubx(size, ydata, xsize, zdata);
+		mpsub(size, ydata, wdata);
+//		res = (res >> 1) + one;
+		mprshift(xsize, zdata, 1);
+		mpaddx(xsize, zdata, size, wdata);
+            } else {
+//		res >>= 1;
+		mprshift(xsize, zdata, 1);
+	    }
+//	    one >>= 2;
+	    mprshift(size, wdata, 2);
+	}
+}
+
 /* ---------- */
 
 static mpwObject *
@@ -924,19 +974,59 @@ fprintf(stderr, "<== %s(%ld) z %p\n\t", __FUNCTION__, ival, z), mpfprintln(stder
 static mpwObject *
 mpw_FromDouble(double dval)
 {
-    mpwObject * z = mpw_New(1);
+    static int mbits = 53;
+    int exp = 0;
+    double frac = frexp(dval, &exp);
+    uint64_t flval;
+    uint64_t llval;
+    mpwObject * x;
+    int bits = exp - MP_WBITS;
+    size_t zsize = 1;
+    mpwObject * z;
 
-    if (z == NULL)
-	return NULL;
+    if (bits > 0)
+	zsize += MP_BITS_TO_WORDS(bits + MP_WBITS-1);
 
-    if (dval < 0) {
-	z->ob_size = -z->ob_size;
-	dval = -dval;
+    if (frac < 0.0) {
+	frac = -frac;
+	llval = -dval;
+    } else
+	llval = dval;
+    flval = ldexp(frac, mbits);
+
+#if (MP_WBITS == 64)
+    x = mpw_New(1);
+    mpsetw(MPW_SIZE(z), MPW_DATA(z), (mpw)flval);
+#else
+    if (exp > (int)MP_WBITS) {
+	x = mpw_New(2);
+	x->data[0] = (mpw) ((flval >> 32) & 0xffffffff);
+	x->data[1] = (mpw) ((flval      ) & 0xffffffff);
+    } else {
+	x = mpw_New(1);
+	x->data[0] = (mpw) flval;
     }
-    z->data[0] = (mpw) dval;	/* FIXME: assumes mpw sized doubles. */
+#endif
+    if (exp == mbits)
+	exp = 0;	/* nothing to do */
+    else if (exp < mbits) {
+	mprshift(MPW_SIZE(x), MPW_DATA(x), (mbits - exp));
+	exp = 0;
+    } else if (exp < 64) {
+	mplshift(MPW_SIZE(x), MPW_DATA(x), (exp - mbits));
+	exp = 0;
+    } else
+	exp -= mbits;
 
-if (_debug < 0)
-fprintf(stderr, "<== %s(%g) z %p\n\t", __FUNCTION__, dval, z), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+    z = mpw_New(zsize);
+    mpsetx(MPW_SIZE(z), MPW_DATA(z), MPW_SIZE(x), MPW_DATA(x));
+    if (exp > 0) {
+	mplshift(MPW_SIZE(z), MPW_DATA(z), exp);
+    }
+    if (dval < 0.0)
+	z->ob_size = -z->ob_size;
+    x = _free(x);
+
     return z;
 }
 
@@ -1144,17 +1234,18 @@ prtmpw("a", x);
     case '_':
 	z->ob_size = -z->ob_size;
 	break;
+    case 's':	/* sqrt(x) */
+	mpsqrt(MPW_DATA(z), MPW_SIZE(x), MPW_DATA(x));
+	break;
     case '!':
 	if (z->ob_size < 0)
 	    z->ob_size = -z->ob_size;
 	break;
     case '~':  /* Implement ~z as -(z+1) */
-    {	mpw val = 1;
-	int carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), 1, &val);
-	carry = carry;  /* XXX gcc warning */
+	(void) mpaddw(MPW_SIZE(z), MPW_DATA(z), 1);
 	if (x->ob_size > 0)
 	    z->ob_size = -z->ob_size;
-    }  break;
+	break;
     }
 
 if (_debug < 0)
@@ -2012,6 +2103,7 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 		if (!strcmp(s, "**")) c = (int)'P';
 		if (!strcmp(s, "<<")) c = (int)'<';
 		if (!strcmp(s, ">>")) c = (int)'>';
+		if (!strcmp(s, "sqrt")) c = (int)'s';
 		if (!strcmp(s, "abs")) c = (int)'!';
 		if (!strcmp(s, "not")) c = (int)'~';
 		if (!strcmp(s, "neg")) c = (int)'_';
@@ -2023,6 +2115,7 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 #endif
 
 		switch (c) {
+		case 's':	/* sqrt(x) */
 		case '!':	/* abs(x) */
 		case '_':	/* -x */
 		case '~':	/* ~x */
