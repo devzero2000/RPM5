@@ -60,10 +60,9 @@ ack('mpw(x, y, m, "mulm").toString(10)', '1');
 ack('mpw(x, y, m, "powm").toString(10)', '7');
  
 var zx = 2*3*5*19;
-// FIXME wrong answers here
-// zx *= zx;
-// zx *= zx;
-// XXX FIXME segfault here
+zx *= zx;
+zx *= zx;
+// FIXME segfault, check gcd scaling for zy
 // zx *= zx;
 var zy = 7*11*13*19;
 ack('mpw(zx, zy, "gcd").toString(10)', '19');
@@ -71,6 +70,18 @@ ack('mpw(zx, zy, "gcd").toString(10)', '19');
 ack('mpw(zx, "neg").toString(10)', (-zx).toString(10));
 ack('mpw(zx, "abs").toString(10)', Math.abs(zx).toString(10));
 ack('mpw(zx, "~").toString(10)', (~zx).toString(10));
+
+zx = -1.2345678901234567890123456789012345678901234567890123456789e10;
+ack('mpw(zx*zx, "sqrt").toString(10)', Math.floor(Math.sqrt(zx*zx)).toString(10));
+zx = -1.2345678901234e10;
+ack('mpw(zx*zx, "sqrt").toString(10)', Math.floor(Math.sqrt(zx*zx)).toString(10));
+// for (zx = 0; zx < 1025; zx++) {
+//      ack('mpw(zx*zx, "sqrt").toString(10)', Math.sqrt(zx*zx).toString(10));
+// }
+// for (var i = 0; i < 128; i++) {
+// zx = (1 << i) - 1;
+// ack('mpw(zx*zx, "sqrt").toString(10)', Math.sqrt(zx*zx).toString(10));
+// }
 
 // ===== Carry/borrow tests
 var a = 0x7fffffff;
@@ -886,49 +897,34 @@ ack('dsa.verify(hm)', true);
 delete dsa
 
 // =======================================================
-// Return y^2 - x^3 + 3x (modulo p)
-function vfyPrimeCurve(p, x, y) {
-    var t1 = mpw(y, y, "*");
-    var t2 = mpw(mpw(mpw(x, x, "*"), p, "%"), x, "*");
-    t1 = mpw(t1, t2, "-");
-    t1 = mpw(t1, x, "+");
-    t1 = mpw(t1, x, "+");
-    t1 = mpw(t1, x, "+");
-    t1 = mpw(t1, p, "%");
-    return t1;
+function CurveFp(p, a, b) {
+  this.p = mpw(p);
+  this.a = mpw(a);
+  this.b = mpw(b);
+
+  this.contains =
+    function (x, y) {
+	var t1 = mpw(y, y, "*");
+	var t2 = mpw(mpw(x, x, "*"), x, "*");
+	t1 = mpw(t1, t2, "-");
+	t2 = mpw(x, this.a, "*");
+	t1 = mpw(t1, t2, "-");
+	t1 = mpw(t1, this.b, "-");
+	t1 = mpw(t1, this.p, "%");
+	return (t1.toString(10) == "0");
+    }
+
+  return true;
 }
 
 // =======================================================
-// Return y^2 + xy - x^3 - x^2 (modulo p)
-function vfyBinaryCurve(p, x, y) {
-    var t1 = mpw(y, y, p, "mulm");
-    var t2 = mpw(x, y, p, "mulm");
-    t1 = mpw(t1, t2, p, "addm");
-    t2 = mpw(x, x, p, "mulm");
-    t1 = mpw(t1, t2, p, "subm");
-    t2 = mpw(t2, x, p, "mulm");
-    t1 = mpw(t1, t2, p, "subm");
-    return t1;
-}
-
-// =======================================================
-// Return y^2 + xy - x^3 - 1 (modulo p)
-function vfyKoblitzCurve0(p, x, y) {
-    var t1 = mpw(mpw(mpw(x, y, "+"), y, "*"), p, "%");
-    var t2 = mpw(mpw(mpw(x, x, "*"), p, "%"), x, "*");
-    t1 = mpw(t1, t2, "-");
-    t1 = mpw(t1, 1, "-");
-    t1 = mpw(t1, p, "%");
-    return t1;
-}
-
-// =======================================================
-// Return y^2 + xy - x^3 - x^2 - 1 (modulo p)
-function vfyKoblitzCurve1(p, x, y) {
-    var t1 = vfyBinaryCurve(p, x, y);
-    t1 = mpw(t1, 1, "-");
-    t1 = mpw(t1, p, "%");
-    return t1;
+function Point(curve, x, y, n) {
+  this.curve = curve;
+  this.x = mpw(x);
+  this.y = mpw(y);
+  this.z = mpw(1);
+  this.n = mpw(n);
+  return true;
 }
 
 // ===== secp 112r1
@@ -939,8 +935,14 @@ var b    = mpw('659ef8ba043916eede8911702b22');
 var n    = mpw('db7c2abf62e35e7628dfac6561c5');
 var gx   = mpw('09487239995a5ee76b55f9c2f098');
 var gy   = mpw('a89ce5af8724c0a23e0e0ff77500');
-var t1 = vfyPrimeCurve(p, gx, gy);
-ack('t1.toString(16)', b.toString(16));
+
+c112 = new CurveFp(p, -3, b);
+ack('c112.contains(gx, gy)', true);
+p112 = new Point(c112, gx, gy, n);
+
+delete c112;
+delete p112;
+
 
 // ===== SECP 128r1
 print("===== SECP 128r1");
@@ -950,8 +952,13 @@ var b    = mpw('e87579c11079f43dd824993c2cee5ed3');
 var n    = mpw('fffffffe0000000075a30d1b9038a115');
 var gx   = mpw('161ff7528b899b2d0c28607ca52c5b86');
 var gy   = mpw('cf5ac8395bafeb13c02da292dded7a83');
-var t1 = vfyPrimeCurve(p, gx, gy);
-ack('t1.toString(16)', b.toString(16));
+
+c128 = new CurveFp(p, -3, b);
+ack('c128.contains(gx, gy)', true);
+p128 = new Point(c128, gx, gy, n);
+
+delete c128;
+delete p128;
 
 // ===== SECP 160r1
 print("===== SECP 160r1");
@@ -961,9 +968,13 @@ var b    = mpw('1c97befc54bd7a8b65acf89f81d4d4adc565fa45');
 var n    = mpw('0100000000000000000001f4c8f927aed3ca752257');
 var gx   = mpw('4a96b5688ef573284664698968c38bb913cbfc82');
 var gy   = mpw('23a628553168947d59dcc912042351377ac5fb32');
-var t1 = vfyPrimeCurve(p, gx, gy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+
+c160 = new CurveFp(p, -3, b);
+ack('c160.contains(gx, gy)', true);
+p160 = new Point(c160, gx, gy, n);
+
+delete c160;
+delete p160;
 
 // ===== ECDSA P-192 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -979,16 +990,15 @@ ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toStrin
 
 var gx   = mpw('188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012');
 var gy   = mpw('07192b95ffc8da78631011ed6b24cdd573f977a11e794811');
-var t1 = vfyPrimeCurve(p, gx, gy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+
+c192 = new CurveFp(p, -3, b);
+ack('c192.contains(gx, gy)', true);
+p192 = new Point(c192, gx, gy, n);
 
 var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
-var t1 = vfyPrimeCurve(p, qx, qy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+ack('c192.contains(qx, qy)', true);
 
 var k    = mpw('d06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847');
 var msg  = "Example of ECDSA with P-192";
@@ -1006,6 +1016,9 @@ var u2   = mpw('de0747072e426e307ba1e19bd5c1b57f9e29220ae97cc9bc');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('f0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821');
 
+delete c192;
+delete p192;
+
 // ===== ECDSA P-224 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
 print("===== P-224");
@@ -1018,17 +1031,18 @@ var c    = mpw('5b056c7e11dd68f40469ee7f3c7a7d74f7d121116506d031218291fb');
 var b    = mpw('b4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4');
 // FIXME mulm?
 ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").toString(10));
+
 var gx   = mpw('b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21');
 var gy   = mpw('bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34');
-var t1 = vfyPrimeCurve(p, gx, gy);
-ack('t1.toString(16)', b.toString(16));
+
+c224 = new CurveFp(p, -3, b);
+ack('c224.contains(gx, gy)', true);
+p224 = new Point(c224, gx, gy, n);
 
 var d    = mpw('3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8');
 var qx   = mpw('e84fb0b8e7000cb657d7973cf6b42ed78b301674276df744af130b3e');
 var qy   = mpw('4376675c6fc5612c21a0ff2d2a89d2987df7a2bc52183b5982298555');
-var t1 = vfyPrimeCurve(p, qx, qy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+ack('c224.contains(qx, qy)', true);
 
 var k    = mpw('a548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937');
 var msg  = "Example of ECDSA with P-224";
@@ -1046,6 +1060,9 @@ var u2   = mpw('86daaf97dc9bb13a66ec7b735e69bccd60f395efb2cdfded8a3ccbcf');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('c3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380');
 
+delete c224;
+delete p224;
+
 // ===== ECDSA P-256 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
 print("===== P-256");
@@ -1061,18 +1078,18 @@ ack('n.toString(10)', '115792089210356248762697446949407573529996955224135760342
 var c    = mpw('7efba1662985be9403cb055c75d4f7e0ce8d84a9c5114abcaf3177680104fa0d');
 var b    = mpw('5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b');
 ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toString(10));
+
 var gx   = mpw('6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296');
 var gy   = mpw('4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5');
-var t1 = vfyPrimeCurve(p, gx, gy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+
+c256 = new CurveFp(p, -3, b);
+ack('c256.contains(gx, gy)', true);
+p256 = new Point(c256, gx, gy, n);
 
 var d    = mpw('c477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96');
 var qx   = mpw('b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19');
 var qy   = mpw('3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09');
-var t1 = vfyPrimeCurve(p, qx, qy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+ack('c256.contains(qx, qy)', true);
 
 var k    = mpw('7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae');
 var msg  = "Example of ECDSA with P-256";
@@ -1093,6 +1110,9 @@ var u2   = mpw('1777f73443a4d68c23d1fc4cb5f8b7f2554578ee87f04c253df44efd181c184c
 ack('mpw(r, w, "*", n, "%").toString(16)', u2.toString(16));
 var v    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
 
+delete c256;
+delete p256;
+
 // ===== ECDSA P-384 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
 print("===== P-384");
@@ -1109,16 +1129,18 @@ var c    = mpw('79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a
 var b    = mpw('b3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef');
 // FIXME mulm?
 ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").toString(10));
+
 var gx   = mpw('aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760ab7');
 var gy   = mpw('3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5f');
-var t1 = vfyPrimeCurve(p, gx, gy);
-ack('t1.toString(16)', b.toString(16));
+
+c384 = new CurveFp(p, -3, b);
+ack('c384.contains(gx, gy)', true);
+p384 = new Point(c384, gx, gy, n);
 
 var d    = mpw('f92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08');
 var qx   = mpw('3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471fb9d2ab74657b82f9086489d9ef0f5cb5');
 var qy   = mpw('d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295ffe5382d00cfcda30344a9b5b68db855');
-var t1 = vfyPrimeCurve(p, qx, qy);
-ack('t1.toString(16)', b.toString(16));
+ack('c384.contains(qx, qy)', true);
 
 var k    = mpw('2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef');
 var msg  = "Example of ECDSA with P-384";
@@ -1136,6 +1158,9 @@ var u2   = mpw('8f77be5b0eb32a1a3b9274cfda53518a01aad4afc4bd46a392b7c7de4eed3fe6
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088');
 
+delete c384;
+delete p384;
+
 // ===== ECDSA P-521 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
 print("===== P-521");
@@ -1148,17 +1173,18 @@ var c    = mpw('79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a
 var b    = mpw('051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00');
 // FIXME: wrong answer
 // ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toString(10));
+
 var gx   = mpw('c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66');
 var gy   = mpw('11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650');
-var t1 = vfyPrimeCurve(p, gx, gy);
-t1 = mpw(t1, p, "+");
-ack('t1.toString(16)', b.toString(16));
+
+c512 = new CurveFp(p, -3, b);
+ack('c512.contains(gx, gy)', true);
+p512 = new Point(c512, gx, gy, n);
 
 var d    = mpw('0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722');
 var qx   = mpw('0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cca16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4');
 var qy   = mpw('0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef17be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e');
-var t1 = vfyPrimeCurve(p, qx, qy);
-ack('t1.toString(16)', b.toString(16));
+ack('c512.contains(qx, qy)', true);
 
 var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf');
 var msg  = "Example of ECDSA with P-512";
@@ -1175,6 +1201,9 @@ ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
 var u2   = mpw('014e7fc3ee94b91e092f660253dcaf92a70306bdfa317a0ab7efb2c8286944bee5f146114f2c61950f8c8699cce1a22fe632ea89967d33fefcb0e7607b4b66d157b6');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba');
+
+delete c512;
+delete p512;
 
 // ##############################################################
 // Curve K-163
@@ -1206,10 +1235,92 @@ var u2   = mpw('0003d355dad4b1418780a63a87dafc06d38bfc287312');
 var rx   = mpw('000718ef5ef376b8f5301b5fd2a761989c417807a275');
 var v    = mpw('000318ef5ef376b8f5301b5dd19ebeb7d033de0efc86');
 
+var F = [];
+function Fuv(p, u, v)
+{
+    var sum = 0;
+print("Fuv("+p+", "+ u.toString(2) +", "+ v.toString(2) +")");
+    for (var k = 1; k < p - 1; k++) {
+	var ubit = (u >> F[k+1]) & 1;
+	var vbit = (v >> F[p-k]) & 1;
+	if (ubit && vbit)
+	    sum ^= 1;
+    }
+print("F(" + u.toString(2) + " , " + v.toString(2) + ") = ", sum);
+    return sum;
+}
+
+function Fgenerate(T, m, g)
+{
+    var p = T * m + 1;
+    var w = 1;
+    for (var j = 0; j < T; j++) {
+	var n = w;
+	for (var i = 0; i < m; i++) {
+	    F[n] = i;
+	    n  = (2 * n) % p;
+	}
+	w = (g * w) % p;
+    }
+    print(JSON.stringify(F));
+}
+
+function Fmul()
+{
+    var T = 4;
+    var m = 7;
+    var g = 12;
+    var p = T * m + 1;
+
+    Fgenerate(T, m, g);
+
+    Fuv(p, 0x57, 0x61);
+    Fuv(p, 0x2f, 0x43);
+    Fuv(p, 0x5e, 0x07);
+    Fuv(p, 0x3d, 0x0e);
+    Fuv(p, 0x7a, 0x1c);
+    Fuv(p, 0x75, 0x38);
+    Fuv(p, 0x6b, 0x70);
+
+}
+
+// =======================================================
+// Return y^2 + xy - x^3 - x^2 (modulo p)
+function vfyBinaryCurve(p, x, y) {
+    var t1 = mpw(y, y, p, "mulp");
+    var t2 = mpw(x, y, p, "mulp");
+    t1 = mpw(t1, t2, p, "addp");
+    t2 = mpw(x, x, p, "mulp");
+    t1 = mpw(t1, t2, p, "subp");
+    t2 = mpw(t2, x, p, "mulp");
+    t1 = mpw(t1, t2, p, "subp");
+    return t1;
+}
+
+// =======================================================
+// Return y^2 + xy - x^3 - 1 (modulo p)
+function vfyKoblitzCurve0(p, x, y) {
+    var t1 = mpw(mpw(mpw(x, y, "+"), y, "*"), p, "%");
+    var t2 = mpw(mpw(mpw(x, x, "*"), p, "%"), x, "*");
+    t1 = mpw(t1, t2, "-");
+    t1 = mpw(t1, 1, "-");
+    t1 = mpw(t1, p, "%");
+    return t1;
+}
+
+// =======================================================
+// Return y^2 + xy - x^3 - x^2 - 1 (modulo p)
+function vfyKoblitzCurve1(p, x, y) {
+    var t1 = vfyBinaryCurve(p, x, y);
+    t1 = mpw(t1, 1, p, "subp");
+    return t1;
+}
+
 // ##############################################################
 // Curve B-163
 // ##############################################################
 print("===== B-163");
+// Fmul();
 var p    = mpw(2, 163, "**");
 p = mpw(p, mpw(2,   7, "**"), "+");
 p = mpw(p, mpw(2,   6, "**"), "+");
