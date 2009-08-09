@@ -974,7 +974,7 @@ fprintf(stderr, "<== %s(%ld) z %p\n\t", __FUNCTION__, ival, z), mpfprintln(stder
 static mpwObject *
 mpw_FromDouble(double dval)
 {
-    static int mbits = 53;
+    static int mbits = 52;
     int exp = 0;
     double frac = frexp(dval, &exp);
     uint64_t flval;
