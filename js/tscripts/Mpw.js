@@ -956,7 +956,7 @@ function CurveFp(p, a, b) {
     this.a = mpw(a);
     this.b = mpw(b);
 
-    this.contains =
+  this.contains =
     function (x, y) {
         if (x == undefined && y == undefined)
             return true;
@@ -977,16 +977,116 @@ function CurveFp(p, a, b) {
 // =======================================================
 function PointFp(C, x, y, n) {
     this.C = C;
-    this.x = mpw(x);
-    this.y = mpw(y);
+    this.x = (x != undefined ? mpw(x) : undefined);
+    this.y = (y != undefined ? mpw(y) : undefined);
     this.z = mpw(1);
-    this.n = mpw(n);
+    this.n = (n != undefined ? mpw(n) : undefined);
+    if (!C.contains(this.x, this.y))
+	print("NACK: ", this.x, this.y);
+
+  this.cmp =
+    function (p1, p2) {
+	if (p1.x == undefined || p1.y == undefined || p2.x == undefined || p2.y == undefined)
+	    return (p1.x == undefined && p1.y == undefined && p2.x == undefined && p2.y == undefined);
+	return (mpw.eq(p1.x, p2.x) && mpw.eq(p1.y, p2.y));
+    }
+
+  this.dbl =
+    function (P) {
+	var C = P.C;
+	if (P.x == undefined || P.y == undefined)
+	    return new PointFp(C, undefined, undefined, P.n);
+	var l = mpw(P.x, P.x, "*", 3, "*", C.a, "+", C.p, "%", 2, P.y, "*", C.p, "%", C.p, "invm", "*", C.p, "%");
+	var x = mpw(l, l, "*", 2, P.x, "*", "-", C.p, "%");
+	var y = mpw(P.x, x, "-", l, "*", P.y, "-", C.p, "%");
+	return new PointFp(C, x, y, P.n);
+    }
+
+  this.add =
+    function (P, Q) {
+	var C = P.C;
+	if (Q.x == undefined || Q.y == undefined)
+	    return new PointFp(C, P.x, P.y, P.n);
+	if (P.x == undefined || P.y == undefined)
+	    return new PointFp(C, Q.x, Q.y, Q.n);
+	if (mpw.eq(P.x, Q.x)) {
+	    if (mpw.eq(mpw(P.y, Q.y, "+", C.p, "%", "abs"), 0))
+		return new PointFp(C, undefined, undefined, P.n);
+	    return P.dbl(P);
+	}
+	var l = mpw(Q.y, P.y, "-", Q.x, P.x, "-", C.p, "invm", "*", C.p, "%");
+	var x = mpw(l, l, "*", P.x, "-", Q.x, "-", C.p, "%");
+	var y = mpw(l, P.x, x, "-", "*", P.y, "-", C.p, "%");
+	return new PointFp(C, x, y, P.n);
+    }
+
+  this.sub =
+    function (P, Q) {
+	if (Q.x == undefined || Q.y == undefined)
+	    return new PointFp(P.C, P.x, P.y, P.n);
+	N = new PointFp(Q.C, Q.x, mpw(Q.y, "neg"), Q.n);
+	return this.add(P, N);
+    }
+
+  this.mul =
+    function (P, m) {
+	var C = P.C;
+	var e = mpw(m);
+	if (P.n != undefined && !mpw.eq(P.n, 0))
+	    e = mpw(e, P.n, "%", "abs");
+	if (mpw.eq(e, 0) || P.x == undefined || P.y == undefined)
+	    return new PointFp(C, undefined, undefined, P.n);
+	var N = new PointFp(C, P.x, mpw(P.y, "neg"), P.n);
+	var e3 = mpw(3, e, "*");
+	var i = mpw(e3, e3, "^", "not");
+	i = mpw(i, i, 1, ">>", "^");
+	while (mpw.eq(mpw(e3, i, "&"), 0))
+	    i = mpw(i, 1, ">>");
+	i = mpw(i, 1, ">>");
+	var r = new PointFp(C, P.x, P.y, P.n);
+	while (mpw.gt(i, 1)) {
+	    r = r.dbl(r);
+	    if (!mpw.eq(mpw(e3, i, "&"), 0) &&  mpw.eq(mpw( e, i, "&"), 0))
+		r = r.add(r, P);
+	    if ( mpw.eq(mpw(e3, i, "&"), 0) && !mpw.eq(mpw( e, i, "&"), 0))
+		r = r.add(r, N);
+	    i = mpw(i, 1, ">>");
+	}
+	return r;
+    }
+
     return this;
 }
 
+function walkDbl(P, imax) {
+    var PP = P.dbl(P);
+    for (let i = 1; i < imax; i++)
+	PP = P.dbl(PP);
+    return PP;
+}
+
+function walkAdd(P, Q, imax) {
+    var PQ = P.add(P, Q);
+    for (let i = 1; i < imax; i++)
+	PQ = P.add(PQ, Q);
+    return PQ;
+}
+
 function checkP(C, x, y, n) {
-    P = new PointFp(C, x, y, n);
-    ack('C.contains(P.x, P.y)', true);
+    var P = new PointFp(C, x, y, n);
+    var PP = P.sub(P, P);
+    var PP = P.dbl(P);
+    var P1 = P.mul(P, 1);
+    var P2 = P.mul(P, 2);
+
+    var N = new PointFp(C, x, mpw(y, "neg"), n);
+    var NN = N.sub(N, N);
+//    var NN = N.dbl(N);
+    var N1 = N.mul(N, 1);
+//    var N2 = N.mul(N, 2);
+
+    var NP = N.add(N, P);
+
     return P;
 }
 
@@ -1057,6 +1157,7 @@ var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
 Q = checkP(C, qx, qy, n);
+GQ = walkAdd(G, Q, 1);
 
 var k    = mpw('d06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847');
 var msg  = "Example of ECDSA with P-192";
@@ -1101,6 +1202,7 @@ var d    = mpw('3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8');
 var qx   = mpw('e84fb0b8e7000cb657d7973cf6b42ed78b301674276df744af130b3e');
 var qy   = mpw('4376675c6fc5612c21a0ff2d2a89d2987df7a2bc52183b5982298555');
 Q = checkP(C, qx, qy, n);
+GQ = walkAdd(G, Q, 1);
 
 var k    = mpw('a548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937');
 var msg  = "Example of ECDSA with P-224";
@@ -1148,6 +1250,7 @@ var d    = mpw('c477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96
 var qx   = mpw('b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19');
 var qy   = mpw('3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09');
 Q = checkP(C, qx, qy, n);
+GQ = walkAdd(G, Q, 1);
 
 var k    = mpw('7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae');
 var msg  = "Example of ECDSA with P-256";
@@ -1199,6 +1302,7 @@ var d    = mpw('f92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0a
 var qx   = mpw('3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471fb9d2ab74657b82f9086489d9ef0f5cb5');
 var qy   = mpw('d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295ffe5382d00cfcda30344a9b5b68db855');
 Q = checkP(C, qx, qy, n);
+// GQ = walkAdd(G, Q, 1);
 
 var k    = mpw('2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef');
 var msg  = "Example of ECDSA with P-384";
@@ -1243,6 +1347,7 @@ var d    = mpw('0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc18
 var qx   = mpw('0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cca16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4');
 var qy   = mpw('0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef17be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e');
 Q = checkP(C, qx, qy, n);
+// GQ = walkAdd(G, Q, 1);
 
 var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf');
 var msg  = "Example of ECDSA with P-512";
