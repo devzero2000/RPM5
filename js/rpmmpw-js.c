@@ -38,7 +38,8 @@ static int _debug = 0;
 #define rpmmpw_iteratorobject	NULL
 #define rpmmpw_wrappedobject	NULL
 
-#define	OBJ_IS_MPW(cx,obj)	(OBJ_GET_CLASS(cx, obj) == &rpmmpwClass)
+#define	OBJ_IS_MPW(cx,obj)	((obj) && OBJ_GET_CLASS((cx), (obj)) == &rpmmpwClass)
+#define	JSVAL_IS_MPW(cx, v)	(JSVAL_IS_OBJECT(v) && OBJ_IS_MPW(cx, JSVAL_TO_OBJECT(v)))
 
 /* --- helpers */
 typedef struct mpwObject_s {
@@ -966,8 +967,6 @@ mpw_FromLong(long ival)
     }
     z->data[0] = (mpw) ival;
 
-if (_debug < 0)
-fprintf(stderr, "<== %s(%ld) z %p\n\t", __FUNCTION__, ival, z), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
     return z;
 }
 
@@ -979,7 +978,13 @@ mpw_FromDouble(double dval)
     double frac = frexp(dval, &exp);
     uint64_t flval;
     uint64_t llval;
-    mpwObject * x;
+#if (MP_WBITS == 64)
+    size_t xsize = 1;
+    mpw xdata[1];
+#else
+    size_t xsize = 2;
+    mpw xdata[2];
+#endif
     int bits = exp - MP_WBITS;
     size_t zsize = 1;
     mpwObject * z;
@@ -995,37 +1000,29 @@ mpw_FromDouble(double dval)
     flval = ldexp(frac, mbits);
 
 #if (MP_WBITS == 64)
-    x = mpw_New(1);
-    mpsetw(MPW_SIZE(z), MPW_DATA(z), (mpw)flval);
+    xdata[0] = (mpw)flval;
 #else
-    if (exp > (int)MP_WBITS) {
-	x = mpw_New(2);
-	x->data[0] = (mpw) ((flval >> 32) & 0xffffffff);
-	x->data[1] = (mpw) ((flval      ) & 0xffffffff);
-    } else {
-	x = mpw_New(1);
-	x->data[0] = (mpw) flval;
-    }
+    xdata[0] = (mpw) ((flval >> 32) & 0xffffffff);
+    xdata[1] = (mpw) ((flval      ) & 0xffffffff);
 #endif
     if (exp == mbits)
 	exp = 0;	/* nothing to do */
     else if (exp < mbits) {
-	mprshift(MPW_SIZE(x), MPW_DATA(x), (mbits - exp));
+	mprshift(xsize, xdata, (mbits - exp));
 	exp = 0;
     } else if (exp < 64) {
-	mplshift(MPW_SIZE(x), MPW_DATA(x), (exp - mbits));
+	mplshift(xsize, xdata, (exp - mbits));
 	exp = 0;
     } else
 	exp -= mbits;
 
     z = mpw_New(zsize);
-    mpsetx(MPW_SIZE(z), MPW_DATA(z), MPW_SIZE(x), MPW_DATA(x));
+    mpsetx(MPW_SIZE(z), MPW_DATA(z), xsize, xdata);
     if (exp > 0) {
 	mplshift(MPW_SIZE(z), MPW_DATA(z), exp);
     }
     if (dval < 0.0)
 	z->ob_size = -z->ob_size;
-    x = _free(x);
 
     return z;
 }
@@ -1221,6 +1218,7 @@ assert(x);
 	goto exit;
 
 if (_debug < 0) {
+fprintf(stderr, "==> %s(%c)\n", __FUNCTION__, (op & 0xff));
 prtmpw("a", x);
 }
 
@@ -1241,10 +1239,15 @@ prtmpw("a", x);
 	if (z->ob_size < 0)
 	    z->ob_size = -z->ob_size;
 	break;
-    case '~':  /* Implement ~z as -(z+1) */
+    case '~': 
+#ifdef	DYING
+	/* Implement ~z as -(z+1) */
 	(void) mpaddw(MPW_SIZE(z), MPW_DATA(z), 1);
 	if (x->ob_size > 0)
 	    z->ob_size = -z->ob_size;
+#else
+	(void) mpnot(MPW_SIZE(z), MPW_DATA(z));
+#endif
 	break;
     }
 
@@ -1296,6 +1299,7 @@ assert(m);
     }
 
 if (_debug < 0) {
+fprintf(stderr, "==> %s(%c)\n", __FUNCTION__, (op & 0xff));
 prtmpw("a", x);
 prtmpw("b", m);
 }
@@ -1434,7 +1438,11 @@ fprintf(stderr, "sub ++: borrow\n");
 	    z->ob_size = -z->ob_size;
 	break;
     case '%':
-	asize = xsize+1;
+	if (mpz(msize, mdata)) {
+	    z = mpw_FromMPW(xsize, xdata, 1);
+	    break;
+	}
+	asize = MAX(xsize, msize) + 1;
 	adata = alloca(asize * sizeof(*adata));
 	mpsetx(asize, adata, xsize, xdata);
 	bsize = msize;
@@ -1442,46 +1450,50 @@ fprintf(stderr, "sub ++: borrow\n");
 
 	zsize = asize;
 	zdata = alloca(zsize * sizeof(*zdata));
-#ifdef	DYING	/* XXX Python dares to be different. */
 	zsign = x->ob_size * m->ob_size;
-#else
-	zsign = x->ob_size;
-#endif
 	wksp = alloca((2*bsize+1) * sizeof(*wksp));
 
 	mpmod(zdata, asize, adata, bsize, bdata, wksp);
 
-#ifdef	DYING	/* XXX Python dares to be different. */
+#ifdef	NOTYET
 	if (zsign < 0) {
 	    if (m->ob_size < 0) {
 		(void) mpsubx(zsize, zdata, bsize, bdata);
 		mpneg(zsize, zdata);
-	    } else {
-		zsign = 0;
+	    } else if (x->ob_size < 0) {
 		mpneg(zsize, zdata);
 		(void) mpaddx(zsize, zdata, bsize, bdata);
 	    }
 	}
 #endif
+
 	z = mpw_FromMPW(zsize, zdata, 1);
+
+#ifdef	NOTYET
 	if (zsign < 0)
-	    z->ob_size = -z->ob_size;
-#ifdef	DYING	/* XXX Python dares to be different. */
-	else if (zsign > 0) {
-	    if (x->ob_size < 0)
+#endif
+	{
+#ifdef	PYTHON_DIVISOR
+	    if (m->ob_size < 0)		/* divisor determines sign. */
+#else
+	    if (x->ob_size < 0)		/* dividend determines sign. */
+#endif
 		z->ob_size = -z->ob_size;
 	}
-#endif
 	break;
     case '<':
-	/* XXX FIXME: enlarge? negative count? sign?. */
-	shift = (size_t) (msize == 1 ? mdata[0] : 0);
-	z = mpw_FromMPW(xsize, xdata, 0);
+	/* XXX FIXME: negative count? sign?. */
+	shift = (size_t) (msize == 1 ? (mdata[0] & 0x00ffffff) : 0);
+	msize = MP_ROUND_B2W(shift - mpmszcnt(xsize, xdata));
+	asize = MAX(xsize, msize);
+	adata = alloca(asize * sizeof(*adata));
+	mpsetx(asize, adata, xsize, xdata);
 	if (shift > 0)
-	    mplshift(MPW_SIZE(z), MPW_DATA(z), shift);
+	    mplshift(asize, adata, shift);
+	z = mpw_FromMPW(asize, adata, 0);
 	break;
     case '>':
-	/* XXX FIXME: enlarge? negative count? sign?. */
+	/* XXX FIXME: negative count? sign?. */
 	shift = (size_t) (msize == 1 ? mdata[0] : 0);
 	z = mpw_FromMPW(xsize, xdata, 0);
 	if (shift > 0)
@@ -1605,6 +1617,7 @@ assert(m);
 	goto exit;
 
 if (_debug < 0) {
+fprintf(stderr, "==> %s(%c)\n", __FUNCTION__, (op & 0xff));
 prtmpw("a", x);
 prtmpw("b", y);
 prtmpw("c", m);
@@ -1870,6 +1883,190 @@ _METHOD_DEBUG_ENTRY(_debug);
     return ok;
 }
 
+/** Return eq(x, y). */
+static JSBool
+mpw_eq(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (argc == 2) {
+	mpwObject * x = mpw_j2mpw(cx, argv[0]);
+	mpwObject * y = mpw_j2mpw(cx, argv[1]);
+
+	*rval = ((x->ob_size * y->ob_size) > 0 && mpeqx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y)))
+		? JSVAL_TRUE : JSVAL_FALSE;
+
+	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
+	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
+    } else
+	ok = JS_FALSE;
+    return ok;
+}
+
+/** Return ne(x, y). */
+static JSBool
+mpw_ne(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    JSBool ok = JS_TRUE;
+    if ((ok = mpw_eq(cx, obj, argc, argv, rval)))
+	*rval = (*rval == JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
+    return ok;
+}
+
+/** Return lt(x, y). */
+static JSBool
+mpw_lt(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (argc == 2) {
+	mpwObject * x = mpw_j2mpw(cx, argv[0]);
+	mpwObject * y = mpw_j2mpw(cx, argv[1]);
+
+	if (x->ob_size < 0 && y->ob_size > 0)
+	    *rval = JSVAL_TRUE;
+	else
+	if (x->ob_size > 0 && y->ob_size < 0)
+	    *rval = JSVAL_FALSE;
+	else
+	if (x->ob_size < 0 && y->ob_size < 0)
+	    *rval = mpgtx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE;
+	if (x->ob_size > 0 && y->ob_size > 0)
+	    *rval = mpltx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE;
+
+	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
+	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
+    } else
+	ok = JS_FALSE;
+    return ok;
+}
+
+/** Return ge(x, y). */
+static JSBool
+mpw_ge(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    JSBool ok = JS_TRUE;
+    if ((ok = mpw_lt(cx, obj, argc, argv, rval)))
+	*rval = (*rval == JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
+    return ok;
+}
+
+/** Return gt(x, y). */
+static JSBool
+mpw_gt(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    if (argc == 2) {
+	mpwObject * x = mpw_j2mpw(cx, argv[0]);
+	mpwObject * y = mpw_j2mpw(cx, argv[1]);
+
+	if (x->ob_size < 0 && y->ob_size > 0)
+	    *rval = JSVAL_FALSE;
+	else
+	if (x->ob_size > 0 && y->ob_size < 0)
+	    *rval = JSVAL_TRUE;
+	else
+	if (x->ob_size < 0 && y->ob_size < 0)
+	    *rval = mpltx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE;
+	if (x->ob_size > 0 && y->ob_size > 0)
+	    *rval = mpgtx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE;
+
+	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
+	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
+    } else
+	ok = JS_FALSE;
+    return ok;
+}
+
+/** Return le(x, y). */
+static JSBool
+mpw_le(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    JSBool ok = JS_TRUE;
+    if ((ok = mpw_gt(cx, obj, argc, argv, rval)))
+	*rval = (*rval == JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
+    return ok;
+}
+
+/** Return min(x, y). */
+static JSBool
+mpw_min(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    /* XXX generalize to N values? */
+    if (argc == 2) {
+	mpwObject * x = mpw_j2mpw(cx, argv[0]);
+	mpwObject * y = mpw_j2mpw(cx, argv[1]);
+
+	if (x->ob_size < 0 && y->ob_size > 0)
+	    *rval = argv[0];
+	else
+	if (x->ob_size > 0 && y->ob_size < 0)
+	    *rval = argv[1];
+	else
+	if (x->ob_size < 0 && y->ob_size < 0)
+	    *rval = mpgex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[0] : argv[1];
+	else
+	if (x->ob_size > 0 && y->ob_size > 0)
+	    *rval = mplex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[0] : argv[1];
+
+	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
+	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
+    } else
+	ok = JS_FALSE;
+    return ok;
+}
+
+/** Return max(x, y). */
+static JSBool
+mpw_max(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
+    JSBool ok = JS_TRUE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+    /* XXX generalize to N values? */
+    if (argc == 2) {
+	mpwObject * x = mpw_j2mpw(cx, argv[0]);
+	mpwObject * y = mpw_j2mpw(cx, argv[1]);
+
+	if (x->ob_size < 0 && y->ob_size > 0)
+	    *rval = argv[1];
+	else
+	if (x->ob_size > 0 && y->ob_size < 0)
+	    *rval = argv[0];
+	else
+	if (x->ob_size < 0 && y->ob_size < 0)
+	    *rval = mpgex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[1] : argv[0];
+	else
+	if (x->ob_size > 0 && y->ob_size > 0)
+	    *rval = mplex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[1] : argv[0];
+
+	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
+	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
+    } else
+	ok = JS_FALSE;
+    return ok;
+}
+
 #ifdef DYING
 /** Return random number 1 < r < b-1. */
 static JSBool
@@ -1898,6 +2095,14 @@ static JSFunctionSpec rpmmpw_funcs[] = {
     JS_FS("toString",	mpw_toString,		0,0,0),
     JS_FS("isPrime",	mpw_isPrime,		0,0,0),
     JS_FS("randomK",	mpw_randomK,		0,0,0),
+    JS_FS("eq",		mpw_eq,			0,0,0),
+    JS_FS("ne",		mpw_ne,			0,0,0),
+    JS_FS("lt",		mpw_lt,			0,0,0),
+    JS_FS("ge",		mpw_ge,			0,0,0),
+    JS_FS("gt",		mpw_gt,			0,0,0),
+    JS_FS("le",		mpw_le,			0,0,0),
+    JS_FS("min",	mpw_min,		0,0,0),
+    JS_FS("max",	mpw_max,		0,0,0),
     JS_FS_END
 };
 
@@ -2194,15 +2399,9 @@ assert(++ix < (int)argc);
 		    break;
 		}
 	    } else {
-		if (JSVAL_IS_OBJECT(v)) {
-		    o = JSVAL_TO_OBJECT(v);
-		    if (!OBJ_IS_MPW(cx, o))
-			o = NULL;
-		} else
-		    o = NULL;
 assert(++ix < (int)argc);
 		stack[ix] = mpw_j2mpw(cx, v);
-		freeme[ix] = (o == NULL ? 1 : 0);
+		freeme[ix] = (!JSVAL_IS_MPW(cx, v) ? 1 : 0);
 	    }
 	}
 	if (ix < 0) {

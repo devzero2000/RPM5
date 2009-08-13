@@ -60,8 +60,8 @@ ack('mpw(x, y, m, "mulm").toString(10)', '1');
 ack('mpw(x, y, m, "powm").toString(10)', '7');
  
 var zx = 2*3*5*19;
-zx *= zx;
-zx *= zx;
+// zx *= zx;
+// zx *= zx;
 // FIXME segfault, check gcd scaling for zy
 // zx *= zx;
 var zy = 7*11*13*19;
@@ -157,6 +157,60 @@ ack('mpw(wmb, wma, "%").toString(10)', (zmb % zma).toString(10));
 ack('mpw(wmb, wpa, "%").toString(10)', (zmb % zpa).toString(10));
 ack('mpw(wpb, wma, "%").toString(10)', (zpb % zma).toString(10));
 ack('mpw(wpb, wpa, "%").toString(10)', (zpb % zpa).toString(10));
+
+ack('mpw.eq(wma, wma)', zma == zma);
+ack('mpw.ne(wma, wma)', zma != zma);
+ack('mpw.eq(wma, wpa)', zma == zpa);
+ack('mpw.ne(wma, wpa)', zma != zpa);
+ack('mpw.eq(wpa, wma)', zpa == zma);
+ack('mpw.ne(wpa, wma)', zpa != zma);
+ack('mpw.eq(wpa, wpa)', zpa == zpa);
+ack('mpw.ne(wpa, wpa)', zpa != zpa);
+
+ack('mpw.lt(wma, wma)', zma < zma);
+ack('mpw.le(wma, wma)', zma <= zma);
+ack('mpw.gt(wma, wma)', zma > zma);
+ack('mpw.ge(wma, wma)', zma >= zma);
+ack('mpw.lt(wma, wpa)', zma < zpa);
+ack('mpw.le(wma, wpa)', zma <= zpa);
+ack('mpw.gt(wma, wpa)', zma > zpa);
+ack('mpw.ge(wma, wpa)', zma >= zpa);
+ack('mpw.lt(wpa, wma)', zpa < zma);
+ack('mpw.le(wpa, wma)', zpa <= zma);
+ack('mpw.gt(wpa, wma)', zpa > zma);
+ack('mpw.ge(wpa, wma)', zpa >= zma);
+ack('mpw.lt(wpa, wpa)', zpa < zpa);
+ack('mpw.le(wpa, wpa)', zpa <= zpa);
+ack('mpw.gt(wpa, wpa)', zpa > zpa);
+ack('mpw.ge(wpa, wpa)', zpa >= zpa);
+
+ack('mpw.min(zma, zmb)', Math.min(zma, zmb));
+ack('mpw.min(zma, zpb)', Math.min(zma, zpb));
+ack('mpw.min(zpa, zmb)', Math.min(zpa, zmb));
+ack('mpw.min(zpa, zpb)', Math.min(zpa, zpb));
+ack('mpw.max(zma, zmb)', Math.max(zma, zmb));
+ack('mpw.max(zma, zpb)', Math.max(zma, zpb));
+ack('mpw.max(zpa, zmb)', Math.max(zpa, zmb));
+ack('mpw.max(zpa, zpb)', Math.max(zpa, zpb));
+
+var za = 5;
+var zb = 3;
+// FIXME
+// ack('mpw(+za, 0, "%").toString(10)', za.toString(10));
+ack('mpw(+5, +3, "%").toString(10)', '2');
+ack('mpw(+5, -3, "%").toString(10)', '-1');
+ack('mpw(-5, +3, "%").toString(10)', '1');
+ack('mpw(-5, -3, "%").toString(10)', '-2');
+function mathmod(x, y) { return (x - y * Math.floor(x/y)); }
+ack('mpw(+za, +zb, "%").toString(10)', mathmod(+za, +zb).toString(10));
+ack('mpw(+za, -zb, "%").toString(10)', mathmod(+za, -zb).toString(10));
+ack('mpw(-za, +zb, "%").toString(10)', mathmod(-za, +zb).toString(10));
+ack('mpw(-za, -zb, "%").toString(10)', mathmod(-za, -zb).toString(10));
+
+ack('mpw(+za, +zb, "%").toString(10)', (+za % +zb).toString(10));
+ack('mpw(+za, -zb, "%").toString(10)', (+za % -zb).toString(10));
+ack('mpw(-za, +zb, "%").toString(10)', (-za % +zb).toString(10));
+ack('mpw(-za, -zb, "%").toString(10)', (-za % -zb).toString(10));
 
 // ===== Knuth poly
 var lo = 2;
@@ -267,7 +321,7 @@ function RSAv21(p, q, d, e, dP, dQ, qInv) {
 	return (mpw(s, this.e, this.n, "powm").toString(10) == hm.toString(10)
 		? true : false);
     }
-  return true;
+  return this;
 }
 
 // ===== RSA example (from "Handbook of Applied Cryptography" 11.20 p434).
@@ -669,7 +723,7 @@ function ElGamal(p, alpha, a, k) {
 		? true : false);
     }
 
-  return true;
+  return this;
 }
 
 // ===== ElGamal example (from "Handbook of Applied Cryptography" 11.65 p455).
@@ -747,7 +801,7 @@ function DSA(p, q, g) {
 	return (this.v.toString(10) == this.r.toString(10)
 		? true : false);
     }
-  return true;
+  return this;
 }
 
 // ===== DSA example (from "Handbook of Applied Cryptography" 11.57 p453).
@@ -898,33 +952,42 @@ delete dsa
 
 // =======================================================
 function CurveFp(p, a, b) {
-  this.p = mpw(p);
-  this.a = mpw(a);
-  this.b = mpw(b);
+    this.p = mpw(p);
+    this.a = mpw(a);
+    this.b = mpw(b);
 
-  this.contains =
+    this.contains =
     function (x, y) {
+        if (x == undefined && y == undefined)
+            return true;
 	var t1 = mpw(y, y, "*");
 	var t2 = mpw(mpw(x, x, "*"), x, "*");
 	t1 = mpw(t1, t2, "-");
 	t2 = mpw(x, this.a, "*");
 	t1 = mpw(t1, t2, "-");
 	t1 = mpw(t1, this.b, "-");
-	t1 = mpw(t1, this.p, "%");
-	return (t1.toString(10) == "0");
+	// XXX FIXME negative 0
+	t1 = mpw(t1, this.p, "%", "abs");
+	return (mpw.eq(t1, 0));
     }
 
-  return true;
+    return this;
 }
 
 // =======================================================
-function Point(curve, x, y, n) {
-  this.curve = curve;
-  this.x = mpw(x);
-  this.y = mpw(y);
-  this.z = mpw(1);
-  this.n = mpw(n);
-  return true;
+function PointFp(C, x, y, n) {
+    this.C = C;
+    this.x = mpw(x);
+    this.y = mpw(y);
+    this.z = mpw(1);
+    this.n = mpw(n);
+    return this;
+}
+
+function checkP(C, x, y, n) {
+    P = new PointFp(C, x, y, n);
+    ack('C.contains(P.x, P.y)', true);
+    return P;
 }
 
 // ===== secp 112r1
@@ -936,13 +999,11 @@ var n    = mpw('db7c2abf62e35e7628dfac6561c5');
 var gx   = mpw('09487239995a5ee76b55f9c2f098');
 var gy   = mpw('a89ce5af8724c0a23e0e0ff77500');
 
-c112 = new CurveFp(p, -3, b);
-ack('c112.contains(gx, gy)', true);
-p112 = new Point(c112, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
-delete c112;
-delete p112;
-
+delete C;
+delete G;
 
 // ===== SECP 128r1
 print("===== SECP 128r1");
@@ -953,12 +1014,11 @@ var n    = mpw('fffffffe0000000075a30d1b9038a115');
 var gx   = mpw('161ff7528b899b2d0c28607ca52c5b86');
 var gy   = mpw('cf5ac8395bafeb13c02da292dded7a83');
 
-c128 = new CurveFp(p, -3, b);
-ack('c128.contains(gx, gy)', true);
-p128 = new Point(c128, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
-delete c128;
-delete p128;
+delete C;
+delete G;
 
 // ===== SECP 160r1
 print("===== SECP 160r1");
@@ -969,12 +1029,11 @@ var n    = mpw('0100000000000000000001f4c8f927aed3ca752257');
 var gx   = mpw('4a96b5688ef573284664698968c38bb913cbfc82');
 var gy   = mpw('23a628553168947d59dcc912042351377ac5fb32');
 
-c160 = new CurveFp(p, -3, b);
-ack('c160.contains(gx, gy)', true);
-p160 = new Point(c160, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
-delete c160;
-delete p160;
+delete C;
+delete G;
 
 // ===== ECDSA P-192 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -991,14 +1050,13 @@ ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toStrin
 var gx   = mpw('188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012');
 var gy   = mpw('07192b95ffc8da78631011ed6b24cdd573f977a11e794811');
 
-c192 = new CurveFp(p, -3, b);
-ack('c192.contains(gx, gy)', true);
-p192 = new Point(c192, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
 var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
-ack('c192.contains(qx, qy)', true);
+Q = checkP(C, qx, qy, n);
 
 var k    = mpw('d06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847');
 var msg  = "Example of ECDSA with P-192";
@@ -1016,8 +1074,9 @@ var u2   = mpw('de0747072e426e307ba1e19bd5c1b57f9e29220ae97cc9bc');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('f0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821');
 
-delete c192;
-delete p192;
+delete C;
+delete G;
+delete Q;
 
 // ===== ECDSA P-224 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -1035,14 +1094,13 @@ ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").
 var gx   = mpw('b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21');
 var gy   = mpw('bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34');
 
-c224 = new CurveFp(p, -3, b);
-ack('c224.contains(gx, gy)', true);
-p224 = new Point(c224, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
 var d    = mpw('3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8');
 var qx   = mpw('e84fb0b8e7000cb657d7973cf6b42ed78b301674276df744af130b3e');
 var qy   = mpw('4376675c6fc5612c21a0ff2d2a89d2987df7a2bc52183b5982298555');
-ack('c224.contains(qx, qy)', true);
+Q = checkP(C, qx, qy, n);
 
 var k    = mpw('a548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937');
 var msg  = "Example of ECDSA with P-224";
@@ -1060,8 +1118,9 @@ var u2   = mpw('86daaf97dc9bb13a66ec7b735e69bccd60f395efb2cdfded8a3ccbcf');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('c3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380');
 
-delete c224;
-delete p224;
+delete C;
+delete G;
+delete Q;
 
 // ===== ECDSA P-256 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -1082,14 +1141,13 @@ ack('mpw(mpw(b, p, "sqrm"), c, p, "mulm").toString(10)', mpw(p, 27, "-").toStrin
 var gx   = mpw('6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296');
 var gy   = mpw('4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5');
 
-c256 = new CurveFp(p, -3, b);
-ack('c256.contains(gx, gy)', true);
-p256 = new Point(c256, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
 var d    = mpw('c477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96');
 var qx   = mpw('b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19');
 var qy   = mpw('3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09');
-ack('c256.contains(qx, qy)', true);
+Q = checkP(C, qx, qy, n);
 
 var k    = mpw('7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae');
 var msg  = "Example of ECDSA with P-256";
@@ -1110,8 +1168,9 @@ var u2   = mpw('1777f73443a4d68c23d1fc4cb5f8b7f2554578ee87f04c253df44efd181c184c
 ack('mpw(r, w, "*", n, "%").toString(16)', u2.toString(16));
 var v    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
 
-delete c256;
-delete p256;
+delete C;
+delete G;
+delete Q;
 
 // ===== ECDSA P-384 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -1133,14 +1192,13 @@ ack('mpw(mpw(b, b, "*", p, "%"), c, "*", p, "%").toString(10)', mpw(p, 27, "-").
 var gx   = mpw('aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760ab7');
 var gy   = mpw('3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5f');
 
-c384 = new CurveFp(p, -3, b);
-ack('c384.contains(gx, gy)', true);
-p384 = new Point(c384, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
 var d    = mpw('f92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08');
 var qx   = mpw('3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471fb9d2ab74657b82f9086489d9ef0f5cb5');
 var qy   = mpw('d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295ffe5382d00cfcda30344a9b5b68db855');
-ack('c384.contains(qx, qy)', true);
+Q = checkP(C, qx, qy, n);
 
 var k    = mpw('2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef');
 var msg  = "Example of ECDSA with P-384";
@@ -1158,8 +1216,9 @@ var u2   = mpw('8f77be5b0eb32a1a3b9274cfda53518a01aad4afc4bd46a392b7c7de4eed3fe6
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088');
 
-delete c384;
-delete p384;
+delete C;
+delete G;
+delete Q;
 
 // ===== ECDSA P-521 example from 
 //	http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/ECDSA_Prime.pdf
@@ -1177,14 +1236,13 @@ var b    = mpw('051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef10
 var gx   = mpw('c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66');
 var gy   = mpw('11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650');
 
-c512 = new CurveFp(p, -3, b);
-ack('c512.contains(gx, gy)', true);
-p512 = new Point(c512, gx, gy, n);
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
 
 var d    = mpw('0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722');
 var qx   = mpw('0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cca16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4');
 var qy   = mpw('0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef17be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e');
-ack('c512.contains(qx, qy)', true);
+Q = checkP(C, qx, qy, n);
 
 var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf');
 var msg  = "Example of ECDSA with P-512";
@@ -1202,8 +1260,9 @@ var u2   = mpw('014e7fc3ee94b91e092f660253dcaf92a70306bdfa317a0ab7efb2c8286944be
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba');
 
-delete c512;
-delete p512;
+delete C;
+delete G;
+delete Q;
 
 // ##############################################################
 // Curve K-163
