@@ -267,6 +267,10 @@ int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
     switch (itemno) {
     default:
 assert(0);
+    case 50:		/* ECDSA r */
+    case 51:		/* ECDSA s */
+    case 60:		/* ECDSA curve OID */
+    case 61:		/* ECDSA Q */
 	break;
     case 10:		/* RSA m**d */
 	ssl->c = BN_bin2bn(p+2, nb, ssl->c);

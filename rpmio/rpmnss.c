@@ -269,6 +269,10 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
     switch (itemno) {
     default:
 assert(0);
+    case 50:		/* ECDSA r */
+    case 51:		/* ECDSA s */
+    case 60:		/* ECDSA curve OID */
+    case 61:		/* ECDSA Q */
 	break;
     case 10:		/* RSA m**d */
 	nss->rsasig = rpmnssMpiCopy(NULL, nss->rsasig, p);

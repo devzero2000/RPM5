@@ -166,6 +166,35 @@ fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
+    pgpImplVecs = &rpmsslImplVecs;
+
+    dig = pgpDigNew(0);
+_pgp_debug = 1;
+_pgp_print = 1;
+
+fprintf(stderr, "=============================== ECDSA Public Key\n");
+    if ((rc = doit(ECDSApub, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+fprintf(stderr, "=============================== ECDSA Signature of \"%s\"\n", str);
+    if ((rc = doit(ECDSAsig, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA256, RPMDIGEST_NONE);
+	pgpDigParams dsig = pgpGetSignature(dig);
+	
+	rpmDigestUpdate(ctx, str, strlen(str));
+	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
+
+	(void) pgpImplSetECDSA(ctx, dig, dsig);
+    }
+
+    rc = pgpImplVerifyECDSA(dig);
+    
+fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
+
+    dig = pgpDigFree(dig);
+
     if (pgpImplVecs == &rpmnssImplVecs)
 	NSS_Shutdown();
 

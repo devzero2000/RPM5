@@ -439,6 +439,7 @@ LIBRPMIO_0
     rpmmgNew;
     rpmmgFile;
     rpmmgBuffer;
+    _rpmnss_init;
     rpmnssImplVecs;
     _rpmperl_debug;
     rpmperlNew;

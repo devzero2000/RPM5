@@ -248,7 +248,8 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_EC		= 18,	/*!< Elliptic Curve */
     PGPPUBKEYALGO_ECDSA		= 19,	/*!< ECDSA */
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
-    PGPPUBKEYALGO_DH		= 21	/*!< Diffie-Hellman (X9.42) */
+    PGPPUBKEYALGO_DH		= 21,	/*!< Diffie-Hellman (X9.42) */
+    PGPPUBKEYALGO_ECDH		= 22	/*!< ECC Diffie-Hellman */
 } pgpPubkeyAlgo;
 /*@=typeuse@*/
 
@@ -295,6 +296,9 @@ typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_AES_192	=  8,	/*!< AES(192-bit key) */
     PGPSYMKEYALGO_AES_256	=  9,	/*!< AES(256-bit key) */
     PGPSYMKEYALGO_TWOFISH	= 10,	/*!< TWOFISH(256-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_128	= 11,	/*!< CAMELLIA(128-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_192	= 12,	/*!< CAMELLIA(192-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_256	= 13,	/*!< CAMELLIA(256-bit key) */
     PGPSYMKEYALGO_NOENCRYPT	= 110	/*!< no encryption */
 } pgpSymkeyAlgo;
 /*@=typeuse@*/

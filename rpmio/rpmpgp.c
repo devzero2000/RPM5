@@ -93,6 +93,7 @@ struct pgpValTbl_s pgpPubkeyTbl[] = {
     { PGPPUBKEYALGO_ECDSA,	"ECDSA" },
     { PGPPUBKEYALGO_ELGAMAL,	"Elgamal" },
     { PGPPUBKEYALGO_DH,		"Diffie-Hellman (X9.42)" },
+    { PGPPUBKEYALGO_ECDH,	"ECDH" },
     { -1,			"Unknown public key algorithm" },
 };
 
@@ -108,6 +109,9 @@ struct pgpValTbl_s pgpSymkeyTbl[] = {
     { PGPSYMKEYALGO_AES_192,	"AES(192-bit key)" },
     { PGPSYMKEYALGO_AES_256,	"AES(256-bit key)" },
     { PGPSYMKEYALGO_TWOFISH,	"TWOFISH(256-bit key)" },
+    { PGPSYMKEYALGO_CAMELLIA_128, "CAMELLIA(128-bit key)" },
+    { PGPSYMKEYALGO_CAMELLIA_192, "CAMELLIA(192-bit key)" },
+    { PGPSYMKEYALGO_CAMELLIA_256, "CAMELLIA(256-bit key)" },
     { PGPSYMKEYALGO_NOENCRYPT,	"no encryption" },
     { -1,			"Unknown symmetric key algorithm" },
 };
@@ -389,6 +393,13 @@ static const char * pgpSigDSA[] = {
     "    s =",
     NULL,
 };
+
+/*@observer@*/ /*@unchecked@*/
+static const char * pgpSigECDSA[] = {
+    "    r =",
+    "    s =",
+    NULL,
+};
 /*@=varuse =readonlytrans =nullassign @*/
 
 static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
@@ -438,6 +449,26 @@ static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		if (xx) return xx;
 	    }
 	    pgpPrtStr("", pgpSigDSA[i]);
+	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
+	    if (i >= 2) break;
+	    if (_dig &&
+	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
+	    {
+		xx = 0;
+		switch (i) {
+		case 0:		/* r */
+		    xx = pgpImplMpiItem(pgpSigECDSA[i], _dig, 50+i, p, pend);
+		    /*@switchbreak@*/ break;
+		case 1:		/* s */
+		    xx = pgpImplMpiItem(pgpSigECDSA[i], _dig, 50+i, p, pend);
+		    /*@switchbreak@*/ break;
+		default:
+		    xx = 1;
+		    /*@switchbreak@*/ break;
+		}
+		if (xx) return xx;
+	    }
+	    pgpPrtStr("", pgpSigECDSA[i]);
 	} else {
 	    if (_pgp_print)
 		fprintf(stderr, "%7d", i);
@@ -595,6 +626,20 @@ static const char * pgpSecretDSA[] = {
 #endif
 
 /*@observer@*/ /*@unchecked@*/
+static const char * pgpPublicECDSA[] = {
+    "    Q =",
+    NULL,
+};
+
+#ifdef	NOTYET
+/*@observer@*/ /*@unchecked@*/
+static const char * pgpSecretECDSA[] = {
+    "    d =",
+    NULL,
+};
+#endif
+
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicELGAMAL[] = {
     "    p =",
     "    g =",
@@ -655,6 +700,24 @@ static const rpmuint8_t * pgpPrtPubkeyParams(const pgpPkt pp,
 		}
 	    }
 	    pgpPrtStr("", pgpPublicDSA[i]);
+	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
+	    if (i >= 1) break;
+	    if (_dig) {
+		switch (i) {
+		case 0:		/* curve & Q */
+		    (void) pgpImplMpiItem(pgpPublicECDSA[i], _dig, 60, p+1, p+1+p[0]);
+		    (void) pgpImplMpiItem(pgpPublicECDSA[i], _dig, 61, p+1+p[0], NULL);
+		    /*@switchbreak@*/ break;
+		default:
+		    /*@switchbreak@*/ break;
+		}
+	    }
+	    if (i == 0) {
+		pgpPrtHex(" Curve = [ OID]:", p+1, p[0]);
+		p += 1 + p[0];
+		pgpPrtNL();
+	    }
+	    pgpPrtStr("", pgpPublicECDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
 	    if (i >= 3) break;
 	    pgpPrtStr("", pgpPublicELGAMAL[i]);
@@ -721,6 +784,9 @@ static const rpmuint8_t * pgpPrtSeckeyParams(const pgpPkt pp,
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpSecretDSA[i] == NULL) break;
 	    pgpPrtStr("", pgpSecretDSA[i]);
+	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
+	    if (pgpSecretECDSA[i] == NULL) break;
+	    pgpPrtStr("", pgpSecretECDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
 	    if (pgpSecretELGAMAL[i] == NULL) break;
 	    pgpPrtStr("", pgpSecretELGAMAL[i]);
@@ -917,6 +983,10 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
 		se += pgpMpiLen(se);
 	    /*@innerbreak@*/ break;
 	case PGPPUBKEYALGO_DSA:
+	    for (i = 0; i < 4; i++)
+		se += pgpMpiLen(se);
+	    /*@innerbreak@*/ break;
+	case PGPPUBKEYALGO_ECDSA:
 	    for (i = 0; i < 4; i++)
 		se += pgpMpiLen(se);
 	    /*@innerbreak@*/ break;
