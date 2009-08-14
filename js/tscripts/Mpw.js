@@ -1205,6 +1205,8 @@ C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
 walkMul(G, 15);
 
+//===================== FIPS 186-3
+
 var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
@@ -1234,6 +1236,52 @@ ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
 var u2   = mpw('de0747072e426e307ba1e19bd5c1b57f9e29220ae97cc9bc');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('f0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821');
+
+// uG = G.mul(G, u1);
+// uQ = Q.mul(Q, u2);
+// V = G.add(uG, uQ);
+// ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
+
+//===================== X9.66-1998 J.3.1
+
+var d    = mpw('1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB');
+// Q compressed = 02 62B12D60 690CDCF3 30BABAB6 E69763B4 71F994DD 702D16A5
+var qx   = mpw('62B12D60690CDCF330BABAB6E69763B471F994DD702D16A5');
+var qy   = mpw(qx, qx, "*", -3, "+", qx, "*", b, "+", p, "%", p, 1, "+", 2, ">>", p, "powm");
+Q = checkP(C, qx, qy, n);
+// GQ = walkAdd(G, Q, 1);
+// QG = walkAdd(Q, G, 82);
+// walkMul(Q, 5);
+
+// dG = G.mul(G, d);
+// ack('Q.cmp(Q,dG)', true);
+
+var k    = mpw('FA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E');
+var msg  = "abc";
+var e    = mpw('A9993E364706816ABA3E25717850C26C9CD0D89D');
+ack('e.toString(10)', '968236873715988614170569073515315707566766479517');
+var kinv = mpw(k, n, "invm");
+// ack('mpw(k, n, "invm").toString(16)', kinv.toString(16));
+var r    = mpw('885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD');
+ack('r.toString(10)', '3342403536405981729393488334694600415596881826869351677613');
+var s    = mpw('E9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686');
+ack('s.toString(10)', '5735822328888155254683894997897571951568553642892029982342');
+ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
+
+// kG = G.mul(G, k);
+// ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
+var w    = mpw(s, n, "invm");
+ack('w.toString(10)', '3250964404472526825130516490452346217749189704049629042861');
+var u1   = mpw('688E3FF66F55524374317D0AA03FA2B6E7DB44964CF9D457');
+ack('u1.toString(10)', '2563697409189434185194736134579731015366492496392189760599');
+ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
+var u2   = mpw('9FBBC2459B10ADC858EE18BE81541041229A839EF04268518');
+ack('u2.toString(10)', '62666438133486179671864777102357858491364063233387822220568');
+// XXX FIXME wrong answer
+// ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
+var v    = mpw('885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD');
+ack('v.toString(10)', '3342403536405981729393488334694600415596881826869351677613');
 
 // uG = G.mul(G, u1);
 // uQ = Q.mul(Q, u2);
@@ -1298,6 +1346,85 @@ var v    = mpw('c3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380');
 // uQ = Q.mul(Q, u2);
 // V = G.add(uG, uQ);
 // ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
+
+delete C;
+delete G;
+delete Q;
+
+// ===== ECDSA P-239 example from X9.62-1998 J.3.2
+print("===== P-239");
+var p    = mpw('7FFFFFFFFFFFFFFFFFFFFFFF7FFFFFFFFFFF8000000000007FFFFFFFFFFF');
+ack('p.toString(10)', '883423532389192164791648750360308885314476597252960362792450860609699839');
+var n    = mpw('7FFFFFFFFFFFFFFFFFFFFFFF7FFFFF9E5E9A9F5D9071FBD1522688909D0B');
+ack('n.toString(10)', '883423532389192164791648750360308884807550341691627752275345424702807307');
+
+var b    = mpw('6B016C3BDCF18941D0D654921475CA71A9DB2FB27D1D37796185C2942C0A');
+var a    = mpw('7FFFFFFFFFFFFFFFFFFFFFFF7FFFFFFFFFFF8000000000007FFFFFFFFFFC');
+
+// G compressed = 020FFA 963CDCA8 816CCC33 B8642BED F905C3D3 58573D3F 27FBBD3B 3CB9AAAF
+var gx   = mpw('0FFA963CDCA8816CCC33B8642BEDF905C3D358573D3F27FBBD3B3CB9AAAF');
+var gy   = mpw(gx, gx, "*", -3, "+", gx, "*", b, "+", p, "%", p, 1, "+", 2, ">>", p, "powm");
+
+C = new CurveFp(p, -3, b);
+G = checkP(C, gx, gy, n);
+// walkMul(G, 128);
+
+var d    = mpw('7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D');
+ack('d.toString(10)', '876300101507107567501066130761671078357010671067781776716671676178726717');
+// Q compressed = 025B6D C53BC61A 2548FFB0 F671472D E6C9521A 9D2D2534 E65ABFCB D5FE0C70
+var qx   = mpw('5B6DC53BC61A2548FFB0F671472DE6C9521A9D2D2534E65ABFCBD5FE0C70');
+var qy   = mpw(qx, qx, "*", -3, "+", qx, "*", b, "+", p, "%", p, 1, "+", 2, ">>", p, "powm");
+Q = checkP(C, qx, qy, n);
+// GQ = walkAdd(G, Q, 5);
+// QG = walkAdd(Q, G, 1);
+// walkMul(Q, 128);
+
+dG = G.mul(G, d);
+// ack('Q.cmp(Q,dG)', true);
+
+var k    = mpw('656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF');
+ack('k.toString(10)', '700000017569056646655505781757157107570501575775705779575555657156756655');
+var msg  = "abc";
+var e    = mpw('A9993E364706816ABA3E25717850C26C9CD0D89D');
+ack('e.toString(10)', '968236873715988614170569073515315707566766479517');
+var kinv = mpw(k, n, "invm");
+var ry   = mpw('20C08272B9E6C92B518A5AC5EB2835BE0102809D77E69304A6F7C522B47B');
+var r    = mpw('2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0');
+ack('r.toString(10)', '308636143175167811492622547300668018854959378758531778147462058306432176');
+var s    = mpw('2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF');
+ack('s.toString(10)', '323813553209797357708078776831250505931891051755007842781978505179448783');
+ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
+
+kG = G.mul(G, k);
+ack('kG.x.toString(10)', '308636143175167811492622547300668018854959378758531778147462058306432176');
+ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
+var w    = mpw(s, n, "invm");
+ack('w.toString(16)', '0x7886c9885b6fa74077186378969e35af072f6ba36b7364104e7a94447124');
+ack('w.toString(10)', '831843418332978390463010021843350581892480848636408104706147767766249764');
+var u1   = mpw('11F9D347D0996B633D8D83734C6F7E280011DEDC142CF5B3359A82CF15D9');
+ack('u1.toString(10)', '124064965052014194622159338097387562954788117638383503089995672152118745');
+ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
+var u2   = mpw('1975746D082DE951CA9C5129DF423065B870E28FE8E7A9A27D465787BC5CB');
+ack('u2.toString(10)', '2811363736140754465407544341268382421438687214093897850239246340491822539');
+// XXX FIXME wrong answer
+ack('mpw(r, w, "*", n, "%").toString(16)', u2.toString(16));
+var v    = mpw('2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0');
+ack('v.toString(10)', '308636143175167811492622547300668018854959378758531778147462058306432176');
+
+uG = G.mul(G, u1);
+ack('uG.x.toString(16)', mpw('64C429FAF03DC1707700D2011D439836B4C712DCFFD8E4B7ED9937F62D1F').toString(16));
+ack('uG.y.toString(16)', mpw('6580DE1A6ECEDFD783538C7C9D8398BAE8B5A697EEFD004AA59660800F48').toString(16));
+uQ = Q.mul(Q, u2);
+ack('uQ.x.toString(16)', mpw('3DCA0CAFD86C59DDD9FC251A20739F69845168F5922E523B7994AFC92D9D').toString(16));
+ack('uQ.y.toString(16)', mpw('5532B0A717E945EED3D8AD1C26AB37907E942833CD22AFFE63AC1F5BC8FE').toString(16));
+
+uQ.x   = mpw('3DCA0CAFD86C59DDD9FC251A20739F69845168F5922E523B7994AFC92D9D');
+uQ.y   = mpw(uQ.x, uQ.x, "*", -3, "+", uQ.x, "*", b, "+", p, "%", p, 1, "+", 2, ">>", p, "powm");
+V = G.add(uG, uQ);
+ack('V.x.toString(16)', mpw('2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0').toString(16));
+ack('V.y.toString(16)', mpw('20C08272B9E6C92B518A5AC5EB2835BE0102809D77E69304A6F7C522B47B').toString(16));
+ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
 
 delete C;
 delete G;
