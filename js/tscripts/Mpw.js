@@ -961,13 +961,9 @@ function CurveFp(p, a, b) {
         if (x == undefined && y == undefined)
             return true;
 	var t1 = mpw(y, y, "*");
-	var t2 = mpw(mpw(x, x, "*"), x, "*");
-	t1 = mpw(t1, t2, "-");
-	t2 = mpw(x, this.a, "*");
-	t1 = mpw(t1, t2, "-");
-	t1 = mpw(t1, this.b, "-");
+	var t2 = mpw(x, x, "*", this.a, "+", x, "*", this.b, "+");
 	// XXX FIXME negative 0
-	t1 = mpw(t1, this.p, "%", "abs");
+	t1 = mpw(t1, t2, "-", this.p, "%", "abs");
 	return (mpw.eq(t1, 0));
     }
 
@@ -996,9 +992,12 @@ function PointFp(C, x, y, n) {
 	var C = P.C;
 	if (P.x == undefined || P.y == undefined)
 	    return new PointFp(C, undefined, undefined, P.n);
-	var l = mpw(P.x, P.x, "*", 3, "*", C.a, "+", C.p, "%", 2, P.y, "*", C.p, "%", C.p, "invm", "*", C.p, "%");
+	var l = mpw(P.x, P.x, "*", 3, "*", C.a, "+", C.p, "%", 2, P.y, "abs", "*", C.p, "%", C.p, "invm", "*", C.p, "%", "abs");
+	if (mpw.lt(P.y, 0))
+	    l = mpw(l, "neg");
 	var x = mpw(l, l, "*", 2, P.x, "*", "-", C.p, "%");
 	var y = mpw(P.x, x, "-", l, "*", P.y, "-", C.p, "%");
+//	y = mpw(y, "abs");	// XXX force positive for now
 	return new PointFp(C, x, y, P.n);
     }
 
@@ -1014,8 +1013,12 @@ function PointFp(C, x, y, n) {
 		return new PointFp(C, undefined, undefined, P.n);
 	    return P.dbl(P);
 	}
-	var l = mpw(Q.y, P.y, "-", Q.x, P.x, "-", C.p, "invm", "*", C.p, "%");
-	var x = mpw(l, l, "*", P.x, "-", Q.x, "-", C.p, "%");
+	if (mpw.gt(P.x, Q.x)) {
+	    var l = mpw(P.y, Q.y, "-", C.p, "%", P.x, Q.x, "-", C.p, "invm", "*", C.p, "%");
+	} else {
+	    var l = mpw(Q.y, P.y, "-", C.p, "%", Q.x, P.x, "-", C.p, "invm", "*", C.p, "%");
+	}
+	var x = mpw(l, l, "*", P.x, Q.x, "+", "-", C.p, "%");
 	var y = mpw(l, P.x, x, "-", "*", P.y, "-", C.p, "%");
 	return new PointFp(C, x, y, P.n);
     }
@@ -1072,18 +1075,63 @@ function walkAdd(P, Q, imax) {
     return PQ;
 }
 
+function walkMul(P, imax) {
+    PM = new PointFp(P.C, undefined, undefined, P.n);
+    for (let i = 1; i < imax; i++)
+	PM = P.mul(P, i);
+    return PM;
+}
+
+function walkDblMul(P, imax) {
+  PP = P.dbl(P);
+  for (let i = 1; i < imax; i++) {
+    var j = Math.pow(2, i);
+    PM = P.mul(P, j);
+ack('PP.cmp(PP,PM)', true);
+    PP = PP.dbl(PP);
+  }
+  return true;
+}
+
+function walkDblAdd(P, imax) {
+  var j = 2;
+  PQ = P.add(P, P);
+  PP = P.dbl(P);
+  for (let i = 1; i < imax; i++) {
+     while (j < Math.pow(2, i)) {
+ 	PQ = PQ.add(PQ, P);
+	j++;
+    }
+ack('PP.cmp(PP,PQ)', true);
+    PP = PP.dbl(PP);
+  }
+  return true;
+}
+
 function checkP(C, x, y, n) {
     var P = new PointFp(C, x, y, n);
-    var PP = P.sub(P, P);
-    var PP = P.dbl(P);
-    var P1 = P.mul(P, 1);
-    var P2 = P.mul(P, 2);
+//    var PP = P.sub(P, P);
+//    var PP = P.dbl(P);
+//    var P1 = P.mul(P, 1);
+//    var P2 = P.mul(P, 2);
+
+    walkDbl(P, 10);
+    walkDblMul(P, 10);
+
+//    walkAdd(P, P, 10);
+//    walkDblAdd(P, 2);
 
     var N = new PointFp(C, x, mpw(y, "neg"), n);
     var NN = N.sub(N, N);
-//    var NN = N.dbl(N);
+    var NN = N.dbl(N);
     var N1 = N.mul(N, 1);
-//    var N2 = N.mul(N, 2);
+    var N2 = N.mul(N, 2);
+
+    walkDbl(N, 10);
+    walkDblMul(N, 10);
+
+//    walkAdd(N, N, 1);
+//    walkDblAdd(N, 1);
 
     var NP = N.add(N, P);
 
@@ -1101,6 +1149,7 @@ var gy   = mpw('a89ce5af8724c0a23e0e0ff77500');
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+// walkMul(G, 1024);
 
 delete C;
 delete G;
@@ -1116,6 +1165,7 @@ var gy   = mpw('cf5ac8395bafeb13c02da292dded7a83');
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+walkMul(G, 5);
 
 delete C;
 delete G;
@@ -1131,6 +1181,7 @@ var gy   = mpw('23a628553168947d59dcc912042351377ac5fb32');
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+walkMul(G, 53);
 
 delete C;
 delete G;
@@ -1152,12 +1203,18 @@ var gy   = mpw('07192b95ffc8da78631011ed6b24cdd573f977a11e794811');
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+walkMul(G, 15);
 
 var d    = mpw('7891686032fd8057f636b44b1f47cce564d2509923a7465b');
 var qx   = mpw('fba2aac647884b504eb8cd5a0a1287babcc62163f606a9a2');
 var qy   = mpw('dae6d4cc05ef4f27d79ee38b71c9c8ef4865d98850d84aa5');
 Q = checkP(C, qx, qy, n);
 GQ = walkAdd(G, Q, 1);
+QG = walkAdd(Q, G, 82);
+walkMul(Q, 5);
+
+// dG = G.mul(G, d);
+// ack('Q.cmp(Q,dG)', true);
 
 var k    = mpw('d06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847');
 var msg  = "Example of ECDSA with P-192";
@@ -1168,12 +1225,20 @@ var r    = mpw('f0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821');
 var s    = mpw('1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed');
 ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
 
+// kG = G.mul(G, k);
+// ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
 var w    = mpw(s, n, "invm");
 var u1   = mpw('785760fd37767d546003fa66933b7d202642352331b15b84');
 ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
 var u2   = mpw('de0747072e426e307ba1e19bd5c1b57f9e29220ae97cc9bc');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('f0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821');
+
+// uG = G.mul(G, u1);
+// uQ = Q.mul(Q, u2);
+// V = G.add(uG, uQ);
+// ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
 
 delete C;
 delete G;
@@ -1197,12 +1262,18 @@ var gy   = mpw('bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34');
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+walkMul(G, 5);
 
 var d    = mpw('3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8');
 var qx   = mpw('e84fb0b8e7000cb657d7973cf6b42ed78b301674276df744af130b3e');
 var qy   = mpw('4376675c6fc5612c21a0ff2d2a89d2987df7a2bc52183b5982298555');
 Q = checkP(C, qx, qy, n);
-GQ = walkAdd(G, Q, 1);
+GQ = walkAdd(G, Q, 5);
+QG = walkAdd(Q, G, 1);
+walkMul(Q, 39);
+
+// dG = G.mul(G, d);
+// ack('Q.cmp(Q,dG)', true);
 
 var k    = mpw('a548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937');
 var msg  = "Example of ECDSA with P-224";
@@ -1213,12 +1284,20 @@ var r    = mpw('c3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380');
 var s    = mpw('c5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617');
 ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
 
+// kG = G.mul(G, k);
+// ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
 var w    = mpw(s, n, "invm");
 var u1   = mpw('69df611df949498ebe20c1e453cf231cdd2f30adeecba9335481295d');
 ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
 var u2   = mpw('86daaf97dc9bb13a66ec7b735e69bccd60f395efb2cdfded8a3ccbcf');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('c3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380');
+
+// uG = G.mul(G, u1);
+// uQ = Q.mul(Q, u2);
+// V = G.add(uG, uQ);
+// ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
 
 delete C;
 delete G;
@@ -1245,12 +1324,18 @@ var gy   = mpw('4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+walkMul(G, 3);
 
 var d    = mpw('c477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96');
 var qx   = mpw('b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19');
 var qy   = mpw('3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09');
 Q = checkP(C, qx, qy, n);
 GQ = walkAdd(G, Q, 1);
+QG = walkAdd(Q, G, 1);
+walkMul(Q, 9);
+
+// dG = G.mul(G, d);
+// ack('Q.cmp(Q,dG)', true);
 
 var k    = mpw('7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae');
 var msg  = "Example of ECDSA with P-256";
@@ -1262,6 +1347,9 @@ var s    = mpw('dc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1
 // FIXME mulm?
 ack('mpw(mpw(mpw(r, d, "*", n, "%"), e, "+", n, "%"), kinv, "*", n, "%").toString(16)', s.toString(16));
 
+// kG = G.mul(G, k);
+// ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
 var w    = mpw(s, n, "invm");
 var u1   = mpw('b807bf3281dd13849958f444fd9aea808d074c2c48ee8382f6c47a435389a17e');
 // FIXME mulm?
@@ -1270,6 +1358,11 @@ var u2   = mpw('1777f73443a4d68c23d1fc4cb5f8b7f2554578ee87f04c253df44efd181c184c
 // FIXME mulm?
 ack('mpw(r, w, "*", n, "%").toString(16)', u2.toString(16));
 var v    = mpw('2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f');
+
+// uG = G.mul(G, u1);
+// uQ = Q.mul(Q, u2);
+// V = G.add(uG, uQ);
+// ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
 
 delete C;
 delete G;
@@ -1297,12 +1390,18 @@ var gy   = mpw('3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c0
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+walkMul(G, 7);
 
 var d    = mpw('f92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08');
 var qx   = mpw('3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471fb9d2ab74657b82f9086489d9ef0f5cb5');
 var qy   = mpw('d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295ffe5382d00cfcda30344a9b5b68db855');
 Q = checkP(C, qx, qy, n);
-// GQ = walkAdd(G, Q, 1);
+GQ = walkAdd(G, Q, 2);
+QG = walkAdd(Q, G, 10);
+walkMul(Q, 5);
+
+// dG = G.mul(G, d);
+// ack('Q.cmp(Q,dG)', true);
 
 var k    = mpw('2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef');
 var msg  = "Example of ECDSA with P-384";
@@ -1313,12 +1412,20 @@ var r    = mpw('30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a
 var s    = mpw('cc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94efd1f7d5dbe620bfb821c46d549683ad8');
 ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
 
+// kG = G.mul(G, k);
+// ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
 var w    = mpw(s, n, "invm");
 var u1   = mpw('9c0590ee8000b79832dc4c6776f7e5fd2a74be161741c7c2d2f038d439831696a1b8ece4199d225b12b76dd9e637b250');
 ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
 var u2   = mpw('8f77be5b0eb32a1a3b9274cfda53518a01aad4afc4bd46a392b7c7de4eed3fe6dee54f3064234fe7fde57ae45532c24d');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088');
+
+// uG = G.mul(G, u1);
+// uQ = Q.mul(Q, u2);
+// V = G.add(uG, uQ);
+// ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
 
 delete C;
 delete G;
@@ -1342,12 +1449,20 @@ var gy   = mpw('11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e6
 
 C = new CurveFp(p, -3, b);
 G = checkP(C, gx, gy, n);
+// walkMul(G, 1024);
 
 var d    = mpw('0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722');
 var qx   = mpw('0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cca16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4');
 var qy   = mpw('0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef17be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e');
 Q = checkP(C, qx, qy, n);
-// GQ = walkAdd(G, Q, 1);
+// GQ = walkAdd(G, Q, 1024);
+// QG = walkAdd(Q, G, 1024);
+// walkMul(Q, 1024);
+// walkDblAdd(Q, 3);
+// walkDblMul(Q, 31);
+
+dG = G.mul(G, d);
+ack('Q.cmp(Q,dG)', true);
 
 var k    = mpw('c91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf');
 var msg  = "Example of ECDSA with P-512";
@@ -1358,12 +1473,20 @@ var r    = mpw('0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269ada
 var s    = mpw('00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1');
 ack('mpw(kinv, mpw(e, mpw(r, d, n, "mulm"), n, "addm"), n, "mulm").toString(16)', s.toString(16));
 
+kG = G.mul(G, k);
+ack('mpw(kG.x, kG.n, "%").toString(16)', r.toString(16));
+
 var w    = mpw(s, n, "invm");
 var u1   = mpw('01697eefb6bd3a6db024254fe69fd19c80eb04b71cdd16af72f322106093f971cb08c29f6f8950f0f61e45bf65bac39a590dcb043758c6606907f216a759b4ea4be4');
 ack('mpw(e, w, n, "mulm").toString(16)', u1.toString(16));
 var u2   = mpw('014e7fc3ee94b91e092f660253dcaf92a70306bdfa317a0ab7efb2c8286944bee5f146114f2c61950f8c8699cce1a22fe632ea89967d33fefcb0e7607b4b66d157b6');
 ack('mpw(r, w, n, "mulm").toString(16)', u2.toString(16));
 var v    = mpw('0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba');
+
+uG = G.mul(G, u1);
+uQ = Q.mul(Q, u2);
+V = G.add(uG, uQ);
+ack('mpw(V.x, V.n, "%").toString(16)', v.toString(16));
 
 delete C;
 delete G;
