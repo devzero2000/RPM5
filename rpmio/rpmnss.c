@@ -92,10 +92,9 @@ int rpmnssVerifyRSA(pgpDig dig)
     nss->item.len = (unsigned) dig->md5len;
 
 /*@-moduncon -nullstate @*/
-    rc = (VFY_VerifyDigest(&nss->item, nss->rsa, nss->rsasig, nss->sigalg, NULL) == SECSuccess);
+    rc = VFY_VerifyDigest(&nss->item, nss->rsa, nss->rsasig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
-
-    return rc;
+    return (rc == SECSuccess);
 }
 
 static
@@ -126,34 +125,63 @@ int rpmnssVerifyDSA(pgpDig dig)
     nss->item.len = (unsigned) dig->sha1len;
 
 /*@-moduncon -nullstate @*/
-    rc = (VFY_VerifyDigest(&nss->item, nss->dsa, nss->dsasig, nss->sigalg, NULL) == SECSuccess);
+    rc = VFY_VerifyDigest(&nss->item, nss->dsa, nss->dsasig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
-
-    return rc;
+    return (rc == SECSuccess);
 }
 
 static
 int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 1;		/* XXX always fail. */
+    rpmnss nss = dig->impl;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+    nss->sigalg = SEC_OID_UNKNOWN;
+    switch (sigp->hash_algo) {
+    case PGPHASHALGO_SHA1:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA1_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA224:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA224_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA256:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA256_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA384:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA384_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA512:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA512_SIGNATURE;
+	break;
+    default:
+	break;
+    }
+    if (nss->sigalg == SEC_OID_UNKNOWN)
+	return 1;
+
+    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-
-    return rc;
+    return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
 static
 int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    rpmnss nss = dig->impl;
+    int rc;
 
-    return rc;
+    nss->item.type = siBuffer;
+    nss->item.data = dig->md5;
+    nss->item.len = (unsigned) dig->md5len;
+
+/*@-moduncon -nullstate @*/
+    rc = VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL);
+/*@=moduncon =nullstate @*/
+    return (rc == SECSuccess);
 }
 
 /**
@@ -187,7 +215,7 @@ fprintf(stderr, "*** mbits %u nbits %u nbytes %u ix %u\n", mbits, nbits, nbytes,
     if (ix > 0) memset(t, (int)'\0', ix);
     memcpy(t+ix, p+2, nbytes-ix);
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s %s", pre, pgpHexStr(dest, nbytes));
+fprintf(stderr, "\t %s %s\n", pre, pgpHexStr(dest, nbytes));
 /*@=modfilesystem @*/
     return 0;
 }
@@ -263,16 +291,14 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@*/
 {
     rpmnss nss = dig->impl;
+    unsigned int hbits;
+    size_t nb = (pend >= p ? (pend - p) : 0);
     int rc = 0;
 
 /*@-moduncon@*/
     switch (itemno) {
     default:
 assert(0);
-    case 50:		/* ECDSA r */
-    case 51:		/* ECDSA s */
-    case 60:		/* ECDSA curve OID */
-    case 61:		/* ECDSA Q */
 	break;
     case 10:		/* RSA m**d */
 	nss->rsasig = rpmnssMpiCopy(NULL, nss->rsasig, p);
@@ -280,13 +306,15 @@ assert(0);
 	    rc = 1;
 	break;
     case 20:		/* DSA r */
+	hbits = 160;
 	nss->item.type = 0;
-	nss->item.len = 2 * (160/8);
+	nss->item.len = 2 * (hbits/8);
 	nss->item.data = xcalloc(1, nss->item.len);
-	rc = rpmnssMpiSet(pre, 160, nss->item.data, p, pend);
+	rc = rpmnssMpiSet(pre, hbits, nss->item.data, p, pend);
 	break;
     case 21:		/* DSA s */
-	rc = rpmnssMpiSet(pre, 160, nss->item.data + (160/8), p, pend);
+	hbits = 160;
+	rc = rpmnssMpiSet(pre, hbits, nss->item.data + (hbits/8), p, pend);
 	if (nss->dsasig != NULL)
 	    SECITEM_FreeItem(nss->dsasig, PR_FALSE);
 	if ((nss->dsasig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
@@ -341,6 +369,44 @@ assert(0);
 	    rc = 1;
 	else
 	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.publicValue, p);
+	break;
+    case 50:		/* ECDSA r */
+	hbits = 256;
+	nss->item.type = 0;
+	nss->item.len = 2 * (hbits/8);
+	nss->item.data = xcalloc(1, nss->item.len);
+	rc = rpmnssMpiSet(pre, hbits, nss->item.data, p, pend);
+	break;
+    case 51:		/* ECDSA s */
+	hbits = 256;
+	rc = rpmnssMpiSet(pre, hbits, nss->item.data + (hbits/8), p, pend);
+	if (nss->ecdsasig != NULL)
+	    SECITEM_FreeItem(nss->ecdsasig, PR_FALSE);
+	if ((nss->ecdsasig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
+	 || DSAU_EncodeDerSigWithLen(nss->ecdsasig, &nss->item, nss->item.len) != SECSuccess)
+	    rc = 1;
+	nss->item.data = _free(nss->item.data);
+	break;
+    case 60:		/* ECDSA curve OID */
+assert(pend > p);
+	if (nss->ecdsa == NULL)
+	    nss->ecdsa = rpmnssNewPublicKey(ecKey);
+	if (nss->ecdsa == NULL)
+	    rc = 1;
+	else {
+	    SECKEYECParams * ecp = &nss->ecdsa->u.ec.DEREncodedParams;
+	    ecp->data = PORT_ArenaZAlloc(nss->ecdsa->arena, nb + 2);
+	    ecp->data[0] = SEC_ASN1_OBJECT_ID;
+	    ecp->data[1] = nb;
+	    memcpy(ecp->data + 2, p, nb);
+	    ecp->len = nb + 2;
+	}
+	break;
+    case 61:		/* ECDSA Q */
+assert(nss->ecdsa);
+	/* XXX assumes uncompressed Q as a MPI */
+	nss->ecdsa->u.ec.size = ((nb - (2 + 1)) * 8)/2;
+	(void) rpmnssMpiCopy(nss->ecdsa->arena, &nss->ecdsa->u.ec.publicValue, p);
 	break;
     }
 /*@=moduncon@*/

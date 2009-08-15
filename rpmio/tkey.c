@@ -60,6 +60,7 @@ for (i = 0, s = sig, t = enc; *s & *t; i++, s++, t++) {
     if (*s == '\n') s++;
     if (*t == '\n') t++;
     if (*s == *t) continue;
+if (_debug)
 fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xff), *s, *t);
     rc = 5;
 }
@@ -83,11 +84,11 @@ static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 int
 main(int argc, char *argv[])
 {
+    pgpImplVecs_t * testImplVecs = &rpmnssImplVecs;
     pgpDig dig;
     rpmbc bc;
     int printing = -1;
     int rc;
-
 
     pgpImplVecs = &rpmbcImplVecs;
 
@@ -108,7 +109,7 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmsslImplVecs;
+    pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 1;
@@ -137,7 +138,7 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmsslImplVecs;
+    pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 1;
@@ -166,7 +167,7 @@ fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmsslImplVecs;
+    pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 1;
@@ -195,7 +196,7 @@ fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    if (pgpImplVecs == &rpmnssImplVecs)
+    if (pgpImplVecs == &rpmsslImplVecs)
 	NSS_Shutdown();
 
     return rc;

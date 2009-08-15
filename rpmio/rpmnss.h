@@ -31,13 +31,17 @@ struct rpmnss_s {
     SECOidTag sigalg;
     SECItem item;
 
+    /* RSA parameters. */
+    SECKEYPublicKey *rsa;
+    SECItem * rsasig;
+
     /* DSA parameters. */
     SECKEYPublicKey *dsa;
     SECItem * dsasig;
 
-    /* RSA parameters. */
-    SECKEYPublicKey *rsa;
-    SECItem * rsasig;
+    /* ECDSA parameters. */
+    SECKEYPublicKey *ecdsa;
+    SECItem * ecdsasig;
 };
 #endif
 
