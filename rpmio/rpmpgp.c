@@ -987,7 +987,8 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
 		se += pgpMpiLen(se);
 	    /*@innerbreak@*/ break;
 	case PGPPUBKEYALGO_ECDSA:
-	    for (i = 0; i < 4; i++)
+	    se += 1 + se[0];
+	    for (i = 0; i < 1; i++)
 		se += pgpMpiLen(se);
 	    /*@innerbreak@*/ break;
 	}
@@ -1134,6 +1135,10 @@ static void pgpDigFini(void * __dig)
 #ifndef	BUGGY
     yarnPossess(dig->_item.use);
 #endif
+
+    if (dig->hdrctx != NULL)
+	(void) rpmDigestFinal(dig->hdrctx, NULL, NULL, 0);
+    dig->hdrctx = NULL;
 
     if (dig->hdrsha1ctx != NULL)
 	(void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
