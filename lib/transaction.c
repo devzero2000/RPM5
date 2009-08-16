@@ -1227,6 +1227,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/* Open database RDWR for installing packages. */
 	if (rpmtsOpenDB(ts, dbmode)) {
 	    lock = rpmtsFreeLock(lock);
+	    if (sx) sx = rpmsxFree(sx);
 	    return -1;	/* XXX W2DO? */
 	}
     }
@@ -1528,6 +1529,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc, exclude)) {
 	    ps = rpmpsFree(ps);
 	    lock = rpmtsFreeLock(lock);
+	    if (sx) sx = rpmsxFree(sx);
 	    return 1;	/* XXX WTFO? */
 	}
 
@@ -1682,6 +1684,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
        )
     {
 	lock = rpmtsFreeLock(lock);
+	if (sx) sx = rpmsxFree(sx);
 	return ts->orderCount;
     }
 
@@ -1991,10 +1994,8 @@ assert(psm != NULL);
 	pi = rpmtsiFree(pi);
     }
 
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && sx)
-	sx = rpmsxFree(sx);
-
     lock = rpmtsFreeLock(lock);
+    if (sx) sx = rpmsxFree(sx);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc)
