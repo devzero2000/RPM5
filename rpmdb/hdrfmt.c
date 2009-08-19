@@ -145,7 +145,8 @@ static char * intFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 	xx = snprintf(b, nb, myfmt, ival);
 /*@=formatconst@*/
 	b[nb-1] = '\0';
-    }
+    } else
+	b = "";
 
     return xstrdup(b);
 }
