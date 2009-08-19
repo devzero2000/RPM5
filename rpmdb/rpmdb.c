@@ -4165,7 +4165,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     
     {	Header h = NULL;
 	rpmmi mi;
-#define	_RECNUM	rpmmiInstance(mi)
 
 	mi = rpmmiInit(olddb, RPMDBI_PACKAGES, NULL, 0);
 	if (ts)
@@ -4191,8 +4190,10 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    }
 
 	    if (rc) {
+#define	_RECNUM	rpmmiInstance(mi)
 		rpmlog(RPMLOG_ERR,
 			_("cannot add record originally at %u\n"), _RECNUM);
+#undef	_RECNUM
 		failed = 1;
 		break;
 	    }
