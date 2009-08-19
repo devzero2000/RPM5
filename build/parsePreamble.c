@@ -1169,6 +1169,17 @@ assert(lastpkg != NULL);
 
     /* Do some final processing on the header */
     
+    /* 
+     * Expand buildroot one more time to get %{version} and the like
+     * from the main package.
+     */
+    if (initialPackage) {
+        const char *s = rpmExpand("%{?buildroot}", NULL);
+	if (s && *s) 
+	    (void) addMacro(NULL, "buildroot", NULL, s, -1);
+	s = _free(s);
+    }
+
     /* XXX Skip valid arch check if not building binary package */
     if (!spec->anyarch && checkForValidArchitectures(spec))
 	return RPMRC_FAIL;
