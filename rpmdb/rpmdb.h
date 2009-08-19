@@ -510,8 +510,11 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
  * @return		NULL always
  */
 /*@null@*/
-dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
-	/*@*/;
+dbiIndex db3Free(/*@only@*/ /*@null@*/ dbiIndex dbi)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, fileSystem, internalState @*/;
+#define	db3Free(_dbi)	\
+    ((dbiIndex)rpmioFreePoolItem((rpmioItem)(_dbi), __FUNCTION__, __FILE__, __LINE__))
 
 /** \ingroup db3
  * Format db3 open flags for debugging print.

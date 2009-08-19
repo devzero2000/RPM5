@@ -636,13 +636,6 @@ DB_STAT_CLEAR		mutex_stat*
 };
 /*@=compmempass =immediatetrans =exportlocal =exportheadervar =type@*/
 
-dbiIndex db3Free(dbiIndex dbi)
-{
-    if (dbi != NULL)
-	(void)rpmioFreePoolItem((rpmioItem)dbi, __FUNCTION__, __FILE__, __LINE__);
-    return NULL;
-}
-
 static void dbiFini(void * _dbi)
 	/*@modifies _dbi @*/
 {

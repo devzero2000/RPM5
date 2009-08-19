@@ -4,7 +4,6 @@ LIBRPMDB_0
     _dbi_debug;
     _dbiPool;
     db3dbi;
-    db3Free;
     db3New;
     db3vec;
     dbiFreeIndexSet;
