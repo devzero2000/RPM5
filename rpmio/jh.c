@@ -581,9 +581,9 @@ unsigned char S[2][16] = {
 };
 
 /* The linear transformation L */
-#define L(a, b) {														\
-	(b) ^= ( ( (a) << 1) ^ ( (a) >> 3) ^ (( (a) >> 2) & 2) ) & 0xf;		\
-	(a) ^= ( ( (b) << 1) ^ ( (b) >> 3) ^ (( (b) >> 2) & 2) ) & 0xf;	    \
+#define L(a, b) { \
+    (b) ^= ( ( (a) << 1) ^ ( (a) >> 3) ^ (( (a) >> 2) & 2) ) & 0xf; \
+    (a) ^= ( ( (b) << 1) ^ ( (b) >> 3) ^ (( (b) >> 2) & 2) ) & 0xf; \
 }   
 
 /* round function */
