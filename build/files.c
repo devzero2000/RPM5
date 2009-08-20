@@ -2548,6 +2548,7 @@ int initSourceHeader(Spec spec, rpmiob *sfp)
 	case RPMTAG_CHANGELOGNAME:
 	case RPMTAG_CHANGELOGTEXT:
 	case RPMTAG_URL:
+	case RPMTAG_BUGURL:
 	case RPMTAG_ICON:
 	case RPMTAG_GIF:
 	case RPMTAG_XPM:
