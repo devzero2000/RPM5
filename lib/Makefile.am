@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
+MCCABE = pmccabe
 
 SUBDIRS = # tests
 
@@ -38,7 +39,7 @@ EXTRA_PROGRAMS = tevr tgi tpgp tsbt
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	rpmcli.h rpmversion.h rpmds.h rpmfi.h rpmps.h \
-	rpmrc.h rpmte.h rpmts.h rpm4compat.h rpm46compat
+	rpmrc.h rpmte.h rpmts.h rpm4compat.h rpm46compat.h
 noinst_HEADERS = \
 	filetriggers.h fs.h fsm.h manifest.h misc.h psm.h rpmal.h \
 	rpmfc.h rpmgi.h rpmlib.h rpmlock.h rpmluaext.h rpmrollback.h
@@ -101,6 +102,10 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+
+.PHONY:	mccabe
+mccabe:
+	$(MCCABE) $(librpm_la_SOURCES) | sort -n -r | head -n 20
 
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:

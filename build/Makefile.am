@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
+MCCABE = pmccabe
 
 EXTRA_DIST = librpmbuild.vers
 
@@ -87,6 +88,10 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
+
+.PHONY:	mccabe
+mccabe:
+	$(MCCABE) $(librpmbuild_la_SOURCES) | sort -n -r | head -n 20
 
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:

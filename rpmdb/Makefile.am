@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
+MCCABE = pmccabe
 
 SUBDIRS = # tests
 
@@ -131,6 +132,10 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
+
+.PHONY:	mccabe
+mccabe:
+	$(MCCABE) $(librpmdb_la_SOURCES) $(DBLIBSRCS) | sort -n -r | head -n 10
 
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:

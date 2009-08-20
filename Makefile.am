@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
+MCCABE = pmccabe
 
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL cpuinfo.yaml \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
@@ -149,6 +150,14 @@ lint:
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
 		`make -s sources -C file/src`
+
+.PHONY:	mccabe
+mccabe:
+	@$(MCCABE) rpmqv.c $(rpmbuild_SOURCES) \
+		`make -s sources -C build` \
+		`make -s sources -C lib` \
+		`make -s sources -C rpmdb` \
+		`make -s sources -C rpmio` | sort -nr | head -n 30
 
 .PHONY: updatepo
 updatepo:

@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
+MCCABE = pmccabe
 
 SUBDIRS = # tests
 
@@ -170,6 +171,10 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+
+.PHONY:        mccabe
+mccabe:
+	$(MCCABE) $(librpmio_la_SOURCES) | sort -n -r | head -n 20
 
 .PHONY:	lint_rpmcpio
 lint_rpmcpio:
