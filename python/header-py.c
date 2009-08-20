@@ -149,6 +149,12 @@ struct hdrObject_s {
     return 0;
 }
 
+static PyObject *hdrIsSource(hdrObject *s)
+{
+    int isSource = !headerIsEntry(s->h, RPMTAG_SOURCERPM);
+    return PyBool_FromLong(isSource);
+}
+
 /** \ingroup python
  * \name Class: Rpmhdr
  */
@@ -305,6 +311,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_NOARGS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
 	NULL },
 
     {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
