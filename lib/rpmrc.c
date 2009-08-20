@@ -745,10 +745,11 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    cp = _platform;
 	if (rpmPlatform(cp) == RPMRC_OK) {
 #elif defined(WITH_CPUINFO) && defined(WITH_SYCK)
-	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK) {
+	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK)
 #else
-	if (rpmPlatform(_platform) == RPMRC_OK) {
+	if (rpmPlatform(_platform) == RPMRC_OK)
 #endif
+	{
 	    const char * s;
 	    gotDefaults = 1;
 	    s = rpmExpand("%{?_host_cpu}", NULL);
@@ -886,10 +887,8 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
     } else {
 	if (num) *num = 255;
 #if defined(WITH_CPUINFO)
-	if (name)
-	{
-	    if(type == ARCH)
-	    {
+	if (name) {
+	    if(type == ARCH) {
 		int i, j, n;
 	    	ARGV_t archs = NULL;
 		char *pref = rpmExpand("%{?_prefer_target_cpu}", NULL);
