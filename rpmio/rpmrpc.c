@@ -1442,6 +1442,7 @@ fprintf(stderr, "*** Fstat(%p,%p) path %s\n", fd, st, path);
     return fstat(Fileno(fd), st);
 }
 
+#undef	HAVE_FALLOCATE	/* XXX hmmm, fallocate64 is AWOL in F11. */
 int Fallocate(FD_t fd, off_t offset, off_t len)
 {
     const char * path = fdGetOPath(fd);
