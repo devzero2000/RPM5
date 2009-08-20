@@ -1242,10 +1242,11 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    long size = -1;
 	    if (stat(dbf, &sb) == 0)
 		size = (long)sb.st_size;
-	    if (access(dbf, F_OK) == -1 || size == 0) {
+	    if (access(dbf, F_OK) == -1 || size == 0)
 #else
-	    if (access(dbf, F_OK) == -1) {
+	    if (access(dbf, F_OK) == -1)
 #endif
+	    {
 		/* ... non-existent (or unwritable) DBENV, will create ... */
 		dbi->dbi_oeflags |= DB_CREATE;
 		dbi->dbi_eflags &= ~DB_JOINENV;
