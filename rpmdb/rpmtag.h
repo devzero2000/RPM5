@@ -424,7 +424,8 @@ enum rpmTag_e {
     RPMTAG_DISTEPOCH		= 1218, /* s */
 #define	RPMTAG_D RPMTAG_DISTEPOCH	/* s */
 
-    RPMTAG_FILEDIGESTALGO       = 5011, /* i file checksum algorithm */
+    RPMTAG_FILEDIGESTALGO	= 5011, /* i file checksum algorithm */
+    RPMTAG_BUGURL		= 5012, /* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG,	/*!< internal */

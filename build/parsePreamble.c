@@ -45,6 +45,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_PREFIXES,
     RPMTAG_DISTTAG,
+    RPMTAG_BUGURL,
     RPMTAG_CVSID,
     RPMTAG_VARIANTS,
     RPMTAG_XMAJOR,
@@ -369,6 +370,7 @@ static struct optionalTag {
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
+    { RPMTAG_BUGURL,		"%{bugurl}" },
     { 0xffffffff,		"%{class}" },
     { -1, NULL }
 };
@@ -654,6 +656,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_DISTTAG:
     case RPMTAG_REPOTAG:
     case RPMTAG_CVSID:
+    case RPMTAG_BUGURL:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
@@ -963,6 +966,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, "docdir"},
     {RPMTAG_DISTTAG,		0, 0, "disttag"},
+    {RPMTAG_BUGURL,		0, 0, "bugurl"},
     {RPMTAG_CVSID,		0, 0, "cvsid"},
     {RPMTAG_SVNID,		0, 0, "svnid"},
     {RPMTAG_SUGGESTSFLAGS,	0, 0, "suggests"},
