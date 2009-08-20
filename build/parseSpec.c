@@ -188,7 +188,7 @@ static int copyNextLineFromOFI(Spec spec, OFI_t * ofi, rpmStripFlags strip)
 	to = spec->lbufPtr ? spec->lbufPtr : spec->lbuf;
 	from = ofi->readPtr;
 	ch = ' ';
-	while (*from && ch != '\n')
+	while (from && *from && ch != '\n')
 	    ch = *to++ = *from++;
 /*@-mods@*/
 	spec->lbufPtr = to;
