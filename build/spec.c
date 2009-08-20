@@ -464,19 +464,20 @@ assert(mdir != NULL);
 		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
 #ifdef WITH_LUA
-    {	rpmlua lua = NULL; /* global state */
-	const char * what = (flag & RPMFILE_PATCH) ? "patches" : "sources";
-	rpmluav var = rpmluavNew();
+	if (!spec->recursing) {
+	    rpmlua lua = NULL; /* global state */
+	    const char * what = (flag & RPMFILE_PATCH) ? "patches" : "sources";
+	    rpmluav var = rpmluavNew();
 
-	rpmluaPushTable(lua, what);
-	rpmluavSetListMode(var, 1);
-	rpmluavSetValue(var, RPMLUAV_STRING, body);
-	rpmluaSetVar(lua, var);
+	    rpmluaPushTable(lua, what);
+	    rpmluavSetListMode(var, 1);
+	    rpmluavSetValue(var, RPMLUAV_STRING, body);
+	    rpmluaSetVar(lua, var);
 /*@-moduncon@*/
-	var = (rpmluav) rpmluavFree(var);
+	    var = (rpmluav) rpmluavFree(var);
 /*@=moduncon@*/
-	rpmluaPop(lua);
-    }
+	    rpmluaPop(lua);
+	}
 #endif
 	body = _free(body);
     }
