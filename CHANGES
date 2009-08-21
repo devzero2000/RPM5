@@ -1,4 +1,5 @@
 5.2.0 -> 5.2.1:
+    - rpm.org: Avoid adding Lua sources/patches twice when recursing.
     - proyvind: make sure to expand %buildroot from main package.
     - proyvind: rpmevr: make rpmEVRparse() work with missing values.
     - proyvind: rpm46compat: Implement RPM 4.6 API wrapper providing ~seamless
