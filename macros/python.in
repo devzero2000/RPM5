@@ -4,6 +4,13 @@
 
 %__python	@__PYTHON@
 
+# Path to scripts to autogenerate python package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
+%__python_provides	%{_rpmhome}/pythondeps.sh --provides
+%__python_requires	%{_rpmhome}/pythondeps.sh --requires
+#
 # python main version
 %py_ver		%(echo `python -c "import sys; print sys.version[:3]"`)
 

@@ -5,6 +5,15 @@
 
 %__perl			@__PERL@
 
+# Path to scripts to autogenerate perl package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
+#%__perl_provides	%{_rpmhome}/perldeps.pl --provides
+#%__perl_requires	%{_rpmhome}/perldeps.pl --requires
+%__perl_provides	%{_rpmhome}/perl.prov
+%__perl_requires	%{_rpmhome}/perl.req
+
 # Useful macros for building *.rpm perl packages.
 #	(from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
 #

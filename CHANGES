@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: macros: automagic dependency extractors are now per-interpreter.
+    - jbj: macros: refactor perl/php/python peculier config into separate file.
+    - jbj: macros: expand %{load:...} immediiately/recursively when loading.
     - jbj: macros: gather "default" config into macros/ dir for refactoring.
     - proyvind: rpmevr: make rpmEVRparse() work with missing values.
     - proyvind: rpm46compat: Implement RPM 4.6 API wrapper providing ~seamless

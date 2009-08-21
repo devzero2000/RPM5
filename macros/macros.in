@@ -1628,84 +1628,31 @@ done \
 
 #------------------------------------------------------------------------
 # perl(...) configuration
-#
-
-# Path to scripts to autogenerate perl package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-#%__perl_provides	%{_rpmhome}/perldeps.pl --provides
-#%__perl_requires	%{_rpmhome}/perldeps.pl --requires
-%__perl_provides	%{_rpmhome}/perl.prov
-%__perl_requires	%{_rpmhome}/perl.req
-
 %{load:%{_usrlibrpm}/macros.d/perl}
 
 #------------------------------------------------------------------------
 # python(...) configuration.
-#
-# Path to scripts to autogenerate python package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-%__python_provides	%{_rpmhome}/pythondeps.sh --provides
-%__python_requires	%{_rpmhome}/pythondeps.sh --requires
-
 %{load:%{_usrlibrpm}/macros.d/python}
 
 #------------------------------------------------------------------------
 # php(...) configuration.
-#
-# Path to scripts to autogenerate php package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-#%__php_provides	%{_rpmhome}/phpdeps.sh --provides
-#%__php_requires	%{_rpmhome}/phpdeps.sh --requires
-#%__php_provides		%{_rpmhome}/php.prov
-#%__php_requires		%{_rpmhome}/php.req
-
 %{load:%{_usrlibrpm}/macros.d/php}
 
 #------------------------------------------------------------------------
 # java(...) configuration.
-#
-# Path to scripts to autogenerate java package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-%__java_provides	%{_rpmhome}/javadeps.sh --provides
-%__java_requires	%{_rpmhome}/javadeps.sh --requires
+%{load:%{_usrlibrpm}/macros.d/java}
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
-#
-# Path to scripts to autogenerate libtool package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-%__libtool_provides	%{_rpmhome}/libtooldeps.sh --provides %{buildroot} %{name}
-%__libtool_requires	%{_rpmhome}/libtooldeps.sh --requires %{buildroot} %{name}
+%{load:%{_usrlibrpm}/macros.d/java}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.
-#
-# Path to scripts to autogenerate pkgconfig package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-%__pkgconfig_provides	%{_rpmhome}/pkgconfigdeps.sh --provides
-%__pkgconfig_requires	%{_rpmhome}/pkgconfigdeps.sh --requires
+%{load:%{_usrlibrpm}/macros.d/java}
 
 #------------------------------------------------------------------------
 # mono(...) configuration.
-#
-# Path to scripts to autogenerate mono package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-%__mono_provides	%{_rpmhome}/mono-find-provides
-%__mono_requires	%{_rpmhome}/mono-find-requires
+%{load:%{_usrlibrpm}/macros.d/java}
 
 #------------------------------------------------------------------------
 # executable(...) configuration.
