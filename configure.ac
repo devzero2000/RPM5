@@ -1968,11 +1968,12 @@ AC_CONFIG_SUBDIRS()
 
 dnl # explicit list of files to generate
 AC_CONFIG_FILES([ po/Makefile.in
-    Doxyfile Makefile macros/macros rpmpopt rpm.spec
+    Doxyfile Makefile rpmpopt rpm.spec
     rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
     scripts/Makefile
+    macros/macros macros/macros.rpmbuild
     macros/java macros/libtool macros/mono macros/perl 
-    macros/pkgconfig macros/php macros/python
+    macros/pkgconfig macros/php macros/python macros/selinux
     tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile

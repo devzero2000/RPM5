@@ -1,8 +1,10 @@
 java
 libtool
 macros
+macros.rpmbuild
 mono
 perl
 php
 pkgconfig
 python
+selinux

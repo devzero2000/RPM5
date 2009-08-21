@@ -8,3 +8,13 @@
 # helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
 %__java_provides	%{_rpmhome}/javadeps.sh --provides
 %__java_requires	%{_rpmhome}/javadeps.sh --requires
+
+#	The value of CLASSPATH in build scriptlets (iff configured).
+#	
+#%_javaclasspath	all
+
+#	Import packaging conventions from jpackage.org (prefixed with _
+#	to avoid name collisions).
+#	
+%_javadir      %{_datadir}/java
+%_javadocdir   %{_datadir}/javadoc

@@ -116,13 +116,15 @@ if WITH_PATH_VERSIONED
 endif
 
 pkglibdir =		@USRLIBRPM@
-pkglib_DATA = rpmpopt macros/macros cpuinfo.yaml
+pkglib_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
 
 pkgbindir =	$(pkglibdir)/bin
 pkgbin_SCRIPTS = install-sh mkinstalldirs
 
 pkgcfgdir =	$(pkglibdir)/macros.d
-pkgcfg_DATA = macros/perl macros/php macros/python
+pkgcfg_DATA = \
+	macros/java macros/libtool macros/mono macros/perl \
+	macros/pkgconfig macros/php macros/python macros/selinux
 
 noinst_HEADERS = build.h debug.h system.h
 
