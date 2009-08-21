@@ -32,8 +32,7 @@ EXTRA_DIST = \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml \
-	macros.perl* macros.python* \
-	macros.php* find-*.php find-php-* ${HELPERS}
+	find-*.php find-php-* ${HELPERS}
 
 all:
 

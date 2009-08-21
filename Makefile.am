@@ -11,6 +11,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL cpuinfo.yaml \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
+	macros/*.in \
 	perl/typemap \
 	perl/Makefile.PL.in \
 	perl/t/00.pod.t perl/t/00.pod.coverage.t \
@@ -115,7 +116,7 @@ if WITH_PATH_VERSIONED
 endif
 
 pkglibdir =		@USRLIBRPM@
-pkglib_DATA =	rpmpopt macros cpuinfo.yaml
+pkglib_DATA =	rpmpopt macros/macros cpuinfo.yaml
 pkglib_SCRIPTS = install-sh mkinstalldirs
 
 noinst_HEADERS = build.h debug.h system.h
@@ -246,7 +247,7 @@ nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
 
 .PHONY:	doxygen
-doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt macros
+doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt macros/macros
 	rm -rf $@
 	mkdir -p $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@

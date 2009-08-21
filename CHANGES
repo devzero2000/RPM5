@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: macros: gather "default" config into macros/ dir for refactoring.
     - proyvind: rpmevr: make rpmEVRparse() work with missing values.
     - proyvind: rpm46compat: Implement RPM 4.6 API wrapper providing ~seamless
 	API compatibility for the function wrappers provided. :)
