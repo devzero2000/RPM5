@@ -110,7 +110,7 @@ int
 load_macro_file(filename)
     char * filename
     CODE:
-    RETVAL= ! rpmLoadMacroFile(NULL, filename); /* return False on error */
+    RETVAL= ! rpmLoadMacroFile(NULL, filename, 0); /* return False on error */
     OUTPUT:
     RETVAL
 

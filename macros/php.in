@@ -1,9 +1,7 @@
 # Perl specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
-# %include %{_usrlibrpm}/macros.php
+# %{load:%{_usrlibrpm}/macros.d/php}
 
-%define		__find_requires	%{_usrlibrpm}/find-php-requires
-%define		__find_provides	%{_usrlibrpm}/find-php-provides
+%__php		@__PHP@
 
-%define		php_pear_dir	%{_datadir}/pear
-
+%php_pear_dir	%{_datadir}/pear

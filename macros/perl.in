@@ -1,12 +1,36 @@
 # Perl specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
-# %include %{_usrlibrpm}/macros.perl
+# %{load:%{_usrlibrpm}/macros.d/perl}
+#
 
-%define		__find_requires	%{_usrlibrpm}/find-perl-requires
-%define		__find_provides	%{_usrlibrpm}/find-perl-provides
+%__perl			@__PERL@
 
-%define		perl_sitelib	%(eval "`perl -V:installsitelib`"; echo $installsitelib)
-%define		perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
-%define		perl_archlib	%(eval "`perl -V:installarchlib`"; echo $installarchlib)
-%define		perl_privlib	%(eval "`perl -V:installprivlib`"; echo $installprivlib)
+# Useful macros for building *.rpm perl packages.
+#	(from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
+#
+# For example, these can be used as (from ImageMagick.spec from PLD site)
+#	[...]
+#	BuildPrereq: perl
+#	[...]
+#	%package perl
+#	Summary: libraries and modules for access to ImageMagick from perl
+#	Group: Development/Languages/Perl
+#	Requires: %{name} = %{version}
+#	[...]
+#	%install
+#	rm -fr $RPM_BUILD_ROOT
+#	install -d $RPM_BUILD_ROOT/%{perl_sitearch}
+#	[...]
+#	%files perl
+#	%defattr(644,root,root,755)
+#	%{perl_sitearch}/Image
+#	%dir %{perl_sitearch}/auto/Image
+#
 
+%perl_sitearch	%(eval "`%{__perl} -V:installsitearch`"; echo $installsitearch)
+%perl_sitelib	%(eval "`%{__perl} -V:installsitelib`"; echo $installsitelib)
+%perl_vendorarch %(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
+%perl_vendorlib  %(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
+%perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
+%perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
+%perl_version	%(eval "`%{__perl} -V:version`"; echo $version)

@@ -1,18 +1,33 @@
 # Python specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
-# %include %{_usrlibrpm}/macros.python
+# %{load:%{_usrlibrpm}/macros.d/python}
+
+%__python	@__PYTHON@
 
 # python main version
-%define py_ver         %(echo `python -c "import sys; print sys.version[:3]"`)
+%py_ver		%(echo `python -c "import sys; print sys.version[:3]"`)
 
 # directories
-%define py_prefix      %(echo `python -c "import sys; print sys.prefix"`)
-%define py_libdir      %{py_prefix}/lib/python%{py_ver}
-%define py_incdir      /usr/include/python%{py_ver}
-%define py_sitedir     %{py_libdir}/site-packages
-%define py_dyndir      %{py_libdir}/lib-dynload
+%py_prefix	%(echo `python -c "import sys; print sys.prefix"`)
+%py_libdir	%{py_prefix}/lib/python%{py_ver}
+%py_incdir	@oldincludedir@/python%{py_ver}
+%py_sitedir	%{py_libdir}/site-packages
+%py_dyndir	%{py_libdir}/lib-dynload
 
 # pure python modules compilation
-%define py_comp        python -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('$RPM_BUILD_ROOT'):])"
+%py_comp	%{__python} -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('$RPM_BUILD_ROOT'):])"
 
-%define py_ocomp       python -O -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('$RPM_BUILD_ROOT'):])"
+%py_ocomp	%{__python} -O -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('$RPM_BUILD_ROOT'):])"
+
+%python_sitearch %(%{__python} -c "import os; from distutils.sysconfig import get_python_lib; lib=get_python_lib(1); print os.path.islink(lib) and os.path.abspath(os.path.join(os.path.dirname(lib),os.readlink(lib))) or lib")
+%python_sitelib	%(%{__python} -c "import os; from distutils.sysconfig import get_python_lib; lib=get_python_lib(); print os.path.islink(lib) and os.path.abspath(os.path.join(os.path.dirname(lib),os.readlink(lib))) or lib")
+%python_version	%(%{__python} -c "import sys; print(sys.version[0:3])")
+
+%py_compile(O)  \
+find %1 -name '*.pyc' -name '*.pyo' -exec rm -f {} \\; \
+%{__python} %{?O:-O} -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
+
+%py_requires(d) \
+%define maxver %(%{__python} -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) \
+BuildRequires: python %{-d:python-devel} \
+PreReq: python >= %{python_version}, python < %{maxver}

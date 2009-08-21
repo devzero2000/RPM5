@@ -169,6 +169,7 @@ LIBRPMIO_0
     _Lstat;
     lzdio;
     max_macro_depth;
+    _max_load_depth;
     _mire_debug;
     _mirePool;
     mireAppend;

@@ -1053,6 +1053,7 @@ static int rpm_source(lua_State *L)
     return 0;
 }
 
+extern int _max_load_depth;	/* Maximum load nesting depth. */
 static int rpm_load(lua_State *L)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies L, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1062,7 +1063,7 @@ static int rpm_load(lua_State *L)
     } else {
 	const char *filename = lua_tostring(L, 1);
 /*@-globs@*/
-	(void)rpmLoadMacroFile(NULL, filename);
+	(void)rpmLoadMacroFile(NULL, filename, _max_load_depth);
 /*@=globs@*/
     }
     return 0;

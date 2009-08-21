@@ -176,8 +176,9 @@ void rpmLoadMacros(/*@null@*/ MacroContext mc, int level)
  * Load macro context from a macro file.
  * @param mc		(unused)
  * @param fn		macro file name
+ * @param nesting	max load recursion depth, 0 disables.
  */
-int rpmLoadMacroFile(/*@null@*/ MacroContext mc, const char * fn)
+int rpmLoadMacroFile(/*@null@*/ MacroContext mc, const char * fn, int nesting)
 	/*@globals rpmGlobalMacroContext,
 		h_errno, fileSystem, internalState @*/
 	/*@modifies mc, rpmGlobalMacroContext, fileSystem, internalState @*/;

@@ -150,6 +150,10 @@ int print_macro_trace = _PRINT_MACRO_TRACE;
 #define	_PRINT_EXPAND_TRACE	0
 /*@unchecked@*/
 int print_expand_trace = _PRINT_EXPAND_TRACE;
+
+#define	_MAX_LOAD_DEPTH		2
+/*@unchecked@*/
+int _max_load_depth = _MAX_LOAD_DEPTH;
 /*@=exportlocal =exportheadervar@*/
 
 #define	MACRO_CHUNK_SIZE	16
@@ -1792,7 +1796,7 @@ expandMacro(MacroBuf mb)
 		    char * mfn = strncpy(alloca(gn + 1), g, gn);
 		    int xx;
 		    mfn[gn] = '\0';
-		    xx = rpmLoadMacroFile(NULL, mfn);
+		    xx = rpmLoadMacroFile(NULL, mfn, _max_load_depth);
 		    /* Print failure iff %{load:...} or %{!?load:...} */
 		    if (xx != 0 && chkexist == negate)
 			rpmlog(RPMLOG_ERR, _("%s: load macros failed\n"), mfn);
@@ -2580,14 +2584,17 @@ static void expand_macrosfile_macro(const char *file_name, const char *buf, size
 #endif
 
 int
-rpmLoadMacroFile(MacroContext mc, const char * fn)
+rpmLoadMacroFile(MacroContext mc, const char * fn, int nesting)
 {
-    /* XXX TODO: teach rdcl() to read through a URI, eliminate ".fpio". */
-    FD_t fd = Fopen(fn, "r.fpio");
     size_t bufn = _macro_BUFSIZ;
     char *buf = alloca(bufn);
+    int lineno = 0;
     int rc = -1;
+    FD_t fd;
+    int xx;
 
+    /* XXX TODO: teach rdcl() to read through a URI, eliminate ".fpio". */
+    fd = Fopen(fn, "r.fpio");
     if (fd == NULL || Ferror(fd)) {
 	if (fd) (void) Fclose(fd);
 	return rc;
@@ -2600,21 +2607,50 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
 
     buf[0] = '\0';
     while(rdcl(buf, bufn, fd) != NULL) {
-	char *n;
+	char * s;
 	int c;
 
-	n = buf;
-	SKIPBLANK(n, c);
+	lineno++;
+	s = buf;
+	SKIPBLANK(s, c);
 
 	if (c != (int) '%')
+	    continue;
+
+	/* Parse %{load:...} immediately recursively. */
+	if (s[1] == '{' && !strncmp(s+2, "load:", sizeof("load:")-1)) {
+	    char * se = matchchar(s, '{', '}');
+	    if (se == NULL) {
+		rpmlog(RPMLOG_WARNING,
+		    _("%s:%u Missing '}' in \"%s\", skipping.\n"),
+		    fn, lineno, buf);
 		continue;
-	n++;	/* skip % */
+	    }
+	    s += sizeof("%{load:") - 1;
+	    SKIPBLANK(s, c);
+	    *se = '\0';
+	    if (nesting <= 0) {
+		rpmlog(RPMLOG_WARNING,
+		    _("%s:%u load depth exceeded, \"%s\" ignored.\n"),
+		    fn, lineno, buf);
+		continue;
+	    }
+	    se = rpmMCExpand(mc, s, NULL);
+	    rc = rpmLoadMacroFile(mc, se, nesting - 1);
+	    se = _free(se);
+	    if (rc != 0)
+		goto exit;
+	} else {
 #if defined(RPM_VENDOR_OPENPKG) /* expand-macro-source */
-	expand_macrosfile_macro(fn, buf, bufn);
+	    expand_macrosfile_macro(fn, buf, bufn);
 #endif
-	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
+	    if (*s == '%') s++;
+	    rc = rpmDefineMacro(mc, s, RMIL_MACROFILES);
+	}
     }
-    rc = Fclose(fd);
+    rc = 0;
+exit:
+    xx = Fclose(fd);
     return rc;
 }
 
@@ -2688,7 +2724,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	       || _suffix(fn, ".rpmorig")
 	       || _suffix(fn, ".rpmsave"))
 	       )
-		   (void) rpmLoadMacroFile(mc, fn);
+		   (void) rpmLoadMacroFile(mc, fn, _max_load_depth);
 #undef _suffix
 
 	    av[i] = _free(av[i]);
