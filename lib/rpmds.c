@@ -918,7 +918,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	    ds->i = -1;
 
 /*@-modfilesys @*/
-if (_rpmds_debug  < 0 && i != -1)
+if (_rpmds_debug  < 0 && i != -1 && ds->DNEVR[2] != '\0')
 fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
 /*@=modfilesys @*/
 
