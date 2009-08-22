@@ -41,6 +41,13 @@
 %_rpmhome		%{_usrlibrpm}
 
 #==============================================================================
+# ---- RPM specific tool paths
+#
+%__find			@{_usrlibrpm}/bin/find
+%__grep			%{_usrlibrpm}/bin/grep
+%__wget			%{_usrlibrpm}/bin/wget
+
+#==============================================================================
 # ---- Generally useful path macros.
 #
 %__awk			@AWK@
@@ -57,9 +64,7 @@
 %__diff			@__DIFF@
 %__ditto		@__DITTO@
 %__file			@__FILE@
-%__find			@__FIND@
 %__gpg			@__GPG@
-%__grep			@__GREP@
 %__gzip			@__GZIP@
 %__hg			@__HG@
 %__id			@__ID@
@@ -88,7 +93,6 @@
 %__tclsh		@__TCLSH@
 %__unzip		@__UNZIP@
 %__vcheck		%{__perl} %{_rpmhome}/vcheck
-%__wget			@__WGET@
 %__xar			@__XAR@
 %__xz			@__XZ@
 
