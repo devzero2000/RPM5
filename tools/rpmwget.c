@@ -711,7 +711,7 @@ static const char * wgetOPath(rpmwget wget)
  */
 static int wgetCopyFile(rpmwget wget)
 {
-    size_t nw;
+    size_t nw = 0;
     size_t nr;
     struct stat * st = wget->st;
     ssize_t contentLength = 0;

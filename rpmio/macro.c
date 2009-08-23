@@ -2619,7 +2619,7 @@ rpmLoadMacroFile(MacroContext mc, const char * fn, int nesting)
 
 	/* Parse %{load:...} immediately recursively. */
 	if (s[1] == '{' && !strncmp(s+2, "load:", sizeof("load:")-1)) {
-	    char * se = matchchar(s, '{', '}');
+	    char * se = (char *) matchchar(s, '{', '}');
 	    if (se == NULL) {
 		rpmlog(RPMLOG_WARNING,
 		    _("%s:%u Missing '}' in \"%s\", skipping.\n"),
