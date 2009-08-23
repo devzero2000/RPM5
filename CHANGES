@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: stub-in the data elements needed for keyed hashes.
+    - jbj: rpmio: fix: unbreak --alldigests.
     - jbj: rpmio: factor digest insturmentation out of loops for --stats.
     - jbj: attach buildids to file provides in header metadata.
     - jbj: fix: ensure new ordering queue additions follow older using a

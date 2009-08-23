@@ -129,8 +129,11 @@ struct DIGEST_CTX_s {
 /*@observer@*/
     const char * name;		/*!< Digest name. */
     size_t paramsize;		/*!< No. bytes of digest parameters. */
-    size_t datasize;		/*!< No. bytes in block of plaintext data. */
+    size_t blocksize;		/*!< No. bytes in block of plaintext data. */
     size_t digestsize;		/*!< No. bytes of digest. */
+    size_t keybitsmin;
+    size_t keybitsmax;
+    size_t keybitsinc;
     int (*Reset) (void * param)
 	/*@modifies param @*/;	/*!< Digest initialize. */
     int (*Update) (void * param, const byte * data, size_t size)
@@ -142,6 +145,7 @@ struct DIGEST_CTX_s {
 /*@observer@*/ /*@null@*/
     const char * asn1;		/*!< RFC 3447 ASN1 oid string (in hex). */
     void * param;		/*!< Digest parameters. */
+    void * salt;		/*!< Key salt[2*blocksize] */
 };
 
 static void ctxFini(void * _ctx)
@@ -150,17 +154,25 @@ static void ctxFini(void * _ctx)
     DIGEST_CTX ctx = _ctx;
     ctx->name = NULL;
     ctx->paramsize = 0;
-    ctx->datasize = 0;
+    ctx->blocksize = 0;
     ctx->digestsize = 0;
+    ctx->keybitsmin = 0;
+    ctx->keybitsmax = 0;
+    ctx->keybitsinc = 0;
     ctx->Reset = NULL;
     ctx->Update = NULL;
     ctx->Digest = NULL;
     ctx->hashalgo = 0;
     ctx->flags = 0;
     ctx->asn1 = NULL;
-    if (ctx->param != NULL && ctx->paramsize > 0)
+    if (ctx->param != NULL && ctx->paramsize > 0) {
 	memset(ctx->param, 0, ctx->paramsize);	/* In case it's sensitive */
-    ctx->param = _free(ctx->param);
+	ctx->param = _free(ctx->param);
+    }
+    if (ctx->salt != NULL && ctx->blocksize > 0) {
+	memset(ctx->salt, 0, 2*ctx->paramsize);	/* In case it's sensitive */
+	ctx->salt = _free(ctx->salt);
+    }
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -205,15 +217,23 @@ rpmDigestDup(DIGEST_CTX octx)
 
     nctx->name = octx->name;
     nctx->digestsize = octx->digestsize;
-    nctx->datasize = octx->datasize;
+    nctx->blocksize = octx->blocksize;
     nctx->paramsize = octx->paramsize;
+    nctx->keybitsmin = octx->keybitsmin;
+    nctx->keybitsmax = octx->keybitsmax;
+    nctx->keybitsinc = octx->keybitsinc;
     nctx->Reset = octx->Reset;
     nctx->Update = octx->Update;
     nctx->Digest = octx->Digest;
     nctx->hashalgo = octx->hashalgo;
     nctx->flags = octx->flags;
     nctx->asn1 = octx->asn1;
-    nctx->param = memcpy(xcalloc(1, nctx->paramsize), octx->param, nctx->paramsize);
+    nctx->param = (octx->param != NULL && octx->paramsize > 0)
+	    ? memcpy(xmalloc(nctx->paramsize), octx->param, nctx->paramsize)
+	    : NULL;
+    nctx->salt = (octx->salt != NULL && octx->blocksize > 0)
+	    ? memcpy(xmalloc(2*nctx->blocksize), octx->salt, 2*nctx->blocksize)
+	    : NULL;
     return (DIGEST_CTX)rpmioLinkPoolItem((rpmioItem)nctx, __FUNCTION__, __FILE__, __LINE__);
 }
 
@@ -236,12 +256,12 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 
     ctx->hashalgo = hashalgo;
     ctx->flags = flags;
+    ctx->blocksize = 64;	/* XXX set common value, override peculier */
 
     switch (hashalgo) {
     case PGPHASHALGO_MD5:
 	ctx->name = "MD5";
 	ctx->digestsize = 128/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md5Param);
 /*@=sizeoftype@*/
@@ -256,7 +276,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SHA1:
 	ctx->name = "SHA1";
 	ctx->digestsize = 160/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha1Param);
 /*@=sizeoftype@*/
@@ -271,7 +290,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_RIPEMD128:
 	ctx->name = "RIPEMD128";
 	ctx->digestsize = 128/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd128Param);
 /*@=sizeoftype@*/
@@ -285,7 +303,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_RIPEMD160:
 	ctx->name = "RIPEMD160";
 	ctx->digestsize = 160/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd160Param);
 /*@=sizeoftype@*/
@@ -300,7 +317,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_RIPEMD256:
 	ctx->name = "RIPEMD256";
 	ctx->digestsize = 256/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd256Param);
 /*@=sizeoftype@*/
@@ -314,7 +330,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_RIPEMD320:
 	ctx->name = "RIPEMD320";
 	ctx->digestsize = 320/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd320Param);
 /*@=sizeoftype@*/
@@ -328,7 +343,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SALSA10:
 	ctx->name = "SALSA10";
 	ctx->digestsize = 512/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(salsa10Param);
 /*@=sizeoftype@*/
@@ -342,7 +356,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SALSA20:
 	ctx->name = "SALSA20";
 	ctx->digestsize = 512/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(salsa20Param);
 /*@=sizeoftype@*/
@@ -356,7 +369,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_TIGER192:
 	ctx->name = "TIGER192";
 	ctx->digestsize = 192/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(tigerParam);
 /*@=sizeoftype@*/
@@ -371,7 +383,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_MD2:
 	ctx->name = "MD2";
 	ctx->digestsize = 128/8;
-	ctx->datasize = 16;
+	ctx->blocksize = 16;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md2Param);
 /*@=sizeoftype@*/
@@ -386,7 +398,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_MD4:
 	ctx->name = "MD4";
 	ctx->digestsize = 128/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md4Param);
 /*@=sizeoftype@*/
@@ -400,7 +411,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_CRC32:
 	ctx->name = "CRC32";
 	ctx->digestsize = 32/8;
-	ctx->datasize = 8;
+	ctx->blocksize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) __crc32;
@@ -418,7 +429,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_ADLER32:
 	ctx->name = "ADLER32";
 	ctx->digestsize = 32/8;
-	ctx->datasize = 8;
+	ctx->blocksize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) __adler32;
@@ -436,7 +447,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_JLU32:
 	ctx->name = "JLU32";
 	ctx->digestsize = 32/8;
-	ctx->datasize = 8;
+	ctx->blocksize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) jlu32l;
@@ -453,7 +464,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_CRC64:
 	ctx->name = "CRC64";
 	ctx->digestsize = 64/8;
-	ctx->datasize = 8;
+	ctx->blocksize = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type@*/
 	    mp->update = (rpmuint64_t (*)(rpmuint64_t, const byte *, size_t)) __crc64;
@@ -472,7 +483,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SHA224:
 	ctx->name = "SHA224";
 	ctx->digestsize = 224/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha224Param);
 /*@=sizeoftype@*/
@@ -487,7 +497,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SHA256:
 	ctx->name = "SHA256";
 	ctx->digestsize = 256/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha256Param);
 /*@=sizeoftype@*/
@@ -502,7 +511,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SHA384:
 	ctx->name = "SHA384";
 	ctx->digestsize = 384/8;
-	ctx->datasize = 128;
+	ctx->blocksize = 128;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha384Param);
 /*@=sizeoftype@*/
@@ -517,7 +526,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SHA512:
 	ctx->name = "SHA512";
 	ctx->digestsize = 512/8;
-	ctx->datasize = 128;
+	ctx->blocksize = 128;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha512Param);
 /*@=sizeoftype@*/
@@ -534,7 +543,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_SKEIN_256: ctx->digestsize = 256/8; goto skein256;
 skein256:
 	ctx->name = "SKEIN256";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_256_Ctxt_t);
 /*@=sizeoftype@*/
@@ -549,7 +557,6 @@ skein256:
     case PGPHASHALGO_SKEIN_512: ctx->digestsize = 512/8; goto skein512;
 skein512:
 	ctx->name = "SKEIN512";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_512_Ctxt_t);
 /*@=sizeoftype@*/
@@ -563,7 +570,6 @@ skein512:
     case PGPHASHALGO_SKEIN_1024:
 	ctx->name = "SKEIN1024";
 	ctx->digestsize = 1024/8;
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein1024_Ctxt_t);
 /*@=sizeoftype@*/
@@ -580,7 +586,6 @@ skein512:
     case PGPHASHALGO_ARIRANG_512: ctx->digestsize = 512/8; goto arirang;
 arirang:
 	ctx->name = "ARIRANG";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(arirangParam);
 /*@=sizeoftype@*/
@@ -596,7 +601,6 @@ arirang:
     case PGPHASHALGO_BLAKE_512: ctx->digestsize = 512/8; goto blake;
 blake:
 	ctx->name = "BLAKE";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(blakeParam);
 /*@=sizeoftype@*/
@@ -612,7 +616,6 @@ blake:
     case PGPHASHALGO_BMW_512: ctx->digestsize = 512/8; goto bmw;
 bmw:
 	ctx->name = "BMW";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(bmwParam);
 /*@=sizeoftype@*/
@@ -628,7 +631,6 @@ bmw:
     case PGPHASHALGO_CHI_512: ctx->digestsize = 512/8; goto chi;
 chi:
 	ctx->name = "CHI";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(chiParam);
 /*@=sizeoftype@*/
@@ -644,7 +646,6 @@ chi:
     case PGPHASHALGO_CUBEHASH_512: ctx->digestsize = 512/8; goto cubehash;
 cubehash:
 	ctx->name = "CUBEHASH";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(cubehashParam);
 /*@=sizeoftype@*/
@@ -662,7 +663,6 @@ cubehash:
     case PGPHASHALGO_ECHO_512: ctx->digestsize = 512/8; goto echo;
 echo:
 	ctx->name = "ECHO";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(echo_hashState);
 /*@=sizeoftype@*/
@@ -679,7 +679,6 @@ echo:
     case PGPHASHALGO_EDONR_512: ctx->digestsize = 512/8; goto edonr;
 edonr:
 	ctx->name = "EDON-R";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(edonr_hashState);
 /*@=sizeoftype@*/
@@ -696,7 +695,6 @@ edonr:
     case PGPHASHALGO_FUGUE_512: ctx->digestsize = 512/8; goto fugue;
 fugue:
 	ctx->name = "FUGUE";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(fugueParam);
 /*@=sizeoftype@*/
@@ -712,7 +710,6 @@ fugue:
     case PGPHASHALGO_GROESTL_512: ctx->digestsize = 512/8; goto groestl;
 groestl:
 	ctx->name = "GROESTL";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(groestl_hashState);
 /*@=sizeoftype@*/
@@ -729,7 +726,6 @@ groestl:
     case PGPHASHALGO_HAMSI_512: ctx->digestsize = 512/8; goto hamsi;
 hamsi:
 	ctx->name = "HAMSI";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(hamsiParam);
 /*@=sizeoftype@*/
@@ -745,7 +741,6 @@ hamsi:
     case PGPHASHALGO_JH_512: ctx->digestsize = 512/8; goto jh;
 jh:
 	ctx->name = "JH";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(jhParam);
 /*@=sizeoftype@*/
@@ -761,7 +756,6 @@ jh:
     case PGPHASHALGO_KECCAK_512: ctx->digestsize = 512/8; goto keccak;
 keccak:
 	ctx->name = "KECCAK";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(keccak_hashState);
 /*@=sizeoftype@*/
@@ -778,7 +772,6 @@ keccak:
     case PGPHASHALGO_LANE_512: ctx->digestsize = 512/8; goto lane;
 lane:
 	ctx->name = "LANE";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(laneParam);
 /*@=sizeoftype@*/
@@ -794,7 +787,6 @@ lane:
     case PGPHASHALGO_LUFFA_512: ctx->digestsize = 512/8; goto luffa;
 luffa:
 	ctx->name = "LUFFA";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(luffaParam);
 /*@=sizeoftype@*/
@@ -810,7 +802,6 @@ luffa:
     case PGPHASHALGO_MD6_512: ctx->digestsize = 512/8; goto md6;
 md6:
 	ctx->name = "MD6";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md6_state);
 /*@=sizeoftype@*/
@@ -842,7 +833,6 @@ md6:
     case PGPHASHALGO_SHABAL_512: ctx->digestsize = 512/8; goto shabal;
 shabal:
 	ctx->name = "SHABAL";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(shabalParam);
 /*@=sizeoftype@*/
@@ -858,7 +848,6 @@ shabal:
     case PGPHASHALGO_SHAVITE3_512: ctx->digestsize = 512/8; goto shavite3;
 shavite3:
 	ctx->name = "SHAVITE3";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(shavite3_hashState);
 /*@=sizeoftype@*/
@@ -875,7 +864,6 @@ shavite3:
     case PGPHASHALGO_SIMD_512: ctx->digestsize = 512/8; goto simd;
 simd:
 	ctx->name = "SIMD";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(simd_hashState);
 /*@=sizeoftype@*/
@@ -892,7 +880,6 @@ simd:
     case PGPHASHALGO_TIB3_512: ctx->digestsize = 512/8; goto tib3;
 tib3:
 	ctx->name = "TIB3";
-	ctx->datasize = 64;
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(tib3_hashState);
 /*@=sizeoftype@*/
