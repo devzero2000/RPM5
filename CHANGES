@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: factor digest insturmentation out of loops for --stats.
     - jbj: attach buildids to file provides in header metadata.
     - jbj: fix: ensure new ordering queue additions follow older using a
 	generation counter.

@@ -49,6 +49,8 @@ AM_CPPFLAGS = \
 	@WITH_XZ_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
 
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
 RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \

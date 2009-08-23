@@ -97,6 +97,8 @@ AM_CPPFLAGS = \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_XZ_CPPFLAGS@
 
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \

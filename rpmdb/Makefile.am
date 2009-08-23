@@ -23,6 +23,8 @@ AM_CPPFLAGS = \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
 EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
 
 EXTRA_PROGRAMS = tjfn

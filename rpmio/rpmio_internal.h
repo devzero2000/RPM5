@@ -96,7 +96,7 @@ struct _FD_s {
     FDSTAT_t	stats;		/* I/O statistics */
 
     int		ndigests;
-#define	FDDIGEST_MAX	32
+#define	FDDIGEST_MAX	128
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
 /*null@*/
@@ -551,15 +551,17 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 {
     int i;
 
-    if (buf != NULL && buflen > 0)
+  if (fd->ndigests > 0 && buf != NULL && buflen > 0) {
+    fdstat_enter(fd, FDSTAT_DIGEST);
+#pragma omp parallel for
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
 	    continue;
-	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
-	fdstat_exit(fd, FDSTAT_DIGEST, buflen);
     }
+    fdstat_exit(fd, FDSTAT_DIGEST, buflen);
+  }
 }
 
 /** \ingroup rpmio
@@ -575,6 +577,8 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
     int imax = -1;
     int i;
 
+  if (fd->ndigests > 0) {
+    fdstat_enter(fd, FDSTAT_DIGEST);
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
@@ -582,12 +586,12 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	if (i > imax) imax = i;
 	if (fddig->hashalgo != hashalgo)
 	    continue;
-	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
-	fdstat_exit(fd, FDSTAT_DIGEST, 0);
 	fddig->hashctx = NULL;
 	break;
     }
+    fdstat_exit(fd, FDSTAT_DIGEST, 0);
+  }
     if (i < 0) {
 	if (datap != NULL) *(void **)datap = NULL;
 	if (lenp != NULL) *lenp = 0;

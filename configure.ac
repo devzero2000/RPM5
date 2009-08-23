@@ -121,7 +121,6 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_YACC
 
-
 AC_PATH_PROG(AS, as, as)
 
 dnl # GCC specifics
@@ -205,6 +204,14 @@ AC_ARG_WITH(valgrind, AS_HELP_STRING([--with-valgrind], [build RPM insturmented 
         AC_DEFINE(WITH_VALGRIND, 1, [Build with valgrind support?])
     fi
 ])
+
+dnl # Checks for OpenMP support
+AC_LANG_PUSH(C)
+AC_OPENMP
+AC_LANG_POP(C)
+AC_LANG_PUSH(C++)
+AC_OPENMP
+AC_LANG_POP(C++)
 
 dnl # RPM tries hard to use adaptive "feature tests" instead of
 dnl # problematic "platform tests". Nevertheless for some extremely

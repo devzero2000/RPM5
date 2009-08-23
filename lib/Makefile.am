@@ -24,6 +24,8 @@ AM_CPPFLAGS = \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
 RPM_LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \

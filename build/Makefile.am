@@ -25,6 +25,8 @@ AM_CPPFLAGS = \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h

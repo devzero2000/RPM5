@@ -18,6 +18,8 @@ AM_CPPFLAGS = -I. \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
 EXTRA_DIST =	hashtab.h
 
 EXTRA_PROGRAMS = augtool debugedit rpmkey

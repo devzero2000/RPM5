@@ -291,6 +291,7 @@ static void fdFini(void * _fd)
 assert(fd != NULL);
     fd->opath = _free(fd->opath);
     fd->stats = _free(fd->stats);
+#pragma omp parallel for
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
