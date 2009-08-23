@@ -2975,6 +2975,51 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	default:
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case SHT_NOTE:
+	    if (!(shdr->sh_flags & SHF_ALLOC))
+		continue;
+	    data = NULL;
+	    while ((data = elf_getdata(scn, data)) != NULL) {
+		GElf_Nhdr nhdr;
+		size_t name_offset;
+		size_t desc_offset;
+		offset = 0;
+		while (offset < data->d_size
+		 && (offset = gelf_getnote(data, offset,
+			&nhdr, &name_offset, &desc_offset)) > 0)
+		{
+		    const char *name = ((char *)data->d_buf) + name_offset;
+		    const char *desc = ((char *)data->d_buf) + desc_offset;
+		    if (memchr(name, '\0', nhdr.n_namesz) == NULL)
+			continue;
+		    switch (nhdr.n_type) {
+		    default:	/*@innercontinue@*/ continue;
+#if !defined(NT_GNU_BUILD_ID)
+#define	NT_GNU_BUILD_ID	3
+#endif
+		    case NT_GNU_BUILD_ID:
+			if (strcmp(name, "GNU") == 0 && nhdr.n_descsz > 0) {  
+			    static const char hex[] = "0123456789abcdef";
+			    size_t i;
+			    buf[0] = '\0';
+			    t = buf;
+			    for (i = 0; i < nhdr.n_descsz; ++i) {
+				*t++ = hex[ ((desc[i] >> 4) & 0x0f) ];
+				*t++ = hex[ ((desc[i]     ) & 0x0f) ];
+			    }
+			    *t = '\0';
+			    /* Add next buildid. */
+			    ds = rpmdsSingle(RPMTAG_PROVIDES, "elf(buildid)",
+					buf, RPMSENSE_EQUAL|RPMSENSE_FIND_PROVIDES);
+			    xx = add(context, ds);
+			    (void)rpmdsFree(ds);
+			    ds = NULL;
+			}
+			/*@switchbreak@*/ break;
+		    }
+		}
+	    }
+	    /*@switchbreak@*/ break;
 	case SHT_GNU_verdef:
 	    data = NULL;
 	    if (!skipP)

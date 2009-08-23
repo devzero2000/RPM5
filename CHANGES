@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: attach buildids to file provides in header metadata.
     - jbj: fix: ensure new ordering queue additions follow older using a
 	generation counter.
     - jbj: macros: split rpmbuild macros into /usr/lib/rpm/macros.rpmbuild.
