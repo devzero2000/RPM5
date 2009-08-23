@@ -131,7 +131,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 {
     static size_t blenmax = (32 * BUFSIZ);
     rpmuint8_t * b = NULL;
-    size_t blen;
+    size_t blen = 0;
     struct stat sb;
     FD_t fd;
     int rc = 0;
