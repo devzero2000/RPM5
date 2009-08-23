@@ -121,6 +121,7 @@ rpmte_R(rpmteObject * s)
     return Py_BuildValue("s", rpmteR(s->te));
 }
 
+#ifdef	RPM_VENDOR_MANDRIVA
 /*@null@*/
 static PyObject *
 rpmte_D(rpmteObject * s)
@@ -128,6 +129,7 @@ rpmte_D(rpmteObject * s)
 {
     return Py_BuildValue("s", rpmteD(s->te));
 }
+#endif
 
 /*@null@*/
 static PyObject *
@@ -353,9 +355,13 @@ static struct PyMethodDef rpmte_methods[] = {
     {"R",	(PyCFunction)rpmte_R,		METH_NOARGS,
 "te.R() -> R\n\
 - Return element release.\n" },
+
+#ifdef	RPM_VENDOR_MANDRIVA
     {"D",	(PyCFunction)rpmte_D,		METH_NOARGS,
 "te.D() -> D\n\
 - Return element distepoch.\n" },
+#endif
+
     {"A",	(PyCFunction)rpmte_A,		METH_NOARGS,
 "te.A() -> A\n\
 - Return element arch.\n" },
