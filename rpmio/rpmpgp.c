@@ -1182,8 +1182,34 @@ static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
 pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
 {
     pgpDig dig = digGetPool(_digPool);
+    memset(&dig->signature, 0, sizeof(dig->signature));
+    memset(&dig->pubkey, 0, sizeof(dig->pubkey));
+
+    dig->sigtag = 0;
+    dig->sigtype = 0;
+    dig->sig = NULL;
+    dig->siglen = 0;
+
     dig->vsflags = pgpDigVSFlags;
+    memset(&dig->dops, 0, sizeof(dig->dops));
+    memset(&dig->sops, 0, sizeof(dig->sops));
+    dig->findPubkey = NULL;
+    dig->_ts = NULL;
+    dig->ppkts = NULL;
+    dig->npkts = 0;
+    dig->nbytes = 0;
+
+    dig->sha1ctx = NULL;
+    dig->hdrsha1ctx = NULL;
+    dig->sha1 = NULL;
+    dig->sha1len = 0;
+
+    dig->md5ctx = NULL;
+    dig->hdrctx = NULL;
+    dig->md5 = NULL;
+    dig->md5len = 0;
     dig->impl = pgpImplInit();
+
     return pgpDigLink(dig);
 }
 
