@@ -152,6 +152,12 @@ static void ctxFini(void * _ctx)
 	/*@modifies _ctx @*/
 {
     DIGEST_CTX ctx = _ctx;
+    if (ctx->param != NULL && ctx->paramsize > 0)
+	memset(ctx->param, 0, ctx->paramsize);	/* In case it's sensitive */
+    ctx->param = _free(ctx->param);
+    if (ctx->salt != NULL && ctx->blocksize > 0)
+	memset(ctx->salt, 0, 2*ctx->paramsize);	/* In case it's sensitive */
+    ctx->salt = _free(ctx->salt);
     ctx->name = NULL;
     ctx->paramsize = 0;
     ctx->blocksize = 0;
@@ -165,14 +171,6 @@ static void ctxFini(void * _ctx)
     ctx->hashalgo = 0;
     ctx->flags = 0;
     ctx->asn1 = NULL;
-    if (ctx->param != NULL && ctx->paramsize > 0) {
-	memset(ctx->param, 0, ctx->paramsize);	/* In case it's sensitive */
-	ctx->param = _free(ctx->param);
-    }
-    if (ctx->salt != NULL && ctx->blocksize > 0) {
-	memset(ctx->salt, 0, 2*ctx->paramsize);	/* In case it's sensitive */
-	ctx->salt = _free(ctx->salt);
-    }
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -254,9 +252,21 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     DIGEST_CTX ctx = ctxGetPool(_ctxPool);
     int xx;
 
+    ctx->name = "";
+    ctx->paramsize = 0;
+    ctx->blocksize = 64;
+    ctx->digestsize = 0;
+    ctx->keybitsmin = 0;
+    ctx->keybitsmax = 0;
+    ctx->keybitsinc = 0;
+    ctx->Reset = NULL;
+    ctx->Update = NULL;
+    ctx->Digest = NULL;
     ctx->hashalgo = hashalgo;
     ctx->flags = flags;
-    ctx->blocksize = 64;	/* XXX set common value, override peculier */
+    ctx->asn1 = NULL;
+    ctx->param = NULL;
+    ctx->salt = NULL;
 
     switch (hashalgo) {
     case PGPHASHALGO_MD5:
