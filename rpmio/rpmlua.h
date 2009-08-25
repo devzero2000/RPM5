@@ -21,6 +21,10 @@ struct rpmlua_s {
     size_t printbufused;
 /*@relnull@*/
     char *printbuf;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 struct rpmluav_s {
@@ -38,6 +42,10 @@ struct rpmluav_s {
 	double num;
     } value;
     int listmode;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #endif /* _RPMLUA_INTERNAL */
