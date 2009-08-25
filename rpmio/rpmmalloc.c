@@ -93,7 +93,8 @@ assert(pool->made == count);
 if (pool->made != count)
 rpmlog(RPMLOG_WARNING, D_("pool %s: FIXME: made %d, count %d\nNote: This is a harmless memory leak discovered while exiting, relax ...\n"), pool->name, pool->made, count);
 #endif
-	pool = _free(pool);
+	(void) _free(pool);
+	VALGRIND_DESTROY_MEMPOOL(pool);
     }
     return NULL;
 }
@@ -105,7 +106,10 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
 		void (*fini) (void *item))
 	/*@*/
 {
+    static int rzB = 0;		/* size of red-zones (if any) */
+    static int is_zeroed = 0;	/* does pool return zero'd allocations? */
     rpmioPool pool = xcalloc(1, sizeof(*pool));
+    VALGRIND_CREATE_MEMPOOL(pool, rzB, is_zeroed);
     pool->have = yarnNewLock(0);
     pool->pool = NULL;
     pool->head = NULL;
@@ -188,6 +192,7 @@ assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
     if (yarnPeekLock(item->use) <= 1L) {
 	if (pool != NULL && pool->fini != NULL)
 	    (*pool->fini) ((void *)item);
+	VALGRIND_MEMPOOL_FREE(pool, item + 1);
 	item = rpmioPutPool(item);
     } else
 	yarnTwist(item->use, BY, -1);
@@ -217,6 +222,9 @@ rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
 	    pool->reused++;
 	    item->pool = pool;		/* remember the pool this belongs to */
 	    yarnTwist(pool->have, BY, -1);      /* one less in pool */
+	    VALGRIND_MEMPOOL_ALLOC(pool,
+		item + 1,
+		size - sizeof(struct rpmioItem_s));
 	    return item;
 	}
 
@@ -231,6 +239,9 @@ assert(pool->limit != 0);
     item = xcalloc(1, size);
     item->use = yarnNewLock(0);		/* XXX newref? */
     item->pool = pool;
+    VALGRIND_MEMPOOL_ALLOC(pool,
+	item + 1,
+	size - sizeof(struct rpmioItem_s));
     return item;
 }
 /*@=internalglobs@*/
@@ -255,7 +266,7 @@ rpmioItem rpmioPutPool(rpmioItem item)
 	yarnTwist(item->use, TO, 0);
 	item->use = yarnFreeLock(item->use);
     }
-    item = _free(item);
+    (void) _free(item);
     return NULL;
 }
 /*@=internalglobs@*/
