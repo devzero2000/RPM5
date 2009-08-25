@@ -178,6 +178,13 @@ rpmlua rpmluaNew(void)
     char *path;
 
     lua->L = L;
+    lua->pushsize = 0;
+    lua->storeprint = 0;
+    /* XXX TODO: use an rpmiob here. */
+    lua->printbufsize = 0;
+    lua->printbufused = 0;
+    lua->printbuf = NULL;
+
     for (; lib->name; lib++) {
 /*@-noeffectuncon@*/
 	lua_pushcfunction(L, lib->func);
@@ -507,6 +514,11 @@ static rpmluav rpmluavGetPool(/*@null@*/ rpmioPool pool)
 rpmluav rpmluavNew(void)
 {
     rpmluav var = rpmluavGetPool(_rpmluavPool);
+    var->keyType = RPMLUAV_NIL;
+    var->valueType = RPMLUAV_NIL;
+    var->key.ptr = NULL;
+    var->value.ptr = NULL;
+    var->listmode = 0;
     return ((rpmluav)rpmioLinkPoolItem((rpmioItem)var, __FUNCTION__, __FILE__, __LINE__));
 }
 
