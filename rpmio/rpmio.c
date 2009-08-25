@@ -291,7 +291,6 @@ static void fdFini(void * _fd)
 assert(fd != NULL);
     fd->opath = _free(fd->opath);
     fd->stats = _free(fd->stats);
-#pragma omp parallel for
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
@@ -345,7 +344,6 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
 	return NULL;
     fd->flags = 0;
     fd->magic = FDMAGIC;
-    fd->urlType = URL_IS_UNKNOWN;
 
     fd->nfps = 0;
     memset(fd->fps, 0, sizeof(fd->fps));
@@ -354,25 +352,31 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
+    fd->urlType = URL_IS_UNKNOWN;
+    fd->url = NULL;
+    fd->req = NULL;
+    fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
+    fd->bytesRemain = -1;
+    fd->contentLength = -1;
+    fd->persist = 0;
+    fd->wr_chunked = 0;
+
+    fd->syserrno = 0;
+    fd->errcookie = NULL;
+
     fd->opath = NULL;
     fd->oflags = 0;
     fd->omode = 0;
-    fd->url = NULL;
-    fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
-    fd->contentLength = fd->bytesRemain = -1;
-    fd->contentType = NULL;
-    fd->contentDisposition = NULL;
-    fd->lastModified = 0;
-    fd->wr_chunked = 0;
-    fd->syserrno = 0;
-    fd->errcookie = NULL;
-    fd->stats = xcalloc(1, sizeof(*fd->stats));
+
     fd->xar = NULL;
     fd->dig = NULL;
-
+    fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));
 
+    fd->contentType = NULL;
+    fd->contentDisposition = NULL;
+    fd->lastModified = 0;
     fd->ftpFileDoneNeeded = 0;
     fd->fd_cpioPos = 0;
 
