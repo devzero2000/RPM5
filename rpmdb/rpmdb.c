@@ -1172,15 +1172,7 @@ if (_rpmdb_debug)
 fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mode, perms, flags, db);
 /*@=modfilesys@*/ /*@=nullpass@*/
 
-    db->db_api = _DB_MAJOR;
-
-    db->_dbi = NULL;
-
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
-
-    db->db_mode = (mode >= 0) ? mode : _DB_MODE;
-    db->db_perms = (perms >= 0)	? perms : _DB_PERMS;
-    db->db_flags = (flags >= 0) ? flags : _DB_FLAGS;
 
     db->db_root = rpmdbURIPath( (root && *root ? root : _DB_ROOT) );
     db->db_home = rpmdbURIPath( (home && *home ? home : _DB_HOME) );
@@ -1193,11 +1185,35 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
 
-    db->db_export = rpmdbExportInfo;
+    db->db_flags = (flags >= 0) ? flags : _DB_FLAGS;
+    db->db_mode = (mode >= 0) ? mode : _DB_MODE;
+    db->db_perms = (perms >= 0)	? perms : _DB_PERMS;
+    db->db_api = _DB_MAJOR;
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
+
     db->db_remove_env = 0;
+    db->db_verifying = 0;
+    db->db_chrootDone = 0;
+    db->db_errcall = NULL;
+    db->db_errfile = NULL;
+    db->db_malloc = NULL;
+    db->db_realloc = NULL;
+    db->db_free = NULL;
+    db->db_export = rpmdbExportInfo;
+
+    db->db_bits = NULL;
+    db->db_nbits = 0;
+    db->db_next = NULL;
+    db->db_opens = 0;
+    db->db_dbenv = NULL;
+
     dbiTagsInit(&db->db_tags, &db->db_ndbi);
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
+
+    memset(&db->db_getops, 0, sizeof(db->db_getops));
+    memset(&db->db_putops, 0, sizeof(db->db_putops));
+    memset(&db->db_delops, 0, sizeof(db->db_delops));
+
     /*@-globstate@*/
     return rpmdbLink(db, "rpmdbNew");
     /*@=globstate@*/
