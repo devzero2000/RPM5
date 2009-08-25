@@ -18,14 +18,27 @@
 #endif
 
 #if defined(WITH_VALGRIND) && defined(HAVE_VALGRIND_VALGRIND_H)
+
 #include <valgrind/valgrind.h>
+
 #else
-#define CALLGRIND_DUMP_STATS
-#define CALLGRIND_DUMP_STATS_AT(pos_str)
-#define CALLGRIND_ZERO_STATS
-#define CALLGRIND_TOGGLE_COLLECT
-#define CALLGRIND_START_INSTRUMENTATION
-#define CALLGRIND_STOP_INSTRUMENTATION
+
+#define	VALGRIND_CREATE_MEMPOOL(pool, rzB, is_zeroed)
+#define	VALGRIND_DESTROY_MEMPOOL(pool)
+#define	VALGRIND_MEMPOOL_ALLOC(pool, addr, size)
+#define	VALGRIND_MEMPOOL_FREE(pool, addr)
+#define	VALGRIND_MEMPOOL_TRIM(pool, addr, size)
+#define	VALGRIND_MOVE_MEMPOOL(poolA, poolB)
+#define	VALGRIND_MEMPOOL_CHANGE(pool, addrA, addrB, size)
+#define	VALGRIND_MEMPOOL_EXISTS(pool)	(0)
+
+#define	CALLGRIND_DUMP_STATS
+#define	CALLGRIND_DUMP_STATS_AT(pos_str)
+#define	CALLGRIND_ZERO_STATS
+#define	CALLGRIND_TOGGLE_COLLECT
+#define	CALLGRIND_START_INSTRUMENTATION
+#define	CALLGRIND_STOP_INSTRUMENTATION
+
 #endif
 
 #endif	/* H_DEBUG */
