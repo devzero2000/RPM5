@@ -30,8 +30,9 @@ enum dcFlags_e {
 	/* 4-13 reserved */
     RPMDC_FLAGS_BINARY		= _DFB(14),	/*!< -b,--binary ... */
     RPMDC_FLAGS_STATUS		= _DFB(15),	/*!<    --status ... */
-    RPMDC_FLAGS_0INSTALL	= _DFB(16)	/*!< -0 --0install ... */
-	/* 17-31 unused */
+    RPMDC_FLAGS_0INSTALL	= _DFB(16),	/*!< -0,--0install ... */
+    RPMDC_FLAGS_FIPS140		= _DFB(17),	/*!<    --fips140 ... */
+	/* 18-31 unused */
 };
 
 /**
@@ -88,6 +89,8 @@ static struct rpmdc_s _dc = {
 /**
  */
 static rpmdc dc = &_dc;
+
+static const char fips140key[] = "orboDeJITITejsirpADONivirpUkvarP";
 
 /*==============================================================*/
 static uint32_t rpmdcName2Algo(const char * dname)
@@ -348,6 +351,9 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 	/* Verify the manifest digest. */
 	{   DIGEST_CTX ctx = rpmDigestInit(dc->dalgo, 0);
 
+	    if (F_ISSET(dc, FIPS140))
+		(void) rpmHmacInit(ctx, fips140key, 0);
+
 	    (void) rpmDigestUpdate(ctx, (char *)iob->b, (be - (char *)iob->b));
 	    digest = NULL;
 	    (void) rpmDigestFinal(ctx, &digest, NULL, 1);
@@ -528,7 +534,7 @@ static int rpmdcPrintFile(rpmdc dc)
     int rc = 0;
 
 if (_rpmdc_debug)
-fprintf(stderr, "\trpmdcPrintFile(%p) fd %p fn %s\n", dc, dc->fd, dc->fn);
+fprintf(stderr, "\t%s(%p) fd %p fn %s\n", __FUNCTION__, dc, dc->fd, dc->fn);
 
 assert(dc->fd != NULL);
     fdFiniDigest(dc->fd, dc->dalgo, &dc->digest, &dc->digestlen, asAscii);
@@ -568,7 +574,7 @@ static int rpmdcFiniFile(rpmdc dc)
 	return rc;
 
 if (_rpmdc_debug)
-fprintf(stderr, "\trpmdcFiniFile(%p) fn %s\n", dc, dc->fn);
+fprintf(stderr, "\t%s(%p) fn %s\n", __FUNCTION__, dc, dc->fn);
     switch (dalgo) {
     default:
 	dc->dalgo = dalgo;
@@ -606,7 +612,7 @@ static int rpmdcCalcFile(rpmdc dc)
     int rc = 0;
 
 if (_rpmdc_debug)
-fprintf(stderr, "\trpmdcCalcFile(%p) fn %s\n", dc, dc->fn);
+fprintf(stderr, "\t%s(%p) fn %s\n", __FUNCTION__, dc, dc->fn);
     /* Skip (unopened) non-files. */
     if (dc->fd != NULL)
     do {
@@ -625,7 +631,7 @@ static int rpmdcInitFile(rpmdc dc)
     int rc = 0;
 
 if (_rpmdc_debug)
-fprintf(stderr, "\trpmdcInitFile(%p) fn %s\n", dc, dc->fn);
+fprintf(stderr, "\t%s(%p) fn %s\n", __FUNCTION__, dc, dc->fn);
     /* Skip non-files. */
     if (!S_ISREG(dc->sb.st_mode)) {
 	/* XXX not found return code? */
@@ -646,6 +652,8 @@ fprintf(stderr, "\trpmdcInitFile(%p) fn %s\n", dc, dc->fn);
 	/* XXX TODO: instantiate verify digests for all identical paths. */
 	dc->dalgo = dc->algo;
 	fdInitDigest(dc->fd, dc->dalgo, 0);
+	if (F_ISSET(dc, FIPS140))
+	    fdInitHmac(dc->fd, fips140key, 0);
 	break;
     case 256:		/* --all digests requested. */
       {	struct poptOption * opt = rpmioDigestPoptTable;
@@ -659,6 +667,8 @@ fprintf(stderr, "\trpmdcInitFile(%p) fn %s\n", dc, dc->fn);
 	    dc->dalgo = opt->val;
 	    dc->dalgoName = opt->longName;
 	    fdInitDigest(dc->fd, dc->dalgo, 0);
+	    if (F_ISSET(dc, FIPS140))
+		fdInitHmac(dc->fd, fips140key, 0);
 	}
       }	break;
     }
@@ -675,7 +685,7 @@ rpmdcVisitF(rpmdc dc)
     int xx;
 
 if (_rpmdc_debug)
-fprintf(stderr, "*** rpmdcVisitF(%p) fn %s\n", dc, dc->fn);
+fprintf(stderr, "*** %s(%p) fn %s\n", __FUNCTION__, dc, dc->fn);
     if ((xx = rpmdcInitFile(dc)) != 0)
 	rc = xx;
     else {
@@ -860,6 +870,9 @@ static struct poptOption _optionsTable[] = {
   { "text", 't', POPT_BIT_CLR,		&_dc.flags, RPMDC_FLAGS_BINARY,
 	N_("read in text mode (default)"), NULL },
 
+  { "fips140", '\0', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_FIPS140,
+	N_("generate FIPS-140 HMAC's"), NULL },
+
 #ifdef	NOTYET		/* XXX todo for popt-1.15 */
   { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
         N_("\
@@ -931,8 +944,11 @@ main(int argc, char *argv[])
     dc->ftsoptions |= FTS_NOCHDIR;
 
     dc->ofd = Fopen(dc->ofn, "w.ufdio");
-    if (F_ISSET(dc, 0INSTALL))
+    if (F_ISSET(dc, 0INSTALL)) {
 	fdInitDigest(dc->ofd, dc->oalgo, 0);
+	if (F_ISSET(dc, FIPS140))
+	    fdInitHmac(dc->ofd, fips140key, 0);
+    }
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
