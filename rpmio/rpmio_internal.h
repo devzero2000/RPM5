@@ -50,7 +50,6 @@ typedef	/*@abstract@*/ struct {
 /** \ingroup rpmio
  */
 typedef struct _FDDIGEST_s {
-    pgpHashAlgo		hashalgo;
     DIGEST_CTX		hashctx;
 } * FDDIGEST_t;
 
@@ -534,7 +533,6 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
     FDDIGEST_t fddig = fd->digests + fd->ndigests;
     if (fddig != (fd->digests + FDDIGEST_MAX)) {
 	fd->ndigests++;
-	fddig->hashalgo = hashalgo;
 	fdstat_enter(fd, FDSTAT_DIGEST);
 	fddig->hashctx = rpmDigestInit(hashalgo, flags);
 	fdstat_exit(fd, FDSTAT_DIGEST, 0);
@@ -553,7 +551,9 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 
   if (fd->ndigests > 0 && buf != NULL && buflen > 0) {
     fdstat_enter(fd, FDSTAT_DIGEST);
+#if defined(_OPENMP)
 #pragma omp parallel for
+#endif
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
@@ -584,7 +584,7 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	if (fddig->hashctx == NULL)
 	    continue;
 	if (i > imax) imax = i;
-	if (fddig->hashalgo != hashalgo)
+	if (rpmDigestAlgo(fddig->hashctx) != hashalgo)
 	    continue;
 	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
 	fddig->hashctx = NULL;
@@ -614,7 +614,7 @@ void fdStealDigest(FD_t fd, pgpDig dig)
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx != NULL)
-	switch (fddig->hashalgo) {
+	switch (rpmDigestAlgo(fddig->hashctx)) {
 	case PGPHASHALGO_MD5:
 assert(dig->md5ctx == NULL);
 /*@-onlytrans@*/
