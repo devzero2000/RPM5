@@ -291,13 +291,15 @@ static void fdFini(void * _fd)
 assert(fd != NULL);
     fd->opath = _free(fd->opath);
     fd->stats = _free(fd->stats);
+    if (fd->ndigests > 0)
     for (i = fd->ndigests - 1; i >= 0; i--) {
-	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx == NULL)
+	DIGEST_CTX ctx = fd->digests[i];
+	if (ctx == NULL)
 	    continue;
-	(void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
-	fddig->hashctx = NULL;
+	(void) rpmDigestFinal(ctx, NULL, NULL, 0);
+	fd->digests[i] = NULL;
     }
+    fd->digests = _free(fd->digests);
     fd->ndigests = 0;
     fd->contentType = _free(fd->contentType);
     fd->contentDisposition = _free(fd->contentDisposition);
@@ -372,7 +374,7 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
     fd->dig = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->ndigests = 0;
-    memset(fd->digests, 0, sizeof(fd->digests));
+    fd->digests = NULL;
 
     fd->contentType = NULL;
     fd->contentDisposition = NULL;
@@ -419,7 +421,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	rc = read(fdFileno(fd), buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+    if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -436,7 +438,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     if (count == 0) return 0;
 
