@@ -537,6 +537,18 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 }
 
 /** \ingroup rpmio
+ * Attach digest to fd.
+ */
+/*@unused@*/ static inline
+void fdInitHmac(FD_t fd, const void * key, size_t keylen)
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
+{
+    if (fd->digests != NULL && fd->ndigests > 0 && key != NULL)
+	rpmHmacInit(fd->digests[fd->ndigests-1], key, keylen);
+}
+
+/** \ingroup rpmio
  * Update digest(s) attached to fd.
  */
 /*@unused@*/ static inline

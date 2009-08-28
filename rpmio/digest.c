@@ -131,9 +131,6 @@ struct DIGEST_CTX_s {
     size_t paramsize;		/*!< No. bytes of digest parameters. */
     size_t blocksize;		/*!< No. bytes in block of plaintext data. */
     size_t digestsize;		/*!< No. bytes of digest. */
-    size_t keybitsmin;
-    size_t keybitsmax;
-    size_t keybitsinc;
     int (*Reset) (void * param)
 	/*@modifies param @*/;	/*!< Digest initialize. */
     int (*Update) (void * param, const byte * data, size_t size)
@@ -162,9 +159,6 @@ static void ctxFini(void * _ctx)
     ctx->paramsize = 0;
     ctx->blocksize = 0;
     ctx->digestsize = 0;
-    ctx->keybitsmin = 0;
-    ctx->keybitsmax = 0;
-    ctx->keybitsinc = 0;
     ctx->Reset = NULL;
     ctx->Update = NULL;
     ctx->Digest = NULL;
@@ -217,9 +211,6 @@ rpmDigestDup(DIGEST_CTX octx)
     nctx->digestsize = octx->digestsize;
     nctx->blocksize = octx->blocksize;
     nctx->paramsize = octx->paramsize;
-    nctx->keybitsmin = octx->keybitsmin;
-    nctx->keybitsmax = octx->keybitsmax;
-    nctx->keybitsinc = octx->keybitsinc;
     nctx->Reset = octx->Reset;
     nctx->Update = octx->Update;
     nctx->Digest = octx->Digest;
@@ -246,6 +237,8 @@ static int md6_Update(void * param, const byte * _data, size_t _len)
     return md6_update(param, (unsigned char *) _data, (rpmuint64_t)(8 * _len));
 }
 
+static const char fips140key[] = "orboDeJITITejsirpADONivirpUkvarP";
+
 DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 {
@@ -256,9 +249,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     ctx->paramsize = 0;
     ctx->blocksize = 64;
     ctx->digestsize = 0;
-    ctx->keybitsmin = 0;
-    ctx->keybitsmax = 0;
-    ctx->keybitsinc = 0;
     ctx->Reset = NULL;
     ctx->Update = NULL;
     ctx->Digest = NULL;
@@ -925,6 +915,9 @@ DPRINTF((stderr, "==> ctx %p ==== Update(%s,%p[%u]) param %p\n", ctx, ctx->name,
 }
 /*@=mustmod@*/
 
+#define	HMAC_IPAD	0x36
+#define	HMAC_OPAD	0x5c
+
 int
 rpmDigestFinal(DIGEST_CTX ctx, void * datap, size_t *lenp, int asAscii)
 {
@@ -939,6 +932,23 @@ DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", 
 /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
 /*@=noeffectuncon@*/
+
+    /* If keyed HMAC, re-hash with key material. */
+    if (ctx->salt != NULL) {
+	DIGEST_CTX kctx = rpmDigestInit(ctx->hashalgo, RPMDIGEST_NONE);
+	byte * salt = ctx->salt;
+	byte * kdigest = NULL;
+	size_t kdigestlen = 0;
+	unsigned i;
+	for (i = 0; i < ctx->blocksize; i++)
+	    salt[i] ^= HMAC_OPAD;
+	rpmDigestUpdate(kctx, ctx->salt, ctx->blocksize);
+	ctx->salt = _free(ctx->salt);
+	rpmDigestUpdate(kctx, digest, ctx->digestsize);
+	(void) rpmDigestFinal(kctx, &kdigest, &kdigestlen, 0);
+	memcpy(digest, kdigest, kdigestlen);
+	kdigest = _free(kdigest);
+    }
 
     /* Return final digest. */
     if (!asAscii) {
@@ -968,4 +978,39 @@ DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", 
     }
     (void)rpmioFreePoolItem((rpmioItem)ctx, __FUNCTION__, __FILE__, __LINE__);
     return 0;
+}
+
+int
+rpmHmacInit(DIGEST_CTX ctx, const void * key, size_t keylen)
+{
+    int rc = 0;
+
+    if (ctx == NULL)
+	return -1;
+    if (key != NULL) {
+	byte * salt = xcalloc(1, ctx->blocksize);
+	unsigned i;
+	if (keylen == 0) keylen = strlen(key);
+	ctx->salt = salt;
+DPRINTF((stderr, "==> ctx %p ==== HMAC(%s,%p[%u])\n", ctx, ctx->name, key, (unsigned)keylen));
+	if (keylen > ctx->blocksize) {
+	    /* If key is larger than digestlen, then hash the material. */
+	    DIGEST_CTX kctx = rpmDigestInit(ctx->hashalgo, RPMDIGEST_NONE);
+	    byte * kdigest = NULL;
+	    size_t kdigestlen = 0;
+	    rpmDigestUpdate(kctx, key, keylen);
+	    (void) rpmDigestFinal(kctx, &kdigest, &kdigestlen, 0);
+	    memcpy(ctx->salt, kdigest, kdigestlen);
+	    kdigest = _free(kdigest);
+	} else
+	    memcpy(ctx->salt, key, keylen);
+
+	salt = ctx->salt;
+	for (i = 0; i < ctx->blocksize; i++)
+	    salt[i] ^= HMAC_IPAD;
+	rpmDigestUpdate(ctx, ctx->salt, ctx->blocksize);
+	for (i = 0; i < ctx->blocksize; i++)
+	    salt[i] ^= HMAC_IPAD;
+    }
+    return rc;
 }

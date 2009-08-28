@@ -307,7 +307,7 @@ typedef enum pgpHashAlgo_e {
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
-    RPMDIGEST_NONE	=    0,
+    RPMDIGEST_NONE	=	0,
 } rpmDigestFlags;
 
 #if defined(_RPMIOB_INTERNAL)
@@ -396,8 +396,6 @@ int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
 
 /** \ingroup rpmpgp
  * Return digest and destroy context.
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
- * 1 0* (64-bit count of bits processed, MSB-first)
  *
  * @param ctx		digest context
  * @retval *datap	digest
@@ -409,6 +407,18 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ void * datap,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
+
+/** \ingroup rpmpgp
+ *
+ * Compute key material and add to digest context.
+ * @param ctx		digest context
+ * @param key		HMAC key (NULL does digest instead)
+ * @param keylen	HMAC key length(bytes) (0 uses strlen(key))
+ * @return		0 on success
+ */
+/*@only@*/ /*@null@*/
+int rpmHmacInit(DIGEST_CTX ctx, const void * key, size_t keylen)
+	/*@*/;
 
 /** \ingroup rpmio
  */

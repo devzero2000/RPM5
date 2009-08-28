@@ -322,6 +322,7 @@ LIBRPMIO_0
     rpmGetPath;
     rpmGlob;
     rpmGlobalMacroContext;
+    rpmHmacInit;
     rpmhookArgsFree;
     rpmhookArgsNew;
     rpmhookCall;
