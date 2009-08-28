@@ -326,7 +326,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else {
 	fdstat_exit(fd, FDSTAT_READ, (rc > 0 ? rc : 0));
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
     }
     return rc;
 }
@@ -342,7 +342,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     rpmgz = gzdFileno(fd);
     if (rpmgz == NULL) return -2;	/* XXX can't happen */

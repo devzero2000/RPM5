@@ -391,7 +391,7 @@ DBGIO(fd, (stderr, "==>\txzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -410,7 +410,7 @@ static ssize_t xzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;   /* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     xzfile = xzdFileno(fd);
 

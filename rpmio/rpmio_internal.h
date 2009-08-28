@@ -94,7 +94,7 @@ struct _FD_s {
 
     FDSTAT_t	stats;		/* I/O statistics */
 
-    int		ndigests;
+    size_t	ndigests;
     DIGEST_CTX *digests;
 
 /*null@*/
@@ -602,6 +602,7 @@ void fdStealDigest(FD_t fd, pgpDig dig)
 {
     int i;
 /*@-type@*/	/* FIX: getters for pgpDig internals */
+    if (fd->ndigests > 0)
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	DIGEST_CTX ctx = fd->digests[i];
 	if (ctx != NULL)
