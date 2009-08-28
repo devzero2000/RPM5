@@ -20,6 +20,10 @@
 #if defined(WITH_VALGRIND) && defined(HAVE_VALGRIND_VALGRIND_H)
 
 #include <valgrind/valgrind.h>
+#include <valgrind/memcheck.h>
+#include <valgrind/callgrind.h>
+#include <valgrind/helgrind.h>
+#include <valgrind/drd.h>
 
 #else
 
@@ -31,6 +35,8 @@
 #define	VALGRIND_MOVE_MEMPOOL(poolA, poolB)
 #define	VALGRIND_MEMPOOL_CHANGE(pool, addrA, addrB, size)
 #define	VALGRIND_MEMPOOL_EXISTS(pool)	(0)
+
+#define	VALGRIND_HG_CLEAN_MEMORY(_qzz_start, _qzz_len)
 
 #define	CALLGRIND_DUMP_STATS
 #define	CALLGRIND_DUMP_STATS_AT(pos_str)
