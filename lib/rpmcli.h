@@ -146,8 +146,9 @@ typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_MTIME	= (1 << 5),	/*!< from %verify(mtime) */
     RPMVERIFY_MODE	= (1 << 6),	/*!< from %verify(mode) */
     RPMVERIFY_RDEV	= (1 << 7),	/*!< from %verify(rdev) */
-	/* bits 8-13 unused, reserved for rpmVerifyAttrs */
-    RPMVERIFY_HMAC	= (1 << 14) | RPMVERIFY_FDIGEST,
+    RPMVERIFY_CAPS	= (1 << 8),	/*!< from %verify(caps) (unimplemented) */
+	/* bits 9-13 unused, reserved for rpmVerifyAttrs */
+    RPMVERIFY_HMAC	= (1 << 14),
     RPMVERIFY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
 	/* bits 16-22 used in rpmVerifyFlags */
 	/* bits 23-27 used in rpmQueryFlags */
@@ -156,7 +157,6 @@ typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_LSTATFAIL	= (1 << 30),	/*!< lstat failed */
     RPMVERIFY_LGETFILECONFAIL	= (1 << 31)	/*!< lgetfilecon failed */
 } rpmVerifyAttrs;
-#define	RPMVERIFY_MD5	RPMVERIFY_FDIGEST
 #define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 #define	RPMVERIFY_FAILURES	\
   (RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL|RPMVERIFY_LGETFILECONFAIL)
@@ -176,8 +176,9 @@ typedef enum rpmQueryFlags_e {
     QUERY_MTIME		= (1 << 5),	/*!< from --nomtime) */
     QUERY_MODE		= (1 << 6),	/*!< from --nomode) */
     QUERY_RDEV		= (1 << 7),	/*!< from --nodev */
-	/* bits 8-13 unused, reserved for rpmVerifyAttrs */
-    QUERY_HMAC		= (1 << 14) | QUERY_FDIGEST,
+    QUERY_CAPS		= (1 << 8),	/*!< (unimplemented) */
+	/* bits 9-13 unused, reserved for rpmVerifyAttrs */
+    QUERY_HMAC		= (1 << 14),
     QUERY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
     QUERY_FILES		= (1 << 16),	/*!< verify: from --nofiles */
     QUERY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
@@ -220,8 +221,9 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_MTIME	= (1 << 5),	/*!< from --nomtime */
     VERIFY_MODE		= (1 << 6),	/*!< from --nomode */
     VERIFY_RDEV		= (1 << 7),	/*!< from --nodev */
-	/* bits 8-13 unused, reserved for rpmVerifyAttrs */
-    VERIFY_HMAC		= (1 << 14) | VERIFY_FDIGEST,
+    VERIFY_CAPS		= (1 << 8),	/*!< (unimplemented) */
+	/* bits 9-13 unused, reserved for rpmVerifyAttrs */
+    VERIFY_HMAC		= (1 << 14),
     VERIFY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
     VERIFY_FILES	= (1 << 16),	/*!< verify: from --nofiles */
     VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */

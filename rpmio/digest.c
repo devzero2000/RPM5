@@ -237,8 +237,6 @@ static int md6_Update(void * param, const byte * _data, size_t _len)
     return md6_update(param, (unsigned char *) _data, (rpmuint64_t)(8 * _len));
 }
 
-static const char fips140key[] = "orboDeJITITejsirpADONivirpUkvarP";
-
 DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 {

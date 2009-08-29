@@ -51,15 +51,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-/*@only@*/
-    static const char * cmd = NULL;
-    static int oneshot = 0;
     int fdno;
-
-    if (!oneshot) {
-	cmd = rpmExpand("%{?__prelink_undo_cmd}", NULL);
-	oneshot++;
-    }
 
     if (pidp) *pidp = 0;
 
@@ -72,10 +64,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 
     fdno = open(path, O_RDONLY);
     if (fdno < 0)
-	return fdno;
-
-    if (!(cmd && *cmd))
-	return fdno;
+	goto exit;
 
 #if defined(HAVE_GELF_H) && defined(HAVE_LIBELF)
  {  Elf *elf = NULL;
@@ -85,6 +74,18 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
     GElf_Shdr shdr;
     GElf_Dyn dyn;
     int bingo;
+    static const char * cmd = NULL;	/* XXX memleak */
+    static yarnLock oneshot = NULL;	/* XXX memleak */
+
+    if (oneshot == NULL) {
+	cmd = rpmExpand("%{?__prelink_undo_cmd}", NULL);
+	VALGRIND_HG_CLEAN_MEMORY(cmd, sizeof(cmd));
+	oneshot = yarnNewLock(0);
+	VALGRIND_HG_CLEAN_MEMORY(oneshot, sizeof(oneshot));
+    }
+    yarnPossess(oneshot);
+    if (!(cmd && *cmd))
+	goto elfexit;
 
     (void) elf_version(EV_CURRENT);
 
@@ -93,7 +94,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
      || elf_kind(elf) != ELF_K_ELF
      || gelf_getehdr(elf, &ehdr) == NULL
      || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
-	goto exit;
+	goto elfexit;
 /*@=evalorder@*/
 
     bingo = 0;
@@ -144,17 +145,24 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	xx = close(pipes[1]);
     }
 
-exit:
+elfexit:
     if (elf) (void) elf_end(elf);
+    yarnRelease(oneshot);
  }
 #endif
 
+exit:
     return fdno;
 }
 /*@=compdef =moduncon =noeffectuncon @*/
 
-int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
+static const char hmackey[] = "orboDeJITITejsirpADONivirpUkvarP";
+
+int dodigest(int dalgo, const char * fn, unsigned char * digest,
+		unsigned dflags, size_t *fsizep)
 {
+    int asAscii = dflags & 0x01;
+    int doHmac = dflags & 0x02;
     const char * path;
     urltype ut = urlPath(fn, &path);
     unsigned char * dsum = NULL;
@@ -202,7 +210,9 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
 #endif
 	}
 
-	ctx = rpmDigestInit(digestalgo, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+	if (doHmac)
+	    rpmHmacInit(ctx, hmackey, 0);
 	if (fsize)
 	    xx = rpmDigestUpdate(ctx, mapped, fsize);
 	xx = rpmDigestFinal(ctx, &dsum, &dlen, asAscii);
@@ -228,11 +238,13 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
 	    break;
 	}
 	
-	fdInitDigest(fd, digestalgo, 0);
+	fdInitDigest(fd, dalgo, 0);
+	if (doHmac)
+	    fdInitHmac(fd, hmackey, 0);
 	fsize = 0;
 	while ((rc = (int) Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
-	fdFiniDigest(fd, digestalgo, &dsum, &dlen, asAscii);
+	fdFiniDigest(fd, dalgo, &dsum, &dlen, asAscii);
 	if (Ferror(fd))
 	    rc = 1;
 

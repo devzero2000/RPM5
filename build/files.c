@@ -137,11 +137,11 @@ typedef struct FileList_s {
     int inFtw;
     int currentFlags;
     specdFlags currentSpecdFlags;
-    int currentVerifyFlags;
+    unsigned currentVerifyFlags;
     struct AttrRec_s cur_ar;
     struct AttrRec_s def_ar;
     specdFlags defSpecdFlags;
-    int defVerifyFlags;
+    unsigned defVerifyFlags;
     int nLangs;
 /*@only@*/ /*@null@*/
     const char ** currentLangs;
@@ -304,7 +304,7 @@ typedef struct VFA {
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
 static VFA_t verifyAttrs[] = {
-    { "md5",	0,	RPMVERIFY_MD5 },
+    { "md5",	0,	RPMVERIFY_FDIGEST },	/* XXX legacy syntax */
     { "size",	0,	RPMVERIFY_FILESIZE },
     { "link",	0,	RPMVERIFY_LINKTO },
     { "user",	0,	RPMVERIFY_USER },
@@ -312,6 +312,8 @@ static VFA_t verifyAttrs[] = {
     { "mtime",	0,	RPMVERIFY_MTIME },
     { "mode",	0,	RPMVERIFY_MODE },
     { "rdev",	0,	RPMVERIFY_RDEV },
+    { "digest",	0,	RPMVERIFY_FDIGEST },
+    { "hmac",	0,	RPMVERIFY_HMAC },
     { NULL, 0,	0 }
 };
 /*@=exportlocal =exportheadervar@*/
@@ -329,9 +331,9 @@ static rpmRC parseForVerify(char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
-    int *resultVerify;
+    unsigned *resultVerify;
     int negated;
-    int verifyFlags;
+    unsigned verifyFlags;
     specdFlags * specdFlags;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {
@@ -389,6 +391,7 @@ static rpmRC parseForVerify(char * buf, FileList fl)
 		if (strcmp(p, vfa->attribute))
 		    /*@innercontinue@*/ continue;
 		verifyFlags |= vfa->flag;
+		    verifyFlags &= ~RPMVERIFY_FDIGEST;
 		/*@innerbreak@*/ break;
 	    }
 	    if (vfa->attribute)
@@ -405,6 +408,15 @@ static rpmRC parseForVerify(char * buf, FileList fl)
     }
 
     *resultVerify = negated ? ~(verifyFlags) : verifyFlags;
+    if (negated) {
+	/* Make sure "no digest" implies "no hmac" */
+	if (!(*resultVerify & RPMVERIFY_FDIGEST))
+	    *resultVerify &= ~RPMVERIFY_HMAC;
+    } else {
+	/* Make sure "hmac" implies "no digest" */
+	if (*resultVerify & RPMVERIFY_HMAC)
+	    *resultVerify &= ~RPMVERIFY_FDIGEST;
+    }
     *specdFlags |= SPECD_VERIFY;
 
     return RPMRC_OK;
@@ -1001,7 +1013,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 	/* XXX WATCHOUT: buf is an arg */
 	   {	
 		/*@only@*/
-		static char *_docdir_fmt = NULL;
+		static char *_docdir_fmt = NULL;	/* XXX memleak */
 		static int oneshot = 0;
 		const char *ddir, *fmt, *errstr;
 		if (!oneshot) {
@@ -1506,8 +1518,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->append = 0;
 
 	buf[0] = '\0';
-	if (S_ISREG(flp->fl_mode))
-	    (void) dodigest(dalgo, flp->diskURL, (unsigned char *)buf, 1, NULL);
+	if (S_ISREG(flp->fl_mode)) {
+	    unsigned dflags = 0x01;	/* asAscii */
+#define	_mask	(RPMVERIFY_FDIGEST|RPMVERIFY_HMAC)
+	    if ((flp->verifyFlags & _mask) == RPMVERIFY_HMAC)
+		dflags |= 0x02;		/* doHmac */
+#undef	_mask
+	    (void) dodigest(dalgo, flp->diskURL, (unsigned char *)buf,
+			dflags, NULL);
+	}
 	s = buf;
 
 	he->tag = RPMTAG_FILEDIGESTS;
@@ -1557,7 +1576,7 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 
 	if (flp->flags & RPMFILE_GHOST) {
-	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
+	    flp->verifyFlags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
 	ui32 = flp->verifyFlags;

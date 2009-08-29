@@ -31,7 +31,7 @@ enum dcFlags_e {
     RPMDC_FLAGS_BINARY		= _DFB(14),	/*!< -b,--binary ... */
     RPMDC_FLAGS_STATUS		= _DFB(15),	/*!<    --status ... */
     RPMDC_FLAGS_0INSTALL	= _DFB(16),	/*!< -0,--0install ... */
-    RPMDC_FLAGS_FIPS140		= _DFB(17),	/*!<    --fips140 ... */
+    RPMDC_FLAGS_HMAC		= _DFB(17),	/*!<    --hmac ... */
 	/* 18-31 unused */
 };
 
@@ -90,7 +90,7 @@ static struct rpmdc_s _dc = {
  */
 static rpmdc dc = &_dc;
 
-static const char fips140key[] = "orboDeJITITejsirpADONivirpUkvarP";
+static const char hmackey[] = "orboDeJITITejsirpADONivirpUkvarP";
 
 /*==============================================================*/
 static uint32_t rpmdcName2Algo(const char * dname)
@@ -351,8 +351,8 @@ static int rpmdcParseZeroInstall(rpmdc dc)
 	/* Verify the manifest digest. */
 	{   DIGEST_CTX ctx = rpmDigestInit(dc->dalgo, 0);
 
-	    if (F_ISSET(dc, FIPS140))
-		(void) rpmHmacInit(ctx, fips140key, 0);
+	    if (F_ISSET(dc, HMAC))
+		(void) rpmHmacInit(ctx, hmackey, 0);
 
 	    (void) rpmDigestUpdate(ctx, (char *)iob->b, (be - (char *)iob->b));
 	    digest = NULL;
@@ -652,8 +652,8 @@ fprintf(stderr, "\t%s(%p) fn %s\n", __FUNCTION__, dc, dc->fn);
 	/* XXX TODO: instantiate verify digests for all identical paths. */
 	dc->dalgo = dc->algo;
 	fdInitDigest(dc->fd, dc->dalgo, 0);
-	if (F_ISSET(dc, FIPS140))
-	    fdInitHmac(dc->fd, fips140key, 0);
+	if (F_ISSET(dc, HMAC))
+	    fdInitHmac(dc->fd, hmackey, 0);
 	break;
     case 256:		/* --all digests requested. */
       {	struct poptOption * opt = rpmioDigestPoptTable;
@@ -667,8 +667,8 @@ fprintf(stderr, "\t%s(%p) fn %s\n", __FUNCTION__, dc, dc->fn);
 	    dc->dalgo = opt->val;
 	    dc->dalgoName = opt->longName;
 	    fdInitDigest(dc->fd, dc->dalgo, 0);
-	    if (F_ISSET(dc, FIPS140))
-		fdInitHmac(dc->fd, fips140key, 0);
+	    if (F_ISSET(dc, HMAC))
+		fdInitHmac(dc->fd, hmackey, 0);
 	}
       }	break;
     }
@@ -870,8 +870,8 @@ static struct poptOption _optionsTable[] = {
   { "text", 't', POPT_BIT_CLR,		&_dc.flags, RPMDC_FLAGS_BINARY,
 	N_("read in text mode (default)"), NULL },
 
-  { "fips140", '\0', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_FIPS140,
-	N_("generate FIPS-140 HMAC's"), NULL },
+  { "hmac", '\0', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_HMAC,
+	N_("generate HMAC's instead"), NULL },
 
 #ifdef	NOTYET		/* XXX todo for popt-1.15 */
   { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
@@ -946,8 +946,8 @@ main(int argc, char *argv[])
     dc->ofd = Fopen(dc->ofn, "w.ufdio");
     if (F_ISSET(dc, 0INSTALL)) {
 	fdInitDigest(dc->ofd, dc->oalgo, 0);
-	if (F_ISSET(dc, FIPS140))
-	    fdInitHmac(dc->ofd, fips140key, 0);
+	if (F_ISSET(dc, HMAC))
+	    fdInitHmac(dc->ofd, hmackey, 0);
     }
 
     av = poptGetArgs(optCon);
