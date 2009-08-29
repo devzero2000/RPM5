@@ -293,6 +293,10 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_SCRIPT;
 	break;
 
+    case RPMCLI_POPT_NOHMACS:
+	qva->qva_flags |= VERIFY_HMAC;
+	break;
+
     /* XXX perhaps POPT_ARG_INT instead of callback. */
     case POPT_TRUST:
     {	char * end = NULL;
@@ -418,6 +422,8 @@ struct poptOption rpmVerifyPoptTable[] = {
 	&rpmQVKArgs.qva_flags, VERIFY_RDEV,
         N_("don't verify mode of files"), NULL },
 
+ { "nohmacs", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOHMACS,
+	N_("don't verify file HMAC's"), NULL },
  { "nocontexts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't verify file security contexts"), NULL },
  { "nofiles", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILES,

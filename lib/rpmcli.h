@@ -100,6 +100,7 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 #define	RPMCLI_POPT_NOHDRCHK		-1031
 #define	RPMCLI_POPT_NOCONTEXTS		-1032
 #define	RPMCLI_POPT_TARGETPLATFORM	-1033
+#define	RPMCLI_POPT_NOHMACS		-1034
 
 /* ==================================================================== */
 /** \name RPMQV */
@@ -244,7 +245,7 @@ typedef enum rpmVerifyFlags_e {
 
 #define	VERIFY_ATTRS	\
   ( VERIFY_FDIGEST | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
-    VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_CONTEXTS )
+    VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_HMAC | VERIFY_CONTEXTS )
 #define	VERIFY_ALL	\
   ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
     VERIFY_SIGNATURE | VERIFY_HDRCHK )
