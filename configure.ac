@@ -1126,7 +1126,7 @@ RPM_CHECK_LIB(
 dnl # ZLib
 RPM_CHECK_LIB(
     [ZLib], [zlib],
-    [rpmz z gz], [gzread], [zlib.h],
+    [z gz], [gzread], [zlib.h],
     [yes,external:none], [zlib],
     [ AC_CHECK_FUNC(gzseek)
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
@@ -1197,6 +1197,38 @@ AC_ARG_WITH([usecrypto],
         * ) AC_MSG_ERROR([invalid cryptography library identifier specified for --with-usecrypto option]) ;;
     esac
 ])
+
+dnl # Expat
+dnl RPM_CHECK_LIB(
+dnl     [Expat], [expat],
+dnl     [expat], [XML_SetXmlDeclHandler], [expat.h],
+dnl     [no,external:none], [],
+dnl     [ AC_DEFINE(WITH_EXPAT, 1, [Define if building with Expat])
+dnl     ], [])
+
+dnl # Libtasn1
+RPM_CHECK_LIB(
+    [Libtasn1], [libtasn1],
+    [tasn1], [asn1_array2tree], [libtasn1.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
+    ], [])
+
+dnl # Pakchois
+dnl RPM_CHECK_LIB(
+dnl     [Pakchois], [pakchois],
+dnl     [pakchois], [pakchois_module_load], [pakchois/pakchois.h],
+dnl     [no,external:none], [],
+dnl     [ AC_DEFINE(WITH_PAKCHOIS, 1, [Define if building with Pakchois])
+dnl     ], [])
+
+dnl # GnuTLS
+dnl RPM_CHECK_LIB(
+dnl     [GnuTLS], [gnutls],
+dnl     [gnutls], [gnutls_global_init], [gnutls/gnutls.h],
+dnl     [no,external:none], [],
+dnl     [ AC_DEFINE(WITH_GNUTLS, 1, [Define if building with GnuTLS])
+dnl     ], [])
 
 dnl # Neon
 RPM_CHECK_LIB(
