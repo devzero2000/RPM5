@@ -1164,7 +1164,7 @@ dnl # GCrypt
 RPM_CHECK_LIB(
     [GCrypt], [gcrypt],
     [gcrypt], [gcry_pk_verify], [gcrypt.h],
-    [no,external], [],
+    [no,external:none], [],
     [ AC_DEFINE(WITH_GCRYPT, 1, [Define if building with GCrypt])
     ], [])
 
@@ -1172,14 +1172,14 @@ dnl # Mozilla NSS
 RPM_CHECK_LIB(
     [Mozilla NSS], [nss],
     [nss3 nss], [NSS_NoDB_Init], [nss.h],
-    [no,external], [],
+    [no,external:none], [],
     [], [])
 
 dnl # OpenSSL
 RPM_CHECK_LIB(
     [OpenSSL], [openssl],
     [crypto], [ERR_load_CRYPTO_strings], [openssl/crypto.h],
-    [no,external], [],
+    [no,external:none], [],
     [ AC_DEFINE(WITH_SSL, 1, [Define if building with OpenSSL])
     ], [])
 
@@ -1192,7 +1192,7 @@ AC_ARG_WITH([usecrypto],
     case "`echo $withval | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`" in
         beecrypt | bc ) AC_DEFINE(USE_CRYPTO_BEECRYPT, 1, [Define to 1 for using BeeCrypt    as default cryptography library]) ;;
         gcrypt   | gc ) AC_DEFINE(USE_CRYPTO_GCRYPT,   1, [Define to 1 for using GCrypt      as default cryptography library]) ;;
-        nss           ) AC_DEFINE(USE_CRYPTO_NS,       1, [Define to 1 for using Mozilla NSS as default cryptography library]) ;;
+        nss           ) AC_DEFINE(USE_CRYPTO_NSS,      1, [Define to 1 for using Mozilla NSS as default cryptography library]) ;;
         openssl | ssl ) AC_DEFINE(USE_CRYPTO_OPENSSL,  1, [Define to 1 for using OpenSSL     as default cryptography library]) ;;
         * ) AC_MSG_ERROR([invalid cryptography library identifier specified for --with-usecrypto option]) ;;
     esac
@@ -1248,6 +1248,7 @@ RPM_CHECK_LIB(
           AC_MSG_ERROR([not using Berkeley-DB at all not supported (without packager taking responsibility first)])
       fi
     ])
+
 RPM_CHECK_LIB(
     [SQLite], [sqlite],
     [sqlite3], [sqlite3_open], [sqlite3.h],
