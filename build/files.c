@@ -1592,7 +1592,7 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 	
 	/* Add file security context to package. */
-if (!(_rpmbuildFlags & 4))
+if (!(_rpmbuildFlags & 4) && sxfn != NULL && *sxfn != '\0')
 	{
 	    static char *nocon = "";
 /*@-moduncon@*/

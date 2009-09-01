@@ -1,4 +1,5 @@
 5.2.0 -> 5.2.1:
+    - permit RPMTAG_FILECONTEXTS addition to be disabled.
     - rpm.org: Avoid adding Lua sources/patches twice when recursing.
     - proyvind: make sure to expand %buildroot from main package.
     - proyvind: rpmevr: make rpmEVRparse() work with missing values.
