@@ -47,61 +47,40 @@
  * in "to") to form the final target path.
  */
 
+#include <sys/acl.h>
+#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 
 #include <err.h>
 #include <errno.h>
+#include <fcntl.h>
+
 #ifdef	NOTYET
 #include <fts.h>
 #else
 #include "/usr/include/fts.h"
 #endif
+
 #include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sysexits.h>
 #include <unistd.h>
+
+#ifdef VM_AND_BUFFER_CACHE_SYNCHRONIZED
+#include <sys/mman.h>
+#endif
 
 #if defined(__linux__)
 #include <utime.h>
-
-/*
- * Copy src to string dst of size siz.  At most siz-1 characters
- * will be copied.  Always NUL terminates (unless siz == 0).
- * Returns strlen(src); if retval >= siz, truncation occurred.
- */
-static size_t
-strlcpy(char * __restrict dst, const char * __restrict src, size_t siz)
-{
-	char *d = dst;
-	const char *s = src;
-	size_t n = siz;
-
-	/* Copy as many bytes as will fit */
-	if (n != 0) {
-		while (--n != 0) {
-			if ((*d++ = *s++) == '\0')
-				break;
-		}
-	}
-
-	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0) {
-		if (siz != 0)
-			*d = '\0';		/* NUL-terminate dst */
-		while (*s++)
-			;
-	}
-
-	return(s - src - 1);	/* count does not include NUL */
-}
-#endif
-
-#if !defined(MAXPHYS)
-#define	MAXPHYS		(128 * 1024)	/* max raw I/O transfer size */
+#define st_atimespec    st_atim
+#define st_mtimespec    st_mtim
+/* XXX FIXME */
+#define	lchmod(_fn, _mode)	chmod((_fn), (_mode))
 #endif
 
 #if !defined(TIMESPEC_TO_TIMEVAL)
@@ -118,22 +97,16 @@ strlcpy(char * __restrict dst, const char * __restrict src, size_t siz)
 #undef  HAVE_ST_FLAGS           /* XXX TODO: should be AutoFu test */
 #endif
 
-#if defined(__linux__)
-#define st_atimespec    st_atim
-#define st_mtimespec    st_mtim
-/* XXX FIXME */
-#define	lchmod(_fn, _mode)	chmod((_fn), (_mode))
-#endif
-
 #if !defined(S_ISTXT) && defined(S_ISVTX)       /* XXX linux != BSD */
 #define S_ISTXT         S_ISVTX
 #endif
 
-#if !defined(__unused)
-#define __unused	__attribute__((__unused__))
-#endif
+#define	STRIP_TRAILING_SLASH(p) {					\
+        while ((p).p_end > (p).p_path + 1 && (p).p_end[-1] == '/')	\
+                *--(p).p_end = 0;					\
+}
 
-/* ----- extern.h */
+static char emptystring[] = "";
 
 typedef struct {
 	char	*p_end;			/* pointer to NULL at end of path */
@@ -141,31 +114,19 @@ typedef struct {
 	char	p_path[PATH_MAX];	/* pointer to the start of a path */
 } PATH_T;
 
-extern PATH_T to;
-extern int fflag, iflag, lflag, nflag, pflag, vflag;
-extern volatile sig_atomic_t info;
+static PATH_T to = { to.p_path, emptystring, "" };
 
-__BEGIN_DECLS
-int	copy_fifo(struct stat *, int);
-int	copy_file(const FTSENT *, int);
-int	copy_link(const FTSENT *, int);
-int	copy_special(struct stat *, int);
-int	setfile(struct stat *, int);
-int	preserve_dir_acls(struct stat *, char *, char *);
-int	preserve_fd_acls(int, int);
-void	usage(void);
-__END_DECLS
+static int fflag, iflag, lflag, nflag, pflag, vflag;
+static int Rflag, rflag;
+static volatile sig_atomic_t info;
+
+enum op { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
 
 /* ----- utils.c */
 
-#include <sys/acl.h>
-#include <sys/param.h>
-#ifdef VM_AND_BUFFER_CACHE_SYNCHRONIZED
-#include <sys/mman.h>
+#if !defined(MAXPHYS)
+#define	MAXPHYS		(128 * 1024)	/* max raw I/O transfer size */
 #endif
-
-#include <fcntl.h>
-#include <sysexits.h>
 
 #define	cp_pct(x, y)	((y == 0) ? 0 : (int)(100.0 * (x) / (y)))
 
@@ -180,7 +141,153 @@ __END_DECLS
  * smaller than MAXPHYS */
 #define BUFSIZE_SMALL (MAXPHYS)
 
-int
+static int
+preserve_fd_acls(int source_fd, int dest_fd)
+{
+#if defined(_PC_ACL_EXTENDED)
+	struct acl *aclp;
+	acl_t acl;
+
+	if (fpathconf(source_fd, _PC_ACL_EXTENDED) != 1 ||
+	    fpathconf(dest_fd, _PC_ACL_EXTENDED) != 1)
+		return (0);
+	acl = acl_get_fd(source_fd);
+	if (acl == NULL) {
+		warn("failed to get acl entries while setting %s", to.p_path);
+		return (1);
+	}
+	aclp = &acl->ats_acl;
+	if (aclp->acl_cnt == 3)
+		return (0);
+	if (acl_set_fd(dest_fd, acl) < 0) {
+		warn("failed to set acl entries for %s", to.p_path);
+		return (1);
+	}
+#endif
+	return (0);
+}
+
+static int
+preserve_dir_acls(struct stat *fs, char *source_dir, char *dest_dir)
+{
+#if defined(_PC_ACL_EXTENDED)
+	acl_t (*aclgetf)(const char *, acl_type_t);
+	int (*aclsetf)(const char *, acl_type_t, acl_t);
+	struct acl *aclp;
+	acl_t acl;
+
+	if (pathconf(source_dir, _PC_ACL_EXTENDED) != 1 ||
+	    pathconf(dest_dir, _PC_ACL_EXTENDED) != 1)
+		return (0);
+	/*
+	 * If the file is a link we will not follow it
+	 */
+	if (S_ISLNK(fs->st_mode)) {
+		aclgetf = acl_get_link_np;
+		aclsetf = acl_set_link_np;
+	} else {
+		aclgetf = acl_get_file;
+		aclsetf = acl_set_file;
+	}
+	/*
+	 * Even if there is no ACL_TYPE_DEFAULT entry here, a zero
+	 * size ACL will be returned. So it is not safe to simply
+	 * check the pointer to see if the default ACL is present.
+	 */
+	acl = aclgetf(source_dir, ACL_TYPE_DEFAULT);
+	if (acl == NULL) {
+		warn("failed to get default acl entries on %s",
+		    source_dir);
+		return (1);
+	}
+	aclp = &acl->ats_acl;
+	if (aclp->acl_cnt != 0 && aclsetf(dest_dir,
+	    ACL_TYPE_DEFAULT, acl) < 0) {
+		warn("failed to set default acl entries on %s",
+		    dest_dir);
+		return (1);
+	}
+	acl = aclgetf(source_dir, ACL_TYPE_ACCESS);
+	if (acl == NULL) {
+		warn("failed to get acl entries on %s", source_dir);
+		return (1);
+	}
+	aclp = &acl->ats_acl;
+	if (aclsetf(dest_dir, ACL_TYPE_ACCESS, acl) < 0) {
+		warn("failed to set acl entries on %s", dest_dir);
+		return (1);
+	}
+#endif
+	return (0);
+}
+
+static int
+setfile(struct stat *fs, int fd)
+{
+	static struct timeval tv[2];
+	struct stat ts;
+	int rval, gotstat, islink, fdval;
+
+	rval = 0;
+	fdval = fd != -1;
+	islink = !fdval && S_ISLNK(fs->st_mode);
+	fs->st_mode &= S_ISUID | S_ISGID | S_ISVTX |
+		       S_IRWXU | S_IRWXG | S_IRWXO;
+
+	TIMESPEC_TO_TIMEVAL(&tv[0], &fs->st_atimespec);
+	TIMESPEC_TO_TIMEVAL(&tv[1], &fs->st_mtimespec);
+	if (islink ? lutimes(to.p_path, tv) : utimes(to.p_path, tv)) {
+		warn("%sutimes: %s", islink ? "l" : "", to.p_path);
+		rval = 1;
+	}
+	if (fdval ? fstat(fd, &ts) :
+	    (islink ? lstat(to.p_path, &ts) : stat(to.p_path, &ts)))
+		gotstat = 0;
+	else {
+		gotstat = 1;
+		ts.st_mode &= S_ISUID | S_ISGID | S_ISVTX |
+			      S_IRWXU | S_IRWXG | S_IRWXO;
+	}
+	/*
+	 * Changing the ownership probably won't succeed, unless we're root
+	 * or POSIX_CHOWN_RESTRICTED is not set.  Set uid/gid before setting
+	 * the mode; current BSD behavior is to remove all setuid bits on
+	 * chown.  If chown fails, lose setuid/setgid bits.
+	 */
+	if (!gotstat || fs->st_uid != ts.st_uid || fs->st_gid != ts.st_gid)
+		if (fdval ? fchown(fd, fs->st_uid, fs->st_gid) :
+		    (islink ? lchown(to.p_path, fs->st_uid, fs->st_gid) :
+		    chown(to.p_path, fs->st_uid, fs->st_gid))) {
+			if (errno != EPERM) {
+				warn("chown: %s", to.p_path);
+				rval = 1;
+			}
+			fs->st_mode &= ~(S_ISUID | S_ISGID);
+		}
+
+	if (!gotstat || fs->st_mode != ts.st_mode)
+		if (fdval ? fchmod(fd, fs->st_mode) :
+		    (islink ? lchmod(to.p_path, fs->st_mode) :
+		    chmod(to.p_path, fs->st_mode))) {
+			warn("chmod: %s", to.p_path);
+			rval = 1;
+		}
+
+#if defined(HAVE_ST_FLAGS)
+	if (!gotstat || fs->st_flags != ts.st_flags)
+		if (fdval ?
+		    fchflags(fd, fs->st_flags) :
+		    (islink ? lchflags(to.p_path, fs->st_flags) :
+		    chflags(to.p_path, fs->st_flags))) {
+			warn("chflags: %s", to.p_path);
+			rval = 1;
+		}
+#endif
+
+	return (rval);
+}
+
+static int
 copy_file(const FTSENT *entp, int dne)
 {
 	static char *buf = NULL;
@@ -372,7 +479,7 @@ copy_file(const FTSENT *entp, int dne)
 	return (rval);
 }
 
-int
+static int
 copy_link(const FTSENT *p, int exists)
 {
 	int len;
@@ -394,7 +501,7 @@ copy_link(const FTSENT *p, int exists)
 	return (pflag ? setfile(p->fts_statp, -1) : 0);
 }
 
-int
+static int
 copy_fifo(struct stat *from_stat, int exists)
 {
 	if (exists && unlink(to.p_path)) {
@@ -408,7 +515,7 @@ copy_fifo(struct stat *from_stat, int exists)
 	return (pflag ? setfile(from_stat, -1) : 0);
 }
 
-int
+static int
 copy_special(struct stat *from_stat, int exists)
 {
 	if (exists && unlink(to.p_path)) {
@@ -422,345 +529,38 @@ copy_special(struct stat *from_stat, int exists)
 	return (pflag ? setfile(from_stat, -1) : 0);
 }
 
-int
-setfile(struct stat *fs, int fd)
-{
-	static struct timeval tv[2];
-	struct stat ts;
-	int rval, gotstat, islink, fdval;
-
-	rval = 0;
-	fdval = fd != -1;
-	islink = !fdval && S_ISLNK(fs->st_mode);
-	fs->st_mode &= S_ISUID | S_ISGID | S_ISVTX |
-		       S_IRWXU | S_IRWXG | S_IRWXO;
-
-	TIMESPEC_TO_TIMEVAL(&tv[0], &fs->st_atimespec);
-	TIMESPEC_TO_TIMEVAL(&tv[1], &fs->st_mtimespec);
-	if (islink ? lutimes(to.p_path, tv) : utimes(to.p_path, tv)) {
-		warn("%sutimes: %s", islink ? "l" : "", to.p_path);
-		rval = 1;
-	}
-	if (fdval ? fstat(fd, &ts) :
-	    (islink ? lstat(to.p_path, &ts) : stat(to.p_path, &ts)))
-		gotstat = 0;
-	else {
-		gotstat = 1;
-		ts.st_mode &= S_ISUID | S_ISGID | S_ISVTX |
-			      S_IRWXU | S_IRWXG | S_IRWXO;
-	}
-	/*
-	 * Changing the ownership probably won't succeed, unless we're root
-	 * or POSIX_CHOWN_RESTRICTED is not set.  Set uid/gid before setting
-	 * the mode; current BSD behavior is to remove all setuid bits on
-	 * chown.  If chown fails, lose setuid/setgid bits.
-	 */
-	if (!gotstat || fs->st_uid != ts.st_uid || fs->st_gid != ts.st_gid)
-		if (fdval ? fchown(fd, fs->st_uid, fs->st_gid) :
-		    (islink ? lchown(to.p_path, fs->st_uid, fs->st_gid) :
-		    chown(to.p_path, fs->st_uid, fs->st_gid))) {
-			if (errno != EPERM) {
-				warn("chown: %s", to.p_path);
-				rval = 1;
-			}
-			fs->st_mode &= ~(S_ISUID | S_ISGID);
-		}
-
-	if (!gotstat || fs->st_mode != ts.st_mode)
-		if (fdval ? fchmod(fd, fs->st_mode) :
-		    (islink ? lchmod(to.p_path, fs->st_mode) :
-		    chmod(to.p_path, fs->st_mode))) {
-			warn("chmod: %s", to.p_path);
-			rval = 1;
-		}
-
-#if defined(HAVE_ST_FLAGS)
-	if (!gotstat || fs->st_flags != ts.st_flags)
-		if (fdval ?
-		    fchflags(fd, fs->st_flags) :
-		    (islink ? lchflags(to.p_path, fs->st_flags) :
-		    chflags(to.p_path, fs->st_flags))) {
-			warn("chflags: %s", to.p_path);
-			rval = 1;
-		}
-#endif
-
-	return (rval);
-}
-
-int
-preserve_fd_acls(int source_fd, int dest_fd)
-{
-#if defined(_PC_ACL_EXTENDED)
-	struct acl *aclp;
-	acl_t acl;
-
-	if (fpathconf(source_fd, _PC_ACL_EXTENDED) != 1 ||
-	    fpathconf(dest_fd, _PC_ACL_EXTENDED) != 1)
-		return (0);
-	acl = acl_get_fd(source_fd);
-	if (acl == NULL) {
-		warn("failed to get acl entries while setting %s", to.p_path);
-		return (1);
-	}
-	aclp = &acl->ats_acl;
-	if (aclp->acl_cnt == 3)
-		return (0);
-	if (acl_set_fd(dest_fd, acl) < 0) {
-		warn("failed to set acl entries for %s", to.p_path);
-		return (1);
-	}
-#endif
-	return (0);
-}
-
-int
-preserve_dir_acls(struct stat *fs, char *source_dir, char *dest_dir)
-{
-#if defined(_PC_ACL_EXTENDED)
-	acl_t (*aclgetf)(const char *, acl_type_t);
-	int (*aclsetf)(const char *, acl_type_t, acl_t);
-	struct acl *aclp;
-	acl_t acl;
-
-	if (pathconf(source_dir, _PC_ACL_EXTENDED) != 1 ||
-	    pathconf(dest_dir, _PC_ACL_EXTENDED) != 1)
-		return (0);
-	/*
-	 * If the file is a link we will not follow it
-	 */
-	if (S_ISLNK(fs->st_mode)) {
-		aclgetf = acl_get_link_np;
-		aclsetf = acl_set_link_np;
-	} else {
-		aclgetf = acl_get_file;
-		aclsetf = acl_set_file;
-	}
-	/*
-	 * Even if there is no ACL_TYPE_DEFAULT entry here, a zero
-	 * size ACL will be returned. So it is not safe to simply
-	 * check the pointer to see if the default ACL is present.
-	 */
-	acl = aclgetf(source_dir, ACL_TYPE_DEFAULT);
-	if (acl == NULL) {
-		warn("failed to get default acl entries on %s",
-		    source_dir);
-		return (1);
-	}
-	aclp = &acl->ats_acl;
-	if (aclp->acl_cnt != 0 && aclsetf(dest_dir,
-	    ACL_TYPE_DEFAULT, acl) < 0) {
-		warn("failed to set default acl entries on %s",
-		    dest_dir);
-		return (1);
-	}
-	acl = aclgetf(source_dir, ACL_TYPE_ACCESS);
-	if (acl == NULL) {
-		warn("failed to get acl entries on %s", source_dir);
-		return (1);
-	}
-	aclp = &acl->ats_acl;
-	if (aclsetf(dest_dir, ACL_TYPE_ACCESS, acl) < 0) {
-		warn("failed to set acl entries on %s", dest_dir);
-		return (1);
-	}
-#endif
-	return (0);
-}
-
-void
-usage(void)
-{
-
-	(void)fprintf(stderr, "%s\n%s\n",
-"usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file",
-"       cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file ... "
-"target_directory");
-	exit(EX_USAGE);
-}
 /* ----- */
 
-#define	STRIP_TRAILING_SLASH(p) {					\
-        while ((p).p_end > (p).p_path + 1 && (p).p_end[-1] == '/')	\
-                *--(p).p_end = 0;					\
+/*
+ * mastercmp --
+ *	The comparison function for the copy order.  The order is to copy
+ *	non-directory files before directory files.  The reason for this
+ *	is because files tend to be in the same cylinder group as their
+ *	parent directory, whereas directories tend not to be.  Copying the
+ *	files first reduces seeking.
+ */
+static int
+mastercmp(const FTSENT * const *a, const FTSENT * const *b)
+{
+	int a_info, b_info;
+
+	a_info = (*a)->fts_info;
+	if (a_info == FTS_ERR || a_info == FTS_NS || a_info == FTS_DNR)
+		return (0);
+	b_info = (*b)->fts_info;
+	if (b_info == FTS_ERR || b_info == FTS_NS || b_info == FTS_DNR)
+		return (0);
+	if (a_info == FTS_D)
+		return (-1);
+	if (b_info == FTS_D)
+		return (1);
+	return (0);
 }
 
-static char emptystring[] = "";
-
-PATH_T to = { to.p_path, emptystring, "" };
-
-int fflag, iflag, lflag, nflag, pflag, vflag;
-static int Rflag, rflag;
-volatile sig_atomic_t info;
-
-enum op { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
-
-static int copy(char *[], enum op, int);
-static int mastercmp(const FTSENT * const *, const FTSENT * const *);
-static void siginfo(int __unused);
-
-int
-main(int argc, char *argv[])
+static void
+siginfo(int sig __attribute__((__unused__)))
 {
-	struct stat to_stat, tmp_stat;
-	enum op type;
-	int Hflag, Lflag, Pflag, ch, fts_options, r, have_trailing_slash;
-	char *target;
-
-	Hflag = Lflag = Pflag = 0;
-	while ((ch = getopt(argc, argv, "HLPRafilnprv")) != -1)
-		switch (ch) {
-		case 'H':
-			Hflag = 1;
-			Lflag = Pflag = 0;
-			break;
-		case 'L':
-			Lflag = 1;
-			Hflag = Pflag = 0;
-			break;
-		case 'P':
-			Pflag = 1;
-			Hflag = Lflag = 0;
-			break;
-		case 'R':
-			Rflag = 1;
-			break;
-		case 'a':
-			Pflag = 1;
-			pflag = 1;
-			Rflag = 1;
-			Hflag = Lflag = 0;
-			break;
-		case 'f':
-			fflag = 1;
-			iflag = nflag = 0;
-			break;
-		case 'i':
-			iflag = 1;
-			fflag = nflag = 0;
-			break;
-		case 'l':
-			lflag = 1;
-			break;
-		case 'n':
-			nflag = 1;
-			fflag = iflag = 0;
-			break;
-		case 'p':
-			pflag = 1;
-			break;
-		case 'r':
-			rflag = Lflag = 1;
-			Hflag = Pflag = 0;
-			break;
-		case 'v':
-			vflag = 1;
-			break;
-		default:
-			usage();
-			break;
-		}
-	argc -= optind;
-	argv += optind;
-
-	if (argc < 2)
-		usage();
-
-	fts_options = FTS_NOCHDIR | FTS_PHYSICAL;
-	if (Rflag && rflag)
-		errx(1, "the -R and -r options may not be specified together");
-	if (rflag)
-		Rflag = 1;
-	if (Rflag) {
-		if (Hflag)
-			fts_options |= FTS_COMFOLLOW;
-		if (Lflag) {
-			fts_options &= ~FTS_PHYSICAL;
-			fts_options |= FTS_LOGICAL;
-		}
-	} else {
-		fts_options &= ~FTS_PHYSICAL;
-		fts_options |= FTS_LOGICAL | FTS_COMFOLLOW;
-	}
-#if defined(SIGINFO)
-	(void)signal(SIGINFO, siginfo);
-#endif
-
-	/* Save the target base in "to". */
-	target = argv[--argc];
-	if (strlcpy(to.p_path, target, sizeof(to.p_path)) >= sizeof(to.p_path))
-		errx(1, "%s: name too long", target);
-	to.p_end = to.p_path + strlen(to.p_path);
-        if (to.p_path == to.p_end) {
-		*to.p_end++ = '.';
-		*to.p_end = 0;
-	}
-	have_trailing_slash = (to.p_end[-1] == '/');
-	if (have_trailing_slash)
-		STRIP_TRAILING_SLASH(to);
-	to.target_end = to.p_end;
-
-	/* Set end of argument list for fts(3). */
-	argv[argc] = NULL;
-
-	/*
-	 * Cp has two distinct cases:
-	 *
-	 * cp [-R] source target
-	 * cp [-R] source1 ... sourceN directory
-	 *
-	 * In both cases, source can be either a file or a directory.
-	 *
-	 * In (1), the target becomes a copy of the source. That is, if the
-	 * source is a file, the target will be a file, and likewise for
-	 * directories.
-	 *
-	 * In (2), the real target is not directory, but "directory/source".
-	 */
-	r = stat(to.p_path, &to_stat);
-	if (r == -1 && errno != ENOENT)
-		err(1, "%s", to.p_path);
-	if (r == -1 || !S_ISDIR(to_stat.st_mode)) {
-		/*
-		 * Case (1).  Target is not a directory.
-		 */
-		if (argc > 1)
-			errx(1, "%s is not a directory", to.p_path);
-
-		/*
-		 * Need to detect the case:
-		 *	cp -R dir foo
-		 * Where dir is a directory and foo does not exist, where
-		 * we want pathname concatenations turned on but not for
-		 * the initial mkdir().
-		 */
-		if (r == -1) {
-			if (Rflag && (Lflag || Hflag))
-				stat(*argv, &tmp_stat);
-			else
-				lstat(*argv, &tmp_stat);
-
-			if (S_ISDIR(tmp_stat.st_mode) && Rflag)
-				type = DIR_TO_DNE;
-			else
-				type = FILE_TO_FILE;
-		} else
-			type = FILE_TO_FILE;
-
-		if (have_trailing_slash && type == FILE_TO_FILE) {
-			if (r == -1)
-				errx(1, "directory %s does not exist",
-				     to.p_path);
-			else
-				errx(1, "%s is not a directory", to.p_path);
-		}
-	} else
-		/*
-		 * Case (2).  Target is a directory.
-		 */
-		type = FILE_TO_DIR;
-
-	exit (copy(argv, type, fts_options));
+	info = 1;
 }
 
 static int
@@ -852,7 +652,8 @@ copy(char *argv[], enum op type, int fts_options)
 			(void)strncat(target_mid, p, nlen);
 			to.p_end = target_mid + nlen;
 			*to.p_end = 0;
-			STRIP_TRAILING_SLASH(to);
+			while (to.p_end > to.p_path + 1 && to.p_end[-1] == '/')
+				*--to.p_end = 0;
 		}
 
 		if (curr->fts_info == FTS_DP) {
@@ -994,35 +795,181 @@ copy(char *argv[], enum op type, int fts_options)
 	return (rval);
 }
 
-/*
- * mastercmp --
- *	The comparison function for the copy order.  The order is to copy
- *	non-directory files before directory files.  The reason for this
- *	is because files tend to be in the same cylinder group as their
- *	parent directory, whereas directories tend not to be.  Copying the
- *	files first reduces seeking.
- */
-static int
-mastercmp(const FTSENT * const *a, const FTSENT * const *b)
-{
-	int a_info, b_info;
-
-	a_info = (*a)->fts_info;
-	if (a_info == FTS_ERR || a_info == FTS_NS || a_info == FTS_DNR)
-		return (0);
-	b_info = (*b)->fts_info;
-	if (b_info == FTS_ERR || b_info == FTS_NS || b_info == FTS_DNR)
-		return (0);
-	if (a_info == FTS_D)
-		return (-1);
-	if (b_info == FTS_D)
-		return (1);
-	return (0);
-}
 
 static void
-siginfo(int sig __unused)
+usage(void)
 {
 
-	info = 1;
+	(void)fprintf(stderr, "%s\n%s\n",
+"usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file",
+"       cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file ... "
+"target_directory");
+	exit(EX_USAGE);
+}
+
+int
+main(int argc, char *argv[])
+{
+	struct stat to_stat, tmp_stat;
+	enum op type;
+	int Hflag, Lflag, Pflag, ch, fts_options, r, have_trailing_slash;
+	char *target;
+
+	Hflag = Lflag = Pflag = 0;
+	while ((ch = getopt(argc, argv, "HLPRafilnprv")) != -1)
+		switch (ch) {
+		case 'H':
+			Hflag = 1;
+			Lflag = Pflag = 0;
+			break;
+		case 'L':
+			Lflag = 1;
+			Hflag = Pflag = 0;
+			break;
+		case 'P':
+			Pflag = 1;
+			Hflag = Lflag = 0;
+			break;
+		case 'R':
+			Rflag = 1;
+			break;
+		case 'a':
+			Pflag = 1;
+			pflag = 1;
+			Rflag = 1;
+			Hflag = Lflag = 0;
+			break;
+		case 'f':
+			fflag = 1;
+			iflag = nflag = 0;
+			break;
+		case 'i':
+			iflag = 1;
+			fflag = nflag = 0;
+			break;
+		case 'l':
+			lflag = 1;
+			break;
+		case 'n':
+			nflag = 1;
+			fflag = iflag = 0;
+			break;
+		case 'p':
+			pflag = 1;
+			break;
+		case 'r':
+			rflag = Lflag = 1;
+			Hflag = Pflag = 0;
+			break;
+		case 'v':
+			vflag = 1;
+			break;
+		default:
+			usage();
+			break;
+		}
+	argc -= optind;
+	argv += optind;
+
+	if (argc < 2)
+		usage();
+
+	fts_options = FTS_NOCHDIR | FTS_PHYSICAL;
+	if (Rflag && rflag)
+		errx(1, "the -R and -r options may not be specified together");
+	if (rflag)
+		Rflag = 1;
+	if (Rflag) {
+		if (Hflag)
+			fts_options |= FTS_COMFOLLOW;
+		if (Lflag) {
+			fts_options &= ~FTS_PHYSICAL;
+			fts_options |= FTS_LOGICAL;
+		}
+	} else {
+		fts_options &= ~FTS_PHYSICAL;
+		fts_options |= FTS_LOGICAL | FTS_COMFOLLOW;
+	}
+
+#if defined(SIGINFO)
+	(void)signal(SIGINFO, siginfo);
+#endif
+
+	/* Save the target base in "to". */
+	target = argv[--argc];
+	if (strlen(target) > sizeof(to.p_path) - 2)
+		errx(1, "%s: name too long", target);
+	(void) strcpy(to.p_path, target);
+	to.p_end = to.p_path + strlen(to.p_path);
+        if (to.p_path == to.p_end) {
+		*to.p_end++ = '.';
+		*to.p_end = 0;
+	}
+	have_trailing_slash = (to.p_end[-1] == '/');
+	if (have_trailing_slash)
+		while (to.p_end > to.p_path + 1 && to.p_end[-1] == '/')
+			*--to.p_end = 0;
+	to.target_end = to.p_end;
+
+	/* Set end of argument list for fts(3). */
+	argv[argc] = NULL;
+
+	/*
+	 * Cp has two distinct cases:
+	 *
+	 * cp [-R] source target
+	 * cp [-R] source1 ... sourceN directory
+	 *
+	 * In both cases, source can be either a file or a directory.
+	 *
+	 * In (1), the target becomes a copy of the source. That is, if the
+	 * source is a file, the target will be a file, and likewise for
+	 * directories.
+	 *
+	 * In (2), the real target is not directory, but "directory/source".
+	 */
+	r = stat(to.p_path, &to_stat);
+	if (r == -1 && errno != ENOENT)
+		err(1, "%s", to.p_path);
+	if (r == -1 || !S_ISDIR(to_stat.st_mode)) {
+		/*
+		 * Case (1).  Target is not a directory.
+		 */
+		if (argc > 1)
+			errx(1, "%s is not a directory", to.p_path);
+
+		/*
+		 * Need to detect the case:
+		 *	cp -R dir foo
+		 * Where dir is a directory and foo does not exist, where
+		 * we want pathname concatenations turned on but not for
+		 * the initial mkdir().
+		 */
+		if (r == -1) {
+			if (Rflag && (Lflag || Hflag))
+				stat(*argv, &tmp_stat);
+			else
+				lstat(*argv, &tmp_stat);
+
+			if (S_ISDIR(tmp_stat.st_mode) && Rflag)
+				type = DIR_TO_DNE;
+			else
+				type = FILE_TO_FILE;
+		} else
+			type = FILE_TO_FILE;
+
+		if (have_trailing_slash && type == FILE_TO_FILE) {
+			if (r == -1)
+				errx(1, "directory %s does not exist",
+				     to.p_path);
+			else
+				errx(1, "%s is not a directory", to.p_path);
+		}
+	} else
+		/*
+		 * Case (2).  Target is a directory.
+		 */
+		type = FILE_TO_DIR;
+
+	exit (copy(argv, type, fts_options));
 }
