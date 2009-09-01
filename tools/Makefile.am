@@ -22,7 +22,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = augtool debugedit rpmkey
+EXTRA_PROGRAMS = augtool cp debugedit rpmkey
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -55,6 +55,9 @@ dist_man_MANS =		rpmgrep.1
 
 augtool_SOURCES =	augtool.c
 augtool_LDADD =		$(RPM_LDADD_COMMON) -lreadline
+
+cp_SOURCES =		cp.c
+cp_LDADD =		$(RPM_LDADD_COMMON)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(RPM_LDADD_COMMON)
