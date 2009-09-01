@@ -18,6 +18,7 @@
 #include <rpmiotypes.h>
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
+#define	_RPMSX_INTERNAL		/* XXX permit disabling. */
 #include <rpmsx.h>
 #include <fts.h>
 #include <argv.h>
@@ -1604,7 +1605,7 @@ if (!(_rpmbuildFlags & 4)) {
 	he->append = 0;
 	
 	/* Add file security context to package. */
-	if (sx && !(_rpmbuildFlags & 4)) {
+	if (sx && sx->fn  && *sx->fn && !(_rpmbuildFlags & 4)) {
 	    const char * scon = rpmsxMatch(sx, flp->fileURL, flp->fl_mode);
 	    if (scon) {
 		he->tag = RPMTAG_FILECONTEXTS;
@@ -1695,7 +1696,6 @@ if (_rpmbuildFlags & 4) {
 		fi->fnlen = fnlen;
 	    }
 	}
-
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
@@ -2038,7 +2038,7 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
 	    /*@switchbreak@*/ break;
 	case FTS_DOT:		/* dot or dot-dot */
 	case FTS_DP:		/* postorder directory */
-	    rc = 0;
+	    rc = RPMRC_OK;
 	    /*@switchbreak@*/ break;
 	case FTS_NS:		/* stat(2) failed */
 	case FTS_DNR:		/* unreadable directory */
@@ -2863,6 +2863,7 @@ static int checkUnpackagedFiles(Spec spec)
 	}
 	fi = rpmfiFree(fi);
     }
+
     if (n == 0) {
 	/* no packaged files, and buildroot may not exist -
 	 * no need to run check */
