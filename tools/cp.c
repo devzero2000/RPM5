@@ -96,10 +96,13 @@ enum copyFlags_e {
 	/* 10-31 unused */
 };
 
-static enum copyFlags_e copyFlags;
-#define CP_ISSET(_FLAG) ((copyFlags & ((COPY_FLAGS_##_FLAG) & ~0x40000000)) != COPY_FLAGS_NONE)
+#define CP_ISSET(_FLAG) ((ct->flags & ((COPY_FLAGS_##_FLAG) & ~0x40000000)) != COPY_FLAGS_NONE)
 
-static char emptystring[] = "";
+/**
+ */
+typedef struct rpmct_s * rpmct;
+
+enum copyType_e { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
 
 /*
  * Cp copies source files to target files.
@@ -115,18 +118,33 @@ static char emptystring[] = "";
  * path (relative to the root of the traversal) is appended to dir (stored
  * in "to") to form the final target path.
  */
+struct rpmct_s {
+    enum copyFlags_e flags;
+    enum copyType_e type;
+    const char ** av;
+    int ac;
+    int ftsoptions;
+    FTS * t;
+    FTSENT * p;
+    struct stat sb;
+    char * b;
+    size_t blen;
+    size_t ballocated;
+    struct timeval tv[2];
+    char *p_end;		/* pointer to NULL at end of path */
+    char *target_end;		/* pointer to end of target base */
+    char p_path[PATH_MAX];	/* pointer to the start of a path */
+};
 
-typedef struct {
-	char	*p_end;			/* pointer to NULL at end of path */
-	char	*target_end;		/* pointer to end of target base */
-	char	p_path[PATH_MAX];	/* pointer to the start of a path */
-} PATH_T;
+/**
+ */
+static struct rpmct_s __ct = {
+        .flags = COPY_FLAGS_NONE
+};
 
-static PATH_T to = { to.p_path, emptystring, "" };
+static rpmct _ct = &__ct;
 
 static volatile sig_atomic_t info;
-
-enum op { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
 
 /* ----- utils.c */
 
@@ -148,105 +166,103 @@ enum op { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
 #define BUFSIZE_SMALL (MAXPHYS)
 
 static int
-preserve_fd_acls(int source_fd, int dest_fd)
+preserve_fd_acls(rpmct ct, int source_fd, int dest_fd)
 {
 #if defined(_PC_ACL_EXTENDED)
-	struct acl *aclp;
-	acl_t acl;
+    struct acl *aclp;
+    acl_t acl;
 
-	if (fpathconf(source_fd, _PC_ACL_EXTENDED) != 1 ||
-	    fpathconf(dest_fd, _PC_ACL_EXTENDED) != 1)
-		return 0;
-	acl = acl_get_fd(source_fd);
-	if (acl == NULL) {
-		warn("failed to get acl entries while setting %s", to.p_path);
-		return 1;
-	}
-	aclp = &acl->ats_acl;
-	if (aclp->acl_cnt == 3)
-		return 0;
-	if (acl_set_fd(dest_fd, acl) < 0) {
-		warn("failed to set acl entries for %s", to.p_path);
-		return 1;
-	}
-#endif
+    if (fpathconf(source_fd, _PC_ACL_EXTENDED) != 1
+     || fpathconf(dest_fd, _PC_ACL_EXTENDED) != 1)
 	return 0;
+    acl = acl_get_fd(source_fd);
+    if (acl == NULL) {
+	warn("failed to get acl entries while setting %s", ct->p_path);
+	return 1;
+    }
+    aclp = &acl->ats_acl;
+    if (aclp->acl_cnt == 3)
+	return 0;
+    if (acl_set_fd(dest_fd, acl) < 0) {
+	warn("failed to set acl entries for %s", ct->p_path);
+	return 1;
+    }
+#endif
+    return 0;
 }
 
 static int
-preserve_dir_acls(struct stat *fs, char *source_dir, char *dest_dir)
+preserve_dir_acls(rpmct ct, char *source_dir, char *dest_dir)
 {
 #if defined(_PC_ACL_EXTENDED)
-	acl_t (*aclgetf)(const char *, acl_type_t);
-	int (*aclsetf)(const char *, acl_type_t, acl_t);
-	struct acl *aclp;
-	acl_t acl;
+    struct stat * st = ct->p->fts_statp;
+    acl_t (*aclgetf)(const char *, acl_type_t);
+    int (*aclsetf)(const char *, acl_type_t, acl_t);
+    struct acl *aclp;
+    acl_t acl;
 
-	if (pathconf(source_dir, _PC_ACL_EXTENDED) != 1 ||
-	    pathconf(dest_dir, _PC_ACL_EXTENDED) != 1)
-		return 0;
-	/*
-	 * If the file is a link we will not follow it
-	 */
-	if (S_ISLNK(fs->st_mode)) {
-		aclgetf = acl_get_link_np;
-		aclsetf = acl_set_link_np;
-	} else {
-		aclgetf = acl_get_file;
-		aclsetf = acl_set_file;
-	}
-	/*
-	 * Even if there is no ACL_TYPE_DEFAULT entry here, a zero
-	 * size ACL will be returned. So it is not safe to simply
-	 * check the pointer to see if the default ACL is present.
-	 */
-	acl = aclgetf(source_dir, ACL_TYPE_DEFAULT);
-	if (acl == NULL) {
-		warn("failed to get default acl entries on %s",
-		    source_dir);
-		return 1;
-	}
-	aclp = &acl->ats_acl;
-	if (aclp->acl_cnt != 0 && aclsetf(dest_dir,
-	    ACL_TYPE_DEFAULT, acl) < 0) {
-		warn("failed to set default acl entries on %s",
-		    dest_dir);
-		return 1;
-	}
-	acl = aclgetf(source_dir, ACL_TYPE_ACCESS);
-	if (acl == NULL) {
-		warn("failed to get acl entries on %s", source_dir);
-		return 1;
-	}
-	aclp = &acl->ats_acl;
-	if (aclsetf(dest_dir, ACL_TYPE_ACCESS, acl) < 0) {
-		warn("failed to set acl entries on %s", dest_dir);
-		return 1;
-	}
-#endif
+    if (pathconf(source_dir, _PC_ACL_EXTENDED) != 1
+     ||	pathconf(dest_dir, _PC_ACL_EXTENDED) != 1)
 	return 0;
+    /*
+    * If the file is a link we will not follow it
+    */
+    if (S_ISLNK(st->st_mode)) {
+	aclgetf = acl_get_link_np;
+	aclsetf = acl_set_link_np;
+    } else {
+	aclgetf = acl_get_file;
+	aclsetf = acl_set_file;
+    }
+    /*
+    * Even if there is no ACL_TYPE_DEFAULT entry here, a zero
+    * size ACL will be returned. So it is not safe to simply
+    * check the pointer to see if the default ACL is present.
+    */
+    acl = aclgetf(source_dir, ACL_TYPE_DEFAULT);
+    if (acl == NULL) {
+	warn("failed to get default acl entries on %s", source_dir);
+	return 1;
+    }
+    aclp = &acl->ats_acl;
+    if (aclp->acl_cnt != 0 && aclsetf(dest_dir, ACL_TYPE_DEFAULT, acl) < 0) {
+	warn("failed to set default acl entries on %s", dest_dir);
+	return 1;
+    }
+    acl = aclgetf(source_dir, ACL_TYPE_ACCESS);
+    if (acl == NULL) {
+	warn("failed to get acl entries on %s", source_dir);
+	return 1;
+    }
+    aclp = &acl->ats_acl;
+    if (aclsetf(dest_dir, ACL_TYPE_ACCESS, acl) < 0) {
+	warn("failed to set acl entries on %s", dest_dir);
+	return 1;
+    }
+#endif
+    return 0;
 }
 
 static int
-setfile(struct stat *fs, int fd)
+setfile(rpmct ct, int fd)
 {
-    static struct timeval tv[2];
+    struct stat * st = ct->p->fts_statp;
     struct stat ts;
     int rval = 0;
     int fdval = fd != -1;
-    int islink = !fdval && S_ISLNK(fs->st_mode);
+    int islink = !fdval && S_ISLNK(st->st_mode);
     int gotstat;
 
-    fs->st_mode &= S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO;
+    st->st_mode &= S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO;
 
-    TIMESPEC_TO_TIMEVAL(&tv[0], &fs->st_atimespec);
-    TIMESPEC_TO_TIMEVAL(&tv[1], &fs->st_mtimespec);
-    if (islink ? lutimes(to.p_path, tv) : utimes(to.p_path, tv)) {
-	warn("%sutimes: %s", islink ? "l" : "", to.p_path);
+    TIMESPEC_TO_TIMEVAL(&ct->tv[0], &st->st_atimespec);
+    TIMESPEC_TO_TIMEVAL(&ct->tv[1], &st->st_mtimespec);
+    if (islink ? lutimes(ct->p_path, ct->tv) : Utimes(ct->p_path, ct->tv)) {
+	warn("%sutimes: %s", islink ? "l" : "", ct->p_path);
 	rval = 1;
     }
     if (fdval ? fstat(fd, &ts) :
-	(islink ? Lstat(to.p_path, &ts) : Stat(to.p_path, &ts)))
+	(islink ? Lstat(ct->p_path, &ts) : Stat(ct->p_path, &ts)))
 	    gotstat = 0;
     else {
 	gotstat = 1;
@@ -259,35 +275,34 @@ setfile(struct stat *fs, int fd)
     * the mode; current BSD behavior is to remove all setuid bits on
     * chown.  If chown fails, lose setuid/setgid bits.
     */
-    if (!gotstat || fs->st_uid != ts.st_uid || fs->st_gid != ts.st_gid)
-	if (fdval ? fchown(fd, fs->st_uid, fs->st_gid) :
-	    (islink ? Lchown(to.p_path, fs->st_uid, fs->st_gid) :
-	    Chown(to.p_path, fs->st_uid, fs->st_gid)))
+    if (!gotstat || st->st_uid != ts.st_uid || st->st_gid != ts.st_gid)
+	if (fdval ? fchown(fd, st->st_uid, st->st_gid) :
+	   (islink ? Lchown(ct->p_path, st->st_uid, st->st_gid) :
+	   Chown(ct->p_path, st->st_uid, st->st_gid)))
 	{
 	    if (errno != EPERM) {
-		warn("chown: %s", to.p_path);
+		warn("chown: %s", ct->p_path);
 		rval = 1;
 	    }
-	    fs->st_mode &= ~(S_ISUID | S_ISGID);
+	    st->st_mode &= ~(S_ISUID | S_ISGID);
 	}
 
-    if (!gotstat || fs->st_mode != ts.st_mode)
-	if (fdval ? fchmod(fd, fs->st_mode) :
-	    (islink ? lchmod(to.p_path, fs->st_mode) :
-	    Chmod(to.p_path, fs->st_mode)))
+    if (!gotstat || st->st_mode != ts.st_mode)
+	if (fdval ? fchmod(fd, st->st_mode) :
+	   (islink ? lchmod(ct->p_path, st->st_mode) :
+	   Chmod(ct->p_path, st->st_mode)))
 	{
-	    warn("Chmod: %s", to.p_path);
+	    warn("Chmod: %s", ct->p_path);
 	    rval = 1;
 	}
 
 #if defined(HAVE_ST_FLAGS)
-    if (!gotstat || fs->st_flags != ts.st_flags)
-	if (fdval ?
-	    fchflags(fd, fs->st_flags) :
-	    (islink ? lchflags(to.p_path, fs->st_flags) :
-	    chflags(to.p_path, fs->st_flags)))
+    if (!gotstat || st->st_flags != ts.st_flags)
+	if (fdval ?  fchflags(fd, st->st_flags) :
+	   (islink ? lchflags(ct->p_path, st->st_flags) :
+	   chflags(ct->p_path, st->st_flags)))
 	{
-	    warn("chflags: %s", to.p_path);
+	    warn("chflags: %s", ct->p_path);
 	    rval = 1;
 	}
 #endif
@@ -296,11 +311,9 @@ setfile(struct stat *fs, int fd)
 }
 
 static int
-copy_file(const FTSENT *entp, int dne)
+copy_file(rpmct ct, int dne)
 {
-    static char *buf = NULL;
-    static size_t bufsize;
-    struct stat *fs;
+    struct stat * st = ct->p->fts_statp;
     ssize_t wcount;
     size_t wresid;
     off_t wtotal;
@@ -310,12 +323,10 @@ copy_file(const FTSENT *entp, int dne)
     char *p;
 #endif
 
-    if ((from_fd = open(entp->fts_path, O_RDONLY, 0)) == -1) {
-	warn("%s", entp->fts_path);
+    if ((from_fd = open(ct->p->fts_path, O_RDONLY, 0)) == -1) {
+	warn("%s", ct->p->fts_path);
 	return 1;
     }
-
-    fs = entp->fts_statp;
 
     /*
      * If the file exists and we're interactive, verify with the user.
@@ -329,11 +340,11 @@ copy_file(const FTSENT *entp, int dne)
 #define YESNO "(y/n [n]) "
 	if (CP_ISSET(NOCLOBBER)) {
 	    if (CP_ISSET(VERBOSE))
-		fprintf(stdout, "%s not overwritten\n", to.p_path);
+		fprintf(stdout, "%s not overwritten\n", ct->p_path);
 	    (void)close(from_fd);
 	    return 0;
 	} else if (CP_ISSET(INTERACTIVE)) {
-	    (void)fprintf(stderr, "overwrite %s? %s", to.p_path, YESNO);
+	    (void)fprintf(stderr, "overwrite %s? %s", ct->p_path, YESNO);
 	    checkch = ch = getchar();
 	    while (ch != '\n' && ch != EOF)
 		ch = getchar();
@@ -347,23 +358,23 @@ copy_file(const FTSENT *entp, int dne)
 	if (CP_ISSET(FORCE)) {
 	    /* remove existing destination file name, 
 	     * create a new file  */
-	    (void)Unlink(to.p_path);
+	    (void)Unlink(ct->p_path);
 	    if (!CP_ISSET(HARDLINK))
-		to_fd = open(to.p_path, O_WRONLY | O_TRUNC | O_CREAT,
-				  fs->st_mode & ~(S_ISUID | S_ISGID));
+		to_fd = open(ct->p_path, O_WRONLY | O_TRUNC | O_CREAT,
+				  st->st_mode & ~(S_ISUID | S_ISGID));
 	} else {
 	    if (!CP_ISSET(HARDLINK))
 		/* overwrite existing destination file name */
-	    	to_fd = open(to.p_path, O_WRONLY | O_TRUNC, 0);
+	    	to_fd = open(ct->p_path, O_WRONLY | O_TRUNC, 0);
 	}
     } else {
 	if (!CP_ISSET(HARDLINK))
-	    to_fd = open(to.p_path, O_WRONLY | O_TRUNC | O_CREAT,
-			fs->st_mode & ~(S_ISUID | S_ISGID));
+	    to_fd = open(ct->p_path, O_WRONLY | O_TRUNC | O_CREAT,
+			st->st_mode & ~(S_ISUID | S_ISGID));
     }
 	
     if (to_fd == -1) {
-	warn("%s", to.p_path);
+	warn("%s", ct->p_path);
 	(void)close(from_fd);
 	return 1;
     }
@@ -379,13 +390,13 @@ copy_file(const FTSENT *entp, int dne)
 	 * so this is a best-effort attempt.
 	 */
 #ifdef VM_AND_BUFFER_CACHE_SYNCHRONIZED
-	if (S_ISREG(fs->st_mode) && fs->st_size > 0
-	 && fs->st_size <= 8 * 1024 * 1024
-	 && (p = mmap(NULL, (size_t)fs->st_size, PROT_READ,
+	if (S_ISREG(st->st_mode) && st->st_size > 0
+	 && st->st_size <= 8 * 1024 * 1024
+	 && (p = Mmap(NULL, (size_t)st->st_size, PROT_READ,
 		    MAP_SHARED, from_fd, (off_t)0)) != MAP_FAILED)
 	{
 	    wtotal = 0;
-	    for (bufp = p, wresid = fs->st_size; ;
+	    for (bufp = p, wresid = st->st_size; ;
 		bufp += wcount, wresid -= (size_t)wcount)
 	    {
 		wcount = write(to_fd, bufp, wresid);
@@ -395,39 +406,31 @@ copy_file(const FTSENT *entp, int dne)
 		if (info) {
 		    info = 0;
 		    (void)fprintf(stderr, "%s -> %s %3d%%\n",
-			    entp->fts_path, to.p_path,
-			    cp_pct(wtotal, fs->st_size));
+			    ct->p->fts_path, ct->p_path,
+			    cp_pct(wtotal, st->st_size));
 		}
 		if (wcount >= (ssize_t)wresid)
 		    break;
 	    }
 	    if (wcount != (ssize_t)wresid) {
-		warn("%s", to.p_path);
+		warn("%s", ct->p_path);
 		rval = 1;
 	    }
 	    /* Some systems don't unmap on close(2). */
-	    if (munmap(p, fs->st_size) < 0) {
-		warn("%s", entp->fts_path);
+	    if (Munmap(p, st->st_size) < 0) {
+		warn("%s", ct->p->fts_path);
 		rval = 1;
 	    }
 	} else
 #endif
 	{
-	    if (buf == NULL) {
-		/*
-		 * Note that buf and bufsize are static. If
-		 * malloc() fails, it will fail at the start
-		 * and not copy only some files. 
-		 */ 
-		if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
-		    bufsize = MIN(BUFSIZE_MAX, MAXPHYS * 8);
-		else
-		    bufsize = BUFSIZE_SMALL;
-		buf = xmalloc(bufsize);
+	    if (ct->b == NULL) {
+		ct->b = xmalloc(ct->ballocated);
+		ct->blen = ct->ballocated;
 	    }
 	    wtotal = 0;
-	    while ((rcount = read(from_fd, buf, bufsize)) > 0) {
-		for (bufp = buf, wresid = rcount; ;
+	    while ((rcount = read(from_fd, ct->b, ct->blen)) > 0) {
+		for (bufp = ct->b, wresid = rcount; ;
 	    		bufp += wcount, wresid -= wcount)
 		{
 		    wcount = write(to_fd, bufp, wresid);
@@ -437,26 +440,26 @@ copy_file(const FTSENT *entp, int dne)
 		    if (info) {
 			info = 0;
 			(void)fprintf(stderr, "%s -> %s %3d%%\n",
-			    entp->fts_path, to.p_path,
-			    cp_pct(wtotal, fs->st_size));
+			    ct->p->fts_path, ct->p_path,
+			    cp_pct(wtotal, st->st_size));
 		    }
 		    if (wcount >= (ssize_t)wresid)
 			break;
 		}
 		if (wcount != (ssize_t)wresid) {
-		    warn("%s", to.p_path);
+		    warn("%s", ct->p_path);
 		    rval = 1;
 		    break;
 		}
 	    }
 	    if (rcount < 0) {
-		warn("%s", entp->fts_path);
+		warn("%s", ct->p->fts_path);
 		rval = 1;
 	    }
 	}
     } else {
-	if (Link(entp->fts_path, to.p_path)) {
-	    warn("%s", to.p_path);
+	if (Link(ct->p->fts_path, ct->p_path)) {
+	    warn("%s", ct->p_path);
 	    rval = 1;
 	}
     }
@@ -469,12 +472,12 @@ copy_file(const FTSENT *entp, int dne)
      */
 
     if (!CP_ISSET(HARDLINK)) {
-	if (CP_ISSET(PRESERVE) && setfile(fs, to_fd))
+	if (CP_ISSET(PRESERVE) && setfile(ct, to_fd))
 	    rval = 1;
-	if (CP_ISSET(PRESERVE) && preserve_fd_acls(from_fd, to_fd) != 0)
+	if (CP_ISSET(PRESERVE) && preserve_fd_acls(ct, from_fd, to_fd) != 0)
 	    rval = 1;
 	if (close(to_fd)) {
-	    warn("%s", to.p_path);
+	    warn("%s", ct->p_path);
 	    rval = 1;
 	}
     }
@@ -485,53 +488,55 @@ copy_file(const FTSENT *entp, int dne)
 }
 
 static int
-copy_link(const FTSENT *p, int exists)
+copy_link(rpmct ct, int exists)
 {
-    int len;
     char llink[PATH_MAX];
+    int len;
 
-    if ((len = Readlink(p->fts_path, llink, sizeof(llink) - 1)) == -1) {
-	warn("Readlink: %s", p->fts_path);
+    if ((len = Readlink(ct->p->fts_path, llink, sizeof(llink) - 1)) == -1) {
+	warn("Readlink: %s", ct->p->fts_path);
 	return 1;
     }
     llink[len] = '\0';
-    if (exists && Unlink(to.p_path)) {
-	warn("Unlink: %s", to.p_path);
+    if (exists && Unlink(ct->p_path)) {
+	warn("Unlink: %s", ct->p_path);
 	return 1;
     }
-    if (Symlink(llink, to.p_path)) {
+    if (Symlink(llink, ct->p_path)) {
 	warn("symlink: %s", llink);
 	return 1;
     }
-    return (CP_ISSET(PRESERVE) ? setfile(p->fts_statp, -1) : 0);
+    return (CP_ISSET(PRESERVE) ? setfile(ct, -1) : 0);
 }
 
 static int
-copy_fifo(struct stat *from_stat, int exists)
+copy_fifo(rpmct ct, int exists)
 {
-    if (exists && Unlink(to.p_path)) {
-	warn("Unlink: %s", to.p_path);
+    struct stat * st = ct->p->fts_statp;
+    if (exists && Unlink(ct->p_path)) {
+	warn("Unlink: %s", ct->p_path);
 	return 1;
     }
-    if (Mkfifo(to.p_path, from_stat->st_mode)) {
-	warn("Mkfifo: %s", to.p_path);
+    if (Mkfifo(ct->p_path, st->st_mode)) {
+	warn("Mkfifo: %s", ct->p_path);
 	return 1;
     }
-    return (CP_ISSET(PRESERVE) ? setfile(from_stat, -1) : 0);
+    return (CP_ISSET(PRESERVE) ? setfile(ct, -1) : 0);
 }
 
 static int
-copy_special(struct stat *from_stat, int exists)
+copy_special(rpmct ct, int exists)
 {
-    if (exists && Unlink(to.p_path)) {
-	warn("Unlink: %s", to.p_path);
+    struct stat * st = ct->p->fts_statp;
+    if (exists && Unlink(ct->p_path)) {
+	warn("Unlink: %s", ct->p_path);
 	return 1;
     }
-    if (Mknod(to.p_path, from_stat->st_mode, from_stat->st_rdev)) {
-	warn("mknod: %s", to.p_path);
+    if (Mknod(ct->p_path, st->st_mode, st->st_rdev)) {
+	warn("mknod: %s", ct->p_path);
 	return 1;
     }
-    return (CP_ISSET(PRESERVE) ? setfile(from_stat, -1) : 0);
+    return (CP_ISSET(PRESERVE) ? setfile(ct, -1) : 0);
 }
 
 /* ----- */
@@ -570,11 +575,8 @@ siginfo(int sig __attribute__((__unused__)))
 #endif
 
 static int
-copy(const char ** argv, enum op type, int fts_options)
+copy(rpmct ct)
 {
-    struct stat to_stat;
-    FTS *ftsp;
-    FTSENT *curr;
     int base = 0, dne, badcp, rval;
     size_t nlen;
     char *p, *target_mid;
@@ -587,18 +589,18 @@ copy(const char ** argv, enum op type, int fts_options)
     mask = ~umask(0777);
     umask(~mask);
 
-    if ((ftsp = Fts_open((char *const *)argv, fts_options, mastercmp)) == NULL)
+    if ((ct->t = Fts_open((char *const *)ct->av, ct->ftsoptions, mastercmp)) == NULL)
 	err(1, "Fts_open");
-    for (badcp = rval = 0; (curr = Fts_read(ftsp)) != NULL; badcp = 0) {
-	switch (curr->fts_info) {
+    for (badcp = rval = 0; (ct->p = Fts_read(ct->t)) != NULL; badcp = 0) {
+	switch (ct->p->fts_info) {
 	case FTS_NS:
 	case FTS_DNR:
 	case FTS_ERR:
-	    warnx("%s: %s", curr->fts_path, strerror(curr->fts_errno));
+	    warnx("%s: %s", ct->p->fts_path, strerror(ct->p->fts_errno));
 	    badcp = rval = 1;
 	    continue;
 	case FTS_DC:			/* Warn, continue. */
-	    warnx("%s: directory causes a cycle", curr->fts_path);
+	    warnx("%s: directory causes a cycle", ct->p->fts_path);
 	    badcp = rval = 1;
 	    continue;
 	default:
@@ -609,7 +611,7 @@ copy(const char ** argv, enum op type, int fts_options)
 	 * If we are in case (2) or (3) above, we need to append the
 	 * source name to the target name.
 	 */
-	if (type != FILE_TO_FILE) {
+	if (ct->type != FILE_TO_FILE) {
 	    /*
 	     * Need to remember the roots of traversals to create
 	     * correct pathnames.  If there's a directory being
@@ -629,41 +631,41 @@ copy(const char ** argv, enum op type, int fts_options)
 	     * Since the first level MUST be FTS_ROOTLEVEL, base
 	     * is always initialized.
 	     */
-	    if (curr->fts_level == FTS_ROOTLEVEL) {
-		if (type != DIR_TO_DNE) {
-		    p = strrchr(curr->fts_path, '/');
-		    base = (p == NULL) ? 0 : (int)(p - curr->fts_path + 1);
-		    if (!strcmp(&curr->fts_path[base], ".."))
+	    if (ct->p->fts_level == FTS_ROOTLEVEL) {
+		if (ct->type != DIR_TO_DNE) {
+		    p = strrchr(ct->p->fts_path, '/');
+		    base = (p == NULL) ? 0 : (int)(p - ct->p->fts_path + 1);
+		    if (!strcmp(&ct->p->fts_path[base], ".."))
 			base += 1;
 		} else
-		    base = curr->fts_pathlen;
+		    base = ct->p->fts_pathlen;
 	    }
 
-	    p = &curr->fts_path[base];
-	    nlen = curr->fts_pathlen - base;
-	    target_mid = to.target_end;
+	    p = &ct->p->fts_path[base];
+	    nlen = ct->p->fts_pathlen - base;
+	    target_mid = ct->target_end;
 	    if (*p != '/' && target_mid[-1] != '/')
 		*target_mid++ = '/';
 	    *target_mid = 0;
-	    if (target_mid - to.p_path + nlen >= PATH_MAX) {
-		warnx("%s%s: name too long (not copied)", to.p_path, p);
+	    if (target_mid - ct->p_path + nlen >= PATH_MAX) {
+		warnx("%s%s: name too long (not copied)", ct->p_path, p);
 		badcp = rval = 1;
 		continue;
 	    }
 	    (void)strncat(target_mid, p, nlen);
-	    to.p_end = target_mid + nlen;
-	    *to.p_end = 0;
-	    while (to.p_end > to.p_path + 1 && to.p_end[-1] == '/')
-		*--to.p_end = 0;
+	    ct->p_end = target_mid + nlen;
+	    *ct->p_end = '\0';
+	    while (ct->p_end > ct->p_path + 1 && ct->p_end[-1] == '/')
+		*--ct->p_end = '\0';
 	}
 
-	if (curr->fts_info == FTS_DP) {
+	if (ct->p->fts_info == FTS_DP) {
 	    /*
 	     * We are nearly finished with this directory.  If we
 	     * didn't actually copy it, or otherwise don't need to
 	     * change its attributes, then we are done.
 	     */
-	    if (!curr->fts_number)
+	    if (!ct->p->fts_number)
 		continue;
 	    /*
 	     * If -p is in effect, set all the attributes.
@@ -675,16 +677,16 @@ copy(const char ** argv, enum op type, int fts_options)
 	     * normally want to preserve them on directories.
 	     */
 	    if (CP_ISSET(PRESERVE)) {
-		if (setfile(curr->fts_statp, -1))
+		if (setfile(ct, -1))
 		    rval = 1;
-		if (preserve_dir_acls(curr->fts_statp, curr->fts_accpath, to.p_path) != 0)
+		if (preserve_dir_acls(ct, ct->p->fts_accpath, ct->p_path) != 0)
 		    rval = 1;
 	    } else {
-		mode = curr->fts_statp->st_mode;
-		if ((mode & (S_ISUID | S_ISGID | S_ISTXT)) ||
-		    ((mode | S_IRWXU) & mask) != (mode & mask))
-		    if (Chmod(to.p_path, mode & mask) != 0) {
-			warn("Chmod: %s", to.p_path);
+		mode = ct->p->fts_statp->st_mode;
+		if ((mode & (S_ISUID | S_ISGID | S_ISTXT))
+		 || ((mode | S_IRWXU) & mask) != (mode & mask))
+		    if (Chmod(ct->p_path, mode & mask) != 0) {
+			warn("Chmod: %s", ct->p_path);
 			rval = 1;
 		    }
 	    }
@@ -692,45 +694,45 @@ copy(const char ** argv, enum op type, int fts_options)
 	}
 
 	/* Not an error but need to remember it happened */
-	if (Stat(to.p_path, &to_stat) == -1)
+	if (Stat(ct->p_path, &ct->sb) == -1)
 	    dne = 1;
 	else {
-	    if (to_stat.st_dev == curr->fts_statp->st_dev &&
-		to_stat.st_ino == curr->fts_statp->st_ino)
+	    if (ct->sb.st_dev == ct->p->fts_statp->st_dev &&
+		ct->sb.st_ino == ct->p->fts_statp->st_ino)
 	    {
 		warnx("%s and %s are identical (not copied).",
-		    to.p_path, curr->fts_path);
+		    ct->p_path, ct->p->fts_path);
 		badcp = rval = 1;
-		if (S_ISDIR(curr->fts_statp->st_mode))
-		    (void)Fts_set(ftsp, curr, FTS_SKIP);
+		if (S_ISDIR(ct->p->fts_statp->st_mode))
+		    (void)Fts_set(ct->t, ct->p, FTS_SKIP);
 		continue;
 	    }
-	    if (!S_ISDIR(curr->fts_statp->st_mode) && S_ISDIR(to_stat.st_mode)) {
+	    if (!S_ISDIR(ct->p->fts_statp->st_mode) && S_ISDIR(ct->sb.st_mode)) {
 		warnx("cannot overwrite directory %s with non-directory %s",
-		    to.p_path, curr->fts_path);
+		    ct->p_path, ct->p->fts_path);
 		badcp = rval = 1;
 		continue;
 	    }
 	    dne = 0;
 	}
 
-	switch (curr->fts_statp->st_mode & S_IFMT) {
+	switch (ct->p->fts_statp->st_mode & S_IFMT) {
 	case S_IFLNK:
 	    /* Catch special case of a non-dangling symlink */
-	    if ((fts_options & FTS_LOGICAL)
-	     || ((fts_options & FTS_COMFOLLOW) && curr->fts_level == 0))
+	    if ((ct->ftsoptions & FTS_LOGICAL)
+	     || ((ct->ftsoptions & FTS_COMFOLLOW) && ct->p->fts_level == 0))
 	    {
-		if (copy_file(curr, dne))
+		if (copy_file(ct, dne))
 		    badcp = rval = 1;
 	    } else {	
-		if (copy_link(curr, !dne))
+		if (copy_link(ct, !dne))
 		    badcp = rval = 1;
 	    }
 	    break;
 	case S_IFDIR:
 	    if (!CP_ISSET(RECURSE)) {
-		warnx("%s is a directory (not copied).", curr->fts_path);
-		(void)Fts_set(ftsp, curr, FTS_SKIP);
+		warnx("%s is a directory (not copied).", ct->p->fts_path);
+		(void)Fts_set(ct->t, ct->p, FTS_SKIP);
 		badcp = rval = 1;
 		break;
 	    }
@@ -743,51 +745,53 @@ copy(const char ** argv, enum op type, int fts_options)
 	     * umask blocks owner writes, we fail..
 	     */
 	    if (dne) {
-		if (Mkdir(to.p_path, curr->fts_statp->st_mode | S_IRWXU) < 0)
-		    err(1, "%s", to.p_path);
-	    } else if (!S_ISDIR(to_stat.st_mode)) {
+		if (Mkdir(ct->p_path, ct->p->fts_statp->st_mode | S_IRWXU) < 0)
+		    err(1, "%s", ct->p_path);
+	    } else if (!S_ISDIR(ct->sb.st_mode)) {
 		errno = ENOTDIR;
-		err(1, "%s", to.p_path);
+		err(1, "%s", ct->p_path);
 	    }
 	    /*
 	     * Arrange to correct directory attributes later
 	     * (in the post-order phase) if this is a new
 	     * directory, or if the -p flag is in effect.
 	     */
-	    curr->fts_number = CP_ISSET(PRESERVE) || dne;
+	    ct->p->fts_number = CP_ISSET(PRESERVE) || dne;
 	    break;
 	case S_IFBLK:
 	case S_IFCHR:
 	    if (CP_ISSET(RECURSE)) {
-		if (copy_special(curr->fts_statp, !dne))
+		if (copy_special(ct, !dne))
 		    badcp = rval = 1;
 	    } else {
-		if (copy_file(curr, dne))
+		if (copy_file(ct, dne))
 		    badcp = rval = 1;
 	    }
 	    break;
 	case S_IFSOCK:
-	    warnx("%s is a socket (not copied).", curr->fts_path);
+	    warnx("%s is a socket (not copied).", ct->p->fts_path);
 	case S_IFIFO:
 	    if (CP_ISSET(RECURSE)) {
-		if (copy_fifo(curr->fts_statp, !dne))
+		if (copy_fifo(ct, !dne))
 		    badcp = rval = 1;
 	    } else {
-		if (copy_file(curr, dne))
+		if (copy_file(ct, dne))
 		    badcp = rval = 1;
 	    }
 	    break;
 	default:
-	    if (copy_file(curr, dne))
+	    if (copy_file(ct, dne))
 		badcp = rval = 1;
 	    break;
 	}
 	if (CP_ISSET(VERBOSE) && !badcp)
-	    (void)fprintf(stdout, "%s -> %s\n", curr->fts_path, to.p_path);
+	    (void)fprintf(stdout, "%s -> %s\n", ct->p->fts_path, ct->p_path);
     }
     if (errno)
 	err(1, "Fts_read");
-    Fts_close(ftsp);
+    Fts_close(ct->t);
+    ct->t = NULL;
+    ct->p = NULL;
     return rval;
 }
 
@@ -803,58 +807,60 @@ static void copyArgCallback(poptContext con,
         /*@globals _rpmfts, rpmioFtsOpts, h_errno, fileSystem, internalState @*/
         /*@modifies _rpmfts, rpmioFtsOpts, fileSystem, internalState @*/
 {
+    rpmct ct = _ct;
+
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
     case 'H':
-	copyFlags |= COPY_FLAGS_FOLLOWARGS;
-	copyFlags &= ~COPY_FLAGS_FOLLOW;
+	ct->flags |= COPY_FLAGS_FOLLOWARGS;
+	ct->flags &= ~COPY_FLAGS_FOLLOW;
 	break;
     case 'L':
-	copyFlags |= COPY_FLAGS_FOLLOW;
-	copyFlags &= ~COPY_FLAGS_FOLLOWARGS;
+	ct->flags |= COPY_FLAGS_FOLLOW;
+	ct->flags &= ~COPY_FLAGS_FOLLOWARGS;
 	break;
     case 'P':
-	copyFlags &= ~COPY_FLAGS_FOLLOWARGS;
-	copyFlags &= ~COPY_FLAGS_FOLLOW;
+	ct->flags &= ~COPY_FLAGS_FOLLOWARGS;
+	ct->flags &= ~COPY_FLAGS_FOLLOW;
 	break;
     case 'R':
-	copyFlags |= COPY_FLAGS_RECURSE;
+	ct->flags |= COPY_FLAGS_RECURSE;
 	break;
     case 'a':
-	copyFlags |= COPY_FLAGS_PRESERVE;
-	copyFlags |= COPY_FLAGS_RECURSE;
-	copyFlags &= ~COPY_FLAGS_FOLLOWARGS;
-	copyFlags &= ~COPY_FLAGS_FOLLOW;
+	ct->flags |= COPY_FLAGS_PRESERVE;
+	ct->flags |= COPY_FLAGS_RECURSE;
+	ct->flags &= ~COPY_FLAGS_FOLLOWARGS;
+	ct->flags &= ~COPY_FLAGS_FOLLOW;
 	break;
     case 'f':
-	copyFlags |= COPY_FLAGS_FORCE;
-	copyFlags &= ~COPY_FLAGS_INTERACTIVE;
-	copyFlags &= ~COPY_FLAGS_NOCLOBBER;
+	ct->flags |= COPY_FLAGS_FORCE;
+	ct->flags &= ~COPY_FLAGS_INTERACTIVE;
+	ct->flags &= ~COPY_FLAGS_NOCLOBBER;
 	break;
     case 'i':
-	copyFlags |= COPY_FLAGS_INTERACTIVE;
-	copyFlags &= ~COPY_FLAGS_FORCE;
-	copyFlags &= ~COPY_FLAGS_NOCLOBBER;
+	ct->flags |= COPY_FLAGS_INTERACTIVE;
+	ct->flags &= ~COPY_FLAGS_FORCE;
+	ct->flags &= ~COPY_FLAGS_NOCLOBBER;
 	break;
     case 'l':
-	copyFlags |= COPY_FLAGS_HARDLINK;
+	ct->flags |= COPY_FLAGS_HARDLINK;
 	break;
     case 'n':
-	copyFlags |= COPY_FLAGS_NOCLOBBER;
-	copyFlags &= ~COPY_FLAGS_FORCE;
-	copyFlags &= ~COPY_FLAGS_INTERACTIVE;
+	ct->flags |= COPY_FLAGS_NOCLOBBER;
+	ct->flags &= ~COPY_FLAGS_FORCE;
+	ct->flags &= ~COPY_FLAGS_INTERACTIVE;
 	break;
     case 'p':
-	copyFlags |= COPY_FLAGS_PRESERVE;
+	ct->flags |= COPY_FLAGS_PRESERVE;
 	break;
     case 'r':
-	copyFlags |= COPY_FLAGS_RECURSE;
-	copyFlags |= COPY_FLAGS_FOLLOW;
-	copyFlags &= ~COPY_FLAGS_FOLLOWARGS;
+	ct->flags |= COPY_FLAGS_RECURSE;
+	ct->flags |= COPY_FLAGS_FOLLOW;
+	ct->flags &= ~COPY_FLAGS_FOLLOWARGS;
 	break;
     case 'v':
-	copyFlags |= COPY_FLAGS_VERBOSE;
+	ct->flags |= COPY_FLAGS_VERBOSE;
 	break;
 
     case '?':
@@ -927,33 +933,37 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    struct stat to_stat, tmp_stat;
-    enum op type;
+    rpmct ct = _ct;
     int r, have_trailing_slash;
-    const char * target;
-    int fts_options;
-    const char ** av = NULL;
-    int ac = 0;
     int rc = -1;
 
-    av = poptGetArgs(optCon);
-    ac = argvCount(av);
-    if (ac < 2) {
+    if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
+	ct->ballocated = MIN(BUFSIZE_MAX, MAXPHYS * 8);
+    else
+	ct->ballocated = BUFSIZE_SMALL;
+
+    ct->p_path[0] = '\0';
+    ct->target_end = "";
+    ct->p_end = ct->p_path;
+
+    ct->av = poptGetArgs(optCon);
+    ct->ac = argvCount(ct->av);
+    if (ct->ac < 2) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
     }
 
-    fts_options = FTS_NOCHDIR | FTS_PHYSICAL;
+    ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
     if (CP_ISSET(RECURSE)) {
 	if (CP_ISSET(FOLLOWARGS))
-	    fts_options |= FTS_COMFOLLOW;
+	    ct->ftsoptions |= FTS_COMFOLLOW;
 	if (CP_ISSET(FOLLOW)) {
-	    fts_options &= ~FTS_PHYSICAL;
-	    fts_options |= FTS_LOGICAL;
+	    ct->ftsoptions &= ~FTS_PHYSICAL;
+	    ct->ftsoptions |= FTS_LOGICAL;
 	}
     } else {
-	fts_options &= ~FTS_PHYSICAL;
-	fts_options |= FTS_LOGICAL | FTS_COMFOLLOW;
+	ct->ftsoptions &= ~FTS_PHYSICAL;
+	ct->ftsoptions |= FTS_LOGICAL | FTS_COMFOLLOW;
     }
 
 #if defined(SIGINFO)
@@ -961,23 +971,24 @@ main(int argc, char *argv[])
 #endif
 
     /* Save the target base in "to". */
-    target = av[--ac];
-    if (strlen(target) > sizeof(to.p_path) - 2)
-	errx(1, "%s: name too long", target);
-    (void) strcpy(to.p_path, target);
-    to.p_end = to.p_path + strlen(to.p_path);
-    if (to.p_path == to.p_end) {
-	*to.p_end++ = '.';
-	*to.p_end = '\0';
+    {	const char * target = ct->av[--ct->ac];
+	if (strlen(target) > sizeof(ct->p_path) - 2)
+	    errx(1, "%s: name too long", target);
+	(void) strcpy(ct->p_path, target);
     }
-    have_trailing_slash = (to.p_end[-1] == '/');
+    ct->p_end = ct->p_path + strlen(ct->p_path);
+    if (ct->p_path == ct->p_end) {
+	*ct->p_end++ = '.';
+	*ct->p_end = '\0';
+    }
+    have_trailing_slash = (ct->p_end[-1] == '/');
     if (have_trailing_slash)
-	while (to.p_end > to.p_path + 1 && to.p_end[-1] == '/')
-	    *--to.p_end = '\0';
-    to.target_end = to.p_end;
+	while (ct->p_end > ct->p_path + 1 && ct->p_end[-1] == '/')
+	    *--ct->p_end = '\0';
+    ct->target_end = ct->p_end;
 
     /* Set end of argument list for fts(3). */
-    av[ac] = NULL;
+    ct->av[ct->ac] = NULL;
 
     /*
      * Cp has two distinct cases:
@@ -993,15 +1004,13 @@ main(int argc, char *argv[])
      *
      * In (2), the real target is not directory, but "directory/source".
      */
-    r = Stat(to.p_path, &to_stat);
+    r = Stat(ct->p_path, &ct->sb);
     if (r == -1 && errno != ENOENT)
-	err(1, "%s", to.p_path);
-    if (r == -1 || !S_ISDIR(to_stat.st_mode)) {
-	/*
-	 * Case (1).  Target is not a directory.
-	 */
-	if (ac > 1)
-	    errx(1, "%s is not a directory", to.p_path);
+	err(1, "%s", ct->p_path);
+    if (r == -1 || !S_ISDIR(ct->sb.st_mode)) {
+	/* Case (1).  Target is not a directory. */
+	if (ct->ac > 1)
+	    errx(1, "%s is not a directory", ct->p_path);
 
 	/*
 	 * Need to detect the case:
@@ -1011,33 +1020,33 @@ main(int argc, char *argv[])
 	 * the initial Mkdir().
 	 */
 	if (r == -1) {
+	    struct stat sb;
 	    if (CP_ISSET(RECURSE) && (CP_ISSET(FOLLOW) || CP_ISSET(FOLLOWARGS)))
-		Stat(*av, &tmp_stat);
+		Stat(ct->av[0], &sb);
 	    else
-		Lstat(*av, &tmp_stat);
+		Lstat(ct->av[0], &sb);
 
-	    if (S_ISDIR(tmp_stat.st_mode) && CP_ISSET(RECURSE))
-		type = DIR_TO_DNE;
+	    if (S_ISDIR(sb.st_mode) && CP_ISSET(RECURSE))
+		ct->type = DIR_TO_DNE;
 	    else
-		type = FILE_TO_FILE;
+		ct->type = FILE_TO_FILE;
 	} else
-	    type = FILE_TO_FILE;
+	    ct->type = FILE_TO_FILE;
 
-	if (have_trailing_slash && type == FILE_TO_FILE) {
+	if (have_trailing_slash && ct->type == FILE_TO_FILE) {
 	    if (r == -1)
-		errx(1, "directory %s does not exist", to.p_path);
+		errx(1, "directory %s does not exist", ct->p_path);
 	    else
-		errx(1, "%s is not a directory", to.p_path);
+		errx(1, "%s is not a directory", ct->p_path);
 	}
     } else
-	/*
-	 * Case (2).  Target is a directory.
-	 */
-	type = FILE_TO_DIR;
+	/* Case (2).  Target is a directory. */
+	ct->type = FILE_TO_DIR;
 
-    rc = copy(av, type, fts_options);
+    rc = copy(ct);
 
 exit:
+    ct->b = _free(ct->b);
     optCon = rpmioFini(optCon);
     return rc;
 }
