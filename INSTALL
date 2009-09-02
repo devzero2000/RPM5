@@ -38,8 +38,8 @@ SQLite      [1] optional  3.3     3.6.14  http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
-XZ Utils    [3] optional  4.999.8 4.999.8 http://tukaani.org/xz/
-File/magic  [4] optional  4.00    5.00    ftp://ftp.astron.com/pub/file/
+XZ Utils    [3] optional  4.999.9 4.999.9 http://tukaani.org/xz/
+File/magic  [4] optional  4.00    5.03    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            mandatory 7.0     7.9     http://www.pcre.org/
@@ -64,10 +64,9 @@ CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
                Building RPM against stock external Lua not recommended
                as it reduces its RPM-specific functionality.
 
-[3] xz:        Modified XZ Utils copy bundled with RPM.
-               Building RPM against stock external XZ currently still not recommended.
+[3] xz:        XZ Utils copy is bundled with RPM because there is no "official" XZ release and too many variants in the wild.
 
-[4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
+[4] file:      File/magic copy is bundled with RPM to control for magic strings used in *.rpm tag content.
                Building RPM against stock external File/magic supported, too.
                NOTICE: File 4.24 is unportable because uses asprintf(3) without fallbacks.
 
@@ -84,7 +83,7 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 GNU zip         optional  -       -       http://www.gzip.org/
 Bzip2           optional  -       -       http://www.bzip.org/
-XZ              optional  -       -       http://tukaani.org/xz/
+XZ              optional  -       4.999.9 http://tukaani.org/xz/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
