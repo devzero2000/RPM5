@@ -316,6 +316,10 @@ void rpmRunFileTriggers(const char * rootDir)
     FILE * fp = NULL;
     int xx;
 
+    rpmlog(RPMLOG_DEBUG, _("[filetriggers] starting\n"));
+
+    fn = rpmGenPath(rootDir, files_awaiting_filetriggers, NULL);
+
     if (!filetriggers_dir())
 	goto exit;
 
@@ -323,9 +327,6 @@ void rpmRunFileTriggers(const char * rootDir)
     if (nft <= 0)
 	goto exit;
 
-    rpmlog(RPMLOG_DEBUG, _("[filetriggers] starting\n"));
-
-    fn = rpmGenPath(rootDir, files_awaiting_filetriggers, NULL);
     fd = Fopen(fn, "r.fpio");
     fp = fdGetFILE(fd);
 
