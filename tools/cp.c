@@ -91,9 +91,7 @@ enum rpmctFlags_e {
     COPY_FLAGS_HARDLINK		= _MFB( 6), /*!< -l,--link ... */
     COPY_FLAGS_NOCLOBBER	= _MFB( 7), /*!< -n,--noclobber ... */
     COPY_FLAGS_PRESERVE		= _MFB( 8), /*!< -p,--preserve ... */
-
-    COPY_FLAGS_VERBOSE		= _MFB( 9), /*!< -v,--verbose ... */
-	/* 10-31 unused */
+	/* 9-31 unused */
 };
 
 #define CP_ISSET(_FLAG) ((ct->flags & ((COPY_FLAGS_##_FLAG) & ~0x40000000)) != COPY_FLAGS_NONE)
@@ -144,15 +142,22 @@ static struct rpmct_s __ct = {
 
 static rpmct _ct = &__ct;
 
+#if defined(SIGINFO)
 static volatile sig_atomic_t info;
 
-/* ----- utils.c */
+static void
+siginfo(int sig __attribute__((__unused__)))
+{
+    info = 1;
+}
+
+#define	cp_pct(x, y)	((y == 0) ? 0 : (int)(100.0 * (x) / (y)))
+
+#endif
 
 #if !defined(MAXPHYS)
 #define	MAXPHYS		(128 * 1024)	/* max raw I/O transfer size */
 #endif
-
-#define	cp_pct(x, y)	((y == 0) ? 0 : (int)(100.0 * (x) / (y)))
 
 /* Memory strategy threshold, in pages: if physmem is larger then this, use a 
  * large buffer */
@@ -181,7 +186,7 @@ rpmctSetFile(rpmct ct, FD_t fd)
     TIMESPEC_TO_TIMEVAL(&ct->tv[0], &st->st_atimespec);
     TIMESPEC_TO_TIMEVAL(&ct->tv[1], &st->st_mtimespec);
     if (islink ? lutimes(ct->p_path, ct->tv) : Utimes(ct->p_path, ct->tv)) {
-	warn("%sutimes: %s", islink ? "l" : "", ct->p_path);
+	rpmlog(RPMLOG_ERR, "%stimes: %s: %s\n", islink ? "lu" : "U", ct->p_path, strerror(errno));
 	rval = RPMRC_FAIL;
     }
     if (fdval ? Fstat(fd, &ts) :
@@ -204,7 +209,7 @@ rpmctSetFile(rpmct ct, FD_t fd)
 	   Chown(ct->p_path, st->st_uid, st->st_gid)))
 	{
 	    if (errno != EPERM) {
-		warn("chown: %s", ct->p_path);
+		rpmlog(RPMLOG_ERR, "Chown: %s: %s\n", ct->p_path, strerror(errno));
 		rval = RPMRC_FAIL;
 	    }
 	    st->st_mode &= ~(S_ISUID | S_ISGID);
@@ -215,7 +220,7 @@ rpmctSetFile(rpmct ct, FD_t fd)
 	   (islink ? lchmod(ct->p_path, st->st_mode) :
 	   Chmod(ct->p_path, st->st_mode)))
 	{
-	    warn("Chmod: %s", ct->p_path);
+	    rpmlog(RPMLOG_ERR, "Chmod: %s: %s\n", ct->p_path, strerror(errno));
 	    rval = RPMRC_FAIL;
 	}
 
@@ -225,7 +230,7 @@ rpmctSetFile(rpmct ct, FD_t fd)
 	   (islink ? lchflags(ct->p_path, st->st_flags) :
 	   chflags(ct->p_path, st->st_flags)))
 	{
-	    warn("chflags: %s", ct->p_path);
+	    rpmlog(RPMLOG_ERR, "chflags: %s: %s\n", ct->p_path, strerror(errno));
 	    rval = RPMRC_FAIL;
 	}
 #endif
@@ -254,7 +259,7 @@ rpmctCopyFile(rpmct ct, int dne)
     ifd = Fopen(ct->p->fts_path, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
 	if (ifd) (void) Fclose(ifd);
-	warn("%s", ct->p->fts_path);
+	rpmlog(RPMLOG_ERR, "Fopen: %s: %s\n", ct->p->fts_path, strerror(errno));
 	return RPMRC_FAIL;
     }
 
@@ -269,8 +274,8 @@ rpmctCopyFile(rpmct ct, int dne)
     if (!dne) {
 #define YESNO "(y/n [n]) "
 	if (CP_ISSET(NOCLOBBER)) {
-	    if (CP_ISSET(VERBOSE))
-		fprintf(stdout, "%s not overwritten\n", ct->p_path);
+	    if (rpmIsVerbose())
+		rpmlog(RPMLOG_INFO, "%s not overwritten\n", ct->p_path);
 	    (void) Fclose(ifd);
 	    return RPMRC_OK;
 	} else if (CP_ISSET(INTERACTIVE)) {
@@ -304,7 +309,7 @@ rpmctCopyFile(rpmct ct, int dne)
     if (ofd == NULL || Ferror(ofd)
      || Fchmod(ofd, st->st_mode & ~(S_ISUID | S_ISGID)))
     {
-	warn("%s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Fchmod: %s: %s\n", ct->p_path, strerror(errno));
 	if (ofd) (void) Fclose(ofd);
 	(void) Fclose(ifd);
 	return RPMRC_FAIL;
@@ -334,22 +339,24 @@ rpmctCopyFile(rpmct ct, int dne)
 		if (Ferror(ofd) || wcount <= 0)
 		    break;
 		wtotal += wcount;
+#if defined(SIGINFO)
 		if (info) {
 		    info = 0;
 		    (void)fprintf(stderr, "%s -> %s %3d%%\n",
 			    ct->p->fts_path, ct->p_path,
 			    cp_pct(wtotal, st->st_size));
 		}
+#endif
 		if (wcount >= (ssize_t)wresid)
 		    break;
 	    }
 	    if (wcount != (ssize_t)wresid) {
-		warn("%s", ct->p_path);
+		rpmlog(RPMLOG_ERR, "Fwrite: %s: %s\n", ct->p_path, strerror(errno));
 		rval = RPMRC_FAIL;
 	    }
 	    /* Some systems don't unmap on close(2). */
 	    if (Munmap(p, st->st_size) < 0) {
-		warn("%s", ct->p->fts_path);
+		rpmlog(RPMLOG_ERR, "Munmap: %s: %s\n", ct->p->fts_path, strerror(errno));
 		rval = RPMRC_FAIL;
 	    }
 	} else
@@ -368,29 +375,31 @@ rpmctCopyFile(rpmct ct, int dne)
 		    if (Ferror(ofd) || wcount <= 0)
 			break;
 		    wtotal += wcount;
+#if defined(SIGINFO)
 		    if (info) {
 			info = 0;
 			(void)fprintf(stderr, "%s -> %s %3d%%\n",
 			    ct->p->fts_path, ct->p_path,
 			    cp_pct(wtotal, st->st_size));
 		    }
+#endif
 		    if (wcount >= (ssize_t)wresid)
 			break;
 		}
 		if (wcount != (ssize_t)wresid) {
-		    warn("%s", ct->p_path);
+		    rpmlog(RPMLOG_ERR, "Fwrite: %s: %s\n", ct->p_path, strerror(errno));
 		    rval = RPMRC_FAIL;
 		    break;
 		}
 	    }
-	    if (rcount < 0) {
-		warn("%s", ct->p->fts_path);
+	    if (Ferror(ifd)) {
+		rpmlog(RPMLOG_ERR, "Fread: %s: %s\n", ct->p->fts_path, strerror(errno));
 		rval = RPMRC_FAIL;
 	    }
 	}
     } else {
 	if (Link(ct->p->fts_path, ct->p_path)) {
-	    warn("%s", ct->p_path);
+	    rpmlog(RPMLOG_ERR, "Link: %s: %s\n", ct->p_path, strerror(errno));
 	    rval = RPMRC_FAIL;
 	}
     }
@@ -408,7 +417,7 @@ rpmctCopyFile(rpmct ct, int dne)
 	if (CP_ISSET(PRESERVE) && rpmaclCopyFd(ifd, ofd) != 0)
 	    rval = RPMRC_FAIL;
 	if (ofd && Fclose(ofd)) {
-	    warn("%s", ct->p_path);
+	    rpmlog(RPMLOG_ERR, "Fclose: %s: %s\n", ct->p_path, strerror(errno));
 	    rval = RPMRC_FAIL;
 	}
     }
@@ -425,16 +434,16 @@ rpmctCopyLink(rpmct ct, int exists)
     int len;
 
     if ((len = Readlink(ct->p->fts_path, llink, sizeof(llink) - 1)) == -1) {
-	warn("Readlink: %s", ct->p->fts_path);
+	rpmlog(RPMLOG_ERR, "Readlink: %s: %s\n", ct->p->fts_path, strerror(errno));
 	return RPMRC_FAIL;
     }
     llink[len] = '\0';
     if (exists && Unlink(ct->p_path)) {
-	warn("Unlink: %s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Unlink: %s: %s\n", ct->p_path, strerror(errno));
 	return RPMRC_FAIL;
     }
     if (Symlink(llink, ct->p_path)) {
-	warn("symlink: %s", llink);
+	rpmlog(RPMLOG_ERR, "Symlink: %s: %s\n", llink, strerror(errno));
 	return RPMRC_FAIL;
     }
     return (CP_ISSET(PRESERVE) ? rpmctSetFile(ct, NULL) : RPMRC_OK);
@@ -445,11 +454,11 @@ rpmctCopyFifo(rpmct ct, int exists)
 {
     struct stat * st = ct->p->fts_statp;
     if (exists && Unlink(ct->p_path)) {
-	warn("Unlink: %s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Unlink: %s: %s\n", ct->p_path, strerror(errno));
 	return RPMRC_FAIL;
     }
     if (Mkfifo(ct->p_path, st->st_mode)) {
-	warn("Mkfifo: %s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Mkfifo: %s: %s\n", ct->p_path, strerror(errno));
 	return RPMRC_FAIL;
     }
     return (CP_ISSET(PRESERVE) ? rpmctSetFile(ct, NULL) : RPMRC_OK);
@@ -460,17 +469,15 @@ rpmctCopySpecial(rpmct ct, int exists)
 {
     struct stat * st = ct->p->fts_statp;
     if (exists && Unlink(ct->p_path)) {
-	warn("Unlink: %s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Unlink: %s: %s\n", ct->p_path, strerror(errno));
 	return RPMRC_FAIL;
     }
     if (Mknod(ct->p_path, st->st_mode, st->st_rdev)) {
-	warn("mknod: %s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Mknod: %s: %s\n", ct->p_path, strerror(errno));
 	return RPMRC_FAIL;
     }
     return (CP_ISSET(PRESERVE) ? rpmctSetFile(ct, NULL) : RPMRC_OK);
 }
-
-/* ----- */
 
 /*
  * mastercmp --
@@ -497,14 +504,6 @@ mastercmp(const FTSENT ** a, const FTSENT ** b)
     return 0;
 }
 
-#if defined(SIGINFO)
-static void
-siginfo(int sig __attribute__((__unused__)))
-{
-	info = 1;
-}
-#endif
-
 static rpmRC
 rpmctCopy(rpmct ct)
 {
@@ -526,7 +525,7 @@ rpmctCopy(rpmct ct)
     umask(~mask);
 
     if ((ct->t = Fts_open((char *const *)ct->av, ct->ftsoptions, mastercmp)) == NULL) {
-	warn("Fts_open");
+	rpmlog(RPMLOG_ERR, "Fts_open: %s\n", strerror(errno));
 	rval = RPMRC_FAIL;
 	goto exit;
     }
@@ -535,11 +534,11 @@ rpmctCopy(rpmct ct)
 	case FTS_NS:
 	case FTS_DNR:
 	case FTS_ERR:
-	    warnx("%s: %s", ct->p->fts_path, strerror(ct->p->fts_errno));
+	    rpmlog(RPMLOG_ERR, "Fts_read: %s: %s\n", ct->p->fts_path, strerror(ct->p->fts_errno));
 	    rval = RPMRC_FAIL;
 	    continue;
 	case FTS_DC:			/* Warn, continue. */
-	    warnx("%s: directory causes a cycle", ct->p->fts_path);
+	    rpmlog(RPMLOG_ERR, "Fts_read: %s: directory causes a cycle\n", ct->p->fts_path);
 	    rval = RPMRC_FAIL;
 	    continue;
 	default:
@@ -587,7 +586,7 @@ rpmctCopy(rpmct ct)
 		*target_mid++ = '/';
 	    *target_mid = 0;
 	    if (target_mid - ct->p_path + nlen >= PATH_MAX) {
-		warnx("%s%s: name too long (not copied)", ct->p_path, p);
+		rpmlog(RPMLOG_ERR, "%s%s: name too long (not copied)\n", ct->p_path, p);
 		rval = RPMRC_FAIL;
 		continue;
 	    }
@@ -625,7 +624,7 @@ rpmctCopy(rpmct ct)
 		if ((mode & (S_ISUID | S_ISGID | S_ISTXT))
 		 || ((mode | S_IRWXU) & mask) != (mode & mask))
 		    if (Chmod(ct->p_path, mode & mask) != 0) {
-			warn("Chmod: %s", ct->p_path);
+			rpmlog(RPMLOG_ERR, "Chmod: %s: %s\n", ct->p_path, strerror(errno));
 			rval = RPMRC_FAIL;
 		    }
 	    }
@@ -639,7 +638,7 @@ rpmctCopy(rpmct ct)
 	    if (ct->sb.st_dev == ct->p->fts_statp->st_dev &&
 		ct->sb.st_ino == ct->p->fts_statp->st_ino)
 	    {
-		warnx("%s and %s are identical (not copied).",
+		rpmlog(RPMLOG_ERR, "%s and %s are identical (not copied).\n",
 		    ct->p_path, ct->p->fts_path);
 		rval = RPMRC_FAIL;
 		if (S_ISDIR(ct->p->fts_statp->st_mode))
@@ -647,7 +646,7 @@ rpmctCopy(rpmct ct)
 		continue;
 	    }
 	    if (!S_ISDIR(ct->p->fts_statp->st_mode) && S_ISDIR(ct->sb.st_mode)) {
-		warnx("cannot overwrite directory %s with non-directory %s",
+		rpmlog(RPMLOG_ERR, "cannot overwrite directory %s with non-directory %s\n",
 		    ct->p_path, ct->p->fts_path);
 		rval = RPMRC_FAIL;
 		continue;
@@ -671,7 +670,7 @@ rpmctCopy(rpmct ct)
 	    break;
 	case S_IFDIR:
 	    if (!CP_ISSET(RECURSE)) {
-		warnx("%s is a directory (not copied).", ct->p->fts_path);
+		rpmlog(RPMLOG_ERR, "%s is a directory (not copied).\n", ct->p->fts_path);
 		(void)Fts_set(ct->t, ct->p, FTS_SKIP);
 		badcp = 1;
 		break;
@@ -686,13 +685,13 @@ rpmctCopy(rpmct ct)
 	     */
 	    if (dne) {
 		if (Mkdir(ct->p_path, ct->p->fts_statp->st_mode | S_IRWXU) < 0) {
-		    warn("%s", ct->p_path);
+		    rpmlog(RPMLOG_ERR, "Mkdir: %s: %s\n", ct->p_path, strerror(errno));
 		    rval = RPMRC_FAIL;
 		    goto exit;
 		}
 	    } else if (!S_ISDIR(ct->sb.st_mode)) {
 		errno = ENOTDIR;
-		warn("%s", ct->p_path);
+		rpmlog(RPMLOG_ERR, "%s: %s\n", ct->p_path, strerror(errno));
 		rval = RPMRC_FAIL;
 		goto exit;
 	    }
@@ -714,7 +713,7 @@ rpmctCopy(rpmct ct)
 	    }
 	    break;
 	case S_IFSOCK:
-	    warnx("%s is a socket (not copied).", ct->p->fts_path);
+	    rpmlog(RPMLOG_ERR, "%s is a socket (not copied).\n", ct->p->fts_path);
 	case S_IFIFO:
 	    if (CP_ISSET(RECURSE)) {
 		if (rpmctCopyFifo(ct, !dne))
@@ -731,14 +730,8 @@ rpmctCopy(rpmct ct)
 	}
 	if (badcp)
 	    rval = RPMRC_FAIL;
-	else if (CP_ISSET(VERBOSE))
-	    (void)fprintf(stdout, "%s -> %s\n", ct->p->fts_path, ct->p_path);
-    }
-
-    if (errno) {
-	warn("Fts_read");
-	rval = RPMRC_FAIL;
-	goto exit;
+	else if (rpmIsVerbose())
+	    rpmlog(RPMLOG_INFO, "%s -> %s\n", ct->p->fts_path, ct->p_path);
     }
 
 exit:
@@ -812,9 +805,6 @@ static void copyArgCallback(poptContext con,
 	ct->flags |= COPY_FLAGS_FOLLOW;
 	ct->flags &= ~COPY_FLAGS_FOLLOWARGS;
 	break;
-    case 'v':
-	ct->flags |= COPY_FLAGS_VERBOSE;
-	break;
 
     case '?':
     default:
@@ -852,13 +842,6 @@ static struct poptOption optionsTable[] = {
 	N_("Do not overwrite an existing file"), NULL },
   { "preserve",'p', POPT_ARG_NONE,	NULL, (int)'p',
 	N_("Preserve mode/ownership/timestamps"), NULL },
-#ifdef	DYING
-  /* XXX conflicts with -r, --root */
-  { NULL,'r', POPT_ARG_NONE,		NULL, (int)'r',
-	N_("Copy directories recursively"), NULL },
-#endif
-  { "verbose",'v', POPT_ARG_NONE,	NULL, (int)'v',
-	N_("Explain what is being done"), NULL },
 
 #ifdef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
@@ -887,10 +870,12 @@ Usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file\n\
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    poptContext optCon;
     rpmct ct = _ct;
     int r, have_trailing_slash;
     rpmRC rc = RPMRC_FAIL;
+
+    __progname = "cp";
 
     if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
 	ct->ballocated = MIN(BUFSIZE_MAX, MAXPHYS * 8);
@@ -901,6 +886,7 @@ main(int argc, char *argv[])
     ct->target_end = "";
     ct->p_end = ct->p_path;
 
+    optCon = rpmioInit(argc, argv, optionsTable);
     ct->av = poptGetArgs(optCon);
     ct->ac = argvCount(ct->av);
     if (ct->ac < 2) {
@@ -928,7 +914,7 @@ main(int argc, char *argv[])
     /* Save the target base in "to". */
     {	const char * target = ct->av[--ct->ac];
 	if (strlen(target) > sizeof(ct->p_path) - 2) {
-	    warnx("%s: name too long", target);
+	    rpmlog(RPMLOG_ERR, "%s: name too long\n", target);
 	    goto exit;
 	}
 	(void) strcpy(ct->p_path, target);
@@ -963,13 +949,13 @@ main(int argc, char *argv[])
      */
     r = Stat(ct->p_path, &ct->sb);
     if (r == -1 && errno != ENOENT) {
-	warn("%s", ct->p_path);
+	rpmlog(RPMLOG_ERR, "Stat: %s: %s\n", ct->p_path, strerror(errno));
 	goto exit;
     }
     if (r == -1 || !S_ISDIR(ct->sb.st_mode)) {
 	/* Case (1).  Target is not a directory. */
 	if (ct->ac > 1) {
-	    warnx("%s is not a directory", ct->p_path);
+	    rpmlog(RPMLOG_ERR, "%s is not a directory\n", ct->p_path);
 	    goto exit;
 	}
 
@@ -996,9 +982,9 @@ main(int argc, char *argv[])
 
 	if (have_trailing_slash && ct->type == FILE_TO_FILE) {
 	    if (r == -1)
-		warnx("directory %s does not exist", ct->p_path);
+		rpmlog(RPMLOG_ERR, "directory %s does not exist\n", ct->p_path);
 	    else
-		warnx("%s is not a directory", ct->p_path);
+		rpmlog(RPMLOG_ERR, "%s is not a directory\n", ct->p_path);
 	    goto exit;
 	}
     } else

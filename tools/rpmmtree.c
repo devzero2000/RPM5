@@ -3668,7 +3668,7 @@ main(int argc, char *argv[])
     int rc = 1;		/* assume failure */
     int i;
 
-    __progname = "rpmmtree";
+    __progname = "mtree";
 
     RPM_LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
