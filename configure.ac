@@ -718,7 +718,9 @@ AC_CHECK_MEMBERS([
 	struct stat.st_atimespec.tv_nsec,
 	struct stat.st_atimensec,
 	struct stat.st_uatime,
-	struct stat.st_atim.st__tim.tv_nsec])
+	struct stat.st_atim.st__tim.tv_nsec,
+	struct stat.st_birthtime,
+	struct stat.st_flags])
 
 AC_MSG_CHECKING(if timezone is defined)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])

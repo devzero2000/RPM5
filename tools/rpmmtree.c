@@ -47,12 +47,6 @@ static const char copyright[] =
 #include "asprintf.h"
 #endif
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || defined(__APPLE__)
-#define	HAVE_ST_FLAGS	1	/* XXX TODO: should be AutoFu test */
-#else
-#undef	HAVE_ST_FLAGS		/* XXX TODO: should be AutoFu test */
-#endif
-
 #if defined(__linux__)
 #define	st_mtimespec	st_mtim
 #endif
@@ -206,7 +200,7 @@ struct rpmfts_s {
     char * path;
     int ftsoptions;
 
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     size_t maxf;
 /*@null@*/
     unsigned long * f;
@@ -450,7 +444,7 @@ algo2tagname(uint32_t algo)
     return tagname;
 }
 
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
 static const char *
 flags_to_string(u_long fflags)
 	/*@*/
@@ -1444,7 +1438,7 @@ set(char * t, NODE * ip)
 		mtree_error("invalid checksum %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_FLAGS:
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
 	    if (!strcmp(val, "none")) {
 		ip->sb.st_flags = 0;
 		/*@switchbreak@*/ break;
@@ -1831,7 +1825,7 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
 	}
     }
 
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     if (KF_ISSET(keys, FLAGS))
 	printf(" flags=%s", flags_to_string(n->sb.st_flags));
 #endif
@@ -1934,7 +1928,7 @@ compare_nodes(NODE *n1, NODE *n2, const char *path)
 	}
     }
 
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     if (FF(n1, n2, MTREE_KEYS_FLAGS, sb.st_flags))
 	differs |= MTREE_KEYS_FLAGS;
 #endif
@@ -2327,7 +2321,7 @@ cleanup:
 	(void) printf(_("%s%s expected %s found %s\n"), tab, "link_ref",
 		cp, s->slink);
     }
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     if (KF_ISSET(keys, FLAGS) && s->sb.st_flags != st->st_flags) {
 	char *fflags;
 
@@ -2373,7 +2367,7 @@ mtreeVisitD(rpmfts fts)
     gid_t maxgid = 0;
     uid_t maxuid = 0;
     mode_t maxmode = 0;
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     unsigned long maxflags = 0;
 #endif
 
@@ -2389,7 +2383,7 @@ mtreeVisitD(rpmfts fts)
     _FTSCALLOC(fts->g, fts->maxg);
     _FTSCALLOC(fts->m, fts->maxm);
     _FTSCALLOC(fts->u, fts->maxu);
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     _FTSCALLOC(fts->f, fts->maxf);
 #endif
 
@@ -2417,7 +2411,7 @@ mtreeVisitD(rpmfts fts)
 	    sb.st_uid = st->st_uid;
 	    maxuid = fts->u[st->st_uid];
 	}
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
 	/*
  	 * XXX
  	 * note that the below will break when file flags
@@ -2444,7 +2438,7 @@ mtreeVisitD(rpmfts fts)
     if (((KF_ISSET(keys, UNAME) || KF_ISSET(keys, UID)) && (fts->sb.st_uid != sb.st_uid))
      || ((KF_ISSET(keys, GNAME) || KF_ISSET(keys, GID)) && (fts->sb.st_gid != sb.st_gid))
      ||  (KF_ISSET(keys, MODE) && (fts->sb.st_mode != sb.st_mode))
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
      ||  (KF_ISSET(keys, FLAGS) && (fts->sb.st_flags != sb.st_flags))
 #endif
      || fts->sb_is_valid == 0)
@@ -2484,7 +2478,7 @@ mtreeVisitD(rpmfts fts)
 	    (void) printf(" mode=%#o", (unsigned)sb.st_mode);
 	if (KF_ISSET(keys, NLINK))
 	    (void) printf(" nlink=1");
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
 	if (KF_ISSET(keys, FLAGS)) {
 	    const char * fflags = flags_to_string(sb.st_flags);
 	    (void) printf(" flags=%s", fflags);
@@ -2703,7 +2697,7 @@ cleanup:    /* Accumulate statistics and clean up. */
     }
 
     if (KF_ISSET(keys, FLAGS) && !S_ISLNK(st->st_mode)) {
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
 	char * fflags = fflagstostr(st->st_flags);
 
 	if (fflags != NULL && fflags[0] != '\0')
@@ -3342,7 +3336,7 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	if (Chmod(fts->path, p->sb.st_mode))
 	    (void) printf(_("%s: permissions not set: %s\n"),
 		    fts->path, strerror(errno));
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
 	if (KF_ISSET(p->flags, FLAGS) && p->sb.st_flags != 0 &&
                     chflags(fts->path, p->sb.st_flags))
                         (void) printf(_("%s: file flags not set: %s\n"),
@@ -3675,7 +3669,7 @@ main(int argc, char *argv[])
     fts->maxg = 5000;
     fts->maxu = 5000;
     fts->maxm = (MBITS + 1);
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     fts->maxf = 256;
     fts->sb.st_flags = 0xffffffff;
 #endif
@@ -3828,7 +3822,7 @@ exit:
 	fts->spec2 = NULL;
     }
     fts->paths = argvFree(fts->paths);
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     fts->f = _free(fts->f);
 #endif
     fts->g = _free(fts->g);

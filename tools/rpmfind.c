@@ -61,10 +61,7 @@ char copyright[] =
 
 #define	__unused	__attribute__((__unused__))
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || defined(__APPLE__)
-#define	HAVE_ST_FLAGS	1	/* XXX TODO: should be AutoFu test */
-#else
-#undef	HAVE_ST_FLAGS		/* XXX TODO: should be AutoFu test */
+#if !defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
 #define	st_birthtime	st_ctime	/* Use st_ctime if no st_birthtime. */
 #endif
 
@@ -1020,7 +1017,7 @@ printtime(time_t ftime)
     fputs(longstring, stdout);
 }
 
-#if !defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if !defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
 static int strmode(mode_t mode, char *perms)
 {
     strcpy(perms, "----------");
@@ -1480,7 +1477,7 @@ f_delete(PLAN *plan __unused, FTSENT *entry)
 	errx(1, "-delete: %s: relative path potentially not safe",
 		entry->fts_accpath);
 
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     /* Turn off user immutable bits if running as root */
     if ((entry->fts_statp->st_flags & (UF_APPEND|UF_IMMUTABLE))
      && !(entry->fts_statp->st_flags & (SF_APPEND|SF_IMMUTABLE))
@@ -1802,7 +1799,7 @@ f_flags(PLAN *plan, FTSENT *entry)
 {
     unsigned long flags;
 
-#if defined(HAVE_ST_FLAGS)
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     flags = entry->fts_statp->st_flags;
 #else
     flags = 0;	/* XXX HACK */
@@ -1834,7 +1831,7 @@ c_flags(OPTION *option, char ***argvp)
 	new->flags |= F_ANY;
 	flags_str++;
     }
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
     if (strtofflags(&flags_str, &flags, &notflags) == 1)
 	errx(1, "%s: %s: illegal flags string", option->name, flags_str);
 #else
@@ -1872,7 +1869,7 @@ f_fstype(PLAN *plan, FTSENT *entry)
 {
     static dev_t curdev;	/* need a guaranteed illegal dev value */
     static int first = 1;
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
     struct statfs sb;
 #endif
     static int val_type, val_flags;
@@ -1901,7 +1898,7 @@ f_fstype(PLAN *plan, FTSENT *entry)
 	} else
 	    p = NULL;
 
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
 	if (statfs(entry->fts_accpath, &sb))
 	    err(1, "%s", entry->fts_accpath);
 #endif
@@ -1917,7 +1914,7 @@ f_fstype(PLAN *plan, FTSENT *entry)
 	 * Further tests may need both of these values, so
 	 * always copy both of them.
 	 */
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
 	val_flags = sb.f_flags;
 	val_type = sb.f_type;
 #endif
@@ -1937,13 +1934,13 @@ c_fstype(OPTION *option, char ***argvp)
 {
     char * fsname = nextarg(option, argvp);
     PLAN * new = palloc(option);
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
     struct xvfsconf vfc;
 #endif
 
     ftsoptions &= ~FTS_NOSTAT;
 
-#if defined(HAVE_ST_FLAGS)	/* XXX HACK */
+#if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
     /*
      * Check first for a filesystem name.
      */

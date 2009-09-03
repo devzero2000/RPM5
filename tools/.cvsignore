@@ -7,6 +7,7 @@ Makefile.in
 *.gcno
 augtool
 convertdb1
+cp
 db_tool
 debugedit
 rpm2cpio
