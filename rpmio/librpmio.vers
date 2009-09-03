@@ -263,6 +263,8 @@ LIBRPMIO_0
     _RequestPass;
     Rmdir;
     _Rmdir;
+    rpmaclCopyFd;
+    rpmaclCopyDir;
     _rpmaug_debug;
     _rpmaugCommands;
     rpmaugDefnode;
