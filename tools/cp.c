@@ -108,10 +108,10 @@ enum rpmctType_e { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
  * Cp copies source files to target files.
  *
  * The global PATH_T structure "to" always contains the path to the
- * current target file.  Since fts(3) does not change directories,
+ * current target file.  Since Fts(3) does not change directories,
  * this path can be either absolute or dot-relative.
  *
- * The basic algorithm is to initialize "to" and use fts(3) to traverse
+ * The basic algorithm is to initialize "to" and use Fts(3) to traverse
  * the file hierarchy rooted in the argument list.  A trivial case is the
  * case of 'cp file1 file2'.  The more interesting case is the case of
  * 'cp file1 file2 ... fileN dir' where the hierarchy is traversed and the
@@ -525,8 +525,11 @@ rpmctCopy(rpmct ct)
     mask = ~umask(0777);
     umask(~mask);
 
-    if ((ct->t = Fts_open((char *const *)ct->av, ct->ftsoptions, mastercmp)) == NULL)
-	err(1, "Fts_open");
+    if ((ct->t = Fts_open((char *const *)ct->av, ct->ftsoptions, mastercmp)) == NULL) {
+	warn("Fts_open");
+	rval = RPMRC_FAIL;
+	goto exit;
+    }
     while ((ct->p = Fts_read(ct->t)) != NULL) {
 	switch (ct->p->fts_info) {
 	case FTS_NS:
@@ -682,11 +685,16 @@ rpmctCopy(rpmct ct)
 	     * umask blocks owner writes, we fail..
 	     */
 	    if (dne) {
-		if (Mkdir(ct->p_path, ct->p->fts_statp->st_mode | S_IRWXU) < 0)
-		    err(1, "%s", ct->p_path);
+		if (Mkdir(ct->p_path, ct->p->fts_statp->st_mode | S_IRWXU) < 0) {
+		    warn("%s", ct->p_path);
+		    rval = RPMRC_FAIL;
+		    goto exit;
+		}
 	    } else if (!S_ISDIR(ct->sb.st_mode)) {
 		errno = ENOTDIR;
-		err(1, "%s", ct->p_path);
+		warn("%s", ct->p_path);
+		rval = RPMRC_FAIL;
+		goto exit;
 	    }
 	    /*
 	     * Arrange to correct directory attributes later
@@ -727,14 +735,19 @@ rpmctCopy(rpmct ct)
 	    (void)fprintf(stdout, "%s -> %s\n", ct->p->fts_path, ct->p_path);
     }
 
-    if (errno)
-	err(1, "Fts_read");
-    Fts_close(ct->t);
+    if (errno) {
+	warn("Fts_read");
+	rval = RPMRC_FAIL;
+	goto exit;
+    }
+
+exit:
+    if (ct->t != NULL)
+	Fts_close(ct->t);
     ct->t = NULL;
     ct->p = NULL;
     return rval;
 }
-
 
 /*==============================================================*/
 
@@ -744,8 +757,8 @@ static void copyArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
-        /*@globals _rpmfts, rpmioFtsOpts, h_errno, fileSystem, internalState @*/
-        /*@modifies _rpmfts, rpmioFtsOpts, fileSystem, internalState @*/
+        /*@globals _rpmct, h_errno, fileSystem, internalState @*/
+        /*@modifies _rpmct, fileSystem, internalState @*/
 {
     rpmct ct = _ct;
 
@@ -877,7 +890,7 @@ main(int argc, char *argv[])
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     rpmct ct = _ct;
     int r, have_trailing_slash;
-    rpmRC rc = -1;
+    rpmRC rc = RPMRC_FAIL;
 
     if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
 	ct->ballocated = MIN(BUFSIZE_MAX, MAXPHYS * 8);
@@ -914,8 +927,10 @@ main(int argc, char *argv[])
 
     /* Save the target base in "to". */
     {	const char * target = ct->av[--ct->ac];
-	if (strlen(target) > sizeof(ct->p_path) - 2)
-	    errx(1, "%s: name too long", target);
+	if (strlen(target) > sizeof(ct->p_path) - 2) {
+	    warnx("%s: name too long", target);
+	    goto exit;
+	}
 	(void) strcpy(ct->p_path, target);
     }
     ct->p_end = ct->p_path + strlen(ct->p_path);
@@ -947,12 +962,16 @@ main(int argc, char *argv[])
      * In (2), the real target is not directory, but "directory/source".
      */
     r = Stat(ct->p_path, &ct->sb);
-    if (r == -1 && errno != ENOENT)
-	err(1, "%s", ct->p_path);
+    if (r == -1 && errno != ENOENT) {
+	warn("%s", ct->p_path);
+	goto exit;
+    }
     if (r == -1 || !S_ISDIR(ct->sb.st_mode)) {
 	/* Case (1).  Target is not a directory. */
-	if (ct->ac > 1)
-	    errx(1, "%s is not a directory", ct->p_path);
+	if (ct->ac > 1) {
+	    warnx("%s is not a directory", ct->p_path);
+	    goto exit;
+	}
 
 	/*
 	 * Need to detect the case:
@@ -977,9 +996,10 @@ main(int argc, char *argv[])
 
 	if (have_trailing_slash && ct->type == FILE_TO_FILE) {
 	    if (r == -1)
-		errx(1, "directory %s does not exist", ct->p_path);
+		warnx("directory %s does not exist", ct->p_path);
 	    else
-		errx(1, "%s is not a directory", ct->p_path);
+		warnx("%s is not a directory", ct->p_path);
+	    goto exit;
 	}
     } else
 	/* Case (2).  Target is a directory. */
