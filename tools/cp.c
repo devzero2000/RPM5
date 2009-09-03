@@ -32,9 +32,9 @@
 
 #include "system.h"
 
-#include <sys/acl.h>
-
 #include <rpmio.h>
+#include <rpmacl.h>
+#include <rpmlog.h>
 #include <argv.h>
 #include <fts.h>
 #include <poptIO.h>
@@ -164,86 +164,6 @@ static volatile sig_atomic_t info;
 /* Small (default) buffer size in bytes. It's inefficient for this to be
  * smaller than MAXPHYS */
 #define BUFSIZE_SMALL (MAXPHYS)
-
-static rpmRC
-rpmctCopyFdAcls(rpmct ct, FD_t ifd, FD_t ofd)
-{
-#if defined(_PC_ACL_EXTENDED)
-    int ifdno = Fileno(ifd);
-    int ofdno = Fileno(ofd);
-    struct acl *aclp;
-    acl_t acl;
-
-    if (fpathconf(ifdno, _PC_ACL_EXTENDED) != 1
-     || fpathconf(ofdno, _PC_ACL_EXTENDED) != 1)
-	return RPMRC_OK;
-    acl = acl_get_fd(ifdno);
-    if (acl == NULL) {
-	warn("failed to get acl entries while setting %s", ct->p_path);
-	return RPMRC_FAIL;
-    }
-    aclp = &acl->ats_acl;
-    if (aclp->acl_cnt == 3)
-	return RPMRC_OK;
-    if (acl_set_fd(ofdno, acl) < 0) {
-	warn("failed to set acl entries for %s", ct->p_path);
-	return RPMRC_FAIL;
-    }
-#endif
-    return RPMRC_OK;
-}
-
-static rpmRC
-rpmctCopyDirAcls(rpmct ct, char *source_dir, char *dest_dir)
-{
-#if defined(_PC_ACL_EXTENDED)
-    struct stat * st = ct->p->fts_statp;
-    acl_t (*aclgetf)(const char *, acl_type_t);
-    int (*aclsetf)(const char *, acl_type_t, acl_t);
-    struct acl *aclp;
-    acl_t acl;
-
-    if (pathconf(source_dir, _PC_ACL_EXTENDED) != 1
-     ||	pathconf(dest_dir, _PC_ACL_EXTENDED) != 1)
-	return RPMRC_OK;
-    /*
-    * If the file is a link we will not follow it
-    */
-    if (S_ISLNK(st->st_mode)) {
-	aclgetf = acl_get_link_np;
-	aclsetf = acl_set_link_np;
-    } else {
-	aclgetf = acl_get_file;
-	aclsetf = acl_set_file;
-    }
-    /*
-    * Even if there is no ACL_TYPE_DEFAULT entry here, a zero
-    * size ACL will be returned. So it is not safe to simply
-    * check the pointer to see if the default ACL is present.
-    */
-    acl = aclgetf(source_dir, ACL_TYPE_DEFAULT);
-    if (acl == NULL) {
-	warn("failed to get default acl entries on %s", source_dir);
-	return RPMRC_FAIL;
-    }
-    aclp = &acl->ats_acl;
-    if (aclp->acl_cnt != 0 && aclsetf(dest_dir, ACL_TYPE_DEFAULT, acl) < 0) {
-	warn("failed to set default acl entries on %s", dest_dir);
-	return RPMRC_FAIL;
-    }
-    acl = aclgetf(source_dir, ACL_TYPE_ACCESS);
-    if (acl == NULL) {
-	warn("failed to get acl entries on %s", source_dir);
-	return RPMRC_FAIL;
-    }
-    aclp = &acl->ats_acl;
-    if (aclsetf(dest_dir, ACL_TYPE_ACCESS, acl) < 0) {
-	warn("failed to set acl entries on %s", dest_dir);
-	return RPMRC_FAIL;
-    }
-#endif
-    return RPMRC_OK;
-}
 
 static rpmRC
 rpmctSetFile(rpmct ct, FD_t fd)
@@ -485,7 +405,7 @@ rpmctCopyFile(rpmct ct, int dne)
     if (!CP_ISSET(HARDLINK)) {
 	if (CP_ISSET(PRESERVE) && rpmctSetFile(ct, ofd))
 	    rval = RPMRC_FAIL;
-	if (CP_ISSET(PRESERVE) && rpmctCopyFdAcls(ct, ifd, ofd) != 0)
+	if (CP_ISSET(PRESERVE) && rpmaclCopyFd(ifd, ofd) != 0)
 	    rval = RPMRC_FAIL;
 	if (ofd && Fclose(ofd)) {
 	    warn("%s", ct->p_path);
@@ -593,7 +513,8 @@ rpmctCopy(rpmct ct)
     int badcp = 0;
     rpmRC rval = RPMRC_OK;
     size_t nlen;
-    char *p, *target_mid;
+    char *p;
+    char *target_mid;
     mode_t mask;
     mode_t mode;
 
@@ -691,13 +612,13 @@ rpmctCopy(rpmct ct)
 	     * honour setuid, setgid and sticky bits, but we
 	     * normally want to preserve them on directories.
 	     */
+	    mode = ct->p->fts_statp->st_mode;
 	    if (CP_ISSET(PRESERVE)) {
 		if (rpmctSetFile(ct, NULL))
 		    rval = RPMRC_FAIL;
-		if (rpmctCopyDirAcls(ct, ct->p->fts_accpath, ct->p_path) != 0)
+		if (rpmaclCopyDir(ct->p->fts_accpath, ct->p_path, mode) != 0)
 		    rval = RPMRC_FAIL;
 	    } else {
-		mode = ct->p->fts_statp->st_mode;
 		if ((mode & (S_ISUID | S_ISGID | S_ISTXT))
 		 || ((mode | S_IRWXU) & mask) != (mode & mask))
 		    if (Chmod(ct->p_path, mode & mask) != 0) {
