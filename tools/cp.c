@@ -331,7 +331,7 @@ rpmctCopyFile(rpmct ct, int dne)
     char *p;
 #endif
 
-    ifd = Fopen(ct->p->fts_path, "r");
+    ifd = Fopen(ct->p->fts_path, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
 	if (ifd) (void) Fclose(ifd);
 	warn("%s", ct->p->fts_path);
@@ -929,14 +929,13 @@ static struct poptOption optionsTable[] = {
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
 	N_("Available digests:"), NULL },
+#endif
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
 	NULL },
 
   POPT_AUTOALIAS
-#endif
-
   POPT_AUTOHELP
 
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
