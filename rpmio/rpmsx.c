@@ -50,7 +50,7 @@ extern int is_selinux_enabled(void)
 #endif
 #endif
 
-#define	_RPMSEX_INTERNAL
+#define	_RPMSX_INTERNAL
 #include <rpmsx.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
@@ -71,7 +71,7 @@ static void rpmsxFini(void * _sx)
 
 #if defined(WITH_SELINUX)
     if (sx->fn)
-	(void) matchpathcon_fini();
+	matchpathcon_fini();
 #endif
     sx->flags = 0;
     sx->fn = _free(sx->fn);
@@ -94,7 +94,7 @@ static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
     return (rpmsx) rpmioGetPool(pool, sizeof(*sx));
 }
 
-rpmsx rpmsxNew(const char * fn, int flags)
+rpmsx rpmsxNew(const char * fn, unsigned int flags)
 {
     rpmsx sx = rpmsxGetPool(_rpmsxPool);
 
@@ -102,11 +102,17 @@ rpmsx rpmsxNew(const char * fn, int flags)
     sx->flags = flags;
 
 #if defined(WITH_SELINUX)
-    sx->fn = (fn ? rpmGetPath(fn,NULL) : xstrdup(selinux_file_context_path()));
-    if (sx->fn && *sx->fn && *sx->fn != '%')
-	(void) matchpathcon_init(sx->fn);
-    else
-	sx->fn = _free(sx->fn);
+    if (fn == NULL)
+	fn = selinux_file_context_path();
+    if (sx->flags)
+	set_matchpathcon_flags(sx->flags);
+    {	int rc;
+	sx->fn = rpmGetPath(fn, NULL);
+	rc = matchpathcon_init(sx->fn);
+	/* If matchpathcon_init fails, turn off SELinux functionality. */
+	if (rc < 0)
+	    sx->fn = _free(sx->fn);
+    }
 #endif
     return rpmsxLink(sx);
 }
@@ -127,14 +133,18 @@ static rpmsx rpmsxI(void)
 
 int rpmsxEnabled(/*@null@*/ rpmsx sx)
 {
-    int rc = 0;
-
+    static int rc = 0;
 #if defined(WITH_SELINUX)
-    rc = is_selinux_enabled();
-#endif
+    static int oneshot = 0;
 
+    if (!oneshot) {
+	rc = is_selinux_enabled();
 if (_rpmsx_debug)
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sx, rc);
+	oneshot++;
+    }
+#endif
+
     return rc;
 }
 
@@ -144,19 +154,17 @@ const char * rpmsxMatch(rpmsx sx, const char *fn, mode_t mode)
 
     if (sx == NULL) sx = rpmsxI();
 
-if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s,0%o)\n", __FUNCTION__, sx, fn, mode);
-
 #if defined(WITH_SELINUX)
     if (sx->fn) {
 	static char nocon[] = "";
-	if (matchpathcon(fn, mode, (security_context_t *)&scon) < 0)
+	int rc = matchpathcon(fn, mode, (security_context_t *)&scon);
+	if (rc < 0)
 	    scon = xstrdup(nocon);
     }
 #endif
 
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p,%s,0%o) %s\n", __FUNCTION__, sx, fn, mode, scon);
+if (_rpmsx_debug < 0 || (_rpmsx_debug > 0 && scon != NULL && *scon != '\0' &&strcmp("(null)", scon)))
+fprintf(stderr, "<-- %s(%p,%s,0%o) \"%s\"\n", __FUNCTION__, sx, fn, mode, scon);
     return scon;
 }
 

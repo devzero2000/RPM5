@@ -1,5 +1,5 @@
-#ifndef	H_RPMSEX
-#define	H_RPMSEX
+#ifndef	H_RPMSX
+#define	H_RPMSX
 
 /** \ingroup rpmio
  * \file rpmio/rpmsx.h
@@ -15,19 +15,19 @@ extern int _rpmsx_debug;
 
 extern rpmsx _rpmsxI;
 
-#if defined(_RPMSEX_INTERNAL)
+#if defined(_RPMSX_INTERNAL)
 /** \ingroup rpmio
  */
 struct rpmsx_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
-    int flags;
+    const char * fn;		/*!< File context path (NULL disables). */
+    unsigned int flags;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-#endif	/* _RPMSEX_INTERNAL */
+#endif	/* _RPMSX_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,12 +69,12 @@ rpmsx rpmsxFree(/*@killref@*/ /*@null@*/rpmsx sx)
 
 /**
  * Create and load a SELinux wrapper.
- * @param fn		SELinux file
- * @param flags		SELinux flags
+ * @param fn		SELinux file (NULL uses selinux_file_context_path()).
+ * @param flags		SELinux set_matchpathcon_flags() flags
  * @return		new SELinux wrapper
  */
 /*@newref@*/ /*@null@*/
-rpmsx rpmsxNew(/*@null@*/ const char * fn, int flags)
+rpmsx rpmsxNew(/*@null@*/ const char * fn, unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
@@ -147,4 +147,4 @@ int rpmsxExec(rpmsx sx, int verified, const char ** argv)
 }
 #endif
 
-#endif	/* H_RPMSEX */
+#endif	/* H_RPMSX */
