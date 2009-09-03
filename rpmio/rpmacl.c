@@ -32,42 +32,51 @@ rpmRC rpmaclCopyFd(FD_t ifd, FD_t ofd)
 {
     int ifdno = Fileno(ifd);
     int ofdno = Fileno(ofd);
-    acl_t a;
+    rpmRC rc = RPMRC_OK;	/* assume success */
+    acl_t a = NULL;
     int count;
 
     if (ifdno < 0 || ofdno < 0)
-	return RPMRC_OK;
+	goto exit;
 
 #if defined(_PC_ACL_EXTENDED)
     if (fpathconf(ifdno, _PC_ACL_EXTENDED) != 1
      || fpathconf(ofdno, _PC_ACL_EXTENDED) != 1)
-	return RPMRC_OK;
+	goto exit;
 #endif
 
     a = acl_get_fd(ifdno);
     if (a == NULL)
-	return RPMRC_FAIL;
+	goto exit;
     count = __acl_entries(a);
-    if (count > 0 && count != 3 && acl_set_fd(ofdno, a) < 0)
-	return RPMRC_FAIL;
-    return RPMRC_OK;
+    if (count > 0 && count != 3 && acl_set_fd(ofdno, a) < 0) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+
+exit:
+    if (a)
+	acl_free(a);
+    return rc;
 }
 
 rpmRC rpmaclCopyDir(const char * sdn, const char * tdn, mode_t mode)
 {
     acl_t (*aclgetf)(const char *, acl_type_t);
     int (*aclsetf)(const char *, acl_type_t, acl_t);
-    acl_t a;
+    rpmRC rc = RPMRC_OK;	/* assume success */
+    acl_t a = NULL;
     int count;
 
     if (!(sdn && *sdn && tdn && *tdn))
-	return RPMRC_OK;
+	goto exit;
 
 #if defined(_PC_ACL_EXTENDED)
     if (pathconf(sdn, _PC_ACL_EXTENDED) != 1
      || pathconf(tdn, _PC_ACL_EXTENDED) != 1)
-        return RPMRC_OK;
+	goto exit;
 #endif
+
 #if defined(__FreeBSD__)
     /* If the file is a link we will not follow it */
     if (S_ISLNK(mode)) {
@@ -85,19 +94,39 @@ rpmRC rpmaclCopyDir(const char * sdn, const char * tdn, mode_t mode)
      * size ACL will be returned. So it is not safe to simply
      * check the pointer to see if the default ACL is present.
      */
-    a = aclgetf(sdn, ACL_TYPE_DEFAULT);
+#if defined(__APPLE__)
+    a = aclgetf(sdn, ACL_TYPE_EXTENDED);
     if (a == NULL)
-	return RPMRC_FAIL;
+	goto exit;
 
     count = __acl_entries(a);
-    if (count > 0 && aclsetf(tdn, ACL_TYPE_DEFAULT, a) < 0)
-	return RPMRC_FAIL;
+    if (count > 0 && aclsetf(tdn, ACL_TYPE_DEFAULT, a) < 0) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+#else
+    a = aclgetf(sdn, ACL_TYPE_DEFAULT);
+    if (a == NULL)
+	goto exit;
+
+    count = __acl_entries(a);
+    if (count > 0 && aclsetf(tdn, ACL_TYPE_DEFAULT, a) < 0) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+    acl_free(a);
 
     a = aclgetf(sdn, ACL_TYPE_ACCESS);
     if (a == NULL)
-	return RPMRC_FAIL;
-    if (aclsetf(tdn, ACL_TYPE_ACCESS, a) < 0)
-	return RPMRC_FAIL;
+	goto exit;
+    if (aclsetf(tdn, ACL_TYPE_ACCESS, a) < 0) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+#endif
 
-    return RPMRC_OK;
+exit:
+    if (a)
+	acl_free(a);
+    return rc;
 }
