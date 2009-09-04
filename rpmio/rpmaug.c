@@ -698,7 +698,7 @@ static rpmRC rpmaugCommand(rpmaugP *Pptr, const char * str)
 {
     static char whitespace[] = " \t\n\r";
     rpmaugP P;
-    rpmRC rc;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
     char *b;
     char *be;
     int xx;
