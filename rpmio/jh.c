@@ -66,7 +66,7 @@ const unsigned char JH512_H0[128] __attribute__((aligned(16))) = {
 0x7f,0x22,0x9e,0xc2,0x43,0xb6,0x80,0x14,0x0a,0x33,0xb9,0x09,0x33,0x3c,0x03,0x03
 };
 
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
 /* 36 round constants, each round constant is 32-byte (256-bit) */
 static
 const unsigned char E8_bitslice_roundconstant00[32] __attribute__((aligned(16))) = {
@@ -564,7 +564,7 @@ const unsigned char  E8_bitslice_roundconstant35[32] __attribute__((aligned(16))
     SS(sp->x0,sp->x2,sp->x4,sp->x6,sp->x1,sp->x3,sp->x5,sp->x7,a0,a4); \
  }
 
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
 
 /* The constant for the Round 0 of E8 */
 const unsigned char roundconstant_zero[64] = {
@@ -800,13 +800,13 @@ void E8(jhParam *sp)
 	sp->H[(i + 768)>>3] |= t3 << (7 - (i & 7));
     }
 }
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
 
 /* compression function F8 */
 static
 void F8(jhParam *sp) 
 {
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
     __m128i  a0, a1, a2, a3, a4, a5, a6, a7;
 
     /* load the 512-bit message from the buffer into a0,a1,a2 and a3 */
@@ -820,7 +820,7 @@ void F8(jhParam *sp)
     sp->x1 = XOR(sp->x1, a1);
     sp->x2 = XOR(sp->x2, a2);
     sp->x3 = XOR(sp->x3, a3);
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
     unsigned int i;
 
     /* initialize the round constant */
@@ -830,10 +830,10 @@ void F8(jhParam *sp)
     /* xor the message with the first half of H */
     for (i = 0; i < 64; i++)
 	sp->H[i] ^= sp->buffer[i];
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
 
     /* Bijective function E8 */
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
     /* perform 35.5 rounds */
     round_function(00);
     round_function(01);
@@ -872,11 +872,11 @@ void F8(jhParam *sp)
     round_function(34);
 
     last_half_round(35);    
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
     E8(sp);
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
 
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
     /* load the 512-bit message into a0,a1,a2 and a3 */ 
     LOAD(a0, sp->buffer);
     LOAD(a1, sp->buffer+16);
@@ -888,17 +888,17 @@ void F8(jhParam *sp)
     sp->x5 = XOR(sp->x5, a1);
     sp->x6 = XOR(sp->x6, a2);
     sp->x7 = XOR(sp->x7, a3);
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
     /* xor the message with the last half of H */
     for (i = 0; i < 64; i++)
 	sp->H[i+64] ^= sp->buffer[i];
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
 }
 
 int jhInit(jhParam *sp, int hashbitlen) 
 {
     const unsigned char * H0;
-#if	!OPTIMIZED
+#if	!defined(OPTIMIZE_SSE2)
     unsigned int i;
 #endif
 
@@ -912,7 +912,7 @@ int jhInit(jhParam *sp, int hashbitlen)
 
     sp->hashbitlen = hashbitlen;
 
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
     LOAD(sp->x0, H0);
     LOAD(sp->x1, H0+16);
     LOAD(sp->x2, H0+32);
@@ -921,7 +921,7 @@ int jhInit(jhParam *sp, int hashbitlen)
     LOAD(sp->x5, H0+80);
     LOAD(sp->x6, H0+96);
     LOAD(sp->x7, H0+112);
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
     for (i = 0; i < 64; i++)
 	sp->buffer[i] = 0;
 #ifdef	DYING
@@ -936,7 +936,7 @@ int jhInit(jhParam *sp, int hashbitlen)
 #else
     memcpy(sp->H, H0, sizeof(sp->H));
 #endif
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
 
     return SUCCESS;
 }
@@ -976,11 +976,11 @@ int jhUpdate(jhParam *sp, const byte *data, size_t size)
 /* padding the message, truncate the hash value H and obtain the message digest */
 int jhDigest(jhParam *sp, byte *digest) 
 {
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
     unsigned char t[64] __attribute__((aligned (16)));
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
     unsigned char * t = sp->H;
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
     unsigned int i;
 
     if ((sp->databitlen & 0x1ff) == 0) {
@@ -1016,14 +1016,14 @@ int jhDigest(jhParam *sp, byte *digest)
     }
 
     /* truncating the final hash value to generate the message digest */
-#if	OPTIMIZED
+#if	defined(OPTIMIZE_SSE2)
     STORE(sp->x4, t);
     STORE(sp->x5, t+16);
     STORE(sp->x6, t+32);
     STORE(sp->x7, t+48);
-#else	/* OPTIMIZED */
+#else	/* defined(OPTIMIZE_SSE2) */
     t += 64;
-#endif	/* OPTIMIZED */
+#endif	/* defined(OPTIMIZE_SSE2) */
 
     if (sp->hashbitlen == 224) 
 	memcpy(digest, t + (64-28), 28);

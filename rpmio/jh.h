@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include "beecrypt/beecrypt.h"
 
-#if 0 && defined(__SSE2__) /* OPTIMIZE_SSE2 breaks jh.c compile */
+#if  defined(__SSE2__)
 #define OPTIMIZE_SSE2
 #endif
 
