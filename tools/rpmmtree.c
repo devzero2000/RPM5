@@ -273,9 +273,6 @@ static void mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 
 #define	MISMATCHEXIT	2
 
-#if !defined(S_ISTXT) && defined(S_ISVTX)	/* XXX linux != BSD */
-#define	S_ISTXT		S_ISVTX
-#endif
 #define	MBITS	(S_ISUID|S_ISGID|S_ISTXT|S_IRWXU|S_IRWXG|S_IRWXO)
 
 /*@unchecked@*/

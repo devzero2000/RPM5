@@ -40,7 +40,6 @@
 #include <poptIO.h>
 
 #if defined(__linux__)
-#include <utime.h>
 #define st_atimespec    st_atim
 #define st_mtimespec    st_mtim
 #endif
@@ -53,14 +52,6 @@
                 (tv)->tv_sec = (ts)->tv_sec;                            \
                 (tv)->tv_usec = (ts)->tv_nsec / 1000;                   \
         } while (0)
-#endif
-
-#if !defined(S_ISTXT) && defined(S_ISVTX)       /* XXX linux != BSD */
-#define S_ISTXT         S_ISVTX
-#endif
-
-#if !defined(MAXPHYS)
-#define	MAXPHYS		(128 * 1024)	/* max raw I/O transfer size */
 #endif
 
 /* Memory strategy threshold, in pages: if physmem is larger then this, use a 

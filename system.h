@@ -31,10 +31,18 @@ typedef struct
 #endif
 
 #include <sys/stat.h>
+/* XXX retrofit the *BSD constant if not present. */
+#if !defined(HAVE_S_ISTXT) && defined(HAVE_S_ISVTX)
+#define	S_ISTXT	 S_ISVTX
+#endif
 #include <stdio.h>
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
+#endif
+/* XXX retrofit the *BSD constant if not present. */
+#if !defined(MAXPHYS)
+#define MAXPHYS         (128 * 1024)    /* max raw I/O transfer size */
 #endif
 
 /* <unistd.h> should be included before any preprocessor test
