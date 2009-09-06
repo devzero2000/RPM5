@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: retrofit TIMFOO_TO_TIMEBAR macros for the truly deprived.
+    - jbj: retrofit *BSD st_[acm]timespec names if possible.
     - jbj: use HAVE_STRUCT_STAT_ST_BIRTHTIME, retrofit st_ctime for the deprived.
     - jbj: use the AutoFu.
     - jbj: system: add AutoFu for S_ISTXT <-> S_ISVTX *shrug*.

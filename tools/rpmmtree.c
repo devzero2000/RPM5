@@ -47,10 +47,6 @@ static const char copyright[] =
 #include "asprintf.h"
 #endif
 
-#if defined(__linux__)
-#define	st_mtimespec	st_mtim
-#endif
-
 #if defined(__QNXNTO__)
 #define	st_mtimespec	st_mtime
 #endif

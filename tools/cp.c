@@ -39,20 +39,7 @@
 #include <fts.h>
 #include <poptIO.h>
 
-#if defined(__linux__)
-#define st_atimespec    st_atim
-#define st_mtimespec    st_mtim
-#endif
-
 #include "debug.h"
-
-#if !defined(TIMESPEC_TO_TIMEVAL)
-#define TIMESPEC_TO_TIMEVAL(tv, ts)                                     \
-        do {                                                            \
-                (tv)->tv_sec = (ts)->tv_sec;                            \
-                (tv)->tv_usec = (ts)->tv_nsec / 1000;                   \
-        } while (0)
-#endif
 
 /* Memory strategy threshold, in pages: if physmem is larger then this, use a 
  * large buffer */
@@ -900,7 +887,7 @@ main(int argc, char *argv[])
     (void)signal(SIGINFO, siginfo);
 #endif
 
-    /* Save the target base in "to". */
+    /* Save the target base. */
     {	const char * target = ct->av[--ct->ac];
 	if (strlen(target) > sizeof(ct->npath) - 2) {
 	    rpmlog(RPMLOG_ERR, "%s: name too long\n", target);

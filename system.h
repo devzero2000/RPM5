@@ -38,6 +38,12 @@ typedef struct
 #if !defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
 #define	st_birthtime	st_ctime	/* Use st_ctime if no st_birthtime. */
 #endif
+/* XXX retrofit the *BSD st_[acm]timespec names if not present. */
+#if !defined(HAVE_STRUCT_STAT_ST_ATIMESPEC_TV_NSEC) && defined(HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC)
+#define	st_atimespec	st_atim
+#define	st_ctimespec	st_ctim
+#define	st_mtimespec	st_mtim
+#endif
 
 #include <stdio.h>
 
@@ -79,6 +85,20 @@ extern char ** environ;
 # else
 #  include <time.h>
 # endif
+#endif
+
+/* XXX retrofit the (POSIX? GNU? *BSD?) macros if not present. */
+#if !defined(TIMEVAL_TO_TIMESPEC)
+# define TIMEVAL_TO_TIMESPEC(tv, ts) { \
+        (ts)->tv_sec = (tv)->tv_sec; \
+        (ts)->tv_nsec = (tv)->tv_usec * 1000; \
+}
+#endif
+#if !defined(TIMESPEC_TO_TIMEVAL)
+# define TIMESPEC_TO_TIMEVAL(tv, ts) { \
+        (tv)->tv_sec = (ts)->tv_sec; \
+        (tv)->tv_usec = (ts)->tv_nsec / 1000; \
+}
 #endif
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
