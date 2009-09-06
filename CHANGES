@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: use the new rpmio wrappers.
+    - jbj: rpmio: add Lchmod/Chflags/Lchflags/Fchflags wrappers.
     - jbj: permit HMAC's to be substituted for digests in *.rpm.
     - jbj: reserve a bit to mark file HMAC's.
     - jbj: rpmdigest: add --fips140 to verify Fedorable HMAC's.

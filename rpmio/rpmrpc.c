@@ -1673,6 +1673,32 @@ fprintf(stderr, "*** Chmod(%s,%0o)\n", path, (int)mode);
     return chmod(path, mode);
 }
 
+int Lchmod(const char * path, mode_t mode)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Lchmod(%s,%0o)\n", path, (int)mode);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return lchmod(path, mode);
+}
+
 int Fchmod(FD_t fd, mode_t mode)
 {
     const char * path = fdGetOPath(fd);
@@ -1700,6 +1726,99 @@ fprintf(stderr, "*** Fchmod(%p,%0o) path %s\n", fd, (int)mode, path);
     return fchmod(Fileno(fd), mode);
 }
 
+int Chflags(const char * path, unsigned int flags)
+{
+#if defined(HAVE_CHFLAGS)
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Chflags(%s,0x%x)\n", path, flags);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return chflags(path, flags);
+#else
+    errno = ENOSYS;
+    return -2;
+#endif
+}
+
+int Lchflags(const char * path, unsigned int flags)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+#if defined(HAVE_LCHFLAGS)
+if (_rpmio_debug)
+fprintf(stderr, "*** Lchflags(%s,0x%x)\n", path, flags);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return lchflags(path, flags);
+#else
+    errno = ENOSYS;
+    return -2;
+#endif
+}
+
+int Fchflags(FD_t fd, unsigned int flags)
+{
+#if defined(HAVE_FCHFLAGS)
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Fchflags(%p,0x%x) path %s\n", fd, flags, path);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+    return fchflags(Fileno(fd), flags);
+#else
+    errno = ENOSYS;
+    return -2;
+#endif
+}
 int Mkfifo(const char * path, mode_t mode)
 {
     const char * lpath;

@@ -343,10 +343,42 @@ int Chmod(const char * path, mode_t mode)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
+ * lchmod(2) clone.
+ * @todo Implement remotely.
+ */
+int Lchmod(const char * path, mode_t mode)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
  * fchmod(2) clone.
  * @todo Implement remotely.
  */
 int Fchmod(FD_t fd, mode_t mode)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * chflags(2) clone.
+ * @todo Implement remotely.
+ */
+int Chflags(const char * path, unsigned int flags)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * lchflags(2) clone.
+ * @todo Implement remotely.
+ */
+int Lchflags(const char * path, unsigned int flags)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * fchflags(2) clone.
+ * @todo Implement remotely.
+ */
+int Fchflags(FD_t fd, unsigned int flags)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 

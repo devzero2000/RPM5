@@ -50,7 +50,12 @@ int (*_Chown) (const char * path, uid_t owner, gid_t group) = Chown;
 int (*_Fchown) (void * fd, uid_t owner, gid_t group)
 	= (int (*) (void *, uid_t, gid_t)) Fchown;
 int (*_Lchown) (const char * path, uid_t owner, gid_t group) = Lchown;
+int (*_Chflags) (const char * path, unsigned int flags) = Chflags;
+int (*_Lchflags) (const char * path, unsigned int flags) = Lchflags;
+int (*_Fchflags) (void * fd, unsigned int flags)
+	= (int (*) (void *, unsigned int))Fchflags;
 int (*_Chmod) (const char * path, mode_t mode) = Chmod;
+int (*_Lchmod) (const char * path, mode_t mode) = Lchmod;
 int (*_Fchmod) (void * fd, mode_t mode)
 	= (int (*) (void *, mode_t))Fchmod;
 int (*_Mkfifo) (const char * path, mode_t mode) = Mkfifo;

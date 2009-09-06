@@ -40,6 +40,8 @@ LIBRPMIO_0
     bzdio;
     Chdir;
     _Chdir;
+    Chflags;
+    _Chflags;
     Chmod;
     _Chmod;
     Chown;
@@ -76,6 +78,8 @@ LIBRPMIO_0
     expandMacros;
     _fsmNext;
     Fallocate;
+    Fchflags;
+    _Fchflags;
     Fchmod;
     _Fchmod;
     Fchown;
@@ -159,6 +163,10 @@ LIBRPMIO_0
     iosmStrerror;
     iosmTeardown;
     isCompressed;
+    Lchflags;
+    _Lchflags;
+    Lchmod;
+    _Lchmod;
     Lchown;
     _Lchown;
     Link;

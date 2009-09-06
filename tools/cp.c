@@ -43,8 +43,6 @@
 #include <utime.h>
 #define st_atimespec    st_atim
 #define st_mtimespec    st_mtim
-/* XXX FIXME */
-#define	lchmod(_fn, _mode)	Chmod((_fn), (_mode))
 #endif
 
 #include "debug.h"
@@ -268,7 +266,7 @@ rpmctSetFile(rpmct ct, FD_t fd)
 
     if (!gotstat || st->st_mode != ts.st_mode)
 	if (fdval ? Fchmod(fd, st->st_mode) :
-	   (islink ? lchmod(ct->npath, st->st_mode) :
+	   (islink ? Lchmod(ct->npath, st->st_mode) :
 	   Chmod(ct->npath, st->st_mode)))
 	{
 	    rpmlog(RPMLOG_ERR, "Chmod: %s: %s\n", ct->npath, strerror(errno));
@@ -277,11 +275,11 @@ rpmctSetFile(rpmct ct, FD_t fd)
 
 #if defined(HAVE_STRUCT_STAT_ST_FLAGS)
     if (!gotstat || st->st_flags != ts.st_flags)
-	if (fdval ?  fchflags(fdno, st->st_flags) :
-	   (islink ? lchflags(ct->npath, st->st_flags) :
-	   chflags(ct->npath, st->st_flags)))
+	if (fdval ?  Fchflags(fd, st->st_flags) :
+	   (islink ? Lchflags(ct->npath, st->st_flags) :
+	   Chflags(ct->npath, st->st_flags)))
 	{
-	    rpmlog(RPMLOG_ERR, "chflags: %s: %s\n", ct->npath, strerror(errno));
+	    rpmlog(RPMLOG_ERR, "Chflags: %s: %s\n", ct->npath, strerror(errno));
 	    rval = RPMRC_FAIL;
 	}
 #endif
