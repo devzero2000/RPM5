@@ -1163,6 +1163,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     void * ptr;
     int xx;
 
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p,0x%x,0x%x) tsFlags 0x%x\n", msg, ts, (unsigned) okProbs, (unsigned) ignoreSet, rpmtsFlags(ts));
+
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0) {
 	rpmlog(RPMLOG_ERR,
