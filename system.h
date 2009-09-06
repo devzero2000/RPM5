@@ -35,6 +35,10 @@ typedef struct
 #if !defined(HAVE_S_ISTXT) && defined(HAVE_S_ISVTX)
 #define	S_ISTXT	 S_ISVTX
 #endif
+#if !defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
+#define	st_birthtime	st_ctime	/* Use st_ctime if no st_birthtime. */
+#endif
+
 #include <stdio.h>
 
 #ifdef HAVE_SYS_PARAM_H

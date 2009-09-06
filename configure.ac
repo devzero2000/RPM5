@@ -707,6 +707,20 @@ if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
 fi
 
+dnl Handle uglix dialectical differences with S_ISTXT and S_ISVTX
+AC_MSG_CHECKING(if <sys/stat.h> defines S_ISTXT)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISTXT)]])],[HAS_S_ISTXT=yes],[HAS_S_ISTXT=no])
+AC_MSG_RESULT($HAS_S_ISTXT)
+if test $HAS_S_ISTXT = yes; then
+	AC_DEFINE(HAVE_S_ISTXT, 1, [Define as 1 if <sys/stat.h> defines S_ISTXT])
+fi
+AC_MSG_CHECKING(if <sys/stat.h> defines S_ISVTX)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISVTX)]])],[HAS_S_ISVTX=yes],[HAS_S_ISVTX=no])
+AC_MSG_RESULT($HAS_S_ISVTX)
+if test $HAS_S_ISVTX = yes; then
+	AC_DEFINE(HAVE_S_ISVTX, 1, [Define as 1 if <sys/stat.h> defines S_ISVTX])
+fi
+
 # Find the best function to set timestamps.
 AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 

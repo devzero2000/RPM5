@@ -61,14 +61,6 @@ char copyright[] =
 
 #define	__unused	__attribute__((__unused__))
 
-#if !defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
-#define	st_birthtime	st_ctime	/* Use st_ctime if no st_birthtime. */
-#endif
-
-#if !defined(S_ISTXT)
-#define	S_ISTXT	S_ISVTX
-#endif
-
 time_t now;			/* time find was run */
 int dotfd;			/* starting directory */
 int ftsoptions;			/* options for the ftsopen(3) call */
