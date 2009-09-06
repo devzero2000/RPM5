@@ -43,6 +43,7 @@ struct rpmQVKArguments_s rpmIArgs = {
  * @todo (CLI embedding) Use rpmlog/rpmlog instead of fprintf, remove exit.
  * @param desc		message	
  */
+static void argerror(const char * desc) __attribute__((__noreturn__));
 /*@exits@*/
 static void argerror(const char * desc)
 	/*@globals stderr, fileSystem @*/
