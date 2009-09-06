@@ -2310,7 +2310,7 @@ int rpmtsOrder(rpmts ts)
     int numOrderList;
     int npeer = 128;	/* XXX more than deep enough for now. */
     int * peer = memset(alloca(npeer*sizeof(*peer)), 0, (npeer*sizeof(*peer)));
-    int nrescans = 10;
+    int nrescans = 100;
     int _printed = 0;
     char deptypechar;
     size_t tsbytes;
@@ -2320,6 +2320,9 @@ int rpmtsOrder(rpmts ts)
     int breadth;
     int qlen;
     int i, j;
+
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 
 #ifdef	DYING
     rpmalMakeIndex(ts->addedPackages);
@@ -2805,6 +2808,9 @@ int rpmtsCheck(rpmts ts)
     int terminate = 2;		/* XXX terminate if rc >= terminate */
     int rc = 0;
     int ourrc = 0;
+
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
