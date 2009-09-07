@@ -960,14 +960,6 @@ AC_ARG_WITH(libelf, AS_HELP_STRING([--with-libelf], [use libelf/gelf API]), [
 ])
 AC_SUBST(WITH_LIBELF_DEBUGEDIT)
 
-dnl # optional SELinux support
-AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]), [
-    if test ".$withval" = .yes; then
-        AC_DEFINE(WITH_SELINUX, 1, [Build with SELinux support?])
-        LIBS="$LIBS -lselinux"
-    fi
-])
-
 dnl # optional Perl language bindings
 WITH_PERL_SUBDIR=""
 WITH_PERL_SUBPACKAGE=0
@@ -1216,6 +1208,22 @@ AC_ARG_WITH([usecrypto],
     esac
 ])
 
+dnl # Libselinux
+RPM_CHECK_LIB(
+    [Libselinux], [selinux],
+    [selinux], [is_selinux_enabled], [selinux/selinux.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_SELINUX, 1, [Define if building with Libselinux])
+    ], [])
+
+dnl # Libsemanage
+RPM_CHECK_LIB(
+    [Libsemanage], [semanage],
+    [semanage], [semanage_handle_create], [semanage/semanage.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_SEMANAGE, 1, [Define if building with Libsemnage])
+    ], [])
+
 dnl # Expat
 dnl RPM_CHECK_LIB(
 dnl     [Expat], [expat],
@@ -1225,12 +1233,12 @@ dnl     [ AC_DEFINE(WITH_EXPAT, 1, [Define if building with Expat])
 dnl     ], [])
 
 dnl # Libtasn1
-RPM_CHECK_LIB(
-    [Libtasn1], [libtasn1],
-    [tasn1], [asn1_array2tree], [libtasn1.h],
-    [no,external:none], [],
-    [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
-    ], [])
+dnl RPM_CHECK_LIB(
+dnl     [Libtasn1], [libtasn1],
+dnl     [tasn1], [asn1_array2tree], [libtasn1.h],
+dnl     [no,external:none], [],
+dnl     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
+dnl     ], [])
 
 dnl # Pakchois
 dnl RPM_CHECK_LIB(
