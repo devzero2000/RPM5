@@ -74,8 +74,8 @@ noinst_HEADERS = \
 	rpmficl.h rpmgc.h \
 	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
 	rpmku.h rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h \
-	rpmruby.h rpmsq.h rpmsquirrel.h rpmssl.h rpmsx.h rpmsyck.h rpmtcl.h \
-	rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	rpmruby.h rpmsm.h rpmsq.h rpmsquirrel.h rpmssl.h rpmsx.h rpmsyck.h \
+	rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
@@ -91,7 +91,7 @@ librpmio_la_SOURCES = \
 	rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
 	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c \
-	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsq.c \
+	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsq.c \
 	rpmsquirrel.c rpmssl.c rpmsyck.c rpmsw.c rpmsx.c rpmtcl.c \
 	rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c

@@ -3201,6 +3201,7 @@ void rpmioClean(void)
     extern rpmioPool _htmlPool;
     extern rpmioPool _htPool;
     extern rpmioPool _ctxPool;
+    extern rpmioPool _rpmsmPool;
     extern rpmioPool _rpmsxPool;
     extern rpmioPool _rpmsyckPool;
 /*@=shadow@*/
@@ -3250,6 +3251,7 @@ void rpmioClean(void)
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);
 
+    _rpmsmPool = rpmioFreePool(_rpmsmPool);
     _rpmsxI = rpmsxFree(_rpmsxI);
     _rpmsxPool = rpmioFreePool(_rpmsxPool);
 

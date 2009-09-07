@@ -37,6 +37,7 @@
 #include <rpmtcl.h>
 
 #include <rpmsx.h>
+#include <rpmsm.h>
 
 #include "debug.h"
 
@@ -615,8 +616,10 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmsq Signal Queue"), NULL},
  { "rpmsquirreldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsquirrel_debug, -1,
 	N_("Debug embedded SQUIRREL interpreter"), NULL},
+ { "rpmsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsm_debug, 1,
+	N_("Debug semanage"), NULL},
  { "rpmsxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsx_debug, 1,
-	N_("Debug SELinux"), NULL},
+	N_("Debug selinux"), NULL},
  { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,
 	N_("Debug embedded TCL interpreter"), NULL},
 #ifdef WITH_BZIP2
