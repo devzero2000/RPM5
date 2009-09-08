@@ -36,8 +36,9 @@
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
-#include <rpmsx.h>
 #include <rpmsm.h>
+#include <rpmsp.h>
+#include <rpmsx.h>
 
 #include "debug.h"
 
@@ -618,6 +619,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug embedded SQUIRREL interpreter"), NULL},
  { "rpmsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsm_debug, 1,
 	N_("Debug semanage"), NULL},
+ { "rpmspdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsp_debug, 1,
+	N_("Debug sepol"), NULL},
  { "rpmsxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsx_debug, 1,
 	N_("Debug selinux"), NULL},
  { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,

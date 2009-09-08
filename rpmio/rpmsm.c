@@ -4,9 +4,6 @@
 
 #include "system.h"
 
-#if defined(WITH_SELINUX)
-#include <selinux/selinux.h>
-#endif
 #if defined(WITH_SEMANAGE)
 #include <semanage/semanage.h>
 #endif
@@ -21,6 +18,9 @@
 
 /*@unchecked@*/
 int _rpmsm_debug = 0;
+
+/*@unchecked@*/ /*@relnull@*/
+rpmsm _rpmsmI = NULL;
 
 static void rpmsmFini(void * _sm)
 	/*@globals fileSystem @*/

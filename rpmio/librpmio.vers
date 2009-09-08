@@ -467,7 +467,11 @@ LIBRPMIO_0
     rpmrubyRun;
     rpmrubyRunFile;
     _rpmsm_debug;
+    _rpmsmI;
     rpmsmNew;
+    _rpmsp_debug;
+    _rpmspI;
+    rpmspNew;
     _rpmsq_debug;
     rpmsqAction;
     rpmsqCaught;
