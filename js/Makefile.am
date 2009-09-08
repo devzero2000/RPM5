@@ -69,8 +69,8 @@ noinst_HEADERS = \
 	rpmaug-js.h rpmbc-js.h rpmbf-js.h rpmdc-js.h rpmdig-js.h rpmdir-js.h \
 	rpmds-js.h rpmfc-js.h rpmfi-js.h rpmfts-js.h rpmgi-js.h rpmhdr-js.h \
 	rpmio-js.h rpmiob-js.h rpmmc-js.h rpmmg-js.h rpmmi-js.h rpmmpw-js.h \
-	rpmps-js.h rpmst-js.h rpmsw-js.h rpmsx-js.h rpmsys-js.h rpmte-js.h \
-	rpmts-js.h rpmxar-js.h \
+	rpmps-js.h rpmsm-js.h rpmsp-js.h rpmst-js.h rpmsw-js.h rpmsx-js.h \
+	rpmsys-js.h rpmte-js.h rpmts-js.h rpmxar-js.h \
 	syck-js.h uuid-js.h
 
 rpmjsm_la_SOURCES = \
@@ -78,8 +78,8 @@ rpmjsm_la_SOURCES = \
 	rpmaug-js.c rpmbc-js.c rpmbf-js.c rpmdc-js.c rpmdig-js.c rpmdir-js.c \
 	rpmds-js.c rpmfc-js.c rpmfi-js.c rpmfts-js.c rpmgi-js.c rpmhdr-js.c \
 	rpmio-js.c rpmiob-js.c rpmmc-js.c rpmmg-js.c rpmmi-js.c rpmmpw-js.c \
-	rpmps-js.c rpmst-js.c rpmsw-js.c rpmsx-js.c rpmsys-js.c rpmte-js.c \
-	rpmts-js.c rpmxar-js.c \
+	rpmps-js.c rpmsm-js.c rpmsp-js.c rpmst-js.c rpmsw-js.c rpmsx-js.c \
+	rpmsys-js.c rpmte-js.c rpmts-js.c rpmxar-js.c \
 	syck-js.c uuid-js.c
 
 librpmjsm_la_SOURCES = $(rpmjsm_la_SOURCES)

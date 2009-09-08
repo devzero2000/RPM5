@@ -27,6 +27,8 @@
 #include "rpmmi-js.h"
 #include "rpmmpw-js.h"
 #include "rpmps-js.h"
+#include "rpmsm-js.h"
+#include "rpmsp-js.h"
 #include "rpmst-js.h"
 #include "rpmsw-js.h"
 #include "rpmsx-js.h"
@@ -82,11 +84,13 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Mc",		rpmjs_InitMcClass,	 -24 },
     { "Mg",		rpmjs_InitMgClass,	 -31 },
     { "Mi",		rpmjs_InitMiClass,	 -11 },
-    { "Mpw",		rpmjs_InitMpwClass,	 41 },	/* todo++ */
+    { "Mpw",		rpmjs_InitMpwClass,	 -41 },	/* todo++ */
     { "Ps",		rpmjs_InitPsClass,	 -16 },
+    { "Sm",		rpmjs_InitSmClass,	 42 },	/* todo++ */
+    { "Sp",		rpmjs_InitSpClass,	 43 },	/* todo++ */
     { "St",		rpmjs_InitStClass,	 -27 },
     { "Sw",		rpmjs_InitSwClass,	 -38 },	/* todo++ */
-    { "Sx",		rpmjs_InitSxClass,	 -39 },
+    { "Sx",		rpmjs_InitSxClass,	 39 },
 #ifdef WITH_SYCK
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
