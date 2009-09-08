@@ -10,7 +10,6 @@
 
 #define	_RPMSM_INTERNAL
 #include <rpmsm.h>
-#include <rpmsx.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
 
@@ -69,6 +68,7 @@ rpmsm rpmsmNew(const char * fn, unsigned int flags)
     if (I == NULL) {
 if (_rpmsm_debug)
 fprintf(stderr, "--> %s(%s,0x%x): semanage_handle_create() failed\n", __FUNCTION__, fn, flags);
+	(void)rpmsmFree(sm);
 	return NULL;
     }
 

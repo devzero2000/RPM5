@@ -1216,12 +1216,20 @@ RPM_CHECK_LIB(
     [ AC_DEFINE(WITH_SELINUX, 1, [Define if building with Libselinux])
     ], [])
 
+dnl # Libsepol
+RPM_CHECK_LIB(
+    [Libsepol], [sepol],
+    [sepol], [sepol], [sepol/sepol.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_SEPOL, 1, [Define if building with Libsepol])
+    ], [])
+
 dnl # Libsemanage
 RPM_CHECK_LIB(
     [Libsemanage], [semanage],
     [semanage], [semanage_handle_create], [semanage/semanage.h],
     [no,external:none], [],
-    [ AC_DEFINE(WITH_SEMANAGE, 1, [Define if building with Libsemnage])
+    [ AC_DEFINE(WITH_SEMANAGE, 1, [Define if building with Libsemanage])
     ], [])
 
 dnl # Expat

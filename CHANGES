@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsp: open and load a policydb from a file.
     - jbj: js: stub-in Sm/Sp classes for rpmsm/rpmsp objects.
     - jbj: stub-in a wrapper for -lsepol methods.
     - jbj: use RPM_CHECK_LIB() to detect -lsepol.
