@@ -13,12 +13,18 @@ typedef /*@refcounted@*/ struct rpmsm_s * rpmsm;
 /*@unchecked@*/
 extern int _rpmsm_debug;
 
+/*@unchecked@*/ /*@relnull@*/
+extern rpmsm _rpmsmI;
+
 #if defined(_RPMSM_INTERNAL)
 /** \ingroup rpmio
  */
 struct rpmsm_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    const char * fn;
     unsigned int flags;
+    void * I;			/*!< semanage handle */
+    unsigned int access;	/*!< access 1: readable 2: writable */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

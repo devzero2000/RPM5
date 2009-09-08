@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsm: add creator/destructor methods to populate the wrapper.
     - jbj: stub-in a wrapper for -lsemanage methods.
     - jbj: use RPM_CHECK_LIB() to detect -lsemanage.
     - jbj: use RPM_CHECK_LIB() to detect -lselinux.
