@@ -86,8 +86,8 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Mi",		rpmjs_InitMiClass,	 -11 },
     { "Mpw",		rpmjs_InitMpwClass,	 -41 },	/* todo++ */
     { "Ps",		rpmjs_InitPsClass,	 -16 },
-    { "Sm",		rpmjs_InitSmClass,	 42 },	/* todo++ */
-    { "Sp",		rpmjs_InitSpClass,	 43 },	/* todo++ */
+    { "Sm",		rpmjs_InitSmClass,	 43 },	/* todo++ */
+    { "Sp",		rpmjs_InitSpClass,	 42 },	/* todo++ */
     { "St",		rpmjs_InitStClass,	 -27 },
     { "Sw",		rpmjs_InitSwClass,	 -38 },	/* todo++ */
     { "Sx",		rpmjs_InitSxClass,	 39 },

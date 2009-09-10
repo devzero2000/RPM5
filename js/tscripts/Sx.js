@@ -55,8 +55,7 @@ ack("sx.enforce = sx.enforce;", sx.enforce);
 
 var fn_bash = '/bin/bash';
 var fn_sh = '/bin/sh';
-var fcon = 'unconfined_u:object_r:bin_t:s0';
-ack("sx(fn_bash);", fcon);
-ack("sx(fn_sh);", fcon);
+ack("sx(fn_bash);", 'system_u:object_r:shell_exec_t:s0');
+ack("sx(fn_sh);", 'system_u:object_r:bin_t:s0');
 
 if (loglvl) print("<-- Sx.js");

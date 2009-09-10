@@ -16,15 +16,33 @@ extern int _rpmsm_debug;
 /*@unchecked@*/ /*@relnull@*/
 extern rpmsm _rpmsmI;
 
+/**
+ * Bit field enum for semamange/semodule flags.
+ */
+enum rpmsmFlags_e {
+    RPMSM_FLAGS_NONE	= 0,
+    RPMSM_FLAGS_BASE	= (1 <<  1),	/* -b,--base ... */
+    RPMSM_FLAGS_INSTALL	= (1 <<  2),	/* -i,--install ... */
+    RPMSM_FLAGS_LIST	= (1 <<  3),	/* -l,--list-modules ... */
+    RPMSM_FLAGS_REMOVE	= (1 <<  4),	/* -r,--remove ... */
+    RPMSM_FLAGS_UPGRADE	= (1 <<  5),	/* -u,--upgrade ... */
+    RPMSM_FLAGS_RELOAD	= (1 <<  6),	/* -R,--reload ... */
+    RPMSM_FLAGS_BUILD	= (1 <<  7),	/* -B,--build ... */
+    RPMSM_FLAGS_NOAUDIT	= (1 <<  8),	/* -D,--disable_dontaudit ... */
+    RPMSM_FLAGS_COMMIT	= (1 <<  9),
+    RPMSM_FLAGS_CREATE	= (1 << 10),
+};
+
 #if defined(_RPMSM_INTERNAL)
 /** \ingroup rpmio
  */
 struct rpmsm_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
+    const char * fn;		/*!< policy store (i.e. "targeted") */
     unsigned int flags;
-    void * I;			/*!< semanage handle */
     unsigned int access;	/*!< access 1: readable 2: writable */
+    const char ** av;
+    void * I;			/*!< semanage_handle_t */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
@@ -72,7 +90,7 @@ rpmsm rpmsmFree(/*@killref@*/ /*@null@*/rpmsm sm)
 
 /**
  * Create and load a semanage wrapper.
- * @param fn		semanage file (unused).
+ * @param fn		semanage policy store (i.e. "targeted")
  * @param flags		semanage flags
  * @return		new semanage wrapper
  */
@@ -80,6 +98,20 @@ rpmsm rpmsmFree(/*@killref@*/ /*@null@*/rpmsm sm)
 rpmsm rpmsmNew(/*@null@*/ const char * fn, unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+
+/**
+ * Run semanage commands.
+ *
+ * Commands are keyword strings with appended optional argument.
+ *
+ * @param sm		semanage wrapper
+ * @param av		semanage commands
+ * @return		0 on success
+ */
+int rpmsmRun(rpmsm sm, const char ** av)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies sm, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

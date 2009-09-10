@@ -1225,12 +1225,15 @@ RPM_CHECK_LIB(
     ], [])
 
 dnl # Libsemanage
+WITH_SEMANAGE_SEMODULE=""
 RPM_CHECK_LIB(
     [Libsemanage], [semanage],
     [semanage], [semanage_handle_create], [semanage/semanage.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_SEMANAGE, 1, [Define if building with Libsemanage])
+      WITH_SEMANAGE_SEMODULE="semodule"
     ], [])
+AC_SUBST(WITH_SEMANAGE_SEMODULE)
 
 dnl # Expat
 dnl RPM_CHECK_LIB(
@@ -1349,12 +1352,14 @@ AC_ARG_WITH([dbapi],
 AC_SUBST(DBAPI)
 
 dnl # Augeas
+WITH_AUGEAS_AUGTOOL=""
 RPM_CHECK_LIB(
     [Augeas], [augeas],
     [augeas], [aug_init], [augeas.h],
     [no,external:none], [],
-    [
+    [ WITH_AUGEAS_AUGTOOL="augtool"
     ], [])
+AC_SUBST(WITH_AUGEAS_AUGTOOL)
 
 dnl # Perl ExtUtils::Embed
 RPM_CHECK_LIB(
@@ -1579,7 +1584,8 @@ RPM_CHECK_LIB(
     [Linux keyutils], [keyutils],
     [keyutils], [keyctl_read], [keyutils.h],
     [no,external:none], [],
-    [WITH_KEYUTILS_RPMKEY="rpmkey"], [])
+    [ WITH_KEYUTILS_RPMKEY="rpmkey"
+    ], [])
 AC_SUBST(WITH_KEYUTILS_RPMKEY)
 
 # later..

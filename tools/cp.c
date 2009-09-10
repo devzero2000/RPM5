@@ -89,12 +89,12 @@ enum rpmctType_e { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
  * current target file.  Since Fts(3) does not change directories,
  * this path can be either absolute or dot-relative.
  *
- * The basic algorithm is to initialize "to" and use Fts(3) to traverse
+ * The basic algorithm is to initialize rpmct target and use Fts(3) to traverse
  * the file hierarchy rooted in the argument list.  A trivial case is the
  * case of 'cp file1 file2'.  The more interesting case is the case of
  * 'cp file1 file2 ... fileN dir' where the hierarchy is traversed and the
  * path (relative to the root of the traversal) is appended to dir (stored
- * in "to") to form the final target path.
+ * in rpmct) to form the final target path.
  */
 struct rpmct_s {
     enum rpmctFlags_e flags;

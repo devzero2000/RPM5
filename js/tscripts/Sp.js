@@ -10,9 +10,9 @@ const SYM_LEVELS  = 6;
 const SYM_CATS    = 7;
 const SYM_NUM     = 8;
 
-var fn = "tscripts/policies/test-downgrade/policy.hi";
+var dn = "targeted";
 
-var sp = new Sp(fn);
+var sp = new Sp(dn);
 ack("typeof sp;", "object");
 ack("sp instanceof Sp;", true);
 ack("sp.debug = 1;", 1);

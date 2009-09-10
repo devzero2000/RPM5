@@ -102,9 +102,7 @@ static JSPropertySpec rpmsx_props[] = {
     {"keycreate",_KEYCREATE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"sockcreate",_SOCKCREATE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"enforce",	_ENFORCE,	JSPROP_ENUMERATE,	NULL,	NULL},
-#ifdef	NOTYET
     {"deny",	_DENY,		JSPROP_ENUMERATE,	NULL,	NULL},
-#endif
     {"policyvers",_POLICYVERS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"enabled",	_ENABLED,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"mlsenabled",_MLSENABLED,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -121,9 +119,7 @@ static JSPropertySpec rpmsx_props[] = {
     {"fcon",	_FCON,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"fconhome",_FCONHOME,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"fconlocal",_FCONLOCAL,	JSPROP_ENUMERATE,	NULL,	NULL},
-#ifdef	NOTYET
     {"fconsubs",_FCONSUBS,	JSPROP_ENUMERATE,	NULL,	NULL},
-#endif
     {"homedir",	_HOMEDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"media",	_MEDIA,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"virtdomain",_VIRTDOMAIN,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -170,9 +166,7 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _KEYCREATE:	*vp = _GET_CON(!getkeycreatecon(&con));		break;
     case _SOCKCREATE:	*vp = _GET_CON(!getsockcreatecon(&con));	break;
     case _ENFORCE:	*vp = INT_TO_JSVAL(security_getenforce());	break;
-#ifdef	NOTYET
     case _DENY:		*vp = INT_TO_JSVAL(security_deny_unknown());	break;
-#endif
     case _POLICYVERS:	*vp = INT_TO_JSVAL(security_policyvers());	break;
     case _ENABLED:	*vp = INT_TO_JSVAL(is_selinux_enabled());	break;
     case _MLSENABLED:	*vp = INT_TO_JSVAL(is_selinux_mls_enabled());	break;
@@ -188,9 +182,7 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _FCON:		*vp = _GET_STR(selinux_file_context_path());	break;
     case _FCONHOME:	*vp = _GET_STR(selinux_file_context_homedir_path());break;
     case _FCONLOCAL:	*vp = _GET_STR(selinux_file_context_local_path());break;
-#ifdef	NOTYET
     case _FCONSUBS:	*vp = _GET_STR(selinux_file_context_subs_path());break;
-#endif
     case _HOMEDIR:	*vp = _GET_STR(selinux_homedir_context_path());	break;
     case _MEDIA:	*vp = _GET_STR(selinux_media_context_path());	break;
     case _VIRTDOMAIN:	*vp = _GET_STR(selinux_virtual_domain_context_path());break;

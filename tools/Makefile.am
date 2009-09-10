@@ -22,7 +22,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = augtool debugedit rpmkey
+EXTRA_PROGRAMS = augtool debugedit rpmkey semodule
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -48,7 +48,7 @@ bin_PROGRAMS =		rpm2cpio
 
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
-	cp find grep mtree wget \
+	@WITH_AUGEAS_AUGTOOL@ cp find grep mtree @WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
@@ -89,6 +89,9 @@ rpmrepo_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmspecdump_SOURCES =	rpmspecdump.c
 rpmspecdump_LDADD =	$(RPMBUILD_LDADD_COMMON)
+
+semodule_SOURCES =	semodule.c
+semodule_LDADD =	$(RPM_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)
