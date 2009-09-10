@@ -159,7 +159,7 @@ int rpmaugDefvar(rpmaug aug, const char * name, const char * expr)
     rc = aug_defvar(aug->I, name, expr);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, name, expr, rc);
+fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, name, expr, rc);
     return rc;
 }
 
@@ -172,7 +172,7 @@ int rpmaugDefnode(rpmaug aug, const char * name, const char * expr,
     rc = aug_defnode(aug->I, name, expr, value, created);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\",\"%s\",\"%s\",%p) rc %d *created %d\n", __FUNCTION__, aug, name, expr, value, created, rc, (created ? *created : 0));
+fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\",\"%s\",%p) rc %d *created %d\n", __FUNCTION__, aug, name, expr, value, created, rc, (created ? *created : 0));
     return rc;
 }
 
@@ -184,7 +184,7 @@ int rpmaugGet(rpmaug aug, const char * path, const char ** value)
     rc = aug_get(aug->I, path, value);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\",%p) rc %d *value \"%s\"\n", __FUNCTION__, aug, path, value, rc, (value ? *value : NULL));
+fprintf(stderr, "<-- %s(%p,\"%s\",%p) rc %d *value \"%s\"\n", __FUNCTION__, aug, path, value, rc, (value ? *value : NULL));
     return rc;
 }
 
@@ -196,7 +196,7 @@ int rpmaugSet(rpmaug aug, const char * path, const char * value)
     rc = aug_set(aug->I, path, value);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, path, value, rc);
+fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, path, value, rc);
     return rc;
 }
 
@@ -207,6 +207,8 @@ int rpmaugInsert(rpmaug aug, const char * path, const char * label, int before)
     if (aug == NULL) aug = rpmaugI();
     rc = aug_insert(aug->I, path, label, before);
 #endif
+if (_rpmaug_debug < 0)
+fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\",%d) rc %d\n", __FUNCTION__, aug, path, label, before, rc);
     return rc;
 }
 
@@ -218,7 +220,7 @@ int rpmaugRm(rpmaug aug, const char * path)
     rc = aug_rm(aug->I, path);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\") rc %d\n", __FUNCTION__, aug, path, rc);
+fprintf(stderr, "<-- %s(%p,\"%s\") rc %d\n", __FUNCTION__, aug, path, rc);
     return rc;
 }
 
@@ -230,7 +232,7 @@ int rpmaugMv(rpmaug aug, const char * src, const char * dst)
     rc = aug_mv(aug->I, src, dst);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, src, dst, rc);
+fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, src, dst, rc);
     return rc;
 }
 
@@ -242,7 +244,7 @@ int rpmaugMatch(rpmaug aug, const char * path, char *** matches)
     rc = aug_match(aug->I, path, matches);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p,\"%s\",%p) rc %d *matches %p\n", __FUNCTION__, aug, path, matches, rc, (matches ? *matches : NULL));
+fprintf(stderr, "<-- %s(%p,\"%s\",%p) rc %d *matches %p\n", __FUNCTION__, aug, path, matches, rc, (matches ? *matches : NULL));
     return rc;
 }
 
@@ -254,7 +256,7 @@ int rpmaugSave(rpmaug aug)
     rc = aug_save(aug->I);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p) rc %d\n", __FUNCTION__, aug, rc);
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, aug, rc);
     return rc;
 }
 
@@ -266,7 +268,7 @@ int rpmaugLoad(rpmaug aug)
     rc = aug_load(aug->I);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p) rc %d\n", __FUNCTION__, aug, rc);
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, aug, rc);
     return rc;
 }
 
@@ -280,7 +282,7 @@ int rpmaugPrint(rpmaug aug, FILE *out, const char * path)
     (void) fflush(out);
 #endif
 if (_rpmaug_debug < 0)
-fprintf(stderr, "--> %s(%p, %p, \"%s\") rc %d\n", __FUNCTION__, aug, out, path, rc);
+fprintf(stderr, "<-- %s(%p, %p, \"%s\") rc %d\n", __FUNCTION__, aug, out, path, rc);
     return rc;
 }
 
@@ -375,7 +377,7 @@ static int child_count(const char *path)
 
 static int cmd_quit(int ac, char *av[])
 {
-    exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);		/* XXX FIXME: quit is useless for embedded */
 }
 
 static int cmd_ls(int ac, char *av[])
@@ -579,7 +581,7 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
     rpmaugC c;
 
     rpmaugFprintf(NULL, "Commands:\n\n");
-    for (c=(rpmaugC)_rpmaugCommands; c->name != NULL; c++) {
+    for (c = (rpmaugC)_rpmaugCommands; c->name != NULL; c++) {
         rpmaugFprintf(NULL, "    %s\n        %s\n\n", c->synopsis, c->help);
     }
     rpmaugFprintf(NULL, "\nEnvironment:\n\n");
