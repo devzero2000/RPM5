@@ -13,6 +13,7 @@
 #include <rpmlog.h>
 #include <rpmmacro.h>
 #include <argv.h>
+#include <mire.h>
 
 #include "debug.h"
 
@@ -205,19 +206,32 @@ if (_rpmsm_debug)
 fprintf(stderr, "<-- %s: semanage_module_list(%p): %s\n", __FUNCTION__, I, strerror(errno));
     } else {
 	rpmiob iob = rpmiobNew(0);
+	const char * NV = NULL;
+	miRE include = NULL;
+	int ninclude = 0;
 	int j;
+
+	if (arg && *arg) {
+	    include = mireNew(RPMMIRE_REGEX, 0);
+	    (void) mireRegcomp(include, arg);
+	    ninclude++;
+	}
+
 	for (j = 0; j < nmodules; j++) {
 	    semanage_module_info_t * m = semanage_module_list_nth(modules, j);
-	    const char * N = semanage_module_get_name(m);
-	    const char * V = semanage_module_get_version(m);
-	    rpmiobAppend(iob, N, 0);
-	    rpmiobAppend(iob, "-", 0);
-	    rpmiobAppend(iob, V, 1);
+	    NV = rpmExpand(semanage_module_get_name(m), "-",
+			   semanage_module_get_version(m), NULL);
+	    if (include == NULL
+	     || !(mireApply(include, ninclude, NV, 0, +1) < 0))
+		rpmiobAppend(iob, NV, 1);
+	    NV = _free(NV);
 	    semanage_module_info_datum_destroy(m);
 	}
+
+	include = mireFree(include);
 	modules = _free(modules);
 	if (resultp)
-	    *resultp = xstrdup(rpmiobStr(iob));
+	    *resultp = xstrdup(rpmiobStr(rpmiobRTrim(iob)));
 	iob = rpmiobFree(iob);
     }
 #endif

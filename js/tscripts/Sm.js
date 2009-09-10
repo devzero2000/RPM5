@@ -18,13 +18,13 @@ var smflags = 0;
 var sm = new Sm(smstore, smflags);
 ack("typeof sm;", "object");
 ack("sm instanceof Sm;", true);
-// ack("sm.debug = 1;", 1);
-// ack("sm.debug = 0;", 0);
+ack("sm.debug = 1;", 1);
+ack("sm.debug = 0;", 0);
 
 ack("sm.store", smstore);
 ack("sm.flags", smflags);
 
-nack('sm("list unconfined");', false);
+ack('sm("list unconfined-.*");', 'unconfined-3.0.1');
 
 delete sm;
 

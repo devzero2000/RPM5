@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsm: permit *RE's with -l,--list command. hmmm, semodule todo++.
     - jbj: rpmsm: return "N-V" as moudular policy identifier string.
     - jbj: rpmsm: drill a string result pointer into semodule methods.
     - jbj: add semodule helper.
