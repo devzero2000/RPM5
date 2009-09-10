@@ -26,6 +26,8 @@ struct rpmsp_s {
     void * I;			/*!< sepol_handle_t */
     void * DB;			/*!< sepol_policydb_t */
     void * F;			/*!< sepol_policy_file_t */
+    void * C;			/*!< sepol_context_t */
+    void * P;			/*!< sepol_module_package_t */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

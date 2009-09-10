@@ -25,6 +25,10 @@ static void rpmspFini(void * _sp)
     rpmsp sp = _sp;
 
 #if defined(WITH_SEPOL)
+    if (sp->P)
+	sepol_module_package_free(sp->P);
+    if (sp->C)
+	sepol_context_free(sp->C);
     if (sp->F)
 	sepol_policy_file_free(sp->F);
     if (sp->DB)
@@ -37,6 +41,8 @@ static void rpmspFini(void * _sp)
     sp->I = NULL;
     sp->DB = NULL;
     sp->F = NULL;
+    sp->C = NULL;
+    sp->P = NULL;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -74,6 +80,22 @@ fprintf(stderr, "--> %s(%s,0x%x): sepol_handle_create() failed\n", __FUNCTION__,
     sp->DB = NULL;
     sp->F = NULL;
 
+    sp->C = NULL;
+    if ((xx = sepol_context_create(SP->I, &sp->C)) < 0) {
+if (_rpmsp_debug)
+fprintf(stderr, "--> %s: sepol_context_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
+	(void)rpmsmFree(sm);
+	return NULL;
+    }
+
+    sp->P = NULL;
+    if ((xx = sepol_module_package_create(&sp->P)) < 0) {
+if (_rpmsp_debug)
+fprintf(stderr, "--> %s: sepol_module_package_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
+	(void)rpmsmFree(sm);
+	return NULL;
+    }
+
     if (fn != NULL) {
 	FILE * fp = fopen(fn, "r");
 
@@ -84,26 +106,25 @@ fprintf(stderr, "--> %s: fopen(%s)\n", __FUNCTION__, fn);
 	    return NULL;
 	}
 
-	if ((xx = sepol_policydb_create(&sp->DB)) < 0) {
-if (_rpmsp_debug)
-fprintf(stderr, "--> %s: sepol_policydb_create(): %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
-	    (void)rpmsmFree(sm);
-	    return NULL;
-	}
-
 	if ((xx = sepol_policy_file_create(&sp->F)) < 0) {
 if (_rpmsp_debug)
-fprintf(stderr, "--> %s: sepol_policy_file_create(): %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
+fprintf(stderr, "--> %s: sepol_policy_file_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
 	    (void)rpmsmFree(sm);
 	    return NULL;
 	}
-
 	sepol_policy_file_set_handle(sp->F, sp->I);
 	sepol_policy_file_set_fp(sp->F, fp);
 
+	if ((xx = sepol_policydb_create(&sp->DB)) < 0) {
+if (_rpmsp_debug)
+fprintf(stderr, "--> %s: sepol_policydb_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
+	    (void)rpmsmFree(sm);
+	    return NULL;
+	}
+
 	if ((xx = sepol_policydb_read(sp->DB, sp->F)) < 0) {
 if (_rpmsp_debug)
-fprintf(stderr, "--> %s: sepol_policydb_read(%p,%p): %s\n", __FUNCTION__, sp->DB, sp->F, strerror(errno));	/* XXX errno? */
+fprintf(stderr, "--> %s: sepol_policydb_read: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
 	}
 
 	(void) fclose(fp);
@@ -115,7 +136,8 @@ fprintf(stderr, "--> %s: sepol_policydb_read(%p,%p): %s\n", __FUNCTION__, sp->DB
 }
 
 /*@unchecked@*/ /*@null@*/
-static const char * _rpmspI_fn;
+static const char * _rpmspI_fn = "minimum";
+
 /*@unchecked@*/
 static int _rpmspI_flags;
 
