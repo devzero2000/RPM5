@@ -119,12 +119,14 @@ fprintf(stderr, "<-- %s: semanage_begin_transaction(%p): %s\n", __FUNCTION__, I,
     return rc;
 }
 
-static int rpmsmInstall(rpmsm sm, char * arg)
+static int rpmsmInstall(rpmsm sm, char * arg, const char ** resultp)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
+if (_rpmsm_debug)
+fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
     rc = semanage_module_install_file(I, arg);
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
@@ -134,12 +136,14 @@ fprintf(stderr, "<-- %s: semanage_module_install_file(%p,%s): %s\n", __FUNCTION_
     return rc;
 }
 
-static int rpmsmUpgrade(rpmsm sm, char * arg)
+static int rpmsmUpgrade(rpmsm sm, char * arg, const char ** resultp)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
+if (_rpmsm_debug)
+fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
     rc = semanage_module_upgrade_file(I, arg);
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
@@ -149,12 +153,14 @@ fprintf(stderr, "<-- %s: semanage_module_upgrade_file(%p,%s): %s\n", __FUNCTION_
     return rc;
 }
 
-static int rpmsmInstallBase(rpmsm sm, char * arg)
+static int rpmsmInstallBase(rpmsm sm, char * arg, const char ** resultp)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
+if (_rpmsm_debug)
+fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
     rc = semanage_module_install_base_file(I, arg);
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
@@ -164,12 +170,14 @@ fprintf(stderr, "<-- %s: semanage_module_install_base_file(%p,%s): %s\n", __FUNC
     return rc;
 }
 
-static int rpmsmRemove(rpmsm sm, char * arg)
+static int rpmsmRemove(rpmsm sm, char * arg, const char ** resultp)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
+if (_rpmsm_debug)
+fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
     rc = semanage_module_remove(I, arg);
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
@@ -179,29 +187,38 @@ fprintf(stderr, "<-- %s: semanage_module_remove(%p,%s): %s\n", __FUNCTION__, I, 
     return rc;
 }
 
-static int rpmsmList(rpmsm sm, char * arg)
+static int rpmsmList(rpmsm sm, char * arg, const char ** resultp)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
-    semanage_module_info_t *modinfo = NULL;
-    int num_modules = 0;
+    semanage_module_info_t *modules = NULL;
+    int nmodules = 0;
 
-    rc = semanage_module_list(I, &modinfo, &num_modules);
+if (_rpmsm_debug)
+fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
+    if (resultp)
+	*resultp = NULL;
+    rc = semanage_module_list(I, &modules, &nmodules);
     if (rc < 0) {
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s: semanage_module_list(%p): %s\n", __FUNCTION__, I, strerror(errno));
-    } else if (num_modules == 0) {
-	printf("No modules.\n");
     } else {
+	rpmiob iob = rpmiobNew(0);
 	int j;
-	for (j = 0; j < num_modules; j++) {
-	    semanage_module_info_t * m = semanage_module_list_nth(modinfo, j);
-	    printf("%s\t%s\n", semanage_module_get_name(m),
-			       semanage_module_get_version(m));
+	for (j = 0; j < nmodules; j++) {
+	    semanage_module_info_t * m = semanage_module_list_nth(modules, j);
+	    const char * N = semanage_module_get_name(m);
+	    const char * V = semanage_module_get_version(m);
+	    rpmiobAppend(iob, N, 0);
+	    rpmiobAppend(iob, "-", 0);
+	    rpmiobAppend(iob, V, 1);
 	    semanage_module_info_datum_destroy(m);
 	}
-	modinfo = _free(modinfo);
+	modules = _free(modules);
+	if (resultp)
+	    *resultp = xstrdup(rpmiobStr(iob));
+	iob = rpmiobFree(iob);
     }
 #endif
     return rc;
@@ -314,7 +331,7 @@ static rpmsm rpmsmI(void)
 
 /*==============================================================*/
 
-int rpmsmRun(rpmsm sm, const char ** av)
+int rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
 {
     int ncmds = argvCount(av);
     int rc = 0;
@@ -362,21 +379,21 @@ int rpmsmRun(rpmsm sm, const char ** av)
 
 	switch (*cmd) {
 	case 'i':
-	    rc = rpmsmInstall(sm, arg);
+	    rc = rpmsmInstall(sm, arg, resultp);
 	    break;
 	case 'u':
-	    rc = rpmsmUpgrade(sm, arg);
+	    rc = rpmsmUpgrade(sm, arg, resultp);
 	    break;
 	case 'b':
-	    rc = rpmsmInstallBase(sm, arg);
+	    rc = rpmsmInstallBase(sm, arg, resultp);
 	    break;
 	case 'r':
-	    rc = rpmsmRemove(sm, arg);
+	    rc = rpmsmRemove(sm, arg, resultp);
 	    if (rc == -2)
 		continue;
 	    break;
 	case 'l':
-	    rc = rpmsmList(sm, arg);
+	    rc = rpmsmList(sm, arg, resultp);
 	    break;
 	default:
 	    fprintf(stderr, "%s:  Unknown cmd specified: \"%s\"\n", __progname, cmd);

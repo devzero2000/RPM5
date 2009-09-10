@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitSmClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewSmObject(JSContext *cx);
+rpmjs_NewSmObject(JSContext *cx, const char * _fn, unsigned int _flags);
 
 #ifdef __cplusplus      
 }

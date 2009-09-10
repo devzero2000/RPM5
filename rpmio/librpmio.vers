@@ -469,6 +469,7 @@ LIBRPMIO_0
     _rpmsm_debug;
     _rpmsmI;
     rpmsmNew;
+    rpmsmRun;
     _rpmsp_debug;
     _rpmspI;
     rpmspNew;

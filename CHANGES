@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsm: return "N-V" as moudular policy identifier string.
+    - jbj: rpmsm: drill a string result pointer into semodule methods.
     - jbj: add semodule helper.
     - jbj: rpmsm: add rpmsmRun() method for semodule.
     - jbj: rpmsp: open and load a policydb from a file.

@@ -10,13 +10,13 @@
 #if defined(WITH_SEMANAGE)
 #include <semanage/semanage.h>
 #endif
-#define	_RPMSX_INTERNAL
+#define	_RPMSM_INTERNAL
 #include <rpmsm.h>
 
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 /* Required JSClass vectors */
 #define	rpmsm_addprop		JS_PropertyStub
@@ -51,10 +51,14 @@ static JSFunctionSpec rpmsm_funcs[] = {
 /* --- Object properties */
 enum rpmsm_tinyid {
     _DEBUG	= -2,
+    _FLAGS	= -3,
+    _STORE	= -4,
 };
 
 static JSPropertySpec rpmsm_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"store",	_STORE,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -66,6 +70,7 @@ static JSBool
 rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
+    rpmsm sm = ptr;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -76,6 +81,8 @@ rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
+    case _FLAGS:	*vp = INT_TO_JSVAL(sm->flags);			break;
+    case _STORE:	*vp = _GET_STR(sm->fn);				break;
     default:
 	break;
     }
@@ -157,14 +164,12 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static rpmsm
-rpmsm_init(JSContext *cx, JSObject *obj)
+rpmsm_init(JSContext *cx, JSObject *obj, const char * _fn, unsigned int _flags)
 {
-    const char * _fn = NULL;
-    int _flags = 0;
     rpmsm sm = rpmsmNew(_fn, _flags);
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p) sm %p\n", __FUNCTION__, cx, obj, sm);
+fprintf(stderr, "==> %s(%p,%p,%s,0x%x) sm %p\n", __FUNCTION__, cx, obj, _fn, _flags, sm);
 
     if (!JS_SetPrivate(cx, obj, (void *)sm)) {
 	/* XXX error msg */
@@ -187,13 +192,18 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 static JSBool
 rpmsm_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    const char * _fn = NULL;
+    unsigned int _flags = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_fn, &_flags)))
+	goto exit;
+
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmsm_init(cx, obj);
+	(void) rpmsm_init(cx, obj, _fn, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmsmClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -212,20 +222,29 @@ rpmsm_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmsmClass, NULL);
     JSBool ok = JS_FALSE;
-#ifdef	FIXME
     rpmsm sm = ptr;
-    const char *_fn = NULL;
-    const char * _con = NULL;
+    const char *_cmd = NULL;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_cmd)))
         goto exit;
 
-    *rval = (sm && _fn && (_con = rpmsmLgetfilecon(sm, _fn)) != NULL)
-	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
-    _con = _free(_con);
+    if (sm && _cmd) {
+	const char * av[2] = { _cmd, NULL };
+	const char * result = NULL;
+	/* XXX FIXME: pin down rc value. list returns nitems? */
+	int rc = rpmsmRun(sm, av, &result);
+
+	if (rc < 0)
+	    *rval = JSVAL_FALSE;
+	else if (rc == 0 || result == NULL)
+	    *rval = JSVAL_TRUE;
+	else
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, result));
+	result = _free(result);
+    } else
+	*rval = JSVAL_FALSE;
 
     ok = JS_TRUE;
-#endif
 
 exit:
 if (_debug)
@@ -262,7 +281,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewSmObject(JSContext *cx)
+rpmjs_NewSmObject(JSContext *cx, const char * _fn, unsigned int _flags)
 {
     JSObject *obj;
     rpmsm sm;
@@ -271,7 +290,7 @@ rpmjs_NewSmObject(JSContext *cx)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((sm = rpmsm_init(cx, obj)) == NULL) {
+    if ((sm = rpmsm_init(cx, obj, _fn, _flags)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

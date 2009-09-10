@@ -139,6 +139,7 @@ int main(int argc, char *argv[])
     rpmsm sm = NULL;
     poptContext optCon = NULL;
     const char ** av = NULL;
+    const char * result = NULL;
     int rc = -1;	/* assume failure */
 
     __progname = "semodule";
@@ -191,7 +192,9 @@ int main(int argc, char *argv[])
     (void) signal(SIGQUIT, SIG_IGN);
     (void) signal(SIGTERM, SIG_IGN);
 
-    rc = rpmsmRun(sm, sm->av);
+    rc = rpmsmRun(sm, sm->av, &result);
+    if (result)
+	fprintf((rc < 0 ? stderr : stdout), "%s\n", result);
 
 exit:
 
@@ -200,5 +203,5 @@ exit:
     if (optCon)
 	optCon = rpmioFini(optCon);
 
-    return (rc == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return (rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
