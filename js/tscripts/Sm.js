@@ -11,6 +11,7 @@ const RPMSM_FLAGS_BUILD   = (1 <<  7);    /* -B,--build ... */
 const RPMSM_FLAGS_NOAUDIT = (1 <<  8);    /* -D,--disable_dontaudit ... */
 const RPMSM_FLAGS_COMMIT  = (1 <<  9);
 const RPMSM_FLAGS_CREATE  = (1 << 10);
+const RPMSM_FLAGS_CONNECT = (1 << 11);
 
 var smstore = "targeted";
 var smflags = 0;
@@ -25,6 +26,10 @@ ack("sm.store", smstore);
 ack("sm.flags", smflags);
 
 ack('sm("list unconfined-.*");', 'unconfined-3.0.1');
+
+var fn = "/usr/share/selinux/targeted/unconfined";
+var icmd = "install " + fn;
+ack('sm(icmd);', true);
 
 delete sm;
 

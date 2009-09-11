@@ -31,6 +31,7 @@ enum rpmsmFlags_e {
     RPMSM_FLAGS_NOAUDIT	= (1 <<  8),	/* -D,--disable_dontaudit ... */
     RPMSM_FLAGS_COMMIT	= (1 <<  9),
     RPMSM_FLAGS_CREATE	= (1 << 10),
+    RPMSM_FLAGS_CONNECT	= (1 << 11),
 };
 
 #if defined(_RPMSM_INTERNAL)
@@ -43,6 +44,7 @@ struct rpmsm_s {
     unsigned int access;	/*!< access 1: readable 2: writable */
     const char ** av;
     void * I;			/*!< semanage_handle_t */
+    rpmiob iob;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

@@ -26,6 +26,17 @@ rpmsm _rpmsmI = NULL;
 #define F_ISSET(_sm, _FLAG) (((_sm)->flags & ((RPMSM_FLAGS_##_FLAG) & ~0x40000000)) != RPMSM_FLAGS_NONE)
 
 /*==============================================================*/
+static int rpmsmChk(rpmsm sm, int rc, const char * msg)
+{
+    if (rc < 0 && msg != NULL) {
+	rpmiobAppend(sm->iob, "semanage_", 0);
+	rpmiobAppend(sm->iob, msg, 0);
+	if (errno)
+	    rpmiobAppend(sm->iob, strerror(errno), 0);
+    }
+    return rc;
+}
+
 static int rpmsmSelect(rpmsm sm)
 {
     int rc = 0;
@@ -51,15 +62,15 @@ static int rpmsmCreate(rpmsm sm)
 
     if (!F_ISSET(sm, CREATE)) {
 	if (!(xx = semanage_is_managed(I))) {
-if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_is_managed(%p): rc %d\n", __FUNCTION__, I, xx);
+	    /* XXX FIXME error msg */
 	    rc = -1;
 	} else if ((xx = semanage_access_check(I)) < SEMANAGE_CAN_READ) {
-if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_access_check(%p): rc %d\n", __FUNCTION__, I, xx);
+	    /* XXX FIXME error msg */
 	    rc = -1;
 	}
     }
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, I, rc);
 #endif
     return rc;
 }
@@ -70,11 +81,10 @@ static int rpmsmConnect(rpmsm sm)
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-    if (!semanage_is_connected(I)) {
-	rc = semanage_connect(I);
-if (_rpmsm_debug && rc < 0)
-fprintf(stderr, "<-- %s: semanage_connect(%p): %s\n", __FUNCTION__, I, strerror(errno));
-    }
+    if (!semanage_is_connected(I))
+	rc = rpmsmChk(sm, semanage_connect(I), "connect");
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, I, rc);
 #endif
     return rc;
 }
@@ -85,11 +95,10 @@ static int rpmsmDisconnect(rpmsm sm)
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-    if (semanage_is_connected(I)) {
-	rc = semanage_disconnect(I);
-if (_rpmsm_debug && rc < 0)
-fprintf(stderr, "<-- %s: semanage_disconnect(%p): %s\n", __FUNCTION__, I, strerror(errno));
-    }
+    if (semanage_is_connected(I))
+	rc = rpmsmChk(sm, semanage_disconnect(I), "disconnect");
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, I, rc);
 #endif
     return rc;
 }
@@ -100,9 +109,9 @@ static int rpmsmReload(rpmsm sm)
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-    rc = semanage_reload_policy(I);
-if (_rpmsm_debug && rc < 0)
-fprintf(stderr, "<-- %s: semanage_reload_policy(%p): %s\n", __FUNCTION__, I, strerror(errno));
+    rc = rpmsmChk(sm, semanage_reload_policy(I), "reload_policy");
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, I, rc);
 #endif
     return rc;
 }
@@ -113,82 +122,74 @@ static int rpmsmBegin(rpmsm sm)
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-    rc = semanage_begin_transaction(I);
-if (_rpmsm_debug && rc < 0)
-fprintf(stderr, "<-- %s: semanage_begin_transaction(%p): %s\n", __FUNCTION__, I, strerror(errno));
+    rc = rpmsmChk(sm, semanage_begin_transaction(I), "begin_transaction");
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, I, rc);
 #endif
     return rc;
 }
 
-static int rpmsmInstall(rpmsm sm, char * arg, const char ** resultp)
+static int rpmsmInstall(rpmsm sm, char * arg)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-if (_rpmsm_debug)
-fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
-    rc = semanage_module_install_file(I, arg);
+    rc = rpmsmChk(sm, semanage_module_install_file(I, arg), "module_install_file");
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
-else if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_module_install_file(%p,%s): %s\n", __FUNCTION__, I, arg, strerror(errno));
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
 #endif
     return rc;
 }
 
-static int rpmsmUpgrade(rpmsm sm, char * arg, const char ** resultp)
+static int rpmsmUpgrade(rpmsm sm, char * arg)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-if (_rpmsm_debug)
-fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
-    rc = semanage_module_upgrade_file(I, arg);
+    rc = rpmsmChk(sm, semanage_module_upgrade_file(I, arg), "module_upgrade_file");
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
-else if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_module_upgrade_file(%p,%s): %s\n", __FUNCTION__, I, arg, strerror(errno));
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
 #endif
     return rc;
 }
 
-static int rpmsmInstallBase(rpmsm sm, char * arg, const char ** resultp)
+static int rpmsmInstallBase(rpmsm sm, char * arg)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-if (_rpmsm_debug)
-fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
-    rc = semanage_module_install_base_file(I, arg);
+    rc = rpmsmChk(sm, semanage_module_install_base_file(I, arg), "module_install_base_file");
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
-else if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_module_install_base_file(%p,%s): %s\n", __FUNCTION__, I, arg, strerror(errno));
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
 #endif
     return rc;
 }
 
-static int rpmsmRemove(rpmsm sm, char * arg, const char ** resultp)
+static int rpmsmRemove(rpmsm sm, char * arg)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
     semanage_handle_t * I = sm->I;
 
-if (_rpmsm_debug)
-fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
-    rc = semanage_module_remove(I, arg);
+    rc = rpmsmChk(sm, semanage_module_remove(I, arg), "module_remove");
     if (rc >= 0)
 	sm->flags |= RPMSM_FLAGS_COMMIT;
-else if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_module_remove(%p,%s): %s\n", __FUNCTION__, I, arg, strerror(errno));
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
 #endif
     return rc;
 }
 
-static int rpmsmList(rpmsm sm, char * arg, const char ** resultp)
+static int rpmsmList(rpmsm sm, char * arg)
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
@@ -196,16 +197,8 @@ static int rpmsmList(rpmsm sm, char * arg, const char ** resultp)
     semanage_module_info_t *modules = NULL;
     int nmodules = 0;
 
-if (_rpmsm_debug)
-fprintf(stderr, "--> %s(%p,\"%s\",%p)\n", __FUNCTION__, sm, arg, resultp);
-    if (resultp)
-	*resultp = NULL;
-    rc = semanage_module_list(I, &modules, &nmodules);
-    if (rc < 0) {
-if (_rpmsm_debug)
-fprintf(stderr, "<-- %s: semanage_module_list(%p): %s\n", __FUNCTION__, I, strerror(errno));
-    } else {
-	rpmiob iob = rpmiobNew(0);
+    rc = rpmsmChk(sm, semanage_module_list(I, &modules, &nmodules), "module_list");
+    if (rc >= 0) {
 	const char * NV = NULL;
 	miRE include = NULL;
 	int ninclude = 0;
@@ -223,22 +216,21 @@ fprintf(stderr, "<-- %s: semanage_module_list(%p): %s\n", __FUNCTION__, I, strer
 			   semanage_module_get_version(m), NULL);
 	    if (include == NULL
 	     || !(mireApply(include, ninclude, NV, 0, +1) < 0))
-		rpmiobAppend(iob, NV, 1);
+		rpmiobAppend(sm->iob, NV, 1);
 	    NV = _free(NV);
 	    semanage_module_info_datum_destroy(m);
 	}
 
 	include = mireFree(include);
 	modules = _free(modules);
-	if (resultp)
-	    *resultp = xstrdup(rpmiobStr(rpmiobRTrim(iob)));
-	iob = rpmiobFree(iob);
     }
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
 #endif
     return rc;
 }
 
-static int rpmsmCommit(rpmsm sm)
+static int rpmsmCommit(rpmsm sm)	/* XXX add arg */
 {
     int rc = 0;
 #if defined(WITH_SEMANAGE)
@@ -254,14 +246,12 @@ static int rpmsmCommit(rpmsm sm)
 	else if (F_ISSET(sm, BUILD))
 	    semanage_set_disable_dontaudit(I, 0);
 
-	rc = semanage_commit(I);
+	rc = rpmsmChk(sm, semanage_commit(I), "commit");
 	sm->flags &= ~RPMSM_FLAGS_COMMIT;
     }
-
-if (_rpmsm_debug && rc < 0)
-fprintf(stderr, "<-- %s: semanage_commit(%p): %s\n", __FUNCTION__, I, strerror(errno));
+if (_rpmsm_debug)
+fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, I, rc);
 #endif
-
     return rc;
 }
 
@@ -279,6 +269,8 @@ static void rpmsmFini(void * _sm)
 	semanage_handle_destroy(sm->I);
     }
 #endif
+    (void) rpmiobFree(sm->iob);
+    sm->iob = NULL;
     sm->fn = _free(sm->fn);
     sm->flags = 0;
     sm->access = 0;
@@ -319,10 +311,21 @@ fprintf(stderr, "--> %s: semanage_handle_create() failed\n", __FUNCTION__);
 
     sm->fn = (fn ? xstrdup(fn) : NULL);
     sm->flags = flags;
+    sm->iob = rpmiobNew(0);
 
+    /* Select "targeted", "minimum", or other store. */
     if (rpmsmSelect(sm)) {
 	(void)rpmsmFree(sm);
 	return NULL;
+    }
+
+    /* Connect to the policy store immediately (if requested). */
+    if (F_ISSET(sm, CONNECT)) {
+	sm->flags |= RPMSM_FLAGS_CREATE;
+	if (rpmsmCreate(sm) < 0 || rpmsmConnect(sm) < 0 || rpmsmBegin(sm) < 0) {
+	    (void)rpmsmFree(sm);
+	    return NULL;
+	}
     }
 #endif
 
@@ -353,35 +356,25 @@ int rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
 
     if (sm == NULL) sm = rpmsmI();
 
-    /* Select "targeted", "minimum",  or other store. */
-    rc = rpmsmSelect(sm);
+    if (!F_ISSET(sm, CONNECT)) {
 
-    /* Create store if bootstrapping base policy. */
-    rc = rpmsmCreate(sm);
-    if (rc < 0) {
-	fprintf(stderr, "%s: policy is not managed or store cannot be accessed.\n",
-			__progname);
-	    goto exit;
-    }
+	/* Select "targeted", "minimum", or other store. */
+	rc = rpmsmSelect(sm);
 
-    if ((rc = rpmsmConnect(sm)) < 0) {
-	fprintf(stderr, "%s:  Could not connect to policy handler\n", __progname);
-	goto exit;
-    }
-
-    if (F_ISSET(sm, RELOAD)) {
-	if ((rc = rpmsmReload(sm)) < 0) {
-	    fprintf(stderr, "%s:  Could not reload policy\n", __progname);
+	/* Create store if bootstrapping base policy. */
+	if ((rc = rpmsmCreate(sm)) < 0) {
+	    rpmiobAppend(sm->iob, "Policy store access failed", 0);
 	    goto exit;
 	}
-    }
 
-    if (F_ISSET(sm, BUILD)) {
-	if ((rc = rpmsmBegin(sm)) < 0) {
-	    fprintf(stderr, "%s:  Could not begin transaction:  %s\n",
-			__progname, errno ? strerror(errno) : "");
+	if ((rc = rpmsmConnect(sm)) < 0)
 	    goto exit;
-	}
+
+	if (F_ISSET(sm, RELOAD) && (rc = rpmsmReload(sm)) < 0)
+	    goto exit;
+
+	if (F_ISSET(sm, BUILD) && (rc = rpmsmBegin(sm)) < 0)
+	    goto exit;
     }
 
     for (i = 0; i < ncmds; i++) {
@@ -393,24 +386,28 @@ int rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
 
 	switch (*cmd) {
 	case 'i':
-	    rc = rpmsmInstall(sm, arg, resultp);
+	    rc = rpmsmInstall(sm, arg);
 	    break;
 	case 'u':
-	    rc = rpmsmUpgrade(sm, arg, resultp);
+	    rc = rpmsmUpgrade(sm, arg);
 	    break;
 	case 'b':
-	    rc = rpmsmInstallBase(sm, arg, resultp);
+	    rc = rpmsmInstallBase(sm, arg);
 	    break;
 	case 'r':
-	    rc = rpmsmRemove(sm, arg, resultp);
-	    if (rc == -2)
+	    rc = rpmsmRemove(sm, arg);
+	    if (rc == -2) {	/* XXX WTF? */
+		rc = 0;
 		continue;
+	    }
 	    break;
 	case 'l':
-	    rc = rpmsmList(sm, arg, resultp);
+	    rc = rpmsmList(sm, arg);
 	    break;
 	default:
-	    fprintf(stderr, "%s:  Unknown cmd specified: \"%s\"\n", __progname, cmd);
+	    rpmiobAppend(sm->iob, "Unknown cmd: \"", 0);
+	    rpmiobAppend(sm->iob, cmd, 0);
+	    rpmiobAppend(sm->iob, "\"", 0);
 	    goto exit;
 	    /*@notreached@*/ break;
 	}
@@ -419,11 +416,17 @@ int rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
     if (F_ISSET(sm, COMMIT)) {
 	rc = rpmsmCommit(sm);
 	if (rc < 0) {
-	    fprintf(stderr, "%s:  Commit failed!\n", __progname);
+	    rpmiobAppend(sm->iob, "Commit failed", 0);
 	    goto exit;
 	}
     }
 
 exit:
+    /* Return any spewage to caller. */
+    if (resultp)
+	*resultp = (rpmiobLen(sm->iob) > 0
+		? xstrdup(rpmiobStr(rpmiobRTrim(sm->iob))) : NULL);
+    (void) rpmiobEmpty(sm->iob);
+    
     return rc;
 }
