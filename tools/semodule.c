@@ -58,6 +58,9 @@ static void rpmsmArgCallback(poptContext con,
 	break;
     case 'R':
 	sm->flags |= RPMSM_FLAGS_RELOAD;
+	arg = "";	/* XXX no arg for --reload */
+	t = rpmExpand("  ", arg, NULL); *t = opt->val;
+	xx = argvAdd(&sm->av, t);
 	break;
     case 'n':
 	sm->flags &= ~RPMSM_FLAGS_RELOAD;
@@ -67,8 +70,10 @@ static void rpmsmArgCallback(poptContext con,
 	sm->fn = xstrdup(arg);
 	break;
     case 'B':
-	sm->flags |= RPMSM_FLAGS_BUILD;
-	sm->flags |= RPMSM_FLAGS_COMMIT;
+	sm->flags |= RPMSM_FLAGS_REBUILD;
+	arg = "";	/* XXX no arg for --build */
+	t = rpmExpand("  ", arg, NULL); *t = opt->val;
+	xx = argvAdd(&sm->av, t);
 	break;
     case 'D':
 	sm->flags |= RPMSM_FLAGS_NOAUDIT;
@@ -86,7 +91,7 @@ static void rpmsmArgCallback(poptContext con,
 }
 
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption otherTable[] = {
+static struct poptOption rpmsmOtherTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmsmArgCallback, 0, NULL, NULL },
@@ -101,7 +106,7 @@ static struct poptOption otherTable[] = {
 };
 
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption optionsTable[] = {
+static struct poptOption rpmsmOptionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmsmArgCallback, 0, NULL, NULL },
@@ -122,7 +127,7 @@ static struct poptOption optionsTable[] = {
   { "build",'B', POPT_ARG_NONE,				NULL, (int)'B',
 	N_("Build and reload policy"), NULL },
 
-  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, otherTable, 0,
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmsmOtherTable, 0,
 	N_("Other options:"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
@@ -150,7 +155,7 @@ int main(int argc, char *argv[])
     }
 
     /* Parse CLI options and args. */
-    optCon = rpmioInit(argc, argv, optionsTable);
+    optCon = rpmioInit(argc, argv, rpmsmOptionsTable);
     av = poptGetArgs(optCon);
     if (av && *av) {
 	int ac = argvCount(av);
@@ -176,7 +181,7 @@ int main(int argc, char *argv[])
 	}
     }
     
-    if (F_ISSET(sm, BUILD) || F_ISSET(sm, RELOAD)) {
+    if (F_ISSET(sm, REBUILD) || F_ISSET(sm, RELOAD)) {
 	if (sm->av && *sm->av) {
 	    fprintf(stderr, "build or reload should not be used with other commands\n");
 	    goto exit;

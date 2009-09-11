@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsm: stub-in a state machine for handling policy operations lazily.
     - jbj: rpmsm: add RPMSM_FLAGS_CONNECT for Tresys dain bramaged patches.
     - jbj: rpmsm: use an iob to return spewage.
     - jbj: rpmsm: permit *RE's with -l,--list command. hmmm, semodule todo++.

@@ -52,12 +52,16 @@ static JSFunctionSpec rpmsm_funcs[] = {
 enum rpmsm_tinyid {
     _DEBUG	= -2,
     _FLAGS	= -3,
-    _STORE	= -4,
+    _STATE	= -4,
+    _ACCESS	= -5,
+    _STORE	= -6,
 };
 
 static JSPropertySpec rpmsm_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"state",	_STATE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"access",	_ACCESS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"store",	_STORE,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
@@ -82,6 +86,8 @@ rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	break;
     case _FLAGS:	*vp = INT_TO_JSVAL(sm->flags);			break;
+    case _STATE:	*vp = INT_TO_JSVAL(sm->state);			break;
+    case _ACCESS:	*vp = INT_TO_JSVAL(sm->access);			break;
     case _STORE:	*vp = _GET_STR(sm->fn);				break;
     default:
 	break;

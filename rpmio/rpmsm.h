@@ -27,11 +27,14 @@ enum rpmsmFlags_e {
     RPMSM_FLAGS_REMOVE	= (1 <<  4),	/* -r,--remove ... */
     RPMSM_FLAGS_UPGRADE	= (1 <<  5),	/* -u,--upgrade ... */
     RPMSM_FLAGS_RELOAD	= (1 <<  6),	/* -R,--reload ... */
-    RPMSM_FLAGS_BUILD	= (1 <<  7),	/* -B,--build ... */
+    RPMSM_FLAGS_REBUILD	= (1 <<  7),	/* -B,--build ... */
     RPMSM_FLAGS_NOAUDIT	= (1 <<  8),	/* -D,--disable_dontaudit ... */
     RPMSM_FLAGS_COMMIT	= (1 <<  9),
     RPMSM_FLAGS_CREATE	= (1 << 10),
     RPMSM_FLAGS_CONNECT	= (1 << 11),
+    RPMSM_FLAGS_SELECT	= (1 << 12),
+    RPMSM_FLAGS_ACCESS	= (1 << 13),
+    RPMSM_FLAGS_BEGIN	= (1 << 14),
 };
 
 #if defined(_RPMSM_INTERNAL)
@@ -39,8 +42,9 @@ enum rpmsmFlags_e {
  */
 struct rpmsm_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;		/*!< policy store (i.e. "targeted") */
+    char * fn;			/*!< policy store (i.e. "targeted") */
     unsigned int flags;
+    unsigned int state;
     unsigned int access;	/*!< access 1: readable 2: writable */
     const char ** av;
     void * I;			/*!< semanage_handle_t */
