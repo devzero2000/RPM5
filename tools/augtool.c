@@ -22,8 +22,14 @@
 
 #include "system.h"
 
+#if defined(WITH_READLINE)
+#if defined(HAVE_READLINE_READLINE_H)
 #include <readline/readline.h>
+#endif
+#if defined(HAVE_READLINE_HISTORY_H)
 #include <readline/history.h>
+#endif
+#endif
 
 #include <rpmiotypes.h>
 #include <poptIO.h>
@@ -55,6 +61,7 @@ static char *cleanstr(char *path, const char sep)
     return path;
 }
 
+#if defined(WITH_READLINE)
 static char *ls_pattern(const char *path)
 {
     char *q;
@@ -148,8 +155,7 @@ static char *readline_command_generator(const char *text, int state)
     return NULL;
 }
 
-#define	HAVE_RL_COMPLETION_MATCHES	/* XXX no AutoFu yet */
-#ifndef HAVE_RL_COMPLETION_MATCHES
+#if !defined(HAVE_RL_COMPLETION_MATCHES)
 typedef char *rl_compentry_func_t(const char *, int);
 static char **rl_completion_matches(/*@unused@*/ const char *text,
                            /*@unused@*/ rl_compentry_func_t *func)
@@ -171,10 +177,11 @@ static char **readline_completion(const char *text, int start,
 
 static void readline_init(void)
 {
-    rl_readline_name = "augtool";
+    rl_readline_name = progname;
     rl_attempted_completion_function = readline_completion;
     rl_completion_entry_function = readline_path_generator;
 }
+#endif
 
 static int main_loop(void)
 {
@@ -185,14 +192,16 @@ static int main_loop(void)
     while (1) {
 	const char *buf;
 
+#if defined(WITH_READLINE)
         if (isatty(fileno(stdin))) {
             line = readline("augtool> ");
-        } else if (getline(&line, &len, stdin) == -1) {
+        } else
+#endif
+	if (getline(&line, &len, stdin) == -1)
 	    break;
-        }
         cleanstr(line, '\n');
         if (line == NULL) {
-            printf("\n");
+            fprintf(stdout, "\n");
 	    break;
         }
         if (line[0] == '#')
@@ -200,8 +209,10 @@ static int main_loop(void)
 
 	buf = NULL;
 	if (rpmaugRun(NULL, line, &buf) == RPMRC_OK) {
+#if defined(WITH_READLINE)
 	    if (isatty(fileno(stdin)))
 		add_history(line);
+#endif
 	}
 	if (buf && *buf)
 	    fprintf(stdout, "%s", buf);
@@ -237,7 +248,7 @@ int main(int argc, char **argv)
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     const char ** av = NULL;
     int ac;
-    int r;
+    int r = -1;
 
     if (_rpmaugLoadargv != NULL)
 	_rpmaugLoadpath = argvJoin(_rpmaugLoadargv, PATH_SEP_CHAR);
@@ -245,16 +256,20 @@ int main(int argc, char **argv)
     _rpmaugI = rpmaugNew(_rpmaugRoot, _rpmaugLoadpath, _rpmaugFlags);
     if (_rpmaugI == NULL) {
         fprintf(stderr, "Failed to initialize Augeas\n");
-        exit(EXIT_FAILURE);
+	goto exit;
     }
+
+#if defined(WITH_READLINE)
     readline_init();
+#endif
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
     if (ac > 0) {	// Accept one command from the command line
-	const char * cmd = argvJoin((const char **)av, ' ');
+	const char * cmd = argvJoin(av, ' ');
 	const char *buf;
 
+	buf = NULL;
         r = rpmaugRun(NULL, cmd, &buf);
 	cmd = _free(cmd);
 	if (buf && *buf)
@@ -263,6 +278,7 @@ int main(int argc, char **argv)
         r = main_loop();
     }
 
+exit:
     if (_rpmaugLoadargv)
 	_rpmaugLoadpath = _free(_rpmaugLoadpath);
     _rpmaugLoadargv = argvFree(_rpmaugLoadargv);
@@ -270,5 +286,5 @@ int main(int argc, char **argv)
 
     optCon = rpmioFini(optCon);
 
-    return r == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return (r == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
