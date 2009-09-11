@@ -1351,6 +1351,16 @@ AC_ARG_WITH([dbapi],
 ])
 AC_SUBST(DBAPI)
 
+dnl # Readline (eventually needed by augtool)
+RPM_CHECK_LIB(
+    [Readline], [readline],
+    [readline], [readline], [readline/readline.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_READLINE, 1, [Define to 1 if you want to use Readline])
+      AC_CHECK_HEADERS([readline/history.h])
+      AC_CHECK_FUNCS([rl_completion_matches])
+    ], [])
+
 dnl # Augeas
 WITH_AUGEAS_AUGTOOL=""
 RPM_CHECK_LIB(
