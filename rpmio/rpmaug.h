@@ -45,18 +45,8 @@ struct rpmaug_s {
 #endif
 };
 
-/** \ingroup rpmio
- */
-typedef struct rpmaugC_s {
-    const char *name;
-    int minargs;
-    int maxargs;
-    int(*handler) (int ac, char *av[]);
-    const char *synopsis;
-    const char *help;
-} * rpmaugC;
-
-extern struct rpmaugC_s const _rpmaugCommands[];
+/*@unchecked@*/
+extern struct rpmioC_s const _rpmaugCommands[];
 
 #endif	/* _RPMAUG_INTERNAL */
 

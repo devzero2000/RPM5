@@ -836,3 +836,133 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
     return optCon;
 }
 /*@=globstate@*/
+
+/**
+ * Return text between pl and matching pr characters.
+ * @param p		start of text
+ * @param pl		left char, i.e. '[', '(', '{', etc.
+ * @param pr		right char, i.e. ']', ')', '}', etc.
+ * @return		pointer to matching pr char in string (or NULL)
+ */
+/*@null@*/
+static char *
+matchchar(char * p, char pl, char pr)
+        /*@*/
+{
+    int lvl = 0;
+    char c;
+
+    while ((c = *p++) != '\0') {
+        if (c == '\\') {	/* Ignore escaped chars */
+            p++;
+            continue;
+        }
+        if (c == pr) {
+            if (--lvl <= 0)     return --p;
+        } else if (c == pl)
+            lvl++;
+    }
+    return (char *)NULL;
+}
+
+rpmioP rpmioPFree(rpmioP P)
+{
+    if (P != NULL) {
+	P->str = _free(P->str);
+	P->av = argvFree(P->av);
+	P = _free(P);
+    }
+    return NULL;
+}
+
+rpmRC rpmioParse(rpmioP *Pptr, const char * str)
+{
+    static char whitespace[] = " \t\n\r";
+    rpmioP P;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    char *b;
+    char *be;
+    int xx;
+    int c;
+
+    if ((P = *Pptr) == NULL)
+	*Pptr = P = xcalloc(1, sizeof(*P));
+
+    if (str != NULL) {
+	P->str = _free(P->str);
+	P->next = P->str = xstrdup(str);
+    }
+
+    /* Ltrim whitespace. Anything left to parse? */
+    if ((b = P->next) != NULL)
+    while (*b && strchr(whitespace, *b))
+	*b++ = '\0';
+    if (b == NULL || *b == '\0')
+	return RPMRC_NOTFOUND;
+
+    /* Parse next command into an argv. */
+    P->ac = 0;
+    P->av = argvFree(P->av);
+    if ((be = b) != NULL)
+  while (1) {
+    c = *be++;
+    switch (c) {
+    default:
+	break;
+    case '\\':		/* escaped character. */
+	if (*be != '\0')
+	    be++;
+	break;
+    case '\0':		/* end-of-command termination. */
+    case '\n':
+    case '\r':
+    case ';':	
+	if (be[-1] != '\0')
+	    be[-1] = '\0';
+	else
+	    be--;			/* XXX one too far */
+	if ((be - b) > 1) {
+	    xx = argvAdd(&P->av, b);
+	    P->ac++;
+	}
+	goto exit;
+	break;
+    case '[':		/* XPath construct with '[' balancing. */
+	if ((be = matchchar(be, '[', ']')) == NULL) {
+	    be += strlen(b);	/* XXX unmatched ']' */
+	    goto exit;
+	}
+	be++;
+	break;
+    case '"':		/* quoted string */
+	while (1) {
+	    if ((be = strchr(be, '"')) == NULL) {
+		be += strlen(b);	/* XXX unmatched '"' */
+		goto exit;
+	    }
+	    be++;
+	    if (be[-2] == '\\')	/* escaped quote */
+		continue;
+	    break;
+	}
+	break;
+    case ' ':		/* argument separator */
+    case '\t':
+	be[-1] = '\0';
+	if ((be - b) > 1) {
+	    xx = argvAdd(&P->av, b);
+	    P->ac++;
+	}
+	b = be;
+	while (*b && (*b == ' ' || *b == '\t'))
+	    *b++ = '\0';
+	be = b;
+	break;
+    }
+  }
+    rc = RPMRC_OK;
+
+exit:
+    P->next = be;
+    return rc;
+}

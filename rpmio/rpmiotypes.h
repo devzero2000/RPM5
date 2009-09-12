@@ -55,6 +55,26 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmiob_s * rpmiob;
 /*@unchecked@*/
 extern size_t _rpmiob_chunk;
 
+/** \ingroup rpmio
+ */
+typedef struct rpmioC_s {
+    const char * name;
+    int minargs;
+    int maxargs;
+    int(*handler) (int ac, char * av[]);
+    const char *synopsis;
+    const char *help;
+} * rpmioC;
+
+/** \ingroup rpmio
+ */
+typedef struct rpmioP_s {
+    char * str;
+    char * next;
+    const char ** av;
+    int ac;
+} * rpmioP;
+
 /** \ingroup rpmpgp
  */
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
@@ -619,6 +639,24 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
         /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies *iobp, fileSystem, internalState @*/;
 #endif
+
+/**
+ * Destroy a rpmioP object.
+ * @param P		parser state
+ * @return		NULL
+ */
+/*@null@*/
+rpmioP rpmioPFree(/*@only@*/ /*@null@*/ rpmioP P)
+	/*@modifies P @*/;
+
+/**
+ * Parse next command out of a string incrementally.
+ * @param *Pptr		parser state
+ * @param str		string to parse
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmioParse(rpmioP *Pptr, const char * str)
+	/*@modifies (Pptr @*/;
 
 #ifdef __cplusplus
 }

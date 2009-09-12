@@ -372,6 +372,8 @@ LIBRPMIO_0
     rpmioLinkPoolItem;
     rpmioMkpath;
     rpmioNewPool;
+    rpmioParse;
+    rpmioPFree;
     rpmioPipeOutput;
     rpmioPutPool;
     rpmioRootDir;
