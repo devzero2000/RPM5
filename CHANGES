@@ -1,6 +1,7 @@
 
 5.2b1 -> 5.3a1
-    - jbj: retrofit asprintf for augtool build more portably.
+    - jbj: retrofit getline for augtool to build more portably.
+    - jbj: retrofit asprintf for augtool to build more portably.
     - jbj: AutoFu for -lreadline to be included in spooktool(8).
     - jbj: rpmsm: stub-in a state machine for handling policy operations lazily.
     - jbj: rpmsm: add RPMSM_FLAGS_CONNECT for Tresys dain bramaged patches.

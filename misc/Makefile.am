@@ -9,8 +9,8 @@ AM_CPPFLAGS = \
 EXTRA_DIST = \
 	librpmmisc.vers alloca.c \
 	asprintf.c	basename.c	err.c		error.c		\
-	fakefork.c			getcwd.c	getmntent.c	\
-	getwd.c						memcmp.c	\
+	fakefork.c	getcwd.c	getdelim.c	getline.c	\
+	getmntent.c	getwd.c				memcmp.c	\
 	mktime.c	myrealloc.c	putenv.c	realpath.c	\
 	setenv.c	setproctitle.c	stpcpy.c	stpncpy.c	\
 			strcspn.c	strdup.c	strerror.c	\
