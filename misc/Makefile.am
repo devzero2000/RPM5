@@ -7,8 +7,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)
 
 EXTRA_DIST = \
-	librpmmisc.vers asprintf.h \
-	alloca.c	basename.c	err.c		error.c		\
+	librpmmisc.vers alloca.c \
+	asprintf.c	basename.c	err.c		error.c		\
 	fakefork.c			getcwd.c	getmntent.c	\
 	getwd.c						memcmp.c	\
 	mktime.c	myrealloc.c	putenv.c	realpath.c	\
@@ -20,7 +20,7 @@ EXTRA_DIST = \
         mkdtemp.c 
 
 noinst_HEADERS = \
-	asprintf.h	err.h		error.h tempname.h
+	err.h		error.h tempname.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmmisc.la

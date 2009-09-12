@@ -43,10 +43,6 @@ static const char copyright[] =
 #include <signal.h>
 #include <stdarg.h>
 
-#if !defined(HAVE_ASPRINTF)
-#include "asprintf.h"
-#endif
-
 #if defined(__QNXNTO__)
 #define	st_mtimespec	st_mtime
 #endif

@@ -35,8 +35,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static inline int
-vasprintf(char ** rResult, const char * aFormat, va_list aAp)
+int vasprintf(char ** rResult, const char * aFormat, va_list aAp)
 {
     int rVal;
     char * result;
@@ -79,8 +78,7 @@ vasprintf(char ** rResult, const char * aFormat, va_list aAp)
     return rVal;
 }
 
-static inline int
-asprintf(char ** rResult, const char * aFormat, ...)
+int asprintf(char ** rResult, const char * aFormat, ...)
 {
     int rVal;
     va_list ap;
