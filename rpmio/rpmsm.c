@@ -63,8 +63,8 @@ static int rpmsmSelect(rpmsm sm, char * arg)
 	    sm->state = RPMSM_STATE_SELECTED;
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
-#endif
     }
+#endif
     return rc;
 }
 
@@ -158,10 +158,10 @@ static int rpmsmDisconnect(rpmsm sm, char * arg)
 	    rc = rpmsmChk(sm, semanage_disconnect(I), "disconnect");
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
-#endif
 	/* XXX check rc? */
 	sm->state = RPMSM_STATE_CLOSED;
     }
+#endif
     return rc;
 }
 
