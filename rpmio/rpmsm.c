@@ -83,8 +83,8 @@ static int rpmsmAccess(rpmsm sm, char * arg)
 	    sm->state = RPMSM_STATE_ACCESSED;
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, I, rc);
-#endif
     }
+#endif
     return rc;
 }
 
