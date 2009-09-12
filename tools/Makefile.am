@@ -22,7 +22,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = augtool debugedit rpmkey semodule
+EXTRA_PROGRAMS = augtool debugedit rpmkey semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -92,6 +92,9 @@ rpmspecdump_LDADD =	$(RPMBUILD_LDADD_COMMON)
 
 semodule_SOURCES =	semodule.c
 semodule_LDADD =	$(RPM_LDADD_COMMON)
+
+spooktool_SOURCES =	spooktool.c
+spooktool_LDADD =	$(RPM_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)

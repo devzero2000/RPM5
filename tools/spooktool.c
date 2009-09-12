@@ -1,6 +1,16 @@
 
 #include "system.h"
 
+#if defined(WITH_READLINE)
+#if defined(HAVE_READLINE_READLINE_H)
+#include <readline/readline.h>
+#endif
+#if defined(HAVE_READLINE_HISTORY_H)
+#include <readline/history.h>
+#endif
+#endif
+
+#define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <poptIO.h>
@@ -11,6 +21,190 @@
 #include "debug.h"
 
 #define F_ISSET(_sm, _FLAG) (((_sm)->flags & ((RPMSM_FLAGS_##_FLAG) & ~0x40000000)) != RPMSM_FLAGS_NONE)
+
+/* forward reference */
+extern const struct rpmioC_s const _rpmsmCommands[];
+
+static char *cleanstr(char *path, const char sep)
+{
+    if (path && *path) {
+	char *e = path + strlen(path) - 1;
+	while (e >= path && (*e == sep || xisspace(*e)))
+	    *e-- = '\0';
+    }
+    return path;
+}
+
+static int cmd_quit(int ac, char *av[])
+{
+    exit(EXIT_SUCCESS);		/* XXX FIXME: quit is useless for embedded */
+}
+
+static int cmd_run(int ac, char *av[])
+{
+    char * cmd = argvJoin((ARGV_t)av, ' ');
+    const char * cav[] = { cmd, NULL };
+    int rc;
+    if (!strcmp(av[0], "reload") || !strcmp(av[0], "build"))
+	*cmd = xtoupper(*cmd);
+    rc = rpmsmRun(NULL, cav, NULL);
+    cmd = _free(cmd);
+    return rc;
+}
+
+static int cmd_help(int ac, /*@unused@*/ char *av[])
+{
+    FILE * fp = stdout;
+    rpmioC c;
+
+    fprintf(fp, "Commands:\n\n");
+    for (c = (rpmioC)_rpmsmCommands; c->name != NULL; c++) {
+        fprintf(fp, "    %s\n        %s\n\n", c->synopsis, c->help);
+    }
+    return 0;
+}
+
+const struct rpmioC_s const _rpmsmCommands[] = {
+    { "exit",  0, 0, cmd_quit, "exit",
+      "Exit the program."
+    },
+    { "quit",  0, 0, cmd_quit, "quit",
+      "Exit the program."
+    },
+    { "list",  0, 1, cmd_run, "list [REGEX]",
+      "List installed policy modules that match REGEX."
+    },
+
+    { "base",  1, 1, cmd_run, "base FILE",
+      "Install a new base policy module FILE."
+    },
+    { "install",  1, 1, cmd_run, "install FILE",
+      "Install a new policy module FILE."
+    },
+    { "upgrade",  1, 1, cmd_run, "upgrade FILE",
+      "Upgrade an existing policy module FILE."
+    },
+    { "remove",  1, 1, cmd_run, "remove MODULE",
+      "Remove an existing policy MODULE."
+    },
+    { "reload",  0, 1, cmd_run, "reload",
+      "Reload policy."
+    },
+    { "build",  0, 1, cmd_run, "build",
+      "Build and reload policy."
+    },
+
+    { "help", 0, 0, cmd_help, "help",
+      "Print this help text"
+    },
+    { NULL, -1, -1, NULL, NULL, NULL }
+};
+
+static rpmRC _rpmsmRun(rpmsm sm, const char * str, const char ** resultp)
+{
+    rpmioP P = NULL;
+    rpmRC rc = RPMRC_OK;	/* assume success */
+    int xx;
+
+    if (sm == NULL) sm = _rpmsmI;
+
+    if (resultp)
+	*resultp = NULL;
+
+    while (rpmioParse(&P, str) != RPMRC_NOTFOUND) {	/* XXX exit on EOS */
+	rpmioC c;
+	str = NULL;
+
+	if (P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0) {
+
+	    for (c = (rpmioC) _rpmsmCommands; c->name; c++) {
+	        if (!strcmp(P->av[0], c->name))
+	            break;
+	    }
+	    if (c->name == NULL) {
+		rpmiobAppend(sm->iob, "Unknown command '", 0);
+		rpmiobAppend(sm->iob, P->av[0], 0);
+		rpmiobAppend(sm->iob, "'\n", 0);
+		rc = RPMRC_FAIL;
+	    } else
+	    if ((P->ac - 1) < c->minargs) {
+		rpmiobAppend(sm->iob, "Not enough arguments for ", 0);
+		rpmiobAppend(sm->iob, c->name, 0);
+		rpmiobAppend(sm->iob, "\n", 0);
+		rc = RPMRC_FAIL;
+	    } else
+	    if ((P->ac - 1) > c->maxargs) {
+		rpmiobAppend(sm->iob, "Too many arguments for ", 0);
+		rpmiobAppend(sm->iob, c->name, 0);
+		rpmiobAppend(sm->iob, "\n", 0);
+		rc = RPMRC_FAIL;
+	    } else
+	    if ((xx = (*c->handler)(P->ac, (char **)P->av)) < 0) {
+		static char ibuf[32];
+		(void) snprintf(ibuf, sizeof(ibuf), "%d", xx);
+		rpmiobAppend(sm->iob, "Failed(", 0);
+		rpmiobAppend(sm->iob, ibuf, 0);
+		rpmiobAppend(sm->iob, "): ", 0);
+		rpmiobAppend(sm->iob, P->av[0], 0);
+		rpmiobAppend(sm->iob, "\n", 0);
+		rc = RPMRC_FAIL;
+	    }
+	}
+	if (rc != RPMRC_OK)
+	    break;
+    }
+
+    if (sm != NULL) {
+	rpmiob iob = sm->iob;
+	if (resultp && iob->blen > 0) /* XXX return result iff bytes appended */
+	    *resultp = rpmiobStr(iob);
+	iob->blen = 0;			/* XXX reset the print buffer */
+    }
+
+    rpmioPFree(P);
+
+    return rc;
+}
+
+static int main_loop(void)
+{
+    char *line = NULL;
+    size_t len = 0;
+    int ret = 0;	/* assume success */
+
+    while (1) {
+	const char *buf;
+
+#if defined(WITH_READLINE)
+        if (isatty(fileno(stdin))) {
+            line = readline("boo> ");
+        } else
+#endif
+	if (getline(&line, &len, stdin) == -1)
+	    break;
+        cleanstr(line, '\n');
+        if (line == NULL) {
+            fprintf(stdout, "\n");
+	    break;
+        }
+        if (line[0] == '#')
+            continue;
+
+	buf = NULL;
+	if (_rpmsmRun(NULL, line, &buf) == RPMRC_OK) {
+#if defined(WITH_READLINE)
+	    if (isatty(fileno(stdin)))
+		add_history(line);
+#endif
+	}
+	if (buf && *buf) {
+	    const char * eol = (buf[strlen(buf)-1] != '\n' ? "\n" : "");
+	    fprintf(stdout, "%s%s", buf, eol);
+	}
+    }
+    line = _free(line);
+    return ret;
+}
 
 /**
  */
@@ -156,6 +350,12 @@ int main(int argc, char *argv[])
     /* Parse CLI options and args. */
     optCon = rpmioInit(argc, argv, rpmsmOptionsTable);
     av = poptGetArgs(optCon);
+
+    if (!(av && *av) || !strcmp(av[0], "-")) {
+	rc = main_loop();
+	goto exit;
+    }
+
     if (av && *av) {
 	int ac = argvCount(av);
 	char lcmd = (av && ac > 0 ? (*av)[0] : 0);
@@ -196,14 +396,12 @@ int main(int argc, char *argv[])
     (void) signal(SIGQUIT, SIG_IGN);
     (void) signal(SIGTERM, SIG_IGN);
 
-    result = NULL;
     rc = rpmsmRun(sm, sm->av, &result);
-    if (result && *result) {
-	const char * eol = (result[strlen(result)-1] != '\n' ? "\n" : "");
-	fprintf((rc < 0 ? stderr : stdout), "%s%s", result, eol);
-    }
+    if (result)
+	fprintf((rc < 0 ? stderr : stdout), "%s\n", result);
 
 exit:
+
     if (optCon)
 	optCon = rpmioFini(optCon);
 
