@@ -58,46 +58,39 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
     rpmioC c;
 
     fprintf(fp, "Commands:\n\n");
-    for (c = (rpmioC)_rpmsmCommands; c->name != NULL; c++) {
-        fprintf(fp, "    %s\n        %s\n\n", c->synopsis, c->help);
+    for (c = (rpmioC)_rpmsmCommands; c->longName != NULL; c++) {
+        fprintf(fp, "    %s %s\n        %s\n\n",
+		c->longName, (c->argDescrip ? c->argDescrip : ""), c->descrip);
     }
     return 0;
 }
 
+#define	ARGMINMAX(_min, _max)	(int)(((_min) << 8) | ((_max) & 0xff))
+
 const struct rpmioC_s const _rpmsmCommands[] = {
-    { "exit",  0, 0, cmd_quit, "exit",
-      "Exit the program."
-    },
-    { "quit",  0, 0, cmd_quit, "quit",
-      "Exit the program."
-    },
-    { "list",  0, 1, cmd_run, "list [REGEX]",
-      "List installed policy modules that match REGEX."
-    },
+    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program."), NULL },
+    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program."), NULL },
+    { "list", '\0', POPT_ARG_MAINCALL,		cmd_run, ARGMINMAX(0, 1),
+	N_("List installed policy modules that match REGEX."), N_("[REGEX]") },
 
-    { "base",  1, 1, cmd_run, "base FILE",
-      "Install a new base policy module FILE."
-    },
-    { "install",  1, 1, cmd_run, "install FILE",
-      "Install a new policy module FILE."
-    },
-    { "upgrade",  1, 1, cmd_run, "upgrade FILE",
-      "Upgrade an existing policy module FILE."
-    },
-    { "remove",  1, 1, cmd_run, "remove MODULE",
-      "Remove an existing policy MODULE."
-    },
-    { "reload",  0, 1, cmd_run, "reload",
-      "Reload policy."
-    },
-    { "build",  0, 1, cmd_run, "build",
-      "Build and reload policy."
-    },
+    { "base", '\0', POPT_ARG_MAINCALL,		cmd_run, ARGMINMAX(1, 1),
+	N_("Install a new base policy module FILE."), N_("FILE") },
+    { "install", '\0', POPT_ARG_MAINCALL,	cmd_run, ARGMINMAX(1, 1),
+	N_("Install a new policy module FILE."), N_("FILE") },
+    { "upgrade", '\0', POPT_ARG_MAINCALL,	cmd_run, ARGMINMAX(1, 1),
+	N_("Upgrade an existing policy module FILE."), N_("FILE") },
+    { "remove", '\0', POPT_ARG_MAINCALL,	cmd_run, ARGMINMAX(1, 1),
+	N_("Remove an existing policy MODULE."), N_("MODULE") },
+    { "reload", '\0', POPT_ARG_MAINCALL,	cmd_run, ARGMINMAX(0, 1),
+	N_("Reload policy."), NULL },
+    { "build", '\0', POPT_ARG_MAINCALL,		cmd_run, ARGMINMAX(0, 1),
+	N_("Build and reload policy."), NULL },
 
-    { "help", 0, 0, cmd_help, "help",
-      "Print this help text"
-    },
-    { NULL, -1, -1, NULL, NULL, NULL }
+    { "help", '\0', POPT_ARG_MAINCALL,		cmd_help, ARGMINMAX(0, 0),
+	N_("Print this help text"), NULL },
+    { NULL, '\0', 0, NULL, ARGMINMAX(0, 0), NULL, NULL }
 };
 
 static rpmRC _rpmsmRun(rpmsm sm, const char * str, const char ** resultp)
@@ -116,26 +109,32 @@ static rpmRC _rpmsmRun(rpmsm sm, const char * str, const char ** resultp)
 	str = NULL;
 
 	if (P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0) {
+	    int minargs;
+	    int maxargs;
 
-	    for (c = (rpmioC) _rpmsmCommands; c->name; c++) {
-	        if (!strcmp(P->av[0], c->name))
-	            break;
+	    for (c = (rpmioC) _rpmsmCommands; c->longName; c++) {
+	        if (strcmp(P->av[0], c->longName))
+		    continue;
+		minargs = (c->val >> 8) & 0xff;
+		maxargs = (c->val     ) & 0xff;
+		break;
 	    }
-	    if (c->name == NULL) {
+
+	    if (c->longName == NULL) {
 		rpmiobAppend(sm->iob, "Unknown command '", 0);
 		rpmiobAppend(sm->iob, P->av[0], 0);
 		rpmiobAppend(sm->iob, "'\n", 0);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((P->ac - 1) < c->minargs) {
+	    if ((P->ac - 1) < minargs) {
 		rpmiobAppend(sm->iob, "Not enough arguments for ", 0);
-		rpmiobAppend(sm->iob, c->name, 0);
+		rpmiobAppend(sm->iob, c->longName, 0);
 		rpmiobAppend(sm->iob, "\n", 0);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((P->ac - 1) > c->maxargs) {
+	    if ((P->ac - 1) > maxargs) {
 		rpmiobAppend(sm->iob, "Too many arguments for ", 0);
-		rpmiobAppend(sm->iob, c->name, 0);
+		rpmiobAppend(sm->iob, c->longName, 0);
 		rpmiobAppend(sm->iob, "\n", 0);
 		rc = RPMRC_FAIL;
 	    } else

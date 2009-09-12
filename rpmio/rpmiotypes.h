@@ -58,12 +58,13 @@ extern size_t _rpmiob_chunk;
 /** \ingroup rpmio
  */
 typedef struct rpmioC_s {
-    const char * name;
-    int minargs;
-    int maxargs;
-    int(*handler) (int ac, char * av[]);
-    const char *synopsis;
-    const char *help;
+    const char * longName;
+    char shortName;
+    unsigned int argInfo;
+    int (*handler) (int ac, char * av[]);
+    int val;
+    const char *descrip;
+    const char *argDescrip;
 } * rpmioC;
 
 /** \ingroup rpmio

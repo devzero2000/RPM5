@@ -581,8 +581,9 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
     rpmioC c;
 
     rpmaugFprintf(NULL, "Commands:\n\n");
-    for (c = (rpmioC)_rpmaugCommands; c->name != NULL; c++) {
-        rpmaugFprintf(NULL, "    %s\n        %s\n\n", c->synopsis, c->help);
+    for (c = (rpmioC)_rpmaugCommands; c->longName != NULL; c++) {
+        rpmaugFprintf(NULL, "    %s %s\n        %s\n\n",
+		c->longName, (c->argDescrip ? c->argDescrip : ""), c->descrip);
     }
     rpmaugFprintf(NULL, "\nEnvironment:\n\n");
     rpmaugFprintf(NULL, "    AUGEAS_ROOT\n        the file system root, defaults to '/'\n\n");
@@ -591,74 +592,87 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
     return 0;
 }
 
+#define	ARGMINMAX(_min, _max)	(int)(((_min) << 8) | ((_max) & 0xff))
+
 const struct rpmioC_s const _rpmaugCommands[] = {
-    { "exit",  0, 0, cmd_quit, "exit",
-      "Exit the program"
+    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+      "Exit the program",
+	NULL
     },
-    { "quit",  0, 0, cmd_quit, "quit",
-      "Exit the program"
+    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program"), NULL
     },
-    { "ls",  1, 1, cmd_ls, "ls <PATH>",
-      "List the direct children of PATH"
+    { "ls", '\0', POPT_ARG_MAINCALL,		cmd_ls, ARGMINMAX(1, 1),
+	N_("List the direct children of PATH"), N_("<PATH>")
     },
-    { "match",  1, 2, cmd_match, "match <PATH> [<VALUE>]",
-      "Find all paths that match the path expression PATH. If VALUE is given,\n"
-      "        only the matching paths whose value equals VALUE are printed"
+    { "match", '\0', POPT_ARG_MAINCALL,		cmd_match, ARGMINMAX(1, 2),
+   N_("Find all paths that match the path expression PATH. If VALUE is given,\n"
+      "        only the matching paths whose value equals VALUE are printed"),
+	N_("<PATH> [<VALUE>]")
     },
-    { "rm",  1, 1, cmd_rm, "rm <PATH>",
-      "Delete PATH and all its children from the tree"
+    { "rm", '\0', POPT_ARG_MAINCALL,		cmd_rm, ARGMINMAX(1, 1),
+	N_("Delete PATH and all its children from the tree"), N_("<PATH>")
     },
-    { "mv", 2, 2, cmd_mv, "mv <SRC> <DST>",
-      "Move node SRC to DST. SRC must match exactly one node in the tree.\n"
+    { "mv", '\0', POPT_ARG_MAINCALL,		cmd_mv, ARGMINMAX(2, 2),
+   N_("Move node SRC to DST. SRC must match exactly one node in the tree.\n"
       "        DST must either match exactly one node in the tree, or may not\n"
       "        exist yet. If DST exists already, it and all its descendants are\n"
       "        deleted. If DST does not exist yet, it and all its missing \n"
-      "        ancestors are created." },
-    { "set", 1, 2, cmd_set, "set <PATH> <VALUE>",
-      "Associate VALUE with PATH. If PATH is not in the tree yet,\n"
+      "        ancestors are created."),
+	N_("<SRC> <DST>")
+    },
+    { "set", '\0', POPT_ARG_MAINCALL,		cmd_set, ARGMINMAX(1, 2),
+   N_("Associate VALUE with PATH. If PATH is not in the tree yet,\n"
       "        it and all its ancestors will be created. These new tree entries\n"
-      "        will appear last amongst their siblings"
+      "        will appear last amongst their siblings"),
+	N_("<PATH> <VALUE>")
     },
-    { "clear", 1, 1, cmd_clear, "clear <PATH>",
-      "Set the value for PATH to NULL. If PATH is not in the tree yet,\n"
+    { "clear", '\0', POPT_ARG_MAINCALL,		cmd_clear, ARGMINMAX(1, 1),
+   N_("Set the value for PATH to NULL. If PATH is not in the tree yet,\n"
       "        it and all its ancestors will be created. These new tree entries\n"
-      "        will appear last amongst their siblings"
+      "        will appear last amongst their siblings"),
+	N_("<PATH>")
     },
-    { "get", 1, 1, cmd_get, "get <PATH>",
-      "Print the value associated with PATH"
+    { "get", '\0', POPT_ARG_MAINCALL,		cmd_get, ARGMINMAX(1, 1),
+	N_("Print the value associated with PATH"), N_("<PATH>")
     },
-    { "print", 0, 1, cmd_print, "print [<PATH>]",
-      "Print entries in the tree. If PATH is given, printing starts there,\n"
-      "        otherwise the whole tree is printed"
+    { "print", '\0', POPT_ARG_MAINCALL,		cmd_print, ARGMINMAX(0, 1),
+   N_("Print entries in the tree. If PATH is given, printing starts there,\n"
+      "        otherwise the whole tree is printed"),
+	N_("[<PATH>]")
     },
-    { "ins", 3, 3, cmd_ins, "ins <LABEL> <WHERE> <PATH>",
-      "Insert a new node with label LABEL right before or after PATH into\n"
-     "        the tree. WHERE must be either 'before' or 'after'."
+    { "ins", '\0', POPT_ARG_MAINCALL,		cmd_ins, ARGMINMAX(3, 3),
+   N_("Insert a new node with label LABEL right before or after PATH into\n"
+     "        the tree. WHERE must be either 'before' or 'after'."),
+	N_("<LABEL> <WHERE> <PATH>")
     },
-    { "save", 0, 0, cmd_save, "save",
-      "Save all pending changes to disk. For now, files are not overwritten.\n"
-      "        Instead, new files with extension .augnew are created"
+    { "save", '\0', POPT_ARG_MAINCALL,		cmd_save, ARGMINMAX(0, 0),
+   N_("Save all pending changes to disk. For now, files are not overwritten.\n"
+      "        Instead, new files with extension .augnew are created"),
+	NULL
     },
-    { "load", 0, 0, cmd_load, "load",
-      "Load files accordig to the transforms in /augeas/load."
+    { "load", '\0', POPT_ARG_MAINCALL,		cmd_load, ARGMINMAX(0, 0),
+	N_("Load files accordig to the transforms in /augeas/load."), NULL
     },
-    { "defvar", 1, 2, cmd_defvar, "defvar <NAME> <EXPR>",
-      "Define the variable NAME to the result of evalutating EXPR. The\n"
+    { "defvar", '\0', POPT_ARG_MAINCALL,	cmd_defvar, ARGMINMAX(1, 2),
+   N_("Define the variable NAME to the result of evalutating EXPR. The\n"
       "        variable can be used in path expressions as $NAME. Note that EXPR\n"
-      "        is evaluated when the variable is defined, not when it is used."
+      "        is evaluated when the variable is defined, not when it is used."),
+	N_("<NAME> <EXPR>")
     },
-    { "defnode", 2, 3, cmd_defnode, "defnode <NAME> <EXPR> [<VALUE>]",
-      "Define the variable NAME to the result of evalutating EXPR, which\n"
+    { "defnode", '\0', POPT_ARG_MAINCALL,	cmd_defnode, ARGMINMAX(2, 3),
+   N_("Define the variable NAME to the result of evalutating EXPR, which\n"
       "        must be a nodeset. If no node matching EXPR exists yet, one\n"
       "        is created and NAME will refer to it. If VALUE is given, this\n"
       "        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"
       "        node is created as if with 'clear EXPR' would and NAME refers\n"
-      "        to that node."
+      "        to that node."),
+	N_("<NAME> <EXPR> [<VALUE>]")
     },
-    { "help", 0, 0, cmd_help, "help",
-      "Print this help text"
+    { "help", '\0', POPT_ARG_MAINCALL,		cmd_help, ARGMINMAX(0, 0),
+	N_("Print this help text"), NULL
     },
-    { NULL, -1, -1, NULL, NULL, NULL }
+    { NULL, '\0', 0, NULL, ARGMINMAX(0, 0), NULL, NULL }
 };
 
 rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
@@ -677,21 +691,26 @@ rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
 	str = NULL;
 
 	if (P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0) {
+	    int minargs;
+	    int maxargs;
 
-	    for (c = (rpmioC) _rpmaugCommands; c->name; c++) {
-	        if (!strcmp(P->av[0], c->name))
-	            break;
+	    for (c = (rpmioC) _rpmaugCommands; c->longName; c++) {
+	        if (strcmp(P->av[0], c->longName))
+		    continue;
+		minargs = (c->val >> 8) & 0xff;
+		maxargs = (c->val     ) & 0xff;
+		break;
 	    }
-	    if (c->name == NULL) {
+	    if (c->longName == NULL) {
 	        rpmaugFprintf(NULL, "Unknown command '%s'\n", P->av[0]);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((P->ac - 1) < c->minargs) {
-		rpmaugFprintf(NULL, "Not enough arguments for %s\n", c->name);
+	    if ((P->ac - 1) < minargs) {
+		rpmaugFprintf(NULL, "Not enough arguments for %s\n", c->longName);
 		rc = RPMRC_FAIL;
 	    } else
-	    if ((P->ac - 1) > c->maxargs) {
-		rpmaugFprintf(NULL, "Too many arguments for %s\n", c->name);
+	    if ((P->ac - 1) > maxargs) {
+		rpmaugFprintf(NULL, "Too many arguments for %s\n", c->longName);
 		rc = RPMRC_FAIL;
 	    } else
 	    if ((xx = (*c->handler)(P->ac-1, (char **)P->av+1)) < 0) {

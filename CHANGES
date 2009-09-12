@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augtool: morph the rpmioC command table to popt.
+    - jbj: spooktool: morph the rpmioC command table to popt.
     - jbj: add spooktool (i.e. semodule with an augtool-like interpreter).
     - jbj: rpmsm: ensure pool memory is initialized correctly.
     - jbj: rpmaug: use the rpmio parser.
