@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsm: ensure pool memory is initialized correctly.
     - jbj: rpmaug: use the rpmio parser.
     - jbj: rpmio: expose the toy parser and command table used by augtool.
     - jbj: retrofit getline for augtool to build more portably.

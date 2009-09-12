@@ -347,7 +347,7 @@ static void rpmsmFini(void * _sm)
     sm->iob = NULL;
     sm->fn = _free(sm->fn);
     sm->flags = 0;
-    sm->access = RPMSM_STATE_CLOSED;
+    sm->state = RPMSM_STATE_CLOSED;
     sm->access = 0;
     sm->av = argvFree(sm->av);
     sm->I = NULL;
@@ -374,8 +374,16 @@ rpmsm rpmsmNew(const char * fn, unsigned int flags)
 {
     rpmsm sm = rpmsmGetPool(_rpmsmPool);
 
+    sm->fn = NULL;
+    sm->flags = 0;
+    sm->state = 0;
+    sm->access = 0;
+    sm->av = NULL;
+    sm->I = NULL;
+    sm->iob = rpmiobNew(0);
+
 #if defined(WITH_SEMANAGE)
-    semanage_handle_t *I = sm->I = semanage_handle_create();
+  { semanage_handle_t *I = sm->I = semanage_handle_create();
     int rc;
 
     if (I == NULL) {
@@ -385,8 +393,6 @@ fprintf(stderr, "--> %s: semanage_handle_create() failed\n", __FUNCTION__);
 	return NULL;
     }
 
-    if (sm->iob == NULL)
-	sm->iob = rpmiobNew(0);
 
     /* Connect to the policy store immediately in known (if requested). */
     if (flags & RPMSM_FLAGS_BEGIN)
@@ -406,6 +412,7 @@ fprintf(stderr, "--> %s: semanage_handle_create() failed\n", __FUNCTION__);
 	(void)rpmsmFree(sm);
 	return NULL;
     }
+  }
 #endif
 
     return rpmsmLink(sm);
@@ -434,6 +441,8 @@ int rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
     int i;
 
     if (sm == NULL) sm = rpmsmI();
+
+    (void) rpmiobEmpty(sm->iob);
 
     for (i = 0; i < ncmds; i++) {
 	char * cmd = (char *)av[i];
@@ -492,10 +501,9 @@ exit:
     }
 
     /* Return any/all spewage to caller. */
-    if (resultp)
-	*resultp = (rpmiobLen(sm->iob) > 0
-		? xstrdup(rpmiobStr(rpmiobRTrim(sm->iob))) : NULL);
-    (void) rpmiobEmpty(sm->iob);
+    (void) rpmiobRTrim(sm->iob);
+    if (resultp)	/* XXX xstrdup? */
+	*resultp = (rpmiobLen(sm->iob) > 0 ? rpmiobStr(sm->iob) : NULL);
     
     return rc;
 }
