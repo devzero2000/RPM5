@@ -274,7 +274,7 @@ LIBRPMIO_0
     rpmaclCopyFd;
     rpmaclCopyDir;
     _rpmaug_debug;
-    _rpmaugCommands;
+    _rpmaugCommandTable;
     rpmaugDefnode;
     rpmaugDefvar;
     _rpmaugFlags;

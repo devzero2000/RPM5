@@ -377,7 +377,7 @@ static int child_count(const char *path)
 
 static int cmd_quit(int ac, char *av[])
 {
-    exit(EXIT_SUCCESS);		/* XXX FIXME: quit is useless for embedded */
+    return -1;	/* XXX return immediately on quit and exit commands */
 }
 
 static int cmd_ls(int ac, char *av[])
@@ -578,10 +578,10 @@ exit:
 
 static int cmd_help(int ac, /*@unused@*/ char *av[])
 {
-    rpmioC c;
+    const struct poptOption * c;
 
     rpmaugFprintf(NULL, "Commands:\n\n");
-    for (c = (rpmioC)_rpmaugCommands; c->longName != NULL; c++) {
+    for (c = _rpmaugCommandTable; c->longName != NULL; c++) {
         rpmaugFprintf(NULL, "    %s %s\n        %s\n\n",
 		c->longName, (c->argDescrip ? c->argDescrip : ""), c->descrip);
     }
@@ -594,14 +594,7 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
 
 #define	ARGMINMAX(_min, _max)	(int)(((_min) << 8) | ((_max) & 0xff))
 
-const struct rpmioC_s const _rpmaugCommands[] = {
-    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
-      "Exit the program",
-	NULL
-    },
-    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
-	N_("Exit the program"), NULL
-    },
+const struct poptOption _rpmaugCommandTable[] = {
     { "ls", '\0', POPT_ARG_MAINCALL,		cmd_ls, ARGMINMAX(1, 1),
 	N_("List the direct children of PATH"), N_("<PATH>")
     },
@@ -669,6 +662,12 @@ const struct rpmioC_s const _rpmaugCommands[] = {
       "        to that node."),
 	N_("<NAME> <EXPR> [<VALUE>]")
     },
+    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program"), NULL
+    },
+    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program"), NULL
+    },
     { "help", '\0', POPT_ARG_MAINCALL,		cmd_help, ARGMINMAX(0, 0),
 	N_("Print this help text"), NULL
     },
@@ -687,37 +686,46 @@ rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
 	*resultp = NULL;
 
     while (rpmioParse(&P, str) != RPMRC_NOTFOUND) {	/* XXX exit on EOS */
-	rpmioC c;
+	const struct poptOption * c;
+	int (*handler) (int ac, char * av[]);
+	int minargs;
+	int maxargs;
+
 	str = NULL;
 
-	if (P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0) {
-	    int minargs;
-	    int maxargs;
+	if (!(P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0))
+	    continue;
 
-	    for (c = (rpmioC) _rpmaugCommands; c->longName; c++) {
-	        if (strcmp(P->av[0], c->longName))
-		    continue;
-		minargs = (c->val >> 8) & 0xff;
-		maxargs = (c->val     ) & 0xff;
-		break;
-	    }
-	    if (c->longName == NULL) {
-	        rpmaugFprintf(NULL, "Unknown command '%s'\n", P->av[0]);
-		rc = RPMRC_FAIL;
-	    } else
-	    if ((P->ac - 1) < minargs) {
-		rpmaugFprintf(NULL, "Not enough arguments for %s\n", c->longName);
-		rc = RPMRC_FAIL;
-	    } else
-	    if ((P->ac - 1) > maxargs) {
-		rpmaugFprintf(NULL, "Too many arguments for %s\n", c->longName);
-		rc = RPMRC_FAIL;
-	    } else
-	    if ((xx = (*c->handler)(P->ac-1, (char **)P->av+1)) < 0) {
-	        rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, P->av[0]);
+	for (c = _rpmaugCommandTable; c->longName; c++) {
+	    if (strcmp(P->av[0], c->longName))
+		continue;
+	    handler = c->arg;
+	    minargs = (c->val >> 8) & 0xff;
+	    maxargs = (c->val     ) & 0xff;
+	    break;
+	}
+	if (c->longName == NULL) {
+	    rpmaugFprintf(NULL, "Unknown command '%s'\n", P->av[0]);
+	    rc = RPMRC_FAIL;
+	} else
+	if ((P->ac - 1) < minargs) {
+	    rpmaugFprintf(NULL, "Not enough arguments for %s\n", c->longName);
+	    rc = RPMRC_FAIL;
+	} else
+	if ((P->ac - 1) > maxargs) {
+	    rpmaugFprintf(NULL, "Too many arguments for %s\n", c->longName);
+	    rc = RPMRC_FAIL;
+	} else
+	if ((xx = (*handler)(P->ac-1, (char **)P->av+1)) < 0) {
+	    /* XXX return immediately on quit and exit commands */
+	    if (!strcmp(c->longName, "quit") || !strcmp(c->longName, "exit"))
+		rc = RPMRC_NOTFOUND;
+	    else {
+		rpmaugFprintf(NULL, "Failed(%d): %s\n", xx, P->av[0]);
 		rc = RPMRC_FAIL;
 	    }
 	}
+
 	if (rc != RPMRC_OK)
 	    break;
     }

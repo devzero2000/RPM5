@@ -141,16 +141,16 @@ static char *readline_path_generator(const char *text, int state)
 static char *readline_command_generator(const char *text, int state)
 {
     static int current = 0;
-    const char *name;
+    const char * longName;
 
     if (state == 0)
         current = 0;
 
     rl_completion_append_character = ' ';
-    while ((name = _rpmaugCommands[current].name) != NULL) {
+    while ((longName = _rpmaugCommandTable[current].longName) != NULL) {
         current += 1;
-        if (!strncmp(text, name, strlen(text)))
-            return strdup(name);
+        if (!strncmp(text, longName, strlen(text)))
+            return strdup(longName);
     }
     return NULL;
 }
@@ -208,15 +208,23 @@ static int main_loop(void)
             continue;
 
 	buf = NULL;
-	if (rpmaugRun(NULL, line, &buf) == RPMRC_OK) {
+	switch (rpmaugRun(NULL, line, &buf)) {
+	case RPMRC_OK:
 #if defined(WITH_READLINE)
 	    if (isatty(fileno(stdin)))
 		add_history(line);
 #endif
+	    break;
+	case RPMRC_NOTFOUND:
+	    goto exit;
+	    /*@notreached@*/ break;
+	default:
+	    break;
 	}
 	if (buf && *buf)
 	    fprintf(stdout, "%s", buf);
     }
+exit:
     line = _free(line);
     return ret;
 }

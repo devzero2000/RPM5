@@ -23,7 +23,7 @@
 #define F_ISSET(_sm, _FLAG) (((_sm)->flags & ((RPMSM_FLAGS_##_FLAG) & ~0x40000000)) != RPMSM_FLAGS_NONE)
 
 /* forward reference */
-extern const struct rpmioC_s const _rpmsmCommands[];
+extern struct poptOption _rpmsmCommandTable[];
 
 static char *cleanstr(char *path, const char sep)
 {
@@ -35,12 +35,12 @@ static char *cleanstr(char *path, const char sep)
     return path;
 }
 
-static int cmd_quit(int ac, char *av[])
+static rpmRC cmd_quit(int ac, char *av[])
 {
-    exit(EXIT_SUCCESS);		/* XXX FIXME: quit is useless for embedded */
+    return RPMRC_NOTFOUND;	/* XXX exit as if EOS */
 }
 
-static int cmd_run(int ac, char *av[])
+static rpmRC cmd_run(int ac, char *av[])
 {
     char * cmd = argvJoin((ARGV_t)av, ' ');
     const char * cav[] = { cmd, NULL };
@@ -52,26 +52,22 @@ static int cmd_run(int ac, char *av[])
     return rc;
 }
 
-static int cmd_help(int ac, /*@unused@*/ char *av[])
+static rpmRC cmd_help(int ac, /*@unused@*/ char *av[])
 {
     FILE * fp = stdout;
-    rpmioC c;
+    struct poptOption * c;
 
     fprintf(fp, "Commands:\n\n");
-    for (c = (rpmioC)_rpmsmCommands; c->longName != NULL; c++) {
+    for (c = _rpmsmCommandTable; c->longName != NULL; c++) {
         fprintf(fp, "    %s %s\n        %s\n\n",
 		c->longName, (c->argDescrip ? c->argDescrip : ""), c->descrip);
     }
-    return 0;
+    return RPMRC_OK;
 }
 
 #define	ARGMINMAX(_min, _max)	(int)(((_min) << 8) | ((_max) & 0xff))
 
-const struct rpmioC_s const _rpmsmCommands[] = {
-    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
-	N_("Exit the program."), NULL },
-    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
-	N_("Exit the program."), NULL },
+struct poptOption _rpmsmCommandTable[] = {
     { "list", '\0', POPT_ARG_MAINCALL,		cmd_run, ARGMINMAX(0, 1),
 	N_("List installed policy modules that match REGEX."), N_("[REGEX]") },
 
@@ -90,6 +86,10 @@ const struct rpmioC_s const _rpmsmCommands[] = {
 
     { "help", '\0', POPT_ARG_MAINCALL,		cmd_help, ARGMINMAX(0, 0),
 	N_("Print this help text"), NULL },
+    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program."), NULL },
+    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+	N_("Exit the program."), NULL },
     { NULL, '\0', 0, NULL, ARGMINMAX(0, 0), NULL, NULL }
 };
 
@@ -105,50 +105,53 @@ static rpmRC _rpmsmRun(rpmsm sm, const char * str, const char ** resultp)
 	*resultp = NULL;
 
     while (rpmioParse(&P, str) != RPMRC_NOTFOUND) {	/* XXX exit on EOS */
-	rpmioC c;
+	struct poptOption * c;
+	int (*handler) (int ac, char * av[]);
+	int minargs;
+	int maxargs;
+
 	str = NULL;
 
-	if (P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0) {
-	    int minargs;
-	    int maxargs;
+	if (!(P->av && P->ac > 0 && P->av[0] != NULL && strlen(P->av[0]) > 0))
+	    continue;
 
-	    for (c = (rpmioC) _rpmsmCommands; c->longName; c++) {
-	        if (strcmp(P->av[0], c->longName))
-		    continue;
-		minargs = (c->val >> 8) & 0xff;
-		maxargs = (c->val     ) & 0xff;
-		break;
-	    }
-
-	    if (c->longName == NULL) {
-		rpmiobAppend(sm->iob, "Unknown command '", 0);
-		rpmiobAppend(sm->iob, P->av[0], 0);
-		rpmiobAppend(sm->iob, "'\n", 0);
-		rc = RPMRC_FAIL;
-	    } else
-	    if ((P->ac - 1) < minargs) {
-		rpmiobAppend(sm->iob, "Not enough arguments for ", 0);
-		rpmiobAppend(sm->iob, c->longName, 0);
-		rpmiobAppend(sm->iob, "\n", 0);
-		rc = RPMRC_FAIL;
-	    } else
-	    if ((P->ac - 1) > maxargs) {
-		rpmiobAppend(sm->iob, "Too many arguments for ", 0);
-		rpmiobAppend(sm->iob, c->longName, 0);
-		rpmiobAppend(sm->iob, "\n", 0);
-		rc = RPMRC_FAIL;
-	    } else
-	    if ((xx = (*c->handler)(P->ac, (char **)P->av)) < 0) {
-		static char ibuf[32];
-		(void) snprintf(ibuf, sizeof(ibuf), "%d", xx);
-		rpmiobAppend(sm->iob, "Failed(", 0);
-		rpmiobAppend(sm->iob, ibuf, 0);
-		rpmiobAppend(sm->iob, "): ", 0);
-		rpmiobAppend(sm->iob, P->av[0], 0);
-		rpmiobAppend(sm->iob, "\n", 0);
-		rc = RPMRC_FAIL;
-	    }
+	for (c = _rpmsmCommandTable; c->longName; c++) {
+	    if (strcmp(P->av[0], c->longName))
+		continue;
+	    handler = c->arg;
+	    minargs = (c->val >> 8) & 0xff;
+	    maxargs = (c->val     ) & 0xff;
+	    break;
 	}
+
+	if (c->longName == NULL) {
+	    rpmiobAppend(sm->iob, "Unknown command '", 0);
+	    rpmiobAppend(sm->iob, P->av[0], 0);
+	    rpmiobAppend(sm->iob, "'\n", 0);
+	    rc = RPMRC_FAIL;
+	} else
+	if ((P->ac - 1) < minargs) {
+	    rpmiobAppend(sm->iob, "Not enough arguments for ", 0);
+	    rpmiobAppend(sm->iob, c->longName, 0);
+	    rpmiobAppend(sm->iob, "\n", 0);
+	    rc = RPMRC_FAIL;
+	} else
+	if ((P->ac - 1) > maxargs) {
+	    rpmiobAppend(sm->iob, "Too many arguments for ", 0);
+	    rpmiobAppend(sm->iob, c->longName, 0);
+	    rpmiobAppend(sm->iob, "\n", 0);
+	    rc = RPMRC_FAIL;
+	} else
+	if ((rc = (*handler)(P->ac, (char **)P->av)) == RPMRC_FAIL) {
+	    static char ibuf[32];
+	    (void) snprintf(ibuf, sizeof(ibuf), "%d", xx);
+	    rpmiobAppend(sm->iob, "Failed(", 0);
+	    rpmiobAppend(sm->iob, ibuf, 0);
+	    rpmiobAppend(sm->iob, "): ", 0);
+	    rpmiobAppend(sm->iob, P->av[0], 0);
+	    rpmiobAppend(sm->iob, "\n", 0);
+	}
+
 	if (rc != RPMRC_OK)
 	    break;
     }
@@ -190,17 +193,25 @@ static int main_loop(void)
             continue;
 
 	buf = NULL;
-	if (_rpmsmRun(NULL, line, &buf) == RPMRC_OK) {
+	switch (_rpmsmRun(NULL, line, &buf)) {
+	case RPMRC_OK:
 #if defined(WITH_READLINE)
 	    if (isatty(fileno(stdin)))
 		add_history(line);
 #endif
+	    break;
+	case RPMRC_NOTFOUND:
+	    goto exit;
+	    /*@notreached@*/ break;
+	default:
+	    break;
 	}
 	if (buf && *buf) {
 	    const char * eol = (buf[strlen(buf)-1] != '\n' ? "\n" : "");
 	    fprintf(stdout, "%s%s", buf, eol);
 	}
     }
+exit:
     line = _free(line);
     return ret;
 }
@@ -350,7 +361,7 @@ int main(int argc, char *argv[])
     optCon = rpmioInit(argc, argv, rpmsmOptionsTable);
     av = poptGetArgs(optCon);
 
-    if (!(av && *av) || !strcmp(av[0], "-")) {
+    if (sm->av == NULL && (av == NULL || *av == NULL || !strcmp(av[0], "-"))) {
 	rc = main_loop();
 	goto exit;
     }

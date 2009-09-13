@@ -45,8 +45,8 @@ struct rpmaug_s {
 #endif
 };
 
-/*@unchecked@*/
-extern struct rpmioC_s const _rpmaugCommands[];
+/*@unchecked@*/ /*@observer@*/
+extern const struct poptOption	_rpmaugCommandTable[];
 
 #endif	/* _RPMAUG_INTERNAL */
 
