@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augeas: change the DSL embedding syntax from "augtool" to "augeas".
     - jbj: haul out some trash.
     - jbj: augtool: morph the rpmioC command table to popt.
     - jbj: spooktool: morph the rpmioC command table to popt.

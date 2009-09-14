@@ -682,7 +682,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
     } else
 #endif
 #if defined(WITH_AUGEAS)
-    if (!strcmp(Phe->p.argv[0], "<augtool>")) {
+    if (!strcmp(Phe->p.argv[0], "<augeas>")) {
 	/* XXX change rpmaugNew() to common embedded interpreter API */
 	rpmaug aug = NULL;
 	rc = rpmaugRun(aug, script, NULL) == RPMRC_OK
@@ -1764,7 +1764,9 @@ static rpmpsm rpmpsmGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmpsmFini);
 	pool = _psmPool;
     }
-    return (rpmpsm) rpmioGetPool(pool, sizeof(*psm));
+    psm = (rpmpsm) rpmioGetPool(pool, sizeof(*psm));
+    memset(((char *)psm)+sizeof(psm->_item), 0, sizeof(*psm)-sizeof(psm->_item));
+    return psm;
 }
 
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)

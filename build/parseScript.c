@@ -314,7 +314,7 @@ int parseScript(Spec spec, int parsePart)
     } else
 #endif
 #ifdef WITH_AUGEAS
-    if (!strcmp(progArgv[0], "<augtool>")) {
+    if (!strcmp(progArgv[0], "<augeas>")) {
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinAugeasScripts", "5.3-1");
     } else

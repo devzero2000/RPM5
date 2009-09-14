@@ -1892,7 +1892,7 @@ expandMacro(MacroBuf mb)
 #endif
 
 #ifdef	WITH_AUGEAS
-	if (STREQ("augtool", f, fn)) {
+	if (STREQ("augeas", f, fn)) {
 		/* XXX change rpmaugNew() to common embedded interpreter API */
 #ifdef	NOTYET
 		const char ** av = NULL;
