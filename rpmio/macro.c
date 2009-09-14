@@ -77,6 +77,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsm.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
@@ -2061,6 +2062,50 @@ expandMacro(MacroBuf mb)
 		}
 		ruby = rpmrubyFree(ruby);
 		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_SEMANAGE
+	if (STREQ("spook", f, fn)) {
+		/* XXX change rpmsmNew() to common embedded interpreter API */
+#ifdef	NOTYET
+		const char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+#else
+		/* XXX use xstrndup (which never returns NULL) instead. */
+		char * script = strndup(g, (size_t)(se-g-1));
+		const char * av[2];
+		/* XXX FIXME */
+		static const char * _rpmsmStore = "targeted";
+		static unsigned int _rpmsmFlags = 0;
+#endif
+		rpmsm sm = (_globalI ? NULL
+		    : rpmsmNew(_rpmsmStore, _rpmsmFlags));
+		const char * result = NULL;
+
+		/* XXX HACK: use an argv for now. */
+		av[0] = script;
+		av[1] = NULL;
+		if (rpmsmRun(sm, av, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		 }
+		}
+		sm = rpmsmFree(sm);
+#ifdef	NOTYET
+		av = _free(av);
+#endif
 		script = _free(script);
 		s = se;
 		continue;

@@ -20,6 +20,7 @@
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsm.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
@@ -586,7 +587,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fdnop, fileSystem, internalState @*/
@@ -728,6 +729,19 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	ruby = rpmrubyFree(ruby);
+    } else
+#endif
+#if defined(WITH_SEMANAGE)
+    if (!strcmp(Phe->p.argv[0], "<spook>")) {
+	/* XXX change rpmsmNew() to common embedded interpreter API */
+	rpmsm sm = NULL;
+	/* XXX HACK: use an argv for now. */
+	const char * av[2];
+	av[0] = script;
+	av[1] = NULL;
+	rc = rpmsmRun(sm, av, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	sm = rpmsmFree(sm);
     } else
 #endif
 #if defined(WITH_SQUIRREL)

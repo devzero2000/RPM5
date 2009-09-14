@@ -193,7 +193,9 @@ static rpmds rpmdsGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmdsFini);
 	pool = _rpmdsPool;
     }
-    return (rpmds) rpmioGetPool(pool, sizeof(*ds));
+    ds = (rpmds) rpmioGetPool(pool, sizeof(*ds));
+    memset(((char *)ds)+sizeof(ds->_item), 0, sizeof(*ds)-sizeof(ds->_item));
+    return ds;
 }
 
 static /*@null@*/
@@ -980,7 +982,6 @@ assert(ods->Flags != NULL);
 /*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 /*@=compmempass@*/
-
 }
 
 int rpmdsFind(rpmds ds, const rpmds ods)
@@ -1490,6 +1491,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(BuiltinRubyScripts)",	"5.2-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded ruby scripts.") },
+#endif
+#if defined(WITH_SEMANAGE)
+    { "rpmlib(BuiltinSpookScripts)",	"5.3-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("internal embedded Spook scripts.") },
 #endif
 #if defined(WITH_SQUIRREL)
     { "rpmlib(BuiltinSquirrelScripts)",	"5.2-1",

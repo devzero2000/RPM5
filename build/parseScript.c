@@ -349,6 +349,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinRubyScripts", "5.2-1");
     } else
 #endif
+#ifdef WITH_SEMANAGE
+    if (!strcmp(progArgv[0], "<spook>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinSpookScripts", "5.3-1");
+    } else
+#endif
 #ifdef WITH_SQUIRREL
     if (!strcmp(progArgv[0], "<squirrel>")) {
 	(void) rpmlibNeedsFeature(pkg->header,
