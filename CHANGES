@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: spook: install spooktool next to semodule.
     - jbj: spook: embed the "spook" DSL just like augeas (nee "augtool").
     - jbj: augeas: change the DSL embedding syntax from "augtool" to "augeas".
     - jbj: haul out some trash.

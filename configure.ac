@@ -1232,7 +1232,7 @@ RPM_CHECK_LIB(
     [semanage], [semanage_handle_create], [semanage/semanage.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_SEMANAGE, 1, [Define if building with Libsemanage])
-      WITH_SEMANAGE_SEMODULE="semodule"
+      WITH_SEMANAGE_SEMODULE="semodule spooktool"
     ], [])
 AC_SUBST(WITH_SEMANAGE_SEMODULE)
 

@@ -18,7 +18,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmsm_debug = -1;
+int _rpmsm_debug = 0;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmsm _rpmsmI = NULL;
