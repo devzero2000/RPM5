@@ -403,11 +403,14 @@ static rpmsm rpmsmI(void)
 
 /*==============================================================*/
 
-int rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
+rpmRC rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
 {
     int ncmds = argvCount(av);
     int rc = 0;
     int i;
+
+if (_rpmsm_debug)
+fprintf(stderr, "--> %s(%p,%p,%p) av[0] \"%s\"\n", __FUNCTION__, sm, av, resultp, (av ? av[0] : NULL));
 
     if (sm == NULL) sm = rpmsmI();
 
@@ -475,6 +478,7 @@ exit:
 	*resultp = (rpmiobLen(sm->iob) > 0 ? rpmiobStr(sm->iob) : NULL);
     
 if (_rpmsm_debug)
-fprintf(stderr, "<-- %s(%p) I %p rc %d\n", __FUNCTION__, sm, sm->I, rc);
-    return rc;
+fprintf(stderr, "<-- %s(%p,%p,%p) av[0] \"%s\" rc %d\n", __FUNCTION__, sm, av, resultp, (av ? av[0] : NULL), rc);
+    /* XXX impedance match to OK or FAIL return codes. */
+    return (rc >= 0 ? RPMRC_OK : RPMRC_FAIL);
 }

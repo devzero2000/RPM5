@@ -246,7 +246,6 @@ rpmsm_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	    *rval = JSVAL_TRUE;
 	else
 	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, result));
-	result = _free(result);
     } else
 	*rval = JSVAL_FALSE;
 

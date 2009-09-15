@@ -114,9 +114,9 @@ rpmsm rpmsmNew(/*@null@*/ const char * fn, unsigned int flags)
  * @param sm		semanage wrapper
  * @param av		semanage commands
  * @retval *resultp	string result (malloc'd)
- * @return		0 on success, <0 on error
+ * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-int rpmsmRun(rpmsm sm, const char ** av, /*@out@*/ const char ** resultp)
+rpmRC rpmsmRun(rpmsm sm, const char ** av, /*@out@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sm, *resultp, fileSystem, internalState @*/;
 
