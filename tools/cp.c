@@ -117,7 +117,7 @@ struct rpmct_s {
 /**
  */
 static struct rpmct_s __ct = {
-        .flags = COPY_FLAGS_NONE
+	.flags = COPY_FLAGS_NONE
 };
 
 static rpmct _ct = &__ct;

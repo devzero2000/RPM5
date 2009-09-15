@@ -48,16 +48,19 @@ bin_PROGRAMS =		rpm2cpio
 
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
-	@WITH_AUGEAS_AUGTOOL@ cp find grep mtree @WITH_SEMANAGE_SEMODULE@ wget \
+	@WITH_AUGEAS_AUGTOOL@ chroot cp find grep mtree @WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 
 augtool_SOURCES =	augtool.c
-augtool_LDADD =		$(RPM_LDADD_COMMON) -lreadline
+augtool_LDADD =		$(RPMIO_LDADD_COMMON)
+
+chroot_SOURCES =	chroot.c
+chroot_LDADD =		$(RPMIO_LDADD_COMMON)
 
 cp_SOURCES =		cp.c
-cp_LDADD =		$(RPM_LDADD_COMMON)
+cp_LDADD =		$(RPMIO_LDADD_COMMON)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(RPM_LDADD_COMMON)
@@ -91,13 +94,13 @@ rpmspecdump_SOURCES =	rpmspecdump.c
 rpmspecdump_LDADD =	$(RPMBUILD_LDADD_COMMON)
 
 semodule_SOURCES =	semodule.c
-semodule_LDADD =	$(RPM_LDADD_COMMON)
+semodule_LDADD =	$(RPMIO_LDADD_COMMON)
 
 sandbox_SOURCES =	sandbox.c
-sandbox_LDADD =		$(RPM_LDADD_COMMON)
+sandbox_LDADD =		$(RPMIO_LDADD_COMMON)
 
 spooktool_SOURCES =	spooktool.c
-spooktool_LDADD =	$(RPM_LDADD_COMMON)
+spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)
@@ -117,7 +120,6 @@ rpmkey_LDADD =          $(RPM_LDADD_COMMON) -lkeyutils
 ##
 ## XAR <-> RPM package converter
 ##
-
 if WITH_XAR
 pkgbin_PROGRAMS += txar
 txar_SOURCES =		txar.c
@@ -128,7 +130,6 @@ endif
 ##
 ##  provide Berkeley-DB tools
 ##
-
 if WITH_DB_INTERNAL
 if WITH_DB_TOOLS_INTEGRATED
 pkgbin_PROGRAMS += db_tool
