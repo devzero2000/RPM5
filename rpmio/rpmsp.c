@@ -66,8 +66,16 @@ rpmsp rpmspNew(const char * fn, unsigned int flags)
 {
     rpmsp sp = rpmspGetPool(_rpmspPool);
 
+    sp->fn = NULL;
+    sp->flags = 0;
+    sp->I = NULL;
+    sp->DB = NULL;
+    sp->F = NULL;
+    sp->C = NULL;
+    sp->P = NULL;
+
 #if defined(WITH_SEPOL)
-    sepol_handle_t *I = sp->I = sepol_handle_create();
+  { sepol_handle_t *I = sp->I = sepol_handle_create();
     int xx;
 
     if (I == NULL) {
@@ -77,10 +85,6 @@ fprintf(stderr, "--> %s(%s,0x%x): sepol_handle_create() failed\n", __FUNCTION__,
 	return NULL;
     }
 
-    sp->DB = NULL;
-    sp->F = NULL;
-
-    sp->C = NULL;
     if ((xx = sepol_context_create(SP->I, &sp->C)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_context_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
@@ -88,7 +92,6 @@ fprintf(stderr, "--> %s: sepol_context_create: %s\n", __FUNCTION__, strerror(err
 	return NULL;
     }
 
-    sp->P = NULL;
     if ((xx = sepol_module_package_create(&sp->P)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_module_package_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
@@ -130,6 +133,7 @@ fprintf(stderr, "--> %s: sepol_policydb_read: %s\n", __FUNCTION__, strerror(errn
 	(void) fclose(fp);
 
     }
+  }
 #endif
 
     return rpmspLink(sp);
