@@ -7,6 +7,7 @@ Makefile.in
 *.gcno
 augtool
 convertdb1
+chroot
 cp
 db_tool
 debugedit
@@ -21,6 +22,8 @@ rpmdigest
 rpmkey
 rpmrepo
 rpmspecdump
+sandbox
 semodule
+spooktool
 txar
 wget
