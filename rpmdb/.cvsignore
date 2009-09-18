@@ -16,6 +16,10 @@ db_svc
 db_upgrade
 db_verify
 tagtbl.c
+tbdb.c
+bdb.c
+bdb.h
+tbdb
 tjfn
 .libs
 *.gcda

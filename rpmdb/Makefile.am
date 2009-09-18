@@ -4,6 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 MCCABE = pmccabe
+DB_SQL = db_sql
 
 SUBDIRS = # tests
 
@@ -25,13 +26,9 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
+EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql
 
-EXTRA_PROGRAMS = tjfn
-
-tjfn_SOURCES = tjfn.c
-tjfn_LDFLAGS = @LDFLAGS_STATIC@
-tjfn_LDADD = $(mylibs)
+EXTRA_PROGRAMS = tjfn tbdb
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
@@ -122,7 +119,7 @@ check-local:
 clean-local:
 	rm -f *.o tagtbl.c
 
-BUILT_SOURCES = tagtbl.c
+BUILT_SOURCES = tagtbl.c tbdb.c bdb.c bdb.h
 
 rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-splint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
@@ -167,6 +164,15 @@ lcov-report:
 #.PHONY:	lcov-upload
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
+
+tjfn_SOURCES = tjfn.c
+tjfn_LDADD = $(mylibs)
+
+tbdb_SOURCES = tbdb.c bdb.c
+tbdb_LDADD = $(mylibs)
+
+tbdb.c bdb.c bdb.h: bdb.sql
+	$(DB_SQL) -i bdb.sql -t tbdb.c
 
 tdbi: tdbi.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
