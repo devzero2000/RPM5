@@ -847,9 +847,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 	dbi->dbi_mmapsize = 16 * 1024 * 1024;
 	dbi->dbi_cachesize = 1 * 1024 * 1024;
     }
-
-    if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
-	dbi->dbi_permit_dups = 1;
 #endif
 
     /*@-globstate@*/ /* FIX: *(rdbOptions->arg) reachable */
