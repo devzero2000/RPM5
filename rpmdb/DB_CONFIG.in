@@ -1,0 +1,11 @@
+# ================ Environment =====================
+#set_data_dir		./data
+#set_lg_dir		./log
+set_tmp_dir		./tmp
+
+set_thread_count	64
+
+# ================ Memory Pool =====================
+set_cachesize		0 262144 0 
+set_mp_mmapsize		16777216
+

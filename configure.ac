@@ -2059,6 +2059,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     Doxyfile Makefile rpmpopt rpm.spec
     rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
     scripts/Makefile
+    rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
     macros/java macros/libtool macros/mono macros/perl 
     macros/pkgconfig macros/php macros/python macros/selinux

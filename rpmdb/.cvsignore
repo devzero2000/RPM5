@@ -1,6 +1,7 @@
 .created
 .deps
 .depend
+DB_CONFIG
 Makefile
 Makefile.in
 db_archive
