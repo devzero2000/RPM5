@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: install DB_CONFIG if not already present.
     - jbj: rpmdb: revert the DBENV->set_data_dir() attempt when re-opening. Not
 	the right fix, and spews an error on 4.8.24 with lazy opens in chroot.
     - jbj: rpmdb: stub-in DB_CONFIG.in (no parameters and uninstalled for now).

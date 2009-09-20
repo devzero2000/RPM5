@@ -110,7 +110,10 @@ else
 my_DB_HEADER = $(srcdir)/db_emu.h
 endif
 
+varlibrpm =	$(varprefix)/lib/rpm
 install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)
+	[ -f $(DESTDIR)$(varlibrpm)/DB_CONFIG ] || $(install_sh_DATA) DB_CONFIG $(DESTDIR)$(varlibrpm)
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
 	$(INSTALL_HEADER) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 
