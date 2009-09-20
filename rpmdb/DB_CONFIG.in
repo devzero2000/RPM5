@@ -6,6 +6,6 @@
 set_thread_count	64
 
 # ================ Memory Pool =====================
-set_cachesize		0 262144 0 
+set_cachesize		0 1048576 0 
 set_mp_mmapsize		16777216
 

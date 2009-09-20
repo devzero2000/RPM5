@@ -308,8 +308,6 @@ package or when debugging this package.\
 #   token	works?	Berkeley db flag or value
 #==================================================
 #---------------------- DBENV->open parameters and tunable values:
-#   mmapsize=16Mb	DBENV->set_mp_mmapsize
-#   cachesize=1Mb	DBENV->set_cachesize, DB->set_cachesize
 #---------------------- DBENV->open and DB->open common bits:
 #   create		DB_CREATE
 #   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
@@ -340,25 +338,19 @@ package or when debugging this package.\
 #   queue	???	DB_QUEUE
 #   unknown	+++	DB_UNKNOWN
 #---------------------- DB->set_flags bits:
-#   bt_dup	+++	(btree only) DB_DUP
 #   bt_dupsort	+++	(btree only) DB_DUPSORT
-#   ht_dup	+++	(hash only) DB_DUP
 #   ht_dupsort	+++	(hash only) DB_DUPSORT
 #----------------------- rpmdb specific configuration:
 #   usedbenv		(always on) Use db3 environment?
 #   verify		(db3 only) Verify Packages db after RW close?
 #   nofsync		Disable fsync(2) call performed after db3 writes?
 #   temporary		Unlink file when closing.
-#   thread_count=64	Track pid/tid of locks in dbenv for stale lock removal
-#
 
 # XXX Use transactions and logs for rpmdb durability (no clue yet):
-#%__dbi_other			create joinenv mpool txn log \
-#				mp_mmapsize=8Mb mp_size=512Kb
+#%__dbi_other			create joinenv mpool txn log
 
 # Use a CDB database model for concurrent access.
-%__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb \
-				thread_count=64
+%__dbi_cdb			create cdb mpool
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
 

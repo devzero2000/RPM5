@@ -2076,7 +2076,9 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmmiFini);
 	pool = _rpmmiPool;
     }
-    return (rpmmi) rpmioGetPool(pool, sizeof(*mi));
+    mi = (rpmmi) rpmioGetPool(pool, sizeof(*mi));
+    memset(((char *)mi)+sizeof(mi->_item), 0, sizeof(*mi)-sizeof(mi->_item));
+    return mi;
 }
 
 unsigned int rpmmiInstance(rpmmi mi) {
@@ -3677,30 +3679,32 @@ assert((dlen & 1) == 0);
 if (k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 
-/*@-compmempass@*/
 		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-		if (rc == 0) {			/* success */
+		switch (rc) {
+		case 0:			/* success */
+#ifdef	DYING
 		/* With duplicates, cursor is positioned, discard the record. */
 		    if (!dbi->dbi_permit_dups)
+#endif
 			(void) dbt2set(dbi, &v, &set);
-		} else if (rc != DB_NOTFOUND) {	/* error */
+		    break;
+		case DB_NOTFOUND:	/* notfound */
+		    break;
+		default:		/* error */
 		    rpmlog(RPMLOG_ERR,
 			_("error(%d) getting records from %s index\n"),
 			rc, dbiBN);
 		    ret += 1;
 		    /*@innercontinue@*/ continue;
 		}
-/*@=compmempass@*/
 
 		if (set == NULL)		/* not found or duplicate */
 		    set = xcalloc(1, sizeof(*set));
 
 		(void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
 
-/*@-compmempass@*/
 		(void) set2dbt(dbi, &v, set);
 		rc = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
-/*@=compmempass@*/
 
 		if (rc) {
 		    rpmlog(RPMLOG_ERR,

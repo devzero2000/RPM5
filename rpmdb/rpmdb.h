@@ -298,7 +298,6 @@ struct _dbiIndex {
 
     int	dbi_verify_on_close;
     int	dbi_use_dbenv;		/*!< use db environment? */
-    int	dbi_permit_dups;	/*!< permit duplicate entries? */
     int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
@@ -343,8 +342,6 @@ struct _dbiIndex {
     unsigned int dbi_lg_max;
     unsigned int dbi_lg_regionmax;
 	/* mpool sub-system parameters */
-    int	dbi_mmapsize;		/*!< (10Mb) */
-    int	dbi_cachesize;		/*!< (128Kb) */
 	/* mutex sub-system parameters */
     unsigned int dbi_mutex_align;
     unsigned int dbi_mutex_increment;

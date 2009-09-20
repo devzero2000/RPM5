@@ -404,10 +404,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		(dbi->dbi_verbose & DB_VERB_FILEOPS_ALL));
 #endif
 
-	if (dbi->dbi_mmapsize) {
-	    xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
-	    xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
-	}
 	if (dbi->dbi_tmpdir) {
 	    const char * root;
 	    const char * tmpdir;
@@ -467,10 +463,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #endif
 
 /* ==== Memory pool: */
-    if (dbi->dbi_cachesize) {
-	xx = dbenv->set_cachesize(dbenv, 0, dbi->dbi_cachesize, 0);
-	xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
-    }
 
 /* ==== Mutexes: */
     if (dbi->dbi_mutex_align) {
@@ -1411,10 +1403,6 @@ assert(rpmdb && rpmdb->db_dbenv);
 #endif
 
 /* 4.1: db->set_cache_priority(???) */
-	    if (rc == 0 && !dbi->dbi_use_dbenv && dbi->dbi_cachesize) {
-		rc = db->set_cachesize(db, 0, dbi->dbi_cachesize, 0);
-		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
-	    }
 /* 4.1: db->set_encrypt(???) */
 /* 4.1: db->set_errcall(dbenv, rpmdb->db_errcall); */
 /* 4.1: db->set_errfile(dbenv, rpmdb->db_errfile); */

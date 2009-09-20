@@ -319,8 +319,6 @@ DB_READ_UNCOMITTED
 #endif
 
 /* XXX set_alloc */
- { "cachesize",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
-	NULL, NULL },
 #if defined(WITH_DB)
 /* XXX set_dup_compare */
 /* XXX set_encrypt */
@@ -481,14 +479,8 @@ DB_SET_TXN_TIMEOUT
 
 /* ==== Memory pool: */
 #if defined(WITH_DB)
- { "mp_size",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
-	NULL, NULL },
 /* XXX DB_ENV->set_mp_max_openfd */
 /* XXX DB_ENV->set_mp_max_write */
- { "mmapsize", 0,POPT_ARG_INT,		&db3dbi.dbi_mmapsize, 0,
-	NULL, NULL },
- { "mp_mmapsize", 0,POPT_ARG_INT,	&db3dbi.dbi_mmapsize, 0,
-	NULL, NULL },
 /* XXX DB_MPOOLFILE->set_clear_len */
 /* XXX DB_MPOOLFILE->set_fileid */
 /* XXX DB_MPOOLFILE->set_ftype */
@@ -844,8 +836,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;
 	dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
-	dbi->dbi_mmapsize = 16 * 1024 * 1024;
-	dbi->dbi_cachesize = 1 * 1024 * 1024;
     }
 #endif
 
