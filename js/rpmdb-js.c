@@ -7,6 +7,8 @@
 #include "rpmdb-js.h"
 #include "rpmjs-debug.h"
 
+#include <argv.h>
+
 #include <db.h>
 
 #include "debug.h"
@@ -38,9 +40,10 @@ static int _debug = 0;
 
 /* --- helpers */
 static const char _home[] = "./rpmdb";
+static int _eflags = DB_CREATE | DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_TXN;
+
 static uint64_t _cachesize = 1024 * 1024;
 static int _ncaches = 1;
-static int _eflags = DB_CREATE | DB_INIT_MPOOL;
 
 static int rpmdb_env_create(DB_ENV ** dbenvp, uint32_t flags)
 {
@@ -89,7 +92,9 @@ enum rpmdb_tinyid {
     _MSGFILE	= -12,
     _SHMKEY	= -13,
     _THREADCNT	= -14,
-    _TIMEOUT	= -15,
+
+    _LKTIMEOUT	= -15,
+
     _TMPDIR	= -16,
     _VERBOSE	= -17,
     _LKCONFLICTS = -18,
@@ -98,16 +103,38 @@ enum rpmdb_tinyid {
     _LKMAXLOCKS	= -21,
     _LKMAXOBJS	= -22,
     _LKPARTITIONS = -23,
-    _LOGCONFIG	= -24,
-    _LGBSIZE	= -25,
-    _LGDIR	= -26,
-    _LGFILEMODE	= -27,
-    _LGMAX	= -28,
-    _LGREGIONMAX = -29,
+
+    _LOGDIRECT	= -24,
+    _LOGDSYNC	= -25,
+    _LOGAUTORM	= -26,
+    _LOGINMEM	= -27,
+    _LOGZERO	= -28,
+
+    _LGBSIZE	= -29,
+    _LGDIR	= -30,
+    _LGFILEMODE	= -31,
+    _LGMAX	= -32,
+    _LGREGIONMAX = -33,
+
+    _TXNTIMEOUT	= -34,
+
+    _VERSION	= -35,
+    _MAJOR	= -36,
+    _MINOR	= -37,
+    _PATCH	= -38,
+
+    _CACHESIZE	= -39,
+    _NCACHES	= -40,
 };
 
 static JSPropertySpec rpmdb_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"version",	_VERSION,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"major",	_MAJOR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"minor",	_MINOR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"patch",	_PATCH,		JSPROP_ENUMERATE,	NULL,	NULL},
+
     {"home",	_HOME,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"open_flags", _OPENFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"data_dirs", _DATADIRS,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -120,7 +147,7 @@ static JSPropertySpec rpmdb_props[] = {
     {"msgfile", _MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"shm_key", _SHMKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"thread_count", _THREADCNT, JSPROP_ENUMERATE,	NULL,	NULL},
-    {"timeout", _TIMEOUT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lock_timeout", _LKTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
     {"tmp_dir", _TMPDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"verbose", _VERBOSE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"lk_conflicts", _LKCONFLICTS, JSPROP_ENUMERATE,	NULL,	NULL},
@@ -129,19 +156,33 @@ static JSPropertySpec rpmdb_props[] = {
     {"lk_max_locks", _LKMAXLOCKS, JSPROP_ENUMERATE,	NULL,	NULL},
     {"lk_max_objects", _LKMAXOBJS, JSPROP_ENUMERATE,	NULL,	NULL},
     {"lk_partitions", _LKPARTITIONS, JSPROP_ENUMERATE,	NULL,	NULL},
-    {"log_config", _LOGCONFIG, JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"log_direct", _LOGDIRECT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"log_dsync", _LOGDSYNC,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"log_autorm", _LOGAUTORM,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"log_inmemory", _LOGINMEM, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"log_zero", _LOGZERO,	JSPROP_ENUMERATE,	NULL,	NULL},
+
     {"lg_bsize", _LGBSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_dir", _LGDIR,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_filemode", _LGFILEMODE, JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_max", _LGMAX,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_regionmax", _LGREGIONMAX, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"txn_timeout", _TXNTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"cachesize", _CACHESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"ncaches",	_NCACHES,	JSPROP_ENUMERATE,	NULL,	NULL},
+
     {NULL, 0, 0, NULL, NULL}
 };
 
+#define	_RET_B(_bool)	((_bool) > 0 ? JSVAL_TRUE: JSVAL_FALSE)
 #define	_RET_S(_str)	\
     ((_str) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_str))) : JSVAL_NULL)
 #define	_GET_S(_test)	((_test) ? _RET_S(_s) : JSVAL_VOID)
 #define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
+#define	_GET_I(_test)	((_test) ? INT_TO_JSVAL(_i) : JSVAL_VOID)
+#define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
 #define	_GET_L(_test)	((_test) ? DOUBLE_TO_JSVAL((double)_l) : JSVAL_VOID)
 
 static JSBool
@@ -149,8 +190,12 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB_ENV * dbenv = ptr;
+    const char ** _av = NULL;
+    int _ac = 0;
     const char * _s = NULL;
+    uint32_t _gb = 0;
     uint32_t _u = 0;
+    int _i = 0;
     long _l = 0;
     FILE * _fp = NULL;
     jsint tiny = JSVAL_TO_INT(id);
@@ -163,9 +208,23 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
+
+    case _VERSION:	*vp = _RET_S(DB_VERSION_STRING);		break;
+    case _MAJOR:	*vp = INT_TO_JSVAL(DB_VERSION_MAJOR);		break;
+    case _MINOR:	*vp = INT_TO_JSVAL(DB_VERSION_MINOR);		break;
+    case _PATCH:	*vp = INT_TO_JSVAL(DB_VERSION_PATCH);		break;
+
     case _HOME:		*vp = _GET_S(!dbenv->get_home(dbenv, &_s));	break;
     case _OPENFLAGS:	*vp = _GET_U(!dbenv->get_open_flags(dbenv, &_u)); break;
-    case _DATADIRS:	*vp = JSVAL_VOID;	break;
+    case _DATADIRS:
+	if (!dbenv->get_data_dirs(dbenv, &_av)
+	 && (_ac = argvCount(_av)) > 0)
+	{
+	    _s = _av[0];	/* XXX FIXME: return array */
+	    *vp = _RET_S(_s);
+	} else
+	    *vp = JSVAL_VOID;
+	break;
     case _CREATEDIR:	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s)); break;
     case _ENCRYPTFLAGS:	*vp = _GET_U(!dbenv->get_encrypt_flags(dbenv, &_u)); break;
     case _ERRFILE:
@@ -192,21 +251,40 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	break;
     case _SHMKEY:	*vp = _GET_L(!dbenv->get_shm_key(dbenv, &_l));	break;
     case _THREADCNT:	*vp = _GET_U(!dbenv->get_thread_count(dbenv, &_u)); break;
-    case _TIMEOUT:	*vp = JSVAL_VOID;	break;	/* XXX FIXME db_timeout_t * */
+
+	/* XXX FIXME assumes typedef uint32_t db_timeout_t; */
+    case _LKTIMEOUT:
+	*vp = _GET_U(!dbenv->get_timeout(dbenv, (db_timeout_t *)&_u, DB_SET_LOCK_TIMEOUT));
+	break;
+    case _TXNTIMEOUT:
+	*vp = _GET_U(!dbenv->get_timeout(dbenv, (db_timeout_t *)&_u, DB_SET_TXN_TIMEOUT));
+	break;
+
     case _TMPDIR:	*vp = _GET_S(!dbenv->get_tmp_dir(dbenv, &_s));	break;
     case _VERBOSE:	*vp = JSVAL_VOID;	break;	/* XXX FIXME enum */
-    case _LKCONFLICTS:	*vp = JSVAL_VOID;	break;
-    case _LKDETECT:	*vp = JSVAL_VOID;	break;
-    case _LKMAXLOCKERS:	*vp = JSVAL_VOID;	break;
-    case _LKMAXLOCKS:	*vp = JSVAL_VOID;	break;
-    case _LKMAXOBJS:	*vp = JSVAL_VOID;	break;
-    case _LKPARTITIONS:	*vp = JSVAL_VOID;	break;
-    case _LOGCONFIG:	*vp = JSVAL_VOID;	break;
-    case _LGBSIZE:	*vp = JSVAL_VOID;	break;
-    case _LGDIR:	*vp = JSVAL_VOID;	break;
-    case _LGFILEMODE:	*vp = JSVAL_VOID;	break;
-    case _LGMAX:	*vp = JSVAL_VOID;	break;
-    case _LGREGIONMAX:	*vp = JSVAL_VOID;	break;
+    case _LKCONFLICTS:	*vp = JSVAL_VOID;	break;	/* XXX FIXME */
+    case _LKDETECT:	*vp = _GET_U(!dbenv->get_lk_detect(dbenv, &_u)); break;
+    case _LKMAXLOCKERS:	*vp = _GET_U(!dbenv->get_lk_max_lockers(dbenv, &_u)); break;
+    case _LKMAXLOCKS:	*vp = _GET_U(!dbenv->get_lk_max_locks(dbenv, &_u)); break;
+    case _LKMAXOBJS:	*vp = _GET_U(!dbenv->get_lk_max_objects(dbenv, &_u)); break;
+    case _LKPARTITIONS:	*vp = _GET_U(!dbenv->get_lk_partitions(dbenv, &_u)); break;
+
+    case _LOGDIRECT:	*vp = _GET_B(!dbenv->log_get_config(dbenv, DB_LOG_DIRECT, &_i)); break;
+    case _LOGDSYNC:	*vp = _GET_B(!dbenv->log_get_config(dbenv, DB_LOG_DSYNC, &_i)); break;
+    case _LOGAUTORM:	*vp = _GET_B(!dbenv->log_get_config(dbenv, DB_LOG_AUTO_REMOVE, &_i)); break;
+    case _LOGINMEM:	*vp = _GET_B(!dbenv->log_get_config(dbenv, DB_LOG_IN_MEMORY, &_i)); break;
+    case _LOGZERO:	*vp = _GET_B(!dbenv->log_get_config(dbenv, DB_LOG_ZERO, &_i)); break;
+
+    case _LGBSIZE:	*vp = _GET_U(!dbenv->get_lg_bsize(dbenv, &_u));	break;
+    case _LGDIR:	*vp = _GET_S(!dbenv->get_lg_dir(dbenv, &_s)); break;
+    case _LGFILEMODE:	*vp = _GET_I(!dbenv->get_lg_filemode(dbenv, &_i)); break;
+    case _LGMAX:	*vp = _GET_U(!dbenv->get_lg_max(dbenv, &_u));	break;
+    case _LGREGIONMAX:	*vp = _GET_U(!dbenv->get_lg_regionmax(dbenv, &_u)); break;
+
+	/* XXX FIXME: return uint64_t */
+    case _CACHESIZE: 	*vp = _GET_U(!dbenv->get_cachesize(dbenv, &_gb, &_u, &_i)); break;
+    case _NCACHES: 	*vp = _GET_I(!dbenv->get_cachesize(dbenv, &_gb, &_u, &_i)); break;
+
     default:
 	break;
     }
@@ -214,9 +292,9 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     return JS_TRUE;
 }
 
-#define	_PUT_CON(_put)	(JSVAL_IS_STRING(*vp) && !(_put) \
+#define	_PUT_S(_put)	(JSVAL_IS_STRING(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_INT(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+#define	_PUT_U(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
@@ -245,7 +323,10 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _MSGFILE:
     case _SHMKEY:
     case _THREADCNT:
-    case _TIMEOUT:
+
+    case _LKTIMEOUT:
+    case _TXNTIMEOUT:
+
     case _TMPDIR:
     case _VERBOSE:
     case _LKCONFLICTS:
@@ -254,12 +335,20 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _LKMAXLOCKS:
     case _LKMAXOBJS:
     case _LKPARTITIONS:
-    case _LOGCONFIG:
+
+    case _LOGDIRECT:
+    case _LOGDSYNC:
+    case _LOGAUTORM:
+    case _LOGINMEM:
+    case _LOGZERO:
+
+
     case _LGBSIZE:
     case _LGDIR:
     case _LGFILEMODE:
     case _LGMAX:
     case _LGREGIONMAX:
+
     default:
 	break;
     }
