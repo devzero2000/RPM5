@@ -21,6 +21,7 @@ set_thread_count	64
 #set_verbose		DB_VERB_REPMGR_MISC
 #set_verbose		DB_VERB_WAITSFOR
 
+#  ================ Logging Subsystem =====================
 # ================ Memory Pool =====================
 set_cachesize		0 1048576 0 
 set_mp_mmapsize		16777216

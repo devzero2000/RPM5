@@ -284,58 +284,23 @@ package or when debugging this package.\
 # are writing an rpm installer, you shouldn't have to touch *any* of these
 # parameters.
 #
-# Here's a short list of the tokens, with a guess of whether the option is
-# useful:
-#	(nothing)	currently used in rpm, known to work.
-#	"+++"		under development, will be supported in rpm eventually.
-#	"???"		I have no clue, you're mostly on your own.
-#
-# If you do find yourself inclined to fiddle, here's what I see (shrug):
-# 1) Only the value of mp_size has any serious impact on overall performance,
-#    and you will need ~256Kb to handle a typical machine install.
-# 2) Only the Packages hash, because of the size of the values (i.e. headers),
-#    will ever need tuning. Diddle the pagesize if you're interested, although
-#    I believe that you will find pagesize=512 "best".
-# 3) Adding nofsync increases speed, but risks total data loss. Fiddle shared
-#    and/or mp_size instead.
-# 4) btree is faster than hash, but would require some painful rpm release
-#    engineering to convert everbody's databases to btree, not gonna happen
-#    soon.
-#
-# See the db3-devel package, or http://www.sleepycat.com for Berkeley db-3.x
-# documentation.
-#
 #   token	works?	Berkeley db flag or value
 #==================================================
 #---------------------- DBENV->open parameters and tunable values:
 #---------------------- DBENV->open and DB->open common bits:
 #   create		DB_CREATE
-#   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
 #---------------------- DBENV->open bits:
 #   joinenv		DB_JOIN_ENV
 #   mpool		DB_INIT_MPOOL
 #   cdb		+++	DB_INIT_CDB
-#   txn		???	DB_INIT_TXN
-#   log		???	DB_INIT_LOG
-#   lock	???	DB_INIT_LOCK
-#   recover	???	DB_RECOVER
-#   recover_fatal ???	DB_RECOVER_FATAL
-#   use_environ	???	DB_USE_ENVIRON
-#   use_environ_root ??? DB_USE_ENVIRON_ROOT
-#   private	+++	DB_PRIVATE
-#   lockdown	???	DB_LOCKDOWN
 #   shared	+++	DB_SYSTEM_MEM
 #---------------------- DB->open parameters and tunable values:
 #   pagesize=512 +++	DB->set_pagesize
 #---------------------- DB->open bits:
-#   excl	???	DB_EXCL
-#   nommap	???	DB_NOMMAP
 #   rdonly		DB_RDONLY
 #---------------------- DB->open types:
 #   btree		DB_BTREE
 #   hash		DB_HASH
-#   recno	???	DB_RECNO
-#   queue	???	DB_QUEUE
 #   unknown	+++	DB_UNKNOWN
 #---------------------- DB->set_flags bits:
 #   bt_dupsort	+++	(btree only) DB_DUPSORT

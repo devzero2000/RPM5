@@ -337,143 +337,9 @@ DB_READ_UNCOMITTED
 
 #endif
 
-#if defined(WITH_DB) && defined(DB_VERB_CHKPOINT)
- { "chkpoint",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_CHKPOINT,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_DEADLOCK)
- { "deadlock",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_DEADLOCK,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_RECOVERY)
- { "recovery",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_RECOVERY,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_REGISTER)
- { "register",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_REGISTER,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_REPLICATION)
- { "replication", 0,POPT_BIT_SET, &db3dbi.dbi_verbose, DB_VERB_REPLICATION,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_WAITSFOR)
- { "waitsfor",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_WAITSFOR,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_FILEOPS)
- { "fileops",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_FILEOPS,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_VERB_FILEOPS_ALL)
- { "fileops_all",0,POPT_BIT_SET,&db3dbi.dbi_verbose, DB_VERB_FILEOPS_ALL,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB)
- { "verbose",	0,POPT_ARG_VAL,		&db3dbi.dbi_verbose, -1,
-	NULL, NULL },
-#endif
-
 /* ==== Locking: */
-/* DB_ENV->lock_detect */
-/* DB_ENV->set_lk_detect */
-/* DB_ENV->get_lk_detect */
-#if defined(WITH_DB) && defined(DB_LOCK_DEFAULT)
- { "lk_default",0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_DEFAULT,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_EXPIRE)
- { "lk_expire",	0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_EXPIRE,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_MAXLOCKS)
- { "lk_maxlocks", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MAXLOCKS,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_MAXWRITE)
- { "lk_maxwrite", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MAXWRITE,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_MINLOCKS)
- { "lk_minlocks", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MINLOCKS,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_MINWRITE)
- { "lk_minwrite", 0,POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_MINWRITE,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_OLDEST)
- { "lk_oldest",	0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_OLDEST,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_RANDOM)
- { "lk_random",	0,POPT_ARG_VAL,		&db3dbi.dbi_lk_detect, DB_LOCK_RANDOM,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_LOCK_YOUNGEST)
- { "lk_youngest",0, POPT_ARG_VAL,	&db3dbi.dbi_lk_detect, DB_LOCK_YOUNGEST,
-	NULL, NULL },
-#endif
-
-/* DB_ENV->lock_get */
-/* XXX DB_ENV->set_lk_conflicts */
-/* XXX DB_ENV->get_lk_conflicts */
-#if defined(WITH_DB) && defined(NOTYET)
-DB_LOCK_NOWAIT	/* flags */
-
-DB_LOCK_READ	/* mode(s) */
-DB_LOCK_WRITE
-DB_LOCK_IWRITE
-DB_LOCK_IREAD
-DB_LOCK_IWR
-#endif
-
-#if defined(WITH_DB)
-/* XXX DB_ENV->set_lk_max_lockers */
-/* XXX DB_ENV->get_lk_max_lockers */
- { "lk_max_lockers", 0,POPT_ARG_INT,	&db3dbi.dbi_lk_max_lockers, 0,
-	NULL, NULL },
-/* XXX DB_ENV->set_lk_max_locks */
-/* XXX DB_ENV->get_lk_max_locks */
- { "lk_max_locks", 0,POPT_ARG_INT,	&db3dbi.dbi_lk_max_locks, 0,
-	NULL, NULL },
-/* XXX DB_ENV->set_lk_max_objects */
-/* XXX DB_ENV->get_lk_max_objects */
- { "lk_max_objects", 0,POPT_ARG_INT,	&db3dbi.dbi_lk_max_objects, 0,
-	NULL, NULL },
-#endif
-
-/* XXX DB_ENV->set_timeout */
-#if defined(WITH_DB) && defined(NOTYET)
-DB_SET_LOCK_TIMEOUT
-DB_SET_TXN_NOW
-DB_SET_TXN_TIMEOUT
-#endif
-/* XXX DB_ENV->get_timeout */
 
 /* ==== Logging: */
-#if defined(WITH_DB)
-/* XXX DB_ENV->set_lg_bsize */
-/* XXX DB_ENV->get_lg_bsize */
- { "lg_bsize",	0,POPT_ARG_INT,		&db3dbi.dbi_lg_bsize, 0,
-	NULL, NULL },
-/* XXX DB_ENV->set_lg_dir */
-/* XXX DB_ENV->get_lg_dir */
- { "lg_dir",	0,POPT_ARG_STRING,	&db3dbi.dbi_lg_dir, 0,
-	NULL, NULL },
-/* XXX DB_ENV->set_lg_filemode */
-/* XXX DB_ENV->get_lg_filemode */
- { "lg_filemode", 0,POPT_ARG_INT,	&db3dbi.dbi_lg_filemode, 0,
-	NULL, NULL },
-/* XXX DB_ENV->set_lg_max */
-/* XXX DB_ENV->get_lg_max */
- { "lg_max",	0,POPT_ARG_INT,		&db3dbi.dbi_lg_max, 0,
-	NULL, NULL },
-/* XXX DB_ENV->set_lg_regionmax */
-/* XXX DB_ENV->get_lg_regionmax */
- { "lg_regionmax", 0,POPT_ARG_INT,	&db3dbi.dbi_lg_regionmax, 0,
-	NULL, NULL },
-#endif
 
 /* ==== Memory pool: */
 #if defined(WITH_DB)
@@ -489,37 +355,8 @@ DB_SET_TXN_TIMEOUT
 #endif
 
 /* ==== Mutexes: */
-#if defined(WITH_DB) && defined(NOTYET)
-DB_MUTEX_PROCESS_ONLY	mutex_alloc
-DB_MUTEX_SELF_BLOCK	mutex_alloc
-DB_STAT_CLEAR		mutex_stat*
-#endif
-#if defined(WITH_DB)
-/* XXX DB_ENV->mutex_set_align */
-/* XXX DB_ENV->mutex_get_align */
- { "mutex_align", 0,POPT_ARG_INT,	&db3dbi.dbi_mutex_align, 0,
-	NULL, NULL },
-/* XXX DB_ENV->mutex_set_increment */
-/* XXX DB_ENV->mutex_get_increment */
- { "mutex_increment", 0,POPT_ARG_INT,	&db3dbi.dbi_mutex_increment, 0,
-	NULL, NULL },
-/* XXX DB_ENV->mutex_set_max */
-/* XXX DB_ENV->mutex_get_max */
- { "mutex_max", 0,POPT_ARG_INT,		&db3dbi.dbi_mutex_max, 0,
-	NULL, NULL },
-/* XXX DB_ENV->mutex_set_tas_spins */
-/* XXX DB_ENV->mutex_get_tas_spins */
- { "mutex_tas_spins",	0,POPT_ARG_INT,	&db3dbi.dbi_mutex_tas_spins, 0,
-	NULL, NULL },
-#endif
 
 /* ==== Replication: */
-/* XXX DB_ENV->rep_set_config */
-/* XXX DB_ENV->rep_set_limit */
-/* XXX DB_ENV->rep_set_nsites */
-/* XXX DB_ENV->rep_set_priority */
-/* XXX DB_ENV->rep_set_timeout */
-/* XXX DB_ENV->rep_set_transport */
 
 /* ==== Sequences: */
 #if defined(WITH_DB)

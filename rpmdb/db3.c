@@ -498,11 +498,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 /*@-noeffectuncon@*/
     dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
 /*@=noeffectuncon@*/
-    /* XXX must be at least 8, and __db* files need nuking to instantiate. */
-    if (dbi->dbi_thread_count >= 8) {
-	xx = dbenv->set_thread_count(dbenv, dbi->dbi_thread_count);
-	xx = cvtdberr(dbi, "dbenv->set_thread_count", xx, _debug);
-    }
 #endif
 
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
@@ -520,7 +515,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	goto errxit;
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
-    if (!rpmdb->db_verifying && dbi->dbi_thread_count >= 8) {
+    if (!rpmdb->db_verifying) {
 	/* XXX Set pid/tid is_alive probe. */
 	xx = dbenv->set_isalive(dbenv, db3is_alive);
 	xx = cvtdberr(dbi, "dbenv->set_isalive", xx, _debug);

@@ -321,31 +321,11 @@ struct _dbiIndex {
 /*@unused@*/ /*@shared@*/
     FILE *	dbi_errfile;
     const char * dbi_errpfx;
-    int	dbi_verbose;
     int	dbi_region_init;
 	/* locking sub-system parameters */
-    unsigned int dbi_lk_max_lockers;
-    unsigned int dbi_lk_max_locks;
-    unsigned int dbi_lk_max_objects;
-    unsigned int dbi_lk_detect;
-/*@unused@*/
-    int dbi_lk_nmodes;
-/*@unused@*/
-    unsigned char * dbi_lk_conflicts;
 	/* logging sub-system parameters */
-    unsigned int dbi_lg_bsize;
-/*@unused@*/
-    const char * dbi_lg_dir;
-/*@unused@*/
-    unsigned int dbi_lg_filemode;
-    unsigned int dbi_lg_max;
-    unsigned int dbi_lg_regionmax;
 	/* mpool sub-system parameters */
 	/* mutex sub-system parameters */
-    unsigned int dbi_mutex_align;
-    unsigned int dbi_mutex_increment;
-    unsigned int dbi_mutex_max;
-    unsigned int dbi_mutex_tas_spins;
 	/* replication sub-system parameters */
 	/* sequences sub-system parameters */
     unsigned int dbi_seq_cachesize;
