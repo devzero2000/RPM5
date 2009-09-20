@@ -7,8 +7,7 @@
 #include "rpmdb-js.h"
 #include "rpmjs-debug.h"
 
-#define	_RPMDB_INTERNAL
-#include <rpmdb.h>
+#include <db.h>
 
 #include "debug.h"
 
@@ -38,6 +37,36 @@ static int _debug = 0;
 #define rpmdb_wrappedobject	NULL
 
 /* --- helpers */
+static const char _home[] = "./rpmdb";
+static uint64_t _cachesize = 1024 * 1024;
+static int _ncaches = 1;
+static int _eflags = DB_CREATE | DB_INIT_MPOOL;
+
+static int rpmdb_env_create(DB_ENV ** dbenvp, uint32_t flags)
+{
+    FILE * _errfile = stderr;
+    int ret;
+
+    if ((ret = db_env_create(dbenvp, flags)) != 0) {
+	fprintf(stderr, "db_env_create: %s", db_strerror(ret));
+	ret = 1;
+	goto exit;
+    }
+
+    (*dbenvp)->set_errfile(*dbenvp, _errfile);
+
+    (*dbenvp)->set_cachesize(*dbenvp,
+	(_cachesize >> 32), (_cachesize & 0xffffffff), _ncaches);
+
+    if ((ret = (*dbenvp)->open(*dbenvp, _home, _eflags, 0)) != 0) {
+	(*dbenvp)->err(*dbenvp, ret, "DB_ENV->open: %s", _home);
+	ret = 1;
+	goto exit;
+    }
+
+exit:
+    return ret;
+}
 
 /* --- Object methods */
 
@@ -48,111 +77,83 @@ static JSFunctionSpec rpmdb_funcs[] = {
 /* --- Object properties */
 enum rpmdb_tinyid {
     _DEBUG	= -2,
-#ifdef	DYING
-    _CURRENT	= -3,
-    _PID	= -4,
-    _PPID	= -5,
-    _PREV	= -6,
-    _EXEC	= -7,
-    _FSCREATE	= -8,
-    _KEYCREATE	= -9,
-    _SOCKCREATE	= -10,
-    _ENFORCE	= -11,
-    _DENY	= -12,
-    _POLICYVERS	= -13,
-    _ENABLED	= -14,
-    _MLSENABLED	= -15,
-    _BOOLS	= -16,		/* todo++ */
-
-    _ROOT	= -30,
-    _BINARY	= -31,
-    _FAILSAFE	= -32,
-    _REMOVABLE	= -33,
-    _DEFAULT	= -34,
-    _USER	= -35,
-    _FCON	= -36,
-    _FCONHOME	= -37,
-    _FCONLOCAL	= -38,
-    _FCONSUBS	= -39,
-    _HOMEDIR	= -40,
-    _MEDIA	= -41,
-    _VIRTDOMAIN	= -42,
-    _VIRTIMAGE	= -43,
-    _X		= -44,
-    _CONTEXTS	= -45,
-    _SECURETTY	= -46,
-    _BOOLEANS	= -47,
-    _CUSTOMTYPES= -48,
-    _USERS	= -49,
-    _USERSCONF	= -50,
-    _XLATIONS	= -51,
-    _COLORS	= -52,
-    _NETFILTER	= -53,
-    _PATH	= -54,
-#endif	/* DYING */
+    _HOME	= -3,
+    _OPENFLAGS	= -4,
+    _DATADIRS	= -5,
+    _CREATEDIR	= -6,
+    _ENCRYPTFLAGS = -7,
+    _ERRFILE	= -8,
+    _ERRPFX	= -9,
+    _FLAGS	= -10,
+    _IDIRMODE	= -11,
+    _MSGFILE	= -12,
+    _SHMKEY	= -13,
+    _THREADCNT	= -14,
+    _TIMEOUT	= -15,
+    _TMPDIR	= -16,
+    _VERBOSE	= -17,
+    _LKCONFLICTS = -18,
+    _LKDETECT	= -19,
+    _LKMAXLOCKERS = -20,
+    _LKMAXLOCKS	= -21,
+    _LKMAXOBJS	= -22,
+    _LKPARTITIONS = -23,
+    _LOGCONFIG	= -24,
+    _LGBSIZE	= -25,
+    _LGDIR	= -26,
+    _LGFILEMODE	= -27,
+    _LGMAX	= -28,
+    _LGREGIONMAX = -29,
 };
 
 static JSPropertySpec rpmdb_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
-#ifdef	DYING
-    {"current",	_CURRENT,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"pid",	_PID,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"ppid",	_PPID,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"prev",	_PREV,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"exec",	_EXEC,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"fscreate",_FSCREATE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"keycreate",_KEYCREATE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"sockcreate",_SOCKCREATE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"enforce",	_ENFORCE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"deny",	_DENY,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"policyvers",_POLICYVERS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"enabled",	_ENABLED,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"mlsenabled",_MLSENABLED,	JSPROP_ENUMERATE,	NULL,	NULL},
-#ifdef	NOTYET
-    {"bools",	_BOOLS,		JSPROP_ENUMERATE,	NULL,	NULL},
-#endif
-
-    {"root",	_ROOT,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"binary",	_BINARY,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"failsafe",_FAILSAFE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"removable",_REMOVABLE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"default",	_DEFAULT,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"user",	_USER,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"fcon",	_FCON,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"fconhome",_FCONHOME,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"fconlocal",_FCONLOCAL,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"fconsubs",_FCONSUBS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"homedir",	_HOMEDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"media",	_MEDIA,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"virtdomain",_VIRTDOMAIN,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"virtimage",_VIRTIMAGE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"X",	_X,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"contexts",_CONTEXTS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"securetty",_SECURETTY,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"booleans",_BOOLEANS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"customtypes",_CUSTOMTYPES,JSPROP_ENUMERATE,	NULL,	NULL},
-    {"users",	_USERS,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"usersconf",_USERSCONF,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"xlations",_XLATIONS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"colors",	_COLORS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"netfilter",_NETFILTER,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"path",	_PATH,	JSPROP_ENUMERATE,	NULL,	NULL},
-#endif	/* DYING */
+    {"home",	_HOME,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"open_flags", _OPENFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"data_dirs", _DATADIRS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"create_dir", _CREATEDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"encrypt_flags", _ENCRYPTFLAGS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errfile",	_ERRFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errpfx",	_ERRPFX,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"idirmode", _IDIRMODE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"msgfile", _MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"shm_key", _SHMKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"thread_count", _THREADCNT, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"timeout", _TIMEOUT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"tmp_dir", _TMPDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"verbose", _VERBOSE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lk_conflicts", _LKCONFLICTS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lk_detect", _LKDETECT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lk_max_lockers", _LKMAXLOCKERS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lk_max_locks", _LKMAXLOCKS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lk_max_objects", _LKMAXOBJS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lk_partitions", _LKPARTITIONS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"log_config", _LOGCONFIG, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lg_bsize", _LGBSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lg_dir", _LGDIR,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lg_filemode", _LGFILEMODE, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lg_max", _LGMAX,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lg_regionmax", _LGREGIONMAX, JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
-#define	_GET_STR(_str)	\
-    ((_str) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_str))) : JSVAL_VOID)
-#define	_GET_CON(_test)	((_test) ? _GET_STR(con) : JSVAL_VOID)
+#define	_RET_S(_str)	\
+    ((_str) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_str))) : JSVAL_NULL)
+#define	_GET_S(_test)	((_test) ? _RET_S(_s) : JSVAL_VOID)
+#define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
+#define	_GET_L(_test)	((_test) ? DOUBLE_TO_JSVAL((double)_l) : JSVAL_VOID)
 
 static JSBool
 rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB_ENV * dbenv = ptr;
+    const char * _s = NULL;
+    uint32_t _u = 0;
+    long _l = 0;
+    FILE * _fp = NULL;
     jsint tiny = JSVAL_TO_INT(id);
-#ifdef	DYING
-    security_context_t con = NULL;
-#endif
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -162,59 +163,53 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
-#ifdef	DYING
-    case _CURRENT:	*vp = _GET_CON(!getcon(&con));			break;
-    case _PID:		*vp = _GET_CON(!getpidcon(getpid(), &con));	break;
-    case _PPID:		*vp = _GET_CON(!getpidcon(getppid(), &con));	break;
-    case _PREV:		*vp = _GET_CON(!getprevcon(&con));		break;
-    case _EXEC:		*vp = _GET_CON(!getexeccon(&con));		break;
-    case _FSCREATE:	*vp = _GET_CON(!getfscreatecon(&con));		break;
-    case _KEYCREATE:	*vp = _GET_CON(!getkeycreatecon(&con));		break;
-    case _SOCKCREATE:	*vp = _GET_CON(!getsockcreatecon(&con));	break;
-    case _ENFORCE:	*vp = INT_TO_JSVAL(security_getenforce());	break;
-    case _DENY:		*vp = INT_TO_JSVAL(security_deny_unknown());	break;
-    case _POLICYVERS:	*vp = INT_TO_JSVAL(security_policyvers());	break;
-    case _ENABLED:	*vp = INT_TO_JSVAL(is_selinux_enabled());	break;
-    case _MLSENABLED:	*vp = INT_TO_JSVAL(is_selinux_mls_enabled());	break;
-#ifdef	NOTYET
-    case _BOOLS:	*vp = ;	break;
-#endif
-    case _ROOT:		*vp = _GET_STR(selinux_policy_root());		break;
-    case _BINARY:	*vp = _GET_STR(selinux_binary_policy_path());	break;
-    case _FAILSAFE:	*vp = _GET_STR(selinux_failsafe_context_path());break;
-    case _REMOVABLE:	*vp = _GET_STR(selinux_removable_context_path());break;
-    case _DEFAULT:	*vp = _GET_STR(selinux_default_context_path());	break;
-    case _USER:		*vp = _GET_STR(selinux_user_contexts_path());	break;
-    case _FCON:		*vp = _GET_STR(selinux_file_context_path());	break;
-    case _FCONHOME:	*vp = _GET_STR(selinux_file_context_homedir_path());break;
-    case _FCONLOCAL:	*vp = _GET_STR(selinux_file_context_local_path());break;
-    case _FCONSUBS:	*vp = _GET_STR(selinux_file_context_subs_path());break;
-    case _HOMEDIR:	*vp = _GET_STR(selinux_homedir_context_path());	break;
-    case _MEDIA:	*vp = _GET_STR(selinux_media_context_path());	break;
-    case _VIRTDOMAIN:	*vp = _GET_STR(selinux_virtual_domain_context_path());break;
-    case _VIRTIMAGE:	*vp = _GET_STR(selinux_virtual_image_context_path());break;
-    case _X:		*vp = _GET_STR(selinux_x_context_path());	break;
-    case _CONTEXTS:	*vp = _GET_STR(selinux_contexts_path());	break;
-    case _SECURETTY:	*vp = _GET_STR(selinux_securetty_types_path());	break;
-    case _BOOLEANS:	*vp = _GET_STR(selinux_booleans_path());	break;
-    case _CUSTOMTYPES:	*vp = _GET_STR(selinux_customizable_types_path());break;
-    case _USERS:	*vp = _GET_STR(selinux_users_path());		break;
-    case _USERSCONF:	*vp = _GET_STR(selinux_usersconf_path());	break;
-    case _XLATIONS:	*vp = _GET_STR(selinux_translations_path());	break;
-    case _COLORS:	*vp = _GET_STR(selinux_colors_path());		break;
-    case _NETFILTER:	*vp = _GET_STR(selinux_netfilter_context_path());break;
-    case _PATH:		*vp = _GET_STR(selinux_path());			break;
-#endif	/* DYING */
+    case _HOME:		*vp = _GET_S(!dbenv->get_home(dbenv, &_s));	break;
+    case _OPENFLAGS:	*vp = _GET_U(!dbenv->get_open_flags(dbenv, &_u)); break;
+    case _DATADIRS:	*vp = JSVAL_VOID;	break;
+    case _CREATEDIR:	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s)); break;
+    case _ENCRYPTFLAGS:	*vp = _GET_U(!dbenv->get_encrypt_flags(dbenv, &_u)); break;
+    case _ERRFILE:
+	dbenv->get_errfile(dbenv, &_fp);
+	_s = (_fp ? "other" : NULL);
+	if (_fp == stdin)	_s = "stdin";
+	if (_fp == stdout)	_s = "stdout";
+	if (_fp == stderr)	_s = "stderr";
+	*vp = _RET_S(_s);
+	break;
+    case _ERRPFX:
+	dbenv->get_errpfx(dbenv, &_s);
+	*vp = _RET_S(_s);
+	break;
+    case _FLAGS:	*vp = _GET_U(!dbenv->get_flags(dbenv, &_u)); break;
+    case _IDIRMODE:	*vp = _GET_S(!dbenv->get_intermediate_dir_mode(dbenv, &_s)); break;
+    case _MSGFILE:
+	dbenv->get_msgfile(dbenv, &_fp);
+	_s = (_fp ? "other" : NULL);
+	if (_fp == stdin)	_s = "stdin";
+	if (_fp == stdout)	_s = "stdout";
+	if (_fp == stderr)	_s = "stderr";
+	*vp = _RET_S(_s);
+	break;
+    case _SHMKEY:	*vp = _GET_L(!dbenv->get_shm_key(dbenv, &_l));	break;
+    case _THREADCNT:	*vp = _GET_U(!dbenv->get_thread_count(dbenv, &_u)); break;
+    case _TIMEOUT:	*vp = JSVAL_VOID;	break;	/* XXX FIXME db_timeout_t * */
+    case _TMPDIR:	*vp = _GET_S(!dbenv->get_tmp_dir(dbenv, &_s));	break;
+    case _VERBOSE:	*vp = JSVAL_VOID;	break;	/* XXX FIXME enum */
+    case _LKCONFLICTS:	*vp = JSVAL_VOID;	break;
+    case _LKDETECT:	*vp = JSVAL_VOID;	break;
+    case _LKMAXLOCKERS:	*vp = JSVAL_VOID;	break;
+    case _LKMAXLOCKS:	*vp = JSVAL_VOID;	break;
+    case _LKMAXOBJS:	*vp = JSVAL_VOID;	break;
+    case _LKPARTITIONS:	*vp = JSVAL_VOID;	break;
+    case _LOGCONFIG:	*vp = JSVAL_VOID;	break;
+    case _LGBSIZE:	*vp = JSVAL_VOID;	break;
+    case _LGDIR:	*vp = JSVAL_VOID;	break;
+    case _LGFILEMODE:	*vp = JSVAL_VOID;	break;
+    case _LGMAX:	*vp = JSVAL_VOID;	break;
+    case _LGREGIONMAX:	*vp = JSVAL_VOID;	break;
     default:
 	break;
     }
-
-#ifdef	DYING
-    if (con) {
-	freecon(con);
-	con = NULL;
-    }
-#endif
 
     return JS_TRUE;
 }
@@ -229,36 +224,42 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-#ifdef	DYING
-    security_context_t con = NULL;
-    int myint = 0xdeadbeef;
-#endif
-    JSBool ok = JS_TRUE;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
-
-#ifdef	DYING
-    if (JSVAL_IS_STRING(*vp))
-	con = (security_context_t) JS_GetStringBytes(JS_ValueToString(cx, *vp));
-    if (JSVAL_IS_INT(*vp))
-	myint = JSVAL_TO_INT(*vp);
-#endif	/* DYING */
 
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
 	    break;
 	break;
-#ifdef	DYING
-    case _CURRENT:	ok = _PUT_CON(setcon(con));			break;
-    case _EXEC:		ok = _PUT_CON(setexeccon(con));			break;
-    case _FSCREATE:	ok = _PUT_CON(setfscreatecon(con));		break;
-    case _KEYCREATE:	ok = _PUT_CON(setkeycreatecon(con));		break;
-    case _SOCKCREATE:	ok = _PUT_CON(setsockcreatecon(con));		break;
-    case _ENFORCE:	ok = _PUT_INT(security_setenforce(myint));	break;
-#endif	/* DYING */
+    /* dbenv->add_data_dir() */
+    case _DATADIRS:
+    case _CREATEDIR:
+    case _ENCRYPTFLAGS:
+    case _ERRFILE:
+    case _ERRPFX:
+    case _FLAGS:
+    case _IDIRMODE:
+    case _MSGFILE:
+    case _SHMKEY:
+    case _THREADCNT:
+    case _TIMEOUT:
+    case _TMPDIR:
+    case _VERBOSE:
+    case _LKCONFLICTS:
+    case _LKDETECT:
+    case _LKMAXLOCKERS:
+    case _LKMAXLOCKS:
+    case _LKMAXOBJS:
+    case _LKPARTITIONS:
+    case _LOGCONFIG:
+    case _LGBSIZE:
+    case _LGDIR:
+    case _LGFILEMODE:
+    case _LGMAX:
+    case _LGREGIONMAX:
     default:
 	break;
     }
@@ -312,39 +313,40 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 }
 
 /* --- Object ctors/dtors */
-static rpmdb
+static DB_ENV *
 rpmdb_init(JSContext *cx, JSObject *obj)
 {
-    const char * _root = "/";
-    const char * _home = "/var/lib/rpm";
-    int _mode = O_RDONLY;
-    int _perms = 0644;
-    int _flags = 0;
-    rpmdb db = rpmdbNew(_root, _home, _mode, _perms, _flags);
+    DB_ENV * dbenv = NULL;
+    uint32_t _flags = 0;
+
+    if (rpmdb_env_create(&dbenv, _flags) || dbenv == NULL
+     ||!JS_SetPrivate(cx, obj, (void *)dbenv))
+    {
+	if (dbenv)
+	    (void) dbenv->close(dbenv, _flags);
+
+	/* XXX error msg */
+	dbenv = NULL;
+    }
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p) db %p\n", __FUNCTION__, cx, obj, db);
+fprintf(stderr, "<== %s(%p,%p) dbenv %p\n", __FUNCTION__, cx, obj, dbenv);
 
-    if (!JS_SetPrivate(cx, obj, (void *)db)) {
-	/* XXX error msg */
-	return NULL;
-    }
-    return db;
+    return dbenv;
 }
 
 static void
 rpmdb_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
-    rpmdb db = ptr;
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = 0;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-#ifdef	NOTYET
-    db = rpmdbFree(db);
-#else
-    (void) rpmdbClose(db);
-#endif
+    if (dbenv) {
+	(void) dbenv->close(dbenv, _flags);
+    }
 }
 
 static JSBool
@@ -375,7 +377,7 @@ rpmdb_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmdbClass, NULL);
 #ifdef	NOTYET
-    rpmdb db = ptr;
+    DB_ENV * dbenv = ptr;
     const char *_fn = NULL;
     const char * _con = NULL;
 #endif
@@ -390,9 +392,10 @@ rpmdb_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     _con = _free(_con);
 
     ok = JS_TRUE;
-#endif
 
 exit:
+#endif
+
 if (_debug)
 fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
 
@@ -430,13 +433,13 @@ JSObject *
 rpmjs_NewDbObject(JSContext *cx)
 {
     JSObject *obj;
-    rpmdb db;
+    DB_ENV * dbenv;
 
     if ((obj = JS_NewObject(cx, &rpmdbClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((db = rpmdb_init(cx, obj)) == NULL) {
+    if ((dbenv = rpmdb_init(cx, obj)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
