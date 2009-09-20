@@ -1376,11 +1376,6 @@ assert(dbenv);
 	} else {
 assert(rpmdb && rpmdb->db_dbenv);
 	    dbenv = rpmdb->db_dbenv;
-#define	PLD_CHROOT
-#ifdef	PLD_CHROOT
-	    if (rpmdb->db_chrootDone)
-		xx = dbenv->set_data_dir(dbenv, dbhome);
-#endif
 	    rpmdb->db_opens++;
 	}
 	/*@=mods@*/
