@@ -1,7 +1,7 @@
 # ================ Environment =====================
 #set_data_dir		./data
 #set_lg_dir		./log
-set_tmp_dir		./tmp
+#set_tmp_dir		./tmp
 
 set_thread_count	64
 
