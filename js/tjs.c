@@ -11,6 +11,7 @@
 #include "rpmaug-js.h"
 #include "rpmbc-js.h"
 #include "rpmbf-js.h"
+#include "rpmdb-js.h"
 #include "rpmdc-js.h"
 #include "rpmdig-js.h"
 #include "rpmdir-js.h"
@@ -69,6 +70,7 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Aug",		rpmjs_InitAugClass,	 -25 },
     { "Bc",		rpmjs_InitBcClass,	 -40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 -26 },
+    { "Db",		rpmjs_InitDbClass,	 44 },
     { "Dc",		rpmjs_InitDcClass,	 -28 },
     { "Dig",		rpmjs_InitDigClass,	 -37 },	/* todo++ */
     { "Dir",		rpmjs_InitDirClass,	 -29 },
@@ -86,19 +88,19 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Mi",		rpmjs_InitMiClass,	 -11 },
     { "Mpw",		rpmjs_InitMpwClass,	 -41 },	/* todo++ */
     { "Ps",		rpmjs_InitPsClass,	 -16 },
-    { "Sm",		rpmjs_InitSmClass,	 43 },	/* todo++ */
-    { "Sp",		rpmjs_InitSpClass,	 42 },	/* todo++ */
+    { "Sm",		rpmjs_InitSmClass,	 -43 },	/* todo++ */
+    { "Sp",		rpmjs_InitSpClass,	 -42 },	/* todo++ */
     { "St",		rpmjs_InitStClass,	 -27 },
     { "Sw",		rpmjs_InitSwClass,	 -38 },	/* todo++ */
-    { "Sx",		rpmjs_InitSxClass,	 39 },
-#ifdef WITH_SYCK
+    { "Sx",		rpmjs_InitSxClass,	 -39 },
+#if defined(WITH_SYCK)
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
     { "Sys",		rpmjs_InitSysClass,	 -33 },
     { "Te",		rpmjs_InitTeClass,	 -15 },
     { "Ts",		rpmjs_InitTsClass,	 -10 },
     { "Xar",		rpmjs_InitXarClass,	 -41 },	/* todo++ */
-#ifdef WITH_UUID
+#if defined(WITH_UUID)
     { "Uuid",		rpmjs_InitUuidClass,	  -2 },
 #endif
 };
