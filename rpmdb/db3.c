@@ -377,32 +377,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	    (void) sleep(15);
 	}
     } else {
-#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
-		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-#endif
-	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
-		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
-		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-#if defined(DB_VERB_REGISTER)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_REGISTER,
-		(dbi->dbi_verbose & DB_VERB_REGISTER));
-#endif
-#if defined(DB_VERB_REPLICATION)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_REPLICATION,
-		(dbi->dbi_verbose & DB_VERB_REPLICATION));
-#endif
-	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
-		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
-#if defined(DB_VERB_FILEOPS)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_FILEOPS,
-		(dbi->dbi_verbose & DB_VERB_FILEOPS));
-#endif
-#if defined(DB_VERB_FILEOPS_ALL)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_FILEOPS_ALL,
-		(dbi->dbi_verbose & DB_VERB_FILEOPS_ALL));
-#endif
 
 	if (dbi->dbi_tmpdir) {
 	    const char * root;

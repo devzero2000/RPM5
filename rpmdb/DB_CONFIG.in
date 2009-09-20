@@ -5,6 +5,22 @@
 
 set_thread_count	64
 
+#set_verbose		DB_VERB_DEADLOCK
+#set_verbose		DB_VERB_FILEOPS
+#set_verbose		DB_VERB_FILEOPS_ALL
+#set_verbose		DB_VERB_RECOVERY
+#set_verbose		DB_VERB_REGISTER
+#set_verbose		DB_VERB_REPLICATION
+#set_verbose		DB_VERB_REP_ELECT
+#set_verbose		DB_VERB_REP_LEASE
+#set_verbose		DB_VERB_REP_MISC
+#set_verbose		DB_VERB_REP_MSGS
+#set_verbose		DB_VERB_REP_SYNC
+#set_verbose		DB_VERB_REP_TEST
+#set_verbose		DB_VERB_REPMGR_CONNFAIL
+#set_verbose		DB_VERB_REPMGR_MISC
+#set_verbose		DB_VERB_WAITSFOR
+
 # ================ Memory Pool =====================
 set_cachesize		0 1048576 0 
 set_mp_mmapsize		16777216

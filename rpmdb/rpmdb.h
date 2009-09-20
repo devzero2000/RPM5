@@ -323,7 +323,6 @@ struct _dbiIndex {
     const char * dbi_errpfx;
     int	dbi_verbose;
     int	dbi_region_init;
-    unsigned int dbi_thread_count;
 	/* locking sub-system parameters */
     unsigned int dbi_lk_max_lockers;
     unsigned int dbi_lk_max_locks;
