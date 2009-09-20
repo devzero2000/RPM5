@@ -342,9 +342,6 @@ DB_READ_UNCOMITTED
 /* ==== Logging: */
 
 /* ==== Memory pool: */
-#if defined(WITH_DB)
-/* XXX DB_ENV->set_mp_max_openfd */
-/* XXX DB_ENV->set_mp_max_write */
 /* XXX DB_MPOOLFILE->set_clear_len */
 /* XXX DB_MPOOLFILE->set_fileid */
 /* XXX DB_MPOOLFILE->set_ftype */
@@ -352,7 +349,6 @@ DB_READ_UNCOMITTED
 /* XXX DB_MPOOLFILE->set_maxsize */
 /* XXX DB_MPOOLFILE->set_pgcookie */
 /* XXX DB_MPOOLFILE->set_priority */
-#endif
 
 /* ==== Mutexes: */
 
@@ -389,16 +385,6 @@ DB_READ_UNCOMITTED
 #endif
 
 /* ==== Transactions: */
-/* XXX DB_ENV->txn_checkpoint */
-/* XXX DB_ENV->txn_recover */
-/* XXX DB_ENV->txn_stat */
-/* XXX DB_ENV->set_timeout */
-/* XXX DB_ENV->get_timeout */
-#if defined(WITH_DB)
- { "tx_max",	0,POPT_ARG_INT,		&db3dbi.dbi_tx_max, 0,
-	NULL, NULL },
-#endif
-/* XXX DB_ENV->set_tx_timestamp */
 
 /* XXX set_append_recno */
 /* XXX set_bt_compare */

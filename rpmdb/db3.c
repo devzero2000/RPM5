@@ -395,88 +395,12 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* ==== Locking: */
- /* dbenv->set_lk_conflicts(???) */
-    if (dbi->dbi_lk_detect) {
-	xx = dbenv->set_lk_detect(dbenv, dbi->dbi_lk_detect);
-	xx = cvtdberr(dbi, "dbenv->set_lk_detect", xx, _debug);
-    }
-#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-    if (dbi->dbi_lk_max_lockers) {
-	xx = dbenv->set_lk_max_lockers(dbenv, dbi->dbi_lk_max_lockers);
-	xx = cvtdberr(dbi, "dbenv->set_lk_max_lockers", xx, _debug);
-    }
-    if (dbi->dbi_lk_max_locks) {
-	xx = dbenv->set_lk_max_locks(dbenv, dbi->dbi_lk_max_locks);
-	xx = cvtdberr(dbi, "dbenv->set_lk_max_locks", xx, _debug);
-    }
-    if (dbi->dbi_lk_max_objects) {
-	xx = dbenv->set_lk_max_objects(dbenv, dbi->dbi_lk_max_objects);
-	xx = cvtdberr(dbi, "dbenv->set_lk_max_objects", xx, _debug);
-    }
 /* ==== Logging: */
-    if (dbi->dbi_lg_bsize) {
-	xx = dbenv->set_lg_bsize(dbenv, dbi->dbi_lg_bsize);
-	xx = cvtdberr(dbi, "dbenv->set_lg_bsize", xx, _debug);
-    }
-    if (dbi->dbi_lg_dir) {
-	xx = dbenv->set_lg_dir(dbenv, dbi->dbi_lg_dir);
-	xx = cvtdberr(dbi, "dbenv->set_lg_dir", xx, _debug);
-    }
-    if (dbi->dbi_lg_filemode) {
-	xx = dbenv->set_lg_filemode(dbenv, dbi->dbi_lg_filemode);
-	xx = cvtdberr(dbi, "dbenv->set_lg_filemode", xx, _debug);
-    }
-    if (dbi->dbi_lg_max) {
-	xx = dbenv->set_lg_max(dbenv, dbi->dbi_lg_max);
-	xx = cvtdberr(dbi, "dbenv->set_lg_max", xx, _debug);
-    }
-    if (dbi->dbi_lg_regionmax) {
-	xx = dbenv->set_lg_regionmax(dbenv, dbi->dbi_lg_regionmax);
-	xx = cvtdberr(dbi, "dbenv->set_lg_regionmax", xx, _debug);
-    }
-#endif
-
 /* ==== Memory pool: */
-
 /* ==== Mutexes: */
-    if (dbi->dbi_mutex_align) {
-	xx = dbenv->mutex_set_align(dbenv, dbi->dbi_mutex_align);
-	xx = cvtdberr(dbi, "dbenv->mutex_set_align", xx, _debug);
-    }
-    if (dbi->dbi_mutex_increment) {
-	xx = dbenv->mutex_set_increment(dbenv, dbi->dbi_mutex_increment);
-	xx = cvtdberr(dbi, "dbenv->mutex_set_increment", xx, _debug);
-    }
-    if (dbi->dbi_mutex_max) {
-	xx = dbenv->mutex_set_max(dbenv, dbi->dbi_mutex_max);
-	xx = cvtdberr(dbi, "dbenv->mutex_set_max", xx, _debug);
-    }
-    if (dbi->dbi_mutex_tas_spins) {
-	xx = dbenv->mutex_set_tas_spins(dbenv, dbi->dbi_mutex_tas_spins);
-	xx = cvtdberr(dbi, "dbenv->mutex_set_tas_spins", xx, _debug);
-    }
-
 /* ==== Replication: */
-/* dbenv->rep_set_config */
-/* dbenv->rep_set_limit */
-/* dbenv->rep_set_nsites */
-/* dbenv->rep_set_priority */
-/* dbenv->rep_set_timeout */
-/* dbenv->rep_set_transport */
-
 /* ==== Sequences: */
-
 /* ==== Transactions: */
-    if (dbi->dbi_tx_max) {
-	xx = dbenv->set_tx_max(dbenv, dbi->dbi_tx_max);
-	xx = cvtdberr(dbi, "dbenv->set_tx_max", xx, _debug);
-    }
-/* XXX dbenv->txn_checkpoint */
-/* XXX dbenv->txn_recover */
-/* XXX dbenv->txn_stat */
- /* 4.1 dbenv->set_timeout(???) */
- /* 4.1: dbenv->set_tx_timestamp(???) */
-
 
 /* ==== Other: */
     if (dbi->dbi_no_fsync) {
@@ -982,16 +906,6 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
 	/*@=noeffectuncon@*/
-#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
-		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-#endif
-	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
-		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
-		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
-		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
 	    /*@-mods@*/

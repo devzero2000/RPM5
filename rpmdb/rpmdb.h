@@ -335,7 +335,6 @@ struct _dbiIndex {
     int64_t dbi_seq_max;
 #endif
 	/* transaction sub-system parameters */
-    unsigned int dbi_tx_max;
 #if 0
     int	(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec,
 				DB_LSN *lsnp, int redo, void *info)

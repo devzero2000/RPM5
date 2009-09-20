@@ -724,6 +724,7 @@ static int sql_initDB(dbiIndex dbi)
         sprintf(cmd, "PRAGMA locking_mode = EXCLUSIVE;");
         xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
     }
+#ifdef	DYING
     if (dbi->dbi_pagesize > 0) {
         int xx;
         sprintf(cmd, "PRAGMA cache_size = %d;", dbi->dbi_cachesize);
@@ -734,6 +735,7 @@ static int sql_initDB(dbiIndex dbi)
         sprintf(cmd, "PRAGMA page_size = %d;", dbi->dbi_pagesize);
         xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
     }
+#endif
 
     /* Check if the table exists... */
     sprintf(cmd,
