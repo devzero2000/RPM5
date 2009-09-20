@@ -58,6 +58,8 @@ static int rpmdb_env_create(DB_ENV ** dbenvp, uint32_t flags)
 
     (*dbenvp)->set_errfile(*dbenvp, _errfile);
 
+    (*dbenvp)->set_errpfx(*dbenvp, _home);	/* XXX FIXME */
+
     (*dbenvp)->set_cachesize(*dbenvp,
 	(_cachesize >> 32), (_cachesize & 0xffffffff), _ncaches);
 
@@ -84,7 +86,7 @@ enum rpmdb_tinyid {
     _OPENFLAGS	= -4,
     _DATADIRS	= -5,
     _CREATEDIR	= -6,
-    _ENCRYPTFLAGS = -7,
+    _ENCRYPT	= -7,
     _ERRFILE	= -8,
     _ERRPFX	= -9,
     _FLAGS	= -10,
@@ -125,6 +127,7 @@ enum rpmdb_tinyid {
 
     _CACHESIZE	= -39,
     _NCACHES	= -40,
+    _REGTIMEOUT	= -41,
 };
 
 static JSPropertySpec rpmdb_props[] = {
@@ -139,7 +142,7 @@ static JSPropertySpec rpmdb_props[] = {
     {"open_flags", _OPENFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"data_dirs", _DATADIRS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"create_dir", _CREATEDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"encrypt_flags", _ENCRYPTFLAGS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"encrypt",	_ENCRYPT,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"errfile",	_ERRFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"errpfx",	_ERRPFX,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
@@ -169,6 +172,7 @@ static JSPropertySpec rpmdb_props[] = {
     {"lg_max", _LGMAX,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_regionmax", _LGREGIONMAX, JSPROP_ENUMERATE,	NULL,	NULL},
     {"txn_timeout", _TXNTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"reg_timeout", _REGTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
 
     {"cachesize", _CACHESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"ncaches",	_NCACHES,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -226,7 +230,7 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    *vp = JSVAL_VOID;
 	break;
     case _CREATEDIR:	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s)); break;
-    case _ENCRYPTFLAGS:	*vp = _GET_U(!dbenv->get_encrypt_flags(dbenv, &_u)); break;
+    case _ENCRYPT:	*vp = _GET_U(!dbenv->get_encrypt_flags(dbenv, &_u)); break;
     case _ERRFILE:
 	dbenv->get_errfile(dbenv, &_fp);
 	_s = (_fp ? "other" : NULL);
@@ -259,6 +263,7 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _TXNTIMEOUT:
 	*vp = _GET_U(!dbenv->get_timeout(dbenv, (db_timeout_t *)&_u, DB_SET_TXN_TIMEOUT));
 	break;
+    case _REGTIMEOUT:	*vp = JSVAL_NULL;	break;	/* XXX FIXME */
 
     case _TMPDIR:	*vp = _GET_S(!dbenv->get_tmp_dir(dbenv, &_s));	break;
     case _VERBOSE:	*vp = JSVAL_VOID;	break;	/* XXX FIXME enum */
@@ -296,16 +301,38 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 #define	_PUT_U(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
+#define	_PUT_I(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+	? JSVAL_TRUE : JSVAL_FALSE)
+#define	_PUT_L(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
 rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB_ENV * dbenv = ptr;
+#ifdef	NOTYET
+    const char ** _av = NULL;
+    int _ac = 0;
+#endif
+    const char * _s = NULL;
+    uint32_t _gb = 0;
+    uint32_t _b = 0;
+    uint32_t _u = 0;
+    int _i = 0;
+    int _nc = 0;
+    long _l = 0;
+    FILE * _fp = NULL;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
+
+    if (JSVAL_IS_STRING(*vp))
+	_s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+    if (JSVAL_IS_INT(*vp))
+	_l = _u = _i = JSVAL_TO_INT(*vp);
 
     switch (tiny) {
     case _DEBUG:
@@ -313,42 +340,81 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    break;
 	break;
     /* dbenv->add_data_dir() */
-    case _DATADIRS:
-    case _CREATEDIR:
-    case _ENCRYPTFLAGS:
+    case _DATADIRS:	break;	/* XXX FIXME */
+    case _CREATEDIR:	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));	break;
+    case _ENCRYPT:	*vp = _PUT_S(dbenv->set_encrypt(dbenv, _s, DB_ENCRYPT_AES));	break;
     case _ERRFILE:
+	/* XXX FIXME: cleaner typing */
+	_fp = NULL;
+	if (!strcmp(_s, "stdout")) _fp = stdout;
+	if (!strcmp(_s, "stderr")) _fp = stderr;
+	dbenv->set_errfile(dbenv, _fp);
+	*vp = JSVAL_TRUE;
+	break;
     case _ERRPFX:
-    case _FLAGS:
-    case _IDIRMODE:
+	dbenv->set_errpfx(dbenv, _s);
+	*vp = JSVAL_TRUE;
+	break;
+    case _FLAGS:	break;	/* XXX FIXME */
+    case _IDIRMODE:	*vp = _PUT_S(dbenv->set_intermediate_dir_mode(dbenv, _s));	break;
     case _MSGFILE:
-    case _SHMKEY:
-    case _THREADCNT:
+	/* XXX FIXME: cleaner typing */
+	_fp = NULL;
+	if (_s != NULL) {
+	    if (!strcmp(_s, "stdout")) _fp = stdout;
+	    else if (!strcmp(_s, "stderr")) _fp = stderr;
+	    /* XXX FIXME: fp = fopen(_s, O_RDWR); with error checking */
+	}
+	dbenv->set_errfile(dbenv, _fp);
+	*vp = JSVAL_TRUE;
+	break;
+	/* XXX FIXME: if string, use ftok(3) */
+    case _SHMKEY:	*vp = _PUT_L(dbenv->set_shm_key(dbenv, _l)); break;
+    case _THREADCNT:	*vp = _PUT_U(dbenv->set_thread_count(dbenv, _u)); break;
 
-    case _LKTIMEOUT:
-    case _TXNTIMEOUT:
+    case _LKTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_LOCK_TIMEOUT));	break;
+    case _TXNTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_TXN_TIMEOUT));	break;
+    case _REGTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_REG_TIMEOUT));	break;
 
-    case _TMPDIR:
-    case _VERBOSE:
-    case _LKCONFLICTS:
-    case _LKDETECT:
-    case _LKMAXLOCKERS:
-    case _LKMAXLOCKS:
-    case _LKMAXOBJS:
-    case _LKPARTITIONS:
+    case _TMPDIR:	*vp = _PUT_S(dbenv->set_tmp_dir(dbenv, _s));	break;
+    case _VERBOSE:	break;	/* XXX FIXME */
+    case _LKCONFLICTS:	break;	/* XXX FIXME */
+	/* XXX FIXME: explicit enum check needed */
+    case _LKDETECT:	*vp = _PUT_U(dbenv->set_lk_detect(dbenv, _u)); break;
+    case _LKMAXLOCKERS:	*vp = _PUT_U(dbenv->set_lk_max_lockers(dbenv, _u)); break;
+    case _LKMAXLOCKS:	*vp = _PUT_U(dbenv->set_lk_max_locks(dbenv, _u)); break;
+    case _LKMAXOBJS:	*vp = _PUT_U(dbenv->set_lk_max_objects(dbenv, _u)); break;
+    case _LKPARTITIONS:	*vp = _PUT_U(dbenv->set_lk_partitions(dbenv, _u)); break;
 
-    case _LOGDIRECT:
-    case _LOGDSYNC:
-    case _LOGAUTORM:
-    case _LOGINMEM:
-    case _LOGZERO:
+    case _LOGDIRECT:	*vp = _PUT_I(dbenv->log_set_config(dbenv, DB_LOG_DIRECT, (_i ? 1 : 0)));	break;
+    case _LOGDSYNC:	*vp = _PUT_I(dbenv->log_set_config(dbenv, DB_LOG_DSYNC, (_i ? 1 : 0)));	break;
+    case _LOGAUTORM:	*vp = _PUT_I(dbenv->log_set_config(dbenv, DB_LOG_AUTO_REMOVE, (_i ? 1 : 0)));	break;
+    case _LOGINMEM:	*vp = _PUT_I(dbenv->log_set_config(dbenv, DB_LOG_IN_MEMORY, (_i ? 1 : 0)));	break;
+    case _LOGZERO:	*vp = _PUT_I(dbenv->log_set_config(dbenv, DB_LOG_ZERO, (_i ? 1 : 0)));	break;
 
 
-    case _LGBSIZE:
-    case _LGDIR:
-    case _LGFILEMODE:
-    case _LGMAX:
-    case _LGREGIONMAX:
+    case _LGBSIZE:	*vp = _PUT_U(dbenv->set_lg_bsize(dbenv, _u));	break;
+    case _LGDIR:	*vp = _PUT_S(dbenv->set_lg_dir(dbenv, _s));	break;
+    case _LGFILEMODE:	*vp = _PUT_I(dbenv->set_lg_filemode(dbenv, _i)); break;
+    case _LGMAX:	*vp = _PUT_U(dbenv->set_lg_max(dbenv, _u));	break;
+    case _LGREGIONMAX:	*vp = _PUT_U(dbenv->set_lg_regionmax(dbenv, _u)); break;
 
+    case _CACHESIZE:
+	if (!dbenv->get_cachesize(dbenv, &_gb, &_b, &_nc)) {
+	    _b = _u;
+	    *vp = !dbenv->set_cachesize(dbenv, _gb, _b, _nc)
+		? JSVAL_TRUE : JSVAL_FALSE;
+	} else
+	    *vp = JSVAL_FALSE;
+	break;
+    case _NCACHES:
+	if (!dbenv->get_cachesize(dbenv, &_gb, &_b, &_nc)) {
+	    _nc = _i;
+	    *vp = !dbenv->set_cachesize(dbenv, _gb, _b, _nc)
+		? JSVAL_TRUE : JSVAL_FALSE;
+	} else
+	    *vp = JSVAL_FALSE;
+	break;
     default:
 	break;
     }

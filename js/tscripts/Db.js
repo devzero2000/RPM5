@@ -59,7 +59,7 @@ print("home:	"+db.home);
 print("open_flags:	0x"+db.open_flags.toString(16));
 print("data_dirs:	"+db.data_dirs);
 print("create_dir:	"+db.create_dir);
-print("encrypt_flags:	"+db.encrypt_flags);
+print("encrypt:	"+db.encrypt_flags);
 print("errfile:	"+db.errfile);
 print("errpfx:	"+db.errpfx);
 print("flags:	0x"+db.flags.toString(16));
