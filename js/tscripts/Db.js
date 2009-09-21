@@ -68,8 +68,17 @@ print("msgfile:	"+db.msgfile);
 print("shm_key:	"+db.shm_key);
 print("thread_count:	"+db.thread_count);
 
+print("cachemax:	"+db.cachemax);
 print("cachesize:	"+db.cachesize);
 print("ncaches:	"+db.ncaches);
+
+print("max_openfd:	"+db.max_openfd);
+print("mmapsize:	"+db.mmapsize);
+
+print("mutex_align:	"+db.mutex_align);
+print("mutex_inc:	"+db.mutex_inc);
+print("mutex_max:	"+db.mutex_max);
+print("mutex_spins:	"+db.mutex_spins);
 
 print("lock_timeout:	"+db.lock_timeout);
 print("txn_timeout:	"+db.txn_timeout);
@@ -95,5 +104,8 @@ print("lg_dir:	"+db.lg_dir);
 print("lg_filemode:	"+db.lg_filemode);
 print("lg_max:	"+db.lg_max);
 print("lg_regionmax:	"+db.lg_regionmax);
+
+print("tx_max:	"+db.tx_max);
+print("tx_timestamp:	"+db.tx_timestamp);
 
 if (loglvl) print("<-- Db.js");

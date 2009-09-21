@@ -128,6 +128,17 @@ enum rpmdb_tinyid {
     _CACHESIZE	= -39,
     _NCACHES	= -40,
     _REGTIMEOUT	= -41,
+    _CACHEMAX	= -42,
+    _MAXOPENFD	= -43,
+    _MMAPSIZE	= -44,
+
+    _MXALIGN	= -45,
+    _MXINC	= -46,
+    _MXMAX	= -47,
+    _MXSPINS	= -48,
+
+    _TXMAX	= -49,
+    _TXTSTAMP	= -50,
 };
 
 static JSPropertySpec rpmdb_props[] = {
@@ -174,8 +185,20 @@ static JSPropertySpec rpmdb_props[] = {
     {"txn_timeout", _TXNTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
     {"reg_timeout", _REGTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
 
+    {"cachemax", _CACHEMAX,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"cachesize", _CACHESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"ncaches",	_NCACHES,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"max_openfd", _MAXOPENFD,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"mmapsize", _MMAPSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"mutex_align", _MXALIGN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"mutex_inc", _MXINC,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"mutex_max", _MXMAX,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"mutex_spins", _MXSPINS,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"tx_max",	_TXMAX,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"tx_timestamp", _TXTSTAMP,	JSPROP_ENUMERATE,	NULL,	NULL},
 
     {NULL, 0, 0, NULL, NULL}
 };
@@ -287,8 +310,39 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _LGREGIONMAX:	*vp = _GET_U(!dbenv->get_lg_regionmax(dbenv, &_u)); break;
 
 	/* XXX FIXME: return uint64_t */
-    case _CACHESIZE: 	*vp = _GET_U(!dbenv->get_cachesize(dbenv, &_gb, &_u, &_i)); break;
-    case _NCACHES: 	*vp = _GET_I(!dbenv->get_cachesize(dbenv, &_gb, &_u, &_i)); break;
+    case _CACHEMAX:	*vp = _GET_U(!dbenv->get_cache_max(dbenv, &_gb, &_u)); break;
+    case _CACHESIZE:	*vp = _GET_U(!dbenv->get_cachesize(dbenv, &_gb, &_u, &_i)); break;
+    case _NCACHES:	*vp = _GET_I(!dbenv->get_cachesize(dbenv, &_gb, &_u, &_i)); break;
+    case _MAXOPENFD:	*vp = _GET_I(!dbenv->get_mp_max_openfd(dbenv, &_i)); break;
+	/* XXX FIXME dbenv->get_mp_max_write(dbenv, &maxwrite, &timeout); */
+    case _MMAPSIZE:
+    {	size_t _sz = 0;
+	*vp = (!dbenv->get_mp_mmapsize(dbenv, &_sz)
+		? INT_TO_JSVAL((int)_sz) : JSVAL_VOID);
+    }	break;
+    case _MXALIGN:	*vp = _GET_U(!dbenv->mutex_get_align(dbenv, &_u)); break;
+    case _MXINC:	*vp = _GET_U(!dbenv->mutex_get_increment(dbenv, &_u)); break;
+    case _MXMAX:	*vp = _GET_U(!dbenv->mutex_get_increment(dbenv, &_u)); break;
+    case _MXSPINS:	*vp = _GET_U(!dbenv->mutex_get_tas_spins(dbenv, &_u)); break;
+	/* XXX FIXME: dbenv->rep_get_clockskew(dbenv, u &fast, u &slow) */
+	/* XXX FIXME: dbenv->rep_get_config(dbenv, u which, i &_i) */
+	/* XXX FIXME: dbenv->rep_get_limit(dbenv, &_gb, &_u) */
+	/* XXX FIXME: dbenv->rep_get_nsites(dbenv, &_u) */
+	/* XXX FIXME: dbenv->rep_get_priority(dbenv, &_u) */
+	/* XXX FIXME: dbenv->rep_get_request(dbenv, u &min, u &max) */
+	/* XXX FIXME: dbenv->rep_get_timeout(dbenv, i which, &_u) */
+
+	/* XXX FIXME: dbenv->repmgr_get_ack_policy(dbenv, &_i) */
+
+    case _TXMAX:	*vp = _GET_U(!dbenv->get_tx_max(dbenv, &_u)); break;
+    case _TXTSTAMP:
+    {	time_t tstamp = 0;
+	if (!dbenv->get_tx_timestamp(dbenv, &tstamp)) {
+	    _u = tstamp;
+	    *vp = INT_TO_JSVAL(_u);	/* XXX FIXME */
+	} else
+	    *vp = JSVAL_VOID;
+    }	break;
 
     default:
 	break;
@@ -399,6 +453,14 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _LGMAX:	*vp = _PUT_U(dbenv->set_lg_max(dbenv, _u));	break;
     case _LGREGIONMAX:	*vp = _PUT_U(dbenv->set_lg_regionmax(dbenv, _u)); break;
 
+    case _CACHEMAX:
+	if (!dbenv->get_cache_max(dbenv, &_gb, &_b)) {
+	    _b = _u;
+	    *vp = !dbenv->set_cache_max(dbenv, _gb, _b)
+		? JSVAL_TRUE : JSVAL_FALSE;
+	} else
+	    *vp = JSVAL_FALSE;
+	break;
     case _CACHESIZE:
 	if (!dbenv->get_cachesize(dbenv, &_gb, &_b, &_nc)) {
 	    _b = _u;
@@ -415,6 +477,30 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	} else
 	    *vp = JSVAL_FALSE;
 	break;
+    case _MAXOPENFD: 	*vp = _PUT_I(!dbenv->set_mp_max_openfd(dbenv, _i)); break;
+	/* XXX FIXME dbenv->set_mp_max_write(dbenv, maxwrite, timeout); */
+    case _MMAPSIZE:	*vp = _PUT_U(dbenv->set_mp_mmapsize(dbenv, _u)); break;
+    case _MXALIGN:	break;	/* XXX FIXME */
+    case _MXINC:	break;	/* XXX FIXME */
+    case _MXMAX:	break;	/* XXX FIXME */
+    case _MXSPINS:	break;	/* XXX FIXME */
+	/* XXX FIXME: dbenv->rep_set_clockskew(dbenv, u fast, u slow) */
+	/* XXX FIXME: dbenv->rep_set_config(dbenv, u which, i _i) */
+	/* XXX FIXME: dbenv->rep_set_limit(dbenv, _gb, _u) */
+	/* XXX FIXME: dbenv->rep_set_nsites(dbenv, _u) */
+	/* XXX FIXME: dbenv->rep_set_priority(dbenv, _u) */
+	/* XXX FIXME: dbenv->rep_set_request(dbenv, u min, u max) */
+	/* XXX FIXME: dbenv->rep_set_timeout(dbenv, i which, _u) */
+
+	/* XXX FIXME: dbenv->repmgr_set_ack_policy(dbenv, _i) */
+
+    case _TXMAX:	*vp = _PUT_U(!dbenv->set_tx_max(dbenv, _u)); break;
+    case _TXTSTAMP:
+    {	time_t tstamp = _u;
+	*vp = (JSVAL_IS_INT(*vp) && !dbenv->set_tx_timestamp(dbenv, &tstamp)
+		? JSVAL_TRUE : JSVAL_FALSE);
+    }	break;
+
     default:
 	break;
     }
