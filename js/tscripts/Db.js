@@ -20,25 +20,36 @@ const DB_SYSTEM_MEM		= 0x00010000;
 const DB_THREAD			= 0x00000010;
 
 // ----- flags
-const DB_ENV_AUTO_COMMIT	= 0x00000001; /* DB_AUTO_COMMIT */
-const DB_ENV_CDB_ALLDB		= 0x00000002; /* CDB environment wide locking */
-const DB_ENV_FAILCHK		= 0x00000004; /* Failchk is running */
-const DB_ENV_DIRECT_DB		= 0x00000008; /* DB_DIRECT_DB set */
-const DB_ENV_DSYNC_DB		= 0x00000010; /* DB_DSYNC_DB set */
-const DB_ENV_MULTIVERSION	= 0x00000020; /* DB_MULTIVERSION set */
-const DB_ENV_NOLOCKING		= 0x00000040; /* DB_NOLOCKING set */
-const DB_ENV_NOMMAP		= 0x00000080; /* DB_NOMMAP set */
-const DB_ENV_NOPANIC		= 0x00000100; /* Okay if panic set */
-const DB_ENV_OVERWRITE		= 0x00000200; /* DB_OVERWRITE set */
-const DB_ENV_REGION_INIT	= 0x00000400; /* DB_REGION_INIT set */
-const DB_ENV_RPCCLIENT		= 0x00000800; /* DB_RPCCLIENT set */
-const DB_ENV_RPCCLIENT_GIVEN	= 0x00001000; /* User-supplied RPC client struct */
-const DB_ENV_TIME_NOTGRANTED	= 0x00002000; /* DB_TIME_NOTGRANTED set */
-const DB_ENV_TXN_NOSYNC		= 0x00004000; /* DB_TXN_NOSYNC set */
-const DB_ENV_TXN_NOWAIT		= 0x00008000; /* DB_TXN_NOWAIT set */
-const DB_ENV_TXN_SNAPSHOT	= 0x00010000; /* DB_TXN_SNAPSHOT set */
-const DB_ENV_TXN_WRITE_NOSYNC	= 0x00020000; /* DB_TXN_WRITE_NOSYNC set */
-const DB_ENV_YIELDCPU		= 0x00040000; /* DB_YIELDCPU set */
+const DB_AUTO_COMMIT		= 0x00000100;
+const DB_CDB_ALLDB		= 0x00000040;
+const DB_DIRECT_DB		= 0x00000080;
+const DB_DSYNC_DB		= 0x00000200;
+const DB_MULTIVERSION		= 0x00000004;
+const DB_NOLOCKING		= 0x00000400;
+const DB_NOMMAP			= 0x00000008;
+const DB_NOPANIC		= 0x00000800;
+const DB_OVERWRITE		= 0x00001000;
+const DB_REGION_INIT		= 0x00004000;
+const DB_TXN_NOSYNC		= 0x00000001;
+const DB_TXN_NOWAIT		= 0x00000010;
+const DB_TXN_SNAPSHOT		= 0x00000002;
+const DB_TXN_WRITE_NOSYNC	= 0x00000020;
+const DB_YIELDCPU		= 0x00010000;
+
+const DB_LOG_IN_MEMORY		= 0x00000008;
+const DB_LOG_AUTO_REMOVE	= 0x00000001;
+
+// ----- locking
+const DB_LOCK_NORUN		= 0;
+const DB_LOCK_DEFAULT		= 1;	/* Default policy. */
+const DB_LOCK_EXPIRE		= 2;	/* Only expire locks, no detection. */
+const DB_LOCK_MAXLOCKS		= 3;	/* Select locker with max locks. */
+const DB_LOCK_MAXWRITE		= 4;	/* Select locker with max writelocks. */
+const DB_LOCK_MINLOCKS		= 5;	/* Select locker with min locks. */
+const DB_LOCK_MINWRITE		= 6;	/* Select locker with min writelocks. */
+const DB_LOCK_OLDEST		= 7;	/* Select oldest locker. */
+const DB_LOCK_RANDOM		= 8;	/* Select random locker. */
+const DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
 
 // -----
 var home = "./rpmdb";
@@ -50,62 +61,64 @@ ack("db instanceof Db;", true);
 ack("db.debug = 1;", 1);
 ack("db.debug = 0;", 0);
 
-print("version:	"+db.version);
-print("major:	"+db.major);
-print("minor:	"+db.minor);
-print("patch:	"+db.patch);
+ack('db.version', 'Berkeley DB 4.8.24: (August 14, 2009)');
+ack('db.major', 4);
+ack('db.minor', 8);
+ack('db.patch', 24);
 
-print("home:	"+db.home);
-print("open_flags:	0x"+db.open_flags.toString(16));
-print("data_dirs:	"+db.data_dirs);
-print("create_dir:	"+db.create_dir);
-print("encrypt:	"+db.encrypt_flags);
-print("errfile:	"+db.errfile);
-print("errpfx:	"+db.errpfx);
-print("flags:	0x"+db.flags.toString(16));
-print("idirmode:	"+db.idirmode);
-print("msgfile:	"+db.msgfile);
-print("shm_key:	"+db.shm_key);
-print("thread_count:	"+db.thread_count);
+ack('db.home', home);
+ack('db.open_flags', eflags);
+ack('db.data_dirs', './data');
+ack('db.create_dir', '.');
+ack('db.encrypt', 0);
+ack('db.errfile', 'stderr');
+ack('db.errpfx', home);
 
-print("cachemax:	"+db.cachemax);
-print("cachesize:	"+db.cachesize);
-print("ncaches:	"+db.ncaches);
+ack('db.flags', DB_REGION_INIT);
 
-print("max_openfd:	"+db.max_openfd);
-print("mmapsize:	"+db.mmapsize);
+ack('db.idirmode', 'rwxr-xr-x');
+ack('db.msgfile', null);
+ack('db.shm_key', -1);
+ack('db.thread_count', 64);
+ack('db.cachemax', 1318912);
+ack('db.cachesize', 1312348);
+ack('db.ncaches', 1);
+ack('db.max_openfd', 0);
+ack('db.mmapsize', 16*1024*1024);
 
-print("mutex_align:	"+db.mutex_align);
-print("mutex_inc:	"+db.mutex_inc);
-print("mutex_max:	"+db.mutex_max);
-print("mutex_spins:	"+db.mutex_spins);
+ack('db.mutex_align', 4);
+ack('db.mutex_inc', 0);
+ack('db.mutex_max', 0);
+ack('db.mutex_spins', 1);
 
-print("lock_timeout:	"+db.lock_timeout);
-print("txn_timeout:	"+db.txn_timeout);
+ack('db.lock_timeout', 0);
+ack('db.txn_timeout', 0);
 
-print("tmp_dir:	"+db.tmp_dir);
-print("verbose:	"+db.verbose);
+ack('db.tmp_dir', './tmp');
 
-print("lk_conflicts:	"+db.lk_conflicts);
-print("lk_detect:	"+db.lk_detect);
-print("lk_max_lockers: "+db.lk_max_lockers);
-print("lk_max_locks:	"+db.lk_max_locks);
-print("lk_max_objects:	"+db.lk_max_objects);
-print("lk_partitions:	"+db.lk_partitions);
+ack('db.verbose', false);	// todo++
 
-print("log_direct:	"+db.log_direct);
-print("log_dsync:	"+db.log_dsync);
-print("log_autorm:	"+db.log_autorm);
-print("log_inmemory:	"+db.log_inmemory);
-print("log_zero:	"+db.log_zero);
+ack('db.lk_conflicts', false);	// todo++
 
-print("lg_bsize:	"+db.lg_bsize);
-print("lg_dir:	"+db.lg_dir);
-print("lg_filemode:	"+db.lg_filemode);
-print("lg_max:	"+db.lg_max);
-print("lg_regionmax:	"+db.lg_regionmax);
+ack('db.lk_detect', DB_LOCK_DEFAULT);
+ack('db.lk_max_lockers', 1000);
+ack('db.lk_max_locks', 1000);
+ack('db.lk_max_objects', 1000);
+ack('db.lk_partitions', 1);
 
-print("tx_max:	"+db.tx_max);
-print("tx_timestamp:	"+db.tx_timestamp);
+ack('db.log_direct', false);
+ack('db.log_dsync', false);
+ack('db.log_autorm', false);
+ack('db.log_inmemory', false);
+ack('db.log_zero', false);
+
+ack('db.lg_bsize', 32000);
+ack('db.lg_dir', './log');
+ack('db.lg_filemode', 0644);	// todo++
+ack('db.lg_max', 10485760);
+ack('db.lg_regionmax', 130000);
+
+ack('db.tx_max', 100);
+ack('db.tx_timestamp', 0);
 
 if (loglvl) print("<-- Db.js");
