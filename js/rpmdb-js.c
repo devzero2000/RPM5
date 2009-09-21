@@ -40,7 +40,7 @@ static int _debug = 0;
 
 /* --- helpers */
 static const char _home[] = "./rpmdb";
-static int _eflags = DB_CREATE | DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_TXN;
+static int _eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
 
 static uint64_t _cachesize = 1024 * 1024;
 static int _ncaches = 1;
@@ -139,6 +139,28 @@ enum rpmdb_tinyid {
 
     _TXMAX	= -49,
     _TXTSTAMP	= -50,
+
+    _REPBULK	= -51,
+    _REPDELAYCLIENT = -52,
+    _REPINMEM	= -53,
+    _REPLEASE	= -54,
+    _REPNOAUTOINIT = -55,
+    _REPNOWAIT	= -56,
+    _REPMGRSTRICT = -57,
+
+    _REPLIMIT	= -58,
+    _REPNSITES	= -59,
+    _REPPRIORITY = -60,
+
+    _REPACKTO	= -61,
+    _REPCKPDELAY = -62,
+    _REPCONNRETRY = -63,
+    _REPELECTTO	= -64,
+    _REPELECTRETRY = -65,
+    _REPFULLELECTTO = -66,
+    _REPHBMON	= -67,
+    _REPHBSEND	= -68,
+    _REPLEASETO	= -69,
 };
 
 static JSPropertySpec rpmdb_props[] = {
@@ -199,6 +221,28 @@ static JSPropertySpec rpmdb_props[] = {
 
     {"tx_max",	_TXMAX,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"tx_timestamp", _TXTSTAMP,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"DB_REP_CONF_BULK", _REPBULK,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_CONF_DELAYCLIENT", _REPDELAYCLIENT, JSPROP_ENUMERATE, NULL, NULL},
+    {"DB_REP_CONF_INMEM", _REPINMEM,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_CONF_LEASE", _REPLEASE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_CONF_NOAUTOINIT", _REPNOAUTOINIT, JSPROP_ENUMERATE, NULL,	NULL},
+    {"DB_REP_CONF_NOWAIT", _REPNOWAIT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REPMGR_CONF_2SITE_STRICT", _REPMGRSTRICT, JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"rep_limit", _REPLIMIT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"rep_nsites", _REPNSITES,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"rep_priority", _REPPRIORITY, JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"DB_REP_ACK_TIMEOUT", _REPACKTO, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_CHECKPOINT_DELAY", _REPCKPDELAY, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_CONNECTION_RETRY", _REPCONNRETRY, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_ELECTION_TIMEOUT", _REPELECTTO, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_ELECTION_RETRY", _REPELECTRETRY, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_FULL_ELECTION_TIMEOUT", _REPFULLELECTTO, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_HEARTBEAT_MONITOR", _REPHBMON, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_HEARTBEAT_SEND", _REPHBSEND, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"DB_REP_LEASE_TIMEOUT", _REPLEASETO, JSPROP_ENUMERATE,	NULL,	NULL},
 
     {NULL, 0, 0, NULL, NULL}
 };
@@ -325,12 +369,58 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _MXMAX:	*vp = _GET_U(!dbenv->mutex_get_increment(dbenv, &_u)); break;
     case _MXSPINS:	*vp = _GET_U(!dbenv->mutex_get_tas_spins(dbenv, &_u)); break;
 	/* XXX FIXME: dbenv->rep_get_clockskew(dbenv, u &fast, u &slow) */
-	/* XXX FIXME: dbenv->rep_get_config(dbenv, u which, i &_i) */
-	/* XXX FIXME: dbenv->rep_get_limit(dbenv, &_gb, &_u) */
-	/* XXX FIXME: dbenv->rep_get_nsites(dbenv, &_u) */
-	/* XXX FIXME: dbenv->rep_get_priority(dbenv, &_u) */
+    case _REPBULK:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REP_CONF_BULK, &_i));
+	break;
+    case _REPDELAYCLIENT:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REP_CONF_DELAYCLIENT, &_i));
+	break;
+    case _REPINMEM:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REP_CONF_INMEM, &_i));
+	break;
+    case _REPLEASE:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REP_CONF_LEASE, &_i));
+	break;
+    case _REPNOAUTOINIT:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REP_CONF_NOAUTOINIT, &_i));
+	break;
+    case _REPNOWAIT:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REP_CONF_NOWAIT, &_i));
+	break;
+    case _REPMGRSTRICT:
+	*vp = _GET_B(!dbenv->rep_get_config(dbenv, DB_REPMGR_CONF_2SITE_STRICT, &_i));
+	break;
+    case _REPLIMIT:	_GET_U(!dbenv->rep_get_limit(dbenv, &_gb, &_u)); break;
+    case _REPNSITES:	_GET_U(!dbenv->rep_get_nsites(dbenv, &_u)); break;
+    case _REPPRIORITY:	_GET_U(!dbenv->rep_get_priority(dbenv, &_u)); break;
 	/* XXX FIXME: dbenv->rep_get_request(dbenv, u &min, u &max) */
-	/* XXX FIXME: dbenv->rep_get_timeout(dbenv, i which, &_u) */
+    case _REPACKTO:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_ACK_TIMEOUT, &_u));
+	break;
+    case _REPCKPDELAY:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_CHECKPOINT_DELAY, &_u));
+	break;
+    case _REPCONNRETRY:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_CONNECTION_RETRY, &_u));
+	break;
+    case _REPELECTTO:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_ELECTION_TIMEOUT, &_u));
+	break;
+    case _REPELECTRETRY:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_ELECTION_RETRY, &_u));
+	break;
+    case _REPFULLELECTTO:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_FULL_ELECTION_TIMEOUT, &_u));
+	break;
+    case _REPHBMON:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_HEARTBEAT_MONITOR, &_u));
+	break;
+    case _REPHBSEND:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_HEARTBEAT_SEND, &_u));
+	break;
+    case _REPLEASETO:
+	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, DB_REP_LEASE_TIMEOUT, &_u));
+	break;
 
 	/* XXX FIXME: dbenv->repmgr_get_ack_policy(dbenv, &_i) */
 
@@ -485,21 +575,68 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _MXMAX:	break;	/* XXX FIXME */
     case _MXSPINS:	break;	/* XXX FIXME */
 	/* XXX FIXME: dbenv->rep_set_clockskew(dbenv, u fast, u slow) */
-	/* XXX FIXME: dbenv->rep_set_config(dbenv, u which, i _i) */
-	/* XXX FIXME: dbenv->rep_set_limit(dbenv, _gb, _u) */
-	/* XXX FIXME: dbenv->rep_set_nsites(dbenv, _u) */
-	/* XXX FIXME: dbenv->rep_set_priority(dbenv, _u) */
-	/* XXX FIXME: dbenv->rep_set_request(dbenv, u min, u max) */
-	/* XXX FIXME: dbenv->rep_set_timeout(dbenv, i which, _u) */
-
-	/* XXX FIXME: dbenv->repmgr_set_ack_policy(dbenv, _i) */
-
     case _TXMAX:	*vp = _PUT_U(!dbenv->set_tx_max(dbenv, _u)); break;
     case _TXTSTAMP:
     {	time_t tstamp = _u;
 	*vp = (JSVAL_IS_INT(*vp) && !dbenv->set_tx_timestamp(dbenv, &tstamp)
 		? JSVAL_TRUE : JSVAL_FALSE);
     }	break;
+
+    case _REPBULK:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REP_CONF_BULK, (_i ? 1 : 0)));
+	break;
+    case _REPDELAYCLIENT:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REP_CONF_DELAYCLIENT, (_i ? 1 : 0)));
+	break;
+    case _REPINMEM:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REP_CONF_INMEM, (_i ? 1 : 0)));
+	break;
+    case _REPLEASE:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REP_CONF_LEASE, (_i ? 1 : 0)));
+	break;
+    case _REPNOAUTOINIT:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REP_CONF_NOAUTOINIT, (_i ? 1 : 0)));
+	break;
+    case _REPNOWAIT:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REP_CONF_NOWAIT, (_i ? 1 : 0)));
+	break;
+    case _REPMGRSTRICT:
+	*vp = _PUT_I(!dbenv->rep_set_config(dbenv, DB_REPMGR_CONF_2SITE_STRICT, (_i ? 1 : 0)));
+	break;
+	/* XXX FIXME _gb always 0 */
+    case _REPLIMIT:	_PUT_U(!dbenv->rep_set_limit(dbenv, _gb, _u)); break;
+    case _REPNSITES:	_PUT_U(!dbenv->rep_set_nsites(dbenv, _u)); break;
+    case _REPPRIORITY:	_PUT_U(!dbenv->rep_set_priority(dbenv, _u)); break;
+	/* XXX FIXME: dbenv->rep_set_request(dbenv, u min, u max) */
+    case _REPACKTO:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_ACK_TIMEOUT, _u));
+	break;
+    case _REPCKPDELAY:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_CHECKPOINT_DELAY, _u));
+	break;
+    case _REPCONNRETRY:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_CONNECTION_RETRY, _u));
+	break;
+    case _REPELECTTO:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_ELECTION_TIMEOUT, _u));
+	break;
+    case _REPELECTRETRY:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_ELECTION_RETRY, _u));
+	break;
+    case _REPFULLELECTTO:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_FULL_ELECTION_TIMEOUT, _u));
+	break;
+    case _REPHBMON:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_HEARTBEAT_MONITOR, _u));
+	break;
+    case _REPHBSEND:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_HEARTBEAT_SEND, _u));
+	break;
+    case _REPLEASETO:
+	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, DB_REP_LEASE_TIMEOUT, _u));
+	break;
+
+	/* XXX FIXME: dbenv->repmgr_set_ack_policy(dbenv, _i) */
 
     default:
 	break;

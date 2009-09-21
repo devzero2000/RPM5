@@ -53,7 +53,7 @@ const DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
 
 // -----
 var home = "./rpmdb";
-var eflags = DB_CREATE | DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_TXN;
+var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
 
 var db = new Db(home, eflags);
 ack("typeof db;", "object");
@@ -67,58 +67,151 @@ ack('db.minor', 8);
 ack('db.patch', 24);
 
 ack('db.home', home);
+// ack('db.home = home', true);
+
 ack('db.open_flags', eflags);
+// ack('db.open_flags = eflags', true);
+
 ack('db.data_dirs', './data');
+// ack('db.data_dirs = "./data"', true);	// todo++
+
 ack('db.create_dir', '.');
+// ack('db.create_dir = "."', true);
+
 ack('db.encrypt', 0);
+// ack('db.encrypt = "xyzzy"', true);
+
 ack('db.errfile', 'stderr');
+// ack('db.errfile = "stdout"', true);
+
 ack('db.errpfx', home);
+// ack('db.errpfx = "foo"', true);
 
 ack('db.flags', DB_REGION_INIT);
+// ack('db.flags = DB_REGION_INIT', true);
 
 ack('db.idirmode', 'rwxr-xr-x');
+// ack('db.idirmode = "rwxrwxrwx"', true);
+
 ack('db.msgfile', null);
+// ack('db.msgfile = "stdout"', true);
+
 ack('db.shm_key', -1);
+// ack('db.shm_key = 0x1234', true);
+
 ack('db.thread_count', 64);
+// ack('db.thread_count = 2 * 64', true);
+
 ack('db.cachemax', 1318912);
+// ack('db.cachemax = 2 * 1318912', true);
+
 ack('db.cachesize', 1312348);
+// ack('db.cachesize = 2 * 1312348', true);
+
 ack('db.ncaches', 1);
-ack('db.max_openfd', 0);
+// ack('db.ncaches = 2 * 1', true);
+
+ack('db.max_openfd', 100);
+// ack('db.max_openfd = 100', true);
+
 ack('db.mmapsize', 16*1024*1024);
+// ack('db.mmapsize = 32*1024*1024', true);
 
 ack('db.mutex_align', 4);
+// ack('db.mutex_align = 4', true);
+
 ack('db.mutex_inc', 0);
+// ack('db.mutex_inc = 0', true);
+
 ack('db.mutex_max', 0);
+// ack('db.mutex_max = 0', true);
+
 ack('db.mutex_spins', 1);
+// ack('db.mutex_spins = 1', true);
 
 ack('db.lock_timeout', 0);
+// ack('db.lock_timeout = 0', true);
+
 ack('db.txn_timeout', 0);
+// ack('db.txn_timeout = 0', true);
 
 ack('db.tmp_dir', './tmp');
+// ack('db.tmp_dir = "/var/tmp"', true);
 
 ack('db.verbose', false);	// todo++
 
 ack('db.lk_conflicts', false);	// todo++
 
 ack('db.lk_detect', DB_LOCK_DEFAULT);
-ack('db.lk_max_lockers', 1000);
-ack('db.lk_max_locks', 1000);
-ack('db.lk_max_objects', 1000);
-ack('db.lk_partitions', 1);
+// ack('db.lk_detect = DB_LOCK_DEFAULT', true);
+
+ack('db.lk_max_lockers', 300000);
+// ack('db.lk_max_lockers = 1000', true);
+
+ack('db.lk_max_locks', 300000);
+// ack('db.lk_max_locks = 1000', true);
+
+ack('db.lk_max_objects', 300000);
+// ack('db.lk_max_objects = 1000', true);
+
+ack('db.lk_partitions', 40);
+// ack('db.lk_partitions = 1', true);
 
 ack('db.log_direct', false);
-ack('db.log_dsync', false);
-ack('db.log_autorm', false);
-ack('db.log_inmemory', false);
-ack('db.log_zero', false);
+// ack('db.log_direct = 0', true);
 
-ack('db.lg_bsize', 32000);
+ack('db.log_dsync', false);
+// ack('db.log_dsync = 0', true);
+
+ack('db.log_autorm', false);
+// ack('db.log_autorm = 0', true);
+
+ack('db.log_inmemory', false);
+// ack('db.log_inmemory = 0', true);
+
+ack('db.log_zero', false);
+// ack('db.log_zero = 0', true);
+
+ack('db.lg_bsize', 65536);
+// ack('db.lg_bsize = 2 * 32000', true);
+
 ack('db.lg_dir', './log');
+// ack('db.lg_dir = "/var/tmp/log"', true);
+
 ack('db.lg_filemode', 0644);	// todo++
+
 ack('db.lg_max', 10485760);
+// ack('db.lg_max = 2 * 10485760', true);
+
 ack('db.lg_regionmax', 130000);
+// ack('db.lg_regionmax = 2 * 130000', true);
 
 ack('db.tx_max', 100);
+// ack('db.tx_max = 2 * 100', true);
+
 ack('db.tx_timestamp', 0);
+// ack('db.tx_timestamp = 0x1234', true);
+
+ack('db.DB_REP_CONF_BULK', 0);
+ack('db.DB_REP_CONF_DELAYCLIENT', 0);
+ack('db.DB_REP_CONF_INMEM', 0);
+ack('db.DB_REP_CONF_LEASE', 0);
+ack('db.DB_REP_CONF_NOAUTOINIT', 0);
+ack('db.DB_REP_CONF_NOWAIT', 0);
+ack('db.DB_REPMGR_CONF_2SITE_STRICT', 0);
+
+ack('db.rep_limit', 0);
+ack('db.rep_nsites', 0);
+ack('db.rep_priority', 0);
+
+ack('db.DB_REP_ACK_TIMEOUT', 1000000);
+ack('db.DB_REP_CHECKPOINT_DELAY', 30000000);
+ack('db.DB_REP_CONNECTION_RETRY', 30000000);
+ack('db.DB_REP_ELECTION_TIMEOUT', 2000000);
+ack('db.DB_REP_ELECTION_RETRY', 10000000);
+ack('db.DB_REP_FULL_ELECTION_TIMEOUT', 0);
+ack('db.DB_REP_HEARTBEAT_MONITOR', 0);
+ack('db.DB_REP_HEARTBEAT_SEND', 0);
+ack('db.DB_REP_LEASE_TIMEOUT', 0);
 
 if (loglvl) print("<-- Db.js");
