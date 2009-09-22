@@ -2376,10 +2376,10 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
 
-      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
-
 	/* Avoid narcisstic relations. */
 	selected[rpmtsiOc(pi)] = 1;
+
+      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
 
 	/* T2. Next "q <- p" relation. */
 
