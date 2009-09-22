@@ -1,10 +1,10 @@
 /** \ingroup js_c
- * \file js/rpmdb-js.c
+ * \file js/rpmtxn-js.c
  */
 
 #include "system.h"
 
-#include "rpmdb-js.h"
+#include "rpmtxn-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
@@ -17,32 +17,32 @@
 static int _debug = 0;
 
 /* Required JSClass vectors */
-#define	rpmdb_addprop		JS_PropertyStub
-#define	rpmdb_delprop		JS_PropertyStub
-#define	rpmdb_convert		JS_ConvertStub
+#define	rpmtxn_addprop		JS_PropertyStub
+#define	rpmtxn_delprop		JS_PropertyStub
+#define	rpmtxn_convert		JS_ConvertStub
 
 /* Optional JSClass vectors */
-#define	rpmdb_getobjectops	NULL
-#define	rpmdb_checkaccess	NULL
-#define	rpmdb_call		rpmdb_call
-#define	rpmdb_construct		rpmdb_ctor
-#define	rpmdb_xdrobject		NULL
-#define	rpmdb_hasinstance	NULL
-#define	rpmdb_mark		NULL
-#define	rpmdb_reserveslots	NULL
+#define	rpmtxn_getobjectops	NULL
+#define	rpmtxn_checkaccess	NULL
+#define	rpmtxn_call		rpmtxn_call
+#define	rpmtxn_construct		rpmtxn_ctor
+#define	rpmtxn_xdrobject		NULL
+#define	rpmtxn_hasinstance	NULL
+#define	rpmtxn_mark		NULL
+#define	rpmtxn_reserveslots	NULL
 
 /* Extended JSClass vectors */
-#define rpmdb_equality		NULL
-#define rpmdb_outerobject	NULL
-#define rpmdb_innerobject	NULL
-#define rpmdb_iteratorobject	NULL
-#define rpmdb_wrappedobject	NULL
+#define rpmtxn_equality		NULL
+#define rpmtxn_outerobject	NULL
+#define rpmtxn_innerobject	NULL
+#define rpmtxn_iteratorobject	NULL
+#define rpmtxn_wrappedobject	NULL
 
 /* --- helpers */
 
 /* --- Object methods */
 
-static JSFunctionSpec rpmdb_funcs[] = {
+static JSFunctionSpec rpmtxn_funcs[] = {
     JS_FS_END
 };
 
@@ -50,11 +50,11 @@ static JSFunctionSpec rpmdb_funcs[] = {
 
 #define	_TABLE(_v)	#_v, _##_v, JSPROP_ENUMERATE, NULL, NULL
 
-enum rpmdb_tinyid {
+enum rpmtxn_tinyid {
     _DEBUG	= -2,
 };
 
-static JSPropertySpec rpmdb_props[] = {
+static JSPropertySpec rpmtxn_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
 
     {NULL, 0, 0, NULL, NULL}
@@ -70,9 +70,9 @@ static JSPropertySpec rpmdb_props[] = {
 #define	_GET_L(_test)	((_test) ? DOUBLE_TO_JSVAL((double)_l) : JSVAL_VOID)
 
 static JSBool
-rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -101,9 +101,9 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
-rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmtxn_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -131,10 +131,10 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmdb_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmtxn_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
 
 _RESOLVE_DEBUG_ENTRY(_debug < 0);
 
@@ -151,7 +151,7 @@ exit:
 }
 
 static JSBool
-rpmdb_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
+rpmtxn_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
 
@@ -176,50 +176,54 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 }
 
 /* --- Object ctors/dtors */
-static DB *
-rpmdb_init(JSContext *cx, JSObject *obj)
+static DB_TXN *
+rpmtxn_init(JSContext *cx, JSObject *obj)
 {
-    DB * db = NULL;
+    DB_TXN * txn = NULL;
 #ifdef	NOTYET
     uint32_t _flags = 0;
 
-    if (rpmdb_env_create(&db, _flags) || db == NULL
-     || !JS_SetPrivate(cx, obj, (void *)db))
+    if (rpmtxn_env_create(&db, _flags) || txn == NULL
+     || !JS_SetPrivate(cx, obj, (void *)txn))
 #else
-    if (!JS_SetPrivate(cx, obj, (void *)db))
+    if (!JS_SetPrivate(cx, obj, (void *)txn))
 #endif
     {
 #ifdef	NOTYET
-	if (db)
-	    (void) db->close(db, _flags);
+	if (txn)
+	    (void) txn->close(txn, _flags);
 #endif
 
 	/* XXX error msg */
-	db = NULL;
+	txn = NULL;
     }
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p) db %p\n", __FUNCTION__, cx, obj, db);
+fprintf(stderr, "<== %s(%p,%p) txn %p\n", __FUNCTION__, cx, obj, txn);
 
-    return db;
+    return txn;
 }
 
 static void
-rpmdb_dtor(JSContext *cx, JSObject *obj)
+rpmtxn_dtor(JSContext *cx, JSObject *obj)
 {
-    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
-    DB * db = ptr;
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+#ifdef	NOTYET
+    DB_TXN * txn = ptr;
     uint32_t _flags = 0;
+#endif
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+#ifdef	NOTYET
     if (db) {
 	(void) db->close(db, _flags);
     }
+#endif
 }
 
 static JSBool
-rpmdb_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmtxn_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
 
@@ -227,9 +231,9 @@ if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmdb_init(cx, obj);
+	(void) rpmtxn_init(cx, obj);
     } else {
-	if ((obj = JS_NewObject(cx, &rpmdbClass, NULL, NULL)) == NULL)
+	if ((obj = JS_NewObject(cx, &rpmtxnClass, NULL, NULL)) == NULL)
 	    goto exit;
 	*rval = OBJECT_TO_JSVAL(obj);
     }
@@ -240,13 +244,13 @@ exit:
 }
 
 static JSBool
-rpmdb_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmtxn_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
-    void * ptr = JS_GetInstancePrivate(cx, o, &rpmdbClass, NULL);
+    void * ptr = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
 #ifdef	NOTYET
-    DB * db = ptr;
+    DB_TXN * txn = ptr;
     const char *_fn = NULL;
     const char * _con = NULL;
 #endif
@@ -256,7 +260,7 @@ rpmdb_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
         goto exit;
 
-    *rval = (db && _fn && (_con = rpmdbLgetfilecon(db, _fn)) != NULL)
+    *rval = (txn && _fn && (_con = rpmtxnLgetfilecon(txn, _fn)) != NULL)
 	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
     _con = _free(_con);
 
@@ -272,43 +276,43 @@ fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, 
 }
 
 /* --- Class initialization */
-JSClass rpmdbClass = {
-    "Db", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
-    rpmdb_addprop,   rpmdb_delprop, rpmdb_getprop, rpmdb_setprop,
-    (JSEnumerateOp)rpmdb_enumerate, (JSResolveOp)rpmdb_resolve,
-    rpmdb_convert,	rpmdb_dtor,
+JSClass rpmtxnClass = {
+    "Txn", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
+    rpmtxn_addprop,   rpmtxn_delprop, rpmtxn_getprop, rpmtxn_setprop,
+    (JSEnumerateOp)rpmtxn_enumerate, (JSResolveOp)rpmtxn_resolve,
+    rpmtxn_convert,	rpmtxn_dtor,
 
-    rpmdb_getobjectops,	rpmdb_checkaccess,
-    rpmdb_call,		rpmdb_construct,
-    rpmdb_xdrobject,	rpmdb_hasinstance,
-    rpmdb_mark,		rpmdb_reserveslots,
+    rpmtxn_getobjectops,	rpmtxn_checkaccess,
+    rpmtxn_call,		rpmtxn_construct,
+    rpmtxn_xdrobject,	rpmtxn_hasinstance,
+    rpmtxn_mark,		rpmtxn_reserveslots,
 };
 
 JSObject *
-rpmjs_InitDbClass(JSContext *cx, JSObject* obj)
+rpmjs_InitTxnClass(JSContext *cx, JSObject* obj)
 {
     JSObject *proto;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 
-    proto = JS_InitClass(cx, obj, NULL, &rpmdbClass, rpmdb_ctor, 1,
-		rpmdb_props, rpmdb_funcs, NULL, NULL);
+    proto = JS_InitClass(cx, obj, NULL, &rpmtxnClass, rpmtxn_ctor, 1,
+		rpmtxn_props, rpmtxn_funcs, NULL, NULL);
 assert(proto != NULL);
     return proto;
 }
 
 JSObject *
-rpmjs_NewDbObject(JSContext *cx)
+rpmjs_NewTxnObject(JSContext *cx)
 {
     JSObject *obj;
-    DB * db;
+    DB_TXN * txn;
 
-    if ((obj = JS_NewObject(cx, &rpmdbClass, NULL, NULL)) == NULL) {
+    if ((obj = JS_NewObject(cx, &rpmtxnClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((db = rpmdb_init(cx, obj)) == NULL) {
+    if ((txn = rpmtxn_init(cx, obj)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

@@ -11,7 +11,12 @@
 #include "rpmaug-js.h"
 #include "rpmbc-js.h"
 #include "rpmbf-js.h"
+
 #include "rpmdb-js.h"
+#include "rpmdbc-js.h"
+#include "rpmdbe-js.h"
+#include "rpmtxn-js.h"
+
 #include "rpmdc-js.h"
 #include "rpmdig-js.h"
 #include "rpmdir-js.h"
@@ -70,7 +75,12 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Aug",		rpmjs_InitAugClass,	 -25 },
     { "Bc",		rpmjs_InitBcClass,	 -40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 -26 },
-    { "Db",		rpmjs_InitDbClass,	 44 },
+
+    { "Db",		rpmjs_InitDbClass,	 45 },
+    { "Dbc",		rpmjs_InitDbcClass,	 46 },
+    { "Dbe",		rpmjs_InitDbeClass,	 44 },
+    { "Txn",		rpmjs_InitTxnClass,	 47 },
+
     { "Dc",		rpmjs_InitDcClass,	 -28 },
     { "Dig",		rpmjs_InitDigClass,	 -37 },	/* todo++ */
     { "Dir",		rpmjs_InitDirClass,	 -29 },
