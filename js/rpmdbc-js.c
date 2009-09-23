@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 /* Required JSClass vectors */
 #define	rpmdbc_addprop		JS_PropertyStub
@@ -42,7 +42,197 @@ static int _debug = 0;
 
 /* --- Object methods */
 
+#define	_zalloca(_p)	memset(alloca(sizeof(*_p)), 0, sizeof(*_p))
+
+static JSBool
+rpmdbc_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	int ret = dbc->close(dbc);
+	dbc = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+    }
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbc_Cmp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	DBC * _otherdbc = NULL;
+	int _result = 0;
+	uint32_t _flags = 0;
+	int ret = dbc->cmp(dbc, _otherdbc, &_result, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbc_Count(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	db_recno_t _count = 0;
+	uint32_t _flags = 0;
+	int ret = dbc->count(dbc, &_count, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbc_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	uint32_t _flags = 0;
+	int ret = dbc->del(dbc, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbc_Dup(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	DBC * _cursor = NULL;
+	uint32_t _flags = 0;
+	int ret = dbc->dup(dbc, &_cursor, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbc_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	DBT * _key = _zalloca(_key);
+	DBT * _data = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = dbc->get(dbc, _key, _data, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbc_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	DBT * _key = _zalloca(_key);
+	DBT * _pkey = _zalloca(_pkey);
+	DBT * _data = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = dbc->pget(dbc, _key, _pkey, _data, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbc_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbc) {
+	DBT * _key = _zalloca(_key);
+	DBT * _data = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = dbc->put(dbc, _key, _data, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
 static JSFunctionSpec rpmdbc_funcs[] = {
+    JS_FS("close",	rpmdbc_Close,		0,0,0),
+    JS_FS("cmp",	rpmdbc_Cmp,		0,0,0),
+    JS_FS("count",	rpmdbc_Count,		0,0,0),
+    JS_FS("del",	rpmdbc_Del,		0,0,0),
+    JS_FS("dup",	rpmdbc_Dup,		0,0,0),
+    JS_FS("get",	rpmdbc_Get,		0,0,0),
+    JS_FS("pget",	rpmdbc_Pget,		0,0,0),
+    JS_FS("put",	rpmdbc_Put,		0,0,0),
     JS_FS_END
 };
 
@@ -52,10 +242,12 @@ static JSFunctionSpec rpmdbc_funcs[] = {
 
 enum rpmdbc_tinyid {
     _DEBUG	= -2,
+    _PRIORITY	= -3,
 };
 
 static JSPropertySpec rpmdbc_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"priority",_PRIORITY,	JSPROP_ENUMERATE,	NULL,	NULL},
 
     {NULL, 0, 0, NULL, NULL}
 };
@@ -73,6 +265,8 @@ static JSBool
 rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    uint32_t _u = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -83,6 +277,7 @@ rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
+    case _PRIORITY:	*vp = _GET_U(!dbc->get_priority(dbc, (DB_CACHE_PRIORITY *)&_u)); break;
 
     default:
 	break;
@@ -104,24 +299,23 @@ static JSBool
 rpmdbc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
+    uint32_t _u = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
 
-#ifdef	NOTYET
-    if (JSVAL_IS_STRING(*vp))
-	_s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
     if (JSVAL_IS_INT(*vp))
-	_l = _u = _i = JSVAL_TO_INT(*vp);
-#endif
+	_u = JSVAL_TO_INT(*vp);
 
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
 	    break;
 	break;
+    case _PRIORITY:	*vp = _PUT_U(dbc->set_priority(dbc, (DB_CACHE_PRIORITY)_u));		break;
 
     default:
 	break;
