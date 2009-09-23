@@ -119,10 +119,10 @@ rpmdb_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
-	int ret = db->close(db, _flags);
+    {	int ret = db->close(db, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->close");
 	db = ptr = NULL;
@@ -143,19 +143,23 @@ rpmdb_Cursor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_TRUE;
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
 
-    if (db) {
+    if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
 	DBC * _dbc;
 	uint32_t _flags = 0;
 	int ret = db->cursor(db, _txnid, &_dbc, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->cursor");
+	else
+	    *rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -168,19 +172,23 @@ rpmdb_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_TRUE;
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
 
-    if (db) {
+    if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
 	DBT * _key = _zalloca(_key);
 	uint32_t _flags = 0;
 	int ret = db->del(db, _txnid, _key, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->del");
+	else
+	    *rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -193,19 +201,21 @@ rpmdb_Exists(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_TRUE;
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
 
-    if (db) {
+    if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
 	DBT * _key = _zalloca(_key);
 	uint32_t _flags = 0;
 	int ret = db->exists(db, _txnid, _key, _flags);
-	if (ret)
-	    db->err(db, ret, "DB->exists");
+	/* XXX should check DB_NOTFOUND/DB_KEYEMPTY explicitly */
+	*rval = (!ret ? JSVAL_TRUE : JSVAL_FALSE);
     }
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -218,9 +228,10 @@ rpmdb_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
+    if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
 	DBT * _key = _zalloca(_key);
 	DBT * _data = _zalloca(_key);
@@ -232,6 +243,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -241,21 +253,22 @@ rpmdb_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
     const char * _file = NULL;
+    const char * _database = NULL;
     DBTYPE _type = DB_HASH;
     uint32_t _oflags = DB_CREATE;
+    int _mode = 0644;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/uu", &_file, &_type, &_oflags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/suui", &_file, &_database, &_type, &_oflags, &_mode)))
 	goto exit;
 
     if (db->app_private == NULL) {
 	DB_TXN * _txnid = NULL;
-	const char * _database = NULL;
-	int _mode = 0644;
 	int ret = rpmdb_open(db, _txnid, _file, _database, _type, _oflags, _mode);
 	if (ret) {
 	    db->err(db, ret, "DB->open");
@@ -279,9 +292,10 @@ rpmdb_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
+    if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
 	DBT * _key = _zalloca(_key);
 	DBT * _data = _zalloca(_key);
@@ -293,6 +307,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -301,23 +316,31 @@ rpmdb_Remove(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    const char * _file = NULL;
+    const char * _database = NULL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_TRUE;
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
 
-    if (db) {
-	const char * _file = NULL;
-	const char * _database = NULL;
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/s", &_file, &_database)))
+	goto exit;
+
+    if (db->app_private == NULL) {
 	uint32_t _flags = 0;
 	int ret = db->remove(db, _file, _database, _flags);
 	if (ret)
-	    db->err(db, ret, "DB->remove");
+	    fprintf(stderr, "db->remove: %s", db_strerror(ret));
+	db = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+	*rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -326,24 +349,34 @@ rpmdb_Rename(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    const char * _file = NULL;
+    const char * _database = NULL;
+    const char * _newname = NULL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_TRUE;
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
 
-    if (db) {
-	const char * _file = NULL;
-	const char * _database = NULL;
-	const char * _newname = NULL;
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "sss", &_file, &_database, &_newname)))
+	goto exit;
+
+    /* XXX lazy reopen in order to rename? */
+
+    if (db->app_private == NULL) {
 	uint32_t _flags = 0;
 	int ret = db->rename(db, _file, _database, _newname, _flags);
-	if (ret)
+	if (ret) {
 	    db->err(db, ret, "DB->rename");
+	    goto exit;
+	}
+	*rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -352,23 +385,58 @@ rpmdb_Stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    uint32_t _flags = DB_STAT_ALL;	/* XXX DB_FAST_STAT is saner default */
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
 	void * _sp = NULL;
-	uint32_t _flags = 0;
-	int ret = db->stat(db, _txnid, _sp, _flags);
+	int ret = db->stat(db, _txnid, &_sp, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->stat");
+	/* XXX FIXME: format for return. ugh */
+	_sp = _free(_sp);
     }
 
     ok = JS_TRUE;
 
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_StatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    uint32_t _flags = DB_STAT_ALL;	/* XXX DB_FAST_STAT is saner default */
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_TRUE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (db->app_private != NULL) {
+	int ret = db->stat_print(db, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->stat_print");
+    }
+
+    ok = JS_TRUE;
+
+exit:
     return ok;
 }
 
@@ -381,10 +449,12 @@ rpmdb_Sync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
-	uint32_t _flags = 0;
+    /* XXX check argc? */
+
+    {	uint32_t _flags = 0;
 	int ret = db->sync(db, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->sync");
@@ -392,6 +462,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -404,11 +475,13 @@ rpmdb_Truncate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
-	DB_TXN * _txnid = NULL;
-	uint32_t _count = 0;
+    /* XXX check argc? */
+
+    {	DB_TXN * _txnid = NULL;
+	uint32_t _count = 0;	/* XXX no. of records truncated needs return */
 	uint32_t _flags = 0;
 	int ret = db->truncate(db, _txnid, &_count, _flags);
 	if (ret)
@@ -417,6 +490,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -425,15 +499,19 @@ rpmdb_Upgrade(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    const char * _file = NULL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
-	const char * _file = NULL;
-	uint32_t _flags = 0;
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_file)))
+	goto exit;
+
+    /* XXX check db->lorder, same endianness is required. */
+    {	uint32_t _flags = 0;	/* XXX DB_DUPSORT prior to db-3.1 */
 	int ret = db->upgrade(db, _file, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->upgrade");
@@ -441,6 +519,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -449,24 +528,31 @@ rpmdb_Verify(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    const char * _file = NULL;
+    const char * _database = NULL;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    if (db == NULL) goto exit;
     *rval = JSVAL_TRUE;
 
-    if (db) {
-	const char * _file = NULL;
-	const char * _database = NULL;
-	FILE * _outfile = NULL;
-	uint32_t _flags = 0;
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ssu", &_file, &_database, &_flags)))
+	goto exit;
+
+    if (db->app_private == NULL) {
+	FILE * _outfile = NULL;		/* XXX optional key/val dump */
 	int ret = db->verify(db, _file, _database, _outfile, _flags);
 	if (ret)
-	    db->err(db, ret, "DB->verify");
+	    fprintf(stderr, "db->verify: %s", db_strerror(ret));
+	db = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
     }
 
     ok = JS_TRUE;
 
+exit:
     return ok;
 }
 
@@ -481,6 +567,7 @@ static JSFunctionSpec rpmdb_funcs[] = {
     JS_FS("remove",	rpmdb_Remove,		0,0,0),
     JS_FS("rename",	rpmdb_Rename,		0,0,0),
     JS_FS("stat",	rpmdb_Stat,		0,0,0),
+    JS_FS("stat_print",	rpmdb_StatPrint,	0,0,0),
     JS_FS("sync",	rpmdb_Sync,		0,0,0),
     JS_FS("truncate",	rpmdb_Truncate,		0,0,0),
     JS_FS("upgrade",	rpmdb_Upgrade,		0,0,0),

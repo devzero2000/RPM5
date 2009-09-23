@@ -209,8 +209,11 @@ var little_endian = 1234;
 var big_endian = 4321;
 
 var dbfile = "./rpmdb/Stuff";
+var dbname = null;
 var oflags = DB_CREATE;
 var dbtype = DB_HASH;
+var dbperms = 0644;
+
 var avg_keysize = 128;
 var avg_datasize = 1024;
 var h_ffactor = (pagesize - 32) / (avg_keysize + avg_datasize + 8);
@@ -254,8 +257,9 @@ ack('db.h_nelem = h_nelem', true);
 ack('db.h_nelem', h_nelem);
 
 // -----
-ack('db.open(dbfile, dbtype, oflags)', true);
+ack('db.open(dbfile, dbname, dbtype, oflags,dbperms)', true);
 ack('db.dbfile', dbfile);
+ack('db.dbname', dbname);
 ack('db.type', dbtype);
 ack('db.open_flags', oflags);
 
@@ -284,6 +288,25 @@ ack('db.q_extentsize', 0);
 // ack('db.re_pad', 0);
 // ack('db.re_source', 0);
 
-db.close(0);
+ack('db.sync()', true);
+ack('db.stat(DB_FAST_STAT)', true);
+ack('db.stat_print(DB_FAST_STAT)', true);
+
+ack('db.close(0)', true);
+delete db;
+
+var db = new Db(dbenv, eoflags);
+ack('typeof db;', 'object');
+ack('db instanceof Db;', true);
+ack('db.upgrade(dbfile)', true);
+ack('db.verify(dbfile,dbname,0)', true);
+ack('db.truncate()', true);
+delete db;
+
+var db = new Db(dbenv, eoflags);
+ack('typeof db;', 'object');
+ack('db instanceof Db;', true);
+ack('db.remove(dbfile,dbname)', true);
+delete db;
 
 if (loglvl) print("<-- Db.js");
