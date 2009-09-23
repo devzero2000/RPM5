@@ -61,12 +61,6 @@ rpmdb_cmplong(DB *dbp, const DBT *a, const DBT *b)
 }
 #endif
 
-static char * _file = "/X/src/wdj/js/rpmdb/Stuff";
-static uint32_t _oflags = DB_CREATE;
-static const char * _database = NULL;
-static DBTYPE _type = DB_HASH;
-static int _mode = 0644;
-
 static uint32_t _preflags = 0;
 static int (*_bt_compare) (DB *, const DBT *, const DBT *) = NULL;
 
@@ -74,11 +68,13 @@ static int
 rpmdb_create(DB ** dbpp, DB_ENV * dbenv, uint32_t flags)
 {
     FILE * _errfile = stderr;
-    DB_TXN * _txnid = NULL;
-    int ret;
+    int ret = db_create(dbpp, dbenv, flags);
 
-    if ((ret = db_create(dbpp, dbenv, 0)) != 0) {
-	dbenv->err(dbenv, ret, "db_create");
+    if (ret) {
+	if (dbenv)
+	    dbenv->err(dbenv, ret, "db_create");
+	else
+	    fprintf(stderr, "db_create: %s", db_strerror(ret));
 	goto exit;
     }
 
@@ -93,12 +89,19 @@ rpmdb_create(DB ** dbpp, DB_ENV * dbenv, uint32_t flags)
     if (_errfile)
 	(*dbpp)->set_errfile(*dbpp, _errfile);
 
-    if ((ret = (*dbpp)->open(*dbpp, _txnid, _file, _database, _type, _oflags, _mode)) != 0) {
-	(*dbpp)->err(*dbpp, ret, "DB->open: %s", _file);
-	goto exit;
-    }
+    (*dbpp)->app_private = NULL;
 
 exit:
+    return ret;
+}
+
+static int
+rpmdb_open(DB * db, DB_TXN * txnid, const char * file, const char * database,
+		uint32_t type, uint32_t oflags, int mode)
+{
+    int ret = db->open(db, txnid, file, database, type, oflags, mode);
+
+    if (ret) db->err(db, ret, "DB->open: %s", file);
     return ret;
 }
 
@@ -237,24 +240,33 @@ rpmdb_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    const char * _file = NULL;
+    DBTYPE _type = DB_HASH;
+    uint32_t _oflags = DB_CREATE;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
-    if (0) {
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/uu", &_file, &_type, &_oflags)))
+	goto exit;
+
+    if (db->app_private == NULL) {
 	DB_TXN * _txnid = NULL;
-	int ret = db->open(db, _txnid, _file, _database, _type, _oflags, _mode);
-	if (ret != 0) {
-	    db->err(db, ret, "DB->open: %s", _file);
+	const char * _database = NULL;
+	int _mode = 0644;
+	int ret = rpmdb_open(db, _txnid, _file, _database, _type, _oflags, _mode);
+	if (ret) {
+	    db->err(db, ret, "DB->open");
 	    goto exit;
 	}
+	db->app_private = obj;
+	*rval = JSVAL_TRUE;
     }
 
-    ok = JS_TRUE;
-
 exit:
+    ok = JS_TRUE;
     return ok;
 }
 
@@ -773,15 +785,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static DB *
-rpmdb_init(JSContext *cx, JSObject *obj)
+rpmdb_init(JSContext *cx, JSObject *obj, DB_ENV * dbenv, uint32_t flags)
 {
     DB * db = NULL;
-    DB_ENV * _dbenv = NULL;
-    uint32_t _flags = 0;
 
-    if (rpmdb_create(&db, _dbenv, _flags) || db == NULL
+    if (rpmdb_create(&db, dbenv, flags) || db == NULL
      || !JS_SetPrivate(cx, obj, (void *)db))
     {
+	uint32_t _flags = 0;
 	if (db)
 	    (void) db->close(db, _flags);
 	/* XXX error msg */
@@ -809,13 +820,15 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 static JSBool
 rpmdb_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    DB_ENV * _dbenv = NULL;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmdb_init(cx, obj);
+	(void) rpmdb_init(cx, obj, _dbenv, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdbClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -890,13 +903,15 @@ JSObject *
 rpmjs_NewDbObject(JSContext *cx)
 {
     JSObject *obj;
+    DB_ENV * _dbenv = NULL;
+    uint32_t _flags = 0;
     DB * db;
 
     if ((obj = JS_NewObject(cx, &rpmdbClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((db = rpmdb_init(cx, obj)) == NULL) {
+    if ((db = rpmdb_init(cx, obj, _dbenv, _flags)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

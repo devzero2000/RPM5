@@ -198,30 +198,71 @@ var	DB_YIELDCPU				= 0x00010000;
 // -------------------------
 
 // -----
+var dbenv = null;
+var eoflags = 0;
+
+var errfile = "stdout";
+var errpfx = "Stuff";
+var pagesize = 1024;
+var cachesize = 1024 * 1024;
+var little_endian = 1234;
+var big_endian = 4321;
+
 var dbfile = "./rpmdb/Stuff";
 var oflags = DB_CREATE;
 var dbtype = DB_HASH;
+var avg_keysize = 128;
+var avg_datasize = 1024;
+var h_ffactor = (pagesize - 32) / (avg_keysize + avg_datasize + 8);
+var h_nelem = 12345;
 
-var db = new Db(dbfile, dbtype, oflags);
+var db = new Db(dbenv, eoflags);
 ack("typeof db;", "object");
 ack("db instanceof Db;", true);
 // ack("db.debug = 1;", 1);
 // ack("db.debug = 0;", 0);
 
-ack('db.byteswapped', 0);
-ack('db.dbfile', null);
-ack('db.dbname', null);
-ack('db.multiple', 0);
+ack('db.errfile', 'stderr');
+ack('db.errfile = errfile', true);
+ack('db.errfile', errfile);
 
-ack('db.open_flags', oflags);
-// ack('db.open_flags = oflags', true);
+ack('db.errpfx', null);
+ack('db.errpfx = errpfx', true);
+ack('db.errpfx', errpfx);
 
-ack('db.type', dbtype);
+ack('db.lorder', little_endian);
+ack('db.lorder = big_endian', true);
+ack('db.lorder', big_endian);
+ack('db.lorder = little_endian', true);
+ack('db.lorder', little_endian);
 
-// ack('db.bt_minkey', 0);
+ack('db.pagesize', 0);
+ack('db.pagesize = pagesize', true);
+ack('db.pagesize', pagesize);
 
 ack('db.cachesize', 265564);
-// ack('db.cachesize = 2 * 1312348', true);
+ack('db.cachesize = cachesize', true);
+ack('db.cachesize >= cachesize', true);
+
+h_ffactor = 50;			// todo: figger the units
+ack('db.h_ffactor', 0);
+ack('db.h_ffactor = h_ffactor', true);
+ack('db.h_ffactor', h_ffactor);
+
+ack('db.h_nelem', 1234);	// todo: why 1234?
+ack('db.h_nelem = h_nelem', true);
+ack('db.h_nelem', h_nelem);
+
+// -----
+ack('db.open(dbfile, dbtype, oflags)', true);
+ack('db.dbfile', dbfile);
+ack('db.type', dbtype);
+ack('db.open_flags', oflags);
+
+ack('db.byteswapped', 0);
+ack('db.multiple', 0);
+
+// ack('db.bt_minkey', 0);
 
 ack('db.create_dir', null);
 // ack('db.create_dir = "."', true);
@@ -229,18 +270,8 @@ ack('db.create_dir', null);
 ack('db.encrypt', 0);
 // ack('db.encrypt = "xyzzy"', true);
 
-ack('db.errfile', 'stderr');
-// ack('db.errfile = "stdout"', true);
-
-ack('db.errpfx', null);
-// ack('db.errpfx = "foo"', true);
-
 ack('db.flags', 0);
 // ack('db.flags = DB_REGION_INIT', true);
-
-ack('db.h_ffactor', 0);
-ack('db.h_nelem', 0);
-ack('db.lorder', 1234);
 
 ack('db.msgfile', null);
 // ack('db.msgfile = "stdout"', true);
