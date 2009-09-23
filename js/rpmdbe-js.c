@@ -48,6 +48,7 @@ static int _ncaches = 1;
 static int rpmdbe_env_create(DB_ENV ** dbenvp, uint32_t flags)
 {
     FILE * _errfile = stderr;
+    int _mode = 0;
     int ret;
 
     if ((ret = db_env_create(dbenvp, flags)) != 0) {
@@ -63,7 +64,7 @@ static int rpmdbe_env_create(DB_ENV ** dbenvp, uint32_t flags)
     (*dbenvp)->set_cachesize(*dbenvp,
 	(_cachesize >> 32), (_cachesize & 0xffffffff), _ncaches);
 
-    if ((ret = (*dbenvp)->open(*dbenvp, _home, _eflags, 0)) != 0) {
+    if ((ret = (*dbenvp)->open(*dbenvp, _home, _eflags, _mode)) != 0) {
 	(*dbenvp)->err(*dbenvp, ret, "DB_ENV->open: %s", _home);
 	ret = 1;
 	goto exit;
@@ -75,7 +76,133 @@ exit:
 
 /* --- Object methods */
 
+static JSBool
+rpmdbe_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbenv) {
+	(void) dbenv->close(dbenv, _flags);
+	dbenv = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+    }
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_Dbremove(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbenv) {
+	DB_TXN * _txnid = NULL;
+	const char * _file = NULL;
+	const char * _database = NULL;
+	uint32_t _flags = 0;
+	int ret = dbenv->dbremove(dbenv, _txnid, _file, _database, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbe_Dbrename(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbenv) {
+	DB_TXN * _txnid = NULL;
+	const char * _file = NULL;
+	const char * _database = NULL;
+	const char * _newname = NULL;
+	uint32_t _flags = 0;
+	int ret = dbenv->dbrename(dbenv, _txnid, _file, _database, _newname, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdbe_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (0) {
+	uint32_t _flags = 0;
+	int _mode = 0;
+	int ret = dbenv->open(dbenv, _home, _flags, _mode);
+
+	if (ret) {
+	    dbenv->err(dbenv, ret, "DB_ENV->open: %s", _home);
+	    goto exit;
+	}
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_Remove(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (dbenv) {
+	uint32_t _flags = 0;
+	int ret = dbenv->remove(dbenv, _home, _flags);
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
 static JSFunctionSpec rpmdbe_funcs[] = {
+    JS_FS("close",	rpmdbe_Close,		0,0,0),
+    JS_FS("dbremove",	rpmdbe_Dbremove,	0,0,0),
+    JS_FS("dbrename",	rpmdbe_Dbrename,	0,0,0),
+    JS_FS("open",	rpmdbe_Open,		0,0,0),
+    JS_FS("remove",	rpmdbe_Remove,		0,0,0),
     JS_FS_END
 };
 

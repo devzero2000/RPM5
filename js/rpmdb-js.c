@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 /* Required JSClass vectors */
 #define	rpmdb_addprop		JS_PropertyStub
@@ -104,7 +104,375 @@ exit:
 
 /* --- Object methods */
 
+#define	_zalloca(_p)	memset(alloca(sizeof(*_p)), 0, sizeof(*_p))
+
+static JSBool
+rpmdb_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	int ret = db->close(db, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->close");
+	db = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+    }
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_Cursor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	DBC * _dbc;
+	uint32_t _flags = 0;
+	int ret = db->cursor(db, _txnid, &_dbc, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->cursor");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	DBT * _key = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = db->del(db, _txnid, _key, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->del");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Exists(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	DBT * _key = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = db->exists(db, _txnid, _key, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->exists");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	DBT * _key = _zalloca(_key);
+	DBT * _data = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = db->get(db, _txnid, _key, _data, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->get");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (0) {
+	DB_TXN * _txnid = NULL;
+	int ret = db->open(db, _txnid, _file, _database, _type, _oflags, _mode);
+	if (ret != 0) {
+	    db->err(db, ret, "DB->open: %s", _file);
+	    goto exit;
+	}
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	DBT * _key = _zalloca(_key);
+	DBT * _data = _zalloca(_key);
+	uint32_t _flags = 0;
+	int ret = db->put(db, _txnid, _key, _data, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->put");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Remove(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	const char * _file = NULL;
+	const char * _database = NULL;
+	uint32_t _flags = 0;
+	int ret = db->remove(db, _file, _database, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->remove");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Rename(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	const char * _file = NULL;
+	const char * _database = NULL;
+	const char * _newname = NULL;
+	uint32_t _flags = 0;
+	int ret = db->rename(db, _file, _database, _newname, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->rename");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	void * _sp = NULL;
+	uint32_t _flags = 0;
+	int ret = db->stat(db, _txnid, _sp, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->stat");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Sync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	uint32_t _flags = 0;
+	int ret = db->sync(db, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->sync");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Truncate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	DB_TXN * _txnid = NULL;
+	uint32_t _count = 0;
+	uint32_t _flags = 0;
+	int ret = db->truncate(db, _txnid, &_count, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->truncate");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Upgrade(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	const char * _file = NULL;
+	uint32_t _flags = 0;
+	int ret = db->upgrade(db, _file, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->upgrade");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmdb_Verify(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    *rval = JSVAL_TRUE;
+
+    if (db) {
+	const char * _file = NULL;
+	const char * _database = NULL;
+	FILE * _outfile = NULL;
+	uint32_t _flags = 0;
+	int ret = db->verify(db, _file, _database, _outfile, _flags);
+	if (ret)
+	    db->err(db, ret, "DB->verify");
+    }
+
+    ok = JS_TRUE;
+
+    return ok;
+}
+
 static JSFunctionSpec rpmdb_funcs[] = {
+    JS_FS("close",	rpmdb_Close,		0,0,0),
+    JS_FS("cursor",	rpmdb_Cursor,		0,0,0),
+    JS_FS("del",	rpmdb_Del,		0,0,0),
+    JS_FS("exists",	rpmdb_Exists,		0,0,0),
+    JS_FS("get",	rpmdb_Get,		0,0,0),
+    JS_FS("open",	rpmdb_Open,		0,0,0),
+    JS_FS("put",	rpmdb_Put,		0,0,0),
+    JS_FS("remove",	rpmdb_Remove,		0,0,0),
+    JS_FS("rename",	rpmdb_Rename,		0,0,0),
+    JS_FS("stat",	rpmdb_Stat,		0,0,0),
+    JS_FS("sync",	rpmdb_Sync,		0,0,0),
+    JS_FS("truncate",	rpmdb_Truncate,		0,0,0),
+    JS_FS("upgrade",	rpmdb_Upgrade,		0,0,0),
+    JS_FS("verify",	rpmdb_Verify,		0,0,0),
     JS_FS_END
 };
 

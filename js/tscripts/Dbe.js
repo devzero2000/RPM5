@@ -1,55 +1,55 @@
 if (loglvl) print("--> Dbe.js");
 
 // ----- eflags
-const DB_INIT_CDB		= 0x00000040;
-const DB_INIT_LOCK		= 0x00000080;
-const DB_INIT_LOG		= 0x00000100;
-const DB_INIT_MPOOL		= 0x00000200;
-const DB_INIT_REP		= 0x00000400;
-const DB_INIT_TXN		= 0x00000800;
+var DB_INIT_CDB			= 0x00000040;
+var DB_INIT_LOCK		= 0x00000080;
+var DB_INIT_LOG			= 0x00000100;
+var DB_INIT_MPOOL		= 0x00000200;
+var DB_INIT_REP			= 0x00000400;
+var DB_INIT_TXN			= 0x00000800;
 
-const DB_RECOVER		= 0x00000002;
-const DB_RECOVER_FATAL		= 0x00004000;
+var DB_RECOVER			= 0x00000002;
+var DB_RECOVER_FATAL		= 0x00004000;
 
-const DB_CREATE			= 0x00000001;
-const DB_LOCKDOWN		= 0x00001000;
-const DB_FAILCHK		= 0x00000020;
-const DB_PRIVATE		= 0x00002000;
-const DB_REGISTER		= 0x00008000;
-const DB_SYSTEM_MEM		= 0x00010000;
-const DB_THREAD			= 0x00000010;
+var DB_CREATE			= 0x00000001;
+var DB_LOCKDOWN			= 0x00001000;
+var DB_FAILCHK			= 0x00000020;
+var DB_PRIVATE			= 0x00002000;
+var DB_REGISTER			= 0x00008000;
+var DB_SYSTEM_MEM		= 0x00010000;
+var DB_THREAD			= 0x00000010;
 
 // ----- flags
-const DB_AUTO_COMMIT		= 0x00000100;
-const DB_CDB_ALLDB		= 0x00000040;
-const DB_DIRECT_DB		= 0x00000080;
-const DB_DSYNC_DB		= 0x00000200;
-const DB_MULTIVERSION		= 0x00000004;
-const DB_NOLOCKING		= 0x00000400;
-const DB_NOMMAP			= 0x00000008;
-const DB_NOPANIC		= 0x00000800;
-const DB_OVERWRITE		= 0x00001000;
-const DB_REGION_INIT		= 0x00004000;
-const DB_TXN_NOSYNC		= 0x00000001;
-const DB_TXN_NOWAIT		= 0x00000010;
-const DB_TXN_SNAPSHOT		= 0x00000002;
-const DB_TXN_WRITE_NOSYNC	= 0x00000020;
-const DB_YIELDCPU		= 0x00010000;
+var DB_AUTO_COMMIT		= 0x00000100;
+var DB_CDB_ALLDB		= 0x00000040;
+var DB_DIRECT_DB		= 0x00000080;
+var DB_DSYNC_DB			= 0x00000200;
+var DB_MULTIVERSION		= 0x00000004;
+var DB_NOLOCKING		= 0x00000400;
+var DB_NOMMAP			= 0x00000008;
+var DB_NOPANIC			= 0x00000800;
+var DB_OVERWRITE		= 0x00001000;
+var DB_REGION_INIT		= 0x00004000;
+var DB_TXN_NOSYNC		= 0x00000001;
+var DB_TXN_NOWAIT		= 0x00000010;
+var DB_TXN_SNAPSHOT		= 0x00000002;
+var DB_TXN_WRITE_NOSYNC		= 0x00000020;
+var DB_YIELDCPU			= 0x00010000;
 
-const DB_LOG_IN_MEMORY		= 0x00000008;
-const DB_LOG_AUTO_REMOVE	= 0x00000001;
+var DB_LOG_IN_MEMORY		= 0x00000008;
+var DB_LOG_AUTO_REMOVE		= 0x00000001;
 
 // ----- locking
-const DB_LOCK_NORUN		= 0;
-const DB_LOCK_DEFAULT		= 1;	/* Default policy. */
-const DB_LOCK_EXPIRE		= 2;	/* Only expire locks, no detection. */
-const DB_LOCK_MAXLOCKS		= 3;	/* Select locker with max locks. */
-const DB_LOCK_MAXWRITE		= 4;	/* Select locker with max writelocks. */
-const DB_LOCK_MINLOCKS		= 5;	/* Select locker with min locks. */
-const DB_LOCK_MINWRITE		= 6;	/* Select locker with min writelocks. */
-const DB_LOCK_OLDEST		= 7;	/* Select oldest locker. */
-const DB_LOCK_RANDOM		= 8;	/* Select random locker. */
-const DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
+var DB_LOCK_NORUN		= 0;
+var DB_LOCK_DEFAULT		= 1;	/* Default policy. */
+var DB_LOCK_EXPIRE		= 2;	/* Only expire locks, no detection. */
+var DB_LOCK_MAXLOCKS		= 3;	/* Select locker with max locks. */
+var DB_LOCK_MAXWRITE		= 4;	/* Select locker with max writelocks. */
+var DB_LOCK_MINLOCKS		= 5;	/* Select locker with min locks. */
+var DB_LOCK_MINWRITE		= 6;	/* Select locker with min writelocks. */
+var DB_LOCK_OLDEST		= 7;	/* Select oldest locker. */
+var DB_LOCK_RANDOM		= 8;	/* Select random locker. */
+var DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
 
 // -----
 var home = "./rpmdb";
@@ -213,5 +213,7 @@ ack('dbenv.DB_REP_FULL_ELECTION_TIMEOUT', 0);
 ack('dbenv.DB_REP_HEARTBEAT_MONITOR', 0);
 ack('dbenv.DB_REP_HEARTBEAT_SEND', 0);
 ack('dbenv.DB_REP_LEASE_TIMEOUT', 0);
+
+dbenv.close(0);
 
 if (loglvl) print("<-- Dbe.js");

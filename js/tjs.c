@@ -78,7 +78,7 @@ static struct rpmjsClassTable_s classTable[] = {
 
     { "Db",		rpmjs_InitDbClass,	 45 },
     { "Dbc",		rpmjs_InitDbcClass,	 -46 },
-    { "Dbe",		rpmjs_InitDbeClass,	 -44 },
+    { "Dbe",		rpmjs_InitDbeClass,	 44 },
     { "Txn",		rpmjs_InitTxnClass,	 -47 },
 
     { "Dc",		rpmjs_InitDcClass,	 -28 },
