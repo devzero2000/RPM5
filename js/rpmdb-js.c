@@ -107,7 +107,7 @@ rpmdb_open(DB * db, DB_TXN * txnid, const char * file, const char * database,
 
 /* --- Object methods */
 
-#define	_zalloca(_p)	memset(alloca(sizeof(*_p)), 0, sizeof(*_p))
+#define	DBT_INIT	{0}
 
 static JSBool
 rpmdb_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -120,11 +120,13 @@ rpmdb_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     {	int ret = db->close(db, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->close");
+	else
+	    *rval = JSVAL_TRUE;
 	db = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
     }
@@ -168,6 +170,8 @@ rpmdb_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    DBT _k = DBT_INIT;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -175,11 +179,14 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_k.data, &_flags)))
+	goto exit;
+    if (_k.data)
+	_k.size = strlen(_k.data)+1;
+
     if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
-	DBT * _key = _zalloca(_key);
-	uint32_t _flags = 0;
-	int ret = db->del(db, _txnid, _key, _flags);
+	int ret = db->del(db, _txnid, &_k, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->del");
 	else
@@ -197,6 +204,8 @@ rpmdb_Exists(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    DBT _k = DBT_INIT;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -204,13 +213,27 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_k.data, &_flags)))
+	goto exit;
+    if (_k.data)
+	_k.size = strlen(_k.data)+1;
+
     if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
-	DBT * _key = _zalloca(_key);
-	uint32_t _flags = 0;
-	int ret = db->exists(db, _txnid, _key, _flags);
-	/* XXX should check DB_NOTFOUND/DB_KEYEMPTY explicitly */
-	*rval = (!ret ? JSVAL_TRUE : JSVAL_FALSE);
+	int ret = db->exists(db, _txnid, &_k, _flags);
+	switch (ret) {
+	default:
+	    *rval = JSVAL_FALSE;
+	    db->err(db, ret, "DB->exists");
+	    goto exit;
+	    break;
+	case 0:
+	    *rval = JSVAL_TRUE;
+	    break;
+	case DB_NOTFOUND:
+	    *rval = JSVAL_VOID;
+	    break;
+	}
     }
 
     ok = JS_TRUE;
@@ -224,21 +247,39 @@ rpmdb_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    DBT _k = DBT_INIT;
+    DBT _d = DBT_INIT;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/su", &_k.data, &_d.data, &_flags)))
+	goto exit;
+    if (_k.data)
+	_k.size = strlen(_k.data)+1;
+    if (_d.data)
+	_d.size = strlen(_d.data)+1;
 
     if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
-	DBT * _key = _zalloca(_key);
-	DBT * _data = _zalloca(_key);
-	uint32_t _flags = 0;
-	int ret = db->get(db, _txnid, _key, _data, _flags);
-	if (ret)
+	int ret = db->get(db, _txnid, &_k, &_d, _flags);
+	switch (ret) {
+	default:
+	    *rval = JSVAL_FALSE;
 	    db->err(db, ret, "DB->get");
+	    goto exit;
+	    break;
+	case 0:
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _d.data));
+	    break;
+	case DB_NOTFOUND:
+	    *rval = JSVAL_VOID;
+	    break;
+	}
     }
 
     ok = JS_TRUE;
@@ -270,12 +311,12 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db->app_private == NULL) {
 	DB_TXN * _txnid = NULL;
 	int ret = rpmdb_open(db, _txnid, _file, _database, _type, _oflags, _mode);
-	if (ret) {
+	if (ret)
 	    db->err(db, ret, "DB->open");
-	    goto exit;
+	else {
+	    db->app_private = obj;
+	    *rval = JSVAL_TRUE;
 	}
-	db->app_private = obj;
-	*rval = JSVAL_TRUE;
     }
 
 exit:
@@ -284,25 +325,90 @@ exit:
 }
 
 static JSBool
-rpmdb_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdb_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    DBT _k = DBT_INIT;
+    DBT _p = DBT_INIT;
+    DBT _d = DBT_INIT;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/su", &_k.data, &_d.data, &_flags)))
+	goto exit;
+    if (_k.data)
+	_k.size = strlen(_k.data)+1;
+    if (_d.data)
+	_d.size = strlen(_d.data)+1;
 
     if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
-	DBT * _key = _zalloca(_key);
-	DBT * _data = _zalloca(_key);
-	uint32_t _flags = 0;
-	int ret = db->put(db, _txnid, _key, _data, _flags);
-	if (ret)
+	int ret = db->pget(db, _txnid, &_k, &_p, &_d, _flags);
+	switch (ret) {
+	default:
+	    *rval = JSVAL_FALSE;
+	    db->err(db, ret, "DB->pget");
+	    goto exit;
+	    break;
+	case 0:
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _d.data));
+	    break;
+	case DB_NOTFOUND:
+	    *rval = JSVAL_VOID;
+	    break;
+	}
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    DBT _k = DBT_INIT;
+    DBT _d = DBT_INIT;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ss/u", &_k.data, &_d.data, &_flags)))
+	goto exit;
+    if (_k.data)
+	_k.size = strlen(_k.data)+1;
+    if (_d.data)
+	_d.size = strlen(_d.data)+1;
+
+    if (db->app_private != NULL) {
+	DB_TXN * _txnid = NULL;
+	int ret = db->put(db, _txnid, &_k, &_d, _flags);
+	switch (ret) {
+	default:
+	    *rval = JSVAL_FALSE;
 	    db->err(db, ret, "DB->put");
+	    goto exit;
+	    break;
+	case 0:
+	    *rval = JSVAL_TRUE;
+	    break;
+	case DB_NOTFOUND:
+	    *rval = JSVAL_VOID;
+	    break;
+	}
     }
 
     ok = JS_TRUE;
@@ -333,9 +439,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 	int ret = db->remove(db, _file, _database, _flags);
 	if (ret)
 	    fprintf(stderr, "db->remove: %s", db_strerror(ret));
+	else
+	    *rval = JSVAL_TRUE;
 	db = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
-	*rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -367,11 +474,10 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db->app_private == NULL) {
 	uint32_t _flags = 0;
 	int ret = db->rename(db, _file, _database, _newname, _flags);
-	if (ret) {
+	if (ret)
 	    db->err(db, ret, "DB->rename");
-	    goto exit;
-	}
-	*rval = JSVAL_TRUE;
+	else
+	    *rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -391,7 +497,7 @@ rpmdb_Stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -402,6 +508,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	int ret = db->stat(db, _txnid, &_sp, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->stat");
+	else
+	    *rval = JSVAL_TRUE;
 	/* XXX FIXME: format for return. ugh */
 	_sp = _free(_sp);
     }
@@ -423,7 +531,7 @@ rpmdb_StatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -432,6 +540,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	int ret = db->stat_print(db, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->stat_print");
+	else
+	    *rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -450,7 +560,7 @@ rpmdb_Sync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     /* XXX check argc? */
 
@@ -458,6 +568,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	int ret = db->sync(db, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->sync");
+	else
+	    *rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -476,16 +588,19 @@ rpmdb_Truncate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     /* XXX check argc? */
 
     {	DB_TXN * _txnid = NULL;
-	uint32_t _count = 0;	/* XXX no. of records truncated needs return */
+	uint32_t _count = 0;
 	uint32_t _flags = 0;
 	int ret = db->truncate(db, _txnid, &_count, _flags);
-	if (ret)
+	if (ret) {
 	    db->err(db, ret, "DB->truncate");
+	    goto exit;
+	}
+	*rval = INT_TO_JSVAL(_count);
     }
 
     ok = JS_TRUE;
@@ -505,7 +620,7 @@ rpmdb_Upgrade(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_file)))
 	goto exit;
@@ -513,8 +628,11 @@ _METHOD_DEBUG_ENTRY(_debug);
     /* XXX check db->lorder, same endianness is required. */
     {	uint32_t _flags = 0;	/* XXX DB_DUPSORT prior to db-3.1 */
 	int ret = db->upgrade(db, _file, _flags);
-	if (ret)
+	if (ret) {
 	    db->err(db, ret, "DB->upgrade");
+	    goto exit;
+	}
+	*rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -536,7 +654,7 @@ rpmdb_Verify(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (db == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "ssu", &_file, &_database, &_flags)))
 	goto exit;
@@ -546,6 +664,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	int ret = db->verify(db, _file, _database, _outfile, _flags);
 	if (ret)
 	    fprintf(stderr, "db->verify: %s", db_strerror(ret));
+	else
+	    *rval = JSVAL_TRUE;
 	db = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
     }
@@ -563,6 +683,7 @@ static JSFunctionSpec rpmdb_funcs[] = {
     JS_FS("exists",	rpmdb_Exists,		0,0,0),
     JS_FS("get",	rpmdb_Get,		0,0,0),
     JS_FS("open",	rpmdb_Open,		0,0,0),
+    JS_FS("pget",	rpmdb_Pget,		0,0,0),
     JS_FS("put",	rpmdb_Put,		0,0,0),
     JS_FS("remove",	rpmdb_Remove,		0,0,0),
     JS_FS("rename",	rpmdb_Rename,		0,0,0),

@@ -288,6 +288,11 @@ ack('db.q_extentsize', 0);
 // ack('db.re_pad', 0);
 // ack('db.re_source', 0);
 
+ack('db.put("foo", "bar")', true);
+ack('db.exists("foo")', true);
+ack('db.get("foo")', 'bar');
+ack('db.del("foo")', true);
+
 ack('db.sync()', true);
 ack('db.stat(DB_FAST_STAT)', true);
 ack('db.stat_print(DB_FAST_STAT)', true);
