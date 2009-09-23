@@ -39,6 +39,68 @@ static int _debug = 0;
 #define rpmdb_wrappedobject	NULL
 
 /* --- helpers */
+#ifdef	NOTYET
+static int
+rpmdb_cmpint(DB *dbp, const DBT *a, const DBT *b)
+{
+	int ai, bi;
+
+	memcpy(&ai, a->data, sizeof(int));
+	memcpy(&bi, b->data, sizeof(int));
+	return (ai - bi);
+}
+
+static int
+rpmdb_cmplong(DB *dbp, const DBT *a, const DBT *b)
+{
+	long ai, bi;
+
+	memcpy(&ai, a->data, sizeof(long));
+	memcpy(&bi, b->data, sizeof(long));
+	return (ai - bi);
+}
+#endif
+
+static char * _file = "/X/src/wdj/js/rpmdb/Stuff";
+static uint32_t _oflags = DB_CREATE;
+static const char * _database = NULL;
+static DBTYPE _type = DB_HASH;
+static int _mode = 0644;
+
+static uint32_t _preflags = 0;
+static int (*_bt_compare) (DB *, const DBT *, const DBT *) = NULL;
+
+static int
+rpmdb_create(DB ** dbpp, DB_ENV * dbenv, uint32_t flags)
+{
+    FILE * _errfile = stderr;
+    DB_TXN * _txnid = NULL;
+    int ret;
+
+    if ((ret = db_create(dbpp, dbenv, 0)) != 0) {
+	dbenv->err(dbenv, ret, "db_create");
+	goto exit;
+    }
+
+    if (_preflags != 0)
+	(*dbpp)->set_flags(*dbpp, _preflags);
+
+    if (_bt_compare != NULL)
+	(*dbpp)->set_bt_compare(*dbpp, _bt_compare);
+
+    if (dbenv)
+	dbenv->get_errfile(dbenv, &_errfile);
+    if (_errfile)
+	(*dbpp)->set_errfile(*dbpp, _errfile);
+
+    if ((ret = (*dbpp)->open(*dbpp, _txnid, _file, _database, _type, _oflags, _mode)) != 0) {
+	(*dbpp)->err(*dbpp, ret, "DB->open: %s", _file);
+	goto exit;
+    }
+
+exit:
+    return ret;
+}
 
 /* --- Object methods */
 
@@ -51,12 +113,61 @@ static JSFunctionSpec rpmdb_funcs[] = {
 #define	_TABLE(_v)	#_v, _##_v, JSPROP_ENUMERATE, NULL, NULL
 
 enum rpmdb_tinyid {
-    _DEBUG	= -2,
+    _DEBUG		= -2,
+    _BYTESWAPPED	= -3,
+    _DBFILE		= -4,
+    _DBNAME		= -5,
+    _MULTIPLE		= -6,
+    _OPEN_FLAGS		= -7,
+    _TYPE		= -8,
+    _BT_MINKEY		= -9,
+    _CACHESIZE		= -10,
+    _CREATE_DIR		= -11,
+    _ENCRYPT		= -12,
+    _ERRFILE		= -13,
+    _ERRPFX		= -14,
+    _FLAGS		= -15,
+    _H_FFACTOR		= -16,
+    _H_NELEM		= -17,
+    _LORDER		= -18,
+    _MSGFILE		= -19,
+    _PAGESIZE		= -20,
+    _PARTITION_DIRS	= -21,
+    _PRIORITY		= -22,
+    _Q_EXTENTSIZE	= -23,
+    _RE_DELIM		= -24,
+    _RE_LEN		= -25,
+    _RE_PAD		= -26,
+    _RE_SOURCE		= -27,
 };
 
 static JSPropertySpec rpmdb_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
-
+    {"byteswapped", _BYTESWAPPED, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dbfile", _DBFILE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dbname", _DBNAME,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"multiple", _MULTIPLE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"open_flags", _OPEN_FLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"type",	_TYPE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"bt_minkey", _BT_MINKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"cachesize", _CACHESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"create_dir", _CREATE_DIR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"encrypt",	_ENCRYPT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errfile",	_ERRFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errpfx",	_ERRPFX,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"h_ffactor", _H_FFACTOR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"h_nelem",	_H_NELEM,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lorder",	_LORDER,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"msgfile",	_MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pagesize", _PAGESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"partition_dirs", _PARTITION_DIRS,	JSPROP_ENUMERATE, NULL,	NULL},
+    {"priority", _PRIORITY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"q_extentsize", _Q_EXTENTSIZE, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_delim", _RE_DELIM,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_len",	_RE_LEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_pad",	_RE_PAD,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_source", _RE_SOURCE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -73,6 +184,15 @@ static JSBool
 rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    const char ** _av = NULL;
+    int _ac = 0;
+    const char * _s = NULL;
+    const char * _t = NULL;
+    uint32_t _gb = 0;
+    uint32_t _u = 0;
+    int _i = 0;
+    FILE * _fp = NULL;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -84,6 +204,56 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(_debug);
 	break;
 
+    case _BYTESWAPPED:	*vp = _GET_I(!db->get_byteswapped(db, &_i));	break;
+    case _DBFILE:	*vp = _GET_S(!db->get_dbname(db, &_s, &_t));	break;
+    case _DBNAME:	*vp = _GET_S(!db->get_dbname(db, &_t, &_s));	break;
+    case _MULTIPLE:	*vp = _RET_B(db->get_multiple(db));		break;
+    case _OPEN_FLAGS:	*vp = _GET_U(!db->get_open_flags(db, &_u));	break;
+    case _TYPE:		*vp = _GET_U(!db->get_type(db, &_u));	break;
+    case _BT_MINKEY:	*vp = _GET_U(!db->get_bt_minkey(db, &_u));	break;
+    case _CACHESIZE:	*vp = _GET_U(!db->get_cachesize(db, &_gb, &_u, &_i)); break;
+    case _CREATE_DIR:	*vp = _GET_S(!db->get_create_dir(db, &_s)); break;
+    case _ENCRYPT:	*vp = _GET_U(!db->get_encrypt_flags(db, &_u));	break;
+    case _ERRFILE:
+	db->get_errfile(db, &_fp);
+	_s = (_fp ? "other" : NULL);
+	if (_fp == stdin)	_s = "stdin";
+	if (_fp == stdout)	_s = "stdout";
+	if (_fp == stderr)	_s = "stderr";
+	*vp = _RET_S(_s);
+	break;
+    case _ERRPFX:
+	db->get_errpfx(db, &_s);
+	*vp = _RET_S(_s);
+	break;
+    case _FLAGS:	*vp = _GET_U(!db->get_flags(db, &_u));		break;
+    case _H_FFACTOR:	*vp = _GET_U(!db->get_h_ffactor(db, &_u));	break;
+    case _H_NELEM:	*vp = _GET_U(!db->get_h_nelem(db, &_u));	break;
+    case _LORDER:	*vp = _GET_I(!db->get_lorder(db, &_i));		break;
+    case _MSGFILE:
+	db->get_msgfile(db, &_fp);
+	_s = (_fp ? "other" : NULL);
+	if (_fp == stdin)	_s = "stdin";
+	if (_fp == stdout)	_s = "stdout";
+	if (_fp == stderr)	_s = "stderr";
+	*vp = _RET_S(_s);
+	break;
+    case _PAGESIZE:	*vp = _GET_U(!db->get_pagesize(db, &_u));	break;
+    case _PARTITION_DIRS:	break;
+	if (!db->get_partition_dirs(db, &_av)
+	 && (_ac = argvCount(_av)) > 0)
+	{
+	    _s = _av[0];	/* XXX FIXME: return array */
+	    *vp = _RET_S(_s);
+	} else
+	    *vp = JSVAL_VOID;
+	break;
+    case _PRIORITY:	*vp = _GET_U(!db->get_priority(db, &_u));	break;
+    case _Q_EXTENTSIZE:	*vp = _GET_U(!db->get_q_extentsize(db, &_u));	break;
+    case _RE_DELIM:	*vp = _GET_I(!db->get_re_delim(db, &_i));	break;
+    case _RE_LEN:	*vp = _GET_U(!db->get_re_len(db, &_u));		break;
+    case _RE_PAD:	*vp = _GET_I(!db->get_re_pad(db, &_i));		break;
+    case _RE_SOURCE:	*vp = _GET_S(!db->get_re_source(db, &_s));	break;
     default:
 	break;
     }
@@ -104,24 +274,82 @@ static JSBool
 rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    const char * _s = NULL;
+    uint32_t _gb = 0;
+    uint32_t _b = 0;
+    uint32_t _u = 0;
+    int _i = 0;
+    int _nc = 0;
+    FILE * _fp = NULL;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
 
-#ifdef	NOTYET
     if (JSVAL_IS_STRING(*vp))
 	_s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
     if (JSVAL_IS_INT(*vp))
-	_l = _u = _i = JSVAL_TO_INT(*vp);
-#endif
+	_u = _i = JSVAL_TO_INT(*vp);
 
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
 	    break;
 	break;
+
+#ifdef	NOTYET
+    case _DBFILE:	break;
+    case _DBNAME:	break;
+#endif
+
+    case _BT_MINKEY:	*vp = _PUT_U(db->set_bt_minkey(db, _u));	break;
+    case _CACHESIZE:
+	if (!db->get_cachesize(db, &_gb, &_b, &_nc)) {
+	    _b = _u;
+	    *vp = !db->set_cachesize(db, _gb, _b, _nc)
+		? JSVAL_TRUE : JSVAL_FALSE;
+	} else
+	    *vp = JSVAL_FALSE;
+	break;
+    case _CREATE_DIR:	*vp = _PUT_S(db->set_create_dir(db, _s));	break;
+    case _ENCRYPT:	*vp = _PUT_S(db->set_encrypt(db, _s, DB_ENCRYPT_AES)); break;
+    case _ERRFILE:
+	/* XXX FIXME: cleaner typing */
+	_fp = NULL;
+	if (!strcmp(_s, "stdout")) _fp = stdout;
+	if (!strcmp(_s, "stderr")) _fp = stderr;
+	db->set_errfile(db, _fp);
+	*vp = JSVAL_TRUE;
+	break;
+    case _ERRPFX:
+	db->set_errpfx(db, _s);
+	*vp = JSVAL_TRUE;
+	break;
+    case _FLAGS:	break;	/* XXX FIXME */
+    case _H_FFACTOR:	*vp = _PUT_U(db->set_h_ffactor(db, _u));	break;
+    case _H_NELEM:	*vp = _PUT_U(db->set_h_nelem(db, _u));		break;
+    case _LORDER:	*vp = _PUT_I(db->set_h_nelem(db, _i));		break;
+    case _MSGFILE:
+	/* XXX FIXME: cleaner typing */
+	_fp = NULL;
+	if (_s != NULL) {
+	    if (!strcmp(_s, "stdout")) _fp = stdout;
+	    else if (!strcmp(_s, "stderr")) _fp = stderr;
+	    /* XXX FIXME: fp = fopen(_s, O_RDWR); with error checking */
+	}
+	db->set_errfile(db, _fp);
+	*vp = JSVAL_TRUE;
+	break;
+    case _PAGESIZE:	*vp = _PUT_U(db->set_pagesize(db, _u));		break;
+    case _PARTITION_DIRS:	break;	/* XXX FIXME */
+    case _PRIORITY:	*vp = _PUT_U(db->set_priority(db, _u));		break;
+    case _Q_EXTENTSIZE:	*vp = _PUT_U(db->set_q_extentsize(db, _u));	break;
+    case _RE_DELIM:	*vp = _PUT_I(db->set_re_delim(db, _i));		break;
+    case _RE_LEN:	*vp = _PUT_U(db->set_re_len(db, _u));	break;
+    case _RE_PAD:	*vp = _PUT_I(db->set_re_pad(db, _i));		break;
+    case _RE_SOURCE:	*vp = _PUT_S(db->set_re_source(db, _s));	break;
 
     default:
 	break;
@@ -180,27 +408,20 @@ static DB *
 rpmdb_init(JSContext *cx, JSObject *obj)
 {
     DB * db = NULL;
-#ifdef	NOTYET
+    DB_ENV * _dbenv = NULL;
     uint32_t _flags = 0;
 
-    if (rpmdb_env_create(&db, _flags) || db == NULL
+    if (rpmdb_create(&db, _dbenv, _flags) || db == NULL
      || !JS_SetPrivate(cx, obj, (void *)db))
-#else
-    if (!JS_SetPrivate(cx, obj, (void *)db))
-#endif
     {
-#ifdef	NOTYET
 	if (db)
 	    (void) db->close(db, _flags);
-#endif
-
 	/* XXX error msg */
 	db = NULL;
     }
 
 if (_debug)
 fprintf(stderr, "<== %s(%p,%p) db %p\n", __FUNCTION__, cx, obj, db);
-
     return db;
 }
 
@@ -213,9 +434,8 @@ rpmdb_dtor(JSContext *cx, JSObject *obj)
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    if (db) {
+    if (db)
 	(void) db->close(db, _flags);
-    }
 }
 
 static JSBool

@@ -25,8 +25,8 @@ static int _debug = 0;
 #define	rpmdbe_getobjectops	NULL
 #define	rpmdbe_checkaccess	NULL
 #define	rpmdbe_call		rpmdbe_call
-#define	rpmdbe_construct		rpmdbe_ctor
-#define	rpmdbe_xdrobject		NULL
+#define	rpmdbe_construct	rpmdbe_ctor
+#define	rpmdbe_xdrobject	NULL
 #define	rpmdbe_hasinstance	NULL
 #define	rpmdbe_mark		NULL
 #define	rpmdbe_reserveslots	NULL
@@ -84,64 +84,64 @@ static JSFunctionSpec rpmdbe_funcs[] = {
 #define	_TABLE(_v)	#_v, _##_v, JSPROP_ENUMERATE, NULL, NULL
 
 enum rpmdbe_tinyid {
-    _DEBUG	= -2,
-    _HOME	= -3,
-    _OPENFLAGS	= -4,
-    _DATADIRS	= -5,
-    _CREATEDIR	= -6,
-    _ENCRYPT	= -7,
-    _ERRFILE	= -8,
-    _ERRPFX	= -9,
-    _FLAGS	= -10,
-    _IDIRMODE	= -11,
-    _MSGFILE	= -12,
-    _SHMKEY	= -13,
-    _THREADCNT	= -14,
+    _DEBUG		= -2,
+    _HOME		= -3,
+    _OPEN_FLAGS		= -4,
+    _DATADIRS		= -5,
+    _CREATE_DIR		= -6,
+    _ENCRYPT		= -7,
+    _ERRFILE		= -8,
+    _ERRPFX		= -9,
+    _FLAGS		= -10,
+    _IDIRMODE		= -11,
+    _MSGFILE		= -12,
+    _SHMKEY		= -13,
+    _THREADCNT		= -14,
 
-    _LKTIMEOUT	= -15,
+    _LKTIMEOUT		= -15,
 
-    _TMPDIR	= -16,
-    _VERBOSE	= -17,
-    _LKCONFLICTS = -18,
-    _LKDETECT	= -19,
-    _LKMAXLOCKERS = -20,
-    _LKMAXLOCKS	= -21,
-    _LKMAXOBJS	= -22,
-    _LKPARTITIONS = -23,
+    _TMPDIR		= -16,
+    _VERBOSE		= -17,
+    _LKCONFLICTS	= -18,
+    _LKDETECT		= -19,
+    _LKMAXLOCKERS	= -20,
+    _LKMAXLOCKS		= -21,
+    _LKMAXOBJS		= -22,
+    _LKPARTITIONS	= -23,
 
-    _LOGDIRECT	= -24,
-    _LOGDSYNC	= -25,
-    _LOGAUTORM	= -26,
-    _LOGINMEM	= -27,
-    _LOGZERO	= -28,
+    _LOGDIRECT		= -24,
+    _LOGDSYNC		= -25,
+    _LOGAUTORM		= -26,
+    _LOGINMEM		= -27,
+    _LOGZERO		= -28,
 
-    _LGBSIZE	= -29,
-    _LGDIR	= -30,
-    _LGFILEMODE	= -31,
-    _LGMAX	= -32,
-    _LGREGIONMAX = -33,
+    _LGBSIZE		= -29,
+    _LGDIR		= -30,
+    _LGFILEMODE		= -31,
+    _LGMAX		= -32,
+    _LGREGIONMAX	= -33,
 
-    _TXNTIMEOUT	= -34,
+    _TXNTIMEOUT		= -34,
 
-    _VERSION	= -35,
-    _MAJOR	= -36,
-    _MINOR	= -37,
-    _PATCH	= -38,
+    _VERSION		= -35,
+    _MAJOR		= -36,
+    _MINOR		= -37,
+    _PATCH		= -38,
 
-    _CACHESIZE	= -39,
-    _NCACHES	= -40,
-    _REGTIMEOUT	= -41,
-    _CACHEMAX	= -42,
-    _MAXOPENFD	= -43,
-    _MMAPSIZE	= -44,
+    _CACHESIZE		= -39,
+    _NCACHES		= -40,
+    _REGTIMEOUT		= -41,
+    _CACHEMAX		= -42,
+    _MAXOPENFD		= -43,
+    _MMAPSIZE		= -44,
 
-    _MXALIGN	= -45,
-    _MXINC	= -46,
-    _MXMAX	= -47,
-    _MXSPINS	= -48,
+    _MXALIGN		= -45,
+    _MXINC		= -46,
+    _MXMAX		= -47,
+    _MXSPINS		= -48,
 
-    _TXMAX	= -49,
-    _TXTSTAMP	= -50,
+    _TXMAX		= -49,
+    _TXTSTAMP		= -50,
 
     _DB_REP_CONF_BULK		= -51,
     _DB_REP_CONF_DELAYCLIENT	= -52,
@@ -151,9 +151,9 @@ enum rpmdbe_tinyid {
     _DB_REP_CONF_NOWAIT		= -56,
     _DB_REPMGR_CONF_2SITE_STRICT= -57,
 
-    _REPLIMIT	= -58,
-    _REPNSITES	= -59,
-    _REPPRIORITY = -60,
+    _REPLIMIT		= -58,
+    _REPNSITES		= -59,
+    _REPPRIORITY	= -60,
 
     _DB_REP_ACK_TIMEOUT		= -61,
     _DB_REP_CHECKPOINT_DELAY	= -62,
@@ -175,9 +175,9 @@ static JSPropertySpec rpmdbe_props[] = {
     {"patch",	_PATCH,		JSPROP_ENUMERATE,	NULL,	NULL},
 
     {"home",	_HOME,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"open_flags", _OPENFLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"open_flags", _OPEN_FLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"data_dirs", _DATADIRS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"create_dir", _CREATEDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"create_dir", _CREATE_DIR,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"encrypt",	_ENCRYPT,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"errfile",	_ERRFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"errpfx",	_ERRPFX,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -289,7 +289,7 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _PATCH:	*vp = INT_TO_JSVAL(DB_VERSION_PATCH);		break;
 
     case _HOME:		*vp = _GET_S(!dbenv->get_home(dbenv, &_s));	break;
-    case _OPENFLAGS:	*vp = _GET_U(!dbenv->get_open_flags(dbenv, &_u)); break;
+    case _OPEN_FLAGS:	*vp = _GET_U(!dbenv->get_open_flags(dbenv, &_u)); break;
     case _DATADIRS:
 	if (!dbenv->get_data_dirs(dbenv, &_av)
 	 && (_ac = argvCount(_av)) > 0)
@@ -299,7 +299,7 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	} else
 	    *vp = JSVAL_VOID;
 	break;
-    case _CREATEDIR:	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s)); break;
+    case _CREATE_DIR:	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s)); break;
     case _ENCRYPT:	*vp = _GET_U(!dbenv->get_encrypt_flags(dbenv, &_u)); break;
     case _ERRFILE:
 	dbenv->get_errfile(dbenv, &_fp);
@@ -467,7 +467,7 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	break;
     /* dbenv->add_data_dir() */
     case _DATADIRS:	break;	/* XXX FIXME */
-    case _CREATEDIR:	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));	break;
+    case _CREATE_DIR:	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));	break;
     case _ENCRYPT:	*vp = _PUT_S(dbenv->set_encrypt(dbenv, _s, DB_ENCRYPT_AES));	break;
     case _ERRFILE:
 	/* XXX FIXME: cleaner typing */
