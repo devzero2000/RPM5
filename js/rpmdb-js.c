@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmdb-js.h"
+#include "rpmdbc-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
@@ -14,7 +15,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* Required JSClass vectors */
 #define	rpmdb_addprop		JS_PropertyStub
@@ -74,7 +75,7 @@ rpmdb_create(DB ** dbpp, DB_ENV * dbenv, uint32_t flags)
 	if (dbenv)
 	    dbenv->err(dbenv, ret, "db_create");
 	else
-	    fprintf(stderr, "db_create: %s", db_strerror(ret));
+	    fprintf(stderr, "db_create: %s\n", db_strerror(ret));
 	goto exit;
     }
 
@@ -141,6 +142,7 @@ rpmdb_Cursor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -148,15 +150,30 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
     if (db->app_private != NULL) {
 	DB_TXN * _txnid = NULL;
-	DBC * _dbc;
-	uint32_t _flags = 0;
+	JSObject * _o = NULL;
+	DBC * _dbc = NULL;
 	int ret = db->cursor(db, _txnid, &_dbc, _flags);
-	if (ret)
+	switch (ret) {
+	default:
 	    db->err(db, ret, "DB->cursor");
-	else
-	    *rval = JSVAL_TRUE;
+	    goto exit;
+	    break;
+	case 0:
+	    if ((_o = JS_NewObject(cx, &rpmdbcClass, NULL, NULL)) == NULL
+	     || !JS_SetPrivate(cx, _o, (void *)_dbc))
+	    {
+		if (_dbc)	_dbc->close(_dbc);
+		/* XXX error msg */
+		goto exit;
+	    }
+	    *rval = OBJECT_TO_JSVAL(_o);
+	    break;
+	}
     }
 
     ok = JS_TRUE;
@@ -438,7 +455,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	uint32_t _flags = 0;
 	int ret = db->remove(db, _file, _database, _flags);
 	if (ret)
-	    fprintf(stderr, "db->remove: %s", db_strerror(ret));
+	    fprintf(stderr, "db->remove: %s\n", db_strerror(ret));
 	else
 	    *rval = JSVAL_TRUE;
 	db = ptr = NULL;
@@ -663,7 +680,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	FILE * _outfile = NULL;		/* XXX optional key/val dump */
 	int ret = db->verify(db, _file, _database, _outfile, _flags);
 	if (ret)
-	    fprintf(stderr, "db->verify: %s", db_strerror(ret));
+	    fprintf(stderr, "db->verify: %s\n", db_strerror(ret));
 	else
 	    *rval = JSVAL_TRUE;
 	db = ptr = NULL;
