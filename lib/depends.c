@@ -2094,6 +2094,7 @@ static inline int addRelation(rpmts ts,
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
     nsType NSType = rpmdsNSType(requires);
+    const char * N = rpmdsN(requires);
     fnpyKey key;
     int teType = rpmteType(p);
     alKey pkgKey;
@@ -2125,6 +2126,23 @@ static inline int addRelation(rpmts ts,
 	/*@notreached@*/ break;
     default:
 	break;
+    }
+
+    /* Avoid looking up files/directories that are "owned" by _THIS_ package. */
+    if (*N == '/') {
+	rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
+	int bingo = 0;
+
+	fi = rpmfiInit(fi, 0);
+	while (rpmfiNext(fi) >= 0) {
+	    const char * fn = rpmfiFN(fi);
+	    if (strcmp(N, fn))
+		continue;
+	    bingo = 1;
+	    break;
+	}
+	if (bingo)
+	    return 0;
     }
 
     pkgKey = RPMAL_NOMATCH;
