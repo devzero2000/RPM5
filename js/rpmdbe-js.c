@@ -343,6 +343,326 @@ exit:
 }
 
 static JSBool
+rpmdbe_LockDetect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockGet(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockId(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockIdFree(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockPut(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LockVec(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogArchive(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogCursor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogFile(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogFlush(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogPrintf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogPut(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LogStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_LsnReset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -1189,42 +1509,58 @@ exit:
 }
 
 static JSFunctionSpec rpmdbe_funcs[] = {
-    JS_FS("cdsgroup_begin", rpmdbe_CdsgroupBegin, 0,0,0),
-    JS_FS("close",	rpmdbe_Close,		0,0,0),
-    JS_FS("dbremove",	rpmdbe_Dbremove,	0,0,0),
-    JS_FS("dbrename",	rpmdbe_Dbrename,	0,0,0),
-    JS_FS("failchk",	rpmdbe_Failchk,		0,0,0),
-    JS_FS("fileid_reset", rpmdbe_FileidReset,	0,0,0),
-    JS_FS("lsn_reset",	rpmdbe_LsnReset,	0,0,0),
-    JS_FS("memp_fcreate",	rpmdbe_MempFcreate,	0,0,0),
-    JS_FS("memp_register",	rpmdbe_MempRegister,	0,0,0),
-    JS_FS("memp_stat",	rpmdbe_MempStat,	0,0,0),
-    JS_FS("memp_stat_print",	rpmdbe_MempStatPrint,	0,0,0),
-    JS_FS("memp_sync",	rpmdbe_MempSync,	0,0,0),
-    JS_FS("memp_trickle",	rpmdbe_MempTrickle,	0,0,0),
-    JS_FS("mutex_alloc",	rpmdbe_MutexAlloc,	0,0,0),
-    JS_FS("mutex_free",	rpmdbe_MutexFree,	0,0,0),
-    JS_FS("mutex_lock",	rpmdbe_MutexLock,	0,0,0),
-    JS_FS("mutex_stat",	rpmdbe_MutexStat,	0,0,0),
-    JS_FS("mutex_stat_print",	rpmdbe_MutexStatPrint,	0,0,0),
-    JS_FS("mutex_unlock",	rpmdbe_MutexUnlock,	0,0,0),
-    JS_FS("open",	rpmdbe_Open,		0,0,0),
-    JS_FS("remove",	rpmdbe_Remove,		0,0,0),
-    JS_FS("rep_elect",	rpmdbe_RepElect,	0,0,0),
-    JS_FS("rep_process_message",	rpmdbe_RepProcessMessage,	0,0,0),
-    JS_FS("rep_start",	rpmdbe_RepStart,	0,0,0),
-    JS_FS("rep_stat",	rpmdbe_RepStat,		0,0,0),
-    JS_FS("rep_stat_print",	rpmdbe_RepStatPrint,	0,0,0),
-    JS_FS("rep_sync",	rpmdbe_RepSync,	0,0,0),
-    JS_FS("repmgr_start",	rpmdbe_RepmgrStart,	0,0,0),
-    JS_FS("repmgr_stat",	rpmdbe_RepmgrStat,	0,0,0),
-    JS_FS("repmgr_stat_print",	rpmdbe_RepmgrStatPrint,	0,0,0),
-    JS_FS("stat_print",	rpmdbe_StatPrint,	0,0,0),
-    JS_FS("txn_begin",	rpmdbe_TxnBegin,	0,0,0),
-    JS_FS("txn_checkpoint",	rpmdbe_TxnCheckpoint,	0,0,0),
-    JS_FS("txn_recover",	rpmdbe_TxnRecover,	0,0,0),
-    JS_FS("txn_stat",	rpmdbe_TxnStat,	0,0,0),
-    JS_FS("txn_stat_print",	rpmdbe_TxnStatPrint,	0,0,0),
+    JS_FS("cdsgroup_begin",	rpmdbe_CdsgroupBegin,		0,0,0),
+    JS_FS("close",		rpmdbe_Close,			0,0,0),
+    JS_FS("dbremove",		rpmdbe_Dbremove,		0,0,0),
+    JS_FS("dbrename",		rpmdbe_Dbrename,		0,0,0),
+    JS_FS("failchk",		rpmdbe_Failchk,			0,0,0),
+    JS_FS("fileid_reset",	rpmdbe_FileidReset,		0,0,0),
+    JS_FS("lock_detect",	rpmdbe_LockDetect,		0,0,0),
+    JS_FS("lock_get",		rpmdbe_LockGet,			0,0,0),
+    JS_FS("lock_id",		rpmdbe_LockId,			0,0,0),
+    JS_FS("lock_id_free",	rpmdbe_LockIdFree,		0,0,0),
+    JS_FS("lock_put",		rpmdbe_LockPut,			0,0,0),
+    JS_FS("lock_stat",		rpmdbe_LockStat,		0,0,0),
+    JS_FS("lock_stat_print",	rpmdbe_LockStatPrint,		0,0,0),
+    JS_FS("lock_vec",		rpmdbe_LockVec,			0,0,0),
+    JS_FS("log_archive",	rpmdbe_LogArchive,		0,0,0),
+    JS_FS("log_cursor",		rpmdbe_LogCursor,		0,0,0),
+    JS_FS("log_file",		rpmdbe_LogFile,			0,0,0),
+    JS_FS("log_flush",		rpmdbe_LogFlush,		0,0,0),
+    JS_FS("log_printf",		rpmdbe_LogPrintf,		0,0,0),
+    JS_FS("log_put",		rpmdbe_LogPut,			0,0,0),
+    JS_FS("log_stat",		rpmdbe_LogStat,			0,0,0),
+    JS_FS("log_stat_print",	rpmdbe_LogStatPrint,		0,0,0),
+    JS_FS("lsn_reset",		rpmdbe_LsnReset,		0,0,0),
+    JS_FS("memp_fcreate",	rpmdbe_MempFcreate,		0,0,0),
+    JS_FS("memp_register",	rpmdbe_MempRegister,		0,0,0),
+    JS_FS("memp_stat",		rpmdbe_MempStat,		0,0,0),
+    JS_FS("memp_stat_print",	rpmdbe_MempStatPrint,		0,0,0),
+    JS_FS("memp_sync",		rpmdbe_MempSync,		0,0,0),
+    JS_FS("memp_trickle",	rpmdbe_MempTrickle,		0,0,0),
+    JS_FS("mutex_alloc",	rpmdbe_MutexAlloc,		0,0,0),
+    JS_FS("mutex_free",		rpmdbe_MutexFree,		0,0,0),
+    JS_FS("mutex_lock",		rpmdbe_MutexLock,		0,0,0),
+    JS_FS("mutex_stat",		rpmdbe_MutexStat,		0,0,0),
+    JS_FS("mutex_stat_print",	rpmdbe_MutexStatPrint,		0,0,0),
+    JS_FS("mutex_unlock",	rpmdbe_MutexUnlock,		0,0,0),
+    JS_FS("open",		rpmdbe_Open,			0,0,0),
+    JS_FS("remove",		rpmdbe_Remove,			0,0,0),
+    JS_FS("rep_elect",		rpmdbe_RepElect,		0,0,0),
+    JS_FS("rep_process_message",rpmdbe_RepProcessMessage,	0,0,0),
+    JS_FS("rep_start",		rpmdbe_RepStart,		0,0,0),
+    JS_FS("rep_stat",		rpmdbe_RepStat,			0,0,0),
+    JS_FS("rep_stat_print",	rpmdbe_RepStatPrint,		0,0,0),
+    JS_FS("rep_sync",		rpmdbe_RepSync,			0,0,0),
+    JS_FS("repmgr_start",	rpmdbe_RepmgrStart,		0,0,0),
+    JS_FS("repmgr_stat",	rpmdbe_RepmgrStat,		0,0,0),
+    JS_FS("repmgr_stat_print",	rpmdbe_RepmgrStatPrint,		0,0,0),
+    JS_FS("stat_print",		rpmdbe_StatPrint,		0,0,0),
+    JS_FS("txn_begin",		rpmdbe_TxnBegin,		0,0,0),
+    JS_FS("txn_checkpoint",	rpmdbe_TxnCheckpoint,		0,0,0),
+    JS_FS("txn_recover",	rpmdbe_TxnRecover,		0,0,0),
+    JS_FS("txn_stat",		rpmdbe_TxnStat,			0,0,0),
+    JS_FS("txn_stat_print",	rpmdbe_TxnStatPrint,		0,0,0),
     JS_FS_END
 };
 
