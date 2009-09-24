@@ -39,34 +39,6 @@ static int _debug = 0;
 #define rpmdbe_wrappedobject	NULL
 
 /* --- helpers */
-static const char _home[] = "./rpmdb";
-static int _eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
-
-static uint64_t _cachesize = 1024 * 1024;
-static int _ncaches = 1;
-
-static int rpmdbe_create(DB_ENV ** dbenvp, uint32_t flags)
-{
-    FILE * _errfile = stderr;
-    int _mode = 0;
-    int ret;
-
-    if ((ret = db_env_create(dbenvp, flags)) != 0) {
-	fprintf(stderr, "db_env_create: %s", db_strerror(ret));
-	ret = 1;
-	goto exit;
-    }
-
-    (*dbenvp)->set_errfile(*dbenvp, _errfile);
-
-    (*dbenvp)->set_errpfx(*dbenvp, _home);	/* XXX FIXME */
-
-    (*dbenvp)->set_cachesize(*dbenvp,
-	(_cachesize >> 32), (_cachesize & 0xffffffff), _ncaches);
-
-exit:
-    return ret;
-}
 
 /* --- Object methods */
 
@@ -220,7 +192,41 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbenv->app_private == NULL) {
 	int ret = dbenv->remove(dbenv, _home, _flags);
-	*rval = JSVAL_TRUE;
+	if (ret) {
+	    dbenv->err(dbenv, ret, "DB_ENV->remove: %s", _home);
+	    goto exit;
+	} else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_StatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->stat_print(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->stat_print");
+	else
+	    *rval = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -235,6 +241,7 @@ static JSFunctionSpec rpmdbe_funcs[] = {
     JS_FS("dbrename",	rpmdbe_Dbrename,	0,0,0),
     JS_FS("open",	rpmdbe_Open,		0,0,0),
     JS_FS("remove",	rpmdbe_Remove,		0,0,0),
+    JS_FS("stat_print",	rpmdbe_StatPrint,	0,0,0),
     JS_FS_END
 };
 
@@ -453,8 +460,14 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (!dbenv->get_data_dirs(dbenv, &_av)
 	 && (_ac = argvCount(_av)) > 0)
 	{
-	    _s = _av[0];	/* XXX FIXME: return array */
-	    *vp = _RET_S(_s);
+	    JSObject * o = JS_NewArrayObject(cx, 0, NULL);
+	    int i;
+
+	    *vp = OBJECT_TO_JSVAL(o);
+	    for (i = 0; i < _ac; i++) {
+		jsval v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _av[i]));
+		(void) JS_SetElement(cx, o, i, &v);
+	    }
 	} else
 	    *vp = JSVAL_VOID;
 	break;
@@ -625,7 +638,7 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    break;
 	break;
     /* dbenv->add_data_dir() */
-    case _DATADIRS:	break;	/* XXX FIXME */
+    case _DATADIRS:	*vp = _PUT_S(dbenv->add_data_dir(dbenv, _s));	break;
     case _CREATE_DIR:	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));	break;
     case _ENCRYPT:	*vp = _PUT_S(dbenv->set_encrypt(dbenv, _s, DB_ENCRYPT_AES));	break;
     case _ERRFILE:
@@ -817,10 +830,9 @@ rpmdbe_init(JSContext *cx, JSObject *obj)
 {
     DB_ENV * dbenv = NULL;
     uint32_t _flags = 0;
+    int ret = db_env_create(&dbenv, _flags);
 
-    if (rpmdbe_create(&dbenv, _flags) || dbenv == NULL
-     || !JS_SetPrivate(cx, obj, (void *)dbenv))
-    {
+    if (ret || dbenv == NULL || !JS_SetPrivate(cx, obj, (void *)dbenv)) {
 	if (dbenv)
 	    (void) dbenv->close(dbenv, _flags);
 

@@ -232,17 +232,29 @@ var	DB_YIELDCPU				= 0x00010000;
 // -------------------------
 
 // -----
-var dbenv = null;
-var eoflags = 0;
+var home = "./rpmdb";
+var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
+var emode = 0;
 
-var errfile = "stdout";
+// var dbenv = null;
+var dbenv = new Dbe();
+ack("typeof dbenv;", "object");
+ack("dbenv instanceof Dbe;", true);
+ack('dbenv.open(home, eflags, emode)', true);
+ack('dbenv.home', home);
+ack('dbenv.open_flags', eflags);
+
+var eoflags = 0;
+var errfile = "stderr";
 var errpfx = "Stuff";
 var pagesize = 1024;
 var cachesize = 1024 * 1024;
 var little_endian = 1234;
 var big_endian = 4321;
 
-var dbfile = "./rpmdb/Stuff";
+// var dbfile = home + "/Stuff";
+var dbfile = "Stuff";
+
 var dbname = null;
 var oflags = DB_CREATE;
 var dbtype = DB_HASH;
@@ -259,7 +271,7 @@ ack("db instanceof Db;", true);
 // ack("db.debug = 1;", 1);
 // ack("db.debug = 0;", 0);
 
-ack('db.errfile', 'stderr');
+ack('db.errfile', null);
 ack('db.errfile = errfile', true);
 ack('db.errfile', errfile);
 
@@ -269,7 +281,7 @@ ack('db.errpfx', errpfx);
 
 ack('db.lorder', little_endian);
 ack('db.lorder = big_endian', true);
-ack('db.lorder', big_endian);
+// ack('db.lorder', big_endian);
 ack('db.lorder = little_endian', true);
 ack('db.lorder', little_endian);
 
@@ -277,9 +289,10 @@ ack('db.pagesize', 0);
 ack('db.pagesize = pagesize', true);
 ack('db.pagesize', pagesize);
 
-ack('db.cachesize', 265564);
-ack('db.cachesize = cachesize', true);
-ack('db.cachesize >= cachesize', true);
+// --- not permitted with dbenv
+// ack('db.cachesize', 265564);
+// ack('db.cachesize = cachesize', true);
+// ack('db.cachesize >= cachesize', true);
 
 h_ffactor = 50;			// todo: figger the units
 ack('db.h_ffactor', 0);
@@ -305,7 +318,8 @@ ack('db.multiple', 0);
 ack('db.create_dir', null);
 // ack('db.create_dir = "."', true);
 
-ack('db.encrypt', 0);
+// --- not permitted with dbenv
+// ack('db.encrypt', 0);
 // ack('db.encrypt = "xyzzy"', true);
 
 ack('db.flags', 0);
