@@ -3,6 +3,9 @@
  */
 
 #include "system.h"
+#if defined(HAVE_FTOK)
+#include <sys/ipc.h>		/* XXX ftok(3) */
+#endif
 
 #include "rpmdbe-js.h"
 #include "rpmtxn-js.h"
@@ -40,6 +43,99 @@ static int _debug = 0;
 #define rpmdbe_wrappedobject	NULL
 
 /* --- helpers */
+#define	_TABLE(_v)	{ #_v, DB_EVENT_##_v }
+static struct _events_s {
+    const char * n;
+    uint32_t v;
+} _events[] = {
+    _TABLE(NO_SUCH_EVENT),	/*  0 */
+    _TABLE(PANIC),		/*  1 */
+    _TABLE(REG_ALIVE),		/*  2 */
+    _TABLE(REG_PANIC),		/*  3 */
+    _TABLE(REP_CLIENT),		/*  4 */
+    _TABLE(REP_ELECTED),	/*  5 */
+    _TABLE(REP_MASTER),		/*  6 */
+    _TABLE(REP_NEWMASTER),	/*  7 */
+    _TABLE(REP_PERM_FAILED),	/*  8 */
+    _TABLE(REP_STARTUPDONE),	/*  9 */
+    _TABLE(WRITE_FAILED),	/* 10 */
+    _TABLE(NO_SUCH_EVENT),	/* 11 */
+    _TABLE(NO_SUCH_EVENT),	/* 12 */
+    _TABLE(NO_SUCH_EVENT),	/* 13 */
+    _TABLE(NO_SUCH_EVENT),	/* 14 */
+    _TABLE(NO_SUCH_EVENT),	/* 15 */
+};
+#undef	_TABLE
+
+static void
+rpmdbe_event_notify(DB_ENV * dbenv, u_int32_t event, void * event_info)
+{
+    JSObject * o = (dbenv ? dbenv->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %s(%u), %p) o %p\n", __FUNCTION__, dbenv, _events[event & 0xf].n, event, event_info, o);
+}
+
+static void
+rpmdbe_feedback(DB_ENV * dbenv, int opcode, int percent)
+{
+    JSObject * o = (dbenv ? dbenv->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %d, %d) o %p\n", __FUNCTION__, dbenv, opcode, percent, o);
+}
+
+#define	_TABLE(_v)	{ #_v, DB_TXN_##_v }
+static struct _appops_s {
+    const char * n;
+    uint32_t v;
+} _appops[] = {
+    _TABLE(ABORT),		/*  0 */
+    _TABLE(APPLY),		/*  1 */
+    { "UNKNOWN", 2 },
+    _TABLE(BACKWARD_ROLL),	/*  3 */
+    _TABLE(FORWARD_ROLL),	/*  4 */
+    _TABLE(OPENFILES),		/*  5 */
+    _TABLE(POPENFILES),		/*  6 */
+    _TABLE(PRINT),		/*  7 */
+};
+#undef	_TABLE
+
+static int
+rpmdbe_app_dispatch(DB_ENV * dbenv, DBT * log_rec, DB_LSN * lsn, db_recops op)
+{
+    JSObject * o = (dbenv ? dbenv->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %p, %p, %s(%d)) o %p\n", __FUNCTION__, dbenv, log_rec, lsn, _appops[op & 0x7].n, op, o);
+    return 0;
+}
+
+static void
+rpmdbe_errcall(const DB_ENV * dbenv, const char * errpfx, const char * msg)
+{
+    JSObject * o = (dbenv ? dbenv->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %s, %s) o %p\n", __FUNCTION__, dbenv, errpfx, msg, o);
+}
+
+static void
+rpmdbe_msgcall(const DB_ENV * dbenv, const char * msg)
+{
+    JSObject * o = (dbenv ? dbenv->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %s) o %p\n", __FUNCTION__, dbenv, msg, o);
+}
+
+static int
+rpmdbe_isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, u_int32_t flags)
+	/*@*/
+{
+    int alive = 1;	/* assume all processes are alive */
+
+    switch (flags) {
+    case 0:
+    default:
+	/* XXX FIXME: check thread ID's */
+	/*@fallthrough@*/
+    case DB_MUTEX_PROCESS_ONLY:
+	alive = (!(kill(pid, 0) < 0 && errno == ESRCH));
+	break;
+    }
+    return alive;
+}
 
 /* --- Object methods */
 
@@ -170,6 +266,43 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    dbenv->err(dbenv, ret, "DB_ENV->dbrename(%s,%s,%s)", _file, _database, _newname);
 	else
 	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_Failchk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_VOID;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->failchk(dbenv, _flags);
+	switch (ret) {
+	default:
+	    dbenv->err(dbenv, ret, "DB_ENV->failchk");
+	    break;
+	case DB_RUNRECOVERY:
+	    *rval = JSVAL_FALSE;
+	    break;
+	case 0:
+	    *rval = JSVAL_TRUE;
+	    break;
+	}
     }
 
     ok = JS_TRUE;
@@ -407,6 +540,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	} else {
 	    dbenv->app_private = obj;
+	    ret = dbenv->set_event_notify(dbenv, rpmdbe_event_notify);
+	    if (ret) dbenv->err(dbenv, ret, "DB_ENV->set_event_notify");
+	    /* XXX only DB_RECOVER is currently implemented */
+	    ret = dbenv->set_feedback(dbenv, rpmdbe_feedback);
+	    if (ret) dbenv->err(dbenv, ret, "DB_ENV->set_feedback");
 	    *rval = JSVAL_TRUE;
 	}
     }
@@ -891,6 +1029,7 @@ static JSFunctionSpec rpmdbe_funcs[] = {
     JS_FS("close",	rpmdbe_Close,		0,0,0),
     JS_FS("dbremove",	rpmdbe_Dbremove,	0,0,0),
     JS_FS("dbrename",	rpmdbe_Dbrename,	0,0,0),
+    JS_FS("failchk",	rpmdbe_Failchk,		0,0,0),
     JS_FS("fileid_reset", rpmdbe_FileidReset,	0,0,0),
     JS_FS("lsn_reset",	rpmdbe_LsnReset,	0,0,0),
     JS_FS("mutex_alloc",	rpmdbe_MutexAlloc,	0,0,0),
@@ -1316,9 +1455,17 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    break;
 	break;
     /* dbenv->add_data_dir() */
-    case _DATADIRS:	*vp = _PUT_S(dbenv->add_data_dir(dbenv, _s));	break;
-    case _CREATE_DIR:	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));	break;
-    case _ENCRYPT:	*vp = _PUT_S(dbenv->set_encrypt(dbenv, _s, DB_ENCRYPT_AES));	break;
+    case _DATADIRS:
+	/* XXX duplicates? */
+	*vp = _PUT_S(dbenv->add_data_dir(dbenv, _s));
+	break;
+    case _CREATE_DIR:
+	/* XXX check datadirs to prevent failure? */
+	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));
+	break;
+    case _ENCRYPT:
+	*vp = _PUT_S(dbenv->set_encrypt(dbenv, _s, DB_ENCRYPT_AES));
+	break;
     case _ERRFILE:
 	/* XXX FIXME: cleaner typing */
 	_fp = NULL;
@@ -1344,9 +1491,21 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	dbenv->set_errfile(dbenv, _fp);
 	*vp = JSVAL_TRUE;
 	break;
-	/* XXX FIXME: if string, use ftok(3) */
-    case _SHMKEY:	*vp = _PUT_L(dbenv->set_shm_key(dbenv, _l)); break;
-    case _THREADCNT:	*vp = _PUT_U(dbenv->set_thread_count(dbenv, _u)); break;
+    case _SHMKEY:
+#if defined(HAVE_FTOK)
+	if (JSVAL_IS_STRING(*vp) && _s != NULL)
+	    _l = ftok(_s, 0);
+#endif
+	*vp = _PUT_L(dbenv->set_shm_key(dbenv, _l));
+	break;
+    case _THREADCNT:
+	if (JSVAL_IS_INT(*vp) && _u >= 8 && !dbenv->set_thread_count(dbenv, _u))
+	{
+	    int ret = dbenv->set_isalive(dbenv, (_u ? rpmdbe_isalive : NULL));
+	    *vp = (!ret ? JSVAL_TRUE : JSVAL_FALSE);
+	} else
+	    *vp = JSVAL_FALSE;
+	break;
 
 #define	_JUMP(_v, _lbl)	_##_v:	_nc = _v;	goto _lbl
     case _JUMP(DB_SET_LOCK_TIMEOUT,		_set_timeout);
@@ -1517,10 +1676,15 @@ rpmdbe_init(JSContext *cx, JSObject *obj)
 
     if (ret || dbenv == NULL || !JS_SetPrivate(cx, obj, (void *)dbenv)) {
 	if (dbenv)
-	    (void) dbenv->close(dbenv, _flags);
+	    ret = dbenv->close(dbenv, _flags);
 
 	/* XXX error msg */
 	dbenv = NULL;
+    } else {
+	dbenv->set_errcall(dbenv, rpmdbe_errcall);
+	dbenv->set_msgcall(dbenv, rpmdbe_msgcall);
+	ret = dbenv->set_app_dispatch(dbenv, rpmdbe_app_dispatch);
+	if (ret) dbenv->err(dbenv, ret, "DB_ENV->set_app_dispatch");
     }
 
 if (_debug)

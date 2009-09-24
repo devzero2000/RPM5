@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
+static int _debug = 0;
 
 /* Required JSClass vectors */
 #define	rpmtxn_addprop		JS_PropertyStub

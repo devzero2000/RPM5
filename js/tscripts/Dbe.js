@@ -100,7 +100,7 @@ ack('dbenv.max_openfd', 0);
 // ack('dbenv.max_openfd', 100);
 
 ack('dbenv.shm_key', -1);
-ack('dbenv.shm_key = 0x1234', true);
+ack('dbenv.shm_key = home', true);
 // ack('dbenv.shm_key', 0x1234);
 
 ack('dbenv.data_dirs', undefined);
@@ -152,6 +152,8 @@ ack('dbenv.encrypt', 0);
 ack('dbenv.open(home, eflags, emode)', true);
 ack('dbenv.home', home);
 ack('dbenv.open_flags', eflags);
+
+ack('dbenv.failchk()', true);
 
 ack('dbenv.data_dirs', './data,.');
 ack('dbenv.create_dir', '.');
