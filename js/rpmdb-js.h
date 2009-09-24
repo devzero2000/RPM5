@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitDbClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewDbObject(JSContext *cx);
+rpmjs_NewDbObject(JSContext *cx, void * _dbenv, uint32_t _flags);
 
 #ifdef __cplusplus      
 }

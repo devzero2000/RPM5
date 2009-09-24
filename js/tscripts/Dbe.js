@@ -54,8 +54,9 @@ var DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
 // -----
 var home = "./rpmdb";
 var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
+var emode = 0;
 
-var dbenv = new Dbe(home, eflags);
+var dbenv = new Dbe();
 ack("typeof dbenv;", "object");
 ack("dbenv instanceof Dbe;", true);
 ack("dbenv.debug = 1;", 1);
@@ -66,11 +67,9 @@ ack('dbenv.major', 4);
 ack('dbenv.minor', 8);
 ack('dbenv.patch', 24);
 
+ack('dbenv.open(home, eflags, emode)', true);
 ack('dbenv.home', home);
-// ack('dbenv.home = home', true);
-
 ack('dbenv.open_flags', eflags);
-// ack('dbenv.open_flags = eflags', true);
 
 ack('dbenv.data_dirs', './data');
 // ack('dbenv.data_dirs = "./data"', true);	// todo++

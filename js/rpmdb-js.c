@@ -6,6 +6,7 @@
 
 #include "rpmdb-js.h"
 #include "rpmdbc-js.h"
+#include "rpmdbe-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
@@ -93,16 +94,6 @@ rpmdb_create(DB ** dbpp, DB_ENV * dbenv, uint32_t flags)
     (*dbpp)->app_private = NULL;
 
 exit:
-    return ret;
-}
-
-static int
-rpmdb_open(DB * db, DB_TXN * txnid, const char * file, const char * database,
-		uint32_t type, uint32_t oflags, int mode)
-{
-    int ret = db->open(db, txnid, file, database, type, oflags, mode);
-
-    if (ret) db->err(db, ret, "DB->open: %s", file);
     return ret;
 }
 
@@ -327,17 +318,19 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (db->app_private == NULL) {
 	DB_TXN * _txnid = NULL;
-	int ret = rpmdb_open(db, _txnid, _file, _database, _type, _oflags, _mode);
-	if (ret)
+	int ret = db->open(db, _txnid, _file, _database, _type, _oflags, _mode);
+	if (ret) {
 	    db->err(db, ret, "DB->open");
-	else {
+	    goto exit;
+	} else {
 	    db->app_private = obj;
 	    *rval = JSVAL_TRUE;
 	}
     }
 
-exit:
     ok = JS_TRUE;
+
+exit:
     return ok;
 }
 
@@ -1042,15 +1035,24 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 	(void) db->close(db, _flags);
 }
 
+#define OBJ_IS_RPMDBE(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbeClass)
+
 static JSBool
 rpmdb_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
+    JSObject * o = NULL;
     DB_ENV * _dbenv = NULL;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ou", &o, &_flags)))
+	goto exit;
+
+    if (OBJ_IS_RPMDBE(cx, o))
+	_dbenv = JS_GetInstancePrivate(cx, o, &rpmdbeClass, NULL);
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
 	(void) rpmdb_init(cx, obj, _dbenv, _flags);
@@ -1125,18 +1127,17 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewDbObject(JSContext *cx)
+rpmjs_NewDbObject(JSContext *cx, void * _dbenv, uint32_t _flags)
 {
     JSObject *obj;
-    DB_ENV * _dbenv = NULL;
-    uint32_t _flags = 0;
+    DB_ENV * dbenv = _dbenv;
     DB * db;
 
     if ((obj = JS_NewObject(cx, &rpmdbClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((db = rpmdb_init(cx, obj, _dbenv, _flags)) == NULL) {
+    if ((db = rpmdb_init(cx, obj, dbenv, _flags)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
