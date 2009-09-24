@@ -43,6 +43,26 @@ static int _debug = 0;
 /* --- Object methods */
 
 static JSBool
+rpmdbe_CdsgroupBegin(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -53,7 +73,7 @@ rpmdbe_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbenv == NULL) goto exit;
-    *rval = JSVAL_TRUE;
+    *rval = JSVAL_FALSE;
 
     {	int ret = dbenv->close(dbenv, _flags);
         if (ret)
@@ -138,6 +158,46 @@ exit:
 }
 
 static JSBool
+rpmdbe_FileidReset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_LsnReset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -206,6 +266,66 @@ exit:
 }
 
 static JSBool
+rpmdbe_RepmgrStart(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepmgrStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepmgrStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_StatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -235,13 +355,124 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmdbe_TxnBegin(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_TxnCheckpoint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_TxnRecover(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_TxnStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_TxnStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
 static JSFunctionSpec rpmdbe_funcs[] = {
+    JS_FS("cdsgroup_begin", rpmdbe_CdsgroupBegin, 0,0,0),
     JS_FS("close",	rpmdbe_Close,		0,0,0),
     JS_FS("dbremove",	rpmdbe_Dbremove,	0,0,0),
     JS_FS("dbrename",	rpmdbe_Dbrename,	0,0,0),
+    JS_FS("fileid_reset", rpmdbe_FileidReset,	0,0,0),
+    JS_FS("lsn_reset",	rpmdbe_LsnReset,	0,0,0),
     JS_FS("open",	rpmdbe_Open,		0,0,0),
     JS_FS("remove",	rpmdbe_Remove,		0,0,0),
+    JS_FS("repmgr_start",	rpmdbe_RepmgrStart,	0,0,0),
+    JS_FS("repmgr_stat",	rpmdbe_RepmgrStat,	0,0,0),
+    JS_FS("repmgr_stat_print",	rpmdbe_RepmgrStatPrint,	0,0,0),
     JS_FS("stat_print",	rpmdbe_StatPrint,	0,0,0),
+    JS_FS("txn_begin",	rpmdbe_TxnBegin,	0,0,0),
+    JS_FS("txn_checkpoint",	rpmdbe_TxnCheckpoint,	0,0,0),
+    JS_FS("txn_recover",	rpmdbe_TxnRecover,	0,0,0),
+    JS_FS("txn_stat",	rpmdbe_TxnStat,	0,0,0),
+    JS_FS("txn_stat_print",	rpmdbe_TxnStatPrint,	0,0,0),
     JS_FS_END
 };
 

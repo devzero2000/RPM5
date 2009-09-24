@@ -102,6 +102,44 @@ exit:
 #define	DBT_INIT	{0}
 
 static JSBool
+rpmdb_Associate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_AssociateForeign(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdb_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
@@ -124,6 +162,41 @@ _METHOD_DEBUG_ENTRY(_debug);
     }
 
     ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_Compact(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (db->app_private != NULL) {
+	DB_TXN * _txnid = NULL;
+	DBT * _start = NULL;
+	DBT * _stop = NULL;
+	DB_COMPACT * _c_data = NULL;
+	DBT * _end = NULL;
+	int ret = db->compact(db, _txnid, _start, _stop, _c_data, _flags, _end);
+	if (ret)
+	    db->err(db, ret, "DB->compact");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
 exit:
     return ok;
 }
@@ -292,6 +365,44 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_Join(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdb_KeyRange(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (db == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
 exit:
     return ok;
 }
@@ -687,11 +798,16 @@ exit:
 }
 
 static JSFunctionSpec rpmdb_funcs[] = {
+    JS_FS("associate",	rpmdb_Associate,	0,0,0),
+    JS_FS("associate_foreign",	rpmdb_AssociateForeign,	0,0,0),
     JS_FS("close",	rpmdb_Close,		0,0,0),
+    JS_FS("compact",	rpmdb_Compact,		0,0,0),
     JS_FS("cursor",	rpmdb_Cursor,		0,0,0),
     JS_FS("del",	rpmdb_Del,		0,0,0),
     JS_FS("exists",	rpmdb_Exists,		0,0,0),
     JS_FS("get",	rpmdb_Get,		0,0,0),
+    JS_FS("join",	rpmdb_Join,		0,0,0),
+    JS_FS("key_range",	rpmdb_KeyRange,		0,0,0),
     JS_FS("open",	rpmdb_Open,		0,0,0),
     JS_FS("pget",	rpmdb_Pget,		0,0,0),
     JS_FS("put",	rpmdb_Put,		0,0,0),
