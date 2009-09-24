@@ -743,7 +743,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o, &_flags)))
 	goto exit;
 
-    if (OBJ_IS_RPMTXN(cx, o))
+    if (o && OBJ_IS_RPMTXN(cx, o))
 	_parent = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
 
     if (dbenv->app_private != NULL) {

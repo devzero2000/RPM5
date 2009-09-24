@@ -256,7 +256,7 @@ var big_endian = 4321;
 var dbfile = "Stuff";
 
 var dbname = null;
-var oflags = DB_CREATE;
+var oflags = DB_CREATE | DB_AUTO_COMMIT;
 var dbtype = DB_HASH;
 var dbperms = 0644;
 
@@ -304,7 +304,8 @@ ack('db.h_nelem = h_nelem', true);
 ack('db.h_nelem', h_nelem);
 
 // -----
-ack('db.open(dbfile, dbname, dbtype, oflags,dbperms)', true);
+var txn = null;
+ack('db.open(txn, dbfile, dbname, dbtype, oflags,dbperms)', true);
 ack('db.dbfile', dbfile);
 ack('db.dbname', dbname);
 ack('db.type', dbtype);
@@ -336,28 +337,79 @@ ack('db.q_extentsize', 0);
 // ack('db.re_pad', 0);
 // ack('db.re_source', 0);
 
-ack('db.put("foo", "bar")', true);
-ack('db.exists("foo")', true);
-ack('db.get("foo")', 'bar');
-ack('db.del("foo")', true);
+var txn = dbenv.txn_begin(null, 0);
+ack('typeof txn', "object");
+ack('txn instanceof Txn', true);
+ack('db.put(txn, "foo", "bar")', true);
+ack('db.exists(txn, "foo")', true);
+ack('db.get(txn, "foo")', 'bar');
+ack('db.del(txn, "foo")', true);
+ack('txn.commit()', true);
 
-var dbc = db.cursor();
+var txn = dbenv.txn_begin(null, 0);
+ack('typeof txn', "object");
+ack('txn instanceof Txn', true);
+var dbc = db.cursor(txn);
 ack('typeof dbc;', "object");
 ack('dbc instanceof Dbc;', true);
 ack('dbc.get("foo", "bar", DB_SET)', undefined);
 ack('dbc.put("foo", "bar", DB_KEYLAST)', true);
 ack('dbc.close()', true);
+ack('txn.commit()', true);
 
 ack('db.sync()', true);
 ack('db.stat_print(DB_FAST_STAT)', true);
 
-var dbc = db.cursor();
+var txn = dbenv.txn_begin(null, 0);
+ack('typeof txn', "object");
+ack('txn instanceof Txn', true);
+var dbc = db.cursor(txn);
 ack('typeof dbc;', "object");
 ack('dbc instanceof Dbc;', true);
 ack('dbc.get("foo", "bar", DB_SET)', 'bar');
 ack('dbc.count()', 1);
 ack('dbc.del()', true);
 ack('dbc.close()', true);
+ack('txn.commit()', true);
+
+var txn = dbenv.txn_begin(null, 0);
+ack('typeof txn', "object");
+ack('txn instanceof Txn', true);
+ack('txn.name', undefined);
+ack('txn.name = "john"', true);
+ack('txn.name', 'john');
+nack('txn.id', 0);
+ack('txn.DB_SET_LOCK_TIMEOUT', undefined);
+ack('txn.DB_SET_TXN_TIMEOUT', undefined);
+ack('txn.abort()', true);
+
+// Stuff: PANIC: Invalid argument
+// DB_TXN->discard: DB_RUNRECOVERY: Fatal error, run database recoveryNACK:  ack(txn.discard())	got 'false' not 'true'
+// var txn = dbenv.txn_begin(null, 0);
+// ack('typeof txn', "object");
+// ack('txn instanceof Txn', true);
+// ack('txn.name', undefined);
+// ack('txn.name = "paul"', true);
+// ack('txn.name', 'paul');
+// nack('txn.id', 0);
+// ack('txn.DB_SET_LOCK_TIMEOUT', undefined);
+// ack('txn.DB_SET_TXN_TIMEOUT', undefined);
+// ack('txn.discard()', true);
+
+var txn = dbenv.txn_begin(null, 0);
+ack('typeof txn', "object");
+ack('txn instanceof Txn', true);
+ack('txn.name', undefined);
+ack('txn.name = "ringo"', true);
+ack('txn.name', 'ringo');
+nack('txn.id', 0);
+ack('txn.DB_SET_LOCK_TIMEOUT', undefined);
+ack('txn.DB_SET_TXN_TIMEOUT', undefined);
+ack('db.put(txn, "foo", "bar")', true);
+ack('db.exists(txn, "foo")', true);
+ack('db.get(txn, "foo")', 'bar');
+ack('db.del(txn, "foo")', true);
+ack('txn.commit()', true);
 
 ack('db.sync()', true);
 ack('db.stat(DB_FAST_STAT)', true);
