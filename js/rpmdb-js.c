@@ -42,65 +42,12 @@ static int _debug = 0;
 #define rpmdb_wrappedobject	NULL
 
 /* --- helpers */
-#ifdef	NOTYET
-static int
-rpmdb_cmpint(DB *dbp, const DBT *a, const DBT *b)
-{
-	int ai, bi;
-
-	memcpy(&ai, a->data, sizeof(int));
-	memcpy(&bi, b->data, sizeof(int));
-	return (ai - bi);
-}
-
-static int
-rpmdb_cmplong(DB *dbp, const DBT *a, const DBT *b)
-{
-	long ai, bi;
-
-	memcpy(&ai, a->data, sizeof(long));
-	memcpy(&bi, b->data, sizeof(long));
-	return (ai - bi);
-}
-#endif
-
-static uint32_t _preflags = 0;
-static int (*_bt_compare) (DB *, const DBT *, const DBT *) = NULL;
-
-static int
-rpmdb_create(DB ** dbpp, DB_ENV * dbenv, uint32_t flags)
-{
-    FILE * _errfile = stderr;
-    int ret = db_create(dbpp, dbenv, flags);
-
-    if (ret) {
-	if (dbenv)
-	    dbenv->err(dbenv, ret, "db_create");
-	else
-	    fprintf(stderr, "db_create: %s\n", db_strerror(ret));
-	goto exit;
-    }
-
-    if (_preflags != 0)
-	(*dbpp)->set_flags(*dbpp, _preflags);
-
-    if (_bt_compare != NULL)
-	(*dbpp)->set_bt_compare(*dbpp, _bt_compare);
-
-    if (dbenv)
-	dbenv->get_errfile(dbenv, &_errfile);
-    if (_errfile)
-	(*dbpp)->set_errfile(*dbpp, _errfile);
-
-    (*dbpp)->app_private = NULL;
-
-exit:
-    return ret;
-}
 
 /* --- Object methods */
 
+#define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
 #define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
+
 #define	DBT_INIT	{0}
 
 static JSBool
@@ -108,6 +55,11 @@ rpmdb_Associate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    JSObject * o_txn = NULL;
+    DB_TXN * _txn = NULL;
+    JSObject * o_db = NULL;
+    DB * _secondary = NULL;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -115,7 +67,29 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "oo/u", &o_txn, &o_db, &_flags)))
+	goto exit;
+
+    if (o_db && OBJ_IS_RPMDB(cx, o_db))
+	_secondary = JS_GetInstancePrivate(cx, o_db, &rpmdbClass, NULL);
+    else goto exit;
+    if (o_txn && OBJ_IS_RPMTXN(cx, o_txn))
+	_txn = JS_GetInstancePrivate(cx, o_txn, &rpmtxnClass, NULL);
+
+    if (db->app_private != NULL) {
+	/* XXX todo++ */
+	int (*_callback) (DB *, const DBT *, const DBT *, DBT *) = NULL;
+	int ret = db->associate(db, _txn, _secondary, _callback, _flags);
+	switch (ret) {
+	default:
+	    db->err(db, ret, "DB->associate");
+	    goto exit;
+	    break;
+	case 0:
+	    *rval = JSVAL_TRUE;
+	    break;
+	}
+    }
 
     ok = JS_TRUE;
 exit:
@@ -127,6 +101,9 @@ rpmdb_AssociateForeign(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, js
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    JSObject * o_db = NULL;
+    DB * _secondary = NULL;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -135,6 +112,27 @@ _METHOD_DEBUG_ENTRY(_debug);
     *rval = JSVAL_FALSE;
 
 	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o_db, &_flags)))
+	goto exit;
+
+    if (o_db && OBJ_IS_RPMDB(cx, o_db))
+	_secondary = JS_GetInstancePrivate(cx, o_db, &rpmdbClass, NULL);
+    else goto exit;
+
+    if (db->app_private != NULL) {
+	/* XXX todo++ */
+	int (*_callback) (DB *, const DBT *, DBT *, const DBT *, int *) = NULL;
+	int ret = db->associate_foreign(db, _secondary, _callback, _flags);
+	switch (ret) {
+	default:
+	    db->err(db, ret, "DB->associate_foreign");
+	    goto exit;
+	    break;
+	case 0:
+	    *rval = JSVAL_TRUE;
+	    break;
+	}
+    }
 
     ok = JS_TRUE;
 exit:
@@ -190,10 +188,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
 
     if (db->app_private != NULL) {
-	DBT * _start = NULL;
-	DBT * _stop = NULL;
-	DB_COMPACT * _c_data = NULL;
-	DBT * _end = NULL;
+	DBT * _start = NULL;		/* XXX todo++ */
+	DBT * _stop = NULL;		/* XXX todo++ */
+	DB_COMPACT * _c_data = NULL;	/* XXX todo++ */
+	DBT * _end = NULL;		/* XXX todo++ */
 	int ret = db->compact(db, _txn, _start, _stop, _c_data, _flags, _end);
 	if (ret)
 	    db->err(db, ret, "DB->compact");
@@ -281,10 +279,15 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (db->app_private != NULL) {
 	int ret = db->del(db, _txn, &_k, _flags);
-	if (ret)
+	switch (ret) {
+	default:
 	    db->err(db, ret, "DB->del");
-	else
+	    goto exit;
+	    break;
+	case 0:
 	    *rval = JSVAL_TRUE;
+	    break;
+	}
     }
 
     ok = JS_TRUE;
@@ -395,6 +398,7 @@ rpmdb_Join(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -402,7 +406,24 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (db->app_private != NULL) {
+	DBC ** _curslist = NULL;	/* XXX FIXME */
+	DBC * _dbc = NULL;		/* XXX FIXME */
+	int ret = db->join(db, _curslist, &_dbc, _flags);
+	switch (ret) {
+	default:
+	    db->err(db, ret, "DB->join");
+	    goto exit;
+	    break;
+	case 0:
+	    /* XXX todo++ return the created join cursor. */
+	    *rval = JSVAL_TRUE;
+	    break;
+	}
+    }
 
     ok = JS_TRUE;
 exit:
@@ -414,6 +435,10 @@ rpmdb_KeyRange(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    JSObject * o = NULL;
+    DB_TXN * _txn = NULL;
+    DBT _k = DBT_INIT;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -421,7 +446,28 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/u", &o, &_k.data, &_flags)))
+	goto exit;
+
+    if (o && OBJ_IS_RPMTXN(cx, o))
+	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
+    if (_k.data)
+	_k.size = strlen(_k.data)+1;
+
+    if (db->app_private != NULL) {
+	DB_KEY_RANGE _key_range = {0};
+	int ret = db->key_range(db, _txn, &_k, &_key_range, _flags);
+	switch (ret) {
+	default:
+	    db->err(db, ret, "DB->key_range");
+	    goto exit;
+	    break;
+	case 0:
+	    /* XXX todo++ return the triple of double's */
+	    *rval = JSVAL_TRUE;
+	    break;
+	}
+    }
 
     ok = JS_TRUE;
 exit:
@@ -1155,15 +1201,24 @@ static DB *
 rpmdb_init(JSContext *cx, JSObject *obj, DB_ENV * dbenv, uint32_t flags)
 {
     DB * db = NULL;
+    int ret = db_create(&db, dbenv, flags);
 
-    if (rpmdb_create(&db, dbenv, flags) || db == NULL
-     || !JS_SetPrivate(cx, obj, (void *)db))
-    {
-	uint32_t _flags = 0;
+    if (ret || db == NULL || !JS_SetPrivate(cx, obj, (void *)db)) {
+	if (dbenv)
+	    dbenv->err(dbenv, ret, "db_create");
+	else
+	    fprintf(stderr, "db_create: %s\n", db_strerror(ret));
+
 	if (db)
-	    (void) db->close(db, _flags);
-	/* XXX error msg */
+	    ret = db->close(db, 0);
 	db = NULL;
+    } else {
+	FILE * _errfile = stderr;
+	if (dbenv)
+	    dbenv->get_errfile(dbenv, &_errfile);
+	if (_errfile)
+	    db->set_errfile(db, _errfile);
+	db->app_private = NULL;
     }
 
 if (_debug)
