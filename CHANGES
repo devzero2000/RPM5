@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - devzero2000: add INSTALL.developer
     - jbj: order: fix: check current package for files/dirs before other packages.
     - jbj: order: fix: avoid self-looping for man-pages (and pkgs w no requires)
     - jbj: rpmdb: use DB_CONFIG.
