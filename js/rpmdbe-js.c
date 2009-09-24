@@ -374,6 +374,170 @@ exit:
 }
 
 static JSBool
+rpmdbe_MempFcreate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MempRegister(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MempStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	DB_MPOOL_STAT ** _gsp = NULL;	/* XXX todo++ */
+#ifdef	NOTYET
+	DB_MPOOL_FSTAT *(*_fsp)[] = NULL;
+#endif
+
+	int ret = dbenv->memp_stat(dbenv, _gsp, NULL, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->memp_stat");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MempStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->memp_stat_print(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->memp_stat_print");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MempSync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (dbenv->app_private != NULL) {
+	DB_LSN * _lsn = NULL;
+	int ret = dbenv->memp_sync(dbenv, _lsn);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->memp_sync");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MempTrickle(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    int _percent = 20;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_VOID;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &_percent)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int nwrote = 0;
+	int ret = dbenv->memp_trickle(dbenv, _percent, &nwrote);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->memp_sync");
+	else
+	    *rval = INT_TO_JSVAL(nwrote);
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_MutexAlloc(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -1032,6 +1196,12 @@ static JSFunctionSpec rpmdbe_funcs[] = {
     JS_FS("failchk",	rpmdbe_Failchk,		0,0,0),
     JS_FS("fileid_reset", rpmdbe_FileidReset,	0,0,0),
     JS_FS("lsn_reset",	rpmdbe_LsnReset,	0,0,0),
+    JS_FS("memp_fcreate",	rpmdbe_MempFcreate,	0,0,0),
+    JS_FS("memp_register",	rpmdbe_MempRegister,	0,0,0),
+    JS_FS("memp_stat",	rpmdbe_MempStat,	0,0,0),
+    JS_FS("memp_stat_print",	rpmdbe_MempStatPrint,	0,0,0),
+    JS_FS("memp_sync",	rpmdbe_MempSync,	0,0,0),
+    JS_FS("memp_trickle",	rpmdbe_MempTrickle,	0,0,0),
     JS_FS("mutex_alloc",	rpmdbe_MutexAlloc,	0,0,0),
     JS_FS("mutex_free",	rpmdbe_MutexFree,	0,0,0),
     JS_FS("mutex_lock",	rpmdbe_MutexLock,	0,0,0),
