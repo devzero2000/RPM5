@@ -42,7 +42,117 @@ static int _debug = -1;
 
 /* --- Object methods */
 
+static JSBool
+rpmtxn_Abort(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+    DB_TXN * txn = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (txn == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    {	int ret = txn->abort(txn);
+        if (ret)
+	    fprintf(stderr, "DB_TXN->abort: %s", db_strerror(ret));
+        else
+            *rval = JSVAL_TRUE;
+	txn = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmtxn_Commit(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+    DB_TXN * txn = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (txn == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    {	int ret = txn->commit(txn, _flags);
+        if (ret)
+	    fprintf(stderr, "DB_TXN->commit: %s", db_strerror(ret));
+        else
+            *rval = JSVAL_TRUE;
+	txn = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmtxn_Discard(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+    DB_TXN * txn = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (txn == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    {	int ret = txn->discard(txn, _flags);
+        if (ret)
+	    fprintf(stderr, "DB_TXN->discard: %s", db_strerror(ret));
+        else
+            *rval = JSVAL_TRUE;
+	txn = ptr = NULL;
+	(void) JS_SetPrivate(cx, obj, ptr);
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmtxn_Prepare(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+    DB_TXN * txn = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (txn == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME: todo++ used with DB_ENV->txn_recover */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
 static JSFunctionSpec rpmtxn_funcs[] = {
+    JS_FS("abort",	rpmtxn_Abort,		0,0,0),
+    JS_FS("commit",	rpmtxn_Commit,		0,0,0),
+    JS_FS("discard",	rpmtxn_Discard,		0,0,0),
+    JS_FS("prepare",	rpmtxn_Prepare,		0,0,0),
     JS_FS_END
 };
 
