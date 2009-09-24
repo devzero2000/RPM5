@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 /* Required JSClass vectors */
 #define	rpmtxn_addprop		JS_PropertyStub
@@ -52,10 +52,18 @@ static JSFunctionSpec rpmtxn_funcs[] = {
 
 enum rpmtxn_tinyid {
     _DEBUG	= -2,
+    _NAME	= -3,
+    _ID		= -4,
+    _DB_SET_LOCK_TIMEOUT	= -5,
+    _DB_SET_TXN_TIMEOUT		= -6,
 };
 
 static JSPropertySpec rpmtxn_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"name",	_NAME,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"id",	_ID,		JSPROP_ENUMERATE,	NULL,	NULL},
+    { _TABLE(DB_SET_LOCK_TIMEOUT) },
+    { _TABLE(DB_SET_TXN_TIMEOUT) },
 
     {NULL, 0, 0, NULL, NULL}
 };
@@ -73,6 +81,8 @@ static JSBool
 rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+    DB_TXN * txn = ptr;
+    const char * _s = NULL;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -83,7 +93,8 @@ rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
-
+    case _NAME:	*vp = _GET_S(!txn->get_name(txn, &_s));	break;
+    case _ID:	*vp = INT_TO_JSVAL(txn->id(txn));	break;
     default:
 	break;
     }
@@ -104,23 +115,35 @@ static JSBool
 rpmtxn_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
+    DB_TXN * txn = ptr;
+    const char * _s = NULL;
+    uint32_t _u = 0;
+    uint32_t _nc = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
 
-#ifdef	NOTYET
     if (JSVAL_IS_STRING(*vp))
 	_s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+#ifdef	NOTYET
     if (JSVAL_IS_INT(*vp))
-	_l = _u = _i = JSVAL_TO_INT(*vp);
+	_u = JSVAL_TO_INT(*vp);
 #endif
 
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
 	    break;
+	break;
+    case _NAME:	*vp = _PUT_S(txn->set_name(txn, _s));	break;
+#define	_JUMP(_v, _lbl)	_##_v:	_nc = _v;	goto _lbl
+    case _JUMP(DB_SET_LOCK_TIMEOUT,		_set_timeout);
+    case _JUMP(DB_SET_TXN_TIMEOUT,		_set_timeout);
+#undef	_JUMP
+    _set_timeout:
+	*vp = _PUT_U(txn->set_timeout(txn, (db_timeout_t)_u, _nc));
 	break;
 
     default:

@@ -178,11 +178,11 @@ ack('dbenv.mutex_max', 0);
 ack('dbenv.mutex_spins', 1);
 // ack('dbenv.mutex_spins = 1', true);
 
-ack('dbenv.lock_timeout', 0);
-// ack('dbenv.lock_timeout = 0', true);
+ack('dbenv.DB_SET_LOCK_TIMEOUT', 0);
+// ack('dbenv.DB_SET_LOCK_TIMEOUT = 0', true);
 
-ack('dbenv.txn_timeout', 0);
-// ack('dbenv.txn_timeout = 0', true);
+ack('dbenv.DB_SET_TXN_TIMEOUT', 0);
+// ack('dbenv.DB_SET_TXN_TIMEOUT = 0', true);
 
 ack('dbenv.tmp_dir', './tmp');
 

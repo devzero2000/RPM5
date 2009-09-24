@@ -76,10 +76,10 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Bc",		rpmjs_InitBcClass,	 -40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 -26 },
 
-    { "Db",		rpmjs_InitDbClass,	 45 },
-    { "Dbc",		rpmjs_InitDbcClass,	 46 },
-    { "Dbe",		rpmjs_InitDbeClass,	 44 },
-    { "Txn",		rpmjs_InitTxnClass,	 -47 },
+    { "Db",		rpmjs_InitDbClass,	 -45 },
+    { "Dbc",		rpmjs_InitDbcClass,	 -46 },
+    { "Dbe",		rpmjs_InitDbeClass,	 -44 },
+    { "Txn",		rpmjs_InitTxnClass,	 47 },
 
     { "Dc",		rpmjs_InitDcClass,	 -28 },
     { "Dig",		rpmjs_InitDigClass,	 -37 },	/* todo++ */
@@ -96,7 +96,7 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Mc",		rpmjs_InitMcClass,	 -24 },
     { "Mg",		rpmjs_InitMgClass,	 -31 },
     { "Mi",		rpmjs_InitMiClass,	 -11 },
-    { "Mpw",		rpmjs_InitMpwClass,	 -41 },	/* todo++ */
+    { "Mpw",		rpmjs_InitMpwClass,	 -41 },
     { "Ps",		rpmjs_InitPsClass,	 -16 },
     { "Sm",		rpmjs_InitSmClass,	 -43 },	/* todo++ */
     { "Sp",		rpmjs_InitSpClass,	 -42 },	/* todo++ */

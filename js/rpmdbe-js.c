@@ -198,6 +198,147 @@ exit:
 }
 
 static JSBool
+rpmdbe_MutexAlloc(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MutexFree(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MutexLock(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MutexStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	DB_MUTEX_STAT * _stat = NULL;
+	int ret = dbenv->mutex_stat(dbenv, &_stat, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->mutex_stat");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MutexStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->mutex_stat_print(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->mutex_stat_print");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_MutexUnlock(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -266,6 +407,157 @@ exit:
 }
 
 static JSBool
+rpmdbe_RepElect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepProcessMessage(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepStart(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+	/* FIXME todo++ */
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	DB_REP_STAT * _stat = NULL;
+	int ret = dbenv->rep_stat(dbenv, &_stat, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->rep_stat");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->rep_stat_print(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->rep_stat_print");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmdbe_RepSync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
+    DB_ENV * dbenv = ptr;
+    uint32_t _flags = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (dbenv == NULL) goto exit;
+    *rval = JSVAL_FALSE;
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->rep_sync(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->rep_sync");
+	else
+	    *rval = JSVAL_TRUE;
+    }
+
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
 rpmdbe_RepmgrStart(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
@@ -290,6 +582,7 @@ rpmdbe_RepmgrStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
     DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -297,7 +590,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbenv == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	DB_REPMGR_STAT * _stat = NULL;
+	int ret = dbenv->repmgr_stat(dbenv, &_stat, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->repmgr_stat");
+	else
+	    *rval = JSVAL_TRUE;
+    }
 
     ok = JS_TRUE;
 
@@ -310,6 +613,7 @@ rpmdbe_RepmgrStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, js
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
     DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -317,7 +621,16 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbenv == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->repmgr_stat_print(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->repmgr_stat_print");
+	else
+	    *rval = JSVAL_TRUE;
+    }
 
     ok = JS_TRUE;
 
@@ -420,6 +733,7 @@ rpmdbe_TxnStat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
     DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -427,7 +741,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbenv == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	DB_TXN_STAT * _stat = NULL;
+	int ret = dbenv->txn_stat(dbenv, &_stat, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->txn_stat");
+	else
+	    *rval = JSVAL_TRUE;
+    }
 
     ok = JS_TRUE;
 
@@ -440,6 +764,7 @@ rpmdbe_TxnStatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
     DB_ENV * dbenv = ptr;
+    uint32_t _flags = DB_STAT_ALL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -447,7 +772,16 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbenv == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	int ret = dbenv->txn_stat_print(dbenv, _flags);
+	if (ret)
+	    dbenv->err(dbenv, ret, "DB_ENV->txn_stat_print");
+	else
+	    *rval = JSVAL_TRUE;
+    }
 
     ok = JS_TRUE;
 
@@ -462,8 +796,20 @@ static JSFunctionSpec rpmdbe_funcs[] = {
     JS_FS("dbrename",	rpmdbe_Dbrename,	0,0,0),
     JS_FS("fileid_reset", rpmdbe_FileidReset,	0,0,0),
     JS_FS("lsn_reset",	rpmdbe_LsnReset,	0,0,0),
+    JS_FS("mutex_alloc",	rpmdbe_MutexAlloc,	0,0,0),
+    JS_FS("mutex_free",	rpmdbe_MutexFree,	0,0,0),
+    JS_FS("mutex_lock",	rpmdbe_MutexLock,	0,0,0),
+    JS_FS("mutex_stat",	rpmdbe_MutexStat,	0,0,0),
+    JS_FS("mutex_stat_print",	rpmdbe_MutexStatPrint,	0,0,0),
+    JS_FS("mutex_unlock",	rpmdbe_MutexUnlock,	0,0,0),
     JS_FS("open",	rpmdbe_Open,		0,0,0),
     JS_FS("remove",	rpmdbe_Remove,		0,0,0),
+    JS_FS("rep_elect",	rpmdbe_RepElect,	0,0,0),
+    JS_FS("rep_process_message",	rpmdbe_RepProcessMessage,	0,0,0),
+    JS_FS("rep_start",	rpmdbe_RepStart,	0,0,0),
+    JS_FS("rep_stat",	rpmdbe_RepStat,		0,0,0),
+    JS_FS("rep_stat_print",	rpmdbe_RepStatPrint,	0,0,0),
+    JS_FS("rep_sync",	rpmdbe_RepSync,	0,0,0),
     JS_FS("repmgr_start",	rpmdbe_RepmgrStart,	0,0,0),
     JS_FS("repmgr_stat",	rpmdbe_RepmgrStat,	0,0,0),
     JS_FS("repmgr_stat_print",	rpmdbe_RepmgrStatPrint,	0,0,0),
@@ -495,7 +841,7 @@ enum rpmdbe_tinyid {
     _SHMKEY		= -13,
     _THREADCNT		= -14,
 
-    _LKTIMEOUT		= -15,
+    _DB_SET_LOCK_TIMEOUT	= -15,
 
     _TMPDIR		= -16,
     _VERBOSE		= -17,
@@ -518,7 +864,7 @@ enum rpmdbe_tinyid {
     _LGMAX		= -32,
     _LGREGIONMAX	= -33,
 
-    _TXNTIMEOUT		= -34,
+    _DB_SET_TXN_TIMEOUT		= -34,
 
     _VERSION		= -35,
     _MAJOR		= -36,
@@ -583,7 +929,7 @@ static JSPropertySpec rpmdbe_props[] = {
     {"msgfile", _MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"shm_key", _SHMKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"thread_count", _THREADCNT, JSPROP_ENUMERATE,	NULL,	NULL},
-    {"lock_timeout", _LKTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
+
     {"tmp_dir", _TMPDIR,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"verbose", _VERBOSE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"lk_conflicts", _LKCONFLICTS, JSPROP_ENUMERATE,	NULL,	NULL},
@@ -604,7 +950,9 @@ static JSPropertySpec rpmdbe_props[] = {
     {"lg_filemode", _LGFILEMODE, JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_max", _LGMAX,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"lg_regionmax", _LGREGIONMAX, JSPROP_ENUMERATE,	NULL,	NULL},
-    {"txn_timeout", _TXNTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
+
+    { _TABLE(DB_SET_LOCK_TIMEOUT) },
+    { _TABLE(DB_SET_TXN_TIMEOUT) },
     {"reg_timeout", _REGTIMEOUT, JSPROP_ENUMERATE,	NULL,	NULL},
 
     {"cachemax", _CACHEMAX,	JSPROP_ENUMERATE,	NULL,	NULL},
@@ -730,12 +1078,14 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _THREADCNT:	*vp = _GET_U(!dbenv->get_thread_count(dbenv, &_u)); break;
 
 	/* XXX FIXME assumes typedef uint32_t db_timeout_t; */
-    case _LKTIMEOUT:
-	*vp = _GET_U(!dbenv->get_timeout(dbenv, (db_timeout_t *)&_u, DB_SET_LOCK_TIMEOUT));
+#define	_JUMP(_v, _lbl)	_##_v:	_u = _v;	goto _lbl
+    case _JUMP(DB_SET_LOCK_TIMEOUT,		_get_timeout);
+    case _JUMP(DB_SET_TXN_TIMEOUT,		_get_timeout);
+#undef	_JUMP
+    _get_timeout:
+	*vp = _GET_U(!dbenv->get_timeout(dbenv, (db_timeout_t *)&_u, _u));
 	break;
-    case _TXNTIMEOUT:
-	*vp = _GET_U(!dbenv->get_timeout(dbenv, (db_timeout_t *)&_u, DB_SET_TXN_TIMEOUT));
-	break;
+
     case _REGTIMEOUT:	*vp = JSVAL_NULL;	break;	/* XXX FIXME */
 
     case _TMPDIR:	*vp = _GET_S(!dbenv->get_tmp_dir(dbenv, &_s));	break;
@@ -793,17 +1143,17 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	/* XXX FIXME: dbenv->rep_get_request(dbenv, u &min, u &max) */
 
 #define	_JUMP(_v, _lbl)	_##_v:	_i = _v;	goto _lbl
-    case _JUMP(DB_REP_ACK_TIMEOUT,		_get_timeout);
-    case _JUMP(DB_REP_CHECKPOINT_DELAY,		_get_timeout);
-    case _JUMP(DB_REP_CONNECTION_RETRY,		_get_timeout);
-    case _JUMP(DB_REP_ELECTION_TIMEOUT,		_get_timeout);
-    case _JUMP(DB_REP_ELECTION_RETRY,		_get_timeout);
-    case _JUMP(DB_REP_FULL_ELECTION_TIMEOUT,	_get_timeout);
-    case _JUMP(DB_REP_HEARTBEAT_MONITOR,	_get_timeout);
-    case _JUMP(DB_REP_HEARTBEAT_SEND,		_get_timeout);
-    case _JUMP(DB_REP_LEASE_TIMEOUT,		_get_timeout);
+    case _JUMP(DB_REP_ACK_TIMEOUT,		_rep_get_timeout);
+    case _JUMP(DB_REP_CHECKPOINT_DELAY,		_rep_get_timeout);
+    case _JUMP(DB_REP_CONNECTION_RETRY,		_rep_get_timeout);
+    case _JUMP(DB_REP_ELECTION_TIMEOUT,		_rep_get_timeout);
+    case _JUMP(DB_REP_ELECTION_RETRY,		_rep_get_timeout);
+    case _JUMP(DB_REP_FULL_ELECTION_TIMEOUT,	_rep_get_timeout);
+    case _JUMP(DB_REP_HEARTBEAT_MONITOR,	_rep_get_timeout);
+    case _JUMP(DB_REP_HEARTBEAT_SEND,		_rep_get_timeout);
+    case _JUMP(DB_REP_LEASE_TIMEOUT,		_rep_get_timeout);
 #undef	_JUMP
-    _get_timeout:
+    _rep_get_timeout:
 	*vp = _GET_U(!dbenv->rep_get_timeout(dbenv, _i, &_u));
 	break;
 
@@ -901,8 +1251,13 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _SHMKEY:	*vp = _PUT_L(dbenv->set_shm_key(dbenv, _l)); break;
     case _THREADCNT:	*vp = _PUT_U(dbenv->set_thread_count(dbenv, _u)); break;
 
-    case _LKTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_LOCK_TIMEOUT));	break;
-    case _TXNTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_TXN_TIMEOUT));	break;
+#define	_JUMP(_v, _lbl)	_##_v:	_nc = _v;	goto _lbl
+    case _JUMP(DB_SET_LOCK_TIMEOUT,		_set_timeout);
+    case _JUMP(DB_SET_TXN_TIMEOUT,		_set_timeout);
+#undef	_JUMP
+    _set_timeout:
+	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, _nc));
+	break;
     case _REGTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_REG_TIMEOUT));	break;
 
     case _TMPDIR:	*vp = _PUT_S(dbenv->set_tmp_dir(dbenv, _s));	break;
@@ -987,17 +1342,17 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	/* XXX FIXME: dbenv->rep_set_request(dbenv, u min, u max) */
 
 #define	_JUMP(_v, _lbl)	_##_v:	_i = _v;	goto _lbl
-    case _JUMP(DB_REP_ACK_TIMEOUT,		_set_timeout);
-    case _JUMP(DB_REP_CHECKPOINT_DELAY,		_set_timeout);
-    case _JUMP(DB_REP_CONNECTION_RETRY,		_set_timeout);
-    case _JUMP(DB_REP_ELECTION_TIMEOUT,		_set_timeout);
-    case _JUMP(DB_REP_ELECTION_RETRY,		_set_timeout);
-    case _JUMP(DB_REP_FULL_ELECTION_TIMEOUT,	_set_timeout);
-    case _JUMP(DB_REP_HEARTBEAT_MONITOR,	_set_timeout);
-    case _JUMP(DB_REP_HEARTBEAT_SEND,		_set_timeout);
-    case _JUMP(DB_REP_LEASE_TIMEOUT,		_set_timeout);
+    case _JUMP(DB_REP_ACK_TIMEOUT,		_rep_set_timeout);
+    case _JUMP(DB_REP_CHECKPOINT_DELAY,		_rep_set_timeout);
+    case _JUMP(DB_REP_CONNECTION_RETRY,		_rep_set_timeout);
+    case _JUMP(DB_REP_ELECTION_TIMEOUT,		_rep_set_timeout);
+    case _JUMP(DB_REP_ELECTION_RETRY,		_rep_set_timeout);
+    case _JUMP(DB_REP_FULL_ELECTION_TIMEOUT,	_rep_set_timeout);
+    case _JUMP(DB_REP_HEARTBEAT_MONITOR,	_rep_set_timeout);
+    case _JUMP(DB_REP_HEARTBEAT_SEND,		_rep_set_timeout);
+    case _JUMP(DB_REP_LEASE_TIMEOUT,		_rep_set_timeout);
 #undef	_JUMP
-    _set_timeout:
+    _rep_set_timeout:
 	*vp = _PUT_U(!dbenv->rep_set_timeout(dbenv, _i, _u));
 	break;
 
