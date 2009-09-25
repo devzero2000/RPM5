@@ -16,6 +16,7 @@
 #include "rpmdbc-js.h"
 #include "rpmdbe-js.h"
 #include "rpmmpf-js.h"
+#include "rpmseq-js.h"
 #include "rpmtxn-js.h"
 
 #include "rpmdc-js.h"
@@ -81,6 +82,7 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Dbc",		rpmjs_InitDbcClass,	 -46 },
     { "Dbe",		rpmjs_InitDbeClass,	 -44 },
     { "Mpf",		rpmjs_InitMpfClass,	 48 },
+    { "Seq",		rpmjs_InitSeqClass,	 49 },
     { "Txn",		rpmjs_InitTxnClass,	 -47 },
 
     { "Dc",		rpmjs_InitDcClass,	 -28 },
