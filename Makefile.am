@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 MCCABE = pmccabe
 
-EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL cpuinfo.yaml \
+EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	db db3/configure xar xz pcre syck \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
