@@ -7,6 +7,7 @@
 #include "rpmdb-js.h"
 #include "rpmdbc-js.h"
 #include "rpmdbe-js.h"
+#include "rpmmpf-js.h"
 #include "rpmtxn-js.h"
 #include "rpmjs-debug.h"
 
@@ -923,15 +924,16 @@ enum rpmdb_tinyid {
     _H_FFACTOR		= -16,
     _H_NELEM		= -17,
     _LORDER		= -18,
-    _MSGFILE		= -19,
-    _PAGESIZE		= -20,
-    _PARTITION_DIRS	= -21,
-    _PRIORITY		= -22,
-    _Q_EXTENTSIZE	= -23,
-    _RE_DELIM		= -24,
-    _RE_LEN		= -25,
-    _RE_PAD		= -26,
-    _RE_SOURCE		= -27,
+    _MPF		= -19,
+    _MSGFILE		= -20,
+    _PAGESIZE		= -21,
+    _PARTITION_DIRS	= -22,
+    _PRIORITY		= -23,
+    _Q_EXTENTSIZE	= -24,
+    _RE_DELIM		= -25,
+    _RE_LEN		= -26,
+    _RE_PAD		= -27,
+    _RE_SOURCE		= -28,
 };
 
 static JSPropertySpec rpmdb_props[] = {
@@ -952,6 +954,7 @@ static JSPropertySpec rpmdb_props[] = {
     {"h_ffactor", _H_FFACTOR,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"h_nelem",	_H_NELEM,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"lorder",	_LORDER,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"mpf",	_MPF,		JSPROP_ENUMERATE,	NULL,	NULL},
     {"msgfile",	_MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"pagesize", _PAGESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"partition_dirs", _PARTITION_DIRS,	JSPROP_ENUMERATE, NULL,	NULL},
@@ -1023,6 +1026,15 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _H_FFACTOR:	*vp = _GET_U(!db->get_h_ffactor(db, &_u));	break;
     case _H_NELEM:	*vp = _GET_U(!db->get_h_nelem(db, &_u));	break;
     case _LORDER:	*vp = _GET_I(!db->get_lorder(db, &_i));		break;
+    case _MPF:
+    {	DB_MPOOLFILE * _mpf = db->get_mpf(db);
+	if (_mpf) {
+	    JSObject * o = JS_NewObject(cx, &rpmmpfClass, NULL, NULL);
+	    *vp = (o && JS_SetPrivate(cx, o, (void *)_mpf)
+		? OBJECT_TO_JSVAL(o) : JSVAL_VOID);
+	} else
+	    *vp = JSVAL_NULL;
+    }	break;
     case _MSGFILE:
 	db->get_msgfile(db, &_fp);
 	_s = (_fp ? "other" : NULL);

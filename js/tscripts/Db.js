@@ -415,6 +415,15 @@ ack('db.sync()', true);
 ack('db.stat(DB_FAST_STAT)', true);
 ack('db.stat_print(DB_FAST_STAT)', true);
 
+var mpf = db.mpf;
+ack('mpf.clear_len', 32);
+ack('mpf.flags', 0);			// todo++
+ack('mpf.ftype', -1);
+ack('mpf.lsn_offset', 0);
+ack('mpf.maxsize', 0);
+ack('mpf.pgcookie', undefined);		// todo++
+ack('mpf.priority', 3);
+
 ack('db.close(0)', true);
 delete db;
 

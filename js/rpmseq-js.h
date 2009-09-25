@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitSeqClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewSeqObject(JSContext *cx);
+rpmjs_NewSeqObject(JSContext *cx, void * _db, uint32_t _flags);
 
 #ifdef __cplusplus      
 }

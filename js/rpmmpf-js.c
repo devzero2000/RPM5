@@ -233,11 +233,27 @@ static JSFunctionSpec rpmmpf_funcs[] = {
 
 enum rpmmpf_tinyid {
     _DEBUG	= -2,
-    _PRIORITY	= -3,
+    _CLEARLEN	= -3,
+    _FILEID	= -4,
+    _FLAGS	= -5,
+    _FTYPE	= -6,
+    _LSNOFFSET	= -7,
+    _MAXSIZE	= -8,
+    _PGCOOKIE	= -9,
+    _PRIORITY	= -10,
 };
 
 static JSPropertySpec rpmmpf_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"clear_len",_CLEARLEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+#ifdef	NOTNEEDED
+    {"fileid",	_FILEID,	JSPROP_ENUMERATE,	NULL,	NULL},
+#endif
+    {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"ftype",	_FTYPE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lsn_offset",_LSNOFFSET,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"maxsize",	_MAXSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pgcookie",_PGCOOKIE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"priority",_PRIORITY,	JSPROP_ENUMERATE,	NULL,	NULL},
 
     {NULL, 0, 0, NULL, NULL}
@@ -257,7 +273,9 @@ rpmmpf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
+    int32_t _i = 0;
     uint32_t _u = 0;
+    uint32_t _gb = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -268,6 +286,12 @@ rpmmpf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
+    case _CLEARLEN:	*vp = _GET_U(!mpf->get_clear_len(mpf, &_u)); break;
+    case _FLAGS:	*vp = _GET_U(!mpf->get_flags(mpf, &_u)); break;
+    case _FTYPE:	*vp = _GET_I(!mpf->get_ftype(mpf, &_i)); break;
+    case _LSNOFFSET:	*vp = _GET_I(!mpf->get_lsn_offset(mpf, &_i)); break;
+    case _MAXSIZE:	*vp = _GET_U(!mpf->get_maxsize(mpf, &_gb, &_u)); break;
+    case _PGCOOKIE:	*vp = JSVAL_VOID; break;	/* XXX FIXME */
     case _PRIORITY:	*vp = _GET_U(!mpf->get_priority(mpf, (DB_CACHE_PRIORITY *)&_u)); break;
 
     default:
@@ -291,7 +315,9 @@ rpmmpf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
+    int32_t _i = 0;
     uint32_t _u = 0;
+    uint32_t _gb = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -299,14 +325,20 @@ rpmmpf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	return JS_TRUE;
 
     if (JSVAL_IS_INT(*vp))
-	_u = JSVAL_TO_INT(*vp);
+	_i = _u = JSVAL_TO_INT(*vp);
 
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
 	    break;
 	break;
-    case _PRIORITY:	*vp = _PUT_U(mpf->set_priority(mpf, (DB_CACHE_PRIORITY)_u));		break;
+    case _CLEARLEN:	*vp = _PUT_U(!mpf->set_clear_len(mpf, _u)); break;
+    case _FLAGS:	*vp = JSVAL_FALSE; break;	/* XXX FIXME */
+    case _FTYPE:	*vp = _PUT_I(!mpf->set_ftype(mpf, _i)); break;
+    case _LSNOFFSET:	*vp = _PUT_I(!mpf->set_lsn_offset(mpf, _i)); break;
+    case _MAXSIZE:	*vp = _PUT_U(!mpf->set_maxsize(mpf, _gb, _u)); break;
+    case _PGCOOKIE:	*vp = JSVAL_FALSE; break;	/* XXX FIXME */
+    case _PRIORITY:	*vp = _PUT_U(mpf->set_priority(mpf, (DB_CACHE_PRIORITY)_u)); break;
 
     default:
 	break;
@@ -394,8 +426,10 @@ rpmmpf_dtor(JSContext *cx, JSObject *obj)
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+#ifdef	NOTYET	/* XXX let BDB handle DB_MPOOLFILE ptrs */
     if (mpf)
 	(void) mpf->close(mpf, 0);
+#endif
 }
 
 static JSBool
