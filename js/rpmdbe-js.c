@@ -507,6 +507,7 @@ rpmdbe_LogArchive(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbeClass, NULL);
     DB_ENV * dbenv = ptr;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -515,6 +516,39 @@ _METHOD_DEBUG_ENTRY(_debug);
     *rval = JSVAL_FALSE;
 
 	/* FIXME todo++ */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+	goto exit;
+
+    if (dbenv->app_private != NULL) {
+	const char ** _av = NULL;
+	int ret = dbenv->log_archive(dbenv, (char ***) &_av, _flags);
+
+	switch (ret) {
+	default:
+	    dbenv->err(dbenv, ret, "DB_ENV->log_archive");
+	    break;
+	case DB_RUNRECOVERY:
+	    *rval = JSVAL_FALSE;
+	    break;
+	case 0:
+argvPrint("log_archive", _av, NULL);
+	    if (_av == NULL) {
+		*rval = JSVAL_NULL;
+	    } else {
+		int _ac = argvCount(_av);
+		JSObject * o = JS_NewArrayObject(cx, 0, NULL);
+		int i;
+		*rval = OBJECT_TO_JSVAL(o);
+		for (i = 0; i < _ac; i++) {
+		    jsval v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _av[i]));
+		    (void) JS_SetElement(cx, o, i, &v);
+		}
+	    }
+	    break;
+	}
+    }
+
+    ok = JS_TRUE;
 
     ok = JS_TRUE;
 

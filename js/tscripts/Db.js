@@ -231,6 +231,89 @@ var	DB_WRITEOPEN				= 0x00008000;
 var	DB_YIELDCPU				= 0x00010000;
 // -------------------------
 
+function BDB(dbenv, _name, _type) {
+    this.dbenv = dbenv;
+    this.db = new Db(dbenv, 0);
+    this.txn = null;
+    this.dbfile = _name + ".db";
+    this.dbname = null;
+    this.oflags = DB_CREATE | DB_AUTO_COMMIT;
+    this.dbtype = _type;
+    this.dbperms = 0644;
+
+    this.db.errfile =	this.errfile ="stderr";
+    this.db.errpfx =	this.errpfx = _name;
+    this.db.pagesize =	this.pagesize = 1024;
+//  this.db.cachesize =	this.cachesize = 0;
+
+    this.avg_keysize = 128;
+    this.avg_datasize = 1024;
+
+    switch (this.dbtype) {
+    case DB_HASH:
+	this.db.h_ffactor = this.h_ffactor =
+	  Math.floor(100 * (pagesize - 32) / (avg_keysize + avg_datasize + 8));
+	this.db.h_nelem = this.h_nelem = 12345;
+	break;
+    case DB_BTREE:
+	this.bt_minkey = undefined;
+	break;
+    case DB_RECNO:
+//	this.re_delim = 0x0a;
+//	this.db.re_len = this.re_len = 40;
+//	this.re_pad = 0x20;
+//	this.re_source = "Source";
+	break;
+    case DB_QUEUE:
+	this.q_extentsize = 0;
+	break;
+    }
+
+    return this.db.open(this.txn, this.dbfile, this.dbname, this.dbtype,
+			this.oflags, this.dbperms);
+}
+
+function Fill(A) {
+    var dbenv = A.dbenv;
+    var db = A.db;
+    var dbc = null;
+    var txn = null;
+    var putflags = 0;
+    var imax = 10;
+
+    print('----> PUT ' + dbenv.home + '/' + db.dbfile);
+
+    switch (db.dbtype) {
+    case DB_HASH:
+    case DB_BTREE:
+	putflags = DB_NOOVERWRITE;
+	break;
+    case DB_RECNO:
+    case DB_QUEUE:
+	putflags = DB_APPEND;
+	break;
+    }
+
+    txn = dbenv.txn_begin(null, 0);
+    for (let i = 0; i < imax; i++)
+	db.put(txn, i.toString(10), i.toString(2), putflags);
+    db.sync();
+    txn.commit();
+
+    print('----> GET ' + dbenv.home + '/' + db.dbfile);
+    txn = null;
+    for (let i = 0; i < imax; i++) {
+	var k = i.toString(10);
+	if (db.exists(txn, k))
+	    print('\t' + k + ': ' + db.get(txn, k));
+    }
+
+//  txn = dbenv.txn_begin(null, 0);
+//  for (let i = 0; i < imax; i++)
+//	db.del(txn, i.toString(10));
+//  txn.commit();
+}
+
 // -----
 var home = "./rpmdb";
 var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
@@ -244,68 +327,83 @@ ack('dbenv.open(home, eflags, emode)', true);
 ack('dbenv.home', home);
 ack('dbenv.open_flags', eflags);
 
-var eoflags = 0;
 var errfile = "stderr";
-var errpfx = "Stuff";
+var errpfx = "H";
 var pagesize = 1024;
 var cachesize = 1024 * 1024;
 var little_endian = 1234;
 var big_endian = 4321;
 
-// var dbfile = home + "/Stuff";
-var dbfile = "Stuff";
+var bt_minkey = undefined;
+var B = new BDB(dbenv, "B", DB_BTREE);
+Fill(B);
+ack('B.db.close(0)', true);
 
+var re_delim = 0x0a;
+var re_len = undefined;
+var re_pad = 0x20;
+var re_source = "Source";
+var R = new BDB(dbenv, "R", DB_RECNO);
+ack('R.db.re_delim', 0);
+ack('R.db.re_len', 0);
+ack('R.db.re_pad', 0);
+ack('R.db.re_source', 0);
+// Fill(R);
+ack('R.db.close(0)', true);
+
+var q_extentsize = 0;
+var Q = new BDB(dbenv, "Q", DB_QUEUE);
+// Fill(Q);
+ack('Q.db.close(0)', true);
+
+var avg_keysize = 128;
+var avg_datasize = 1024;
+var h_ffactor = Math.floor(100 * (pagesize - 32) / (avg_keysize + avg_datasize + 8));
+var h_nelem = 12345;
+
+var H = new BDB(dbenv, "H", DB_HASH);
+Fill(H);
+
+var dbfile = "H.db";
 var dbname = null;
 var oflags = DB_CREATE | DB_AUTO_COMMIT;
 var dbtype = DB_HASH;
 var dbperms = 0644;
 
-var avg_keysize = 128;
-var avg_datasize = 1024;
-var h_ffactor = (pagesize - 32) / (avg_keysize + avg_datasize + 8);
-var h_nelem = 12345;
-
-var db = new Db(dbenv, eoflags);
-ack("typeof db;", "object");
-ack("db instanceof Db;", true);
+var db = H.db;
+ack('typeof db', 'object');
+ack('db instanceof Db;', true);
 // ack("db.debug = 1;", 1);
 // ack("db.debug = 0;", 0);
 
-ack('db.errfile', null);
-ack('db.errfile = errfile', true);
 ack('db.errfile', errfile);
-
-ack('db.errpfx', null);
-ack('db.errpfx = errpfx', true);
 ack('db.errpfx', errpfx);
-
-ack('db.lorder', little_endian);
-ack('db.lorder = big_endian', true);
-// ack('db.lorder', big_endian);
-ack('db.lorder = little_endian', true);
-ack('db.lorder', little_endian);
-
-ack('db.pagesize', 0);
-ack('db.pagesize = pagesize', true);
 ack('db.pagesize', pagesize);
-
-// --- not permitted with dbenv
 // ack('db.cachesize', 265564);
-// ack('db.cachesize = cachesize', true);
-// ack('db.cachesize >= cachesize', true);
 
-h_ffactor = 50;			// todo: figger the units
-ack('db.h_ffactor', 0);
-ack('db.h_ffactor = h_ffactor', true);
-ack('db.h_ffactor', h_ffactor);
+ack('db.lorder', little_endian);
 
-ack('db.h_nelem', 1234);	// todo: why 1234?
-ack('db.h_nelem = h_nelem', true);
-ack('db.h_nelem', h_nelem);
+// ----- db->open() checks
 
-// -----
-var txn = null;
-ack('db.open(txn, dbfile, dbname, dbtype, oflags,dbperms)', true);
+  switch (H.dbtype) {
+  case DB_HASH:
+    ack('H.db.h_ffactor', h_ffactor);
+    ack('H.db.h_nelem', h_nelem);
+    break;
+  case DB_BTREE:
+    ack('B.db.bt_minkey', bt_minkey);
+    break;
+  case DB_RECNO:
+    ack('R.db.re_delim', re_delim);
+    ack('R.db.re_len', re_len);
+    ack('R.db.re_pad', re_pad);
+    ack('R.db.re_source', re_source);
+    break;
+  case DB_QUEUE:
+    ack('Q.db.q_extentsize', q_extentsize);
+    break;
+  }
+
 ack('db.dbfile', dbfile);
 ack('db.dbname', dbname);
 ack('db.type', dbtype);
@@ -313,8 +411,6 @@ ack('db.open_flags', oflags);
 
 ack('db.byteswapped', 0);
 ack('db.multiple', 0);
-
-// ack('db.bt_minkey', 0);
 
 ack('db.create_dir', null);
 // ack('db.create_dir = "."', true);
@@ -330,12 +426,6 @@ ack('db.msgfile', null);
 // ack('db.msgfile = "stdout"', true);
 
 ack('db.priority', 0);
-ack('db.q_extentsize', 0);
-
-// ack('db.re_delim', 0);
-// ack('db.re_len', 0);
-// ack('db.re_pad', 0);
-// ack('db.re_source', 0);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
@@ -358,7 +448,7 @@ ack('dbc.close()', true);
 ack('txn.commit()', true);
 
 ack('db.sync()', true);
-ack('db.stat_print(DB_FAST_STAT)', true);
+// ack('db.stat_print(DB_FAST_STAT)', true);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
@@ -412,8 +502,8 @@ ack('db.del(txn, "foo")', true);
 ack('txn.commit()', true);
 
 ack('db.sync()', true);
-ack('db.stat(DB_FAST_STAT)', true);
-ack('db.stat_print(DB_FAST_STAT)', true);
+// ack('db.stat(DB_FAST_STAT)', true);
+// ack('db.stat_print(DB_FAST_STAT)', true);
 
 var mpf = db.mpf;
 ack('mpf.clear_len', 32);
@@ -427,18 +517,21 @@ ack('mpf.priority', 3);
 ack('db.close(0)', true);
 delete db;
 
-var db = new Db(dbenv, eoflags);
+var db = new Db(dbenv, 0);
 ack('typeof db;', 'object');
 ack('db instanceof Db;', true);
 ack('db.upgrade(dbfile)', true);
 ack('db.verify(dbfile,dbname,0)', true);
-ack('db.truncate()', true);
+// ack('db.truncate()', true);
 delete db;
 
-var db = new Db(dbenv, eoflags);
-ack('typeof db;', 'object');
-ack('db instanceof Db;', true);
-ack('db.remove(dbfile,dbname)', true);
-delete db;
+// var db = new Db(dbenv, 0);
+// ack('typeof db;', 'object');
+// ack('db instanceof Db;', true);
+// ack('db.remove(dbfile,dbname)', true);
+// delete db;
+
+ack('dbenv.close(0)', true);
+delete dbenv;
 
 if (loglvl) print("<-- Db.js");

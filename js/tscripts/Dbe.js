@@ -56,8 +56,6 @@ var home = "./rpmdb";
 var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
 var emode = 0;
 
-var dbfile = "Stuff";
-
 var dbenv = new Dbe();
 ack("typeof dbenv;", "object");
 ack("dbenv instanceof Dbe;", true);
@@ -157,8 +155,9 @@ ack('dbenv.home', home);
 ack('dbenv.open_flags', eflags);
 
 ack('dbenv.failchk()', true);
-ack('dbenv.fileid_reset(dbfile)', true);
-ack('dbenv.lsn_reset(dbfile)', true);
+// var dbfile = "Stuff";
+// ack('dbenv.fileid_reset(dbfile)', true);
+// ack('dbenv.lsn_reset(dbfile)', true);
 
 ack('dbenv.data_dirs', './data,.');
 ack('dbenv.create_dir', '.');

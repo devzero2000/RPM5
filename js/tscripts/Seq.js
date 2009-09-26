@@ -11,13 +11,14 @@ ack('dbenv.open(home, eflags, emode)', true);
 
 var dbfile = "Sequence";
 var dbname = "Sequence";
-var oflags = DB_CREATE;
+var oflags = DB_CREATE | DB_AUTO_COMMIT;
 var dbtype = DB_HASH;
 var dbperms = 0644;
 
-var db = new Db(dbenv, eoflags);
+var db = new Db(dbenv);
 ack("typeof db;", "object");
 ack("db instanceof Db;", true);
+
 var txn = null;
 ack('db.open(txn, dbfile, dbname, dbtype, oflags, dbperms)', true);
 
@@ -38,13 +39,18 @@ var rangemax =  9223372036854776000;
 ack('seq.initval = initval', true);
 
 var key = "foo";
-var flags = 2;
+var soflags = DB_CREATE | DB_THREAD;
+var flags = DB_SEQ_INC;
 
 // must be 0 if txn != null
 var cachesize = 0;
 ack('seq.cachesize = cachesize', true);
 
-ack('seq.open(txn, key)', true);
+// var txn = dbenv.txn_begin(null, 0);
+// ack('typeof txn', "object");
+// ack('txn instanceof Txn', true);
+
+ack('seq.open(txn, key, soflags)', true);
 ack("seq.key", key);
 // ack('seq.rangemin = rangemin', true);
 // ack('seq.rangemax = rangemax', true);
@@ -63,9 +69,12 @@ ack("seq.st_max", rangemax);
 ack("seq.st_cachesize", cachesize);
 ack("seq.st_flags", flags);
 
-ack('seq.get(txn)', seq.st_current);
-ack('seq.get(txn)', seq.st_current);
-ack('seq.get(txn)', seq.st_current);
+ack('seq.get(txn, 1, DB_TXN_NOSYNC)', seq.st_current);
+ack('seq.get(txn, 1, DB_TXN_NOSYNC)', seq.st_current);
+ack('seq.get(txn, 1, DB_TXN_NOSYNC)', seq.st_current);
+
+// ack('txn.commit()', true);
+// delete txn;
 
 ack('seq.close(0)', true);
 delete seq;
