@@ -309,6 +309,24 @@ function Fill(A) {
 	    print('\t' + i + ': ' + db.get(txn, i));
     }
 
+    db.stat_print(DB_FAST_STAT);
+    print("st_buckets:\t" + db.st_buckets);
+    print("st_cur_recno:\t" + db.st_cur_recno);
+    print("st_extentsize:\t" + db.st_extentsize);
+    print("st_ffactor:\t" + db.st_ffactor);
+    print("st_first_recno:\t" + db.st_first_recno);
+    print("st_magic:\t" + db.st_magic);
+    print("st_minkey:\t" + db.st_minkey);
+    print("st_ndata:\t" + db.st_ndata);
+    print("st_nkeys:\t" + db.st_nkeys);
+    print("st_pagcnt:\t" + db.st_pagcnt);
+    print("st_pagesize:\t" + db.st_pagesize);
+    print("st_re_len:\t" + db.st_re_len);
+    print("st_re_pad:\t" + db.st_re_pad);
+    print("st_version:\t" + db.st_version);
+
+ 
+
 //  txn = dbenv.txn_begin(null, 0);
 //  for (let i = 0; i < imax; i++)
 //	db.del(txn, i.toString(10));

@@ -992,38 +992,215 @@ enum rpmdb_tinyid {
     _RE_LEN		= -26,
     _RE_PAD		= -27,
     _RE_SOURCE		= -28,
+
+    _ST_BUCKETS		= -29,
+    _ST_CUR_RECNO	= -30,
+    _ST_EXTENTSIZE	= -31,
+    _ST_FFACTOR		= -32,
+    _ST_FIRST_RECNO	= -33,
+    _ST_MAGIC		= -34,
+    _ST_MINKEY		= -35,
+    _ST_NDATA		= -36,
+    _ST_NKEYS		= -37,
+    _ST_PAGECNT		= -38,
+    _ST_PAGESIZE	= -39,
+    _ST_RE_LEN		= -40,
+    _ST_RE_PAD		= -41,
+    _ST_VERSION		= -42,
+
+#ifndef	NOTFAST
+    _ST_BFREE		= -43,
+    _ST_BIG_BFREE	= -44,
+    _ST_BIGPAGES	= -45,
+    _ST_BT_DUP_PG	= -46,
+    _ST_BT_DUP_PGFREE	= -47,
+    _ST_BT_EMPTY_PG	= -48,
+    _ST_BT_FREE		= -49,
+    _ST_BT_INT_PG	= -50,
+    _ST_BT_INT_PGFREE	= -51,
+    _ST_BT_LEAF_PG	= -52,
+    _ST_BT_LEAF_PGFREE	= -53,
+    _ST_BT_LEVELS	= -54,
+    _ST_BT_OVER_PG	= -55,
+    _ST_BT_OVER_PGFREE	= -56,
+    _ST_DUP		= -57,
+    _ST_DUP_FREE	= -58,
+    _ST_FREE		= -59,
+    _ST_OVERFLOWS	= -60,
+    _ST_OVFL_FREE	= -61,
+    _ST_PAGES		= -62,
+    _ST_PGFREE		= -63,
+#endif
 };
 
 static JSPropertySpec rpmdb_props[] = {
-    {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"byteswapped", _BYTESWAPPED, JSPROP_ENUMERATE,	NULL,	NULL},
-    {"dbfile", _DBFILE,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"dbname", _DBNAME,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"multiple", _MULTIPLE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"open_flags", _OPEN_FLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"type",	_TYPE,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"bt_minkey", _BT_MINKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"cachesize", _CACHESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"create_dir", _CREATE_DIR,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"encrypt",	_ENCRYPT,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"errfile",	_ERRFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"errpfx",	_ERRPFX,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"flags",	_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"h_ffactor", _H_FFACTOR,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"h_nelem",	_H_NELEM,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"lorder",	_LORDER,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"mpf",	_MPF,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"msgfile",	_MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"pagesize", _PAGESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"partition_dirs", _PARTITION_DIRS,	JSPROP_ENUMERATE, NULL,	NULL},
-    {"priority", _PRIORITY,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"q_extentsize", _Q_EXTENTSIZE, JSPROP_ENUMERATE,	NULL,	NULL},
-    {"re_delim", _RE_DELIM,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"re_len",	_RE_LEN,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"re_pad",	_RE_PAD,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"re_source", _RE_SOURCE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"debug",		_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"byteswapped",	_BYTESWAPPED,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dbfile",		_DBFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"dbname",		_DBNAME,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"multiple",	_MULTIPLE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"open_flags",	_OPEN_FLAGS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"type",		_TYPE,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"bt_minkey",	_BT_MINKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"cachesize",	_CACHESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"create_dir",	_CREATE_DIR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"encrypt",		_ENCRYPT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errfile",		_ERRFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"errpfx",		_ERRPFX,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"flags",		_FLAGS,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"h_ffactor",	_H_FFACTOR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"h_nelem",		_H_NELEM,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"lorder",		_LORDER,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"mpf",		_MPF,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"msgfile",		_MSGFILE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"pagesize",	_PAGESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"partition_dirs",	_PARTITION_DIRS, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"priority",	_PRIORITY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"q_extentsize",	_Q_EXTENTSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_delim",	_RE_DELIM,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_len",		_RE_LEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_pad",		_RE_PAD,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"re_source",	_RE_SOURCE,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+    {"st_buckets",	_ST_BUCKETS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_cur_recno",	_ST_CUR_RECNO,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_extentsize",	_ST_EXTENTSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_ffactor",	_ST_FFACTOR,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_first_recno",	_ST_FIRST_RECNO, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_magic",	_ST_MAGIC,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_minkey",	_ST_MINKEY,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_ndata",	_ST_NDATA,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_nkeys",	_ST_NKEYS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_pagcnt",	_ST_PAGECNT,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_pagesize",	_ST_PAGESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_re_len",	_ST_RE_LEN,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_re_pad",	_ST_RE_PAD,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_version",	_ST_VERSION,	JSPROP_ENUMERATE,	NULL,	NULL},
+
+#ifndef	NOTFAST
+    {"st_bfree",	_ST_BFREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_big_bfree",	_ST_BIG_BFREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bigpages",	_ST_BIGPAGES,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_dup_pg",	_ST_BT_DUP_PG,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_dup_pgfree",_ST_BT_DUP_PGFREE, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_empty_pg",	_ST_BT_EMPTY_PG, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_free",	_ST_BT_FREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_int_pg",	_ST_BT_INT_PG,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_int_pgfree",_ST_BT_INT_PGFREE, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_leaf_pg",	_ST_BT_LEAF_PG,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_leaf_pgfree", _ST_BT_LEAF_PGFREE, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_levels",	_ST_BT_LEVELS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_over_pg",	_ST_BT_OVER_PG,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_bt_over_pgfree", _ST_BT_OVER_PGFREE, JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_dup",		_ST_DUP,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_dup_free",	_ST_DUP_FREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_free",		_ST_FREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_overflows",	_ST_OVERFLOWS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_ovfl_free",	_ST_OVFL_FREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_pages",	_ST_PAGES,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"st_pgfree",	_ST_PGFREE,	JSPROP_ENUMERATE,	NULL,	NULL},
+#endif
     {NULL, 0, 0, NULL, NULL}
 };
+
+static JSBool
+rpmdb_getFastStats(JSContext *cx, JSObject *obj, jsval id, jsval *vp,
+		void * _txn, uint32_t flags)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
+    DB * db = ptr;
+    jsint tiny = JSVAL_TO_INT(id);
+
+    DBTYPE _type = DB_UNKNOWN;
+    DB_TXN * txn = _txn;
+    void * _sp = NULL;
+    int ret = db->stat(db, txn, &_sp, flags);
+    DB_BTREE_STAT *bsp = _sp;
+    DB_HASH_STAT *hsp = _sp;
+    DB_QUEUE_STAT *qsp = _sp;
+    jsdouble dorig = 0.0123456789;
+    jsdouble d = dorig;
+
+    ret = db->get_type(db, &_type);
+    switch (_type) {
+    case DB_RECNO:
+    case DB_BTREE:
+      switch (tiny) {
+	case _ST_MAGIC:			d = bsp->bt_magic;	break;
+	case _ST_VERSION:		d = bsp->bt_version;	break;
+	case _ST_NKEYS:			d = bsp->bt_nkeys;	break;
+	case _ST_NDATA:			d = bsp->bt_ndata;	break;
+	case _ST_MINKEY:		d = bsp->bt_minkey;	break;
+	case _ST_RE_LEN:		d = bsp->bt_re_len;	break;
+	case _ST_RE_PAD:		d = bsp->bt_re_pad;	break;
+	case _ST_PAGESIZE:		d = bsp->bt_pagesize;	break;
+	case _ST_PAGECNT:		d = bsp->bt_pagecnt;	break;
+#ifndef	NOTFAST
+	case _ST_BT_LEVELS:		d = bsp->bt_levels;	break;
+	case _ST_BT_INT_PG:		d = bsp->bt_int_pg;	break;
+	case _ST_BT_LEAF_PG:		d = bsp->bt_leaf_pg;	break;
+	case _ST_BT_DUP_PG:		d = bsp->bt_dup_pg;	break;
+	case _ST_BT_OVER_PG:		d = bsp->bt_over_pg;	break;
+	case _ST_BT_EMPTY_PG:		d = bsp->bt_empty_pg;	break;
+	case _ST_BT_FREE:		d = bsp->bt_free;	break;
+	case _ST_BT_INT_PGFREE:		d = bsp->bt_int_pgfree;	break;
+	case _ST_BT_LEAF_PGFREE:	d = bsp->bt_leaf_pgfree; break;
+	case _ST_BT_DUP_PGFREE:		d = bsp->bt_dup_pgfree;	break;
+	case _ST_BT_OVER_PGFREE:	d = bsp->bt_over_pgfree; break;
+#endif
+      }	break;
+    case DB_HASH:
+      switch (tiny) {
+	case _ST_MAGIC:			d = hsp->hash_magic;	break;
+	case _ST_VERSION:		d = hsp->hash_version;	break;
+	case _ST_PAGESIZE:		d = hsp->hash_pagesize;	break;
+	case _ST_PAGECNT:		d = hsp->hash_pagecnt;	break;
+	case _ST_NKEYS:			d = hsp->hash_nkeys;	break;
+	case _ST_NDATA:			d = hsp->hash_ndata;	break;
+	case _ST_FFACTOR:		d = hsp->hash_ffactor;	break;
+	case _ST_BUCKETS:		d = hsp->hash_buckets;	break;
+#ifndef	NOTFAST
+	case _ST_FREE:			d = hsp->hash_free;	break;
+	case _ST_BFREE:			d = hsp->hash_bfree;	break;
+	case _ST_BIGPAGES:		d = hsp->hash_bigpages;	break;
+	case _ST_BIG_BFREE:		d = hsp->hash_big_bfree; break;
+	case _ST_OVERFLOWS:		d = hsp->hash_overflows; break;
+	case _ST_OVFL_FREE:		d = hsp->hash_ovfl_free; break;
+	case _ST_DUP:			d = hsp->hash_dup;	break;
+	case _ST_DUP_FREE:		d = hsp->hash_dup_free;	break;
+#endif
+      }	break;
+    case DB_QUEUE:
+      switch (tiny) {
+	case _ST_MAGIC:			d = qsp->qs_magic;	break;
+	case _ST_VERSION:		d = qsp->qs_version;	break;
+	case _ST_PAGESIZE:		d = qsp->qs_pagesize;	break;
+	case _ST_EXTENTSIZE:		d = qsp->qs_extentsize;	break;
+	case _ST_NKEYS:			d = qsp->qs_nkeys;	break;
+	case _ST_NDATA:			d = qsp->qs_ndata;	break;
+	case _ST_RE_LEN:		d = qsp->qs_re_len;	break;
+	case _ST_RE_PAD:		d = qsp->qs_re_pad;	break;
+	case _ST_FIRST_RECNO:		d = qsp->qs_first_recno; break;
+	case _ST_CUR_RECNO:		d = qsp->qs_cur_recno;	break;
+#ifndef	NOTFAST
+	case _ST_PAGES:			d = qsp->qs_pages;	break;
+	case _ST_PGFREE:		d = qsp->qs_pgfree;	break;
+#endif
+      }	break;
+    case DB_UNKNOWN:
+	break;
+    }
+
+    _sp = _free(_sp);
+
+    if (d != dorig) {
+        if (!JS_NewNumberValue(cx, d, vp))
+            *vp = JSVAL_FALSE;
+    } else
+	*vp = JSVAL_VOID;
+
+    return JS_TRUE;
+}
 
 #define	_RET_B(_bool)	((_bool) > 0 ? JSVAL_TRUE: JSVAL_FALSE)
 #define	_RET_S(_str)	\
@@ -1117,6 +1294,53 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _RE_LEN:	*vp = _GET_U(!db->get_re_len(db, &_u));		break;
     case _RE_PAD:	*vp = _GET_I(!db->get_re_pad(db, &_i));		break;
     case _RE_SOURCE:	*vp = _GET_S(!db->get_re_source(db, &_s));	break;
+    case _ST_BUCKETS:
+    case _ST_CUR_RECNO:
+    case _ST_EXTENTSIZE:
+    case _ST_FFACTOR:
+    case _ST_FIRST_RECNO:
+    case _ST_MAGIC:
+    case _ST_MINKEY:
+    case _ST_NDATA:
+    case _ST_NKEYS:
+    case _ST_PAGECNT:
+    case _ST_PAGESIZE:
+    case _ST_RE_LEN:
+    case _ST_RE_PAD:
+    case _ST_VERSION:
+    {	void * _txn = NULL;
+	uint32_t _flags = DB_READ_UNCOMMITTED | DB_FAST_STAT;
+	(void) rpmdb_getFastStats(cx, obj, id, vp, _txn, _flags);
+    }	break;
+
+#ifndef	NOTFAST
+    case _ST_BFREE:
+    case _ST_BIG_BFREE:
+    case _ST_BIGPAGES:
+    case _ST_BT_DUP_PG:
+    case _ST_BT_DUP_PGFREE:
+    case _ST_BT_EMPTY_PG:
+    case _ST_BT_FREE:
+    case _ST_BT_INT_PG:
+    case _ST_BT_INT_PGFREE:
+    case _ST_BT_LEAF_PG:
+    case _ST_BT_LEAF_PGFREE:
+    case _ST_BT_LEVELS:
+    case _ST_BT_OVER_PG:
+    case _ST_BT_OVER_PGFREE:
+    case _ST_DUP:
+    case _ST_DUP_FREE:
+    case _ST_FREE:
+    case _ST_OVERFLOWS:
+    case _ST_OVFL_FREE:
+    case _ST_PAGES:
+    case _ST_PGFREE:
+    {	void * _txn = NULL;
+	uint32_t _flags = DB_READ_UNCOMMITTED;
+	(void) rpmdb_getFastStats(cx, obj, id, vp, _txn, _flags);
+    }	break;
+#endif
+
     default:
 	break;
     }
