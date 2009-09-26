@@ -9,7 +9,7 @@ ack("typeof dbenv;", "object");
 ack("dbenv instanceof Dbe;", true);
 ack('dbenv.open(home, eflags, emode)', true);
 
-var dbfile = "Sequence";
+var dbfile = "Sequence.db";
 var dbname = "Sequence";
 var oflags = DB_CREATE | DB_AUTO_COMMIT;
 var dbtype = DB_HASH;

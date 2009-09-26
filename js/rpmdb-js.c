@@ -4,7 +4,9 @@
 
 #include "system.h"
 
+#define	_RPMDB_JS_INTERNAL
 #include "rpmdb-js.h"
+
 #include "rpmdbc-js.h"
 #include "rpmdbe-js.h"
 #include "rpmmpf-js.h"
@@ -12,8 +14,6 @@
 #include "rpmjs-debug.h"
 
 #include <argv.h>
-
-#include <db.h>
 
 #include "debug.h"
 
@@ -44,12 +44,52 @@ static int _debug = 0;
 
 /* --- helpers */
 
+int
+rpmdb_v2dbt(JSContext *cx, jsval v, _RPMDBT * p)
+{
+    int rc = 0;
+
+    if (v == JSVAL_NULL || v == JSVAL_VOID) {
+	p->dbt.size = 0;
+	p->dbt.data = NULL;
+    } else
+    if (JSVAL_IS_INT(v)) {
+	JS_ValueToInt32(cx, v, &p->_u._i);
+	p->dbt.size = sizeof(p->_u._i);
+	p->dbt.data = &p->_u._i;
+    } else
+    if (JSVAL_IS_DOUBLE(v)) {
+	jsdouble d = 0;
+	JS_ValueToNumber(cx, v, &d);
+	p->_u._ll = d;
+	p->dbt.size = sizeof(p->_u._ll);
+	p->dbt.data = &p->_u._ll;
+    } else
+    if (JSVAL_IS_STRING(v)) {
+	p->dbt.data = JS_GetStringBytes(JSVAL_TO_STRING(v));
+	p->dbt.size = strlen(p->dbt.data) + 1;
+    } else
+    if (JSVAL_IS_OBJECT(v)) {
+#ifdef	NOTYET
+        JSObject *o = JSVAL_TO_OBJECT(v);
+        if (OBJ_IS_FOO(cx, o))
+            foo = JS_GetInstancePrivate(cx, o, &rpmfooClass, NULL);
+#else
+	p->dbt.size = 0;
+	p->dbt.data = NULL;
+#endif
+    } else
+    {
+fprintf(stderr, "*** %s(%p, 0x%x, %p)  FIXME\n", __FUNCTION__, cx, (unsigned)v, p);
+	rc = 0;
+    }
+    return rc;
+}
+
 /* --- Object methods */
 
 #define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
 #define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
-
-#define	DBT_INIT	{0}
 
 static JSBool
 rpmdb_Associate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -261,7 +301,8 @@ rpmdb_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     DB * db = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -270,16 +311,16 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/u", &o, &_k.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/u", &o, &_kv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
 
     if (db->app_private != NULL) {
-	int ret = db->del(db, _txn, &_k, _flags);
+	int ret = db->del(db, _txn, _RPMDBT_PTR(_k), _flags);
 	switch (ret) {
 	default:
 	    db->err(db, ret, "DB->del");
@@ -304,7 +345,8 @@ rpmdb_Exists(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     DB * db = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -313,16 +355,16 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/u", &o, &_k.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/u", &o, &_kv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
 
     if (db->app_private != NULL) {
-	int ret = db->exists(db, _txn, &_k, _flags);
+	int ret = db->exists(db, _txn, _RPMDBT_PTR(_k), _flags);
 	switch (ret) {
 	default:
 	    *rval = JSVAL_FALSE;
@@ -351,8 +393,10 @@ rpmdb_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     DB * db = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
-    DBT _d = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
+    jsval _dv = JSVAL_NULL;
+    _RPMDBT _d = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -361,18 +405,18 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/su", &o, &_k.data, &_d.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/vu", &o, &_kv, &_dv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
-    if (_d.data)
-	_d.size = strlen(_d.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
+    if (rpmdb_v2dbt(cx, _dv, &_d))
+	goto exit;
 
     if (db->app_private != NULL) {
-	int ret = db->get(db, _txn, &_k, &_d, _flags);
+	int ret = db->get(db, _txn, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
 	switch (ret) {
 	default:
 	    *rval = JSVAL_FALSE;
@@ -380,7 +424,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _d.data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
@@ -438,7 +482,8 @@ rpmdb_KeyRange(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
     DB * db = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -447,17 +492,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/u", &o, &_k.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/u", &o, &_kv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
 
     if (db->app_private != NULL) {
 	DB_KEY_RANGE _key_range = {0};
-	int ret = db->key_range(db, _txn, &_k, &_key_range, _flags);
+	int ret = db->key_range(db, _txn, _RPMDBT_PTR(_k), &_key_range, _flags);
 	switch (ret) {
 	default:
 	    db->err(db, ret, "DB->key_range");
@@ -500,8 +545,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
 
+    /* XXX hmm, "null" is getting passed somehow. */
+    if (_database && (*_database == '\0' || !strcmp(_database, "null")))
+	_database = NULL;
+    if (_type == DB_QUEUE)
+	_database = NULL;
+
     if (db->app_private == NULL) {
 	int ret = db->open(db, _txn, _file, _database, _type, _oflags, _mode);
+#ifdef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = db->open(%p, %p, \"%s\", \"%s\", %d, 0x%x, 0%o)\n", __FUNCTION__, ret, db, _txn, _file, _database, _type, _oflags, _mode);
+#endif
 	if (ret) {
 	    db->err(db, ret, "DB->open");
 	    goto exit;
@@ -524,9 +578,11 @@ rpmdb_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     DB * db = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
-    DBT _p = DBT_INIT;
-    DBT _d = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
+    jsval _dv = JSVAL_NULL;
+    _RPMDBT _d = _RPMDBT_INIT;
+    _RPMDBT _p = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -535,18 +591,18 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/su", &o, &_k.data, &_d.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/vu", &o, &_kv, &_dv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
-    if (_d.data)
-	_d.size = strlen(_d.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
+    if (rpmdb_v2dbt(cx, _dv, &_d))
+	goto exit;
 
     if (db->app_private != NULL) {
-	int ret = db->pget(db, _txn, &_k, &_p, &_d, _flags);
+	int ret = db->pget(db, _txn, _RPMDBT_PTR(_k), _RPMDBT_PTR(_p), _RPMDBT_PTR(_d), _flags);
 	switch (ret) {
 	default:
 	    *rval = JSVAL_FALSE;
@@ -554,7 +610,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _d.data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
@@ -575,8 +631,10 @@ rpmdb_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     DB * db = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
-    DBT _d = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
+    jsval _dv = JSVAL_NULL;
+    _RPMDBT _d = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -585,18 +643,18 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "oss/u", &o, &_k.data, &_d.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ovv/u", &o, &_kv, &_dv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
-    if (_d.data)
-	_d.size = strlen(_d.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
+    if (rpmdb_v2dbt(cx, _dv, &_d))
+	goto exit;
 
     if (db->app_private != NULL) {
-	int ret = db->put(db, _txn, &_k, &_d, _flags);
+	int ret = db->put(db, _txn, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
 	switch (ret) {
 	default:
 	    *rval = JSVAL_FALSE;

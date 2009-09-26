@@ -7,13 +7,13 @@
 #include <sys/ipc.h>		/* XXX ftok(3) */
 #endif
 
+#define	_RPMDB_JS_INTERNAL
+#include "rpmdb-js.h"
 #include "rpmdbe-js.h"
 #include "rpmtxn-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
-
-#include <db.h>
 
 #include "debug.h"
 

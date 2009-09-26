@@ -4,14 +4,13 @@
 
 #include "system.h"
 
-#include "rpmseq-js.h"
+#define	_RPMDB_JS_INTERNAL
 #include "rpmdb-js.h"
+#include "rpmseq-js.h"
 #include "rpmtxn-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
-
-#include <db.h>
 
 #include "debug.h"
 
@@ -44,10 +43,7 @@ static int _debug = 0;
 
 /* --- Object methods */
 
-#define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
 #define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
-
-#define	DBT_INIT	{0}
 
 static JSBool
 rpmseq_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -132,7 +128,8 @@ rpmseq_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     DB_SEQUENCE * seq = ptr;
     JSObject * o = NULL;
     DB_TXN * _txn = NULL;
-    DBT _k = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
     uint32_t _flags = DB_CREATE;
     JSBool ok = JS_FALSE;
 
@@ -141,15 +138,15 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (seq == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "os/u", &o, &_k.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/u", &o, &_kv, &_flags)))
 	goto exit;
 
     if (o && OBJ_IS_RPMTXN(cx, o))
 	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
 
-    {	int ret = seq->open(seq, _txn, &_k, _flags);
+    {	int ret = seq->open(seq, _txn, _RPMDBT_PTR(_k), _flags);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DB_SEQUENCE->open: %s\n", db_strerror(ret));
@@ -351,7 +348,7 @@ rpmseq_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = _db->app_private ? OBJECT_TO_JSVAL(_db->app_private) : JSVAL_NULL;
     }	break;
     case _KEY:
-    {	DBT _k = DBT_INIT;
+    {	DBT _k = {0};
 	if ((ret = seq->get_key(seq, &_k)) != 0) {
 	    *vp = JSVAL_VOID;
 	    break;

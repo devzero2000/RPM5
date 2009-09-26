@@ -266,6 +266,7 @@ function BDB(dbenv, _name, _type) {
 	break;
     case DB_QUEUE:
 	this.q_extentsize = 0;
+	this.db.re_len = this.re_len = 40;
 	break;
     }
 
@@ -279,6 +280,7 @@ function Fill(A) {
     var dbc = null;
     var txn = null;
     var putflags = 0;
+    var imin = 1;
     var imax = 10;
 
     print('----> PUT ' + dbenv.home + '/' + db.dbfile);
@@ -295,17 +297,16 @@ function Fill(A) {
     }
 
     txn = dbenv.txn_begin(null, 0);
-    for (let i = 0; i < imax; i++)
-	db.put(txn, i.toString(10), i.toString(2), putflags);
+    for (let i = imin; i < imax; i++)
+	db.put(txn, i, i.toString(2), putflags);
     db.sync();
     txn.commit();
 
     print('----> GET ' + dbenv.home + '/' + db.dbfile);
     txn = null;
-    for (let i = 0; i < imax; i++) {
-	var k = i.toString(10);
-	if (db.exists(txn, k))
-	    print('\t' + k + ': ' + db.get(txn, k));
+    for (let i = imin; i < imax; i++) {
+	if (db.exists(txn, i))
+	    print('\t' + i + ': ' + db.get(txn, i));
     }
 
 //  txn = dbenv.txn_begin(null, 0);
@@ -348,12 +349,12 @@ ack('R.db.re_delim', 0);
 ack('R.db.re_len', 0);
 ack('R.db.re_pad', 0);
 ack('R.db.re_source', 0);
-// Fill(R);
+Fill(R);
 ack('R.db.close(0)', true);
 
 var q_extentsize = 0;
 var Q = new BDB(dbenv, "Q", DB_QUEUE);
-// Fill(Q);
+Fill(Q);
 ack('Q.db.close(0)', true);
 
 var avg_keysize = 128;

@@ -4,12 +4,12 @@
 
 #include "system.h"
 
+#define	_RPMDB_JS_INTERNAL
+#include "rpmdb-js.h"
 #include "rpmdbc-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
-
-#include <db.h>
 
 #include "debug.h"
 
@@ -41,8 +41,6 @@ static int _debug = 0;
 /* --- helpers */
 
 /* --- Object methods */
-
-#define	DBT_INIT	{0}
 
 static JSBool
 rpmdbc_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -222,8 +220,10 @@ rpmdbc_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    DBT _k = DBT_INIT;
-    DBT _d = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
+    jsval _dv = JSVAL_NULL;
+    _RPMDBT _d = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -232,21 +232,21 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbc == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/su", &_k.data, &_d.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/vu", &_kv, &_dv, &_flags)))
 	goto exit;
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
-    if (_d.data)
-	_d.size = strlen(_d.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
+    if (rpmdb_v2dbt(cx, _dv, &_d))
+	goto exit;
 
-    {	int ret = dbc->get(dbc, &_k, &_d, _flags);
+    {	int ret = dbc->get(dbc, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->get: %s\n", db_strerror(ret));
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _d.data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
@@ -265,9 +265,11 @@ rpmdbc_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    DBT _k = DBT_INIT;
-    DBT _p = DBT_INIT;
-    DBT _d = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
+    jsval _dv = JSVAL_NULL;
+    _RPMDBT _d = _RPMDBT_INIT;
+    _RPMDBT _p = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -276,21 +278,21 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbc == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s/su", &_k.data, &_d.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/vu", &_kv, &_dv, &_flags)))
 	goto exit;
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
-    if (_d.data)
-	_d.size = strlen(_d.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
+    if (rpmdb_v2dbt(cx, _dv, &_d))
+	goto exit;
 
-    {	int ret = dbc->pget(dbc, &_k, &_p, &_d, _flags);
+    {	int ret = dbc->pget(dbc, _RPMDBT_PTR(_k), _RPMDBT_PTR(_p), _RPMDBT_PTR(_d), _flags);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->pget: %s\n", db_strerror(ret));
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _d.data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
@@ -309,8 +311,10 @@ rpmdbc_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    DBT _k = DBT_INIT;
-    DBT _d = DBT_INIT;
+    jsval _kv = JSVAL_NULL;
+    _RPMDBT _k = _RPMDBT_INIT;
+    jsval _dv = JSVAL_NULL;
+    _RPMDBT _d = _RPMDBT_INIT;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -319,14 +323,14 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbc == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "ss/u", &_k.data, &_d.data, &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "vv/u", &_kv, &_dv, &_flags)))
 	goto exit;
-    if (_k.data)
-	_k.size = strlen(_k.data)+1;
-    if (_d.data)
-	_d.size = strlen(_d.data)+1;
+    if (rpmdb_v2dbt(cx, _kv, &_k))
+	goto exit;
+    if (rpmdb_v2dbt(cx, _dv, &_d))
+	goto exit;
 
-    {	int ret = dbc->put(dbc, &_k, &_d, _flags);
+    {	int ret = dbc->put(dbc, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->put: %s\n", db_strerror(ret));
