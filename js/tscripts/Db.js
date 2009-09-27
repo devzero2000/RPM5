@@ -540,9 +540,10 @@ var F = new BDB(dbenv, "F", DB_RECNO, "files");
 ack('F.db.flags |= DB_SNAPSHOT', DB_SNAPSHOT);
 var FN = new BDB(dbenv, "FN", DB_BTREE, null);
 var BN = new BDB(dbenv, "BN", DB_BTREE, null);
+var DN = new BDB(dbenv, "DN", DB_BTREE, null);
+ack('DN.db.flags |= DB_DUPSORT', DB_DUPSORT);
 
 var i = 0;
-var ix = 0;
 var k = '';
 do {
     ++i;
@@ -551,42 +552,49 @@ do {
     if (!k)
 	break;
     FN.put(k, i);
-    ix = k.lastIndexOf("/") + 1;
-// print('\tBN:', k.substr(ix));
+    var ix = k.lastIndexOf("/") + 1;
     BN.put(k.substr(ix), i);
-// print('\tDN:', k.substr(0, ix));
+    DN.put(k.substr(0, ix), i);
 } while (1) ;
 
 ack('F.db.associate(F.txn, FN.db, 0)', true);
 ack('F.db.associate(F.txn, BN.db, 0)', true);
+ack('F.db.associate(F.txn, DN.db, 0)', true);
 
 var fnlist = [ "/bin/bash", "/bin/cp", "/bin/mv", "/bin/sh", "/sbin/rmt" ];
 
      F.loop("F", 1, 10);
      FN.print("FN", fnlist);
      BN.print("BN", [ "bash", "sh" ]);
+     DN.print("DN", [ "/bin/", "/sbin/" ]);
 
 for (var [key, val] in Iterator(fnlist)) {
     var fn = val;
-    var bn = fn.substr(fn.lastIndexOf("/")+1);
+    var ix = fn.lastIndexOf("/") + 1;
+    var bn = fn.substr(ix);
+    var dn = fn.substr(0, ix);
 
     var fnc = FN.cursor(fn);
     var bnc = BN.cursor(bn);
+    var dnc = DN.cursor(dn);
+
     var fc = F.join(fnc, bnc);
-
     ack('fc.get(null)', fn);
-
     ack('fc.close()', true);
+
+    var fc = F.join(dnc, bnc);
+//  ack('fc.get(null)', fn);
+    ack('fc.close()', true);
+
+    ack('dnc.close()', true);
     ack('bnc.close()', true);
     ack('fnc.close()', true);
 }
 
-ack('BN.sync()', true);
-ack('BN.close()', true);
-ack('FN.sync()', true);
-ack('FN.close()', true);
-ack('F.sync()', true);
-ack('F.close()', true);
+ack('DN.sync() && DN.close()', true);
+ack('BN.sync() && BN.close()', true);
+ack('FN.sync() && FN.close()', true);
+ack('F.sync() && F.close()', true);
 
 print('<==== FILES');
 
