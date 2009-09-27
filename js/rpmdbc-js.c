@@ -387,7 +387,6 @@ static JSPropertySpec rpmdbc_props[] = {
 #define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
 #define	_GET_I(_test)	((_test) ? INT_TO_JSVAL(_i) : JSVAL_VOID)
 #define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
-#define	_GET_L(_test)	((_test) ? DOUBLE_TO_JSVAL((double)_l) : JSVAL_VOID)
 
 static JSBool
 rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)

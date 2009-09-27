@@ -95,6 +95,14 @@ fprintf(stderr, "==> %s(%p, %p, %p, %p) k %p[%u] d %p[%u]\n", __FUNCTION__, db, 
     return 0;
 }
 
+static int
+rpmdb_AFcallback(DB * db, const DBT * _k, DBT * _d, const DBT * _fk,
+		int * _changed)
+{
+fprintf(stderr, "==> %s(%p, %p, %p, %p, %p) k %p[%u] fk %p[%u] changed %d\n", __FUNCTION__, db, _k, _d, _fk, _changed, _k->data, (unsigned)_k->size, _fk->data, (unsigned)_fk->size, *_changed);
+    return 0;
+}
+
 /* --- Object methods */
 
 #define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
@@ -175,8 +183,13 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (db->app_private != NULL) {
 	/* XXX todo++ */
-	int (*_callback) (DB *, const DBT *, DBT *, const DBT *, int *) = NULL;
+	int (*_callback) (DB *, const DBT *, DBT *, const DBT *, int *)
+		= (_flags & (DB_FOREIGN_ABORT | DB_FOREIGN_CASCADE))
+			? NULL : rpmdb_AFcallback;
 	int ret = db->associate_foreign(db, _secondary, _callback, _flags);
+#ifndef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = db->associate_foreign(%p, %p, %p, 0x%x)\n", __FUNCTION__, ret, db, _secondary, _callback, _flags);
+#endif
 	switch (ret) {
 	default:
 	    db->err(db, ret, "DB->associate_foreign");
@@ -463,6 +476,7 @@ rpmdb_Join(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    JSObject * o = NULL;
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
@@ -478,14 +492,23 @@ _METHOD_DEBUG_ENTRY(_debug);
 	DBC ** _curslist = NULL;	/* XXX FIXME */
 	DBC * _dbc = NULL;		/* XXX FIXME */
 	int ret = db->join(db, _curslist, &_dbc, _flags);
+#ifndef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = db->join(%p, %p, %p 0x%x) dbc %p\n", __FUNCTION__, ret, db, _curslist, &_dbc, _flags, _dbc);
+#endif
 	switch (ret) {
 	default:
 	    db->err(db, ret, "DB->join");
 	    goto exit;
 	    break;
 	case 0:
-	    /* XXX todo++ return the created join cursor. */
 	    *rval = JSVAL_TRUE;
+	    if ((o = JS_NewObject(cx, &rpmdbcClass, NULL, NULL)) == NULL
+	     || !JS_SetPrivate(cx, o, (void *)_dbc))
+	    {
+		if (_dbc)	_dbc->close(_dbc);
+		goto exit;
+	    }
+	    *rval = OBJECT_TO_JSVAL(o);
 	    break;
 	}
     }
@@ -523,15 +546,23 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db->app_private != NULL) {
 	DB_KEY_RANGE _key_range = {0};
 	int ret = db->key_range(db, _txn, _RPMDBT_PTR(_k), &_key_range, _flags);
+#ifdef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = db->key_range(%p, %p, %p, %p, 0x%x) <%g =%g >%g\n", __FUNCTION__, ret, db, _txn, _RPMDBT_PTR(_k), &_key_range, _flags, _key_range.less, _key_range.equal, _key_range.greater);
+#endif
 	switch (ret) {
 	default:
 	    db->err(db, ret, "DB->key_range");
 	    goto exit;
 	    break;
 	case 0:
-	    /* XXX todo++ return the triple of double's */
-	    *rval = JSVAL_TRUE;
-	    break;
+	  { void * mark = NULL;
+	    *rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, 3,
+			JS_PushArguments(cx, &mark, "ddd",
+				_key_range.less,
+				_key_range.equal,
+				_key_range.greater)));
+	    JS_PopArguments(cx, mark);
+	  } break;
 	}
     }
 
@@ -1239,7 +1270,6 @@ rpmdb_getFastStats(JSContext *cx, JSObject *obj, jsval id, jsval *vp,
 #define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
 #define	_GET_I(_test)	((_test) ? INT_TO_JSVAL(_i) : JSVAL_VOID)
 #define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
-#define	_GET_L(_test)	((_test) ? DOUBLE_TO_JSVAL((double)_l) : JSVAL_VOID)
 
 static JSBool
 rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)

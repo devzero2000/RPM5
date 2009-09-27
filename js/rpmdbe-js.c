@@ -1778,7 +1778,6 @@ static JSPropertySpec rpmdbe_props[] = {
 #define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
 #define	_GET_I(_test)	((_test) ? INT_TO_JSVAL(_i) : JSVAL_VOID)
 #define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
-#define	_GET_L(_test)	((_test) ? DOUBLE_TO_JSVAL((double)_l) : JSVAL_VOID)
 
 static JSBool
 rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
@@ -1850,7 +1849,14 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (_fp == stderr)	_s = "stderr";
 	*vp = _RET_S(_s);
 	break;
-    case _SHMKEY:	*vp = _GET_L(!dbenv->get_shm_key(dbenv, &_l));	break;
+    case _SHMKEY:
+	if (!dbenv->get_shm_key(dbenv, &_l)) {
+	    jsdouble d = _l;
+            if (!JS_NewNumberValue(cx, d, vp))
+                *vp = JSVAL_VOID;
+	} else
+	    *vp = JSVAL_VOID;
+	break;
     case _THREADCNT:	*vp = _GET_U(!dbenv->get_thread_count(dbenv, &_u)); break;
 
 	/* XXX FIXME assumes typedef uint32_t db_timeout_t; */

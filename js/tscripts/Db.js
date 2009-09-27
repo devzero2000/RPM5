@@ -383,6 +383,9 @@ B.dbfile = "X.db";
 B.oflags = 0;	// DB_RDONLY
 B.db.open(B.txn, B.dbfile, B.dbname, B.dbtype, B.oflags, B.dbperms);
 
+var w = "boomerang";
+print('key_range(' + w + '): ' + B.db.key_range(B.txn, w));
+
 // var i = 0;
 // var k = '';
 // do {
@@ -407,8 +410,8 @@ print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
 
 var w = 'wdj';
 print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
-R.db.put(R.txn, 0, w, DB_APPEND);
-print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+// R.db.put(R.txn, 0, w, DB_APPEND);
+// print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
 
 ack('B.db.close(0)', true);
 
