@@ -8,6 +8,7 @@
 #include "rpm-js.h"
 
 extern JSClass rpmdbcClass;
+#define	OBJ_IS_RPMDBC(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbcClass)
 
 #ifdef __cplusplus
 extern "C" {

@@ -122,10 +122,6 @@ fprintf(stderr, "==> %s(%p, %p, %p, %p, %p) k %p[%u] fk %p[%u] changed %d\n", __
 
 /* --- Object methods */
 
-#define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
-#define	OBJ_IS_RPMDBC(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbcClass)
-#define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
-
 static JSBool
 rpmdb_Associate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -1633,8 +1629,6 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
     if (db)
 	(void) db->close(db, _flags);
 }
-
-#define OBJ_IS_RPMDBE(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbeClass)
 
 static JSBool
 rpmdb_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)

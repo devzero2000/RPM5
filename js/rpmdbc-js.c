@@ -240,6 +240,13 @@ _METHOD_DEBUG_ENTRY(_debug);
 	goto exit;
 
     {	int ret = dbc->get(dbc, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
+#ifdef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = dbc->get(%p, %p[%u], %p[%u], 0x%x)\n",
+__FUNCTION__, ret, dbc,
+_RPMDBT_PTR(_k)->data, (unsigned)_RPMDBT_PTR(_k)->size,
+_RPMDBT_PTR(_d)->data, (unsigned)_RPMDBT_PTR(_d)->size,
+_flags);
+#endif
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->get: %s\n", db_strerror(ret));
@@ -370,30 +377,23 @@ static JSFunctionSpec rpmdbc_funcs[] = {
 
 enum rpmdbc_tinyid {
     _DEBUG	= -2,
-    _PRIORITY	= -3,
+    _LENGTH	= -3,
+    _PRIORITY	= -4,
 };
 
 static JSPropertySpec rpmdbc_props[] = {
     {"debug",	_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
+    {"length",	_LENGTH,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"priority",_PRIORITY,	JSPROP_ENUMERATE,	NULL,	NULL},
 
     {NULL, 0, 0, NULL, NULL}
 };
-
-#define	_RET_B(_bool)	((_bool) > 0 ? JSVAL_TRUE: JSVAL_FALSE)
-#define	_RET_S(_str)	\
-    ((_str) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_str))) : JSVAL_NULL)
-#define	_GET_S(_test)	((_test) ? _RET_S(_s) : JSVAL_VOID)
-#define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
-#define	_GET_I(_test)	((_test) ? INT_TO_JSVAL(_i) : JSVAL_VOID)
-#define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
 
 static JSBool
 rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    uint32_t _u = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -402,10 +402,25 @@ rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
     switch (tiny) {
     case _DEBUG:
-	*vp = INT_TO_JSVAL(_debug);
+	if (!JS_NewNumberValue(cx, (jsdouble)_debug, vp))
+	    *vp = JSVAL_VOID;
 	break;
-    case _PRIORITY:	*vp = _GET_U(!dbc->get_priority(dbc, (DB_CACHE_PRIORITY *)&_u)); break;
-
+    case _LENGTH:
+    {	db_recno_t _count = 0;
+	if (!dbc->count(dbc, &_count, 0)) {
+	    if (!JS_NewNumberValue(cx, (jsdouble)_count, vp))
+		*vp = JSVAL_VOID;
+	} else
+	    *vp = JSVAL_VOID;
+    }	break;
+    case _PRIORITY:
+    {	DB_CACHE_PRIORITY _priority = DB_PRIORITY_UNCHANGED;
+	if (!dbc->get_priority(dbc, &_priority)) {
+	    if (!JS_NewNumberValue(cx, (jsdouble)_priority, vp))
+		*vp = JSVAL_VOID;
+	} else
+	    *vp = JSVAL_VOID;
+    }	break;
     default:
 	break;
     }
@@ -413,35 +428,31 @@ rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     return JS_TRUE;
 }
 
-#define	_PUT_S(_put)	(JSVAL_IS_STRING(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_U(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_I(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-
 static JSBool
 rpmdbc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    uint32_t _u = 0;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
 
-    if (JSVAL_IS_INT(*vp))
-	_u = JSVAL_TO_INT(*vp);
-
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
-	    break;
+	    *vp = JSVAL_VOID;
 	break;
-    case _PRIORITY:	*vp = _PUT_U(dbc->set_priority(dbc, (DB_CACHE_PRIORITY)_u));		break;
-
+    case _PRIORITY:
+    {	uint32_t _u = 0;
+	if (JS_ValueToECMAUint32(cx, *vp, &_u)) {
+	    DB_CACHE_PRIORITY _priority = _u;
+	    *vp = !dbc->get_priority(dbc, &_priority)
+		? JSVAL_TRUE : JSVAL_FALSE;
+	} else
+	    *vp = JSVAL_VOID;
+    }	break;
     default:
 	break;
     }
@@ -473,17 +484,54 @@ static JSBool
 rpmdbc_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
+    DBC * dbc = ptr;
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
-	*statep = JSVAL_VOID;
-        if (idp)
-            *idp = JSVAL_ZERO;
+	*statep = JSVAL_ZERO;
+        if (idp) {
+	    db_recno_t _count = 0;
+	    uint32_t _flags = 0;
+	    int ret = dbc->count(dbc, &_count, _flags);
+	    switch (ret) {
+	    default:
+		*idp = JSVAL_ZERO;
+		break;
+	    case 0:
+		*idp = INT_TO_JSVAL(_count);
+		break;
+	    }
+	}
         break;
     case JSENUMERATE_NEXT:
-	*statep = JSVAL_VOID;
+    {	DBT _k = {0};
+	DBT _d = {0};
+	uint32_t _flags = 0;
+	int ret = dbc->get(dbc, &_k, &_d, _flags);
+	int ix = JSVAL_TO_INT(*statep);
+	*statep = INT_TO_JSVAL(ix + 1);
+#ifdef  NOTNOW
+fprintf(stderr, "==> %s: ret %d = dbc->get(%p, %p[%u], %p[%u], 0x%x)\n",
+__FUNCTION__, ret, dbc,
+_k.data, (unsigned)_k.size,
+_d.data, (unsigned)_d.size,
+_flags);
+#endif
+	switch (ret) {
+	default:
+	    *idp = JSVAL_VOID;
+	    break;
+	case 0:
+	    *idp = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _d.data, _d.size));
+	    break;
+	case DB_NOTFOUND:
+	    *idp = JSVAL_VOID;
+	    break;
+	}
+    }
         if (*idp != JSVAL_VOID)
             break;
         /*@fallthrough@*/

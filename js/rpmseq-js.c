@@ -43,8 +43,6 @@ static int _debug = 0;
 
 /* --- Object methods */
 
-#define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
-
 static JSBool
 rpmseq_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {

@@ -279,7 +279,7 @@ function BDB(dbenv, _name, _type, _re_source) {
 	function (key) {
 	    var dbc = this.db.cursor();
 	    if (key != undefined)
-		dbc.get(key, null, DB_SET)
+		dbc.get(key, null, (key != null ? DB_SET : DB_NEXT));
 	    return dbc;
 	};
 
@@ -560,24 +560,26 @@ do {
 ack('F.db.associate(F.txn, FN.db, 0)', true);
 ack('F.db.associate(F.txn, BN.db, 0)', true);
 
-var fnlist = [ "/bin/bash", "/bin/sh" ];
+var fnlist = [ "/bin/bash", "/bin/cp", "/bin/mv", "/bin/sh", "/sbin/rmt" ];
 
      F.loop("F", 1, 10);
      FN.print("FN", fnlist);
      BN.print("BN", [ "bash", "sh" ]);
 
-var fn = "/bin/bash";
-var bn = fn.substr(fn.lastIndexOf("/")+1);
+for (var [key, val] in Iterator(fnlist)) {
+    var fn = val;
+    var bn = fn.substr(fn.lastIndexOf("/")+1);
 
-var fnc = FN.cursor(fn);
-var bnc = BN.cursor(bn);
+    var fnc = FN.cursor(fn);
+    var bnc = BN.cursor(bn);
+    var fc = F.join(fnc, bnc);
 
-var fc = F.join(fnc, bnc);
-ack('fc.get(null)', fn);
-ack('fc.close()', true);
+    ack('fc.get(null)', fn);
 
-ack('bnc.close()', true);
-ack('fnc.close()', true);
+    ack('fc.close()', true);
+    ack('bnc.close()', true);
+    ack('fnc.close()', true);
+}
 
 ack('BN.sync()', true);
 ack('BN.close()', true);

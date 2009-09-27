@@ -8,6 +8,7 @@
 #include "rpm-js.h"
 
 extern JSClass rpmdbeClass;
+#define	OBJ_IS_RPMDBE(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbeClass)
 
 #ifdef __cplusplus
 extern "C" {
