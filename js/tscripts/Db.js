@@ -302,30 +302,28 @@ function Fill(A) {
     db.sync();
     txn.commit();
 
-    print('----> GET ' + dbenv.home + '/' + db.dbfile);
-    txn = null;
-    for (let i = imin; i < imax; i++) {
-	if (db.exists(txn, i))
-	    print('\t' + i + ': ' + db.get(txn, i));
-    }
+//  print('----> GET ' + dbenv.home + '/' + db.dbfile);
+//  txn = null;
+//  for (let i = imin; i < imax; i++) {
+//	if (db.exists(txn, i))
+//	    print('\t' + i + ': ' + db.get(txn, i));
+//  }
 
-    db.stat_print(DB_FAST_STAT);
-    print("st_buckets:\t" + db.st_buckets);
-    print("st_cur_recno:\t" + db.st_cur_recno);
-    print("st_extentsize:\t" + db.st_extentsize);
-    print("st_ffactor:\t" + db.st_ffactor);
-    print("st_first_recno:\t" + db.st_first_recno);
-    print("st_magic:\t" + db.st_magic);
-    print("st_minkey:\t" + db.st_minkey);
-    print("st_ndata:\t" + db.st_ndata);
-    print("st_nkeys:\t" + db.st_nkeys);
-    print("st_pagcnt:\t" + db.st_pagcnt);
-    print("st_pagesize:\t" + db.st_pagesize);
-    print("st_re_len:\t" + db.st_re_len);
-    print("st_re_pad:\t" + db.st_re_pad);
-    print("st_version:\t" + db.st_version);
-
- 
+//  db.stat_print(DB_FAST_STAT);
+//  print("st_buckets:\t" + db.st_buckets);
+//  print("st_cur_recno:\t" + db.st_cur_recno);
+//  print("st_extentsize:\t" + db.st_extentsize);
+//  print("st_ffactor:\t" + db.st_ffactor);
+//  print("st_first_recno:\t" + db.st_first_recno);
+//  print("st_magic:\t" + db.st_magic);
+//  print("st_minkey:\t" + db.st_minkey);
+//  print("st_ndata:\t" + db.st_ndata);
+//  print("st_nkeys:\t" + db.st_nkeys);
+//  print("st_pagcnt:\t" + db.st_pagcnt);
+//  print("st_pagesize:\t" + db.st_pagesize);
+//  print("st_re_len:\t" + db.st_re_len);
+//  print("st_re_pad:\t" + db.st_re_pad);
+//  print("st_version:\t" + db.st_version);
 
 //  txn = dbenv.txn_begin(null, 0);
 //  for (let i = 0; i < imax; i++)
@@ -363,12 +361,59 @@ var re_len = undefined;
 var re_pad = 0x20;
 var re_source = "Source";
 var R = new BDB(dbenv, "R", DB_RECNO);
-ack('R.db.re_delim', 0);
+ack('R.db.re_delim', re_delim);
 ack('R.db.re_len', 0);
-ack('R.db.re_pad', 0);
-ack('R.db.re_source', 0);
+ack('R.db.re_pad', re_pad);
+ack('R.db.re_source', null);
 Fill(R);
 ack('R.db.close(0)', true);
+
+print('====> WORDS');
+R.db = new Db(dbenv, 0);
+R.dbfile = "W.db";
+R.oflags = 0;	// DB_RDONLY
+R.db.re_delim = 0x0a;
+R.db.re_pad = 0x20;
+R.db.re_source = "words";
+R.db.open(R.txn, R.dbfile, R.dbname, R.dbtype, R.oflags, R.dbperms);
+R.db.stat_print(DB_FAST_STAT);
+
+B.db = new Db(dbenv, 0);
+B.dbfile = "X.db";
+B.oflags = 0;	// DB_RDONLY
+B.db.open(B.txn, B.dbfile, B.dbname, B.dbtype, B.oflags, B.dbperms);
+
+// var i = 0;
+// var k = '';
+// do {
+//     ++i;
+//     k = R.db.get(R.txn, i);
+// print('\t', i, k);
+//     if (k)
+// 	B.db.put(B.txn, k, i);
+//     else
+// 	break;
+// } while (1) ;
+
+ack('R.db.associate(R.txn, B.db, 0)', true);
+
+var w = 'package';
+print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+var w = 'monkey';
+print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+
+var w = 'rpm';
+print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+
+var w = 'wdj';
+print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+R.db.put(R.txn, 0, w, DB_APPEND);
+print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+
+ack('B.db.close(0)', true);
+
+ack('R.db.close(0)', true);
+print('<==== WORDS');
 
 var q_extentsize = 0;
 var Q = new BDB(dbenv, "Q", DB_QUEUE);

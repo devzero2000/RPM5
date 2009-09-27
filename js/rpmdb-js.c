@@ -86,6 +86,15 @@ fprintf(stderr, "*** %s(%p, 0x%x, %p)  FIXME\n", __FUNCTION__, cx, (unsigned)v, 
     return rc;
 }
 
+static int
+rpmdb_Acallback(DB * db, const DBT * _k, const DBT * _d, DBT * _r)
+{
+fprintf(stderr, "==> %s(%p, %p, %p, %p) k %p[%u] d %p[%u]\n", __FUNCTION__, db, _k, _d, _r, _k->data, (unsigned)_k->size, _d->data, (unsigned)_d->size);
+    _r->data = _d->data;
+    _r->size = _d->size;
+    return 0;
+}
+
 /* --- Object methods */
 
 #define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
@@ -119,8 +128,12 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (db->app_private != NULL) {
 	/* XXX todo++ */
-	int (*_callback) (DB *, const DBT *, const DBT *, DBT *) = NULL;
+	int (*_callback) (DB *, const DBT *, const DBT *, DBT *)
+		= rpmdb_Acallback;
 	int ret = db->associate(db, _txn, _secondary, _callback, _flags);
+#ifndef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = db->associate(%p, %p, %p %p, 0x%x)\n", __FUNCTION__, ret, db, _txn, _secondary, _callback, _flags);
+#endif
 	switch (ret) {
 	default:
 	    db->err(db, ret, "DB->associate");
@@ -417,6 +430,13 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (db->app_private != NULL) {
 	int ret = db->get(db, _txn, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
+#ifdef	NOTNOW
+fprintf(stderr, "==> %s: ret %d = db->get(%p, %p, %p[%u], %p[%u], 0x%x)\n",
+__FUNCTION__, ret, db, _txn,
+_RPMDBT_PTR(_k)->data, (unsigned)_RPMDBT_PTR(_k)->size,
+_RPMDBT_PTR(_d)->data, (unsigned)_RPMDBT_PTR(_d)->size,
+_flags);
+#endif
 	switch (ret) {
 	default:
 	    *rval = JSVAL_FALSE;
@@ -424,7 +444,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
@@ -610,7 +630,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
@@ -750,6 +770,8 @@ rpmdb_Stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    JSObject * o = NULL;
+    DB_TXN * _txn = NULL;
     uint32_t _flags = DB_STAT_ALL;	/* XXX DB_FAST_STAT is saner default */
     JSBool ok = JS_FALSE;
 
@@ -758,13 +780,15 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o, &_flags)))
 	goto exit;
 
+    if (o && OBJ_IS_RPMTXN(cx, o))
+	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
+
     if (db->app_private != NULL) {
-	DB_TXN * _txnid = NULL;
 	void * _sp = NULL;
-	int ret = db->stat(db, _txnid, &_sp, _flags);
+	int ret = db->stat(db, _txn, &_sp, _flags);
 	if (ret)
 	    db->err(db, ret, "DB->stat");
 	else
@@ -842,6 +866,9 @@ rpmdb_Truncate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
+    JSObject * o = NULL;
+    DB_TXN * _txn = NULL;
+    uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -850,11 +877,14 @@ _METHOD_DEBUG_ENTRY(_debug);
     *rval = JSVAL_FALSE;
 
     /* XXX check argc? */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o, &_flags)))
+	goto exit;
 
-    {	DB_TXN * _txnid = NULL;
-	uint32_t _count = 0;
-	uint32_t _flags = 0;
-	int ret = db->truncate(db, _txnid, &_count, _flags);
+    if (o && OBJ_IS_RPMTXN(cx, o))
+	_txn = JS_GetInstancePrivate(cx, o, &rpmtxnClass, NULL);
+
+    {	uint32_t _count = 0;
+	int ret = db->truncate(db, _txn, &_count, _flags);
 	if (ret) {
 	    db->err(db, ret, "DB->truncate");
 	    goto exit;
