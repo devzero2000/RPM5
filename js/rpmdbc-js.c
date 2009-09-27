@@ -246,7 +246,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
+	    *rval = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size));
 	    break;
 	case DB_NOTFOUND:
 	    *rval = JSVAL_VOID;
