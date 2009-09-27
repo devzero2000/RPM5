@@ -213,11 +213,9 @@ rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
 #define	_PUT_S(_put)	(JSVAL_IS_STRING(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_U(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+#define	_PUT_U(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_I(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_L(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+#define	_PUT_I(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool

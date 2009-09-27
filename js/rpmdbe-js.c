@@ -1964,8 +1964,6 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 #define	_PUT_I(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_L(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
 rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
@@ -1985,6 +1983,7 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     long _l = 0;
     FILE * _fp = NULL;
     jsint tiny = JSVAL_TO_INT(id);
+    jsdouble d;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -1992,8 +1991,10 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
     if (JSVAL_IS_STRING(*vp))
 	_s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
-    if (JSVAL_IS_INT(*vp))
-	_l = _u = _i = JSVAL_TO_INT(*vp);
+    if (JSVAL_IS_NUMBER(*vp)) {
+	(void) JS_ValueToNumber(cx, *vp, &d);
+	_u = _i = _l = d;
+    }
 
     switch (tiny) {
     case _DEBUG:
@@ -2042,7 +2043,8 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	if (JSVAL_IS_STRING(*vp) && _s != NULL)
 	    _l = ftok(_s, 0);
 #endif
-	*vp = _PUT_L(dbenv->set_shm_key(dbenv, _l));
+	
+	*vp = (!dbenv->set_shm_key(dbenv, _l) ? JSVAL_TRUE : JSVAL_FALSE);
 	break;
     case _THREADCNT:
 	if (JSVAL_IS_INT(*vp) && _u >= 8 && !dbenv->set_thread_count(dbenv, _u))

@@ -44,6 +44,23 @@ static int _debug = 0;
 
 /* --- helpers */
 
+static int
+rpmdb_DBTcompare(DB * db, const DBT * A, const DBT * B)
+{
+    size_t nb = (A->size < B->size ? A->size : B->size);
+    int ret = (nb > 0 ? memcmp(A->data, B->data, nb) : 0);
+    if (ret)
+	return ret;
+    return (int)((long)A->size - (long)B->size);
+}
+
+static void
+rpmdb_feedback(DB * db, int opcode, int percent)
+{
+    JSObject * o = (db ? db->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %d, %d) o %p\n", __FUNCTION__, db, opcode, percent, o);
+}
+
 int
 rpmdb_v2dbt(JSContext *cx, jsval v, _RPMDBT * p)
 {
@@ -106,6 +123,7 @@ fprintf(stderr, "==> %s(%p, %p, %p, %p, %p) k %p[%u] fk %p[%u] changed %d\n", __
 /* --- Object methods */
 
 #define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
+#define	OBJ_IS_RPMDBC(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbcClass)
 #define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
 
 static JSBool
@@ -355,6 +373,9 @@ _METHOD_DEBUG_ENTRY(_debug);
 	case 0:
 	    *rval = JSVAL_TRUE;
 	    break;
+	case DB_NOTFOUND:
+	    *rval = JSVAL_VOID;
+	    break;
 	}
     }
 
@@ -477,7 +498,12 @@ rpmdb_Join(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbClass, NULL);
     DB * db = ptr;
     JSObject * o = NULL;
+    DBC * _dbc = NULL;
+    size_t nb = (argc + 1) * sizeof(_dbc);
+    DBC ** _list = memset(alloca(nb), 0, nb);
     uint32_t _flags = 0;
+    uint32_t i;
+    jsval v;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -485,15 +511,29 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
+    /* Build the cursor list. */
+    for (i = 0; i < argc; i++) {
+	v = argv[i];
+	if (!JSVAL_IS_OBJECT(v))
+	    break;
+	o = JSVAL_TO_OBJECT(v);
+	if (!(o && OBJ_IS_RPMDBC(cx, o)))
+	    break;
+	if ((_list[i] = JS_GetInstancePrivate(cx, o, &rpmdbcClass, NULL)) == NULL)
+	    break;
+    }
+    _list[i] = NULL;
+
+    /* Set _flags from optional last int in args */
+    if (i+1 == argc && JSVAL_IS_INT(argv[i]))
+	_flags = JSVAL_TO_INT(argv[i++]);
+    if (i < argc)
 	goto exit;
 
     if (db->app_private != NULL) {
-	DBC ** _curslist = NULL;	/* XXX FIXME */
-	DBC * _dbc = NULL;		/* XXX FIXME */
-	int ret = db->join(db, _curslist, &_dbc, _flags);
+	int ret = db->join(db, _list, &_dbc, _flags);
 #ifndef	NOTNOW
-fprintf(stderr, "==> %s: ret %d = db->join(%p, %p, %p 0x%x) dbc %p\n", __FUNCTION__, ret, db, _curslist, &_dbc, _flags, _dbc);
+fprintf(stderr, "==> %s: ret %d = db->join(%p, %p, %p 0x%x) dbc %p\n", __FUNCTION__, ret, db, _list, &_dbc, _flags, _dbc);
 #endif
 	switch (ret) {
 	default:
@@ -612,6 +652,9 @@ fprintf(stderr, "==> %s: ret %d = db->open(%p, %p, \"%s\", \"%s\", %d, 0x%x, 0%o
 	    goto exit;
 	} else {
 	    db->app_private = obj;
+            /* XXX only DB_UPGRADE/DB_VERIFY are currently implemented */
+            ret = db->set_feedback(db, rpmdb_feedback);
+            if (ret) db->err(db, ret, "DB->set_feedback");
 	    *rval = JSVAL_TRUE;
 	}
     }
@@ -1410,11 +1453,9 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
 #define	_PUT_S(_put)	(JSVAL_IS_STRING(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_U(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+#define	_PUT_U(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_I(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_L(_put)	(JSVAL_IS_INT(*vp) && !(_put) \
+#define	_PUT_I(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool

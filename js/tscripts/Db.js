@@ -376,15 +376,16 @@ R.db.re_delim = 0x0a;
 R.db.re_pad = 0x20;
 R.db.re_source = "words";
 R.db.open(R.txn, R.dbfile, R.dbname, R.dbtype, R.oflags, R.dbperms);
-R.db.stat_print(DB_FAST_STAT);
+// R.db.stat_print(DB_FAST_STAT);
 
 B.db = new Db(dbenv, 0);
 B.dbfile = "X.db";
 B.oflags = 0;	// DB_RDONLY
 B.db.open(B.txn, B.dbfile, B.dbname, B.dbtype, B.oflags, B.dbperms);
 
-var w = "boomerang";
-print('key_range(' + w + '): ' + B.db.key_range(B.txn, w));
+var krwords = [ "boomerang", "fedora", "mugwumps", "stifle", "zebras" ];
+for (let [i,w] in Iterator(krwords))
+    print('    key_range(' + w + '):\n\t' + B.db.key_range(B.txn, w));
 
 // var i = 0;
 // var k = '';
@@ -398,24 +399,31 @@ print('key_range(' + w + '): ' + B.db.key_range(B.txn, w));
 // 	break;
 // } while (1) ;
 
+var i;
+var w = "wdj";
+if (B.db.exists(B.txn, w))
+    ack('B.db.del(B.txn, w)', true);
+if (R.db.exists(R.txn, w))
+    ack('R.db.del(R.txn, w)', true);
+
 ack('R.db.associate(R.txn, B.db, 0)', true);
 
-var w = 'package';
-print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
-var w = 'monkey';
-print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
-
-var w = 'rpm';
-print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
-
-var w = 'wdj';
-print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
-// R.db.put(R.txn, 0, w, DB_APPEND);
+ack('R.db.put(R.txn, 0, w, DB_APPEND)', true);
 // print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
 
-ack('B.db.close(0)', true);
+var luwords = [ "rpm", "package", "monkey", "wdj" ];
+for ([i,w] in Iterator(luwords)) {
+    var got = B.db.get(B.txn, w);
+    if (got != w)
+	print('\t' + w + '\t<=>\t' + got);
+}
 
+var w = "wdj";
+ack('B.db.del(B.txn, w)', true);
+
+ack('B.db.close(0)', true);
 ack('R.db.close(0)', true);
+
 print('<==== WORDS');
 
 var q_extentsize = 0;
