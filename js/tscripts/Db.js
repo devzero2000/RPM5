@@ -275,6 +275,8 @@ function BDB(dbenv, _name, _type, _re_source, _flags) {
 
     this.associate =
 	function (secondary) { return this.db.associate(this.txn, secondary, 0); };
+    this.associate_foreign =
+	function (secondary, flags) { return this.db.associate_foreign(secondary, flags); };
 
     this.close =
 	function () { return this.db.close(0); };
@@ -484,6 +486,7 @@ Fill(R);
 ack('R.db.sync()', true);
 ack('R.db.close(0)', true);
 
+if (0) {
 print('====> WORDS');
 var W = new BDB(dbenv, "W", DB_RECNO, "words", DB_SNAPSHOT);
 var X = new BDB(dbenv, "X", DB_BTREE, null, 0);
@@ -529,7 +532,9 @@ ack('X.sync() && X.close(0)', true);
 ack('W.sync() && W.close(0)', true);
 
 print('<==== WORDS');
+}
 
+if (0) {
 print('====> FILES');
 var dbfile = "F.db";
 var F = new BDB(dbenv, "F", DB_RECNO, "files", DB_SNAPSHOT);
@@ -604,6 +609,49 @@ ack('FN.sync() && FN.close()', true);
 ack('F.sync() && F.close()', true);
 
 print('<==== FILES');
+}
+
+if (1) {
+print('====> GROUPS');
+var G = new BDB(dbenv, "G", DB_RECNO, "groups", DB_SNAPSHOT);
+var GF = new BDB(dbenv, "GF", DB_RECNO, "groups", DB_SNAPSHOT);
+var GN = new BDB(dbenv, "GN", DB_BTREE, null, DB_DUP);
+
+var bad = "Illegal";
+var glist = [ "Amusements/Games", "Documentation", "Utilities" ];
+
+var key = 0;
+var val = '';
+for (key = 1; (val = G.get(key)); key++) {
+print('\t', key, val);
+    ack('GN.put(val, key)', true);
+}
+
+for (let [key,val] in Iterator(glist)) {
+   print('    key_range(' + val + '):')
+   print('\t' + GN.key_range(val));
+}
+
+ack('G.associate(GN.db, 0)', true);
+ack('GF.associate_foreign(GN.db, DB_FOREIGN_ABORT)', true);
+
+for ([i,g] in Iterator(glist)) {
+    var got = GN.get(g);
+    if (got != g)
+	print('\t' + g + '\t<=>\t' + got);
+}
+
+ack('G.db.put(G.txn, 0, glist[0], DB_APPEND)', true);
+
+ack('G.db.put(G.txn, 0, bad, DB_APPEND)', false);
+ack('GN.del(bad)', undefined);	// XXX false instead?
+
+ack('GN.sync() && GN.close(0)', true);
+ack('GF.sync() && GF.close(0)', true);
+ack('G.sync() && G.close(0)', true);
+
+print('<==== GROUPS');
+}
 
 var db = H.db;
 // ack("db.debug = 1;", 1);
