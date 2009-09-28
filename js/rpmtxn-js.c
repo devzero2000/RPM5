@@ -133,6 +133,8 @@ rpmtxn_Prepare(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
     DB_TXN * txn = ptr;
+    uint8_t _gid[DB_GID_SIZE] = {0};
+    const char * _s = NULL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
@@ -140,7 +142,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (txn == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME: todo++ used with DB_ENV->txn_recover */
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
+	goto exit;
+	/* XXX todo: hex convert for _gid string? */
+    (void) strncpy((char *)_gid, _s, sizeof(_gid));
+    
+    {	int ret = txn->prepare(txn, _gid);
+        if (ret)
+	    fprintf(stderr, "DB_TXN->prepare: %s", db_strerror(ret));
+        else
+            *rval = JSVAL_TRUE;
+    }
 
     ok = JS_TRUE;
 
@@ -161,9 +173,9 @@ static JSFunctionSpec rpmtxn_funcs[] = {
 #define	_TABLE(_v)	#_v, _##_v, JSPROP_ENUMERATE, NULL, NULL
 
 enum rpmtxn_tinyid {
-    _DEBUG	= -2,
-    _NAME	= -3,
-    _ID		= -4,
+    _DEBUG			= -2,
+    _NAME			= -3,
+    _ID				= -4,
     _DB_SET_LOCK_TIMEOUT	= -5,
     _DB_SET_TXN_TIMEOUT		= -6,
 };
@@ -178,20 +190,11 @@ static JSPropertySpec rpmtxn_props[] = {
     {NULL, 0, 0, NULL, NULL}
 };
 
-#define	_RET_B(_bool)	((_bool) > 0 ? JSVAL_TRUE: JSVAL_FALSE)
-#define	_RET_S(_str)	\
-    ((_str) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_str))) : JSVAL_NULL)
-#define	_GET_S(_test)	((_test) ? _RET_S(_s) : JSVAL_VOID)
-#define	_GET_U(_test)	((_test) ? INT_TO_JSVAL(_u) : JSVAL_VOID)
-#define	_GET_I(_test)	((_test) ? INT_TO_JSVAL(_i) : JSVAL_VOID)
-#define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
-
 static JSBool
 rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
     DB_TXN * txn = ptr;
-    const char * _s = NULL;
     jsint tiny = JSVAL_TO_INT(id);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -200,10 +203,19 @@ rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
     switch (tiny) {
     case _DEBUG:
-	*vp = INT_TO_JSVAL(_debug);
+	if (!JS_NewNumberValue(cx, (jsdouble)_debug, vp))
+	    *vp = JSVAL_VOID;
 	break;
-    case _NAME:	*vp = _GET_S(!txn->get_name(txn, &_s));	break;
-    case _ID:	*vp = INT_TO_JSVAL(txn->id(txn));	break;
+    case _NAME:
+    {	const char * _s = NULL;
+	int ret = txn->get_name(txn, &_s);
+	*vp = !ret ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _s)) : JSVAL_VOID;
+    }   break;
+    case _ID:
+    {	uint32_t _u = txn->id(txn);
+	if (!JS_NewNumberValue(cx, (jsdouble)_u, vp))
+            *vp = JSVAL_VOID;
+    }   break;
     default:
 	break;
     }
@@ -211,47 +223,40 @@ rpmtxn_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     return JS_TRUE;
 }
 
-#define	_PUT_S(_put)	(JSVAL_IS_STRING(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_U(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-#define	_PUT_I(_put)	(JSVAL_IS_NUMBER(*vp) && !(_put) \
-	? JSVAL_TRUE : JSVAL_FALSE)
-
 static JSBool
 rpmtxn_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
     DB_TXN * txn = ptr;
-    const char * _s = NULL;
-    uint32_t _u = 0;
-    uint32_t _nc = 0;
     jsint tiny = JSVAL_TO_INT(id);
+    uint32_t _flags = 0;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
 	return JS_TRUE;
 
-    if (JSVAL_IS_STRING(*vp))
-	_s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
-#ifdef	NOTYET
-    if (JSVAL_IS_INT(*vp))
-	_u = JSVAL_TO_INT(*vp);
-#endif
-
     switch (tiny) {
     case _DEBUG:
 	if (!JS_ValueToInt32(cx, *vp, &_debug))
-	    break;
+	    *vp = JSVAL_VOID;
 	break;
-    case _NAME:	*vp = _PUT_S(txn->set_name(txn, _s));	break;
-#define	_JUMP(_v, _lbl)	_##_v:	_nc = _v;	goto _lbl
+    case _NAME:
+    {	const char * _s = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+	*vp = !txn->set_name(txn, _s) ? JSVAL_TRUE : JSVAL_FALSE;
+    }	break;
+#define	_JUMP(_v, _lbl)	_##_v:	_flags = _v;	goto _lbl
     case _JUMP(DB_SET_LOCK_TIMEOUT,		_set_timeout);
     case _JUMP(DB_SET_TXN_TIMEOUT,		_set_timeout);
 #undef	_JUMP
     _set_timeout:
-	*vp = _PUT_U(txn->set_timeout(txn, (db_timeout_t)_u, _nc));
-	break;
+    {	uint32_t _u = 0;
+        if (JS_ValueToECMAUint32(cx, *vp, &_u)) {
+	    db_timeout_t _timeout = _u;
+	    *vp = !txn->set_timeout(txn, _timeout, _flags)
+			? JSVAL_TRUE : JSVAL_FALSE;
+	} else
+	    *vp = JSVAL_VOID;
+    }	break;
 
     default:
 	break;

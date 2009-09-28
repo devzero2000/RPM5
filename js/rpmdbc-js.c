@@ -449,7 +449,7 @@ rpmdbc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     {	uint32_t _u = 0;
 	if (JS_ValueToECMAUint32(cx, *vp, &_u)) {
 	    DB_CACHE_PRIORITY _priority = _u;
-	    *vp = !dbc->get_priority(dbc, &_priority)
+	    *vp = !dbc->set_priority(dbc, _priority)
 		? JSVAL_TRUE : JSVAL_FALSE;
 	} else
 	    *vp = JSVAL_VOID;

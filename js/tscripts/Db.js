@@ -496,12 +496,14 @@ var X = new BDB(dbenv, "X", DB_BTREE, null, 0);
 // print('\t', i, k);
 //     if (!k)
 // 	break;
-//     X.put(k, i);
+//      X.put(k, i);
 // } while (1) ;
 
 // var krwords = [ "boomerang", "fedora", "mugwumps", "stifle", "zebras" ];
-// for (let [key,val] in Iterator(krwords))
-//     print('    key_range(' + val + '):\n\t' + W.key_range(val));
+// for (let [key,val] in Iterator(krwords)) {
+//    print('    key_range(' + val + '):')
+//    print('\t' + W.key_range(val));
+// }
 
 var i;
 var w = "wdj";
@@ -587,7 +589,7 @@ for (var [key, val] in Iterator(fnlist)) {
     ack('fc.get(null)', fn);
     ack('fc.close()', true);
 
-    var fc = F.join(fnc, dnc, bnc);
+    var fc = F.join(dnc, bnc);
     ack('fc.get(null)', fn);
     ack('fc.close()', true);
 
