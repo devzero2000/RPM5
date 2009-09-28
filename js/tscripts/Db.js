@@ -272,6 +272,9 @@ function BDB(dbenv, _name, _type, _re_source) {
 	break;
     }
 
+    this.associate =
+	function (secondary) { return this.db.associate(this.txn, secondary, 0); };
+
     this.close =
 	function () { return this.db.close(0); };
 
@@ -294,6 +297,9 @@ function BDB(dbenv, _name, _type, _re_source) {
 
     this.join =
 	function (A, B) { return this.db.join(A, B); };
+
+    this.key_range =
+	function (key) { return this.db.key_range(this.txn, key); };
 
     this.put =
 	function (key, val) { return this.db.put(this.txn, key, val); };
@@ -475,62 +481,48 @@ ack('R.db.sync()', true);
 ack('R.db.close(0)', true);
 
 print('====> WORDS');
-R.db = new Db(dbenv, 0);
-R.dbfile = "W.db";
-R.oflags = 0;	// DB_RDONLY
-R.db.re_delim = 0x0a;
-R.db.re_pad = 0x20;
-R.db.re_source = "words";
-R.db.open(R.txn, R.dbfile, R.dbname, R.dbtype, R.oflags, R.dbperms);
-// R.db.stat_print(DB_FAST_STAT);
+var W = new BDB(dbenv, "W", DB_RECNO, "words");
+ack('W.db.flags |= DB_SNAPSHOT', DB_SNAPSHOT);
 
-B.db = new Db(dbenv, 0);
-B.dbfile = "X.db";
-B.oflags = 0;	// DB_RDONLY
-B.db.open(B.txn, B.dbfile, B.dbname, B.dbtype, B.oflags, B.dbperms);
-
-var krwords = [ "boomerang", "fedora", "mugwumps", "stifle", "zebras" ];
-for (let [i,w] in Iterator(krwords))
-    print('    key_range(' + w + '):\n\t' + B.db.key_range(B.txn, w));
+var X = new BDB(dbenv, "X", DB_BTREE, null);
 
 // var i = 0;
 // var k = '';
 // do {
 //     ++i;
-//     k = R.db.get(R.txn, i);
+//     k = W.get(i);
 // print('\t', i, k);
-//     if (k)
-// 	B.db.put(B.txn, k, i);
-//     else
+//     if (!k)
 // 	break;
+//     X.put(k, i);
 // } while (1) ;
+
+// var krwords = [ "boomerang", "fedora", "mugwumps", "stifle", "zebras" ];
+// for (let [key,val] in Iterator(krwords))
+//     print('    key_range(' + val + '):\n\t' + W.key_range(val));
 
 var i;
 var w = "wdj";
-if (B.db.exists(B.txn, w))
-    ack('B.db.del(B.txn, w)', true);
-if (R.db.exists(R.txn, w))
-    ack('R.db.del(R.txn, w)', true);
+if (X.exists(w))
+    ack('X.del(w)', true);
+if (W.exists(w))
+    ack('W.del(w)', true);
 
-ack('R.db.associate(R.txn, B.db, 0)', true);
-
-ack('R.db.put(R.txn, 0, w, DB_APPEND)', true);
-// print('\t' + w + '\t<=>\t' + B.db.get(B.txn, w));
+ack('W.associate(X.db, 0)', true);
+ack('W.db.put(W.txn, 0, w, DB_APPEND)', true);
+// print('\t' + w + '\t<=>\t' + X.get(w));
 
 var luwords = [ "rpm", "package", "monkey", "wdj" ];
 for ([i,w] in Iterator(luwords)) {
-    var got = B.db.get(B.txn, w);
+    var got = X.get(w);
     if (got != w)
 	print('\t' + w + '\t<=>\t' + got);
 }
 
-var w = "wdj";
-ack('B.db.del(B.txn, w)', true);
+ack('X.del("wdj")', true);
 
-ack('B.db.sync()', true);
-ack('B.db.close(0)', true);
-ack('R.db.sync()', true);
-ack('R.db.close(0)', true);
+ack('X.sync() && X.close(0)', true);
+ack('W.sync() && W.close(0)', true);
 
 print('<==== WORDS');
 
@@ -541,21 +533,27 @@ ack('F.db.flags |= DB_SNAPSHOT', DB_SNAPSHOT);
 var FN = new BDB(dbenv, "FN", DB_BTREE, null);
 var BN = new BDB(dbenv, "BN", DB_BTREE, null);
 var DN = new BDB(dbenv, "DN", DB_BTREE, null);
-ack('DN.db.flags |= DB_DUPSORT', DB_DUPSORT);
+ack('DN.db.flags |= (DB_DUP | DB_DUPSORT)', (DB_DUP | DB_DUPSORT));
 
-var i = 0;
-var k = '';
-do {
-    ++i;
-    k = F.get(i);
+// var i = 0;
+// var k = '';
+// do {
+//     ++i;
+//     k = F.get(i);
 // print('\t', i, k);
-    if (!k)
-	break;
-    FN.put(k, i);
-    var ix = k.lastIndexOf("/") + 1;
-    BN.put(k.substr(ix), i);
-    DN.put(k.substr(0, ix), i);
-} while (1) ;
+//     if (!k)
+// 	break;
+//     FN.put(k, i);
+//     var ix = k.lastIndexOf("/") + 1;
+//     BN.put(k.substr(ix), i);
+//     DN.put(k.substr(0, ix), i);
+// } while (1) ;
+
+var dnlist = [ "/bin/", "/sbin/" ];
+for (var [key, val] in Iterator(dnlist)) {
+    print('    key_range(' + val + '):')
+    print('\t' + DN.key_range(val) + '\t' + FN.key_range(val));
+};
 
 ack('F.db.associate(F.txn, FN.db, 0)', true);
 ack('F.db.associate(F.txn, BN.db, 0)', true);
@@ -563,7 +561,7 @@ ack('F.db.associate(F.txn, DN.db, 0)', true);
 
 var fnlist = [ "/bin/bash", "/bin/cp", "/bin/mv", "/bin/sh", "/sbin/rmt" ];
 
-     F.loop("F", 1, 10);
+     F.loop("F", 3, 8);
      FN.print("FN", fnlist);
      BN.print("BN", [ "bash", "sh" ]);
      DN.print("DN", [ "/bin/", "/sbin/" ]);
@@ -575,15 +573,21 @@ for (var [key, val] in Iterator(fnlist)) {
     var dn = fn.substr(0, ix);
 
     var fnc = FN.cursor(fn);
+    ack('fnc.count()', 1);
+    ack('fnc.length', 1);
     var bnc = BN.cursor(bn);
+    ack('bnc.count()', 1);
+    ack('bnc.length', 1);
     var dnc = DN.cursor(dn);
+    ack('dnc.count()', 1);
+    ack('dnc.length', 1);
 
     var fc = F.join(fnc, bnc);
     ack('fc.get(null)', fn);
     ack('fc.close()', true);
 
-    var fc = F.join(dnc, bnc);
-//  ack('fc.get(null)', fn);
+    var fc = F.join(fnc, dnc, bnc);
+    ack('fc.get(null)', fn);
     ack('fc.close()', true);
 
     ack('dnc.close()', true);

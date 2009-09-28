@@ -127,7 +127,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = INT_TO_JSVAL(_count);
+	    if (!JS_NewNumberValue(cx, (jsdouble)_count, rval))
+		*rval = JSVAL_VOID;
 	    break;
 	}
     }
