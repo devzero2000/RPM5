@@ -1511,7 +1511,7 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	db->set_errpfx(db, _s);
 	*vp = JSVAL_TRUE;
 	break;
-    case _FLAGS:	break;	/* XXX FIXME */
+    case _FLAGS:	*vp = _PUT_U(db->set_flags(db, _u));	break;
     case _H_FFACTOR:	*vp = _PUT_U(db->set_h_ffactor(db, _u));	break;
     case _H_NELEM:	*vp = _PUT_U(db->set_h_nelem(db, _u));		break;
     case _LORDER:	*vp = _PUT_I(db->set_h_nelem(db, _i));		break;

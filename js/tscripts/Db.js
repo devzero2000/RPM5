@@ -231,7 +231,7 @@ var	DB_WRITEOPEN				= 0x00008000;
 var	DB_YIELDCPU				= 0x00010000;
 // -------------------------
 
-function BDB(dbenv, _name, _type, _re_source) {
+function BDB(dbenv, _name, _type, _re_source, _flags) {
     this.dbenv = dbenv;
     this.db = new Db(dbenv, 0);
     this.txn = null;
@@ -242,6 +242,7 @@ function BDB(dbenv, _name, _type, _re_source) {
     this.dbperms = 0644;
 
     this.re_source = _re_source;
+    this.flags = _flags;
 
     this.db.errfile =	this.errfile ="stderr";
     this.db.errpfx =	this.errpfx = this.dbfile;
@@ -326,6 +327,9 @@ function BDB(dbenv, _name, _type, _re_source) {
 		print('\t' + i + ': ' + this.get(i));
 	    return true;
 	};
+
+    if (this.flags)
+	this.db.flags |= this.flags;
 
     return this.db.open(this.txn, this.dbfile, this.dbname, this.dbtype,
 			this.oflags, this.dbperms);
@@ -417,7 +421,7 @@ var avg_keysize = 128;
 var avg_datasize = 1024;
 var h_ffactor = Math.floor(100 * (pagesize - 32) / (avg_keysize + avg_datasize + 8));
 var h_nelem = 12345;
-var H = new BDB(dbenv, "H", DB_HASH, null);
+var H = new BDB(dbenv, "H", DB_HASH, null, 0);
 ack('typeof H.db', 'object');
 ack('H.db instanceof Db;', true);
 ack('H.db.dbfile', dbfile);
@@ -432,7 +436,7 @@ Fill(H);
 var dbfile = "Q.db";
 var dbtype = DB_QUEUE;
 var q_extentsize = 0;
-var Q = new BDB(dbenv, "Q", DB_QUEUE, null);
+var Q = new BDB(dbenv, "Q", DB_QUEUE, null, 0);
 ack('typeof Q.db', 'object');
 ack('Q.db instanceof Db;', true);
 ack('Q.db.dbfile', dbfile);
@@ -447,7 +451,7 @@ ack('Q.db.close(0)', true);
 var dbfile = "B.db";
 var dbtype = DB_BTREE;
 var bt_minkey = undefined;
-var B = new BDB(dbenv, "B", DB_BTREE, null);
+var B = new BDB(dbenv, "B", DB_BTREE, null, 0);
 ack('typeof B.db', 'object');
 ack('B.db instanceof Db;', true);
 ack('B.db.dbfile', dbfile);
@@ -465,7 +469,7 @@ var re_delim = 0x0a;
 var re_len = undefined;
 var re_pad = 0x20;
 var re_source = "Source";
-var R = new BDB(dbenv, "R", DB_RECNO, null);
+var R = new BDB(dbenv, "R", DB_RECNO, null, 0);
 ack('typeof R.db', 'object');
 ack('R.db instanceof Db;', true);
 ack('R.db.dbfile', dbfile);
@@ -481,10 +485,8 @@ ack('R.db.sync()', true);
 ack('R.db.close(0)', true);
 
 print('====> WORDS');
-var W = new BDB(dbenv, "W", DB_RECNO, "words");
-ack('W.db.flags |= DB_SNAPSHOT', DB_SNAPSHOT);
-
-var X = new BDB(dbenv, "X", DB_BTREE, null);
+var W = new BDB(dbenv, "W", DB_RECNO, "words", DB_SNAPSHOT);
+var X = new BDB(dbenv, "X", DB_BTREE, null, 0);
 
 // var i = 0;
 // var k = '';
@@ -528,12 +530,10 @@ print('<==== WORDS');
 
 print('====> FILES');
 var dbfile = "F.db";
-var F = new BDB(dbenv, "F", DB_RECNO, "files");
-ack('F.db.flags |= DB_SNAPSHOT', DB_SNAPSHOT);
+var F = new BDB(dbenv, "F", DB_RECNO, "files", DB_SNAPSHOT);
 var FN = new BDB(dbenv, "FN", DB_BTREE, null);
 var BN = new BDB(dbenv, "BN", DB_BTREE, null);
-var DN = new BDB(dbenv, "DN", DB_BTREE, null);
-ack('DN.db.flags |= (DB_DUP | DB_DUPSORT)', (DB_DUP | DB_DUPSORT));
+var DN = new BDB(dbenv, "DN", DB_BTREE, null, DB_DUPSORT);
 
 // var i = 0;
 // var k = '';
@@ -579,8 +579,9 @@ for (var [key, val] in Iterator(fnlist)) {
     ack('bnc.count()', 1);
     ack('bnc.length', 1);
     var dnc = DN.cursor(dn);
-    ack('dnc.count()', 1);
-    ack('dnc.length', 1);
+    ack('dnc.count()', (dn == "/sbin/" ? 277 : 106));
+    ack('dnc.length', (dn == "/sbin/" ? 277 : 106));
+
 
     var fc = F.join(fnc, bnc);
     ack('fc.get(null)', fn);
