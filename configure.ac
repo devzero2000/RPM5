@@ -187,6 +187,15 @@ AC_ARG_ENABLE(build-debug,
         fi
     fi
 ])
+AC_ARG_ENABLE(build-optimization,
+    AS_HELP_STRING([--enable-build-optimization], [build RPM instrumented for extra optimization/security (GCC only)]), [dnl
+    if test ".$enableval" = .yes; then
+        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
+            dnl # GNU GCC (usually "gcc")
+            CFLAGS="$CFLAGS -fno-delete-null-pointer-checks"
+        fi
+    fi
+])
 AC_ARG_ENABLE(build-gcov,
     AS_HELP_STRING([--enable-build-gcov], [build RPM instrumented for gcov]), [dnl
     if test ".$enableval" = .yes; then
