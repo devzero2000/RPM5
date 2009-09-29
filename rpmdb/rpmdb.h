@@ -127,6 +127,20 @@ struct _dbiVec {
 	/*@modifies dbi, fileSystem @*/;
 
 /** \ingroup dbi
+ * Associate foreign secondary database with primary.
+ * @param dbi		index database handle
+ * @param dbisecondary	secondary index database handle
+ * @param callback	create secondary key from primary (NULL if DB_RDONLY)
+ * @param flags		DB_CREATE or 0
+ * @return		0 on success
+ */
+    int (*associate_foreign) (dbiIndex dbi, dbiIndex dbisecondary,
+                int (*callback) (DB *, const DBT *, DBT *, const DBT *, int *),
+                unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/;
+
+/** \ingroup dbi
  * Return join cursor for list of cursors.
  * @param dbi		index database handle
  * @param curslist	NULL terminated list of database cursors

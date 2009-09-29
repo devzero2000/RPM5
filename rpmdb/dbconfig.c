@@ -55,11 +55,6 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
 #endif
 
-#if defined(WITH_DB) && defined(DB_XA_CREATE)
- { "xa_create",	0,POPT_BIT_SET,	&db3dbi.dbi_cflags, DB_XA_CREATE,
-	NULL, NULL },
-#endif
-
 /* DB_ENV->open and DB->open */
 #if defined(WITH_DB) && defined(DB_AUTO_COMMIT)
  { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oeflags, DB_AUTO_COMMIT,
@@ -641,6 +636,16 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
      */
     /*@-sizeoftype@*/
     switch (tag) {
+    case RPMTAG_GROUP:
+    case RPMTAG_CONFLICTVERSION:
+    case RPMTAG_CONFLICTFLAGS:
+    case RPMTAG_OBSOLETENAME:
+    case RPMTAG_OBSOLETEVERSION:
+    case RPMTAG_OBSOLETEFLAGS:
+    case RPMTAG_PROVIDEVERSION:
+    case RPMTAG_PROVIDEFLAGS:
+    case RPMTAG_REQUIREVERSION:
+    case RPMTAG_REQUIREFLAGS:
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
 	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);

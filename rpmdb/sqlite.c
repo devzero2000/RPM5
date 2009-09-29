@@ -1446,6 +1446,25 @@ fprintf(stderr, "*** sql_associate:\n");
 }
 
 /**
+ * Associate secondary database with primary.
+ * @param dbi           index database handle
+ * @param dbisecondary  secondary index database handle
+ * @param callback      create secondary key from primary (NULL if DB_RDONLY)
+ * @param flags         DB_CREATE or 0
+ * @return              0 on success
+ */
+static int sql_associate_foreign (/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ dbiIndex dbisecondary,
+    /*@unused@*/int (*callback) (DB *, const DBT *, DBT *, const DBT *, int *),
+		/*@unused@*/ unsigned int flags)
+	/*@*/
+{
+if (_debug)
+fprintf(stderr, "*** sql_associate_foreign:\n");
+    return EINVAL;
+}
+
+/**
  * Return join cursor for list of cursors.
  * @param dbi           index database handle
  * @param curslist      NULL terminated list of database cursors
@@ -1584,7 +1603,7 @@ leaveChroot(dbi);
 }
 
 /* Major, minor, patch version of DB.. we're not using db.. so set to 0 */
-/* open, close, sync, associate, join */
+/* open, close, sync, associate, asociate_foreign, join */
 /* cursor_open, cursor_close, cursor_dup, cursor_delete, cursor_get, */
 /* cursor_pget?, cursor_put, cursor_count */
 /* db_bytewapped, stat */
@@ -1595,6 +1614,7 @@ struct _dbiVec sqlitevec = {
     sql_close,
     sql_sync,
     sql_associate,
+    sql_associate_foreign,
     sql_join,
     sql_copen,
     sql_cclose,

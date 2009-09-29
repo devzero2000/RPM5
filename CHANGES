@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: dbi: configure new indices with 4b join keys and duplicates.
+    - jbj: dbi: generate additional indices.
+    - jbj: dbi: add db->associate_foreign.
     - devzero2000: add rpm-genenerate-loop-test-harness.sh 
     - devzero2000: add INSTALL.developer
     - jbj: order: fix: check current package for files/dirs before other packages.

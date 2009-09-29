@@ -20,12 +20,6 @@ CREATE TABLE _Basenames( /*+ DBTYPE = BTREE */
 	bn		VARCHAR2(64) PRIMARY KEY
 );
 
-CREATE TABLE _Group(	/*+ DBTYPE = BTREE */
-	hx		INTEGER REFERENCES Packages(instance),
-	ix		INTEGER,
-	G		VARCHAR2(64) PRIMARY KEY
-);
-
 CREATE TABLE _Providename( /*+ DBTYPE = BTREE */
 	hx		INTEGER REFERENCES Packages(instance),
 	ix		INTEGER,
@@ -44,12 +38,6 @@ CREATE TABLE _Conflictname( /*+ DBTYPE = BTREE */
 	N		VARCHAR2(64) PRIMARY KEY
 );
 
-CREATE TABLE _Obsoletename( /*+ DBTYPE = BTREE */
-	hx		INTEGER REFERENCES Packages(instance),
-	ix		INTEGER,
-	N		VARCHAR2(64) PRIMARY KEY
-);
-
 CREATE TABLE _Triggername( /*+ DBTYPE = BTREE */
 	hx		INTEGER REFERENCES Packages(instance),
 	ix		INTEGER,
@@ -60,18 +48,6 @@ CREATE TABLE _Dirnames(	/*+ DBTYPE = BTREE */
 	hx		INTEGER REFERENCES Packages(instance),
 	ix		INTEGER,
 	dn		VARCHAR2(64) PRIMARY KEY
-);
-
-CREATE TABLE _Requireversion( /*+ DBTYPE = BTREE */
-	hx		INTEGER REFERENCES Packages(instance),
-	ix		INTEGER,
-	EVR		VARCHAR2(64) PRIMARY KEY
-);
-
-CREATE TABLE _Provideversion( /*+ DBTYPE = BTREE */
-	hx		INTEGER REFERENCES Packages(instance),
-	ix		INTEGER,
-	EVR		VARCHAR2(64) PRIMARY KEY
 );
 
 CREATE TABLE _Installtid( /*+ DBTYPE = BTREE */
@@ -126,4 +102,54 @@ CREATE TABLE _Filepaths( /*+ DBTYPE = HASH */
 	hx		INTEGER REFERENCES Packages(instance),
 	ix		INTEGER,
 	fn		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Group(	/*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	G		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Conflictversion( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	EVR		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Conflictflags( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	F		INTEGER PRIMARY KEY
+);
+
+CREATE TABLE _Obsoletename( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	N		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Obsoleteversion( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	EVR		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Obsoleteflags( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	F		INTEGER PRIMARY KEY
+);
+
+CREATE TABLE _Provideversion( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	EVR		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Provideflags( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	F		INTEGER PRIMARY KEY
+);
+
+CREATE TABLE _Requireversion( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	EVR		VARCHAR2(64) PRIMARY KEY
+);
+
+CREATE TABLE _Requireflags( /*+ DBTYPE = BTREE */
+	hx		INTEGER REFERENCES Packages(instance),
+	F		INTEGER PRIMARY KEY
 );

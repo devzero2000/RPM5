@@ -800,6 +800,30 @@ assert(db != NULL);
 /*@=mustmod@*/
 
 /*@-mustmod@*/
+static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
+		int (*callback)(DB *, const DBT *, DBT *, const DBT *, int *),
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    DB * secondary = dbisecondary->dbi_db;
+    int rc;
+
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+assert(db != NULL);
+    rc = db->associate_foreign(db, secondary, callback, flags);
+#else
+    rc = EINVAL;
+#endif
+/*@=moduncon@*/
+    rc = cvtdberr(dbi, "db->associate_foreign", rc, _debug);
+    return rc;
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
 static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
 		unsigned int flags)
 	/*@globals fileSystem @*/
@@ -1532,7 +1556,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 /*@observer@*/ /*@unchecked@*/
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db3open, db3close, db3sync, db3associate, db3join,
+    db3open, db3close, db3sync, db3associate, db3associate_foreign, db3join,
     db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,
     db3byteswapped, db3stat
 };
