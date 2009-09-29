@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - devzero2000: add security CFLAGS for GCC if supported
     - jbj: dbi: configure new indices with 4b join keys and duplicates.
     - jbj: dbi: generate additional indices.
     - jbj: dbi: add db->associate_foreign.
