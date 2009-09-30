@@ -387,6 +387,9 @@ struct _dbiIndex {
 	/* queue access parameters */
     unsigned int dbi_q_extentsize;
 
+    int dbi_index;
+    const char * dbi_foreign;
+
 /*@refcounted@*/
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
