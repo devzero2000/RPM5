@@ -150,7 +150,6 @@ static const char * dbiModeFlags =
 	"\20\1WRONLY\2RDWR\7CREAT\10EXCL\11NOCTTY\12TRUNC\13APPEND\14NONBLOCK\15SYNC\16ASYNC\17DIRECT\20LARGEFILE\21DIRECTORY\22NOFOLLOW";
 #endif	/* NOTNOW */
 
-
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
 		int error, int printit)
@@ -568,64 +567,22 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
     assert(db != NULL);
     if (dbcursor == NULL) {
-	rc = db->put(db, dbi->dbi_txnid, key, data, 0);
+flags = 0;
+	rc = db->put(db, dbi->dbi_txnid, key, data, flags);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
+flags = DB_KEYLAST;
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
-	rc = dbcursor->put(dbcursor, key, data, DB_KEYLAST);
+	rc = dbcursor->put(dbcursor, key, data, flags);
 	rc = cvtdberr(dbi, "dbcursor->put", rc, _debug);
 #else
-	rc = dbcursor->c_put(dbcursor, key, data, DB_KEYLAST);
+	rc = dbcursor->c_put(dbcursor, key, data, flags);
 	rc = cvtdberr(dbi, "dbcursor->c_put", rc, _debug);
 #endif
     }
 
     return rc;
 }
-
-/*@-mustmod@*/
-static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
-{
-    DB * db = dbi->dbi_db;
-    int rc;
-
-    assert(db != NULL);
-    if (dbcursor == NULL) {
-	rc = db->del(db, dbi->dbi_txnid, key, flags);
-	rc = cvtdberr(dbi, "db->del", rc, _debug);
-    } else {
-	int _printit;
-
-	/* XXX TODO: insure that cursor is positioned with duplicates */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
-	rc = dbcursor->get(dbcursor, key, data, DB_SET);
-	/* XXX DB_NOTFOUND can be returned */
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "dbcursor->get", rc, _printit);
-#else
-	rc = dbcursor->c_get(dbcursor, key, data, DB_SET);
-	/* XXX DB_NOTFOUND can be returned */
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
-#endif
-
-	if (rc == 0) {
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
-	    rc = dbcursor->del(dbcursor, flags);
-	    rc = cvtdberr(dbi, "dbcursor->del", rc, _debug);
-#else
-	    rc = dbcursor->c_del(dbcursor, flags);
-	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
-#endif
-	}
-    }
-
-    return rc;
-}
-/*@=mustmod@*/
 
 /*@-mustmod@*/
 static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
@@ -697,6 +654,39 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
 }
 /*@=mustmod@*/
 
+/*@-mustmod@*/
+static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+    assert(db != NULL);
+    if (dbcursor == NULL) {
+	rc = db->del(db, dbi->dbi_txnid, key, flags);
+	rc = cvtdberr(dbi, "db->del", rc, _debug);
+    } else {
+
+	/* XXX TODO: insure that cursor is positioned with duplicates */
+	rc = db3cget(dbi, dbcursor, key, data, DB_SET);
+
+	if (rc == 0) {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	    rc = dbcursor->del(dbcursor, flags);
+	    rc = cvtdberr(dbi, "dbcursor->del", rc, _debug);
+#else
+	    rc = dbcursor->c_del(dbcursor, flags);
+	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
+#endif
+	}
+    }
+
+    return rc;
+}
+/*@=mustmod@*/
+
 static int db3ccount(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ /*@out@*/ unsigned int * countp,
 		/*@unused@*/ unsigned int flags)
@@ -714,8 +704,7 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     rc = dbcursor->c_count(dbcursor, &count, flags);
     rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
 #endif
-    if (rc) return rc;
-    if (countp) *countp = count;
+    if (countp) *countp = (!rc ? count : 0);
 
     return rc;
 }
@@ -781,16 +770,15 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
 {
     DB * db = dbi->dbi_db;
     DB * secondary = dbisecondary->dbi_db;
+    DB_TXN * txnid = NULL;
     int rc;
+
+assert(db != NULL);
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-    DB_TXN * txnid = NULL;
-
-assert(db != NULL);
     rc = db->associate(db, txnid, secondary, callback, flags);
 #else
-assert(db != NULL);
     rc = db->associate(db, secondary, callback, flags);
 #endif
 /*@=moduncon@*/
@@ -1538,9 +1526,15 @@ assert(rpmdb && rpmdb->db_dbenv);
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
 	*dbip = dbi;
+	if (dbi->dbi_index) {
+	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *) = NULL;
+	    int _flags = 0;
+	    (void) db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
+	}
     } else {
 	dbi->dbi_verify_on_close = 0;
 	(void) db3close(dbi, 0);
+	dbi = NULL;
     }
 
     urlfn = _free(urlfn);
