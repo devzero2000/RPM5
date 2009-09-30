@@ -633,7 +633,6 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 {
     rpmop sw = (rpmop)dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
-    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);

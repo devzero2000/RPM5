@@ -723,6 +723,9 @@ struct rpmmi_s {
     DBT			mi_key;
     DBT			mi_data;
     int			mi_setx;
+    void *		mi_keyp;
+    int			mi_index;
+    size_t		mi_keylen;
 /*@refcounted@*/ /*@null@*/
     Header		mi_h;
     int			mi_sorted;
@@ -2055,6 +2058,10 @@ assert(dbi != NULL);
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
 
+    mi->mi_keyp = _free(mi->mi_keyp);
+    mi->mi_keylen = 0;
+    mi->mi_index = 0;
+
     /* XXX this needs to be done elsewhere, not within destructor. */
     (void) rpmdbCheckSignals();
 }
@@ -2484,7 +2491,7 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * vp,
 
 	    vp->ulen = (u_int32_t)uhlen;
 	    vp->data = uh;
-	    rc = dbiGet(dbi, dbcursor, kp, vp, DB_SET);
+	    rc = dbiGet(dbi, dbcursor, kp, vp, flags);
 	    if (rc == 0) {
 		if (mprotect(uh, uhlen, PROT_READ) != 0)
 		    fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
@@ -2510,6 +2517,8 @@ Header rpmmiNext(rpmmi mi)
     void * uh;
     size_t uhlen;
     int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
+rpmTag tag;
+uint32_t _flags;
     int map;
     int rc;
     int xx;
@@ -2517,7 +2526,8 @@ Header rpmmiNext(rpmmi mi)
     if (mi == NULL)
 	return NULL;
 
-    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
+tag = (mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
+    dbi = dbiOpen(mi->mi_db, tag, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -2532,8 +2542,17 @@ Header rpmmiNext(rpmmi mi)
      * CDB model is used for the database, then the cursor needs to
      * marked with DB_WRITECURSOR as well.
      */
-    if (mi->mi_dbc == NULL)
+    if (mi->mi_dbc == NULL) {
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
+	_flags = DB_SET;
+	memset(&k, 0, sizeof(k));
+	k.data = mi->mi_keyp;
+	k.size = (u_int32_t)mi->mi_keylen;
+if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
+if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
+	memset(&mi->mi_data, 0, sizeof(mi->mi_data));
+    } else
+	_flags = DB_NEXT_DUP;
 
 next:
     if (mi->mi_set) {
@@ -2555,6 +2574,11 @@ next:
 /*@=immediatetrans@*/
 	k.size = (u_int32_t)sizeof(mi_offset.ui);
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, DB_SET);
+    }
+    else if (dbi->dbi_index) {
+mi->mi_offset = 0;	/* XXX FIXME: set the instance # */
+	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, _flags);
+	_flags = DB_NEXT_DUP;
     }
     else {
 	/* Iterating Packages database. */
@@ -2843,7 +2867,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     rpmmiRock = mi;
 
     if (tag == RPMDBI_PACKAGES && keyp == NULL) {
-	/* Special case #1: will iterate Packages database. */
+	/* Special case #1: sequentially iterate Packages database. */
 	assert(keylen == 0);
 	/* This should be the only case when (set == NULL). */
     }
@@ -2859,9 +2883,11 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	set->recs[0].hdrNum = hdrNum.ui;
     }
     else if (keyp == NULL) {
-	/* XXX Special case #3: they want empty iterator,
-	 * for use with rpmmiGrow(). */
+	/* XXX Special case #3: empty iterator with rpmmiGrow() */
 	assert(keylen == 0);
+    }
+    else if (dbi->dbi_index) {
+	/* XXX Special case #4: secondary db associated with primary Packages */
     }
     else {
 	/* Common case: retrieve join keys. */
@@ -2879,38 +2905,66 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	} else if (tag == RPMTAG_BASENAMES) {
 	    rc = rpmdbFindByFile(db, keyp, &k, &v, &set);
 	} else {
+	    uint32_t _flags;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
-/*@-temptrans@*/
 k.data = (void *) keyp;
-/*@=temptrans@*/
 k.size = (UINT32_T) keylen;
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 
-/*@-nullstate@*/
-	    rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-/*@=nullstate@*/
-	    if (rc > 0) {
-		rpmlog(RPMLOG_ERR,
-			_("error(%d) getting records from %s index\n"),
-			rc, tagName(dbi->dbi_rpmtag));
+	    _flags = DB_SET;
+	    while (1) {
+		union _dbswap * vp;
+		size_t nb;
+
+		rc = dbiGet(dbi, dbcursor, &k, &v, _flags);
+		_flags = DB_NEXT_DUP;
+
+		vp = v.data;
+
+
+		switch (rc) {
+		default:
+		    if (rc > 0)
+			rpmlog(RPMLOG_ERR, _("dbiGet(%s) error(%d): %s\n"),
+				tagName(dbi->dbi_rpmtag), rc, strerror(rc));
+		    goto done;
+		    break;
+
+		case 0:
+		    if (dbi->dbi_jlen == (2 * sizeof(uint32_t))
+		     || v.size > sizeof(uint32_t))
+		    {
+			/* Join keys need to be native endian internally. */
+			(void) dbt2set(dbi, &v, &set);
+			goto done;
+		    }
+		    break;
+		}
+
+		/* Append duplicates to join key set */
+		if (set == NULL)
+		    set = xcalloc(1, sizeof(*set));
+		nb = (set->count + 1) * sizeof(set->recs[0]);
+		set->recs = xrealloc(set->recs, nb);
+		set->recs[set->count].hdrNum = vp->ui;
+		set->count++;
 	    }
 
-	    /* Join keys need to be native endian internally. */
-	    if (rc == 0)
-		(void) dbt2set(dbi, &v, &set);
-
+done:
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	}
-	if (rc || set == NULL || set->count < 1) { /* error/not found */
+
+	if ((rc && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
 	    mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 	    return NULL;
 	}
+
     }
 
 /*@-assignexpose@*/
@@ -2921,6 +2975,15 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
     mi->mi_dbc = NULL;
     mi->mi_set = set;
     mi->mi_setx = 0;
+
+    mi->mi_index = (dbi && dbi->dbi_index ? 1 : 0);
+    mi->mi_keylen = keylen;
+    if (keyp)
+	mi->mi_keyp = keylen > 0
+		? memcpy(xmalloc(keylen), keyp, keylen) : xstrdup(keyp) ;
+    else
+	mi->mi_keyp = NULL;
+
     mi->mi_h = NULL;
     mi->mi_sorted = 0;
     mi->mi_cflags = 0;
@@ -3682,10 +3745,8 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		switch (rc) {
 		case 0:			/* success */
-#ifdef	DYING
-		/* With duplicates, cursor is positioned, discard the record. */
-		    if (!dbi->dbi_permit_dups)
-#endif
+		    /* Accumulate join keys iff no duplicates. */
+		    if (!((dbi->dbi_bt_flags|dbi->dbi_h_flags) & (DB_DUP|DB_DUPSORT)))
 			(void) dbt2set(dbi, &v, &set);
 		    break;
 		case DB_NOTFOUND:	/* notfound */
