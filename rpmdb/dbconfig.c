@@ -306,6 +306,10 @@ DB_READ_UNCOMITTED
 #endif
  { "noload",	0,POPT_ARG_NONE,	&db3dbi.dbi_noload, 0,
 	NULL, NULL },
+ { "index",	0,POPT_ARG_NONE,	&db3dbi.dbi_index, 0,
+	NULL, NULL },
+ { "foreign",	0,POPT_ARG_STRING,	&db3dbi.dbi_foreign, 0,
+	NULL, NULL },
  { "temporary",	0,POPT_ARG_NONE,	&db3dbi.dbi_temporary, 0,
 	NULL, NULL },
 #if defined(WITH_DB)
@@ -636,9 +640,10 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
      */
     /*@-sizeoftype@*/
     switch (tag) {
-    case RPMTAG_GROUP:
     case RPMTAG_CONFLICTVERSION:
     case RPMTAG_CONFLICTFLAGS:
+    case RPMTAG_GROUP:
+    case RPMTAG_NVRA:
     case RPMTAG_OBSOLETENAME:
     case RPMTAG_OBSOLETEVERSION:
     case RPMTAG_OBSOLETEFLAGS:
@@ -646,6 +651,9 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     case RPMTAG_PROVIDEFLAGS:
     case RPMTAG_REQUIREVERSION:
     case RPMTAG_REQUIREFLAGS:
+    case RPMTAG_SHA1HEADER:
+    case RPMTAG_SIGMD5:
+    case RPMTAG_SOURCEPKGID:
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
 	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
