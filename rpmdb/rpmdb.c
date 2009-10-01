@@ -1196,6 +1196,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 
     db->db_remove_env = 0;
     db->db_verifying = 0;
+    db->db_rebuilding = _rebuildinprogress;	/* XXX no thread_count w --rebuilddb */
     db->db_chrootDone = 0;
     db->db_errcall = NULL;
     db->db_errfile = NULL;
@@ -1203,6 +1204,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_realloc = NULL;
     db->db_free = NULL;
     db->db_export = rpmdbExportInfo;
+    db->db_h = NULL;
 
     db->db_bits = NULL;
     db->db_nbits = 0;
@@ -2536,6 +2538,8 @@ tag = (mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
     case 3:	map = _rpmmi_usermem;	break;	/* Berkeley DB */
     }
 
+if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi, dbi, tagName(tag));
+
     /*
      * Cursors are per-iterator, not per-dbi, so get a cursor for the
      * iterator on 1st call. If the iteration is to rewrite headers, and the
@@ -2545,7 +2549,6 @@ tag = (mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
     if (mi->mi_dbc == NULL) {
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
 	_flags = DB_SET;
-	memset(&k, 0, sizeof(k));
 	k.data = mi->mi_keyp;
 	k.size = (u_int32_t)mi->mi_keylen;
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
@@ -2569,9 +2572,7 @@ next:
 	mi_offset.ui = mi->mi_offset;
 	if (dbiByteSwapped(dbi) == 1)
 	    _DBSWAP(mi_offset);
-/*@-immediatetrans@*/
 	k.data = &mi_offset.ui;
-/*@=immediatetrans@*/
 	k.size = (u_int32_t)sizeof(mi_offset.ui);
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, DB_SET);
     }
@@ -2862,6 +2863,8 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     mi = rpmmiGetPool(_rpmmiPool);
     (void)rpmioLinkPoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
+if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 ? (const char *)keyp : "???"), dbi, mi);
+
     /* Chain cursors for teardown on abnormal exit. */
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
@@ -2906,6 +2909,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	    rc = rpmdbFindByFile(db, keyp, &k, &v, &set);
 	} else {
 	    uint32_t _flags;
+
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
 k.data = (void *) keyp;
@@ -2922,7 +2926,6 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 		_flags = DB_NEXT_DUP;
 
 		vp = v.data;
-
 
 		switch (rc) {
 		default:
@@ -2957,7 +2960,7 @@ done:
 	    dbcursor = NULL;
 	}
 
-	if ((rc && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
+	if ((rc  && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
@@ -3057,7 +3060,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 		/*@unused@*/ rpmts ts)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    Header h;
     sigset_t signalMask;
     int ret = 0;
     int rc = 0;
@@ -3066,15 +3068,16 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
     if (db == NULL)
 	return 0;
 
+    /* Retrieve header for use by associated secondary index callbacks. */
     {	rpmmi mi;
 	mi = rpmmiInit(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
-	h = rpmmiNext(mi);
-	if (h)
-	    h = headerLink(h);
+	db->db_h = rpmmiNext(mi);
+	if (db->db_h)
+	    db->db_h = headerLink(db->db_h);
 	mi = rpmmiFree(mi);
     }
 
-    if (h == NULL) {
+    if (db->db_h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", hdrNum);
 	return 1;
@@ -3090,12 +3093,12 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = tid;
 	he->c = 2;
-	xx = headerPut(h, he, 0);
+	xx = headerPut(db->db_h, he, 0);
     }
 #endif
 
     he->tag = RPMTAG_NVRA;
-    xx = headerGet(h, he, 0);
+    xx = headerGet(db->db_h, he, 0);
     rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, he->p.str);
     he->p.ptr = _free(he->p.ptr);
 
@@ -3136,7 +3139,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
 		if (db->db_export != NULL)
-		    xx = db->db_export(db, h, 0);
+		    xx = db->db_export(db, db->db_h, 0);
 		dbi = dbiOpen(db, he->tag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
@@ -3164,7 +3167,7 @@ if (dbiByteSwapped(dbi) == 1)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		xx = headerGet(h, he, 0);
+		xx = headerGet(db->db_h, he, 0);
 		if (!xx)
 		    continue;
 		/*@switchbreak@*/ break;
@@ -3360,10 +3363,11 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
     }
 /*@=nullpass =nullptrarith =nullderef @*/
 
-    (void) unblockSignals(db, &signalMask);
+    /* Unreference header used by associated secondary index callbacks. */
+    (void) headerFree(db->db_h);
+    db->db_h = NULL;
 
-    (void)headerFree(h);
-    h = NULL;
+    (void) unblockSignals(db, &signalMask);
 
     /* XXX return ret; */
     return 0;
@@ -3389,6 +3393,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
     if (db == NULL)
 	return 0;
+
+    /* Reference header for use by associated secondary index callbacks. */
+    db->db_h = headerLink(h);
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     he->tag = RPMTAG_REMOVETID;
@@ -3596,7 +3603,7 @@ assert(v.data != NULL);
 		continue;
 
 	  dbi = dbiOpen(db, he->tag, 0);
-	  if (dbi != NULL) {
+	  if (dbi != NULL && !dbi->dbi_index) {
 	    int printed;
 
 	    /* XXX Coerce strings into header argv return. */
@@ -3746,8 +3753,10 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 		switch (rc) {
 		case 0:			/* success */
 		    /* Accumulate join keys iff no duplicates. */
-		    if (!((dbi->dbi_bt_flags|dbi->dbi_h_flags) & (DB_DUP|DB_DUPSORT)))
+#define	_DUP_ENABLED(_f)	((dbi->dbi_##_f) & (DB_DUP|DB_DUPSORT))
+		    if (!(_DUP_ENABLED(bt_flags) || _DUP_ENABLED(h_flags)))
 			(void) dbt2set(dbi, &v, &set);
+#undef	_DUP_ENABLED
 		    break;
 		case DB_NOTFOUND:	/* notfound */
 		    break;
@@ -3800,6 +3809,9 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
     }
 
 exit:
+    /* Unreference header used by associated secondary index callbacks. */
+    (void) headerFree(db->db_h);
+
     (void) unblockSignals(db, &signalMask);
     dirIndexes = _free(dirIndexes);
     dirNames = _free(dirNames);
@@ -4244,6 +4256,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
     _dbapi_rebuild = newdb->db_api;
     
+    newdb->db_rebuilding = 1;	/* XXX disable db->associate hack-o-round */
     {	Header h = NULL;
 	rpmmi mi;
 
@@ -4283,6 +4296,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	mi = rpmmiFree(mi);
 
     }
+    newdb->db_rebuilding = 0;
 
     xx = rpmdbClose(olddb);
     xx = rpmdbClose(newdb);

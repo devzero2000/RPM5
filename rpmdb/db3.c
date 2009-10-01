@@ -27,6 +27,8 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #define	DB_CLIENT	DB_RPCCLIENT
 #endif
 
+#define	DBIDEBUG(_dbi, _list)	if ((_dbi)->dbi_debug) fprintf _list
+
 /*@access rpmdb @*/
 /*@access dbiIndex @*/
 /*@access dbiIndexSet @*/
@@ -150,6 +152,229 @@ static const char * dbiModeFlags =
 	"\20\1WRONLY\2RDWR\7CREAT\10EXCL\11NOCTTY\12TRUNC\13APPEND\14NONBLOCK\15SYNC\16ASYNC\17DIRECT\20LARGEFILE\21DIRECTORY\22NOFOLLOW";
 #endif	/* NOTNOW */
 
+typedef struct key_s {
+    uint32_t	v;
+    const char *n;
+} KEY;
+
+static const char * tblName(uint32_t v, KEY * tbl, size_t ntbl)
+{
+    const char * n = NULL;
+    static char buf[32];
+    size_t i;
+
+    for (i = 0; i < ntbl; i++) {
+	if (v != tbl[i].v)
+	    continue;
+	n = tbl[i].n;
+	break;
+    }
+    if (n == NULL) {
+	snprintf(buf, sizeof(buf), "0x%x", v);
+	n = buf;
+    }
+    return n;
+}
+
+static const char * fmtBits(uint32_t flags, KEY tbl[], size_t ntbl, char *t)
+{
+    char pre = '<';
+    char * te = t;
+    int i;
+
+    sprintf(t, "0x%x", flags);
+    te = t;
+    te += strlen(te);
+    for (i = 0; i < 32; i++) {
+	uint32_t mask = (1 << i);
+	const char * name;
+
+	if (!(flags & mask))
+	    continue;
+
+	name = tblName(mask, tbl, ntbl);
+	*te++ = pre;
+	pre = ',';
+	te = stpcpy(te, name);
+    }
+    if (pre == ',') *te++ = '>';
+    *te = '\0';
+    return t;
+}
+
+#define _ENTRY(_v)      { DB_##_v, #_v, }
+
+static KEY DBoflags[] = {
+    _ENTRY(AUTO_COMMIT),
+    _ENTRY(CREATE),
+    _ENTRY(EXCL),
+    _ENTRY(MULTIVERSION),
+    _ENTRY(NOMMAP),
+    _ENTRY(RDONLY),
+    _ENTRY(READ_UNCOMMITTED),
+    _ENTRY(THREAD),
+    _ENTRY(TRUNCATE),
+};
+static size_t nDBoflags = sizeof(DBoflags) / sizeof(DBoflags[0]);
+static const char * fmtDBoflags(uint32_t flags)
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    te = stpcpy(te, "\n\tflags: ");
+    (void) fmtBits(flags, DBoflags, nDBoflags, te);
+    return buf;
+}
+#define	_OFLAGS(_dbi)	fmtDBoflags((_dbi)->dbi_oflags)
+
+static KEY DBCflags[] = {
+    _ENTRY(AFTER),		/* Dbc.put */
+    _ENTRY(APPEND),		/* Db.put */
+    _ENTRY(BEFORE),		/* Dbc.put */
+    _ENTRY(CONSUME),		/* Db.get */
+    _ENTRY(CONSUME_WAIT),	/* Db.get */
+    _ENTRY(CURRENT),		/* Dbc.get, Dbc.put, DbLogc.get */
+    _ENTRY(FIRST),		/* Dbc.get, DbLogc->get */
+    _ENTRY(GET_BOTH),		/* Db.get, Dbc.get */
+    _ENTRY(GET_BOTHC),		/* Dbc.get (internal) */
+    _ENTRY(GET_BOTH_RANGE),	/* Db.get, Dbc.get */
+    _ENTRY(GET_RECNO),		/* Dbc.get */
+    _ENTRY(JOIN_ITEM),		/* Dbc.get; don't do primary lookup */
+    _ENTRY(KEYFIRST),		/* Dbc.put */
+    _ENTRY(KEYLAST),		/* Dbc.put */
+    _ENTRY(LAST),		/* Dbc.get, DbLogc->get */
+    _ENTRY(NEXT),		/* Dbc.get, DbLogc->get */
+    _ENTRY(NEXT_DUP),		/* Dbc.get */
+    _ENTRY(NEXT_NODUP),		/* Dbc.get */
+    _ENTRY(NODUPDATA),		/* Db.put, Dbc.put */
+    _ENTRY(NOOVERWRITE),	/* Db.put */
+    _ENTRY(NOSYNC),		/* Db.close */
+    _ENTRY(OVERWRITE_DUP),	/* Dbc.put, Db.put; no DB_KEYEXIST */
+    _ENTRY(POSITION),		/* Dbc.dup */
+    _ENTRY(PREV),		/* Dbc.get, DbLogc->get */
+    _ENTRY(PREV_DUP),		/* Dbc.get */
+    _ENTRY(PREV_NODUP),		/* Dbc.get */
+    _ENTRY(SET),		/* Dbc.get, DbLogc->get */
+    _ENTRY(SET_RANGE),		/* Dbc.get */
+    _ENTRY(SET_RECNO),		/* Db.get, Dbc.get */
+    _ENTRY(UPDATE_SECONDARY),	/* Dbc.get, Dbc.del (internal) */
+    _ENTRY(SET_LTE),		/* Dbc.get (internal) */
+    _ENTRY(GET_BOTH_LTE),	/* Dbc.get (internal) */
+
+    _ENTRY(IGNORE_LEASE),
+    _ENTRY(READ_COMMITTED),
+    _ENTRY(READ_UNCOMMITTED),
+    _ENTRY(MULTIPLE),
+    _ENTRY(MULTIPLE_KEY),
+    _ENTRY(RMW),
+};
+static size_t nDBCflags = sizeof(DBCflags) / sizeof(DBCflags[0]);
+static const char * fmtDBCflags(uint32_t flags)
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    uint32_t op = (flags & DB_OPFLAGS_MASK);
+    flags &= ~DB_OPFLAGS_MASK;
+
+    te = stpcpy(te, "\n\tflags: ");
+    if (op) {
+	te = stpcpy( stpcpy(te, "DB_"), tblName(op, DBCflags, nDBCflags));
+	*te++ = ' ';
+	*te = '\0';
+    }
+    if (flags)
+	(void) fmtBits(flags, DBCflags, nDBCflags, te);
+    return buf;
+}
+#define	_DBCFLAGS(_flags)	fmtDBCflags(_flags)
+
+static KEY DBTflags[] = {
+    _ENTRY(DBT_MALLOC),
+    _ENTRY(DBT_REALLOC),
+    _ENTRY(DBT_USERMEM),
+    _ENTRY(DBT_PARTIAL),
+    _ENTRY(DBT_APPMALLOC),
+    _ENTRY(DBT_MULTIPLE),
+};
+static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
+static const char * fmtKeyData(const DBT * key, const DBT * data)
+{
+    static char buf[BUFSIZ];
+    static size_t keymax = 40;
+    char * te = buf;
+    uint8_t * _u;
+    int unprintable;
+    uint32_t i;
+
+    te = stpcpy(te, "\n\t  key: ");
+    if (key == NULL) {
+	te = stpcpy(te, "NULL");
+    } else {
+	sprintf(te, "%p[%u]\t", key->data, (unsigned)key->size);
+	te += strlen(te);
+	(void) fmtBits(key->flags, DBTflags, nDBTflags, te);
+	te += strlen(te);
+	if (key->data && key->size > 0) {
+	    /* Verify if key is a string. */
+	    _u = key->data;
+	    unprintable = 0;
+	    for (i = 0; i < key->size; i++)
+		unprintable |= !xisprint(_u[i]);
+
+	    /* Display the key. */
+	    if (!unprintable) {
+		size_t nb = (key->size < keymax ? key->size : keymax);
+		char * ellipsis = (key->size < keymax ? "" : "...");
+		sprintf(te, "\t\"%.*s%s\"", nb, (char *)key->data, ellipsis);
+	    } else {
+		switch (key->size) {
+		default: break;
+		case 4:	sprintf(te, "\t0x%x", *(uint32_t *)key->data); break;
+		}
+	    }
+
+	    te += strlen(te);
+	    *te = '\0';
+	}
+    }
+    
+    te = stpcpy(te, "\n\t data: ");
+    if (data == NULL) {
+	te = stpcpy(te, "NULL");
+    } else {
+	sprintf(te, "%p[%u]\t", data->data, (unsigned)data->size);
+	te += strlen(te);
+	(void) fmtBits(data->flags, DBTflags, nDBTflags, te);
+	te += strlen(te);
+	if (data->data && data->size > 0) {
+	    /* Verify if value is a string. */
+	    _u = data->data;
+	    unprintable = 0;
+	    for (i = 0; i < key->size; i++)
+		unprintable |= !xisprint(_u[i]);
+
+	    /* Display the value. */
+	    if (!unprintable) {
+		size_t nb = (data->size < keymax ? data->size : keymax);
+		char * ellipsis = (data->size < keymax ? "" : "...");
+		sprintf(te, "\t\"%.*s%s\"", nb, (char *)data->data, ellipsis);
+	    } else {
+		switch (data->size) {
+		default: break;
+		case 4:	sprintf(te, "\th#%7d", *(uint32_t *)data->data); break;
+		}
+	    }
+
+	    te += strlen(te);
+	    *te = '\0';
+	}
+    }
+    
+    return buf;
+}
+#define	_KEYDATA(_key, _data)	fmtKeyData(_key, _data)
+
+#undef	_ENTRY
+
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
 		int error, int printit)
@@ -206,6 +431,8 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = rpmdb->db_dbenv;
     int rc;
+
+DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s)\n", __FUNCTION__, dbi, dbhome, dbfile, dbsubfile));
 
     if (dbenv == NULL)
 	return 0;
@@ -290,6 +517,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     int rc;
     int xx;
 
+DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s,%p)\n", __FUNCTION__, dbi, dbhome, dbfile, dbsubfile, dbenvp));
     if (!oneshot) {
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = db_env_set_func_open((int (*)(const char *, int, ...))Open);
@@ -438,7 +666,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	goto errxit;
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
-    if (!rpmdb->db_verifying) {
+    if (!rpmdb->db_verifying && !rpmdb->db_rebuilding) {
 	/* XXX Set pid/tid is_alive probe. */
 	xx = dbenv->set_isalive(dbenv, db3is_alive);
 	xx = cvtdberr(dbi, "dbenv->set_isalive", xx, _debug);
@@ -482,6 +710,9 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
 #endif
     rc = cvtdberr(dbi, "db->sync", rc, _printit);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
+
     return rc;
 }
 
@@ -500,9 +731,10 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
     rc = dbcursor->c_dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
 #endif
-    /*@-nullstate @*/ /* FIX: *dbcp can be NULL */
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, dbcp, flags, rc));
+
     return rc;
-    /*@=nullstate @*/
 }
 
 /*@-mustmod@*/
@@ -523,6 +755,9 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 	rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
 #endif
     }
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, flags, rc));
+
     return rc;
 }
 /*@=mustmod@*/
@@ -554,6 +789,7 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
     else
 	(void) db3cclose(dbi, dbcursor, 0);
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) dbc %p rc %d\n", __FUNCTION__, dbi, txnid, dbcp, dbiflags, dbcursor, rc));
     return rc;
 }
 
@@ -581,6 +817,7 @@ flags = DB_KEYLAST;
 #endif
     }
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
     return rc;
 }
 
@@ -619,6 +856,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 #endif
     }
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
     return rc;
 }
 /*@=mustmod@*/
@@ -650,6 +888,7 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
     rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
 #endif
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
     return rc;
 }
 /*@=mustmod@*/
@@ -683,6 +922,7 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	}
     }
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
     return rc;
 }
 /*@=mustmod@*/
@@ -705,6 +945,8 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
 #endif
     if (countp) *countp = (!rc ? count : 0);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) count %d\n", __FUNCTION__, dbi, dbcursor, countp, flags, count));
 
     return rc;
 }
@@ -758,6 +1000,9 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     rc = db->stat(db, &dbi->dbi_stats, NULL, flags);
 #endif
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
+
     return rc;
 }
 
@@ -783,6 +1028,15 @@ assert(db != NULL);
 #endif
 /*@=moduncon@*/
     rc = cvtdberr(dbi, "db->associate", rc, _debug);
+
+    if (dbi->dbi_debug || dbisecondary->dbi_debug) {
+	const char * tag1 = xstrdup(tagName(dbi->dbi_rpmtag));
+    	const char * tag2 = xstrdup(tagName(dbisecondary->dbi_rpmtag));
+fprintf(stderr, "<-- %s(%p(%s),%p(%s),%p,0x%x) rc %d\n", __FUNCTION__, dbi, tag1, dbisecondary, tag2, callback, flags, rc);
+	tag2 = _free(tag2);
+	tag1 = _free(tag1);
+    }
+
     return rc;
 }
 /*@=mustmod@*/
@@ -798,6 +1052,7 @@ static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
     DB * secondary = dbisecondary->dbi_db;
     int rc;
 
+DBIDEBUG(dbi, (stderr, "--> %s(%p,%p,%p,0x%x)\n", __FUNCTION__, dbi, dbisecondary, callback, flags));
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
 assert(db != NULL);
@@ -820,6 +1075,7 @@ static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
     DB * db = dbi->dbi_db;
     int rc;
 
+DBIDEBUG(dbi, (stderr, "--> %s(%p,%p,%p,0x%x)\n", __FUNCTION__, dbi, curslist, dbcp, flags));
 assert(db != NULL);
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
     rc = db->join(db, curslist, dbcp, flags);
@@ -964,6 +1220,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     }
 
 exit:
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
+
     dbi->dbi_db = NULL;
 
     urlfn = _free(urlfn);
@@ -973,6 +1232,85 @@ exit:
     return rc;
 }
 /*@=moduncon@*/
+
+static int
+db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    dbiIndex dbi = db->app_private;
+    rpmdb rpmdb = NULL;
+    Header h = NULL;
+    int rc = DB_DONOTINDEX;	/* assume no-op */
+    size_t nb;
+
+    /* XXX Don't index the header instance counter at record 0. */
+    if (key->size == 4 && *(uint32_t *)key->data == 0)
+	return rc;
+
+assert(dbi);
+    rpmdb = dbi->dbi_rpmdb;
+assert(rpmdb);
+    h = rpmdb->db_h;
+assert(h);
+
+    he->tag = dbi->dbi_rpmtag;
+    if (!headerGet(h, he, 0))
+	goto exit;
+
+    switch (he->t) {
+    default:
+assert(0);
+	break;
+    case RPM_UINT8_TYPE:	nb = sizeof(*he->p.ui8p);	goto _ifill;
+    case RPM_UINT16_TYPE:	nb = sizeof(*he->p.ui16p);	goto _ifill;
+    case RPM_UINT32_TYPE:	nb = sizeof(*he->p.ui32p);	goto _ifill;
+    case RPM_UINT64_TYPE:	nb = sizeof(*he->p.ui64p);	goto _ifill;
+    _ifill:
+	/* XXX only scalars/array[0] -- uniqueness check needed. */
+	_r->flags = DB_DBT_APPMALLOC;
+	_r->data = he->p.ptr;
+	_r->size = nb;
+	break;
+    case RPM_BIN_TYPE:
+	_r->flags = DB_DBT_APPMALLOC;
+	_r->data = he->p.ptr;
+	_r->size = he->c;
+	break;
+    case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
+    case RPM_STRING_TYPE:
+	_r->flags = DB_DBT_APPMALLOC;
+	_r->data = (char *)he->p.str;
+	_r->size = strlen(he->p.str);
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+	if (he->c == 1) {
+	    _r->flags = DB_DBT_APPMALLOC;
+	    _r->data = xstrdup(he->p.argv[0]);
+	    _r->size = strlen(he->p.argv[0]);
+	} else {
+	    /* XXX uniqueness check needed. */
+	    DBT * A = xcalloc(he->c, sizeof(*A));
+	    uint32_t i;
+	    for (i = 0; i < he->c; i++) {
+		A[i].flags = DB_DBT_APPMALLOC;
+		A[i].data = xstrdup(he->p.argv[i]);
+		A[i].size = strlen(he->p.argv[i]);
+	    }
+	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
+	    _r->data = A;
+	    _r->size = he->c;
+	}
+	he->p.ptr = _free(he->p.ptr);
+	break;
+    }
+    rc = 0;
+
+exit:
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data)));
+
+    return rc;
+}
 
 /**
  * Return handle for an index database.
@@ -1522,12 +1860,14 @@ assert(rpmdb && rpmdb->db_dbenv);
     }
 
     dbi->dbi_db = db;
+    db->app_private = dbi;
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
 	*dbip = dbi;
-	if (dbi->dbi_index) {
-	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *) = NULL;
+	if (!rpmdb->db_rebuilding && dbi->dbi_index) {
+	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
+			= db3Acallback;
 	    int _flags = 0;
 	    (void) db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
 	}
@@ -1539,6 +1879,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 
     urlfn = _free(urlfn);
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb, tagName(rpmtag), dbip, dbi, rc, _OFLAGS(dbi)));
     /*@-nullstate -compmempass@*/
     return rc;
     /*@=nullstate =compmempass@*/

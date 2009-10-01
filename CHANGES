@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: dbi: permit tag tables to be secondary indices with dupes.
     - devzero2000: add security CFLAGS for GCC if supported
     - jbj: dbi: configure new indices with 4b join keys and duplicates.
     - jbj: dbi: generate additional indices.

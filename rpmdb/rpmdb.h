@@ -418,7 +418,7 @@ struct rpmdb_s {
 /*@owned@*/
     const char * db_home;	/*!< rpmdb directory path */
     int		db_flags;
-    int		db_mode;	/*!< rpmdb pen mode */
+    int		db_mode;	/*!< rpmdb open mode */
     int		db_perms;	/*!< rpmdb open permissions */
     int		db_api;		/*!< Berkeley API type */
 /*@owned@*/
@@ -426,6 +426,7 @@ struct rpmdb_s {
 
     int		db_remove_env;	/*!< Discard dbenv on close? */
     int		db_verifying;
+    int		db_rebuilding;
 
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     void (*db_errcall) (const char * db_errpfx, char * buffer)
@@ -442,6 +443,9 @@ struct rpmdb_s {
 	/*@modifies *ptr @*/;
 
     int	(*db_export) (rpmdb db, Header h, int adding);
+
+/*@refcounted@*/
+    Header db_h;		/*!< Currently active header */
 
 /*@only@*/ /*@null@*/
     unsigned char * db_bits;	/*!< Header instance bit mask. */
