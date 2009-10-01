@@ -411,7 +411,7 @@ DB_READ_UNCOMITTED
  { "h_dup",	0,POPT_BIT_SET,	&db3dbi.dbi_h_flags, DB_DUP,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_SUPSORT)
+#if defined(WITH_DB) && defined(DB_DUPSORT)
  { "h_dupsort",	0,POPT_BIT_SET,	&db3dbi.dbi_h_flags, DB_DUPSORT,
 	NULL, NULL },
 #endif
@@ -640,6 +640,8 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
      */
     /*@-sizeoftype@*/
     switch (tag) {
+#ifdef	DYING
+    case RPMTAG_CONFLICTVERSION:
     case RPMTAG_CONFLICTVERSION:
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_GROUP:
@@ -654,11 +656,15 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     case RPMTAG_SHA1HEADER:
     case RPMTAG_SIGMD5:
     case RPMTAG_SOURCEPKGID:
+#endif
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
+    default:
 	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
 	break;
-    default:
+    case RPMTAG_BASENAMES:
+    case RPMTAG_DIRNAMES:
+    case RPMTAG_DIRINDEXES:
 	dbi->dbi_jlen = 2 * sizeof(rpmuint32_t);
 	break;
     }
