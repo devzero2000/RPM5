@@ -640,23 +640,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
      */
     /*@-sizeoftype@*/
     switch (tag) {
-#ifdef	DYING
-    case RPMTAG_CONFLICTVERSION:
-    case RPMTAG_CONFLICTVERSION:
-    case RPMTAG_CONFLICTFLAGS:
-    case RPMTAG_GROUP:
-    case RPMTAG_NVRA:
-    case RPMTAG_OBSOLETENAME:
-    case RPMTAG_OBSOLETEVERSION:
-    case RPMTAG_OBSOLETEFLAGS:
-    case RPMTAG_PROVIDEVERSION:
-    case RPMTAG_PROVIDEFLAGS:
-    case RPMTAG_REQUIREVERSION:
-    case RPMTAG_REQUIREFLAGS:
-    case RPMTAG_SHA1HEADER:
-    case RPMTAG_SIGMD5:
-    case RPMTAG_SOURCEPKGID:
-#endif
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
     default:
