@@ -1241,7 +1241,7 @@ db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
     rpmdb rpmdb = NULL;
     Header h = NULL;
     int rc = DB_DONOTINDEX;	/* assume no-op */
-    size_t nb;
+    uint32_t i;
 
     /* XXX Don't index the header instance counter at record 0. */
     if (key->size == 4 && *(uint32_t *)key->data == 0)
@@ -1261,15 +1261,62 @@ assert(h);
     default:
 assert(0);
 	break;
-    case RPM_UINT8_TYPE:	nb = sizeof(*he->p.ui8p);	goto _ifill;
-    case RPM_UINT16_TYPE:	nb = sizeof(*he->p.ui16p);	goto _ifill;
-    case RPM_UINT32_TYPE:	nb = sizeof(*he->p.ui32p);	goto _ifill;
-    case RPM_UINT64_TYPE:	nb = sizeof(*he->p.ui64p);	goto _ifill;
-    _ifill:
-	/* XXX only scalars/array[0] -- uniqueness check needed. */
-	_r->flags = DB_DBT_APPMALLOC;
-	_r->data = he->p.ptr;
-	_r->size = nb;
+    case RPM_UINT8_TYPE:	/* XXX coerce to uint32_t */
+    {	uint8_t *_u = he->p.ui8p;
+	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
+	for (i = 0; i < he->c; i++)
+	    he->p.ui32p[i] = _u[i];
+	_u = _free(_u);
+	goto _ifill;
+    }	break;
+    case RPM_UINT16_TYPE:	/* XXX coerce to uint32_t */
+    {	uint16_t *_u = he->p.ui16p;
+	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
+	for (i = 0; i < he->c; i++)
+	    he->p.ui32p[i] = _u[i];
+	_u = _free(_u);
+	goto _ifill;
+    }	break;
+    case RPM_UINT32_TYPE:
+_ifill:
+	if (he->c == 1) {
+	    _r->flags = DB_DBT_APPMALLOC;
+	    _r->data = he->p.ui32p;
+	    _r->size = sizeof(*he->p.ui32p);
+	} else {
+	    /* XXX uniqueness check needed. */
+	    DBT * A = xcalloc(he->c, sizeof(*A));
+	    uint32_t ix;
+	   /* Store array in reverse order, mark last w DB_DBT_APPMALLOC */
+	    for (i = 0, ix = he->c - 1; i < he->c; i++, ix--) {
+		A[ix].data = he->p.ui32p + i;
+		A[ix].size = sizeof(*he->p.ui32p);
+	    }
+	    A[he->c - 1].flags = DB_DBT_APPMALLOC;
+	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
+	    _r->data = A;
+	    _r->size = he->c;
+	}
+	break;
+    case RPM_UINT64_TYPE:
+	if (he->c == 1) {
+	    _r->flags = DB_DBT_APPMALLOC;
+	    _r->data = he->p.ui64p;
+	    _r->size = sizeof(*he->p.ui64p);
+	} else {
+	    /* XXX uniqueness check needed. */
+	    DBT * A = xcalloc(he->c, sizeof(*A));
+	    uint32_t ix;
+	   /* Store array in reverse order, mark last w DB_DBT_APPMALLOC */
+	    for (i = 0, ix = he->c - 1; i < he->c; i++, ix--) {
+		A[ix].data = he->p.ui64p + i;
+		A[ix].size = sizeof(*he->p.ui64p);
+	    }
+	    A[he->c - 1].flags = DB_DBT_APPMALLOC;
+	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
+	    _r->data = A;
+	    _r->size = he->c;
+	}
 	break;
     case RPM_BIN_TYPE:
 	_r->flags = DB_DBT_APPMALLOC;
@@ -1290,7 +1337,6 @@ assert(0);
 	} else {
 	    /* XXX uniqueness check needed. */
 	    DBT * A = xcalloc(he->c, sizeof(*A));
-	    uint32_t i;
 	    for (i = 0; i < he->c; i++) {
 		A[i].flags = DB_DBT_APPMALLOC;
 		A[i].data = xstrdup(he->p.argv[i]);
