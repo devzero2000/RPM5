@@ -32,7 +32,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    (void) rpmbfAdd(bf, _s);
+    (void) rpmbfAdd(bf, _s, 0);
     *rval = JSVAL_TRUE;		/* XXX return s? */
     ok = JS_TRUE;
 exit:
@@ -52,7 +52,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfChk(bf, _s) ? JSVAL_TRUE : JSVAL_FALSE);
+    *rval = (rpmbfChk(bf, _s, 0) ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;
@@ -85,7 +85,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfDel(bf, _s) ? JSVAL_FALSE : JSVAL_TRUE);
+    *rval = (rpmbfDel(bf, _s, 0) ? JSVAL_FALSE : JSVAL_TRUE);
     ok = JS_TRUE;
 exit:
     return ok;

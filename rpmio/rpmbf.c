@@ -64,13 +64,12 @@ rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
     return rpmbfLink(bf);
 }
 
-int rpmbfAdd(rpmbf bf, const char * s)
+int rpmbfAdd(rpmbf bf, const char * s, size_t ns)
 {
-    size_t ns = (s ? strlen(s) : 0);
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 
-assert(ns > 0);
+    if (ns == 0) ns = strlen(s);
     jlu32lpair(s, ns, &h0, &h1);
 
     for (ns = 0; ns < bf->k; ns++) {
@@ -84,14 +83,13 @@ fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsig
     return 0;
 }
 
-int rpmbfChk(rpmbf bf, const char * s)
+int rpmbfChk(rpmbf bf, const char * s, size_t ns)
 {
-    size_t ns = (s ? strlen(s) : 0);
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
     int rc = 1;
 
-assert(ns > 0);
+    if (ns == 0) ns = strlen(s);
     jlu32lpair(s, ns, &h0, &h1);
 
     for (ns = 0; ns < bf->k; ns++) {
@@ -119,12 +117,12 @@ fprintf(stderr, "--> %s(%p) bf{%u,%u}[%u]\n", __FUNCTION__, bf, (unsigned)bf->m,
     return 0;
 }
 
-int rpmbfDel(rpmbf bf, const char * s)
+int rpmbfDel(rpmbf bf, const char * s, size_t ns)
 {
-    size_t ns = (s ? strlen(s) : 0);
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 
+    if (ns == 0) ns = strlen(s);
 assert(ns > 0);
     jlu32lpair(s, ns, &h0, &h1);
 
