@@ -172,7 +172,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 {
 /*@observer@*/
     static const char * const _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
+	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys";
     tagStore_t dbiTags = NULL;
     size_t dbiNTags = 0;
     char * dbiTagStr = NULL;

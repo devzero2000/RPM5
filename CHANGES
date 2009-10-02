@@ -1,5 +1,18 @@
 
 5.2b1 -> 5.3a1
+    - jbj: dbi: tear out the rpmdb->db_rebuilding construction scaffholding.
+	DB->associate() cascaded callbacks to generate bulk secondary index key
+	stores are now functional with --rebuilddb.
+    - jbj: add uniqification filtering for argv/uint32_t/uint64_t secondary keys.
+	DB_DUPSORT can likely be free;y applied as a schema qualifier.
+    - jbj: dbi: add currently existing secondary key filtering and transforms
+	through the DB->associate() callback.
+    - jbj: dbi: Backout the PRCO EVR/F tables, the PRCO assertion tables won't need no
+	steenkin' joins.
+    - jbj: dbi: add tables for PRCO dependency assertions based on YAML spewage.
+	rude & crude but "works".
+    - jbj: rpmtag: make sure that he->tag contains the assigned tag numbers.
+    - jbj: rpmtag: assign numbers to the YAML PRCO tags to index assertions.
     - jbj: rpmbf: pass string length where needed.
     - jbj: dbi: commit to DB->associate() secondary indices as default
 	(w exceptions, todo++).

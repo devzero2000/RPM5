@@ -14,10 +14,16 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <rpmlog.h>
 #include <rpmmacro.h>
-#include <rpmurl.h>	/* XXX urlPath proto */
+#include <rpmbf.h>
+#include <rpmpgp.h>		/* XXX pgpExtractPubkeyFingerprint */
+#include <rpmurl.h>		/* XXX urlPath proto */
 
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
+
+#define _RPMEVR_INTERNAL	/* XXX isInstallPrereq */
+#include <rpmevr.h>
+
 #define	_RPMDB_INTERNAL
 #include <rpmdb.h>
 
@@ -296,82 +302,73 @@ static KEY DBTflags[] = {
     _ENTRY(DBT_MULTIPLE),
 };
 static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
-static const char * fmtKeyData(const DBT * key, const DBT * data)
+static char * fmtDBT(const DBT * K, char * te)
 {
-    static char buf[BUFSIZ];
     static size_t keymax = 40;
-    char * te = buf;
-    uint8_t * _u;
     int unprintable;
     uint32_t i;
 
-    te = stpcpy(te, "\n\t  key: ");
-    if (key == NULL) {
-	te = stpcpy(te, "NULL");
-    } else {
-	sprintf(te, "%p[%u]\t", key->data, (unsigned)key->size);
-	te += strlen(te);
-	(void) fmtBits(key->flags, DBTflags, nDBTflags, te);
-	te += strlen(te);
-	if (key->data && key->size > 0) {
-	    /* Verify if key is a string. */
-	    _u = key->data;
-	    unprintable = 0;
-	    for (i = 0; i < key->size; i++)
-		unprintable |= !xisprint(_u[i]);
+    sprintf(te, "%p[%u]\t", K->data, (unsigned)K->size);
+    te += strlen(te);
+    (void) fmtBits(K->flags, DBTflags, nDBTflags, te);
+    te += strlen(te);
+    if (K->data && K->size > 0) {
+ 	uint8_t * _u;
+	size_t _nu;
 
-	    /* Display the key. */
-	    if (!unprintable) {
-		size_t nb = (key->size < keymax ? key->size : keymax);
-		char * ellipsis = (key->size < keymax ? "" : "...");
-		sprintf(te, "\t\"%.*s%s\"", nb, (char *)key->data, ellipsis);
-	    } else {
-		switch (key->size) {
-		default: break;
-		case 4:	sprintf(te, "\t0x%x", *(uint32_t *)key->data); break;
-		}
-	    }
-
-	    te += strlen(te);
-	    *te = '\0';
+	/* Grab the key data/size. */
+	if (K->flags & DB_DBT_MULTIPLE) {
+	    DBT * _K = K->data;
+	    _u = _K->data;
+	    _nu = _K->size;
+	} else {
+	    _u = K->data;
+	    _nu = K->size;
 	}
-    }
-    
-    te = stpcpy(te, "\n\t data: ");
-    if (data == NULL) {
-	te = stpcpy(te, "NULL");
-    } else {
-	sprintf(te, "%p[%u]\t", data->data, (unsigned)data->size);
-	te += strlen(te);
-	(void) fmtBits(data->flags, DBTflags, nDBTflags, te);
-	te += strlen(te);
-	if (data->data && data->size > 0) {
-	    /* Verify if value is a string. */
-	    _u = data->data;
-	    unprintable = 0;
-	    for (i = 0; i < key->size; i++)
-		unprintable |= !xisprint(_u[i]);
+	/* Verify if data is a string. */
+	unprintable = 0;
+	for (i = 0; i < _nu; i++)
+	    unprintable |= !xisprint(_u[i]);
 
-	    /* Display the value. */
-	    if (!unprintable) {
-		size_t nb = (data->size < keymax ? data->size : keymax);
-		char * ellipsis = (data->size < keymax ? "" : "...");
-		sprintf(te, "\t\"%.*s%s\"", nb, (char *)data->data, ellipsis);
-	    } else {
-		switch (data->size) {
-		default: break;
-		case 4:	sprintf(te, "\th#%7d", *(uint32_t *)data->data); break;
-		}
+	/* Display the data. */
+	if (!unprintable) {
+	    size_t nb = (_nu < keymax ? _nu : keymax);
+	    char * ellipsis = (_nu < keymax ? "" : "...");
+	    sprintf(te, "\t\"%.*s%s\"", nb, (char *)_u, ellipsis);
+	} else {
+	    switch (_nu) {
+	    default: break;
+	    case 4:	sprintf(te, "\t%u", *(uint32_t *)_u); break;
 	    }
-
-	    te += strlen(te);
-	    *te = '\0';
 	}
+
+	te += strlen(te);
+	*te = '\0';
     }
+    return te;
+}
+static const char * fmtKDR(const DBT * K, const DBT * D, const DBT * R)
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+
+    if (K) {
+	te = stpcpy(te, "\n\t  key: ");
+	te = fmtDBT(K, te);
+    }
+    if (D) {
+	te = stpcpy(te, "\n\t data: ");
+	te = fmtDBT(D, te);
+    }
+    if (R) {
+	te = stpcpy(te, "\n\t  res: ");
+	te = fmtDBT(R, te);
+    }
+    *te = '\0';
     
     return buf;
 }
-#define	_KEYDATA(_key, _data)	fmtKeyData(_key, _data)
+#define	_KEYDATA(_K, _D, _R)	fmtKDR(_K, _D, _R)
 
 #undef	_ENTRY
 
@@ -817,7 +814,7 @@ flags = DB_KEYLAST;
 #endif
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
     return rc;
 }
 
@@ -856,7 +853,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 #endif
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
     return rc;
 }
 /*@=mustmod@*/
@@ -888,7 +885,7 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
     rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
 #endif
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
     return rc;
 }
 /*@=mustmod@*/
@@ -922,7 +919,7 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	}
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
     return rc;
 }
 /*@=mustmod@*/
@@ -1233,13 +1230,96 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc))
 }
 /*@=moduncon@*/
 
+/**
+ * Convert hex to binary nibble.
+ * @param c		hex character
+ * @return		binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char)(c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return '\0';
+}
+
+static int _loadArgvTag(DBT * _r, HE_t he, uint32_t i)
+{
+    const char * s = he->p.argv[i];
+    size_t ns = strlen(s);
+    uint8_t * t = NULL;
+    void * data = NULL;
+    size_t size = 0;
+    int xx;
+
+    switch (he->tag) {
+    case RPMTAG_FILEDIGESTS:
+	/* Filter out empty and odd file digests. */
+	if (ns > 0 && !(ns & 1)) {
+	    /* Convert hex to binary. */
+	    size = ns / 2;
+	    data = t = xmalloc(size);
+	    for (i = 0; i < size; i++, t++, s += 2)
+		*t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+	}
+	break;
+    case RPMTAG_PUBKEYS:
+	/* Extract pubkey id from the base64 blob. */
+	data = t = xmalloc(32);
+	if ((size = xx = pgpExtractPubkeyFingerprint(s, t)) <= 0)
+	    data = t = _free(t);
+	break;
+    case RPMTAG_CONFLICTYAMLENTRY:	
+    case RPMTAG_OBSOLETEYAMLENTRY:
+    case RPMTAG_PROVIDEYAMLENTRY:
+    case RPMTAG_REQUIREYAMLENTRY:
+	/* Skip the YAML "- ..." lead-in mark up if present. */
+	if (s[0] == '-' && s[1] == ' ') {
+	    s += 2;
+	    ns -= 2;
+	}
+	/*@fallthrough@*/
+    default:
+	/* Filter out empty strings. */
+	if (*s && ns > 0) {
+	    data = (void *) xstrdup(s);
+	    size = ns;
+	}
+	break;
+    }
+    if ((_r->data = data) != NULL) _r->flags |= DB_DBT_APPMALLOC;
+    return (_r->size = size);
+}
+
+static int uint32Cmp(const void * _a, const void * _b)
+{
+    const uint32_t * a = _a;
+    const uint32_t * b = _b;
+    return ((*a < *b) ? -1 :
+	   ((*a > *b) ?  1 : 0));
+}
+
+static int uint64Cmp(const void * _a, const void * _b)
+{
+    const uint64_t * a = _a;
+    const uint64_t * b = _b;
+    return ((*a < *b) ? -1 :
+	   ((*a > *b) ?  1 : 0));
+}
+
 static int
 db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     dbiIndex dbi = db->app_private;
     rpmdb rpmdb = NULL;
     Header h = NULL;
+    DBT * A = NULL;
     int rc = DB_DONOTINDEX;	/* assume no-op */
     uint32_t i;
 
@@ -1257,12 +1337,23 @@ assert(h);
     if (!headerGet(h, he, 0))
 	goto exit;
 
+    /* Retrieve other tags needed for filtering decisions. */
+    switch (he->tag) {
+    default:
+	break;
+    case RPMTAG_REQUIREYAMLENTRY:
+    case RPMTAG_REQUIRENAME:
+	Fhe->tag = RPMTAG_REQUIREFLAGS;
+	(void) headerGet(h, Fhe, 0);
+	break;
+    }
+
     switch (he->t) {
     default:
 assert(0);
 	break;
     case RPM_UINT8_TYPE:	/* XXX coerce to uint32_t */
-    {	uint8_t *_u = he->p.ui8p;
+    {	uint8_t * _u = he->p.ui8p;
 	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
 	for (i = 0; i < he->c; i++)
 	    he->p.ui32p[i] = _u[i];
@@ -1270,7 +1361,7 @@ assert(0);
 	goto _ifill;
     }	break;
     case RPM_UINT16_TYPE:	/* XXX coerce to uint32_t */
-    {	uint16_t *_u = he->p.ui16p;
+    {	uint16_t * _u = he->p.ui16p;
 	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
 	for (i = 0; i < he->c; i++)
 	    he->p.ui32p[i] = _u[i];
@@ -1279,45 +1370,67 @@ assert(0);
     }	break;
     case RPM_UINT32_TYPE:
 _ifill:
+    {	uint32_t * _u = he->p.ui32p;
+	size_t _ulen = sizeof(*_u);
+
+	/* Drop the transaction id usecs field (if present) when indexing. */
+	switch (he->tag) {
+	case RPMTAG_INSTALLTID:
+	case RPMTAG_REMOVETID:
+	    he->c = 1;
+	    break;
+	default:
+	    break;
+	}
 	if (he->c == 1) {
 	    _r->flags = DB_DBT_APPMALLOC;
-	    _r->data = he->p.ui32p;
-	    _r->size = sizeof(*he->p.ui32p);
-	} else {
-	    /* XXX uniqueness check needed. */
-	    DBT * A = xcalloc(he->c, sizeof(*A));
-	    uint32_t ix;
-	   /* Store array in reverse order, mark last w DB_DBT_APPMALLOC */
-	    for (i = 0, ix = he->c - 1; i < he->c; i++, ix--) {
-		A[ix].data = he->p.ui32p + i;
-		A[ix].size = sizeof(*he->p.ui32p);
-	    }
-	    A[he->c - 1].flags = DB_DBT_APPMALLOC;
-	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
-	    _r->data = A;
-	    _r->size = he->c;
+	    _r->data = _u;
+	    _r->size = _ulen;
+	    break;
 	}
-	break;
+	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
+	_r->data = A = xcalloc(he->c, sizeof(*A));
+	_r->size = 0;
+	if (he->c > 1)
+	    qsort(_u, he->c, _ulen, uint32Cmp);
+	for (i = 0; i < he->c; i++, _u++) {
+	    /* Don't add identical (key,val) item to secondary. */
+	    if (i > 0 && _u[-1] == _u[0])
+		continue;
+	    A->flags = DB_DBT_APPMALLOC;
+	    A->data = memcpy(xmalloc(_ulen), _u, _ulen);
+	    A->size = _ulen;
+	    A++;
+	    _r->size++;
+	}
+	he->p.ptr = _free(he->p.ptr);
+    }	break;
     case RPM_UINT64_TYPE:
+    {   uint64_t * _u = he->p.ui64p;
+	size_t _ulen = sizeof(*_u);
 	if (he->c == 1) {
 	    _r->flags = DB_DBT_APPMALLOC;
-	    _r->data = he->p.ui64p;
-	    _r->size = sizeof(*he->p.ui64p);
-	} else {
-	    /* XXX uniqueness check needed. */
-	    DBT * A = xcalloc(he->c, sizeof(*A));
-	    uint32_t ix;
-	   /* Store array in reverse order, mark last w DB_DBT_APPMALLOC */
-	    for (i = 0, ix = he->c - 1; i < he->c; i++, ix--) {
-		A[ix].data = he->p.ui64p + i;
-		A[ix].size = sizeof(*he->p.ui64p);
-	    }
-	    A[he->c - 1].flags = DB_DBT_APPMALLOC;
-	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
-	    _r->data = A;
-	    _r->size = he->c;
+	    _r->data = _u;
+	    _r->size = _ulen;
+	    break;
 	}
-	break;
+	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
+	_r->data = A = xcalloc(he->c, sizeof(*A));
+	_r->size = 0;
+	if (he->c > 1)
+	    qsort(_u, he->c, _ulen, uint64Cmp);
+	for (i = 0; i < he->c; i++, _u++) {
+	    /* Don't add identical (key,val) item to secondary. */
+	    if (i > 0 && _u[-1] == _u[0])
+		continue;
+	    A->flags = DB_DBT_APPMALLOC;
+	    A->data = memcpy(xmalloc(_ulen), _u, _ulen);
+	    A->size = _ulen;
+	    A++;
+	    _r->size++;
+	}
+	he->p.ptr = _free(he->p.ptr);
+    }	break;
     case RPM_BIN_TYPE:
 	_r->flags = DB_DBT_APPMALLOC;
 	_r->data = he->p.ptr;
@@ -1326,34 +1439,53 @@ _ifill:
     case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
     case RPM_STRING_TYPE:
 	_r->flags = DB_DBT_APPMALLOC;
-	_r->data = (char *)he->p.str;
+	_r->data = (char *) he->p.str;
 	_r->size = strlen(he->p.str);
 	break;
     case RPM_STRING_ARRAY_TYPE:
 	if (he->c == 1) {
-	    _r->flags = DB_DBT_APPMALLOC;
-	    _r->data = xstrdup(he->p.argv[0]);
-	    _r->size = strlen(he->p.argv[0]);
+	    /* No "" empty keys please. */
+	    if (*he->p.argv[0] != '\0')
+		(void) _loadArgvTag(_r, he, 0);
 	} else {
-	    /* XXX uniqueness check needed. */
-	    DBT * A = xcalloc(he->c, sizeof(*A));
-	    for (i = 0; i < he->c; i++) {
-		A[i].flags = DB_DBT_APPMALLOC;
-		A[i].data = xstrdup(he->p.argv[i]);
-		A[i].size = strlen(he->p.argv[i]);
-	    }
+	    size_t _jiggery = 2;	/* XXX todo: Bloom filter tuning? */
+	    size_t _k = _jiggery * 8;
+	    size_t _m = _jiggery * (3 * he->c * _k) / 2;
+	    rpmbf bf = rpmbfNew(_m, _k, 0);
+
 	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
-	    _r->data = A;
-	    _r->size = he->c;
+	    _r->data = A = xcalloc(he->c, sizeof(*A));
+	    _r->size = 0;
+	    for (i = 0; i < he->c; i++) {
+		/* No "" empty keys please. */
+		if (*he->p.argv[i] == '\0')
+		    continue;
+		/* Filter install context dependencies. */
+		if (Fhe->p.ui32p && isInstallPreReq(Fhe->p.ui32p[i]))
+		    continue;
+		/* Don't add identical (key,val) item to secondary. */
+		if (rpmbfChk(bf, he->p.argv[i], 0))
+		    continue;
+		rpmbfAdd(bf, he->p.argv[i], 0);
+		if (!_loadArgvTag(A, he, i))
+		    continue;
+		A++;
+		_r->size++;
+	    }
+	    bf = rpmbfFree(bf);
 	}
 	he->p.ptr = _free(he->p.ptr);
 	break;
     }
-    rc = 0;
+    if (_r->data && _r->size > 0)
+	rc = 0;
+    else if (_r->flags & DB_DBT_APPMALLOC)
+	_r->data = _free(_r->data);
 
 exit:
+    Fhe->p.ptr = _free(Fhe->p.ptr);
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data, _r)));
 
     return rc;
 }
@@ -1911,7 +2043,7 @@ assert(rpmdb && rpmdb->db_dbenv);
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
 	*dbip = dbi;
-	if (!rpmdb->db_rebuilding && dbi->dbi_index) {
+	if (dbi->dbi_index) {
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
 	    int _flags = 0;

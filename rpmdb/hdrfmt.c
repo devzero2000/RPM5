@@ -3498,32 +3498,44 @@ static int PyamlTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
+    int rc;
     he->tag = RPMTAG_PROVIDENAME;
-    return PRCOyamlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+    rc = PRCOyamlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+    he->tag = RPMTAG_PROVIDEYAMLENTRY;
+    return rc;
 }
 
 static int RyamlTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
+    int rc;
     he->tag = RPMTAG_REQUIRENAME;
-    return PRCOyamlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+    rc = PRCOyamlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+    he->tag = RPMTAG_REQUIREYAMLENTRY;
+    return rc;
 }
 
 static int CyamlTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
+    int rc;
     he->tag = RPMTAG_CONFLICTNAME;
-    return PRCOyamlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+    rc = PRCOyamlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+    he->tag = RPMTAG_CONFLICTYAMLENTRY;
+    return rc;
 }
 
 static int OyamlTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
+    int rc;
     he->tag = RPMTAG_OBSOLETENAME;
-    return PRCOyamlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+    rc = PRCOyamlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+    he->tag = RPMTAG_OBSOLETEYAMLENTRY;
+    return rc;
 }
 
 static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, rpmuint32_t i)
