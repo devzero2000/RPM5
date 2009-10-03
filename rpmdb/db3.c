@@ -304,7 +304,7 @@ static KEY DBTflags[] = {
 static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
 static char * fmtDBT(const DBT * K, char * te)
 {
-    static size_t keymax = 40;
+    static size_t keymax = 35;
     int unprintable;
     uint32_t i;
 

@@ -1636,25 +1636,7 @@ assert(bnset->count > 0);
     if (bingo && (dbi = dbiOpen(db, RPMTAG_DIRNAMES, 0)) != NULL) {
 	dbiIndexSet dnset = NULL;
 
-	/* Load the dirnames index set. */
-	dbcursor = NULL;
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-
-/*@-temptrans@*/
-key->data = (void *) dirName;
-/*@=temptrans@*/
-key->size = (UINT32_T) strlen(dirName);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
-
-	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-	if (rc > 0) {
-	    rpmlog(RPMLOG_ERR,
-		_("error(%d) getting records from %s index\n"),
-		rc, tagName(dbi->dbi_rpmtag));
-	}
-	if (rc == 0)
-	    (void) dbt2set(dbi, data, &dnset);
-	xx = dbiCclose(dbi, dbcursor, 0);
+	rc = _joinKeys(dbi, dirName, strlen(dirName), &dnset);
 
 	/* If dnset is non-empty, then attempt Plan A intersection. */
 	if (rc == 0 && dnset && dnset->count > 0) {
@@ -3630,6 +3612,12 @@ assert(v.data != NULL);
 		xx = headerGet(h, he, 0);
 /*@=compmempass@*/
 		/*@switchbreak@*/ break;
+	    case RPMTAG_DIRNAMES:
+	    case RPMTAG_TRIGGERNAME:
+		xx = headerGet(h, he, 0);
+		if (he->c > 1)
+		    qsort(he->p.argv, he->c, sizeof(he->p.argv[0]), argvCmp);
+		/*@switchbreak@*/ break;
 	    default:
 /*@-compmempass@*/
 		xx = headerGet(h, he, 0);
@@ -3688,16 +3676,10 @@ assert(v.data != NULL);
 		     && isInstallPreReq(requireFlags.ui32p[i]))
 			/*@innercontinue@*/ continue;
 		    /*@switchbreak@*/ break;
+		case RPMTAG_DIRNAMES:
 		case RPMTAG_TRIGGERNAME:
-		    if (i) {	/* don't add duplicates */
-			int j;
-			for (j = 0; j < i; j++) {
-			    if (!strcmp(he->p.argv[i], he->p.argv[j]))
-				/*@innerbreak@*/ break;
-			}
-			if (j < i)
-			    /*@innercontinue@*/ continue;
-		    }
+		    if (i > 0 && !strcmp(he->p.argv[i], he->p.argv[i-1]))
+			/*@innercontinue@*/ continue;
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
