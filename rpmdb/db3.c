@@ -1247,48 +1247,45 @@ static inline unsigned char nibble(char c)
     return '\0';
 }
 
-static int _loadArgvTag(DBT * _r, HE_t he, uint32_t i)
+static int loadDBT(DBT * _r, rpmTag tag, const void * _s, size_t ns)
 {
-    const char * s = he->p.argv[i];
-    size_t ns = strlen(s);
-    uint8_t * t = NULL;
+    const char * s = _s;
     void * data = NULL;
     size_t size = 0;
+    uint8_t * t = NULL;
+    uint32_t i;
     int xx;
 
-    switch (he->tag) {
+    if (ns == 0) ns = strlen(s);
+    switch (tag) {
     case RPMTAG_FILEDIGESTS:
-	/* Filter out empty and odd file digests. */
+	/* Convert hex to binary, filter out odd hex strings. */
 	if (ns > 0 && !(ns & 1)) {
-	    /* Convert hex to binary. */
-	    size = ns / 2;
-	    data = t = xmalloc(size);
-	    for (i = 0; i < size; i++, t++, s += 2)
+	    ns /= 2;
+	    data = t = xmalloc(ns);
+	    for (i = 0; i < ns; i++, t++, s += 2) {
+		if (!(isxdigit(s[0]) && isxdigit(s[1])))
+		    break;
 		*t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+	    }
+	    if (i == ns)
+		size = ns;
+	    else
+		data = _free(data);
 	}
 	break;
     case RPMTAG_PUBKEYS:
 	/* Extract pubkey id from the base64 blob. */
-	data = t = xmalloc(32);
-	if ((size = xx = pgpExtractPubkeyFingerprint(s, t)) <= 0)
-	    data = t = _free(t);
+	t = xmalloc(32);
+	if ((xx = pgpExtractPubkeyFingerprint(s, t)) > 0) {
+	    data = t;
+	    size = xx;
+	} else
+	    t = _free(t);
 	break;
-    case RPMTAG_CONFLICTYAMLENTRY:	
-    case RPMTAG_OBSOLETEYAMLENTRY:
-    case RPMTAG_PROVIDEYAMLENTRY:
-    case RPMTAG_REQUIREYAMLENTRY:
-	/* Skip the YAML "- ..." lead-in mark up if present. */
-	if (s[0] == '-' && s[1] == ' ') {
-	    s += 2;
-	    ns -= 2;
-	}
-	/*@fallthrough@*/
     default:
-	/* Filter out empty strings. */
-	if (*s && ns > 0) {
-	    data = (void *) xstrdup(s);
-	    size = ns;
-	}
+	data = (void *) memcpy(xmalloc(ns), _s, ns);
+	size = ns;
 	break;
     }
     if ((_r->data = data) != NULL) _r->flags |= DB_DBT_APPMALLOC;
@@ -1316,10 +1313,15 @@ db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+#ifdef	NOTYET
+    HE_t FMhe = memset(alloca(sizeof(*FMhe)), 0, sizeof(*FMhe));
+#endif
     dbiIndex dbi = db->app_private;
     rpmdb rpmdb = NULL;
     Header h = NULL;
     DBT * A = NULL;
+    const char * s = NULL;
+    size_t ns = 0;
     int rc = DB_DONOTINDEX;	/* assume no-op */
     uint32_t i;
 
@@ -1341,8 +1343,17 @@ assert(h);
     switch (he->tag) {
     default:
 	break;
+#ifdef	NOTYET
+    case RPMTAG_BASENAMES:
+    case RPMTAG_FILEPATHS:
+	/* Add the pesky trailing '/' to directories. */
+	FMhe->tag = RPMTAG_FILEMODES;
+	(void) headerGet(h, FMhe, 0);
+	break;
+#endif
     case RPMTAG_REQUIREYAMLENTRY:
     case RPMTAG_REQUIRENAME:
+	/* The Requires: F is needed to filter install context dependencies. */
 	Fhe->tag = RPMTAG_REQUIREFLAGS;
 	(void) headerGet(h, Fhe, 0);
 	break;
@@ -1383,9 +1394,8 @@ _ifill:
 	    break;
 	}
 	if (he->c == 1) {
-	    _r->flags = DB_DBT_APPMALLOC;
-	    _r->data = _u;
-	    _r->size = _ulen;
+	    /* XXX is it worth avoiding the realloc here? */
+	    (void) loadDBT(A, he->tag, _u, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
@@ -1397,21 +1407,18 @@ _ifill:
 	    /* Don't add identical (key,val) item to secondary. */
 	    if (i > 0 && _u[-1] == _u[0])
 		continue;
-	    A->flags = DB_DBT_APPMALLOC;
-	    A->data = memcpy(xmalloc(_ulen), _u, _ulen);
-	    A->size = _ulen;
+	    if (!loadDBT(A, he->tag, _u, _ulen))
+		continue;
 	    A++;
 	    _r->size++;
 	}
-	he->p.ptr = _free(he->p.ptr);
     }	break;
     case RPM_UINT64_TYPE:
     {   uint64_t * _u = he->p.ui64p;
 	size_t _ulen = sizeof(*_u);
 	if (he->c == 1) {
-	    _r->flags = DB_DBT_APPMALLOC;
-	    _r->data = _u;
-	    _r->size = _ulen;
+	    /* XXX is it worth avoiding the realloc here? */
+	    (void) loadDBT(A, he->tag, _u, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
@@ -1423,30 +1430,30 @@ _ifill:
 	    /* Don't add identical (key,val) item to secondary. */
 	    if (i > 0 && _u[-1] == _u[0])
 		continue;
-	    A->flags = DB_DBT_APPMALLOC;
-	    A->data = memcpy(xmalloc(_ulen), _u, _ulen);
-	    A->size = _ulen;
+	    if (!loadDBT(A, he->tag, _u, _ulen))
+		continue;
 	    A++;
 	    _r->size++;
 	}
-	he->p.ptr = _free(he->p.ptr);
     }	break;
     case RPM_BIN_TYPE:
-	_r->flags = DB_DBT_APPMALLOC;
-	_r->data = he->p.ptr;
-	_r->size = he->c;
+	s = he->p.ptr; ns = he->c;
+	/* XXX is it worth avoiding the realloc here? */
+	if (ns > 0)			/* No "" empty keys please. */
+	    (void) loadDBT(_r, he->tag, s, ns);
 	break;
     case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
     case RPM_STRING_TYPE:
-	_r->flags = DB_DBT_APPMALLOC;
-	_r->data = (char *) he->p.str;
-	_r->size = strlen(he->p.str);
+	s = he->p.str; ns = strlen(s);
+	/* XXX is it worth avoiding the realloc here? */
+	if (ns > 0)			/* No "" empty keys please. */
+	    (void) loadDBT(_r, he->tag, s, ns);
 	break;
     case RPM_STRING_ARRAY_TYPE:
 	if (he->c == 1) {
-	    /* No "" empty keys please. */
-	    if (*he->p.argv[0] != '\0')
-		(void) _loadArgvTag(_r, he, 0);
+	    s = he->p.argv[0]; ns = strlen(s);
+	    if (ns > 0)			/* No "" empty keys please. */
+		(void) loadDBT(_r, he->tag, s, ns);
 	} else {
 	    size_t _jiggery = 2;	/* XXX todo: Bloom filter tuning? */
 	    size_t _k = _jiggery * 8;
@@ -1457,24 +1464,39 @@ _ifill:
 	    _r->data = A = xcalloc(he->c, sizeof(*A));
 	    _r->size = 0;
 	    for (i = 0; i < he->c; i++) {
-		/* No "" empty keys please. */
-		if (*he->p.argv[i] == '\0')
+		s = he->p.argv[i]; ns = strlen(s);
+
+		/* XXX Skip YAML "- ..." lead-in mark up if present. */
+		if (s[0] == '-' && s[1] == ' ') {
+		    s += 2, ns -= 2;
+		}
+
+#ifdef	NOTYET
+		/* Add the pesky trailing '/' to directories. */
+		if (FMhe->p.ui16p && !S_ISREG((mode_t)FMhe->p.ui16p[i])) {
 		    continue;
+		}
+#endif
+
+		if (ns == 0)		/* No "" empty keys please. */
+		    continue;
+
 		/* Filter install context dependencies. */
 		if (Fhe->p.ui32p && isInstallPreReq(Fhe->p.ui32p[i]))
 		    continue;
+
 		/* Don't add identical (key,val) item to secondary. */
-		if (rpmbfChk(bf, he->p.argv[i], 0))
+		if (rpmbfChk(bf, s, ns))
 		    continue;
-		rpmbfAdd(bf, he->p.argv[i], 0);
-		if (!_loadArgvTag(A, he, i))
+		rpmbfAdd(bf, s, ns);
+
+		if (!loadDBT(A, he->tag, s, ns))
 		    continue;
 		A++;
 		_r->size++;
 	    }
 	    bf = rpmbfFree(bf);
 	}
-	he->p.ptr = _free(he->p.ptr);
 	break;
     }
     if (_r->data && _r->size > 0)
@@ -1483,7 +1505,11 @@ _ifill:
 	_r->data = _free(_r->data);
 
 exit:
+#ifdef	NOTYET
+    FMhe->p.ptr = _free(FMhe->p.ptr);
+#endif
     Fhe->p.ptr = _free(Fhe->p.ptr);
+    he->p.ptr = _free(he->p.ptr);
 
 DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data, _r)));
 

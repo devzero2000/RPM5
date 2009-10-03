@@ -187,6 +187,8 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }
 
+if (_rpmdb_debug)
+fprintf(stderr, "*** dbiTagStr %s\n", dbiTagStr);
     /* Always allocate package index */
     dbiTags = xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
@@ -224,6 +226,13 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = tag;
 	dbiTags[dbiNTags].iob = NULL;
+if (_rpmdb_debug) {
+fprintf(stderr, "\t%d %s(", dbiNTags, o);
+if (tag & 0x40000000)
+    fprintf(stderr, "0x%x)\n", tag);
+else
+    fprintf(stderr, "%d)\n", tag);
+}
 	dbiNTags++;
     }
 
@@ -1405,6 +1414,77 @@ int rpmdbVerify(const char * prefix)
     return rc;
 }
 
+static int _joinKeys(dbiIndex dbi, const void * keyp, size_t keylen,
+		dbiIndexSet * matches)
+{
+    static unsigned int _tagNum = 0;
+    static unsigned int _fpNum = 0;
+    dbiIndexSet set = NULL;
+    DBC * dbcursor = NULL;
+    DBT k = DBT_INIT;
+    DBT v = DBT_INIT;
+    uint32_t _flags;
+    int rc;
+    int xx;
+
+    *matches = NULL;
+
+    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
+k.data = (void *) keyp;
+k.size = (UINT32_T) keylen;
+if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
+if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
+
+    _flags = DB_SET;
+    while (1) {
+	union _dbswap * vp;
+	size_t nb;
+
+	rc = dbiGet(dbi, dbcursor, &k, &v, _flags);
+	_flags = DB_NEXT_DUP;
+
+	vp = v.data;
+
+	switch (rc) {
+	default:
+	    if (rc > 0)
+		rpmlog(RPMLOG_ERR, _("dbiGet(%s) error(%d): %s\n"),
+			tagName(dbi->dbi_rpmtag), rc, strerror(rc));
+	    goto done;
+	    break;
+
+	case 0:
+	    if (dbi->dbi_jlen == (2 * sizeof(rpmuint32_t))
+	     || v.size > sizeof(rpmuint32_t))
+	    {
+		/* Join keys need to be native endian internally. */
+		(void) dbt2set(dbi, &v, &set);
+		goto done;
+	    }
+	    break;
+	}
+
+	/* Append duplicates to join key set */
+	if (set == NULL)
+	    set = xcalloc(1, sizeof(*set));
+	nb = (set->count + 1) * sizeof(set->recs[0]);
+	set->recs = xrealloc(set->recs, nb);
+	set->recs[set->count].hdrNum = vp->ui;
+	set->recs[set->count].tagNum = _tagNum;
+	set->recs[set->count].fpNum = _fpNum;
+	set->count++;
+    }
+
+done:
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+
+    *matches = set;
+
+    return rc;
+}
+
 /**
  * Return a tagnum with hash on the (directory) path in upper 16 bits.
  * @param s		(directory) path
@@ -1474,18 +1554,19 @@ static int dbiIntersect(unsigned int tag, dbiIndexSet dnset, dbiIndexSet bnset,
  * Find file matches in database.
  * @param db		rpm database
  * @param filespec
- * @param key
- * @param data
+ * @param keylen
  * @param matches
  * @return		0 on success, 1 on not found, -2 on error
  */
-static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
-		DBT * key, DBT * data, /*@out@*/ dbiIndexSet * matches)
+static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec, size_t keylen,
+		/*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, *key, *data, *matches, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
+DBT k = DBT_INIT, *key = &k;
+DBT v = DBT_INIT, *data = &v;
     const char * dirName;
     const char * baseName;
     dbiIndex dbi;
@@ -1843,32 +1924,37 @@ exit:
  * Both version and release can be patterns.
  * @todo Name must be an exact match, as name is a db key.
  * @param dbi		index database handle (always RPMTAG_NAME)
- * @param dbcursor	index database cursor
- * @param key		search key/length/flags
- * @param data		search data/length/flags
  * @param arg		name[-version[-release]] string
+ * @param keylen
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
+static rpmRC dbiFindByLabel(dbiIndex dbi, /*@null@*/ const char * arg, size_t keylen,
+		/*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies dbi, *dbcursor, *key, *data, *matches,
+	/*@modifies dbi, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
+DBC * dbcursor = NULL;
+DBT k = DBT_INIT, *key = &k;
+DBT v = DBT_INIT, *data = &v;
     const char * release;
     char * localarg;
     char * s;
     char c;
     int brackets;
     rpmRC rc;
+    int xx;
  
     if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
+    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
     /* did they give us just a name? */
     rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
-    if (rc != RPMRC_NOTFOUND) return rc;
+    if (rc != RPMRC_NOTFOUND)
+	goto exit;
 
     /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
@@ -1894,13 +1980,15 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	    break;
     }
 
-    /*@-nullstate@*/	/* FIX: *matches may be NULL. */
-    if (s == localarg) return RPMRC_NOTFOUND;
+    if (s == localarg) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
 
     *s = '\0';
     rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
-    /*@=nullstate@*/
-    if (rc != RPMRC_NOTFOUND) return rc;
+    if (rc != RPMRC_NOTFOUND)
+	goto exit;
 
     /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
@@ -1926,12 +2014,20 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	    break;
     }
 
-    if (s == localarg) return RPMRC_NOTFOUND;
+    if (s == localarg) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
 
     *s = '\0';
-    /*@-nullstate@*/	/* FIX: *matches may be NULL. */
-    return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
-    /*@=nullstate@*/
+    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
+
+exit:
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+/*@-nullstate@*/	/* FIX: *matches may be NULL. */
+    return rc;
+/*@=nullstate@*/
 }
 
 void * dbiStatsAccumulator(dbiIndex dbi, int opx)
@@ -2894,70 +2990,14 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\
     }
     else {
 	/* Common case: retrieve join keys. */
-	DBC * dbcursor = NULL;
-	DBT k = DBT_INIT;
-	DBT v = DBT_INIT;
 	int rc;
-	int xx;
 
 	if (isLabel) {
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-	    rc = dbiFindByLabel(dbi, dbcursor, &k, &v, keyp, &set);
-	    xx = dbiCclose(dbi, dbcursor, 0);
-	    dbcursor = NULL;
+	    rc = dbiFindByLabel(dbi, keyp, keylen, &set);
 	} else if (tag == RPMTAG_BASENAMES) {
-	    rc = rpmdbFindByFile(db, keyp, &k, &v, &set);
+	    rc = rpmdbFindByFile(db, keyp, keylen, &set);
 	} else {
-	    uint32_t _flags;
-
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-
-k.data = (void *) keyp;
-k.size = (UINT32_T) keylen;
-if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
-if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
-
-	    _flags = DB_SET;
-	    while (1) {
-		union _dbswap * vp;
-		size_t nb;
-
-		rc = dbiGet(dbi, dbcursor, &k, &v, _flags);
-		_flags = DB_NEXT_DUP;
-
-		vp = v.data;
-
-		switch (rc) {
-		default:
-		    if (rc > 0)
-			rpmlog(RPMLOG_ERR, _("dbiGet(%s) error(%d): %s\n"),
-				tagName(dbi->dbi_rpmtag), rc, strerror(rc));
-		    goto done;
-		    break;
-
-		case 0:
-		    if (dbi->dbi_jlen == (2 * sizeof(uint32_t))
-		     || v.size > sizeof(uint32_t))
-		    {
-			/* Join keys need to be native endian internally. */
-			(void) dbt2set(dbi, &v, &set);
-			goto done;
-		    }
-		    break;
-		}
-
-		/* Append duplicates to join key set */
-		if (set == NULL)
-		    set = xcalloc(1, sizeof(*set));
-		nb = (set->count + 1) * sizeof(set->recs[0]);
-		set->recs = xrealloc(set->recs, nb);
-		set->recs[set->count].hdrNum = vp->ui;
-		set->count++;
-	    }
-
-done:
-	    xx = dbiCclose(dbi, dbcursor, 0);
-	    dbcursor = NULL;
+	    rc = _joinKeys(dbi, keyp, keylen, &set);
 	}
 
 	if ((rc  && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
@@ -2967,7 +3007,6 @@ done:
 	    mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 	    return NULL;
 	}
-
     }
 
 /*@-assignexpose@*/
@@ -3731,9 +3770,11 @@ assert((dlen & 1) == 0);
 
 		if (!printed) {
 		    if (he->c == 1 && stringvalued) {
+			const char * s = k.data;
+			if (s[0] == '-' && s[1] == ' ')	s += 2;
 			rpmlog(RPMLOG_DEBUG,
 				D_("adding \"%s\" to %s index.\n"),
-				(char *)k.data, dbiBN);
+				(char *)s, dbiBN);
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				D_("adding %u entries to %s index.\n"),
