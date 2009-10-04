@@ -323,10 +323,11 @@ assert(_dbapi_rebuild == 3 || _dbapi_rebuild == 4);
 assert(db != NULL);
 assert(db->_dbi != NULL);
 
+    /* Is this index configured? */
     dbix = dbiTagToDbix(db, tag);
-assert(dbix < db->db_ndbi);
+    if (dbix >= db->db_ndbi)
+	goto exit;
     dbiTag = db->db_tags + dbix;
-assert(dbiTag->str != NULL);
 
     /* Is this index already open ? */
     if ((dbi = db->_dbi[dbix]) != NULL)
@@ -342,28 +343,28 @@ assert(mydbvecs[_dbapi] != NULL);
 	if (!_printed[dbix & 0x1f]++)
 	    rpmlog(RPMLOG_ERR,
 		_("cannot open %s(%u) index: %s(%d)\n\tDB: %s"),
-		dbiTag->str, tag,
+		tagName(tag), tag,
 		(rc > 0 ? strerror(rc) : ""), rc,
 		((mydbvecs[_dbapi]->dbv_version != NULL)
 		? mydbvecs[_dbapi]->dbv_version : "unknown"));
 	dbi = db3Free(dbi);
 	goto exit;
     }
-
     db->_dbi[dbix] = dbi;
 
     /* XXX FIXME: move to rpmdbOpen() instead. */
+    if (tag == RPMDBI_PACKAGES && db->db_bits == NULL) {
+	db->db_nbits = 8192;
 /*@-sizeoftype@*/
-    if (db->db_nbits <= 0) db->db_nbits = 8192;
-    if (db->db_bits == NULL)
 	db->db_bits = PBM_ALLOC(db->db_nbits);
 /*@=sizeoftype@*/
+    }
 
 exit:
 
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p\n", db, tagName(tag), tag, flags, dbi);
+fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p = %p[%u:%u]\n", db, tagName(tag), tag, flags, dbi, db->_dbi, dbix, db->db_ndbi);
 /*@=modfilesys@*/
 
 /*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
@@ -2071,7 +2072,8 @@ assert(dbi != NULL);
 	mi->mi_db = NULL;
     }
 
-    mi->mi_re = mireFreeAll(mi->mi_re, mi->mi_nre);
+    (void) mireFreeAll(mi->mi_re, mi->mi_nre);
+    mi->mi_re = NULL;
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
 
@@ -2278,11 +2280,13 @@ assert(nmire != NULL);
 
     if (mi->mi_re == NULL) {
 	mi->mi_re = mireGetPool(_mirePool);
-	mire = mi->mi_re;
+	mire = mireLink(mi->mi_re);
     } else {
 	void *use =  mi->mi_re->_item.use;
 	void *pool = mi->mi_re->_item.pool;
 	mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
+if (_mire_debug)
+fprintf(stderr, "    mire %p[%u] realloc\n", mi->mi_re, mi->mi_nre+1);
 	mire = mi->mi_re + mi->mi_nre;
 	memset(mire, 0, sizeof(*mire));
 	/* XXX ensure no segfault, copy the use/pool from 1st item. */
@@ -3077,8 +3081,9 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 	size_t dbix;
 
+	dbix = db->db_ndbi - 1;
 	if (db->db_tags != NULL)
-	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	do {
 	    dbiIndex dbi;
 	    DBC * dbcursor = NULL;
 	    DBT k = DBT_INIT;
@@ -3326,7 +3331,7 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 	    he->p.ptr = _free(he->p.ptr);
 	    he->c = 0;
 	    bin = _free(bin);
-	}
+	} while (dbix-- > 0);
 
 	rec = _free(rec);
     }
@@ -3471,8 +3476,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	/* Save the header instance. */
 	(void) headerSetInstance(h, hdrNum);
 	
+	dbix = db->db_ndbi - 1;
 	if (db->db_tags != NULL)
-	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	do {
 	    DBC * dbcursor = NULL;
 	    DBT k = DBT_INIT;
 	    DBT v = DBT_INIT;
@@ -3578,8 +3584,6 @@ assert(v.data != NULL);
 		continue;
 
 	  dbi = dbiOpen(db, he->tag, 0);
-if (_rpmdb_debug)
-fprintf(stderr, "*** %s: loop %d %s(%u) dbi %p index %d debug %d\n", __FUNCTION__, dbix, tagName(he->tag), he->tag, dbi, dbi->dbi_index, dbi->dbi_debug);
 	  if (dbi != NULL && !dbi->dbi_index) {
 	    int printed;
 
@@ -3776,7 +3780,7 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
 	    he->c = 0;
 	    bin = _free(bin);
 	    requireFlags.ptr = _free(requireFlags.ptr);
-	}
+	} while (dbix-- > 0);
 
 	rec = _free(rec);
     }
