@@ -1455,9 +1455,9 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	    break;
 
 	case 0:
-	    if (dbi->dbi_jlen == (2 * sizeof(rpmuint32_t))
-	     || v.size > sizeof(rpmuint32_t))
-	    {
+#define	_DUP_ENABLED(_f)	((dbi->dbi_##_f) & (DB_DUP|DB_DUPSORT))
+	    if (!(_DUP_ENABLED(bt_flags) || _DUP_ENABLED(h_flags))) {
+#undef	_DUP_ENABLED
 		/* Join keys need to be native endian internally. */
 		(void) dbt2set(dbi, &v, &set);
 		goto done;

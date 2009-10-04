@@ -1395,7 +1395,7 @@ _ifill:
 	}
 	if (he->c == 1) {
 	    /* XXX is it worth avoiding the realloc here? */
-	    (void) loadDBT(A, he->tag, _u, _ulen);
+	    (void) loadDBT(_r, he->tag, _u, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
@@ -1418,7 +1418,7 @@ _ifill:
 	size_t _ulen = sizeof(*_u);
 	if (he->c == 1) {
 	    /* XXX is it worth avoiding the realloc here? */
-	    (void) loadDBT(A, he->tag, _u, _ulen);
+	    (void) loadDBT(_r, he->tag, _u, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
