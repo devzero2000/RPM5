@@ -50,8 +50,8 @@ static struct poptOption optionsTable[] = {
 
 #ifdef	NOTYET
   POPT_AUTOALIAS
-  POPT_AUTOHELP
 #endif
+  POPT_AUTOHELP
 
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
         "\
