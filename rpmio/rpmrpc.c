@@ -174,9 +174,8 @@ int Chroot(const char * path)
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
+    int rc;
 
-if (_rpmio_debug)
-fprintf(stderr, "*** Chroot(%s)\n", path);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;
@@ -203,8 +202,13 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 /*@=globs =mods@*/
 
 /*@-superuser@*/
-    return chroot(path);
+    rc = chroot(path);
 /*@=superuser@*/
+
+if (_rpmio_debug)
+fprintf(stderr, "<-- %s(%s) prefix %s rc %d\n", __FUNCTION__, path, _chroot_prefix, rc);
+
+    return rc;
 }
 /*@=mods@*/
 
@@ -214,8 +218,6 @@ int Open(const char * path, int flags, mode_t mode)
     int ut = urlPath(path, &lpath);
     int fdno;
 
-if (_rpmio_debug)
-fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, (unsigned)mode);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;
@@ -253,6 +255,10 @@ fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, (unsigned)mode);
 	    fdno = -1;
 	}
     }
+
+if (_rpmio_debug)
+fprintf(stderr, "<-- %s(%s, 0x%x, 0%o) prefix %s fdno %d\n", __FUNCTION__, path, flags, (unsigned)mode, _chroot_prefix, fdno);
+
     return fdno;
 }
 
