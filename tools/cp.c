@@ -71,7 +71,13 @@ enum rpmctFlags_e {
     COPY_FLAGS_HARDLINK		= _MFB( 6), /*!< -l,--link ... */
     COPY_FLAGS_NOCLOBBER	= _MFB( 7), /*!< -n,--noclobber ... */
     COPY_FLAGS_PRESERVE		= _MFB( 8), /*!< -p,--preserve ... */
-	/* 9-31 unused */
+    COPY_FLAGS_XDEV		= _MFB( 9), /*!< -x,--xdev ... */
+
+    COPY_FLAGS_SYMLINK		= _MFB(10), /*!< -s,--symlink ... */
+    COPY_FLAGS_UPDATE		= _MFB(11), /*!< -u,--update ... */
+    COPY_FLAGS_SPARSE		= _MFB(12), /*!<    --sparse ... */
+
+	/* 13-31 unused */
 };
 
 #define CP_ISSET(_FLAG) ((ct->flags & ((COPY_FLAGS_##_FLAG) & ~0x40000000)) != COPY_FLAGS_NONE)
@@ -781,6 +787,9 @@ static void copyArgCallback(poptContext con,
 	ct->flags |= COPY_FLAGS_FOLLOW;
 	ct->flags &= ~COPY_FLAGS_FOLLOWARGS;
 	break;
+    case 'x':
+	ct->flags |= COPY_FLAGS_XDEV;
+	break;
 
     case '?':
     default:
@@ -818,6 +827,8 @@ static struct poptOption optionsTable[] = {
 	N_("Do not overwrite an existing file"), NULL },
   { "preserve",'p', POPT_ARG_NONE,	NULL, (int)'p',
 	N_("Preserve mode/ownership/timestamps"), NULL },
+  { "xdev",'x', POPT_ARG_NONE,	NULL, (int)'x',
+	N_("Stay on thgis file system"), NULL },
 
 #ifdef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
@@ -837,7 +848,7 @@ static struct poptOption optionsTable[] = {
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
         "\
 Usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file\n\
-       cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file ... target_directory\n\
+       cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file ... target_dir\n\
 ", NULL },
 
   POPT_TABLEEND
@@ -861,6 +872,7 @@ main(int argc, char *argv[])
     ct->npath[0] = '\0';
     ct->target_end = "";
     ct->p_end = ct->npath;
+    ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
 
     optCon = rpmioInit(argc, argv, optionsTable);
     ct->av = poptGetArgs(optCon);
@@ -870,7 +882,6 @@ main(int argc, char *argv[])
 	goto exit;
     }
 
-    ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
     if (CP_ISSET(RECURSE)) {
 	if (CP_ISSET(FOLLOWARGS))
 	    ct->ftsoptions |= FTS_COMFOLLOW;
@@ -882,6 +893,8 @@ main(int argc, char *argv[])
 	ct->ftsoptions &= ~FTS_PHYSICAL;
 	ct->ftsoptions |= FTS_LOGICAL | FTS_COMFOLLOW;
     }
+    if (CP_ISSET(XDEV))
+	ct->ftsoptions |= FTS_XDEV;
 
 #if defined(SIGINFO)
     (void)signal(SIGINFO, siginfo);
