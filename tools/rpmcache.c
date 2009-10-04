@@ -14,8 +14,7 @@ const char *__progname;
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
-
-#include "rpmdb.h"
+#include <rpmdb.h>
 
 #include "rpmps.h"
 
