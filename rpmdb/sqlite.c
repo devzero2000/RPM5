@@ -1609,7 +1609,10 @@ leaveChroot(dbi);
 /* db_bytewapped, stat */
 /*@observer@*/ /*@unchecked@*/
 struct _dbiVec sqlitevec = {
-    0, 0, 0,
+    "Sqlite " SQLITE_VERSION,
+    ((SQLITE_VERSION_NUMBER / (1000 * 1000)) % 1000),
+    ((SQLITE_VERSION_NUMBER / (       1000)) % 1000),
+    ((SQLITE_VERSION_NUMBER                ) % 1000),
     sql_open,
     sql_close,
     sql_sync,

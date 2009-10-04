@@ -294,11 +294,11 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
 dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 {
     static int _oneshot = 0;
+    static int _dbapi_rebuild;
     size_t dbix;
     tagStore_t dbiTag;
-    const char * dbiBN;
     dbiIndex dbi = NULL;
-    int _dbapi, _dbapi_rebuild, _dbapi_wanted;
+    int _dbapi;
     int rc = 0;
 
     /* Insure that stdin/stdout/stderr are open, lest stderr end up in rpmdb. */
@@ -315,99 +315,56 @@ dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 	(void) checkfd(_devnull, STDERR_FILENO, O_WRONLY);
 #endif
 /*@=noeffect@*/
+    _dbapi_rebuild = rpmExpandNumeric("%{?_dbapi_rebuild}%{!?_dbapi_rebuild:4}");
+assert(_dbapi_rebuild == 3 || _dbapi_rebuild == 4);
 	_oneshot++;
    }
 
-/*@-modfilesys@*/
-if (_rpmdb_debug)
-fprintf(stderr, "==> dbiOpen(%p, %s(%u), 0x%x)\n", db, tagName(tag), tag, flags);
-/*@=modfilesys@*/
-
-    if (db == NULL)
-	return NULL;
+assert(db != NULL);
+assert(db->_dbi != NULL);
 
     dbix = dbiTagToDbix(db, tag);
-    if (dbix >= db->db_ndbi)
-	return NULL;
+assert(dbix < db->db_ndbi);
     dbiTag = db->db_tags + dbix;
-    dbiBN = (dbiTag->str != NULL ? dbiTag->str : tagName(tag));
+assert(dbiTag->str != NULL);
 
     /* Is this index already open ? */
-/*@-compdef@*/ /* FIX: db->_dbi may be NULL */
-    if (db->_dbi != NULL && (dbi = db->_dbi[dbix]) != NULL)
-	return dbi;
-/*@=compdef@*/
+    if ((dbi = db->_dbi[dbix]) != NULL)
+	goto exit;
 
-    _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
-    if (_dbapi_rebuild < 1 || _dbapi_rebuild > 4)
-	_dbapi_rebuild = 4;
-/*    _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api); */
-    _dbapi_wanted = (_rebuildinprogress ? _dbapi_rebuild : db->db_api);
+    _dbapi = (_rebuildinprogress ? _dbapi_rebuild : db->db_api);
+assert(_dbapi == 3 || _dbapi == 4);
+assert(mydbvecs[_dbapi] != NULL);
 
-    switch (_dbapi_wanted) {
-    default:
-	_dbapi = _dbapi_wanted;
-	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
-            rpmlog(RPMLOG_DEBUG, D_("dbiOpen: _dbapi failed\n"));
-	    return NULL;
-	}
-	errno = 0;
-	dbi = NULL;
-	rc = (*mydbvecs[_dbapi]->open) (db, tag, &dbi);
-	if (rc) {
-	    static int _printed[32];
-	    if (!_printed[dbix & 0x1f]++)
-		rpmlog(RPMLOG_ERR,
-			_("cannot open %s(%u) index using db%d - %s (%d)\n"),
-			dbiBN, tag, _dbapi,
-			(rc > 0 ? strerror(rc) : ""), rc);
-	    _dbapi = -1;
-	}
-	break;
-    case -1:
-	_dbapi = 5;
-	while (_dbapi-- > 1) {
-	    if (mydbvecs[_dbapi] == NULL)
-		continue;
-	    errno = 0;
-	    dbi = NULL;
-	    rc = (*mydbvecs[_dbapi]->open) (db, tag, &dbi);
-	    if (rc == 0 && dbi)
-		/*@loopbreak@*/ break;
-	}
-	if (_dbapi <= 0) {
-	    static int _printed[32];
-	    if (!_printed[dbix & 0x1f]++)
-		rpmlog(RPMLOG_ERR, _("cannot open %s(%u) index\n"),
-			dbiBN, tag);
-	    rc = 1;
-	    goto exit;
-	}
-	if (db->db_api == -1 && _dbapi > 0)
-	    db->db_api = _dbapi;
-    	break;
+    rc = (*mydbvecs[_dbapi]->open) (db, tag, &dbi);
+    if (rc) {
+	static uint8_t _printed[128];
+	if (!_printed[dbix & 0x1f]++)
+	    rpmlog(RPMLOG_ERR,
+		_("cannot open %s(%u) index: %s(%d)\n\tDB: %s"),
+		dbiTag->str, tag,
+		(rc > 0 ? strerror(rc) : ""), rc,
+		((mydbvecs[_dbapi]->dbv_version != NULL)
+		? mydbvecs[_dbapi]->dbv_version : "unknown"));
+	dbi = db3Free(dbi);
+	goto exit;
     }
+
+    db->_dbi[dbix] = dbi;
+
+    /* XXX FIXME: move to rpmdbOpen() instead. */
+/*@-sizeoftype@*/
+    if (db->db_nbits <= 0) db->db_nbits = 8192;
+    if (db->db_bits == NULL)
+	db->db_bits = PBM_ALLOC(db->db_nbits);
+/*@=sizeoftype@*/
 
 exit:
-    if (dbi != NULL && rc == 0) {
-	if (db->_dbi != NULL)
-	    db->_dbi[dbix] = dbi;
-/*@-sizeoftype@*/
-	if (tag == RPMDBI_PACKAGES && db->db_bits == NULL) {
-	    db->db_nbits = 1024;
-	    if (!dbiStat(dbi, DB_FAST_STAT)) {
-		DB_HASH_STAT * hash = (DB_HASH_STAT *)dbi->dbi_stats;
-		if (hash)
-		    db->db_nbits += hash->hash_nkeys;
-	    }
-	    db->db_bits = PBM_ALLOC(db->db_nbits);
-	}
-/*@=sizeoftype@*/
-    }
-#ifdef HAVE_DB_H
-      else
-	dbi = db3Free(dbi);
-#endif
+
+/*@-modfilesys@*/
+if (_rpmdb_debug)
+fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p\n", db, tagName(tag), tag, flags, dbi);
+/*@=modfilesys@*/
 
 /*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
     return dbi;
@@ -3621,6 +3578,8 @@ assert(v.data != NULL);
 		continue;
 
 	  dbi = dbiOpen(db, he->tag, 0);
+if (_rpmdb_debug)
+fprintf(stderr, "*** %s: loop %d %s(%u) dbi %p index %d debug %d\n", __FUNCTION__, dbix, tagName(he->tag), he->tag, dbi, dbi->dbi_index, dbi->dbi_debug);
 	  if (dbi != NULL && !dbi->dbi_index) {
 	    int printed;
 

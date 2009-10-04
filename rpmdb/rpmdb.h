@@ -78,9 +78,10 @@ struct _dbiIndexSet {
  * Private methods for accessing an index database.
  */
 struct _dbiVec {
-    int dbv_major;			/*!< Berkeley db version major */
-    int dbv_minor;			/*!< Berkeley db version minor */
-    int dbv_patch;			/*!< Berkeley db version patch */
+    const char * dbv_version;		/*!< DB version string */
+    int dbv_major;			/*!< DB version major */
+    int dbv_minor;			/*!< DB version minor */
+    int dbv_patch;			/*!< DB version patch */
 
 /** \ingroup dbi
  * Return handle for an index database.
@@ -336,6 +337,7 @@ struct _dbiIndex {
     FILE *	dbi_errfile;
     const char * dbi_errpfx;
     int	dbi_region_init;
+    unsigned int dbi_thread_count;
 	/* locking sub-system parameters */
 	/* logging sub-system parameters */
 	/* mpool sub-system parameters */

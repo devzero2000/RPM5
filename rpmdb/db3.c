@@ -647,6 +647,10 @@ DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s,%p)\n", __FUNCTION__, dbi, dbhome, db
 /*@-noeffectuncon@*/
     dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
 /*@=noeffectuncon@*/
+    if (dbi->dbi_thread_count >= 8) {
+	xx = dbenv->set_thread_count(dbenv, dbi->dbi_thread_count);
+	xx = cvtdberr(dbi, "dbenv->set_thread_count", xx, _debug);
+    }
 #endif
 
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
@@ -664,7 +668,7 @@ DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s,%p)\n", __FUNCTION__, dbi, dbhome, db
 	goto errxit;
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
-    if (!rpmdb->db_verifying && !rpmdb->db_rebuilding) {
+    if (!rpmdb->db_verifying && !rpmdb->db_rebuilding && dbi->dbi_thread_count >= 8) {
 	/* XXX Set pid/tid is_alive probe. */
 	xx = dbenv->set_isalive(dbenv, db3is_alive);
 	xx = cvtdberr(dbi, "dbenv->set_isalive", xx, _debug);
@@ -2074,6 +2078,8 @@ assert(rpmdb && rpmdb->db_dbenv);
     dbi->dbi_db = db;
     db->app_private = dbi;
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb, tagName(rpmtag), dbip, dbi, rc, _OFLAGS(dbi)));
+
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
 	*dbip = dbi;
@@ -2091,7 +2097,6 @@ assert(rpmdb && rpmdb->db_dbenv);
 
     urlfn = _free(urlfn);
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb, tagName(rpmtag), dbip, dbi, rc, _OFLAGS(dbi)));
     /*@-nullstate -compmempass@*/
     return rc;
     /*@=nullstate =compmempass@*/
@@ -2102,7 +2107,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 /*@-exportheadervar@*/
 /*@observer@*/ /*@unchecked@*/
 struct _dbiVec db3vec = {
-    DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
+    DB_VERSION_STRING, DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3associate, db3associate_foreign, db3join,
     db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,
     db3byteswapped, db3stat
