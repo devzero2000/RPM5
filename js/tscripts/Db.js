@@ -611,7 +611,7 @@ ack('F.sync() && F.close()', true);
 print('<==== FILES');
 }
 
-if (1) {
+if (0) {
 print('====> GROUPS');
 var G = new BDB(dbenv, "G", DB_RECNO, "groups", DB_SNAPSHOT);
 var GF = new BDB(dbenv, "GF", DB_RECNO, "groups", DB_SNAPSHOT);
@@ -651,6 +651,247 @@ ack('GF.sync() && GF.close(0)', true);
 ack('G.sync() && G.close(0)', true);
 
 print('<==== GROUPS');
+}
+
+if (1) {
+print('====> DEPS');
+var Clist = [
+  [ "alsa-utils",	"1.0.18",	"2" ],
+  [ "anaconda-images",	"10",	"10" ],
+  [ "aspell-ca",	"0.50",	"2" ],
+  [ "aspell-config",	"0.27",	"2" ],
+  [ "aspell-da",	"0.50",	"2" ],
+  [ "aspell-de",	"0.50",	"2" ],
+  [ "aspell-es",	"0.50",	"2" ],
+  [ "aspell-fr",	"0.50",	"2" ],
+  [ "aspell-it",	"0.50",	"2" ],
+  [ "aspell-nl",	"0.50",	"2" ],
+  [ "aspell-no",	"0.50",	"2" ],
+  [ "aspell-pt_BR",	"2.5",	"2" ],
+  [ "aspell-sv",	"0.50",	"2" ],
+  [ "audispd-plugins",	"1.7.7-1",	"10" ],
+  [ "automake",	"1.5",	"2" ],
+  [ "automake",	"1.8",	"2" ],
+  [ "bash",	"2.0.4-21",	"10" ],
+  [ "binutils",	"2.17.50.0.3-4",	"2" ],
+  [ "bluez-gnome",	"1.8",	"10" ],
+  [ "bonobo-devel",	"1.0.8",	"2" ],
+  [ "cracklib-dicts",	"2.8",	"2" ],
+  [ "crontabs",	"1.5",	"10" ],
+  [ "cups",	"1:1.1.20-4",	"2" ],
+  [ "dbus",	"1.1.4-3.fc9",	"2" ],
+  [ "dejavu-fonts",	"2.26-3",	"2" ],
+  [ "dejavu-fonts-experimental",	"2.26-3",	"2" ],
+  [ "desktop-backgrounds-basic",	"2.0-27",	"2" ],
+  [ "desktop-backgrounds-extended",	"2.0-27",	"2" ],
+  [ "dhclient",	"3.0.3-7",	"2" ],
+  [ "docbook-utils",	"0.6.9-4",	"2" ],
+  [ "e2fsprogs",	"1.37-4",	"2" ],
+  [ "elilo",	"3.6-5",	"10" ],
+  [ "evolution",	"2.4.1-5",	"10" ],
+  [ "fipscheck",	"1.2.0-1",	"2" ],
+  [ "firstboot",	"1.3.26",	"10" ],
+  [ "fonts-hebrew",	"0.100",	"2" ],
+  [ "fonts-xorg-base",	"",	"0" ],
+  [ "fonts-xorg-syriac",	"",	"0" ],
+  [ "gcc-c++",	"4.0.0",	"2" ],
+  [ "GConf2-dbus",	"",	"0" ],
+  [ "GConf2-dbus-devel",	"",	"0" ],
+  [ "gdb",	"5.1-2",	"2" ],
+  [ "gdb",	"6.6-9",	"2" ],
+  [ "gdk-pixbuf-devel",	"0.11",	"10" ],
+  [ "gdm",	"1:2.6.0.8-5",	"2" ],
+  [ "ghostscript",	"7.05",	"2" ],
+  [ "glib2",	"2.11.1-2",	"2" ],
+  [ "glibc",	"2.2",	"2" ],
+  [ "glibc-common",	"2.3.2-63",	"10" ],
+  [ "gnome-libs-devel",	"1:1.4.1.2",	"2" ],
+  [ "gnome-libs-devel",	"1.4.1.2",	"2" ],
+  [ "gnome-power-manager",	"2.15.3",	"2" ],
+  [ "gnome-themes",	"2.9.0",	"2" ],
+  [ "gnome-vfs-devel",	"1.0.2",	"2" ],
+  [ "groff-tools",	"1.18.1.4",	"8" ],
+  [ "gtk2-engines",	"2.7.4-7",	"2" ],
+  [ "gtk-nodoka-engine",	"0.7.0-2",	"2" ],
+  [ "hal",	"0.5.10-3.fc11",	"2" ],
+  [ "hotplug",	"3:2002_01_14-2",	"2" ],
+  [ "hpijs",	"1.5",	"2" ],
+  [ "hwdata",	"0.169",	"2" ],
+  [ "initscripts",	"4.26",	"2" ],
+  [ "initscripts",	"5.30-1",	"10" ],
+  [ "initscripts",	"6.55",	"2" ],
+  [ "initscripts",	"7.23",	"2" ],
+  [ "initscripts",	"7.84",	"2" ],
+  [ "iptables",	"1.3.2-1",	"2" ],
+  [ "ipw2200-firmware",	"2.4",	"2" ],
+  [ "isdn4k-utils",	"3.2-32",	"2" ],
+  [ "ispell",	"3.1.21",	"2" ],
+  [ "iwl4965-firmware",	"228.57.2",	"2" ],
+  [ "jfsutils",	"1.1.7-2",	"2" ],
+  [ "kbd",	"1.06-19",	"2" ],
+  [ "kbd",	"1.12-21",	"2" ],
+  [ "kdebase",	"3.1.5",	"10" ],
+  [ "kdelibs",	"6:3.5.2-6",	"2" ],
+  [ "kdepim",	"6:4.2.90",	"2" ],
+  [ "kernel",	"0:2.6",	"2" ],
+  [ "kernel",	"2.2.12-7",	"2" ],
+  [ "kernel",	"2.4",	"2" ],
+  [ "kernel",	"2.4.20",	"2" ],
+  [ "kernel",	"2.6.12",	"2" ],
+  [ "kernel",	"2.6.17",	"2" ],
+  [ "kernel",	"2.6.26",	"2" ],
+  [ "kudzu",	"1.2.0",	"2" ],
+  [ "liberation-fonts",	"1.04.93-8",	"2" ],
+  [ "libglade",	"0.17",	"2" ],
+  [ "libgnomeui",	"2.15.1cvs20060505-2",	"2" ],
+  [ "libpciaccess",	"0.10.3-5",	"2" ],
+  [ "lm1100",	"",	"0" ],
+  [ "lokkit",	"0.50-14",	"2" ],
+  [ "lvm",	"",	"0" ],
+  [ "man-pages",	"2.43-12",	"2" ],
+  [ "man-pages-fr",	"0.9.7-14",	"2" ],
+  [ "man-pages-it",	"0.3.0-17",	"2" ],
+  [ "man-pages-pl",	"0.24-2",	"2" ],
+  [ "mdadm",	"2.6.4-3",	"2" ],
+  [ "mkinitrd",	"0:4.1.11-1",	"10" ],
+  [ "mkinitrd",	"4.0",	"2" ],
+  [ "mutt",	"5:1.5.16-2",	"2" ],
+  [ "nautilus",	"2.0.3-1",	"10" ],
+  [ "nautilus",	"2.2.0",	"2" ],
+  [ "ncurses",	"5.6-13",	"2" ],
+  [ "NetworkManager-openconnect",	"0:0.7.0.99-1",	"2" ],
+  [ "NetworkManager-openvpn",	"1:0.7.0.99-1",	"2" ],
+  [ "NetworkManager-pptp",	"1:0.7.0.99-1",	"2" ],
+  [ "NetworkManager-vpnc",	"1:0.7.0.99-1",	"2" ],
+  [ "nfs-utils",	"1.0.7-12",	"2" ],
+  [ "nss",	"3.12.2.99.3-5",	"2" ],
+  [ "nss_ldap",	"254",	"2" ],
+  [ "nut",	"2.2.0",	"2" ],
+  [ "oprofile",	"0.9.1-2",	"2" ],
+  [ "ORBit-devel",	"1:0.5.8",	"10" ],
+  [ "pam_krb5",	"1.49",	"2" ],
+  [ "passivetex",	"1.21",	"2" ],
+  [ "pcmcia-cs",	"",	"0" ],
+  [ "pcre",	"4.0",	"2" ],
+  [ "pirut",	"1.1.4",	"2" ],
+  [ "plymouth",	"0.7.0-0.2009.02.26",	"2" ],
+  [ "pm-utils",	"0.99.3-11",	"10" ],
+  [ "ppp",	"2.4.3-3",	"2" ],
+  [ "procps",	"3.2.5-6.3",	"2" ],
+  [ "psacct",	"6.3.2-12",	"2" ],
+  [ "python",	"2.6-9.fc11",	"2" ],
+  [ "qt",	"0:2.2.2",	"2" ],
+  [ "redhat-artwork",	"0.243-1",	"2" ],
+  [ "redhat-artwork",	"0.35",	"2" ],
+  [ "redhat-artwork",	"5.0.5",	"10" ],
+  [ "reiserfs-utils",	"3.6.19-2",	"2" ],
+  [ "samba-client",	"3.0",	"2" ],
+  [ "samba-common",	"3.0",	"2" ],
+  [ "selinux-policy",	"3.0.3-3",	"2" ],
+  [ "selinux-policy-targeted",	"1.25.3-14",	"2" ],
+  [ "squashfs-tools",	"4.0",	"2" ],
+  [ "subversion",	"0.22.2-4",	"2" ],
+  [ "subversion-devel",	"0.22.2-4",	"2" ],
+  [ "sysklogd",	"1.4.1",	"2" ],
+  [ "sysklogd",	"1.4.1-43",	"2" ],
+  [ "system-config-date",	"1.9.35",	"2" ],
+  [ "system-config-display",	"1.0.31",	"2" ],
+  [ "system-config-printer",	"0.6.132",	"2" ],
+  [ "system-config-printer",	"0.7.0",	"2" ],
+  [ "system-config-services",	"0.99.29",	"2" ],
+  [ "system-config-users",	"1.2.82",	"2" ],
+  [ "tcsh",	"6.13-5",	"2" ],
+  [ "tetex",	"1.0.7-66",	"2" ],
+  [ "ttfonts-ja",	"1.2-23",	"2" ],
+  [ "ttfonts-ko",	"1.0.11-27",	"2" ],
+  [ "ttfonts-zh_CN",	"2.12-2",	"2" ],
+  [ "ttfonts-zh_TW",	"2.11-20",	"2" ],
+  [ "udev",	"062",	"2" ],
+  [ "udev",	"063-6",	"2" ],
+  [ "util-linux",	"2.11r-9",	"2" ],
+  [ "util-linux",	"2.12",	"2" ],
+  [ "wireless-tools",	"28-0.pre8.5",	"2" ],
+  [ "wireless-tools",	"29-3",	"2" ],
+  [ "Xconfigurator",	"",	"0" ],
+  [ "xfsdump",	"2.0.0",	"2" ],
+  [ "xfsdump",	"3.0.1",	"2" ],
+  [ "xfsprogs",	"2.6.13-4",	"2" ],
+  [ "xorg-x11",	"",	"0" ],
+  [ "xorg-x11-drivers",	"7.3-11.fc11",	"2" ],
+  [ "xorg-x11-proto-devel",	"7.2-12",	"10" ],
+  [ "xorg-x11-server-Xorg",	"1.3.0.0-19.fc8",	"2" ],
+  [ "xorg-x11-server-Xorg",	"1.4.99.901-14",	"2" ],
+  [ "xorg-x11-server-Xorg",	"1.6.0-7",	"2" ],
+  [ "xpdf",	"1:3.01-8",	"10" ],
+  [ "xscreensaver",	"1:5.00-19",	"2" ],
+  [ "yaboot",	"1.3.14-8",	"2" ],
+  [ "ypbind",	"1.6-12",	"2" ],
+  [ "yum",	"3.2.0",	"2" ],
+];
+
+var C = new BDB(dbenv, "C", DB_BTREE, null, 0);
+var CN = new BDB(dbenv, "CN", DB_BTREE, null, DB_DUP);
+var CEVR = new BDB(dbenv, "CEVR", DB_BTREE, null, DB_DUP);
+var CF = new BDB(dbenv, "CF", DB_BTREE, null, DB_DUP);
+
+var ops = [ "","<",">","?3","=","<=",">=","?7" ];
+for (var [ ix, dep ] in Iterator(Clist)) {
+    var N = dep[0];
+    var EVR = dep[1];
+    var F = dep[2];
+    var op = ops[(F >> 1) & 0x7];
+    var val = (((F & 0xf) == 0) ? N : (N + ' ' + op + ' ' + EVR));
+    print('\t' + ix + ':', val);
+    C.put(ix, val);
+    CN.put(N, ix);
+    CEVR.put(EVR, ix);
+    CF.put(op, ix);
+}
+
+ack('C.db.associate(C.txn, CN.db, 0)', true);
+ack('C.db.associate(C.txn, CEVR.db, 0)', true);
+ack('C.db.associate(C.txn, CF.db, 0)', true);
+
+var cnlist = [ "udev", "tcsh", "wnh" ];
+
+     C.loop("C", 3, 8);
+     CN.print("CN", cnlist);
+     CEVR.print("CEVR", [ "3.2.0", "" ]);
+     CF.print("CF", [ "2", "" ]);
+
+for (var [ix, dep] in Iterator(Clist)) {
+    var N = dep[0];
+    var EVR = dep[1];
+    var F = dep[2];
+    var op = ops[(F >> 1) & 0x7];
+    var val = (((F & 0xf) == 0) ? N : (N + ' ' + op + ' ' + EVR));
+
+    var CNc = CN.cursor(N);
+    nack('CNc.count()', 0);
+    nack('CNc.length', 0);
+    var CEVRc = CEVR.cursor(EVR);
+    nack('CEVRc.count()', 0);
+    nack('CEVRc.length', 0);
+    var CFc = CF.cursor(op);
+    nack('CFc.count()', 0);
+    nack('CFc.length', 0);
+
+    var Cc = C.join(CNc, CEVRc, CFc);
+//  ack('Cc.get(null)', val);
+    print('\t' + ix + ': "' + val + '"\t<=>\t"' + Cc.get(null) + '"');
+    ack('Cc.close()', true);
+
+    ack('CFc.close()', true);
+    ack('CEVRc.close()', true);
+    ack('CNc.close()', true);
+}
+
+ack('CF.sync() && CF.close(0)', true);
+ack('CEVR.sync() && CEVR.close(0)', true);
+ack('CN.sync() && CN.close(0)', true);
+ack('C.sync() && C.close(0)', true);
+
+print('<==== DEPS');
 }
 
 var db = H.db;
