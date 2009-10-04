@@ -365,12 +365,13 @@ package or when debugging this package.\
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
 
-%_dbi_tags_3                    Packages:Name:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
+%_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
 
-%_dbi_tags_4                    Packages:Name:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
+%_dbi_tags_4                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3                  %{_dbi_btconfig}
+%_dbi_config_3_Arch             %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Basenames        %{_dbi_btconfig}
 %_dbi_config_3_Conflictname     %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Conflictyamlentry %{_dbi_btconfig} %{?_bt_dupsort}
@@ -383,10 +384,12 @@ package or when debugging this package.\
 %_dbi_config_3_Nvra             %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Obsoletename     %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Obsoleteyamlentry %{_dbi_btconfig} %{?_bt_dupsort}
+%_dbi_config_3_Os               %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Packagecolor     %{_dbi_htconfig} %{?_h_dupsort}
 %_dbi_config_3_Providename      %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Provideyamlentry  %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Pubkeys          %{_dbi_htconfig} %{?_h_dupsort}
+%_dbi_config_3_Release          %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Removetid        %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Requirename      %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Requireyamlentry  %{_dbi_btconfig} %{?_bt_dupsort}
@@ -394,11 +397,13 @@ package or when debugging this package.\
 %_dbi_config_3_Sigmd5           %{_dbi_htconfig} %{?_h_dupsort}
 %_dbi_config_3_Sourcepkgid      %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Triggername      %{_dbi_btconfig} %{?_bt_dupsort}
+%_dbi_config_3_Version          %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Packages         %{_dbi_btconfig}
 %_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
+%_dbi_config_3_Arch             %{_dbi_sqlconfig}
 %_dbi_config_4_Basenames        %{_dbi_sqlconfig}
 %_dbi_config_4_Conflictname     %{_dbi_sqlconfig}
 %_dbi_config_4_Dirnames         %{_dbi_sqlconfig}
@@ -411,10 +416,12 @@ package or when debugging this package.\
 %_dbi_config_4_Obsoletename     %{_dbi_sqlconfig}
 %_dbi_config_3_Obsoleteversion  %{_dbi_sqlconfig}
 %_dbi_config_3_Obsoleteflags    %{_dbi_sqlconfig}
+%_dbi_config_3_Os               %{_dbi_sqlconfig}
 %_dbi_config_4_Packagecolor     %{_dbi_sqlconfig}
 %_dbi_config_4_Providename      %{_dbi_sqlconfig}
 %_dbi_config_4_Provideversion   %{_dbi_sqlconfig}
 %_dbi_config_4_Pubkeys          %{_dbi_sqlconfig}
+%_dbi_config_3_Release          %{_dbi_sqlconfig}
 %_dbi_config_4_Removetid        %{_dbi_sqlconfig}
 %_dbi_config_4_Requirename      %{_dbi_sqlconfig}
 %_dbi_config_4_Requireversion   %{_dbi_sqlconfig}
@@ -422,6 +429,7 @@ package or when debugging this package.\
 %_dbi_config_4_Sigmd5           %{_dbi_sqlconfig}
 %_dbi_config_4_Sourcepkgid      %{_dbi_sqlconfig}
 %_dbi_config_4_Triggername      %{_dbi_sqlconfig}
+%_dbi_config_3_Version          %{_dbi_sqlconfig}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
 %_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
 

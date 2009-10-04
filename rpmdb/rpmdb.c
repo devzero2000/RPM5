@@ -1561,16 +1561,13 @@ static int dbiIntersect(unsigned int tag, dbiIndexSet dnset, dbiIndexSet bnset,
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec, size_t keylen,
 		/*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, *key, *data, *matches, rpmGlobalMacroContext,
+	/*@modifies db, *matches, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-DBT k = DBT_INIT, *key = &k;
-DBT v = DBT_INIT, *data = &v;
     const char * dirName;
     const char * baseName;
     dbiIndex dbi;
-    DBC * dbcursor;
     dbiIndexSet bnset = NULL;
     int bingo;
     int rc;
@@ -1597,25 +1594,8 @@ assert(baseName != NULL);
     if ((dbi = dbiOpen(db, RPMTAG_BASENAMES, 0)) == NULL)
 	return -2;
 
-    dbcursor = NULL;
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-
-/*@-temptrans@*/
-key->data = (void *) baseName;
-/*@=temptrans@*/
-key->size = (UINT32_T) strlen(baseName);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
-
-    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-    if (rc > 0) {
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting records from %s index\n"),
-		rc, tagName(dbi->dbi_rpmtag));
-    } else
-    if (rc == 0)
-	(void) dbt2set(dbi, data, &bnset);
-    xx = dbiCclose(dbi, dbcursor, 0);
-    if (rc)
+    rc = _joinKeys(dbi, baseName, strlen(baseName), &bnset);
+    if ((rc && rc != DB_NOTFOUND) || bnset == NULL || bnset->count < 1)
 	return rc;
 assert(bnset != NULL);
 assert(bnset->count > 0);
@@ -2540,11 +2520,13 @@ int rpmmiSetHdrChk(rpmmi mi, rpmts ts)
 
 static int _rpmmi_usermem = 1;
 
-static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * vp,
+static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * pk, DBT * vp,
                 unsigned int flags)
 {
     int map;
     int rc;
+
+if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p(%s),%p,%p,%p,0x%x)\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbcursor, kp, vp, flags);
 
     switch (dbi->dbi_rpmdb->db_api) {
     default:	map = 0;		break;
@@ -2571,7 +2553,10 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * vp,
 
 	    vp->ulen = (u_int32_t)uhlen;
 	    vp->data = uh;
-	    rc = dbiGet(dbi, dbcursor, kp, vp, flags);
+	    if (dbi->dbi_index && pk)
+		rc = dbiPget(dbi, dbcursor, kp, pk, vp, flags);
+	    else
+		rc = dbiGet(dbi, dbcursor, kp, vp, flags);
 	    if (rc == 0) {
 		if (mprotect(uh, uhlen, PROT_READ) != 0)
 		    fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
@@ -2592,6 +2577,7 @@ Header rpmmiNext(rpmmi mi)
 {
     dbiIndex dbi;
     DBT k = DBT_INIT;
+    DBT p = DBT_INIT;
     DBT v = DBT_INIT;
     union _dbswap mi_offset;
     void * uh;
@@ -2626,12 +2612,12 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi,
      */
     if (mi->mi_dbc == NULL) {
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
-	_flags = DB_SET;
 	k.data = mi->mi_keyp;
 	k.size = (u_int32_t)mi->mi_keylen;
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	memset(&mi->mi_data, 0, sizeof(mi->mi_data));
+	_flags = DB_SET;
     } else
 	_flags = DB_NEXT_DUP;
 
@@ -2652,12 +2638,17 @@ next:
 	    _DBSWAP(mi_offset);
 	k.data = &mi_offset.ui;
 	k.size = (u_int32_t)sizeof(mi_offset.ui);
-	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, DB_SET);
+	rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_SET);
     }
     else if (dbi->dbi_index) {
-mi->mi_offset = 0;	/* XXX FIXME: set the instance # */
-	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, _flags);
+	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &p, &v, _flags);
 	_flags = DB_NEXT_DUP;
+	if (rc == 0) {
+	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    mi->mi_offset = mi_offset.ui;
+	}
     }
     else {
 	/* Iterating Packages database. */
@@ -2667,7 +2658,7 @@ mi->mi_offset = 0;	/* XXX FIXME: set the instance # */
 	/* Instance 0 is the largest header instance in the database,
 	 * and should be skipped. */
 	do {
-	    rc = rpmmiGet(dbi, mi->mi_dbc, &k, &v, DB_NEXT);
+	    rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_NEXT);
 	    if (rc == 0) {
 		memcpy(&mi_offset, k.data, sizeof(mi_offset.ui));
 		if (dbiByteSwapped(dbi) == 1)
@@ -3195,7 +3186,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    }
 	
 	  dbi = dbiOpen(db, he->tag, 0);
-	  if (dbi != NULL) {
+	  if (dbi != NULL && !dbi->dbi_index) {
 	    int printed;
 
 	    /* XXX Coerce strings into header argv return. */

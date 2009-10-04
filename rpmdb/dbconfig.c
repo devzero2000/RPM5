@@ -645,9 +645,11 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     default:
 	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
 	break;
+#ifndef	DYING
     case RPMTAG_BASENAMES:
 	dbi->dbi_jlen = 2 * sizeof(rpmuint32_t);
 	break;
+#endif
     }
     /*@=sizeoftype@*/
 

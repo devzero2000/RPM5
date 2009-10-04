@@ -293,13 +293,14 @@ static const char * fmtDBCflags(uint32_t flags)
 }
 #define	_DBCFLAGS(_flags)	fmtDBCflags(_flags)
 
+#define _DBT_ENTRY(_v)      { DB_DBT_##_v, #_v, }
 static KEY DBTflags[] = {
-    _ENTRY(DBT_MALLOC),
-    _ENTRY(DBT_REALLOC),
-    _ENTRY(DBT_USERMEM),
-    _ENTRY(DBT_PARTIAL),
-    _ENTRY(DBT_APPMALLOC),
-    _ENTRY(DBT_MULTIPLE),
+    _DBT_ENTRY(MALLOC),
+    _DBT_ENTRY(REALLOC),
+    _DBT_ENTRY(USERMEM),
+    _DBT_ENTRY(PARTIAL),
+    _DBT_ENTRY(APPMALLOC),
+    _DBT_ENTRY(MULTIPLE),
 };
 static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
 static char * fmtDBT(const DBT * K, char * te)
@@ -1335,6 +1336,11 @@ assert(rpmdb);
     h = rpmdb->db_h;
 assert(h);
 
+#ifdef	DYING
+fprintf(stderr, "--> %s(%p, %p, %p, %p)\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data, _r));
+#endif
+    memset(_r, 0, sizeof(*_r));
+
     he->tag = dbi->dbi_rpmtag;
     if (!headerGet(h, he, 0))
 	goto exit;
@@ -1501,8 +1507,10 @@ _ifill:
     }
     if (_r->data && _r->size > 0)
 	rc = 0;
-    else if (_r->flags & DB_DBT_APPMALLOC)
+    else if (_r->flags & DB_DBT_APPMALLOC) {
 	_r->data = _free(_r->data);
+	memset(_r, 0, sizeof(*_r));
+    }
 
 exit:
 #ifdef	NOTYET
