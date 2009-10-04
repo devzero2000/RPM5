@@ -304,7 +304,7 @@ package or when debugging this package.\
 #   unknown	+++	DB_UNKNOWN
 #---------------------- DB->set_flags bits:
 #   bt_dupsort	+++	(btree only) DB_DUPSORT
-#   ht_dupsort	+++	(hash only) DB_DUPSORT
+#   h_dupsort	+++	(hash only) DB_DUPSORT
 #----------------------- rpmdb specific configuration:
 #   usedbenv		(always on) Use db3 environment?
 #   verify		(db3 only) Verify Packages db after RW close?
@@ -315,7 +315,7 @@ package or when debugging this package.\
 #%__dbi_other			create joinenv mpool txn log
 
 # Use a CDB database model for concurrent access.
-%__dbi_cdb			create cdb mpool
+%__dbi_cdb			create cdb mpool thread_count=64
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
 
@@ -403,9 +403,10 @@ package or when debugging this package.\
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
-%_dbi_config_3_Arch             %{_dbi_sqlconfig}
+%_dbi_config_4_Arch             %{_dbi_sqlconfig}
 %_dbi_config_4_Basenames        %{_dbi_sqlconfig}
 %_dbi_config_4_Conflictname     %{_dbi_sqlconfig}
+%_dbi_config_4_Conflictyamlentry %{_dbi_sqlconfig}
 %_dbi_config_4_Dirnames         %{_dbi_sqlconfig}
 %_dbi_config_4_Filedigests      %{_dbi_sqlconfig}
 %_dbi_config_4_Filepaths	%{_dbi_sqlconfig}
@@ -414,50 +415,56 @@ package or when debugging this package.\
 %_dbi_config_4_Name             %{_dbi_sqlconfig}
 %_dbi_config_4_Nvra             %{_dbi_sqlconfig} noload
 %_dbi_config_4_Obsoletename     %{_dbi_sqlconfig}
-%_dbi_config_3_Obsoleteversion  %{_dbi_sqlconfig}
-%_dbi_config_3_Obsoleteflags    %{_dbi_sqlconfig}
-%_dbi_config_3_Os               %{_dbi_sqlconfig}
+%_dbi_config_4_Obsoleteyamlentry %{_dbi_sqlconfig}
+%_dbi_config_4_Os               %{_dbi_sqlconfig}
 %_dbi_config_4_Packagecolor     %{_dbi_sqlconfig}
 %_dbi_config_4_Providename      %{_dbi_sqlconfig}
-%_dbi_config_4_Provideversion   %{_dbi_sqlconfig}
+%_dbi_config_4_Provideyamlentry %{_dbi_sqlconfig}
 %_dbi_config_4_Pubkeys          %{_dbi_sqlconfig}
-%_dbi_config_3_Release          %{_dbi_sqlconfig}
+%_dbi_config_4_Release          %{_dbi_sqlconfig}
 %_dbi_config_4_Removetid        %{_dbi_sqlconfig}
 %_dbi_config_4_Requirename      %{_dbi_sqlconfig}
-%_dbi_config_4_Requireversion   %{_dbi_sqlconfig}
+%_dbi_config_4_Requireyamlentry %{_dbi_sqlconfig}
 %_dbi_config_4_Sha1header       %{_dbi_sqlconfig}
 %_dbi_config_4_Sigmd5           %{_dbi_sqlconfig}
 %_dbi_config_4_Sourcepkgid      %{_dbi_sqlconfig}
 %_dbi_config_4_Triggername      %{_dbi_sqlconfig}
-%_dbi_config_3_Version          %{_dbi_sqlconfig}
+%_dbi_config_4_Version          %{_dbi_sqlconfig}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
 %_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
 
 # database configuration [code entry hooks]
 %_dbi_config                    %{expand:%%{_dbi_config_%{_dbapi_used}}}
-%_dbi_config_Dirnames           %{expand:%%{_dbi_config_%{_dbapi_used}_Dirnames}}
-%_dbi_config_Requireversion     %{expand:%%{_dbi_config_%{_dbapi_used}_Requireversion}}
-%_dbi_config_Provideversion     %{expand:%%{_dbi_config_%{_dbapi_used}_Provideversion}}
-%_dbi_config_Installtid         %{expand:%%{_dbi_config_%{_dbapi_used}_Installtid}}
-%_dbi_config_Removetid          %{expand:%%{_dbi_config_%{_dbapi_used}_Removetid}}
+%_dbi_config_Arch               %{expand:%%{_dbi_config_%{_dbapi_used}_Arch}}
 %_dbi_config_Basenames          %{expand:%%{_dbi_config_%{_dbapi_used}_Basenames}}
 %_dbi_config_Conflictname       %{expand:%%{_dbi_config_%{_dbapi_used}_Conflictname}}
+%_dbi_config_Conflictyamlentry  %{expand:%%{_dbi_config_%{_dbapi_used}_Conflictyamlentry}}
+
+%_dbi_config_Dirnames           %{expand:%%{_dbi_config_%{_dbapi_used}_Dirnames}}
 %_dbi_config_Filedigests        %{expand:%%{_dbi_config_%{_dbapi_used}_Filedigests}}
+%_dbi_config_Filepaths		%{expand:%%{_dbi_config_%{_dbapi_used}_Filepaths}}
 %_dbi_config_Group              %{expand:%%{_dbi_config_%{_dbapi_used}_Group}}
+%_dbi_config_Installtid         %{expand:%%{_dbi_config_%{_dbapi_used}_Installtid}}
 %_dbi_config_Name               %{expand:%%{_dbi_config_%{_dbapi_used}_Name}}
+%_dbi_config_Nvra               %{expand:%%{_dbi_config_%{_dbapi_used}_Nvra}}
 %_dbi_config_Obsoletename       %{expand:%%{_dbi_config_%{_dbapi_used}_Obsoletename}}
+%_dbi_config_Obsoleteyamlentry  %{expand:%%{_dbi_config_%{_dbapi_used}_Obsoleteyamlentry}}
+%_dbi_config_Os                 %{expand:%%{_dbi_config_%{_dbapi_used}_Os}}
 %_dbi_config_Packagecolor       %{expand:%%{_dbi_config_%{_dbapi_used}_Packagecolor}}
 %_dbi_config_Providename        %{expand:%%{_dbi_config_%{_dbapi_used}_Providename}}
+%_dbi_config_Provideyamlentry   %{expand:%%{_dbi_config_%{_dbapi_used}_Provideyamlentry}}
 %_dbi_config_Pubkeys            %{expand:%%{_dbi_config_%{_dbapi_used}_Pubkeys}}
+%_dbi_config_Release            %{expand:%%{_dbi_config_%{_dbapi_used}_Release}}
+%_dbi_config_Removetid          %{expand:%%{_dbi_config_%{_dbapi_used}_Removetid}}
 %_dbi_config_Requirename        %{expand:%%{_dbi_config_%{_dbapi_used}_Requirename}}
+%_dbi_config_Requireyamlentry   %{expand:%%{_dbi_config_%{_dbapi_used}_Requireyamlentry}}
 %_dbi_config_Sha1header         %{expand:%%{_dbi_config_%{_dbapi_used}_Sha1header}}
 %_dbi_config_Sigmd5             %{expand:%%{_dbi_config_%{_dbapi_used}_Sigmd5}}
+%_dbi_config_Sourcepkgid        %{expand:%%{_dbi_config_%{_dbapi_used}_Sourcepkgid}}
 %_dbi_config_Triggername        %{expand:%%{_dbi_config_%{_dbapi_used}_Triggername}}
+%_dbi_config_Version            %{expand:%%{_dbi_config_%{_dbapi_used}_Version}}
 %_dbi_config_Packages           %{expand:%%{_dbi_config_%{_dbapi_used}_Packages}}
 %_dbi_config_Depends            %{expand:%%{_dbi_config_%{_dbapi_used}_Depends}}
-%_dbi_config_Nvra               %{expand:%%{_dbi_config_%{_dbapi_used}_Nvra}}
-%_dbi_config_Sourcepkgid        %{expand:%%{_dbi_config_%{_dbapi_used}_Sourcepkgid}}
-%_dbi_config_Filepaths		%{expand:%%{_dbi_config_%{_dbapi_used}_Filepaths}}
 
 # Database API configuration:
 #
