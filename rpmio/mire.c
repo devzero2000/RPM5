@@ -38,10 +38,6 @@ int _mirePCREoptions = 0;
 int mireClean(miRE mire)
 {
     if (mire == NULL) return 0;
-/*@-modfilesys@*/
-if (_mire_debug)
-fprintf(stderr, "--> mireClean(%p)\n", mire);
-/*@=modfilesys@*/
     mire->pattern = _free(mire->pattern);
     if (mire->mode == RPMMIRE_REGEX) {
 	if (mire->preg != NULL) {
@@ -64,6 +60,10 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
     mire->coptions = 0;
     mire->eoptions = 0;
     mire->notmatch = 0;
+/*@-modfilesys@*/
+if (_mire_debug)
+fprintf(stderr, "<-- mireClean(%p)\n", mire);
+/*@=modfilesys@*/
     return 0;
 }
 
@@ -86,22 +86,21 @@ miRE mireGetPool(rpmioPool pool)
 			NULL, NULL, mireFini);
 	pool = _mirePool;
     }
-    return (miRE) rpmioGetPool(pool, sizeof(*mire));
+    mire = (miRE) rpmioGetPool(pool, sizeof(*mire));
+    memset(((char *)mire)+sizeof(mire->_item), 0, sizeof(*mire)-sizeof(mire->_item));
+    return mire;
 }
 
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 void * mireFreeAll(miRE mire, int nmire)
 {
     if (mire != NULL) {
-	int i;
-	for (i = 0; i < nmire; i++)
-	    (void) mireClean(mire + i);
+	while (--nmire > 0)
+	    (void) mireClean(mire + nmire);
 	/* XXX rpmgrep doesn't use mire pools yet. retrofit a fix. */
-	if (mire->_item.use != NULL && mire->_item.pool != NULL) {
-	    /* XXX only the 1st element in the array has a usage mutex. */
-	    mire = xrealloc(mire, sizeof(*mire));
+	if (mire->_item.use != NULL && mire->_item.pool != NULL)
 	    mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
-	} else
+	else
 	    mire = _free(mire);
     }
     return NULL;
@@ -388,7 +387,7 @@ exit:
 #endif
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
+fprintf(stderr, "<-- mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
 /*@=modfilesys@*/
     return rc;
 }
@@ -470,7 +469,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (int)(vallen < 20 ? vallen : 20), val);
+fprintf(stderr, "<-- mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (int)(vallen < 20 ? vallen : 20), val);
 /*@=modfilesys@*/
     return rc;
 }
