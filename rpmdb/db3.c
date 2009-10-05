@@ -726,6 +726,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,0x%x) rc %d\n", __FUNCTION__, dbi, dbfile, 
     return rc;
 }
 /*@=mustmod@*/
+#endif	/* NOTYET */
 
 /*@-mustmod@*/
 static int db3verify(dbiIndex dbi, /*@null@*/ const char * dbfile,
@@ -746,7 +747,6 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%s,%p,0x%x) rc %d\n", __FUNCTION__, dbi, db
     return rc;
 }
 /*@=mustmod@*/
-#endif	/* NOTYET */
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
@@ -1262,7 +1262,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	}
 	    
 	eflags = DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON;
-	rc = (dbenv->open)(dbenv, dbhome, eflags, 0);
+	rc = (dbenv->open) (dbenv, dbhome, eflags, 0);
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
@@ -1274,20 +1274,16 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	if (db != NULL) {
 		/*@-mods@*/
 		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
+		const char * _dbsubfile = NULL;
+		FILE * _fp = NULL;
 		/*@=mods@*/
 
-		rc = db->verify(db, dbf, NULL, NULL, flags);
-		rc = cvtdberr(dbi, "db->verify", rc, _debug);
+		rc = db3verify(dbi, dbf, _dbsubfile, _fp, flags);
 
 		rpmlog(RPMLOG_DEBUG, D_("verified db index       %s/%s\n"),
 			(dbhome ? dbhome : ""),
 			(dbfile ? dbfile : dbiBN));
 
-		/*
-		 * The DB handle may not be accessed again after
-		 * DB->verify is called, regardless of its return.
-		 */
-		db = NULL;
 		dbf = _free(dbf);
 	}
 	xx = dbenv->close(dbenv, 0);
