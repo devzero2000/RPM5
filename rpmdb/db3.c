@@ -39,54 +39,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 /*@access dbiIndex @*/
 /*@access dbiIndexSet @*/
 
-/** \ingroup dbi
- * Hash database statistics.
- */
-/*@-fielduse@*/
-struct dbiHStats_s {
-    unsigned int hash_magic;	/*!< hash database magic number. */
-    unsigned int hash_version;	/*!< version of the hash database. */
-    unsigned int hash_nkeys;	/*!< no. of unique keys in the database. */
-    unsigned int hash_ndata;	/*!< no. of key/data pairs in the database. */
-    unsigned int hash_pagesize;	/*!< db page (and bucket) size, in bytes. */
-    unsigned int hash_nelem;	/*!< estimated size of the hash table. */
-    unsigned int hash_ffactor;	/*!< no. of items per bucket. */
-    unsigned int hash_buckets;	/*!< no. of hash buckets. */
-    unsigned int hash_free;	/*!< no. of pages on the free list. */
-    unsigned int hash_bfree;	/*!< no. of bytes free on bucket pages. */
-    unsigned int hash_bigpages;	/*!< no. of big key/data pages. */
-    unsigned int hash_big_bfree;/*!< no. of bytes free on big item pages. */
-    unsigned int hash_overflows;/*!< no. of overflow pages. */
-    unsigned int hash_ovfl_free;/*!< no. of bytes free on overflow pages. */
-    unsigned int hash_dup;	/*!< no. of duplicate pages. */
-    unsigned int hash_dup_free;	/*!< no. bytes free on duplicate pages. */
-};
-
-/** \ingroup dbi
- * B-tree database statistics.
- */
-struct dbiBStats_s {
-    unsigned int bt_magic;	/*!< btree database magic. */
-    unsigned int bt_version;	/*!< version of the btree database. */
-    unsigned int bt_nkeys;	/*!< no. of unique keys in the database. */
-    unsigned int bt_ndata;	/*!< no. of key/data pairs in the database. */
-    unsigned int bt_pagesize;	/*!< database page size, in bytes. */
-    unsigned int bt_minkey;	/*!< minimum keys per page. */
-    unsigned int bt_re_len;	/*!< length of fixed-length records. */
-    unsigned int bt_re_pad;	/*!< padding byte for fixed-length records. */
-    unsigned int bt_levels;	/*!< no. of levels in the database. */
-    unsigned int bt_int_pg;	/*!< no. of database internal pages. */
-    unsigned int bt_leaf_pg;	/*!< no. of database leaf pages. */
-    unsigned int bt_dup_pg;	/*!< no. of database duplicate pages. */
-    unsigned int bt_over_pg;	/*!< no. of database overflow pages. */
-    unsigned int bt_free;	/*!< no. of pages on the free list. */
-    unsigned int bt_int_pgfree;	/*!< no. of bytes free in internal pages. */
-    unsigned int bt_leaf_pgfree;/*!< no. of bytes free in leaf pages. */
-    unsigned int bt_dup_pgfree;	/*!< no. of bytes free in duplicate pages. */
-    unsigned int bt_over_pgfree;/*!< no. of bytes free in overflow pages. */
-};
-/*@=fielduse@*/
-
 #ifdef	NOTNOW
 static const char * bfstring(unsigned int x, const char * xbf)
 {
@@ -695,6 +647,107 @@ errxit:
 }
 /*@=moduncon@*/
 
+#ifdef	NOTYET
+/*@-mustmod@*/
+static int db3remove(dbiIndex dbi, /*@null@*/ const char * dbfile,
+		/*@unused@*/ /*@null@*/ const char * dbsubfile,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+assert(db != NULL);
+    rc = db->remove(db, dbfile, dbsubfile, flags);
+    rc = cvtdberr(dbi, "db->remove", rc, _debug);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%s,0x%x) rc %d\n", __FUNCTION__, dbi, dbfile, dbsubfile, flags, rc));
+
+    return rc;
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
+static int db3rename(dbiIndex dbi, /*@null@*/ const char * dbfile,
+		/*@unused@*/ /*@null@*/ const char * dbsubfile,
+		/*@unused@*/ /*@null@*/ const char * newname,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+assert(db != NULL);
+    rc = db->rename(db, dbfile, dbsubfile, newname, flags);
+    rc = cvtdberr(dbi, "db->rename", rc, _debug);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%s,%s,0x%x) rc %d %s\n", __FUNCTION__, dbi, dbfile, dbsubfile, newname, flags, rc, _DBCFLAGS(flags)));
+
+    return rc;
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
+static int db3truncate(dbiIndex dbi, DB_TXN * txnid, unsigned int * countp,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *countp, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+assert(db != NULL);
+    rc = db->truncate(db, txnid, countp, flags);
+    rc = cvtdberr(dbi, "db->truncate", rc, _debug);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, txnid, countp, flags, rc));
+
+    return rc;
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
+static int db3upgrade(dbiIndex dbi, /*@null@*/ const char * dbfile,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+assert(db != NULL);
+    rc = db->upgrade(db, dbfile, flags);
+    rc = cvtdberr(dbi, "db->upgrade", rc, _debug);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,0x%x) rc %d\n", __FUNCTION__, dbi, dbfile, flags, rc));
+
+    return rc;
+}
+/*@=mustmod@*/
+
+/*@-mustmod@*/
+static int db3verify(dbiIndex dbi, /*@null@*/ const char * dbfile,
+		/*@unused@*/ /*@null@*/ const char * dbsubfile, FILE * fp,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+assert(db != NULL);
+    rc = db->verify(db, dbfile, dbsubfile, fp, flags);
+    rc = cvtdberr(dbi, "db->verify", rc, _debug);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%s,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbfile, dbsubfile, fp, flags, rc));
+
+    return rc;
+}
+/*@=mustmod@*/
+#endif	/* NOTYET */
+
 static int db3sync(dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -717,6 +770,27 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc))
 
     return rc;
 }
+
+/*@-mustmod@*/
+static int db3exists(dbiIndex dbi, DB_TXN * txnid, DBT * key, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *key, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int _printit;
+    int rc;
+
+assert(db != NULL);
+    rc = db->exists(db, txnid, key, flags);
+    /* XXX DB_NOTFOUND can be returned */
+    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
+    rc = cvtdberr(dbi, "db->exists", rc, _printit);
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, txnid, key, flags, rc, _KEYDATA(key, NULL, NULL)));
+
+    return rc;
+}
+/*@=mustmod@*/
 
 static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 		unsigned int flags)
@@ -2109,6 +2183,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 struct _dbiVec db3vec = {
     DB_VERSION_STRING, DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3associate, db3associate_foreign, db3join,
+    db3exists,
     db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,
     db3byteswapped, db3stat
 };

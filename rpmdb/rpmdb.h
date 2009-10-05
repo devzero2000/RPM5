@@ -155,6 +155,19 @@ struct _dbiVec {
 	/*@modifies dbi, *dbcp, fileSystem @*/;
 
 /** \ingroup dbi
+ * Return whether key exists in a database.
+ * @param dbi		index database handle
+ * @param txnid		database transaction handle
+ * @param key		retrieve key value/length/flags
+ * @param flags		usually 0
+ * @return		0 if key exists, DB_NOTFOUND if not, else error
+ */
+    int (*exists) (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
+		/*@out@*/ DBT * key, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *txnid, fileSystem @*/;
+
+/** \ingroup dbi
  * Open database cursor.
  * @param dbi		index database handle
  * @param txnid		database transaction handle
@@ -752,6 +765,23 @@ int dbiSync (dbiIndex dbi, unsigned int flags)
 	/*@modifies fileSystem @*/
 {
     return (*dbi->dbi_vec->sync) (dbi, flags);
+}
+
+/** \ingroup dbi
+ * Return whether key exists in a database.
+ * @param dbi		index database handle
+ * @param txnid		database transaction handle
+ * @param key		retrieve key value/length/flags
+ * @param flags		usually 0
+ * @return		0 if key exists, DB_NOTFOUND if not, else error
+ */
+/*@unused@*/ static inline
+int dbiExists(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
+		/*@out@*/ DBT * key, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    return (*dbi->dbi_vec->exists) (dbi, txnid, key, flags);
 }
 
 /** \ingroup dbi

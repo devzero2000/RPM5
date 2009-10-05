@@ -1068,6 +1068,24 @@ leaveChroot(dbi);
     return rc;
 }
 
+/** \ingroup dbi
+ * Return whether key exists in a database.
+ * @param dbi		index database handle
+ * @param txnid		database transaction handle
+ * @param key		retrieve key value/length/flags
+ * @param flags		usually 0
+ * @return		0 if key exists, DB_NOTFOUND if not, else error
+ */
+static int sql_exists(dbiIndex dbi, DB_TXN * txnid, DBT * key,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *key, fileSystem @*/
+{
+if (_debug)
+fprintf(stderr, "*** sql_exists:\n");
+    return EINVAL;
+}
+
 /**
  * Open database cursor.
  * @param dbi		index database handle
@@ -1619,6 +1637,7 @@ struct _dbiVec sqlitevec = {
     sql_associate,
     sql_associate_foreign,
     sql_join,
+    sql_exists,
     sql_copen,
     sql_cclose,
     sql_cdup,
