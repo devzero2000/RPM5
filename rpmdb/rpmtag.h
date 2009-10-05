@@ -144,6 +144,11 @@ typedef /*@abstract@*/ const struct headerSprintfExtension_s * headerSprintfExte
 #define	RPMDBI_HDLIST		6	/* (rpmgi) Header list. */
 #define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
 #define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
+#define	RPMDBI_SEQNO		9	/* Sequence numbers. */
+#define	RPMDBI_BTREE		10	/* (development) Generic DB_BTREE. */
+#define	RPMDBI_HASH		11	/* (development) Generic DB_HASH. */
+#define	RPMDBI_QUEUE		12	/* (development) Generic DB_QUEUE. */
+#define	RPMDBI_RECNO		13	/* (development) Generic DB_RECNO. */
 
 /** \ingroup header
  * Tags identify data in package headers.

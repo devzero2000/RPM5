@@ -228,6 +228,21 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_FTSWALK:
 	strncpy(nameBuf, "Ftswalk", nameBufLen);
 	break;
+    case RPMDBI_SEQNO:
+	strncpy(nameBuf, "Seqno", nameBufLen);
+	break;
+    case RPMDBI_BTREE:
+	strncpy(nameBuf, "Btree", nameBufLen);
+	break;
+    case RPMDBI_HASH:
+	strncpy(nameBuf, "Hash", nameBufLen);
+	break;
+    case RPMDBI_QUEUE:
+	strncpy(nameBuf, "Queue", nameBufLen);
+	break;
+    case RPMDBI_RECNO:
+	strncpy(nameBuf, "Recno", nameBufLen);
+	break;
 
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
@@ -301,6 +316,11 @@ static unsigned int _tagType(rpmTag tag)
     case RPMDBI_HDLIST:
     case RPMDBI_ARGLIST:
     case RPMDBI_FTSWALK:
+    case RPMDBI_SEQNO:
+    case RPMDBI_BTREE:
+    case RPMDBI_HASH:
+    case RPMDBI_QUEUE:
+    case RPMDBI_RECNO:
 	break;
     default:
 	if (_rpmTags.byValue == NULL)
@@ -360,6 +380,16 @@ static rpmTag _tagValue(const char * tagstr)
 	return RPMDBI_ARGLIST;
     if (!xstrcasecmp(tagstr, "Ftswalk"))
 	return RPMDBI_FTSWALK;
+    if (!xstrcasecmp(tagstr, "Seqno"))
+	return RPMDBI_SEQNO;
+    if (!xstrcasecmp(tagstr, "Btree"))
+	return RPMDBI_BTREE;
+    if (!xstrcasecmp(tagstr, "Hash"))
+	return RPMDBI_HASH;
+    if (!xstrcasecmp(tagstr, "Queue"))
+	return RPMDBI_QUEUE;
+    if (!xstrcasecmp(tagstr, "Recno"))
+	return RPMDBI_RECNO;
 
     if (_rpmTags.aTags == NULL)
 	xx = tagLoadATags(&_rpmTags.aTags, NULL);

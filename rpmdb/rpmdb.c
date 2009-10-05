@@ -3414,6 +3414,10 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
     (void) blockSignals(db, &signalMask);
 
+    /* XXX Force the Seqno database to be created. */
+    if (!db->db_rebuilding)
+	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
+
     dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
     if (dbi != NULL) {
 	/* Header indices are monotonically increasing integer instances
@@ -4033,12 +4037,17 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    const char * dbiBN = (dbiTags[i].str != NULL
                         ? dbiTags[i].str : tagName(tag));
 
-	    /* Filter out temporary databases */
+	    /* Filter out temporary/persistent databases */
 	    switch (tag) {
 	    case RPMDBI_AVAILABLE:
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
+	    case RPMDBI_SEQNO:
+	    case RPMDBI_BTREE:
+	    case RPMDBI_HASH:
+	    case RPMDBI_QUEUE:
+	    case RPMDBI_RECNO:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
