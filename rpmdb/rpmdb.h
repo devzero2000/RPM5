@@ -157,15 +157,24 @@ struct _dbiVec {
 /** \ingroup dbi
  * Return whether key exists in a database.
  * @param dbi		index database handle
- * @param txnid		database transaction handle
  * @param key		retrieve key value/length/flags
  * @param flags		usually 0
  * @return		0 if key exists, DB_NOTFOUND if not, else error
  */
-    int (*exists) (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
-		/*@out@*/ DBT * key, unsigned int flags)
+    int (*exists) (dbiIndex dbi, DBT * key, unsigned int flags)
 	/*@globals fileSystem @*/
-	/*@modifies dbi, *txnid, fileSystem @*/;
+	/*@modifies dbi, fileSystem @*/;
+
+/** \ingroup dbi
+ * Return next sequence number.
+ * @param dbi		index database handle (with attached sequence)
+ * @retval *seqnop	IN: delta (0 does seqno++) OUT: returned 64bit seqno
+ * @param flags		usually 0
+ * @return		0 on success
+ */
+    int (*seqno) (dbiIndex dbi, /*@null@*/ int64_t * seqnop, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *seqnop, fileSystem @*/;
 
 /** \ingroup dbi
  * Open database cursor.
@@ -774,18 +783,31 @@ int dbiSync (dbiIndex dbi, unsigned int flags)
 /** \ingroup dbi
  * Return whether key exists in a database.
  * @param dbi		index database handle
- * @param txnid		database transaction handle
  * @param key		retrieve key value/length/flags
  * @param flags		usually 0
  * @return		0 if key exists, DB_NOTFOUND if not, else error
  */
 /*@unused@*/ static inline
-int dbiExists(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
-		/*@out@*/ DBT * key, unsigned int flags)
+int dbiExists(dbiIndex dbi, /*@out@*/ DBT * key, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    return (*dbi->dbi_vec->exists) (dbi, txnid, key, flags);
+    return (*dbi->dbi_vec->exists) (dbi, key, flags);
+}
+
+/** \ingroup dbi
+ * Return next sequence number.
+ * @param dbi		index database handle (with attached sequence)
+ * @retval *seqnop	IN: delta (0 does seqno++) OUT: returned 64bit seqno
+ * @param flags		usually 0
+ * @return		0 on success
+ */
+/*@unused@*/ static inline
+int dbiSeqno(dbiIndex dbi, /*@null@*/ int64_t * seqnop, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *seqnop, fileSystem @*/
+{
+    return (*dbi->dbi_vec->seqno) (dbi, seqnop, flags);
 }
 
 /** \ingroup dbi

@@ -1071,18 +1071,30 @@ leaveChroot(dbi);
 /** \ingroup dbi
  * Return whether key exists in a database.
  * @param dbi		index database handle
- * @param txnid		database transaction handle
  * @param key		retrieve key value/length/flags
  * @param flags		usually 0
  * @return		0 if key exists, DB_NOTFOUND if not, else error
  */
-static int sql_exists(dbiIndex dbi, DB_TXN * txnid, DBT * key,
-		unsigned int flags)
+static int sql_exists(dbiIndex dbi, DBT * key, unsigned int flags)
 	/*@globals fileSystem @*/
-	/*@modifies *key, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 if (_debug)
 fprintf(stderr, "*** sql_exists:\n");
+    return EINVAL;
+}
+
+/** \ingroup dbi
+ * Return next sequence number.
+ * @param dbi		index database handle (with attached sequence)
+ * @retval *seqnop	IN: delta (0 does seqno++) OUT: returned 64bit seqno
+ * @param flags		usually 0
+ * @return		0 on success
+ */
+static int sql_seqno(dbiIndex dbi, int64_t * seqnop, unsigned int flags)
+{
+if (_debug)
+fprintf(stderr, "*** sql_seqno:\n");
     return EINVAL;
 }
 
@@ -1638,6 +1650,7 @@ struct _dbiVec sqlitevec = {
     sql_associate_foreign,
     sql_join,
     sql_exists,
+    sql_seqno,
     sql_copen,
     sql_cclose,
     sql_cdup,

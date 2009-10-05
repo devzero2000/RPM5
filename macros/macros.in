@@ -400,11 +400,11 @@ package or when debugging this package.\
 %_dbi_config_3_Version          %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Packages         %{_dbi_btconfig}
 %_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
-%_dbi_config_3_Seqno            %{_dbi_btconfig} seq_id=0
-%_dbi_config_3_Btree            %{_dbi_btconfig}
-%_dbi_config_3_Hash             %{_dbi_htconfig}
-%_dbi_config_3_Queue            queue %{__dbi_perms}
-%_dbi_config_3_Recno            recno %{__dbi_perms}
+%_dbi_config_3_Seqno            btree perms=0644 debug seq_id=0
+%_dbi_config_3_Btree            btree perms=0644 debug
+%_dbi_config_3_Hash             hash  perms=0644 debug
+%_dbi_config_3_Queue            queue perms=0644 debug
+%_dbi_config_3_Recno            recno perms=0644 debug
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
@@ -471,7 +471,7 @@ package or when debugging this package.\
 %_dbi_config_Version            %{expand:%%{_dbi_config_%{_dbapi_used}_Version}}
 %_dbi_config_Packages           %{expand:%%{_dbi_config_%{_dbapi_used}_Packages}}
 %_dbi_config_Depends            %{expand:%%{_dbi_config_%{_dbapi_used}_Depends}}
-%_dbi_config_Seqno              %{expand:%%{_dbi_config_%{_dbapi_used}_Depends}}
+%_dbi_config_Seqno              %{expand:%%{_dbi_config_%{_dbapi_used}_Seqno}}
 
 # Database API configuration:
 #

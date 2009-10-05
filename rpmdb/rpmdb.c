@@ -342,7 +342,7 @@ assert(mydbvecs[_dbapi] != NULL);
 	static uint8_t _printed[128];
 	if (!_printed[dbix & 0x1f]++)
 	    rpmlog(RPMLOG_ERR,
-		_("cannot open %s(%u) index: %s(%d)\n\tDB: %s"),
+		_("cannot open %s(%u) index: %s(%d)\n\tDB: %s\n"),
 		tagName(tag), tag,
 		(rc > 0 ? strerror(rc) : ""), rc,
 		((mydbvecs[_dbapi]->dbv_version != NULL)
@@ -3414,9 +3414,18 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
     (void) blockSignals(db, &signalMask);
 
-    /* XXX Force the Seqno database to be created. */
-    if (!db->db_rebuilding)
+    if (!db->db_rebuilding) {
+	int64_t seqno = 0;
+	int i;
+
 	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
+	/* XXX Grab 10 values just to exercise the code for now. */
+	for (i = 0; i < 10; i++) {
+	    seqno = 0;
+	    xx = dbiSeqno(dbi, &seqno, 0);
+	}
+	xx = dbiSync(dbi, 0);
+    }
 
     dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
     if (dbi != NULL) {
