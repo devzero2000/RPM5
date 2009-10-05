@@ -2172,6 +2172,42 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
     /*@=nullstate =compmempass@*/
 }
 
+#ifdef	NOTYET
+static int db3seqno(dbiIndex dbi, DB_TXN * txnid, DBT * key,
+		int64_t * seqnop, unsigned int flags)
+{
+    DB * db = dbi->dbi_db;
+    DB_SEQUENCE * seq = NULL;
+    int _delta = 1;	/* XXX pass in through *seqnop? */
+    db_seq_t ret = 0;
+    int rc;
+
+assert(db != NULL);
+    rc = db_sequence_create(&seq, db, 0);
+    rc = cvtdberr(dbi, "db_sequence_create", rc, _debug);
+    if (rc) goto exit;
+
+    rc = seq->open(seq, txnid, key, flags);
+    rc = cvtdberr(dbi, "seq->open", rc, _debug);
+    if (rc) goto exit;
+
+    rc = seq->get(seq, txnid, _delta, &ret, 0);  
+    rc = cvtdberr(dbi, "seq->get", rc, _debug);
+    if (rc) goto exit;
+
+    rc = seq->close(seq, 0);  
+    rc = cvtdberr(dbi, "seq->close", rc, _debug);
+    if (rc) goto exit;
+
+    *seqnop = ret;
+
+exit:
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) seqno %lld rc %d %s%s\n", __FUNCTION__, dbi, txnid, key, seqnop, flags, (long long)*seqnop, rc, fmtDBoflags(flags), _KEYDATA(key, NULL, NULL)));
+
+    return rc;
+}
+#endif
+
 /** \ingroup db3
  */
 /*@-exportheadervar@*/
