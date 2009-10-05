@@ -356,13 +356,15 @@ struct _dbiIndex {
 	/* mpool sub-system parameters */
 	/* mutex sub-system parameters */
 	/* replication sub-system parameters */
+
 	/* sequences sub-system parameters */
+    const char * dbi_seq_id;
     unsigned int dbi_seq_cachesize;
     unsigned int dbi_seq_flags;
-#if 0	/* needs signed 64 bit type */
+    int64_t dbi_seq_initial;
     int64_t dbi_seq_min;
     int64_t dbi_seq_max;
-#endif
+
 	/* transaction sub-system parameters */
 #if 0
     int	(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec,
@@ -410,11 +412,13 @@ struct _dbiIndex {
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     size_t dbi_jlen;		/*!< size of join key */
 
-/*@only@*//*@relnull@*/
-    DB * dbi_db;		/*!< Berkeley DB * handle */
-/*@only@*//*@null@*/
-    DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
-/*@only@*//*@null@*/
+/*@only@*/ /*@relnull@*/
+    DB_SEQUENCE * dbi_seq;	/*!< Berkeley DB_SEQUENCE handle */
+/*@only@*/ /*@relnull@*/
+    DB * dbi_db;		/*!< Berkeley DB handle */
+/*@only@*/ /*@null@*/
+    DB_TXN * dbi_txnid;		/*!< Berkeley DB_TXN handle */
+/*@only@*/ /*@null@*/
     void * dbi_stats;		/*!< Berkeley DB statistics */
 
 /*@observer@*/

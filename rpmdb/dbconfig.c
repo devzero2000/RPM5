@@ -358,6 +358,8 @@ DB_READ_UNCOMITTED
 
 /* ==== Sequences: */
 #if defined(WITH_DB)
+ { "seq_id",	0,POPT_ARG_STRING,	&db3dbi.dbi_seq_id, 0,
+	NULL, NULL },
 /* XXX DB_SEQUENCE->set_cachesize */
 /* XXX DB_SEQUENCE->get_cachesize */
  { "seq_cachesize",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_cachesize, 0,
@@ -377,12 +379,15 @@ DB_READ_UNCOMITTED
  { "seq_wrap",	0,POPT_BIT_SET,		&db3dbi.dbi_seq_flags, DB_SEQ_WRAP,
 	NULL, NULL },
 #endif
+#if defined(WITH_DB)
+/* XXX DB_SEQUENCE->initial_value */
+ { "seq_initial",	0,POPT_ARG_LONG, &db3dbi.dbi_seq_initial, 0,
+	NULL, NULL },
 /* XXX DB_SEQUENCE->set_range */
 /* XXX DB_SEQUENCE->get_range */
-#if defined(WITH_DB) && defined(NOTYET)		/* needs signed 64bit type */
- { "seq_min",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_min, 0,
+ { "seq_min",	0,POPT_ARG_LONG,	&db3dbi.dbi_seq_min, 0,
 	NULL, NULL },
- { "seq_max",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_max, 0,
+ { "seq_max",	0,POPT_ARG_LONG,	&db3dbi.dbi_seq_max, 0,
 	NULL, NULL },
 #endif
 

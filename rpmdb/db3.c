@@ -1175,6 +1175,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     const char * dbfile;
     const char * dbsubfile;
     DB * db = dbi->dbi_db;
+    DB_SEQUENCE * seq = dbi->dbi_seq;
     const char * dbiBN = mapTagName(rpmdb, dbi);
     int _printit;
     int rc = 0, xx;
@@ -1208,6 +1209,16 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : dbiBN);
 	dbsubfile = NULL;
 #endif
+    }
+
+    if (seq) {
+	rc = seq->close(seq, 0);  
+	rc = cvtdberr(dbi, "seq->close", rc, _debug);
+	seq = dbi->dbi_seq = NULL;
+
+	rpmlog(RPMLOG_DEBUG, D_("closed   db seqno       %s/%s\n"),
+		dbhome, (dbfile ? dbfile : dbiBN));
+
     }
 
     if (db) {
@@ -1594,6 +1605,74 @@ exit:
     he->p.ptr = _free(he->p.ptr);
 
 DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data, _r)));
+
+    return rc;
+}
+
+static int seqid_init(dbiIndex dbi, const char * keyp, size_t keylen,
+		DB_SEQUENCE ** seqp)
+{
+    DB * db = dbi->dbi_db;
+    DBT k = {0};
+    DB_TXN * txnid = NULL;
+    DB_SEQUENCE * seq = NULL;
+    db_seq_t _rangemin = -922337203685477600LL;
+    db_seq_t _rangemax =  922337203685477600LL;
+    db_seq_t _value = 0;
+    int32_t _cachesize = 0;
+    uint32_t _flags = DB_SEQ_INC;
+    uint32_t _oflags = DB_CREATE;
+    int rc;
+
+assert(db != NULL);
+    if (seqp) *seqp = NULL;
+
+    rc = db_sequence_create(&seq, db, 0);
+    rc = cvtdberr(dbi, "db_sequence_create", rc, _debug);
+    if (rc) goto exit;
+
+    if (dbi->dbi_seq_cachesize) {
+	_cachesize = dbi->dbi_seq_cachesize;
+	rc = seq->set_cachesize(seq, _cachesize);
+	rc = cvtdberr(dbi, "seq->set_cachesize", rc, _debug);
+	if (rc) goto exit;
+    }
+
+    if (dbi->dbi_seq_initial)
+	_value = dbi->dbi_seq_initial;
+    rc = seq->initial_value(seq, _value);
+    rc = cvtdberr(dbi, "seq->initial_value", rc, _debug);
+    if (rc) goto exit;
+
+    if (dbi->dbi_seq_min)
+	_rangemin = dbi->dbi_seq_min;
+    if (dbi->dbi_seq_max)
+	_rangemin = dbi->dbi_seq_max;
+    rc = seq->set_range(seq, _rangemin, _rangemax);
+    rc = cvtdberr(dbi, "seq->set_range", rc, _debug);
+    if (rc) goto exit;
+
+    if (dbi->dbi_seq_flags)
+	_flags = dbi->dbi_seq_flags;
+    rc = seq->set_flags(seq, _flags);
+    rc = cvtdberr(dbi, "seq->set_flags", rc, _debug);
+    if (rc) goto exit;
+
+    k.data = (void *)keyp;
+    k.size = (u_int32_t) (keylen > 0 ? keylen : strlen(keyp));
+    rc = seq->open(seq, txnid, &k, _oflags);
+    rc = cvtdberr(dbi, "seq->open", rc, _debug);
+    if (rc) goto exit;
+
+exit:
+    if (rc == 0 && seqp != NULL)
+	*seqp = seq;
+    else {
+	int xx = seq->close(seq, 0);  
+	xx = cvtdberr(dbi, "seq->close", xx, _debug);
+    }
+
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d\n", __FUNCTION__, dbi, keyp, keylen, seqp, (seqp ? *seqp : NULL), rc));
 
     return rc;
 }
@@ -2157,7 +2236,16 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
 	    int _flags = 0;
-	    (void) db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
+	    xx = db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
+	}
+	if (dbi->dbi_seq_id) {
+	    char * end = NULL;
+	    uint32_t u = (uint32_t) strtoll(dbi->dbi_seq_id, &end, 0);
+
+	    if (*end == '\0')
+		xx = seqid_init(dbi,(const char *)&u, sizeof(u), &dbi->dbi_seq);
+	    else
+		xx = seqid_init(dbi, dbi->dbi_seq_id, 0, &dbi->dbi_seq);
 	}
     } else {
 	dbi->dbi_verify_on_close = 0;
