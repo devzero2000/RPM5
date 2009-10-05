@@ -466,9 +466,12 @@ static void dbiFini(void * _dbi)
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_subfile = _free(dbi->dbi_subfile);
 	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
+	dbi->dbi_bf = rpmbfFree(dbi->dbi_bf);
 	dbi->dbi_host = _free(dbi->dbi_host);
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
+	dbi->dbi_seq_id = _free(dbi->dbi_seq_id);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
+	dbi->dbi_foreign = _free(dbi->dbi_foreign);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
     }
 }

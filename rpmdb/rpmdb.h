@@ -54,6 +54,7 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
 #if defined(_RPMDB_INTERNAL)
 #include <rpmio.h>
+#include <rpmbf.h>
 #include <rpmsw.h>
 
 #if !defined(SWIG)	/* XXX inline dbiFoo() need */
@@ -329,7 +330,7 @@ struct _dbiIndex {
 
     int	dbi_type;		/*!< db index type */
     unsigned dbi_mode;		/*!< mode to use on open */
-    int	dbi_perms;		/*!< file permission to use on open */
+    int	dbi_perms;		/*!< file permission used when creating */
     long dbi_shmkey;		/*!< shared memory base key */
     int	dbi_api;		/*!< Berkeley API type */
 
@@ -342,6 +343,8 @@ struct _dbiIndex {
     int dbi_noload;		/*!< standalone index/table */
     int	dbi_debug;
     int	dbi_byteswapped;
+
+    rpmbf dbi_bf;
 
 /*@null@*/
     char * dbi_host;
@@ -360,6 +363,7 @@ struct _dbiIndex {
     const char * dbi_errpfx;
     int	dbi_region_init;
     unsigned int dbi_thread_count;
+
 	/* locking sub-system parameters */
 	/* logging sub-system parameters */
 	/* mpool sub-system parameters */

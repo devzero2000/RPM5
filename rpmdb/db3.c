@@ -184,6 +184,37 @@ static const char * fmtDBoflags(uint32_t flags)
 }
 #define	_OFLAGS(_dbi)	fmtDBoflags((_dbi)->dbi_oflags)
 
+static KEY DBaflags[] = {
+    _ENTRY(CREATE),
+    _ENTRY(IMMUTABLE_KEY),
+};
+static size_t nDBaflags = sizeof(DBaflags) / sizeof(DBaflags[0]);
+static const char * fmtDBaflags(uint32_t flags)
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    te = stpcpy(te, "\n\tflags: ");
+    (void) fmtBits(flags, DBaflags, nDBaflags, te);
+    return buf;
+}
+#define	_AFLAGS(_aflags)	fmtDBaflags(_aflags)
+
+static KEY DBafflags[] = {
+    _ENTRY(FOREIGN_ABORT),
+    _ENTRY(FOREIGN_CASCADE),
+    _ENTRY(FOREIGN_NULLIFY),
+};
+static size_t nDBafflags = sizeof(DBafflags) / sizeof(DBafflags[0]);
+static const char * fmtDBafflags(uint32_t flags)
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    te = stpcpy(te, "\n\tflags: ");
+    (void) fmtBits(flags, DBafflags, nDBafflags, te);
+    return buf;
+}
+#define	_AFFLAGS(_afflags)	fmtDBaflags(_afflags)
+
 static KEY DBCflags[] = {
     _ENTRY(AFTER),		/* Dbc.put */
     _ENTRY(APPEND),		/* Db.put */
@@ -1139,11 +1170,9 @@ assert(db != NULL);
     rc = cvtdberr(dbi, "db->associate", rc, _debug);
 
     if (dbi->dbi_debug || dbisecondary->dbi_debug) {
-	const char * tag1 = xstrdup(tagName(dbi->dbi_rpmtag));
     	const char * tag2 = xstrdup(tagName(dbisecondary->dbi_rpmtag));
-fprintf(stderr, "<-- %s(%p(%s),%p(%s),%p,0x%x) rc %d\n", __FUNCTION__, dbi, tag1, dbisecondary, tag2, callback, flags, rc);
+fprintf(stderr, "<-- %s(%p(%s),%p(%s),%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbisecondary, tag2, callback, flags, rc, _AFLAGS(flags));
 	tag2 = _free(tag2);
-	tag1 = _free(tag1);
     }
 
     return rc;
@@ -1161,7 +1190,6 @@ static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
     DB * secondary = dbisecondary->dbi_db;
     int rc;
 
-DBIDEBUG(dbi, (stderr, "--> %s(%p,%p,%p,0x%x)\n", __FUNCTION__, dbi, dbisecondary, callback, flags));
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
 assert(db != NULL);
@@ -1171,6 +1199,13 @@ assert(db != NULL);
 #endif
 /*@=moduncon@*/
     rc = cvtdberr(dbi, "db->associate_foreign", rc, _debug);
+
+    if (dbi->dbi_debug || dbisecondary->dbi_debug) {
+    	const char * tag2 = xstrdup(tagName(dbisecondary->dbi_rpmtag));
+fprintf(stderr, "<-- %s(%p(%s),%p(%s),%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbisecondary, tag2, callback, flags, rc, _AFFLAGS(flags));
+	tag2 = _free(tag2);
+    }
+
     return rc;
 }
 /*@=mustmod@*/
