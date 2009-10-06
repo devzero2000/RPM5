@@ -311,17 +311,13 @@ package or when debugging this package.\
 #   nofsync		Disable fsync(2) call performed after db3 writes?
 #   temporary		Unlink file when closing.
 
-# XXX Use transactions and logs for rpmdb durability (no clue yet):
-#%__dbi_other			create joinenv mpool txn log
-
 # Use a CDB database model for concurrent access.
 %__dbi_cdb			create cdb mpool thread_count=64
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
 
-# Note: adding nofsync here speeds up --rebuilddb a lot.
-%__dbi_rebuild			nofsync !log !txn !cdb
-%__dbi_transient		%{__dbi_rebuild} temporary private
+%__dbi_rebuild			nofsync !lock !txn !log !cdb !auto_commit
+%__dbi_transient		%{?__dbi_rebuild} temporary private
 %__dbi_perms			perms=0644
 
 # database configuration: Berkeley-DB, Hash
@@ -332,7 +328,7 @@ package or when debugging this package.\
 %{nil}
 
 %__dbi_htconfig_current		%{__dbi_htconfig}
-%__dbi_htconfig_rebuild		%{__dbi_htconfig} %{__dbi_rebuild}
+%__dbi_htconfig_rebuild		%{__dbi_htconfig} %{?__dbi_rebuild}
 
 %_dbi_htconfig		\
   %{?_rpmdb_rebuild:%{__dbi_htconfig_rebuild}}\
@@ -347,7 +343,7 @@ package or when debugging this package.\
 %{nil}
 
 %__dbi_btconfig_current		%{__dbi_btconfig}
-%__dbi_btconfig_rebuild		%{__dbi_btconfig} %{__dbi_rebuild}
+%__dbi_btconfig_rebuild		%{__dbi_btconfig} %{?__dbi_rebuild}
 
 %_dbi_btconfig		\
   %{?_rpmdb_rebuild:%{__dbi_btconfig_rebuild}}\
@@ -400,7 +396,7 @@ package or when debugging this package.\
 %_dbi_config_3_Version          %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Packages         %{_dbi_btconfig}
 %_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
-%_dbi_config_3_Seqno            btree perms=0644 debug seq_id=0
+%_dbi_config_3_Seqno            %{_dbi_btconfig} debug seq_id=0
 %_dbi_config_3_Btree            btree perms=0644 debug
 %_dbi_config_3_Hash             hash  perms=0644 debug
 %_dbi_config_3_Queue            queue perms=0644 debug
