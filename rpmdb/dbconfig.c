@@ -56,12 +56,12 @@ struct poptOption rdbOptions[] = {
 #endif
 
 /* DB_ENV->open and DB->open */
-#if defined(WITH_DB) && defined(DB_AUTO_COMMIT)
- { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oeflags, DB_AUTO_COMMIT,
-	NULL, NULL },
-#endif
 #if defined(WITH_DB) && defined(DB_CREATE)
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
+	NULL, NULL },
+#endif
+#if defined(WITH_DB) && defined(DB_THREAD)
+ { "thread",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_THREAD,
 	NULL, NULL },
 #endif
 #if defined(WITH_DB) && defined(DB_MULTIVERSION)
@@ -70,10 +70,6 @@ struct poptOption rdbOptions[] = {
 #endif
 #if defined(WITH_DB) && defined(DB_NOMMAP)
  { "nommap",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_NOMMAP,
-	NULL, NULL },
-#endif
-#if defined(WITH_DB) && defined(DB_THREAD)
- { "thread",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_THREAD,
 	NULL, NULL },
 #endif
 
@@ -209,20 +205,28 @@ DB_SNAPSHOT	RECNO
 #endif
 
 /* DB->open */
+#if defined(WITH_DB) && defined(DB_RDONLY)
+ { "rdonly",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_RDONLY,
+	NULL, NULL },
+#endif
 #if (defined(WITH_DB) || defined(WITH_SQLITE)) && defined(DB_EXCL)
  { "excl",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_EXCL,
+	NULL, NULL },
+#endif
+#if defined(WITH_DB) && defined(DB_TRUNCATE)
+ { "truncate",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_TRUNCATE,
 	NULL, NULL },
 #endif
 #if defined(WITH_DB) && defined(DB_FCNTL_LOCKING)
  { "fcntl_locking",0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_FCNTL_LOCKING,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_NO_AUTO_COMMIT) && defined(NOTYET)
- { "noautocommit", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_NO_AUTO_COMMIT,
+#if defined(WITH_DB) && defined(DB_AUTO_COMMIT)
+ { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oflags, DB_AUTO_COMMIT,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_RDONLY)
- { "rdonly",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_RDONLY,
+#if defined(WITH_DB) && defined(DB_NO_AUTO_COMMIT) && defined(NOTYET)
+ { "noautocommit", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_NO_AUTO_COMMIT,
 	NULL, NULL },
 #endif
 #if defined(WITH_DB) && defined(DB_RDWRMASTER) && defined(NOTYET)
@@ -231,10 +235,6 @@ DB_SNAPSHOT	RECNO
 #endif
 #if defined(WITH_DB) && defined(NOTYET)
 DB_READ_UNCOMITTED
-#endif
-#if defined(WITH_DB) && defined(DB_TRUNCATE)
- { "truncate",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_TRUNCATE,
-	NULL, NULL },
 #endif
 #if defined(WITH_DB) && defined(DB_WRITEOPEN)
  { "writeopen", 0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_WRITEOPEN,

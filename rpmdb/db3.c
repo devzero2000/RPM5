@@ -162,6 +162,36 @@ static const char * fmtBits(uint32_t flags, KEY tbl[], size_t ntbl, char *t)
 
 #define _ENTRY(_v)      { DB_##_v, #_v, }
 
+static KEY DBeflags[] = {
+    _ENTRY(INIT_CDB),
+    _ENTRY(INIT_LOCK),
+    _ENTRY(INIT_LOG),
+    _ENTRY(INIT_MPOOL),
+    _ENTRY(INIT_REP),
+    _ENTRY(INIT_TXN),
+    _ENTRY(RECOVER),
+    _ENTRY(RECOVER_FATAL),
+    _ENTRY(USE_ENVIRON),
+    _ENTRY(USE_ENVIRON_ROOT),
+    _ENTRY(CREATE),
+    _ENTRY(LOCKDOWN),
+    _ENTRY(FAILCHK),
+    _ENTRY(PRIVATE),
+    _ENTRY(REGISTER),
+    _ENTRY(SYSTEM_MEM),
+    _ENTRY(THREAD),
+};
+static size_t nDBeflags = sizeof(DBeflags) / sizeof(DBeflags[0]);
+static const char * fmtDBeflags(uint32_t flags)
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    te = stpcpy(te, "\n\tflags: ");
+    (void) fmtBits(flags, DBeflags, nDBeflags, te);
+    return buf;
+}
+#define	_EFLAGS(_eflags)	fmtDBeflags(_eflags)
+
 static KEY DBoflags[] = {
     _ENTRY(AUTO_COMMIT),
     _ENTRY(CREATE),
@@ -182,7 +212,7 @@ static const char * fmtDBoflags(uint32_t flags)
     (void) fmtBits(flags, DBoflags, nDBoflags, te);
     return buf;
 }
-#define	_OFLAGS(_dbi)	fmtDBoflags((_dbi)->dbi_oflags)
+#define	_OFLAGS(_oflags)	fmtDBoflags(_oflags)
 
 static KEY DBaflags[] = {
     _ENTRY(CREATE),
@@ -213,7 +243,7 @@ static const char * fmtDBafflags(uint32_t flags)
     (void) fmtBits(flags, DBafflags, nDBafflags, te);
     return buf;
 }
-#define	_AFFLAGS(_afflags)	fmtDBaflags(_afflags)
+#define	_AFFLAGS(_afflags)	fmtDBafflags(_afflags)
 
 static KEY DBCflags[] = {
     _ENTRY(AFTER),		/* Dbc.put */
@@ -420,6 +450,7 @@ DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s)\n", __FUNCTION__, dbi, dbhome, dbfil
 
     rc = dbenv->close(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
+    rpmdb->db_dbenv = NULL;
 
     if (dbfile)
 	rpmlog(RPMLOG_DEBUG, D_("closed   db environment %s/%s\n"),
@@ -498,7 +529,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     int rc;
     int xx;
 
-DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s,%p)\n", __FUNCTION__, dbi, dbhome, dbfile, dbsubfile, dbenvp));
     if (!oneshot) {
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = db_env_set_func_open((int (*)(const char *, int, ...))Open);
@@ -667,6 +697,8 @@ DBIDEBUG(dbi, (stderr, "--> %s(%p,%s,%s,%s,%p)\n", __FUNCTION__, dbi, dbhome, db
 
     *dbenvp = dbenv;
 
+DBIDEBUG(dbi, (stderr, "<-- %s(%p(%s),%s,%s,%s,%p) dbenv %p %s\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbhome, dbfile, dbsubfile, dbenvp, dbenv, _EFLAGS(eflags)));
+
     return 0;
 
 errxit:
@@ -721,19 +753,19 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%s,%s,0x%x) rc %d %s\n", __FUNCTION__, dbi,
 /*@=mustmod@*/
 
 /*@-mustmod@*/
-static int db3truncate(dbiIndex dbi, DB_TXN * txnid, unsigned int * countp,
-		unsigned int flags)
+static int db3truncate(dbiIndex dbi, unsigned int * countp, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *countp, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
 assert(db != NULL);
-    rc = db->truncate(db, txnid, countp, flags);
+    rc = db->truncate(db, _txnid, countp, flags);
     rc = cvtdberr(dbi, "db->truncate", rc, _debug);
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, txnid, countp, flags, rc));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, countp, flags, rc));
 
     return rc;
 }
@@ -808,7 +840,7 @@ static int db3exists(dbiIndex dbi, DBT * key, unsigned int flags)
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
-    DB_TXN * _txnid = NULL;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int _printit;
     int rc;
 
@@ -830,7 +862,7 @@ static int db3seqno(dbiIndex dbi, int64_t * seqnop, unsigned int flags)
 	/*@modifies *seqnop, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
-    DB_TXN * _txnid = NULL;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     DB_SEQUENCE * seq = dbi->dbi_seq;
     int32_t _delta = 1;
     db_seq_t seqno = 0;
@@ -939,12 +971,13 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
     assert(db != NULL);
     if (dbcursor == NULL) {
 flags = 0;
-	rc = db->put(db, dbi->dbi_txnid, key, data, flags);
+	rc = db->put(db, _txnid, key, data, flags);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
 flags = DB_KEYLAST;
@@ -968,13 +1001,14 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int _printit;
     int rc;
 
     assert(db != NULL);
     if (dbcursor == NULL) {
 	/* XXX duplicates require cursors. */
-	rc = db->get(db, dbi->dbi_txnid, key, data, 0);
+	rc = db->get(db, _txnid, key, data, 0);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
@@ -1040,11 +1074,12 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@modifies *dbcursor, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
     assert(db != NULL);
     if (dbcursor == NULL) {
-	rc = db->del(db, dbi->dbi_txnid, key, flags);
+	rc = db->del(db, _txnid, key, flags);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     } else {
 
@@ -1117,7 +1152,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-    DB_TXN * txnid = NULL;
+    DB_TXN * _txnid = dbiTxnid(dbi);
 #endif
     int rc = 0;
 
@@ -1132,7 +1167,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 /* XXX 3.3.4 change. */
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-    rc = db->stat(db, txnid, &dbi->dbi_stats, flags);
+    rc = db->stat(db, _txnid, &dbi->dbi_stats, flags);
 #else
     rc = db->stat(db, &dbi->dbi_stats, flags);
 #endif
@@ -1155,14 +1190,14 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
 {
     DB * db = dbi->dbi_db;
     DB * secondary = dbisecondary->dbi_db;
-    DB_TXN * txnid = NULL;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
 assert(db != NULL);
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-    rc = db->associate(db, txnid, secondary, callback, flags);
+    rc = db->associate(db, _txnid, secondary, callback, flags);
 #else
     rc = db->associate(db, secondary, callback, flags);
 #endif
@@ -1679,7 +1714,7 @@ static int seqid_init(dbiIndex dbi, const char * keyp, size_t keylen,
 {
     DB * db = dbi->dbi_db;
     DBT k = {0};
-    DB_TXN * txnid = NULL;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     DB_SEQUENCE * seq = NULL;
     db_seq_t _rangemin = -922337203685477600LL;
     db_seq_t _rangemax =  922337203685477600LL;
@@ -1725,7 +1760,7 @@ assert(db != NULL);
 
     k.data = (void *)keyp;
     k.size = (u_int32_t) (keylen > 0 ? keylen : strlen(keyp));
-    rc = seq->open(seq, txnid, &k, _oflags);
+    rc = seq->open(seq, _txnid, &k, _oflags);
     rc = cvtdberr(dbi, "seq->open", rc, _debug);
     if (rc) goto exit;
 
@@ -1771,7 +1806,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-    DB_TXN * txnid = NULL;
+    DB_TXN * _txnid = NULL;
 #endif
     DBTYPE dbi_type = DB_UNKNOWN;
     rpmuint32_t oflags;
@@ -1791,6 +1826,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*@=mods@*/
     dbi->dbi_api = DB_VERSION_MAJOR;
     dbiBN = mapTagName(rpmdb, dbi);
+    dbi->dbi_txnid = NULL;
+    _txnid = NULL;
 
     /*
      * Get the prefix/root component and directory path.
@@ -2206,7 +2243,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 #endif	/* HACK */
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-		rc = (db->open)(db, txnid, dbpath, dbsubfile,
+		rc = (db->open)(db, _txnid, dbpath, dbsubfile,
 		    dbi_type, oflags, dbi->dbi_perms);
 #else
 		rc = (db->open)(db, dbpath, dbsubfile,
@@ -2228,8 +2265,6 @@ assert(rpmdb && rpmdb->db_dbenv);
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
-
-	    dbi->dbi_txnid = NULL;
 
 	    /*
 	     * Lock a file using fcntl(2). Traditionally this is Packages,
@@ -2292,7 +2327,7 @@ assert(rpmdb && rpmdb->db_dbenv);
     dbi->dbi_db = db;
     db->app_private = dbi;
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb, tagName(rpmtag), dbip, dbi, rc, _OFLAGS(dbi)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb, tagName(rpmtag), dbip, dbi, rc, _OFLAGS(dbi->dbi_oflags)));
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;

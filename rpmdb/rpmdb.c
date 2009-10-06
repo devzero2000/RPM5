@@ -1387,7 +1387,7 @@ static int _joinKeys(dbiIndex dbi, const void * keyp, size_t keylen,
 
     *matches = NULL;
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
 k.data = (void *) keyp;
 k.size = (UINT32_T) keylen;
@@ -1702,7 +1702,7 @@ int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 /*@=temptrans@*/
     k.size = (UINT32_T) keylen;
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 #ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
@@ -1869,7 +1869,7 @@ DBT v = DBT_INIT, *data = &v;
  
     if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
     /* did they give us just a name? */
     rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
@@ -2572,7 +2572,7 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi,
      * marked with DB_WRITECURSOR as well.
      */
     if (mi->mi_dbc == NULL) {
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
+	xx = dbiCopen(dbi, dbiTxnid(dbi), &mi->mi_dbc, mi->mi_cflags);
 	k.data = mi->mi_keyp;
 	k.size = (u_int32_t)mi->mi_keylen;
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
@@ -2773,7 +2773,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
     if (dbi == NULL)
 	return 1;
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 #ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
@@ -2997,7 +2997,7 @@ int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 	xx = mireRegcomp(mire, pat);
     }
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
     while ((rc = dbiGet(dbi, dbcursor, key, data, DB_NEXT)) == 0) {
 	size_t ns = key->size;
@@ -3076,6 +3076,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
     he->p.ptr = _free(he->p.ptr);
 
     (void) blockSignals(db, &signalMask);
+    xx = rpmtxnBegin(db);
 
 /*@-nullpass -nullptrarith -nullderef @*/ /* FIX: rpmvals heartburn */
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
@@ -3126,7 +3127,7 @@ if (dbiByteSwapped(dbi) == 1)
 /*@=immediatetrans@*/
 		k.size = (UINT32_T) sizeof(mi_offset.ui);
 
-		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		rc = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		if (rc) {
 		    rpmlog(RPMLOG_ERR,
@@ -3163,7 +3164,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    }
 
 	    printed = 0;
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 	    for (i = 0; i < (int) he->c; i++) {
 		dbiIndexSet set;
 		int stringvalued;
@@ -3341,6 +3342,7 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
     (void) headerFree(db->db_h);
     db->db_h = NULL;
 
+    xx = rpmtxnCommit(db);
     (void) unblockSignals(db, &signalMask);
 
     /* XXX return ret; */
@@ -3413,17 +3415,14 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     dirIndexes = he->p.ui32p;
 
     (void) blockSignals(db, &signalMask);
+    xx = rpmtxnBegin(db);
 
     if (!db->db_rebuilding) {
 	int64_t seqno = 0;
 	int i;
 
 	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
-	/* XXX Grab 10 values just to exercise the code for now. */
-	for (i = 0; i < 10; i++) {
-	    seqno = 0;
-	    xx = dbiSeqno(dbi, &seqno, 0);
-	}
+	xx = dbiSeqno(dbi, &seqno, 0);
 	xx = dbiSync(dbi, 0);
     }
 
@@ -3438,7 +3437,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
 
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+	xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
 	k.data = &idx0;
@@ -3518,6 +3517,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
+	    case RPMDBI_SEQNO:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
@@ -3526,7 +3526,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 		dbi = dbiOpen(db, he->tag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 		mi_offset.ui = hdrNum;
 		if (dbiByteSwapped(dbi) == 1)
@@ -3612,7 +3612,7 @@ assert(v.data != NULL);
 	    }
 
 	    printed = 0;
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 	    for (i = 0; i < (int) he->c; i++) {
 		dbiIndexSet set;
@@ -3802,7 +3802,9 @@ exit:
     /* Unreference header used by associated secondary index callbacks. */
     (void) headerFree(db->db_h);
 
+    xx = (!ret ? rpmtxnCommit(db) : rpmtxnAbort(db));
     (void) unblockSignals(db, &signalMask);
+
     dirIndexes = _free(dirIndexes);
     dirNames = _free(dirNames);
 
