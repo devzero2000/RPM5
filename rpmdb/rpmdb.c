@@ -3419,8 +3419,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
     if (!db->db_rebuilding) {
 	int64_t seqno = 0;
-	int i;
-
 	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
 	xx = dbiSeqno(dbi, &seqno, 0);
 	xx = dbiSync(dbi, 0);

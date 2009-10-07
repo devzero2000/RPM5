@@ -1005,10 +1005,10 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     int _printit;
     int rc;
 
-    assert(db != NULL);
+assert(db != NULL);
     if (dbcursor == NULL) {
 	/* XXX duplicates require cursors. */
-	rc = db->get(db, _txnid, key, data, 0);
+	rc = db->get(db, _txnid, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
@@ -1042,25 +1042,32 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+    DB_TXN * _txnid = dbiTxnid(dbi);
     int _printit;
     int rc;
 
-    assert(db != NULL);
-    assert(dbcursor != NULL);
-
+assert(db != NULL);
+    if (dbcursor == NULL) {
+	/* XXX duplicates require cursors. */
+	rc = db->pget(db, _txnid, key, pkey, data, flags);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "db->pget", rc, _printit);
+    } else {
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
-    /* XXX db3 does DB_FIRST on uninitialized cursor */
-    rc = dbcursor->pget(dbcursor, key, pkey, data, flags);
-    /* XXX DB_NOTFOUND can be returned */
-    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
-    rc = cvtdberr(dbi, "dbcursor->pget", rc, _printit);
+	/* XXX db3 does DB_FIRST on uninitialized cursor */
+	rc = dbcursor->pget(dbcursor, key, pkey, data, flags);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "dbcursor->pget", rc, _printit);
 #else
-    /* XXX db3 does DB_FIRST on uninitialized cursor */
-    rc = dbcursor->c_pget(dbcursor, key, pkey, data, flags);
-    /* XXX DB_NOTFOUND can be returned */
-    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
-    rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
+	/* XXX db3 does DB_FIRST on uninitialized cursor */
+	rc = dbcursor->c_pget(dbcursor, key, pkey, data, flags);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
 #endif
+    }
 
 DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
     return rc;
@@ -1077,7 +1084,7 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
-    assert(db != NULL);
+assert(db != NULL);
     if (dbcursor == NULL) {
 	rc = db->del(db, _txnid, key, flags);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
@@ -1898,6 +1905,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 	    /* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
 	    oflags &= ~DB_CREATE;
+	    oflags &= ~DB_AUTO_COMMIT;
 
 	    /* ... but DBENV->open might still need DB_CREATE ... */
 	    if (dbi->dbi_eflags & DB_PRIVATE) {
@@ -1905,7 +1913,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    } else {
 		dbi->dbi_eflags |= DB_JOINENV;
 		dbi->dbi_oeflags &= ~DB_CREATE;
+#ifdef	DYING
 		dbi->dbi_oeflags &= ~DB_THREAD;
+#endif
 		/* ... but, unless DB_PRIVATE is used, skip DBENV. */
 		dbi->dbi_use_dbenv = 0;
 	    }
@@ -1949,7 +1959,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		} else {
 		    dbi->dbi_eflags |= DB_JOINENV;
 		    dbi->dbi_oeflags &= ~DB_CREATE;
+#ifdef	DYING
 		    dbi->dbi_oeflags &= ~DB_THREAD;
+#endif
 		}
 	    }
 	    dbf = _free(dbf);
@@ -2107,7 +2119,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 /* 4.1: db->set_errcall(dbenv, rpmdb->db_errcall); */
 /* 4.1: db->set_errfile(dbenv, rpmdb->db_errfile); */
 /* 4.1: db->set_errpfx(dbenv, rpmdb->db_errpfx); */
- /* 4.1: db->set_feedback(???) */
+/* 4.1: db->set_feedback(???) */
 
 	    if (rc == 0 && dbi->dbi_lorder) {
 		rc = db->set_lorder(db, dbi->dbi_lorder);
@@ -2183,8 +2195,8 @@ assert(rpmdb && rpmdb->db_dbenv);
 #endif
 		    break;
 		case DB_RECNO:
-		    if (dbi->dbi_re_delim) {
 /* 4.1: db->set_append_recno(???) */
+		    if (dbi->dbi_re_delim) {
 			rc = db->set_re_delim(db, dbi->dbi_re_delim);
 			rc = cvtdberr(dbi, "db->set_re_selim", rc, _debug);
 			if (rc) break;
