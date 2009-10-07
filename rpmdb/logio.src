@@ -1,0 +1,18 @@
+PREFIX	logio
+INCLUDE #include "system.h"
+INCLUDE #include "rpmio.h"
+INCLUDE #include "logio.h"
+INCLUDE #include "debug.h"
+
+/*
+ *     awk -f ./logio.awk \
+ *         -v source_file=logio_auto.c         \
+ *         -v header_file=logio_auto.h         \
+ *         -v template_file=logio_template     \
+ *         < logio.src
+ */
+
+/* Mkdir(2) */
+BEGIN Mkdir	48	10000
+DBT	dirname		DBT		s
+END

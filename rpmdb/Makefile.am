@@ -26,9 +26,12 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql
+EXTRA_DIST = \
+	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql \
+	logio.awk logio.src logio_template logio.c logio_rec.c \
+	logio_auto.c logio_autop.c logio_auto.h
 
-EXTRA_PROGRAMS = tjfn tbdb
+EXTRA_PROGRAMS = logio tjfn tbdb
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
@@ -122,8 +125,6 @@ check-local:
 clean-local:
 	rm -f *.o tagtbl.c
 
-BUILT_SOURCES = tagtbl.c tbdb.c bdb.c bdb.h
-
 rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-splint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
 
@@ -167,6 +168,21 @@ lcov-report:
 #.PHONY:	lcov-upload
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
+
+logio_BUILT = logio_auto.c logio_autop.c logio_auto.h
+$(logio_BUILT):	logio.awk logio.src logio_template
+	@$(AWK) -f logio.awk \
+		-v header_file=logio_auto.h \
+		-v print_file=logio_autop.c \
+		-v source_file=logio_auto.c \
+		-v template_file=logio_template \
+	< logio.src
+
+logio_SOURCES = logio.c logio_rec.c $(logio_BUILT)
+logio_CFLAGS = -I../db
+logio_LDADD = $(mylibs)
+
+BUILT_SOURCES = tagtbl.c tbdb.c bdb.c bdb.h $(logio_BUILT)
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
