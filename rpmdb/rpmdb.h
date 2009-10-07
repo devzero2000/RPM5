@@ -489,6 +489,7 @@ struct rpmdb_s {
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     DB_TXN *	db_txnid;	/*!< Berkeley DB_TXN handle */
     DB_LOGC *	db_logc;	/*!< Berkeley DB_LOGC handle */
+    DB_MPOOLFILE *db_mpf;	/*!< Berkeley DB_MPOOLFILE handle */
 
     tagStore_t	db_tags;	/*!< Tag name/value mappings. */
     size_t	db_ndbi;	/*!< No. of tag indices. */
@@ -1142,6 +1143,98 @@ int rpmlgcPut(rpmdb rpmdb, DB_LSN * _lsn, const DBT * data, uint32_t flags)
     int rc = dbenv->log_put(dbenv, _lsn, data, flags);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", "dbenv->log_put", dbenv, _lsn, data, flags, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfSyncAll(rpmdb rpmdb)
+{
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_LSN * _lsn = NULL;
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+	? dbenv->memp_sync(dbenv, _lsn) : ENOTSUP;
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->memp_sync", dbenv, _lsn, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfTrickle(rpmdb rpmdb)
+{
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    int _percent = 20;
+    int _nwrote = 0;
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+	? dbenv->memp_trickle(dbenv, _percent, &_nwrote) : ENOTSUP;
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,%d) nwrote %d rc %d\n", "dbenv->memp_trickle", dbenv, _percent, _nwrote, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfClose(rpmdb rpmdb)
+{
+    DB_MPOOLFILE * mpf = rpmdb->db_mpf;
+    uint32_t _flags = 0;
+    int rc = (mpf ? mpf->close(mpf, _flags) : ENOTSUP);
+    rpmdb->db_mpf = NULL;
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p) rc %d\n", "mpf->close", mpf, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfGet(rpmdb rpmdb, uint32_t * _pgnop, uint32_t _flags, void ** _pagep)
+{
+    DB_MPOOLFILE * mpf = rpmdb->db_mpf;
+    DB_TXN * _txnid = rpmdb->db_txnid;
+    int rc = mpf->get(mpf, _pgnop, _txnid, _flags, _pagep);
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p,0x%x,%p) rc %d\n", "mpf->get", mpf, _pgnop, _txnid, _flags, _pagep, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfOpen(rpmdb rpmdb, /*@null@*/ const char * fn, uint32_t flags)
+{
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_MPOOLFILE * mpf = NULL;
+    int _perms = rpmdb->_dbi[0]->dbi_perms;
+    size_t _pagesize = BUFSIZ;
+    uint32_t _fcreate_flags = 0;
+    int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
+	? dbenv->memp_fcreate(dbenv, &mpf, _fcreate_flags) : ENOTSUP;
+
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,&mpf,0x%x) mpf %p rc %d\n", "dbenv->memp_fcreate", dbenv, _fcreate_flags, mpf, rc);
+    if (rc) goto exit;
+    rc = mpf->open(mpf, fn, flags, _perms, _pagesize);
+    rpmdb->db_mpf = (!rc ? mpf : NULL);		/* FIXME: mpf memleak */
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,%s,0x%x) rc %d\n", "mpf->open", mpf, fn, flags, rc);
+
+exit:
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfPut(rpmdb rpmdb, void * _page, uint32_t flags)
+{
+    DB_MPOOLFILE * mpf = rpmdb->db_mpf;
+    uint32_t _priority = DB_PRIORITY_DEFAULT;
+    int rc = mpf->put(mpf, _page, _priority, flags);
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p,%p,0x%x,0x%x) rc %d\n", "mpf->put", mpf, _page, _priority, flags, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmmpfSync(rpmdb rpmdb)
+{
+    DB_MPOOLFILE * mpf = rpmdb->db_mpf;
+    int rc = (mpf ? mpf->sync(mpf) : ENOTSUP);
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p) rc %d\n", "mpf->close", mpf, rc);
     return rc;
 }
 
