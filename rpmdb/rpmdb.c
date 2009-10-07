@@ -1177,7 +1177,11 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_nbits = 0;
     db->db_next = NULL;
     db->db_opens = 0;
+
     db->db_dbenv = NULL;
+    db->db_txnid = NULL;
+    db->db_logc = NULL;
+    db->db_mpf = NULL;
 
     dbiTagsInit(&db->db_tags, &db->db_ndbi);
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));

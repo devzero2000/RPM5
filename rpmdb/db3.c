@@ -666,6 +666,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 #endif
 
+    if (eflags & DB_RECOVER) eflags |= DB_CREATE;
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
