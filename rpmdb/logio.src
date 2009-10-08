@@ -1,6 +1,6 @@
 PREFIX	logio
 INCLUDE #include "system.h"
-INCLUDE #include "rpmio.h"
+INCLUDE #include <rpmio.h>
 INCLUDE #include "logio.h"
 INCLUDE #include "debug.h"
 
@@ -12,7 +12,83 @@ INCLUDE #include "debug.h"
  *         < logio.src
  */
 
+/* Unlink(2) */
+BEGIN Unlink	48	10000
+DBT	path		DBT		s
+END
+
+/* Rename(2) */
+BEGIN Rename	48	10001
+DBT	oldpath		DBT		s
+DBT	newpath		DBT		s
+END
+
 /* Mkdir(2) */
-BEGIN Mkdir	48	10000
-DBT	dirname		DBT		s
+BEGIN Mkdir	48	10002
+DBT	path		DBT		s
+ARG	mode		mode_t		o
+END
+
+/* Rmdir(2) */
+BEGIN Rmdir	48	10003
+DBT	path		DBT		s
+ARG	mode		mode_t		o
+END
+
+/* Lsetfilecon(2) */
+BEGIN Lsetfilecon	48	10004
+DBT	path		DBT		s
+DBT	context		DBT		s
+END
+
+/* Chown(2) */
+BEGIN Chown	48	10005
+DBT	path		DBT		s
+ARG	owner		uid_t		d
+ARG	group		gid_t		d
+END
+
+/* Lchown(2) */
+BEGIN Lchown	48	10006
+DBT	path		DBT		s
+ARG	owner		uid_t		d
+ARG	group		gid_t		d
+END
+
+/* Chmod(2) */
+BEGIN Chmod	48	10007
+DBT	path		DBT		s
+ARG	mode		mode_t		o
+END
+
+/* Utime(2) */
+BEGIN Utime	48	10008
+DBT	path		DBT		s
+TIME	actime		time_t		ld
+TIME	modtime		time_t		ld
+END
+
+/* Symlink(2) */
+BEGIN Symlink	48	10009
+DBT	oldpath		DBT		s
+DBT	newpath		DBT		s
+END
+
+/* Link(2) */
+BEGIN Link	48	10010
+DBT	oldpath		DBT		s
+DBT	newpath		DBT		s
+END
+
+/* Mknod(2) */
+BEGIN Mknod	48	10011
+DBT	path		DBT		s
+ARG	mode		mode_t		o
+ARG	dev		dev_t		lx
+END
+
+/* Mkfifo(2) */
+BEGIN Mkfifo	48	10012
+DBT	path		DBT		s
+ARG	mode		mode_t		o
 END

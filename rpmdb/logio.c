@@ -8,17 +8,8 @@
 
 #include "system.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <errno.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include <rpmio.h>
+#include <poptIO.h>
 
 #include "db.h"
 #include "db_int.h"
@@ -43,38 +34,35 @@ apprec_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
     switch (rectype) {
     case DB_logio_Mkdir:
 	return logio_Mkdir_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Rmdir:
+	return logio_Rmdir_recover(dbenv, dbt, lsn, op);
     default:
-	/*
-	 * We've hit an unexpected, allegedly user-defined record
-	 * type.
-	 */
+	/* We've hit an unexpected, allegedly user-defined record type.  */
 	dbenv->errx(dbenv, "Unexpected log record type encountered");
 	return EINVAL;
     }
 }
 
 static int
-open_env(const char * home, FILE * errfp, const char * progname,
-		DB_ENV ** dbenvp)
+open_env(const char * home, FILE * fp, DB_ENV ** dbenvp)
 {
     DB_ENV *dbenv;
     uint32_t eflags;
     int ret;
 
-   /*
-    * Create an environment object and initialize it for error
-    * reporting.
-    */
+    if (fp == NULL) fp = stderr;
+
+    /* Create an environment initialized for error reporting. */
     if ((ret = db_env_create(&dbenv, 0)) != 0) {
-	fprintf(errfp, "%s: %s\n", progname, db_strerror(ret));
+	fprintf(fp, "%s: db_env_create: %s\n", __progname, db_strerror(ret));
 	return ret;
     }
-    dbenv->set_errfile(dbenv, errfp);
-    dbenv->set_errpfx(dbenv, progname);
+    dbenv->set_errfile(dbenv, fp);
+    dbenv->set_errpfx(dbenv, __progname);
 
     /* Set up our custom recovery dispatch function. */
     if ((ret = dbenv->set_app_dispatch(dbenv, apprec_dispatch)) != 0) {
-	dbenv->err(dbenv, ret, "set_app_dispatch");
+	dbenv->err(dbenv, ret, "DB_ENV->set_app_dispatch");
 	return ret;
     }
 
@@ -82,7 +70,7 @@ open_env(const char * home, FILE * errfp, const char * progname,
     eflags = DB_CREATE | DB_RECOVER |
 	DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN;
     if ((ret = dbenv->open(dbenv, home, eflags, 0)) != 0) {
-	dbenv->err(dbenv, ret, "environment open: %s", home);
+	dbenv->err(dbenv, ret, "DB_ENV->open: %s", home);
 	dbenv->close(dbenv, 0);
 	return ret;
     }
@@ -92,71 +80,50 @@ open_env(const char * home, FILE * errfp, const char * progname,
 }
 
 static int
-verify_absence(DB_ENV * dbenv, const char * dirname)
+verify(const char * DN, mode_t mode)
 {
-
-    if (Access(dirname, F_OK) == 0) {
-	dbenv->errx(dbenv, "Error--directory present!");
-	exit(EXIT_FAILURE);
-    }
-
-    return 0;
+    struct stat sb;
+    if (Lstat(DN, &sb))
+	return errno;
+    return (sb.st_mode == mode ? 0 : -1);
 }
 
-static int
-verify_presence(DB_ENV * dbenv, const char * dirname)
-{
+static const char *home = "HOME";
+static const char * dir = "DIR";
+static mode_t mode = 0755;
 
-    if (Access(dirname, F_OK) != 0) {
-	dbenv->errx(dbenv, "Error--directory not present!");
-	exit(EXIT_FAILURE);
-    }
+static struct poptOption _optionsTable[] = {
 
-    return 0;
-}
+  { "home", 'h', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&home, 0,
+	N_("Specify DIR for database environment"), N_("DIR") },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"), NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
+static struct poptOption *optionsTable = &_optionsTable[0];
 
 int
 main(int argc, char *argv[])
 {
-    extern char *optarg;
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    const char * DN = rpmGetPath(home, "/", dir, NULL);
     DB_ENV *dbenv;
-    DB_LSN lsn;
     DB_TXN *txn;
-    DBT dirnamedbt;
+    DB_LSN lsn;
+    DBT DNdbt = {0};
     int ret;
-    const char *home;
-    char ch, dirname[256];
-    const char *progname = "logio";		/* Program name. */
     int ec = EXIT_FAILURE;	/* assume failure */
 
-    /* Default home. */
-    home = "TESTDIR";
+    if (verify(home, S_IFDIR|mode) == ENOENT)
+	(void) Mkdir(home, mode);
 
-    while ((ch = getopt(argc, argv, "h:")) != EOF)
-    switch (ch) {
-    case 'h':
-	home = optarg;
-	break;
-    default:
-	fprintf(stderr, "usage: %s [-h home]", progname);
-	exit(EXIT_FAILURE);
-    }
-
-    printf("Set up environment.\n");
-    if ((ret = open_env(home, stderr, progname, &dbenv)) != 0)
+    if ((ret = open_env(home, NULL, &dbenv)) != 0)
 	goto exit;
-
-    printf("Create a directory in a transaction.\n");
-   /* Log the full directory name, including trailing nul.  */
-    memset(&dirnamedbt, 0, sizeof(dirnamedbt));
-    sprintf(dirname, "%s/MYDIRECTORY", home);
-    dirnamedbt.data = dirname;
-    dirnamedbt.size = strlen(dirname) + 1;
-
-    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "txn_begin");
-	goto exit;
-    }
 
    /*
     * Remember, always log actions before you execute them!
@@ -167,88 +134,142 @@ main(int argc, char *argv[])
     * flush would not be necessary were we doing an operation into the
     * BDB mpool and using LSNs that mpool knew about.
     */
-    memset(&lsn, 0, sizeof(lsn));
-    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, DB_FLUSH, &dirnamedbt)) != 0) {
-	dbenv->err(dbenv, ret, "Mkdir_log");
-	goto exit;
-    }
-    if (Mkdir(dirname, 0755) != 0) {
-	dbenv->err(dbenv, errno, "Mkdir");
-	goto exit;
-    }
-
-    printf("Verify the directory's presence: ");
-    verify_presence(dbenv, dirname);
-    printf("check.\n");
-
-    /* Now abort the transaction and verify that the directory goes away. */
-    printf("Abort the transaction.\n");
-    if ((ret = txn->abort(txn)) != 0) {
-	dbenv->err(dbenv, ret, "txn_abort");
-	goto exit;
-    }
-
-    printf("Verify the directory's absence: ");
-    verify_absence(dbenv, dirname);
-    printf("check.\n");
-
-    /* Now do the same thing over again, only with a commit this time. */
-    printf("Create a directory in a transaction.\n");
-    memset(&dirnamedbt, 0, sizeof(dirnamedbt));
-    sprintf(dirname, "%s/MYDIRECTORY", home);
-    dirnamedbt.data = dirname;
-    dirnamedbt.size = strlen(dirname) + 1;
+    printf("INIT: Mkdir transaction logged and directory created: ");
     if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
 	dbenv->err(dbenv, ret, "txn_begin");
 	goto exit;
     }
-
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;	/* trailing NUL too */
     memset(&lsn, 0, sizeof(lsn));
-    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, 0, &dirnamedbt)) != 0) {
+    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, DB_FLUSH, &DNdbt, mode)) != 0) {
 	dbenv->err(dbenv, ret, "Mkdir_log");
 	goto exit;
     }
-    if (Mkdir(dirname, 0755) != 0) {
+    if (Mkdir(DN, mode) != 0) {
 	dbenv->err(dbenv, errno, "Mkdir");
 	goto exit;
     }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
 
-    printf("Verify the directory's presence: ");
-    verify_presence(dbenv, dirname);
-    printf("check.\n");
-
-    /* Now abort the transaction and verify that the directory goes away. */
-    printf("Commit the transaction.\n");
-    if ((ret = txn->commit(txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "txn_commit");
+    printf("TEST: directory is removed by transaction abort: ");
+    if ((ret = txn->abort(txn)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->abort");
 	goto exit;
     }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
 
-    printf("Verify the directory's presence: ");
-    verify_presence(dbenv, dirname);
-    printf("check.\n");
+    /* Repeat, with a commit this time. */
+    printf("INIT: Mkdir transaction logged and directory created: ");
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, 0, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Mkdir_log");
+	goto exit;
+    }
+    if (Mkdir(DN, mode) != 0) {
+	dbenv->err(dbenv, errno, "Mkdir");
+	goto exit;
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
 
-    printf("Now remove the directory, then run recovery.\n");
+    /* Commit the transaction and verify that the creation persists. */
+    printf("TEST: creation persists after transaction commit: ");
+    if ((ret = txn->commit(txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->commit");
+	goto exit;
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
+
+    printf("INIT: Close dbenv and remove directory: ");
     if ((ret = dbenv->close(dbenv, 0)) != 0) {
 	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
 	goto exit;
     }
-    if (Rmdir(dirname) != 0) {
-	fprintf(stderr,
-	    "%s: Rmdir failed with error %s", progname,
+    if (Rmdir(DN) != 0) {
+	fprintf(stderr, "%s: Rmdir failed with error %s", __progname,
 	    strerror(errno));
     }
-    verify_absence(dbenv, dirname);
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
 
-    /* Opening with DB_RECOVER runs recovery. */
-    if ((ret = open_env(home, stderr, progname, &dbenv)) != 0)
+    printf("TEST: directory is re-created opening dbenv with DB_RECOVER: ");
+    if ((ret = open_env(home, stderr, &dbenv)) != 0)
 	goto exit;
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
 
-    printf("Verify the directory's presence: ");
-    verify_presence(dbenv, dirname);
-    printf("check.\n");
+    printf("INIT: Rmdir transaction logged and directory removed: ");
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "txn_begin");
+	goto exit;
+    }
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;	/* trailing NUL too */
+    memset(&lsn, 0, sizeof(lsn));
+    if ((ret = logio_Rmdir_log(dbenv, txn, &lsn, DB_FLUSH, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Rmdir_log");
+	goto exit;
+    }
+    if (Rmdir(DN) != 0) {
+	dbenv->err(dbenv, errno, "Rmdir");
+	goto exit;
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
 
-    /* Close the handle. */
+    printf("TEST: directory is re-created by transaction abort: ");
+    if ((ret = txn->abort(txn)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->abort");
+	goto exit;
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
+
+    /* Repeat, with a commit this time. */
+    printf("INIT: Rmdir transaction logged and directory removed: ");
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    if ((ret = logio_Rmdir_log(dbenv, txn, &lsn, 0, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Rmdir_log");
+	goto exit;
+    }
+    if (Rmdir(DN) != 0) {
+	dbenv->err(dbenv, errno, "Rmdir");
+	goto exit;
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
+
+    /* Commit the transaction and verify that the removal persists. */
+    printf("TEST: removal persists after transaction commit: ");
+    if ((ret = txn->commit(txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->commit");
+	goto exit;
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
+
+    printf("INIT: Close dbenv and create directory: ");
+    if ((ret = dbenv->close(dbenv, 0)) != 0) {
+	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
+	goto exit;
+    }
+    if (Mkdir(DN, mode) != 0) {
+	fprintf(stderr, "%s: Mkdir failed with error %s", __progname,
+	    strerror(errno));
+    }
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
+
+    printf("TEST: directory is removed opening dbenv with DB_RECOVER: ");
+    if ((ret = open_env(home, stderr, &dbenv)) != 0)
+	goto exit;
+    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
+
     if ((ret = dbenv->close(dbenv, 0)) != 0) {
 	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
 	goto exit;
@@ -256,5 +277,7 @@ main(int argc, char *argv[])
     ec = EXIT_SUCCESS;
 
 exit:
+    DN = _free(DN);
+    optCon = rpmioFini(optCon);
     return ec;
 }

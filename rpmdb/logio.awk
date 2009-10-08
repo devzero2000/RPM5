@@ -45,7 +45,7 @@
 BEGIN {
 	if (source_file == "" ||
 	    header_file == "" || template_file == "") {
-	    print "Usage: logio.awk requires three variables to be set:"
+	    print "Usage: logio.awk requires 4 variables to be set:"
 	    print "\theader_file\t-- the recover #include file being created"
 	    print "\tprint_file\t-- the print source file being created"
 	    print "\tsource_file\t-- the recover source file being created"
@@ -84,16 +84,13 @@ BEGIN {
 	printf("#undef\tPACKAGE_NAME\n") >> CFILE
 	printf("#undef\tPACKAGE_STRING\n") >> CFILE
 	printf("#undef\tPACKAGE_TARNAME\n") >> CFILE
-	printf("#undef\tPACKAGE_VERSION\n") >> CFILE
-	printf("#include \"system.h\"\n") >> CFILE
-	printf("#include \"rpmio.h\"\n") >> CFILE
+	printf("#undef\tPACKAGE_VERSION\n\n") >> CFILE
+	printf("#include \"system.h\"\n\n") >> CFILE
+	printf("#include <rpmio.h>\n\n") >> CFILE
 	if (!dbprivate) {
-		printf("#include <errno.h>\n") >> CFILE
-		printf("#include <stdlib.h>\n") >> CFILE
-		printf("#include <string.h>\n") >> CFILE
 		printf("#include \"db.h\"\n") >> CFILE
 		printf("#include \"db_int.h\"\n") >> CFILE
-		printf("#include \"dbinc/db_swap.h\"\n") >> CFILE
+		printf("#include \"dbinc/db_swap.h\"\n\n") >> CFILE
 	}
 	printf("#include \"debug.h\"\n") >> CFILE
 
@@ -105,15 +102,12 @@ BEGIN {
 	printf("#undef\tPACKAGE_STRING\n") >> PFILE
 	printf("#undef\tPACKAGE_TARNAME\n") >> PFILE
 	printf("#undef\tPACKAGE_VERSION\n\n") >> PFILE
-	printf("#include \"system.h\"\n") >> PFILE
-	printf("#include \"rpmio.h\"\n") >> PFILE
+	printf("#include \"system.h\"\n\n") >> PFILE
+	printf("#include <rpmio.h>\n\n") >> PFILE
 	if (!dbprivate) {
-		printf("#include <ctype.h>\n") >> PFILE
-		printf("#include <stdio.h>\n") >> PFILE
-		printf("#include <stdlib.h>\n") >> PFILE
-		printf("#include \"db.h\"\n") >> PFILE
+		printf("#include \"db.h\"\n\n") >> PFILE
 	}
-	printf("#include \"debug.h\"\n") >> PFILE
+	printf("#include \"debug.h\"\n\n") >> PFILE
 
 	if (prefix == "__ham")
 		printf("#ifdef HAVE_HASH\n") >> PFILE
@@ -135,8 +129,8 @@ BEGIN {
 		printf("#undef\tPACKAGE_STRING\n") >> TFILE
 		printf("#undef\tPACKAGE_TARNAME\n") >> TFILE
 		printf("#undef\tPACKAGE_VERSION\n\n") >> TFILE
-		printf("#include \"system.h\"\n") >> TFILE
-		printf("#include \"rpmio.h\"\n") >> TFILE
+		printf("#include \"system.h\"\n\n") >> TFILE
+		printf("#include <rpmio.h>\n\n") >> TFILE
 		printf("#include \"db_int.h\"\n") >> TFILE
 		printf("#include \"dbinc/db_page.h\"\n") >> TFILE
 		printf("#include \"dbinc/%s.h\"\n", prefix) >> TFILE
@@ -144,8 +138,8 @@ BEGIN {
 		printf("#include \"debug.h\"\n\n") >> TFILE
 	} else {
 		printf("#include \"system.h\"\n\n") >> TFILE
-		printf("#include \"rpmio.h\"\n") >> TFILE
-		printf("#include \"db.h\"\n\n") > TFILE
+		printf("#include <rpmio.h>\n\n") >> TFILE
+		printf("#include <db.h>\n\n") >> TFILE
 		printf("#include \"debug.h\"\n\n") >> TFILE
 	}
 }
@@ -269,15 +263,11 @@ BEGIN {
 	print_function();
 
 	# Recovery template
-	if (dbprivate)
-		f = "template/rec_ctemp"
-	else
-		f = "template/rec_utemp"
 
 	cmd = sprintf(\
-    "sed -e s/PREF/%s/ -e s/FUNC/%s/ -e s/DUP/%s/ < template/rec_%s >> %s",
+    "sed -e s/PREF/%s/ -e s/FUNC/%s/ -e s/DUP/%s/ < %s_recover_template >> %s",
 	    prefix, thisfunc, dup_thisfunc,
-	    dbprivate ? "ctemp" : "utemp", TFILE)
+	    prefix, TFILE)
 	system(cmd);
 
 	# Done writing stuff, reset and continue.
@@ -295,10 +285,8 @@ END {
 	proto_format(p, PFILE);
 
 	# Create the routine to call __db_add_recovery(print_fn, id)
-	printf("int\n%s_init_print(%s, dtabp)\n",\
-	    prefix, env_var) >> PFILE
-	printf("\t%s *%s;\n", env_type, env_var) >> PFILE
-	printf("\tDB_DISTAB *dtabp;\n{\n") >> PFILE
+	printf("int\n%s_init_print(%s * %s, DB_DISTAB * dtabp)\n{\n",\
+	    prefix, env_type, env_var) >> PFILE
 	# If application-specific, the user will need a prototype for
 	# __db_add_recovery, since they won't have DB's.
 	if (!dbprivate) {
@@ -741,17 +729,11 @@ function print_function()
 	proto_format(p, PFILE);
 
 	# Function declaration
-	printf("int\n%s_print(%s, ", funcname, env_var) >> PFILE
-	printf("dbtp, lsnp, notused2") >> PFILE
+	printf("int\n%s_print(%s * %s, ", funcname, env_type, env_var) >> PFILE
+	printf("DBT * dbtp, DB_LSN * lsnp, db_recops notused2") >> PFILE
 	if (dbprivate)
-		printf(", notused3") >> PFILE
+		printf(", void * notused3") >> PFILE
 	printf(")\n") >> PFILE
-	printf("\t%s *%s;\n", env_type, env_var) >> PFILE
-	printf("\tDBT *dbtp;\n") >> PFILE
-	printf("\tDB_LSN *lsnp;\n") >> PFILE
-	printf("\tdb_recops notused2;\n") >> PFILE
-	if (dbprivate)
-		printf("\tvoid *notused3;\n") >> PFILE
 	printf("{\n") >> PFILE
 
 	# Locals
@@ -762,7 +744,7 @@ function print_function()
 		if (modes[i] == "TIME") {
 			printf("\tstruct tm *lt;\n") >> PFILE
 			printf("\ttime_t timeval;\n") >> PFILE
-			printf("\tchar time_buf[CTIME_BUFLEN];\n") >> PFILE
+			printf("\tchar time_buf[24+1+1];\n") >> PFILE
 			break;
 		}
 	for (i = 0; i < nvars; i ++)
@@ -839,7 +821,7 @@ function print_function()
 	    "%%%s (%%.24s, 20%%02lu%%02lu%%02lu%%02lu%%02lu.%%02lu)\\n\",\n",\
 			    formats[i]) >> PFILE
 			printf("\t    (long)argp->%s, ", vars[i]) >> PFILE
-			printf("__os_ctime(&timeval, time_buf),",\
+			printf("(char *)ctime_r(&timeval, time_buf),",\
 			    vars[i]) >> PFILE
 			printf("\n\t    (u_long)lt->tm_year - 100, ") >> PFILE
 			printf("(u_long)lt->tm_mon+1,") >> PFILE
@@ -886,21 +868,12 @@ function read_function()
 
 	# Function declaration
 	if (has_dbp) {
-		printf("int\n%s_read(%s, dbpp, td, recbuf, argpp)\n",
-		    funcname, env_var) >> CFILE
+		printf("int\n%s_read(%s * %s, DB * dbpp, void * td, void * recbuf, %s_args ** argpp)\n",
+		    funcname, env_type, env_var, funcname) >> CFILE
 	} else {
-		printf("int\n%s_read(%s, recbuf, argpp)\n",
-		    funcname, env_var) >> CFILE
+		printf("int\n%s_read(%s * %s, void * recbuf, %s_args ** argpp)\n",
+		    funcname, env_type, env_var, funcname) >> CFILE
 	}
-
-	# Now print the parameters
-	printf("\t%s *%s;\n", env_type, env_var) >> CFILE
-	if (has_dbp) {
-		printf("\tDB **dbpp;\n") >> CFILE
-		printf("\tvoid *td;\n") >> CFILE
-	}
-	printf("\tvoid *recbuf;\n") >> CFILE
-	printf("\t%s_args **argpp;\n", funcname) >> CFILE
 
 	# Function body and local decls
 	printf("{\n\t%s_args *argp;\n", funcname) >> CFILE

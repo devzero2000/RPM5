@@ -171,6 +171,7 @@ lcov-report:
 
 logio_BUILT = logio_auto.c logio_autop.c logio_auto.h logio_template
 $(logio_BUILT):	logio.awk logio.src
+	@rm -f $(logio_BUILT)
 	@$(AWK) -f logio.awk \
 		-v header_file=logio_auto.h \
 		-v print_file=logio_autop.c \
