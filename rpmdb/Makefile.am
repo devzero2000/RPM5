@@ -169,8 +169,8 @@ lcov-report:
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
 
-logio_BUILT = logio_auto.c logio_autop.c logio_auto.h
-$(logio_BUILT):	logio.awk logio.src logio_template
+logio_BUILT = logio_auto.c logio_autop.c logio_auto.h logio_template
+$(logio_BUILT):	logio.awk logio.src
 	@$(AWK) -f logio.awk \
 		-v header_file=logio_auto.h \
 		-v print_file=logio_autop.c \
@@ -178,7 +178,7 @@ $(logio_BUILT):	logio.awk logio.src logio_template
 		-v template_file=logio_template \
 	< logio.src
 
-logio_SOURCES = logio.c logio_rec.c $(logio_BUILT)
+logio_SOURCES = logio.c logio.h logio_rec.c $(logio_BUILT)
 logio_CFLAGS = -I../db
 logio_LDADD = $(mylibs)
 
