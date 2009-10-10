@@ -69,6 +69,8 @@ _LOGIO_PROTO(Mkfifo);
 
 #undef	_LOGIO_PROTO
 
+int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op);
+
 int logio_init_print __P((DB_ENV *, DB_DISTAB *));
 
 #endif /* !H_LOGIO */

@@ -5,6 +5,44 @@
 #include <rpmio.h>
 
 #include <db.h>
+
+/* XXX hot wire a db_config.h impedance match until RPM AutoFu is fixed. */
+#define	HAVE_ISALPHA
+#define	HAVE_ISDIGIT
+#define	HAVE_ISPRINT
+#define	HAVE_ISSPACE
+#define	HAVE_LOCALTIME
+#define	HAVE_MEMCMP
+#define	HAVE_MEMCPY
+#define	HAVE_MEMMOVE
+#define	HAVE_PRINTF
+#define	HAVE_QSORT
+#define	HAVE_RAISE
+#define	HAVE_RAND
+#define	HAVE_STRCASECMP
+#define	HAVE_STRCAT
+#define	HAVE_STRCHR
+#define	HAVE_STRNCAT
+#define	HAVE_STRNCMP
+#define	HAVE_STRRCHR
+#define	HAVE_STRSEP
+#define	HAVE_TIME
+
+#define	HAVE_ATOI
+#define	HAVE_ATOL
+#define	HAVE_GETOPT
+
+#define	HAVE_FCLOSE
+#define	HAVE_FGETC
+#define	HAVE_FGETS
+#define	HAVE_FOPEN
+#define	HAVE_FWRITE
+#define	HAVE_LOCALTIME
+
+#include "db_int.h"
+
+#include "dbinc/db_swap.h"
+
 #include "logio.h"
 
 #include "debug.h"
@@ -867,3 +905,48 @@ exit:
     return ret;
 }
 
+int
+logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
+{
+    uint32_t rectype;
+
+    /* Pull the record type out of the log record. */
+    LOGCOPY_32(dbenv->env, &rectype, dbt->data);
+
+    switch (rectype) {
+    case DB_logio_Creat:
+	return logio_Creat_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Unlink:
+	return logio_Unlink_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Rename:
+	return logio_Rename_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Mkdir:
+	return logio_Mkdir_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Rmdir:
+	return logio_Rmdir_recover(dbenv, dbt, lsn, op);
+#ifdef	NOTYET
+    case DB_logio_Lsetfilecon:
+	return logio_Lsetfilecon_recover(dbenv, dbt, lsn, op);
+#endif
+    case DB_logio_Chown:
+	return logio_Chown_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Lchown:
+	return logio_Lchown_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Chmod:
+	return logio_Chmod_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Utime:
+	return logio_Utime_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Symlink:
+	return logio_Symlink_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Link:
+	return logio_Link_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Mknod:
+	return logio_Mknod_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Mkfifo:
+	return logio_Mkfifo_recover(dbenv, dbt, lsn, op);
+    default:
+	/* We've hit an unexpected, allegedly user-defined record type.  */
+	dbenv->errx(dbenv, "Unexpected log record type encountered");
+	return EINVAL;
+    }
+}

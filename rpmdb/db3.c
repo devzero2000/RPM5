@@ -29,6 +29,10 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "debug.h"
 
+extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
+	/*@*/;
+
+
 #if !defined(DB_CLIENT)	/* XXX db-4.2.42 retrofit */
 #define	DB_CLIENT	DB_RPCCLIENT
 #endif
@@ -550,6 +554,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     /* Try to join, rather than create, the environment. */
     /* XXX DB_JOINENV is defined to 0 in db-4.5.20 */
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
+    /* XXX DB_RECOVER needs automagic */
+    if (!(eflags & DB_INIT_TXN)) eflags &= ~DB_RECOVER;
 
     if (dbfile)
 	rpmlog(RPMLOG_DEBUG, D_("opening  db environment %s/%s %s\n"),
@@ -575,17 +581,16 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
     /*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
 
- /* 4.1: dbenv->set_app_dispatch(???) */
- /* 4.1: dbenv->set_alloc(???) */
- /* 4.1: dbenv->set_data_dir(???) */
- /* 4.1: dbenv->set_encrypt(???) */
-
 /*@-castfcnptr@*/
     dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
 /*@=castfcnptr@*/
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
     /*@=noeffectuncon@*/
+
+ /* 4.1: dbenv->set_alloc(???) */
+ /* 4.1: dbenv->set_data_dir(???) */
+ /* 4.1: dbenv->set_encrypt(???) */
 
  /* 4.1: dbenv->set_feedback(???) */
  /* 4.1: dbenv->set_flags(???) */
@@ -639,6 +644,10 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 /* ==== Replication: */
 /* ==== Sequences: */
 /* ==== Transactions: */
+    if (eflags & DB_INIT_TXN) {
+	xx = dbenv->set_app_dispatch(dbenv, logio_dispatch);
+	xx = cvtdberr(dbi, "dbenv->set_app_dispatch", xx, _debug);
+    }
 
 /* ==== Other: */
     if (dbi->dbi_no_fsync) {
@@ -1965,6 +1974,10 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 #endif
 		}
 	    }
+	    /* ... transactionally protected open's need DB_AUTO_COMMIT ... */
+	    if (rpmdb->_dbi[0]
+	     && rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
+		oflags |= DB_AUTO_COMMIT;
 	    dbf = _free(dbf);
 	}
     }
@@ -2255,8 +2268,6 @@ assert(rpmdb && rpmdb->db_dbenv);
 #endif	/* PLD_CHROOT */
 #endif	/* HACK */
 
-		if (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
-		    oflags |= DB_AUTO_COMMIT;
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 		rc = (db->open)(db, _txnid, dbpath, dbsubfile,
 		    dbi_type, oflags, dbi->dbi_perms);
@@ -2340,7 +2351,8 @@ assert(rpmdb && rpmdb->db_dbenv);
     }
 
     dbi->dbi_db = db;
-    db->app_private = dbi;
+    if (db)
+	db->app_private = dbi;
 
 DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb, tagName(rpmtag), dbip, dbi, rc, _OFLAGS(dbi->dbi_oflags)));
 
