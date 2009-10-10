@@ -26,6 +26,10 @@
 
 #include <rpmtag.h>
 #include <rpmtypes.h>
+#include <pkgio.h>
+#define	_RPMDB_INTERNAL
+#include <rpmdb.h>		/* XXX for db_chrootDone */
+#include "signature.h"		/* signature constants */
 #include <rpmlib.h>
 
 #define	_RPMFI_INTERNAL
@@ -46,10 +50,7 @@
 #define	_RPMTS_INTERNAL		/* XXX ts->notify */
 #include "rpmts.h"
 
-#include <pkgio.h>
 #include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
-#include "rpmdb.h"		/* XXX for db_chrootDone */
-#include "signature.h"		/* signature constants */
 
 #include <rpmcli.h>
 
@@ -332,14 +333,14 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     }
 
 #if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
-    if(createDir(fi, ts, NULL, "%{_topdir}") ||
+    if (createDir(fi, ts, NULL, "%{_topdir}") ||
 	    createDir(fi, ts, NULL, "%{_builddir}") ||
 	    createDir(fi, ts, NULL, "%{_rpmdir}") ||
 	    createDir(fi, ts, NULL, "%{_srcrpmdir}") ||
 	    createDir(fi, ts, &_sourcedir, "%{_sourcedir}") ||
 	    createDir(fi, ts, &_specdir, "%{_specdir}"))
 #else
-    if(createDir(ts, NULL, "%{_topdir}") ||
+    if (createDir(ts, NULL, "%{_topdir}") ||
 	    createDir(ts, NULL, "%{_builddir}") ||
 	    createDir(ts, NULL, "%{_rpmdir}") ||
 	    createDir(ts, NULL, "%{_srcrpmdir}") ||
@@ -2592,6 +2593,8 @@ assert(psm->te != NULL);
 		break;
 	    }
 
+	    xx = rpmtxnBegin(rpmtsGetRdb(ts));
+
 	    rc = fsmSetup(fi->fsm, IOSM_PKGINSTALL, psm->payload_format, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
@@ -2609,6 +2612,11 @@ assert(psm->te != NULL);
 
 	    if (!rc)
 		rc = rpmpsmNext(psm, PSM_COMMIT);
+
+	    if (rc)
+		xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	    else
+		xx = rpmtxnCommit(rpmtsGetRdb(ts));
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
@@ -3011,6 +3019,8 @@ assert(psm->mi == NULL);
 	if (fi->isSource)	break;	/* XXX never add SRPM's */
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
+	xx = rpmtxnBegin(rpmtsGetRdb(ts));
+
 	/* Add header to db, doing header check if requested */
 	/* XXX rollback headers propagate the previous transaction id. */
 	{   rpmuint32_t tid = ((rpmtsType(ts) == RPMTRANS_TYPE_ROLLBACK)
@@ -3023,7 +3033,11 @@ assert(psm->mi == NULL);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	}
 
-	if (rc != RPMRC_OK) break;
+	if (rc != RPMRC_OK) {
+	    xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	    break;
+	} else
+	    xx = rpmtxnCommit(rpmtsGetRdb(ts));
 
 assert(psm->te != NULL);
 	/* Mark non-rollback elements as installed. */
@@ -3039,11 +3053,17 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 
+	xx = rpmtxnBegin(rpmtsGetRdb(ts));
+
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 
-	if (rc != RPMRC_OK) break;
+	if (rc != RPMRC_OK) {
+	    xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	    break;
+	} else
+	    xx = rpmtxnCommit(rpmtsGetRdb(ts));
 
 	/* Forget the offset of a successfully removed header. */
 	if (psm->te != NULL)	/* XXX can't happen */

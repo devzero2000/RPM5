@@ -3080,7 +3080,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
     he->p.ptr = _free(he->p.ptr);
 
     (void) blockSignals(db, &signalMask);
-    xx = rpmtxnBegin(db);
 
 /*@-nullpass -nullptrarith -nullderef @*/ /* FIX: rpmvals heartburn */
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
@@ -3346,7 +3345,6 @@ if (k.size == 0) k.size++;	/* XXX "/" fixup. */
     (void) headerFree(db->db_h);
     db->db_h = NULL;
 
-    xx = rpmtxnCommit(db);
     (void) unblockSignals(db, &signalMask);
 
     /* XXX return ret; */
@@ -3419,7 +3417,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     dirIndexes = he->p.ui32p;
 
     (void) blockSignals(db, &signalMask);
-    xx = rpmtxnBegin(db);
 
     if (!db->db_rebuilding) {
 	int64_t seqno = 0;
@@ -3804,7 +3801,6 @@ exit:
     /* Unreference header used by associated secondary index callbacks. */
     (void) headerFree(db->db_h);
 
-    xx = (!ret ? rpmtxnCommit(db) : rpmtxnAbort(db));
     (void) unblockSignals(db, &signalMask);
 
     dirIndexes = _free(dirIndexes);

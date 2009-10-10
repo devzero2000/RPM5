@@ -7,6 +7,7 @@ LIBRPMMISC_0
     db_env_set_func_fsync_rpmdb;
     db_sequence_create_rpmdb;
     db_strerror_rpmdb;
+    __db_add_recovery_rpmdb;
     ficlSystemCompileExtras;
     ficlSystemCreate;
     ficlSystemCreateVm;

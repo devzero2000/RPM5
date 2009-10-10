@@ -7,9 +7,19 @@
 
 #include <rpmio_internal.h>	/* XXX urlPath, fdGetCpioPos */
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include "rpmsq.h"
 #include <rpmsx.h>
+#if defined(SUPPORT_AR_PAYLOADS)
+#include "ar.h"
+#endif
+#include "cpio.h"
+#include "tar.h"
+#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
+
 #include <rpmtag.h>
 #include <rpmtypes.h>
+#define	_RPMDB_INTERNAL
+#include <rpmdb.h>
 
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
@@ -18,20 +28,11 @@
 #include <fsm.h>
 #define	fsmUNSAFE	fsmStage
 
-#if defined(SUPPORT_AR_PAYLOADS)
-#include "ar.h"
-#endif
-#include "cpio.h"
-#include "tar.h"
-
 #define	_USE_RPMTE
 #if defined(_USE_RPMTE)
 #include "rpmte.h"
 #endif
 #include "rpmts.h"
-#include "rpmsq.h"
-
-#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
 
 #include "debug.h"
 
@@ -1486,6 +1487,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 		rpmfi fi = fsmGetFi(fsm);
 		*te = '\0';
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
+rc = rpmlioMkdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
 		rc = fsmNext(fsm, IOSM_MKDIR);
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */

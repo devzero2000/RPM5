@@ -1473,7 +1473,33 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (dbenv == NULL) goto exit;
     *rval = JSVAL_FALSE;
 
-	/* FIXME todo++ */
+#ifdef	NOTYET
+    if (dbenv->app_private != NULL) {
+	DB_PREPLIST _preplist[32];
+	long _count = (sizeof(_preplist) / sizeof(_preplist[0]));
+	long _got = 0;
+	uint32_t _flags = DB_FIRST;
+	int ret = 0;
+	int i;
+
+	while (1) {
+	    ret = dbenv->txn_recover(dbenv, _preplist, _count, &_count, _flags);
+	    if (ret) {
+		dbenv->err(dbenv, ret, "DB_ENV->txn_recover");
+		goto exit;
+	    }
+	    if (_got == 0)
+		break;
+	    for (i = 0; i < _got; i++) {
+		DB_TXN * _txn = _preplist[i].txn;
+		uint32_t _tflags = 0;
+		(void) _txn->discard(_txn, _tflags);
+	    }
+	    _flags = DB_NEXT;
+	}
+	*rval = JSVAL_TRUE;
+    }
+#endif
 
     ok = JS_TRUE;
 
