@@ -2255,6 +2255,8 @@ assert(rpmdb && rpmdb->db_dbenv);
 #endif	/* PLD_CHROOT */
 #endif	/* HACK */
 
+		if (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
+		    oflags |= DB_AUTO_COMMIT;
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 		rc = (db->open)(db, _txnid, dbpath, dbsubfile,
 		    dbi_type, oflags, dbi->dbi_perms);
@@ -2348,7 +2350,8 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 	if (dbi->dbi_index) {
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
-	    int _flags = 0;
+	    int _flags = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
+			? DB_AUTO_COMMIT : 0;
 	    xx = db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
 	}
 	if (dbi->dbi_seq_id) {
