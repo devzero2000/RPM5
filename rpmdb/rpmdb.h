@@ -1147,6 +1147,64 @@ fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", "dbenv->log_put", dbenv, _lsn, 
 }
 
 /*@unused@*/ static inline
+int rpmlioCreat(rpmdb rpmdb, const char * fn,
+		const rpmuint8_t * d, size_t dlen, mode_t mode)
+{
+    int rc = 0;
+    extern int logio_Creat_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, mode_t));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    DBT DIGESTdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    DIGESTdbt.data = (void *)d;
+    DIGESTdbt.size = dlen;
+    rc = logio_Creat_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, &DIGESTdbt, mode);
+fprintf(stderr, "<== %s(%s, %p]%u], 0%o) rc %d\n", __FUNCTION__, fn, d, (unsigned)dlen, mode, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioUnlink(rpmdb rpmdb, const char * fn, mode_t mode)
+{
+    int rc = 0;
+    extern int logio_Unlink_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    rc = logio_Unlink_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
+fprintf(stderr, "<== %s(%s, 0%o) rc %d\n", __FUNCTION__, fn, mode, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioRename(rpmdb rpmdb, const char * oldname, const char * newname)
+{
+    int rc = 0;
+    extern int logio_Symlink_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT ONdbt = {0};
+    DBT NNdbt = {0};
+    ONdbt.data = (void *)oldname;
+    ONdbt.size = strlen(oldname) + 1;	/* trailing NUL too */
+    NNdbt.data = (void *)newname;
+    NNdbt.size = strlen(newname) + 1;	/* trailing NUL too */
+    rc = logio_Symlink_log(dbenv, _txn, &_lsn, DB_FLUSH, &ONdbt, &NNdbt);
+fprintf(stderr, "<== %s(%s, %s) rc %d\n", __FUNCTION__, oldname, newname, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
 int rpmlioMkdir(rpmdb rpmdb, const char * dn, mode_t mode)
 {
     int rc = 0;
@@ -1181,10 +1239,44 @@ fprintf(stderr, "<== %s(%s, 0%o) rc %d\n", __FUNCTION__, dn, mode, rc);
 }
 
 /*@unused@*/ static inline
-int rpmlioMkfifo(rpmdb rpmdb, const char * fn, mode_t mode)
+int rpmlioChown(rpmdb rpmdb, const char * fn, uid_t uid, gid_t gid)
 {
     int rc = 0;
-    extern int logio_Mkfifo_log
+    extern int logio_Chown_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, uid_t, gid_t));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    rc = logio_Chown_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, uid, gid);
+fprintf(stderr, "<== %s(%s, %u, %u) rc %d\n", __FUNCTION__, fn, (unsigned)uid, (unsigned)gid, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioLchown(rpmdb rpmdb, const char * fn, uid_t uid, gid_t gid)
+{
+    int rc = 0;
+    extern int logio_Lchown_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, uid_t, gid_t));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    rc = logio_Lchown_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, uid, gid);
+fprintf(stderr, "<== %s(%s, %u, %u) rc %d\n", __FUNCTION__, fn, (unsigned)uid, (unsigned)gid, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioChmod(rpmdb rpmdb, const char * fn, mode_t mode)
+{
+    int rc = 0;
+    extern int logio_Chmod_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
     DB_TXN * _txn = rpmdb->db_txnid;
@@ -1192,25 +1284,25 @@ int rpmlioMkfifo(rpmdb rpmdb, const char * fn, mode_t mode)
     DBT FNdbt = {0};
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
-    rc = logio_Mkfifo_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
+    rc = logio_Chmod_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
 fprintf(stderr, "<== %s(%s, 0%o) rc %d\n", __FUNCTION__, fn, mode, rc);
     return rc;
 }
 
 /*@unused@*/ static inline
-int rpmlioMknod(rpmdb rpmdb, const char * fn, mode_t mode, dev_t dev)
+int rpmlioUtime(rpmdb rpmdb, const char * fn, time_t actime, time_t modtime)
 {
     int rc = 0;
-    extern int logio_Mknod_log
-        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t, dev_t));
+    extern int logio_Utime_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, time_t, time_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
     DB_TXN * _txn = rpmdb->db_txnid;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
-    rc = logio_Mknod_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode, dev);
-fprintf(stderr, "<== %s(%s, 0%o, 0x%x) rc %d\n", __FUNCTION__, fn, mode, (unsigned)dev, rc);
+    rc = logio_Utime_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, actime, modtime);
+fprintf(stderr, "<== %s(%s, 0x%x, 0x%x) rc %d\n", __FUNCTION__, fn, (unsigned)actime, (unsigned)modtime, rc);
     return rc;
 }
 
@@ -1233,6 +1325,7 @@ int rpmlioSymlink(rpmdb rpmdb, const char * ln, const char * fn)
 fprintf(stderr, "<== %s(%s, %s) rc %d\n", __FUNCTION__, ln, fn, rc);
     return rc;
 }
+
 /*@unused@*/ static inline
 int rpmlioLink(rpmdb rpmdb, const char * ln, const char * fn)
 {
@@ -1250,6 +1343,40 @@ int rpmlioLink(rpmdb rpmdb, const char * ln, const char * fn)
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Link_log(dbenv, _txn, &_lsn, DB_FLUSH, &LNdbt, &FNdbt);
 fprintf(stderr, "<== %s(%s, %s) rc %d\n", __FUNCTION__, ln, fn, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioMknod(rpmdb rpmdb, const char * fn, mode_t mode, dev_t dev)
+{
+    int rc = 0;
+    extern int logio_Mknod_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t, dev_t));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    rc = logio_Mknod_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode, dev);
+fprintf(stderr, "<== %s(%s, 0%o, 0x%x) rc %d\n", __FUNCTION__, fn, mode, (unsigned)dev, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioMkfifo(rpmdb rpmdb, const char * fn, mode_t mode)
+{
+    int rc = 0;
+    extern int logio_Mkfifo_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    rc = logio_Mkfifo_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
+fprintf(stderr, "<== %s(%s, 0%o) rc %d\n", __FUNCTION__, fn, mode, rc);
     return rc;
 }
 

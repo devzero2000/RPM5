@@ -15,6 +15,7 @@ INCLUDE #include "debug.h"
 /* Creat(2) */
 BEGIN Creat	48	10000
 DBT	path		DBT		s
+DBT	digest		DBT		s
 ARG	mode		mode_t		o
 END
 

@@ -81,12 +81,16 @@ LIBRPMDB_0
     headerVerifyInfo;
     hGetColor;
     _init;
+    logio_Chmod_log;
+    logio_Chown_log;
+    logio_Lchown_log;
     logio_Link_log;
     logio_Mkdir_log;
     logio_Mkfifo_log;
     logio_Mknod_log;
     logio_Rmdir_log;
     logio_Symlink_log;
+    logio_Utime_log;
     _pkgio_debug;
     prDbiOpenFlags;
     rdbOptions;

@@ -1487,7 +1487,6 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 		rpmfi fi = fsmGetFi(fsm);
 		*te = '\0';
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
-rc = rpmlioMkdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
 		rc = fsmNext(fsm, IOSM_MKDIR);
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
@@ -2266,23 +2265,48 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	return (rc ? rc : IOSMERR_ENOENT);	/* XXX HACK */
 	/*@notreached@*/ break;
 
-    case IOSM_UNLINK:
-    case IOSM_RENAME:
     case IOSM_MKDIR:
+	rc = rpmlioMkdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
+	goto iosmcall;
     case IOSM_RMDIR:
-    case IOSM_LSETFCON:
-    case IOSM_CHOWN:
-    case IOSM_LCHOWN:
-    case IOSM_CHMOD:
-    case IOSM_UTIME:
+	rc = rpmlioRmdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
+	goto iosmcall;
     case IOSM_SYMLINK:
+	rc = rpmlioSymlink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->lpath, fsm->path);
+	goto iosmcall;
     case IOSM_LINK:
+	rc = rpmlioLink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
+	goto iosmcall;
     case IOSM_MKFIFO:
+	rc = rpmlioMkfifo(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
+	goto iosmcall;
     case IOSM_MKNOD:
+	rc = rpmlioMknod(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode, st->st_rdev);
+	goto iosmcall;
+    case IOSM_UNLINK:
+	goto iosmcall;
+    case IOSM_RENAME:
+	rc = rpmlioRename(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
+	goto iosmcall;
+    case IOSM_LSETFCON:
+	goto iosmcall;
+    case IOSM_CHOWN:
+	rc = rpmlioChown(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_uid, st->st_gid);
+	goto iosmcall;
+    case IOSM_LCHOWN:
+	rc = rpmlioLchown(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_uid, st->st_gid);
+	goto iosmcall;
+    case IOSM_CHMOD:
+	rc = rpmlioChmod(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
+	goto iosmcall;
+    case IOSM_UTIME:
+	rc = rpmlioUtime(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mtime, st->st_mtime);
+	goto iosmcall;
     case IOSM_LSTAT:
     case IOSM_STAT:
     case IOSM_READLINK:
     case IOSM_CHROOT:
+iosmcall:
 	rc = iosmStage(fsm, stage);
 	break;
 

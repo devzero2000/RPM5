@@ -12,7 +12,7 @@ int logio_##_SYS_##_recover \
 	__P((DB_ENV *, DBT *, DB_LSN *, db_recops))
 
 int logio_Creat_log
-	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, mode_t));
 _LOGIO_PROTO(Creat);
 
 int logio_Unlink_log
