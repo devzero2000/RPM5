@@ -988,6 +988,9 @@ static int extractRegular(/*@special@*/ IOSM_t fsm)
     if (st->st_size > 0 && (fsm->fdigest != NULL || fsm->digest != NULL))
 	fdInitDigest(fsm->wfd, fsm->fdigestalgo, 0);
 
+    rc = rpmlioCreat(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode,
+		fsm->digest, fsm->digestlen, fsm->fdigestalgo);
+
     while (left) {
 
 	fsm->wrlen = (left > fsm->wrsize ? fsm->wrsize : left);
@@ -2265,30 +2268,20 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	return (rc ? rc : IOSMERR_ENOENT);	/* XXX HACK */
 	/*@notreached@*/ break;
 
+    case IOSM_UNLINK:
+	rc = rpmlioUnlink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
+	goto iosmcall;
+    case IOSM_RENAME:
+	rc = rpmlioRename(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
+	goto iosmcall;
     case IOSM_MKDIR:
 	rc = rpmlioMkdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
 	goto iosmcall;
     case IOSM_RMDIR:
 	rc = rpmlioRmdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
 	goto iosmcall;
-    case IOSM_SYMLINK:
-	rc = rpmlioSymlink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->lpath, fsm->path);
-	goto iosmcall;
-    case IOSM_LINK:
-	rc = rpmlioLink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
-	goto iosmcall;
-    case IOSM_MKFIFO:
-	rc = rpmlioMkfifo(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
-	goto iosmcall;
-    case IOSM_MKNOD:
-	rc = rpmlioMknod(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode, st->st_rdev);
-	goto iosmcall;
-    case IOSM_UNLINK:
-	goto iosmcall;
-    case IOSM_RENAME:
-	rc = rpmlioRename(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
-	goto iosmcall;
     case IOSM_LSETFCON:
+	rc = rpmlioLsetfilecon(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, fsm->fcontext);
 	goto iosmcall;
     case IOSM_CHOWN:
 	rc = rpmlioChown(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_uid, st->st_gid);
@@ -2301,6 +2294,18 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	goto iosmcall;
     case IOSM_UTIME:
 	rc = rpmlioUtime(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mtime, st->st_mtime);
+	goto iosmcall;
+    case IOSM_SYMLINK:
+	rc = rpmlioSymlink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->lpath, fsm->path);
+	goto iosmcall;
+    case IOSM_LINK:
+	rc = rpmlioLink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
+	goto iosmcall;
+    case IOSM_MKFIFO:
+	rc = rpmlioMkfifo(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
+	goto iosmcall;
+    case IOSM_MKNOD:
+	rc = rpmlioMknod(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode, st->st_rdev);
 	goto iosmcall;
     case IOSM_LSTAT:
     case IOSM_STAT:

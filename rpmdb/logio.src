@@ -16,6 +16,7 @@ INCLUDE #include "debug.h"
 BEGIN Creat	48	10000
 DBT	path		DBT		s
 DBT	digest		DBT		s
+ARG	dalgo		unsigned	u
 ARG	mode		mode_t		o
 END
 

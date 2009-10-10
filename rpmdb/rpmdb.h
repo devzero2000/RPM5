@@ -1147,12 +1147,12 @@ fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", "dbenv->log_put", dbenv, _lsn, 
 }
 
 /*@unused@*/ static inline
-int rpmlioCreat(rpmdb rpmdb, const char * fn,
-		const rpmuint8_t * d, size_t dlen, mode_t mode)
+int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
+		const rpmuint8_t * d, size_t dlen, unsigned dalgo)
 {
     int rc = 0;
     extern int logio_Creat_log
-        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, mode_t));
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, unsigned, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
     DB_TXN * _txn = rpmdb->db_txnid;
     DB_LSN _lsn = {0,0};
@@ -1162,7 +1162,7 @@ int rpmlioCreat(rpmdb rpmdb, const char * fn,
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     DIGESTdbt.data = (void *)d;
     DIGESTdbt.size = dlen;
-    rc = logio_Creat_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, &DIGESTdbt, mode);
+    rc = logio_Creat_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, &DIGESTdbt, dalgo, mode);
 fprintf(stderr, "<== %s(%s, %p]%u], 0%o) rc %d\n", __FUNCTION__, fn, d, (unsigned)dlen, mode, rc);
     return rc;
 }
@@ -1235,6 +1235,26 @@ int rpmlioRmdir(rpmdb rpmdb, const char * dn, mode_t mode)
     DNdbt.size = strlen(dn) + 1;	/* trailing NUL too */
     rc = logio_Rmdir_log(dbenv, _txn, &_lsn, DB_FLUSH, &DNdbt, mode);
 fprintf(stderr, "<== %s(%s, 0%o) rc %d\n", __FUNCTION__, dn, mode, rc);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioLsetfilecon(rpmdb rpmdb, const char * fn, const char * context)
+{
+    int rc = 0;
+    extern int logio_Lsetfilecon_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT FNdbt = {0};
+    DBT CONTEXTdbt = {0};
+    FNdbt.data = (void *)fn;
+    FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    CONTEXTdbt.data = (void *)context;
+    CONTEXTdbt.size = strlen(context) + 1;	/* trailing NUL too */
+    rc = logio_Lsetfilecon_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, &CONTEXTdbt);
+fprintf(stderr, "<== %s(%s, %s) rc %d\n", __FUNCTION__, fn, context, rc);
     return rc;
 }
 
