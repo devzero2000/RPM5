@@ -24,7 +24,7 @@ AM_CPPFLAGS = \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
-AM_CFLAGS = $(OPENMP_CFLAGS)
+AM_CFLAGS = $(OPENMP_CFLAGS) -I../db
 
 EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql \
@@ -46,13 +46,15 @@ mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/misc/librpmmisc.la
 
+logio_LSOURCES = logio_rec.c $(logio_BUILT)
+
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmns.c rpmtd.c rpmwf.c \
-	signature.c tagname.c tagtbl.c
+	signature.c tagname.c tagtbl.c $(logio_LSOURCES)
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmdb_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmdb.vers
@@ -179,8 +181,7 @@ $(logio_BUILT):	logio.awk logio.src
 		-v template_file=logio_template \
 	< logio.src
 
-logio_SOURCES = logio.c logio.h logio_rec.c $(logio_BUILT)
-logio_CFLAGS = -I../db
+logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
 
 BUILT_SOURCES = tagtbl.c tbdb.c bdb.c bdb.h $(logio_BUILT)

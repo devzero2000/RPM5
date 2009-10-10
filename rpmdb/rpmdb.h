@@ -1150,7 +1150,6 @@ fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", "dbenv->log_put", dbenv, _lsn, 
 int rpmlioMkdir(rpmdb rpmdb, const char * dn, mode_t mode)
 {
     int rc = 0;
-#ifdef	NOTYET
     extern int logio_Mkdir_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
@@ -1159,8 +1158,7 @@ int rpmlioMkdir(rpmdb rpmdb, const char * dn, mode_t mode)
     DBT DNdbt = {0};
     DNdbt.data = (void *)dn;
     DNdbt.size = strlen(dn) + 1;	/* trailing NUL too */
-    rc = logio_Mkdir_log(dbenv, _txn, &_lsn, DB_FLUSH, &DNdbt, mode)
-#endif
+    rc = logio_Mkdir_log(dbenv, _txn, &_lsn, DB_FLUSH, &DNdbt, mode);
     return rc;
 }
 

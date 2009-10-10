@@ -81,6 +81,7 @@ LIBRPMDB_0
     headerVerifyInfo;
     hGetColor;
     _init;
+    logio_Mkdir_log;
     _pkgio_debug;
     prDbiOpenFlags;
     rdbOptions;
