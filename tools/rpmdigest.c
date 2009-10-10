@@ -889,8 +889,7 @@ The following two options are useful only when verifying digests:\
 	N_("Available digests:"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"),
-	NULL },
+	N_("Common options for all rpmio executables:"), NULL },
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
