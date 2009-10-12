@@ -2,7 +2,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio_internal.h>	/* XXX fdInitDigest */
 
 #include <db.h>
 
@@ -13,6 +13,45 @@
 #include "logio.h"
 
 #include "debug.h"
+
+static int writeFile(const char * fn, mode_t mode,
+		const DBT * content, const DBT * digest, uint32_t dalgo)
+{
+    uint8_t * b = content->data;
+    size_t blen = content->size;
+    uint8_t * d = digest->data;
+    size_t dlen = digest->size;
+    int ret = 0;
+    int xx;
+
+    if (S_ISREG(mode)) {
+	FD_t fd = Fopen(fn, "w.fdio");
+	size_t nw;
+
+	if (dalgo > 0 && d && dlen > 0)
+	    fdInitDigest(fd, dalgo, 0);
+	nw = Fwrite(b, 1, blen, fd);
+
+	xx = fsync(Fileno(fd));
+
+	if (dalgo > 0 && d && dlen > 0) {
+	    static int asAscii = 0;
+	    void * digest = NULL;
+	    size_t digestlen = 0;
+
+	    (void) Fflush(fd);
+	    fdFiniDigest(fd, dalgo, &digest, &digestlen, asAscii);
+	    if (digest == NULL || digestlen != dlen || memcmp(digest, d, dlen))
+		ret = -1;
+	    digest = _free(digest);
+	}
+	(void) Fclose(fd);
+	fd = NULL;
+	if (nw != blen)
+	    ret = -1;
+    }
+    return ret;
+}
 
 /*
  * logio_Creat_recover --
@@ -94,7 +133,8 @@ logio_Unlink_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     switch (op) {
     case DB_TXN_ABORT:
     case DB_TXN_BACKWARD_ROLL:
-	ret = creat(argp->path.data, argp->mode);
+	ret = writeFile(argp->path.data, argp->mode, &argp->content,
+				&argp->digest, argp->dalgo);
 	if (ret != 0)
 	    dbenv->err(dbenv, ret, "Unlink: DB_TXN_BACKWARD_ROLL");
 	else
@@ -152,6 +192,8 @@ logio_Rename_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     switch (op) {
     case DB_TXN_ABORT:
     case DB_TXN_BACKWARD_ROLL:
+	ret = writeFile(argp->newpath.data, argp->mode, &argp->content,
+				&argp->digest, argp->dalgo);
 	ret = Rename(argp->newpath.data, argp->oldpath.data);
 	if (ret != 0)
 	    dbenv->err(dbenv, ret, "Rename: DB_TXN_BACKWARD_ROLL");

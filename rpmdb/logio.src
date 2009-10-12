@@ -14,23 +14,30 @@ INCLUDE #include "debug.h"
 
 /* Creat(2) */
 BEGIN Creat	48	10000
-DBT	fid		DBT		s
 DBT	path		DBT		s
 ARG	mode		mode_t		o
+DBT	content		DBT		s
+DBT	digest		DBT		s
+ARG	dalgo		uint32_t	lu
 END
 
 /* Unlink(2) */
 BEGIN Unlink	48	10001
-DBT	fid		DBT		s
 DBT	path		DBT		s
 ARG	mode		mode_t		o
+DBT	content		DBT		s
+DBT	digest		DBT		s
+ARG	dalgo		uint32_t	lu
 END
 
 /* Rename(2) */
 BEGIN Rename	48	10002
-DBT	fid		DBT		s
 DBT	oldpath		DBT		s
 DBT	newpath		DBT		s
+ARG	mode		mode_t		o
+DBT	content		DBT		s
+DBT	digest		DBT		s
+ARG	dalgo		uint32_t	lu
 END
 
 /* Mkdir(2) */

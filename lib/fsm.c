@@ -981,15 +981,23 @@ static int extractRegular(/*@special@*/ IOSM_t fsm)
     int rc = 0;
     int xx;
 
+    {	const char * fn = fsm->path;
+	mode_t mode = st->st_mode;
+	uint8_t * b = (uint8_t *)"";
+	size_t blen = 1;
+	const uint8_t * d = fsm->digest;
+	size_t dlen = fsm->digestlen;
+	uint32_t dalgo = fsm->fdigestalgo;
+
+	xx = rpmlioCreat(rpmtsGetRdb(fsmGetTs(fsm)), fn, mode, b, blen, d, dlen, dalgo);
+    }
+
     rc = fsmNext(fsm, IOSM_WOPEN);
     if (rc)
 	goto exit;
 
     if (st->st_size > 0 && (fsm->fdigest != NULL || fsm->digest != NULL))
 	fdInitDigest(fsm->wfd, fsm->fdigestalgo, 0);
-
-    rc = rpmlioCreat(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode,
-		fsm->digest, fsm->digestlen, fsm->fdigestalgo);
 
     while (left) {
 
@@ -1035,6 +1043,7 @@ static int extractRegular(/*@special@*/ IOSM_t fsm)
 
 exit:
     (void) fsmNext(fsm, IOSM_WCLOSE);
+
     return rc;
 }
 /*@=compdef@*/
@@ -2269,11 +2278,54 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	/*@notreached@*/ break;
 
     case IOSM_UNLINK:
-	rc = rpmlioUnlink(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
-	goto iosmcall;
+    {	const char * fn = fsm->path;
+	uint8_t * b = (uint8_t *)"";
+	size_t blen = 0;
+	uint8_t * d = NULL;
+	size_t dlen = 0;
+	uint32_t dalgo = 0;
+	FD_t fd = NULL;
+	struct stat sb;
+	mode_t mode;
+	sb.st_mode = 0;
+	if (!Lstat(fn, &sb) && S_ISREG(sb.st_mode)) {
+	    fd = Fopen(fn, "r.fdio");
+	    blen = sb.st_size;
+	    b = mmap(NULL, blen, PROT_READ, MAP_SHARED, Fileno(fd), 0);
+	}
+	mode = sb.st_mode;
+	rc = rpmlioUnlink(rpmtsGetRdb(fsmGetTs(fsm)), fn, mode, b, blen, d, dlen, dalgo);
+	if (fd != NULL) {
+	    (void)munmap(b, blen);
+	    (void) Fclose(fd);
+	    fd = NULL;
+	}
+    }	goto iosmcall;
     case IOSM_RENAME:
-	rc = rpmlioRename(rpmtsGetRdb(fsmGetTs(fsm)), fsm->opath, fsm->path);
-	goto iosmcall;
+    {	const char * ofn = fsm->opath;
+	const char * fn = fsm->path;
+	uint8_t * b = NULL;
+	size_t blen = 0;
+	uint8_t * d = NULL;
+	size_t dlen = 0;
+	uint32_t dalgo = 0;
+	FD_t fd = NULL;
+	struct stat sb;
+	mode_t mode;
+	sb.st_mode = 0;
+	if (!Lstat(fn, &sb) && S_ISREG(sb.st_mode)) {
+	    fd = Fopen(fn, "r.fdio");
+	    blen = sb.st_size;
+	    b = mmap(NULL, blen, PROT_READ, MAP_SHARED, Fileno(fd), 0);
+	}
+	mode = sb.st_mode;
+	rc = rpmlioRename(rpmtsGetRdb(fsmGetTs(fsm)), ofn, fn, mode, b, blen, d, dlen, dalgo);
+	if (fd != NULL) {
+	    (void)munmap(b, blen);
+	    (void) Fclose(fd);
+	    fd = NULL;
+	}
+    }	goto iosmcall;
     case IOSM_MKDIR:
 	rc = rpmlioMkdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
 	goto iosmcall;
