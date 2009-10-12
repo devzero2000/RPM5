@@ -2281,7 +2281,11 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	rc = rpmlioRmdir(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_mode);
 	goto iosmcall;
     case IOSM_LSETFCON:
-	rc = rpmlioLsetfilecon(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, fsm->fcontext);
+	/* Log iff lsetfilecon() will actually be called. */
+	if (iosm->fcontext && *iosm->fcontext
+	 && strcmp(iosm->fcontext, "<<none>>"))
+	    rc = rpmlioLsetfilecon(rpmtsGetRdb(fsmGetTs(fsm)),
+			fsm->path, fsm->fcontext);
 	goto iosmcall;
     case IOSM_CHOWN:
 	rc = rpmlioChown(rpmtsGetRdb(fsmGetTs(fsm)), fsm->path, st->st_uid, st->st_gid);

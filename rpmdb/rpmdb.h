@@ -1251,10 +1251,11 @@ int rpmlioLsetfilecon(rpmdb rpmdb, const char * fn, const char * context)
     DBT CONTEXTdbt = {0};
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
+    if (context == NULL) context = "";	/* XXX prevent segfaults */
     CONTEXTdbt.data = (void *)context;
     CONTEXTdbt.size = strlen(context) + 1;	/* trailing NUL too */
     rc = logio_Lsetfilecon_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, &CONTEXTdbt);
-fprintf(stderr, "<== %s(%s, %s) rc %d\n", __FUNCTION__, fn, context, rc);
+fprintf(stderr, "<== %s(%s, \"%s\") rc %d\n", __FUNCTION__, fn, context, rc);
     return rc;
 }
 
