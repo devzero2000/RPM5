@@ -794,6 +794,13 @@ AC_CHECK_FUNCS([dnl
     strtol strtoul dnl
 ])
 
+dnl # specific additional tests needed to replace Berkeley-DB db_config.h with RPM config.h
+AC_CHECK_FUNCS([dnl
+    isalpha isdigit isprint isspace localtime memcmp memcpy memmove printf dnl
+    qsort raise rand strcasecmp strcat strchr strncat strncmp strrchr strsep dnl
+    time atoi atol getopt fclose fgetc fgets fopen fwrite dnl
+])
+
 dnl # check for getmntent and alternatives
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL, 1, [Define as 1 if you have mntctl() (only aix?)]),[

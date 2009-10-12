@@ -2282,8 +2282,8 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	goto iosmcall;
     case IOSM_LSETFCON:
 	/* Log iff lsetfilecon() will actually be called. */
-	if (iosm->fcontext && *iosm->fcontext
-	 && strcmp(iosm->fcontext, "<<none>>"))
+	if (fsm->fcontext && *fsm->fcontext
+	 && strcmp(fsm->fcontext, "<<none>>"))
 	    rc = rpmlioLsetfilecon(rpmtsGetRdb(fsmGetTs(fsm)),
 			fsm->path, fsm->fcontext);
 	goto iosmcall;

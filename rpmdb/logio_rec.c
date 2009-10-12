@@ -6,39 +6,6 @@
 
 #include <db.h>
 
-/* XXX hot wire a db_config.h impedance match until RPM AutoFu is fixed. */
-#define	HAVE_ISALPHA
-#define	HAVE_ISDIGIT
-#define	HAVE_ISPRINT
-#define	HAVE_ISSPACE
-#define	HAVE_LOCALTIME
-#define	HAVE_MEMCMP
-#define	HAVE_MEMCPY
-#define	HAVE_MEMMOVE
-#define	HAVE_PRINTF
-#define	HAVE_QSORT
-#define	HAVE_RAISE
-#define	HAVE_RAND
-#define	HAVE_STRCASECMP
-#define	HAVE_STRCAT
-#define	HAVE_STRCHR
-#define	HAVE_STRNCAT
-#define	HAVE_STRNCMP
-#define	HAVE_STRRCHR
-#define	HAVE_STRSEP
-#define	HAVE_TIME
-
-#define	HAVE_ATOI
-#define	HAVE_ATOL
-#define	HAVE_GETOPT
-
-#define	HAVE_FCLOSE
-#define	HAVE_FGETC
-#define	HAVE_FGETS
-#define	HAVE_FOPEN
-#define	HAVE_FWRITE
-#define	HAVE_LOCALTIME
-
 #include "db_int.h"
 
 #include "dbinc/db_swap.h"
