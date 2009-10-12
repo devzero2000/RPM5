@@ -88,9 +88,11 @@ LIBRPMDB_0
     logio_Link_log;
     logio_Lsetfilecon_log;
     logio_Mkdir_log;
+    logio_Mkdir_recover;
     logio_Mkfifo_log;
     logio_Mknod_log;
     logio_Rmdir_log;
+    logio_Rmdir_recover;
     logio_Symlink_log;
     logio_Unlink_log;
     logio_Utime_log;

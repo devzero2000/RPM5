@@ -79,12 +79,6 @@ BEGIN {
 	# Start .c files.
 	printf("/* Do not edit: automatically built by logio.awk. */\n\n")\
 	    > CFILE
-	printf("#include \"db_config.h\"\n") >> CFILE
-	printf("#undef\tPACKAGE_BUGREPORT\n") >> CFILE
-	printf("#undef\tPACKAGE_NAME\n") >> CFILE
-	printf("#undef\tPACKAGE_STRING\n") >> CFILE
-	printf("#undef\tPACKAGE_TARNAME\n") >> CFILE
-	printf("#undef\tPACKAGE_VERSION\n\n") >> CFILE
 	printf("#include \"system.h\"\n\n") >> CFILE
 	printf("#include <rpmio.h>\n\n") >> CFILE
 	if (!dbprivate) {
@@ -96,12 +90,6 @@ BEGIN {
 
 	printf("/* Do not edit: automatically built by logio.awk. */\n\n")\
 	    > PFILE
-	printf("#include \"db_config.h\"\n") >> PFILE
-	printf("#undef\tPACKAGE_BUGREPORT\n") >> PFILE
-	printf("#undef\tPACKAGE_NAME\n") >> PFILE
-	printf("#undef\tPACKAGE_STRING\n") >> PFILE
-	printf("#undef\tPACKAGE_TARNAME\n") >> PFILE
-	printf("#undef\tPACKAGE_VERSION\n\n") >> PFILE
 	printf("#include \"system.h\"\n\n") >> PFILE
 	printf("#include <rpmio.h>\n\n") >> PFILE
 	if (!dbprivate) {
@@ -123,12 +111,6 @@ BEGIN {
 	# Write recovery template file headers
 	if (dbprivate) {
 		# This assumes we're doing DB recovery.
-		printf("#include \"db_config.h\"\n") > TFILE
-		printf("#undef\tPACKAGE_BUGREPORT\n") >> TFILE
-		printf("#undef\tPACKAGE_NAME\n") >> TFILE
-		printf("#undef\tPACKAGE_STRING\n") >> TFILE
-		printf("#undef\tPACKAGE_TARNAME\n") >> TFILE
-		printf("#undef\tPACKAGE_VERSION\n\n") >> TFILE
 		printf("#include \"system.h\"\n\n") >> TFILE
 		printf("#include <rpmio.h>\n\n") >> TFILE
 		printf("#include \"db_int.h\"\n") >> TFILE
