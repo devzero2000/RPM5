@@ -1,5 +1,5 @@
 PREFIX	logio
-INCLUDE #include "system.h"
+
 INCLUDE #include <rpmio.h>
 INCLUDE #include "logio.h"
 INCLUDE #include "debug.h"
@@ -14,20 +14,21 @@ INCLUDE #include "debug.h"
 
 /* Creat(2) */
 BEGIN Creat	48	10000
+DBT	fid		DBT		s
 DBT	path		DBT		s
-DBT	digest		DBT		s
-ARG	dalgo		unsigned	u
 ARG	mode		mode_t		o
 END
 
 /* Unlink(2) */
 BEGIN Unlink	48	10001
+DBT	fid		DBT		s
 DBT	path		DBT		s
 ARG	mode		mode_t		o
 END
 
 /* Rename(2) */
 BEGIN Rename	48	10002
+DBT	fid		DBT		s
 DBT	oldpath		DBT		s
 DBT	newpath		DBT		s
 END
@@ -53,15 +54,15 @@ END
 /* Chown(2) */
 BEGIN Chown	48	10006
 DBT	path		DBT		s
-ARG	owner		uid_t		d
-ARG	group		gid_t		d
+ARG	owner		uid_t		lu
+ARG	group		gid_t		lu
 END
 
 /* Lchown(2) */
 BEGIN Lchown	48	10007
 DBT	path		DBT		s
-ARG	owner		uid_t		d
-ARG	group		gid_t		d
+ARG	owner		uid_t		lu
+ARG	group		gid_t		lu
 END
 
 /* Chmod(2) */
@@ -73,8 +74,8 @@ END
 /* Utime(2) */
 BEGIN Utime	48	10009
 DBT	path		DBT		s
-TIME	actime		time_t		ld
-TIME	modtime		time_t		ld
+TIME	actime		time_t		lu
+TIME	modtime		time_t		lu
 END
 
 /* Symlink(2) */

@@ -91,6 +91,7 @@ LIBRPMDB_0
     logio_Mkdir_recover;
     logio_Mkfifo_log;
     logio_Mknod_log;
+    logio_Rename_log;
     logio_Rmdir_log;
     logio_Rmdir_recover;
     logio_Symlink_log;

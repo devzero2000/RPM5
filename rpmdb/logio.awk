@@ -80,22 +80,18 @@ BEGIN {
 	printf("/* Do not edit: automatically built by logio.awk. */\n\n")\
 	    > CFILE
 	printf("#include \"system.h\"\n\n") >> CFILE
-	printf("#include <rpmio.h>\n\n") >> CFILE
 	if (!dbprivate) {
 		printf("#include \"db.h\"\n") >> CFILE
 		printf("#include \"db_int.h\"\n") >> CFILE
 		printf("#include \"dbinc/db_swap.h\"\n\n") >> CFILE
 	}
-	printf("#include \"debug.h\"\n") >> CFILE
 
 	printf("/* Do not edit: automatically built by logio.awk. */\n\n")\
 	    > PFILE
 	printf("#include \"system.h\"\n\n") >> PFILE
-	printf("#include <rpmio.h>\n\n") >> PFILE
 	if (!dbprivate) {
 		printf("#include \"db.h\"\n\n") >> PFILE
 	}
-	printf("#include \"debug.h\"\n\n") >> PFILE
 
 	if (prefix == "__ham")
 		printf("#ifdef HAVE_HASH\n") >> PFILE
@@ -112,17 +108,13 @@ BEGIN {
 	if (dbprivate) {
 		# This assumes we're doing DB recovery.
 		printf("#include \"system.h\"\n\n") >> TFILE
-		printf("#include <rpmio.h>\n\n") >> TFILE
 		printf("#include \"db_int.h\"\n") >> TFILE
 		printf("#include \"dbinc/db_page.h\"\n") >> TFILE
 		printf("#include \"dbinc/%s.h\"\n", prefix) >> TFILE
 		printf("#include \"dbinc/log.h\"\n\n") >> TFILE
-		printf("#include \"debug.h\"\n\n") >> TFILE
 	} else {
 		printf("#include \"system.h\"\n\n") >> TFILE
-		printf("#include <rpmio.h>\n\n") >> TFILE
 		printf("#include <db.h>\n\n") >> TFILE
-		printf("#include \"debug.h\"\n\n") >> TFILE
 	}
 }
 /^[ 	]*INCLUDE/ {
@@ -1055,10 +1047,10 @@ function log_funcdecl(name, withtype)
 {
 	# Function declaration
 	if (has_dbp) {
-		printf("int\n%s_log(dbp, txnp, ret_lsnp, flags",\
+		printf("int\n%s_log(DB *dbp, DB_TXN *txnp, DB_LSN *ret_lsnp, uint32_t flags",\
 		    name) >> CFILE
 	} else {
-		printf("int\n%s_log(%s, txnp, ret_lsnp, flags",\
+		printf("int\n%s_log(DB_ENV *%s, DB_TXN *txnp, DB_LSN *ret_lsnp, uint32_t flags",\
 		    name, env_var) >> CFILE
 	}
 	for (i = 0; i < nvars; i++) {
@@ -1068,36 +1060,24 @@ function log_funcdecl(name, withtype)
 			continue;
 		}
 		printf(",") >> CFILE
-		if ((i % 6) == 0)
-			printf("\n    ") >> CFILE
+		if ((i % 4) == 0)
+			printf("\n\t\t") >> CFILE
 		else
 			printf(" ") >> CFILE
-		printf("%s", vars[i]) >> CFILE
-	}
 
-	if (withtype)
-		printf(", type") >> CFILE
-
-	printf(")\n") >> CFILE
-
-	# Now print the parameters
-	if (has_dbp) {
-		printf("\tDB *dbp;\n") >> CFILE
-	} else {
-		printf("\t%s *%s;\n", env_type, env_var) >> CFILE
-	}
-	printf("\tDB_TXN *txnp;\n\tDB_LSN *ret_lsnp;\n") >> CFILE
-	printf("\tuint32_t flags;\n") >> CFILE
-	for (i = 0; i < nvars; i++) {
 		# We just skip for modes == DB.
 		if (modes[i] == "DBT" || modes[i] == "LOCKS" ||
 		    modes[i] == "PGDBT" || modes[i] == "PGDDBT")
-			printf("\tconst %s *%s;\n", types[i], vars[i]) >> CFILE
+			printf("const %s *%s", types[i], vars[i]) >> CFILE
 		else if (modes[i] != "DB")
-			printf("\t%s %s;\n", types[i], vars[i]) >> CFILE
+			printf("%s %s", types[i], vars[i]) >> CFILE
 	}
+
 	if (withtype)
-		printf("\tuint32_t type;\n") >> CFILE
+		printf(", uint32_t type") >> CFILE
+
+	printf(")\n") >> CFILE
+
 }
 
 function log_callint(fname)
