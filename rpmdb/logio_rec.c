@@ -14,6 +14,8 @@
 
 #include "debug.h"
 
+#undef	DEBUG_RECOVER
+
 static int writeFile(const char * fn, mode_t mode,
 		const DBT * content, const DBT * digest, uint32_t dalgo)
 {
@@ -76,14 +78,15 @@ logio_Creat_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     case DB_TXN_ABORT:
     case DB_TXN_BACKWARD_ROLL:
 	ret = Unlink(argp->path.data);
-	if (ret != 0)
+	if (ret != 0 && errno != ENOENT)
 	    dbenv->err(dbenv, ret, "Creat: DB_TXN_BACKWARD_ROLL");
 	else
 	    ret = 0;
 	break;
     case DB_TXN_APPLY:
     case DB_TXN_FORWARD_ROLL:
-	ret = creat(argp->path.data, argp->mode);
+	ret = writeFile(argp->path.data, argp->mode, &argp->content,
+				&argp->digest, argp->dalgo);
 	if (ret != 0)
 	    dbenv->err(dbenv, ret, "Creat: DB_TXN_FORWARD_ROLL");
 	else
@@ -143,7 +146,7 @@ logio_Unlink_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     case DB_TXN_APPLY:
     case DB_TXN_FORWARD_ROLL:
 	ret = Unlink(argp->path.data);
-	if (ret != 0)
+	if (ret != 0 && errno != ENOENT)
 	    dbenv->err(dbenv, ret, "Unlink: DB_TXN_FORWARD_ROLL");
 	else
 	    ret = 0;
