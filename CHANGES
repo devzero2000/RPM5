@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj/glen: strip possible chroot prefix from db opened paths in Open(2) wrapper. LP#347749
 	- jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
 	- jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
 	- jbj: ensure that PLD setup & FHS packages install correctly.

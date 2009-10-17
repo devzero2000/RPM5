@@ -164,6 +164,7 @@ int Chroot(const char * path)
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
+    int fdno;
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Chroot(%s)\n", path);
@@ -230,7 +231,17 @@ fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, mode);
     if (mode == 0)
 	mode = 0644;
 #endif
-    return open(path, flags, mode);
+    fdno = open(path, flags, mode);
+    /* XXX if the open(2) fails, try to strip a possible chroot(2) prefix. */
+    if (fdno < 0 && errno == ENOENT) {
+        const char *dbpath = rpmExpand("%{_dbpath}", "/", NULL);
+        const char *fn = strstr(path + 1, dbpath);
+        if (fn)
+            fdno = open(fn, flags, mode);
+        if (dbpath)
+        	 dbpath = _free(dbpath);
+    }
+    return fdno;
 }
 
 /* XXX rpmdb.c: analogue to rename(2). */
