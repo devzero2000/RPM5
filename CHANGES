@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: correct pl/rpm.8: missing --test (ankry@PLD)
 	- glen: scan AC_PROG_CXX to be able to set __cpp macro
 	- glen: libtool deps generator update from PLD Linux
 	- glen: ignore loop messages for pkgs in whiteout lists on erase too
