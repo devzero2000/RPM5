@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function usage () {
   echo "usage: $0 <directory> <diff-extension>" 1>&2
