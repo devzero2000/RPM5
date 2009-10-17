@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: merge from HEAD: Check-in [10777]: add %{_check_symlink_deps} & %{_check_dirname_deps} to optionally enable/disable directory & symlink dependencies. By pkarlsen.
 	- glen: db4.8 support (arekm@PLD).
 	- glen: update db3/configure from rpm5 trunk
 	- glen: avoid -L poisoning in *.la (qboosh@PLD).

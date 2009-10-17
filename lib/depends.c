@@ -1321,6 +1321,8 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
     const char * Name;
     int rc;
     int ourrc = 0;
+    int dirname_deps;
+    int symlink_deps;
 
     requires = rpmdsInit(requires);
     if (requires != NULL)
@@ -1396,6 +1398,8 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	}
     }
 
+    dirname_deps = rpmExpandNumeric("%{?_check_dirname_deps}%{?!_check_dirname_deps:1}");
+    if (dirname_deps) {
     dirnames = rpmdsInit(dirnames);
     if (dirnames != NULL)
     while (!ourrc && rpmdsNext(dirnames) >= 0) {
@@ -1437,7 +1441,10 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    /*@switchbreak@*/ break;
 	}
     }
+    }
 
+    symlink_deps = rpmExpandNumeric("%{?_check_symlink_deps}%{?!_check_symlink_deps:1}");
+    if (symlink_deps) {
     linktos = rpmdsInit(linktos);
     if (linktos != NULL)
     while (!ourrc && rpmdsNext(linktos) >= 0) {
@@ -1455,6 +1462,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	dscolor = rpmdsColor(linktos);
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
+    }
 
 	rc = unsatisfiedDepend(ts, linktos, adding);
 
