@@ -37,6 +37,7 @@ librpmbuild_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(L
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_MAGIC_LIB@ \
 	@WITH_LIBELF_LIB@
 
 if HAVE_LD_VERSION_SCRIPT
