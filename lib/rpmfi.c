@@ -13,6 +13,8 @@
 
 #include "rpmds.h"
 
+#include "legacy.h"
+
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
