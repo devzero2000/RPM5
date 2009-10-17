@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: db4.8 support (arekm@PLD).
 	- glen: update db3/configure from rpm5 trunk
 	- glen: avoid -L poisoning in *.la (qboosh@PLD).
 	- glen: fix build with as-needed (needs patched libtool to trigger it) (sparky@PLD).

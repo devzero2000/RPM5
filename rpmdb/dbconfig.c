@@ -46,8 +46,10 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
 #endif
 
+#ifdef DB_XA_CREATE
  { "xa_create",	0,POPT_BIT_SET,	&db3dbi.dbi_cflags, DB_XA_CREATE,
 	NULL, NULL },
+#endif
 
 /* DB_ENV->open and DB->open */
 #if defined(DB_AUTO_COMMIT)
