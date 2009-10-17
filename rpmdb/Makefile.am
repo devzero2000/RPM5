@@ -56,7 +56,8 @@ librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
-	@WITH_LIBELF_LIB@
+	@WITH_LIBELF_LIB@ \
+	@WITH_SELINUX_LIB@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
 
