@@ -31,8 +31,6 @@ noinst_HEADERS = \
 
 BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/listobjs)
 
-LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
