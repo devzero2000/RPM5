@@ -128,8 +128,15 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 		xx = Fclose(fd);
 		fd = NULL;
 	    }
-	} else
+	} else {
+ 	    long oldfl;
 	    fd = fdLink(fd, "persist (showProgress)");
+ 	    oldfl=Fcntl(fd, F_GETFD, 0);
+ 	    if(oldfl >= 0) {
+ 		oldfl |= FD_CLOEXEC; /* scripts shouldn't inherit rpm file descriptor */
+ 		Fcntl(fd, F_SETFD, (void*)oldfl);
+ 	    }
+ 	}
 	/*@=type@*/
 /*@+voidabstract@*/
 	return (void *)fd;

@@ -1,8 +1,9 @@
 4.4.9 -> 4.5:
+	- glen: prevent from passing open file descriptors to pre/post scripts (one fd (12?) was terminal, second (11?) .rpm file) (qboosh@PLD).
 	- jbj/glen: strip possible chroot prefix from db opened paths in Open(2) wrapper. LP#347749
 	- jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.
 	- jbj: add RPMSIGTAG_PADDING to force metadata header alignment in file.
-	- jbj: ensure that PLD setup & FHS packages install correctly.
+	- jbj: ensure that PLD Linux setup & FHS packages install correctly.
 	- jbj: wrapper for open(2).
 	- glen: merge :shescape from rpm5 trunk (code in this branch read out of buffer bounds)
 	- proyvind: fix segfault with relative paths due to missing header inclusion.
@@ -10,10 +11,10 @@
 	- proyvind: backport xz/lzma payload support through liblzma.
 	- proyvind: make OSSP uuid support optional.
 	- glen: set failed state on upgrade if package reopen failed to avoid losing pkg info from db
-	- glen: scripts/rpm2cpio: avoid awk, use pure echo (from PLD)
+	- glen: scripts/rpm2cpio: avoid awk, use pure echo (from PLD Linux)
 	- glen: use modern chown syntax in setugids popt macro
 	- glen: perl makefile: respect LIBS from configure
-	- glen: update php dependency generators from PLD
+	- glen: update php dependency generators from PLD Linux
 	- jbj: add a relation to to force install-before-erase.
 	- jbj: display dependency loops as an error for now.
 	- glen: do not skip %clean from spec file
@@ -32,7 +33,7 @@
 	- jbj: tests: add check-install target to attempt --relocate install.
 	- jbj: tests: enhance the devtool-sanity package with scripts and a file.
 	- glen: install rpmdeps, rpmdigest, rpmmtree, rpmrepo tools to bindir
-	- glen: add mono deps from PLD
+	- glen: add mono deps from PLD Linux
 	- glen: call %__java-{requires/provides} for java files (jars/classes)
 	- glen: hotwire only -lossp-uuid not both with -luuid
 	- glen: backport: perform fsync(2) before closing installed file (patchset#7657).
@@ -109,7 +110,7 @@
 	- jbj: rpmrepo: backport :bncdata, :cdata, :utf8 header format extensions.
 	- jbj: rpmrepo: backport --yum:primary.xml popt alias from HEAD.
 	- glen: print error when makeTempPath fails due missing temp dir
-	- glen: merged perl find.{prov,req} fixes from PLD
+	- glen: merged perl find.{prov,req} fixes from PLD Linux
 	- jbj: header: free tag data on error retrurn with damaged data.
 	- rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
 	- jbj: header: fix: avoid double free with damaged data (#442761).
