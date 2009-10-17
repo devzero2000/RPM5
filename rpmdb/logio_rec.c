@@ -1005,3 +1005,376 @@ logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
 	return EINVAL;
     }
 }
+
+/*
+ * logio_Pretrans_recover --
+ *	Recovery function for Pretrans.
+ *
+ * PUBLIC: int logio_Pretrans_recover
+ * PUBLIC:   __P((dbenv *, DBT *, DB_LSN *, db_recops));
+ */
+int
+logio_Pretrans_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
+{
+    logio_Pretrans_args *argp = NULL;
+    int ret = EINVAL;
+
+#ifdef DEBUG_RECOVER
+    (void)logio_Pretrans_print(dbenv, dbtp, lsnp, op);
+#endif
+    if ((ret = logio_Pretrans_read(dbenv, dbtp->data, &argp)) != 0)
+	goto exit;
+
+    switch (op) {
+    case DB_TXN_ABORT:
+    case DB_TXN_BACKWARD_ROLL:
+#ifdef	NOTYET
+	ret = UNPretrans(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Pretrans: DB_TXN_BACKWARD_ROLL");
+	else
+	    ret = 0;
+	break;
+    case DB_TXN_APPLY:
+    case DB_TXN_FORWARD_ROLL:
+#ifdef	NOTYET
+	ret = Pretrans(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Pretrans: DB_TXN_FORWARD_ROLL");
+	else
+	    ret = 0;
+    case DB_TXN_PRINT:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Pretrans: DB_TXN_PRINT");
+	else
+	    ret = 0;
+	break;
+    default:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Pretrans: UNKNOWN");
+	else
+	    ret = 0;
+	break;
+    }
+
+    /* Allow for following LSN pointers through a transaction. */
+    *lsnp = argp->prev_lsn;
+
+exit:
+    if (argp != NULL)
+	free(argp);
+    return ret;
+}
+
+/*
+ * logio_Prein_recover --
+ *	Recovery function for Prein.
+ *
+ * PUBLIC: int logio_Prein_recover
+ * PUBLIC:   __P((dbenv *, DBT *, DB_LSN *, db_recops));
+ */
+int
+logio_Prein_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
+{
+    logio_Prein_args *argp = NULL;
+    int ret = EINVAL;
+
+#ifdef DEBUG_RECOVER
+    (void)logio_Prein_print(dbenv, dbtp, lsnp, op);
+#endif
+    if ((ret = logio_Prein_read(dbenv, dbtp->data, &argp)) != 0)
+	goto exit;
+
+    switch (op) {
+    case DB_TXN_ABORT:
+    case DB_TXN_BACKWARD_ROLL:
+#ifdef	NOTYET
+	ret = UNPrein(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Prein: DB_TXN_BACKWARD_ROLL");
+	else
+	    ret = 0;
+	break;
+    case DB_TXN_APPLY:
+    case DB_TXN_FORWARD_ROLL:
+#ifdef	NOTYET
+	ret = Prein(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Prein: DB_TXN_FORWARD_ROLL");
+	else
+	    ret = 0;
+    case DB_TXN_PRINT:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Prein: DB_TXN_PRINT");
+	else
+	    ret = 0;
+	break;
+    default:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Prein: UNKNOWN");
+	else
+	    ret = 0;
+	break;
+    }
+
+    /* Allow for following LSN pointers through a transaction. */
+    *lsnp = argp->prev_lsn;
+
+exit:
+    if (argp != NULL)
+	free(argp);
+    return ret;
+}
+
+/*
+ * logio_Postin_recover --
+ *	Recovery function for Postin.
+ *
+ * PUBLIC: int logio_Postin_recover
+ * PUBLIC:   __P((dbenv *, DBT *, DB_LSN *, db_recops));
+ */
+int
+logio_Postin_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
+{
+    logio_Postin_args *argp = NULL;
+    int ret = EINVAL;
+
+#ifdef DEBUG_RECOVER
+    (void)logio_Postin_print(dbenv, dbtp, lsnp, op);
+#endif
+    if ((ret = logio_Postin_read(dbenv, dbtp->data, &argp)) != 0)
+	goto exit;
+
+    switch (op) {
+    case DB_TXN_ABORT:
+    case DB_TXN_BACKWARD_ROLL:
+#ifdef	NOTYET
+	ret = UNPostin(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postin: DB_TXN_BACKWARD_ROLL");
+	else
+	    ret = 0;
+	break;
+    case DB_TXN_APPLY:
+    case DB_TXN_FORWARD_ROLL:
+#ifdef	NOTYET
+	ret = Postin(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postin: DB_TXN_FORWARD_ROLL");
+	else
+	    ret = 0;
+    case DB_TXN_PRINT:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postin: DB_TXN_PRINT");
+	else
+	    ret = 0;
+	break;
+    default:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postin: UNKNOWN");
+	else
+	    ret = 0;
+	break;
+    }
+
+    /* Allow for following LSN pointers through a transaction. */
+    *lsnp = argp->prev_lsn;
+
+exit:
+    if (argp != NULL)
+	free(argp);
+    return ret;
+}
+
+/*
+ * logio_Preun_recover --
+ *	Recovery function for Preun.
+ *
+ * PUBLIC: int logio_Preun_recover
+ * PUBLIC:   __P((dbenv *, DBT *, DB_LSN *, db_recops));
+ */
+int
+logio_Preun_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
+{
+    logio_Preun_args *argp = NULL;
+    int ret = EINVAL;
+
+#ifdef DEBUG_RECOVER
+    (void)logio_Preun_print(dbenv, dbtp, lsnp, op);
+#endif
+    if ((ret = logio_Preun_read(dbenv, dbtp->data, &argp)) != 0)
+	goto exit;
+
+    switch (op) {
+    case DB_TXN_ABORT:
+    case DB_TXN_BACKWARD_ROLL:
+#ifdef	NOTYET
+	ret = UNPreun(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Preun: DB_TXN_BACKWARD_ROLL");
+	else
+	    ret = 0;
+	break;
+    case DB_TXN_APPLY:
+    case DB_TXN_FORWARD_ROLL:
+#ifdef	NOTYET
+	ret = Preun(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Preun: DB_TXN_FORWARD_ROLL");
+	else
+	    ret = 0;
+    case DB_TXN_PRINT:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Preun: DB_TXN_PRINT");
+	else
+	    ret = 0;
+	break;
+    default:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Preun: UNKNOWN");
+	else
+	    ret = 0;
+	break;
+    }
+
+    /* Allow for following LSN pointers through a transaction. */
+    *lsnp = argp->prev_lsn;
+
+exit:
+    if (argp != NULL)
+	free(argp);
+    return ret;
+}
+
+/*
+ * logio_Postun_recover --
+ *	Recovery function for Postun.
+ *
+ * PUBLIC: int logio_Postun_recover
+ * PUBLIC:   __P((dbenv *, DBT *, DB_LSN *, db_recops));
+ */
+int
+logio_Postun_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
+{
+    logio_Postun_args *argp = NULL;
+    int ret = EINVAL;
+
+#ifdef DEBUG_RECOVER
+    (void)logio_Postun_print(dbenv, dbtp, lsnp, op);
+#endif
+    if ((ret = logio_Postun_read(dbenv, dbtp->data, &argp)) != 0)
+	goto exit;
+
+    switch (op) {
+    case DB_TXN_ABORT:
+    case DB_TXN_BACKWARD_ROLL:
+#ifdef	NOTYET
+	ret = UNPostun(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postun: DB_TXN_BACKWARD_ROLL");
+	else
+	    ret = 0;
+	break;
+    case DB_TXN_APPLY:
+    case DB_TXN_FORWARD_ROLL:
+#ifdef	NOTYET
+	ret = Postun(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postun: DB_TXN_FORWARD_ROLL");
+	else
+	    ret = 0;
+    case DB_TXN_PRINT:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postun: DB_TXN_PRINT");
+	else
+	    ret = 0;
+	break;
+    default:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Postun: UNKNOWN");
+	else
+	    ret = 0;
+	break;
+    }
+
+    /* Allow for following LSN pointers through a transaction. */
+    *lsnp = argp->prev_lsn;
+
+exit:
+    if (argp != NULL)
+	free(argp);
+    return ret;
+}
+
+/*
+ * logio_Posttrans_recover --
+ *	Recovery function for Posttrans.
+ *
+ * PUBLIC: int logio_Posttrans_recover
+ * PUBLIC:   __P((dbenv *, DBT *, DB_LSN *, db_recops));
+ */
+int
+logio_Posttrans_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
+{
+    logio_Posttrans_args *argp = NULL;
+    int ret = EINVAL;
+
+#ifdef DEBUG_RECOVER
+    (void)logio_Posttrans_print(dbenv, dbtp, lsnp, op);
+#endif
+    if ((ret = logio_Posttrans_read(dbenv, dbtp->data, &argp)) != 0)
+	goto exit;
+
+    switch (op) {
+    case DB_TXN_ABORT:
+    case DB_TXN_BACKWARD_ROLL:
+#ifdef	NOTYET
+	ret = UNPosttrans(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Posttrans: DB_TXN_BACKWARD_ROLL");
+	else
+	    ret = 0;
+	break;
+    case DB_TXN_APPLY:
+    case DB_TXN_FORWARD_ROLL:
+#ifdef	NOTYET
+	ret = Posttrans(argp->path.data);
+#endif
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Posttrans: DB_TXN_FORWARD_ROLL");
+	else
+	    ret = 0;
+    case DB_TXN_PRINT:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Posttrans: DB_TXN_PRINT");
+	else
+	    ret = 0;
+	break;
+    default:
+	if (ret != 0)
+	    dbenv->err(dbenv, ret, "Posttrans: UNKNOWN");
+	else
+	    ret = 0;
+	break;
+    }
+
+    /* Allow for following LSN pointers through a transaction. */
+    *lsnp = argp->prev_lsn;
+
+exit:
+    if (argp != NULL)
+	free(argp);
+    return ret;
+}
+

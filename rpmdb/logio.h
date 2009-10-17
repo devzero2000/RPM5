@@ -67,6 +67,30 @@ int logio_Mkfifo_log
 	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
 _LOGIO_PROTO(Mkfifo);
 
+int logio_Pretrans_log
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, const DBT *));
+_LOGIO_PROTO(Pretrans);
+
+int logio_Prein_log
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, const DBT *));
+_LOGIO_PROTO(Prein);
+
+int logio_Postin_log
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, const DBT *));
+_LOGIO_PROTO(Postin);
+
+int logio_Preun_log
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, const DBT *));
+_LOGIO_PROTO(Preun);
+
+int logio_Postun_log
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, const DBT *));
+_LOGIO_PROTO(Postun);
+
+int logio_Posttrans_log
+	__P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, const DBT *));
+_LOGIO_PROTO(Posttrans);
+
 #undef	_LOGIO_PROTO
 
 int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op);

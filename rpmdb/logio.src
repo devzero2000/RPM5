@@ -110,3 +110,45 @@ BEGIN Mkfifo	48	10013
 DBT	path		DBT		s
 ARG	mode		mode_t		o
 END
+
+/* %pretrans */
+BEGIN Pretrans	48	10030
+DBT	interpreter	DBT		s
+DBT	args		DBT		%p
+DBT	script		DBT		s
+END
+
+/* %pre */
+BEGIN Prein	48	10031
+DBT	interpreter	DBT		s
+DBT	args		DBT		%p
+DBT	script		DBT		s
+END
+
+/* %post */
+BEGIN Postin	48	10032
+DBT	interpreter	DBT		s
+DBT	args		DBT		%p
+DBT	script		DBT		s
+END
+
+/* %preun */
+BEGIN Preun	48	10033
+DBT	interpreter	DBT		s
+DBT	args		DBT		%p
+DBT	script		DBT		s
+END
+
+/* %postun */
+BEGIN Postun	48	10034
+DBT	interpreter	DBT		s
+DBT	args		DBT		%p
+DBT	script		DBT		s
+END
+
+/* %posttrans */
+BEGIN Posttrans	48	10035
+DBT	interpreter	DBT		s
+DBT	args		DBT		%p
+DBT	script		DBT		s
+END
