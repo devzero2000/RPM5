@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: libtool deps generator update from PLD Linux
 	- glen: ignore loop messages for pkgs in whiteout lists on erase too
 	- glen: gendiff it uses bash syntax, maybe should be rewritten (blues@PLD).
 	- glen: merge from HEAD: Check-in [10777]: add %{_check_symlink_deps} & %{_check_dirname_deps} to optionally enable/disable directory & symlink dependencies. By pkarlsen.
