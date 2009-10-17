@@ -7,22 +7,45 @@ db_dist="${base_path}../db/dist"
 
 rm -f config.cache
 
-# XXX edit CFLAGS= ... out of invocation args ???
-ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -[^-][^ ]*%%g' -e 's% --param=[^ ]*%%g' -e 's%--cache-file=.*$%%'`"
+# We iterate over the argument list.  Processing the arguments using 
+# echo "$*" can fail with the sed chopping out parts of unrelated 
+# arguments
+set -- "$@" eoa_marker
+while [ "$1" != "eoa_marker" ]; do
+   ARG=`echo "$1" | \
+       sed -e 's%CFLAGS=.*%%' \
+           -e 's%--param=.*%%g' \
+           -e 's%--cache-file=.*$%%' \
+           -e 's%--with-db-rpc=\(.*\)%--enable-rpc=\1%' \
+           -e 's%--with-db-rpc%--enable-rpc%' \
+           -e 's%--without-db-rpc%--disable-rpc%' \
+           -e 's%--with-db-largefile=\(.*\)%--enable-largefile=\1%' \
+           -e 's%--with-db-largefile%--enable-largefile%' \
+           -e 's%--without-db-largefile%--disable-largefile%' \
+           -e 's%--with-db-mutex=\(.*\)%--with-mutex=\1%' \
+           -e 's%--with-db-mutex%%' \
+           -e 's%--without-db-mutex%%' \
+   `
+   shift
+   set -- "$@" "$ARG"
+done
+shift
 
-CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
-	--enable-shared --enable-static --enable-rpc \
-	--with-uniquename=_rpmdb --srcdir=$db_dist
+
+#   NOTICE:
+#   1. "--enable-shared" is there for enforcing GNU libtool usage only
+#      as Berkeley-DB "configure" else would not use GNU libtool at all.
+#   2. "--enable-static" is there for enforcing the building of a static
+#      version of the libdb objects RPM actually is interested in.
+
+CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure "$@" \
+	--enable-shared --enable-static \
+	--with-uniquename=_rpmdb --srcdir=$db_dist || exit 1
 
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install[:-]/c\
-.PHONY: listobjs\
-listobjs:\
-\	@echo $(OBJS) $(C_OBJS) \
-\
 distdir install check:\
-\
-db4_install: all install_setip' > Makefile
+' -e 's/^\(SOFLAGS=\).*$/\1/' > Makefile
 
 mv db.h db.h.orig
 cat db.h.orig | sed \
@@ -35,5 +58,3 @@ cat db.h.orig | sed \
 	-e '/^int txn_commit __P((/a\
 /*@=declundef =noparams =fcnuse =fielduse =enummemuse =typeuse @*/' > db.h
 
-# Generate manifest for rpmdb.
-make -s listobjs > db3lobjs
