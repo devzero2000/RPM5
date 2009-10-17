@@ -249,6 +249,14 @@ int Open(const char * path, int flags, mode_t mode)
 	mode = 0644;
 #endif
     fdno = open(path, flags, mode);
+    /* XXX if the open(2) fails, try to strip a possible chroot(2) prefix. */
+    if (fdno < 0 && errno == ENOENT) {
+	const char *dbpath = rpmExpand("%{?_dbpath}/", NULL);
+	const char * fn = strstr(path + 1, dbpath);
+	if (fn)
+	    fdno = open(fn, flags, mode);
+	dbpath = _free(dbpath);
+    }
     if (fdno >= 0) {
 	if (fcntl(fdno, F_SETFD, FD_CLOEXEC) < 0) {
 	    (void) close(fdno);
