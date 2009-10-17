@@ -12,6 +12,39 @@
 
 #include "debug.h"
 
+static int _debug = 0;
+
+static const char *home = "HOME";
+static const char * dir = "DIR";
+static const char * file = "FILE";
+static mode_t _mode = 0755;
+
+static int
+verify(const char * fn, mode_t mode)
+{
+    struct stat sb;
+    int rc;
+    sb.st_mode = 0;
+    rc = Lstat(fn, &sb)
+	? errno
+	: (sb.st_mode == mode ? 0 : -1);
+if (_debug)
+fprintf(stderr, "<-- %s(%s,0%o) st_mode 0%o rc %d\n", __FUNCTION__, fn, mode, sb.st_mode, rc);
+    return rc;
+}
+
+static int
+Creat(const char * fn, mode_t mode, const char * s)
+{
+    size_t ns = strlen(s) + 1;
+    FD_t fd = Fopen(fn, "w");
+    int rc = 0;
+    (void) Fwrite(s, 1, ns, fd);
+    (void) Fclose(fd);
+    (void) Chmod(fn, mode & 0777);
+    return rc;
+}
+
 /*
  * Sample application dispatch function to handle user-specified log record
  * types.
@@ -25,10 +58,16 @@ apprec_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
     LOGCOPY_32(dbenv->env, &rectype, dbt->data);
 
     switch (rectype) {
+    case DB_logio_Creat:
+	return logio_Creat_recover(dbenv, dbt, lsn, op);
     case DB_logio_Mkdir:
 	return logio_Mkdir_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Rename:
+	return logio_Rename_recover(dbenv, dbt, lsn, op);
     case DB_logio_Rmdir:
 	return logio_Rmdir_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Unlink:
+	return logio_Unlink_recover(dbenv, dbt, lsn, op);
     default:
 	/* We've hit an unexpected, allegedly user-defined record type.  */
 	dbenv->errx(dbenv, "Unexpected log record type encountered");
@@ -73,22 +112,346 @@ open_env(const char * home, FILE * fp, DB_ENV ** dbenvp)
 }
 
 static int
-verify(const char * DN, mode_t mode)
+testMkdir(DB_ENV * dbenv, const char * DN, mode_t mode)
 {
-    struct stat sb;
-    if (Lstat(DN, &sb))
-	return errno;
-    return (sb.st_mode == mode ? 0 : -1);
+    const char * msg;
+    DB_TXN *txn;
+    DB_LSN lsn;
+    DBT DNdbt = {0};
+    int ret;
+
+    msg = "INIT: Mkdir transaction logged and directory created";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;	/* trailing NUL too */
+    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, DB_FLUSH, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Mkdir_log");
+	goto exit;
+    }
+    if (Mkdir(DN, mode) != 0) {
+	dbenv->err(dbenv, errno, "Mkdir");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == 0 ? "ok" : "FAIL"));
+
+    msg = "TEST: directory is removed by transaction abort";
+    if ((ret = txn->abort(txn)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->abort");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "INIT: Mkdir transaction logged and directory created";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;
+    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, 0, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Mkdir_log");
+	goto exit;
+    }
+    if (Mkdir(DN, mode) != 0) {
+	dbenv->err(dbenv, errno, "Mkdir");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == 0 ? "ok" : "FAIL"));
+
+    /* Commit the transaction and verify that the creation persists. */
+    msg = "TEST: creation persists after transaction commit";
+    if ((ret = txn->commit(txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->commit");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == 0 ? "ok" : "FAIL"));
+
+    msg = "INIT: Close dbenv and remove directory";
+    if ((ret = dbenv->close(dbenv, 0)) != 0) {
+	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
+	goto exit;
+    }
+    if (Rmdir(DN) != 0) {
+	fprintf(stderr, "%s: Rmdir failed with error %s", __progname,
+	    strerror(errno));
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "TEST: directory is re-created opening dbenv with DB_RECOVER";
+    if ((ret = open_env(home, stderr, &dbenv)) != 0)
+	goto exit;
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == 0 ? "ok" : "FAIL"));
+
+exit:
+    return ret;
 }
 
-static const char *home = "HOME";
-static const char * dir = "DIR";
-static mode_t mode = 0755;
+static int
+testRmdir(DB_ENV * dbenv, const char * DN, mode_t mode)
+{
+    const char * msg;
+    DB_TXN *txn;
+    DB_LSN lsn;
+    DBT DNdbt = {0};
+    int ret;
+
+    msg = "INIT: Rmdir transaction logged and directory removed";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;	/* trailing NUL too */
+    if ((ret = logio_Rmdir_log(dbenv, txn, &lsn, DB_FLUSH, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Rmdir_log");
+	goto exit;
+    }
+    if (Rmdir(DN) != 0) {
+	dbenv->err(dbenv, errno, "Rmdir");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "TEST: directory is re-created by transaction abort";
+    if ((ret = txn->abort(txn)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->abort");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == 0 ? "ok" : "FAIL"));
+
+    /* Repeat, with a commit this time. */
+    msg = "INIT: Rmdir transaction logged and directory removed";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    DNdbt.data = (void *)DN;
+    DNdbt.size = strlen(DN) + 1;
+    if ((ret = logio_Rmdir_log(dbenv, txn, &lsn, 0, &DNdbt, mode)) != 0) {
+	dbenv->err(dbenv, ret, "Rmdir_log");
+	goto exit;
+    }
+    if (Rmdir(DN) != 0) {
+	dbenv->err(dbenv, errno, "Rmdir");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "TEST: removal persists after transaction commit";
+    if ((ret = txn->commit(txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->commit");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "INIT: Close dbenv and create directory";
+    if ((ret = dbenv->close(dbenv, 0)) != 0) {
+	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
+	goto exit;
+    }
+    if (Mkdir(DN, mode) != 0) {
+	fprintf(stderr, "%s: Mkdir failed with error %s", __progname,
+	    strerror(errno));
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == 0 ? "ok" : "FAIL"));
+
+    msg = "TEST: directory is removed opening dbenv with DB_RECOVER";
+    if ((ret = open_env(home, stderr, &dbenv)) != 0)
+	goto exit;
+    fprintf(stderr, "%s: %s\n", msg, (verify(DN, mode) == ENOENT ? "ok" : "FAIL"));
+
+exit:
+    return ret;
+}
+
+static int
+testCreat(DB_ENV * dbenv, const char * FN, mode_t mode)
+{
+    const char * msg;
+    DB_TXN *txn;
+    DB_LSN lsn;
+    DBT FNdbt = {0};
+    DBT Bdbt = {0};
+    DBT Ddbt = {0};
+    uint32_t dalgo = 0;
+    int ret;
+
+    msg = "INIT: Creat transaction logged and file created";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "txn_begin");
+	goto exit;
+    }
+    FNdbt.data = (void *)FN;
+    FNdbt.size = strlen(FN) + 1;	/* trailing NUL too */
+    Bdbt.data = (void *)FN;
+    Bdbt.size = strlen(FN) + 1;
+    memset(&lsn, 0, sizeof(lsn));
+    if ((ret = logio_Creat_log(dbenv, txn, &lsn, DB_FLUSH, &FNdbt, mode, &Bdbt, &Ddbt, dalgo)) != 0) {
+	dbenv->err(dbenv, ret, "Creat_log");
+	goto exit;
+    }
+    if (Creat(FN, mode, FN) != 0) {
+	dbenv->err(dbenv, errno, "Creat");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == 0 ? "ok" : "FAIL"));
+
+    msg = "TEST: file is removed by transaction abort";
+    if ((ret = txn->abort(txn)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->abort");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    /* Repeat, with a commit this time. */
+    msg = "INIT: Creat transaction logged and file created";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    FNdbt.data = (void *)FN;
+    FNdbt.size = strlen(FN) + 1;
+    Bdbt.data = (void *)FN;
+    Bdbt.size = strlen(FN) + 1;
+    if ((ret = logio_Creat_log(dbenv, txn, &lsn, 0, &FNdbt, mode, &Bdbt, &Ddbt, dalgo)) != 0) {
+	dbenv->err(dbenv, ret, "Creat_log");
+	goto exit;
+    }
+    if (Creat(FN, mode, FN) != 0) {
+	dbenv->err(dbenv, errno, "Creat");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == 0 ? "ok" : "FAIL"));
+
+    /* Commit the transaction and verify that the creation persists. */
+    msg = "TEST: creation persists after transaction commit";
+    if ((ret = txn->commit(txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->commit");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == 0 ? "ok" : "FAIL"));
+
+    msg = "INIT: Close dbenv and remove file";
+    if ((ret = dbenv->close(dbenv, 0)) != 0) {
+	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
+	goto exit;
+    }
+    if (Unlink(FN) != 0) {
+	fprintf(stderr, "%s: Unlink failed with error %s", __progname,
+	    strerror(errno));
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "TEST: file is re-created opening dbenv with DB_RECOVER";
+    if ((ret = open_env(home, stderr, &dbenv)) != 0)
+	goto exit;
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == 0 ? "ok" : "FAIL"));
+
+exit:
+    return ret;
+}
+
+static int
+testUnlink(DB_ENV * dbenv, const char * FN, mode_t mode)
+{
+    const char * msg;
+    DB_TXN *txn;
+    DB_LSN lsn;
+    DBT FNdbt = {0};
+    DBT Bdbt = {0};
+    DBT Ddbt = {0};
+    uint32_t dalgo = 0;
+    int ret;
+
+    msg = "INIT: Unlink transaction logged and file removed";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "txn_begin");
+	goto exit;
+    }
+    FNdbt.data = (void *)FN;
+    FNdbt.size = strlen(FN) + 1;	/* trailing NUL too */
+    Bdbt.data = (void *)FN;
+    Bdbt.size = strlen(FN) + 1;
+    memset(&lsn, 0, sizeof(lsn));
+    if ((ret = logio_Unlink_log(dbenv, txn, &lsn, DB_FLUSH, &FNdbt, mode, &Bdbt, &Ddbt, dalgo)) != 0) {
+	dbenv->err(dbenv, ret, "Unlink_log");
+	goto exit;
+    }
+    if (Unlink(FN) != 0) {
+	dbenv->err(dbenv, errno, "Unlink");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "TEST: file is re-created by transaction abort";
+    if ((ret = txn->abort(txn)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->abort");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == 0 ? "ok" : "FAIL"));
+
+    /* Repeat, with a commit this time. */
+    msg = "INIT: Unlink transaction logged and file removed";
+    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+	goto exit;
+    }
+    memset(&lsn, 0, sizeof(lsn));
+    FNdbt.data = (void *)FN;
+    FNdbt.size = strlen(FN) + 1;
+    Bdbt.data = (void *)FN;
+    Bdbt.size = strlen(FN) + 1;
+    if ((ret = logio_Unlink_log(dbenv, txn, &lsn, 0, &FNdbt, mode, &Bdbt, &Ddbt, dalgo)) != 0) {
+	dbenv->err(dbenv, ret, "Unlink_log");
+	goto exit;
+    }
+    if (Unlink(FN) != 0) {
+	dbenv->err(dbenv, errno, "Unlink");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "TEST: removal persists after transaction commit";
+    if ((ret = txn->commit(txn, 0)) != 0) {
+	dbenv->err(dbenv, ret, "TXN->commit");
+	goto exit;
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == ENOENT ? "ok" : "FAIL"));
+
+    msg = "INIT: Close dbenv and create file";
+    if ((ret = dbenv->close(dbenv, 0)) != 0) {
+	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
+	goto exit;
+    }
+    if (Creat(FN, mode, FN) != 0) {
+	fprintf(stderr, "%s: Creat failed with error %s", __progname,
+	    strerror(errno));
+    }
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == 0 ? "ok" : "FAIL"));
+
+    msg = "TEST: file is removed opening dbenv with DB_RECOVER";
+    if ((ret = open_env(home, stderr, &dbenv)) != 0)
+	goto exit;
+    fprintf(stderr, "%s: %s\n", msg, (verify(FN, mode) == ENOENT ? "ok" : "FAIL"));
+
+exit:
+    return ret;
+}
 
 static struct poptOption _optionsTable[] = {
 
   { "home", 'h', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&home, 0,
 	N_("Specify DIR for database environment"), N_("DIR") },
+
+ { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
@@ -105,15 +468,13 @@ main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     const char * DN = rpmGetPath(home, "/", dir, NULL);
+    const char * FN = rpmGetPath(home, "/", file, NULL);
     DB_ENV *dbenv;
-    DB_TXN *txn;
-    DB_LSN lsn;
-    DBT DNdbt = {0};
     int ret;
     int ec = EXIT_FAILURE;	/* assume failure */
 
-    if (verify(home, S_IFDIR|mode) == ENOENT)
-	(void) Mkdir(home, mode);
+    if (verify(home, S_IFDIR|_mode) == ENOENT)
+	(void) Mkdir(home, _mode);
 
     if ((ret = open_env(home, NULL, &dbenv)) != 0)
 	goto exit;
@@ -127,149 +488,26 @@ main(int argc, char *argv[])
     * flush would not be necessary were we doing an operation into the
     * BDB mpool and using LSNs that mpool knew about.
     */
-    printf("INIT: Mkdir transaction logged and directory created: ");
-    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "txn_begin");
-	goto exit;
-    }
-    DNdbt.data = (void *)DN;
-    DNdbt.size = strlen(DN) + 1;	/* trailing NUL too */
-    memset(&lsn, 0, sizeof(lsn));
-    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, DB_FLUSH, &DNdbt, mode)) != 0) {
-	dbenv->err(dbenv, ret, "Mkdir_log");
-	goto exit;
-    }
-    if (Mkdir(DN, mode) != 0) {
-	dbenv->err(dbenv, errno, "Mkdir");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
 
-    printf("TEST: directory is removed by transaction abort: ");
-    if ((ret = txn->abort(txn)) != 0) {
-	dbenv->err(dbenv, ret, "TXN->abort");
+    if ((ret = testMkdir(dbenv, DN, (S_IFDIR|_mode))) != 0)
 	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
+    if ((ret = testRmdir(dbenv, DN, (S_IFDIR|_mode))) != 0)
+	goto exit;
 
-    /* Repeat, with a commit this time. */
-    printf("INIT: Mkdir transaction logged and directory created: ");
-    DNdbt.data = (void *)DN;
-    DNdbt.size = strlen(DN) + 1;
-    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
+    if ((ret = testCreat(dbenv, FN, (S_IFREG|_mode))) != 0)
 	goto exit;
-    }
-    memset(&lsn, 0, sizeof(lsn));
-    if ((ret = logio_Mkdir_log(dbenv, txn, &lsn, 0, &DNdbt, mode)) != 0) {
-	dbenv->err(dbenv, ret, "Mkdir_log");
+    if ((ret = testUnlink(dbenv, FN, (S_IFREG|_mode))) != 0)
 	goto exit;
-    }
-    if (Mkdir(DN, mode) != 0) {
-	dbenv->err(dbenv, errno, "Mkdir");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
-
-    /* Commit the transaction and verify that the creation persists. */
-    printf("TEST: creation persists after transaction commit: ");
-    if ((ret = txn->commit(txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "TXN->commit");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
-
-    printf("INIT: Close dbenv and remove directory: ");
-    if ((ret = dbenv->close(dbenv, 0)) != 0) {
-	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
-	goto exit;
-    }
-    if (Rmdir(DN) != 0) {
-	fprintf(stderr, "%s: Rmdir failed with error %s", __progname,
-	    strerror(errno));
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
-
-    printf("TEST: directory is re-created opening dbenv with DB_RECOVER: ");
-    if ((ret = open_env(home, stderr, &dbenv)) != 0)
-	goto exit;
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
-
-    printf("INIT: Rmdir transaction logged and directory removed: ");
-    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "txn_begin");
-	goto exit;
-    }
-    DNdbt.data = (void *)DN;
-    DNdbt.size = strlen(DN) + 1;	/* trailing NUL too */
-    memset(&lsn, 0, sizeof(lsn));
-    if ((ret = logio_Rmdir_log(dbenv, txn, &lsn, DB_FLUSH, &DNdbt, mode)) != 0) {
-	dbenv->err(dbenv, ret, "Rmdir_log");
-	goto exit;
-    }
-    if (Rmdir(DN) != 0) {
-	dbenv->err(dbenv, errno, "Rmdir");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
-
-    printf("TEST: directory is re-created by transaction abort: ");
-    if ((ret = txn->abort(txn)) != 0) {
-	dbenv->err(dbenv, ret, "TXN->abort");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
-
-    /* Repeat, with a commit this time. */
-    printf("INIT: Rmdir transaction logged and directory removed: ");
-    DNdbt.data = (void *)DN;
-    DNdbt.size = strlen(DN) + 1;
-    if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "DB_ENV->txn_begin");
-	goto exit;
-    }
-    memset(&lsn, 0, sizeof(lsn));
-    if ((ret = logio_Rmdir_log(dbenv, txn, &lsn, 0, &DNdbt, mode)) != 0) {
-	dbenv->err(dbenv, ret, "Rmdir_log");
-	goto exit;
-    }
-    if (Rmdir(DN) != 0) {
-	dbenv->err(dbenv, errno, "Rmdir");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
-
-    /* Commit the transaction and verify that the removal persists. */
-    printf("TEST: removal persists after transaction commit: ");
-    if ((ret = txn->commit(txn, 0)) != 0) {
-	dbenv->err(dbenv, ret, "TXN->commit");
-	goto exit;
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
-
-    printf("INIT: Close dbenv and create directory: ");
-    if ((ret = dbenv->close(dbenv, 0)) != 0) {
-	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
-	goto exit;
-    }
-    if (Mkdir(DN, mode) != 0) {
-	fprintf(stderr, "%s: Mkdir failed with error %s", __progname,
-	    strerror(errno));
-    }
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == 0 ? "ok" : "FAIL"));
-
-    printf("TEST: directory is removed opening dbenv with DB_RECOVER: ");
-    if ((ret = open_env(home, stderr, &dbenv)) != 0)
-	goto exit;
-    printf("%s\n", (verify(DN, S_IFDIR|mode) == ENOENT ? "ok" : "FAIL"));
 
     if ((ret = dbenv->close(dbenv, 0)) != 0) {
 	fprintf(stderr, "DB_ENV->close: %s\n", db_strerror(ret));
 	goto exit;
     }
+
     ec = EXIT_SUCCESS;
 
 exit:
+    FN = _free(FN);
     DN = _free(DN);
     optCon = rpmioFini(optCon);
     return ec;

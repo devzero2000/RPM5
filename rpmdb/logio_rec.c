@@ -15,6 +15,18 @@
 #include "debug.h"
 
 #undef	DEBUG_RECOVER
+static int _debug = 0;
+
+static const char * opnames[] = {
+    "ABORT",
+    "APPLY",
+    "FIXME",
+    "BACKWARD",
+    "FORWARD",
+    "OPENFILES",
+    "POPENFILES",
+    "PRINT"
+};
 
 static int writeFile(const char * fn, mode_t mode,
 		const DBT * content, const DBT * digest, uint32_t dalgo)
@@ -26,6 +38,8 @@ static int writeFile(const char * fn, mode_t mode,
     int ret = 0;
     int xx;
 
+if (_debug)
+fprintf(stderr, "--> %s(%s,0%o,%p,%p,%u)\n", __FUNCTION__, fn, mode, content, digest, dalgo);
     if (S_ISREG(mode)) {
 	FD_t fd = Fopen(fn, "w.fdio");
 	size_t nw;
@@ -48,6 +62,7 @@ static int writeFile(const char * fn, mode_t mode,
 	    digest = _free(digest);
 	}
 	(void) Fclose(fd);
+	(void) Chmod(fn, mode);
 	fd = NULL;
 	if (nw != blen)
 	    ret = -1;
@@ -68,6 +83,8 @@ logio_Creat_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Creat_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Creat_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -127,6 +144,8 @@ logio_Unlink_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Unlink_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Unlink_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -186,6 +205,8 @@ logio_Rename_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Rename_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Rename_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -239,6 +260,8 @@ logio_Mkdir_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Mkdir_args * argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     logio_Mkdir_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -323,6 +346,8 @@ logio_Rmdir_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Rmdir_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Rmdir_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -383,6 +408,8 @@ logio_Lsetfilecon_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops o
     logio_Lsetfilecon_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Lsetfilecon_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -446,6 +473,8 @@ logio_Chown_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Chown_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Chown_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -508,6 +537,8 @@ logio_Lchown_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Lchown_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Lchown_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -570,6 +601,8 @@ logio_Chmod_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Chmod_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Chmod_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -632,6 +665,8 @@ logio_Utime_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Utime_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Utime_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -698,6 +733,8 @@ logio_Symlink_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Symlink_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Symlink_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -756,6 +793,8 @@ logio_Link_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Link_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Link_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -814,6 +853,8 @@ logio_Mknod_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Mknod_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Mknod_print(dbenv, dbtp, lsnp, op);
 #endif
@@ -872,6 +913,8 @@ logio_Mkfifo_recover(DB_ENV * dbenv, DBT * dbtp, DB_LSN * lsnp, db_recops op)
     logio_Mkfifo_args *argp = NULL;
     int ret = EINVAL;
 
+if (_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%s)\n", __FUNCTION__, dbenv, dbtp, lsnp, opnames[op&7]);
 #ifdef DEBUG_RECOVER
     (void)logio_Mkfifo_print(dbenv, dbtp, lsnp, op);
 #endif

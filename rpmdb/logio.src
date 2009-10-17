@@ -3,6 +3,7 @@ PREFIX	logio
 INCLUDE #include <rpmio.h>
 INCLUDE #include "logio.h"
 INCLUDE #include "debug.h"
+INCLUDE
 
 /*
  *     awk -f ./logio.awk \
