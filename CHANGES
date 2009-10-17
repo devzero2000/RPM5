@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: fix --root --rebuilddb (merge from r8637)
 	- glen: kill warnings about calling function without prototype (qboosh@PLD)
 	- glen: correct pl/rpm.8: missing --test (ankry@PLD)
 	- glen: scan AC_PROG_CXX to be able to set __cpp macro

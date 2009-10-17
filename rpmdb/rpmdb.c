@@ -3934,7 +3934,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
     if (!(prefix[0] == '/' && prefix[1] == '\0'))
-	dbpath += strlen(prefix) - 1;
+	dbpath += strlen(prefix);
     tfn = _free(tfn);
 
     /*@-nullpass@*/
