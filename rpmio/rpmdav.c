@@ -1100,9 +1100,14 @@ static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
 /**
  */
 typedef struct rpmhtml_s * rpmhtml;
+#endif	/* WITH_NEON */
 
 int _html_debug = 0;
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _htmlPool = NULL;
+
+#ifdef WITH_NEON
 /**
  */
 struct rpmhtml_s {
@@ -1180,9 +1185,6 @@ static void htmlFini(void * _html)
     html->b = html->buf = _free(html->buf);
     html->nb = html->nbuf = 0;
 }
-
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _htmlPool = NULL;
 
 static rpmhtml htmlGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _htmlPool, fileSystem @*/
