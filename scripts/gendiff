@@ -1,22 +1,22 @@
 #!/bin/sh
 
-function usage () {
+usage () {
   echo "usage: $0 <directory> <diff-extension>" 1>&2
   exit 1
 }
 
 : ${DIFF:=diff -p}
 
-if [ "$1" = "-p" -a -z "$3" ];then
+[ "$1" = "-p" -a -z "$3" ] && {
 	echo "With -p you need to give the definition of patch (like dummy)"
 	exit 1
-fi
+}
 
-if [ "$1" = "-p" ];then
+[ "$1" = "-p" ] && {
     DEFAULT_PATCH="$2"
     shift;
-	shift;
-fi
+    shift;
+}
 
 [ -z "$1" ] && usage
 
@@ -25,10 +25,10 @@ fi
   exit 1
 }    
 
-if [ -n "$DEFAULT_PATCH" -a "$RPM" ];then
+[ -n "$DEFAULT_PATCH" -a "$RPM" ] && {
     FILEPATCH="$RPM/SOURCES/$(echo $1|sed 's@/@@g')-$DEFAULT_PATCH.patch"
     [ -f $FILEPATCH ] && mv -f $FILEPATCH $FILEPATCH.old
-fi
+}
 
 [ -n "$2" ] && PATCH_PREFIX=$2
 
