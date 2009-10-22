@@ -29,6 +29,7 @@
 #include <pkgio.h>
 #define	_RPMDB_INTERNAL
 #include <rpmdb.h>		/* XXX for db_chrootDone */
+#include <rpmtxn.h>
 #include "signature.h"		/* signature constants */
 #include <rpmlib.h>
 
@@ -985,6 +986,24 @@ assert(he->p.str != NULL);
 
     argv[argc] = NULL;
 
+    /* Log the scriptlet to be exec'd. */
+    switch (psm->scriptTag) {
+    default:
+	break;
+    case RPMTAG_PREIN:
+	rpmlioPrein(rpmtsGetRdb(ts), argv, body);
+	break;
+    case RPMTAG_POSTIN:
+	rpmlioPostin(rpmtsGetRdb(ts), argv, body);
+	break;
+    case RPMTAG_PREUN:
+	rpmlioPreun(rpmtsGetRdb(ts), argv, body);
+	break;
+    case RPMTAG_POSTUN:
+	rpmlioPostun(rpmtsGetRdb(ts), argv, body);
+	break;
+    }
+
     scriptFd = rpmtsScriptFd(ts);
     if (scriptFd != NULL) {
 	if (rpmIsVerbose()) {
@@ -1176,6 +1195,7 @@ static rpmRC runInstScript(rpmpsm psm)
     rpmfi fi = psm->fi;
     const char * argv0 = NULL;
     rpmRC rc = RPMRC_OK;
+    int xx;
 
 assert(fi->h != NULL);
     She->tag = psm->scriptTag;
@@ -2936,7 +2956,12 @@ psm->te->h = NULL;
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
+	xx = rpmtxnBegin(rpmtsGetRdb(ts));
 	rc = runInstScript(psm);
+	if (rc)
+	     xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	else
+	     xx = rpmtxnCommit(rpmtsGetRdb(ts));
 	break;
     case PSM_TRIGGERS:
 	/* Run triggers in other package(s) this package sets off. */

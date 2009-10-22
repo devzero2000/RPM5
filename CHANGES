@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmtxn: expose the existing rpmtxn API for refactoring work.
     - jbj/glen: strip possible chroot prefix from db opened paths in
 	Open(2) wrapper. LP#347749
     - jbj: dbi: tear out the rpmdb->db_rebuilding construction scaffholding.

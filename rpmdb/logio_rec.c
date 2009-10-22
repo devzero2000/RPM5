@@ -960,52 +960,7 @@ exit:
     return ret;
 }
 
-int
-logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
-{
-    uint32_t rectype;
-
-    /* Pull the record type out of the log record. */
-    LOGCOPY_32(dbenv->env, &rectype, dbt->data);
-
-    switch (rectype) {
-    case DB_logio_Creat:
-	return logio_Creat_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Unlink:
-	return logio_Unlink_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Rename:
-	return logio_Rename_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Mkdir:
-	return logio_Mkdir_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Rmdir:
-	return logio_Rmdir_recover(dbenv, dbt, lsn, op);
-#ifdef	NOTYET
-    case DB_logio_Lsetfilecon:
-	return logio_Lsetfilecon_recover(dbenv, dbt, lsn, op);
-#endif
-    case DB_logio_Chown:
-	return logio_Chown_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Lchown:
-	return logio_Lchown_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Chmod:
-	return logio_Chmod_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Utime:
-	return logio_Utime_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Symlink:
-	return logio_Symlink_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Link:
-	return logio_Link_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Mknod:
-	return logio_Mknod_recover(dbenv, dbt, lsn, op);
-    case DB_logio_Mkfifo:
-	return logio_Mkfifo_recover(dbenv, dbt, lsn, op);
-    default:
-	/* We've hit an unexpected, allegedly user-defined record type.  */
-	dbenv->errx(dbenv, "Unexpected log record type encountered");
-	return EINVAL;
-    }
-}
-
+/* ============================================================== */
 /*
  * logio_Pretrans_recover --
  *	Recovery function for Pretrans.
@@ -1376,5 +1331,67 @@ exit:
     if (argp != NULL)
 	free(argp);
     return ret;
+}
+
+/* ============================================================== */
+
+int
+logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
+{
+    uint32_t rectype;
+
+    /* Pull the record type out of the log record. */
+    LOGCOPY_32(dbenv->env, &rectype, dbt->data);
+
+    switch (rectype) {
+    case DB_logio_Creat:
+	return logio_Creat_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Unlink:
+	return logio_Unlink_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Rename:
+	return logio_Rename_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Mkdir:
+	return logio_Mkdir_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Rmdir:
+	return logio_Rmdir_recover(dbenv, dbt, lsn, op);
+#ifdef	NOTYET
+    case DB_logio_Lsetfilecon:
+	return logio_Lsetfilecon_recover(dbenv, dbt, lsn, op);
+#endif
+    case DB_logio_Chown:
+	return logio_Chown_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Lchown:
+	return logio_Lchown_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Chmod:
+	return logio_Chmod_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Utime:
+	return logio_Utime_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Symlink:
+	return logio_Symlink_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Link:
+	return logio_Link_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Mknod:
+	return logio_Mknod_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Mkfifo:
+	return logio_Mkfifo_recover(dbenv, dbt, lsn, op);
+
+    case DB_logio_Pretrans:
+	return logio_Pretrans_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Prein:
+	return logio_Prein_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Postin:
+	return logio_Postin_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Preun:
+	return logio_Preun_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Postun:
+	return logio_Postun_recover(dbenv, dbt, lsn, op);
+    case DB_logio_Posttrans:
+	return logio_Posttrans_recover(dbenv, dbt, lsn, op);
+
+    default:
+	/* We've hit an unexpected, allegedly user-defined record type.  */
+	dbenv->errx(dbenv, "Unexpected log record type encountered");
+	return EINVAL;
+    }
 }
 

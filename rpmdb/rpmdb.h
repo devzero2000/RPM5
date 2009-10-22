@@ -897,131 +897,6 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 
 #if defined(_RPMDB_INTERNAL)
 /*@unused@*/ static inline
-uint32_t rpmtxnId(rpmdb rpmdb)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    uint32_t rc = (_txn ? _txn->id(_txn) : 0);
-    return rc;
-}
-
-/*@unused@*/ static inline /*@null@*/
-const char * rpmtxnName(rpmdb rpmdb)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    const char * N = NULL;
-    int rc = (_txn ? _txn->get_name(_txn, &N) : ENOTSUP);
-    rc = rc;
-    return N;
-}
-
-/*@unused@*/ static inline
-int rpmtxnSetName(rpmdb rpmdb, const char * N)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    int rc = (_txn ? _txn->set_name(_txn, N) : ENOTSUP);
-if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p,%s) rc %d\n", "txn->set_name", _txn, N, rc);
-    return rc;
-}
-
-/*@unused@*/ static inline
-int rpmtxnAbort(rpmdb rpmdb)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    int rc = (_txn ? _txn->abort(_txn) : ENOTSUP);
-    rpmdb->db_txnid = NULL;
-if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p) rc %d\n", "txn->abort", _txn, rc);
-    return rc;
-}
-
-/*@unused@*/ static inline
-int rpmtxnBegin(rpmdb rpmdb)
-{
-    DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
-    DB_TXN * _parent = NULL;
-    DB_TXN * _txn = NULL;
-    uint32_t _flags = 0;
-    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
-	? dbenv->txn_begin(dbenv, _parent, &_txn, _flags) : ENOTSUP;
-    rpmdb->db_txnid = (!rc ? _txn : NULL);
-if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) txn %p rc %d\n", "dbenv->txn_begin", dbenv, _parent, &_txn, _flags, _txn, rc);
-    return rc;
-}
-
-/*@unused@*/ static inline
-int rpmtxnCommit(rpmdb rpmdb)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    uint32_t _flags = 0;
-    int rc = (_txn ? _txn->commit(_txn, _flags) : ENOTSUP);
-    rpmdb->db_txnid = NULL;
-if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, _flags, rc);
-    return rc;
-}
-
-#ifdef	NOTYET
-/*@unused@*/ static inline
-int rpmtxnCheckpoint(rpmdb rpmdb)
-{
-    DB_ENV * dbenv = rpmdb->db_dbenv;
-    uint32_t _kbytes = 0;
-    uint32_t _minutes = 0;
-    uint32_t _flags = 0;
-    int rc = dbenv->txn_checkpoint(dbenv, _kbytes, _minutes, _flags);
-if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv, _kbytes, _minutes, _flags, rc);
-    return rc;
-}
-
-/*@unused@*/ static inline
-int rpmtxnDiscard(rpmdb rpmdb)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    uint32_t _flags = 0;
-    int rc = (_txn ? _txn->discard(_txn, _flags) : ENOTSUP);
-    rpmdb->db_txnid = NULL;
-    return rc;
-}
-
-/*@unused@*/ static inline
-int rpmtxnPrepare(rpmdb rpmdb)
-{
-    DB_TXN * _txn = rpmdb->db_txnid;
-    uint8_t _gid[DB_GID_SIZE] = {0};
-    int rc = (_txn ? _txn->prepare(_txn, _gid) : ENOTSUP);
-    return rc;
-}
-
-/*@unused@*/ static inline
-int rpmtxnRecover(rpmdb rpmdb)
-{
-    DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_PREPLIST _preplist[32];
-    long _count = (sizeof(_preplist) / sizeof(_preplist[0]));
-    long _got = 0;
-    uint32_t _flags = DB_FIRST;
-    int rc = 0;
-    int i;
-
-    while (1) {
-	rc = dbenv->txn_recover(dbenv, _preplist, _count, &_got, _flags);
-	_flags = DB_NEXT;
-	if (rc || _got == 0)
-	    break;
-	for (i = 0; i < _got; i++) {
-	    DB_TXN * _txn = _preplist[i].txn;
-	    uint32_t _tflags = 0;
-	    (void) _txn->discard(_txn, _tflags);
-	}
-    }
-    return rc;
-}
-#endif	/* NOTYET */
-
-/*@unused@*/ static inline
 int rpmlkId(rpmdb rpmdb, uint32_t *_idp)
 {
     DB_ENV * dbenv = rpmdb->db_dbenv;
@@ -1433,6 +1308,100 @@ int rpmlioMkfifo(rpmdb rpmdb, const char * fn, mode_t mode)
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Mkfifo_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
 fprintf(stderr, "<== %s(%s, 0%o) rc %d\n", __FUNCTION__, fn, mode, rc);
+    return rc;
+}
+
+#include <argv.h>
+
+/*@unused@*/ static inline
+int rpmlioPrein(rpmdb rpmdb, const char ** av, const char * body)
+{
+    const char * cmd = argvJoin(av, ' ');
+    int rc = 0;
+    extern int logio_Prein_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT AVdbt = {0};
+    DBT BODYdbt = {0};
+    if (!(dbenv && _txn)) return 0;
+    AVdbt.data = (void *)cmd;
+    AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
+    BODYdbt.data = (void *)body;
+    BODYdbt.size = strlen(body) + 1;	/* trailing NUL too */
+    rc = logio_Prein_log(dbenv, _txn, &_lsn, DB_FLUSH, &AVdbt, &BODYdbt);
+fprintf(stderr, "<== %s(%p,%p) rc %d\n", __FUNCTION__, av, body, rc);
+    cmd = _free(cmd);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioPostin(rpmdb rpmdb, const char ** av, const char * body)
+{
+    const char * cmd = argvJoin(av, ' ');
+    int rc = 0;
+    extern int logio_Postin_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT AVdbt = {0};
+    DBT BODYdbt = {0};
+    if (!(dbenv && _txn)) return 0;
+    AVdbt.data = (void *)cmd;
+    AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
+    BODYdbt.data = (void *)body;
+    BODYdbt.size = strlen(body) + 1;	/* trailing NUL too */
+    rc = logio_Postin_log(dbenv, _txn, &_lsn, DB_FLUSH, &AVdbt, &BODYdbt);
+fprintf(stderr, "<== %s(%p,%p) rc %d\n", __FUNCTION__, av, body, rc);
+    cmd = _free(cmd);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioPreun(rpmdb rpmdb, const char ** av, const char * body)
+{
+    const char * cmd = argvJoin(av, ' ');
+    int rc = 0;
+    extern int logio_Preun_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT AVdbt = {0};
+    DBT BODYdbt = {0};
+    if (!(dbenv && _txn)) return 0;
+    AVdbt.data = (void *)cmd;
+    AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
+    BODYdbt.data = (void *)body;
+    BODYdbt.size = strlen(body) + 1;	/* trailing NUL too */
+    rc = logio_Preun_log(dbenv, _txn, &_lsn, DB_FLUSH, &AVdbt, &BODYdbt);
+fprintf(stderr, "<== %s(%p,%p) rc %d\n", __FUNCTION__, av, body, rc);
+    cmd = _free(cmd);
+    return rc;
+}
+
+/*@unused@*/ static inline
+int rpmlioPostun(rpmdb rpmdb, const char ** av, const char * body)
+{
+    const char * cmd = argvJoin(av, ' ');
+    int rc = 0;
+    extern int logio_Postun_log
+        __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
+    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_LSN _lsn = {0,0};
+    DBT AVdbt = {0};
+    DBT BODYdbt = {0};
+    if (!(dbenv && _txn)) return 0;
+    AVdbt.data = (void *)cmd;
+    AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
+    BODYdbt.data = (void *)body;
+    BODYdbt.size = strlen(body) + 1;	/* trailing NUL too */
+    rc = logio_Postun_log(dbenv, _txn, &_lsn, DB_FLUSH, &AVdbt, &BODYdbt);
+fprintf(stderr, "<== %s(%p,%p) rc %d\n", __FUNCTION__, av, body, rc);
+    cmd = _free(cmd);
     return rc;
 }
 

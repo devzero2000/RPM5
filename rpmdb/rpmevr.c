@@ -1,5 +1,5 @@
 /** \ingroup rpmds
- * \file lib/rpmevr.c
+ * \file rpmdb/rpmevr.c
  */
 #include "system.h"
 

@@ -100,6 +100,10 @@ LIBRPMDB_0
     logio_Unlink_log;
     logio_Unlink_recover;
     logio_Utime_log;
+    logio_Prein_log;
+    logio_Postin_log;
+    logio_Preun_log;
+    logio_Postun_log;
     _pkgio_debug;
     prDbiOpenFlags;
     rdbOptions;
@@ -187,6 +191,16 @@ LIBRPMDB_0
     rpmtsGetRdb;
     rpmtsOp;
     rpmtsPubkey;
+    rpmtxnAbort;
+    rpmtxnBegin;
+    rpmtxnCheckpoint;
+    rpmtxnCommit;
+    rpmtxnDiscard;
+    rpmtxnId;
+    rpmtxnName;
+    rpmtxnPrepare;
+    rpmtxnRecover;
+    rpmtxnSetName;
     _rpmvercmp;
     rpmvercmp;
     rpmVersionCompare;
