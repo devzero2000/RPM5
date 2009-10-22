@@ -30,7 +30,7 @@ int rpmtxnSetName(rpmtxn txn, const char * N)
 int rpmtxnAbort(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
-int rpmtxnBegin(rpmdb rpmdb, /*@null@*/ rpmtxn * txnp)
+int rpmtxnBegin(rpmdb rpmdb, /*@null@*/ rpmtxn parent, /*@null@*/ rpmtxn * txnp)
 	/*@*/;
 
 int rpmtxnCommit(/*@only@*/ rpmtxn txn)

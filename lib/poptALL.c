@@ -56,9 +56,6 @@ static int _debug = 0;
 extern int _rpmds_nopromote;
 
 /*@unchecked@*/
-extern int _dbi_debug;
-
-/*@unchecked@*/
 extern int _fps_debug;
 
 /*@unchecked@*/
@@ -451,10 +448,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("Debug Package State Machine"), NULL},
  { "psmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_threads, -1,
 	N_("Use threads for Package State Machine"), NULL},
- { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,
-	N_("Debug rpmdb DataBase"), NULL},
- { "rpmdbidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dbi_debug, -1,
-	N_("Debug dbiIndex DataBase Index"), NULL},
  { "rpmdsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_debug, -1,
 	N_("Debug rpmds Dependency Set"), NULL},
  { "rpmfcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,

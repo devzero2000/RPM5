@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: poptDB: wire up --rpmtxndebug, collect other rpmdb debugging options.
+    - jbj: rpmte: stub-in a parent transaction.
+    - jbj: rpmtxn: add a parent transaction argument.
     - jbj: rpmtxn: add abstract typedef and drill throughout the API.
     - jbj: rpmtxn: expose the existing rpmtxn API for refactoring work.
     - jbj/glen: strip possible chroot prefix from db opened paths in

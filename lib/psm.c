@@ -2612,7 +2612,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
+	    xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
 
 	    rc = fsmSetup(fi->fsm, IOSM_PKGINSTALL, psm->payload_format, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
@@ -2956,7 +2956,7 @@ psm->te->h = NULL;
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
-	xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
 	rc = runInstScript(psm);
 	if (rc)
 	     xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
@@ -3045,7 +3045,7 @@ assert(psm->mi == NULL);
 	if (fi->isSource)	break;	/* XXX never add SRPM's */
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
-	xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
 
 	/* Add header to db, doing header check if requested */
 	/* XXX rollback headers propagate the previous transaction id. */
@@ -3081,7 +3081,7 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 
-	xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);

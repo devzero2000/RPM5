@@ -50,10 +50,10 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", "txn->abort", _txn, rc);
     return rc;
 }
 
-int rpmtxnBegin(rpmdb rpmdb, rpmtxn * txnp)
+int rpmtxnBegin(rpmdb rpmdb, rpmtxn parent, rpmtxn * txnp)
 {
     DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
-    DB_TXN * _parent = NULL;
+    DB_TXN * _parent = parent;
     DB_TXN * _txn = NULL;
     uint32_t _flags = 0;
     int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
