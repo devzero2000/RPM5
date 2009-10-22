@@ -487,7 +487,7 @@ struct rpmdb_s {
 /*@only@*/ /*@null@*/
 
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
-    DB_TXN *	db_txnid;	/*!< Berkeley DB_TXN handle */
+    void *	db_txn;		/*!< Berkeley DB_TXN handle */
     DB_LOGC *	db_logc;	/*!< Berkeley DB_LOGC handle */
     DB_MPOOLFILE *db_mpf;	/*!< Berkeley DB_MPOOLFILE handle */
 
@@ -891,7 +891,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 	/*@*/
 {
     rpmdb rpmdb = (dbi ? dbi->dbi_rpmdb : NULL);
-    DB_TXN * _txn = (rpmdb ? rpmdb->db_txnid : NULL);
+    DB_TXN * _txn = (rpmdb ? rpmdb->db_txn : NULL);
     return _txn;
 }
 
@@ -1004,7 +1004,7 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->log_flush", dbenv, _lsn, rc);
 int rpmlgcPrintf(rpmdb rpmdb, const char * fmt, void *_A1, void *_A2, void *_A3, void *_A4, void *_A5)
 {
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txnid = rpmdb->db_txnid;
+    DB_TXN * _txnid = rpmdb->db_txn;
     int rc = dbenv->log_printf(dbenv, _txnid, fmt, _A1, _A2, _A3, _A4, _A5);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,\"%s\", ...) rc %d\n", "dbenv->log_printf", dbenv, _txnid, fmt, rc);
@@ -1030,7 +1030,7 @@ int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
     extern int logio_Creat_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t, const DBT *, const DBT *, uint32_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     DBT Bdbt = {0};
@@ -1056,7 +1056,7 @@ int rpmlioUnlink(rpmdb rpmdb, const char * fn, mode_t mode,
     extern int logio_Unlink_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t, const DBT *, const DBT *, uint32_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     DBT Bdbt = {0};
@@ -1083,7 +1083,7 @@ int rpmlioRename(rpmdb rpmdb, const char * oldname, const char * newname,
     extern int logio_Rename_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *, mode_t, const DBT *, const DBT *, uint32_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT ONdbt = {0};
     DBT NNdbt = {0};
@@ -1110,7 +1110,7 @@ int rpmlioMkdir(rpmdb rpmdb, const char * dn, mode_t mode)
     extern int logio_Mkdir_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT DNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1128,7 +1128,7 @@ int rpmlioRmdir(rpmdb rpmdb, const char * dn, mode_t mode)
     extern int logio_Rmdir_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT DNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1146,7 +1146,7 @@ int rpmlioLsetfilecon(rpmdb rpmdb, const char * fn, const char * context)
     extern int logio_Lsetfilecon_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     DBT CONTEXTdbt = {0};
@@ -1168,7 +1168,7 @@ int rpmlioChown(rpmdb rpmdb, const char * fn, uid_t uid, gid_t gid)
     extern int logio_Chown_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, uid_t, gid_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1186,7 +1186,7 @@ int rpmlioLchown(rpmdb rpmdb, const char * fn, uid_t uid, gid_t gid)
     extern int logio_Lchown_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, uid_t, gid_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1204,7 +1204,7 @@ int rpmlioChmod(rpmdb rpmdb, const char * fn, mode_t mode)
     extern int logio_Chmod_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1222,7 +1222,7 @@ int rpmlioUtime(rpmdb rpmdb, const char * fn, time_t actime, time_t modtime)
     extern int logio_Utime_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, time_t, time_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1240,7 +1240,7 @@ int rpmlioSymlink(rpmdb rpmdb, const char * ln, const char * fn)
     extern int logio_Symlink_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT LNdbt = {0};
     DBT FNdbt = {0};
@@ -1261,7 +1261,7 @@ int rpmlioLink(rpmdb rpmdb, const char * ln, const char * fn)
     extern int logio_Link_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT LNdbt = {0};
     DBT FNdbt = {0};
@@ -1282,7 +1282,7 @@ int rpmlioMknod(rpmdb rpmdb, const char * fn, mode_t mode, dev_t dev)
     extern int logio_Mknod_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t, dev_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1300,7 +1300,7 @@ int rpmlioMkfifo(rpmdb rpmdb, const char * fn, mode_t mode)
     extern int logio_Mkfifo_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, mode_t));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     if (!(dbenv && _txn)) return 0;
@@ -1321,7 +1321,7 @@ int rpmlioPrein(rpmdb rpmdb, const char ** av, const char * body)
     extern int logio_Prein_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
@@ -1344,7 +1344,7 @@ int rpmlioPostin(rpmdb rpmdb, const char ** av, const char * body)
     extern int logio_Postin_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
@@ -1367,7 +1367,7 @@ int rpmlioPreun(rpmdb rpmdb, const char ** av, const char * body)
     extern int logio_Preun_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
@@ -1390,7 +1390,7 @@ int rpmlioPostun(rpmdb rpmdb, const char ** av, const char * body)
     extern int logio_Postun_log
         __P((DB_ENV *, DB_TXN *, DB_LSN *, uint32_t, const DBT *, const DBT *));
     DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
@@ -1446,7 +1446,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", "mpf->close", mpf, rc);
 int rpmmpfGet(rpmdb rpmdb, uint32_t * _pgnop, uint32_t _flags, void ** _pagep)
 {
     DB_MPOOLFILE * mpf = rpmdb->db_mpf;
-    DB_TXN * _txnid = rpmdb->db_txnid;
+    DB_TXN * _txnid = rpmdb->db_txn;
     int rc = mpf->get(mpf, _pgnop, _txnid, _flags, _pagep);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,%p,0x%x,%p) rc %d\n", "mpf->get", mpf, _pgnop, _txnid, _flags, _pagep, rc);

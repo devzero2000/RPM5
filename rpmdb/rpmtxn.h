@@ -11,37 +11,39 @@
 extern int _rpmtxn_debug;
 /*@=exportlocal@*/
 
+typedef /*@abstract@*/ void * rpmtxn;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-uint32_t rpmtxnId(rpmdb rpmdb)
+uint32_t rpmtxnId(rpmtxn txn)
 	/*@*/;
 
 /*@null@*/
-const char * rpmtxnName(rpmdb rpmdb)
+const char * rpmtxnName(rpmtxn txn)
 	/*@*/;
 
-int rpmtxnSetName(rpmdb rpmdb, const char * N)
+int rpmtxnSetName(rpmtxn txn, const char * N)
 	/*@*/;
 
-int rpmtxnAbort(rpmdb rpmdb)
+int rpmtxnAbort(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
-int rpmtxnBegin(rpmdb rpmdb)
+int rpmtxnBegin(rpmdb rpmdb, /*@null@*/ rpmtxn * txnp)
 	/*@*/;
 
-int rpmtxnCommit(rpmdb rpmdb)
+int rpmtxnCommit(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
 #ifdef	NOTYET
 int rpmtxnCheckpoint(rpmdb rpmdb)
 	/*@*/;
 
-int rpmtxnDiscard(rpmdb rpmdb)
+int rpmtxnDiscard(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
-int rpmtxnPrepare(rpmdb rpmdb)
+int rpmtxnPrepare(rpmtxn txn)
 	/*@*/;
 
 int rpmtxnRecover(rpmdb rpmdb)

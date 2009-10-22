@@ -16,42 +16,41 @@
 
 int _rpmtxn_debug = 0;
 
-uint32_t rpmtxnId(rpmdb rpmdb)
+uint32_t rpmtxnId(rpmtxn txn)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     uint32_t rc = (_txn ? _txn->id(_txn) : 0);
     return rc;
 }
 
-const char * rpmtxnName(rpmdb rpmdb)
+const char * rpmtxnName(rpmtxn txn)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     const char * N = NULL;
     int rc = (_txn ? _txn->get_name(_txn, &N) : ENOTSUP);
     rc = rc;
     return N;
 }
 
-int rpmtxnSetName(rpmdb rpmdb, const char * N)
+int rpmtxnSetName(rpmtxn txn, const char * N)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     int rc = (_txn ? _txn->set_name(_txn, N) : ENOTSUP);
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p,%s) rc %d\n", "txn->set_name", _txn, N, rc);
     return rc;
 }
 
-int rpmtxnAbort(rpmdb rpmdb)
+int rpmtxnAbort(rpmtxn txn)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     int rc = (_txn ? _txn->abort(_txn) : ENOTSUP);
-    rpmdb->db_txnid = NULL;
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p) rc %d\n", "txn->abort", _txn, rc);
     return rc;
 }
 
-int rpmtxnBegin(rpmdb rpmdb)
+int rpmtxnBegin(rpmdb rpmdb, rpmtxn * txnp)
 {
     DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
     DB_TXN * _parent = NULL;
@@ -59,18 +58,22 @@ int rpmtxnBegin(rpmdb rpmdb)
     uint32_t _flags = 0;
     int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
 	? dbenv->txn_begin(dbenv, _parent, &_txn, _flags) : ENOTSUP;
-    rpmdb->db_txnid = (!rc ? _txn : NULL);
+    if (!rc) {
+	if (txnp != NULL)
+	    *txnp = _txn;
+	else
+	    rpmdb->db_txn = _txn;
+    }
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) txn %p rc %d\n", "dbenv->txn_begin", dbenv, _parent, &_txn, _flags, _txn, rc);
     return rc;
 }
 
-int rpmtxnCommit(rpmdb rpmdb)
+int rpmtxnCommit(rpmtxn txn)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     uint32_t _flags = 0;
     int rc = (_txn ? _txn->commit(_txn, _flags) : ENOTSUP);
-    rpmdb->db_txnid = NULL;
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, _flags, rc);
     return rc;
@@ -89,18 +92,17 @@ fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv,
     return rc;
 }
 
-int rpmtxnDiscard(rpmdb rpmdb)
+int rpmtxnDiscard(rpmtxn txn)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     uint32_t _flags = 0;
     int rc = (_txn ? _txn->discard(_txn, _flags) : ENOTSUP);
-    rpmdb->db_txnid = NULL;
     return rc;
 }
 
-int rpmtxnPrepare(rpmdb rpmdb)
+int rpmtxnPrepare(rpmtxn txn)
 {
-    DB_TXN * _txn = rpmdb->db_txnid;
+    DB_TXN * _txn = txn;
     uint8_t _gid[DB_GID_SIZE] = {0};
     int rc = (_txn ? _txn->prepare(_txn, _gid) : ENOTSUP);
     return rc;

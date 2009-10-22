@@ -1179,7 +1179,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_opens = 0;
 
     db->db_dbenv = NULL;
-    db->db_txnid = NULL;
+    db->db_txn = NULL;
     db->db_logc = NULL;
     db->db_mpf = NULL;
 

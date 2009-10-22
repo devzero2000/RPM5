@@ -1195,7 +1195,6 @@ static rpmRC runInstScript(rpmpsm psm)
     rpmfi fi = psm->fi;
     const char * argv0 = NULL;
     rpmRC rc = RPMRC_OK;
-    int xx;
 
 assert(fi->h != NULL);
     She->tag = psm->scriptTag;
@@ -2613,7 +2612,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    xx = rpmtxnBegin(rpmtsGetRdb(ts));
+	    xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
 
 	    rc = fsmSetup(fi->fsm, IOSM_PKGINSTALL, psm->payload_format, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
@@ -2634,9 +2633,10 @@ assert(psm->te != NULL);
 		rc = rpmpsmNext(psm, PSM_COMMIT);
 
 	    if (rc)
-		xx = rpmtxnAbort(rpmtsGetRdb(ts));
+		xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
 	    else
-		xx = rpmtxnCommit(rpmtsGetRdb(ts));
+		xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
+	    rpmtsGetRdb(ts)->db_txn = NULL;
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
@@ -2956,12 +2956,13 @@ psm->te->h = NULL;
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
-	xx = rpmtxnBegin(rpmtsGetRdb(ts));
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
 	rc = runInstScript(psm);
 	if (rc)
-	     xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	     xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
 	else
-	     xx = rpmtxnCommit(rpmtsGetRdb(ts));
+	     xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
+	rpmtsGetRdb(ts)->db_txn = NULL;
 	break;
     case PSM_TRIGGERS:
 	/* Run triggers in other package(s) this package sets off. */
@@ -3044,7 +3045,7 @@ assert(psm->mi == NULL);
 	if (fi->isSource)	break;	/* XXX never add SRPM's */
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
-	xx = rpmtxnBegin(rpmtsGetRdb(ts));
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
 
 	/* Add header to db, doing header check if requested */
 	/* XXX rollback headers propagate the previous transaction id. */
@@ -3059,10 +3060,12 @@ assert(psm->mi == NULL);
 	}
 
 	if (rc != RPMRC_OK) {
-	    xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	    xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
+	    rpmtsGetRdb(ts)->db_txn = NULL;
 	    break;
 	} else
-	    xx = rpmtxnCommit(rpmtsGetRdb(ts));
+	    xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
+	rpmtsGetRdb(ts)->db_txn = NULL;
 
 assert(psm->te != NULL);
 	/* Mark non-rollback elements as installed. */
@@ -3078,17 +3081,19 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_NORPMDB)	break;
 
-	xx = rpmtxnBegin(rpmtsGetRdb(ts));
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 
 	if (rc != RPMRC_OK) {
-	    xx = rpmtxnAbort(rpmtsGetRdb(ts));
+	    xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
+	    rpmtsGetRdb(ts)->db_txn = NULL;
 	    break;
 	} else
-	    xx = rpmtxnCommit(rpmtsGetRdb(ts));
+	    xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
+	rpmtsGetRdb(ts)->db_txn = NULL;
 
 	/* Forget the offset of a successfully removed header. */
 	if (psm->te != NULL)	/* XXX can't happen */
