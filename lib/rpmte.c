@@ -13,6 +13,10 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 
+#ifdef	REFERENCE
+#include "rpmpol.h"
+#endif
+
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 #include "rpmts.h"
@@ -43,8 +47,6 @@ static void delTE(rpmte p)
 
     rpmteCleanDS(p);
 
-    p->fi = rpmfiFree(p->fi);
-
 /*@-refcounttrans@*/	/* FIX: XfdFree annotation */
     if (p->fd != NULL)
         p->fd = fdFree(p->fd, "delTE");
@@ -73,6 +75,15 @@ static void delTE(rpmte p)
     p->blink.NEVRA = argvFree(p->blink.NEVRA);
     p->blink.Pkgid = argvFree(p->blink.Pkgid);
     p->blink.Hdrid = argvFree(p->blink.Hdrid);
+
+#ifdef	REFERENCE
+    (void)rpmpolFree(p->pol);
+    p->pol = NULL;
+#endif
+
+assert(p->txn == NULL);		/* XXX FIXME */
+    p->txn = NULL;
+    p->fi = rpmfiFree(p->fi);
 
     (void)headerFree(p->h);
     p->h = NULL;
@@ -195,6 +206,10 @@ assert(he->p.str != NULL);
 	p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	(void) rpmtsSetRelocateElement(ts, savep);
     }
+    p->txn = NULL;
+#ifdef	REFERENCE
+    p->pol = (headerIsEntry(h, RPMTAG_POLICIES) ? rpmpolNew(h) : NULL);
+#endif
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
@@ -225,7 +240,9 @@ static rpmte rpmteGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmteFini);
 	pool = _rpmtePool;
     }
-    return (rpmte) rpmioGetPool(pool, sizeof(*te));
+    te = (rpmte) rpmioGetPool(pool, sizeof(*te));
+    memset(((char *)te)+sizeof(te->_item), 0, sizeof(*te)-sizeof(te->_item));
+    return te;
 }
 
 rpmte rpmteNew(const rpmts ts, Header h,
@@ -571,6 +588,30 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 	return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
+
+#ifdef	REFERENCE
++rpmpol rpmteSetPol(rpmte te, rpmpol pol)
++{
++	if (te != NULL) {
++		te->pol = rpmpolFree(te->pol);
++		if (pol != NULL) {
++			te->pol = rpmpolLink(pol);
++		}
++	}
++	return NULL;
++}
++
++rpmpol rpmtePol(rpmte te)
++{
++	return (te == NULL) ? NULL : te->pol;
++}
++
++static int rpmteHavePolicies(rpmte te)
++	/*@*/
++{
++    return (te != NULL && te->policies);
++}
+#endif
 
 void rpmteColorDS(rpmte te, rpmTag tag)
 {

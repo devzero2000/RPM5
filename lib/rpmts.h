@@ -84,7 +84,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
 /*@=enummemuse@*/
     RPMTRANS_FLAG_NORPMDB	= (1 << 25),	/*!< from --norpmdb */
-	/* 26 unused */
+    RPMTRANS_FLAG_NOPOLICY	= (1 << 26),	/*!< from --nopolicy */
     RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
     RPMTRANS_FLAG_NOPRETRANS	= (1 << 28),	/*!< from --nopretrans */
     RPMTRANS_FLAG_NOPOSTTRANS	= (1 << 29),	/*!< from --noposttrans */
@@ -157,6 +157,7 @@ typedef enum tsStage_e {
 
 #include "rpmhash.h"	/* XXX hashTable */
 #include "rpmkeyring.h"
+#include <rpmtxn.h>
 #include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
 
 /*@unchecked@*/
@@ -242,6 +243,8 @@ struct rpmts_s {
     int dbmode;			/*!< Install database open mode. */
 /*@only@*/
     hashTable ht;		/*!< Fingerprint hash table. */
+/*@null@*/
+    rpmtxn txn;			/*!< Transaction set transaction pointer. */
 
 /*@only@*/ /*@null@*/
     int * removedPackages;	/*!< Set of packages being removed. */

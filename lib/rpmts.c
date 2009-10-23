@@ -642,6 +642,8 @@ static void rpmtsFini(void * _ts)
     ts->PRCO = rpmdsFreePRCO(ts->PRCO);
 
     (void) rpmtsCloseDB(ts);
+assert(ts->txn == NULL);	/* XXX FIXME */
+    ts->txn = NULL;
 
     (void) rpmtsCloseSDB(ts);
 
@@ -698,7 +700,9 @@ static rpmts rpmtsGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmtsFini);
 	pool = _rpmtsPool;
     }
-    return (rpmts) rpmioGetPool(pool, sizeof(*ts));
+    ts = (rpmts) rpmioGetPool(pool, sizeof(*ts));
+    memset(((char *)ts)+sizeof(ts->_item), 0, sizeof(*ts)-sizeof(ts->_item));
+    return ts;
 }
 
 void * rpmtsGetKeyring(rpmts ts, /*@unused@*/ int autoload)
@@ -1395,6 +1399,7 @@ rpmts rpmtsCreate(void)
 
     ts->rdb = NULL;
     ts->dbmode = O_RDONLY;
+    ts->txn = NULL;
 
     ts->scriptFd = NULL;
     {	struct timeval tv;

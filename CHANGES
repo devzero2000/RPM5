@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmts: stub-in a grandparent transaction.
     - jbj: poptDB: wire up --rpmtxndebug, collect other rpmdb debugging options.
     - jbj: rpmte: stub-in a parent transaction.
     - jbj: rpmtxn: add a parent transaction argument.

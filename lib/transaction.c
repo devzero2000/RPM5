@@ -23,6 +23,10 @@
 #include <rpmfi.h>
 #include "fsm.h"
 
+#ifdef	REFERENCE
+#include "rpmpol.h"
+#endif
+
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 #define	_RPMTS_INTERNAL
@@ -1139,6 +1143,136 @@ static int markLinkedFailed(rpmts ts, rpmte p)
     return 0;
 }
 
+#ifdef	REFERENCE
++/*
++ * Clean up everything created in rpmtsPreparePolicy
++ */
++static rpmRC rpmtsFreePolicy(rpmts ts)
++{
++	rpmtsi pi;
++	rpmte p;
++
++	pi = rpmtsiInit(ts);
++	while ((p = rpmtsiNext(pi, TR_ADDED))) {
++		if (!rpmteHavePolicies(p)) {
++			continue;
++		}
++		rpmteSetPol(p, NULL);
++	}
++	pi = rpmtsiFree(pi);
++
++	return RPMRC_OK;
++}
++
++/*
++ * Create rpmol structures for each transaction element
++ */
++static rpmRC rpmtsPreparePolicy(rpmts ts)
++{
++	rpmtsi pi;
++	rpmte p;
++	rpmpol pol;
++	Header h;
++	int rc = RPMRC_OK;
++	int changes = 0;
++
++	pi = rpmtsiInit(ts);
++	while (rc == RPMRC_OK && (p = rpmtsiNext(pi, TR_ADDED))) {
++		if (!rpmteHavePolicies(p)) {
++			continue;
++		}
++
++		if (!rpmteOpen(p, ts, 0)) {
++			rc = RPMRC_FAIL;
++		} else {
++			h = rpmteHeader(p);
++
++			pol = rpmpolNew(h);
++			if (!pol) {
++				rc = RPMRC_FAIL;
++			} else {
++				rpmteSetPol(p, pol);
++				pol = rpmpolFree(pol);
++				changes = 1;
++			}
++
++			h = headerFree(h);
++			rpmteClose(p, ts, 0);
++		}
++	}
++	pi = rpmtsiFree(pi);
++
++	if (rc != RPMRC_OK) {
++		rpmtsFreePolicy(ts);
++	}
++	else if (changes == 0) {
++		rc = RPMRC_NOTFOUND;
++	}
++
++	return rc;
++}
++
++/*
++ * Extract and load selinux policy for transaction set
++ * param ts	Transaction set
++ * return	0 on success, -1 on error (invalid script tag)
++ */
++static int rpmtsLoadPolicy(rpmts ts)
++{
++	rpmtsi pi;
++	rpmte p;
++	rpmpol pol;
++	int rc = RPMRC_OK;
++
++	rc = rpmtsPreparePolicy(ts);
++	if (rc == RPMRC_NOTFOUND) {
++		return RPMRC_OK;
++	} else if (rc != RPMRC_OK) {
++		return rc;
++	}
++
++	rpmpoltrans ptrans = rpmpoltransBegin();
++	if (!ptrans) {
++		rpmlog(RPMLOG_ERR, _("Failed to begin policy transaction\n"));
++		return RPMRC_FAIL;
++	}
++
++	pi = rpmtsiInit(ts);
++	while ((p = rpmtsiNext(pi, TR_ADDED))) {
++		if (!rpmteHavePolicies(p)) {
++			continue;
++		}
++
++		pol = rpmtePol(p);
++		if (!pol) {
++			rc = RPMRC_FAIL;
++			goto out;
++		}
++
++		rpmpolInitIterator(pol);
++		while (rpmpolNext(pol) >= 0) {
++			rc = rpmpoltransAdd(ptrans, pol);
++			if (rc != RPMRC_OK) {
++				goto out;
++			}
++		}
++	}
++out:
++	pi = rpmtsiFree(pi);
++
++	if (rc == RPMRC_OK) {
++		rc = rpmpoltransCommit(ptrans);
++	}
++
++	ptrans = rpmpoltransFree(ptrans);
++
++	rpmtsFreePolicy(ts);
++
++	return rc;
++}
++
+#endif
+
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     static const char msg[] = "rpmtsRun";
@@ -1204,12 +1338,12 @@ fprintf(stderr, "--> %s(%p,0x%x,0x%x) tsFlags 0x%x\n", msg, ts, (unsigned) okPro
 
     /* if SELinux isn't enabled or init fails, don't bother... */
     if (!rpmtsSELinuxEnabled(ts))
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | (RPMTRANS_FLAG_NOCONTEXTS|RPMTRANS_FLAG_NOPOLICY)));
 
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOCONTEXTS|RPMTRANS_FLAG_NOPOLICY))) {
 	sx = rpmsxNew("%{?_install_file_context_path}", 0);
         if (sx == NULL)
-	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | (RPMTRANS_FLAG_NOCONTEXTS|RPMTRANS_FLAG_NOPOLICY)));
     }
 
     ts->probs = rpmpsFree(ts->probs);
@@ -1331,6 +1465,16 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
     }
     pi = rpmtsiFree(pi);
 
+#ifdef	REFERENCE
++    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPOLICY))
++     	  || (rpmpsNumProblems(ts->probs) &&
++		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
++		if (rpmtsLoadPolicy(ts) != RPMRC_OK) {
++			goto exit;
++		}
++	}
++
+#endif
 
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point. */
@@ -1747,6 +1891,8 @@ assert(psm != NULL);
     /* ===============================================
      * Install and remove packages.
      */
+    xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL, &ts->txn);
+
 /*@-nullpass@*/
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -2001,9 +2147,16 @@ assert(psm != NULL);
     if (sx) sx = rpmsxFree(sx);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
-    if (ourrc)
+    if (ourrc) {
+	if (ts->txn)
+	    xx = rpmtxnAbort(ts->txn);
+	ts->txn = NULL;
     	return -1;
-    else
+    } else {
+	if (ts->txn)
+	    xx = rpmtxnCommit(ts->txn);
+	ts->txn = NULL;
 	return 0;
+    }
     /*@=nullstate@*/
 }

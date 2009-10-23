@@ -2268,6 +2268,8 @@ assert(psm->mi == NULL);
 		memset(fi->fstates, RPMFILE_STATE_NORMAL, fc);
 	    }
 
+	    xx = rpmtxnBegin(rpmtsGetRdb(ts), ts->txn, &psm->te->txn);
+
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (fc <= 0)				break;
 	
@@ -2306,6 +2308,10 @@ assert(he->p.argv != NULL);
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
 	
+	    /* XXX FIXME: PSM_PKGSAVE needs to be transactionally protected. */
+	    if (psm->goal == PSM_PKGERASE)
+		xx = rpmtxnBegin(rpmtsGetRdb(ts), ts->txn, &psm->te->txn);
+
 	    /* Retrieve installed header. */
 	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
 #ifdef	DYING
@@ -2845,6 +2851,15 @@ assert(psm->te != NULL);
 	    /*@-nullstate@*/ /* FIX: psm->fd may be NULL. */
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 	    /*@=nullstate@*/
+	    if (psm->te->txn != NULL) {
+		xx = rpmtxnAbort(psm->te->txn);
+		psm->te->txn = NULL;
+	    }
+	} else {
+	    if (psm->te->txn != NULL) {
+		xx = rpmtxnCommit(psm->te->txn);
+		psm->te->txn = NULL;
+	    }
 	}
 
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
