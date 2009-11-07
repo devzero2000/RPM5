@@ -286,35 +286,11 @@ package or when debugging this package.\
 #
 #   token	works?	Berkeley db flag or value
 #==================================================
-#---------------------- DBENV->open parameters and tunable values:
-#---------------------- DBENV->open and DB->open common bits:
-#   create		DB_CREATE
-#---------------------- DBENV->open bits:
-#   joinenv		DB_JOIN_ENV
-#   mpool		DB_INIT_MPOOL
-#   cdb		+++	DB_INIT_CDB
-#   shared	+++	DB_SYSTEM_MEM
-#---------------------- DB->open parameters and tunable values:
-#   pagesize=512 +++	DB->set_pagesize
-#---------------------- DB->open bits:
-#   rdonly		DB_RDONLY
-#---------------------- DB->open types:
-#   btree		DB_BTREE
-#   hash		DB_HASH
-#   unknown	+++	DB_UNKNOWN
-#---------------------- DB->set_flags bits:
-#   bt_dupsort	+++	(btree only) DB_DUPSORT
-#   h_dupsort	+++	(hash only) DB_DUPSORT
-#----------------------- rpmdb specific configuration:
-#   usedbenv		(always on) Use db3 environment?
-#   verify		(db3 only) Verify Packages db after RW close?
-#   nofsync		Disable fsync(2) call performed after db3 writes?
-#   temporary		Unlink file when closing.
 
-# Use a CDB database model for concurrent access.
-%__dbi_cdb			create cdb mpool thread_count=64
+# Use Berkeley DB transaction logging for rpmdb ACID behavior.
+%__dbi_txn      create lock log mpool txn auto_commit thread thread_count=64
 
-%__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
+%__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_txn}
 
 %__dbi_rebuild			nofsync !lock !txn !log !cdb !auto_commit
 %__dbi_transient		%{?__dbi_rebuild} temporary private
@@ -360,6 +336,9 @@ package or when debugging this package.\
 
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
+
+%_bt_dupsort    bt_dupsort index
+%_h_dupsort     h_dupsort index
 
 %_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
 
