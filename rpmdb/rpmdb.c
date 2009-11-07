@@ -465,85 +465,6 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 /*@=compdef@*/
 }
 
-/**
- * Convert index set to database representation.
- * @param dbi		index database handle
- * @param data		retrieved data
- * @param set		index set
- * @return		0 on success
- */
-static int set2dbt(dbiIndex dbi, DBT * data, const dbiIndexSet set)
-	/*@modifies dbi, *data @*/
-{
-    int _dbbyteswapped;
-    setSwap S;
-    char * t;
-    int i;
-
-    if (dbi == NULL || data == NULL || set == NULL)
-	return -1;
-    _dbbyteswapped = dbiByteSwapped(dbi);
-
-    data->size = (UINT32_T)(set->count * (dbi->dbi_jlen));
-    if (data->size == 0) {
-	data->data = NULL;
-	return 0;
-    }
-
-    t = data->data = xmalloc(data->size);
-    S = (setSwap)set->recs;
-
-/*@-sizeoftype@*/
-    switch (dbi->dbi_jlen) {
-    default:
-    case 2*sizeof(rpmuint32_t):
-	if (_dbbyteswapped) {
-	    for (i = 0; i < set->count; i++) {
-		*t++ = S->hdr.uc[3];
-		*t++ = S->hdr.uc[2];
-		*t++ = S->hdr.uc[1];
-		*t++ = S->hdr.uc[0];
-		*t++ = S->tag.uc[3];
-		*t++ = S->tag.uc[2];
-		*t++ = S->tag.uc[1];
-		*t++ = S->tag.uc[0];
-		S++;
-	    }
-	} else {
-	    for (i = 0; i < set->count; i++) {
-		memcpy(t, &S->hdr.ui, sizeof(S->hdr.ui));
-		t += sizeof(S->hdr.ui);
-		memcpy(t, &S->tag.ui, sizeof(S->tag.ui));
-		t += sizeof(S->tag.ui);
-		S++;
-	    }
-	}
-	break;
-    case 1*sizeof(rpmuint32_t):
-	if (_dbbyteswapped) {
-	    for (i = 0; i < set->count; i++) {
-		*t++ = S->hdr.uc[3];
-		*t++ = S->hdr.uc[2];
-		*t++ = S->hdr.uc[1];
-		*t++ = S->hdr.uc[0];
-		S++;
-	    }
-	} else {
-	    for (i = 0; i < set->count; i++) {
-		memcpy(t, &S->hdr.ui, sizeof(S->hdr.ui));
-		t += sizeof(S->hdr.ui);
-		S++;
-	    }
-	}
-	break;
-    }
-/*@=sizeoftype@*/
-
-/*@-compdef@*/
-    return 0;
-/*@=compdef@*/
-}
-
 /* XXX assumes hdrNum is first int in dbiIndexItem */
 static int hdrNumCmp(const void * one, const void * two)
 	/*@*/
@@ -1345,77 +1266,6 @@ int rpmdbVerify(const char * prefix)
     if (!rc && db != NULL)
 	rc = rpmdbVerifyAllDBI(db);
 #endif
-    return rc;
-}
-
-static int _joinKeys(dbiIndex dbi, const void * keyp, size_t keylen,
-		dbiIndexSet * matches)
-{
-    static unsigned int _tagNum = 0;
-    static unsigned int _fpNum = 0;
-    dbiIndexSet set = NULL;
-    DBC * dbcursor = NULL;
-    DBT k = DBT_INIT;
-    DBT v = DBT_INIT;
-    uint32_t _flags;
-    int rc;
-    int xx;
-
-    *matches = NULL;
-
-    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
-
-k.data = (void *) keyp;
-k.size = (UINT32_T) keylen;
-if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
-if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
-
-    _flags = DB_SET;
-    while (1) {
-	union _dbswap * vp;
-	size_t nb;
-
-	rc = dbiGet(dbi, dbcursor, &k, &v, _flags);
-	_flags = DB_NEXT_DUP;
-
-	vp = v.data;
-
-	switch (rc) {
-	default:
-	    if (rc > 0)
-		rpmlog(RPMLOG_ERR, _("dbiGet(%s) error(%d): %s\n"),
-			tagName(dbi->dbi_rpmtag), rc, strerror(rc));
-	    goto done;
-	    break;
-
-	case 0:
-#define	_DUP_ENABLED(_f)	((dbi->dbi_##_f) & (DB_DUP|DB_DUPSORT))
-	    if (!(_DUP_ENABLED(bt_flags) || _DUP_ENABLED(h_flags))) {
-#undef	_DUP_ENABLED
-		/* Join keys need to be native endian internally. */
-		(void) dbt2set(dbi, &v, &set);
-		goto done;
-	    }
-	    break;
-	}
-
-	/* Append duplicates to join key set */
-	if (set == NULL)
-	    set = xcalloc(1, sizeof(*set));
-	nb = (set->count + 1) * sizeof(set->recs[0]);
-	set->recs = xrealloc(set->recs, nb);
-	set->recs[set->count].hdrNum = vp->ui;
-	set->recs[set->count].tagNum = _tagNum;
-	set->recs[set->count].fpNum = _fpNum;
-	set->count++;
-    }
-
-done:
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-
-    *matches = set;
-
     return rc;
 }
 
@@ -2674,11 +2524,7 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\
 	int rc;
 
 assert(isLabel != 0);
-	if (isLabel) {
-	    rc = dbiFindByLabel(dbi, keyp, keylen, &set);
-	} else {
-	    rc = _joinKeys(dbi, keyp, keylen, &set);
-	}
+	rc = dbiFindByLabel(dbi, keyp, keylen, &set);
 
 	if ((rc  && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);
@@ -2780,7 +2626,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
-    int ret = 0;
     int rc = 0;
     int xx;
 
@@ -2840,8 +2685,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	    rpmTag tag = dbiTag->tag;
 	    const char * dbiBN = (dbiTag->str != NULL
 		? dbiTag->str : tagName(tag));
-	    rpmuint8_t * bin = NULL;
-	    int i;
 
 	    dbi = NULL;
 	    he->tag = tag;
@@ -2893,191 +2736,12 @@ if (dbiByteSwapped(dbi) == 1)
 		/*@switchbreak@*/ break;
 	    }
 	
-	  dbi = dbiOpen(db, he->tag, 0);
-	  if (dbi != NULL && !dbi->dbi_index) {
-	    int printed;
-
-assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
-	    /* XXX Coerce strings into header argv return. */
-	    if (he->t == RPM_STRING_TYPE) {
-		const char * s = he->p.str;
-		char * t;
-		he->c = 1;
-		he->p.argv = xcalloc(1, sizeof(*he->p.argv)+strlen(s)+1);
-		he->p.argv[0] = t = (char *) &he->p.argv[1];
-		(void) strcpy(t, s);
-		s = _free(s);
-	    }
-
-	    printed = 0;
-	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
-	    for (i = 0; i < (int) he->c; i++) {
-		dbiIndexSet set;
-		int stringvalued;
-
-		bin = _free(bin);
-		switch (dbi->dbi_rpmtag) {
-		case RPMTAG_FILEDIGESTS:
-		    /* Filter out empty file digests. */
-		    if (!(he->p.argv[i] && *he->p.argv[i] != '\0'))
-			/*@innercontinue@*/ continue;
-		    /*@switchbreak@*/ break;
-		default:
-		    /*@switchbreak@*/ break;
-		}
-
-		/* Identify value pointer and length. */
-		stringvalued = 0;
-		switch (he->t) {
-		case RPM_UINT8_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui8p);
-/*@i@*/		    k.data = he->p.ui8p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_UINT16_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui16p);
-/*@i@*/		    k.data = he->p.ui16p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_UINT32_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui32p);
-/*@i@*/		    k.data = he->p.ui32p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_UINT64_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui64p);
-/*@i@*/		    k.data = he->p.ui64p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_BIN_TYPE:
-		    k.size = (UINT32_T) he->c;
-/*@i@*/		    k.data = he->p.ptr;
-		    he->c = 1;		/* XXX break out of loop. */
-		    /*@switchbreak@*/ break;
-		case RPM_I18NSTRING_TYPE:	/* XXX never occurs. */
-		case RPM_STRING_TYPE:
-		    he->c = 1;		/* XXX break out of loop. */
-		    /*@fallthrough@*/
-		case RPM_STRING_ARRAY_TYPE:
-		    /* Convert from hex to binary. */
-		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
-			const char * s = he->p.argv[i];
-			size_t dlen = strlen(s);
-			rpmuint8_t * t;
-			unsigned j;
-assert((dlen & 1) == 0);
-			dlen /= 2;
-			bin = t = xcalloc(1, dlen);
-/*@-type@*/
-			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-/*@=type@*/
-			k.data = bin;
-			k.size = (UINT32_T) dlen;
-			/*@switchbreak@*/ break;
-		    }
-		    /* Extract the pubkey id from the base64 blob. */
-		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			int nbin;
-			bin = xcalloc(1, 32);
-			nbin = pgpExtractPubkeyFingerprint(he->p.argv[i], bin);
-			if (nbin <= 0)
-			    /*@innercontinue@*/ continue;
-			k.data = bin;
-			k.size = (UINT32_T) nbin;
-			/*@switchbreak@*/ break;
-		    }
-		    /*@fallthrough@*/
-		default:
-/*@i@*/		    k.data = (void *) he->p.argv[i];
-		    k.size = (UINT32_T) strlen(he->p.argv[i]);
-		    stringvalued = 1;
-		    /*@switchbreak@*/ break;
-		}
-
-		if (!printed) {
-		    if (he->c == 1 && stringvalued) {
-			rpmlog(RPMLOG_DEBUG,
-				D_("removing \"%s\" from %s index.\n"),
-				(char *)k.data, dbiBN);
-		    } else {
-			rpmlog(RPMLOG_DEBUG,
-				D_("removing %u entries from %s index.\n"),
-				(unsigned) he->c, dbiBN);
-		    }
-		    printed++;
-		}
-
-		/* XXX
-		 * This is almost right, but, if there are duplicate tag
-		 * values, there will be duplicate attempts to remove
-		 * the header instance. It's faster to just ignore errors
-		 * than to do things correctly.
-		 */
-
-/* XXX with duplicates, an accurate data value and DB_GET_BOTH is needed. */
-
-		set = NULL;
-
-if (k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
-if (k.size == 0) k.size++;	/* XXX "/" fixup. */
-
-/*@-compmempass@*/
-		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-		if (rc == 0) {			/* success */
-		    (void) dbt2set(dbi, &v, &set);
-		} else if (rc == DB_NOTFOUND) {	/* not found */
-		    /*@innercontinue@*/ continue;
-		} else {			/* error */
-		    rpmlog(RPMLOG_ERR,
-			_("error(%d) getting records from %s index\n"),
-			rc, dbiBN);
-		    ret += 1;
-		    /*@innercontinue@*/ continue;
-		}
-/*@=compmempass@*/
-
-		rc = dbiPruneSet(set, rec, 1, sizeof(*rec), 1);
-
-		/* If nothing was pruned, then don't bother updating. */
-		if (rc) {
-		    set = dbiFreeIndexSet(set);
-		    /*@innercontinue@*/ continue;
-		}
-
-/*@-compmempass@*/
-		if (set->count > 0) {
-		    (void) set2dbt(dbi, &v, set);
-		    rc = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
-		    if (rc) {
-			rpmlog(RPMLOG_ERR,
-				_("error(%d) storing record into %s\n"),
-				rc, dbiBN);
-			ret += 1;
-		    }
-		    v.data = _free(v.data);
-		    v.size = 0;
-		} else {
-		    rc = dbiDel(dbi, dbcursor, &k, &v, 0);
-		    if (rc) {
-			rpmlog(RPMLOG_ERR,
-				_("error(%d) removing record from %s\n"),
-				rc, dbiBN);
-			ret += 1;
-		    }
-		}
-/*@=compmempass@*/
-		set = dbiFreeIndexSet(set);
-	    }
-
-	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	    dbcursor = NULL;
-
-	    if (!dbi->dbi_no_dbsync)
-		xx = dbiSync(dbi, 0);
-	  }
+	    dbi = dbiOpen(db, he->tag, 0);
 
 	    he->tag = 0;
 	    he->t = 0;
 	    he->p.ptr = _free(he->p.ptr);
 	    he->c = 0;
-	    bin = _free(bin);
 	} while (dbix-- > 0);
 
 	rec = _free(rec);
@@ -3106,7 +2770,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     union _dbswap mi_offset;
     unsigned int hdrNum = 0;
     int ret = 0;
-    int rc;
     int xx;
 
     /* Initialize the header instance */
@@ -3238,12 +2901,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	    DBT v = DBT_INIT;
 
 	    tagStore_t dbiTag = db->db_tags + dbix;
-	    const char * dbiBN = (dbiTag->str != NULL
-			? dbiTag->str : tagName(dbiTag->tag));
 	    rpmuint8_t * bin = NULL;
 	    rpmTagData requireFlags;
 	    rpmRC rpmrc;
-	    int i;
 
 	    rpmrc = RPMRC_NOTFOUND;
 	    requireFlags.ptr = NULL;
@@ -3335,194 +2995,8 @@ assert(v.data != NULL);
 	    }
 
 	    /* Anything to do? */
-	    if (he->c == 0)
-		continue;
-
-	  dbi = dbiOpen(db, he->tag, 0);
-	  if (dbi != NULL && !dbi->dbi_index) {
-	    int printed;
-
-assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
-	    /* XXX Coerce strings into header argv return. */
-	    if (he->t == RPM_STRING_TYPE) {
-		const char * s = he->p.str;
-		char * t;
-		he->c = 1;
-		he->p.argv = xmalloc(sizeof(*he->p.argv)+strlen(s)+1);
-		he->p.argv[0] = t = (char *) &he->p.argv[1];
-		t = stpcpy(t, s);
-		s = _free(s);
-	    }
-
-	    printed = 0;
-	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
-
-	    for (i = 0; i < (int) he->c; i++) {
-		dbiIndexSet set;
-		int stringvalued;
-
-		bin = _free(bin);
-		/*
-		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
-		 * included the tagNum only for files.
-		 */
-		rec->tagNum = i;
-		switch (dbi->dbi_rpmtag) {
-		case RPMTAG_PUBKEYS:
-		    /*@switchbreak@*/ break;
-		case RPMTAG_FILEDIGESTS:
-		    /* Filter out empty MD5 strings. */
-		    if (!(he->p.argv[i] && *he->p.argv[i] != '\0'))
-			/*@innercontinue@*/ continue;
-		    /*@switchbreak@*/ break;
-		case RPMTAG_REQUIRENAME:
-		    /* Filter out install prerequisites. */
-		    if (requireFlags.ui32p
-		     && isInstallPreReq(requireFlags.ui32p[i]))
-			/*@innercontinue@*/ continue;
-		    /*@switchbreak@*/ break;
-		case RPMTAG_DIRNAMES:
-		case RPMTAG_TRIGGERNAME:
-		    /* Uniqify dirnames and triggers. */
-		    if (i > 0 && !strcmp(he->p.argv[i], he->p.argv[i-1]))
-			/*@innercontinue@*/ continue;
-		    /*@switchbreak@*/ break;
-		default:
-		    /*@switchbreak@*/ break;
-		}
-
-		/* Identify value pointer and length. */
-		stringvalued = 0;
-		switch (he->t) {
-		case RPM_UINT8_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui8p);
-/*@i@*/		    k.data = he->p.ui8p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_UINT16_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui16p);
-/*@i@*/		    k.data = he->p.ui16p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_UINT32_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui32p);
-/*@i@*/		    k.data = he->p.ui32p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_UINT64_TYPE:
-		    k.size = (UINT32_T) sizeof(*he->p.ui64p);
-/*@i@*/		    k.data = he->p.ui64p + i;
-		    /*@switchbreak@*/ break;
-		case RPM_BIN_TYPE:
-		    k.size = (UINT32_T) he->c;
-/*@i@*/		    k.data = he->p.ptr;
-		    he->c = 1;		/* XXX break out of loop. */
-		    /*@switchbreak@*/ break;
-		case RPM_I18NSTRING_TYPE:	/* XXX never occurs */
-		case RPM_STRING_TYPE:
-		    he->c = 1;		/* XXX break out of loop. */
-		    /*@fallthrough@*/
-		case RPM_STRING_ARRAY_TYPE:
-		    /* Convert from hex to binary. */
-		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
-			const char * s = he->p.argv[i];
-			size_t dlen = strlen(s);
-			rpmuint8_t * t;
-			unsigned j;
-assert((dlen & 1) == 0);
-			dlen /= 2;
-			bin = t = xmalloc(dlen);
-/*@-type@*/
-			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-/*@=type@*/
-			k.data = bin;
-			k.size = (UINT32_T) dlen;
-			/*@switchbreak@*/ break;
-		    }
-		    /* Extract the pubkey id from the base64 blob. */
-		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			int nbin;
-			bin = xmalloc(32);
-			nbin = pgpExtractPubkeyFingerprint(he->p.argv[i], bin);
-			if (nbin <= 0)
-			    /*@innercontinue@*/ continue;
-			k.data = bin;
-			k.size = (UINT32_T) nbin;
-			/*@switchbreak@*/ break;
-		    }
-		    /*@fallthrough@*/
-		default:
-/*@i@*/		    k.data = (void *) he->p.argv[i];
-		    k.size = (UINT32_T) strlen(he->p.argv[i]);
-		    stringvalued = 1;
-		    /*@switchbreak@*/ break;
-		}
-
-		if (!printed) {
-		    if (he->c == 1 && stringvalued) {
-			const char * s = k.data;
-			if (s[0] == '-' && s[1] == ' ')	s += 2;
-			rpmlog(RPMLOG_DEBUG,
-				D_("adding \"%s\" to %s index.\n"),
-				(char *)s, dbiBN);
-		    } else {
-			rpmlog(RPMLOG_DEBUG,
-				D_("adding %u entries to %s index.\n"),
-				(unsigned)he->c, dbiBN);
-		    }
-		    printed++;
-		}
-
-/* XXX with duplicates, an accurate data value and DB_GET_BOTH is needed. */
-
-		set = NULL;
-
-if (k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
-if (k.size == 0) k.size++;	/* XXX "/" fixup. */
-
-		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-		switch (rc) {
-		case 0:			/* success */
-		    /* Accumulate join keys iff no duplicates. */
-#define	_DUP_ENABLED(_f)	((dbi->dbi_##_f) & (DB_DUP|DB_DUPSORT))
-		    if (!(_DUP_ENABLED(bt_flags) || _DUP_ENABLED(h_flags)))
-			(void) dbt2set(dbi, &v, &set);
-#undef	_DUP_ENABLED
-		    break;
-		case DB_NOTFOUND:	/* notfound */
-		    break;
-		default:		/* error */
-		    rpmlog(RPMLOG_ERR,
-			_("error(%d) getting records from %s index\n"),
-			rc, dbiBN);
-		    ret += 1;
-		    /*@innercontinue@*/ continue;
-		}
-
-		if (set == NULL)		/* not found or duplicate */
-		    set = xcalloc(1, sizeof(*set));
-
-		(void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
-
-		(void) set2dbt(dbi, &v, set);
-		rc = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
-
-		if (rc) {
-		    rpmlog(RPMLOG_ERR,
-				_("error(%d) storing record into %s\n"),
-				rc, dbiBN);
-		    ret += 1;
-		}
-/*@-unqualifiedtrans@*/
-		v.data = _free(v.data);
-/*@=unqualifiedtrans@*/
-		v.size = 0;
-		set = dbiFreeIndexSet(set);
-	    }
-
-	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-
-	    if (!dbi->dbi_no_dbsync)
-		xx = dbiSync(dbi, 0);
-	  }
+	    if (he->c != 0)
+		dbi = dbiOpen(db, he->tag, 0);
 
 	    he->tag = 0;
 	    he->t = 0;
@@ -3576,7 +3050,6 @@ data = &mi->mi_data;
 
     /* Gather all installed headers with matching basename's. */
     for (i = 0; i < numItems; i++) {
-	unsigned int tag;
 
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
 
