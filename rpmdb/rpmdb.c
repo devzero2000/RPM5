@@ -2359,7 +2359,7 @@ next:
     }
     else {
 	/* Iterating Packages database. */
-	assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
+assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 
 	/* Fetch header with DB_NEXT. */
 	/* Instance 0 is the largest header instance in the database,
@@ -2673,6 +2673,7 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\
 	/* Common case: retrieve join keys. */
 	int rc;
 
+assert(isLabel != 0);
 	if (isLabel) {
 	    rc = dbiFindByLabel(dbi, keyp, keylen, &set);
 	} else {
@@ -2896,6 +2897,7 @@ if (dbiByteSwapped(dbi) == 1)
 	  if (dbi != NULL && !dbi->dbi_index) {
 	    int printed;
 
+assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    /* XXX Coerce strings into header argv return. */
 	    if (he->t == RPM_STRING_TYPE) {
 		const char * s = he->p.str;
@@ -3340,6 +3342,7 @@ assert(v.data != NULL);
 	  if (dbi != NULL && !dbi->dbi_index) {
 	    int printed;
 
+assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    /* XXX Coerce strings into header argv return. */
 	    if (he->t == RPM_STRING_TYPE) {
 		const char * s = he->p.str;

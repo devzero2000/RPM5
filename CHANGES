@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: add assertions before always using secondary indices.
     - jbj: rpmdb: change from a CDB to ACID database behahvior.
     - jbj: rpmdb: eliminate the custom Basenames retrieval code.
     - jbj: rpmdb: eliminate the Basenames index.
