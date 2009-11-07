@@ -13,12 +13,6 @@ CREATE TABLE _Name(	/*+ DBTYPE = BTREE */
 	N		VARCHAR2(64) PRIMARY KEY
 );
 
-CREATE TABLE _Basenames( /*+ DBTYPE = BTREE */
-	hx		INTEGER REFERENCES Packages(instance),
-	ix		INTEGER,
-	bn		VARCHAR2(64) PRIMARY KEY
-);
-
 CREATE TABLE _Providename( /*+ DBTYPE = BTREE */
 	hx		INTEGER REFERENCES Packages(instance),
 	N		VARCHAR2(64) PRIMARY KEY

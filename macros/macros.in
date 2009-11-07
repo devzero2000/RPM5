@@ -361,7 +361,7 @@ package or when debugging this package.\
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
 
-%_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
+%_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
 
 %_dbi_tags_4                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
 
