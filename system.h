@@ -719,15 +719,9 @@ static inline const char *rcsid(const char *p) { \
 #endif
 
 /**
- * Mark --initdb and --verifydb for destruction.
- */
-#define	SUPPORT_INITDB		1
-#define	SUPPORT_VERIFYDB	1
-
-/**
  * Use the tag data type compiled into rpm, not the type from the header.
  */
-#undef SUPPORT_IMPLICIT_TAG_DATA_TYPES	/* XXX postpone to rpm-5.1 */
+#undef SUPPORT_IMPLICIT_TAG_DATA_TYPES	/* XXX postpone */
 
 /**
  * Permit ar(1) payloads. Disabled while rpmio/iosm.c is under development.

@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: eliminate --initdb and --verifydb, lazy creation and db_verify
+	are preferred.
     - jbj: rpmdb: eliminate dead code associated with database indices.
     - jbj: rpmdb: add assertions before always using secondary indices.
     - jbj: rpmdb: change from a CDB to ACID database behahvior.
