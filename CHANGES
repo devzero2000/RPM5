@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: eliminate the custom Basenames retrieval code.
     - jbj: rpmdb: eliminate the Basenames index.
     - jbj: rpmdb: abandon RPMTAG_BASENAMES lookup, use RPMTAG_FILEPATHS instead.
     - jbj: rpmts: stub-in a grandparent transaction.
