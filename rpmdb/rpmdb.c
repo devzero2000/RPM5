@@ -2884,10 +2884,17 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 
     (void) rpmdbCheckSignals();
 
+    switch (tag) {
+    default:	break;
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
-    if (tag == RPMDBI_LABEL) {
+    case RPMDBI_LABEL:
 	tag = RPMTAG_NAME;
 	isLabel = 1;
+	break;
+    /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
+    case RPMTAG_BASENAMES:
+	tag = RPMTAG_FILEPATHS;
+	break;
     }
 
     dbi = dbiOpen(db, tag, 0);
