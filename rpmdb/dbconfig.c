@@ -11,7 +11,7 @@
 
 #include <rpmtag.h>
 #define	_RPMDB_INTERNAL
-#include "rpmdb.h"
+#include <rpmdb.h>
 #include "debug.h"
 
 /*@access rpmdb@*/
@@ -27,16 +27,6 @@ int _dbi_debug;
 /*@unchecked@*/
 struct _dbiIndex db3dbi;
 /*@=exportlocal =exportheadervar@*/
-
-/*@unchecked@*/
-#if defined(WITH_DB)
-static int dbi_use_cursors;
-#endif
-
-/*@unchecked@*/
-#if defined(WITH_DB)
-static int dbi_tear_down;
-#endif
 
 /*@-compmempass -immediatetrans -exportlocal -exportheadervar -type@*/
 /** \ingroup db3
@@ -289,10 +279,6 @@ DB_READ_UNCOMITTED
 #if defined(WITH_DB)
  { "verify",	0,POPT_ARG_NONE,	&db3dbi.dbi_verify_on_close, 0,
 	NULL, NULL },
- { "teardown",	0,POPT_ARG_NONE,	&dbi_tear_down, 0,
-	NULL, NULL },
- { "usecursors",0,POPT_ARG_NONE,	&dbi_use_cursors, 0,
-	NULL, NULL },
  { "usedbenv",	0,POPT_ARG_NONE,	&db3dbi.dbi_use_dbenv, 0,
 	NULL, NULL },
 #endif
@@ -491,139 +477,129 @@ static dbiIndex dbiGetPool(rpmioPool pool)
     return (dbiIndex) rpmioGetPool(pool, sizeof(*dbi));
 }
 
-/*@observer@*/ /*@unchecked@*/
-static const char *db3_config_default =
-    "hash tmpdir=/var/tmp create cdb mpool mp_mmapsize=16Mb mp_size=1Mb perms=0644";
-
 dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 {
     dbiIndex dbi = dbiGetPool(_dbiPool);
-    char * dbOpts = rpmExpand("%{_dbi_config_", tagName(tag), "}", NULL);
+    char * dbOpts = rpmExpand("%{?_dbi_config_", tagName(tag), "}", NULL);
+    char *o, *oe;
+    char *p, *pe;
 
-    if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
+    if (!(dbOpts != NULL && *dbOpts != '\0')) {
 	dbOpts = _free(dbOpts);
-	dbOpts = rpmExpand("%{_dbi_config}", NULL);
-	if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
-	    dbOpts = rpmExpand(db3_config_default, NULL);
-	}
+	dbOpts = rpmExpand("%{?_dbi_config}", NULL);
     }
+assert(dbOpts != NULL && *dbOpts != '\0');
 
     /* Parse the options for the database element(s). */
-    if (dbOpts && *dbOpts && *dbOpts != '%') {
-	char *o, *oe;
-	char *p, *pe;
-
-	memset(&db3dbi, 0, sizeof(db3dbi));
+    memset(&db3dbi, 0, sizeof(db3dbi));
 /*=========*/
-	for (o = dbOpts; o && *o; o = oe) {
-	    struct poptOption *opt;
-	    const char * tok;
-	    int argInfo;
+    for (o = dbOpts; o && *o; o = oe) {
+	struct poptOption *opt;
+	const char * tok;
+	int argInfo;
 
-	    /* Skip leading white space. */
-	    while (*o && xisspace((int)*o))
-		o++;
+	/* Skip leading white space. */
+	while (*o && xisspace((int)*o))
+	    o++;
 
-	    /* Find and terminate next key=value pair. Save next start point. */
-	    for (oe = o; oe && *oe; oe++) {
-		if (xisspace((int)*oe))
-		    /*@innerbreak@*/ break;
-		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
-		    /*@innerbreak@*/ break;
-	    }
-	    if (oe && *oe)
-		*oe++ = '\0';
-	    if (*o == '\0')
-		continue;
-
-	    /* Separate key from value, save value start (if any). */
-	    for (pe = o; pe && *pe && *pe != '='; pe++)
-		{};
-	    p = (pe ? *pe++ = '\0', pe : NULL);
-
-	    /* Skip over negation at start of token. */
-	    for (tok = o; *tok == '!'; tok++)
-		{};
-
-	    /* Find key in option table. */
-	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
-		if (strcmp(tok, opt->longName))
-		    /*@innercontinue@*/ continue;
+	/* Find and terminate next key=value pair. Save next start point. */
+	for (oe = o; oe && *oe; oe++) {
+	    if (xisspace((int)*oe))
 		/*@innerbreak@*/ break;
-	    }
-	    if (opt->longName == NULL) {
-		rpmlog(RPMLOG_ERR,
+	    if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
+		/*@innerbreak@*/ break;
+	}
+	if (oe && *oe)
+	    *oe++ = '\0';
+	if (*o == '\0')
+	    continue;
+
+	/* Separate key from value, save value start (if any). */
+	for (pe = o; pe && *pe && *pe != '='; pe++)
+	    {};
+	p = (pe ? *pe++ = '\0', pe : NULL);
+
+	/* Skip over negation at start of token. */
+	for (tok = o; *tok == '!'; tok++)
+	    {};
+
+	/* Find key in option table. */
+	for (opt = rdbOptions; opt->longName != NULL; opt++) {
+	    if (strcmp(tok, opt->longName))
+		/*@innercontinue@*/ continue;
+	    /*@innerbreak@*/ break;
+	}
+	if (opt->longName == NULL) {
+	    rpmlog(RPMLOG_ERR,
 			_("unrecognized db option: \"%s\" ignored.\n"), o);
-		continue;
-	    }
+	    continue;
+	}
 
-	    /* Toggle the flags for negated tokens, if necessary. */
-	    argInfo = opt->argInfo;
-	    if (argInfo == POPT_BIT_SET && *o == '!' && ((tok - o) % 2))
-		argInfo = POPT_BIT_CLR;
+	/* Toggle the flags for negated tokens, if necessary. */
+	argInfo = opt->argInfo;
+	if (argInfo == POPT_BIT_SET && *o == '!' && ((tok - o) % 2))
+	    argInfo = POPT_BIT_CLR;
 
-	    /* Save value in template as appropriate. */
-	    switch (argInfo & POPT_ARG_MASK) {
+	/* Save value in template as appropriate. */
+	switch (argInfo & POPT_ARG_MASK) {
 
-	    case POPT_ARG_NONE:
-		(void) poptSaveInt((int *)opt->arg, argInfo, 1L);
-		/*@switchbreak@*/ break;
-	    case POPT_ARG_VAL:
-		(void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
-	    	/*@switchbreak@*/ break;
-	    case POPT_ARG_STRING:
-	    {	const char ** t = opt->arg;
-		/*@-mods@*/
-		if (t) {
+	case POPT_ARG_NONE:
+	    (void) poptSaveInt((int *)opt->arg, argInfo, 1L);
+	    /*@switchbreak@*/ break;
+	case POPT_ARG_VAL:
+	    (void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
+	    /*@switchbreak@*/ break;
+	case POPT_ARG_STRING:
+	{   const char ** t = opt->arg;
+/*@-mods@*/
+	    if (t) {
 /*@-unqualifiedtrans@*/ /* FIX: opt->arg annotation in popt.h */
-		    *t = _free(*t);
+		*t = _free(*t);
 /*@=unqualifiedtrans@*/
-		    *t = xstrdup( (p ? p : "") );
-		}
-		/*@=mods@*/
-	    }	/*@switchbreak@*/ break;
-
-	    case POPT_ARG_INT:
-	    case POPT_ARG_LONG:
-	      {	long aLong = strtol(p, &pe, 0);
-		if (pe) {
-		    if (!xstrncasecmp(pe, "Mb", 2))
-			aLong *= 1024 * 1024;
-		    else if (!xstrncasecmp(pe, "Kb", 2))
-			aLong *= 1024;
-		    else if (*pe != '\0') {
-			rpmlog(RPMLOG_ERR,
+		*t = xstrdup( (p ? p : "") );
+	    }
+/*@=mods@*/
+	}	/*@switchbreak@*/ break;
+	case POPT_ARG_INT:
+	case POPT_ARG_LONG:
+	{   long aLong = strtol(p, &pe, 0);
+	    if (pe) {
+		if (!xstrncasecmp(pe, "Mb", 2))
+		    aLong *= 1024 * 1024;
+		else if (!xstrncasecmp(pe, "Kb", 2))
+		    aLong *= 1024;
+		else if (*pe != '\0') {
+		    rpmlog(RPMLOG_ERR,
 				_("%s has invalid numeric value, skipped\n"),
 				opt->longName);
-			continue;
-		    }
+		    continue;
 		}
+	    }
 
-		if ((argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
-		    if (aLong == LONG_MIN || aLong == LONG_MAX) {
-			rpmlog(RPMLOG_ERR,
+	    if ((argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
+		if (aLong == LONG_MIN || aLong == LONG_MAX) {
+		    rpmlog(RPMLOG_ERR,
 				_("%s has too large or too small long value, skipped\n"),
 				opt->longName);
-			continue;
-		    }
-		    (void) poptSaveLong((long *)opt->arg, argInfo, aLong);
-		    /*@switchbreak@*/ break;
-		} else {
-		    if (aLong > INT_MAX || aLong < INT_MIN) {
-			rpmlog(RPMLOG_ERR,
+		    continue;
+		}
+		(void) poptSaveLong((long *)opt->arg, argInfo, aLong);
+		/*@switchbreak@*/ break;
+	    } else {
+		if (aLong > INT_MAX || aLong < INT_MIN) {
+		    rpmlog(RPMLOG_ERR,
 				_("%s has too large or too small integer value, skipped\n"),
 				opt->longName);
-			continue;
-		    }
-		    (void) poptSaveInt((int *)opt->arg, argInfo, aLong);
+		    continue;
 		}
-	      }	/*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
+		(void) poptSaveInt((int *)opt->arg, argInfo, aLong);
 	    }
+	}   /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
 	}
-/*=========*/
     }
+/*=========*/
 
     dbOpts = _free(dbOpts);
 
@@ -646,31 +622,15 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     /*@=assignexpose =newreftrans@*/
     dbi->dbi_rpmtag = tag;
     
-    /*
-     * Inverted lists have join length of 2, primary data has join length of 1.
-     */
-    /*@-sizeoftype@*/
-    switch (tag) {
-    case RPMDBI_PACKAGES:
-    case RPMDBI_DEPENDS:
-    default:
-	dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
-	break;
-#ifndef	DYING
-    case RPMTAG_BASENAMES:
-	dbi->dbi_jlen = 2 * sizeof(rpmuint32_t);
-	break;
-#endif
-    }
-    /*@=sizeoftype@*/
+/*@-sizeoftype@*/
+    dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
+/*@=sizeoftype@*/
 
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
 #if defined(WITH_DB)
-    if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
-	dbi->dbi_use_dbenv = 1;
-	dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
-    }
+    dbi->dbi_use_dbenv = 1;	/* dbenv is always used now. */
+    dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
 #endif
 
     /*@-globstate@*/ /* FIX: *(rdbOptions->arg) reachable */

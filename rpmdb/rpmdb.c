@@ -2676,41 +2676,41 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	if (db->db_tags != NULL)
 	do {
 	    dbiIndex dbi;
-	    DBC * dbcursor = NULL;
-	    DBT k = DBT_INIT;
-	    DBT v = DBT_INIT;
-	    union _dbswap mi_offset;
 
 	    tagStore_t dbiTag = db->db_tags + dbix;
-	    rpmTag tag = dbiTag->tag;
-	    const char * dbiBN = (dbiTag->str != NULL
-		? dbiTag->str : tagName(tag));
 
 	    dbi = NULL;
-	    he->tag = tag;
-	    he->t = 0;
-	    he->p.ptr = NULL;
-	    he->c = 0;
+	    (void) memset(he, 0, sizeof(*he));
+	    he->tag = dbiTag->tag;
 
 	    switch (he->tag) {
-	    /* Filter out temporary databases */
-	    case RPMDBI_AVAILABLE:
+	    default:
+		if (headerGet(db->db_h, he, 0))
+		    dbi = dbiOpen(db, he->tag, 0);
+		he->p.ptr = _free(he->p.ptr);
+		/*@switchbreak@*/ break;
+	    case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPMDBI_SEQNO:
+		/*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
+	    {	DBC * dbcursor = NULL;
+		DBT k = DBT_INIT;
+		DBT v = DBT_INIT;
+	        union _dbswap mi_offset;
+
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, db->db_h, 0);
 		dbi = dbiOpen(db, he->tag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 	      
+	        mi_offset.ui = hdrNum;
+		if (dbiByteSwapped(dbi) == 1)
+		    _DBSWAP(mi_offset);
 /*@-immediatetrans@*/
-mi_offset.ui = hdrNum;
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
 		k.data = &mi_offset;
 /*@=immediatetrans@*/
 		k.size = (UINT32_T) sizeof(mi_offset.ui);
@@ -2718,6 +2718,8 @@ if (dbiByteSwapped(dbi) == 1)
 		rc = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 		if (rc) {
+		    const char * dbiBN = (dbiTag->str != NULL
+			? dbiTag->str : tagName(dbiTag->tag));
 		    rpmlog(RPMLOG_ERR,
 			_("error(%d) setting header #%d record for %s removal\n"),
 			rc, hdrNum, dbiBN);
@@ -2727,21 +2729,8 @@ if (dbiByteSwapped(dbi) == 1)
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    default:
-		xx = headerGet(db->db_h, he, 0);
-		if (!xx)
-		    continue;
-		/*@switchbreak@*/ break;
+	    }	/*@switchbreak@*/ break;
 	    }
-	
-	    dbi = dbiOpen(db, he->tag, 0);
-
-	    he->tag = 0;
-	    he->t = 0;
-	    he->p.ptr = _free(he->p.ptr);
-	    he->c = 0;
 	} while (dbix-- > 0);
 
 	rec = _free(rec);
@@ -2763,8 +2752,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
-    const char ** dirNames;
-    rpmuint32_t * dirIndexes;
     dbiIndex dbi;
     size_t dbix;
     union _dbswap mi_offset;
@@ -2810,17 +2797,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	xx = headerPut(h, he, 0);
 /*@=compmempass@*/
     }
-
-    he->tag = RPMTAG_DIRNAMES;
-/*@-compmempass@*/
-    xx = headerGet(h, he, 0);
-/*@=compmempass@*/
-    dirNames = he->p.argv;
-    he->tag = RPMTAG_DIRINDEXES;
-/*@-compmempass@*/
-    xx = headerGet(h, he, 0);
-/*@=compmempass@*/
-    dirIndexes = he->p.ui32p;
 
     (void) blockSignals(db, &signalMask);
 
@@ -2896,33 +2872,31 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	dbix = db->db_ndbi - 1;
 	if (db->db_tags != NULL)
 	do {
-	    DBC * dbcursor = NULL;
-	    DBT k = DBT_INIT;
-	    DBT v = DBT_INIT;
 
 	    tagStore_t dbiTag = db->db_tags + dbix;
-	    rpmuint8_t * bin = NULL;
-	    rpmTagData requireFlags;
-	    rpmRC rpmrc;
 
-	    rpmrc = RPMRC_NOTFOUND;
-	    requireFlags.ptr = NULL;
 	    dbi = NULL;
+	    (void) memset(he, 0, sizeof(*he));
 	    he->tag = dbiTag->tag;
-	    he->t = 0;
-	    he->p.ptr = NULL;
-	    he->c = 0;
 
 	    switch (he->tag) {
-	    /* Filter out temporary databases */
-	    case RPMDBI_AVAILABLE:
+	    default:
+		if (headerGet(h, he, 0))
+		    dbi = dbiOpen(db, he->tag, 0);
+		he->p.ptr = _free(he->p.ptr);
+		/*@switchbreak@*/ break;
+	    case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
 	    case RPMDBI_SEQNO:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+		/*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
+	    {	DBC * dbcursor = NULL;
+		DBT k = DBT_INIT;
+		DBT v = DBT_INIT;
+		rpmRC rpmrc = RPMRC_NOTFOUND;
+
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, h, 1);
 		dbi = dbiOpen(db, he->tag, 0);
@@ -2937,6 +2911,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 		k.data = (void *) &mi_offset;
 		/*@=immediatetrans@*/
 		k.size = (UINT32_T) sizeof(mi_offset.ui);
+
 		{   size_t len = 0;
 		    v.data = headerUnload(h, &len);
 		    v.size = (UINT32_T) len;
@@ -2968,44 +2943,9 @@ assert(v.data != NULL);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    case RPMTAG_REQUIRENAME:
-		he->tag = RPMTAG_REQUIREFLAGS;
-/*@-compmempass@*/
-		xx = headerGet(h, he, 0);
-/*@=compmempass@*/
-		requireFlags.ptr = he->p.ptr;
-		he->tag = RPMTAG_REQUIRENAME;
-/*@-compmempass@*/
-		xx = headerGet(h, he, 0);
-/*@=compmempass@*/
-		/*@switchbreak@*/ break;
-	    case RPMTAG_DIRNAMES:
-	    case RPMTAG_TRIGGERNAME:
-		xx = headerGet(h, he, 0);
-		if (he->c > 1)
-		    qsort(he->p.argv, he->c, sizeof(he->p.argv[0]), argvCmp);
-		/*@switchbreak@*/ break;
-	    default:
-/*@-compmempass@*/
-		xx = headerGet(h, he, 0);
-/*@=compmempass@*/
-		/*@switchbreak@*/ break;
+	    }	/*@switchbreak@*/ break;
 	    }
 
-	    /* Anything to do? */
-	    if (he->c != 0)
-		dbi = dbiOpen(db, he->tag, 0);
-
-	    he->tag = 0;
-	    he->t = 0;
-/*@-kepttrans -onlytrans@*/
-	    he->p.ptr = _free(he->p.ptr);
-/*@=kepttrans =onlytrans@*/
-	    he->c = 0;
-	    bin = _free(bin);
-	    requireFlags.ptr = _free(requireFlags.ptr);
 	} while (dbix-- > 0);
 
 	rec = _free(rec);
@@ -3014,11 +2954,9 @@ assert(v.data != NULL);
 exit:
     /* Unreference header used by associated secondary index callbacks. */
     (void) headerFree(db->db_h);
+    db->db_h = NULL;
 
     (void) unblockSignals(db, &signalMask);
-
-    dirIndexes = _free(dirIndexes);
-    dirNames = _free(dirNames);
 
     return ret;
 }
