@@ -234,10 +234,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    if (!headerGet(h, he, 0))
 		continue;
 	    hx = rpmmiInstance(mi);
-	    ix = rpmmiFilenum(mi);
 /*@-moduncon -nullstate @*/
-	    if (ix >= (unsigned) he->c
-	     || b64decode(he->p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
+	     if (b64decode(he->p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = 0xffffffff;
 /*@=moduncon =nullstate @*/
 	    he->p.ptr = _free(he->p.ptr);

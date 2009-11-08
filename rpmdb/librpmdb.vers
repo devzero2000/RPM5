@@ -147,7 +147,6 @@ LIBRPMDB_0
     rpmmiAddPattern;
     rpmmiFree;
     rpmmiCount;
-    rpmmiFilenum;
     rpmmiGrow;
     rpmmiInstance;
     rpmmiInit;

@@ -268,7 +268,6 @@ dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
     static int _oneshot = 0;
     static int _dbapi_rebuild;
     size_t dbix;
-    tagStore_t dbiTag;
     dbiIndex dbi = NULL;
     int _dbapi;
     int rc = 0;
@@ -299,7 +298,6 @@ assert(db->_dbi != NULL);
     dbix = dbiTagToDbix(db, tag);
     if (dbix >= db->db_ndbi)
 	goto exit;
-    dbiTag = db->db_tags + dbix;
 
     /* Is this index already open ? */
     if ((dbi = db->_dbi[dbix]) != NULL)
@@ -413,7 +411,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
     default:
     case 2*sizeof(rpmuint32_t):
 	if (_dbbyteswapped) {
-	    for (i = 0; i < set->count; i++) {
+	    for (i = 0; i < (int)set->count; i++) {
 		T->hdr.uc[3] = *s++;
 		T->hdr.uc[2] = *s++;
 		T->hdr.uc[1] = *s++;
@@ -426,7 +424,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 		T++;
 	    }
 	} else {
-	    for (i = 0; i < set->count; i++) {
+	    for (i = 0; i < (int)set->count; i++) {
 		memcpy(&T->hdr.ui, s, sizeof(T->hdr.ui));
 		s += sizeof(T->hdr.ui);
 		memcpy(&T->tag.ui, s, sizeof(T->tag.ui));
@@ -438,7 +436,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	break;
     case 1*sizeof(rpmuint32_t):
 	if (_dbbyteswapped) {
-	    for (i = 0; i < set->count; i++) {
+	    for (i = 0; i < (int)set->count; i++) {
 		T->hdr.uc[3] = *s++;
 		T->hdr.uc[2] = *s++;
 		T->hdr.uc[1] = *s++;
@@ -448,7 +446,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 		T++;
 	    }
 	} else {
-	    for (i = 0; i < set->count; i++) {
+	    for (i = 0; i < (int)set->count; i++) {
 		memcpy(&T->hdr.ui, s, sizeof(T->hdr.ui));
 		s += sizeof(T->hdr.ui);
 		T->tag.ui = 0;
@@ -582,7 +580,8 @@ struct rpmmi_s {
     DBC *		mi_dbc;
     DBT			mi_key;
     DBT			mi_data;
-    int			mi_setx;
+    unsigned int	mi_count;
+    uint32_t		mi_setx;
     void *		mi_keyp;
     int			mi_index;
     size_t		mi_keylen;
@@ -593,7 +592,6 @@ struct rpmmi_s {
     int			mi_modified;
     unsigned int	mi_prevoffset;	/* header instance (native endian) */
     unsigned int	mi_offset;	/* header instance (native endian) */
-    unsigned int	mi_filenum;	/* tag element (native endian) */
     int			mi_nre;
 /*@only@*/ /*@null@*/
     miRE		mi_re;
@@ -1702,12 +1700,29 @@ unsigned int rpmmiInstance(rpmmi mi) {
     return (mi ? mi->mi_offset : 0);
 }
 
-unsigned int rpmmiFilenum(rpmmi mi) {
-    return (mi ? mi->mi_filenum : 0);
-}
+unsigned int rpmmiCount(rpmmi mi) {
+    unsigned int rc;
 
-int rpmmiCount(rpmmi mi) {
-    return (mi && mi->mi_set ?  mi->mi_set->count : 0);
+    /* XXX Secondary db associated with Packages needs cursor record count */
+    if (mi && mi->mi_index && mi->mi_dbc == NULL) {
+	dbiIndex dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
+	DBT k = DBT_INIT;
+	DBT v = DBT_INIT;
+	int xx;
+assert(dbi != NULL);	/* XXX dbiCopen doesn't handle dbi == NULL */
+	xx = dbiCopen(dbi, dbiTxnid(dbi), &mi->mi_dbc, mi->mi_cflags);
+	k.data = mi->mi_keyp;
+	k.size = (u_int32_t)mi->mi_keylen;
+if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
+if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
+	if (!dbiGet(dbi, mi->mi_dbc, &k, &v, DB_SET))
+	    xx = dbiCount(dbi, mi->mi_dbc, &mi->mi_count, 0);
+	memset(&mi->mi_data, 0, sizeof(mi->mi_data));
+    }
+
+    rc = (mi ? mi->mi_count : 0);
+
+    return rc;
 }
 
 /**
@@ -2176,7 +2191,7 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	memset(&mi->mi_data, 0, sizeof(mi->mi_data));
 	_flags = DB_SET;
     } else
-	_flags = DB_NEXT_DUP;
+	_flags = (mi->mi_setx ? DB_NEXT_DUP : DB_SET);
 
 next:
     if (mi->mi_set) {
@@ -2184,7 +2199,6 @@ next:
 	if (!(mi->mi_setx < mi->mi_set->count))
 	    return NULL;
 	mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
-	mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	mi->mi_setx++;
 	/* If next header is identical, return it now. */
 	if (mi->mi_offset == mi->mi_prevoffset && mi->mi_h != NULL)
@@ -2392,7 +2406,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
     (void) dbt2set(dbi, data, &set);
 
     /* prune the set against exclude and tag */
-    for (i = j = 0; i < set->count; i++) {
+    for (i = j = 0; i < (int)set->count; i++) {
 	if (exclude && set->recs[i].hdrNum == exclude)
 	    continue;
 	if (i > j)
@@ -2409,7 +2423,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
     }
     set->count = j;
 
-    for (i = 0; i < set->count; i++)
+    for (i = 0; i < (int)set->count; i++)
 	set->recs[i].fpNum = fpNum;
 
 #ifdef	SQLITE_HACK
@@ -2543,6 +2557,7 @@ assert(isLabel != 0);
     mi->mi_dbc = NULL;
     mi->mi_set = set;
     mi->mi_setx = 0;
+    mi->mi_count = (set ? set->count : 0);
 
     mi->mi_index = (dbi && dbi->dbi_index ? 1 : 0);
     mi->mi_keylen = keylen;
@@ -2558,7 +2573,6 @@ assert(isLabel != 0);
     mi->mi_modified = 0;
     mi->mi_prevoffset = 0;
     mi->mi_offset = 0;
-    mi->mi_filenum = 0;
     mi->mi_nre = 0;
     mi->mi_re = NULL;
 
@@ -3021,9 +3035,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	rpmuint32_t * fullDirIndexes;
 	fingerPrint * fps;
 	dbiIndexItem im;
-	int start;
-	int num;
-	int end;
+	uint32_t start;
+	uint32_t num;
+	uint32_t end;
 
 	start = mi->mi_setx - 1;
 	im = mi->mi_set->recs + start;
@@ -3048,7 +3062,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
-	for (i = 0; i < num; i++) {
+	for (i = 0; i < (int)num; i++) {
 	    baseNames[i] = fullBaseNames[im[i].tagNum];
 	    dirIndexes[i] = fullDirIndexes[im[i].tagNum];
 	}
@@ -3057,7 +3071,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	fpLookupList(fpc, dirNames, baseNames, dirIndexes, num, fps);
 
 	/* Add db (recnum,filenum) to list for fingerprint matches. */
-	for (i = 0; i < num; i++, im++) {
+	for (i = 0; i < (int)num; i++, im++) {
 	    /*@-nullpass@*/ /* FIX: fpList[].subDir may be NULL */
 	    if (!FP_EQUAL(fps[i], fpList[im->fpNum]))
 		/*@innercontinue@*/ continue;

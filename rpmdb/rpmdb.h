@@ -72,7 +72,7 @@ struct _dbiIndexItem {
  */
 struct _dbiIndexSet {
 /*@owned@*/ struct _dbiIndexItem * recs; /*!< array of records */
-    int count;				/*!< number of records */
+    unsigned int count;			/*!< number of records */
 };
 
 /** \ingroup dbi
@@ -1704,18 +1704,11 @@ unsigned int rpmmiInstance(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
- * Return header tag index join key for current position of rpmdb iterator.
- * @param mi		rpm database iterator
- */
-unsigned int rpmmiFilenum(rpmmi mi)
-	/*@*/;
-
-/** \ingroup rpmdb
  * Return number of elements in rpm database iterator.
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmmiCount(/*@null@*/ rpmmi mi)
+unsigned int rpmmiCount(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb

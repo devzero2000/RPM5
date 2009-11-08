@@ -1,5 +1,9 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: fix: rpmmiCount() -> dbiCCount() with early dbcOpen().
+    - jbj: rpmmi: eliminate mi->mi_filenum & rpmmiFilenum(), join keysi
+	are history.
+    - jbj: rpmmi: add mi->mi_count preparing to bulldoze struct _dbiIndexItem.
     - jbj: rpmdb: eliminate --initdb and --verifydb, lazy creation and db_verify
 	are preferred.
     - jbj: rpmdb: eliminate dead code associated with database indices.
