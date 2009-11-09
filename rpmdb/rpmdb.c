@@ -1269,6 +1269,7 @@ int rpmdbVerify(const char * prefix)
 
 int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
+    unsigned int count = 0;
     DBC * dbcursor = NULL;
     DBT k = DBT_INIT;
     DBT v = DBT_INIT;
@@ -1293,36 +1294,24 @@ int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-#ifndef	SQLITE_HACK
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-#endif
-
-    if (rc == 0) {		/* success */
-	dbiIndexSet matches;
-	/*@-nullpass@*/ /* FIX: matches might be NULL */
-	matches = NULL;
-	(void) dbt2set(dbi, &v, &matches);
-	if (matches) {
-	    rc = dbiIndexSetCount(matches);
-	    matches = dbiFreeIndexSet(matches);
+    switch (rc) {
+    case 0:
+	if ((rc = dbiCount(dbi, dbcursor, &count, 0)) != 0) {
+	    rc = -1;
+	    break;
 	}
-	/*@=nullpass@*/
-    } else
-    if (rc == DB_NOTFOUND) {	/* not found */
-	rc = 0;
-    } else {			/* error */
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting records from %s index\n"),
+	/*@fallthrough@*/
+    case DB_NOTFOUND:
+	rc = count;
+	break;
+    default:
+	rpmlog(RPMLOG_ERR, _("error(%d) getting records from %s index\n"),
 		rc, tagName(dbi->dbi_rpmtag));
 	rc = -1;
+	break;
     }
-
-#ifdef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
-#endif
-
     return rc;
 }
 
@@ -1365,19 +1354,21 @@ key->data = (void *) name;
 key->size = (UINT32_T) strlen(name);
 
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-
-    if (rc == 0) {		/* success */
+    switch (rc) {
+    case 0:
 	(void) dbt2set(dbi, data, matches);
 	if (version == NULL && release == NULL)
 	    return RPMRC_OK;
-    } else
-    if (rc == DB_NOTFOUND) {	/* not found */
+	break;
+    case DB_NOTFOUND:
 	return RPMRC_NOTFOUND;
-    } else {			/* error */
+	/*@notreached@*/ break;
+    default:
 	rpmlog(RPMLOG_ERR,
 		_("error(%d) getting records from %s index\n"),
 		rc, tagName(dbi->dbi_rpmtag));
 	return RPMRC_FAIL;
+	/*@notreached@*/ break;
     }
 
     /* Make sure the version and release match. */
@@ -2585,11 +2576,12 @@ int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 		const char *** argvp)
 {
     DBC * dbcursor = NULL;
-    DBT * key = memset(alloca(sizeof(*key)), 0, sizeof(*key));
-    DBT * data = memset(alloca(sizeof(*data)), 0, sizeof(*data));
+    DBT k = DBT_INIT;
+    DBT v = DBT_INIT;
     dbiIndex dbi;
     miRE mire = NULL;
     ARGV_t av = NULL;
+uint32_t _flags = DB_SET;
     int ret = 1;		/* assume error */
     int rc;
     int xx;
@@ -2605,14 +2597,15 @@ int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
-    while ((rc = dbiGet(dbi, dbcursor, key, data, DB_NEXT)) == 0) {
-	size_t ns = key->size;
-	char * s = memcpy(xmalloc(ns+1), key->data, ns);
+    while ((rc = dbiGet(dbi, dbcursor, &k, &v, _flags)) == 0) {
+	size_t ns = k.size;
+	char * s = memcpy(xmalloc(ns+1), k.data, ns);
 
 	s[ns] = '\0';
 	if (mire == NULL || mireRegexec(mire, s, ns) >= 0)
 	    xx = argvAdd(&av, s);
 	s = _free(s);
+	_flags = DB_NEXT_DUP;
     }
 
     xx = dbiCclose(dbi, dbcursor, 0);
