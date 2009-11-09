@@ -1336,11 +1336,10 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "seq->close", rc, _debug);
 	seq = dbi->dbi_seq = NULL;
 
-	rpmlog(RPMLOG_DEBUG, D_("closed   db sequence    %s/%s\n"),
+	rpmlog(RPMLOG_DEBUG, D_("closed   db seqno       %s/%s\n"),
 		dbhome, (dbfile ? dbfile : dbiBN));
 
     }
-
     if (db) {
 	rc = db->close(db, 0);
 	/* XXX ignore not found error messages. */
