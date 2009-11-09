@@ -1321,6 +1321,156 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     return rpmdbCount(db, RPMTAG_NAME, name, 0);
 }
 
+int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
+		const char *** argvp)
+{
+    DBC * dbcursor = NULL;
+    DBT k = DBT_INIT;
+    DBT v = DBT_INIT;
+    dbiIndex dbi;
+    miRE mire = NULL;
+    ARGV_t av = NULL;
+    int ret = 1;		/* assume error */
+    int rc;
+    int xx;
+
+    dbi = dbiOpen(db, tag, 0);
+    if (dbi == NULL)
+	goto exit;
+
+    if (pat) {
+	mire = mireNew(mode, 0);
+	xx = mireRegcomp(mire, pat);
+    }
+
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
+
+    /* Iterate over all string keys, collecting pattern matches. */
+    while ((rc = dbiGet(dbi, dbcursor, &k, &v, DB_NEXT_NODUP)) == 0) {
+	size_t ns = k.size;
+	/* XXX TODO: strdup malloc is necessary solely for argvAdd() */
+	char * s = memcpy(xmalloc(ns+1), k.data, ns);
+
+	s[ns] = '\0';
+	if (mire == NULL || mireRegexec(mire, s, ns) >= 0)
+	    xx = argvAdd(&av, s);
+	s = _free(s);
+    }
+
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+
+    switch (rc) {
+    case 0:
+    case DB_NOTFOUND:
+	ret = 0;
+	break;
+    default:
+	rpmlog(RPMLOG_ERR, _("error(%d) getting keys from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
+	break;
+    }
+
+exit:
+    if (argvp != NULL)
+	xx = argvAppend(argvp, av);
+    av = argvFree(av);
+    mire = mireFree(mire);
+    return ret;
+}
+
+static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
+		const char * pat, dbiIndexSet * matches)
+{
+    DBC * dbcursor = NULL;
+    DBT k = DBT_INIT;
+    DBT p = DBT_INIT;
+    DBT v = DBT_INIT;
+    dbiIndex dbi;
+    miRE mire = NULL;
+uint32_t _flags = DB_NEXT;
+dbiIndexSet set = NULL;
+    int ret = 1;		/* assume error */
+    int rc;
+    int xx;
+
+    dbi = dbiOpen(db, tag, 0);
+    if (dbi == NULL)
+	goto exit;
+
+    if (pat) {
+	mire = mireNew(mode, 0);
+	xx = mireRegcomp(mire, pat);
+
+	/* Use the pattern stem to (partially) match on lookup. */
+	/* XXX TODO: extend to other patterns. */
+	switch (mode) {
+	default:
+	    break;
+	case RPMMIRE_STRCMP:
+	    k.data = (void *) pat;
+	    k.size = (UINT32_T) strlen(pat);
+	    _flags = DB_SET;
+	    break;
+	}
+    }
+
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
+
+    /* Iterate over all keys, collecting primary keys. */
+    while ((rc = dbiPget(dbi, dbcursor, &k, &p, &v, _flags)) == 0) {
+	size_t ns = k.size;
+	/* XXX TODO: strdup malloc is necessary solely for argvAdd() */
+	char * s = memcpy(xmalloc(ns+1), k.data, ns);
+
+	s[ns] = '\0';
+	if (mire == NULL || mireRegexec(mire, s, ns) >= 0) {
+	    union _dbswap mi_offset;
+	    unsigned i;
+
+	    /* Get a native endian copy of the primary package key. */
+	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+
+	    /* Append primary package key to set. */
+	    if (set == NULL)
+		set = xcalloc(1, sizeof(*set));
+	    i = set->count;
+	    /* XXX TODO: sort/uniqify set? */
+	    (void) dbiAppendSet(set, &mi_offset.ui, 1, sizeof(mi_offset.ui), 0);
+
+	}
+	s = _free(s);
+
+	if (_flags == DB_SET) _flags = DB_NEXT_DUP;
+    }
+
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+
+    switch (rc) {
+    case 0:
+    case DB_NOTFOUND:
+	ret = 0;
+	break;
+    default:
+	rpmlog(RPMLOG_ERR, _("error(%d) getting keys from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
+	break;
+    }
+
+exit:
+    if (ret == 0 && matches) {
+	/* XXX TODO: sort/uniqify set? */
+	*matches = set;
+	set = NULL;
+    }
+    set = dbiFreeIndexSet(set);
+    mire = mireFree(mire);
+    return ret;
+}
+
 /**
  * Attempt partial matches on name[-version[-release]] strings.
  * @param dbi		index database handle (always RPMTAG_NAME)
@@ -1348,15 +1498,9 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
     int rc;
     unsigned i;
 
-/*@-temptrans@*/
-key->data = (void *) name;
-/*@=temptrans@*/
-key->size = (UINT32_T) strlen(name);
-
-    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+    rc = rpmdbMireKeys(dbi->dbi_rpmdb, RPMTAG_NAME, RPMMIRE_STRCMP, name, matches);
     switch (rc) {
     case 0:
-	(void) dbt2set(dbi, data, matches);
 	if (version == NULL && release == NULL)
 	    return RPMRC_OK;
 	break;
@@ -1446,7 +1590,7 @@ DBT v = DBT_INIT, *data = &v;
     int brackets;
     rpmRC rc;
     int xx;
- 
+
     if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
@@ -2155,7 +2299,7 @@ uint32_t _flags;
     if (mi == NULL)
 	return NULL;
 
-tag = (mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
+tag = (mi->mi_set == NULL && mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
     dbi = dbiOpen(mi->mi_db, tag, 0);
     if (dbi == NULL)
 	return NULL;
@@ -2205,11 +2349,23 @@ next:
     else if (dbi->dbi_index) {
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &p, &v, _flags);
 	_flags = DB_NEXT_DUP;
-	if (rc == 0) {
+	switch (rc) {
+	default:
+assert(0);
+	    /*@notreached@*/ break;
+	case DB_NOTFOUND:
+	    return NULL;
+	    /*@notreached@*/ break;
+	case 0:
+	    mi->mi_setx++;
 	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
 	    mi->mi_offset = mi_offset.ui;
+	    /* If next header is identical, return it now. */
+	    if (mi->mi_offset == mi->mi_prevoffset && mi->mi_h != NULL)
+		return mi->mi_h;
+	    break;
 	}
     }
     else {
@@ -2521,14 +2677,10 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\
 	/* XXX Special case #3: empty iterator with rpmmiGrow() */
 	assert(keylen == 0);
     }
-    else if (dbi->dbi_index) {
-	/* XXX Special case #4: secondary db associated with primary Packages */
-    }
-    else {
-	/* Common case: retrieve join keys. */
+    else if (isLabel && tag == RPMTAG_NAME) {
+	/* XXX Special case #4: apply gather primary keys from a label. */
 	int rc;
 
-assert(isLabel != 0);
 	rc = dbiFindByLabel(dbi, keyp, keylen, &set);
 
 	if ((rc  && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
@@ -2538,6 +2690,13 @@ assert(isLabel != 0);
 	    mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 	    return NULL;
 	}
+    }
+    else if (dbi->dbi_index) {
+	/* XXX Special case #5: secondary db associated with primary Packages */
+    }
+    else {
+	/* Common case: retrieve join keys. */
+assert(0);
     }
 
 /*@-assignexpose@*/
@@ -2570,61 +2729,6 @@ assert(isLabel != 0);
     mi->mi_ts = NULL;
 
 /*@i@*/ return mi;
-}
-
-int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
-		const char *** argvp)
-{
-    DBC * dbcursor = NULL;
-    DBT k = DBT_INIT;
-    DBT v = DBT_INIT;
-    dbiIndex dbi;
-    miRE mire = NULL;
-    ARGV_t av = NULL;
-uint32_t _flags = DB_SET;
-    int ret = 1;		/* assume error */
-    int rc;
-    int xx;
-
-    dbi = dbiOpen(db, tag, 0);
-    if (dbi == NULL)
-	goto exit;
-
-    if (pat) {
-	mire = mireNew(mode, 0);
-	xx = mireRegcomp(mire, pat);
-    }
-
-    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
-
-    while ((rc = dbiGet(dbi, dbcursor, &k, &v, _flags)) == 0) {
-	size_t ns = k.size;
-	char * s = memcpy(xmalloc(ns+1), k.data, ns);
-
-	s[ns] = '\0';
-	if (mire == NULL || mireRegexec(mire, s, ns) >= 0)
-	    xx = argvAdd(&av, s);
-	s = _free(s);
-	_flags = DB_NEXT_DUP;
-    }
-
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-
-    if (rc > 0) {
-	rpmlog(RPMLOG_ERR, _("error(%d) getting keys from %s index\n"),
-		rc, tagName(dbi->dbi_rpmtag));
-	goto exit;
-    }
-
-    ret = 0;
-
-exit:
-    if (argvp != NULL)
-	xx = argvAppend(argvp, av);
-    av = argvFree(av);
-    mire = mireFree(mire);
-    return ret;
 }
 
 /* XXX psm.c */
