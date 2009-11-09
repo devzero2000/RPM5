@@ -78,41 +78,41 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Bc",		rpmjs_InitBcClass,	 -40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 -26 },
 
-    { "Db",		rpmjs_InitDbClass,	 45 },
-    { "Dbc",		rpmjs_InitDbcClass,	 46 },
-    { "Dbe",		rpmjs_InitDbeClass,	 44 },
+    { "Db",		rpmjs_InitDbClass,	 -45 },
+    { "Dbc",		rpmjs_InitDbcClass,	 -46 },
+    { "Dbe",		rpmjs_InitDbeClass,	 -44 },
     { "Mpf",		rpmjs_InitMpfClass,	 -48 },
     { "Seq",		rpmjs_InitSeqClass,	 -49 },
-    { "Txn",		rpmjs_InitTxnClass,	 47 },
+    { "Txn",		rpmjs_InitTxnClass,	 -47 },
 
     { "Dc",		rpmjs_InitDcClass,	 -28 },
     { "Dig",		rpmjs_InitDigClass,	 -37 },	/* todo++ */
     { "Dir",		rpmjs_InitDirClass,	 -29 },
-    { "Ds",		rpmjs_InitDsClass,	 -13 },
+    { "Ds",		rpmjs_InitDsClass,	 13 },
     { "Fc",		rpmjs_InitFcClass,	 -34 },	/* todo++ */
-    { "Fi",		rpmjs_InitFiClass,	 -14 },
+    { "Fi",		rpmjs_InitFiClass,	 14 },
     { "File",		   js_InitFileClass,	  -1 },
     { "Fts",		rpmjs_InitFtsClass,	 -30 },
-    { "Gi",		rpmjs_InitGiClass,	 -35 },	/* todo++ */
-    { "Hdr",		rpmjs_InitHdrClass,	 -12 },
-    { "Io",		rpmjs_InitIoClass,	 -32 },
-    { "Iob",		rpmjs_InitIobClass,	 -36 },	/* todo++ */
+    { "Gi",		rpmjs_InitGiClass,	 35 },	/* todo++ */
+    { "Hdr",		rpmjs_InitHdrClass,	 12 },
+    { "Io",		rpmjs_InitIoClass,	 32 },
+    { "Iob",		rpmjs_InitIobClass,	 36 },	/* todo++ */
     { "Mc",		rpmjs_InitMcClass,	 -24 },
     { "Mg",		rpmjs_InitMgClass,	 -31 },
-    { "Mi",		rpmjs_InitMiClass,	 -11 },
+    { "Mi",		rpmjs_InitMiClass,	 11 },
     { "Mpw",		rpmjs_InitMpwClass,	 -41 },
     { "Ps",		rpmjs_InitPsClass,	 -16 },
     { "Sm",		rpmjs_InitSmClass,	 -43 },	/* todo++ */
     { "Sp",		rpmjs_InitSpClass,	 -42 },	/* todo++ */
-    { "St",		rpmjs_InitStClass,	 -27 },
+    { "St",		rpmjs_InitStClass,	 27 },
     { "Sw",		rpmjs_InitSwClass,	 -38 },	/* todo++ */
     { "Sx",		rpmjs_InitSxClass,	 -39 },
 #if defined(WITH_SYCK)
     { "Syck",		rpmjs_InitSyckClass,	 -3 },
 #endif
-    { "Sys",		rpmjs_InitSysClass,	 -33 },
-    { "Te",		rpmjs_InitTeClass,	 -15 },
-    { "Ts",		rpmjs_InitTsClass,	 -10 },
+    { "Sys",		rpmjs_InitSysClass,	 33 },
+    { "Te",		rpmjs_InitTeClass,	 15 },
+    { "Ts",		rpmjs_InitTsClass,	 10 },
     { "Xar",		rpmjs_InitXarClass,	 -41 },	/* todo++ */
 #if defined(WITH_UUID)
     { "Uuid",		rpmjs_InitUuidClass,	  -2 },

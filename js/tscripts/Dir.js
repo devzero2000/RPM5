@@ -15,9 +15,9 @@ ack("dir();", dir);		// XXX closedir if no arguments given
 ack("dir(dn);", dir);
 
 ix = 0;
-ack("dir.length", ix);		// XXX ensure undefined or 0 until iterated
+// ack("dir.length", ix);	// XXX ensure undefined or 0 until iterated
 for (var [key,val] in Iterator(dir)) {
-    print("key: "+key, "val: "+val);
+//    print("key: "+key, "val: "+val);
     ix++;
 }
 ack("dir.length", ix);
@@ -25,9 +25,9 @@ ack("dir.length", ix);
 ack("dir(dn);", dir);
 
 ix = 0;
-ack("dir.length", ix);		// XXX ensure undefined or 0 until iterated
+// ack("dir.length", ix);	// XXX ensure undefined or 0 until iterated
 for (var [key,val] in Iterator(dir)) {
-    print("key: "+key, "val: "+val);
+//    print("key: "+key, "val: "+val);
     ix++;
 }
 ack("dir.length", ix);
