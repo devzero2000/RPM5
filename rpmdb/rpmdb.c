@@ -2678,7 +2678,7 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\
 	assert(keylen == 0);
     }
     else if (isLabel && tag == RPMTAG_NAME) {
-	/* XXX Special case #4: apply gather primary keys from a label. */
+	/* XXX Special case #4: gather primary keys for a NVR label. */
 	int rc;
 
 	rc = dbiFindByLabel(dbi, keyp, keylen, &set);
@@ -2758,20 +2758,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	return 1;
     }
 
-#ifdef	DYING
-    /* Add remove transaction id to header. */
-    if (rid != 0 && rid != -1) {
-	rpmuint32_t tid[2];
-	tid[0] = rid;
-	tid[1] = 0;
-	he->tag = RPMTAG_REMOVETID;
-	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = tid;
-	he->c = 2;
-	xx = headerPut(db->db_h, he, 0);
-    }
-#endif
-
     he->tag = RPMTAG_NVRA;
     xx = headerGet(db->db_h, he, 0);
     rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, he->p.str);
@@ -2796,9 +2782,15 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 
 	    switch (he->tag) {
 	    default:
+		/* Do a lazy open on all necessary secondary indices. */
+#ifndef	NOTYET	/* XXX headerGet() sees tag extensions, headerIsEntry doesn't */
 		if (headerGet(db->db_h, he, 0))
 		    dbi = dbiOpen(db, he->tag, 0);
 		he->p.ptr = _free(he->p.ptr);
+#else
+		if (headerIsEntry(db->db_h, he->tag))
+		    dbi = dbiOpen(db, he->tag, 0);
+#endif
 		/*@switchbreak@*/ break;
 	    case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	    case RPMDBI_ADDED:
@@ -2814,6 +2806,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, db->db_h, 0);
+
 		dbi = dbiOpen(db, he->tag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
@@ -2879,10 +2872,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     /* Reference header for use by associated secondary index callbacks. */
     db->db_h = headerLink(h);
 
-#ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
-    he->tag = RPMTAG_REMOVETID;
-    xx = headerDel(h, he, 0);
-#endif
+assert(headerIsEntry(h, RPMTAG_REMOVETID) == 0);	/* XXX sanity */
+
     if (iid != 0 && iid != -1) {
 	rpmuint32_t tid[2];
 	tid[0] = iid;
@@ -2897,17 +2888,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 /*@=compmempass@*/
     }
 
-    /* Add the package color if not present. */
-    if (!headerIsEntry(h, RPMTAG_PACKAGECOLOR)) {
-	rpmuint32_t hcolor = hGetColor(h);
-	he->tag = RPMTAG_PACKAGECOLOR;
-	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = &hcolor;
-	he->c = 1;
-/*@-compmempass@*/
-	xx = headerPut(h, he, 0);
-/*@=compmempass@*/
-    }
+assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
 
     (void) blockSignals(db, &signalMask);
 
@@ -2959,6 +2940,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 /*@-compmempass@*/
 	ret = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 /*@=compmempass@*/
+
 	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2992,9 +2974,15 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
 	    switch (he->tag) {
 	    default:
+		/* Do a lazy open on all necessary secondary indices. */
+#ifndef	NOTYET	/* XXX headerGet() sees tag extensions, headerIsEntry doesn't */
 		if (headerGet(h, he, 0))
 		    dbi = dbiOpen(db, he->tag, 0);
 		he->p.ptr = _free(he->p.ptr);
+#else
+		if (headerIsEntry(h, he->tag))
+		    dbi = dbiOpen(db, he->tag, 0);
+#endif
 		/*@switchbreak@*/ break;
 	    case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	    case RPMDBI_ADDED:
@@ -3010,6 +2998,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, h, 1);
+
 		dbi = dbiOpen(db, he->tag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
@@ -3054,6 +3043,7 @@ assert(v.data != NULL);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
+
 	    }	/*@switchbreak@*/ break;
 	    }
 
