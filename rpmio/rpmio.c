@@ -2523,8 +2523,8 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 		if (fp)
 		    rc = fclose(fp);
 		if (fpno == -1) {
-		    fd = fdFree(fd, "fopencookie (Fclose)");
 		    fdPop(fd);
+		    fd = fdFree(fd, "fopencookie (Fclose)");
 		}
 	    }
 	} else {
