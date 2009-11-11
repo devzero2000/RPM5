@@ -615,6 +615,9 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     rpmuint32_t num;
     int rc;
     int xx;
+#if defined(defined(RPM_VENDOR_MANDRIVA)) /* build-expand-field-for-single-token */
+    char * expand_field = NULL;
+#endif
     
     if (field == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
@@ -633,17 +636,28 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		 spec->lineNum, spec->line);
 	return RPMRC_FAIL;
     }
+#if defined(RPM_VENDOR_MANDRIVA) /* build-expand-field-for-single-token */
+    expand_field = rpmExpand(field, NULL);
+#else
     end = findLastChar(field);
+#endif    
 
     /* Validate tag data content. */
     if (tagValidate(spec, tag, field) != RPMRC_OK)
 	return RPMRC_FAIL;
 
     /* See if this is multi-token */
+#if defined(RPM_VENDOR_MANDRIVA) /* build-expand-field-for-single-token */
+    end = expand_field;
+#else
     end = field;
+#endif
     SKIPNONSPACE(end);
     if (*end != '\0')
 	multiToken = 1;
+#if defined(RPM_VENDOR_MANDRIVA) /* build-expand-field-for-single-token */
+    _free(expand_field);
+#endif
 
     switch (tag) {
     case RPMTAG_NAME:
