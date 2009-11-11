@@ -323,11 +323,11 @@ assert(mydbvecs[_dbapi] != NULL);
     db->_dbi[dbix] = dbi;
 
     /* XXX FIXME: move to rpmdbOpen() instead. */
-    if (tag == RPMDBI_PACKAGES && db->db_bits == NULL) {
-	db->db_nbits = 8192;
-/*@-sizeoftype@*/
-	db->db_bits = PBM_ALLOC(db->db_nbits);
-/*@=sizeoftype@*/
+    if (tag == RPMDBI_PACKAGES && db->db_bf == NULL) {
+	size_t _jiggery = 2;		/* XXX todo: Bloom filter tuning? */
+	size_t _k = _jiggery * 8;
+	size_t _m = _jiggery * (3 * 8192 * _k) / 2;
+	db->db_bf = rpmbfNew(_m, _k, 0);
     }
 
 exit:
@@ -903,7 +903,7 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use
 	db->db_errpfx = _free(db->db_errpfx);
 	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
-	db->db_bits = PBM_FREE(db->db_bits);
+	db->db_bf = rpmbfFree(db->db_bf);
 	db->db_tags = tagStoreFree(db->db_tags, db->db_ndbi);
 	db->_dbi = _free(db->_dbi);
 	db->db_ndbi = 0;
@@ -1064,8 +1064,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_export = rpmdbExportInfo;
     db->db_h = NULL;
 
-    db->db_bits = NULL;
-    db->db_nbits = 0;
+    db->db_bf = NULL;
     db->db_next = NULL;
     db->db_opens = 0;
 
@@ -2404,14 +2403,10 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 
 	/* Don't bother re-checking a previously read header. */
-	if (mi->mi_db->db_bits) {
-	    pbm_set * set;
-
-	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi->mi_offset);
-	    if (PBM_ISSET(mi->mi_offset, set))
-		rpmrc = RPMRC_OK;
-	}
+	if (mi->mi_db && mi->mi_db->db_bf
+	 && rpmbfChk(mi->mi_db->db_bf,
+		(const char *)&mi->mi_offset, sizeof(mi->mi_offset)))
+	    rpmrc = RPMRC_OK;
 
 	/* If blob is unchecked, check blob import consistency now. */
 	if (rpmrc != RPMRC_OK) {
@@ -2427,13 +2422,9 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
-	    if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
-		pbm_set * set;
-
-		set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi->mi_offset);
-		PBM_SET(mi->mi_offset, set);
-	    }
+	    if (mi->mi_db && mi->mi_db->db_bf && rpmrc == RPMRC_OK)
+		rpmbfAdd(mi->mi_db->db_bf,
+			(const char *)&mi->mi_offset, sizeof(mi->mi_offset));
 
 	    /* Skip damaged and inconsistent headers. */
 	    if (rpmrc == RPMRC_FAIL)

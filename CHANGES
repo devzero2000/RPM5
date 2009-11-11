@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: use a Bloom filter not a bitmap to determine if header
+	signature/digest was checked. Header instances no longer need to
+	be small integers.
     - jbj: rpmdb: begin phasing out RPMDBI_LABEL with patterns on keys.
     - jbj: rpmdb: fix: resurrect queries with duplicate packages. happy yum ...
     - jbj: rpmdb: remap rpmdbCount -> dbiCount, eliminate dbiIndexSet usage.

@@ -477,14 +477,12 @@ struct rpmdb_s {
     int	(*db_export) (rpmdb db, Header h, int adding);
 
 /*@refcounted@*/
+    rpmbf	db_bf;		/*!< Header instance Bloom filter. */
+/*@refcounted@*/
     Header db_h;		/*!< Currently active header */
 
-/*@only@*/ /*@null@*/
-    unsigned char * db_bits;	/*!< Header instance bit mask. */
-    int		db_nbits;	/*!< No. of bits in mask. */
     rpmdb	db_next;	/*!< Chain of rpmdbOpen'ed rpmdb's. */
     int		db_opens;	/*!< No. of opens for this rpmdb. */
-/*@only@*/ /*@null@*/
 
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     void *	db_txn;		/*!< Berkeley DB_TXN handle */
@@ -505,9 +503,6 @@ struct rpmdb_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-#endif	/* defined(_RPMDB_INTERNAL) */
-
-/* for RPM's internal use only */
 
 /** \ingroup rpmdb
  */
@@ -518,6 +513,7 @@ enum rpmdbFlags {
 	RPMDB_FLAG_CHROOT	= (1 << 2)
 /*@=enummemuse@*/
 };
+#endif	/* defined(_RPMDB_INTERNAL) */
 
 #ifdef __cplusplus
 extern "C" {
