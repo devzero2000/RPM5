@@ -344,7 +344,11 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
     fd->oflags = 0;
     fd->omode = 0;
     fd->url = NULL;
+#if defined(defined(RPM_VENDOR_MANDRIVA)) /* raise-read-timeout-to-60secs */
+    fd->rd_timeoutsecs = 60;	/* XXX default value used to be -1 */
+#else
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
+#endif
     fd->contentLength = fd->bytesRemain = -1;
     fd->contentType = NULL;
     fd->contentDisposition = NULL;
@@ -2295,7 +2299,11 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	fd = fdOpen(path, flags, mode);
 	if (fd) {
 	    fdSetIo(fd, ufdio);
+#if defined(defined(RPM_VENDOR_MANDRIVA)) /* raise-read-timeout-to-60secs */
+	    fd->rd_timeoutsecs = 60;
+#else
 	    fd->rd_timeoutsecs = 1;
+#endif
 	    fd->contentLength = fd->bytesRemain = -1;
 	}
 	break;
