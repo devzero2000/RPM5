@@ -1,4 +1,6 @@
 5.2.0 -> 5.2.1:
+    - proyvind: undo previous revert of checkfiles behaviour which broke build
+	of many packages.
     - permit RPMTAG_FILECONTEXTS addition to be disabled.
     - rpm.org: Avoid adding Lua sources/patches twice when recursing.
     - proyvind: make sure to expand %buildroot from main package.
