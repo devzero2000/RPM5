@@ -9,6 +9,10 @@
 #include "config.h"
 #endif
 
+#if HAVE_SYSLOG_H
+#include <syslog.h>
+#endif
+
 #include <sys/types.h>
 
 #if defined(__LCLINT__)

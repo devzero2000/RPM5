@@ -567,6 +567,11 @@
                      not allowed when doing install ('rpm -i') of packages.
      ________________________________________________________________________
 
+     Change:         log-install-remove-to-syslog
+     Purpose:        Logs install/remove of packages to syslog
+     Reason:         Log changes of packages installed on system.
+     ________________________________________________________________________
+
   o  Name:           WINDRIVER
      Vendor:         Wind River <http://windriver.com/>
      Representative: Jeff Johnson <jbj@rpm5.org>
