@@ -615,7 +615,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     rpmuint32_t num;
     int rc;
     int xx;
-#if defined(defined(RPM_VENDOR_MANDRIVA)) /* build-expand-field-for-single-token */
+#if defined(RPM_VENDOR_MANDRIVA) /* build-expand-field-for-single-token */
     char * expand_field = NULL;
 #endif
     
