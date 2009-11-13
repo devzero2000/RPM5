@@ -999,7 +999,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 
     dig = pgpDigNew(rpmtsVSFlags(s->ts));
     rpmrc = headerCheck(dig, uh, uc, &msg);
-    dig = pgpDigFree(dig, "rpmts_HdrCheck");
+    dig = pgpDigFree(dig);
 
     switch (rpmrc) {
     case RPMRC_OK:
@@ -1203,7 +1203,7 @@ rpmts_SetProbFilter(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     rpmprobFilterFlags ignoreSet = 0;
-    rpmprobFilterFlags oignoreSet = 0;
+    rpmprobFilterFlags oignoreSet;
     char * kwlist[] = {"ignoreSet", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:ProbFilter", kwlist,
