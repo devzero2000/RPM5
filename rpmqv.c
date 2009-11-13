@@ -57,6 +57,7 @@ extern const char *__progname;
 #include "debug.h"
 
 enum modes {
+    MODE_UNKNOWN	= 0,
 
     MODE_QUERY		= (1 <<  0),
     MODE_VERIFY		= (1 <<  3),
@@ -76,13 +77,8 @@ enum modes {
     MODE_RESIGN		= (1 <<  7),
 #define	MODES_K	 (MODE_CHECKSIG | MODE_RESIGN)
 
-    MODE_INITDB		= (1 << 10),
     MODE_REBUILDDB	= (1 << 12),
-    MODE_VERIFYDB	= (1 << 13),
-#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB | MODE_VERIFYDB)
-
-
-    MODE_UNKNOWN	= 0
+#define	MODES_DB (MODE_REBUILDDB)
 };
 
 #define	MODES_FOR_DBPATH	(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
@@ -299,9 +295,7 @@ static void integrity_check(const char *progname, enum modes progmode_num)
         case MODE_REBUILD:   progmode = "rebuild";   break;
         case MODE_RECOMPILE: progmode = "recompile"; break;
         case MODE_TARBUILD:  progmode = "tarbuild";  break;
-        case MODE_INITDB:    progmode = "initdb";    break;
         case MODE_REBUILDDB: progmode = "rebuilddb"; break;
-        case MODE_VERIFYDB:  progmode = "verifydb";  break;
         case MODE_UNKNOWN:   progmode = "unknown";   break;
         default:             progmode = "unknown";   break;
     }
@@ -468,9 +462,7 @@ int main(int argc, const char ** argv)
     case MODE_REBUILD:
     case MODE_RECOMPILE:
     case MODE_TARBUILD:
-    case MODE_INITDB:
     case MODE_REBUILDDB:
-    case MODE_VERIFYDB:
     case MODE_UNKNOWN:
     default:
 	break;
@@ -496,23 +488,11 @@ int main(int argc, const char ** argv)
     
 #ifdef	IAM_RPMDB
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_DB)) {
-    if (da->init) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_INITDB;
-    } else
     if (da->rebuild) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
 	else
 	    bigMode = MODE_REBUILDDB;
-    } else
-    if (da->verify) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_VERIFYDB;
     }
   }
 #endif	/* IAM_RPMDB */
@@ -756,14 +736,6 @@ int main(int argc, const char ** argv)
     (void) rpmtsSetRootDir(ts, rpmioRootDir);
     switch (bigMode) {
 #ifdef	IAM_RPMDB
-    case MODE_INITDB:
-#if defined(SUPPORT_INITDB)
-	ec = rpmtsInitDB(ts, 0644);
-#else
-	ec = -1;
-#endif
-	break;
-
     case MODE_REBUILDDB:
     {   rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
 	rpmVSFlags ovsflags;
@@ -775,13 +747,6 @@ int main(int argc, const char ** argv)
 	ec = rpmtsRebuildDB(ts);
 	vsflags = rpmtsSetVSFlags(ts, ovsflags);
     }	break;
-    case MODE_VERIFYDB:
-#if defined(SUPPORT_VERIFYDB)
-	ec = rpmtsVerifyDB(ts);
-#else
-	ec = -1;
-#endif
-	break;
 #endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMBT
@@ -1028,9 +993,7 @@ ia->rbRun = rpmcliInstallRun;
     case MODE_RESIGN:
 #endif
 #if !defined(IAM_RPMDB)
-    case MODE_INITDB:
     case MODE_REBUILDDB:
-    case MODE_VERIFYDB:
 #endif
 #if !defined(IAM_RPMBT)
     case MODE_BUILD:

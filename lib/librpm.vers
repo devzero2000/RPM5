@@ -347,7 +347,6 @@ LIBRPM_0
     rpmtsGetType;
     rpmtsGoal;
     rpmtsiNext;
-    rpmtsInitDB;
     rpmtsInitDSI;
     rpmtsInitIterator;
     rpmtsiOc;
@@ -392,7 +391,6 @@ LIBRPM_0
     _rpmts_stats;
     rpmtsUnorderedSuccessors;
     rpmtsUpdateDSI;
-    rpmtsVerifyDB;
     rpmtsVSFlags;
     rpmVerifyPoptTable;
     rpmVerifySignatures;

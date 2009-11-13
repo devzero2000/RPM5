@@ -72,48 +72,6 @@ static int _rebuildinprogress = 0;
 #define	_DBI_MAJOR	-1
 
 /**
- * Convert hex to binary nibble.
- * @param c		hex character
- * @return		binary nibble
- */
-static inline unsigned char nibble(char c)
-	/*@*/
-{
-    if (c >= '0' && c <= '9')
-	return (unsigned char)(c - '0');
-    if (c >= 'A' && c <= 'F')
-	return (unsigned char)((int)(c - 'A') + 10);
-    if (c >= 'a' && c <= 'f')
-	return (unsigned char)((int)(c - 'a') + 10);
-    return '\0';
-}
-
-/**
- * Convert binary blob to printable hex string.
- * @param data		binary data
- * @param size		size of data in bytes
- * @return		malloc'd hex string
- */
-/*@only@*/
-static char * bin2hex(const void *data, size_t size)
-	/*@*/
-{
-    static char hex[] = "0123456789abcdef";
-    const char * s = data;
-    char * t, * val;
-    val = t = xmalloc(size * 2 + 1);
-    while (size-- > 0) {
-	unsigned i;
-	i = (unsigned) *s++;
-	*t++ = hex[ (i >> 4) & 0xf ];
-	*t++ = hex[ (i     ) & 0xf ];
-    }
-    *t = '\0';
-
-    return val;
-}
-
-/**
  * Return dbi index used for rpm tag.
  * @param db		rpm database
  * @param tag		rpm tag
@@ -1199,73 +1157,6 @@ int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
     return rpmdbOpenDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 }
 
-int rpmdbInit (const char * prefix, int perms)
-{
-    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
-#ifdef	SUPPORT_INITDB
-    rpmdb db = NULL;
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
-
-    rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
-		perms, RPMDB_FLAG_JUSTCHECK);
-    if (db != NULL) {
-	int xx;
-	xx = rpmdbOpenAll(db);
-	if (xx && rc == 0) rc = xx;
-	xx = rpmdbClose(db);
-	if (xx && rc == 0) rc = xx;
-	db = NULL;
-    }
-#endif
-    return rc;
-}
-
-int rpmdbVerifyAllDBI(rpmdb db)
-{
-    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
-
-#if defined(SUPPORT_VERIFYDB)
-    if (db != NULL) {
-	size_t dbix;
-	int xx;
-	rc = rpmdbOpenAll(db);
-
-	if (db->_dbi != NULL)
-	for (dbix = db->db_ndbi; dbix;) {
-	    dbix--;
-	    if (db->_dbi[dbix] == NULL)
-		continue;
-	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
-	    xx = dbiVerify(db->_dbi[dbix], 0);
-	    if (xx && rc == 0) rc = xx;
-	    db->_dbi[dbix] = NULL;
-	    /*@=unqualifiedtrans@*/
-	}
-
-	/*@-nullstate@*/	/* FIX: db->_dbi[] may be NULL. */
-	xx = rpmdbClose(db);
-	/*@=nullstate@*/
-	if (xx && rc == 0) rc = xx;
-	db = NULL;
-    }
-#endif
-    return rc;
-}
-
-int rpmdbVerify(const char * prefix)
-{
-    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
-#if defined(SUPPORT_VERIFYDB)
-    rpmdb db = NULL;
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
-
-    rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
-    if (!rc && db != NULL)
-	rc = rpmdbVerifyAllDBI(db);
-#endif
-    return rc;
-}
-
 int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
     unsigned int count = 0;
@@ -2061,6 +1952,48 @@ exit:
     allpat = _free(allpat);
     nmire = mireFree(nmire);
     return rc;
+}
+
+/**
+ * Convert hex to binary nibble.
+ * @param c		hex character
+ * @return		binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char)(c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return '\0';
+}
+
+/**
+ * Convert binary blob to printable hex string.
+ * @param data		binary data
+ * @param size		size of data in bytes
+ * @return		malloc'd hex string
+ */
+/*@only@*/
+static char * bin2hex(const void *data, size_t size)
+	/*@*/
+{
+    static char hex[] = "0123456789abcdef";
+    const char * s = data;
+    char * t, * val;
+    val = t = xmalloc(size * 2 + 1);
+    while (size-- > 0) {
+	unsigned i;
+	i = (unsigned) *s++;
+	*t++ = hex[ (i >> 4) & 0xf ];
+	*t++ = hex[ (i     ) & 0xf ];
+    }
+    *t = '\0';
+
+    return val;
 }
 
 /**

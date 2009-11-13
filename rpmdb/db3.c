@@ -1793,6 +1793,59 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d %s\n", __FUNCTION__, d
     return rc;
 }
 
+/** \ingroup dbi
+ * Verify (and close) index database.
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+static inline
+int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    dbi->dbi_verify_on_close = 1;
+    return (*dbi->dbi_vec->close) (dbi, flags);
+}
+
+/**
+ * Verify all database components.
+ * @param db		rpm database
+ * @return		0 on success
+ */
+static int rpmdbVerifyAllDBI(rpmdb db)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
+
+    if (db != NULL) {
+	size_t dbix;
+	int xx;
+	rc = rpmdbOpenAll(db);
+
+	if (db->_dbi != NULL)
+	for (dbix = db->db_ndbi; dbix;) {
+	    dbix--;
+	    if (db->_dbi[dbix] == NULL)
+		continue;
+	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
+	    xx = dbiVerify(db->_dbi[dbix], 0);
+	    if (xx && rc == 0) rc = xx;
+	    db->_dbi[dbix] = NULL;
+	    /*@=unqualifiedtrans@*/
+	}
+
+	/*@-nullstate@*/	/* FIX: db->_dbi[] may be NULL. */
+	xx = rpmdbClose(db);
+	/*@=nullstate@*/
+	if (xx && rc == 0) rc = xx;
+	db = NULL;
+    }
+
+    return rc;
+}
+
 /**
  * Return handle for an index database.
  * @param rpmdb         rpm database

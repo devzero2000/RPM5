@@ -742,21 +742,6 @@ int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
 }
 
 /** \ingroup dbi
- * Verify (and close) index database.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-/*@unused@*/ static inline
-int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
-{
-    dbi->dbi_verify_on_close = 1;
-    return (*dbi->dbi_vec->close) (dbi, flags);
-}
-
-/** \ingroup dbi
  * Close index database.
  * @param dbi		index database handle
  * @param flags		(unused)
@@ -1586,38 +1571,10 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
+int rpmdbOpen(/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
 		int mode, int perms)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *dbp, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup rpmdb
- * Initialize database.
- * @param prefix	path to top of install tree
- * @param perms		database permissions
- * @return		0 on success
- */
-int rpmdbInit(/*@null@*/ const char * prefix, int perms)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup rpmdb
- * Verify all database components.
- * @param db		rpm database
- * @return		0 on success
- */
-int rpmdbVerifyAllDBI(rpmdb db)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup rpmdb
- * Open and verify all database components.
- * @param prefix	path to top of install tree
- * @return		0 on success
- */
-int rpmdbVerify(/*@null@*/ const char * prefix)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Block access to a single database index.

@@ -122,7 +122,6 @@ LIBRPMDB_0
     rpmdbCount;
     rpmdbCountPackages;
     rpmdbFindFpList;
-    rpmdbInit;
     rpmdbMireApply;
     rpmdbNew;
     rpmdbOpen;
@@ -131,8 +130,6 @@ LIBRPMDB_0
     rpmdbRebuild;
     rpmdbRemove;
     rpmdbSync;
-    rpmdbVerify;
-    rpmdbVerifyAllDBI;
     rpmDisplayQueryTags;
     _rpmevr_debug;
     rpmEVRcmp;

@@ -125,18 +125,6 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     return rc;
 }
 
-int rpmtsInitDB(rpmts ts, int dbmode)
-{
-#if defined(SUPPORT_INITDB)
-    void *lock = rpmtsAcquireLock(ts);
-    int rc = rpmdbInit(ts->rootDir, dbmode);
-    lock = rpmtsFreeLock(lock);
-    return rc;
-#else
-    return -1;
-#endif
-}
-
 int rpmtsRebuildDB(rpmts ts)
 {
     void * lock = rpmtsAcquireLock(ts);
@@ -147,15 +135,6 @@ int rpmtsRebuildDB(rpmts ts)
     		(!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK) ? ts : NULL));
     lock = rpmtsFreeLock(lock);
     return rc;
-}
-
-int rpmtsVerifyDB(rpmts ts)
-{
-#if defined(SUPPORT_VERIFYDB)
-    return rpmdbVerify(ts->rootDir);
-#else
-    return -1;
-#endif
 }
 
 /*@-compdef@*/ /* keyp might not be defined. */

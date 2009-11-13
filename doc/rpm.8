@@ -34,7 +34,7 @@ rpm \- RPM Package Manager
 .SS "MISCELLANEOUS:"
 .PP
 
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR}
+\fBrpm\fR {\fB--rebuilddb\fR}
 
 \fBrpm\fR {\fB--addsign|--resign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
@@ -780,10 +780,9 @@ for per-user configuration.
 .PP
 The general form of an rpm rebuild database command is 
 .PP
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIDIRECTORY\fB\fR] [\fB--root \fIDIRECTORY\fB\fR]
+\fBrpm\fR {\fB--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIDIRECTORY\fB\fR] [\fB--root \fIDIRECTORY\fB\fR]
 .PP
-Use \fB--initdb\fR to create a new database, use
-\fB--rebuilddb\fR to rebuild the database indices from
+Use \fB--rebuilddb\fR to rebuild the database indices from
 the installed package headers.
 .SS "SHOWRC"
 .PP

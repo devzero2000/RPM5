@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: eliminate --verifydb (except for rpmtsVerifyDB error stub));
+    - jbj: rpmdb: eliminate --initdb (except for rpmtsInitDB error stub));
     - jbj: rpmdb: assign the primary key to installed headers persistently.
     - jbj: rpmdb: use a Bloom filter not a bitmap to determine if header
 	signature/digest was checked. Header instances no longer need to

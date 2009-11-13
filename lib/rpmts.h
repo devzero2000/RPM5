@@ -440,14 +440,18 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 
 /** \ingroup rpmts
  * Initialize the database used by the transaction.
- * @deprecated An explicit rpmdbInit() is almost never needed.
+ * @deprecated An explicit rpmdbInit() is never needed.
  * @param ts		transaction set
  * @param dbmode	O_RDONLY or O_RDWR
  * @return		0 on success
  */
+static inline /*@unused@*/
 int rpmtsInitDB(rpmts ts, int dbmode)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    return -1;
+}
 
 /** \ingroup rpmts
  * Rebuild the database used by the transaction.
@@ -460,12 +464,17 @@ int rpmtsRebuildDB(rpmts ts)
 
 /** \ingroup rpmts
  * Verify the database used by the transaction.
+ * @deprecated Use included standalone db_verify(1) utility instead.
  * @param ts		transaction set
  * @return		0 on success
  */
+static inline /*@unused@*/
 int rpmtsVerifyDB(rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    return -1;
+}
 
 /** \ingroup rpmts
  * Return transaction database iterator.
