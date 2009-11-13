@@ -160,7 +160,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
     }
 
 if (_rpmdb_debug)
-fprintf(stderr, "*** dbiTagStr %s\n", dbiTagStr);
+fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTagsP, dbiTagStr);
     /* Always allocate package index */
     dbiTags = xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
@@ -291,8 +291,8 @@ assert(_dbapi_rebuild == 3 || _dbapi_rebuild == 4);
 	_oneshot++;
    }
 
-assert(db != NULL);
-assert(db->_dbi != NULL);
+assert(db != NULL);					/* XXX sanity */
+assert(db->_dbi != NULL);				/* XXX sanity */
 
     /* Is this index configured? */
     dbix = dbiTagToDbix(db, tag);
@@ -1781,7 +1781,7 @@ static void rpmmiFini(void * _mi)
     /* XXX there's code that traverses here w mi->mi_db == NULL. b0rked imho. */
     if (mi->mi_db) {
 	dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
-assert(dbi != NULL);
+assert(dbi != NULL);				/* XXX sanity */
 
 	xx = miFreeHeader(mi, dbi);
 
@@ -2347,7 +2347,6 @@ next:
     }
     else if (dbi->dbi_index) {
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &p, &v, _flags);
-	_flags = DB_NEXT_DUP;
 	switch (rc) {
 	default:
 assert(0);
@@ -2366,6 +2365,7 @@ assert(0);
 		return mi->mi_h;
 	    break;
 	}
+	_flags = DB_NEXT_DUP;
     }
     else {
 	/* Iterating Packages database. */
@@ -2572,9 +2572,6 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
     if (mi->mi_set == NULL) {
 	mi->mi_set = set;
     } else {
-#if 0
-fprintf(stderr, "+++ %d = %d + %d\t\"%s\"\n", (mi->mi_set->count + set->count), mi->mi_set->count, set->count, ((char *)key->data));
-#endif
 	mi->mi_set->recs = xrealloc(mi->mi_set->recs,
 		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
 	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
@@ -2775,12 +2772,16 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 	    default:
 		/* Do a lazy open on all necessary secondary indices. */
 #ifndef	NOTYET	/* XXX headerGet() sees tag extensions, headerIsEntry doesn't */
-		if (headerGet(db->db_h, he, 0))
+		if (headerGet(db->db_h, he, 0)) {
 		    dbi = dbiOpen(db, he->tag, 0);
+assert(dbi != NULL);				/* XXX sanity */
+		}
 		he->p.ptr = _free(he->p.ptr);
 #else
-		if (headerIsEntry(db->db_h, he->tag))
+		if (headerIsEntry(db->db_h, he->tag)) {
 		    dbi = dbiOpen(db, he->tag, 0);
+assert(dbi != NULL);				/* XXX sanity */
+		}
 #endif
 		/*@switchbreak@*/ break;
 	    case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
@@ -2850,21 +2851,22 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     dbiIndex dbi;
     size_t dbix;
     union _dbswap mi_offset;
-    unsigned int hdrNum = 0;
+    uint32_t hdrNum = headerGetInstance(h);
     int ret = 0;
     int xx;
 
-    /* Initialize the header instance */
-    (void) headerSetInstance(h, 0);
-
     if (db == NULL)
 	return 0;
+
+if (_rpmdb_debug)
+fprintf(stderr, "--> %s(%p, %u, %p, %p) h# %u\n", __FUNCTION__, db, (unsigned)iid, h, ts, hdrNum);
 
     /* Reference header for use by associated secondary index callbacks. */
     db->db_h = headerLink(h);
 
 assert(headerIsEntry(h, RPMTAG_REMOVETID) == 0);	/* XXX sanity */
 
+    /* Add the install transaction id. */
     if (iid != 0 && iid != -1) {
 	rpmuint32_t tid[2];
 	tid[0] = iid;
@@ -2883,19 +2885,29 @@ assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
 
     (void) blockSignals(db, &signalMask);
 
-    if (!db->db_rebuilding) {
+    /* Assign a primary Packages key for new Header's. */
+    if (!db->db_rebuilding && hdrNum == 0) {
 	int64_t seqno = 0;
 	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
-	xx = dbiSeqno(dbi, &seqno, 0);
-	xx = dbiSync(dbi, 0);
+	if ((ret = dbiSeqno(dbi, &seqno, 0)) == 0) {
+	    hdrNum = seqno;
+	    headerSetInstance(h, hdrNum);
+	}
     }
 
+/* XXX ensure that the header instance is set persistently. */
+if (hdrNum == 0) {
+assert(hdrNum > 0);
+assert(hdrNum == headerGetInstance(h));
+}
+
     dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
-    if (dbi != NULL) {
+assert(dbi != NULL);					/* XXX sanity */
+    {
 	/* Header indices are monotonically increasing integer instances
 	 * starting with 1.  Header instance #0 is where the monotonically
 	 * increasing integer is stored.  */
-	unsigned int idx0 = 0;
+	uint32_t idx0 = 0;
 
 	DBC * dbcursor = NULL;
 	DBT k = DBT_INIT;
@@ -2903,56 +2915,50 @@ assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
 
 	xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
-	/* Retrieve join key for next header instance. */
+	/* Retrieve largest primary key. */
 	k.data = &idx0;
-	k.size = (u_int32_t)sizeof(idx0);
+	k.size = (UINT32_T)sizeof(idx0);
 	ret = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 
-	hdrNum = 0;
 	if (ret == 0 && v.data) {
 	    memcpy(&mi_offset, v.data, sizeof(mi_offset.ui));
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
-	    hdrNum = (unsigned) mi_offset.ui;
+	    idx0 = (unsigned) mi_offset.ui;
 	}
-	++hdrNum;
-	mi_offset.ui = hdrNum;
-	if (dbiByteSwapped(dbi) == 1)
-	    _DBSWAP(mi_offset);
-	if (ret == 0 && v.data) {
-	    memcpy(v.data, &mi_offset, sizeof(mi_offset.ui));
-	} else {
+	/* Update largest primary key (if necessary). */
+	if (hdrNum > idx0) {
+	    mi_offset.ui = hdrNum;
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    if (ret == 0 && v.data) {
+		memcpy(v.data, &mi_offset, sizeof(mi_offset.ui));
+	    } else {
 /*@-immediatetrans@*/
-	    v.data = &mi_offset;
+		v.data = &mi_offset;
 /*@=immediatetrans@*/
-	    v.size = (u_int32_t)sizeof(mi_offset.ui);
-	}
+		v.size = (u_int32_t)sizeof(mi_offset.ui);
+	    }
 
 /*@-compmempass@*/
-	ret = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
+	    ret = dbiPut(dbi, dbcursor, &k, &v, DB_CURRENT);
 /*@=compmempass@*/
-
-	xx = dbiSync(dbi, 0);
+	}
 
 	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-
     }
 
     if (ret) {
 	rpmlog(RPMLOG_ERR,
-		_("error(%d) allocating new package instance\n"), ret);
+		_("error(%d) updating largest primary key\n"), ret);
 	goto exit;
     }
 
     /* Now update the indexes */
 
-    if (hdrNum)
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
 
-	/* Save the header instance. */
-	(void) headerSetInstance(h, hdrNum);
-	
 	dbix = db->db_ndbi - 1;
 	if (db->db_tags != NULL)
 	do {
@@ -2967,12 +2973,16 @@ assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
 	    default:
 		/* Do a lazy open on all necessary secondary indices. */
 #ifndef	NOTYET	/* XXX headerGet() sees tag extensions, headerIsEntry doesn't */
-		if (headerGet(h, he, 0))
+		if (headerGet(h, he, 0)) {
 		    dbi = dbiOpen(db, he->tag, 0);
+assert(dbi != NULL);					/* XXX sanity */
+		}
 		he->p.ptr = _free(he->p.ptr);
 #else
-		if (headerIsEntry(h, he->tag))
+		if (headerIsEntry(h, he->tag)) {
 		    dbi = dbiOpen(db, he->tag, 0);
+assert(dbi != NULL);					/* XXX sanity */
+		}
 #endif
 		/*@switchbreak@*/ break;
 	    case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
@@ -2991,8 +3001,7 @@ assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
 		    xx = db->db_export(db, h, 1);
 
 		dbi = dbiOpen(db, he->tag, 0);
-		if (dbi == NULL)	/* XXX shouldn't happen */
-		    continue;
+assert(dbi != NULL);					/* XXX sanity */
 		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 		mi_offset.ui = hdrNum;
@@ -3027,7 +3036,6 @@ assert(v.data != NULL);
 /*@-compmempass@*/
 		    xx = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 /*@=compmempass@*/
-		    xx = dbiSync(dbi, 0);
 		}
 		v.data = _free(v.data); /* headerUnload */
 		v.size = 0;
@@ -3383,9 +3391,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
-#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-#endif
     const char * myprefix = NULL;
     rpmdb olddb;
     const char * dbpath = NULL;
@@ -3397,14 +3403,12 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     int nocleanup = 1;
     int failed = 0;
     int removedir = 0;
-    int rc = 0, xx;
-    int _dbapi;
-    int _dbapi_rebuild;
+    int rc = 0;
+    int xx;
+    int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    int _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
     tagStore_t dbiTags = NULL;
     size_t dbiNTags = 0;
-
-    _dbapi = rpmExpandNumeric("%{_dbapi}");
-    _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
 
     dbiTagsInit(&dbiTags, &dbiNTags);
 
@@ -3503,32 +3507,37 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    (void) rpmmiSetHdrChk(mi, ts);
 
 	while ((h = rpmmiNext(mi)) != NULL) {
+	    uint32_t hdrNum = headerGetInstance(h);
 
+/* XXX ensure that the header instance is set persistently. */
+assert(hdrNum > 0 && hdrNum == rpmmiInstance(mi));
+
+	    he->tag = RPMTAG_NVRA;
+	    xx = headerGet(h, he, 0);
 /* XXX limit the fiddle up to linux for now. */
 #if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
-	    he->tag = RPMTAG_NVRA;
-	    if (headerGet(h, he, 0)) {
+	    if (he->p.str)
 		setproctitle("%s", he->p.str);
-		he->p.ptr = _free(he->p.ptr);
-	    }
 #endif
 
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
+if (nh) headerSetInstance(nh, hdrNum);
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts);
 		(void)headerFree(nh);
 		nh = NULL;
 	    }
 
 	    if (rc) {
-#define	_RECNUM	rpmmiInstance(mi)
 		rpmlog(RPMLOG_ERR,
-			_("cannot add record originally at %u\n"), _RECNUM);
-#undef	_RECNUM
+			_("cannot add %s (h# %u)\n"), he->p.str, hdrNum);
 		failed = 1;
-		break;
 	    }
+	    he->p.ptr = _free(he->p.ptr);
+
+	    if (failed)
+		break;
 	}
 
 	mi = rpmmiFree(mi);

@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: assign the primary key to installed headers persistently.
     - jbj: rpmdb: use a Bloom filter not a bitmap to determine if header
 	signature/digest was checked. Header instances no longer need to
 	be small integers.
