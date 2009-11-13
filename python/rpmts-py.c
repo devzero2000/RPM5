@@ -1634,6 +1634,7 @@ fprintf(stderr, "*** rpmts_init(%p,%p,%p)\n", s, args, kwds);
      *      python objects */
     (void) rpmtsSetVSFlags(s->ts, vsflags);
     s->keyList = PyList_New(0);
+    s->ignoreSet = 0;
     s->scriptFd = NULL;
     s->tsi = NULL;
     s->tsiFilter = 0;
