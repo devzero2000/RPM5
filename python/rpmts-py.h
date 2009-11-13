@@ -41,7 +41,7 @@ extern "C" {
 
 /** \ingroup py_c
  */
-rpmtsObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
+PyObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
