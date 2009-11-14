@@ -503,16 +503,6 @@ struct rpmdb_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-
-/** \ingroup rpmdb
- */
-enum rpmdbFlags {
-	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
-	RPMDB_FLAG_MINIMAL	= (1 << 1),
-/*@-enummemuse@*/
-	RPMDB_FLAG_CHROOT	= (1 << 2)
-/*@=enummemuse@*/
-};
 #endif	/* defined(_RPMDB_INTERNAL) */
 
 #ifdef __cplusplus

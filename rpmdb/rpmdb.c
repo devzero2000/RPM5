@@ -320,6 +320,7 @@ union _dbswap {
     rpmuint32_t ui;
     unsigned char uc[4];
 };
+static union _dbswap _endian = { .ui = 0x11223344 };
 
 #define	_DBSWAP(_a) \
   { unsigned char _b, *_c = (_a).uc; \
@@ -351,7 +352,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 
     if (dbi == NULL || data == NULL || setp == NULL)
 	return -1;
-    _dbbyteswapped = dbiByteSwapped(dbi);
+    _dbbyteswapped = (_endian.uc[0] == 0x44);
 
     if ((s = data->data) == NULL) {
 	*setp = NULL;
@@ -1055,9 +1056,8 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		fileSystem, internalState @*/
 {
     rpmdb db;
-    int rc, xx;
-    int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
-    int minimal = flags & RPMDB_FLAG_MINIMAL;
+    int rc;
+    int xx;
 
     /* Insure that _dbapi has one of -1, 1, 2, or 3 */
     if (_dbapi < -1 || _dbapi > 4)
@@ -1128,8 +1128,6 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_NAME:
 		if (dbi == NULL) rc |= 1;
-		if (minimal)
-		    goto exit;
 		/*@switchbreak@*/ break;
 	    default:
 		/*@switchbreak@*/ break;
@@ -1138,7 +1136,7 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
     }
 
 exit:
-    if (rc || justCheck || dbp == NULL)
+    if (rc || dbp == NULL)
 	xx = rpmdbClose(db);
     else {
 /*@-assignexpose -newreftrans@*/
@@ -1320,7 +1318,7 @@ dbiIndexSet set = NULL;
 
 	    /* Get a native endian copy of the primary package key. */
 	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
-	    if (dbiByteSwapped(dbi) == 1)
+	    if (_endian.uc[0] == 0x44)
 		_DBSWAP(mi_offset);
 
 	    /* Append primary package key to set. */
@@ -2272,7 +2270,7 @@ next:
 	    return mi->mi_h;
 	/* Fetch header by offset. */
 	mi_offset.ui = mi->mi_offset;
-	if (dbiByteSwapped(dbi) == 1)
+	if (_endian.uc[0] == 0x44)
 	    _DBSWAP(mi_offset);
 	k.data = &mi_offset.ui;
 	k.size = (u_int32_t)sizeof(mi_offset.ui);
@@ -2290,7 +2288,7 @@ assert(0);
 	case 0:
 	    mi->mi_setx++;
 	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
-	    if (dbiByteSwapped(dbi) == 1)
+	    if (_endian.uc[0] == 0x44)
 		_DBSWAP(mi_offset);
 	    mi->mi_offset = mi_offset.ui;
 	    /* If next header is identical, return it now. */
@@ -2311,7 +2309,7 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 	    rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_NEXT);
 	    if (rc == 0) {
 		memcpy(&mi_offset, k.data, sizeof(mi_offset.ui));
-		if (dbiByteSwapped(dbi) == 1)
+		if (_endian.uc[0] == 0x44)
 		    _DBSWAP(mi_offset);
 		mi->mi_offset = mi_offset.ui;
 	    }
@@ -2737,7 +2735,7 @@ assert(dbi != NULL);				/* XXX sanity */
 		    continue;
 	      
 	        mi_offset.ui = hdrNum;
-		if (dbiByteSwapped(dbi) == 1)
+		if (_endian.uc[0] == 0x44)
 		    _DBSWAP(mi_offset);
 /*@-immediatetrans@*/
 		k.data = &mi_offset;
@@ -2836,56 +2834,6 @@ assert(hdrNum == headerGetInstance(h));
 
     dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
 assert(dbi != NULL);					/* XXX sanity */
-    {
-	/* Header indices are monotonically increasing integer instances
-	 * starting with 1.  Header instance #0 is where the monotonically
-	 * increasing integer is stored.  */
-	uint32_t idx0 = 0;
-
-	DBC * dbcursor = NULL;
-	DBT k = DBT_INIT;
-	DBT v = DBT_INIT;
-
-	xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
-
-	/* Retrieve largest primary key. */
-	k.data = &idx0;
-	k.size = (UINT32_T)sizeof(idx0);
-	ret = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-
-	if (ret == 0 && v.data) {
-	    memcpy(&mi_offset, v.data, sizeof(mi_offset.ui));
-	    if (dbiByteSwapped(dbi) == 1)
-		_DBSWAP(mi_offset);
-	    idx0 = (unsigned) mi_offset.ui;
-	}
-	/* Update largest primary key (if necessary). */
-	if (hdrNum > idx0) {
-	    mi_offset.ui = hdrNum;
-	    if (dbiByteSwapped(dbi) == 1)
-		_DBSWAP(mi_offset);
-	    if (ret == 0 && v.data) {
-		memcpy(v.data, &mi_offset, sizeof(mi_offset.ui));
-	    } else {
-/*@-immediatetrans@*/
-		v.data = &mi_offset;
-/*@=immediatetrans@*/
-		v.size = (u_int32_t)sizeof(mi_offset.ui);
-	    }
-
-/*@-compmempass@*/
-	    ret = dbiPut(dbi, dbcursor, &k, &v, DB_CURRENT);
-/*@=compmempass@*/
-	}
-
-	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-    }
-
-    if (ret) {
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) updating largest primary key\n"), ret);
-	goto exit;
-    }
 
     /* Now update the indexes */
 
@@ -2938,7 +2886,7 @@ assert(dbi != NULL);					/* XXX sanity */
 		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 		mi_offset.ui = hdrNum;
-		if (dbiByteSwapped(dbi) == 1)
+		if (_endian.uc[0] == 0x44)
 		    _DBSWAP(mi_offset);
 		/*@-immediatetrans@*/
 		k.data = (void *) &mi_offset;
@@ -3333,6 +3281,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     const char * newdbpath = NULL;
     const char * newrootdbpath = NULL;
     const char * tfn;
+    uint32_t maxHdrNum = 0;
     int nocleanup = 1;
     int failed = 0;
     int removedir = 0;
@@ -3412,8 +3361,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
     rpmlog(RPMLOG_DEBUG, D_("opening old database with dbapi %d\n"),
 		_dbapi);
-    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644,
-		     RPMDB_FLAG_MINIMAL)) {
+    /* XXX Seqno update needs O_RDWR. */
+    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDWR, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
@@ -3444,6 +3393,10 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
 /* XXX ensure that the header instance is set persistently. */
 assert(hdrNum > 0 && hdrNum == rpmmiInstance(mi));
+
+	    /* Keep track of largest hdrNum. */
+	    if (hdrNum > maxHdrNum)
+		maxHdrNum = hdrNum;
 
 	    he->tag = RPMTAG_NVRA;
 	    xx = headerGet(h, he, 0);
@@ -3478,6 +3431,19 @@ if (nh) headerSetInstance(nh, hdrNum);
     }
     newdb->db_rebuilding = 0;
 
+    /* Make sure Seqno is larger than maxHdrNum. */
+    {	dbiIndex dbi;
+	int64_t seqno = 0;
+	dbi = dbiOpen(olddb, RPMDBI_SEQNO, 0);
+assert(dbi != NULL);					/* XXX sanity */
+	/* XXX calling dbiSeqno does seqno++ always. */
+	while (!dbiSeqno(dbi, &seqno, 0) && seqno < (int64_t)maxHdrNum)
+	    ;
+	/* XXX grrr no %ull in rpmlog(). */
+	rpmlog(RPMLOG_DEBUG, D_("max. instance %u seqno %u\n"),
+			(unsigned)maxHdrNum, (unsigned)seqno);
+    }
+
     xx = rpmdbClose(olddb);
     xx = rpmdbClose(newdb);
 
@@ -3502,6 +3468,7 @@ if (nh) headerSetInstance(nh, hdrNum);
 	    goto exit;
 	}
     }
+
     rc = 0;
 
 exit:
