@@ -64,8 +64,9 @@ rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
     return rpmbfLink(bf);
 }
 
-int rpmbfAdd(rpmbf bf, const char * s, size_t ns)
+int rpmbfAdd(rpmbf bf, const void * _s, size_t ns)
 {
+    const char * s = _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 
@@ -79,12 +80,13 @@ int rpmbfAdd(rpmbf bf, const char * s, size_t ns)
     }
     bf->n++;
 if (_rpmbf_debug)
-fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
+fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return 0;
 }
 
-int rpmbfChk(rpmbf bf, const char * s, size_t ns)
+int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
 {
+    const char * s = _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
     int rc = 1;
@@ -101,7 +103,7 @@ int rpmbfChk(rpmbf bf, const char * s, size_t ns)
 	break;
     }
 if (_rpmbf_debug)
-fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
+fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return rc;
 }
 
@@ -113,12 +115,13 @@ int rpmbfClr(rpmbf bf)
     memset(bits, 0, nw * nbw);
     bf->n = 0;
 if (_rpmbf_debug)
-fprintf(stderr, "--> %s(%p) bf{%u,%u}[%u]\n", __FUNCTION__, bf, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
+fprintf(stderr, "<-- %s(%p) bf{%u,%u}[%u]\n", __FUNCTION__, bf, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return 0;
 }
 
-int rpmbfDel(rpmbf bf, const char * s, size_t ns)
+int rpmbfDel(rpmbf bf, const void * _s, size_t ns)
 {
+    const char * s = _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 
@@ -134,7 +137,7 @@ assert(ns > 0);
     if (bf->n != 0)
 	bf->n--;
 if (_rpmbf_debug)
-fprintf(stderr, "--> %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
+fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
     return 0;
 }
 
@@ -151,7 +154,7 @@ int rpmbfIntersect(rpmbf a, const rpmbf b)
 	abits[i] &= bbits[i];
     a->n = 1;		/* XXX what is population estimate? */
 if (_rpmbf_debug)
-fprintf(stderr, "--> %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
+fprintf(stderr, "<-- %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
     return 0;
 }
 
@@ -168,6 +171,6 @@ int rpmbfUnion(rpmbf a, const rpmbf b)
 	abits[i] |= bbits[i];
     a->n += b->n;
 if (_rpmbf_debug)
-fprintf(stderr, "--> %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
+fprintf(stderr, "<-- %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
     return 0;
 }

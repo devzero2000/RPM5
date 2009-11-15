@@ -130,13 +130,13 @@ rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
 	/*@*/;
 
 /**
- * Add string to a Bloom filter.
+ * Add item to a Bloom filter.
  * @param bf		Bloom filter
- * @param s		string
- * @param ns		no. bytes in string (0 will do strlen)
+ * @param *_s		bytes
+ * @param ns		no. bytes (0 uses strlen)
  * @return		0 always
  */
-int rpmbfAdd(rpmbf bf, const char * s, size_t ns)
+int rpmbfAdd(rpmbf bf, const void * _s, size_t ns)
 	/*@modifies bf @*/;
 
 /**
@@ -148,24 +148,24 @@ int rpmbfClr(rpmbf bf)
 	/*@modifies bf @*/;
 
 /**
- * Check for string in a Bloom filter.
+ * Check for item in a Bloom filter.
  * @param bf		Bloom filter
- * @param s		string
- * @param ns		no. bytes in string (0 will do strlen)
+ * @param *_s		bytes
+ * @param ns		no. bytes (0 uses strlen)
  * @return		1 if string is present, 0 if not
  */
-int rpmbfChk(rpmbf bf, const char * s, size_t ns)
+int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
 	/*@modifies bf @*/;
 
 /**
- * Delete string from a Bloom filter.
- * @todo Counting bloom filter needed.
+ * Delete item from a Bloom filter.
+ * @todo Counting bloom filter needed?
  * @param bf		Bloom filter
- * @param s		string
- * @param ns		no. bytes in string (0 will do strlen)
+ * @param *_s		bytes
+ * @param ns		no. bytes (0 will do strlen)
  * @return		0 always
  */
-int rpmbfDel(rpmbf bf, const char * s, size_t ns)
+int rpmbfDel(rpmbf bf, const void * _s, size_t ns)
 	/*@modifies bf @*/;
 
 /**
