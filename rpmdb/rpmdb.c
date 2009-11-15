@@ -17,7 +17,7 @@
 #include <argv.h>
 
 #define	_RPMBF_INTERNAL
-#include <rpmbf.h>		/* pbm_set macros */
+#include <rpmbf.h>
 
 #include <rpmtypes.h>
 
@@ -280,6 +280,7 @@ assert(mydbvecs[_dbapi] != NULL);
     }
     db->_dbi[dbix] = dbi;
 
+#if defined(SUPPORT_HEADER_CHECKS)
     /* XXX FIXME: move to rpmdbOpen() instead. */
     if (tag == RPMDBI_PACKAGES && db->db_bf == NULL) {
 	size_t _jiggery = 2;		/* XXX todo: Bloom filter tuning? */
@@ -287,6 +288,7 @@ assert(mydbvecs[_dbapi] != NULL);
 	size_t _m = _jiggery * (3 * 8192 * _k) / 2;
 	db->db_bf = rpmbfNew(_m, _k, 0);
     }
+#endif
 
 exit:
 
@@ -469,41 +471,6 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
     return 0;
 }
 
-/**
- * Remove element(s) from set of index database items.
- * @param set		set of index database items
- * @param recs		array of items to remove from set
- * @param nrecs		number of items
- * @param recsize	size of an array item
- * @param sorted	array is already sorted?
- * @return		0 success, 1 failure (no items found)
- */
-static int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
-		size_t recsize, int sorted)
-	/*@modifies set, recs @*/
-{
-    int from;
-    int to = 0;
-    int num = set->count;
-    int numCopied = 0;
-
-assert(set->count > 0);
-    if (nrecs > 1 && !sorted)
-	qsort(recs, nrecs, recsize, hdrNumCmp);
-
-    for (from = 0; from < num; from++) {
-	if (bsearch(&set->recs[from], recs, nrecs, recsize, hdrNumCmp)) {
-	    set->count--;
-	    continue;
-	}
-	if (from != to)
-	    set->recs[to] = set->recs[from]; /* structure assignment */
-	to++;
-	numCopied++;
-    }
-    return (numCopied == num);
-}
-
 /* XXX transaction.c */
 unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
@@ -551,6 +518,8 @@ struct rpmmi_s {
     int			mi_modified;
     unsigned int	mi_prevoffset;	/* header instance (native endian) */
     unsigned int	mi_offset;	/* header instance (native endian) */
+/*@refcounted@*/ /*@null@*/
+    rpmbf		mi_bf;		/* Iterator instance Bloom filter. */
     int			mi_nre;
 /*@only@*/ /*@null@*/
     miRE		mi_re;
@@ -1598,7 +1567,9 @@ static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
+#if defined(SUPPORT_HEADER_CHECKS)
 	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
+#endif
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -1611,6 +1582,7 @@ static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	    v.size = (UINT32_T) len;
 	}
 
+#if defined(SUPPORT_HEADER_CHECKS)
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_ts && chkhdr) {
 	    const char * msg = NULL;
@@ -1625,6 +1597,7 @@ assert(v.data != NULL);
 			mi->mi_prevoffset, (msg ? msg : "\n"));
 	    msg = _free(msg);
 	}
+#endif
 
 	if (v.data != NULL && rpmrc != RPMRC_FAIL) {
 	    sigset_t signalMask;
@@ -1687,6 +1660,8 @@ assert(dbi != NULL);				/* XXX sanity */
     (void) mireFreeAll(mi->mi_re, mi->mi_nre);
     mi->mi_re = NULL;
 
+    (void) rpmbfFree(mi->mi_bf);
+    mi->mi_bf = NULL;
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
 
     mi->mi_keyp = _free(mi->mi_keyp);
@@ -2163,8 +2138,6 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * pk, DBT * vp,
     int map;
     int rc;
 
-if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p(%s),%p,%p,%p,0x%x)\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbcursor, kp, vp, flags);
-
     switch (dbi->dbi_rpmdb->db_api) {
     default:	map = 0;		break;
     case 3:	map = _rpmmi_usermem;	break;	/* Berkeley DB */
@@ -2207,6 +2180,9 @@ if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p(%s),%p,%p,%p,0x%x)\n", __FUNCTION
 	}
     } else
 	rc = dbiGet(dbi, dbcursor, kp, vp, flags);
+if (_rpmmi_debug || dbi->dbi_debug)
+fprintf(stderr, "<-- %s(%p(%s),%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbcursor, kp, vp, flags, rc);
+
     return rc;
 }
 
@@ -2219,7 +2195,9 @@ Header rpmmiNext(rpmmi mi)
     union _dbswap mi_offset;
     void * uh;
     size_t uhlen;
+#if defined(SUPPORT_HEADER_CHECKS)
     int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
+#endif
 rpmTag tag;
 uint32_t _flags;
     int map;
@@ -2239,7 +2217,8 @@ tag = (mi->mi_set == NULL && mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
     case 3:	map = _rpmmi_usermem;	break;	/* Berkeley DB */
     }
 
-if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi, dbi, tagName(tag));
+if (_rpmmi_debug || dbi->dbi_debug)
+fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi, dbi, tagName(tag));
 
     /*
      * Cursors are per-iterator, not per-dbi, so get a cursor for the
@@ -2265,9 +2244,16 @@ next:
 	    return NULL;
 	mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	mi->mi_setx++;
+
 	/* If next header is identical, return it now. */
 	if (mi->mi_offset == mi->mi_prevoffset && mi->mi_h != NULL)
 	    return mi->mi_h;
+
+	/* Should this header be skipped? */
+	if (mi->mi_bf != NULL
+	 && rpmbfChk(mi->mi_bf, &mi->mi_offset, sizeof(mi->mi_offset)))
+	    goto next;
+
 	/* Fetch header by offset. */
 	mi_offset.ui = mi->mi_offset;
 	if (_endian.uc[0] == 0x44)
@@ -2303,8 +2289,8 @@ assert(0);
 assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 
 	/* Fetch header with DB_NEXT. */
-	/* Instance 0 is the largest header instance in the database,
-	 * and should be skipped. */
+	/* Instance 0 is the largest header instance in legacy databases,
+	 * and must be skipped. */
 	do {
 	    rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_NEXT);
 	    if (rc == 0) {
@@ -2320,23 +2306,27 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
     if (rc)
 	return NULL;
 
+    /* Should this header be skipped? */
+    if (mi->mi_set == NULL && mi->mi_bf != NULL
+     && rpmbfChk(mi->mi_bf, &mi->mi_offset, sizeof(mi->mi_offset)))
+	goto next;
+
     uh = v.data;
     uhlen = v.size;
-
     if (uh == NULL)
 	return NULL;
 
     /* Rewrite current header (if necessary) and unlink. */
     xx = miFreeHeader(mi, dbi);
 
+#if defined(SUPPORT_HEADER_CHECKS)
     /* Check header digest/signature once (if requested). */
     if (mi->mi_ts && chkhdr) {
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 
 	/* Don't bother re-checking a previously read header. */
 	if (mi->mi_db && mi->mi_db->db_bf
-	 && rpmbfChk(mi->mi_db->db_bf,
-		(const char *)&mi->mi_offset, sizeof(mi->mi_offset)))
+	 && rpmbfChk(mi->mi_db->db_bf, &mi->mi_offset, sizeof(mi->mi_offset)))
 	    rpmrc = RPMRC_OK;
 
 	/* If blob is unchecked, check blob import consistency now. */
@@ -2354,14 +2344,14 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 
 	    /* Mark header checked. */
 	    if (mi->mi_db && mi->mi_db->db_bf && rpmrc == RPMRC_OK)
-		rpmbfAdd(mi->mi_db->db_bf,
-			(const char *)&mi->mi_offset, sizeof(mi->mi_offset));
+		rpmbfAdd(mi->mi_db->db_bf, &mi->mi_offset, sizeof(mi->mi_offset));
 
 	    /* Skip damaged and inconsistent headers. */
 	    if (rpmrc == RPMRC_FAIL)
 		goto next;
 	}
     }
+#endif
 
     if (map) {
 /*@-onlytrans@*/
@@ -2374,9 +2364,9 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
     } else
 	mi->mi_h = headerCopyLoad(uh);
 
-    if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
+    if (mi->mi_h == NULL) {
 	rpmlog(RPMLOG_ERR,
-		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),
+		_("rpmdb: damaged header #%u cannot be loaded -- skipping.\n"),
 		mi->mi_offset);
 	/* damaged header should not be reused */
 	if (mi->mi_h) {
@@ -2514,14 +2504,26 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
     return rc;
 }
 
+/* XXX TODO: a Bloom Filter on removed packages created once, not each time. */
 int rpmmiPrune(rpmmi mi, int * hdrNums, int nHdrNums, int sorted)
 {
-    if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
-	return 1;
+    int rc = (mi == NULL || hdrNums == NULL || nHdrNums <= 0);
 
-    if (mi->mi_set)
-	(void) dbiPruneSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), sorted);
-    return 0;
+    if (!rc) {
+	int i;
+	if (mi->mi_bf == NULL) {
+	    size_t _jiggery = 2;	/* XXX todo: Bloom filter tuning? */
+	    size_t _k = _jiggery * 8;
+	    size_t _m = _jiggery * (3 * nHdrNums * _k) / 2;
+	    mi->mi_bf = rpmbfNew(_m, _k, 0);
+	}
+	for (i = 0; i < nHdrNums; i++)
+	    rpmbfAdd(mi->mi_bf, &hdrNums[i], sizeof(*hdrNums));
+    }
+
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p, %p[%u], %d) rc %d\n", __FUNCTION__, mi, hdrNums, (unsigned)nHdrNums, sorted, rc);
+    return rc;
 }
 
 int rpmmiGrow(rpmmi mi, const int * hdrNums, int nHdrNums)
@@ -2570,7 +2572,8 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     mi = rpmmiGetPool(_rpmmiPool);
     (void)rpmioLinkPoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
-if (dbi->dbi_debug) fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 ? (const char *)keyp : "???"), dbi, mi);
+if (_rpmmi_debug || dbi->dbi_debug)
+fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 ? (const char *)keyp : "???"), dbi, mi);
 
     /* Chain cursors for teardown on abnormal exit. */
     mi->mi_next = rpmmiRock;
@@ -2838,7 +2841,9 @@ assert(dbi != NULL);					/* XXX sanity */
     /* Now update the indexes */
 
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+#if defined(SUPPORT_HEADER_CHECKS)
 	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
+#endif
 
 	dbix = db->db_ndbi - 1;
 	if (db->db_tags != NULL)
@@ -2898,6 +2903,7 @@ assert(dbi != NULL);					/* XXX sanity */
 		    v.size = (UINT32_T) len;
 		}
 
+#if defined(SUPPORT_HEADER_CHECKS)
 		/* Check header digest/signature on blob export. */
 		if (ts && chkhdr && !(h->flags & HEADERFLAG_RDONLY)) {
 		    const char * msg = NULL;
@@ -2912,6 +2918,7 @@ assert(v.data != NULL);
 				hdrNum, (msg ? msg : ""));
 		    msg = _free(msg);
 		}
+#endif
 
 		if (v.data != NULL && rpmrc != RPMRC_FAIL) {
 /*@-compmempass@*/
@@ -2932,7 +2939,6 @@ assert(v.data != NULL);
 	rec = _free(rec);
     }
 
-exit:
     /* Unreference header used by associated secondary index callbacks. */
     (void) headerFree(db->db_h);
     db->db_h = NULL;
@@ -3400,6 +3406,11 @@ assert(hdrNum > 0 && hdrNum == rpmmiInstance(mi));
 
 	    he->tag = RPMTAG_NVRA;
 	    xx = headerGet(h, he, 0);
+
+#if !defined(SUPPORT_HEADER_CHECKS)
+	    rpmlog(RPMLOG_DEBUG, "rpmdb: read h#%8u %s\n", hdrNum, he->p.str);
+#endif
+
 /* XXX limit the fiddle up to linux for now. */
 #if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
 	    if (he->p.str)

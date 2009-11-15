@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmmi: rework iterator instance filtering as a Bloom filter.
+    - jbj: rpmdb: eliminate signature/digest checks on rpmdb Header blobs.
     - jbj: rpmbf: permit non-string Bloom filters, s/char/void/ in prototypes.
     - jbj: rpmdb: eliminate rpmdbFlags hysteria.
     - jbj: rpmdb: use Seqno to assign Packages primary keys.
