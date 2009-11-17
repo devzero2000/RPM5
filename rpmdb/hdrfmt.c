@@ -2695,7 +2695,7 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 
     mi = rpmmiInit(_rpmdb, tagN, key, keylen);
     if (hitp && *hitp)
-	xx = rpmmiPrune(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+	xx = rpmmiPrune(mi, (uint32_t *)argiData(*hitp), argiCount(*hitp), 0);
     while ((oh = rpmmiNext(mi)) != NULL) {
 	if (!headerGet(oh, RNhe, 0))
 	    goto bottom;
@@ -2872,7 +2872,7 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 
     mi = rpmmiInit(_rpmdb, tagN, key, keylen);
     if (hitp && *hitp)
-	xx = rpmmiPrune(mi, (int *)argiData(*hitp), argiCount(*hitp), 0);
+	xx = rpmmiPrune(mi, (uint32_t *)argiData(*hitp), argiCount(*hitp), 0);
     while ((oh = rpmmiNext(mi)) != NULL) {
 	if (!headerGet(oh, PNhe, 0))
 	    goto bottom;

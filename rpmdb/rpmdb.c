@@ -2505,7 +2505,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
 }
 
 /* XXX TODO: a Bloom Filter on removed packages created once, not each time. */
-int rpmmiPrune(rpmmi mi, int * hdrNums, int nHdrNums, int sorted)
+int rpmmiPrune(rpmmi mi, uint32_t * hdrNums, int nHdrNums, int sorted)
 {
     int rc = (mi == NULL || hdrNums == NULL || nHdrNums <= 0);
 

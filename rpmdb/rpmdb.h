@@ -1674,7 +1674,7 @@ int rpmmiGrow(/*@null@*/ rpmmi mi,
  * @return		0 on success, 1 on failure (bad args)
  */
 int rpmmiPrune(/*@null@*/ rpmmi mi,
-		/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
+		/*@null@*/ uint32_t * hdrNums, int nHdrNums, int sorted)
 	/*@modifies mi, hdrNums @*/;
 
 /** \ingroup rpmdb
