@@ -249,7 +249,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		rpmElementType type,
 		fnpyKey key,
 		rpmRelocation relocs,
-		int dboffset,
+		uint32_t dboffset,
 		alKey pkgKey)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));

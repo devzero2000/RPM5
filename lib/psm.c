@@ -1502,7 +1502,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
-	    xx = rpmmiPrune(mi, (int *)vals, nvals, 1);
+	    xx = rpmmiPrune(mi, (uint32_t *)vals, nvals, 1);
 
 	prev = 0;
 	while((triggeredH = rpmmiNext(mi)) != NULL) {
@@ -1688,7 +1688,7 @@ assert(fi->h != NULL);
 	nvals = argiCount(instances);
 	vals = argiData(instances);
 	if (nvals > 0)
-	    xx = rpmmiPrune(mi, (int *)vals, nvals, 1);
+	    xx = rpmmiPrune(mi, (uint32_t *)vals, nvals, 1);
 
 	prev = 0;
 	while((sourceH = rpmmiNext(mi)) != NULL) {

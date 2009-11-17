@@ -55,12 +55,12 @@ void
 prune(mi, ...)
     rpmmi mi
     PREINIT:
-    int * exclude = NULL;
+    uint32_t * exclude = NULL;
     int exclude_count = 0;
     int i = 0;
     CODE:
     exclude_count = items - 1;
-    exclude = malloc(exclude_count * sizeof(int));
+    exclude = malloc(exclude_count * sizeof(*exclude));
     for (i = 1; i < items; i++) {
         if (!SvIOK(ST(i))) { /* TODO: */ }
         exclude[i - 1] = SvIV(ST(i));

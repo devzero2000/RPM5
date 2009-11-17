@@ -178,7 +178,7 @@ struct rpmte_s {
 	struct {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
 	    alKey dependsOnKey;
-	    int dboffset;
+	    uint32_t dboffset;
 	} removed;
     } u;
 #if defined(__LCLINT__)
@@ -237,7 +237,7 @@ rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
 rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation relocs,
-		int dboffset,
+		uint32_t dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;

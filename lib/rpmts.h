@@ -155,6 +155,7 @@ typedef enum tsStage_e {
 
 #if defined(_RPMTS_INTERNAL)
 
+#include <rpmbf.h>
 #include "rpmhash.h"	/* XXX hashTable */
 #include "rpmkeyring.h"
 #include <rpmtxn.h>
@@ -246,8 +247,10 @@ struct rpmts_s {
 /*@null@*/
     rpmtxn txn;			/*!< Transaction set transaction pointer. */
 
+/*@refcounted@*/ /*@null@*/
+    rpmbf rbf;			/*!< Removed packages Bloom filter. */
 /*@only@*/ /*@null@*/
-    int * removedPackages;	/*!< Set of packages being removed. */
+    uint32_t * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;	/*!< No. removed package instances. */
     int allocedRemovedPackages;	/*!< Size of removed packages array. */
 
@@ -1096,7 +1099,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @param dboffset	rpm database instance
  * @return		0 on success
  */
-int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
+int rpmtsAddEraseElement(rpmts ts, Header h, uint32_t dboffset)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

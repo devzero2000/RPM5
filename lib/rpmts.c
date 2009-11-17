@@ -626,6 +626,8 @@ assert(ts->txn == NULL);	/* XXX FIXME */
 
     (void) rpmtsCloseSDB(ts);
 
+    (void) rpmbfFree(ts->rbf);
+    ts->rbf = NULL;
     ts->removedPackages = _free(ts->removedPackages);
 
     ts->availablePackages = rpmalFree(ts->availablePackages);
@@ -1392,6 +1394,7 @@ rpmts rpmtsCreate(void)
     ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}");
     if (!ts->prefcolor) ts->prefcolor = 0x2;
 
+    ts->rbf = NULL;
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;
     ts->removedPackages = xcalloc(ts->allocedRemovedPackages,

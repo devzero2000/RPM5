@@ -66,11 +66,11 @@ int rpmFLAGS = RPMSENSE_EQUAL;
  * @param b		2nd instance address
  * @return		result of comparison
  */
-static int intcmp(const void * a, const void * b)
+static int uintcmp(const void * a, const void * b)
 	/*@requires maxRead(a) == 0 /\ maxRead(b) == 0 @*/
 {
-    const int * aptr = a;
-    const int * bptr = b;
+    const uint32_t * aptr = a;
+    const uint32_t * bptr = b;
     int rc = (*aptr - *bptr);
     return rc;
 }
@@ -84,7 +84,7 @@ static int intcmp(const void * a, const void * b)
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(rpmts ts, Header h, int dboffset,
+static int removePackage(rpmts ts, Header h, uint32_t dboffset,
 		/*@null@*/ int * indexp,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -94,9 +94,9 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
-	int * needle = NULL;
+	uint32_t * needle = NULL;
 	needle = bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
-			sizeof(*ts->removedPackages), intcmp);
+			sizeof(*ts->removedPackages), uintcmp);
 	if (needle != NULL) {
 	    /* XXX lastx should be per-call, not per-ts. */
 	    if (indexp != NULL)
@@ -105,19 +105,27 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 	}
     }
 
+    if (ts->rbf == NULL) {
+	static size_t nRemoves = 4096;	/* XXX poplation estimate */
+	size_t _jiggery = 2;        /* XXX todo: Bloom filter tuning? */
+	size_t _k = _jiggery * 8;
+	size_t _m = _jiggery * (3 * nRemoves * _k) / 2;
+	ts->rbf = rpmbfNew(_m, _k, 0);
+    }
+
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
 	ts->allocedRemovedPackages += ts->delta;
 	ts->removedPackages = xrealloc(ts->removedPackages,
 		sizeof(ts->removedPackages) * ts->allocedRemovedPackages);
     }
 
-    if (ts->removedPackages != NULL) {	/* XXX can't happen. */
-	ts->removedPackages[ts->numRemovedPackages] = dboffset;
-	ts->numRemovedPackages++;
-	if (ts->numRemovedPackages > 1)
-	    qsort(ts->removedPackages, ts->numRemovedPackages,
-			sizeof(*ts->removedPackages), intcmp);
-    }
+assert(ts->removedPackages != NULL);	/* XXX can't happen. */
+    rpmbfAdd(ts->rbf, &dboffset, sizeof(dboffset));
+    ts->removedPackages[ts->numRemovedPackages] = dboffset;
+    ts->numRemovedPackages++;
+    if (ts->numRemovedPackages > 1)
+	qsort(ts->removedPackages, ts->numRemovedPackages,
+			sizeof(*ts->removedPackages), uintcmp);
 
     if (ts->orderCount >= ts->orderAlloced) {
 	ts->orderAlloced += (ts->orderCount - ts->orderAlloced) + ts->delta;
@@ -802,7 +810,7 @@ exit:
     return ec;
 }
 
-int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
+int rpmtsAddEraseElement(rpmts ts, Header h, uint32_t dboffset)
 {
     int oc = -1;
     int rc = removePackage(ts, h, dboffset, &oc, RPMAL_NOMATCH);
