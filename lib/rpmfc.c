@@ -740,6 +740,7 @@ static int rpmfcSCRIPT(rpmfc fc)
     int i;
     int is_executable;
     int xx;
+    const char * defaultdocdir = NULL;
 
     /* Extract dependencies only from files with executable bit set. */
     {	struct stat sb, * st = &sb;
@@ -812,7 +813,11 @@ static int rpmfcSCRIPT(rpmfc fc)
     (void) fclose(fp);
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
-	if (strncmp(fn, "/usr/share/doc/", sizeof("/usr/share/doc/")-1)) {
+    	defaultdocdir = rpmExpand("%{?_defaultdocdir}", NULL);
+    	if (defaultdocdir == NULL || *defaultdocdir == '\0') 
+            defaultdocdir = "/usr/share/doc";
+
+	if (strncmp(fn, defaultdocdir, sizeof(defaultdocdir)-1)) {
 	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
 		xx = rpmfcHelper(fc, 'P', "perl");
 	    if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
@@ -857,6 +862,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "mono");
     }
+    defaultdocdir = _free(defaultdocdir) ;
     return 0;
 }
 

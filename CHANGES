@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - devzero2000: fix hardwired docdir in rpmfc
     - proyvind: fix assert fail with Mandriva filetriggers in case of
 	installing src.rpm with no triggers queue. (from David Smid/Unity Linux)
     - jbj: rpmmi: rework iterator instance filtering as a Bloom filter.
