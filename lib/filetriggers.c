@@ -328,6 +328,9 @@ void rpmRunFileTriggers(const char * rootDir)
 	goto exit;
 
     fd = Fopen(fn, "r.fpio");
+    if (fd == NULL)
+	goto exit;
+
     fp = fdGetFILE(fd);
 
     if (fp != NULL) {
