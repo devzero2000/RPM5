@@ -120,6 +120,7 @@ class Test_upgrade(unittest.TestCase):
 	got = []
 	for h in mi:
 	    got.append('%(name)s' % h)
+	got.sort()
 	self.assertEqual(expected, got)
 
     def tearDown(self):
