@@ -8,6 +8,14 @@ from test.test_support import rmtree
 
 DICT = {}
 
+def runCallback(reason, amount, total, key, client_data):
+    global rpmtsCallback_fd
+    if reason == rpm.RPMCALLBACK_INST_OPEN_FILE:
+	rpmtsCallback_fd = os.open(key, os.O_RDONLY)
+	return rpmtsCallback_fd
+    elif reason == rpm.RPMCALLBACK_INST_START:
+	os.close(rpmtsCallback_fd)
+
 class Test_loadHeader(unittest.TestCase):
     def setUp(self):
 	self.topdir = "%s/tmp" % os.getcwdu()
@@ -66,11 +74,63 @@ class Test_labelCompare(unittest.TestCase):
 	self.assertEqual(rpm.labelCompare(no, yes), -1)
 	self.assertEqual(rpm.labelCompare(no, no), 0)	
 
+class Test_upgrade(unittest.TestCase):
+
+    def setUp(self):
+	self.topdir = "%s/tmp" % os.getcwdu()
+	self.first = (
+		("%s/RPMS/noarch/simple-1.0-1-foo2009.1.noarch.rpm" % self.topdir),
+		("%s/RPMS/noarch/simple2-1.0-1-foo2009.1.noarch.rpm" % self.topdir, ("--define", "nsuffix 2")))
+	self.second = (
+		("%s/RPMS/noarch/simple-1.0-12-foo2009.1.noarch.rpm" % self.topdir, ("--define", "rsuffix 2")),
+		("%s/RPMS/noarch/simple2-1.0-12-foo2009.1.noarch.rpm" % self.topdir, ("--define", "nsuffix 2", "--define", "rsuffix 2")))
+
+	for pl in self.first, self.second:
+	    for p in pl:
+		args = ["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"]
+		if len(p) == 2:
+		    filename = p[0]
+		    args.extend(p[1])
+		else:
+		    filename = p
+		build = subprocess.Popen(args,
+			executable="rpm", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+		self.assertFalse(build.wait())
+		self.assertTrue(os.path.isfile(filename))
+
+    def test_multipleTransactions(self):
+	for pl in self.first, self.second:
+	    for p in pl:
+		if len(p) == 2:
+		    filename = p[0]
+		else:
+		    filename = p
+		ts = rpm.ts(self.topdir)
+		f = open(filename)
+		h = ts.hdrFromFdno(f.fileno())
+		ts.addInstall(h, filename, 'u')
+		ts.check()
+		ts.order()
+		ts.run(runCallback, 1)
+		del ts
+
+	ts = rpm.ts(self.topdir)
+	mi = ts.dbMatch()
+	expected = ["simple", "simple2"]
+	got = []
+	for h in mi:
+	    got.append('%(name)s' % h)
+	self.assertEqual(expected, got)
+
+    def tearDown(self):
+	rmtree(self.topdir)
+    
 def test_main():
     from test import test_support
     test_support.run_unittest(
 	    Test_loadHeader,
-	    Test_labelCompare)
+	    Test_labelCompare,
+	    Test_upgrade)
     test_support.reap_children()
 
 
