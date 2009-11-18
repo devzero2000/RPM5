@@ -1,4 +1,6 @@
 5.2.0 -> 5.2.1:
+    - proyvind: fix assert fail with Mandriva filetriggers in case of
+	installing src.rpm with no triggers queue. (from David Smid/Unity Linux)
     - proyvind: Change log level to debug level for memory leaks reported.
     - proyvind: Mandriva: log install/remove of packages to syslog.
     - proyvind: undo previous revert of checkfiles behaviour which broke build
