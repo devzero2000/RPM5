@@ -815,6 +815,15 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the ge
   ])
 ])
 
+AC_CHECK_FUNCS(syslog)
+if test $ac_cv_func_syslog = no; then
+  # syslog is not in the default libraries.  See if it's in some other.
+  for lib in bsd socket inet; do
+    AC_CHECK_LIB($lib, syslog, [AC_DEFINE(HAVE_SYSLOG)
+      LIBS="$LIBS -l$lib"; break])
+  done
+fi
+
 dnl # Check how to find out the amount of physical memory in the system. The
 dnl # xz command line tool uses this to automatically limit its memory usage.
 dnl # - sysconf() gives all the needed info on GNU+Linux and Solaris.
