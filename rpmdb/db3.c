@@ -1756,6 +1756,7 @@ assert(db != NULL);
 
     if (dbi->dbi_seq_initial)
 	_value = dbi->dbi_seq_initial;
+    if (_value <= 0) _value = 1;
     rc = seq->initial_value(seq, _value);
     rc = cvtdberr(dbi, "seq->initial_value", rc, _debug);
     if (rc) goto exit;

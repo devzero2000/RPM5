@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: fix: ensure Seqno h# counter is initialized to 1 when created.
     - proyvind: add %distepoch back to provideversion, leave legacy
 	compatibility for adopters to care about.
     - devzero2000: fix hardwired docdir in rpmfc
