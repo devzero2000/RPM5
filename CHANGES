@@ -1,4 +1,6 @@
 5.2.0 -> 5.2.1:
+    - proyvind: add %distepoch back to provideversion, leave legacy
+	compatibility for adopters to care about.
     - proyvind: fix assert fail with Mandriva filetriggers in case of
 	installing src.rpm with no triggers queue. (from David Smid/Unity Linux)
     - proyvind: Change log level to debug level for memory leaks reported.
