@@ -16,4 +16,5 @@ EXTRA_DIST	= \
 	signatures \
 	spec \
 	triggers \
-	tsort
+	tsort \
+        newrpmdb.howto
