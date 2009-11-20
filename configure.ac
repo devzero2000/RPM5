@@ -1167,6 +1167,7 @@ RPM_CHECK_LIB(
     [yes,external], [],
     [], [AC_MSG_ERROR([mandatory POPT library not found])])
 
+HAVE_RPM_COMPRESSION=no
 dnl # ZLib
 RPM_CHECK_LIB(
     [ZLib], [zlib],
@@ -1178,12 +1179,18 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+    if test ".$WITH_ZLIB" = .yes; then
+        HAVE_RPM_COMPRESSION=yes 
+    fi
 dnl # GNU BZip2
 RPM_CHECK_LIB(
     [GNU BZip2], [bzip2],
     [bz2], [BZ2_bzread], [bzlib.h],
     [no,external:none], [],
     [], [])
+    if test ".$WITH_BZIP2" = .yes; then
+        HAVE_RPM_COMPRESSION=yes 
+    fi
 
 dnl # libLZMA
 WITH_XZ_INTERNAL=false
@@ -1196,13 +1203,22 @@ RPM_CHECK_LIB(
           AC_DEFINE(HAVE_LZMA_H, 1, [Define to 1 if you have <lzma.h>])
       fi
     ], [])
+    if test ".$WITH_XZ" = .yes; then
+        HAVE_RPM_COMPRESSION=yes 
+    fi
 
+if test ".$HAVE_RPM_COMPRESSION" = .no; then
+       AC_MSG_ERROR([you have passed --without-{xz,bzip2,zlib} together but it isn't possible to build rpm without any form of compression library. At a minimum, i suggest adding --with-zlib if you want to actually build and install a *.rpm package])
+fi
 dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
     [yes,external], [],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
+    if test ".$WITH_BEECRYPT" = .no; then
+         AC_MSG_ERROR([BEECRYPT is mandatory])
+    fi
 
 dnl # GCrypt
 RPM_CHECK_LIB(
@@ -1572,6 +1588,10 @@ RPM_CHECK_LIB(
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_PCRE"
       fi
     ], [])
+    dnl # check PCRE 
+    if test ".$WITH_PCRE" = .no; then
+         AC_MSG_ERROR([PCRE is mandatory. If you don't have  libpcre then --with-pcre=internal could be used])
+    fi
 
 dnl # OSSP uuid
 RPM_CHECK_LIB(
