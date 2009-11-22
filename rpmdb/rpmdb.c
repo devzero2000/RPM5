@@ -64,6 +64,8 @@ typedef	rpmuint32_t	u_int32_t;
 /*@unchecked@*/
 int _rpmdb_debug = 0;
 
+static int _jbj_debug = 0;
+
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
 
@@ -1236,11 +1238,59 @@ exit:
     return ret;
 }
 
+static void prtDBT(const char * msg, DBT * kp)
+{
+    if (msg) fprintf(stderr, "\t%s", msg);
+    fprintf(stderr, " %p[%u:%u:%u] flags 0x%x\n",
+	kp->data, (unsigned)kp->size, (unsigned)kp->doff, (unsigned)kp->dlen,
+	kp->flags);
+}
+
+#ifdef	NOTYET
+/* Determine if the regular expression specification has any meta characters. */
+static const char * stemEnd(const char * s)
+	/*@modifies sxp @*/
+{
+    int c;
+
+    /* Return pointer to first RE character (or NUL terminator) */
+    while ((c = *s)) {
+	switch (c) {
+	case '.':
+	case '^':
+	case '$':
+	case '?':
+	case '*':
+	case '+':
+	case '|':
+	case '[':
+	case '(':
+	case '{':
+	case '\0':
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case '\\':
+	    s++;
+	    if (*s == '\0') goto exit;
+	    /*@fallthrough@*/
+	default:
+	    /*@switchbreak@*/ break;
+	}
+	s++;
+    }
+exit:
+    return s;
+}
+#endif
+
 static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
 		const char * pat, dbiIndexSet * matches)
 {
     DBC * dbcursor = NULL;
     DBT k = DBT_INIT;
+#ifdef	NOTYET
+    DBT fk;
+#endif
     DBT p = DBT_INIT;
     DBT v = DBT_INIT;
     dbiIndex dbi;
@@ -1256,51 +1306,91 @@ dbiIndexSet set = NULL;
 	goto exit;
 
     if (pat) {
-	mire = mireNew(mode, 0);
-	xx = mireRegcomp(mire, pat);
+	const char * b = pat;
+#ifdef	NOTYET
+	const char * be;
+#endif
 
-	/* Use the pattern stem to (partially) match on lookup. */
-	/* XXX TODO: extend to other patterns. */
+        mire = mireNew(mode, 0);
+        xx = mireRegcomp(mire, pat);
+
 	switch (mode) {
 	default:
 	    break;
+	case RPMMIRE_PCRE:
+#ifdef	NOTYET
+	    if (*b == '^') k.doff = 1;
+	    be = stemEnd(b + k.doff);
+	    /* If partial match on stem won't help, just iterate. */
+	    if (be == (b + k.doff)) {
+		k.doff = 0;
+		goto doit;
+	    }
+	    /* Set stem length for partial match retrieve. */
+	    k.dlen = (be - b) - k.doff;
+	    k.flags = DB_DBT_PARTIAL;
+	    k.data = (void *) b;
+	    _flags = DB_SET;
+#else
+	    goto doit;
+#endif
+	    break;
 	case RPMMIRE_STRCMP:
-	    k.data = (void *) pat;
-	    k.size = (UINT32_T) strlen(pat);
+	    k.size = (UINT32_T) strlen(b);
+	    k.data = (void *) b;
 	    _flags = DB_SET;
 	    break;
 	}
+if (_jbj_debug) prtDBT("k", &k);
     }
 
+doit:
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
     /* Iterate over all keys, collecting primary keys. */
     while ((rc = dbiPget(dbi, dbcursor, &k, &p, &v, _flags)) == 0) {
-	size_t ns = k.size;
-	/* XXX TODO: strdup malloc is necessary solely for argvAdd() */
-	char * s = memcpy(xmalloc(ns+1), k.data, ns);
-
-	s[ns] = '\0';
-	if (mire == NULL || mireRegexec(mire, s, ns) >= 0) {
-	    union _dbswap mi_offset;
-	    unsigned i;
-
-	    /* Get a native endian copy of the primary package key. */
-	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
-	    if (_endian.uc[0] == 0x44)
-		_DBSWAP(mi_offset);
-
-	    /* Append primary package key to set. */
-	    if (set == NULL)
-		set = xcalloc(1, sizeof(*set));
-	    i = set->count;
-	    /* XXX TODO: sort/uniqify set? */
-	    (void) dbiAppendSet(set, &mi_offset.ui, 1, sizeof(mi_offset.ui), 0);
-
-	}
-	s = _free(s);
+	union _dbswap mi_offset;
+unsigned ix;
 
 	if (_flags == DB_SET) _flags = DB_NEXT_DUP;
+
+if (_jbj_debug) prtDBT("k", &k);
+if (_jbj_debug) prtDBT("p", &p);
+if (_jbj_debug) prtDBT("v", &v);
+
+	if (mire) {
+	    const char * s;
+	    size_t ns;
+
+#ifdef	NOTYET
+	    /* Retrieve the full match key. */
+	    memset (&fk, 0, sizeof(fk));
+	    xx = dbiPget(dbi, dbcursor, &fk, &p, &v, DB_CURRENT);
+	    s = (const char * ) fk.data;
+	    ns = fk.size;
+#else
+	    s = (const char * ) k.data;
+	    ns = k.size;
+#endif
+
+	    /* Skip if not matched. */
+	    if (mireRegexec(mire, s, ns) < 0)
+		continue;
+	}
+	    
+	/* Get a native endian copy of the primary package key. */
+	memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
+	if (_endian.uc[0] == 0x44)
+	    _DBSWAP(mi_offset);
+
+	/* Append primary package key to set. */
+	if (set == NULL)
+	    set = xcalloc(1, sizeof(*set));
+ix = set->count;
+	/* XXX TODO: sort/uniqify set? */
+	(void) dbiAppendSet(set, &mi_offset.ui, 1, sizeof(mi_offset.ui), 0);
+if (_jbj_debug)
+fprintf(stderr, "\tset[%u] = %u\n", ix, dbiIndexRecordOffset(set, ix));
     }
 
     xx = dbiCclose(dbi, dbcursor, 0);
@@ -1318,6 +1408,8 @@ dbiIndexSet set = NULL;
     }
 
 exit:
+if (_jbj_debug)
+fprintf(stderr, "<-- %s(%p, %s(%u), %d, \"%s\", %p) rc %d set %p[%u]\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, ret, (set ? set->recs : NULL), (set ? set->count : 0));
     if (ret == 0 && matches) {
 	/* XXX TODO: sort/uniqify set? */
 	*matches = set;
@@ -1334,87 +1426,60 @@ exit:
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
- * @param name		package name
- * @param version	package version (can be a pattern)
- * @param release	package release (can be a pattern)
+ * @param N		package name
+ * @param V		package version (can be a pattern)
+ * @param R		package release (can be a pattern)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
 static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data,
-		const char * name,
-		/*@null@*/ const char * version,
-		/*@null@*/ const char * release,
+		const char * N,
+		/*@null@*/ const char * V,
+		/*@null@*/ const char * R,
 		/*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-    int gotMatches = 0;
-    int rc;
-    unsigned i;
+    rpmRC rc = RPMRC_FAIL;
+    int ret;
 
-    rc = rpmdbMireKeys(dbi->dbi_rpmdb, RPMTAG_NAME, RPMMIRE_STRCMP, name, matches);
-    switch (rc) {
+    {	rpmMireMode _mode = RPMMIRE_PCRE;
+#ifdef	NOTYET
+	rpmTag _tag = RPMTAG_NVRA;
+#else
+	rpmTag _tag = RPMTAG_NAME;
+#endif
+	/* XXX add ^...$ *RE anchors. */
+	const char * _pat = N;
+	ret = rpmdbMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches);
+    }
+
+    switch (ret) {
     case 0:
-	if (version == NULL && release == NULL)
-	    return RPMRC_OK;
+	if (V == NULL && R == NULL) {
+	    rc = RPMRC_OK;
+	    goto exit;
+	}
 	break;
     case DB_NOTFOUND:
-	return RPMRC_NOTFOUND;
+	rc = RPMRC_NOTFOUND;
+	goto exit;
 	/*@notreached@*/ break;
     default:
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting records from %s index\n"),
-		rc, tagName(dbi->dbi_rpmtag));
-	return RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("error(%d) getting records from %s index\n"),
+		ret, tagName(dbi->dbi_rpmtag));
+	goto exit;
 	/*@notreached@*/ break;
     }
 
-    /* Make sure the version and release match. */
-    for (i = 0; i < dbiIndexSetCount(*matches); i++) {
-	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
-	rpmmi mi;
-	Header h;
-
-	if (recoff == 0)
-	    continue;
-
-	mi = rpmmiInit(dbi->dbi_rpmdb,
-			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
-
-	/* Set iterator selectors for version/release if available. */
-	if (version &&
-	    rpmmiAddPattern(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
-	{
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-	if (release &&
-	    rpmmiAddPattern(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
-	{
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-
-	h = rpmmiNext(mi);
-	if (h)
-	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
-	else
-	    (*matches)->recs[i].hdrNum = 0;
-	mi = rpmmiFree(mi);
-    }
-
-    if (gotMatches) {
-	(*matches)->count = gotMatches;
-	rc = RPMRC_OK;
-    } else
-	rc = RPMRC_NOTFOUND;
-
 exit:
+if (_jbj_debug)
+fprintf(stderr, "<-- %s(%p, %p, %p, %p, \"%s\", \"%s\", \"%s\", %p) rc %d set %p[%u]\n", __FUNCTION__, dbi, dbcursor, key, data, N, V, R, matches, rc, (*matches ? (*matches)->recs : NULL), (*matches ? (*matches)->count : 0));
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
-    if (rc && matches && *matches)
+    if (rc != RPMRC_OK && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
 /*@=unqualifiedtrans@*/
     return rc;
@@ -1440,11 +1505,6 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, /*@null@*/ const char * arg, size_t ke
 DBC * dbcursor = NULL;
 DBT k = DBT_INIT, *key = &k;
 DBT v = DBT_INIT, *data = &v;
-    const char * release;
-    char * localarg;
-    char * s;
-    char c;
-    int brackets;
     rpmRC rc;
     int xx;
 
@@ -1452,78 +1512,8 @@ DBT v = DBT_INIT, *data = &v;
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
-    /* did they give us just a name? */
     rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
-    if (rc != RPMRC_NOTFOUND)
-	goto exit;
 
-    /*@-unqualifiedtrans@*/ /* FIX: double indirection */
-    *matches = dbiFreeIndexSet(*matches);
-    /*@=unqualifiedtrans@*/
-
-    /* maybe a name and a release */
-    localarg = alloca(strlen(arg) + 1);
-    s = stpcpy(localarg, arg);
-
-    c = '\0';
-    brackets = 0;
-    for (s -= 1; s > localarg; s--) {
-	switch (*s) {
-	case '[':
-	    brackets = 1;
-	    /*@switchbreak@*/ break;
-	case ']':
-	    if (c != '[') brackets = 0;
-	    /*@switchbreak@*/ break;
-	}
-	c = *s;
-	if (!brackets && *s == '-')
-	    break;
-    }
-
-    if (s == localarg) {
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-    }
-
-    *s = '\0';
-    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
-    if (rc != RPMRC_NOTFOUND)
-	goto exit;
-
-    /*@-unqualifiedtrans@*/ /* FIX: double indirection */
-    *matches = dbiFreeIndexSet(*matches);
-    /*@=unqualifiedtrans@*/
-    
-    /* how about name-version-release? */
-
-    release = s + 1;
-
-    c = '\0';
-    brackets = 0;
-    for (; s > localarg; s--) {
-	switch (*s) {
-	case '[':
-	    brackets = 1;
-	    /*@switchbreak@*/ break;
-	case ']':
-	    if (c != '[') brackets = 0;
-	    /*@switchbreak@*/ break;
-	}
-	c = *s;
-	if (!brackets && *s == '-')
-	    break;
-    }
-
-    if (s == localarg) {
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-    }
-
-    *s = '\0';
-    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
-
-exit:
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
 /*@-nullstate@*/	/* FIX: *matches may be NULL. */
