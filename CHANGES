@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - bero: Fix generation of configure script with autoconf 2.65
     - jbj: rpmdb: don't recurse within dbiFindByLabel.
     - jbj: rpmdb: use PCRE patterns on Name index for package queries.
     - devzero2000: don't permit using b0rken configure option
