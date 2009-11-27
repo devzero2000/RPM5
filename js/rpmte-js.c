@@ -309,7 +309,7 @@ rpmte_init(JSContext *cx, JSObject *obj, rpmts ts, JSObject *hdro)
     rpmElementType etype = TR_ADDED;
     fnpyKey key = NULL;
     rpmRelocation relocs = NULL;
-    int dboffset = 0;
+    uint32_t dboffset = 0;
     alKey pkgKey = NULL;
 
     if (hdro != NULL) {

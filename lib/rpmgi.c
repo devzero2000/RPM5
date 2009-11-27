@@ -730,7 +730,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	/* XXX rpmgi hack: Save header in transaction element. */
 	if (gi->flags & RPMGI_ERASING) {
 	    static int hdrx = 0;
-	    int dboffset = headerGetInstance(gi->h);
+	    uint32_t dboffset = headerGetInstance(gi->h);
 	    if (dboffset <= 0)
 		dboffset = --hdrx;
 	    xx = rpmtsAddEraseElement(gi->ts, gi->h, dboffset);
