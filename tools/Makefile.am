@@ -20,7 +20,7 @@ AM_CPPFLAGS = -I. \
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-EXTRA_DIST =	hashtab.h
+EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1
 
 EXTRA_PROGRAMS = augtool debugedit rpmkey sandbox semodule spooktool
 

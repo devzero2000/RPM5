@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: add bsdiff/bspatch from bsdiff-4.3.
     - jbj: rpmlio: add "opt-in" enablers for syscall/scriptlet logging.
     - jbj: rpmlio: add --rpmliodebug spewage valve.
     - jbj: rpmlio: add syscall/scriplet logging to -lrpmdb API for rework.
