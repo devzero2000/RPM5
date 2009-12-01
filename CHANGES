@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmlio: add "opt-in" enablers for syscall/scriptlet logging.
     - jbj: rpmlio: add --rpmliodebug spewage valve.
     - jbj: rpmlio: add syscall/scriplet logging to -lrpmdb API for rework.
     - jbj: revert the change for autoconf-2.65, breaks w autoconf-2.63.

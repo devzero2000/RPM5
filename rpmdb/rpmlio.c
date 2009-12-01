@@ -17,6 +17,9 @@
 
 int _rpmlio_debug = 0;
 
+static int _enable_syscall_logging = 0;
+static int _enable_scriptlet_logging = 0;
+
 int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
 		const uint8_t * b, size_t blen,
 		const uint8_t * d, size_t dlen, uint32_t dalgo)
@@ -30,7 +33,7 @@ int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
     DBT FNdbt = {0};
     DBT Bdbt = {0};
     DBT Ddbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     Bdbt.data = (void *)b;
@@ -56,7 +59,7 @@ int rpmlioUnlink(rpmdb rpmdb, const char * fn, mode_t mode,
     DBT FNdbt = {0};
     DBT Bdbt = {0};
     DBT Ddbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     Bdbt.data = (void *)b;
@@ -84,7 +87,7 @@ int rpmlioRename(rpmdb rpmdb, const char * oldname, const char * newname,
     DBT NNdbt = {0};
     DBT Bdbt = {0};
     DBT Ddbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     ONdbt.data = (void *)oldname;
     ONdbt.size = strlen(oldname) + 1;	/* trailing NUL too */
     NNdbt.data = (void *)newname;
@@ -108,7 +111,7 @@ int rpmlioMkdir(rpmdb rpmdb, const char * dn, mode_t mode)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT DNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     DNdbt.data = (void *)dn;
     DNdbt.size = strlen(dn) + 1;	/* trailing NUL too */
     rc = logio_Mkdir_log(dbenv, _txn, &_lsn, DB_FLUSH, &DNdbt, mode);
@@ -126,7 +129,7 @@ int rpmlioRmdir(rpmdb rpmdb, const char * dn, mode_t mode)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT DNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     DNdbt.data = (void *)dn;
     DNdbt.size = strlen(dn) + 1;	/* trailing NUL too */
     rc = logio_Rmdir_log(dbenv, _txn, &_lsn, DB_FLUSH, &DNdbt, mode);
@@ -145,7 +148,7 @@ int rpmlioLsetfilecon(rpmdb rpmdb, const char * fn, const char * context)
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
     DBT CONTEXTdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     if (context == NULL) context = "";	/* XXX prevent segfaults */
@@ -166,7 +169,7 @@ int rpmlioChown(rpmdb rpmdb, const char * fn, uid_t uid, gid_t gid)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Chown_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, uid, gid);
@@ -184,7 +187,7 @@ int rpmlioLchown(rpmdb rpmdb, const char * fn, uid_t uid, gid_t gid)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Lchown_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, uid, gid);
@@ -202,7 +205,7 @@ int rpmlioChmod(rpmdb rpmdb, const char * fn, mode_t mode)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Chmod_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
@@ -220,7 +223,7 @@ int rpmlioUtime(rpmdb rpmdb, const char * fn, time_t actime, time_t modtime)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Utime_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, actime, modtime);
@@ -239,7 +242,7 @@ int rpmlioSymlink(rpmdb rpmdb, const char * ln, const char * fn)
     DB_LSN _lsn = {0,0};
     DBT LNdbt = {0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     LNdbt.data = (void *)ln;
     LNdbt.size = strlen(ln) + 1;	/* trailing NUL too */
     FNdbt.data = (void *)fn;
@@ -260,7 +263,7 @@ int rpmlioLink(rpmdb rpmdb, const char * ln, const char * fn)
     DB_LSN _lsn = {0,0};
     DBT LNdbt = {0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     LNdbt.data = (void *)ln;
     LNdbt.size = strlen(ln) + 1;	/* trailing NUL too */
     FNdbt.data = (void *)fn;
@@ -280,7 +283,7 @@ int rpmlioMknod(rpmdb rpmdb, const char * fn, mode_t mode, dev_t dev)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Mknod_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode, dev);
@@ -298,7 +301,7 @@ int rpmlioMkfifo(rpmdb rpmdb, const char * fn, mode_t mode)
     DB_TXN * _txn = rpmdb->db_txn;
     DB_LSN _lsn = {0,0};
     DBT FNdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_syscall_logging)) return 0;
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     rc = logio_Mkfifo_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode);
@@ -318,7 +321,7 @@ int rpmlioPrein(rpmdb rpmdb, const char ** av, const char * body)
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_scriptlet_logging)) return 0;
     AVdbt.data = (void *)cmd;
     AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
     BODYdbt.data = (void *)body;
@@ -341,7 +344,7 @@ int rpmlioPostin(rpmdb rpmdb, const char ** av, const char * body)
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_scriptlet_logging)) return 0;
     AVdbt.data = (void *)cmd;
     AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
     BODYdbt.data = (void *)body;
@@ -364,7 +367,7 @@ int rpmlioPreun(rpmdb rpmdb, const char ** av, const char * body)
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_scriptlet_logging)) return 0;
     AVdbt.data = (void *)cmd;
     AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
     BODYdbt.data = (void *)body;
@@ -387,7 +390,7 @@ int rpmlioPostun(rpmdb rpmdb, const char ** av, const char * body)
     DB_LSN _lsn = {0,0};
     DBT AVdbt = {0};
     DBT BODYdbt = {0};
-    if (!(dbenv && _txn)) return 0;
+    if (!(dbenv && _txn && _enable_scriptlet_logging)) return 0;
     AVdbt.data = (void *)cmd;
     AVdbt.size = strlen(cmd) + 1;	/* trailing NUL too */
     BODYdbt.data = (void *)body;
