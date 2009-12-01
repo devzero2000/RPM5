@@ -26,10 +26,12 @@
 
 #include "system.h"
 
+#define	_RPMIOB_INTERNAL	/* XXX rpmiobSlurp */
 #include <rpmiotypes.h>
 #include <rpmio.h>
-#include <rpmbz.h>
 #include <poptIO.h>
+
+#include <rpmbz.h>
 
 #include "debug.h"
 
@@ -159,7 +161,6 @@ static void qsufsort(int64_t * I, int64_t * V, uint8_t * old, int64_t oldsize)
 	if (len)
 	    I[i - len] = -len;
     }
-
     for (i = 0; i < oldsize + 1; i++)
 	I[V[i]] = i;
 }
@@ -221,58 +222,58 @@ static void offtout(int64_t x, uint8_t * buf)
 
 int main(int argc, char *argv[])
 {
-    int fd;
-    uint8_t *old, *new;
-    int64_t oldsize, newsize;
-    int64_t *I, *V;
-    int64_t scan, pos, len;
-    int64_t lastscan, lastpos, lastoffset;
-    int64_t oldscore, scsc;
-    int64_t s, Sf, lenf, Sb, lenb;
-    int64_t overlap, Ss, lens;
-    int64_t i;
-    int64_t dblen, eblen;
-    uint8_t *db, *eb;
+    rpmiob oldiob = NULL;
+    uint8_t * old;
+    int64_t oldsize = 0;
+    rpmiob newiob = NULL;
+    uint8_t * new;
+    int64_t newsize = 0;
+
+    int64_t * I = NULL;
+    int64_t scan = 0;
+    int64_t pos = 0;
+    int64_t len = 0;
+    int64_t lastscan = 0;
+    int64_t lastpos = 0;
+    int64_t lastoffset = 0;
+
+    int64_t lenb;
+    uint8_t *db = NULL;
+    int64_t dblen = 0;
+    uint8_t *eb = NULL;
+    int64_t eblen = 0;
     uint8_t buf[8];
     uint8_t header[32];
-    FILE *pf;
-    BZFILE *pfbz2;
+
+    FILE * pf;
+    BZFILE * pfbz2;
     int bz2err;
+    int ec = 1;		/* assume error */
+    int xx;
 
     if (argc != 4)
 	errx(1, "usage: %s oldfile newfile patchfile\n", argv[0]);
 
-    /* Allocate oldsize+1 bytes instead of oldsize bytes to ensure
-       that we never try to malloc(0) and get a NULL pointer */
-    if (((fd = open(argv[1], O_RDONLY, 0)) < 0) ||
-	((oldsize = lseek(fd, 0, SEEK_END)) == -1) ||
-	((old = malloc(oldsize + 1)) == NULL) ||
-	(lseek(fd, 0, SEEK_SET) != 0) ||
-	(read(fd, old, oldsize) != oldsize) || (close(fd) == -1))
-	err(1, "%s", argv[1]);
+    /* Read the old file. */
+    if ((xx = rpmiobSlurp(argv[1], &oldiob)) != 0)
+	goto exit;
+    old = rpmiobBuf(oldiob);
+    oldsize = rpmiobLen(oldiob);
 
-    if (((I = malloc((oldsize + 1) * sizeof(int64_t))) == NULL) ||
-	((V = malloc((oldsize + 1) * sizeof(int64_t))) == NULL))
-	err(1, NULL);
+    /* Read the new file. */
+    if ((xx = rpmiobSlurp(argv[2], &newiob)) != 0)
+	goto exit;
+    new = rpmiobBuf(newiob);
+    newsize = rpmiobLen(newiob);
 
-    qsufsort(I, V, old, oldsize);
+    {	int64_t * V = xmalloc((oldsize + 1) * sizeof(*V));
+	I = xmalloc((oldsize + 1) * sizeof(*I));
+	qsufsort(I, V, old, oldsize);
+	V = _free(V);
+    }
 
-    free(V);
-
-    /* Allocate newsize+1 bytes instead of newsize bytes to ensure
-       that we never try to malloc(0) and get a NULL pointer */
-    if (((fd = open(argv[2], O_RDONLY, 0)) < 0) ||
-	((newsize = lseek(fd, 0, SEEK_END)) == -1) ||
-	((new = malloc(newsize + 1)) == NULL) ||
-	(lseek(fd, 0, SEEK_SET) != 0) ||
-	(read(fd, new, newsize) != newsize) || (close(fd) == -1))
-	err(1, "%s", argv[2]);
-
-    if (((db = malloc(newsize + 1)) == NULL) ||
-	((eb = malloc(newsize + 1)) == NULL))
-	err(1, NULL);
-    dblen = 0;
-    eblen = 0;
+    db = xmalloc(newsize + 1);
+    eb = xmalloc(newsize + 1);
 
     /* Create the patch file */
     if ((pf = fopen(argv[3], "w")) == NULL)
@@ -292,19 +293,18 @@ int main(int argc, char *argv[])
     offtout(0, header + 8);
     offtout(0, header + 16);
     offtout(newsize, header + 24);
-    if (fwrite(header, 32, 1, pf) != 1)
+    if (fwrite(header, 1, sizeof(header), pf) != sizeof(header))
 	err(1, "fwrite(%s)", argv[3]);
 
     /* Compute the differences, writing ctrl as we go */
     if ((pfbz2 = BZ2_bzWriteOpen(&bz2err, pf, 9, 0, 0)) == NULL)
 	errx(1, "BZ2_bzWriteOpen, bz2err = %d", bz2err);
-    scan = 0;
-    pos = 0;
-    len = 0;
-    lastscan = 0;
-    lastpos = 0;
-    lastoffset = 0;
+
     while (scan < newsize) {
+	int64_t oldscore;
+	int64_t scsc;
+	int64_t i;
+
 	oldscore = 0;
 
 	for (scsc = scan += len; scan < newsize; scan++) {
@@ -312,23 +312,23 @@ int main(int argc, char *argv[])
 			 0, oldsize, &pos);
 
 	    for (; scsc < scan + len; scsc++)
-		if ((scsc + lastoffset < oldsize) &&
-		    (old[scsc + lastoffset] == new[scsc]))
+		if (scsc + lastoffset < oldsize
+		 && old[scsc + lastoffset] == new[scsc])
 		    oldscore++;
 
-	    if (((len == oldscore) && (len != 0)) || (len > oldscore + 8))
+	    if ((len == oldscore && len != 0) || len > oldscore + 8)
 		break;
 
-	    if ((scan + lastoffset < oldsize) &&
-		(old[scan + lastoffset] == new[scan]))
+	    if (scan + lastoffset < oldsize
+	     &&	old[scan + lastoffset] == new[scan])
 		oldscore--;
 	}
 
-	if ((len != oldscore) || (scan == newsize)) {
-	    s = 0;
-	    Sf = 0;
-	    lenf = 0;
-	    for (i = 0; (lastscan + i < scan) && (lastpos + i < oldsize);) {
+	if (len != oldscore || scan == newsize) {
+	    int64_t s = 0;
+	    int64_t Sf = 0;
+	    int64_t lenf = 0;
+	    for (i = 0; lastscan + i < scan && lastpos + i < oldsize;) {
 		if (old[lastpos + i] == new[lastscan + i])
 		    s++;
 		i++;
@@ -340,8 +340,8 @@ int main(int argc, char *argv[])
 
 	    lenb = 0;
 	    if (scan < newsize) {
-		s = 0;
-		Sb = 0;
+		int64_t s = 0;
+		int64_t Sb = 0;
 		for (i = 1; (scan >= lastscan + i) && (pos >= i); i++) {
 		    if (old[pos - i] == new[scan - i])
 			s++;
@@ -353,10 +353,11 @@ int main(int argc, char *argv[])
 	    }
 
 	    if (lastscan + lenf > scan - lenb) {
-		overlap = (lastscan + lenf) - (scan - lenb);
-		s = 0;
-		Ss = 0;
-		lens = 0;
+		int64_t overlap = (lastscan + lenf) - (scan - lenb);
+		int64_t s = 0;
+		int64_t Ss = 0;
+		int64_t lens = 0;
+
 		for (i = 0; i < overlap; i++) {
 		    if (new[lastscan + lenf - overlap + i] ==
 			old[lastpos + lenf - overlap + i])
@@ -442,13 +443,15 @@ int main(int argc, char *argv[])
 	err(1, "fwrite(%s)", argv[3]);
     if (fclose(pf))
 	err(1, "fclose");
+    ec = 0;
 
+exit:
     /* Free the memory we used */
-    free(db);
-    free(eb);
-    free(I);
-    free(old);
-    free(new);
+    db = _free(db);
+    eb = _free(eb);
+    I = _free(I);
+    oldiob = rpmiobFree(oldiob);
+    newiob = rpmiobFree(newiob);
 
-    return 0;
+    return ec;
 }

@@ -26,10 +26,12 @@
 
 #include "system.h"
 
+#define	_RPMIOB_INTERNAL	/* XXX rpmiobSlurp */
 #include <rpmiotypes.h>
 #include <rpmio.h>
-#include <rpmbz.h>
 #include <poptIO.h>
+
+#include <rpmbz.h>
 
 #include "debug.h"
 
@@ -44,7 +46,7 @@ static int64_t offtin(uint8_t * buf)
     y |= buf[3];	y <<= 8;
     y |= buf[2];	y <<= 8;
     y |= buf[1];	y <<= 8;
-    y |= buf[0];	y <<= 8;
+    y |= buf[0];
 
     if (buf[7] & 0x80)
 	y = -y;
@@ -54,19 +56,28 @@ static int64_t offtin(uint8_t * buf)
 
 int main(int argc, char *argv[])
 {
+    rpmiob oldiob = NULL;
+    uint8_t * old;
+    int64_t oldsize = 0;
+    int64_t oldpos = 0;
+    rpmiob newiob = NULL;
+    uint8_t * new;
+    int64_t newsize = 0;
+    int64_t newpos = 0;
+
     FILE *f, *cpf, *dpf, *epf;
     BZFILE *cpfbz2, *dpfbz2, *epfbz2;
     int cbz2err, dbz2err, ebz2err;
     int fd;
-    ssize_t oldsize, newsize;
+    
     ssize_t bzctrllen, bzdatalen;
     uint8_t buf[8];
     uint8_t header[32];
-    uint8_t *old, *new;
-    int64_t oldpos, newpos;
     int64_t ctrl[3];
     int64_t lenread;
     int64_t i;
+    int ec = 1;		/* assume error */
+    int xx;
 
     if (argc != 4)
 	errx(1, "usage: %s oldfile newfile patchfile\n", argv[0]);
@@ -95,21 +106,21 @@ int main(int argc, char *argv[])
 	    errx(1, "Corrupt patch\n");
 	err(1, "fread(%s)", argv[3]);
     }
+    if (fclose(f))
+	err(1, "fclose(%s)", argv[3]);
 
     /* Check for appropriate magic */
     if (memcmp(header, "BSDIFF40", 8) != 0)
-	errx(1, "Corrupt patch\n");
+	goto exit;
 
     /* Read lengths from header */
     bzctrllen = offtin(header + 8);
     bzdatalen = offtin(header + 16);
     newsize = offtin(header + 24);
     if ((bzctrllen < 0) || (bzdatalen < 0) || (newsize < 0))
-	errx(1, "Corrupt patch\n");
+	goto exit;
 
-    /* Close patch file and re-open it via libbzip2 at the right places */
-    if (fclose(f))
-	err(1, "fclose(%s)", argv[3]);
+    /* Re-open patch file via libbzip2 at the right places */
     if ((cpf = fopen(argv[3], "r")) == NULL)
 	err(1, "fopen(%s)", argv[3]);
     if (fseeko(cpf, 32, SEEK_SET))
@@ -130,36 +141,35 @@ int main(int argc, char *argv[])
     if ((epfbz2 = BZ2_bzReadOpen(&ebz2err, epf, 0, 0, NULL, 0)) == NULL)
 	errx(1, "BZ2_bzReadOpen, bz2err = %d", ebz2err);
 
-    if (((fd = open(argv[1], O_RDONLY, 0)) < 0) ||
-	((oldsize = lseek(fd, 0, SEEK_END)) == -1) ||
-	((old = malloc(oldsize + 1)) == NULL) ||
-	(lseek(fd, 0, SEEK_SET) != 0) ||
-	(read(fd, old, oldsize) != oldsize) || (close(fd) == -1))
-	err(1, "%s", argv[1]);
-    if ((new = malloc(newsize + 1)) == NULL)
-	err(1, NULL);
+    /* Read the old file. */
+    if ((xx = rpmiobSlurp(argv[1], &oldiob)) != 0)
+        goto exit;
+    old = rpmiobBuf(oldiob);
+    oldsize = rpmiobLen(oldiob);
 
-    oldpos = 0;
-    newpos = 0;
+    /* Allocate the new buffer. */
+    newiob = rpmiobNew(newsize + 1);
+    new = rpmiobBuf(newiob);
+
     while (newpos < newsize) {
 	/* Read control data */
 	for (i = 0; i <= 2; i++) {
 	    lenread = BZ2_bzRead(&cbz2err, cpfbz2, buf, 8);
 	    if ((lenread < 8) || ((cbz2err != BZ_OK) &&
 				  (cbz2err != BZ_STREAM_END)))
-		errx(1, "Corrupt patch\n");
+		goto exit;
 	    ctrl[i] = offtin(buf);
 	}
 
 	/* Sanity-check */
 	if (newpos + ctrl[0] > newsize)
-	    errx(1, "Corrupt patch\n");
+	    goto exit;
 
 	/* Read diff string */
 	lenread = BZ2_bzRead(&dbz2err, dpfbz2, new + newpos, ctrl[0]);
-	if ((lenread < ctrl[0]) ||
-	    ((dbz2err != BZ_OK) && (dbz2err != BZ_STREAM_END)))
-	    errx(1, "Corrupt patch\n");
+	if ((lenread < ctrl[0])
+	 || ((dbz2err != BZ_OK) && (dbz2err != BZ_STREAM_END)))
+	    goto exit;
 
 	/* Add old data to diff string */
 	for (i = 0; i < ctrl[0]; i++)
@@ -172,13 +182,13 @@ int main(int argc, char *argv[])
 
 	/* Sanity-check */
 	if (newpos + ctrl[1] > newsize)
-	    errx(1, "Corrupt patch\n");
+	    goto exit;
 
 	/* Read extra string */
 	lenread = BZ2_bzRead(&ebz2err, epfbz2, new + newpos, ctrl[1]);
-	if ((lenread < ctrl[1]) ||
-	    ((ebz2err != BZ_OK) && (ebz2err != BZ_STREAM_END)))
-	    errx(1, "Corrupt patch\n");
+	if ((lenread < ctrl[1])
+	 || ((ebz2err != BZ_OK) && (ebz2err != BZ_STREAM_END)))
+	    goto exit;
 
 	/* Adjust pointers */
 	newpos += ctrl[1];
@@ -197,8 +207,15 @@ int main(int argc, char *argv[])
 	(write(fd, new, newsize) != newsize) || (close(fd) == -1))
 	err(1, "%s", argv[2]);
 
-    free(new);
-    free(old);
+    ec = 0;
 
-    return 0;
+exit:
+    if (ec == 1)
+	fprintf(stderr, "Corrupt patch\n");
+
+    /* Free the memory we used */
+    oldiob = rpmiobFree(oldiob);
+    newiob = rpmiobFree(newiob);
+
+    return ec;
 }
