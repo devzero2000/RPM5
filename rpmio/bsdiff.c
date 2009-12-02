@@ -214,7 +214,7 @@ static void offtout(int64_t x, uint8_t * buf)
     buf[4] = y & 0xff;	y >>= 8;
     buf[5] = y & 0xff;	y >>= 8;
     buf[6] = y & 0xff;	y >>= 8;
-    buf[7] = y & 0xff;	y >>= 8;
+    buf[7] = y & 0xff;
 
     if (x < 0)
 	buf[7] |= 0x80;
@@ -241,9 +241,9 @@ const char * pfn;
     int64_t lastoffset = 0;
 
     int64_t lenb;
-    uint8_t *db = NULL;
+    uint8_t * db = NULL;
     int64_t dblen = 0;
-    uint8_t *eb = NULL;
+    uint8_t * eb = NULL;
     int64_t eblen = 0;
     uint8_t buf[8];
     uint8_t header[32];

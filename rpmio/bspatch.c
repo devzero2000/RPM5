@@ -35,6 +35,23 @@
 
 #include "debug.h"
 
+static rpmbz rpmbzSeekNew(const char * fn, off_t off)
+{
+    rpmbz bz = NULL;
+    FILE * fp = fopen(fn, "r");
+
+    if (fp == NULL)
+	fprintf(stderr, "fopen(%s)", fn);
+    else {
+	if (fseeko(fp, off, SEEK_SET))
+	    fprintf(stderr, "fseeko(%s)", fn);
+	else
+	    bz = rpmbzNew(fn, "r", dup(fileno(fp)));
+	(void) fclose(fp);
+    }
+    return bz;
+}
+
 static int64_t offtin(uint8_t * buf)
 {
     int64_t y = 0;
@@ -56,6 +73,9 @@ static int64_t offtin(uint8_t * buf)
 
 int main(int argc, char *argv[])
 {
+const char * ofn;
+const char * nfn;
+const char * pfn;
     rpmiob oldiob = NULL;
     uint8_t * old;
     int64_t oldsize = 0;
@@ -65,26 +85,28 @@ int main(int argc, char *argv[])
     int64_t newsize = 0;
     int64_t newpos = 0;
 
-    FILE *f, *cpf, *dpf, *epf;
-    BZFILE *cpfbz2, *dpfbz2, *epfbz2;
-    int cbz2err, dbz2err, ebz2err;
-    int fd;
+FILE * fp = NULL;
+const char * _errmsg = NULL;
+off_t poff;
+rpmbz cbz = NULL;
+rpmbz dbz = NULL;
+rpmbz ebz = NULL;
     
-    ssize_t bzctrllen, bzdatalen;
+    int64_t bzctrllen;
+    int64_t bzdatalen;
     uint8_t buf[8];
     uint8_t header[32];
     int64_t ctrl[3];
-    int64_t lenread;
+    ssize_t nr;
     int64_t i;
     int ec = 1;		/* assume error */
     int xx;
 
     if (argc != 4)
 	errx(1, "usage: %s oldfile newfile patchfile\n", argv[0]);
-
-    /* Open patch file */
-    if ((f = fopen(argv[3], "r")) == NULL)
-	err(1, "fopen(%s)", argv[3]);
+    ofn = argv[1];
+    nfn = argv[2];
+    pfn = argv[3];
 
     /*
        File format:
@@ -100,14 +122,17 @@ int main(int argc, char *argv[])
        extra block; seek forwards in oldfile by z bytes".
      */
 
+    /* Open patch file */
+    if ((fp = fopen(pfn, "r")) == NULL)
+	err(1, "fopen(%s)", pfn);
+
     /* Read header */
-    if (fread(header, 1, sizeof(header), f) < sizeof(header)) {
-	if (feof(f))
+    if (fread(header, 1, sizeof(header), fp) < sizeof(header)) {
+	if (feof(fp))
 	    errx(1, "Corrupt patch\n");
-	err(1, "fread(%s)", argv[3]);
+	err(1, "fread(%s)", pfn);
     }
-    if (fclose(f))
-	err(1, "fclose(%s)", argv[3]);
+    (void)fclose(fp);
 
     /* Check for appropriate magic */
     if (memcmp(header, "BSDIFF40", 8) != 0)
@@ -121,28 +146,20 @@ int main(int argc, char *argv[])
 	goto exit;
 
     /* Re-open patch file via libbzip2 at the right places */
-    if ((cpf = fopen(argv[3], "r")) == NULL)
-	err(1, "fopen(%s)", argv[3]);
-    if (fseeko(cpf, 32, SEEK_SET))
-	err(1, "fseeko(%s, %lld)", argv[3], (long long) 32);
-    if ((cpfbz2 = BZ2_bzReadOpen(&cbz2err, cpf, 0, 0, NULL, 0)) == NULL)
-	errx(1, "BZ2_bzReadOpen, bz2err = %d", cbz2err);
-    if ((dpf = fopen(argv[3], "r")) == NULL)
-	err(1, "fopen(%s)", argv[3]);
-    if (fseeko(dpf, 32 + bzctrllen, SEEK_SET))
-	err(1, "fseeko(%s, %lld)", argv[3], (long long) (32 + bzctrllen));
-    if ((dpfbz2 = BZ2_bzReadOpen(&dbz2err, dpf, 0, 0, NULL, 0)) == NULL)
-	errx(1, "BZ2_bzReadOpen, bz2err = %d", dbz2err);
-    if ((epf = fopen(argv[3], "r")) == NULL)
-	err(1, "fopen(%s)", argv[3]);
-    if (fseeko(epf, 32 + bzctrllen + bzdatalen, SEEK_SET))
-	err(1, "fseeko(%s, %lld)", argv[3],
-	    (long long) (32 + bzctrllen + bzdatalen));
-    if ((epfbz2 = BZ2_bzReadOpen(&ebz2err, epf, 0, 0, NULL, 0)) == NULL)
-	errx(1, "BZ2_bzReadOpen, bz2err = %d", ebz2err);
+    poff = sizeof(header);
+    if ((cbz = rpmbzSeekNew(pfn, poff)) == NULL)
+        goto exit;
+
+    poff += bzctrllen;
+    if ((dbz = rpmbzSeekNew(pfn, poff)) == NULL)
+        goto exit;
+
+    poff += bzdatalen;
+    if ((ebz = rpmbzSeekNew(pfn, poff)) == NULL)
+        goto exit;
 
     /* Read the old file. */
-    if ((xx = rpmiobSlurp(argv[1], &oldiob)) != 0)
+    if ((xx = rpmiobSlurp(ofn, &oldiob)) != 0)
         goto exit;
     old = rpmiobBuf(oldiob);
     oldsize = rpmiobLen(oldiob);
@@ -154,9 +171,9 @@ int main(int argc, char *argv[])
     while (newpos < newsize) {
 	/* Read control data */
 	for (i = 0; i <= 2; i++) {
-	    lenread = BZ2_bzRead(&cbz2err, cpfbz2, buf, 8);
-	    if ((lenread < 8) || ((cbz2err != BZ_OK) &&
-				  (cbz2err != BZ_STREAM_END)))
+	    _errmsg = NULL;
+	    nr = rpmbzRead(cbz, (char *)buf, sizeof(buf), &_errmsg);
+	    if (nr < 8)
 		goto exit;
 	    ctrl[i] = offtin(buf);
 	}
@@ -166,9 +183,9 @@ int main(int argc, char *argv[])
 	    goto exit;
 
 	/* Read diff string */
-	lenread = BZ2_bzRead(&dbz2err, dpfbz2, new + newpos, ctrl[0]);
-	if ((lenread < ctrl[0])
-	 || ((dbz2err != BZ_OK) && (dbz2err != BZ_STREAM_END)))
+	_errmsg = NULL;
+	nr = rpmbzRead(dbz, (char *)(new + newpos), ctrl[0], &_errmsg);
+	if (nr < ctrl[0])
 	    goto exit;
 
 	/* Add old data to diff string */
@@ -185,9 +202,9 @@ int main(int argc, char *argv[])
 	    goto exit;
 
 	/* Read extra string */
-	lenread = BZ2_bzRead(&ebz2err, epfbz2, new + newpos, ctrl[1]);
-	if ((lenread < ctrl[1])
-	 || ((ebz2err != BZ_OK) && (ebz2err != BZ_STREAM_END)))
+	_errmsg = NULL;
+	nr = rpmbzRead(ebz, (char *)(new + newpos), ctrl[1], &_errmsg);
+	if (nr < ctrl[1])
 	    goto exit;
 
 	/* Adjust pointers */
@@ -195,23 +212,24 @@ int main(int argc, char *argv[])
 	oldpos += ctrl[2];
     }
 
-    /* Clean up the bzip2 reads */
-    BZ2_bzReadClose(&cbz2err, cpfbz2);
-    BZ2_bzReadClose(&dbz2err, dpfbz2);
-    BZ2_bzReadClose(&ebz2err, epfbz2);
-    if (fclose(cpf) || fclose(dpf) || fclose(epf))
-	err(1, "fclose(%s)", argv[3]);
-
     /* Write the new file */
-    if (((fd = open(argv[2], O_CREAT | O_TRUNC | O_WRONLY, 0666)) < 0) ||
-	(write(fd, new, newsize) != newsize) || (close(fd) == -1))
-	err(1, "%s", argv[2]);
+    {	int fdno = open(nfn, O_CREAT | O_TRUNC | O_WRONLY, 0666);
+	if (fdno < 0
+	 || write(fdno, new, newsize) != newsize
+	 || close(fdno) == -1)
+	    err(1, "%s", nfn);
+    }
 
     ec = 0;
 
 exit:
     if (ec == 1)
-	fprintf(stderr, "Corrupt patch\n");
+	fprintf(stderr, "%s\n", (_errmsg ? _errmsg : "Corrupt patch"));
+
+    /* Clean up the bzip2 reads */
+    cbz = rpmbzFree(cbz, (ec != 0));
+    dbz = rpmbzFree(dbz, (ec != 0));
+    ebz = rpmbzFree(ebz, (ec != 0));
 
     /* Free the memory we used */
     oldiob = rpmiobFree(oldiob);

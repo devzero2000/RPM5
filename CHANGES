@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: bspatch: use bzip2 through -lrpmio.
+    - jbj: rpmbz: expose sufficient methods to uncouple bspatch from bzip2.
     - bero: Fix configure script for autoconf 2.65 without breaking 2.63
     - jbj: bsdiff: use bzip2 through -lrpmio.
     - jbj: rpmbz: expose sufficient methods to uncouple bsdiff from bzip2.

@@ -536,6 +536,7 @@ LIBRPMIO_0
     rpmbzCompressBlock;
     rpmbzFree;
     rpmbzNew;
+    rpmbzRead;
     rpmbzStrerror;
     rpmbzWrite;
     _rpmzq;

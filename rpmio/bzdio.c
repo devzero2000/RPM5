@@ -218,7 +218,7 @@ static void rpmbzDecompress(rpmbz bz, rpmzJob job)
 #endif	/* NOTYET */
 
 /*@-mustmod@*/
-static ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
+ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
 	/*@globals internalState @*/
 	/*@modifies bz, *buf, *errmsg, internalState @*/

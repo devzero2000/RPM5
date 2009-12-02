@@ -233,14 +233,12 @@ rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
-#ifdef	NOTYET
 /**
  */
 ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
 	/*@globals internalState @*/
 	/*@modifies bz, *buf, *errmsg, internalState @*/;
-#endif
 
 /**
  */
@@ -249,13 +247,11 @@ ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count,
 	/*@modifies bz, *errmsg @*/;
 
 #ifdef	NOTYET
-#ifdef	NOTYET
 /**
  */
 int rpmbzSeek(/*@unused@*/ void * _bz, /*@unused@*/ _libio_pos_t pos,
 			/*@unused@*/ int whence)
 	/*@*/;
-#endif
 
 /**
  */
