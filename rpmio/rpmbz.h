@@ -209,7 +209,6 @@ static rpmbz rpmbzInit(int level, int small, int verbosity, mode_t omode)
 }
 #endif	/* _RPMBZ_INTERNAL */
 
-#ifdef	NOTYET
 /**
  */
 const char * rpmbzStrerror(rpmbz bz)
@@ -234,12 +233,14 @@ rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
+#ifdef	NOTYET
 /**
  */
 ssize_t rpmbzRead(rpmbz bz, /*@out@*/ char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
 	/*@globals internalState @*/
 	/*@modifies bz, *buf, *errmsg, internalState @*/;
+#endif
 
 /**
  */
@@ -247,6 +248,7 @@ ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
 	/*@modifies bz, *errmsg @*/;
 
+#ifdef	NOTYET
 #ifdef	NOTYET
 /**
  */

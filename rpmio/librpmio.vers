@@ -532,7 +532,12 @@ LIBRPMIO_0
     rpmzLogLink;
     rpmzLogNew;
     _rpmzq_debug;
+    rpmbzClose;
     rpmbzCompressBlock;
+    rpmbzFree;
+    rpmbzNew;
+    rpmbzStrerror;
+    rpmbzWrite;
     _rpmzq;
     rpmzqAddCJob;
     rpmzqAddFIFO;

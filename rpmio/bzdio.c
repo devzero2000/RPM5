@@ -19,14 +19,14 @@
 
 #define	BZDONLY(fd)	assert(fdGetIo(fd) == bzdio)
 
-static const char * rpmbzStrerror(rpmbz bz)
+const char * rpmbzStrerror(rpmbz bz)
 	/*@*/
 {
     return BZ2_bzerror(bz->bzfile, &bz->bzerr);
 }
 
 /*@-mustmod@*/
-static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
+void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
 	/*@modifies bz, *errmsg @*/
 {
     if (bz->bzfile != NULL) {
@@ -45,7 +45,7 @@ static void rpmbzClose(rpmbz bz, int abort, /*@null@*/ const char ** errmsg)
 /*@=mustmod@*/
 
 /*@only@*/ /*@null@*/
-static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
+rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
 	/*@globals fileSystem @*/
 	/*@modifies bz, fileSystem @*/
 {
@@ -59,7 +59,7 @@ static rpmbz rpmbzFree(/*@only@*/ rpmbz bz, int abort)
 
 /*@-mustmod@*/
 /*@only@*/
-static rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
+rpmbz rpmbzNew(const char * path, const char * fmode, int fdno)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -262,7 +262,7 @@ assert(rc >= 0);
 }
 /*@=mustmod@*/
 
-static ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count,
+ssize_t rpmbzWrite(rpmbz bz, const char * buf, size_t count,
 		/*@null@*/ const char ** errmsg)
 	/*@globals internalState @*/
 	/*@modifies bz, *errmsg, internalState @*/
