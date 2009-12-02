@@ -260,8 +260,10 @@ lcov-report:
 #  testdata/wintestoutput3
 
 bsdiff_SOURCES = bsdiff.c
+bsdiff_LDADD = $(RPMIO_LDADD_COMMON)
 
 bspatch_SOURCES = bspatch.c
+bspatch_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmborg_SOURCES = rpmborg.c
 rpmborg_LDADD = $(RPMIO_LDADD_COMMON)

@@ -222,6 +222,9 @@ static void offtout(int64_t x, uint8_t * buf)
 
 int main(int argc, char *argv[])
 {
+const char * ofn;
+const char * nfn;
+const char * pfn;
     rpmiob oldiob = NULL;
     uint8_t * old;
     int64_t oldsize = 0;
@@ -245,23 +248,27 @@ int main(int argc, char *argv[])
     uint8_t buf[8];
     uint8_t header[32];
 
-    FILE * pf;
-    BZFILE * pfbz2;
-    int bz2err;
+FILE * fp = NULL;
+const char * _errmsg = NULL;
+rpmbz bz = NULL;
+
     int ec = 1;		/* assume error */
     int xx;
 
     if (argc != 4)
 	errx(1, "usage: %s oldfile newfile patchfile\n", argv[0]);
+    ofn = argv[1];
+    nfn = argv[2];
+    pfn = argv[3];
 
     /* Read the old file. */
-    if ((xx = rpmiobSlurp(argv[1], &oldiob)) != 0)
+    if ((xx = rpmiobSlurp(ofn, &oldiob)) != 0)
 	goto exit;
     old = rpmiobBuf(oldiob);
     oldsize = rpmiobLen(oldiob);
 
     /* Read the new file. */
-    if ((xx = rpmiobSlurp(argv[2], &newiob)) != 0)
+    if ((xx = rpmiobSlurp(nfn, &newiob)) != 0)
 	goto exit;
     new = rpmiobBuf(newiob);
     newsize = rpmiobLen(newiob);
@@ -276,8 +283,11 @@ int main(int argc, char *argv[])
     eb = xmalloc(newsize + 1);
 
     /* Create the patch file */
-    if ((pf = fopen(argv[3], "w")) == NULL)
-	err(1, "%s", argv[3]);
+    fp = fopen(pfn, "w");
+    if (fp == NULL) {
+	fprintf(stderr, "fopen(%s)\n", pfn);
+	goto exit;
+    }
 
     /* Header is
        0    8        "BSDIFF40"
@@ -293,12 +303,18 @@ int main(int argc, char *argv[])
     offtout(0, header + 8);
     offtout(0, header + 16);
     offtout(newsize, header + 24);
-    if (fwrite(header, 1, sizeof(header), pf) != sizeof(header))
-	err(1, "fwrite(%s)", argv[3]);
+    if (fwrite(header, 1, sizeof(header), fp) != sizeof(header)) {
+	fprintf(stderr, "fwrite(%s)\n", pfn);
+	goto exit;
+    }
 
     /* Compute the differences, writing ctrl as we go */
-    if ((pfbz2 = BZ2_bzWriteOpen(&bz2err, pf, 9, 0, 0)) == NULL)
-	errx(1, "BZ2_bzWriteOpen, bz2err = %d", bz2err);
+    (void) fflush(fp);
+    bz = rpmbzNew(pfn, "w", dup(fileno(fp)));
+    if (bz == NULL) {
+	fprintf(stderr, "rpmbzNew: %s\n", pfn);
+	goto exit;
+    }
 
     while (scan < newsize) {
 	int64_t oldscore;
@@ -383,66 +399,84 @@ int main(int argc, char *argv[])
 	    eblen += (scan - lenb) - (lastscan + lenf);
 
 	    offtout(lenf, buf);
-	    BZ2_bzWrite(&bz2err, pfbz2, buf, 8);
-	    if (bz2err != BZ_OK)
-		errx(1, "BZ2_bzWrite, bz2err = %d", bz2err);
+	    if (rpmbzWrite(bz, (const char *)buf, 8, &_errmsg) != 8) {
+		fprintf(stderr, "rpmbzWrite: %s\n", _errmsg);
+		goto exit;
+	    }
 
 	    offtout((scan - lenb) - (lastscan + lenf), buf);
-	    BZ2_bzWrite(&bz2err, pfbz2, buf, 8);
-	    if (bz2err != BZ_OK)
-		errx(1, "BZ2_bzWrite, bz2err = %d", bz2err);
+	    if (rpmbzWrite(bz, (const char *)buf, 8, &_errmsg) != 8) {
+		fprintf(stderr, "rpmbzWrite: %s\n", _errmsg);
+		goto exit;
+	    }
 
 	    offtout((pos - lenb) - (lastpos + lenf), buf);
-	    BZ2_bzWrite(&bz2err, pfbz2, buf, 8);
-	    if (bz2err != BZ_OK)
-		errx(1, "BZ2_bzWrite, bz2err = %d", bz2err);
+	    if (rpmbzWrite(bz, (const char *)buf, 8, &_errmsg) != 8) {
+		fprintf(stderr, "rpmbzWrite: %s\n", _errmsg);
+		goto exit;
+	    }
 
 	    lastscan = scan - lenb;
 	    lastpos = pos - lenb;
 	    lastoffset = pos - scan;
 	}
     }
-    BZ2_bzWriteClose(&bz2err, pfbz2, 0, NULL, NULL);
-    if (bz2err != BZ_OK)
-	errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
+    bz = rpmbzFree(bz, 0);
 
     /* Compute size of compressed ctrl data */
-    if ((len = ftello(pf)) == -1)
-	err(1, "ftello");
+    if ((len = ftello(fp)) == -1) {
+	fprintf(stderr, "ftello(%s)\n", pfn);
+	goto exit;
+    }
     offtout(len - 32, header + 8);
 
     /* Write compressed diff data */
-    if ((pfbz2 = BZ2_bzWriteOpen(&bz2err, pf, 9, 0, 0)) == NULL)
-	errx(1, "BZ2_bzWriteOpen, bz2err = %d", bz2err);
-    BZ2_bzWrite(&bz2err, pfbz2, db, dblen);
-    if (bz2err != BZ_OK)
-	errx(1, "BZ2_bzWrite, bz2err = %d", bz2err);
-    BZ2_bzWriteClose(&bz2err, pfbz2, 0, NULL, NULL);
-    if (bz2err != BZ_OK)
-	errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
+    (void) fflush(fp);
+    bz = rpmbzNew(pfn, "w", dup(fileno(fp)));
+    if (bz == NULL) {
+	fprintf(stderr, "rpmbzNew: %s\n", pfn);
+	goto exit;
+    }
+
+    if (rpmbzWrite(bz, (const char *)db, dblen, &_errmsg) != dblen) {
+	fprintf(stderr, "rpmbzWrite: %s\n", _errmsg);
+	goto exit;
+    }
+    bz = rpmbzFree(bz, 0);
 
     /* Compute size of compressed diff data */
-    if ((newsize = ftello(pf)) == -1)
-	err(1, "ftello");
+    newsize = ftello(fp);
+    if (newsize == -1) {
+	fprintf(stderr, "ftello(%s)\n", pfn);
+	goto exit;
+    }
     offtout(newsize - len, header + 16);
 
     /* Write compressed extra data */
-    if ((pfbz2 = BZ2_bzWriteOpen(&bz2err, pf, 9, 0, 0)) == NULL)
-	errx(1, "BZ2_bzWriteOpen, bz2err = %d", bz2err);
-    BZ2_bzWrite(&bz2err, pfbz2, eb, eblen);
-    if (bz2err != BZ_OK)
-	errx(1, "BZ2_bzWrite, bz2err = %d", bz2err);
-    BZ2_bzWriteClose(&bz2err, pfbz2, 0, NULL, NULL);
-    if (bz2err != BZ_OK)
-	errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
+    (void) fflush(fp);
+    bz = rpmbzNew(pfn, "w", dup(fileno(fp)));
+    if (bz == NULL) {
+	fprintf(stderr, "rpmbzNew: %s\n", pfn);
+	goto exit;
+    }
+
+    if (rpmbzWrite(bz, (const char *)eb, eblen, &_errmsg) != eblen) {
+	fprintf(stderr, "rpmbzWrite: %s\n", _errmsg);
+	goto exit;
+    }
+    bz = rpmbzFree(bz, 0);
 
     /* Seek to the beginning, write the header, and close the file */
-    if (fseeko(pf, 0, SEEK_SET))
-	err(1, "fseeko");
-    if (fwrite(header, 32, 1, pf) != 1)
-	err(1, "fwrite(%s)", argv[3]);
-    if (fclose(pf))
-	err(1, "fclose");
+    if (fseeko(fp, 0, SEEK_SET) != 0) {
+	fprintf(stderr, "fseeko(%s)\n", pfn);
+	goto exit;
+    }
+    if (fwrite(header, 1, sizeof(header), fp) != sizeof(header)) {
+	fprintf(stderr, "fwrite(%s)\n", pfn);
+	goto exit;
+    }
+    (void) fclose(fp);
+    fp = NULL;
     ec = 0;
 
 exit:
@@ -452,6 +486,11 @@ exit:
     I = _free(I);
     oldiob = rpmiobFree(oldiob);
     newiob = rpmiobFree(newiob);
+
+    if (bz)
+	bz = rpmbzFree(bz, (ec != 0));
+    if (fp)
+	(void) fclose(fp);
 
     return ec;
 }
