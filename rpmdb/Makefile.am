@@ -118,6 +118,8 @@ endif
 varlibrpm =	$(varprefix)/lib/rpm
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)
+	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)/log
+	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)/tmp
 	[ -f $(DESTDIR)$(varlibrpm)/DB_CONFIG ] || $(install_sh_DATA) DB_CONFIG $(DESTDIR)$(varlibrpm)
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
 	$(INSTALL_HEADER) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h

@@ -2,8 +2,8 @@
 #add_data_dir		.
 set_data_dir		.
 set_create_dir		.
-#set_lg_dir		./log
-#set_tmp_dir		./tmp
+set_lg_dir		./log
+set_tmp_dir		./tmp
 
 # -- thread_count must be >= 8
 set_thread_count	64
@@ -31,5 +31,8 @@ set_cachesize		0 1048576 0
 set_mp_mmapsize		16777216
 
 # ================ Locking
+set_lk_max_locks	4000
+set_lk_max_lockers	4000
+set_lk_max_objects	4000
 
 # ================ Replication
