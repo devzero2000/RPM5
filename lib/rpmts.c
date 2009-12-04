@@ -1146,17 +1146,23 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
 	if (dsi->f_bavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->f_bavail) {
-	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
+	    if (dsi->bneeded != dsi->obneeded) {
+		rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	   (adj_fs_blocks(dsi->bneeded) - dsi->f_bavail) * dsi->f_bsize);
+ 		  (adj_fs_blocks(dsi->bneeded) - dsi->f_bavail) * dsi->f_bsize);
+		dsi->obneeded = dsi->bneeded;
+	    }
 	}
 
 	if (dsi->f_favail > 0 && adj_fs_blocks(dsi->ineeded) > dsi->f_favail) {
-	    rpmpsAppend(ps, RPMPROB_DISKNODES,
+	    if (dsi->ineeded != dsi->oineeded) {
+		rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	    (adj_fs_blocks(dsi->ineeded) - dsi->f_favail));
+ 			(adj_fs_blocks(dsi->ineeded) - dsi->f_favail));
+		dsi->oineeded = dsi->ineeded;
+	    }
 	}
 
 	if ((dsi->bneeded || dsi->ineeded) && (dsi->f_flag & ST_RDONLY)) {

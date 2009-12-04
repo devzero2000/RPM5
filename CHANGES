@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - rpm.org: Only report disk space/inode issues for affected packages.
     - jbj: rpmdb: mark code to renumber primary keys when needed.
     - jbj: rpmmi: fix: return native endian, but store big endian, primary keys.
     - jbj: DB_CONFIG: create /var/lib/rpm/tmp subdir.

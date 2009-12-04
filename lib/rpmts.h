@@ -188,6 +188,8 @@ struct diskspaceInfo_s {
 
     signed long long bneeded;	/*!< No. of blocks needed. */
     signed long long ineeded;	/*!< No. of inodes needed. */
+    signed long long obneeded;	/*!< Bookkeeping to avoid duplicate reports. */
+    signed long long oineeded;	/*!< Bookkeeping to avoid duplicate reports. */
     dev_t dev;			/*!< File system device number. */
 };
 
