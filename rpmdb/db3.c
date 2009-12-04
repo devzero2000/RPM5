@@ -356,7 +356,7 @@ static char * fmtDBT(const DBT * K, char * te)
 	} else {
 	    switch (_nu) {
 	    default: break;
-	    case 4:	sprintf(te, "\t%u", *(uint32_t *)_u); break;
+	    case 4:	sprintf(te, "\t0x%08x", *(uint32_t *)_u); break;
 	    }
 	}
 
