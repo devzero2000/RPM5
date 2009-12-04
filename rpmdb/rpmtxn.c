@@ -79,7 +79,6 @@ fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, _flags, rc);
     return rc;
 }
 
-#ifdef	NOTYET
 int rpmtxnCheckpoint(rpmdb rpmdb)
 {
     DB_ENV * dbenv = rpmdb->db_dbenv;
@@ -92,6 +91,7 @@ fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv,
     return rc;
 }
 
+#ifdef	NOTYET
 int rpmtxnDiscard(rpmtxn txn)
 {
     DB_TXN * _txn = txn;

@@ -36,10 +36,10 @@ int rpmtxnBegin(rpmdb rpmdb, /*@null@*/ rpmtxn parent, /*@null@*/ rpmtxn * txnp)
 int rpmtxnCommit(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
-#ifdef	NOTYET
 int rpmtxnCheckpoint(rpmdb rpmdb)
 	/*@*/;
 
+#ifdef	NOTYET
 int rpmtxnDiscard(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
