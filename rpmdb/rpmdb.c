@@ -479,12 +479,12 @@ unsigned int dbiIndexSetCount(dbiIndexSet set) {
 }
 
 /* XXX transaction.c */
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
+uint32_t dbiIndexRecordOffset(dbiIndexSet set, int recno) {
     return (unsigned) set->recs[recno].hdrNum;
 }
 
 /* XXX transaction.c */
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
     return (unsigned) set->recs[recno].tagNum;
 }
 
@@ -518,8 +518,8 @@ struct rpmmi_s {
     int			mi_sorted;
     int			mi_cflags;
     int			mi_modified;
-    unsigned int	mi_prevoffset;	/* header instance (native endian) */
-    unsigned int	mi_offset;	/* header instance (native endian) */
+    unsigned int	mi_prevoffset;	/* header instance (big endian) */
+    unsigned int	mi_offset;	/* header instance (big endian) */
 /*@refcounted@*/ /*@null@*/
     rpmbf		mi_bf;		/* Iterator instance Bloom filter. */
     int			mi_nre;
@@ -1684,8 +1684,14 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
     return mi;
 }
 
-unsigned int rpmmiInstance(rpmmi mi) {
-    return (mi ? mi->mi_offset : 0);
+uint32_t rpmmiInstance(rpmmi mi)
+{
+    union _dbswap mi_offset;
+    /* Get a native endian copy of the primary package key. */
+    mi_offset.ui = (mi ? mi->mi_offset : 0);
+    if (_endian.uc[0] == 0x44)
+	_DBSWAP(mi_offset);
+    return mi_offset.ui;
 }
 
 unsigned int rpmmiCount(rpmmi mi) {
@@ -2232,7 +2238,10 @@ next:
 	/* The set of header instances is known in advance. */
 	if (!(mi->mi_setx < mi->mi_set->count))
 	    return NULL;
-	mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+	mi_offset.ui = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+	if (_endian.uc[0] == 0x44)
+	    _DBSWAP(mi_offset);
+	mi->mi_offset = mi_offset.ui;
 	mi->mi_setx++;
 
 	/* If next header is identical, return it now. */
@@ -2245,11 +2254,8 @@ next:
 	    goto next;
 
 	/* Fetch header by offset. */
-	mi_offset.ui = mi->mi_offset;
-	if (_endian.uc[0] == 0x44)
-	    _DBSWAP(mi_offset);
-	k.data = &mi_offset.ui;
-	k.size = (u_int32_t)sizeof(mi_offset.ui);
+	k.data = &mi->mi_offset;
+	k.size = (UINT32_T)sizeof(mi->mi_offset);
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_SET);
     }
     else if (dbi->dbi_index) {
@@ -2263,10 +2269,8 @@ assert(0);
 	    /*@notreached@*/ break;
 	case 0:
 	    mi->mi_setx++;
-	    memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
-	    if (_endian.uc[0] == 0x44)
-		_DBSWAP(mi_offset);
-	    mi->mi_offset = mi_offset.ui;
+assert(p.size == sizeof(mi->mi_offset));
+	    memcpy(&mi->mi_offset, p.data, sizeof(mi->mi_offset));
 	    /* If next header is identical, return it now. */
 	    if (mi->mi_offset == mi->mi_prevoffset && mi->mi_h != NULL)
 		return mi->mi_h;
@@ -2284,12 +2288,10 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 	do {
 	    rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_NEXT);
 	    if (rc == 0) {
-		memcpy(&mi_offset, k.data, sizeof(mi_offset.ui));
-		if (_endian.uc[0] == 0x44)
-		    _DBSWAP(mi_offset);
-		mi->mi_offset = mi_offset.ui;
+assert(k.size == sizeof(mi->mi_offset));
+		memcpy(&mi->mi_offset, k.data, sizeof(mi->mi_offset));
 	    }
-	} while (rc == 0 && mi_offset.ui == 0);
+	} while (rc == 0 && mi->mi_offset == 0);
     }
 
     /* Did the header blob load correctly? */
@@ -2327,9 +2329,12 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), uh, uhlen, &msg);
 	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
+	    mi_offset.ui = mi->mi_offset;
+	    if (_endian.uc[0] == 0x44)
+		_DBSWAP(mi_offset);
 	    rpmlog(lvl, "%s h#%8u %s\n",
 		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : _("rpmdb: read")),
-			mi->mi_offset, (msg ? msg : ""));
+			mi_offset.ui, (msg ? msg : ""));
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
@@ -2355,9 +2360,12 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 	mi->mi_h = headerCopyLoad(uh);
 
     if (mi->mi_h == NULL) {
+	mi_offset.ui = mi->mi_offset;
+	if (_endian.uc[0] == 0x44)
+	    _DBSWAP(mi_offset);
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u cannot be loaded -- skipping.\n"),
-		mi->mi_offset);
+		mi_offset.ui);
 	/* damaged header should not be reused */
 	if (mi->mi_h) {
 	    (void)headerFree(mi->mi_h);
@@ -2373,9 +2381,12 @@ assert(mi->mi_rpmtag == RPMDBI_PACKAGES);
 
     /* Mark header with its instance number. */
     {	char origin[32];
-	sprintf(origin, "rpmdb (h#%u)", mi->mi_offset);
+	mi_offset.ui = mi->mi_offset;
+	if (_endian.uc[0] == 0x44)
+	    _DBSWAP(mi_offset);
+	sprintf(origin, "rpmdb (h#%u)", mi_offset.ui);
 	(void) headerSetOrigin(mi->mi_h, origin);
-	(void) headerSetInstance(mi->mi_h, mi->mi_offset);
+	(void) headerSetInstance(mi->mi_h, mi_offset.ui);
     }
 
     mi->mi_prevoffset = mi->mi_offset;
@@ -2644,7 +2655,7 @@ assert(0);
 }
 
 /* XXX psm.c */
-int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
+int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 		/*@unused@*/ rpmts ts)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -3379,6 +3390,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     newdb->db_rebuilding = 1;	/* XXX disable db->associate hack-o-round */
     {	Header h = NULL;
 	rpmmi mi;
+#ifdef	RESET_PRIMARY_KEYS
+uint32_t hx = 0;
+#endif
 
 	mi = rpmmiInit(olddb, RPMDBI_PACKAGES, NULL, 0);
 	if (ts)
@@ -3389,6 +3403,11 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
 /* XXX ensure that the header instance is set persistently. */
 assert(hdrNum > 0 && hdrNum == rpmmiInstance(mi));
+
+#ifdef	RESET_PRIMARY_KEYS
+/* XXX Reset hdrNum */
+hdrNum = ++hx;
+#endif
 
 	    /* Keep track of largest hdrNum. */
 	    if (hdrNum > maxHdrNum)
@@ -3410,7 +3429,12 @@ assert(hdrNum > 0 && hdrNum == rpmmiInstance(mi));
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
-if (nh) headerSetInstance(nh, hdrNum);
+if (nh)
+headerSetInstance(nh, hdrNum);
+#ifdef	RESET_PRIMARY_KEYS
+else
+headerSetInstance(h, hdrNum);
+#endif
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts);
 		(void)headerFree(nh);
 		nh = NULL;

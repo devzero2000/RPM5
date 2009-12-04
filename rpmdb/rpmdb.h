@@ -62,16 +62,17 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
  * A single item from an index database (i.e. the "data returned").
  */
 struct _dbiIndexItem {
-    rpmuint32_t hdrNum;			/*!< header instance in db */
-    rpmuint32_t tagNum;			/*!< tag index in header */
-    rpmuint32_t fpNum;			/*!< finger print index */
+    uint32_t hdrNum;			/*!< header instance in db */
+    uint32_t tagNum;			/*!< tag index in header */
+    uint32_t fpNum;			/*!< finger print index */
 };
 
 /** \ingroup dbi
  * Items retrieved from the index database.
  */
 struct _dbiIndexSet {
-/*@owned@*/ struct _dbiIndexItem * recs; /*!< array of records */
+/*@owned@*/
+    struct _dbiIndexItem * recs;	/*!< array of records */
     unsigned int count;			/*!< number of records */
 };
 
@@ -1115,7 +1116,7 @@ unsigned int dbiIndexSetCount(dbiIndexSet set)
  * @param recno	index of item in set
  * @return	record offset of header
  */
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
+uint32_t dbiIndexRecordOffset(dbiIndexSet set, int recno)
 	/*@*/;
 
 /** \ingroup dbi
@@ -1124,7 +1125,7 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
  * @param recno	index of item in set
  * @return	file index
  */
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
+uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 	/*@*/;
 #endif	/* defined(_RPMDB_INTERNAL) */
 
@@ -1261,7 +1262,7 @@ int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
  * @param mi		rpm database iterator
  * @return		current header join key
  */
-unsigned int rpmmiInstance(/*@null@*/ rpmmi mi)
+uint32_t rpmmiInstance(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
@@ -1455,7 +1456,7 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts)
  * @param ts		(unused) transaction set (or NULL)
  * @return		0 on success
  */
-int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
+int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 		/*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, ts,

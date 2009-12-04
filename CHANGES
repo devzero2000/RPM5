@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: mark code to renumber primary keys when needed.
+    - jbj: rpmmi: fix: return native endian, but store big endian, primary keys.
     - jbj: DB_CONFIG: create /var/lib/rpm/tmp subdir.
     - jbj: DB_CONFIG: move log files to /var/liog/rpm/log subdir.
     - jbj: DB_CONFIG: configure set_lk_max_{locks,lockers,objects} to 4000.
