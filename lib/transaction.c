@@ -2158,6 +2158,7 @@ assert(psm != NULL);
 	if (ts->txn)
 	    xx = rpmtxnCommit(ts->txn);
 	ts->txn = NULL;
+	xx = rpmtxnCheckpoint(rpmtsGetRdb(ts));
 	return 0;
     }
     /*@=nullstate@*/

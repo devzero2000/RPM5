@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: perform checkpoint after every successful transaction.
     - jbj: rpmtxn: expose rpmtxnCheckpoint.
     - rpm.org: Only report disk space/inode issues for affected packages.
     - jbj: rpmdb: mark code to renumber primary keys when needed.
