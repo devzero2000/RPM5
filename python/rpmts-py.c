@@ -481,9 +481,9 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else { /* XXX: Note that we automatically choose to remove all matches */
 	    Header h;
 	    while ((h = rpmmiNext(mi)) != NULL) {
-		unsigned int recOffset = rpmmiInstance(mi);
-		if (recOffset)
-		    rpmtsAddEraseElement(s->ts, h, recOffset);
+		uint32_t hdrNum = rpmmiInstance(mi);
+		if (hdrNum)
+		    rpmtsAddEraseElement(s->ts, h, hdrNum);
 	    }
 	}
 	mi = rpmmiFree(mi);
@@ -499,9 +499,9 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else {
 	    Header h;
 	    while ((h = rpmmiNext(mi)) != NULL) {
-		uint32_t recOffset = rpmmiInstance(mi);
-		if (recOffset)
-		    rpmtsAddEraseElement(s->ts, h, recOffset);
+		uint32_t hdrNum = rpmmiInstance(mi);
+		if (hdrNum)
+		    rpmtsAddEraseElement(s->ts, h, hdrNum);
 		break;
 	    }
 	}

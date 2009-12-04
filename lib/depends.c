@@ -79,12 +79,12 @@ static int uintcmp(const void * a, const void * b)
  * Add removed package instance to ordered transaction set.
  * @param ts		transaction set
  * @param h		header
- * @param dboffset	rpm database instance
+ * @param hdrNum	rpm database instance
  * @retval *indexp	removed element index (if not NULL)
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(rpmts ts, Header h, uint32_t dboffset,
+static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
 		/*@null@*/ int * indexp,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -95,7 +95,7 @@ static int removePackage(rpmts ts, Header h, uint32_t dboffset,
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
 	uint32_t * needle = NULL;
-	needle = bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
+	needle = bsearch(&hdrNum, ts->removedPackages, ts->numRemovedPackages,
 			sizeof(*ts->removedPackages), uintcmp);
 	if (needle != NULL) {
 	    /* XXX lastx should be per-call, not per-ts. */
@@ -106,7 +106,7 @@ static int removePackage(rpmts ts, Header h, uint32_t dboffset,
     }
 
     if (ts->rbf == NULL) {
-	static size_t nRemoves = 4096;	/* XXX poplation estimate */
+	static size_t nRemoves = 4096;	/* XXX population estimate */
 	size_t _jiggery = 2;        /* XXX todo: Bloom filter tuning? */
 	size_t _k = _jiggery * 8;
 	size_t _m = _jiggery * (3 * nRemoves * _k) / 2;
@@ -120,8 +120,8 @@ static int removePackage(rpmts ts, Header h, uint32_t dboffset,
     }
 
 assert(ts->removedPackages != NULL);	/* XXX can't happen. */
-    rpmbfAdd(ts->rbf, &dboffset, sizeof(dboffset));
-    ts->removedPackages[ts->numRemovedPackages] = dboffset;
+    rpmbfAdd(ts->rbf, &hdrNum, sizeof(hdrNum));
+    ts->removedPackages[ts->numRemovedPackages] = hdrNum;
     ts->numRemovedPackages++;
     if (ts->numRemovedPackages > 1)
 	qsort(ts->removedPackages, ts->numRemovedPackages,
@@ -134,7 +134,7 @@ assert(ts->removedPackages != NULL);	/* XXX can't happen. */
 /*@=type =voidabstract @*/
     }
 
-    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, dboffset, depends);
+    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, hdrNum, depends);
     ts->order[ts->orderCount] = p;
     if (indexp != NULL)
 	*indexp = ts->orderCount;
@@ -810,10 +810,10 @@ exit:
     return ec;
 }
 
-int rpmtsAddEraseElement(rpmts ts, Header h, uint32_t dboffset)
+int rpmtsAddEraseElement(rpmts ts, Header h, uint32_t hdrNum)
 {
     int oc = -1;
-    int rc = removePackage(ts, h, dboffset, &oc, RPMAL_NOMATCH);
+    int rc = removePackage(ts, h, hdrNum, &oc, RPMAL_NOMATCH);
     if (rc == 0 && oc >= 0 && oc < ts->orderCount) {
 	(void) rpmtsEraseDebuginfo(ts, ts->order[oc], h, RPMAL_NOMATCH);
 	ts->teErase = ts->order[oc];
