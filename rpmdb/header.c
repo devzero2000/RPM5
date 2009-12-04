@@ -1244,9 +1244,12 @@ rpmuint32_t headerGetInstance(Header h)
 
 rpmuint32_t headerSetInstance(Header h, rpmuint32_t instance)
 {
-    if (h != NULL)
+    uint32_t oinstance = 0;
+    if (h != NULL) {
+	oinstance = h->instance;
 	h->instance = instance;
-    return 0;
+    }
+    return oinstance;
 }
 
 rpmuint32_t headerGetStartOff(Header h)
@@ -1283,7 +1286,7 @@ Header headerReload(Header h, int tag)
     const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
     struct stat sb = h->sb;	/* structure assignment */
     void * rpmdb = h->rpmdb;
-    rpmuint32_t instance = h->instance;
+    rpmuint32_t instance = headerGetInstance(h);
     int xx;
 
 /*@-onlytrans@*/
