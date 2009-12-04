@@ -1283,6 +1283,34 @@ exit:
 }
 #endif
 
+static const char * xpatdup(const char * s, size_t ns)
+{
+    char * t;
+
+    if (s[0] == '^' || s[ns-1] == '$')
+	t = xstrdup(s);
+    else {
+	static const char _REchars[] = "^.*(|)[]+?{}$";
+	size_t nt = 0;
+	const char * se;
+	char * te;
+
+	for (se = s; *se != '\0'; se++, nt++)
+	    if (strchr(_REchars, *se)) nt++;
+
+	te = t = xmalloc(nt + sizeof("^$"));
+	*te++ = '^';
+	for (se = s; *se != '\0'; *te++ = *se++)
+	    if (strchr(_REchars, *se)) *te++ = '\\';
+	*te++ = '$';
+	*te = '\0';
+    }
+
+if (_jbj_debug)
+fprintf(stderr, "<-- %s(\"%s\", %u) ret \"%s\"\n", __FUNCTION__, s, ns, t);
+    return t;
+}
+
 static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
 		const char * pat, dbiIndexSet * matches)
 {
@@ -1426,58 +1454,50 @@ fprintf(stderr, "<-- %s(%p, %s(%u), %d, \"%s\", %p) rc %d set %p[%u]\n", __FUNCT
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
- * @param N		package name
- * @param V		package version (can be a pattern)
- * @param R		package release (can be a pattern)
+ * @param NVR		name[-version[-release]] string/pattern
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
-		DBT * key, DBT * data,
-		const char * N,
-		/*@null@*/ const char * V,
-		/*@null@*/ const char * R,
-		/*@out@*/ dbiIndexSet * matches)
+static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		const char * NVR, /*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-    rpmRC rc = RPMRC_FAIL;
+    const char * s = NVR;
+    size_t ns = (s ? strlen(s) : 0);
+    rpmRC rc = RPMRC_NOTFOUND;
     int ret;
 
-    {	rpmMireMode _mode = RPMMIRE_PCRE;
+    if (ns == 0) goto exit;
+
+    {
 #ifdef	NOTYET
 	rpmTag _tag = RPMTAG_NVRA;
 #else
 	rpmTag _tag = RPMTAG_NAME;
 #endif
-	/* XXX add ^...$ *RE anchors. */
-	const char * _pat = N;
+	rpmMireMode _mode = RPMMIRE_PCRE;
+	const char * _pat = xpatdup(s, ns);
+	/* Add ^...$ *RE anchors. Escape pattern characters. */
 	ret = rpmdbMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches);
+	_pat = _free(_pat);
     }
 
     switch (ret) {
-    case 0:
-	if (V == NULL && R == NULL) {
-	    rc = RPMRC_OK;
-	    goto exit;
-	}
-	break;
-    case DB_NOTFOUND:
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-	/*@notreached@*/ break;
-    default:
+    case 0:		rc = RPMRC_OK;		break;
+    case DB_NOTFOUND:	rc = RPMRC_NOTFOUND;	break;
+    default:		rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("error(%d) getting records from %s index\n"),
 		ret, tagName(dbi->dbi_rpmtag));
-	goto exit;
-	/*@notreached@*/ break;
+	break;
     }
 
 exit:
 if (_jbj_debug)
-fprintf(stderr, "<-- %s(%p, %p, %p, %p, \"%s\", \"%s\", \"%s\", %p) rc %d set %p[%u]\n", __FUNCTION__, dbi, dbcursor, key, data, N, V, R, matches, rc, (*matches ? (*matches)->recs : NULL), (*matches ? (*matches)->count : 0));
+fprintf(stderr, "<-- %s(%p, %p, %p, %p, \"%s\", %p) rc %d set %p[%u]\n", __FUNCTION__, dbi, dbcursor, key, data, NVR, matches, rc, (*matches ? (*matches)->recs : NULL), (*matches ? (*matches)->count : 0));
+
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     if (rc != RPMRC_OK && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
@@ -1490,12 +1510,11 @@ fprintf(stderr, "<-- %s(%p, %p, %p, %p, \"%s\", \"%s\", \"%s\", %p) rc %d set %p
  * Both version and release can be patterns.
  * @todo Name must be an exact match, as name is a db key.
  * @param dbi		index database handle (always RPMTAG_NAME)
- * @param arg		name[-version[-release]] string
- * @param keylen
+ * @param NVR		name[-version[-release]] string/pattern
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(dbiIndex dbi, /*@null@*/ const char * arg, size_t keylen,
+static rpmRC dbiFindByLabel(dbiIndex dbi, /*@null@*/ const char * NVR,
 		/*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *matches,
@@ -1508,11 +1527,11 @@ DBT v = DBT_INIT, *data = &v;
     rpmRC rc;
     int xx;
 
-    if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
+    if (NVR == NULL || strlen(NVR) == 0) return RPMRC_NOTFOUND;
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
-    rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
+    rc = dbiFindMatches(dbi, dbcursor, key, data, NVR, matches);
 
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
@@ -2604,7 +2623,7 @@ fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db
 	/* XXX Special case #4: gather primary keys for a NVR label. */
 	int rc;
 
-	rc = dbiFindByLabel(dbi, keyp, keylen, &set);
+	rc = dbiFindByLabel(dbi, keyp, &set);
 
 	if ((rc  && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);

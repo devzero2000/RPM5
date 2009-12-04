@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: permit anchored patterns on RPMDBI_LABEL retrieves. strings
+	are escaped and anchored. Still only RPMTAG_NAME, RPMTAG_NVRA next.
     - jbj: perform checkpoint after every successful transaction.
     - jbj: rpmtxn: expose rpmtxnCheckpoint.
     - rpm.org: Only report disk space/inode issues for affected packages.
