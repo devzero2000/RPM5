@@ -1283,31 +1283,36 @@ exit:
 }
 #endif
 
-static const char * xpatdup(const char * s, size_t ns)
+/*@only@*/
+static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
+		/*@null@*/ const char *_post)
+	/*@*/
 {
+
+    static const char _REchars[] = "^.*(|)[]+?{}$";
+    size_t nt = 0;
+    const char * se;
     char * t;
+    char * te;
 
-    if (s[0] == '^' || s[ns-1] == '$')
-	t = xstrdup(s);
-    else {
-	static const char _REchars[] = "^.*(|)[]+?{}$";
-	size_t nt = 0;
-	const char * se;
-	char * te;
+    if (_pre == NULL) _pre = "^";
+    if (_post == NULL) _post = "(-[^-]+-[^-]+|-[^-]+|)\\.[^.]+$";
 
-	for (se = s; *se != '\0'; se++, nt++)
-	    if (strchr(_REchars, *se)) nt++;
+    /* Find the PCRE pattern length, including escapes. */
+    for (se = s; *se != '\0'; se++, nt++)
+	if (strchr(_REchars, *se)) nt++;
+    nt += strlen(_pre) + strlen(_post);
 
-	te = t = xmalloc(nt + sizeof("^$"));
-	*te++ = '^';
-	for (se = s; *se != '\0'; *te++ = *se++)
-	    if (strchr(_REchars, *se)) *te++ = '\\';
-	*te++ = '$';
-	*te = '\0';
-    }
+    /* Build the PCRE pattern, escaping characters as needed. */
+    te = t = xmalloc(nt + 1);
+    te = stpcpy(te, _pre);
+    for (se = s; *se != '\0'; *te++ = *se++)
+	if (strchr(_REchars, *se)) *te++ = '\\';
+    te = stpcpy(te, _post);
+    *te = '\0';
 
 if (_jbj_debug)
-fprintf(stderr, "<-- %s(\"%s\", %u) ret \"%s\"\n", __FUNCTION__, s, ns, t);
+fprintf(stderr, "<-- %s(\"%s\") ret \"%s\"\n", __FUNCTION__, s, t);
     return t;
 }
 
@@ -1472,15 +1477,12 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
     if (ns == 0) goto exit;
 
-    {
-#ifdef	NOTYET
-	rpmTag _tag = RPMTAG_NVRA;
-#else
-	rpmTag _tag = RPMTAG_NAME;
-#endif
+    {	rpmTag _tag = RPMTAG_NVRA;
 	rpmMireMode _mode = RPMMIRE_PCRE;
-	const char * _pat = xpatdup(s, ns);
 	/* Add ^...$ *RE anchors. Escape pattern characters. */
+	const char * _pat = (s[0] == '^' || s[ns-1] == '$')
+		? xstrdup(s)
+		: _str2PCREpat("^", s, "(-[^-]+-[^-]+|-[^-]+|)\\.[^.]+$");
 	ret = rpmdbMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches);
 	_pat = _free(_pat);
     }
