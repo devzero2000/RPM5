@@ -733,6 +733,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
 			he->p.str);
 	    he->p.ptr = _free(he->p.ptr);
+	    platform = _free(platform);
+	    arch = _free(arch);
+	    os = _free(os);
 	    spec = freeSpec(spec);
 	    return RPMRC_FAIL;
 	}
