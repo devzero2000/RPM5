@@ -189,7 +189,9 @@ static Package pkgGetPool(rpmioPool pool)
 			NULL, NULL, pkgFini);
 	pool = _pkgPool;
     }
-    return (Package) rpmioGetPool(pool, sizeof(*pkg));
+    pkg = (Package) rpmioGetPool(pool, sizeof(*pkg));
+    memset(((char *)pkg)+sizeof(pkg->_item), 0, sizeof(*pkg)-sizeof(pkg->_item));
+    return pkg;
 }
 
 Package newPackage(/*@unused@*/ Spec spec)
@@ -633,7 +635,9 @@ static Spec specGetPool(rpmioPool pool)
 			NULL, NULL, specFini);
 	pool = _specPool;
     }
-    return (Spec) rpmioGetPool(pool, sizeof(*spec));
+    spec = (Spec) rpmioGetPool(pool, sizeof(*spec));
+    memset(((char *)spec)+sizeof(spec->_item), 0, sizeof(*spec)-sizeof(spec->_item));
+    return spec;
 }
 
 Spec newSpec(void)
