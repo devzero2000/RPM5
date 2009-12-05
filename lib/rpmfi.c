@@ -1302,7 +1302,9 @@ static rpmfi rpmfiGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmfiFini);
 	pool = _rpmfiPool;
     }
-    return (rpmfi) rpmioGetPool(pool, sizeof(*fi));
+    fi = (rpmfi) rpmioGetPool(pool, sizeof(*fi));
+    memset(((char *)fi)+sizeof(fi->_item), 0, sizeof(*fi)-sizeof(fi->_item));
+    return fi;
 }
 
 /**
