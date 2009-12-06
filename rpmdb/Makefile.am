@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 MCCABE = pmccabe
-DB_SQL = db_sql
+DB_SQL = ../db3/db_sql
 
 SUBDIRS = # tests
 
