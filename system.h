@@ -36,6 +36,9 @@ typedef struct
 #define	S_ISTXT	 S_ISVTX
 #endif
 #if !defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
+#if (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)) && defined(st_birthtime)
+#undef	st_birthtime
+#endif
 #define	st_birthtime	st_ctime	/* Use st_ctime if no st_birthtime. */
 #endif
 /* XXX retrofit the *BSD st_[acm]timespec names if not present. */
