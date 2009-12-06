@@ -113,7 +113,7 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 			    if (munmap(h->blob, h->bloblen) != 0)
 				fprintf(stderr,
 					"==> munmap(%p[%u]) error(%d): %s\n",
-					h->blob, h->bloblen,
+					h->blob, (unsigned)h->bloblen,
 					errno, strerror(errno));
 			    h->blob = NULL;
 			} else
@@ -1329,7 +1329,7 @@ Header headerReload(Header h, int tag)
     (void) headerSetRpmdb(nh, rpmdb);
     xx = (int) headerSetInstance(nh, instance);
 if (_hdr_debug)
-fprintf(stderr, "--> h %p ==== %s: blob %p[%u] flags 0x%x\n", nh, __FUNCTION__, nh->blob, nh->bloblen, nh->flags);
+fprintf(stderr, "--> h %p ==== %s: blob %p[%u] flags 0x%x\n", nh, __FUNCTION__, nh->blob, (unsigned)nh->bloblen, nh->flags);
     return nh;
 }
 
@@ -1359,12 +1359,12 @@ static Header headerMap(const void * uh, int map)
 	if (nuh == NULL || nuh == (void *)-1)
 	    fprintf(stderr,
 		"==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
-		NULL, pvlen, prot, flags, fdno, (unsigned)off,
+		NULL, (unsigned)pvlen, prot, flags, fdno, (unsigned)off,
 		errno, strerror(errno));
 	memcpy(nuh, uh, pvlen);
 	if (mprotect(nuh, pvlen, PROT_READ) != 0)
 	    fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
-			nuh, pvlen, PROT_READ,
+			nuh, (unsigned)pvlen, PROT_READ,
 			errno, strerror(errno));
 	nh = headerLoad(nuh);
 	if (nh != NULL) {
@@ -1374,7 +1374,7 @@ assert(nh->bloblen == pvlen);
 	} else {
 	    if (munmap(nuh, pvlen) != 0)
 		fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
-			nuh, pvlen, errno, strerror(errno));
+			nuh, (unsigned)pvlen, errno, strerror(errno));
 	}
     } else {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);

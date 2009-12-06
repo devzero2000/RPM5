@@ -742,7 +742,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	if (ei == NULL || ei == (void *)-1)
             fprintf(stderr,
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
-                NULL, pvlen, prot, flags, fdno, (unsigned)off,
+                NULL, (unsigned)pvlen, prot, flags, fdno, (unsigned)off,
                 errno, strerror(errno));
     } else {
 	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
@@ -761,7 +761,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
         if (mprotect(ei, pvlen, PROT_READ) != 0)
             fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
-                        ei, pvlen, PROT_READ,
+                        ei, (unsigned)pvlen, PROT_READ,
                         errno, strerror(errno));
     }
 
@@ -1367,7 +1367,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	if (ei == NULL || ei == (void *)-1)
             fprintf(stderr,
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
-                NULL, uc, prot, flags, fdno, (unsigned)off,
+                NULL, (unsigned)uc, prot, flags, fdno, (unsigned)off,
                 errno, strerror(errno));
     } else {
 	ei = (rpmuint32_t *) xmalloc(uc);
@@ -1384,7 +1384,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     if (map) {
         if (mprotect(ei, uc, PROT_READ) != 0)
             fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
-                        ei, uc, PROT_READ,
+                        ei, (unsigned)uc, PROT_READ,
                         errno, strerror(errno));
     }
 
@@ -1437,7 +1437,7 @@ exit:
 	if (map) {
             if (munmap(ei, uc) != 0)
                 fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
-                ei, uc, errno, strerror(errno));
+                ei, (unsigned)uc, errno, strerror(errno));
 	    ei = NULL;
 	} else
 	    ei = _free(ei);

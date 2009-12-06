@@ -1310,7 +1310,7 @@ fprintf(stderr, "--> htmlParse(%p) %p[%u]\n", html, html->buf, (unsigned)html->n
 	char * h, * he;
 	size_t nh;
 	char * t;
-	mode_t st_mode;
+	mode_t st_mode = S_IFREG | 0644;
 	int ut;
 
 assert(html->b != NULL);

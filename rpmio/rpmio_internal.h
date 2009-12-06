@@ -583,7 +583,7 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	/*@globals internalState @*/
 	/*@modifies fd, *datap, *lenp, internalState @*/
 {
-    int i;
+    int i = -1;
 
   if (fd->ndigests > 0) {
     fdstat_enter(fd, FDSTAT_DIGEST);

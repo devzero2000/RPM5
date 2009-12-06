@@ -352,7 +352,7 @@ static char * fmtDBT(const DBT * K, char * te)
 	if (!unprintable) {
 	    size_t nb = (_nu < keymax ? _nu : keymax);
 	    char * ellipsis = (_nu < keymax ? "" : "...");
-	    sprintf(te, "\t\"%.*s%s\"", nb, (char *)_u, ellipsis);
+	    sprintf(te, "\t\"%.*s%s\"", (int)nb, (char *)_u, ellipsis);
 	} else {
 	    switch (_nu) {
 	    default: break;
@@ -1789,7 +1789,7 @@ exit:
 	xx = cvtdberr(dbi, "seq->close", xx, _debug);
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d %s\n", __FUNCTION__, dbi, keyp, keylen, seqp, (seqp ? *seqp : NULL), rc, _KEYDATA(&k, NULL, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d %s\n", __FUNCTION__, dbi, keyp, (unsigned)keylen, seqp, (seqp ? *seqp : NULL), rc, _KEYDATA(&k, NULL, NULL)));
 
     return rc;
 }

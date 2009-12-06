@@ -159,7 +159,7 @@ fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTag
 	dbiTags[dbiNTags].tag = tag;
 	dbiTags[dbiNTags].iob = NULL;
 if (_rpmdb_debug) {
-fprintf(stderr, "\t%d %s(", dbiNTags, o);
+fprintf(stderr, "\t%u %s(", (unsigned)dbiNTags, o);
 if (tag & 0x40000000)
     fprintf(stderr, "0x%x)\n", tag);
 else
@@ -296,7 +296,7 @@ exit:
 
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p = %p[%u:%u]\n", db, tagName(tag), tag, flags, dbi, db->_dbi, dbix, db->db_ndbi);
+fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p = %p[%u:%u]\n", db, tagName(tag), tag, flags, dbi, db->_dbi, (unsigned)dbix, (unsigned)db->db_ndbi);
 /*@=modfilesys@*/
 
 /*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
@@ -2175,7 +2175,7 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * pk, DBT * vp,
 	    if (uh == NULL || uh == (void *)-1)
 		fprintf(stderr,
 		    "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
-		    NULL, uhlen, _prot, _flags, _fdno, (unsigned)_off,
+		    NULL, (unsigned)uhlen, _prot, _flags, _fdno, (unsigned)_off,
 		    errno, strerror(errno));
 
 	    vp->ulen = (u_int32_t)uhlen;
@@ -2187,12 +2187,12 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * pk, DBT * vp,
 	    if (rc == 0) {
 		if (mprotect(uh, uhlen, PROT_READ) != 0)
 		    fprintf(stderr, "==> mprotect(%p[%u],0x%x) error(%d): %s\n",
-			uh, uhlen, PROT_READ,
+			uh, (unsigned)uhlen, PROT_READ,
 			errno, strerror(errno));
 	    } else {
 		if (munmap(uh, uhlen) != 0)
 		    fprintf(stderr, "==> munmap(%p[%u]) error(%d): %s\n",
-                	uh, uhlen, errno, strerror(errno));
+                	uh, (unsigned)uhlen, errno, strerror(errno));
 	    }
 	}
     } else

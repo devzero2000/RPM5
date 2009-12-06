@@ -1145,7 +1145,7 @@ assert(lastpkg != NULL);
 	    return rc;
 	while ((nextPart = isPart(spec)) == PART_NONE) {
 	    const char * macro = NULL;
-	    rpmTag tag;
+	    rpmTag tag = 0;
 
 	    /* Skip blank lines */
 	    linep = spec->line;

@@ -960,7 +960,7 @@ int rpmlgcFile(rpmdb rpmdb, const DB_LSN * _lsn, char * name, size_t len)
     DB_ENV * dbenv = rpmdb->db_dbenv;
     int rc = dbenv->log_file(dbenv, _lsn, name, len);
 if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p,%p,%p[%u]) \"%s\" rc %d\n", "dbenv->log_file", dbenv, _lsn, name, len, name, rc);
+fprintf(stderr, "<-- %s(%p,%p,%p[%u]) \"%s\" rc %d\n", "dbenv->log_file", dbenv, _lsn, name, (unsigned)len, name, rc);
     return rc;
 }
 
