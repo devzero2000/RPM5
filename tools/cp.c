@@ -864,9 +864,11 @@ main(int argc, char *argv[])
 
     __progname = "cp";
 
+#if defined(_SC_PHYS_PAGES)
     if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
 	ct->ballocated = MIN(BUFSIZE_MAX, MAXPHYS * 8);
     else
+#endif
 	ct->ballocated = BUFSIZE_SMALL;
 
     ct->npath[0] = '\0';

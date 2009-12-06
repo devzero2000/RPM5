@@ -1106,7 +1106,11 @@ queryuser(char *argv[])
 	(void)fprintf(stderr, "\n");
 	(void)fflush(stderr);
     }
+#if defined(__APPLE__)
+    return ((resp[0] == 'Y' || resp[0] == 'y') ? 1 : 0);
+#else
     return (rpmatch(resp) == 1);
+#endif
 }
 
 /*==============================================================*/
@@ -1926,6 +1930,9 @@ c_fstype(OPTION *option, char ***argvp)
 {
     char * fsname = nextarg(option, argvp);
     PLAN * new = palloc(option);
+#if defined(__APPLE__)
+#define	xvfsconf	vfsconf
+#endif
 #if defined(HAVE_STRUCT_STAT_ST_FLAGS)	/* XXX HACK */
     struct xvfsconf vfc;
 #endif
