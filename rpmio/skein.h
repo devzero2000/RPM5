@@ -62,10 +62,13 @@ typedef uint64_t        u64b_t;             /* 64-bit unsigned integer */
  */
 #ifndef SKEIN_NEED_SWAP /* compile-time "override" for endianness? */
 
-#include <endian.h>
-#define	PLATFORM_BYTE_ORDER	__BYTE_ORDER
-#define	IS_BIG_ENDIAN		__BIG_ENDIAN
-#define	IS_LITTLE_ENDIAN	__LITTLE_ENDIAN
+#define	IS_BIG_ENDIAN		4321
+#define	IS_LITTLE_ENDIAN	1234
+#ifdef	WORDS_BIGENDIAN
+#define	PLATFORM_BYTE_ORDER	4321
+#else
+#define	PLATFORM_BYTE_ORDER	1234
+#endif
 
 #if   PLATFORM_BYTE_ORDER == IS_BIG_ENDIAN
     /* here for big-endian CPUs */

@@ -41,7 +41,14 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
 #define IS_ALIGNED(p,n)    0
 #endif
 
-#  include <endian.h>
+#define __BIG_ENDIAN	4321
+#define __LITTLE_ENDIAN	1234
+#ifdef  WORDS_BIGENDIAN
+#define __BYTE_ORDER	4321
+#else
+#define __BYTE_ORDER	1234
+#endif
+
 #  if __BYTE_ORDER == __LITTLE_ENDIAN
 #    define SIMD_LITTLE_ENDIAN
 #  elif __BYTE_ORDER == __BIG_ENDIAN

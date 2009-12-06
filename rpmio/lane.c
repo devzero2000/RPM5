@@ -36,7 +36,13 @@ enum { SUCCESS        = 0, /* Execution successful */
 #define MSB32(x) ((uint32_t)((((uint64_t)(x))>>32) & 0xffffffff))
 #define LSB32(x) ((uint32_t)((((uint64_t)(x))    ) & 0xffffffff))
 
-#include <endian.h>
+#define __BIG_ENDIAN	4321
+#define __LITTLE_ENDIAN	1234
+#ifdef  WORDS_BIGENDIAN
+#define __BYTE_ORDER	4321
+#else
+#define __BYTE_ORDER	1234
+#endif
 
 #if	__BYTE_ORDER == __BIG_ENDIAN
 #define U8TO32_BIG(c)  (((uint32_t*)(c))[0])

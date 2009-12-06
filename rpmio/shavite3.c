@@ -15,7 +15,14 @@
 
 enum {SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2};
 
-#include <endian.h>
+#define __BIG_ENDIAN	4321
+#define __LITTLE_ENDIAN	1234
+#ifdef  WORDS_BIGENDIAN
+#define __BYTE_ORDER	4321
+#else
+#define __BYTE_ORDER	1234
+#endif
+
 #define	ONE8	0xFFU
 #define	ONE16	0xFFFFU
 

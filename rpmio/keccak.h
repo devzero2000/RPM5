@@ -33,16 +33,16 @@ typedef unsigned long long DataLength;
 #define KeccakMaximumRateInBytes (KeccakMaximumRate/8)
 
 #if defined(__GNUC__)
-#define ALIGN __attribute__ ((aligned(32)))
+#define ___ALIGN __attribute__ ((aligned(32)))
 #elif defined(_MSC_VER)
-#define ALIGN __declspec(align(32))
+#define ___ALIGN __declspec(align(32))
 #else
-#define ALIGN
+#define ___ALIGN
 #endif
 
-ALIGN typedef struct {
-    ALIGN unsigned char state[KeccakPermutationSizeInBytes];
-    ALIGN unsigned char dataQueue[KeccakMaximumRateInBytes];
+___ALIGN typedef struct {
+    ___ALIGN unsigned char state[KeccakPermutationSizeInBytes];
+    ___ALIGN unsigned char dataQueue[KeccakMaximumRateInBytes];
     unsigned int rate;
     unsigned int capacity;
     unsigned char diversifier;

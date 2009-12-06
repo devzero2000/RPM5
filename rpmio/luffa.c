@@ -36,7 +36,14 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
 #define LIMIT_384 128
 #define LIMIT_512 128
 /*********************************/
-#include <endian.h>
+
+#define __BIG_ENDIAN	4321
+#define __LITTLE_ENDIAN	1234
+#ifdef  WORDS_BIGENDIAN
+#define __BYTE_ORDER	4321
+#else
+#define __BYTE_ORDER	1234
+#endif
 
 #if	__BYTE_ORDER == __BIG_ENDIAN
 # define BYTES_SWAP32(x) x
