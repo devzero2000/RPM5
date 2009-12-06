@@ -7,7 +7,12 @@
 #include "rpmsx-js.h"
 #include "rpmjs-debug.h"
 
+#if defined(WITH_SELINUX)
 #include <selinux/selinux.h>
+#else
+typedef char * security_context_t;
+#endif
+
 #define	_RPMSX_INTERNAL
 #include <rpmsx.h>
 
@@ -147,7 +152,9 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsxClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
+#if defined(WITH_SELINUX)
     security_context_t con = NULL;
+#endif
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -157,6 +164,7 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
+#if defined(WITH_SELINUX)
     case _CURRENT:	*vp = _GET_CON(!getcon(&con));			break;
     case _PID:		*vp = _GET_CON(!getpidcon(getpid(), &con));	break;
     case _PPID:		*vp = _GET_CON(!getpidcon(getppid(), &con));	break;
@@ -198,14 +206,17 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _COLORS:	*vp = _GET_STR(selinux_colors_path());		break;
     case _NETFILTER:	*vp = _GET_STR(selinux_netfilter_context_path());break;
     case _PATH:		*vp = _GET_STR(selinux_path());			break;
+#endif
     default:
 	break;
     }
 
+#if defined(WITH_SELINUX)
     if (con) {
 	freecon(con);
 	con = NULL;
     }
+#endif
 
     return JS_TRUE;
 }
@@ -218,6 +229,7 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 static JSBool
 rpmsx_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+#if defined(WITH_SELINUX)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsxClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
     security_context_t con = NULL;
@@ -247,6 +259,7 @@ rpmsx_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     default:
 	break;
     }
+#endif
 
     return JS_TRUE;
 }
