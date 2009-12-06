@@ -20,6 +20,7 @@ db_hotbackup
 db_load
 db_printlog
 db_recover
+db_sql
 db_stat
 db_upgrade
 db_verify

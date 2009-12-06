@@ -9,6 +9,7 @@ augtool
 convertdb1
 chroot
 cp
+db_sql
 db_tool
 debugedit
 find
