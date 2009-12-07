@@ -1861,7 +1861,9 @@ static rpmfc rpmfcGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmfcFini);
 	pool = _rpmfcPool;
     }
-    return (rpmfc) rpmioGetPool(pool, sizeof(*fc));
+    fc = (rpmfc) rpmioGetPool(pool, sizeof(*fc));
+    memset(((char *)fc)+sizeof(fc->_item), 0, sizeof(*fc)-sizeof(fc->_item));
+    return fc;
 }
 
 rpmfc rpmfcNew(void)
