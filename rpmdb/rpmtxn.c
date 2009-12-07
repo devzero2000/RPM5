@@ -81,11 +81,12 @@ fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, _flags, rc);
 
 int rpmtxnCheckpoint(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
     uint32_t _kbytes = 0;
     uint32_t _minutes = 0;
     uint32_t _flags = 0;
-    int rc = dbenv->txn_checkpoint(dbenv, _kbytes, _minutes, _flags);
+    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
+	? dbenv->txn_checkpoint(dbenv, _kbytes, _minutes, _flags) : ENOTSUP;
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv, _kbytes, _minutes, _flags, rc);
     return rc;
