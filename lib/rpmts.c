@@ -141,79 +141,9 @@ int rpmtsRebuildDB(rpmts ts)
 rpmmi rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
-    rpmmi mi;
-    const char * arch = NULL;
-    int xx;
-
-    if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
-	return NULL;
-
-    /* Parse out "N(EVR).A" tokens from a label key. */
-    if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
-	const char * s = keyp;
-	const char *se;
-	size_t slen = strlen(s);
-	char *t = alloca(slen+1);
-	int level = 0;
-	int c;
-
-	keyp = t;
-	while ((c = *s++) != '\0') {
-	    switch (c) {
-	    default:
-		*t++ = (char)c;
-		/*@switchbreak@*/ break;
-	    case '(':
-		/* XXX Fail if nested parens. */
-		if (level++ != 0) {
-		    rpmlog(RPMLOG_ERR, _("extra '(' in package label: %s\n"), (char *)keyp);
-		    return NULL;
-		}
-		/* Parse explicit epoch. */
-		for (se = s; *se && xisdigit(*se); se++)
-		    {};
-		if (*se == ':') {
-		    /* XXX skip explicit epoch's (for now) */
-		    *t++ = '-';
-		    s = se + 1;
-		} else {
-		    /* No Epoch: found. Convert '(' to '-' and chug. */
-		    *t++ = '-';
-		}
-		/*@switchbreak@*/ break;
-	    case ')':
-		/* XXX Fail if nested parens. */
-		if (--level != 0) {
-		    rpmlog(RPMLOG_ERR, _("missing '(' in package label: %s\n"), (char *)keyp);
-		    return NULL;
-		}
-		/* Don't copy trailing ')' */
-		/*@switchbreak@*/ break;
-	    }
-	}
-	if (level) {
-	    rpmlog(RPMLOG_ERR, _("missing ')' in package label: %s\n"), (char *)keyp);
-	    return NULL;
-	}
-	*t = '\0';
-	t = (char *) keyp;
-	t = strrchr(t, '.');
-	/* Is this a valid ".arch" suffix? */
-	if (t != NULL && rpmnsArch(t+1)) {
-	   *t++ = '\0';
-	   arch = t;
-	}
-    }
-
-    mi = rpmmiInit(ts->rdb, rpmtag, keyp, keylen);
-
-    /* Verify header signature/digest during retrieve (if not disabled). */
-    if (mi && !(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	(void) rpmmiSetHdrChk(mi, ts);
-
-    /* Select specified arch only. */
-    if (arch != NULL)
-	xx = rpmmiAddPattern(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
+    rpmmi mi = (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
+	? NULL
+	: rpmmiInit(ts->rdb, rpmtag, keyp, keylen);
     return mi;
 }
 /*@=compdef@*/

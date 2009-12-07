@@ -1296,7 +1296,7 @@ static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
     char * te;
 
     if (_pre == NULL) _pre = "^";
-    if (_post == NULL) _post = "(-[^-]+-[^-]+|-[^-]+|)\\.[^.]+$";
+    if (_post == NULL) _post = "(-[^-]+-[^-]+\\.[^.]+|-[^-]+\\.[^.]+|\\.[^.]+|)$";
 
     /* Find the PCRE pattern length, including escapes. */
     for (se = s; *se != '\0'; se++, nt++)
@@ -1480,9 +1480,11 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     {	rpmTag _tag = RPMTAG_NVRA;
 	rpmMireMode _mode = RPMMIRE_PCRE;
 	/* Add ^...$ *RE anchors. Escape pattern characters. */
+	static const char _pre[] = "^";
+	static const char _post[] = "(-[^-]+-[^-]+\\.[^.]+|-[^-]+\\.[^.]+|\\.[^.]+|)$";
 	const char * _pat = (s[0] == '^' || s[ns-1] == '$')
 		? xstrdup(s)
-		: _str2PCREpat("^", s, "(-[^-]+-[^-]+|-[^-]+|)\\.[^.]+$");
+		: _str2PCREpat(_pre, s, _post);
 	ret = rpmdbMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches);
 	_pat = _free(_pat);
     }

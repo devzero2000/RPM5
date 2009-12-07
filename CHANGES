@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: handle optional .A just like optional -V and -R patterns.
     - jbj: rpmdb: use RPMTAG_NVRA patterns for RPMDBI_LABEL rpmmi iterators.
     - jbj: rpmdb: permit anchored patterns on RPMDBI_LABEL retrieves. strings
 	are escaped and anchored. Still only RPMTAG_NAME, RPMTAG_NVRA next.
