@@ -332,6 +332,19 @@ static union _dbswap _endian = { .ui = 0x11223344 };
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
   }
 
+static inline uint32_t _ntohl(uint32_t ui)
+{
+    union _dbswap mi_offset;
+    mi_offset.ui = ui;
+    if (_endian.uc[0] == 0x44)
+	_DBSWAP(mi_offset);
+    return mi_offset.ui;
+}
+static inline uint32_t _htonl(uint32_t ui)
+{
+    return _ntohl(ui);
+}
+
 typedef struct _setSwap_s {
     union _dbswap hdr;
     union _dbswap tag;
@@ -518,8 +531,8 @@ struct rpmmi_s {
     int			mi_sorted;
     int			mi_cflags;
     int			mi_modified;
-    unsigned int	mi_prevoffset;	/* header instance (big endian) */
-    unsigned int	mi_offset;	/* header instance (big endian) */
+    uint32_t		mi_prevoffset;	/* header instance (big endian) */
+    uint32_t		mi_offset;	/* header instance (big endian) */
 /*@refcounted@*/ /*@null@*/
     rpmbf		mi_bf;		/* Iterator instance Bloom filter. */
     int			mi_nre;
@@ -1382,7 +1395,7 @@ doit:
 
     /* Iterate over all keys, collecting primary keys. */
     while ((rc = dbiPget(dbi, dbcursor, &k, &p, &v, _flags)) == 0) {
-	union _dbswap mi_offset;
+	uint32_t hdrNum;
 unsigned ix;
 
 	if (_flags == DB_SET) _flags = DB_NEXT_DUP;
@@ -1412,16 +1425,15 @@ if (_jbj_debug) prtDBT("v", &v);
 	}
 	    
 	/* Get a native endian copy of the primary package key. */
-	memcpy(&mi_offset, p.data, sizeof(mi_offset.ui));
-	if (_endian.uc[0] == 0x44)
-	    _DBSWAP(mi_offset);
+	memcpy(&hdrNum, p.data, sizeof(hdrNum));
+	hdrNum = _ntohl(hdrNum);
 
 	/* Append primary package key to set. */
 	if (set == NULL)
 	    set = xcalloc(1, sizeof(*set));
 ix = set->count;
 	/* XXX TODO: sort/uniqify set? */
-	(void) dbiAppendSet(set, &mi_offset.ui, 1, sizeof(mi_offset.ui), 0);
+	(void) dbiAppendSet(set, &hdrNum, 1, sizeof(hdrNum), 0);
 if (_jbj_debug)
 fprintf(stderr, "\tset[%u] = %u\n", ix, dbiIndexRecordOffset(set, ix));
     }
@@ -1709,12 +1721,8 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 
 uint32_t rpmmiInstance(rpmmi mi)
 {
-    union _dbswap mi_offset;
     /* Get a native endian copy of the primary package key. */
-    mi_offset.ui = (mi ? mi->mi_offset : 0);
-    if (_endian.uc[0] == 0x44)
-	_DBSWAP(mi_offset);
-    return mi_offset.ui;
+    return _ntohl(mi ? mi->mi_offset : 0);
 }
 
 unsigned int rpmmiCount(rpmmi mi) {
@@ -2211,7 +2219,6 @@ Header rpmmiNext(rpmmi mi)
     DBT k = DBT_INIT;
     DBT p = DBT_INIT;
     DBT v = DBT_INIT;
-    union _dbswap mi_offset;
     void * uh;
     size_t uhlen;
 #if defined(SUPPORT_HEADER_CHECKS)
@@ -2261,10 +2268,7 @@ next:
 	/* The set of header instances is known in advance. */
 	if (!(mi->mi_setx < mi->mi_set->count))
 	    return NULL;
-	mi_offset.ui = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
-	if (_endian.uc[0] == 0x44)
-	    _DBSWAP(mi_offset);
-	mi->mi_offset = mi_offset.ui;
+	mi->mi_offset = _htonl(dbiIndexRecordOffset(mi->mi_set, mi->mi_setx));
 	mi->mi_setx++;
 
 	/* If next header is identical, return it now. */
@@ -2352,12 +2356,9 @@ assert(k.size == sizeof(mi->mi_offset));
 	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), uh, uhlen, &msg);
 	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-	    mi_offset.ui = mi->mi_offset;
-	    if (_endian.uc[0] == 0x44)
-		_DBSWAP(mi_offset);
 	    rpmlog(lvl, "%s h#%8u %s\n",
 		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : _("rpmdb: read")),
-			mi_offset.ui, (msg ? msg : ""));
+			_ntohl(mi->mi_offset), (msg ? msg : ""));
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
@@ -2383,12 +2384,9 @@ assert(k.size == sizeof(mi->mi_offset));
 	mi->mi_h = headerCopyLoad(uh);
 
     if (mi->mi_h == NULL) {
-	mi_offset.ui = mi->mi_offset;
-	if (_endian.uc[0] == 0x44)
-	    _DBSWAP(mi_offset);
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u cannot be loaded -- skipping.\n"),
-		mi_offset.ui);
+		_ntohl(mi->mi_offset));
 	/* damaged header should not be reused */
 	if (mi->mi_h) {
 	    (void)headerFree(mi->mi_h);
@@ -2404,12 +2402,10 @@ assert(k.size == sizeof(mi->mi_offset));
 
     /* Mark header with its instance number. */
     {	char origin[32];
-	mi_offset.ui = mi->mi_offset;
-	if (_endian.uc[0] == 0x44)
-	    _DBSWAP(mi_offset);
-	sprintf(origin, "rpmdb (h#%u)", mi_offset.ui);
+	uint32_t hdrNum = _ntohl(mi->mi_offset);
+	sprintf(origin, "rpmdb (h#%u)", hdrNum);
 	(void) headerSetOrigin(mi->mi_h, origin);
-	(void) headerSetInstance(mi->mi_h, mi_offset.ui);
+	(void) headerSetInstance(mi->mi_h, hdrNum);
     }
 
     mi->mi_prevoffset = mi->mi_offset;
@@ -2610,14 +2606,14 @@ fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db
     }
     else if (tag == RPMDBI_PACKAGES) {
 	/* Special case #2: will fetch header instance. */
-	union _dbswap hdrNum;
-	assert(keylen == sizeof(hdrNum.ui));
-	memcpy(&hdrNum.ui, keyp, sizeof(hdrNum.ui));
+	uint32_t hdrNum;
+assert(keylen == sizeof(hdrNum));
+	memcpy(&hdrNum, keyp, sizeof(hdrNum));
 	/* The set has only one element, which is hdrNum. */
 	set = xcalloc(1, sizeof(*set));
 	set->count = 1;
 	set->recs = xcalloc(1, sizeof(set->recs[0]));
-	set->recs[0].hdrNum = hdrNum.ui;
+	set->recs[0].hdrNum = hdrNum;
     }
     else if (keyp == NULL) {
 	/* XXX Special case #3: empty iterator with rpmmiGrow() */
@@ -2752,7 +2748,7 @@ assert(dbi != NULL);				/* XXX sanity */
 	    {	DBC * dbcursor = NULL;
 		DBT k = DBT_INIT;
 		DBT v = DBT_INIT;
-	        union _dbswap mi_offset;
+		uint32_t kdata;
 
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, db->db_h, 0);
@@ -2761,13 +2757,11 @@ assert(dbi != NULL);				/* XXX sanity */
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 	      
-	        mi_offset.ui = hdrNum;
-		if (_endian.uc[0] == 0x44)
-		    _DBSWAP(mi_offset);
+	        kdata = _htonl(hdrNum);
 /*@-immediatetrans@*/
-		k.data = &mi_offset;
+		k.data = &kdata;
 /*@=immediatetrans@*/
-		k.size = (UINT32_T) sizeof(mi_offset.ui);
+		k.size = (UINT32_T) sizeof(kdata);
 
 		rc = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
@@ -2808,7 +2802,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     sigset_t signalMask;
     dbiIndex dbi;
     size_t dbix;
-    union _dbswap mi_offset;
     uint32_t hdrNum = headerGetInstance(h);
     int ret = 0;
     int xx;
@@ -2906,6 +2899,7 @@ assert(dbi != NULL);					/* XXX sanity */
 		DBT k = DBT_INIT;
 		DBT v = DBT_INIT;
 		rpmRC rpmrc = RPMRC_NOTFOUND;
+		uint32_t kdata;
 
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, h, 1);
@@ -2914,13 +2908,11 @@ assert(dbi != NULL);					/* XXX sanity */
 assert(dbi != NULL);					/* XXX sanity */
 		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
-		mi_offset.ui = hdrNum;
-		if (_endian.uc[0] == 0x44)
-		    _DBSWAP(mi_offset);
+		kdata = _htonl(hdrNum);
 		/*@-immediatetrans@*/
-		k.data = (void *) &mi_offset;
+		k.data = (void *) &kdata;
 		/*@=immediatetrans@*/
-		k.size = (UINT32_T) sizeof(mi_offset.ui);
+		k.size = (UINT32_T) sizeof(kdata);
 
 		{   size_t len = 0;
 		    v.data = headerUnload(h, &len);

@@ -2029,7 +2029,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    default:
 		break;
 	    case DB_RUNRECOVERY:
-		rpmlog(RPMLOG_ERR, _("Re-opening dbenv with DB_RUNRECOVER ...\n"));
+		rpmlog(RPMLOG_ERR, _("Re-opening dbenv with DB_RECOVER ...\n"));
 		dbi->dbi_eflags |= DB_RECOVER;
 		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 		dbi->dbi_eflags &= ~DB_RECOVER;
