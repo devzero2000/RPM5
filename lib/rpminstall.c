@@ -715,7 +715,6 @@ exit:
 
 int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 {
-    int count;
     const char ** arg;
     int numFailed = 0;
     int numRPMS = 0;
@@ -769,9 +768,9 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	    numFailed++;
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
-	    count = 0;
+	    int count = 0;
 	    while ((h = rpmmiNext(mi)) != NULL) {
-		unsigned int recOffset = rpmmiInstance(mi);
+		uint32_t hdrNum = rpmmiInstance(mi);
 
 		if (!(count++ == 0 || (ia->installInterfaceFlags & INSTALL_ALLMATCHES))) {
 		    rpmlog(RPMLOG_ERR, _("\"%s\" specifies multiple packages\n"),
@@ -779,8 +778,8 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 		    numFailed++;
 		    /*@innerbreak@*/ break;
 		}
-		if (recOffset) {
-		    (void) rpmtsAddEraseElement(ts, h, recOffset);
+		if (hdrNum) {
+		    (void) rpmtsAddEraseElement(ts, h, hdrNum);
 		    numRPMS++;
 		}
 	    }
