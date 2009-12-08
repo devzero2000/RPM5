@@ -43,6 +43,69 @@ extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
 /*@access dbiIndex @*/
 /*@access dbiIndexSet @*/
 
+union _dbswap {
+    uint64_t ul;
+    uint32_t ui;
+    uint16_t us;
+    uint8_t uc[8];
+};
+static union _dbswap _endian = { .ui = 0x11223344 };
+
+static inline uint64_t _ntoh_ul(uint64_t ul)
+	/*@*/
+{
+    union _dbswap _a;
+    _a.ul = ul;
+    if (_endian.uc[0] == 0x44) {
+	uint8_t _b, *_c = _a.uc; \
+	_b = _c[7]; _c[7] = _c[0]; _c[0] = _b; \
+	_b = _c[6]; _c[6] = _c[1]; _c[1] = _b; \
+	_b = _c[5]; _c[5] = _c[2]; _c[2] = _b; \
+	_b = _c[4]; _c[4] = _c[3]; _c[3] = _b; \
+    }
+    return _a.ul;
+}
+static inline uint64_t _hton_ul(uint64_t ul)
+	/*@*/
+{
+    return _ntoh_ul(ul);
+}
+
+static inline uint32_t _ntoh_ui(uint32_t ui)
+	/*@*/
+{
+    union _dbswap _a;
+    _a.ui = ui;
+    if (_endian.uc[0] == 0x44) {
+	uint8_t _b, *_c = _a.uc; \
+	_b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+	_b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+    }
+    return _a.ui;
+}
+static inline uint32_t _hton_ui(uint32_t ui)
+	/*@*/
+{
+    return _ntoh_ui(ui);
+}
+
+static inline uint16_t _ntoh_us(uint16_t us)
+	/*@*/
+{
+    union _dbswap _a;
+    _a.us = us;
+    if (_endian.uc[0] == 0x44) {
+	uint8_t _b, *_c = _a.uc; \
+	_b = _c[1]; _c[1] = _c[0]; _c[0] = _b; \
+    }
+    return _a.us;
+}
+static inline uint16_t _hton_us(uint16_t us)
+	/*@*/
+{
+    return _ntoh_us(us);
+}
+
 #ifdef	NOTNOW
 static const char * bfstring(unsigned int x, const char * xbf)
 {

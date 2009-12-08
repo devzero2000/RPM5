@@ -321,34 +321,72 @@ static dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
 }
 
 union _dbswap {
-    rpmuint32_t ui;
-    unsigned char uc[4];
+    uint64_t ul;
+    uint32_t ui;
+    uint16_t us;
+    uint8_t uc[8];
 };
 static union _dbswap _endian = { .ui = 0x11223344 };
 
-#define	_DBSWAP(_a) \
-  { unsigned char _b, *_c = (_a).uc; \
-    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
-    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
-  }
-
-static inline uint32_t _ntohl(uint32_t ui)
+static inline uint64_t _ntoh_ul(uint64_t ul)
+	/*@*/
 {
-    union _dbswap mi_offset;
-    mi_offset.ui = ui;
-    if (_endian.uc[0] == 0x44)
-	_DBSWAP(mi_offset);
-    return mi_offset.ui;
+    union _dbswap _a;
+    _a.ul = ul;
+    if (_endian.uc[0] == 0x44) {
+	uint8_t _b, *_c = _a.uc; \
+	_b = _c[7]; _c[7] = _c[0]; _c[0] = _b; \
+	_b = _c[6]; _c[6] = _c[1]; _c[1] = _b; \
+	_b = _c[5]; _c[5] = _c[2]; _c[2] = _b; \
+	_b = _c[4]; _c[4] = _c[3]; _c[3] = _b; \
+    }
+    return _a.ul;
 }
-static inline uint32_t _htonl(uint32_t ui)
+static inline uint64_t _hton_ul(uint64_t ul)
+	/*@*/
 {
-    return _ntohl(ui);
+    return _ntoh_ul(ul);
+}
+
+static inline uint32_t _ntoh_ui(uint32_t ui)
+	/*@*/
+{
+    union _dbswap _a;
+    _a.ui = ui;
+    if (_endian.uc[0] == 0x44) {
+	uint8_t _b, *_c = _a.uc; \
+	_b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+	_b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+    }
+    return _a.ui;
+}
+static inline uint32_t _hton_ui(uint32_t ui)
+	/*@*/
+{
+    return _ntoh_ui(ui);
+}
+
+static inline uint16_t _ntoh_us(uint16_t us)
+	/*@*/
+{
+    union _dbswap _a;
+    _a.us = us;
+    if (_endian.uc[0] == 0x44) {
+	uint8_t _b, *_c = _a.uc; \
+	_b = _c[1]; _c[1] = _c[0]; _c[0] = _b; \
+    }
+    return _a.us;
+}
+static inline uint16_t _hton_us(uint16_t us)
+	/*@*/
+{
+    return _ntoh_us(us);
 }
 
 typedef struct _setSwap_s {
     union _dbswap hdr;
     union _dbswap tag;
-    rpmuint32_t fp;
+    uint32_t fp;
 } * setSwap;
 
 /**
@@ -1426,7 +1464,7 @@ if (_jbj_debug) prtDBT("v", &v);
 	    
 	/* Get a native endian copy of the primary package key. */
 	memcpy(&hdrNum, p.data, sizeof(hdrNum));
-	hdrNum = _ntohl(hdrNum);
+	hdrNum = _ntoh_ui(hdrNum);
 
 	/* Append primary package key to set. */
 	if (set == NULL)
@@ -1722,7 +1760,7 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 uint32_t rpmmiInstance(rpmmi mi)
 {
     /* Get a native endian copy of the primary package key. */
-    return _ntohl(mi ? mi->mi_offset : 0);
+    return _ntoh_ui(mi ? mi->mi_offset : 0);
 }
 
 unsigned int rpmmiCount(rpmmi mi) {
@@ -2268,7 +2306,7 @@ next:
 	/* The set of header instances is known in advance. */
 	if (!(mi->mi_setx < mi->mi_set->count))
 	    return NULL;
-	mi->mi_offset = _htonl(dbiIndexRecordOffset(mi->mi_set, mi->mi_setx));
+	mi->mi_offset = _hton_ui(dbiIndexRecordOffset(mi->mi_set, mi->mi_setx));
 	mi->mi_setx++;
 
 	/* If next header is identical, return it now. */
@@ -2358,7 +2396,7 @@ assert(k.size == sizeof(mi->mi_offset));
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s\n",
 		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : _("rpmdb: read")),
-			_ntohl(mi->mi_offset), (msg ? msg : ""));
+			_ntoh_ui(mi->mi_offset), (msg ? msg : ""));
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
@@ -2386,7 +2424,7 @@ assert(k.size == sizeof(mi->mi_offset));
     if (mi->mi_h == NULL) {
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u cannot be loaded -- skipping.\n"),
-		_ntohl(mi->mi_offset));
+		_ntoh_ui(mi->mi_offset));
 	/* damaged header should not be reused */
 	if (mi->mi_h) {
 	    (void)headerFree(mi->mi_h);
@@ -2402,7 +2440,7 @@ assert(k.size == sizeof(mi->mi_offset));
 
     /* Mark header with its instance number. */
     {	char origin[32];
-	uint32_t hdrNum = _ntohl(mi->mi_offset);
+	uint32_t hdrNum = _ntoh_ui(mi->mi_offset);
 	sprintf(origin, "rpmdb (h#%u)", hdrNum);
 	(void) headerSetOrigin(mi->mi_h, origin);
 	(void) headerSetInstance(mi->mi_h, hdrNum);
@@ -2757,7 +2795,7 @@ assert(dbi != NULL);				/* XXX sanity */
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 	      
-	        kdata = _htonl(hdrNum);
+	        kdata = _hton_ui(hdrNum);
 /*@-immediatetrans@*/
 		k.data = &kdata;
 /*@=immediatetrans@*/
@@ -2908,7 +2946,7 @@ assert(dbi != NULL);					/* XXX sanity */
 assert(dbi != NULL);					/* XXX sanity */
 		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
-		kdata = _htonl(hdrNum);
+		kdata = _hton_ui(hdrNum);
 		/*@-immediatetrans@*/
 		k.data = (void *) &kdata;
 		/*@=immediatetrans@*/
