@@ -2415,8 +2415,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 	if (dbi->dbi_index) {
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
-	    int _flags = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
-			? DB_AUTO_COMMIT : 0;
+	    int _flags = DB_IMMUTABLE_KEY;
 	    if (oflags & (DB_CREATE|DB_TRUNCATE)) _flags |= DB_CREATE;
 	    xx = db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
 	}
