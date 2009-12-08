@@ -1794,59 +1794,6 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d %s\n", __FUNCTION__, d
     return rc;
 }
 
-/** \ingroup dbi
- * Verify (and close) index database.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-static inline
-int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
-{
-    dbi->dbi_verify_on_close = 1;
-    return (*dbi->dbi_vec->close) (dbi, flags);
-}
-
-/**
- * Verify all database components.
- * @param db		rpm database
- * @return		0 on success
- */
-static int rpmdbVerifyAllDBI(rpmdb db)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
-
-    if (db != NULL) {
-	size_t dbix;
-	int xx;
-	rc = rpmdbOpenAll(db);
-
-	if (db->_dbi != NULL)
-	for (dbix = db->db_ndbi; dbix;) {
-	    dbix--;
-	    if (db->_dbi[dbix] == NULL)
-		continue;
-	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
-	    xx = dbiVerify(db->_dbi[dbix], 0);
-	    if (xx && rc == 0) rc = xx;
-	    db->_dbi[dbix] = NULL;
-	    /*@=unqualifiedtrans@*/
-	}
-
-	/*@-nullstate@*/	/* FIX: db->_dbi[] may be NULL. */
-	xx = rpmdbClose(db);
-	/*@=nullstate@*/
-	if (xx && rc == 0) rc = xx;
-	db = NULL;
-    }
-
-    return rc;
-}
-
 /**
  * Return handle for an index database.
  * @param rpmdb         rpm database
@@ -2077,35 +2024,19 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
 	if (rpmdb->db_dbenv == NULL) {
-	    static int runrecoverycount = 0;
 	    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 	    switch (rc) {
 	    default:
 		break;
-
 	    case DB_RUNRECOVERY:
-		if (runrecoverycount++ >= 1) {
-		    rpmlog(RPMLOG_ERR, _("RUNRECOVERY failed, exiting ...\n"));
-		   exit(EXIT_FAILURE);
-		}
-		rpmlog(RPMLOG_ERR, _("Runnning db->verify ...\n"));
-		rpmdb = rpmdbLink(rpmdb, "DB_RUNRECOVERY");
-assert(rpmdb != NULL);
-		rpmdb->db_remove_env = 1;
-		rpmdb->db_verifying = 1;
-		xx = rpmdbVerifyAllDBI(rpmdb);
-		xx = cvtdberr(dbi, "db->verify", xx, _debug);
-		rpmdb->db_remove_env = 0;
-		rpmdb->db_verifying = 0;
-
-		dbi->dbi_oeflags |= DB_CREATE;
-		dbi->dbi_eflags &= ~DB_JOINENV;
+		rpmlog(RPMLOG_ERR, _("Re-opening dbenv with DB_RUNRECOVER ...\n"));
+		dbi->dbi_eflags |= DB_RECOVER;
 		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
-		/* XXX db_init EINVAL was masked. */
-		rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
-		if (rc)
-		    break;
-
+		dbi->dbi_eflags &= ~DB_RECOVER;
+		if (rc) {
+		    rpmlog(RPMLOG_ERR, _("RUNRECOVERY failed, exiting ...\n"));
+		    exit(EXIT_FAILURE);
+		}
 assert(dbenv);
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
