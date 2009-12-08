@@ -69,6 +69,8 @@ static int _jbj_debug = 0;
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
 
+static int _rebuild_inplace = 1;
+
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
@@ -794,6 +796,10 @@ int rpmdbOpenAll(rpmdb db)
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
 	case RPMDBI_DEPENDS:
+	case RPMDBI_BTREE:
+	case RPMDBI_HASH:
+	case RPMDBI_QUEUE:
+	case RPMDBI_RECNO:
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
@@ -3182,12 +3188,26 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	for (i = 0; i < dbiNTags; i++) {
 	    const char * dbiBN = (dbiTags[i].str != NULL
                         ? dbiTags[i].str : tagName(dbiTags[i].tag));
+if (_rebuild_inplace)
+switch (dbiTags[i].tag) {
+case RPMDBI_PACKAGES:
+case RPMDBI_SEQNO:
+case RPMDBI_BTREE:
+case RPMDBI_HASH:
+case RPMDBI_QUEUE:
+case RPMDBI_RECNO:
+    continue;
+    /*@notreached@*/ break;
+default:
+    break;
+}
 	    fn = rpmGetPath(prefix, dbpath, "/", dbiBN, NULL);
 	    if (rpmioFileExists(fn))
 		xx = Unlink(fn);
 	    fn = _free(fn);
 	}
 
+if (!_rebuild_inplace) {
 	fn = rpmGetPath(prefix, dbpath, "/", "__db.000", NULL);
 	suffix = (char *)(fn + strlen(fn) - (sizeof("000") - 1));
 	for (i = 0; i < 16; i++) {
@@ -3196,6 +3216,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 		xx = Unlink(fn);
 	}
 	fn = _free(fn);
+}
 
     }	break;
     case 2:
@@ -3204,9 +3225,11 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	break;
     }
 
+if (!_rebuild_inplace) {
     fn = rpmGetPath(prefix, dbpath, NULL);
     xx = Rmdir(fn);
     fn = _free(fn);
+}
 
     return 0;
 }
@@ -3328,7 +3351,7 @@ bottom:
     return rc;
 }
 
-int rpmdbRebuild(const char * prefix, rpmts ts)
+static int _rpmdbRebuild(const char * prefix, rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
@@ -3561,5 +3584,73 @@ exit:
     dbiTags = tagStoreFree(dbiTags, dbiNTags);
     myprefix = _free(myprefix);
 
+    return rc;
+}
+
+int rpmdbRebuild(const char * prefix, rpmts ts)
+	/*@globals _rebuildinprogress @*/
+	/*@modifies _rebuildinprogress @*/
+{
+    const char * myprefix = NULL;
+    rpmdb olddb;
+    const char * dbpath = NULL;
+    const char * rootdbpath = NULL;
+    int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    tagStore_t dbiTags = NULL;
+    size_t dbiNTags = 0;
+    const char * tfn;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    if (!_rebuild_inplace)
+	return _rpmdbRebuild(prefix, ts);
+
+fprintf(stderr, "--> %s(%s, %p)\n", __FUNCTION__, prefix, ts);
+
+    dbiTagsInit(&dbiTags, &dbiNTags);
+
+    /*@-nullpass@*/
+    tfn = rpmGetPath("%{?_dbpath}", NULL);
+    /*@=nullpass@*/
+    if (!(tfn && tfn[0] != '\0')) {
+	rpmlog(RPMLOG_DEBUG, D_("no dbpath has been set"));
+	tfn = _free(tfn);
+	goto exit;
+    }
+
+    /* Add --root prefix iff --dbpath is not a URL. */
+    switch (urlPath(tfn, NULL)) {
+    default:
+	myprefix = xstrdup("");
+	break;
+    case URL_IS_UNKNOWN:
+	myprefix = rpmGetPath((prefix ? prefix : "/"), NULL);
+	break;
+    }
+
+    dbpath = rootdbpath = rpmGetPath(myprefix, tfn, NULL);
+    if (!(myprefix[0] == '/' && myprefix[1] == '\0'))
+	dbpath += strlen(myprefix);
+    tfn = _free(tfn);
+
+    xx = rpmdbRemoveDatabase(myprefix, dbpath, _dbapi, dbiTags, dbiNTags);
+
+    /* XXX Seqno update needs O_RDWR. */
+    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDWR, 0644, 0)) {
+	rc = 1;
+	goto exit;
+    }
+    _dbapi = olddb->db_api;
+
+    xx = rpmdbOpenAll(olddb);
+
+    xx = rpmdbClose(olddb);
+
+    rc = 0;
+
+exit:
+    rootdbpath = _free(rootdbpath);
+    dbiTags = tagStoreFree(dbiTags, dbiNTags);
+    myprefix = _free(myprefix);
     return rc;
 }

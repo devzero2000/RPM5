@@ -31,8 +31,8 @@ set_cachesize		0 1048576 0
 set_mp_mmapsize		16777216
 
 # ================ Locking
-set_lk_max_locks	4000
-set_lk_max_lockers	4000
-set_lk_max_objects	4000
+set_lk_max_locks	8000
+set_lk_max_lockers	8000
+set_lk_max_objects	8000
 
 # ================ Replication
