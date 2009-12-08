@@ -122,12 +122,8 @@ static PyObject *
 rpmmi_Instance(rpmmiObject * s)
 	/*@*/
 {
-    int rc = 0;
-
-    if (s->mi != NULL)
-	rc = rpmmiInstance(s->mi);
-
-    return Py_BuildValue("i", rc);
+    uint32_t hdrNum = (s->mi != NULL) ? rpmmiInstance(s->mi) : 0;
+    return Py_BuildValue("i", hdrNum);
 }
 
 /**
