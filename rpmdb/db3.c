@@ -1531,14 +1531,19 @@ db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
     uint32_t i;
 
     /* XXX Don't index the header instance counter at record 0. */
-    if (key->size == 4 && *(uint32_t *)key->data == 0)
-	return rc;
+    {	static uint32_t _zero = 0;
+	if (key->size == 4 && !memcmp(key->data, &_zero, key->size))
+	    goto exit;
+    }
 
 assert(dbi);
     rpmdb = dbi->dbi_rpmdb;
 assert(rpmdb);
-    h = rpmdb->db_h;
-assert(h);
+    h = headerLink(rpmdb->db_h);
+    if (h == NULL) {
+	h = headerLoad(data->data);
+	if (h == NULL) goto exit;
+    }
 
     memset(_r, 0, sizeof(*_r));
 
@@ -1553,7 +1558,7 @@ assert(h);
 #ifdef	NOTYET
     case RPMTAG_BASENAMES:
     case RPMTAG_FILEPATHS:
-	/* Add the pesky trailing '/' to directories. */
+	/* XXX Add the pesky trailing '/' to directories. */
 	FMhe->tag = RPMTAG_FILEMODES;
 	(void) headerGet(h, FMhe, 0);
 	break;
@@ -1719,6 +1724,7 @@ exit:
 #endif
     Fhe->p.ptr = _free(Fhe->p.ptr);
     he->p.ptr = _free(he->p.ptr);
+    h = headerFree(h);
 
 DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data, _r)));
 
@@ -1876,7 +1882,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     }
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
-    oflags &= ~DB_TRUNCATE;	/* XXX this is dangerous */
+    /* XXX permit DB_TRUNCATE iff a secondary index. */
+    if (!dbi->dbi_index) oflags &= ~DB_TRUNCATE;
 
 #if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
     if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
@@ -1896,9 +1903,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    oflags |= DB_CREATE;
 	    dbi->dbi_oeflags |= DB_CREATE;
 	}
-#ifdef	DANGEROUS
-	if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
-#endif
+	/* XXX permit DB_TRUNCATE iff a secondary index. */
+	if (dbi->dbi_index && (dbi->dbi_mode & O_TRUNC)) oflags |= DB_TRUNCATE;
     }
 
     /*
@@ -2010,9 +2016,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     }
 
     /*
-     * Set db type if creating.
+     * Set db type if creating or truncating.
      */
-    if (oflags & DB_CREATE)
+    if (oflags & (DB_CREATE|DB_TRUNCATE))
 	dbi_type = dbi->dbi_type;
 
     /*
@@ -2348,6 +2354,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 			= db3Acallback;
 	    int _flags = (rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
 			? DB_AUTO_COMMIT : 0;
+	    if (oflags & (DB_CREATE|DB_TRUNCATE)) _flags |= DB_CREATE;
 	    xx = db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
 	}
 	if (dbi->dbi_seq_id) {

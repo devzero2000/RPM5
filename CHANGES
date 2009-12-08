@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: lazily create non-existent secondary indices.
     - jbj: rpmdb: consolidate primary key swabbing to network order.
     - jbj: rpmdb: re-open dbenv w DB_RUNRECOVER rather than remove/verify.
     - jbj: rpmdb: handle optional .A just like optional -V and -R patterns.
