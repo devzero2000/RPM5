@@ -46,6 +46,7 @@ struct orderListIndex_s {
     int orIndex;
 };
 
+#define	CACHE_DEPENDENCY_RESULT	1
 #if defined(CACHE_DEPENDENCY_RESULT)
 /*@unchecked@*/
 int _cacheDependsRC = CACHE_DEPENDENCY_RESULT;
