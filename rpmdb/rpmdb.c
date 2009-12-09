@@ -65,6 +65,9 @@ typedef	rpmuint32_t	u_int32_t;
 int _rpmdb_debug = 0;
 
 /*@unchecked@*/
+int _rpmmi_debug = 0;
+
+/*@unchecked@*/
 static int _rebuildinprogress = 0;
 
 static int _rebuild_inplace = 1;
@@ -1234,64 +1237,6 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     return rpmdbCount(db, RPMTAG_NAME, name, 0);
 }
 
-int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
-		const char *** argvp)
-{
-    DBC * dbcursor = NULL;
-    DBT k = DBT_INIT;
-    DBT v = DBT_INIT;
-    dbiIndex dbi;
-    miRE mire = NULL;
-    ARGV_t av = NULL;
-    int ret = 1;		/* assume error */
-    int rc;
-    int xx;
-
-    dbi = dbiOpen(db, tag, 0);
-    if (dbi == NULL)
-	goto exit;
-
-    if (pat) {
-	mire = mireNew(mode, 0);
-	xx = mireRegcomp(mire, pat);
-    }
-
-    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
-
-    /* Iterate over all string keys, collecting pattern matches. */
-    while ((rc = dbiGet(dbi, dbcursor, &k, &v, DB_NEXT_NODUP)) == 0) {
-	size_t ns = k.size;
-	/* XXX TODO: strdup malloc is necessary solely for argvAdd() */
-	char * s = memcpy(xmalloc(ns+1), k.data, ns);
-
-	s[ns] = '\0';
-	if (mire == NULL || mireRegexec(mire, s, ns) >= 0)
-	    xx = argvAdd(&av, s);
-	s = _free(s);
-    }
-
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-
-    switch (rc) {
-    case 0:
-    case DB_NOTFOUND:
-	ret = 0;
-	break;
-    default:
-	rpmlog(RPMLOG_ERR, _("error(%d) getting keys from %s index\n"),
-		rc, tagName(dbi->dbi_rpmtag));
-	break;
-    }
-
-exit:
-    if (argvp != NULL)
-	xx = argvAppend(argvp, av);
-    av = argvFree(av);
-    mire = mireFree(mire);
-    return ret;
-}
-
 /* Return pointer to first RE character (or NUL terminator) */
 static const char * stemEnd(const char * s)
 	/*@*/
@@ -1354,8 +1299,21 @@ static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
     return t;
 }
 
-static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
-		const char * pat, dbiIndexSet * matches)
+/**
+ * Retrieve prinary/secondary keys for  a pattern match.
+ * @todo Move to Berkeley DB db3.c when dbiIndexSet is eliminated.
+ * @param db		rpm database
+ * @param tag		rpm tag
+ * @param mode		type of pattern match
+ * @param pat		pattern to match (NULL iterates all keys).
+ * @retval *matches	array or primary keys that match (or NULL)
+ * @retval *argvp       array of secondary keys that match (or NULL)
+ */
+static int dbiMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
+		/*@null@*/ const char * pat,
+		/*@null@*/ dbiIndexSet * matches,
+		/*@null@*/ const char *** argvp)
+	/*@modifies *matches, *argvp @*/
 {
     DBC * dbcursor = NULL;
     DBT k = DBT_INIT;
@@ -1364,6 +1322,7 @@ static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
     dbiIndex dbi;
     miRE mire = NULL;
     uint32_t _flags = DB_NEXT;
+    ARGV_t av = NULL;
     dbiIndexSet set = NULL;
     const char * b = NULL;
     size_t nb = 0;
@@ -1375,23 +1334,40 @@ static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
     if (dbi == NULL)
 	goto exit;
 
+if (_rpmmi_debug || dbi->dbi_debug)
+fprintf(stderr, "--> %s(%p, %s(%u), %d, \"%s\", %p, %p)\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, argvp);
+
     if (pat) {
 
         mire = mireNew(mode, 0);
         xx = mireRegcomp(mire, pat);
 
+	/* Initialize the secondary retrieval key. */
 	switch (mode) {
 	default:
+assert(0);			/* XXX sanity */
+	    /*@notreached@*/ break;
+	case RPMMIRE_GLOB:
 	    break;
+	case RPMMIRE_REGEX:
 	case RPMMIRE_PCRE:
-	    b = pat;
-	    if (*b == '^') b++;
-	    nb = stemEnd(b) - b;
+	    if (*pat == '^') pat++;
+	    nb = stemEnd(pat) - pat;
 	    /* If partial match on stem won't help, just iterate. */
 	    if (nb == 0) {
 		k.doff = 0;
 		goto doit;
 	    }
+	    /* Remove the escapes in the stem. */
+	    {	char *be;
+		b = be = xmalloc(nb + 1);
+		while (nb--) {
+		    if ((*be = *pat++) != '\\')
+			be++;
+		}
+		*be = '\0';
+	    }
+	    nb = strlen(b);
 	    /* Set stem length for partial match retrieve. */
 	    k.flags = DB_DBT_PARTIAL;
 	    k.dlen = nb;
@@ -1400,8 +1376,8 @@ static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
 	    _flags = DB_SET_RANGE;
 	    break;
 	case RPMMIRE_STRCMP:
-	    k.size = (UINT32_T) strlen(b);
-	    k.data = (void *) b;
+	    k.size = (UINT32_T) strlen(pat);
+	    k.data = (void *) pat;
 	    _flags = DB_SET;
 	    break;
 	}
@@ -1413,40 +1389,54 @@ doit:
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
-    /* Iterate over all keys, collecting primary keys. */
+    /* Iterate over matches, collecting primary/secondary keys. */
     while ((rc = dbiPget(dbi, dbcursor, &k, &p, &v, _flags)) == 0) {
 	uint32_t hdrNum;
+	const char * s;
+	size_t ns;
 
 	if (_flags == DB_SET) _flags = DB_NEXT_DUP;
 	if (b != NULL && nb > 0) {
+
 	    /* Exit if the stem doesn't match. */
 	    if (k.size < nb || memcmp(b, k.data, nb))
 		break;
-	    /* Retrieve the full record. */
-	    memset (&k, 0, sizeof(k));
-	    xx = dbiPget(dbi, dbcursor, &k, &p, &v, DB_CURRENT);
-	    _flags = DB_NEXT;
+
+	    /* Retrieve the full record after DB_SET_RANGE. */
+	    if (_flags == DB_SET_RANGE) {
+		memset (&k, 0, sizeof(k));
+		xx = dbiPget(dbi, dbcursor, &k, &p, &v, DB_CURRENT);
+		_flags = DB_NEXT;
+	    }
 	}
 
-	/* Apply pattern to the key. */
-	if (mire) {
-	    const char * s = (const char * ) k.data;
-	    size_t ns = k.size;
+	/* Get the secondary key. */
+	s = (const char * ) k.data;
+	ns = k.size;
 
-	    /* Skip if not matched. */
-	    if (mireRegexec(mire, s, ns) < 0)
-		continue;
-	}
+	/* Skip if not matched. */
+	if (mire && mireRegexec(mire, s, ns) < 0)
+	    continue;
 	    
 	/* Get a native endian copy of the primary package key. */
 	memcpy(&hdrNum, p.data, sizeof(hdrNum));
 	hdrNum = _ntoh_ui(hdrNum);
 
-	/* Append primary package key to set. */
-	if (set == NULL)
-	    set = xcalloc(1, sizeof(*set));
-	/* XXX TODO: sort/uniqify set? */
-	(void) dbiAppendSet(set, &hdrNum, 1, sizeof(hdrNum), 0);
+	/* Collect primary keys. */
+	if (matches) {
+	    if (set == NULL)
+		set = xcalloc(1, sizeof(*set));
+	    /* XXX TODO: sort/uniqify set? */
+	    (void) dbiAppendSet(set, &hdrNum, 1, sizeof(hdrNum), 0);
+	}
+
+	/* Collect secondary keys. */
+	if (argvp) {
+	    char * a = memcpy(xmalloc(ns+1), s, ns);
+	    a[ns] = '\0';
+	    xx = argvAdd(&av, a);
+	    a = _free(a);
+	}
     }
 
     xx = dbiCclose(dbi, dbcursor, 0);
@@ -1464,14 +1454,26 @@ doit:
     }
 
 exit:
-    if (ret == 0 && matches) {
-	/* XXX TODO: sort/uniqify set? */
-	*matches = set;
-	set = NULL;
+    if (ret == 0) {
+	if (matches) {
+	    /* XXX TODO: sort/uniqify set? */
+	    *matches = set;
+	    set = NULL;
+	}
+	if (argvp)
+	    xx = argvAppend(argvp, av);
     }
     set = dbiFreeIndexSet(set);
+    av = argvFree(av);
+    b = _free(b);
     mire = mireFree(mire);
     return ret;
+}
+
+int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
+		const char *** argvp)
+{
+    return dbiMireKeys(db, tag, mode, pat, NULL, argvp);
 }
 
 /**
@@ -1506,7 +1508,7 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	const char * _pat = (s[0] == '^' || s[ns-1] == '$')
 		? xstrdup(s)
 		: _str2PCREpat(_pre, s, _post);
-	ret = rpmdbMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches);
+	ret = dbiMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches, NULL);
 	_pat = _free(_pat);
     }
 
@@ -1702,9 +1704,6 @@ assert(dbi != NULL);				/* XXX sanity */
     /* XXX this needs to be done elsewhere, not within destructor. */
     (void) rpmdbCheckSignals();
 }
-
-/*@unchecked@*/
-int _rpmmi_debug = 0;
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmmiPool;
