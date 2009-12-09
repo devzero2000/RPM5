@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmmi: optimize NVRA range queries using a *RE stem.
     - jbj: rpmdb: inline rpmdbOpenAll for inplace --rebuilddb. sadly
 	DB->associate(..., DB_CREATE) is not free threaded w -fopenmp. oh well.
     - jbj: rpmts: take checkpoints beroe and after --rebuilddb.

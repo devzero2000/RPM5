@@ -64,8 +64,6 @@ typedef	rpmuint32_t	u_int32_t;
 /*@unchecked@*/
 int _rpmdb_debug = 0;
 
-static int _jbj_debug = 0;
-
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
 
@@ -1294,22 +1292,12 @@ exit:
     return ret;
 }
 
-static void prtDBT(const char * msg, DBT * kp)
-{
-    if (msg) fprintf(stderr, "\t%s", msg);
-    fprintf(stderr, " %p[%u:%u:%u] flags 0x%x\n",
-	kp->data, (unsigned)kp->size, (unsigned)kp->doff, (unsigned)kp->dlen,
-	kp->flags);
-}
-
-#ifdef	NOTYET
-/* Determine if the regular expression specification has any meta characters. */
+/* Return pointer to first RE character (or NUL terminator) */
 static const char * stemEnd(const char * s)
-	/*@modifies sxp @*/
+	/*@*/
 {
     int c;
 
-    /* Return pointer to first RE character (or NUL terminator) */
     while ((c = *s)) {
 	switch (c) {
 	case '.':
@@ -1337,7 +1325,6 @@ static const char * stemEnd(const char * s)
 exit:
     return s;
 }
-#endif
 
 /*@only@*/
 static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
@@ -1350,9 +1337,6 @@ static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
     const char * se;
     char * t;
     char * te;
-
-    if (_pre == NULL) _pre = "^";
-    if (_post == NULL) _post = "(-[^-]+-[^-]+\\.[^.]+|-[^-]+\\.[^.]+|\\.[^.]+|)$";
 
     /* Find the PCRE pattern length, including escapes. */
     for (se = s; *se != '\0'; se++, nt++)
@@ -1367,8 +1351,6 @@ static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
     te = stpcpy(te, _post);
     *te = '\0';
 
-if (_jbj_debug)
-fprintf(stderr, "<-- %s(\"%s\") ret \"%s\"\n", __FUNCTION__, s, t);
     return t;
 }
 
@@ -1377,15 +1359,14 @@ static int rpmdbMireKeys(rpmdb db, rpmTag tag, rpmMireMode mode,
 {
     DBC * dbcursor = NULL;
     DBT k = DBT_INIT;
-#ifdef	NOTYET
-    DBT fk;
-#endif
     DBT p = DBT_INIT;
     DBT v = DBT_INIT;
     dbiIndex dbi;
     miRE mire = NULL;
-uint32_t _flags = DB_NEXT;
-dbiIndexSet set = NULL;
+    uint32_t _flags = DB_NEXT;
+    dbiIndexSet set = NULL;
+    const char * b = NULL;
+    size_t nb = 0;
     int ret = 1;		/* assume error */
     int rc;
     int xx;
@@ -1395,10 +1376,6 @@ dbiIndexSet set = NULL;
 	goto exit;
 
     if (pat) {
-	const char * b = pat;
-#ifdef	NOTYET
-	const char * be;
-#endif
 
         mire = mireNew(mode, 0);
         xx = mireRegcomp(mire, pat);
@@ -1407,22 +1384,20 @@ dbiIndexSet set = NULL;
 	default:
 	    break;
 	case RPMMIRE_PCRE:
-#ifdef	NOTYET
-	    if (*b == '^') k.doff = 1;
-	    be = stemEnd(b + k.doff);
+	    b = pat;
+	    if (*b == '^') b++;
+	    nb = stemEnd(b) - b;
 	    /* If partial match on stem won't help, just iterate. */
-	    if (be == (b + k.doff)) {
+	    if (nb == 0) {
 		k.doff = 0;
 		goto doit;
 	    }
 	    /* Set stem length for partial match retrieve. */
-	    k.dlen = (be - b) - k.doff;
 	    k.flags = DB_DBT_PARTIAL;
+	    k.dlen = nb;
+	    k.size = nb;
 	    k.data = (void *) b;
-	    _flags = DB_SET;
-#else
-	    goto doit;
-#endif
+	    _flags = DB_SET_RANGE;
 	    break;
 	case RPMMIRE_STRCMP:
 	    k.size = (UINT32_T) strlen(b);
@@ -1430,37 +1405,33 @@ dbiIndexSet set = NULL;
 	    _flags = DB_SET;
 	    break;
 	}
-if (_jbj_debug) prtDBT("k", &k);
     }
 
 doit:
+    p.flags |= DB_DBT_PARTIAL;
+    v.flags |= DB_DBT_PARTIAL;
+
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
     /* Iterate over all keys, collecting primary keys. */
     while ((rc = dbiPget(dbi, dbcursor, &k, &p, &v, _flags)) == 0) {
 	uint32_t hdrNum;
-unsigned ix;
 
 	if (_flags == DB_SET) _flags = DB_NEXT_DUP;
+	if (b != NULL && nb > 0) {
+	    /* Exit if the stem doesn't match. */
+	    if (k.size < nb || memcmp(b, k.data, nb))
+		break;
+	    /* Retrieve the full record. */
+	    memset (&k, 0, sizeof(k));
+	    xx = dbiPget(dbi, dbcursor, &k, &p, &v, DB_CURRENT);
+	    _flags = DB_NEXT;
+	}
 
-if (_jbj_debug) prtDBT("k", &k);
-if (_jbj_debug) prtDBT("p", &p);
-if (_jbj_debug) prtDBT("v", &v);
-
+	/* Apply pattern to the key. */
 	if (mire) {
-	    const char * s;
-	    size_t ns;
-
-#ifdef	NOTYET
-	    /* Retrieve the full match key. */
-	    memset (&fk, 0, sizeof(fk));
-	    xx = dbiPget(dbi, dbcursor, &fk, &p, &v, DB_CURRENT);
-	    s = (const char * ) fk.data;
-	    ns = fk.size;
-#else
-	    s = (const char * ) k.data;
-	    ns = k.size;
-#endif
+	    const char * s = (const char * ) k.data;
+	    size_t ns = k.size;
 
 	    /* Skip if not matched. */
 	    if (mireRegexec(mire, s, ns) < 0)
@@ -1474,11 +1445,8 @@ if (_jbj_debug) prtDBT("v", &v);
 	/* Append primary package key to set. */
 	if (set == NULL)
 	    set = xcalloc(1, sizeof(*set));
-ix = set->count;
 	/* XXX TODO: sort/uniqify set? */
 	(void) dbiAppendSet(set, &hdrNum, 1, sizeof(hdrNum), 0);
-if (_jbj_debug)
-fprintf(stderr, "\tset[%u] = %u\n", ix, dbiIndexRecordOffset(set, ix));
     }
 
     xx = dbiCclose(dbi, dbcursor, 0);
@@ -1496,8 +1464,6 @@ fprintf(stderr, "\tset[%u] = %u\n", ix, dbiIndexRecordOffset(set, ix));
     }
 
 exit:
-if (_jbj_debug)
-fprintf(stderr, "<-- %s(%p, %s(%u), %d, \"%s\", %p) rc %d set %p[%u]\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, ret, (set ? set->recs : NULL), (set ? set->count : 0));
     if (ret == 0 && matches) {
 	/* XXX TODO: sort/uniqify set? */
 	*matches = set;
@@ -1554,9 +1520,6 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     }
 
 exit:
-if (_jbj_debug)
-fprintf(stderr, "<-- %s(%p, %p, %p, %p, \"%s\", %p) rc %d set %p[%u]\n", __FUNCTION__, dbi, dbcursor, key, data, NVR, matches, rc, (*matches ? (*matches)->recs : NULL), (*matches ? (*matches)->count : 0));
-
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     if (rc != RPMRC_OK && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
