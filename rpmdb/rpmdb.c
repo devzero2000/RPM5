@@ -1478,27 +1478,28 @@ int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 
 /**
  * Attempt partial matches on name[-version[-release]] strings.
- * @param dbi		index database handle (always RPMTAG_NAME)
- * @param dbcursor	index database cursor
- * @param key		search key/length/flags
- * @param data		search data/length/flags
+ * @param dbi		index database handle (always RPMTAG_NVRA)
  * @param NVR		name[-version[-release]] string/pattern
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+static rpmRC dbiFindMatches(dbiIndex dbi,
 		const char * NVR, /*@out@*/ dbiIndexSet * matches)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies dbi, *dbcursor, *key, *data, *matches,
+	/*@modifies dbi, *dbcursor, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
     const char * s = NVR;
     size_t ns = (s ? strlen(s) : 0);
+    DBC * dbcursor = NULL;
     rpmRC rc = RPMRC_NOTFOUND;
     int ret;
+    int xx;
 
     if (ns == 0) goto exit;
+
+    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
     {	rpmTag _tag = RPMTAG_NVRA;
 	rpmMireMode _mode = RPMMIRE_PCRE;
@@ -1521,47 +1522,15 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	break;
     }
 
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+
 exit:
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     if (rc != RPMRC_OK && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
 /*@=unqualifiedtrans@*/
     return rc;
-}
-
-/**
- * Lookup by name, name-version, and finally by name-version-release.
- * Both version and release can be patterns.
- * @todo Name must be an exact match, as name is a db key.
- * @param dbi		index database handle (always RPMTAG_NAME)
- * @param NVR		name[-version[-release]] string/pattern
- * @retval matches	set of header instances that match
- * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
- */
-static rpmRC dbiFindByLabel(dbiIndex dbi, /*@null@*/ const char * NVR,
-		/*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies dbi, *matches,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@requires maxSet(matches) >= 0 @*/
-{
-DBC * dbcursor = NULL;
-DBT k = DBT_INIT, *key = &k;
-DBT v = DBT_INIT, *data = &v;
-    rpmRC rc;
-    int xx;
-
-    if (NVR == NULL || strlen(NVR) == 0) return RPMRC_NOTFOUND;
-
-    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
-
-    rc = dbiFindMatches(dbi, dbcursor, key, data, NVR, matches);
-
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-/*@-nullstate@*/	/* FIX: *matches may be NULL. */
-    return rc;
-/*@=nullstate@*/
 }
 
 void * dbiStatsAccumulator(dbiIndex dbi, int opx)
@@ -2581,7 +2550,8 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     default:	break;
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     case RPMDBI_LABEL:
-	tag = RPMTAG_NAME;
+	tag = RPMTAG_NVRA;
+	/*@fallthrough@*/
 	isLabel = 1;
 	break;
     /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
@@ -2624,13 +2594,11 @@ assert(keylen == sizeof(hdrNum));
 	/* XXX Special case #3: empty iterator with rpmmiGrow() */
 	assert(keylen == 0);
     }
-    else if (isLabel && tag == RPMTAG_NAME) {
+    else if (isLabel) {
 	/* XXX Special case #4: gather primary keys for a NVR label. */
-	int rc;
+	rpmRC rc = dbiFindMatches(dbi, keyp, &set);
 
-	rc = dbiFindByLabel(dbi, keyp, &set);
-
-	if ((rc  && rc != DB_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
+	if ((rc  && rc != RPMRC_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
