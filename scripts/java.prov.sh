@@ -42,9 +42,10 @@ while read filename ; do
 		;;
 	*.jar) 
 		if ! $JAR tf "$filename" | grep -q -e '(^..|^/|^\\)' ; then
-			pushd $classdir > /dev/null
+                        PUSHDIR=`pwd`
+			cd $classdir > /dev/null
 			$JAR xf "$filename"
-			popd > /dev/null
+			cd $PUSHDIR > /dev/null
 			$JAR tf "$filename" | sed "s|^|$classdir/|g" | $0 "$@"
 			rm -fr $classdir/*
 		fi

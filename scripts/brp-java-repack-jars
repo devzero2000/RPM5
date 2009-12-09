@@ -30,8 +30,9 @@ if [ ! -z "$JARS" ]; then
 		TMPDIR=`mktemp -d -p $RPM_BUILD_ROOT/tmp $JARNAME.tmpdir.XXXXXXXXXX` || exit 1
 		JARDIR=`mktemp -d -p $RPM_BUILD_ROOT/tmp $JARNAME.jardir.XXXXXXXXXX` || exit 1
 		TIMEREF=`mktemp -p $RPM_BUILD_ROOT/tmp $JARNAME.timeref.XXXXXXXXXX` || exit 1
-		
-		pushd $TMPDIR > /dev/null
+	        
+                PUSHDIR=`pwd`
+		cd $TMPDIR > /dev/null
 		/usr/bin/unzip -qq -o $j
 		rm -f $j
 		
@@ -66,13 +67,14 @@ if [ ! -z "$JARS" ]; then
             		cp $f $JARDIR/$f
             		touch --date="$DATE" $JARDIR/$f
         	done
-		popd > /dev/null
+		cd $PUSHDIR > /dev/null
 
 		# Set the times of the directories.
 		touch --date="$DATE" `find $JARDIR -type d`
 
 		# make the jar
-		pushd $JARDIR > /dev/null
+                PUSHDIR=`pwd`
+		cd $JARDIR > /dev/null
 
 		if [ -n "`find -type f`" ]; then
 			find -type f -print | LC_ALL=C sort | /usr/bin/zip -q -X -9 $j -@
@@ -80,7 +82,7 @@ if [ ! -z "$JARS" ]; then
 			# Put the empty jar back
 			touch $j
 		fi
-		popd > /dev/null
+		cd $PUSHDIR > /dev/null
 
 		# Cleanup.
 		rm -rf $TMPDIR
