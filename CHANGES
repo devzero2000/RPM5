@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmts: take checkpoints beroe and after --rebuilddb.
     - jbj: rpmdb: do in-place rebuilddb, opt-in for now.
     - jbj: rpmdb: lazily create non-existent secondary indices.
     - jbj: rpmdb: consolidate primary key swabbing to network order.

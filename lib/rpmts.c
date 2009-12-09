@@ -116,10 +116,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     ts->dbmode = dbmode;
     rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
     if (rc) {
-	const char * dn;
-	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmlog(RPMLOG_ERR,
-			_("cannot open Packages database in %s\n"), dn);
+	const char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+	rpmlog(RPMLOG_ERR, _("cannot open Packages database in %s\n"), dn);
 	dn = _free(dn);
     }
     return rc;
@@ -128,11 +126,22 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 int rpmtsRebuildDB(rpmts ts)
 {
     void * lock = rpmtsAcquireLock(ts);
-    int rc = rpmtsOpenDB(ts, ts->dbmode);
+    int rc;
 
-    if (rc == 0)
-	rc = rpmdbRebuild(ts->rootDir,
+    rc = rpmtsOpenDB(ts, O_RDWR);
+    if (rc) goto exit;
+
+    rc = rpmtxnCheckpoint(rpmtsGetRdb(ts));
+    if (rc) goto exit;
+
+    rc = rpmdbRebuild(ts->rootDir,
     		(!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK) ? ts : NULL));
+    if (rc) goto exit;
+
+    rc = rpmtxnCheckpoint(rpmtsGetRdb(ts));
+    if (rc) goto exit;
+
+exit:
     lock = rpmtsFreeLock(lock);
     return rc;
 }
