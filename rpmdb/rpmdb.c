@@ -778,20 +778,18 @@ static rpmdb rpmdbGetPool(/*@null@*/ rpmioPool pool)
 
 int rpmdbOpenAll(rpmdb db)
 {
-    size_t dbix;
     int rc = 0;
 
     if (db == NULL) return -2;
 
-    if (db->db_tags != NULL && db->_dbi != NULL)
+  if (db->db_tags != NULL && db->_dbi != NULL) {
+    size_t dbix;
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	tagStore_t dbiTag = db->db_tags + dbix;
-	int tag = dbiTag->tag;
-	if (tag < 0)
+	if ((int)db->db_tags[dbix].tag < 0)
 	    continue;
 	if (db->_dbi[dbix] != NULL)
 	    continue;
-	switch (tag) {
+	switch (db->db_tags[dbix].tag) {
 	case RPMDBI_AVAILABLE:
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
@@ -805,8 +803,9 @@ int rpmdbOpenAll(rpmdb db)
 	default:
 	    /*@switchbreak@*/ break;
 	}
-	(void) dbiOpen(db, tag, db->db_flags);
+	(void) dbiOpen(db, db->db_tags[dbix].tag, db->db_flags);
     }
+  }
     return rc;
 }
 
@@ -3636,13 +3635,28 @@ fprintf(stderr, "--> %s(%s, %p)\n", __FUNCTION__, prefix, ts);
     xx = rpmdbRemoveDatabase(myprefix, dbpath, _dbapi, dbiTags, dbiNTags);
 
     /* XXX Seqno update needs O_RDWR. */
-    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDWR, 0644, 0)) {
-	rc = 1;
+    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDWR, 0644, 0))
 	goto exit;
-    }
-    _dbapi = olddb->db_api;
 
-    xx = rpmdbOpenAll(olddb);
+  { size_t dbix;
+    for (dbix = 0; dbix < dbiNTags; dbix++) {
+	switch (dbiTags[dbix].tag) {
+	case RPMDBI_AVAILABLE:
+	case RPMDBI_ADDED:
+	case RPMDBI_REMOVED:
+	case RPMDBI_DEPENDS:
+	case RPMDBI_BTREE:
+	case RPMDBI_HASH:
+	case RPMDBI_QUEUE:
+	case RPMDBI_RECNO:
+	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
+	}
+	(void) dbiOpen(olddb, dbiTags[dbix].tag, olddb->db_flags);
+    }
+  }
 
     xx = rpmdbClose(olddb);
 
