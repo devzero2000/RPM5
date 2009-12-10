@@ -395,7 +395,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 #ifdef	NOTYET
-    int instance = headerGetInstance(h);
+    rpmuint32_t hdrNum = headerGetInstance(h);
 #endif
     rpmps ps;
     int rc = 0;		/* assume no problems */
@@ -403,8 +403,8 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 
     rpmtsEmpty(ts);
 #ifdef	NOTYET
-    if (instance > 0)
-	(void) rpmtsAddEraseElement(ts, h, instance);
+    if (hdrNum > 0)
+	(void) rpmtsAddEraseElement(ts, h, hdrNum);
     else
 #endif
 	(void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);

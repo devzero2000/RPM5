@@ -1133,7 +1133,7 @@ assert(s != NULL);
     if (nsubs > 0) {
 	char instance[64];
 	int xx = snprintf(instance, sizeof(instance), "'%u'",
-		(unsigned) headerGetInstance(h));
+		(rpmuint32_t) headerGetInstance(h));
 	size_t tlen = strlen(s) + nsubs * ((int)strlen(instance) - (int)nmark);
 	char * t = xmalloc(tlen + 1);
 	char * te = t;
