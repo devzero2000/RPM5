@@ -10,7 +10,7 @@
 
 /** \ingroup rpmbuild
  */
-typedef struct Package_s * Package;
+typedef /*@abstract@*/ /*@refcounted@*/ struct Package_s * Package;
 
 /** \ingroup rpmbuild
  */
@@ -190,8 +190,11 @@ struct Spec_s {
 /*@only@*/ /*@relnull@*/
     tagStore_t foo;
 
-/*@owned@*/
     Package packages;		/*!< Package list. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /** \ingroup rpmbuild
@@ -238,8 +241,11 @@ struct Package_s {
 /*@only@*/
     rpmiob fileList;		/* If NULL, package will not be written */
 
-/*@dependent@*/
     Package next;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 #ifdef __cplusplus
