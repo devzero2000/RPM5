@@ -16,6 +16,42 @@
 -bounds
 -bufferoverflowhigh	# 26
 
++voidabstract
++longunsignedintegral
+-abstract
+-assignexpose
+-castfcnptr
+-compdef
+-compmempass
+-fullinitblock
+-immediatetrans
+-matchfields
+-modfilesys
+-noeffect
+-paramuse
+-retalias
+-retexpose
+-shiftnegative
+
+-castexpose
+-globs
+-globuse
+-internalglobs
+-modobserver
+-mods
+-moduncon
+-nestedextern
+-nullderef
+-nullret
+-kepttrans
+-readonlytrans
+-shadow
+-temptrans
+-type
+-unrecog
+
+-exportheader		# 1 logio_dispatch
+
 -evalorder		# 17
 -nullpass		# 90
 -nullstate		# 56 indirections hard to annotate

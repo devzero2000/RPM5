@@ -1,6 +1,7 @@
 #ifndef H_RPMLIO
 #define H_RPMLIO
 
+/*@unchecked@*/
 extern int _rpmlio_debug;
 
 int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,

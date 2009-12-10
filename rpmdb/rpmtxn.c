@@ -14,6 +14,9 @@
 
 #include "debug.h"
 
+/*@access rpmdb @*/
+/*@access dbiIndex @*/
+
 int _rpmtxn_debug = 0;
 
 uint32_t rpmtxnId(rpmtxn txn)
@@ -55,7 +58,7 @@ int rpmtxnBegin(rpmdb rpmdb, rpmtxn parent, rpmtxn * txnp)
     DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
     DB_TXN * _parent = parent;
     DB_TXN * _txn = NULL;
-    uint32_t _flags = 0;
+    u_int32_t _flags = 0;
     int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
 	? dbenv->txn_begin(dbenv, _parent, &_txn, _flags) : ENOTSUP;
     if (!rc) {
@@ -65,30 +68,30 @@ int rpmtxnBegin(rpmdb rpmdb, rpmtxn parent, rpmtxn * txnp)
 	    rpmdb->db_txn = _txn;
     }
 if (_rpmtxn_debug)
-fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) txn %p rc %d\n", "dbenv->txn_begin", dbenv, _parent, &_txn, _flags, _txn, rc);
+fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) txn %p rc %d\n", "dbenv->txn_begin", dbenv, _parent, &_txn, (unsigned)_flags, _txn, rc);
     return rc;
 }
 
 int rpmtxnCommit(rpmtxn txn)
 {
     DB_TXN * _txn = txn;
-    uint32_t _flags = 0;
+    u_int32_t _flags = 0;
     int rc = (_txn ? _txn->commit(_txn, _flags) : ENOTSUP);
 if (_rpmtxn_debug)
-fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, _flags, rc);
+fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, (unsigned)_flags, rc);
     return rc;
 }
 
 int rpmtxnCheckpoint(rpmdb rpmdb)
 {
     DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
-    uint32_t _kbytes = 0;
-    uint32_t _minutes = 0;
-    uint32_t _flags = 0;
+    u_int32_t _kbytes = 0;
+    u_int32_t _minutes = 0;
+    u_int32_t _flags = 0;
     int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
 	? dbenv->txn_checkpoint(dbenv, _kbytes, _minutes, _flags) : ENOTSUP;
 if (_rpmtxn_debug)
-fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv, _kbytes, _minutes, _flags, rc);
+fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv, (unsigned)_kbytes, (unsigned)_minutes, (unsigned)_flags, rc);
     return rc;
 }
 

@@ -870,6 +870,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 
 #include <rpmlio.h>	/* XXX add to psm.c/fsm.c */
 
+#if !defined(__LCLINT__)
 /*@unused@*/ static inline
 int rpmlkId(rpmdb rpmdb, uint32_t *_idp)
 {
@@ -888,7 +889,7 @@ int rpmlkIdFree(rpmdb rpmdb, uint32_t _id)
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
 	? dbenv->lock_id_free(dbenv, _id) : ENOTSUP;
 if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p,%u) rc %d\n", "dbenv->lock_id_free", dbenv, _id, rc);
+fprintf(stderr, "<-- %s(%p,%u) rc %d\n", "dbenv->lock_id_free", dbenv, (unsigned)_id, rc);
     return rc;
 }
 
@@ -1086,6 +1087,7 @@ if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p) rc %d\n", "mpf->close", mpf, rc);
     return rc;
 }
+#endif	/* __LCLINT__ */
 
 #endif	/* _RPMDB_INTERNAL */
 /*@=globuse =mustmod @*/
@@ -1116,7 +1118,7 @@ unsigned int dbiIndexSetCount(dbiIndexSet set)
  * @param recno	index of item in set
  * @return	record offset of header
  */
-uint32_t dbiIndexRecordOffset(dbiIndexSet set, int recno)
+uint32_t dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno)
 	/*@*/;
 
 /** \ingroup dbi

@@ -15,9 +15,12 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 int _rpmlio_debug = 0;
 
+/*@unchecked@*/
 static int _enable_syscall_logging = 0;
+/*@unchecked@*/
 static int _enable_scriptlet_logging = 0;
 
 int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
@@ -42,7 +45,7 @@ int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
     Ddbt.size = dlen;
     rc = logio_Creat_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode, &Bdbt, &Ddbt, dalgo);
 if (_rpmlio_debug)
-fprintf(stderr, "<== %s(%s, 0%o, %p[%u], %p[%u], %u) rc %d\n", __FUNCTION__, fn, mode, b, (unsigned)blen, d, (unsigned)dlen, dalgo, rc);
+fprintf(stderr, "<== %s(%s, 0%o, %p[%u], %p[%u], %u) rc %d\n", __FUNCTION__, fn, mode, b, (unsigned)blen, d, (unsigned)dlen, (unsigned)dalgo, rc);
     return rc;
 }
 
@@ -68,7 +71,7 @@ int rpmlioUnlink(rpmdb rpmdb, const char * fn, mode_t mode,
     Ddbt.size = dlen;
     rc = logio_Unlink_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, mode, &Bdbt, &Ddbt, dalgo);
 if (_rpmlio_debug)
-fprintf(stderr, "<== %s(%s, 0%o, %p[%u], %p[%u], %u) rc %d\n", __FUNCTION__, fn, mode, b, (unsigned)blen, d, (unsigned)dlen, dalgo, rc);
+fprintf(stderr, "<== %s(%s, 0%o, %p[%u], %p[%u], %u) rc %d\n", __FUNCTION__, fn, mode, b, (unsigned)blen, d, (unsigned)dlen, (unsigned)dalgo, rc);
     return rc;
 }
 
@@ -98,7 +101,7 @@ int rpmlioRename(rpmdb rpmdb, const char * oldname, const char * newname,
     Ddbt.size = dlen;
     rc = logio_Rename_log(dbenv, _txn, &_lsn, DB_FLUSH, &ONdbt, &NNdbt, mode, &Bdbt, &Ddbt, dalgo);
 if (_rpmlio_debug)
-fprintf(stderr, "<== %s(%s, %s, 0%o, %p[%u], %p[%u], %u) rc %d\n", __FUNCTION__, oldname, newname, mode, b, (unsigned)blen, d, (unsigned)dlen, dalgo, rc);
+fprintf(stderr, "<== %s(%s, %s, 0%o, %p[%u], %p[%u], %u) rc %d\n", __FUNCTION__, oldname, newname, mode, b, (unsigned)blen, d, (unsigned)dlen, (unsigned)dalgo, rc);
     return rc;
 }
 
@@ -152,7 +155,9 @@ int rpmlioLsetfilecon(rpmdb rpmdb, const char * fn, const char * context)
     FNdbt.data = (void *)fn;
     FNdbt.size = strlen(fn) + 1;	/* trailing NUL too */
     if (context == NULL) context = "";	/* XXX prevent segfaults */
+/*@-observertrans@*/
     CONTEXTdbt.data = (void *)context;
+/*@=observertrans@*/
     CONTEXTdbt.size = strlen(context) + 1;	/* trailing NUL too */
     rc = logio_Lsetfilecon_log(dbenv, _txn, &_lsn, DB_FLUSH, &FNdbt, &CONTEXTdbt);
 if (_rpmlio_debug)

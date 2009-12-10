@@ -20,6 +20,7 @@
 /*@unchecked@*/
 extern int _dbi_debug;
 
+/*@unchecked@*/
 struct rpmQVKArguments_s rpmDBArgs;
 
 /**

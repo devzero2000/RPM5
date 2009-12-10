@@ -43,12 +43,15 @@ extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
 /*@access dbiIndex @*/
 /*@access dbiIndexSet @*/
 
+/*@-redef@*/
 union _dbswap {
     uint64_t ul;
     uint32_t ui;
     uint16_t us;
     uint8_t uc[8];
 };
+/*@=redef@*/
+/*@unchecked@*/
 static union _dbswap _endian = { .ui = 0x11223344 };
 
 static inline uint64_t _ntoh_ul(uint64_t ul)
@@ -177,12 +180,17 @@ static const char * dbiModeFlags =
 	"\20\1WRONLY\2RDWR\7CREAT\10EXCL\11NOCTTY\12TRUNC\13APPEND\14NONBLOCK\15SYNC\16ASYNC\17DIRECT\20LARGEFILE\21DIRECTORY\22NOFOLLOW";
 #endif	/* NOTNOW */
 
+/*@-redef@*/
 typedef struct key_s {
     uint32_t	v;
+/*@observer@*/
     const char *n;
 } KEY;
+/*@=redef@*/
 
+/*@observer@*/
 static const char * tblName(uint32_t v, KEY * tbl, size_t ntbl)
+	/*@*/
 {
     const char * n = NULL;
     static char buf[32];
@@ -195,19 +203,20 @@ static const char * tblName(uint32_t v, KEY * tbl, size_t ntbl)
 	break;
     }
     if (n == NULL) {
-	snprintf(buf, sizeof(buf), "0x%x", v);
+	(void) snprintf(buf, sizeof(buf), "0x%x", (unsigned)v);
 	n = buf;
     }
     return n;
 }
 
 static const char * fmtBits(uint32_t flags, KEY tbl[], size_t ntbl, char *t)
+	/*@modifies t @*/
 {
     char pre = '<';
     char * te = t;
     int i;
 
-    sprintf(t, "0x%x", flags);
+    sprintf(t, "0x%x", (unsigned)flags);
     te = t;
     te += strlen(te);
     for (i = 0; i < 32; i++) {
@@ -229,6 +238,7 @@ static const char * fmtBits(uint32_t flags, KEY tbl[], size_t ntbl, char *t)
 
 #define _ENTRY(_v)      { DB_##_v, #_v, }
 
+/*@unchecked@*/ /*@observer@*/
 static KEY DBeflags[] = {
     _ENTRY(INIT_CDB),
     _ENTRY(INIT_LOCK),
@@ -248,8 +258,11 @@ static KEY DBeflags[] = {
     _ENTRY(SYSTEM_MEM),
     _ENTRY(THREAD),
 };
+/*@unchecked@*/
 static size_t nDBeflags = sizeof(DBeflags) / sizeof(DBeflags[0]);
+/*@observer@*/
 static const char * fmtDBeflags(uint32_t flags)
+	/*@*/
 {
     static char buf[BUFSIZ];
     char * te = buf;
@@ -259,6 +272,7 @@ static const char * fmtDBeflags(uint32_t flags)
 }
 #define	_EFLAGS(_eflags)	fmtDBeflags(_eflags)
 
+/*@unchecked@*/ /*@observer@*/
 static KEY DBoflags[] = {
     _ENTRY(AUTO_COMMIT),
     _ENTRY(CREATE),
@@ -270,8 +284,11 @@ static KEY DBoflags[] = {
     _ENTRY(THREAD),
     _ENTRY(TRUNCATE),
 };
+/*@unchecked@*/
 static size_t nDBoflags = sizeof(DBoflags) / sizeof(DBoflags[0]);
+/*@observer@*/
 static const char * fmtDBoflags(uint32_t flags)
+	/*@*/
 {
     static char buf[BUFSIZ];
     char * te = buf;
@@ -281,12 +298,16 @@ static const char * fmtDBoflags(uint32_t flags)
 }
 #define	_OFLAGS(_oflags)	fmtDBoflags(_oflags)
 
+/*@unchecked@*/ /*@observer@*/
 static KEY DBaflags[] = {
     _ENTRY(CREATE),
     _ENTRY(IMMUTABLE_KEY),
 };
+/*@unchecked@*/
 static size_t nDBaflags = sizeof(DBaflags) / sizeof(DBaflags[0]);
+/*@observer@*/
 static const char * fmtDBaflags(uint32_t flags)
+	/*@*/
 {
     static char buf[BUFSIZ];
     char * te = buf;
@@ -296,13 +317,17 @@ static const char * fmtDBaflags(uint32_t flags)
 }
 #define	_AFLAGS(_aflags)	fmtDBaflags(_aflags)
 
+/*@unchecked@*/ /*@observer@*/
 static KEY DBafflags[] = {
     _ENTRY(FOREIGN_ABORT),
     _ENTRY(FOREIGN_CASCADE),
     _ENTRY(FOREIGN_NULLIFY),
 };
+/*@unchecked@*/
 static size_t nDBafflags = sizeof(DBafflags) / sizeof(DBafflags[0]);
+/*@observer@*/
 static const char * fmtDBafflags(uint32_t flags)
+	/*@*/
 {
     static char buf[BUFSIZ];
     char * te = buf;
@@ -312,6 +337,7 @@ static const char * fmtDBafflags(uint32_t flags)
 }
 #define	_AFFLAGS(_afflags)	fmtDBafflags(_afflags)
 
+/*@unchecked@*/ /*@observer@*/
 static KEY DBCflags[] = {
     _ENTRY(AFTER),		/* Dbc.put */
     _ENTRY(APPEND),		/* Db.put */
@@ -353,8 +379,11 @@ static KEY DBCflags[] = {
     _ENTRY(MULTIPLE_KEY),
     _ENTRY(RMW),
 };
+/*@unchecked@*/
 static size_t nDBCflags = sizeof(DBCflags) / sizeof(DBCflags[0]);
+/*@observer@*/
 static const char * fmtDBCflags(uint32_t flags)
+	/*@*/
 {
     static char buf[BUFSIZ];
     char * te = buf;
@@ -374,6 +403,7 @@ static const char * fmtDBCflags(uint32_t flags)
 #define	_DBCFLAGS(_flags)	fmtDBCflags(_flags)
 
 #define _DBT_ENTRY(_v)      { DB_DBT_##_v, #_v, }
+/*@unchecked@*/ /*@observer@*/
 static KEY DBTflags[] = {
     _DBT_ENTRY(MALLOC),
     _DBT_ENTRY(REALLOC),
@@ -382,8 +412,11 @@ static KEY DBTflags[] = {
     _DBT_ENTRY(APPMALLOC),
     _DBT_ENTRY(MULTIPLE),
 };
+/*@unchecked@*/
 static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
+/*@observer@*/
 static char * fmtDBT(const DBT * K, char * te)
+	/*@modifies te @*/
 {
     static size_t keymax = 35;
     int unprintable;
@@ -419,7 +452,7 @@ static char * fmtDBT(const DBT * K, char * te)
 	} else {
 	    switch (_nu) {
 	    default: break;
-	    case 4:	sprintf(te, "\t0x%08x", *(uint32_t *)_u); break;
+	    case 4:	sprintf(te, "\t0x%08x", (unsigned)*(uint32_t *)_u); break;
 	    }
 	}
 
@@ -428,7 +461,9 @@ static char * fmtDBT(const DBT * K, char * te)
     }
     return te;
 }
+/*@observer@*/
 static const char * fmtKDR(const DBT * K, const DBT * D, const DBT * R)
+	/*@*/
 {
     static char buf[BUFSIZ];
     char * te = buf;
@@ -1286,7 +1321,7 @@ assert(db != NULL);
 
     if (dbi->dbi_debug || dbisecondary->dbi_debug) {
     	const char * tag2 = xstrdup(tagName(dbisecondary->dbi_rpmtag));
-fprintf(stderr, "<-- %s(%p(%s),%p(%s),%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbisecondary, tag2, callback, flags, rc, _AFLAGS(flags));
+fprintf(stderr, "<-- %s(%p(%s),%p(%s),%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, tagName(dbi->dbi_rpmtag), dbisecondary, tag2, (void *)callback, flags, rc, _AFLAGS(flags));
 	tag2 = _free(tag2);
     }
 
@@ -1516,6 +1551,7 @@ static inline unsigned char nibble(char c)
 }
 
 static int loadDBT(DBT * _r, rpmTag tag, const void * _s, size_t ns)
+	/*@modifies *_r @*/
 {
     const char * s = _s;
     void * data = NULL;
@@ -1533,7 +1569,7 @@ static int loadDBT(DBT * _r, rpmTag tag, const void * _s, size_t ns)
 	    data = t = xmalloc(ns);
 	    for (i = 0; i < ns; i++, t++, s += 2) {
 		if (!(isxdigit(s[0]) && isxdigit(s[1])))
-		    break;
+		    /*@loopbreak@*/ break;
 		*t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 	    }
 	    if (i == ns)
@@ -1561,6 +1597,7 @@ static int loadDBT(DBT * _r, rpmTag tag, const void * _s, size_t ns)
 }
 
 static int uint32Cmp(const void * _a, const void * _b)
+	/*@*/
 {
     const uint32_t * a = _a;
     const uint32_t * b = _b;
@@ -1569,6 +1606,7 @@ static int uint32Cmp(const void * _a, const void * _b)
 }
 
 static int uint64Cmp(const void * _a, const void * _b)
+	/*@*/
 {
     const uint64_t * a = _a;
     const uint64_t * b = _b;
@@ -1578,6 +1616,8 @@ static int uint64Cmp(const void * _a, const void * _b)
 
 static int
 db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
+	/*@globals internalState @*/
+	/*@modifies *_r, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
@@ -1637,7 +1677,7 @@ assert(rpmdb);
     switch (he->t) {
     default:
 assert(0);
-	break;
+	/*@notreached@*/ break;
     case RPM_UINT8_TYPE:	/* XXX coerce to uint32_t */
     {	uint8_t * _u = he->p.ui8p;
 	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
@@ -1645,7 +1685,7 @@ assert(0);
 	    he->p.ui32p[i] = _u[i];
 	_u = _free(_u);
 	goto _ifill;
-    }	break;
+    }	/*@notreached@*/ break;
     case RPM_UINT16_TYPE:	/* XXX coerce to uint32_t */
     {	uint16_t * _u = he->p.ui16p;
 	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
@@ -1653,7 +1693,7 @@ assert(0);
 	    he->p.ui32p[i] = _u[i];
 	_u = _free(_u);
 	goto _ifill;
-    }	break;
+    }	/*@notreached@*/ break;
     case RPM_UINT32_TYPE:
 _ifill:
     {	uint32_t * _u = he->p.ui32p;
@@ -1664,9 +1704,9 @@ _ifill:
 	case RPMTAG_INSTALLTID:
 	case RPMTAG_REMOVETID:
 	    he->c = 1;
-	    break;
+	    /*@innerbreak@*/ break;
 	default:
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	if (he->c == 1) {
 	    /* XXX is it worth avoiding the realloc here? */
@@ -1763,7 +1803,7 @@ _ifill:
 		/* Don't add identical (key,val) item to secondary. */
 		if (rpmbfChk(bf, s, ns))
 		    continue;
-		rpmbfAdd(bf, s, ns);
+		(void) rpmbfAdd(bf, s, ns);
 
 		if (!loadDBT(A, he->tag, s, ns))
 		    continue;
@@ -1796,6 +1836,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p
 
 static int seqid_init(dbiIndex dbi, const char * keyp, size_t keylen,
 		DB_SEQUENCE ** seqp)
+	/*@modifies *seqp @*/
 {
     DB * db = dbi->dbi_db;
     DBT k = {0};
@@ -1812,9 +1853,12 @@ static int seqid_init(dbiIndex dbi, const char * keyp, size_t keylen,
 assert(db != NULL);
     if (seqp) *seqp = NULL;
 
+/*@-moduncon@*/
     rc = db_sequence_create(&seq, db, 0);
+/*@=moduncon@*/
     rc = cvtdberr(dbi, "db_sequence_create", rc, _debug);
     if (rc) goto exit;
+assert(seq != NULL);
 
     if (dbi->dbi_seq_cachesize) {
 	_cachesize = dbi->dbi_seq_cachesize;

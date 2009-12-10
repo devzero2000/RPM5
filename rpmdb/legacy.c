@@ -212,7 +212,7 @@ int dodigest(int dalgo, const char * fn, unsigned char * digest,
 
 	ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
 	if (doHmac)
-	    rpmHmacInit(ctx, hmackey, 0);
+	    xx = rpmHmacInit(ctx, hmackey, 0);
 	if (fsize)
 	    xx = rpmDigestUpdate(ctx, mapped, fsize);
 	xx = rpmDigestFinal(ctx, &dsum, &dlen, asAscii);

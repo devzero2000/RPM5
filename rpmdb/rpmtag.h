@@ -1111,7 +1111,7 @@ void * headerSetRpmdb(/*@null@*/ Header h, /*@null@*/ void * rpmdb)
  * @param h		header
  * @return		header instance
  */
-rpmuint32_t headerGetInstance(/*@null@*/ Header h)
+uint32_t headerGetInstance(/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -1120,7 +1120,7 @@ rpmuint32_t headerGetInstance(/*@null@*/ Header h)
  * @param instance	new header instance
  * @return		0 always
  */
-rpmuint32_t headerSetInstance(/*@null@*/ Header h, rpmuint32_t instance)
+uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
 	/*@modifies h @*/;
 
 /** \ingroup header

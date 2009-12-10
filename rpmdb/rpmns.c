@@ -28,6 +28,7 @@
 
 /*@access rpmts @*/
 /*@access pgpDigParams @*/
+/*@access rpmiob @*/
 
 /*@unchecked@*/
 int _rpmns_debug = 0;

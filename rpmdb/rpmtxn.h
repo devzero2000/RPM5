@@ -31,7 +31,7 @@ int rpmtxnAbort(/*@only@*/ rpmtxn txn)
 	/*@*/;
 
 int rpmtxnBegin(rpmdb rpmdb, /*@null@*/ rpmtxn parent, /*@null@*/ rpmtxn * txnp)
-	/*@*/;
+	/*@modifies *txnp @*/;
 
 int rpmtxnCommit(/*@only@*/ rpmtxn txn)
 	/*@*/;

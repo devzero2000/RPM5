@@ -457,7 +457,9 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	if (tagSwab(ptr, he, nb) != NULL)
 	    he->p.ptr = ptr;
 	else {
+/*@-dependenttrans@*/
 	    ptr = _free(ptr);
+/*@=dependenttrans@*/
 	    rc = 0;
 	}
     }
@@ -1237,12 +1239,12 @@ void * headerSetRpmdb(Header h, void * rpmdb)
     return NULL;
 }
 
-rpmuint32_t headerGetInstance(Header h)
+uint32_t headerGetInstance(Header h)
 {
     return (h != NULL ? h->instance : 0);
 }
 
-rpmuint32_t headerSetInstance(Header h, rpmuint32_t instance)
+uint32_t headerSetInstance(Header h, uint32_t instance)
 {
     uint32_t oinstance = 0;
     if (h != NULL) {
