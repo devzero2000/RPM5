@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmperl_s * rpmperl;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmperl_s * rpmperl;
 
 /*@unchecked@*/
 extern int _rpmperl_debug;
@@ -20,6 +20,10 @@ extern rpmperl _rpmperlI;
 struct rpmperl_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMPERL_INTERNAL */
 

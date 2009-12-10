@@ -8,11 +8,12 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@refcounted@*/ struct rpmsx_s * rpmsx;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmsx_s * rpmsx;
 
 /*@unchecked@*/
 extern int _rpmsx_debug;
 
+/*@unchecked@*/
 extern rpmsx _rpmsxI;
 
 #if defined(_RPMSX_INTERNAL)

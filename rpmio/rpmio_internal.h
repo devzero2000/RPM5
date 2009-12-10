@@ -529,8 +529,10 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 	/*@globals internalState @*/
 	/*@modifies fd, internalState @*/
 {
+/*@+voidabstract@*/
     fd->digests = xrealloc(fd->digests,
 			(fd->ndigests + 1) * sizeof(*fd->digests));
+/*@=voidabstract@*/
     fdstat_enter(fd, FDSTAT_DIGEST);
     fd->digests[fd->ndigests++] = rpmDigestInit(hashalgo, flags);
     fdstat_exit(fd, FDSTAT_DIGEST, 0);
@@ -621,9 +623,9 @@ void fdStealDigest(FD_t fd, pgpDig dig)
 	switch (rpmDigestAlgo(ctx)) {
 	case PGPHASHALGO_MD5:
 assert(dig->md5ctx == NULL);
-/*@-onlytrans@*/
+/*@-assignexpose -onlytrans@*/
 	    dig->md5ctx = ctx;
-/*@=onlytrans@*/
+/*@=assignexpose =onlytrans@*/
 	    fd->digests[i] = NULL;
 	    /*@switchbreak@*/ break;
 	case PGPHASHALGO_SHA1:
@@ -634,9 +636,9 @@ assert(dig->md5ctx == NULL);
 	case PGPHASHALGO_SHA512:
 #endif
 assert(dig->sha1ctx == NULL);
-/*@-onlytrans@*/
+/*@-assignexpose -onlytrans@*/
 	    dig->sha1ctx = ctx;
-/*@=onlytrans@*/
+/*@=assignexpose =onlytrans@*/
 	    fd->digests[i] = NULL;
 	    /*@switchbreak@*/ break;
 	default:

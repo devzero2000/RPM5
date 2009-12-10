@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmpython_s * rpmpython;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpython_s * rpmpython;
 
 /*@unchecked@*/
 extern int _rpmpython_debug;
@@ -20,6 +20,10 @@ extern rpmpython _rpmpythonI;
 struct rpmpython_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;			/* (unused) */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMPYTHON_INTERNAL */
 

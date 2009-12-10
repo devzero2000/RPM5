@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmruby_s * rpmruby;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmruby_s * rpmruby;
 
 /*@unchecked@*/
 extern int _rpmruby_debug;
@@ -21,6 +21,10 @@ struct rpmruby_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;
     unsigned long state;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMRUBY_INTERNAL */
 

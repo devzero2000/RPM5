@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmjs_s * rpmjs;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmjs_s * rpmjs;
 
 /*@unchecked@*/
 extern int _rpmjs_debug;
@@ -22,6 +22,10 @@ struct rpmjs_s {
     void * rt;
     void * cx;
     void * glob;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMJS_INTERNAL */
 

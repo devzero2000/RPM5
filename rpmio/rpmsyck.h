@@ -13,7 +13,7 @@ typedef enum {
     T_MAP
 } syck_type_t; 
 
-typedef struct rpmsyck_node_s * rpmsyck_node;
+typedef /*@abstract@*/ struct rpmsyck_node_s * rpmsyck_node;
 
 struct rpmsyck_node_s {
     syck_type_t type;
@@ -25,12 +25,16 @@ struct rpmsyck_node_s {
     } value;
 };
 
-typedef struct rpmSyck_s * rpmSyck;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmSyck_s * rpmSyck;
 
 struct rpmSyck_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmsyck_node firstNode;
     st_table *syms;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /**
@@ -66,7 +70,7 @@ rpmSyck rpmSyckUnlink (/*@killref@*/ /*@null@*/ rpmSyck rs)
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmSyck rpmSyckLink (/*@null@*/ rpmSyck rs)
-	/*@modifies ht @*/;
+	/*@modifies rs @*/;
 #define	rpmSyckLink(_rs)	\
     ((rpmSyck)rpmioLinkPoolItem((rpmioItem)(_rs), __FUNCTION__, __FILE__, __LINE__))
 

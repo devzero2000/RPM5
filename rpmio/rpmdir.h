@@ -56,7 +56,7 @@ struct __dirstream {
 
 /**
  */
-typedef struct rpmavx_s * rpmavx;
+typedef /*@abstrct@*/ /*@refcounted@*/ struct rpmavx_s * rpmavx;
 
 /**
  */
@@ -203,7 +203,7 @@ void Rewinddir(DIR * dir)
 int Scandir(const char * path, struct dirent *** nl,
 		int (*filter) (const struct dirent *),
 		int (*compar) (const void *, const void *))
-	/*@modifies dir @*/;
+	/*@modifies *nl @*/;
 int Alphasort(const void * a, const void * b)
 	/*@*/;
 int Versionsort(const void * a, const void * b)

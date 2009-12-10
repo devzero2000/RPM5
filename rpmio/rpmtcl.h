@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmtcl_s * rpmtcl;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmtcl_s * rpmtcl;
 
 /*@unchecked@*/
 extern int _rpmtcl_debug;

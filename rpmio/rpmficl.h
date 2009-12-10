@@ -8,7 +8,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>
 
-typedef /*@abstract@*/ struct rpmficl_s * rpmficl;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmficl_s * rpmficl;
 
 /*@unchecked@*/
 extern int _rpmficl_debug;
@@ -22,6 +22,10 @@ struct rpmficl_s {
     void * sys;			/* ficlSystem */
     void * vm;			/* ficlVm */
     rpmiob iob;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif /* _RPMFICL_INTERNAL */
 
