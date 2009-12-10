@@ -1698,6 +1698,7 @@ assert(0);
 _ifill:
     {	uint32_t * _u = he->p.ui32p;
 	size_t _ulen = sizeof(*_u);
+	uint32_t _ube;			/* XXX network order integer keys */
 
 	/* Drop the transaction id usecs field (if present) when indexing. */
 	switch (he->tag) {
@@ -1709,8 +1710,9 @@ _ifill:
 	    /*@innerbreak@*/ break;
 	}
 	if (he->c == 1) {
+	    _ube = _hton_ui(*_u);	/* XXX network order integer keys */
 	    /* XXX is it worth avoiding the realloc here? */
-	    (void) loadDBT(_r, he->tag, _u, _ulen);
+	    (void) loadDBT(_r, he->tag, &_ube, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
@@ -1722,7 +1724,8 @@ _ifill:
 	    /* Don't add identical (key,val) item to secondary. */
 	    if (i > 0 && _u[-1] == _u[0])
 		continue;
-	    if (!loadDBT(A, he->tag, _u, _ulen))
+	    _ube = _hton_ui(*_u);	/* XXX network order integer keys */
+	    if (!loadDBT(A, he->tag, &_ube, _ulen))
 		continue;
 	    A++;
 	    _r->size++;
@@ -1731,7 +1734,10 @@ _ifill:
     case RPM_UINT64_TYPE:
     {   uint64_t * _u = he->p.ui64p;
 	size_t _ulen = sizeof(*_u);
+	uint64_t _ube;			/* XXX network order integer keys */
+
 	if (he->c == 1) {
+	    _ube = _hton_ul(*_u);	/* XXX network order integer keys */
 	    /* XXX is it worth avoiding the realloc here? */
 	    (void) loadDBT(_r, he->tag, _u, _ulen);
 	    break;
@@ -1745,7 +1751,8 @@ _ifill:
 	    /* Don't add identical (key,val) item to secondary. */
 	    if (i > 0 && _u[-1] == _u[0])
 		continue;
-	    if (!loadDBT(A, he->tag, _u, _ulen))
+	    _ube = _hton_ul(*_u);	/* XXX network order integer keys */
+	    if (!loadDBT(A, he->tag, &_ube, _ulen))
 		continue;
 	    A++;
 	    _r->size++;

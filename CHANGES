@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: use network order for all integer secondary keys.
     - jbj: rpmdb: fold rpmdbMireApply into dbiMireKeys.
     - jbj: rpmmi: optimize NVRA range queries using a *RE stem.
     - jbj: rpmdb: inline rpmdbOpenAll for inplace --rebuilddb. sadly
