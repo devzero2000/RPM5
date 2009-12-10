@@ -542,10 +542,10 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 /*@unused@*/ static inline
 void fdInitHmac(FD_t fd, const void * key, size_t keylen)
 	/*@globals internalState @*/
-	/*@modifies fd, internalState @*/
+	/*@modifies internalState @*/
 {
     if (fd->digests != NULL && fd->ndigests > 0 && key != NULL)
-	rpmHmacInit(fd->digests[fd->ndigests-1], key, keylen);
+	(void) rpmHmacInit(fd->digests[fd->ndigests-1], key, keylen);
 }
 
 /** \ingroup rpmio

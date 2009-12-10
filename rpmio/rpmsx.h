@@ -138,7 +138,6 @@ int rpmsxLsetfilecon(/*@null@*/ rpmsx sx, const char *fn, mode_t mode,
  * @param argv		scriptlet helper
  * @return		0 on success
  */
-/*@only@*/
 int rpmsxExec(rpmsx sx, int verified, const char ** argv)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

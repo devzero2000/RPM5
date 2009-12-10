@@ -425,7 +425,6 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
  * @param keylen	HMAC key length(bytes) (0 uses strlen(key))
  * @return		0 on success
  */
-/*@only@*/ /*@null@*/
 int rpmHmacInit(DIGEST_CTX ctx, const void * key, size_t keylen)
 	/*@*/;
 
