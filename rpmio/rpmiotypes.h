@@ -645,7 +645,7 @@ rpmioP rpmioPFree(/*@only@*/ /*@null@*/ rpmioP P)
  * @return		RPMRC_OK on success
  */
 rpmRC rpmioParse(rpmioP *Pptr, const char * str)
-	/*@modifies (Pptr @*/;
+	/*@modifies *Pptr @*/;
 
 #ifdef __cplusplus
 }
