@@ -1246,6 +1246,7 @@ int rpmShowRC(FILE * fp)
 #endif
 	    fprintf(fp,
 		_("Features provided by current cpuinfo (from %s):\n"), fn);
+/*@-mods@*/
 	    cpuinfoP = rpmdsInit(cpuinfoP);
 	    while (rpmdsNext(cpuinfoP) >= 0) {
 		const char * DNEVR = rpmdsDNEVR(cpuinfoP);
@@ -1254,6 +1255,7 @@ int rpmShowRC(FILE * fp)
 	    }
 	    (void)rpmdsFree(cpuinfoP);
 	    cpuinfoP = NULL;
+/*@=mods@*/
 
 	    fprintf(fp, "\n");
 	}

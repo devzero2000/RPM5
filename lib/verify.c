@@ -49,13 +49,14 @@ struct rpmvf_s {
     const unsigned char * digest;
     const char * fuser;
     const char * fgroup;
-#if defined(__LCLINT__)
+#if defined(__LCLINT__NOTYET)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
 
-static rpmvf rpmvfFree(rpmvf vf)
+static rpmvf rpmvfFree(/*@only@*/ rpmvf vf)
+	/*@modifies vf @*/
 {
     if (vf) {
 #ifdef	NOTYET
@@ -76,7 +77,9 @@ static rpmvf rpmvfFree(rpmvf vf)
     return NULL;
 }
 
+/*@only@*/
 static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
+	/*@*/
 {
     rpmvf vf = xcalloc(1, sizeof(*vf));
 
@@ -85,7 +88,9 @@ static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
     vf->_item.pool = NULL;
 #endif
 
+/*@-mods@*/
     vf->fn = rpmGetPath(rpmtsRootDir(ts), fi->dnl[fi->dil[i]], fi->bnl[i], NULL);
+/*@=mods@*/
     vf->flink = fi->flinks[i];
     vf->fuser = fi->fuser[i];
     vf->fgroup = fi->fgroup[i];
@@ -138,8 +143,7 @@ static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
  */
 static int rpmvfVerify(rpmvf vf, int spew)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies vf, te, fileSystem, internalState @*/
-	/*@requires maxSet(res) >= 0 @*/
+	/*@modifies vf, fileSystem, internalState @*/
 {
     rpmVerifyAttrs res = RPMVERIFY_NONE;
     struct stat sb;

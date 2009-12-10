@@ -201,7 +201,8 @@ void rpmcliConfigured(void)
 /* ========== all-rpm-modes popt args */
 
 static const char * rpmcliEvalSlurp(const char * arg)
-	/*@*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     const char * pre = "";
     const char * post = "";

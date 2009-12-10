@@ -121,7 +121,7 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
     }
 
 assert(ts->removedPackages != NULL);	/* XXX can't happen. */
-    rpmbfAdd(ts->rbf, &hdrNum, sizeof(hdrNum));
+    (void) rpmbfAdd(ts->rbf, &hdrNum, sizeof(hdrNum));
     ts->removedPackages[ts->numRemovedPackages] = hdrNum;
     ts->numRemovedPackages++;
     if (ts->numRemovedPackages > 1)
@@ -861,9 +861,9 @@ void rpmnsClean(void)
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
-	/*@globals rpmGlobalMacroContext, h_errno,
+	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
 		sysinfo_path, fileSystem, internalState @*/
-	/*@modifies ts, dep, rpmGlobalMacroContext,
+	/*@modifies ts, dep, _cacheDependsRC, rpmGlobalMacroContext,
 		sysinfo_path, fileSystem, internalState @*/
 {
     DBT * key = alloca(sizeof(*key));

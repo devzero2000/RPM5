@@ -862,7 +862,9 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "mono");
     }
+/*@-observertrans@*/
     defaultdocdir = _free(defaultdocdir) ;
+/*@=observertrans@*/
     return 0;
 }
 
@@ -1257,8 +1259,8 @@ assert(se != NULL);
 
     mg = rpmmgFree(mg);
     rpmlog(RPMLOG_DEBUG,
-		D_("categorized %d files into %d classes (using %s).\n"),
-		fc->nfiles, argvCount(fc->cdict), magicfile);
+		D_("categorized %d files into %u classes (using %s).\n"),
+		(unsigned)fc->nfiles, argvCount(fc->cdict), magicfile);
     magicfile = _free(magicfile);
 
     return RPMRC_OK;

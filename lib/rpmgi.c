@@ -457,8 +457,7 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
 
 /*@-mustmod@*/
 static void rpmgiFini(void * _gi)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies _gi, rpmGlobalMacroContext @*/
+	/*@modifies _gi @*/
 {
     rpmgi gi = _gi;
     int xx;
@@ -583,7 +582,8 @@ nextkey:
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmmiInstance(gi->mi));
+		/* XXX use h->origin instead. */
+		sprintf(hnum, "%u", (unsigned)rpmmiInstance(gi->mi));
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
@@ -609,7 +609,8 @@ nextkey:
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmmiInstance(gi->mi));
+		/* XXX use h->origin instead. */
+		sprintf(hnum, "%u", (unsigned)rpmmiInstance(gi->mi));
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
@@ -729,10 +730,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */
 	if (gi->flags & RPMGI_ERASING) {
-	    static int hdrx = 0;
-	    rpmuint32_t hdrNum = headerGetInstance(gi->h);
-	    if (hdrNum <= 0)
-		hdrNum = --hdrx;
+	    uint32_t hdrNum = headerGetInstance(gi->h);
 	    xx = rpmtsAddEraseElement(gi->ts, gi->h, hdrNum);
 	} else
 	    xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);

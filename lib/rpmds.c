@@ -2997,7 +2997,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 		    const char *name = ((char *)data->d_buf) + name_offset;
 		    const char *desc = ((char *)data->d_buf) + desc_offset;
 		    if (memchr(name, '\0', nhdr.n_namesz) == NULL)
-			continue;
+			/*@innercontinue@*/ continue;
 		    switch (nhdr.n_type) {
 		    default:	/*@innercontinue@*/ continue;
 #if !defined(NT_GNU_BUILD_ID)
@@ -3010,8 +3010,8 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 			    buf[0] = '\0';
 			    t = buf;
 			    for (i = 0; i < nhdr.n_descsz; ++i) {
-				*t++ = hex[ ((desc[i] >> 4) & 0x0f) ];
-				*t++ = hex[ ((desc[i]     ) & 0x0f) ];
+				*t++ = hex[ (((unsigned)desc[i] >> 4) & 0x0f) ];
+				*t++ = hex[ (((unsigned)desc[i]     ) & 0x0f) ];
 			    }
 			    *t = '\0';
 			    /* Add next buildid. */

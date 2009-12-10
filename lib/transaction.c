@@ -1364,7 +1364,7 @@ fprintf(stderr, "--> %s(%p,0x%x,0x%x) tsFlags 0x%x\n", msg, ts, (unsigned) okPro
 	/* Open database RDWR for installing packages. */
 	if (rpmtsOpenDB(ts, dbmode)) {
 	    lock = rpmtsFreeLock(lock);
-	    if (sx) sx = rpmsxFree(sx);
+	    if (sx != NULL) sx = rpmsxFree(sx);
 	    return -1;	/* XXX W2DO? */
 	}
     }
@@ -1416,6 +1416,7 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	}
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
+#ifdef	DYING
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    xx = rpmmiAddPattern(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 				rpmteE(p));
@@ -1442,6 +1443,18 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 		/*@innerbreak@*/ break;
 	    }
 	    mi = rpmmiFree(mi);
+#else
+	    ARGV_t keys = NULL;
+	    int xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_NVRA,
+		RPMMIRE_STRCMP, rpmteNEVRA(p), &keys);
+	    int nkeys = argvCount(keys);
+	    if (nkeys > 0)
+		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
+			rpmteNEVR(p), rpmteKey(p),
+			NULL, NULL,
+			NULL, 0);
+	    keys = argvFree(keys);
+#endif
 	}
 
 	/* Count no. of files (if any). */
@@ -1676,7 +1689,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc, exclude)) {
 	    ps = rpmpsFree(ps);
 	    lock = rpmtsFreeLock(lock);
-	    if (sx) sx = rpmsxFree(sx);
+	    if (sx != NULL) sx = rpmsxFree(sx);
 	    return 1;	/* XXX WTFO? */
 	}
 
@@ -1831,7 +1844,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
        )
     {
 	lock = rpmtsFreeLock(lock);
-	if (sx) sx = rpmsxFree(sx);
+	if (sx != NULL) sx = rpmsxFree(sx);
 	return ts->orderCount;
     }
 
@@ -2146,16 +2159,16 @@ assert(psm != NULL);
     }
 
     lock = rpmtsFreeLock(lock);
-    if (sx) sx = rpmsxFree(sx);
+    if (sx != NULL) sx = rpmsxFree(sx);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc) {
-	if (ts->txn)
+	if (ts->txn != NULL)
 	    xx = rpmtxnAbort(ts->txn);
 	ts->txn = NULL;
     	return -1;
     } else {
-	if (ts->txn)
+	if (ts->txn != NULL)
 	    xx = rpmtxnCommit(ts->txn);
 	ts->txn = NULL;
 	xx = rpmtxnCheckpoint(rpmtsGetRdb(ts));

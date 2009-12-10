@@ -2157,7 +2157,9 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 		rc = fsmMapFContext(fsm);
 		if (!rc)
 		    rc = fsmNext(fsm, IOSM_LSETFCON);
+/*@-dependenttrans -observertrans @*/	/* FIX: use the SELinux free wrapper */
 		fsm->fcontext = _free(fsm->fcontext);
+/*@=dependenttrans =observertrans @*/
 	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())
@@ -2296,7 +2298,9 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	mode = sb.st_mode;
 	rc = rpmlioUnlink(rpmtsGetRdb(fsmGetTs(fsm)), fn, mode, b, blen, d, dlen, dalgo);
 	if (fd != NULL) {
+/*@-observertrans@*/	/* FIX: b should be initialized to NULL, not "" */
 	    (void)munmap(b, blen);
+/*@=observertrans@*/
 	    (void) Fclose(fd);
 	    fd = NULL;
 	}

@@ -538,7 +538,7 @@ static pid_t psmWait(rpmpsm psm)
  */
 static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
     rpmRC rc = RPMRC_OK;
@@ -592,7 +592,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies *fdnop, fileSystem, internalState @*/
+	/*@modifies psm, *fdnop, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     int inChroot;
@@ -623,7 +623,7 @@ static int enterChroot(rpmpsm psm, int * fdnop)
 
 static int exitChroot(rpmpsm psm, int inChroot, int rootFdno)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     const char *rootDir = rpmtsRootDir(ts);
@@ -658,7 +658,7 @@ static int exitChroot(rpmpsm psm, int inChroot, int rootFdno)
  */
 static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 		   const char *script, int arg1, int arg2)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
     char * av[] = { NULL, NULL, NULL, NULL };
@@ -991,16 +991,16 @@ assert(he->p.str != NULL);
     default:
 	break;
     case RPMTAG_PREIN:
-	rpmlioPrein(rpmtsGetRdb(ts), argv, body);
+	(void) rpmlioPrein(rpmtsGetRdb(ts), argv, body);
 	break;
     case RPMTAG_POSTIN:
-	rpmlioPostin(rpmtsGetRdb(ts), argv, body);
+	(void) rpmlioPostin(rpmtsGetRdb(ts), argv, body);
 	break;
     case RPMTAG_PREUN:
-	rpmlioPreun(rpmtsGetRdb(ts), argv, body);
+	(void) rpmlioPreun(rpmtsGetRdb(ts), argv, body);
 	break;
     case RPMTAG_POSTUN:
-	rpmlioPostun(rpmtsGetRdb(ts), argv, body);
+	(void) rpmlioPostun(rpmtsGetRdb(ts), argv, body);
 	break;
     }
 
@@ -2117,7 +2117,7 @@ assert(fi->h != NULL);
  */
 static int postPopulateInstallHeader(/*@unused@*/ const rpmts ts,
 		const rpmpsm psm, rpmfi fi)
-	/*@modifies fi @*/
+	/*@modifies psm, fi @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int fc = rpmfiFC(fi);

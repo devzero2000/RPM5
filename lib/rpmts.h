@@ -451,9 +451,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 static inline /*@unused@*/
-int rpmtsInitDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+int rpmtsInitDB(/*@unused@*/ rpmts ts, /*@unused@*/ int dbmode)
+	/*@*/
 {
     return -1;
 }
@@ -474,9 +473,8 @@ int rpmtsRebuildDB(rpmts ts)
  * @return		0 on success
  */
 static inline /*@unused@*/
-int rpmtsVerifyDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+int rpmtsVerifyDB(/*@unused@*/ rpmts ts)
+	/*@*/
 {
     return -1;
 }

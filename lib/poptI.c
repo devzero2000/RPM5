@@ -61,8 +61,8 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
 		/*@unused@*/ const void * data)
-	/*@globals rpmIArgs, stderr, fileSystem @*/
-	/*@modifies rpmIArgs, stderr, fileSystem @*/
+	/*@globals rpmIArgs, stderr @*/
+	/*@modifies rpmIArgs, stderr @*/
 {
     QVA_t ia = &rpmIArgs;
     int xx;

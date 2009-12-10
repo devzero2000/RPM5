@@ -1334,6 +1334,7 @@ static inline unsigned char nibble(char c)
     xx = headerGet((_h), he, 0); \
     _data = he->p.ptr;
 
+/*@-strictusereleased@*/
 rpmfi rpmfiNew(const void * _ts, Header h, rpmTag tagN, int flags)
 {
 /*@-castexpose@*/
@@ -1654,6 +1655,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
     /*@=compdef =nullstate@*/
 }
+/*@=strictusereleased@*/
 
 int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
 		const char * oldPath, const char * newPath)
