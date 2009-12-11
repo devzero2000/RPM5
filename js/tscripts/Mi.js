@@ -29,10 +29,9 @@ var mi = new Mi(ts);
 var bingo = 0;
 var npkgs = 0;
 for (var [dbkey,h] in Iterator(mi)) {
-//    nack("h.instance", 0);
-//    ack("h.instance", mi.instance);
     ack("mi.instance != 0", true);
     ack("mi.instance < 0x0000ffff", true);
+    ack("mi.instance == h.dbinstance", true);
     if (h[RPMTAG_NAME] == N) {
 	hdrNum = mi.instance;
 	V = h[RPMTAG_VERSION];
@@ -45,27 +44,21 @@ for (var [dbkey,h] in Iterator(mi)) {
     bingo = 1;
 }
 ack("bingo", 1);
-nack("npkgs", 0);
-ack("hdrNum != 0", true);
-ack("hdrNum < 0x0000ffff", true);
-nack("NVRA", N);
 delete mi;
 
 function doITER(ts, tag, key) {
     this.mi = new Mi(ts, tag, key);
     this.bingo = 0;
-//  this.dbkey = null;
-//  this.h = null;
     for ([this.dbkey,this.h] in Iterator(this.mi)) {
 	ack("this.h.name", N);
 	ack("this.h.nvra", NVRA);
-	ack("this.mi.instance < 0x0000ffff", true);
-	ack("this.mi.instance", hdrNum);
+	ack("this.mi.instance == hdrNum", true);
+	ack("this.mi.instance == this.h.dbinstance", true);
 	delete this.h;
 	this.bingo = 1;
     }
-    delete this.mi;
     ack("this.bingo", 1);
+    delete this.mi;
     return true;
 }
 
@@ -94,7 +87,8 @@ bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
     ack("h.name", N);
     ack("h.nvra", NVRA);
-//  ack("h.instance", hdrNum);
+    ack("mi.instance == hdrNum", true);
+    ack("mi.instance == h.dbinstance", true);
     delete h;
     bingo = 1;
 }
