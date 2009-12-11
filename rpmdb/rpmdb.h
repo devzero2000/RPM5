@@ -25,6 +25,8 @@
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmdb_debug;
+/*@unchecked@*/
+extern int _rpmmi_debug;
 /*@=exportlocal@*/
 
 #ifdef	NOTYET
@@ -36,7 +38,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 /** \ingroup rpmdb
  * Database iterator.
  */
-typedef /*@abstract@*/ struct rpmmi_s * rpmmi;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmmi_s * rpmmi;
 #endif
 
 /**
