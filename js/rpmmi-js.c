@@ -187,9 +187,10 @@ fprintf(stderr, "\tINIT mi %p\n", mi);
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;		/* XXX needed? */
 	if ((h = rpmmiNext(mi)) != NULL) {
-            JS_ValueToId(cx, OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h)), idp);
+	    h = headerLink(h);
+	    JS_ValueToId(cx, OBJECT_TO_JSVAL(rpmjs_NewHdrObject(cx, h)), idp);
 if (_debug)
-fprintf(stderr, "\tNEXT mi %p h %p\n", mi, h);
+fprintf(stderr, "\tNEXT mi %p h# %u %p\n", mi, (unsigned)headerGetInstance(h), h);
 	} else
 	    *idp = JSVAL_VOID;
 	if (*idp != JSVAL_VOID)
