@@ -179,29 +179,27 @@ rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     jsval tagid = JSVAL_VOID;
+    jsval kv = JSVAL_VOID;
     rpmTag tag = RPMDBI_PACKAGES;
-    char * key = NULL;
-    int keylen = 0;
-    JSObject *Mi;
+    JSObject *mio;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/vs", &tagid, &key)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/vv", &tagid, &kv)))
         goto exit;
 
     if (!JSVAL_IS_VOID(tagid)) {
-	/* XXX TODO: handle key object as non-string. */
 	/* XXX TODO: make sure both tag and key were specified. */
 	tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)
 		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
     }
 
-    if ((Mi = rpmjs_NewMiObject(cx, ts, tag, key, keylen)) == NULL)
+    if ((mio = rpmjs_NewMiObject(cx, ts, tag, kv)) == NULL)
 	goto exit;
 
-    *rval = OBJECT_TO_JSVAL(Mi);
+    *rval = OBJECT_TO_JSVAL(mio);
     ok = JS_TRUE;
 
 exit:

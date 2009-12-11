@@ -9,7 +9,8 @@
 #define	OBJ_IS_STRING(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &js_StringClass)
 #define	OBJ_IS_RPMHDR(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmhdrClass)
 
-static const char * v2s(JSContext *cx, jsval v)
+static inline
+const char * v2s(JSContext *cx, jsval v)
 {
     if (JSVAL_IS_NULL(v))	return "null";
     if (JSVAL_IS_VOID(v))	return "void";

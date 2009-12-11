@@ -208,9 +208,30 @@ fprintf(stderr, "\tFINI mi %p\n", mi);
 
 /* --- Object ctors/dtors */
 static rpmmi
-rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, void * _key, int _keylen)
+rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, jsval v)
 {
     rpmmi mi;
+    uint32_t _u = 0;
+    void * _key = NULL;
+    int _keylen = 0;
+
+    if (JSVAL_IS_NULL(v) || JSVAL_IS_VOID(v)) {
+	_keylen = 0;
+	_key = NULL;
+    } else
+    if (JSVAL_IS_NUMBER(v)) {
+	if (!JS_ValueToECMAUint32(cx, v, &_u))
+	    return NULL;
+	_keylen = sizeof(_u);
+	_key = (void *) &_u;
+    } else
+    if (JSVAL_IS_STRING(v)) {
+	const char * s = JS_GetStringBytes(JS_ValueToString(cx, v));
+	_keylen = strlen(s);
+	_key = (void *)s;
+    } else
+	/* XXX TODO: handle key object as binary octet string. */
+	return NULL;
 
     if ((mi = rpmtsInitIterator(ts, _tag, _key, _keylen)) == NULL)
 	return NULL;
@@ -226,15 +247,12 @@ static void
 rpmmi_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmmi mi = ptr;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 
-#ifdef	BUGGY
-    {	rpmmi mi = ptr;
-	mi = rpmmiFree(mi);
-    }
-#endif
+    mi = rpmmiFree(mi);
 }
 
 static JSBool
@@ -242,29 +260,27 @@ rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSObject *tso = NULL;
     jsval tagid = JSVAL_VOID;
+    jsval kv = JSVAL_VOID;
     rpmTag tag = RPMDBI_PACKAGES;
-    char * key = NULL;
-    int keylen = 0;
     JSBool ok = JS_FALSE;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/vs", &tso, &tagid, &key)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/vv", &tso, &tagid, &kv)))
 	goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 
 	if (!JSVAL_IS_VOID(tagid)) {
-	    /* XXX TODO: handle key object as non-string. */
 	    /* XXX TODO: make sure both tag and key were specified. */
 	    tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)
 		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
 	}
 
-	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, key, keylen))
+	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, kv))
 	    goto exit;		/* XXX error msg */
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL)
@@ -301,19 +317,19 @@ assert(o != NULL);
 }
 
 JSObject *
-rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, void *_key, int _keylen)
+rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, jsval kv)
 {
     JSObject *obj;
     rpmmi mi;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%s(%u),%p[%u]) _key %s\n", __FUNCTION__, cx, _ts, tagName(_tag), (unsigned)_tag, _key, (unsigned)_keylen, (const char *)(_key ? _key : ""));
+fprintf(stderr, "==> %s(%p,%p,%u(%s),%u(%s))\n", __FUNCTION__, cx, _ts, (unsigned)_tag, tagName(_tag), (unsigned)kv, v2s(cx, kv));
 
     if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
-    if ((mi = rpmmi_init(cx, obj, _ts, _tag, _key, _keylen)) == NULL) {
+    if ((mi = rpmmi_init(cx, obj, _ts, _tag, kv)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

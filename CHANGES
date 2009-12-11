@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: add rpmmi unit tests for common accesses including patterns.
+    - jbj: js: fix: add a newref for headers retrieved using rpmmi.
     - jbj: rpmdb: use network order for all integer secondary keys.
     - jbj: rpmdb: fold rpmdbMireApply into dbiMireKeys.
     - jbj: rpmmi: optimize NVRA range queries using a *RE stem.

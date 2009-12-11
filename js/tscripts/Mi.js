@@ -54,11 +54,12 @@ delete mi;
 function doITER(ts, tag, key) {
     this.mi = new Mi(ts, tag, key);
     this.bingo = 0;
-    this.dbkey = null;
-    this.h = null;
+//  this.dbkey = null;
+//  this.h = null;
     for ([this.dbkey,this.h] in Iterator(this.mi)) {
-	ack("this.h[RPMTAG_NAME]", N);
-	ack("this.h[RPMTAG_NVRA]", NVRA);
+	ack("this.h.name", N);
+	ack("this.h.nvra", NVRA);
+	ack("this.mi.instance < 0x0000ffff", true);
 	ack("this.mi.instance", hdrNum);
 	delete this.h;
 	this.bingo = 1;
@@ -67,6 +68,9 @@ function doITER(ts, tag, key) {
     ack("this.bingo", 1);
     return true;
 }
+
+// --- Retrieve by package primary key
+doITER(ts, RPMDBI_PACKAGES, hdrNum);
 
 // --- Retrieve by N and NVRA string key(s).
 doITER(ts, RPMTAG_NAME, N);
@@ -89,6 +93,9 @@ bingo = 0;
 // ack("mi.pattern(RPMTAG_VERSION, V)", true);
 for (var [dbkey,h] in Iterator(mi)) {
     ack("h.name", N);
+    ack("h.nvra", NVRA);
+//  ack("h.instance", hdrNum);
+    delete h;
     bingo = 1;
 }
 ack("bingo", 1);

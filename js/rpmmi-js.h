@@ -13,11 +13,11 @@ extern JSClass rpmmiClass;
 extern "C" {
 #endif
 
-extern JSObject*
+extern JSObject *
 rpmjs_InitMiClass(JSContext *cx, JSObject* obj);
 
-extern JSObject*
-rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, void * _key, int _keylen);
+extern JSObject *
+rpmjs_NewMiObject(JSContext *cx, void * _ts, int _tag, jsval kv);
 
 #ifdef __cplusplus      
 }
