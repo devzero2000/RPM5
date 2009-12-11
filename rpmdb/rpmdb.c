@@ -1934,6 +1934,8 @@ fprintf(stderr, "    mire %p[%u] realloc\n", mi->mi_re, mi->mi_nre+1);
 	qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
 
 exit:
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p, %u(%s), %u, \"%s\") rc %d mi_re %p[%u]\n", __FUNCTION__, mi, (unsigned)tag, tagName(tag), (unsigned)mode, pattern, rc, (mi ? mi->mi_re: NULL), (unsigned)(mi ? mi->mi_nre : 0));
     allpat = _free(allpat);
     nmire = mireFree(nmire);
     return rc;

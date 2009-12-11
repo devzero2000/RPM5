@@ -5,6 +5,8 @@ var RPMDBI_LABEL = 2;
 var RPMTAG_NAME = 1000;
 var RPMTAG_VERSION = 1001;
 var RPMTAG_RELEASE = 1002;
+var RPMTAG_GROUP = 1016;
+var RPMTAG_OS = 1021;
 var RPMTAG_ARCH = 1022;
 var RPMTAG_NVRA = 1196;
 
@@ -12,8 +14,12 @@ var N = "popt";
 var V = "";
 var R = "";
 var A = "";
+var O = "";
+var G = "";
 var NVRA = N;
 var hdrNum = 0;
+var bingo = 0;
+var npkgs = 0;
 
 var ts = new Ts();
 
@@ -26,18 +32,19 @@ delete mi;
 
 // --- Iterate over packages, counting, grab hdrNum and NVRA on the fly.
 var mi = new Mi(ts);
-var bingo = 0;
-var npkgs = 0;
+bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
     ack("mi.instance != 0", true);
     ack("mi.instance < 0x0000ffff", true);
     ack("mi.instance == h.dbinstance", true);
-    if (h[RPMTAG_NAME] == N) {
+    if (h.name == N) {
 	hdrNum = mi.instance;
-	V = h[RPMTAG_VERSION];
-	R = h[RPMTAG_RELEASE];
-	A = h[RPMTAG_ARCH];
-	NVRA = h[RPMTAG_NVRA];
+	V = h.version;
+	R = h.release;
+	O = h.os;
+	A = h.arch;
+	G = h.group;
+	NVRA = h.nvra;
     }
     npkgs++;
     delete h;
@@ -79,11 +86,14 @@ doITER(ts, RPMDBI_LABEL, N+"-"+V+"-"+R+"."+A);
 doITER(ts, RPMDBI_LABEL, "\^"+N+"-[0-9].*$");
 doITER(ts, RPMDBI_LABEL, "\^"+N+"-[0-9].*"+"\."+A+"$");
 
-// --- Retrieve by N with a mire pattern selector.
+// --- Retrieve by N with a V mire pattern selector.
 var mi = new Mi(ts, RPMTAG_NAME, N)
+ack("mi.pattern(RPMTAG_VERSION, V)", true);
+ack("mi.pattern(RPMTAG_RELEASE, R)", true);
+ack("mi.pattern(RPMTAG_OS, O)", true);
+ack("mi.pattern(RPMTAG_ARCH, A)", true);
+ack("mi.pattern(RPMTAG_GROUP, G)", true);
 bingo = 0;
-// XXX FIXME: rpmmi iterator w patterns is busted
-// ack("mi.pattern(RPMTAG_VERSION, V)", true);
 for (var [dbkey,h] in Iterator(mi)) {
     ack("h.name", N);
     ack("h.nvra", NVRA);
