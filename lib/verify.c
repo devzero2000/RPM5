@@ -399,7 +399,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 #ifdef	NOTYET
-    rpmuint32_t hdrNum = headerGetInstance(h);
+    uint32_t hdrNum = headerGetInstance(h);
 #endif
     rpmps ps;
     int rc = 0;		/* assume no problems */

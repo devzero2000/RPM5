@@ -2794,7 +2794,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     sigset_t signalMask;
     dbiIndex dbi;
     size_t dbix;
-    rpmuint32_t hdrNum = headerGetInstance(h);
+    uint32_t hdrNum = headerGetInstance(h);
     int ret = 0;
     int xx;
 
@@ -3423,7 +3423,7 @@ uint32_t hx = 0;
 	    (void) rpmmiSetHdrChk(mi, ts);
 
 	while ((h = rpmmiNext(mi)) != NULL) {
-	    rpmuint32_t hdrNum = headerGetInstance(h);
+	    uint32_t hdrNum = headerGetInstance(h);
 
 /* XXX ensure that the header instance is set persistently. */
 assert(hdrNum > 0 && hdrNum == rpmmiInstance(mi));
