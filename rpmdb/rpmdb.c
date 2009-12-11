@@ -2529,23 +2529,29 @@ int rpmmiPrune(rpmmi mi, uint32_t * hdrNums, int nHdrNums, int sorted)
 	    size_t _m = _jiggery * (3 * nHdrNums * _k) / 2;
 	    mi->mi_bf = rpmbfNew(_m, _k, 0);
 	}
-	for (i = 0; i < nHdrNums; i++)
-	    (void) rpmbfAdd(mi->mi_bf, &hdrNums[i], sizeof(*hdrNums));
+	for (i = 0; i < nHdrNums; i++) {
+	    uint32_t mi_offset = _hton_ui(hdrNums[i]);
+	    (void) rpmbfAdd(mi->mi_bf, &mi_offset, sizeof(mi_offset));
+	}
     }
 
 if (_rpmmi_debug)
-fprintf(stderr, "<-- %s(%p, %p[%u], %d) rc %d\n", __FUNCTION__, mi, hdrNums, (unsigned)nHdrNums, sorted, rc);
+fprintf(stderr, "<-- %s(%p, %p[%u], %d) rc %d h# %u\n", __FUNCTION__, mi, hdrNums, (unsigned)nHdrNums, sorted, rc, (unsigned) (hdrNums ? hdrNums[0] : 0));
     return rc;
 }
 
-int rpmmiGrow(rpmmi mi, const int * hdrNums, int nHdrNums)
+int rpmmiGrow(rpmmi mi, const uint32_t * hdrNums, int nHdrNums)
 {
-    if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
-	return 1;
+    int rc = (mi == NULL || hdrNums == NULL || nHdrNums <= 0);
 
-    if (mi->mi_set == NULL)
-	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
-    (void) dbiAppendSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
+    if (!rc) {
+	if (mi->mi_set == NULL)
+	    mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
+	(void) dbiAppendSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
+    }
+
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p, %p[%u]) rc %d h# %u\n", __FUNCTION__, mi, hdrNums, (unsigned)nHdrNums, rc, (unsigned) (hdrNums ? hdrNums[0] : 0));
     return 0;
 }
 

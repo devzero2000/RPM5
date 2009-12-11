@@ -29,19 +29,78 @@ rpmmi_pattern(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
+    jsval tagid = JSVAL_VOID;
     int tag = RPMTAG_NAME;
-    rpmMireMode type = RPMMIRE_REGEX;
+    rpmMireMode type = RPMMIRE_PCRE;
     char * pattern = NULL;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "is", &tag, &pattern)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "vs/u", &tagid, &pattern, &type)))
 	goto exit;
 
-    rpmmiAddPattern(mi, tag, type, pattern);
+    switch (type) {
+    default:
+	ok = JS_FALSE;
+	break;
+    case RPMMIRE_DEFAULT:
+    case RPMMIRE_STRCMP:
+    case RPMMIRE_REGEX:
+    case RPMMIRE_GLOB:
+    case RPMMIRE_PCRE:
+	if (!JSVAL_IS_VOID(tagid)) {
+	    /* XXX TODO: make sure both tag and key were specified. */
+	    tag = JSVAL_IS_INT(tagid)
+		? (rpmTag) JSVAL_TO_INT(tagid)
+		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+	}
+	rpmmiAddPattern(mi, tag, type, pattern);
+	ok = JS_TRUE;
+	break;
+    }
+    *rval = BOOLEAN_TO_JSVAL(ok);
 
-    ok = JS_TRUE;
+exit:
+    return ok;
+}
+
+static JSBool
+rpmmi_prune(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmmi mi = ptr;
+    uint32_t _u = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "u", &_u)))
+	goto exit;
+    /* XXX handle arrays */
+    if (!rpmmiPrune(mi, &_u, 1, 1))
+	ok = JS_TRUE;
+    *rval = BOOLEAN_TO_JSVAL(ok);
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmmi_grow(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmmi mi = ptr;
+    uint32_t _u = 0;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "u", &_u)))
+	goto exit;
+    /* XXX handle arrays */
+    if (!rpmmiGrow(mi, &_u, 1))
+	ok = JS_TRUE;
     *rval = BOOLEAN_TO_JSVAL(ok);
 
 exit:
@@ -50,6 +109,8 @@ exit:
 
 static JSFunctionSpec rpmmi_funcs[] = {
     JS_FS("pattern",	rpmmi_pattern,		0,0,0),
+    JS_FS("prune",	rpmmi_prune,		0,0,0),
+    JS_FS("grow",	rpmmi_grow,		0,0,0),
     JS_FS_END
 };
 

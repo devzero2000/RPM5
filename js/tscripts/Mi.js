@@ -10,6 +10,12 @@ var RPMTAG_OS = 1021;
 var RPMTAG_ARCH = 1022;
 var RPMTAG_NVRA = 1196;
 
+var RPMMIRE_DEFAULT     = 0;    /*!< posix regex with \., .* and ^...$ added */
+var RPMMIRE_STRCMP      = 1;    /*!< strings using strcmp(3) */
+var RPMMIRE_REGEX       = 2;    /*!< posix regex(7) patterns using regcomp(3) */
+var RPMMIRE_GLOB        = 3;    /*!< glob(7) patterns using fnmatch(3) */
+var RPMMIRE_PCRE        = 4;    /*!< pcre patterns using pcre_compile2(3) */
+
 var N = "popt";
 var V = "";
 var R = "";
@@ -86,13 +92,43 @@ doITER(ts, RPMDBI_LABEL, N+"-"+V+"-"+R+"."+A);
 doITER(ts, RPMDBI_LABEL, "\^"+N+"-[0-9].*$");
 doITER(ts, RPMDBI_LABEL, "\^"+N+"-[0-9].*"+"\."+A+"$");
 
-// --- Retrieve by N with a V mire pattern selector.
-var mi = new Mi(ts, RPMTAG_NAME, N)
+// --- Retrieve by N with various mire pattern selectors.
+var mi = new Mi(ts, RPMTAG_NAME, N);
 ack("mi.pattern(RPMTAG_VERSION, V)", true);
-ack("mi.pattern(RPMTAG_RELEASE, R)", true);
-ack("mi.pattern(RPMTAG_OS, O)", true);
-ack("mi.pattern(RPMTAG_ARCH, A)", true);
-ack("mi.pattern(RPMTAG_GROUP, G)", true);
+ack("mi.pattern('release', R, RPMMIRE_STRCMP)", true);
+ack("mi.pattern(RPMTAG_OS, O, RPMMIRE_REGEX)", true);
+ack("mi.pattern('arch', A, RPMMIRE_GLOB)", true);
+ack("mi.pattern(RPMTAG_GROUP, G, RPMMIRE_PCRE)", true);
+bingo = 0;
+for (var [dbkey,h] in Iterator(mi)) {
+    ack("h.name", N);
+    ack("h.nvra", NVRA);
+    ack("mi.instance == hdrNum", true);
+    ack("mi.instance == h.dbinstance", true);
+    delete h;
+    bingo = 1;
+}
+ack("bingo", 1);
+delete mi;
+
+// --- Retrieve by N, filtering the instance (i.e. nothing found).
+var mi = new Mi(ts, RPMTAG_NAME, N);
+ack("mi.prune(hdrNum)", true);
+bingo = 0;
+for (var [dbkey,h] in Iterator(mi)) {
+    nack("h.name", N);
+    nack("h.nvra", NVRA);
+    nack("mi.instance == hdrNum", true);
+    nack("mi.instance == h.dbinstance", true);
+    delete h;
+    bingo = 1;
+}
+ack("bingo", 0);
+delete mi;
+
+// --- Retrieve by adding the instance.
+var mi = new Mi(ts);
+ack("mi.grow(hdrNum)", true);
 bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
     ack("h.name", N);

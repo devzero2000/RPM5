@@ -1285,7 +1285,7 @@ unsigned int rpmmiCount(/*@null@*/ rpmmi mi)
  * @return		0 on success, 1 on failure (bad args)
  */
 int rpmmiGrow(/*@null@*/ rpmmi mi,
-		/*@null@*/ const int * hdrNums, int nHdrNums)
+		/*@null@*/ const uint32_t * hdrNums, int nHdrNums)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
