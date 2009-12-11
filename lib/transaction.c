@@ -1276,7 +1276,9 @@ static int markLinkedFailed(rpmts ts, rpmte p)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     static const char msg[] = "rpmtsRun";
+#ifdef	DYING
     rpmuint32_t tscolor = rpmtsColor(ts);
+#endif
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;
@@ -1445,9 +1447,10 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	    mi = rpmmiFree(mi);
 #else
 	    ARGV_t keys = NULL;
-	    int xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_NVRA,
+	    int nkeys;
+	    xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_NVRA,
 		RPMMIRE_STRCMP, rpmteNEVRA(p), &keys);
-	    int nkeys = argvCount(keys);
+	    nkeys = argvCount(keys);
 	    if (nkeys > 0)
 		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
 			rpmteNEVR(p), rpmteKey(p),
