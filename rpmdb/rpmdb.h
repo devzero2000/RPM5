@@ -480,8 +480,6 @@ struct rpmdb_s {
     int	(*db_export) (rpmdb db, Header h, int adding);
 
 /*@refcounted@*/
-    rpmbf	db_bf;		/*!< Header instance Bloom filter. */
-/*@refcounted@*/
     Header db_h;		/*!< Currently active header */
 
     rpmdb	db_next;	/*!< Chain of rpmdbOpen'ed rpmdb's. */
@@ -1331,15 +1329,6 @@ int rpmmiSetRewrite(/*@null@*/ rpmmi mi, int rewrite)
  * @return		previous value
  */
 int rpmmiSetModified(/*@null@*/ rpmmi mi, int modified)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Modify iterator to verify retrieved header blobs.
- * @param mi		rpm database iterator
- * @param ts		transaction set
- * @return		0 always
- */
-int rpmmiSetHdrChk(/*@null@*/ rpmmi mi, /*@null@*/ rpmts ts)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb

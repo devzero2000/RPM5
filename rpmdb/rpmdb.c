@@ -286,16 +286,6 @@ assert(mydbvecs[_dbapi] != NULL);
     }
     db->_dbi[dbix] = dbi;
 
-#if defined(SUPPORT_HEADER_CHECKS)
-    /* XXX FIXME: move to rpmdbOpen() instead. */
-    if (tag == RPMDBI_PACKAGES && db->db_bf == NULL) {
-	size_t _jiggery = 2;		/* XXX todo: Bloom filter tuning? */
-	size_t _k = _jiggery * 8;
-	size_t _m = _jiggery * (3 * 8192 * _k) / 2;
-	db->db_bf = rpmbfNew(_m, _k, 0);
-    }
-#endif
-
 exit:
 
 /*@-modfilesys@*/
@@ -584,10 +574,6 @@ struct rpmmi_s {
     int			mi_nre;
 /*@only@*/ /*@null@*/
     miRE		mi_re;
-#if defined(SUPPORT_HEADER_CHECKS)
-/*@null@*/
-    rpmts		mi_ts;
-#endif
 
 };
 
@@ -897,7 +883,6 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use
 	db->db_errpfx = _free(db->db_errpfx);
 	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
-	db->db_bf = rpmbfFree(db->db_bf);
 	db->db_tags = tagStoreFree(db->db_tags, db->db_ndbi);
 	db->_dbi = _free(db->_dbi);
 	db->db_ndbi = 0;
@@ -1058,7 +1043,6 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_export = rpmdbExportInfo;
     db->db_h = NULL;
 
-    db->db_bf = NULL;
     db->db_next = NULL;
     db->db_opens = 0;
 
@@ -1578,9 +1562,6 @@ static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
-#if defined(SUPPORT_HEADER_CHECKS)
-	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
-#endif
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -1592,24 +1573,6 @@ static int miFreeHeader(rpmmi mi, dbiIndex dbi)
 	    v.data = headerUnload(mi->mi_h, &len);
 	    v.size = (UINT32_T) len;
 	}
-
-#if defined(SUPPORT_HEADER_CHECKS)
-	/* Check header digest/signature on blob export (if requested). */
-	if (mi->mi_ts && chkhdr) {
-	    const char * msg = NULL;
-	    int lvl;
-
-assert(v.data != NULL);
-	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), v.data, v.size, &msg);
-	    rpmtsCleanDig(mi->mi_ts);
-	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-	    rpmlog(lvl, "%s h#%8u %s",
-		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
-			(unsigned)_ntoh_ui(mi->mi_prevoffset),
-			(msg ? msg : "\n"));
-	    msg = _free(msg);
-	}
-#endif
 
 	if (v.data != NULL && rpmrc != RPMRC_FAIL) {
 	    sigset_t signalMask;
@@ -2133,19 +2096,6 @@ int rpmmiSetModified(rpmmi mi, int modified)
     return rc;
 }
 
-int rpmmiSetHdrChk(rpmmi mi, rpmts ts)
-{
-    int rc = 0;
-#if defined(SUPPORT_HEADER_CHECKS)
-    if (mi == NULL)
-	return 0;
-/*@-assignexpose -newreftrans @*/ /* XXX forward linkage prevents rpmtsLink */
-/*@i@*/ mi->mi_ts = ts;
-/*@=assignexpose =newreftrans @*/
-#endif
-    return rc;
-}
-
 /*@unchecked@*/
 static int _rpmmi_usermem = 1;
 
@@ -2213,9 +2163,6 @@ Header rpmmiNext(rpmmi mi)
     DBT v = DBT_INIT;
     void * uh;
     size_t uhlen;
-#if defined(SUPPORT_HEADER_CHECKS)
-    int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
-#endif
 rpmTag tag;
 unsigned int _flags;
     int map;
@@ -2329,40 +2276,6 @@ assert((size_t)k.size == sizeof(mi->mi_offset));
 
     /* Rewrite current header (if necessary) and unlink. */
     xx = miFreeHeader(mi, dbi);
-
-#if defined(SUPPORT_HEADER_CHECKS)
-    /* Check header digest/signature once (if requested). */
-    if (mi->mi_ts && chkhdr) {
-	rpmRC rpmrc = RPMRC_NOTFOUND;
-
-	/* Don't bother re-checking a previously read header. */
-	if (mi->mi_db && mi->mi_db->db_bf
-	 && rpmbfChk(mi->mi_db->db_bf, &mi->mi_offset, sizeof(mi->mi_offset)))
-	    rpmrc = RPMRC_OK;
-
-	/* If blob is unchecked, check blob import consistency now. */
-	if (rpmrc != RPMRC_OK) {
-	    const char * msg = NULL;
-	    int lvl;
-
-	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), uh, uhlen, &msg);
-	    rpmtsCleanDig(mi->mi_ts);
-	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-	    rpmlog(lvl, "%s h#%8u %s\n",
-		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : _("rpmdb: read")),
-			(unsigned)_ntoh_ui(mi->mi_offset), (msg ? msg : ""));
-	    msg = _free(msg);
-
-	    /* Mark header checked. */
-	    if (mi->mi_db && mi->mi_db->db_bf && rpmrc == RPMRC_OK)
-		rpmbfAdd(mi->mi_db->db_bf, &mi->mi_offset, sizeof(mi->mi_offset));
-
-	    /* Skip damaged and inconsistent headers. */
-	    if (rpmrc == RPMRC_FAIL)
-		goto next;
-	}
-    }
-#endif
 
     if (map) {
 /*@-onlytrans@*/
@@ -2705,9 +2618,6 @@ assert(keylen == sizeof(he->p.ui64p[0]));
     mi->mi_nre = 0;
     mi->mi_re = NULL;
 
-#if defined(SUPPORT_HEADER_CHECKS)
-    mi->mi_ts = NULL;
-#endif
 
 /*@i@*/ return mi;
 }
@@ -2897,9 +2807,6 @@ assert(dbi != NULL);					/* XXX sanity */
     /* Now update the indexes */
 
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
-#if defined(SUPPORT_HEADER_CHECKS)
-	int chkhdr = (pgpDigVSFlags & _RPMVSF_NOHEADER) ^ _RPMVSF_NOHEADER;
-#endif
 
 	dbix = db->db_ndbi - 1;
 	if (db->db_tags != NULL)
@@ -2957,23 +2864,6 @@ assert(dbi != NULL);					/* XXX sanity */
 		    v.data = headerUnload(h, &len);
 		    v.size = (UINT32_T) len;
 		}
-
-#if defined(SUPPORT_HEADER_CHECKS)
-		/* Check header digest/signature on blob export. */
-		if (ts && chkhdr && !(h->flags & HEADERFLAG_RDONLY)) {
-		    const char * msg = NULL;
-		    int lvl;
-
-assert(v.data != NULL);
-		    rpmrc = headerCheck(rpmtsDig(ts), v.data, v.size, &msg);
-		    rpmtsCleanDig(ts);
-		    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-		    rpmlog(lvl, "%s h#%8u %s\n",
-			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
-				hdrNum, (msg ? msg : ""));
-		    msg = _free(msg);
-		}
-#endif
 
 		if (v.data != NULL && rpmrc != RPMRC_FAIL) {
 /*@-compmempass@*/
@@ -3346,7 +3236,7 @@ bottom:
     return rc;
 }
 
-static int _rpmdbRebuild(const char * prefix, rpmts ts)
+static int _rpmdbRebuild(const char * prefix, /*@unused@*/ rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
@@ -3466,8 +3356,6 @@ uint32_t hx = 0;
 #endif
 
 	mi = rpmmiInit(olddb, RPMDBI_PACKAGES, NULL, 0);
-	if (ts)
-	    (void) rpmmiSetHdrChk(mi, ts);
 
 	while ((h = rpmmiNext(mi)) != NULL) {
 	    uint32_t hdrNum = headerGetInstance(h);

@@ -389,7 +389,7 @@ static inline int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) 
 
 static inline int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
 	rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, char ** msg)) {
-    return rpmmiSetHdrChk(mi, ts);
+    return 0;
 }
 
 static inline rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag tag,
