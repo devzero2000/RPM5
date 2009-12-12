@@ -78,7 +78,8 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    arr = JS_NewArrayObject(cx, 0, NULL);
 	    ok = JS_AddRoot(cx, &arr);
 	    for (i = 0; i < (int)he->c; i++) {
-		v = INT_TO_JSVAL(he->p.ui32p[i]);
+		if (!JS_NewNumberValue(cx, he->p.ui32p[i], &v))
+		    v = JSVAL_VOID;
 		ok = JS_SetElement(cx, arr, i, &v);
 	    }
 	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),
@@ -93,7 +94,8 @@ fprintf(stderr, "\t%s(%u) %u %p[%u]\n", name, (unsigned)he->tag, (unsigned)he->t
 	    arr = JS_NewArrayObject(cx, 0, NULL);
 	    ok = JS_AddRoot(cx, &arr);
 	    for (i = 0; i < (int)he->c; i++) {
-		v = INT_TO_JSVAL(he->p.ui64p[i]);
+		if (!JS_NewNumberValue(cx, he->p.ui64p[i], &v))
+		    v = JSVAL_VOID;
 		ok = JS_SetElement(cx, arr, i, &v);
 	    }
 	    ok = JS_DefineProperty(cx, obj, name, (v=OBJECT_TO_JSVAL(arr)),

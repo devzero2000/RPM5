@@ -2560,6 +2560,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	/*@globals rpmmiRock @*/
 	/*@modifies rpmmiRock @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmmi mi;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
@@ -2650,12 +2651,50 @@ assert(0);
     mi->mi_count = (set ? set->count : 0);
 
     mi->mi_index = (dbi && dbi->dbi_index ? 1 : 0);
-    mi->mi_keylen = keylen;
-    if (keyp)
-	mi->mi_keyp = keylen > 0
+
+    /* Coerce and swab integer keys, save the key in the iterator. */
+    switch (tagType(tag) & 0xffff) {
+    case RPM_UINT8_TYPE:	/* XXX coerce to uint32_t */
+assert(keylen == sizeof(he->p.ui8p[0]));
+	mi->mi_keylen = sizeof(he->p.ui32p[0]);
+	mi->mi_keyp = he->p.ui32p = xmalloc(mi->mi_keylen);
+	he->p.ui32p[0] = 0;
+	memcpy(&he->p.ui8p[3], keyp, keylen);
+	break;
+    case RPM_UINT16_TYPE:	/* XXX coerce to uint32_t */
+assert(keylen == sizeof(he->p.ui16p[0]));
+	mi->mi_keylen = sizeof(he->p.ui32p[0]);
+	mi->mi_keyp = he->p.ui32p = xmalloc(mi->mi_keylen);
+	he->p.ui32p[0] = 0;
+	memcpy(&he->p.ui16p[1], keyp, keylen);
+	he->p.ui16p[1] = _hton_us(he->p.ui16p[1]);
+	break;
+    case RPM_UINT32_TYPE:
+assert(keylen == sizeof(he->p.ui32p[0]));
+	mi->mi_keylen = keylen;
+	mi->mi_keyp = memcpy((he->p.ui32p = xmalloc(keylen)), keyp, keylen);
+	he->p.ui32p[0] = _hton_ui(he->p.ui32p[0]);
+	break;
+    case RPM_UINT64_TYPE:
+assert(keylen == sizeof(he->p.ui64p[0]));
+	mi->mi_keylen = keylen;
+	mi->mi_keyp = memcpy((he->p.ui64p = xmalloc(keylen)), keyp, keylen);
+	he->p.ui64p[0] = _hton_ui(he->p.ui64p[0]);
+	break;
+    case RPM_BIN_TYPE:
+    case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
+    case RPM_STRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    default:
+	mi->mi_keylen = keylen;
+	if (keyp)
+	    mi->mi_keyp = keylen > 0
 		? memcpy(xmalloc(keylen), keyp, keylen) : xstrdup(keyp) ;
-    else
-	mi->mi_keyp = NULL;
+	else
+	    mi->mi_keyp = NULL;
+	break;
+    }
+    he->p.ptr = NULL;
 
     mi->mi_h = NULL;
     mi->mi_sorted = 0;

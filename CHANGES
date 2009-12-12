@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: swab integer secondary keys when retrieving through rpmmi.
     - jbj: js: add rpmmi unit tests for common accesses including patterns.
     - jbj: js: fix: add a newref for headers retrieved using rpmmi.
     - jbj: rpmdb: use network order for all integer secondary keys.

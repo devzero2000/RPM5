@@ -8,6 +8,9 @@ var RPMTAG_RELEASE = 1002;
 var RPMTAG_GROUP = 1016;
 var RPMTAG_OS = 1021;
 var RPMTAG_ARCH = 1022;
+var RPMTAG_INSTALLTID = 1128;
+var RPMTAG_REMOVETID = 1129;
+var RPMTAG_PACKAGECOLOR = 1184;
 var RPMTAG_NVRA = 1196;
 
 var RPMMIRE_DEFAULT     = 0;    /*!< posix regex with \., .* and ^...$ added */
@@ -22,10 +25,15 @@ var R = "";
 var A = "";
 var O = "";
 var G = "";
+var IID = 0;
+var color = -1;
+
 var NVRA = N;
 var hdrNum = 0;
 var bingo = 0;
 var npkgs = 0;
+var IIDcounts = [];
+var IIDcount = 0;
 
 var ts = new Ts();
 
@@ -43,6 +51,11 @@ for (var [dbkey,h] in Iterator(mi)) {
     ack("mi.instance != 0", true);
     ack("mi.instance < 0x0000ffff", true);
     ack("mi.instance == h.dbinstance", true);
+    ++npkgs;
+    if (IIDcounts[h.installtid[0].toString(16)] > 0)
+	++IIDcounts[h.installtid[0].toString(16)];
+    else
+	IIDcounts[h.installtid[0].toString(16)] = 1;
     if (h.name == N) {
 	hdrNum = mi.instance;
 	V = h.version;
@@ -50,9 +63,10 @@ for (var [dbkey,h] in Iterator(mi)) {
 	O = h.os;
 	A = h.arch;
 	G = h.group;
+	IID = h.installtid[0];
+	color = h.packagecolor;
 	NVRA = h.nvra;
     }
-    npkgs++;
     delete h;
     bingo = 1;
 }
@@ -139,6 +153,19 @@ for (var [dbkey,h] in Iterator(mi)) {
     bingo = 1;
 }
 ack("bingo", 1);
+delete mi;
+
+// --- Count the install transaction set members.
+var mi = new Mi(ts, RPMTAG_INSTALLTID, IID);
+bingo = 0;
+IIDcount = 0;
+for (var [dbkey,h] in Iterator(mi)) {
+    ++IIDcount;
+    delete h;
+    bingo = 1;
+}
+ack("bingo", 1);
+ack("IIDcount", IIDcounts[IID.toString(16)]);
 delete mi;
 
 delete ts;
