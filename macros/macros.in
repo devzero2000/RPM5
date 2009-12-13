@@ -111,9 +111,6 @@
 #	The location of the rpm database file(s).
 %_dbpath		@DBPATH_MACRO@
 
-#	The location of the rpm database file(s) after "rpm --rebuilddb".
-%_dbpath_rebuild	%{_dbpath}
-
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
@@ -275,9 +272,7 @@ package or when debugging this package.\
 # list of tokens, with an optional '!' negation to explicitly disable bit
 # values, or a "=value" if a parameter. A per-tag value is used (e.g.
 # %_dbi_config_Packages) if defined, otherwise a per-rpmdb default
-# (e.g. %_dbi_config). The configuration is also conditioned on the
-# existence of an internal %{_rpmdb_rebuild} switch to permit changing
-# the configuration while rebuilding an rpmdb database.
+# (e.g. %_dbi_config).
 #
 # The rpmdb configuration tokens are in a popt table in rpmdb/dbconfig.c,
 # see that for the latest gory details. Note carefully that, unless you
@@ -292,7 +287,6 @@ package or when debugging this package.\
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_txn}
 
-%__dbi_rebuild			nofsync !lock !txn !log !cdb !auto_commit
 %__dbi_transient		%{?__dbi_rebuild} temporary private
 %__dbi_perms			perms=0644
 
@@ -303,13 +297,7 @@ package or when debugging this package.\
   %{__dbi_perms}\
 %{nil}
 
-%__dbi_htconfig_current		%{__dbi_htconfig}
-%__dbi_htconfig_rebuild		%{__dbi_htconfig} %{?__dbi_rebuild}
-
-%_dbi_htconfig		\
-  %{?_rpmdb_rebuild:%{__dbi_htconfig_rebuild}}\
-  %{!?_rpmdb_rebuild:%{__dbi_htconfig_current}}\
-%{nil}
+%_dbi_htconfig			%{__dbi_htconfig}
 
 # database configuration: Berkeley-DB, Btree
 %__dbi_btconfig	\
@@ -318,21 +306,12 @@ package or when debugging this package.\
   %{__dbi_perms}\
 %{nil}
 
-%__dbi_btconfig_current		%{__dbi_btconfig}
-%__dbi_btconfig_rebuild		%{__dbi_btconfig} %{?__dbi_rebuild}
-
-%_dbi_btconfig		\
-  %{?_rpmdb_rebuild:%{__dbi_btconfig_rebuild}}\
-  %{!?_rpmdb_rebuild:%{__dbi_btconfig_current}}\
-%{nil}
+%_dbi_btconfig			%{__dbi_btconfig}
 
 # database configuration: SQLite
-%__dbi_sqlconfig_current		perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
-%__dbi_sqlconfig_rebuild		%{__dbi_sqlconfig_current} nofsync
-%_dbi_sqlconfig \
-  %{?_rpmdb_rebuild:%{__dbi_sqlconfig_rebuild}}\
-  %{!?_rpmdb_rebuild:%{__dbi_sqlconfig_current}}\
-%{nil}
+%__dbi_sqlconfig		perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
+
+%_dbi_sqlconfig			%{__dbi_sql_config}
 
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
@@ -459,8 +438,7 @@ package or when debugging this package.\
 # database between formats (usually for upgrading purposes)
 #
 %_dbapi			@DBAPI@
-%_dbapi_rebuild		@DBAPI@
-%_dbapi_used		%{?_rpmdb_rebuild:%{_dbapi_rebuild}}%{!?_rpmdb_rebuild:%{_dbapi}}
+%_dbapi_used		%{_dbapi}
 
 #
 # Export package NEVRA (stamped with install tid) info for HRMIB on this path.
@@ -617,7 +595,6 @@ package or when debugging this package.\
 %_vsflags_erase		%{__vsflags}
 %_vsflags_install	%{__vsflags}
 %_vsflags_query		%{__vsflags}
-%_vsflags_rebuilddb	%{__vsflags}
 %_vsflags_verify	%{__vsflags}
 
 #	Choose keyutils keyring type:

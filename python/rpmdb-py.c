@@ -325,19 +325,4 @@ rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds) {
 
     return o;
 }
-
-/**
- * @todo Permit header checks when doing --rebuilddb.
- */
-PyObject *
-rebuildDB (/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
-{
-    char * rootDir = "";
-    char * kwlist[] = {"rootdir", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &rootDir))
-	return NULL;
-
-    return Py_BuildValue("i", rpmdbRebuild(rootDir, NULL, NULL));
-}
 #endif

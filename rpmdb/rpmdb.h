@@ -460,8 +460,7 @@ struct rpmdb_s {
     const char * db_errpfx;	/*!< Berkeley DB error msg prefix. */
 
     int		db_remove_env;	/*!< Discard dbenv on close? */
-    int		db_verifying;
-    int		db_rebuilding;
+    uint32_t	db_maxkey;	/*!< Max. primary key. */
 
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     void (*db_errcall) (const char * db_errpfx, char * buffer)
@@ -1454,16 +1453,6 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, ts,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup rpmdb
- * Rebuild database indices from package headers.
- * @param prefix	path to top of install tree
- * @param ts		transaction set (or NULL)
- * @return		0 on success
- */
-int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Mergesort, same arguments as qsort(2).

@@ -15,6 +15,7 @@
 #include <rpmsx.h>
 
 #include <rpmtypes.h>
+#define	_RPMTAG_INTERNAL	/* XXX tagStore_s */
 #include <rpmtag.h>
 #include <pkgio.h>
 
@@ -126,20 +127,72 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 int rpmtsRebuildDB(rpmts ts)
 {
     void * lock = rpmtsAcquireLock(ts);
+    rpmdb db = NULL;
+    const char * fn;
+    struct stat sb;
     int rc;
+    int xx;
 
+    /* XXX Seqno update needs O_RDWR. */
     rc = rpmtsOpenDB(ts, O_RDWR);
     if (rc) goto exit;
+    db = rpmtsGetRdb(ts);
 
-    rc = rpmtxnCheckpoint(rpmtsGetRdb(ts));
+    if (!(db->db_api == 3 || db->db_api == 4))
+	goto exit;
+
+    rc = rpmtxnCheckpoint(db);
     if (rc) goto exit;
 
-    rc = rpmdbRebuild(ts->rootDir,
-    		(!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK) ? ts : NULL));
-    if (rc) goto exit;
+  { size_t dbix;
+    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	tagStore_t dbiTags = &db->db_tags[dbix];
 
-    rc = rpmtxnCheckpoint(rpmtsGetRdb(ts));
-    if (rc) goto exit;
+	/* Remove configured secondary indices. */
+	switch (dbiTags->tag) {
+	case RPMDBI_PACKAGES:
+	case RPMDBI_AVAILABLE:
+	case RPMDBI_ADDED:
+	case RPMDBI_REMOVED:
+	case RPMDBI_DEPENDS:
+	case RPMDBI_SEQNO:
+	case RPMDBI_BTREE:
+	case RPMDBI_HASH:
+	case RPMDBI_QUEUE:
+	case RPMDBI_RECNO:
+	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	default:
+	    fn = rpmGetPath(db->db_root, db->db_home, "/",
+		(dbiTags->str != NULL ? dbiTags->str : tagName(dbiTags->tag)),
+		NULL);
+	    if (!Stat(fn, &sb))
+		xx = Unlink(fn);
+	    fn = _free(fn);
+	    /*@switchbreak@*/ break;
+	}
+
+	/* Open (and re-create) each index. */
+	(void) dbiOpen(db, dbiTags->tag, db->db_flags);
+    }
+  }
+
+    /* Unreference header used by associated secondary index callbacks. */
+    (void) headerFree(db->db_h);
+    db->db_h = NULL;
+
+    /* Reset the Seqno counter to the maximum primary key */
+    rpmlog(RPMLOG_DEBUG, D_("rpmdb: max. primary key %u\n"),
+		(unsigned)db->db_maxkey);
+    fn = rpmGetPath(db->db_root, db->db_home, "/Seqno", NULL);
+    if (!Stat(fn, &sb))
+	xx = Unlink(fn);
+    (void) dbiOpen(db, RPMDBI_SEQNO, db->db_flags);
+    fn = _free(fn);
+
+    rc = rpmtxnCheckpoint(db);
+
+    xx = rpmtsCloseDB(ts);
 
 exit:
     lock = rpmtsFreeLock(lock);

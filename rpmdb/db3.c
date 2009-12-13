@@ -789,7 +789,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	goto errxit;
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
-    if (!rpmdb->db_verifying && !rpmdb->db_rebuilding && dbi->dbi_thread_count >= 8) {
+    if (dbi->dbi_thread_count >= 8) {
 	/* XXX Set pid/tid is_alive probe. */
 	xx = dbenv->set_isalive(dbenv, db3is_alive);
 	xx = cvtdberr(dbi, "dbenv->set_isalive", xx, _debug);
@@ -1627,25 +1627,38 @@ db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
     dbiIndex dbi = db->app_private;
     rpmdb rpmdb = NULL;
     Header h = NULL;
+    uint32_t hdrNum;
     DBT * A = NULL;
     const char * s = NULL;
     size_t ns = 0;
     int rc = DB_DONOTINDEX;	/* assume no-op */
     uint32_t i;
 
+assert(key->size == sizeof(hdrNum));
+    memcpy(&hdrNum, key->data, key->size);
+    hdrNum = _ntoh_ui(hdrNum);
+
     /* XXX Don't index the header instance counter at record 0. */
-    {	static uint32_t _zero = 0;
-	if (key->size == 4 && !memcmp(key->data, &_zero, key->size))
-	    goto exit;
-    }
+    if (hdrNum == 0)
+	goto exit;
 
 assert(dbi);
     rpmdb = dbi->dbi_rpmdb;
 assert(rpmdb);
+
+    /* XXX Track the maximum primary key value. */
+    if (hdrNum > rpmdb->db_maxkey)
+	rpmdb->db_maxkey = hdrNum;
+
     h = headerLink(rpmdb->db_h);
     if (h == NULL) {
 	h = headerLoad(data->data);
-	if (h == NULL) goto exit;
+	if (h == NULL) {
+	    rpmlog(RPMLOG_ERR,
+		_("rpmdb: header #%u cannot be loaded -- skipping.\n"),
+                (unsigned)hdrNum);
+	    goto exit;
+	}
     }
 
     memset(_r, 0, sizeof(*_r));
@@ -2473,6 +2486,10 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 	if (dbi->dbi_seq_id) {
 	    char * end = NULL;
 	    uint32_t u = (uint32_t) strtoll(dbi->dbi_seq_id, &end, 0);
+
+	    /* Reset the Seqno counter to the next primary key */
+	    if (oflags & (DB_CREATE|DB_TRUNCATE))
+		dbi->dbi_seq_initial = rpmdb->db_maxkey + 1;
 
 	    if (*end == '\0')
 		xx = seqid_init(dbi,(const char *)&u, sizeof(u), &dbi->dbi_seq);

@@ -92,7 +92,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     sharedFileInfo sfi;
     rpmmi mi;
     Header h;
-    int * offsets;
+    uint32_t * offsets;
     rpmuint32_t prev;
     int num;
     int xx;
