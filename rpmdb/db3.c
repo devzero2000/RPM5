@@ -32,7 +32,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
 	/*@*/;
 
-
 #if !defined(DB_CLIENT)	/* XXX db-4.2.42 retrofit */
 #define	DB_CLIENT	DB_RPCCLIENT
 #endif
@@ -677,6 +676,53 @@ static size_t ncores(void)
 }
 
 /*==============================================================*/
+#define	_TABLE(_v)	{ #_v, DB_EVENT_##_v }
+static struct _events_s {
+    const char * n;
+    uint32_t v;
+} _events[] = {
+    _TABLE(NO_SUCH_EVENT),	/*  0 */
+    _TABLE(PANIC),		/*  1 */
+    _TABLE(REG_ALIVE),		/*  2 */
+    _TABLE(REG_PANIC),		/*  3 */
+    _TABLE(REP_CLIENT),		/*  4 */
+    _TABLE(REP_ELECTED),	/*  5 */
+    _TABLE(REP_MASTER),		/*  6 */
+    _TABLE(REP_NEWMASTER),	/*  7 */
+    _TABLE(REP_PERM_FAILED),	/*  8 */
+    _TABLE(REP_STARTUPDONE),	/*  9 */
+    _TABLE(WRITE_FAILED),	/* 10 */
+    _TABLE(NO_SUCH_EVENT),	/* 11 */
+    _TABLE(NO_SUCH_EVENT),	/* 12 */
+    _TABLE(NO_SUCH_EVENT),	/* 13 */
+    _TABLE(NO_SUCH_EVENT),	/* 14 */
+    _TABLE(NO_SUCH_EVENT),	/* 15 */
+};
+#undef	_TABLE
+
+static void
+rpmdbe_event_notify(DB_ENV * dbenv, u_int32_t event, void * event_info)
+{
+    void * o = (dbenv ? dbenv->app_private : NULL);
+fprintf(stderr, "==> %s(%p, %s(%u), %p) app_private %p\n", __FUNCTION__, dbenv, _events[event & 0xf].n, event, event_info, o);
+}
+
+static void
+rpmdbe_feedback(DB_ENV * dbenv, u_int32_t opcode, int percent)
+	/*@*/
+{
+    dbenv = NULL;
+    dbenv = dbenv;
+    switch (opcode) {
+    case DB_RECOVER:
+	fprintf(stderr, "\rrecovery %d%% complete", percent);
+	(void)fflush(stderr);	/* XXX unnecessary? */
+	/*@fallthrough@*/
+    default:
+	break;
+    }
+}
+
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
@@ -747,7 +793,11 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* 4.1: dbenv->set_data_dir(???) */
  /* 4.1: dbenv->set_encrypt(???) */
 
- /* 4.1: dbenv->set_feedback(???) */
+    xx = dbenv->set_feedback(dbenv, rpmdbe_feedback);
+    xx = cvtdberr(dbi, "dbenv->set_feedback", xx, _debug);
+    xx = dbenv->set_event_notify(dbenv, rpmdbe_event_notify);
+    xx = cvtdberr(dbi, "dbenv->set_event_notify", xx, _debug);
+
  /* 4.1: dbenv->set_flags(???) */
 
  /* dbenv->set_paniccall(???) */
@@ -778,7 +828,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
 	{   size_t _lo =  16 * 1024 * 1024;
 	    size_t _hi = 512 * 1024 * 1024;
-	    size_t _mp_mmapsize = _physmem / 2;
+	    size_t _mp_mmapsize = _physmem;	/* XXX default value? */
 	    if (_mp_mmapsize < _lo) _mp_mmapsize = _lo;
 	    if (_mp_mmapsize > _hi) _mp_mmapsize = _hi;
 	    xx = dbenv->set_mp_mmapsize(dbenv, _mp_mmapsize);
@@ -820,7 +870,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	uint32_t _lo =  16 * 1024 * 1024;
 	uint32_t _hi = 512 * 1024 * 1024;
 	uint32_t _gb = 0;
-	uint32_t _bytes	= _physmem;
+	uint32_t _bytes	= _physmem;		/* XXX default value? */
 	int _ncache = 4;
 	if (_bytes < _lo) _bytes = _lo;
 	if (_bytes > _hi) _bytes = _hi;

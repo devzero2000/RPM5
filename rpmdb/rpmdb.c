@@ -2482,6 +2482,11 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	tag = RPMTAG_NVRA;
 	/*@fallthrough@*/
     case RPMTAG_NVRA:
+    case RPMTAG_NAME:
+    case RPMTAG_VERSION:
+    case RPMTAG_RELEASE:
+    case RPMTAG_ARCH:
+    case RPMTAG_OS:
     case RPMTAG_GROUP:
 	usePatterns = 1;
 	break;
@@ -2490,6 +2495,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	tag = RPMTAG_FILEPATHS;
 	/*@fallthrough@*/
     case RPMTAG_FILEPATHS:
+    case RPMTAG_DIRNAMES:
 	usePatterns = 1;
 	break;
     }

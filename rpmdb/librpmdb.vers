@@ -81,6 +81,7 @@ LIBRPMDB_0
     headerVerifyInfo;
     hGetColor;
     _init;
+    logio_dispatch;
     logio_Chmod_log;
     logio_Chown_log;
     logio_Creat_log;
