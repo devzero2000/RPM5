@@ -1755,6 +1755,7 @@ assert(rpmdb);
 
     h = headerLink(rpmdb->db_h);
     if (h == NULL) {
+	/* XXX needs PROT_READ somewhen. */
 	h = headerLoad(data->data);
 	if (h == NULL) {
 	    rpmlog(RPMLOG_ERR,
