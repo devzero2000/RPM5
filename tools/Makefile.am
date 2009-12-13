@@ -142,10 +142,14 @@ db_tool_CPPFLAGS += \
     -DWITH_DB_RPC
 endif
 db_tool_LDFLAGS =
+db_tool_LDADD =
+#   for db_recover
+db_tool_LDADD += \
+	$(RPMDB_LDADD_COMMON)
 #   for all db_xxx
-db_tool_LDADD = \
-    $(top_builddir)/db3/util_cache.lo \
-    $(top_builddir)/db3/util_log.lo \
+db_tool_LDADD += \
+	$(top_builddir)/db3/util_cache.lo \
+	$(top_builddir)/db3/util_log.lo \
 	$(top_builddir)/db3/util_sig.lo
 #   for db_printlog
 db_tool_LDADD += \
@@ -172,20 +176,19 @@ endif
 pkgbin_PROGRAMS += db_sql
 db_sql_SOURCES = ../db/db_sql/db_sql.c
 db_sql_LDADD = \
-    $(top_builddir)/db3/parse.lo \
-    $(top_builddir)/db3/preparser.lo \
-    $(top_builddir)/db3/parsefuncs.lo \
-    $(top_builddir)/db3/tokenize.lo \
-    $(top_builddir)/db3/sqlprintf.lo \
-    $(top_builddir)/db3/buildpt.lo \
-    $(top_builddir)/db3/utils.lo \
-    $(top_builddir)/db3/generate.lo \
-    $(top_builddir)/db3/generate_test.lo \
-    $(top_builddir)/db3/generation_utils.lo \
-    $(top_builddir)/db3/generate_verification.lo \
-    $(top_builddir)/db3/hint_comment.lo \
-    $(top_builddir)/db3/libdb-4.8.la
-
+	$(top_builddir)/db3/parse.lo \
+	$(top_builddir)/db3/preparser.lo \
+	$(top_builddir)/db3/parsefuncs.lo \
+	$(top_builddir)/db3/tokenize.lo \
+	$(top_builddir)/db3/sqlprintf.lo \
+	$(top_builddir)/db3/buildpt.lo \
+	$(top_builddir)/db3/utils.lo \
+	$(top_builddir)/db3/generate.lo \
+	$(top_builddir)/db3/generate_test.lo \
+	$(top_builddir)/db3/generation_utils.lo \
+	$(top_builddir)/db3/generate_verification.lo \
+	$(top_builddir)/db3/hint_comment.lo \
+	$(top_builddir)/db3/libdb-4.8.la
 endif
 
 if WITH_DB_INTERNAL

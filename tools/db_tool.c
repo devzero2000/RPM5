@@ -90,6 +90,14 @@ int db_deadlock_main(int argc, char *argv[]);
 #undef  version_check
 
 /* integrate db_recover */
+/* XXX db_recover needs RPM logio abstract log events registered. */
+#define	_HAVE_APP_DISPATCH
+#if defined(_HAVE_APP_DISPATCH)
+extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
+        /*@*/;
+static int (*_app_dispatch) (DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
+	= logio_dispatch;
+#endif
 #define main          db_recover_main
 #define db_init       db_recover_db_init
 #define copyright     db_recover_copyright

@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmlio: Register logio dispatch handler with db_recover.
     - jbj: rpmdb: Switch to inplace rpmtsRebuildDB(), eliminate rpmdbRebuild().
     - jbj: rpmmi: Eliminate rpmmiSetHdrChk(), get ts out of the rpmdb layer.
     - jbj: rpmdb: Eliminate signature/digest checks on rpmdb header blobs.
