@@ -9,6 +9,8 @@
 #include "rpmmi-js.h"
 #include "rpmjs-debug.h"
 
+#include <rpmlog.h>
+#include <rpmcb.h>
 #include <argv.h>
 #include <mire.h>
 
@@ -206,12 +208,114 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmts_dbrebuild(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    /* XXX rebuild requires root. */
+    if (getuid())
+	*rval = JSVAL_VOID;
+    else
+	*rval = (ts && !rpmtsRebuildDB(ts)) ? JSVAL_TRUE : JSVAL_FALSE;
+    ok = JS_TRUE;
+
+    return ok;
+}
+
+static JSBool
+rpmts_dbkeys(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
+    rpmts ts = ptr;
+    jsval tagid = JSVAL_VOID;
+    jsval v = JSVAL_VOID;
+    rpmTag tag = RPMTAG_NVRA;
+    rpmMireMode _mode = RPMMIRE_PCRE;
+    const char * _pat = "^a.*$";
+    ARGV_t _av = NULL;
+    JSBool ok = JS_FALSE;
+    int xx;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/vvu", &v, &tagid, &v, &_mode)))
+        goto exit;
+
+    if (!JSVAL_IS_VOID(tagid)) {
+	/* XXX TODO: make sure both tag and key were specified. */
+	tag = JSVAL_IS_INT(tagid)
+		? (rpmTag) JSVAL_TO_INT(tagid)
+		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+    }
+
+    if (JSVAL_IS_VOID(v))
+	_pat = "^.*$";
+    else if (JSVAL_IS_NULL(v))
+	_pat = NULL;
+    else if (JSVAL_IS_STRING(v))
+	_pat = JS_GetStringBytes(JS_ValueToString(cx, v));
+#ifdef	NOTYET
+    else if (JSVAL_IS_NUMBER(v)) {
+	uint32_t _u = 0;
+	if (!JS_ValueToECMAUint32(cx, v, &_u)) {
+	    *rval = JSVAL_VOID;
+	    goto exit;
+	}
+    } else
+	;
+#endif
+
+    switch (_mode) {
+    default:
+	*rval = JSVAL_VOID;
+	goto exit;
+	break;
+    case RPMMIRE_DEFAULT:
+    case RPMMIRE_STRCMP:
+    case RPMMIRE_REGEX:
+    case RPMMIRE_GLOB:
+    case RPMMIRE_PCRE:
+	break;
+    }
+
+    if (rpmtsGetRdb(ts) == NULL)
+	xx = rpmtsOpenDB(ts, O_RDONLY);
+
+    if (rpmdbMireApply(rpmtsGetRdb(ts), tag, _mode, _pat, &_av))
+	*rval = JSVAL_VOID;
+    else if (_av == NULL || _av[0] == NULL)
+	*rval = JSVAL_NULL;
+    else {
+	int _ac = argvCount(_av);
+	int i;
+	JSObject * arr = JS_NewArrayObject(cx, 0, NULL);
+	*rval = OBJECT_TO_JSVAL(arr);
+
+	for (i = 0; i < _ac; i++) {
+	    v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _av[i]));
+	    ok = JS_SetElement(cx, arr, i, &v);
+	}
+    }
+
+exit:
+    ok = JS_TRUE;
+    _av = argvFree(_av);
+    return ok;
+}
+
 static JSFunctionSpec rpmts_funcs[] = {
     JS_FS("add",	rpmts_add,		0,0,0),
     JS_FS("check",	rpmts_check,		0,0,0),
     JS_FS("order",	rpmts_order,		0,0,0),
     JS_FS("run",	rpmts_run,		0,0,0),
     JS_FS("mi",		rpmts_mi,		0,0,0),
+    JS_FS("dbrebuild",	rpmts_dbrebuild,	0,0,0),
+    JS_FS("dbkeys",	rpmts_dbkeys,		0,0,0),
     JS_FS_END
 };
 
