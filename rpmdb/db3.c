@@ -615,6 +615,68 @@ static int db3is_alive(/*@unused@*/ DB_ENV *dbenv, pid_t pid,
 }
 #endif
 
+/*==============================================================*/
+
+/* HAVE_SYS_SYSCTL_H */
+#if defined(HAVE_PHYSMEM_SYSCTL) || defined(HAVE_NCPU_SYSCTL)
+#include <sys/sysctl.h>
+#endif
+
+static uint64_t physmem(void)
+	/*@*/
+{
+    static uint64_t _physmem = 0;
+    static int oneshot = 0;
+
+    if (!oneshot) {
+#if defined(HAVE_PHYSMEM_SYSCONF)
+	const long _pagesize = sysconf(_SC_PAGESIZE);
+	const long _pages = sysconf(_SC_PHYS_PAGES);
+	if (_pagesize != -1 || _pages != -1)
+	    _physmem = (uint64_t)(_pagesize) * (uint64_t)(_pages);
+#elif defined(HAVE_PHYSMEM_SYSCTL)
+	int name[2] = { CTL_HW, HW_PHYSMEM };
+	unsigned long mem;
+	size_t mem_ptr_size = sizeof(mem);
+	if (!sysctl(name, 2, &mem, &mem_ptr_size, NULL, 0)) {
+	    if (mem_ptr_size != sizeof(mem)) {
+		if (mem_ptr_size == sizeof(unsigned int))
+		    _physmem = *(unsigned int *)(&mem);
+	    } else {
+		_physmem = mem;
+	    }
+	}
+#endif
+	oneshot++;
+    }
+    return _physmem;
+}
+
+static size_t ncores(void)
+	/*@*/
+{
+    static size_t _ncores = 1;
+    static int oneshot = 0;
+
+    if (!oneshot) {
+#if defined(HAVE_NCPU_SYSCONF)
+	const long cpus = sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined(HAVE_NCPU_SYSCTL)
+	int name[2] = { CTL_HW, HW_NCPU };
+	int cpus = 0;
+	size_t cpus_size = sizeof(cpus);
+	if (sysctl(name, 2, &cpus, &cpus_size, NULL, 0)
+	 || cpus_size != sizeof(cpus))
+	    cpus = 0;
+#endif
+	if (cpus > (int)_ncores)
+	    _ncores = (size_t)(cpus);
+	oneshot++;
+    }
+    return _ncores;
+}
+
+/*==============================================================*/
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
@@ -625,6 +687,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	/*@modifies dbi, *dbenvp, fileSystem, internalState @*/
 {
     static int oneshot = 0;
+    uint64_t _physmem = physmem();
+    size_t _ncores = ncores();
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int eflags;
@@ -632,6 +696,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     int xx;
 
     if (!oneshot) {
+	rpmlog(RPMLOG_DEBUG, D_("rpmdb: cpus %u physmem %uMb\n"),
+		(unsigned)_ncores, (unsigned)(_physmem/(1024 * 1024)));
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = db_env_set_func_open((int (*)(const char *, int, ...))Open);
 	xx = cvtdberr(dbi, "db_env_set_func_open", xx, _debug);
@@ -662,15 +728,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     /* XXX Can't do RPC w/o host. */
     if (dbi->dbi_host == NULL)
 	dbi->dbi_ecflags &= ~DB_CLIENT;
-
-    /* XXX Set a default shm_key. */
-    if ((dbi->dbi_eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {
-#if defined(HAVE_FTOK)
-	dbi->dbi_shmkey = ftok(dbhome, 0);
-#else
-	dbi->dbi_shmkey = 0x44631380;
-#endif
-    }
 
     rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
@@ -719,6 +776,15 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	}
     } else {
 
+	{   size_t _lo =  16 * 1024 * 1024;
+	    size_t _hi = 512 * 1024 * 1024;
+	    size_t _mp_mmapsize = _physmem / 2;
+	    if (_mp_mmapsize < _lo) _mp_mmapsize = _lo;
+	    if (_mp_mmapsize > _hi) _mp_mmapsize = _hi;
+	    xx = dbenv->set_mp_mmapsize(dbenv, _mp_mmapsize);
+	    xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
+	}
+
 	if (dbi->dbi_tmpdir) {
 	    const char * root;
 	    const char * tmpdir;
@@ -736,8 +802,36 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* ==== Locking: */
+    if (eflags & DB_INIT_LOCK) {
+	uint32_t _lk_max_lockers = 8192;
+	uint32_t _lk_max_locks = 8192;
+	uint32_t _lk_max_objects = 8192;
+	xx = dbenv->set_lk_max_lockers(dbenv, _lk_max_lockers);
+	xx = cvtdberr(dbi, "dbenv->set_lk_max_lockers", xx, _debug);
+	xx = dbenv->set_lk_max_locks(dbenv, _lk_max_locks);
+	xx = cvtdberr(dbi, "dbenv->set_lk_max_locks", xx, _debug);
+	xx = dbenv->set_lk_max_objects(dbenv, _lk_max_objects);
+	xx = cvtdberr(dbi, "dbenv->set_lk_max_objects", xx, _debug);
+    }
+
 /* ==== Logging: */
 /* ==== Memory pool: */
+    if (eflags & DB_INIT_MPOOL) {
+	uint32_t _lo =  16 * 1024 * 1024;
+	uint32_t _hi = 512 * 1024 * 1024;
+	uint32_t _gb = 0;
+	uint32_t _bytes	= _physmem;
+	int _ncache = 4;
+	if (_bytes < _lo) _bytes = _lo;
+	if (_bytes > _hi) _bytes = _hi;
+	xx = dbenv->set_cache_max(dbenv, _gb, _hi);
+	xx = cvtdberr(dbi, "dbenv->set_cache_max", xx, _debug);
+	if (_ncache > 0)
+	    _bytes /= _ncache;
+	xx = dbenv->set_cachesize(dbenv, _gb, _bytes, _ncache);
+	xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
+    }
+
 /* ==== Mutexes: */
 /* ==== Replication: */
 /* ==== Sequences: */
@@ -757,6 +851,14 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
     }
 
+    /* XXX Set a default shm_key. */
+    if ((eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {
+#if defined(HAVE_FTOK)
+	dbi->dbi_shmkey = ftok(dbhome, 0);
+#else
+	dbi->dbi_shmkey = 0x44631380;
+#endif
+    }
     if (dbi->dbi_shmkey) {
 	xx = dbenv->set_shm_key(dbenv, dbi->dbi_shmkey);
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
@@ -774,6 +876,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #endif
 
     if (eflags & DB_RECOVER) eflags |= DB_CREATE;
+
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
@@ -1656,7 +1759,7 @@ assert(rpmdb);
 	if (h == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		_("rpmdb: header #%u cannot be loaded -- skipping.\n"),
-                (unsigned)hdrNum);
+		(unsigned)hdrNum);
 	    goto exit;
 	}
     }
