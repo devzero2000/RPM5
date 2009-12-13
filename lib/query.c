@@ -646,32 +646,45 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
-    {   char * fn;
+    {	int gotpattern = 0;
+	char * fn;
 
-	for (s = arg; *s != '\0'; s++)
-	    if (!(*s == '.' || *s == '/'))
-		/*@loopbreak@*/ break;
-
-	if (*s == '\0') {
-	    char fnbuf[PATH_MAX];
-	    fn = Realpath(arg, fnbuf);
-	    fn = xstrdup( (fn != NULL ? fn : arg) );
-	} else if (*arg != '/') {
-	    const char *curDir = currentDirectory();
-	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
-	    curDir = _free(curDir);
-	} else
+	if (arg[0] == '^' || arg[strlen(arg)-1] == '$') {
 	    fn = xstrdup(arg);
-assert(fn != NULL);
-	(void) rpmCleanPath(fn);
+	    gotpattern++;
+	} else
+#ifdef	NOTYET
+	if (arg[0] == '/' && Glob_pattern_p(arg, 1)) {
+	    fn = xstrdup(arg);
+	    gotpattern++;
+	} else
+#endif
+	{
+	    for (s = arg; *s != '\0'; s++) {
+		if (!(*s == '.' || *s == '/'))
+		    /*@loopbreak@*/ break;
+	    }
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
-	if (qva->qva_mi == NULL && !provides_checked)
+	    if (*s == '\0') {
+		char fnbuf[PATH_MAX];
+		fn = Realpath(arg, fnbuf);
+		fn = xstrdup( (fn != NULL ? fn : arg) );
+	    } else if (*arg != '/') {
+		const char *curDir = currentDirectory();
+		fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
+		curDir = _free(curDir);
+	    } else
+		fn = xstrdup(arg);
+	    (void) rpmCleanPath(fn);
+	}
+
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEPATHS, fn, 0);
+	if (qva->qva_mi == NULL && !provides_checked && !gotpattern)
 	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 
 	if (qva->qva_mi == NULL) {
 	    struct stat sb;
-	    if (Lstat(fn, &sb) != 0)
+	    if (!gotpattern && Lstat(fn, &sb) != 0)
 		rpmlog(RPMLOG_NOTICE, _("file %s: %s\n"), fn, strerror(errno));
 	    else
 		rpmlog(RPMLOG_NOTICE,
