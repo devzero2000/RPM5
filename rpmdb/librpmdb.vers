@@ -127,7 +127,6 @@ LIBRPMDB_0
     rpmdbOpen;
     rpmdbOpenAll;
     rpmdbOpenDatabase;
-    rpmdbRebuild;
     rpmdbRemove;
     rpmdbSync;
     rpmDisplayQueryTags;
