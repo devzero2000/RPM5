@@ -1434,21 +1434,24 @@ exit:
 int rpmdbMireApply(rpmdb db, rpmTag tag, rpmMireMode mode, const char * pat,
 		const char *** argvp)
 {
-    return dbiMireKeys(db, tag, mode, pat, NULL, argvp);
+    int rc = dbiMireKeys(db, tag, mode, pat, NULL, argvp);
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p, %s(%u), %d, \"%s\", %p) rc %d\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, argvp, rc);
+    return rc;
 }
 
 /**
  * Attempt partial matches on name[-version[-release]] strings.
  * @param dbi		index database handle (always RPMTAG_NVRA)
- * @param NVR		name[-version[-release]] string/pattern
+ * @param pat		pattern to match against secondary keys
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
 static rpmRC dbiFindMatches(dbiIndex dbi,
-		const char * NVR, /*@out@*/ dbiIndexSet * matches)
+		const char * pat, /*@out@*/ dbiIndexSet * matches)
 	/*@*/
 {
-    const char * s = NVR;
+    const char * s = pat;
     size_t ns = (s ? strlen(s) : 0);
     DBC * dbcursor = NULL;
     rpmRC rc = RPMRC_NOTFOUND;
@@ -1459,15 +1462,39 @@ static rpmRC dbiFindMatches(dbiIndex dbi,
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
-    {	rpmTag _tag = RPMTAG_NVRA;
-	rpmMireMode _mode = RPMMIRE_PCRE;
-	/* Add ^...$ *RE anchors. Escape pattern characters. */
-	static const char _pre[] = "^";
-	static const char _post[] = "(-[^-]+-[^-]+\\.[^.]+|-[^-]+\\.[^.]+|\\.[^.]+|)$";
-	const char * _pat = (s[0] == '^' || s[ns-1] == '$')
+    /* Add ^...$ *RE anchors. Escape pattern characters. */
+    {	rpmTag tag = dbi->dbi_rpmtag;
+	rpmMireMode mode = RPMMIRE_PCRE;
+	static const char _post_NVRA[] = "(-[^-]+-[^-]+\\.[^.]+|-[^-]+\\.[^.]+|\\.[^.]+|)$";
+	const char * _pat;
+
+	switch (tag) {
+	default:
+	    mode = RPMMIRE_PCRE;
+	    _pat = _str2PCREpat("^", s, ".*$");
+	    break;
+	case RPMTAG_NVRA:
+	    mode = RPMMIRE_PCRE;
+	    _pat = (s[0] == '^' || s[ns-1] == '$')
 		? xstrdup(s)
-		: _str2PCREpat(_pre, s, _post);
-	ret = dbiMireKeys(dbi->dbi_rpmdb, _tag, _mode, _pat, matches, NULL);
+		: _str2PCREpat("^", s, _post_NVRA);
+	    break;
+	case RPMTAG_FILEPATHS:
+	    if (s[0] == '^' || s[ns-1] == '$')
+		mode = RPMMIRE_PCRE;
+	    else
+#ifdef NOTYET
+	    if (s[0] == '/' && Glob_pattern_p(s, 1))
+		mode = RPMMIRE_GLOB;
+	    else
+#endif
+		mode = RPMMIRE_STRCMP;
+	    _pat = xstrdup(s);
+	    break;
+	}
+
+	ret = dbiMireKeys(dbi->dbi_rpmdb, tag, mode, _pat, matches, NULL);
+
 	_pat = _free(_pat);
     }
 
@@ -1580,8 +1607,8 @@ static void rpmmiFini(void * _mi)
 	next->mi_next = NULL;
     }
 
-    /* XXX there's code that traverses here w mi->mi_db == NULL. b0rked imho. */
-assert(mi->mi_db != NULL);
+    /* XXX NOTFOUND exits traverse here w mi->mi_db == NULL. b0rked imho. */
+    if (mi->mi_db) {
 	dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
 assert(dbi != NULL);				/* XXX sanity */
 
@@ -1595,6 +1622,7 @@ assert(dbi != NULL);				/* XXX sanity */
 	 */
 	(void) rpmdbClose(mi->mi_db);
 	mi->mi_db = NULL;
+    }
 
     (void) mireFreeAll(mi->mi_re, mi->mi_nre);
     mi->mi_re = NULL;
@@ -2454,11 +2482,15 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	tag = RPMTAG_NVRA;
 	/*@fallthrough@*/
     case RPMTAG_NVRA:
+    case RPMTAG_GROUP:
 	usePatterns = 1;
 	break;
     /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
     case RPMTAG_BASENAMES:
 	tag = RPMTAG_FILEPATHS;
+	/*@fallthrough@*/
+    case RPMTAG_FILEPATHS:
+	usePatterns = 1;
 	break;
     }
 
