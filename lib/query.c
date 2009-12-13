@@ -687,7 +687,7 @@ assert(fn != NULL);
     {	int mybase = 10;
 	const char * myarg = arg;
 	char * end = NULL;
-	unsigned recOffset;
+	uint32_t hdrNum;
 
 	/* XXX should be in strtoul */
 	if (*myarg == '0') {
@@ -698,24 +698,23 @@ assert(fn != NULL);
 		mybase = 16;
 	    }
 	}
-	recOffset = (unsigned) strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (recOffset == UINT_MAX)) {
+	hdrNum = (uint32_t) strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (hdrNum == UINT_MAX)) {
 	    rpmlog(RPMLOG_NOTICE, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmlog(RPMLOG_DEBUG, D_("package record number: %u\n"), recOffset);
-	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
+	rpmlog(RPMLOG_DEBUG, D_("package record number: %u\n"), (unsigned)hdrNum);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE,
-		_("record %u could not be read\n"), recOffset);
+		_("record %u could not be read\n"), (unsigned)hdrNum);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
     }	break;
 
     case RPMQV_PACKAGE:
-	/* XXX HACK to get rpmdbFindByLabel out of the API */
-	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_NVRA, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
 	    res = 1;
@@ -805,7 +804,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     default:
       if (giFlags & RPMGI_TSADD) {
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_LABEL, NULL, 0);
+	qva->qva_gi = rpmgiNew(ts, RPMTAG_NVRA, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts,
 		(giFlags | (RPMGI_NOGLOB               )));
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */

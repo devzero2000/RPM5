@@ -104,7 +104,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	case '+':	pkgN++;		upgrade = 1;	break;
 	default:			upgrade = 1;	break;
 	}
-	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, pkgN, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NVRA, pkgN, 0);
 	while ((h = rpmmiNext(mi)) != NULL) {
 	    xx = (upgrade >= 0)
 	        ? rpmtsAddInstallElement(ts, h, (fnpyKey)pkgN, upgrade, NULL)

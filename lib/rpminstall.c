@@ -338,7 +338,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     rpmRC rc = RPMRC_OK;
     int xx;
 
-    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+    mi = rpmtsInitIterator(ts, RPMTAG_NVRA, arg, 0);
     if (mi == NULL)
 	return RPMRC_NOTFOUND;
 
@@ -762,7 +762,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	rpmmi mi;
 
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
-	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NVRA, *arg, 0);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), *arg);
 	    numFailed++;

@@ -2440,7 +2440,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     rpmmi mi;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
-    int isLabel = 0;
+    int usePatterns = 0;
 
     if (db == NULL)
 	return NULL;
@@ -2452,7 +2452,9 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     case RPMDBI_LABEL:
 	tag = RPMTAG_NVRA;
-	isLabel = 1;
+	/*@fallthrough@*/
+    case RPMTAG_NVRA:
+	usePatterns = 1;
 	break;
     /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
     case RPMTAG_BASENAMES:
@@ -2494,8 +2496,8 @@ assert(keylen == sizeof(hdrNum));
 	/* XXX Special case #3: empty iterator with rpmmiGrow() */
 	assert(keylen == 0);
     }
-    else if (isLabel) {
-	/* XXX Special case #4: gather primary keys for a NVR label. */
+    else if (usePatterns) {
+	/* XXX Special case #4: gather primary keys with patterns. */
 	rpmRC rc;
 
 	rc = dbiFindMatches(dbi, keyp, &set);
