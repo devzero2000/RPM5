@@ -54,7 +54,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     rpmRC rc = RPMRC_OK;
     int xx;
 
-    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+    mi = rpmtsInitIterator(ts, RPMTAG_NVRA, arg, 0);
     if (mi == NULL)
 	return RPMRC_NOTFOUND;
 
