@@ -11,7 +11,9 @@
 #include <rpmtag.h>
 #include <rpmdb.h>
 
+#define	_FPRINT_INTERNAL
 #include "fprint.h"
+
 #include "debug.h"
 
 /*@access hashTable @*/
@@ -156,7 +158,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 		fp.subDir++;
 	    if (fp.subDir[0] == '\0' ||
 	    /* XXX don't bother saving '/' as subdir */
-	       (fp.subDir[0] == '/' && fp.subDir[1] == '\0'))
+	      (fp.subDir[0] == '/' && fp.subDir[1] == '\0'))
 		fp.subDir = NULL;
 	    fp.baseName = baseName;
 	    if (!scareMem && fp.subDir != NULL)
@@ -287,3 +289,249 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     baseNames = _free(baseNames);
 }
 #endif
+
+#define	_RPMFI_INTERNAL
+#include "rpmfi.h"
+#define	_RPMTE_INTERNAL
+#include "rpmte.h"
+
+static inline /*@null@*/
+struct fingerPrint_s * __rpmfiFpsIndex(rpmfi fi, int ix)
+{
+    struct fingerPrint_s * fps = NULL;
+    if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < (int)fi->fc) {
+	struct fingerPrint_s * fi_fps = fi->_fps;
+	fps = fi_fps + ix;
+    }
+    return fps;
+}
+
+static inline
+int __rpmfiFX(rpmfi fi)
+{
+    return (fi != NULL ? fi->i : -1);
+}
+
+static inline
+int __rpmfiSetFX(rpmfi fi, int fx)
+{
+    int i = -1;
+
+    if (fi != NULL && fx >= 0 && fx < (int)fi->fc) {
+	i = fi->i;
+	fi->i = fx;
+	fi->j = fi->dil[fi->i];
+    }
+    return i;
+}
+
+static inline
+const char * __rpmfiFLink(rpmfi fi)
+{
+    const char * flink = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
+	if (fi->flinks != NULL)
+	    flink = fi->flinks[fi->i];
+    }
+    return flink;
+}
+
+static inline
+rpmfi __rpmteFI(rpmte te, rpmTag tag)
+{
+    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
+    if (te == NULL)
+	return NULL;
+
+    if (tag == RPMTAG_BASENAMES)
+	return te->fi;
+    else
+	return NULL;
+    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
+}
+
+/*
+ * Concatenate strings with dynamically (re)allocated
+ * memory what prevents static buffer overflows by design.
+ * *dest is reallocated to the size of strings to concatenate.
+ * List of strings has to be NULL terminated.
+ *
+ * Note:
+ * 1) char *buf = rstrscat(NULL,"string",NULL); is the same like rstrscat(&buf,"string",NULL);
+ * 2) rstrscat(&buf,NULL) returns buf
+ * 3) rstrscat(NULL,NULL) returns NULL
+ * 4) *dest and argument strings can overlap
+ */
+static char * rstrscat(char **dest, const char *arg, ...)
+{
+    va_list ap;
+    size_t arg_size, dst_size;
+    const char *s;
+    char *dst, *p;
+
+    dst = dest ? *dest : NULL;
+
+    if ( arg == NULL ) {
+        return dst;
+    }
+
+    va_start(ap, arg);
+    for (arg_size=0, s=arg; s; s = va_arg(ap, const char *))
+        arg_size += strlen(s);
+    va_end(ap);
+
+    dst_size = dst ? strlen(dst) : 0;
+    dst = xrealloc(dst, dst_size+arg_size+1);    /* include '\0' */
+    p = &dst[dst_size];
+
+    va_start(ap, arg);
+    for (s = arg; s; s = va_arg(ap, const char *)) {
+        size_t size = strlen(s);
+        memmove(p, s, size);
+        p += size;
+    }
+    *p = '\0';
+
+    if ( dest ) {
+        *dest = dst;
+    }
+
+    return dst;
+}
+
+void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
+		void * _p, int filenr)
+{
+    rpmte p = _p;
+    rpmfi fi = __rpmteFI(p, RPMTAG_BASENAMES);
+    struct fingerPrint_s current_fp;
+    char * endsubdir;
+    char * endbasename;
+    char * currentsubdir;
+    size_t lensubDir;
+
+    struct rpmffi_s * recs;
+    int numRecs;
+    int i, fiFX;
+    fingerPrint * fp = __rpmfiFpsIndex(fi, filenr);
+    int symlinkcount = 0;
+
+    struct rpmffi_s * ffi = alloca(sizeof(*ffi));
+    ffi->p = p;
+    ffi->fileno = filenr;
+
+    if (fp->subDir == NULL) {
+	 htAddEntry(fphash, fp, ffi);
+	 return;
+    }
+
+    lensubDir = strlen(fp->subDir);
+    current_fp = *fp;
+    currentsubdir = xstrdup(fp->subDir);
+
+    /* Set baseName to the upper most dir */
+    current_fp.baseName = endbasename = currentsubdir;
+    while (*endbasename != '/' && endbasename < currentsubdir + lensubDir - 1)
+	 endbasename++;
+    *endbasename = '\0';
+
+    current_fp.subDir = endsubdir = NULL; // no subDir for now
+
+    while (endbasename < currentsubdir + lensubDir - 1) {
+	 char found;
+	 found = 0;
+
+	 htGetEntry(symlinks, &current_fp,
+		    &recs, &numRecs, NULL);
+
+	 for (i = 0; i < numRecs; i++) {
+	     rpmfi foundfi;
+	     int filenr;
+	     char const *linktarget;
+	     char *link;
+
+	     foundfi =  __rpmteFI(recs[i].p, RPMTAG_BASENAMES);
+	     fiFX = __rpmfiFX(foundfi);
+
+	     filenr = recs[i].fileno;
+	     __rpmfiSetFX(foundfi, filenr);
+	     linktarget = __rpmfiFLink(foundfi);
+
+	     if (linktarget && *linktarget != '\0') {
+		   /* this "directory" is a symlink */
+		   link = NULL;
+		   if (*linktarget != '/') {
+			rstrscat(&link, current_fp.entry->dirName,
+				 current_fp.subDir ? "/" : "",
+				 current_fp.subDir ? current_fp.subDir : "",
+				 "/", NULL);
+		   }
+		   rstrscat(&link, linktarget, "/", NULL);
+		   if (strlen(endbasename+1)) {
+			rstrscat(&link, endbasename+1, "/", NULL);
+		   }
+
+		   *fp = fpLookup(fpc, link, fp->baseName, 0);
+
+		   free(link);
+		   free(currentsubdir);
+		   symlinkcount++;
+
+		   /* setup current_fp for the new path */
+		   found = 1;
+		   current_fp = *fp;
+		   if (fp->subDir == NULL) {
+		     /* directory exists - no need to look for symlinks */
+		     htAddEntry(fphash, fp, ffi);
+		     return;
+		   }
+		   lensubDir = strlen(fp->subDir);
+		   currentsubdir = xstrdup(fp->subDir);
+		   current_fp.subDir = endsubdir = NULL; // no subDir for now
+
+		   /* Set baseName to the upper most dir */
+		   current_fp.baseName = currentsubdir;
+		   endbasename = currentsubdir;
+		   while (*endbasename != '/' &&
+			  endbasename < currentsubdir + lensubDir - 1)
+			endbasename++;
+		   *endbasename = '\0';
+		   break;
+
+	     }
+	     __rpmfiSetFX(foundfi, fiFX);
+	 }
+
+	 if (symlinkcount > 50) {
+	     // found too many symlinks in the path
+	     // most likley a symlink cicle
+	     // giving up
+	     // TODO warning/error
+	     break;
+	 }
+
+	 if (found) {
+	     continue; // restart loop after symlink
+	 }
+
+	 if (current_fp.subDir == NULL) {
+              /* after first round set former baseName as subDir */
+	     current_fp.subDir = currentsubdir;
+	 } else {
+	     *endsubdir = '/'; // rejoin the former baseName with subDir
+	 }
+	 endsubdir = endbasename;
+
+	 /* set baseName to the next lower dir */
+	 endbasename++;
+	 while (*endbasename != '\0' && *endbasename != '/')
+	     endbasename++;
+	 *endbasename = '\0';
+	 current_fp.baseName = endsubdir + 1;
+
+    }
+    free(currentsubdir);
+    htAddEntry(fphash, fp, ffi);
+
+}

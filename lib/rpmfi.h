@@ -189,6 +189,9 @@ struct rpmfi_s {
 /*@unused@*/
     rpmuint32_t * odil;		/*!< Original dirindex(s) (from header) */
 
+/*@only@*/ /*@null@*/
+    void * _fps;		/*!< File fingerprint(s). */
+
 /*@only@*/ /*@relnull@*/
     unsigned char * digests;	/*!< File digest(s) in binary. */
     rpmuint32_t digestalgo;	/*!< File digest algorithm. */

@@ -36,6 +36,13 @@ struct fprintCache_s {
     hashTable ht;			/*!< hashed by dirName */
 };
 
+#if defined(_FPRINT_INTERNAL)
+struct rpmffi_s {
+    rpmte p;
+    int fileno;
+};
+#endif	/* _FPRINT_INTERNAL */
+
 /**
  * Associates a trailing sub-directory and final base name with an existing
  * directory finger print.
@@ -154,6 +161,19 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 		  rpmuint32_t fileCount, fingerPrint * fpList)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies cache, *fpList, fileSystem, internalState @*/;
+
+/**
+ * Check file for to be installed symlinks in their path,
+ *  correct their fingerprint and add it to newht.
+ * @param ht		hash table containing all files fingerprints
+ * @param newht		hash table to add the corrected fingerprints
+ * @param fpc		fingerprint cache
+ * @param _p		transaction element
+ * @param filenr	the number of the file we are dealing with
+ */
+void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
+		void * _p, int filenr)
+	/*@*/;
 
 #ifdef __cplusplus
 }
