@@ -2230,14 +2230,15 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    default:
 		break;
 	    case DB_RUNRECOVERY:
-		rpmlog(RPMLOG_ERR, _("Re-opening dbenv with DB_RECOVER ...\n"));
+		rpmlog(RPMLOG_NOTICE, _("Re-opening dbenv with DB_RECOVER ...\n"));
 		dbi->dbi_eflags |= DB_RECOVER;
 		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 		dbi->dbi_eflags &= ~DB_RECOVER;
 		if (rc) {
-		    rpmlog(RPMLOG_ERR, _("RUNRECOVERY failed, exiting ...\n"));
+		    rpmlog(RPMLOG_ERR, _("\nrecovery failed. Exiting ...\n"));
 		    exit(EXIT_FAILURE);
 		}
+		rpmlog(RPMLOG_NOTICE, _(".\nrecovery succeeded.\n"));
 assert(dbenv);
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
