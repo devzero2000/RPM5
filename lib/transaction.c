@@ -924,6 +924,93 @@ rpmfi rpmtsiFi(const rpmtsi tsi)
     /*@=compdef =refcounttrans =usereleased @*/
 }
 
+/* ================================================================= */
+
+/* Add fingerprint for each file not skipped. */
+static void addFingerprints(rpmts ts, uint32_t fileCount, hashTable ht,
+		fingerPrintCache fpc)
+{
+    rpmtsi pi;
+    rpmte p;
+    rpmfi fi;
+    int i;
+
+#ifdef	REFERENCE
+    hashTable symlinks = htCreate(fileCount/16+16, 0, 0, fpHashFunction, fpEqual);
+#endif
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	(void) rpmdbCheckSignals();
+
+	if (p->isSource) continue;
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+
+	rpmfiFpLookup(fi, fpc);
+
+	/* Collect symlinks. */
+ 	fi = rpmfiInit(fi, 0);
+ 	if (fi != NULL)		/* XXX lclint */
+	while ((i = rpmfiNext(fi)) >= 0) {
+#ifdef	REFERENCE
+	    char const *linktarget;
+	    linktarget = rpmfiFLink(fi);
+	    if (!(linktarget && *linktarget != '\0'))
+		continue;
+#endif
+	    if (iosmFileActionSkipped(fi->actions[i]))
+		/*@innercontinue@*/ continue;
+#ifdef	REFERENCE
+	    {	struct rpmffi_s ffi;
+		ffi.p = p;
+		ffi.fileno = i;
+		htAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
+	    }
+#else
+	    /*@-dependenttrans@*/
+	    htAddEntry(ts->ht, fi->fps + i, (void *) fi);
+	    /*@=dependenttrans@*/
+#endif
+	}
+
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
+
+    }
+    pi = rpmtsiFree(pi);
+
+#ifdef	REFERENCE
+    /* ===============================================
+     * Check fingerprints if they contain symlinks
+     * and add them to the hash table
+     */
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	(void) rpmdbCheckSignals();
+
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;	/* XXX can't happen */
+	fi = rpmfiInit(fi, 0);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
+		continue;
+	    fpLookupSubdir(symlinks, ht, fpc, p, i);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+    }
+    pi = rpmtsiFree(pi);
+
+    symlinks = htFree(symlinks);
+#endif
+
+}
+
+/* ================================================================= */
+
 /**
  * Force add a failed package into the rpmdb.
  * @param ts		current transaction set
@@ -1387,6 +1474,7 @@ fprintf(stderr, "--> %s(%p,0x%x,0x%x) tsFlags 0x%x\n", msg, ts, (unsigned) okPro
     /* Get available space on mounted file systems. */
     xx = rpmtsInitDSI(ts);
 
+    totalFileCount = 0;
     /* ===============================================
      * For packages being installed:
      * - verify package epoch:version-release is newer.
@@ -1620,9 +1708,12 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
     ts->ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
 
+    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
+#ifdef	DYING
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
@@ -1649,8 +1740,9 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
 
     }
     pi = rpmtsiFree(pi);
-
-    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+#else
+    addFingerprints(ts, totalFileCount, ts->ht, fpc);
+#endif
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1904,12 +1996,13 @@ assert(psm != NULL);
 				7, numRemoved);
     }
 
-    /* ===============================================
-     * Install and remove packages.
-     */
 #ifdef	NOTYET
     xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL, &ts->txn);
 #endif
+
+    /* ===============================================
+     * Install and remove packages.
+     */
 
 /*@-nullpass@*/
     pi = rpmtsiInit(ts);
@@ -2162,6 +2255,7 @@ assert(psm != NULL);
     }
 
     lock = rpmtsFreeLock(lock);
+
     if (sx != NULL) sx = rpmsxFree(sx);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */

@@ -300,8 +300,7 @@ struct fingerPrint_s * __rpmfiFpsIndex(rpmfi fi, int ix)
 {
     struct fingerPrint_s * fps = NULL;
     if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < (int)fi->fc) {
-	struct fingerPrint_s * fi_fps = fi->_fps;
-	fps = fi_fps + ix;
+	fps = fi->fps + ix;
     }
     return fps;
 }

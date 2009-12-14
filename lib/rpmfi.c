@@ -20,6 +20,9 @@
 #include <rpmtypes.h>
 #include <rpmtag.h>
 
+#define	_FPRINT_INTERNAL
+#include "fprint.h"
+
 #define	_IOSM_INTERNAL
 #define	_RPMFI_INTERNAL
 #include "fsm.h"	/* XXX newFSM() */
@@ -457,6 +460,23 @@ void * rpmfiInclude(const rpmfi fi)
 int rpmfiNInclude(const rpmfi fi)
 {
     return (fi != NULL ? fi->ninclude : 0);
+}
+
+struct fingerPrint_s * rpmfiFpsIndex(rpmfi fi, int ix)
+{
+    struct fingerPrint_s * fps = NULL;
+    if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < (int)fi->fc) {
+	fps = fi->fps + ix;
+    }
+    return fps;
+}
+
+void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
+{
+    if (fi->fc > 0 && fi->fps == NULL) {
+	fi->fps = xcalloc(fi->fc, sizeof(*fi->fps));
+    }
+    fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 }
 
 int rpmfiNext(rpmfi fi)

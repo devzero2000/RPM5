@@ -189,9 +189,6 @@ struct rpmfi_s {
 /*@unused@*/
     rpmuint32_t * odil;		/*!< Original dirindex(s) (from header) */
 
-/*@only@*/ /*@null@*/
-    void * _fps;		/*!< File fingerprint(s). */
-
 /*@only@*/ /*@relnull@*/
     unsigned char * digests;	/*!< File digest(s) in binary. */
     rpmuint32_t digestalgo;	/*!< File digest algorithm. */
@@ -594,6 +591,22 @@ void * rpmfiInclude(/*@null@*/ const rpmfi fi)
  */
 int rpmfiNInclude(/*@null@*/ const rpmfi fi)
 	/*@*/;
+
+#if defined(_RPMFI_INTERNAL)
+#include "fprint.h"
+/**
+ * Return fingerprint from file info set.
+ * @param fi		file info set
+ * @param ix
+ * @return		fingerprint, NULL on invalid
+ */
+/*@null@*/
+struct fingerPrint_s * rpmfiFpsIndex(rpmfi fi, int ix)
+	/*@*/;
+
+void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
+	/*@*/;
+#endif
 
 /**
  * Return next file iterator index.
