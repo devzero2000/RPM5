@@ -212,7 +212,6 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
 dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 {
     static int _oneshot = 0;
-    static int _dbapi_rebuild;
     size_t dbix;
     dbiIndex dbi = NULL;
     int _dbapi;
@@ -232,8 +231,6 @@ dbiIndex dbiOpen(rpmdb db, rpmTag tag, /*@unused@*/ unsigned int flags)
 	(void) checkfd(_devnull, STDERR_FILENO, O_WRONLY);
 #endif
 /*@=noeffect@*/
-    _dbapi_rebuild = rpmExpandNumeric("%{?_dbapi_rebuild}%{!?_dbapi_rebuild:4}");
-assert(_dbapi_rebuild == 3 || _dbapi_rebuild == 4);
 	_oneshot++;
    }
 
@@ -526,7 +523,7 @@ struct rpmmi_s {
     unsigned int	mi_count;
     uint32_t		mi_setx;
     void *		mi_keyp;
-    int			mi_index;
+    const char *	mi_primary;
     size_t		mi_keylen;
 /*@refcounted@*/ /*@null@*/
     Header		mi_h;
@@ -1633,7 +1630,7 @@ assert(dbi != NULL);				/* XXX sanity */
 
     mi->mi_keyp = _free(mi->mi_keyp);
     mi->mi_keylen = 0;
-    mi->mi_index = 0;
+    mi->mi_primary = _free(mi->mi_primary);
 
     /* XXX this needs to be done elsewhere, not within destructor. */
     (void) rpmdbCheckSignals();
@@ -1668,7 +1665,7 @@ unsigned int rpmmiCount(rpmmi mi) {
     unsigned int rc;
 
     /* XXX Secondary db associated with Packages needs cursor record count */
-    if (mi && mi->mi_index && mi->mi_dbc == NULL) {
+    if (mi && mi->mi_primary && mi->mi_dbc == NULL) {
 	dbiIndex dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
@@ -2123,7 +2120,7 @@ static int rpmmiGet(dbiIndex dbi, DBC * dbcursor, DBT * kp, DBT * pk, DBT * vp,
 
 	    vp->ulen = (u_int32_t)uhlen;
 	    vp->data = uh;
-	    if (dbi->dbi_index && pk)
+	    if (dbi->dbi_primary && pk)
 		rc = dbiPget(dbi, dbcursor, kp, pk, vp, flags);
 	    else
 		rc = dbiGet(dbi, dbcursor, kp, vp, flags);
@@ -2163,7 +2160,9 @@ unsigned int _flags;
     if (mi == NULL)
 	return NULL;
 
-tag = (mi->mi_set == NULL && mi->mi_index ? mi->mi_rpmtag : RPMDBI_PACKAGES);
+    /* Find the tag to open. */
+    tag = (mi->mi_set == NULL && mi->mi_primary != NULL
+		? mi->mi_rpmtag : RPMDBI_PACKAGES);
     dbi = dbiOpen(mi->mi_db, tag, 0);
     if (dbi == NULL)
 	return NULL;
@@ -2215,7 +2214,7 @@ next:
 	k.size = (UINT32_T)sizeof(mi->mi_offset);
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, NULL, &v, DB_SET);
     }
-    else if (dbi->dbi_index) {
+    else if (dbi->dbi_primary) {
 	rc = rpmmiGet(dbi, mi->mi_dbc, &k, &p, &v, _flags);
 	switch (rc) {
 	default:
@@ -2477,8 +2476,8 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 
     switch (tag) {
     default:	break;
-    /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
-    case RPMDBI_LABEL:
+    case 2:	/* XXX HACK to remove RPMDBI_LABEL from RPM. */
+	/* XXX rpmlog message warning RPMDBI is deprecated? */
 	tag = RPMTAG_NVRA;
 	/*@fallthrough@*/
     case RPMTAG_NVRA:
@@ -2548,8 +2547,8 @@ assert(keylen == sizeof(hdrNum));
 	    return NULL;
 	}
     }
-    else if (dbi->dbi_index) {
-	/* XXX Special case #5: secondary db associated with primary Packages */
+    else if (dbi->dbi_primary != NULL) {
+	/* XXX Special case #5: secondary ndex associated with primary table. */
     }
     else {
 	/* Common case: retrieve join keys. */
@@ -2566,20 +2565,21 @@ assert(0);
     mi->mi_setx = 0;
     mi->mi_count = (set ? set->count : 0);
 
-    mi->mi_index = (dbi && dbi->dbi_index ? 1 : 0);
+    mi->mi_primary = (dbi && dbi->dbi_primary
+		? xstrdup(dbi->dbi_primary) : NULL);
 
-    /* Coerce and swab integer keys, save the key in the iterator. */
+    /* Coerce/swab integer keys. Save key ind keylen in the iterator. */
     switch (tagType(tag) & 0xffff) {
-    case RPM_UINT8_TYPE:	/* XXX coerce to uint32_t */
+    case RPM_UINT8_TYPE:
 assert(keylen == sizeof(he->p.ui8p[0]));
-	mi->mi_keylen = sizeof(he->p.ui32p[0]);
+	mi->mi_keylen = sizeof(he->p.ui32p[0]);	/* XXX coerce to uint32_t */
 	mi->mi_keyp = he->p.ui32p = xmalloc(mi->mi_keylen);
 	he->p.ui32p[0] = 0;
 	memcpy(&he->p.ui8p[3], keyp, keylen);
 	break;
-    case RPM_UINT16_TYPE:	/* XXX coerce to uint32_t */
+    case RPM_UINT16_TYPE:
 assert(keylen == sizeof(he->p.ui16p[0]));
-	mi->mi_keylen = sizeof(he->p.ui32p[0]);
+	mi->mi_keylen = sizeof(he->p.ui32p[0]);	/* XXX coerce to uint32_t */
 	mi->mi_keyp = he->p.ui32p = xmalloc(mi->mi_keylen);
 	he->p.ui32p[0] = 0;
 	memcpy(&he->p.ui16p[1], keyp, keylen);

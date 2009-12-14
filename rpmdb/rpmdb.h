@@ -337,15 +337,12 @@ struct _dbiIndex {
     long dbi_shmkey;		/*!< shared memory base key */
     int	dbi_api;		/*!< Berkeley API type */
 
-    int	dbi_verify_on_close;
     int	dbi_use_dbenv;		/*!< use db environment? */
     int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
     int	dbi_temporary;		/*!< non-persistent index/table */
-    int dbi_noload;		/*!< standalone index/table */
     int	dbi_debug;
-    int	dbi_byteswapped;
 
     rpmbf dbi_bf;
 
@@ -420,7 +417,9 @@ struct _dbiIndex {
 	/* queue access parameters */
     unsigned int dbi_q_extentsize;
 
-    int dbi_index;
+/*@null@*/
+    const char * dbi_primary;	/*!< Primary table for secondary index. */
+/*@null@*/
     const char * dbi_foreign;
 
 /*@refcounted@*/
@@ -833,9 +832,7 @@ int dbiJoin(dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
 int dbiByteSwapped(dbiIndex dbi)
 	/*@modifies dbi @*/
 {
-    if (dbi->dbi_byteswapped == -1)
-        dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
-    return dbi->dbi_byteswapped;
+    return (*dbi->dbi_vec->byteswapped) (dbi);
 }
 
 /** \ingroup dbi

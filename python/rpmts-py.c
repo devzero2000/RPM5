@@ -472,7 +472,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
     if (PyString_Check(o) || PyUnicode_Check(o)) {
 	char * name = PyString_AsString(o);
 
-	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
+	mi = rpmtsInitIterator(s->ts, RPMTAG_NVRA, name, 0);
 	count = rpmmiCount(mi);
 	if (count <= 0) {
 	    mi = rpmmiFree(mi);

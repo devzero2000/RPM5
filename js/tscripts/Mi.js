@@ -1,7 +1,6 @@
 if (loglvl) print("--> Mi.js");
 
 var RPMDBI_PACKAGES = 0;
-var RPMDBI_LABEL = 2;
 var RPMTAG_NAME = 1000;
 var RPMTAG_VERSION = 1001;
 var RPMTAG_RELEASE = 1002;
@@ -97,14 +96,14 @@ doITER(ts, RPMTAG_NAME, N);
 doITER(ts, RPMTAG_NVRA, NVRA);
 
 // --- Retrieve by N, N-V, N-V-R, and N-V-R.A strings.
-doITER(ts, RPMDBI_LABEL, N);
-doITER(ts, RPMDBI_LABEL, N+"-"+V);
-doITER(ts, RPMDBI_LABEL, N+"-"+V+"-"+R);
-doITER(ts, RPMDBI_LABEL, N+"-"+V+"-"+R+"."+A);
+doITER(ts, RPMTAG_NVRA, N);
+doITER(ts, RPMTAG_NVRA, N+"-"+V);
+doITER(ts, RPMTAG_NVRA, N+"-"+V+"-"+R);
+doITER(ts, RPMTAG_NVRA, N+"-"+V+"-"+R+"."+A);
 
 // --- Retrieve by N pattern.
-doITER(ts, RPMDBI_LABEL, "\^"+N+"-[0-9].*$");
-doITER(ts, RPMDBI_LABEL, "\^"+N+"-[0-9].*"+"\."+A+"$");
+doITER(ts, RPMTAG_NVRA, "\^"+N+"-[0-9].*$");
+doITER(ts, RPMTAG_NVRA, "\^"+N+"-[0-9].*"+"\."+A+"$");
 
 // --- Retrieve by N with various mire pattern selectors.
 var mi = new Mi(ts, RPMTAG_NAME, N);

@@ -1,8 +1,13 @@
 
 5.2b1 -> 5.3a1
-    - jbj: rpmdb: permit patterns on (little used) secondary indices.
-    - jbj: rpmdb: stub-in an event_notify callback.
-    - jbj: rpmdb: wire up DB_RECOVER progress feedback callback.
+    - jbj: rpmdb: Stub-in RPMDBI_REPACKAGES/RPMDBI_REPOSITORY stores.
+    - jbj: rpmdb: Eliminate RPMDBI_LABEL. Use RPMTAG_NVRA instead.
+    - jbj: rpmmi: Prepare for multiple primary stores w mi_index -> mi_primary.
+    - jbj: dbi: Prepare for multiple primary stores w dbi_index -> dbi_primary.
+    - jbj: dbi: Eliminate verify_on_close/noload/byteswapped coprolites.
+    - jbj: rpmdb: Permit patterns on (little used) secondary indices.
+    - jbj: rpmdb: Stub-in an event_notify callback.
+    - jbj: rpmdb: Wire up DB_RECOVER progress feedback callback.
     - jbj: rpmlio: Register logio dispatch handler with db_recover.
     - jbj: rpmdb: Switch to inplace rpmtsRebuildDB(), eliminate rpmdbRebuild().
     - jbj: rpmmi: Eliminate rpmmiSetHdrChk(), get ts out of the rpmdb layer.

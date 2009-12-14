@@ -277,8 +277,6 @@ DB_READ_UNCOMITTED
 #endif
 
 #if defined(WITH_DB)
- { "verify",	0,POPT_ARG_NONE,	&db3dbi.dbi_verify_on_close, 0,
-	NULL, NULL },
  { "usedbenv",	0,POPT_ARG_NONE,	&db3dbi.dbi_use_dbenv, 0,
 	NULL, NULL },
 #endif
@@ -290,9 +288,7 @@ DB_READ_UNCOMITTED
  { "lockdbfd",	0,POPT_ARG_NONE,	&db3dbi.dbi_lockdbfd, 0,
 	NULL, NULL },
 #endif
- { "noload",	0,POPT_ARG_NONE,	&db3dbi.dbi_noload, 0,
-	NULL, NULL },
- { "index",	0,POPT_ARG_NONE,	&db3dbi.dbi_index, 0,
+ { "primary",	0,POPT_ARG_STRING,	&db3dbi.dbi_primary, 0,
 	NULL, NULL },
  { "foreign",	0,POPT_ARG_STRING,	&db3dbi.dbi_foreign, 0,
 	NULL, NULL },
@@ -457,6 +453,7 @@ static void dbiFini(void * _dbi)
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_seq_id = _free(dbi->dbi_seq_id);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
+	dbi->dbi_primary = _free(dbi->dbi_primary);
 	dbi->dbi_foreign = _free(dbi->dbi_foreign);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
     }
@@ -625,8 +622,6 @@ assert(dbOpts != NULL && *dbOpts != '\0');
 /*@-sizeoftype@*/
     dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
 /*@=sizeoftype@*/
-
-    dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
 #if defined(WITH_DB)
     dbi->dbi_use_dbenv = 1;	/* dbenv is always used now. */

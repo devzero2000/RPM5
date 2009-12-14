@@ -708,7 +708,7 @@ fprintf(stderr, "==> %s(%p, %s(%u), %p) app_private %p\n", __FUNCTION__, dbenv, 
 }
 
 static void
-rpmdbe_feedback(DB_ENV * dbenv, u_int32_t opcode, int percent)
+rpmdbe_feedback(DB_ENV * dbenv, int opcode, int percent)
 	/*@*/
 {
     dbenv = NULL;
@@ -1051,26 +1051,6 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,0x%x) rc %d\n", __FUNCTION__, dbi, dbfile, 
 }
 /*@=mustmod@*/
 #endif	/* NOTYET */
-
-/*@-mustmod@*/
-static int db3verify(dbiIndex dbi, /*@null@*/ const char * dbfile,
-		/*@unused@*/ /*@null@*/ const char * dbsubfile, FILE * fp,
-		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    DB * db = dbi->dbi_db;
-    int rc;
-
-assert(db != NULL);
-    rc = db->verify(db, dbfile, dbsubfile, fp, flags);
-    rc = cvtdberr(dbi, "db->verify", rc, _debug);
-
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%s,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbfile, dbsubfile, fp, flags, rc));
-
-    return rc;
-}
-/*@=mustmod@*/
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
@@ -1613,67 +1593,6 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rpmdb->db_opens--;
     }
 
-    if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
-	DB_ENV * dbenv = NULL;
-	int eflags;
-
-	/*@-moduncon@*/ /* FIX: annotate db3 methods */
-	rc = db_env_create(&dbenv, 0);
-	/*@=moduncon@*/
-	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
-	if (rc || dbenv == NULL) goto exit;
-
-	/*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
-/*@-castfcnptr@*/
-	dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
-/*@=castfcnptr@*/
-	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
-	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
- /*	dbenv->set_paniccall(???) */
-	/*@=noeffectuncon@*/
-
-	if (dbi->dbi_tmpdir) {
-	    /*@-mods@*/
-	    const char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
-	    /*@=mods@*/
-	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
-	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
-	    tmpdir = _free(tmpdir);
-	    if (rc) goto exit;
-	}
-	    
-	eflags = DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON;
-	rc = (dbenv->open) (dbenv, dbhome, eflags, 0);
-	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
-	if (rc) goto exit;
-
-	/*@-moduncon -nullstate@*/ /* FIX: annotate db3 methods */
-	rc = db_create(&db, dbenv, 0);
-	/*@=moduncon =nullstate@*/
-	rc = cvtdberr(dbi, "db_create", rc, _debug);
-
-	if (db != NULL) {
-		/*@-mods@*/
-		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
-		const char * _dbsubfile = NULL;
-		FILE * _fp = NULL;
-		/*@=mods@*/
-
-		rc = db3verify(dbi, dbf, _dbsubfile, _fp, flags);
-
-		rpmlog(RPMLOG_DEBUG, D_("verified db index       %s/%s\n"),
-			(dbhome ? dbhome : ""),
-			(dbfile ? dbfile : dbiBN));
-
-		dbf = _free(dbf);
-	}
-	xx = dbenv->close(dbenv, 0);
-	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
-	if (rc == 0 && xx) rc = xx;
-    }
-
-exit:
-
 DBIDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
 
     dbi->dbi_db = NULL;
@@ -2164,7 +2083,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
     /* XXX permit DB_TRUNCATE iff a secondary index. */
-    if (!dbi->dbi_index) oflags &= ~DB_TRUNCATE;
+    if (dbi->dbi_primary) oflags &= ~DB_TRUNCATE;
 
 #if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
     if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
@@ -2185,7 +2104,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    dbi->dbi_oeflags |= DB_CREATE;
 	}
 	/* XXX permit DB_TRUNCATE iff a secondary index. */
-	if (dbi->dbi_index && (dbi->dbi_mode & O_TRUNC)) oflags |= DB_TRUNCATE;
+	if (dbi->dbi_primary && (dbi->dbi_mode & O_TRUNC))
+	    oflags |= DB_TRUNCATE;
     }
 
     /*
@@ -2301,12 +2221,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if (oflags & (DB_CREATE|DB_TRUNCATE))
 	dbi_type = dbi->dbi_type;
-
-    /*
-     * Turn off verify-on-close if opening read-only.
-     */
-    if (oflags & DB_RDONLY)
-	dbi->dbi_verify_on_close = 0;
 
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
@@ -2630,12 +2544,17 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
 	*dbip = dbi;
-	if (dbi->dbi_index) {
+	if (dbi->dbi_primary) {
+	    rpmTag Ptag = tagValue(dbi->dbi_primary);
+	    dbiIndex Pdbi = NULL;
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
 	    int _flags = DB_IMMUTABLE_KEY;
+assert(Ptag == RPMDBI_PACKAGES && Ptag != rpmtag);
+	    Pdbi = dbiOpen(rpmdb, Ptag, 0);
+assert(Pdbi != NULL);
 	    if (oflags & (DB_CREATE|DB_TRUNCATE)) _flags |= DB_CREATE;
-	    xx = db3associate(rpmdb->_dbi[0], dbi, _callback, _flags);
+	    xx = db3associate(Pdbi, dbi, _callback, _flags);
 	}
 	if (dbi->dbi_seq_id) {
 	    char * end = NULL;
@@ -2651,7 +2570,6 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 		xx = seqid_init(dbi, dbi->dbi_seq_id, 0, &dbi->dbi_seq);
 	}
     } else {
-	dbi->dbi_verify_on_close = 0;
 	(void) db3close(dbi, 0);
 	dbi = NULL;
     }

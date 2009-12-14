@@ -316,8 +316,8 @@ package or when debugging this package.\
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
 
-%_bt_dupsort    bt_dupsort index
-%_h_dupsort     h_dupsort index
+%_bt_dupsort    bt_dupsort primary=Packages
+%_h_dupsort     h_dupsort primary=Packages
 
 %_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
 
@@ -372,7 +372,7 @@ package or when debugging this package.\
 %_dbi_config_4_Group            %{_dbi_sqlconfig}
 %_dbi_config_4_Installtid       %{_dbi_sqlconfig}
 %_dbi_config_4_Name             %{_dbi_sqlconfig}
-%_dbi_config_4_Nvra             %{_dbi_sqlconfig} noload
+%_dbi_config_4_Nvra             %{_dbi_sqlconfig}
 %_dbi_config_4_Obsoletename     %{_dbi_sqlconfig}
 %_dbi_config_4_Obsoleteyamlentry %{_dbi_sqlconfig}
 %_dbi_config_4_Os               %{_dbi_sqlconfig}
