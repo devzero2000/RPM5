@@ -1750,11 +1750,6 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
     size_t nb;
     int c;
 
-#ifdef	DYING
-    /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
-    if (tag == RPMTAG_BASENAMES) tag = RPMTAG_FILEPATHS;
-#endif
-
     switch (*modep) {
     default:
     case RPMMIRE_DEFAULT:
@@ -2487,7 +2482,7 @@ int rpmmiGrow(rpmmi mi, const uint32_t * hdrNums, int nHdrNums)
 
 if (_rpmmi_debug)
 fprintf(stderr, "<-- %s(%p, %p[%u]) rc %d h# %u\n", __FUNCTION__, mi, hdrNums, (unsigned)nHdrNums, rc, (unsigned) (hdrNums ? hdrNums[0] : 0));
-    return 0;
+    return rc;
 }
 
 rpmmi rpmmiInit(rpmdb db, rpmTag tag,
@@ -2506,6 +2501,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 
     (void) rpmdbCheckSignals();
 
+    /* XXX Control for whether patterns are permitted. */
     switch (tag) {
     default:	break;
     case 2:	/* XXX HACK to remove RPMDBI_LABEL from RPM. */
@@ -2523,12 +2519,6 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     case RPMTAG_GROUP:
 	usePatterns = 1;
 	break;
-#ifdef	DYING
-    /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
-    case RPMTAG_BASENAMES:
-	tag = RPMTAG_FILEPATHS;
-	/*@fallthrough@*/
-#endif
     case RPMTAG_FILEPATHS:
     case RPMTAG_DIRNAMES:
 	usePatterns = 1;
@@ -2657,7 +2647,6 @@ assert(keylen == sizeof(he->p.ui64p[0]));
     mi->mi_nre = 0;
     mi->mi_re = NULL;
 
-
 /*@i@*/ return mi;
 }
 
@@ -2667,6 +2656,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
+    dbiIndex dbi;
     size_t dbix;
     int rc = 0;
     int xx;
@@ -2696,32 +2686,30 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 
     (void) blockSignals(db, &signalMask);
 
-/*@-nullpass -nullptrarith -nullderef @*/ /* FIX: rpmvals heartburn */
     dbix = db->db_ndbi - 1;
     if (db->db_tags != NULL)
     do {
 	tagStore_t dbiTag = db->db_tags + dbix;
-	dbiIndex dbi;
+	DBC * dbcursor;
+	DBT k;
+	DBT v;
+	uint32_t ui;
 
 	dbi = NULL;
+	dbcursor = NULL;
+	(void) memset(&k, 0, sizeof(k));
+	(void) memset(&v, 0, sizeof(v));
 	(void) memset(he, 0, sizeof(*he));
 	he->tag = dbiTag->tag;
 
 	switch (he->tag) {
 	default:
-	    /* Do a lazy open on all necessary secondary indices. */
-#ifndef	NOTYET	/* XXX headerGet() sees tag extensions, headerIsEntry doesn't */
-	    if (headerGet(db->db_h, he, 0)) {
-		dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);				/* XXX sanity */
-	    }
+	    /* Don't bother if tag is not present. */
+	    if (!headerGet(db->db_h, he, 0))
+		/*@switchbreak@*/ break;
+	    dbi = dbiOpen(db, he->tag, 0);
+assert(dbi != NULL);					/* XXX sanity */
 	    he->p.ptr = _free(he->p.ptr);
-#else
-	    if (headerIsEntry(db->db_h, he->tag)) {
-		dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);				/* XXX sanity */
-	    }
-#endif
 	    /*@switchbreak@*/ break;
 	case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	case RPMDBI_ADDED:
@@ -2730,41 +2718,26 @@ assert(dbi != NULL);				/* XXX sanity */
 	case RPMDBI_SEQNO:
 	    /*@switchbreak@*/ break;
 	case RPMDBI_PACKAGES:
-	  { DBC * dbcursor = NULL;
-	    DBT k = DBT_INIT;
-	    DBT v = DBT_INIT;
-	    uint32_t kdata;
-
 	    if (db->db_export != NULL)
 		xx = db->db_export(db, db->db_h, 0);
 
+	    ui = _hton_ui(hdrNum);
+	    k.data = &ui;
+	    k.size = (UINT32_T) sizeof(ui);
+
 	    dbi = dbiOpen(db, he->tag, 0);
 assert(dbi != NULL);
-	      
-	    kdata = _hton_ui(hdrNum);
-/*@-immediatetrans@*/
-	    k.data = &kdata;
-/*@=immediatetrans@*/
-	    k.size = (UINT32_T) sizeof(kdata);
-
 	    rc = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 	    rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
-	    if (rc) {
-		const char * dbiBN = (dbiTag->str != NULL
-			? dbiTag->str : tagName(dbiTag->tag));
-		rpmlog(RPMLOG_ERR,
-			_("error(%d) setting header #%u for %s removal\n"),
-			rc, (unsigned)hdrNum, dbiBN);
-	    } else
+	    if (!rc)
 		rc = dbiDel(dbi, dbcursor, &k, &v, 0);
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	    dbcursor = NULL;
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
-	  } /*@switchbreak@*/ break;
+
+	    /*@switchbreak@*/ break;
 	}
     } while (dbix-- > 0);
-/*@=nullpass =nullptrarith =nullderef @*/
 
     /* Unreference header used by associated secondary index callbacks. */
     (void) headerFree(db->db_h);
@@ -2821,6 +2794,7 @@ assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
     if (hdrNum == 0) {
 	int64_t seqno = 0;
 	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
+assert(dbi != NULL);					/* XXX sanity */
 	if ((ret = dbiSeqno(dbi, &seqno, 0)) == 0) {
 	    hdrNum = seqno;
 	    (void) headerSetInstance(h, hdrNum);
@@ -2836,32 +2810,30 @@ assert(hdrNum == headerGetInstance(h));
     dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
 assert(dbi != NULL);					/* XXX sanity */
 
-    /* Now update the indexes */
-
     dbix = db->db_ndbi - 1;
     if (db->db_tags != NULL)
     do {
 	tagStore_t dbiTag = db->db_tags + dbix;
+	DBC * dbcursor;
+	DBT k;
+	DBT v;
+	uint32_t ui;
 
 	dbi = NULL;
+	dbcursor = NULL;
+	(void) memset(&k, 0, sizeof(k));
+	(void) memset(&v, 0, sizeof(v));
 	(void) memset(he, 0, sizeof(*he));
 	he->tag = dbiTag->tag;
 
 	switch (he->tag) {
 	default:
-	    /* Do a lazy open on all necessary secondary indices. */
-#ifndef	NOTYET	/* XXX headerGet() sees tag extensions, headerIsEntry doesn't */
-	    if (headerGet(h, he, 0)) {
-		dbi = dbiOpen(db, he->tag, 0);
+	    /* Don't bother if tag is not present. */
+	    if (!headerGet(h, he, 0))
+		/*@switchbreak@*/ break;
+	    dbi = dbiOpen(db, he->tag, 0);
 assert(dbi != NULL);					/* XXX sanity */
-	    }
 	    he->p.ptr = _free(he->p.ptr);
-#else
-	    if (headerIsEntry(h, he->tag)) {
-		dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);					/* XXX sanity */
-	    }
-#endif
 	    /*@switchbreak@*/ break;
 	case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	case RPMDBI_ADDED:
@@ -2870,41 +2842,30 @@ assert(dbi != NULL);					/* XXX sanity */
 	case RPMDBI_SEQNO:
 	    /*@switchbreak@*/ break;
 	case RPMDBI_PACKAGES:
-	  { DBC * dbcursor = NULL;
-	    DBT k = DBT_INIT;
-	    DBT v = DBT_INIT;
-	    uint32_t kdata;
-	    size_t len;
-
 	    if (db->db_export != NULL)
 		xx = db->db_export(db, h, 1);
+
+	    ui = _hton_ui(hdrNum);
+	    k.data = (void *) &ui;
+	    k.size = (UINT32_T) sizeof(ui);
+
+	    {   size_t len = 0;
+		v.data = headerUnload(h, &len);
+assert(v.data != NULL);
+		v.size = (UINT32_T) len;
+	    }
 
 	    dbi = dbiOpen(db, he->tag, 0);
 assert(dbi != NULL);					/* XXX sanity */
 	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
-
-	    kdata = _hton_ui(hdrNum);
-	    /*@-immediatetrans@*/
-	    k.data = (void *) &kdata;
-	    /*@=immediatetrans@*/
-	    k.size = (UINT32_T) sizeof(kdata);
-
-	    len = 0;
-	    v.data = headerUnload(h, &len);
-assert(v.data != NULL);
-	    v.size = (UINT32_T) len;
-
-/*@-compmempass@*/
 	    xx = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
-/*@=compmempass@*/
-
-	    v.data = _free(v.data); /* headerUnload */
-	    v.size = 0;
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
-	  } /*@switchbreak@*/ break;
+	    v.data = _free(v.data); /* headerUnload */
+	    v.size = 0;
+	    /*@switchbreak@*/ break;
 	}
 
     } while (dbix-- > 0);
@@ -2963,10 +2924,11 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	mi = rpmmiFree(mi);
 	return 0;
     }
-    fpc = fpCacheCreate(i);
 
     rpmdbSortIterator(mi);
     /* iterator is now sorted by (recnum, filenum) */
+
+    fpc = fpCacheCreate(i);
 
     /* For all installed headers with matching basename's ... */
     if (mi != NULL)
