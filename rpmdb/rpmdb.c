@@ -105,8 +105,10 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }
 
+#ifdef	NOISY
 if (_rpmdb_debug)
 fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTagsP, dbiTagStr);
+#endif
     /* Always allocate package index */
     dbiTags = xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
@@ -144,6 +146,7 @@ fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTag
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = tag;
 	dbiTags[dbiNTags].iob = NULL;
+#ifdef	NOISY
 if (_rpmdb_debug) {
 fprintf(stderr, "\t%u %s(", (unsigned)dbiNTags, o);
 if (tag & 0x40000000)
@@ -151,6 +154,7 @@ if (tag & 0x40000000)
 else
     fprintf(stderr, "%d)\n", tag);
 }
+#endif
 	dbiNTags++;
     }
 
@@ -2265,42 +2269,6 @@ static void rpmdbSortIterator(/*@null@*/ rpmmi mi)
     }
 }
 
-static int rpmdbGrowIterator(rpmmi mi, dbiIndexSet set,
-		int fpNum, unsigned int exclude)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int rc = 0;
-    int i, j;
-
-    /* prune the set against exclude and tag */
-    for (i = j = 0; i < (int)set->count; i++) {
-	if (exclude && set->recs[i].hdrNum == exclude)
-	    continue;
-	if (i > j)
-	    set->recs[j] = set->recs[i];
-	j++;
-    }
-    if (j == 0)
-	return DB_NOTFOUND;
-    set->count = j;
-
-    for (i = 0; i < (int)set->count; i++)
-	set->recs[i].fpNum = fpNum;
-
-    if (mi->mi_set == NULL) {
-	mi->mi_set = set;
-    } else {
-	mi->mi_set->recs = xrealloc(mi->mi_set->recs,
-		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
-	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
-		set->count * sizeof(*(mi->mi_set->recs)));
-	mi->mi_set->count += set->count;
-    }
-
-    return rc;
-}
-
 /* XXX TODO: a Bloom Filter on removed packages created once, not each time. */
 int rpmmiPrune(rpmmi mi, uint32_t * hdrNums, int nHdrNums, int sorted)
 {
@@ -2346,13 +2314,13 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	/*@modifies rpmmiRock @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmmi mi;
+    rpmmi mi = NULL;
     dbiIndexSet set = NULL;
-    dbiIndex dbi;
+    dbiIndex dbi = NULL;
     int usePatterns = 0;
 
     if (db == NULL)
-	return NULL;
+	goto exit;
 
     (void) rpmdbCheckSignals();
 
@@ -2377,6 +2345,8 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 #ifndef	NOTYET		/* XXX can't quite do this yet */
     /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
     case RPMTAG_BASENAMES:
+	if (keyp == NULL)	/* XXX rpmdbFindFpList & grow are speshul */
+	    break;
 	tag = RPMTAG_FILEPATHS;
 	/*@fallthrough@*/
 #endif
@@ -2387,13 +2357,17 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     }
 
     dbi = dbiOpen(db, tag, 0);
+#ifdef	NOTYET	/* XXX non-configured tag indices force NULL return */
+assert(dbi != NULL);					/* XXX sanity */
+#else
     if (dbi == NULL)
-	return NULL;
+	goto exit;
+#endif
 
     mi = rpmmiGetPool(_rpmmiPool);
     (void)rpmioLinkPoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
-if (_rpmmi_debug || dbi->dbi_debug)
+if (_rpmmi_debug || (dbi && dbi->dbi_debug))
 fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 ? (const char *)keyp : "???"), dbi, mi);
 
     /* Chain cursors for teardown on abnormal exit. */
@@ -2434,7 +2408,7 @@ assert(keylen == sizeof(hdrNum));
 	    return NULL;
 	}
     }
-    else if (dbi->dbi_primary != NULL) {
+    else if (dbi && dbi->dbi_primary != NULL) {
 	/* XXX Special case #5: secondary ndex associated with primary table. */
     }
     else {
@@ -2508,6 +2482,7 @@ assert(keylen == sizeof(he->p.ui64p[0]));
     mi->mi_nre = 0;
     mi->mi_re = NULL;
 
+exit:
 /*@i@*/ return mi;
 }
 
@@ -2740,6 +2715,41 @@ assert(dbi != NULL);					/* XXX sanity */
     return ret;
 }
 
+static int rpmdbGrowIterator(rpmmi mi, dbiIndexSet set,
+		int fpNum, unsigned int exclude)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    int rc = 0;
+    int i, j;
+
+    /* prune the set against exclude and tag */
+    for (i = j = 0; i < (int)set->count; i++) {
+	if (exclude && set->recs[i].hdrNum == exclude)
+	    continue;
+	if (i > j)
+	    set->recs[j] = set->recs[i];
+	j++;
+    }
+    if (j == 0)
+	return DB_NOTFOUND;
+    set->count = j;
+
+    for (i = 0; i < (int)set->count; i++)
+	set->recs[i].fpNum = fpNum;
+
+    if (mi->mi_set == NULL)
+	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
+    mi->mi_set->recs = xrealloc(mi->mi_set->recs,
+		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
+    memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
+		set->count * sizeof(*(mi->mi_set->recs)));
+    mi->mi_set->count += set->count;
+if (_rpmdb_debug)
+fprintf(stderr, "<-- %s(%p, %p[%u], %d, %u) set %p[%u]\n", __FUNCTION__, mi, set, (unsigned)(set ? set->count : 0), fpNum, exclude, mi->mi_set, (unsigned)(mi->mi_set ? mi->mi_set->count : 0));
+    return rc;
+}
+
 /* XXX transaction.c */
 /*@-compmempass@*/
 int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList, 
@@ -2753,6 +2763,8 @@ int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList,
     Header h;
     int i, xx;
 
+if (_rpmdb_debug)
+fprintf(stderr, "--> %s(%p, %p[%d], %p, %d, %u) mi %p\n", __FUNCTION__, db, fpList, numItems, matchList, numItems, exclude, mi);
     if (db == NULL)
 	goto exit;
 
@@ -2766,8 +2778,9 @@ int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList,
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
 
 	xx = dbiMireKeys(mi->mi_db, _tag, _mode, bn, &set, NULL);
-	if (xx == 0 && set != NULL)
+	if (xx == 0 && set && set->count > 0)
 	    xx = rpmdbGrowIterator(mi, set, i, exclude);
+	set = dbiFreeIndexSet(set);
 
     }
 
