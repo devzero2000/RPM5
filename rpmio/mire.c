@@ -398,8 +398,10 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 
     switch (mire->mode) {
     case RPMMIRE_STRCMP:
-	/* XXX strcasecmp? strncmp? */
-	rc = strcmp(mire->pattern, val);
+	if (vallen == 0)
+	    vallen = strlen(val);
+	/* XXX strcasecmp? */
+	rc = strncmp(mire->pattern, val, vallen);
 	if (rc) rc = -1;
 	break;
     case RPMMIRE_DEFAULT:
