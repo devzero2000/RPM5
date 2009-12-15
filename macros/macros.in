@@ -319,14 +319,14 @@ package or when debugging this package.\
 %_bt_dupsort    bt_dupsort primary=Packages
 %_h_dupsort     h_dupsort primary=Packages
 
-%_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
+%_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
 
 %_dbi_tags_4                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3                  %{_dbi_btconfig}
 %_dbi_config_3_Arch             %{_dbi_btconfig} %{?_bt_dupsort}
-%_dbi_config_3_Basenames        %{_dbi_btconfig}
+%_dbi_config_3_Basenames        %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Conflictname     %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Conflictyamlentry %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Dirnames         %{_dbi_btconfig} %{?_bt_dupsort}
