@@ -1282,6 +1282,9 @@ int rpmmiGrow(/*@null@*/ rpmmi mi,
 		/*@null@*/ const uint32_t * hdrNums, int nHdrNums)
 	/*@modifies mi @*/;
 
+int rpmmiGrowBasename(rpmmi mi, const char * bn)
+	/*@modifies mi @*/;
+
 /** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
  * @note Sorted hdrNums are always passed in rpmlib.

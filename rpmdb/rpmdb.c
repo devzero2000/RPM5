@@ -1437,6 +1437,34 @@ fprintf(stderr, "<-- %s(%p, %s(%u), %d, \"%s\", %p) rc %d\n", __FUNCTION__, db, 
     return rc;
 }
 
+int rpmmiGrowBasename(rpmmi mi, const char * bn)
+{
+    rpmTag _tag = RPMTAG_BASENAMES;
+    rpmMireMode _mode = RPMMIRE_STRCMP;
+    dbiIndexSet set = NULL;
+    unsigned int i;
+    int rc = 1;		/* assume error */
+
+    if (mi == NULL || mi->mi_db == NULL || bn == NULL || *bn == '\0')
+	goto exit;
+
+assert(mi->mi_rpmtag == _tag);
+    /* XXX use &mi->mi_set? */
+    rc = dbiMireKeys(mi->mi_db, _tag, _mode, bn, &set, NULL);
+    if (rc == 0 && set != NULL)
+    for (i = 0; i < set->count; i++) {
+	uint32_t hdrNum = dbiIndexRecordOffset(set, i);
+	(void) rpmmiGrow(mi, &hdrNum, 1);
+    }
+    set = dbiFreeIndexSet(set);
+    rc = 0;
+
+exit:
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p, \"%s\") rc %d\n", __FUNCTION__, mi, bn, rc);
+    return rc;
+}
+
 /**
  * Attempt partial matches on name[-version[-release]] strings.
  * @param dbi		index database handle (always RPMTAG_NVRA)

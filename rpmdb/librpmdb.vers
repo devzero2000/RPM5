@@ -164,6 +164,7 @@ LIBRPMDB_0
     rpmmiFree;
     rpmmiCount;
     rpmmiGrow;
+    rpmmiGrowBasename;
     rpmmiInstance;
     rpmmiInit;
     rpmmiNext;
