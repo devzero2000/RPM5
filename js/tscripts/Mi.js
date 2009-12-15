@@ -167,6 +167,19 @@ ack("bingo", 1);
 ack("IIDcount", IIDcounts[IID.toString(16)]);
 delete mi;
 
+// --- Print packages that contain "README".
+var bn = "README";
+var mi = new Mi(ts, RPMTAG_BASENAMES, null);
+ack("mi.growbn(bn)", true);
+bingo = 0;
+for (var [dbkey,h] in Iterator(mi)) {
+//    print(h.nvra);
+    delete h;
+    bingo = 1;
+}
+ack("bingo", 1);
+delete mi;
+
 delete ts;
 
 if (loglvl) print("<-- Mi.js");

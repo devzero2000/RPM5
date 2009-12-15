@@ -107,10 +107,32 @@ exit:
     return ok;
 }
 
+static JSBool
+rpmmi_growbn(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
+    rpmmi mi = ptr;
+    const char * _bn = NULL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_bn)))
+	goto exit;
+    /* XXX handle arrays */
+    if (!rpmmiGrowBasename(mi, _bn))
+	ok = JS_TRUE;
+    *rval = BOOLEAN_TO_JSVAL(ok);
+
+exit:
+    return ok;
+}
+
 static JSFunctionSpec rpmmi_funcs[] = {
     JS_FS("pattern",	rpmmi_pattern,		0,0,0),
     JS_FS("prune",	rpmmi_prune,		0,0,0),
     JS_FS("grow",	rpmmi_grow,		0,0,0),
+    JS_FS("growbn",	rpmmi_growbn,		0,0,0),
     JS_FS_END
 };
 
