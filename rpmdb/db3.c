@@ -784,14 +784,11 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (dbenv == NULL || rc)
 	goto errxit;
 
-    /*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
-
 /*@-castfcnptr@*/
     dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
 /*@=castfcnptr@*/
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
-    /*@=noeffectuncon@*/
 
  /* 4.1: dbenv->set_alloc(???) */
  /* 4.1: dbenv->set_data_dir(???) */
@@ -860,12 +857,21 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	uint32_t _lk_max_lockers = 8192;
 	uint32_t _lk_max_locks = 8192;
 	uint32_t _lk_max_objects = 8192;
+
 	xx = dbenv->set_lk_max_lockers(dbenv, _lk_max_lockers);
 	xx = cvtdberr(dbi, "dbenv->set_lk_max_lockers", xx, _debug);
 	xx = dbenv->set_lk_max_locks(dbenv, _lk_max_locks);
 	xx = cvtdberr(dbi, "dbenv->set_lk_max_locks", xx, _debug);
 	xx = dbenv->set_lk_max_objects(dbenv, _lk_max_objects);
 	xx = cvtdberr(dbi, "dbenv->set_lk_max_objects", xx, _debug);
+
+#ifdef	NOTYET	/* XXX unclear if necessary atm. */
+      {	uint32_t _max = 8192;
+	xx = dbenv->mutex_set_max(dbenv, _max);
+	xx = cvtdberr(dbi, "dbenv->mutex_set_max", xx, _debug);
+      }
+#endif
+
     }
 
 /* ==== Logging: */
@@ -920,16 +926,21 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
     /* XXX capture dbenv->falchk output on stderr. */
-/*@-noeffectuncon@*/
     dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
-/*@=noeffectuncon@*/
     if (dbi->dbi_thread_count >= 8) {
 	xx = dbenv->set_thread_count(dbenv, dbi->dbi_thread_count);
 	xx = cvtdberr(dbi, "dbenv->set_thread_count", xx, _debug);
     }
 #endif
 
-    if (eflags & DB_RECOVER) eflags |= DB_CREATE;
+    /* XXX Attempt db_recover -ev (i.e. dbenv w DB_INIT_LOCK) */
+    if (eflags & DB_RECOVER) {
+#ifdef	DYING	/* XXX this should not be necessary. */
+	eflags |= DB_CREATE;
+#endif
+	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY, 1);
+	xx = cvtdberr(dbi, "dbenv->set_verbose", xx, _debug);
+    }
 
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
@@ -2234,12 +2245,15 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    default:
 		break;
 	    case DB_RUNRECOVERY:
+		if (getuid() != 0)
+		    break;
 		rpmlog(RPMLOG_NOTICE, _("Re-opening dbenv with DB_RECOVER ...\n"));
+		/* XXX Attempt db_recover -ev (i.e. dbenv w DB_INIT_LOCK) */
 		dbi->dbi_eflags |= DB_RECOVER;
 		rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 		dbi->dbi_eflags &= ~DB_RECOVER;
 		if (rc) {
-		    rpmlog(RPMLOG_ERR, _("\nrecovery failed. Exiting ...\n"));
+		    rpmlog(RPMLOG_NOTICE, _("\nrecovery failed. Exiting ...\n"));
 		    exit(EXIT_FAILURE);
 		}
 		rpmlog(RPMLOG_NOTICE, _(".\nrecovery succeeded.\n"));
