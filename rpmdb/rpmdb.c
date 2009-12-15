@@ -1448,7 +1448,9 @@ int rpmmiGrowBasename(rpmmi mi, const char * bn)
     if (mi == NULL || mi->mi_db == NULL || bn == NULL || *bn == '\0')
 	goto exit;
 
+#ifdef	NOTYET
 assert(mi->mi_rpmtag == _tag);
+#endif
     /* XXX use &mi->mi_set? */
     rc = dbiMireKeys(mi->mi_db, _tag, _mode, bn, &set, NULL);
     if (rc == 0 && set != NULL)
@@ -1748,8 +1750,10 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
     size_t nb;
     int c;
 
+#ifdef	DYING
     /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
     if (tag == RPMTAG_BASENAMES) tag = RPMTAG_FILEPATHS;
+#endif
 
     switch (*modep) {
     default:
@@ -2509,7 +2513,9 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
 	tag = RPMTAG_NVRA;
 	/*@fallthrough@*/
     case RPMTAG_NVRA:
+#ifdef	NOTYET		/* XXX JS unit tests break. */
     case RPMTAG_NAME:
+#endif
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
     case RPMTAG_ARCH:
@@ -2517,10 +2523,12 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     case RPMTAG_GROUP:
 	usePatterns = 1;
 	break;
+#ifdef	DYING
     /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
     case RPMTAG_BASENAMES:
 	tag = RPMTAG_FILEPATHS;
 	/*@fallthrough@*/
+#endif
     case RPMTAG_FILEPATHS:
     case RPMTAG_DIRNAMES:
 	usePatterns = 1;
