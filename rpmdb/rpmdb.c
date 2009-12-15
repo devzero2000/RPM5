@@ -2519,6 +2519,12 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag,
     case RPMTAG_GROUP:
 	usePatterns = 1;
 	break;
+#ifndef	NOTYET		/* XXX can't quite do this yet */
+    /* XXX HACK to remove the existing complexity of RPMTAG_BASENAMES */
+    case RPMTAG_BASENAMES:
+	tag = RPMTAG_FILEPATHS;
+	/*@fallthrough@*/
+#endif
     case RPMTAG_FILEPATHS:
     case RPMTAG_DIRNAMES:
 	usePatterns = 1;
