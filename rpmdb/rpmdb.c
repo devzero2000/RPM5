@@ -350,94 +350,6 @@ typedef struct _setSwap_s {
     uint32_t fp;
 } * setSwap;
 
-/**
- * Convert retrieved data to index set.
- * @param dbi		index database handle
- * @param data		retrieved data
- * @retval setp		(malloc'ed) index set
- * @return		0 on success
- */
-static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
-	/*@modifies *setp @*/
-{
-    int _dbbyteswapped;
-    dbiIndexSet set;
-    const uint8_t * s;
-    setSwap T;
-    int i;
-
-    if (dbi == NULL || data == NULL || setp == NULL)
-	return -1;
-    _dbbyteswapped = (_endian.uc[0] == 0x44);
-
-    if ((s = data->data) == NULL) {
-	*setp = NULL;
-	return 0;
-    }
-
-    set = xmalloc(sizeof(*set));
-    set->count = (int) (data->size / dbi->dbi_jlen);
-    set->recs = xmalloc(set->count * sizeof(*(set->recs)));
-
-    T = (setSwap)set->recs;
-
-/*@-sizeoftype @*/
-    switch (dbi->dbi_jlen) {
-    default:
-    case 2*sizeof(rpmuint32_t):
-	if (_dbbyteswapped) {
-	    for (i = 0; i < (int)set->count; i++) {
-		T->hdr.uc[3] = *s++;
-		T->hdr.uc[2] = *s++;
-		T->hdr.uc[1] = *s++;
-		T->hdr.uc[0] = *s++;
-		T->tag.uc[3] = *s++;
-		T->tag.uc[2] = *s++;
-		T->tag.uc[1] = *s++;
-		T->tag.uc[0] = *s++;
-		T->fp = 0;
-		T++;
-	    }
-	} else {
-	    for (i = 0; i < (int)set->count; i++) {
-		memcpy(&T->hdr.ui, s, sizeof(T->hdr.ui));
-		s += sizeof(T->hdr.ui);
-		memcpy(&T->tag.ui, s, sizeof(T->tag.ui));
-		s += sizeof(T->tag.ui);
-		T->fp = 0;
-		T++;
-	    }
-	}
-	break;
-    case 1*sizeof(rpmuint32_t):
-	if (_dbbyteswapped) {
-	    for (i = 0; i < (int)set->count; i++) {
-		T->hdr.uc[3] = *s++;
-		T->hdr.uc[2] = *s++;
-		T->hdr.uc[1] = *s++;
-		T->hdr.uc[0] = *s++;
-		T->tag.ui = 0;
-		T->fp = 0;
-		T++;
-	    }
-	} else {
-	    for (i = 0; i < (int)set->count; i++) {
-		memcpy(&T->hdr.ui, s, sizeof(T->hdr.ui));
-		s += sizeof(T->hdr.ui);
-		T->tag.ui = 0;
-		T->fp = 0;
-		T++;
-	    }
-	}
-	break;
-    }
-    *setp = set;
-/*@=sizeoftype @*/
-/*@-compdef@*/
-    return 0;
-/*@=compdef@*/
-}
-
 /* XXX assumes hdrNum is first int in dbiIndexItem */
 static int hdrNumCmp(const void * one, const void * two)
 	/*@*/
@@ -518,8 +430,6 @@ struct rpmmi_s {
     rpmTag		mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
-    DBT			mi_key;
-    DBT			mi_data;
     unsigned int	mi_count;
     uint32_t		mi_setx;
     void *		mi_keyp;
@@ -1708,7 +1618,6 @@ if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	if (!dbiGet(dbi, mi->mi_dbc, &k, &v, DB_SET))
 	    xx = dbiCount(dbi, mi->mi_dbc, &mi->mi_count, 0);
-	memset(&mi->mi_data, 0, sizeof(mi->mi_data));
     }
 
     rc = (mi ? mi->mi_count : 0);
@@ -2214,7 +2123,6 @@ fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi, dbi, tagName(tag));
 	k.size = (u_int32_t)mi->mi_keylen;
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
-	memset(&mi->mi_data, 0, sizeof(mi->mi_data));
 	_flags = DB_SET;
     } else
 	_flags = (mi->mi_setx ? DB_NEXT_DUP : DB_SET);
@@ -2357,54 +2265,13 @@ static void rpmdbSortIterator(/*@null@*/ rpmmi mi)
     }
 }
 
-static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
-		unsigned int exclude, /*@unused@*/ unsigned int tag)
+static int rpmdbGrowIterator(rpmmi mi, dbiIndexSet set,
+		int fpNum, unsigned int exclude)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    DBC * dbcursor;
-    DBT * key;
-    DBT * data;
-    dbiIndex dbi = NULL;
-    dbiIndexSet set;
-    int rc;
-    int xx;
+    int rc = 0;
     int i, j;
-
-    if (mi == NULL)
-	return 1;
-
-    dbcursor = mi->mi_dbc;
-    key = &mi->mi_key;
-    data = &mi->mi_data;
-    if (key->data == NULL)
-	return 1;
-
-    dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
-    if (dbi == NULL)
-	return 1;
-
-    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
-    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-#ifndef	SQLITE_HACK
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-#endif
-
-    if (rc) {			/* error/not found */
-	if (rc != DB_NOTFOUND)
-	    rpmlog(RPMLOG_ERR,
-		_("error(%d) getting records from %s index\n"),
-		rc, tagName(dbi->dbi_rpmtag));
-#ifdef	SQLITE_HACK
-	xx = dbiCclose(dbi, dbcursor, 0);
-	dbcursor = NULL;
-#endif
-	return rc;
-    }
-
-    set = NULL;
-    (void) dbt2set(dbi, data, &set);
 
     /* prune the set against exclude and tag */
     for (i = j = 0; i < (int)set->count; i++) {
@@ -2414,23 +2281,12 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
 	    set->recs[j] = set->recs[i];
 	j++;
     }
-    if (j == 0) {
-#ifdef	SQLITE_HACK
-	xx = dbiCclose(dbi, dbcursor, 0);
-	dbcursor = NULL;
-#endif
-	set = dbiFreeIndexSet(set);
+    if (j == 0)
 	return DB_NOTFOUND;
-    }
     set->count = j;
 
     for (i = 0; i < (int)set->count; i++)
 	set->recs[i].fpNum = fpNum;
-
-#ifdef	SQLITE_HACK
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-#endif
 
     if (mi->mi_set == NULL) {
 	mi->mi_set = set;
@@ -2440,7 +2296,6 @@ static int rpmdbGrowIterator(/*@null@*/ rpmmi mi, int fpNum,
 	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
 		set->count * sizeof(*(mi->mi_set->recs)));
 	mi->mi_set->count += set->count;
-	set = dbiFreeIndexSet(set);
     }
 
     return rc;
@@ -2892,44 +2747,32 @@ int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList,
 {
     rpmdb db = _db;
     dbiIndexSet * matchList = _matchList;
-DBT * key;
-DBT * data;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmmi mi;
+    rpmmi mi = rpmmiInit(db, RPMTAG_BASENAMES, NULL, 0);
     fingerPrintCache fpc;
     Header h;
     int i, xx;
 
-    if (db == NULL) return 0;
-
-    mi = rpmmiInit(db, RPMTAG_BASENAMES, NULL, 0);
-assert(mi != NULL);	/* XXX will never happen. */
-    if (mi == NULL)
-	return 2;
-
-key = &mi->mi_key;
-data = &mi->mi_data;
+    if (db == NULL)
+	goto exit;
 
     /* Gather all installed headers with matching basename's. */
     for (i = 0; i < numItems; i++) {
+	const char * bn = fpList[i].baseName;
+	static rpmTag _tag = RPMTAG_BASENAMES;
+	static rpmMireMode _mode = RPMMIRE_STRCMP;
+	dbiIndexSet set = NULL;
 
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
 
-/*@-dependenttrans@*/
-key->data = (void *) fpList[i].baseName;
-/*@=dependenttrans@*/
-key->size = (UINT32_T) strlen((char *)key->data);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
-
-	/* XXX TODO: eliminate useless exclude/tag arguments. */
-	xx = rpmdbGrowIterator(mi, i, exclude, 0);
+	xx = dbiMireKeys(mi->mi_db, _tag, _mode, bn, &set, NULL);
+	if (xx == 0 && set != NULL)
+	    xx = rpmdbGrowIterator(mi, set, i, exclude);
 
     }
 
-    if ((i = rpmmiCount(mi)) == 0) {
-	mi = rpmmiFree(mi);
-	return 0;
-    }
+    if ((i = rpmmiCount(mi)) == 0)
+	goto exit;
 
     rpmdbSortIterator(mi);
     /* iterator is now sorted by (recnum, filenum) */
@@ -3002,10 +2845,10 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	mi->mi_setx = end;
     }
 
-    mi = rpmmiFree(mi);
-
     fpc = fpCacheFree(fpc);
 
+exit:
+    mi = rpmmiFree(mi);
     return 0;
 
 }
