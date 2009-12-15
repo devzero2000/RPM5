@@ -461,7 +461,7 @@ static char * fmtDBT(const DBT * K, char * te)
     return te;
 }
 /*@observer@*/
-static const char * fmtKDR(const DBT * K, const DBT * D, const DBT * R)
+static const char * fmtKDR(const DBT * K, const DBT * P, const DBT * D, const DBT * R)
 	/*@*/
 {
     static char buf[BUFSIZ];
@@ -470,6 +470,10 @@ static const char * fmtKDR(const DBT * K, const DBT * D, const DBT * R)
     if (K) {
 	te = stpcpy(te, "\n\t  key: ");
 	te = fmtDBT(K, te);
+    }
+    if (P) {
+	te = stpcpy(te, "\n\t pkey: ");
+	te = fmtDBT(P, te);
     }
     if (D) {
 	te = stpcpy(te, "\n\t data: ");
@@ -483,7 +487,7 @@ static const char * fmtKDR(const DBT * K, const DBT * D, const DBT * R)
     
     return buf;
 }
-#define	_KEYDATA(_K, _D, _R)	fmtKDR(_K, _D, _R)
+#define	_KEYDATA(_K, _P, _D, _R)	fmtKDR(_K, _P, _D, _R)
 
 #undef	_ENTRY
 
@@ -1091,7 +1095,7 @@ assert(db != NULL);
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
     rc = cvtdberr(dbi, "db->exists", rc, _printit);
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key, flags, rc, _KEYDATA(key, NULL, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key, flags, rc, _KEYDATA(key, NULL, NULL, NULL)));
 
     return rc;
 }
@@ -1231,7 +1235,7 @@ flags = DB_KEYLAST;
 #endif
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1271,7 +1275,7 @@ assert(db != NULL);
 #endif
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 /*@=mustmod@*/
@@ -1310,7 +1314,7 @@ assert(db != NULL);
 #endif
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, pkey, data, NULL)));
     return rc;
 }
 /*@=mustmod@*/
@@ -1345,7 +1349,7 @@ assert(db != NULL);
 	}
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, data, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d %s%s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, _DBCFLAGS(flags), _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 /*@=mustmod@*/
@@ -1922,7 +1926,7 @@ exit:
     he->p.ptr = _free(he->p.ptr);
     h = headerFree(h);
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, data, _r)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p, %p, %p, %p) rc %d\n\tdbi %p(%s) rpmdb %p h %p %s\n", __FUNCTION__, db, key, data, _r, rc, dbi, tagName(dbi->dbi_rpmtag), rpmdb, h, _KEYDATA(key, NULL, data, _r)));
 
     return rc;
 }
@@ -1995,7 +1999,7 @@ exit:
 	xx = cvtdberr(dbi, "seq->close", xx, _debug);
     }
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d %s\n", __FUNCTION__, dbi, keyp, (unsigned)keylen, seqp, (seqp ? *seqp : NULL), rc, _KEYDATA(&k, NULL, NULL)));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p[%u],%p) seq %p rc %d %s\n", __FUNCTION__, dbi, keyp, (unsigned)keylen, seqp, (seqp ? *seqp : NULL), rc, _KEYDATA(&k, NULL, NULL, NULL)));
 
     return rc;
 }
