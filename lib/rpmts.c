@@ -530,6 +530,8 @@ void rpmtsEmpty(rpmts ts)
 /*@=type =unqualifiedtrans @*/
     }
     pi = rpmtsiFree(pi);
+    ts->numAddedFiles = 0;
+    ts->numErasedFiles = 0;
 
     ts->orderCount = 0;
     ts->ntrees = 0;

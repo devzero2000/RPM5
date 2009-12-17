@@ -7,6 +7,7 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmcb.h>
+#include <rpmbf.h>
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 #include <envvar.h>
 #include <ugid.h>		/* XXX user()/group() probes */
@@ -107,11 +108,12 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
     }
 
     if (ts->rbf == NULL) {
-	static size_t nRemoves = 4096;	/* XXX population estimate */
-	size_t _jiggery = 2;        /* XXX todo: Bloom filter tuning? */
-	size_t _k = _jiggery * 8;
-	size_t _m = _jiggery * (3 * nRemoves * _k) / 2;
-	ts->rbf = rpmbfNew(_m, _k, 0);
+	static size_t nRemoves = 8192;	/* XXX population estimate */
+	static double e = 1.0e-4;
+	size_t m = 0;
+	size_t k = 0;
+	rpmbfParams(nRemoves, e, &m, &k);
+	ts->rbf = rpmbfNew(m, k, 0);
     }
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
@@ -137,6 +139,7 @@ assert(ts->removedPackages != NULL);	/* XXX can't happen. */
 
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, hdrNum, depends);
     ts->order[ts->orderCount] = p;
+    ts->numErasedFiles += rpmfiFC(rpmteFI(p, RPMTAG_BASENAMES));
     if (indexp != NULL)
 	*indexp = ts->orderCount;
     ts->orderCount++;
@@ -735,12 +738,14 @@ addheader:
 assert(p != NULL);
 
     if (duplicate && oc < ts->orderCount) {
+	ts->numAddedFiles -= rpmfiFC(rpmteFI(ts->order[oc], RPMTAG_BASENAMES));
 /*@-type -unqualifiedtrans@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=type =unqualifiedtrans@*/
     }
 
     ts->order[oc] = p;
+    ts->numAddedFiles += rpmfiFC(rpmteFI(p, RPMTAG_BASENAMES));
     if (!duplicate) {
 	ts->orderCount++;
 	rpmcliPackagesTotal++;
@@ -2140,17 +2145,8 @@ static inline int addRelation(rpmts ts,
     /* Avoid looking up files/directories that are "owned" by _THIS_ package. */
     if (*N == '/') {
 	rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
-	int bingo = 0;
-
-	fi = rpmfiInit(fi, 0);
-	while (rpmfiNext(fi) >= 0) {
-	    const char * fn = rpmfiFN(fi);
-	    if (strcmp(N, fn))
-		continue;
-	    bingo = 1;
-	    break;
-	}
-	if (bingo)
+	rpmbf bf = rpmfiBloomFN(fi);
+	if (rpmbfChk(bf, N, strlen(N)))
 	    return 0;
     }
 
