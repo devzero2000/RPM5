@@ -1878,10 +1878,12 @@ _ifill:
 	    if (ns > 0)			/* No "" empty keys please. */
 		(void) loadDBT(_r, he->tag, s, ns);
 	} else {
-	    size_t _jiggery = 2;	/* XXX todo: Bloom filter tuning? */
-	    size_t _k = _jiggery * 8;
-	    size_t _m = _jiggery * (3 * he->c * _k) / 2;
-	    rpmbf bf = rpmbfNew(_m, _k, 0);
+	    static double e = 1.0e-4;
+	    size_t m = 0;
+	    size_t k = 0;
+	    rpmbf bf;
+	    rpmbfParams(he->c, e, &m, &k);
+	    bf = rpmbfNew(m, k, 0);
 
 	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
 	    _r->data = A = xcalloc(he->c, sizeof(*A));

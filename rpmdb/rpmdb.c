@@ -2277,10 +2277,13 @@ int rpmmiPrune(rpmmi mi, uint32_t * hdrNums, int nHdrNums, int sorted)
     if (!rc) {
 	int i;
 	if (mi->mi_bf == NULL) {
-	    size_t _jiggery = 2;	/* XXX todo: Bloom filter tuning? */
-	    size_t _k = _jiggery * 8;
-	    size_t _m = _jiggery * (3 * nHdrNums * _k) / 2;
-	    mi->mi_bf = rpmbfNew(_m, _k, 0);
+	    static size_t nRemoves = 8192;	/* XXX population estimate */
+	    static double e = 1.0e-4;
+	    size_t m = 0;
+	    size_t k = 0;
+	    rpmbf bf;
+	    rpmbfParams(nRemoves, e, &m, &k);
+	    mi->mi_bf = rpmbfNew(m, k, 0);
 	}
 	for (i = 0; i < nHdrNums; i++) {
 	    uint32_t mi_offset = _hton_ui(hdrNums[i]);
