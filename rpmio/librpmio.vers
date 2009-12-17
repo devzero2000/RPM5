@@ -304,6 +304,7 @@ LIBRPMIO_0
     rpmbfClr;
     rpmbfDel;
     rpmbfIntersect;
+    rpmbfParams;
     rpmbfUnion;
     rpmCleanPath;
     rpmCLIMacroContext;
