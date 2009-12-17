@@ -350,9 +350,7 @@ void rpmRunFileTriggers(const char * rootDir)
 		ssize_t nw;
 		if (!is_regexp_matching(list[i].mire, tmp))
 		    /*@innercontinue@*/ continue;
-		list[i].filename = xmalloc(tmplen - 1);
-		for (j = 1; j < (int)tmplen; j++)
-		    list[i].filename[j-1] = tmp[j];
+		list[i].filename = xstrdup(tmp+1);
 		mayStartFiletrigger(rootDir, &list[i]);
 		nw = write(list[i].command_pipe, tmp, tmplen);
 	    }
