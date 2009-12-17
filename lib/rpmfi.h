@@ -166,6 +166,8 @@ struct rpmfi_s {
 /*@dependent@*/ /*@relnull@*/
     void * te;
 
+/*@refcounted@*/
+    void * _fnbf;		/*!< File paths Bloom filter. */
 /*@only@*/ /*@null@*/
     miRE exclude;		/*!< Iterator exclude patterns. */
     int nexclude;		/*!< No. of exclude patterns. */
@@ -556,6 +558,14 @@ extern const char * rpmfiFUser(/*@null@*/ rpmfi fi)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/** \ingroup rpmfi
+ * Return file path Bloom filter.
+ * @param fi		file info set
+ * @return		file path Bloom filter (NULL if not set)
+ */
+void * rpmfiBloomFN(/*@null@*/ const rpmfi fi)
 	/*@*/;
 
 /** \ingroup rpmfi

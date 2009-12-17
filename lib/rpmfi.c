@@ -8,6 +8,7 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>	/* XXX fnpyKey */
 #include <rpmlog.h>
+#include <rpmbf.h>
 #include <rpmurl.h>	/* XXX urlGetPath */
 #define	_RPMDIR_INTERNAL
 #include <rpmdir.h>
@@ -440,6 +441,11 @@ const char * rpmfiFGroup(rpmfi fi)
 	    fgroup = fi->fgroup[fi->i];
     }
     return fgroup;
+}
+
+void * rpmfiBloomFN(const rpmfi fi)
+{
+    return (fi != NULL ? fi->_fnbf : NULL);
 }
 
 void * rpmfiExclude(const rpmfi fi)
@@ -1289,6 +1295,7 @@ static void rpmfiFini(void * _fi)
     fi->fsm = freeFSM(fi->fsm);
 /*@=globs@*/
 
+    fi->_fnbf = rpmbfFree((rpmbf)fi->_fnbf);
     fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
     fi->include = mireFreeAll(fi->include, fi->ninclude);
 
@@ -1660,6 +1667,23 @@ if (fi->actions == NULL)
 	size_t fnlen = strlen(fi->dnl[fi->dil[i]]) + strlen(fi->bnl[i]);
 	if (fnlen > fi->fnlen)
 	    fi->fnlen = fnlen;
+    }
+    
+    {	char * fn = alloca(fi->fnlen + 1);	/* XXX malloc fi->fn? */
+	static double e = 1.0e-6;
+	size_t m = 0;
+	size_t k = 0;
+	rpmbf bf;
+	rpmbfParams(fi->fc, e, &m, &k);
+	bf = rpmbfNew(m, k, 0);
+	for (i = 0; i < (int)fi->fc; i++) {
+	    const char * dn;
+	    dn = NULL;
+	    (void) urlPath(fi->dnl[fi->dil[i]], &dn);
+	    dn = stpcpy(stpcpy(fn, dn), fi->bnl[i]);
+	    (void) rpmbfAdd(bf, fn, (size_t)(dn - fn));
+	}
+	fi->_fnbf = bf;
     }
 
     fi->dperms = 0755;
