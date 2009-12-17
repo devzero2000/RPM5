@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+#include <math.h>
 
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* for *Pool methods */
@@ -173,4 +174,14 @@ int rpmbfUnion(rpmbf a, const rpmbf b)
 if (_rpmbf_debug)
 fprintf(stderr, "<-- %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a->m, (unsigned)a->k, (unsigned)a->n);
     return 0;
+}
+
+void rpmbfParams(size_t n, double e, size_t * mp, size_t * kp)
+{
+    size_t m = (size_t)((n * log(e)) / (log(1.0 / pow(2.0, log(2.0)))) + 0.5);
+    size_t k = (size_t) ((m * log(2.0)) / n);
+    if (mp) *mp = m;
+    if (kp) *kp = k;
+if (_rpmbf_debug)
+fprintf(stderr, "<-- %s(%u, %g) m %u k %u\n", __FUNCTION__, (unsigned)n, e, (unsigned)m, (unsigned)k);
 }

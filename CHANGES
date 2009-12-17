@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmbf: estimate optimal {m,k} parameters given {n,e}.
     - jbj: mire: fix: use strncmp, rpmdb string keys are not NUL terminated.
     - rpm.org: port addFingerprints.
     - rpm.org: port a copy of fpLookupSubdir.

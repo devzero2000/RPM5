@@ -120,8 +120,8 @@ rpmbf rpmbfFree(/*@killref@*/ /*@null@*/rpmbf bf)
 
 /**
  * Create a Bloom filter.
- * @param m
- * @param k
+ * @param m		no. of bits
+ * @param k		no. of hashes
  * @param flags		flags
  * @return		new Bloom filter
  */
@@ -185,6 +185,17 @@ int rpmbfIntersect(rpmbf a, const rpmbf b)
  */
 int rpmbfUnion(rpmbf a, const rpmbf b)
 	/*@modifies a @*/;
+
+/**
+ * Return optimal {m, k} for given n and e.
+ * @param		population estimate
+ * @param e		probability of error
+ * @retval *mp		no. of bits
+ * @retval *kp		no. of hashes
+ * @return		0 on success, -1 if {m,k} disagree.
+ */
+void rpmbfParams(size_t n, double e, size_t * mp, size_t * kp)
+	/*@modifies *mp, *kp @*/;
 
 #ifdef __cplusplus
 }
