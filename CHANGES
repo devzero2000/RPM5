@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: cudf: stub-in cudftool with -lcudf AutoFu.
     - jbj: change sonames to 5.3.
     - jbj: rpmbf: estimate optimal {m,k} parameters given {n,e}.
     - jbj: mire: fix: use strncmp, rpmdb string keys are not NUL terminated.

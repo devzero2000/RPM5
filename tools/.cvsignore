@@ -6,9 +6,10 @@ Makefile.in
 *.gcda
 *.gcno
 augtool
-convertdb1
 chroot
+convertdb1
 cp
+cudftool
 db_sql
 db_tool
 debugedit

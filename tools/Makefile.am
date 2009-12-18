@@ -22,7 +22,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1
 
-EXTRA_PROGRAMS = augtool debugedit rpmkey sandbox semodule spooktool
+EXTRA_PROGRAMS = augtool cudftool debugedit rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -64,6 +64,11 @@ chroot_LDADD =		$(RPMIO_LDADD_COMMON)
 cp_SOURCES =		cp.c
 cp_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 cp_LDADD =		$(RPMIO_LDADD_COMMON)
+
+cudftool_SOURCES =	cudftool.c
+cudftool_CPPFLAGS =	$(AM_CPPFLAGS) $(CPPFLAGS) $(shell pkg-config --cflags glib-2.0)
+cudftool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS) $(shell pkg-config --libs glib-2.0)
+cudftool_LDADD =	# $(RPMIO_LDADD_COMMON)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
