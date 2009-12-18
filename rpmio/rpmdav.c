@@ -168,8 +168,9 @@ fprintf(stderr, "*** davFree(%p)\n", u);
 
 void davDestroy(void)
 {
-#ifdef NE_FEATURE_SSL
+#if defined(NE_FEATURE_SSL)
     if (ne_has_support(NE_FEATURE_SSL)) {
+#if defined(WITH_OPENSSL)	/* XXX FIXME: hard AutoFu to get right. */
 /* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
 	ENGINE_cleanup();
 	CRYPTO_cleanup_all_ex_data();
@@ -178,8 +179,9 @@ void davDestroy(void)
 	EVP_cleanup();
 	CRYPTO_mem_leaks(NULL);
 	CONF_modules_unload(1);
+#endif	/* WITH_OPENSSL */
     }
-#endif
+#endif	/* NE_FEATURE_SSL */
 if (_dav_debug < 0)
 fprintf(stderr, "*** davDestroy()\n");
 }
