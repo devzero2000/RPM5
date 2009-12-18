@@ -158,8 +158,9 @@ fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\
 
 int rpmxarPull(rpmxar xar, const char * fn)
 {
-    const char * path = xar_get_path(xar->f);
     int rc = 1;
+#ifdef	WITH_XAR
+    const char * path = xar_get_path(xar->f);
 
     if (fn != NULL && strcmp(fn, path)) {
 	path = _free(path);
@@ -184,8 +185,10 @@ size_t bsize = xar->bsize;
 fprintf(stderr, "<-- rpmxarPull(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 }
 /*@=charint =nullpass =nullderef @*/
+    rc = 0;
+#endif
 
-    return 0;
+    return rc;
 }
 
 int rpmxarSwapBuf(rpmxar xar, unsigned char * b, size_t bsize,
@@ -256,8 +259,9 @@ fprintf(stderr, "<-- %s(%p) %s\n", __FUNCTION__, xar, path);
 static mode_t xarMode(rpmxar xar)
 	/*@*/
 {
+    mode_t m = 0;
+#ifdef	WITH_XAR
     const char * t = NULL;
-    mode_t m;
 
     xar_prop_get(xar->f, "mode", &t);
     m = (t ? (mode_t) strtoll(t, NULL, 8) : 0);
@@ -283,6 +287,7 @@ static mode_t xarMode(rpmxar xar)
     else if (!strcmp(t, "whiteout"))
 	m |= S_IFWHT;
 #endif
+#endif
 
     return m;
 }
@@ -290,14 +295,16 @@ static mode_t xarMode(rpmxar xar)
 static dev_t xarDev(rpmxar xar)
 	/*@*/
 {
+    unsigned major = 0;
+    unsigned minor = 0;
+#ifdef	WITH_XAR
     const char *t = NULL;
-    unsigned major;
-    unsigned minor;
 
     xar_prop_get(xar->f, "device/major", &t);
     major = (t ? (unsigned) strtoll(t, NULL, 0) : 0);
     xar_prop_get(xar->f, "device/minor", &t);
     minor = (t ? (unsigned) strtoll(t, NULL, 0) : 0);
+#endif
 #ifdef makedev
     return makedev(major, minor);
 #else
@@ -308,49 +315,62 @@ static dev_t xarDev(rpmxar xar)
 static long long xarSize(rpmxar xar)
 	/*@*/
 {
+    long long ll = 0L;
+#ifdef	WITH_XAR
     char * t = xar_get_size(xar->x, xar->f);
-    long long ll = strtoll(t, NULL, 0);
+    ll = strtoll(t, NULL, 0);
     t = _free(t);
+#endif
     return ll;
 }
 
 static uid_t xarUid(rpmxar xar)
 	/*@*/
 {
+    uid_t u = 0;
+#ifdef	WITH_XAR
     const char * t = NULL;
-    uid_t u;
+
     xar_prop_get(xar->f, "user", &t);
     if (t == NULL || unameToUid(t, &u) < 0) {
 	xar_prop_get(xar->f, "uid", &t);
 	u = (t ? (uid_t) strtoll(t, NULL, 0) : getuid());
     }
+#endif
     return u;
 }
 
 static gid_t xarGid(rpmxar xar)
 	/*@*/
 {
+    gid_t g = 0;
+#ifdef	WITH_XAR
     const char * t = NULL;
-    gid_t g;
+
     xar_prop_get(xar->f, "group", &t);
     if (t == NULL || gnameToGid(t, &g) < 0) {
 	xar_prop_get(xar->f, "gid", &t);
 	g = (t ? (gid_t) strtoll(t, NULL, 0) : getgid());
     }
+#endif
     return g;
 }
 
 static void xarTime(rpmxar xar, const char * tprop, struct timeval *tv)
 	/*@modifies *tvp */
 {
+#ifdef	WITH_XAR
     const char * t = NULL;
+
     xar_prop_get(xar->f, tprop, &t);
     if (t) {
 	struct tm tm;
 	strptime(t, "%FT%T", &tm);
 	tv->tv_sec = timegm(&tm);
 	tv->tv_usec = 0;
-    } else {
+    } else
+#endif
+    {
 	tv->tv_sec = time(NULL);
 	tv->tv_usec = 0;
     }
