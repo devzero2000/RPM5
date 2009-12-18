@@ -54,36 +54,47 @@ pkgbin_PROGRAMS =	\
 dist_man_MANS =		rpmgrep.1
 
 augtool_SOURCES =	augtool.c
+augtool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 augtool_LDADD =		$(RPMIO_LDADD_COMMON)
 
 chroot_SOURCES =	chroot.c
+chroot_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 chroot_LDADD =		$(RPMIO_LDADD_COMMON)
 
 cp_SOURCES =		cp.c
+cp_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 cp_LDADD =		$(RPMIO_LDADD_COMMON)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
+debugedit_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 debugedit_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmcache_SOURCES =	rpmcache.c
+rpmcache_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmcache_LDADD =	$(RPM_LDADD_COMMON)
 
 rpmcmp_SOURCES =	rpmcmp.c
-rpmcmp_LDADD =		$(RPM_LDADD_COMMON)
+rpmcmp_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+rpmcmp_LDADD =		$(RPMDB_LDADD_COMMON)
 
 rpmdeps_SOURCES =	rpmdeps.c
+rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmdeps_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmdigest_SOURCES =	rpmdigest.c
+rpmdigest_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmdigest_LDADD =	$(RPMIO_LDADD_COMMON)
 
 find_SOURCES =		rpmfind.c
+find_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 find_LDADD =		$(RPMIO_LDADD_COMMON)
 
 grep_SOURCES =		rpmgrep.c
+grep_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 grep_LDADD =		$(RPMIO_LDADD_COMMON)
 
 mtree_SOURCES =		rpmmtree.c
+mtree_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 mtree_LDADD =		$(RPM_LDADD_COMMON)
 
 rpmrepo_SOURCES =	rpmrepo.c
@@ -109,13 +120,15 @@ wget_LDADD =		$(RPMIO_LDADD_COMMON)
 ## Traditional rpm2cpio
 ##
 rpm2cpio_SOURCES =	rpm2cpio.c
-rpm2cpio_LDADD =	$(RPM_LDADD_COMMON)
+rpm2cpio_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+rpm2cpio_LDADD =	$(LDFLAGS) $(RPM_LDADD_COMMON)
 
 ##
 ##  keyctl(1) clone
 ##
 rpmkey_SOURCES =        rpmkey.c
-rpmkey_LDADD =          $(RPM_LDADD_COMMON) -lkeyutils
+rpmkey_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+rpmkey_LDADD =          $(LDFLAGS) $(RPM_LDADD_COMMON) -lkeyutils
 
 ##
 ## XAR <-> RPM package converter
@@ -141,7 +154,7 @@ if WITH_DB_RPC
 db_tool_CPPFLAGS += \
     -DWITH_DB_RPC
 endif
-db_tool_LDFLAGS =
+db_tool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 db_tool_LDADD =
 #   for db_recover
 db_tool_LDADD += \
@@ -173,8 +186,9 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/libdb-4.8.la
 endif
 
-pkgbin_PROGRAMS += db_sql
-db_sql_SOURCES = ../db/db_sql/db_sql.c
+pkgbin_PROGRAMS +=	db_sql
+db_sql_SOURCES =	../db/db_sql/db_sql.c
+db_sql_LDFLAGS		= @LDFLAGS_STATIC@ $(LDFLAGS)
 db_sql_LDADD = \
 	$(top_builddir)/db3/parse.lo \
 	$(top_builddir)/db3/preparser.lo \

@@ -131,13 +131,13 @@ pkgcfg_DATA = \
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =		$(top_srcdir)/build.c
-rpm_LDFLAGS =		@LDFLAGS_STATIC@
+rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmbuild_SOURCES =	$(top_srcdir)/build.c
-rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@
+rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.c
