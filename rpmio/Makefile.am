@@ -99,7 +99,7 @@ librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
-librpmio_la_LIBADD =
+librpmio_la_LIBADD = -lm
 if ENABLE_BUILD_INTLIBDEP
 librpmio_la_LIBADD +=
 	$(top_builddir)/misc/librpmmisc.la
