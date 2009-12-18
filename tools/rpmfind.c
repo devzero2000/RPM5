@@ -43,7 +43,9 @@ char copyright[] =
 
 #include "system.h"
 
+#if defined(HAVE_SYS_ACL_H)
 #include <sys/acl.h>
+#endif
 #include <sys/mount.h>
 
 #include <langinfo.h>
@@ -1402,7 +1404,9 @@ c_mXXdepth(OPTION *option, char ***argvp)
 static int
 f_acl(PLAN *plan __unused, FTSENT *entry)
 {
-    int match, entries;
+    int match = 0;
+#if defined(HAVE_SYS_ACL_H)
+    int entries;
     acl_entry_t ae;
     acl_t facl;
 
@@ -1435,6 +1439,7 @@ f_acl(PLAN *plan __unused, FTSENT *entry)
 	acl_free(facl);
     } else
 	warn("%s", entry->fts_accpath);
+#endif
     return match;
 }
 

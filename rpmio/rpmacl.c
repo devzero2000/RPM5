@@ -4,22 +4,24 @@
 
 #include "system.h"
 
+#if defined(HAVE_SYS_ACL_H)
 #include <sys/acl.h>
+#endif
 #include <rpmacl.h>
 
 #include "debug.h"
 
+#if defined(HAVE_SYS_ACL_H)
 static inline int __acl_entries(acl_t a)
 {
-    int count;
+    int count = 0;
 #if defined(__FreeBSD__)	/* XXX others too. HAVE_ACL_ACL_CNT AutoFu? */
     struct acl * aclp = &a->ats_acl;
     count = aclp->acl_cnt;
 #else
     int id = ACL_FIRST_ENTRY;
     acl_entry_t ace;
-	
-    count = 0;
+
     while (acl_get_entry(a, id, &ace) > 0) {
 	id = ACL_NEXT_ENTRY;
 	count++;
@@ -27,12 +29,14 @@ static inline int __acl_entries(acl_t a)
 #endif
     return count;
 }
+#endif	/* HAVE_SYS_ACL_H */
 
 rpmRC rpmaclCopyFd(FD_t ifd, FD_t ofd)
 {
+    rpmRC rc = RPMRC_OK;	/* assume success */
+#if defined(HAVE_SYS_ACL_H)
     int ifdno = Fileno(ifd);
     int ofdno = Fileno(ofd);
-    rpmRC rc = RPMRC_OK;	/* assume success */
     acl_t a = NULL;
     int count;
 
@@ -57,14 +61,16 @@ rpmRC rpmaclCopyFd(FD_t ifd, FD_t ofd)
 exit:
     if (a)
 	acl_free(a);
+#endif	/* HAVE_SYS_ACL_H */
     return rc;
 }
 
 rpmRC rpmaclCopyDir(const char * sdn, const char * tdn, mode_t mode)
 {
+    rpmRC rc = RPMRC_OK;	/* assume success */
+#if defined(HAVE_SYS_ACL_H)
     acl_t (*aclgetf)(const char *, acl_type_t);
     int (*aclsetf)(const char *, acl_type_t, acl_t);
-    rpmRC rc = RPMRC_OK;	/* assume success */
     acl_t a = NULL;
     int count;
 
@@ -128,5 +134,6 @@ rpmRC rpmaclCopyDir(const char * sdn, const char * tdn, mode_t mode)
 exit:
     if (a)
 	acl_free(a);
+#endif	/* HAVE_SYS_ACL_H */
     return rc;
 }
