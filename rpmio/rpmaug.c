@@ -680,7 +680,11 @@ rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
     rpmRC rc = RPMRC_OK;	/* assume success */
     int xx;
 
+#ifdef	WITH_AUGEAS
     if (aug == NULL) aug = rpmaugI();
+#else
+    if (aug == NULL) return rc;		/* XXX FIXME */
+#endif
 
     if (resultp)
 	*resultp = NULL;
