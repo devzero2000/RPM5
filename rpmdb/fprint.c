@@ -290,6 +290,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 }
 #endif
 
+#ifdef	NOTYET	/* XXX rstrscat needs to be ported and nuked */
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #define	_RPMTE_INTERNAL
@@ -398,10 +399,12 @@ static char * rstrscat(char **dest, const char *arg, ...)
 
     return dst;
 }
+#endif	/* NOTYET */
 
 void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
 		void * _p, int filenr)
 {
+#ifdef	NOTYET		/* XXX needed iff @rpm.org API is used */
     rpmte p = _p;
     rpmfi fi = __rpmteFI(p, RPMTAG_BASENAMES);
     struct fingerPrint_s current_fp;
@@ -532,5 +535,6 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
     }
     free(currentsubdir);
     htAddEntry(fphash, fp, ffi);
+#endif	/* NOTYET */
 
 }
