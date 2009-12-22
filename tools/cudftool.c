@@ -431,6 +431,12 @@ static rpmcudf rpmcudfGetPool(/*@null@*/ rpmioPool pool)
 static rpmcudf rpmcudfNew(const char * fn, int flags)
 {
     rpmcudf cudf = rpmcudfGetPool(_rpmcudfPool);
+    static int oneshot = 0;
+
+    if (!oneshot) {
+	cudf_init();
+	oneshot++;
+    }
 
     if (fn != NULL) {
 	if (flags)
@@ -444,6 +450,132 @@ static rpmcudf rpmcudfNew(const char * fn, int flags)
 }
 
 /*==============================================================*/
+typedef struct {
+  void *block;           /* address of the malloced block this chunk live in */
+  size_t alloc;         /* in bytes, used for compaction */
+  size_t size;          /* in bytes */
+  char *next;
+} heap_chunk_head;
+  
+#define Chunk_size(c) (((heap_chunk_head *) (c)) [-1]).size
+#define Chunk_alloc(c) (((heap_chunk_head *) (c)) [-1]).alloc
+#define Chunk_next(c) (((heap_chunk_head *) (c)) [-1]).next
+#define Chunk_block(c) (((heap_chunk_head *) (c)) [-1]).block
+extern char * caml_heap_start;
+
+struct caml_ref_table {
+  void **base;
+  void **end;
+  void **threshold;
+  void **ptr; 
+  void **limit;
+  size_t size;
+  size_t reserve;
+};
+extern struct caml_ref_table caml_ref_table;
+extern struct caml_ref_table caml_weak_ref_table;
+
+#define Page_log 12             /* A page is 4 kilobytes. */
+#define Pagetable2_log 11
+#define Pagetable2_size (1 << Pagetable2_log)
+#define Pagetable1_log (Page_log + Pagetable2_log) 
+#define Pagetable1_size (1 << (32 - Pagetable1_log))
+extern unsigned char * caml_page_table[Pagetable1_size];
+
+struct channel {
+  int fd;                       /* Unix file descriptor */
+  off_t offset;                 /* Absolute position of fd in the file */
+  char * end;                   /* Physical end of the buffer */
+  char * curr;                  /* Current position in the buffer */
+  char * max;                   /* Logical end of the buffer (for input) */
+  void * mutex;                 /* Placeholder for mutex (for systhreads) */
+  struct channel * next, * prev;/* Double chaining of channels (flush_all) */
+  int revealed;                 /* For Cash only */
+  int old_revealed;             /* For Cash only */
+  int refcount;                 /* For flush_all and for Cash */
+  int flags;                    /* Bitfield */
+  char buff[1];                 /* The buffer itself */
+};
+extern struct channel * caml_all_opened_channels;
+
+struct ext_table {
+  int size;
+  int capacity;
+  void ** contents;
+};
+extern struct ext_table caml_prim_table;
+
+extern void * caml_stack_low;
+
+extern char * caml_young_start;
+extern char * caml_young_end;
+extern char * caml_young_ptr;
+extern char * caml_young_limit;
+
+static void
+cudf_fini(void)
+{
+    void * _p = caml_heap_start;
+    void * _block = Chunk_block(_p);
+    size_t _alloc = Chunk_alloc(_p);
+    size_t _size = Chunk_size(_p);
+    void * _next = Chunk_next(_p);
+    void * _base;
+    void * _empty;
+    struct channel * _c;
+
+    int i;
+
+    caml_gc_full_major(0);
+
+if (_rpmcudf_debug)
+fprintf(stderr, "---- caml_page_table\n");
+    _empty = caml_page_table[0];
+    for (i = 0; i < Pagetable1_size; i++) {
+	_base = caml_page_table[i];
+	if (_base == _empty)
+	    continue;
+if (_rpmcudf_debug)
+fprintf(stderr, "\t%3d %p\n", i, _base);
+	free(_base);
+    }
+
+    i = 0;
+    while ((_c = caml_all_opened_channels) != NULL) {
+	_c->refcount = 0;
+	caml_close_channel(_c);
+if (_rpmcudf_debug)
+fprintf(stderr, "---- channel: %d %p %p\n", i, _c, caml_all_opened_channels);
+	i++;
+    }
+
+    caml_ext_table_free(&caml_prim_table, 0);
+
+    _base = caml_stack_low;
+    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
+    _base = caml_weak_ref_table.base;
+    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
+    _base = caml_ref_table.base;
+    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
+
+if (_rpmcudf_debug)
+fprintf(stderr, "*** caml_young_start: %p\n", caml_young_start);
+if (_rpmcudf_debug)
+fprintf(stderr, "*** caml_young_end: %p\n", caml_young_end);
+if (_rpmcudf_debug)
+fprintf(stderr, "*** caml_young_ptr: %p\n", caml_young_ptr);
+if (_rpmcudf_debug)
+fprintf(stderr, "*** caml_young_limit: %p\n", caml_young_limit);
+
+#ifdef	NOTYET
+    free(caml_young_start);
+#endif
+
+if (_rpmcudf_debug)
+fprintf(stderr, "*** caml_heap_start: %p\n\tblock %p[%u:%u] next %p\n", caml_heap_start, _block, (unsigned)_alloc, (unsigned)_size, _next);
+    free(_block);
+
+}
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,			&_rpmcudf_debug, -1,
@@ -471,12 +603,14 @@ int main(int argc, char **argv)
     rpmcudf X = NULL;
     FILE * fp = NULL;
     int ec = 1;		/* assume failure */
+#ifdef	DYING
     static int oneshot = 0;
 
     if (!oneshot) {
 	cudf_init();
 	oneshot++;
     }
+#endif
 
     optCon = rpmioInit(argc, argv, optionsTable);
     av = poptGetArgs(optCon);
@@ -504,6 +638,7 @@ int main(int argc, char **argv)
 
     print_universe(X, X->doc);
 
+    fflush(X->fp);
     X = rpmcudfFree(X);
 
     X = rpmcudfNew(av[0], 0);
@@ -519,10 +654,14 @@ int main(int argc, char **argv)
 	       cudf_is_solution(X->cudf, Y->cudf->universe) ? "yes" : "no");
 	Y = rpmcudfFree(Y);
     }
+    fflush(X->fp);
     X = rpmcudfFree(X);
     ec = 0;
 
 exit:
+if (_rpmcudf_debug)
+fprintf(stderr, "=== EXITING\n");
+cudf_fini();
     _rpmcudfPool = rpmioFreePool(_rpmcudfPool);
     optCon = rpmioFini(optCon);
 

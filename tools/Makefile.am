@@ -68,7 +68,7 @@ cp_LDADD =		$(RPMIO_LDADD_COMMON)
 cudftool_SOURCES =	cudftool.c
 cudftool_CPPFLAGS =	$(AM_CPPFLAGS) $(CPPFLAGS) $(shell pkg-config --cflags glib-2.0)
 cudftool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS) $(shell pkg-config --libs glib-2.0)
-cudftool_LDADD =	# $(RPMIO_LDADD_COMMON)
+cudftool_LDADD =	$(RPMIO_LDADD_COMMON)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
