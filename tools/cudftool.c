@@ -22,7 +22,7 @@
 #include <argv.h>
 #include <poptIO.h>
 
-#undef	WITH_GLIB
+#define	WITH_GLIB
 #if defined(WITH_GLIB)
 #include <glib.h>
 #else
@@ -83,8 +83,8 @@ g_hash_table_foreach (GHashTable *hash_table,
 {
     int i;
 
-    assert(hash_table != NULL);
-    assert(func != NULL);
+assert(hash_table != NULL);
+assert(func != NULL);
 
     for (i = 0; i < hash_table->size; i++) {
 	GHashNode *node = &hash_table->nodes[i];
@@ -103,6 +103,9 @@ g_hash_table_foreach (GHashTable *hash_table,
 #include "debug.h"
 
 const char *__progname;
+
+/*@unchecked@*/
+int _rpmcudf_debug = 0;
 
 typedef	struct rpmcudf_s * rpmcudf;
 
@@ -289,6 +292,7 @@ void print_package(rpmcudf cudf, cudf_package_t pkg)
     FILE * fp = cudf->fp;
     cudf_vpkgformula_t fmla;
     cudf_vpkglist_t vpkglist;
+    cudf_extra_t extra;
 
 assert(fp != NULL);
 
@@ -319,8 +323,11 @@ assert(fp != NULL);
 
     print_keep(cudf, cudf_pkg_keep(pkg));	/* keep */
 
-    print_extra(cudf, cudf_pkg_extra(pkg));	/* extra properties */
+    extra = cudf_pkg_extra(pkg);	/* extra properties */
+    print_extra(cudf, extra);
+    cudf_free_extra(extra);
     fprintf(fp, "\n");
+
 }
 
 /* Print a CUDF universe */
@@ -348,9 +355,205 @@ void print_universe(rpmcudf cudf, cudf_doc_t *doc)
 }
 
 /*==============================================================*/
+typedef long intnat;
+typedef unsigned long uintnat;
+typedef intnat value;
 
-/*@unchecked@*/
-int _rpmcudf_debug = 0;
+typedef struct {
+  void *block;           /* address of the malloced block this chunk live in */
+  size_t alloc;         /* in bytes, used for compaction */
+  size_t size;          /* in bytes */
+  char *next;
+} heap_chunk_head;
+  
+#define Chunk_size(c) (((heap_chunk_head *) (c)) [-1]).size
+#define Chunk_alloc(c) (((heap_chunk_head *) (c)) [-1]).alloc
+#define Chunk_next(c) (((heap_chunk_head *) (c)) [-1]).next
+#define Chunk_block(c) (((heap_chunk_head *) (c)) [-1]).block
+extern char * caml_heap_start;
+extern intnat caml_stat_heap_size;
+
+struct caml_ref_table {
+  void **base;
+  void **end;
+  void **threshold;
+  void **ptr; 
+  void **limit;
+  size_t size;
+  size_t reserve;
+};
+extern struct caml_ref_table caml_ref_table;
+extern struct caml_ref_table caml_weak_ref_table;
+
+#define Page_log 12             /* A page is 4 kilobytes. */
+#define Pagetable2_log 11
+#define Pagetable2_size (1 << Pagetable2_log)
+#define Pagetable1_log (Page_log + Pagetable2_log) 
+#define Pagetable1_size (1 << (32 - Pagetable1_log))
+extern unsigned char * caml_page_table[Pagetable1_size];
+
+struct channel {
+  int fd;                       /* Unix file descriptor */
+  off_t offset;                 /* Absolute position of fd in the file */
+  char * end;                   /* Physical end of the buffer */
+  char * curr;                  /* Current position in the buffer */
+  char * max;                   /* Logical end of the buffer (for input) */
+  void * mutex;                 /* Placeholder for mutex (for systhreads) */
+  struct channel * next, * prev;/* Double chaining of channels (flush_all) */
+  int revealed;                 /* For Cash only */
+  int old_revealed;             /* For Cash only */
+  int refcount;                 /* For flush_all and for Cash */
+  int flags;                    /* Bitfield */
+  char buff[1];                 /* The buffer itself */
+};
+extern struct channel * caml_all_opened_channels;
+
+struct global_root {
+  value * root;                    /* the address of the root */
+  struct global_root * forward[1]; /* variable-length array */
+};
+#define NUM_LEVELS 17
+struct global_root_list {
+  value * root;                 /* dummy value for layout compatibility */
+  struct global_root * forward[NUM_LEVELS]; /* forward chaining */
+  int level;                    /* max used level */
+};
+struct global_root_list caml_global_roots;
+struct global_root_list caml_global_roots_young;
+struct global_root_list caml_global_roots_old;
+
+static void caml_empty_global_roots(struct global_root_list * rootlist)
+{
+  struct global_root * gr, * next;
+  int i;
+
+  for (gr = rootlist->forward[0]; gr != NULL; /**/) {
+    next = gr->forward[0];
+    caml_stat_free(gr);
+    gr = next;
+  }
+  for (i = 0; i <= rootlist->level; i++) rootlist->forward[i] = NULL;
+  rootlist->level = 0;
+}
+
+#ifdef	NOTYET		/* XXX byterun/custom.c static custom_ops_table */
+struct custom_operations {
+  char *identifier;
+  void (*finalize)(value v);
+  int (*compare)(value v1, value v2);
+  intnat (*hash)(value v);
+  void (*serialize)(value v,
+                    /*out*/ uintnat * wsize_32 /*size in bytes*/,
+                    /*out*/ uintnat * wsize_64 /*size in bytes*/);
+  uintnat (*deserialize)(void * dst);
+};
+extern struct custom_operations caml_int32_ops,
+                                caml_nativeint_ops,
+                                caml_int64_ops;
+#endif
+
+struct ext_table {
+  int size;
+  int capacity;
+  void ** contents;
+};
+extern struct ext_table caml_prim_table;
+
+extern void * caml_stack_low;
+
+#define In_heap 1                         
+#define In_young 2 
+extern char * caml_young_start;
+extern char * caml_young_end;
+
+static void
+cudf_fini(void)
+{
+    void * _base;
+    void * _empty;
+    uintnat *_p;
+    struct channel * _c;
+
+    int i;
+
+    caml_gc_full_major(0);
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_all_opened_channels\n");
+    i = 0;
+    while ((_c = caml_all_opened_channels) != NULL) {
+	if (_c->fd >= 0 && _c->fd <= 2)	/* XXX avoid closing std{in,out,err} */
+	    _c->fd = dup(_c->fd);
+	_c->refcount = 0;
+	caml_close_channel(_c);
+if (_rpmcudf_debug)
+fprintf(stderr, "--- channel: %d %p %p\n", i, _c, caml_all_opened_channels);
+	i++;
+    }
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_prim_table\n");
+    caml_ext_table_free(&caml_prim_table, 0);
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_stack_low\n");
+    _base = caml_stack_low;
+    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_global_roots\n");
+    caml_empty_global_roots(&caml_global_roots);
+
+    /* XXX the OCAML major heap has chained allocation chunks. */
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_heap_start\n");
+    caml_page_table_remove(In_heap, caml_heap_start, caml_heap_start+caml_stat_heap_size);
+    _base = Chunk_block(caml_heap_start);
+    free(_base);
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_weak_ref_table\n");
+    _base = caml_weak_ref_table.base;
+    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_ref_table\n");
+    _base = caml_ref_table.base;
+    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_young_start\n");
+    caml_page_table_remove(In_young, caml_young_start, caml_young_end);
+    _p = (void *)caml_young_start;
+
+    /* XXX the OCAML minor heap is page aligned and caml_young_base is static */
+#ifdef	BRUTAL_HACK
+    _p -= (2624/sizeof(*_p));
+    free(_p);
+#else
+#ifdef	DYING
+    /* XXX OCAML compiled with DEBUG adds red zones = Debug_filler_align. */
+    for (i = 0; i < (int)(2640/sizeof(*_p)); i++) {
+fprintf(stderr, "\tp[%d]\t%u\n", -i, (unsigned)*_p);
+	_p--;
+    }
+#endif
+#endif
+
+if (_rpmcudf_debug)
+fprintf(stderr, "--- caml_page_table\n");
+    _empty = caml_page_table[0];
+    for (i = 0; i < Pagetable1_size; i++) {
+	_base = caml_page_table[i];
+	if (_base == _empty)
+	    continue;
+if (_rpmcudf_debug)
+fprintf(stderr, "\t%3d %p\n", i, _base);
+	free(_base);
+    }
+
+}
+
+/*==============================================================*/
 
 #ifdef	NOTYET
 /*@unchecked@*/ /*@relnull@*/
@@ -449,134 +652,6 @@ static rpmcudf rpmcudfNew(const char * fn, int flags)
     return rpmcudfLink(cudf);
 }
 
-/*==============================================================*/
-typedef struct {
-  void *block;           /* address of the malloced block this chunk live in */
-  size_t alloc;         /* in bytes, used for compaction */
-  size_t size;          /* in bytes */
-  char *next;
-} heap_chunk_head;
-  
-#define Chunk_size(c) (((heap_chunk_head *) (c)) [-1]).size
-#define Chunk_alloc(c) (((heap_chunk_head *) (c)) [-1]).alloc
-#define Chunk_next(c) (((heap_chunk_head *) (c)) [-1]).next
-#define Chunk_block(c) (((heap_chunk_head *) (c)) [-1]).block
-extern char * caml_heap_start;
-
-struct caml_ref_table {
-  void **base;
-  void **end;
-  void **threshold;
-  void **ptr; 
-  void **limit;
-  size_t size;
-  size_t reserve;
-};
-extern struct caml_ref_table caml_ref_table;
-extern struct caml_ref_table caml_weak_ref_table;
-
-#define Page_log 12             /* A page is 4 kilobytes. */
-#define Pagetable2_log 11
-#define Pagetable2_size (1 << Pagetable2_log)
-#define Pagetable1_log (Page_log + Pagetable2_log) 
-#define Pagetable1_size (1 << (32 - Pagetable1_log))
-extern unsigned char * caml_page_table[Pagetable1_size];
-
-struct channel {
-  int fd;                       /* Unix file descriptor */
-  off_t offset;                 /* Absolute position of fd in the file */
-  char * end;                   /* Physical end of the buffer */
-  char * curr;                  /* Current position in the buffer */
-  char * max;                   /* Logical end of the buffer (for input) */
-  void * mutex;                 /* Placeholder for mutex (for systhreads) */
-  struct channel * next, * prev;/* Double chaining of channels (flush_all) */
-  int revealed;                 /* For Cash only */
-  int old_revealed;             /* For Cash only */
-  int refcount;                 /* For flush_all and for Cash */
-  int flags;                    /* Bitfield */
-  char buff[1];                 /* The buffer itself */
-};
-extern struct channel * caml_all_opened_channels;
-
-struct ext_table {
-  int size;
-  int capacity;
-  void ** contents;
-};
-extern struct ext_table caml_prim_table;
-
-extern void * caml_stack_low;
-
-extern char * caml_young_start;
-extern char * caml_young_end;
-extern char * caml_young_ptr;
-extern char * caml_young_limit;
-
-static void
-cudf_fini(void)
-{
-    void * _p = caml_heap_start;
-    void * _block = Chunk_block(_p);
-    size_t _alloc = Chunk_alloc(_p);
-    size_t _size = Chunk_size(_p);
-    void * _next = Chunk_next(_p);
-    void * _base;
-    void * _empty;
-    struct channel * _c;
-
-    int i;
-
-    caml_gc_full_major(0);
-
-if (_rpmcudf_debug)
-fprintf(stderr, "---- caml_page_table\n");
-    _empty = caml_page_table[0];
-    for (i = 0; i < Pagetable1_size; i++) {
-	_base = caml_page_table[i];
-	if (_base == _empty)
-	    continue;
-if (_rpmcudf_debug)
-fprintf(stderr, "\t%3d %p\n", i, _base);
-	free(_base);
-    }
-
-    i = 0;
-    while ((_c = caml_all_opened_channels) != NULL) {
-	_c->refcount = 0;
-	caml_close_channel(_c);
-if (_rpmcudf_debug)
-fprintf(stderr, "---- channel: %d %p %p\n", i, _c, caml_all_opened_channels);
-	i++;
-    }
-
-    caml_ext_table_free(&caml_prim_table, 0);
-
-    _base = caml_stack_low;
-    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
-    _base = caml_weak_ref_table.base;
-    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
-    _base = caml_ref_table.base;
-    if (_base) caml_stat_free(_base);	/* XXX free(_base) instead? */
-
-if (_rpmcudf_debug)
-fprintf(stderr, "*** caml_young_start: %p\n", caml_young_start);
-if (_rpmcudf_debug)
-fprintf(stderr, "*** caml_young_end: %p\n", caml_young_end);
-if (_rpmcudf_debug)
-fprintf(stderr, "*** caml_young_ptr: %p\n", caml_young_ptr);
-if (_rpmcudf_debug)
-fprintf(stderr, "*** caml_young_limit: %p\n", caml_young_limit);
-
-#ifdef	NOTYET
-    free(caml_young_start);
-#endif
-
-if (_rpmcudf_debug)
-fprintf(stderr, "*** caml_heap_start: %p\n\tblock %p[%u:%u] next %p\n", caml_heap_start, _block, (unsigned)_alloc, (unsigned)_size, _next);
-    free(_block);
-
-}
-
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,			&_rpmcudf_debug, -1,
 	NULL, NULL },
@@ -603,14 +678,6 @@ int main(int argc, char **argv)
     rpmcudf X = NULL;
     FILE * fp = NULL;
     int ec = 1;		/* assume failure */
-#ifdef	DYING
-    static int oneshot = 0;
-
-    if (!oneshot) {
-	cudf_init();
-	oneshot++;
-    }
-#endif
 
     optCon = rpmioInit(argc, argv, optionsTable);
     av = poptGetArgs(optCon);
