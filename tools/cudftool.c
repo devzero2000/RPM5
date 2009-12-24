@@ -130,16 +130,14 @@ enum rpmcudv_e {
     RPMCUDV_TYPEDECL	= TYPE_TYPEDECL,	/* type "typedecl" */
 
 	/* XXX extensions */
-    RPMCUDV_PREAMBLE	= RPMCUDV_EBASE+0,	/* cudf_preamble_t */
-    RPMCUDV_REQUEST	= RPMCUDV_EBASE+1,	/* cudf_request_t */
-    RPMCUDV_UNIVERSE	= RPMCUDV_EBASE+2,	/* cudf_universe_t */
+    RPMCUDV_UNIVERSE	= RPMCUDV_EBASE+0,	/* cudf_universe_t */
 
-    RPMCUDV_PACKAGE	= RPMCUDV_EBASE+3,	/* cudf_package_t */
+    RPMCUDV_PACKAGE	= RPMCUDV_EBASE+1,	/* cudf_package_t */
 
-    RPMCUDV_CUDFDOC	= RPMCUDV_EBASE+4,	/* cudf_doc_t */
-    RPMCUDV_CUDF	= RPMCUDV_EBASE+5,	/* cudf_t */
+    RPMCUDV_CUDFDOC	= RPMCUDV_EBASE+2,	/* cudf_doc_t */
+    RPMCUDV_CUDF	= RPMCUDV_EBASE+3,	/* cudf_t */
 
-    RPMCUDV_EXTRA	= RPMCUDV_EBASE+6,	/* cudf_extra_t */
+    RPMCUDV_EXTRA	= RPMCUDV_EBASE+4,	/* cudf_extra_t */
 
 };
 
@@ -167,6 +165,24 @@ struct rpmcudv_s {
     enum rpmcudv_e typ;
     union rpmcudv_u val;
 };
+
+struct rpmcudf_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+
+    struct rpmcudv_s V;		/*!< union of cudf_doc_t and cudf_t */
+
+    FILE * fp;
+    rpmiob iob;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
+};
+
+/*==============================================================*/
+
+/* forward ref */
+static void rpmcudvPrint(rpmcudf cudf, rpmcudv v, int free);
 
 static rpmcudv rpmcudvFree(rpmcudv v)
 {
@@ -203,12 +219,6 @@ assert(0);
 assert(0);	/* XXX unimplemented */
 	break;
 
-    case RPMCUDV_PREAMBLE:
-assert(0);	/* XXX unimplemented */
-	break;
-    case RPMCUDV_REQUEST:
-assert(0);	/* XXX unimplemented */
-	break;
     case RPMCUDV_UNIVERSE:
 	cudf_free_universe(v->val.univ);
 	break;
@@ -225,30 +235,9 @@ assert(0);	/* XXX unimplemented */
 	g_hash_table_destroy(v->val.extra);
 	break;
     }
-
-    /* XXX memset(v, 0, sizeof(*v)); */
-    v->typ = RPMCUDV_NOTYPE;
-    v->val.ptr = NULL;
-
+    memset(v, 0, sizeof(*v));		/* trash & burn */
     return NULL;
 }
-
-/*==============================================================*/
-
-/*==============================================================*/
-
-struct rpmcudf_s {
-    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-
-    struct rpmcudv_s V;
-
-    FILE * fp;
-    rpmiob iob;
-#if defined(__LCLINT__)
-/*@refs@*/
-    int nrefs;			/*!< (unused) keep splint happy */
-#endif
-};
 
 /*==============================================================*/
 
@@ -270,6 +259,7 @@ void print_vpkg(rpmcudf cudf, rpmcudv v)
     FILE * fp = cudf->fp;
 
 assert(v->typ == RPMCUDV_VPKG || v->typ == RPMCUDV_VEQPKG);
+
     if (v->val.vpkg == NULL)
 	return;
     fprintf(fp, "%s", v->val.vpkg->name);
@@ -294,7 +284,7 @@ assert(v->typ == RPMCUDV_VPKGLIST || v->typ == RPMCUDV_VEQPKGLIST);
 struct rpmcudv_s x;
 x.typ = RPMCUDV_VPKG;
 x.val.vpkg = g_list_nth_data(l, 0);
-	print_vpkg(cudf, &x);
+rpmcudvPrint(cudf, &x, 0);
 	if (l != last)
 	    fprintf(fp, "%s", sep);
     }
@@ -314,7 +304,11 @@ assert(v->typ == RPMCUDV_VPKGFORMULA);
 struct rpmcudv_s x;
 x.typ = RPMCUDV_VPKGLIST;
 x.val.vpkg = g_list_nth_data(l, 0);
+#ifndef	DYING
 	print_vpkglist(cudf, &x, " | ");
+#else
+rpmcudvPrint(cudf, &x, 0);
+#endif
 	if (l != last)
 	    fprintf(fp, ", ");
     }
@@ -322,38 +316,41 @@ x.val.vpkg = g_list_nth_data(l, 0);
 
 /* Print a CUDF preamble */
 static
-void print_preamble(rpmcudf cudf, cudf_doc_t *doc)
+void print_preamble(rpmcudf cudf)
 {
     FILE * fp = cudf->fp;
-    static char *props[] = { "preamble", "property", "univ-checksum", "status-checksum", "req-checksum" };
-    char *s;
-    int i;
+    static char *props[] = {
+	"preamble", "property", "univ-checksum", "status-checksum",
+	"req-checksum", NULL
+    };
+    char ** prop;
 
-    if (!doc->has_preamble)
-	return;
-
-    for (i = 0 ; i < 5 ; i++) {
-	s = cudf_pre_property(doc->preamble, props[i]);
-	fprintf(fp, "  %s: %s\n", props[i], s);
+rpmcudv v = &cudf->V;
+assert(v->typ == RPMCUDV_CUDFDOC);
+    if (v->val.doc->has_preamble)
+    for (prop = props; *prop != NULL; prop++) {
+	char * s = cudf_pre_property(v->val.doc->preamble, *prop);
+	fprintf(fp, "  %s: %s\n", *prop, s);
 	free(s);
     }
 }
 
 /* Print a CUDF request */
 static
-void print_request(rpmcudf cudf, cudf_doc_t *doc)
+void print_request(rpmcudf cudf)
 {
     FILE * fp = cudf->fp;
-    static char *props[] = { "request", "install", "remove", "upgrade" };
-    char *s;
-    int i;
+    static char *props[] = {
+	"request", "install", "remove", "upgrade", NULL
+    };
+    char ** prop;
 
-    if (!doc->has_request)
-	return;
-
-    for (i = 0 ; i < 4 ; i++) {
-	s = cudf_req_property(doc->request, props[i]);
-	fprintf(fp, "  %s: %s\n", props[i], s);
+rpmcudv v = &cudf->V;
+assert(v->typ == RPMCUDV_CUDFDOC);
+    if (v->val.doc->has_request)
+    for (prop = props; *prop != NULL; prop++) {
+	char * s = cudf_req_property(v->val.doc->request, *prop);
+	fprintf(fp, "  %s: %s\n", *prop, s);
 	free(s);
     }
 }
@@ -375,9 +372,6 @@ assert(0);
     }
 }
 
-/* forward ref */
-static void rpmcudvPrint(rpmcudf cudf, rpmcudv v);
-
 /* Print a generic property, i.e. a pair <name, typed value> */
 static
 void print_property(void * k, void * v, void * _cudf)
@@ -385,14 +379,14 @@ void print_property(void * k, void * v, void * _cudf)
     rpmcudf cudf = _cudf;
     FILE * fp = cudf->fp;
     fprintf(fp, "  %s: ", (char *) k);
-    rpmcudvPrint(cudf, v);
+    rpmcudvPrint(cudf, v, 0);
     fprintf(fp, "\n");
 }
 
 /* Print to stdout a set of extra properties */
 #define print_extra(_cudf, e)	g_hash_table_foreach(e, print_property, _cudf)
 
-static void rpmcudvPrint(rpmcudf cudf, rpmcudv v)
+static void rpmcudvPrint(rpmcudf cudf, rpmcudv v, int free)
 {
     FILE * fp = cudf->fp;
 
@@ -421,6 +415,7 @@ assert(0);
 	break;
     case RPMCUDV_VPKGFORMULA:
 	print_vpkgformula(cudf, v);
+if (free) rpmcudvFree(v);
 	break;
     case RPMCUDV_VPKG:
     case RPMCUDV_VEQPKG:
@@ -429,17 +424,12 @@ assert(0);
     case RPMCUDV_VPKGLIST:
     case RPMCUDV_VEQPKGLIST:
 	print_vpkglist(cudf, v, ", ");
+if (free) rpmcudvFree(v);
 	break;
     case RPMCUDV_TYPEDECL:
 assert(0);	/* XXX unimplemented */
 	break;
 
-    case RPMCUDV_PREAMBLE:
-assert(0);	/* XXX unimplemented */
-	break;
-    case RPMCUDV_REQUEST:
-assert(0);	/* XXX unimplemented */
-	break;
     case RPMCUDV_UNIVERSE:
 assert(0);	/* XXX unimplemented */
 	break;
@@ -454,6 +444,7 @@ assert(0);	/* XXX unimplemented */
 	break;
     case RPMCUDV_EXTRA:
 	print_extra(cudf, v->val.extra);
+if (free) rpmcudvFree(v);
 	break;
     }
 }
@@ -506,18 +497,18 @@ assert(v->typ == RPMCUDV_PACKAGE);
     return cudf_pkg_version(v->val.pkg);
 }
 
-static const char * rpmcudpInstalled(rpmcudp cudp)
+static int rpmcudpInstalled(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
 assert(v->typ == RPMCUDV_PACKAGE);
-    return (cudf_pkg_installed(v->val.pkg) ? "true" : "false");
+    return cudf_pkg_installed(v->val.pkg);
 }
 
-static const char * rpmcudpWasInstalled(rpmcudp cudp)
+static int rpmcudpWasInstalled(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
 assert(v->typ == RPMCUDV_PACKAGE);
-    return (cudf_pkg_was_installed(v->val.pkg) ? "true" : "false");
+    return cudf_pkg_was_installed(v->val.pkg);
 }
 
 static rpmcudv rpmcudpW(rpmcudp cudp, int typ, void * ptr)
@@ -566,67 +557,43 @@ static
 void print_package(rpmcudf cudf, rpmcudp cudp)
 {
 FILE * fp = cudf->fp;
-rpmcudv w;
+rpmcudv v;
 
 assert(fp != NULL);
-w = &cudp->V;
-assert(w->typ == RPMCUDV_PACKAGE);
+v = &cudp->V;
+assert(v->typ == RPMCUDV_PACKAGE);
 
     fprintf(fp, "  package: %s\n", rpmcudpName(cudp));
     fprintf(fp, "  version: %d\n", rpmcudpVersion(cudp));
-    fprintf(fp, "  installed: %s\n", rpmcudpInstalled(cudp));
-    fprintf(fp, "  was-installed: %s\n", rpmcudpWasInstalled(cudp));
+    fprintf(fp, "  installed: %s\n",
+		rpmcudpInstalled(cudp) ? "true" : "false");
+    fprintf(fp, "  was-installed: %s\n",
+		rpmcudpWasInstalled(cudp) ? "true" : "false");
 
     fprintf(fp, "  depends: ");
-w = rpmcudpDepends(cudp);
-    print_vpkgformula(cudf, w);
-rpmcudvFree(w);
+    rpmcudvPrint(cudf, rpmcudpDepends(cudp), 1);
     fprintf(fp, "\n");
 
     fprintf(fp, "  conflicts: ");
-w = rpmcudpConflicts(cudp);
-    print_vpkglist(cudf, w, ", ");
-rpmcudvFree(w);
+    rpmcudvPrint(cudf, rpmcudpConflicts(cudp), 1);
     fprintf(fp, "\n");
 
     fprintf(fp, "  provides: ");
-w = rpmcudpProvides(cudp);
-    print_vpkglist(cudf, w, ", ");
-rpmcudvFree(w);
+    rpmcudvPrint(cudf, rpmcudpProvides(cudp), 1);
     fprintf(fp, "\n");
 
-w = rpmcudpKeep(cudp);
-    print_keep(cudf, w->val.i);
-rpmcudvFree(w);
+v = rpmcudpKeep(cudp);
+#ifndef	DYING
+    print_keep(cudf, v->val.i);
+#else
+    rpmcudvPrint(cudf, v, 0);
+#endif
+rpmcudvFree(v);
 
-w = rpmcudpExtra(cudp);
-    print_extra(cudf, w->val.extra);
-rpmcudvFree(w);
+    rpmcudvPrint(cudf, rpmcudpExtra(cudp), 0);
 
     fprintf(fp, "\n");
 
-}
-
-/* Print a CUDF universe */
-static
-void print_universe(rpmcudf cudf, cudf_doc_t *doc)
-{
-    FILE * fp = cudf->fp;
-
-    {   rpmcudp cudp = rpmcudpNew(cudf);
-	fprintf(fp, "Universe:\n");
-	while (rpmcudpNext(cudp) != NULL)
-	    print_package(cudf, cudp);
-	cudp = rpmcudpFree(cudp);
-    }
-
-    {   cudf_universe_t univ = cudf_load_universe(doc->packages);
-	fprintf(fp, "Universe size: %d/%d (installed/total)\n",
-			cudf_installed_size(univ), cudf_universe_size(univ));
-	fprintf(fp, "Universe consistent: %s\n", cudf_is_consistent(univ) ?
-			"yes" : "no");
-	cudf_free_universe(univ);
-    }
 }
 
 /*==============================================================*/
@@ -934,6 +901,114 @@ assert(0);
     return rpmcudfLink(cudf);
 }
 
+static
+int rpmcudfHasPreamble(rpmcudf cudf)
+{
+    switch(cudf->V.typ) {
+    default:			assert(0);	break;
+    case RPMCUDV_CUDFDOC:	return cudf->V.val.doc->has_preamble;	break;
+    case RPMCUDV_CUDF:		return cudf->V.val.cudf->has_preamble;	break;
+    }
+}
+
+static
+int rpmcudfHasRequest(rpmcudf cudf)
+{
+    switch(cudf->V.typ) {
+    default:			assert(0);	break;
+    case RPMCUDV_CUDFDOC:	return cudf->V.val.doc->has_request;	break;
+    case RPMCUDV_CUDF:		return cudf->V.val.cudf->has_request;	break;
+    }
+}
+
+static
+int rpmcudfIsConsistent(rpmcudf cudf)
+{
+    switch(cudf->V.typ) {
+    default:			assert(0);	break;
+    case RPMCUDV_CUDF:
+	return cudf_is_consistent(cudf->V.val.cudf->universe);
+	break;
+    }
+}
+
+static
+int rpmcudfInstalledSize(rpmcudf cudf)
+{
+    switch(cudf->V.typ) {
+    default:			assert(0);	break;
+    case RPMCUDV_CUDF:
+	return cudf_installed_size(cudf->V.val.cudf->universe);
+	break;
+    }
+}
+
+static
+int rpmcudfUniverseSize(rpmcudf cudf)
+{
+    switch(cudf->V.typ) {
+    default:			assert(0);	break;
+    case RPMCUDV_CUDF:
+	return cudf_universe_size(cudf->V.val.cudf->universe);
+	break;
+    }
+}
+
+static
+void rpmcudfPrintPreamble(rpmcudf cudf)
+{
+    FILE * fp = cudf->fp;
+    fprintf(fp, "Has preamble: %s\n", rpmcudfHasPreamble(cudf) ? "yes" : "no");
+    if (rpmcudfHasPreamble(cudf)) {
+	fprintf(fp, "Preamble: \n");
+	print_preamble(cudf);
+	fprintf(fp, "\n");
+    }
+}
+
+static
+void rpmcudfPrintRequest(rpmcudf cudf)
+{
+    FILE * fp = cudf->fp;
+    fprintf(fp, "Has request: %s\n", rpmcudfHasRequest(cudf) ? "yes" : "no");
+    if (rpmcudfHasRequest(cudf)) {
+	fprintf(fp, "Request: \n");
+	print_request(cudf);
+	fprintf(fp, "\n");
+    }
+}
+
+static
+void rpmcudfPrintUniverse(rpmcudf cudf)
+{
+    FILE * fp = cudf->fp;
+
+    if (cudf->V.typ == RPMCUDV_CUDFDOC) {
+	rpmcudp cudp = rpmcudpNew(cudf);
+	fprintf(fp, "Universe:\n");
+	while (rpmcudpNext(cudp) != NULL)
+	    print_package(cudf, cudp);
+	cudp = rpmcudpFree(cudp);
+    }
+
+    if (cudf->V.typ == RPMCUDV_CUDFDOC) {
+	cudf_universe_t univ = cudf_load_universe(cudf->V.val.doc->packages);
+	fprintf(fp, "Universe size: %d/%d (installed/total)\n",
+			cudf_installed_size(univ), cudf_universe_size(univ));
+	fprintf(fp, "Universe consistent: %s\n", cudf_is_consistent(univ) ?
+			"yes" : "no");
+	cudf_free_universe(univ);
+    }
+}
+
+static
+int rpmcudfIsSolution(rpmcudf X, rpmcudf Y)
+{
+assert(X->V.typ == RPMCUDV_CUDF);
+assert(Y->V.typ == RPMCUDV_CUDF);
+    return cudf_is_solution(X->V.val.cudf, Y->V.val.cudf->universe);
+}
+
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,			&_rpmcudf_debug, -1,
 	NULL, NULL },
@@ -954,56 +1029,36 @@ Usage: cudftool CUDF_FILE [ SOLUTION_FILE ]\n\
 
 int main(int argc, char **argv)
 {
-    poptContext optCon;
-    ARGV_t av = NULL;
-    int ac;
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    ARGV_t av = poptGetArgs(optCon);
+    int ac = argvCount(av);
     rpmcudf X = NULL;
     FILE * fp = NULL;
     int ec = 1;		/* assume failure */
-
-    optCon = rpmioInit(argc, argv, optionsTable);
-    av = poptGetArgs(optCon);
-    ac = argvCount(av);
 
     if (!(ac == 1 || ac == 2))
 	goto exit;
 
     X = rpmcudfNew(av[0], RPMCUDV_CUDFDOC);
-    fp = X->fp;
-    fprintf(fp, "Has preamble: %s\n", X->V.val.doc->has_preamble
-		? "yes" : "no");
-    if (X->V.val.doc->has_preamble) {
-	fprintf(fp, "Preamble: \n");
-	print_preamble(X, X->V.val.doc);
-	fprintf(fp, "\n");
-    }
-    fprintf(fp, "Has request: %s\n", X->V.val.doc->has_request
-		? "yes" : "no");
-    if (X->V.val.doc->has_request) {
-	fprintf(fp, "Request: \n");
-	print_request(X, X->V.val.doc);
-	fprintf(fp, "\n");
-    }
-
-    print_universe(X, X->V.val.doc);
-
-    fflush(X->fp);
+fp = X->fp;
+    rpmcudfPrintPreamble(X);
+    rpmcudfPrintRequest(X);
+    rpmcudfPrintUniverse(X);
+fflush(fp);
     X = rpmcudfFree(X);
 
     X = rpmcudfNew(av[0], RPMCUDV_CUDF);
-    fp = X->fp;
+fp = X->fp;
     fprintf(fp, "Universe size: %d/%d (installed/total)\n",
-	       cudf_installed_size(X->V.val.cudf->universe),
-	       cudf_universe_size(X->V.val.cudf->universe));
+	       rpmcudfInstalledSize(X), rpmcudfUniverseSize(X));
     fprintf(fp, "Universe consistent: %s\n",
-	       cudf_is_consistent(X->V.val.cudf->universe) ? "yes" : "no");
+		(rpmcudfIsConsistent(X) ? "yes" : "no"));
     if (ac >= 2) {
 	rpmcudf Y = rpmcudfNew(av[1], RPMCUDV_CUDF);
-	fprintf(fp, "Is solution: %s\n",
-	       cudf_is_solution(X->V.val.cudf, Y->V.val.cudf->universe) ? "yes" : "no");
+	fprintf(fp, "Is solution: %s\n", rpmcudfIsSolution(X,Y) ? "yes" : "no");
 	Y = rpmcudfFree(Y);
     }
-    fflush(X->fp);
+fflush(fp);
     X = rpmcudfFree(X);
     ec = 0;
 
