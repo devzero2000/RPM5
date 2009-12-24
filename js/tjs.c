@@ -12,6 +12,8 @@
 #include "rpmbc-js.h"
 #include "rpmbf-js.h"
 
+#include "rpmcudf-js.h"
+
 #include "rpmdb-js.h"
 #include "rpmdbc-js.h"
 #include "rpmdbe-js.h"
@@ -77,6 +79,8 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Aug",		rpmjs_InitAugClass,	 -25 },
     { "Bc",		rpmjs_InitBcClass,	 -40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 -26 },
+
+    { "Cudf",		rpmjs_InitCudfClass,	 50 },	/* todo++ */
 
     { "Db",		rpmjs_InitDbClass,	 -45 },
     { "Dbc",		rpmjs_InitDbcClass,	 -46 },

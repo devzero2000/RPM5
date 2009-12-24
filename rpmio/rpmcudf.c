@@ -31,8 +31,10 @@ static rpmcudv rpmcudvFree(rpmcudv v)
 	return NULL;
     switch (v->typ) {
     default :
-	fprintf(stderr, "Internal error: unexpected type: %d\n", v->typ);
+	fprintf(stderr, "%s: unexpected type: %d\n", __FUNCTION__, v->typ);
 assert(0);
+	break;
+    case RPMCUDV_NOTYPE:
 	break;
     case RPMCUDV_INT:
     case RPMCUDV_POSINT:
@@ -241,6 +243,8 @@ static void rpmcudvPrint(rpmcudf cudf, rpmcudv v, int free)
     default :
 	fprintf(stderr, "%s: unexpected type: %d\n", __FUNCTION__, v->typ);
 assert(0);
+	break;
+    case RPMCUDV_NOTYPE:
 	break;
     case RPMCUDV_INT:
     case RPMCUDV_POSINT:
