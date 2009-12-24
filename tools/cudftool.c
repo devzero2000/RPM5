@@ -168,11 +168,8 @@ struct rpmcudv_s {
 
 struct rpmcudf_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-
     struct rpmcudv_s V;		/*!< union of cudf_doc_t and cudf_t */
-
-    FILE * fp;
-    rpmiob iob;
+    rpmiob iob;			/*!< output collector */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
@@ -256,17 +253,22 @@ static const char * relops[] = {
 static
 void print_vpkg(rpmcudf cudf, rpmcudv v)
 {
-    FILE * fp = cudf->fp;
 
 assert(v->typ == RPMCUDV_VPKG || v->typ == RPMCUDV_VEQPKG);
 
-    if (v->val.vpkg == NULL)
-	return;
-    fprintf(fp, "%s", v->val.vpkg->name);
-    if (v->val.vpkg->relop) {
-	fprintf(fp, " ");
-	fprintf(fp, "%s", relops[v->val.vpkg->relop & 0x7]);
-	fprintf(fp, " %d", v->val.vpkg->version);
+    if (v->val.vpkg) {
+	size_t nb = strlen(v->val.vpkg->name) + 5 + 64;
+	char * b = alloca(nb);
+	char * be = b;
+
+	be = stpcpy(be, v->val.vpkg->name);
+	if (v->val.vpkg->relop) {
+	    snprintf(be, 5+64, " %s %d",
+		relops[v->val.vpkg->relop & 0x7],
+		v->val.vpkg->version);
+	    be += strlen(be);
+	}
+	rpmiobAppend(cudf->iob, b, 0);
     }
 }
 
@@ -274,7 +276,6 @@ assert(v->typ == RPMCUDV_VPKG || v->typ == RPMCUDV_VEQPKG);
 static
 void print_vpkglist(rpmcudf cudf, rpmcudv v, const char * sep)
 {
-    FILE * fp = cudf->fp;
 cudf_vpkglist_t l;
 GList * last;
 
@@ -286,7 +287,7 @@ x.typ = RPMCUDV_VPKG;
 x.val.vpkg = g_list_nth_data(l, 0);
 rpmcudvPrint(cudf, &x, 0);
 	if (l != last)
-	    fprintf(fp, "%s", sep);
+	    rpmiobAppend(cudf->iob, sep, 0);
     }
 }
 
@@ -294,23 +295,19 @@ rpmcudvPrint(cudf, &x, 0);
 static
 void print_vpkgformula(rpmcudf cudf, rpmcudv v)
 {
-    FILE * fp = cudf->fp;
 cudf_vpkgformula_t l;
 GList * last;
 
 assert(v->typ == RPMCUDV_VPKGFORMULA);
 
     for (l = v->val.f, last=g_list_last(l); l != NULL; l = g_list_next(l)) {
-struct rpmcudv_s x;
-x.typ = RPMCUDV_VPKGLIST;
-x.val.vpkg = g_list_nth_data(l, 0);
-#ifndef	DYING
+	struct rpmcudv_s x;
+	x.typ = RPMCUDV_VPKGLIST;
+	x.val.vpkg = g_list_nth_data(l, 0);
+	/* XXX use rpmcudvPrint? */
 	print_vpkglist(cudf, &x, " | ");
-#else
-rpmcudvPrint(cudf, &x, 0);
-#endif
 	if (l != last)
-	    fprintf(fp, ", ");
+	    rpmiobAppend(cudf->iob, ", ", 0);
     }
 }
 
@@ -318,7 +315,6 @@ rpmcudvPrint(cudf, &x, 0);
 static
 void print_preamble(rpmcudf cudf)
 {
-    FILE * fp = cudf->fp;
     static char *props[] = {
 	"preamble", "property", "univ-checksum", "status-checksum",
 	"req-checksum", NULL
@@ -329,9 +325,11 @@ rpmcudv v = &cudf->V;
 assert(v->typ == RPMCUDV_CUDFDOC);
     if (v->val.doc->has_preamble)
     for (prop = props; *prop != NULL; prop++) {
-	char * s = cudf_pre_property(v->val.doc->preamble, *prop);
-	fprintf(fp, "  %s: %s\n", *prop, s);
-	free(s);
+	const char * s = cudf_pre_property(v->val.doc->preamble, *prop);
+	char * t = rpmExpand("  ", *prop, ": ", s, NULL);
+	rpmiobAppend(cudf->iob, t, 1);
+	t = _free(t);
+	s = _free(s);
     }
 }
 
@@ -339,7 +337,6 @@ assert(v->typ == RPMCUDV_CUDFDOC);
 static
 void print_request(rpmcudf cudf)
 {
-    FILE * fp = cudf->fp;
     static char *props[] = {
 	"request", "install", "remove", "upgrade", NULL
     };
@@ -349,9 +346,11 @@ rpmcudv v = &cudf->V;
 assert(v->typ == RPMCUDV_CUDFDOC);
     if (v->val.doc->has_request)
     for (prop = props; *prop != NULL; prop++) {
-	char * s = cudf_req_property(v->val.doc->request, *prop);
-	fprintf(fp, "  %s: %s\n", *prop, s);
-	free(s);
+	const char * s = cudf_req_property(v->val.doc->request, *prop);
+	char * t = rpmExpand("  ", *prop, ": ", s, NULL);
+	rpmiobAppend(cudf->iob, t, 1);
+	t = _free(t);
+	s = _free(s);
     }
 }
 
@@ -359,17 +358,18 @@ assert(v->typ == RPMCUDV_CUDFDOC);
 static
 void print_keep(rpmcudf cudf, int keep)
 {
-    FILE * fp = cudf->fp;
+    const char * s;
     switch (keep) {
     default :
 	fprintf(stderr, "%s: unexpected keep value: %d\n", __FUNCTION__, keep);
 assert(0);
 	break;
-    case KEEP_NONE:	fprintf(fp, "  keep: version\n");	break;
-    case KEEP_VERSION:	fprintf(fp, "  keep: version\n");	break;
-    case KEEP_PACKAGE:	fprintf(fp, "  keep: package\n");	break;
-    case KEEP_FEATURE:	fprintf(fp, "  keep: feature\n");	break;
+    case KEEP_NONE:	s = "  keep: version";	break;
+    case KEEP_VERSION:	s = "  keep: version";	break;
+    case KEEP_PACKAGE:	s = "  keep: package";	break;
+    case KEEP_FEATURE:	s = "  keep: feature";	break;
     }
+    rpmiobAppend(cudf->iob, s, 1);
 }
 
 /* Print a generic property, i.e. a pair <name, typed value> */
@@ -377,10 +377,11 @@ static
 void print_property(void * k, void * v, void * _cudf)
 {
     rpmcudf cudf = _cudf;
-    FILE * fp = cudf->fp;
-    fprintf(fp, "  %s: ", (char *) k);
+    rpmiobAppend(cudf->iob, "  ", 0);
+    rpmiobAppend(cudf->iob, (char *)k, 0);
+    rpmiobAppend(cudf->iob, ": ", 0);
     rpmcudvPrint(cudf, v, 0);
-    fprintf(fp, "\n");
+    rpmiobAppend(cudf->iob, "", 1);
 }
 
 /* Print to stdout a set of extra properties */
@@ -388,12 +389,12 @@ void print_property(void * k, void * v, void * _cudf)
 
 static void rpmcudvPrint(rpmcudf cudf, rpmcudv v, int free)
 {
-    FILE * fp = cudf->fp;
+    const char * s = NULL;
+    char t[64];
 
     if (v == NULL)
 	return;
 
-assert(fp);
     switch (v->typ) {
     default :
 	fprintf(stderr, "%s: unexpected type: %d\n", __FUNCTION__, v->typ);
@@ -402,16 +403,17 @@ assert(0);
     case RPMCUDV_INT:
     case RPMCUDV_POSINT:
     case RPMCUDV_NAT:
-	fprintf(fp, "%d", v->val.i);
+	snprintf(t, sizeof(t), "%d", v->val.i);
+	s = t;
 	break;
     case RPMCUDV_BOOL:
-	fprintf(fp, "%s", v->val.i ? "true" : "false");
+	s = (v->val.i ? "true" : "false");
 	break;
     case RPMCUDV_STRING:
     case RPMCUDV_PKGNAME:
     case RPMCUDV_IDENT:
     case RPMCUDV_ENUM:
-	fprintf(fp, "%s", v->val.s);
+	s = v->val.s;
 	break;
     case RPMCUDV_VPKGFORMULA:
 	print_vpkgformula(cudf, v);
@@ -447,6 +449,8 @@ assert(0);	/* XXX unimplemented */
 if (free) rpmcudvFree(v);
 	break;
     }
+    if (s)
+	rpmiobAppend(cudf->iob, s, 0);
 }
 
 typedef	struct rpmcudp_s * rpmcudp;
@@ -518,33 +522,36 @@ rpmcudv w = &cudp->W;
     w->val.ptr = ptr;
     return w;
 }
+
 static rpmcudv rpmcudpDepends(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
 assert(v->typ == RPMCUDV_PACKAGE);
     return rpmcudpW(cudp, RPMCUDV_VPKGFORMULA, cudf_pkg_depends(v->val.pkg));
 }
+
 static rpmcudv rpmcudpConflicts(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
 assert(v->typ == RPMCUDV_PACKAGE);
     return rpmcudpW(cudp, RPMCUDV_VPKGLIST, cudf_pkg_conflicts(v->val.pkg));
 }
+
 static rpmcudv rpmcudpProvides(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
 assert(v->typ == RPMCUDV_PACKAGE);
     return rpmcudpW(cudp, RPMCUDV_VPKGLIST, cudf_pkg_provides(v->val.pkg));
 }
-static rpmcudv rpmcudpKeep(rpmcudp cudp)
+
+static int rpmcudpKeep(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
-rpmcudv w = &cudp->W;
 assert(v->typ == RPMCUDV_PACKAGE);
-    w->typ = RPMCUDV_INT;
-    w->val.i = cudf_pkg_keep(v->val.pkg);
-    return w;
+    /* XXX return rpmcudv instead? */
+    return cudf_pkg_keep(v->val.pkg);
 }
+
 static rpmcudv rpmcudpExtra(rpmcudp cudp)
 {
 rpmcudv v = &cudp->V;
@@ -556,43 +563,44 @@ assert(v->typ == RPMCUDV_PACKAGE);
 static
 void print_package(rpmcudf cudf, rpmcudp cudp)
 {
-FILE * fp = cudf->fp;
+    char t[256];
 rpmcudv v;
 
-assert(fp != NULL);
 v = &cudp->V;
 assert(v->typ == RPMCUDV_PACKAGE);
 
-    fprintf(fp, "  package: %s\n", rpmcudpName(cudp));
-    fprintf(fp, "  version: %d\n", rpmcudpVersion(cudp));
-    fprintf(fp, "  installed: %s\n",
+    snprintf(t, sizeof(t), "  package: %s", rpmcudpName(cudp));
+    rpmiobAppend(cudf->iob, t, 1);
+
+    snprintf(t, sizeof(t), "  version: %d", rpmcudpVersion(cudp));
+    rpmiobAppend(cudf->iob, t, 1);
+
+    snprintf(t, sizeof(t), "  installed: %s",
 		rpmcudpInstalled(cudp) ? "true" : "false");
-    fprintf(fp, "  was-installed: %s\n",
+    rpmiobAppend(cudf->iob, t, 1);
+
+    snprintf(t, sizeof(t), "  was-installed: %s",
 		rpmcudpWasInstalled(cudp) ? "true" : "false");
+    rpmiobAppend(cudf->iob, t, 1);
 
-    fprintf(fp, "  depends: ");
+    rpmiobAppend(cudf->iob, "  depends: ", 0);
     rpmcudvPrint(cudf, rpmcudpDepends(cudp), 1);
-    fprintf(fp, "\n");
+    rpmiobAppend(cudf->iob, "", 1);
 
-    fprintf(fp, "  conflicts: ");
+    rpmiobAppend(cudf->iob, "  conflicts: ", 0);
     rpmcudvPrint(cudf, rpmcudpConflicts(cudp), 1);
-    fprintf(fp, "\n");
+    rpmiobAppend(cudf->iob, "", 1);
 
-    fprintf(fp, "  provides: ");
+    rpmiobAppend(cudf->iob, "  provides: ", 0);
     rpmcudvPrint(cudf, rpmcudpProvides(cudp), 1);
-    fprintf(fp, "\n");
+    rpmiobAppend(cudf->iob, "", 1);
 
-v = rpmcudpKeep(cudp);
-#ifndef	DYING
-    print_keep(cudf, v->val.i);
-#else
-    rpmcudvPrint(cudf, v, 0);
-#endif
-rpmcudvFree(v);
+    /* XXX use rpmcudvPrint? */
+    print_keep(cudf, rpmcudpKeep(cudp));
 
     rpmcudvPrint(cudf, rpmcudpExtra(cudp), 0);
 
-    fprintf(fp, "\n");
+    rpmiobAppend(cudf->iob, "", 1);
 
 }
 
@@ -895,8 +903,6 @@ assert(0);
 	cudf->V.val.ptr = cudf_load_from_file((char *)fn);
 	break;
     }
-
-    cudf->fp = stdout;
     cudf->iob = rpmiobNew(0);
     return rpmcudfLink(cudf);
 }
@@ -957,35 +963,34 @@ int rpmcudfUniverseSize(rpmcudf cudf)
 static
 void rpmcudfPrintPreamble(rpmcudf cudf)
 {
-    FILE * fp = cudf->fp;
-    fprintf(fp, "Has preamble: %s\n", rpmcudfHasPreamble(cudf) ? "yes" : "no");
+    rpmiobAppend(cudf->iob, "Has preamble: ", 0);
+    rpmiobAppend(cudf->iob, (rpmcudfHasPreamble(cudf) ? "yes" : "no"), 1);
     if (rpmcudfHasPreamble(cudf)) {
-	fprintf(fp, "Preamble: \n");
+	rpmiobAppend(cudf->iob, "Preamble: ", 1);
 	print_preamble(cudf);
-	fprintf(fp, "\n");
+	rpmiobAppend(cudf->iob, "", 1);
     }
 }
 
 static
 void rpmcudfPrintRequest(rpmcudf cudf)
 {
-    FILE * fp = cudf->fp;
-    fprintf(fp, "Has request: %s\n", rpmcudfHasRequest(cudf) ? "yes" : "no");
+    rpmiobAppend(cudf->iob, "Has request: ", 0);
+    rpmiobAppend(cudf->iob, (rpmcudfHasRequest(cudf) ? "yes" : "no"), 1);
     if (rpmcudfHasRequest(cudf)) {
-	fprintf(fp, "Request: \n");
+	rpmiobAppend(cudf->iob, "Request: ", 1);
 	print_request(cudf);
-	fprintf(fp, "\n");
+	rpmiobAppend(cudf->iob, "", 1);
     }
 }
 
 static
 void rpmcudfPrintUniverse(rpmcudf cudf)
 {
-    FILE * fp = cudf->fp;
 
     if (cudf->V.typ == RPMCUDV_CUDFDOC) {
 	rpmcudp cudp = rpmcudpNew(cudf);
-	fprintf(fp, "Universe:\n");
+	rpmiobAppend(cudf->iob, "Universe:", 1);
 	while (rpmcudpNext(cudp) != NULL)
 	    print_package(cudf, cudp);
 	cudp = rpmcudpFree(cudp);
@@ -993,10 +998,14 @@ void rpmcudfPrintUniverse(rpmcudf cudf)
 
     if (cudf->V.typ == RPMCUDV_CUDFDOC) {
 	cudf_universe_t univ = cudf_load_universe(cudf->V.val.doc->packages);
-	fprintf(fp, "Universe size: %d/%d (installed/total)\n",
+	char t[256];
+
+	snprintf(t, sizeof(t), "Universe size: %d/%d (installed/total)",
 			cudf_installed_size(univ), cudf_universe_size(univ));
-	fprintf(fp, "Universe consistent: %s\n", cudf_is_consistent(univ) ?
-			"yes" : "no");
+	rpmiobAppend(cudf->iob, t, 1);
+	snprintf(t, sizeof(t), "Universe consistent: %s",
+			cudf_is_consistent(univ) ?  "yes" : "no");
+	rpmiobAppend(cudf->iob, t, 1);
 	cudf_free_universe(univ);
     }
 }
@@ -1033,32 +1042,37 @@ int main(int argc, char **argv)
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
     rpmcudf X = NULL;
-    FILE * fp = NULL;
     int ec = 1;		/* assume failure */
 
     if (!(ac == 1 || ac == 2))
 	goto exit;
 
     X = rpmcudfNew(av[0], RPMCUDV_CUDFDOC);
-fp = X->fp;
     rpmcudfPrintPreamble(X);
     rpmcudfPrintRequest(X);
     rpmcudfPrintUniverse(X);
-fflush(fp);
+fprintf(stdout, "%s", rpmiobStr(X->iob));
+fflush(stdout);
     X = rpmcudfFree(X);
 
     X = rpmcudfNew(av[0], RPMCUDV_CUDF);
-fp = X->fp;
-    fprintf(fp, "Universe size: %d/%d (installed/total)\n",
+    {	char t [256];
+	snprintf(t, sizeof(t), "Universe size: %d/%d (installed/total)",
 	       rpmcudfInstalledSize(X), rpmcudfUniverseSize(X));
-    fprintf(fp, "Universe consistent: %s\n",
+	rpmiobAppend(X->iob, t, 1);
+	snprintf(t, sizeof(t), "Universe consistent: %s",
 		(rpmcudfIsConsistent(X) ? "yes" : "no"));
-    if (ac >= 2) {
-	rpmcudf Y = rpmcudfNew(av[1], RPMCUDV_CUDF);
-	fprintf(fp, "Is solution: %s\n", rpmcudfIsSolution(X,Y) ? "yes" : "no");
-	Y = rpmcudfFree(Y);
+	rpmiobAppend(X->iob, t, 1);
+	if (ac >= 2) {
+	    rpmcudf Y = rpmcudfNew(av[1], RPMCUDV_CUDF);
+	    snprintf(t, sizeof(t), "Is solution: %s",
+		rpmcudfIsSolution(X,Y) ? "yes" : "no");
+	    rpmiobAppend(X->iob, t, 1);
+	    Y = rpmcudfFree(Y);
+	}
     }
-fflush(fp);
+fprintf(stdout, "%s", rpmiobStr(X->iob));
+fflush(stdout);
     X = rpmcudfFree(X);
     ec = 0;
 
