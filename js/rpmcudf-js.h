@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitCudfClass(JSContext *cx, JSObject *obj);
 
 extern JSObject *
-rpmjs_NewCudfObject(JSContext *cx, JSObject *fno);
+rpmjs_NewCudfObject(JSContext *cx, JSObject *fno, int _flags);
 
 #ifdef __cplusplus      
 }

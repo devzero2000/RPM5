@@ -62,9 +62,6 @@ assert(0);
 assert(0);	/* XXX unimplemented */
 	break;
 
-    case RPMCUDV_UNIVERSE:
-	cudf_free_universe(v->val.univ);
-	break;
     case RPMCUDV_PACKAGE:
 assert(0);	/* XXX unimplemented */
 	break;
@@ -278,9 +275,6 @@ if (free) rpmcudvFree(v);
 assert(0);	/* XXX unimplemented */
 	break;
 
-    case RPMCUDV_UNIVERSE:
-assert(0);	/* XXX unimplemented */
-	break;
     case RPMCUDV_PACKAGE:
 assert(0);	/* XXX unimplemented */
 	break;
@@ -298,13 +292,6 @@ if (free) rpmcudvFree(v);
     if (s)
 	rpmiobAppend(cudf->iob, s, 0);
 }
-
-typedef	struct rpmcudp_s * rpmcudp;
-struct rpmcudp_s {
-    GList * l;
-    struct rpmcudv_s V;
-    struct rpmcudv_s W;
-};
 
 static rpmcudp rpmcudpFree(rpmcudp cudp)
 {

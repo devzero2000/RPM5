@@ -9,18 +9,21 @@
 #include <rpmio.h>
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmcudf_s * rpmcudf;
+typedef	/*@abstract@*/ struct rpmcudp_s * rpmcudp;
+typedef /*@abstract@*/ struct rpmcudv_s * rpmcudv;
 
 /*@unchecked@*/
 extern int _rpmcudf_debug;
 
+#ifdef	NOTYET
 /*@unchecked@*/ /*@relnull@*/
 extern rpmcudf _rpmcudfI;
+#endif
 
 #if defined(_RPMCUDF_INTERNAL)
 #include <cudf.h>
 
 /* XXX Extend cudf_value_t to include additional types. */
-typedef struct rpmcudv_s * rpmcudv;
 
 #define	RPMCUDV_EBASE	256
 enum rpmcudv_e {
@@ -41,14 +44,12 @@ enum rpmcudv_e {
     RPMCUDV_TYPEDECL	= TYPE_TYPEDECL,	/* type "typedecl" */
 
 	/* XXX extensions */
-    RPMCUDV_UNIVERSE	= RPMCUDV_EBASE+0,	/* cudf_universe_t */
+    RPMCUDV_PACKAGE	= RPMCUDV_EBASE+0,	/* cudf_package_t */
 
-    RPMCUDV_PACKAGE	= RPMCUDV_EBASE+1,	/* cudf_package_t */
+    RPMCUDV_CUDFDOC	= RPMCUDV_EBASE+1,	/* cudf_doc_t */
+    RPMCUDV_CUDF	= RPMCUDV_EBASE+2,	/* cudf_t */
 
-    RPMCUDV_CUDFDOC	= RPMCUDV_EBASE+2,	/* cudf_doc_t */
-    RPMCUDV_CUDF	= RPMCUDV_EBASE+3,	/* cudf_t */
-
-    RPMCUDV_EXTRA	= RPMCUDV_EBASE+4,	/* cudf_extra_t */
+    RPMCUDV_EXTRA	= RPMCUDV_EBASE+3,	/* cudf_extra_t */
 
 };
 
@@ -62,7 +63,6 @@ union rpmcudv_u {
     void * ptr;
     cudf_preamble_t preamble;
     cudf_request_t request;
-    cudf_universe_t univ;
 
     cudf_package_t *pkg;
 
@@ -75,6 +75,12 @@ union rpmcudv_u {
 struct rpmcudv_s {
     enum rpmcudv_e typ;
     union rpmcudv_u val;
+};
+
+struct rpmcudp_s {
+    GList * l;
+    struct rpmcudv_s V;
+    struct rpmcudv_s W;
 };
 
 struct rpmcudf_s {

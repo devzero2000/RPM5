@@ -40,34 +40,86 @@ static int _debug = 0;
 /* --- helpers */
 
 /* --- Object methods */
+static JSBool
+rpmcudf_issolution(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
+    rpmcudf cudf = ptr;
+    JSObject *fno = NULL;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &fno)))
+	goto exit;
+
+    if (fno && OBJ_IS_STRING(cx, fno)) {
+	const char * _fn =
+		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
+	int _flags = RPMCUDV_CUDF;	/* XXX FIXME */
+	const char * _av[] = { _fn, NULL };
+	rpmcudf Y = rpmcudfNew(_av, _flags);
+	*rval = (rpmcudfIsSolution(cudf, Y) ? JSVAL_TRUE : JSVAL_FALSE);
+	Y = rpmcudfFree(Y);
+    } else
+	*rval = JSVAL_VOID;
+    ok = JS_TRUE;
+
+exit:
+    return ok;
+}
+
+static JSBool
+rpmcudf_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+    void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
+    rpmcudf cudf = ptr;
+    JSBool ok = JS_FALSE;
+
+_METHOD_DEBUG_ENTRY(_debug);
+
+    if (cudf && cudf->V.typ == RPMCUDV_CUDFDOC) {
+	rpmcudfPrintPreamble(cudf);
+	rpmcudfPrintRequest(cudf);
+	rpmcudfPrintUniverse(cudf);
+	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmiobStr(cudf->iob)));
+	(void) rpmiobEmpty(cudf->iob);
+    } else
+	*rval = JSVAL_VOID;
+    ok = JS_TRUE;
+
+    return ok;
+}
 
 static JSFunctionSpec rpmcudf_funcs[] = {
+    JS_FS("issolution",	rpmcudf_issolution,		0,0,0),
+    JS_FS("print",	rpmcudf_print,			0,0,0),
     JS_FS_END
 };
 
 /* --- Object properties */
 enum rpmcudf_tinyid {
     _DEBUG		= -2,
-    _PREAMBLE		= -3,
-    _REQUEST		= -4,
-    _CONSISTENT		= -5,
-#ifdef	NOTYET
-    _SOLUTION		= -6,
-#endif
-    _INSTALLEDSIZE	= -7,
-    _UNIVERSESIZE	= -8,
+    _HASPREAMBLE	= -3,
+    _HASREQUEST		= -4,
+    _ISCONSISTENT	= -5,
+    _INSTALLEDSIZE	= -6,
+    _UNIVERSESIZE	= -7,
+    _PREAMBLE		= -8,
+    _REQUEST		= -9,
+    _UNIVERSE		= -10,
 };
 
 static JSPropertySpec rpmcudf_props[] = {
     {"debug",		_DEBUG,		JSPROP_ENUMERATE,	NULL,	NULL},
-    {"preamble",	_PREAMBLE,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"request",		_REQUEST,	JSPROP_ENUMERATE,	NULL,	NULL},
-    {"consistent",	_CONSISTENT,	JSPROP_ENUMERATE,	NULL,	NULL},
-#ifdef	NOTYET
-    {"solution",	_SOLUTION,	JSPROP_ENUMERATE,	NULL,	NULL},
-#endif
+    {"haspreamble",	_HASPREAMBLE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"hasrequest",	_HASREQUEST,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"isconsistent",	_ISCONSISTENT,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"installedsize",	_INSTALLEDSIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"universesize",	_UNIVERSESIZE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"preamble",	_PREAMBLE,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"request",		_REQUEST,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"universe",	_UNIVERSE,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -86,24 +138,44 @@ rpmcudf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _DEBUG:
 	*vp = INT_TO_JSVAL(_debug);
 	break;
-    case _PREAMBLE:
+    case _HASPREAMBLE:
 	*vp = (cudf && rpmcudfHasPreamble(cudf) ? JSVAL_TRUE : JSVAL_FALSE);
 	break;
-    case _REQUEST:
+    case _HASREQUEST:
 	*vp = (cudf && rpmcudfHasRequest(cudf) ? JSVAL_TRUE : JSVAL_FALSE);
 	break;
-    case _CONSISTENT:
+    case _ISCONSISTENT:
 	*vp = (cudf && rpmcudfIsConsistent(cudf) ? JSVAL_TRUE : JSVAL_FALSE);
 	break;
-#ifdef	NOTYET
-    case _SOLUTION:
-	break;
-#endif
     case _INSTALLEDSIZE:
 	*vp = (cudf ? INT_TO_JSVAL(rpmcudfInstalledSize(cudf)) : JSVAL_VOID);
 	break;
     case _UNIVERSESIZE:
 	*vp = (cudf ? INT_TO_JSVAL(rpmcudfUniverseSize(cudf)) : JSVAL_VOID);
+	break;
+    case _PREAMBLE:
+	if (cudf && cudf->V.typ == RPMCUDV_CUDFDOC) {
+	    rpmcudfPrintPreamble(cudf);
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmiobStr(cudf->iob)));
+	    (void) rpmiobEmpty(cudf->iob);
+	} else
+	    *vp = JSVAL_VOID;
+	break;
+    case _REQUEST:
+	if (cudf && cudf->V.typ == RPMCUDV_CUDFDOC) {
+	    rpmcudfPrintRequest(cudf);
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmiobStr(cudf->iob)));
+	    (void) rpmiobEmpty(cudf->iob);
+	} else
+	    *vp = JSVAL_VOID;
+	break;
+    case _UNIVERSE:
+	if (cudf && cudf->V.typ == RPMCUDV_CUDFDOC) {
+	    rpmcudfPrintUniverse(cudf);
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmiobStr(cudf->iob)));
+	    (void) rpmiobEmpty(cudf->iob);
+	} else
+	    *vp = JSVAL_VOID;
 	break;
     default:
 	break;
@@ -181,7 +253,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static rpmcudf
-rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno)
+rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno, int _flags)
 {
     const char * fn = NULL;
     rpmcudf cudf = NULL;
@@ -189,8 +261,14 @@ rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno)
     if (fno && OBJ_IS_STRING(cx, fno))
 	fn = JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
 
+    switch (_flags) {
+    default:	_flags = RPMCUDV_CUDF;	break;
+    case RPMCUDV_CUDFDOC:
+    case RPMCUDV_CUDF:
+	break;
+    }
+
     {	const char *_av[] = { fn, NULL };
-	int _flags = RPMCUDV_CUDF;	/* XXX FIXME */
 	cudf = rpmcudfNew(_av, _flags);
     }
 
@@ -200,7 +278,7 @@ rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno)
     }
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p, %p) cudf %p fn %s\n", __FUNCTION__, cx, obj, fno, cudf, fn);
+fprintf(stderr, "<== %s(%p,%p, %p, %d) cudf %p fn %s\n", __FUNCTION__, cx, obj, fno, _flags, cudf, fn);
 
     return cudf;
 }
@@ -221,15 +299,16 @@ rpmcudf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
     JSObject *fno = NULL;
+    int _flags = 0;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &fno)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/oi", &fno, &_flags)))
 	goto exit;
 
     if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
-	(void) rpmcudf_init(cx, obj, fno);
+	(void) rpmcudf_init(cx, obj, fno, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmcudfClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -269,7 +348,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewCudfObject(JSContext *cx, JSObject *fno)
+rpmjs_NewCudfObject(JSContext *cx, JSObject *fno, int _flags)
 {
     JSObject *obj;
     rpmcudf cudf;
@@ -278,7 +357,7 @@ rpmjs_NewCudfObject(JSContext *cx, JSObject *fno)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((cudf = rpmcudf_init(cx, obj, fno)) == NULL) {
+    if ((cudf = rpmcudf_init(cx, obj, fno, _flags)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
