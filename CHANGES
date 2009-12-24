@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: cudf: build & install cudftool iff --with-cudf AutoFu.
+    - jbj: cudf: move cudftool innards to -lrpmio. silly methods atm, todo++.
     - jbj: cudf: stub-in cudftool with -lcudf AutoFu.
     - jbj: change sonames to 5.3.
     - jbj: rpmbf: estimate optimal {m,k} parameters given {n,e}.

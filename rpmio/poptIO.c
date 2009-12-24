@@ -28,6 +28,7 @@
 #include <rpmbf.h>
 
 #include <rpmaug.h>
+#include <rpmcudf.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmperl.h>
@@ -597,6 +598,8 @@ struct poptOption rpmioAllPoptTable[] = {
 
  { "rpmaugdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmaug_debug, -1,
 	N_("Debug embedded Augeas interpreter"), NULL},
+ { "rpmcudfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcudf_debug, -1,
+	N_("Debug embedded CUDF parser"), NULL},
  { "rpmficldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmficl_debug, -1,
 	N_("Debug embedded FICL interpreter"), NULL},
  { "rpmjsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmjs_debug, -1,

@@ -1418,11 +1418,14 @@ RPM_CHECK_LIB(
 AC_SUBST(WITH_AUGEAS_AUGTOOL)
 
 dnl # CUDF
+WITH_CUDF_CUDFTOOL=""
 RPM_CHECK_LIB(
     [Libcudf], [cudf],
     [cudf], [cudf_parse_from_file], [cudf.h],
     [no,external:none], [],
+    [ WITH_CUDF_CUDFTOOL="cudftool"
     ], [])
+AC_SUBST(WITH_CUDF_CUDFTOOL)
 
 dnl # Perl ExtUtils::Embed
 RPM_CHECK_LIB(

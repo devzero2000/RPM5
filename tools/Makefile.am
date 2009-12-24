@@ -48,7 +48,8 @@ bin_PROGRAMS =		rpm2cpio
 
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
-	@WITH_AUGEAS_AUGTOOL@ chroot cp find grep mtree @WITH_SEMANAGE_SEMODULE@ wget \
+	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find grep mtree \
+	@WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1

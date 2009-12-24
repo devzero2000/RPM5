@@ -595,7 +595,7 @@ rpmiob rpmiobAppend(/*@returned@*/ rpmiob iob, const char * s, size_t nl)
 /**
  * Return I/O buffer.
  * @param iob		I/O buffer
- * @return		I/O buffer (as string)
+ * @return		I/O buffer (as octets)
  */
 rpmuint8_t * rpmiobBuf(rpmiob iob)
 	/*@*/;

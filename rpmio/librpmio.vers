@@ -306,6 +306,18 @@ LIBRPMIO_0
     rpmbfIntersect;
     rpmbfParams;
     rpmbfUnion;
+    _rpmcudf_debug;
+    rpmcudfFree;
+    rpmcudfHasPreamble;
+    rpmcudfHasRequest;
+    rpmcudfInstalledSize;
+    rpmcudfIsConsistent;
+    rpmcudfIsSolution;
+    rpmcudfNew;
+    rpmcudfPrintPreamble;
+    rpmcudfPrintRequest;
+    rpmcudfPrintUniverse;
+    rpmcudfUniverseSize;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;
