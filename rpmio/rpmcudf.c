@@ -566,6 +566,7 @@ int rpmcudfHasPreamble(rpmcudf cudf)
 #if defined(WITH_CUDF)
     switch(cudf->V.typ) {
     default:			assert(0);	break;
+    case RPMCUDV_NOTYPE:	break;
     case RPMCUDV_CUDFDOC:	rc = cudf->V.val.doc->has_preamble;	break;
     case RPMCUDV_CUDF:		rc = cudf->V.val.cudf->has_preamble;	break;
     }
@@ -579,6 +580,7 @@ int rpmcudfHasRequest(rpmcudf cudf)
 #if defined(WITH_CUDF)
     switch(cudf->V.typ) {
     default:			assert(0);	break;
+    case RPMCUDV_NOTYPE:	break;
     case RPMCUDV_CUDFDOC:	rc = cudf->V.val.doc->has_request;	break;
     case RPMCUDV_CUDF:		rc = cudf->V.val.cudf->has_request;	break;
     }
@@ -592,6 +594,7 @@ int rpmcudfIsConsistent(rpmcudf cudf)
 #if defined(WITH_CUDF)
     switch(cudf->V.typ) {
     default:			assert(0);	break;
+    case RPMCUDV_NOTYPE:	break;
     case RPMCUDV_CUDF:
 	rc = cudf_is_consistent(cudf->V.val.cudf->universe);
 	break;
@@ -606,6 +609,7 @@ int rpmcudfInstalledSize(rpmcudf cudf)
 #if defined(WITH_CUDF)
     switch(cudf->V.typ) {
     default:			assert(0);	break;
+    case RPMCUDV_NOTYPE:	break;
     case RPMCUDV_CUDF:
 	rc = cudf_installed_size(cudf->V.val.cudf->universe);
 	break;
@@ -620,6 +624,7 @@ int rpmcudfUniverseSize(rpmcudf cudf)
 #if defined(WITH_CUDF)
     switch(cudf->V.typ) {
     default:			assert(0);	break;
+    case RPMCUDV_NOTYPE:	break;
     case RPMCUDV_CUDF:
 	rc = cudf_universe_size(cudf->V.val.cudf->universe);
 	break;

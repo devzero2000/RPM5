@@ -14,10 +14,10 @@ extern "C" {
 #endif
 
 extern JSObject *
-rpmjs_InitCudfClass(JSContext *cx, JSObject* obj);
+rpmjs_InitCudfClass(JSContext *cx, JSObject *obj);
 
 extern JSObject *
-rpmjs_NewCudfObject(JSContext *cx);
+rpmjs_NewCudfObject(JSContext *cx, JSObject *fno);
 
 #ifdef __cplusplus      
 }
