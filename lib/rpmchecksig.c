@@ -8,11 +8,14 @@
 #include <rpmio_internal.h>
 #include <poptIO.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
+
 #include <rpmtag.h>
 #include <rpmtypes.h>
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
 #include <rpmevr.h>
+#define	_RPMDB_INTERNAL		/* XXX db_txn */
 #include <rpmdb.h>
+#include <rpmtxn.h>
 #include <rpmxar.h>
 #include <pkgio.h>
 #include "signature.h"
@@ -730,10 +733,22 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
         SHA1 = _free(SHA1);
     }
 
+    he->tag = RPMTAG_PACKAGECOLOR;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &zero;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
     /* Add header to database. */
+    xx = rpmtxnBegin(rpmtsGetRdb(ts), NULL, NULL);
     xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL);
-    if (xx != 0)
+    if (xx != 0) {
+	xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
+	rpmtsGetRdb(ts)->db_txn = NULL;
 	goto exit;
+    } else
+	xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
+    rpmtsGetRdb(ts)->db_txn = NULL;
     rc = RPMRC_OK;
 
 exit:
