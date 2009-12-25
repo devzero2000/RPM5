@@ -7,18 +7,35 @@ EXTRA_DIST =	ref/[^C]* ref/.alldigests
 
 SUBDIRS =
 
-macros =	$(abs_top_builddir)/macros:$(testdir)/macros
+macros =	$(abs_top_builddir)/macros/macros:$(testdir)/macros
+#XXX rpmpopt =	$(abs_top_builddir)/rpmpopt
+
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
-mtree =		$(abs_top_builddir)/tools/mtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
-rpmwget =	$(abs_top_builddir)/tools/wget
-cpio =		cpio
+
+chroot =	$(abs_top_builddir)/tools/chroot
+cp =		$(abs_top_builddir)/tools/cp
+find =		$(abs_top_builddir)/tools/find
+grep =		$(abs_top_builddir)/tools/grep
+mtree =		$(abs_top_builddir)/tools/mtree
+wget =		$(abs_top_builddir)/tools/wget
+xar =		$(abs_top_builddir)/tools/xar
+
+cpio =		@__CPIO@
+diff =		@__DIFF@
+file =		@__FILE@
+gpg =		@__GPG@
+lua =		@__LUA@
+mv =		@__MV@
+rm =		@__RM@
+tar =		@__TAR@
 
 .PHONY:	check-init
 check-init: macros
+	@echo "=== $@ ==="
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
 	@-diff -u {tmp,ref}/version || cp {tmp,ref}/version
@@ -28,7 +45,7 @@ check-init: macros
 	@-diff -u {tmp,ref}/showrc || cp {tmp,ref}/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 	@-diff -u {tmp,ref}/.alldigests || cp {tmp,ref}/.alldigests
-	@${mtree} -c -p ref | ${mtree} -p ref
+	@${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
@@ -36,21 +53,43 @@ POPTPKGS =	\
 	popt-1.14-1.i386.rpm
 
 $(POPTPKGS):
-	-${rpmwget} $(POPTURI)$@
+	${wget} $(POPTURI)$@
 
 .PHONY:	check-pubkeys
 check-pubkeys: $(POPTPKGS)
+	@echo "=== $@ ==="
 	@rm -rf tmp/rpmdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u {tmp,ref}/popt.Kv
+	@${rpm} -Kvv --usecrypto bc $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto gc $(POPTPKGS) > /dev/null 2>&1
+	@${rpm} -Kvv --usecrypto nss $(POPTPKGS) > /dev/null 2>&1
+	@${rpm} -Kvv --usecrypto ssl $(POPTPKGS) > /dev/null 2>&1
 
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
+	@echo "=== $@ ==="
 	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@diff -u {tmp,ref}/popt.xml
+
+.PHONY:	check-macros
+check-macros:
+	@echo "=== $@ ==="
+	@${rpm} -D 'foo bar' -E '%dump%trace%foo' > /dev/null 2>&1
+	@${rpm} -D 'foo %foo' -E '%foo' > /dev/null 2>&1
+	@${rpm} -D 'foo bing' -D 'foo bang' -D 'foo boom' -E '%{@foo}' > /dev/null 2>&1
+	@${rpm} -E '%(/bin/echo "Hello World!")' > /dev/null 2>&1
+	@${rpm} -E '%{lua:print("Hello World!")}' > /dev/null 2>&1
+	@${rpm} -E '%{js:print("Hello World!")}' > /dev/null 2>&1
+	@-${rpm} -E '%{ruby:print "Hello World!"}' > /dev/null 2>&1
+	@-${rpm} -E '%{tcl:puts "Hello World!"}' > /dev/null 2>&1
+	@-${rpm} -E '%{squirrel:print("Hello World!")}' > /dev/null 2>&1
+	@-${rpm} -E '%{perl:print "Hello World!"}' > /dev/null 2>&1
+	@-${rpm} -E '%{python:print "Hello World!"}' > /dev/null 2>&1
+#XXX	@-${rpm} -E '%{ficl:." Hello World!"}' > /dev/null 2>&1
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
@@ -61,49 +100,64 @@ check-markup: $(POPTPKGS)
 BUILD_DIRS = $(shell ${rpm} -qp --qf '%{NAME} ' --nosignature $(wildcard *.src.rpm))
 
 $(BUILD_DIRS): $(wildcard %-*.src.rpm)
+	@echo "=== build $@ ==="
 	${rpm} -i --nosignature --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec) > /dev/null
 
 check-build: $(BUILD_DIRS)
+	@echo "=== $@ ==="
 	@ls -1 */*.rpm > tmp/manifest
-	@diff -u {tmp,ref}/manifest || cp {tmp,ref}/manifest
+	@diff -u {tmp,ref}/manifest || ${cp} {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
 	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb --nodeps edos-test/*.rpm
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -U -- edos-test/glass-1-*
-	@${rpm} -U -- +car +turbo edos-test/engine-1-* edos-test/wheel-2-* +window +door
+	@${rpm} -U -- +car +turbo edos-test/{engine-1-*,wheel-2-*,door-1-*,window-0-*}
 	@${rpm} -qaT > tmp/edos.qa.1
-	@diff -u {tmp,ref}/edos.qa.1 || cp {tmp,ref}/edos.qa.1
+	@diff -u {tmp,ref}/edos.qa.1 || ${cp} {tmp,ref}/edos.qa.1
 	@${rpm} -U -- edos-test/engine-2-* -turbo
 	@${rpm} -U -- edos-test/{wheel-3,tyre-1}-*
 	@${rpm} -F -- edos-test/{door-2,window-1,glass-2}-*
 	@${rpm} -qaT > tmp/edos.qa.2
-	@diff -u {tmp,ref}/edos.qa.2 || cp {tmp,ref}/edos.qa.2
+	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
+	@${rpm} --rebuilddb		# XXX masks DB_SECONDARY_BAD issue
 	@${rpm} -e car engine wheel door tyre window glass
 
 check-install:
+	@echo "=== $@ ==="
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
 check-triggers:
-	-${rpm} -Uv --noparentdirs --nodeps triggers-N/triggers-N*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-N-a triggers-N-b
-	-${rpm} -Uv --noparentdirs --nodeps triggers-P/triggers-P*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-P-a triggers-P-b
-	-${rpm} -Uv --noparentdirs --nodeps triggers-F/triggers-F*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-F-a triggers-F-b
-	-${rpm} -Uv --noparentdirs --nodeps triggers-FP/triggers-FP*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-FP-a triggers-FP-b
-	-${rpm} -Uv --noparentdirs --nodeps triggers-D/triggers-D*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-D-a triggers-D-b
-	-${rpm} -Uv --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
-	${rpm} -ev --noparentdirs --nodeps triggers-DP-a triggers-DP-b
+	@echo "=== $@ ==="
+	@echo "--> N:"
+	@${rpm} -U --noparentdirs --nodeps triggers-N/triggers-N*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-N-a triggers-N-b
+	@echo "--> NA:"
+	@${rpm} -U --noparentdirs --nodeps triggers-NA/triggers-NA*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-NA-a triggers-NA-b
+	@echo "--> P:"
+	@${rpm} -U --noparentdirs --nodeps triggers-P/triggers-P*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-P-a triggers-P-b
+	@echo "--> F:"
+	@${rpm} -U --noparentdirs --nodeps triggers-F/triggers-F*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-F-a triggers-F-b
+	@echo "--> FP:"
+	@${rpm} -U --noparentdirs --nodeps triggers-FP/triggers-FP*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-FP-a triggers-FP-b
+	@echo "--> D:"
+	@${rpm} -U --noparentdirs --nodeps triggers-D/triggers-D*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-D-a triggers-D-b
+	@echo "--> DP:"
+	@${rpm} -U --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
+	@${rpm} -e --noparentdirs --nodeps triggers-DP-a triggers-DP-b
 
 check-query:
+	@echo "=== $@ ==="
 	@${rpm} -qW . > /dev/null 2>&1
-	@-${rpm} -U --justdb */*.rpm > /dev/null 2>&1
-	@-${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
-	@-${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
+#XXX	-${rpm} -Uvv --justdb */*.rpm > /dev/null 2>&1
+#XXX	-${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
+#XXX	-${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
 	@${rpm} -qa > /dev/null
 	@${rpm} -qa 'arch=noarch' > /dev/null
 	@${rpm} -qa 'arch=!noarch' > /dev/null
@@ -128,14 +182,28 @@ check-query:
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEPROVIDE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEREQUIRE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
-	@${rpm} --rebuilddb
-	@-${rpm} -Va > /dev/null
-	@-${rpm} -Vp tmp/manifest > /dev/null
-	@${rpm} -e probes
-	@${rpm} -e devtool-sanity
 
-check-local: check-init check-pubkeys check-markup \
-	check-build check-install check-query # check-repo check-jbj
+check-verify:
+	@echo "=== $@ ==="
+	@${rpm} --rebuilddb
+#XXX	-${rpm} -V devtool-sanity
+	@${rpm} -e devtool-sanity
+	@${rpm} -V probes
+	@${rpm} -Va > /dev/null
+	@${rpm} -e probes
+#XXX	-${rpm} -Vp tmp/manifest > /dev/null
+
+check-tools:
+	@echo "=== $@ ==="
+	@${find} $(POPTURI) -type f -maxdepth 1 > tmp/find
+	@mkdir -p tmp/wget && ${wget} -i tmp/find -P tmp/wget > /dev/null 2>&1
+	@mkdir -p tmp/cp && ${cp} -R $(POPTURI) tmp/cp
+	@diff -ru tmp/{wget,cp}
+	@${grep} -i HREF $(POPTURI) > tmp/grep
+
+check-local: check-init check-pubkeys check-markup check-macros \
+	check-build check-install check-query check-verify \
+	check-triggers check-tools # check-repo
 
 clean-local:
 	rm -rf tmp $(BUILD_DIRS)

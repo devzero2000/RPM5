@@ -4,6 +4,7 @@ BASENAMES              1117 argv array
 BLINKHDRID             1165 argv array
 BLINKNEVRA             1166 argv array
 BLINKPKGID             1164 argv array
+BUGURL                 5012 string
 BUILDARCHS             1089 argv array
 BUILDBUILD           1538136666 argv array
 BUILDBUILDPROG       1874092052 argv array
@@ -36,8 +37,10 @@ CONFLICTFLAGS          1053 uint32 array
 CONFLICTNAME           1054 argv array
 CONFLICTS              1054 argv array
 CONFLICTVERSION        1055 argv array
+CONFLICTYAMLENTRY      1219 argv array
 COOKIE                 1094 string
 CVSID                  1163 string
+D                      1218 string
 DBINSTANCE             1195 uint32
 DEPATTRSDICT           1188 argv array
 DEPENDSDICT            1145 uint32 array
@@ -111,6 +114,7 @@ OBSOLETEFLAGS          1114 uint32 array
 OBSOLETENAME           1090 argv array
 OBSOLETES              1090 argv array
 OBSOLETEVERSION        1115 argv array
+OBSOLETEYAMLENTRY      1220 argv array
 OLDFILENAMES           1027 argv array
 OPTFLAGS               1122 string
 ORIGBASENAMES          1120 argv array
@@ -161,6 +165,7 @@ PROVIDEFLAGS           1112 uint32 array
 PROVIDENAME            1047 argv array
 PROVIDES               1047 argv array
 PROVIDEVERSION         1113 argv array
+PROVIDEYAMLENTRY       1221 argv array
 PUBKEYS                 266 argv array
 R                      1002 string
 RECONTEXTS             1149 argv array
@@ -172,6 +177,7 @@ REQUIREFLAGS           1048 uint32 array
 REQUIRENAME            1049 argv array
 REQUIRES               1049 argv array
 REQUIREVERSION         1050 argv array
+REQUIREYAMLENTRY       1222 argv array
 RHNPLATFORM            1131 string
 RPMLIBTIMESTAMP        1200 uint32
 RPMLIBVENDOR           1201 uint32
