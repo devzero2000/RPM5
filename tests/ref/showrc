@@ -20,6 +20,7 @@ Features provided by rpmlib installer:
     rpmlib(BuiltinFiclScripts) = 5.2-1
     rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
+    rpmlib(BuiltinPerlScripts) = 5.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinRubyScripts) = 5.2-1
     rpmlib(BuiltinSpookScripts) = 5.3-1

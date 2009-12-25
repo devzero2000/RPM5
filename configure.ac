@@ -1428,7 +1428,7 @@ AC_SUBST(WITH_CUDF_CUDFTOOL)
 dnl # Perl ExtUtils::Embed
 RPM_CHECK_LIB(
     [Perl ExtUtils::Embed], [perlembed],
-    [perl], [perl_alloc], [perl.h],
+    [perl], [perl_alloc], [EXTERN.h],
     [no,external:none], [],
     [
     ], [])
@@ -1448,6 +1448,7 @@ RPM_CHECK_LIB(
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
+      WITH_RUBY_SUBDIR=ruby
     ], [])
 AC_SUBST(WITH_RUBY_SUBDIR)
 
@@ -1460,12 +1461,14 @@ RPM_CHECK_LIB(
     ], [])
 
 dnl # Tcl
+WITH_TCL_SUBDIR=""
 RPM_CHECK_LIB(
     [Tcl], [tcl],
     [tcl], [Tcl_CreateInterp], [tcl.h],
     [no,external:none], [],
     [
     ], [])
+AC_SUBST(WITH_TCL_SUBDIR)
 
 dnl # FICL
 RPM_CHECK_LIB(
