@@ -49,6 +49,7 @@
 %__find			%{_usrlibrpmbin}/find
 %__grep			%{_usrlibrpmbin}/grep
 %__mtree		%{_usrlibrpmbin}/mtree
+%__rc			%{_usrlibrpmbin}/rc
 %__wget			%{_usrlibrpmbin}/wget
 %__xar			%{_usrlibrpmbin}/xar
 

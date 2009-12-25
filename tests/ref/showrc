@@ -280,6 +280,7 @@ print (t)
 -14: __python_provides	%{_rpmhome}/pythondeps.sh --provides
 -14: __python_requires	%{_rpmhome}/pythondeps.sh --requires
 -14: __ranlib	ranlib
+-14: __rc	%{_usrlibrpmbin}/rc
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
 -14: __rsh	/usr/bin/rsh
@@ -791,4 +792,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 485 empty 0
+======================== active 486 empty 0

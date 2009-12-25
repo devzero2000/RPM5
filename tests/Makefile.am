@@ -21,6 +21,7 @@ cp =		$(abs_top_builddir)/tools/cp
 find =		$(abs_top_builddir)/tools/find
 grep =		$(abs_top_builddir)/tools/grep
 mtree =		$(abs_top_builddir)/tools/mtree
+rc =		$(abs_top_builddir)/tools/rc
 wget =		$(abs_top_builddir)/tools/wget
 xar =		$(abs_top_builddir)/tools/xar
 
