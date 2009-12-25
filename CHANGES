@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: mtree: avoid mtime.tv_usecs differences for now.
     - jbj: pubkeys: fix: all headers, including pubkeys, need PACKAGECOLOR.
     - jbj: pubkeys: fix: rpmdbAdd() needs to be transactionally protected.
     - jbj: cudf: fiddle up some methods for cudftool-equiv in JS.

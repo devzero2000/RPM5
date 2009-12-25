@@ -2215,7 +2215,11 @@ typeerr:    LABEL;
 	tv[1].tv_usec = 0L;
 #endif
 /*@=noeffectuncon =unrecog @*/
-	if (tv[0].tv_sec != tv[1].tv_sec || tv[0].tv_usec != tv[1].tv_usec) {
+	if (tv[0].tv_sec != tv[1].tv_sec
+#ifdef	NOTYET	/* XXX avoid timespec jitter issues for now. */
+	 || tv[0].tv_usec != tv[1].tv_usec
+#endif
+	) {
 	    time_t t1 = (time_t)tv[0].tv_sec;
 	    time_t t2 = (time_t)tv[1].tv_sec;
 	    LABEL;
