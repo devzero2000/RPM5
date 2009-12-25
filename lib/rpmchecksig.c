@@ -749,7 +749,6 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     } else
 	xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
     rpmtsGetRdb(ts)->db_txn = NULL;
-            ts->txn = NULL;
     xx = rpmtxnCheckpoint(rpmtsGetRdb(ts));
     rc = RPMRC_OK;
 
