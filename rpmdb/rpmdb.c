@@ -2625,6 +2625,7 @@ assert(headerIsEntry(h, RPMTAG_REMOVETID) == 0);	/* XXX sanity */
 /*@=compmempass@*/
     }
 
+/* XXX pubkeys used to set RPMTAG_PACKAGECOLOR here. */
 assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
 
     (void) blockSignals(db, &signalMask);
