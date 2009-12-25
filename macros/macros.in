@@ -43,9 +43,14 @@
 #==============================================================================
 # ---- RPM specific tool paths
 #
-%__find			@{_usrlibrpm}/bin/find
-%__grep			%{_usrlibrpm}/bin/grep
-%__wget			%{_usrlibrpm}/bin/wget
+%_usrlibrpmbin		%{_usrlibrpm}/bin
+%__chroot		%{_usrlibrpmbin}/chroot
+%__cp			%{_usrlibrpmbin}/cp
+%__find			%{_usrlibrpmbin}/find
+%__grep			%{_usrlibrpmbin}/grep
+%__mtree		%{_usrlibrpmbin}/mtree
+%__wget			%{_usrlibrpmbin}/wget
+%__xar			%{_usrlibrpmbin}/xar
 
 #==============================================================================
 # ---- Generally useful path macros.
@@ -57,7 +62,6 @@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
 %__chown		@__CHOWN@
-%__cp			@__CP@
 %__cpio			@__CPIO@
 %__curl			@__CURL@
 %__cvs			@__CVS@
@@ -93,7 +97,6 @@
 %__tclsh		@__TCLSH@
 %__unzip		@__UNZIP@
 %__vcheck		%{__perl} %{_rpmhome}/vcheck
-%__xar			@__XAR@
 %__xz			@__XZ@
 
 #==============================================================================
