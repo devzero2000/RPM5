@@ -70,7 +70,7 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_UNDO		= (1 << 14),
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 15),
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
     RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
