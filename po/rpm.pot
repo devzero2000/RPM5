@@ -2,12 +2,13 @@
 # This file is put in the public domain.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#: tools/rpmkey.c:1210
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-03-06 17:30-0500\n"
+"POT-Creation-Date: 2009-12-26 09:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,265 +55,260 @@ msgstr ""
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:303 build/spec.c:950
+#: build.c:303 build/spec.c:997
 #, c-format
 msgid "    target platform: %s\n"
 msgstr ""
 
-#: rpmqv.c:99
+#: rpmqv.c:95
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:102
+#: rpmqv.c:98
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:106
+#: rpmqv.c:102
 msgid "Source options (with --query or --verify):"
 msgstr ""
 
-#: rpmqv.c:113
+#: rpmqv.c:109
 msgid "Dependency check/order options:"
 msgstr ""
 
-#: rpmqv.c:119
+#: rpmqv.c:115
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:125
+#: rpmqv.c:121
 msgid "Signature options:"
 msgstr ""
 
-#: rpmqv.c:131
+#: rpmqv.c:127
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:137
+#: rpmqv.c:133
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:143
+#: rpmqv.c:139
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:148 tools/rpmdeps.c:160
+#: rpmqv.c:144 tools/rpmdeps.c:160 tools/rpmkey.c:1269
 msgid "Common options:"
 msgstr ""
 
-#: rpmqv.c:165 lib/poptI.c:55
+#: rpmqv.c:161 lib/poptI.c:53
 #, c-format
 msgid "%s: %s\n"
 msgstr ""
 
-#: rpmqv.c:495 rpmqv.c:501 rpmqv.c:507 rpmqv.c:544
+#: rpmqv.c:493 rpmqv.c:530
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: rpmqv.c:523
+#: rpmqv.c:509
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: rpmqv.c:527
+#: rpmqv.c:513
 msgid "unexpected query flags"
 msgstr ""
 
-#: rpmqv.c:530
+#: rpmqv.c:516
 msgid "unexpected query format"
 msgstr ""
 
-#: rpmqv.c:533
+#: rpmqv.c:519
 msgid "unexpected query source"
 msgstr ""
 
-#: rpmqv.c:576
+#: rpmqv.c:562
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: rpmqv.c:578
+#: rpmqv.c:564
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: rpmqv.c:581
+#: rpmqv.c:567
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:584
+#: rpmqv.c:570
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: rpmqv.c:587
+#: rpmqv.c:573
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: rpmqv.c:590
+#: rpmqv.c:576
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: rpmqv.c:593
+#: rpmqv.c:579
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:597
+#: rpmqv.c:583
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:601
+#: rpmqv.c:587
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:605
+#: rpmqv.c:591
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:609
+#: rpmqv.c:595
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:613
+#: rpmqv.c:599
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: rpmqv.c:617
+#: rpmqv.c:603
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:621
+#: rpmqv.c:607
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:625
+#: rpmqv.c:611
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: rpmqv.c:629
+#: rpmqv.c:615
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:634
+#: rpmqv.c:620
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:639
+#: rpmqv.c:625
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:644
+#: rpmqv.c:630
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:648
+#: rpmqv.c:634
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation, erasure, and verification"
 msgstr ""
 
-#: rpmqv.c:653
+#: rpmqv.c:639
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: rpmqv.c:658
+#: rpmqv.c:644
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: rpmqv.c:670
+#: rpmqv.c:656
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: rpmqv.c:698
+#: rpmqv.c:684
 #, c-format
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:703
+#: rpmqv.c:689
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpmqv.c:715
+#: rpmqv.c:701
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:717
+#: rpmqv.c:703
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: rpmqv.c:721
+#: rpmqv.c:707
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: rpmqv.c:732
+#: rpmqv.c:718
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr ""
 
-#: rpmqv.c:741
+#: rpmqv.c:727
 #, c-format
 msgid "exec failed\n"
 msgstr ""
 
-#: rpmqv.c:786
+#: rpmqv.c:762
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: rpmqv.c:884
+#: rpmqv.c:860
 msgid "no spec files given for build"
 msgstr ""
 
-#: rpmqv.c:886
+#: rpmqv.c:862
 msgid "no tar files given for build"
 msgstr ""
 
-#: rpmqv.c:912
+#: rpmqv.c:888
 msgid "no packages given for erase"
 msgstr ""
 
-#: rpmqv.c:953
+#: rpmqv.c:929
 msgid "no packages given for install"
 msgstr ""
 
-#: rpmqv.c:973
+#: rpmqv.c:949
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpmqv.c:990
+#: rpmqv.c:966
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpmqv.c:1005
+#: rpmqv.c:981
 msgid "no arguments given"
 msgstr ""
 
-#: build/build.c:190 build/pack.c:757
+#: build/build.c:197 build/pack.c:761
 msgid "Unable to open temp file.\n"
 msgstr ""
 
-#: build/build.c:268
+#: build/build.c:271
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
-#: build/build.c:276
-#, c-format
-msgid "Exec of %s failed (%s): %s\n"
-msgstr ""
-
-#: build/build.c:285
+#: build/build.c:283
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:429
+#: build/build.c:431
 msgid ""
 "\n"
 "\n"
@@ -368,203 +364,203 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:287
+#: build/files.c:289
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:351 build/files.c:547 build/files.c:737
+#: build/files.c:355 build/files.c:561 build/files.c:751
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:362 build/files.c:675 build/files.c:748
+#: build/files.c:366 build/files.c:689 build/files.c:762
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
-#: build/files.c:400 build/files.c:700
+#: build/files.c:405 build/files.c:714
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr ""
 
-#: build/files.c:508
+#: build/files.c:522
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr ""
 
-#: build/files.c:563
+#: build/files.c:577
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:601
+#: build/files.c:615
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:611
+#: build/files.c:625
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:623
+#: build/files.c:637
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:775
+#: build/files.c:789
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:786
+#: build/files.c:800
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:915
+#: build/files.c:929
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:923
+#: build/files.c:937
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
-#: build/files.c:957
+#: build/files.c:971
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:978
+#: build/files.c:992
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:995
+#: build/files.c:1009
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1016
+#: build/files.c:1030
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1318
+#: build/files.c:1377
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1535
+#: build/files.c:1564
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1870
+#: build/files.c:1884
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1896
+#: build/files.c:1910
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr ""
 
-#: build/files.c:1899
+#: build/files.c:1913
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:2089
+#: build/files.c:2103
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2095
+#: build/files.c:2109
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr ""
 
-#: build/files.c:2099 lib/rpmchecksig.c:766
+#: build/files.c:2113 lib/rpmchecksig.c:823
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2107
+#: build/files.c:2121
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr ""
 
-#: build/files.c:2166
+#: build/files.c:2180
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:2190
+#: build/files.c:2204
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2205
+#: build/files.c:2219
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:2209
+#: build/files.c:2223
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:2274
+#: build/files.c:2288
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:2285 build/pack.c:141
+#: build/files.c:2299 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:2769
+#: build/files.c:2783
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
-#: build/files.c:2789 build/parsePrep.c:58
+#: build/files.c:2803 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2858
+#: build/files.c:2874
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2873
+#: build/files.c:2889
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2925
+#: build/files.c:2941
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3068
+#: build/files.c:3084
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3113
+#: build/files.c:3129
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -608,135 +604,135 @@ msgstr ""
 msgid "create archive failed: %s\n"
 msgstr ""
 
-#: build/pack.c:101
+#: build/pack.c:102
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr ""
 
-#: build/pack.c:108
+#: build/pack.c:109
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr ""
 
-#: build/pack.c:223
+#: build/pack.c:224
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:230
+#: build/pack.c:231
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:237
+#: build/pack.c:238
 #, c-format
 msgid "Could not open PreTrans file: %s\n"
 msgstr ""
 
-#: build/pack.c:244
+#: build/pack.c:245
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:251
+#: build/pack.c:252
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:258
+#: build/pack.c:259
 #, c-format
 msgid "Could not open PostTrans file: %s\n"
 msgstr ""
 
-#: build/pack.c:266
+#: build/pack.c:267
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr ""
 
-#: build/pack.c:273
+#: build/pack.c:274
 #, c-format
 msgid "Could not open Test file: %s\n"
 msgstr ""
 
-#: build/pack.c:298
+#: build/pack.c:299
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr ""
 
-#: build/pack.c:332
+#: build/pack.c:333
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:353
+#: build/pack.c:354
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:363
+#: build/pack.c:364
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr ""
 
-#: build/pack.c:395
+#: build/pack.c:398
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:400
+#: build/pack.c:403
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:744
+#: build/pack.c:748
 msgid "Unable to create immutable header region.\n"
 msgstr ""
 
-#: build/pack.c:806
+#: build/pack.c:810
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:830
+#: build/pack.c:834
 msgid "Unable to reload signature header.\n"
 msgstr ""
 
-#: build/pack.c:838
+#: build/pack.c:862
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:864 lib/psm.c:2277
+#: build/pack.c:888 lib/psm.c:2507
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:889
+#: build/pack.c:913
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:930
+#: build/pack.c:955
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:937
+#: build/pack.c:962
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:972 lib/psm.c:2592
+#: build/pack.c:999 lib/psm.c:2831
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:1094
+#: build/pack.c:1121
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:1114
+#: build/pack.c:1141
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -811,136 +807,136 @@ msgstr ""
 msgid "line %d: Second %%files list\n"
 msgstr ""
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:281
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:284
+#: build/parsePreamble.c:285
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:288
+#: build/parsePreamble.c:289
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:292
+#: build/parsePreamble.c:293
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:317
+#: build/parsePreamble.c:318
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:349
+#: build/parsePreamble.c:350
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:444
 msgid "No icon file in sources\n"
 msgstr ""
 
-#: build/parsePreamble.c:470
+#: build/parsePreamble.c:472
 #, c-format
 msgid "Invalid icon URL: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:477
+#: build/parsePreamble.c:479
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:486
+#: build/parsePreamble.c:488
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:491
+#: build/parsePreamble.c:493
 #, c-format
 msgid "Icon %s is too big (max. %d bytes)\n"
 msgstr ""
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:557
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:586
 #, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:624
+#: build/parsePreamble.c:626
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:632
+#: build/parsePreamble.c:634
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:661 build/parsePreamble.c:668
+#: build/parsePreamble.c:664 build/parsePreamble.c:671 build/parseReqs.c:170
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:711
+#: build/parsePreamble.c:714
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:728
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:736
+#: build/parsePreamble.c:739
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:748
+#: build/parsePreamble.c:751
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:762
+#: build/parsePreamble.c:765
 #, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:808 build/parsePreamble.c:819
+#: build/parsePreamble.c:811 build/parsePreamble.c:822
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:864
+#: build/parsePreamble.c:867
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:877
+#: build/parsePreamble.c:880
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1004
+#: build/parsePreamble.c:1008
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1105
+#: build/parsePreamble.c:1109
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1151
+#: build/parsePreamble.c:1155
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr ""
@@ -975,89 +971,89 @@ msgstr ""
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:575
+#: build/parsePrep.c:576
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:584
+#: build/parsePrep.c:585
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:597
+#: build/parsePrep.c:598
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:606
+#: build/parsePrep.c:607
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:618
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:625
+#: build/parsePrep.c:626
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:632
+#: build/parsePrep.c:633
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:636
+#: build/parsePrep.c:637
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:789
+#: build/parsePrep.c:790
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:801 build/parsePrep.c:816
+#: build/parsePrep.c:802 build/parsePrep.c:817
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr ""
 
-#: build/parsePrep.c:807 build/parsePrep.c:822
+#: build/parsePrep.c:808 build/parsePrep.c:823
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:827
+#: build/parsePrep.c:828
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:851
+#: build/parsePrep.c:852
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
 
-#: build/parseReqs.c:105
+#: build/parseReqs.c:117
 #, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:137
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr ""
 
-#: build/parseReqs.c:148
+#: build/parseReqs.c:165
 #, c-format
-msgid "line %d: Version required: %s\n"
+msgid "line %d: %s must be specified: %s\n"
 msgstr ""
 
-#: build/parseReqs.c:167
+#: build/parseReqs.c:184
 #, c-format
-msgid "line %d: EVR does not parse: %s\n"
+msgid "line %d: %s does not parse: %s\n"
 msgstr ""
 
 #: build/parseScript.c:197
@@ -1085,7 +1081,7 @@ msgstr ""
 msgid "line %d: Second %s\n"
 msgstr ""
 
-#: build/parseScript.c:318
+#: build/parseScript.c:372
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr ""
@@ -1134,331 +1130,344 @@ msgstr ""
 msgid "Package has no %%description: %s\n"
 msgstr ""
 
-#: build/poptBT.c:144
+#: build/poptBT.c:126
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:145 build/poptBT.c:148 build/poptBT.c:151 build/poptBT.c:154
-#: build/poptBT.c:157 build/poptBT.c:160 build/poptBT.c:163 build/poptBT.c:167
-#: build/poptBT.c:170
+#: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
+#: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
+#: build/poptBT.c:152
 msgid "<specfile>"
 msgstr ""
 
-#: build/poptBT.c:147
+#: build/poptBT.c:129
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:150
+#: build/poptBT.c:132
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:153
+#: build/poptBT.c:135
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:156
+#: build/poptBT.c:138
 msgid "build source and binary packages from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:159
+#: build/poptBT.c:141
 msgid "build binary package only from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:162
+#: build/poptBT.c:144
 msgid "build source package only from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:166
+#: build/poptBT.c:148
 msgid "track versions of sources from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:169
+#: build/poptBT.c:151
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:155
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
+#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
 msgid "<tarball>"
 msgstr ""
 
-#: build/poptBT.c:176
+#: build/poptBT.c:158
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:179
+#: build/poptBT.c:161
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:182
+#: build/poptBT.c:164
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:185
+#: build/poptBT.c:167
 msgid "build source and binary packages from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:188
+#: build/poptBT.c:170
 msgid "build binary package only from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:191
+#: build/poptBT.c:173
 msgid "build source package only from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:195
+#: build/poptBT.c:177
 msgid "build binary package from <source package>"
 msgstr ""
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:178 build/poptBT.c:181
 msgid "<source package>"
 msgstr ""
 
-#: build/poptBT.c:198
+#: build/poptBT.c:180
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 
-#: build/poptBT.c:202
+#: build/poptBT.c:184
 msgid "remove build tree when done"
 msgstr ""
 
-#: build/poptBT.c:204
+#: build/poptBT.c:186
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build/poptBT.c:206
+#: build/poptBT.c:188
 msgid "do not verify build dependencies"
 msgstr ""
 
-#: build/poptBT.c:208
+#: build/poptBT.c:191
 msgid "disable automagic Provides: extraction"
 msgstr ""
 
-#: build/poptBT.c:210
+#: build/poptBT.c:193
 msgid "disable automagic Requires: extraction"
 msgstr ""
 
-#: build/poptBT.c:212
+#: build/poptBT.c:195
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:215 lib/poptI.c:326 lib/poptQV.c:531 lib/poptQV.c:540
-#: lib/poptQV.c:582
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:456 lib/poptQV.c:465
+#: lib/poptQV.c:507
 msgid "don't verify package digest(s)"
 msgstr ""
 
-#: build/poptBT.c:217 lib/poptI.c:328 lib/poptQV.c:534 lib/poptQV.c:542
-#: lib/poptQV.c:585
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:459 lib/poptQV.c:467
+#: lib/poptQV.c:510
 msgid "don't verify database header(s) when retrieved"
 msgstr ""
 
-#: build/poptBT.c:219 lib/poptI.c:330 lib/poptQV.c:537 lib/poptQV.c:544
-#: lib/poptQV.c:587
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:462 lib/poptQV.c:469
+#: lib/poptQV.c:512
 msgid "don't verify package signature(s)"
 msgstr ""
 
-#: build/poptBT.c:222
+#: build/poptBT.c:205
+msgid "Debug Package objects"
+msgstr ""
+
+#: build/poptBT.c:207
+msgid "Debug Spec objects"
+msgstr ""
+
+#: build/poptBT.c:210
 msgid "do not accept i18n msgstr's from specfile"
 msgstr ""
 
-#: build/poptBT.c:224
+#: build/poptBT.c:212
 msgid "remove sources when done"
 msgstr ""
 
-#: build/poptBT.c:226
+#: build/poptBT.c:214
 msgid "remove specfile when done"
 msgstr ""
 
-#: build/poptBT.c:228
+#: build/poptBT.c:216
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build/poptBT.c:230
+#: build/poptBT.c:218
 msgid "generate PGP/GPG signature"
 msgstr ""
 
-#: build/poptBT.c:232
+#: build/poptBT.c:220
 msgid "override target platform"
 msgstr ""
 
-#: build/poptBT.c:232 lib/poptALL.c:371 lib/poptQV.c:442
+#: build/poptBT.c:220 lib/poptALL.c:413 lib/poptQV.c:365
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:234
-msgid "look up i18n strings in specfile catalog"
-msgstr ""
-
-#: build/spec.c:313
+#: build/spec.c:336
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/spec.c:319
+#: build/spec.c:342
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr ""
 
-#: build/spec.c:389
+#: build/spec.c:412
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: build/spec.c:400
+#: build/spec.c:423
 #, c-format
 msgid "%s %d defined multiple times\n"
 msgstr ""
 
-#: build/spec.c:743
+#: build/spec.c:790
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: build/spec.c:883
+#: build/spec.c:930
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: build/spec.c:938
+#: build/spec.c:985
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
 
-#: lib/depends.c:682
+#: lib/depends.c:697
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:696
+#: lib/depends.c:711
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:921
+#: lib/depends.c:934
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:937
+#: lib/depends.c:950
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:969
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:986
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:995
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:1004
+#: lib/depends.c:1017
 msgid "(mtab probe)"
 msgstr ""
 
-#: lib/depends.c:1061
+#: lib/depends.c:1074
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1116
 msgid "(digest probe)"
 msgstr ""
 
-#: lib/depends.c:1127
+#: lib/depends.c:1140
 msgid "(signature probe)"
 msgstr ""
 
-#: lib/depends.c:1157
+#: lib/depends.c:1170
 msgid "(verify probe)"
 msgstr ""
 
-#: lib/depends.c:1179
+#: lib/depends.c:1192
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1205
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:1220
+#: lib/depends.c:1233
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1260
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1282
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1303
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1324
 msgid "(sysinfo provides)"
 msgstr ""
 
-#: lib/depends.c:1330
+#: lib/depends.c:1343
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:1345
+#: lib/depends.c:1358
 msgid "(cpuinfo provides)"
 msgstr ""
 
-#: lib/depends.c:1360
+#: lib/depends.c:1373
 msgid "(getconf provides)"
 msgstr ""
 
-#: lib/depends.c:1375
+#: lib/depends.c:1388
 msgid "(uname provides)"
 msgstr ""
 
-#: lib/depends.c:1407
+#: lib/depends.c:1421
 msgid "(soname provides)"
 msgstr ""
 
-#: lib/depends.c:1435
+#: lib/depends.c:1449
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:1447
+#: lib/depends.c:1461
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1477
+#: lib/depends.c:1491
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1931
+#: lib/depends.c:1949
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:2054
+#: lib/depends.c:2072
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
-#: lib/depends.c:2677
+#: lib/depends.c:2712
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2713
+#: lib/depends.c:2748
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
+msgstr ""
+
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:66 lib/rpmchecksig.c:1233
+#, c-format
+msgid "%s: open failed: %s\n"
+msgstr ""
+
+#: lib/filetriggers.c:319
+msgid "[filetriggers] starting\n"
 msgstr ""
 
 #: lib/fs.c:80
@@ -1491,42 +1500,42 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:912 rpmio/iosm.c:971
+#: lib/fsm.c:913 rpmio/iosm.c:969
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:926 rpmio/iosm.c:985
+#: lib/fsm.c:927 rpmio/iosm.c:983
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:1806 rpmio/iosm.c:1871
+#: lib/fsm.c:1810 rpmio/iosm.c:1860
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1949 lib/fsm.c:2069 rpmio/iosm.c:2016 rpmio/iosm.c:2135
+#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2005 rpmio/iosm.c:2124
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:2096
+#: lib/fsm.c:2100
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:2102
+#: lib/fsm.c:2106
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:2117
+#: lib/fsm.c:2121
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:2142 rpmio/iosm.c:2208
+#: lib/fsm.c:2146 rpmio/iosm.c:2197
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -1550,1110 +1559,1142 @@ msgstr ""
 msgid "read failed\n"
 msgstr ""
 
-#: lib/package.c:135 lib/rpmchecksig.c:250 lib/rpmchecksig.c:925
+#: lib/package.c:135 lib/rpmchecksig.c:253 lib/rpmchecksig.c:984
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:228 lib/package.c:265 lib/rpmchecksig.c:1010
+#: lib/package.c:228 lib/package.c:265 lib/rpmchecksig.c:1069
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:310 lib/rpmchecksig.c:123
+#: lib/package.c:310 lib/rpmchecksig.c:126
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/poptALL.c:157 rpmio/poptIO.c:153
+#: lib/poptALL.c:173 rpmio/poptIO.c:343
 #, c-format
 msgid "%s ("
 msgstr ""
 
-#: lib/poptALL.c:303
+#: lib/poptALL.c:345
 msgid "Add suggested packages to transaction"
 msgstr ""
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:348
 msgid "Use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:309
+#: lib/poptALL.c:351
 msgid "Print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:354
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptALL.c:315
+#: lib/poptALL.c:357
 msgid "Do not check added package conflicts"
 msgstr ""
 
-#: lib/poptALL.c:318
+#: lib/poptALL.c:360
 msgid "Ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:321
+#: lib/poptALL.c:363
 msgid "Ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:324
+#: lib/poptALL.c:366
 msgid "Ignore added package requires on file parent directory"
 msgstr ""
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:369
 msgid "Do not check added package requires"
 msgstr ""
 
-#: lib/poptALL.c:330
+#: lib/poptALL.c:372
 msgid "Ignore added package upgrades"
 msgstr ""
 
-#: lib/poptALL.c:343 rpmio/poptIO.c:329
+#: lib/poptALL.c:385 rpmio/poptIO.c:519
 msgid "Debug generic operations"
 msgstr ""
 
-#: lib/poptALL.c:346
+#: lib/poptALL.c:388
 msgid "Predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:347 lib/poptALL.c:351 rpmio/poptIO.c:334
+#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:524
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:350 rpmio/poptIO.c:333
+#: lib/poptALL.c:392 rpmio/poptIO.c:523
 msgid "Define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:353 rpmio/poptIO.c:336
+#: lib/poptALL.c:395 rpmio/poptIO.c:526
 msgid "Undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:354 rpmio/poptIO.c:337
+#: lib/poptALL.c:396 rpmio/poptIO.c:527
 msgid "'MACRO'"
 msgstr ""
 
-#: lib/poptALL.c:356 rpmio/poptIO.c:339
+#: lib/poptALL.c:398 rpmio/poptIO.c:529
 msgid "Print macro expansion of EXPR"
 msgstr ""
 
-#: lib/poptALL.c:357 rpmio/poptIO.c:340
+#: lib/poptALL.c:399 rpmio/poptIO.c:530
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:359 rpmio/poptIO.c:343
+#: lib/poptALL.c:401 rpmio/poptIO.c:533
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:360 lib/poptALL.c:364 lib/poptALL.c:368 rpmio/poptIO.c:344
-#: rpmio/poptIO.c:348 rpmio/poptIO.c:352
+#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:534
+#: rpmio/poptIO.c:538 rpmio/poptIO.c:542
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:363 rpmio/poptIO.c:347
+#: lib/poptALL.c:405 rpmio/poptIO.c:537
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr ""
 
-#: lib/poptALL.c:367 rpmio/poptIO.c:351
+#: lib/poptALL.c:409 rpmio/poptIO.c:541
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr ""
 
-#: lib/poptALL.c:371
+#: lib/poptALL.c:413
 msgid "Specify target platform"
 msgstr ""
 
-#: lib/poptALL.c:374
+#: lib/poptALL.c:416
 msgid "Don't verify package digest(s)"
 msgstr ""
 
-#: lib/poptALL.c:376
+#: lib/poptALL.c:418
 msgid "Don't verify database header(s) when retrieved"
 msgstr ""
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:420
 msgid "Don't verify package signature(s)"
 msgstr ""
 
-#: lib/poptALL.c:381
+#: lib/poptALL.c:423
 msgid "Display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:383
+#: lib/poptALL.c:425
 msgid "Display macro and configuration values"
 msgstr ""
 
-#: lib/poptALL.c:385 rpmio/poptIO.c:367
+#: lib/poptALL.c:427 rpmio/poptIO.c:557
 msgid "Print the version"
 msgstr ""
 
-#: lib/poptALL.c:391
+#: lib/poptALL.c:433
 msgid "Debug file FingerPrintS"
 msgstr ""
 
-#: lib/poptALL.c:393
+#: lib/poptALL.c:435
 msgid "Debug payload File State Machine"
 msgstr ""
 
-#: lib/poptALL.c:395
+#: lib/poptALL.c:437
 msgid "Use threads for File State Machine"
 msgstr ""
 
-#: lib/poptALL.c:403
+#: lib/poptALL.c:443
 msgid "Display macros used"
 msgstr ""
 
-#: lib/poptALL.c:407
+#: lib/poptALL.c:447
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr ""
 
-#: lib/poptALL.c:409
+#: lib/poptALL.c:449
 msgid "Debug Package State Machine"
 msgstr ""
 
-#: lib/poptALL.c:411
+#: lib/poptALL.c:451
 msgid "Use threads for Package State Machine"
 msgstr ""
 
-#: lib/poptALL.c:413
-msgid "Debug rpmdb DataBase"
-msgstr ""
-
-#: lib/poptALL.c:415
+#: lib/poptALL.c:453
 msgid "Debug rpmds Dependency Set"
 msgstr ""
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:455
 msgid "Debug rpmfc File Classifier"
 msgstr ""
 
-#: lib/poptALL.c:419
+#: lib/poptALL.c:457
 msgid "Debug rpmfi File Info"
 msgstr ""
 
-#: lib/poptALL.c:421
+#: lib/poptALL.c:459
 msgid "Debug rpmgi Generalized Iterator"
 msgstr ""
 
-#: lib/poptALL.c:423
+#: lib/poptALL.c:461
+msgid "Debug rpmmi Match Iterator"
+msgstr ""
+
+#: lib/poptALL.c:463
 msgid "Debug rpmns Name Space"
 msgstr ""
 
-#: lib/poptALL.c:425
+#: lib/poptALL.c:465
 msgid "Debug rpmps Problem Set"
 msgstr ""
 
-#: lib/poptALL.c:427
-msgid "Debug rpmsx SELinux Xattrs"
-msgstr ""
-
-#: lib/poptALL.c:429
+#: lib/poptALL.c:467
 msgid "Debug rpmte Transaction Element"
 msgstr ""
 
-#: lib/poptALL.c:431
+#: lib/poptALL.c:469
 msgid "Debug rpmts Transaction Set"
 msgstr ""
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:471
 msgid "Debug rpmwf Wrapper Format"
 msgstr ""
 
-#: lib/poptALL.c:435 rpmio/poptIO.c:407
+#: lib/poptALL.c:473 rpmio/poptIO.c:640
 msgid "Display operation statistics"
 msgstr ""
 
-#: lib/poptALL.c:671 rpmio/poptIO.c:581
+#: lib/poptALL.c:759 rpmio/poptIO.c:813
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
 
-#: lib/poptI.c:82
+#: lib/poptI.c:80
 msgid "exclude paths must begin with a /"
 msgstr ""
 
-#: lib/poptI.c:90
+#: lib/poptI.c:88
 msgid "Option --relocate needs /old/path=/new/path argument"
 msgstr ""
 
-#: lib/poptI.c:92
+#: lib/poptI.c:90
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: lib/poptI.c:95
+#: lib/poptI.c:93
 msgid "relocations must contain a ="
 msgstr ""
 
-#: lib/poptI.c:98
+#: lib/poptI.c:96
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: lib/poptI.c:110
+#: lib/poptI.c:108
 msgid "Option --rbexclude needs transaction id argument(s)"
 msgstr ""
 
-#: lib/poptI.c:141
+#: lib/poptI.c:139
 msgid "Option --rollback needs a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:145
+#: lib/poptI.c:143
 #, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/poptI.c:149
+#: lib/poptI.c:147
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:156
+#: lib/poptI.c:154
 msgid "arbgoal takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:163
+#: lib/poptI.c:161
 msgid "malformed arbgoal time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:198
+#: lib/poptI.c:208
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 
-#: lib/poptI.c:203 lib/poptI.c:233
+#: lib/poptI.c:213 lib/poptI.c:251 lib/poptI.c:254
 msgid "do not execute package scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:206
+#: lib/poptI.c:216
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:209 lib/poptI.c:217
+#: lib/poptI.c:219 lib/poptI.c:227
 msgid "do not install configuration files"
 msgstr ""
 
-#: lib/poptI.c:212 lib/poptI.c:220
+#: lib/poptI.c:222 lib/poptI.c:230
 msgid "do not install documentation"
 msgstr ""
 
-#: lib/poptI.c:214
+#: lib/poptI.c:224
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 
-#: lib/poptI.c:223
+#: lib/poptI.c:234
 msgid "don't install file security contexts"
 msgstr ""
 
-#: lib/poptI.c:226 lib/poptQV.c:473 lib/poptQV.c:476 lib/poptQV.c:478
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:396 lib/poptQV.c:399
+#: lib/poptQV.c:401
 msgid "don't verify file digests"
 msgstr ""
 
-#: lib/poptI.c:229
+#: lib/poptI.c:240 lib/poptQV.c:428
+msgid "don't verify file security contexts"
+msgstr ""
+
+#: lib/poptI.c:246
 msgid "don't register headers in rpmdb"
 msgstr ""
 
-#: lib/poptI.c:236
+#: lib/poptI.c:258
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:239
+#: lib/poptI.c:261
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:242
+#: lib/poptI.c:264
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:245
+#: lib/poptI.c:267
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:248
+#: lib/poptI.c:270
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:251
+#: lib/poptI.c:273
 #, c-format
 msgid "do not execute %%postrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:254
+#: lib/poptI.c:276
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 
-#: lib/poptI.c:257
+#: lib/poptI.c:279
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:260
+#: lib/poptI.c:282
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:263
+#: lib/poptI.c:285
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:266
+#: lib/poptI.c:288
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:270
+#: lib/poptI.c:292
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:272
+#: lib/poptI.c:294
 msgid "don't install, but tell if it would work or not"
 msgstr ""
 
-#: lib/poptI.c:276
+#: lib/poptI.c:298
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
 
-#: lib/poptI.c:281
+#: lib/poptI.c:303
 msgid "relocate files in non-relocatable package"
 msgstr ""
 
-#: lib/poptI.c:285
+#: lib/poptI.c:307
 msgid "erase (uninstall) package"
 msgstr ""
 
-#: lib/poptI.c:285
+#: lib/poptI.c:307
 msgid "<package>+"
 msgstr ""
 
-#: lib/poptI.c:287
+#: lib/poptI.c:309
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:288 tools/rpmmtree.c:3611 tools/rpmmtree.c:3614
+#: lib/poptI.c:310 tools/rpmmtree.c:3571
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:292
+#: lib/poptI.c:314
 msgid "detect file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:296
+#: lib/poptI.c:318
 msgid "upgrade package(s) if already installed"
 msgstr ""
 
-#: lib/poptI.c:297 lib/poptI.c:315 lib/poptI.c:363
+#: lib/poptI.c:319 lib/poptI.c:337 lib/poptI.c:385
 msgid "<packagefile>+"
 msgstr ""
 
-#: lib/poptI.c:299
+#: lib/poptI.c:321
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 
-#: lib/poptI.c:303
+#: lib/poptI.c:325
 msgid "don't verify package architecture"
 msgstr ""
 
-#: lib/poptI.c:306
+#: lib/poptI.c:328
 msgid "don't verify package operating system"
 msgstr ""
 
-#: lib/poptI.c:310
+#: lib/poptI.c:332
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: lib/poptI.c:312
+#: lib/poptI.c:334
 msgid "install documentation"
 msgstr ""
 
-#: lib/poptI.c:315
+#: lib/poptI.c:337
 msgid "install package(s)"
 msgstr ""
 
-#: lib/poptI.c:318
+#: lib/poptI.c:340
 msgid "do not verify package dependencies"
 msgstr ""
 
-#: lib/poptI.c:322
+#: lib/poptI.c:344
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 
-#: lib/poptI.c:334
+#: lib/poptI.c:356
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 
-#: lib/poptI.c:338
+#: lib/poptI.c:360
 msgid "print percentages as package installs"
 msgstr ""
 
-#: lib/poptI.c:340
+#: lib/poptI.c:362
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 
-#: lib/poptI.c:341
+#: lib/poptI.c:363
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:343
+#: lib/poptI.c:365
 msgid "relocate files from path <old> to <new>"
 msgstr ""
 
-#: lib/poptI.c:344
+#: lib/poptI.c:366
 msgid "<old>=<new>"
 msgstr ""
 
-#: lib/poptI.c:347
+#: lib/poptI.c:369
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:350
+#: lib/poptI.c:372
 msgid "reinstall if the package is already present"
 msgstr ""
 
-#: lib/poptI.c:352
+#: lib/poptI.c:374
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:353 lib/poptI.c:356
+#: lib/poptI.c:375 lib/poptI.c:378
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:355
+#: lib/poptI.c:377
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:358
+#: lib/poptI.c:380
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:359
+#: lib/poptI.c:381
 msgid "<tid>"
 msgstr ""
 
-#: lib/poptI.c:362
+#: lib/poptI.c:384
 msgid "upgrade package(s)"
 msgstr ""
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:129
 msgid "query/verify all packages"
 msgstr ""
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:131
 msgid "rpm checksig mode"
 msgstr ""
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:133
 msgid "query/verify package(s) owning file"
 msgstr ""
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:135
 msgid "query/verify package(s) in group"
 msgstr ""
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:137
 msgid "query/verify a package file"
 msgstr ""
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:140
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr ""
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:142
 msgid "query/verify package(s) from system HDLIST"
 msgstr ""
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:145
 msgid "query/verify package(s) with source package identifier"
 msgstr ""
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:147
 msgid "query/verify package(s) with package identifier"
 msgstr ""
 
-#: lib/poptQV.c:152
+#: lib/poptQV.c:149
 msgid "query/verify package(s) with header identifier"
 msgstr ""
 
-#: lib/poptQV.c:154
+#: lib/poptQV.c:151
 msgid "query/verify package(s) with file identifier"
 msgstr ""
 
-#: lib/poptQV.c:157
+#: lib/poptQV.c:154
 msgid "rpm query mode"
 msgstr ""
 
-#: lib/poptQV.c:159
+#: lib/poptQV.c:156
 msgid "query/verify a header instance"
 msgstr ""
 
-#: lib/poptQV.c:161
+#: lib/poptQV.c:158
 msgid "query a spec file"
 msgstr ""
 
-#: lib/poptQV.c:161 lib/poptQV.c:163 tools/rpmmtree.c:3598
+#: lib/poptQV.c:158 lib/poptQV.c:160 tools/rpmmtree.c:3559
 msgid "<spec>"
 msgstr ""
 
-#: lib/poptQV.c:163
+#: lib/poptQV.c:160
 msgid "query source metadata from spec file parse"
 msgstr ""
 
-#: lib/poptQV.c:165
+#: lib/poptQV.c:162
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 
-#: lib/poptQV.c:167
+#: lib/poptQV.c:164
 msgid "query the package(s) triggered by the package"
 msgstr ""
 
-#: lib/poptQV.c:169
+#: lib/poptQV.c:166
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/poptQV.c:171
+#: lib/poptQV.c:168
 msgid "query/verify the package(s) which require a dependency"
 msgstr ""
 
-#: lib/poptQV.c:173
+#: lib/poptQV.c:170
 msgid "query/verify the package(s) which require any contained provide"
 msgstr ""
 
-#: lib/poptQV.c:177
+#: lib/poptQV.c:174
 msgid "query/verify the package(s) which provide a dependency"
 msgstr ""
 
-#: lib/poptQV.c:179
+#: lib/poptQV.c:176
 msgid "query/verify the package(s) which conflict with a dependency"
 msgstr ""
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:178
 msgid "query/verify the package(s) which obsolete a dependency"
 msgstr ""
 
-#: lib/poptQV.c:184
+#: lib/poptQV.c:181
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:186
+#: lib/poptQV.c:183
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:188
+#: lib/poptQV.c:185
 msgid "do not glob arguments"
 msgstr ""
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:187
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:192
+#: lib/poptQV.c:189
 msgid "do not read headers"
 msgstr ""
 
-#: lib/poptQV.c:400
+#: lib/poptQV.c:323
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:402
+#: lib/poptQV.c:325
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:404
+#: lib/poptQV.c:327
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:408
+#: lib/poptQV.c:331
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:412 lib/poptQV.c:459
+#: lib/poptQV.c:335 lib/poptQV.c:382
 msgid "add suggested packages to transaction"
 msgstr ""
 
-#: lib/poptQV.c:417 lib/poptQV.c:464
+#: lib/poptQV.c:340 lib/poptQV.c:387
 #, c-format
 msgid "skip %%config files"
 msgstr ""
 
-#: lib/poptQV.c:420 lib/poptQV.c:467
+#: lib/poptQV.c:343 lib/poptQV.c:390
 #, c-format
 msgid "skip %%doc files"
 msgstr ""
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:346
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:427
+#: lib/poptQV.c:350
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:430
+#: lib/poptQV.c:353
 #, c-format
 msgid "skip %%readme files"
 msgstr ""
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:359
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:359
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:361
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/poptQV.c:440
+#: lib/poptQV.c:363
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:442
+#: lib/poptQV.c:365
 msgid "specify target platform"
 msgstr ""
 
-#: lib/poptQV.c:482
+#: lib/poptQV.c:405
 msgid "don't verify size of files"
 msgstr ""
 
-#: lib/poptQV.c:485
+#: lib/poptQV.c:408
 msgid "don't verify symlink path of files"
 msgstr ""
 
-#: lib/poptQV.c:488
+#: lib/poptQV.c:411
 msgid "don't verify owner of files"
 msgstr ""
 
-#: lib/poptQV.c:491
+#: lib/poptQV.c:414
 msgid "don't verify group of files"
 msgstr ""
 
-#: lib/poptQV.c:494
+#: lib/poptQV.c:417
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:497 lib/poptQV.c:500
+#: lib/poptQV.c:420 lib/poptQV.c:423
 msgid "don't verify mode of files"
 msgstr ""
 
-#: lib/poptQV.c:503
-msgid "don't verify file security contexts"
+#: lib/poptQV.c:426
+msgid "don't verify file HMAC's"
 msgstr ""
 
-#: lib/poptQV.c:505
+#: lib/poptQV.c:430
 msgid "don't verify files in package"
 msgstr ""
 
-#: lib/poptQV.c:508 lib/poptQV.c:511
+#: lib/poptQV.c:433 lib/poptQV.c:436
 msgid "don't verify package dependencies"
 msgstr ""
 
-#: lib/poptQV.c:516 lib/poptQV.c:520 lib/poptQV.c:523 lib/poptQV.c:526
+#: lib/poptQV.c:441 lib/poptQV.c:445 lib/poptQV.c:448 lib/poptQV.c:451
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/poptQV.c:560
+#: lib/poptQV.c:485
 msgid "sign package(s) (identical to --resign)"
 msgstr ""
 
-#: lib/poptQV.c:562
+#: lib/poptQV.c:487
 msgid "verify package signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:564
+#: lib/poptQV.c:489
 msgid "delete package signatures"
 msgstr ""
 
-#: lib/poptQV.c:566
+#: lib/poptQV.c:491
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:568
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --addsign)"
 msgstr ""
 
-#: lib/poptQV.c:570
+#: lib/poptQV.c:495
 msgid "generate signature"
 msgstr ""
 
-#: lib/poptQV.c:573
+#: lib/poptQV.c:498
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:573
+#: lib/poptQV.c:498
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:576
+#: lib/poptQV.c:501
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:579
+#: lib/poptQV.c:504
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/psm.c:190
-msgid "source package expected, binary found\n"
-msgstr ""
-
-#: lib/psm.c:297 lib/psm.c:313
+#: lib/psm.c:180
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:349
+#: lib/psm.c:235
+msgid "source package expected, binary found\n"
+msgstr ""
+
+#: lib/psm.c:380
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:919 lib/rpmfc.c:119
+#: lib/psm.c:1126 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:930
+#: lib/psm.c:1137
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:940
+#: lib/psm.c:1147
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/psm.c:946
+#: lib/psm.c:1153
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:2169
+#: lib/psm.c:2398
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2290
+#: lib/psm.c:2520
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:2417
+#: lib/psm.c:2656
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2418
+#: lib/psm.c:2657
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2601
+#: lib/psm.c:2840
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2604
+#: lib/psm.c:2843
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:148
+#: lib/query.c:149
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:217
+#: lib/query.c:218
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:305
+#: lib/query.c:306
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:308
+#: lib/query.c:309
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:311
+#: lib/query.c:312
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:314
+#: lib/query.c:315
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:317
+#: lib/query.c:318
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:320
+#: lib/query.c:321
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:323
+#: lib/query.c:324
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:340 lib/query.c:370
+#: lib/query.c:341 lib/query.c:371
 msgid "package without owner/group tags\n"
 msgstr ""
 
-#: lib/query.c:474
+#: lib/query.c:475
 #, c-format
 msgid "key \"%s\" not found in %s table\n"
 msgstr ""
 
-#: lib/query.c:508
+#: lib/query.c:509
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:517
+#: lib/query.c:518
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:533 lib/query.c:556 lib/query.c:578 lib/query.c:613
+#: lib/query.c:534 lib/query.c:557 lib/query.c:579 lib/query.c:614
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr ""
 
-#: lib/query.c:545 lib/query.c:562 lib/query.c:589 lib/query.c:618
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr ""
 
-#: lib/query.c:629
+#: lib/query.c:630
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:640
+#: lib/query.c:641
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:674
+#: lib/query.c:688
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:677
+#: lib/query.c:691
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:702
+#: lib/query.c:716
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:709
+#: lib/query.c:723
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:719 lib/query.c:725 lib/rpminstall.c:767
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:767
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:659
+#: lib/rpmal.c:665
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:737
+#: lib/rpmal.c:743
 msgid "(added provide)"
 msgstr ""
 
-#: lib/rpmchecksig.c:63 lib/rpmchecksig.c:1173
-#, c-format
-msgid "%s: open failed: %s\n"
-msgstr ""
-
-#: lib/rpmchecksig.c:75
+#: lib/rpmchecksig.c:78
 msgid "rpmTempFile failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:117
+#: lib/rpmchecksig.c:120
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:127
+#: lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:384
+#: lib/rpmchecksig.c:392
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:761
+#: lib/rpmchecksig.c:818
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:773
+#: lib/rpmchecksig.c:830
 #, c-format
 msgid "%s: import failed.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:825
+#: lib/rpmchecksig.c:883
 msgid "headerGet failed"
 msgstr ""
 
-#: lib/rpmchecksig.c:826
+#: lib/rpmchecksig.c:884
 msgid "failed to retrieve original header\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:848 rpmdb/pkgio.c:503 rpmdb/pkgio.c:689
-#: rpmdb/pkgio.c:1277
+#: lib/rpmchecksig.c:907 rpmdb/pkgio.c:504 rpmdb/pkgio.c:693
+#: rpmdb/pkgio.c:1314
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr ""
 
-#: lib/rpmchecksig.c:858
+#: lib/rpmchecksig.c:917
 msgid "Fread failed"
 msgstr ""
 
-#: lib/rpmchecksig.c:1098
+#: lib/rpmchecksig.c:1157
 msgid "NOT_OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1099 lib/rpmchecksig.c:1113
+#: lib/rpmchecksig.c:1158 lib/rpmchecksig.c:1172
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1101 lib/rpmchecksig.c:1115
+#: lib/rpmchecksig.c:1160 lib/rpmchecksig.c:1174
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1102 lib/rpmchecksig.c:1116
+#: lib/rpmchecksig.c:1161 lib/rpmchecksig.c:1175
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1104 lib/rpmchecksig.c:1118
+#: lib/rpmchecksig.c:1163 lib/rpmchecksig.c:1177
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1112
+#: lib/rpmchecksig.c:1171
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:914 lib/rpmds.c:3718
+#: lib/rpmds.c:897 lib/rpmds.c:3869
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:914 lib/rpmds.c:3718
+#: lib/rpmds.c:897 lib/rpmds.c:3869
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1403
+#: lib/rpmds.c:1433
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1406
+#: lib/rpmds.c:1436
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1410
+#: lib/rpmds.c:1440
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1444
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1417
+#: lib/rpmds.c:1447
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1420
+#: lib/rpmds.c:1450
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1423
+#: lib/rpmds.c:1453
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1426
+#: lib/rpmds.c:1456
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1429
+#: lib/rpmds.c:1459
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1433
-msgid "internal support for lua scripts."
+#: lib/rpmds.c:1463
+msgid "internal embedded lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1437
+#: lib/rpmds.c:1468
+msgid "internal embedded Augeas."
+msgstr ""
+
+#: lib/rpmds.c:1473
+msgid "internal embedded FICL."
+msgstr ""
+
+#: lib/rpmds.c:1478
+msgid "internal embedded JavaScript."
+msgstr ""
+
+#: lib/rpmds.c:1483
+msgid "internal embedded perl scripts."
+msgstr ""
+
+#: lib/rpmds.c:1488
+msgid "internal embedded python scripts."
+msgstr ""
+
+#: lib/rpmds.c:1493
+msgid "internal embedded ruby scripts."
+msgstr ""
+
+#: lib/rpmds.c:1498
+msgid "internal embedded Spook scripts."
+msgstr ""
+
+#: lib/rpmds.c:1503
+msgid "internal embedded squirrel scripts."
+msgstr ""
+
+#: lib/rpmds.c:1508
+msgid "internal embedded tcl scripts."
+msgstr ""
+
+#: lib/rpmds.c:1512
 msgid "header tag data can be of type uint64_t."
 msgstr ""
 
-#: lib/rpmds.c:1440
+#: lib/rpmds.c:1515
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1443
+#: lib/rpmds.c:1519
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:1446
+#: lib/rpmds.c:1523 lib/rpmds.c:1526
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1530
 msgid "package payload can be in ar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1454
+#: lib/rpmds.c:1535
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:1544 lib/rpmds.c:3513
+#: lib/rpmds.c:1627 lib/rpmds.c:3658
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1567 lib/rpmds.c:3530
+#: lib/rpmds.c:1650 lib/rpmds.c:3675
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1578 lib/rpmds.c:3545
+#: lib/rpmds.c:1661 lib/rpmds.c:3690
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3512 lib/rpmds.c:3529 lib/rpmds.c:3541
+#: lib/rpmds.c:3657 lib/rpmds.c:3674 lib/rpmds.c:3686
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3543
+#: lib/rpmds.c:3688
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3677
+#: lib/rpmds.c:3828
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:3717
+#: lib/rpmds.c:3868
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
@@ -2678,53 +2719,45 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:356
+#: lib/rpmfc.c:355
 #, c-format
 msgid "Compilation of pattern '%s' (expanded from '%s') failed. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmfc.c:384
+#: lib/rpmfc.c:383
 #, c-format
 msgid "Skipping %c: '%s'\n"
 msgstr ""
 
-#: lib/rpmfc.c:1049
+#: lib/rpmfc.c:1028
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1059
+#: lib/rpmfc.c:1038
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1447
+#: lib/rpmfc.c:1436
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr ""
 
-#: lib/rpmfc.c:1452 lib/rpmfc.c:1464
+#: lib/rpmfc.c:1441 lib/rpmfc.c:1453
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:173 lib/rpmts.c:421
-#: tools/rpmdigest.c:637
+#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:374
+#: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/rpmgi.c:430
+#: lib/rpmgi.c:433
 #, c-format
 msgid "unknown tag: \"%s\"\n"
-msgstr ""
-
-#: lib/rpmgi.c:778
-msgid "Failed dependencies:\n"
-msgstr ""
-
-#: lib/rpmgi.c:783 lib/rpminstall.c:299
-msgid "    Suggested resolutions:\n"
 msgstr ""
 
 #: lib/rpminstall.c:211
@@ -2751,6 +2784,10 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr ""
 
+#: lib/rpminstall.c:299
+msgid "    Suggested resolutions:\n"
+msgstr ""
+
 #: lib/rpminstall.c:313
 msgid "Failed dependencies"
 msgstr ""
@@ -2768,12 +2805,12 @@ msgstr ""
 msgid "package \"%s\" cannot be found\n"
 msgstr ""
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:601
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr ""
 
-#: lib/rpminstall.c:626
+#: lib/rpminstall.c:627
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr ""
@@ -2808,726 +2845,628 @@ msgstr ""
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:232
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:249
+#: lib/rpmps.c:240
 #, c-format
 msgid "package %s is intended for a %s platform"
 msgstr ""
 
-#: lib/rpmps.c:254
+#: lib/rpmps.c:245
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/rpmps.c:259
+#: lib/rpmps.c:250
 #, c-format
 msgid "re-packaged package with %s: %s is missing"
 msgstr ""
 
-#: lib/rpmps.c:264
+#: lib/rpmps.c:255
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr ""
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:260
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:274
+#: lib/rpmps.c:265
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:279
+#: lib/rpmps.c:270
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/rpmps.c:284
+#: lib/rpmps.c:275
 #, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:294
+#: lib/rpmps.c:285
 #, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:299
+#: lib/rpmps.c:290
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/rpmps.c:303
+#: lib/rpmps.c:294
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr ""
 
-#: lib/rpmps.c:305 lib/rpmps.c:310
+#: lib/rpmps.c:296 lib/rpmps.c:301
 msgid "(installed) "
 msgstr ""
 
-#: lib/rpmps.c:308
+#: lib/rpmps.c:299
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr ""
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:305
 #, c-format
 msgid "installing package %s on %s rdonly filesystem"
 msgstr ""
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:310
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:1134
+#: lib/rpmrc.c:1212
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1148
+#: lib/rpmrc.c:1227
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1163
+#: lib/rpmrc.c:1248
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1179
+#: lib/rpmrc.c:1268
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1193
+#: lib/rpmrc.c:1283
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
 
-#: lib/rpmrollback.c:510
+#: lib/rpmrollback.c:512
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/rpmrollback.c:611
+#: lib/rpmrollback.c:614
 msgid "Missing re-packaged package(s)"
 msgstr ""
 
-#: lib/rpmrollback.c:619
+#: lib/rpmrollback.c:622
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpmrollback.c:645
+#: lib/rpmrollback.c:648
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpmrollback.c:652
+#: lib/rpmrollback.c:655
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr ""
 
-#: lib/rpmsx.c:369
-#, c-format
-msgid "%s:  no newline on line number %d (only read %s)\n"
-msgstr ""
-
-#: lib/rpmsx.c:393
-#, c-format
-msgid "%s:  line number %d is missing fields (only read %s)\n"
-msgstr ""
-
-#: lib/rpmsx.c:426
-#, c-format
-msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
-msgstr ""
-
-#: lib/rpmsx.c:441 lib/rpmsx.c:456
-#, c-format
-msgid "%s:  invalid type specifier %s on line number %d\n"
-msgstr ""
-
-#: lib/rpmsx.c:469
-#, c-format
-msgid "%s:  invalid context %s on line number %d\n"
-msgstr ""
-
-#: lib/rpmts.c:142 rpmdb/pkgio.c:220
+#: lib/rpmts.c:121 rpmdb/pkgio.c:223
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:210
-#, c-format
-msgid "extra '(' in package label: %s\n"
-msgstr ""
-
-#: lib/rpmts.c:228
-#, c-format
-msgid "missing '(' in package label: %s\n"
-msgstr ""
-
-#: lib/rpmts.c:236
-#, c-format
-msgid "missing ')' in package label: %s\n"
-msgstr ""
-
-#: lib/rpmts.c:298
+#: lib/rpmts.c:249
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:411
+#: lib/rpmts.c:364
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1001
+#: lib/transaction.c:1427
+#, c-format
+msgid "Unable to change root directory: %m\n"
+msgstr ""
+
+#: lib/transaction.c:1657
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1019
+#: lib/transaction.c:1675
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1165
+#: lib/transaction.c:1885
+msgid "Failed to begin policy transaction\n"
+msgstr ""
+
+#: lib/transaction.c:1951
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:326
+#: lib/verify.c:288
 #, c-format
 msgid "missing   %c %s"
 msgstr ""
 
-#: lib/verify.c:457
+#: lib/verify.c:446
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""
 
-#: rpmdb/db3.c:165
+#: rpmdb/db3.c:505
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:168
+#: rpmdb/db3.c:508
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1314
-msgid "RUNRECOVERY failed, exiting ...\n"
+#: rpmdb/db3.c:1746 rpmdb/rpmdb.c:2222
+#, c-format
+msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:1317
-msgid "Runnning db->verify ...\n"
+#: rpmdb/db3.c:2252
+msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1628
+#: rpmdb/db3.c:2258
+msgid ""
+"\n"
+"recovery failed. Exiting ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:2261
+msgid ""
+".\n"
+"recovery succeeded.\n"
+msgstr ""
+
+#: rpmdb/db3.c:2545
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1630
+#: rpmdb/db3.c:2547
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1630
+#: rpmdb/db3.c:2547
 msgid "shared"
 msgstr ""
 
-#: rpmdb/dbconfig.c:714
+#: rpmdb/dbconfig.c:531
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:754
+#: rpmdb/dbconfig.c:570
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:763
+#: rpmdb/dbconfig.c:579
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:772
+#: rpmdb/dbconfig.c:588
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:98 rpmdb/hdrfmt.c:203
+#: rpmdb/hdrfmt.c:98 rpmdb/hdrfmt.c:204
 msgid "(not a number)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:231
+#: rpmdb/hdrfmt.c:232
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:243
+#: rpmdb/hdrfmt.c:244
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:297
+#: rpmdb/hdrfmt.c:298
 msgid "invalid type"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:418 rpmdb/hdrfmt.c:441 rpmdb/hdrfmt.c:509
-#: rpmdb/hdrfmt.c:1222 rpmdb/hdrfmt.c:1274
+#: rpmdb/hdrfmt.c:388 rpmdb/hdrfmt.c:419 rpmdb/hdrfmt.c:442 rpmdb/hdrfmt.c:510
+#: rpmdb/hdrfmt.c:1223 rpmdb/hdrfmt.c:1275
 msgid "(invalid type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:499
+#: rpmdb/hdrfmt.c:500
 msgid "(not base64)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:540
+#: rpmdb/hdrfmt.c:541
 msgid "(invalid type :base64)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:737 rpmdb/hdrfmt.c:745 rpmdb/hdrfmt.c:775
-#: rpmdb/hdrfmt.c:3230 rpmdb/hdrfmt.c:3238 rpmdb/hdrfmt.c:4006
-#: rpmdb/hdrfmt.c:4024
+#: rpmdb/hdrfmt.c:738 rpmdb/hdrfmt.c:746 rpmdb/hdrfmt.c:776
+#: rpmdb/hdrfmt.c:3233 rpmdb/hdrfmt.c:3241 rpmdb/hdrfmt.c:4021
+#: rpmdb/hdrfmt.c:4039
 msgid "(not a string)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:844
+#: rpmdb/hdrfmt.c:845
 msgid "(invalid xml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1049
+#: rpmdb/hdrfmt.c:1050
 msgid "(invalid yaml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1116
+#: rpmdb/hdrfmt.c:1117
 msgid "(not a blob)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1139
+#: rpmdb/hdrfmt.c:1140
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4223
+#: rpmdb/hdrfmt.c:4238
 msgid "(invalid type :digest)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4282
+#: rpmdb/hdrfmt.c:4297
 msgid "(invalid type :stat)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4445
+#: rpmdb/hdrfmt.c:4460
 msgid "(invalid type :uuid)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4505
+#: rpmdb/hdrfmt.c:4520
 msgid "(invalid type :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4517
+#: rpmdb/hdrfmt.c:4532
 msgid "(invalid string :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4533
+#: rpmdb/hdrfmt.c:4548
 msgid "(expected number :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4537
+#: rpmdb/hdrfmt.c:4552
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4543
+#: rpmdb/hdrfmt.c:4558
 msgid "(invalid number :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4548
+#: rpmdb/hdrfmt.c:4563
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4561
+#: rpmdb/hdrfmt.c:4576
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4604
+#: rpmdb/hdrfmt.c:4619
 msgid "(invalid type :strsub)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4609
+#: rpmdb/hdrfmt.c:4624
 msgid "(invalid args :strsub)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5461
+#: rpmdb/hdrfmt.c:5478
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5495
+#: rpmdb/hdrfmt.c:5512
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5511
+#: rpmdb/hdrfmt.c:5528
 msgid "empty tag format"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5531
+#: rpmdb/hdrfmt.c:5548
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5552
+#: rpmdb/hdrfmt.c:5569
 msgid "empty tag name"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5561
+#: rpmdb/hdrfmt.c:5578
 msgid "unknown tag"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5591
+#: rpmdb/hdrfmt.c:5608
 msgid "] expected at end of array"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5608
+#: rpmdb/hdrfmt.c:5625
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5623
+#: rpmdb/hdrfmt.c:5640
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5702
+#: rpmdb/hdrfmt.c:5719
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5709
+#: rpmdb/hdrfmt.c:5726
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5721 rpmdb/hdrfmt.c:5761
+#: rpmdb/hdrfmt.c:5738 rpmdb/hdrfmt.c:5778
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5729
+#: rpmdb/hdrfmt.c:5746
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5747
+#: rpmdb/hdrfmt.c:5764
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5769
+#: rpmdb/hdrfmt.c:5786
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:6103
+#: rpmdb/hdrfmt.c:6119
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/poptDB.c:22
-msgid "initialize database"
-msgstr ""
-
-#: rpmdb/poptDB.c:25
-msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-
-#: rpmdb/poptDB.c:29
-msgid "verify database files"
-msgstr ""
-
-#: rpmdb/pkgio.c:83
+#: rpmdb/pkgio.c:84
 msgid "write of NULL header"
 msgstr ""
 
-#: rpmdb/pkgio.c:90
+#: rpmdb/pkgio.c:91
 msgid "headerUnload failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:102
+#: rpmdb/pkgio.c:103
 msgid "short write of header magic"
 msgstr ""
 
-#: rpmdb/pkgio.c:114
+#: rpmdb/pkgio.c:115
 msgid "short write of header"
 msgstr ""
 
-#: rpmdb/pkgio.c:471 rpmdb/pkgio.c:476
+#: rpmdb/pkgio.c:472 rpmdb/pkgio.c:477
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr ""
 
-#: rpmdb/pkgio.c:510
+#: rpmdb/pkgio.c:511
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:527
+#: rpmdb/pkgio.c:528
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:536
+#: rpmdb/pkgio.c:537
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:547
+#: rpmdb/pkgio.c:548
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:697
+#: rpmdb/pkgio.c:701
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:709
+#: rpmdb/pkgio.c:713
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:717
+#: rpmdb/pkgio.c:721
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:723
+#: rpmdb/pkgio.c:727
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:733
+#: rpmdb/pkgio.c:754
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:745 rpmdb/pkgio.c:929 rpmdb/pkgio.c:1056
+#: rpmdb/pkgio.c:775 rpmdb/pkgio.c:964 rpmdb/pkgio.c:1091
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:766 rpmdb/pkgio.c:949
+#: rpmdb/pkgio.c:796 rpmdb/pkgio.c:984
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:791 rpmdb/pkgio.c:968
+#: rpmdb/pkgio.c:821 rpmdb/pkgio.c:1003
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:803 rpmdb/pkgio.c:980
+#: rpmdb/pkgio.c:833 rpmdb/pkgio.c:1015
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:814
+#: rpmdb/pkgio.c:844
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:824
+#: rpmdb/pkgio.c:854
 #, c-format
 msgid "sigh load: BAD"
 msgstr ""
 
-#: rpmdb/pkgio.c:837
+#: rpmdb/pkgio.c:871
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr ""
 
-#: rpmdb/pkgio.c:850
+#: rpmdb/pkgio.c:884
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:920
+#: rpmdb/pkgio.c:955
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:989
+#: rpmdb/pkgio.c:1024
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:1007
+#: rpmdb/pkgio.c:1042
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr ""
 
-#: rpmdb/pkgio.c:1019
+#: rpmdb/pkgio.c:1054
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1029
+#: rpmdb/pkgio.c:1064
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1092 rpmdb/pkgio.c:1137
+#: rpmdb/pkgio.c:1127 rpmdb/pkgio.c:1172
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1290
+#: rpmdb/pkgio.c:1327
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1300
+#: rpmdb/pkgio.c:1337
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1308
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:1315
+#: rpmdb/pkgio.c:1352
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1326
+#: rpmdb/pkgio.c:1378
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1340
+#: rpmdb/pkgio.c:1399
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:394
-#, c-format
-msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
+#: rpmdb/poptDB.c:31
+msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 
-#: rpmdb/rpmdb.c:414
-#, c-format
-msgid "cannot open %s(%u) index\n"
+#: rpmdb/poptDB.c:35
+msgid "Debug rpmdb DataBase"
 msgstr ""
 
-#: rpmdb/rpmdb.c:866
+#: rpmdb/poptDB.c:37
+msgid "Debug dbiIndex DataBase Index"
+msgstr ""
+
+#: rpmdb/poptDB.c:39
+msgid "Debug rpmlio database Log I/O"
+msgstr ""
+
+#: rpmdb/poptDB.c:41
+msgid "Debug rpmtxn database Transaction"
+msgstr ""
+
+#: rpmdb/rpmdb.c:262
+#, c-format
+msgid ""
+"cannot open %s(%u) index: %s(%d)\n"
+"\tDB: %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:577
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1189
+#: rpmdb/rpmdb.c:898
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1493 rpmdb/rpmdb.c:1639 rpmdb/rpmdb.c:1701 rpmdb/rpmdb.c:2555
-#: rpmdb/rpmdb.c:2720 rpmdb/rpmdb.c:3064 rpmdb/rpmdb.c:3508
+#: rpmdb/rpmdb.c:1091 rpmdb/rpmdb.c:1446
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1908
-msgid "miFreeHeader: skipping"
-msgstr ""
-
-#: rpmdb/rpmdb.c:1919
-#, c-format
-msgid "error(%d) storing record #%d into %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2444
-msgid "rpmdb: skipping"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2444
-msgid "rpmdb: read"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2475
-#, c-format
-msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2799
+#: rpmdb/rpmdb.c:1323
 #, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2837
+#: rpmdb/rpmdb.c:1515
+#, c-format
+msgid "error(%d) storing record h#%u into %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:2516
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2915
-#, c-format
-msgid "error(%d) setting header #%d record for %s removal\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3085 rpmdb/rpmdb.c:3527
-#, c-format
-msgid "error(%d) storing record into %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3095
-#, c-format
-msgid "error(%d) removing record from %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3241
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3313
-msgid "rpmdbAdd: skipping"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3973
-#, c-format
-msgid "temporary database %s already exists\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3981
-#, c-format
-msgid "creating directory %s: %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4028
-#, c-format
-msgid "header #%u in the database is bad -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4036
-#, c-format
-msgid "header #%u in the database is SRPM -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4076
-#, c-format
-msgid "cannot add record originally at %u\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4090
-msgid "failed to rebuild database: original database remains in place\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4102
-msgid "failed to replace old database with new database!\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4104
-#, c-format
-msgid "replace files in %s with files from %s to recover"
-msgstr ""
-
-#: rpmdb/rpmdb.c:4116
-#, c-format
-msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
 #: rpmdb/signature.c:88 rpmdb/signature.c:97 rpmdb/signature.c:102
@@ -3541,51 +3480,51 @@ msgstr ""
 msgid "Couldn't create pipe for signing: %m"
 msgstr ""
 
-#: rpmdb/signature.c:193 rpmdb/signature.c:525
+#: rpmdb/signature.c:193 rpmdb/signature.c:530
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:203 rpmdb/signature.c:532
+#: rpmdb/signature.c:203 rpmdb/signature.c:537
 #, c-format
 msgid "Failed rpmkuPassPhrase(passPhrase): %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:222
+#: rpmdb/signature.c:224
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr ""
 
-#: rpmdb/signature.c:229
+#: rpmdb/signature.c:231
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: rpmdb/signature.c:248
+#: rpmdb/signature.c:250
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: rpmdb/signature.c:576
+#: rpmdb/signature.c:583
 msgid "Header+Payload size: "
 msgstr ""
 
-#: rpmdb/signature.c:619 rpmdb/signature.c:683
+#: rpmdb/signature.c:626 rpmdb/signature.c:690
 msgid " digest: "
 msgstr ""
 
-#: rpmdb/signature.c:679 rpmdb/signature.c:747 rpmdb/signature.c:845
+#: rpmdb/signature.c:686 rpmdb/signature.c:754 rpmdb/signature.c:852
 msgid "Header "
 msgstr ""
 
-#: rpmdb/signature.c:764 rpmdb/signature.c:862
+#: rpmdb/signature.c:771 rpmdb/signature.c:869
 msgid " signature: "
 msgstr ""
 
-#: rpmdb/signature.c:923
+#: rpmdb/signature.c:930
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: rpmdb/signature.c:944
+#: rpmdb/signature.c:951
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr ""
@@ -3595,482 +3534,1049 @@ msgstr ""
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/iosm.c:2161
+#: rpmio/iosm.c:2150
 #, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: rpmio/iosm.c:2167
+#: rpmio/iosm.c:2156
 #, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr ""
 
-#: rpmio/iosm.c:2182
+#: rpmio/iosm.c:2171
 #, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr ""
 
-#: rpmio/iosm.c:2776
+#: rpmio/iosm.c:2765
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: rpmio/iosm.c:2779
+#: rpmio/iosm.c:2768
 msgid "Bad magic"
 msgstr ""
 
-#: rpmio/iosm.c:2780
+#: rpmio/iosm.c:2769
 msgid "Bad/unreadable header"
 msgstr ""
 
-#: rpmio/iosm.c:2802
+#: rpmio/iosm.c:2791
 msgid "Header size too big"
 msgstr ""
 
-#: rpmio/iosm.c:2803
+#: rpmio/iosm.c:2792
 msgid "Unknown file type"
 msgstr ""
 
-#: rpmio/iosm.c:2804
+#: rpmio/iosm.c:2793
 msgid "Missing hard link(s)"
 msgstr ""
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2794
 msgid "File digest mismatch"
 msgstr ""
 
-#: rpmio/iosm.c:2806
+#: rpmio/iosm.c:2795
 msgid "Internal error"
 msgstr ""
 
-#: rpmio/iosm.c:2807
+#: rpmio/iosm.c:2796
 msgid "Archive file not in header"
 msgstr ""
 
-#: rpmio/iosm.c:2818
+#: rpmio/iosm.c:2807
 msgid " failed - "
 msgstr ""
 
-#: rpmio/macro.c:283
+#: rpmio/macro.c:304
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
-#: rpmio/macro.c:473
+#: rpmio/macro.c:494
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:516
+#: rpmio/macro.c:537
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:745 rpmio/macro.c:783
+#: rpmio/macro.c:766 rpmio/macro.c:804
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:804
+#: rpmio/macro.c:825
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:810
+#: rpmio/macro.c:831
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:815
+#: rpmio/macro.c:836
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:821
+#: rpmio/macro.c:842
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:861
+#: rpmio/macro.c:882
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:977
+#: rpmio/macro.c:998
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:1131
+#: rpmio/macro.c:1152
 #, c-format
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1467
+#: rpmio/macro.c:1649
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1541 rpmio/macro.c:1558
+#: rpmio/macro.c:1723 rpmio/macro.c:1740
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1603
+#: rpmio/macro.c:1785
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1621
+#: rpmio/macro.c:1803
 #, c-format
 msgid "%s: load macros failed\n"
 msgstr ""
 
-#: rpmio/macro.c:1808
+#: rpmio/macro.c:2263
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr ""
 
-#: rpmio/macro.c:2167
+#: rpmio/macro.c:2507
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2201
+#: rpmio/macro.c:2541
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2494 rpmio/macro.c:2500
+#: rpmio/macro.c:2670
+#, c-format
+msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
+msgstr ""
+
+#: rpmio/macro.c:2679
+#, c-format
+msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
+msgstr ""
+
+#: rpmio/macro.c:2867 rpmio/macro.c:2873
 #, c-format
 msgid "File %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:2503
+#: rpmio/macro.c:2876
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/mire.c:325
+#: rpmio/mire.c:310
 #, c-format
 msgid "%s: Failed to set locale %s (obtained from %s)\n"
 msgstr ""
 
-#: rpmio/mire.c:365
+#: rpmio/mire.c:350
 #, c-format
 msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
 msgstr ""
 
-#: rpmio/mire.c:384
+#: rpmio/mire.c:369
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr ""
 
-#: rpmio/mire.c:442
+#: rpmio/mire.c:429
 #, c-format
 msgid "%s: regexec failed: %s(%d)\n"
 msgstr ""
 
-#: rpmio/mire.c:460
+#: rpmio/mire.c:447
 #, c-format
 msgid "pcre_exec failed: return %d\n"
 msgstr ""
 
-#: rpmio/mire.c:474
+#: rpmio/mire.c:461
 #, c-format
 msgid "fnmatch failed: return %d\n"
 msgstr ""
 
-#: rpmio/mire.c:569
+#: rpmio/mire.c:572
 #, c-format
 msgid " number %d"
 msgstr ""
 
-#: rpmio/mire.c:570
+#: rpmio/mire.c:573
 #, c-format
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr ""
 
-#: rpmio/poptIO.c:102
+#: rpmio/poptIO.c:130
 msgid "MD2 digest (RFC-1319)"
 msgstr ""
 
-#: rpmio/poptIO.c:104
+#: rpmio/poptIO.c:132
 msgid "MD4 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:106
+#: rpmio/poptIO.c:134
 msgid "MD5 digest (RFC-1321)"
 msgstr ""
 
-#: rpmio/poptIO.c:108
+#: rpmio/poptIO.c:136
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr ""
 
-#: rpmio/poptIO.c:110
+#: rpmio/poptIO.c:138
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:112
+#: rpmio/poptIO.c:140
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:114
+#: rpmio/poptIO.c:142
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:116
+#: rpmio/poptIO.c:144
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:118
-msgid "SALSA-10 hash"
+#: rpmio/poptIO.c:146
+msgid "SKEIN-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:120
-msgid "SALSA-20 hash"
+#: rpmio/poptIO.c:148
+msgid "SKEIN-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:122
-msgid "RIPEMD-128 digest"
+#: rpmio/poptIO.c:150
+msgid "SKEIN-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:124
-msgid "RIPEMD-160 digest"
+#: rpmio/poptIO.c:152
+msgid "SKEIN-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:126
-msgid "RIPEMD-256 digest"
+#: rpmio/poptIO.c:154
+msgid "SKEIN-1024 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:128
-msgid "RIPEMD-320 digest"
+#: rpmio/poptIO.c:156
+msgid "Arirang-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:130
-msgid "TIGER digest"
+#: rpmio/poptIO.c:158
+msgid "Arirang-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:132
-msgid "CRC-32 checksum"
+#: rpmio/poptIO.c:160
+msgid "Arirang-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:134
-msgid "CRC-64 checksum"
+#: rpmio/poptIO.c:162
+msgid "Arirang-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:136
-msgid "ADLER-32 checksum"
+#: rpmio/poptIO.c:164
+msgid "Blake-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:138
-msgid "Lookup3 hash"
+#: rpmio/poptIO.c:166
+msgid "Blake-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:140
-msgid "No hash algorithm"
+#: rpmio/poptIO.c:168
+msgid "Blake-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:142
-msgid "All hash algorithm(s)"
+#: rpmio/poptIO.c:170
+msgid "Blake-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:172
+msgid "BlueMidnightWish-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:174
+msgid "BlueMidnightWish-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:176
+msgid "BlueMidnightWish-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:178
+msgid "BlueMidnightWish-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:180
+msgid "Chi-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:182
+msgid "Chi-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:184
+msgid "Chi-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:186
+msgid "Chi-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:188
+msgid "CubeHash-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:190
+msgid "CubeHash-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:192
+msgid "CubeHash-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:194
+msgid "CubeHash-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:196
+msgid "Echo-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:198
+msgid "Echo-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:200
+msgid "Echo-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:202
+msgid "Echo-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:204
+msgid "EdonR-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:206
+msgid "EdonR-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:208
+msgid "EdonR-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:210
+msgid "EdonR-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:212
+msgid "Fugue-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:214
+msgid "Fugue-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:216
+msgid "Fugue-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:218
+msgid "Fugue-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:220
+msgid "Groestl-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:222
+msgid "Groestl-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:224
+msgid "Groestl-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:226
+msgid "Groestl-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:228
+msgid "Hamsi-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:230
+msgid "Hamsi-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:232
+msgid "Hamsi-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:234
+msgid "Hamsi-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:236
+msgid "JH-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:238
+msgid "JH-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:240
+msgid "JH-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:242
+msgid "JH-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:244
+msgid "Keccak-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:246
+msgid "Keccak-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:248
+msgid "Keccak-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:250
+msgid "Keccak-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:252
+msgid "Lane-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:254
+msgid "Lane-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:256
+msgid "Lane-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:258
+msgid "Lane-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:260
+msgid "Luffa-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:262
+msgid "Luffa-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:264
+msgid "Luffa-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:266
+msgid "Luffa-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:268
+msgid "MD6-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:270
+msgid "MD6-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:272
+msgid "MD6-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:274
+msgid "MD6-512digest"
+msgstr ""
+
+#: rpmio/poptIO.c:276
+msgid "Shabal-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:278
+msgid "Shabal-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:280
+msgid "Shabal-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:282
+msgid "Shabal-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:284
+msgid "SHAvite3-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:286
+msgid "SHAvite3-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:288
+msgid "SHAvite3-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:290
+msgid "SHAvite3-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:292
+msgid "SIMD-224 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:294
+msgid "SIMD-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:296
+msgid "SIMD-384 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:298
+msgid "SIMD-512 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:300
+msgid "TIB3-224 digest"
 msgstr ""
 
 #: rpmio/poptIO.c:302
-msgid "FTS_COMFOLLOW: follow command line symlinks"
+msgid "TIB3-256 digest"
 msgstr ""
 
 #: rpmio/poptIO.c:304
-msgid "FTS_LOGICAL: logical walk"
+msgid "TIB3-384 digest"
 msgstr ""
 
 #: rpmio/poptIO.c:306
-msgid "FTS_NOCHDIR: don't change directories"
+msgid "TIB3-512 digest"
 msgstr ""
 
 #: rpmio/poptIO.c:308
-msgid "FTS_NOSTAT: don't get stat info"
+msgid "SALSA-10 hash"
 msgstr ""
 
 #: rpmio/poptIO.c:310
-msgid "FTS_PHYSICAL: physical walk"
+msgid "SALSA-20 hash"
 msgstr ""
 
 #: rpmio/poptIO.c:312
-msgid "FTS_SEEDOT: return dot and dot-dot"
+msgid "RIPEMD-128 digest"
 msgstr ""
 
 #: rpmio/poptIO.c:314
-msgid "FTS_XDEV: don't cross devices"
+msgid "RIPEMD-160 digest"
 msgstr ""
 
 #: rpmio/poptIO.c:316
+msgid "RIPEMD-256 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:318
+msgid "RIPEMD-320 digest"
+msgstr ""
+
+#: rpmio/poptIO.c:320
+msgid "TIGER digest"
+msgstr ""
+
+#: rpmio/poptIO.c:322
+msgid "CRC-32 checksum"
+msgstr ""
+
+#: rpmio/poptIO.c:324
+msgid "CRC-64 checksum"
+msgstr ""
+
+#: rpmio/poptIO.c:326
+msgid "ADLER-32 checksum"
+msgstr ""
+
+#: rpmio/poptIO.c:328
+msgid "Lookup3 hash"
+msgstr ""
+
+#: rpmio/poptIO.c:330
+msgid "No hash algorithm"
+msgstr ""
+
+#: rpmio/poptIO.c:332
+msgid "All hash algorithm(s)"
+msgstr ""
+
+#: rpmio/poptIO.c:492
+msgid "FTS_COMFOLLOW: follow command line symlinks"
+msgstr ""
+
+#: rpmio/poptIO.c:494
+msgid "FTS_LOGICAL: logical walk"
+msgstr ""
+
+#: rpmio/poptIO.c:496
+msgid "FTS_NOCHDIR: don't change directories"
+msgstr ""
+
+#: rpmio/poptIO.c:498
+msgid "FTS_NOSTAT: don't get stat info"
+msgstr ""
+
+#: rpmio/poptIO.c:500
+msgid "FTS_PHYSICAL: physical walk"
+msgstr ""
+
+#: rpmio/poptIO.c:502
+msgid "FTS_SEEDOT: return dot and dot-dot"
+msgstr ""
+
+#: rpmio/poptIO.c:504
+msgid "FTS_XDEV: don't cross devices"
+msgstr ""
+
+#: rpmio/poptIO.c:506
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: rpmio/poptIO.c:356
+#: rpmio/poptIO.c:546
 msgid "Send stdout to CMD"
 msgstr ""
 
-#: rpmio/poptIO.c:357
+#: rpmio/poptIO.c:547
 msgid "CMD"
 msgstr ""
 
-#: rpmio/poptIO.c:359
+#: rpmio/poptIO.c:549
 msgid "Use ROOT as top level directory"
 msgstr ""
 
-#: rpmio/poptIO.c:360
+#: rpmio/poptIO.c:550 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr ""
 
-#: rpmio/poptIO.c:363
+#: rpmio/poptIO.c:553
 msgid "Provide less detailed output"
 msgstr ""
 
-#: rpmio/poptIO.c:365
+#: rpmio/poptIO.c:555
 msgid "Provide more detailed output"
 msgstr ""
 
-#: rpmio/poptIO.c:371
+#: rpmio/poptIO.c:561
 msgid "Disable use of libio(3) API"
 msgstr ""
 
-#: rpmio/poptIO.c:375
+#: rpmio/poptIO.c:565
 msgid "Select cryptography implementation"
 msgstr ""
 
-#: rpmio/poptIO.c:376
+#: rpmio/poptIO.c:566
 msgid "CRYPTO"
 msgstr ""
 
-#: rpmio/poptIO.c:379
+#: rpmio/poptIO.c:569
 msgid "Debug ar archives"
 msgstr ""
 
-#: rpmio/poptIO.c:381
+#: rpmio/poptIO.c:571
 msgid "Debug argv collections"
 msgstr ""
 
-#: rpmio/poptIO.c:383
+#: rpmio/poptIO.c:573
 msgid "Debug cpio archives"
 msgstr ""
 
-#: rpmio/poptIO.c:385
+#: rpmio/poptIO.c:575
+msgid "Debug digest contexts"
+msgstr ""
+
+#: rpmio/poptIO.c:577
 msgid "Debug WebDAV data stream"
 msgstr ""
 
-#: rpmio/poptIO.c:387
+#: rpmio/poptIO.c:579
 msgid "Debug FTP/HTTP data stream"
 msgstr ""
 
-#: rpmio/poptIO.c:389
+#: rpmio/poptIO.c:581
 msgid "Debug Fts(3) traverse"
 msgstr ""
 
-#: rpmio/poptIO.c:391
+#: rpmio/poptIO.c:583
+msgid "Debug hash tables"
+msgstr ""
+
+#: rpmio/poptIO.c:585
+msgid "Debug HTML parsing"
+msgstr ""
+
+#: rpmio/poptIO.c:587
 msgid "Debug I/O state machine"
 msgstr ""
 
-#: rpmio/poptIO.c:393
+#: rpmio/poptIO.c:589
 msgid "Debug miRE patterns"
 msgstr ""
 
-#: rpmio/poptIO.c:395
+#: rpmio/poptIO.c:591
+msgid "Debug PGP usage"
+msgstr ""
+
+#: rpmio/poptIO.c:593
+msgid "Debug Bloom filters"
+msgstr ""
+
+#: rpmio/poptIO.c:595
 msgid "Debug rpmio I/O"
 msgstr ""
 
-#: rpmio/poptIO.c:397
+#: rpmio/poptIO.c:597
+msgid "Debug rpmio I/O buffers"
+msgstr ""
+
+#: rpmio/poptIO.c:600
+msgid "Debug embedded Augeas interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:602
+msgid "Debug embedded CUDF parser"
+msgstr ""
+
+#: rpmio/poptIO.c:604
+msgid "Debug embedded FICL interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:606
+msgid "Debug embedded JavaScript interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:609
+msgid "Debug embedded Lua interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:612
 msgid "Debug rpmmg magic"
 msgstr ""
 
-#: rpmio/poptIO.c:399
+#: rpmio/poptIO.c:614
+msgid "Debug embedded Perl interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:616
+msgid "Debug embedded Python interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:618
+msgid "Debug embedded Ruby interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:620
 msgid "Debug rpmsq Signal Queue"
 msgstr ""
 
-#: rpmio/poptIO.c:401
+#: rpmio/poptIO.c:622
+msgid "Debug embedded SQUIRREL interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:624
+msgid "Debug semanage"
+msgstr ""
+
+#: rpmio/poptIO.c:626
+msgid "Debug sepol"
+msgstr ""
+
+#: rpmio/poptIO.c:628
+msgid "Debug selinux"
+msgstr ""
+
+#: rpmio/poptIO.c:630
+msgid "Debug embedded TCL interpreter"
+msgstr ""
+
+#: rpmio/poptIO.c:633
 msgid "Debug rpmzq Job Queuing"
 msgstr ""
 
-#: rpmio/poptIO.c:403
+#: rpmio/poptIO.c:636
 msgid "Debug xar archives"
 msgstr ""
 
-#: rpmio/poptIO.c:405
+#: rpmio/poptIO.c:638
 msgid "Debug tar archives"
 msgstr ""
 
-#: rpmio/poptIO.c:409
+#: rpmio/poptIO.c:642
 msgid "Debug URL cache handling"
 msgstr ""
 
-#: rpmio/rpmdav.c:1029
+#: rpmio/rpmaug.c:102
+msgid "Type check lenses"
+msgstr ""
+
+#: rpmio/rpmaug.c:104
+msgid "Backup modified files with suffix '.augsave'"
+msgstr ""
+
+#: rpmio/rpmaug.c:106
+msgid "Save modified files with suffix '.augnew'"
+msgstr ""
+
+#: rpmio/rpmaug.c:108
+msgid "Use ROOT as the root of the filesystem"
+msgstr ""
+
+#: rpmio/rpmaug.c:110
+msgid "Search DIR for modules (may be used more than once)"
+msgstr ""
+
+#: rpmio/rpmaug.c:110 tools/rpmrepo.c:1895 tools/rpmrepo.c:1915
+#: tools/rpmwget.c:1316
+msgid "DIR"
+msgstr ""
+
+#: rpmio/rpmaug.c:112
+msgid "Do not search default modules path"
+msgstr ""
+
+#: rpmio/rpmaug.c:114
+msgid "Do not load files into tree on startup"
+msgstr ""
+
+#: rpmio/rpmaug.c:116
+msgid "Do not autoload modules from the search path"
+msgstr ""
+
+#: rpmio/rpmaug.c:599
+msgid "List the direct children of PATH"
+msgstr ""
+
+#: rpmio/rpmaug.c:599 rpmio/rpmaug.c:607 rpmio/rpmaug.c:627 rpmio/rpmaug.c:630
+msgid "<PATH>"
+msgstr ""
+
+#: rpmio/rpmaug.c:602
+msgid ""
+"Find all paths that match the path expression PATH. If VALUE is given,\n"
+"        only the matching paths whose value equals VALUE are printed"
+msgstr ""
+
+#: rpmio/rpmaug.c:604
+msgid "<PATH> [<VALUE>]"
+msgstr ""
+
+#: rpmio/rpmaug.c:607
+msgid "Delete PATH and all its children from the tree"
+msgstr ""
+
+#: rpmio/rpmaug.c:610
+msgid ""
+"Move node SRC to DST. SRC must match exactly one node in the tree.\n"
+"        DST must either match exactly one node in the tree, or may not\n"
+"        exist yet. If DST exists already, it and all its descendants are\n"
+"        deleted. If DST does not exist yet, it and all its missing \n"
+"        ancestors are created."
+msgstr ""
+
+#: rpmio/rpmaug.c:615
+msgid "<SRC> <DST>"
+msgstr ""
+
+#: rpmio/rpmaug.c:618
+msgid ""
+"Associate VALUE with PATH. If PATH is not in the tree yet,\n"
+"        it and all its ancestors will be created. These new tree entries\n"
+"        will appear last amongst their siblings"
+msgstr ""
+
+#: rpmio/rpmaug.c:621
+msgid "<PATH> <VALUE>"
+msgstr ""
+
+#: rpmio/rpmaug.c:624
+msgid ""
+"Set the value for PATH to NULL. If PATH is not in the tree yet,\n"
+"        it and all its ancestors will be created. These new tree entries\n"
+"        will appear last amongst their siblings"
+msgstr ""
+
+#: rpmio/rpmaug.c:630
+msgid "Print the value associated with PATH"
+msgstr ""
+
+#: rpmio/rpmaug.c:633
+msgid ""
+"Print entries in the tree. If PATH is given, printing starts there,\n"
+"        otherwise the whole tree is printed"
+msgstr ""
+
+#: rpmio/rpmaug.c:635
+msgid "[<PATH>]"
+msgstr ""
+
+#: rpmio/rpmaug.c:638
+msgid ""
+"Insert a new node with label LABEL right before or after PATH into\n"
+"        the tree. WHERE must be either 'before' or 'after'."
+msgstr ""
+
+#: rpmio/rpmaug.c:640
+msgid "<LABEL> <WHERE> <PATH>"
+msgstr ""
+
+#: rpmio/rpmaug.c:643
+msgid ""
+"Save all pending changes to disk. For now, files are not overwritten.\n"
+"        Instead, new files with extension .augnew are created"
+msgstr ""
+
+#: rpmio/rpmaug.c:648
+msgid "Load files accordig to the transforms in /augeas/load."
+msgstr ""
+
+#: rpmio/rpmaug.c:651
+msgid ""
+"Define the variable NAME to the result of evalutating EXPR. The\n"
+"        variable can be used in path expressions as $NAME. Note that EXPR\n"
+"        is evaluated when the variable is defined, not when it is used."
+msgstr ""
+
+#: rpmio/rpmaug.c:654
+msgid "<NAME> <EXPR>"
+msgstr ""
+
+#: rpmio/rpmaug.c:657
+msgid ""
+"Define the variable NAME to the result of evalutating EXPR, which\n"
+"        must be a nodeset. If no node matching EXPR exists yet, one\n"
+"        is created and NAME will refer to it. If VALUE is given, this\n"
+"        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"
+"        node is created as if with 'clear EXPR' would and NAME refers\n"
+"        to that node."
+msgstr ""
+
+#: rpmio/rpmaug.c:663
+msgid "<NAME> <EXPR> [<VALUE>]"
+msgstr ""
+
+#: rpmio/rpmaug.c:666 rpmio/rpmaug.c:669
+msgid "Exit the program"
+msgstr ""
+
+#: rpmio/rpmaug.c:672 tools/spooktool.c:88
+msgid "Print this help text"
+msgstr ""
+
+#: rpmio/rpmdav.c:822
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:1031
+#: rpmio/rpmdav.c:824
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:1033
+#: rpmio/rpmdav.c:826
 msgid "Server Error"
 msgstr ""
 
-#: rpmio/rpmdav.c:1035
+#: rpmio/rpmdav.c:828
 msgid "Unknown Error"
 msgstr ""
 
-#: rpmio/rpmio.c:735
+#: rpmio/rpmio.c:745
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:758
+#: rpmio/rpmio.c:768
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:770
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:772
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:764
+#: rpmio/rpmio.c:774
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:776
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:768
+#: rpmio/rpmio.c:778
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:770
+#: rpmio/rpmio.c:780
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:772
+#: rpmio/rpmio.c:782
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:774
+#: rpmio/rpmio.c:784
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:776
+#: rpmio/rpmio.c:786
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:778
+#: rpmio/rpmio.c:788
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:782
+#: rpmio/rpmio.c:792
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:799
+#: rpmio/rpmio.c:809
 msgid "Malformed URL"
 msgstr ""
 
@@ -4090,54 +4596,79 @@ msgstr ""
 msgid "warning: "
 msgstr ""
 
-#: rpmio/rpmlua.c:581
+#: rpmio/rpmlua.c:648
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:597
+#: rpmio/rpmlua.c:664
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:602 rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:669 rpmio/rpmlua.c:688
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:616
+#: rpmio/rpmlua.c:683
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:833
+#: rpmio/rpmlua.c:901
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmmalloc.c:22
+#: rpmio/rpmmalloc.c:26
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/rpmmg.c:49
+#: rpmio/rpmmg.c:68
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmmg.c:55
+#: rpmio/rpmmg.c:74
 #, c-format
 msgid "magic_load(ms, %s) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmmg.c:77
+#: rpmio/rpmmg.c:123
 #, c-format
 msgid "magic_file(ms, %s) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmmg.c:102
+#: rpmio/rpmmg.c:153
 #, c-format
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
+msgstr ""
+
+#: rpmio/rpmrpc.c:1514
+#, c-format
+msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
+msgstr ""
+
+#: rpmio/rpmrpc.c:1527
+#, c-format
+msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
+msgstr ""
+
+#: rpmio/rpmrpc.c:1539
+#, c-format
+msgid "%s(%p[%u]) failed: %m\n"
+msgstr ""
+
+#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#, c-format
+msgid "%s(%p[%u],%d) failed: %m\n"
+msgstr ""
+
+#: rpmio/rpmrpc.c:1594
+#, c-format
+msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""
 
 #: rpmio/rpmuuid.c:34
@@ -4186,76 +4717,172 @@ msgstr ""
 msgid "UUID generator not available!\n"
 msgstr ""
 
-#: rpmio/url.c:134
+#: rpmio/url.c:89
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:154
+#: rpmio/url.c:109
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:192
+#: rpmio/url.c:194
 #, c-format
-msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgid "warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:287
+#: rpmio/url.c:290
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:316 rpmio/url.c:342
+#: rpmio/url.c:319 rpmio/url.c:345
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:533
+#: rpmio/url.c:513
 msgid "url port must be a number\n"
 msgstr ""
 
-#: tools/rpm2cpio.c:67
+#: tools/augtool.c:238
+msgid "Options:"
+msgstr ""
+
+#: tools/augtool.c:242 tools/cp.c:842 tools/cudftool.c:29
+#: tools/rpmdigest.c:892 tools/rpmgrep.c:1381 tools/rpmmtree.c:3598
+#: tools/rpmrepo.c:1936 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/spooktool.c:336
+msgid "Common options for all rpmio executables:"
+msgstr ""
+
+#: tools/chroot.c:45
+msgid "Set primary USER"
+msgstr ""
+
+#: tools/chroot.c:45 tools/rpmwget.c:1221 tools/rpmwget.c:1251
+#: tools/rpmwget.c:1266 tools/rpmwget.c:1327
+msgid "USER"
+msgstr ""
+
+#: tools/chroot.c:47
+msgid "Set primary GROUP"
+msgstr ""
+
+#: tools/chroot.c:47
+msgid "GROUP"
+msgstr ""
+
+#: tools/chroot.c:49
+msgid "Set primary GROUPS"
+msgstr ""
+
+#: tools/chroot.c:49
+msgid "GROUPS"
+msgstr ""
+
+#: tools/cp.c:796 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
+#: tools/rpmmtree.c:3529 tools/rpmrepo.c:1849 tools/rpmwget.c:1098
+#: tools/semodule.c:83 tools/spooktool.c:287
+#, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr ""
+
+#: tools/cp.c:811
+msgid "Follow command-line symbolic links"
+msgstr ""
+
+#: tools/cp.c:813
+msgid "Always follow symbolic links"
+msgstr ""
+
+#: tools/cp.c:815
+msgid "Never follow symbolic links"
+msgstr ""
+
+#: tools/cp.c:817
+msgid "Copy directories recursively"
+msgstr ""
+
+#: tools/cp.c:819
+msgid "Archive mode (same as -RpP)"
+msgstr ""
+
+#: tools/cp.c:821
+msgid "Unlink and retry if 1st open fails"
+msgstr ""
+
+#: tools/cp.c:823
+msgid "Prompt before overwriting a file"
+msgstr ""
+
+#: tools/cp.c:825
+msgid "Link files instead of copying"
+msgstr ""
+
+#: tools/cp.c:827
+msgid "Do not overwrite an existing file"
+msgstr ""
+
+#: tools/cp.c:829
+msgid "Preserve mode/ownership/timestamps"
+msgstr ""
+
+#: tools/cp.c:831
+msgid "Stay on thgis file system"
+msgstr ""
+
+#: tools/cp.c:835 tools/rpmmtree.c:3592 tools/rpmrepo.c:1922
+msgid "Fts(3) traversal options:"
+msgstr ""
+
+#: tools/cp.c:838 tools/rpmdigest.c:889 tools/rpmmtree.c:3595
+#: tools/rpmrepo.c:1933
+msgid "Available digests:"
+msgstr ""
+
+#: tools/rpm2cpio.c:68
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
-#: tools/rpm2cpio.c:72
+#: tools/rpm2cpio.c:73
 #, c-format
 msgid "error reading header from package\n"
 msgstr ""
 
-#: tools/rpm2cpio.c:102
+#: tools/rpm2cpio.c:103
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: tools/rpmcache.c:528
+#: tools/rpmcache.c:530
 msgid "don't verify header+payload signature"
 msgstr ""
 
-#: tools/rpmcache.c:531
+#: tools/rpmcache.c:533
 msgid "update cache database"
 msgstr ""
 
-#: tools/rpmcache.c:533
+#: tools/rpmcache.c:535
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:536
+#: tools/rpmcache.c:538
 msgid "File tree walk options:"
 msgstr ""
 
-#: tools/rpmcache.c:540
+#: tools/rpmcache.c:542
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
-#: tools/rpmcache.c:572
+#: tools/rpmcache.c:574
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:615
+#: tools/rpmcache.c:617
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr ""
@@ -4365,388 +4992,375 @@ msgstr ""
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 
-#: tools/rpmdigest.c:161 tools/rpmgrep.c:1060 tools/rpmgrep.c:1195
+#: tools/rpmdigest.c:164 tools/rpmgrep.c:1041 tools/rpmgrep.c:1176
 #, c-format
 msgid "%s: Failed to open %s: %s\n"
 msgstr ""
 
-#: tools/rpmdigest.c:205
+#: tools/rpmdigest.c:208
 #, c-format
 msgid "%s: %s line %u: No file path found.\n"
 msgstr ""
 
-#: tools/rpmdigest.c:216
+#: tools/rpmdigest.c:219
 #, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
 msgstr ""
 
-#: tools/rpmdigest.c:308
+#: tools/rpmdigest.c:311 tools/rpmwget.c:936
 #, c-format
 msgid "%s: Failed to open %s\n"
 msgstr ""
 
-#: tools/rpmdigest.c:323
+#: tools/rpmdigest.c:326
 #, c-format
 msgid "%s: %s: Manifest needs \"algo=digest\" as last line\n"
 msgstr ""
 
-#: tools/rpmdigest.c:333
+#: tools/rpmdigest.c:336
 #, c-format
 msgid "%s: %s: Manifest is empty\n"
 msgstr ""
 
-#: tools/rpmdigest.c:341
+#: tools/rpmdigest.c:344
 #, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
 msgstr ""
 
-#: tools/rpmdigest.c:356
+#: tools/rpmdigest.c:362
 #, c-format
 msgid "%s: %s: Manifest digest check: Expected(%s) != (%s)\n"
 msgstr ""
 
-#: tools/rpmdigest.c:390
+#: tools/rpmdigest.c:396
 #, c-format
 msgid "%s: %s line %u: Malformed digest field.\n"
 msgstr ""
 
-#: tools/rpmdigest.c:399
+#: tools/rpmdigest.c:405
 #, c-format
 msgid "%s: %s line %u: Malformed mtime field.\n"
 msgstr ""
 
-#: tools/rpmdigest.c:408
+#: tools/rpmdigest.c:414
 #, c-format
 msgid "%s: %s line %u: Malformed size field.\n"
 msgstr ""
 
-#: tools/rpmdigest.c:415
+#: tools/rpmdigest.c:421
 #, c-format
 msgid "%s: %s line %u: No file path.\n"
 msgstr ""
 
-#: tools/rpmdigest.c:822 tools/rpmgrep.c:1324 tools/rpmmtree.c:3568
-#: tools/rpmrepo.c:1965
-#, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr ""
-
-#: tools/rpmdigest.c:841
+#: tools/rpmdigest.c:851
 msgid "Print 0install manifest"
 msgstr ""
 
-#: tools/rpmdigest.c:844
+#: tools/rpmdigest.c:854
 msgid "Read in binary mode"
 msgstr ""
 
-#: tools/rpmdigest.c:848 tools/rpmdigest.c:852
+#: tools/rpmdigest.c:858 tools/rpmdigest.c:862
 msgid "Read digests from MANIFEST file and verify (may be used more than once)"
 msgstr ""
 
-#: tools/rpmdigest.c:849 tools/rpmdigest.c:853
+#: tools/rpmdigest.c:859 tools/rpmdigest.c:863
 msgid "MANIFEST"
 msgstr ""
 
-#: tools/rpmdigest.c:856 tools/rpmmtree.c:3592
+#: tools/rpmdigest.c:866 tools/rpmmtree.c:3553
 msgid "Print file tree specification to stdout"
 msgstr ""
 
-#: tools/rpmdigest.c:858 tools/rpmmtree.c:3594
+#: tools/rpmdigest.c:868 tools/rpmmtree.c:3555
 msgid "Directories only"
 msgstr ""
 
-#: tools/rpmdigest.c:861
+#: tools/rpmdigest.c:871
 msgid "read in text mode (default)"
 msgstr ""
 
-#: tools/rpmdigest.c:865
+#: tools/rpmdigest.c:874
+msgid "generate HMAC's instead"
+msgstr ""
+
+#: tools/rpmdigest.c:878
 msgid "The following two options are useful only when verifying digests:"
 msgstr ""
 
-#: tools/rpmdigest.c:871
+#: tools/rpmdigest.c:884
 msgid "no output when verifying"
 msgstr ""
 
-#: tools/rpmdigest.c:873
+#: tools/rpmdigest.c:886
 msgid "warn about improperly formatted checksum lines"
 msgstr ""
 
-#: tools/rpmdigest.c:876 tools/rpmmtree.c:3639 tools/rpmrepo.c:2064
-msgid "Available digests:"
-msgstr ""
-
-#: tools/rpmdigest.c:879 tools/rpmgrep.c:1443 tools/rpmmtree.c:3642
-#: tools/rpmrepo.c:2067
-msgid "Common options for all rpmio executables:"
-msgstr ""
-
-#: tools/rpmdigest.c:886
+#: tools/rpmdigest.c:898
 msgid ""
 "When checking, the input should be a former output of this program.  The\n"
 "default mode is to print a line with digest, a character indicating type\n"
 "(`*' for binary, ` ' for text), and name for each FILE.\n"
 msgstr ""
 
-#: tools/rpmgrep.c:601
+#: tools/rpmgrep.c:582
 #, c-format
 msgid "%s: pcre_exec() error %d while matching "
 msgstr ""
 
-#: tools/rpmgrep.c:602
+#: tools/rpmgrep.c:583
 #, c-format
 msgid "pattern number %d to "
 msgstr ""
 
-#: tools/rpmgrep.c:603
+#: tools/rpmgrep.c:584
 #, c-format
 msgid "this line:\n"
 msgstr ""
 
-#: tools/rpmgrep.c:611
+#: tools/rpmgrep.c:592
 #, c-format
 msgid "%s: error %d means that a resource limit was exceeded\n"
 msgstr ""
 
-#: tools/rpmgrep.c:614
+#: tools/rpmgrep.c:595
 #, c-format
 msgid "%s: check your regex for nested unlimited loops\n"
 msgstr ""
 
-#: tools/rpmgrep.c:619
+#: tools/rpmgrep.c:600
 #, c-format
 msgid "%s: too many errors - abandoned\n"
 msgstr ""
 
-#: tools/rpmgrep.c:991
+#: tools/rpmgrep.c:972
 #, c-format
 msgid "%s: Failed to open directory %s: %s\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1101
+#: tools/rpmgrep.c:1082
 #, c-format
 msgid "%s: Too many patterns (max %d)\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1126
+#: tools/rpmgrep.c:1107
 #, c-format
 msgid "%s: Error in"
 msgstr ""
 
-#: tools/rpmgrep.c:1128
+#: tools/rpmgrep.c:1109
 #, c-format
 msgid " command-line %d"
 msgstr ""
 
-#: tools/rpmgrep.c:1130
+#: tools/rpmgrep.c:1111
 #, c-format
 msgid " file:line %s:%d"
 msgstr ""
 
-#: tools/rpmgrep.c:1131
+#: tools/rpmgrep.c:1112
 #, c-format
 msgid " regex at offset %d: %s\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1273
+#: tools/rpmgrep.c:1231
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1283
+#: tools/rpmgrep.c:1241
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1300
+#: tools/rpmgrep.c:1258
 #, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1316
+#: tools/rpmgrep.c:1274
 #, c-format
 msgid "%s %s (PCRE version %s)\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1319
+#: tools/rpmgrep.c:1277
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1342
+#: tools/rpmgrep.c:1300
 msgid "set number of following context lines"
 msgstr ""
 
-#: tools/rpmgrep.c:1342 tools/rpmgrep.c:1344 tools/rpmgrep.c:1346
+#: tools/rpmgrep.c:1300 tools/rpmgrep.c:1302 tools/rpmgrep.c:1304
 msgid "=number"
 msgstr ""
 
-#: tools/rpmgrep.c:1344
+#: tools/rpmgrep.c:1302
 msgid "set number of prior context lines"
 msgstr ""
 
-#: tools/rpmgrep.c:1346
+#: tools/rpmgrep.c:1304
 msgid "set number of context lines, before & after"
 msgstr ""
 
-#: tools/rpmgrep.c:1348
+#: tools/rpmgrep.c:1306
 msgid "print only a count of matching lines per FILE"
 msgstr ""
 
-#: tools/rpmgrep.c:1350
+#: tools/rpmgrep.c:1308
 msgid "matched text color option (auto|always|never)"
 msgstr ""
 
-#: tools/rpmgrep.c:1350 tools/rpmgrep.c:1352
+#: tools/rpmgrep.c:1308 tools/rpmgrep.c:1310
 msgid "=option"
 msgstr ""
 
-#: tools/rpmgrep.c:1352
+#: tools/rpmgrep.c:1310
 msgid "matched text colour option (auto|always|never)"
 msgstr ""
 
-#: tools/rpmgrep.c:1355
+#: tools/rpmgrep.c:1313
 msgid "device, FIFO, or socket action (read|skip)"
 msgstr ""
 
-#: tools/rpmgrep.c:1355 tools/rpmgrep.c:1357
+#: tools/rpmgrep.c:1313 tools/rpmgrep.c:1315
 msgid "=action"
 msgstr ""
 
-#: tools/rpmgrep.c:1357
+#: tools/rpmgrep.c:1315
 msgid "directory action (read|skip|recurse)"
 msgstr ""
 
-#: tools/rpmgrep.c:1360 tools/rpmgrep.c:1363
+#: tools/rpmgrep.c:1317
 msgid "specify pattern (may be used more than once)"
 msgstr ""
 
-#: tools/rpmgrep.c:1360 tools/rpmgrep.c:1363 tools/rpmgrep.c:1436
-#: tools/rpmgrep.c:1438
+#: tools/rpmgrep.c:1317 tools/rpmgrep.c:1374 tools/rpmgrep.c:1376
 msgid "(p)"
 msgstr ""
 
-#: tools/rpmgrep.c:1366
+#: tools/rpmgrep.c:1319
 msgid "patterns are sets of newline-separated strings"
 msgstr ""
 
-#: tools/rpmgrep.c:1369 tools/rpmgrep.c:1373
+#: tools/rpmgrep.c:1321
 msgid "read patterns from file (may be used more than once)"
 msgstr ""
 
-#: tools/rpmgrep.c:1370 tools/rpmgrep.c:1374
+#: tools/rpmgrep.c:1322
 msgid "=path"
 msgstr ""
 
-#: tools/rpmgrep.c:1377
+#: tools/rpmgrep.c:1324
 msgid "output file offsets, not text"
 msgstr ""
 
-#: tools/rpmgrep.c:1379
+#: tools/rpmgrep.c:1326
 msgid "force the prefixing filename on output"
 msgstr ""
 
-#: tools/rpmgrep.c:1381
+#: tools/rpmgrep.c:1328
 msgid "suppress the prefixing filename on output"
 msgstr ""
 
-#: tools/rpmgrep.c:1383
+#: tools/rpmgrep.c:1330
 msgid "ignore case distinctions"
 msgstr ""
 
-#: tools/rpmgrep.c:1385
+#: tools/rpmgrep.c:1332
 msgid "print only FILE names containing matches"
 msgstr ""
 
-#: tools/rpmgrep.c:1387
+#: tools/rpmgrep.c:1334
 msgid "print only FILE names not containing matches"
 msgstr ""
 
-#: tools/rpmgrep.c:1389
+#: tools/rpmgrep.c:1336
 msgid "set name for standard input"
 msgstr ""
 
-#: tools/rpmgrep.c:1389
+#: tools/rpmgrep.c:1336
 msgid "=name"
 msgstr ""
 
-#: tools/rpmgrep.c:1391
+#: tools/rpmgrep.c:1338
 msgid "output line numbers and offsets, not text"
 msgstr ""
 
-#: tools/rpmgrep.c:1394
+#: tools/rpmgrep.c:1341
 msgid "use the named locale"
 msgstr ""
 
-#: tools/rpmgrep.c:1394
+#: tools/rpmgrep.c:1341
 msgid "=locale"
 msgstr ""
 
-#: tools/rpmgrep.c:1396
+#: tools/rpmgrep.c:1343
 msgid "run in multiline mode"
 msgstr ""
 
-#: tools/rpmgrep.c:1398
+#: tools/rpmgrep.c:1345
 msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
 msgstr ""
 
-#: tools/rpmgrep.c:1398
+#: tools/rpmgrep.c:1345
 msgid "=type"
 msgstr ""
 
-#: tools/rpmgrep.c:1400
+#: tools/rpmgrep.c:1347
 msgid "print line number with output lines"
 msgstr ""
 
-#: tools/rpmgrep.c:1402
+#: tools/rpmgrep.c:1349
 msgid "show only the part of the line that matched"
 msgstr ""
 
-#: tools/rpmgrep.c:1405
+#: tools/rpmgrep.c:1352
 msgid "suppress output, just set return code"
 msgstr ""
 
-#: tools/rpmgrep.c:1407
+#: tools/rpmgrep.c:1354
 msgid "recursively scan sub-directories"
 msgstr ""
 
-#: tools/rpmgrep.c:1410 tools/rpmgrep.c:1417
+#: tools/rpmgrep.c:1356
 msgid "exclude matching files when recursing (may be used more than once)"
 msgstr ""
 
-#: tools/rpmgrep.c:1411 tools/rpmgrep.c:1414 tools/rpmgrep.c:1418
-#: tools/rpmgrep.c:1421
+#: tools/rpmgrep.c:1357 tools/rpmgrep.c:1360
 msgid "=pattern"
 msgstr ""
 
-#: tools/rpmgrep.c:1413 tools/rpmgrep.c:1420
+#: tools/rpmgrep.c:1359
 msgid "include matching files when recursing (may be used more than once)"
 msgstr ""
 
-#: tools/rpmgrep.c:1424 tools/rpmgrep.c:1426
+#: tools/rpmgrep.c:1362 tools/rpmgrep.c:1364
 msgid "suppress error messages"
 msgstr ""
 
-#: tools/rpmgrep.c:1428
+#: tools/rpmgrep.c:1366
 msgid "use UTF-8 mode"
 msgstr ""
 
-#: tools/rpmgrep.c:1431
+#: tools/rpmgrep.c:1369
 msgid "print version information and exit"
 msgstr ""
 
-#: tools/rpmgrep.c:1434
+#: tools/rpmgrep.c:1372
 msgid "select non-matching lines"
 msgstr ""
 
-#: tools/rpmgrep.c:1436
+#: tools/rpmgrep.c:1374
 msgid "force patterns to match only as words"
 msgstr ""
 
-#: tools/rpmgrep.c:1438
+#: tools/rpmgrep.c:1376
 msgid "force patterns to match only whole lines"
 msgstr ""
 
-#: tools/rpmgrep.c:1449
+#: tools/rpmgrep.c:1387
 msgid ""
 "Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
 "\n"
@@ -4758,7 +5372,7 @@ msgid ""
 "Example: rpmgrep -i 'hello.*world' menu.h main.c"
 msgstr ""
 
-#: tools/rpmgrep.c:1459
+#: tools/rpmgrep.c:1397
 msgid ""
 "  When reading patterns from a file instead of using a command line option,\n"
 "  trailing white space is removed and blank lines are ignored.\n"
@@ -4767,563 +5381,1367 @@ msgid ""
 "h.\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1526
+#: tools/rpmgrep.c:1464
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1546
+#: tools/rpmgrep.c:1484
 #, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1608
+#: tools/rpmgrep.c:1543
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
 msgstr ""
 
-#: tools/rpmgrep.c:1620
+#: tools/rpmgrep.c:1555
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:359
+#: tools/rpmkey.c:1210
+msgid "Show process keyrings"
+msgstr ""
+
+#: tools/rpmkey.c:1212 tools/rpmkey.c:1214
+msgid "Add a key to a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1212
+msgid "<type> <desc> <data> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1214
+msgid "<type> <desc> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1216 tools/rpmkey.c:1218 tools/rpmkey.c:1220
+msgid "Request a key"
+msgstr ""
+
+#: tools/rpmkey.c:1216 tools/rpmkey.c:1220
+msgid "<type> <desc> [<dest_keyring>]"
+msgstr ""
+
+#: tools/rpmkey.c:1218
+msgid "<type> <desc> <info> [<dest_keyring>]"
+msgstr ""
+
+#: tools/rpmkey.c:1222 tools/rpmkey.c:1224
+msgid "Update a key"
+msgstr ""
+
+#: tools/rpmkey.c:1222
+msgid "<key> <data>"
+msgstr ""
+
+#: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
+#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3563
+#: tools/rpmmtree.c:3565
+msgid "<key>"
+msgstr ""
+
+#: tools/rpmkey.c:1226
+msgid "Create a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1226
+msgid "<name> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1228
+msgid "Revoke a key"
+msgstr ""
+
+#: tools/rpmkey.c:1230
+msgid "Clear a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1230 tools/rpmkey.c:1244 tools/rpmkey.c:1246
+#: tools/rpmkey.c:1248
+msgid "<keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1232
+msgid "Link a key to a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1232 tools/rpmkey.c:1234 tools/rpmkey.c:1262
+msgid "<key> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1234
+msgid "Unlink a key from a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1236
+msgid "Search a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1236
+msgid "<keyring> <type> <desc> [<dest_keyring>]"
+msgstr ""
+
+#: tools/rpmkey.c:1238 tools/rpmkey.c:1240 tools/rpmkey.c:1242
+msgid "Read a key"
+msgstr ""
+
+#: tools/rpmkey.c:1244 tools/rpmkey.c:1246
+msgid "List a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1248 tools/rpmkey.c:1250
+msgid "Describe a key"
+msgstr ""
+
+#: tools/rpmkey.c:1250
+msgid "<keyring> [sep]"
+msgstr ""
+
+#: tools/rpmkey.c:1252 tools/rpmkey.c:1254
+msgid "Change the access controls on a key"
+msgstr ""
+
+#: tools/rpmkey.c:1252
+msgid "<key> <uid>"
+msgstr ""
+
+#: tools/rpmkey.c:1254
+msgid "<key> <gid>"
+msgstr ""
+
+#: tools/rpmkey.c:1256
+msgid "Set the permissions mask on a key"
+msgstr ""
+
+#: tools/rpmkey.c:1256
+msgid "<key> <mask>"
+msgstr ""
+
+#: tools/rpmkey.c:1258
+msgid "Start a new session with fresh keyrings"
+msgstr ""
+
+#: tools/rpmkey.c:1258
+msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+msgstr ""
+
+#: tools/rpmkey.c:1260 tools/rpmkey.c:1262 tools/rpmkey.c:1264
+msgid "Instantiate a key"
+msgstr ""
+
+#: tools/rpmkey.c:1260
+msgid "<key> <data> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1264
+msgid "<key> <timeout> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1266
+msgid "Set the expiry time on a key"
+msgstr ""
+
+#: tools/rpmkey.c:1266
+msgid "<key> <timeout>"
+msgstr ""
+
+#: tools/rpmmtree.c:320
 #, c-format
 msgid "%s: failed at line %d of the specification\n"
 msgstr ""
 
-#: tools/rpmmtree.c:1519 tools/rpmmtree.c:1708
+#: tools/rpmmtree.c:1480 tools/rpmmtree.c:1669
 #, c-format
 msgid "%s: filename (%s) encoded incorrectly\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2075
+#: tools/rpmmtree.c:2036
 #, c-format
 msgid "%s changed\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2155
+#: tools/rpmmtree.c:2116
 #, c-format
 msgid "\ttype expected %s found %s)\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2165 tools/rpmmtree.c:2178
+#: tools/rpmmtree.c:2126 tools/rpmmtree.c:2139
 #, c-format
 msgid "%s%s expected %lu found %lu"
 msgstr ""
 
-#: tools/rpmmtree.c:2169 tools/rpmmtree.c:2182 tools/rpmmtree.c:2209
-#: tools/rpmmtree.c:2266
+#: tools/rpmmtree.c:2130 tools/rpmmtree.c:2143 tools/rpmmtree.c:2170
+#: tools/rpmmtree.c:2231
 #, c-format
 msgid " not modified: %s)\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2171 tools/rpmmtree.c:2184 tools/rpmmtree.c:2211
+#: tools/rpmmtree.c:2132 tools/rpmmtree.c:2145 tools/rpmmtree.c:2172
 #, c-format
 msgid " modified)\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2205
+#: tools/rpmmtree.c:2166
 #, c-format
 msgid "%s%s expected %#o found %#o"
 msgstr ""
 
-#: tools/rpmmtree.c:2222
+#: tools/rpmmtree.c:2183
 #, c-format
 msgid "%s%s expected %lu found %lu)\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2229
+#: tools/rpmmtree.c:2190
 #, c-format
 msgid "%s%s expected %llu found %llu\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2261
+#: tools/rpmmtree.c:2226
 #, c-format
 msgid "%s%s expected %.24s "
 msgstr ""
 
-#: tools/rpmmtree.c:2262
+#: tools/rpmmtree.c:2227
 #, c-format
 msgid "found %.24s"
 msgstr ""
 
-#: tools/rpmmtree.c:2268
+#: tools/rpmmtree.c:2233
 #, c-format
 msgid " modified\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2311
+#: tools/rpmmtree.c:2276
 #, c-format
 msgid "%s%s expected %lu found %lu\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2329 tools/rpmmtree.c:2349
+#: tools/rpmmtree.c:2294 tools/rpmmtree.c:2314
 #, c-format
 msgid "%s%s expected %s found %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2358
+#: tools/rpmmtree.c:2323
 #, c-format
 msgid "%s%s expected \"%s\""
 msgstr ""
 
-#: tools/rpmmtree.c:2362
+#: tools/rpmmtree.c:2327
 #, c-format
 msgid " found \"%s\""
 msgstr ""
 
-#: tools/rpmmtree.c:2484 tools/rpmmtree.c:2591
+#: tools/rpmmtree.c:2449 tools/rpmmtree.c:2556
 #, c-format
 msgid "%s: Could not get uname for uid=%lu\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2497 tools/rpmmtree.c:2606
+#: tools/rpmmtree.c:2462 tools/rpmmtree.c:2571
 #, c-format
 msgid "%s: Could not get gname for gid=%lu\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2645 tools/rpmmtree.c:2670
+#: tools/rpmmtree.c:2610 tools/rpmmtree.c:2635
 #, c-format
 msgid "%s: %s: cksum: %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:2790
+#: tools/rpmmtree.c:2755
 #, c-format
 msgid "%s: open of %s failed: %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:3290
+#: tools/rpmmtree.c:3257
 #, c-format
 msgid "missing: %s"
 msgstr ""
 
-#: tools/rpmmtree.c:3301
+#: tools/rpmmtree.c:3268
 #, c-format
 msgid " (%s not created: user not specified)"
 msgstr ""
 
-#: tools/rpmmtree.c:3303
+#: tools/rpmmtree.c:3270
 #, c-format
 msgid " (%s not created: group not specified))"
 msgstr ""
 
-#: tools/rpmmtree.c:3306
+#: tools/rpmmtree.c:3273
 #, c-format
 msgid " (%s not created: %s)\n"
 msgstr ""
 
-#: tools/rpmmtree.c:3309
+#: tools/rpmmtree.c:3276
 #, c-format
 msgid " (%s created)\n"
 msgstr ""
 
-#: tools/rpmmtree.c:3322 tools/rpmmtree.c:3358
+#: tools/rpmmtree.c:3289 tools/rpmmtree.c:3325
 #, c-format
 msgid "%s: %s not modified: %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:3327
+#: tools/rpmmtree.c:3294
 #, c-format
 msgid " (%s not created: mode not specified)"
 msgstr ""
 
-#: tools/rpmmtree.c:3329
+#: tools/rpmmtree.c:3296
 #, c-format
 msgid " (%s not created: %s)"
 msgstr ""
 
-#: tools/rpmmtree.c:3332
+#: tools/rpmmtree.c:3299
 #, c-format
 msgid " (%s created)"
 msgstr ""
 
-#: tools/rpmmtree.c:3363
+#: tools/rpmmtree.c:3330
 #, c-format
 msgid "%s: permissions not set: %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:3368
+#: tools/rpmmtree.c:3335
 #, c-format
 msgid "%s: file flags not set: %s\n"
 msgstr ""
 
-#: tools/rpmmtree.c:3480
+#: tools/rpmmtree.c:3447
 #, c-format
 msgid ", not removed: %s"
 msgstr ""
 
-#: tools/rpmmtree.c:3482
+#: tools/rpmmtree.c:3449
 #, c-format
 msgid ", removed"
 msgstr ""
 
-#: tools/rpmmtree.c:3584
+#: tools/rpmmtree.c:3545
 msgid "Follow symlinks"
 msgstr ""
 
-#: tools/rpmmtree.c:3587
+#: tools/rpmmtree.c:3548
 msgid "Don't follow symlinks"
 msgstr ""
 
-#: tools/rpmmtree.c:3589
+#: tools/rpmmtree.c:3550
 msgid "Read fnmatch(3) exclude patterns from <file>"
 msgstr ""
 
-#: tools/rpmmtree.c:3589
+#: tools/rpmmtree.c:3550
 msgid "<file>"
 msgstr ""
 
-#: tools/rpmmtree.c:3596
+#: tools/rpmmtree.c:3557
 msgid "Don't complain about files not in the specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3598
+#: tools/rpmmtree.c:3559
 msgid "Read file tree <spec>"
 msgstr ""
 
-#: tools/rpmmtree.c:3600
+#: tools/rpmmtree.c:3561
 msgid "Indent sub-directories"
 msgstr ""
 
-#: tools/rpmmtree.c:3602
+#: tools/rpmmtree.c:3563
 msgid "Add <key> to specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3602 tools/rpmmtree.c:3604
-msgid "<key>"
-msgstr ""
-
-#: tools/rpmmtree.c:3604
+#: tools/rpmmtree.c:3565
 msgid "Use \"type\" keywords instead"
 msgstr ""
 
-#: tools/rpmmtree.c:3606
+#: tools/rpmmtree.c:3567
 msgid "Loose permissions check"
 msgstr ""
 
-#: tools/rpmmtree.c:3608
+#: tools/rpmmtree.c:3569
 msgid "Don't include sub-directory comments"
 msgstr ""
 
-#: tools/rpmmtree.c:3611 tools/rpmmtree.c:3614
+#: tools/rpmmtree.c:3571
 msgid "Use <path> rather than current directory"
 msgstr ""
 
-#: tools/rpmmtree.c:3618
+#: tools/rpmmtree.c:3574
 msgid "Quiet mode"
 msgstr ""
 
-#: tools/rpmmtree.c:3620
+#: tools/rpmmtree.c:3576
 msgid "Remove files not in specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3622
+#: tools/rpmmtree.c:3578
 msgid "Display crc for file(s) with <seed>"
 msgstr ""
 
-#: tools/rpmmtree.c:3622
+#: tools/rpmmtree.c:3578
 msgid "<seed>"
 msgstr ""
 
-#: tools/rpmmtree.c:3624
+#: tools/rpmmtree.c:3580
 msgid "Touch files iff timestamp differs"
 msgstr ""
 
-#: tools/rpmmtree.c:3626
+#: tools/rpmmtree.c:3582
 msgid "Update owner/group/permissions to match specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3628
+#: tools/rpmmtree.c:3584
 msgid "Same as -u, but ignore match status on exit"
 msgstr ""
 
-#: tools/rpmmtree.c:3630
+#: tools/rpmmtree.c:3586
 msgid "Treat missing uid/gid as warning"
 msgstr ""
 
-#: tools/rpmmtree.c:3633
+#: tools/rpmmtree.c:3589
 msgid "Don't cross mount points"
 msgstr ""
 
-#: tools/rpmmtree.c:3636 tools/rpmrepo.c:2053
-msgid "Fts(3) traversal options:"
-msgstr ""
-
-#: tools/rpmmtree.c:3671
+#: tools/rpmmtree.c:3627
 #, c-format
 msgid "(no controlling terminal) %s"
 msgstr ""
 
-#: tools/rpmmtree.c:3676
+#: tools/rpmmtree.c:3632
 #, c-format
 msgid "(no controlling terminal) #%d"
 msgstr ""
 
-#: tools/rpmmtree.c:3817 tools/rpmmtree.c:3832
+#: tools/rpmmtree.c:3773 tools/rpmmtree.c:3788
 #, c-format
 msgid "%s: %s checksum: %u\n"
 msgstr ""
 
-#: tools/rpmrepo.c:645
+#: tools/rpmrepo.c:646
 #, c-format
 msgid "Cannot create/verify %s: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:687
+#: tools/rpmrepo.c:688
 #, c-format
 msgid "Directory %s must exist"
 msgstr ""
 
-#: tools/rpmrepo.c:694
+#: tools/rpmrepo.c:695
 #, c-format
 msgid "Directory %s does not exist."
 msgstr ""
 
-#: tools/rpmrepo.c:698
+#: tools/rpmrepo.c:699
 #, c-format
 msgid "Directory %s must be writable."
 msgstr ""
 
-#: tools/rpmrepo.c:708
+#: tools/rpmrepo.c:709
 #, c-format
 msgid "Old data directory exists, please remove: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:724
+#: tools/rpmrepo.c:725
 #, c-format
 msgid "Path must be writable: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:744
+#: tools/rpmrepo.c:745
 #, c-format
 msgid "groupfile %s cannot be found."
 msgstr ""
 
-#: tools/rpmrepo.c:785
+#: tools/rpmrepo.c:786
 #, c-format
 msgid "Fts_open: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:853
+#: tools/rpmrepo.c:854
 #, c-format
 msgid "cannot get to file: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:880 tools/rpmrepo.c:947
+#: tools/rpmrepo.c:881 tools/rpmrepo.c:948
 #, c-format
 msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
 msgstr ""
 
-#: tools/rpmrepo.c:1006
+#: tools/rpmrepo.c:1007
 #, c-format
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr ""
 
-#: tools/rpmrepo.c:1050 tools/rpmrepo.c:1122
+#: tools/rpmrepo.c:1052 tools/rpmrepo.c:1124
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1233
+#: tools/rpmrepo.c:1235
 #, c-format
 msgid ""
 "\n"
 "Error %s: %s\n"
 msgstr ""
 
-#: tools/rpmrepo.c:1349
+#: tools/rpmrepo.c:1352
 #, c-format
 msgid "Saving %s metadata"
 msgstr ""
 
-#: tools/rpmrepo.c:1566
+#: tools/rpmrepo.c:1569
 msgid "Generating sqlite DBs"
 msgstr ""
 
-#: tools/rpmrepo.c:1593
+#: tools/rpmrepo.c:1596
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1659
+#: tools/rpmrepo.c:1662
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1693
+#: tools/rpmrepo.c:1696
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: tools/rpmrepo.c:1704
+#: tools/rpmrepo.c:1707
 #, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1709
+#: tools/rpmrepo.c:1712
 #, c-format
 msgid "Could not save temp file: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1736
+#: tools/rpmrepo.c:1739
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1744
+#: tools/rpmrepo.c:1747
 msgid "Error moving final metadata into place"
 msgstr ""
 
-#: tools/rpmrepo.c:1761 tools/rpmrepo.c:1793
+#: tools/rpmrepo.c:1764 tools/rpmrepo.c:1796
 #, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1803
+#: tools/rpmrepo.c:1806
 #, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1815
+#: tools/rpmrepo.c:1818
 #, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr ""
 
-#: tools/rpmrepo.c:1978
+#: tools/rpmrepo.c:1862
 msgid "don't compress"
 msgstr ""
 
-#: tools/rpmrepo.c:1980
+#: tools/rpmrepo.c:1864
 msgid "use gzip compression"
 msgstr ""
 
-#: tools/rpmrepo.c:1982
+#: tools/rpmrepo.c:1866
 msgid "use bzip2 compression"
 msgstr ""
 
-#: tools/rpmrepo.c:1984
+#: tools/rpmrepo.c:1868
 msgid "use lzma compression"
 msgstr ""
 
-#: tools/rpmrepo.c:1986
+#: tools/rpmrepo.c:1870
 msgid "use xz compression"
 msgstr ""
 
-#: tools/rpmrepo.c:1998
+#: tools/rpmrepo.c:1882
 msgid "debug repo handling"
 msgstr ""
 
-#: tools/rpmrepo.c:2001
+#: tools/rpmrepo.c:1885
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: tools/rpmrepo.c:2003
+#: tools/rpmrepo.c:1887
 msgid "output more debugging info."
 msgstr ""
 
-#: tools/rpmrepo.c:2005
+#: tools/rpmrepo.c:1889
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: tools/rpmrepo.c:2008 tools/rpmrepo.c:2011
+#: tools/rpmrepo.c:1891
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: tools/rpmrepo.c:2008 tools/rpmrepo.c:2011 tools/rpmrepo.c:2015
-#: tools/rpmrepo.c:2018
+#: tools/rpmrepo.c:1891 tools/rpmrepo.c:1893
 msgid "PATTERN"
 msgstr ""
 
-#: tools/rpmrepo.c:2015 tools/rpmrepo.c:2018
+#: tools/rpmrepo.c:1893
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: tools/rpmrepo.c:2021
+#: tools/rpmrepo.c:1895
 msgid "top level directory"
 msgstr ""
 
-#: tools/rpmrepo.c:2021 tools/rpmrepo.c:2046
-msgid "DIR"
-msgstr ""
-
-#: tools/rpmrepo.c:2023
+#: tools/rpmrepo.c:1897
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: tools/rpmrepo.c:2023
+#: tools/rpmrepo.c:1897
 msgid "BASEURL"
 msgstr ""
 
-#: tools/rpmrepo.c:2026
+#: tools/rpmrepo.c:1900
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: tools/rpmrepo.c:2026 tools/rpmrepo.c:2040 tools/rpmrepo.c:2043
+#: tools/rpmrepo.c:1900 tools/rpmrepo.c:1913 tools/rpmwget.c:1131
+#: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
+#: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
+#: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318 tools/rpmwget.c:1320 tools/semodule.c:116
+#: tools/semodule.c:118 tools/semodule.c:120 tools/spooktool.c:75
+#: tools/spooktool.c:77 tools/spooktool.c:79 tools/spooktool.c:320
+#: tools/spooktool.c:322 tools/spooktool.c:324
 msgid "FILE"
 msgstr ""
 
-#: tools/rpmrepo.c:2029
+#: tools/rpmrepo.c:1903
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: tools/rpmrepo.c:2031
+#: tools/rpmrepo.c:1905
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: tools/rpmrepo.c:2034
+#: tools/rpmrepo.c:1908
 msgid "create sqlite3 database files"
 msgstr ""
 
-#: tools/rpmrepo.c:2037
+#: tools/rpmrepo.c:1911
 msgid "generate split media"
 msgstr ""
 
-#: tools/rpmrepo.c:2040 tools/rpmrepo.c:2043
+#: tools/rpmrepo.c:1913
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: tools/rpmrepo.c:2046
+#: tools/rpmrepo.c:1915
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: tools/rpmrepo.c:2048
+#: tools/rpmrepo.c:1917
 msgid "ignore symlinks of packages"
 msgstr ""
 
-#: tools/rpmrepo.c:2050
+#: tools/rpmrepo.c:1919
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: tools/rpmrepo.c:2057
+#: tools/rpmrepo.c:1926
 msgid "print the version"
 msgstr ""
 
-#: tools/rpmrepo.c:2061
+#: tools/rpmrepo.c:1930
 msgid "Available compressions:"
 msgstr ""
 
-#: tools/rpmrepo.c:2139
+#: tools/rpmrepo.c:2008
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: tools/rpmrepo.c:2157 tools/rpmrepo.c:2209
+#: tools/rpmrepo.c:2026 tools/rpmrepo.c:2078
 #, c-format
 msgid "Realpath(%s): %s"
 msgstr ""
 
-#: tools/rpmrepo.c:2214
+#: tools/rpmrepo.c:2083
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: tools/rpmrepo.c:2234
+#: tools/rpmrepo.c:2103
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: tools/rpmrepo.c:2237
+#: tools/rpmrepo.c:2106
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: tools/rpmrepo.c:2269
+#: tools/rpmrepo.c:2138
 #, c-format
 msgid "repo is up to date\n"
+msgstr ""
+
+#: tools/rpmwget.c:723
+msgid "Spider mode enabled. Check if remote file exists.\n"
+msgstr ""
+
+#: tools/rpmwget.c:731
+msgid "Remote file exists.\n"
+msgstr ""
+
+#: tools/rpmwget.c:733
+msgid "Remote file does not exist -- broken link!!!\n"
+msgstr ""
+
+#: tools/rpmwget.c:794
+#, c-format
+msgid "Ouptut file \"%s\" exists, skipping retrieve.\n"
+msgstr ""
+
+#: tools/rpmwget.c:806
+#, c-format
+msgid "Input for file \"%s\" is not newer, skipping retrieve.\n"
+msgstr ""
+
+#: tools/rpmwget.c:860
+#, c-format
+msgid "--%s-- (%3.1f KB/s) - `%s' saved [%lu]\n"
+msgstr ""
+
+#: tools/rpmwget.c:908
+#, c-format
+msgid "Download quota of %lluK EXCEEDED!\n"
+msgstr ""
+
+#: tools/rpmwget.c:1109
+msgid "display the version of Wget and exit."
+msgstr ""
+
+#: tools/rpmwget.c:1112
+msgid "print this help."
+msgstr ""
+
+#: tools/rpmwget.c:1115
+msgid "go to background after startup."
+msgstr ""
+
+#: tools/rpmwget.c:1117
+msgid "execute a `.wgetrc'-style command."
+msgstr ""
+
+#: tools/rpmwget.c:1117
+msgid "COMMAND"
+msgstr ""
+
+#: tools/rpmwget.c:1131
+msgid "log messages to FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1133
+msgid "append log messages to FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1135
+msgid "print lots of debugging information."
+msgstr ""
+
+#: tools/rpmwget.c:1137
+msgid "quiet (no output)."
+msgstr ""
+
+#: tools/rpmwget.c:1139
+msgid "be verbose (this is the default)."
+msgstr ""
+
+#: tools/rpmwget.c:1141 tools/rpmwget.c:1143
+msgid "turn off verboseness, without being quiet."
+msgstr ""
+
+#: tools/rpmwget.c:1145
+msgid "download URLs found in FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1147
+msgid "treat input file as HTML."
+msgstr ""
+
+#: tools/rpmwget.c:1149
+msgid "prepends URL to relative links in -F -i file."
+msgstr ""
+
+#: tools/rpmwget.c:1149 tools/rpmwget.c:1270
+msgid "URL"
+msgstr ""
+
+#: tools/rpmwget.c:1161
+msgid "set number of retries to NUMBER (0 unlimits)."
+msgstr ""
+
+#: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
+#: tools/rpmwget.c:1348
+msgid "NUMBER"
+msgstr ""
+
+#: tools/rpmwget.c:1163
+msgid "retry even if connection is refused."
+msgstr ""
+
+#: tools/rpmwget.c:1165
+msgid "write documents to FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1167 tools/rpmwget.c:1169
+msgid "skip downloads that would download to existing files."
+msgstr ""
+
+#: tools/rpmwget.c:1171
+msgid "resume getting a partially-downloaded file."
+msgstr ""
+
+#: tools/rpmwget.c:1173
+msgid "select progress gauge type."
+msgstr ""
+
+#: tools/rpmwget.c:1173 tools/rpmwget.c:1308 tools/rpmwget.c:1312
+msgid "TYPE"
+msgstr ""
+
+#: tools/rpmwget.c:1175
+msgid "don't re-retrieve files unless newer than local."
+msgstr ""
+
+#: tools/rpmwget.c:1177
+msgid "print server response."
+msgstr ""
+
+#: tools/rpmwget.c:1179
+msgid "don't download anything."
+msgstr ""
+
+#: tools/rpmwget.c:1181
+msgid "set all timeout values to SECONDS."
+msgstr ""
+
+#: tools/rpmwget.c:1181 tools/rpmwget.c:1183 tools/rpmwget.c:1185
+#: tools/rpmwget.c:1187 tools/rpmwget.c:1189 tools/rpmwget.c:1192
+msgid "SECONDS"
+msgstr ""
+
+#: tools/rpmwget.c:1183
+msgid "set the DNS lookup timeout to SECS."
+msgstr ""
+
+#: tools/rpmwget.c:1185
+msgid "set the connect timeout to SECS."
+msgstr ""
+
+#: tools/rpmwget.c:1187
+msgid "set the read timeout to SECS."
+msgstr ""
+
+#: tools/rpmwget.c:1189
+msgid "wait SECONDS between retrievals."
+msgstr ""
+
+#: tools/rpmwget.c:1192
+msgid "wait 1..SECONDS between retries of a retrieval."
+msgstr ""
+
+#: tools/rpmwget.c:1195
+msgid "wait from 0...2*WAIT secs between retrievals."
+msgstr ""
+
+#: tools/rpmwget.c:1197
+msgid "explicitly turn off proxy."
+msgstr ""
+
+#: tools/rpmwget.c:1199
+msgid "set retrieval quota to NUMBER."
+msgstr ""
+
+#: tools/rpmwget.c:1203
+msgid "bind to ADDRESS (hostname or IP) on local host."
+msgstr ""
+
+#: tools/rpmwget.c:1203
+msgid "ADDRESS"
+msgstr ""
+
+#: tools/rpmwget.c:1206
+msgid "limit download rate to RATE."
+msgstr ""
+
+#: tools/rpmwget.c:1206
+msgid "RATE"
+msgstr ""
+
+#: tools/rpmwget.c:1209
+msgid "disable caching DNS lookups."
+msgstr ""
+
+#: tools/rpmwget.c:1211
+msgid "restrict chars in file names to ones OS allows."
+msgstr ""
+
+#: tools/rpmwget.c:1211
+msgid "OS"
+msgstr ""
+
+#: tools/rpmwget.c:1213
+msgid "ignore case when matching files/directories."
+msgstr ""
+
+#: tools/rpmwget.c:1215
+msgid "connect only to IPv4 addresses."
+msgstr ""
+
+#: tools/rpmwget.c:1217
+msgid "connect only to IPv6 addresses."
+msgstr ""
+
+#: tools/rpmwget.c:1219
+msgid ""
+"connect first to addresses of specified family, one of IPv6, IPv4, or none."
+msgstr ""
+
+#: tools/rpmwget.c:1219
+msgid "FAMILY"
+msgstr ""
+
+#: tools/rpmwget.c:1221
+msgid "set both ftp and http user to USER."
+msgstr ""
+
+#: tools/rpmwget.c:1223
+msgid "set both ftp and http password to PASS."
+msgstr ""
+
+#: tools/rpmwget.c:1223 tools/rpmwget.c:1253 tools/rpmwget.c:1268
+#: tools/rpmwget.c:1329
+msgid "PASS"
+msgstr ""
+
+#: tools/rpmwget.c:1230 tools/rpmwget.c:1232
+msgid "don't create directories."
+msgstr ""
+
+#: tools/rpmwget.c:1234
+msgid "force creation of directories."
+msgstr ""
+
+#: tools/rpmwget.c:1236 tools/rpmwget.c:1238
+msgid "don't create host directories."
+msgstr ""
+
+#: tools/rpmwget.c:1240
+msgid "use protocol name in directories."
+msgstr ""
+
+#: tools/rpmwget.c:1242
+msgid "save files to PREFIX/..."
+msgstr ""
+
+#: tools/rpmwget.c:1242
+msgid "PREFIX"
+msgstr ""
+
+#: tools/rpmwget.c:1244
+msgid "ignore NUMBER remote directory components."
+msgstr ""
+
+#: tools/rpmwget.c:1251
+msgid "set http user to USER."
+msgstr ""
+
+#: tools/rpmwget.c:1253
+msgid "set http password to PASS."
+msgstr ""
+
+#: tools/rpmwget.c:1255
+msgid "disallow server-cached data."
+msgstr ""
+
+#: tools/rpmwget.c:1257
+msgid "save HTML documents with `.html' extension."
+msgstr ""
+
+#: tools/rpmwget.c:1259
+msgid "ignore `Content-Length' header field."
+msgstr ""
+
+#: tools/rpmwget.c:1262
+msgid "insert STRING among the headers."
+msgstr ""
+
+#: tools/rpmwget.c:1262 tools/rpmwget.c:1286
+msgid "STRING"
+msgstr ""
+
+#: tools/rpmwget.c:1264
+msgid "maximum redirections allowed per page."
+msgstr ""
+
+#: tools/rpmwget.c:1264
+msgid "NUM"
+msgstr ""
+
+#: tools/rpmwget.c:1266
+msgid "set USER as proxy username."
+msgstr ""
+
+#: tools/rpmwget.c:1268
+msgid "set PASS as proxy password."
+msgstr ""
+
+#: tools/rpmwget.c:1270
+msgid "include `Referer: URL' header in HTTP request."
+msgstr ""
+
+#: tools/rpmwget.c:1272
+msgid "save the HTTP headers to file."
+msgstr ""
+
+#: tools/rpmwget.c:1274
+msgid "identify as AGENT instead of Wget/VERSION."
+msgstr ""
+
+#: tools/rpmwget.c:1274
+msgid "AGENT"
+msgstr ""
+
+#: tools/rpmwget.c:1276
+msgid "disable HTTP keep-alive (persistent connections)."
+msgstr ""
+
+#: tools/rpmwget.c:1278
+msgid "don't use cookies."
+msgstr ""
+
+#: tools/rpmwget.c:1280
+msgid "load cookies from FILE before session."
+msgstr ""
+
+#: tools/rpmwget.c:1282
+msgid "save cookies to FILE after session."
+msgstr ""
+
+#: tools/rpmwget.c:1284
+msgid "load and save session (non-permanent) cookies."
+msgstr ""
+
+#: tools/rpmwget.c:1286
+msgid "use the POST method; send STRING as the data."
+msgstr ""
+
+#: tools/rpmwget.c:1288
+msgid "use the POST method; send contents of FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1290 tools/rpmwget.c:1293
+msgid ""
+"honor the Content-Disposition header when choosing local file names "
+"(EXPERIMENTAL)."
+msgstr ""
+
+#: tools/rpmwget.c:1295
+msgid ""
+"Send Basic HTTP authentication information without first waiting for the "
+"server's challenge."
+msgstr ""
+
+#: tools/rpmwget.c:1302
+msgid "choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."
+msgstr ""
+
+#: tools/rpmwget.c:1302
+msgid "PR"
+msgstr ""
+
+#: tools/rpmwget.c:1304
+msgid "don't validate the server's certificate."
+msgstr ""
+
+#: tools/rpmwget.c:1306
+msgid "client certificate file."
+msgstr ""
+
+#: tools/rpmwget.c:1308
+msgid "client certificate type, PEM or DER."
+msgstr ""
+
+#: tools/rpmwget.c:1310
+msgid "private key file."
+msgstr ""
+
+#: tools/rpmwget.c:1312
+msgid "private key type, PEM or DER."
+msgstr ""
+
+#: tools/rpmwget.c:1314
+msgid "file with the bundle of CA's."
+msgstr ""
+
+#: tools/rpmwget.c:1316
+msgid "directory where hash list of CA's is stored."
+msgstr ""
+
+#: tools/rpmwget.c:1318
+msgid "file with random data for seeding the SSL PRNG."
+msgstr ""
+
+#: tools/rpmwget.c:1320
+msgid "file naming the EGD socket with random data."
+msgstr ""
+
+#: tools/rpmwget.c:1327
+msgid "set ftp user to USER."
+msgstr ""
+
+#: tools/rpmwget.c:1329
+msgid "set ftp password to PASS."
+msgstr ""
+
+#: tools/rpmwget.c:1331
+msgid "don't remove `.listing' files."
+msgstr ""
+
+#: tools/rpmwget.c:1333
+msgid "turn off FTP file name globbing."
+msgstr ""
+
+#: tools/rpmwget.c:1335
+msgid "disable the \"passive\" transfer mode."
+msgstr ""
+
+#: tools/rpmwget.c:1337
+msgid "when recursing, get linked-to files (not dir)."
+msgstr ""
+
+#: tools/rpmwget.c:1339
+msgid "preserve remote file permissions."
+msgstr ""
+
+#: tools/rpmwget.c:1346
+msgid "specify recursive download."
+msgstr ""
+
+#: tools/rpmwget.c:1348
+msgid "maximum recursion depth (inf or 0 for infinite)."
+msgstr ""
+
+#: tools/rpmwget.c:1350
+msgid "delete files locally after downloading them."
+msgstr ""
+
+#: tools/rpmwget.c:1352
+msgid "make links in downloaded HTML point to local files."
+msgstr ""
+
+#: tools/rpmwget.c:1354
+msgid "before converting file X, back up as X.orig."
+msgstr ""
+
+#: tools/rpmwget.c:1357
+msgid "shortcut for -N -r -l inf --no-remove-listing."
+msgstr ""
+
+#: tools/rpmwget.c:1359
+msgid "get all images, etc. needed to display HTML page."
+msgstr ""
+
+#: tools/rpmwget.c:1361
+msgid "turn on strict (SGML) handling of HTML comments."
+msgstr ""
+
+#: tools/rpmwget.c:1368
+msgid "comma-separated list of accepted extensions."
+msgstr ""
+
+#: tools/rpmwget.c:1368 tools/rpmwget.c:1370 tools/rpmwget.c:1372
+#: tools/rpmwget.c:1374 tools/rpmwget.c:1378 tools/rpmwget.c:1380
+#: tools/rpmwget.c:1386 tools/rpmwget.c:1388
+msgid "LIST"
+msgstr ""
+
+#: tools/rpmwget.c:1370
+msgid "comma-separated list of rejected extensions."
+msgstr ""
+
+#: tools/rpmwget.c:1372
+msgid "comma-separated list of accepted domains."
+msgstr ""
+
+#: tools/rpmwget.c:1374
+msgid "comma-separated list of rejected domains."
+msgstr ""
+
+#: tools/rpmwget.c:1376
+msgid "follow FTP links from HTML documents."
+msgstr ""
+
+#: tools/rpmwget.c:1378
+msgid "comma-separated list of followed HTML tags."
+msgstr ""
+
+#: tools/rpmwget.c:1380
+msgid "comma-separated list of ignored HTML tags."
+msgstr ""
+
+#: tools/rpmwget.c:1382
+msgid "go to foreign hosts when recursive."
+msgstr ""
+
+#: tools/rpmwget.c:1384
+msgid "follow relative links only."
+msgstr ""
+
+#: tools/rpmwget.c:1386
+msgid "list of allowed directories."
+msgstr ""
+
+#: tools/rpmwget.c:1388
+msgid "list of excluded directories."
+msgstr ""
+
+#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
+msgid "don't ascend to the parent directory."
+msgstr ""
+
+#: tools/rpmwget.c:1406
+msgid "Startup:"
+msgstr ""
+
+#: tools/rpmwget.c:1409
+msgid "Logging and input file:"
+msgstr ""
+
+#: tools/rpmwget.c:1412
+msgid "Download:"
+msgstr ""
+
+#: tools/rpmwget.c:1415
+msgid "Directories:"
+msgstr ""
+
+#: tools/rpmwget.c:1418
+msgid "HTTP options:"
+msgstr ""
+
+#: tools/rpmwget.c:1421
+msgid "HTTPS (SSL/TLS) options:"
+msgstr ""
+
+#: tools/rpmwget.c:1424
+msgid "FTP options:"
+msgstr ""
+
+#: tools/rpmwget.c:1427
+msgid "Recursive download:"
+msgstr ""
+
+#: tools/rpmwget.c:1430
+msgid "Recursive accept/reject:"
+msgstr ""
+
+#: tools/rpmwget.c:1439
+msgid ""
+"Usage: rpmwget [OPTION]... [URL]...\n"
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n"
+"\n"
+"Mail bug reports and suggestions to <rpm-devel@rpm5.org>.\n"
+msgstr ""
+
+#: tools/semodule.c:98 tools/spooktool.c:302
+msgid "Set the STORE to operate on (e.g. \"targeted\")"
+msgstr ""
+
+#: tools/semodule.c:98 tools/spooktool.c:302
+msgid "STORE"
+msgstr ""
+
+#: tools/semodule.c:100 tools/spooktool.c:304
+msgid "Do not reload policy after commit"
+msgstr ""
+
+#: tools/semodule.c:102 tools/spooktool.c:306
+msgid "Remove dontaudits from policy"
+msgstr ""
+
+#: tools/semodule.c:114 tools/spooktool.c:318
+msgid "Display list of installed policy modules"
+msgstr ""
+
+#: tools/semodule.c:114 tools/spooktool.c:318
+msgid "REGEX"
+msgstr ""
+
+#: tools/semodule.c:116 tools/spooktool.c:320
+msgid "Install a new module FILE"
+msgstr ""
+
+#: tools/semodule.c:118 tools/spooktool.c:322
+msgid "Upgrade an existing module FILE"
+msgstr ""
+
+#: tools/semodule.c:120 tools/spooktool.c:324
+msgid "Install a new base module FILE"
+msgstr ""
+
+#: tools/semodule.c:122 tools/spooktool.c:326
+msgid "Remove an existing MODULE"
+msgstr ""
+
+#: tools/semodule.c:122 tools/spooktool.c:81 tools/spooktool.c:326
+msgid "MODULE"
+msgstr ""
+
+#: tools/semodule.c:124 tools/spooktool.c:328
+msgid "Reload policy"
+msgstr ""
+
+#: tools/semodule.c:126 tools/spooktool.c:330
+msgid "Build and reload policy"
+msgstr ""
+
+#: tools/semodule.c:129 tools/spooktool.c:333
+msgid "Other options:"
+msgstr ""
+
+#: tools/spooktool.c:72
+msgid "List installed policy modules that match REGEX."
+msgstr ""
+
+#: tools/spooktool.c:72
+msgid "[REGEX]"
+msgstr ""
+
+#: tools/spooktool.c:75
+msgid "Install a new base policy module FILE."
+msgstr ""
+
+#: tools/spooktool.c:77
+msgid "Install a new policy module FILE."
+msgstr ""
+
+#: tools/spooktool.c:79
+msgid "Upgrade an existing policy module FILE."
+msgstr ""
+
+#: tools/spooktool.c:81
+msgid "Remove an existing policy MODULE."
+msgstr ""
+
+#: tools/spooktool.c:83
+msgid "Reload policy."
+msgstr ""
+
+#: tools/spooktool.c:85
+msgid "Build and reload policy."
+msgstr ""
+
+#: tools/spooktool.c:90 tools/spooktool.c:92
+msgid "Exit the program."
 msgstr ""

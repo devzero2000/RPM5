@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: i18n: update po files (Translation Project).
+    - jbj: i18n: update POTFILES.in.
     - jbj: js: fix: give print() a "" return value instead of JSVAL_VOID.
     - jbj: cli: fix: --eval could access before beginning of array.
     - jbj: ficl: resurrect as --with-ficl=internal. external is wonky w no *.la.
