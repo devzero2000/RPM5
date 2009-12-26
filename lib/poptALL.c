@@ -285,7 +285,7 @@ assert(arg != NULL);
 	rpmcliConfigured();
     {	const char * val = rpmcliEvalSlurp(arg);
 	size_t val_len = fwrite(val, strlen(val), 1, stdout);
-	if (val[val_len - 1] != '\n')
+	if (val_len > 0 && val[val_len - 1] != '\n')
 	    fprintf(stdout, "\n");
 	val = _free(val);
     }	break;
