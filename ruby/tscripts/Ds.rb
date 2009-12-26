@@ -10,7 +10,7 @@ ack("$ds.class.to_s", "Ds")
 ack("$ds.debug = 1;", 1);
 ack("$ds.debug = 0;", 0);
 
-ack("$ds.length", 22);
+ack("$ds.length", 25);
 # FIXME: what to call the method?
 ack("$ds.Type", "Provides");
 ack("$ds.buildtime = 1234;", 1234);
@@ -23,10 +23,10 @@ ack("$ds.ix += 1;", 0);
 ack("$ds.ix += 1;", 1);
 ack("$ds.ix = 1;", 1);
 
-ack("$ds.N", "BuiltinJavaScript");
+ack("$ds.N", "BuiltinFiclScripts");
 ack("$ds.EVR", "5.2-1");
-ack("$ds.F", 8);
-ack("$ds.DNEVR", "P rpmlib(BuiltinJavaScript) = 5.2-1");
+ack("$ds.F", 16777224);
+ack("$ds.DNEVR", "P rpmlib(BuiltinFiclScripts) = 5.2-1");
 
 if ($loglvl)
   print("<-- Ds.rb\n");
