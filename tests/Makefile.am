@@ -82,15 +82,15 @@ check-macros:
 	@${rpm} -D 'foo bar' -E '%dump%trace%foo' > /dev/null 2>&1
 	@${rpm} -D 'foo %foo' -E '%foo' > /dev/null 2>&1
 	@${rpm} -D 'foo bing' -D 'foo bang' -D 'foo boom' -E '%{@foo}' > /dev/null 2>&1
-	@${rpm} -E '%(/bin/echo "Hello World!")' > /dev/null 2>&1
-	@${rpm} -E '%{lua:print("Hello World!")}' > /dev/null 2>&1
-	@${rpm} -E '%{js:print("Hello World!")}' > /dev/null 2>&1
-	@-${rpm} -E '%{ruby:print "Hello World!"}' > /dev/null 2>&1
-	@-${rpm} -E '%{tcl:puts "Hello World!"}' > /dev/null 2>&1
-	@-${rpm} -E '%{squirrel:print("Hello World!")}' > /dev/null 2>&1
-	@-${rpm} -E '%{perl:print "Hello World!"}' > /dev/null 2>&1
-	@-${rpm} -E '%{python:print "Hello World!"}' > /dev/null 2>&1
-	@-${rpm} -E '%{ficl:.( Hello World!) cr}' > /dev/null 2>&1
+	@${rpm}  -E '%(/bin/echo "-->       sh: Portable Shar!")'
+	@${rpm}  -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@${rpm}  -E '%{js:print("-->       js: Use GPSEE!")}'
+	@-${rpm} -E '%{ruby:print "-->     ruby: Puppet Gems!"}'
+	@-${rpm} -E '%{tcl:puts "-->      tcl: Porticus Ports!"}'
+	@-${rpm} -E '%{squirrel:print("--> squirrel: Eat Nuts!")}'
+	@-${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
+	@-${rpm} -E '%{python:print "-->   python: Snake Oil!",}'
+	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
@@ -204,7 +204,7 @@ check-tools:
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-install check-query check-verify \
-	check-triggers check-tools # check-repo
+	check-triggers # check-tools # check-repo
 
 clean-local:
 	rm -rf tmp $(BUILD_DIRS)
