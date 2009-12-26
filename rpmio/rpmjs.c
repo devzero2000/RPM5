@@ -161,6 +161,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     }
     fputc('\n', fp);
     fflush(fp);
+    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, ""));	/* XXX "\n" instead? */
     return JS_TRUE;
 }
 
