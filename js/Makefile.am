@@ -22,7 +22,11 @@ AM_CPPFLAGS = -I. \
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-EXTRA_DIST =
+EXTRA_DIST = \
+	src \
+	tscripts \
+	words \
+	legacy.cudf legacy-sol.cudf
 EXTRA_PROGRAMS =
 
 RPMMISC_LDADD_COMMON = \
@@ -49,20 +53,17 @@ pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
 
 pkgbin_PROGRAMS =	tjs
-pkglib_LTLIBRARIES =	rpmjsm.la
-pkglib_LTLIBRARIES +=	librpmjsm.la
+pkglib_LTLIBRARIES =	librpmjsm.la
 
-rpmjsm_la_CFLAGS = -fno-strict-aliasing
-rpmjsm_la_LDFLAGS = -module -avoid-version
-rpmjsm_la_LIBADD = \
+librpmjsm_la_CFLAGS = -fno-strict-aliasing
+librpmjsm_la_LDFLAGS = -module -avoid-version
+librpmjsm_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
-
-librpmjsm_la_LIBADD = $(rpmjsm_la_LIBADD)
 
 noinst_HEADERS = \
 	rpmjsfile.h \
@@ -73,7 +74,7 @@ noinst_HEADERS = \
 	rpmsx-js.h rpmsys-js.h rpmte-js.h rpmts-js.h rpmtxn-js.h rpmxar-js.h \
 	syck-js.h uuid-js.h
 
-rpmjsm_la_SOURCES = \
+librpmjsm_la_SOURCES = \
 	rpmjsfile.c \
 	rpmaug-js.c rpmbc-js.c rpmbf-js.c rpmcudf-js.c rpmdb-js.c rpmdbc-js.c rpmdbe-js.c rpmdc-js.c rpmdig-js.c \
 	rpmdir-js.c rpmds-js.c rpmfc-js.c rpmfi-js.c rpmfts-js.c rpmgi-js.c \
@@ -82,12 +83,43 @@ rpmjsm_la_SOURCES = \
 	rpmsx-js.c rpmsys-js.c rpmte-js.c rpmts-js.c rpmtxn-js.c rpmxar-js.c \
 	syck-js.c uuid-js.c
 
-librpmjsm_la_SOURCES = $(rpmjsm_la_SOURCES)
-
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(rpmjs_la_sources)
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmjs_la_sources)
 
-tjs_SOURCES = tjs.c librpmjsm.la
+tjs_SOURCES = tjs.c
 tjs_LDADD = librpmjsm.la $(RPM_LDADD_COMMON)
 
+check-local:	tjs
+	-./tjs
+
+.PHONY:	lcov-reset	# run lcov from scratch, always
+lcov-reset:
+	make lcov-run
+	make lcov-report
+
+# run lcov from scratch if the dir is not there
+lcov:
+	make lcov-reset
+
+.PHONY:	lcov-run	# reset run coverage tests
+lcov-run:
+	@-rm -rf lcov
+	find .. -name "*.gcda" -exec rm {} \;
+	make check
+
+.PHONY:	lcov-report	# generate report based on current coverage data
+lcov-report:
+	mkdir lcov
+	-lcov -d ./src -d . --capture --output-file lcov/lcov.info
+	lcov -l lcov/lcov.info | grep -v "`cd $(top_srcdir) && pwd`" | cut -d: -f1 > lcov/remove
+	lcov -r lcov/lcov.info `cat lcov/remove` > lcov/lcov.cleaned.info
+	rm lcov/remove
+	mv lcov/lcov.cleaned.info lcov/lcov.info
+	genhtml -t "$(PACKAGE_STRING)" -o lcov lcov/lcov.info
+
+.PHONY:	lcov-upload
+lcov-upload: lcov
+	mkdir -p /var/ftp/pub/jbj/rpm-$(VERSION)-lcov
+	tar -C lcov -cf - . | (cd /var/ftp/pub/jbj/rpm-$(VERSION)-lcov; tar xf -)
+#	rsync -rvz -e ssh --delete lcov/* ???
