@@ -129,22 +129,22 @@ check-local:
 clean-local:
 	rm -f *.o tagtbl.c
 
-splint_librpmdb_la_SOURCES = \
+splint_SRCS = \
 	dbconfig.c fprint.c \
 	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmlio.c rpmns.c rpmtd.c \
 	rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c
 
-rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-splint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
+rpmdb.lcd: Makefile.am ${splint_SRCS} ${pkginc_HEADERS} ${noinst_HEADERS}
+	-splint ${DEFS} ${INCLUDES} ${splint_SRCS} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
-	@echo $(splint_librpmdb_la_SOURCES:%=rpmdb/%)
+	@echo $(splint_SRCS:%=rpmdb/%)
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(splint_librpmdb_la_SOURCES) $(DBLIBSRCS)
+	$(LINT) $(DEFS) $(INCLUDES) $(splint_SRCS) $(DBLIBSRCS)
 
 .PHONY:	mccabe
 mccabe:
