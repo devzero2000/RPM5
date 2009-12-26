@@ -20,7 +20,8 @@ AM_CPPFLAGS = -I. \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
 
-EXTRA_DIST =
+EXTRA_DIST = \
+	tscripts
 EXTRA_PROGRAMS =
 
 RPMMISC_LDADD_COMMON = \
@@ -47,11 +48,11 @@ pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
 
 pkgbin_PROGRAMS =       trb
-pkglib_LTLIBRARIES =    rpmrbm.la
+pkglib_LTLIBRARIES =    librpmrbm.la
 
-rpmrbm_la_CFLAGS = -fno-strict-aliasing
-rpmrbm_la_LDFLAGS = -module -avoid-version
-rpmrbm_la_LIBADD = \
+librpmrbm_la_CFLAGS = -fno-strict-aliasing
+librpmrbm_la_LDFLAGS = -module -avoid-version
+librpmrbm_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -60,15 +61,23 @@ rpmrbm_la_LIBADD = \
 	@LTLIBINTL@
 
 noinst_HEADERS = \
-	rpm-rb.h rpmts-rb.h rpmmi-rb.h rpmhdr-rb.h rpmds-rb.h rpmfi-rb.h rpmte-rb.h rpmmc-rb.h rpmps-rb.h
+	rpm-rb.h rpmts-rb.h rpmmi-rb.h rpmhdr-rb.h \
+	rpmds-rb.h rpmfi-rb.h rpmte-rb.h rpmmc-rb.h \
+	rpmps-rb.h
 
-rpmrbm_la_SOURCES = \
-	rpm-rb.c rpmts-rb.c rpmmi-rb.c rpmhdr-rb.c rpmds-rb.c rpmfi-rb.c rpmte-rb.c rpmmc-rb.c rpmps-rb.c
+librpmrbm_la_SOURCES = \
+	rpm-rb.c rpmts-rb.c rpmmi-rb.c rpmhdr-rb.c \
+	rpmds-rb.c rpmfi-rb.c rpmte-rb.c rpmmc-rb.c \
+	rpmps-rb.c
+
+trb_SOURCES = trb.c
+trb_LDADD = librpmrbm.la $(RPM_LDADD_COMMON)
 
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(rpmrb_la_sources)
 
-trb_SOURCES = trb.c rpmrbm.la
-trb_LDADD = rpmrbm.la $(RPM_LDADD_COMMON)
+.PHONY:	check-local
+check-local:
+	-./trb
 
