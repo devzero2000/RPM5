@@ -90,7 +90,7 @@ check-macros:
 	@-${rpm} -E '%{squirrel:print("Hello World!")}' > /dev/null 2>&1
 	@-${rpm} -E '%{perl:print "Hello World!"}' > /dev/null 2>&1
 	@-${rpm} -E '%{python:print "Hello World!"}' > /dev/null 2>&1
-#XXX	@-${rpm} -E '%{ficl:." Hello World!"}' > /dev/null 2>&1
+	@-${rpm} -E '%{ficl:.( Hello World!) cr}' > /dev/null 2>&1
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
