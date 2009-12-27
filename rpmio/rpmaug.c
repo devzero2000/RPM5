@@ -349,6 +349,22 @@ static char *cleanpath(char *path)
     return cleanstr(path, SEP);		/* XXX strip pesky trailing slashes */
 }
 
+static void err_check(void)
+{
+    rpmaug aug = rpmaugI();
+
+    if (aug_error(aug->I) != AUG_NOERROR) {
+	const char *minor = aug_error_minor_message(aug->I);
+	const char *details = aug_error_details(aug->I);
+
+	fprintf(stderr, "error: %s\n", aug_error_message(aug->I));
+	if (minor != NULL)
+	    fprintf(stderr, "error: %s\n", minor);
+	if (details != NULL)
+	    fprintf(stderr, "error: %s\n", details);
+    }
+}
+
 static char *ls_pattern(const char *path)
 {
     char *q;
@@ -371,6 +387,7 @@ static int child_count(const char *path)
     if (q == NULL)
         return 0;
     cnt = rpmaugMatch(NULL, q, NULL);
+    err_check();
     free(q);
     return cnt;
 }
@@ -391,17 +408,21 @@ static int cmd_ls(int ac, char *av[])
     if (path == NULL)
         return -1;
     cnt = rpmaugMatch(NULL, path, &paths);
-    for (i=0; i < cnt; i++) {
+    err_check();
+    for (i = 0; i < cnt; i++) {
         const char *basnam = strrchr(paths[i], SEP);
         int dir = child_count(paths[i]);
         const char *val;
         rpmaugGet(NULL, paths[i], &val);
+	err_check();
         basnam = (basnam == NULL) ? paths[i] : basnam + 1;
         if (val == NULL)
             val = "(none)";
         rpmaugFprintf(NULL, "%s%s= %s\n", basnam, dir ? "/ " : " ", val);
+	paths[i] = _free(paths[i]);
     }
-    (void) argvFree((const char **)paths);
+    if (cnt > 0)
+	paths = _free(paths);
     path = _free(path);
     return 0;
 }
@@ -416,6 +437,7 @@ static int cmd_match(int ac, char *av[])
     int i;
 
     cnt = rpmaugMatch(NULL, pattern, &matches);
+    err_check();
     if (cnt < 0) {
         rpmaugFprintf(NULL, "  (error matching %s)\n", pattern);
         result = -1;
@@ -426,9 +448,10 @@ static int cmd_match(int ac, char *av[])
         goto done;
     }
 
-    for (i=0; i < cnt; i++) {
+    for (i = 0; i < cnt; i++) {
         const char *val;
         rpmaugGet(NULL, matches[i], &val);
+	err_check();
         if (val == NULL)
             val = "(none)";
         if (filter) {
@@ -439,7 +462,9 @@ static int cmd_match(int ac, char *av[])
         }
     }
  done:
-    (void) argvFree((const char **)matches);
+    for (i = 0; i < cnt; i++)
+	matches[i] = _free(matches[i]);
+    matches = _free(matches);
     return result;
 }
 
@@ -450,6 +475,7 @@ static int cmd_rm(int ac, char *av[])
 
     rpmaugFprintf(NULL, "rm : %s", path);
     cnt = rpmaugRm(NULL, path);
+    err_check();
     rpmaugFprintf(NULL, " %d\n", cnt);
     return 0;
 }
@@ -460,6 +486,9 @@ static int cmd_mv(int ac, char *av[])
     const char *dst = cleanpath(av[1]);
     int r = rpmaugMv(NULL, src, dst);
 
+    err_check();
+    if (r == -1)
+	rpmaugFprintf(NULL, "Failed\n");
     return r;
 }
 
@@ -469,6 +498,9 @@ static int cmd_set(int ac, char *av[])
     const char *val = av[1];
     int r = rpmaugSet(NULL, path, val);
 
+    err_check();
+    if (r == -1)
+	rpmaugFprintf(NULL, "Failed\n");
     return r;
 }
 
@@ -478,6 +510,9 @@ static int cmd_defvar(int ac, char *av[])
     const char *path = (av[1] && *av[1] ? cleanpath(av[1]) : NULL);
     int r = rpmaugDefvar(NULL, name, path);
 
+    err_check();
+    if (r == -1)
+	rpmaugFprintf(NULL, "Failed\n");
     return r;
 }
 
@@ -494,7 +529,9 @@ static int cmd_defnode(int ac, char *av[])
         value = NULL;
 
     r = rpmaugDefnode(NULL, name, path, value, NULL);
-
+    err_check();
+    if (r == -1)
+	rpmaugFprintf(NULL, "Failed\n");
     return r;
 }
 
@@ -503,6 +540,9 @@ static int cmd_clear(int ac, char *av[])
     const char *path = cleanpath(av[0]);
     int r = rpmaugSet(NULL, path, NULL);
 
+    err_check();
+    if (r == -1)
+	rpmaugFprintf(NULL, "Failed\n");
     return r;
 }
 
@@ -518,19 +558,25 @@ static int cmd_get(int ac, char *av[])
         rpmaugFprintf(NULL, " (none)\n");
     else
         rpmaugFprintf(NULL, " = %s\n", val);
+    err_check();
     return 0;
 }
 
 static int cmd_print(int ac, char *av[])
 {
-    return rpmaugPrint(NULL, stdout, cleanpath(av[0]));
+    int r = rpmaugPrint(NULL, stdout, cleanpath(av[0]));
+    err_check();
+    return r;
 }
 
 static int cmd_save(int ac, /*@unused@*/ char *av[])
 {
     int r = rpmaugSave(NULL);
 
-    if (r != -1) {
+    if (r == -1) {
+	rpmaugFprintf(NULL, "Saving failed\n");
+	err_check();
+    } else {
         r = rpmaugMatch(NULL, "/augeas/events/saved", NULL);
         if (r > 0)
             rpmaugFprintf(NULL, "Saved %d file(s)\n", r);
@@ -543,7 +589,10 @@ static int cmd_save(int ac, /*@unused@*/ char *av[])
 static int cmd_load(int ac, /*@unused@*/ char *av[])
 {
     int r = rpmaugLoad(NULL);
-    if (r != -1) {
+    if (r == -1) {
+	rpmaugFprintf(NULL, "Loading failed\n");
+	err_check();
+    } else {
         r = rpmaugMatch(NULL, "/augeas/events/saved", NULL);
         if (r > 0)
             rpmaugFprintf(NULL, "Saved %d file(s)\n", r);
@@ -559,7 +608,7 @@ static int cmd_ins(int ac, char *av[])
     const char *where = av[1];
     const char *path = cleanpath(av[2]);
     int before;
-    int r = -1;	/* assume failure */
+    int r = -1;		/* assume failure */
 
     if (!strcmp(where, "after"))
         before = 0;
@@ -571,6 +620,7 @@ static int cmd_ins(int ac, char *av[])
     }
 
     r = rpmaugInsert(NULL, path, label, before);
+    err_check();
 
 exit:
     return r;

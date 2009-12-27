@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: augtool: add error checking.
+    - jbj: augeas: fix: aug_match no longer returns matches with argv sentinel.
     - jbj: js: fix: sort out module <-> library targets.
     - jbj: js: fix: make dependencies prevented "make distcheck".
     - jbj: ruby: rescusitate.
