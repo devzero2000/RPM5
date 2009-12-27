@@ -21,27 +21,47 @@ extern rpmcudf _rpmcudfI;
 #endif
 
 #if defined(_RPMCUDF_INTERNAL)
+#if defined(WITH_CUDF)
 #include <cudf.h>
+#else
+typedef void *cudf_preamble_t;  /* preamble of a CUDF document */
+typedef void *cudf_request_t;   /* request of a CUDF document */
+typedef void *cudf_universe_t;  /* package universe (i.e. all known packages) */
+typedef void *cudf_package_t;   /* single package from the universe */
+
+typedef	struct _GList GList;
+typedef	struct _GHashTable GHashTable;
+
+typedef GList *cudf_packages_t;
+typedef struct __cudf_doc cudf_doc_t;
+typedef struct __cudf cudf_t;
+typedef struct __cudf_vpkg cudf_vpkg_t;
+typedef GList *cudf_vpkglist_t;
+typedef GHashTable *cudf_extra_t;
+typedef GList *cudf_vpkgformula_t;
+typedef struct __cudf_value cudf_value_t;
+
+#endif
 
 /* XXX Extend cudf_value_t to include additional types. */
 
 #define	RPMCUDV_EBASE	256
 enum rpmcudv_e {
-    RPMCUDV_NOTYPE	= TYPE_NOTYPE,		/* dummy type */
-    RPMCUDV_INT		= TYPE_INT,		/* type "int" */
-    RPMCUDV_POSINT	= TYPE_POSINT,		/* type "posint" */
-    RPMCUDV_NAT		= TYPE_NAT,		/* type "nat" */
-    RPMCUDV_BOOL	= TYPE_BOOL,		/* type "bool" */
-    RPMCUDV_STRING	= TYPE_STRING,		/* type "string" */
-    RPMCUDV_ENUM	= TYPE_ENUM,		/* type "enum" (enum list) */
-    RPMCUDV_PKGNAME	= TYPE_PKGNAME,		/* type "pkgname" */
-    RPMCUDV_IDENT	= TYPE_IDENT,		/* type "ident" */
-    RPMCUDV_VPKG	= TYPE_VPKG,		/* type "vpkg" */
-    RPMCUDV_VPKGFORMULA	= TYPE_VPKGFORMULA,	/* type "vpkgformula" */
-    RPMCUDV_VPKGLIST	= TYPE_VPKGLIST,	/* type "vpkglist" */
-    RPMCUDV_VEQPKG	= TYPE_VEQPKG,		/* type "veqpkg" */
-    RPMCUDV_VEQPKGLIST	= TYPE_VEQPKGLIST,	/* type "veqpkglist" */
-    RPMCUDV_TYPEDECL	= TYPE_TYPEDECL,	/* type "typedecl" */
+    RPMCUDV_NOTYPE	= 0,			/* TYPE_NOTYPE */
+    RPMCUDV_INT		= 1,			/* TYPE_INT */
+    RPMCUDV_POSINT	= 2,			/* TYPE_POSINT */
+    RPMCUDV_NAT		= 3,			/* TYPE_NAT */
+    RPMCUDV_BOOL	= 4,			/* TYPE_BOOL */
+    RPMCUDV_STRING	= 5,			/* TYPE_STRING */
+    RPMCUDV_ENUM	= 6,			/* TYPE_ENUM */
+    RPMCUDV_PKGNAME	= 7,			/* TYPE_PKGNAME */
+    RPMCUDV_IDENT	= 8,			/* TYPE_IDENT */
+    RPMCUDV_VPKG	= 9,			/* TYPE_VPKG */
+    RPMCUDV_VPKGFORMULA	= 10,			/* TYPE_VPKGFORMULA */
+    RPMCUDV_VPKGLIST	= 11,			/* TYPE_VPKGLIST */
+    RPMCUDV_VEQPKG	= 12,			/* TYPE_VEQPKG */
+    RPMCUDV_VEQPKGLIST	= 13,			/* TYPE_VEQPKGLIST */
+    RPMCUDV_TYPEDECL	= 14,			/* TYPE_TYPEDECL */
 
 	/* XXX extensions */
     RPMCUDV_PACKAGE	= RPMCUDV_EBASE+0,	/* cudf_package_t */

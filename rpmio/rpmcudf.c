@@ -492,7 +492,12 @@ rpmcudf rpmcudfNew(const char ** av, int flags)
     static int oneshot = 0;
 
     if (!oneshot) {
+#if defined(WITH_CUDF)
 	cudf_init();
+#else
+	fn = fn;
+	typ = typ;
+#endif
 	oneshot++;
     }
 
