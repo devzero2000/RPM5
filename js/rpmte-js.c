@@ -113,6 +113,7 @@ enum rpmte_tinyid {
     _ADDEDKEY	= -22,
     _DBOFFSET	= -23,
     _KEY	= -24,
+    _SOURCERPM	= -25,
 };
 
 static JSPropertySpec rpmte_props[] = {
@@ -141,6 +142,7 @@ static JSPropertySpec rpmte_props[] = {
 #ifdef	NOTYET
     {"key",	_KEY,		JSPROP_ENUMERATE,	NULL,	NULL},
 #endif
+    {"sourcerpm",_SOURCERPM,	JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -196,37 +198,45 @@ rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	*vp = INT_TO_JSVAL(rpmteColor(te));
 	break;
     case _PKGFSIZE:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmtePkgFileSize(te));
 	break;
     case _BREADTH:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmteBreadth(te));
 	break;
     case _DEPTH:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmteDepth(te));
 	break;
     case _NPREDS:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmteNpreds(te));
 	break;
     case _DEGREE:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmteDegree(te));
 	break;
     case _PARENT:
+#ifdef	DYING
 	*vp = INT_TO_JSVAL(rpmteColor(te));
+#else
+	*vp = JSVAL_VOID;
+#endif
 	break;
     case _TREE:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmteTree(te));
 	break;
     case _ADDEDKEY:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	/* XXX FIXME */
+	*vp = INT_TO_JSVAL((int)rpmteAddedKey(te));
 	break;
     case _DBOFFSET:
-	*vp = INT_TO_JSVAL(rpmteColor(te));
+	*vp = INT_TO_JSVAL(rpmteDBOffset(te));
 	break;
 #ifdef	NOTYET
     case _KEY:
 	*vp = INT_TO_JSVAL(rpmteColor(te));
 	break;
 #endif
+    case _SOURCERPM:
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmteSourcerpm(te)));
+	break;
     default:
 	break;
     }
