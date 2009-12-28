@@ -204,7 +204,7 @@ check-tools:
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-install check-query check-verify \
-	check-triggers # check-tools # check-repo
+	check-triggers check-tools # check-repo
 
 clean-local:
 	rm -rf tmp $(BUILD_DIRS)

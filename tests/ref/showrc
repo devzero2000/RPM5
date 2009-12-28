@@ -46,14 +46,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5987.18
+    cpuinfo(bogomips) = 5991.30
     cpuinfo(bts)
     cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2993.593
+    cpuinfo(cpu_MHz) = 2995.651
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
