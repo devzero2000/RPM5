@@ -44,6 +44,7 @@ static int _debug = 0;
 
 /* --- helpers */
 
+#ifdef	UNUSED
 static int
 rpmdb_DBTcompare(DB * db, const DBT * A, const DBT * B)
 {
@@ -53,12 +54,16 @@ rpmdb_DBTcompare(DB * db, const DBT * A, const DBT * B)
 	return ret;
     return (int)((long)A->size - (long)B->size);
 }
+#endif
 
 static void
 rpmdb_feedback(DB * db, int opcode, int percent)
 {
+#ifdef	NOTNOW
     JSObject * o = (db ? db->app_private : NULL);
+if (_debug)
 fprintf(stderr, "==> %s(%p, %d, %d) o %p\n", __FUNCTION__, db, opcode, percent, o);
+#endif
 }
 
 int
@@ -97,7 +102,10 @@ rpmdb_v2dbt(JSContext *cx, jsval v, _RPMDBT * p)
 #endif
     } else
     {
+#ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "*** %s(%p, 0x%x, %p)  FIXME\n", __FUNCTION__, cx, (unsigned)v, p);
+#endif
 	rc = 0;
     }
     return rc;
@@ -106,6 +114,7 @@ fprintf(stderr, "*** %s(%p, 0x%x, %p)  FIXME\n", __FUNCTION__, cx, (unsigned)v, 
 static int
 rpmdb_Acallback(DB * db, const DBT * _k, const DBT * _d, DBT * _r)
 {
+if (_debug)
 fprintf(stderr, "==> %s(%p, %p, %p, %p) k %p[%u] d %p[%u]\n", __FUNCTION__, db, _k, _d, _r, _k->data, (unsigned)_k->size, _d->data, (unsigned)_d->size);
     _r->data = _d->data;
     _r->size = _d->size;
@@ -116,7 +125,10 @@ static int
 rpmdb_AFcallback(DB * db, const DBT * _k, DBT * _d, const DBT * _fk,
 		int * _changed)
 {
+#ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s(%p, %p, %p, %p, %p) k %p[%u] fk %p[%u] changed %d\n", __FUNCTION__, db, _k, _d, _fk, _changed, _k->data, (unsigned)_k->size, _fk->data, (unsigned)_fk->size, *_changed);
+#endif
     return 0;
 }
 
@@ -153,7 +165,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	int (*_callback) (DB *, const DBT *, const DBT *, DBT *)
 		= rpmdb_Acallback;
 	int ret = db->associate(db, _txn, _secondary, _callback, _flags);
-#ifndef	NOTNOW
+#ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s: ret %d = db->associate(%p, %p, %p %p, 0x%x)\n", __FUNCTION__, ret, db, _txn, _secondary, _callback, _flags);
 #endif
 	switch (ret) {
@@ -201,7 +214,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 		= (_flags & (DB_FOREIGN_ABORT | DB_FOREIGN_CASCADE))
 			? NULL : rpmdb_AFcallback;
 	int ret = db->associate_foreign(db, _secondary, _callback, _flags);
-#ifndef	NOTNOW
+#ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s: ret %d = db->associate_foreign(%p, %p, %p, 0x%x)\n", __FUNCTION__, ret, db, _secondary, _callback, _flags);
 #endif
 	switch (ret) {
@@ -461,6 +475,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db->app_private != NULL) {
 	int ret = db->get(db, _txn, _RPMDBT_PTR(_k), _RPMDBT_PTR(_d), _flags);
 #ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s: ret %d = db->get(%p, %p, %p[%u], %p[%u], 0x%x)\n",
 __FUNCTION__, ret, db, _txn,
 _RPMDBT_PTR(_k)->data, (unsigned)_RPMDBT_PTR(_k)->size,
@@ -528,7 +543,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (db->app_private != NULL) {
 	int ret = db->join(db, _list, &_dbc, _flags);
-#ifndef	NOTNOW
+#ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s: ret %d = db->join(%p, %p, %p 0x%x) dbc %p\n", __FUNCTION__, ret, db, _list, &_dbc, _flags, _dbc);
 #endif
 	switch (ret) {
@@ -583,6 +599,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	DB_KEY_RANGE _key_range = {0};
 	int ret = db->key_range(db, _txn, _RPMDBT_PTR(_k), &_key_range, _flags);
 #ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s: ret %d = db->key_range(%p, %p, %p, %p, 0x%x) <%g =%g >%g\n", __FUNCTION__, ret, db, _txn, _RPMDBT_PTR(_k), &_key_range, _flags, _key_range.less, _key_range.equal, _key_range.greater);
 #endif
 	switch (ret) {
@@ -641,6 +658,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (db->app_private == NULL) {
 	int ret = db->open(db, _txn, _file, _database, _type, _oflags, _mode);
 #ifdef	NOTNOW
+if (_debug)
 fprintf(stderr, "==> %s: ret %d = db->open(%p, %p, \"%s\", \"%s\", %d, 0x%x, 0%o)\n", __FUNCTION__, ret, db, _txn, _file, _database, _type, _oflags, _mode);
 #endif
 	if (ret) {
