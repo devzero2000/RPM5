@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: verify: fix: no parent txn running %verifyscript/%sanitycheck.
     - jbj: rpmfi: fix: memory leak running %pretrans.
     - jbj: rpmdb: fix: add proper rc for RPMTAG_FILEPATHS w no files.
     - jbj: augtool: add error checking.

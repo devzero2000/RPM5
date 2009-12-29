@@ -2971,14 +2971,16 @@ psm->te->h = NULL;
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
-	xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
+	/* XXX running %verifyscript/%sanitycheck doesn't have psm->te */
+    {	rpmtxn _parent = (psm && psm->te ? psm->te->txn : NULL);
+	xx = rpmtxnBegin(rpmtsGetRdb(ts), _parent, NULL);
 	rc = runInstScript(psm);
 	if (rc)
 	     xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
 	else
 	     xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
 	rpmtsGetRdb(ts)->db_txn = NULL;
-	break;
+    }	break;
     case PSM_TRIGGERS:
 	/* Run triggers in other package(s) this package sets off. */
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
