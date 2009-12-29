@@ -1622,11 +1622,13 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 
 	    if (rpmteFd(p) != NULL) {
 		int scareMem = 0;
-		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
-		if (fi != NULL) {	/* XXX can't happen */
-		    fi->te = p;
-		    p->fi = fi;
-		}
+
+		rpmfi ofi = rpmfiLink(p->fi, "pretrans");
+		(void)rpmfiFree(p->fi);
+		p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
+		if (p->fi != NULL)
+		    p->fi->te = p;
+
 /*@-compdef -usereleased@*/	/* p->fi->te undefined */
 		psm = rpmpsmNew(ts, p, p->fi);
 /*@=compdef =usereleased@*/
@@ -1636,6 +1638,11 @@ assert(psm != NULL);
 		psm->progTag = RPMTAG_PRETRANSPROG;
 		xx = rpmpsmStage(psm, PSM_SCRIPT);
 		psm = rpmpsmFree(psm, msg);
+
+		(void)rpmfiFree(p->fi);
+		p->fi = rpmfiLink(ofi, "pretrans");
+		(void)rpmfiFree(ofi);
+		ofi = NULL;
 
 /*@-compdef -usereleased @*/
 		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
