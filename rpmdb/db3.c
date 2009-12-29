@@ -2573,7 +2573,11 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 	    dbiIndex Pdbi = NULL;
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
+#ifdef	NOTYET	/* XXX KISS for now */
 	    int _flags = DB_IMMUTABLE_KEY;
+#else
+	    int _flags = 0;
+#endif
 assert(Ptag == RPMDBI_PACKAGES && Ptag != rpmtag);
 	    Pdbi = dbiOpen(rpmdb, Ptag, 0);
 assert(Pdbi != NULL);
