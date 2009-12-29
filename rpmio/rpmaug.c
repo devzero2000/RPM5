@@ -351,6 +351,7 @@ static char *cleanpath(char *path)
 
 static void err_check(void)
 {
+#ifdef	WITH_AUGEAS
     rpmaug aug = rpmaugI();
 
     if (aug_error(aug->I) != AUG_NOERROR) {
@@ -363,6 +364,7 @@ static void err_check(void)
 	if (details != NULL)
 	    fprintf(stderr, "error: %s\n", details);
     }
+#endif
 }
 
 static char *ls_pattern(const char *path)
