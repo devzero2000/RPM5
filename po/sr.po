@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-12-26 09:24-0500\n"
+"POT-Creation-Date: 2009-12-28 11:51-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: Serbian <gnu@prevod.org>\n"
@@ -3130,26 +3130,21 @@ msgstr "грешка: не могу да отворим %s%s/пацкагес.р
 msgid "incorrect solve path format: %s\n"
 msgstr "грешка у формату: %s\n"
 
-#: lib/transaction.c:1427
-#, fuzzy, c-format
-msgid "Unable to change root directory: %m\n"
-msgstr "неуспело отварање %s: %s"
-
-#: lib/transaction.c:1657
+#: lib/transaction.c:1094
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "неуспела команда рмдир %s: %s"
 
-#: lib/transaction.c:1675
+#: lib/transaction.c:1112
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1885
+#: lib/transaction.c:1323
 msgid "Failed to begin policy transaction\n"
 msgstr ""
 
-#: lib/transaction.c:1951
+#: lib/transaction.c:1395
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -4558,29 +4553,29 @@ msgstr ""
 msgid "Do not autoload modules from the search path"
 msgstr ""
 
-#: rpmio/rpmaug.c:599
+#: rpmio/rpmaug.c:649
 msgid "List the direct children of PATH"
 msgstr ""
 
-#: rpmio/rpmaug.c:599 rpmio/rpmaug.c:607 rpmio/rpmaug.c:627 rpmio/rpmaug.c:630
+#: rpmio/rpmaug.c:649 rpmio/rpmaug.c:657 rpmio/rpmaug.c:677 rpmio/rpmaug.c:680
 msgid "<PATH>"
 msgstr ""
 
-#: rpmio/rpmaug.c:602
+#: rpmio/rpmaug.c:652
 msgid ""
 "Find all paths that match the path expression PATH. If VALUE is given,\n"
 "        only the matching paths whose value equals VALUE are printed"
 msgstr ""
 
-#: rpmio/rpmaug.c:604
+#: rpmio/rpmaug.c:654
 msgid "<PATH> [<VALUE>]"
 msgstr ""
 
-#: rpmio/rpmaug.c:607
+#: rpmio/rpmaug.c:657
 msgid "Delete PATH and all its children from the tree"
 msgstr ""
 
-#: rpmio/rpmaug.c:610
+#: rpmio/rpmaug.c:660
 msgid ""
 "Move node SRC to DST. SRC must match exactly one node in the tree.\n"
 "        DST must either match exactly one node in the tree, or may not\n"
@@ -4589,74 +4584,74 @@ msgid ""
 "        ancestors are created."
 msgstr ""
 
-#: rpmio/rpmaug.c:615
+#: rpmio/rpmaug.c:665
 msgid "<SRC> <DST>"
 msgstr ""
 
-#: rpmio/rpmaug.c:618
+#: rpmio/rpmaug.c:668
 msgid ""
 "Associate VALUE with PATH. If PATH is not in the tree yet,\n"
 "        it and all its ancestors will be created. These new tree entries\n"
 "        will appear last amongst their siblings"
 msgstr ""
 
-#: rpmio/rpmaug.c:621
+#: rpmio/rpmaug.c:671
 msgid "<PATH> <VALUE>"
 msgstr ""
 
-#: rpmio/rpmaug.c:624
+#: rpmio/rpmaug.c:674
 msgid ""
 "Set the value for PATH to NULL. If PATH is not in the tree yet,\n"
 "        it and all its ancestors will be created. These new tree entries\n"
 "        will appear last amongst their siblings"
 msgstr ""
 
-#: rpmio/rpmaug.c:630
+#: rpmio/rpmaug.c:680
 msgid "Print the value associated with PATH"
 msgstr ""
 
-#: rpmio/rpmaug.c:633
+#: rpmio/rpmaug.c:683
 msgid ""
 "Print entries in the tree. If PATH is given, printing starts there,\n"
 "        otherwise the whole tree is printed"
 msgstr ""
 
-#: rpmio/rpmaug.c:635
+#: rpmio/rpmaug.c:685
 msgid "[<PATH>]"
 msgstr ""
 
-#: rpmio/rpmaug.c:638
+#: rpmio/rpmaug.c:688
 msgid ""
 "Insert a new node with label LABEL right before or after PATH into\n"
 "        the tree. WHERE must be either 'before' or 'after'."
 msgstr ""
 
-#: rpmio/rpmaug.c:640
+#: rpmio/rpmaug.c:690
 msgid "<LABEL> <WHERE> <PATH>"
 msgstr ""
 
-#: rpmio/rpmaug.c:643
+#: rpmio/rpmaug.c:693
 msgid ""
 "Save all pending changes to disk. For now, files are not overwritten.\n"
 "        Instead, new files with extension .augnew are created"
 msgstr ""
 
-#: rpmio/rpmaug.c:648
+#: rpmio/rpmaug.c:698
 msgid "Load files accordig to the transforms in /augeas/load."
 msgstr ""
 
-#: rpmio/rpmaug.c:651
+#: rpmio/rpmaug.c:701
 msgid ""
 "Define the variable NAME to the result of evalutating EXPR. The\n"
 "        variable can be used in path expressions as $NAME. Note that EXPR\n"
 "        is evaluated when the variable is defined, not when it is used."
 msgstr ""
 
-#: rpmio/rpmaug.c:654
+#: rpmio/rpmaug.c:704
 msgid "<NAME> <EXPR>"
 msgstr ""
 
-#: rpmio/rpmaug.c:657
+#: rpmio/rpmaug.c:707
 msgid ""
 "Define the variable NAME to the result of evalutating EXPR, which\n"
 "        must be a nodeset. If no node matching EXPR exists yet, one\n"
@@ -4666,15 +4661,15 @@ msgid ""
 "        to that node."
 msgstr ""
 
-#: rpmio/rpmaug.c:663
+#: rpmio/rpmaug.c:713
 msgid "<NAME> <EXPR> [<VALUE>]"
 msgstr ""
 
-#: rpmio/rpmaug.c:666 rpmio/rpmaug.c:669
+#: rpmio/rpmaug.c:716 rpmio/rpmaug.c:719
 msgid "Exit the program"
 msgstr ""
 
-#: rpmio/rpmaug.c:672 tools/spooktool.c:88
+#: rpmio/rpmaug.c:722 tools/spooktool.c:88
 msgid "Print this help text"
 msgstr ""
 
@@ -6945,6 +6940,10 @@ msgstr ""
 #: tools/spooktool.c:90 tools/spooktool.c:92
 msgid "Exit the program."
 msgstr ""
+
+#, fuzzy
+#~ msgid "Unable to change root directory: %m\n"
+#~ msgstr "неуспело отварање %s: %s"
 
 #, fuzzy
 #~ msgid "Exec of %s failed (%s): %s\n"
