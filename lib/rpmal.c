@@ -187,7 +187,8 @@ rpmal rpmalFree(rpmal al)
     for (i = 0; i < al->size; i++, alp++) {
 	(void)rpmdsFree(alp->provides);
 	alp->provides = NULL;
-	alp->fi = rpmfiFree(alp->fi);
+	(void)rpmfiFree(alp->fi);
+	alp->fi = NULL;
     }
 
     if ((die = al->dirs) != NULL)
@@ -332,7 +333,8 @@ void rpmalDel(rpmal al, alKey pkgKey)
 
     (void)rpmdsFree(alp->provides);
     alp->provides = NULL;
-    alp->fi = rpmfiFree(alp->fi);
+    (void)rpmfiFree(alp->fi);
+    alp->fi = NULL;
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
     return;
