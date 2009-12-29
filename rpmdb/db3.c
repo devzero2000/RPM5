@@ -1755,6 +1755,9 @@ assert(rpmdb);
     if (!headerGet(h, he, 0))
 	goto exit;
 
+    /* XXX catch busted headerGet() rc on RPMTAG_FILEPATHS w empty list. */
+assert(he->p.ptr != NULL && he->c > 0);
+
     /* Retrieve other tags needed for filtering decisions. */
     switch (he->tag) {
     default:

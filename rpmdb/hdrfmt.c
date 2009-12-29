@@ -2393,7 +2393,12 @@ static int _fnTag(Header h, HE_t he, rpmTag tag)
     he->t = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, tag, &he->p.argv, &he->c);
     he->freeData = 1;
-    return 0;
+    /* XXX headerGet() rc on RPMTAG_FILEPATHS w empty list. */
+    if (he->p.argv && he->p.argv[0] && he->c > 0)
+	return 0;
+    he->p.ptr = _free(he->p.ptr);
+    he->c = 0;
+    return 1;
 }
 
 static int filenamesTag(Header h, HE_t he)
