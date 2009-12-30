@@ -22,11 +22,11 @@ clean();
 
 # Creating temp db
 mkdir($tempdbpath) or die "Cannot create $tempdbpath";
-my @rpmcmd = (qw(../rpm --macros ../macros --define), "_dbpath $tempdbpath", '--initdb');
+my @rpmcmd = (qw(../rpm --macros ../macros/macros --define), "_dbpath $tempdbpath", '-qa');
 system(@rpmcmd) and die "Cannot init db in $tempdbpath";
-system(qw(../rpm --macros ../macros), '--define', "_dbpath $tempdbpath", qw(-U test-rpm-1.0-1.noarch.rpm --justdb --nodeps));
+system(qw(../rpm --macros ../macros/macros), '--define', "_dbpath $tempdbpath", qw(-U test-rpm-1.0-1.noarch.rpm --justdb --nodeps));
 
-RPM::load_macro_file('../macros');
+RPM::load_macro_file('../macros/macros');
 RPM::add_macro("_dbpath $tempdbpath");
 use_ok('RPM::PackageIterator');
 
