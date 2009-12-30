@@ -119,9 +119,9 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -U -- edos-test/engine-2-* -turbo
 	@${rpm} -U -- edos-test/{wheel-3,tyre-1}-*
 	@${rpm} -F -- edos-test/{door-2,window-1,glass-2}-*
+	@${rpm} --rebuilddb		#XXX masks DB_SECONDARY_BAD
 	@${rpm} -qaT > tmp/edos.qa.2
 	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
-	@${rpm} --rebuilddb		# XXX masks DB_SECONDARY_BAD issue
 	@${rpm} -e car engine wheel door tyre window glass
 
 check-install:
@@ -131,6 +131,8 @@ check-install:
 
 check-triggers:
 	@echo "=== $@ ==="
+	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*' > /dev/null 2>&1
+	@-rm tmp/rpmdb/Triggername	#XXX masks DB_SECONDARY_BAD
 	@echo "--> N:"
 	@${rpm} -U --noparentdirs --nodeps triggers-N/triggers-N*.rpm
 	@${rpm} -e --noparentdirs --nodeps triggers-N-a triggers-N-b
@@ -152,6 +154,7 @@ check-triggers:
 	@echo "--> DP:"
 	@${rpm} -U --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
 	@${rpm} -e --noparentdirs --nodeps triggers-DP-a triggers-DP-b
+	@${rpm} --rebuilddb		#XXX masks DB_SECONDARY_BAD
 
 check-query:
 	@echo "=== $@ ==="
@@ -186,13 +189,20 @@ check-query:
 
 check-verify:
 	@echo "=== $@ ==="
-	@${rpm} --rebuilddb
-#XXX	-${rpm} -V devtool-sanity
-	@${rpm} -e devtool-sanity
-	@${rpm} -V probes
-	@${rpm} -Va > /dev/null
+	@${rpm} -e probes devtool-sanity
+	@${rpm} --rebuilddb		#XXX masks DB_SECONDARY_BAD
+	@-${rpm} -U --justdb --nodeps tmp/manifest
+	@-${rpm} -V probes devtool-sanity > /dev/null
+	@-${rpm} -Va > /dev/null
+#XXX	@-${rpm} -Vp tmp/manifest
+	@${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*'
+	@-rm tmp/rpmdb/Triggername	#XXX masks DB_SECONDARY_BAD
+	@${rpm} -e car engine wheel door tyre window glass
+	@${rpm} -e battery bicycle electric-engine gasoline-engine
+	@${rpm} -e solar-collector tire turbo
+	@${rpm} -e --justdb popt
 	@${rpm} -e probes
-#XXX	-${rpm} -Vp tmp/manifest > /dev/null
+	@${rpm} -e devtool-sanity
 
 check-tools:
 	@echo "=== $@ ==="
