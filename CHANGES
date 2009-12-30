@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: lua: install executables and library.
     - jbj: perl: change --macros to point to ../macros/macros now.
     - jbj: verify: fix: no parent txn running %verifyscript/%sanitycheck.
     - jbj: rpmfi: fix: memory leak running %pretrans.
