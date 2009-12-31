@@ -45,6 +45,9 @@ CLEANFILES = *~
 
 .PHONY: test
 
+check-local:
+	-$(MAKE) -f Makefile.perl test
+
 clean-local:
 	if [ -f Makefile.perl ]; then $(MAKE) -f Makefile.perl realclean; fi
 	rm -f Makefile.perl Makefile.perl.old
