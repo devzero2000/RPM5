@@ -104,7 +104,9 @@ static rpmxar rpmxarGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmxarFini);
 	pool = _xarPool;
     }
-    return (rpmxar) rpmioGetPool(pool, sizeof(*xar));
+    xar = (rpmxar) rpmioGetPool(pool, sizeof(*xar));
+    memset(((char *)xar)+sizeof(xar->_item), 0, sizeof(*xar)-sizeof(xar->_item));
+    return xar;
 }
 
 rpmxar rpmxarNew(const char * fn, const char * fmode)
@@ -124,15 +126,16 @@ assert(fn != NULL);
 int rpmxarNext(rpmxar xar)
 {
 if (_xar_debug)
-fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, xar->first);
+fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, (xar ? xar->first : NULL));
+    if (xar && xar->x) {
+	if (xar->first) {
+	    xar->f = xar_file_first(xar->x, xar->i);
+	    xar->first = 0;
+	} else
+	    xar->f = xar_file_next(xar->i);
+    }
 
-    if (xar->first) {
-	xar->f = xar_file_first(xar->x, xar->i);
-	xar->first = 0;
-    } else
-	xar->f = xar_file_next(xar->i);
-
-    return (xar->f == NULL ? 1 : 0);
+    return (xar && xar->f ? 0 : 1);
 }
 
 int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
