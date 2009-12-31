@@ -120,13 +120,17 @@ assert(fn != NULL);
 	xar->i = xar_iter_new();
 	xar->first = 1;
     }
-    return rpmxarLink(xar, "rpmxarNew");
+if (_xar_debug)
+fprintf(stderr, "<-- %s(%s,%s) xar %p i %p x %p first %d\n", __FUNCTION__, fn, fmode, xar, xar->i, xar->x, xar->first);
+    return rpmxarLink(xar, __FUNCTION__);
 }
 
 int rpmxarNext(rpmxar xar)
 {
+    int rc = 1;		/* assume failure */
+
 if (_xar_debug)
-fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, (xar ? xar->first : NULL));
+fprintf(stderr, "--> %s(%p) i %p x %p first %d\n", __FUNCTION__, xar, (xar ? xar->i : NULL), (xar ? xar->x : NULL), (xar ? xar->first : -1));
     if (xar && xar->x) {
 	if (xar->first) {
 	    xar->f = xar_file_first(xar->x, xar->i);
@@ -135,7 +139,9 @@ fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, (xar ? xar->first : NULL))
 	    xar->f = xar_file_next(xar->i);
     }
 
-    return (xar && xar->f ? 0 : 1);
+    rc = (xar && xar->f ? 0 : 1);
+if (_xar_debug)fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, xar, rc);
+    return rc;
 }
 
 int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
@@ -320,9 +326,16 @@ static long long xarSize(rpmxar xar)
 {
     long long ll = 0L;
 #ifdef	WITH_XAR
-    char * t = xar_get_size(xar->x, xar->f);
+    char * t = NULL;
+#if defined(HAVE_XAR_GET_SIZE)
+    t = xar_get_size(xar->x, xar->f);
     ll = strtoll(t, NULL, 0);
     t = _free(t);
+#else
+    xar_prop_get(xar->f, "data/size", &t);
+    if (t)
+	ll = strtoll(t, NULL, 0);
+#endif
 #endif
     return ll;
 }

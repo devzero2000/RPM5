@@ -1626,13 +1626,17 @@ dnl # FIXME: AutoFu test for <sys/acl.h> is needed.
 RPM_CHECK_LIB(
     [XAR], [xar],
     [xar], [xar_open], [xar.h],
-    [no,internal:external:none], [xar:include:lib],
+    [no,external:internal:none], [xar:include:lib],
     [ AM_CONDITIONAL(WITH_XAR, [ true ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-          AC_DEFINE(HAVE_XAR_H, 1, [Have <xar.h> header])
-          AC_DEFINE(HAVE_SYS_ACL_H, 1, [Have <sys/acl.h> header])
+        AC_DEFINE(HAVE_XAR_H, 1, [Have <xar.h> header])
+        AC_DEFINE(HAVE_XAR_GET_SIZE, 1, [Have xar_get_size()])
+        AC_DEFINE(HAVE_SYS_ACL_H, 1, [Have <sys/acl.h> header])
+      else
+        AC_CHECK_LIB(xar, xar_get_size, [
+          AC_DEFINE(HAVE_XAR_GET_SIZE, 1,
+                    [Define to 1 if you have xar_get_size() in libxar.]) ])
       fi
-      AC_MSG_WARN([XAR support is under development])
     ],
     [ AM_CONDITIONAL(WITH_XAR, [ false ])
     ])
