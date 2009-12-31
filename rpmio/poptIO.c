@@ -82,6 +82,8 @@ extern int noLibio;
 /*@unchecked@*/
 extern int _pgp_debug;
 /*@unchecked@*/
+extern int _pgp_print;
+/*@unchecked@*/
 extern int _rpmio_debug;
 /*@unchecked@*/
 extern int _rpmiob_debug;
@@ -589,6 +591,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug miRE patterns"), NULL},
  { "pgpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_debug, -1,
 	N_("Debug PGP usage"), NULL},
+ { "pgpprint", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_print, -1,
+	N_("Print PGP keys"), NULL},
  { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
 	N_("Debug Bloom filters"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
