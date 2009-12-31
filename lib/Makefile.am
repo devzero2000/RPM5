@@ -34,9 +34,9 @@ RPM_LDADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-EXTRA_DIST = genpgp.sh librpm.vers tpgp.c
+EXTRA_DIST = librpm.vers
 
-EXTRA_PROGRAMS = tevr tgi tpgp tsbt
+EXTRA_PROGRAMS = tevr tgi tsbt
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -143,14 +143,6 @@ tevr_LDADD = $(RPM_LDADD)
 
 tgi_SOURCES = tgi.c
 tgi_LDADD = $(RPM_LDADD)
-
-tpgp_SOURCES = genpgp.h tpgp.c
-tpgp_LDADD = $(RPM_LDADD)
-
-tpgp.c: genpgp.h
-
-genpgp.h: genpgp.sh
-	-sh ./genpgp.sh > genpgp.h
 
 tsbt_SOURCES = tsbt.c
 tsbt_LDADD = $(RPM_LDADD)

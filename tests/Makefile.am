@@ -3,9 +3,36 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 # Note: *.src.rpm's cannot be added here because of suffix rules.
-EXTRA_DIST =	ref/[^C]* ref/.alldigests
+EXTRA_DIST =	genpgp.sh tpgp.c ref/[^C]* ref/.alldigests
+
+EXTRA_PROGRAMS = tpgp
 
 SUBDIRS =
+
+AM_CPPFLAGS = \
+	-I$(srcdir) \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
+	-I$(top_builddir)/lib \
+	-I$(top_srcdir)/rpmdb \
+	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_FILE_CPPFLAGS@ \
+	@WITH_PCRE_CPPFLAGS@ \
+	@WITH_SYCK_CPPFLAGS@ \
+	@WITH_XAR_CPPFLAGS@
+
+RPM_LDADD = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
 
 macros =	$(abs_top_builddir)/macros/macros:$(testdir)/macros
 #XXX rpmpopt =	$(abs_top_builddir)/rpmpopt
@@ -15,6 +42,8 @@ rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
+
+tpgp =		./tpgp --macros $(macros)
 
 chroot =	$(abs_top_builddir)/tools/chroot
 cp =		$(abs_top_builddir)/tools/cp
@@ -33,6 +62,16 @@ lua =		@__LUA@
 mv =		@__MV@
 rm =		@__RM@
 tar =		@__TAR@
+
+tpgp_SOURCES = genpgp.h tpgp.c
+tpgp_LDADD = $(RPM_LDADD)
+
+tpgp.c: genpgp.h
+
+genpgp.h: genpgp.sh
+	-sh ./genpgp.sh > genpgp.h
+
+BUILT_SOURCES = genpgp.h
 
 .PHONY:	check-init
 check-init: macros
@@ -57,9 +96,21 @@ $(POPTPKGS):
 	${wget} $(POPTURI)$@
 
 .PHONY:	check-pubkeys
-check-pubkeys: $(POPTPKGS)
+check-pubkeys: tpgp $(POPTPKGS)
 	@echo "=== $@ ==="
 	@rm -rf tmp/rpmdb
+	@${rpm} --import tmp/DSA.pubpem
+	@${rpm} --import tmp/RSA.pubpem
+	@echo -n "--> default:"
+	@${tpgp}
+	@echo -n "--> beecrypt:"
+	@${tpgp} --usecrypto bc
+	@echo "--> gcrypt(note: MPI padding is BROKEN atm):"
+	@-${tpgp} --usecrypto gc
+	@echo -n "--> nss:"
+	@${tpgp} --usecrypto nss
+	@echo -n "--> openssl:"
+	@${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u {tmp,ref}/popt.Kv
@@ -89,7 +140,7 @@ check-macros:
 	@-${rpm} -E '%{tcl:puts "-->      tcl: Porticus Ports!"}'
 	@-${rpm} -E '%{squirrel:print("--> squirrel: Eat Nuts!")}'
 	@-${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
-	@-${rpm} -E '%{python:print "-->   python: Snake Oil!",}'
+	@-${rpm} -E '%{python:print "-->   python: Snake Eggs!",}'
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
 
 %.spec: $(wildcard %-*.src.rpm)
@@ -114,13 +165,13 @@ check-build: $(BUILD_DIRS)
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -U -- edos-test/glass-1-*
 	@${rpm} -U -- +car +turbo edos-test/{engine-1-*,wheel-2-*,door-1-*,window-0-*}
-	@${rpm} -qaT > tmp/edos.qa.1
+	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.1
 	@diff -u {tmp,ref}/edos.qa.1 || ${cp} {tmp,ref}/edos.qa.1
 	@${rpm} -U -- edos-test/engine-2-* -turbo
 	@${rpm} -U -- edos-test/{wheel-3,tyre-1}-*
 	@${rpm} -F -- edos-test/{door-2,window-1,glass-2}-*
 	@${rpm} --rebuilddb		#XXX masks DB_SECONDARY_BAD
-	@${rpm} -qaT > tmp/edos.qa.2
+	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.2
 	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
 	@${rpm} -e car engine wheel door tyre window glass
 
@@ -217,5 +268,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 	check-triggers check-tools # check-repo
 
 clean-local:
+	rm -f $(BUILT_SOURCES)
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/

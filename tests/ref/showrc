@@ -184,7 +184,7 @@ done
 -14: __autoheader	autoheader
 -14: __automake	automake
 -14: __awk	gawk
--14: __bash	/bin/bash
+-14: __bash	/usr/lib/rpm/bin/bash
 -14: __bzip2	/usr/bin/bzip2
 -14: __cat	/bin/cat
 -14: __cc	gcc
@@ -246,7 +246,7 @@ done
 -14: __libtool_requires	%{nil}
 -14: __libtoolize	libtoolize
 -14: __ln_s	ln -s
--14: __lua	/usr/bin/lua
+-14: __lua	/usr/lib/rpm/bin/lua
 -14: __lzma	/usr/bin/lzma
 -14: __lzop	%{_bindir}/lzop
 -14: __make	/usr/bin/make

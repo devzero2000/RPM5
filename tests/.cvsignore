@@ -1,5 +1,12 @@
+.deps
+.depend
 Makefile
 Makefile.in
+genpgp.h
+tpgp
+.libs
+*.gcda
+*.gcno
 macros
 popt*.rpm
 repodata

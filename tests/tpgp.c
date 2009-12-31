@@ -8,15 +8,13 @@ extern int _pgp_print;
 
 #include "system.h"
 
-#include <rpmcli.h>
+#include <rpmio.h>
 #include <rpmns.h>
+#include <rpmcli.h>
 
 #include "genpgp.h"
 
 #include "debug.h"
-
-#define rpmtsfree() rpmioFreePoolItem()
-
 
 static
 rpmRC doit(rpmts ts, const char * sigtype)
@@ -64,15 +62,13 @@ main(int argc, char *argv[])
     rpmts ts = rpmtsCreate();
     int rc = rpmtsOpenDB(ts, O_RDONLY);
 
-_rpmns_debug = 1;
-_pgp_debug = 1;
-_pgp_print = 1;
-
+fprintf(stderr, " DSA");
     rc = doit(ts, "DSA");
-
+fprintf(stderr, " RSA");
     rc = doit(ts, "RSA");
+fprintf(stderr, "\n");
 
-    (void)rpmtsFree(ts); 
+    (void) rpmtsFree(ts); 
     ts = NULL;
 
     optCon = rpmcliFini(optCon);
