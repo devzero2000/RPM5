@@ -6,21 +6,29 @@ var RPMTAG_BASENAMES = 1117;
 
 var N = "popt";
 
+var NVRA = N;
+var bingo = 0;
+
+var h = new Hdr();
+ack("typeof h;", "object");
+ack("h instanceof Hdr;", true);
+ack("h.debug = 1;", 1);
+ack("h.debug = 0;", 0);
+delete h;
+
 var ts = new Ts();
-// var mi = ts.mi(RPMTAG_NAME, 'popt');
-var mi = new Mi(ts, RPMTAG_NAME, N);
+
+var mi = new Mi(ts, RPMTAG_NVRA, N);
 ack("mi.length", 1);
 ack("mi.count", 1);
 ack("mi.instance", 0);  // zero before iterating
 
-// var h = new Hdr();
+bingo = 0;
 for (let [dbkey,h] in Iterator(mi)) {
     nack("mi.instance", 0); // non-zero when iterating
 
     ack("typeof h;", "object");
     ack("h instanceof Hdr;", true);
-    ack("h.debug = 1;", 1);
-    ack("h.debug = 0;", 0);
 
 // for (var [tagno,tagval] in Iterator(h,true))
 //     print(h.tag(tagno),JSON.stringify(tagval));
@@ -102,7 +110,9 @@ for (let [dbkey,h] in Iterator(mi)) {
     ack("h.getorigin()", origin);
     var qfmt = "%{buildtime:date}";
     ack("h.sprintf(qfmt)", undefined);
+    bingo = 1;
 }
+ack('bingo', 1);
 
 delete mi;	// GCZeal?
 delete ts;	// GCZeal?

@@ -47,9 +47,9 @@ delete mi;
 var mi = new Mi(ts);
 bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
-    ack("mi.instance != 0", true);
-    ack("mi.instance < 0x0000ffff", true);
-    ack("mi.instance == h.dbinstance", true);
+//    ack("mi.instance != 0", true);
+//    ack("mi.instance < 0x0000ffff", true);
+//    ack("mi.instance == h.dbinstance", true);
     ++npkgs;
     if (IIDcounts[h.installtid[0].toString(16)] > 0)
 	++IIDcounts[h.installtid[0].toString(16)];

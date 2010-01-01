@@ -11,6 +11,7 @@ ack("mi.count", 1);
 ack("mi.instance", 0);  // zero before iterating
 
 // var h = new Hdr();
+var bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
     ack("mi.instance", 0); // non-zero when iterating
     ack("mi.instance", h.instance);
@@ -68,7 +69,9 @@ for (var [dbkey,h] in Iterator(mi)) {
     ack("fi.fgroup", undefined);
     ack("fi.fcolor", undefined);
     nack("fi.fclass", "symbolic link to `libpopt.so.0.0.0'");
+    bingo = 1;
 }
+ack('bingo', 1);
 
 delete mi;	// GCZeal?
 delete ts;	// GCZeal?

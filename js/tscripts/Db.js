@@ -534,7 +534,7 @@ ack('W.sync() && W.close(0)', true);
 print('<==== WORDS');
 }
 
-if (0) {
+if (1) {
 print('====> FILES');
 var dbfile = "F.db";
 var F = new BDB(dbenv, "F", DB_RECNO, "files", DB_SNAPSHOT);
@@ -611,7 +611,7 @@ ack('F.sync() && F.close()', true);
 print('<==== FILES');
 }
 
-if (0) {
+if (1) {
 print('====> GROUPS');
 var G = new BDB(dbenv, "G", DB_RECNO, "groups", DB_SNAPSHOT);
 var GF = new BDB(dbenv, "GF", DB_RECNO, "groups", DB_SNAPSHOT);
