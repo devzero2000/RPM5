@@ -71,8 +71,6 @@ tpgp.c: genpgp.h
 genpgp.h: genpgp.sh
 	-sh ./genpgp.sh > genpgp.h
 
-BUILT_SOURCES = genpgp.h
-
 .PHONY:	check-init
 check-init: macros
 	@echo "=== $@ ==="
@@ -268,6 +266,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 	check-triggers check-tools # check-repo
 
 clean-local:
-	rm -f $(BUILT_SOURCES)
+	rm -f gengpg.h
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
