@@ -117,7 +117,7 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Sys",		rpmjs_InitSysClass,	 33 },
     { "Te",		rpmjs_InitTeClass,	 15 },
     { "Ts",		rpmjs_InitTsClass,	 10 },
-    { "Xar",		rpmjs_InitXarClass,	 41 },	/* todo++ */
+    { "Xar",		rpmjs_InitXarClass,	 51 },	/* todo++ */
 #if defined(WITH_UUID)
     { "Uuid",		rpmjs_InitUuidClass,	  2 },
 #endif
