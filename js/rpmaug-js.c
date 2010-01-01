@@ -159,15 +159,8 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_path)))
         goto exit;
 
-    switch (rpmaugRm(aug, _path)) {
-    case 0:	/* success */
-	*rval = JSVAL_TRUE;
-	break;
-    default:
-    case -1:	/* failure */
-	*rval = JSVAL_FALSE;
-	break;
-    }
+    /* XXX rpmaug_rm() returns number of deleted nodes. */
+    *rval = INT_TO_JSVAL(rpmaugRm(aug, _path));
     ok = JS_TRUE;
 exit:
     return ok;

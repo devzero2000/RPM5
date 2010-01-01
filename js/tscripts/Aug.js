@@ -12,20 +12,16 @@ const AUG_NO_MODL_AUTOLOAD = (1 << 6);
 var aug = new Aug("/", "", (AUG_NO_LOAD|AUG_SAVE_NEWFILE));
 ack("typeof aug;", "object");
 ack("aug instanceof Aug;", true);
-// ack("aug.debug = 1;", 1);
+ack("aug.debug = 1;", 1);
 // ack("aug.debug = 0;", 0);
 
 var _defvar = "/augeas/version/defvar";
-aug.print(_defvar);
 ack("aug.defvar('foo', 'bar')", "foo");
-aug.print(_defvar);
 ack("aug.defvar('foo')", "foo");
-aug.print(_defvar);
 
 ack("aug.hosts = '/files/etc/hosts/*'", undefined);
-aug.print(_defvar);
-aug.localhost = "'127.0.0.1'";
-aug.print(_defvar);
+aug.localhost = "127.0.0.1";
+ack('aug.localhost', '127.0.0.1');
 
 ack("aug.load()", true);
 
@@ -50,7 +46,7 @@ var newrpc = passwd+"/newrpc";
 var newrpcnewname = newrpc+"/"+newname;
 ack("aug.mv(rpc, newrpc)", true);
 ack("aug.get(newrpcnewname)", "George");
-ack("aug.rm(newrpc)", true);
+ack("aug.rm(newrpc)", 8);
 
 // XXX return depends on root in order to rewrite changed files. */
 ack("aug.save()", undefined);
