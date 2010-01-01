@@ -5,11 +5,13 @@
 #include "system.h"
 
 #include "rpmfi-js.h"
+#include "rpmbf-js.h"
 #include "rpmhdr-js.h"
 #include "rpmjs-debug.h"
 
 #include <argv.h>
 #include <mire.h>
+#include <rpmbf.h>
 
 #include <rpmdb.h>
 
@@ -56,6 +58,7 @@ enum rpmfi_tinyid {
     _FGROUP	= -21,
     _FCOLOR	= -22,
     _FCLASS	= -23,
+    _FNBF	= -24,
 };
 
 static JSPropertySpec rpmfi_props[] = {
@@ -81,6 +84,7 @@ static JSPropertySpec rpmfi_props[] = {
     {"fgroup",	_FGROUP,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"fcolor",	_FCOLOR,	JSPROP_ENUMERATE,	NULL,	NULL},
     {"fclass",	_FCLASS,	JSPROP_ENUMERATE,	NULL,	NULL},
+    {"fnbf",	_FNBF,		JSPROP_ENUMERATE,	NULL,	NULL},
     {NULL, 0, 0, NULL, NULL}
 };
 
@@ -199,6 +203,20 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	   t[sizeof("symbolic link")-1] = '\0';
 	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, t));
 	t = _free(t);
+      }	break;
+    case _FNBF:
+      {	rpmbf bf = NULL;
+	JSObject *bfo = NULL;
+	if ((bf = rpmfiFNBF(fi)) == NULL)
+            *vp = JSVAL_NULL;
+        else
+        if ((bfo = JS_NewObject(cx, &rpmbfClass, NULL, NULL)) != NULL
+         && JS_SetPrivate(cx, bfo, rpmbfLink(bf)))
+            *vp = OBJECT_TO_JSVAL(bfo);
+        else {
+	    bf = rpmbfFree(bf);
+            *vp = JSVAL_VOID;
+	}
       }	break;
     default:
 	if (tiny < 0 || tiny >= rpmfiFC(fi)) break;
