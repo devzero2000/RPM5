@@ -167,11 +167,12 @@ LIBRPM_0
     rpmfiFGroup;
     rpmfiFInode;
     rpmfiFLink;
-    rpmfiFNMaxLen;
     rpmfiFMode;
     rpmfiFMtime;
     rpmfiFN;
+    rpmfiFNBF;
     rpmfiFNlink;
+    rpmfiFNMaxLen;
     rpmfiFRdev;
     rpmfiFreeRelocations;
     rpmfiFSize;

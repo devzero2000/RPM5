@@ -619,6 +619,15 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 #endif
 
 /**
+ * Return FN Bloom filter from file info set.
+ * @param fi		file info set
+ * @return		FN Bloom filter, NULL on invalid
+ */
+/*@null@*/
+void * rpmfiFNBF(rpmfi fi)
+	/*@*/;
+
+/**
  * Return next file iterator index.
  * @param fi		file info set
  * @return		file iterator index, -1 on termination

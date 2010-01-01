@@ -171,6 +171,14 @@ const char * rpmfiFN(rpmfi fi)
     return FN;
 }
 
+void * rpmfiFNBF(rpmfi fi)
+{
+    void * _fnbf = NULL;
+    if (fi != NULL)
+	_fnbf = fi->_fnbf;
+    return _fnbf;
+}
+
 size_t rpmfiFNMaxLen(rpmfi fi)
 {
     if (fi != NULL)
