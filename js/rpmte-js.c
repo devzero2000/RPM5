@@ -16,6 +16,8 @@
 
 #include <rpmdb.h>
 
+#include <rpmds.h>
+#include <rpmfi.h>
 #include <rpmal.h>
 #include <rpmts.h>
 #define	_RPMTE_INTERNAL		/* XXX for rpmteNew/rpmteFree */
@@ -48,10 +50,16 @@ _METHOD_DEBUG_ENTRY(_debug);
         goto exit;
     {	rpmds ds = NULL;
 	JSObject *dso = NULL;
-	if ((ds = rpmteDS(te, tagN)) != NULL
-	 && (dso = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) != NULL
-	 && JS_SetPrivate(cx, dso, ds))
+	if ((ds = rpmteDS(te, tagN)) == NULL)
+	    *rval = JSVAL_NULL;
+	else
+	if ((dso = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) != NULL
+	 && JS_SetPrivate(cx, dso, rpmdsLink(ds, __FUNCTION__)))
 	    *rval = OBJECT_TO_JSVAL(dso);
+	else {
+	    ds = rpmdsFree(ds);
+	    *rval = JSVAL_VOID;
+	}
     }
     ok = JS_TRUE;
 exit:
@@ -72,10 +80,16 @@ _METHOD_DEBUG_ENTRY(_debug);
         goto exit;
     {	rpmfi fi = NULL;
 	JSObject *fio = NULL;
-	if ((fi = rpmteFI(te, tagN)) != NULL
-	 && (fio = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) != NULL
-	 && JS_SetPrivate(cx, fio, fi))
+	if ((fi = rpmteFI(te, tagN)) == NULL)
+	    *rval = JSVAL_NULL;
+	else
+	if ((fio = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) != NULL
+	 && JS_SetPrivate(cx, fio, rpmfiLink(fi, __FUNCTION__)))
 	    *rval = OBJECT_TO_JSVAL(fio);
+	else {
+	    fi = rpmfiFree(fi);
+	    *rval = JSVAL_VOID;
+	}
     }
     ok = JS_TRUE;
 exit:
