@@ -360,6 +360,7 @@ fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, 
 
     return ok;
 }
+
 /* --- Class initialization */
 JSClass rpmdcClass = {
     /* XXX class should be "Digest" eventually, avoid name conflicts for now */
