@@ -12,7 +12,7 @@ ack("xar.debug = 1;", 1);
 ack("xar.debug = 0;", 0);
 
 ix = 0;
-ack("xar.length", ix);		// XXX ensure undefined or 0 until iterated
+ack("xar.length", undefined);	// XXX ensure undefined or 0 until iterated
 for (var [key,val] in Iterator(xar)) {
     path = val[0];
     st = val[1];
@@ -20,6 +20,7 @@ for (var [key,val] in Iterator(xar)) {
     print('\t0'+st.mode.toString(8)+' '+st.uid+'/'+st.gid+' '+st.size+' '+st.mtime);
     ix++;
 }
+ack("ix > 0", true);
 ack("xar.length", ix);
 
 if (loglvl) print("<-- Xar.js");

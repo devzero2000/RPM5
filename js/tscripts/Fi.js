@@ -12,8 +12,8 @@ ack("mi.instance", 0);  // zero before iterating
 
 // var h = new Hdr();
 for (var [dbkey,h] in Iterator(mi)) {
-    nack("mi.instance", 0); // non-zero when iterating
-//  ack("mi.instance", h.instance);
+    ack("mi.instance", 0); // non-zero when iterating
+    ack("mi.instance", h.instance);
 
     var fi = new Fi(h);
     ack("typeof fi;", "object");
