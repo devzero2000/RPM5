@@ -534,7 +534,7 @@ ack('W.sync() && W.close(0)', true);
 print('<==== WORDS');
 }
 
-if (1) {
+if (0) {
 print('====> FILES');
 var dbfile = "F.db";
 var F = new BDB(dbenv, "F", DB_RECNO, "files", DB_SNAPSHOT);
