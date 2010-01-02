@@ -108,7 +108,7 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@echo "--> gcrypt(note: MPI padding is BROKEN atm):"
 	@-${tpgp} --usecrypto gc
 	@echo -n "--> nss:"
-	@${tpgp} --usecrypto nss
+	@-${tpgp} --usecrypto nss
 	@echo -n "--> openssl:"
 	@${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
@@ -116,7 +116,7 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@diff -u {tmp,ref}/popt.Kv
 	@${rpm} -Kvv --usecrypto bc $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto gc $(POPTPKGS) > /dev/null 2>&1
-	@${rpm} -Kvv --usecrypto nss $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto nss $(POPTPKGS) > /dev/null 2>&1
 	@${rpm} -Kvv --usecrypto ssl $(POPTPKGS) > /dev/null 2>&1
 
 .PHONY:	check-markup
