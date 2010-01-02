@@ -133,6 +133,9 @@ rpmtxn_Prepare(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtxnClass, NULL);
     DB_TXN * txn = ptr;
+#if !defined(DB_GID_SIZE)
+#define	DB_GID_SIZE	128
+#endif
     uint8_t _gid[DB_GID_SIZE] = {0};
     const char * _s = NULL;
     JSBool ok = JS_FALSE;

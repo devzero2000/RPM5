@@ -1374,8 +1374,10 @@ AC_SUBST(DBLIBOBJS)
 AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
 AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
 AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
+AC_ARG_WITH(db-sql,       AS_HELP_STRING([--with-db-sql],       [build Berkeley-DB with db_sql support (db-4.8.24 or later)]))
 AC_ARG_WITH(db-tools-integrated, AS_HELP_STRING([--with-db-tools-integrated], [install integrated Berkeley-DB tools]))
 AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
+AM_CONDITIONAL(WITH_DB_SQL, test ".$with_db_sql" = .yes)
 AM_CONDITIONAL(WITH_DB_TOOLS_INTEGRATED, test ".$with_db_tools_integrated" = .yes)
 
 dnl # determine default RPM DB API and configuration

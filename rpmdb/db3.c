@@ -251,7 +251,9 @@ static KEY DBeflags[] = {
     _ENTRY(USE_ENVIRON_ROOT),
     _ENTRY(CREATE),
     _ENTRY(LOCKDOWN),
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     _ENTRY(FAILCHK),
+#endif
     _ENTRY(PRIVATE),
     _ENTRY(REGISTER),
     _ENTRY(SYSTEM_MEM),
@@ -359,7 +361,9 @@ static KEY DBCflags[] = {
     _ENTRY(NODUPDATA),		/* Db.put, Dbc.put */
     _ENTRY(NOOVERWRITE),	/* Db.put */
     _ENTRY(NOSYNC),		/* Db.close */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     _ENTRY(OVERWRITE_DUP),	/* Dbc.put, Db.put; no DB_KEYEXIST */
+#endif
     _ENTRY(POSITION),		/* Dbc.dup */
     _ENTRY(PREV),		/* Dbc.get, DbLogc->get */
     _ENTRY(PREV_DUP),		/* Dbc.get */
@@ -368,8 +372,10 @@ static KEY DBCflags[] = {
     _ENTRY(SET_RANGE),		/* Dbc.get */
     _ENTRY(SET_RECNO),		/* Db.get, Dbc.get */
     _ENTRY(UPDATE_SECONDARY),	/* Dbc.get, Dbc.del (internal) */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     _ENTRY(SET_LTE),		/* Dbc.get (internal) */
     _ENTRY(GET_BOTH_LTE),	/* Dbc.get (internal) */
+#endif
 
     _ENTRY(IGNORE_LEASE),
     _ENTRY(READ_COMMITTED),
@@ -687,8 +693,13 @@ static struct _events_s {
 } _events[] = {
     _TABLE(NO_SUCH_EVENT),	/*  0 */
     _TABLE(PANIC),		/*  1 */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     _TABLE(REG_ALIVE),		/*  2 */
     _TABLE(REG_PANIC),		/*  3 */
+#else
+    _TABLE(NO_SUCH_EVENT),	/*  2 */
+    _TABLE(NO_SUCH_EVENT),	/*  3 */
+#endif
     _TABLE(REP_CLIENT),		/*  4 */
     _TABLE(REP_ELECTED),	/*  5 */
     _TABLE(REP_MASTER),		/*  6 */
@@ -1484,16 +1495,14 @@ static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    DB * secondary = dbisecondary->dbi_db;
-    int rc;
+    int rc = ENOTSUP;;
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+    DB * db = dbi->dbi_db;
+    DB * secondary = dbisecondary->dbi_db;
 assert(db != NULL);
     rc = db->associate_foreign(db, secondary, callback, flags);
-#else
-    rc = EINVAL;
 #endif
 /*@=moduncon@*/
     rc = cvtdberr(dbi, "db->associate_foreign", rc, _debug);

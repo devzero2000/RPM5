@@ -1360,7 +1360,13 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _TYPE:		*vp = _GET_U(!db->get_type(db, &_u));	break;
     case _BT_MINKEY:	*vp = _GET_U(!db->get_bt_minkey(db, &_u));	break;
     case _CACHESIZE:	*vp = _GET_U(!db->get_cachesize(db, &_gb, &_u, &_i)); break;
-    case _CREATE_DIR:	*vp = _GET_S(!db->get_create_dir(db, &_s)); break;
+    case _CREATE_DIR:
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+	*vp = _GET_S(!db->get_create_dir(db, &_s));
+#else
+	*vp = JSVAL_VOID;
+#endif
+	break;
     case _ENCRYPT:	*vp = _GET_U(!db->get_encrypt_flags(db, &_u));	break;
     case _ERRFILE:
 	db->get_errfile(db, &_fp);
@@ -1397,12 +1403,14 @@ rpmdb_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	break;
     case _PAGESIZE:	*vp = _GET_U(!db->get_pagesize(db, &_u));	break;
     case _PARTITION_DIRS:	break;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
 	if (!db->get_partition_dirs(db, &_av)
 	 && (_ac = argvCount(_av)) > 0)
 	{
 	    _s = _av[0];	/* XXX FIXME: return array */
 	    *vp = _RET_S(_s);
 	} else
+#endif
 	    *vp = JSVAL_VOID;
 	break;
     case _PRIORITY:	*vp = _GET_U(!db->get_priority(db, &_u));	break;
@@ -1515,7 +1523,13 @@ rpmdb_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	} else
 	    *vp = JSVAL_FALSE;
 	break;
-    case _CREATE_DIR:	*vp = _PUT_S(db->set_create_dir(db, _s));	break;
+    case _CREATE_DIR:
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+	*vp = _PUT_S(db->set_create_dir(db, _s));
+#else
+	*vp = JSVAL_VOID;
+#endif
+	break;
     case _ENCRYPT:	*vp = _PUT_S(db->set_encrypt(db, _s, DB_ENCRYPT_AES)); break;
     case _ERRFILE:
 	/* XXX FIXME: cleaner typing */

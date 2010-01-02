@@ -50,8 +50,13 @@ static struct _events_s {
 } _events[] = {
     _TABLE(NO_SUCH_EVENT),	/*  0 */
     _TABLE(PANIC),		/*  1 */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     _TABLE(REG_ALIVE),		/*  2 */
     _TABLE(REG_PANIC),		/*  3 */
+#else
+    _TABLE(NO_SUCH_EVENT),	/*  2 */
+    _TABLE(NO_SUCH_EVENT),	/*  3 */
+#endif
     _TABLE(REP_CLIENT),		/*  4 */
     _TABLE(REP_ELECTED),	/*  5 */
     _TABLE(REP_MASTER),		/*  6 */
@@ -1851,7 +1856,13 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	} else
 	    *vp = JSVAL_VOID;
 	break;
-    case _CREATE_DIR:	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s)); break;
+    case _CREATE_DIR:
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+	*vp = _GET_S(!dbenv->get_create_dir(dbenv, &_s));
+#else
+	*vp = JSVAL_VOID;
+#endif
+	break;
     case _ENCRYPT:	*vp = _GET_U(!dbenv->get_encrypt_flags(dbenv, &_u)); break;
     case _ERRFILE:
 	dbenv->get_errfile(dbenv, &_fp);
@@ -1936,7 +1947,9 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 #define	_JUMP(_v, _lbl)	_##_v:	_i = _v;	goto _lbl
     case _JUMP(DB_REP_CONF_BULK,		_get_config);
     case _JUMP(DB_REP_CONF_DELAYCLIENT,		_get_config);
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     case _JUMP(DB_REP_CONF_INMEM,		_get_config);
+#endif
     case _JUMP(DB_REP_CONF_LEASE,		_get_config);
     case _JUMP(DB_REP_CONF_NOAUTOINIT,		_get_config);
     case _JUMP(DB_REP_CONF_NOWAIT,		_get_config);
@@ -2030,11 +2043,19 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     /* dbenv->add_data_dir() */
     case _DATADIRS:
 	/* XXX duplicates? */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
 	*vp = _PUT_S(dbenv->add_data_dir(dbenv, _s));
+#else
+	*vp = JSVAL_VOID;
+#endif
 	break;
     case _CREATE_DIR:
 	/* XXX check datadirs to prevent failure? */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
 	*vp = _PUT_S(dbenv->set_create_dir(dbenv, _s));
+#else
+	*vp = JSVAL_VOID;
+#endif
 	break;
     case _ENCRYPT:
 	*vp = _PUT_S(dbenv->set_encrypt(dbenv, _s, DB_ENCRYPT_AES));
@@ -2088,7 +2109,11 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     _set_timeout:
 	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, _nc));
 	break;
-    case _REGTIMEOUT:	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_REG_TIMEOUT));	break;
+    case _REGTIMEOUT:
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+	*vp = _PUT_U(dbenv->set_timeout(dbenv, (db_timeout_t)_u, DB_SET_REG_TIMEOUT));
+#endif
+	break;
 
     case _TMPDIR:	*vp = _PUT_S(dbenv->set_tmp_dir(dbenv, _s));	break;
     case _VERBOSE:	break;	/* XXX FIXME */
@@ -2155,7 +2180,9 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 #define	_JUMP(_v, _lbl)	_##_v:	_i = _v;	goto _lbl
     case _JUMP(DB_REP_CONF_BULK,		_set_config);
     case _JUMP(DB_REP_CONF_DELAYCLIENT,		_set_config);
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     case _JUMP(DB_REP_CONF_INMEM,		_set_config);
+#endif
     case _JUMP(DB_REP_CONF_LEASE,		_set_config);
     case _JUMP(DB_REP_CONF_NOAUTOINIT,		_set_config);
     case _JUMP(DB_REP_CONF_NOWAIT,		_set_config);

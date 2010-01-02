@@ -88,7 +88,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     {	int _result = 0;
 	uint32_t _flags = 0;
-	int ret = dbc->cmp(dbc, _otherdbc, &_result, _flags);
+	int ret = ENOTSUP;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
+	ret = dbc->cmp(dbc, _otherdbc, &_result, _flags);
+#endif
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->cmp: %s\n", db_strerror(ret));

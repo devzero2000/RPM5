@@ -192,6 +192,7 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/libdb-4.8.la
 endif
 
+if WITH_DB_SQL
 pkgbin_PROGRAMS +=	db_sql
 db_sql_SOURCES =	../db/db_sql/db_sql.c
 db_sql_LDFLAGS		= @LDFLAGS_STATIC@ $(LDFLAGS)
@@ -209,6 +210,7 @@ db_sql_LDADD = \
 	$(top_builddir)/db3/generate_verification.lo \
 	$(top_builddir)/db3/hint_comment.lo \
 	$(top_builddir)/db3/libdb-4.8.la
+endif
 endif
 
 if WITH_DB_INTERNAL
