@@ -18,6 +18,9 @@
 /*@unchecked@*/
 int _rpmsp_debug = -1;
 
+/*@unchecked@*/ /*@relnull@*/
+rpmsp _rpmspI = NULL;
+
 static void rpmspFini(void * _sp)
 	/*@globals fileSystem @*/
 	/*@modifies *_sp, fileSystem @*/
