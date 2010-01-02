@@ -69,7 +69,7 @@ tpgp_LDADD = $(RPM_LDADD)
 tpgp.c: genpgp.h
 
 genpgp.h: genpgp.sh
-	-sh ./genpgp.sh > genpgp.h
+	-sh $< > $@
 
 .PHONY:	check-init
 check-init: macros
@@ -266,6 +266,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 	check-triggers check-tools # check-repo
 
 clean-local:
-	rm -f gengpg.h
+	rm -f genpgp.h
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
