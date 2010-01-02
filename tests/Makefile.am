@@ -49,16 +49,16 @@ chroot =	$(abs_top_builddir)/tools/chroot
 cp =		$(abs_top_builddir)/tools/cp
 find =		$(abs_top_builddir)/tools/find
 grep =		$(abs_top_builddir)/tools/grep
+lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 rc =		$(abs_top_builddir)/tools/rc
 wget =		$(abs_top_builddir)/tools/wget
-xar =		$(abs_top_builddir)/tools/xar
 
 cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
 gpg =		@__GPG@
-lua =		@__LUA@
+mkdir =		@__MKDIR@
 mv =		@__MV@
 rm =		@__RM@
 tar =		@__TAR@
@@ -96,7 +96,9 @@ $(POPTPKGS):
 .PHONY:	check-pubkeys
 check-pubkeys: tpgp $(POPTPKGS)
 	@echo "=== $@ ==="
-	@rm -rf tmp/rpmdb
+	@${rm} -rf tmp/rpmdb
+	@${mkdir} -p tmp/rpmdb/{log,tmp}
+	@${cp} ref/DB_CONFIG tmp/rpmdb
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
 	@echo -n "--> default:"
@@ -263,7 +265,7 @@ check-tools:
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-install check-query check-verify \
-	check-triggers check-tools # check-repo
+	check-triggers # check-tools # check-repo
 
 clean-local:
 	rm -f genpgp.h
