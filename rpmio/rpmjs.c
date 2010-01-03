@@ -70,15 +70,12 @@ static struct {
     {"werror",		JSOPTION_WERROR},
     {"atline",		JSOPTION_ATLINE},
     {"xml",		JSOPTION_XML},
-<<<<<<< rpmjs.c
 #ifdef JSOPTION_RELIMIT
     {"relimit",		JSOPTION_RELIMIT},
 #endif
 #ifdef JSOPTION_ANONFUNFIX
     {"anonfunfix",	JSOPTION_ANONFUNFIX},
 #endif
-=======
->>>>>>> 1.16
     {NULL,		0}
 };
 
@@ -426,14 +423,11 @@ assert(cx != NULL);
     JS_BeginRequest(cx);
 #endif
     JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-<<<<<<< rpmjs.c
 #if JS_VERSION < 180 
     JS_SetVersion(cx, JSVERSION_1_7);
 #else
     JS_SetVersion(cx, JSVERSION_LATEST);
 #endif
-=======
->>>>>>> 1.16
     JS_SetErrorReporter(cx, reportError);
 #ifdef	NOTYET
     JS_CStringsAreUTF8();
