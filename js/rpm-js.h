@@ -35,4 +35,12 @@
 #include "jsutil.h" /* Added by JSIFY */
 #endif
 
+#ifndef JS_FS
+#define JS_FS(name,call,nargs,flags,extra) \
+    {name, call, nargs, flags, extra}
+#endif
+#ifndef JS_FS_END
+#define JS_FS_END JS_FS(NULL,NULL,0,0,0)
+#endif
+
 #endif	/* H_RPM_JS */

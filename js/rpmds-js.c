@@ -357,7 +357,7 @@ fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
 	    return NULL;
 	}
     } else
-    if (OBJ_IS_ARRAY(cx, o)) {
+    if (JS_IsArrayObject(cx, o)) {
 	jsuint length = 0;
 	jsuint i;
 	JSBool ok = JS_GetArrayLength(cx, o, &length);

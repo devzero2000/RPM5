@@ -206,7 +206,9 @@ rpmjsLoadClasses(void)
     /* XXX FIXME: resultp != NULL to actually execute?!? */
     (void) rpmjsRun(NULL, "print(\"loading RPM classes.\");", &result);
     js = _rpmjsI;
+#ifdef JS_GC_ZEAL
     (void) JS_SetGCZeal(js->cx, _zeal);
+#endif
     for (i = 0, tbl = classTable; i < nclassTable; i++, tbl++) {
 	if (tbl->ix <= 0)
 	    continue;

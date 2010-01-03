@@ -2231,7 +2231,11 @@ file_toURL(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     urlChars = js_InflateString(cx, url, &len);
     if (!urlChars)
         return JS_FALSE;
+#if JS_VERSION < 180
+    str = js_NewString(cx, urlChars, len, 0);
+#else
     str = js_NewString(cx, urlChars, len);
+#endif
     if (!str) {
         JS_free(cx, urlChars);
         return JS_FALSE;

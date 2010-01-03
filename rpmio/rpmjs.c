@@ -217,14 +217,6 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     return JS_TRUE;
 }
 
-#ifndef JS_FS
-#define JS_FS(name,call,nargs,flags,extra) \
-    {name, call, nargs, flags, extra}
-#endif
-#ifndef JS_FS_END
-#define JS_FS_END JS_FS(NULL,NULL,0,0,0)
-#endif
-
 static JSFunctionSpec shell_functions[] = {
     JS_FS("version",	Version,	0,0,0),
     JS_FS("options",	Options,	0,0,0),

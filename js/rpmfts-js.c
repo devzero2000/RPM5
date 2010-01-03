@@ -46,7 +46,7 @@ rpmfts_init(JSContext *cx, JSObject *obj, JSObject *dno, int _options)
 
     if (dno) {
 	ARGV_t av = NULL;
-	if (OBJ_IS_ARRAY(cx, dno)) {
+	if (JS_IsArrayObject(cx, dno)) {
 	    jsuint length = 0;
 	    jsuint i;
 
