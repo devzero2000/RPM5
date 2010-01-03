@@ -70,8 +70,6 @@ static struct {
     {"werror",		JSOPTION_WERROR},
     {"atline",		JSOPTION_ATLINE},
     {"xml",		JSOPTION_XML},
-    {"relimit",		JSOPTION_RELIMIT},
-    {"anonfunfix",	JSOPTION_ANONFUNFIX},
     {NULL,		0}
 };
 
@@ -154,7 +152,11 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 	JSString *str;
 	char *bytes;
 	if ((str = JS_ValueToString(cx, argv[i])) == NULL
+#if JS_VERSION < 180 
+	 || (bytes = JS_GetStringBytes(str)) == NULL)
+#else
 	 || (bytes = JS_EncodeString(cx, str)) == NULL)
+#endif
 	    return JS_FALSE;
 	fprintf(fp, "%s%s", i ? " " : "", bytes);
 	JS_free(cx, bytes);
@@ -214,6 +216,14 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 
     return JS_TRUE;
 }
+
+#ifndef JS_FS
+#define JS_FS(name,call,nargs,flags,extra) \
+    {name, call, nargs, flags, extra}
+#endif
+#ifndef JS_FS_END
+#define JS_FS_END JS_FS(NULL,NULL,0,0,0)
+#endif
 
 static JSFunctionSpec shell_functions[] = {
     JS_FS("version",	Version,	0,0,0),
@@ -407,7 +417,6 @@ assert(cx != NULL);
     JS_BeginRequest(cx);
 #endif
     JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-    JS_SetVersion(cx, JSVERSION_LATEST);
     JS_SetErrorReporter(cx, reportError);
 #ifdef	NOTYET
     JS_CStringsAreUTF8();

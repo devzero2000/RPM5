@@ -37,6 +37,7 @@ Neon            optional  0.26.0  0.28.4  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.6.14  http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
+JavaScript      optional  1.7     1.7.0   http://www.mozilla.org/js/spidermonkey/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 XZ Utils    [3] optional  4.999.9 4.999.9 http://tukaani.org/xz/
@@ -209,6 +210,7 @@ partly dependency order from top to bottom):
                          libpcre     (mandatory)
                          libsqlite3  (optional)
                          liblua      (optional)
+                         libjs       (optional)
                          libz        (optional)
                          libbz2      (optional)
                          libintl     (optional)
