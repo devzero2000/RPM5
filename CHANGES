@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: fix: reduce the scope of db->db_h caching optimization
+	(multiple headerLoad's are avoided) so that non-existent secondary
+	indices can be lazily rebuilt as needed.
     - afb: JS: use libjs 1.7.0 on FreeBSD.
     - jbj: tests: configure an rpmdb using DB_CONFIG with reasonable tuning.
     - jbj: add --with-db-sql.

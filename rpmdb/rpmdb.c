@@ -2494,6 +2494,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 		/*@unused@*/ rpmts ts)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    Header h = NULL;
     sigset_t signalMask;
     dbiIndex dbi;
     size_t dbix;
@@ -2506,20 +2507,20 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
     /* Retrieve header for use by associated secondary index callbacks. */
     {	rpmmi mi;
 	mi = rpmmiInit(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
-	db->db_h = rpmmiNext(mi);
-	if (db->db_h)
-	    db->db_h = headerLink(db->db_h);
+	h = rpmmiNext(mi);
+	if (h)
+	    h = headerLink(h);
 	mi = rpmmiFree(mi);
     }
 
-    if (db->db_h == NULL) {
+    if (h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", (unsigned)hdrNum);
 	return 1;
     }
 
     he->tag = RPMTAG_NVRA;
-    xx = headerGet(db->db_h, he, 0);
+    xx = headerGet(h, he, 0);
     rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", (unsigned)hdrNum, he->p.str);
     he->p.ptr = _free(he->p.ptr);
 
@@ -2544,7 +2545,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 	switch (he->tag) {
 	default:
 	    /* Don't bother if tag is not present. */
-	    if (!headerGet(db->db_h, he, 0))
+	    if (!headerGet(h, he, 0))
 		/*@switchbreak@*/ break;
 	    dbi = dbiOpen(db, he->tag, 0);
 assert(dbi != NULL);					/* XXX sanity */
@@ -2558,11 +2559,14 @@ assert(dbi != NULL);					/* XXX sanity */
 	    /*@switchbreak@*/ break;
 	case RPMDBI_PACKAGES:
 	    if (db->db_export != NULL)
-		xx = db->db_export(db, db->db_h, 0);
+		xx = db->db_export(db, h, 0);
 
 	    ui = _hton_ui(hdrNum);
 	    k.data = &ui;
 	    k.size = (UINT32_T) sizeof(ui);
+
+	    /* New h ref for use by associated secondary index callbacks. */
+	    db->db_h = headerLink(h);
 
 	    dbi = dbiOpen(db, he->tag, 0);
 assert(dbi != NULL);
@@ -2571,6 +2575,11 @@ assert(dbi != NULL);
 	    if (!rc)
 		rc = dbiDel(dbi, dbcursor, &k, &v, 0);
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+
+	    /* Unreference db_h used by associated secondary index callbacks. */
+	    (void) headerFree(db->db_h);
+	    db->db_h = NULL;
+
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
@@ -2579,8 +2588,8 @@ assert(dbi != NULL);
     } while (dbix-- > 0);
 
     /* Unreference header used by associated secondary index callbacks. */
-    (void) headerFree(db->db_h);
-    db->db_h = NULL;
+    (void) headerFree(h);
+    h = NULL;
 
     (void) unblockSignals(db, &signalMask);
 
@@ -2604,9 +2613,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 
 if (_rpmdb_debug)
 fprintf(stderr, "--> %s(%p, %u, %p, %p) h# %u\n", __FUNCTION__, db, (unsigned)iid, h, ts, hdrNum);
-
-    /* Reference header for use by associated secondary index callbacks. */
-    db->db_h = headerLink(h);
 
 assert(headerIsEntry(h, RPMTAG_REMOVETID) == 0);	/* XXX sanity */
 
@@ -2695,11 +2701,19 @@ assert(v.data != NULL);
 		v.size = (UINT32_T) len;
 	    }
 
+	    /* New h ref for use by associated secondary index callbacks. */
+	    db->db_h = headerLink(h);
+
 	    dbi = dbiOpen(db, he->tag, 0);
 assert(dbi != NULL);					/* XXX sanity */
 	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 	    xx = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+
+	    /* Unreference db_h used by associated secondary index callbacks. */
+	    (void) headerFree(db->db_h);
+	    db->db_h = NULL;
+
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
@@ -2709,10 +2723,6 @@ assert(dbi != NULL);					/* XXX sanity */
 	}
 
     } while (dbix-- > 0);
-
-    /* Unreference header used by associated secondary index callbacks. */
-    (void) headerFree(db->db_h);
-    db->db_h = NULL;
 
     (void) unblockSignals(db, &signalMask);
 
