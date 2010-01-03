@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - afb: JS: use libjs 1.7.0 on FreeBSD.
     - jbj: tests: configure an rpmdb using DB_CONFIG with reasonable tuning.
     - jbj: add --with-db-sql.
     - jbj: permit building with db-4.7.25.
