@@ -54,6 +54,42 @@ mtree =		$(abs_top_builddir)/tools/mtree
 rc =		$(abs_top_builddir)/tools/rc
 wget =		$(abs_top_builddir)/tools/wget
 
+rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
+rpmdb_Tables = \
+	$(rpmdb)/Arch	\
+	$(rpmdb)/Basenames	\
+	$(rpmdb)/Conflictname	\
+	$(rpmdb)/Dirnames	\
+	$(rpmdb)/Filedigests	\
+	$(rpmdb)/Filepaths	\
+	$(rpmdb)/Group	\
+	$(rpmdb)/Installtid	\
+	$(rpmdb)/Name	\
+	$(rpmdb)/Nvra	\
+	$(rpmdb)/Obsoletename	\
+	$(rpmdb)/Os	\
+	$(rpmdb)/Packagecolor	\
+	$(rpmdb)/Providename	\
+	$(rpmdb)/Pubkeys	\
+	$(rpmdb)/Release	\
+	$(rpmdb)/Requirename	\
+	$(rpmdb)/Seqno	\
+	$(rpmdb)/Sha1header	\
+	$(rpmdb)/Sigmd5	\
+	$(rpmdb)/Sourcepkgid	\
+	$(rpmdb)/Triggername	\
+	$(rpmdb)/Version
+
+db_tool =	$(abs_top_builddir)/tools/db_tool
+db_archive =	${db_tool} db_archive	-h $(rpmdb) -v
+db_checkpoint =	${db_tool} db_checkpoint -h $(rpmdb) -v
+db_dump =	${db_tool} db_dump	-h $(rpmdb)
+db_load =	${db_tool} db_load	-h $(rpmdb)
+db_printlog =	${db_tool} db_printlog	-h $(rpmdb)
+db_recover =	${db_tool} db_recover	-h $(rpmdb) -v
+db_stat =	${db_tool} db_stat	-h $(rpmdb)
+db_verify =	${db_tool} db_verify	-h $(rpmdb)
+
 cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
@@ -110,14 +146,14 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@echo -n "--> nss:"
 	@-${tpgp} --usecrypto nss
 	@echo -n "--> openssl:"
-	@${tpgp} --usecrypto ssl
+	@-${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u {tmp,ref}/popt.Kv
 	@${rpm} -Kvv --usecrypto bc $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto gc $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto nss $(POPTPKGS) > /dev/null 2>&1
-	@${rpm} -Kvv --usecrypto ssl $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto ssl $(POPTPKGS) > /dev/null 2>&1
 
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
@@ -174,6 +210,26 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.2
 	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
 	@${rpm} -e car engine wheel door tyre window glass
+
+check-ACID:
+	@echo "=== $@ ==="
+	@-${db_checkpoint} -1	> /dev/null 2>&1
+	@${rpm} -Uvh ref/edos.manifest
+	@-${db_dump} Packages | ${db_load} Packages
+	@-${db_verify} Packages
+	@-${db_stat} -CA	> /dev/null 2>&1
+	@rm -f tmp/rpmdb/Nvra
+	@${rpm} -q tyre > /dev/null 2>&1
+	@[ -f tmp/rpmdb/Nvra ] || echo "NACK: Nvra not re-created!"
+	@rm -f tmp/rpmdb/Conflictname
+	@${rpm} -q --whatconflicts tyre > /dev/null 2>&1
+	@[ -f tmp/rpmdb/Conflictname ] || echo "NACK: Conflictname not re-created!"
+	@rm -f $(rpmdb_Tables)
+	@-${db_recover} -e
+	@${rpm} -e car engine wheel door tyre window glass
+	@-${db_printlog} -r	> /dev/null 2>&1
+	@-${db_checkpoint} -1	> /dev/null 2>&1
+	@-${db_archive} -d
 
 check-install:
 	@echo "=== $@ ==="
@@ -264,7 +320,7 @@ check-tools:
 	@${grep} -i HREF $(POPTURI) > tmp/grep
 
 check-local: check-init check-pubkeys check-markup check-macros \
-	check-build check-install check-query check-verify \
+	check-build check-ACID check-install check-query check-verify \
 	check-triggers # check-tools # check-repo
 
 clean-local:
