@@ -155,6 +155,16 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@-${rpm} -Kvv --usecrypto nss $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto ssl $(POPTPKGS) > /dev/null 2>&1
 
+.PHONY:	check-sign
+check-sign:
+	@echo "=== $@ ==="
+	@echo "--> DSA:"
+	@${rpm} -D'_gpg_name Donald' --addsign --nopassword cudf-test/*.rpm > /dev/null
+	@${rpm} -Kv cudf-test/*.rpm	> /dev/null
+	@echo "--> RSA:"
+	@${rpm} -D'_gpg_name Ronald' --addsign --nopassword edos-test/*.rpm > /dev/null
+	@${rpm} -Kv edos-test/*.rpm	> /dev/null
+
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
 	@echo "=== $@ ==="
@@ -214,7 +224,7 @@ check-build: $(BUILD_DIRS)
 check-ACID:
 	@echo "=== $@ ==="
 	@-${db_checkpoint} -1	> /dev/null 2>&1
-	@${rpm} -Uvh ref/edos.manifest
+	@${rpm} -Uvh --stats ref/edos.manifest
 	@-${db_dump} Packages | ${db_load} Packages
 	@-${db_verify} Packages
 	@-${db_stat} -CA	> /dev/null 2>&1
@@ -236,6 +246,7 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
+.PHONY:	check-triggers
 check-triggers:
 	@echo "=== $@ ==="
 	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*' > /dev/null 2>&1
@@ -284,6 +295,7 @@ check-query:
 	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
+	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{providesqlentry}\n] [%{requiresqlentry}\n] [%{conflictsqlentry}\n] [%{obsoletesqlentry}\n] [%{filessqlentry1}\n] [%{filessqlentry2}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES:shescape}: %{FILEMTIMES:shescape} %{FILEFLAGS:perms} %{FILEMODES:fflags}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILECLASS}\n]' > /dev/null
@@ -320,7 +332,8 @@ check-tools:
 	@${grep} -i HREF $(POPTURI) > tmp/grep
 
 check-local: check-init check-pubkeys check-markup check-macros \
-	check-build check-ACID check-install check-query check-verify \
+	check-build check-sign check-ACID check-install \
+	check-query check-verify \
 	check-triggers # check-tools # check-repo
 
 clean-local:

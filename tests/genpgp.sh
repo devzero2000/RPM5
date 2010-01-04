@@ -16,7 +16,7 @@ $gpg --batch --debug-quick-random --gen-key << GO_SYSIN_DD
 Key-Type: DSA
 Key-Length: 1024
 Key-Usage: sign
-Name-Real: DSApub
+Name-Real: Donald
 Name-Comment: 1024
 Name-Email: rppm-devel@rpm5.org
 Expire-Date: 1
@@ -24,7 +24,7 @@ Expire-Date: 1
 Key-Type: RSA
 Key-Length: 4096
 Key-Usage: sign,encrypt
-Name-Real: RSApub
+Name-Real: Ronald
 Name-Comment: 4096
 Name-Email: rpm-devel@rpm5.org
 Expire-Date: 1
@@ -45,11 +45,11 @@ GO_SYSIN_DD
 
 echo "static const char * plaintextfn = \"$plaintext\";"
 
-$gpg --detach-sign -u DSApub --output - $plaintext > ${DSA}.sig
-$gpg --detach-sign -a -u DSApub --output - $plaintext > ${DSA}.sigpem
-$gpg --clearsign -u DSApub --output - $plaintext > ${DSA}.pem
-$gpg --export DSApub > ${DSA}.pub
-$gpg --export -a DSApub > ${DSA}.pubpem
+$gpg --detach-sign -u Donald --output - $plaintext > ${DSA}.sig
+$gpg --detach-sign -a -u Donald --output - $plaintext > ${DSA}.sigpem
+$gpg --clearsign -u Donald --output - $plaintext > ${DSA}.pem
+$gpg --export Donald > ${DSA}.pub
+$gpg --export -a Donald > ${DSA}.pubpem
 
 echo "static const char * DSAsig = \"${DSA}.sig\";"
 echo "static const char * DSAsigpem = \"${DSA}.sigpem\";"
@@ -58,11 +58,11 @@ echo "static const char * DSApub = \"${DSA}.pub\";"
 echo "static const char * DSApubpem = \"${DSA}.pubpem\";"
 echo "static const char * DSApubid = \"`$gpg --fingerprint DSApub | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g'`\";"
 
-$gpg --detach-sign -u RSApub --output - $plaintext > ${RSA}.sig
-$gpg --detach-sign -a -u RSApub --output - $plaintext > ${RSA}.sigpem
-$gpg --clearsign -u RSApub --output - $plaintext > ${RSA}.pem
-$gpg --export RSApub > ${RSA}.pub
-$gpg --export -a RSApub > ${RSA}.pubpem
+$gpg --detach-sign -u Ronald --output - $plaintext > ${RSA}.sig
+$gpg --detach-sign -a -u Ronald --output - $plaintext > ${RSA}.sigpem
+$gpg --clearsign -u Ronald --output - $plaintext > ${RSA}.pem
+$gpg --export Ronald > ${RSA}.pub
+$gpg --export -a Ronald > ${RSA}.pubpem
 
 echo "static const char * RSAsig = \"${RSA}.sig\";"
 echo "static const char * RSAsigpem = \"${RSA}.sigpem\";"

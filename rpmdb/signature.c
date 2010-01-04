@@ -493,6 +493,9 @@ int rpmCheckPassPhrase(const char * passPhrase)
     int rc;
     int xx;
 
+    if (!(passPhrase && passPhrase[0]))
+	return 0;
+
     p[0] = p[1] = 0;
     xx = pipe(p);
 

@@ -229,8 +229,9 @@ done
 -14: __gpg_check_password_cmd	%{__gpg} 
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
 -14: __gpg_sign_cmd	%{__gpg} 
-	gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning 
-	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
+    gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning 
+    --homedir %{_testdir}/tmp/.gnupg 
+    -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 -14: __grep	%{_usrlibrpmbin}/grep
 -14: __gzip	/bin/gzip
 -14: __hg	/usr/bin/hg
