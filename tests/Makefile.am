@@ -112,13 +112,13 @@ check-init: macros
 	@echo "=== $@ ==="
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
-	@-diff -u {tmp,ref}/version || cp {tmp,ref}/version
+	@-diff -u tmp/version ref/version || cp tmp/version ref/version
 	@${rpm} -v --querytags	> tmp/querytags
-	@-diff -u {tmp,ref}/querytags || cp {tmp,ref}/querytags
+	@-diff -u tmp/querytags ref/querytags || cp tmp/querytags ref/querytags
 	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
-	@-diff -u {tmp,ref}/showrc || cp {tmp,ref}/showrc
+	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
-	@-diff -u {tmp,ref}/.alldigests || cp {tmp,ref}/.alldigests
+	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
 	@${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
 POPTURI =	http://rpm5.org/files/popt/
@@ -133,7 +133,7 @@ $(POPTPKGS):
 check-pubkeys: tpgp $(POPTPKGS)
 	@echo "=== $@ ==="
 	@${rm} -rf tmp/rpmdb
-	@${mkdir} -p tmp/rpmdb/{log,tmp}
+	@${mkdir} -p tmp/rpmdb/log tmp/rpmdb/tmp
 	@${cp} ref/DB_CONFIG tmp/rpmdb
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
