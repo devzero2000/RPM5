@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: sync DB_CONFIG.in with what "make check" is using.
     - jbj: js: guesstimate a set of modules that might be portable/functional.
     - jbj: fts: fully initialize FTSENT (for JS use).
     - jbj: js: don't bother doing rpmts check/order/run if no elements.
