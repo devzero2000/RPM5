@@ -435,6 +435,8 @@ if (sigh != NULL) {
 		goto exit;
 	    }
 	}
+	(void)headerFree(sigh);
+	sigh = NULL;
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */

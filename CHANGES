@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: sign: fix: add a killref to plug a header memory leak.
     - jbj: tests: add a check-ACID target w db_tool coverage tests.
     - jbj: rpmdb: fix: reduce the scope of db->db_h caching optimization
 	(multiple headerLoad's are avoided) so that non-existent secondary
