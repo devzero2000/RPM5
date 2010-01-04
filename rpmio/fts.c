@@ -516,8 +516,10 @@ fprintf(stderr, "--> Fts_read(%p)\n", sp);
 		/* If skipped or crossed mount point, do post-order visit. */
 		if (instr == FTS_SKIP ||
 		    (ISSET(FTS_XDEV) && p->fts_dev != sp->fts_dev)) {
-			if (p->fts_flags & FTS_SYMFOLLOW)
+			if (p->fts_flags & FTS_SYMFOLLOW) {
 				(void)__close(p->fts_symfd);
+				p->fts_symfd = -1;
+			}
 			if (sp->fts_child) {
 				fts_lfree(sp->fts_child);
 				sp->fts_child = NULL;
@@ -647,12 +649,14 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 		if (FCHDIR(sp, p->fts_symfd)) {
 			saved_errno = errno;
 			(void)__close(p->fts_symfd);
+			p->fts_symfd = -1;
 			__set_errno (saved_errno);
 			SET(FTS_STOP);
 			p = NULL;
 			goto exit;
 		}
 		(void)__close(p->fts_symfd);
+		p->fts_symfd = -1;
 	} else if (!(p->fts_flags & FTS_DONTCHDIR) &&
 		   fts_safe_changedir(sp, p->fts_parent, -1, "..")) {
 		SET(FTS_STOP);
@@ -1193,6 +1197,8 @@ fts_alloc(FTS * sp, const char * name, int namelen)
 		len += sizeof(*p->fts_statp) + ALIGNBYTES;
 	if ((p = malloc(len)) == NULL)
 		return (NULL);
+	memset(p, 0, sizeof(*p));
+	p->fts_symfd = -1;
 
 	/* Copy the name and guarantee NUL termination. */
 	memmove(p->fts_name, name, namelen);
