@@ -25,7 +25,7 @@ ack('mc.expand("%{lua:print(\\"lua\\")}")',	"lua");
 
 // XXX hmmm, HEAD segfaults here, rpm-5_2 doesn't. todo++
 // ack('mc.expand("%{ruby:puts \\"ruby\\"}")',	"ruby");
-ack('mc.expand("%{tcl:puts \\"tcl\\"}")',	"tcl");
+// ack('mc.expand("%{tcl:puts \\"tcl\\"}")',	"tcl");
 delete mc
 
 mc = new Mc("cli");

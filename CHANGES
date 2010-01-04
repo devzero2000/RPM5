@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: guesstimate a set of modules that might be portable/functional.
     - jbj: fts: fully initialize FTSENT (for JS use).
     - jbj: js: don't bother doing rpmts check/order/run if no elements.
     - jbj: rpmdb: fix: ensure that rpmdb pool allocations are set to zero.

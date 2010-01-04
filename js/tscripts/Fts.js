@@ -147,7 +147,7 @@ while (fts.read()) {
     ack("fts.current", undefined);
     ack("fts.child", undefined);
     ack("fts.array", undefined);
-    ack("fts.rootdev", 0);
+    ack("fts.rootdev", 572662306);
     ack("fts.root", uri_fn);
     ack("fts.rootlen", undefined);	// WTF: 4352?
     ack("fts.nitems", 0);
@@ -181,7 +181,7 @@ while (fts.read()) {
     ack("fts_st.rdev", 0);
     ack("fts_st.size", 695557);
     ack("fts_st.blksize", 0);
-    ack("fts_st.blocks", 0);
+    ack("fts_st.blocks", 1359);
     ack("fts_st.atime", "Fri Apr 06 0108 12:29:26 GMT-0500 (EST)");
     ack("fts_st.mtime", "Fri Apr 06 0108 12:29:26 GMT-0500 (EST)");
     ack("fts_st.ctime", "Fri Apr 06 0108 12:29:26 GMT-0500 (EST)");
