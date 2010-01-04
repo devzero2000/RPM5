@@ -464,7 +464,7 @@ DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)cou
     return rc;
 }
 
-static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int fdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -2049,7 +2049,7 @@ fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(err
     return (ssize_t) count;
 }
 
-static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {

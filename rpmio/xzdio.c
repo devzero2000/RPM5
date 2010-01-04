@@ -425,7 +425,7 @@ DBGIO(fd, (stderr, "==>\txzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
     return rc;
 }
 
-static inline int xzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
+static int xzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
 			/*@unused@*/ int whence)
 	/*@*/
 {

@@ -368,7 +368,7 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 
 /* XXX zlib-1.0.4 has not */
 #define	HAVE_GZSEEK	/* XXX autoFu doesn't set this anymore. */
-static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
