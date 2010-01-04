@@ -644,7 +644,9 @@ static rpmdb rpmdbGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, NULL);
 	pool = _rpmdbPool;
     }
-    return (rpmdb) rpmioGetPool(pool, sizeof(*db));
+    db = (rpmdb) rpmioGetPool(pool, sizeof(*db));
+    memset(((char *)db)+sizeof(db->_item), 0, sizeof(*db)-sizeof(db->_item));
+    return db;
 }
 
 int rpmdbOpenAll(rpmdb db)
