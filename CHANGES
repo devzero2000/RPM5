@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: don't bother doing rpmts check/order/run if no elements.
     - jbj: rpmdb: fix: ensure that rpmdb pool allocations are set to zero.
     - jbj: tests: add a check-sign target w DSA/RSA coverage.
     - jbj: sign: fix: add a killref to plug a header memory leak.

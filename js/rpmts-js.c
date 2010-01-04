@@ -131,7 +131,8 @@ rpmts_check(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    (void) rpmcliInstallCheck(ts);	/* XXX print ps for now */
+    if (rpmtsNElements(ts) > 0)
+	(void) rpmcliInstallCheck(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
 
     *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
@@ -147,7 +148,8 @@ rpmts_order(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    (void) rpmcliInstallOrder(ts);	/* XXX print ps for now */
+    if (rpmtsNElements(ts) > 0)
+	(void) rpmcliInstallOrder(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
 
     *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
@@ -165,7 +167,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 #ifdef	NOTYET
     /* XXX force --test instead. */
-    (void) rpmcliInstallRun(ts, NULL, 0);	/* XXX print ps for now */
+    if (rpmtsNElements(ts) > 0)
+	(void) rpmcliInstallRun(ts, NULL, 0);
 #else
     rpmtsEmpty(ts);
 #endif
@@ -549,6 +552,7 @@ rpmts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     JSBool ok = JS_FALSE;
+    int nelements = 0;
     int oc;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
@@ -557,8 +561,10 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	ok = JS_TRUE;
 	goto exit;
     }
+    if ((nelements = rpmtsNElements(ts)) <= 0)
+	goto exit;
 
-    if (JSVAL_IS_INT(id) && (oc = JSVAL_TO_INT(id)) >= 0 && oc < ts->orderCount)
+    if (JSVAL_IS_INT(id) && (oc = JSVAL_TO_INT(id)) >= 0 && oc < nelements)
     {
 	int oc = JSVAL_TO_INT(id);
 	JSObject *teo = NULL; 
