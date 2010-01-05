@@ -151,7 +151,9 @@ static urlinfo urlGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, urlFini);
 	pool = _urlPool;
     }
-    return (urlinfo) rpmioGetPool(pool, sizeof(*u));
+    u = (urlinfo) rpmioGetPool(pool, sizeof(*u));
+    memset(((char *)u)+sizeof(u->_item), 0, sizeof(*u)-sizeof(u->_item));
+    return u;
 }
 
 urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)

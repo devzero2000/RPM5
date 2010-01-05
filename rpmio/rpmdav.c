@@ -1199,7 +1199,9 @@ static rpmhtml htmlGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, htmlFini);
 	pool = _htmlPool;
     }
-    return (rpmhtml) rpmioGetPool(pool, sizeof(*html));
+    html = (rpmhtml) rpmioGetPool(pool, sizeof(*html));
+    memset(((char *)html)+sizeof(html->_item), 0, sizeof(*html)-sizeof(html->_item));
+    return html;
 }
 
 /**

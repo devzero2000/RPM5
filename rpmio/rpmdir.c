@@ -49,7 +49,9 @@ static rpmavx avxGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, avxFini);
 	pool = _avxPool;
     }
-    return (rpmavx) rpmioGetPool(pool, sizeof(*avx));
+    avx = (rpmavx) rpmioGetPool(pool, sizeof(*avx));
+    memset(((char *)avx)+sizeof(avx->_item), 0, sizeof(*avx)-sizeof(avx->_item));
+    return avx;
 }
 
 void * rpmavxNew(const char *uri, struct stat *st)
