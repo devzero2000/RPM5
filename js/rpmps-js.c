@@ -222,10 +222,9 @@ rpmps_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
 
-    ps = rpmpsFree(ps);
+    (void) rpmpsFree(ps);
 }
 
 static JSBool

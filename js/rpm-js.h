@@ -13,8 +13,11 @@
 
 #define	XP_UNIX	1
 #include "jsapi.h"
-#include "jsarray.h"	/* XXX js_ArrayClass */
-#include "jsdate.h"	/* XXX js_NewDateObject */
+
+/* XXX <jsapi.h> wartlets */
+JSObject *
+js_NewDateObject(JSContext* cx, int year, int mon, int mday,
+                 int hour, int min, int sec);
 
 #ifndef JS_FS
 #define JS_FS(name,call,nargs,flags,extra) \

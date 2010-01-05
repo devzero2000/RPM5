@@ -354,8 +354,7 @@ rpmte_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
 
 #ifdef	BUGGY	/* XXX the ts object holds an implicit reference currently. */
     {	rpmte te = ptr;

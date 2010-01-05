@@ -2316,6 +2316,10 @@ js_NewFileObject(JSContext *cx, char *filename)
 }
 
 /* Internal function, used for cases which NSPR file support doesn't cover */
+/*XXX keep gcc happy */
+JSObject*
+js_NewFileObjectFromFILE(JSContext *cx, FILE *nativehandle, char *filename,
+    int32 mode, JSBool open, JSBool randomAccess);
 JSObject*
 js_NewFileObjectFromFILE(JSContext *cx, FILE *nativehandle, char *filename,
     int32 mode, JSBool open, JSBool randomAccess)
@@ -2862,6 +2866,7 @@ static JSBool
 file_currentDirSetter(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     JSFile   *file;
+    int xx;
 
     file = JS_GetInstancePrivate(cx, obj, &js_FileClass, NULL);
 
@@ -2873,7 +2878,7 @@ file_currentDirSetter(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
                 JS_GetProperty(cx, obj, CURRENTDIR_PROPERTY, vp);
                 return JS_FALSE;
             } else {
-                chdir(file->path);
+                xx = chdir(file->path);
                 return JS_TRUE;
             }
         } else {
@@ -2892,7 +2897,7 @@ file_currentDirSetter(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
             JS_GetProperty(cx, obj, CURRENTDIR_PROPERTY, vp);
         } else {
             *vp = OBJECT_TO_JSVAL(rhsObject);
-            chdir(path);
+            xx = chdir(path);
         }
     }
 

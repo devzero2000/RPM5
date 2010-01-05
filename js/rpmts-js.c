@@ -36,8 +36,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = -1;
-
+static int _debug = 0;
 
 #define	rpmts_addprop	JS_PropertyStub
 #define	rpmts_delprop	JS_PropertyStub
@@ -681,8 +680,7 @@ rpmts_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
 
     (void) rpmtsFree(ts);
 }

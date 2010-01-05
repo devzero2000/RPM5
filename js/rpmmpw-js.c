@@ -2239,9 +2239,9 @@ rpmmpw_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     mpwObject * z = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    z = _free(z);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) _free(z);
 }
 
 static JSBool

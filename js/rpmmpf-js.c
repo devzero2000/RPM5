@@ -419,10 +419,12 @@ static void
 rpmmpf_dtor(JSContext *cx, JSObject *obj)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
+#ifdef	NOTYET	/* XXX let BDB handle DB_MPOOLFILE ptrs */
     DB_MPOOLFILE * mpf = ptr;
+#endif
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
+
 #ifdef	NOTYET	/* XXX let BDB handle DB_MPOOLFILE ptrs */
     if (mpf)
 	(void) mpf->close(mpf, 0);

@@ -578,8 +578,8 @@ rpmdbc_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
+
     if (dbc)
 	(void) dbc->close(dbc);
 }

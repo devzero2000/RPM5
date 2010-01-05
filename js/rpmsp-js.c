@@ -93,7 +93,6 @@ rpmsp_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmspClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    JSBool ok = JS_TRUE;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -180,9 +179,9 @@ rpmsp_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmspClass, NULL);
     rpmsp sp = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    sp = rpmspFree(sp);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) rpmspFree(sp);
 }
 
 static JSBool
@@ -225,9 +224,10 @@ rpmsp_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     _con = _free(_con);
 
     ok = JS_TRUE;
-#endif
 
 exit:
+#endif
+
 if (_debug)
 fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
 

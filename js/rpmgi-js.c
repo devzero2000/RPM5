@@ -170,10 +170,10 @@ rpmgi_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmgiClass, NULL);
     rpmgi gi = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
+
     if (gi)
-	gi = rpmgiFree(gi);
+	(void) rpmgiFree(gi);
 }
 
 static JSBool

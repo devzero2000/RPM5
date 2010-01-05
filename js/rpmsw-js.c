@@ -167,9 +167,9 @@ rpmsw_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmswClass, NULL);
     rpmsw sw = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    sw = rpmswFree(sw);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) rpmswFree(sw);
 }
 
 static JSBool

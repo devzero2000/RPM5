@@ -69,6 +69,10 @@ const char * v2s(JSContext *cx, jsval v)
 	fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", \
 	    __FUNCTION__, cx, obj, type, vp, ptr, JS_GetTypeName(cx, type))
 
+#define	_DTOR_DEBUG_ENTRY(_test) \
+    if (_test) \
+	fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr)
+
 #define	_CTOR_DEBUG_ENTRY(_test) \
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", \

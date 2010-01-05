@@ -1656,8 +1656,8 @@ rpmdb_dtor(JSContext *cx, JSObject *obj)
     DB * db = ptr;
     uint32_t _flags = 0;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
+
     if (db)
 	(void) db->close(db, _flags);
 }

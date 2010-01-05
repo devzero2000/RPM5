@@ -196,12 +196,10 @@ rpmdir_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
     DIR * dir = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    if (dir) {
+_DTOR_DEBUG_ENTRY(_debug);
+
+    if (dir)
 	(void) Closedir(dir);
-	/* XXX error msg */
-    }
 }
 
 static JSBool

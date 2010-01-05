@@ -278,8 +278,8 @@ rpmmc_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     rpmmc mc = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
+
     if (!(mc == rpmGlobalMacroContext || mc == rpmCLIMacroContext)) {
 	rpmFreeMacros(mc);
 	mc = _free(mc);

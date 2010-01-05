@@ -212,9 +212,9 @@ rpmxar_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmxarClass, NULL);
     rpmxar xar = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    xar = rpmxarFree(xar, __FUNCTION__);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) rpmxarFree(xar, __FUNCTION__);
 }
 
 static JSBool

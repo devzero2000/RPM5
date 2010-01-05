@@ -163,10 +163,10 @@ rpmiob_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmiobClass, NULL);
     rpmiob iob = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
+_DTOR_DEBUG_ENTRY(_debug);
+
     if (iob)
-	iob = rpmiobFree(iob);
+	(void) rpmiobFree(iob);
 }
 
 static JSBool

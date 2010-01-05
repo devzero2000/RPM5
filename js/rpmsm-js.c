@@ -106,7 +106,6 @@ rpmsm_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
-    JSBool ok = JS_TRUE;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -190,9 +189,9 @@ rpmsm_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
     rpmsm sm = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    sm = rpmsmFree(sm);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) rpmsmFree(sm);
 }
 
 static JSBool

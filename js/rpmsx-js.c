@@ -333,9 +333,9 @@ rpmsx_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsxClass, NULL);
     rpmsx sx = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    sx = rpmsxFree(sx);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) rpmsxFree(sx);
 }
 
 static JSBool

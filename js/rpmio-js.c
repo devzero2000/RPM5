@@ -622,12 +622,9 @@ rpmio_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    if (fd) {
+_DTOR_DEBUG_ENTRY(_debug);
+    if (fd)
 	(void) Fclose(fd);
-	/* XXX error msg */
-    }
 }
 
 static JSBool

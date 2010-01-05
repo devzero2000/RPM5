@@ -273,11 +273,10 @@ rpmdc_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdcClass, NULL);
     rpmdc dc = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    if (dc) {
+_DTOR_DEBUG_ENTRY(_debug);
+
+    if (dc)
 	(void) rpmDigestFinal(dc, NULL, NULL, 0);
-    }
 }
 
 static JSBool

@@ -666,9 +666,9 @@ rpmsys_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    sys = ptr = _free(sys);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    sys = _free(sys);
 }
 
 static JSBool

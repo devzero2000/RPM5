@@ -196,9 +196,9 @@ rpmmg_dtor(JSContext *cx, JSObject *obj)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmgClass, NULL);
     rpmmg mg = ptr;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
-    mg = rpmmgFree(mg);
+_DTOR_DEBUG_ENTRY(_debug);
+
+    (void) rpmmgFree(mg);
 }
 
 static JSBool
