@@ -13,31 +13,10 @@
 
 #ifdef	WITH_JS
 #define	XP_UNIX	1
-#undef	JS_HAS_FILE_OBJECT
-
-#include "jsstddef.h"
-#include "jstypes.h"
-#include "jsarena.h"
-#include "jsutil.h"
 #include "jsprf.h"
 #include "jsapi.h"
-#include "jsarray.h"
-#include "jsatom.h"
-#include "jscntxt.h"
-#include "jsdbgapi.h"
-#include "jsemit.h"
-#include "jsfun.h"
-#include "jsgc.h"
-#include "jslock.h"
-#include "jsnum.h"
-#include "jsobj.h"
-#include "jsparse.h"
-#include "jsscope.h"
-#include "jsscript.h"
-#ifdef	JS_HAS_FILE_OBJECT
-#include "rpmjsio.h"
 #endif
-#endif
+
 #define _RPMJS_INTERNAL
 #include "rpmjs.h"
 
@@ -443,9 +422,7 @@ assert(glob != NULL);
 #endif
 
     xx = JS_InitStandardClasses(cx, glob);
-#ifdef	JS_HAS_FILE_OBJECT
-    (void) js_InitFileClass(cx, glob);
-#endif
+
     xx = JS_DefineFunctions(cx, glob, shell_functions);
     js->glob = glob;
 
