@@ -192,7 +192,10 @@ $(logio_BUILT):	logio.awk logio.src
 logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
 
-BUILT_SOURCES = tagtbl.c tbdb.c bdb.c bdb.h $(logio_BUILT)
+BUILT_SOURCES = tagtbl.c $(logio_BUILT)
+if WITH_DB_SQL
+BUILT_SOURCES += tbdb.c bdb.c bdb.h
+endif
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
