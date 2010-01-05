@@ -168,7 +168,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 #ifdef	NOTYET
     /* XXX force --test instead. */
     if (rpmtsNElements(ts) > 0)
-	(void) rpmcliInstallRun(ts, NULL, 0);
+	(void) rpmcliInstallRun(ts, NULL, 0);	/* XXX print ps for now */
 #else
     rpmtsEmpty(ts);
 #endif
@@ -552,7 +552,6 @@ rpmts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     JSBool ok = JS_FALSE;
-    int nelements = 0;
     int oc;
 
 _RESOLVE_DEBUG_ENTRY(_debug);
@@ -561,10 +560,8 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	ok = JS_TRUE;
 	goto exit;
     }
-    if ((nelements = rpmtsNElements(ts)) <= 0)
-	goto exit;
 
-    if (JSVAL_IS_INT(id) && (oc = JSVAL_TO_INT(id)) >= 0 && oc < nelements)
+    if (JSVAL_IS_INT(id) && (oc = JSVAL_TO_INT(id)) >= 0 && oc < rpmtsNElements(ts))
     {
 	int oc = JSVAL_TO_INT(id);
 	JSObject *teo = NULL; 
