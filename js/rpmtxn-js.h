@@ -8,7 +8,7 @@
 #include "rpm-js.h"
 
 extern JSClass rpmtxnClass;
-#define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
+#define	OBJ_IS_RPMTXN(_cx, _o)	(JS_GET_CLASS(_cx, _o) == &rpmtxnClass)
 
 #ifdef __cplusplus
 extern "C" {

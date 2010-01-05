@@ -592,8 +592,7 @@ rpmseq_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     uint32_t _flags = 0;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o, &_flags)))
 	goto exit;
@@ -601,7 +600,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (uns
     if (OBJ_IS_RPMDB(cx, o))
 	_db = JS_GetInstancePrivate(cx, o, &rpmdbClass, NULL);
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmseq_init(cx, obj, _db, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmseqClass, NULL, NULL)) == NULL)

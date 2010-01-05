@@ -181,10 +181,9 @@ rpmgi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmgi_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmgiClass, NULL, NULL)) == NULL)

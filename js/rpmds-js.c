@@ -394,7 +394,7 @@ fprintf(stderr, "\trpmdsSingle(%s(%d), %s, %s, 0x%x) ds %p\n", tagName(_tagN), _
 	return NULL;
     } else {
 if (_debug)
-fprintf(stderr, "\tobject class %p is unknown. ds %p\n", OBJ_GET_CLASS(cx, o), ds);
+fprintf(stderr, "\tobject class %p is unknown. ds %p\n", JS_GET_CLASS(cx, o), ds);
 	return NULL;
     }
     if (!JS_SetPrivate(cx, obj, (void *)ds)) {
@@ -424,13 +424,12 @@ rpmds_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject *o = NULL;
     int tagN = RPMTAG_REQUIRENAME;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &o, &tagN)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	if (rpmds_init(cx, obj, o, tagN) == NULL)
 	    goto exit;
     } else {

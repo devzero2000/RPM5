@@ -220,7 +220,7 @@ rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
     JSObject *o = (JSVAL_IS_OBJECT(id) ? JSVAL_TO_OBJECT(id) : NULL);
-    JSClass *c = (o ? OBJ_GET_CLASS(cx, o) : NULL);
+    JSClass *c = (o ? JS_GET_CLASS(cx, o) : NULL);
 
 _RESOLVE_DEBUG_ENTRY(_debug);
 
@@ -347,13 +347,12 @@ rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     rpmTag tag = RPMDBI_PACKAGES;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/vv", &tso, &tagid, &kv)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 
 	if (!JSVAL_IS_VOID(tagid)) {

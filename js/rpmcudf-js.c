@@ -53,7 +53,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &fno)))
 	goto exit;
 
-    if (fno && OBJ_IS_STRING(cx, fno)) {
+    if (fno && JSVAL_IS_STRING(OBJECT_TO_JSVAL(fno))) {
 	const char * _fn =
 		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
 	int _flags = RPMCUDV_CUDF;	/* XXX FIXME */
@@ -258,7 +258,7 @@ rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno, int _flags)
     const char * fn = NULL;
     rpmcudf cudf = NULL;
 
-    if (fno && OBJ_IS_STRING(cx, fno))
+    if (fno && JSVAL_IS_STRING(OBJECT_TO_JSVAL(fno)))
 	fn = JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
 
     switch (_flags) {
@@ -301,13 +301,12 @@ rpmcudf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject *fno = NULL;
     int _flags = 0;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/oi", &fno, &_flags)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmcudf_init(cx, obj, fno, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmcudfClass, NULL, NULL)) == NULL)

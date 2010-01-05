@@ -372,13 +372,12 @@ rpmte_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject *tso = NULL;
     JSObject *hdro = NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/o", &tso, &hdro)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 	if (rpmte_init(cx, obj, ts, hdro) == NULL)
 	    goto exit;

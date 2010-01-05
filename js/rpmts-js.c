@@ -36,7 +36,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _debug = -1;
 
 
 #define	rpmts_addprop	JS_PropertyStub
@@ -168,7 +168,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 #ifdef	NOTYET
     /* XXX force --test instead. */
     if (rpmtsNElements(ts) > 0)
-	(void) rpmcliInstallRun(ts, NULL, 0);	/* XXX print ps for now */
+	(void) rpmcliInstallRun(ts, NULL, 0);
 #else
     rpmtsEmpty(ts);
 #endif
@@ -560,10 +560,9 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 	ok = JS_TRUE;
 	goto exit;
     }
-
-    if (JSVAL_IS_INT(id) && (oc = JSVAL_TO_INT(id)) >= 0 && oc < rpmtsNElements(ts))
+    if (JSVAL_IS_INT(id)
+     && (oc = JSVAL_TO_INT(id)) >= 0 && oc < rpmtsNElements(ts))
     {
-	int oc = JSVAL_TO_INT(id);
 	JSObject *teo = NULL; 
 	rpmte te = NULL;
 	/* XXX rpmteLink/rpmteUnlink are no-ops */
@@ -693,10 +692,9 @@ rpmts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_CTOR_DEBUG_ENTRY(_debug);
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	if (rpmts_init(cx, obj) == NULL)
 	    goto exit;
     } else {

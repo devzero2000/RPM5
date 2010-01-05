@@ -364,13 +364,12 @@ rpmbf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     unsigned int _flags = 0;
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/uuu", &_m, &_k, &_flags)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	if (rpmbf_init(cx, obj, _m, _k, _flags) == NULL)
 	    goto exit;
     } else {

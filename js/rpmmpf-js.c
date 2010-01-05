@@ -43,7 +43,7 @@ static int _debug = 0;
 
 /* --- Object methods */
 
-#define	OBJ_IS_RPMTXN(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmtxnClass)
+#define	OBJ_IS_RPMTXN(_cx, _o)	(JS_GET_CLASS(_cx, _o) == &rpmtxnClass)
 
 #define	_RPMMPF_PAGESIZE	(4 * BUFSIZ)
 
@@ -434,10 +434,9 @@ rpmmpf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmmpf_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmpfClass, NULL, NULL)) == NULL)

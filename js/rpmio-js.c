@@ -637,13 +637,12 @@ rpmio_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _fn = NULL;
     const char * _fmode = "r.ufdio";
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ss", &_fn, &_fmode)))
         goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmio_init(cx, obj, _fn, _fmode);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmioClass, NULL, NULL)) == NULL)

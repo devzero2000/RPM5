@@ -287,13 +287,12 @@ rpmdc_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     unsigned int _dalgo = PGPHASHALGO_NONE;
     unsigned int _flags = RPMDIGEST_NONE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/uu", &_dalgo, &_flags)))
         goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmdc_init(cx, obj, _dalgo, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdcClass, NULL, NULL)) == NULL)

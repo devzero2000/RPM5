@@ -385,13 +385,12 @@ rpmfi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSObject *hdro = NULL;
     int tagN = RPMTAG_BASENAMES;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &hdro, &tagN)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	Header h = JS_GetInstancePrivate(cx, hdro, &rpmhdrClass, NULL);
 	if (rpmfi_init(cx, obj, ts, h, tagN) == NULL)
 	    goto exit;

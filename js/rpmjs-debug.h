@@ -6,8 +6,8 @@
  */
 #include <rpm-js.h>
 
-#define	OBJ_IS_STRING(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &js_StringClass)
-#define	OBJ_IS_RPMHDR(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmhdrClass)
+#define	OBJ_IS_STRING(_cx, _o)	(JSVAL_IS_STRING(OBJECT_TO_JSVAL(_o)))
+#define	OBJ_IS_RPMHDR(_cx, _o)	(JS_GET_CLASS(_cx, _o) == &rpmhdrClass)
 
 static inline
 const char * v2s(JSContext *cx, jsval v)
@@ -18,9 +18,8 @@ const char * v2s(JSContext *cx, jsval v)
     if (JSVAL_IS_DOUBLE(v))	return "double";
     if (JSVAL_IS_STRING(v))	return "string";
     if (JSVAL_IS_BOOLEAN(v))	return "boolean";
-    if (JSVAL_IS_OBJECT(v)) {
-	return OBJ_GET_CLASS(cx, JSVAL_TO_OBJECT(v))->name;
-    }
+    if (JSVAL_IS_OBJECT(v))
+	return JS_GET_CLASS(cx, JSVAL_TO_OBJECT(v))->name;
     return "other";
 }
 
@@ -69,6 +68,12 @@ const char * v2s(JSContext *cx, jsval v)
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,%d,%p) ptr %p convert to %s\n", \
 	    __FUNCTION__, cx, obj, type, vp, ptr, JS_GetTypeName(cx, type))
+
+#define	_CTOR_DEBUG_ENTRY(_test) \
+    if (_test) \
+	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", \
+	    __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, \
+	    (JS_IsConstructing(cx) ? " constructing" : ""))
 
 /*@unchecked@*/
 extern int _rpmjs_debug;

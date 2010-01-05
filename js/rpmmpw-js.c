@@ -38,7 +38,7 @@ static int _debug = 0;
 #define rpmmpw_iteratorobject	NULL
 #define rpmmpw_wrappedobject	NULL
 
-#define	OBJ_IS_MPW(cx,obj)	((obj) && OBJ_GET_CLASS((cx), (obj)) == &rpmmpwClass)
+#define	OBJ_IS_MPW(cx,obj)	((obj) && JS_GET_CLASS((cx), (obj)) == &rpmmpwClass)
 #define	JSVAL_IS_MPW(cx, v)	(JSVAL_IS_OBJECT(v) && OBJ_IS_MPW(cx, JSVAL_TO_OBJECT(v)))
 
 /* --- helpers */
@@ -2250,13 +2250,12 @@ rpmmpw_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
     jsval v = JSVAL_NULL;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &v)))
 	goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmmpw_init(cx, obj, v);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmpwClass, NULL, NULL)) == NULL)

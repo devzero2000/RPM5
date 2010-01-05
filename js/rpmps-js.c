@@ -233,10 +233,9 @@ rpmps_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+_CTOR_DEBUG_ENTRY(_debug);
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	if (rpmps_init(cx, obj) == NULL)
 	    goto exit;
     } else {

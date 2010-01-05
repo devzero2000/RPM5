@@ -208,13 +208,12 @@ rpmmg_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _magicfile = NULL;
     int _flags = 0;
 
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ((cx->fp->flags & JSFRAME_CONSTRUCTING) ? " constructing" : ""));
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_magicfile, &_flags)))
         goto exit;
 
-    if (cx->fp->flags & JSFRAME_CONSTRUCTING) {
+    if (JS_IsConstructing(cx)) {
 	(void) rpmmg_init(cx, obj, _magicfile, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmgClass, NULL, NULL)) == NULL)

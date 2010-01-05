@@ -9,7 +9,7 @@
 #include "rpm-js.h"
 
 extern JSClass rpmdbClass;
-#define	OBJ_IS_RPMDB(_cx, _o)	(OBJ_GET_CLASS(_cx, _o) == &rpmdbClass)
+#define	OBJ_IS_RPMDB(_cx, _o)	(JS_GET_CLASS(_cx, _o) == &rpmdbClass)
 
 #if defined(_RPMDB_JS_INTERNAL)
 #include <db.h>
