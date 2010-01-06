@@ -24,11 +24,11 @@ AM_CPPFLAGS = \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
-AM_CFLAGS = $(OPENMP_CFLAGS) -I../db
+AM_CFLAGS = $(OPENMP_CFLAGS) -I$(top_srcdir)/db
 
 EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql \
-	logio.awk logio.src logio_template logio.c logio_rec.c \
+	logio.awk logio.src logio_recover_template logio_template logio.c logio_rec.c \
 	logio_auto.c logio_autop.c logio_auto.h
 
 EXTRA_PROGRAMS = logio tjfn tbdb
@@ -180,14 +180,17 @@ lcov-report:
 #	rsync -rvz -e ssh --delete lcov/* ???
 
 logio_BUILT = logio_auto.c logio_autop.c logio_auto.h logio_template
-$(logio_BUILT):	logio.awk logio.src
+$(logio_BUILT):	logio.awk logio.src logio_recover_template
+	@test -e $(builddir)/logio_recover_template || \
+		cp -p $(srcdir)/logio_recover_template \
+		      $(builddir)/logio_recover_template
 	@rm -f $(logio_BUILT)
-	@$(AWK) -f logio.awk \
+	@$(AWK) -f $(srcdir)/logio.awk \
 		-v header_file=logio_auto.h \
 		-v print_file=logio_autop.c \
 		-v source_file=logio_auto.c \
 		-v template_file=logio_template \
-	< logio.src
+	< $(srcdir)/logio.src
 
 logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
