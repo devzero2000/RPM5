@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: allow --with-js=/usr/lib:/usr/include/js w external TraceMonkey.
     - jbj: rpmdb: sync DB_CONFIG.in with what "make check" is using.
     - jbj: js: guesstimate a set of modules that might be portable/functional.
     - jbj: fts: fully initialize FTSENT (for JS use).

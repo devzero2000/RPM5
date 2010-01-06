@@ -1487,11 +1487,10 @@ dnl # JavaScript
 WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
     [JavaScript], [js],
-    [js], [JS_NewContext], [jsstddef.h],
-    [no,internal:none], [js:src:src],
+    [js], [JS_NewContext], [jsapi.h],
+    [no,internal:external:none], [js:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
 	  WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
-          AC_DEFINE(HAVE_JSSTDDEF_H, 1, [Define to 1 if you have <jsstddef.h>])
 	  AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
       fi
     ], [])
