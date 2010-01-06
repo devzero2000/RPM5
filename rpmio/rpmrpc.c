@@ -1719,6 +1719,7 @@ fprintf(stderr, "<-- %s(%s,%0o) rc %d\n", __FUNCTION__, path, (int)mode, rc);
 
 int Lchmod(const char * path, mode_t mode)
 {
+#if defined(HAVE_LCHMOD)
     const char * lpath;
     int ut = urlPath(path, &lpath);
     int rc = -2;
@@ -1744,6 +1745,10 @@ exit:
 if (_rpmio_debug)
 fprintf(stderr, "<-- %s(%s,%0o) rc %d\n", __FUNCTION__, path, (int)mode, rc);
     return rc;
+#else
+    errno = ENOSYS;
+    return -2;
+#endif
 }
 
 int Fchmod(FD_t fd, mode_t mode)
