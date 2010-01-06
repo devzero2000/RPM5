@@ -146,9 +146,11 @@ static int getFiletriggers_raw(const char * rootDir, int * nftp,
 	    } else {
 		char * be = b + bn;
 		*be = '\0';
-		if ((be = strchr(b, '\n')) != NULL)
-		while (be > b && xisspace((int)be[-1]))
-		    *(--be) = '\0';
+		if ((be = strchr(b, '\n')) != NULL) {
+		    *be = '\0';
+		    while (be > b && xisspace((int)be[-1]))
+			*(--be) = '\0';
+		}
 		(*list_raw)[i].regexp = b;
 		(*list_raw)[i].name = get_filter_name(fn);
 	    }
@@ -338,18 +340,31 @@ void rpmRunFileTriggers(const char * rootDir)
 	char tmp[BUFSIZ];
 	int i;
 
+	rpmlog(RPMLOG_DEBUG,
+		_("[filetriggers] testing files from list: %s\n"), fn);
+
 	while (fgets(tmp, (int)sizeof(tmp), fp)) {
 	    size_t tmplen = strlen(tmp);
-	    int j;
+
+	    if (tmplen > 0 && tmp[tmplen-1] == '\n')
+		tmp[--tmplen] = '\0';
 
 	    if (!is_regexp_matching(matches_any, tmp))
 		continue;
-	    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp found %s",
+
+	    rpmlog(RPMLOG_DEBUG,
+			_("[filetriggers] matches-any regexp found %s\n"),
 			tmp);
+
 	    for (i = 0; i < nft; i++) {
 		ssize_t nw;
 		if (!is_regexp_matching(list[i].mire, tmp))
 		    /*@innercontinue@*/ continue;
+
+		rpmlog(RPMLOG_DEBUG,
+			_("[filetriggers] file name '%s' matches pattern '%s'\n"),
+			tmp, list[i].mire->pattern);
+
 		list[i].filename = xstrdup(tmp+1);
 		mayStartFiletrigger(rootDir, &list[i]);
 		nw = write(list[i].command_pipe, tmp, tmplen);
