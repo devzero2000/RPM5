@@ -3865,7 +3865,7 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 
 exit:
     if (_noisy_range_comparison_debug_message)
-    rpmlog(RPMLOG_DEBUG, _("  %s    A %s\tB %s\n"),
+    rpmlog(RPMLOG_DEBUG, D_("  %s    A %s\tB %s\n"),
 	(result ? _("YES") : _("NO ")), aDepend, bDepend);
     aDepend = _free(aDepend);
     bDepend = _free(bDepend);

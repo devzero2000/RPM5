@@ -185,7 +185,8 @@ static char * computeMatchesAnyFilter(size_t nb,
 	*p++ = '|';
 	p = stpcpy(p, list_raw[i].regexp);
     }
-    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp is %s\n", matches_any);
+    rpmlog(RPMLOG_DEBUG, D_("[filetriggers] matches-any regexp is %s\n"),
+		matches_any);
     return matches_any;
 }
 
@@ -300,7 +301,7 @@ static void mayStartFiletrigger(const char * rootDir,
 	    return;
 
 	cmd = rpmGetPath(dn, "/", trigger->name, ".script", NULL);
-	rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s %s\n",
+	rpmlog(RPMLOG_DEBUG, D_("[filetriggers] spawning %s %s\n"),
 			cmd, trigger->filename);
 	trigger->command_pipe = popen_with_root(rootDir, cmd,
 				    trigger->filename, &trigger->command_pid);
@@ -318,7 +319,7 @@ void rpmRunFileTriggers(const char * rootDir)
     FILE * fp = NULL;
     int xx;
 
-    rpmlog(RPMLOG_DEBUG, _("[filetriggers] starting\n"));
+    rpmlog(RPMLOG_DEBUG, D_("[filetriggers] starting\n"));
 
     fn = rpmGenPath(rootDir, files_awaiting_filetriggers, NULL);
 
@@ -341,7 +342,7 @@ void rpmRunFileTriggers(const char * rootDir)
 	int i;
 
 	rpmlog(RPMLOG_DEBUG,
-		_("[filetriggers] testing files from list: %s\n"), fn);
+		D_("[filetriggers] testing files from list: %s\n"), fn);
 
 	while (fgets(tmp, (int)sizeof(tmp), fp)) {
 	    size_t tmplen = strlen(tmp);
@@ -353,7 +354,7 @@ void rpmRunFileTriggers(const char * rootDir)
 		continue;
 
 	    rpmlog(RPMLOG_DEBUG,
-			_("[filetriggers] matches-any regexp found %s\n"),
+			D_("[filetriggers] matches-any regexp found %s\n"),
 			tmp);
 
 	    for (i = 0; i < nft; i++) {
@@ -362,7 +363,7 @@ void rpmRunFileTriggers(const char * rootDir)
 		    /*@innercontinue@*/ continue;
 
 		rpmlog(RPMLOG_DEBUG,
-			_("[filetriggers] file name '%s' matches pattern '%s'\n"),
+			D_("[filetriggers] file name '%s' matches pattern '%s'\n"),
 			tmp, list[i].mire->pattern);
 
 		list[i].filename = xstrdup(tmp+1);
@@ -372,7 +373,8 @@ void rpmRunFileTriggers(const char * rootDir)
 		if (list[i].command_pipe) {
 		    pid_t pid;
 		    xx = close(list[i].command_pipe);
-		    rpmlog(RPMLOG_DEBUG, "[filetriggers] waiting for %s to end\n",
+		    rpmlog(RPMLOG_DEBUG,
+			    D_("[filetriggers] waiting for %s to end\n"),
 			    list[i].name);
 		    pid = waitpid(list[i].command_pid, &status, 0);
 		    list[i].command_pipe = 0;
