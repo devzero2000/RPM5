@@ -88,6 +88,7 @@ db_load =	${db_tool} db_load	-h $(rpmdb)
 db_printlog =	${db_tool} db_printlog	-h $(rpmdb)
 db_recover =	${db_tool} db_recover	-h $(rpmdb) -v
 db_stat =	${db_tool} db_stat	-h $(rpmdb)
+db_upgrade =	${db_tool} db_upgrade	-h $(rpmdb) -v
 db_verify =	${db_tool} db_verify	-h $(rpmdb)
 
 cpio =		@__CPIO@
@@ -180,8 +181,8 @@ check-macros:
 	@${rpm} -D 'foo %foo' -E '%foo' > /dev/null 2>&1
 	@${rpm} -D 'foo bing' -D 'foo bang' -D 'foo boom' -E '%{@foo}' > /dev/null 2>&1
 	@${rpm}  -E '%(/bin/echo "-->       sh: Portable Shar!")'
-	@${rpm}  -E '%{lua:print("-->      lua: Hard Rocks!")}'
-	@${rpm}  -E '%{js:print("-->       js: Use GPSEE!")}'
+	@-${rpm}  -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@-${rpm}  -E '%{js:print("-->       js: Use GPSEE!")}'
 	@-${rpm} -E '%{ruby:print "-->     ruby: Puppet Gems!"}'
 	@-${rpm} -E '%{tcl:puts "-->      tcl: Porticus Ports!"}'
 	@-${rpm} -E '%{squirrel:print("--> squirrel: Eat Nuts!")}'
@@ -223,6 +224,7 @@ check-build: $(BUILD_DIRS)
 
 check-ACID:
 	@echo "=== $@ ==="
+	@-${db_upgrade} Packages
 	@-${db_checkpoint} -1	> /dev/null 2>&1
 	@${rpm} -Uvh --stats ref/edos.manifest
 	@-${db_dump} Packages | ${db_load} Packages
