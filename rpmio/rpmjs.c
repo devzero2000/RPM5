@@ -28,6 +28,8 @@ int _rpmjs_debug = 0;
 /*@unchecked@*/ /*@relnull@*/
 rpmjs _rpmjsI = NULL;
 
+#undef	WITH_TRACEMONKEY
+
 #if defined(WITH_JS)
 static JSBool
 Version(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -125,30 +127,30 @@ FILE *gErrFile = NULL;
 FILE *gOutFile = NULL;
 
 static JSBool
-Print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+Print(JSContext *cx, uintN argc, jsval *vp)
 {
     FILE * fp = (gOutFile ? gOutFile : stdout);
+    jsval *argv;
     uintN i;
+    JSString *str;
+    char *bytes;
 
-if (_rpmjs_debug < 0)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
-
+    argv = JS_ARGV(cx, vp);
     for (i = 0; i < argc; i++) {
-	JSString *str;
-	char *bytes;
-	if ((str = JS_ValueToString(cx, argv[i])) == NULL
-#if JS_VERSION < 180 
-	 || (bytes = JS_GetStringBytes(str)) == NULL)
-#else
-	 || (bytes = JS_EncodeString(cx, str)) == NULL)
-#endif
-	    return JS_FALSE;
-	fprintf(fp, "%s%s", i ? " " : "", bytes);
-	JS_free(cx, bytes);
+        str = JS_ValueToString(cx, argv[i]);
+        if (!str)
+            return JS_FALSE;
+        bytes = JS_EncodeString(cx, str);
+        if (!bytes)
+            return JS_FALSE;
+        fprintf(fp, "%s%s", i ? " " : "", bytes);
+        JS_free(cx, bytes);
     }
+
     fputc('\n', fp);
     fflush(fp);
-    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, ""));	/* XXX "\n" instead? */
+
+    JS_SET_RVAL(cx, vp, JSVAL_VOID);
     return JS_TRUE;
 }
 
@@ -175,15 +177,21 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 	argv[i] = STRING_TO_JSVAL(str);
 	fn = JS_GetStringBytes(str);
 	errno = 0;
+
 	oldopts = JS_GetOptions(cx);
-	JS_SetOptions(cx, oldopts | JSOPTION_COMPILE_N_GO);
-	if ((script = JS_CompileFile(cx, obj, fn)) == NULL)
+#if !defined(WITH_TRACEMONKEY)
+#define	JSOPTION_NO_SCRIPT_RVAL	0	/* XXX TraceMonkey */
+#endif
+	JS_SetOptions(cx, oldopts | JSOPTION_COMPILE_N_GO | JSOPTION_NO_SCRIPT_RVAL);
+	script = JS_CompileFile(cx, obj, fn);
+	JS_SetOptions(cx, oldopts);
+
+	if (script == NULL)
 	    goto exit;
 	ok = !compileOnly
 		? JS_ExecuteScript(cx, obj, script, &result)
 		: JS_TRUE;
 	JS_DestroyScript(cx, script);
-	JS_SetOptions(cx, oldopts);
 	if (!ok)
 	    goto exit;
     }
@@ -213,8 +221,12 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
 static JSFunctionSpec shell_functions[] = {
     JS_FS("version",	Version,	0,0,0),
     JS_FS("options",	Options,	0,0,0),
-    JS_FS("print",	Print,		0,0,0),
     JS_FS("load",	Load,		1,0,0),
+#if defined(WITH_TRACEMONKEY)
+    JS_FN("print",	Print,		0,0),
+#else
+    JS_FN("print",	Print,		0,0,0),
+#endif
     JS_FS("loadModule",	Require,	0,0,0),
     JS_FS("require",	Require,	0,0,0),
     JS_FS_END
@@ -316,7 +328,7 @@ static JSClass env_class = {
 
 /*@unchecked@*/ /*@observer@*/
 static JSClass global_class = {
-    "global", JSCLASS_GLOBAL_FLAGS,
+    "global", JSCLASS_GLOBAL_FLAGS | JSCLASS_HAS_PRIVATE,
     JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
     JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub,
     JSCLASS_NO_OPTIONAL_MEMBERS
@@ -380,6 +392,9 @@ rpmjs rpmjsNew(const char ** av, int flags)
     JSObject *glob;
     int ac;
     int xx;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,0x%x)\n", __FUNCTION__, av, flags);
 
     if (av == NULL) av = _av;
     ac = argvCount(av);
@@ -456,15 +471,14 @@ static rpmjs rpmjsI(void)
 {
     if (_rpmjsI == NULL)
 	_rpmjsI = rpmjsNew(NULL, 0);
+if (_rpmjs_debug)
+fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
     return _rpmjsI;
 }
 
 rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
-
-if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, js, fn);
 
     if (js == NULL) js = rpmjsI();
 
@@ -487,6 +501,10 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, js, fn);
 	}
 #endif
     }
+
+if (_rpmjs_debug)
+fprintf(stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc);
+
     return rc;
 }
 
@@ -494,16 +512,13 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, js, str);
-
     if (js == NULL) js = rpmjsI();
 
     if (str != NULL) {
 #if defined(WITH_JS)
 	JSContext *cx = js->cx;
 	JSObject *glob = js->glob;
-	jsval rval;
+	jsval rval = JSVAL_VOID;
 	JSBool ok;
 
 	ok = JS_EvaluateScript(cx, glob, str, strlen(str),
@@ -517,5 +532,9 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, js, str);
 	}
 #endif
     }
+
+if (_rpmjs_debug)
+fprintf(stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (str ? strlen(str) : 0), rc);
+
     return rc;
 }
