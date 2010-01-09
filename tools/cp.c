@@ -218,7 +218,7 @@ rpmctSetFile(rpmct ct, FD_t fd)
 
     TIMESPEC_TO_TIMEVAL(&ct->tv[0], &st->st_atimespec);
     TIMESPEC_TO_TIMEVAL(&ct->tv[1], &st->st_mtimespec);
-    if (islink ? lutimes(ct->npath, ct->tv) : Utimes(ct->npath, ct->tv)) {
+    if (islink ? Lutimes(ct->npath, ct->tv) : Utimes(ct->npath, ct->tv)) {
 	rpmlog(RPMLOG_ERR, "%stimes: %s: %s\n", islink ? "lu" : "U", ct->npath, strerror(errno));
 	rval = RPMRC_FAIL;
     }
