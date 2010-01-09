@@ -19,9 +19,7 @@ extern rpmjs _rpmjsI;
 #if defined(_RPMJS_INTERNAL)
 struct rpmjs_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    void * rt;
-    void * cx;
-    void * glob;
+    void * I;			/*!< JS interpreter {rt, cx, globalObj} */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

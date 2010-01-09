@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: prepare to use GPSEE as embedded JS interpreter.
     - jbj: js: switch print method to use JS_FN (Fast Native) w/o a stack frame.
     - jbj: js: allow --with-js=/usr/lib:/usr/include/js w external TraceMonkey.
     - jbj: rpmdb: sync DB_CONFIG.in with what "make check" is using.

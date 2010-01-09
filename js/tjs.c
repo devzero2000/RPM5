@@ -1,4 +1,5 @@
 #include "system.h"
+#define	WITH_GPSEE
 
 #include <rpmio.h>
 #include <rpmlog.h>
@@ -66,6 +67,17 @@ static int _test = 1;
 
 /*@unchecked@*/
 static int _zeal = 2;
+
+#if defined(WITH_GPSEE)
+#include <gpsee/gpsee.h>
+typedef	gpsee_interpreter_t * JSI_t;
+#else
+typedef struct JSI_s {
+    JSRuntime	* rt;
+    JSContext	* cx;
+    JSObject	* globalObj;
+} * JSI_t;
+#endif
 
 typedef struct rpmjsClassTable_s {
 /*@observer@*/
@@ -185,6 +197,7 @@ rpmjsLoadClasses(void)
     size_t norder = 64;
     rpmjsClassTable tbl;
     rpmjs js;
+    JSI_t I;
     const char * result;
     int ix;
     size_t i;
@@ -206,15 +219,16 @@ rpmjsLoadClasses(void)
     /* XXX FIXME: resultp != NULL to actually execute?!? */
     (void) rpmjsRun(NULL, "print(\"loading RPM classes.\");", &result);
     js = _rpmjsI;
+    I = js->I;
 #ifdef JS_GC_ZEAL
-    (void) JS_SetGCZeal(js->cx, _zeal);
+    (void) JS_SetGCZeal(I->cx, _zeal);
 #endif
     for (i = 0, tbl = classTable; i < nclassTable; i++, tbl++) {
 	if (tbl->ix <= 0)
 	    continue;
 	order[tbl->ix & (norder - 1)] = i + 1;
 	if (tbl->init != NULL)
-	    (void) (*tbl->init) (js->cx, js->glob);
+	    (void) (*tbl->init) (I->cx, I->globalObj);
     }
 
     /* Test requested classes in order. */

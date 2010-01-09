@@ -8,13 +8,27 @@
 #endif
 
 #include "system.h"
+#define	WITH_GPSEE
 
 #include <argv.h>
 
 #ifdef	WITH_JS
+
 #define	XP_UNIX	1
 #include "jsprf.h"
 #include "jsapi.h"
+
+#if defined(WITH_GPSEE)
+#include <gpsee/gpsee.h>
+typedef	gpsee_interpreter_t * JSI_t;
+#else
+typedef struct JSI_s {
+    JSRuntime	* rt;
+    JSContext	* cx;
+    JSObject	* globalObj;
+} * JSI_t;
+#endif
+
 #endif
 
 #define _RPMJS_INTERNAL
@@ -345,23 +359,128 @@ static void reportError(JSContext *cx, const char *msg, JSErrorReport *report)
 }
 #endif
 
+static
+int rpmjs_destroyInterpreter(/*@only@*/ /*@null@*/ JSI_t I)
+	/*@modifies I @*/
+{
+    int rc = 0;
+
+    if (I != NULL) {
+#if defined(WITH_JS)
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p) glob %p cx %p rt %p\n", __FUNCTION__, I, I->globalObj, I->cx, I->rt);
+#ifdef	NOTYET
+	JS_EndRequest((JSContext *)I->cx);
+#endif
+	JS_DestroyContext((JSContext *)I->cx);	I->cx = NULL;
+	JS_DestroyRuntime((JSRuntime *)I->rt);	I->rt = NULL;
+	JS_ShutDown();
+	I = _free(I);
+#endif
+    }
+
+    return rc;
+}
+
+static /*@only@*/
+JSI_t rpmjs_createInterpreter(const char ** av,
+		/*@null@*/ /*@unused@*/ const char ** ev)
+	/*@*/
+{
+    JSI_t I = NULL;
+#if defined(WITH_JS)
+    static const char * _av[] = { "rpmjs", NULL };
+    JSRuntime *rt;
+    JSContext *cx;
+    JSObject *glob;
+    int ac;
+    int xx;
+
+if (_rpmjs_debug)
+fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, av, ev);
+
+    if (av == NULL) av = _av;
+    ac = argvCount(av);
+
+    /* Create an interpreter container. */
+    I = xcalloc(1, sizeof(*I));
+
+    /* Initialize JS runtime. */
+    rt = JS_NewRuntime(8L * 1024L * 1024L);
+assert(rt != NULL);
+#ifdef	NOTYET
+    JS_SetContextCallback(rt, ContextCallback);
+#endif
+    /* Set maximum memory for JS engine to infinite. */
+    JS_SetGCParameter(rt, JSGC_MAX_BYTES, (size_t)-1);
+    I->rt = rt;
+
+    /* Initialize JS context. */
+    cx = JS_NewContext(rt, 8192);
+assert(cx != NULL);
+#ifdef	NOTYET
+    JS_BeginRequest(cx);
+#endif
+    JS_SetOptions(cx, JSOPTION_VAROBJFIX);
+#if JS_VERSION < 180 
+    JS_SetVersion(cx, JSVERSION_1_7);
+#else
+    JS_SetVersion(cx, JSVERSION_LATEST);
+#endif
+    JS_SetErrorReporter(cx, reportError);
+#ifdef	NOTYET
+    JS_CStringsAreUTF8();
+#endif
+    I->cx = cx;
+
+    /* Initialize JS global object. */
+    glob = JS_NewObject(cx, &global_class, NULL, NULL);
+assert(glob != NULL);
+
+#ifdef	NOTYET
+    JS_AddNamedRoot(cx, &glob, "glob");
+#endif
+
+    xx = JS_InitStandardClasses(cx, glob);
+
+    xx = JS_DefineFunctions(cx, glob, shell_functions);
+    I->globalObj = glob;
+
+    {	JSObject * env =
+		JS_DefineObject(cx, glob, "environment", &env_class, NULL, 0);
+assert(env != NULL);
+	xx = JS_SetPrivate(cx, env, environ);
+    }
+
+    {	JSObject * args = JS_NewArrayObject(cx, 0, NULL);
+	int i;
+
+assert(args != NULL);
+	xx = JS_DefineProperty(cx, glob, "arguments", OBJECT_TO_JSVAL(args),
+		NULL, NULL, 0);
+	for (i = 0; i < ac; i++) {
+	    JSString *str = JS_NewStringCopyZ(cx, av[i]);
+assert(str != NULL);
+	    xx = JS_DefineElement(cx, args, i, STRING_TO_JSVAL(str),
+			NULL, NULL, JSPROP_ENUMERATE);
+	}
+    }
+#endif	/* WITH_JS */
+    return I;
+}
+
 static void rpmjsFini(void * _js)
 	/*@globals fileSystem @*/
 	/*@modifies *_js, fileSystem @*/
 {
     rpmjs js = _js;
 
-#if defined(WITH_JS)
 if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p) glob %p cx %p rt %p\n", __FUNCTION__, js, js->glob, js->cx, js->rt);
+fprintf(stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I);
 
-#ifdef	NOTYET
-    JS_EndRequest((JSContext *)js->cx);
-#endif
-    JS_DestroyContext((JSContext *)js->cx);	js->cx = NULL;
-    JS_DestroyRuntime((JSRuntime *)js->rt);	js->rt = NULL;
-    JS_ShutDown();
-#endif
+    (void) rpmjs_destroyInterpreter(js->I);
+    js->I = NULL;
+
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -386,81 +505,11 @@ rpmjs rpmjsNew(const char ** av, int flags)
     rpmjs js = rpmjsGetPool(_rpmjsPool);
 
 #if defined(WITH_JS)
-    static const char * _av[] = { "rpmjs", NULL };
-    JSRuntime *rt;
-    JSContext *cx;
-    JSObject *glob;
-    int ac;
-    int xx;
-
-if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p,0x%x)\n", __FUNCTION__, av, flags);
-
-    if (av == NULL) av = _av;
-    ac = argvCount(av);
-
-    /* Initialize JS runtime. */
-    rt = JS_NewRuntime(8L * 1024L * 1024L);
-assert(rt != NULL);
-#ifdef	NOTYET
-    JS_SetContextCallback(rt, ContextCallback);
+    JSI_t I = rpmjs_createInterpreter(av, NULL);
+    js->I = I;
+    if (I != NULL)
+	JS_SetRuntimePrivate(I->rt, js);
 #endif
-    /* Set maximum memory for JS engine to infinite. */
-    JS_SetGCParameter(rt, JSGC_MAX_BYTES, (size_t)-1);
-    JS_SetRuntimePrivate(rt, js);
-    js->rt = rt;
-
-    /* Initialize JS context. */
-    cx = JS_NewContext(rt, 8192);
-assert(cx != NULL);
-#ifdef	NOTYET
-    JS_BeginRequest(cx);
-#endif
-    JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-#if JS_VERSION < 180 
-    JS_SetVersion(cx, JSVERSION_1_7);
-#else
-    JS_SetVersion(cx, JSVERSION_LATEST);
-#endif
-    JS_SetErrorReporter(cx, reportError);
-#ifdef	NOTYET
-    JS_CStringsAreUTF8();
-#endif
-    js->cx = cx;
-
-    /* Initialize JS global object. */
-    glob = JS_NewObject(cx, &global_class, NULL, NULL);
-assert(glob != NULL);
-
-#ifdef	NOTYET
-    JS_AddNamedRoot(cx, &glob, "glob");
-#endif
-
-    xx = JS_InitStandardClasses(cx, glob);
-
-    xx = JS_DefineFunctions(cx, glob, shell_functions);
-    js->glob = glob;
-
-    {	JSObject * env =
-		JS_DefineObject(cx, glob, "environment", &env_class, NULL, 0);
-assert(env != NULL);
-	xx = JS_SetPrivate(cx, env, environ);
-    }
-
-    {	JSObject * args = JS_NewArrayObject(cx, 0, NULL);
-	int i;
-
-assert(args != NULL);
-	xx = JS_DefineProperty(cx, glob, "arguments", OBJECT_TO_JSVAL(args),
-		NULL, NULL, 0);
-	for (i = 0; i < ac; i++) {
-	    JSString *str = JS_NewStringCopyZ(cx, av[i]);
-assert(str != NULL);
-	    xx = JS_DefineElement(cx, args, i, STRING_TO_JSVAL(str),
-			NULL, NULL, JSPROP_ENUMERATE);
-	}
-    }
-#endif	/* WITH_JS */
 
     return rpmjsLink(js);
 }
@@ -484,8 +533,9 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 
     if (fn != NULL) {
 #if defined(WITH_JS)
-	JSContext *cx = js->cx;
-	JSObject *glob = js->glob;
+	JSI_t I = js->I;
+	JSContext *cx = I->cx;
+	JSObject *glob = I->globalObj;
 	JSScript *script = JS_CompileFile(cx, glob, fn);
 	jsval rval;
 
@@ -516,8 +566,9 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 
     if (str != NULL) {
 #if defined(WITH_JS)
-	JSContext *cx = js->cx;
-	JSObject *glob = js->glob;
+	JSI_t I = js->I;
+	JSContext *cx = I->cx;
+	JSObject *glob = I->globalObj;
 	jsval rval = JSVAL_VOID;
 	JSBool ok;
 

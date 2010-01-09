@@ -40,8 +40,6 @@
 #ifndef _jsfile_h__
 #define _jsfile_h__
 
-#include "jsobj.h"
-
 extern JSClass js_FileClass;
 
 #ifdef __cplusplus
