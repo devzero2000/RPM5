@@ -45,6 +45,7 @@ extern int (*_Mkfifo) (const char * path, mode_t mode);
 extern int (*_Mknod) (const char * path, mode_t mode, dev_t dev);
 extern int (*_Utime) (const char * path, const struct utimbuf * buf);
 extern int (*_Utimes) (const char * path, const struct timeval * times);
+extern int (*_Lutimes) (const char * path, const struct timeval * times);
 extern int (*_Symlink) (const char * oldpath, const char * newpath);
 extern int (*_Readlink) (const char * path, char * buf, size_t bufsiz);
 extern int (*_Access) (const char * path, int amode);

@@ -175,6 +175,8 @@ LIBRPMIO_0
     _Lseek;
     Lstat;
     _Lstat;
+    Lutimes;
+    _Lutimes;
     lzdio;
     max_macro_depth;
     _max_load_depth;

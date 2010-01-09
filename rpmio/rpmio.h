@@ -416,6 +416,14 @@ int Utimes(const char * path, const struct timeval * times)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
+ * lutimes(2) clone.
+ * @todo Implement remotely.
+ */
+int Lutimes(const char * path, const struct timeval * times)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
  * symlink(3) clone.
  * @todo Implement remotely.
  */

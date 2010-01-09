@@ -1996,6 +1996,42 @@ fprintf(stderr, "<-- %s(%s,%p) rc %d\n", __FUNCTION__, path, times, rc);
 }
 /*@=fixedformalarray@*/
 
+/*@-fixedformalarray@*/
+int Lutimes(const char * path, const struct timeval times[2])
+{
+#ifdef HAVE_LUTIMES
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+    int rc = -2;
+
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	goto exit;
+	/*@notreached@*/ break;
+    }
+    rc = lutimes(path, times);
+exit:
+if (_rpmio_debug)
+fprintf(stderr, "<-- %s(%s,%p) rc %d\n", __FUNCTION__, path, times, rc);
+    return rc;
+#else
+    errno = ENOSYS;
+    return -2;
+#endif
+}
+/*@=fixedformalarray@*/
+
 int Symlink(const char * oldpath, const char * newpath)
 {
     const char * opath;

@@ -62,6 +62,7 @@ int (*_Mkfifo) (const char * path, mode_t mode) = Mkfifo;
 int (*_Mknod) (const char * path, mode_t mode, dev_t dev) = Mknod;
 int (*_Utime) (const char * path, const struct utimbuf * buf) = Utime;
 int (*_Utimes) (const char * path, const struct timeval * times) = Utimes;
+int (*_Lutimes) (const char * path, const struct timeval * times) = Lutimes;
 int (*_Symlink) (const char * oldpath, const char * newpath) = Symlink;
 /*@-type@*/
 int (*_Readlink) (const char * path, char * buf, size_t bufsiz) = Readlink;
