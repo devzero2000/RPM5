@@ -1,4 +1,5 @@
 5.2.0 -> 5.2.1:
+    - afb: permit building with js-1.7.0 (the only released version)
     - proyvind: add %distepoch back to provideversion, leave legacy
 	compatibility for adopters to care about.
     - proyvind: fix assert fail with Mandriva filetriggers in case of
