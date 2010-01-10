@@ -1484,23 +1484,27 @@ RPM_CHECK_LIB(
     ], [])
 
 dnl # JavaScript
+WITH_JS_SUBDIR=""
 WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
     [JavaScript], [js],
     [js], [JS_NewContext], [jsapi.h],
     [no,internal:external:none], [js:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-	  WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
-	  AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
+        WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
+        AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
+      else
+        WITH_JS_SUBDIR=js
       fi
     ], [])
 AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
+AC_SUBST(WITH_JS_SUBDIR)
 
 dnl # GPSEE
 RPM_CHECK_LIB(
     [GPSEE], [gpsee],
     [gpsee], [gpsee_createInterpreter], [gpsee.h],
-    [no,internal:none], [gpsee],
+    [no,external:none], [gpsee],
     [ AC_DEFINE(WITH_GPSEE, 1, [Define to 1 if to use GPSEE as the embedded JS interpreter])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GPSEE_H, 1, [Define to 1 if you have <gpsee.h>])

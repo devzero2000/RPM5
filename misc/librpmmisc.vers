@@ -16,6 +16,7 @@ LIBRPMMISC_0
     finiproctitle;
     initproctitle;
     setproctitle;
+    gpsee_*;
     JS_*;
     js_*;
     lua_call;

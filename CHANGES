@@ -1,5 +1,8 @@
 
 5.2b1 -> 5.3a1
+    - jbj: js: fix: external JS still needs to build in internal js subdir.
+    - jbj: js: switch to linking external TraceMonkey (from GPSEE).
+    - jbj: js: switch to linking external GPSEE (with added panic routine).
     - jbj: js: stub in sufficient AutoFu to build --with-gpsee=internal.
     - jbj: js: prepare to use GPSEE as embedded JS interpreter.
     - jbj: js: switch print method to use JS_FN (Fast Native) w/o a stack frame.

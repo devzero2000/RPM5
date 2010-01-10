@@ -1,5 +1,4 @@
 #include "system.h"
-#define	WITH_GPSEE
 
 #include <rpmio.h>
 #include <rpmlog.h>
@@ -72,7 +71,7 @@ static int _zeal = 2;
 
 #if defined(WITH_GPSEE)
 #define	MAKEDEPEND	/* XXX hack-o-round JS_THREADSAFE check */
-#include <gpsee/gpsee.h>
+#include <gpsee.h>
 typedef	gpsee_interpreter_t * JSI_t;
 #else
 typedef struct JSI_s {
