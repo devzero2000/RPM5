@@ -19,6 +19,12 @@ rpmjs_InitBfClass(JSContext *cx, JSObject* obj);
 extern JSObject *
 rpmjs_NewBfObject(JSContext *cx, size_t _m, size_t _k, unsigned int _flags);
 
+extern const char *
+rpmbf_InitModule(JSContext *cx, JSObject *moduleObject);
+
+extern JSBool
+rpmbf_FiniModule(JSContext *cx, JSObject *moduleObject);
+
 #ifdef __cplusplus      
 }
 #endif

@@ -4,6 +4,13 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
+EXTRA_DIST = \
+	src \
+	tscripts \
+	words \
+	legacy.cudf legacy-sol.cudf
+EXTRA_PROGRAMS =
+
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
@@ -22,13 +29,6 @@ AM_CPPFLAGS = -I. \
 	@WITH_ZLIB_CPPFLAGS@
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
-
-EXTRA_DIST = \
-	src \
-	tscripts \
-	words \
-	legacy.cudf legacy-sol.cudf
-EXTRA_PROGRAMS =
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -52,19 +52,20 @@ RPMBUILD_LDADD_COMMON = \
 
 pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
+moduledir =	@GPSEE_MODULES_PATH@
 
 pkgbin_PROGRAMS =	tjs
 pkglib_LTLIBRARIES =	librpmjsm.la
+module_LTLIBRARIES =	rpmbf_module.la
 
-librpmjsm_la_CFLAGS = -fno-strict-aliasing
-librpmjsm_la_LDFLAGS = -module -avoid-version
-librpmjsm_la_LIBADD = \
-	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@
+librpmjsm_la_CFLAGS =	-fno-strict-aliasing
+librpmjsm_la_LDFLAGS =	-module -avoid-version
+librpmjsm_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmbf_module_la_SOURCES =	rpmbf-js.c
+rpmbf_module_la_CFLAGS =	-fno-strict-aliasing
+rpmbf_module_la_LDFLAGS =	-module -avoid-version
+rpmbf_module_la_LIBADD =	$(RPM_LDADD_COMMON)
 
 noinst_HEADERS = \
 	rpmaug-js.h rpmbc-js.h rpmbf-js.h rpmcudf-js.h rpmdb-js.h rpmdbc-js.h rpmdbe-js.c rpmdc-js.h rpmdig-js.h \
