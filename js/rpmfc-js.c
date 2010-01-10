@@ -235,3 +235,5 @@ rpmjs_NewFcObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmfc, Fc, JS_TRUE)

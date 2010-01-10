@@ -526,3 +526,5 @@ rpmjs_NewMpfObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmmpf, Mpf, JS_TRUE)

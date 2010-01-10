@@ -459,4 +459,7 @@ fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, obj);
 assert(o != NULL);
     return o;
 }
+
+GPSEE_MODULE_WRAP(syck, Syck, JS_TRUE)
+
 #endif	/* WITH_SYCK */

@@ -416,3 +416,5 @@ fprintf(stderr, "==> %s(%p,%p,%u(%s),%u(%s))\n", __FUNCTION__, cx, _ts, (unsigne
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmmi, Mi, JS_TRUE)

@@ -56,16 +56,83 @@ moduledir =	@GPSEE_MODULES_PATH@
 
 pkgbin_PROGRAMS =	tjs
 pkglib_LTLIBRARIES =	librpmjsm.la
-module_LTLIBRARIES =	rpmbf_module.la
+module_LTLIBRARIES =	\
+	rpmaug_module.la \
+	rpmbf_module.la \
+	rpmdc_module.la \
+	rpmdir_module.la \
+	rpmfts_module.la \
+	rpmio_module.la \
+	rpmmc_module.la \
+	rpmmg_module.la \
+	rpmst_module.la \
+	rpmsys_module.la \
+	syck_module.la \
+	uuid_module.la
 
 librpmjsm_la_CFLAGS =	-fno-strict-aliasing
 librpmjsm_la_LDFLAGS =	-module -avoid-version
 librpmjsm_la_LIBADD =	$(RPM_LDADD_COMMON)
 
+rpmaug_module_la_SOURCES =	rpmaug-js.c
+rpmaug_module_la_CFLAGS =	-fno-strict-aliasing
+rpmaug_module_la_LDFLAGS =	-module -avoid-version
+rpmaug_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
 rpmbf_module_la_SOURCES =	rpmbf-js.c
 rpmbf_module_la_CFLAGS =	-fno-strict-aliasing
 rpmbf_module_la_LDFLAGS =	-module -avoid-version
 rpmbf_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmdc_module_la_SOURCES =	rpmdc-js.c
+rpmdc_module_la_CFLAGS =	-fno-strict-aliasing
+rpmdc_module_la_LDFLAGS =	-module -avoid-version
+rpmdc_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmdir_module_la_SOURCES =	rpmdir-js.c
+rpmdir_module_la_CFLAGS =	-fno-strict-aliasing
+rpmdir_module_la_LDFLAGS =	-module -avoid-version
+rpmdir_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmfts_module_la_SOURCES =	rpmfts-js.c
+rpmfts_module_la_CFLAGS =	-fno-strict-aliasing
+rpmfts_module_la_LDFLAGS =	-module -avoid-version
+rpmfts_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmio_module_la_SOURCES =	rpmio-js.c
+rpmio_module_la_CFLAGS =	-fno-strict-aliasing
+rpmio_module_la_LDFLAGS =	-module -avoid-version
+rpmio_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmmc_module_la_SOURCES =	rpmmc-js.c
+rpmmc_module_la_CFLAGS =	-fno-strict-aliasing
+rpmmc_module_la_LDFLAGS =	-module -avoid-versmcn
+rpmmc_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmmg_module_la_SOURCES =	rpmmg-js.c
+rpmmg_module_la_CFLAGS =	-fno-strict-aliasing
+rpmmg_module_la_LDFLAGS =	-module -avoid-versmgn
+rpmmg_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmst_module_la_SOURCES =	rpmst-js.c
+rpmst_module_la_CFLAGS =	-fno-strict-aliasing
+rpmst_module_la_LDFLAGS =	-module -avoid-verssysn
+rpmst_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+rpmsys_module_la_SOURCES =	rpmsys-js.c
+rpmsys_module_la_CFLAGS =	-fno-strict-aliasing
+rpmsys_module_la_LDFLAGS =	-module -avoid-verssysn
+rpmsys_module_la_LIBADD =	$(RPM_LDADD_COMMON)
+
+syck_module_la_SOURCES =	syck-js.c
+syck_module_la_CFLAGS =		-fno-strict-aliasing
+syck_module_la_LDFLAGS =	-module -avoid-version
+syck_module_la_LIBADD =		$(RPM_LDADD_COMMON)
+
+uuid_module_la_SOURCES =	uuid-js.c
+uuid_module_la_CFLAGS =		-fno-strict-aliasing
+uuid_module_la_LDFLAGS =	-module -avoid-version
+uuid_module_la_LIBADD =		$(RPM_LDADD_COMMON)
 
 noinst_HEADERS = \
 	rpmaug-js.h rpmbc-js.h rpmbf-js.h rpmcudf-js.h rpmdb-js.h rpmdbc-js.h rpmdbe-js.c rpmdc-js.h rpmdig-js.h \

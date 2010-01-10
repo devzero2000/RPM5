@@ -362,3 +362,5 @@ rpmjs_NewCudfObject(JSContext *cx, JSObject *fno, int _flags)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmcudf, Cudf, JS_TRUE)

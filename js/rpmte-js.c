@@ -430,3 +430,5 @@ rpmjs_NewTeObject(JSContext *cx, void * _ts, void * _hdro)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmte, Te, JS_TRUE)

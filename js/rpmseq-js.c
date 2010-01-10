@@ -689,3 +689,5 @@ rpmjs_NewSeqObject(JSContext *cx, void * _db, uint32_t _flags)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmseq, Seq, JS_TRUE)

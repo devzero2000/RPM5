@@ -233,3 +233,5 @@ rpmjs_NewDigObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmdig, Dig, JS_TRUE)

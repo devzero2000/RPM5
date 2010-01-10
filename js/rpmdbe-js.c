@@ -2403,3 +2403,5 @@ rpmjs_NewDbeObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmdbe, Dbe, JS_TRUE)

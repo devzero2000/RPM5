@@ -679,3 +679,5 @@ rpmjs_NewDbcObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmdbc, Dbc, JS_TRUE)

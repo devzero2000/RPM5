@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: gpsee: install ~12 of the simpler and more standalone modules.
+    - jbj: gpsee: add GPSEE_MODULE_WRAP to all JS modules.
     - jbj: gpsee: proof-of-concept for rpmbf module loading.
     - jbj: js: fix: external JS still needs to build in internal js subdir.
     - jbj: js: switch to linking external TraceMonkey (from GPSEE).

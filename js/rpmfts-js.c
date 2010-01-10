@@ -594,3 +594,5 @@ rpmjs_NewFtsObject(JSContext *cx, JSObject * dno, int _options)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmfts, Fts, JS_TRUE)

@@ -296,3 +296,5 @@ rpmjs_NewMgObject(JSContext *cx, const char * _magicfile, int _flags)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmmg, Mg, JS_TRUE)

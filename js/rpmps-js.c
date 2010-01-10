@@ -287,3 +287,5 @@ rpmjs_NewPsObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmps, Ps, JS_TRUE)

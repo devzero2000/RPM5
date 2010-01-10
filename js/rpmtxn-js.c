@@ -455,3 +455,5 @@ rpmjs_NewTxnObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmtxn, Txn, JS_TRUE)

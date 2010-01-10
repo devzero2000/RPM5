@@ -239,3 +239,5 @@ rpmjs_NewGiObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmgi, Gi, JS_TRUE)

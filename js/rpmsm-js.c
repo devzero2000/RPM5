@@ -299,3 +299,5 @@ rpmjs_NewSmObject(JSContext *cx, const char * _fn, unsigned int _flags)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmsm, Sm, JS_TRUE)

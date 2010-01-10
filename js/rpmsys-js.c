@@ -733,3 +733,5 @@ rpmjs_NewSysObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmsys, Sys, JS_TRUE)

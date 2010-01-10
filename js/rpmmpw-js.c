@@ -2473,3 +2473,5 @@ rpmjs_NewMpwObject(JSContext *cx, jsval v)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmmpw, Mpw, JS_TRUE)

@@ -407,3 +407,5 @@ rpmjs_NewDcObject(JSContext *cx, unsigned int _dalgo, unsigned int _flags)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmdc, Dc, JS_TRUE)

@@ -233,3 +233,5 @@ rpmjs_NewIobObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmiob, Iob, JS_TRUE)

@@ -730,3 +730,5 @@ rpmjs_NewIoObject(JSContext *cx, const char * _fn, const char * _fmode)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmio, Io, JS_TRUE)

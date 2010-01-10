@@ -285,3 +285,5 @@ rpmjs_NewXarObject(JSContext *cx, const char * _fn, const char *_fmode)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmxar, Xar, JS_TRUE)

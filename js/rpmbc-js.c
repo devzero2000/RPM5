@@ -237,3 +237,5 @@ rpmjs_NewBcObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmbc, Bc, JS_TRUE)

@@ -513,3 +513,5 @@ fprintf(stderr, "==> %s(%p,%p)\n", __FUNCTION__, cx, _h);
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmhdr, Hdr, JS_TRUE)

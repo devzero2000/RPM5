@@ -481,3 +481,5 @@ rpmjs_NewDsObject(JSContext *cx, JSObject *o, int _tagN)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmds, Ds, JS_TRUE)

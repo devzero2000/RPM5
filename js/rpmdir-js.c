@@ -303,3 +303,5 @@ rpmjs_NewDirObject(JSContext *cx, const char * _dn)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmdir, Dir, JS_TRUE)

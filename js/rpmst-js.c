@@ -342,3 +342,5 @@ rpmjs_NewStObject(JSContext *cx, JSObject *fno)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmst, St, JS_TRUE)

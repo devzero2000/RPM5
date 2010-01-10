@@ -27,4 +27,21 @@ js_NewDateObject(JSContext* cx, int year, int mon, int mday,
 #define JS_FS_END JS_FS(NULL,NULL,0,0,0)
 #endif
 
+#if defined(WITH_GPSEE)
+#define	GPSEE_MODULE_WRAP(_rpmfoo_, _Class_, _unloadok) \
+const char * _rpmfoo_##_InitModule(JSContext *cx, JSObject *moduleObject); \
+const char * _rpmfoo_##_InitModule(JSContext *cx, JSObject *moduleObject) \
+{ \
+    return(rpmjs_Init##_Class_##Class(cx, moduleObject)	\
+	? "gpsee.module.org.rpm5."#_Class_ : NULL);	\
+} \
+JSBool _rpmfoo_##_FiniModule(JSContext *cx, JSObject *moduleObject); \
+JSBool _rpmfoo_##_FiniModule(JSContext *cx, JSObject *moduleObject) \
+{ \
+    return _unloadok;       /* Safe to unload? */	\
+}
+#else
+#define	GPSEE_MODULE_WRAP(_rpmfoo_, _Class_, _unloadok)
+#endif
+
 #endif	/* H_RPM_JS */

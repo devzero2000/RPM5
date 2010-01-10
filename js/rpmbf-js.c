@@ -423,11 +423,4 @@ rpmjs_NewBfObject(JSContext *cx, size_t _m, size_t _k, unsigned int _flags)
     return obj;
 }
 
-#if defined(WITH_GPSEE)
-#define	MODULE_ID	"rpmbf"
-const char * rpmbf_InitModule(JSContext *cx, JSObject *moduleObject)
-{   return (rpmjs_InitBfClass(cx, moduleObject) == NULL ? MODULE_ID : NULL); }
-JSBool rpmbf_FiniModule(JSContext *cx, JSObject *moduleObject)
-{   return JS_TRUE;       /* Safe to unload? */ }
-#endif	/* WITH_GPSEE */
-
+GPSEE_MODULE_WRAP(rpmbf, Bf, JS_TRUE)

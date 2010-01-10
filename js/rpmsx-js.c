@@ -428,3 +428,5 @@ rpmjs_NewSxObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmsx, Sx, JS_TRUE)

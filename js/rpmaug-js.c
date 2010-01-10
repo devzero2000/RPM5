@@ -582,3 +582,5 @@ rpmjs_NewAugObject(JSContext *cx, const char * _root,
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmaug, Aug, JS_TRUE)

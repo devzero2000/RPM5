@@ -349,3 +349,5 @@ rpmjs_NewMcObject(JSContext *cx, JSObject *o)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmmc, Mc, JS_TRUE)

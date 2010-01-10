@@ -235,3 +235,5 @@ rpmjs_NewSwObject(JSContext *cx)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmsw, Sw, JS_TRUE)

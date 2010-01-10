@@ -1767,3 +1767,5 @@ rpmjs_NewDbObject(JSContext *cx, void * _dbenv, uint32_t _flags)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmdb, Db, JS_TRUE)

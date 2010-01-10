@@ -444,3 +444,5 @@ rpmjs_NewFiObject(JSContext *cx, void * _h, int _tagN)
     }
     return obj;
 }
+
+GPSEE_MODULE_WRAP(rpmfi, Fi, JS_TRUE)
