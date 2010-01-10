@@ -50,7 +50,9 @@
 #include "syck-js.h"
 #include "uuid-js.h"
 
+#ifdef	DYING
 #include "rpmjsfile.h"
+#endif
 
 #include <rpmcli.h>
 
@@ -69,6 +71,7 @@ static int _test = 1;
 static int _zeal = 2;
 
 #if defined(WITH_GPSEE)
+#define	MAKEDEPEND	/* XXX hack-o-round JS_THREADSAFE check */
 #include <gpsee/gpsee.h>
 typedef	gpsee_interpreter_t * JSI_t;
 #else
@@ -107,7 +110,9 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Ds",		rpmjs_InitDsClass,	 13 },
     { "Fc",		rpmjs_InitFcClass,	 34 },	/* todo++ */
     { "Fi",		rpmjs_InitFiClass,	 14 },
+#ifdef	DYING
     { "File",		   js_InitFileClass,	  -1 },
+#endif
     { "Fts",		rpmjs_InitFtsClass,	 30 },
     { "Gi",		rpmjs_InitGiClass,	 35 },	/* todo++ */
     { "Hdr",		rpmjs_InitHdrClass,	 12 },

@@ -1496,6 +1496,18 @@ RPM_CHECK_LIB(
     ], [])
 AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
 
+dnl # GPSEE
+RPM_CHECK_LIB(
+    [GPSEE], [gpsee],
+    [gpsee], [gpsee_createInterpreter], [gpsee.h],
+    [no,internal:none], [gpsee],
+    [ AC_DEFINE(WITH_GPSEE, 1, [Define to 1 if to use GPSEE as the embedded JS interpreter])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          AC_DEFINE(HAVE_GPSEE_H, 1, [Define to 1 if you have <gpsee.h>])
+	  AC_DEFINE(HAVE_LIBGPSEE, 1, [Define to 1 if you have the 'gpsee' library (-ljs).])
+      fi
+    ], [])
+
 dnl # Rc
 RPM_CHECK_LIB(
     [Rc], [rc],

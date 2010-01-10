@@ -16,6 +16,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_JS_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
+	@WITH_GPSEE_CPPFLAGS@ \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
@@ -66,7 +67,6 @@ librpmjsm_la_LIBADD = \
 	@LTLIBINTL@
 
 noinst_HEADERS = \
-	rpmjsfile.h \
 	rpmaug-js.h rpmbc-js.h rpmbf-js.h rpmcudf-js.h rpmdb-js.h rpmdbc-js.h rpmdbe-js.c rpmdc-js.h rpmdig-js.h \
 	rpmdir-js.h rpmds-js.h rpmfc-js.h rpmfi-js.h rpmfts-js.h rpmgi-js.h \
 	rpmhdr-js.h rpmio-js.h rpmiob-js.h rpmmc-js.h rpmmg-js.h rpmmi-js.h \
@@ -75,7 +75,6 @@ noinst_HEADERS = \
 	syck-js.h uuid-js.h
 
 librpmjsm_la_SOURCES = \
-	rpmjsfile.c \
 	rpmaug-js.c rpmbc-js.c rpmbf-js.c rpmcudf-js.c rpmdb-js.c rpmdbc-js.c rpmdbe-js.c rpmdc-js.c rpmdig-js.c \
 	rpmdir-js.c rpmds-js.c rpmfc-js.c rpmfi-js.c rpmfts-js.c rpmgi-js.c \
 	rpmhdr-js.c rpmio-js.c rpmiob-js.c rpmmc-js.c rpmmg-js.c rpmmi-js.c \

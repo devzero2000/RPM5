@@ -8,7 +8,6 @@
 #endif
 
 #include "system.h"
-#define	WITH_GPSEE
 
 #include <argv.h>
 
@@ -19,6 +18,7 @@
 #include "jsapi.h"
 
 #if defined(WITH_GPSEE)
+#define	MAKEDEPEND	/* XXX hack-o-round JS_THREADSAFE check */
 #include <gpsee/gpsee.h>
 typedef	gpsee_interpreter_t * JSI_t;
 #else
@@ -42,7 +42,7 @@ int _rpmjs_debug = 0;
 /*@unchecked@*/ /*@relnull@*/
 rpmjs _rpmjsI = NULL;
 
-#undef	WITH_TRACEMONKEY
+#define	WITH_TRACEMONKEY
 
 #if defined(WITH_JS)
 static JSBool
