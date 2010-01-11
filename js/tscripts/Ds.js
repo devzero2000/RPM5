@@ -2,9 +2,11 @@ if (loglvl) print("--> Ds.js");
 
 var RPMNS_TYPE_RPMLIB = (1 << 9);
 
-var ds = new Ds('rpmlib');
+var GPSEE = require('rpmds');
+
+var ds = new GPSEE.Ds('rpmlib');
 ack("typeof ds;", "object");
-ack("ds instanceof Ds;", true);
+ack("ds instanceof GPSEE.Ds;", true);
 ack("ds.debug = 1;", 1);
 ack("ds.debug = 0;", 0);
 
@@ -76,5 +78,7 @@ ack("ds.result = 1;", 1);
 //     print(key+": "+val);
 
 // print(JSON.stringify(ds));
+
+delete ds;
 
 if (loglvl) print("<-- Ds.js");

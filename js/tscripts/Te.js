@@ -69,11 +69,16 @@ var RPMSENSE_PROBE      = (1 << 29);
 var RPMSENSE_PACKAGE    = (1 << 30);
 var RPMSENSE_SCRIPT_SANITYCHECK = (1 << 31); /*!< %sanitycheck dependency. */
 
-var ts = new Ts();
+var rpmts = require('rpmts');
+var rpmte = require('rpmte');
+var rpmds = require('rpmds');
+var rpmfi = require('rpmfi');
 
-var te = new Te(ts)
+var ts = new rpmts.Ts();
+
+var te = new rpmte.Te(ts)
 ack("typeof te;", "object");
-ack("te instanceof Te;", true);
+ack("te instanceof rpmte.Te;", true);
 ack("te.debug = 1;", 1);
 ack("te.debug = 0;", 0);
 delete te;

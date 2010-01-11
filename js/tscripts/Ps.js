@@ -16,9 +16,11 @@ var RPMPROB_BADPRETRANS	= 12; /*!< (unimplemented) */
 var RPMPROB_BADPLATFORM	= 13; /*!< package ... is for a different platform */
 var RPMPROB_NOREPACKAGE	= 14; /*!< re-packaged package ... is missing */
 
-var ps = new Ps();
+var rpmps = require('rpmps');
+
+var ps = new rpmps.Ps();
 ack("typeof ps;", "object");
-ack("ps instanceof Ps;", true);
+ack("ps instanceof rpmps.Ps;", true);
 ack("ps.debug = 1;", 1);
 ack("ps.debug = 0;", 0);
 
@@ -52,5 +54,7 @@ ack("ps.length", 0);
 // ack("ps.length", 12);
 
 // ack("ps.print()", undefined);
+
+delete ps;
 
 if (loglvl) print("<-- Ps.js");

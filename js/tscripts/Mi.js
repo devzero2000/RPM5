@@ -34,17 +34,21 @@ var npkgs = 0;
 var IIDcounts = [];
 var IIDcount = 0;
 
-var ts = new Ts();
+var rpmts = require('rpmts');
+var rpmmi = require('rpmmi');
+var rpmhdr = require('rpmhdr');
 
-var mi = new Mi(ts);
+var ts = new rpmts.Ts();
+
+var mi = new rpmmi.Mi(ts);
 ack("typeof mi;", "object");
-ack("mi instanceof Mi;", true);
+ack("mi instanceof rpmmi.Mi;", true);
 ack("mi.debug = 1;", 1);
 ack("mi.debug = 0;", 0);
 delete mi;
 
 // --- Iterate over packages, counting, grab hdrNum and NVRA on the fly.
-var mi = new Mi(ts);
+var mi = new rpmmi.Mi(ts);
 bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
 //    ack("mi.instance != 0", true);
@@ -73,7 +77,7 @@ ack("bingo", 1);
 delete mi;
 
 function doITER(ts, tag, key) {
-    this.mi = new Mi(ts, tag, key);
+    this.mi = new rpmmi.Mi(ts, tag, key);
     this.bingo = 0;
     for ([this.dbkey,this.h] in Iterator(this.mi)) {
 	ack("this.h.name", N);
@@ -106,7 +110,7 @@ doITER(ts, RPMTAG_NVRA, "\^"+N+"-[0-9].*$");
 doITER(ts, RPMTAG_NVRA, "\^"+N+"-[0-9].*"+"\."+A+"$");
 
 // --- Retrieve by N with various mire pattern selectors.
-var mi = new Mi(ts, RPMTAG_NAME, N);
+var mi = new rpmmi.Mi(ts, RPMTAG_NAME, N);
 ack("mi.pattern(RPMTAG_VERSION, V)", true);
 ack("mi.pattern('release', R, RPMMIRE_STRCMP)", true);
 ack("mi.pattern(RPMTAG_OS, O, RPMMIRE_REGEX)", true);
@@ -125,7 +129,7 @@ ack("bingo", 1);
 delete mi;
 
 // --- Retrieve by N, filtering the instance (i.e. nothing found).
-var mi = new Mi(ts, RPMTAG_NAME, N);
+var mi = new rpmmi.Mi(ts, RPMTAG_NAME, N);
 ack("mi.prune(hdrNum)", true);
 bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
@@ -140,7 +144,7 @@ ack("bingo", 0);
 delete mi;
 
 // --- Retrieve by adding the instance.
-var mi = new Mi(ts);
+var mi = new rpmmi.Mi(ts);
 ack("mi.grow(hdrNum)", true);
 bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
@@ -155,7 +159,7 @@ ack("bingo", 1);
 delete mi;
 
 // --- Count the install transaction set members.
-var mi = new Mi(ts, RPMTAG_INSTALLTID, IID);
+var mi = new rpmmi.Mi(ts, RPMTAG_INSTALLTID, IID);
 bingo = 0;
 IIDcount = 0;
 for (var [dbkey,h] in Iterator(mi)) {
@@ -169,7 +173,7 @@ delete mi;
 
 // --- Print packages that contain "README".
 var bn = "README";
-var mi = new Mi(ts, RPMTAG_BASENAMES, null);
+var mi = new rpmmi.Mi(ts, RPMTAG_BASENAMES, null);
 ack("mi.growbn(bn)", true);
 bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {

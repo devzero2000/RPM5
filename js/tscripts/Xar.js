@@ -5,9 +5,12 @@ var path = null;
 var st = null;
 var ix = 0;
 
-var xar = new Xar(fn, "r");
+var rpmxar = require('rpmxar');
+var rpmst = require('rpmst');
+
+var xar = new rpmxar.Xar(fn, "r");
 ack("typeof xar;", "object");
-ack("xar instanceof Xar;", true);
+ack("xar instanceof rpmxar.Xar;", true);
 ack("xar.debug = 1;", 1);
 ack("xar.debug = 0;", 0);
 
@@ -22,5 +25,7 @@ for (var [key,val] in Iterator(xar)) {
 }
 ack("ix > 0", true);
 ack("xar.length", ix);
+
+delete xar;
 
 if (loglvl) print("<-- Xar.js");

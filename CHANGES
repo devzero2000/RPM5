@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: gpsee: convert the rest of the modules to use GPSEE module loading.
     - jbj: gpsee: convert the first 12 modules to use GPSEE module loading.
     - jbj: gpsee: install ~12 of the simpler and more standalone modules.
     - jbj: gpsee: add GPSEE_MODULE_WRAP to all JS modules.

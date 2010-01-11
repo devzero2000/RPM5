@@ -12,9 +12,11 @@ const SYM_NUM     = 8;
 
 var dn = "targeted";
 
-var sp = new Sp(dn);
+var rpmsp = require('rpmsp');
+
+var sp = new rpmsp.Sp(dn);
 ack("typeof sp;", "object");
-ack("sp instanceof Sp;", true);
+ack("sp instanceof rpmsp.Sp;", true);
 ack("sp.debug = 1;", 1);
 ack("sp.debug = 0;", 0);
 

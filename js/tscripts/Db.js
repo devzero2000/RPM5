@@ -231,9 +231,14 @@ var	DB_WRITEOPEN				= 0x00008000;
 var	DB_YIELDCPU				= 0x00010000;
 // -------------------------
 
+var rpmdb = require('rpmdb');
+var rpmdbc = require('rpmdbc');
+var rpmdbe = require('rpmdbe');
+var rpmtxn = require('rpmtxn');
+
 function BDB(dbenv, _name, _type, _re_source, _flags) {
     this.dbenv = dbenv;
-    this.db = new Db(dbenv, 0);
+    this.db = new rpmdb.Db(dbenv, 0);
     this.txn = null;
     this.dbfile = _name + ".db";
     this.dbname = null;
@@ -400,9 +405,9 @@ var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TX
 var emode = 0;
 
 // var dbenv = null;
-var dbenv = new Dbe();
+var dbenv = new rpmdbe.Dbe();
 ack("typeof dbenv;", "object");
-ack("dbenv instanceof Dbe;", true);
+ack("dbenv instanceof rpmdbe.Dbe;", true);
 ack('dbenv.open(home, eflags, emode)', true);
 ack('dbenv.home', home);
 ack('dbenv.open_flags', eflags);
@@ -425,7 +430,7 @@ var h_ffactor = Math.floor(100 * (pagesize - 32) / (avg_keysize + avg_datasize +
 var h_nelem = 12345;
 var H = new BDB(dbenv, "H", DB_HASH, null, 0);
 ack('typeof H.db', 'object');
-ack('H.db instanceof Db;', true);
+ack('H.db instanceof rpmdb.Db;', true);
 ack('H.db.dbfile', dbfile);
 ack('H.db.dbname', dbname);
 ack('H.db.type', dbtype);
@@ -440,7 +445,7 @@ var dbtype = DB_QUEUE;
 var q_extentsize = 0;
 var Q = new BDB(dbenv, "Q", DB_QUEUE, null, 0);
 ack('typeof Q.db', 'object');
-ack('Q.db instanceof Db;', true);
+ack('Q.db instanceof rpmdb.Db;', true);
 ack('Q.db.dbfile', dbfile);
 ack('Q.db.dbname', dbname);
 ack('Q.db.type', dbtype);
@@ -455,7 +460,7 @@ var dbtype = DB_BTREE;
 var bt_minkey = undefined;
 var B = new BDB(dbenv, "B", DB_BTREE, null, 0);
 ack('typeof B.db', 'object');
-ack('B.db instanceof Db;', true);
+ack('B.db instanceof rpmdb.Db;', true);
 ack('B.db.dbfile', dbfile);
 ack('B.db.dbname', dbname);
 ack('B.db.type', dbtype);
@@ -473,7 +478,7 @@ var re_pad = 0x20;
 var re_source = "Source";
 var R = new BDB(dbenv, "R", DB_RECNO, null, 0);
 ack('typeof R.db', 'object');
-ack('R.db instanceof Db;', true);
+ack('R.db instanceof rpmdb.Db;', true);
 ack('R.db.dbfile', dbfile);
 ack('R.db.dbname', dbname);
 ack('R.db.type', dbtype);
@@ -923,7 +928,7 @@ ack('db.priority', 0);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
-ack('txn instanceof Txn', true);
+ack('txn instanceof rpmtxn.Txn', true);
 ack('db.put(txn, "foo", "bar")', true);
 ack('db.exists(txn, "foo")', true);
 ack('db.get(txn, "foo")', 'bar');
@@ -932,10 +937,10 @@ ack('txn.commit()', true);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
-ack('txn instanceof Txn', true);
+ack('txn instanceof rpmtxn.Txn', true);
 var dbc = db.cursor(txn);
 ack('typeof dbc;', "object");
-ack('dbc instanceof Dbc;', true);
+ack('dbc instanceof rpmdbc.Dbc;', true);
 ack('dbc.get("foo", "bar", DB_SET)', undefined);
 ack('dbc.put("foo", "bar", DB_KEYLAST)', true);
 ack('dbc.close()', true);
@@ -943,10 +948,10 @@ ack('txn.commit()', true);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
-ack('txn instanceof Txn', true);
+ack('txn instanceof rpmtxn.Txn', true);
 var dbc = db.cursor(txn);
 ack('typeof dbc;', "object");
-ack('dbc instanceof Dbc;', true);
+ack('dbc instanceof rpmdbc.Dbc;', true);
 ack('dbc.get("foo", "bar", DB_SET)', 'bar');
 ack('dbc.count()', 1);
 ack('dbc.del()', true);
@@ -955,7 +960,7 @@ ack('txn.commit()', true);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
-ack('txn instanceof Txn', true);
+ack('txn instanceof rpmtxn.Txn', true);
 ack('txn.name', undefined);
 ack('txn.name = "john"', true);
 ack('txn.name', 'john');
@@ -966,7 +971,7 @@ ack('txn.abort()', true);
 
 var txn = dbenv.txn_begin(null, 0);
 ack('typeof txn', "object");
-ack('txn instanceof Txn', true);
+ack('txn instanceof rpmtxn.Txn', true);
 ack('txn.name', undefined);
 ack('txn.name = "ringo"', true);
 ack('txn.name', 'ringo');
@@ -990,17 +995,17 @@ ack('mpf.priority', 3);
 ack('db.close(0)', true);
 delete db;
 
-var db = new Db(dbenv, 0);
+var db = new rpmdb.Db(dbenv, 0);
 ack('typeof db;', 'object');
-ack('db instanceof Db;', true);
+ack('db instanceof rpmdb.Db;', true);
 ack('db.upgrade(dbfile)', true);
 ack('db.verify(dbfile, dbname,0)', true);
 // ack('db.truncate()', true);
 delete db;
 
-// var db = new Db(dbenv, 0);
+// var db = new rpmdb.Db(dbenv, 0);
 // ack('typeof db;', 'object');
-// ack('db instanceof Db;', true);
+// ack('db instanceof rpmdb.Db;', true);
 // ack('db.remove(dbfile, dbname)', true);
 // delete db;
 

@@ -52,47 +52,50 @@ var DB_LOCK_RANDOM		= 8;	/* Select random locker. */
 var DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
 
 // -----
+
+var rpmdbe = require('rpmdbe');
+
 var home = "./rpmdb";
 var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
 var emode = 0;
 
-var dbenv = new Dbe();
+var dbenv = new rpmdbe.Dbe();
 ack("typeof dbenv;", "object");
 ack("dbenv instanceof Dbe;", true);
 ack("dbenv.debug = 1;", 1);
 ack("dbenv.debug = 0;", 0);
 
-ack('dbenv.version', 'Berkeley DB 4.8.24: (August 14, 2009)');
+ack('dbenv.version', 'Berkeley DB 4.8.26: (December 18, 2009)');
 ack('dbenv.major', 4);
 ack('dbenv.minor', 8);
-ack('dbenv.patch', 24);
+ack('dbenv.patch', 26);
 
 ack('dbenv.errpfx', null);
-ack('dbenv.errpfx = home', true);
+ack('dbenv.errpfx = home', home);
 ack('dbenv.errpfx', home);
 
 ack('dbenv.errfile', null);
-ack('dbenv.errfile = "stderr"', true);
+ack('dbenv.errfile = "stderr"', 'stderr');
 ack('dbenv.errfile', 'stderr');
 
 ack('dbenv.cachemax', 265564);
 ack('dbenv.cachesize', 265564);
 ack('dbenv.ncaches', 1);
 
-ack('dbenv.cachemax = 1318912', true);
-ack('dbenv.cachesize = 1312348', true);
-ack('dbenv.ncaches = 2', true);
+ack('dbenv.cachemax = 1318912', 1318912);
+ack('dbenv.cachesize = 1312348', 1312348);
+ack('dbenv.ncaches = 2', 2);
 
 ack('dbenv.cachemax', 1318912);
 ack('dbenv.cachesize', 2054206);
 ack('dbenv.ncaches', 2);
 
 ack('dbenv.mmapsize', 0);
-ack('dbenv.mmapsize = 16*1024*1024', true);
+ack('dbenv.mmapsize = 16*1024*1024', 16*1024*1024);
 ack('dbenv.mmapsize', 16*1024*1024);
 
 ack('dbenv.thread_count', 0);
-ack('dbenv.thread_count = 64', true);
+ack('dbenv.thread_count = 64', 64);
 ack('dbenv.thread_count', 64);
 
 ack('dbenv.max_openfd', 0);
@@ -100,7 +103,7 @@ ack('dbenv.max_openfd', 0);
 // ack('dbenv.max_openfd', 100);
 
 ack('dbenv.shm_key', -1);
-ack('dbenv.shm_key = home', true);
+ack('dbenv.shm_key = home', home);
 // ack('dbenv.shm_key', 0x1234);
 
 ack('dbenv.data_dirs', undefined);
@@ -112,27 +115,27 @@ ack('dbenv.create_dir', null);
 // ack('dbenv.create_dir', '.');
 
 ack('dbenv.idirmode', null);
-ack('dbenv.idirmode = "rwxr-xr-x"', true);
+ack('dbenv.idirmode = "rwxr-xr-x"', "rwxr-xr-x");
 ack('dbenv.idirmode', 'rwxr-xr-x');
 
 ack('dbenv.tmp_dir', null);
-ack('dbenv.tmp_dir = "./tmp"', true);
+ack('dbenv.tmp_dir = "./tmp"', './tmp');
 ack('dbenv.tmp_dir', './tmp');
 
 ack('dbenv.lg_bsize', 0);
-ack('dbenv.lg_bsize = 65536', true);
+ack('dbenv.lg_bsize = 65536', 65536);
 ack('dbenv.lg_bsize', 65536);
 
 ack('dbenv.lg_dir', null);
-ack('dbenv.lg_dir = "./log"', true);
+ack('dbenv.lg_dir = "./log"', './log');
 ack('dbenv.lg_dir', './log');
 
 ack('dbenv.lg_filemode', 0);
-ack('dbenv.lg_filemode = 0644', true);
+ack('dbenv.lg_filemode = 0644', 420);
 ack('dbenv.lg_filemode', 0644);
 
 ack('dbenv.lg_max', 0);
-ack('dbenv.lg_max = 10485760', true);
+ack('dbenv.lg_max = 10485760', 10485760);
 ack('dbenv.lg_max', 10485760);
 
 ack('dbenv.lg_regionmax', 130000);
@@ -141,7 +144,7 @@ ack('dbenv.tx_max', 100);
 // ack('dbenv.tx_max = 100', true);
 
 ack('dbenv.tx_timestamp', 0);
-ack('dbenv.tx_timestamp = 0x12345678', true);
+ack('dbenv.tx_timestamp = 0x12345678', 305419896);
 ack('dbenv.tx_timestamp', 0x12345678);
 
 ack('dbenv.encrypt', 0);
@@ -159,7 +162,7 @@ ack('dbenv.failchk()', true);
 // ack('dbenv.fileid_reset(dbfile)', true);
 // ack('dbenv.lsn_reset(dbfile)', true);
 
-ack('dbenv.data_dirs', './data,.');
+ack('dbenv.data_dirs', './data');
 ack('dbenv.create_dir', '.');
 
 ack('dbenv.flags', DB_REGION_INIT);
@@ -169,7 +172,7 @@ ack('dbenv.msgfile', null);
 // ack('dbenv.msgfile = "stdout"', true);
 
 ack('dbenv.mmapsize', 16*1024*1024);
-ack('dbenv.mmapsize = 32*1024*1024', true);
+ack('dbenv.mmapsize = 32*1024*1024', 32*1024*1024);
 ack('dbenv.mmapsize', 32*1024*1024);
 
 ack('dbenv.mutex_align', 4);

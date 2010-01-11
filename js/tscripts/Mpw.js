@@ -1,6 +1,8 @@
 if (loglvl) print("--> Mpw.js");
 
-var mpw = new Mpw();
+var rpmmpw = require('rpmmpw');
+
+var mpw = new rpmmpw.Mpw();
 ack("typeof mpw;", "object");
 ack("mpw instanceof Mpw;", true);
 // ack("mpw.debug = 1;", 1);

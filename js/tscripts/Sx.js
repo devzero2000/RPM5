@@ -1,8 +1,10 @@
 if (loglvl) print("--> Sx.js");
 
-var sx = new Sx();
+var rpmsx = require('rpmsx');
+
+var sx = new rpmsx.Sx();
 ack("typeof sx;", "object");
-ack("sx instanceof Sx;", true);
+ack("sx instanceof rpmsx.Sx;", true);
 ack("sx.debug = 1;", 1);
 ack("sx.debug = 0;", 0);
 
@@ -57,5 +59,7 @@ var fn_bash = '/bin/bash';
 var fn_sh = '/bin/sh';
 ack("sx(fn_bash);", 'system_u:object_r:shell_exec_t:s0');
 ack("sx(fn_sh);", 'system_u:object_r:bin_t:s0');
+
+delete sx;
 
 if (loglvl) print("<-- Sx.js");

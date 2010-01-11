@@ -92,49 +92,49 @@ typedef struct rpmjsClassTable_s {
 /*@unchecked@*/ /*@observer@*/
 static struct rpmjsClassTable_s classTable[] = {
     { "Aug",		rpmjs_InitAugClass,	 1,	-25 },
-    { "Bc",		rpmjs_InitBcClass,	 0,	-40 },	/* todo++ */
+    { "Bc",		rpmjs_InitBcClass,	 1,	-40 },	/* todo++ */
     { "Bf",		rpmjs_InitBfClass,	 1,	-26 },
 
-    { "Cudf",		rpmjs_InitCudfClass,	 0,	-50 },	/* todo++ */
+    { "Cudf",		rpmjs_InitCudfClass,	 1,	-50 },	/* todo++ */
 
-    { "Db",		rpmjs_InitDbClass,	 0,	-45 },
-    { "Dbc",		rpmjs_InitDbcClass,	 0,	-46 },
-    { "Dbe",		rpmjs_InitDbeClass,	 0,	-44 },
-    { "Mpf",		rpmjs_InitMpfClass,	 0,	-48 },
-    { "Seq",		rpmjs_InitSeqClass,	 0,	-49 },
-    { "Txn",		rpmjs_InitTxnClass,	 0,	-47 },
+    { "Db",		rpmjs_InitDbClass,	 1,	-45 },
+    { "Dbc",		rpmjs_InitDbcClass,	 1,	-46 },
+    { "Dbe",		rpmjs_InitDbeClass,	 1,	-44 },
+    { "Mpf",		rpmjs_InitMpfClass,	 1,	-48 },
+    { "Seq",		rpmjs_InitSeqClass,	 1,	-49 },
+    { "Txn",		rpmjs_InitTxnClass,	 1,	-47 },
 
     { "Dc",		rpmjs_InitDcClass,	 1,	-28 },
-    { "Dig",		rpmjs_InitDigClass,	 0,	-37 },	/* todo++ */
+    { "Dig",		rpmjs_InitDigClass,	 1,	-37 },	/* todo++ */
     { "Dir",		rpmjs_InitDirClass,	 1,	-29 },
-    { "Ds",		rpmjs_InitDsClass,	 0,	-13 },
-    { "Fc",		rpmjs_InitFcClass,	 0,	-34 },	/* todo++ */
-    { "Fi",		rpmjs_InitFiClass,	 0,	-14 },
+    { "Ds",		rpmjs_InitDsClass,	 1,	-13 },
+    { "Fc",		rpmjs_InitFcClass,	 1,	-34 },	/* todo++ */
+    { "Fi",		rpmjs_InitFiClass,	 1,	-14 },
 #ifdef	DYING
     { "File",		   js_InitFileClass,	 0,	 -1 },
 #endif
-    { "Fts",		rpmjs_InitFtsClass,	 1,	30 },
-    { "Gi",		rpmjs_InitGiClass,	 0,	-35 },	/* todo++ */
-    { "Hdr",		rpmjs_InitHdrClass,	 0,	-12 },
-    { "Io",		rpmjs_InitIoClass,	 1,	32 },
-    { "Iob",		rpmjs_InitIobClass,	 0,	-36 },	/* todo++ */
+    { "Fts",		rpmjs_InitFtsClass,	 1,	-30 },
+    { "Gi",		rpmjs_InitGiClass,	 1,	-35 },	/* todo++ */
+    { "Hdr",		rpmjs_InitHdrClass,	 1,	-12 },
+    { "Io",		rpmjs_InitIoClass,	 1,	-32 },
+    { "Iob",		rpmjs_InitIobClass,	 1,	-36 },	/* todo++ */
     { "Mc",		rpmjs_InitMcClass,	 1,	-24 },
     { "Mg",		rpmjs_InitMgClass,	 1,	-31 },
-    { "Mi",		rpmjs_InitMiClass,	 0,	-11 },
-    { "Mpw",		rpmjs_InitMpwClass,	 0,	-41 },
-    { "Ps",		rpmjs_InitPsClass,	 0,	-16 },
-    { "Sm",		rpmjs_InitSmClass,	 0,	-43 },	/* todo++ */
-    { "Sp",		rpmjs_InitSpClass,	 0,	-42 },	/* todo++ */
-    { "St",		rpmjs_InitStClass,	 1,	27 },
-    { "Sw",		rpmjs_InitSwClass,	 0,	-38 },	/* todo++ */
-    { "Sx",		rpmjs_InitSxClass,	 0,	-39 },
+    { "Mi",		rpmjs_InitMiClass,	 1,	-11 },
+    { "Mpw",		rpmjs_InitMpwClass,	 1,	-41 },
+    { "Ps",		rpmjs_InitPsClass,	 1,	-16 },
+    { "Sm",		rpmjs_InitSmClass,	 1,	-43 },	/* todo++ */
+    { "Sp",		rpmjs_InitSpClass,	 1,	-42 },	/* todo++ */
+    { "St",		rpmjs_InitStClass,	 1,	-27 },
+    { "Sw",		rpmjs_InitSwClass,	 1,	-38 },	/* todo++ */
+    { "Sx",		rpmjs_InitSxClass,	 1,	-39 },
 #if defined(WITH_SYCK)
     { "Syck",		rpmjs_InitSyckClass,	 1,	 -3 },	/* todo++ */
 #endif
-    { "Sys",		rpmjs_InitSysClass,	 1,	33 },
-    { "Te",		rpmjs_InitTeClass,	 0,	-15 },
-    { "Ts",		rpmjs_InitTsClass,	 0,	-10 },
-    { "Xar",		rpmjs_InitXarClass,	 0,	-51 },	/* todo++ */
+    { "Sys",		rpmjs_InitSysClass,	 1,	-33 },
+    { "Te",		rpmjs_InitTeClass,	 1,	-15 },
+    { "Ts",		rpmjs_InitTsClass,	 1,	-10 },
+    { "Xar",		rpmjs_InitXarClass,	 1,	51 },	/* todo++ */
 #if defined(WITH_UUID)
     { "Uuid",		rpmjs_InitUuidClass,	 1,	 -2 },
 #endif

@@ -34,9 +34,11 @@ var	DB_UPDATE_SECONDARY	= 30;	/* Dbc.get, Dbc.del (internal) */
 var	DB_SET_LTE		= 31;	/* Dbc.get (internal) */
 var	DB_GET_BOTH_LTE		= 32;	/* Dbc.get (internal) */
 
-var dbc = new Dbc();
+var rpmdbc = require('rpmdbc');
+
+var dbc = new rpmdbc.Dbc();
 ack("typeof dbc;", "object");
-ack("dbc instanceof Dbc;", true);
+ack("dbc instanceof rpmdbc.Dbc;", true);
 ack("dbc.debug = 1;", 1);
 ack("dbc.debug = 0;", 0);
 

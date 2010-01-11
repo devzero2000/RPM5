@@ -6,9 +6,12 @@ var RPMTAG_BASENAMES	= 1117;
 
 var RPMMIRE_STRCMP	= 1;
 
-var ts = new Ts();
+var rpmts = require('rpmts');
+var rpmte = require('rpmte');
+
+var ts = new rpmts.Ts();
 ack("typeof ts;", "object");
-ack("ts instanceof Ts;", true);
+ack("ts instanceof rpmts.Ts;", true);
 ack("ts.debug = 1;", 1);
 ack("ts.debug = 0;", 0);
 
@@ -39,7 +42,7 @@ ack("ts[ts.length-1].N", "glibc");
 var ix = 0;
 for (var [key,te] in Iterator(ts)) {
     ack("typeof te;", "object");
-    ack("te instanceof Te;", true);
+    ack("te instanceof rpmte.Te;", true);
     ack("key == ix", true);
 //  print(JSON.stringify(te.ds(RPMTAG_NAME)));
 //  print(JSON.stringify(te.ds(RPMTAG_PROVIDENAME)));

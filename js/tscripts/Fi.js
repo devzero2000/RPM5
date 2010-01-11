@@ -3,22 +3,27 @@ if (loglvl) print("--> Fi.js");
 var RPMTAG_NAME = 1000;
 var N = "popt";
 
-var ts = new Ts();
+var rpmts = require('rpmts');
+var rpmmi = require('rpmmi');
+var rpmfi = require('rpmfi');
+var rpmhdr = require('rpmhdr');
+
+var ts = new rpmts.Ts();
 // var mi = ts.mi(RPMTAG_NAME, 'popt');
-var mi = new Mi(ts, RPMTAG_NAME, N);
+var mi = new rpmmi.Mi(ts, RPMTAG_NAME, N);
 ack("mi.length", 1);
 ack("mi.count", 1);
 ack("mi.instance", 0);  // zero before iterating
 
-// var h = new Hdr();
+// var h = new rpmhdr.Hdr();
 var bingo = 0;
 for (var [dbkey,h] in Iterator(mi)) {
     ack("mi.instance", 0); // non-zero when iterating
     ack("mi.instance", h.instance);
 
-    var fi = new Fi(h);
+    var fi = new rpmfi.Fi(h);
     ack("typeof fi;", "object");
-    ack("fi instanceof Fi;", true);
+    ack("fi instanceof rpmfi.Fi;", true);
     ack("fi.debug = 1;", 1);
     ack("fi.debug = 0;", 0);
 

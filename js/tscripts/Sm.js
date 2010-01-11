@@ -23,14 +23,16 @@ const RPMSM_STATE_CREATED	= 3;
 const RPMSM_STATE_CONNECTED	= 4;
 const RPMSM_STATE_TRANSACTION	= 5;
 
+var rpmsm = require('rpmsm');
+
 var dn = "/usr/share/selinux";
 var store = "targeted";
 var flags = RPMSM_FLAGS_SELECT;
 var state = RPMSM_STATE_SELECTED;
 
-var sm = new Sm(store, flags);
+var sm = new rpmsm.Sm(store, flags);
 ack("typeof sm;", "object");
-ack("sm instanceof Sm;", true);
+ack("sm instanceof rpmsm.Sm;", true);
 ack("sm.debug = 1;", 1);
 ack("sm.debug = 0;", 0);
 
