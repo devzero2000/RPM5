@@ -54,9 +54,12 @@ var uri_fn = uri_dn + uri_bn;
 var dn = "./tscripts";
 var fts_options = FTS_PHYSICAL | FTS_NOCHDIR;
 
-var fts = new Fts(dn, fts_options);
+var GPSEE = require('rpmfts');
+var rpmst = require('rpmst');
+
+var fts = new GPSEE.Fts(dn, fts_options);
 ack("typeof fts;", "object");
-ack("fts instanceof Fts;", true);
+ack("fts instanceof GPSEE.Fts;", true);
 ack("fts.debug = 1;", 1);
 ack("fts.debug = 0;", 0);
 
@@ -87,7 +90,7 @@ var ix = 0;
 ix = 0;
 fts.open(dn, fts_options);
 while (fts.read()) {
-    var st = new St(fts.accpath);
+    var st = new rpmst.St(fts.accpath);
     fts.number = ix;
     print("FTS_"+ftsinfo[fts.info]+"\t"+fts.number+"\t"+fts.path);
 

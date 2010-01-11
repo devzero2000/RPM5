@@ -3,9 +3,11 @@ if (loglvl) print("--> Dir.js");
 var dn = "./tscripts";
 var ix = 0;
 
-var dir = new Dir(dn);
+var GPSEE = require('rpmdir');
+
+var dir = new GPSEE.Dir(dn);
 ack("typeof dir;", "object");
-ack("dir instanceof Dir;", true);
+ack("dir instanceof GPSEE.Dir;", true);
 ack("dir.debug = 1;", 1);
 ack("dir.debug = 0;", 0);
 
@@ -31,5 +33,7 @@ for (var [key,val] in Iterator(dir)) {
     ix++;
 }
 ack("dir.length", ix);
+
+delete dir;
 
 if (loglvl) print("<-- Dir.js");

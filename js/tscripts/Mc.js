@@ -1,8 +1,10 @@
 if (loglvl) print("--> Mc.js");
 
-var mc = new Mc();
+var GPSEE = require('rpmmc');
+
+var mc = new GPSEE.Mc();
 ack("typeof mc;", "object");
-ack("mc instanceof Mc;", true);
+ack("mc instanceof GPSEE.Mc;", true);
 ack("mc.debug = 1;", 1);
 ack("mc.debug = 0;", 0);
 
@@ -28,7 +30,7 @@ ack('mc.expand("%{lua:print(\\"lua\\")}")',	"lua");
 // ack('mc.expand("%{tcl:puts \\"tcl\\"}")',	"tcl");
 delete mc
 
-mc = new Mc("cli");
+mc = new GPSEE.Mc("cli");
 ack('mc.list()', null);
 ack('mc.add("foo bar")', true);
 ack('mc.list()', "%foo	bar");
@@ -38,7 +40,7 @@ ack('mc.list()', null);
 ack('mc.expand("%{foo}")', "%{foo}");
 delete mc
 
-mc = new Mc("tscripts/macros");
+mc = new GPSEE.Mc("tscripts/macros");
 ack('mc.list()', null);
 ack('mc.add("foo bar")', true);
 ack('mc.list()', "%foo	bar");
@@ -48,7 +50,7 @@ ack('mc.list()', null);
 ack('mc.expand("%{foo}")', "%{foo}");
 delete mc
 
-mc = new Mc("");
+mc = new GPSEE.Mc("");
 ack('mc.list()', null);
 ack('mc.add("foo bar")', true);
 ack('mc.list()', "%foo	bar");
@@ -59,7 +61,7 @@ ack('mc.expand("%{foo}")', "%{foo}");
 delete mc
 
 // FIXME: there's no internal code path error returns to force an error out.
-mc = new Mc("tscripts/nonexistent");
+mc = new GPSEE.Mc("tscripts/nonexistent");
 delete mc
 
 if (loglvl) print("<-- Mc.js");

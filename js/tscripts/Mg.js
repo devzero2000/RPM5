@@ -23,15 +23,20 @@ const MAGIC_NO_CHECK_TOKENS	= 0x100000; /* Don't check ascii/tokens */
 
 var magicfile = "/usr/lib/rpm/magic";
 
-var magic = new Mg(magicfile, MAGIC_CHECK);
+var GPSEE = require('rpmmg');
+
+var magic = new GPSEE.Mg(magicfile, MAGIC_CHECK);
 ack("typeof magic;", "object");
-ack("magic instanceof Mg;", true);
+ack("magic instanceof GPSEE.Mg;", true);
 ack("magic.debug = 1;", 1);
 ack("magic.debug = 0;", 0);
 
-var mime = new Mg(magicfile, MAGIC_CHECK|MAGIC_MIME);
+var mime = new GPSEE.Mg(magicfile, MAGIC_CHECK|MAGIC_MIME);
 var fn = '/bin/sh';
 
 print(fn+": mime("+mime(fn)+") "+magic(fn));
+
+delete mime;
+delete magic;
 
 if (loglvl) print("<-- Mg.js");
