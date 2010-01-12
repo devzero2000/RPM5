@@ -70,10 +70,10 @@ ack("st.rdev", 0x0);
 ack("st.size", 695557);
 ack("st.blksize", 0);
 ack("st.blocks", 1359);
-// FIXME: the year is screwy somehow
-ack("st.atime", 'Fri Apr 06 0108 12:29:26 GMT-0500 (EST)');
-ack("st.mtime", 'Fri Apr 06 0108 12:29:26 GMT-0500 (EST)');
-ack("st.ctime", 'Fri Apr 06 0108 12:29:26 GMT-0500 (EST)');
+
+ack("st.atime", 'Sun Apr 06 2008 12:29:26 GMT-0400 (EST)');
+ack("st.mtime", 'Sun Apr 06 2008 12:29:26 GMT-0400 (EST)');
+ack("st.ctime", 'Sun Apr 06 2008 12:29:26 GMT-0400 (EST)');
 
 delete st;
 

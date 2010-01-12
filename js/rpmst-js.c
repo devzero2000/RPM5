@@ -115,7 +115,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     if (mytime != (time_t)0xffffffff) {
 	struct tm *tm = gmtime(&mytime);
 	*vp = OBJECT_TO_JSVAL(js_NewDateObject(cx,
-					tm->tm_year,
+					tm->tm_year + 1900,
 					tm->tm_mon,
 					tm->tm_mday,
 					tm->tm_hour,
