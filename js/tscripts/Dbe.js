@@ -61,7 +61,7 @@ var emode = 0;
 
 var dbenv = new rpmdbe.Dbe();
 ack("typeof dbenv;", "object");
-ack("dbenv instanceof Dbe;", true);
+ack("dbenv instanceof rpmdbe.Dbe;", true);
 ack("dbenv.debug = 1;", 1);
 ack("dbenv.debug = 0;", 0);
 
@@ -90,6 +90,10 @@ ack('dbenv.cachemax', 1318912);
 ack('dbenv.cachesize', 2054206);
 ack('dbenv.ncaches', 2);
 
+ack('dbenv.lk_max_lockers = 1000', 1000);
+ack('dbenv.lk_max_locks = 1000', 1000);
+ack('dbenv.lk_max_objects = 1000', 1000);
+
 ack('dbenv.mmapsize', 0);
 ack('dbenv.mmapsize = 16*1024*1024', 16*1024*1024);
 ack('dbenv.mmapsize', 16*1024*1024);
@@ -99,20 +103,20 @@ ack('dbenv.thread_count = 64', 64);
 ack('dbenv.thread_count', 64);
 
 ack('dbenv.max_openfd', 0);
-// ack('dbenv.max_openfd = 100', true);
-// ack('dbenv.max_openfd', 100);
+ack('dbenv.max_openfd = 100', 100);
+ack('dbenv.max_openfd', 100);
 
 ack('dbenv.shm_key', -1);
+ack('dbenv.shm_key = 0x1234', 0x1234);
 ack('dbenv.shm_key = home', home);
-// ack('dbenv.shm_key', 0x1234);
 
 ack('dbenv.data_dirs', undefined);
-// ack('dbenv.data_dirs = "./data"', true);	// todo++
-// ack('dbenv.data_dirs', './data');
+ack('dbenv.data_dirs = "./data"', './data');
+ack('dbenv.data_dirs', './data');
 
 ack('dbenv.create_dir', null);
-// ack('dbenv.create_dir = "."', true);
-// ack('dbenv.create_dir', '.');
+ack('dbenv.create_dir = "."', '.');
+ack('dbenv.create_dir', null);		// FIXME
 
 ack('dbenv.idirmode', null);
 ack('dbenv.idirmode = "rwxr-xr-x"', "rwxr-xr-x");
@@ -140,8 +144,13 @@ ack('dbenv.lg_max', 10485760);
 
 ack('dbenv.lg_regionmax', 130000);
 
+ack('dbenv.lk_partitions = 40', 40);
+
+ack('dbenv.log_inmemory = 0', 0);
+// ack('dbenv.log_direct = 0', 0);
+
 ack('dbenv.tx_max', 100);
-// ack('dbenv.tx_max = 100', true);
+ack('dbenv.tx_max = 100', 100);
 
 ack('dbenv.tx_timestamp', 0);
 ack('dbenv.tx_timestamp = 0x12345678', 305419896);
@@ -163,10 +172,10 @@ ack('dbenv.failchk()', true);
 // ack('dbenv.lsn_reset(dbfile)', true);
 
 ack('dbenv.data_dirs', './data');
-ack('dbenv.create_dir', '.');
+ack('dbenv.create_dir', null);		// FIXME
 
-ack('dbenv.flags', DB_REGION_INIT);
-// ack('dbenv.flags = DB_REGION_INIT', true);
+ack('dbenv.flags', 0);
+ack('dbenv.flags = DB_REGION_INIT', DB_REGION_INIT);
 
 ack('dbenv.msgfile', null);
 // ack('dbenv.msgfile = "stdout"', true);
@@ -176,22 +185,22 @@ ack('dbenv.mmapsize = 32*1024*1024', 32*1024*1024);
 ack('dbenv.mmapsize', 32*1024*1024);
 
 ack('dbenv.mutex_align', 4);
-// ack('dbenv.mutex_align = 4', true);
+ack('dbenv.mutex_align = 4', 4);
 
 ack('dbenv.mutex_inc', 0);
-// ack('dbenv.mutex_inc = 0', true);
+ack('dbenv.mutex_inc = 0', 0);
 
 ack('dbenv.mutex_max', 0);
-// ack('dbenv.mutex_max = 0', true);
+ack('dbenv.mutex_max = 0', 0);
 
-ack('dbenv.mutex_spins', 1);
-// ack('dbenv.mutex_spins = 1', true);
+ack('dbenv.mutex_spins', 200);
+ack('dbenv.mutex_spins = 200', 200);
 
 ack('dbenv.DB_SET_LOCK_TIMEOUT', 0);
-// ack('dbenv.DB_SET_LOCK_TIMEOUT = 0', true);
+ack('dbenv.DB_SET_LOCK_TIMEOUT = 0', 0);
 
 ack('dbenv.DB_SET_TXN_TIMEOUT', 0);
-// ack('dbenv.DB_SET_TXN_TIMEOUT = 0', true);
+ack('dbenv.DB_SET_TXN_TIMEOUT = 0', 0);
 
 ack('dbenv.tmp_dir', './tmp');
 
@@ -199,34 +208,28 @@ ack('dbenv.verbose', undefined);	// todo++
 ack('dbenv.lk_conflicts', undefined);	// todo++
 
 ack('dbenv.lk_detect', DB_LOCK_DEFAULT);
-// ack('dbenv.lk_detect = DB_LOCK_DEFAULT', true);
+ack('dbenv.lk_detect = DB_LOCK_DEFAULT', true);
 
-ack('dbenv.lk_max_lockers', 300000);
-// ack('dbenv.lk_max_lockers = 1000', true);
+ack('dbenv.lk_max_lockers', 1000);
 
-ack('dbenv.lk_max_locks', 300000);
-// ack('dbenv.lk_max_locks = 1000', true);
+ack('dbenv.lk_max_locks', 1000);
 
-ack('dbenv.lk_max_objects', 300000);
-// ack('dbenv.lk_max_objects = 1000', true);
+ack('dbenv.lk_max_objects', 1000);
 
 ack('dbenv.lk_partitions', 40);
-// ack('dbenv.lk_partitions = 1', true);
 
 ack('dbenv.log_direct', false);
-// ack('dbenv.log_direct = 0', true);
 
 ack('dbenv.log_dsync', false);
-// ack('dbenv.log_dsync = 0', true);
+ack('dbenv.log_dsync = 0', 0);
 
 ack('dbenv.log_autorm', false);
-// ack('dbenv.log_autorm = 0', true);
+ack('dbenv.log_autorm = 0', 0);
 
 ack('dbenv.log_inmemory', false);
-// ack('dbenv.log_inmemory = 0', true);
 
 ack('dbenv.log_zero', false);
-// ack('dbenv.log_zero = 0', true);
+ack('dbenv.log_zero = 0', 0);
 
 ack('dbenv.lg_bsize', 65536);
 ack('dbenv.lg_dir', './log');
@@ -257,5 +260,7 @@ ack('dbenv.DB_REP_HEARTBEAT_SEND', 0);
 ack('dbenv.DB_REP_LEASE_TIMEOUT', 0);
 
 ack('dbenv.close(0)', true);
+
+delete dbenv;
 
 if (loglvl) print("<-- Dbe.js");
