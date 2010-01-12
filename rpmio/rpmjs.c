@@ -44,7 +44,7 @@ rpmjs _rpmjsI = NULL;
 
 #define	WITH_TRACEMONKEY
 
-#if defined(WITH_JS)
+#if defined(WITH_JS) && !defined(WITH_GPSEE)
 static JSBool
 Version(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
@@ -357,7 +357,6 @@ static void reportError(JSContext *cx, const char *msg, JSErrorReport *report)
 	report->filename ? report->filename : "<no filename>",
 	(unsigned int) report->lineno, msg);
 }
-#endif
 
 static
 int rpmjs_destroyInterpreter(/*@only@*/ /*@null@*/ JSI_t I)
@@ -468,6 +467,7 @@ assert(str != NULL);
 #endif	/* WITH_JS */
     return I;
 }
+#endif	/* defined(WITH_JS) && !defined(WITH_GPSEE) */
 
 static void rpmjsFini(void * _js)
 	/*@globals fileSystem @*/
@@ -478,7 +478,11 @@ static void rpmjsFini(void * _js)
 if (_rpmjs_debug)
 fprintf(stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I);
 
+#if defined(WITH_GPSEE)
+    (void) gpsee_destroyInterpreter(js->I);
+#else
     (void) rpmjs_destroyInterpreter(js->I);
+#endif
     js->I = NULL;
 
 }
@@ -503,13 +507,18 @@ static rpmjs rpmjsGetPool(/*@null@*/ rpmioPool pool)
 rpmjs rpmjsNew(const char ** av, int flags)
 {
     rpmjs js = rpmjsGetPool(_rpmjsPool);
+    JSI_t I = NULL;
 
+#if defined(WITH_GPSEE)
+    I = gpsee_createInterpreter((char *const *)av, environ);
+#else
+    I = rpmjs_createInterpreter(av, NULL);
 #if defined(WITH_JS)
-    JSI_t I = rpmjs_createInterpreter(av, NULL);
-    js->I = I;
     if (I != NULL)
 	JS_SetRuntimePrivate(I->rt, js);
 #endif
+#endif
+    js->I = I;
 
     return rpmjsLink(js);
 }
