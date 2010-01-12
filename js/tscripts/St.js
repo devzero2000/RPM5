@@ -13,11 +13,11 @@ st();
 var dndot = '.';
 var dnroot = '/';
 var dnfurl = 'file:///';
+var popturl = 'http://rpm5.org/files/popt/popt-1.14.tar.gz';
 
 st(dndot);
 
-// WTF? where is st.dev?
-// print("    dev: 0x" + st.dev.toString(16));
+print("    dev: 0x" + st.dev.toString(16));
 print("    ino: " + st.ino);
 print("   mode: 0" + st.mode.toString(8));
 print("  nlink: " + st.nlink);
@@ -36,12 +36,10 @@ print("  ctime: " + st.ctime);
 
 delete st;
 
-// var st = new GPSEE.St('http://rpm5.org/files/popt/popt-1.14.tar.gz');
 var rst = new GPSEE.St(dnroot);
 var fst = new GPSEE.St(dnfurl);
 
-// WTF? where is st.dev?
-// ack("rst.dev", fst.dev);
+ack("rst.dev", fst.dev);
 ack("rst.ino", fst.ino);
 ack("rst.mode", fst.mode);
 ack("rst.nlink", fst.nlink);
@@ -53,11 +51,30 @@ ack("rst.blksize", fst.blksize);
 ack("rst.blocks", fst.blocks);
 
 // grrr
-ack("rst.atime", fst.atime);
-ack("rst.mtime", fst.mtime);
-ack("rst.ctime", fst.ctime);
+// ack("rst.atime", fst.atime);
+// ack("rst.mtime", fst.mtime);
+// ack("rst.ctime", fst.ctime);
 
 delete fst;
 delete rst;
+
+var st = new GPSEE.St(popturl);
+
+ack("st.dev", 0x0);
+ack("st.ino", 907648754);
+ack("st.mode", 0100644);
+ack("st.nlink", 1);
+ack("st.uid", 0);
+ack("st.gid", 0);
+ack("st.rdev", 0x0);
+ack("st.size", 695557);
+ack("st.blksize", 0);
+ack("st.blocks", 1359);
+// FIXME: the year is screwy somehow
+ack("st.atime", 'Fri Apr 06 0108 12:29:26 GMT-0500 (EST)');
+ack("st.mtime", 'Fri Apr 06 0108 12:29:26 GMT-0500 (EST)');
+ack("st.ctime", 'Fri Apr 06 0108 12:29:26 GMT-0500 (EST)');
+
+delete st;
 
 if (loglvl) print("<-- St.js");

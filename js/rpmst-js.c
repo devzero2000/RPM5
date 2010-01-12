@@ -202,16 +202,15 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static struct stat *
-rpmst_init(JSContext *cx, JSObject *obj, JSObject *fno)
+rpmst_init(JSContext *cx, JSObject *obj, jsval fnv)
 {
     struct stat * st = xcalloc(1, sizeof(*st));
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p) st %p\n", __FUNCTION__, cx, obj, fno, st);
+fprintf(stderr, "==> %s(%p,%p,%u) st %p\n", __FUNCTION__, cx, obj, fnv, st);
 
-    if (fno && OBJ_IS_STRING(cx, fno)) {
-	const char * fn =
-		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
+    if (JSVAL_IS_STRING(fnv)) {
+	const char * fn = JS_GetStringBytes(JS_ValueToString(cx, fnv));
 	if (Stat(fn, st) < 0) {
 	    /* XXX error msg */
 	    st = _free(st);
@@ -242,15 +241,15 @@ static JSBool
 rpmst_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
-    JSObject *fno = NULL;
+    jsval fnv = JSVAL_VOID;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &fno)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &fnv)))
         goto exit;
 
     if (JS_IsConstructing(cx)) {
-	(void) rpmst_init(cx, obj, fno);
+	(void) rpmst_init(cx, obj, fnv);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmstClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -270,18 +269,17 @@ rpmst_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmstClass, NULL);
     struct stat * st = ptr;
     JSBool ok = JS_FALSE;
-    JSObject *_fno = NULL;
+    jsval fnv = JSVAL_VOID;
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &_fno)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &fnv)))
         goto exit;
 
     if (st) {
-	st = _free(st);
-	st = ptr = NULL;
+	st = ptr = _free(st);
 	(void) JS_SetPrivate(cx, o, (void *)st);
     }
 
-    st = ptr = rpmst_init(cx, o, _fno);
+    st = ptr = rpmst_init(cx, o, fnv);
 
     *rval = OBJECT_TO_JSVAL(o);
 
@@ -327,7 +325,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewStObject(JSContext *cx, JSObject *fno)
+rpmjs_NewStObject(JSContext *cx, jsval fnv)
 {
     JSObject *obj;
     struct stat * st;
@@ -336,7 +334,7 @@ rpmjs_NewStObject(JSContext *cx, JSObject *fno)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((st = rpmst_init(cx, obj, fno)) == NULL) {
+    if ((st = rpmst_init(cx, obj, fnv)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
