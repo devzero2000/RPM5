@@ -152,9 +152,9 @@ rpmhdr_ds(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &tagN)))
         goto exit;
-    *rval = OBJECT_TO_JSVAL(rpmjs_NewDsObject(cx, obj, tagN));
+    *rval = OBJECT_TO_JSVAL(rpmjs_NewDsObject(cx, OBJECT_TO_JSVAL(obj), tagN));
     ok = JS_TRUE;
 exit:
     return ok;
@@ -170,7 +170,7 @@ rpmhdr_fi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/i", &tagN)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &tagN)))
         goto exit;
     *rval = OBJECT_TO_JSVAL(rpmjs_NewFiObject(cx, h, tagN));
     ok = JS_TRUE;

@@ -6,7 +6,6 @@
  */
 #include <rpm-js.h>
 
-#define	OBJ_IS_STRING(_cx, _o)	(JSVAL_IS_STRING(OBJECT_TO_JSVAL(_o)))
 #define	OBJ_IS_RPMHDR(_cx, _o)	(JS_GET_CLASS(_cx, _o) == &rpmhdrClass)
 
 static inline

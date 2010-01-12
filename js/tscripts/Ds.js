@@ -75,7 +75,7 @@ ack("ds.refs += 1;", 1);
 ack("ds.result = 1;", 1);
 
 // for (var [key,val] in Iterator(ds))
-//     print(key+": "+val);
+//     print("\t"+key+": "+val);
 
 // print(JSON.stringify(ds));
 

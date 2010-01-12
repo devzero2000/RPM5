@@ -236,20 +236,16 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static rpmmc
-rpmmc_init(JSContext *cx, JSObject *obj, JSObject *o)
+rpmmc_init(JSContext *cx, JSObject *obj, jsval v)
 {
     rpmmc mc = NULL;	/* XXX FIXME: only global context for now. */
+    JSObject * o = (JSVAL_IS_OBJECT(v) ? JSVAL_TO_OBJECT(v) : NULL);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p) mc %p\n", __FUNCTION__, cx, obj, o, mc);
 
-    if (o == NULL) {
-if (_debug)
-fprintf(stderr, "\tinitMacros() mc %p\n", mc);
-    } else
-    if (OBJ_IS_STRING(cx, o)) {
-	const char * s =
-		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(o)));
+    if (JSVAL_IS_STRING(v)) {
+	const char * s = JS_GetStringBytes(JS_ValueToString(cx, v));
         if (!strcmp(s, "global"))
             mc = rpmGlobalMacroContext;
 	else if (!strcmp(s, "cli"))
@@ -263,6 +259,10 @@ fprintf(stderr, "\tinitMacros() mc %p\n", mc);
 	}
 if (_debug)
 fprintf(stderr, "\tinitMacros(\"%s\") mc %p\n", s, mc);
+    } else
+    if (o == NULL) {
+if (_debug)
+fprintf(stderr, "\tinitMacros() mc %p\n", mc);
     }
 
     if (!JS_SetPrivate(cx, obj, (void *)mc)) {
@@ -290,15 +290,16 @@ static JSBool
 rpmmc_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
+    jsval v = JSVAL_VOID;
     JSObject *o = NULL;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/o", &o)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &v)))
         goto exit;
 
     if (JS_IsConstructing(cx)) {
-	(void) rpmmc_init(cx, obj, o);
+	(void) rpmmc_init(cx, obj, v);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmcClass, NULL, NULL)) == NULL)
 	    goto exit;
@@ -334,7 +335,7 @@ assert(proto != NULL);
 }
 
 JSObject *
-rpmjs_NewMcObject(JSContext *cx, JSObject *o)
+rpmjs_NewMcObject(JSContext *cx, jsval v)
 {
     JSObject *obj;
     rpmmc mc;
@@ -343,7 +344,7 @@ rpmjs_NewMcObject(JSContext *cx, JSObject *o)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((mc = rpmmc_init(cx, obj, o)) == NULL) {
+    if ((mc = rpmmc_init(cx, obj, v)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }

@@ -17,7 +17,7 @@ extern JSObject *
 rpmjs_InitMcClass(JSContext *cx, JSObject* obj);
 
 extern JSObject *
-rpmjs_NewMcObject(JSContext *cx, JSObject *o);
+rpmjs_NewMcObject(JSContext *cx, jsval v);
 
 #ifdef __cplusplus      
 }

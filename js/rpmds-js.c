@@ -306,12 +306,13 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
 /* --- Object ctors/dtors */
 static rpmds
-rpmds_init(JSContext *cx, JSObject *obj, JSObject *o, int _tagN)
+rpmds_init(JSContext *cx, JSObject *obj, jsval v, uint32_t _tagN)
 {
     rpmds ds = NULL;
+    JSObject * o = (JSVAL_IS_OBJECT(v) ? JSVAL_TO_OBJECT(v) : NULL);
     int xx;
 
-    if (OBJ_IS_RPMHDR(cx, o)) {
+    if (o && OBJ_IS_RPMHDR(cx, o)) {
 	Header h = JS_GetPrivate(cx, o);
 	int flags = 0;
 	if (_tagN == RPMTAG_NAME) {
@@ -328,9 +329,8 @@ fprintf(stderr, "\trpmdsNew(%p, %s(%d), 0x%x) ds %p\n", h, tagName(_tagN), _tagN
 	if (ds == NULL)
 	    return NULL;
     } else
-    if (OBJ_IS_STRING(cx, o)) {
-	const char * s =
-		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(o)));
+    if (JSVAL_IS_STRING(v)) {
+	const char * s = JS_GetStringBytes(JS_ValueToString(cx, v));
 	if (!strcmp(s, "cpuinfo")) {
 	    xx = rpmdsCpuinfo(&ds, NULL);
 if (_debug)
@@ -357,13 +357,13 @@ fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
 	    return NULL;
 	}
     } else
-    if (JS_IsArrayObject(cx, o)) {
+    if (o && JS_IsArrayObject(cx, o)) {
 	jsuint length = 0;
-	jsuint i;
 	JSBool ok = JS_GetArrayLength(cx, o, &length);
 	const char * N = NULL;
 	const char * EVR = NULL;
 	uint32_t F = 0;
+	jsuint i;
 
 	if (!ok)
 	    return NULL;
@@ -420,16 +420,16 @@ static JSBool
 rpmds_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     JSBool ok = JS_FALSE;
-    JSObject *o = NULL;
-    int tagN = RPMTAG_REQUIRENAME;
+    jsval v = JSVAL_VOID;
+    uint32_t tagN = RPMTAG_REQUIRENAME;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &o, &tagN)))
+    if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/u", &v, &tagN)))
 	goto exit;
 
     if (JS_IsConstructing(cx)) {
-	if (rpmds_init(cx, obj, o, tagN) == NULL)
+	if (rpmds_init(cx, obj, v, tagN) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) == NULL)
@@ -466,7 +466,7 @@ assert(o != NULL);
 }
 
 JSObject *
-rpmjs_NewDsObject(JSContext *cx, JSObject *o, int _tagN)
+rpmjs_NewDsObject(JSContext *cx, jsval v, uint32_t _tagN)
 {
     JSObject *obj;
     rpmds ds;
@@ -475,7 +475,7 @@ rpmjs_NewDsObject(JSContext *cx, JSObject *o, int _tagN)
 	/* XXX error msg */
 	return NULL;
     }
-    if ((ds = rpmds_init(cx, obj, o, _tagN)) == NULL) {
+    if ((ds = rpmds_init(cx, obj, v, _tagN)) == NULL) {
 	/* XXX error msg */
 	return NULL;
     }
