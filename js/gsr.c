@@ -567,6 +567,9 @@ PRIntn prmain(PRIntn argc, char **argv)
       goto out;
   }
 
+#if !defined(SYSTEM_GSR)
+#define	SYSTEM_GSR	"/usr/bin/gsr"
+#endif
   if ((argv[0][0] == '/') && (strcmp(argv[0], SYSTEM_GSR) != 0) && rc_bool_value(rc, "no_gsr_preload_script") != rc_true)
   {
     char preloadScriptFilename[FILENAME_MAX];
