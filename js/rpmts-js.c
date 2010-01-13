@@ -441,7 +441,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	    /* XXX rpmteLink/rpmteUnlink are no-ops */
 	    if ((te = rpmtsElement(ts, oc)) != NULL
 	     && (teo = JS_NewObject(cx, &rpmteClass, NULL, NULL)) != NULL
-	     && JS_SetPrivate(cx, teo, rpmteLink(rpmtsElement(ts, oc))))
+	     && JS_SetPrivate(cx, teo, rpmteLink(te)))
 	    {
 		*vp = OBJECT_TO_JSVAL(teo);
 	    }
