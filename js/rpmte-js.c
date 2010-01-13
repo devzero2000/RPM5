@@ -28,7 +28,6 @@
 /*@unchecked@*/
 static int _debug = 0;
 
-
 #define	rpmte_addprop	JS_PropertyStub
 #define	rpmte_delprop	JS_PropertyStub
 #define	rpmte_convert	JS_ConvertStub
@@ -314,6 +313,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 	break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
+	    *idp = JSVAL_VOID;	/* XXX immediate terminate */
 	if (*idp != JSVAL_VOID)
 	    break;
 	/*@fallthrough@*/
