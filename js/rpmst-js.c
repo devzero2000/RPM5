@@ -150,7 +150,6 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     return JS_TRUE;
 }
 
-#ifdef	NOTYET
 static JSBool
 rpmst_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
 	JSObject **objp)
@@ -175,17 +174,23 @@ static JSBool
 rpmst_enumerate(JSContext *cx, JSObject *obj, JSIterateOp op,
 		  jsval *statep, jsid *idp)
 {
+    JSObject * iter;
+    JSBool ok = JS_FALSE;
 
 _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
-	*statep = JSVAL_VOID;
+	if ((iter = JS_NewPropertyIterator(cx, obj)) == NULL)
+	    goto exit;
+	*statep = OBJECT_TO_JSVAL(iter);
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
-	*statep = JSVAL_VOID;
+	iter = (JSObject*)JSVAL_TO_OBJECT(*statep);
+	if (!JS_NextProperty(cx, iter, idp))
+	    goto exit;
         if (*idp != JSVAL_VOID)
             break;
         /*@fallthrough@*/
@@ -193,12 +198,11 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 	*statep = JSVAL_NULL;
         break;
     }
-    return JS_TRUE;
+    ok = JS_TRUE;
+
+exit:
+    return ok;
 }
-#else
-#define	rpmst_resolve	JS_ResolveStub
-#define	rpmst_enumerate	JS_EnumerateStub
-#endif
 
 /* --- Object ctors/dtors */
 static struct stat *
@@ -295,11 +299,7 @@ fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, 
 /* --- Class initialization */
 JSClass rpmstClass = {
     /* XXX class should be "Stat" eventually, avoid name conflicts for now */
-#ifdef	NOTYET
     "St", JSCLASS_NEW_RESOLVE | JSCLASS_NEW_ENUMERATE | JSCLASS_HAS_PRIVATE,
-#else
-    "St", JSCLASS_HAS_PRIVATE,
-#endif
     rpmst_addprop,   rpmst_delprop, rpmst_getprop, rpmst_setprop,
     (JSEnumerateOp)rpmst_enumerate, (JSResolveOp)rpmst_resolve,
     rpmst_convert,	rpmst_dtor,
