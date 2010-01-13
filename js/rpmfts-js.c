@@ -334,7 +334,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	    struct stat *st;
 	    size_t nb = sizeof(*st);
 	    if ((st = memcpy(xmalloc(nb), p->fts_statp, nb)) != NULL
-	     && (o = JS_NewObject(cx, &rpmstClass, NULL, NULL)) != NULL
+	     && (o = JS_NewObject(cx, &rpmstClass, NULL, obj)) != NULL
 	     && JS_SetPrivate(cx, o, (void *)st))
 		*vp = OBJECT_TO_JSVAL(o);
 	    else
