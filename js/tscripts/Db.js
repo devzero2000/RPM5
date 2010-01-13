@@ -364,11 +364,13 @@ function Fill(A) {
 	break;
     }
 
-    txn = dbenv.txn_begin(null, 0);
+//    txn = dbenv.txn_begin(null, 0);
+//    ack("typeof txn;", "object");
+//    ack("txn instanceof rpmtxn.Txn;", true);
     for (let i = imin; i < imax; i++)
 	db.put(txn, i, i.toString(2), putflags);
     db.sync();
-    txn.commit();
+//    txn.commit();
 
 //  print('----> GET ' + dbenv.home + '/' + db.dbfile);
 //  txn = null;
@@ -401,13 +403,14 @@ function Fill(A) {
 
 // -----
 var home = "./rpmdb";
-var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
+var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN | DB_INIT_LOG;
 var emode = 0;
 
-// var dbenv = null;
 var dbenv = new rpmdbe.Dbe();
 ack("typeof dbenv;", "object");
 ack("dbenv instanceof rpmdbe.Dbe;", true);
+ack('dbenv.lg_dir = "./log"', './log');
+
 ack('dbenv.open(home, eflags, emode)', true);
 ack('dbenv.home', home);
 ack('dbenv.open_flags', eflags);
@@ -438,7 +441,8 @@ ack('H.db.open_flags', oflags);
 ack('H.db.h_ffactor', h_ffactor);
 ack('H.db.h_nelem', h_nelem);
 Fill(H);
-// ack('H.db.close(0)', true);
+ack('H.db.sync()', true);
+ack('H.db.close(0)', true);
 
 var dbfile = "Q.db";
 var dbtype = DB_QUEUE;
@@ -491,7 +495,7 @@ Fill(R);
 ack('R.db.sync()', true);
 ack('R.db.close(0)', true);
 
-if (0) {
+if (1) {
 print('====> WORDS');
 var W = new BDB(dbenv, "W", DB_RECNO, "words", DB_SNAPSHOT);
 var X = new BDB(dbenv, "X", DB_BTREE, null, 0);
@@ -658,7 +662,7 @@ ack('G.sync() && G.close(0)', true);
 print('<==== GROUPS');
 }
 
-if (1) {
+if (0) {
 print('====> DEPS');
 var Clist = [
   [ "alsa-utils",	"1.0.18",	"2" ],
