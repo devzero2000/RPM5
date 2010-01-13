@@ -73,6 +73,7 @@ var rpmts = require('rpmts');
 var rpmte = require('rpmte');
 var rpmds = require('rpmds');
 var rpmfi = require('rpmfi');
+var rpmbf = require('rpmbf');
 
 var ts = new rpmts.Ts();
 
@@ -89,6 +90,8 @@ ack("ts.check()", true);
 ack("ts.order()", true);
 
 te = ts[0];
+ack("typeof te;", "object");
+ack("te instanceof rpmte.Te;", true);
 
 ack("te.N", "popt");
 ack("te.E", 0);
@@ -114,6 +117,8 @@ ack("te.key", 0);
 ack("te.sourcerpm", "popt-1.13-5.fc11.src.rpm");
 
     var ds = te.ds(RPMTAG_PROVIDENAME);
+ack("typeof ds;", "object");
+ack("ds instanceof rpmds.Ds;", true);
 
     ack("ds.ix", 0);
     ack("ds.N", "libpopt.so.0");
@@ -145,8 +150,8 @@ ack("te.sourcerpm", "popt-1.13-5.fc11.src.rpm");
     delete ds;
 
     var fi = te.fi();
-    ack("typeof fi;", "object");
-    ack("fi instanceof Fi;", true);
+ack("typeof fi;", "object");
+ack("fi instanceof rpmfi.Fi;", true);
 
     var files = new Array();
     var ix = 0;
@@ -188,7 +193,7 @@ var fn = dn + bn;
 
 var bf = fi.fnbf;
 ack("typeof bf;", "object");
-ack("bf instanceof Bf;", true);
+ack("bf instanceof rpmbf.Bf;", true);
 ack('bf.chk(bn)', false);
 ack('bf.chk(dn)', false);
 ack('bf.chk(fn)', true);
