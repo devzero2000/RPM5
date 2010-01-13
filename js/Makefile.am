@@ -4,12 +4,15 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = \
+EXTRA_DIST = gsr.c minimal.c \
 	src \
 	tscripts \
 	words \
 	legacy.cudf legacy-sol.cudf
-EXTRA_PROGRAMS =
+
+EXTRA_PROGRAMS =	gsr minimal
+gsr_SOURCES =		gsr.c
+minimal_SOURCES =	minimal.c
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \

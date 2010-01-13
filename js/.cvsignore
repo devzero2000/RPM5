@@ -7,6 +7,9 @@ Makefile.in
 *.la
 *.lo
 README
+gsr
 jsd
+minimal
+rpmdb
 src
 tjs
