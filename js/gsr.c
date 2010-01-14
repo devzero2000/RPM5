@@ -61,6 +61,7 @@ const char rcsid[] = "$Id$";
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#include <argv.h>
 #include <poptIO.h>
 
 #define PRODUCT_SHORTNAME	"gsr"
@@ -70,6 +71,8 @@ const char rcsid[] = "$Id$";
 #include "gpsee.h"
 #if defined(GPSEE_DARWIN_SYSTEM)
 #include <crt_externs.h>
+#else
+extern char **environ;
 #endif
 
 #if defined(__SURELYNX__)
@@ -105,11 +108,15 @@ enum gsrFlags_e {
     RPMGSR_FLAGS_NONE		= 0,
     RPMGSR_FLAGS_NOEXEC		= _DFB(0),	/*!< -n */
     RPMGSR_FLAGS_SKIPSHEBANG	= _DFB(1),	/*!< -F */
+    RPMGSR_FLAGS_LOADRC		= _DFB(2),	/*!< -R */
+    RPMGSR_FLAGS_NOUTF8		= _DFB(3),	/*!< -U */
+    RPMGSR_FLAGS_NOCACHE	= _DFB(4),	/*!< -C */
+    RPMGSR_FLAGS_NOWARN		= _DFB(5),	/*!< -W */
 };
 
 /**
  */
-typedef struct rpmgsr_s *rpmgsr;
+typedef struct rpmgsr_s * rpmgsr;
 
 /**
  */
@@ -227,24 +234,38 @@ static void rpmgsrArgCallback(poptContext con,
 #endif
 #endif
     case 'a':
+#if defined(GPSEE_DARWIN_SYSTEM)
+	gsr->environ = (char *const *) _NSGetEnviron();
+#else
+	gsr->environ = (char *const *) environ;
+#endif
 	break;
     case 'C':
+	gsr->flags |= RPMGSR_FLAGS_NOCACHE;
 	break;
     case 'd':
+	gsr->verbosity++;
 	break;
     case 'e':
+	gsr->options &= ~JSOPTION_RELIMIT;
 	break;
     case 'J':
+	gsr->options &= ~JSOPTION_JIT;
 	break;
     case 'S':
+	gsr->options &= ~JSOPTION_STRICT;
 	break;
     case 'R':
+	gsr->flags |= RPMGSR_FLAGS_LOADRC;
 	break;
     case 'U':
+	gsr->flags |= RPMGSR_FLAGS_NOUTF8;
 	break;
     case 'W':
+	gsr->flags |= RPMGSR_FLAGS_NOWARN;
 	break;
     case 'x':
+	gsr->options |= JSOPTION_XML;
 	break;
     case 'z':
 	gsr->gcZeal++;
@@ -330,7 +351,7 @@ static struct poptOption _optionsTable[] = {
 " PRODUCT_SHORTNAME " " PRODUCT_VERSION " - GPSEE Script Runner for GPSEE " GPSEE_CURRENT_VERSION_STRING "\n\
 Copyright (c) 2007-2009 PageMail, Inc. All Rights Reserved.\n\
 \n\
-As an interpreter: #! gsr {-/*flags*/}\n\
+As an interpreter: #!/usr/bin/gsr {-/*flags*/}\n\
 As a command:      gsr {-r file} [-D file] [-z #] [-n] <[-c code]|[-f filename]>\n\
                    gsr {-/*flags*/} {[--] [arg...]}\n\
 \n\
@@ -345,194 +366,17 @@ Valid Flags:\
 #ifdef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
+#endif
 
   POPT_AUTOALIAS
-#endif
   POPT_AUTOHELP
-
-  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-        N_("\
-" PRODUCT_SHORTNAME " " PRODUCT_VERSION " - GPSEE Script Runner for GPSEE " GPSEE_CURRENT_VERSION_STRING "\n\
-Copyright (c) 2007-2009 PageMail, Inc. All Rights Reserved.\n\
-\n\
-As an interpreter: #! gsr {-/*flags*/}\n\
-As a command:      gsr {-r file} [-D file] [-z #] [-n] <[-c code]|[-f filename]>\n\
-                   gsr {-/*flags*/} {[--] [arg...]}\n\
-Command Options:\n\
-    -c code     Specifies literal JavaScript code to execute\n\
-    -f filename Specifies the filename containing code to run\n\
-    -F filename Like -f, but skip shebang if present.\n\
-    -h          Display this help\n\
-    -n          Engine will load and parse, but not run, the script\n\
-    -D file     Specifies a debug output file\n\
-    -r file     Specifies alternate interpreter RC file\n\
-    flags       A series of one-character flags which can be used\n\
-                in either file interpreter or command mode\n\
-    --          Arguments after -- are passed to the script\n\
-\n\
-Valid Flags:\n\
-    a - Allow (read-only) access to caller's environment\n\
-    C - Disables compiler caching via JSScript XDR serialization\n\
-    d - Increase verbosity\n\
-    e - Do not limit regexps to n^3 levels of backtracking\n\
-    J - Disable nanojit\n\
-    S - Disable Strict mode\n\
-    R - Load RC file for interpreter (" PRODUCT_SHORTNAME ") based on\n\
-        script filename.\n\
-    U - Disable UTF-8 C string processing\n\
-    W - Do not report warnings\n\
-    x - Parse <!-- comments --> as E4X tokens\n\
-    z - Increase GC Zealousness\n\
-"), NULL },
 
   POPT_TABLEEND
 };
 
 static struct poptOption *optionsTable = &_optionsTable[0];
+
 /*==============================================================*/
-
-/** Help text for this program, which doubles as the "official"
- *  documentation for the command-line parameters.
- *
- *  @param	argv_zero	How this program was invoked.
- *
- *  @note	Exits with status 1
- */
-static void __attribute__ ((noreturn)) usage(const char *argv_zero)
-{
-    char spaces[strlen(argv_zero) + 1];
-
-    memset(spaces, (int) (' '), sizeof(spaces) - 1);
-    spaces[sizeof(spaces) - 1] = (char) 0;
-
-    gpsee_printf("\n"
-#if defined(__SURELYNX__)
-		 "SureLynx "
-#endif
-		 PRODUCT_SHORTNAME " " PRODUCT_VERSION
-		 " - GPSEE Script Runner for GPSEE "
-		 GPSEE_CURRENT_VERSION_STRING "\n"
-		 "Copyright (c) 2007-2009 PageMail, Inc. All Rights Reserved.\n"
-		 "\n" "As an interpreter: #! %s {-/*flags*/}\n"
-		 "As a command:      %s "
-#if defined(__SURELYNX__)
-		 "{-r file} [-D file] "
-#endif
-		 "[-z #] [-n] <[-c code]|[-f filename]>\n"
-		 "                   %s {-/*flags*/} {[--] [arg...]}\n"
-		 "Command Options:\n"
-		 "    -c code     Specifies literal JavaScript code to execute\n"
-		 "    -f filename Specifies the filename containing code to run\n"
-		 "    -F filename Like -f, but skip shebang if present.\n"
-		 "    -h          Display this help\n"
-		 "    -n          Engine will load and parse, but not run, the script\n"
-#if defined(__SURELYNX__)
-		 "    -D file     Specifies a debug output file\n"
-		 "    -r file     Specifies alternate interpreter RC file\n"
-#endif
-		 "    flags       A series of one-character flags which can be used\n"
-		 "                in either file interpreter or command mode\n"
-		 "    --          Arguments after -- are passed to the script\n"
-		 "\n"
-		 "Valid Flags:\n"
-		 "    a - Allow (read-only) access to caller's environment\n"
-		 "    C - Disables compiler caching via JSScript XDR serialization\n"
-		 "    d - Increase verbosity\n"
-		 "    e - Do not limit regexps to n^3 levels of backtracking\n"
-		 "    J - Disable nanojit\n"
-		 "    S - Disable Strict mode\n"
-		 "    R - Load RC file for interpreter (" PRODUCT_SHORTNAME
-		 ") based on\n" "        script filename.\n"
-		 "    U - Disable UTF-8 C string processing\n"
-		 "    W - Do not report warnings\n"
-		 "    x - Parse <!-- comments --> as E4X tokens\n"
-#ifdef JS_GC_ZEAL
-		 "    z - Increase GC Zealousness\n"
-#endif				/* JS_GC_ZEAL */
-		 "\n", argv_zero, argv_zero, spaces);
-    exit(1);
-}
-
-/** Process the script interpreter flags.
- *
- *  @param	flags	An array of flags, in no particular order.
- */
-static void processFlags(rpmgsr gsr, const char *flags)
-{
-    gpsee_interpreter_t * I = gsr->I;
-#ifdef JS_GC_ZEAL
-    int gcZeal = 0;
-#endif				/* JS_GC_ZEAL */
-    int jsOptions;
-    int verbosity =
-	max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
-    const char *f;
-
-    jsOptions =
-	JS_GetOptions(I->cx) | JSOPTION_ANONFUNFIX | JSOPTION_STRICT |
-	JSOPTION_RELIMIT | JSOPTION_JIT;
-
-    /* Iterate over each flag */
-    for (f = flags; *f; f++) {
-	switch (*f) {
-	    /* 'C' flag disables compiler cache */
-	case 'C':
-	    I->useCompilerCache = 0;
-	    break;
-
-	case 'a':		/* Handled in prmain() */
-	case 'R':		/* Handled in loadRuntimeConfig() */
-	case 'U':		/* Must be handled before 1st JS runtime */
-	    break;
-
-	case 'x':		/* Parse <!-- comments --> as E4X tokens */
-	    jsOptions |= JSOPTION_XML;
-	    break;
-
-	case 'S':		/* Disable Strict JS */
-	    jsOptions &= ~JSOPTION_STRICT;
-	    break;
-
-	case 'W':		/* Suppress JS Warnings */
-	    I->errorReport |= er_noWarnings;
-	    break;
-
-	case 'e':		/* Allow regexps that are more than O(n^3) */
-	    jsOptions &= ~JSOPTION_RELIMIT;
-	    break;
-
-	case 'J':		/* Disable Nanojit */
-	    jsOptions &= ~JSOPTION_JIT;
-	    break;
-
-#ifdef JS_GC_ZEAL
-	case 'z':		/* GC Zeal */
-	    gcZeal++;
-	    break;
-#endif				/* JS_GC_ZEAL */
-
-	case 'd':		/* debug */
-	    gsr->verbosity++;
-	    break;
-
-	default:
-	    gpsee_log(SLOG_WARNING, "Error: Unrecognized option flag %c!",
-		      *f);
-	    break;
-	}
-    }
-
-#ifdef JS_GC_ZEAL
-    JS_SetGCZeal(I->cx, gcZeal);
-#endif				/* JS_GC_ZEAL */
-    JS_SetOptions(I->cx, jsOptions);
-
-    gpsee_verbosity(verbosity);
-#if defined(__SURELYNX__)
-    sl_set_debugLevel(verbosity);
-    enableTerminalLogs(permanent_pool, verbosity > 0, NULL);
-#endif
-}
 
 static FILE *openScriptFile(rpmgsr gsr)
 {
@@ -567,58 +411,17 @@ static FILE *openScriptFile(rpmgsr gsr)
     return fp;
 }
 
-/**
- * Detect if we've been asked to run as a file interpreter.
- *
- * File interpreters always have the script filename within 
- * the first two arguments. It is never "not found", except
- * due to an annoying OS race in exec(2), which is very hard
- * to exploit.
- *
- * @returns - 0 if we're not a file interpreter
- *	    - 1 if the script filename is on argv[1]
- *          - 2 if the script filename is on argv[2]
- */
-PRIntn findFileToInterpret(PRIntn argc, char **argv)
-{
-    if (argc == 1)
-	return 0;
-
-    if ((argv[1][0] == '-') && ((argv[1][1] == '-')
-				|| strchr(argv[1] + 1, 'c')
-				|| strchr(argv[1] + 1, 'f')
-				|| strchr(argv[1] + 1, 'F')
-				|| strchr(argv[1] + 1, 'h')
-				|| strchr(argv[1] + 1, 'n')
-#if defined(__SURELYNX__)
-				|| strchr(argv[1], 'r')
-				|| strchr(argv[1], 'D')
-#endif
-	))
-	return 0;		/* -h, -c, -f, -F, -r will always be invalid flags & force command mode */
-
-    if ((argc > 1) && argv[1][0] != '-')
-	if (access(argv[1], F_OK) == 0)
-	    return 1;
-
-    if ((argc > 2) && (argv[2][0] != '-'))
-	if (access(argv[2], F_OK) == 0)
-	    return 2;
-
-    return 0;
-}
-
 /** Load RC file based on filename.
  *  Filename to use is script's filename, if -R option flag is thrown.
  *  Otherwise, file interpreter's filename (i.e. gsr) is used.
  */
 void
-loadRuntimeConfig(rpmgsr gsr, const char *flags, int argc, char *const *argv)
+loadRuntimeConfig(rpmgsr gsr, int argc, char *const *argv)
 {
     const char *scriptFilename = gsr->fn;
     rcFILE *rc_file;
 
-    if (strchr(flags, 'R')) {
+    if (F_ISSET(gsr, LOADRC)) {
 	char fake_argv_zero[FILENAME_MAX];
 	char *fake_argv[2];
 	char *s;
@@ -657,11 +460,10 @@ PRIntn prmain(PRIntn argc, char **argv)
 {
     poptContext optCon;
     rpmgsr gsr = &_gsr;
-    char * flags;		/* Flags found on command line */
+    ARGV_t av = NULL;
+    int ac = 0;
     int ec;
 
-    flags = xmalloc(8);
-    flags[0] = '\0';
     gsr->verbosity =
 	max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
 
@@ -673,134 +475,37 @@ PRIntn prmain(PRIntn argc, char **argv)
 
     optCon = rpmioInit(argc, argv, optionsTable);
 
-    /* Print usage and exit if no arguments were given */
-    if (argc < 2)
-	usage(argv[0]);
+    /* Add files from CLI. */
+    {   ARGV_t av = poptGetArgs(optCon);
+	int xx;
+        if (av != NULL)
+	    xx = argvAppend((const char ***)&gsr->argv, av);
+    }
+    ac = argvCount((ARGV_t)gsr->argv);
 
-    gsr->fiArg = findFileToInterpret(argc, argv);
-
-    if (gsr->fiArg == 0) {	/* Not a script file interpreter (shebang) */
-	char *fe = flags;
-	int c;
-
-	while ((c =
-		getopt(argc, argv,
-		       whenSureLynx("D:r:", "") "v:c:hnf:F:aCRxSUWdeJ"
-#ifdef JS_GC_ZEAL
-		       "z"
-#endif
-		)) != -1) {
-	    switch (c) {
-#if defined(__SURELYNX__)
-	    case 'D':
-		redirect_output(permanent_pool, optarg);
-		break;
-	    case 'r':		/* handled by rc_openfile() */
-		break;
-#endif
-
-	    case 'c':
-		gsr->code = xstrdup(optarg);
-		break;
-
-	    case 'h':
-		usage(argv[0]);
-		break;
-
-	    case 'n':
-		gsr->flags |= RPMGSR_FLAGS_NOEXEC;
-		break;
-
-	    case 'F':
-		gsr->flags |= RPMGSR_FLAGS_SKIPSHEBANG;
-	    case 'f':
-		gsr->fn = xstrdup(optarg);
-		break;
-
-	    case 'a':
-	    case 'C':
-	    case 'd':
-	    case 'e':
-	    case 'J':
-	    case 'S':
-	    case 'R':
-	    case 'U':
-	    case 'W':
-	    case 'x':
-	    case 'z':
-		{
-		    char *flags_storage = xrealloc(flags, (fe - flags) + 1 + 1);
-
-		    if (flags_storage != flags) {
-			fe = (fe - flags) + flags_storage;
-			flags = flags_storage;
-		    }
-
-		    *fe++ = c;
-		    *fe = '\0';
-		}
-		break;
-
-	    case '?':
-		{
-		    char buf[32];
-
-		    snprintf(buf, sizeof(buf), "Invalid option: %c\n",
-			     optopt);
-		    fatal(buf);
-		}
-
-	    case ':':
-		{
-		    char buf[32];
-
-		    snprintf(buf, sizeof(buf),
-			     "Missing parameter to option '%c'\n", optopt);
-		    fatal(buf);
-		}
-
-	    }
-	}			/* getopt wend */
-
-	if (optind < argc)
-	    gsr->argv = argv + optind;
-
-	*fe = '\0';
-
-	if (gsr->verbosity) {
-#if defined(__SURELYNX__)
-	    sl_set_debugLevel(gsr->verbosity);
-#endif
-	    gpsee_verbosity(gsr->verbosity);
-	}
-    } else {
-	gsr->fn = xstrdup(argv[gsr->fiArg]);
-
-	if (gsr->fiArg == 2) {
-	    if (argv[1][0] != '-')
-		fatal
-		    ("Invalid syntax for file-interpreter flags! (Must begin with '-')");
-
-	    flags = xrealloc(flags, strlen(argv[1]) + 1);
-	    strcpy(flags, argv[1] + 1);
-	}
-
-	gsr->argv = argv + gsr->fiArg;
+    switch (ac) {
+    case 0:
+	if (gsr->code || gsr->fn)
+	    break;
+	/*@fallthrough@*/
+    default:
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+	/*@notreached@*/ break;
     }
 
-    if (strchr(flags, 'a')) {
-#if defined(GPSEE_DARWIN_SYSTEM)
-	gsr->environ = (char *const *) _NSGetEnviron();
-#else
-	extern char **environ;
-	gsr->environ = (char *const *) environ;
+    if (gsr->verbosity) {
+#if defined(__SURELYNX__)
+	sl_set_debugLevel(gsr->verbosity);
 #endif
+	gpsee_verbosity(gsr->verbosity);
     }
 
-    loadRuntimeConfig(gsr, flags, argc, argv);
-    if (strchr(flags, 'U')
-	|| (rc_bool_value(rc, "gpsee_force_no_utf8_c_strings") == rc_true)
-	|| getenv("GPSEE_NO_UTF8_C_STRINGS")) {
+    loadRuntimeConfig(gsr, argc, argv);
+    if (F_ISSET(gsr, NOUTF8)
+     || (rc_bool_value(rc, "gpsee_force_no_utf8_c_strings") == rc_true)
+     || getenv("GPSEE_NO_UTF8_C_STRINGS"))
+    {
 	JS_DestroyRuntime(JS_NewRuntime(1024));
 	putenv((char *) "GPSEE_NO_UTF8_C_STRINGS=1");
     }
@@ -811,8 +516,25 @@ PRIntn prmain(PRIntn argc, char **argv)
     }
 
     gsr->I = gpsee_createInterpreter(gsr->argv, gsr->environ);
-    processFlags(gsr, flags);
-    flags = _free(flags);
+
+    {	gpsee_interpreter_t * I = gsr->I;
+	gsr->options |= JS_GetOptions(I->cx);	/* XXX FIXME */
+	if (F_ISSET(gsr, NOCACHE))
+	    I->useCompilerCache = 0;
+	if (F_ISSET(gsr, NOWARN))
+	    I->errorReport = er_noWarnings;
+
+#ifdef JS_GC_ZEAL
+	JS_SetGCZeal(I->cx, gsr->gcZeal);
+#endif				/* JS_GC_ZEAL */
+	JS_SetOptions(I->cx, gsr->options);
+
+	gpsee_verbosity(gsr->verbosity);
+#if defined(__SURELYNX__)
+	sl_set_debugLevel(gsr->verbosity);
+	enableTerminalLogs(permanent_pool, gsr->verbosity > 0, NULL);
+#endif
+    }
 
     /* Run JavaScript specified with -c */
     if (gsr->code) {
@@ -878,8 +600,7 @@ PRIntn prmain(PRIntn argc, char **argv)
 	    goto exit;
     }
 
-
-    if (gsr->fiArg != 0)
+    if (ac != 0)	/* XXX FIXME */
 	gsr->flags |= RPMGSR_FLAGS_SKIPSHEBANG;
 
     if (gsr->fn == NULL) {
@@ -905,7 +626,7 @@ PRIntn prmain(PRIntn argc, char **argv)
 exit:
     gsr->code = _free(gsr->code);
     gsr->fn = _free(gsr->fn);
-    gsr->argv = NULL;
+    gsr->argv = argvFree((ARGV_t)gsr->argv);
     gsr->environ = NULL;
 
     optCon = rpmioFini(optCon);
