@@ -11,8 +11,6 @@ EXTRA_DIST = gsr.c minimal.c \
 	legacy.cudf legacy-sol.cudf
 
 EXTRA_PROGRAMS =	gsr minimal
-gsr_SOURCES =		gsr.c
-minimal_SOURCES =	minimal.c
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -302,6 +300,11 @@ librpmjsm_la_SOURCES = \
 	rpmmpf-js.c rpmmpw-js.c rpmps-js.c rpmseq-js.c rpmsm-js.c rpmsp-js.c rpmst-js.c rpmsw-js.c \
 	rpmsx-js.c rpmsys-js.c rpmte-js.c rpmts-js.c rpmtxn-js.c rpmxar-js.c \
 	syck-js.c uuid-js.c
+
+gsr_SOURCES =		gsr.c
+gsr_LDADD =		$(RPM_LDADD_COMMON)
+
+minimal_SOURCES =	minimal.c
 
 .PHONY:	lint
 lint:
