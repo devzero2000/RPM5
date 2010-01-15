@@ -394,6 +394,8 @@ LIBRPMIO_0
     rpmioRootDir;
     rpmioUnlinkPoolItem;
     _rpmjs_debug;
+    _rpmjs_options;
+    _rpmjs_zeal;
     _rpmjsI;
     _rpmjsPool;
     rpmjsNew;

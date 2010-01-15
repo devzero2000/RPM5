@@ -16,9 +16,16 @@ extern int _rpmjs_debug;
 /*@unchecked@*/ /*@relnull@*/
 extern rpmjs _rpmjsI;
 
+/*@unchecked@*/
+extern uint32_t _rpmjs_options;
+
+/*@unchecked@*/
+extern int _rpmjs_zeal;
+
 #if defined(_RPMJS_INTERNAL)
 struct rpmjs_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    uint32_t flags;		/*!< JSOPTION_FOO in 0xffff bits */
     void * I;			/*!< JS interpreter {rt, cx, globalObj} */
 #if defined(__LCLINT__)
 /*@refs@*/
@@ -68,11 +75,11 @@ rpmjs rpmjsFree(/*@killref@*/ /*@null@*/rpmjs js)
 /**
  * Create and load a js interpreter.
  * @param av		js interpreter args (or NULL)
- * @param flags		js interpreter flags (1 == use global interpreter)
+ * @param flags		js interpreter flags (0 uses default)
  * @return		new js interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmjs rpmjsNew(/*@null@*/ const char ** av, int flags)
+rpmjs rpmjsNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
