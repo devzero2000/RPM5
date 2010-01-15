@@ -31,6 +31,8 @@ typedef	gpsee_interpreter_t * JSI_t;
 
 #include "debug.h"
 
+#define F_ISSET(_flags, _FLAG) ((_flags) & RPMJS_FLAGS_##_FLAG)
+
 /*@unchecked@*/
 int _rpmjs_debug = 0;
 
@@ -81,9 +83,27 @@ rpmjs rpmjsNew(const char ** av, uint32_t flags)
     JSI_t I = NULL;
 
 #if defined(WITH_GPSEE)
+    static char *const _empty[] = { NULL };
+    char *const * Iargv = (av ? (char *const *)av : _empty);
+    char *const * Ienviron = NULL;
     if (flags == 0)
 	flags = _rpmjs_options;
-    I = gpsee_createInterpreter((char *const *)av, environ);
+
+    if (F_ISSET(flags, ALLOW)) {
+#if defined(__APPLE__)
+        Ienviron = _NSGetEnviron();
+#else
+        Ienviron = environ;
+#endif
+    }
+
+    I = gpsee_createInterpreter(Iargv, Ienviron);
+
+    if (F_ISSET(flags, NOCACHE))
+	I->useCompilerCache = 0;
+    if (F_ISSET(flags, NOWARN))
+	I->errorReport = er_noWarnings;
+
     JS_SetOptions(I->cx, (flags & 0xffff));
 #if defined(JS_GC_ZEAL)
     JS_SetGCZeal(I->cx, _rpmjs_zeal);

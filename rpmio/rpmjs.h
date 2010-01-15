@@ -23,6 +23,36 @@ extern uint32_t _rpmjs_options;
 extern int _rpmjs_zeal;
 
 #if defined(_RPMJS_INTERNAL)
+/**
+ * Interpreter flags.
+ */
+enum rpmjsFlags_e {
+    RPMJS_FLAGS_NONE		= 0,
+    RPMJS_FLAGS_STRICT		= (1<< 0),	/* JSOPTION_STRICT */
+    RPMJS_FLAGS_WERROR		= (1<< 1),	/* JSOPTION_WERROR */
+    RPMJS_FLAGS_VAROBJFIX	= (1<< 2),	/* JSOPTION_VAROBJFIX */
+    RPMJS_FLAGS_PRIVATE_IS_NSISUPPORTS = (1<< 3), /* JSOPTION_PRIVATE_IS_NSISUPPORTS */
+    RPMJS_FLAGS_COMPILE_N_GO	= (1<< 4),	/* JSOPTION_COMPILE_N_GO */
+    RPMJS_FLAGS_ATLINE		= (1<< 5),	/* JSOPTION_ATLINE */
+    RPMJS_FLAGS_XML		= (1<< 6),	/* JSOPTION_XML */
+	/* bit 7 unused */
+    RPMJS_FLAGS_DONT_REPORT_UNCAUGHT = (1<< 8),	/* JSOPTION_DONT_REPORT_UNCAUGHT */
+    RPMJS_FLAGS_RELIMIT		= (1<< 9),	/* JSOPTION_RELIMIT */
+    RPMJS_FLAGS_ANONFUNFIX	= (1<<10),	/* JSOPTION_ANONFUNFIX */
+    RPMJS_FLAGS_JIT		= (1<<11),	/* JSOPTION_JIT */
+    RPMJS_FLAGS_NO_SCRIPT_RVAL	= (1<<12),	/* JSOPTION_NO_SCRIPT_RVAL */
+    RPMJS_FLAGS_UNROOTED_GLOBAL	= (1<<13),	/* JSOPTION_UNROOTED_GLOBAL */
+	/* bits 14-15 unused */
+    RPMJS_FLAGS_NOEXEC		= (1<<16),	/*!< -n */
+    RPMJS_FLAGS_SKIPSHEBANG	= (1<<17),	/*!< -F */
+    RPMJS_FLAGS_LOADRC		= (1<<18),	/*!< -R */
+    RPMJS_FLAGS_NOUTF8		= (1<<19),	/*!< -U */
+    RPMJS_FLAGS_NOCACHE		= (1<<20),	/*!< -C */
+    RPMJS_FLAGS_NOWARN		= (1<<21),	/*!< -W */
+    RPMJS_FLAGS_ALLOW		= (1<<22),	/*!< -a */
+	/* bits 23-31 unused */
+};
+
 struct rpmjs_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     uint32_t flags;		/*!< JSOPTION_FOO in 0xffff bits */
