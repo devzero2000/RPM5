@@ -64,11 +64,15 @@ const char rcsid[] = "$Id$";
 #include <argv.h>
 #include <poptIO.h>
 
+#define	_RPMJS_INTERNAL
+#include <rpmjs.h>
+
 #define PRODUCT_SHORTNAME	"gsr"
 #define PRODUCT_VERSION		"1.0-pre1"
 
 #include <prinit.h>
 #include "gpsee.h"
+
 #if defined(GPSEE_DARWIN_SYSTEM)
 #include <crt_externs.h>
 #else
@@ -94,55 +98,22 @@ static apr_pool_t *permanent_pool;
 
 /*==============================================================*/
 
-static int _rpmgsr_debug = 0;
-
-#define _KFB(n) (1U << (n))
-#define _DFB(n) (_KFB(n) | 0x40000000)
-
-#define F_ISSET(_gsr, _FLAG) ((_gsr)->flags & ((RPMGSR_FLAGS_##_FLAG) & ~0x40000000))
+#define F_ISSET(_js, _FLAG) ((_js)->flags & RPMJS_FLAGS_##_FLAG)
 
 /**
- * Bit field enum for CLI options.
  */
-enum gsrFlags_e {
-    RPMGSR_FLAGS_NONE		= 0,
-    RPMGSR_FLAGS_NOEXEC		= _DFB(0),	/*!< -n */
-    RPMGSR_FLAGS_SKIPSHEBANG	= _DFB(1),	/*!< -F */
-    RPMGSR_FLAGS_LOADRC		= _DFB(2),	/*!< -R */
-    RPMGSR_FLAGS_NOUTF8		= _DFB(3),	/*!< -U */
-    RPMGSR_FLAGS_NOCACHE	= _DFB(4),	/*!< -C */
-    RPMGSR_FLAGS_NOWARN		= _DFB(5),	/*!< -W */
+static struct rpmjs_s _js = {
+    .flags =
+	(RPMJS_FLAGS_STRICT |
+	 RPMJS_FLAGS_RELIMIT |
+	 RPMJS_FLAGS_ANONFUNFIX |
+	 RPMJS_FLAGS_JIT ),
 };
 
-/**
- */
-typedef struct rpmgsr_s * rpmgsr;
-
-/**
- */
-struct rpmgsr_s {
-    enum gsrFlags_e flags;	/*!< control bits. */
-    int options;
-    int gcZeal;
-
-    gpsee_interpreter_t * I;	/* Handle describing JS interpreter */
-
-    const char * code;		/* String with JavaScript program in it */
-    const char * fn;		/* Filename with JavaScript program in it */
-    char *const *argv;		/* Becomes arguments array in JS program */
-    char *const *environ;	/* Environment to pass to script */
-
-    int verbosity;		/* 0 = no debug, bigger = more debug */
-    int fiArg;
-};
-
-/**
- */
-static struct rpmgsr_s _gsr = {
-    .flags = RPMGSR_FLAGS_NONE,
-    .options =
-      JSOPTION_ANONFUNFIX | JSOPTION_STRICT | JSOPTION_RELIMIT | JSOPTION_JIT,
-};
+static const char * Icode;	/* String with JavaScript program in it */
+static const char * Ifn;	/* Filename with JavaScript program in it */
+static int verbosity;		/* 0 = no debug, bigger = more debug */
+static int gcZeal;
 
 /*==============================================================*/
 
@@ -208,22 +179,20 @@ static void rpmgsrArgCallback(poptContext con,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    rpmgsr gsr = &_gsr;
+    rpmjs js = &_js;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
     case 'F':
-	gsr->flags |= RPMGSR_FLAGS_SKIPSHEBANG;
-	gsr->fn = xstrdup(arg);
+	js->flags |= RPMJS_FLAGS_SKIPSHEBANG;
+	Ifn = xstrdup(arg);
 	break;
     case 'h':
 	poptPrintHelp(con, stderr, 0);
-#ifdef	NOTYET
 /*@-exitarg@*/
 	exit(0);
 /*@=exitarg@*/
-#endif
 	break;
 #if defined(__SURELYNX__)
     case 'D':
@@ -233,43 +202,8 @@ static void rpmgsrArgCallback(poptContext con,
     case 'r':
 #endif
 #endif
-    case 'a':
-#if defined(GPSEE_DARWIN_SYSTEM)
-	gsr->environ = (char *const *) _NSGetEnviron();
-#else
-	gsr->environ = (char *const *) environ;
-#endif
-	break;
-    case 'C':
-	gsr->flags |= RPMGSR_FLAGS_NOCACHE;
-	break;
-    case 'd':
-	gsr->verbosity++;
-	break;
-    case 'e':
-	gsr->options &= ~JSOPTION_RELIMIT;
-	break;
-    case 'J':
-	gsr->options &= ~JSOPTION_JIT;
-	break;
-    case 'S':
-	gsr->options &= ~JSOPTION_STRICT;
-	break;
-    case 'R':
-	gsr->flags |= RPMGSR_FLAGS_LOADRC;
-	break;
-    case 'U':
-	gsr->flags |= RPMGSR_FLAGS_NOUTF8;
-	break;
-    case 'W':
-	gsr->flags |= RPMGSR_FLAGS_NOWARN;
-	break;
-    case 'x':
-	gsr->options |= JSOPTION_XML;
-	break;
-    case 'z':
-	gsr->gcZeal++;
-	break;
+    case 'd':	verbosity++;	break;
+    case 'z':	gcZeal++;	break;
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -286,15 +220,15 @@ static struct poptOption _gsrOptionsTable[] = {
         rpmgsrArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { NULL, 'c', POPT_ARG_STRING,      &_gsr.code, 0,
+  { NULL, 'c', POPT_ARG_STRING,      &Icode, 0,
         N_("Specifies literal JavaScript code to execute"), N_("code") },
-  { NULL, 'f', POPT_ARG_STRING,      &_gsr.fn, 0,
+  { NULL, 'f', POPT_ARG_STRING,      &Ifn, 0,
         N_("Specifies the filename containing code to run"), N_("filename") },
   { NULL, 'F', POPT_ARG_STRING,      NULL, 'F',
-        N_("Like -f, but skip shebang if present."), N_("filename") },
+        N_("Like -f, but skip shebang if present"), N_("filename") },
   { NULL, 'h', POPT_ARG_NONE,      NULL, 'h',
         N_("Display this help"), NULL },
-  { NULL, 'n', POPT_BIT_SET,		&_gsr.flags, RPMGSR_FLAGS_NOEXEC,
+  { "noexec", 'n', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOEXEC,
 	N_("Engine will load and parse, but not run, the script"), NULL },
 #if defined(__SURELYNX__)
   { NULL, 'D', POPT_ARG_STRING,      NULL, 'D',
@@ -314,27 +248,27 @@ static struct poptOption _jsOptionsTable[] = {
         rpmgsrArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { NULL, 'a', POPT_ARG_NONE,      NULL, 'a',
+  { "allow", 'a', POPT_BIT_SET,		&_js.flags, RPMJS_FLAGS_ALLOW,
         N_("Allow (read-only) access to caller's environmen"), NULL },
-  { NULL, 'C', POPT_ARG_NONE,      NULL, 'C',
+  { "nocache", 'C', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOCACHE,
         N_("Disables compiler caching via JSScript XDR serialization"), NULL },
-  { NULL, 'd', POPT_ARG_NONE,      NULL, 'd',
+  { NULL, 'd', POPT_ARG_NONE,		NULL, 'd',
         N_("Increase verbosity"), NULL },
-  { NULL, 'e', POPT_ARG_NONE,      NULL, 'e',
+  { "norelimit", 'e', POPT_BIT_CLR,	&_js.flags, RPMJS_FLAGS_RELIMIT,
         N_("Do not limit regexps to n^3 levels of backtracking"), NULL },
-  { NULL, 'J', POPT_ARG_NONE,      NULL, 'J',
+  { "nojit", 'J', POPT_BIT_CLR,		&_js.flags, RPMJS_FLAGS_JIT,
         N_("Disable nanojit"), NULL },
-  { NULL, 'S', POPT_ARG_NONE,      NULL, 'S',
+  { "nostrict", 'S', POPT_BIT_CLR,	&_js.flags, RPMJS_FLAGS_STRICT,
         N_("Disable Strict mode"), NULL },
-  { NULL, 'R', POPT_ARG_NONE,      NULL, 'R',
+  { "loadrc", 'R', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_LOADRC,
         N_("Load RC file for interpreter (" PRODUCT_SHORTNAME ") based on script filename."), NULL },
-  { NULL, 'U', POPT_ARG_NONE,      NULL, 'U',
+  { "noutf8", 'U', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOUTF8,
         N_("Disable UTF-8 C string processing"), NULL },
-  { NULL, 'W', POPT_ARG_NONE,      NULL, 'W',
+  { "nowarn", 'W', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOWARN,
         N_("Do not report warnings"), NULL },
-  { NULL, 'x', POPT_ARG_NONE,      NULL, 'x',
+  { "xml", 'x', POPT_BIT_SET,		&_js.flags, RPMJS_FLAGS_XML,
         N_("Parse <!-- comments --> as E4X tokens"), NULL },
-  { NULL, 'z', POPT_ARG_NONE,      NULL, 'z',
+  { "gczeal", 'z', POPT_ARG_NONE,	NULL, 'z',
         N_("Increase GC Zealousness"), NULL },
 
   POPT_TABLEEND
@@ -378,10 +312,10 @@ static struct poptOption *optionsTable = &_optionsTable[0];
 
 /*==============================================================*/
 
-static FILE *openScriptFile(rpmgsr gsr)
+static FILE *openScriptFile(rpmjs js, const char * fn)
 {
-    FILE * fp = fopen(gsr->fn, "r");
-    gpsee_interpreter_t * I = gsr->I;
+    FILE * fp = fopen(fn, "r");
+    gpsee_interpreter_t * I = js->I;
     char line[64];		/* #! args can be longer than 64 on some unices, but no matter */
 
     if (!fp)
@@ -389,7 +323,7 @@ static FILE *openScriptFile(rpmgsr gsr)
 
     gpsee_flock(fileno(fp), GPSEE_LOCK_SH);
 
-    if (!F_ISSET(gsr, SKIPSHEBANG))
+    if (!F_ISSET(js, SKIPSHEBANG))
 	return fp;
 
     if (fgets(line, sizeof(line), fp)) {
@@ -416,12 +350,12 @@ static FILE *openScriptFile(rpmgsr gsr)
  *  Otherwise, file interpreter's filename (i.e. gsr) is used.
  */
 void
-loadRuntimeConfig(rpmgsr gsr, int argc, char *const *argv)
+loadRuntimeConfig(rpmjs js, const char * fn, int argc, char *const *argv)
 {
-    const char *scriptFilename = gsr->fn;
+    const char *scriptFilename = fn;
     rcFILE *rc_file;
 
-    if (F_ISSET(gsr, LOADRC)) {
+    if (F_ISSET(js, LOADRC)) {
 	char fake_argv_zero[FILENAME_MAX];
 	char *fake_argv[2];
 	char *s;
@@ -435,14 +369,14 @@ loadRuntimeConfig(rpmgsr gsr, int argc, char *const *argv)
 	gpsee_cpystrn(fake_argv_zero, scriptFilename,
 		      sizeof(fake_argv_zero));
 
-	if ((s = strstr(fake_argv_zero, ".js")) && (s[3] == (char) 0))
-	    *s = (char) 0;
+	if ((s = strstr(fake_argv_zero, ".js")) && (s[3] == '\0'))
+	    *s = '\0';
 
-	if ((s = strstr(fake_argv_zero, ".es3")) && (s[4] == (char) 0))
-	    *s = (char) 0;
+	if ((s = strstr(fake_argv_zero, ".es3")) && (s[4] == '\0'))
+	    *s = '\0';
 
-	if ((s = strstr(fake_argv_zero, ".e4x")) && (s[4] == (char) 0))
-	    *s = (char) 0;
+	if ((s = strstr(fake_argv_zero, ".e4x")) && (s[4] == '\0'))
+	    *s = '\0';
 
 	rc_file = rc_openfile(1, fake_argv);
     } else {
@@ -459,13 +393,13 @@ loadRuntimeConfig(rpmgsr gsr, int argc, char *const *argv)
 PRIntn prmain(PRIntn argc, char **argv)
 {
     poptContext optCon;
-    rpmgsr gsr = &_gsr;
-    ARGV_t av = NULL;
+    rpmjs js = &_js;
+    char *const * Iargv;	/* Becomes arguments array in JS program */
+    char *const * Ienviron = NULL;	/* Environment to pass to script */
     int ac = 0;
     int ec;
 
-    gsr->verbosity =
-	max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
+    verbosity = max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
 
     gpsee_openlog(gpsee_basename(argv[0]));
 
@@ -476,16 +410,12 @@ PRIntn prmain(PRIntn argc, char **argv)
     optCon = rpmioInit(argc, argv, optionsTable);
 
     /* Add files from CLI. */
-    {   ARGV_t av = poptGetArgs(optCon);
-	int xx;
-        if (av != NULL)
-	    xx = argvAppend((const char ***)&gsr->argv, av);
-    }
-    ac = argvCount((ARGV_t)gsr->argv);
+    Iargv = (char *const *)poptGetArgs(optCon);
+    ac = argvCount((ARGV_t)Iargv);
 
     switch (ac) {
     case 0:
-	if (gsr->code || gsr->fn)
+	if (Icode || Ifn)
 	    break;
 	/*@fallthrough@*/
     default:
@@ -494,15 +424,8 @@ PRIntn prmain(PRIntn argc, char **argv)
 	/*@notreached@*/ break;
     }
 
-    if (gsr->verbosity) {
-#if defined(__SURELYNX__)
-	sl_set_debugLevel(gsr->verbosity);
-#endif
-	gpsee_verbosity(gsr->verbosity);
-    }
-
-    loadRuntimeConfig(gsr, argc, argv);
-    if (F_ISSET(gsr, NOUTF8)
+    loadRuntimeConfig(js, Ifn, argc, argv);
+    if (F_ISSET(js, NOUTF8)
      || (rc_bool_value(rc, "gpsee_force_no_utf8_c_strings") == rc_true)
      || getenv("GPSEE_NO_UTF8_C_STRINGS"))
     {
@@ -510,40 +433,14 @@ PRIntn prmain(PRIntn argc, char **argv)
 	putenv((char *) "GPSEE_NO_UTF8_C_STRINGS=1");
     }
 
-    if (gsr->argv == NULL) {
-	static const char const *empty_argv[] = { NULL };
-	gsr->argv = (char *const *) empty_argv;
-    }
-
-    gsr->I = gpsee_createInterpreter(gsr->argv, gsr->environ);
-
-    {	gpsee_interpreter_t * I = gsr->I;
-	gsr->options |= JS_GetOptions(I->cx);	/* XXX FIXME */
-	if (F_ISSET(gsr, NOCACHE))
-	    I->useCompilerCache = 0;
-	if (F_ISSET(gsr, NOWARN))
-	    I->errorReport = er_noWarnings;
-
-#ifdef JS_GC_ZEAL
-	JS_SetGCZeal(I->cx, gsr->gcZeal);
-#endif				/* JS_GC_ZEAL */
-	JS_SetOptions(I->cx, gsr->options);
-
-	gpsee_verbosity(gsr->verbosity);
-#if defined(__SURELYNX__)
-	sl_set_debugLevel(gsr->verbosity);
-	enableTerminalLogs(permanent_pool, gsr->verbosity > 0, NULL);
-#endif
-    }
+    js = rpmjsNew((const char **)Iargv, js->flags);
 
     /* Run JavaScript specified with -c */
-    if (gsr->code) {
-	gpsee_interpreter_t * I = gsr->I;
-	jsval v;
-	JS_EvaluateScript(I->cx, I->globalObj, gsr->code,
-			  strlen(gsr->code), "command_line", 1, &v);
-	if (JS_IsExceptionPending(I->cx))
-	    goto exit;
+    if (Icode) {
+	const char * result = NULL;
+	rpmRC rc = rpmjsRun(js, Icode, &result);
+	ec = (rc == RPMRC_OK ? 0 : 1);
+	goto finish;
     }
 
 #if !defined(SYSTEM_GSR)
@@ -552,7 +449,7 @@ PRIntn prmain(PRIntn argc, char **argv)
     if ((argv[0][0] == '/') && (strcmp(argv[0], SYSTEM_GSR) != 0)
      && rc_bool_value(rc, "no_gsr_preload_script") != rc_true)
     {
-	gpsee_interpreter_t * I = gsr->I;
+	gpsee_interpreter_t * I = js->I;
 	char preloadScriptFilename[FILENAME_MAX];
 	char mydir[FILENAME_MAX];
 	int i;
@@ -581,11 +478,11 @@ PRIntn prmain(PRIntn argc, char **argv)
 			  PRODUCT_SHORTNAME
 			  ": Unable to compile preload script '%s' - %s",
 			  preloadScriptFilename, errmsg);
-		goto exit;
+		goto finish;
 	    }
 
 	    if (!script || !scrobj)
-		goto exit;
+		goto finish;
 
 	    JS_AddNamedRoot(I->cx, &scrobj, "preload_scrobj");
 	    JS_ExecuteScript(I->cx, I->globalObj, script, &v);
@@ -597,43 +494,41 @@ PRIntn prmain(PRIntn argc, char **argv)
 	}
 
 	if (I->exitType & et_exception)
-	    goto exit;
+	    goto finish;
     }
 
     if (ac != 0)	/* XXX FIXME */
-	gsr->flags |= RPMGSR_FLAGS_SKIPSHEBANG;
+	js->flags |= RPMJS_FLAGS_SKIPSHEBANG;
 
-    if (gsr->fn == NULL) {
-	ec = gsr->code ? 0 : 1;
+    if (Ifn == NULL) {
+	ec = Icode ? 0 : 1;
     } else {
-	FILE * fp = openScriptFile(gsr);
+	FILE * fp = openScriptFile(js, Ifn);
 	if (fp == NULL) {
 	    gpsee_log(SLOG_NOTICE,
 		      PRODUCT_SHORTNAME
 		      ": Unable to open' script '%s'! (%m)",
-		      gsr->fn);
+		      Ifn);
 	    ec = 1;
 	} else {
-	    gpsee_runProgramModule(gsr->I->cx, gsr->fn, fp);
+	    gpsee_interpreter_t * I = js->I;
+	    gpsee_runProgramModule(I->cx, Ifn, fp);
 	    fclose(fp);
-	    if ((gsr->I->exitType & et_successMask) == gsr->I->exitType)
-		ec = gsr->I->exitCode;
+	    if ((I->exitType & et_successMask) == I->exitType)
+		ec = I->exitCode;
 	    else
 		ec = 1;
 	}
     }
 
+finish:
+    js = rpmjsFree(js);
+
 exit:
-    gsr->code = _free(gsr->code);
-    gsr->fn = _free(gsr->fn);
-    gsr->argv = argvFree((ARGV_t)gsr->argv);
-    gsr->environ = NULL;
+    Icode = _free(Icode);
+    Ifn = _free(Ifn);
 
     optCon = rpmioFini(optCon);
-
-    gpsee_destroyInterpreter(gsr->I);
-    gsr->I = NULL;
-    JS_ShutDown();
 
     return ec;
 }
