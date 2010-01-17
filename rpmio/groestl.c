@@ -166,7 +166,7 @@ void Transform(hashState* ctx,
   u8 temp1[ROWS][COLS1024], temp2[ROWS][COLS1024];
 
   /* digest one message block at the time */
-  for (; msglen >= ctx->statesize; 
+  for (; msglen >= (u32)ctx->statesize; 
        msglen -= ctx->statesize, input += ctx->statesize) {
     /* store message block (m) in temp2, and xor of chaining (h) and
        message block in temp1 */
@@ -260,7 +260,7 @@ HashReturn Init(hashState* ctx,
 HashReturn Update(hashState* ctx,
 		  const BitSequence* input,
 		  DataLength databitlen) {
-  int index = 0;
+  u32 index = 0;
   DataLength msglen = databitlen/8; /* no. of (full) bytes supplied */
   DataLength rem = databitlen%8;    /* no. of additional bits */
 

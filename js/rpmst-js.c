@@ -211,7 +211,7 @@ rpmst_init(JSContext *cx, JSObject *obj, jsval fnv)
     struct stat * st = xcalloc(1, sizeof(*st));
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%u) st %p\n", __FUNCTION__, cx, obj, fnv, st);
+fprintf(stderr, "==> %s(%p,%p,%u) st %p\n", __FUNCTION__, cx, obj, (unsigned)fnv, st);
 
     if (JSVAL_IS_STRING(fnv)) {
 	const char * fn = JS_GetStringBytes(JS_ValueToString(cx, fnv));

@@ -105,7 +105,7 @@ js_syck_parser_handler(SyckParser *p, SyckNode *n)
 #endif
 	break;
     }
-    oid = syck_add_sym(p, (char *)o);
+    oid = syck_add_sym(p, (char *)((long)o));
     return oid;
 }
 
@@ -266,7 +266,7 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsig
     js_syck_mark_emitter(emitter, bonus->id);
 
     bonus->id = 1;
-    syck_emit(emitter, (st_data_t)bonus->id);
+    syck_emit(emitter, (st_data_t)((long)bonus->id));
     syck_emitter_flush(emitter, 0);
 
 #ifdef	NOTYET

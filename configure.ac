@@ -662,6 +662,9 @@ if test ".$WITH_PTHREADS" = .yes; then
     ])
 fi
 
+dnl # <beecrypt/api.h> tries to retrofit an assert(x) macro
+AC_CHECK_HEADERS(assert.h)
+
 dnl # FIXME: platform-hack: MiNT
 AC_CHECK_LIB(port, writev)
 

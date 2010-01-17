@@ -727,10 +727,10 @@ int arirangDigest(arirangParam *sp, byte *digest)
     else Arirang_Compression512(sp);
 
     if (sp->hashbitlen <257)
-	for (i = 0; i < (sp->hashbitlen >> 3); i += 4)
+	for (i = 0; i < (uint32_t)(sp->hashbitlen >> 3); i += 4)
 	    BIG_D2B((sp->workingvar)[(i*2) / 8], &digest[i]);
     else
-	for (i = 0; i < (sp->hashbitlen >> 3); i += 8)
+	for (i = 0; i < (uint32_t)(sp->hashbitlen >> 3); i += 8)
 	    BIG_Q2B((sp->workingvar)[i / 8], &digest[i]);
 
     return 0;

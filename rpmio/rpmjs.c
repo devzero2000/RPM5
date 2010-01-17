@@ -23,6 +23,7 @@ typedef	gpsee_interpreter_t * JSI_t;
 #define	_RPMJS_OPTIONS	\
     (JSOPTION_STRICT | JSOPTION_RELIMIT | JSOPTION_ANONFUNFIX | JSOPTION_JIT)
 #else
+typedef void * JSI_t;
 #define	_RPMJS_OPTIONS	0
 #endif
 
@@ -91,7 +92,7 @@ rpmjs rpmjsNew(const char ** av, uint32_t flags)
 
     if (F_ISSET(flags, ALLOW)) {
 #if defined(__APPLE__)
-        Ienviron = _NSGetEnviron();
+        Ienviron = (char *const *) _NSGetEnviron();
 #else
         Ienviron = environ;
 #endif
@@ -187,7 +188,7 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
     }
 
 if (_rpmjs_debug)
-fprintf(stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (str ? strlen(str) : 0), rc);
+fprintf(stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc);
 
     return rc;
 }

@@ -298,9 +298,11 @@ struct poptOption rpmzqOptionsPoptTable[] = {
 int rpmbzCompressBlock(void * _bz, rpmzJob job)
 {
     rpmbz bz = _bz;
+    unsigned int len = job->out->len;
     int rc;
-    rc = BZ2_bzBuffToBuffCompress((char *)job->out->buf, &job->out->len,
+    rc = BZ2_bzBuffToBuffCompress((char *)job->out->buf, &len,
 		(char *)job->in->buf, job->in->len, bz->B, bz->V, bz->W);
+    job->out->len = len;
     if (rc != BZ_OK)
 	zqFprintf(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
     return rc;
@@ -312,9 +314,11 @@ static int rpmbzDecompressBlock(rpmbz bz, rpmzJob job)
 	/*@globals fileSystem @*/
 	/*@modifies job, fileSystem @*/
 {
+    unsigned int len = job->out->len;
     int rc;
-    rc = BZ2_bzBuffToBuffDecompress((char *)job->out->buf, &job->out->len,
+    rc = BZ2_bzBuffToBuffDecompress((char *)job->out->buf, &len,
 		(char *)job->in->buf, job->in->len, bz->S, bz->V);
+    job->out->len = len;
     if (rc != BZ_OK)
 	zqFprintf(stderr, "==> %s(%p,%p) rc %d\n", __FUNCTION__, bz, job, rc);
     return rc;

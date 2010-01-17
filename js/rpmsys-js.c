@@ -522,7 +522,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     case _PPID:		*vp = INT_TO_JSVAL((int)getppid());	break;
     case _SID:		*vp = INT_TO_JSVAL((int)getsid((pid_t)0));	break;
 #if defined(WITH_PTHREADS)
-    case _TID:		*vp = INT_TO_JSVAL((int)pthread_self());	break;
+    case _TID:		*vp = INT_TO_JSVAL((int)((long)pthread_self())); break;
 #endif
     case _TIME:		*vp = INT_TO_JSVAL((int)time(NULL));	break;
     case _TIMEOFDAY:

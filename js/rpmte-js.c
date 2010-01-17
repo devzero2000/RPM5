@@ -237,7 +237,7 @@ rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	break;
     case _ADDEDKEY:
 	/* XXX FIXME */
-	*vp = INT_TO_JSVAL((int)rpmteAddedKey(te));
+	*vp = INT_TO_JSVAL((int)((long)rpmteAddedKey(te)));
 	break;
     case _DBOFFSET:
 	*vp = INT_TO_JSVAL(rpmteDBOffset(te));

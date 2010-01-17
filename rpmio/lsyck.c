@@ -109,7 +109,7 @@ lua_syck_parser_handler(SyckParser *p, SyckNode *n)
 			}
 			break;
 	}
-	oid = syck_add_sym(p, (char *)o);
+	oid = syck_add_sym(p, (char *)((long)o));
 	return oid;
 }
 
@@ -143,7 +143,7 @@ void lua_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 				lua_pushnil(bonus->L);  /* first key */
 				while (lua_next(bonus->L, -2) != 0) {
 					/* `key' is at index -2 and `value' at index -1 */
-					syck_emit_item(e, (st_data_t)bonus->id++);
+					syck_emit_item(e, (st_data_t)((long)bonus->id++));
 					lua_pop(bonus->L, 1);  /* removes `value'; keeps `key' for next iteration */
 
 				}
@@ -153,9 +153,9 @@ void lua_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 				lua_pushnil(bonus->L);
 				while (lua_next(bonus->L, -2) != 0) {
 					lua_pushvalue(bonus->L, -2);
-					syck_emit_item(e, (st_data_t)bonus->id++);
+					syck_emit_item(e, (st_data_t)((long)bonus->id++));
 					lua_pop(bonus->L, 1);
-					syck_emit_item(e, (st_data_t)bonus->id++);
+					syck_emit_item(e, (st_data_t)((long)bonus->id++));
 					lua_pop(bonus->L, 1);
 				}
 				syck_emit_end(e);
@@ -177,13 +177,13 @@ static void lua_syck_mark_emitter(SyckEmitter *e, int idx)
 			while (lua_next(bonus->L, -2) != 0) {
 				/* `key' is at index -2 and `value' at index -1 */
 				//syck_emitter_mark_node(e, bonus->id++);
-				syck_emitter_mark_node(e, (st_data_t)bonus->id++);
+				syck_emitter_mark_node(e, (st_data_t)((long)bonus->id++));
 				lua_syck_mark_emitter(e, -1);
 				lua_pop(bonus->L, 1);
 			}
 			break;
 		default:
-			syck_emitter_mark_node(e, (st_data_t)bonus->id++);
+			syck_emitter_mark_node(e, (st_data_t)((long)bonus->id++));
 			break;
 	}
 }
@@ -246,7 +246,7 @@ static int syck_dump(lua_State *L)
 	lua_syck_mark_emitter(emitter, bonus->id);
 
 	bonus->id = 1;
-	syck_emit(emitter, (st_data_t)bonus->id);
+	syck_emit(emitter, (st_data_t)((long)bonus->id));
 	syck_emitter_flush(emitter, 0);
 
 	luaL_pushresult(&bonus->output);

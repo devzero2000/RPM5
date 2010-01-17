@@ -4,7 +4,10 @@
 #ifndef	H_DEBUG
 #define	H_DEBUG
 
+#ifdef HAVE_ASSERT_H
+#undef	assert	/* <beecrypt/api.h> tries to retrofit an assert(x) macro */
 #include <assert.h>
+#endif
 
 #ifdef  __LCLINT__
 #define	ntohl(_x)	(_x)

@@ -303,7 +303,7 @@ static /*@null@*/ rpmbz rpmbzFdopen(void * _fdno, const char * fmode)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    int fdno = (int)_fdno;	/* XXX hack */
+    int fdno = (int)((long)_fdno);	/* XXX hack */
     return  rpmbzNew(NULL, fmode, fdno);
 }
 
@@ -361,7 +361,7 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
 {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
-    rpmbz bz = rpmbzFdopen((void *)fdno, fmode);
+    rpmbz bz = rpmbzFdopen((void *)((long)fdno), fmode);
 
     if (bz == NULL)
 	return NULL;

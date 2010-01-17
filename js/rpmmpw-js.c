@@ -365,7 +365,7 @@ static void prtmpw(const char * msg, mpwObject * x)
 	/*@global stderr, fileSystem @*/
 	/*@modifies stderr, fileSystem @*/
 {
-fprintf(stderr, "%5.5s %p[%d]:\t", msg, MPW_DATA(x), MPW_SIZE(x)), mpfprintln(stderr, MPW_SIZE(x), MPW_DATA(x));
+fprintf(stderr, "%5.5s %p[%u]:\t", msg, MPW_DATA(x), (unsigned)MPW_SIZE(x)), mpfprintln(stderr, MPW_SIZE(x), MPW_DATA(x));
 }
 
 static size_t
@@ -387,7 +387,7 @@ mpsizeinbase(size_t xsize, mpw* xdata, size_t base)
 	res = (nbits * mp_bases[base].chars_per_bit_exactly) + 1;
     }
 if (_debug < -1)
-fprintf(stderr, "<== mpsizeinbase(%p[%d], %d) res %u\n", xdata, xsize, base, (unsigned)res);
+fprintf(stderr, "<== mpsizeinbase(%p[%u], %u) res %u\n", xdata, (unsigned)xsize, (unsigned)base, (unsigned)res);
     return res;
 }
 
@@ -439,7 +439,7 @@ mpstr(char * t, size_t nt, size_t size, mpw* data, mpw base)
     size_t result;
 
 if (_debug < -1)
-fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, data, size, base), mpfprintln(stderr, size, data);
+fprintf(stderr, "*** mpstr(%p[%u], %p[%u], %u):\t", t, (unsigned)nt, data, (unsigned)size, (unsigned)base), mpfprintln(stderr, size, data);
 
     mpsetx(asize, adata, size, data);
 
@@ -449,8 +449,8 @@ fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, data, size, base), mp
 	mpndivmod(zdata, asize, adata, 1, &base, wksp);
 
 if (_debug < -1) {
-fprintf(stderr, "    a %p[%d]:\t", adata, asize), mpfprintln(stderr, asize, adata);
-fprintf(stderr, "    z %p[%d]:\t", zdata, asize+1), mpfprintln(stderr, asize+1, zdata);
+fprintf(stderr, "    a %p[%u]:\t", adata, (unsigned)asize), mpfprintln(stderr, asize, adata);
+fprintf(stderr, "    z %p[%u]:\t", zdata, (unsigned)asize+1), mpfprintln(stderr, asize+1, zdata);
 }
 	result = zdata[asize];
 	t[nt] = bchars[result];
@@ -495,7 +495,7 @@ mpw_format(JSContext *cx, mpwObject * z, size_t base, int addL)
 #endif
 
 if (_debug < -1)
-fprintf(stderr, "==> %s(%p,%d,%d):\t", __FUNCTION__, z, base, addL), mpfprintln(stderr, zsize, zdata);
+fprintf(stderr, "==> %s(%p,%u,%d):\t", __FUNCTION__, z, (unsigned)base, addL), mpfprintln(stderr, zsize, zdata);
 
     assert(base >= 2 && base <= 36);
 
@@ -840,7 +840,7 @@ static void mpnpow_w(mpnumber* n, size_t xsize, const mpw* xdata,
     size = MP_ROUND_B2W(15 * xbits);
 
 if (_debug < 0)
-fprintf(stderr, "*** pbits %d xbits %d nsize %d size %d\n", pbits, xbits, nsize, size);
+fprintf(stderr, "*** pbits %u xbits %u nsize %u size %u\n", (unsigned)pbits, (unsigned)xbits, (unsigned)nsize, (unsigned)size);
     mpnsize(n, nsize);
 
     /* 1. Precompute odd powers of x (up to 2**K). */
@@ -1252,7 +1252,7 @@ prtmpw("a", x);
     }
 
 if (_debug < 0)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%u]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), (unsigned)MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 exit:
 assert(z);
@@ -1584,7 +1584,7 @@ fprintf(stderr, "sub ++: borrow\n");
     }
 
 if (_debug)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%u]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), (unsigned)MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 exit:
     mpbfree(&b);
@@ -1672,7 +1672,7 @@ prtmpw("c", m);
 
 exit:
 if (_debug < 0)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%u]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), (unsigned)MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
     mpbfree(&b);
 assert(z);
@@ -1733,7 +1733,7 @@ assert(0);
 
 exit:
 if (_debug < 0)
-fprintf(stderr, "<== %s(%c) %p[%d]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%c) %p[%u]\t", __FUNCTION__, (op & 0xff), MPW_DATA(z), (unsigned)MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 assert(z);
     return z;
