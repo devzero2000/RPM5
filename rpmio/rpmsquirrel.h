@@ -69,11 +69,11 @@ rpmsquirrel rpmsquirrelFree(/*@killref@*/ /*@null@*/rpmsquirrel squirrel)
 /**
  * Create and load a squirrel interpreter.
  * @param av		squirrel interpreter args (or NULL)
- * @param flags		squirrel interpreter flags (1 == use global interpreter)
+ * @param flags		squirrel interpreter flags ((1<<31): use global interpreter)
  * @return		new squirrel interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmsquirrel rpmsquirrelNew(/*@null@*/ const char ** av, int flags)
+rpmsquirrel rpmsquirrelNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

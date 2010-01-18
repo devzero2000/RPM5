@@ -155,11 +155,11 @@ rpmcudf rpmcudfFree(/*@killref@*/ /*@null@*/rpmcudf cudf)
 /**
  * Create and load a cudf interpreter.
  * @param *av		cudf interpreter args (or NULL)
- * @param flags		cudf interpreter flags (1 == use global interpreter)
+ * @param flags		cudf interpreter flags ((1<<31) == use global interpreter)
  * @return		new cudf interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmcudf rpmcudfNew(/*@null@*/ const char ** av, int flags)
+rpmcudf rpmcudfNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

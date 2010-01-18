@@ -484,9 +484,13 @@ static rpmcudf rpmcudfI(void)
 }
 #endif
 
-rpmcudf rpmcudfNew(const char ** av, int flags)
+rpmcudf rpmcudfNew(const char ** av, uint32_t flags)
 {
-    rpmcudf cudf = rpmcudfGetPool(_rpmcudfPool);
+    rpmcudf cudf =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmcudfI() :
+#endif
+	rpmcudfGetPool(_rpmcudfPool);
     const char * fn = (av ? av[0] : NULL);
     int typ = flags;
     static int oneshot = 0;

@@ -68,11 +68,11 @@ rpmpython rpmpythonFree(/*@killref@*/ /*@null@*/rpmpython python)
 /**
  * Create and load a python interpreter.
  * @param fn		python interpreter args (or NULL)
- * @param flags		python interpreter flags (1 == use global interpreter)
+ * @param flags		python interpreter flags ((1<<31): use global interpreter)
  * @return		new python interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmpython rpmpythonNew(/*@null@*/ const char ** av, int flags)
+rpmpython rpmpythonNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

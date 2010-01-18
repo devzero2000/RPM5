@@ -64,10 +64,24 @@ $stdout = StringIO.new($result, \"w+\")\n\
 ";
 #endif
 
-rpmruby rpmrubyNew(const char ** av, int flags)
+static rpmruby rpmrubyI(void)
+	/*@globals _rpmrubyI @*/
+	/*@modifies _rpmrubyI @*/
 {
+    if (_rpmrubyI == NULL)
+	_rpmrubyI = rpmrubyNew(NULL, 0);
+    return _rpmrubyI;
+}
+
+rpmruby rpmrubyNew(const char ** av, uint32_t flags)
+{
+    rpmruby ruby =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmrubyI() :
+#endif
+	rpmrubyGetPool(_rpmrubyPool);
+
     static const char * _av[] = { "rpmruby", NULL };
-    rpmruby ruby = rpmrubyGetPool(_rpmrubyPool);
 
     if (av == NULL) av = _av;
 
@@ -81,15 +95,6 @@ rpmruby rpmrubyNew(const char ** av, int flags)
 #endif
 
     return rpmrubyLink(ruby);
-}
-
-static rpmruby rpmrubyI(void)
-	/*@globals _rpmrubyI @*/
-	/*@modifies _rpmrubyI @*/
-{
-    if (_rpmrubyI == NULL)
-	_rpmrubyI = rpmrubyNew(NULL, 0);
-    return _rpmrubyI;
 }
 
 rpmRC rpmrubyRunFile(rpmruby ruby, const char * fn, const char ** resultp)

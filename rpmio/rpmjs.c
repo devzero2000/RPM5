@@ -2,6 +2,7 @@
 #include "system.h"
 
 #include <argv.h>
+#include <popt.h>
 
 #if defined(__APPLE__)
 #include <crt_externs.h>
@@ -46,6 +47,39 @@ uint32_t _rpmjs_options = _RPMJS_OPTIONS;
 /*@unchecked@*/
 int _rpmjs_zeal = 2;
 
+#ifdef	NOTYET
+struct poptOption rpmjsIPoptTable[] = {
+  { "allow", 'a', POPT_BIT_SET,		&_js.flags, RPMJS_FLAGS_ALLOW,
+        N_("Allow (read-only) access to caller's environmen"), NULL },
+  { "nocache", 'C', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOCACHE,
+        N_("Disables compiler caching via JSScript XDR serialization"), NULL },
+  { "loadrc", 'R', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_LOADRC,
+        N_("Load RC file for interpreter based on script filename."), NULL },
+  { "nowarn", 'W', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOWARN,
+        N_("Do not report warnings"), NULL },
+
+  { "norelimit", 'e', POPT_BIT_CLR,	&_js.flags, RPMJS_FLAGS_RELIMIT,
+        N_("Do not limit regexps to n^3 levels of backtracking"), NULL },
+  { "nojit", 'J', POPT_BIT_CLR,		&_js.flags, RPMJS_FLAGS_JIT,
+        N_("Disable nanojit"), NULL },
+  { "nostrict", 'S', POPT_BIT_CLR,	&_js.flags, RPMJS_FLAGS_STRICT,
+        N_("Disable Strict mode"), NULL },
+  { "noutf8", 'U', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOUTF8,
+        N_("Disable UTF-8 C string processing"), NULL },
+  { "xml", 'x', POPT_BIT_SET,		&_js.flags, RPMJS_FLAGS_XML,
+        N_("Parse <!-- comments --> as E4X tokens"), NULL },
+
+  { "anonfunfix", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_js.flags, RPMJS_FLAGS_ANONFUNFIX,
+        N_("Parse //@line number [\"filename\"] for XUL"), NULL },
+  { "atline", 'A', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_js.flags, RPMJS_FLAGS_ATLINE,
+        N_("Parse //@line number [\"filename\"] for XUL"), NULL },
+  { "werror", 'w', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_js.flags, RPMJS_FLAGS_WERROR,
+        N_("Convert warnings to errors"), NULL },
+
+  POPT_TABLEEND
+};
+#endif
+
 static void rpmjsFini(void * _js)
 	/*@globals fileSystem @*/
 	/*@modifies *_js, fileSystem @*/
@@ -78,9 +112,24 @@ static rpmjs rpmjsGetPool(/*@null@*/ rpmioPool pool)
     return (rpmjs) rpmioGetPool(pool, sizeof(*js));
 }
 
+static rpmjs rpmjsI(void)
+	/*@globals _rpmjsI @*/
+	/*@modifies _rpmjsI @*/
+{
+    if (_rpmjsI == NULL)
+	_rpmjsI = rpmjsNew(NULL, 0);
+if (_rpmjs_debug)
+fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
+    return _rpmjsI;
+}
+
 rpmjs rpmjsNew(const char ** av, uint32_t flags)
 {
-    rpmjs js = rpmjsGetPool(_rpmjsPool);
+    rpmjs js =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmjsI() :
+#endif
+	rpmjsGetPool(_rpmjsPool);
     JSI_t I = NULL;
 
 #if defined(WITH_GPSEE)
@@ -115,17 +164,6 @@ rpmjs rpmjsNew(const char ** av, uint32_t flags)
     js->I = I;
 
     return rpmjsLink(js);
-}
-
-static rpmjs rpmjsI(void)
-	/*@globals _rpmjsI @*/
-	/*@modifies _rpmjsI @*/
-{
-    if (_rpmjsI == NULL)
-	_rpmjsI = rpmjsNew(NULL, 0);
-if (_rpmjs_debug)
-fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
-    return _rpmjsI;
 }
 
 rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)

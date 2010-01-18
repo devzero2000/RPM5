@@ -69,11 +69,11 @@ rpmruby rpmrubyFree(/*@killref@*/ /*@null@*/rpmruby ruby)
 /**
  * Create and load a ruby interpreter.
  * @param av		ruby interpreter args (or NULL)
- * @param flags		ruby interpreter flags (1 == use global interpreter)
+ * @param flags		ruby interpreter flags ((1<<31): use global interpreter)
  * @return		new ruby interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmruby rpmrubyNew(/*@null@*/ const char ** av, int flags)
+rpmruby rpmrubyNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

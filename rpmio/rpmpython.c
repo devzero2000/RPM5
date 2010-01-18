@@ -68,13 +68,14 @@ static rpmpython rpmpythonI(void)
     return _rpmpythonI;
 }
 
-rpmpython rpmpythonNew(const char ** av, int flags)
+rpmpython rpmpythonNew(const char ** av, uint32_t flags)
 {
     static const char * _av[] = { "rpmpython", NULL };
 #if defined(WITH_PYTHONEMBED)
-    int initialize = (!flags || _rpmpythonI == NULL);
+    int initialize = (!(flags & 0x80000000) || _rpmpythonI == NULL);
 #endif
-    rpmpython python = (flags ? rpmpythonI() : rpmpythonGetPool(_rpmpythonPool));
+    rpmpython python = (flags & 0x80000000)
+	? rpmpythonI() : rpmpythonGetPool(_rpmpythonPool);
 
 if (_rpmpython_debug)
 fprintf(stderr, "==> %s(%p, %d) python %p\n", __FUNCTION__, av, flags, python);

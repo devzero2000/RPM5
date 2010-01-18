@@ -62,10 +62,22 @@ static rpmficl rpmficlGetPool(/*@null@*/ rpmioPool pool)
     return (rpmficl) rpmioGetPool(pool, sizeof(*ficl));
 }
 
-rpmficl rpmficlNew(const char ** av, int flags)
+static rpmficl rpmficlI(void)
+	/*@globals _rpmficlI @*/
+	/*@modifies _rpmficlI @*/
 {
-    rpmficl ficl = rpmficlGetPool(_rpmficlPool);
+    if (_rpmficlI == NULL)
+	_rpmficlI = rpmficlNew(NULL, 0);
+    return _rpmficlI;
+}
 
+rpmficl rpmficlNew(const char ** av, uint32_t flags)
+{
+    rpmficl ficl =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmficlI() :
+#endif
+	rpmficlGetPool(_rpmficlPool);
 #if defined(WITH_FICL)
     static const char * _av[] = { "rpmficl", NULL };
     ficlSystemInformation fsi;
@@ -106,15 +118,6 @@ fprintf(stderr, "%s", s);
 #endif
 
     return rpmficlLink(ficl);
-}
-
-static rpmficl rpmficlI(void)
-	/*@globals _rpmficlI @*/
-	/*@modifies _rpmficlI @*/
-{
-    if (_rpmficlI == NULL)
-	_rpmficlI = rpmficlNew(NULL, 0);
-    return _rpmficlI;
 }
 
 rpmRC rpmficlRunFile(rpmficl ficl, const char * fn, const char ** resultp)

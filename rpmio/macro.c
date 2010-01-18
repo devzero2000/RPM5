@@ -92,7 +92,7 @@ const char * rpmMacrofiles = MACROFILES;
 
 /*@unchecked@*/
 #if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
-static int _globalI = 1;
+static int _globalI = 0x80000000;
 #endif
 
 #if defined(__LCLINT__)

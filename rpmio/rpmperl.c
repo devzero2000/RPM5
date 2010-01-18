@@ -80,9 +80,22 @@ use RPM;\n\
 ";
 #endif
 
-rpmperl rpmperlNew(const char ** av, int flags)
+static rpmperl rpmperlI(void)
+	/*@globals _rpmperlI @*/
+	/*@modifies _rpmperlI @*/
 {
-    rpmperl perl = rpmperlGetPool(_rpmperlPool);
+    if (_rpmperlI == NULL)
+	_rpmperlI = rpmperlNew(NULL, 0);
+    return _rpmperlI;
+}
+
+rpmperl rpmperlNew(const char ** av, uint32_t flags)
+{
+    rpmperl perl =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmperlI() :
+#endif
+	rpmperlGetPool(_rpmperlPool);
 #if defined(WITH_PERLEMBED)
     static const char * _av[] = { "rpmperl", NULL };
     static int initialized = 0;
@@ -119,15 +132,6 @@ rpmperl rpmperlNew(const char ** av, int flags)
 #endif
 
     return rpmperlLink(perl);
-}
-
-static rpmperl rpmperlI(void)
-	/*@globals _rpmperlI @*/
-	/*@modifies _rpmperlI @*/
-{
-    if (_rpmperlI == NULL)
-	_rpmperlI = rpmperlNew(NULL, 0);
-    return _rpmperlI;
 }
 
 rpmRC rpmperlRun(rpmperl perl, const char * str, const char ** resultp)

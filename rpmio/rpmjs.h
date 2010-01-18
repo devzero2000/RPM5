@@ -50,7 +50,8 @@ enum rpmjsFlags_e {
     RPMJS_FLAGS_NOCACHE		= (1<<20),	/*!< -C */
     RPMJS_FLAGS_NOWARN		= (1<<21),	/*!< -W */
     RPMJS_FLAGS_ALLOW		= (1<<22),	/*!< -a */
-	/* bits 23-31 unused */
+	/* bits 23-30 unused */
+    RPMJS_FLAGS_GLOBAL		= (1<<31),
 };
 
 struct rpmjs_s {
@@ -105,7 +106,7 @@ rpmjs rpmjsFree(/*@killref@*/ /*@null@*/rpmjs js)
 /**
  * Create and load a js interpreter.
  * @param av		js interpreter args (or NULL)
- * @param flags		js interpreter flags (0 uses default)
+ * @param flags		js interpreter flags ((1<<31): use global interpreter)
  * @return		new js interpreter
  */
 /*@newref@*/ /*@null@*/

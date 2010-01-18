@@ -68,11 +68,11 @@ rpmperl rpmperlFree(/*@killref@*/ /*@null@*/rpmperl perl)
 /**
  * Create and load a perl interpreter.
  * @param av		perl interpreter args (or NULL)
- * @param flags		perl interpreter flags (1 == use global interpreter)
+ * @param flags		perl interpreter flags ((1<<31): use global interpreter)
  * @return		new perl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmperl rpmperlNew(/*@null@*/ const char ** av, int flags)
+rpmperl rpmperlNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

@@ -70,11 +70,11 @@ rpmficl rpmficlFree(/*@killref@*/ /*@null@*/rpmficl ficl)
 /**
  * Create and load a ficl interpreter.
  * @param av		ficl interpreter args (or NULL)
- * @param flags		ficl interpreter flags (1 == use global interpreter)
+ * @param flags		ficl interpreter flags ((1<<31) == use global interpreter)
  * @return		new ficl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmficl rpmficlNew(/*@null@*/ const char ** av, int flags)
+rpmficl rpmficlNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

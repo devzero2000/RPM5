@@ -74,9 +74,23 @@ static void rpmsquirrelPrint(HSQUIRRELVM v, const SQChar *s, ...)
 }
 #endif
 
-rpmsquirrel rpmsquirrelNew(const char ** av, int flags)
+/* XXX FIXME: honor 0x8000000 in flags to use global interpreter */
+static rpmsquirrel rpmsquirrelI(void)
+	/*@globals _rpmsquirrelI @*/
+	/*@modifies _rpmsquirrelI @*/
 {
-    rpmsquirrel squirrel = rpmsquirrelGetPool(_rpmsquirrelPool);
+    if (_rpmsquirrelI == NULL)
+	_rpmsquirrelI = rpmsquirrelNew(NULL, 0);
+    return _rpmsquirrelI;
+}
+
+rpmsquirrel rpmsquirrelNew(const char ** av, uint32_t flags)
+{
+    rpmsquirrel squirrel =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmsquirrelI() :
+#endif
+	rpmsquirrelGetPool(_rpmsquirrelPool);
 
 #if defined(WITH_SQUIRREL)
     static const char * _av[] = { "rpmsquirrel", NULL };
@@ -108,15 +122,6 @@ rpmsquirrel rpmsquirrelNew(const char ** av, int flags)
     squirrel->iob = rpmiobNew(0);
 
     return rpmsquirrelLink(squirrel);
-}
-
-static rpmsquirrel rpmsquirrelI(void)
-	/*@globals _rpmsquirrelI @*/
-	/*@modifies _rpmsquirrelI @*/
-{
-    if (_rpmsquirrelI == NULL)
-	_rpmsquirrelI = rpmsquirrelNew(NULL, 0);
-    return _rpmsquirrelI;
 }
 
 rpmRC rpmsquirrelRunFile(rpmsquirrel squirrel, const char * fn, const char ** resultp)

@@ -111,9 +111,22 @@ static Tcl_ChannelType rpmtclIO = {
 };
 #endif
 
-rpmtcl rpmtclNew(const char ** av, int flags)
+static rpmtcl rpmtclI(void)
+	/*@globals _rpmtclI @*/
+	/*@modifies _rpmtclI @*/
 {
-    rpmtcl tcl = rpmtclGetPool(_rpmtclPool);
+    if (_rpmtclI == NULL)
+	_rpmtclI = rpmtclNew(NULL, 0);
+    return _rpmtclI;
+}
+
+rpmtcl rpmtclNew(const char ** av, uint32_t flags)
+{
+    rpmtcl tcl =
+#ifdef	NOTYET
+	(flags & 0x80000000) ? rpmtclI() :
+#endif
+	rpmtclGetPool(_rpmtclPool);
 
 #if defined(WITH_TCL)
     static const char * _av[] = { "rpmtcl", NULL };
@@ -138,15 +151,6 @@ rpmtcl rpmtclNew(const char ** av, int flags)
     tcl->iob = rpmiobNew(0);
 
     return rpmtclLink(tcl);
-}
-
-static rpmtcl rpmtclI(void)
-	/*@globals _rpmtclI @*/
-	/*@modifies _rpmtclI @*/
-{
-    if (_rpmtclI == NULL)
-	_rpmtclI = rpmtclNew(NULL, 0);
-    return _rpmtclI;
 }
 
 rpmRC rpmtclRunFile(rpmtcl tcl, const char * fn, const char ** resultp)

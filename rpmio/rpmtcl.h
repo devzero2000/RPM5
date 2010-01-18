@@ -70,11 +70,11 @@ rpmtcl rpmtclFree(/*@killref@*/ /*@null@*/rpmtcl tcl)
 /**
  * Create and load a tcl interpreter.
  * @param av		tcl interpreter args (or NULL)
- * @param flags		tcl interpreter flags (1 == use global interpreter)
+ * @param flags		tcl interpreter flags ((1<<31): use global interpreter)
  * @return		new tcl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmtcl rpmtclNew(/*@null@*/ const char ** av, int flags)
+rpmtcl rpmtclNew(/*@null@*/ const char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
