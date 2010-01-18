@@ -29,6 +29,9 @@ extern "C" {
  */
 
 /*@unchecked@*/
+extern int _rpmio_popt_context_flags;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
+
+/*@unchecked@*/
 extern pgpHashAlgo rpmioDigestHashAlgo;
 
 /** \ingroup rpmio

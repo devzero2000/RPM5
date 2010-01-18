@@ -122,6 +122,8 @@ extern const char *rpmluaFiles;
 static char *rpmpoptfiles = RPMPOPTFILES;
 #endif
 
+int _rpmio_popt_context_flags = 0;
+
 pgpHashAlgo rpmioDigestHashAlgo = -1;
 
 /**
@@ -748,7 +750,7 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
 #endif	/* NOTYET */
 
 /*@-nullpass -temptrans@*/
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, _rpmio_popt_context_flags);
 /*@=nullpass =temptrans@*/
 
 #ifdef	NOTYET

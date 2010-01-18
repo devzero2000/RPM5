@@ -61,6 +61,7 @@ const char rcsid[] = "$Id$";
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#include <rpmlog.h>
 #include <argv.h>
 #include <poptIO.h>
 
@@ -152,7 +153,7 @@ static void __attribute__ ((noreturn)) fatal(const char *message)
 		    "\007Fatal Error in " PRODUCT_SHORTNAME ": %s\n",
 		    message);
     } else
-	gpsee_log(SLOG_EMERG, "Fatal Error: %s", message);
+	rpmlog(RPMLOG_EMERG, "Fatal Error: %s\n", message);
 
     exit(1);
 }
@@ -259,39 +260,6 @@ static struct poptOption *optionsTable = &_optionsTable[0];
 
 /*==============================================================*/
 
-static FILE *openScriptFile(rpmjs js, const char * fn)
-{
-    FILE * fp = fopen(fn, "r");
-    gpsee_interpreter_t * I = js->I;
-    char line[64];		/* #! args can be longer than 64 on some unices, but no matter */
-
-    if (!fp)
-	return NULL;
-
-    gpsee_flock(fileno(fp), GPSEE_LOCK_SH);
-
-    if (!F_ISSET(js, SKIPSHEBANG))
-	return fp;
-
-    if (fgets(line, sizeof(line), fp)) {
-	if ((line[0] != '#') || (line[1] != '!')) {
-	    gpsee_log(SLOG_NOTICE,
-		      PRODUCT_SHORTNAME ": Warning: First line of "
-		      "file-interpreter script does not contain #!");
-	    rewind(fp);
-	} else {
-	    I->linenoOffset += 1;
-
-	    do {		/* consume entire first line, regardless of length */
-		if (strchr(line, '\n'))
-		    break;
-	    } while (fgets(line, sizeof(line), fp));
-	}
-    }
-
-    return fp;
-}
-
 /** Load RC file based on filename.
  *  Filename to use is script's filename, if -R option flag is thrown.
  *  Otherwise, file interpreter's filename (i.e. gsr) is used.
@@ -344,18 +312,16 @@ PRIntn prmain(PRIntn argc, char **argv)
     rpmjs js = &_rpmgsr;
     char *const * Iargv;	/* Becomes arguments array in JS program */
     int ac = 0;
-    int ec;
+    int ec = 1;		/* assume failure */
 
     js->flags = _rpmjs_options | _RPMJS_OPTIONS;
 
     _debug = max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
-
-    gpsee_openlog(gpsee_basename(argv[0]));
-
 #if defined(__SURELYNX__)
     permanent_pool = apr_initRuntime();
 #endif
 
+    _rpmio_popt_context_flags = POPT_CONTEXT_POSIXMEHARDER;
     optCon = rpmioInit(argc, argv, optionsTable);
 
     /* Add files from CLI. */
@@ -399,36 +365,35 @@ PRIntn prmain(PRIntn argc, char **argv)
      && rc_bool_value(rc, "no_gsr_preload_script") != rc_true)
     {
 	gpsee_interpreter_t * I = js->I;
-	char preloadScriptFilename[FILENAME_MAX];
-	char mydir[FILENAME_MAX];
-	int i;
+	const char * preloadfn =
+		rpmGetPath(dirname(argv[0]), "/.", basename(argv[0]), NULL);
 
-	i = snprintf(preloadScriptFilename, sizeof(preloadScriptFilename),
-		     "%s/.%s_preload", gpsee_dirname(argv[0], mydir,
-						     sizeof(mydir)),
-		     gpsee_basename(argv[0]));
-	if ((i == 0) || (i == (sizeof(preloadScriptFilename) - 1)))
-	    gpsee_log(SLOG_EMERG,
+	if (!(preloadfn && *preloadfn)) {
+	    rpmlog(RPMLOG_EMERG,
 		      PRODUCT_SHORTNAME
-		      ": Unable to create preload script filename!");
-	else
-	    errno = 0;
+		      ": Unable to create preload script filename!\n");
+	    preloadfn = _free(preloadfn);
+	    goto finish;
+	}
+	errno = 0;
 
-	if (access(preloadScriptFilename, F_OK) == 0) {
+	if (access(preloadfn, F_OK) == 0) {
 	    jsval v;
 	    const char *errmsg;
 	    JSScript *script;
 	    JSObject *scrobj;
 
 	    if (gpsee_compileScript
-		(I->cx, preloadScriptFilename, NULL, &script,
+		(I->cx, preloadfn, NULL, &script,
 		 I->globalObj, &scrobj, &errmsg)) {
-		gpsee_log(SLOG_EMERG,
+		rpmlog(RPMLOG_EMERG,
 			  PRODUCT_SHORTNAME
-			  ": Unable to compile preload script '%s' - %s",
-			  preloadScriptFilename, errmsg);
+			  ": Unable to compile preload script '%s' - %s\n",
+			  preloadfn, errmsg);
+		preloadfn = _free(preloadfn);
 		goto finish;
 	    }
+	    preloadfn = _free(preloadfn);
 
 	    if (!script || !scrobj)
 		goto finish;
@@ -451,24 +416,26 @@ PRIntn prmain(PRIntn argc, char **argv)
 
     if (Ifn == NULL) {
 	ec = Icode ? 0 : 1;
-    } else {
-	FILE * fp = openScriptFile(js, Ifn);
-	if (fp == NULL) {
-	    gpsee_log(SLOG_NOTICE,
-		      PRODUCT_SHORTNAME
-		      ": Unable to open' script '%s'! (%m)",
-		      Ifn);
-	    ec = 1;
-	} else {
-	    gpsee_interpreter_t * I = js->I;
-	    gpsee_runProgramModule(I->cx, Ifn, fp);
-	    fclose(fp);
-	    if ((I->exitType & et_successMask) == I->exitType)
-		ec = I->exitCode;
-	    else
-		ec = 1;
-	}
+	goto finish;
     }
+
+  { gpsee_interpreter_t * I = js->I;
+    const char * msg = NULL;
+    switch (rpmjsRunFile(js, Ifn, &msg)) {
+    default:
+	rpmlog(RPMLOG_NOTICE,
+		      PRODUCT_SHORTNAME
+		      ": Unable to open' script '%s'! (%s)\n",
+		      Ifn, msg);
+	msg = _free(msg);
+	ec = 1;
+	break;
+    case RPMRC_OK:
+	ec = ((I->exitType & et_successMask) == I->exitType)
+		? I->exitCode : 1;
+	break;
+    }
+  }
 
 finish:
     js = rpmjsFree(js);
@@ -476,7 +443,6 @@ finish:
 exit:
     Icode = _free(Icode);
     Ifn = _free(Ifn);
-    closelog();
 
     optCon = rpmioFini(optCon);
 

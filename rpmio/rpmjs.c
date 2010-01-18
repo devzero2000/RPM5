@@ -1,6 +1,7 @@
 
 #include "system.h"
 
+#include "rpmio_internal.h"
 #include <argv.h>
 #include <popt.h>
 
@@ -166,6 +167,56 @@ rpmjs rpmjsNew(const char ** av, uint32_t flags)
     return rpmjsLink(js);
 }
 
+static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
+	/*@modifies js @*/
+{
+    FILE * fp = NULL;
+#if defined(WITH_GPSEE)
+    gpsee_interpreter_t * I = js->I;
+
+    fp = fopen(fn, "r");
+    if (fp == NULL || ferror(fp)) {
+	if (fp) {
+	    if (msgp)
+		*msgp = xstrdup(strerror(errno));
+	    (void) fclose(fp);
+	    fp = NULL;
+	} else {
+	    if (msgp)	/* XXX FIXME: add __FUNCTION__ identifier? */
+		*msgp = xstrdup("unknown error");
+	}
+	goto exit;
+    }
+
+    gpsee_flock(fileno(fp), GPSEE_LOCK_SH);
+
+    if (F_ISSET(js->flags, SKIPSHEBANG)) {
+	char buf[BUFSIZ];
+	
+	if (fgets(buf, sizeof(buf), fp)) {
+	    if (!(buf[0] == '#' && buf[1] == '!')) {
+		rpmlog(RPMLOG_WARNING, "%s: %s: no \'#!\' on 1st line\n",
+			__FUNCTION__, fn);
+		rewind(fp);
+	    } else {
+		I->linenoOffset += 1;
+		do {	/* consume entire first line, regardless of length */
+		    if (strchr(buf, '\n'))
+			break;
+		} while (fgets(buf, sizeof(buf), fp));
+	    }
+	}
+    }
+
+exit:
+#endif
+
+if (_rpmjs_debug)
+fprintf(stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp);
+
+    return fp;
+}
+
 rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -174,6 +225,19 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 
     if (fn != NULL) {
 #if defined(WITH_JS)
+#if defined(WITH_GPSEE)
+	gpsee_interpreter_t * I = js->I;
+	FILE * fp;
+
+	fp = rpmjsOpenFile(js, fn, resultp);
+	if (fp == NULL)
+	    goto exit;
+
+	gpsee_runProgramModule(I->cx, fn, fp);
+	(void) fclose(fp);
+	rc = ((I->exitType & et_successMask) == I->exitType && I->exitCode == 0)
+		? RPMRC_OK : RPMRC_FAIL;
+#else
 	JSI_t I = js->I;
 	JSContext *cx = I->cx;
 	JSObject *glob = I->globalObj;
@@ -190,9 +254,11 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 	    }
 	    JS_DestroyScript(cx, script);
 	}
-#endif
+#endif	/* WITH_GPSEE */
+#endif	/* WITH_JS */
     }
 
+exit:
 if (_rpmjs_debug)
 fprintf(stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc);
 

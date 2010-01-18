@@ -358,6 +358,7 @@ LIBRPMIO_0
     rpmhookUnregisterAny;
     rpmInitMacros;
     _rpmio_debug;
+    _rpmio_popt_context_flags;
     _rpmiob_chunk;
     rpmiobAppend;
     rpmiobBuf;
