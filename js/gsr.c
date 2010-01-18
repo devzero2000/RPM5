@@ -100,20 +100,14 @@ static apr_pool_t *permanent_pool;
 
 #define F_ISSET(_js, _FLAG) ((_js)->flags & RPMJS_FLAGS_##_FLAG)
 
-/**
- */
-static struct rpmjs_s _js = {
-    .flags =
-	(RPMJS_FLAGS_STRICT |
-	 RPMJS_FLAGS_RELIMIT |
-	 RPMJS_FLAGS_ANONFUNFIX |
-	 RPMJS_FLAGS_JIT ),
-};
+#define _RPMJS_OPTIONS  \
+    (RPMJS_FLAGS_STRICT | RPMJS_FLAGS_RELIMIT | RPMJS_FLAGS_ANONFUNFIX | RPMJS_FLAGS_JIT)
+
+extern struct rpmjs_s _rpmgsr;
 
 static const char * Icode;	/* String with JavaScript program in it */
 static const char * Ifn;	/* Filename with JavaScript program in it */
-static int verbosity;		/* 0 = no debug, bigger = more debug */
-static int gcZeal;
+static int _debug;		/* 0 = no debug, bigger = more debug */
 
 /*==============================================================*/
 
@@ -179,7 +173,7 @@ static void rpmgsrArgCallback(poptContext con,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    rpmjs js = &_js;
+    rpmjs js = &_rpmgsr;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -187,12 +181,6 @@ static void rpmgsrArgCallback(poptContext con,
     case 'F':
 	js->flags |= RPMJS_FLAGS_SKIPSHEBANG;
 	Ifn = xstrdup(arg);
-	break;
-    case 'h':
-	poptPrintHelp(con, stderr, 0);
-/*@-exitarg@*/
-	exit(0);
-/*@=exitarg@*/
 	break;
 #if defined(__SURELYNX__)
     case 'D':
@@ -202,8 +190,8 @@ static void rpmgsrArgCallback(poptContext con,
     case 'r':
 #endif
 #endif
-    case 'd':	verbosity++;	break;
-    case 'z':	gcZeal++;	break;
+    case 'd':	_debug++;	break;
+    case 'z':	_rpmjs_zeal++;	break;
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -221,67 +209,30 @@ static struct poptOption _gsrOptionsTable[] = {
 /*@=type@*/
 
   { NULL, 'c', POPT_ARG_STRING,      &Icode, 0,
-        N_("Specifies literal JavaScript code to execute"), N_("code") },
+        N_("Specifies literal JavaScript code to execute"), N_(" code") },
   { NULL, 'f', POPT_ARG_STRING,      &Ifn, 0,
-        N_("Specifies the filename containing code to run"), N_("filename") },
+        N_("Specifies the filename containing code to run"), N_(" filename") },
   { NULL, 'F', POPT_ARG_STRING,      NULL, 'F',
-        N_("Like -f, but skip shebang if present"), N_("filename") },
-  { NULL, 'h', POPT_ARG_NONE,      NULL, 'h',
-        N_("Display this help"), NULL },
-  { "noexec", 'n', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOEXEC,
+        N_("Like -f, but skip shebang if present"), N_(" filename") },
+  { "noexec", 'n', POPT_BIT_SET,	&_rpmgsr.flags, RPMJS_FLAGS_NOEXEC,
 	N_("Engine will load and parse, but not run, the script"), NULL },
 #if defined(__SURELYNX__)
   { NULL, 'D', POPT_ARG_STRING,      NULL, 'D',
-        N_("Specifies a debug output file"), N_("file") },
+        N_("Specifies a debug output file"), N_(" file") },
 #ifdef	NOTYET	/* -r file appears defunct */
   { NULL, 'r', POPT_ARG_STRING,      NULL, 'r',
-        N_("Specifies alternate interpreter RC file"), N_("file") },
+        N_("Specifies alternate interpreter RC file"), N_(" file") },
 #endif
 #endif
-
-  POPT_TABLEEND
-};
-
-static struct poptOption _jsOptionsTable[] = {
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmgsrArgCallback, 0, NULL, NULL },
-/*@=type@*/
-
-  { "allow", 'a', POPT_BIT_SET,		&_js.flags, RPMJS_FLAGS_ALLOW,
-        N_("Allow (read-only) access to caller's environmen"), NULL },
-  { "nocache", 'C', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOCACHE,
-        N_("Disables compiler caching via JSScript XDR serialization"), NULL },
-  { "loadrc", 'R', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_LOADRC,
-        N_("Load RC file for interpreter (" PRODUCT_SHORTNAME ") based on script filename."), NULL },
-  { "nowarn", 'W', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOWARN,
-        N_("Do not report warnings"), NULL },
-
-  { "norelimit", 'e', POPT_BIT_CLR,	&_js.flags, RPMJS_FLAGS_RELIMIT,
-        N_("Do not limit regexps to n^3 levels of backtracking"), NULL },
-  { "nojit", 'J', POPT_BIT_CLR,		&_js.flags, RPMJS_FLAGS_JIT,
-        N_("Disable nanojit"), NULL },
-  { "nostrict", 'S', POPT_BIT_CLR,	&_js.flags, RPMJS_FLAGS_STRICT,
-        N_("Disable Strict mode"), NULL },
-  { "noutf8", 'U', POPT_BIT_SET,	&_js.flags, RPMJS_FLAGS_NOUTF8,
-        N_("Disable UTF-8 C string processing"), NULL },
-  { "xml", 'x', POPT_BIT_SET,		&_js.flags, RPMJS_FLAGS_XML,
-        N_("Parse <!-- comments --> as E4X tokens"), NULL },
-
-  { "anonfunfix", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_js.flags, RPMJS_FLAGS_ANONFUNFIX,
-        N_("Parse //@line number [\"filename\"] for XUL"), NULL },
-  { "atline", 'A', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_js.flags, RPMJS_FLAGS_ATLINE,
-        N_("Parse //@line number [\"filename\"] for XUL"), NULL },
-  { "werror", 'w', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_js.flags, RPMJS_FLAGS_WERROR,
-        N_("Convert warnings to errors"), NULL },
-
-  { NULL, 'd', POPT_ARG_NONE,		NULL, 'd',
-        N_("Increase verbosity"), NULL },
-  { "gczeal", 'z', POPT_ARG_NONE,	NULL, 'z',
+  { "debug", 'd', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'd',
+        N_("Increase debuuging"), NULL },
+  { "zeal", 'z', POPT_ARG_NONE,	NULL, 'z',
         N_("Increase GC Zealousness"), NULL },
 
   POPT_TABLEEND
 };
+
+extern struct poptOption rpmjsIPoptTable[];
 
 static struct poptOption _optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -290,26 +241,13 @@ static struct poptOption _optionsTable[] = {
 /*@=type@*/
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _gsrOptionsTable, 0,
-        N_("\
-" PRODUCT_SHORTNAME " " PRODUCT_VERSION " - GPSEE Script Runner for GPSEE " GPSEE_CURRENT_VERSION_STRING "\n\
-Copyright (c) 2007-2009 PageMail, Inc. All Rights Reserved.\n\
-\n\
-As an interpreter: #!/usr/bin/gsr {-/*flags*/}\n\
-As a command:      gsr {-r file} [-D file] [-z #] [-n] <[-c code]|[-f filename]>\n\
-                   gsr {-/*flags*/} {[--] [arg...]}\n\
-\n\
-Command Options:\
-"), NULL },
+        N_("Command options:"), NULL },
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _jsOptionsTable, 0,
-        N_("\
-Valid Flags:\
-"), NULL },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmjsIPoptTable, 0,
+        N_("JS interpreter options:"), NULL },
 
-#ifdef	NOTYET
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
-#endif
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
@@ -358,7 +296,7 @@ static FILE *openScriptFile(rpmjs js, const char * fn)
  *  Filename to use is script's filename, if -R option flag is thrown.
  *  Otherwise, file interpreter's filename (i.e. gsr) is used.
  */
-void
+static void
 loadRuntimeConfig(rpmjs js, const char * fn, int argc, char *const *argv)
 {
     const char *scriptFilename = fn;
@@ -399,16 +337,18 @@ loadRuntimeConfig(rpmjs js, const char * fn, int argc, char *const *argv)
     rc_close(rc_file);
 }
 
+static
 PRIntn prmain(PRIntn argc, char **argv)
 {
     poptContext optCon;
-    rpmjs js = &_js;
+    rpmjs js = &_rpmgsr;
     char *const * Iargv;	/* Becomes arguments array in JS program */
-    char *const * Ienviron = NULL;	/* Environment to pass to script */
     int ac = 0;
     int ec;
 
-    verbosity = max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
+    js->flags = _rpmjs_options | _RPMJS_OPTIONS;
+
+    _debug = max(whenSureLynx(sl_get_debugLevel(), 0), gpsee_verbosity(0));
 
     gpsee_openlog(gpsee_basename(argv[0]));
 
@@ -536,6 +476,7 @@ finish:
 exit:
     Icode = _free(Icode);
     Ifn = _free(Ifn);
+    closelog();
 
     optCon = rpmioFini(optCon);
 

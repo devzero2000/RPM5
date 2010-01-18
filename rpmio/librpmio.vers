@@ -398,6 +398,8 @@ LIBRPMIO_0
     _rpmjs_zeal;
     _rpmjsI;
     _rpmjsPool;
+    _rpmgsr;
+    rpmjsIPoptTable;
     rpmjsNew;
     rpmjsRun;
     rpmKeyringAddKey;

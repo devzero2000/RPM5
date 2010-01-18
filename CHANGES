@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: gpsee: bury the JS interpreter popt table in -lrpmio.
     - jbj: reserve (1<<31) in all embedded interpreters to mark global.
     - jbj: gpsee: remove the --without-gpsee JS interpreter.
     - jbj: gpsee: use gpsee_{create,destroy}Interpreter() throughout RPM.
