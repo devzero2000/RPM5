@@ -10,8 +10,6 @@
 #define	_RPMJS_INTERNAL
 #include <rpmjs.h>
 
-#include "gpsee.h"
-
 #include "debug.h"
 
 extern const char * __progname;
@@ -121,12 +119,12 @@ int main(int argc, char *argv[])
     poptContext optCon;
     rpmjs js = &_rpmgsr;
     char *const * Iargv;	/* Becomes arguments array in JS program */
+    const char * result = NULL;
+    rpmRC rc;
     int ac = 0;
     int ec = 1;		/* assume failure */
 
     js->flags = _rpmjs_options | _RPMJS_OPTIONS;
-
-    _debug = gpsee_verbosity(0);
 
     _rpmio_popt_context_flags = POPT_CONTEXT_POSIXMEHARDER;
     optCon = rpmioInit(argc, argv, optionsTable);
@@ -146,98 +144,32 @@ int main(int argc, char *argv[])
 	/*@notreached@*/ break;
     }
 
-    if (F_ISSET(js, NOUTF8) || getenv("GPSEE_NO_UTF8_C_STRINGS"))
-    {
-	JS_DestroyRuntime(JS_NewRuntime(1024));
-	putenv((char *) "GPSEE_NO_UTF8_C_STRINGS=1");
-    }
-
     js = rpmjsNew((const char **)Iargv, js->flags);
 
     /* Run JavaScript specified with -c */
     if (Icode) {
-	const char * result = NULL;
-	rpmRC rc = rpmjsRun(js, Icode, &result);
+	rc = rpmjsRun(js, Icode, &result);
+	result = NULL;
 	ec = (rc == RPMRC_OK ? 0 : 1);
 	goto finish;
     }
 
-    /* Pre-compile JavaScript specified with -f */
     /* Run JavaScript specified with -f */
-#if !defined(SYSTEM_GSR)
-#define	SYSTEM_GSR	"/usr/bin/gsr"
-#endif
-    if ((argv[0][0] == '/') && strcmp(argv[0], SYSTEM_GSR)) {
-	gpsee_interpreter_t * I = js->I;
-	const char * preloadfn =
-		rpmGetPath(dirname(argv[0]), "/.", basename(argv[0]), NULL);
-
-	if (!(preloadfn && *preloadfn)) {
-	    rpmlog(RPMLOG_EMERG,
-		"%s: Unable to create preload script filename!\n", __progname);
-	    preloadfn = _free(preloadfn);
-	    goto finish;
-	}
-	errno = 0;
-
-	if (access(preloadfn, F_OK) == 0) {
-	    jsval v;
-	    const char *errmsg;
-	    JSScript *script;
-	    JSObject *scrobj;
-
-	    if (gpsee_compileScript
-		(I->cx, preloadfn, NULL, &script,
-		 I->globalObj, &scrobj, &errmsg)) {
-		rpmlog(RPMLOG_EMERG,
-			  "%s: Unable to compile preload script '%s' - %s\n",
-			  __progname, preloadfn, errmsg);
-		preloadfn = _free(preloadfn);
-		goto finish;
-	    }
-	    preloadfn = _free(preloadfn);
-
-	    if (!script || !scrobj)
-		goto finish;
-
-	    JS_AddNamedRoot(I->cx, &scrobj, "preload_scrobj");
-	    JS_ExecuteScript(I->cx, I->globalObj, script, &v);
-	    if (JS_IsExceptionPending(I->cx)) {
-		I->exitType = et_exception;
-		JS_ReportPendingException(I->cx);
-	    }
-	    JS_RemoveRoot(I->cx, &scrobj);
-	}
-
-	if (I->exitType & et_exception)
-	    goto finish;
-    }
-
-    if (Ifn == NULL) {
-	ec = Icode ? 0 : 1;
-	goto finish;
-    }
-
-    /* Run (pre-compiled) JavaScript specified with -f */
-  { gpsee_interpreter_t * I = js->I;
-    const char * result = NULL;
-
     if (ac != 0)	/* XXX FIXME */
 	js->flags |= RPMJS_FLAGS_SKIPSHEBANG;
 
-    switch (rpmjsRunFile(js, Ifn, &result)) {
-    default:
+    result = NULL;
+    switch ((rc = rpmjsRunFile(js, Ifn, &result))) {
+    case RPMRC_FAIL:
 	rpmlog(RPMLOG_ERR, "%s: Unable to open' script '%s'! (%s)\n",
 		      __progname, Ifn, result);
 	result = _free(result);
 	ec = 1;
 	break;
-    case RPMRC_OK:
-	ec = ((I->exitType & et_successMask) == I->exitType)
-		? I->exitCode : 1;
+    default:
+	ec = -rc;	/* XXX hack tp get I->exitCode into ec */
 	break;
     }
-  }
 
 finish:
     js = rpmjsFree(js);

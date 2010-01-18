@@ -151,8 +151,12 @@ static rpmjs rpmjsI(void)
 	/*@globals _rpmjsI @*/
 	/*@modifies _rpmjsI @*/
 {
-    if (_rpmjsI == NULL)
+    if (_rpmjsI == NULL) {
+#if defined(WITH_GPSEE)
+	gpsee_verbosity(0);	/* XXX hack around syslog(3) in GPSEE */
+#endif
 	_rpmjsI = rpmjsNew(NULL, 0);
+    }
 if (_rpmjs_debug)
 fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
     return _rpmjsI;
@@ -173,6 +177,11 @@ rpmjs rpmjsNew(const char ** av, uint32_t flags)
     char *const * Ienviron = NULL;
     if (flags == 0)
 	flags = _rpmjs_options;
+
+    if (F_ISSET(flags, NOUTF8) || getenv("GPSEE_NO_UTF8_C_STRINGS")) {
+	JS_DestroyRuntime(JS_NewRuntime(1024));
+	putenv((char *) "GPSEE_NO_UTF8_C_STRINGS=1");
+    }
 
     if (F_ISSET(flags, ALLOW)) {
 #if defined(__APPLE__)
@@ -269,8 +278,9 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 
 	gpsee_runProgramModule(I->cx, fn, fp);
 	(void) fclose(fp);
-	rc = ((I->exitType & et_successMask) == I->exitType && I->exitCode == 0)
-		? RPMRC_OK : RPMRC_FAIL;
+	/* XXX hack tp get I->exitCode into rc -> ec by negating */
+	rc = ((I->exitType & et_successMask) == I->exitType)
+		? -I->exitCode : RPMRC_FAIL;
 #else
 	JSI_t I = js->I;
 	JSContext *cx = I->cx;
