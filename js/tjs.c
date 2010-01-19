@@ -49,10 +49,6 @@
 #include "syck-js.h"
 #include "uuid-js.h"
 
-#ifdef	DYING
-#include "rpmjsfile.h"
-#endif
-
 #include <rpmcli.h>
 
 #include "debug.h"
@@ -70,7 +66,6 @@ static int _test = 1;
 static int _zeal = 2;
 
 #if defined(WITH_GPSEE)
-#define	MAKEDEPEND	/* XXX hack-o-round JS_THREADSAFE check */
 #include <gpsee.h>
 typedef	gpsee_interpreter_t * JSI_t;
 #else
@@ -110,9 +105,6 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Ds",		rpmjs_InitDsClass,	 1,	-13 },
     { "Fc",		rpmjs_InitFcClass,	 1,	-34 },	/* todo++ */
     { "Fi",		rpmjs_InitFiClass,	 1,	-14 },
-#ifdef	DYING
-    { "File",		   js_InitFileClass,	 0,	 -1 },
-#endif
     { "Fts",		rpmjs_InitFtsClass,	 1,	-30 },
     { "Gi",		rpmjs_InitGiClass,	 1,	-35 },	/* todo++ */
     { "Hdr",		rpmjs_InitHdrClass,	 1,	-12 },
@@ -125,16 +117,16 @@ static struct rpmjsClassTable_s classTable[] = {
     { "Ps",		rpmjs_InitPsClass,	 1,	-16 },
     { "Sm",		rpmjs_InitSmClass,	 1,	-43 },	/* todo++ */
     { "Sp",		rpmjs_InitSpClass,	 1,	-42 },	/* todo++ */
-    { "St",		rpmjs_InitStClass,	 1,	-27 },
+    { "St",		rpmjs_InitStClass,	 1,	27 },
     { "Sw",		rpmjs_InitSwClass,	 1,	-38 },	/* todo++ */
     { "Sx",		rpmjs_InitSxClass,	 1,	-39 },
 #if defined(WITH_SYCK)
     { "Syck",		rpmjs_InitSyckClass,	 1,	 -3 },	/* todo++ */
 #endif
-    { "Sys",		rpmjs_InitSysClass,	 1,	-33 },
+    { "Sys",		rpmjs_InitSysClass,	 1,	33 },
     { "Te",		rpmjs_InitTeClass,	 1,	-15 },
     { "Ts",		rpmjs_InitTsClass,	 1,	-10 },
-    { "Xar",		rpmjs_InitXarClass,	 1,	51 },	/* todo++ */
+    { "Xar",		rpmjs_InitXarClass,	 1,	-51 },	/* todo++ */
 #if defined(WITH_UUID)
     { "Uuid",		rpmjs_InitUuidClass,	 1,	 -2 },
 #endif
@@ -179,36 +171,34 @@ rpmjsLoadFile(const char * pre, const char * fn, unsigned flags, int bingo)
 {
     char * str;
     rpmRC ret = RPMRC_FAIL;
+    const char * result = NULL;
 
 #if defined(WITH_GPSEE)
     if (flags) {
-	static char * const av[] = { "", NULL };
-	static char * const ev[] = { "", NULL };
-	JSI_t I = gpsee_createInterpreter(av, ev);
-	jsval v;
+	rpmjs js = _rpmjsI;
 
 	if (pre == NULL)
 	    pre = "";
 	str = rpmExpand(pre, "\ntry { require('system').include('", fn, "'); } catch(e) { print(e); print(e.stack); throw e; }", NULL);
 if (_debug)
-fprintf(stderr, "\trunning GPSEE:\n%s\n", str);
-	if (JS_EvaluateScript(I->cx, I->globalObj, str, strlen(str), __FILE__, __LINE__, &v)
-	 && !JS_IsExceptionPending(I->cx))
-	    ret = RPMRC_OK;
+fprintf(stderr, "\trunning:\n%s\n", str);
 
+	result = NULL;
+	ret = rpmjsRun(NULL, str, &result);
+
+	if (result != NULL && *result != '\0') {
+	    fprintf(stdout, "%s\n", result);
+	    fflush(stdout);
+	}
 	str = _free(str);
-	gpsee_destroyInterpreter(I);
-	I = NULL;
     } else
 #endif
     {
-	const char * result = NULL;
-
 	if (bingo || pre == NULL)
 	    pre = "";
 	str = rpmExpand(pre, "load(\"", fn, "\");", NULL);
 if (_debug)
-fprintf(stderr, "\trunning rpmjsNew:\n%s%s\n", (*pre ? "\n" : " "), str);
+fprintf(stderr, "\trunning:\n%s%s\n", (*pre ? "\n" : " "), str);
 	result = NULL;
 	ret = rpmjsRun(NULL, str, &result);
 	if (result != NULL && *result != '\0') {
