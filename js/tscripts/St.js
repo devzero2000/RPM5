@@ -1,10 +1,10 @@
 if (loglvl) print("--> St.js");
 
-var GPSEE = require('rpmst');
+var rpmst = require('rpmst');
 
-var st = new GPSEE.St('.');
+var st = new rpmst.St('.');
 ack("typeof st;", "object");
-ack("st instanceof GPSEE.St;", true);
+ack("st instanceof rpmst.St;", true);
 ack("st.debug = 1;", 1);
 ack("st.debug = 0;", 0);
 
@@ -16,6 +16,16 @@ var dnfurl = 'file:///';
 var popturl = 'http://rpm5.org/files/popt/popt-1.14.tar.gz';
 
 st(dndot);
+
+// print("=============");
+// print(JSON.stringify(rpmst.St));
+// print(JSON.stringify(rpmst.St.prototype));
+// print(JSON.stringify(rpmst.St.prototype));
+// print(JSON.stringify(st));
+// print(JSON.stringify(st.__proto__));
+// for (let i in st)
+//      print(i + ': ' + st[i] + ': ' +st.__proto__[i]);
+// print("=============");
 
 print("    dev: 0x" + st.dev.toString(16));
 print("    ino: " + st.ino);
@@ -31,14 +41,14 @@ print("  atime: " + st.atime);
 print("  mtime: " + st.mtime);
 print("  ctime: " + st.ctime);
 
-// XXX needs enumerate/resolve or custom st.toJSON()
-// print(JSON.stringify(st));
-
 delete st;
 
-var rst = new GPSEE.St(dnroot);
-var fst = new GPSEE.St(dnfurl);
+var rst = new rpmst.St(dnroot);
+var fst = new rpmst.St(dnfurl);
 
+// print("=============");
+// ack('JSON.stringify(rst.__proto__)', JSON.stringify(fst.__proto__));
+// print("=============");
 ack("rst.dev", fst.dev);
 ack("rst.ino", fst.ino);
 ack("rst.mode", fst.mode);
@@ -58,8 +68,9 @@ ack("rst.blocks", fst.blocks);
 delete fst;
 delete rst;
 
-var st = new GPSEE.St(popturl);
+var st = new rpmst.St(popturl);
 
+// print(JSON.stringify(st.__proto__));
 ack("st.dev", 0x0);
 ack("st.ino", 907648754);
 ack("st.mode", 0100644);
