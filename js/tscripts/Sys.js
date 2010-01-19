@@ -5,12 +5,12 @@ const W_OK	= 2;		/* Test for write permission.  */
 const X_OK	= 1;		/* Test for execute permission.  */
 const F_OK	= 0;		/* Test for existence.  */
 
-var GPSEE = require('rpmsys');
+var rpmsys = require('rpmsys');
 var rpmst = require('rpmst');
 
-var sys = new GPSEE.Sys();
+var sys = new rpmsys.Sys();
 ack("typeof sys;", "object");
-ack("sys instanceof GPSEE.Sys;", true);
+ack("sys instanceof rpmsys.Sys;", true);
 ack("sys.debug = 1;", 1);
 ack("sys.debug = 0;", 0);
 
@@ -47,12 +47,28 @@ ack("sys.rmdir(dn);", 0);
 var st;
 
 ack("sys.creat(fn,0644);", 0);
-ack("(st = sys.stat(fn)) instanceof rpmst.St;", true);
+st = sys.stat(fn);
+ack("st instanceof rpmst.St;", true);
 ack("st.uid", sys.uid);
 ack("st.gid", sys.gid);
 ack("st.mode", 0100644);
 ack("sys.chmod(fn,0640);", 0);
-ack("(st = sys.lstat(fn)) instanceof rpmst.St;", true);
+
+st = sys.lstat(fn);
+ack("st instanceof rpmst.St;", true);
+print("    ino: " + st.ino);
+// print("   mode: 0" + st.mode.toString(8));
+// print("  nlink: " + st.nlink);
+// print("    uid: " + st.uid);
+// print("    gid: " + st.gid);
+// print("   rdev: 0x" + st.rdev.toString(16));
+// print("   size: " + st.size);
+// print("blksize: " + st.blksize);
+// print(" blocks: " + st.blocks);
+// print("  atime: " + st.atime);
+// print("  mtime: " + st.mtime);
+// print("  ctime: " + st.ctime);
+
 ack("st.mode", 0100640);
 ack("sys.chown(fn,-1,-1);", 0);
 ack("sys.chown(fn,sys.uid,-1);", 0);
