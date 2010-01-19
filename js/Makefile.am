@@ -56,7 +56,7 @@ pkgbindir =     @USRLIBRPM@/bin
 moduledir =	@GPSEE_MODULES_PATH@
 
 pkgbin_PROGRAMS =	tjs
-pkglib_LTLIBRARIES =	librpmjsm.la
+noinst_LTLIBRARIES =	librpmjsm.la
 module_LTLIBRARIES =	\
 	rpmaug_module.la \
 	rpmbc_module.la \
@@ -311,7 +311,7 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmjs_la_sources)
 
 tjs_SOURCES = tjs.c
-tjs_LDADD = librpmjsm.la $(RPM_LDADD_COMMON)
+tjs_LDADD = $(RPM_LDADD_COMMON)
 
 check-local:	tjs
 	-./tjs
