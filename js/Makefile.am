@@ -10,7 +10,7 @@ EXTRA_DIST = gsr.c minimal.c \
 	words \
 	legacy.cudf legacy-sol.cudf
 
-EXTRA_PROGRAMS =	gsr minimal
+EXTRA_PROGRAMS =	tjs
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -55,7 +55,9 @@ pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
 moduledir =	@GPSEE_MODULES_PATH@
 
-pkgbin_PROGRAMS =	tjs
+pkgbin_PROGRAMS =	gsr
+
+noinst_PROGRAMS =	tjs
 noinst_LTLIBRARIES =	librpmjsm.la
 module_LTLIBRARIES =	\
 	rpmaug_module.la \
@@ -313,8 +315,7 @@ lint:
 tjs_SOURCES = tjs.c
 tjs_LDADD = $(RPM_LDADD_COMMON)
 
-check-local:	tjs
-	-./tjs
+check-local:	gsr
 
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:
