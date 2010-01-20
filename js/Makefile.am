@@ -10,7 +10,7 @@ EXTRA_DIST = gsr.c minimal.c \
 	words \
 	legacy.cudf legacy-sol.cudf
 
-EXTRA_PROGRAMS =	tjs
+EXTRA_PROGRAMS =
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -57,7 +57,6 @@ moduledir =	@GPSEE_MODULES_PATH@
 
 pkgbin_PROGRAMS =	gsr
 
-noinst_PROGRAMS =	tjs
 noinst_LTLIBRARIES =	librpmjsm.la
 module_LTLIBRARIES =	\
 	rpmaug_module.la \
@@ -306,14 +305,9 @@ librpmjsm_la_SOURCES = \
 gsr_SOURCES =		gsr.c
 gsr_LDADD =		$(RPM_LDADD_COMMON)
 
-minimal_SOURCES =	minimal.c
-
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmjs_la_sources)
-
-tjs_SOURCES = tjs.c
-tjs_LDADD = $(RPM_LDADD_COMMON)
 
 check-local:	gsr
 
