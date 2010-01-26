@@ -71,6 +71,8 @@ int rpmbfAdd(rpmbf bf, const void * _s, size_t ns)
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 
+    if (bf == NULL) return -1;
+
     if (ns == 0) ns = strlen(s);
     jlu32lpair(s, ns, &h0, &h1);
 
@@ -92,6 +94,8 @@ int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
     rpmuint32_t h1 = 0;
     int rc = 1;
 
+    if (bf == NULL) return -1;
+
     if (ns == 0) ns = strlen(s);
     jlu32lpair(s, ns, &h0, &h1);
 
@@ -110,9 +114,14 @@ fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsig
 
 int rpmbfClr(rpmbf bf)
 {
-    __pbm_bits * bits = __PBM_BITS(bf);
     static size_t nbw = (__PBM_NBITS/8);
-    size_t nw = (__PBM_IX(bf->m-1) + 1);
+    __pbm_bits * bits;
+    size_t nw;
+
+    if (bf == NULL) return -1;
+
+    bits = __PBM_BITS(bf);
+    nw = (__PBM_IX(bf->m-1) + 1);
     memset(bits, 0, nw * nbw);
     bf->n = 0;
 if (_rpmbf_debug)
@@ -125,6 +134,8 @@ int rpmbfDel(rpmbf bf, const void * _s, size_t ns)
     const char * s = _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
+
+    if (bf == NULL) return -1;
 
     if (ns == 0) ns = strlen(s);
 assert(ns > 0);
@@ -144,10 +155,16 @@ fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsig
 
 int rpmbfIntersect(rpmbf a, const rpmbf b)
 {
-    __pbm_bits * abits = __PBM_BITS(a);
-    __pbm_bits * bbits = __PBM_BITS(b);
-    size_t nw = (__PBM_IX(a->m-1) + 1);
+    __pbm_bits * abits;
+    __pbm_bits * bbits;
+    size_t nw;
     size_t i;
+
+    if (a == NULL || b == NULL) return -1;
+
+    abits = __PBM_BITS(a);
+    bbits = __PBM_BITS(b);
+    nw = (__PBM_IX(a->m-1) + 1);
 
     if (!(a->m == b->m && a->k == b->k))
 	return -1;
@@ -161,10 +178,16 @@ fprintf(stderr, "<-- %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a
 
 int rpmbfUnion(rpmbf a, const rpmbf b)
 {
-    __pbm_bits * abits = __PBM_BITS(a);
-    __pbm_bits * bbits = __PBM_BITS(b);
-    size_t nw = (__PBM_IX(a->m-1) + 1);
+    __pbm_bits * abits;
+    __pbm_bits * bbits;
+    size_t nw;
     size_t i;
+
+    if (a == NULL || b == NULL) return -1;
+
+    abits = __PBM_BITS(a);
+    bbits = __PBM_BITS(b);
+    nw = (__PBM_IX(a->m-1) + 1);
 
     if (!(a->m == b->m && a->k == b->k))
 	return -1;

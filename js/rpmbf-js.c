@@ -29,11 +29,11 @@ rpmbf_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    *rval = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    (void) rpmbfAdd(bf, _s, 0);
-    *rval = JSVAL_TRUE;		/* XXX return s? */
+    *rval = (rpmbfAdd(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;
@@ -49,10 +49,11 @@ rpmbf_chk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    *rval = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfChk(bf, _s, 0) ? JSVAL_TRUE : JSVAL_FALSE);
+    *rval = (rpmbfChk(bf, _s, 0) > 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;
@@ -67,7 +68,7 @@ rpmbf_clr(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = (rpmbfClr(bf) ? JSVAL_FALSE : JSVAL_TRUE);
+    *rval = (rpmbfClr(bf) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
     return ok;
 }
@@ -82,10 +83,11 @@ rpmbf_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
+    *rval = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfDel(bf, _s, 0) ? JSVAL_FALSE : JSVAL_TRUE);
+    *rval = (rpmbfDel(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;

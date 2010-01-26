@@ -134,7 +134,7 @@ rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
  * @param bf		Bloom filter
  * @param *_s		bytes
  * @param ns		no. bytes (0 uses strlen)
- * @return		0 always
+ * @return		0 on success, -1 on NULL pointer
  */
 int rpmbfAdd(rpmbf bf, const void * _s, size_t ns)
 	/*@modifies bf @*/;
@@ -142,7 +142,7 @@ int rpmbfAdd(rpmbf bf, const void * _s, size_t ns)
 /**
  * Clear a Bloom filter, discarding all set memberships.
  * @param bf		Bloom filter
- * @return		0 always
+ * @return		0 on success, -1 on NULL pointer
  */
 int rpmbfClr(rpmbf bf)
 	/*@modifies bf @*/;
@@ -152,7 +152,7 @@ int rpmbfClr(rpmbf bf)
  * @param bf		Bloom filter
  * @param *_s		bytes
  * @param ns		no. bytes (0 uses strlen)
- * @return		1 if string is present, 0 if not
+ * @return		1 if string is present, 0 if not, -1 on NULL pointer
  */
 int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
 	/*@modifies bf @*/;
@@ -163,7 +163,7 @@ int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
  * @param bf		Bloom filter
  * @param *_s		bytes
  * @param ns		no. bytes (0 will do strlen)
- * @return		0 always
+ * @return		0 on success, -1 on NULL pointer
  */
 int rpmbfDel(rpmbf bf, const void * _s, size_t ns)
 	/*@modifies bf @*/;
@@ -172,7 +172,7 @@ int rpmbfDel(rpmbf bf, const void * _s, size_t ns)
  * Return intersection of two Bloom filters.
  * @retval a		Bloom filter
  * @param b		Bloom filter
- * @return		0 on success, -1 if {m,k} disagree.
+ * @return		0 on success, -1 if {m,k} disagree or NULL pointers.
  */
 int rpmbfIntersect(rpmbf a, const rpmbf b)
 	/*@modifies a @*/;
@@ -181,7 +181,7 @@ int rpmbfIntersect(rpmbf a, const rpmbf b)
  * Return union of two Bloom filters.
  * @retval a		Bloom filter
  * @param b		Bloom filter
- * @return		0 on success, -1 if {m,k} disagree.
+ * @return		0 on success, -1 if {m,k} disagree or NULL pointers.
  */
 int rpmbfUnion(rpmbf a, const rpmbf b)
 	/*@modifies a @*/;
@@ -192,7 +192,6 @@ int rpmbfUnion(rpmbf a, const rpmbf b)
  * @param e		probability of error
  * @retval *mp		no. of bits
  * @retval *kp		no. of hashes
- * @return		0 on success, -1 if {m,k} disagree.
  */
 void rpmbfParams(size_t n, double e, size_t * mp, size_t * kp)
 	/*@modifies *mp, *kp @*/;

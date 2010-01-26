@@ -1923,7 +1923,7 @@ _ifill:
 		    continue;
 
 		/* Don't add identical (key,val) item to secondary. */
-		if (rpmbfChk(bf, s, ns))
+		if (rpmbfChk(bf, s, ns) > 0)
 		    continue;
 		(void) rpmbfAdd(bf, s, ns);
 

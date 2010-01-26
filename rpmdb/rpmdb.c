@@ -1341,6 +1341,8 @@ exit:
     av = argvFree(av);
     b = _free(b);
     mire = mireFree(mire);
+if (_rpmmi_debug || dbi->dbi_debug)
+fprintf(stderr, "<-- %s(%p, %s(%u), %d, %p, %p, %p) rc %d %p[%u]\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, argvp, ret, (matches ? (*matches)->recs : NULL), (matches ? (*matches)->count : 0));
     return ret;
 }
 
@@ -1604,7 +1606,10 @@ static rpmmi rpmmiGetPool(/*@null@*/ rpmioPool pool)
 uint32_t rpmmiInstance(rpmmi mi)
 {
     /* Get a native endian copy of the primary package key. */
-    return _ntoh_ui(mi ? mi->mi_offset : 0);
+    uint32_t rc = _ntoh_ui(mi ? mi->mi_offset : 0);
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p) rc %u\n", __FUNCTION__, mi, (unsigned)rc);
+    return rc;
 }
 
 unsigned int rpmmiCount(rpmmi mi) {
@@ -2147,7 +2152,7 @@ next:
 
 	/* Should this header be skipped? */
 	if (mi->mi_bf != NULL
-	 && rpmbfChk(mi->mi_bf, &mi->mi_offset, sizeof(mi->mi_offset)))
+	 && rpmbfChk(mi->mi_bf, &mi->mi_offset, sizeof(mi->mi_offset)) > 0)
 	    goto next;
 
 	/* Fetch header by offset. */
@@ -2197,7 +2202,7 @@ assert((size_t)k.size == sizeof(mi->mi_offset));
 
     /* Should this header be skipped? */
     if (mi->mi_set == NULL && mi->mi_bf != NULL
-     && rpmbfChk(mi->mi_bf, &mi->mi_offset, sizeof(mi->mi_offset)))
+     && rpmbfChk(mi->mi_bf, &mi->mi_offset, sizeof(mi->mi_offset)) > 0)
 	goto next;
 
     uh = v.data;
@@ -2373,7 +2378,7 @@ assert(dbi != NULL);					/* XXX sanity */
     (void)rpmioLinkPoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
 if (_rpmmi_debug || (dbi && dbi->dbi_debug))
-fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 ? (const char *)keyp : "???"), dbi, mi);
+fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 || ((const char *)keyp)[keylen] == '\0' ? (const char *)keyp : "???"), dbi, mi);
 
     /* Chain cursors for teardown on abnormal exit. */
     mi->mi_next = rpmmiRock;
