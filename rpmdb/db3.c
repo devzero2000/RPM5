@@ -1729,6 +1729,7 @@ db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
     size_t ns = 0;
     int rc = DB_DONOTINDEX;	/* assume no-op */
     uint32_t i;
+    int xx;
 
 assert(key->size == sizeof(hdrNum));
     memcpy(&hdrNum, key->data, key->size);
@@ -1925,7 +1926,8 @@ _ifill:
 		/* Don't add identical (key,val) item to secondary. */
 		if (rpmbfChk(bf, s, ns) > 0)
 		    continue;
-		(void) rpmbfAdd(bf, s, ns);
+		xx = rpmbfAdd(bf, s, ns);
+assert(xx == 0);
 
 		if (!loadDBT(A, he->tag, s, ns))
 		    continue;

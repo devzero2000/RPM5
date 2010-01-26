@@ -93,6 +93,7 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
 	/*@modifies ts, h, *indexp, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmte p;
+    int xx;
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
@@ -123,7 +124,8 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
     }
 
 assert(ts->removedPackages != NULL);	/* XXX can't happen. */
-    (void) rpmbfAdd(ts->rbf, &hdrNum, sizeof(hdrNum));
+    xx = rpmbfAdd(ts->rbf, &hdrNum, sizeof(hdrNum));
+assert(xx == 0);
     ts->removedPackages[ts->numRemovedPackages] = hdrNum;
     ts->numRemovedPackages++;
     if (ts->numRemovedPackages > 1)

@@ -2294,7 +2294,8 @@ int rpmmiPrune(rpmmi mi, uint32_t * hdrNums, int nHdrNums, int sorted)
 	}
 	for (i = 0; i < nHdrNums; i++) {
 	    uint32_t mi_offset = _hton_ui(hdrNums[i]);
-	    (void) rpmbfAdd(mi->mi_bf, &mi_offset, sizeof(mi_offset));
+	    int xx = rpmbfAdd(mi->mi_bf, &mi_offset, sizeof(mi_offset));
+assert(xx == 0);
 	}
     }
 

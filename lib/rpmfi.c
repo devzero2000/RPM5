@@ -1689,7 +1689,8 @@ if (fi->actions == NULL)
 	    dn = NULL;
 	    (void) urlPath(fi->dnl[fi->dil[i]], &dn);
 	    dn = stpcpy(stpcpy(fn, dn), fi->bnl[i]);
-	    (void) rpmbfAdd(bf, fn, (size_t)(dn - fn));
+	    xx = rpmbfAdd(bf, fn, (size_t)(dn - fn));
+assert(xx == 0);
 	}
 	fi->_fnbf = bf;
     }
