@@ -2168,8 +2168,6 @@ assert(psm != NULL);
 	    p->h = NULL;
 	}
 
-	xx = rpmdbSync(rpmtsGetRdb(ts));
-
 /*@-nullstate@*/ /* FIX: psm->fi may be NULL */
 	psm = rpmpsmFree(psm, msg);
 /*@=nullstate@*/

@@ -1213,15 +1213,6 @@ int rpmdbClose (/*@killref@*/ /*@only@*/ /*@null@*/ rpmdb db)
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
- * Sync all database indices.
- * @param db		rpm database
- * @return		0 on success
- */
-int rpmdbSync (/*@null@*/ rpmdb db)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/** \ingroup rpmdb
  * Open all database indices.
  * @param db		rpm database
  * @return		0 on success

@@ -796,25 +796,6 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use
 }
 /*@=incondefs@*/
 
-int rpmdbSync(rpmdb db)
-{
-    size_t dbix;
-    int rc = 0;
-
-    if (db == NULL) return 0;
-    if (db->_dbi != NULL)
-    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	int xx;
-	if (db->_dbi[dbix] == NULL)
-	    continue;
-	if (db->_dbi[dbix]->dbi_no_dbsync)
- 	    continue;
-    	xx = dbiSync(db->_dbi[dbix], 0);
-	if (xx && rc == 0) rc = xx;
-    }
-    return rc;
-}
-
 /**
  * Return macro expanded absolute path to rpmdb.
  * @param uri		desired path
