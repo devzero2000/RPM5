@@ -54,6 +54,9 @@ mtree =		$(abs_top_builddir)/tools/mtree
 rc =		$(abs_top_builddir)/tools/rc
 wget =		$(abs_top_builddir)/tools/wget
 
+sudo =		sudo
+caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
+
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
 rpmdb_Tables = \
 	$(rpmdb)/Arch	\
@@ -247,6 +250,16 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
+check-cAos:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(caosroot)
+	@rm -rf tmp/cAos-2 tmp/cAos-3
+	@mkdir -p $(caosroot) tmp/cAos-2 tmp/cAos-3
+	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-bash.i386.manifest
+	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-2/*.rpm cAos2-stub/*.noarch.rpm
+	@cd tmp/cAos-3 && $(wget) -i ../../ref/cAos3-bash.i386.manifest
+	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-3/*.rpm
+
 .PHONY:	check-triggers
 check-triggers:
 	@echo "=== $@ ==="
@@ -335,5 +348,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
+	$(sudo) rm -rf $(caosroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/

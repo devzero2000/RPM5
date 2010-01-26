@@ -1,0 +1,14 @@
+http://mirror.caoslinux.org/cAos-2/core/i386/setup-3.0-7.caos.noarch.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/basesystem-8.0-2.centos.0.noarch.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/filesystem-2.3.0-3.i386.rpm
+
+http://mirror.caoslinux.org/cAos-2/core/i386/tzdata-2007f-1.caos.noarch.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/glibc-common-2.3.3-73.i386.rpm
+
+http://mirror.caoslinux.org/cAos-2/core/i386/libgcc-3.4.3-4.caos.i386.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/glibc-2.3.3-73.i386.rpm
+
+http://mirror.caoslinux.org/cAos-2/core/i386/termcap-11.0.1-17.1.noarch.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/libtermcap-2.0.8-35.i386.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/mktemp-1.5-19.caos.i386.rpm
+http://mirror.caoslinux.org/cAos-2/core/i386/bash-3.0-18.i386.rpm

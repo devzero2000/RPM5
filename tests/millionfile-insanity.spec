@@ -6,7 +6,6 @@ License:   Public Domain
 Group:     Development/Tools
 URL:       http://rpm5.org/
 Prefix:    /tmp
-Source0:   JBJ-GPG-KEY
 BuildArch: noarch
 
 %description

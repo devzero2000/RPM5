@@ -17,7 +17,6 @@ MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinAugeasScripts) = 5.3-1
-    rpmlib(BuiltinFiclScripts) = 5.2-1
     rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPerlScripts) = 5.2-1
@@ -46,14 +45,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5991.30
+    cpuinfo(bogomips) = 5986.66
     cpuinfo(bts)
     cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2995.651
+    cpuinfo(cpu_MHz) = 2993.332
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)

@@ -1,3 +1,4 @@
+cAos2-stub/cAos2-stub-1-0.noarch.rpm
 cudf-test/battery-3-0.noarch.rpm
 cudf-test/bicycle-7-0.noarch.rpm
 cudf-test/car-1-0.noarch.rpm
@@ -34,6 +35,7 @@ edos-test/wheel-3-0.noarch.rpm
 edos-test/window-0-0.noarch.rpm
 edos-test/window-1-0.noarch.rpm
 edos-test/window-2-0.noarch.rpm
+millionfile-insanity/millionfile-insanity-1.0-1.src.rpm
 popt/popt-1.14-1.i686.rpm
 probes-test/probes-1-0.noarch.rpm
 probes-test/probes-2-0.noarch.rpm
@@ -45,6 +47,7 @@ triggers-FP/triggers-FP-a-1.0-1.noarch.rpm
 triggers-FP/triggers-FP-b-1.0-1.i686.rpm
 triggers-F/triggers-F-a-1.0-1.noarch.rpm
 triggers-F/triggers-F-b-1.0-1.i686.rpm
+triggers-multiple/triggers-multiple-1-1.src.rpm
 triggers-NA/triggers-NA-a-1.0-1.noarch.rpm
 triggers-NA/triggers-NA-b-1.0-1.i686.rpm
 triggers-N/triggers-N-a-1.0-1.noarch.rpm
