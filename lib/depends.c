@@ -2148,7 +2148,7 @@ static inline int addRelation(rpmts ts,
     if (*N == '/') {
 	rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
 	rpmbf bf = rpmfiBloomFN(fi);
-	if (rpmbfChk(bf, N, strlen(N)) > 0)
+	if (bf != NULL && rpmbfChk(bf, N, strlen(N)) > 0)
 	    return 0;
     }
 
