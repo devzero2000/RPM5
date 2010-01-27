@@ -57,6 +57,7 @@ wget =		$(abs_top_builddir)/tools/wget
 sudo =		sudo
 caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
 centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
+suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
 
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
 rpmdb_Tables = \
@@ -272,6 +273,16 @@ check-CentOS:
 	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/CentOS5.2-bash.i386.manifest
 	-$(sudo) $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
 
+check-SuSE:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(suseroot) tmp/repackage
+	@rm -rf tmp/SuSE11.1 tmp/SuSE11.2
+	@mkdir -p $(suseroot) tmp/SuSE11.1 tmp/SuSE11.2 tmp/repackage
+	@cd tmp/SuSE11.1 && $(wget) -i ../../ref/SuSE11.1-bash.i586.manifest
+	-$(sudo) $(rpm) -Uvh --nodeps -r $(suseroot) tmp/SuSE11.1/*.rpm
+	@cd tmp/SuSE11.2 && $(wget) -i ../../ref/SuSE11.2-bash.i586.manifest
+	-$(sudo) $(rpm) -Uvh --nodeps -r $(suseroot) tmp/SuSE11.2/*.rpm
+
 .PHONY:	check-triggers
 check-triggers:
 	@echo "=== $@ ==="
@@ -360,6 +371,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
-	$(sudo) rm -rf $(caosroot) $(centosroot) tmp/repackage
+	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
