@@ -356,21 +356,17 @@ static inline unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
     return rpmmiInstance(mi);
 }
 
-static inline unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
-    return rpmmiFilenum(mi);
-}
-
 static inline int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
     return rpmmiCount(mi);
 }
 
 static inline int rpmdbAppendIterator(rpmdbMatchIterator mi,
-	const int * hdrNums, int nHdrNums) {
+	const uint32_t * hdrNums, int nHdrNums) {
     return rpmmiGrow(mi, hdrNums, nHdrNums);
 }
 
 static inline int rpmdbPruneIterator(rpmdbMatchIterator mi,
-		int * hdrNums, int nHdrNums, int sorted) {
+		uint32_t * hdrNums, int nHdrNums, int sorted) {
     return rpmmiPrune(mi, hdrNums, nHdrNums, sorted);
 }
 
