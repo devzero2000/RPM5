@@ -1826,8 +1826,7 @@ _ifill:
 	if (he->c == 1) {
 	    _ube = _hton_ui(*_u);	/* XXX network order integer keys */
 	    /* XXX is it worth avoiding the realloc here? */
-	    if (loadDBT(_r, he->tag, &_ube, _ulen))
-		_r->size++;
+	    xx = loadDBT(_r, he->tag, &_ube, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
@@ -1854,8 +1853,7 @@ _ifill:
 	if (he->c == 1) {
 	    _ube = _hton_ul(*_u);	/* XXX network order integer keys */
 	    /* XXX is it worth avoiding the realloc here? */
-	    if (loadDBT(_r, he->tag, _u, _ulen))
-		_r->size++;
+	    xx = loadDBT(_r, he->tag, _u, _ulen);
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
@@ -1877,21 +1875,21 @@ _ifill:
     case RPM_BIN_TYPE:
 	s = he->p.ptr; ns = he->c;
 	/* XXX is it worth avoiding the realloc here? */
-	if (ns > 0 && loadDBT(_r, he->tag, s, ns))
-	    _r->size++;
+	if (ns > 0)			/* No "" empty keys please. */
+	    xx = loadDBT(_r, he->tag, s, ns);
 	break;
-    case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
+    case RPM_I18NSTRING_TYPE:		/* XXX never occurs */
     case RPM_STRING_TYPE:
 	s = he->p.str; ns = strlen(s);
 	/* XXX is it worth avoiding the realloc here? */
-	if (ns > 0 && loadDBT(_r, he->tag, s, ns))
-	    _r->size++;
+	if (ns > 0)			/* No "" empty keys please. */
+	    xx = loadDBT(_r, he->tag, s, ns);
 	break;
     case RPM_STRING_ARRAY_TYPE:
 	if (he->c == 1) {
 	    s = he->p.argv[0]; ns = strlen(s);
-	    if (ns > 0 && loadDBT(_r, he->tag, s, ns))
-		_r->size++;
+	    if (ns > 0)			/* No "" empty keys please. */
+		xx = loadDBT(_r, he->tag, s, ns);
 	} else {
 	    static double e = 1.0e-4;
 	    size_t m = 0;
