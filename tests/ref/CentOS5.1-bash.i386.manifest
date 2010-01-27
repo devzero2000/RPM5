@@ -1,0 +1,11 @@
+http://vault.centos.org/5.1/os/i386/CentOS/setup-2.5.58-1.el5.noarch.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/basesystem-8.0-5.1.1.el5.centos.noarch.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/filesystem-2.4.0-1.el5.centos.i386.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/tzdata-2007d-1.el5.noarch.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/glibc-common-2.5-18.i386.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/libgcc-4.1.2-14.el5.i386.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/glibc-2.5-18.i686.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/termcap-5.5-1.20060701.1.noarch.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/libtermcap-2.0.8-46.1.i386.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/mktemp-1.5-23.2.2.i386.rpm
+http://vault.centos.org/5.1/os/i386/CentOS/bash-3.1-16.1.i386.rpm

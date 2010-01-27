@@ -56,6 +56,7 @@ wget =		$(abs_top_builddir)/tools/wget
 
 sudo =		sudo
 caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
+centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
 
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
 rpmdb_Tables = \
@@ -252,13 +253,24 @@ check-install:
 
 check-cAos:
 	@echo "=== $@ ==="
-	$(sudo) rm -rf $(caosroot)
+	$(sudo) rm -rf $(caosroot) tmp/repackage
 	@rm -rf tmp/cAos-2 tmp/cAos-3
-	@mkdir -p $(caosroot) tmp/cAos-2 tmp/cAos-3
+	@mkdir -p $(caosroot) tmp/cAos-2 tmp/cAos-3 tmp/repackage
 	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-bash.i386.manifest
 	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-2/*.rpm cAos2-stub/*.noarch.rpm
 	@cd tmp/cAos-3 && $(wget) -i ../../ref/cAos3-bash.i386.manifest
-	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-3/*.rpm
+	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-3/ncurses-libs-*.rpm
+	-$(sudo) $(rpm) -Uvh -r $(caosroot) `echo tmp/cAos-3/*.rpm | sed -e 's,tmp/cAos-3/ncurses-libs[^ ]*,,'`
+
+check-CentOS:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(centosroot) tmp/repackage
+	@rm -rf tmp/CentOS5.1 tmp/CentOS5.2
+	@mkdir -p $(centosroot) tmp/CentOS5.1 tmp/CentOS5.2 tmp/repackage
+	@cd tmp/CentOS5.1 && $(wget) -i ../../ref/CentOS5.1-bash.i386.manifest
+	$(sudo) $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.1/*.rpm
+	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/CentOS5.2-bash.i386.manifest
+	-$(sudo) $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
 
 .PHONY:	check-triggers
 check-triggers:
@@ -348,6 +360,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
-	$(sudo) rm -rf $(caosroot) tmp/repackage
+	$(sudo) rm -rf $(caosroot) $(centosroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
