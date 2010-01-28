@@ -1441,6 +1441,11 @@ retry:
 
     /* XXX only the installer does not have the database open here. */
     if (rpmtsGetRdb(ts) != NULL) {
+	/* XXX Always satisfy Requires: /, SuSE (others?) doesn't package "/" */
+	if (Name[0] == '/' && Name[1] == '\0') {
+	    rpmdsNotify(dep, _("(root files)"), rc);
+	    goto exit;
+	}
 	if (Name[0] == '/') {
 	    /* depFlags better be 0! */
 
