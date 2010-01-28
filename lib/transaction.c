@@ -23,10 +23,6 @@
 #include <rpmfi.h>
 #include "fsm.h"
 
-#ifdef	REFERENCE
-#include "rpmpol.h"
-#endif
-
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 #define	_RPMTS_INTERNAL
@@ -1230,136 +1226,6 @@ static int markLinkedFailed(rpmts ts, rpmte p)
     return 0;
 }
 
-#ifdef	REFERENCE
-+/*
-+ * Clean up everything created in rpmtsPreparePolicy
-+ */
-+static rpmRC rpmtsFreePolicy(rpmts ts)
-+{
-+	rpmtsi pi;
-+	rpmte p;
-+
-+	pi = rpmtsiInit(ts);
-+	while ((p = rpmtsiNext(pi, TR_ADDED))) {
-+		if (!rpmteHavePolicies(p)) {
-+			continue;
-+		}
-+		rpmteSetPol(p, NULL);
-+	}
-+	pi = rpmtsiFree(pi);
-+
-+	return RPMRC_OK;
-+}
-+
-+/*
-+ * Create rpmol structures for each transaction element
-+ */
-+static rpmRC rpmtsPreparePolicy(rpmts ts)
-+{
-+	rpmtsi pi;
-+	rpmte p;
-+	rpmpol pol;
-+	Header h;
-+	int rc = RPMRC_OK;
-+	int changes = 0;
-+
-+	pi = rpmtsiInit(ts);
-+	while (rc == RPMRC_OK && (p = rpmtsiNext(pi, TR_ADDED))) {
-+		if (!rpmteHavePolicies(p)) {
-+			continue;
-+		}
-+
-+		if (!rpmteOpen(p, ts, 0)) {
-+			rc = RPMRC_FAIL;
-+		} else {
-+			h = rpmteHeader(p);
-+
-+			pol = rpmpolNew(h);
-+			if (!pol) {
-+				rc = RPMRC_FAIL;
-+			} else {
-+				rpmteSetPol(p, pol);
-+				pol = rpmpolFree(pol);
-+				changes = 1;
-+			}
-+
-+			h = headerFree(h);
-+			rpmteClose(p, ts, 0);
-+		}
-+	}
-+	pi = rpmtsiFree(pi);
-+
-+	if (rc != RPMRC_OK) {
-+		rpmtsFreePolicy(ts);
-+	}
-+	else if (changes == 0) {
-+		rc = RPMRC_NOTFOUND;
-+	}
-+
-+	return rc;
-+}
-+
-+/*
-+ * Extract and load selinux policy for transaction set
-+ * param ts	Transaction set
-+ * return	0 on success, -1 on error (invalid script tag)
-+ */
-+static int rpmtsLoadPolicy(rpmts ts)
-+{
-+	rpmtsi pi;
-+	rpmte p;
-+	rpmpol pol;
-+	int rc = RPMRC_OK;
-+
-+	rc = rpmtsPreparePolicy(ts);
-+	if (rc == RPMRC_NOTFOUND) {
-+		return RPMRC_OK;
-+	} else if (rc != RPMRC_OK) {
-+		return rc;
-+	}
-+
-+	rpmpoltrans ptrans = rpmpoltransBegin();
-+	if (!ptrans) {
-+		rpmlog(RPMLOG_ERR, _("Failed to begin policy transaction\n"));
-+		return RPMRC_FAIL;
-+	}
-+
-+	pi = rpmtsiInit(ts);
-+	while ((p = rpmtsiNext(pi, TR_ADDED))) {
-+		if (!rpmteHavePolicies(p)) {
-+			continue;
-+		}
-+
-+		pol = rpmtePol(p);
-+		if (!pol) {
-+			rc = RPMRC_FAIL;
-+			goto out;
-+		}
-+
-+		rpmpolInitIterator(pol);
-+		while (rpmpolNext(pol) >= 0) {
-+			rc = rpmpoltransAdd(ptrans, pol);
-+			if (rc != RPMRC_OK) {
-+				goto out;
-+			}
-+		}
-+	}
-+out:
-+	pi = rpmtsiFree(pi);
-+
-+	if (rc == RPMRC_OK) {
-+		rc = rpmpoltransCommit(ptrans);
-+	}
-+
-+	ptrans = rpmpoltransFree(ptrans);
-+
-+	rpmtsFreePolicy(ts);
-+
-+	return rc;
-+}
-+
-#endif
-
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     static const char msg[] = "rpmtsRun";
@@ -1506,34 +1372,6 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	}
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
-#ifdef	DYING
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-	    xx = rpmmiAddPattern(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
-				rpmteE(p));
-	    xx = rpmmiAddPattern(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
-				rpmteV(p));
-	    xx = rpmmiAddPattern(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
-				rpmteR(p));
-#ifdef	RPM_VENDOR_MANDRIVA
-	    xx = rpmmiAddPattern(mi, RPMTAG_DISTEPOCH, RPMMIRE_STRCMP,
-				rpmteD(p));
-#endif
-	    if (tscolor) {
-		xx = rpmmiAddPattern(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
-				rpmteA(p));
-		xx = rpmmiAddPattern(mi, RPMTAG_OS, RPMMIRE_STRCMP,
-				rpmteO(p));
-	    }
-
-	    while (rpmmiNext(mi) != NULL) {
-		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
-			rpmteNEVR(p), rpmteKey(p),
-			NULL, NULL,
-			NULL, 0);
-		/*@innerbreak@*/ break;
-	    }
-	    mi = rpmmiFree(mi);
-#else
 	    ARGV_t keys = NULL;
 	    int nkeys;
 	    xx = rpmdbMireApply(rpmtsGetRdb(ts), RPMTAG_NVRA,
@@ -1545,7 +1383,6 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 			NULL, NULL,
 			NULL, 0);
 	    keys = argvFree(keys);
-#endif
 	}
 
 	/* Count no. of files (if any). */
@@ -1568,17 +1405,6 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	totalFileCount += fc;
     }
     pi = rpmtsiFree(pi);
-
-#ifdef	REFERENCE
-+    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPOLICY))
-+     	  || (rpmpsNumProblems(ts->probs) &&
-+		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
-+		if (rpmtsLoadPolicy(ts) != RPMRC_OK) {
-+			goto exit;
-+		}
-+	}
-+
-#endif
 
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point. */
@@ -1720,36 +1546,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-#ifdef	DYING
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int fc;
-
-	(void) rpmdbCheckSignals();
-
-	if (p->isSource) continue;
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
-
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
- 	fi = rpmfiInit(fi, 0);
- 	if (fi != NULL)		/* XXX lclint */
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    if (iosmFileActionSkipped(fi->actions[i]))
-		/*@innercontinue@*/ continue;
-	    /*@-dependenttrans@*/
-	    htAddEntry(ts->ht, fi->fps + i, (void *) fi);
-	    /*@=dependenttrans@*/
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
-
-    }
-    pi = rpmtsiFree(pi);
-#else
     addFingerprints(ts, totalFileCount, ts->ht, fpc);
-#endif
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
