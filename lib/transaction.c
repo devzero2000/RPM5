@@ -374,40 +374,53 @@ linear:
  * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
-static void handleOverlappedFiles(const rpmts ts,
-		const rpmte p, rpmfi fi)
+static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState @*/
 {
-#ifdef	REFERENCE
-    rpm_loff_t fixupSize = 0;
+    uint32_t fixupSize = 0;
     rpmps ps;
     const char * fn;
     int i, j;
-    rpm_color_t tscolor = rpmtsColor(ts);
-    rpm_color_t prefcolor = rpmtsPrefColor(ts);
+
+#ifdef	REFERENCE
     rpmfs fs = rpmteGetFileStates(p);
     rpmfs otherFs;
+#endif	/* REFERENCE */
 
     ps = rpmtsProblems(ts);
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
-	rpm_color_t oFColor, FColor;
+	uint32_t tscolor = rpmtsColor(ts);
+	uint32_t prefcolor = rpmtsPrefColor(ts);
+	uint32_t oFColor;
+	uint32_t FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
+	int numRecs;
+
+#ifdef	REFERENCE
 	rpmte otherTe;
 	rpmfileAttrs FFlags;
 	rpm_mode_t FMode;
 	struct rpmffi_s * recs;
-	int numRecs;
+#else	/* REFERENCE */
+	rpmuint32_t FFlags;
+	rpmuint16_t FMode;
+	const rpmfi * recs;
+#endif	/* REFERENCE */
 
-	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+	if (iosmFileActionSkipped(fi->actions[i]))
 	    continue;
 
 	fn = rpmfiFN(fi);
+#ifdef	REFERENCE
 	fiFps = rpmfiFpsIndex(fi, i);
+#else	/* REFERENCE */
+	fiFps = fi->fps + i;
+#endif	/* REFERENCE */
 	FFlags = rpmfiFFlags(fi);
 	FMode = rpmfiFMode(fi);
 	FColor = rpmfiFColor(fi);
@@ -421,7 +434,11 @@ static void handleOverlappedFiles(const rpmts ts,
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
+#ifdef	REFERENCE
 	(void) rpmFpHashGetEntry(ht, fiFps, &recs, &numRecs, NULL);
+#else	/* REFERENCE */
+	(void) htGetEntry(ts->ht, fiFps, &recs, &numRecs, NULL);
+#endif	/* REFERENCE */
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -441,20 +458,30 @@ static void handleOverlappedFiles(const rpmts ts,
 	 * file removal from preceding packages needs to be skipped so that
 	 * the file removal occurs only on the last occurence of an overlapped
 	 * file in the transaction set.
-	 *
 	 */
 
 	/* Locate this overlapped file in the set of added/removed packages. */
+#ifdef	REFERENCE
 	for (j = 0; j < numRecs && recs[j].p != p; j++)
 	    {};
+#else	/* REFERENCE */
+	for (j = 0; j < numRecs && recs[j] != fi; j++)
+	    {};
+#endif	/* REFERENCE */
 
 	/* Find what the previous disposition of this file was. */
 	otherFileNum = -1;			/* keep gcc quiet */
 	otherFi = NULL;
+#ifdef	REFERENCE
 	otherTe = NULL;
 	otherFs = NULL;
+#endif	/* REFERENCE */
 
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
+	    struct fingerPrint_s * otherFps;
+	    int otherFc;
+
+#ifdef	REFERENCE
 	    otherTe = recs[otherPkgNum].p;
 	    otherFi = rpmteFI(otherTe);
 	    otherFileNum = recs[otherPkgNum].fileno;
@@ -464,203 +491,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	    if (rpmteType(p) == TR_ADDED && rpmteType(otherTe) != TR_ADDED)
 		continue;
 
-	    (void) rpmfiSetFX(otherFi, otherFileNum);
-
-	    /* XXX Happens iff fingerprint for incomplete package install. */
-	    if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN);
-		break;
-	}
-
-	oFColor = rpmfiFColor(otherFi);
-	oFColor &= tscolor;
-
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	  {
-	    int reportConflicts =
-		!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
-	    int done = 0;
-
-	    if (otherPkgNum < 0) {
-		/* XXX is this test still necessary? */
-		rpmFileAction action;
-		if (rpmfsGetAction(fs, i) != FA_UNKNOWN)
-		    break;
-		if (rpmfiConfigConflict(fi)) {
-		    /* Here is a non-overlapped pre-existing config file. */
-		    action = (FFlags & RPMFILE_NOREPLACE) ?
-			      FA_ALTNAME : FA_BACKUP;
-		} else {
-		    action = FA_CREATE;
-		}
-		rpmfsSetAction(fs, i, action);
-		break;
-	    }
-
-assert(otherFi != NULL);
-	    /* Mark added overlapped non-identical files as a conflict. */
-	    if (rpmfiCompare(otherFi, fi)) {
-		int rConflicts;
-
-		rConflicts = reportConflicts;
-		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
-		if (tscolor != 0) {
-		    if (FColor & prefcolor) {
-			/* ... last file of preferred colour is installed ... */
-			if (!XFA_SKIPPING(rpmfsGetAction(fs, i)))
-			    rpmfsSetAction(otherFs, otherFileNum, FA_SKIPCOLOR);
-			rpmfsSetAction(fs, i, FA_CREATE);
-			rConflicts = 0;
-		    } else
-		    if (oFColor & prefcolor) {
-			/* ... first file of preferred colour is installed ... */
-			if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
-			    rpmfsSetAction(otherFs, otherFileNum, FA_CREATE);
-			rpmfsSetAction(fs, i, FA_SKIPCOLOR);
-			rConflicts = 0;
-		    }
-		    done = 1;
-		}
-		if (rConflicts) {
-		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
-			rpmteNEVRA(p), rpmteKey(p),
-			fn, NULL,
-			rpmteNEVRA(otherTe),
-			0);
-		}
-	    }
-
-	    /* Try to get the disk accounting correct even if a conflict. */
-	    fixupSize = rpmfiFSize(otherFi);
-
-	    if (rpmfiConfigConflict(fi)) {
-		/* Here is an overlapped  pre-existing config file. */
-		rpmFileAction action;
-		action = (FFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SKIP;
-		rpmfsSetAction(fs, i, action);
-	    } else {
-		if (!done)
-		    rpmfsSetAction(fs, i, FA_CREATE);
-	    }
-	  } break;
-
-	case TR_REMOVED:
-	    if (otherPkgNum >= 0) {
-		assert(otherFi != NULL);
-                /* Here is an overlapped added file we don't want to nuke. */
-		if (rpmfsGetAction(otherFs, otherFileNum) != FA_ERASE) {
-		    /* On updates, don't remove files. */
-		    rpmfsSetAction(fs, i, FA_SKIP);
-		    break;
-		}
-		/* Here is an overlapped removed file: skip in previous. */
-		rpmfsSetAction(otherFs, otherFileNum, FA_SKIP);
-	    }
-	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
-		break;
-	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
-		break;
-	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG))) {
-		rpmfsSetAction(fs, i, FA_ERASE);
-		break;
-	    }
-		
-	    /* Here is a pre-existing modified config file that needs saving. */
-	    {	pgpHashAlgo algo = 0;
-		size_t diglen = 0;
-		const unsigned char *digest;
-		if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
-		    unsigned char fdigest[diglen];
-		    if (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
-			memcmp(digest, fdigest, diglen)) {
-			rpmfsSetAction(fs, i, FA_BACKUP);
-			break;
-		    }
-		}
-	    }
-	    rpmfsSetAction(fs, i, FA_ERASE);
-	    break;
-	}
-
-	/* Update disk space info for a file. */
-	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
-		       rpmfiFReplacedSize(fi), fixupSize, rpmfsGetAction(fs, i));
-
-    }
-    ps = rpmpsFree(ps);
 #else	/* REFERENCE */
-    rpmuint32_t fixupSize = 0;
-    rpmps ps;
-    const char * fn;
-    int i, j;
-
-    ps = rpmtsProblems(ts);
-    fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
-    while ((i = rpmfiNext(fi)) >= 0) {
-	rpmuint32_t tscolor = rpmtsColor(ts);
-	rpmuint32_t prefcolor = rpmtsPrefColor(ts);
-	rpmuint32_t oFColor, FColor;
-	struct fingerPrint_s * fiFps;
-	int otherPkgNum, otherFileNum;
-	rpmfi otherFi;
-	rpmuint32_t FFlags;
-	rpmuint16_t FMode;
-	const rpmfi * recs;
-	int numRecs;
-
-	if (iosmFileActionSkipped(fi->actions[i]))
-	    continue;
-
-	fn = rpmfiFN(fi);
-	fiFps = fi->fps + i;
-	FFlags = rpmfiFFlags(fi);
-	FMode = rpmfiFMode(fi);
-	FColor = rpmfiFColor(fi);
-	FColor &= tscolor;
-
-	fixupSize = 0;
-
-	/*
-	 * Retrieve all records that apply to this file. Note that the
-	 * file info records were built in the same order as the packages
-	 * will be installed and removed so the records for an overlapped
-	 * files will be sorted in exactly the same order.
-	 */
-	(void) htGetEntry(ts->ht, fiFps, &recs, &numRecs, NULL);
-
-	/*
-	 * If this package is being added, look only at other packages
-	 * being added -- removed packages dance to a different tune.
-	 *
-	 * If both this and the other package are being added, overlapped
-	 * files must be identical (or marked as a conflict). The
-	 * disposition of already installed config files leads to
-	 * a small amount of extra complexity.
-	 *
-	 * If this package is being removed, then there are two cases that
-	 * need to be worried about:
-	 * If the other package is being added, then skip any overlapped files
-	 * so that this package removal doesn't nuke the overlapped files
-	 * that were just installed.
-	 * If both this and the other package are being removed, then each
-	 * file removal from preceding packages needs to be skipped so that
-	 * the file removal occurs only on the last occurence of an overlapped
-	 * file in the transaction set.
-	 *
-	 */
-
-	/* Locate this overlapped file in the set of added/removed packages. */
-	for (j = 0; j < numRecs && recs[j] != fi; j++)
-	    {};
-
-	/* Find what the previous disposition of this file was. */
-	otherFileNum = -1;			/* keep gcc quiet */
-	otherFi = NULL;
-	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
-	    struct fingerPrint_s * otherFps;
-	    int otherFc;
-
 	    otherFi = recs[otherPkgNum];
 
 	    /* Added packages need only look at other added packages. */
@@ -671,6 +502,8 @@ assert(otherFi != NULL);
 	    otherFc = rpmfiFC(otherFi);
 
 	    otherFileNum = findFps(fiFps, otherFps, otherFc);
+#endif	/* REFERENCE */
+
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
 	    /* XXX Happens iff fingerprint for incomplete package install. */
@@ -712,9 +545,11 @@ assert(otherFi != NULL);
 		    if (FColor & prefcolor) {
 			/* ... last file of preferred colour is installed ... */
 			if (!iosmFileActionSkipped(fi->actions[i])) {
+#ifdef	DYING
 			    /* XXX static helpers are order dependent. Ick. */
 			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
 			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
+#endif
 				otherFi->actions[otherFileNum] = FA_SKIPCOLOR;
 			}
 			fi->actions[i] = FA_CREATE;
@@ -748,7 +583,12 @@ assert(otherFi != NULL);
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = rpmfiFSize(otherFi);
 
-	    if ((FFlags & RPMFILE_CONFIG) && (FFlags & RPMFILE_EXISTS)) {
+#ifdef	REFERENCE
+	    if (rpmfiConfigConflict(fi))
+#else	/* REFERENCE */
+	    if ((FFlags & RPMFILE_CONFIG) && (FFlags & RPMFILE_EXISTS))
+#endif	/* REFERENCE */
+	    {
 		/* Here is an overlapped  pre-existing config file. */
 		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
@@ -779,7 +619,7 @@ assert(otherFi != NULL);
 	    fi->actions[i] = FA_ERASE;
 	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG)))
 		/*@switchbreak@*/ break;
-		
+
 	    /* Check for pre-existing modified config file that needs saving. */
 	    if (!(FFlags & RPMFILE_SPARSE))
 	    {	int dalgo = 0;
@@ -799,12 +639,16 @@ assert(digest != NULL);
 	}
 
 	/* Update disk space info for a file. */
+#ifdef	REFERENCE
+	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
+		       rpmfiFReplacedSize(fi), fixupSize, rpmfsGetAction(fs, i));
+#else
 	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
 		fi->replacedSizes[i], fixupSize, fi->actions[i]);
+#endif
 
     }
     ps = rpmpsFree(ps);
-#endif	/* REFERENCE */
 }
 
 /**
@@ -1218,9 +1062,16 @@ int checkInstalledFiles(rpmts ts, uint32_t fileCount, hashTable ht, fingerPrintC
     Header h, newheader;
 
     int beingRemoved;
+#else	/* REFERENCE */
+    rpmfi fi;
+    void * ptr;
+    int xx;
+    int rc = 0;
+#endif	/* REFERENCE */
 
-    rpmlog(RPMLOG_DEBUG, "computing file dispositions\n");
+rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
+#ifdef	REFERENCE
     mi = rpmFindBaseNamesInDB(ts, fileCount);
 
     /* For all installed headers with matching basename's ... */
@@ -1328,13 +1179,6 @@ int checkInstalledFiles(rpmts ts, uint32_t fileCount, hashTable ht, fingerPrintC
 
 #else	/* REFERENCE */
 
-    rpmfi fi;
-    void * ptr;
-    int xx;
-    int rc = 0;
-
-rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
-
     pi = rpmtsiInit(ts);
 /*@-nullpass@*/
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1368,7 +1212,6 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    continue;
 	}
 
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fc, sizeof(*matches));
 	exclude = (rpmteType(p) == TR_REMOVED ? fi->record : 0);
@@ -1473,27 +1316,13 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
 	free(sharedList);
 
-	/* Update disk space needs on each partition for this package. */
-/*@-nullpass@*/
-	handleOverlappedFiles(ts, p, fi);
-/*@=nullpass@*/
-
-	/* Check added package has sufficient space on each partition used. */
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	    rpmtsCheckDSIProblems(ts, p);
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	    /*@switchbreak@*/ break;
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
 /*@=nullpass@*/
     pi = rpmtsiFree(pi);
+#endif	/* REFERENCE */
 
 exit:
     return rc;
-#endif	/* REFERENCE */
 }
 
 /*
@@ -2054,185 +1883,45 @@ rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), fileCount);
 
 #endif	/* REFERENCE */
 
+    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
 #ifdef	REFERENCE
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
     rpmtsAddFingerprints(ts, fileCount, ht, fpc);
 #else	/* REFERENCE */
-    ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
     rpmtsAddFingerprints(ts, fileCount, ts->ht, fpc);
 #endif	/* REFERENCE */
 
-#ifdef	REFERENCE
-    /* check against files in the rpmdb */
-    checkInstalledFiles(ts, fileCount, ht, fpc);
-
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;   /* XXX can't happen */
-
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	/* check files in ts against each other and update disk space
-	   needs on each partition for this package. */
-	handleOverlappedFiles(ts, ht, p, fi);
-
-	/* Check added package has sufficient space on each partition used. */
-	if (rpmteType(p) == TR_ADDED) {
-	    rpmtsCheckDSIProblems(ts, p);
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-    }
-    pi = rpmtsiFree(pi);
-#else	/* REFERENCE */
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
 rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
+#ifdef	REFERENCE
+    checkInstalledFiles(ts, fileCount, ht, fpc);
+#else	/* REFERENCE */
+    rc = checkInstalledFiles(ts, fileCount, ts->ht, fpc);
+    if (rc)
+	goto exit;
+#endif	/* REFERENCE */
+
     pi = rpmtsiInit(ts);
-/*@-nullpass@*/
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	dbiIndexSet * matches;
-	unsigned int exclude;
-	int knownBad;
-	int fc;
-	int i;
-	int j;
-	sharedFileInfo shared, sharedList;
-	int nexti;
-	int numShared;
-
-	(void) rpmdbCheckSignals();
-
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
-
-	ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
-			ts->orderCount);
-
-	if (fc == 0) continue;
-
-	/* All source files get installed. */
-	if (p->isSource) {
- 	    fi = rpmfiInit(fi, 0);
-	    if (fi != NULL)
-	    while ((i = rpmfiNext(fi)) >= 0)
-		fi->actions[i] = FA_CREATE;
-	    continue;
-	}
+	if (p->isSource) continue;
+	if ((fi = rpmteFI(p, RPMTAG_BASENAMES)) == NULL)
+	    continue;   /* XXX can't happen */
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	/* Extract file info for all files in this package from the database. */
-	matches = xcalloc(fc, sizeof(*matches));
-	exclude = (rpmteType(p) == TR_REMOVED ? fi->record : 0);
-	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc, exclude)) {
-	    rc = 1;	/* XXX WTFO? */
-	    goto exit;
-	}
-
-	numShared = 0;
- 	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    struct stat sb, *st = &sb;
-	    rpmuint32_t FFlags = rpmfiFFlags(fi);
-	    numShared += dbiIndexSetCount(matches[i]);
-	    if (!(FFlags & RPMFILE_CONFIG))
-		/*@innercontinue@*/ continue;
-	    if (!Lstat(rpmfiFN(fi), st)) {
-		FFlags |= RPMFILE_EXISTS;
-		if ((512 * st->st_blocks) < st->st_size)
-		     FFlags |= RPMFILE_SPARSE;
-		(void) rpmfiSetFFlags(fi, FFlags);
-	    }
-	}
-
-	/* Build sorted file info list for this package. */
-	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
-
- 	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    /*
-	     * Take care not to mark files as replaced in packages that will
-	     * have been removed before we will get here.
-	     */
-	    for (j = 0; j < (int)dbiIndexSetCount(matches[i]); j++) {
-		rpmtsi qi;
-		rpmte q;
-		int ro;
-
-		ro = dbiIndexRecordOffset(matches[i], j);
-		knownBad = 0;
-		qi = rpmtsiInit(ts);
-		while ((q = rpmtsiNext(qi, TR_REMOVED)) != NULL) {
-		    if (ro == knownBad)
-			/*@innerbreak@*/ break;
-		    if (rpmteDBOffset(q) == ro)
-			knownBad = ro;
-		}
-		qi = rpmtsiFree(qi);
-
-		shared->pkgFileNum = i;
-		shared->otherPkg = dbiIndexRecordOffset(matches[i], j);
-		shared->otherFileNum = dbiIndexRecordFileNumber(matches[i], j);
-		shared->isRemoved = (knownBad == ro);
-		shared++;
-	    }
-	    matches[i] = dbiFreeIndexSet(matches[i]);
-	}
-	numShared = shared - sharedList;
-	shared->otherPkg = -1;
-	matches = _free(matches);
-
-	/* Sort file info by other package index (otherPkg) */
-	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
-
-	/* For all files from this package that are in the database ... */
-	nexti = 0;
-/*@-nullpass@*/
-	for (i = 0; i < numShared; i = nexti) {
-	    int beingRemoved;
-
-	    shared = sharedList + i;
-
-	    /* Find the end of the files in the other package. */
-	    for (nexti = i + 1; nexti < numShared; nexti++) {
-		if (sharedList[nexti].otherPkg != shared->otherPkg)
-		    /*@innerbreak@*/ break;
-	    }
-
-	    /* Is this file from a package being removed? */
-	    beingRemoved = 0;
-	    if (ts->removedPackages != NULL)
-	    for (j = 0; j < ts->numRemovedPackages; j++) {
-		if (ts->removedPackages[j] != (uint32_t)shared->otherPkg)
-		    /*@innercontinue@*/ continue;
-		beingRemoved = 1;
-		/*@innerbreak@*/ break;
-	    }
-
-	    /* Determine the fate of each file. */
-	    switch (rpmteType(p)) {
-	    case TR_ADDED:
-		xx = handleInstInstalledFiles(ts, p, fi, shared, nexti - i,
-	!(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES)));
-		/*@switchbreak@*/ break;
-	    case TR_REMOVED:
-		if (!beingRemoved)
-		    xx = handleRmvdInstalledFiles(ts, fi, shared, nexti - i);
-		/*@switchbreak@*/ break;
-	    }
-	}
-/*@=nullpass@*/
-
-	free(sharedList);
 
 	/* Update disk space needs on each partition for this package. */
 /*@-nullpass@*/
+#ifdef	REFERENCE
+	handleOverlappedFiles(ts, ht, p, fi);
+#else	/* REFERENCE */
 	handleOverlappedFiles(ts, p, fi);
+#endif	/* REFERENCE */
 /*@=nullpass@*/
 
 	/* Check added package has sufficient space on each partition used. */
@@ -2243,32 +1932,10 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	case TR_REMOVED:
 	    /*@switchbreak@*/ break;
 	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
-    }
-/*@=nullpass@*/
-    pi = rpmtsiFree(pi);
-#endif	/* REFERENCE */
-
-#ifdef	REFERENCE
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
-
-    /* return from chroot if done earlier */
-    if (rpmtsChrootDone(ts)) {
-	const char * currDir = rpmtsCurrDir(ts);
-	if (dochroot)
-	    xx = chroot(".");
-	(void) rpmtsSetChrootDone(ts, 0);
-	if (currDir != NULL)
-	    xx = chdir(currDir);
-    }
-
-    /* File info sets, fp caches etc not needed beyond here, free 'em up. */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmteSetFI(p, NULL);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
     }
     pi = rpmtsiFree(pi);
-#else	/* REFERENCE */
+
     if (rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
 	const char * currDir = rpmtsCurrDir(ts);
@@ -2286,6 +1953,13 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
     /* ===============================================
      * Free unused memory as soon as possible.
      */
+#ifdef	REFERENCE
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	rpmteSetFI(p, NULL);
+    }
+    pi = rpmtsiFree(pi);
+#else	/* REFERENCE */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	if (p->isSource) continue;
@@ -2301,11 +1975,10 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 exit:
 #ifdef	REFERENCE
     ht = rpmFpHashFree(ht);
-    fpc = fpCacheFree(fpc);
 #else	/* REFERENCE */
-    fpc = fpCacheFree(fpc);
     ts->ht = htFree(ts->ht);
 #endif	/* REFERENCE */
+    fpc = fpCacheFree(fpc);
 
     return rc;
 }
