@@ -1992,233 +1992,203 @@ static int rpmtsProcess(rpmts ts, rpmprobFilterFlags ignoreSet,
     rpmtsi pi;
     rpmte p;
     int rc = 0;
-#ifdef	REFERENCE
-
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int failed = 1;
-	rpmElementType tetype = rpmteType(p);
-	rpmtsOpX op = (tetype == TR_ADDED) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
-
-	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
-		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-	if (rpmteFailed(p)) {
-	    /* XXX this should be a warning, need a better message though */
-	    rpmlog(RPMLOG_DEBUG, "element %s marked as failed, skipping\n",
-					rpmteNEVRA(p));
-	    rc++;
-	    continue;
-	}
-	
-	if (rpmteOpen(p, ts, 1)) {
-	    rpmpsm psm = NULL;
-	    pkgStage stage = PSM_UNKNOWN;
-	    int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
-			1 : 0;
-
-	    switch (tetype) {
-	    case TR_ADDED:
-		stage = PSM_PKGINSTALL;
-		break;
-	    case TR_REMOVED:
-		stage = PSM_PKGERASE;
-		break;
-	    }
-	    psm = rpmpsmNew(ts, p);
-	    rpmpsmSetAsync(psm, async);
-
-	    (void) rpmswEnter(rpmtsOp(ts, op), 0);
-	    failed = rpmpsmStage(psm, stage);
-	    (void) rpmswExit(rpmtsOp(ts, op), 0);
-	    psm = rpmpsmFree(psm);
-	    rpmteClose(p, ts, 1);
-	}
-	if (failed) {
-	    rpmteMarkFailed(p, ts);
-	    rc++;
-	}
-	(void) rpmdbSync(rpmtsGetRdb(ts));
-    }
-    pi = rpmtsiFree(pi);
-
-#else	/* REFERENCE */
-    rpmpsm psm;
 
 /*@-nullpass@*/
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmfi fi;
-	alKey pkgKey;
+	rpmpsm psm = NULL;;
+	pkgStage stage = PSM_UNKNOWN;
+	int failed;
 	int gotfd;
 	int xx;
 
+#ifdef	REFERENCE
+	rpmElementType tetype = rpmteType(p);
+	rpmtsOpX op = (tetype == TR_ADDED) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
+#endif	/* REFERENCE */
+
 	(void) rpmdbCheckSignals();
 
+	failed = 1;
 	gotfd = 0;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
+#ifdef	REFERENCE
+	if (rpmteFailed(p))
+#else	/* REFERENCE */
+	if (p->linkFailed)
+#endif	/* REFERENCE */
+	{
+	    /* XXX this should be a warning, need a better message though */
+	    rpmlog(RPMLOG_DEBUG, D_("element %s marked as failed, skipping\n"),
+					rpmteNEVRA(p));
+	    rc++;
+	    continue;
+	}
+
+#ifdef	REFERENCE
+	psm = rpmpsmNew(ts, p);
+	{   int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
+			1 : 0;
+	    rpmpsmSetAsync(psm, async);
+	}
+#else	/* REFERENCE */
 	psm = rpmpsmNew(ts, p, fi);
 assert(psm != NULL);
 	if (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1))
 	    psm->flags |= RPMPSM_FLAGS_UNORDERED;
 	else
 	    psm->flags &= ~RPMPSM_FLAGS_UNORDERED;
+#endif	/* REFERENCE */
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-
-	    pkgKey = rpmteAddedKey(p);
-
 	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
+	    stage = PSM_PKGINSTALL;
+#ifdef	REFERENCE
+	    if (rpmteOpen(p, ts, 1)) {
+		(void) rpmswEnter(rpmtsOp(ts, op), 0);
+		failed = rpmpsmStage(psm, stage);
+		(void) rpmswExit(rpmtsOp(ts, op), 0);
+		rpmteClose(p, ts, 1);
+	    }
+#else	/* REFERENCE */
 	    p->h = NULL;
-	    /*@-type@*/ /* FIX: rpmte not opaque */
-	    {
-		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-		if (rpmteFd(p) != NULL) {
-		    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-		    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-		    rpmRC rpmrc;
+	    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+	    if (rpmteFd(p) != NULL) {
+		rpmVSFlags ovsflags = rpmtsVSFlags(ts);
+		rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
+		rpmRC rpmrc;
 
-		    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-		    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-				rpmteNEVR(p), &p->h);
-		    vsflags = rpmtsSetVSFlags(ts, ovsflags);
+		ovsflags = rpmtsSetVSFlags(ts, vsflags);
+		rpmrc = rpmReadPackageFile(ts, rpmteFd(p), rpmteNEVR(p), &p->h);
+		vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
-		    switch (rpmrc) {
-		    default:
-			p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
+		switch (rpmrc) {
+		default:
+		    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0);
-			p->fd = NULL;
-			rc++;
-			/*@innerbreak@*/ break;
-		    case RPMRC_NOTTRUSTED:
-		    case RPMRC_NOKEY:
-		    case RPMRC_OK:
-			/*@innerbreak@*/ break;
-		    }
-		    if (rpmteFd(p) != NULL) gotfd = 1;
-		} else {
-		    rc++;
-		    xx = markLinkedFailed(ts, p);
+		    p->fd = NULL;
+		    /*@innerbreak@*/ break;
+		case RPMRC_NOTTRUSTED:
+		case RPMRC_NOKEY:
+		case RPMRC_OK:
+		    gotfd = 1;
+		    /*@innerbreak@*/ break;
 		}
 	    }
-	    /*@=type@*/
 
-	    if (rpmteFd(p) != NULL) {
+	    if (gotfd && rpmteFd(p) != NULL) {
 		/*
 		 * XXX Sludge necessary to tranfer existing fstates/actions
 		 * XXX around a recreated file info set.
 		 */
-		psm->fi = rpmfiFree(psm->fi);
-		{
-		    rpmuint8_t * fstates = fi->fstates;
-		    iosmFileAction * actions = (iosmFileAction *) fi->actions;
-		    int mapflags = fi->mapflags;
-		    rpmte savep;
-		    int scareMem = 0;
+		rpmuint8_t * fstates = fi->fstates;
+		iosmFileAction * actions = (iosmFileAction *) fi->actions;
+		int mapflags = fi->mapflags;
+		rpmte savep;
+		int scareMem = 0;
 
-		    fi->fstates = NULL;
-		    fi->actions = NULL;
+		psm->fi = rpmfiFree(psm->fi);
+
+		fi->fstates = NULL;
+		fi->actions = NULL;
 /*@-nullstate@*/ /* FIX: fi->actions is NULL */
-		    fi = rpmfiFree(fi);
+		fi = rpmfiFree(fi);
 /*@=nullstate@*/
 
-		    savep = rpmtsSetRelocateElement(ts, p);
-		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
-		    (void) rpmtsSetRelocateElement(ts, savep);
+		savep = rpmtsSetRelocateElement(ts, p);
+		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
+		(void) rpmtsSetRelocateElement(ts, savep);
 
-		    if (fi != NULL) {	/* XXX can't happen */
-			fi->te = p;
-			fi->fstates = _free(fi->fstates);
-			fi->fstates = fstates;
-			fi->actions = _free(fi->actions);
-			fi->actions = (int *) actions;
-			if (mapflags & IOSM_SBIT_CHECK)
-			    fi->mapflags |= IOSM_SBIT_CHECK;
-			p->fi = fi;
-		    }
+		if (fi != NULL) {	/* XXX can't happen */
+		    fi->te = p;
+		    fi->fstates = _free(fi->fstates);
+		    fi->fstates = fstates;
+		    fi->actions = _free(fi->actions);
+		    fi->actions = (int *) actions;
+		    if (mapflags & IOSM_SBIT_CHECK)
+			fi->mapflags |= IOSM_SBIT_CHECK;
+		    p->fi = fi;
 		}
+
 		psm->fi = rpmfiLink(p->fi, NULL);
 
-		if ((xx = rpmpsmStage(psm, PSM_PKGINSTALL)) != 0) {
-		    rc++;
-		    xx = markLinkedFailed(ts, p);
-		}
-#if defined(RPM_VENDOR_MANDRIVA)
-		else {
-		    if(!rpmteIsSource(fi->te))
-	    		xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 1);
-		    p->done = 1;
-		}
-#endif
+		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
+		failed = rpmpsmStage(psm, PSM_PKGINSTALL);
+		(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 
-	    } else {
-		rc++;
-	    }
-
-	    if (gotfd) {
 		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 		p->fd = NULL;
+		gotfd = 0;
 	    }
 
-	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-
+#endif	/* REFERENCE */
 	    /*@switchbreak@*/ break;
 
 	case TR_REMOVED:
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-
 	    rpmlog(RPMLOG_DEBUG, "========== --- %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-	    /* If linked element install failed, then don't erase. */
-	    if (p->linkFailed == 0) {
-		if ((xx = rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
-		    rc++;
-		}
-#if defined(RPM_VENDOR_MANDRIVA)
-		else {
-		    if(!rpmteIsSource(fi->te))
-			xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts), psm->fi, 0);
-		    p->done = 1;
-		}
-#endif
-	    } else
-		rc++;
-
+	    stage = PSM_PKGERASE;
+#ifdef	REFERENCE
+	    if (rpmteOpen(p, ts, 1)) {
+		(void) rpmswEnter(rpmtsOp(ts, op), 0);
+		failed = rpmpsmStage(psm, stage);
+		(void) rpmswExit(rpmtsOp(ts, op), 0);
+		rpmteClose(p, ts, 1);
+	    }
+#else	/* REFERENCE */
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
+	    failed = rpmpsmStage(psm, PSM_PKGERASE);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-
+#endif	/* REFERENCE */
 	    /*@switchbreak@*/ break;
 	}
 
-	/* Would have freed header above in TR_ADD portion of switch
-	 * but needed the header to add it to the autorollback transaction.
-	 */
-	if (rpmteType(p) == TR_ADDED) {
-	    (void)headerFree(p->h);
-	    p->h = NULL;
+#if defined(RPM_VENDOR_MANDRIVA)
+	if (!failed) {
+	    if(!rpmteIsSource(p))
+		xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts),
+				fi, (rpmteType(p) == TR_ADDED ? 1 : 0));
+	    p->done = 1;
 	}
+#endif
 
 /*@-nullstate@*/ /* FIX: psm->fi may be NULL */
 	psm = rpmpsmFree(psm, __FUNCTION__);
 /*@=nullstate@*/
 
+	if (failed) {
+	    rc++;
+#ifdef	REFERENCE
+	    rpmteMarkFailed(p, ts);
+#else	/* REFERENCE */
+	    xx = markLinkedFailed(ts, p);
 	/* If we received an error, lets break out and rollback, provided
 	 * autorollback is enabled.
 	 */
-	if (rc && rollbackFailures) {
-	    xx = rpmtsRollback(ts, ignoreSet, 1, p);
-	    break;
+	    if (rollbackFailures) {
+		xx = rpmtsRollback(ts, ignoreSet, 1, p);
+		break;
+	    }
+#endif	/* REFERENCE */
 	}
+
+	if (p->h) {
+	    (void) headerFree(p->h);
+	    p->h = NULL;
+	}
+
+#ifdef	REFERENCE
+	(void) rpmdbSync(rpmtsGetRdb(ts));
+#endif	/* REFERENCE */
+
     }
 /*@=nullpass@*/
     pi = rpmtsiFree(pi);
-#endif	/* REFERENCE */
     return rc;
 }
 
@@ -2312,7 +2282,7 @@ static rpmRC _processFailedPackage(rpmts ts, rpmte p)
 assert(psm != NULL);
 	psm->stepName = "failed";	/* XXX W2DO? */
 	rc = rpmpsmStage(psm, PSM_RPMDB_ADD);
-	psm = rpmpsmFree(psm, "_processFailedPackage");
+	psm = rpmpsmFree(psm, __FUNCTION__);
     }
     return rc;
 }
