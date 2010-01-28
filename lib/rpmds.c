@@ -1513,8 +1513,8 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ustar tar archive format.") },
-#if defined(WITH_XZ)
-    { "rpmlib(PayloadIsLzma)",		"4.4.6-1",
+#if defined(WITH_XZ)	/* XXX should be 4.4.6, but use SuSE's 4.4.2 instead */
+    { "rpmlib(PayloadIsLzma)",		"4.4.2-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using lzma.") },
 #endif
