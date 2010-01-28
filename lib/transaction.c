@@ -1480,26 +1480,7 @@ assert(0);
 	}
 #endif	/* REFERENCE */
 
-	p->h = NULL;
-	p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-	if (rpmteFd(p) != NULL) {
-	    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-	    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-	    rpmRC rpmrc;
-	    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-	    rpmrc = rpmReadPackageFile(ts, rpmteFd(p), rpmteNEVR(p), &p->h);
-	    vsflags = rpmtsSetVSFlags(ts, ovsflags);
-	    switch (rpmrc) {
-	    default:
-		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-		p->fd = NULL;
-		/*@switchbreak@*/ break;
-	    case RPMRC_NOTTRUSTED:
-	    case RPMRC_NOKEY:
-	    case RPMRC_OK:
-		/*@switchbreak@*/ break;
-	    }
-	}
+	p->h = rpmteFDHeader(ts, p);
 
 	if (rpmteFd(p) != NULL) {
 	    int scareMem = 0;
@@ -1525,12 +1506,7 @@ assert(psm != NULL);
 	    (void)rpmfiFree(ofi);
 	    ofi = NULL;
 
-/*@-compdef -usereleased @*/
-	    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-/*@=compdef =usereleased @*/
-	    p->fd = NULL;
-	    (void)headerFree(p->h);
-	    p->h = NULL;
+	    xx = rpmteClose(p, ts, 0);
 	}
 	break;
     case RPMTAG_POSTTRANS:
@@ -1558,26 +1534,7 @@ assert(psm != NULL);
 	}
 #endif	/* REFERENCE */
 
-	p->h = NULL;
-	p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-	if (rpmteFd(p) != NULL) {
-	    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-	    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-	    rpmRC rpmrc;
-	    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-	    rpmrc = rpmReadPackageFile(ts, rpmteFd(p), rpmteNEVR(p), &p->h);
-	    vsflags = rpmtsSetVSFlags(ts, ovsflags);
-	    switch (rpmrc) {
-	    default:
-		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-	    	p->fd = NULL;
-	    	/*@switchbreak@*/ break;
-	    case RPMRC_NOTTRUSTED:
-	    case RPMRC_NOKEY:
-	    case RPMRC_OK:
-		/*@switchbreak@*/ break;
-	    }
-	}
+	p->h = rpmteFDHeader(ts, p);
 
 /*@-nullpass@*/
 	if (rpmteFd(p) != NULL) {
@@ -1595,13 +1552,9 @@ assert(psm != NULL);
 	    xx = rpmpsmStage(psm, PSM_SCRIPT);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
 
-/*@-compdef -usereleased @*/
-	    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-/*@=compdef =usereleased @*/
-	    p->fd = NULL;
+	    xx = rpmteClose(p, ts, 0);	/* XXX reset_fi = 1? */
+
 	    p->fi = rpmfiFree(p->fi);
-	    (void)headerFree(p->h);
-	    p->h = NULL;
 	}
 /*@=nullpass@*/
 	break;
@@ -2056,34 +2009,12 @@ assert(psm != NULL);
 		rpmteClose(p, ts, 1);
 	    }
 #else	/* REFERENCE */
-	    p->h = NULL;
-	    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-	    if (rpmteFd(p) != NULL) {
-		rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-		rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-		rpmRC rpmrc;
-
-		ovsflags = rpmtsSetVSFlags(ts, vsflags);
-		rpmrc = rpmReadPackageFile(ts, rpmteFd(p), rpmteNEVR(p), &p->h);
-		vsflags = rpmtsSetVSFlags(ts, ovsflags);
-
-		switch (rpmrc) {
-		default:
-		    p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
-					0, 0);
-		    p->fd = NULL;
-		    /*@innerbreak@*/ break;
-		case RPMRC_NOTTRUSTED:
-		case RPMRC_NOKEY:
-		case RPMRC_OK:
-		    gotfd = 1;
-		    /*@innerbreak@*/ break;
-		}
-	    }
+	    if ((p->h = rpmteFDHeader(ts, p)) != NULL)
+		gotfd = 1;
 
 	    if (gotfd && rpmteFd(p) != NULL) {
 		/*
-		 * XXX Sludge necessary to tranfer existing fstates/actions
+		 * XXX Sludge necessary to transfer existing fstates/actions
 		 * XXX around a recreated file info set.
 		 */
 		rpmuint8_t * fstates = fi->fstates;
@@ -2121,8 +2052,7 @@ assert(psm != NULL);
 		failed = rpmpsmStage(psm, PSM_PKGINSTALL);
 		(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 
-		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-		p->fd = NULL;
+		xx = rpmteClose(p, ts, 0);
 		gotfd = 0;
 	    }
 

@@ -9,6 +9,8 @@
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
+#include <rpmdb.h>		/* rpmmiFoo */
+#include <pkgio.h>		/* rpmReadPackageFile */
 
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -279,7 +281,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 }
 
 /* Get the DB Instance value */
-unsigned int rpmteDBInstance(rpmte te) 
+uint32_t rpmteDBInstance(rpmte te) 
 {
     return (te != NULL ? te->db_instance : 0);
 }
@@ -839,3 +841,243 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
     }
     return te;
 }
+
+Header rpmteDBHeader(rpmts ts, uint32_t rec)
+{
+    rpmmi mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &rec, sizeof(rec));
+    Header h;
+
+    /* iterator returns weak refs, grab hold of header */
+    if ((h = rpmmiNext(mi)) != NULL)
+	h = headerLink(h);
+    mi = rpmmiFree(mi);
+    return h;
+}
+
+Header rpmteFDHeader(rpmts ts, rpmte te)
+{
+    Header h = NULL;
+    te->fd = rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+    if (te->fd != NULL) {
+	rpmVSFlags ovsflags;
+	rpmRC pkgrc;
+
+	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
+	pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVR(te), &h);
+	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
+	switch (pkgrc) {
+	default:
+	    (void) rpmteClose(te, ts, 1);
+	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	case RPMRC_OK:
+	    break;
+	}
+    }
+    return h;
+}
+
+int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
+{
+    Header h = NULL;
+    uint32_t instance;
+    int rc = 0;	/* assume failure */
+
+    if (te == NULL || ts == NULL)
+	goto exit;
+
+    instance = rpmteDBInstance(te);
+    rpmteSetHeader(te, NULL);
+
+    switch (rpmteType(te)) {
+    case TR_ADDED:
+	h = instance ? rpmteDBHeader(ts, instance) : rpmteFDHeader(ts, te);
+	break;
+    case TR_REMOVED:
+	h = rpmteDBHeader(ts, instance);
+    	break;
+    }
+    if (h != NULL) {
+#ifdef	NOTYET
+	if (reload_fi) {
+	    te->fi = getFI(te, ts, h);
+	}
+#endif
+	
+	rpmteSetHeader(te, h);
+	h = headerFree(h);
+	rc = 1;
+    }
+
+exit:
+    return rc;
+}
+
+int rpmteClose(rpmte te, rpmts ts, int reset_fi)
+{
+    if (te == NULL || ts == NULL)
+	return 0;
+
+    switch (te->type) {
+    case TR_ADDED:
+	if (te->fd) {
+	    rpmtsNotify(ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	    te->fd = NULL;
+	}
+	break;
+    case TR_REMOVED:
+	/* eventually we'll want notifications for erase open too */
+	break;
+    }
+    rpmteSetHeader(te, NULL);
+#ifdef	NOTYET
+    if (reset_fi) {
+	rpmteSetFI(te, NULL);
+    }
+#endif
+    return 1;
+}
+
+#ifdef	REFERENCE
+int rpmteMarkFailed(rpmte te, rpmts ts)
+{
+    rpmtsi pi = rpmtsiInit(ts);
+    int rc = 0;
+    rpmte p;
+
+    te->failed = 1;
+    /* XXX we can do a much better here than this... */
+    while ((p = rpmtsiNext(pi, TR_REMOVED))) {
+	if (rpmteDependsOn(p) == te) {
+	    p->failed = 1;
+	}
+    }
+    rpmtsiFree(pi);
+    return rc;
+}
+
+int rpmteFailed(rpmte te)
+{
+    return (te != NULL) ? te->failed : -1;
+}
+
+int rpmteHaveTransScript(rpmte te, rpmTag tag)
+{
+    int rc = 0;
+    if (tag == RPMTAG_PRETRANS) {
+	rc = (te->transscripts & RPMTE_HAVE_PRETRANS);
+    } else if (tag == RPMTAG_POSTTRANS) {
+	rc = (te->transscripts & RPMTE_HAVE_POSTTRANS);
+    }
+    return rc;
+}
+
+rpmps rpmteProblems(rpmte te)
+{
+    return te ? te->probs : NULL;
+}
+
+rpmfs rpmteGetFileStates(rpmte te) {
+    return te->fs;
+}
+
+rpmfs rpmfsNew(unsigned int fc, rpmElementType type) {
+    rpmfs fs = xmalloc(sizeof(*fs));
+    fs->fc = fc;
+    fs->replaced = NULL;
+    fs->states = NULL;
+    if (type == TR_ADDED) {
+	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
+	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
+    }
+    fs->actions = xmalloc(fc * sizeof(*fs->actions));
+    memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
+    fs->numReplaced = fs->allocatedReplaced = 0;
+    return fs;
+}
+
+rpmfs rpmfsFree(rpmfs fs) {
+    fs->replaced = _free(fs->replaced);
+    fs->states = _free(fs->states);
+    fs->actions = _free(fs->actions);
+
+    fs = _free(fs);
+    return fs;
+}
+
+rpm_count_t rpmfsFC(rpmfs fs) {
+    return fs->fc;
+}
+
+void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
+{
+    if (!fs->replaced) {
+	fs->replaced = xcalloc(3, sizeof(*fs->replaced));
+	fs->allocatedReplaced = 3;
+    }
+    if (fs->numReplaced>=fs->allocatedReplaced) {
+	fs->allocatedReplaced += (fs->allocatedReplaced>>1) + 2;
+	fs->replaced = xrealloc(fs->replaced, fs->allocatedReplaced*sizeof(*fs->replaced));
+    }
+    fs->replaced[fs->numReplaced].pkgFileNum = pkgFileNum;
+    fs->replaced[fs->numReplaced].otherPkg = otherPkg;
+    fs->replaced[fs->numReplaced].otherFileNum = otherFileNum;
+
+    fs->numReplaced++;
+}
+
+sharedFileInfo rpmfsGetReplaced(rpmfs fs)
+{
+    if (fs && fs->numReplaced)
+        return fs->replaced;
+    else
+        return NULL;
+}
+
+sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced)
+{
+    if (fs && replaced) {
+        replaced++;
+	if (replaced - fs->replaced < fs->numReplaced)
+	    return replaced;
+    }
+    return NULL;
+}
+
+void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state)
+{
+    assert(ix < fs->fc);
+    fs->states[ix] = state;
+}
+
+rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix)
+{
+    assert(ix < fs->fc);
+    if (fs->states) return fs->states[ix];
+    return RPMFILE_STATE_MISSING;
+}
+
+rpm_fstate_t * rpmfsGetStates(rpmfs fs)
+{
+    return fs->states;
+}
+
+rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix)
+{
+    rpmFileAction action;
+    if (fs->actions != NULL && ix < fs->fc) {
+	action = fs->actions[ix];
+    } else {
+	action = FA_UNKNOWN;
+    }
+    return action;
+}
+
+void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action)
+{
+    if (fs->actions != NULL && ix < fs->fc) {
+	fs->actions[ix] = action;
+    }
+}
+#endif	/* REFERENCE */

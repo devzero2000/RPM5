@@ -129,7 +129,7 @@ struct rpmte_s {
     int tree;			/*!< Tree index. */
     int depth;			/*!< Depth in dependency tree. */
     int breadth;		/*!< Breadth in dependency tree. */
-    unsigned int db_instance;   /*!< Database Instance after add */
+    uint32_t db_instance;	/*!< Database Instance after add */
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
@@ -202,6 +202,15 @@ struct rpmtsi_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
+
+int rpmteClose(rpmte te, rpmts ts, int reset_fi)
+	/*@*/;
+Header rpmteDBHeader(rpmts ts, uint32_t rec)
+	/*@*/;
+Header rpmteFDHeader(rpmts ts, rpmte te)
+	/*@*/;
+int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
+	/*@*/;
 
 #endif	/* _RPMTE_INTERNAL */
 
@@ -363,7 +372,7 @@ rpmuint32_t rpmteSetColor(rpmte te, rpmuint32_t color)
  * @param te		transaction element
  * @return		last install instance.
  */
-unsigned int rpmteDBInstance(rpmte te)
+uint32_t rpmteDBInstance(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte
@@ -807,6 +816,58 @@ static inline void hdrPrintErased(Header h)
 }
 #endif
 #endif
+
+#ifdef	REFERENCE
+/** \ingroup rpmte
+ * Transaction element file states.
+ */
+typedef struct rpmfs_s *		rpmfs;
+
+/**
+ */
+struct sharedFileInfo_s {
+    int pkgFileNum;
+    int otherPkg;
+    int otherFileNum;
+};
+
+typedef char rpm_fstate_t;
+
+struct rpmfs_s {
+    unsigned int fc;
+
+    rpm_fstate_t * states;
+    rpmFileAction * actions;	/*!< File disposition(s). */
+
+    sharedFileInfo replaced;	/*!< (TR_ADDED) to be replaced files in the rpmdb */
+    int numReplaced;
+    int allocatedReplaced;
+};
+
+int rpmteMarkFailed(rpmte te, rpmts ts);
+
+/** \ingroup rpmte
+ * Return failed status of transaction element.
+ * @param te		transaction element
+ * @return		1 if transaction element (or its parents) failed
+ */
+int rpmteFailed(rpmte te);
+
+int rpmteHaveTransScript(rpmte te, rpmTag tag);
+rpmps rpmteProblems(rpmte te);
+rpmfs rpmteGetFileStates(rpmte te);
+rpmfs rpmfsNew(unsigned int fc, rpmElementType type);
+rpmfs rpmfsFree(rpmfs fs);
+rpm_count_t rpmfsFC(rpmfs fs);
+void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum);
+sharedFileInfo rpmfsGetReplaced(rpmfs fs);
+sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced);
+void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state);
+rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix);
+/*@null@*/
+rpm_fstate_t * rpmfsGetStates(rpmfs fs);
+void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
+#endif	/* REFERENCE */
 
 #ifdef __cplusplus
 }
