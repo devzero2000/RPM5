@@ -290,7 +290,6 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 }
 #endif
 
-#ifdef	NOTYET	/* XXX rstrscat needs to be ported and nuked */
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #define	_RPMTE_INTERNAL
@@ -399,12 +398,10 @@ static char * rstrscat(char **dest, const char *arg, ...)
 
     return dst;
 }
-#endif	/* NOTYET */
 
 void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
 		void * _p, int filenr)
 {
-#ifdef	NOTYET		/* XXX needed iff @rpm.org API is used */
     rpmte p = _p;
     rpmfi fi = __rpmteFI(p, RPMTAG_BASENAMES);
     struct fingerPrint_s current_fp;
@@ -419,13 +416,12 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
     fingerPrint * fp = __rpmfiFpsIndex(fi, filenr);
     int symlinkcount = 0;
 
-    struct rpmffi_s * ffi = alloca(sizeof(*ffi));
+    struct rpmffi_s * ffi = xmalloc(sizeof(*ffi));
     ffi->p = p;
     ffi->fileno = filenr;
 
     if (fp->subDir == NULL) {
-	 htAddEntry(fphash, fp, ffi);
-	 return;
+	goto exit;
     }
 
     lensubDir = strlen(fp->subDir);
@@ -435,106 +431,107 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
     /* Set baseName to the upper most dir */
     current_fp.baseName = endbasename = currentsubdir;
     while (*endbasename != '/' && endbasename < currentsubdir + lensubDir - 1)
-	 endbasename++;
+	endbasename++;
     *endbasename = '\0';
 
     current_fp.subDir = endsubdir = NULL; // no subDir for now
 
     while (endbasename < currentsubdir + lensubDir - 1) {
-	 char found;
-	 found = 0;
+	char found;
+	found = 0;
 
-	 htGetEntry(symlinks, &current_fp,
-		    &recs, &numRecs, NULL);
+	recs = NULL;
+	numRecs = 0;
+	htGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
 
-	 for (i = 0; i < numRecs; i++) {
-	     rpmfi foundfi;
-	     int filenr;
-	     char const *linktarget;
-	     char *link;
+	for (i = 0; i < numRecs; i++) {
+	    rpmfi foundfi;
+	    int filenr;
+	    char const *linktarget;
+	    char *link;
 
-	     foundfi =  __rpmteFI(recs[i].p, RPMTAG_BASENAMES);
-	     fiFX = __rpmfiFX(foundfi);
+	    foundfi =  __rpmteFI(recs[i].p, RPMTAG_BASENAMES);
+	    fiFX = __rpmfiFX(foundfi);
 
-	     filenr = recs[i].fileno;
-	     __rpmfiSetFX(foundfi, filenr);
-	     linktarget = __rpmfiFLink(foundfi);
+	    filenr = recs[i].fileno;
+	    __rpmfiSetFX(foundfi, filenr);
+	    linktarget = __rpmfiFLink(foundfi);
 
-	     if (linktarget && *linktarget != '\0') {
-		   /* this "directory" is a symlink */
-		   link = NULL;
-		   if (*linktarget != '/') {
-			rstrscat(&link, current_fp.entry->dirName,
+	    if (linktarget && *linktarget != '\0') {
+		/* this "directory" is a symlink */
+		link = NULL;
+		if (*linktarget != '/') {
+		    rstrscat(&link, current_fp.entry->dirName,
 				 current_fp.subDir ? "/" : "",
 				 current_fp.subDir ? current_fp.subDir : "",
 				 "/", NULL);
-		   }
-		   rstrscat(&link, linktarget, "/", NULL);
-		   if (strlen(endbasename+1)) {
-			rstrscat(&link, endbasename+1, "/", NULL);
-		   }
+		}
+		rstrscat(&link, linktarget, "/", NULL);
+		if (strlen(endbasename+1)) {
+		    rstrscat(&link, endbasename+1, "/", NULL);
+		}
 
-		   *fp = fpLookup(fpc, link, fp->baseName, 0);
+		*fp = fpLookup(fpc, link, fp->baseName, 0);
 
-		   free(link);
-		   free(currentsubdir);
-		   symlinkcount++;
+		free(link);
+		free(currentsubdir);
+		symlinkcount++;
 
-		   /* setup current_fp for the new path */
-		   found = 1;
-		   current_fp = *fp;
-		   if (fp->subDir == NULL) {
-		     /* directory exists - no need to look for symlinks */
-		     htAddEntry(fphash, fp, ffi);
-		     return;
-		   }
-		   lensubDir = strlen(fp->subDir);
-		   currentsubdir = xstrdup(fp->subDir);
-		   current_fp.subDir = endsubdir = NULL; // no subDir for now
+		/* setup current_fp for the new path */
+		found = 1;
+		current_fp = *fp;
+		if (fp->subDir == NULL) {
+		    /* directory exists - no need to look for symlinks */
+		    goto exit;
+		}
+		lensubDir = strlen(fp->subDir);
+		currentsubdir = xstrdup(fp->subDir);
+		current_fp.subDir = endsubdir = NULL; // no subDir for now
 
-		   /* Set baseName to the upper most dir */
-		   current_fp.baseName = currentsubdir;
-		   endbasename = currentsubdir;
-		   while (*endbasename != '/' &&
-			  endbasename < currentsubdir + lensubDir - 1)
-			endbasename++;
-		   *endbasename = '\0';
-		   break;
+		/* Set baseName to the upper most dir */
+		current_fp.baseName = currentsubdir;
+		endbasename = currentsubdir;
+		while (*endbasename != '/'
+		 && endbasename < currentsubdir + lensubDir - 1)
+		    endbasename++;
+		*endbasename = '\0';
+		break;
 
-	     }
-	     __rpmfiSetFX(foundfi, fiFX);
-	 }
+	    }
+	    __rpmfiSetFX(foundfi, fiFX);
+	}
 
-	 if (symlinkcount > 50) {
-	     // found too many symlinks in the path
-	     // most likley a symlink cicle
-	     // giving up
-	     // TODO warning/error
-	     break;
-	 }
+	if (symlinkcount > 50) {
+	    // found too many symlinks in the path
+	    // most likley a symlink cicle
+	    // giving up
+	    // TODO warning/error
+	    break;
+	}
 
-	 if (found) {
-	     continue; // restart loop after symlink
-	 }
+	if (found) {
+	    continue; // restart loop after symlink
+	}
 
-	 if (current_fp.subDir == NULL) {
-              /* after first round set former baseName as subDir */
-	     current_fp.subDir = currentsubdir;
-	 } else {
-	     *endsubdir = '/'; // rejoin the former baseName with subDir
-	 }
-	 endsubdir = endbasename;
+	if (current_fp.subDir == NULL) {
+            /* after first round set former baseName as subDir */
+	    current_fp.subDir = currentsubdir;
+	} else {
+	    *endsubdir = '/'; // rejoin the former baseName with subDir
+	}
+	endsubdir = endbasename;
 
-	 /* set baseName to the next lower dir */
-	 endbasename++;
-	 while (*endbasename != '\0' && *endbasename != '/')
-	     endbasename++;
-	 *endbasename = '\0';
-	 current_fp.baseName = endsubdir + 1;
+	/* set baseName to the next lower dir */
+	endbasename++;
+	while (*endbasename != '\0' && *endbasename != '/')
+	    endbasename++;
+	*endbasename = '\0';
+	current_fp.baseName = endsubdir + 1;
 
     }
     free(currentsubdir);
+exit:
     htAddEntry(fphash, fp, ffi);
-#endif	/* NOTYET */
+    return;
 
 }

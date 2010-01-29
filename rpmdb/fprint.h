@@ -75,24 +75,6 @@ struct fingerPrint_s {
 extern "C" {
 #endif
 
-/** \ingroup rpmdb
- * Find fingerprint matches in database.
- * @param _db		rpm database
- * @param fpList	fingerprint array
- * @retval _matchList	returned fingerprint matches
- * @param numItems	number of fingerprint items
- * @param exclude	excluded header instance (0 to disable)
- * @return		0 always
- */
-int rpmdbFindFpList(/*@null@*/ void * _db, fingerPrint * fpList,
-		/*@out@*/ void * _matchList, int numItems,
-		unsigned int exclude)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies _db, _matchList, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/* Be carefull with the memory... assert(*fullName == '/' || !scareMem) */
-
 /**
  * Create finger print cache.
  * @param sizeHint	number of elements expected

@@ -10,6 +10,7 @@
 #include <rpmlog.h>
 #include <rpmpgp.h>
 #include <rpmurl.h>
+#include <rpmhash.h>		/* hashFunctionString */
 #define	_MIRE_INTERNAL
 #include <rpmmacro.h>
 #include <rpmsq.h>
@@ -412,7 +413,7 @@ uint32_t dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno) {
 }
 
 /* XXX transaction.c */
-uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno) {
     return set->recs[recno].tagNum;
 }
 
@@ -446,6 +447,7 @@ struct rpmmi_s {
     int			mi_modified;
     uint32_t		mi_prevoffset;	/* header instance (big endian) */
     uint32_t		mi_offset;	/* header instance (big endian) */
+    uint32_t		mi_bntag;	/* base name tag (native endian) */
 /*@refcounted@*/ /*@null@*/
     rpmbf		mi_bf;		/* Iterator instance Bloom filter. */
     int			mi_nre;
@@ -918,7 +920,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     memset(&db->db_delops, 0, sizeof(db->db_delops));
 
     /*@-globstate@*/
-    return rpmdbLink(db, "rpmdbNew");
+    return rpmdbLink(db, __FUNCTION__);
     /*@=globstate@*/
 }
 /*@=exportheader =globs =mods @*/
@@ -1062,13 +1064,14 @@ int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
     rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
     switch (rc) {
     case 0:
-	if ((rc = dbiCount(dbi, dbcursor, &count, 0)) != 0) {
+	rc = dbiCount(dbi, dbcursor, &count, 0);
+	if (rc != 0)
 	    rc = -1;
-	    break;
-	}
-	/*@fallthrough@*/
+	else
+	    rc = count;
+	break;
     case DB_NOTFOUND:
-	rc = count;
+	rc = 0;
 	break;
     default:
 	rpmlog(RPMLOG_ERR, _("error(%d) getting records from %s index\n"),
@@ -1082,9 +1085,9 @@ int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 }
 
 /* XXX python/upgrade.c, install.c, uninstall.c */
-int rpmdbCountPackages(rpmdb db, const char * name)
+int rpmdbCountPackages(rpmdb db, const char * N)
 {
-    return rpmdbCount(db, RPMTAG_NAME, name, 0);
+    return rpmdbCount(db, RPMTAG_NAME, N, strlen(N));
 }
 
 /* Return pointer to first RE character (or NUL terminator) */
@@ -1323,7 +1326,7 @@ exit:
     b = _free(b);
     mire = mireFree(mire);
 if (_rpmmi_debug || dbi->dbi_debug)
-fprintf(stderr, "<-- %s(%p, %s(%u), %d, %p, %p, %p) rc %d %p[%u]\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, argvp, ret, (matches ? (*matches)->recs : NULL), (matches ? (*matches)->count : 0));
+fprintf(stderr, "<-- %s(%p, %s(%u), %d, %p, %p, %p) rc %d %p[%u]\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, argvp, ret, (matches && *matches ? (*matches)->recs : NULL), (matches && *matches ? (*matches)->count : 0));
     return ret;
 }
 
@@ -1350,19 +1353,21 @@ int rpmmiGrowBasename(rpmmi mi, const char * bn)
 #ifdef	NOTYET
 assert(mi->mi_rpmtag == _tag);
 #endif
-    /* XXX use &mi->mi_set? */
+    /* Retrieve set of headers that contain the base name. */
     rc = dbiMireKeys(mi->mi_db, _tag, _mode, bn, &set, NULL);
-    if (rc == 0 && set != NULL)
-    for (i = 0; i < set->count; i++) {
-	uint32_t hdrNum = dbiIndexRecordOffset(set, i);
-	(void) rpmmiGrow(mi, &hdrNum, 1);
+    if (rc == 0 && set != NULL) {
+	rpmuint32_t tagNum = hashFunctionString(0, bn, 0);
+	/* Set tagNum to the hash of the basename. */
+	for (i = 0; i < set->count; i++)
+	    set->recs[i].tagNum = tagNum;
+	(void) dbiAppendSet(mi->mi_set, set->recs, set->count, sizeof(*set->recs), 0);
     }
-    set = dbiFreeIndexSet(set);
     rc = 0;
 
 exit:
 if (_rpmmi_debug)
-fprintf(stderr, "<-- %s(%p, \"%s\") rc %d\n", __FUNCTION__, mi, bn, rc);
+fprintf(stderr, "<-- %s(%p, \"%s\")\trc %d set %p %p[%u]\n", __FUNCTION__, mi, bn, rc, set, (set ? set->recs : NULL), (unsigned)(set ? set->count : 0));
+    set = dbiFreeIndexSet(set);
     return rc;
 }
 
@@ -1593,7 +1598,15 @@ fprintf(stderr, "<-- %s(%p) rc %u\n", __FUNCTION__, mi, (unsigned)rc);
     return rc;
 }
 
-unsigned int rpmmiCount(rpmmi mi) {
+uint32_t rpmmiBNTag(rpmmi mi) {
+    uint32_t rc = (mi ? mi->mi_bntag : 0);
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p) rc %u\n", __FUNCTION__, mi, (unsigned)rc);
+    return rc;
+}
+
+unsigned int rpmmiCount(rpmmi mi)
+{
     unsigned int rc;
 
     /* XXX Secondary db associated with Packages needs cursor record count */
@@ -1614,6 +1627,8 @@ if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 
     rc = (mi ? mi->mi_count : 0);
 
+if (_rpmmi_debug)
+fprintf(stderr, "<-- %s(%p) rc %u\n", __FUNCTION__, mi, (unsigned)rc);
     return rc;
 }
 
@@ -2125,6 +2140,7 @@ next:
 	if (!(mi->mi_setx < mi->mi_set->count))
 	    return NULL;
 	mi->mi_offset = _hton_ui(dbiIndexRecordOffset(mi->mi_set, mi->mi_setx));
+	mi->mi_bntag = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	mi->mi_setx++;
 
 	/* If next header is identical, return it now. */
@@ -2238,23 +2254,36 @@ assert((size_t)k.size == sizeof(mi->mi_offset));
 /*@=compdef =retalias =retexpose =usereleased @*/
 }
 
-static void rpmdbSortIterator(/*@null@*/ rpmmi mi)
-	/*@modifies mi @*/
+int rpmmiSort(/*@null@*/ rpmmi mi)
 {
+    int rc = 0;
+
     if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
     /*
      * mergesort is much (~10x with lots of identical basenames) faster
      * than pure quicksort, but glibc uses msort_with_tmp() on stack.
      */
+    if (mi->mi_set->count > 1) {
 #if defined(__GLIBC__)
-	qsort(mi->mi_set->recs, mi->mi_set->count,
+	    qsort(mi->mi_set->recs, mi->mi_set->count,
 		sizeof(*mi->mi_set->recs), hdrNumCmp);
 #else
-	rpm_mergesort(mi->mi_set->recs, mi->mi_set->count,
+	    rpm_mergesort(mi->mi_set->recs, mi->mi_set->count,
 		sizeof(*mi->mi_set->recs), hdrNumCmp);
 #endif
+	}
 	mi->mi_sorted = 1;
+#ifdef	NOTNOW
+    {	struct _dbiIndexItem * rec;
+	int i;
+	for (i = 0, rec = mi->mi_set->recs; i < mi->mi_set->count; i++, rec++) {
+	    fprintf(stderr, "\t%p[%u] =  %p: %u %u %u\n", mi->mi_set->recs,
+			i, rec, rec->hdrNum, rec->tagNum, rec->fpNum);
+	}
     }
+#endif
+    }
+    return rc;
 }
 
 /* XXX TODO: a Bloom Filter on removed packages created once, not each time. */
@@ -2265,11 +2294,10 @@ int rpmmiPrune(rpmmi mi, uint32_t * hdrNums, int nHdrNums, int sorted)
     if (!rc) {
 	int i;
 	if (mi->mi_bf == NULL) {
-	    static size_t nRemoves = 8192;	/* XXX population estimate */
+	    static size_t nRemoves = 2 * 8192;	/* XXX population estimate */
 	    static double e = 1.0e-4;
 	    size_t m = 0;
 	    size_t k = 0;
-	    rpmbf bf;
 	    rpmbfParams(nRemoves, e, &m, &k);
 	    mi->mi_bf = rpmbfNew(m, k, 0);
 	}
@@ -2409,7 +2437,7 @@ assert(0);
     }
 
 /*@-assignexpose@*/
-    mi->mi_db = rpmdbLink(db, "matchIterator");
+    mi->mi_db = rpmdbLink(db, __FUNCTION__);
 /*@=assignexpose@*/
     mi->mi_rpmtag = tag;
 
@@ -2717,155 +2745,3 @@ assert(dbi != NULL);					/* XXX sanity */
 
     return ret;
 }
-
-static int rpmdbGrowIterator(rpmmi mi, dbiIndexSet set,
-		int fpNum, unsigned int exclude)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int rc = 0;
-    int i, j;
-
-    /* prune the set against exclude and tag */
-    for (i = j = 0; i < (int)set->count; i++) {
-	if (exclude && set->recs[i].hdrNum == exclude)
-	    continue;
-	if (i > j)
-	    set->recs[j] = set->recs[i];
-	j++;
-    }
-    if (j == 0)
-	return DB_NOTFOUND;
-    set->count = j;
-
-    for (i = 0; i < (int)set->count; i++)
-	set->recs[i].fpNum = fpNum;
-
-    if (mi->mi_set == NULL)
-	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
-    mi->mi_set->recs = xrealloc(mi->mi_set->recs,
-		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
-    memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
-		set->count * sizeof(*(mi->mi_set->recs)));
-    mi->mi_set->count += set->count;
-if (_rpmdb_debug)
-fprintf(stderr, "<-- %s(%p, %p[%u], %d, %u) set %p[%u]\n", __FUNCTION__, mi, set, (unsigned)(set ? set->count : 0), fpNum, exclude, mi->mi_set, (unsigned)(mi->mi_set ? mi->mi_set->count : 0));
-    return rc;
-}
-
-/* XXX transaction.c */
-/*@-compmempass@*/
-int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList, 
-		    int numItems, unsigned int exclude)
-{
-    rpmdb db = _db;
-    dbiIndexSet * matchList = _matchList;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    rpmmi mi = rpmmiInit(db, RPMTAG_BASENAMES, NULL, 0);
-    fingerPrintCache fpc;
-    Header h;
-    int i, xx;
-
-if (_rpmdb_debug)
-fprintf(stderr, "--> %s(%p, %p[%d], %p, %d, %u) mi %p\n", __FUNCTION__, db, fpList, numItems, matchList, numItems, exclude, mi);
-    if (db == NULL)
-	goto exit;
-
-    /* Gather all installed headers with matching basename's. */
-    for (i = 0; i < numItems; i++) {
-	const char * bn = fpList[i].baseName;
-	static rpmTag _tag = RPMTAG_BASENAMES;
-	static rpmMireMode _mode = RPMMIRE_STRCMP;
-	dbiIndexSet set = NULL;
-
-	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
-
-	xx = dbiMireKeys(mi->mi_db, _tag, _mode, bn, &set, NULL);
-	if (xx == 0 && set && set->count > 0)
-	    xx = rpmdbGrowIterator(mi, set, i, exclude);
-	set = dbiFreeIndexSet(set);
-
-    }
-
-    if ((i = rpmmiCount(mi)) == 0)
-	goto exit;
-
-    rpmdbSortIterator(mi);
-    /* iterator is now sorted by (recnum, filenum) */
-
-    fpc = fpCacheCreate(i);
-
-    /* For all installed headers with matching basename's ... */
-    if (mi != NULL)
-    while ((h = rpmmiNext(mi)) != NULL) {
-	const char ** dirNames;
-	const char ** baseNames;
-	const char ** fullBaseNames;
-	rpmuint32_t * dirIndexes;
-	rpmuint32_t * fullDirIndexes;
-	fingerPrint * fps;
-	dbiIndexItem im;
-	uint32_t start;
-	uint32_t num;
-	uint32_t end;
-
-	start = mi->mi_setx - 1;
-	im = mi->mi_set->recs + start;
-
-	/* Find the end of the set of matched basename's in this package. */
-	for (end = start + 1; end < mi->mi_set->count; end++) {
-	    if (im->hdrNum != mi->mi_set->recs[end].hdrNum)
-		/*@innerbreak@*/ break;
-	}
-	num = end - start;
-
-	/* Compute fingerprints for this installed header's matches */
-	he->tag = RPMTAG_BASENAMES;
-	xx = headerGet(h, he, 0);
-	fullBaseNames = he->p.argv;
-	he->tag = RPMTAG_DIRNAMES;
-	xx = headerGet(h, he, 0);
-	dirNames = he->p.argv;
-	he->tag = RPMTAG_DIRINDEXES;
-	xx = headerGet(h, he, 0);
-	fullDirIndexes = he->p.ui32p;
-
-	baseNames = xcalloc(num, sizeof(*baseNames));
-	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
-	for (i = 0; i < (int)num; i++) {
-	    baseNames[i] = fullBaseNames[im[i].tagNum];
-	    dirIndexes[i] = fullDirIndexes[im[i].tagNum];
-	}
-
-	fps = xcalloc(num, sizeof(*fps));
-	fpLookupList(fpc, dirNames, baseNames, dirIndexes, num, fps);
-
-	/* Add db (recnum,filenum) to list for fingerprint matches. */
-	for (i = 0; i < (int)num; i++, im++) {
-	    /*@-nullpass@*/ /* FIX: fpList[].subDir may be NULL */
-	    if (!FP_EQUAL(fps[i], fpList[im->fpNum]))
-		/*@innercontinue@*/ continue;
-	    /*@=nullpass@*/
-	    xx = dbiAppendSet(matchList[im->fpNum], im, 1, sizeof(*im), 0);
-	}
-
-	fps = _free(fps);
-	fullBaseNames = _free(fullBaseNames);
-/*@-usereleased@*/
-	dirNames = _free(dirNames);
-/*@=usereleased@*/
-	fullDirIndexes = _free(fullDirIndexes);
-	baseNames = _free(baseNames);
-	dirIndexes = _free(dirIndexes);
-
-	mi->mi_setx = end;
-    }
-
-    fpc = fpCacheFree(fpc);
-
-exit:
-    mi = rpmmiFree(mi);
-    return 0;
-
-}
-/*@=compmempass@*/

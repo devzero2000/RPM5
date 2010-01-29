@@ -1123,7 +1123,7 @@ uint32_t dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno)
  * @param recno	index of item in set
  * @return	file index
  */
-uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
+uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno)
 	/*@*/;
 #endif	/* defined(_RPMDB_INTERNAL) */
 
@@ -1239,19 +1239,27 @@ int rpmdbCount(/*@null@*/ rpmdb db, rpmTag tag,
 /** \ingroup rpmdb
  * Return number of instances of package in Name index.
  * @param db		rpm database
- * @param name		rpm package name
+ * @param N		rpm package name
  * @return		number of instances
  */
-int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
+int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * N)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
- * Return header instance join key for current position of rpmdb iterator.
+ * Return header instance for current position of rpmdb iterator.
  * @param mi		rpm database iterator
- * @return		current header join key
+ * @return		current header instance
  */
 uint32_t rpmmiInstance(/*@null@*/ rpmmi mi)
+	/*@*/;
+
+/** \ingroup rpmdb
+ * Return basename tag for current position of rpmdb iterator.
+ * @param mi		rpm database iterator
+ * @return		current basename tag
+ */
+uint32_t rpmmiBNTag(/*@null@*/ rpmmi mi)
 	/*@*/;
 
 /** \ingroup rpmdb
@@ -1273,7 +1281,21 @@ int rpmmiGrow(/*@null@*/ rpmmi mi,
 		/*@null@*/ const uint32_t * hdrNums, int nHdrNums)
 	/*@modifies mi @*/;
 
+/** \ingroup rpmdb
+ * Append packages containing common basename to iterator.
+ * @param mi		rpm database iterator
+ * @param bn		basename key
+ * @return		0 on success, 1 on failure (bad args)
+ */
 int rpmmiGrowBasename(rpmmi mi, const char * bn)
+	/*@modifies mi @*/;
+
+/** \ingroup rpmdb
+ * Sort iterator instances.
+ * @param mi		rpm database iterator
+ * @return		0 on success
+ */
+int rpmmiSort(rpmmi mi)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb

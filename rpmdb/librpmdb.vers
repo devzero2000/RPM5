@@ -25,6 +25,7 @@ LIBRPMDB_0
     fpHashFunction;
     fpLookup;
     fpLookupList;
+    fpLookupSubdir;
     _hdr_debug;
     _hdrqf_debug;
     _hdr_getops;
@@ -160,6 +161,7 @@ LIBRPMDB_0
     _rpmmi_debug;
     _rpmmiPool;
     rpmmiAddPattern;
+    rpmmiBNTag;
     rpmmiFree;
     rpmmiCount;
     rpmmiGrow;
@@ -171,6 +173,7 @@ LIBRPMDB_0
     rpmmiSetHdrChk;
     rpmmiSetModified;
     rpmmiSetRewrite;
+    rpmmiSort;
     _rpmns_debug;
     _rpmns_N_at_A;
     rpmnsArch;
