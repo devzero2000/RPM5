@@ -1218,7 +1218,7 @@ assert(0);
 #endif	/* REFERENCE */
 	    continue;
 
-	ofi = rpmfiLink(p->fi, "pretrans");
+	ofi = rpmfiLink(p->fi, __FUNCTION__);
 	progtag = RPMTAG_PRETRANSPROG;
     	if (rpmteOpen(p, ts, 1)) {
 	    if (p->fi != NULL)
@@ -1232,7 +1232,7 @@ assert(0);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
 	    xx = rpmteClose(p, ts, 1);
 	}
-	p->fi = rpmfiLink(ofi, "pretrans");
+	p->fi = rpmfiLink(ofi, __FUNCTION__);
 	(void) rpmfiFree(ofi);
 	ofi = NULL;
 	/*@switchbreak@*/ break;
@@ -1336,6 +1336,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u,%p,%p)\n", __FUNCTION__, ts, (unsigned)fileCo
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
+	if (p->isSource) continue;
 	if ((fi = rpmteFI(p, RPMTAG_BASENAMES)) == NULL)
 	    continue;	/* XXX can't happen */
 	fi = rpmfiInit(fi, 0);
@@ -1583,9 +1584,18 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if (p->isSource) continue;
 	if ((fi = rpmteFI(p, RPMTAG_BASENAMES)) == NULL)
 	    continue;   /* XXX can't happen */
+	/* XXX Set all SRPM files to FA_CREATE. */
+	if (p->isSource) {
+	    int i;
+	    fi = rpmfiInit(fi, 0);
+	    if (fi != NULL)
+	    while ((i = rpmfiNext(fi)) >= 0) {
+		fi->actions[i] = FA_CREATE;
+	    }
+	    continue;
+	}
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 
@@ -1769,7 +1779,7 @@ assert(psm != NULL);
 		    p->fi = fi;
 		}
 
-		psm->fi = rpmfiLink(p->fi, NULL);
+		psm->fi = rpmfiLink(p->fi, __FUNCTION__);
 
 		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 		failed = rpmpsmStage(psm, PSM_PKGINSTALL);
