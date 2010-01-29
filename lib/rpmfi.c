@@ -453,7 +453,9 @@ const char * rpmfiFGroup(rpmfi fi)
 
 void * rpmfiBloomFN(const rpmfi fi)
 {
+/*@-assignexpose -retexpose @*/
     return (fi != NULL ? fi->_fnbf : NULL);
+/*@=assignexpose =retexpose @*/
 }
 
 void * rpmfiExclude(const rpmfi fi)

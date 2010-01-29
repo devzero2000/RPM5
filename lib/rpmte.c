@@ -605,8 +605,10 @@ rpmfi rpmteSetFI(rpmte te, rpmfi fi)
 {
     if (te != NULL)  {
 	te->fi = rpmfiFree(te->fi);
+/*@-assignexpose -castexpose @*/
 	if (fi != NULL)
 	    te->fi = rpmfiLink(fi, __FUNCTION__);
+/*@=assignexpose =castexpose @*/
     }
     return NULL;
 }
@@ -838,6 +840,7 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
     return te;
 }
 
+/*@-mods@*/
 Header rpmteDBHeader(rpmts ts, uint32_t rec)
 {
     rpmmi mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &rec, sizeof(rec));
@@ -849,6 +852,7 @@ Header rpmteDBHeader(rpmts ts, uint32_t rec)
     mi = rpmmiFree(mi);
     return h;
 }
+/*@=mods@*/
 
 Header rpmteFDHeader(rpmts ts, rpmte te)
 {
@@ -874,6 +878,7 @@ Header rpmteFDHeader(rpmts ts, rpmte te)
     return h;
 }
 
+/*@-mods@*/
 int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 {
     Header h = NULL;
@@ -884,7 +889,7 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 	goto exit;
 
     instance = rpmteDBInstance(te);
-    rpmteSetHeader(te, NULL);
+    (void) rpmteSetHeader(te, NULL);
 
     switch (rpmteType(te)) {
     case TR_ADDED:
@@ -906,7 +911,7 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 	}
 #endif
 	
-	rpmteSetHeader(te, h);
+	(void) rpmteSetHeader(te, h);
 	h = headerFree(h);
 	rc = 1;
     }
@@ -914,6 +919,7 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 exit:
     return rc;
 }
+/*@=mods@*/
 
 int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 {
@@ -922,8 +928,9 @@ int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 
     switch (te->type) {
     case TR_ADDED:
-	if (te->fd) {
-	    rpmtsNotify(ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	if (te->fd != NULL) {
+	    void * ptr;
+	    ptr = rpmtsNotify(ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 	    te->fd = NULL;
 	}
 	break;
@@ -931,7 +938,7 @@ int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 	/* eventually we'll want notifications for erase open too */
 	break;
     }
-    rpmteSetHeader(te, NULL);
+    (void) rpmteSetHeader(te, NULL);
     if (reset_fi)
 	(void) rpmteSetFI(te, NULL);
     return 1;

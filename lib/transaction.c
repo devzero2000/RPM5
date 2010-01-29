@@ -70,6 +70,7 @@
 static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 				   Header otherHeader, rpmfi otherFi,
 				   int beingRemoved)
+	/*@modifies ts, p, fi @*/
 {
     unsigned int fx = rpmfiFX(fi);
     int isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
@@ -856,6 +857,8 @@ static int rpmtsMarkLinkedFailed(rpmts ts, rpmte p)
  */
 static
 rpmmi rpmtsFindBaseNamesInDB(rpmts ts, uint32_t fileCount)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     rpmtsi pi;  rpmte p;
     rpmfi fi;
@@ -894,9 +897,9 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u)\n", __FUNCTION__, ts, (unsigned)fileCount));
 	    ns = strlen(s);
 
 	    if (ns == 0)	/* XXX "/" fixup */
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (rpmbfChk(bf, s, ns))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    xx = rpmmiGrowBasename(mi, s);
 
@@ -906,7 +909,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u)\n", __FUNCTION__, ts, (unsigned)fileCount));
     pi = rpmtsiFree(pi);
     bf = rpmbfFree(bf);
 
-    rpmmiSort(mi);
+    (void) rpmmiSort(mi);
 
     return mi;
 }
@@ -920,6 +923,8 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u)\n", __FUNCTION__, ts, (unsigned)fileCount));
 static
 int rpmtsCheckInstalledFiles(rpmts ts, uint32_t fileCount,
 		hashTable ht, fingerPrintCache fpc)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, fpc, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTagData BN = { .ptr = NULL };
@@ -966,9 +971,9 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	if (ts->removedPackages != NULL)
 	for (j = 0; j < ts->numRemovedPackages; j++) {
 	    if (ts->removedPackages[j] != hdrNum)
-	        continue;
+	        /*@innercontinue@*/ continue;
 	    beingRemoved = 1;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 
 	h = headerLink(h);
@@ -999,7 +1004,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
 	    /* Skip uninteresting basenames. */
 	    if (baseKey != tagNum)
-		continue;
+		/*@innercontinue@*/ continue;
 	    fileNum = i;
 	    dirName = DN.argv[DI.ui32p[fileNum]];
 
@@ -1032,13 +1037,13 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 			static int scareMem = 0;
 		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 		    }
-		    rpmfiSetFX(fi, recs[j]->fileno);
-		    rpmfiSetFX(otherFi, fileNum);
+		    (void) rpmfiSetFX(fi, recs[j]->fileno);
+		    (void) rpmfiSetFX(otherFi, fileNum);
 		    xx = handleInstInstalledFile(ts, p, fi, h, otherFi, beingRemoved);
-		    break;
+		    /*@switchbreak@*/ break;
 		case TR_REMOVED:
 		    if (!beingRemoved) {
-		        rpmfiSetFX(fi, recs[j]->fileno);
+		        (void) rpmfiSetFX(fi, recs[j]->fileno);
 #ifdef	REFERENCE
 			if (*rpmtdGetChar(&ostates) == RPMFILE_STATE_NORMAL) {
 			    rpmfs fs = rpmteGetFileStates(p);
@@ -1049,7 +1054,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 			    fi->actions[recs[j]->fileno] = FA_SKIP;
 #endif
 		    }
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 
@@ -1075,6 +1080,8 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
  * - verify package epoch:version-release is newer.
  */
 static rpmps rpmtsSanityCheck(rpmts ts, uint32_t * tfcp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, *tfcp, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     rpmps ps;
     rpmtsi pi;
@@ -1178,6 +1185,8 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
  * return	0 on success
  */
 static int rpmtsRunScript(rpmts ts, rpmTag stag) 
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     rpmtsi pi; 
     rpmte p;
@@ -1194,7 +1203,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%s(%u))\n", __FUNCTION__, ts, tagName(stag), (un
     switch (stag) {
     default:
 assert(0);
-	break;
+	/*@notreached@*/ /*@switchbreak@*/ break;
     case RPMTAG_PRETRANS:
 	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
@@ -1226,7 +1235,7 @@ assert(0);
 	p->fi = rpmfiLink(ofi, "pretrans");
 	(void) rpmfiFree(ofi);
 	ofi = NULL;
-	break;
+	/*@switchbreak@*/ break;
     case RPMTAG_POSTTRANS:
 	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
@@ -1254,7 +1263,7 @@ assert(0);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
 	    xx = rpmteClose(p, ts, 1);
 	}
-	break;
+	/*@switchbreak@*/ break;
     }
     pi = rpmtsiFree(pi);
 
@@ -1264,6 +1273,7 @@ assert(0);
 /* Add fingerprint for each file not skipped. */
 static void rpmtsAddFingerprints(rpmts ts, uint32_t fileCount, hashTable ht,
 		fingerPrintCache fpc)
+	/*@modifies ts, fpc @*/
 {
     rpmtsi pi;
     rpmte p;
@@ -1292,7 +1302,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u,%p,%p)\n", __FUNCTION__, ts, (unsigned)fileCo
 	    char const *linktarget;
 	    linktarget = rpmfiFLink(fi);
 	    if (!(linktarget && *linktarget != '\0'))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (iosmFileActionSkipped(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 #ifdef	REFERENCE
@@ -1303,7 +1313,9 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u,%p,%p)\n", __FUNCTION__, ts, (unsigned)fileCo
 	    }
 #else
 	    {	struct rpmffi_s *ffip = alloca(sizeof(*ffip));
+/*@-dependenttrans@*/
 		ffip->p = p;
+/*@=dependenttrans@*/
 		ffip->fileno = i;
 		htAddEntry(symlinks, fi->fps + i, (void *) ffip);
 	    }
@@ -1347,10 +1359,14 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u,%p,%p)\n", __FUNCTION__, ts, (unsigned)fileCo
 }
 
 static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet, rpmsx * sxp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, *sxp, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     int xx;
 
-FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, sxp));
+/*@+voidabstract@*/
+FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, (void *)sxp));
+/*@=voidabstract@*/
     /* --noscripts implies no scripts or triggers, duh. */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
@@ -1415,7 +1431,8 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, sxp));
     return 0;
 }
 
-static int rpmtsFinish(rpmts ts, rpmsx sx)
+static int rpmtsFinish(rpmts ts, /*@only@*/ rpmsx sx)
+	/*@modifies sx @*/
 {
 FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, sx));
 #ifdef	REFERENCE
@@ -1430,6 +1447,8 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, sx));
 
 static int rpmtsPrepare(rpmts ts, rpmsx sx, uint32_t fileCount,
 		uint32_t * nrmvdp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, *nrmvdp, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     rpmtsi pi;
     rpmte p;
@@ -1483,7 +1502,7 @@ static int rpmtsPrepare(rpmts ts, rpmsx sx, uint32_t fileCount,
     uint32_t numRemoved = 0;
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%p,%u,%p)\n", __FUNCTION__, ts, sx, (unsigned)fileCount, nrmvdp));
-rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), fileCount);
+rpmlog(RPMLOG_DEBUG, D_("computing %u file fingerprints\n"), (unsigned)fileCount);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1643,17 +1662,18 @@ exit:
  */
 static int rpmtsProcess(rpmts ts, rpmprobFilterFlags ignoreSet,
 		int rollbackFailures)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     rpmtsi pi;
     rpmte p;
     int rc = 0;
 
 FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollbackFailures));
-/*@-nullpass@*/
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmfi fi;
-	rpmpsm psm = NULL;;
+	rpmpsm psm = NULL;
 	pkgStage stage = PSM_UNKNOWN;
 	int failed;
 	int gotfd;
@@ -1810,7 +1830,7 @@ assert(psm != NULL);
 #endif	/* REFERENCE */
 	}
 
-	if (p->h) {
+	if (p->h != NULL) {
 	    (void) headerFree(p->h);
 	    p->h = NULL;
 	}
@@ -1820,13 +1840,14 @@ assert(psm != NULL);
 #endif	/* REFERENCE */
 
     }
-/*@=nullpass@*/
     pi = rpmtsiFree(pi);
     return rc;
 }
 
 /* ================================================================= */
 static int rpmtsRepackage(rpmts ts, uint32_t numRemoved)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     rpmpsm psm;
     rpmfi fi;

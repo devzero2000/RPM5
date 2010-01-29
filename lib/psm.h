@@ -147,7 +147,8 @@ extern "C" {
 #endif
 
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Unreference a package state machine instance.

@@ -204,13 +204,13 @@ struct rpmtsi_s {
 };
 
 int rpmteClose(rpmte te, rpmts ts, int reset_fi)
-	/*@*/;
+	/*@modifies te, ts @*/;
 Header rpmteDBHeader(rpmts ts, uint32_t rec)
-	/*@*/;
+	/*@modifies ts @*/;
 Header rpmteFDHeader(rpmts ts, rpmte te)
-	/*@*/;
+	/*@modifies ts, te @*/;
 int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
-	/*@*/;
+	/*@modifies te, ts @*/;
 
 #endif	/* _RPMTE_INTERNAL */
 
@@ -664,26 +664,7 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
 /*@null@*/
 rpmfi rpmteSetFI(rpmte te, rpmfi fi)
-	/*@*/;
-
-#ifdef	REFERENCE
-+/** \ingroup rpmte
-+ * Set the policy set of a transaction element.
-+ * @param te		transaction element
-+ * @param pol		policy set
-+ * @return		policy set on success, NULL otherwise
-+ */
-+rpmpol rpmteSetPol(rpmte te, rpmpol pol)
-+	/*@modifies te @*/;
-+
-+/** \ingroup rpmte
-+ * Retrieve policy set from transaction element.
-+ * @param te		transaction element
-+ * @return		policy set
-+ */
-+rpmpol rpmtePol(rpmte te)
-+	/*@*/;
-#endif
+	/*@modifies te, fi @*/;
 
 /** \ingroup rpmte
  * Calculate transaction element dependency colors/refs from file info.

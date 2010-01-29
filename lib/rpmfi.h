@@ -166,7 +166,7 @@ struct rpmfi_s {
 /*@dependent@*/ /*@relnull@*/
     void * te;
 
-/*@refcounted@*/
+/*@only@*/
     void * _fnbf;		/*!< File paths Bloom filter. */
 /*@only@*/ /*@null@*/
     miRE exclude;		/*!< Iterator exclude patterns. */
@@ -615,7 +615,7 @@ struct fingerPrint_s * rpmfiFpsIndex(rpmfi fi, int ix)
 	/*@*/;
 
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
-	/*@*/;
+	/*@modifies fi, fpc @*/;
 #endif
 
 /**
