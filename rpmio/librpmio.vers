@@ -403,6 +403,7 @@ LIBRPMIO_0
     rpmjsIPoptTable;
     rpmjsNew;
     rpmjsRun;
+    rpmjsRunFile;
     rpmKeyringAddKey;
     rpmKeyringFindKeyid;
     rpmKeyringFree;
