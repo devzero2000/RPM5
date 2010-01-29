@@ -1191,7 +1191,6 @@ static int rpmtsRunScript(rpmts ts, rpmTag stag)
     rpmtsi pi; 
     rpmte p;
     rpmfi fi;
-    rpmfi ofi;
     rpmpsm psm;
     int bingo;
     int xx;
@@ -1218,9 +1217,8 @@ assert(0);
 #endif	/* REFERENCE */
 	    continue;
 
-	ofi = rpmfiLink(p->fi, __FUNCTION__);
 	progtag = RPMTAG_PRETRANSPROG;
-    	if (rpmteOpen(p, ts, 1)) {
+    	if (rpmteOpen(p, ts, 0)) {
 	    if (p->fi != NULL)
 		p->fi->te = p;
 #ifdef	REFERENCE
@@ -1230,11 +1228,8 @@ assert(0);
 #endif	/* REFERENCE */
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
-	    xx = rpmteClose(p, ts, 1);
+	    xx = rpmteClose(p, ts, 0);
 	}
-	p->fi = rpmfiLink(ofi, __FUNCTION__);
-	(void) rpmfiFree(ofi);
-	ofi = NULL;
 	/*@switchbreak@*/ break;
     case RPMTAG_POSTTRANS:
 	if (p->isSource) continue;
@@ -1251,7 +1246,7 @@ assert(0);
 	    continue;
 
 	progtag = RPMTAG_POSTTRANSPROG;
-    	if (rpmteOpen(p, ts, 1)) {
+    	if (rpmteOpen(p, ts, 0)) {
 	    if (p->fi != NULL)	/* XXX can't happen */
 		p->fi->te = p;
 #ifdef	REFERENCE
@@ -1261,7 +1256,7 @@ assert(0);
 #endif	/* REFERENCE */
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
-	    xx = rpmteClose(p, ts, 1);
+	    xx = rpmteClose(p, ts, 0);
 	}
 	/*@switchbreak@*/ break;
     }
