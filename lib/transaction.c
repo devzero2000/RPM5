@@ -1440,8 +1440,8 @@ static int rpmtsRunScript(rpmts ts, rpmTag stag)
     rpmpsm psm;
     int haspostscript;
     int xx;
+    rpmTag progtag;
 #ifdef	REFERENCE
-    rpmTag progtag = RPMTAG_NOT_FOUND;
 
     if (stag == RPMTAG_PRETRANS) {
 	progtag = RPMTAG_PRETRANSPROG;
@@ -1495,18 +1495,18 @@ assert(0);
 	    psm = rpmpsmNew(ts, p, p->fi);
 /*@=compdef =usereleased@*/
 assert(psm != NULL);
+
 	    psm->stepName = "pretrans";
-	    psm->scriptTag = RPMTAG_PRETRANS;
-	    psm->progTag = RPMTAG_PRETRANSPROG;
-	    xx = rpmpsmStage(psm, PSM_SCRIPT);
+	    progtag = RPMTAG_PRETRANSPROG;
+	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
 
-	    (void)rpmfiFree(p->fi);
+	    xx = rpmteClose(p, ts, 1);
+
 	    p->fi = rpmfiLink(ofi, "pretrans");
 	    (void)rpmfiFree(ofi);
 	    ofi = NULL;
 
-	    xx = rpmteClose(p, ts, 0);
 	}
 	break;
     case RPMTAG_POSTTRANS:
@@ -1547,14 +1547,10 @@ assert(psm != NULL);
 /*@=compdef =usereleased@*/
 assert(psm != NULL);
 	    psm->stepName = "posttrans";
-	    psm->scriptTag = RPMTAG_POSTTRANS;
-	    psm->progTag = RPMTAG_POSTTRANSPROG;
-	    xx = rpmpsmStage(psm, PSM_SCRIPT);
+	    progtag = RPMTAG_POSTTRANSPROG;
+	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
-
-	    xx = rpmteClose(p, ts, 0);	/* XXX reset_fi = 1? */
-
-	    p->fi = rpmfiFree(p->fi);
+	    xx = rpmteClose(p, ts, 1);
 	}
 /*@=nullpass@*/
 	break;

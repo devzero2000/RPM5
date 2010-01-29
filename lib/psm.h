@@ -146,6 +146,9 @@ struct rpmpsm_s {
 extern "C" {
 #endif
 
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
+	/*@*/;
+
 /**
  * Unreference a package state machine instance.
  * @param psm		package state machine

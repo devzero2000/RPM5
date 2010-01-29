@@ -1757,6 +1757,25 @@ static const char * pkgStageString(pkgStage a)
     /*@noteached@*/
 }
 
+#ifdef	REFERENCE
+void rpmpsmSetAsync(rpmpsm psm, int async)
+{
+    assert(psm != NULL);
+    psm->unorderedSuccessor = async;
+}
+#endif
+
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
+{
+    assert(psm != NULL);
+    psm->scriptTag = scriptTag;
+    psm->progTag = progTag;
+    if (scriptTag == RPMTAG_VERIFYSCRIPT) {
+	psm->stepName = "verify";
+    }
+    return rpmpsmStage(psm, PSM_SCRIPT);
+}
+
 /*@-mustmod@*/
 static void rpmpsmFini(void * _psm)
 	/*@modifies _psm @*/

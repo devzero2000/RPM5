@@ -578,6 +578,15 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
     return (te != NULL ? rpmdsFromPRCO(te->PRCO, tag) : NULL);
 }
 
+#ifdef	REFERENCE
+rpmfi rpmteFI(rpmte te)
+{
+    if (te == NULL)
+	return NULL;
+
+    return te->fi; /* XXX take fi reference here? */
+}
+#else
 rpmfi rpmteFI(rpmte te, rpmTag tag)
 {
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
@@ -590,30 +599,17 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 	return NULL;
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
-
-#ifdef	REFERENCE
-+rpmpol rpmteSetPol(rpmte te, rpmpol pol)
-+{
-+	if (te != NULL) {
-+		te->pol = rpmpolFree(te->pol);
-+		if (pol != NULL) {
-+			te->pol = rpmpolLink(pol);
-+		}
-+	}
-+	return NULL;
-+}
-+
-+rpmpol rpmtePol(rpmte te)
-+{
-+	return (te == NULL) ? NULL : te->pol;
-+}
-+
-+static int rpmteHavePolicies(rpmte te)
-+	/*@*/
-+{
-+    return (te != NULL && te->policies);
-+}
 #endif
+
+rpmfi rpmteSetFI(rpmte te, rpmfi fi)
+{
+    if (te != NULL)  {
+	te->fi = rpmfiFree(te->fi);
+	if (fi != NULL)
+	    te->fi = rpmfiLink(fi, __FUNCTION__);
+    }
+    return NULL;
+}
 
 void rpmteColorDS(rpmte te, rpmTag tag)
 {
@@ -899,9 +895,14 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
     	break;
     }
     if (h != NULL) {
-#ifdef	NOTYET
+#ifdef	REFERENCE
 	if (reload_fi) {
 	    te->fi = getFI(te, ts, h);
+	}
+#else
+	if (reload_fi) {
+	    static int scareMem = 0;
+	    te->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	}
 #endif
 	
@@ -931,11 +932,8 @@ int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 	break;
     }
     rpmteSetHeader(te, NULL);
-#ifdef	NOTYET
-    if (reset_fi) {
-	rpmteSetFI(te, NULL);
-    }
-#endif
+    if (reset_fi)
+	(void) rpmteSetFI(te, NULL);
     return 1;
 }
 

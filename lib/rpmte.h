@@ -662,6 +662,9 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
  */
 rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
+/*@null@*/
+rpmfi rpmteSetFI(rpmte te, rpmfi fi)
+	/*@*/;
 
 #ifdef	REFERENCE
 +/** \ingroup rpmte
