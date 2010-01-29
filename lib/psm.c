@@ -1767,11 +1767,15 @@ void rpmpsmSetAsync(rpmpsm psm, int async)
 
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
 {
-    assert(psm != NULL);
+assert(psm != NULL);
     psm->scriptTag = scriptTag;
     psm->progTag = progTag;
-    if (scriptTag == RPMTAG_VERIFYSCRIPT) {
-	psm->stepName = "verify";
+    /* XXX other tags needed? */
+    switch (scriptTag) {
+    default:	break;
+    case RPMTAG_VERIFYSCRIPT:	psm->stepName = "verify";	break;
+    case RPMTAG_PRETRANS:	psm->stepName = "pretrans";	break;
+    case RPMTAG_POSTTRANS:	psm->stepName = "posttrans";	break;
     }
     return rpmpsmStage(psm, PSM_SCRIPT);
 }

@@ -1679,10 +1679,11 @@ if (fi->actions == NULL)
     
     {	char * fn = alloca(fi->fnlen + 1);	/* XXX malloc fi->fn? */
 	static double e = 1.0e-6;
+	size_t n = (fi->fc > 256 ? fi->fc : 256); /* XXX necessary? */
 	size_t m = 0;
 	size_t k = 0;
 	rpmbf bf;
-	rpmbfParams(fi->fc, e, &m, &k);
+	rpmbfParams(n, e, &m, &k);
 	bf = rpmbfNew(m, k, 0);
 	for (i = 0; i < (int)fi->fc; i++) {
 	    const char * dn;

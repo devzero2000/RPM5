@@ -1,8 +1,9 @@
 
 5.2b1 -> 5.3a1
+    - jbj: begin to finalize upgrade fingerprint handling.
     - jbj: satsify Requires: / internally & always, SuSE doesn't package "/".
     - jbj: change rpmlib(PayloadIsLzma) version from 4.4.6 -> 4.4.2 a la SuSE.
-    - jbj: rpmts: refactor rpmtsRun() into smaller routines  a la rpm.org.
+    - jbj: rpmts: refactor rpmtsRun() into smaller routines a la rpm.org.
     - bero: rpm4compat.h: Adjust to changes in the rest of rpm5
     - jbj: rpmdb: refactor dbiSync as internal per-table, eliminate rpmdbSync.
     - jbj: rpmbf: fix: return -1 error on NULL pointers.
