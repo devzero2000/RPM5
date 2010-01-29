@@ -2481,7 +2481,7 @@ assert(keylen == sizeof(he->p.ui64p[0]));
 /*@=mayaliasunique@*/
 	{   uint32_t _tmp = he->p.ui32p[0];
 	    he->p.ui32p[0] = _hton_ui(he->p.ui32p[1]);
-	    he->p.ui32p[1] = _hton_ui(tmp);
+	    he->p.ui32p[1] = _hton_ui(_tmp);
 	}
 	break;
 #endif	/* !defined(__LCLINT__) */

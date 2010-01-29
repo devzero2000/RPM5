@@ -19,7 +19,7 @@
 /*@access dbiIndexSet@*/
 
 /*@unchecked@*/
-extern int _dbi_debug;
+int _dbi_debug;
 
 #if defined(WITH_DB) || defined(WITH_SQLITE)
 
