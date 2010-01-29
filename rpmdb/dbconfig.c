@@ -19,7 +19,7 @@
 /*@access dbiIndexSet@*/
 
 /*@unchecked@*/
-int _dbi_debug;
+extern int _dbi_debug;
 
 #if defined(WITH_DB) || defined(WITH_SQLITE)
 
@@ -439,7 +439,7 @@ DB_READ_UNCOMITTED
 /*@=compmempass =immediatetrans =exportlocal =exportheadervar =type@*/
 
 static void dbiFini(void * _dbi)
-	/*@modifies _dbi @*/
+	/*@*/
 {
     dbiIndex dbi = _dbi;
     if (dbi) {

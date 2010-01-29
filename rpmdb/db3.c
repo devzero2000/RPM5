@@ -795,11 +795,13 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (dbenv == NULL || rc)
 	goto errxit;
 
+/*@-noeffectuncon@*/
 /*@-castfcnptr@*/
     dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
 /*@=castfcnptr@*/
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
+/*@=noeffectuncon@*/
 
  /* 4.1: dbenv->set_alloc(???) */
  /* 4.1: dbenv->set_data_dir(???) */
@@ -937,7 +939,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
     /* XXX capture dbenv->falchk output on stderr. */
+/*@-noeffectuncon@*/
     dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
+/*@=noeffectuncon@*/
     if (dbi->dbi_thread_count >= 8) {
 	xx = dbenv->set_thread_count(dbenv, dbi->dbi_thread_count);
 	xx = cvtdberr(dbi, "dbenv->set_thread_count", xx, _debug);
@@ -1497,6 +1501,7 @@ static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
 {
     int rc = ENOTSUP;;
 
+#if !defined(__LCLINT__)
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     DB * db = dbi->dbi_db;
@@ -1505,6 +1510,7 @@ assert(db != NULL);
     rc = db->associate_foreign(db, secondary, callback, flags);
 #endif
 /*@=moduncon@*/
+#endif	/* !defined(__LCLINT__) */
     rc = cvtdberr(dbi, "db->associate_foreign", rc, _debug);
 
     if (dbi->dbi_debug || dbisecondary->dbi_debug) {

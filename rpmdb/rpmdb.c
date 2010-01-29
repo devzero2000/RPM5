@@ -2254,7 +2254,7 @@ assert((size_t)k.size == sizeof(mi->mi_offset));
 /*@=compdef =retalias =retexpose =usereleased @*/
 }
 
-int rpmmiSort(/*@null@*/ rpmmi mi)
+int rpmmiSort(rpmmi mi)
 {
     int rc = 0;
 
@@ -2328,10 +2328,8 @@ fprintf(stderr, "<-- %s(%p, %p[%u]) rc %d h# %u\n", __FUNCTION__, mi, hdrNums, (
     return rc;
 }
 
-rpmmi rpmmiInit(rpmdb db, rpmTag tag,
-		const void * keyp, size_t keylen)
-	/*@globals rpmmiRock @*/
-	/*@modifies rpmmiRock @*/
+/*@-dependenttrans -exposetrans -globstate @*/
+rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmmi mi = NULL;
@@ -2466,18 +2464,27 @@ assert(keylen == sizeof(he->p.ui16p[0]));
 	memcpy(&he->p.ui16p[1], keyp, keylen);
 	he->p.ui16p[1] = _hton_us(he->p.ui16p[1]);
 	break;
+#if !defined(__LCLINT__)	/* LCL: buggy */
     case RPM_UINT32_TYPE:
 assert(keylen == sizeof(he->p.ui32p[0]));
 	mi->mi_keylen = keylen;
+/*@-mayaliasunique@*/
 	mi->mi_keyp = memcpy((he->p.ui32p = xmalloc(keylen)), keyp, keylen);
+/*@=mayaliasunique@*/
 	he->p.ui32p[0] = _hton_ui(he->p.ui32p[0]);
 	break;
     case RPM_UINT64_TYPE:
 assert(keylen == sizeof(he->p.ui64p[0]));
 	mi->mi_keylen = keylen;
+/*@-mayaliasunique@*/
 	mi->mi_keyp = memcpy((he->p.ui64p = xmalloc(keylen)), keyp, keylen);
-	he->p.ui64p[0] = _hton_ui(he->p.ui64p[0]);
+/*@=mayaliasunique@*/
+	{   uint32_t _tmp = he->p.ui32p[0];
+	    he->p.ui32p[0] = _hton_ui(he->p.ui32p[1]);
+	    he->p.ui32p[1] = _hton_ui(tmp);
+	}
 	break;
+#endif	/* !defined(__LCLINT__) */
     case RPM_BIN_TYPE:
     case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
     case RPM_STRING_TYPE:
@@ -2503,8 +2510,9 @@ assert(keylen == sizeof(he->p.ui64p[0]));
     mi->mi_re = NULL;
 
 exit:
-/*@i@*/ return mi;
+    return mi;
 }
+/*@=dependenttrans =exposetrans =globstate @*/
 
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
@@ -2629,7 +2637,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 	return 0;
 
 if (_rpmdb_debug)
-fprintf(stderr, "--> %s(%p, %u, %p, %p) h# %u\n", __FUNCTION__, db, (unsigned)iid, h, ts, hdrNum);
+fprintf(stderr, "--> %s(%p, %u, %p, %p) h# %u\n", __FUNCTION__, db, (unsigned)iid, h, ts, (unsigned)hdrNum);
 
 assert(headerIsEntry(h, RPMTAG_REMOVETID) == 0);	/* XXX sanity */
 

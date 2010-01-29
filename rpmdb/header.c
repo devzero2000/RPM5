@@ -502,7 +502,7 @@ static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmui
 		unsigned char * dataStart,
 		/*@null@*/ const unsigned char * dataEnd,
 		rpmint32_t regionid)
-	/*@modifies *entry, *dataStart @*/
+	/*@modifies *entry @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTagData p;

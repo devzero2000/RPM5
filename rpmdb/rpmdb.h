@@ -66,7 +66,6 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 struct _dbiIndexItem {
     uint32_t hdrNum;			/*!< header instance in db */
     uint32_t tagNum;			/*!< tag index in header */
-    uint32_t fpNum;			/*!< finger print index */
 };
 
 /** \ingroup dbi
@@ -1295,7 +1294,7 @@ int rpmmiGrowBasename(rpmmi mi, const char * bn)
  * @param mi		rpm database iterator
  * @return		0 on success
  */
-int rpmmiSort(rpmmi mi)
+int rpmmiSort(/*@null@*/ rpmmi mi)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb

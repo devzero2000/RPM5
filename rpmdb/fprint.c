@@ -297,6 +297,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 
 static inline /*@null@*/
 struct fingerPrint_s * __rpmfiFpsIndex(rpmfi fi, int ix)
+	/*@*/
 {
     struct fingerPrint_s * fps = NULL;
     if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < (int)fi->fc) {
@@ -307,12 +308,14 @@ struct fingerPrint_s * __rpmfiFpsIndex(rpmfi fi, int ix)
 
 static inline
 int __rpmfiFX(rpmfi fi)
+	/*@*/
 {
     return (fi != NULL ? fi->i : -1);
 }
 
 static inline
 int __rpmfiSetFX(rpmfi fi, int fx)
+	/*@*/
 {
     int i = -1;
 
@@ -326,6 +329,7 @@ int __rpmfiSetFX(rpmfi fi, int fx)
 
 static inline
 const char * __rpmfiFLink(rpmfi fi)
+	/*@*/
 {
     const char * flink = NULL;
 
@@ -338,6 +342,7 @@ const char * __rpmfiFLink(rpmfi fi)
 
 static inline
 rpmfi __rpmteFI(rpmte te, rpmTag tag)
+	/*@*/
 {
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
@@ -362,7 +367,9 @@ rpmfi __rpmteFI(rpmte te, rpmTag tag)
  * 3) rstrscat(NULL,NULL) returns NULL
  * 4) *dest and argument strings can overlap
  */
-static char * rstrscat(char **dest, const char *arg, ...)
+static
+char * rstrscat(char **dest, const char *arg, ...)
+	/*@modifies *dest @*/
 {
     va_list ap;
     size_t arg_size, dst_size;
@@ -437,12 +444,12 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
     current_fp.subDir = endsubdir = NULL; // no subDir for now
 
     while (endbasename < currentsubdir + lensubDir - 1) {
-	char found;
+	int found;
 	found = 0;
 
 	recs = NULL;
 	numRecs = 0;
-	htGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
+	(void) htGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
 
 	for (i = 0; i < numRecs; i++) {
 	    rpmfi foundfi;
@@ -454,21 +461,21 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
 	    fiFX = __rpmfiFX(foundfi);
 
 	    filenr = recs[i].fileno;
-	    __rpmfiSetFX(foundfi, filenr);
+	    (void) __rpmfiSetFX(foundfi, filenr);
 	    linktarget = __rpmfiFLink(foundfi);
 
 	    if (linktarget && *linktarget != '\0') {
 		/* this "directory" is a symlink */
 		link = NULL;
 		if (*linktarget != '/') {
-		    rstrscat(&link, current_fp.entry->dirName,
+		    (void) rstrscat(&link, current_fp.entry->dirName,
 				 current_fp.subDir ? "/" : "",
 				 current_fp.subDir ? current_fp.subDir : "",
 				 "/", NULL);
 		}
-		rstrscat(&link, linktarget, "/", NULL);
+		(void) rstrscat(&link, linktarget, "/", NULL);
 		if (strlen(endbasename+1)) {
-		    rstrscat(&link, endbasename+1, "/", NULL);
+		    (void) rstrscat(&link, endbasename+1, "/", NULL);
 		}
 
 		*fp = fpLookup(fpc, link, fp->baseName, 0);
@@ -495,10 +502,10 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
 		 && endbasename < currentsubdir + lensubDir - 1)
 		    endbasename++;
 		*endbasename = '\0';
-		break;
+		/*@innerbreak@*/ break;
 
 	    }
-	    __rpmfiSetFX(foundfi, fiFX);
+	    (void) __rpmfiSetFX(foundfi, fiFX);
 	}
 
 	if (symlinkcount > 50) {

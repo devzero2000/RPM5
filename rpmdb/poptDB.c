@@ -17,8 +17,10 @@
 
 #include "debug.h"
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _dbi_debug;
+/*@=redecl@*/
 
 /*@unchecked@*/
 struct rpmQVKArguments_s rpmDBArgs;
