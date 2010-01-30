@@ -3124,6 +3124,7 @@ rpmGetPath(const char *path, ...)
     char *buf = alloca(bufn);
     const char * s;
     char * t, * te;
+    int slashed = 0;
     va_list ap;
 
     if (path == NULL)
@@ -3136,15 +3137,28 @@ rpmGetPath(const char *path, ...)
 
     va_start(ap, path);
     while ((s = va_arg(ap, const char *)) != NULL) {
+	/* Specifically requested pesky trailing '/'? */
+	slashed = (s[0] == '/' && s[1] == '\0');
 	te = stpcpy(te, s);
-	*te = '\0';
     }
     va_end(ap);
+    *te = '\0';
+
 /*@-modfilesys@*/
     (void) expandMacros(NULL, NULL, buf, bufn);
 /*@=modfilesys@*/
 
+    /* Note: rpmCleanPath will strip pesky trailing '/'. */
     (void) rpmCleanPath(buf);
+
+    /* Re-append specifically requested pesky trailing '/'. */
+    if (slashed) {
+	size_t nb = strlen(buf);
+	if (buf[nb-1] != '/')
+	    buf[nb++] = '/';
+	buf[nb] = '\0';
+    }
+
     return xstrdup(buf);	/* XXX xstrdup has side effects. */
 }
 

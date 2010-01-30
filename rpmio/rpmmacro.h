@@ -250,6 +250,7 @@ char * rpmMCExpand(/*@null@*/ MacroContext mc, /*@null@*/ const char * arg, ...)
 
 /**
  * Canonicalize file path.
+ * @note Path canonicalization always removes the pesky trailing '/'.
  * @param path		path to canonicalize (in-place)
  * @return		pointer to path
  */
@@ -259,6 +260,7 @@ char * rpmCleanPath(/*@returned@*/ /*@null@*/ char * path)
 
 /**
  * Return (malloc'ed) expanded, canonicalized, file path.
+ * @note A final "/" argument will force append a pesky trailing '/'.
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */

@@ -450,14 +450,20 @@ static const char * rpmcliInstallElementPath(/*@unused@*/ rpmts ts,
 	ARGV_t nav = NULL;
 	int nac = 0;
 
-	/* Insure only directory paths are matched. */
+	/* Make sure only directory paths are matched. */
 	fn = rpmGetPath(dav[i], "/", NULL);
 	xx = rpmGlob(fn, &nac, &nav);
 
-	/* Insure that final directory paths have trailing '/' */
 	if (nav != NULL)
 	for (i = 0; i < nac; i++) {
-	    char * t = rpmExpand(nav[i], "/", NULL);
+	    const char * t = nav[i];
+	    size_t nt = strlen(t);
+
+	    /* Make sure that final directory paths have trailing '/' */
+	    if (!(nt > 0 && t[nt-1] == '/'))
+		continue;
+
+	    t = rpmExpand(t, "/", NULL);
 	    nav[i] = _free(nav[i]);
 	    nav[i] = t;
 	}

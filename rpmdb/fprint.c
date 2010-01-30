@@ -269,7 +269,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     int xx;
 
     he->tag = RPMTAG_BASENAMES;
-    xx = headerGet(h, he->tag, &he->t, he->p, &he->c);
+    xx = headerGet(h, he, 0);
     baseNames = he_p.argv;
     fileCount = he->c;
     if (!xx)
@@ -290,6 +290,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 }
 #endif
 
+/* XXX fpLookupSubdir should be moved to lib/rpmfi.c somewhen. */
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #define	_RPMTE_INTERNAL
@@ -302,10 +303,9 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
     rpmfi fi = p->fi;
     fingerPrint *const fps = fi->fps + filenr;
     
-    char link[PATH_MAX];
-
     struct fingerPrint_s current_fp;
     fingerPrint * cfp = &current_fp;
+    int symlinkcount = 0;
 
     const char * s;
     const char * se;
@@ -335,17 +335,15 @@ restart:
     while (te < se) {
 	struct rpmffi_s * recs;
 	int numRecs;
-	int symlinkcount;
 	int i;
 
 	recs = NULL;
 	numRecs = 0;
 	(void) htGetEntry(symlinks, cfp, &recs, &numRecs, NULL);
-	symlinkcount = 0;
 
 	for (i = 0; i < numRecs; i++) {
 	    const char * flink;
-	    char * le;
+	    char * link;
 	    int fx;
 
 	    fx = recs[i].fileno;
@@ -354,34 +352,24 @@ restart:
 	    if (!(flink && *flink != '\0'))
 		continue;
 
-	    /* Follow a "directory" symlink. */
-	    le = link;
-	    *le = '\0';
+	    /* Build a new (directory) fingerprint path. */
+	    /* XXX Paths containing '%' will be macro expanded. */
+	    if (*flink == '/')
+		link = rpmGetPath(flink, "/", te+1, "/", NULL);
+	    else if (cfp->subDir == NULL)
+		link = rpmGetPath(cfp->entry->dirName, "/",
+			flink, "/", te+1, "/", NULL);
+	    else
+		link = rpmGetPath(cfp->entry->dirName, "/", cfp->subDir, "/",
+			flink, "/", te+1, "/", NULL);
 
-	    /* Prepend current path for iff relative symlink. */
-	    if (*flink != '/') {
-		le = stpcpy(le, cfp->entry->dirName);
-		if (cfp->subDir) {
-		    if (le[-1] != '/') *le++ = '/';
-		    le = stpcpy(le, cfp->subDir);
-		}
-		if (le[-1] != '/') *le++ = '/';
-	    }
+#ifdef	NOTNOW	/* XXX avoid strlen on fast path */
+assert(link[strlen(link)-1] == '/');
+#endif
 
-	    /* Append the symlink destination to the path. */
-	    le = stpcpy(le, flink);
-
-	    /* Append the remaining subdirs to search (if any). */
-	    if (te[1] != '\0') {
-		if (le[-1] != '/') *le++ = '/';
-		le = stpcpy(le, te+1);
-	    }
-	    if (le[-1] != '/') *le++ = '/';
-	    *le = '\0';
-	    (void) rpmCleanPath(link);
-
-	    /* Find a new fingerprint starting point. */
+	    /* Find the new (directory) fingerprint starting point. */
 	    *fps = fpLookup(fpc, link, fps->baseName, 0);
+	    link = _free(link);
 
 	    s = _free(s);
 	    if (++symlinkcount > 50)
@@ -396,7 +384,7 @@ restart:
 	t = te;
 	cfp->baseName = t + 1;
 
-	/* set baseName to the next lower dir */
+	/* Set baseName to the next lower dir. */
 	te++;
 	while (*te != '\0' && *te != '/')
 	    te++;

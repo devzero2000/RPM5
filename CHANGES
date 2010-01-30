@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmio: teach rpmGetPath() to append explicit pesky trailing '/'.
     - jbj: hrmib: fix: add lazy Mkdir to instantiate in chroot's.
     - jbj: begin to finalize upgrade fingerprint handling.
     - jbj: satsify Requires: / internally & always, SuSE doesn't package "/".
