@@ -593,6 +593,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	/*@modifies h, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    static int oneshot;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * fn = NULL;
     int xx;
@@ -604,6 +605,20 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
     }
 
     if (fn == NULL)
+	goto exit;
+
+    /* Lazily create the directory in chroot's if configured. */
+    if (!oneshot) {
+	const char * dn = dirname(fn);
+	mode_t _mode = 0755;
+	uid_t _uid = 0;
+	gid_t _gid = 0;
+	/* If not a directory, then disable, else don't retry. */
+	errno = 0;
+	oneshot = (rpmioMkpath(dn, _mode, _uid, _gid) ? -1 : 1);
+    }
+    /* If directory is AWOL, don't bother exporting info. */
+    if (oneshot < 0)
 	goto exit;
 
     if (adding) {
