@@ -295,250 +295,117 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 
-static inline /*@null@*/
-struct fingerPrint_s * __rpmfiFpsIndex(rpmfi fi, int ix)
-	/*@*/
-{
-    struct fingerPrint_s * fps = NULL;
-    if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < (int)fi->fc) {
-	fps = fi->fps + ix;
-    }
-    return fps;
-}
-
-static inline
-int __rpmfiFX(rpmfi fi)
-	/*@*/
-{
-    return (fi != NULL ? fi->i : -1);
-}
-
-static inline
-int __rpmfiSetFX(rpmfi fi, int fx)
-	/*@*/
-{
-    int i = -1;
-
-    if (fi != NULL && fx >= 0 && fx < (int)fi->fc) {
-	i = fi->i;
-	fi->i = fx;
-	fi->j = fi->dil[fi->i];
-    }
-    return i;
-}
-
-static inline
-const char * __rpmfiFLink(rpmfi fi)
-	/*@*/
-{
-    const char * flink = NULL;
-
-    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
-	if (fi->flinks != NULL)
-	    flink = fi->flinks[fi->i];
-    }
-    return flink;
-}
-
-static inline
-rpmfi __rpmteFI(rpmte te, rpmTag tag)
-	/*@*/
-{
-    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
-    if (te == NULL)
-	return NULL;
-
-    if (tag == RPMTAG_BASENAMES)
-	return te->fi;
-    else
-	return NULL;
-    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
-}
-
-/*
- * Concatenate strings with dynamically (re)allocated
- * memory what prevents static buffer overflows by design.
- * *dest is reallocated to the size of strings to concatenate.
- * List of strings has to be NULL terminated.
- *
- * Note:
- * 1) char *buf = rstrscat(NULL,"string",NULL); is the same like rstrscat(&buf,"string",NULL);
- * 2) rstrscat(&buf,NULL) returns buf
- * 3) rstrscat(NULL,NULL) returns NULL
- * 4) *dest and argument strings can overlap
- */
-static
-char * rstrscat(char **dest, const char *arg, ...)
-	/*@modifies *dest @*/
-{
-    va_list ap;
-    size_t arg_size, dst_size;
-    const char *s;
-    char *dst, *p;
-
-    dst = dest ? *dest : NULL;
-
-    if ( arg == NULL ) {
-        return dst;
-    }
-
-    va_start(ap, arg);
-    for (arg_size=0, s=arg; s; s = va_arg(ap, const char *))
-        arg_size += strlen(s);
-    va_end(ap);
-
-    dst_size = dst ? strlen(dst) : 0;
-    dst = xrealloc(dst, dst_size+arg_size+1);    /* include '\0' */
-    p = &dst[dst_size];
-
-    va_start(ap, arg);
-    for (s = arg; s; s = va_arg(ap, const char *)) {
-        size_t size = strlen(s);
-        memmove(p, s, size);
-        p += size;
-    }
-    *p = '\0';
-
-    if ( dest ) {
-        *dest = dst;
-    }
-
-    return dst;
-}
-
 void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
 		void * _p, int filenr)
 {
     rpmte p = _p;
-    rpmfi fi = __rpmteFI(p, RPMTAG_BASENAMES);
-    struct fingerPrint_s current_fp;
-    char * endsubdir;
-    char * endbasename;
-    char * currentsubdir;
-    size_t lensubDir;
+    rpmfi fi = p->fi;
+    fingerPrint *const fps = fi->fps + filenr;
+    
+    char link[PATH_MAX];
 
-    struct rpmffi_s * recs;
-    int numRecs;
-    int i, fiFX;
-    fingerPrint * fp = __rpmfiFpsIndex(fi, filenr);
-    int symlinkcount = 0;
+    struct fingerPrint_s current_fp;
+    fingerPrint * cfp = &current_fp;
+
+    const char * s;
+    const char * se;
+    size_t ns;
+    char * t;
+    char * te;
 
     struct rpmffi_s * ffi = xmalloc(sizeof(*ffi));
     ffi->p = p;
     ffi->fileno = filenr;
 
-    if (fp->subDir == NULL) {
+restart:
+    *cfp = *fps;
+    if (cfp->subDir == NULL)
 	goto exit;
-    }
 
-    lensubDir = strlen(fp->subDir);
-    current_fp = *fp;
-    currentsubdir = xstrdup(fp->subDir);
+    s = cfp->baseName = te = xstrdup(cfp->subDir);
+    ns = strlen(s);
+    se = s + ns - 1;
+    cfp->subDir = t = NULL; // no subDir for now
 
     /* Set baseName to the upper most dir */
-    current_fp.baseName = endbasename = currentsubdir;
-    while (*endbasename != '/' && endbasename < currentsubdir + lensubDir - 1)
-	endbasename++;
-    *endbasename = '\0';
+    while (*te != '/' && te < se)
+	te++;
+    *te = '\0';
 
-    current_fp.subDir = endsubdir = NULL; // no subDir for now
-
-    while (endbasename < currentsubdir + lensubDir - 1) {
-	int found;
-	found = 0;
+    while (te < se) {
+	struct rpmffi_s * recs;
+	int numRecs;
+	int symlinkcount;
+	int i;
 
 	recs = NULL;
 	numRecs = 0;
-	(void) htGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
+	(void) htGetEntry(symlinks, cfp, &recs, &numRecs, NULL);
+	symlinkcount = 0;
 
 	for (i = 0; i < numRecs; i++) {
-	    rpmfi foundfi;
-	    int filenr;
-	    char const *linktarget;
-	    char *link;
+	    const char * flink;
+	    char * le;
+	    int fx;
 
-	    foundfi =  __rpmteFI(recs[i].p, RPMTAG_BASENAMES);
-	    fiFX = __rpmfiFX(foundfi);
+	    fx = recs[i].fileno;
+	    fi =  recs[i].p->fi;
+	    flink = fi->flinks[fx];
+	    if (!(flink && *flink != '\0'))
+		continue;
 
-	    filenr = recs[i].fileno;
-	    (void) __rpmfiSetFX(foundfi, filenr);
-	    linktarget = __rpmfiFLink(foundfi);
+	    /* Follow a "directory" symlink. */
+	    le = link;
+	    *le = '\0';
 
-	    if (linktarget && *linktarget != '\0') {
-		/* this "directory" is a symlink */
-		link = NULL;
-		if (*linktarget != '/') {
-		    (void) rstrscat(&link, current_fp.entry->dirName,
-				 current_fp.subDir ? "/" : "",
-				 current_fp.subDir ? current_fp.subDir : "",
-				 "/", NULL);
+	    /* Prepend current path for iff relative symlink. */
+	    if (*flink != '/') {
+		le = stpcpy(le, cfp->entry->dirName);
+		if (cfp->subDir) {
+		    if (le[-1] != '/') *le++ = '/';
+		    le = stpcpy(le, cfp->subDir);
 		}
-		(void) rstrscat(&link, linktarget, "/", NULL);
-		if (strlen(endbasename+1)) {
-		    (void) rstrscat(&link, endbasename+1, "/", NULL);
-		}
-
-		*fp = fpLookup(fpc, link, fp->baseName, 0);
-
-		free(link);
-		free(currentsubdir);
-		symlinkcount++;
-
-		/* setup current_fp for the new path */
-		found = 1;
-		current_fp = *fp;
-		if (fp->subDir == NULL) {
-		    /* directory exists - no need to look for symlinks */
-		    goto exit;
-		}
-		lensubDir = strlen(fp->subDir);
-		currentsubdir = xstrdup(fp->subDir);
-		current_fp.subDir = endsubdir = NULL; // no subDir for now
-
-		/* Set baseName to the upper most dir */
-		current_fp.baseName = currentsubdir;
-		endbasename = currentsubdir;
-		while (*endbasename != '/'
-		 && endbasename < currentsubdir + lensubDir - 1)
-		    endbasename++;
-		*endbasename = '\0';
-		/*@innerbreak@*/ break;
-
+		if (le[-1] != '/') *le++ = '/';
 	    }
-	    (void) __rpmfiSetFX(foundfi, fiFX);
+
+	    /* Append the symlink destination to the path. */
+	    le = stpcpy(le, flink);
+
+	    /* Append the remaining subdirs to search (if any). */
+	    if (te[1] != '\0') {
+		if (le[-1] != '/') *le++ = '/';
+		le = stpcpy(le, te+1);
+	    }
+	    if (le[-1] != '/') *le++ = '/';
+	    *le = '\0';
+	    (void) rpmCleanPath(link);
+
+	    /* Find a new fingerprint starting point. */
+	    *fps = fpLookup(fpc, link, fps->baseName, 0);
+
+	    s = _free(s);
+	    if (++symlinkcount > 50)
+		goto exit;
+	    goto restart;
 	}
 
-	if (symlinkcount > 50) {
-	    // found too many symlinks in the path
-	    // most likley a symlink cicle
-	    // giving up
-	    // TODO warning/error
-	    break;
-	}
-
-	if (found) {
-	    continue; // restart loop after symlink
-	}
-
-	if (current_fp.subDir == NULL) {
-            /* after first round set former baseName as subDir */
-	    current_fp.subDir = currentsubdir;
-	} else {
-	    *endsubdir = '/'; // rejoin the former baseName with subDir
-	}
-	endsubdir = endbasename;
+	if (cfp->subDir == NULL)
+	    cfp->subDir = s;
+	else
+	    *t = '/';
+	t = te;
+	cfp->baseName = t + 1;
 
 	/* set baseName to the next lower dir */
-	endbasename++;
-	while (*endbasename != '\0' && *endbasename != '/')
-	    endbasename++;
-	*endbasename = '\0';
-	current_fp.baseName = endsubdir + 1;
+	te++;
+	while (*te != '\0' && *te != '/')
+	    te++;
+	*te = '\0';
 
     }
-    free(currentsubdir);
-exit:
-    htAddEntry(fphash, fp, ffi);
-    return;
+    s = _free(s);
 
+exit:
+    htAddEntry(fphash, fps, ffi);
+    return;
 }
