@@ -61,6 +61,7 @@ suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
 mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
 caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
 idmsroot =	$(abs_top_builddir)/tests/tmp/IDMS
+unityroot =	$(abs_top_builddir)/tests/tmp/UNITY
 
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
 rpmdb_Tables = \
@@ -315,9 +316,17 @@ check-IDMS:
 	@echo "=== $@ ==="
 	$(sudo) rm -rf $(idmsroot) tmp/repackage
 	@rm -rf tmp/idms-pkgs
-	@mkdir -p $(caixaroot) tmp/idms-pkgs tmp/repackage
+	@mkdir -p $(idmsroot) tmp/idms-pkgs tmp/repackage
 	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) tmp/idms-pkgs/*.rpm
+
+check-Unity:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(unityroot) tmp/repackage
+	@rm -rf tmp/unity-pkgs
+	@mkdir -p $(unityroot) tmp/unity-pkgs tmp/repackage
+	@cd tmp/unity-pkgs && $(wget) -i ../../ref/unity-minimal.x86_64.manifest
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(unityroot) tmp/unity-pkgs/*.rpm
 
 .PHONY:	check-triggers
 check-triggers:
@@ -407,6 +416,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
-	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) tmp/repackage
+	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) $(unityroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
