@@ -258,11 +258,14 @@ check-cAos:
 	$(sudo) rm -rf $(caosroot) tmp/repackage
 	@rm -rf tmp/cAos-2 tmp/cAos-3
 	@mkdir -p $(caosroot) tmp/cAos-2 tmp/cAos-3 tmp/repackage
-	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-bash.i386.manifest
-	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-2/*.rpm cAos2-stub/*.noarch.rpm
+#	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-bash.i386.manifest
+#	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-2/*.rpm cAos2-stub/*.noarch.rpm
+	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-minimal.i386.manifest
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caosroot) tmp/cAos-2/*.rpm
 	@cd tmp/cAos-3 && $(wget) -i ../../ref/cAos3-bash.i386.manifest
-	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-3/ncurses-libs-*.rpm
-	-$(sudo) $(rpm) -Uvh -r $(caosroot) `echo tmp/cAos-3/*.rpm | sed -e 's,tmp/cAos-3/ncurses-libs[^ ]*,,'`
+	@-rm -f tmp/cAos-3/mktemp-1.5-2.caos.i386.rpm
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos --nodeps -r $(caosroot) tmp/cAos-3/ncurses-libs-*.rpm
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos --nodeps -r $(caosroot) `echo tmp/cAos-3/*.rpm | sed -e 's,tmp/cAos-3/ncurses-libs[^ ]*,,'`
 
 check-CentOS:
 	@echo "=== $@ ==="
