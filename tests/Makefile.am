@@ -270,9 +270,9 @@ check-CentOS:
 	@rm -rf tmp/CentOS5.1 tmp/CentOS5.2
 	@mkdir -p $(centosroot) tmp/CentOS5.1 tmp/CentOS5.2 tmp/repackage
 	@cd tmp/CentOS5.1 && $(wget) -i ../../ref/CentOS5.1-bash.i386.manifest
-	$(sudo) $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.1/*.rpm
+	$(sudo) strace -e trace=open,chroot -o /tmp/C51.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.1/*.rpm
 	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/CentOS5.2-bash.i386.manifest
-	$(sudo) $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
+	$(sudo) strace -e trace=open,chroot -o /tmp/C52.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
 
 check-SuSE:
 	@echo "=== $@ ==="
@@ -280,19 +280,20 @@ check-SuSE:
 	@rm -rf tmp/SuSE11.1 tmp/SuSE11.2
 	@mkdir -p $(suseroot) tmp/SuSE11.1 tmp/SuSE11.2 tmp/repackage
 	@cd tmp/SuSE11.1 && $(wget) -i ../../ref/SuSE11.1-bash.i586.manifest
-	-$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.1/*.rpm
+	$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.1/*.rpm
 	@cd tmp/SuSE11.2 && $(wget) -i ../../ref/SuSE11.2-bash.i586.manifest
-	-$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.2/*.rpm
+	$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.2/*.rpm
 
 check-Mandriva:
 	@echo "=== $@ ==="
 	$(sudo) rm -rf $(mandrivaroot) tmp/repackage
-	@rm -rf tmp/Mandriva2009.0 tmp/Mandriva2009.1
-	@mkdir -p $(mandrivaroot) tmp/Mandriva2009.0 tmp/Mandriva2009.1 tmp/repackage
+	@rm -rf tmp/Mandriva2009.0 tmp/Mandriva2010.0
+	@mkdir -p $(mandrivaroot) tmp/Mandriva2009.0 tmp/Mandriva2010.0 tmp/repackage
 	@cd tmp/Mandriva2009.0 && $(wget) -i ../../ref/Mandriva2009.0-bash.i586.manifest
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(mandrivaroot) tmp/Mandriva2009.0/*.rpm
-#	@cd tmp/Mandriva2009.1 && $(wget) -i ../../ref/Mandriva2009.1-bash.i586.manifest
-#	-$(sudo) $(rpm) -Uvh -r $(mandrivaroot) tmp/Mandriva2009.1/*.rpm
+	@cd tmp/Mandriva2010.0 && $(wget) -i ../../ref/Mandriva2010.0-bash.i586.manifest
+	-rm -f tmp/Mandriva2010.0/ifmetric-0.3-7mnb2.i586.rpm
+	-$(sudo) $(rpm) -Uvh -r $(mandrivaroot) tmp/Mandriva2010.0/*.rpm
 
 .PHONY:	check-triggers
 check-triggers:

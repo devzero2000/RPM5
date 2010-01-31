@@ -35,7 +35,7 @@ Features provided by rpmlib installer:
     rpmlib(PartialHardlinkSets) = 4.0.4-1
     rpmlib(PayloadFilesHavePrefix) = 4.0-1
     rpmlib(PayloadIsBzip2) = 3.0.5-1
-    rpmlib(PayloadIsLzma) = 4.4.6-1
+    rpmlib(PayloadIsLzma) = 4.4.2-1
     rpmlib(PayloadIsUstar) = 4.4.4-1
     rpmlib(PayloadIsXz) = 5.2-1
     rpmlib(ScriptletInterpreterArgs) = 4.0.3-1
@@ -45,14 +45,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5986.66
+    cpuinfo(bogomips) = 5988.29
     cpuinfo(bts)
     cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2993.332
+    cpuinfo(cpu_MHz) = 2994.145
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
