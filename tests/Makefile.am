@@ -59,6 +59,7 @@ caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
 centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
 suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
 mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
+caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
 
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
 rpmdb_Tables = \
@@ -272,9 +273,9 @@ check-CentOS:
 	$(sudo) rm -rf $(centosroot) tmp/repackage
 	@rm -rf tmp/CentOS5.1 tmp/CentOS5.2
 	@mkdir -p $(centosroot) tmp/CentOS5.1 tmp/CentOS5.2 tmp/repackage
-	@cd tmp/CentOS5.1 && $(wget) -i ../../ref/CentOS5.1-bash.i386.manifest
+	@cd tmp/CentOS5.1 && $(wget) -i ../../ref/centos5.1-bash.i386.manifest
 	$(sudo) strace -e trace=open,chroot -o /tmp/C51.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.1/*.rpm
-	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/CentOS5.2-bash.i386.manifest
+	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/centos5.2-bash.i386.manifest
 	$(sudo) strace -e trace=open,chroot -o /tmp/C52.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
 
 check-SuSE:
@@ -297,6 +298,17 @@ check-Mandriva:
 	@cd tmp/Mandriva2010.0 && $(wget) -i ../../ref/Mandriva2010.0-bash.i586.manifest
 	-rm -f tmp/Mandriva2010.0/ifmetric-0.3-7mnb2.i586.rpm
 	-$(sudo) $(rpm) -Uvh -r $(mandrivaroot) tmp/Mandriva2010.0/*.rpm
+
+check-Caixa:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(caixaroot) tmp/repackage
+	@rm -rf tmp/CM12 tmp/CM14
+	@mkdir -p $(caixaroot) tmp/CM12 tmp/CM14 tmp/repackage
+	@cd tmp/CM12 && $(wget) -i ../../ref/cm12-bash.i586.manifest
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM12/*.rpm
+	@cd tmp/CM14 && $(wget) -i ../../ref/cm14-bash.i586.manifest
+#	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
 
 .PHONY:	check-triggers
 check-triggers:
@@ -386,6 +398,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
-	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) tmp/repackage
+	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
