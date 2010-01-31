@@ -60,6 +60,7 @@ centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
 suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
 mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
 caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
+idmsroot =	$(abs_top_builddir)/tests/tmp/IDMS
 
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
 rpmdb_Tables = \
@@ -310,6 +311,14 @@ check-Caixa:
 #	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
 
+check-IDMS:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(idmsroot) tmp/repackage
+	@rm -rf tmp/idms-pkgs
+	@mkdir -p $(caixaroot) tmp/idms-pkgs tmp/repackage
+	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) tmp/idms-pkgs/*.rpm
+
 .PHONY:	check-triggers
 check-triggers:
 	@echo "=== $@ ==="
@@ -398,6 +407,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
-	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) tmp/repackage
+	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
