@@ -108,7 +108,7 @@ int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
 	break;
     }
 if (_rpmbf_debug)
-fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n);
+fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u] rc %d\n", __FUNCTION__, bf, s, (unsigned)bf->m, (unsigned)bf->k, (unsigned)bf->n, rc);
     return rc;
 }
 
