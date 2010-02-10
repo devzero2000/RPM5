@@ -180,6 +180,7 @@ LIBRPM_0
     rpmfiSetFState;
     rpmfiFUser;
     rpmfiFX;
+    rpmfiSetHeader;
     rpmfiInclude;
     rpmfiInit;
     rpmfiInitD;

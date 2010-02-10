@@ -174,8 +174,31 @@ const char * rpmfiFN(rpmfi fi)
 void * rpmfiFNBF(rpmfi fi)
 {
     void * _fnbf = NULL;
-    if (fi != NULL)
+    if (fi != NULL) {
+	if (fi->_fnbf == NULL) {
+	    char * fn = alloca(fi->fnlen + 1);
+	    static double e = 1.0e-6;
+	    size_t n = (fi->fc > 256 ? fi->fc : 256); /* XXX necessary? */
+	    size_t m = 0;
+	    size_t k = 0;
+	    rpmbf bf;
+	    int i;
+
+	    rpmbfParams(n, e, &m, &k);
+	    bf = rpmbfNew(m, k, 0);
+	    for (i = 0; i < (int)fi->fc; i++) {
+		const char * dn;
+		int xx;
+		dn = NULL;
+		(void) urlPath(fi->dnl[fi->dil[i]], &dn);
+		dn = stpcpy(stpcpy(fn, dn), fi->bnl[i]);
+		xx = rpmbfAdd(bf, fn, (size_t)(dn - fn));
+assert(xx == 0);
+	    }
+	    fi->_fnbf = bf;
+	}
 	_fnbf = fi->_fnbf;
+    }
     return _fnbf;
 }
 
@@ -1679,25 +1702,6 @@ if (fi->actions == NULL)
 	    fi->fnlen = fnlen;
     }
     
-    {	char * fn = alloca(fi->fnlen + 1);	/* XXX malloc fi->fn? */
-	static double e = 1.0e-6;
-	size_t n = (fi->fc > 256 ? fi->fc : 256); /* XXX necessary? */
-	size_t m = 0;
-	size_t k = 0;
-	rpmbf bf;
-	rpmbfParams(n, e, &m, &k);
-	bf = rpmbfNew(m, k, 0);
-	for (i = 0; i < (int)fi->fc; i++) {
-	    const char * dn;
-	    dn = NULL;
-	    (void) urlPath(fi->dnl[fi->dil[i]], &dn);
-	    dn = stpcpy(stpcpy(fn, dn), fi->bnl[i]);
-	    xx = rpmbfAdd(bf, fn, (size_t)(dn - fn));
-assert(xx == 0);
-	}
-	fi->_fnbf = bf;
-    }
-
     fi->dperms = 0755;
     fi->fperms = 0644;
 

@@ -1561,7 +1561,7 @@ rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const Spec spec = specp;
     Package pkg = pkgp;
-    rpmfi fi = pkg->cpioList;
+    rpmfi fi = pkg->fi;
     rpmfc fc = NULL;
     rpmds ds;
     int flags = 0x2;	/* XXX no filtering, !scareMem */
