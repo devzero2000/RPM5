@@ -736,6 +736,7 @@ struct rpmBuildArguments_s {
     const char * passPhrase;	/*!< Pass phrase. */
 /*@only@*/ /*@null@*/
     const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
+    const char * specFile;	/*!< from --rebuild/--recompile build */
     int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
     int noLang;			/*!< from --nolang */

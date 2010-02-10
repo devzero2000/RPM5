@@ -394,15 +394,15 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
-   QVA_t ia = &rpmIArgs;
+    QVA_t ia = &rpmIArgs;
 #endif
 
 #if defined(IAM_RPMDB)
-   QVA_t da = &rpmDBArgs;
+    QVA_t da = &rpmDBArgs;
 #endif
 
 #if defined(IAM_RPMK)
-   QVA_t ka = &rpmQVKArgs;
+    QVA_t ka = &rpmQVKArgs;
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -781,22 +781,21 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    const char * specFile = NULL;
-
 	    if (nbuilds++ > 0) {
 		rpmFreeMacros(NULL);
 		rpmFreeRpmrc();
 		(void) rpmReadConfigFiles(NULL, NULL);
 	    }
+	    ba->specFile = NULL;
 	    ba->cookie = NULL;
-	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
+	    ec = rpmInstallSource(ts, pkg, &ba->specFile, &ba->cookie);
 	    if (ec == 0) {
 		ba->rootdir = rpmioRootDir;
 		ba->passPhrase = passPhrase;
-		ec = build(ts, specFile, ba, NULL);
+		ec = build(ts, ba, NULL);
 	    }
 	    ba->cookie = _free(ba->cookie);
-	    specFile = _free(specFile);
+	    ba->specFile = _free(ba->specFile);
 
 	    if (ec)
 		/*@loopbreak@*/ break;
@@ -806,8 +805,7 @@ int main(int argc, const char ** argv)
 
     case MODE_BUILD:
     case MODE_TARBUILD:
-    {	const char * pkg;
-	int nbuilds = 0;
+    {	int nbuilds = 0;
 
 #if defined(RPM_VENDOR_OPENPKG) /* no-auto-verbose-increase-for-track-and-fetch */
 	if (ba->buildChar != 't' && ba->buildChar != 'f')
@@ -871,7 +869,7 @@ int main(int argc, const char ** argv)
 		argerror(_("no tar files given for build"));
 	}
 
-	while ((pkg = poptGetArg(optCon))) {
+	while ((ba->specFile = poptGetArg(optCon))) {
 	    if (nbuilds++ > 0) {
 		rpmFreeMacros(NULL);
 		rpmFreeRpmrc();
@@ -880,7 +878,7 @@ int main(int argc, const char ** argv)
 	    ba->rootdir = rpmioRootDir;
 	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
-	    ec = build(ts, pkg, ba, NULL);
+	    ec = build(ts, ba, NULL);
 	    if (ec)
 		/*@loopbreak@*/ break;
 	}

@@ -99,7 +99,7 @@ static int isSpecFile(const char * specfile)
 /**
  */
 /*@-boundswrite@*/
-static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
+static int buildForTarget(rpmts ts, BTA_t ba)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -111,6 +111,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int specut;
     const char * s;
     char * se;
+    const char * arg = ba->specFile;
     size_t nb = strlen(arg) + BUFSIZ;
     char * buf = alloca(nb);
     Spec spec = NULL;
@@ -257,7 +258,7 @@ exit:
 }
 /*@=boundswrite@*/
 
-int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
+int build(rpmts ts, BTA_t ba, const char * rcfile)
 {
     const char *t, *te;
     int rc = 0;
@@ -278,7 +279,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (targets == NULL) {
-	rc =  buildForTarget(ts, arg, ba);
+	rc =  buildForTarget(ts, ba);
 	nbuilds++;
 	goto exit;
     }
@@ -308,7 +309,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	    rpmFreeRpmrc();
 	    (void) rpmReadConfigFiles(rcfile, target);
 	}
-	rc = buildForTarget(ts, arg, ba);
+	rc = buildForTarget(ts, ba);
 	nbuilds++;
 	if (rc)
 	    break;
