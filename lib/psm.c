@@ -190,9 +190,9 @@ static rpmRC createDir(rpmts ts, const char ** fn, const char * name)
 rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
+    static int scareMem = 0;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = _fd;
-    int scareMem = 0;
     rpmfi fi = NULL;
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
@@ -240,27 +240,21 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+assert(fi != NULL);	/* XXX can't happen */
     fi->h = headerLink(h);
+assert(fi->h != NULL);
     (void)headerFree(h);
     h = NULL;
-
-    if (fi == NULL) {	/* XXX can't happen */
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
 
 /*@-onlytrans@*/	/* FIX: te reference */
     fi->te = rpmtsElement(ts, 0);
 /*@=onlytrans@*/
-    if (fi->te == NULL) {	/* XXX can't happen */
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
+assert(fi->te != NULL);	/* XXX can't happen */
 
-assert(fi->h != NULL);
 assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     (void) rpmteSetHeader(fi->te, fi->h);
 /*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
+
 /*@-assignexpose -castexpose -temptrans @*/
     ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
 /*@=assignexpose =castexpose =temptrans @*/
@@ -268,7 +262,7 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 
     (void) headerMacrosLoad(fi->h);
 
-    psm->fi = rpmfiLink(fi, NULL);
+    psm->fi = rpmfiLink(fi, __FUNCTION__);
     /*@-assignexpose -usereleased @*/
     psm->te = fi->te;
     /*@=assignexpose =usereleased @*/
@@ -306,32 +300,15 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
                 fi->gid = mgid;
     }
 #endif
-    fi->astriplen = 0;
-    fi->striplen = 0;
-
     for (i = 0; i < (int)fi->fc; i++)
 	fi->actions[i] = FA_CREATE;
 
-    i = fi->fc;
-
-    if (fi->h != NULL) {	/* XXX can't happen */
-	he->tag = RPMTAG_FILEPATHS;
-	xx = headerGet(fi->h, he, 0);
-	fi->apath = he->p.argv;
-
-	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
-	    for (i = 0; i < (int)fi->fc; i++)
-		if (fi->fflags[i] & RPMFILE_SPECFILE) break;
-    }
-
-    if (i == (int)fi->fc) {
-	/* Find the spec file by name. */
-	for (i = 0; i < (int)fi->fc; i++) {
-	    const char * t = fi->apath[i];
-	    t += strlen(fi->apath[i]) - 5;
-	    if (!strcmp(t, ".spec")) break;
-	}
-    }
+    /* Load file paths as an argv array. */
+    fi->astriplen = 0;
+    fi->striplen = 0;
+    he->tag = RPMTAG_FILEPATHS;
+    xx = headerGet(fi->h, he, 0);
+    fi->apath = he->p.argv;
 
 #if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
     if (createDir(fi, ts, NULL, "%{_topdir}") ||
@@ -350,33 +327,15 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 #endif
 	goto exit;
 
-    /* Build dnl/dil with {_sourcedir, _specdir} as values. */
-    if (i < (int)fi->fc) {
-	size_t speclen = strlen(_specdir) + 2;
-	size_t sourcelen = strlen(_sourcedir) + 2;
-	char * t;
-
-/*@i@*/	fi->dnl = _free(fi->dnl);
-
-	fi->dc = 2;
-	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl)
-			+ fi->fc * sizeof(*fi->dil)
-			+ speclen + sourcelen);
-	/*@-dependenttrans@*/
-	fi->dil = (unsigned int *)(fi->dnl + fi->dc);
-	/*@=dependenttrans@*/
-	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
-	fi->dil[i] = 1;
-	/*@-dependenttrans@*/
-	fi->dnl[0] = t = (char *)(fi->dil + fi->fc);
-	fi->dnl[1] = t = stpcpy( stpcpy(t, _sourcedir), "/") + 1;
-	/*@=dependenttrans@*/
-	(void) stpcpy( stpcpy(t, _specdir), "/");
-
-	t = xmalloc(speclen + strlen(fi->bnl[i]) + 1);
-	(void) stpcpy( stpcpy( stpcpy(t, _specdir), "/"), fi->bnl[i]);
-	specFile = t;
-    } else {
+    /* Find name of spec file. */
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0) {
+	if (!(rpmfiFFlags(fi) & RPMFILE_SPECFILE))
+	    continue;
+	specFile = xstrdup(rpmfiFN(fi));
+	break;
+    }
+    if (specFile == NULL) {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	rpmrc = RPMRC_FAIL;
 	goto exit;
@@ -393,15 +352,17 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     if (rpmrc) rpmrc = RPMRC_FAIL;
 
 exit:
-    if (specFilePtr && specFile && rpmrc == RPMRC_OK)
+    if (specFilePtr && specFile && rpmrc == RPMRC_OK) {
 	*specFilePtr = specFile;
-    else
-	specFile = _free(specFile);
+	specFile = NULL;
+    }
+    specFile = _free(specFile);
 
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    psm->fi = rpmfiFree(psm->fi);
+    (void)rpmfiFree(psm->fi);
+    psm->fi = NULL;
     psm->te = NULL;
 
     if (h != NULL) (void)headerFree(h);
@@ -2209,7 +2170,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int saveerrno;
     int xx;
 
-/* XXX hackery to assert(!scaremem) in rpmfiNew. */
+/* XXX hackery to assert(!scareMem) in rpmfiNew. */
 /*@-castexpose@*/
 if (fi->h == NULL && fi->te && ((rpmte)fi->te)->h != NULL) fi->h = headerLink(((rpmte)fi->te)->h);
 /*@=castexpose@*/
@@ -2337,14 +2298,8 @@ assert(he->p.argv != NULL);
 
 	    /* Retrieve installed header. */
 	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
-#ifdef	DYING
-if (rc == RPMRC_OK)
-if (psm->te)
-psm->te->h = headerLink(fi->h);
-#else
 	    if (rc == RPMRC_OK && psm->te)
 		(void) rpmteSetHeader(psm->te, fi->h);
-#endif
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
@@ -2661,11 +2616,18 @@ assert(psm->te != NULL);
 	    if (!rc)
 		rc = rpmpsmNext(psm, PSM_COMMIT);
 
-	    if (rc)
-		xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
-	    else
-		xx = rpmtxnCommit(rpmtsGetRdb(ts)->db_txn);
-	    rpmtsGetRdb(ts)->db_txn = NULL;
+	    /* Commit/abort the SRPM install transaction. */
+	    /* XXX move into the PSM package state machine w PSM_COMMIT */
+	{   rpmdb db = rpmtsGetRdb(ts);
+	    rpmtxn _txn = (db ? db->db_txn : NULL);
+	    if (_txn != NULL) {
+		if (rc)
+		    xx = rpmtxnAbort(_txn);
+		else
+		    xx = rpmtxnCommit(_txn);
+		db->db_txn = NULL;
+	    }
+	}
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
@@ -2886,16 +2848,8 @@ assert(psm->te != NULL);
 	}
 
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
-#ifdef	DYING
-if (psm->te != NULL)
-if (psm->te->h != NULL) {
-(void)headerFree(psm->te->h);
-psm->te->h = NULL;
-}
-#else
 	    if (psm->te != NULL)
 		(void) rpmteSetHeader(psm->te, NULL);
-#endif
 	    if (fi->h != NULL) {
 		(void)headerFree(fi->h);
 		fi->h = NULL;
