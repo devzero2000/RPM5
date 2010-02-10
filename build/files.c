@@ -2973,6 +2973,7 @@ static int checkDuplicateFiles(Spec spec)
 #else
 	rpmfi fi1 = rpmfiLink(pkg1->fi, __FUNCTION__);
 #endif
+	if (fi1 == NULL) continue;
 	(void) rpmfiSetHeader(fi1, pkg1->header);
 	for (pkg2 = pkg1->next; pkg2; pkg2 = pkg2->next) {
 #ifdef	DYING
@@ -2980,6 +2981,7 @@ static int checkDuplicateFiles(Spec spec)
 #else
 	    rpmfi fi2 = rpmfiLink(pkg2->fi, __FUNCTION__);
 #endif
+	    if (fi2 == NULL) continue;
 	    (void) rpmfiSetHeader(fi2, pkg2->header);
 	    n += fiIntersect(fi1, fi2);
 	    (void) rpmfiSetHeader(fi2, NULL);
