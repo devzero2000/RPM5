@@ -158,11 +158,7 @@ assert(sfi->otherFileNum < he->c);
     return RPMRC_OK;
 }
 
-#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
-static rpmRC createDir(rpmfi fi, rpmts ts, const char ** fn, const char * name)
-#else
-static rpmRC createDir(rpmts ts, const char ** fn, const char * name)
-#endif
+static rpmRC createDir(rpmts ts, rpmfi fi, const char ** fn, const char * name)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *fn, rpmGlobalMacroContext @*/
 {
@@ -172,48 +168,40 @@ static rpmRC createDir(rpmts ts, const char ** fn, const char * name)
 
     t[strlen(t)-1] = '\0';
 
-    if(fn) *fn = N;
-
     rc = rpmMkdirPath(N, t+1);
     if (rc != RPMRC_OK) {
     	if (Access(N, W_OK))
     	    rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"), t, N);
-#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
-	else
+	else if (fi)
 	    Chown(N, fi->uid, fi->gid);
-#endif
     }
+
+    if (fn)
+	*fn = N;
+    else
+	N = _free(N);
     t = _free(t);
+
     return rc;
 }
 
 rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
-    static int scareMem = 0;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = _fd;
     rpmfi fi = NULL;
-    const char * _sourcedir = NULL;
-    const char * _specdir = NULL;
-    const char * specFile = NULL;
+    rpmte p = NULL;
+    rpmpsm psm = NULL;
     Header h = NULL;
-    struct rpmpsm_s psmbuf;
-    rpmpsm psm = &psmbuf;
     int isSource;
-    rpmRC rpmrc;
-    int xx;
+    rpmRC rc;
     int i;
 
-    memset(psm, 0, sizeof(*psm));
-/*@-assignexpose -castexpose @*/
-    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
-/*@=assignexpose =castexpose @*/
-
 /*@-mods@*/	/* Avoid void * _fd annotations for now. */
-    rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+    rc = rpmReadPackageFile(ts, fd, __FUNCTION__, &h);
 /*@=mods@*/
-    switch (rpmrc) {
+    switch (rc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
     case RPMRC_OK:
@@ -225,7 +213,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     if (h == NULL)
 	goto exit;
 
-    rpmrc = RPMRC_OK;
+    rc = RPMRC_FAIL;		/* assume failure */
 
     isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
@@ -233,46 +221,25 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 
     if (!isSource) {
 	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
-	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-assert(fi != NULL);	/* XXX can't happen */
-    fi->h = headerLink(h);
-assert(fi->h != NULL);
-    (void)headerFree(h);
-    h = NULL;
-
-/*@-onlytrans@*/	/* FIX: te reference */
-    fi->te = rpmtsElement(ts, 0);
-/*@=onlytrans@*/
-assert(fi->te != NULL);	/* XXX can't happen */
-
-assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
-    (void) rpmteSetHeader(fi->te, fi->h);
+    p = rpmtsElement(ts, 0);
+assert(p->h == NULL);
+    (void) rpmteSetHeader(p, h);
 /*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
-
 /*@-assignexpose -castexpose -temptrans @*/
-    ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
+    p->fd = fdLink(fd, __FUNCTION__);
 /*@=assignexpose =castexpose =temptrans @*/
 /*@=mods@*/
 
-    (void) headerMacrosLoad(fi->h);
-
-    psm->fi = rpmfiLink(fi, __FUNCTION__);
-    /*@-assignexpose -usereleased @*/
-    psm->te = fi->te;
-    /*@=assignexpose =usereleased @*/
-
-    if (cookie) {
-	*cookie = NULL;
-	he->tag = RPMTAG_COOKIE;
-	xx = headerGet(fi->h, he, 0);
-	*cookie = he->p.str;
-    }
+    fi = rpmteFI(p, RPMTAG_BASENAMES);
+    fi->h = headerLink(h);
+/*@-onlytrans@*/	/* FIX: te reference */
+    fi->te = p;
+/*@=onlytrans@*/
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
     fi->fmapflags = _free(fi->fmapflags);
@@ -303,91 +270,88 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     for (i = 0; i < (int)fi->fc; i++)
 	fi->actions[i] = FA_CREATE;
 
-    /* Load file paths as an argv array. */
+    /* Load relative (in a *.src.rpm) file paths as an argv array. */
     fi->astriplen = 0;
     fi->striplen = 0;
     he->tag = RPMTAG_FILEPATHS;
-    xx = headerGet(fi->h, he, 0);
+    if (!headerGet(h, he, 0) || he->p.argv == NULL || he->p.argv[0] == NULL)
+	goto exit;
     fi->apath = he->p.argv;
 
+    (void) headerMacrosLoad(h);
+
 #if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
-    if (createDir(fi, ts, NULL, "%{_topdir}") ||
-	    createDir(fi, ts, NULL, "%{_builddir}") ||
-	    createDir(fi, ts, NULL, "%{_rpmdir}") ||
-	    createDir(fi, ts, NULL, "%{_srcrpmdir}") ||
-	    createDir(fi, ts, &_sourcedir, "%{_sourcedir}") ||
-	    createDir(fi, ts, &_specdir, "%{_specdir}"))
+    if (createDir(ts, fi, NULL, "%{_topdir}")
+     || createDir(ts, fi, NULL, "%{_builddir}")
+     || createDir(ts, fi, NULL, "%{_rpmdir}")
+     || createDir(ts, fi, NULL, "%{_srcrpmdir}")
+     || createDir(ts, fi, NULL, "%{_sourcedir}")
+     || createDir(ts, fi, NULL, "%{_specdir}"))
 #else
-    if (createDir(ts, NULL, "%{_topdir}") ||
-	    createDir(ts, NULL, "%{_builddir}") ||
-	    createDir(ts, NULL, "%{_rpmdir}") ||
-	    createDir(ts, NULL, "%{_srcrpmdir}") ||
-	    createDir(ts, &_sourcedir, "%{_sourcedir}") ||
-	    createDir(ts, &_specdir, "%{_specdir}"))
+    if (createDir(ts, NULL, NULL, "%{_topdir}")
+     || createDir(ts, NULL, NULL, "%{_builddir}")
+     || createDir(ts, NULL, NULL, "%{_rpmdir}")
+     || createDir(ts, NULL, NULL, "%{_srcrpmdir}")
+     || createDir(ts, NULL, NULL, "%{_sourcedir}")
+     || createDir(ts, NULL, NULL, "%{_specdir}"))
 #endif
 	goto exit;
 
-    /* Find name of spec file. */
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
-	if (!(rpmfiFFlags(fi) & RPMFILE_SPECFILE))
-	    continue;
-	specFile = xstrdup(rpmfiFN(fi));
-	break;
-    }
-    if (specFile == NULL) {
-	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
-	rpmrc = RPMRC_FAIL;
-	goto exit;
+    /* Retrieve build cookie. */
+    if (cookie) {
+	*cookie = NULL;
+	he->tag = RPMTAG_COOKIE;
+	if (headerGet(h, he, 0)) *cookie = he->p.str;
     }
 
+    /* Find spec file path. */
+    if (specFilePtr) {
+	*specFilePtr = NULL;
+	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    if (!(rpmfiFFlags(fi) & RPMFILE_SPECFILE))
+		continue;
+	    *specFilePtr = xstrdup(rpmfiFN(fi));
+	    break;
+	}
+	if (*specFilePtr == NULL) {
+	    rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
+	    goto exit;
+	}
+    }
+
+    /* Unpack the SRPM contents. */
+    psm = rpmpsmNew(ts, p, fi);
     psm->goal = PSM_PKGINSTALL;
-
-    /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
-    rpmrc = rpmpsmStage(psm, PSM_PROCESS);
-
+    rc = rpmpsmStage(psm, PSM_PROCESS);
     (void) rpmpsmStage(psm, PSM_FINI);
-    /*@=compmempass@*/
-
-    if (rpmrc) rpmrc = RPMRC_FAIL;
+    psm = rpmpsmFree(psm, __FUNCTION__);
 
 exit:
-    if (specFilePtr && specFile && rpmrc == RPMRC_OK) {
-	*specFilePtr = specFile;
-	specFile = NULL;
+    if (rc != RPMRC_OK) {
+	if (specFilePtr) *specFilePtr = _free(*specFilePtr);
+	if (cookie) *cookie = _free(*cookie);
     }
-    specFile = _free(specFile);
 
-    _specdir = _free(_specdir);
-    _sourcedir = _free(_sourcedir);
-
-    (void)rpmfiFree(psm->fi);
-    psm->fi = NULL;
-    psm->te = NULL;
-
-    if (h != NULL) (void)headerFree(h);
-    h = NULL;
-
-    if (fi != NULL) {
-	(void) rpmteSetHeader(fi->te, NULL);
-/*@-mods@*/	/* Avoid void * _fd annotations for now. */
-	if (((rpmte)fi->te)->fd != NULL)
-	    (void) Fclose(((rpmte)fi->te)->fd);
-/*@=mods@*/
-	((rpmte)fi->te)->fd = NULL;
+    if (fi)
 	fi->te = NULL;
-#if 0
-	fi = rpmfiFree(fi);
-#endif
+
+    if (p) {
+	(void) rpmteSetHeader(p, NULL);
+/*@-mods@*/	/* Avoid void * _fd annotations for now. */
+	if (p->fd != NULL)
+	    (void) Fclose(p->fd);
+/*@=mods@*/
+	p->fd = NULL;
     }
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
 
-    (void)rpmtsFree(psm->ts); 
-    psm->ts = NULL;
+    (void) headerFree(h);
+    h = NULL;
 
-    return rpmrc;
+    return rc;
 }
 
 /*@observer@*/ /*@unchecked@*/

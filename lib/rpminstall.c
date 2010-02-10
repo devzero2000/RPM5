@@ -820,37 +820,27 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 int rpmInstallSource(rpmts ts, const char * arg,
 		const char ** specFilePtr, const char ** cookie)
 {
-    FD_t fd;
-    int rc;
+    FD_t fd = Fopen(arg, "r%{?_rpmgio}");
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
 
-    fd = Fopen(arg, "r%{?_rpmgio}");
     if (fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
-	if (fd != NULL) (void) Fclose(fd);
-	return 1;
+	goto exit;
     }
 
     if (rpmIsVerbose())
 	fprintf(stdout, _("Installing %s\n"), arg);
 
-    {
-	rpmVSFlags ovsflags =
+    {	rpmVSFlags ovsflags =
 		rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD));
-	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
-	rc = (rpmrc == RPMRC_OK ? 0 : 1);
+	rc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
     }
-    if (rc != 0) {
+    if (rc != RPMRC_OK)
 	rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), arg);
-	/*@-unqualifiedtrans@*/
-	if (specFilePtr && *specFilePtr)
-	    *specFilePtr = _free(*specFilePtr);
-	if (cookie && *cookie)
-	    *cookie = _free(*cookie);
-	/*@=unqualifiedtrans@*/
-    }
 
-    (void) Fclose(fd);
+exit:
+    if (fd != NULL) (void) Fclose(fd);
 
-    return rc;
+    return (rc == RPMRC_OK ? 0 : 1);
 }
