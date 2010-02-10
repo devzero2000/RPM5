@@ -343,7 +343,7 @@ restart:
 
 	for (i = 0; i < numRecs; i++) {
 	    const char * flink;
-	    char * link;
+	    const char * link;
 	    int fx;
 
 	    fx = recs[i].fileno;
