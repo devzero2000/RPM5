@@ -17,6 +17,7 @@
 #define	_RPMIOB_INTERNAL
 #include <rpmiotypes.h>
 #include <rpmio_internal.h>	/* XXX fdGetFp */
+#include <rpmbf.h>
 #include <rpmcb.h>
 #define	_RPMSX_INTERNAL		/* XXX permit disabling. */
 #include <rpmsx.h>
@@ -1629,7 +1630,7 @@ if (_rpmbuildFlags & 4) {
 	
     compressFilelist(h);
 
-  { int scareMem = 0;
+  { static int scareMem = 0;
     void * ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     char * a, * d;
@@ -2243,7 +2244,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies spec->macros,
-		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
+		pkg->fi, pkg->fileList, pkg->specialDoc, pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -2258,7 +2259,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
     int xx;
 
     nullAttrRec(specialDocAttrRec);
-    pkg->cpioList = NULL;
+    pkg->fi = NULL;
 
     if (pkg->fileFile) {
 	char *saveptr = NULL;
@@ -2501,7 +2502,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	(void) rpmlibNeedsFeature(pkg->header,
 			"PartialHardlinkSets", "4.0.4-1");
 
-    genCpioListAndHeader(&fl, &pkg->cpioList, pkg->header, 0);
+    genCpioListAndHeader(&fl, &pkg->fi, pkg->header, 0);
 
     if (spec->timeCheck)
 	timeCheck(spec->timeCheck, pkg->header);
@@ -2813,8 +2814,8 @@ int processSourceFiles(Spec spec)
     if (rc)
 	goto exit;
 
-    spec->sourceCpioList = NULL;
-    genCpioListAndHeader(&fl, &spec->sourceCpioList, spec->sourceHeader, 1);
+    spec->fi = NULL;
+    genCpioListAndHeader(&fl, &spec->fi, spec->sourceHeader, 1);
 
 exit:
     *sfp = rpmiobFree(*sfp);
@@ -2854,7 +2855,11 @@ static int checkUnpackagedFiles(Spec spec)
     fileList = rpmiobNew(0);
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	int i;
+#ifndef	DYING	/* XXX rpmfiNew is necessary here. why?!? */
 	rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
+#else
+	rpmfi fi = rpmfiLink(pkg->fi, __FUNCTION__);
+#endif
 	fi = rpmfiInit(fi, 0);
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    const char *fn = rpmfiFN(fi);
@@ -2899,7 +2904,7 @@ exit:
 
 /* auxiliary function for checkDuplicateFiles() */
 /* XXX need to pass Header because fi->h is NULL */
-static int fiIntersect(/*@null@*/ rpmfi fi1, /*@null@*/ rpmfi fi2, Header h1, Header h2)
+static int fiIntersect(/*@null@*/ rpmfi fi1, /*@null@*/ rpmfi fi2)
 	/*@globals internalState @*/
 	/*@modifies fi1, fi2, internalState @*/
 {
@@ -2933,9 +2938,9 @@ static int fiIntersect(/*@null@*/ rpmfi fi1, /*@null@*/ rpmfi fi2, Header h1, He
 	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = RPMTAG_NVRA;
-	N1 = (headerGet(h1, he, 0) ? he->p.str : NULL);
+	N1 = (headerGet(fi1->h, he, 0) ? he->p.str : NULL);
 	he->tag = RPMTAG_NVRA;
-	N2 = (headerGet(h2, he, 0) ? he->p.str : NULL);
+	N2 = (headerGet(fi2->h, he, 0) ? he->p.str : NULL);
 
 	rpmlog(RPMLOG_WARNING,
 	       _("File(s) packaged into both %s and %s:\n%s"),
@@ -2963,40 +2968,36 @@ static int checkDuplicateFiles(Spec spec)
     Package pkg1, pkg2;
 
     for (pkg1 = spec->packages; pkg1->next; pkg1 = pkg1->next) {
+#ifdef	DYING
 	rpmfi fi1 = rpmfiNew(NULL, pkg1->header, RPMTAG_BASENAMES, 0);
+#else
+	rpmfi fi1 = rpmfiLink(pkg1->fi, __FUNCTION__);
+#endif
+	(void) rpmfiSetHeader(fi1, pkg1->header);
 	for (pkg2 = pkg1->next; pkg2; pkg2 = pkg2->next) {
+#ifdef	DYING
 	    rpmfi fi2 = rpmfiNew(NULL, pkg2->header, RPMTAG_BASENAMES, 0);
-	    n += fiIntersect(fi1, fi2, pkg1->header, pkg2->header);
+#else
+	    rpmfi fi2 = rpmfiLink(pkg2->fi, __FUNCTION__);
+#endif
+	    (void) rpmfiSetHeader(fi2, pkg2->header);
+	    n += fiIntersect(fi1, fi2);
+	    (void) rpmfiSetHeader(fi2, NULL);
 	    fi2 = rpmfiFree(fi2);
 	}
+	(void) rpmfiSetHeader(fi1, NULL);
 	fi1 = rpmfiFree(fi1);
     }
     return n;
 }
 
 /* auxiliary function: check if directory d is packaged */
-static int packagedDir(Package pkg, const char *d)
+static inline int packagedDir(Package pkg, const char *d)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int i;
-    int found = 0;
-    const char *fn;
-    rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
-
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
-	if (!S_ISDIR(rpmfiFMode(fi)))
-	    continue;
-	fn = rpmfiFN(fi);
-	if (strcmp(fn, d) == 0) {
-	    found = 1;
-	    break;
-	}
-    }
-    fi = rpmfiFree(fi);
-    return found;
+    return rpmbfChk(rpmfiFNBF(pkg->fi), d, strlen(d));
 }
 
 /* auxiliary function: find unpackaged subdirectories
@@ -3015,7 +3016,11 @@ static int pkgUnpackagedSubdirs(Package pkg)
     int i, j;
     char **unpackaged = NULL;
     char *fn;
+#ifdef	DYING
     rpmfi fi = rpmfiNew(NULL, pkg->header, RPMTAG_BASENAMES, 0);
+#else
+    rpmfi fi = rpmfiLink(pkg->fi, __FUNCTION__);
+#endif
 
     if (rpmfiFC(fi) <= 1) {
 	fi = rpmfiFree(fi);

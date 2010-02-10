@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: use a Bloom filter so that build sanity checks scale.
     - jbj: fix rpmInstallSourcePackage() refcnts and memory leaks.
     - jbj: fix: don't segfault on --rebuild. the better fix is to eliminate
 	rpmInstallSourcePackage() entirely, todo++.

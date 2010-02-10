@@ -163,7 +163,7 @@ struct Spec_s {
 /*@refcounted@*/
     Header sourceHeader;
 /*@refcounted@*/
-    rpmfi sourceCpioList;
+    rpmfi fi;
     int sourceHdrInit;
 
 /*@dependent@*/ /*@null@*/
@@ -207,7 +207,7 @@ struct Package_s {
 /*@refcounted@*/
     rpmds ds;			/*!< Requires: N = EVR */
 /*@refcounted@*/
-    rpmfi cpioList;
+    rpmfi fi;
 
     int autoReq;
     int autoProv;

@@ -17,7 +17,7 @@ typedef /*@abstract@*/ struct cpioSourceArchive_s {
 /*@relnull@*/
     FD_t	cpioFdIn;
 /*@refcounted@*/ /*@relnull@*/
-    rpmfi	cpioList;
+    rpmfi	fi;
 /*@only@*/
     struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } * CSA_t;

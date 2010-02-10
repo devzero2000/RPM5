@@ -167,9 +167,9 @@ static void pkgFini(void * _pkg)
     pkg->ds = NULL;
     pkg->fileList = rpmiobFree(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
-    if (pkg->cpioList != NULL) {
-	rpmfi fi = pkg->cpioList;
-	pkg->cpioList = NULL;
+    if (pkg->fi != NULL) {
+	rpmfi fi = pkg->fi;
+	pkg->fi = NULL;
 	fi = rpmfiFree(fi);
     }
 
@@ -215,7 +215,7 @@ Package newPackage(/*@unused@*/ Spec spec)
     pkg->fileFile = NULL;
     pkg->fileList = NULL;
 
-    pkg->cpioList = NULL;
+    pkg->fi = NULL;
 
     pkg->preInFile = NULL;
     pkg->postInFile = NULL;
@@ -588,9 +588,9 @@ static void specFini(void * _spec)
     spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
-    if (spec->sourceCpioList != NULL) {
-	rpmfi fi = spec->sourceCpioList;
-	spec->sourceCpioList = NULL;
+    if (spec->fi != NULL) {
+	rpmfi fi = spec->fi;
+	spec->fi = NULL;
 	fi = rpmfiFree(fi);
     }
     
@@ -684,7 +684,7 @@ Spec newSpec(void)
     spec->sourceRpmName = NULL;
     spec->sourcePkgId = NULL;
     spec->sourceHeader = headerNew();
-    spec->sourceCpioList = NULL;
+    spec->fi = NULL;
     
     spec->buildSubdir = NULL;
 

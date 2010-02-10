@@ -44,7 +44,7 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		fileSystem, internalState @*/
 {
     rpmts ts = rpmtsCreate();
-    rpmfi fi = csa->cpioList;
+    rpmfi fi = csa->fi;
     const char *failedFile = NULL;
     FD_t cfd;
     rpmRC rc = RPMRC_OK;
@@ -781,7 +781,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
 
     /* Append the payload to the temp file. */
-    if (csa->cpioList != NULL)
+    if (csa->fi != NULL)
 	rc = cpio_doio(fd, h, csa, payload_format, rpmio_flags);
     else if (Fileno(csa->cpioFdIn) >= 0)
 	rc = cpio_copy(fd, csa);
@@ -1155,17 +1155,17 @@ if (!(_rpmbuildFlags & 4)) {
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
 /*@=onlytrans@*/
 /*@-assignexpose -newreftrans@*/
-	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
+	csa->fi = rpmfiLink(pkg->fi, "packageBinaries");
 /*@=assignexpose =newreftrans@*/
-assert(csa->cpioList != NULL);
+assert(csa->fi != NULL);
 
 	rc = writeRPM(&pkg->header, NULL, fn,
 		    csa, spec->passPhrase, NULL);
 
 /*@-onlytrans@*/
-	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
+	csa->fi->te = _free(csa->fi->te);	/* XXX memory leak */
 /*@=onlytrans@*/
-	csa->cpioList = rpmfiFree(csa->cpioList);
+	csa->fi = rpmfiFree(csa->fi);
 /*@-nullpass -onlytrans -refcounttrans @*/
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 /*@=nullpass =onlytrans =refcounttrans @*/
@@ -1255,18 +1255,18 @@ rpmRC packageSources(Spec spec)
 	csa->cpioFdIn = fdNew("init (packageSources)");
 /*@=onlytrans@*/
 /*@-assignexpose -newreftrans@*/
-	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
+	csa->fi = rpmfiLink(spec->fi, "packageSources");
 /*@=assignexpose =newreftrans@*/
-assert(csa->cpioList != NULL);
+assert(csa->fi != NULL);
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn,
 		csa, spec->passPhrase, &(spec->cookie));
 
 /*@-onlytrans@*/
-	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
+	csa->fi->te = _free(csa->fi->te);	/* XXX memory leak */
 /*@=onlytrans@*/
-	csa->cpioList = rpmfiFree(csa->cpioList);
+	csa->fi = rpmfiFree(csa->fi);
 /*@-nullpass -onlytrans -refcounttrans @*/
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 /*@=nullpass =onlytrans =refcounttrans @*/
