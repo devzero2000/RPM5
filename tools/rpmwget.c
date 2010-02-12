@@ -577,7 +577,7 @@ assert(u->arg != NULL);
 	if (u->info.status == wget_status_lookup)
 	    wgetLog(wget, " %s\n", u->info.address);
 	else if (u->info.status != wget_status_disconnected)
-fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+fprintf(stderr, "%s: **TODO** %s => %s\n", __progname, cstates[u->info.status & 0x7], cstates[status & 0x7]);
 	wgetLog(wget, "Connecting to %s|%s|:%u...",
 			   u->info.hostname, u->info.address, u->port);
 	break;
@@ -592,7 +592,7 @@ fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[st
 	(void) wgetSetRate(wget, u, sop);
 	if (u->info.status != status)
 	if (u->info.status != wget_status_connected)
-fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+fprintf(stderr, "%s: **TODO** %s => %s\n", __progname, cstates[u->info.status & 0x7], cstates[status & 0x7]);
 #ifdef NOTYET	/* XXX noisy, wait for progress bar ... */
 	wgetLog(wget, "Sending ... (%ld:%ld)\n",
 		(long) u->info.progress, (long) u->info.total);
@@ -605,7 +605,7 @@ fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[st
 	if (u->info.status != status)
 	if (u->info.status != wget_status_connected)
 	if (u->info.status != wget_status_sending)
-fprintf(stderr, "**TODO** %s => %s\n", cstates[u->info.status & 0x7], cstates[status & 0x7]);
+fprintf(stderr, "%s: **TODO** %s => %s\n", __progname, cstates[u->info.status & 0x7], cstates[status & 0x7]);
 #ifdef NOTYET	/* XXX noisy, wait for progress bar ... */
 	wgetLog(wget, "Recving ... (%ld:%ld)\n",
 		(long) u->info.progress, (long) u->info.total);
