@@ -31,6 +31,7 @@
 #include "rpmts.h"
 
 #define	_RPMSQ_INTERNAL
+#define	_RPMPSM_INTERNAL
 #include "psm.h"
 
 #include "rpmds.h"
@@ -1192,60 +1193,28 @@ static int rpmtsRunScript(rpmts ts, rpmTag stag)
     rpmte p;
     rpmfi fi;
     rpmpsm psm;
-    int bingo;
     int xx;
-    rpmTag progtag;
+    rpmTag ptag;
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%s(%u))\n", __FUNCTION__, ts, tagName(stag), (unsigned)stag));
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL)
     switch (stag) {
     default:
 assert(0);
-	/*@notreached@*/ /*@switchbreak@*/ break;
-    case RPMTAG_PRETRANS:
+	/*@notreached@*/ break;
+    case RPMTAG_PRETRANS:	ptag = RPMTAG_PRETRANSPROG;	break;
+    case RPMTAG_POSTTRANS:	ptag = RPMTAG_POSTTRANSPROG;	break;
+    }
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	/* If no pre-transaction script, then don't bother. */
-	bingo = (fi->pretrans || fi->pretransprog ? 1 : 0);
-#ifdef	REFERENCE
+	/* If no prre/post transaction script, then don't bother. */
 	if (!rpmteHaveTransScript(p, stag))
-#else
-	if (!bingo)
-#endif	/* REFERENCE */
 	    continue;
 
-	progtag = RPMTAG_PRETRANSPROG;
-    	if (rpmteOpen(p, ts, 0)) {
-	    if (p->fi != NULL)
-		p->fi->te = p;
-#ifdef	REFERENCE
-	    psm = rpmpsmNew(ts, p);
-#else	/* REFERENCE */
-	    psm = rpmpsmNew(ts, p, p->fi);
-#endif	/* REFERENCE */
-	    xx = rpmpsmScriptStage(psm, stag, progtag);
-	    psm = rpmpsmFree(psm, __FUNCTION__);
-	    xx = rpmteClose(p, ts, 0);
-	}
-	/*@switchbreak@*/ break;
-    case RPMTAG_POSTTRANS:
-	if (p->isSource) continue;
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-
-	/* If no post-transaction script, then don't bother. */
-	bingo = (fi->posttrans || fi->posttransprog ? 1 : 0);
-#ifdef	REFERENCE
-	if (!rpmteHaveTransScript(p, stag))
-#else	/* REFERENCE */
-	if (!bingo)
-#endif	/* REFERENCE */
-	    continue;
-
-	progtag = RPMTAG_POSTTRANSPROG;
     	if (rpmteOpen(p, ts, 0)) {
 	    if (p->fi != NULL)	/* XXX can't happen */
 		p->fi->te = p;
@@ -1254,11 +1223,10 @@ assert(0);
 #else	/* REFERENCE */
 	    psm = rpmpsmNew(ts, p, p->fi);
 #endif	/* REFERENCE */
-	    xx = rpmpsmScriptStage(psm, stag, progtag);
+	    xx = rpmpsmScriptStage(psm, stag, ptag);
 	    psm = rpmpsmFree(psm, __FUNCTION__);
 	    xx = rpmteClose(p, ts, 0);
 	}
-	/*@switchbreak@*/ break;
     }
     pi = rpmtsiFree(pi);
 
@@ -1678,6 +1646,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollba
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmfi fi;
+	rpmop sw;
 	rpmpsm psm = NULL;
 	pkgStage stage = PSM_UNKNOWN;
 	int failed;
@@ -1696,12 +1665,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollba
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
-#ifdef	REFERENCE
-	if (rpmteFailed(p))
-#else	/* REFERENCE */
-	if (p->linkFailed)
-#endif	/* REFERENCE */
-	{
+	if (rpmteFailed(p)) {
 	    /* XXX this should be a warning, need a better message though */
 	    rpmlog(RPMLOG_DEBUG, D_("element %s marked as failed, skipping\n"),
 					rpmteNEVRA(p));
@@ -1709,26 +1673,18 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollba
 	    continue;
 	}
 
-#ifdef	REFERENCE
-	psm = rpmpsmNew(ts, p);
+	psm = rpmpsmNew(ts, p, fi);
 	{   int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
 			1 : 0;
 	    rpmpsmSetAsync(psm, async);
 	}
-#else	/* REFERENCE */
-	psm = rpmpsmNew(ts, p, fi);
-assert(psm != NULL);
-	if (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1))
-	    psm->flags |= RPMPSM_FLAGS_UNORDERED;
-	else
-	    psm->flags &= ~RPMPSM_FLAGS_UNORDERED;
-#endif	/* REFERENCE */
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 	    stage = PSM_PKGINSTALL;
+	    sw = rpmtsOp(ts, RPMTS_OP_INSTALL);
 #ifdef	REFERENCE
 	    if (rpmteOpen(p, ts, 1)) {
 		(void) rpmswEnter(rpmtsOp(ts, op), 0);
@@ -1776,9 +1732,9 @@ assert(psm != NULL);
 
 		psm->fi = rpmfiLink(p->fi, __FUNCTION__);
 
-		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-		failed = rpmpsmStage(psm, PSM_PKGINSTALL);
-		(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
+		(void) rpmswEnter(sw, 0);
+		failed = (rpmpsmStage(psm, stage) != RPMRC_OK);
+		(void) rpmswExit(sw, 0);
 
 		xx = rpmteClose(p, ts, 0);
 		gotfd = 0;
@@ -1791,6 +1747,7 @@ assert(psm != NULL);
 	    rpmlog(RPMLOG_DEBUG, "========== --- %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 	    stage = PSM_PKGERASE;
+	    sw = rpmtsOp(ts, RPMTS_OP_ERASE);
 #ifdef	REFERENCE
 	    if (rpmteOpen(p, ts, 1)) {
 		(void) rpmswEnter(rpmtsOp(ts, op), 0);
@@ -1799,9 +1756,9 @@ assert(psm != NULL);
 		rpmteClose(p, ts, 1);
 	    }
 #else	/* REFERENCE */
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-	    failed = rpmpsmStage(psm, PSM_PKGERASE);
-	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
+	    (void) rpmswEnter(sw, 0);
+	    failed = (rpmpsmStage(psm, stage) != RPMRC_OK);
+	    (void) rpmswExit(sw, 0);
 #endif	/* REFERENCE */
 	    /*@switchbreak@*/ break;
 	}

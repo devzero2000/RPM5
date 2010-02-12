@@ -212,6 +212,17 @@ Header rpmteFDHeader(rpmts ts, rpmte te)
 int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 	/*@modifies te, ts @*/;
 
+/** \ingroup rpmte
+ * Return failed status of transaction element.
+ * @param te		transaction element
+ * @return		1 if transaction element (or its parents) failed
+ */
+int rpmteFailed(rpmte te)
+	/*@*/;
+
+int rpmteHaveTransScript(rpmte te, rpmTag tag)
+	/*@*/;
+
 #endif	/* _RPMTE_INTERNAL */
 
 #ifdef __cplusplus
@@ -830,14 +841,6 @@ struct rpmfs_s {
 
 int rpmteMarkFailed(rpmte te, rpmts ts);
 
-/** \ingroup rpmte
- * Return failed status of transaction element.
- * @param te		transaction element
- * @return		1 if transaction element (or its parents) failed
- */
-int rpmteFailed(rpmte te);
-
-int rpmteHaveTransScript(rpmte te, rpmTag tag);
 rpmps rpmteProblems(rpmte te);
 rpmfs rpmteGetFileStates(rpmte te);
 rpmfs rpmfsNew(unsigned int fc, rpmElementType type);

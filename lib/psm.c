@@ -37,6 +37,7 @@
 #include "rpmfi.h"
 #include "fsm.h"		/* XXX CPIO_FOO/IOSM_FOO constants */
 #define	_RPMSQ_INTERNAL
+#define	_RPMPSM_INTERNAL
 #include "psm.h"
 #define F_ISSET(_psm, _FLAG)	((_psm)->flags & (RPMPSM_FLAGS_##_FLAG))
 #define F_SET(_psm, _FLAG)	((_psm)->flags |=  (RPMPSM_FLAGS_##_FLAG))
@@ -1682,13 +1683,18 @@ static const char * pkgStageString(pkgStage a)
     /*@noteached@*/
 }
 
-#ifdef	REFERENCE
 void rpmpsmSetAsync(rpmpsm psm, int async)
 {
     assert(psm != NULL);
+#ifdef	REFERENCE
     psm->unorderedSuccessor = async;
-}
+#else
+    if (async)
+	psm->flags |= RPMPSM_FLAGS_UNORDERED;
+    else
+	psm->flags &= ~RPMPSM_FLAGS_UNORDERED;
 #endif
+}
 
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
 {
@@ -1698,6 +1704,7 @@ assert(psm != NULL);
     /* XXX other tags needed? */
     switch (scriptTag) {
     default:	break;
+    case RPMTAG_SANITYCHECK:	psm->stepName = "sanitycheck";	break;
     case RPMTAG_VERIFYSCRIPT:	psm->stepName = "verify";	break;
     case RPMTAG_PRETRANS:	psm->stepName = "pretrans";	break;
     case RPMTAG_POSTTRANS:	psm->stepName = "posttrans";	break;
@@ -2054,7 +2061,6 @@ assert(fi->h != NULL);
 
     return 0;
 }
-
 
 /**
  * Add fi->states to an install header.

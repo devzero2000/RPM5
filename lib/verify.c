@@ -359,31 +359,29 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    rpmpsm psm = rpmpsmNew(ts, NULL, fi);
-    int rc = 0;
-
-    if (psm == NULL)	/* XXX can't happen */
-	return rc;
+    rpmpsm psm;
+    rpmRC rc;
+    int ec = 0;
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(psm->ts, scriptFd);
+	rpmtsSetScriptFd(ts, scriptFd);
 
-    psm->stepName = "verify";
-    psm->scriptTag = RPMTAG_VERIFYSCRIPT;
-    psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
-    rc = rpmpsmStage(psm, PSM_SCRIPT);
+    psm = rpmpsmNew(ts, NULL, fi);
 
-    psm->stepName = "sanitycheck";
-    psm->scriptTag = RPMTAG_SANITYCHECK;
-    psm->progTag = RPMTAG_SANITYCHECKPROG;
-    rc = rpmpsmStage(psm, PSM_SCRIPT);
+    rc = rpmpsmScriptStage(psm, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG);
+    if (rc != RPMRC_OK)
+	ec = 1;
+
+    rc = rpmpsmScriptStage(psm, RPMTAG_SANITYCHECK, RPMTAG_SANITYCHECKPROG);
+    if (rc != RPMRC_OK)
+	ec = 1;
+
+    psm = rpmpsmFree(psm, __FUNCTION__);
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(psm->ts, NULL);
+	rpmtsSetScriptFd(ts, NULL);
 
-    psm = rpmpsmFree(psm, "rpmVerifyScript");
-
-    return rc;
+    return ec;
 }
 
 /**

@@ -65,6 +65,7 @@ typedef enum pkgStage_e {
 #undef	_fs
 #undef	_fd
 
+#if defined(_RPMPSM_INTERNAL)
 /**
  * PSM control bits.
  */
@@ -141,14 +142,11 @@ struct rpmpsm_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
+#endif	/* _RPMPSM_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Unreference a package state machine instance.
@@ -209,6 +207,20 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
+
+/**
+ * Run rpmpsmStage(PSM_SCRIPT) for scriptTag and progTag
+ * @param psm		package state machine data
+ * @param scriptTag	scriptlet tag to execute
+ * @param progTag	scriptlet prog tag to execute
+ * @return 		0 on success
+ */
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+void rpmpsmSetAsync(rpmpsm psm, int async)
+	/*@modifies psm @*/;
 
 #ifdef __cplusplus
 }

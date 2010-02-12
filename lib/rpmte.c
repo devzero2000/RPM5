@@ -13,11 +13,8 @@
 #include <pkgio.h>		/* rpmReadPackageFile */
 
 #include "rpmds.h"
+#define _RPMFI_INTERNAL		/* pre/post trans scripts */
 #include "rpmfi.h"
-
-#ifdef	REFERENCE
-#include "rpmpol.h"
-#endif
 
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
@@ -77,11 +74,6 @@ static void delTE(rpmte p)
     p->blink.NEVRA = argvFree(p->blink.NEVRA);
     p->blink.Pkgid = argvFree(p->blink.Pkgid);
     p->blink.Hdrid = argvFree(p->blink.Hdrid);
-
-#ifdef	REFERENCE
-    (void)rpmpolFree(p->pol);
-    p->pol = NULL;
-#endif
 
 assert(p->txn == NULL);		/* XXX FIXME */
     p->txn = NULL;
@@ -209,9 +201,6 @@ assert(he->p.str != NULL);
 	(void) rpmtsSetRelocateElement(ts, savep);
     }
     p->txn = NULL;
-#ifdef	REFERENCE
-    p->pol = (headerIsEntry(h, RPMTAG_POLICIES) ? rpmpolNew(h) : NULL);
-#endif
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
@@ -944,6 +933,31 @@ int rpmteClose(rpmte te, rpmts ts, int reset_fi)
     return 1;
 }
 
+int rpmteFailed(rpmte te)
+{
+    return (te != NULL) ? te->linkFailed : -1;
+}
+
+int rpmteHaveTransScript(rpmte te, rpmTag tag)
+{
+    rpmfi fi = (te ? te->fi : NULL);
+    int rc = 0;
+
+    switch (tag) {
+    default:
+	break;
+    case RPMTAG_PRETRANS:
+	if (fi)
+	    rc = (fi->pretrans || fi->pretransprog) ? 1 : 0;
+	break;
+    case RPMTAG_POSTTRANS:
+	if (fi)
+	    rc = (fi->posttrans || fi->posttransprog) ? 1 : 0;
+	break;
+    }
+    return rc;
+}
+
 #ifdef	REFERENCE
 int rpmteMarkFailed(rpmte te, rpmts ts)
 {
@@ -959,22 +973,6 @@ int rpmteMarkFailed(rpmte te, rpmts ts)
 	}
     }
     rpmtsiFree(pi);
-    return rc;
-}
-
-int rpmteFailed(rpmte te)
-{
-    return (te != NULL) ? te->failed : -1;
-}
-
-int rpmteHaveTransScript(rpmte te, rpmTag tag)
-{
-    int rc = 0;
-    if (tag == RPMTAG_PRETRANS) {
-	rc = (te->transscripts & RPMTE_HAVE_PRETRANS);
-    } else if (tag == RPMTAG_POSTTRANS) {
-	rc = (te->transscripts & RPMTE_HAVE_POSTTRANS);
-    }
     return rc;
 }
 
