@@ -73,21 +73,20 @@ static inline
     return NULL;
 }
 
-rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
+rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkgp)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char *NV = NULL;
     char *N = NULL;
     char *V = NULL;
-    Package p, lastp;
+    Package p;
+    Package lastp = spec->packages;
+    rpmRC rc = RPMRC_OK;
     int xx;
     
     /* "main" package */
-    if (name == NULL) {
-	if (pkg)
-	    *pkg = spec->packages;
-	return RPMRC_OK;
-    }
+    if (name == NULL)
+	goto exit;
 
     /* Construct package name */
     if (flag == PART_SUBNAME) {
@@ -98,10 +97,12 @@ assert(xx != 0 && he->p.str != NULL);
 	he->p.ptr = _free(he->p.ptr);
     } else {
 	N = xstrdup(name);
-	if ((V = strrchr(N, '-')) != NULL) {
+	/* XXX restrict V to leading digit to prevent NV split ambiguity. */
+	if ((V = strrchr(N, '-')) != NULL && xisdigit(V[1])) {
 	    NV = xstrdup(N);
 	    *V++ = '\0';
-	}
+	} else
+	    V = NULL;
     }
 
     /* Match last package with same N or same {N,V} */
@@ -129,7 +130,7 @@ assert(xx != 0 && he->p.str != NULL);
 	    if (!strcmp(N, n))
 		lastp = p;
 	} else {
-	    if (!strcmp(NV, nv) ||  !strcmp(NV, n)
+	    if (!strcmp(NV, nv) || !strcmp(NV, n)
 	    || (!strcmp(N, n) && (V == NULL || !strcmp(V, v))))
 		lastp = p;
 	}
@@ -139,12 +140,14 @@ assert(xx != 0 && he->p.str != NULL);
 	nv = _free(nv);
 /*@=usereleased@*/
     }
-
-    if (pkg)
-	/*@-dependenttrans@*/ *pkg = lastp; /*@=dependenttrans@*/
+    rc = (lastp == NULL ? RPMRC_FAIL : RPMRC_OK);
     NV = _free(NV);
     N = _free(N);
-    return ((lastp == NULL) ? RPMRC_FAIL : RPMRC_OK);
+
+exit:
+    if (pkgp)
+	/*@-dependenttrans@*/ *pkgp = lastp; /*@=dependenttrans@*/
+    return rc;
 }
 
 static void pkgFini(void * _pkg)

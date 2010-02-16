@@ -89,17 +89,16 @@ int parseDescription(Spec spec)
 	goto exit;
     }
 
-
-    /******************/
-
-#if 0    
-    if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	rpmlog(RPMLOG_ERR, _("line %d: Second description\n"),
-		spec->lineNum);
-	goto exit;
+    /* Lose the inheirited %description (if present). */
+    {	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	int xx;
+	he->tag = RPMTAG_DESCRIPTION;
+	xx = headerGet(pkg->header, he, 0);
+	he->p.ptr = _free(he->p.ptr);
+	if (xx && he->t == RPM_STRING_TYPE)
+	    xx = headerDel(pkg->header, he, 0);
     }
-#endif
-
+    
     t = stashSt(spec, pkg->header, RPMTAG_DESCRIPTION, lang);
     
     iob = rpmiobNew(0);
