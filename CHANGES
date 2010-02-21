@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - rpm.org: swipe Tarjan's loopy scissors for hacking.
     - jbj: rpmts: add pluggable check/order/run method vectors.
     - jbj: hkp: add keys.rpm5.org as the default pubkey server.
     - jbj: fix: split NV iff V starts with digit string in lookupPackage().

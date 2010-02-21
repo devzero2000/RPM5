@@ -37,26 +37,36 @@ typedef enum rpmElementType_e {
 #include <rpmtxn.h>
 #include <rpmal.h>
 
+typedef struct relation_s * relation;
+
+#if defined(_RPMTS_ORDER_INTERNAL)
+struct relation_s {
+    rpmte   rel_suc;  // pkg requiring this package
+    rpmsenseFlags rel_flags; // accumulated flags of the requirements
+    struct relation_s * rel_next;
+};
+#endif
+
 /** \ingroup rpmte
  * Dependncy ordering information.
  */
 /*@-fielduse@*/	/* LCL: confused by union? */
 struct tsortInfo_s {
-    union {
-	int	count;
-	/*@exposed@*/ /*@dependent@*/ /*@null@*/
-	rpmte	suc;
-    } tsi_u;
-#define	tsi_count	tsi_u.count
-#define	tsi_suc		tsi_u.suc
 /*@owned@*/ /*@null@*/
     tsortInfo	tsi_next;
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     rpmte	tsi_chain;
     int		tsi_tagn;
-    int		tsi_reqx;
     int		tsi_queued;
+
+    int		tsi_count;
     int		tsi_qcnt;
+    int		tsi_reqx;
+    relation	tsi_relations;
+    relation	tsi_forward_relations;
+    rpmte	tsi_suc;
+    int		tsi_SccIdx;
+    int		tsi_SccLowlink;
 };
 /*@=fielduse@*/
 

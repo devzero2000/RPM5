@@ -359,6 +359,7 @@ LIBRPM_0
     rpmtsOpenDB;
     rpmtsOpenSDB;
     _rpmtsOrder;
+    _orgrpmtsOrder;
     rpmtsOrder;
     rpmtsPRCO;
     rpmtsPrefColor;
