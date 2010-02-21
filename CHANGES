@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: hkp: add keys.rpm5.org as the default pubkey server.
     - jbj: fix: split NV iff V starts with digit string in lookupPackage().
     - jbj: fix: remove the inheirited %description before adding explicitly.
     - jbj: use a Bloom filter so that build sanity checks scale.
