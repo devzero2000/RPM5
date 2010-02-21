@@ -2029,7 +2029,7 @@ cleanup:
 }
 /*@=nullpass@*/
 
-int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int ourrc = -1;	/* assume failure */
     uint32_t totalFileCount = 0;
@@ -2169,3 +2169,6 @@ exit:
     }
     /*@=nullstate@*/
 }
+
+int (*rpmtsRun) (rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+	= _rpmtsRun;

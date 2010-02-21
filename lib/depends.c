@@ -2319,7 +2319,7 @@ static int countSlashes(const char * dn)
     return nslashes;
 }
 
-int rpmtsOrder(rpmts ts)
+int _rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     rpmuint32_t Flags;
@@ -2826,7 +2826,10 @@ assert(newOrderCount == ts->orderCount);
     return 0;
 }
 
-int rpmtsCheck(rpmts ts)
+int (*rpmtsOrder) (rpmts ts)
+	= _rpmtsOrder;
+
+int _rpmtsCheck(rpmts ts)
 {
     const char * depName = NULL;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
@@ -3014,3 +3017,6 @@ exit:
 
     return ourrc;
 }
+
+int (*rpmtsCheck) (rpmts ts)
+	= _rpmtsCheck;

@@ -343,7 +343,10 @@ extern "C" {
  * @param ts		transaction set
  * @return		0 = deps ok, 1 = dep problems, 2 = error
  */
-int rpmtsCheck(rpmts ts)
+int _rpmtsCheck(rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+extern int (*rpmtsCheck) (rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -363,7 +366,10 @@ int rpmtsCheck(rpmts ts)
  * @param ts		transaction set
  * @return		no. of (added) packages that could not be ordered
  */
-int rpmtsOrder(rpmts ts)
+int _rpmtsOrder(rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+extern int (*rpmtsOrder) (rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -384,7 +390,10 @@ int rpmtsOrder(rpmts ts)
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
-int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+extern int (*rpmtsRun) (rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

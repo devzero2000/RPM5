@@ -326,6 +326,7 @@ LIBRPM_0
     rpmtsAddEraseElement;
     rpmtsAddInstallElement;
     rpmtsAvailable;
+    _rpmtsCheck;
     rpmtsCheck;
     rpmtsCheckDSIProblems;
     rpmtsChrootDone;
@@ -357,6 +358,7 @@ LIBRPM_0
     rpmtsOp;
     rpmtsOpenDB;
     rpmtsOpenSDB;
+    _rpmtsOrder;
     rpmtsOrder;
     rpmtsPRCO;
     rpmtsPrefColor;
@@ -364,6 +366,7 @@ LIBRPM_0
     rpmtsRebuildDB;
     rpmtsRelocateElement;
     rpmtsRootDir;
+    _rpmtsRun;
     rpmtsRun;
     rpmtsScriptFd;
     rpmtsSELinuxEnabled;
