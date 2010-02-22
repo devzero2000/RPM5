@@ -290,7 +290,6 @@ static inline int orgrpmAddRelation(rpmts ts,
     rpmte q;
     struct tsortInfo_s * tsi_p, * tsi_q;
     relation rel;
-    nsType NSType = rpmdsNSType(requires);
     const char * N = rpmdsN(requires);
     rpmElementType teType = rpmteType(p);
     rpmsenseFlags flags;
@@ -316,7 +315,9 @@ static inline int orgrpmAddRelation(rpmts ts,
     dsflags = rpmdsFlags(requires);
 
     /* Avoid certain NS dependencies. */
-    switch (NSType) {
+    switch (rpmdsNSType(requires)) {
+    default:
+	break;
     case RPMNS_TYPE_RPMLIB:
     case RPMNS_TYPE_CONFIG:
     case RPMNS_TYPE_CPUINFO:
@@ -338,19 +339,17 @@ static inline int orgrpmAddRelation(rpmts ts,
     case RPMNS_TYPE_SIGNATURE:
 	return 0;
 	/*@notreached@*/ break;
-    default:
-	break;
     }
 
+#ifndef	NOTYET
     /* Avoid looking up files/directories that are "owned" by _THIS_ package. */
     if (*N == '/') {
-#ifdef	NOTYET
 	rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
 	rpmbf bf = rpmfiBloomFN(fi);
 	if (bf != NULL && rpmbfChk(bf, N, strlen(N)) > 0)
 	    return 0;
-#endif
     }
+#endif
 
     pkgKey = RPMAL_NOMATCH;
     key = rpmalSatisfiesDepend(al, requires, &pkgKey);
@@ -389,12 +388,14 @@ static inline int orgrpmAddRelation(rpmts ts,
 	flags = isInstallPreReq(dsflags);
     }
 
-#ifdef	DYING
+#ifndef	DYING
+#define	isLegacyPreReq(_x)  (((_x) & _ALL_REQUIRES_MASK) == RPMSENSE_PREREQ)
     /* map legacy prereq to pre/preun as needed */
     if (isLegacyPreReq(dsflags)) {
 	flags |= (teType == TR_ADDED) ?
 		 RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
+#undef	isLegacyPreReq
 #endif
 
     tsi_p = rpmteTSI(p);
@@ -460,7 +461,6 @@ static inline int addRelation(rpmts ts, rpmal al,
 {
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
-    nsType NSType = rpmdsNSType(requires);
     const char * N = rpmdsN(requires);
     fnpyKey key;
     int teType = rpmteType(p);
@@ -468,7 +468,9 @@ static inline int addRelation(rpmts ts, rpmal al,
     int i = 0;
 
     /* Avoid certain NS dependencies. */
-    switch (NSType) {
+    switch (rpmdsNSType(requires)) {
+    default:
+	break;
     case RPMNS_TYPE_RPMLIB:
     case RPMNS_TYPE_CONFIG:
     case RPMNS_TYPE_CPUINFO:
@@ -490,8 +492,6 @@ static inline int addRelation(rpmts ts, rpmal al,
     case RPMNS_TYPE_SIGNATURE:
 	return 0;
 	/*@notreached@*/ break;
-    default:
-	break;
     }
 
     /* Avoid looking up files/directories that are "owned" by _THIS_ package. */
@@ -653,6 +653,7 @@ static rpmuint32_t _autobits = 0xffffffff;
 #endif
 #define isAuto(_x)	((_x) & _autobits)
 
+#ifdef	DYING
 /*@unchecked@*/
 static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
 
@@ -671,6 +672,7 @@ static int countSlashes(const char * dn)
 
     return nslashes;
 }
+#endif
 
 /* Search for SCCs and return an array last entry has a .size of 0 */
 static scc detectSCCs(rpmts ts)
@@ -776,8 +778,14 @@ static scc detectSCCs(rpmts ts)
     SCCs = xrealloc(SCCs, (sccCnt+1)*sizeof(struct scc_s));
     /* Debug output */
     if (sccCnt > 2) {
-	int msglvl = (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS) ?
+#ifdef	REFERENCE
+	rpmlogLvl  msglvl = (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS) ?
 		     RPMLOG_WARNING : RPMLOG_DEBUG;
+#else
+	int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+	rpmlogLvl msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
+			? RPMLOG_WARNING : RPMLOG_ERR;
+#endif
 	int i;
 
 	rpmlog(msglvl, "%d Strongly Connected Components\n", sccCnt-2);
@@ -1014,7 +1022,7 @@ int _orgrpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 #ifdef	REFERENCE
-        rpmalAdd(erasedPackages, p);
+        rpmalAdd(ts->erasedPackages, p);
 #else
 	alKey pkgKey;
 	fnpyKey key;
@@ -1051,6 +1059,60 @@ int _orgrpmtsOrder(rpmts ts)
 	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) orgrpmAddRelation(ts, al, p, requires);
 	}
+
+#ifdef	NOTYET
+	/* Ensure that erasures follow installs during upgrades. */
+      if (rpmteType(p) == TR_REMOVED && p->flink.Pkgid && p->flink.Pkgid[0]) {
+	rpmtsi qi;
+
+	qi = rpmtsiInit(ts);
+	while ((q = rpmtsiNext(qi, TR_ADDED)) != NULL) {
+
+	    if (strcmp(q->pkgid, p->flink.Pkgid[0]))
+		/*@innercontinue@*/ continue;
+
+	    requires = rpmdsFromPRCO(q->PRCO, RPMTAG_NAME);
+	    if (requires != NULL) {
+		/* XXX disable erased arrow reversal. */
+		p->type = TR_ADDED;
+		(void) orgrpmAddRelation(ts, ts->addedPackages, p, requires);
+		p->type = TR_REMOVED;
+	    }
+	}
+	qi = rpmtsiFree(qi);
+      }
+#endif	/* NOTYET */
+
+#ifdef	NOTYET
+	/* Order by requiring parent directories as prerequisites. */
+	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));
+	if (requires != NULL)
+	while (rpmdsNext(requires) >= 0) {
+
+#ifdef	DYING
+	    /* XXX Attempt to avoid loops by filtering out deep paths. */
+	    if (countSlashes(rpmdsN(requires)) > slashDepth)
+		/*@innercontinue@*/ continue;
+#endif
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) orgrpmAddRelation(ts, al, p, requires);
+
+	}
+#endif	/* NOTYET */
+
+#ifdef	NOTYET
+	/* Order by requiring no dangling symlinks. */
+	requires = rpmdsInit(rpmteDS(p, RPMTAG_FILELINKTOS));
+	if (requires != NULL)
+	while (rpmdsNext(requires) >= 0) {
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) orgrpmAddRelation(ts, al, p, requires);
+
+	}
+#endif	/* NOTYET */
+
     }
     pi = rpmtsiFree(pi);
 
@@ -1144,20 +1206,34 @@ int _rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     rpmuint32_t Flags;
-    int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+
     rpmuint32_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
-    tsortInfo tsi;
-    tsortInfo tsi_next;
-    rpmal al;
-    alKey * ordering;
-    int orderingCount = 0;
-    unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
-    int loopcheck;
     rpmte * newOrder;
     int newOrderCount = 0;
+    int treex;
+    int rc = -1;	/* assume failure */
+    int i;
+    int j;
+
+    rpmal al;
+
+#ifdef  REFERENCE
+    rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts), prefcolor);
+    scc SCCs;
+#else	/* REFERENCE */
+    rpmuint32_t tscolor = rpmtsColor(ts);
+    int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+
+    tsortInfo tsi;
+    tsortInfo tsi_next;
+    alKey * ordering;
+    int orderingCount = 0;
+
+    unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
+    int loopcheck;
     orderListIndex orderList;
     int numOrderList;
     int npeer = 128;	/* XXX more than deep enough for now. */
@@ -1165,44 +1241,49 @@ int _rpmtsOrder(rpmts ts)
     int nrescans = 100;
     int _printed = 0;
     char deptypechar;
-    size_t tsbytes;
+    size_t tsbytes = 0;
     int oType = 0;
-    int treex;
     int depth;
     int breadth;
     int qlen;
-    int i, j;
+#endif	/* REFERENCE */
 
 if (_rpmts_debug)
 fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 
-#ifdef	DYING
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
+
+    /* Create added package index. */
+#ifdef	REFERENCE
     rpmalMakeIndex(ts->addedPackages);
+#else
 #endif
 
     /* Create erased package index. */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
-	alKey pkgKey;
-	fnpyKey key;
-	rpmuint32_t tscolor = rpmtsColor(ts);
-	pkgKey = RPMAL_NOMATCH;
+#ifdef	REFERENCE
+	rpmalAdd(ts->erasedPackages, p);
+#else
 /*@-abstract@*/
-	key = (fnpyKey) p;
+	fnpyKey key = (fnpyKey) p;
 /*@=abstract@*/
+	alKey pkgKey;
+
 	pkgKey = rpmalAdd(&ts->erasedPackages, pkgKey, key,
 			rpmteDS(p, RPMTAG_PROVIDENAME),
 			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
 	/* XXX pretend erasedPackages are just appended to addedPackages. */
 	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
 	(void) rpmteSetAddedKey(p, pkgKey);
+#endif
     }
     pi = rpmtsiFree(pi);
     rpmalMakeIndex(ts->erasedPackages);
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
-
     /* T1. Initialize. */
+#ifdef	REFERENCE
+#else
     if (oType == 0)
 	numOrderList = ts->orderCount;
     else {
@@ -1214,7 +1295,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
      }
     ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
     loopcheck = numOrderList;
-    tsbytes = 0;
+#endif
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL)
@@ -1225,14 +1306,17 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
     rpmlog(RPMLOG_DEBUG, D_("========== recording tsort relations\n"));
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
+	al = (rpmteType(p) == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
 
+	/* T2. Next "q <- p" relation. */
+
+#ifdef	REFERENCE
+#else
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
 
 	/* Avoid narcisstic relations. */
 	selected[rpmtsiOc(pi)] = 1;
-
-	al = (rpmteType(p) == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
-	/* T2. Next "q <- p" relation. */
+#endif
 
 	requires = rpmteDS(p, RPMTAG_REQUIRENAME);
 	requires = rpmdsInit(requires);
@@ -1244,10 +1328,16 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+#ifdef	REFERENCE
+	    (void) orgrpmAddRelation(ts, al, p, requires);
+#else
 	    (void) addRelation(ts, al, p, selected, requires);
+#endif
 
 	}
 
+#ifdef	REFERENCE
+#else	/* REFERENCE */
 	/* Ensure that erasures follow installs during upgrades. */
       if (rpmteType(p) == TR_REMOVED && p->flink.Pkgid && p->flink.Pkgid[0]) {
 
@@ -1261,7 +1351,11 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	    if (requires != NULL) {
 		/* XXX disable erased arrow reversal. */
 		p->type = TR_ADDED;
+#ifdef	REFERENCE
+		(void) orgrpmAddRelation(ts, ts->addedPackages, p, requires);
+#else
 		(void) addRelation(ts, ts->addedPackages, p, selected, requires);
+#endif
 		p->type = TR_REMOVED;
 	    }
 	}
@@ -1273,12 +1367,18 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
 
+#ifdef	DYING
 	    /* XXX Attempt to avoid loops by filtering out deep paths. */
 	    if (countSlashes(rpmdsN(requires)) > slashDepth)
 		/*@innercontinue@*/ continue;
+#endif
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+#ifdef	REFERENCE
+	    (void) orgrpmAddRelation(ts, al, p, requires);
+#else
 	    (void) addRelation(ts, al, p, selected, requires);
+#endif
 
 	}
 
@@ -1288,10 +1388,14 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	while (rpmdsNext(requires) >= 0) {
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+#ifdef	REFERENCE
+	    (void) orgrpmAddRelation(ts, al, p, requires);
+#else
 	    (void) addRelation(ts, al, p, selected, requires);
+#endif
 
 	}
-
+#endif	/* REFERENCE */
     }
     pi = rpmtsiFree(pi);
 
@@ -1299,17 +1403,22 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
     treex = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
-	int npreds;
-
-	npreds = rpmteTSI(p)->tsi_count;
+	int npreds = rpmteTSI(p)->tsi_count;
 
 	(void) rpmteSetNpreds(p, npreds);
+#ifdef	REFERENCE
+	(void) rpmteSetDepth(p, 1);
+#else
 	(void) rpmteSetDepth(p, 0);
+#endif
 
 	if (npreds == 0) {
-	    treex++;
-	    (void) rpmteSetTree(p, treex);
+#ifdef	REFERENCE
+	    (void) rpmteSetTree(p, treex++);
+#else
+	    (void) rpmteSetTree(p, ++treex);
 	    (void) rpmteSetBreadth(p, treex);
+#endif
 	} else
 	    (void) rpmteSetTree(p, -1);
 #ifdef	UNNECESSARY
@@ -1320,11 +1429,24 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
     pi = rpmtsiFree(pi);
     ts->ntrees = treex;
 
+#ifdef	REFERENCE
+    /* Remove dependency loops. */
+    newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
+    SCCs = detectSCCs(ts);
+#endif
+
     /* T4. Scan for zeroes. */
     rpmlog(RPMLOG_DEBUG, D_("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
 
+#ifdef	REFERENCE
+  for (j = 0; j < 2; j++) {
+    /* Do two separate runs: installs first - then erases */
+    unsigned oType = (j == 0 ? TR_ADDED : TR_REMOVED);
+
+#else
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
+#endif
     q = r = NULL;
     qlen = 0;
     pi = rpmtsiInit(ts);
@@ -1433,7 +1555,9 @@ rescan:
 	    tsi->tsi_suc = NULL;
 	}
     }
-
+#ifdef	REFERENCE
+  }
+#else	/* REFERENCE */
     /* T8. End of process. Check for loops. */
     if (loopcheck != 0) {
 	int nzaps;
@@ -1541,6 +1665,7 @@ rescan:
 
 	return loopcheck;
     }
+#endif	/* REFERENCE */
 
     /* Clean up tsort remnants (if any). */
     pi = rpmtsiInit(ts);
@@ -1548,9 +1673,9 @@ rescan:
 	rpmteFreeTSI(p);
     pi = rpmtsiFree(pi);
 
-    /*
-     * The order ends up as installed packages followed by removed packages.
-     */
+#ifdef	REFERENCE
+#else	/* REFERENCE */
+    /* The order ends up as installed packages followed by removed packages. */
     orderList = xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
     pi = rpmtsiInit(ts);
@@ -1585,24 +1710,36 @@ rescan:
 	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
     }
+    orderList = _free(orderList);
+#endif	/* REFERENCE */
 
 assert(newOrderCount == ts->orderCount);
+    rc = 0;
 
 /*@+voidabstract@*/
     ts->order = _free(ts->order);
 /*@=voidabstract@*/
     ts->order = newOrder;
     ts->orderAlloced = ts->orderCount;
-    orderList = _free(orderList);
 
+#ifdef	REFERENCE
+    for (i = 2; SCCs[i].members != NULL; i++)
+	SCCs[i].members = _free(SCCs[i].members);
+    SCCs = _free(SCCs);
+
+    rpmalFree(ts->erasedPackages);
+    ts->erasedPackages = NULL;
+#else	/* REFERENCE */
 #ifdef	DYING	/* XXX now done at the CLI level just before rpmtsRun(). */
     rpmtsClean(ts);
 #endif
+#endif	/* REFERENCE */
+
     freeBadDeps();
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
-    return 0;
+    return rc;
 }
 
 int (*rpmtsOrder) (rpmts ts)
