@@ -85,62 +85,6 @@ static void freeBadDeps(void)
 }
 /*@=modobserver =observertrans @*/
 
-#ifdef	REFERENCE
-/**
- * Check for dependency relations to be ignored.
- *
- * @param ts		transaction set
- * @param p		successor element (i.e. with Requires: )
- * @param q		predecessor element (i.e. with Provides: )
- * @return		1 if dependency is to be ignored.
- */
-static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
-{
-    struct badDeps_s * bdp;
-
-    if (!badDepsInitialized) {
-	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
-	const char ** av = NULL;
-	int msglvl = (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS)
-			? RPMLOG_WARNING : RPMLOG_DEBUG;
-	int ac = 0;
-	int i;
-
-	if (s != NULL && *s != '\0'
-	&& !(i = poptParseArgvString(s, &ac, (const char ***)&av))
-	&& ac > 0 && av != NULL)
-	{
-	    bdp = badDeps = xcalloc(ac+1, sizeof(*badDeps));
-	    for (i = 0; i < ac; i++, bdp++) {
-		char * pname, * qname;
-
-		if (av[i] == NULL)
-		    break;
-		pname = xstrdup(av[i]);
-		if ((qname = strchr(pname, '>')) != NULL)
-		    *qname++ = '\0';
-		bdp->pname = pname;
-		bdp->qname = qname;
-		rpmlog(msglvl,
-			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
-			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
-	    }
-	    bdp->pname = NULL;
-	    bdp->qname = NULL;
-	}
-	av = _free(av);
-	s = _free(s);
-	badDepsInitialized++;
-    }
-
-    if (badDeps != NULL)
-    for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
-	if (!strcmp(rpmteN(p), bdp->pname) && !strcmp(rpmteN(q), bdp->qname))
-	    return 1;
-    }
-    return 0;
-}
-#else	/* REFERENCE */
 /**
  * Check for dependency relations to be ignored.
  *
@@ -160,9 +104,14 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
+#ifdef	REFERENCE
+	int msglvl = (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS)
+			? RPMLOG_WARNING : RPMLOG_DEBUG;
+#else
 	int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
 	int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMLOG_WARNING : RPMLOG_DEBUG;
+#endif
 	int ac = 0;
 	int i;
 
@@ -180,9 +129,9 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 		if ((qname = strchr(pname, '>')) != NULL)
 		    *qname++ = '\0';
 		bdp->pname = pname;
-		/*@-usereleased@*/
+/*@-usereleased@*/
 		bdp->qname = qname;
-		/*@=usereleased@*/
+/*@=usereleased@*/
 		rpmlog(msglvl,
 			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
 			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
@@ -195,16 +144,15 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	badDepsInitialized++;
     }
 
-    /*@-compdef@*/
+/*@-compdef@*/
     if (badDeps != NULL)
     for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
 	if (!strcmp(rpmteN(p), bdp->pname) && !strcmp(rpmteN(q), bdp->qname))
 	    return 1;
     }
     return 0;
-    /*@=compdef@*/
+/*@=compdef@*/
 }
-#endif	/* REFERENCE */
 
 /**
  * Recursively mark all nodes with their predecessors.
@@ -363,9 +311,6 @@ static inline int orgrpmAddRelation(rpmts ts,
     rpmtsi qi;
     fnpyKey key;
     alKey pkgKey;
-#ifdef	DYING
-   rpmal al = (teType == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
-#endif
     int i = 0;
 
     dsflags = rpmdsFlags(requires);
@@ -498,13 +443,14 @@ static inline int orgrpmAddRelation(rpmts ts,
 /**
  * Record next "q <- p" relation (i.e. "p" requires "q").
  * @param ts		transaction set
+ * @param al		added/erased package index
  * @param p		predecessor (i.e. package that "Requires: q")
  * @param selected	boolean package selected array
  * @param requires	relation
  * @return		0 always
  */
 /*@-mustmod@*/
-static inline int addRelation(rpmts ts,
+static inline int addRelation(rpmts ts, rpmal al,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
@@ -520,7 +466,6 @@ static inline int addRelation(rpmts ts,
     int teType = rpmteType(p);
     alKey pkgKey;
     int i = 0;
-    rpmal al = (teType == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
 
     /* Avoid certain NS dependencies. */
     switch (NSType) {
@@ -630,55 +575,6 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
     return (a - b);
 }
 
-#ifdef	REFERENCE
-/**
- * Add element to list sorting by tsi_qcnt.
- * @param p		new element
- * @retval qp		address of first element
- * @retval rp		address of last element
- * @param prefcolor
- */
-static void addQ(rpmte p,
-		rpmte * qp,
-		rpmte * rp,
-		rpm_color_t prefcolor)
-{
-    rpmte q, qprev;
-
-    /* Mark the package as queued. */
-    rpmteTSI(p)->tsi_reqx = 1;
-
-    if ((*rp) == NULL) {	/* 1st element */
-	/* FIX: double indirection */
-	(*rp) = (*qp) = p;
-	return;
-    }
-
-    /* Find location in queue using metric tsi_qcnt. */
-    for (qprev = NULL, q = (*qp);
-	 q != NULL;
-	 qprev = q, q = rpmteTSI(q)->tsi_suc)
-    {
-	/* XXX Insure preferred color first. */
-	if (rpmteColor(p) != prefcolor && rpmteColor(p) != rpmteColor(q))
-	    continue;
-
-	if (rpmteTSI(q)->tsi_qcnt <= rpmteTSI(p)->tsi_qcnt)
-	    break;
-    }
-
-    if (qprev == NULL) {	/* insert at beginning of list */
-	rpmteTSI(p)->tsi_suc = q;
-	(*qp) = p;		/* new head */
-    } else if (q == NULL) {	/* insert at end of list */
-	rpmteTSI(qprev)->tsi_suc = p;
-	(*rp) = p;		/* new tail */
-    } else {			/* insert between qprev and q */
-	rpmteTSI(p)->tsi_suc = q;
-	rpmteTSI(qprev)->tsi_suc = p;
-    }
-}
-#else	/* REFERENCE */
 /**
  * Add element to list sorting by tsi_qcnt.
  * @param p		new element
@@ -695,10 +591,15 @@ static void addQ(/*@dependent@*/ rpmte p,
 {
     rpmte q, qprev;
 
+#ifdef	REFERENCE
+    /* Mark the package as queued. */
+    rpmteTSI(p)->tsi_reqx = 1;
+#endif	/* REFERENCE */
+
     if ((*rp) == NULL) {	/* 1st element */
-	/*@-dependenttrans@*/ /* FIX: double indirection */
+/*@-dependenttrans@*/ /* FIX: double indirection */
 	(*rp) = (*qp) = p;
-	/*@=dependenttrans@*/
+/*@=dependenttrans@*/
 	return;
     }
 
@@ -711,6 +612,8 @@ static void addQ(/*@dependent@*/ rpmte p,
 	if (rpmteColor(p) != prefcolor && rpmteColor(p) != rpmteColor(q))
 	    continue;
 
+#ifdef	REFERENCE
+#else	/* REFERENCE */
 	/* XXX Insure removed after added. */
 	if (rpmteType(p) == TR_REMOVED && rpmteType(p) != rpmteType(q))
 	    continue;
@@ -718,6 +621,7 @@ static void addQ(/*@dependent@*/ rpmte p,
 	/* XXX Follow all previous generations in the queue. */
 	if (rpmteTSI(p)->tsi_queued > rpmteTSI(q)->tsi_queued)
 	    continue;
+#endif	/* REFERENCE */
 
 	/* XXX Within a generation, queue behind more "important". */
 	if (rpmteTSI(q)->tsi_qcnt <= rpmteTSI(p)->tsi_qcnt)
@@ -726,22 +630,20 @@ static void addQ(/*@dependent@*/ rpmte p,
 
     if (qprev == NULL) {	/* insert at beginning of list */
 	rpmteTSI(p)->tsi_suc = q;
-	/*@-dependenttrans@*/
+/*@-dependenttrans@*/
 	(*qp) = p;		/* new head */
-	/*@=dependenttrans@*/
+/*@=dependenttrans@*/
     } else if (q == NULL) {	/* insert at end of list */
 	rpmteTSI(qprev)->tsi_suc = p;
-	/*@-dependenttrans@*/
+/*@-dependenttrans@*/
 	(*rp) = p;		/* new tail */
-	/*@=dependenttrans@*/
+/*@=dependenttrans@*/
     } else {			/* insert between qprev and q */
 	rpmteTSI(p)->tsi_suc = q;
 	rpmteTSI(qprev)->tsi_suc = p;
     }
 }
 /*@=mustmod@*/
-
-#endif	/* REFERENCE */
 
 /*@unchecked@*/
 #ifdef	NOTYET
@@ -1249,6 +1151,7 @@ int _rpmtsOrder(rpmts ts)
     rpmtsi ri; rpmte r;
     tsortInfo tsi;
     tsortInfo tsi_next;
+    rpmal al;
     alKey * ordering;
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
@@ -1328,11 +1231,10 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	/* Avoid narcisstic relations. */
 	selected[rpmtsiOc(pi)] = 1;
 
-      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
-
+	al = (rpmteType(p) == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
 	/* T2. Next "q <- p" relation. */
 
-	/* First, do pre-requisites. */
+	requires = rpmteDS(p, RPMTAG_REQUIRENAME);
 	requires = rpmdsInit(requires);
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
@@ -1341,73 +1243,32 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	    if (!isAuto(Flags))
 		/*@innercontinue@*/ continue;
 
-	    switch (rpmteType(p)) {
-	    case TR_REMOVED:
-		/* Skip if not %preun/%postun requires. */
-		if (!isErasePreReq(Flags))
-		    /*@innercontinue@*/ continue;
-		/*@switchbreak@*/ break;
-	    case TR_ADDED:
-		/* Skip if not %pre/%post requires. */
-		if (!isInstallPreReq(Flags))
-		    /*@innercontinue@*/ continue;
-		/*@switchbreak@*/ break;
-	    }
-
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, requires);
+	    (void) addRelation(ts, al, p, selected, requires);
 
 	}
-
-	/* Then do co-requisites. */
-	requires = rpmdsInit(requires);
-	if (requires != NULL)
-	while (rpmdsNext(requires) >= 0) {
-
-	    Flags = rpmdsFlags(requires);
-	    if (!isAuto(Flags))
-		/*@innercontinue@*/ continue;
-
-	    switch (rpmteType(p)) {
-	    case TR_REMOVED:
-		/* Skip if %preun/%postun requires. */
-		if (isErasePreReq(Flags))
-		    /*@innercontinue@*/ continue;
-		/*@switchbreak@*/ break;
-	    case TR_ADDED:
-		/* Skip if %pre/%post requires. */
-		if (isInstallPreReq(Flags))
-		    /*@innercontinue@*/ continue;
-		/*@switchbreak@*/ break;
-	    }
-
-	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, requires);
-
-	}
-      }
 
 	/* Ensure that erasures follow installs during upgrades. */
       if (rpmteType(p) == TR_REMOVED && p->flink.Pkgid && p->flink.Pkgid[0]) {
 
 	qi = rpmtsiInit(ts);
 	while ((q = rpmtsiNext(qi, TR_ADDED)) != NULL) {
+
 	    if (strcmp(q->pkgid, p->flink.Pkgid[0]))
 		/*@innercontinue@*/ continue;
+
 	    requires = rpmdsFromPRCO(q->PRCO, RPMTAG_NAME);
 	    if (requires != NULL) {
 		/* XXX disable erased arrow reversal. */
 		p->type = TR_ADDED;
-		(void) addRelation(ts, p, selected, requires);
+		(void) addRelation(ts, ts->addedPackages, p, selected, requires);
 		p->type = TR_REMOVED;
 	    }
 	}
 	qi = rpmtsiFree(qi);
       }
 
-      {
-
-	/* Order by requiring parent directories pre-requsites. */
+	/* Order by requiring parent directories as prerequisites. */
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
@@ -1417,7 +1278,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, requires);
+	    (void) addRelation(ts, al, p, selected, requires);
 
 	}
 
@@ -1427,10 +1288,9 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	while (rpmdsNext(requires) >= 0) {
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, requires);
+	    (void) addRelation(ts, al, p, selected, requires);
 
 	}
-      }
 
     }
     pi = rpmtsiFree(pi);
