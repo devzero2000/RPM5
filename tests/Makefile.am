@@ -386,6 +386,10 @@ check-query:
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEREQUIRE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
 
+check-rpmv3:
+	@echo "=== $@ ==="
+	@${rpm} -qlp simplestRPMv3-1.0-2.aix5.3.noarch.rpm
+
 check-verify:
 	@echo "=== $@ ==="
 	@${rpm} -e probes devtool-sanity
@@ -411,7 +415,7 @@ check-tools:
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
-	check-query check-verify \
+	check-query check-verify check-rpmv3\
 	check-triggers # check-tools # check-repo
 
 clean-local:
