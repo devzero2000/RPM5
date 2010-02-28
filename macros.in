@@ -1041,11 +1041,6 @@ print (t)\
 %_uuid_auth	http://rpm5.org/
 %_uuid_path	/package
 
-#
-# Dynamic EVRD tags macro for use with versioned provides/requires in place of
-# '%{version}-%{release}', ie. to automatically add distepoch or epoch if present
-%EVRD		%{?epoch:%{epoch}:}%{?version:%{version}}%{?release:-%{release}}%{?distepoch::%{distepoch}}
-
 #==============================================================================
 # ---- EVRD... dependency tuple comparison macros.
 #
