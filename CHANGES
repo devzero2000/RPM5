@@ -1,7 +1,5 @@
 
 5.2b1 -> 5.3a1
-    - proyvind: add a %EVRD macro for use with versioned provides/requires to
-	automatically add all the tags used for version comparison.
     - proyvind: python: make sure that we always use our own rpm build and
 	macros.
     - proyvind: filetriggers: don't pass filename as argument to scripts,

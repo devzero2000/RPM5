@@ -277,11 +277,6 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 # XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%{___NVRA}.rpm
 
-#
-# Dynamic EVRD tags macro for use with versioned provides/requires in place of
-# '%{version}-%{release}', ie. to automatically add distepoch or epoch if present
-%EVRD		%{?epoch:%{epoch}:}%{?version:%{version}}%{?release:-%{release}}%{?distepoch::%{distepoch}}
-
 #==============================================================================
 # ---- per-platform macros.
 #	Macros that are specific to an individual platform. The values here
