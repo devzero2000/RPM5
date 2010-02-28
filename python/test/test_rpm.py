@@ -21,8 +21,17 @@ class Test_loadHeader(unittest.TestCase):
 	self.topdir = "%s/tmp" % os.getcwdu()
 	self.package = "%s/RPMS/noarch/simple-1.0-1-foo2009.1.noarch.rpm" % self.topdir
 
-	build = subprocess.Popen(["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"],
-		executable="rpm", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+	top_builddir = os.getenv("TOP_BUILDDIR")
+	if top_builddir:
+	    rpm_cmd = "%s/rpm" % top_builddir
+	    args = ["--macros", "%s/macros" % top_builddir]
+	else:
+	    rpm_cmd = "rpm"
+	    args = []
+	args.extend(["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"])
+
+	build = subprocess.Popen(args,
+		executable=rpm_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
 	self.assertFalse(build.wait())
 	self.assertTrue(os.path.isfile(self.package))
 
@@ -72,7 +81,7 @@ class Test_labelCompare(unittest.TestCase):
 	# then again with distepoch
 	self.assertEqual(rpm.labelCompare(yes, no), 1)
 	self.assertEqual(rpm.labelCompare(no, yes), -1)
-	self.assertEqual(rpm.labelCompare(no, no), 0)	
+	self.assertEqual(rpm.labelCompare(no, no), 0)
 
 class Test_upgrade(unittest.TestCase):
 
@@ -85,16 +94,24 @@ class Test_upgrade(unittest.TestCase):
 		("%s/RPMS/noarch/simple-1.0-12-foo2009.1.noarch.rpm" % self.topdir, ("--define", "rsuffix 2")),
 		("%s/RPMS/noarch/simple2-1.0-12-foo2009.1.noarch.rpm" % self.topdir, ("--define", "nsuffix 2", "--define", "rsuffix 2")))
 
+	top_builddir = os.getenv("TOP_BUILDDIR")
+	if top_builddir:
+	    rpm_cmd = "%s/rpm" % top_builddir
+	    args = ["--macros", "%s/macros" % top_builddir]
+	else:
+	    rpm_cmd = "rpm"
+	    args = []
+	args.extend(["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"])
+	
 	for pl in self.first, self.second:
 	    for p in pl:
-		args = ["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"]
 		if len(p) == 2:
 		    filename = p[0]
 		    args.extend(p[1])
 		else:
 		    filename = p
 		build = subprocess.Popen(args,
-			executable="rpm", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+			executable=rpm_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
 		self.assertFalse(build.wait())
 		self.assertTrue(os.path.isfile(filename))
 
