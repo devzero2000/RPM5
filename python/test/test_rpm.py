@@ -97,14 +97,15 @@ class Test_upgrade(unittest.TestCase):
 	top_builddir = os.getenv("TOP_BUILDDIR")
 	if top_builddir:
 	    rpm_cmd = "%s/rpm" % top_builddir
-	    args = ["--macros", "%s/macros" % top_builddir]
+	    rpm_args = ["--macros", "%s/macros" % top_builddir]
 	else:
 	    rpm_cmd = "rpm"
-	    args = []
-	args.extend(["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"])
+	    rpm_args = []
+	rpm_args.extend(["--define", "_topdir %s" % self.topdir, "-bb", "resources/simple.spec"])
 	
 	for pl in self.first, self.second:
 	    for p in pl:
+		args = [] + rpm_args
 		if len(p) == 2:
 		    filename = p[0]
 		    args.extend(p[1])
