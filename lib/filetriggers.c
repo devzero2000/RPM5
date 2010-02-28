@@ -98,7 +98,6 @@ struct filetrigger_raw {
 struct filetrigger {
     miRE mire;
     char * name;
-    char * filename;
     int command_pipe;
     pid_t command_pid;
 };
@@ -246,7 +245,7 @@ static int is_regexp_matching(miRE mire, const char * s)
 }
 
 static int popen_with_root(const char * rootDir, const char * cmd,
-		const char * fn, pid_t * pidp)
+		pid_t * pidp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *pidp, fileSystem, internalState @*/
 {
@@ -258,7 +257,7 @@ static int popen_with_root(const char * rootDir, const char * cmd,
 
     *pidp = fork();
     if (*pidp == 0) {
-	const char * argv[3];
+	const char * argv[2];
 
 	xx = close(pipes[1]);
 	xx = dup2(pipes[0], STDIN_FILENO);
@@ -274,8 +273,7 @@ static int popen_with_root(const char * rootDir, const char * cmd,
 	    xx = chdir("/");
 	}
 	argv[0] = cmd;
-	argv[1] = fn;
-	argv[2] = NULL;
+	argv[1] = NULL;
 	xx = execv(argv[0], (char *const *) argv);
 	_exit(-1);
     }
@@ -298,10 +296,10 @@ static void mayStartFiletrigger(const char * rootDir,
 	    return;
 
 	cmd = rpmGetPath(dn, "/", trigger->name, ".script", NULL);
-	rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s %s\n",
-			cmd, trigger->filename);
+	rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s\n",
+			cmd);
 	trigger->command_pipe = popen_with_root(rootDir, cmd,
-				    trigger->filename, &trigger->command_pid);
+				    &trigger->command_pid);
 	cmd = _free(cmd);
     }
 }
@@ -340,7 +338,6 @@ void rpmRunFileTriggers(const char * rootDir)
 
 	while (fgets(tmp, (int)sizeof(tmp), fp)) {
 	    size_t tmplen = strlen(tmp);
-	    int j;
 
 	    if (!is_regexp_matching(matches_any, tmp))
 		continue;
@@ -350,9 +347,6 @@ void rpmRunFileTriggers(const char * rootDir)
 		ssize_t nw;
 		if (!is_regexp_matching(list[i].mire, tmp))
 		    /*@innercontinue@*/ continue;
-		list[i].filename = xmalloc(tmplen - 1);
-		for (j = 1; j < (int)tmplen; j++)
-		    list[i].filename[j-1] = tmp[j];
 		mayStartFiletrigger(rootDir, &list[i]);
 		nw = write(list[i].command_pipe, tmp, tmplen);
 	    }
