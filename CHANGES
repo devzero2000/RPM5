@@ -1,4 +1,6 @@
 5.2.0 -> 5.2.1:
+    - proyvind: python: make sure that we always use our own rpm build and
+	macros.
     - proyvind: filetriggers: don't pass filename as argument to scripts,
 	(all) filenames are passed through stdin already.
     - afb: permit building with js-1.7.0 (the only released version)

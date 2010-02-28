@@ -62,5 +62,6 @@ lint:
 
 # FIXME: using .libs/ is not really correct, but whatever
 check-local:
-	@export PYTHONPATH=$(PYTHONPATH):$(shell pwd):$(shell pwd)/.libs/ && \
+	@export PYTHONPATH=$(PYTHONPATH):$(shell pwd):$(shell pwd)/.libs/ \
+	    TOP_BUILDDIR=$(abs_top_builddir) && \
 	cd test && python test_rpm.py
