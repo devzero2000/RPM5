@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - proyvind: filetriggers: don't pass filename as argument to scripts,
+	(all) filenames are passed through stdin already.
     - devzero2000: use "find" and "mv" if useful instead of "cp -pr" for %doc expansion
       for preventing arg list too long message
     - rpm.org: swipe Tarjan's loopy scissors for hacking.
