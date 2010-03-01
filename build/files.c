@@ -1067,20 +1067,10 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		fl->passedSpecialDoc = 1;
 		fl->isSpecialDoc = 1;
 	    }
-            /* XXX : prevent almost all case of arg list too long messages 
-             the japh shell is equivalent to (x = specialDocBuf y =$DOCDIR )
-            ( [ -d x ] && cp -pr x y ; ) || find x 2>/dev/null | xargs -t -n10 -I '{}' mv -f {} y 2>/dev/null
-            */
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "( [ -d '", 0);
+
+	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "cp -pr ", 0);
 	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, specialDocBuf, 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "' ] && cp -pr ", 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, specialDocBuf, 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " \"$DOCDIR\"", 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, "; ) || find ", 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, specialDocBuf, 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " 2>/dev/null | xargs -n10 -I '{}' mv -f {} ", 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " \"$DOCDIR\"", 0);
-	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " 2>/dev/null", 1);
+	    pkg->specialDoc = rpmiobAppend(pkg->specialDoc, " \"$DOCDIR\"", 1);
 	}
     }
 
