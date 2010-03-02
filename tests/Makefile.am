@@ -38,6 +38,7 @@ macros =	$(abs_top_builddir)/macros/macros:$(testdir)/macros
 #XXX rpmpopt =	$(abs_top_builddir)/rpmpopt
 
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
+rpmbuild =	$(abs_top_builddir)/rpmbuild  --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
