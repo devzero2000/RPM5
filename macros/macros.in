@@ -48,6 +48,7 @@
 %__cp			%{_usrlibrpmbin}/cp
 %__find			%{_usrlibrpmbin}/find
 %__grep			%{_usrlibrpmbin}/grep
+%__lua			%{_usrlibrpmbin}/lua
 %__mtree		%{_usrlibrpmbin}/mtree
 %__rc			%{_usrlibrpmbin}/rc
 %__wget			%{_usrlibrpmbin}/wget
@@ -76,7 +77,7 @@
 %__install		@__INSTALL@
 %__install_info		@__INSTALL_INFO@
 %__ldconfig		@__LDCONFIG@
-%__lua			@__LUA@
+%__ln			@__LN@
 %__ln_s			@LN_S@
 %__lzma			@__LZMA@
 %__lzop			@__LZOP@
