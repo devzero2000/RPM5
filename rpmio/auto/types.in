@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection>
+
+<!-- argv.h -->
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGint_t </data_type>
+  <value> 0xdeadbeef </value>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGI_t </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    assert(argiAdd(&$0, -1, 1) == 0 && $0 != NULL && argiCount($0) == 1);
+    assert(argiAdd(&$0, -1, 2) == 0 && $0 != NULL && argiCount($0) == 2);
+    assert(argiAdd(&$0, -1, 3) == 0 && $0 != NULL && argiCount($0) == 3);
+  </init_code>
+  <final_code>
+    $0 = argiFree($0);
+  </final_code>
+
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGI_t </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    assert(argiAdd(&$0, -1, 1) == 0 && $0 != NULL && argiCount($0) == 1);
+    assert(argiAdd(&$0, -1, 2) == 0 && $0 != NULL && argiCount($0) == 2);
+    assert(argiAdd(&$0, -1, 3) == 0 && $0 != NULL && argiCount($0) == 3);
+  </init_code>
+  <associating>
+    <interfaces>
+      argiFree
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGstr_t </data_type>
+  <value> "foo" </value>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGV_t </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    assert(argvAdd(&$0, "foo") == 0 && $0 != NULL && !strcmp($0[0], "foo"));
+    assert(argvAdd(&$0, "bar") == 0 && $0 != NULL && !strcmp($0[1], "bar"));
+    assert(argvAdd(&$0, "baz") == 0 && $0 != NULL && !strcmp($0[2], "baz"));
+  </init_code>
+  <final_code>
+    $0 = argvFree($0);
+  </final_code>
+
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGV_t * </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    $0 = calloc(1, sizeof(*$0));
+    assert(argvAdd($0, "foo") == 0 && *$0 != NULL && !strcmp((*$0)[0], "foo"));
+    assert(argvAdd($0, "bar") == 0 && *$0 != NULL && !strcmp((*$0)[1], "bar"));
+    assert(argvAdd($0, "baz") == 0 && *$0 != NULL && !strcmp((*$0)[2], "baz"));
+  </init_code>
+  <final_code>
+    if ($0) {
+       *$0 = argvFree(*$0);
+       free($0);
+    }
+    $0 = NULL;
+  </final_code>
+  <associating>
+    <interfaces>
+      argvAdd
+      argvAppend
+      argvSplit
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGV_t </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    assert(argvAdd(&$0, "foo") == 0 && $0 != NULL && !strcmp($0[0], "foo"));
+    assert(argvAdd(&$0, "bar") == 0 && $0 != NULL && !strcmp($0[1], "bar"));
+    assert(argvAdd(&$0, "baz") == 0 && $0 != NULL && !strcmp($0[2], "baz"));
+  </init_code>
+  <associating>
+    <interfaces>
+      argvFree
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGV_t * </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    $0 = calloc(1, sizeof(*$0));
+  </init_code>
+  <final_code>
+    if ($0) {
+       *$0 = argvFree(*$0);
+       free($0);
+    }
+    $0 = NULL;
+  </final_code>
+  <associating>
+    <interfaces>
+      argvFgets
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> void * </data_type>
+  <value> NULL </value>
+
+  <global_code>
+    #include <rpmio.h>	/* XXX Fopen/Fclose */
+    static const char * _fn = "/dev/null";
+  </global_code>
+
+  <init_code>
+    $0 = (void *) Fopen(_fn, "r");
+  </init_code>
+  <final_code>
+    if ($0) (void) Fclose($0);
+  </final_code>
+  <associating>
+    <interfaces>
+      argvFgets
+    </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
+<!-- ar.h -->
+
+<!-- cpio.h -->
+
+<!-- fts.h -->
+
+<!-- mire.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> miRE </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+  </global_code>
+  <init_code>
+    $0 = mireNew(RPMMIRE_REGEX, 0);
+  </init_code>
+  <final_code>
+    $0 = mireFree($0);
+  </final_code>
+</spec_type>
+
+<!-- poptIO.h -->
+
+<!-- rpmacl.h -->
+
+<!-- rpmaug.h -->
+
+<!-- rpmbc.h -->
+
+<!-- rpmbf.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmbf </data_type>
+  <value> rpmbfCreate(1000, 1.0e-4) </value>
+
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    static rpmbf rpmbfCreate(size_t n, double e)
+    {
+	size_t m = 0;
+	size_t k = 0;
+	rpmbfParams(n, e, &m, &k);
+	return rpmbfNew(m, k, 0);
+    }
+  </global_code>
+
+  <init_code>
+    assert(rpmbfAdd($0, "foo", 0) == 0 && rpmbfChk($0, "foo", 0) > 0);
+    assert(rpmbfAdd($0, "bar", 0) == 0 && rpmbfChk($0, "bar", 0) > 0);
+    assert(rpmbfAdd($0, "baz", 0) == 0 && rpmbfChk($0, "baz", 0) > 0);
+  </init_code>
+  <final_code>
+    $0 = rpmbfFree($0);
+  </final_code>
+
+</spec_type>
+
+<!-- rpmbz.h -->
+
+<!-- rpmcb.h -->
+
+<!-- rpmcudf.h -->
+
+<!-- rpmdav.h -->
+
+<!-- rpmdir.h -->
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> DIR * </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    const char * _dn = ".";
+    $0 = Opendir(_dn);
+  </init_code>
+  <final_code>
+    if ($0)
+      (void) Closedir($0);
+    $0 = NULL;
+  </final_code>
+
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> DIR * </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    const char * _dn = ".";
+    $0 = Opendir(_dn);
+  </init_code>
+
+  <associating>
+    <interfaces>
+      Closedir
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> struct dirent * </data_type>
+  <value> NULL </value>
+
+  <init_code>
+    const char * _dn = ".";
+    DIR * _dir = Opendir(_dn);
+    $0 = Readdir(_dir);
+  </init_code>
+  <final_code>
+    $0 = NULL;
+    if (_dir)
+      (void) Closedir(_dir);
+  </final_code>
+
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const void * </data_type>
+  <value> &_foo </value>
+
+  <global_code>
+    static const char * _foo = "foo";
+  </global_code>
+
+  <associating>
+    <interfaces>
+      Alphasort
+      Versionsort
+    </interfaces>
+    <links>
+      param1
+      param2
+    </links>
+  </associating>
+
+</spec_type>
+
+<!-- rpmficl.h -->
+
+<!-- rpmgc.h -->
+
+<!-- rpmhash.h -->
+
+<!-- rpmhook.h -->
+
+<!-- rpmio.h -->
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> FD_t </data_type>
+  <value> fdDup(fileno(tmpfile())) </value>
+  <final_code>
+    (void) Fclose($0);
+    $0 = NULL;
+  </final_code>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> FD_t </data_type>
+  <value> fdDup(fileno(tmpfile())) </value>
+  <associating>
+    <interfaces>
+      Fclose
+      ufdGetFile
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> mode_t </data_type>
+  <value> 0700 </value>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> void * </data_type>
+  <value> &__pglob </value>
+  <global_code>
+    #include <glob.h>
+    static glob_t __pglob;
+  </global_code>
+  <init_code>
+    (void) Glob("*", 0, Glob_error, $0);
+  </init_code>
+  <associating>
+    <interfaces> Globfree </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> char * </data_type>
+  <value> NULL </value>
+  <associating>
+    <interfaces> Realpath </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
+<!-- rpmiotypes.h -->
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> DIGEST_CTX </data_type>
+  <value> NULL </value>
+
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    static pgpHashAlgo _algo = PGPHASHALGO_MD5;
+    static rpmDigestFlags _flags = RPMDIGEST_NONE;
+  </global_code>
+
+  <init_code>
+    $0 = rpmDigestInit(_algo, _flags);
+  </init_code>
+  <final_code>
+    (void) rpmDigestFinal($0, NULL, NULL, 0);
+    $0 = NULL;
+  </final_code>
+
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> DIGEST_CTX </data_type>
+  <value> NULL </value>
+
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    static pgpHashAlgo _algo = PGPHASHALGO_MD5;
+    static rpmDigestFlags _flags = RPMDIGEST_NONE;
+  </global_code>
+
+  <init_code>
+    $0 = rpmDigestInit(_algo, _flags);
+  </init_code>
+  <associating>
+    <interfaces>
+      rpmDigestFinal
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = strdup("foo");
+  </init_code>
+  <associating>
+    <interfaces>
+      xstrtolocale
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> rpmioP </data_type>
+  <value> NULL </value>
+  <init_code>
+    (void) rpmioParse(&$0, "bing bang boom");
+  </init_code>
+  <associating>
+    <interfaces>
+      rpmioPFree
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<!-- rpmjs.h -->
+
+<!-- rpmku.h -->
+
+<!-- rpmlog.h -->
+
+<!-- rpmlua.h -->
+
+<!-- rpmmacro.h -->
+
+<!-- rpmmg.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmmg </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    static const char _fn[] = "/usr/lib/rpm/magic";
+  </global_code>
+  <init_code>
+    $0 = rpmmgNew(_fn, 0);
+  </init_code>
+  <final_code>
+    $0 = rpmmgFree($0);
+  </final_code>
+</spec_type>
+
+<!-- rpmnss.h -->
+
+<!-- rpmperl.h -->
+
+<!-- rpmpgp.h -->
+
+<!-- rpmpython.h -->
+
+<!-- rpmruby.h -->
+
+<!-- rpmsm.h -->
+
+<!-- rpmsp.h -->
+
+<!-- rpmsq.h -->
+
+<!-- rpmsquirrel.h -->
+
+<!-- rpmssl.h -->
+
+<!-- rpmsw.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmsw </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+  </global_code>
+  <init_code>
+    $0 = calloc(1, sizeof(*$0));
+  </init_code>
+  <final_code>
+    if ($0)
+      free($0);
+    $0 = NULL;
+  </final_code>
+</spec_type>
+
+<!-- rpmsx.h -->
+
+<!-- rpmsyck.h -->
+
+<!-- rpmtcl.h -->
+
+<!-- rpmurl.h -->
+
+<!-- rpmuuid.h -->
+
+<!-- rpmxar.h -->
+
+<!-- tar.h -->
+
+<!-- ugid.h -->
+
+<!-- yarn.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> yarnThread </data_type>
+  <value> NULL </value>
+  <global_code>
+    static unsigned int _seconds = 10;
+    static void _snooze (void * _uip) {
+      unsigned int * uip = _uip;
+      if (uip)
+        sleep(*uip);
+    }
+  </global_code>
+  <init_code>
+    $0 = yarnLaunch(_snooze, &_seconds);
+  </init_code>
+  <final_code>
+  </final_code>
+</spec_type>
+
+
+</collection>
+

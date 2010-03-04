@@ -1,0 +1,60 @@
+<version>
+  @VERSION@
+</version>
+ 
+<headers>
+  argv.h
+  mire.h
+  poptIO.h
+  rpmaug.h
+  rpmbf.h
+  rpmcb.h
+  rpmdir.h
+  rpmficl.h
+  rpmhash.h
+  rpmio.h
+  rpmiotypes.h
+  rpmjs.h
+  rpmlog.h
+  rpmmacro.h
+  rpmmg.h
+  rpmperl.h
+  rpmpython.h
+  rpmsm.h
+  rpmsp.h
+  rpmsw.h
+  rpmsx.h
+  rpmsyck.h
+  rpmtcl.h
+  rpmurl.h
+  rpmuuid.h
+  rpmzlog.h
+  yarn.h
+</headers>
+ 
+<libs>
+  @abs_top_builddir@/rpmio/.libs/librpmio.so
+  @abs_top_builddir@/misc/.libs/librpmmisc.so
+</libs>
+
+<include_paths>
+  @abs_top_srcdir@/rpmio
+</include_paths>
+
+<gcc_options>
+  @CFLAGS@
+</gcc_options>
+
+<opaque_types>
+</opaque_types>
+<skip_interfaces>
+</skip_interfaces>
+<include_preamble>
+  stdint.h
+  stdio.h
+  stdlib.h
+  string.h
+  assert.h
+</include_preamble>
+<libs_depend>
+</libs_depend>
