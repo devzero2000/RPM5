@@ -134,7 +134,8 @@ assert(av[2] != NULL);
 /*@-nullstate@*/	/* XXX *password may be null. */
     xx = keyctl_read_alloc(key, (void *)&password);
 /*@=nullstate@*/
-assert(password != NULL);
+    if (password == NULL)
+	password = "";
 #endif
 
 /*@-statictrans@*/

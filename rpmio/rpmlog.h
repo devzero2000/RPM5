@@ -6,6 +6,7 @@
  * Yet Another syslog(3) API clone.
  */
 
+#include <stdio.h>
 #include <stdarg.h>
 
 /**
