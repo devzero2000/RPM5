@@ -79,7 +79,7 @@ ARGV_t argvData(ARGV_t argv)
 /*@=retalias =temptrans @*/
 }
 
-int argiCmp(const void * a, const void * b)
+int argiCmp(ARGint_t * a, ARGint_t * b)
 {
     unsigned aint = *(ARGint_t)a;
     unsigned bint = *(ARGint_t)b;
@@ -87,14 +87,14 @@ int argiCmp(const void * a, const void * b)
 	    (aint > bint) ? +1 : 0);
 }
 
-int argvCmp(const void * a, const void * b)
+int argvCmp(ARGstr_t * a, ARGstr_t * b)
 {
     ARGstr_t astr = *(ARGV_t)a;
     ARGstr_t bstr = *(ARGV_t)b;
     return strcmp(astr, bstr);
 }
 
-int argvStrcasecmp(const void * a, const void * b)
+int argvStrcasecmp(ARGstr_t * a, ARGstr_t * b)
 {
     ARGstr_t astr = *(ARGV_t)a;
     ARGstr_t bstr = *(ARGV_t)b;
@@ -102,14 +102,14 @@ int argvStrcasecmp(const void * a, const void * b)
 }
 
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
-int argvFnmatch(const void * a, const void * b)
+int argvFnmatch(ARGstr_t * a, ARGstr_t * b)
 {
     ARGstr_t astr = *(ARGV_t)a;
     ARGstr_t bstr = *(ARGV_t)b;
     return (fnmatch(astr, bstr, 0) == 0 ? 0 : 1);
 }
 
-int argvFnmatchCasefold(const void * a, const void * b)
+int argvFnmatchCasefold(ARGstr_t * a, ARGstr_t * b)
 {
     ARGstr_t astr = *(ARGV_t)a;
     ARGstr_t bstr = *(ARGV_t)b;
@@ -117,38 +117,41 @@ int argvFnmatchCasefold(const void * a, const void * b)
 }
 #endif
 
-int argiSort(ARGI_t argi, int (*compar)(const void *, const void *))
+int argiSort(ARGI_t argi, int (*compar)(ARGint_t *, ARGint_t *))
 {
     unsigned nvals = argiCount(argi);
     ARGint_t vals = argiData(argi);
     if (compar == NULL)
 	compar = argiCmp;
     if (nvals > 1)
-	qsort(vals, nvals, sizeof(*vals), compar);
+	qsort(vals, nvals, sizeof(*vals),
+		(int(*)(const void *, const void *))compar);
     return 0;
 }
 
-int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
+int argvSort(ARGV_t argv, int (*compar)(ARGstr_t *, ARGstr_t *))
 {
     if (compar == NULL)
 	compar = argvCmp;
-    qsort(argv, argvCount(argv), sizeof(*argv), compar);
+    qsort(argv, argvCount(argv), sizeof(*argv),
+		(int(*)(const void *, const void *))compar);
     return 0;
 }
 
 ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
-		int (*compar)(const void *, const void *))
+		int (*compar)(ARGstr_t *, ARGstr_t *))
 {
     if (argv == NULL)
 	return NULL;
     if (compar == NULL)
 	compar = argvCmp;
-    return bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
+    return bsearch(&val, argv, argvCount(argv), sizeof(*argv),
+		(int(*)(const void *, const void *))compar);
 }
 
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
 ARGV_t argvSearchLinear(ARGV_t argv, ARGstr_t val,
-		int (*compar)(const void *, const void *))
+		int (*compar)(ARGstr_t *, ARGstr_t *))
 {
     ARGV_t result;
     ARGV_t av;

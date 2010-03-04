@@ -90,7 +90,7 @@ ARGV_t argvData(/*@null@*/ ARGV_t argv)
  * @return		result of comparison
  */
 /*@-exportlocal@*/
-int argiCmp(const void * a, const void * b)
+int argiCmp(ARGint_t * a, ARGint_t * b)
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -101,7 +101,7 @@ int argiCmp(const void * a, const void * b)
  * @return		result of comparison
  */
 /*@-exportlocal@*/
-int argvCmp(const void * a, const void * b)
+int argvCmp(ARGstr_t * a, ARGstr_t * b)
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -111,7 +111,7 @@ int argvCmp(const void * a, const void * b)
  * @param b		2nd instance address
  * @return		result of comparison
  */
-int argvStrcasecmp(const void * a, const void * b)
+int argvStrcasecmp(ARGstr_t * a, ARGstr_t * b)
 	/*@*/;
 
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
@@ -121,7 +121,7 @@ int argvStrcasecmp(const void * a, const void * b)
  * @param b		2nd instance address
  * @return		result of comparison
  */
-int argvFnmatch(const void * a, const void * b)
+int argvFnmatch(ARGstr_t * a, ARGstr_t * b)
 	/*@*/;
 
 /**
@@ -130,7 +130,7 @@ int argvFnmatch(const void * a, const void * b)
  * @param b		2nd instance address
  * @return		result of comparison
  */
-int argvFnmatchCasefold(const void * a, const void * b)
+int argvFnmatchCasefold(ARGstr_t * a, ARGstr_t * b)
 	/*@*/;
 #endif
 
@@ -140,7 +140,7 @@ int argvFnmatchCasefold(const void * a, const void * b)
  * @param compar	strcmp-like comparison function, or NULL for argiCmp()
  * @return		0 always
  */
-int argiSort(ARGI_t argi, int (*compar)(const void *, const void *))
+int argiSort(ARGI_t argi, int (*compar)(ARGint_t *, ARGint_t *))
 	/*@*/;
 
 /**
@@ -149,7 +149,7 @@ int argiSort(ARGI_t argi, int (*compar)(const void *, const void *))
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
  * @return		0 always
  */
-int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
+int argvSort(ARGV_t argv, int (*compar)(ARGstr_t *, ARGstr_t *))
 	/*@modifies *argv @*/;
 
 /**
@@ -161,7 +161,7 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
  */
 /*@dependent@*/ /*@null@*/
 ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
-		int (*compar)(const void *, const void *))
+		int (*compar)(ARGstr_t *, ARGstr_t *))
 	/*@*/;
 
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
@@ -174,7 +174,7 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
  */
 /*@dependent@*/ /*@null@*/
 ARGV_t argvSearchLinear(ARGV_t argv, ARGstr_t val,
-		int (*compar)(const void *, const void *))
+		int (*compar)(ARGstr_t *, ARGstr_t *))
 	/*@*/;
 #endif
 

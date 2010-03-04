@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: argv: use stricter RPMstr_t/RPMint_t types instead of void *.
     - devzero2000: add an rpm-arg-max-doc.spec toy test spec in tests
     - proyvind: python: make sure that we always use our own rpm build and
 	macros.
