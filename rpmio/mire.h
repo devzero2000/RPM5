@@ -6,6 +6,8 @@
  * RPM pattern matching.
  */
 
+#include <rpmiotypes.h>
+
 /*@-noparams@*/
 #include <fnmatch.h>
 /*@=noparams@*/

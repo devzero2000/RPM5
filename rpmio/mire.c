@@ -394,10 +394,12 @@ fprintf(stderr, "<-- mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
 
 int mireRegexec(miRE mire, const char * val, size_t vallen)
 {
-    int rc = 0;
+    int rc = -1;	/* assume failure */
 
     switch (mire->mode) {
     case RPMMIRE_STRCMP:
+	if (mire->pattern == NULL)
+	    break;
 	if (vallen == 0)
 	    vallen = strlen(val);
 	/* XXX strcasecmp? */
@@ -406,6 +408,8 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
+	if (mire->preg == NULL)
+	    break;
 	/* XXX rpmgrep: ensure that the string is NUL terminated. */
 	if (vallen > 0) {
 	    if (val[vallen] != '\0') {
@@ -435,6 +439,8 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	break;
     case RPMMIRE_PCRE:
 #ifdef	WITH_PCRE
+	if (mire->pcre == NULL)
+	    break;
 	if (vallen == 0)
 	    vallen = strlen(val);
 	rc = pcre_exec(mire->pcre, mire->hints, val, (int)vallen, mire->startoff,
@@ -452,6 +458,8 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 #endif
 	break;
     case RPMMIRE_GLOB:
+	if (mire->pattern == NULL)
+	    break;
 	rc = fnmatch(mire->pattern, val, mire->fnflags);
 	switch (rc) {
 	case 0:			rc = 0;	/*@innerbreak@*/ break;
@@ -465,7 +473,6 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	}
 	break;
     default:
-	rc = -1;
 	break;
     }
 
