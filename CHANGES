@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: add api-sanity-autotest.pl (GPL->LGPLv2 expected on next release).
     - jbj: _RequestPass: convert assert to returning "" if no password.
     - jbj: mireRegexec: return -1 error instead of segfault when mis-used.
     - jbj: argv: use stricter RPMstr_t/RPMint_t types instead of void *.

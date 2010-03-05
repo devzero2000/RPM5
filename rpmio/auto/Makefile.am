@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-AUTOTEST =      api-sanity-autotest.pl
+AUTOTEST =      @abs_top_srcdir@/scripts/api-sanity-autotest.pl
 
 TDIRS =		descriptors_storage header_compile_errors test_results tests
 

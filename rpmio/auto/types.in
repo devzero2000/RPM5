@@ -373,44 +373,35 @@
   <kind> common_param </kind>
   <data_type> DIGEST_CTX </data_type>
   <value> NULL </value>
-
   <global_code>
     #include <rpmio.h>	/* XXX rpmioItem */
     static pgpHashAlgo _algo = PGPHASHALGO_MD5;
     static rpmDigestFlags _flags = RPMDIGEST_NONE;
   </global_code>
-
   <init_code>
     $0 = rpmDigestInit(_algo, _flags);
   </init_code>
   <final_code>
     (void) rpmDigestFinal($0, NULL, NULL, 0);
-    $0 = NULL;
   </final_code>
-
 </spec_type>
 
 <spec_type>
   <kind> normal </kind>
   <data_type> DIGEST_CTX </data_type>
   <value> NULL </value>
-
   <global_code>
     #include <rpmio.h>	/* XXX rpmioItem */
     static pgpHashAlgo _algo = PGPHASHALGO_MD5;
     static rpmDigestFlags _flags = RPMDIGEST_NONE;
   </global_code>
-
   <init_code>
     $0 = rpmDigestInit(_algo, _flags);
   </init_code>
   <associating>
-    <interfaces>
-      rpmDigestFinal
-    </interfaces>
+    <interfaces> rpmDigestFinal </interfaces>
     <links> param1 </links>
   </associating>
-
 </spec_type>
 
 <spec_type>
@@ -421,9 +412,7 @@
     $0 = strdup("foo");
   </init_code>
   <associating>
-    <interfaces>
-      xstrtolocale
-    </interfaces>
+    <interfaces> xstrtolocale </interfaces>
     <links> param1 </links>
   </associating>
 </spec_type>
@@ -436,9 +425,7 @@
     (void) rpmioParse(&$0, "bing bang boom");
   </init_code>
   <associating>
-    <interfaces>
-      rpmioPFree
-    </interfaces>
+    <interfaces> rpmioPFree </interfaces>
     <links> param1 </links>
   </associating>
 </spec_type>
@@ -504,7 +491,6 @@
   <final_code>
     if ($0)
       free($0);
-    $0 = NULL;
   </final_code>
 </spec_type>
 
@@ -543,7 +529,6 @@
   <final_code>
   </final_code>
 </spec_type>
-
 
 </collection>
 

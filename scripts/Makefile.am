@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 HELPERS = \
 	makeshlibs
 
-EXTRA_DIST = \
+EXTRA_DIST = api-sanity-autotest.pl \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -39,7 +39,7 @@ all:
 bin_SCRIPTS = gendiff
 
 pkglibdir =		@USRLIBRPM@
-pkglib_SCRIPTS = \
+pkglib_SCRIPTS = api-sanity-autotest.pl \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
