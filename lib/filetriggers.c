@@ -130,7 +130,7 @@ static int getFiletriggers_raw(const char * rootDir, int * nftp,
 	struct stat sb;
 
 	if (fdno == -1) {
-	    rpmlog(RPMLOG_ERR, "opening %s failed: %s\n", fn, strerror(errno));
+	    rpmlog(RPMLOG_ERR, _("opening %s failed: %s\n"), fn, strerror(errno));
 	    continue;
 	}
 
@@ -139,7 +139,7 @@ static int getFiletriggers_raw(const char * rootDir, int * nftp,
 	    char * b = xmalloc(bn + 1);
 
 	    if (read(fdno, b, bn) != (ssize_t)bn) {
-		rpmlog(RPMLOG_ERR, "reading %s failed: %s\n", fn,
+		rpmlog(RPMLOG_ERR, _("reading %s failed: %s\n"), fn,
 			strerror(errno));
 		b = _free(b);
 	    } else {
@@ -182,7 +182,7 @@ static char * computeMatchesAnyFilter(size_t nb,
 	*p++ = '|';
 	p = stpcpy(p, list_raw[i].regexp);
     }
-    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp is %s\n", matches_any);
+    rpmlog(RPMLOG_DEBUG, D_("[filetriggers] matches-any regexp is %s\n"), matches_any);
     return matches_any;
 }
 
@@ -195,7 +195,7 @@ static void compileFiletriggersRegexp(/*@only@*/ char * raw, miRE mire)
     xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, options, NULL);
 
     if (mireRegcomp(mire, raw) != 0) {
-	rpmlog(RPMLOG_ERR, "failed to compile filetrigger filter: %s\n", raw);
+	rpmlog(RPMLOG_ERR, _("failed to compile filetrigger filter: %s\n"), raw);
 	mire = mireFree(mire);
     }
     raw = _free(raw);
@@ -266,7 +266,7 @@ static int popen_with_root(const char * rootDir, const char * cmd,
 	if (rootDir != NULL && strcmp(rootDir, "/") != 0) {
 /*@-superuser@*/
 	    if (chroot(rootDir) != 0) {
-		rpmlog(RPMLOG_ERR, "chroot to %s failed\n", rootDir);
+		rpmlog(RPMLOG_ERR, _("chroot to %s failed\n"), rootDir);
 		_exit(-1);
 	    }
 /*@=superuser@*/
@@ -296,7 +296,7 @@ static void mayStartFiletrigger(const char * rootDir,
 	    return;
 
 	cmd = rpmGetPath(dn, "/", trigger->name, ".script", NULL);
-	rpmlog(RPMLOG_DEBUG, "[filetriggers] spawning %s\n",
+	rpmlog(RPMLOG_DEBUG, D_("[filetriggers] spawning %s\n"),
 			cmd);
 	trigger->command_pipe = popen_with_root(rootDir, cmd,
 				    &trigger->command_pid);
@@ -314,7 +314,7 @@ void rpmRunFileTriggers(const char * rootDir)
     FILE * fp = NULL;
     int xx;
 
-    rpmlog(RPMLOG_DEBUG, _("[filetriggers] starting\n"));
+    rpmlog(RPMLOG_DEBUG, D_("[filetriggers] starting\n"));
 
     fn = rpmGenPath(rootDir, files_awaiting_filetriggers, NULL);
 
@@ -336,13 +336,15 @@ void rpmRunFileTriggers(const char * rootDir)
 	char tmp[BUFSIZ];
 	int i;
 
+	rpmlog(RPMLOG_DEBUG,
+		D_("[filetriggers] testing files from list: %s\n"), fn);
 	while (fgets(tmp, (int)sizeof(tmp), fp)) {
 	    size_t tmplen = strlen(tmp);
 
 	    if (!is_regexp_matching(matches_any, tmp))
 		continue;
-	    rpmlog(RPMLOG_DEBUG, "[filetriggers] matches-any regexp found %s",
-			tmp);
+	    rpmlog(RPMLOG_DEBUG,
+		    D_("[filetriggers] matches-any regexp found %s\n"), tmp);
 	    for (i = 0; i < nft; i++) {
 		ssize_t nw;
 		if (!is_regexp_matching(list[i].mire, tmp))
@@ -361,7 +363,7 @@ void rpmRunFileTriggers(const char * rootDir)
 	    if (list[i].command_pipe) {
 		pid_t pid;
 		xx = close(list[i].command_pipe);
-		rpmlog(RPMLOG_DEBUG, "[filetriggers] waiting for %s to end\n",
+		rpmlog(RPMLOG_DEBUG, D_("[filetriggers] waiting for %s to end\n"),
 			list[i].name);
 		pid = waitpid(list[i].command_pid, &status, 0);
 	    }
