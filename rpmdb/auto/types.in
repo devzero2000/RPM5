@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection>
+
+<!-- rpmio/rpmhash.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> hashTable </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+  </global_code>
+  <init_code>
+    $0 = htCreate(1000, 0, 1, NULL, NULL);
+  </init_code>
+  <final_code>
+#ifdef	NOTYET	/* XXX double free here */
+    $0 = htFree($0);
+#endif
+  </final_code>
+</spec_type>
+
+<!-- rpmio/rpmio.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> mode_t </data_type>
+  <value> 0700 </value>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> void * </data_type>
+  <value> &__pglob </value>
+  <global_code>
+    #include <glob.h>
+    static glob_t __pglob;
+  </global_code>
+  <init_code>
+    (void) Glob("*", 0, Glob_error, $0);
+  </init_code>
+  <associating>
+    <interfaces> Globfree </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> char * </data_type>
+  <value> NULL </value>
+  <associating>
+    <interfaces> Realpath </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
+<!-- rpmio/rpmiotypes.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> DIGEST_CTX </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    static pgpHashAlgo _algo = PGPHASHALGO_MD5;
+    static rpmDigestFlags _flags = RPMDIGEST_NONE;
+  </global_code>
+  <init_code>
+    $0 = rpmDigestInit(_algo, _flags);
+  </init_code>
+  <final_code>
+    (void) rpmDigestFinal($0, NULL, NULL, 0);
+  </final_code>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> DIGEST_CTX </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    static pgpHashAlgo _algo = PGPHASHALGO_MD5;
+    static rpmDigestFlags _flags = RPMDIGEST_NONE;
+  </global_code>
+  <init_code>
+    $0 = rpmDigestInit(_algo, _flags);
+  </init_code>
+  <associating>
+    <interfaces> rpmDigestFinal </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = strdup("foo");
+  </init_code>
+  <associating>
+    <interfaces> xstrtolocale </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> rpmioP </data_type>
+  <value> NULL </value>
+  <init_code>
+    (void) rpmioParse(&$0, "bing bang boom");
+  </init_code>
+  <associating>
+    <interfaces> rpmioPFree </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<!-- rpmio/rpmsw.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmsw </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+  </global_code>
+  <init_code>
+    $0 = calloc(1, sizeof(*$0));
+  </init_code>
+  <final_code>
+    if ($0)
+      free($0);
+  </final_code>
+</spec_type>
+
+<!-- rpmio/yarn.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> yarnThread </data_type>
+  <value> NULL </value>
+  <global_code>
+    static unsigned int _seconds = 10;
+    static void _snooze (void * _uip) {
+      unsigned int * uip = _uip;
+      if (uip)
+        sleep(*uip);
+    }
+  </global_code>
+  <init_code>
+    $0 = yarnLaunch(_snooze, &_seconds);
+  </init_code>
+  <final_code>
+  </final_code>
+</spec_type>
+
+<!-- bdb.h -->
+<!-- db_emu.h -->
+
+<!-- fprint.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> fingerPrintCache </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = fpCacheCreate(10001);
+  </init_code>
+  <final_code>
+    $0 = fpCacheFree($0);
+  </final_code>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> fingerPrintCache </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = fpCacheCreate(10001);
+  </init_code>
+  <associating>
+    <interfaces> fpCacheFree </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const void * </data_type>
+  <value> &_foo </value>
+  <global_code>
+    static const char * _foo = "foo";
+  </global_code>
+  <associating>
+    <interfaces> fpEqual </interfaces>
+    <links>
+      param1
+      param2
+    </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const void * </data_type>
+  <value> &_fp </value>
+  <global_code>
+    static struct fprintCacheEntry_s _entry = {
+      .dirName	= "/bing/",
+      .dev	= 0x1234,
+      .ino	= 0x5678
+    };
+    static struct fingerPrint_s _fp = {
+      .entry	= &_entry,
+      .subDir	= "bang/",
+      .baseName	= "boom"
+    };
+  </global_code>
+  <associating>
+    <interfaces> fpHashFunction </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> fingerPrintCahce </data_type>
+  <value> &_fp </value>
+  <global_code>
+    static struct fprintCacheEntry_s _entry = {
+      .dirName	= "/bing/",
+      .dev	= 0x1234,
+      .ino	= 0x5678
+    };
+    static struct fingerPrint_s _fp = {
+      .entry	= &_entry,
+      .subDir	= "bang/",
+      .baseName	= "boom"
+    };
+  </global_code>
+  <associating>
+    <interfaces> fpHashFunction </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
+<!-- header_internal.h -->
+<!-- legacy.h -->
+<!-- logio_auto.h -->
+<!-- logio.h -->
+<!-- pkgio.h -->
+<!-- rpmdb.h -->
+<!-- rpmdpkg.h -->
+<!-- rpmevr.h -->
+<!-- rpmlio.h -->
+
+<!-- rpmns.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmns </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = calloc(6, sizeof(void*));	/* XXX big enuf for struct rpmns_s */
+  </init_code>
+  <final_code>
+    if ($0)
+      free($0);
+  </final_code>
+</spec_type>
+
+<!-- rpmtag.h -->
+<!-- rpmtd.h -->
+<!-- rpmtxn.h -->
+<!-- rpmtypes.h -->
+<!-- rpmwf.h -->
+<!-- signature.h -->
+
+</collection>
+

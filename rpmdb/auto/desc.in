@@ -1,0 +1,45 @@
+<version>
+  @VERSION@
+</version>
+ 
+<headers>
+  fprint.h
+  pkgio.h
+  rpmdb.h
+  rpmdpkg.h
+  rpmevr.h
+  rpmns.h
+  rpmtag.h
+  signature.h
+</headers>
+ 
+<libs>
+  @abs_top_builddir@/rpmdb/.libs/librpmdb.so
+  @abs_top_builddir@/rpmio/.libs/librpmio.so
+  @abs_top_builddir@/misc/.libs/librpmmisc.so
+</libs>
+
+<include_paths>
+  @abs_top_srcdir@/rpmdb
+  @abs_top_srcdir@/rpmio
+</include_paths>
+
+<gcc_options>
+  @CFLAGS@
+</gcc_options>
+
+<opaque_types>
+</opaque_types>
+<skip_interfaces>
+</skip_interfaces>
+<include_preamble>
+  stdint.h
+  stdio.h
+  stdlib.h
+  string.h
+  assert.h
+  rpmiotypes.h
+  rpmtypes.h
+</include_preamble>
+<libs_depend>
+</libs_depend>
