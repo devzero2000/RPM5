@@ -406,6 +406,8 @@
   <data_type> rpmts </data_type>
   <value> NULL </value>
   <global_code>
+    #include <rpmds.h>
+    #include <rpmte.h>
     #include <rpmts.h>
   </global_code>
   <init_code>

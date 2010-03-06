@@ -4,11 +4,25 @@
  
 <headers>
   fs.h
+<!-- fsm.h -->
+  manifest.h
+  misc.h
+<!-- psm.h -->
+  rpmal.h
+  rpmcli.h
   rpmds.h
   rpmfc.h
   rpmfi.h
+  rpmgi.h
+  rpmlib.h
+  rpmlock.h
+<!-- rpmluaext.h -->
   rpmps.h
+  rpmrc.h
+<!-- rpmrollback.h -->
   rpmte.h
+  rpmts.h
+  rpmversion.h
 </headers>
  
 <libs>
