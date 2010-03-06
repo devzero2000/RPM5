@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collection>
 
+<!-- rpmio/mire.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> miRE </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+  </global_code>
+  <init_code>
+    $0 = mireNew(RPMMIRE_DEFAULT, 1);
+  </init_code>
+  <final_code>
+    $0 = mireFree($0);
+  </final_code>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> miRE </data_type>
+  <value> mireNew(RPMMIRE_DEFAULT, 1) </value>
+  <associating>
+    <interfaces>
+      mireFree
+      mireFreeAll
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> int </data_type>
+  <value> 1 </value>
+  <associating>
+    <interfaces> mireFreeAll </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmio/rpmhash.h -->
 <spec_type>
   <kind> common_param </kind>

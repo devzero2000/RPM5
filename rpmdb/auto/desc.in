@@ -4,12 +4,21 @@
  
 <headers>
   fprint.h
+<!-- header_internal.h -->
+<!-- legacy.h -->
+<!-- logio_auto.h -->
+<!-- logio.h -->
   pkgio.h
   rpmdb.h
   rpmdpkg.h
   rpmevr.h
+<!-- rpmlio.h -->
   rpmns.h
   rpmtag.h
+<!-- rpmtd.h -->
+<!-- rpmtxn.h -->
+  rpmtypes.h
+<!-- rpmwf.h -->
   signature.h
 </headers>
  
