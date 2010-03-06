@@ -1,6 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collection>
 
+<!-- rpmio/argv.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGint_t </data_type>
+  <value> 0xdeadbeef </value>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGI_t </data_type>
+  <value> NULL </value>
+  <init_code>
+    assert(argiAdd(&$0, -1, 1) == 0 && $0 != NULL && argiCount($0) == 1);
+  </init_code>
+  <final_code>
+    $0 = argiFree($0);
+  </final_code>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGI_t </data_type>
+  <value> NULL </value>
+  <init_code>
+    assert(argiAdd(&$0, -1, 1) == 0 && $0 != NULL && argiCount($0) == 1);
+  </init_code>
+  <associating>
+    <interfaces> argiFree </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGstr_t </data_type>
+  <value> "foo" </value>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ARGV_t </data_type>
+  <value> NULL </value>
+  <init_code>
+    assert(argvAdd(&$0, "/foo") == 0 && $0 != NULL && !strcmp($0[0], "/foo"));
+  </init_code>
+  <final_code>
+    $0 = argvFree($0);
+  </final_code>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGV_t </data_type>
+  <value> NULL </value>
+  <init_code>
+    assert(argvAdd(&$0, "/foo") == 0 && $0 != NULL && !strcmp($0[0], "/foo"));
+  </init_code>
+  <associating>
+    <interfaces> argvFree </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> ARGV_t * </data_type>
+  <value> NULL </value>
+
+  <global_code>
+    static ARGV_t _av;
+  </global_code>
+  <init_code>
+    $0 = &_av;
+    assert(argvAdd($0, "foo") == 0 && *$0 != NULL && !strcmp((*$0)[0], "foo"));
+  </init_code>
+  <final_code>
+    if ($0) *$0 = argvFree(*$0);
+  </final_code>
+  <associating>
+    <interfaces>
+      argvAdd
+      argvAppend
+      argvSplit
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmio/rpmhash.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -22,9 +110,31 @@
 <!-- rpmio/rpmio.h -->
 <spec_type>
   <kind> common_param </kind>
+  <data_type> FD_t </data_type>
+  <value> fdDup(fileno(tmpfile())) </value>
+  <final_code>
+    (void) Fclose($0);
+  </final_code>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> FD_t </data_type>
+  <value> fdDup(fileno(tmpfile())) </value>
+  <associating>
+    <interfaces>
+      Fclose
+      ufdGetFile
+    </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
   <data_type> mode_t </data_type>
   <value> 0700 </value>
 </spec_type>
+
 <spec_type>
   <kind> normal </kind>
   <data_type> void * </data_type>
@@ -41,6 +151,7 @@
     <links> param1 </links>
   </associating>
 </spec_type>
+
 <spec_type>
   <kind> normal </kind>
   <data_type> char * </data_type>
@@ -110,6 +221,22 @@
   </associating>
 </spec_type>
 
+<!-- rpmio/rpmmacro.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> MacroContext </data_type>
+  <value> NULL </value>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> void * </data_type>
+  <value> NULL </value>
+  <associating>
+    <interfaces> expandMacros </interfaces>
+    <links> param1 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmio/rpmsw.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -172,7 +299,20 @@
 <!-- rpm46compat.h -->
 <!-- rpm4compat.h -->
 <!-- rpmal.h -->
+
 <!-- rpmcli.h -->
+<spec_type>
+  <kind> normal </kind>
+  <data_type> void * </data_type>
+  <value> fdDup(fileno(tmpfile())) </value>
+  <final_code>
+    (void) Fclose($0);
+  </final_code>
+  <associating>
+    <interfaces> rpmVerifySignatures </interfaces>
+    <links> param3 </links>
+  </associating>
+</spec_type>
 
 <!-- rpmds.h -->
 <spec_type>
@@ -267,6 +407,24 @@
     $0 = rpmfcFree($0);
   </final_code>
 </spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char ** </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmfc.h>
+  </global_code>
+  <init_code>
+    assert(argvAdd(&$0, "/foo") == 0 && $0 != NULL && !strcmp($0[0], "/foo"));
+  </init_code>
+  <final_code>
+    $0 = argvFree($0);
+  </final_code>
+  <associating>
+    <interfaces> rpmfcClassify </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
 
 <!-- rpmfi.h -->
 <spec_type>
@@ -312,6 +470,31 @@
 </spec_type>
 
 <!-- rpmlib.h -->
+<spec_type>
+  <kind> normal </kind>
+  <data_type> void * </data_type>
+  <value> fdDup(fileno(tmpfile())) </value>
+  <final_code>
+    (void) Fclose($0);
+  </final_code>
+  <associating>
+    <interfaces> rpmInstallSourcePackage </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char ** </data_type>
+  <value> NULL </value>
+  <associating>
+    <interfaces> rpmInstallSourcePackage </interfaces>
+    <links>
+      param3
+      param4
+   </links>
+  </associating>
+</spec_type>
+
 <!-- rpmlock.h -->
 <!-- rpmluaext.h -->
 
