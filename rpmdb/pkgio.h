@@ -6,7 +6,9 @@
  * Methods to handle package elements.
  */
 
+#include <rpmio.h>	/* XXX FD_t typedef */
 #include <rpmpgp.h>	/* XXX pgpDig typedef */
+#include <rpmtag.h>	/* XXX Header typedef */
 
 #ifdef __cplusplus
 extern "C" {

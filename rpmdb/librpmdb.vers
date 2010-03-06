@@ -128,7 +128,6 @@ LIBRPMDB_0
     rpmdbNew;
     rpmdbOpen;
     rpmdbOpenAll;
-    rpmdbOpenDatabase;
     rpmdbRemove;
     rpmDisplayQueryTags;
     _rpmevr_debug;

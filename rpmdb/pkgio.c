@@ -216,7 +216,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	/* XXX Do a lazy open if not done already. */
 	if (ts->rdb == NULL) {
-	    xx = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
+	    xx = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, (mode_t)0644);
 	    if (xx) {
 		const char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
 		rpmlog(RPMLOG_ERR,

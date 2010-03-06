@@ -609,13 +609,15 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 
     /* Lazily create the directory in chroot's if configured. */
     if (!oneshot) {
-	const char * dn = dirname(fn);
+	char * _fn = xstrdup(fn);
+	char * dn = dirname(_fn);
 	mode_t _mode = 0755;
 	uid_t _uid = 0;
 	gid_t _gid = 0;
 	/* If not a directory, then disable, else don't retry. */
 	errno = 0;
 	oneshot = (rpmioMkpath(dn, _mode, _uid, _gid) ? -1 : 1);
+	_fn = _free(_fn);
     }
     /* If directory is AWOL, don't bother exporting info. */
     if (oneshot < 0)
@@ -871,14 +873,14 @@ assert(fn != NULL);
 #define _DB_MODE	0
 #define _DB_PERMS	0644
 
-#define _DB_MAJOR	-1
+#define _DB_MAJOR	3
 #define	_DB_ERRPFX	"rpmdb"
 
 /*@-exportheader -globs -mods @*/
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
-		int mode, int perms, int flags)
+		int mode, mode_t perms, int flags)
 	/*@*/
 {
     rpmdb db = rpmdbGetPool(_rpmdbPool);
@@ -904,7 +906,7 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 
     db->db_flags = (flags >= 0) ? flags : _DB_FLAGS;
     db->db_mode = (mode >= 0) ? mode : _DB_MODE;
-    db->db_perms = (perms >= 0)	? perms : _DB_PERMS;
+    db->db_perms = (perms > 0)	? perms : _DB_PERMS;
     db->db_api = _DB_MAJOR;
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
 
@@ -940,11 +942,10 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
 }
 /*@=exportheader =globs =mods @*/
 
-/*@-exportheader@*/
-int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
+static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
-		int mode, int perms, int flags)
+		int mode, mode_t perms, int flags)
 	/*@globals rpmdbRock, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmdbRock, *dbp, rpmGlobalMacroContext,
@@ -1041,10 +1042,9 @@ exit:
 
     return rc;
 }
-/*@=exportheader@*/
 
 /* XXX python/rpmmodule.c */
-int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
+int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, mode_t perms)
 {
     int _dbapi = rpmExpandNumeric("%{?_dbapi}");
     return rpmdbOpenDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);

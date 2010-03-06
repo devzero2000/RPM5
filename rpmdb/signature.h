@@ -6,6 +6,8 @@
  * Generate and verify rpm package signatures.
  */
 
+#include <rpmtag.h>	/* XXX Header typedef */
+
 /** \ingroup signature
  * Identify PGP versions.
  * @note Greater than 0 is a valid PGP version.

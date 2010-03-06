@@ -129,7 +129,7 @@ struct EVR_s {
  * @param initialize	Should empty defaults be initialized?
  * @return		initialized EVR container
  */
-EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
+EVR_t rpmEVRnew(uint32_t Flags, int initialize)
         /*@*/;
 
 /** \ingroup rpmtd
@@ -195,6 +195,7 @@ extern int (*rpmvercmp)(const char *a, const char *b)
 rpmsenseFlags rpmEVRflags(/*@null@*/const char *op, /*@null@*/const char **end)
 	/*@modifies *end @*/;
 
+#if defined(_RPMEVR_INTERNAL)
 /**
  * Compare headers to determine which header is "newer".
  * @deprecated Use rpmdsCompare instead.
@@ -206,6 +207,7 @@ rpmsenseFlags rpmEVRflags(/*@null@*/const char *op, /*@null@*/const char **end)
 int rpmVersionCompare(Header A, Header B)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
+#endif
 
 #ifdef __cplusplus
 }

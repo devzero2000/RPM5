@@ -325,7 +325,7 @@ restart:
     s = cfp->baseName = te = xstrdup(cfp->subDir);
     ns = strlen(s);
     se = s + ns - 1;
-    cfp->subDir = t = NULL; // no subDir for now
+    cfp->subDir = t = NULL;	/* no subDir for now */
 
     /* Set baseName to the upper most dir */
     while (*te != '/' && te < se)

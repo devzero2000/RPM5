@@ -115,7 +115,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
  * @param size		size of fingerprint entry
  * @return		hash value
  */
-rpmuint32_t fpHashFunction(rpmuint32_t h, const void * data, size_t size)
+uint32_t fpHashFunction(uint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**

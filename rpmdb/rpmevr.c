@@ -21,7 +21,7 @@ int _rpmevr_debug = 0;
 #define MAX(x, y) ( ((x)>(y))?(x):(y) )
 #endif
 
-EVR_t rpmEVRnew(rpmuint32_t Flags, int initialize)
+EVR_t rpmEVRnew(uint32_t Flags, int initialize)
 {
     EVR_t evr = xcalloc(1, sizeof(*evr));
     evr->Flags = Flags;

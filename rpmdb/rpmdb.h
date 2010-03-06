@@ -8,8 +8,11 @@
  */
 
 #include <assert.h>
-#include <rpmtypes.h>
 #include <mire.h>
+
+#include <rpmtypes.h>
+#include <rpmtag.h>	/* XXX Header typedef */
+
 #if defined(_RPMDB_INTERNAL)
 #if defined(WITH_DB)
 #include "db.h"
@@ -1155,20 +1158,9 @@ rpmdb rpmdbLink (rpmdb db, const char * msg)
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
-		int mode, int perms, int flags)
+		int mode, mode_t perms, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
-
-/** @todo document rpmdbOpenDatabase
- */
-int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
-		/*@null@*/ const char * dbpath,
-		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
-		int mode, int perms, int flags)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *dbp, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Open rpm database.
@@ -1179,7 +1171,7 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
  * @return		0 on success
  */
 int rpmdbOpen(/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
-		int mode, int perms)
+		int mode, mode_t perms)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *dbp, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
