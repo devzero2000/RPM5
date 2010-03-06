@@ -13,6 +13,7 @@
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 
 #include <rpmsq.h>
+#include <rpmfi.h>	/* XXX rpmfi typedef */
 
 /*@-exportlocal@*/
 /*@unchecked@*/

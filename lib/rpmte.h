@@ -6,6 +6,7 @@
  * Structures used for an "rpmte" transaction element.
  */
 #include <rpmfi.h>
+#include <rpmal.h>	/* XXX alKey */
 
 /**
  */
@@ -239,7 +240,6 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag)
 extern "C" {
 #endif
 
-#if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
  * Destroy a transaction element.
  * @param te		transaction element
@@ -271,7 +271,6 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
-#endif	/* _RPMTE_INTERNAL */
 
 /** \ingroup rpmte
  * Retrieve header from transaction element.

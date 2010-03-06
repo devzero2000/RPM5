@@ -1871,6 +1871,7 @@ static rpmfc rpmfcGetPool(/*@null@*/ rpmioPool pool)
 rpmfc rpmfcNew(void)
 {
     rpmfc fc = rpmfcGetPool(_rpmfcPool);
+    fc->fn = xcalloc(1, sizeof(*fc->fn));
     return rpmfcLink(fc);
 }
 

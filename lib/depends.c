@@ -16,14 +16,14 @@
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
 #include <rpmdb.h>
 
+#define	_RPMEVR_INTERNAL
+#include <rpmds.h>
+#include <rpmfi.h>
+
 #define	_RPMTE_INTERNAL
 #include <rpmte.h>
 #define	_RPMTS_INTERNAL
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
-
-#define	_RPMEVR_INTERNAL
-#include <rpmds.h>
-#include <rpmfi.h>
 
 #include "debug.h"
 

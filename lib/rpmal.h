@@ -6,6 +6,7 @@
  * Structures used for managing added/available package lists.
  */
 
+#include <rpmds.h>
 #include <rpmfi.h>
 
 /*@-exportlocal@*/

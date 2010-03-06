@@ -724,7 +724,7 @@ int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
  * @return		NULL on error
  */
 /*@null@*/
-DIR * rpmfiOpendir(rpmfi fi, const char * name)
+void * rpmfiOpendir(rpmfi fi, const char * name)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fi, fileSystem, internalState @*/;
 

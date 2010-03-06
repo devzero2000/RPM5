@@ -6,6 +6,8 @@
  *
  */
 
+#include <rpmcli.h>	/* XXX QVA_t typedef */
+
 /**
  */
 typedef /*@abstract@*/ struct IDT_s * IDT;

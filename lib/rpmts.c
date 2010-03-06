@@ -115,7 +115,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     /* XXX there's a db lock race here that is the callers responsibility. */
 
     ts->dbmode = dbmode;
-    rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
+    rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, (mode_t)0644);
     if (rc) {
 	const char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
 	rpmlog(RPMLOG_ERR, _("cannot open Packages database in %s\n"), dn);
@@ -241,7 +241,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 
     addMacro(NULL, "_dbpath", NULL, "%{_solve_dbpath}", RMIL_DEFAULT);
 
-    rc = rpmdbOpen(ts->rootDir, &ts->sdb, ts->sdbmode, 0644);
+    rc = rpmdbOpen(ts->rootDir, &ts->sdb, ts->sdbmode, (mode_t)0644);
     if (rc) {
 	const char * dn;
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);

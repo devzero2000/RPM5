@@ -6,10 +6,10 @@
  * Structure(s) used for dependency tag sets.
  */
 
-#include "rpmevr.h"
+#include <rpmevr.h>
 #define	_RPMNS_INTERNAL
-#include "rpmns.h"
-#include "rpmps.h"
+#include <rpmns.h>
+#include <rpmps.h>
 
 /** \ingroup rpmds
  */
@@ -31,7 +31,7 @@ extern int _rpmds_nopromote;
 /*@=exportlocal@*/
 
 #if defined(_RPMDS_INTERNAL)
-#include "mire.h"
+#include <mire.h>
 
 /** \ingroup rpmds
  * A dependency set.

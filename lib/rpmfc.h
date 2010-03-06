@@ -12,15 +12,11 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfc_s * rpmfc;
 
 /**
  */
-typedef	enum FCOLOR_e FCOLOR_t;
-
-/**
- */
 typedef struct rpmfcTokens_s * rpmfcToken;
 
 /**
  */
-enum FCOLOR_e {
+typedef enum FCOLOR_e {
     RPMFC_BLACK			= 0,
     RPMFC_ELF32			= (1 <<  0),
     RPMFC_ELF64			= (1 <<  1),
@@ -64,7 +60,7 @@ enum FCOLOR_e {
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),
     RPMFC_ERROR			= (1 << 31)
-};
+} FCOLOR_t;
 
 #if defined(_RPMFC_INTERNAL)
 /**

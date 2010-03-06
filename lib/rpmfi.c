@@ -1825,7 +1825,7 @@ fprintf(stderr, "*** rpmfiStat(%p, %s, %p) rc %d\n", fi, path, st, rc);
     return rc;
 }
 
-DIR * rpmfiOpendir(rpmfi fi, const char * name)
+void * rpmfiOpendir(rpmfi fi, const char * name)
 {
     const char * dn = name;
     size_t dnlen = strlen(dn);
@@ -1866,7 +1866,7 @@ if (_rpmfi_debug)
 fprintf(stderr, "*** rpmfiOpendir(%p, %s) dir %p\n", fi, name, dir);
 /*@=modfilesys =voidabstract @*/
 
-    return dir;
+    return (void *)dir;
 }
 
 void rpmfiBuildFClasses(Header h,

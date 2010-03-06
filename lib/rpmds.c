@@ -528,7 +528,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
-#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)    
+#if defined(RPM_VENDOR_MANDRIVA)    
     he->tag = RPMTAG_DISTEPOCH;
     xx = headerGet(h, he, 0);
     D = (he->p.str ? he->p.str : NULL);
@@ -536,6 +536,10 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 /*@-mods@*/
     xx = headerNEVRA(h, &Name, NULL, &V, &R, NULL);
 /*@=mods@*/
+    /* XXX segfault avoidance */
+    if (Name == NULL)	Name = xstrdup("N");
+    if (V == NULL)	V = xstrdup("V");
+    if (R == NULL)	R = xstrdup("R");
 
     t = xmalloc(sizeof(*N) + strlen(Name) + 1);
     N = (const char **) t;
@@ -546,7 +550,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     Name = _free(Name);
 
     nb = sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-");
-#ifdef	RPM_VENDOR_MANDRIVA
+#if defined(RPM_VENDOR_MANDRIVA)
     nb += (D ? strlen(D) + sizeof(":") : 0);
 #endif
     t = xmalloc(nb);
@@ -557,7 +561,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     sprintf(t, "%d:", E);
     t += strlen(t);
     t = stpcpy( stpcpy( stpcpy( t, V), "-"), R);
-#ifdef	RPM_VENDOR_MANDRIVA
+#if defined(RPM_VENDOR_MANDRIVA)
     if (D != NULL) {
 	t = stpcpy( stpcpy( t, ":"), D);
 	D = _free(D);
@@ -3995,12 +3999,16 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 /*@-mods@*/
     (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
 /*@=mods@*/
+    /* XXX segfault avoidance */
+    if (pkgN == NULL)	pkgN = xstrdup("N");
+    if (V == NULL)	V = xstrdup("V");
+    if (R == NULL)	R = xstrdup("R");
     he->tag = RPMTAG_EPOCH;
     gotE = headerGet(h, he, 0);
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
-#if defined(NOTYET) || defined(RPM_VENDOR_MANDRIVA)
+#if defined(RPM_VENDOR_MANDRIVA)
     he->tag = RPMTAG_DISTEPOCH;
     gotD = headerGet(h, he, 0);
     D = (he->p.str ? he->p.str : NULL);
@@ -4009,7 +4017,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
     if (R) nb += strlen(R);
-#ifdef	RPM_VENDOR_MANDRIVA
+#if defined(RPM_VENDOR_MANDRIVA)
     if (gotD) nb += strlen(D) + 1;
 #endif
     pkgEVR = t = alloca(nb);
@@ -4019,7 +4027,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	t += strlen(t);
     }
     t = stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
-#ifdef	RPM_VENDOR_MANDRIVA
+#if defined(RPM_VENDOR_MANDRIVA)
     if (gotD) {
 	t =  stpcpy( stpcpy( t, ":"), D);
 	D = _free(D);
