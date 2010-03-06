@@ -18,22 +18,33 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     const char *name = NULL;
     rpmRC rc;
 
-    if (parsePart == PART_BUILD) {
+    switch (parsePart) {
+    case PART_BUILD:
 	iobp = &spec->build;
 	name = "build";
-    } else if (parsePart == PART_INSTALL) {
+	break;
+    case PART_INSTALL:
 	iobp = &spec->install;
 	name = "install";
-    } else if (parsePart == PART_CHECK) {
+	break;
+    case PART_CHECK:
 	iobp = &spec->check;
 	name = "check";
-    } else if (parsePart == PART_CLEAN) {
+	break;
+    case PART_CLEAN:
 	iobp = &spec->clean;
 	name = "clean";
-    } else if (parsePart == PART_ARBITRARY) {
+	break;
+    case PART_ARBITRARY:
 assert(spec->nfoo > 0);
 	iobp = &spec->foo[spec->nfoo-1].iob;
 	name = spec->foo[spec->nfoo-1].str;
+	break;
+    default:
+	rpmlog(RPMLOG_ERR, _("line %d: unknown specfile section\n"),
+		spec->lineNum);
+	return RPMRC_FAIL;
+	break;
     }
     
     if (*iobp != NULL) {

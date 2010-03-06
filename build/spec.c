@@ -84,6 +84,8 @@ rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg
     rpmRC rc = RPMRC_OK;
     int xx;
     
+    if (lastp == NULL)	/* XXX segfault avoidance */
+	goto exit;
     /* "main" package */
     if (name == NULL)
 	goto exit;
@@ -364,22 +366,21 @@ int addSource(Spec spec, /*@unused@*/ Package pkg,
     int flag = 0;
     const char *name = NULL;
     const char *mdir = NULL;
-    char *nump;
     const char *fieldp = NULL;
     char buf[BUFSIZ];
-    rpmuint32_t num = 0;
+    uint32_t num = 0;
 
     buf[0] = '\0';
     switch (tag) {
     case RPMTAG_SOURCE:
 	flag = RPMFILE_SOURCE;
 	name = "source";
-	fieldp = spec->line + (sizeof("Source")-1);
+	fieldp = spec->line;
 	break;
     case RPMTAG_PATCH:
 	flag = RPMFILE_PATCH;
 	name = "patch";
-	fieldp = spec->line + (sizeof("Patch")-1);
+	fieldp = spec->line;
 	break;
     case RPMTAG_ICON:
 	flag = RPMFILE_ICON;
@@ -397,23 +398,15 @@ assert(mdir != NULL);
 
     /* Get the number */
     if (fieldp != NULL) {
-	/* We already know that a ':' exists, and that there */
-	/* are no spaces before it.                          */
-	/* This also now allows for spaces and tabs between  */
-	/* the number and the ':'                            */
+	char * end = NULL;
 
-	nump = buf;
-	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t'))
-	    *nump++ = *fieldp++;
-	*nump = '\0';
-
-	nump = buf;
-	SKIPSPACE(nump);
-	if (nump == NULL || *nump == '\0')
-	    num = 0;
-	else if (parseNum(buf, &num)) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
-			 spec->lineNum, name, spec->line);
+	if (!xstrcasecmp(fieldp, name))
+	    fieldp += strlen(name);
+	num = strtoul(fieldp, &end, 10);
+	SKIPSPACE(end);
+	if (*end != ':') {
+	    rpmlog(RPMLOG_ERR, _("line %d: No ':' terminator: %s\n"),
+			 spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
     }

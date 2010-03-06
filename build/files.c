@@ -2543,7 +2543,7 @@ int initSourceHeader(Spec spec, rpmiob *sfp)
 	classTag = tagValue("Class");
 
     /* Only specific tags are added to the source package header */
-  if (!spec->sourceHdrInit) {
+  if (spec->packages && !spec->sourceHdrInit) {
     for (hi = headerInit(spec->packages->header);
 	headerNext(hi, he, 0);
 	he->p.ptr = _free(he->p.ptr))
@@ -2646,7 +2646,8 @@ int initSourceHeader(Spec spec, rpmiob *sfp)
 	sourceFiles = rpmiobNew(0);
 
     /* Construct the source/patch tag entries */
-    sourceFiles = rpmiobAppend(sourceFiles, spec->specFile, 1);
+    if (spec->specFile != NULL)	/* XXX segfault avoidance */
+	sourceFiles = rpmiobAppend(sourceFiles, spec->specFile, 1);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
       {	const char * sfn;
@@ -2967,6 +2968,7 @@ static int checkDuplicateFiles(Spec spec)
     int n = 0;
     Package pkg1, pkg2;
 
+    if (spec->packages)	/* XXX segfault avoidance */
     for (pkg1 = spec->packages; pkg1->next; pkg1 = pkg1->next) {
 #ifdef	DYING
 	rpmfi fi1 = rpmfiNew(NULL, pkg1->header, RPMTAG_BASENAMES, 0);

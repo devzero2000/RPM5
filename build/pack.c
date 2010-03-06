@@ -1257,7 +1257,12 @@ rpmRC packageSources(Spec spec)
 /*@-assignexpose -newreftrans@*/
 	csa->fi = rpmfiLink(spec->fi, "packageSources");
 /*@=assignexpose =newreftrans@*/
+#ifdef	DYING
 assert(csa->fi != NULL);
+#else
+	if (csa->fi == NULL)	/* XXX segfault avoidance */
+	    return RPMRC_FAIL;
+#endif
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn,

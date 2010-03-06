@@ -7,6 +7,8 @@
  */
 
 #include <rpmevr.h>
+#include <rpmfi.h>	/* XXX rpmfi typedef */
+#include <rpmcli.h>	/* XXX QVA_t typedef */
 
 /** \ingroup rpmbuild
  */

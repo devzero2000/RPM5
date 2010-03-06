@@ -353,6 +353,8 @@ int readLine(Spec spec, rpmStripFlags strip)
     OFI_t *ofi = spec->fileStack;
     int rc;
 
+    if (ofi == NULL)	/* XXX segfault avoidance */
+	return 1;
     if (!restoreFirstChar(spec)) {
     retry:
       if ((rc = readLineFromOFI(spec, ofi)) != 0)
