@@ -3,33 +3,93 @@
 </version>
  
 <headers>
+<!-- arirang.h -->
+<!-- blake.h -->
+<!-- bmw.h -->
+<!-- chi.h -->
+<!-- cubehash.h -->
+<!-- echo.h -->
+<!-- edon-r.h -->
+<!-- envvar.h -->
+<!-- fugue.h -->
+<!-- groestl.h -->
+<!-- hamsi.h -->
+<!-- jh.h -->
+<!-- keccak.h -->
+<!-- lane.h -->
+<!-- luffa.h -->
+<!-- md2.h -->
+<!-- md6.h -->
+<!-- salsa10.h -->
+<!-- salsa20.h -->
+<!-- shabal.h -->
+<!-- shavite3.h -->
+<!-- simd.h -->
+<!-- skein.h -->
+<!-- tib3.h -->
+<!-- tiger.h -->
+
+  iosm.h
+  ar.h
+  cpio.h
+  tar.h
+
   argv.h
-  mire.h
-  poptIO.h
+  crc.h
+<!-- fnmatch.h -->
+  fts.h
+<!-- glob.h -->
+<!-- html-parse.h -->
+<!-- mire.h FIXME! -->
+<!-- poptIO.h -->
+  rpmacl.h
   rpmaug.h
+  rpmbc.h
   rpmbf.h
+  rpmbz.h
   rpmcb.h
+<!-- rpmcpio.h -->
+<!-- rpmcudf.h -->
+<!-- rpmdav.h -->
   rpmdir.h
   rpmficl.h
+  rpmgc.h
   rpmhash.h
+<!-- rpmhook.h -->
   rpmio.h
+<!-- rpmio_internal.h -->
   rpmiotypes.h
   rpmjs.h
+<!-- rpmkeyring.h -->
+<!-- rpmku.h	FIXME: 1 -->
   rpmlog.h
+  rpmlua.h
   rpmmacro.h
   rpmmg.h
+  rpmnss.h
   rpmperl.h
+  rpmpgp.h
   rpmpython.h
+<!-- rpmruby.h	FIXME: missing file exception -->
   rpmsm.h
   rpmsp.h
+<!-- rpmsq.h	FIXME: logout from stdin sighup?-->
+  rpmsquirrel.h
+  rpmssl.h
   rpmsw.h
-  rpmsx.h
+<!-- rpmsx.h -->
   rpmsyck.h
   rpmtcl.h
   rpmurl.h
   rpmuuid.h
+<!-- rpmxar.h -->
   rpmzlog.h
+<!-- rpmzq.h -->
+  ugid.h
   yarn.h
+
+<!-- rpmtar.h -->
+<!-- rpmz.h -->
 </headers>
  
 <libs>
@@ -54,7 +114,6 @@
   stdio.h
   stdlib.h
   string.h
-  assert.h
 </include_preamble>
 <libs_depend>
 </libs_depend>
