@@ -445,6 +445,7 @@ LIBRPMIO_0
     rpmluaGetVar;
     rpmluaInteractive;
     rpmluaGetGlobalState;
+    rpmluaFree;
     rpmluaNew;
     rpmluaPop;
     rpmluaPushTable;
