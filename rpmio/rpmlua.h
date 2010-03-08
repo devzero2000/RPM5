@@ -127,9 +127,11 @@ int rpmluaVarExists(/*@null@*/ rpmlua _lua, const char *key, ...)
 void rpmluaPushTable(/*@null@*/ rpmlua _lua, const char *key, ...)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _lua, fileSystem, internalState @*/;
+#if defined(_RPMLUA_INTERNAL)
 void rpmluaPop(/*@null@*/ rpmlua _lua)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _lua, fileSystem, internalState @*/;
+#endif
 
 /*@only@*/
 rpmluav rpmluavNew(void)
