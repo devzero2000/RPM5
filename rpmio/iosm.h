@@ -6,7 +6,7 @@
  * File state machine to handle archive I/O and system call's.
  */
 
-#define	_IOSM_INTERNAL
+#define	_IOSM_INTERNAL	/* XXX expose internals for unit tests. */
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* XXX FD_t */
 #include <rpmsw.h>
