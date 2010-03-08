@@ -1213,53 +1213,63 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, rpmuint8_t val)
  * @param sigtype	signature type
  * @return		0 on success
  */
+#if defined(_RPMPGP_INTERNAL)
 /*@-exportlocal@*/
 int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
+#endif
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP signature packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
+#if defined(_RPMPGP_INTERNAL)
 /*@-exportlocal@*/
 int pgpPrtSig(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
+#endif
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP key packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
+#if defined(_RPMPGP_INTERNAL)
 int pgpPrtKey(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+#endif
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP userid packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
+#if defined(_RPMPGP_INTERNAL)
 /*@-exportlocal@*/
 int pgpPrtUserID(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
+#endif
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP comment packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
+#if defined(_RPMPGP_INTERNAL)
 /*@-exportlocal@*/
 int pgpPrtComment(const pgpPkt pp)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
+#endif
 
 /** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
@@ -1293,8 +1303,10 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt,
  * @retval pp		packet tag/ptr/len
  * @return		packet length, <0 on error.
  */
+#if defined(_RPMPGP_INTERNAL)
 int pgpPktLen(const rpmuint8_t * pkt, size_t pleft, /*@out@*/ pgpPkt pp)
 	/*@modifies pp @*/;
+#endif
 
 /** \ingroup rpmpgp
  * Print/parse next OpenPGP packet.
