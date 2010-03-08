@@ -110,7 +110,7 @@ rpmjs rpmjsFree(/*@killref@*/ /*@null@*/rpmjs js)
  * @return		new js interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmjs rpmjsNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmjs rpmjsNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

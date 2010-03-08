@@ -116,7 +116,7 @@ rpmsm rpmsmNew(/*@null@*/ const char * fn, unsigned int flags)
  * @retval *resultp	string result (malloc'd)
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-rpmRC rpmsmRun(rpmsm sm, const char ** av, /*@out@*/ const char ** resultp)
+rpmRC rpmsmRun(rpmsm sm, char ** av, /*@out@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sm, *resultp, fileSystem, internalState @*/;
 

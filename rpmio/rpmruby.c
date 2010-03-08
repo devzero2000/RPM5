@@ -73,7 +73,7 @@ static rpmruby rpmrubyI(void)
     return _rpmrubyI;
 }
 
-rpmruby rpmrubyNew(const char ** av, uint32_t flags)
+rpmruby rpmrubyNew(char ** av, uint32_t flags)
 {
     rpmruby ruby =
 #ifdef	NOTYET

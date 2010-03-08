@@ -120,7 +120,7 @@ static rpmtcl rpmtclI(void)
     return _rpmtclI;
 }
 
-rpmtcl rpmtclNew(const char ** av, uint32_t flags)
+rpmtcl rpmtclNew(char ** av, uint32_t flags)
 {
     rpmtcl tcl =
 #ifdef	NOTYET

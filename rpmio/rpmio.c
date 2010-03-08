@@ -333,7 +333,7 @@ static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
 
     if (_fdPool == NULL) {
 	_fdPool = rpmioNewPool("fd", sizeof(*fd), -1, _rpmio_debug,
-		(const char * (*)(void *))fdbg, NULL, fdFini);
+		(char * (*)(void *))fdbg, NULL, fdFini);
 	pool = _fdPool;
     }
     return (FD_t) rpmioGetPool(pool, sizeof(*fd));

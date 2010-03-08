@@ -74,7 +74,7 @@ rpmficl rpmficlFree(/*@killref@*/ /*@null@*/rpmficl ficl)
  * @return		new ficl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmficl rpmficlNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmficl rpmficlNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

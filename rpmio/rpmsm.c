@@ -403,7 +403,7 @@ static rpmsm rpmsmI(void)
 
 /*==============================================================*/
 
-rpmRC rpmsmRun(rpmsm sm, const char ** av, const char ** resultp)
+rpmRC rpmsmRun(rpmsm sm, char ** av, const char ** resultp)
 {
     int ncmds = argvCount(av);
     int rc = 0;

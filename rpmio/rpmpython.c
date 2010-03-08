@@ -68,7 +68,7 @@ static rpmpython rpmpythonI(void)
     return _rpmpythonI;
 }
 
-rpmpython rpmpythonNew(const char ** av, uint32_t flags)
+rpmpython rpmpythonNew(char ** av, uint32_t flags)
 {
     static const char * _av[] = { "rpmpython", NULL };
 #if defined(WITH_PYTHONEMBED)

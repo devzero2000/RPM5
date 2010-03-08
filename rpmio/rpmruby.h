@@ -73,7 +73,7 @@ rpmruby rpmrubyFree(/*@killref@*/ /*@null@*/rpmruby ruby)
  * @return		new ruby interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmruby rpmrubyNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmruby rpmrubyNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

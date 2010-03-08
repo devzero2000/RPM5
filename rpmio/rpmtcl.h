@@ -74,7 +74,7 @@ rpmtcl rpmtclFree(/*@killref@*/ /*@null@*/rpmtcl tcl)
  * @return		new tcl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmtcl rpmtclNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmtcl rpmtclNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

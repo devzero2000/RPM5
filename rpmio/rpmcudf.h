@@ -159,7 +159,7 @@ rpmcudf rpmcudfFree(/*@killref@*/ /*@null@*/rpmcudf cudf)
  * @return		new cudf interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmcudf rpmcudfNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmcudf rpmcudfNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

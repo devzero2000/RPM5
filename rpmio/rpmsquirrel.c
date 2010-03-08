@@ -84,7 +84,7 @@ static rpmsquirrel rpmsquirrelI(void)
     return _rpmsquirrelI;
 }
 
-rpmsquirrel rpmsquirrelNew(const char ** av, uint32_t flags)
+rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
 {
     rpmsquirrel squirrel =
 #ifdef	NOTYET

@@ -16,7 +16,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmsp_debug = -1;
+int _rpmsp_debug = 0;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmsp _rpmspI = NULL;

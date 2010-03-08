@@ -484,7 +484,7 @@ static rpmcudf rpmcudfI(void)
 }
 #endif
 
-rpmcudf rpmcudfNew(const char ** av, uint32_t flags)
+rpmcudf rpmcudfNew(char ** av, uint32_t flags)
 {
     rpmcudf cudf =
 #ifdef	NOTYET

@@ -72,7 +72,7 @@ rpmpython rpmpythonFree(/*@killref@*/ /*@null@*/rpmpython python)
  * @return		new python interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmpython rpmpythonNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmpython rpmpythonNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

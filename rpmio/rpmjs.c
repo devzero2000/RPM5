@@ -162,7 +162,7 @@ fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
     return _rpmjsI;
 }
 
-rpmjs rpmjsNew(const char ** av, uint32_t flags)
+rpmjs rpmjsNew(char ** av, uint32_t flags)
 {
     rpmjs js =
 #ifdef	NOTYET
@@ -210,11 +210,12 @@ rpmjs rpmjsNew(const char ** av, uint32_t flags)
     return rpmjsLink(js);
 }
 
+#if defined(WITH_JS)
+#if defined(WITH_GPSEE)
 static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
 	/*@modifies js @*/
 {
     FILE * fp = NULL;
-#if defined(WITH_GPSEE)
     gpsee_interpreter_t * I = js->I;
 
     fp = fopen(fn, "r");
@@ -252,13 +253,14 @@ static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
     }
 
 exit:
-#endif
 
 if (_rpmjs_debug)
 fprintf(stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp);
 
     return fp;
 }
+#endif	/* WITH_GPSEE */
+#endif	/* WITH_JS */
 
 rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 {
@@ -302,7 +304,12 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
 #endif	/* WITH_JS */
     }
 
+#if defined(WITH_JS)
+#if defined(WITH_GPSEE)
 exit:
+#endif	/* WITH_GPSEE */
+#endif	/* WITH_JS */
+
 if (_rpmjs_debug)
 fprintf(stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc);
 

@@ -72,7 +72,7 @@ rpmperl rpmperlFree(/*@killref@*/ /*@null@*/rpmperl perl)
  * @return		new perl interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmperl rpmperlNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmperl rpmperlNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

@@ -89,7 +89,7 @@ static rpmperl rpmperlI(void)
     return _rpmperlI;
 }
 
-rpmperl rpmperlNew(const char ** av, uint32_t flags)
+rpmperl rpmperlNew(char ** av, uint32_t flags)
 {
     rpmperl perl =
 #ifdef	NOTYET
@@ -97,7 +97,7 @@ rpmperl rpmperlNew(const char ** av, uint32_t flags)
 #endif
 	rpmperlGetPool(_rpmperlPool);
 #if defined(WITH_PERLEMBED)
-    static const char * _av[] = { "rpmperl", NULL };
+    static char * _av[] = { "rpmperl", NULL };
     static int initialized = 0;
     ARGV_t argv = NULL;
     int argc = 0;
@@ -110,7 +110,7 @@ rpmperl rpmperlNew(const char ** av, uint32_t flags)
     xx = argvAdd(&argv, "-e");
     xx = argvAdd(&argv, rpmperlInitStringIO);
     if (av[1])
-	xx = argvAppend(&argv, av+1);
+	xx = argvAppend(&argv, (ARGV_t)av+1);
     argc = argvCount(argv);
 
     if (!initialized) {

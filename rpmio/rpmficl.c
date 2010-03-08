@@ -71,7 +71,7 @@ static rpmficl rpmficlI(void)
     return _rpmficlI;
 }
 
-rpmficl rpmficlNew(const char ** av, uint32_t flags)
+rpmficl rpmficlNew(char ** av, uint32_t flags)
 {
     rpmficl ficl =
 #ifdef	NOTYET

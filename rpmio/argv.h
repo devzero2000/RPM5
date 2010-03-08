@@ -71,7 +71,7 @@ ARGint_t argiData(/*@null@*/ ARGI_t argi)
  * @param argv		argv array
  * @return		no. of elements
  */
-int argvCount(/*@null@*/ const ARGV_t argv)
+int argvCount(/*@null@*/ ARGV_t argv)
 	/*@*/;
 
 /**

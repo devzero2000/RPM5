@@ -779,7 +779,7 @@ rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
  */
 rpmioPool rpmioNewPool(/*@observer@*/ const char * name,
 		size_t size, int limit, int flags,
-		/*@null@*/ const char * (*dbg) (void *item), 
+		/*@null@*/ char * (*dbg) (void *item), 
 		/*@null@*/ void (*init) (void *item),
 		/*@null@*/ void (*fini) (void *item))
 	/*@globals fileSystem @*/

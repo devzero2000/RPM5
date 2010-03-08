@@ -73,7 +73,7 @@ rpmsquirrel rpmsquirrelFree(/*@killref@*/ /*@null@*/rpmsquirrel squirrel)
  * @return		new squirrel interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmsquirrel rpmsquirrelNew(/*@null@*/ const char ** av, uint32_t flags)
+rpmsquirrel rpmsquirrelNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

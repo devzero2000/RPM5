@@ -1464,12 +1464,12 @@ static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
 
 #define POPT_ARGV_ARRAY_GROW_DELTA 5
 
-static int XpoptDupArgv(int argc, const char **argv,
-		int * argcPtr, const char *** argvPtr)
+static int XpoptDupArgv(int argc, char **argv,
+		int * argcPtr, char *** argvPtr)
 	/*@modifies *argcPtr, *argvPtr @*/
 {
     size_t nb = (argc + 1) * sizeof(*argv);
-    const char ** argv2;
+    char ** argv2;
     char * dst;
     int i;
 
@@ -1504,13 +1504,13 @@ static int XpoptDupArgv(int argc, const char **argv,
     return 0;
 }
 
-static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+static int XpoptParseArgvString(const char * s, int * argcPtr, char *** argvPtr)
 	/*@modifies *argcPtr, *argvPtr @*/
 {
     const char * src;
     char quote = '\0';
     int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
-    const char ** argv = xmalloc(sizeof(*argv) * argvAlloced);
+    char ** argv = xmalloc(sizeof(*argv) * argvAlloced);
     int argc = 0;
     size_t buflen = strlen(s) + 1;
     char * buf = memset(alloca(buflen), 0, buflen);
@@ -1580,7 +1580,7 @@ exit:
  * @return		script string
  */
 #if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
-static char * parseEmbedded(const char * s, size_t nb, const char *** avp)
+static char * parseEmbedded(const char * s, size_t nb, char *** avp)
 	/*@*/
 {
     char * script = NULL;
@@ -1896,7 +1896,7 @@ expandMacro(MacroBuf mb)
 	if (STREQ("augeas", f, fn)) {
 		/* XXX change rpmaugNew() to common embedded interpreter API */
 #ifdef	NOTYET
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 #else
 		char * script = strndup(g, (size_t)(se-g-1));
@@ -1930,7 +1930,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_FICL
 	if (STREQ("ficl", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmficl ficl = rpmficlNew(av, _globalI);
 		const char * result = NULL;
@@ -1958,7 +1958,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_JS
 	if (STREQ("js", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmjs js = rpmjsNew(av, _globalI);
 		const char * result = NULL;
@@ -1986,7 +1986,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_PERLEMBED
 	if (STREQ("perl", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmperl perl = rpmperlNew(av, _globalI);
 		const char * result = NULL;
@@ -2014,7 +2014,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_PYTHONEMBED
 	if (STREQ("python", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmpython python = rpmpythonNew(av, _globalI);
 		const char * result = NULL;
@@ -2042,7 +2042,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_RUBYEMBED
 	if (STREQ("ruby", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmruby ruby = rpmrubyNew(av, _globalI);
 		const char * result = NULL;
@@ -2072,12 +2072,12 @@ expandMacro(MacroBuf mb)
 	if (STREQ("spook", f, fn)) {
 		/* XXX change rpmsmNew() to common embedded interpreter API */
 #ifdef	NOTYET
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 #else
 		/* XXX use xstrndup (which never returns NULL) instead. */
 		char * script = strndup(g, (size_t)(se-g-1));
-		const char * av[2];
+		char * av[2];
 		/* XXX FIXME */
 		static const char * _rpmsmStore = "targeted";
 		static unsigned int _rpmsmFlags = 0;
@@ -2114,7 +2114,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_SQUIRREL
 	if (STREQ("squirrel", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmsquirrel squirrel = rpmsquirrelNew(av, _globalI);
 		const char * result = NULL;
@@ -2142,7 +2142,7 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_TCL
 	if (STREQ("tcl", f, fn)) {
-		const char ** av = NULL;
+		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
 		rpmtcl tcl = rpmtclNew(av, _globalI);
 		const char * result = NULL;
@@ -2341,7 +2341,7 @@ static int _debug = 0;
 int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 {
     int ac = 0;
-    const char ** av = NULL;
+    char ** av = NULL;
     int argc = 0;
     const char ** argv = NULL;
     char * globRoot = NULL;

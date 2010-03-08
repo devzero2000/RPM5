@@ -101,7 +101,7 @@ rpmlog(RPMLOG_WARNING, D_("pool %s: FIXME: made %d, count %d\nNote: This is a ha
 
 /*@-internalglobs@*/
 rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
-		const char * (*dbg) (void *item),
+		char * (*dbg) (void *item),
 		void (*init) (void *item),
 		void (*fini) (void *item))
 	/*@*/
