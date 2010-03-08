@@ -351,6 +351,7 @@ static ssize_t tarHeaderWriteBlock(void * _iosm, struct stat * st, tarHeader hdr
 	/*@modifies _iosm, hdr, fileSystem, internalState @*/
 {
     IOSM_t iosm = _iosm;
+    const char * path = (iosm && iosm->path ? iosm->path : "");
     ssize_t rc;
 
 if (_tar_debug)
@@ -359,7 +360,7 @@ if (_tar_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
                 (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
-                (iosm->path ? iosm->path : ""));
+                path);
 
 
     (void) stpcpy( stpcpy(hdr->magic, TAR_MAGIC), TAR_VERSION);
@@ -388,6 +389,8 @@ int tarHeaderWrite(void * _iosm, struct stat * st)
 /*@observer@*/
     static const char * llname = "././@LongLink";
     tarHeader hdr = (tarHeader) iosm->rdbuf;
+    const char * path = (iosm && iosm->path ? iosm->path : "");
+    const char * lpath = (iosm && iosm->lpath ? iosm->lpath : "");
     char * t;
     dev_t dev;
     size_t nb;
@@ -396,7 +399,7 @@ int tarHeaderWrite(void * _iosm, struct stat * st)
 if (_tar_debug)
 fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 
-    nb = strlen(iosm->path);
+    nb = strlen(path);
     if (nb > sizeof(hdr->name)) {
 	memset(hdr, 0, sizeof(*hdr));
 	strcpy(hdr->name, llname);
@@ -410,12 +413,12 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	rc = tarHeaderWriteBlock(iosm, st, hdr);
 	_IOSMRC(rc);
-	rc = tarHeaderWriteName(iosm, iosm->path);
+	rc = tarHeaderWriteName(iosm, path);
 	_IOSMRC(rc);
     }
 
-    if (iosm->lpath && iosm->lpath[0] != '0') {
-	nb = strlen(iosm->lpath);
+    if (lpath && lpath[0] != '0') {
+	nb = strlen(lpath);
 	if (nb > sizeof(hdr->name)) {
 	    memset(hdr, 0, sizeof(*hdr));
 	    strcpy(hdr->linkname, llname);
@@ -429,17 +432,17 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	    strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	    rc = tarHeaderWriteBlock(iosm, st, hdr);
 	    _IOSMRC(rc);
-	    rc = tarHeaderWriteName(iosm, iosm->lpath);
+	    rc = tarHeaderWriteName(iosm, path);
 	    _IOSMRC(rc);
 	}
     }
 
     memset(hdr, 0, sizeof(*hdr));
 
-    strncpy(hdr->name, iosm->path, sizeof(hdr->name));
+    strncpy(hdr->name, path, sizeof(hdr->name));
 
-    if (iosm->lpath && iosm->lpath[0] != '0')
-	strncpy(hdr->linkname, iosm->lpath, sizeof(hdr->linkname));
+    if (lpath && lpath[0] != '\0')
+	strncpy(hdr->linkname, lpath, sizeof(hdr->linkname));
 
     sprintf(hdr->mode, "%07o", (unsigned int)(st->st_mode & 00007777));
     sprintf(hdr->uid, "%07o", (unsigned int)(st->st_uid & 07777777));
@@ -464,7 +467,7 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	hdr->typeflag = '?';
 #endif
     else if (S_ISREG(st->st_mode))
-	hdr->typeflag = (iosm->lpath != NULL ? '1' : '0');
+	hdr->typeflag = (lpath && lpath[0] != '\0' ? '1' : '0');
 
     /* XXX FIXME: map uname/gname from uid/gid. */
     t = uidToUname(st->st_uid);

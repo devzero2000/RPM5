@@ -745,13 +745,13 @@ fprintf(stderr, "\tcpio vectors set\n");
     iosm->commit = 1;
 #endif
 
+#if defined(_USE_RPMTS)
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	fi->archivePos = 0;
-#if defined(_USE_RPMTS)
 	(void) rpmtsNotify(ts, fi->te,
 		RPMCALLBACK_INST_START, fi->archivePos, fi->archiveSize);
-#endif
     }
+#endif
 
     /*@-assignexpose@*/
     iosm->archiveSize = archiveSize;
@@ -802,15 +802,15 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
 
     iosm->lmtab = _free(iosm->lmtab);
 
+    if (iosm->iter != NULL) {
 #if defined(_USE_RPMTS)
-    (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
+	(void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			&iosm->op_digest);
-    (void)rpmtsFree(iter->ts); 
-    iter->ts = NULL;
-#else
-    iosm->iter->ts = NULL;
+	(void)rpmtsFree(iosm->iter->ts); 
 #endif
-    iosm->iter = mapFreeIterator(iosm->iter);
+	iosm->iter->ts = NULL;
+	iosm->iter = mapFreeIterator(iosm->iter);
+    }
     if (iosm->cfd != NULL) {
 	iosm->cfd = fdFree(iosm->cfd, "persist (iosm)");
 	iosm->cfd = NULL;
@@ -858,7 +858,7 @@ int iosmMapPath(IOSM_t iosm)
     iosm->nsuffix = NULL;
     iosm->astriplen = 0;
     iosm->action = FA_UNKNOWN;
-    iosm->mapFlags = fi->mapflags;
+    iosm->mapFlags = (fi ? fi->mapflags : 0);
 
     if (fi && i >= 0 && i < (int)fi->fc) {
 
@@ -1849,33 +1849,31 @@ int iosmStage(IOSM_t iosm, iosmFileStage stage)
 	iosm->ix = ((iosm->goal == IOSM_PKGINSTALL)
 		? mapFind(iosm->iter, iosm->path) : mapNextIterator(iosm->iter));
 
-{ rpmfi fi = iosmGetFi(iosm);
-if (!(fi->mapflags & IOSM_PAYLOAD_LIST)) {
+    {	rpmfi fi = iosmGetFi(iosm);
+	if (fi != NULL && !(fi->mapflags & IOSM_PAYLOAD_LIST)) {
 	/* Detect end-of-loop and/or mapping error. */
-if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
-	if (iosm->ix < 0) {
-	    if (iosm->goal == IOSM_PKGINSTALL) {
+	    if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
+		if (iosm->ix < 0) {
+		    if (iosm->goal == IOSM_PKGINSTALL) {
 #if 0
-		rpmlog(RPMLOG_WARNING,
-		    _("archive file %s was not found in header file list\n"),
-			iosm->path);
+			rpmlog(RPMLOG_WARNING,
+			    _("archive file %s was not found in header\n"),
+			    iosm->path);
 #endif
-		if (iosm->failedFile && *iosm->failedFile == NULL)
-		    *iosm->failedFile = xstrdup(iosm->path);
-		rc = IOSMERR_UNMAPPED_FILE;
-	    } else {
-		rc = IOSMERR_HDR_TRAILER;
+			if (iosm->failedFile && *iosm->failedFile == NULL)
+			    *iosm->failedFile = xstrdup(iosm->path);
+			rc = IOSMERR_UNMAPPED_FILE;
+		    } else
+			rc = IOSMERR_HDR_TRAILER;
+		    break;
+		}
 	    }
-	    break;
-	}
-}
 
-	/* On non-install, mode must be known so that dirs don't get suffix. */
-	if (iosm->goal != IOSM_PKGINSTALL) {
-	    st->st_mode = fi->fmodes[iosm->ix];
+	    /* On non-install, mode must be known so dirs don't get suffixed. */
+	    if (iosm->goal != IOSM_PKGINSTALL)
+		st->st_mode = fi->fmodes[iosm->ix];
 	}
-}
-}
+    }
 
 	/* Generate file path. */
 	rc = iosmNext(iosm, IOSM_MAP);
@@ -1920,9 +1918,10 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 		iosm->postpone = saveHardLink(iosm);
 	    /*@=evalorder@*/
 	}
-{ rpmfi fi = iosmGetFi(iosm);
-if (fi->mapflags & IOSM_PAYLOAD_LIST) iosm->postpone = 1;
-}
+    {	rpmfi fi = iosmGetFi(iosm);
+	if (fi != NULL && (fi->mapflags & IOSM_PAYLOAD_LIST))
+	    iosm->postpone = 1;
+    }
 	break;
     case IOSM_PRE:
 	break;
@@ -2064,17 +2063,17 @@ assert(iosm->lpath != NULL);
 	rc = iosmMakeLinks(iosm);
 	break;
     case IOSM_NOTIFY:		/* XXX move from iosm to psm -> tsm */
+#if defined(_USE_RPMTS)
 	if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	    rpmfi fi = iosmGetFi(iosm);
 	    rpmuint64_t archivePos = fdGetCpioPos(iosm->cfd);
 	    if (archivePos > fi->archivePos) {
 		fi->archivePos = (unsigned long long) archivePos;
-#if defined(_USE_RPMTS)
 		(void) rpmtsNotify(iosmGetTs(iosm), fi->te,RPMCALLBACK_INST_PROGRESS,
 			fi->archivePos, fi->archiveSize);
-#endif
 	    }
 	}
+#endif
 	break;
     case IOSM_UNDO:
 	if (iosm->postpone)
@@ -2180,8 +2179,8 @@ assert(iosm->lpath != NULL);
 	}
 
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
-{ rpmfi fi = iosmGetFi(iosm);
-if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
+    { rpmfi fi = iosmGetFi(iosm);
+      if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(iosm->path)) {
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) &&
@@ -2227,8 +2226,8 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 		}
 	    }
 	}
-}
-}
+      }
+    }
 
 	/* Notify on success. */
 	if (!rc)		rc = iosmNext(iosm, IOSM_NOTIFY);
@@ -2332,7 +2331,9 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
 	if (iosm->mapFlags & IOSM_SBIT_CHECK) {
 	    struct stat stb;
-	    if (Lstat(iosm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
+	    if (Lstat(iosm->path, &stb) == 0
+	     && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+	    {
 		/* XXX rc = iosmNext(iosm, IOSM_CHMOD); instead */
 		(void)Chmod(iosm->path, stb.st_mode & 0777);
 	    }
@@ -2348,7 +2349,9 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
 	if (iosm->mapFlags & IOSM_SBIT_CHECK) {
 	    struct stat stb;
-	    if (Lstat(iosm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
+	    if (Lstat(iosm->path, &stb) == 0
+	     && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+	    {
 		/* XXX rc = iosmNext(iosm, IOSM_CHMOD); instead */
 		(void)Chmod(iosm->path, stb.st_mode & 0777);
 	    }
@@ -2557,7 +2560,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
     case IOSM_HREAD:
 	rc = iosmNext(iosm, IOSM_POS);
 	if (!rc)
-	    rc = (*iosm->headerRead) (iosm, st);	/* Read next payload header. */
+	    rc = (*iosm->headerRead) (iosm, st);/* Read next payload header. */
 	break;
     case IOSM_HWRITE:
 	rc = (*iosm->headerWrite) (iosm, st);	/* Write next payload header. */

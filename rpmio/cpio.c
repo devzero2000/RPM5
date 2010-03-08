@@ -225,6 +225,8 @@ int cpioHeaderWrite(void * _iosm, struct stat * st)
 {
     IOSM_t iosm = _iosm;
     cpioHeader hdr = (cpioHeader) iosm->rdbuf;
+    const char * path = (iosm && iosm->path ? iosm->path : "");
+    const char * lpath = (iosm && iosm->lpath ? iosm->lpath : "");
     char field[64];
     size_t nb;
     dev_t dev;
@@ -247,24 +249,23 @@ fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", iosm, st);
     dev = major((unsigned)st->st_rdev); SET_NUM_FIELD(hdr->rdevMajor, dev, field);
     dev = minor((unsigned)st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
 
-    nb = strlen(iosm->path) + 1; SET_NUM_FIELD(hdr->namesize, nb, field);
+    nb = strlen(path) + 1; SET_NUM_FIELD(hdr->namesize, nb, field);
     memcpy(hdr->checksum, "00000000", 8);
 
     /* XXX Coalesce hdr+name into single I/O. */
-    memcpy(iosm->rdbuf + PHYS_HDR_SIZE, iosm->path, nb);
+    memcpy(iosm->rdbuf + PHYS_HDR_SIZE, path, nb);
     nb += PHYS_HDR_SIZE;
     rc = cpioWrite(iosm, hdr, nb);
     _IOSMRC(rc);
 
     if (S_ISLNK(st->st_mode)) {
-assert(iosm->lpath != NULL);
 #if !defined(JBJ_WRITEPAD)
 	rc = _iosmNext(iosm, IOSM_PAD);
 	if (rc) return (int) rc;
 #endif
 
-	nb = strlen(iosm->lpath);
-	rc = cpioWrite(iosm, iosm->lpath, nb);
+	nb = strlen(lpath);
+	rc = cpioWrite(iosm, lpath, nb);
 	_IOSMRC(rc);
     }
 

@@ -236,6 +236,7 @@ int arHeaderWrite(void * _iosm, struct stat * st)
 {
     IOSM_t iosm = _iosm;
     arHeader hdr = (arHeader) iosm->rdbuf;
+    const char * path = (iosm && iosm->path ? iosm->path : "");
     size_t nb;
     ssize_t rc = 0;
 
@@ -268,7 +269,7 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
 
     memset(hdr, (int)' ', sizeof(*hdr));
 
-    nb = strlen(iosm->path);
+    nb = strlen(path);
     if (nb >= sizeof(hdr->name)) {
 	const char * t;
 	const char * te;
@@ -281,7 +282,7 @@ assert(iosm->lmtab != NULL);
 	if (te != NULL)
 	    iosm->lmtaboff += (te - t) + 1;
     } else {
-	strncpy(hdr->name, iosm->path, nb);
+	strncpy(hdr->name, path, nb);
 	hdr->name[nb] = '/';
     }
 
