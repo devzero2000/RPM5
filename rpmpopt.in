@@ -271,6 +271,9 @@ rpm	alias --wnh:filelists.yaml --qf @USRLIBRPM@/qf/wnh_filelists_yaml \
 rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml \
 	--POPTdesc=$"display wnh other.yaml markup"
 
+rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
+	--POPTdesc=$"display wdj binary->source rpm markup"
+
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
