@@ -266,7 +266,7 @@ FD_t fdDup(int fdno)
     fd = fdNew("open (fdDup)");
     fdSetOpen(fd, "fdDup", nfdno, 0);	/* XXX bogus */
     fdSetFdno(fd, nfdno);
-DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
+DBGIO(fd, (stderr, "<-- fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
@@ -425,7 +425,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
     if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
-DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "<--\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
@@ -459,7 +459,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 	rc = write(fdno, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
-DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "<--\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
@@ -481,7 +481,7 @@ static int fdSeek(void * cookie, _libio_pos_t pos, int whence)
     rc = lseek(fdFileno(fd), p, whence);
     fdstat_exit(fd, FDSTAT_SEEK, rc);
 
-DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "<--\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
 
     return (int) rc;
 }
@@ -512,7 +512,7 @@ static int fdClose( /*@only@*/ void * cookie)
 	rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
-DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "<--\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
     fd = fdFree(fd, "open (fdClose)");
     return rc;
@@ -536,7 +536,7 @@ static /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
     fdSetFdno(fd, fdno);
 assert(fd != NULL);
     fd->flags = flags;
-DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
+DBGIO(fd, (stderr, "<--\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
@@ -551,7 +551,7 @@ FILE *fdFdopen(void * cookie, const char *fmode)
     fdno = fdFileno(fd);
     if (fdno < 0) return NULL;
     fp = fdopen(fdno, fmode);
-DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie, fmode, fdno, fp, fileno(fp)));
+DBGIO(fd, (stderr, "<-- fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie, fmode, fdno, fp, fileno(fp)));
     fd = fdFree(fd, "open (fdFdopen)");
     return fp;
 }
@@ -2330,7 +2330,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	return NULL;
     }
 /*@=usereleased@*/
-DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (unsigned)mode, fdbg(fd)));
+DBGIO(fd, (stderr, "<--\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     return fd;
 }
 
@@ -2790,7 +2790,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	    ciof.seek = iof->seek;
 	    ciof.close = iof->close;
 	    fp = fopencookie(fd, stdio, ciof);
-DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, iof, fp));
+DBGIO(fd, (stderr, "<-- fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, iof, fp));
 	}
 #endif
 
@@ -2806,7 +2806,7 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
     }
 
 /*@-refcounttrans -retalias -usereleased @*/
-DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
+DBGIO(fd, (stderr, "<== Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fd;
 /*@=refcounttrans =retalias =usereleased @*/
 }
@@ -2826,14 +2826,15 @@ FD_t Fopen(const char *path, const char *_fmode)
     fmode = rpmExpand(_fmode, NULL);
 /*@=globs =mods@*/
 
+if (_rpmio_debug)
+fprintf(stderr, "==> Fopen(%s, %s)\n", path, fmode);
+
     stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);
     if (stdio[0] == '\0')
 	goto exit;
 
     if (end == NULL || !strcmp(end, "fdio")) {
-if (_rpmio_debug)
-fprintf(stderr, "*** Fopen(%s, %s) fdio\n", path, fmode);
 	fd = fdOpen(path, flags, perms);
 	if (fdFileno(fd) < 0) {
 	    if (fd) (void) fdClose(fd);
@@ -2857,8 +2858,6 @@ fprintf(stderr, "*** Fopen(%s, %s) fdio\n", path, fmode);
 	case URL_IS_DASH:
 	case URL_IS_FTP:
 	case URL_IS_UNKNOWN:
-if (_rpmio_debug)
-fprintf(stderr, "*** Fopen(%s, %s) ufdio\n", path, fmode);
 	    fd = ufdOpen(path, flags, perms);
 	    if (fd == NULL || !(fdFileno(fd) >= 0 || fd->req != NULL)) {
 		if (fd) (void) fdClose(fd);
@@ -2867,8 +2866,6 @@ fprintf(stderr, "*** Fopen(%s, %s) ufdio\n", path, fmode);
 	    }
 	    break;
 	default:
-if (_rpmio_debug)
-fprintf(stderr, "*** Fopen(%s, %s) WTFO\n", path, fmode);
 	    if (fd) (void) fdClose(fd);
 	    fd = NULL;
 	    goto exit;
@@ -2888,6 +2885,9 @@ fprintf(stderr, "*** Fopen(%s, %s) WTFO\n", path, fmode);
     if (fd)
 	fd = Fdopen(fd, fmode);
 exit:
+
+if (_rpmio_debug)
+fprintf(stderr, "<== Fopen(%s, %s) fd %p\n", path, fmode, fd);
     fmode = _free(fmode);
     return fd;
 }
@@ -2963,7 +2963,7 @@ int Ferror(FD_t fd)
 	if (rc == 0 && ec)
 	    rc = ec;
     }
-DBGIO(fd, (stderr, "==> Ferror(%p) rc %d %s\n", fd, rc, fdbg(fd)));
+DBGIO(fd, (stderr, "<== Ferror(%p) rc %d %s\n", fd, rc, fdbg(fd)));
     return rc;
 }
 
@@ -2980,7 +2980,7 @@ int Fileno(FD_t fd)
 	rc = fd->fps[i].fdno;
     }
 
-DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
+DBGIO(fd, (stderr, "<== Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
     return rc;
 }
 
