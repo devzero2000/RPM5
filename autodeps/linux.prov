@@ -12,6 +12,7 @@ solist=$(echo $filelist | grep "\\.so" | grep -v "^/lib/ld.so" | \
 	xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1)
 pythonlist=
 tcllist=
+rubygemlist=$(echo "$filelist"| egrep "\.gemspec$")
 
 #
 # --- Alpha does not mark 64bit dependencies
@@ -60,5 +61,10 @@ done | sort -u
 # --- Tcl modules.
 [ -x "$usrlibrpm/tcl.prov" -a -n "$tcllist" ] &&
     echo $tcllist | tr '[:blank:]' \\n | "$usrlibrpm/tcl.prov" | sort -u
+
+#
+# --- Ruby gems.
+[ -x "$usrlibrpm/rubygems.rb" -a -n "$rubygemlist" ] &&
+    echo $rubygemlist | tr '[:blank:]' \\n | "$usrlibrpm/rubygems.rb" --provides | sort -u
 
 exit 0
