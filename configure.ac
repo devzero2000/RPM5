@@ -1486,6 +1486,17 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # Nix
+dnl # XXX the tests are mostly pointless, all bow to the AutoFu!
+AC_LANG_PUSH(C++)
+RPM_CHECK_LIB(
+    [Nix expressions], [nix],
+    [format], [_init], [globals.hh],
+    [no,external:none], [],
+    [
+    ], [])
+AC_LANG_POP(C++)
+
 dnl # JavaScript
 WITH_JS_SUBDIR=""
 WITH_SPIDERMONKEY_SUBDIR=""
@@ -2146,13 +2157,18 @@ AC_CONFIG_SUBDIRS()
 dnl # explicit list of files to generate
 AC_CONFIG_FILES([ po/Makefile.in
     Doxyfile Makefile rpmpopt rpm.spec
-    rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
+    misc/Makefile
+    rpmio/Makefile rpmio/auto/Makefile rpmio/auto/desc rpmio/auto/types
+    rpmdb/Makefile rpmdb/auto/Makefile rpmdb/auto/desc rpmdb/auto/types
+    lib/Makefile lib/auto/Makefile lib/auto/desc lib/auto/types
+    build/Makefile build/auto/Makefile build/auto/desc build/auto/types
+    tools/Makefile
     scripts/Makefile
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
     macros/java macros/libtool macros/mono macros/perl 
     macros/pkgconfig macros/php macros/python macros/selinux
-    tools/Makefile misc/Makefile doc/Makefile
+    doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
     js/Makefile js/src/Makefile python/Makefile
