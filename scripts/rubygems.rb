@@ -47,7 +47,7 @@ if gems.length > 0
           else
             if version[0..1] == "~>"
               pessimistic = "rubygem(%s) < %s\n" % [name, version[3..-1]]
-              pessimistic[-2] = pessimistic[-2] + 1
+              pessimistic[-2] += 1
               version = version.gsub(/\~>/, '=>')
             end
             version = version.gsub(/^/, ' ')
