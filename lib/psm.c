@@ -621,7 +621,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_FICL)
     if (!strcmp(Phe->p.argv[0], "<ficl>")) {
-	rpmficl ficl = rpmficlNew((const char **)av, 0);
+	rpmficl ficl = rpmficlNew((char **)av, 0);
 	rc = rpmficlRun(ficl, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	ficl = rpmficlFree(ficl);
@@ -629,7 +629,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_JS)
     if (!strcmp(Phe->p.argv[0], "<js>")) {
-	rpmjs js = rpmjsNew((const char **)av, 0);
+	rpmjs js = rpmjsNew((char **)av, 0);
 	rc = rpmjsRun(js, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	js = rpmjsFree(js);
@@ -637,7 +637,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_PERLEMBED)
     if (!strcmp(Phe->p.argv[0], "<perl>")) {
-	rpmperl perl = rpmperlNew((const char **)av, 0);
+	rpmperl perl = rpmperlNew((char **)av, 0);
 	rc = rpmperlRun(perl, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	perl = rpmperlFree(perl);
@@ -645,7 +645,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_PYTHONEMBED)
     if (!strcmp(Phe->p.argv[0], "<python>")) {
-	rpmpython python = rpmpythonNew((const char **)av, 0);
+	rpmpython python = rpmpythonNew((char **)av, 0);
 	rc = rpmpythonRun(python, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	python = rpmpythonFree(python);
@@ -653,7 +653,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_RUBY)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
-	rpmruby ruby = rpmrubyNew((const char **)av, 0);
+	rpmruby ruby = rpmrubyNew((char **)av, 0);
 	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	ruby = rpmrubyFree(ruby);
@@ -667,14 +667,14 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	const char * av[2];
 	av[0] = script;
 	av[1] = NULL;
-	rc = rpmsmRun(sm, av, NULL) == RPMRC_OK
+	rc = rpmsmRun(sm, (char **)av, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	sm = rpmsmFree(sm);
     } else
 #endif
 #if defined(WITH_SQUIRREL)
     if (!strcmp(Phe->p.argv[0], "<squirrel>")) {
-	rpmsquirrel squirrel = rpmsquirrelNew((const char **)av, 0);
+	rpmsquirrel squirrel = rpmsquirrelNew((char **)av, 0);
 	rc = rpmsquirrelRun(squirrel, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	squirrel = rpmsquirrelFree(squirrel);
@@ -682,7 +682,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_TCL)
     if (!strcmp(Phe->p.argv[0], "<tcl>")) {
-	rpmtcl tcl = rpmtclNew((const char **)av, 0);
+	rpmtcl tcl = rpmtclNew((char **)av, 0);
 	rc = rpmtclRun(tcl, script, NULL) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	tcl = rpmtclFree(tcl);
