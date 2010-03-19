@@ -375,12 +375,12 @@ int addSource(Spec spec, /*@unused@*/ Package pkg,
     case RPMTAG_SOURCE:
 	flag = RPMFILE_SOURCE;
 	name = "source";
-	fieldp = spec->line;
+	fieldp = spec->line + strlen(name);
 	break;
     case RPMTAG_PATCH:
 	flag = RPMFILE_PATCH;
 	name = "patch";
-	fieldp = spec->line;
+	fieldp = spec->line + strlen(name);
 	break;
     case RPMTAG_ICON:
 	flag = RPMFILE_ICON;
@@ -400,10 +400,9 @@ assert(mdir != NULL);
     if (fieldp != NULL) {
 	char * end = NULL;
 
-	if (!xstrcasecmp(fieldp, name))
-	    fieldp += strlen(name);
 	num = strtoul(fieldp, &end, 10);
 	SKIPSPACE(end);
+fprintf(stderr, "num(%u) = strtoul(\"%s\", \"...%s\", 10)\n", num, fieldp, end);
 	if (*end != ':') {
 	    rpmlog(RPMLOG_ERR, _("line %d: No ':' terminator: %s\n"),
 			 spec->lineNum, spec->line);
