@@ -61,6 +61,8 @@ if gems.length > 0
 
       end
     end
+    # TODO: Should we add a strict dependency on ruby version here?
+    #print "ruby < %s%s\n" % [Config::CONFIG["ruby_version"][0..-2], Config::CONFIG["ruby_version"][-1..-1].to_i + 1]
     print "ruby >= %s\n" % Config::CONFIG["ruby_version"]
   end
 
