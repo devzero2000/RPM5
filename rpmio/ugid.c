@@ -22,6 +22,15 @@ int unameToUid(const char * thisUname, uid_t * uid)
     struct passwd * pwent;
     size_t thisUnameLen;
 
+#ifdef	SUSE_REFERENCE
+news
+uucp
+man
+nobody
+wwwrun
+mail
+lp
+#endif
     if (!thisUname) {
 	lastUnameLen = 0;
 	return -1;
@@ -38,7 +47,7 @@ int unameToUid(const char * thisUname, uid_t * uid)
     {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
-	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */
+	    lastUname = (char *) xrealloc(lastUname, lastUnameAlloced);
 	}
 	strcpy(lastUname, thisUname);
 
@@ -68,6 +77,12 @@ int gnameToGid(const char * thisGname, gid_t * gid)
     size_t thisGnameLen;
     struct group * grent;
 
+#ifdef	SUSE_REFERENCE
+news
+dialout
+uucp
+lp
+#endif
     if (thisGname == NULL) {
 	lastGnameLen = 0;
 	return -1;
@@ -84,7 +99,7 @@ int gnameToGid(const char * thisGname, gid_t * gid)
     {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
-	    lastGname = xrealloc(lastGname, lastGnameAlloced);	/* XXX memory leak */
+	    lastGname = (char *) xrealloc(lastGname, lastGnameAlloced);
 	}
 	strcpy(lastGname, thisGname);
 
@@ -128,7 +143,7 @@ char * uidToUname(uid_t uid)
 	return NULL;
 #if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
     } else if (uid == (uid_t) 0) {
-	return "root";
+	return (char *) "root";
 #endif
     } else if (uid == lastUid) {
 	return lastUname;
@@ -142,7 +157,7 @@ char * uidToUname(uid_t uid)
 	len = strlen(pwent->pw_name);
 	if (lastUnameLen < len + 1) {
 	    lastUnameLen = len + 20;
-	    lastUname = xrealloc(lastUname, lastUnameLen);
+	    lastUname = (char *) xrealloc(lastUname, lastUnameLen);
 	}
 	strcpy(lastUname, pwent->pw_name);
 
@@ -161,7 +176,7 @@ char * gidToGname(gid_t gid)
 	return NULL;
 #if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
     } else if (gid == (gid_t) 0) {
-	return "root";
+	return (char *) "root";
 #endif
     } else if (gid == lastGid) {
 	return lastGname;
@@ -175,7 +190,7 @@ char * gidToGname(gid_t gid)
 	len = strlen(grent->gr_name);
 	if (lastGnameLen < len + 1) {
 	    lastGnameLen = len + 20;
-	    lastGname = xrealloc(lastGname, lastGnameLen);
+	    lastGname = (char *) xrealloc(lastGname, lastGnameLen);
 	}
 	strcpy(lastGname, grent->gr_name);
 
