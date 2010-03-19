@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     if (!(ac == 1 || ac == 2))
 	goto exit;
 
-    {	const char * _av[] = { av[0], NULL };
+    {	char * _av[] = { (char *)av[0], NULL };
 	X = rpmcudfNew(_av, RPMCUDV_CUDFDOC);
     }
 
@@ -61,7 +61,7 @@ fprintf(stdout, "%s", rpmiobStr(X->iob));
 fflush(stdout);
     X = rpmcudfFree(X);
 
-    {	const char * _av[] = { av[0], NULL };
+    {	char * _av[] = { (char *)av[0], NULL };
 	X = rpmcudfNew(_av, RPMCUDV_CUDF);
     }
 
@@ -73,7 +73,7 @@ fflush(stdout);
 		(rpmcudfIsConsistent(X) ? "yes" : "no"));
 	rpmiobAppend(X->iob, t, 1);
 	if (ac >= 2) {
-	    const char * _av[] = { av[1], NULL };
+	    char * _av[] = { (char *)av[1], NULL };
 	    rpmcudf Y = rpmcudfNew(_av, RPMCUDV_CUDF);
 	    snprintf(t, sizeof(t), "Is solution: %s",
 		rpmcudfIsSolution(X,Y) ? "yes" : "no");
