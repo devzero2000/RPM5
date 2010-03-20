@@ -245,23 +245,22 @@ assert(name != NULL);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    if (u != NULL) {
-	switch (u->urltype) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	    addMacro(spec->macros, "_remsh", NULL, "%{__remsh}", RMIL_SPEC);
-	    addMacro(spec->macros, "_remhost", NULL, u->host, RMIL_SPEC);
-	    if (strcmp(rootDir, "/"))
-		addMacro(spec->macros, "_remroot", NULL, rootDir, RMIL_SPEC);
-	    break;
-	case URL_IS_UNKNOWN:
-	case URL_IS_DASH:
-	case URL_IS_PATH:
-	case URL_IS_HKP:
-	default:
-	    break;
-	}
+
+    switch (urlType(u)) {
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+	addMacro(spec->macros, "_remsh", NULL, "%{__remsh}", RMIL_SPEC);
+	addMacro(spec->macros, "_remhost", NULL, u->host, RMIL_SPEC);
+	if (strcmp(rootDir, "/"))
+	    addMacro(spec->macros, "_remroot", NULL, rootDir, RMIL_SPEC);
+	break;
+    case URL_IS_UNKNOWN:
+    case URL_IS_DASH:
+    case URL_IS_PATH:
+    case URL_IS_HKP:
+    default:
+	break;
     }
 
     buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
@@ -307,24 +306,24 @@ exit:
 	    (void) Unlink(scriptName);
 	scriptName = _free(scriptName);
     }
-    if (u != NULL) {
-	switch (u->urltype) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	    delMacro(spec->macros, "_remsh");
-	    delMacro(spec->macros, "_remhost");
-	    if (strcmp(rootDir, "/"))
-		delMacro(spec->macros, "_remroot");
-	    break;
-	case URL_IS_UNKNOWN:
-	case URL_IS_DASH:
-	case URL_IS_PATH:
-	case URL_IS_HKP:
-	default:
-	    break;
-	}
+
+    switch (urlType(u)) {
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+	delMacro(spec->macros, "_remsh");
+	delMacro(spec->macros, "_remhost");
+	if (strcmp(rootDir, "/"))
+	    delMacro(spec->macros, "_remroot");
+	break;
+    case URL_IS_UNKNOWN:
+    case URL_IS_DASH:
+    case URL_IS_PATH:
+    case URL_IS_HKP:
+    default:
+	break;
     }
+
     argv = _free(argv);
     buildCmd = _free(buildCmd);
     buildTemplate = _free(buildTemplate);

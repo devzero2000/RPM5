@@ -356,8 +356,7 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
-    fd->urlType = URL_IS_UNKNOWN;
-    fd->url = NULL;
+    fd->u = NULL;
     fd->req = NULL;
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->bytesRemain = -1;
@@ -1259,7 +1258,7 @@ errxit2:
 
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 {
-    urlinfo u = data->url;
+    urlinfo u = data->u;
 #if !defined(HAVE_GETADDRINFO)
     struct sockaddr_in dataAddress;
 #endif	/* HAVE_GETADDRINFO */
@@ -1603,7 +1602,7 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
     if (urlSplit(url, &u) < 0)
 	return -1;
 
-    if (u->urltype == URL_IS_FTP) {
+    if (urlType(u) == URL_IS_FTP) {
 	FD_t fd;
 
 	if ((fd = u->ctrl) == NULL) {
@@ -1617,7 +1616,7 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 assert(fd != NULL);
 	fd->rd_timeoutsecs = ftpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
-	fd->url = NULL;		/* XXX FTP ctrl has not */
+	fd->u = NULL;		/* XXX FTP ctrl has not */
 	fd->ftpFileDoneNeeded = 0;
 	fd = fdLink(fd, "grab ctrl (urlConnect FTP)");
 
@@ -1913,10 +1912,10 @@ errxit2:
 void * ufdGetUrlinfo(FD_t fd)
 {
     FDSANE(fd);
-    if (fd->url == NULL)
+    if (fd->u == NULL)
 	return NULL;
 /*@-retexpose@*/
-    return urlLink(fd->url, "ufdGetUrlinfo");
+    return urlLink(fd->u, "ufdGetUrlinfo");
 /*@=retexpose@*/
 }
 
@@ -2055,7 +2054,7 @@ static int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
 {
     FD_t fd = c2f(cookie);
 
-    switch (fd->urlType) {
+    switch (urlType(fd->u)) {
     case URL_IS_UNKNOWN:
     case URL_IS_PATH:
 	break;
@@ -2078,8 +2077,8 @@ int ufdClose( /*@only@*/ void * cookie)
 
     UFDONLY(fd);
 
-    if (fd->url) {
-	urlinfo u = fd->url;
+    if (fd->u) {
+	urlinfo u = fd->u;
 
 /*@-evalorder @*/
 	if (fd == u->data)
@@ -2087,12 +2086,12 @@ int ufdClose( /*@only@*/ void * cookie)
 	else
 	    fd = fdFree(fd, "grab data (ufdClose)");
 assert(fd != NULL);
-	(void) urlFree(fd->url, "url (ufdClose)");
-	fd->url = NULL;
+	(void) urlFree(fd->u, "url (ufdClose)");
+	fd->u = NULL;
 	u->ctrl = fdFree(u->ctrl, "grab ctrl (ufdClose)");
 /*@=evalorder @*/
 
-	if (u->urltype == URL_IS_FTP) {
+	if (urlType(u) == URL_IS_FTP) {
 
 	    /* XXX if not using libio, lose the fp from fpio */
 	    {   FILE * fp;
@@ -2176,8 +2175,9 @@ assert(fd != NULL);
 
 	    /* If content remains, then don't persist. */
 assert(fd != NULL);
-	    if (fd->bytesRemain > 0)
+	    if (fd->bytesRemain > 0) {
 		fd->persist = 0;
+	    }
 	    fd->contentLength = fd->bytesRemain = -1;
 
 	    /* If persisting, then Fclose will juggle refcounts. */
@@ -2208,7 +2208,7 @@ assert(fd != NULL);
 
 assert(u->data != NULL);
 /*@-unqualifiedtrans@*/
-    if (u->data->url == NULL)
+    if (u->data->u == NULL)
 	fd = u->data = fdLink(u->data, "grab data (ftpOpen persist data)");
     else
 	fd = fdNew("grab data (ftpOpen)");
@@ -2221,9 +2221,8 @@ assert(u->data != NULL);
 	fd->rd_timeoutsecs = ftpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
 /*@-usereleased@*/
-	fd->url = urlLink(u, "url (ufdOpen FTP)");
+	fd->u = urlLink(u, "url (ufdOpen FTP)");
 /*@=usereleased@*/
-	fd->urlType = URL_IS_FTP;
     }
 
 exit:
@@ -2243,13 +2242,13 @@ static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
     const char * cmd;
     urlinfo u;
     const char * path;
-    urltype urlType = urlPath(url, &path);
+    urltype ut = urlPath(url, &path);
 
 if (_rpmio_debug)
 fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mode);
 
 /*@-usereleased@*/
-    switch (urlType) {
+    switch (ut) {
     case URL_IS_FTP:
 	fd = ftpOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
@@ -2324,7 +2323,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     }
 
     if (fd == NULL) return NULL;
-    fd->urlType = urlType;
     if (Fileno(fd) < 0) {
 	(void) ufdClose(fd);
 	return NULL;

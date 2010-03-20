@@ -162,7 +162,7 @@ urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
 
     u->proxyp = -1;
     u->port = -1;
-    u->urltype = URL_IS_UNKNOWN;
+    u->ut = URL_IS_UNKNOWN;
     u->ctrl = NULL;
     u->data = NULL;
     u->location = NULL;
@@ -282,7 +282,7 @@ assert(u != NULL);
     u->proxyh = _free(u->proxyh);
 
     /* Perform one-time FTP initialization */
-    if (u->urltype == URL_IS_FTP) {
+    if (u->ut == URL_IS_FTP) {
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    const char * host = (u->host ? u->host : "");
@@ -329,7 +329,7 @@ assert(u != NULL);
     }
 
     /* Perform one-time HTTP initialization */
-    if (u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS || u->urltype == URL_IS_HKP) {
+    if (u->ut == URL_IS_HTTP || u->ut == URL_IS_HTTPS || u->ut == URL_IS_HKP) {
 
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
@@ -390,6 +390,11 @@ urltype urlIsURL(const char * url)
 	break;
     }
     return ut;
+}
+
+urltype urlType(void * _u)
+{
+    return (_u != NULL ? ((urlinfo)_u)->ut : URL_IS_UNKNOWN);
 }
 
 /* Return path portion of url (or pointer to NUL if url == NULL) */
@@ -461,7 +466,7 @@ int urlSplit(const char * url, urlinfo *uret)
     }
 
     u->url = urlStrdup(myurl);		/* XXX +1 byte for pesky trailing '/' */
-    u->urltype = urlIsURL(myurl);
+    u->ut = urlIsURL(myurl);
 
     se = s = myurl;
     while (1) {
@@ -529,13 +534,13 @@ assert(fe != NULL);	/* XXX can't happen */
 /*@=multithreaded =moduncon @*/
 	if (serv != NULL)
 	    u->port = (int) ntohs(serv->s_port);
-	else if (u->urltype == URL_IS_FTP)
+	else if (u->ut == URL_IS_FTP)
 	    u->port = IPPORT_FTP;
-	else if (u->urltype == URL_IS_HKP)
+	else if (u->ut == URL_IS_HKP)
 	    u->port = IPPORT_PGPKEYSERVER;
-	else if (u->urltype == URL_IS_HTTP)
+	else if (u->ut == URL_IS_HTTP)
 	    u->port = IPPORT_HTTP;
-	else if (u->urltype == URL_IS_HTTPS)
+	else if (u->ut == URL_IS_HTTPS)
 	    u->port = IPPORT_HTTPS;
     }
 

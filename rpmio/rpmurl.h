@@ -66,7 +66,7 @@ struct urlinfo_s {
     const char * proxyh;	/*!< FTP/HTTP: proxy host */
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;			/*!< URI port. */
-    int urltype;		/*!< URI type. */
+    urltype ut;			/*!< URI type. */
 /*@relnull@*/
     FD_t ctrl;			/*!< control channel */
 /*@relnull@*/
@@ -198,6 +198,8 @@ void urlFreeCache(void)
  * @return		type of url
  */
 urltype	urlIsURL(const char * url)
+	/*@*/;
+urltype	urlType(void * _u)
 	/*@*/;
 
 /**
