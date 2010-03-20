@@ -402,7 +402,6 @@ assert(mdir != NULL);
 
 	num = strtoul(fieldp, &end, 10);
 	SKIPSPACE(end);
-fprintf(stderr, "num(%u) = strtoul(\"%s\", \"...%s\", 10)\n", num, fieldp, end);
 	if (*end != ':') {
 	    rpmlog(RPMLOG_ERR, _("line %d: No ':' terminator: %s\n"),
 			 spec->lineNum, spec->line);
