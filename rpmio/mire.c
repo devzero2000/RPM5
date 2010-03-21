@@ -417,7 +417,9 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 		t[vallen] = '\0';
 		val = t;
 	    }
-	}
+	} else
+	if (vallen == 0)
+	    vallen = strlen(val);
 /*@-nullpass@*/
 	/* XXX HACK: PCRE returns 2/3 of array, POSIX dimensions regmatch_t. */
 	rc = regexec(mire->preg, val,
