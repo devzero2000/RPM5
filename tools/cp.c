@@ -803,7 +803,7 @@ static void copyArgCallback(poptContext con,
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
         copyArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
@@ -814,6 +814,8 @@ static struct poptOption optionsTable[] = {
   { "nodereference",'P', POPT_ARG_NONE,		NULL, (int)'P',
 	N_("Never follow symbolic links"), NULL },
   { "recursive",'R', POPT_ARG_NONE,		NULL, (int)'R',
+	N_("Copy directories recursively"), NULL },
+  { "recursive",'r', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, (int)'R',
 	N_("Copy directories recursively"), NULL },
   { "archive",'a', POPT_ARG_NONE,	NULL, (int)'a',
 	N_("Archive mode (same as -RpP)"), NULL },
