@@ -591,6 +591,7 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 /*@=declundef =incondefs @*/
 #endif
 
+#if !defined(__cplusplus)
 #if !defined(HAVE_S_IFSOCK)
 #define S_IFSOCK (0xc000)
 #endif
@@ -602,6 +603,7 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 #if !defined(HAVE_S_ISSOCK)
 #define S_ISSOCK(mode) ((mode & 0xf000) == S_IFSOCK)
 #endif
+#endif /* !defined(__cplusplus) */
 
 #if defined(NEED_STRINGS_H)
 #include <strings.h>
