@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
     (void) signal(SIGTERM, SIG_IGN);
 
     result = NULL;
-    rc = rpmsmRun(sm, sm->av, &result);
+    rc = rpmsmRun(sm, (char **) sm->av, &result);
     if (result && *result) {
 	const char * eol = (result[strlen(result)-1] != '\n' ? "\n" : "");
 	fprintf((rc < 0 ? stderr : stdout), "%s%s", result, eol);

@@ -43,7 +43,7 @@ static rpmRC cmd_quit(int ac, char *av[])
 static rpmRC cmd_run(int ac, char *av[])
 {
     char * cmd = argvJoin((ARGV_t)av, ' ');
-    const char * cav[] = { cmd, NULL };
+    char * cav[] = { cmd, NULL };
     int rc;
     if (!strcmp(av[0], "reload") || !strcmp(av[0], "build"))
 	*cmd = xtoupper(*cmd);
@@ -406,7 +406,7 @@ int main(int argc, char *argv[])
     (void) signal(SIGQUIT, SIG_IGN);
     (void) signal(SIGTERM, SIG_IGN);
 
-    rc = rpmsmRun(sm, sm->av, &result);
+    rc = rpmsmRun(sm, (char **)sm->av, &result);
     if (result)
 	fprintf((rc < 0 ? stderr : stdout), "%s\n", result);
 
