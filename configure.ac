@@ -1486,6 +1486,13 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # ATerm (needed by Nix)
+RPM_CHECK_LIB(
+    [ATerm], [aterm],
+    [ATerm], [ATinit], [aterm1.h],
+    [no,external:none], [],
+    [
+    ], [])
 dnl # Nix
 dnl # XXX the tests are mostly pointless, all bow to the AutoFu!
 AC_LANG_PUSH(C++)
