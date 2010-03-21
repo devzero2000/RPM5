@@ -631,6 +631,7 @@ LIBRPMIO_0
     urlSetCallback;
     urlSplit;
     urlStrerror;
+    urlType;
     Utime;
     _Utime;
     Utimes;
