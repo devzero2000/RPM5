@@ -13,7 +13,8 @@ rm -f config.cache
 set -- "$@" eoa_marker
 while [ "$1" != "eoa_marker" ]; do
    ARG=`echo "$1" | \
-       sed -e 's%CFLAGS=.*%%' \
+       sed -e 's%CC=g++%CC=gcc%' \
+           -e 's%CFLAGS=.*%%' \
            -e 's%--param=.*%%g' \
            -e 's%--cache-file=.*$%%' \
            -e 's%--with-db-rpc=\(.*\)%--enable-rpc=\1%' \
@@ -39,6 +40,7 @@ shift
 #   2. "--enable-static" is there for enforcing the building of a static
 #      version of the libdb objects RPM actually is interested in.
 
+# XXX Berkeley DB fails to find a locking scheme if CC=g++
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure "$@" \
 	--enable-shared --enable-static \
 	--with-uniquename=_rpmdb --srcdir=$db_dist || exit 1
