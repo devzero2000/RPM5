@@ -65,10 +65,9 @@ struct _FD_s {
 #define	FDMAGIC			0x04463138
     int		nfps;
     FDSTACK_t	fps[8];
-    int		urlType;	/* ufdio: */
 
 /*@dependent@*/ /*@relnull@*/
-    void *	url;		/* ufdio: URL info */
+    void *	u;		/* ufdio: URL info */
 /*@relnull@*/
     void *	req;		/* ufdio: HTTP request */
 

@@ -115,16 +115,14 @@ const char * rpmioHttpUserAgent;
 /*@-mustmod@*/
 int davDisconnect(/*@unused@*/ void * _u)
 {
-#ifdef	NOTYET	/* XXX not quite right yet. */
     urlinfo u = (urlinfo)_u;
-    int rc;
+    int rc = 0;
 
 #if WITH_NEON_MIN_VERSION >= 0x002700
     rc = (u->info.status == ne_status_sending || u->info.status == ne_status_recving);
-#else
-    rc = 0;	/* XXX W2DO? */
 #endif
-    if (u != NULL && rc != 0) {
+    if (u != NULL) {
+#ifdef	NOTYET
 	if (u->ctrl->req != NULL) {
 	    if (u->ctrl && u->ctrl->req) {
 		ne_request_destroy(u->ctrl->req);
@@ -135,11 +133,16 @@ int davDisconnect(/*@unused@*/ void * _u)
 		u->data->req = NULL;
 	    }
 	}
+#else
+#ifdef	STILL_NOTYET	/* XXX closer but no cigar */
+	if (u->sess != NULL)
+	    ne_close_connection(u->sess);
+#endif
+#endif
     }
 DAVDEBUG(-1, (stderr, "<-- %s(%p) active %d\n", __FUNCTION__, u, rc));
-    /* XXX return active state? */
-#endif	/* NOTYET */
-    return 0;
+    rc = 0;	/* XXX return active state? */
+    return rc;
 }
 /*@=mustmod@*/
 
@@ -150,7 +153,7 @@ int davFree(urlinfo u)
 	    ne_session_destroy(u->sess);
 	    u->sess = NULL;
 	}
-	switch (u->urltype) {
+	switch (urlType(u)) {
 	default:
 	    /*@notreached@*/ break;
 	case URL_IS_HTTPS:
@@ -443,8 +446,15 @@ static int davConnect(urlinfo u)
     int rc;
 
     /* HACK: hkp:// has no steenkin' options */
-    if (!(u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS))
+    switch (urlType(u)) {
+    case URL_IS_HKP:
+    default:
 	return 0;
+	/*@notreached@*/ break;
+    case URL_IS_HTTP:
+    case URL_IS_HTTPS:
+	break;
+    }
 
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
@@ -536,9 +546,9 @@ static int davInit(const char * url, urlinfo * uret)
 /*@=globs@*/
 
     if (u->url != NULL && u->sess == NULL)
-    switch (u->urltype) {
+    switch (u->ut) {
     default:
-	assert(u->urltype != u->urltype);
+	assert(u->ut != u->ut);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
@@ -1678,6 +1688,8 @@ int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
 {
     int rc = 0;
 
+DAVDEBUG(-1, (stderr, "--> %s(%p,%p,%p) sess %p req %p\n", __FUNCTION__, u, ctrl, str, u->sess, ctrl->req));
+
     rc = ne_begin_request(ctrl->req);
     rc = my_result("ne_begin_req(ctrl->req)", rc, NULL);
 
@@ -1699,7 +1711,7 @@ int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
     int rc = 0;
 
 assert(ctrl != NULL);
-    u = ctrl->url;
+    u = ctrl->u;
     URLSANE(u);
 
 DAVDEBUG(-1, (stderr, "--> %s(%p,%s,\"%s\") entry sess %p req %p\n", __FUNCTION__, ctrl, httpCmd, (httpArg ? httpArg : ""), u->sess, ctrl->req));
@@ -1808,7 +1820,7 @@ FD_t davOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
 {
     const char * path = NULL;
-    urltype urlType = urlPath(url, &path);
+    urltype ut = urlPath(url, &path);
     urlinfo u = NULL;
     FD_t fd = NULL;
     int rc;
@@ -1832,9 +1844,9 @@ DAVDEBUG(-1, (stderr, "--> %s(%s,0x%x,0%o,%p)\n", __FUNCTION__, url, flags, (uns
 	yarnRelease(use);
     }
 
-    if (u->ctrl->url == NULL)
+    if (u->ctrl->u == NULL)
 	fd = u->ctrl = fdLink(u->ctrl, "grab ctrl (davOpen persist ctrl)");
-    else if (u->data->url == NULL)
+    else if (u->data->u == NULL)
 	fd = u->data = fdLink(u->data, "grab ctrl (davOpen persist data)");
     else
 	fd = fdNew("grab ctrl (davOpen)");
@@ -1846,9 +1858,8 @@ DAVDEBUG(-1, (stderr, "--> %s(%s,0x%x,0%o,%p)\n", __FUNCTION__, url, flags, (uns
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = rpmioHttpReadTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
-assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP || urlType == URL_IS_HKP);
-	fd->urlType = urlType;
-	fd->url = urlLink(u, "url (davOpen)");
+assert(ut == URL_IS_HTTPS || ut == URL_IS_HTTP || ut == URL_IS_HKP);
+	fd->u = urlLink(u, "url (davOpen)");
 	fd = fdLink(fd, "grab data (davOpen)");
     }
 
@@ -1868,7 +1879,7 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
 #if WITH_NEON_MIN_VERSION >= 0x002700
   { urlinfo u = NULL;
-    u = urlLink(fd->url, "url (davRead)");
+    u = urlLink(fd->u, "url (davRead)");
     if (u->info.status == ne_status_recving)
 	rc = ne_read_response_block(fd->req, buf, count);
     else {
@@ -1946,6 +1957,8 @@ int davClose(void * cookie)
     FD_t fd = cookie;
 /*@=onlytrans@*/
     int rc = 0;
+
+DAVDEBUG(-1, (stderr, "--> %s(%p) rc %d clen %d req %p u %p\n", __FUNCTION__, fd, rc, fd->bytesRemain, fd->req, fd->u));
 
 assert(fd->req != NULL);
     if (fd->req != (void *)-1) {
@@ -2216,7 +2229,6 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
         fd->contentLength = fd->bytesRemain = -1;
         fd->url = urlLink(u, "url (httpOpen)");
         fd = fdLink(fd, "grab data (httpOpen)");
-        fd->urlType = URL_IS_HTTP;
     }
 
 exit:
