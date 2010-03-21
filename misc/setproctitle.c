@@ -149,7 +149,7 @@ initproctitle(int argc, char *argv[], char *envp[])
 	if (!end_of_buffer)
 		return 0;
 
-	char  **new_environ = malloc((i + 1) * sizeof(envp[0]));
+	char  **new_environ = (char **) malloc((i + 1) * sizeof(envp[0]));
 
 	if (!new_environ)
 		return 0;
