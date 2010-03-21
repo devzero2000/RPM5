@@ -16,6 +16,7 @@ debugedit
 find
 grep
 mtree
+nixbuild
 rpm2cpio
 rpmcache
 rpmcmp
