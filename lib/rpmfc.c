@@ -340,12 +340,14 @@ static void * rpmfcExpandRegexps(const char * str, int * nmirep)
     int i;
 
     s = rpmExpand(str, NULL);
-    if (s) {
+    if (s && *s) {
     	xx = poptParseArgvString(s, &ac, (const char ***)&av);
 	s = _free(s);
     }
-    if (ac == 0 || av == NULL || *av == NULL)
+    if (ac == 0 || av == NULL || *av == NULL) {
+	s = _free(s);
 	goto exit;
+    }
 
     for (i = 0; i < ac; i++) {
 	xx = mireAppend(RPMMIRE_REGEX, 0, av[i], NULL, &mire, &nmire);
@@ -377,7 +379,9 @@ static int rpmfcMatchRegexps(void * mires, int nmire,
     int i;
 
     for (i = 0; i < nmire; i++) {
+#ifdef	DYING	/* XXX noisy. use --miredebug if you need this spewage */
 	rpmlog(RPMLOG_DEBUG, D_("Checking %c: '%s'\n"), deptype, str);
+#endif
 	if ((xx = mireRegexec(mire + i, str, 0)) < 0)
 	    continue;
 	rpmlog(RPMLOG_NOTICE, _("Skipping %c: '%s'\n"), deptype, str);
@@ -981,17 +985,26 @@ rpmRC rpmfcApply(rpmfc fc)
     int j;
 
     if (_filter_execs) {
-	fc->Pnmire = 0;
 	fc->PFnmire = 0;
-	fc->Rnmire = 0;
+	fc->PFmires = rpmfcExpandRegexps("%{?__noautoprovfiles}", &fc->PFnmire);
+	if (fc->PFnmire > 0)
+	    rpmlog(RPMLOG_DEBUG, D_("added %d %%__noautoprovfiles patterns.\n"),
+			fc->PFnmire);
 	fc->RFnmire = 0;
-    
-	fc->PFmires = rpmfcExpandRegexps("%{__noautoprovfiles}", &fc->PFnmire);
-	fc->RFmires = rpmfcExpandRegexps("%{__noautoreqfiles}", &fc->RFnmire);
-	fc->Pmires = rpmfcExpandRegexps("%{__noautoprov}", &fc->Pnmire);
-	fc->Rmires = rpmfcExpandRegexps("%{__noautoreq}", &fc->Rnmire);
-	rpmlog(RPMLOG_DEBUG, D_("%i _noautoprov patterns.\n"), fc->Pnmire);
-	rpmlog(RPMLOG_DEBUG, D_("%i _noautoreq patterns.\n"), fc->Rnmire);
+	fc->RFmires = rpmfcExpandRegexps("%{?__noautoreqfiles}", &fc->RFnmire);
+	if (fc->RFnmire > 0)
+	    rpmlog(RPMLOG_DEBUG, D_("added %d %%__noautoreqfiles patterns.\n"),
+			fc->RFnmire);
+	fc->Pnmire = 0;
+	fc->Pmires = rpmfcExpandRegexps("%{?__noautoprov}", &fc->Pnmire);
+	if (fc->Pnmire > 0)
+	    rpmlog(RPMLOG_DEBUG, D_("added %d %%__noautoprov patterns.\n"),
+			fc->Pnmire);
+	fc->Rnmire = 0;
+	fc->Rmires = rpmfcExpandRegexps("%{?__noautoreq}", &fc->Rnmire);
+	if (fc->Rnmire > 0)
+	    rpmlog(RPMLOG_DEBUG, D_("added %d %%__noautoreq patterns.\n"),
+			fc->Rnmire);
     }
 
 /* Make sure something didn't go wrong previously! */
