@@ -21,6 +21,7 @@ EXTRA_DIST = api-sanity-autotest.pl \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
+	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req rpm2cpio \
@@ -64,6 +65,7 @@ pkglibqfdir =		@USRLIBRPM@/qf
 pkglibqf_DATA = \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
+	nix_meta \
 	wdj_srpm \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \

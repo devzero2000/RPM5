@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: nix: add --nix:meta query format template.
     - proyvind: add rubygem(...) extractors from mandriva.
     - jbj: qf: add --wdj:srpm query format template.
     - jbj: add api-sanity-autotest.pl (GPL->LGPLv2 expected on next release).

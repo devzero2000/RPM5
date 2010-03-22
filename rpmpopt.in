@@ -274,6 +274,9 @@ rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml \
 rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
 	--POPTdesc=$"display wdj binary->source rpm markup"
 
+rpm	alias --nix:meta --qf @USRLIBRPM@/qf/nix_meta \
+	--POPTdesc=$"display nix meta markup"
+
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
