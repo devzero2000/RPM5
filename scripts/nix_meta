@@ -7,5 +7,5 @@ meta = \{\
 \n%|URL?{  homepage = %{URL};}:{}|\
 \n  license = \"%|license?{%{LICENSE}\";}:{}|\
 \n%|PACKAGER?{  maintainers = \[ \"%{PACKAGER}\" \];}:{}|\
-\n\}\
+\n\};\
 \n"
