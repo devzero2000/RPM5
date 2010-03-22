@@ -20,9 +20,9 @@ AM_CPPFLAGS = -I. \
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1
+EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
-EXTRA_PROGRAMS = augtool cudftool debugedit nix-build nix-instantiate \
+EXTRA_PROGRAMS = augtool cudftool debugedit nix-build nix-instantiate nix-store \
 	rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
@@ -84,6 +84,11 @@ nix_instantiate_SOURCES =	nix-instantiate.cc
 nix_instantiate_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
 nix_instantiate_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
+
+nix_store_SOURCES =	nix-store.cc dotgraph.cc
+nix_store_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
+        /usr/lib/nix/libATerm.a
+nix_store_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
 
 rpmcache_SOURCES =	rpmcache.c
 rpmcache_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
