@@ -17,6 +17,7 @@ find
 grep
 mtree
 nix-build
+nix-instantiate
 rpm2cpio
 rpmcache
 rpmcmp
