@@ -22,7 +22,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1
 
-EXTRA_PROGRAMS = augtool cudftool debugedit nixbuild rpmkey sandbox semodule spooktool
+EXTRA_PROGRAMS = augtool cudftool debugedit nix-build rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -75,9 +75,9 @@ debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 debugedit_LDADD =	$(RPM_LDADD_COMMON)
 
-nixbuild_SOURCES =	nix-build.c
-nixbuild_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
-nixbuild_LDADD =	$(RPMIO_LDADD_COMMON)
+nix_build_SOURCES =	nix-build.c
+nix_build_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_build_LDADD =	$(RPMIO_LDADD_COMMON)
 
 rpmcache_SOURCES =	rpmcache.c
 rpmcache_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)

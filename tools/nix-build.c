@@ -26,79 +26,19 @@ static const char ** instArgs;
 static const char ** buildArgs;
 static const char ** exprs;
 
-static int nixSlurp(const char * msg, ARGV_t argv, ARGV_t *pathsp)
-	/*@*/
-{
-    FD_t fd = NULL;
-    int fromProg[2];
-    pid_t child;
-    int rc = 1;		/* assume failure */
-    int xx;
-
-argvPrint(msg, argv, NULL);
-
-    fromProg[0] = fromProg[1] = 0;
-    if (pipe(fromProg) < 0) {
-        rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
-	goto exit;
-    }
-
-    if (!(child = fork())) {
-        (void) close(fromProg[0]);
-
-        (void) dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
-
-        (void) close(fromProg[1]);
-
-        rpmlog(RPMLOG_DEBUG, D_("\texecv(%s) pid %d\n"),
-                        argv[0], (unsigned)getpid());
-
-        (void) execvp(argv[0], (char *const *)argv);
-        rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %m\n"), argv[0]);
-        _exit(EXIT_FAILURE);
-    }
-    (void) close(fromProg[1]);
-    if (child < 0) {
-	(void) close(fromProg[0]);
-	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %m\n"), argv[0]);
-	goto exit;
-    }
-    fd = fdDup(fromProg[0]);
-    if (fd == NULL || Ferror(fd)) {
-	if (fd) xx = Fclose(fd);
-	fd = NULL;
-	goto exit;
-    }
-    xx = argvFgets(pathsp, fd);
-    xx = Fclose(fd);
-    rc = 0;	/* XXX success */
-
-exit:
-    return rc;
-}
-
 static int runNixInstantiate(const char * expr, ARGV_t * drvPathsP)
 	/*@*/
 {
     ARGV_t argv = NULL;
     const char * argv0 = rpmGetPath(binDir, "/nix-instantiate", NULL);
+    const char * cmd;
     int rc = 1;		/* assume failure */
     int xx;
 
-#ifdef	REFERENCE
-/**
-    # !!! would prefer the perl 5.8.0 pipe open feature here.
-    my $pid = open(DRVPATHS, "-|") || exec "$binDir/nix-instantiate", "--add-root", $drvLink, "--indirect", @instArgs, $expr;
-    while (<DRVPATHS>) {chomp; push @drvPaths, $_;}
-    if (!close DRVPATHS) {
-        die "nix-instantiate killed by signal " . ($? & 127) . "\n" if ($? & 127);
-        exit 1;
-    }
-**/
-#endif
-
 assert(drvPathsP);
     *drvPathsP = NULL;
+
+argvPrint(__FUNCTION__, instArgs, NULL);
 
     /* Construct the nix-instantiate command to run. */
     xx = argvAdd(&argv, argv0);
@@ -109,10 +49,15 @@ assert(drvPathsP);
     xx = argvAdd(&argv, "--indirect");
     xx = argvAppend(&argv, instArgs);
     xx = argvAdd(&argv, expr);
+    cmd = argvJoin(argv, ' ');
 
     /* Chomp nix-instantiate spewage into *drvPathsP */
-    rc = nixSlurp(__FUNCTION__, argv, drvPathsP);
+    argv0 = rpmExpand("%(", cmd, ")", NULL);
+    xx = argvSplit(drvPathsP, argv0, NULL);
+    argv0 = _free(argv0);
+    rc = 0;
 
+    cmd = _free(cmd);
     argv = argvFree(argv);
 
     return rc;
@@ -123,20 +68,9 @@ static int runNixStore(ARGV_t drvPaths, ARGV_t * outPathsP)
 {
     ARGV_t argv = NULL;
     const char * argv0 = rpmGetPath(binDir, "/nix-store", NULL);
+    const char * cmd;
     int rc = 1;		/* assume failure */
     int xx;
-
-#ifdef	REFERENCE
-/**
-    $pid = open(OUTPATHS, "-|") || exec "$binDir/nix-store", "--add-root", $outLink, "--indirect", "-rv",
-        @buildArgs, @drvPaths;
-    while (<OUTPATHS>) {chomp; push @outPaths, $_;}
-    if (!close OUTPATHS) {
-        die "nix-store killed by signal " . ($? & 127) . "\n" if ($? & 127);
-        exit 1;
-    }
-**/
-#endif
 
 assert(outPathsP);
     *outPathsP = NULL;
@@ -151,10 +85,15 @@ assert(outPathsP);
     xx = argvAdd(&argv, "-rv");
     xx = argvAppend(&argv, buildArgs);
     xx = argvAppend(&argv, drvPaths);
+    cmd = argvJoin(argv, ' ');
 
     /* Chomp nix-store spewage into *outPathsP */
-    rc = nixSlurp(__FUNCTION__, argv, outPathsP);
+    argv0 = rpmExpand("%(", cmd, ")", NULL);
+    xx = argvSplit(outPathsP, argv0, NULL);
+    argv0 = _free(argv0);
+    rc = 0;
 
+    cmd = _free(cmd);
     argv = argvFree(argv);
 
     return rc;
@@ -174,7 +113,7 @@ enum {
     NIX_MAX_JOBS	= _BASE + 7,	/* -j,--max-jobs JOBS */
     NIX_DRY_RUN		= _BASE + 8,	/*    --dry-run */
     NIX_SHOW_TRACE	= _BASE + 9,	/*    --show-trace */
-    NIX_VERBOSE		= _BASE + 10,	/*    --verbose */
+    NIX_VERBOSE		= _BASE + 10,	/* -v,--verbose */
 
 /* XXX from both nix-instatiate and nix-store: */
     NIX_ADD_ROOT	= _BASE + 20,	/*    --add-root */
@@ -280,9 +219,9 @@ static void nixArgCallback(poptContext con,
     case NIX_SHOW_TRACE:		/*    --show-trace */
 	xx = argvAdd(&instArgs, "--show-trace");
 	break;
-    case NIX_VERBOSE:			/*    --verbose */
-	xx = argvAdd(&instArgs, "--verbose");
-	xx = argvAdd(&buildArgs, "--verbose");
+    case NIX_VERBOSE:			/* -v,--verbose */
+	xx = argvAdd(&instArgs, "-v");
+	xx = argvAdd(&buildArgs, "-v");
 	verbose++;
 	break;
 
@@ -401,8 +340,8 @@ static struct poptOption optionsTable[] = {
 /* XXX from nix-store: */
  { "realise", 'r', POPT_ARG_NONE,			0, NIX_REALISE,
 	N_("ensure path validity; if a derivation, ensure the validity of the outputs"), NULL },
-/* XXX conflict with --attr */
- { "add", 'A', POPT_ARG_NONE,			0, NIX_ADD,
+/* XXX conflict with -A,--attr otherwise -A,--add */
+ { "add", '\0', POPT_ARG_NONE,			0, NIX_ADD,
 	N_("copy a path to the Nix store"), NULL },
  { "delete", '\0', POPT_ARG_NONE,			0, NIX_DELETE,
 	N_("safely delete paths from the Nix store"), NULL },
@@ -521,9 +460,9 @@ $SIG{'INT'} = 'intHandler';
     nexpr = argvCount(exprs);
 
     if (drvLink == NULL)
-	drvLink = rpmExpand((addDrvLink ? _build_tmp : ""), "derivation", NULL);
+	drvLink = rpmExpand((!addDrvLink ? _build_tmp : ""), "derivation", NULL);
     if (outLink == NULL)
-	outLink = rpmExpand((addDrvLink ? _build_tmp : ""), "result", NULL);
+	outLink = rpmExpand((!addOutLink ? _build_tmp : ""), "result", NULL);
 
     /* Loop over all the Nix expression arguments. */
     for (i = 0; i < nexpr; i++) {
@@ -575,13 +514,15 @@ $SIG{'INT'} = 'intHandler';
     ec = 0;	/* XXX success */
 
 exit:
-#ifdef	REFERENCE
-END {
-    foreach my $fn (glob ".nix-build-tmp-*") {
-        unlink $fn;
+    /* Clean up any generated files. */
+    av = NULL;
+    ac = 0;
+    if (!rpmGlob(".nix-build-tmp-*", &ac, &av)) {
+	for (i = 0; i < ac; i++)
+	    xx = Unlink(av[i]);
+	av = argvFree(av);
+	ac = 0;
     }
-}
-#endif
 
     outLink = _free(outLink);
     drvLink = _free(drvLink);
