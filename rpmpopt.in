@@ -277,6 +277,9 @@ rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
 rpm	alias --nix:meta --qf @USRLIBRPM@/qf/nix_meta \
 	--POPTdesc=$"display nix meta markup"
 
+rpm	alias --xiu:stdenv --qf @USRLIBRPM@/qf/xiu_stdenv \
+	--POPTdesc=$"display xiu stdenv markup"
+
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\

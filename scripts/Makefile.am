@@ -31,6 +31,7 @@ EXTRA_DIST = api-sanity-autotest.pl \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
+	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml \
 	find-*.php find-php-* ${HELPERS}
@@ -68,6 +69,7 @@ pkglibqf_DATA = \
 	nix_meta \
 	wdj_srpm \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
+	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml
 
