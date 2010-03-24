@@ -23,7 +23,9 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
 EXTRA_PROGRAMS = augtool cudftool debugedit \
-	nix-build nix-hash nix-instantiate nix-store \
+	nix-build nix-channel nix-collect-garbage nix-copy-closure \
+	nix-hash nix-install-package nix-instantiate \
+	nix-pull nix-push nix-store \
 	xiu-instantiate xiu-store \
 	rpmkey sandbox semodule spooktool
 
@@ -82,14 +84,38 @@ nix_build_SOURCES =	nix-build.c
 nix_build_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 nix_build_LDADD =	$(RPMIO_LDADD_COMMON)
 
+nix_channel_SOURCES =	nix-channel.c
+nix_channel_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_channel_LDADD =	$(RPMIO_LDADD_COMMON)
+
+nix_collect_garbage_SOURCES =	nix-collect-garbage.c
+nix_collect_garbage_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_collect_garbage_LDADD =	$(RPMIO_LDADD_COMMON)
+
+nix_copy_closure_SOURCES =	nix-copy-closure.c
+nix_copy_closure_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_copy_closure_LDADD =	$(RPMIO_LDADD_COMMON)
+
 nix_hash_SOURCES =	nix-hash.c
 nix_hash_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 nix_hash_LDADD =	$(RPMIO_LDADD_COMMON)
+
+nix_install_package_SOURCES =	nix-install-package.c
+nix_install_package_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_install_package_LDADD =	$(RPMIO_LDADD_COMMON)
 
 nix_instantiate_SOURCES =	nix-instantiate.cc
 nix_instantiate_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
 nix_instantiate_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
+
+nix_pull_SOURCES =	nix-pull.c
+nix_pull_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_pull_LDADD =	$(RPMIO_LDADD_COMMON)
+
+nix_push_SOURCES =	nix-push.c
+nix_push_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_push_LDADD =	$(RPMIO_LDADD_COMMON)
 
 nix_store_SOURCES =	nix-store.cc dotgraph.cc
 nix_store_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \

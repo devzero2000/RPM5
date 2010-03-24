@@ -17,7 +17,12 @@ find
 grep
 mtree
 nix-build
+nix-copy-closure
+nix-hash
+nix-install-package
 nix-instantiate
+nix-pull
+nix-push
 nix-store
 rpm2cpio
 rpmcache
