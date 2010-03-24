@@ -22,7 +22,9 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
-EXTRA_PROGRAMS = augtool cudftool debugedit nix-build nix-instantiate nix-store \
+EXTRA_PROGRAMS = augtool cudftool debugedit \
+	nix-build nix-hash nix-instantiate nix-store \
+	xiu-instantiate xiu-store \
 	rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
@@ -80,6 +82,10 @@ nix_build_SOURCES =	nix-build.c
 nix_build_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 nix_build_LDADD =	$(RPMIO_LDADD_COMMON)
 
+nix_hash_SOURCES =	nix-hash.c
+nix_hash_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_hash_LDADD =	$(RPMIO_LDADD_COMMON)
+
 nix_instantiate_SOURCES =	nix-instantiate.cc
 nix_instantiate_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
@@ -136,6 +142,14 @@ spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)
+
+xiu_instantiate_SOURCES	= xiu-instantiate.c
+xiu_instantiate_LDADD	= $(RPMIO_LDADD_COMMON) # -L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat /usr/lib/nix/libATerm.a
+xiu_instantiate_LDFLAGS = @LDFLAGS_STATIC@ $(LDFLAGS) # -Wl,-rpath -Wl,/usr/lib/nix
+
+xiu_store_SOURCES	= xiu-store.c
+xiu_store_LDADD		= $(RPMIO_LDADD_COMMON) # -L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat /usr/lib/nix/libATerm.a
+xiu_store_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS) # -Wl,-rpath -Wl,/usr/lib/nix
 
 ##
 ## Traditional rpm2cpio

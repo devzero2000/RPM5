@@ -32,3 +32,5 @@ semodule
 spooktool
 txar
 wget
+xiu-instantiate
+xiu-store

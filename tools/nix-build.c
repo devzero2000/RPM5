@@ -54,8 +54,8 @@ static struct rpmnix_s _nix = {
 static const char _NIX_BIN_DIR[] = "NIX_BIN_DIR";
 static const char _build_tmp[] = ".nix-build-tmp-";
 static const char _default_nix[] = "./default.nix";
+static const char * binDir = "/usr/bin";
 
-static const char * binDir;
 static int verbose = 0;
 
 static int rpmnixInstantiate(rpmnix nix, const char * expr, ARGV_t * drvPathsP)
@@ -260,8 +260,20 @@ static struct poptOption nixInstantiateOptions[] = {
 	nixInstantiateArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
+ { "eval-only", '\0', POPT_ARG_NONE,			0, NIX_EVAL_ONLY,
+	N_("evaluate and print resulting term; do not instantiate"), NULL },
+ { "parse-only", '\0', POPT_ARG_NONE,			0, NIX_PARSE_ONLY,
+	N_("parse and print abstract syntax tree"), NULL },
  { "attr", 'A', POPT_ARG_STRING,			0, NIX_ATTR,
 	N_("select a specific ATTR from the Nix expression"), N_("ATTR") },
+ { "add-root", '\0', POPT_ARG_NONE,			0, NIX_ADD_ROOT,
+	N_("add garbage collector roots for the result"), NULL },
+
+ { "xml", '\0', POPT_ARG_NONE,				0, NIX_XML,
+	N_("print an XML representation of the abstract syntax tree"), NULL },
+ { "strict", '\0', POPT_ARG_NONE,			0, NIX_STRICT,
+	N_("compute attributes and list elements, rather than being lazy"), NULL },
+
  { "log-type", '\0', POPT_ARG_STRING,			0, NIX_LOG_TYPE,
 	N_("FIXME"), N_("TYPE") },
 /* XXX needs next 2 args */
@@ -272,25 +284,14 @@ static struct poptOption nixInstantiateOptions[] = {
 /* XXX needs next 2 args */
  { "option", '\0', POPT_ARG_NONE,			0, NIX_OPTION,
 	N_("FIXME"), N_("OPT1 OPT2") },
+ { "show-trace", '\0', POPT_ARG_NONE,			0, NIX_SHOW_TRACE,
+	N_("FIXME"), NULL },
 
  { "verbose", 'v', POPT_ARG_NONE,			0, NIX_VERBOSE,
 	N_("verbose operation (may be repeated)"), NULL },
 
- { "show-trace", '\0', POPT_ARG_NONE,			0, NIX_SHOW_TRACE,
-	N_("FIXME"), NULL },
- { "add-root", '\0', POPT_ARG_NONE,			0, NIX_ADD_ROOT,
-	N_("add garbage collector roots for the result"), NULL },
  { "version", '\0', POPT_ARG_NONE,			0, NIX_VERSION,
 	N_("output version information"), NULL },
-
- { "eval-only", '\0', POPT_ARG_NONE,			0, NIX_EVAL_ONLY,
-	N_("evaluate and print resulting term; do not instantiate"), NULL },
- { "parse-only", '\0', POPT_ARG_NONE,			0, NIX_PARSE_ONLY,
-	N_("parse and print abstract syntax tree"), NULL },
- { "xml", '\0', POPT_ARG_NONE,				0, NIX_XML,
-	N_("print an XML representation of the abstract syntax tree"), NULL },
- { "strict", '\0', POPT_ARG_NONE,			0, NIX_STRICT,
-	N_("compute attributes and list elements, rather than being lazy"), NULL },
 
   POPT_TABLEEND
 };
@@ -560,7 +561,7 @@ main(int argc, char *argv[])
     int xx;
     int i;
 
-    binDir = ((s = getenv(_NIX_BIN_DIR)) != NULL ? s : "/usr/bin");
+    if ((s = getenv(_NIX_BIN_DIR)) != NULL) binDir = s;
 
 #ifdef	REFERENCE
 sub intHandler {
