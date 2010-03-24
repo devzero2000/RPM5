@@ -21,6 +21,7 @@ nix-copy-closure
 nix-hash
 nix-install-package
 nix-instantiate
+nix-prefetch-url
 nix-pull
 nix-push
 nix-store

@@ -59,6 +59,13 @@ static struct rpmnix_s _nix = {
 	.flags = RPMNIX_FLAGS_NOOUTLINK
 };
 
+static const char * tmpDir;
+static const char * binDir = "/usr/bin";
+static const char * libexecDir = "/usr/libexec";
+static const char * storeDir = "/nix/store";
+static const char * stateDir = "/nix/var/nix";
+static const char * manifestDir;
+
 /*==============================================================*/
 #ifdef	REFERENCE
 /*
@@ -84,8 +91,12 @@ sub addPatch {
 
     return !$found;
 }
+*/
+#endif
 
 
+#ifdef	REFERENCE
+/*
 sub readManifest {
     my ($manifest, $narFiles, $localPaths, $patches) = @_;
 
@@ -211,99 +222,13 @@ sub readManifest {
 
     return $manifestVersion;
 }
-
-
-sub writeManifest {
-    my ($manifest, $narFiles, $patches) = @_;
-
-    open MANIFEST, ">$manifest.tmp"; # !!! check exclusive
-
-    print MANIFEST "version {\n";
-    print MANIFEST "  ManifestVersion: 3\n";
-    print MANIFEST "}\n";
-
-    foreach my $storePath (sort (keys %{$narFiles})) {
-        my $narFileList = $$narFiles{$storePath};
-        foreach my $narFile (@{$narFileList}) {
-            print MANIFEST "{\n";
-            print MANIFEST "  StorePath: $storePath\n";
-            print MANIFEST "  NarURL: $narFile->{url}\n";
-            print MANIFEST "  Hash: $narFile->{hash}\n" if defined $narFile->{hash};
-            print MANIFEST "  NarHash: $narFile->{narHash}\n";
-            print MANIFEST "  Size: $narFile->{size}\n" if defined $narFile->{size};
-            print MANIFEST "  References: $narFile->{references}\n"
-                if defined $narFile->{references} && $narFile->{references} ne "";
-            print MANIFEST "  Deriver: $narFile->{deriver}\n"
-                if defined $narFile->{deriver} && $narFile->{deriver} ne "";
-            print MANIFEST "}\n";
-        }
-    }
-    
-    foreach my $storePath (sort (keys %{$patches})) {
-        my $patchList = $$patches{$storePath};
-        foreach my $patch (@{$patchList}) {
-            print MANIFEST "patch {\n";
-            print MANIFEST "  StorePath: $storePath\n";
-            print MANIFEST "  NarURL: $patch->{url}\n";
-            print MANIFEST "  Hash: $patch->{hash}\n";
-            print MANIFEST "  NarHash: $patch->{narHash}\n";
-            print MANIFEST "  Size: $patch->{size}\n";
-            print MANIFEST "  BasePath: $patch->{basePath}\n";
-            print MANIFEST "  BaseHash: $patch->{baseHash}\n";
-            print MANIFEST "  Type: $patch->{patchType}\n";
-            print MANIFEST "}\n";
-        }
-    }
-    
-    
-    close MANIFEST;
-
-    rename("$manifest.tmp", $manifest)
-        or die "cannot rename $manifest.tmp: $!";
-
-
-    # Create a bzipped manifest.
-    system("/usr/libexec/nix/bzip2 < $manifest > $manifest.bz2.tmp") == 0
-        or die "cannot compress manifest";
-
-    rename("$manifest.bz2.tmp", "$manifest.bz2")
-        or die "cannot rename $manifest.bz2.tmp: $!";
-}
-
-
-return 1;
 */
 #endif
 
 /*==============================================================*/
+
 #ifdef	REFERENCE
 /*
-#! /usr/bin/perl -w -I/usr/libexec/nix
-
-use strict;
-use File::Temp qw(tempdir);
-use readmanifest;
-
-my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
-    or die "cannot create a temporary directory";
-
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-my $libexecDir = ($ENV{"NIX_LIBEXEC_DIR"} or "/usr/libexec");
-my $storeDir = ($ENV{"NIX_STORE_DIR"} or "/nix/store");
-my $stateDir = ($ENV{"NIX_STATE_DIR"} or "/nix/var/nix");
-my $manifestDir = ($ENV{"NIX_MANIFESTS_DIR"} or "$stateDir/manifests");
-
-
-# Prevent access problems in shared-stored installations.
-umask 0022;
-
-
-# Create the manifests directory if it doesn't exist.
-if (! -e $manifestDir) {
-    mkdir $manifestDir, 0755 or die "cannot create directory `$manifestDir'";
-}
-
-
 # Process the URLs specified on the command line.
 my %narFiles;
 my %localPaths;
@@ -321,17 +246,38 @@ sub downloadFile {
     chomp $path;
     return $path;
 }
+*/
+#endif
 
-sub processURL {
+static int processURL(rpmnix nix, const char * url)
+	/*@*/
+{
+    const char * fn;
+    struct stat sb;
+
+#ifdef	REFERENCE
+/*
     my $url = shift;
 
     $url =~ s/\/$//;
 
     my $manifest;
+*/
+#endif
 
-    # First see if a bzipped manifest is available.
-    if (system("/usr/bin/curl --fail --silent --head '$url'.bz2 > /dev/null") == 0) {
-        print "fetching list of Nix archives at `$url.bz2'...\n";
+    /* First see if a bzipped manifest is available. */
+    fn = rpmGetPath(url, ".bz2", NULL);
+#ifdef	REFERENCE
+/*
+    if (system("/usr/bin/curl --fail --silent --head '$url'.bz2 > /dev/null") == 0)
+*/
+#else
+    if (!Stat(fn, &sb))
+#endif
+    {
+        fprintf(stdout, _("fetching list of Nix archives at `%s'...\n"), fn);
+#ifdef	REFERENCE
+/*
         my $bzipped = downloadFile "$url.bz2";
 
         $manifest = "$tmpDir/MANIFEST";
@@ -342,14 +288,20 @@ sub processURL {
         $manifest = (`$binDir/nix-store --add $manifest`
                      or die "cannot copy $manifest to the store");
         chomp $manifest;
-    }
-
-    # Otherwise, just get the uncompressed manifest.
-    else {
-        print "obtaining list of Nix archives at `$url'...\n";
+*/
+#endif
+    } else {	/* Otherwise, just get the uncompressed manifest. */
+        fprintf(stdout, _("obtaining list of Nix archives at `%s'...\n"), url);
+#ifdef	REFERENCE
+/*
         $manifest = downloadFile $url;
+*/
+#endif
     }
+    fn = _free(fn);
 
+#ifdef	REFERENCE
+/*
     my $version = readManifest($manifest, \%narFiles, \%localPaths, \%patches);
     
     die "`$url' is not a manifest or it is too old (i.e., for Nix <= 0.7)\n" if $version < 3;
@@ -363,7 +315,11 @@ sub processURL {
             }
         }
     }
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
     my $baseName = "unnamed";
     if ($url =~ /\/([^\/]+)\/[^\/]+$/) { # get the forelast component
         $baseName = $1;
@@ -372,7 +328,11 @@ sub processURL {
     my $hash = `$binDir/nix-hash --flat '$manifest'`
         or die "cannot hash `$manifest'";
     chomp $hash;
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
     my $urlFile = "$manifestDir/$baseName-$hash.url";
     open URL, ">$urlFile" or die "cannot create `$urlFile'";
     print URL "$url";
@@ -384,8 +344,12 @@ sub processURL {
         
     symlink("$manifest", "$finalPath")
         or die "cannot link `$finalPath to `$manifest'";
+*/
+#endif
 
-    # Delete all old manifests downloaded from this URL.
+    /* Delete all old manifests downloaded from this URL. */
+#ifdef	REFERENCE
+/*
     for my $urlFile2 (glob "$manifestDir/*.url") {
         next if $urlFile eq $urlFile2;
         open URL, "<$urlFile2" or die;
@@ -397,22 +361,10 @@ sub processURL {
         unlink "${base}.url";
         unlink "${base}.nixmanifest";
     }
-}
-
-while (@ARGV) {
-    my $url = shift @ARGV;
-    if ($url eq "--skip-wrong-store") {
-        $skipWrongStore = 1;
-    } else {
-        processURL $url;
-    }
-}
-
-
-my $size = scalar (keys %narFiles) + scalar (keys %localPaths);
-print "$size store paths in manifest\n";
 */
 #endif
+    return 0;
+}
 
 /*==============================================================*/
 
@@ -467,16 +419,91 @@ static struct poptOption nixInstantiateOptions[] = {
 int
 main(int argc, char *argv[])
 {
+    rpmnix nix = &_nix;
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    const char * s;
     int ec = 1;		/* assume failure */
-#ifdef	UNUSED
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
-    rpmnix nix = &_nix;
     int xx;
+    int i;
+
+#ifdef	REFERENCE
+/*
+#! /usr/bin/perl -w -I/usr/libexec/nix
+
+use strict;
+use File::Temp qw(tempdir);
+use readmanifest;
+
+my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
+    or die "cannot create a temporary directory";
+
+my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
+my $libexecDir = ($ENV{"NIX_LIBEXEC_DIR"} or "/usr/libexec");
+my $storeDir = ($ENV{"NIX_STORE_DIR"} or "/nix/store");
+my $stateDir = ($ENV{"NIX_STATE_DIR"} or "/nix/var/nix");
+my $manifestDir = ($ENV{"NIX_MANIFESTS_DIR"} or "$stateDir/manifests");
+
+
+# Prevent access problems in shared-stored installations.
+umask 0022;
+
+# Create the manifests directory if it doesn't exist.
+if (! -e $manifestDir) {
+    mkdir $manifestDir, 0755 or die "cannot create directory `$manifestDir'";
+}
+*/
+#endif
+
+    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
+    if ((s = getenv("NIX_LIBEXEC_DIR"))) libexecDir = s;
+    if ((s = getenv("NIX_STORE_DIR"))) storeDir = s;
+    if ((s = getenv("NIX_STATE_DIR"))) stateDir = s;
+    if ((s = getenv("NIX_MANIFESTS_DIR")))
+	manifestDir = xstrdup(s);
+    else
+	manifestDir = rpmGetPath(stateDir, "/manifests", NULL);
+
+    /* Prevent access problems in shared-stored installations. */
+    xx = umask(0022);
+
+    /* Create the manifests directory if it doesn't exist. */
+    if (rpmioMkpath(manifestDir, (mode_t)0755, (uid_t)-1, (gid_t)-1)) {
+	fprintf(stderr, _("cannot create directory `%s'\n"), manifestDir);
+	goto exit;
+    }
+
+#ifdef	REFERENCE
+/*
+while (@ARGV) {
+    my $url = shift @ARGV;
+    if ($url eq "--skip-wrong-store") {
+        $skipWrongStore = 1;
+    } else {
+        processURL $url;
+    }
+}
+*/
+#endif
+
+    for (i = 0; i < ac; i++) {
+	const char * url = av[i];
+	xx = processURL(nix, av[i]);
+    }
+
+#ifdef	REFERENCE
+/*
+my $size = scalar (keys %narFiles) + scalar (keys %localPaths);
+print "$size store paths in manifest\n";
+*/
 #endif
 
     ec = 0;	/* XXX success */
+
+exit:
+
+    manifestDir = _free(manifestDir);
 
     optCon = rpmioFini(optCon);
 

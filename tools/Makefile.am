@@ -25,7 +25,7 @@ EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 EXTRA_PROGRAMS = augtool cudftool debugedit \
 	nix-build nix-channel nix-collect-garbage nix-copy-closure \
 	nix-hash nix-install-package nix-instantiate \
-	nix-pull nix-push nix-store \
+	nix-prefetch-url nix-pull nix-push nix-store \
 	xiu-instantiate xiu-store \
 	rpmkey sandbox semodule spooktool
 
@@ -108,6 +108,10 @@ nix_instantiate_SOURCES =	nix-instantiate.cc
 nix_instantiate_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
 nix_instantiate_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
+
+nix_prefetch_url_SOURCES =	nix-prefetch-url.c
+nix_prefetch_url_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+nix_prefetch_url_LDADD =	$(RPMIO_LDADD_COMMON)
 
 nix_pull_SOURCES =	nix-pull.c
 nix_pull_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
