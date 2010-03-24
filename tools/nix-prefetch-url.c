@@ -52,14 +52,24 @@ struct rpmnix_s {
 
     const char * attr;
 
+    int quiet;
+    int print;
+    const char * nixPkgs;
+    const char * downloadCache;
     const char * url;
     const char * expHash;
     const char * hashType;
     const char * hashFormat;
+/*@only@*/
     const char * hash;
-    int quiet;
-    int print;
+/*@only@*/
     const char * finalPath;
+/*@only@*/
+    const char * tmpPath;
+/*@only@*/
+    const char * tmpFile;
+/*@only@*/
+    const char * name;
 };
 
 /**
@@ -156,8 +166,10 @@ main(int argc, char *argv[])
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
     int ec = 1;		/* assume failure */
     const char * s;
+    const char * cmd;
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
+    struct stat sb;
 #ifdef	UNUSED
     int xx;
 #endif
@@ -200,6 +212,7 @@ fi
     }
     if ((s = getenv("NIX_HASH_ALGO")))	nix->hashType = s;
     nix->hashFormat = (strcmp(nix->hashType, "md5") ? "--base32" : "");
+    if ((s = getenv("NIX_DOWNLOAD_CACHE"))) nix->downloadCache = s;
 
 #ifdef	REFERENCE
 /*
@@ -217,24 +230,39 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 #ifdef	REFERENCE
 /*
     finalPath=$(/usr/bin/nix-store --print-fixed-path "$hashType" "$expHash" "$name")
+*/
+#endif
+	cmd = rpmExpand("/usr/bin/nix-store --print-fixed-path ",
+		nix->hashType, " ", nix->expHash, " ", nix->name, NULL);
+	nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
+#ifdef	REFERENCE
+/*
     if ! /usr/bin/nix-store --check-validity "$finalPath" 2> /dev/null; then
         finalPath=
     fi
-    hash=$expHash
 */
 #endif
-	nix->hash = nix->expHash;
+	cmd = rpmExpand("/usr/bin/nix-store --check-validity ",
+		nix->finalPath, " 2>/dev/null; echo $?", NULL);
+	s = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
+	if (strcmp(s, "0"))
+	    nix->finalPath = _free(nix->finalPath);
+	s = _free(s);
+	nix->hash = xstrdup(nix->expHash);
     }
+
+    /* Hack to support the mirror:// scheme from Nixpkgs. */
+    if (!strncmp(nix->url, "mirror://", sizeof("mirror://")-1)) {
+	if ((s = getenv("NIXPKGS_ALL")) || *s == '\0') {
+            fprintf(stderr, _("Resolving mirror:// URLs requires Nixpkgs.  Please point $NIXPKGS_ALL at a Nixpkgs tree.\n"));
+	    goto exit;
+	}
+	nix->nixPkgs = s;
 
 #ifdef	REFERENCE
 /*
-# Hack to support the mirror:// scheme from Nixpkgs.
-if test "${url:0:9}" = "mirror://"; then
-    if test -z "$NIXPKGS_ALL"; then
-        echo "Resolving mirror:// URLs requires Nixpkgs.  Please point \$NIXPKGS_ALL at a Nixpkgs tree." >&2
-        exit 1
-    fi
-
     mkTempDir
     nix-build "$NIXPKGS_ALL" -A resolveMirrorURLs --argstr url "$url" -o $tmpPath/urls > /dev/null
 
@@ -246,26 +274,38 @@ if test "${url:0:9}" = "mirror://"; then
 
     echo "$url expands to ${expanded[*]} (using ${expanded[0]})" >&2
     url="${expanded[0]}"
-fi
 */
 #endif
+    }
 
 
+    /*
+     * If we don't know the hash or a file with that hash doesn't exist,
+     * download the file and add it to the store.
+     */
+    if (nix->finalPath == NULL) {
 #ifdef	REFERENCE
 /*
-# If we don't know the hash or a file with that hash doesn't exist,
-# download the file and add it to the store.
-if test -z "$finalPath"; then
-
     mkTempDir
+*/
+#endif
+#ifdef	REFERENCE
+/*
     tmpFile=$tmpPath/$name
+*/
+#endif
+	nix->tmpFile = rpmGetPath(nix->tmpPath, "/", nix->name, NULL);
 
-    # Optionally do timestamp-based caching of the download.
-    # Actually, the only thing that we cache in $NIX_DOWNLOAD_CACHE is
-    # the hash and the timestamp of the file at $url.  The caching of
-    # the file *contents* is done in Nix store, where it can be
-    # garbage-collected independently.
-    if test -n "$NIX_DOWNLOAD_CACHE"; then
+	/*
+	 * Optionally do timestamp-based caching of the download.
+	 * Actually, the only thing that we cache in $NIX_DOWNLOAD_CACHE is
+	 * the hash and the timestamp of the file at $url.  The caching of
+	 * the file *contents* is done in Nix store, where it can be
+	 * garbage-collected independently.
+	 */
+	if (nix->downloadCache) {
+#ifdef	REFERENCE
+/*
         echo -n "$url" > $tmpPath/url
         urlHash=$(/usr/bin/nix-hash --type sha256 --base32 --flat $tmpPath/url)
         echo "$url" > "$NIX_DOWNLOAD_CACHE/$urlHash.url"
@@ -276,59 +316,98 @@ if test -z "$finalPath"; then
             # Only download the file if it is newer than the cached version.
             cacheFlags="$cacheFlags --time-cond $cachedTimestampFN"
         fi
-    fi
+*/
+#endif
+	}
 
-    # Perform the download.
+	/* Perform the download. */
+#ifdef	REFERENCE
+/*
     doDownload
+*/
+#endif
 
-    if test -n "$NIX_DOWNLOAD_CACHE" -a ! -e $tmpFile; then
-        # Curl didn't create $tmpFile, so apparently there's no newer
-        # file on the server.
+	if (nix->downloadCache && Stat(nix->tmpFile, &sb) < 0) {
+	    /* 
+	     * Curl didn't create $tmpFile, so apparently there's no newer
+	     * file on the server.
+	     */
+#ifdef	REFERENCE
+/*
         hash=$(cat $cachedHashFN)
+*/
+#endif
+#ifdef	REFERENCE
+/*
         finalPath=$(/usr/bin/nix-store --print-fixed-path "$hashType" "$hash" "$name") 
+*/
+#endif
+	    nix->finalPath = _free(nix->finalPath);
+	    cmd = rpmExpand("/usr/bin/nix-store --print-fixed-path ",
+			nix->hashType, " ", nix->hash, " ", nix->name, NULL);
+	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
+	    cmd = _free(cmd);
+#ifdef	REFERENCE
+/*
         if ! /usr/bin/nix-store --check-validity "$finalPath" 2> /dev/null; then
             echo "cached contents of \`$url' disappeared, redownloading..." >&2
             finalPath=
             cacheFlags="--remote-time"
             doDownload
         fi
-    fi
-
-    if test -z "$finalPath"; then
-
-        # Compute the hash.
-        hash=$(/usr/bin/nix-hash --type "$hashType" $hashFormat --flat $tmpFile)
-        if ! test -n "$QUIET"; then echo "hash is $hash" >&2; fi
-
-        if test -n "$NIX_DOWNLOAD_CACHE"; then
-            echo $hash > $cachedHashFN
-            touch -r $tmpFile $cachedTimestampFN
-        fi
-
-        # Add the downloaded file to the Nix store.
-        finalPath=$(/usr/bin/nix-store --add-fixed "$hashType" $tmpFile)
-
-        if test -n "$expHash" -a "$expHash" != "$hash"; then
-            echo "hash mismatch for URL \`$url'" >&2
-            exit 1
-        fi
-        
-    fi
-fi
 */
 #endif
+	}
 
+	if (nix->finalPath == NULL) {
+	    /* Compute the hash. */
 #ifdef	REFERENCE
 /*
-if ! test -n "$QUIET"; then echo "path is $finalPath" >&2; fi
-
-echo $hash
-
-if test -n "$PRINT_PATH"; then
-    echo $finalPath
-fi
+        hash=$(/usr/bin/nix-hash --type "$hashType" $hashFormat --flat $tmpFile)
 */
 #endif
+	    cmd = rpmExpand("/usr/bin/nix-hash --type ", nix->hashType,
+			" ", nix->hashFormat, " --flat ", nix->tmpFile, NULL);
+	    nix->hash = rpmExpand("%(", cmd, ")", NULL);
+	    cmd = _free(cmd);
+
+	    if (!nix->quiet)
+		fprintf(stderr, _("hash is %s\n"), nix->hash);
+
+	    if (nix->downloadCache) {
+#ifdef	REFERENCE
+/*
+            echo $hash > $cachedHashFN
+*/
+#endif
+#ifdef	REFERENCE
+/*
+            touch -r $tmpFile $cachedTimestampFN
+*/
+#endif
+	    }
+
+	    /* Add the downloaded file to the Nix store. */
+#ifdef	REFERENCE
+/*
+        finalPath=$(/usr/bin/nix-store --add-fixed "$hashType" $tmpFile)
+*/
+#endif
+	    nix->finalPath = _free(nix->finalPath);
+	    cmd = rpmExpand("/usr/bin/nix-store --add-fixed ", nix->hashType,
+			" ", nix->tmpFile, NULL);
+	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
+	    cmd = _free(cmd);
+
+	    if (nix->expHash && *nix->expHash
+	     && strcmp(nix->expHash, nix->hash))
+	    {
+		fprintf(stderr, "hash mismatch for URL `%s'\n", nix->url);
+		goto exit;
+	    }
+	}
+    }
+
     if (!nix->quiet)
 	fprintf(stderr, _("path is %s\n"), nix->finalPath);
     fprintf(stdout, "%s\n", nix->hash);
@@ -338,6 +417,11 @@ fi
     ec = 0;	/* XXX success */
 
 exit:
+
+    nix->hash = _free(nix->hash);
+    nix->finalPath = _free(nix->finalPath);
+    nix->tmpFile = _free(nix->tmpFile);
+    nix->name = _free(nix->name);
 
     optCon = rpmioFini(optCon);
 
