@@ -9,7 +9,6 @@
 
 #include "debug.h"
 
-
 #define _KFB(n) (1U << (n))
 #define _DFB(n) (_KFB(n) | 0x40000000)
 
@@ -82,33 +81,51 @@ static struct rpmnix_s _nix = {
 	.hashType = "sha256"
 };
 
+static const char * tmpDir = "/tmp";
+
 /*==============================================================*/
+/**
+ * Copy source string to target, substituting for URL characters.
+ * @param t		target xml string
+ * @param s		source string
+ * @return		target xml string
+ */
+static char * urlStrcpy(/*@returned@*/ char * t, const char * s)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+/*
+ * Handle escaped characters in the URI.  `+', `=' and `?' are the only
+ * characters that are valid in Nix store path names but have a special
+ * meaning in URIs.
+ */
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '%':
+	    if (s[0] == '2' && s[1] == 'b')	c = (int)'+';
+	    if (s[0] == '3' && s[1] == 'd')	c = (int)'=';
+	    if (s[0] == '3' && s[1] == 'f')	c = (int)'?';
+	    if (c != (int)s[-1])
+		s += 2;
+	    break;
+	}
+	*te++ = (char) c;
+    }
+    *te = '\0';
+    return t;
+}
+
 static void mkTempDir(rpmnix nix)
 	/*@*/
 {
-    int i = 0;
+    if (nix->tmpPath == NULL) {
+	nix->tmpPath =
+		mkdtemp(rpmGetPath(tmpDir, "/nix-prefetch-url-XXXXXX",NULL));
+assert(nix->tmpPath != NULL);
+    }
 
-    if (nix->tmpPath) return;
-
-#ifdef	REFERENCE
-/*
-    while true; do
-        if test -z "$TMPDIR"; then TMPDIR=/tmp; fi
-        tmpPath=$TMPDIR/nix-prefetch-url-$$-$i
-        if mkdir "$tmpPath"; then break; fi
-        # !!! to bad we can't check for ENOENT in mkdir, so this check
-        # is slightly racy (it bombs out if somebody just removed
-        # $tmpPath...).
-        if ! test -e "$tmpPath"; then exit 1; fi
-        i=$((i + 1))
-    done
-*/
-#endif
-#ifdef	REFERENCE
-/*
-    trap removeTempDir EXIT SIGINT SIGQUIT
-*/
-#endif
 }
 
 static void removeTempDir(rpmnix nix)
@@ -133,15 +150,10 @@ static void doDownload(rpmnix nix)
     const char * cmd;
     const char * rval;
 
-#ifdef	REFERENCE
-/*
-    /usr/bin/curl $cacheFlags --fail --location --max-redirs 20 --disable-epsv \
-        --cookie-jar $tmpPath/cookies "$url" -o $tmpFile
-*/
-#endif
     cmd = rpmExpand("/usr/bin/curl ", nix->cacheFlags,
-	" --fail --location --max-redirs 20 --disable-epsv --cookie-jar ",
-	nix->tmpPath, "/cookies ", nix->url, " -o ", nix->tmpFile, NULL);
+	" --fail --location --max-redirs 20 --disable-epsv",
+	" --cookie-jar ", nix->tmpPath, "/cookies ", nix->url,
+	" -o ", nix->tmpFile, NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
     cmd = _free(cmd);
     rval = _free(rval);
@@ -202,39 +214,21 @@ main(int argc, char *argv[])
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
     int ec = 1;		/* assume failure */
     const char * s;
-    const char * cmd;
+    char * fn;
+    char * cmd;
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
     struct stat sb;
+    FD_t fd;
     int xx;
 
 #ifdef	REFERENCE
 /*
-#! /bin/bash -e
-
-url=$1
-expHash=$2
-
-# needed to make it work on NixOS
-export PATH=$PATH:/bin
-
-hashType=$NIX_HASH_ALGO
-if test -z "$hashType"; then
-    hashType=sha256
-fi
-
-hashFormat=
-if test "$hashType" != "md5"; then
-    hashFormat=--base32
-fi
-
-if test -z "$url"; then
-    echo "syntax: nix-prefetch-url URL [EXPECTED-HASH]" >&2
-    exit 1
-fi
+    trap removeTempDir EXIT SIGINT SIGQUIT
 */
 #endif
 
+    if ((s = getenv("TMPDIR")) && *s) tmpDir = s;
     if ((s = getenv("QUIET")) && *s) nix->quiet = 1;
     if ((s = getenv("PRINT_PATH")) && *s) nix->print = 1;
 
@@ -248,35 +242,28 @@ fi
     nix->hashFormat = (strcmp(nix->hashType, "md5") ? "--base32" : "");
     if ((s = getenv("NIX_DOWNLOAD_CACHE"))) nix->downloadCache = s;
 
-#ifdef	REFERENCE
-/*
-# Handle escaped characters in the URI.  `+', `=' and `?' are the only
-# characters that are valid in Nix store path names but have a special
-# meaning in URIs.
-name=$(basename "$url" | /bin/sed -e 's/%2b/+/g' -e 's/%3d/=/g' -e 's/%3f/\?/g')
-if test -z "$name"; then echo "invalid url"; exit 1; fi
-*/
-#endif
-
+    /*
+     * Handle escaped characters in the URI.  `+', `=' and `?' are the only
+     * characters that are valid in Nix store path names but have a special
+     * meaning in URIs.
+     */
+    fn = xstrdup(nix->url);
+    s = basename(fn);
+    if (s == NULL || *s == '\0') {
+	fprintf(stderr, _("invalid url: %s\n"), nix->url);
+	goto exit;
+    }
+    nix->name = urlStrcpy(xstrdup(s), s);
+    fn = _free(fn);
 
     /* If expected hash specified, check if it already exists in the store. */
     if (nix->expHash != NULL) {
-#ifdef	REFERENCE
-/*
-    finalPath=$(/usr/bin/nix-store --print-fixed-path "$hashType" "$expHash" "$name")
-*/
-#endif
+
 	cmd = rpmExpand("/usr/bin/nix-store --print-fixed-path ",
 		nix->hashType, " ", nix->expHash, " ", nix->name, NULL);
 	nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
-#ifdef	REFERENCE
-/*
-    if ! /usr/bin/nix-store --check-validity "$finalPath" 2> /dev/null; then
-        finalPath=
-    fi
-*/
-#endif
+
 	cmd = rpmExpand("/usr/bin/nix-store --check-validity ",
 		nix->finalPath, " 2>/dev/null; echo $?", NULL);
 	s = rpmExpand("%(", cmd, ")", NULL);
@@ -289,6 +276,7 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 
     /* Hack to support the mirror:// scheme from Nixpkgs. */
     if (!strncmp(nix->url, "mirror://", sizeof("mirror://")-1)) {
+	ARGV_t expanded = NULL;
 	if ((s = getenv("NIXPKGS_ALL")) || *s == '\0') {
             fprintf(stderr, _("Resolving mirror:// URLs requires Nixpkgs.  Please point $NIXPKGS_ALL at a Nixpkgs tree.\n"));
 	    goto exit;
@@ -297,11 +285,6 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 
 	mkTempDir(nix);
 
-#ifdef	REFERENCE
-/*
-    nix-build "$NIXPKGS_ALL" -A resolveMirrorURLs --argstr url "$url" -o $tmpPath/urls > /dev/null
-*/
-#endif
 	cmd = rpmExpand("/usr/bin/nix-build ", nix->nixPkgs,
 		" -A resolveMirrorURLs --argstr url ", nix->url,
 		" -o ", nix->tmpPath, "/urls > /dev/null", NULL);
@@ -309,30 +292,29 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 	cmd = _free(cmd);
 	s = _free(s);
 
-#ifdef	REFERENCE
-/*
-    expanded=($(cat $tmpPath/urls))
-*/
-#endif
+	fn = rpmGetPath(nix->tmpPath, "/urls", NULL);
+	fd = Fopen(fn, "r");
+	if (fd == NULL || Ferror(fd)) {
+	    fprintf(stderr, _("Fopen(%s, \"r\") failed\n"), fn);
+	    if (fd) xx = Fclose(fd);
+	    fn = _free(fn);
+	    goto exit;
+	}
+	xx = argvFgets(&expanded, fd);
+	xx = Fclose(fd);
 
-#ifdef	REFERENCE
-/*
-    if test "${#expanded[*]}" = 0; then
-        echo "$0: cannot resolve $url." >&2
-        exit 1
-    fi
-*/
-#endif
+	fn = _free(fn);
 
-#ifdef	REFERENCE
-/*
-    echo "$url expands to ${expanded[*]} (using ${expanded[0]})" >&2
-    url="${expanded[0]}"
-*/
-#endif
+	if (argvCount(expanded) == 0) {
+	    fprintf(stderr, _("%s: cannot resolve %s\n"), __progname, nix->url);
+	    expanded = argvFree(expanded);
+	    goto exit;
+	}
 
+	fprintf(stderr, _("url %s replaced with %s\n"), nix->url, expanded[0]);
+	nix->url = xstrdup(expanded[0]);
+	expanded = argvFree(expanded);
     }
-
 
     /*
      * If we don't know the hash or a file with that hash doesn't exist,
@@ -353,22 +335,35 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 	 */
 	if (nix->downloadCache) {
 
-#ifdef	REFERENCE
-/*
-        echo -n "$url" > $tmpPath/url
-*/
-#endif
+	    fn = rpmGetPath(nix->tmpPath, "/url", NULL);
+	    fd = Fopen(fn, "w");
+	    if (fd == NULL || Ferror(fd)) {
+		fprintf(stderr, _("Fopen(%s, \"w\") failed\n"), fn);
+		if (fd) xx = Fclose(fd);
+		fn = _free(fn);
+		goto exit;
+	    }
+	    xx = Fwrite(nix->url, 1, strlen(nix->url), fd);
+	    xx = Fclose(fd);
+	    fn = _free(fn);
 
 	    cmd = rpmExpand("/usr/bin/nix-hash --type sha256 --base32 --flat ",
 			nix->tmpPath, "/url", NULL);
 	    nix->urlHash = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _free(cmd);
 
-#ifdef	REFERENCE
-/*
-        echo "$url" > "$NIX_DOWNLOAD_CACHE/$urlHash.url"
-*/
-#endif
+	    fn = rpmGetPath(nix->downloadCache,"/", nix->urlHash, ".url", NULL);
+	    fd = Fopen(fn, "w");
+	    if (fd == NULL || Ferror(fd)) {
+		fprintf(stderr, _("Fopen(%s, \"w\") failed\n"), fn);
+		if (fd) xx = Fclose(fd);
+		fn = _free(fn);
+		goto exit;
+	    }
+	    xx = Fwrite(nix->url, 1, strlen(nix->url), fd);
+	    xx = Fwrite("\n", 1, 1, fd);
+	    xx = Fclose(fd);
+	    fn = _free(fn);
 
 	    nix->cachedHashFN = rpmGetPath(nix->downloadCache, "/",
 			nix->urlHash, ".", nix->hashType, NULL);
@@ -377,17 +372,10 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 	    nix->cacheFlags = _free(nix->cacheFlags);
 	    nix->cacheFlags = xstrdup("--remote-time");
 
-#ifdef	REFERENCE
-/*
-        if test -e "$cachedTimestampFN" -a -e "$cachedHashFN"; then
-            # Only download the file if it is newer than the cached version.
-            cacheFlags="$cacheFlags --time-cond $cachedTimestampFN"
-        fi
-*/
-#endif
 	    if (!Stat(nix->cachedTimestampFN, &sb)
 	     && !Stat(nix->cachedHashFN, &sb))
 	    {
+		/* Only download the file if newer than the cached version. */
 		s = nix->cacheFlags;
 		nix->cacheFlags = rpmExpand(nix->cacheFlags,
 			" --time-cond ", nix->cachedTimestampFN, NULL);
@@ -413,16 +401,6 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _free(cmd);
 
-#ifdef	REFERENCE
-/*
-        if ! /usr/bin/nix-store --check-validity "$finalPath" 2> /dev/null; then
-            echo "cached contents of \`$url' disappeared, redownloading..." >&2
-            finalPath=
-            cacheFlags="--remote-time"
-            doDownload
-        fi
-*/
-#endif
 	    cmd = rpmExpand("/usr/bin/nix-store --check-validity ",
 			nix->finalPath, " 2>/dev/null; echo $?", NULL);
 	    s = rpmExpand("%(", cmd, ")", NULL);
@@ -450,18 +428,28 @@ if test -z "$name"; then echo "invalid url"; exit 1; fi
 		fprintf(stderr, _("hash is %s\n"), nix->hash);
 
 	    if (nix->downloadCache) {
+		struct timeval times[2];
 
-#ifdef	REFERENCE
-/*
-            echo $hash > $cachedHashFN
-*/
-#endif
+		fn = rpmGetPath(nix->cachedHashFN, NULL);
+		fd = Fopen(fn, "w");
+		if (fd == NULL || Ferror(fd)) {
+		    fprintf(stderr, _("Fopen(%s, \"w\") failed\n"), fn);
+		    if (fd) xx = Fclose(fd);
+		    fn = _free(fn);
+		    goto exit;
+		}
+		xx = Fwrite(nix->hash, 1, strlen(nix->hash), fd);
+		xx = Fwrite("\n", 1, 1, fd);
+		xx = Fclose(fd);
+		fn = _free(fn);
 
-#ifdef	REFERENCE
-/*
-            touch -r $tmpFile $cachedTimestampFN
-*/
-#endif
+		if (Stat(nix->tmpFile, &sb)) {
+		    fprintf(stderr, _("Stat(%s) failed\n"), nix->tmpFile);
+		    goto exit;
+		}
+		times[1].tv_sec  = times[0].tv_sec  = sb.st_mtime;
+		times[1].tv_usec = times[0].tv_usec = 0;
+		xx = Utimes(nix->cachedTimestampFN, times);
 
 	    }
 
