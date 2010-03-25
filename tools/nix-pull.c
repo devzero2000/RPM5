@@ -81,22 +81,35 @@ static int addPatch(rpmnix nix, const char * storePath, const char * patch)
 #ifdef	REFERENCE
 /*
     my ($patches, $storePath, $patch) = @_;
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
     $$patches{$storePath} = []
         unless defined $$patches{$storePath};
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
     my $patchList = $$patches{$storePath};
+*/
+#endif
 
-    my $found = 0;
+#ifdef	REFERENCE
+/*
     foreach my $patch2 (@{$patchList}) {
         $found = 1 if
             $patch2->{url} eq $patch->{url} &&
             $patch2->{basePath} eq $patch->{basePath};
     }
+*/
+#endif
     
+#ifdef	REFERENCE
+/*
     push @{$patchList}, $patch if !$found;
-
-    return !$found;
 */
 #endif
 
@@ -111,11 +124,6 @@ static int readManifest(rpmnix nix, const char * manifest)
 #ifdef	REFERENCE
 /*
     my ($manifest, $narFiles, $localPaths, $patches) = @_;
-
-    my $inside = 0;
-    my $type;
-
-    my $manifestVersion = 2;
 */
 #endif
     int inside = 0;
@@ -123,22 +131,6 @@ static int readManifest(rpmnix nix, const char * manifest)
     int manifestVersion = 2;
     int xx;
 
-#ifdef	REFERENCE
-/*
-    my $storePath;
-    my $url;
-    my $hash;
-    my $size;
-    my $basePath;
-    my $baseHash;
-    my $patchType;
-    my $narHash;
-    my $references;
-    my $deriver;
-    my $hashAlgo;
-    my $copyFrom;
-*/
-#endif
     const char * storePath = NULL;
     const char * url = NULL;
     const char * hash = NULL;
@@ -152,12 +144,6 @@ static int readManifest(rpmnix nix, const char * manifest)
     const char * hashAlgo = NULL;
     const char * copyFrom = NULL;
 
-#ifdef	REFERENCE
-/*
-    open MANIFEST, "<$manifest"
-        or die "cannot open `$manifest': $!";
-*/
-#endif
     FD_t fd = Fopen(manifest, "r");
 
     if (fd == NULL || Ferror(fd)) {
@@ -282,11 +268,6 @@ static int readManifest(rpmnix nix, const char * manifest)
 */
 #endif
 
-#ifdef	REFERENCE
-/*
-    close MANIFEST;
-*/
-#endif
     if (fd) xx = Fclose(fd);
 
     return manifestVersion;
@@ -431,16 +412,6 @@ static int processURL(rpmnix nix, const char * url)
 	    const char * path = nix->narFiles[j];
 	    size_t np = strlen(path);
 
-#ifdef	REFERENCE
-/*
-        foreach my $path (keys %narFiles) {
-            if (substr($path, 0, length($storeDir) + 1) ne "$storeDir/") {
-                print STDERR "warning: manifest `$url' assumes a Nix store at a different location than $storeDir, skipping...\n";
-                exit 0;
-            }
-        }
-*/
-#endif
 	    if (np > ns && !strncmp(path, storeDir, ns) && path[ns] == '/')
 		continue;
 	    fprintf(stderr, "warning: manifest `%s' assumes a Nix store at a different location than %s, skipping...\n", url, storeDir);
@@ -468,13 +439,6 @@ static int processURL(rpmnix nix, const char * url)
     urlFile = rpmGetPath(manifestDir, "/",
 			baseName, "-", hash, ".url", NULL);
 
-#ifdef	REFERENCE
-/*
-    open URL, ">$urlFile" or die "cannot create `$urlFile'";
-    print URL "$url";
-    close URL;
-*/
-#endif
     fd = Fopen(urlFile, "w");
     if (fd == NULL || Ferror(fd)) {
 	fprintf(stderr, "cannot create `%s'\n", urlFile);
@@ -482,6 +446,7 @@ static int processURL(rpmnix nix, const char * url)
 	exit(1);
     }
     (void) Fwrite(url, 1, strlen(url), fd);
+    /* XXX why bother with a newline chomp?!? */
     (void) Fwrite("\n", 1, 1, fd);
     xx = Fclose(fd);
     
@@ -511,14 +476,6 @@ static int processURL(rpmnix nix, const char * url)
 	    if (!strcmp(urlFile, urlFile2))
 		continue;
 
-#ifdef	REFERENCE
-/*
-        open URL, "<$urlFile2" or die;
-        my $url2 = <URL>;
-        close URL;
-        chomp $url2;
-*/
-#endif
 	    uav = NULL;
 	    fd = Fopen(urlFile2, "r");
 	    if (fd == NULL || Ferror(fd)) {
@@ -528,6 +485,7 @@ static int processURL(rpmnix nix, const char * url)
 	    }
 	    xx = argvFgets(&uav, fd);
 	    xx = Fclose(fd);
+	    /* XXX why bother with a newline chomp?!? */
 	    url2 = xstrdup(uav[0]);
 	    uav = argvFree(uav);
 
@@ -625,23 +583,6 @@ use strict;
 use File::Temp qw(tempdir);
 use readmanifest;
 
-my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
-    or die "cannot create a temporary directory";
-
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-my $libexecDir = ($ENV{"NIX_LIBEXEC_DIR"} or "/usr/libexec");
-my $storeDir = ($ENV{"NIX_STORE_DIR"} or "/nix/store");
-my $stateDir = ($ENV{"NIX_STATE_DIR"} or "/nix/var/nix");
-my $manifestDir = ($ENV{"NIX_MANIFESTS_DIR"} or "$stateDir/manifests");
-
-
-# Prevent access problems in shared-stored installations.
-umask 0022;
-
-# Create the manifests directory if it doesn't exist.
-if (! -e $manifestDir) {
-    mkdir $manifestDir, 0755 or die "cannot create directory `$manifestDir'";
-}
 */
 #endif
 
@@ -698,6 +639,12 @@ print "$size store paths in manifest\n";
     ec = 0;	/* XXX success */
 
 exit:
+#ifdef	REFERENCE
+/*
+my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
+    or die "cannot create a temporary directory";
+*/
+#endif
 
     manifestDir = _free(manifestDir);
 
