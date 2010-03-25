@@ -31,7 +31,7 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(30)	/*    --skip-wrong-store */
+    RPMNIX_FLAGS_COPY		= _DFB(30)	/*    --copy */
 };
 
 /**
@@ -51,6 +51,20 @@ struct rpmnix_s {
     const char ** exprs;
 
     const char * attr;
+
+    const char ** narFiles;
+    const char ** localPaths;
+    const char ** patches;
+
+    const char ** storePaths;
+    const char ** narArchives;
+
+    const char * localArchivesDir;
+    const char * localManifestFile;
+    const char * targetArchivesUrl;
+    const char * archivesPutURL;
+    const char * archivesGetURL;
+    const char * manifestPutURL;
 };
 
 /**
@@ -59,169 +73,59 @@ static struct rpmnix_s _nix = {
 	.flags = RPMNIX_FLAGS_NOOUTLINK
 };
 
+static const char * tmpDir;
+static const char * binDir = "/usr/bin";
+
+static const char * dataDir = "/usr/share";
+
 /*==============================================================*/
+
+static void writeManifest(rpmnix nix, const char * manifest)
+	/*@*/
+{
+    char * fn = rpmGetPath(manifest, NULL);
+    char * tfn = rpmGetPath(fn, ".tmp", NULL);
+    const char * s;
+    FD_t fd;
+    ssize_t nw;
+    int xx;
+    int i;
+
 #ifdef	REFERENCE
 /*
-use strict;
+    my ($manifest, $narFiles, $patches) = @_;
+*/
+#endif
 
 
-sub addPatch {
-    my ($patches, $storePath, $patch) = @_;
-
-    $$patches{$storePath} = []
-        unless defined $$patches{$storePath};
-
-    my $patchList = $$patches{$storePath};
-
-    my $found = 0;
-    foreach my $patch2 (@{$patchList}) {
-        $found = 1 if
-            $patch2->{url} eq $patch->{url} &&
-            $patch2->{basePath} eq $patch->{basePath};
+#ifdef	REFERENCE
+/*
+    open MANIFEST, ">$manifest.tmp"; # !!! check exclusive
+*/
+#endif
+    fd = Fopen(tfn, "w");	/* XXX check exclusive */
+    if (fd == NULL || Ferror(fd)) {
+	if (fd) xx = Fclose(fd);
+	goto exit;
     }
     
-    push @{$patchList}, $patch if !$found;
 
-    return !$found;
-}
-
-
-sub readManifest {
-    my ($manifest, $narFiles, $localPaths, $patches) = @_;
-
-    open MANIFEST, "<$manifest"
-        or die "cannot open `$manifest': $!";
-
-    my $inside = 0;
-    my $type;
-
-    my $manifestVersion = 2;
-
-    my $storePath;
-    my $url;
-    my $hash;
-    my $size;
-    my $basePath;
-    my $baseHash;
-    my $patchType;
-    my $narHash;
-    my $references;
-    my $deriver;
-    my $hashAlgo;
-    my $copyFrom;
-
-    while (<MANIFEST>) {
-        chomp;
-        s/\#.*$//g;
-        next if (/^$/);
-
-        if (!$inside) {
-
-            if (/^\s*(\w*)\s*\{$/) {
-                $type = $1;
-                $type = "narfile" if $type eq "";
-                $inside = 1;
-                undef $storePath;
-                undef $url;
-                undef $hash;
-                undef $size;
-                undef $narHash;
-                undef $basePath;
-                undef $baseHash;
-                undef $patchType;
-                $references = "";
-                $deriver = "";
-                $hashAlgo = "md5";
-	    }
-
-        } else {
-            
-            if (/^\}$/) {
-                $inside = 0;
-
-                if ($type eq "narfile") {
-
-                    $$narFiles{$storePath} = []
-                        unless defined $$narFiles{$storePath};
-
-                    my $narFileList = $$narFiles{$storePath};
-
-                    my $found = 0;
-                    foreach my $narFile (@{$narFileList}) {
-                        $found = 1 if $narFile->{url} eq $url;
-                    }
-                    if (!$found) {
-                        push @{$narFileList},
-                            { url => $url, hash => $hash, size => $size
-                            , narHash => $narHash, references => $references
-                            , deriver => $deriver, hashAlgo => $hashAlgo
-                            };
-                    }
-                
-                }
-
-                elsif ($type eq "patch") {
-                    addPatch $patches, $storePath,
-                        { url => $url, hash => $hash, size => $size
-                        , basePath => $basePath, baseHash => $baseHash
-                        , narHash => $narHash, patchType => $patchType
-                        , hashAlgo => $hashAlgo
-                        };
-                }
-
-                elsif ($type eq "localPath") {
-
-                    $$localPaths{$storePath} = []
-                        unless defined $$localPaths{$storePath};
-
-                    my $localPathsList = $$localPaths{$storePath};
-
-                    # !!! remove duplicates
-                    
-                    push @{$localPathsList},
-                        { copyFrom => $copyFrom, references => $references
-                        , deriver => ""
-                        };
-                }
-
-            }
-            
-            elsif (/^\s*StorePath:\s*(\/\S+)\s*$/) { $storePath = $1; }
-            elsif (/^\s*CopyFrom:\s*(\/\S+)\s*$/) { $copyFrom = $1; }
-            elsif (/^\s*Hash:\s*(\S+)\s*$/) { $hash = $1; }
-            elsif (/^\s*URL:\s*(\S+)\s*$/) { $url = $1; }
-            elsif (/^\s*Size:\s*(\d+)\s*$/) { $size = $1; }
-            elsif (/^\s*SuccOf:\s*(\/\S+)\s*$/) { } # obsolete
-            elsif (/^\s*BasePath:\s*(\/\S+)\s*$/) { $basePath = $1; }
-            elsif (/^\s*BaseHash:\s*(\S+)\s*$/) { $baseHash = $1; }
-            elsif (/^\s*Type:\s*(\S+)\s*$/) { $patchType = $1; }
-            elsif (/^\s*NarHash:\s*(\S+)\s*$/) { $narHash = $1; }
-            elsif (/^\s*References:\s*(.*)\s*$/) { $references = $1; }
-            elsif (/^\s*Deriver:\s*(\S+)\s*$/) { $deriver = $1; }
-            elsif (/^\s*ManifestVersion:\s*(\d+)\s*$/) { $manifestVersion = $1; }
-
-            # Compatibility;
-            elsif (/^\s*NarURL:\s*(\S+)\s*$/) { $url = $1; }
-            elsif (/^\s*MD5:\s*(\S+)\s*$/) { $hash = "md5:$1"; }
-
-        }
-    }
-
-    close MANIFEST;
-
-    return $manifestVersion;
-}
-
-
-sub writeManifest {
-    my ($manifest, $narFiles, $patches) = @_;
-
-    open MANIFEST, ">$manifest.tmp"; # !!! check exclusive
-
+#ifdef	REFERENCE
+/*
     print MANIFEST "version {\n";
     print MANIFEST "  ManifestVersion: 3\n";
     print MANIFEST "}\n";
+*/
+#endif
+    s = "\
+version {\n\
+  ManifestVersion: 3\n\
+}\n\
+";
+    nw = Fwrite(s, 1, strlen(s), fd);
 
+#ifdef	REFERENCE
+/*
     foreach my $storePath (sort (keys %{$narFiles})) {
         my $narFileList = $$narFiles{$storePath};
         foreach my $narFile (@{$narFileList}) {
@@ -238,7 +142,11 @@ sub writeManifest {
             print MANIFEST "}\n";
         }
     }
+*/
+#endif
     
+#ifdef	REFERENCE
+/*
     foreach my $storePath (sort (keys %{$patches})) {
         my $patchList = $$patches{$storePath};
         foreach my $patch (@{$patchList}) {
@@ -254,28 +162,159 @@ sub writeManifest {
             print MANIFEST "}\n";
         }
     }
+*/
+#endif
     
     
+#ifdef	REFERENCE
+/*
     close MANIFEST;
+*/
+#endif
+    if (fd)
+	xx = Fclose(fd);
 
+#ifdef	REFERENCE
+/*
     rename("$manifest.tmp", $manifest)
         or die "cannot rename $manifest.tmp: $!";
+*/
+#endif
+    if (Rename(tfn, fn) < 0) {
+	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, fn);
+	exit(1);
+    }
 
 
+#ifdef	REFERENCE
+/*
     # Create a bzipped manifest.
     system("/usr/libexec/nix/bzip2 < $manifest > $manifest.bz2.tmp") == 0
         or die "cannot compress manifest";
-
-    rename("$manifest.bz2.tmp", "$manifest.bz2")
-        or die "cannot rename $manifest.bz2.tmp: $!";
-}
-
-
-return 1;
 */
 #endif
 
+#ifdef	REFERENCE
+/*
+    rename("$manifest.bz2.tmp", "$manifest.bz2")
+        or die "cannot rename $manifest.bz2.tmp: $!";
+*/
+#endif
+
+exit:
+    tfn = _free(tfn);
+    fn = _free(fn);
+    return;
+}
+
 /*==============================================================*/
+
+static int copyFile(const char * src, const char * dst)
+	/*@*/
+{
+    const char * tfn = rpmGetPath(dst, ".tmp", NULL);
+
+#ifdef	REFERENCE
+/*
+    system("/bin/cp", $src, $tmp) == 0 or die "cannot copy file";
+*/
+#endif
+
+    if (Rename(tfn, dst) < 0) {
+	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, dst);
+	exit(1);
+    }
+    tfn = _free(tfn);
+    return 0;
+}
+
+static int archiveExists(const char * name)
+	/*@*/
+{
+#ifdef	REFERENCE
+/*
+    my $name = shift;
+    print STDERR "  HEAD on $archivesGetURL/$name\n";
+    return system("$curl --head $archivesGetURL/$name > /dev/null") == 0;
+*/
+#endif
+    return 0;
+}
+
+/*==============================================================*/
+
+#ifdef	UNUSED
+static int verbose = 0;
+#endif
+
+static void nixInstantiateArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data)
+	/*@*/
+{
+#ifdef	UNUSED
+    rpmnix nix = &_nix;
+#endif
+
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
+    switch (opt->val) {
+    default:
+	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
+	poptPrintUsage(con, stderr, 0);
+	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+	/*@notreached@*/ break;
+    }
+}
+
+static struct poptOption nixInstantiateOptions[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	nixInstantiateArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+ { "copy", '\0', POPT_BIT_SET,		&_nix.flags, RPMNIX_FLAGS_COPY,
+        N_("FIXME"), NULL },
+ { "target", '\0', POPT_ARG_STRING,	&_nix.targetArchivesUrl, 0,
+        N_("FIXME"), NULL },
+
+#ifdef	NOTYET
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"), NULL },
+#endif
+
+  POPT_AUTOHELP
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+Usage: nix-push --copy ARCHIVES_DIR MANIFEST_FILE PATHS...\n\
+   or: nix-push ARCHIVES_PUT_URL ARCHIVES_GET_URL MANIFEST_PUT_URL PATHS...\n\
+\n\
+`nix-push' copies or uploads the closure of PATHS to the given\n\
+destination.\n\
+"), NULL },
+
+  POPT_TABLEEND
+};
+
+int
+main(int argc, char *argv[])
+{
+    rpmnix nix = &_nix;
+    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    int ec = 1;		/* assume failure */
+    const char * s;
+    ARGV_t av = poptGetArgs(optCon);
+    int ac = argvCount(av);
+    int xx;
+    int i;
+
+    const char * nixExpr = NULL;
+    const char * manifest = NULL;
+    int localCopy;
+    int nac;
+
 #ifdef	REFERENCE
 /*
 #! /usr/bin/perl -w -I/usr/libexec/nix
@@ -285,24 +324,54 @@ use File::Temp qw(tempdir);
 use readmanifest;
 
 my $hashAlgo = "sha256";
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
 my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
     or die "cannot create a temporary directory";
+*/
+#endif
+    if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
+	s = "/tmp";
+    tmpDir = mkdtemp(rpmGetPath(s, "/nix-push.XXXXXX", NULL));
+    if (tmpDir == NULL) {
+	fprintf(stderr, _("cannot create a temporary directory\n"));
+	goto exit;
+    }
 
+#ifdef	REFERENCE
+/*
 my $nixExpr = "$tmpDir/create-nars.nix";
 my $manifest = "$tmpDir/MANIFEST";
+*/
+#endif
+    nixExpr = rpmGetPath(tmpDir, "/create-nars.nix", NULL);
+    manifest = rpmGetPath(tmpDir, "/MANIFEST", NULL);
 
+#ifdef	REFERENCE
+/*
 my $curl = "/usr/bin/curl --fail --silent";
 my $extraCurlFlags = ${ENV{'CURL_FLAGS'}};
 $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
 my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
 
 my $dataDir = $ENV{"NIX_DATA_DIR"};
 $dataDir = "/usr/share" unless defined $dataDir;
+*/
+#endif
+    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
+    if ((s = getenv("NIX_DATA_DIR"))) dataDir = s;
 
-
-# Parse the command line.
+    /* Parse the command line. */
+#ifdef	REFERENCE
+/*
 my $localCopy;
 my $localArchivesDir;
 my $localManifestFile;
@@ -312,21 +381,21 @@ my $targetArchivesUrl;
 my $archivesPutURL;
 my $archivesGetURL;
 my $manifestPutURL;
+*/
+#endif
 
-sub showSyntax {
-    print STDERR <<EOF
-Usage: nix-push --copy ARCHIVES_DIR MANIFEST_FILE PATHS...
-   or: nix-push ARCHIVES_PUT_URL ARCHIVES_GET_URL MANIFEST_PUT_URL PATHS...
-
-`nix-push' copies or uploads the closure of PATHS to the given
-destination.
-EOF
-    ; # `
-    exit 1;
-}
-
+#ifdef	REFERENCE
+/*
 showSyntax if scalar @ARGV < 1;
+*/
+#endif
+    if (ac < 1) {
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+    }
 
+#ifdef	REFERENCE
+/*
 if ($ARGV[0] eq "--copy") {
     showSyntax if scalar @ARGV < 3;
     $localCopy = 1;
@@ -348,17 +417,47 @@ else {
     $archivesGetURL = shift @ARGV;
     $manifestPutURL = shift @ARGV;
 }
+*/
+#endif
+    if (F_ISSET(nix, COPY)) {
+	if (ac < 2) {
+	    poptPrintUsage(optCon, stderr, 0);
+	    goto exit;
+	}
+	localCopy = 1;
+	nix->localArchivesDir = av[0];
+	nix->localManifestFile = av[1];
+	if (nix->targetArchivesUrl == NULL)
+	    nix->targetArchivesUrl = "file://$localArchivesDir";
+    } else {
+	if (ac < 3) {
+	    poptPrintUsage(optCon, stderr, 0);
+	    goto exit;
+	}
+	localCopy = 0;
+	nix->archivesPutURL = av[0];
+	nix->archivesGetURL = av[1];
+	nix->manifestPutURL = av[2];
+    }
 
-
-# From the given store paths, determine the set of requisite store
-# paths, i.e, the paths required to realise them.
-my %storePaths;
-
-foreach my $path (@ARGV) {
+    /*
+     * From the given store paths, determine the set of requisite store
+     * paths, i.e, the paths required to realise them.
+     */
+    for (i = 0; i < ac; i++) {
+	const char * path = av[i];
+#ifdef	REFERENCE
+/*
     die unless $path =~ /^\//;
-
-    # Get all paths referenced by the normalisation of the given 
-    # Nix expression.
+*/
+#endif
+assert(*path == '/');
+	/*
+	 * Get all paths referenced by the normalisation of the given 
+	 * Nix expression.
+	 */
+#ifdef	REFERENCE
+/*
     my $pid = open(READ,
         "$binDir/nix-store --query --requisites --force-realise " .
         "--include-outputs '$path'|") or die;
@@ -370,13 +469,18 @@ foreach my $path (@ARGV) {
     }
 
     close READ or die "nix-store failed: $?";
-}
+*/
+#endif
+    }
 
+    /*
+     * For each path, create a Nix expression that turns the path into
+     * a Nix archive.
+     */
+#ifdef	REFERENCE
+/*
 my @storePaths = keys %storePaths;
 
-
-# For each path, create a Nix expression that turns the path into
-# a Nix archive.
 open NIX, ">$nixExpr";
 print NIX "[";
 
@@ -393,11 +497,16 @@ foreach my $storePath (@storePaths) {
 
 print NIX "]";
 close NIX;
+*/
+#endif
 
 
-# Instantiate store derivations from the Nix expression.
+    /* Instantiate store derivations from the Nix expression. */
+    fprintf(stderr, "instantiating store derivations...\n");
+
+#ifdef	REFERENCE
+/*
 my @storeExprs;
-print STDERR "instantiating store derivations...\n";
 my $pid = open(READ, "$binDir/nix-instantiate $nixExpr|")
     or die "cannot run nix-instantiate";
 while (<READ>) {
@@ -406,11 +515,14 @@ while (<READ>) {
     push @storeExprs, $_;
 }
 close READ or die "nix-instantiate failed: $?";
+*/
+#endif
 
+    /* Build the derivations. */
+    fprintf(stderr, "creating archives...\n");
 
-# Build the derivations.
-print STDERR "creating archives...\n";
-
+#ifdef	REFERENCE
+/*
 my @narPaths;
 
 my @tmp = @storeExprs;
@@ -429,10 +541,14 @@ while (scalar @tmp > 0) {
     }
     close READ or die "nix-store failed: $?";
 }
+*/
+#endif
 
+    /* Create the manifest. */
+    fprintf(stderr, "creating manifest...\n");
 
-# Create the manifest.
-print STDERR "creating manifest...\n";
+#ifdef	REFERENCE
+/*
 
 my %narFiles;
 my %patches;
@@ -491,134 +607,101 @@ for (my $n = 0; $n < scalar @storePaths; $n++) {
         }
     ];
 }
-
-writeManifest $manifest, \%narFiles, \%patches;
-
-
-sub copyFile {
-    my $src = shift;
-    my $dst = shift;
-    my $tmp = "$dst.tmp.$$";
-    system("/bin/cp", $src, $tmp) == 0 or die "cannot copy file";
-    rename($tmp, $dst) or die "cannot rename file: $!";
-}
-
-
-# Upload/copy the archives.
-print STDERR "uploading/copying archives...\n";
-
-sub archiveExists {
-    my $name = shift;
-    print STDERR "  HEAD on $archivesGetURL/$name\n";
-    return system("$curl --head $archivesGetURL/$name > /dev/null") == 0;
-}
-
-foreach my $narArchive (@narArchives) {
-
-    $narArchive =~ /\/([^\/]*)$/;
-    my $basename = $1;
-
-    if ($localCopy) {
-        # Since nix-push creates $dst atomically, if it exists we
-        # don't have to copy again.
-        my $dst = "$localArchivesDir/$basename";
-        if (! -f "$localArchivesDir/$basename") {
-            print STDERR "  $narArchive\n";
-            copyFile $narArchive, $dst;
-        }
-    }
-    else {
-        if (!archiveExists("$basename")) {
-            print STDERR "  $narArchive\n";
-            system("$curl --show-error --upload-file " .
-                   "'$narArchive' '$archivesPutURL/$basename' > /dev/null") == 0 or
-                   die "curl failed on $narArchive: $?";
-        }
-    }
-}
-
-
-# Upload the manifest.
-print STDERR "uploading manifest...\n";
-if ($localCopy) {
-    copyFile $manifest, $localManifestFile;
-    copyFile "$manifest.bz2", "$localManifestFile.bz2";
-} else {
-    system("$curl --show-error --upload-file " .
-           "'$manifest' '$manifestPutURL' > /dev/null") == 0 or
-           die "curl failed on $manifest: $?";
-    system("$curl --show-error --upload-file " .
-           "'$manifest'.bz2 '$manifestPutURL'.bz2 > /dev/null") == 0 or
-           die "curl failed on $manifest: $?";
-}
 */
 #endif
 
-/*==============================================================*/
-
-#ifdef	UNUSED
-static int verbose = 0;
+#ifdef	REFERENCE
+/*
+writeManifest $manifest, \%narFiles, \%patches;
+*/
 #endif
+    writeManifest(nix, manifest);
 
-static void nixInstantiateArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, const char * arg,
-                /*@unused@*/ void * data)
-	/*@*/
-{
-#ifdef	UNUSED
-    rpmnix nix = &_nix;
+    /* Upload/copy the archives. */
+    fprintf(stderr, "uploading/copying archives...\n");
+
+    nac = argvCount(nix->narArchives);
+    for (i = 0; i < nac; i++) {
+	char * narArchive = xstrdup(av[i]);
+#ifdef	REFERENCE
+/*
+    $narArchive =~ /\/([^\/]*)$/;
+    my $basename = $1;
+*/
 #endif
+	char * bn = basename(narArchive);
 
-    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    if (opt->arg == NULL)
-    switch (opt->val) {
-    default:
-	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
-	poptPrintUsage(con, stderr, 0);
-	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
-	/*@notreached@*/ break;
+	if (localCopy) {
+	    const char * dst = rpmGetPath(nix->localArchivesDir, "/", bn, NULL);
+	    struct stat sb;
+
+	    /*
+	     * Since nix-push creates $dst atomically, if it exists we
+	     * don't have to copy again.
+	     */
+	    if (Stat(dst, &sb) < 0) {
+		fprintf(stderr, "  %s\n", narArchive);
+		xx = copyFile(narArchive, dst);
+	    }
+	} else {
+	    if (!archiveExists(bn)) {
+		fprintf(stderr, "  %s\n", narArchive);
+#ifdef	REFERENCE
+/*
+            system("$curl --show-error --upload-file " .
+                   "'$narArchive' '$archivesPutURL/$basename' > /dev/null") == 0 or
+                   die "curl failed on $narArchive: $?";
+*/
+#endif
+	    }
+	}
+	narArchive = _free(narArchive);
     }
-}
 
-static struct poptOption nixInstantiateOptions[] = {
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
-/*@=type@*/
+    /* Upload the manifest. */
+    fprintf(stderr, "uploading manifest...\n");
 
-#ifdef	NOTYET
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"), NULL },
+    if (localCopy) {
+#ifdef	REFERENCE
+/*
+    copyFile $manifest, $localManifestFile;
+*/
 #endif
-
-  POPT_AUTOHELP
-
-  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-	N_("\
-Usage: nix-push --copy ARCHIVES_DIR MANIFEST_FILE PATHS...\n\
-   or: nix-push ARCHIVES_PUT_URL ARCHIVES_GET_URL MANIFEST_PUT_URL PATHS...\n\
-\n\
-`nix-push' copies or uploads the closure of PATHS to the given\n\
-destination.\n\
-"), NULL },
-
-  POPT_TABLEEND
-};
-
-int
-main(int argc, char *argv[])
-{
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
-    int ec = 1;		/* assume failure */
-#ifdef	UNUSED
-    ARGV_t av = poptGetArgs(optCon);
-    int ac = argvCount(av);
-    rpmnix nix = &_nix;
-    int xx;
+	xx = copyFile(manifest, nix->localManifestFile);
+#ifdef	REFERENCE
+/*
+    copyFile "$manifest.bz2", "$localManifestFile.bz2";
+*/
 #endif
+    } else {
+#ifdef	REFERENCE
+/*
+    system("$curl --show-error --upload-file " .
+           "'$manifest' '$manifestPutURL' > /dev/null") == 0 or
+           die "curl failed on $manifest: $?";
+*/
+#endif
+#ifdef	REFERENCE
+/*
+    system("$curl --show-error --upload-file " .
+           "'$manifest'.bz2 '$manifestPutURL'.bz2 > /dev/null") == 0 or
+           die "curl failed on $manifest: $?";
+*/
+#endif
+    }
 
     ec = 0;	/* XXX success */
+
+exit:
+#ifdef	REFERENCE
+/*
+my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
+    or die "cannot create a temporary directory";
+*/
+#endif
+
+    manifest = _free(manifest);
+    nixExpr = _free(nixExpr);
 
     optCon = rpmioFini(optCon);
 
