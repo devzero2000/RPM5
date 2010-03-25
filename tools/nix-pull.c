@@ -51,6 +51,12 @@ struct rpmnix_s {
     const char ** exprs;
 
     const char * attr;
+
+    const char * manifest;
+
+    const char ** narFiles;
+    const char ** localPaths;
+    const char ** patches;
 };
 
 /**
@@ -67,12 +73,13 @@ static const char * stateDir = "/nix/var/nix";
 static const char * manifestDir;
 
 /*==============================================================*/
+static int addPatch(rpmnix nix, const char * storePath, const char * patch)
+	/*@*/
+{
+    int found = 0;
+
 #ifdef	REFERENCE
 /*
-use strict;
-
-
-sub addPatch {
     my ($patches, $storePath, $patch) = @_;
 
     $$patches{$storePath} = []
@@ -90,14 +97,20 @@ sub addPatch {
     push @{$patchList}, $patch if !$found;
 
     return !$found;
-}
 */
 #endif
 
+    return !found;
+}
+
+
+static int readManifest(rpmnix nix, const char * manifest)
+	/*@*/
+{
+    int manifestVersion = 2;
 
 #ifdef	REFERENCE
 /*
-sub readManifest {
     my ($manifest, $narFiles, $localPaths, $patches) = @_;
 
     open MANIFEST, "<$manifest"
@@ -220,10 +233,11 @@ sub readManifest {
 
     close MANIFEST;
 
-    return $manifestVersion;
-}
 */
 #endif
+
+    return manifestVersion;
+}
 
 /*==============================================================*/
 
@@ -235,25 +249,54 @@ my %localPaths;
 my %patches;
 
 my $skipWrongStore = 0;
+*/
+#endif
 
-sub downloadFile {
-    my $url = shift;
+static char * downloadFile(rpmnix nix, const char * url)
+	/*@*/
+{
+    const char * cmd;
+    const char * rval;
+    char * path;
+
+#ifdef	REFERENCE
+/*
     $ENV{"PRINT_PATH"} = 1;
     $ENV{"QUIET"} = 1;
     my ($dummy, $path) = `$binDir/nix-prefetch-url '$url'`;
     die "cannot fetch `$url'" if $? != 0;
     die "nix-prefetch-url did not return a path" unless defined $path;
     chomp $path;
-    return $path;
 }
 */
 #endif
+    cmd = rpmExpand(binDir, "nix-pre-fetch-url '", url, "'", NULL);
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _free(cmd);
+    path = xstrdup(rval);
+    rval = _free(rval);
+    return path;
+}
 
 static int processURL(rpmnix nix, const char * url)
 	/*@*/
 {
-    const char * fn;
+    const char * cmd;
+    const char * rval;
+    int version;
+    const char * baseName = "unnamed";
+    const char * urlFile;
+    const char * finalPath;
+    const char * hash;
+
+    char * globpat;
+    char * fn;
+    char * manifest;
     struct stat sb;
+    ARGV_t av;
+    int ac;
+    int xx;
+    int i;
 
 #ifdef	REFERENCE
 /*
@@ -275,21 +318,57 @@ static int processURL(rpmnix nix, const char * url)
     if (!Stat(fn, &sb))
 #endif
     {
+	const char * bzipped;
+
         fprintf(stdout, _("fetching list of Nix archives at `%s'...\n"), fn);
+
 #ifdef	REFERENCE
 /*
         my $bzipped = downloadFile "$url.bz2";
+*/
+#endif
+	bzipped = downloadFile(nix, fn);
 
+#ifdef	REFERENCE
+/*
         $manifest = "$tmpDir/MANIFEST";
+*/
+#endif
+	manifest = rpmExpand(tmpDir, "/MANIFEST", NULL);
 
+#ifdef	REFERENCE
+/*
         system("/usr/libexec/nix/bunzip2 < $bzipped > $manifest") == 0
             or die "cannot decompress manifest";
+*/
+#endif
+	cmd = rpmExpand("/usr/libexec/nix/bunzip2 < ", bzipped,
+		" > ", manifest, "; echo $?", NULL);
+	rval = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
+	if (strcmp(rval, "0")) {
+	    fprintf(stderr, "cannot decompress manifest\n");
+	    exit(1);
+	}
+	rval = _free(rval);
 
+#ifdef	REFERENCE
+/*
         $manifest = (`$binDir/nix-store --add $manifest`
                      or die "cannot copy $manifest to the store");
+*/
+#endif
+	cmd = rpmExpand(binDir, "/nix-store --add ", manifest, NULL);
+	manifest = _free(manifest);
+	manifest = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
+
+#ifdef	REFERENCE
+/*
         chomp $manifest;
 */
 #endif
+
     } else {	/* Otherwise, just get the uncompressed manifest. */
         fprintf(stdout, _("obtaining list of Nix archives at `%s'...\n"), url);
 #ifdef	REFERENCE
@@ -297,6 +376,7 @@ static int processURL(rpmnix nix, const char * url)
         $manifest = downloadFile $url;
 */
 #endif
+	manifest = downloadFile(nix, url);
     }
     fn = _free(fn);
 
@@ -306,7 +386,20 @@ static int processURL(rpmnix nix, const char * url)
     
     die "`$url' is not a manifest or it is too old (i.e., for Nix <= 0.7)\n" if $version < 3;
     die "manifest `$url' is too new\n" if $version >= 5;
+*/
+#endif
+    version = readManifest(nix, manifest);
+    if (version < 3) {
+	fprintf(stderr, "`%s' is not a manifest or it is too old (i.e., for Nix <= 0.7)\n", url);
+	exit (1);
+    }
+    if (version >= 5) {
+	fprintf(stderr, "`%s' is too new\n", url);
+	exit (1);
+    }
 
+#ifdef	REFERENCE
+/*
     if ($skipWrongStore) {
         foreach my $path (keys %narFiles) {
             if (substr($path, 0, length($storeDir) + 1) ne "$storeDir/") {
@@ -317,6 +410,8 @@ static int processURL(rpmnix nix, const char * url)
     }
 */
 #endif
+    if (F_ISSET(nix, SKIPWRONGSTORE)) {
+    }
 
 #ifdef	REFERENCE
 /*
@@ -324,9 +419,25 @@ static int processURL(rpmnix nix, const char * url)
     if ($url =~ /\/([^\/]+)\/[^\/]+$/) { # get the forelast component
         $baseName = $1;
     }
+*/
+#endif
+    baseName = "unnamed";
 
+#ifdef	REFERENCE
+/*
     my $hash = `$binDir/nix-hash --flat '$manifest'`
         or die "cannot hash `$manifest'";
+*/
+#endif
+    cmd = rpmExpand(binDir, "/nix-hash --flat ", manifest, NULL);
+    hash = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _free(cmd);
+    if (hash == NULL) {
+	fprintf(stderr, "cannot hash `%s'\n", manifest);
+	exit(1);
+    }
+#ifdef	REFERENCE
+/*
     chomp $hash;
 */
 #endif
@@ -334,35 +445,103 @@ static int processURL(rpmnix nix, const char * url)
 #ifdef	REFERENCE
 /*
     my $urlFile = "$manifestDir/$baseName-$hash.url";
+*/
+#endif
+    urlFile = rpmGetPath(manifestDir, "/",
+			baseName, "-", hash, ".url", NULL);
+
+#ifdef	REFERENCE
+/*
     open URL, ">$urlFile" or die "cannot create `$urlFile'";
     print URL "$url";
     close URL;
+*/
+#endif
     
+#ifdef	REFERENCE
+/*
     my $finalPath = "$manifestDir/$baseName-$hash.nixmanifest";
+*/
+#endif
+    finalPath = rpmGetPath(manifestDir, "/",
+			baseName, "-", hash, ".nixmanifest", NULL);
 
+#ifdef	REFERENCE
+/*
     unlink $finalPath if -e $finalPath;
+*/
+#endif
+    if (!Stat(finalPath, &sb))
+	xx = Unlink(finalPath);
         
+#ifdef	REFERENCE
+/*
     symlink("$manifest", "$finalPath")
         or die "cannot link `$finalPath to `$manifest'";
 */
 #endif
+    if (Symlink(manifest, finalPath)) {
+	fprintf(stderr, _("cannot link `%s' to `%s'\n"), finalPath, manifest);
+	exit(1);
+    }
+    finalPath = _free(finalPath);
 
     /* Delete all old manifests downloaded from this URL. */
 #ifdef	REFERENCE
 /*
-    for my $urlFile2 (glob "$manifestDir/*.url") {
+    for my $urlFile2 (glob "$manifestDir/*.url")
+*/
+#endif
+    globpat = rpmGetPath(manifestDir, "/*.url", NULL);
+    av = NULL;
+    ac = 0;
+    if (!rpmGlob(globpat, &ac, &av)) {
+	for (i = 0; i < ac; i++) {
+	    const char * urlFile2 = av[i];
+	    char * base, * be;
+
+#ifdef	REFERENCE
+/*
         next if $urlFile eq $urlFile2;
+*/
+#endif
+	    if (!strcmp(urlFile, urlFile2))
+		continue;
+
+#ifdef	REFERENCE
+/*
         open URL, "<$urlFile2" or die;
         my $url2 = <URL>;
         chomp $url2;
         close URL;
         next unless $url eq $url2;
+*/
+#endif
+
+#ifdef	REFERENCE
+/*
         my $base = $urlFile2; $base =~ s/.url$//;
         unlink "${base}.url";
         unlink "${base}.nixmanifest";
-    }
 */
 #endif
+	    base = xstrdup(urlFile2);
+	    be = base + strlen(base) - sizeof(".url") + 1;
+	    if (be > base && !strcmp(be, ".url")) *be = '\0';
+
+	    fn = rpmGetPath(base, ".url", NULL);
+	    xx = Unlink(fn);
+	    fn = _free(fn);
+
+	    fn = rpmGetPath(base, ".nixmanifest", NULL);
+	    xx = Unlink(fn);
+	    fn = _free(fn);
+
+	    base = _free(base);
+	}
+    }
+    globpat = _free(globpat);
+
     return 0;
 }
 
@@ -422,6 +601,7 @@ main(int argc, char *argv[])
     rpmnix nix = &_nix;
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
     const char * s;
+    char * dn;
     int ec = 1;		/* assume failure */
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
@@ -455,6 +635,14 @@ if (! -e $manifestDir) {
 }
 */
 #endif
+
+    if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
+	s = "/tmp";
+    tmpDir = mkdtemp(rpmGetPath(s, "/nix-pull.XXXXXX", NULL));
+    if (tmpDir == NULL) {
+	fprintf(stderr, _("cannot create a temporary directory\n"));
+	goto exit;
+    }
 
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
     if ((s = getenv("NIX_LIBEXEC_DIR"))) libexecDir = s;
