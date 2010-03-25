@@ -56,6 +56,7 @@ struct rpmnix_s {
     const char ** localPaths;
     const char ** patches;
 
+    const char ** storeExprs;
     const char ** storePaths;
     const char ** narArchives;
     const char ** narPaths;
@@ -86,18 +87,18 @@ static void writeManifest(rpmnix nix, const char * manifest)
 {
     char * fn = rpmGetPath(manifest, NULL);
     char * tfn = rpmGetPath(fn, ".tmp", NULL);
+    const char * rval;
+    const char * cmd;
     const char * s;
     FD_t fd;
     ssize_t nw;
     int xx;
-    int i;
 
 #ifdef	REFERENCE
 /*
     my ($manifest, $narFiles, $patches) = @_;
 */
 #endif
-
 
 #ifdef	REFERENCE
 /*
@@ -165,8 +166,7 @@ version {\n\
     }
 */
 #endif
-    
-    
+
 #ifdef	REFERENCE
 /*
     close MANIFEST;
@@ -185,7 +185,8 @@ version {\n\
 	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, fn);
 	exit(1);
     }
-
+    tfn = _free(tfn);
+    tfn = rpmGetPath(manifest, ".bz2.tmp", NULL);
 
 #ifdef	REFERENCE
 /*
@@ -194,6 +195,17 @@ version {\n\
         or die "cannot compress manifest";
 */
 #endif
+    cmd = rpmExpand("/usr/libexec/nix/bzip2 < ", fn,
+                " > ", tfn, "; echo $?", NULL);
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _free(cmd);
+    if (strcmp(rval, "0")) {
+	fprintf(stderr, "cannot compress manifest\n");
+	exit(1);
+    }
+    rval = _free(rval);
+    fn = _free(fn);
+    fn = rpmGetPath(manifest, ".bz2", NULL);
 
 #ifdef	REFERENCE
 /*
@@ -201,6 +213,10 @@ version {\n\
         or die "cannot rename $manifest.bz2.tmp: $!";
 */
 #endif
+    if (Rename(tfn, fn) < 0) {
+	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, fn);
+	exit(1);
+    }
 
 exit:
     tfn = _free(tfn);
@@ -312,31 +328,18 @@ main(int argc, char *argv[])
     int i;
 
     const char * cmd;
-    const char * fn;
+    const char * rval;
+    FD_t fd;
+    ssize_t nw;
+    ARGV_t tav;
 
     const char * nixExpr = NULL;
     const char * manifest = NULL;
     int localCopy;
     int nac;
 
-#ifdef	REFERENCE
-/*
-#! /usr/bin/perl -w -I/usr/libexec/nix
+    const char * hashAlgo = "sha256";
 
-use strict;
-use File::Temp qw(tempdir);
-use readmanifest;
-
-my $hashAlgo = "sha256";
-*/
-#endif
-
-#ifdef	REFERENCE
-/*
-my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
-    or die "cannot create a temporary directory";
-*/
-#endif
     if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
 	s = "/tmp";
     tmpDir = mkdtemp(rpmGetPath(s, "/nix-push.XXXXXX", NULL));
@@ -345,12 +348,6 @@ my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
 	goto exit;
     }
 
-#ifdef	REFERENCE
-/*
-my $nixExpr = "$tmpDir/create-nars.nix";
-my $manifest = "$tmpDir/MANIFEST";
-*/
-#endif
     nixExpr = rpmGetPath(tmpDir, "/create-nars.nix", NULL);
     manifest = rpmGetPath(tmpDir, "/MANIFEST", NULL);
 
@@ -362,67 +359,15 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 */
 #endif
 
-#ifdef	REFERENCE
-/*
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-
-my $dataDir = $ENV{"NIX_DATA_DIR"};
-$dataDir = "/usr/share" unless defined $dataDir;
-*/
-#endif
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
     if ((s = getenv("NIX_DATA_DIR"))) dataDir = s;
 
     /* Parse the command line. */
-#ifdef	REFERENCE
-/*
-my $localCopy;
-my $localArchivesDir;
-my $localManifestFile;
-
-my $targetArchivesUrl;
-
-my $archivesPutURL;
-my $archivesGetURL;
-my $manifestPutURL;
-*/
-#endif
-
-#ifdef	REFERENCE
-/*
-showSyntax if scalar @ARGV < 1;
-*/
-#endif
     if (ac < 1) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
     }
 
-#ifdef	REFERENCE
-/*
-if ($ARGV[0] eq "--copy") {
-    showSyntax if scalar @ARGV < 3;
-    $localCopy = 1;
-    shift @ARGV;
-    $localArchivesDir = shift @ARGV;
-    $localManifestFile = shift @ARGV;
-    if ($ARGV[0] eq "--target") {
-       shift @ARGV;
-       $targetArchivesUrl = shift @ARGV;
-    }
-    else {
-       $targetArchivesUrl = "file://$localArchivesDir";
-    }
-}
-else {
-    showSyntax if scalar @ARGV < 3;
-    $localCopy = 0;
-    $archivesPutURL = shift @ARGV;
-    $archivesGetURL = shift @ARGV;
-    $manifestPutURL = shift @ARGV;
-}
-*/
-#endif
     if (F_ISSET(nix, COPY)) {
 	if (ac < 2) {
 	    poptPrintUsage(optCon, stderr, 0);
@@ -432,7 +377,7 @@ else {
 	nix->localArchivesDir = av[0];
 	nix->localManifestFile = av[1];
 	if (nix->targetArchivesUrl == NULL)
-	    nix->targetArchivesUrl = "file://$localArchivesDir";
+	    nix->targetArchivesUrl = rpmExpand("file://", nix->localArchivesDir, NULL);
     } else {
 	if (ac < 3) {
 	    poptPrintUsage(optCon, stderr, 0);
@@ -450,11 +395,7 @@ else {
      */
     for (i = 0; i < ac; i++) {
 	const char * path = av[i];
-#ifdef	REFERENCE
-/*
-    die unless $path =~ /^\//;
-*/
-#endif
+
 assert(*path == '/');
 	/*
 	 * Get all paths referenced by the normalisation of the given 
@@ -475,6 +416,11 @@ assert(*path == '/');
     close READ or die "nix-store failed: $?";
 */
 #endif
+	cmd = rpmExpand(binDir, "/nix-store --query --requisites --force-realise --include-outputs '", path, "'", NULL);
+	rval = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
+	xx = argvSplit(&nix->storePaths, rval, NULL);
+	rval = _free(rval);
     }
 
     /*
@@ -484,10 +430,25 @@ assert(*path == '/');
 #ifdef	REFERENCE
 /*
 my @storePaths = keys %storePaths;
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
 open NIX, ">$nixExpr";
 print NIX "[";
+*/
+#endif
+    fd = Fopen(nixExpr, "w");
+    if (fd == NULL || Ferror(fd)) {
+	fprintf(stderr, "Fopen(%s, \"w\") failed.\n", nixExpr);
+	if (fd) xx = Fclose(fd);
+	exit(1);
+    }
+    nw = Fwrite("[\n", 1, sizeof("[\n")-1, fd);
 
+#ifdef	REFERENCE
+/*
 foreach my $storePath (@storePaths) {
     die unless ($storePath =~ /\/[0-9a-z]{32}[^\"\\\$]*$/);
 
@@ -498,12 +459,31 @@ foreach my $storePath (@storePaths) {
     
     print NIX $nixexpr;
 }
+*/
+#endif
+    nac = argvCount(nix->storePaths);
+    for (i = 0; i < nac; i++) {
+	const char * storePath = nix->storePaths[i];
+	const char * nixexpr = rpmExpand("(",
+		"(import ", dataDir, "/nix/corepkgs/nar/nar.nix)",
+		" {",
+		    "storePath = builtins.storePath \"", storePath, "\";",
+		    "system = \"i686-linux\";",
+		    "hashAlgo = \"", hashAlgo, "\";",
+		" }", ")", NULL);
+	nw = Fwrite(nixexpr, 1, strlen(nixexpr), fd);
+	nw = Fwrite("\n", 1, sizeof("\n")-1, fd);
+	nixexpr = _free(nixexpr);
+    }
 
+#ifdef	REFERENCE
+/*
 print NIX "]";
 close NIX;
 */
 #endif
-
+    nw = Fwrite("]\n", 1, sizeof("]\n")-1, fd);
+    xx = Fclose(fd);
 
     /* Instantiate store derivations from the Nix expression. */
     fprintf(stderr, "instantiating store derivations...\n");
@@ -521,21 +501,45 @@ while (<READ>) {
 close READ or die "nix-instantiate failed: $?";
 */
 #endif
+    cmd = rpmExpand(binDir, "/nix-instantiate ", nixExpr, NULL);
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _free(cmd);
+    xx = argvSplit(&nix->storeExprs, rval, NULL);
+    rval = _free(rval);
 
     /* Build the derivations. */
     fprintf(stderr, "creating archives...\n");
 
 #ifdef	REFERENCE
 /*
-my @narPaths;
-
 my @tmp = @storeExprs;
-while (scalar @tmp > 0) {
+*/
+#endif
+    tav = nix->storeExprs;
+
+#ifdef	REFERENCE
+/*
+while (scalar @tmp > 0)
+*/
+#endif
+    nac = argvCount(tav);
+    for (i = 0; i < nac; i++) {
+	const char * tmp2;
+	
+	/* XXX this appears to attempt chunks < 256 for --realise */
+#ifdef	REFERENCE
+/*
     my $n = scalar @tmp;
     if ($n > 256) { $n = 256 };
     my @tmp2 = @tmp[0..$n - 1];
     @tmp = @tmp[$n..scalar @tmp - 1];
+*/
+#endif
+	/* XXX HACK: do one-by-one for now. */
+	tmp2 = tav[i];
 
+#ifdef	REFERENCE
+/*
     my $pid = open(READ, "$binDir/nix-store --realise @tmp2|")
         or die "cannot run nix-store";
     while (<READ>) {
@@ -544,9 +548,15 @@ while (scalar @tmp > 0) {
         push @narPaths, "$_";
     }
     close READ or die "nix-store failed: $?";
-}
 */
 #endif
+	cmd = rpmExpand(binDir, "/nix-store --realise ", tmp2, NULL);
+	rval = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
+	xx = argvSplit(&nix->narPaths, rval, NULL);
+	rval = _free(rval);
+
+    }
 
     /* Create the manifest. */
     fprintf(stderr, "creating manifest...\n");
@@ -558,6 +568,9 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 #endif
     nac = argvCount(nix->storePaths);
     for (i = 0; i < nac; i++) {
+	const char * storePath = nix->storePaths[i];
+	const char * narDir = nix->narPaths[i];
+
 	struct stat sb;
 	const char * references;
 	const char * deriver;
@@ -566,22 +579,6 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	const char * narName;
 	const char * narFile;
 	off_t narbz2Size;
-#ifdef	REFERENCE
-/*
-    my $narDir = $narPaths[$n];
-*/
-#endif
-	const char * narDir = nix->narPaths[i];
-#ifdef	REFERENCE
-/*
-    my $storePath = $storePaths[$n];
-    $storePath =~ /\/([^\/]*)$/;
-    my $basename = $1;
-    defined $basename or die;
-*/
-#endif
-	char * storePath = xstrdup(nix->storePaths[i]);
-	char * bn = basename(storePath);
 
 #ifdef	REFERENCE
 /*
@@ -609,20 +606,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
     
-#ifdef	REFERENCE
-/*
-    my $narName = "$narbz2Hash.nar.bz2";
-*/
-#endif
 	narName = rpmExpand(narbz2Hash, ".nar.bz2", NULL);
-
-#ifdef	REFERENCE
-/*
-    my $narFile = "$narDir/$narName";
-    (-f $narFile) or die "narfile for $storePath not found";
-    push @narArchives, $narFile;
-*/
-#endif
 	narFile = rpmGetPath(narDir, "/", narName, NULL);
 	if (Lstat(narFile, &sb) < 0) {
 	    fprintf(stderr, "narfile for %s not found\n", storePath);
@@ -630,11 +614,6 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	}
 	xx = argvAdd(&nix->narArchives, narFile);
 
-#ifdef	REFERENCE
-/*
-    my $narbz2Size = (stat $narFile)[7];
-*/
-#endif
 	xx = Stat(narFile, &sb);
 	narbz2Size = sb.st_size;
 
@@ -646,7 +625,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 */
 #endif
 	cmd = rpmExpand(binDir, "/nix-store --query --references '",
-		storePath, NULL);
+		storePath, "'", NULL);
 	references = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
 
@@ -659,20 +638,10 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 */
 #endif
 	cmd = rpmExpand(binDir, "/nix-store --query --deriver '",
-		storePath, NULL);
+		storePath, "'", NULL);
 	deriver = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
 
-#ifdef	REFERENCE
-/*
-    my $url;
-    if ($localCopy) {
-        $url = "$targetArchivesUrl/$narName";
-    } else {
-        $url = "$archivesGetURL/$narName";
-    }
-*/
-#endif
 	if (localCopy)
 	    url = rpmGetPath(nix->targetArchivesUrl, "/", narName, NULL);
 	else
