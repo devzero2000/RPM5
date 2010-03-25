@@ -100,25 +100,12 @@ static void writeManifest(rpmnix nix, const char * manifest)
 */
 #endif
 
-#ifdef	REFERENCE
-/*
-    open MANIFEST, ">$manifest.tmp"; # !!! check exclusive
-*/
-#endif
     fd = Fopen(tfn, "w");	/* XXX check exclusive */
     if (fd == NULL || Ferror(fd)) {
 	if (fd) xx = Fclose(fd);
 	goto exit;
     }
     
-
-#ifdef	REFERENCE
-/*
-    print MANIFEST "version {\n";
-    print MANIFEST "  ManifestVersion: 3\n";
-    print MANIFEST "}\n";
-*/
-#endif
     s = "\
 version {\n\
   ManifestVersion: 3\n\
@@ -167,20 +154,9 @@ version {\n\
 */
 #endif
 
-#ifdef	REFERENCE
-/*
-    close MANIFEST;
-*/
-#endif
     if (fd)
 	xx = Fclose(fd);
 
-#ifdef	REFERENCE
-/*
-    rename("$manifest.tmp", $manifest)
-        or die "cannot rename $manifest.tmp: $!";
-*/
-#endif
     if (Rename(tfn, fn) < 0) {
 	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, fn);
 	exit(1);
@@ -188,13 +164,7 @@ version {\n\
     tfn = _free(tfn);
     tfn = rpmGetPath(manifest, ".bz2.tmp", NULL);
 
-#ifdef	REFERENCE
-/*
-    # Create a bzipped manifest.
-    system("/usr/libexec/nix/bzip2 < $manifest > $manifest.bz2.tmp") == 0
-        or die "cannot compress manifest";
-*/
-#endif
+    /* Create a bzipped manifest. */
     cmd = rpmExpand("/usr/libexec/nix/bzip2 < ", fn,
                 " > ", tfn, "; echo $?", NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
@@ -204,15 +174,10 @@ version {\n\
 	exit(1);
     }
     rval = _free(rval);
+
     fn = _free(fn);
     fn = rpmGetPath(manifest, ".bz2", NULL);
 
-#ifdef	REFERENCE
-/*
-    rename("$manifest.bz2.tmp", "$manifest.bz2")
-        or die "cannot rename $manifest.bz2.tmp: $!";
-*/
-#endif
     if (Rename(tfn, fn) < 0) {
 	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, fn);
 	exit(1);
@@ -230,22 +195,29 @@ static int copyFile(const char * src, const char * dst)
 	/*@*/
 {
     const char * tfn = rpmGetPath(dst, ".tmp", NULL);
+    const char * rval;
+    const char * cmd;
 
-#ifdef	REFERENCE
-/*
-    system("/bin/cp", $src, $tmp) == 0 or die "cannot copy file";
-*/
-#endif
+    /* XXX Ick. */
+    cmd = rpmExpand("/bin/cp '", src, "' '", tfn, "'; echo $?", NULL);
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _free(cmd);
+    if (strcmp(rval, "0")) {
+	fprintf(stderr, "cannot copy file\n");
+	exit(1);
+    }
+    rval = _free(rval);
 
     if (Rename(tfn, dst) < 0) {
 	fprintf(stderr, "Rename(%s, %s) failed\n", tfn, dst);
 	exit(1);
     }
+
     tfn = _free(tfn);
     return 0;
 }
 
-static int archiveExists(const char * name)
+static int archiveExists(rpmnix nix, const char * name)
 	/*@*/
 {
 #ifdef	REFERENCE
@@ -255,7 +227,11 @@ static int archiveExists(const char * name)
     return system("$curl --head $archivesGetURL/$name > /dev/null") == 0;
 */
 #endif
-    return 0;
+    const char * fn = rpmGetPath(nix->archivesGetURL, "/", name, NULL);
+    struct stat sb;
+    int rc = Stat(fn, &sb);
+    fn = _free(fn);
+    return (rc != 0);	/* XXX 0 on success */
 }
 
 /*==============================================================*/
@@ -589,6 +565,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
     close HASH;
 */
 #endif
+	/* XXX Ick. */
 	cmd = rpmExpand("/bin/cat ", narDir, "/narbz2-hash", NULL);
 	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
@@ -602,6 +579,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
     close HASH;
 */
 #endif
+	/* XXX Ick. */
 	cmd = rpmExpand("/bin/cat ", narDir, "/nar-hash", NULL);
 	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
@@ -641,6 +619,10 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 		storePath, "'", NULL);
 	deriver = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _free(cmd);
+	if (!strcmp(deriver, "unknown-deriver")) {
+	    deriver = _free(deriver);
+	    deriver = xstrdup("");
+	}
 
 	if (localCopy)
 	    url = rpmGetPath(nix->targetArchivesUrl, "/", narName, NULL);
@@ -685,7 +667,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 		xx = copyFile(narArchive, dst);
 	    }
 	} else {
-	    if (!archiveExists(bn)) {
+	    if (!archiveExists(nix, bn)) {
 		fprintf(stderr, "  %s\n", narArchive);
 #ifdef	REFERENCE
 /*
