@@ -58,6 +58,7 @@ struct rpmnix_s {
 
     const char ** storePaths;
     const char ** narArchives;
+    const char ** narPaths;
 
     const char * localArchivesDir;
     const char * localManifestFile;
@@ -310,6 +311,9 @@ main(int argc, char *argv[])
     int xx;
     int i;
 
+    const char * cmd;
+    const char * fn;
+
     const char * nixExpr = NULL;
     const char * manifest = NULL;
     int localCopy;
@@ -549,54 +553,133 @@ while (scalar @tmp > 0) {
 
 #ifdef	REFERENCE
 /*
-
-my %narFiles;
-my %patches;
-
-my @narArchives;
-for (my $n = 0; $n < scalar @storePaths; $n++) {
-    my $storePath = $storePaths[$n];
+for (my $n = 0; $n < scalar @storePaths; $n++)
+*/
+#endif
+    nac = argvCount(nix->storePaths);
+    for (i = 0; i < nac; i++) {
+	struct stat sb;
+	const char * references;
+	const char * deriver;
+	const char * url;
+	const char * narbz2Hash;
+	const char * narName;
+	const char * narFile;
+	off_t narbz2Size;
+#ifdef	REFERENCE
+/*
     my $narDir = $narPaths[$n];
-    
+*/
+#endif
+	const char * narDir = nix->narPaths[i];
+#ifdef	REFERENCE
+/*
+    my $storePath = $storePaths[$n];
     $storePath =~ /\/([^\/]*)$/;
     my $basename = $1;
     defined $basename or die;
+*/
+#endif
+	char * storePath = xstrdup(nix->storePaths[i]);
+	char * bn = basename(storePath);
 
+#ifdef	REFERENCE
+/*
     open HASH, "$narDir/narbz2-hash" or die "cannot open narbz2-hash";
     my $narbz2Hash = <HASH>;
     chomp $narbz2Hash;
     $narbz2Hash =~ /^[0-9a-z]+$/ or die "invalid hash";
     close HASH;
+*/
+#endif
+	cmd = rpmExpand("/bin/cat ", narDir, "/narbz2-hash", NULL);
+	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
 
+#ifdef	REFERENCE
+/*
     open HASH, "$narDir/nar-hash" or die "cannot open nar-hash";
     my $narHash = <HASH>;
     chomp $narHash;
     $narHash =~ /^[0-9a-z]+$/ or die "invalid hash";
     close HASH;
+*/
+#endif
+	cmd = rpmExpand("/bin/cat ", narDir, "/nar-hash", NULL);
+	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
     
+#ifdef	REFERENCE
+/*
     my $narName = "$narbz2Hash.nar.bz2";
+*/
+#endif
+	narName = rpmExpand(narbz2Hash, ".nar.bz2", NULL);
 
+#ifdef	REFERENCE
+/*
     my $narFile = "$narDir/$narName";
     (-f $narFile) or die "narfile for $storePath not found";
     push @narArchives, $narFile;
+*/
+#endif
+	narFile = rpmGetPath(narDir, "/", narName, NULL);
+	if (Lstat(narFile, &sb) < 0) {
+	    fprintf(stderr, "narfile for %s not found\n", storePath);
+	    exit(1);
+	}
+	xx = argvAdd(&nix->narArchives, narFile);
 
+#ifdef	REFERENCE
+/*
     my $narbz2Size = (stat $narFile)[7];
+*/
+#endif
+	xx = Stat(narFile, &sb);
+	narbz2Size = sb.st_size;
 
+#ifdef	REFERENCE
+/*
     my $references = `$binDir/nix-store --query --references '$storePath'`;
     die "cannot query references for `$storePath'" if $? != 0;
     $references = join(" ", split(" ", $references));
+*/
+#endif
+	cmd = rpmExpand(binDir, "/nix-store --query --references '",
+		storePath, NULL);
+	references = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
 
+#ifdef	REFERENCE
+/*
     my $deriver = `$binDir/nix-store --query --deriver '$storePath'`;
     die "cannot query deriver for `$storePath'" if $? != 0;
     chomp $deriver;
     $deriver = "" if $deriver eq "unknown-deriver";
+*/
+#endif
+	cmd = rpmExpand(binDir, "/nix-store --query --deriver '",
+		storePath, NULL);
+	deriver = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _free(cmd);
 
+#ifdef	REFERENCE
+/*
     my $url;
     if ($localCopy) {
         $url = "$targetArchivesUrl/$narName";
     } else {
         $url = "$archivesGetURL/$narName";
     }
+*/
+#endif
+	if (localCopy)
+	    url = rpmGetPath(nix->targetArchivesUrl, "/", narName, NULL);
+	else
+	    url = rpmGetPath(nix->archivesGetURL, "/", narName, NULL);
+
+#ifdef	REFERENCE
+/*
     $narFiles{$storePath} = [
         { url => $url
         , hash => "$hashAlgo:$narbz2Hash"
@@ -606,15 +689,10 @@ for (my $n = 0; $n < scalar @storePaths; $n++) {
         , deriver => $deriver
         }
     ];
-}
 */
 #endif
+    }
 
-#ifdef	REFERENCE
-/*
-writeManifest $manifest, \%narFiles, \%patches;
-*/
-#endif
     writeManifest(nix, manifest);
 
     /* Upload/copy the archives. */
@@ -623,12 +701,6 @@ writeManifest $manifest, \%narFiles, \%patches;
     nac = argvCount(nix->narArchives);
     for (i = 0; i < nac; i++) {
 	char * narArchive = xstrdup(av[i]);
-#ifdef	REFERENCE
-/*
-    $narArchive =~ /\/([^\/]*)$/;
-    my $basename = $1;
-*/
-#endif
 	char * bn = basename(narArchive);
 
 	if (localCopy) {
@@ -662,17 +734,14 @@ writeManifest $manifest, \%narFiles, \%patches;
     fprintf(stderr, "uploading manifest...\n");
 
     if (localCopy) {
-#ifdef	REFERENCE
-/*
-    copyFile $manifest, $localManifestFile;
-*/
-#endif
+	const char * bmanifest = rpmGetPath(manifest, ".bz2", NULL);
+	const char * blocalManifestFile =
+		rpmGetPath(nix->localManifestFile, ".bz2", NULL);
+
 	xx = copyFile(manifest, nix->localManifestFile);
-#ifdef	REFERENCE
-/*
-    copyFile "$manifest.bz2", "$localManifestFile.bz2";
-*/
-#endif
+	xx = copyFile(bmanifest, blocalManifestFile);
+	bmanifest = _free(bmanifest);
+	blocalManifestFile = _free(blocalManifestFile);
     } else {
 #ifdef	REFERENCE
 /*
