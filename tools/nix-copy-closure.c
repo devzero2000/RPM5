@@ -53,7 +53,11 @@ struct rpmnix_s {
     const char * attr;
 
     int op;
-    const char * host;
+    const char * sshHost;
+
+    const char ** storePaths;
+    const char ** allStorePaths;
+    const char ** missing;
 };
 
 /**
@@ -62,148 +66,7 @@ static struct rpmnix_s _nix = {
 	.flags = RPMNIX_FLAGS_NOOUTLINK
 };
 
-/*==============================================================*/
-#ifdef	REFERENCE
-/*
-#! /usr/bin/perl -w -I/usr/libexec/nix
-
-use ssh;
-
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-
-
-if (scalar @ARGV < 1) {
-    print STDERR <<EOF
-Usage: nix-copy-closure [--from | --to] HOSTNAME [--sign] [--gzip] PATHS...
-EOF
-    ;
-    exit 1;
-}
-
-
-# Get the target host.
-my $sshHost;
-
-my $sign = 0;
-
-my $compressor = "";
-my $decompressor = "";
-
-my $toMode = 1;
-
-
-# !!! Copied from nix-pack-closure, should put this in a module.
-my @storePaths = ();
-
-while (@ARGV) {
-    my $arg = shift @ARGV;
-    
-    if ($arg eq "--sign") {
-        $sign = 1;
-    }
-    elsif ($arg eq "--gzip") {
-        $compressor = "| gzip";
-        $decompressor = "gunzip |";
-    }
-    elsif ($arg eq "--from") {
-        $toMode = 0;
-    }
-    elsif ($arg eq "--to") {
-        $toMode = 1;
-    }
-    elsif (!defined $sshHost) {
-        $sshHost = $arg;
-    }
-    else {
-        push @storePaths, $arg;
-    }
-}
-
-
-openSSHConnection $sshHost or die "$0: unable to start SSH\n";
-
-
-if ($toMode) { # Copy TO the remote machine.
-
-    my @allStorePaths;
-
-    # Get the closure of this path.
-    my $pid = open(READ, "$binDir/nix-store --query --requisites @storePaths|") or die;
-    
-    while (<READ>) {
-        chomp;
-        die "bad: $_" unless /^\//;
-        push @allStorePaths, $_;
-    }
-
-    close READ or die "nix-store failed: $?";
-
-
-    # Ask the remote host which paths are invalid.
-    open(READ, "ssh $sshHost @sshOpts nix-store --check-validity --print-invalid @allStorePaths|");
-    my @missing = ();
-    while (<READ>) {
-        chomp;
-        push @missing, $_;
-    }
-    close READ or die;
-
-
-    # Export the store paths and import them on the remote machine.
-    if (scalar @missing > 0) {
-        print STDERR "copying these missing paths:\n";
-        print STDERR "  $_\n" foreach @missing;
-        my $extraOpts = "";
-        $extraOpts .= "--sign" if $sign == 1;
-        system("nix-store --export $extraOpts @missing $compressor | ssh $sshHost @sshOpts '$decompressor nix-store --import'") == 0
-            or die "copying store paths to remote machine `$sshHost' failed: $?";
-    }
-
-}
-
-
-else { # Copy FROM the remote machine.
-
-    # Query the closure of the given store paths on the remote
-    # machine.  Paths are assumed to be store paths; there is no
-    # resolution (following of symlinks).
-    my $pid = open(READ,
-        "ssh @sshOpts $sshHost nix-store --query --requisites @storePaths|") or die;
-    
-    my @allStorePaths;
-
-    while (<READ>) {
-        chomp;
-        die "bad: $_" unless /^\//;
-        push @allStorePaths, $_;
-    }
-
-    close READ or die "nix-store on remote machine `$sshHost' failed: $?";
-
-
-    # What paths are already valid locally?
-    open(READ, "/usr/bin/nix-store --check-validity --print-invalid @allStorePaths|");
-    my @missing = ();
-    while (<READ>) {
-        chomp;
-        push @missing, $_;
-    }
-    close READ or die;
-    
-
-    # Export the store paths on the remote machine and import them on locally.
-    if (scalar @missing > 0) {
-        print STDERR "copying these missing paths:\n";
-        print STDERR "  $_\n" foreach @missing;
-        my $extraOpts = "";
-        $extraOpts .= "--sign" if $sign == 1;
-        system("ssh $sshHost @sshOpts 'nix-store --export $extraOpts @missing $compressor' | $decompressor /usr/bin/nix-store --import") == 0
-            or die "copying store paths from remote machine `$sshHost' failed: $?";
-    }
-
-}
-*/
-#endif
+static const char * binDir = "/usr/bin";
 
 /*==============================================================*/
 
@@ -229,11 +92,11 @@ static void nixInstantiateArgCallback(poptContext con,
     switch (opt->val) {
     case NIX_FROM_HOST:
 	nix->op = opt->val;
-	nix->host = xstrdup(arg);
+	nix->sshHost = xstrdup(arg);
 	break;
     case NIX_TO_HOST:
 	nix->op = opt->val;
-	nix->host = xstrdup(arg);
+	nix->sshHost = xstrdup(arg);
 	break;
     default:
 	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
@@ -276,16 +139,267 @@ Usage: nix-copy-closure [--from | --to] HOSTNAME [--sign] [--gzip] PATHS...\n\
 int
 main(int argc, char *argv[])
 {
+    rpmnix nix = &_nix;
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
     int ec = 1;		/* assume failure */
-#ifdef	UNUSED
+    const char * s;
+    const char * cmd;
+    const char * rval;
+    const char * sshOpts = "";			/* XXX HACK */
+    const char * compressor = "";
+    const char * decompressor = "";
+    const char * extraOpts = "";
+    int nac;
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
-    rpmnix nix = &_nix;
     int xx;
+
+#ifdef	REFERENCE
+/*
+#! /usr/bin/perl -w -I/usr/libexec/nix
+
+use ssh;
+*/
 #endif
 
+#ifdef	REFERENCE
+/*
+my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
+*/
+#endif
+    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
+
+
+#ifdef	REFERENCE
+/*
+if (scalar @ARGV < 1) {
+    print STDERR <<EOF
+Usage: nix-copy-closure [--from | --to] HOSTNAME [--sign] [--gzip] PATHS...
+EOF
+    ;
+    exit 1;
+}
+*/
+#endif
+    if (ac < 1) {
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+    }
+
+
+#ifdef	REFERENCE
+/*
+# Get the target host.
+my $sshHost;
+
+my $sign = 0;
+
+my $compressor = "";
+my $decompressor = "";
+
+# !!! Copied from nix-pack-closure, should put this in a module.
+my @storePaths = ();
+*/
+#endif
+    if (nix->op == 0)
+	nix->op = NIX_TO_HOST;
+
+#ifdef	REFERENCE
+/*
+while (@ARGV) {
+    my $arg = shift @ARGV;
+    
+    if ($arg eq "--sign") {
+        $sign = 1;
+    }
+    elsif ($arg eq "--gzip") {
+        $compressor = "| gzip";
+        $decompressor = "gunzip |";
+    }
+    elsif ($arg eq "--from") {
+        $toMode = 0;
+    }
+    elsif ($arg eq "--to") {
+        $toMode = 1;
+    }
+    elsif (!defined $sshHost) {
+        $sshHost = $arg;
+    }
+    else {
+        push @storePaths, $arg;
+    }
+}
+*/
+#endif
+    xx = argvAppend(&nix->storePaths, av);
+    if (F_ISSET(nix, GZIP)) {
+	compressor = "| gzip";
+	decompressor = "gunzip |";
+    }
+    if (F_ISSET(nix, SIGN)) {
+	extraOpts = " --sign";
+    }
+
+#ifdef	REFERENCE
+/*
+openSSHConnection $sshHost or die "$0: unable to start SSH\n";
+*/
+#endif
+
+
+    switch (nix->op) {
+    case NIX_TO_HOST:		/* Copy TO the remote machine. */
+
+	/* Get the closure of this path. */
+#ifdef	REFERENCE
+/*
+    my $pid = open(READ, "$binDir/nix-store --query --requisites @storePaths|") or die;
+    
+    while (<READ>) {
+        chomp;
+        die "bad: $_" unless /^\//;
+        push @allStorePaths, $_;
+    }
+
+    close READ or die "nix-store failed: $?";
+*/
+#endif
+	s = argvJoin(nix->storePaths, ' ');
+        cmd = rpmExpand(binDir, "/nix-store --query --requisites ", s, NULL);
+	s = _free(s);
+        rval = rpmExpand("%(", cmd, ")", NULL);
+        cmd = _free(cmd);
+        xx = argvSplit(&nix->allStorePaths, rval, NULL);
+        rval = _free(rval);
+
+	/* Ask the remote host which paths are invalid. */
+#ifdef	REFERENCE
+/*
+    open(READ, "ssh $sshHost @sshOpts nix-store --check-validity --print-invalid @allStorePaths|");
+    my @missing = ();
+    while (<READ>) {
+        chomp;
+        push @missing, $_;
+    }
+    close READ or die;
+*/
+#endif
+	s = argvJoin(nix->allStorePaths, ' ');
+        cmd = rpmExpand("ssh ", nix->sshHost, " ", sshOpts, " nix-store --check-validity --print-invalid ", s, NULL);
+	s = _free(s);
+#ifdef	NOTYET
+        rval = rpmExpand("%(", cmd, ")", NULL);
+        xx = argvSplit(&nix->missing, rval, NULL);
+        rval = _free(rval);
+#else
+fprintf(stderr, "--> %s\n", cmd);
+nix->missing = NULL;
+fprintf(stderr, "<-- missing assumed NULL\n");
+#endif
+        cmd = _free(cmd);
+
+	/* Export the store paths and import them on the remote machine. */
+	nac = argvCount(nix->missing);
+	if (nac > 0) {
+argvPrint("copying these missing paths:", nix->missing, NULL);
+#ifdef	REFERENCE
+/*
+        my $extraOpts = "";
+        $extraOpts .= "--sign" if $sign == 1;
+        system("nix-store --export $extraOpts @missing $compressor | ssh $sshHost @sshOpts '$decompressor nix-store --import'") == 0
+            or die "copying store paths to remote machine `$sshHost' failed: $?";
+*/
+#endif
+	    s = argvJoin(nix->missing, ' ');
+	    cmd = rpmExpand(
+binDir, "/nix-store --export ", extraOpts, " ", s, " ", compressor, " | ssh ", nix->sshHost, " ", sshOpts, " '", decompressor, " nix-store --import'", NULL);
+	    s = _free(s);
+fprintf(stderr, "--> %s\n", cmd);
+	    cmd = _free(cmd);
+	}
+	break;
+    case NIX_FROM_HOST:		/* Copy FROM the remote machine. */
+
+	/*
+	 * Query the closure of the given store paths on the remote
+	 * machine.  Paths are assumed to be store paths; there is no
+	 * resolution (following of symlinks).
+	 */
+#ifdef	REFERENCE
+/*
+    my $pid = open(READ,
+        "ssh @sshOpts $sshHost nix-store --query --requisites @storePaths|") or die;
+    
+    my @allStorePaths;
+
+    while (<READ>) {
+        chomp;
+        die "bad: $_" unless /^\//;
+        push @allStorePaths, $_;
+    }
+
+    close READ or die "nix-store on remote machine `$sshHost' failed: $?";
+*/
+#endif
+	s = argvJoin(nix->storePaths, ' ');
+        cmd = rpmExpand("ssh ", sshOpts, " ", nix->sshHost, " nix-store --query --requisites ", s, NULL);
+	s = _free(s);
+#ifdef	NOTYET
+        rval = rpmExpand("%(", cmd, ")", NULL);
+        xx = argvSplit(&nix->missing, rval, NULL);
+        rval = _free(rval);
+#else
+fprintf(stderr, "--> %s\n", cmd);
+nix->allStorePaths = NULL;
+fprintf(stderr, "<-- allStorePaths assumed NULL\n");
+#endif
+        cmd = _free(cmd);
+
+	/* What paths are already valid locally? */
+#ifdef	REFERENCE
+/*
+    open(READ, "/usr/bin/nix-store --check-validity --print-invalid @allStorePaths|");
+    my @missing = ();
+    while (<READ>) {
+        chomp;
+        push @missing, $_;
+    }
+    close READ or die;
+*/
+#endif
+	s = argvJoin(nix->allStorePaths, ' ');
+        cmd = rpmExpand(binDir, "/nix-store --check-validity --print-invalid ", s, NULL);
+	s = _free(s);
+        rval = rpmExpand("%(", cmd, ")", NULL);
+        xx = argvSplit(&nix->missing, rval, NULL);
+        rval = _free(rval);
+        cmd = _free(cmd);
+
+	/* Export the store paths on the remote machine and import them on locally. */
+	nac = argvCount(nix->missing);
+	if (nac > 0) {
+argvPrint("copying these missing paths:", nix->missing, NULL);
+#ifdef	REFERENCE
+/*
+        system("ssh $sshHost @sshOpts 'nix-store --export $extraOpts @missing $compressor' | $decompressor /usr/bin/nix-store --import") == 0
+            or die "copying store paths from remote machine `$sshHost' failed: $?";
+*/
+#endif
+	    s = argvJoin(nix->missing, ' ');
+	    cmd = rpmExpand("ssh ", nix->sshHost, " ", sshOpts, " 'nix-store --export ", extraOpts, " ", s, " ", compressor, "' | ", decompressor, " ", binDir, "/nix-store --import", NULL);
+	    s = _free(s);
+fprintf(stderr, "--> %s\n", cmd);
+	    cmd = _free(cmd);
+	}
+	break;
+    }
+
     ec = 0;	/* XXX success */
+
+exit:
+
+    nix->storePaths = argvFree(nix->storePaths);
+    nix->sshHost = _free(nix->sshHost);
 
     optCon = rpmioFini(optCon);
 
