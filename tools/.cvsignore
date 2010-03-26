@@ -24,10 +24,12 @@ nix-env
 nix-hash
 nix-install-package
 nix-instantiate
+nix-log2xml
 nix-prefetch-url
 nix-pull
 nix-push
 nix-store
+nix-worker
 rpm2cpio
 rpmcache
 rpmcmp

@@ -25,7 +25,7 @@ EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 EXTRA_PROGRAMS = augtool cudftool debugedit \
 	nix-build nix-channel nix-collect-garbage nix-copy-closure \
 	nix-env nix-hash nix-install-package nix-instantiate \
-	nix-prefetch-url nix-pull nix-push nix-store \
+	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
 	xiu-hash xiu-instantiate xiu-store \
 	rpmkey sandbox semodule spooktool
 
@@ -115,6 +115,10 @@ nix_instantiate_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
 nix_instantiate_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
 
+nix_log2xml_SOURCES =	log2xml.cc
+nix_log2xml_LDADD =	# -L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat  /usr/lib/nix/libATerm.a
+nix_log2xml_LDFLAGS =	# -Wl,-rpath -Wl,/usr/lib/nix
+
 nix_prefetch_url_SOURCES =	nix-prefetch-url.c
 nix_prefetch_url_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 nix_prefetch_url_LDADD =	$(RPMIO_LDADD_COMMON)
@@ -131,6 +135,11 @@ nix_store_SOURCES =	nix-store.cc dotgraph.cc
 nix_store_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
 nix_store_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
+
+nix_worker_SOURCES =	nix-worker.cc
+nix_worker_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
+        /usr/lib/nix/libATerm.a
+nix_worker_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
 
 rpmcache_SOURCES =	rpmcache.c
 rpmcache_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
