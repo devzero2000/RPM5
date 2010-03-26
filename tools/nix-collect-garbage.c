@@ -9,6 +9,7 @@
 
 #include "debug.h"
 
+static int _debug = -1;
 
 #define _KFB(n) (1U << (n))
 #define _DFB(n) (_KFB(n) | 0x40000000)
@@ -31,7 +32,7 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(30)	/*    --skip-wrong-store */
+    RPMNIX_FLAGS_DELETEOLD	= _DFB(24)	/* -d,--delete-old */
 };
 
 /**
@@ -59,39 +60,30 @@ static struct rpmnix_s _nix = {
 	.flags = RPMNIX_FLAGS_NOOUTLINK
 };
 
+static const char * binDir	= "/usr/bin";
+
+static const char * profilesDir	= "/nix/var/nix/profiles";
+
+#define DBG(_l) if (_debug) fprintf _l
 /*==============================================================*/
-#ifdef	REFERENCE
-/*
-#! /usr/bin/perl -w
 
-use strict;
-
-my $profilesDir = "/nix/var/nix/profiles";
-
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-
-
-# Process the command line arguments.
-my @args = ();
-my $removeOld = 0;
-
-for my $arg (@ARGV) {
-    if ($arg eq "--delete-old" || $arg eq "-d") {
-        $removeOld = 1;
-    } else {
-        push @args, $arg;
-    }
+static char * _freeCmd(const char * cmd)
+{
+DBG((stderr, "\t%s\n", cmd));
+    cmd = _free(cmd);
+    return NULL;
 }
 
-
-# If `-d' was specified, remove all old generations of all profiles.
-# Of course, this makes rollbacks to before this point in time
-# impossible.
-
-sub removeOldGenerations;
-sub removeOldGenerations {
-    my $dir = shift;
-
+/*
+ * If `-d' was specified, remove all old generations of all profiles.
+ * Of course, this makes rollbacks to before this point in time
+ * impossible.
+ */
+static int removeOldGenerations(rpmnix nix, const char * dir)
+	/*@*/
+{
+#ifdef	REFERENCE
+/*
     my $dh;
     opendir $dh, $dir or die;
 
@@ -108,15 +100,10 @@ sub removeOldGenerations {
     }
     
     closedir $dh or die;
-}
-
-removeOldGenerations $profilesDir if $removeOld;
-
-
-# Run the actual garbage collector.
-exec "$binDir/nix-store", "--gc", @args;
 */
 #endif
+    return 0;
+}
 
 /*==============================================================*/
 
@@ -151,7 +138,7 @@ static struct poptOption nixInstantiateOptions[] = {
 	nixInstantiateArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
- { "skip-wrong-store", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_SKIPWRONGSTORE,
+ { "delete-old", 'd', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_DELETEOLD,
 	N_("FIXME"), NULL },
 
 #ifdef	NOTYET
@@ -171,16 +158,58 @@ static struct poptOption nixInstantiateOptions[] = {
 int
 main(int argc, char *argv[])
 {
+    rpmnix nix = &_nix;
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
     int ec = 1;		/* assume failure */
-#ifdef	UNUSED
+    const char * rval;
+    const char * cmd;
+    const char * s;
     ARGV_t av = poptGetArgs(optCon);
+#ifdef	UNUSED
     int ac = argvCount(av);
-    rpmnix nix = &_nix;
+#endif
     int xx;
+
+    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
+
+    /* Process the command line arguments. */
+#ifdef	REFERENCE
+/*
+my @args = ();
+my $removeOld = 0;
+
+for my $arg (@ARGV) {
+    if ($arg eq "--delete-old" || $arg eq "-d") {
+        $removeOld = 1;
+    } else {
+        push @args, $arg;
+    }
+}
+*/
 #endif
 
-    ec = 0;	/* XXX success */
+#ifdef	REFERENCE
+/*
+removeOldGenerations $profilesDir if $removeOld;
+*/
+#endif
+    if (F_ISSET(nix, DELETEOLD))
+	xx = removeOldGenerations(nix, profilesDir);
+
+#ifdef	REFERENCE
+/*
+# Run the actual garbage collector.
+exec "$binDir/nix-store", "--gc", @args;
+*/
+#endif
+    s = argvJoin(av, ' ');
+    cmd = rpmExpand(binDir, "/nix-store --gc ", s, "; echo $?", NULL);
+    s = _free(s);
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    if (!strcmp(rval, "0"))
+	ec = 0;	/* XXX success */
+    rval = _free(rval);
+    cmd = _freeCmd(cmd);
 
     optCon = rpmioFini(optCon);
 
