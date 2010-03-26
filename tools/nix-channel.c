@@ -5,9 +5,12 @@
 #include <rpmlog.h>
 #include <rpmmacro.h>
 #include <argv.h>
+#include <ugid.h>
 #include <poptIO.h>
 
 #include "debug.h"
+
+static int _debug = -1;
 
 
 #define _KFB(n) (1U << (n))
@@ -51,6 +54,10 @@ struct rpmnix_s {
     const char ** exprs;
 
     const char * attr;
+
+    int op;
+    const char * url;
+
 };
 
 /**
@@ -59,39 +66,37 @@ static struct rpmnix_s _nix = {
 	.flags = RPMNIX_FLAGS_NOOUTLINK
 };
 
+static const char * nixDefExpr;
+static const char * channelsList;
+static const char ** channels;
+
+static const char * binDir	= "/usr/bin";
+static const char * homeDir	= "~";
+
+static const char * stateDir	= "/nix/var/nix";
+static const char * rootsDir	= "/nix/var/nix/gcroots";
+
+#define	DBG(_l)	if (_debug) fprintf _l
 /*==============================================================*/
+/* Reads the list of channels from the file $channelsList. */
+static void readChannels(rpmnix nix)
+	/*@*/
+{
+    FD_t fd;
+    struct stat sb;
+    int xx;
+
+DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
+
 #ifdef	REFERENCE
 /*
-#! /usr/bin/perl -w
-
-use strict;
-
-my $rootsDir = "/nix/var/nix/gcroots";
-
-my $stateDir = $ENV{"NIX_STATE_DIR"};
-$stateDir = "/nix/var/nix" unless defined $stateDir;
-
-
-# Turn on caching in nix-prefetch-url.
-my $channelCache = "$stateDir/channel-cache";
-mkdir $channelCache, 0755 unless -e $channelCache;
-$ENV{'NIX_DOWNLOAD_CACHE'} = $channelCache if -W $channelCache;
-
-
-# Figure out the name of the `.nix-channels' file to use.
-my $home = $ENV{"HOME"};
-die '$HOME not set' unless defined $home;
-my $channelsList = "$home/.nix-channels";
-
-my $nixDefExpr = "$home/.nix-defexpr";
-    
-
-my @channels;
-
-
-# Reads the list of channels from the file $channelsList;
-sub readChannels {
     return if (!-f $channelsList);
+*/
+#endif
+    if (channelsList == NULL || Stat(channelsList, &sb) < 0)
+	return;
+#ifdef	REFERENCE
+/*
     open CHANNELS, "<$channelsList" or die "cannot open `$channelsList': $!";
     while (<CHANNELS>) {
         chomp;
@@ -99,71 +104,164 @@ sub readChannels {
         push @channels, $_;
     }
     close CHANNELS;
-}
-
-
-# Writes the list of channels to the file $channelsList;
-sub writeChannels {
-    open CHANNELS, ">$channelsList" or die "cannot open `$channelsList': $!";
-    foreach my $url (@channels) {
-        print CHANNELS "$url\n";
+*/
+#endif
+    fd = Fopen(channelsList, "r.fpio");
+    if (fd == NULL || Ferror(fd)) {
+	fprintf(stderr, "Fopen(%s, \"r\") failed.\n", channelsList);
+	if (fd) xx = Fclose(fd);
+	exit(1);
     }
-    close CHANNELS;
+    /* XXX skip comments todo++ */
+    channels = argvFree(channels);
+    xx = argvFgets(&channels, fd);
+    xx = Fclose(fd);
 }
 
+/* Writes the list of channels to the file $channelsList */
+static void writeChannels(rpmnix nix)
+	/*@*/
+{
+    FD_t fd;
+    int ac = argvCount(channels);
+    ssize_t nw;
+    int xx;
+    int i;
 
-# Adds a channel to the file $channelsList;
-sub addChannel {
-    my $url = shift;
-    readChannels;
-    foreach my $url2 (@channels) {
-        return if $url eq $url2;
+DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
+    if (Access(channelsList, W_OK)) {
+	fprintf(stderr, "file %s is not writable.\n", channelsList);
+	return;
     }
-    push @channels, $url;
-    writeChannels;
-}
-
-
-# Remove a channel from the file $channelsList;
-sub removeChannel {
-    my $url = shift;
-    my @left = ();
-    readChannels;
-    foreach my $url2 (@channels) {
-        push @left, $url2 if $url ne $url2;
+    fd = Fopen(channelsList, "w");
+    if (fd == NULL || Ferror(fd)) {
+	fprintf(stderr, "Fopen(%s, \"w\") failed.\n", channelsList);
+	if (fd) xx = Fclose(fd);
+	exit(1);
     }
-    @channels = @left;
-    writeChannels;
+    for (i = 0; i < ac; i++) {
+	const char * url = channels[i];
+	nw = Fwrite(url, 1, strlen(url), fd);
+	nw = Fwrite("\n", 1, sizeof("\n")-1, fd);
+    }
+    xx = Fclose(fd);
 }
 
+/* Adds a channel to the file $channelsList */
+static void addChannel(rpmnix nix, const char * url)
+	/*@*/
+{
+    int ac;
+    int xx;
+    int i;
 
-# Fetch Nix expressions and pull cache manifests from the subscribed
-# channels.
-sub update {
-    readChannels;
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
+    readChannels(nix);
+    ac = argvCount(channels);
+    for (i = 0; i < ac; i++) {
+	if (!strcmp(channels[i], url))
+	    return;
+    }
+    xx = argvAdd(&channels, url);
+    writeChannels(nix);
+}
 
-    # Create the manifests directory if it doesn't exist.
-    mkdir "$stateDir/manifests", 0755 unless -e "$stateDir/manifests";
+/* Remove a channel from the file $channelsList */
+static void removeChannel(rpmnix nix, const char * url)
+	/*@*/
+{
+    const char ** nchannels = NULL;
+    int ac;
+    int xx;
+    int i;
 
-    # Do we have write permission to the manifests directory?  If not,
-    # then just skip pulling the manifest and just download the Nix
-    # expressions.  If the user is a non-privileged user in a
-    # multi-user Nix installation, he at least gets installation from
-    # source.
-    if (-W "$stateDir/manifests") {
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
+    readChannels(nix);
+    ac = argvCount(channels);
+    for (i = 0; i < ac; i++) {
+	if (!strcmp(channels[i], url))
+	    continue;
+	xx = argvAdd(&nchannels, channels[i]);
+    }
+    channels = argvFree(channels);
+    channels = nchannels;
+    writeChannels(nix);
+}
 
-        # Pull cache manifests.
+/*
+ * Fetch Nix expressions and pull cache manifests from the subscribed
+ * channels.
+ */
+static void updateChannels(rpmnix nix)
+	/*@*/
+{
+    uid_t uid = getuid();
+    const char * userName = uidToUname(uid);
+    const char * rootFile;
+#ifdef	UNUSED
+    const char * rval;
+#endif
+    const char * cmd;
+    const char * dn;
+    const char * fn;
+    int xx;
+
+DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
+
+    readChannels(nix);
+
+    /* Create the manifests directory if it doesn't exist. */
+    dn = rpmGetPath(stateDir, "/manifests", NULL);
+    xx = rpmioMkpath(dn, (mode_t)0755, (uid_t)-1, (gid_t)-1);
+    dn = _free(dn);
+
+    /*
+     * Do we have write permission to the manifests directory?  If not,
+     * then just skip pulling the manifest and just download the Nix
+     * expressions.  If the user is a non-privileged user in a
+     * multi-user Nix installation, he at least gets installation from
+     * source.
+     */
+    dn = rpmGetPath(stateDir, "/manifests", NULL);
+    if (!Access(dn, W_OK)) {
+	int ac = argvCount(channels);
+	int i;
+
+	/* Pull cache manifests. */
+#ifdef	REFERENCE
+/*
         foreach my $url (@channels) {
             #print "pulling cache manifest from `$url'\n";
             system("/usr/bin/nix-pull", "--skip-wrong-store", "$url/MANIFEST") == 0
                 or die "cannot pull cache manifest from `$url'";
         }
 
+*/
+#endif
+	for (i = 0; i < ac; i++) {
+	    const char * url = channels[i];
+            cmd = rpmExpand(binDir, "/nix-pull --skip-wrong-store ", url, "/MANIFEST",
+			"; echo $?", NULL);
+fprintf(stderr, "<-- cmd: %s\n", cmd);
+#ifdef	NOTYET
+	    rval = rpmExpand("%(", cmd, ")", NULL);
+	    if (strcmp(rval, "0")) {
+		fprintf(stderr, "cannot pull cache manifest from `%s'\n", url);
+		exit(1);
+	    }
+	    rval = _free(rval);
+#endif
+	    cmd = _free(cmd);
+	}
     }
+    dn = _free(dn);
 
-    # Create a Nix expression that fetches and unpacks the channel Nix
-    # expressions.
-
+    /*
+     * Create a Nix expression that fetches and unpacks the channel Nix
+     * expressions.
+     */
+#ifdef	REFERENCE
+/*
     my $inputs = "[";
     foreach my $url (@channels) {
         $url =~ /\/([^\/]+)\/?$/;
@@ -180,88 +278,47 @@ sub update {
         $inputs .= '"' . $channelName . '"' . " " . $path . " ";
     }
     $inputs .= "]";
+*/
+#endif
 
-    # Figure out a name for the GC root.
-    my $userName = getpwuid($<);
-    die "who ARE you? go away" unless defined $userName;
-
-    my $rootFile = "$rootsDir/per-user/$userName/channels";
+    /* Figure out a name for the GC root. */
+    rootFile = rpmGetPath(rootsDir, "/per-user/", userName, "/channels", NULL);
     
-    # Build the Nix expression.
-    print "unpacking channel Nix expressions...\n";
+    /* Build the Nix expression. */
+    fprintf(stdout, "unpacking channel Nix expressions...\n");
+#ifdef	REFERENCE
+/*
     my $outPath = `\\
         /usr/bin/nix-build --out-link '$rootFile' --drv-link '$rootFile'.tmp \\
         /usr/share/nix/corepkgs/channels/unpack.nix \\
         --argstr system i686-linux --arg inputs '$inputs'`
         or die "cannot unpack the channels";
     chomp $outPath;
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
     unlink "$rootFile.tmp";
+*/
+#endif
+    fn = rpmGetPath(rootFile, ".tmp", NULL);
+    xx = Unlink(fn);
+    fn = _free(fn);
 
-    # Make the channels appear in nix-env.
+    /* Make the channels appear in nix-env. */
+#ifdef	REFERENCE
+/*
     unlink $nixDefExpr if -l $nixDefExpr; # old-skool ~/.nix-defexpr
     mkdir $nixDefExpr or die "cannot create directory `$nixDefExpr'" if !-e $nixDefExpr;
     my $channelLink = "$nixDefExpr/channels";
     unlink $channelLink; # !!! not atomic
     symlink($outPath, $channelLink) or die "cannot symlink `$channelLink' to `$outPath'";
-}
-
-
-sub usageError {
-    print STDERR <<EOF;
-Usage:
-  nix-channel --add URL
-  nix-channel --remove URL
-  nix-channel --list
-  nix-channel --update
-EOF
-    exit 1;
-}
-
-
-usageError if scalar @ARGV == 0;
-
-
-while (scalar @ARGV) {
-    my $arg = shift @ARGV;
-
-    if ($arg eq "--add") {
-        usageError if scalar @ARGV != 1;
-        addChannel (shift @ARGV);
-        last;
-    }
-
-    if ($arg eq "--remove") {
-        usageError if scalar @ARGV != 1;
-        removeChannel (shift @ARGV);
-        last;
-    }
-
-    if ($arg eq "--list") {
-        usageError if scalar @ARGV != 0;
-        readChannels;
-        foreach my $url (@channels) {
-            print "$url\n";
-        }
-        last;
-    }
-
-    elsif ($arg eq "--update") {
-        usageError if scalar @ARGV != 0;
-        update;
-        last;
-    }
-    
-    elsif ($arg eq "--help") {
-        usageError;
-    }
-
-    else {
-        die "unknown argument `$arg'; try `--help'";
-    }
-}
 */
 #endif
+
+    rootFile = _free(rootFile);
+}
 
 /*==============================================================*/
 
@@ -269,19 +326,32 @@ while (scalar @ARGV) {
 static int verbose = 0;
 #endif
 
+enum {
+    NIX_CHANNEL_ADD = 1,
+    NIX_CHANNEL_REMOVE,
+    NIX_CHANNEL_LIST,
+    NIX_CHANNEL_UPDATE,
+};
+
 static void nixInstantiateArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 	/*@*/
 {
-#ifdef	UNUSED
     rpmnix nix = &_nix;
-#endif
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+    case NIX_CHANNEL_ADD:
+    case NIX_CHANNEL_REMOVE:
+	nix->url = xstrdup(arg);
+	/*@fallthrough@*/
+    case NIX_CHANNEL_LIST:
+    case NIX_CHANNEL_UPDATE:
+	nix->op = opt->val;
+	break;
     default:
 	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -296,19 +366,32 @@ static struct poptOption nixInstantiateOptions[] = {
 	nixInstantiateArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
- { "skip-wrong-store", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_SKIPWRONGSTORE,
-	N_("FIXME"), NULL },
+ { "add", '\0', POPT_ARG_STRING,		0, NIX_CHANNEL_ADD,
+        N_("subscribe to a Nix channel"), N_("URL") },
+ { "remove", '\0', POPT_ARG_STRING,		0, NIX_CHANNEL_REMOVE,
+        N_("unsubscribe from a Nix channel"), N_("URL") },
+ { "list", '\0', POPT_ARG_NONE,		0, NIX_CHANNEL_LIST,
+        N_("list subscribed channels"), NULL },
+ { "update", '\0', POPT_ARG_NONE,		0, NIX_CHANNEL_UPDATE,
+        N_("download latest Nix expressions"), NULL },
 
-#ifdef	NOTYET
+#ifndef	XXXNOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
 
   POPT_AUTOHELP
 
+#ifdef	DYING
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
+Usage:\n\
+  nix-channel --add URL\n\
+  nix-channel --remove URL\n\
+  nix-channel --list\n\
+  nix-channel --update\n\
 "), NULL },
+#endif
 
   POPT_TABLEEND
 };
@@ -316,16 +399,62 @@ static struct poptOption nixInstantiateOptions[] = {
 int
 main(int argc, char *argv[])
 {
+    rpmnix nix = &_nix;
     poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
-    int ec = 1;		/* assume failure */
-#ifdef	UNUSED
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
-    rpmnix nix = &_nix;
-    int xx;
+    const char * s;
+    int ec = 1;		/* assume failure */
+
+    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
+    if ((s = getenv("NIX_STATE_DIR"))) stateDir = s;
+
+    /* Turn on caching in nix-prefetch-url. */
+#ifdef	REFERENCE
+/*
+my $channelCache = "$stateDir/channel-cache";
+mkdir $channelCache, 0755 unless -e $channelCache;
+$ENV{'NIX_DOWNLOAD_CACHE'} = $channelCache if -W $channelCache;
+*/
 #endif
 
+    /* Figure out the name of the `.nix-channels' file to use. */
+    if ((s = getenv("HOME"))) homeDir = s;
+    channelsList = rpmGetPath(homeDir, "/.nix-channels", NULL);
+    nixDefExpr = rpmGetPath(homeDir, "/.nix-defexpr", NULL);
+
+    if (nix->op == 0 || ac != 0) {
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+    }
+
+    switch (nix->op) {
+    case NIX_CHANNEL_ADD:
+assert(nix->url != NULL);	/* XXX proper exit */
+	addChannel(nix, nix->url);
+	break;
+    case NIX_CHANNEL_REMOVE:
+assert(nix->url != NULL);	/* XXX proper exit */
+	removeChannel(nix, nix->url);
+	break;
+    case NIX_CHANNEL_LIST:
+	readChannels(nix);
+	argvPrint(channelsList, channels, NULL);
+	break;
+    case NIX_CHANNEL_UPDATE:
+	updateChannels(nix);
+	break;
+    }
+
     ec = 0;	/* XXX success */
+
+exit:
+
+    nix->url = _free(nix->url);
+
+    channels = argvFree(channels);
+    channelsList = _free(channelsList);
+    nixDefExpr = _free(nixDefExpr);
 
     optCon = rpmioFini(optCon);
 

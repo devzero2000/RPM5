@@ -9,6 +9,8 @@
 
 #include "debug.h"
 
+static int _debug = -1;
+
 
 #define _KFB(n) (1U << (n))
 #define _DFB(n) (_KFB(n) | 0x40000000)
@@ -72,12 +74,14 @@ static const char * storeDir = "/nix/store";
 static const char * stateDir = "/nix/var/nix";
 static const char * manifestDir;
 
+#define	DBG(_l)	if (_debug) fprintf _l
 /*==============================================================*/
 static int addPatch(rpmnix nix, const char * storePath, const char * patch)
 	/*@*/
 {
     int found = 0;
 
+DBG((stderr, "--> %s(%p, \"%s\", \"%s\")\n", __FUNCTION__, nix, storePath, patch));
 #ifdef	REFERENCE
 /*
     my ($patches, $storePath, $patch) = @_;
@@ -146,6 +150,7 @@ static int readManifest(rpmnix nix, const char * manifest)
 
     FD_t fd = Fopen(manifest, "r");
 
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
     if (fd == NULL || Ferror(fd)) {
 	fprintf(stderr, "Fopen(%s, \"r\") failed\n", manifest);
 	if (fd) xx = Fclose(fd);
@@ -304,11 +309,13 @@ static char * downloadFile(rpmnix nix, const char * url)
 }
 */
 #endif
-    cmd = rpmExpand(binDir, "/nix-pre-fetch-url '", url, "'", NULL);
+    cmd = rpmExpand(binDir, "/nix-prefetch-url '", url, "'", NULL);
+
     rval = rpmExpand("%(", cmd, ")", NULL);
-    cmd = _free(cmd);
     path = xstrdup(rval);
     rval = _free(rval);
+DBG((stderr, "<-- %s(%p, \"%s\") cmd: %s\n", __FUNCTION__, nix, url, cmd));
+    cmd = _free(cmd);
     return path;
 }
 
@@ -343,6 +350,7 @@ static int processURL(rpmnix nix, const char * url)
 */
 #endif
 
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     /* First see if a bzipped manifest is available. */
     fn = rpmGetPath(url, ".bz2", NULL);
 #ifdef	REFERENCE

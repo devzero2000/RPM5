@@ -154,83 +154,16 @@ main(int argc, char *argv[])
     int ac = argvCount(av);
     int xx;
 
-#ifdef	REFERENCE
-/*
-#! /usr/bin/perl -w -I/usr/libexec/nix
-
-use ssh;
-*/
-#endif
-
-#ifdef	REFERENCE
-/*
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-*/
-#endif
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
 
-
-#ifdef	REFERENCE
-/*
-if (scalar @ARGV < 1) {
-    print STDERR <<EOF
-Usage: nix-copy-closure [--from | --to] HOSTNAME [--sign] [--gzip] PATHS...
-EOF
-    ;
-    exit 1;
-}
-*/
-#endif
     if (ac < 1) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
     }
 
-
-#ifdef	REFERENCE
-/*
-# Get the target host.
-my $sshHost;
-
-my $sign = 0;
-
-my $compressor = "";
-my $decompressor = "";
-
-# !!! Copied from nix-pack-closure, should put this in a module.
-my @storePaths = ();
-*/
-#endif
     if (nix->op == 0)
 	nix->op = NIX_TO_HOST;
 
-#ifdef	REFERENCE
-/*
-while (@ARGV) {
-    my $arg = shift @ARGV;
-    
-    if ($arg eq "--sign") {
-        $sign = 1;
-    }
-    elsif ($arg eq "--gzip") {
-        $compressor = "| gzip";
-        $decompressor = "gunzip |";
-    }
-    elsif ($arg eq "--from") {
-        $toMode = 0;
-    }
-    elsif ($arg eq "--to") {
-        $toMode = 1;
-    }
-    elsif (!defined $sshHost) {
-        $sshHost = $arg;
-    }
-    else {
-        push @storePaths, $arg;
-    }
-}
-*/
-#endif
     xx = argvAppend(&nix->storePaths, av);
     if (F_ISSET(nix, GZIP)) {
 	compressor = "| gzip";
@@ -311,8 +244,8 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 */
 #endif
 	    s = argvJoin(nix->missing, ' ');
-	    cmd = rpmExpand(
-binDir, "/nix-store --export ", extraOpts, " ", s, " ", compressor, " | ssh ", nix->sshHost, " ", sshOpts, " '", decompressor, " nix-store --import'", NULL);
+	    cmd = rpmExpand(binDir, "/nix-store --export ", extraOpts, " ", s, " ", compressor,
+		" | ssh ", nix->sshHost, " ", sshOpts, " '", decompressor, " nix-store --import'", NULL);
 	    s = _free(s);
 fprintf(stderr, "--> %s\n", cmd);
 	    cmd = _free(cmd);
@@ -386,7 +319,9 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 */
 #endif
 	    s = argvJoin(nix->missing, ' ');
-	    cmd = rpmExpand("ssh ", nix->sshHost, " ", sshOpts, " 'nix-store --export ", extraOpts, " ", s, " ", compressor, "' | ", decompressor, " ", binDir, "/nix-store --import", NULL);
+	    cmd = rpmExpand("ssh ", nix->sshHost, " ", sshOpts,
+		" 'nix-store --export ", extraOpts, " ", s, " ", compressor,
+		"' | ", decompressor, " ", binDir, "/nix-store --import", NULL);
 	    s = _free(s);
 fprintf(stderr, "--> %s\n", cmd);
 	    cmd = _free(cmd);

@@ -9,6 +9,8 @@
 
 #include "debug.h"
 
+static int _debug = -1;
+
 #define _KFB(n) (1U << (n))
 #define _DFB(n) (_KFB(n) | 0x40000000)
 
@@ -81,9 +83,18 @@ static struct rpmnix_s _nix = {
 	.hashType = "sha256"
 };
 
-static const char * tmpDir = "/tmp";
+static const char * tmpDir	= "/tmp";
+static const char * binDir	= "/usr/bin";
 
+#define	DBG(_l)	if (_debug) fprintf _l
 /*==============================================================*/
+
+static char * _freeCmd(const char * cmd)
+{
+DBG((stderr, "\t%s\n", cmd));
+    cmd = _free(cmd);
+    return NULL;
+}
 /**
  * Copy source string to target, substituting for URL characters.
  * @param t		target xml string
@@ -126,6 +137,8 @@ static void mkTempDir(rpmnix nix)
 assert(nix->tmpPath != NULL);
     }
 
+DBG((stderr, "<-- %s(%p) tmpDir %s\n", __FUNCTION__, nix, nix->tmpPath));
+
 }
 
 static void removeTempDir(rpmnix nix)
@@ -138,10 +151,16 @@ static void removeTempDir(rpmnix nix)
     if (nix->tmpPath == NULL) return;
     if (Stat(nix->tmpPath, &sb) < 0) return;
 
-    cmd = rpmExpand("/bin/rm -rf ", nix->tmpPath, NULL);
+    cmd = rpmExpand("/bin/rm -rf '", nix->tmpPath, "'; echo $?", NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
-    cmd = _free(cmd);
+    if (strcmp(rval, "0")) {
+	fprintf(stderr, "failed to remove %s\n", nix->tmpPath);
+    }
     rval = _free(rval);
+
+DBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
+
+    cmd = _freeCmd(cmd);
 }
 
 static void doDownload(rpmnix nix)
@@ -155,8 +174,11 @@ static void doDownload(rpmnix nix)
 	" --cookie-jar ", nix->tmpPath, "/cookies ", nix->url,
 	" -o ", nix->tmpFile, NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
-    cmd = _free(cmd);
     rval = _free(rval);
+
+DBG((stderr, "<-- %s(%p)\n\t%s\n", __FUNCTION__, nix, cmd));
+
+    cmd = _freeCmd(cmd);
 }
 
 /*==============================================================*/
@@ -228,7 +250,10 @@ main(int argc, char *argv[])
 */
 #endif
 
+    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
+
     if ((s = getenv("TMPDIR")) && *s) tmpDir = s;
+
     if ((s = getenv("QUIET")) && *s) nix->quiet = 1;
     if ((s = getenv("PRINT_PATH")) && *s) nix->print = 1;
 
@@ -241,6 +266,8 @@ main(int argc, char *argv[])
     if ((s = getenv("NIX_HASH_ALGO")))	nix->hashType = s;
     nix->hashFormat = (strcmp(nix->hashType, "md5") ? "--base32" : "");
     if ((s = getenv("NIX_DOWNLOAD_CACHE"))) nix->downloadCache = s;
+
+nix->cacheFlags = xstrdup("");
 
     /*
      * Handle escaped characters in the URI.  `+', `=' and `?' are the only
@@ -259,15 +286,15 @@ main(int argc, char *argv[])
     /* If expected hash specified, check if it already exists in the store. */
     if (nix->expHash != NULL) {
 
-	cmd = rpmExpand("/usr/bin/nix-store --print-fixed-path ",
+	cmd = rpmExpand(binDir, "/nix-store --print-fixed-path ",
 		nix->hashType, " ", nix->expHash, " ", nix->name, NULL);
 	nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 
-	cmd = rpmExpand("/usr/bin/nix-store --check-validity ",
+	cmd = rpmExpand(binDir, "/nix-store --check-validity ",
 		nix->finalPath, " 2>/dev/null; echo $?", NULL);
 	s = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 	if (strcmp(s, "0"))
 	    nix->finalPath = _free(nix->finalPath);
 	s = _free(s);
@@ -285,11 +312,11 @@ main(int argc, char *argv[])
 
 	mkTempDir(nix);
 
-	cmd = rpmExpand("/usr/bin/nix-build ", nix->nixPkgs,
+	cmd = rpmExpand(binDir, "/nix-build ", nix->nixPkgs,
 		" -A resolveMirrorURLs --argstr url ", nix->url,
 		" -o ", nix->tmpPath, "/urls > /dev/null", NULL);
 	s = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 	s = _free(s);
 
 	fn = rpmGetPath(nix->tmpPath, "/urls", NULL);
@@ -347,10 +374,10 @@ main(int argc, char *argv[])
 	    xx = Fclose(fd);
 	    fn = _free(fn);
 
-	    cmd = rpmExpand("/usr/bin/nix-hash --type sha256 --base32 --flat ",
+	    cmd = rpmExpand(binDir, "/nix-hash --type sha256 --base32 --flat ",
 			nix->tmpPath, "/url", NULL);
 	    nix->urlHash = rpmExpand("%(", cmd, ")", NULL);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 
 	    fn = rpmGetPath(nix->downloadCache,"/", nix->urlHash, ".url", NULL);
 	    fd = Fopen(fn, "w");
@@ -393,18 +420,18 @@ main(int argc, char *argv[])
 	    nix->hash = _free(nix->hash);
 	    cmd = rpmExpand("cat ", nix->cachedHashFN, NULL);
 	    nix->hash = rpmExpand("%(", cmd, ")", NULL);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 
 	    nix->finalPath = _free(nix->finalPath);
-	    cmd = rpmExpand("/usr/bin/nix-store --print-fixed-path ",
+	    cmd = rpmExpand(binDir, "/nix-store --print-fixed-path ",
 			nix->hashType, " ", nix->hash, " ", nix->name, NULL);
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 
-	    cmd = rpmExpand("/usr/bin/nix-store --check-validity ",
+	    cmd = rpmExpand(binDir, "/nix-store --check-validity ",
 			nix->finalPath, " 2>/dev/null; echo $?", NULL);
 	    s = rpmExpand("%(", cmd, ")", NULL);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 	    if (strcmp(s, "0")) {
 		fprintf(stderr, _("cached contents of `%s' disappeared, redownloading...\n"), nix->url);
 		nix->finalPath = _free(nix->finalPath);
@@ -419,10 +446,10 @@ main(int argc, char *argv[])
 
 	    /* Compute the hash. */
 	    nix->hash = _free(nix->hash);
-	    cmd = rpmExpand("/usr/bin/nix-hash --type ", nix->hashType,
+	    cmd = rpmExpand(binDir, "/nix-hash --type ", nix->hashType,
 			" ", nix->hashFormat, " --flat ", nix->tmpFile, NULL);
 	    nix->hash = rpmExpand("%(", cmd, ")", NULL);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 
 	    if (!nix->quiet)
 		fprintf(stderr, _("hash is %s\n"), nix->hash);
@@ -455,10 +482,10 @@ main(int argc, char *argv[])
 
 	    /* Add the downloaded file to the Nix store. */
 	    nix->finalPath = _free(nix->finalPath);
-	    cmd = rpmExpand("/usr/bin/nix-store --add-fixed ", nix->hashType,
+	    cmd = rpmExpand(binDir, "/nix-store --add-fixed ", nix->hashType,
 			" ", nix->tmpFile, NULL);
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 
 	    if (nix->expHash && *nix->expHash
 	     && strcmp(nix->expHash, nix->hash))
