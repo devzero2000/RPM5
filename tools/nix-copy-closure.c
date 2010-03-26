@@ -30,8 +30,8 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_SIGN		= _DFB(29),	/*    --sign */
-    RPMNIX_FLAGS_GZIP		= _DFB(30)	/*    --gzip */
+    RPMNIX_FLAGS_SIGN		= _DFB(24),	/*    --sign */
+    RPMNIX_FLAGS_GZIP		= _DFB(25)	/*    --gzip */
 };
 
 /**

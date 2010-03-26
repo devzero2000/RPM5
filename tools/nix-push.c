@@ -9,6 +9,8 @@
 
 #include "debug.h"
 
+static int _debug = -1;
+
 
 #define _KFB(n) (1U << (n))
 #define _DFB(n) (_KFB(n) | 0x40000000)
@@ -31,7 +33,7 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_COPY		= _DFB(30)	/*    --copy */
+    RPMNIX_FLAGS_COPY		= _DFB(24)	/*    --copy */
 };
 
 /**
@@ -80,7 +82,15 @@ static const char * binDir = "/usr/bin";
 
 static const char * dataDir = "/usr/share";
 
+#define DBG(_l) if (_debug) fprintf _l
 /*==============================================================*/
+
+static char * _freeCmd(const char * cmd)
+{
+DBG((stderr, "\t%s\n", cmd));
+    cmd = _free(cmd);
+    return NULL;
+}
 
 static void writeManifest(rpmnix nix, const char * manifest)
 	/*@*/
@@ -93,6 +103,8 @@ static void writeManifest(rpmnix nix, const char * manifest)
     FD_t fd;
     ssize_t nw;
     int xx;
+
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
 
 #ifdef	REFERENCE
 /*
@@ -198,6 +210,7 @@ static int copyFile(const char * src, const char * dst)
     const char * rval;
     const char * cmd;
 
+DBG((stderr, "--> %s(\"%s\", \"%s\")\n", __FUNCTION__, src, dst));
     /* XXX Ick. */
     cmd = rpmExpand("/bin/cp '", src, "' '", tfn, "'; echo $?", NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
@@ -220,6 +233,7 @@ static int copyFile(const char * src, const char * dst)
 static int archiveExists(rpmnix nix, const char * name)
 	/*@*/
 {
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, name));
 #ifdef	REFERENCE
 /*
     my $name = shift;
@@ -394,9 +408,9 @@ assert(*path == '/');
 #endif
 	cmd = rpmExpand(binDir, "/nix-store --query --requisites --force-realise --include-outputs '", path, "'", NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
 	xx = argvSplit(&nix->storePaths, rval, NULL);
 	rval = _free(rval);
+	cmd = _freeCmd(cmd);
     }
 
     /*
@@ -479,9 +493,9 @@ close READ or die "nix-instantiate failed: $?";
 #endif
     cmd = rpmExpand(binDir, "/nix-instantiate ", nixExpr, NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
-    cmd = _free(cmd);
     xx = argvSplit(&nix->storeExprs, rval, NULL);
     rval = _free(rval);
+    cmd = _freeCmd(cmd);
 
     /* Build the derivations. */
     fprintf(stderr, "creating archives...\n");
@@ -528,9 +542,9 @@ while (scalar @tmp > 0)
 #endif
 	cmd = rpmExpand(binDir, "/nix-store --realise ", tmp2, NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
 	xx = argvSplit(&nix->narPaths, rval, NULL);
 	rval = _free(rval);
+	cmd = _freeCmd(cmd);
 
     }
 
@@ -568,7 +582,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	/* XXX Ick. */
 	cmd = rpmExpand("/bin/cat ", narDir, "/narbz2-hash", NULL);
 	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 
 #ifdef	REFERENCE
 /*
@@ -582,7 +596,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	/* XXX Ick. */
 	cmd = rpmExpand("/bin/cat ", narDir, "/nar-hash", NULL);
 	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
     
 	narName = rpmExpand(narbz2Hash, ".nar.bz2", NULL);
 	narFile = rpmGetPath(narDir, "/", narName, NULL);
@@ -605,7 +619,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	cmd = rpmExpand(binDir, "/nix-store --query --references '",
 		storePath, "'", NULL);
 	references = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 
 #ifdef	REFERENCE
 /*
@@ -618,11 +632,11 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	cmd = rpmExpand(binDir, "/nix-store --query --deriver '",
 		storePath, "'", NULL);
 	deriver = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
 	if (!strcmp(deriver, "unknown-deriver")) {
 	    deriver = _free(deriver);
 	    deriver = xstrdup("");
 	}
+	cmd = _freeCmd(cmd);
 
 	if (localCopy)
 	    url = rpmGetPath(nix->targetArchivesUrl, "/", narName, NULL);

@@ -17,6 +17,8 @@ find
 grep
 mtree
 nix-build
+nix-channel
+nix-collect-garbage
 nix-copy-closure
 nix-hash
 nix-install-package

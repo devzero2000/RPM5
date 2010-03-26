@@ -34,7 +34,7 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(30)	/*    --skip-wrong-store */
+    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(24)	/*    --skip-wrong-store */
 };
 
 /**
@@ -76,8 +76,18 @@ static const char * homeDir	= "~";
 static const char * stateDir	= "/nix/var/nix";
 static const char * rootsDir	= "/nix/var/nix/gcroots";
 
+static const char * channelCache;
+
 #define	DBG(_l)	if (_debug) fprintf _l
 /*==============================================================*/
+
+static char * _freeCmd(const char * cmd)
+{
+DBG((stderr, "\t%s\n", cmd));
+    cmd = _free(cmd);
+    return NULL;
+}
+
 /* Reads the list of channels from the file $channelsList. */
 static void readChannels(rpmnix nix)
 	/*@*/
@@ -251,7 +261,7 @@ fprintf(stderr, "<-- cmd: %s\n", cmd);
 	    }
 	    rval = _free(rval);
 #endif
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 	}
     }
     dn = _free(dn);
@@ -405,6 +415,7 @@ main(int argc, char *argv[])
     int ac = argvCount(av);
     const char * s;
     int ec = 1;		/* assume failure */
+    int xx;
 
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
     if ((s = getenv("NIX_STATE_DIR"))) stateDir = s;
@@ -417,6 +428,10 @@ mkdir $channelCache, 0755 unless -e $channelCache;
 $ENV{'NIX_DOWNLOAD_CACHE'} = $channelCache if -W $channelCache;
 */
 #endif
+    channelCache = rpmGetPath(stateDir, "/channel-cache", NULL);
+    xx = rpmioMkpath(channelCache, 0755, (uid_t)-1, (gid_t)-1);
+    if (!Access(channelCache, W_OK))
+	xx = setenv("NIX_DOWNLOAD_CACHE", channelCache, 0);
 
     /* Figure out the name of the `.nix-channels' file to use. */
     if ((s = getenv("HOME"))) homeDir = s;

@@ -32,7 +32,6 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(30)	/*    --skip-wrong-store */
 };
 
 /**
@@ -95,6 +94,7 @@ DBG((stderr, "\t%s\n", cmd));
     cmd = _free(cmd);
     return NULL;
 }
+
 /**
  * Copy source string to target, substituting for URL characters.
  * @param t		target xml string
@@ -176,7 +176,7 @@ static void doDownload(rpmnix nix)
     rval = rpmExpand("%(", cmd, ")", NULL);
     rval = _free(rval);
 
-DBG((stderr, "<-- %s(%p)\n\t%s\n", __FUNCTION__, nix, cmd));
+DBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
 
     cmd = _freeCmd(cmd);
 }
@@ -320,7 +320,7 @@ nix->cacheFlags = xstrdup("");
 	s = _free(s);
 
 	fn = rpmGetPath(nix->tmpPath, "/urls", NULL);
-	fd = Fopen(fn, "r");
+	fd = Fopen(fn, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
 	    fprintf(stderr, _("Fopen(%s, \"r\") failed\n"), fn);
 	    if (fd) xx = Fclose(fd);

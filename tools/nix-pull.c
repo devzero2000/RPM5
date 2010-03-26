@@ -33,7 +33,7 @@ enum nixFlags_e {
     RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
     RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
-    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(30)	/*    --skip-wrong-store */
+    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(24)	/*    --skip-wrong-store */
 };
 
 /**
@@ -68,14 +68,22 @@ static struct rpmnix_s _nix = {
 };
 
 static const char * tmpDir;
-static const char * binDir = "/usr/bin";
-static const char * libexecDir = "/usr/libexec";
-static const char * storeDir = "/nix/store";
-static const char * stateDir = "/nix/var/nix";
+static const char * binDir	= "/usr/bin";
+static const char * libexecDir	= "/usr/libexec";
+static const char * storeDir	= "/nix/store";
+static const char * stateDir	= "/nix/var/nix";
 static const char * manifestDir;
 
 #define	DBG(_l)	if (_debug) fprintf _l
 /*==============================================================*/
+
+static char * _freeCmd(const char * cmd)
+{
+DBG((stderr, "\t%s\n", cmd));
+    cmd = _free(cmd);
+    return NULL;
+}
+
 static int addPatch(rpmnix nix, const char * storePath, const char * patch)
 	/*@*/
 {
@@ -280,42 +288,33 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
 
 /*==============================================================*/
 
-#ifdef	REFERENCE
-/*
-# Process the URLs specified on the command line.
-my %narFiles;
-my %localPaths;
-my %patches;
-
-my $skipWrongStore = 0;
-*/
-#endif
-
 static char * downloadFile(rpmnix nix, const char * url)
 	/*@*/
 {
     const char * cmd;
     const char * rval;
     char * path;
+    int xx;
 
-#ifdef	REFERENCE
-/*
-    $ENV{"PRINT_PATH"} = 1;
-    $ENV{"QUIET"} = 1;
-    my ($dummy, $path) = `$binDir/nix-prefetch-url '$url'`;
-    die "cannot fetch `$url'" if $? != 0;
-    die "nix-prefetch-url did not return a path" unless defined $path;
-    chomp $path;
-}
-*/
-#endif
+    xx = setenv("PRINT_PATH", "1", 0);
+    xx = setenv("QUIET", "1", 0);
     cmd = rpmExpand(binDir, "/nix-prefetch-url '", url, "'", NULL);
 
     rval = rpmExpand("%(", cmd, ")", NULL);
-    path = xstrdup(rval);
+    /* XXX The 1st line is the hash, the 2nd line is the path ... */
+    if ((path = strchr(rval, '\n')) == NULL) {
+	fprintf(stderr, "nix-prefetch-url did not return a path");
+	exit(1);
+    }
+#ifdef	REFERENCE
+/*
+    chomp $path;
+*/
+#endif
+    path = xstrdup(path+1);
+DBG((stderr, "<-- %s(%p, \"%s\") path %s\n", __FUNCTION__, nix, url, path));
     rval = _free(rval);
-DBG((stderr, "<-- %s(%p, \"%s\") cmd: %s\n", __FUNCTION__, nix, url, cmd));
-    cmd = _free(cmd);
+    cmd = _freeCmd(cmd);
     return path;
 }
 
@@ -325,7 +324,7 @@ static int processURL(rpmnix nix, const char * url)
     const char * cmd;
     const char * rval;
     int version;
-    const char * baseName = "unnamed";
+    const char * baseName;
     const char * urlFile;
     const char * finalPath;
     const char * hash;
@@ -372,23 +371,17 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 	cmd = rpmExpand("/usr/libexec/nix/bunzip2 < ", bzipped,
 		" > ", manifest, "; echo $?", NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
 	if (strcmp(rval, "0")) {
 	    fprintf(stderr, "cannot decompress manifest\n");
 	    exit(1);
 	}
 	rval = _free(rval);
+	cmd = _freeCmd(cmd);
 
-#ifdef	REFERENCE
-/*
-        $manifest = (`$binDir/nix-store --add $manifest`
-                     or die "cannot copy $manifest to the store");
-*/
-#endif
 	cmd = rpmExpand(binDir, "/nix-store --add ", manifest, NULL);
 	manifest = _free(manifest);
 	manifest = rpmExpand("%(", cmd, ")", NULL);
-	cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 
 #ifdef	REFERENCE
 /*
@@ -433,7 +426,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 
     cmd = rpmExpand(binDir, "/nix-hash --flat ", manifest, NULL);
     hash = rpmExpand("%(", cmd, ")", NULL);
-    cmd = _free(cmd);
+    cmd = _freeCmd(cmd);
     if (hash == NULL) {
 	fprintf(stderr, "cannot hash `%s'\n", manifest);
 	exit(1);
@@ -454,8 +447,6 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 	exit(1);
     }
     (void) Fwrite(url, 1, strlen(url), fd);
-    /* XXX why bother with a newline chomp?!? */
-    (void) Fwrite("\n", 1, 1, fd);
     xx = Fclose(fd);
     
     finalPath = rpmGetPath(manifestDir, "/",
@@ -485,7 +476,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 		continue;
 
 	    uav = NULL;
-	    fd = Fopen(urlFile2, "r");
+	    fd = Fopen(urlFile2, "r.fpio");
 	    if (fd == NULL || Ferror(fd)) {
 		fprintf(stderr, "cannot create `%s'\n", urlFile2);
 		if (fd) xx = Fclose(fd);
@@ -493,7 +484,6 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 	    }
 	    xx = argvFgets(&uav, fd);
 	    xx = Fclose(fd);
-	    /* XXX why bother with a newline chomp?!? */
 	    url2 = xstrdup(uav[0]);
 	    uav = argvFree(uav);
 
@@ -557,16 +547,18 @@ static struct poptOption nixInstantiateOptions[] = {
  { "skip-wrong-store", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_SKIPWRONGSTORE,
 	N_("FIXME"), NULL },
 
-#ifdef	NOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
 
   POPT_AUTOHELP
 
+#ifdef	DYING
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 "), NULL },
+#endif
 
   POPT_TABLEEND
 };
@@ -582,17 +574,6 @@ main(int argc, char *argv[])
     int ac = argvCount(av);
     int xx;
     int i;
-
-#ifdef	REFERENCE
-/*
-#! /usr/bin/perl -w -I/usr/libexec/nix
-
-use strict;
-use File::Temp qw(tempdir);
-use readmanifest;
-
-*/
-#endif
 
     if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
 	s = "/tmp";
@@ -620,29 +601,12 @@ use readmanifest;
 	goto exit;
     }
 
-#ifdef	REFERENCE
-/*
-while (@ARGV) {
-    my $url = shift @ARGV;
-    if ($url eq "--skip-wrong-store") {
-        $skipWrongStore = 1;
-    } else {
-        processURL $url;
-    }
-}
-*/
-#endif
-
     for (i = 0; i < ac; i++) {
 	xx = processURL(nix, av[i]);
     }
 
-#ifdef	REFERENCE
-/*
-my $size = scalar (keys %narFiles) + scalar (keys %localPaths);
-print "$size store paths in manifest\n";
-*/
-#endif
+    fprintf(stdout, "%d store paths in manifest\n", 
+		argvCount(nix->narFiles) + argvCount(nix->localPaths));
 
     ec = 0;	/* XXX success */
 
