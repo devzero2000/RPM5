@@ -24,7 +24,7 @@ EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
 EXTRA_PROGRAMS = augtool cudftool debugedit \
 	nix-build nix-channel nix-collect-garbage nix-copy-closure \
-	nix-hash nix-install-package nix-instantiate \
+	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-prefetch-url nix-pull nix-push nix-store \
 	xiu-hash xiu-instantiate xiu-store \
 	rpmkey sandbox semodule spooktool
@@ -95,6 +95,11 @@ nix_collect_garbage_LDADD =	$(RPMIO_LDADD_COMMON)
 nix_copy_closure_SOURCES =	nix-copy-closure.c
 nix_copy_closure_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 nix_copy_closure_LDADD =	$(RPMIO_LDADD_COMMON)
+
+nix_env_SOURCES =	nix-env.cc profiles.cc
+nix_env_LDADD =		-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
+        /usr/lib/nix/libATerm.a
+nix_env_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
 
 nix_hash_SOURCES =	nix-hash.cc
 nix_hash_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
