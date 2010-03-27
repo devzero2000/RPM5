@@ -5,7 +5,7 @@ stdenv.mkDerivation = \{\
 \n  name = \"%{NAME}-%{VERSION}\";\
 \n\
 \n  src = fetchurl \{\
-\n    url = %{SOURCE};\
+\n    url = \"%{SOURCE}\";\
 \n    sha256 = \"%{FILEDIGESTS}\";\
 \n  \};\
 \n\};\
