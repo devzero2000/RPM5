@@ -74,7 +74,7 @@ noinst_HEADERS = \
 	poptIO.h rpmacl.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h rpmcudf.h \
 	rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
 	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
-	rpmku.h rpmlua.h rpmmg.h rpmnss.h rpmperl.h rpmpython.h \
+	rpmku.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h rpmperl.h rpmpython.h \
 	rpmruby.h rpmsm.h rpmsp.h rpmsq.h rpmsquirrel.h rpmssl.h rpmsx.h \
 	rpmsyck.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h rpmio-stub.h
