@@ -92,7 +92,7 @@ librpmio_la_SOURCES = \
 	rpmdav.c rpmdir.c rpmficl.c rpmgc.c \
 	rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
-	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c \
+	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnix.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
 	rpmsq.c rpmsquirrel.c rpmssl.c rpmsyck.c rpmsw.c rpmsx.c rpmtcl.c \
 	rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \

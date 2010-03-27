@@ -475,6 +475,9 @@ LIBRPMIO_0
     rpmmgNew;
     rpmmgFile;
     rpmmgBuffer;
+    _rpmnix_debug;
+    _rpmnixI;
+    rpmNixNew;
     _rpmnss_init;
     rpmnssImplVecs;
     _rpmperl_debug;

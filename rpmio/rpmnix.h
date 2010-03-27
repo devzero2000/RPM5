@@ -14,11 +14,10 @@
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmnix_s * rpmnix;
 
 /*@unchecked@*/
-#if defined(_RPMNIX_INTERNAL)
-static int _rpmnix_debug = -1;
-#else
 extern int _rpmnix_debug;
-#endif
+
+/*@unchecked@*/
+extern rpmnix _rpmnixI;
 
 #if defined(_RPMNIX_INTERNAL)
 
@@ -56,6 +55,7 @@ enum rpmnixFlags_e {
 struct rpmnix_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     uint32_t flags;		/*!< control bits */
+    void * I;
 
     int op;
     const char * url;
@@ -139,7 +139,6 @@ DBG((stderr, "\t%s\n", cmd));
 }
 #endif
 
-#ifdef	NOTYET
 /**
  * Unreference a nix interpreter instance.
  * @param nix		nix interpreter
@@ -184,7 +183,6 @@ rpmnix rpmnixFree(/*@killref@*/ /*@null@*/rpmnix nix)
 rpmnix rpmnixNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
-#endif
 
 #ifdef __cplusplus
 }
