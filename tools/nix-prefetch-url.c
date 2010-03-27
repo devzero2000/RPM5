@@ -1,69 +1,10 @@
 #include "system.h"
 
-#include <rpmiotypes.h>
-#include <rpmio.h>
-#include <rpmlog.h>
-#include <rpmmacro.h>
-#include <argv.h>
+#define	_RPMNIX_INTERNAL
+#include <rpmnix.h>
 #include <poptIO.h>
 
 #include "debug.h"
-
-static int _debug = -1;
-
-#define _KFB(n) (1U << (n))
-#define _DFB(n) (_KFB(n) | 0x40000000)
-
-#define F_ISSET(_nix, _FLAG) ((_nix)->flags & ((RPMNIX_FLAGS_##_FLAG) & ~0x40000000))
-
-/**
- * Bit field enum for rpmdigest CLI options.
- */
-enum nixFlags_e {
-    RPMNIX_FLAGS_NONE		= 0,
-};
-
-/**
- */
-typedef struct rpmnix_s * rpmnix;
-
-/**
- */
-struct rpmnix_s {
-    enum nixFlags_e flags;	/*!< rpmnix control bits. */
-
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
-
-    int quiet;
-    int print;
-    const char * nixPkgs;
-    const char * downloadCache;
-    const char * url;
-    const char * expHash;
-    const char * hashType;
-    const char * hashFormat;
-/*@only@*/
-    const char * hash;
-/*@only@*/
-    const char * finalPath;
-/*@only@*/
-    const char * tmpPath;
-/*@only@*/
-    const char * tmpFile;
-/*@only@*/
-    const char * name;
-    const char * cacheFlags;
-    const char * cachedHashFN;
-    const char * cachedTimestampFN;
-    const char * urlHash;
-};
 
 /**
  */
@@ -75,15 +16,7 @@ static struct rpmnix_s _nix = {
 static const char * tmpDir	= "/tmp";
 static const char * binDir	= "/usr/bin";
 
-#define	DBG(_l)	if (_debug) fprintf _l
 /*==============================================================*/
-
-static char * _freeCmd(const char * cmd)
-{
-DBG((stderr, "\t%s\n", cmd));
-    cmd = _free(cmd);
-    return NULL;
-}
 
 /**
  * Copy source string to target, substituting for URL characters.

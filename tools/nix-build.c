@@ -1,47 +1,10 @@
-
 #include "system.h"
 
-#include <rpmiotypes.h>
-#include <rpmio.h>
-#include <rpmlog.h>
-#include <rpmmacro.h>
-#include <argv.h>
+#define	_RPMNIX_INTERNAL
+#include <rpmnix.h>
 #include <poptIO.h>
 
 #include "debug.h"
-
-
-#define _KFB(n) (1U << (n))
-#define _DFB(n) (_KFB(n) | 0x40000000)
-
-#define F_ISSET(_nix, _FLAG) ((_nix)->flags & ((RPMNIX_FLAGS_##_FLAG) & ~0x40000000))
-
-/**
- * Bit field enum for rpmdigest CLI options.
- */
-enum nixFlags_e {
-    RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-};
-
-/**
- */
-typedef struct rpmnix_s * rpmnix;
-
-/**
- */
-struct rpmnix_s {
-    enum nixFlags_e flags;	/*!< rpmnix control bits. */
-
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-};
 
 /**
  */
@@ -133,11 +96,9 @@ assert(outPathsP);
 
 #define	_BASE	0x40000000
 enum {
-#ifdef	DYING
     NIX_ADD_DRV_LINK	= _BASE + 0,	/*    --add-drv-link */
     NIX_DRV_LINK	= _BASE + 1,	/*    --drv-link NAME */
     NIX_NO_OUT_LINK	= _BASE + 2,	/* -o,--no-out-link */
-#endif
     NIX_ATTR		= _BASE + 3,	/*    --attr ATTR */
 
     NIX_ARG		= _BASE + 4,	/*    --arg ARG1 ARG2 */
