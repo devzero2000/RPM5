@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 ############################################################################
-# ABI-compliance-checker v1.14, lightweight tool for checking backward binary
-# compatibility of shared C/C++ libraries in Linux and Unix (FreeBSD, Haiku ...).
+# ABI-compliance-checker 1.15, tool for checking binary compatibility
+# of shared C/C++ library versions in Linux and Unix (FreeBSD, Haiku ...).
 # Copyright (C) The Linux Foundation
 # Copyright (C) Institute for System Programming, RAS
 # Author: Andrey Ponomarenko
 #
 # This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
+# it under the terms of the GNU General Public License or the GNU Lesser
+# General Public License as published by the Free Software Foundation,
+# either version 2 of the Licenses, or (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,15 +17,17 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# and the GNU Lesser General Public License along with this program.
+# If not, see <http://www.gnu.org/licenses/>.
 ############################################################################
 use Getopt::Long;
 Getopt::Long::Configure ("posix_default", "no_ignore_case");
 use File::Path qw(mkpath rmtree);
+use Cwd qw(abs_path);
 use Data::Dumper;
 use Config;
 
-my $ABI_COMPLIANCE_CHECKER_VERSION = "1.14";
+my $ABI_COMPLIANCE_CHECKER_VERSION = "1.15";
 my ($Help, $ShowVersion, %Descriptor, $TargetLibraryName, $HeaderCheckingMode_Separately,
 $GenerateDescriptor, $TestSystem, $DumpInfo_DescriptorPath, $CheckHeadersOnly,
 $InterfacesListPath, $AppPath, $ShowExpendTime);
@@ -54,21 +56,22 @@ sub HELP_MESSAGE()
     print STDERR <<"EOM"
 
 NAME:
-  $CmdName - check ABI compatibility of shared C/C++ library versions
+  $CmdName - check binary compatibility of shared C/C++ library versions
 
 DESCRIPTION:
-  Lightweight tool for checking backward binary compatibility of shared C/C++ libraries
-  in Linux. It checks header files along with shared objects in two library versions
-  and searches for ABI changes that may lead to incompatibility. Breakage of the binary
-  compatibility may result in crashing or incorrect behavior of applications built with
-  an old version of a library when it is running with a new one.
+  Lightweight tool for checking binary compatibility of shared C/C++ library
+  versions in Linux. It checks header files along with shared objects in two
+  library versions and searches for ABI changes that may lead to incompatibility.
+  Breakage of the binary compatibility may result in crashing or incorrect
+  behavior of applications built with an old version of a library when it is
+  running with a new one.
 
-  ABI Compliance Checker was intended for library developers that are interested in
-  ensuring backward binary compatibility. Also it can be used for checking forward
-  binary compatibility and checking applications portability to the new library version.
+  ABI Compliance Checker was intended for library developers that are interested
+  in ensuring backward binary compatibility. Also it can be used for checking
+  applications portability to the new library version.
 
-  This tool is free software: you can redistribute it and/or modify it under the terms
-  of the GNU GPL.
+  This tool is free software: you can redistribute it and/or modify it under
+  the terms of the GNU GPL or GNU LGPL.
 
 USAGE:
   $CmdName [options]
@@ -204,6 +207,10 @@ my $Descriptor_Template = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <!-- The list of functions (mangled/symbol names in C++)
          that should be skipped while testing, one per line -->
 </skip_interfaces>
+
+<skip_headers>
+    <!-- The list of headers that should not be processed, one name per line -->
+</skip_headers>
 
 </descriptor>";
 
@@ -427,6 +434,7 @@ my %Header_Includes;
 my %Header_ShouldNotBeUsed;
 my %RecursiveIncludes;
 my %Header_Include_Prefix;
+my %SkipHeaders;
 
 # Binaries
 my %DefaultBinPaths;
@@ -434,6 +442,7 @@ my ($GCC_PATH, $GPP_PATH, $CPP_FILT) = ("gcc", "g++", "c++filt");
 
 #Shared objects
 my %SoLib_DefaultPath;
+my %SharedObject_Path;
 
 #System shared objects
 my %SystemObjects;
@@ -482,6 +491,7 @@ my $Content_Counter = 0;
 sub get_CmdPath($)
 {
     my $Name = $_[0];
+    return "" if(not $Name);
     return $Cache{"get_CmdPath"}{$Name} if(defined $Cache{"get_CmdPath"}{$Name});
     if(my $DefaultPath = get_CmdPath_Default($Name))
     {
@@ -503,6 +513,7 @@ sub get_CmdPath($)
 sub get_CmdPath_Default($)
 {
     my $Name = $_[0];
+    return "" if(not $Name);
     return $Cache{"get_CmdPath_Default"}{$Name} if(defined $Cache{"get_CmdPath_Default"}{$Name});
     if($Name eq "c++filt" and $CPP_FILT ne "c++filt")
     {
@@ -569,6 +580,13 @@ sub readDescriptor($)
         $Option=~s/\A\s+|\s+\Z//g;
         next if(not $Option);
         $CompilerOptions{$LibVersion} .= " ".$Option;
+    }
+    $Descriptor{$LibVersion}{"Skip_Headers"} = parseTag(\$Descriptor_File, "skip_headers");
+    foreach my $Name (split(/\n/, $Descriptor{$LibVersion}{"Skip_Headers"}))
+    {
+        $Name=~s/\A\s+|\s+\Z//g;
+        next if(not $Name);
+        $SkipHeaders{$LibVersion}{$Name} = 1;
     }
     $Descriptor{$LibVersion}{"Opaque_Types"} = parseTag(\$Descriptor_File, "opaque_types");
     foreach my $Type_Name (split(/\n/, $Descriptor{$LibVersion}{"Opaque_Types"}))
@@ -1400,7 +1418,7 @@ sub get_func_signature($)
     foreach my $ParamPos (sort {int($a) <=> int($b)} keys(%{$FuncDescr{$Version}{$FuncInfoId}{"Param"}}))
     {#checking parameters
         my $ParamType_Id = $FuncDescr{$Version}{$FuncInfoId}{"Param"}{$ParamPos}{"type"};
-        my $ParamType_Name = uncover_typedefs($TypeDescr{$Version}{getTypeDeclId($ParamType_Id)}{$ParamType_Id}{"Name"});
+        my $ParamType_Name = uncover_typedefs(get_TypeName($ParamType_Id, $Version));
         @ParamTypes = (@ParamTypes, $ParamType_Name);
     }
     $PureSignature = $PureSignature."(".join(", ", @ParamTypes).")";
@@ -2280,6 +2298,10 @@ sub register_header($$$)
         return;
     }
     my $Header_Name = get_FileName($Header);
+    if($SkipHeaders{$LibVersion}{$Header_Name})
+    {
+        return;
+    }
     my $Header_Path = identify_header($Header, $LibVersion);
     return if(not $Header_Path);
     if(my $RHeader_Path = redirect_header($Header_Path, $LibVersion))
@@ -2302,6 +2324,7 @@ sub register_directory($$)
 {
     my ($Dir, $LibVersion) = @_;
     return if(not $LibVersion or not $Dir or not -d $Dir);
+    $Dir = abs_path($Dir) if($Dir!~/\A\//);
     if(not $RegisteredDirs{$LibVersion}{$Dir})
     {
         foreach my $Path (cmd_find($Dir,"f",""))
@@ -2455,12 +2478,13 @@ sub searchForHeaders($)
         }
         elsif(-d $Dest)
         {
-            $Header_Dependency{$Dest} = 1;
+            $Dest = abs_path($Dest) if($Dest!~/\A\//);
+            $Header_Dependency{$LibVersion}{$Dest} = 1;
             foreach my $Path (sort {length($b)<=>length($a)} cmd_find($Dest,"f",""))
             {
                 $DependencyHeaders_All_FullPath{$LibVersion}{get_FileName($Path)} = $Path;
             }
-            $Include_Paths{$Dest} = 1;
+            $Include_Paths{$LibVersion}{$Dest} = 1;
         }
     }
     foreach my $Dest (split(/\n/, $Descriptor{$LibVersion}{"Headers"}))
@@ -2477,6 +2501,7 @@ sub searchForHeaders($)
         }
         elsif(-f $Dest)
         {
+            $Dest = abs_path($Dest) if($Dest!~/\A\//);
             my $Dir = get_Directory($Dest);
             if(not $SystemPaths{"include"}{$Dir}
             and $Dir ne "/usr/local/include"
@@ -2617,7 +2642,7 @@ sub detect_recursive_includes($)
     return () if($SystemPaths{"include"}{get_Directory(get_Directory($AbsPath))}
     and (get_Directory($AbsPath)=~/\/(asm-.+)\Z/ or $GlibcDir{get_FileName(get_Directory($AbsPath))}));
     return keys(%{$RecursiveIncludes{$LibVersion}{$AbsPath}}) if(keys(%{$RecursiveIncludes{$LibVersion}{$AbsPath}}));
-    return () if(get_FileName($AbsPath)=~/win|atomic/i);
+    return () if(get_FileName($AbsPath)=~/windows|win32|win64|atomic/i);
     push(@RecurInclude, $AbsPath);
     if(not keys(%{$Header_Includes{$LibVersion}{$AbsPath}}))
     {
@@ -2770,6 +2795,7 @@ sub identify_header_m($$)
     }
     elsif(-f $Header)
     {
+        $Header = abs_path($Header) if($Header!~/\A\//);
         if(my $HeaderDir = find_in_dependencies(get_FileName($Header), $LibVersion))
         {
             $Header = cut_path_prefix($Header, $HeaderDir);
@@ -3011,7 +3037,7 @@ sub getFuncShortName($)
     {
         if($FuncInfo=~/note[ ]*:[ ]*conversion /)
         {
-            return "operator ".get_TypeName($FuncDescr{$Version}{$_[0]}{"Return"});
+            return "operator ".get_TypeName($FuncDescr{$Version}{$_[0]}{"Return"}, $Version);
         }
         else
         {
@@ -3194,20 +3220,14 @@ sub get_Signature($$)
 sub getVarNameByAttr($)
 {
     my $FuncInfoId = $_[0];
-    my $VarName;
+    my $VarName = "";
     return "" if(not $FuncDescr{$Version}{$FuncInfoId}{"ShortName"});
     if($FuncDescr{$Version}{$FuncInfoId}{"Class"})
     {
-        $VarName .= $TypeDescr{$Version}{getTypeDeclId($FuncDescr{$Version}{$FuncInfoId}{"Class"})}{$FuncDescr{$Version}{$FuncInfoId}{"Class"}}{"Name"};
-        $VarName .= "::";
+        $VarName .= get_TypeName($FuncDescr{$Version}{$FuncInfoId}{"Class"}, $Version)."::";
     }
     $VarName .= $FuncDescr{$Version}{$FuncInfoId}{"ShortName"};
     return $VarName;
-}
-
-sub mangleFuncName($)
-{
-    my $FuncId = $_[0];
 }
 
 sub getFuncType($)
@@ -3354,16 +3374,16 @@ sub sort_include_paths($$)
 sub getDump_AllInOne()
 {
     return if(not keys(%Headers));
-    mkpath("temp");
+    mkpath(".tmpdir");
     `rm -fr *\.tu`;
     my %IncDir = ();
-    my $TmpHeader = "temp/$TargetLibraryName.h";
+    my $TmpHeader = ".tmpdir/.$TargetLibraryName.h";
     unlink($TmpHeader);
     open(LIB_HEADER, ">$TmpHeader");
     foreach my $Header_Path (sort {int($Include_Preamble{$Version}{$a}{"Position"})<=>int($Include_Preamble{$Version}{$b}{"Position"})} keys(%{$Include_Preamble{$Version}}))
     {
         print LIB_HEADER "#include <$Header_Path>\n";
-        if(not keys(%Include_Paths))
+        if(not keys(%{$Include_Paths{$Version}}))
         {# autodetecting dependencies
             foreach my $Dir (get_HeaderDeps($Header_Path, $Version))
             {
@@ -3379,7 +3399,7 @@ sub getDump_AllInOne()
     {
         next if($Include_Preamble{$Header_Path});
         print LIB_HEADER "#include <$Header_Path>\n";
-        if(not keys(%Include_Paths))
+        if(not keys(%{$Include_Paths{$Version}}))
         {# autodetecting dependencies
             foreach my $Dir (get_HeaderDeps($Header_Path, $Version))
             {
@@ -3394,18 +3414,18 @@ sub getDump_AllInOne()
     close(LIB_HEADER);
     appendFile($LOG_PATH{$Version}, "header file \'$TmpHeader\' will be compiled to create gcc syntax tree, its content:\n".readFile($TmpHeader)."\n");
     my $Headers_Depend = "";
-    if(keys(%Include_Paths))
-    {
-        foreach my $Dir (sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a} keys(%{$Header_Dependency{$Version}}))
+    if(not keys(%{$Include_Paths{$Version}}))
+    {# autodetecting dependencies
+        my @Deps = sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a} keys(%IncDir);
+        sort_include_paths(\@Deps, $Version);
+        foreach my $Dir (@Deps)
         {
             $Headers_Depend .= " -I".esc($Dir);
         }
     }
     else
-    {# autodetecting dependencies
-        my @Deps = sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a} keys(%IncDir);
-        sort_include_paths(\@Deps, $Version);
-        foreach my $Dir (@Deps)
+    {# user defined paths
+        foreach my $Dir (sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a} keys(%{$Header_Dependency{$Version}}))
         {
             $Headers_Depend .= " -I".esc($Dir);
         }
@@ -3418,8 +3438,8 @@ sub getDump_AllInOne()
         print "\nERROR: some errors have occurred, see log file \'$LOG_PATH{$Version}\' for details\n\n";
     }
     $ConstantsSrc{$Version} = cmd_preprocessor($TmpHeader, $Headers_Depend, "define\\ \\|undef\\ \\|#[ ]\\+[0-9]\\+ \".*\"", $Version);
-    my $Cmd_Find_TU = "find . -maxdepth 1 -name \"".esc($TargetLibraryName)."\.h*\.tu\"";
-    rmtree("temp");
+    my $Cmd_Find_TU = "find . -maxdepth 1 -name \".".esc($TargetLibraryName)."\.h*\.tu\"";
+    rmtree(".tmpdir");
     return (split(/\n/, `$Cmd_Find_TU`))[0];
 }
 
@@ -3427,17 +3447,17 @@ sub getDump_Separately($)
 {
     my $Path = $_[0];
     return if(not $Path);
-    mkpath("temp");
+    mkpath(".tmpdir");
     `rm -fr *\.tu`;
     my %IncDir = ();
     my $Lib_VersionName = esc($TargetLibraryName)."_v".$Version;
-    my $TmpHeader = "temp/$TargetLibraryName.h";
+    my $TmpHeader = ".tmpdir/.$TargetLibraryName.h";
     unlink($TmpHeader);
     open(LIB_HEADER, ">$TmpHeader");
     foreach my $Header_Path (sort {int($Include_Preamble{$Version}{$a}{"Position"})<=>int($Include_Preamble{$Version}{$b}{"Position"})} keys(%{$Include_Preamble{$Version}}))
     {
         print LIB_HEADER "#include <$Header_Path>\n";
-        if(not keys(%Include_Paths))
+        if(not keys(%{$Include_Paths{$Version}}))
         {# autodetecting dependencies
             foreach my $Dir (get_HeaderDeps($Header_Path, $Version))
             {
@@ -3461,18 +3481,18 @@ sub getDump_Separately($)
     }
     close(LIB_HEADER);
     my $Headers_Depend = "";
-    if(keys(%Include_Paths))
-    {
-        foreach my $Dir (sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a}  keys(%{$Header_Dependency{$Version}}))
+    if(not keys(%{$Include_Paths{$Version}}))
+    {# autodetecting dependencies
+        my @Deps = sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a} keys(%IncDir);
+        sort_include_paths(\@Deps, $Version);
+        foreach my $Dir (@Deps)
         {
             $Headers_Depend .= " -I".esc($Dir);
         }
     }
     else
-    {# autodetecting dependencies
-        my @Deps = sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a} keys(%IncDir);
-        sort_include_paths(\@Deps, $Version);
-        foreach my $Dir (@Deps)
+    {# user defined paths
+        foreach my $Dir (sort {get_depth($a)<=>get_depth($b)} sort {$b cmp $a}  keys(%{$Header_Dependency{$Version}}))
         {
             $Headers_Depend .= " -I".esc($Dir);
         }
@@ -3485,8 +3505,8 @@ sub getDump_Separately($)
         $ERRORS_OCCURED = 1;
     }
     $ConstantsSrc{$Version} .= cmd_preprocessor($TmpHeader, $Headers_Depend, "define\\ \\|undef\\ \\|#[ ]\\+[0-9]\\+ \".*\"", $Version);
-    my $Cmd_Find_TU = "find . -maxdepth 1 -name \"".esc($TargetLibraryName)."\.h*\.tu\"";
-    rmtree("temp");
+    my $Cmd_Find_TU = "find . -maxdepth 1 -name \".".esc($TargetLibraryName)."\.h*\.tu\"";
+    rmtree(".tmpdir");
     return (split(/\n/, `$Cmd_Find_TU`))[0];
 }
 
@@ -3548,7 +3568,7 @@ sub cmd_find($$$)
 {
     my ($Path, $Type, $Name) = @_;
     return () if(not $Path or not -e $Path);
-    my $Cmd = "find ".esc($Path);
+    my $Cmd = "find ".esc(abs_path($Path));
     if($Type)
     {
         $Cmd .= " -type $Type";
@@ -3597,7 +3617,7 @@ sub is_header($$)
         if(is_header_ext($Header) or $UserDefined
         or cmd_file($Header)=~/:[ ]*ASCII C[\+]* program text/)
         {
-            return $Header;
+            return abs_path($Header);
         }
         else
         {
@@ -5492,7 +5512,7 @@ sub testSystem_cpp()
     return 0;
 }");
     
-    @DataDefs_v2 = (@DataDefs_v2, "enum type_test_enum_member_rename\n{\n    BRANCH_FIRST=1,\n    BRANCH_SECOND=1\n};");
+    @DataDefs_v2 = (@DataDefs_v2, "enum type_test_enum_member_rename\n{\n    BRANCH_FIRST=1,\n    BRANCH_SECOND=2\n};");
     @DataDefs_v2 = (@DataDefs_v2, "int func_test_enum_member_rename(enum type_test_enum_member_rename param);");
     @Sources_v2 = (@Sources_v2,
 "int func_test_enum_member_rename(enum type_test_enum_member_rename param)
@@ -5933,7 +5953,7 @@ sub testSystem_c()
     return 0;
 }");
     
-    @DataDefs_v2 = (@DataDefs_v2, "enum type_test_enum_member_rename\n{\n    BRANCH_FIRST=1,\n    BRANCH_SECOND=1\n};");
+    @DataDefs_v2 = (@DataDefs_v2, "enum type_test_enum_member_rename\n{\n    BRANCH_FIRST=1,\n    BRANCH_SECOND=2\n};");
     @DataDefs_v2 = (@DataDefs_v2, "int func_test_enum_member_rename(enum type_test_enum_member_rename param);");
     @Sources_v2 = (@Sources_v2,
 "int func_test_enum_member_rename(enum type_test_enum_member_rename param)
@@ -6243,11 +6263,11 @@ sub create_TestSuite($$$$$$$$)
     writeFile("$Path_v1/version", "TEST_1.0 {\n};\nTEST_2.0 {\n};\n");
     writeFile("$Path_v1/simple_lib.h", "#include <stdlib.h>\n".$DataDefs_v1."\n");
     writeFile("$Path_v1/simple_lib.$Ext", "#include \"simple_lib.h\"\n".$Sources_v1."\n");
-    writeFile("$Dir/descriptor.v1", "<version>\n    1.0.0\n</version>\n\n<headers>\n    ".$ENV{"PWD"}."/$Path_v1/\n</headers>\n\n<libs>\n    ".$ENV{"PWD"}."/$Path_v1/\n</libs>\n\n<opaque_types>\n    $Opaque\n</opaque_types>\n\n<skip_interfaces>\n    $Private\n</skip_interfaces>\n\n<include_paths>\n    ".$ENV{"PWD"}."/$Path_v1\n</include_paths>\n");
+    writeFile("$Dir/descriptor.v1", "<version>\n    1.0.0\n</version>\n\n<headers>\n    ".abs_path($Path_v1)."\n</headers>\n\n<libs>\n    ".abs_path($Path_v1)."\n</libs>\n\n<opaque_types>\n    $Opaque\n</opaque_types>\n\n<skip_interfaces>\n    $Private\n</skip_interfaces>\n\n<include_paths>\n    ".abs_path($Path_v1)."\n</include_paths>\n");
     writeFile("$Path_v2/version", "TEST_1.0 {\n};\nTEST_2.0 {\n};\n");
     writeFile("$Path_v2/simple_lib.h", "#include <stdlib.h>\n".$DataDefs_v2."\n");
     writeFile("$Path_v2/simple_lib.$Ext", "#include \"simple_lib.h\"\n".$Sources_v2."\n");
-    writeFile("$Dir/descriptor.v2", "<version>\n    2.0.0\n</version>\n\n<headers>\n    ".$ENV{"PWD"}."/$Path_v2/\n</headers>\n\n<libs>\n    ".$ENV{"PWD"}."/$Path_v2/\n</libs>\n\n<opaque_types>\n    $Opaque\n</opaque_types>\n\n<skip_interfaces>\n    $Private\n</skip_interfaces>\n\n<include_paths>\n    ".$ENV{"PWD"}."/$Path_v2\n</include_paths>\n");
+    writeFile("$Dir/descriptor.v2", "<version>\n    2.0.0\n</version>\n\n<headers>\n    ".abs_path($Path_v2)."\n</headers>\n\n<libs>\n    ".abs_path($Path_v2)."\n</libs>\n\n<opaque_types>\n    $Opaque\n</opaque_types>\n\n<skip_interfaces>\n    $Private\n</skip_interfaces>\n\n<include_paths>\n    ".abs_path($Path_v2)."\n</include_paths>\n");
     system("cd $Path_v1 && $Gcc -Wl,--version-script version -shared simple_lib.$Ext -o simple_lib.so");
     if($?)
     {
@@ -7600,7 +7620,7 @@ sub getSymbols($)
     my @SoLibPaths = getSoPaths($LibVersion);
     if($#SoLibPaths eq -1 and not $CheckHeadersOnly)
     {
-        print "ERROR: shared objects were not found\n";
+        print "ERROR: shared objects were not found in the ".$Descriptor{$LibVersion}{"Version"}."\n";
         exit(1);
     }
     foreach my $SoLibPath (@SoLibPaths)
@@ -7841,8 +7861,7 @@ sub getSymbols_Lib($$$)
     }
     foreach my $SoLib (keys(%NeededLib))
     {
-        my $DepPath = $Lib_Dir."/".$SoLib;
-        $DepPath = find_solib_path($SoLib) if(not -f $DepPath);
+        my $DepPath = find_solib_path($LibVersion, $SoLib);
         if($DepPath and -f $DepPath)
         {
             getSymbols_Lib($LibVersion, $DepPath, 1);
@@ -7886,14 +7905,19 @@ sub detectSystemObjects()
     }
 }
 
-sub find_solib_path($)
+sub find_solib_path($$)
 {
-    my $SoName = $_[0];
-    return "" if(not $SoName);
-    return $Cache{"find_solib_path"}{$SoName} if(defined $Cache{"find_solib_path"}{$SoName});
-    if(my $DefaultPath = $SoLib_DefaultPath{$SoName})
+    my ($LibVersion, $SoName) = @_;
+    return "" if(not $SoName or not $LibVersion);
+    return $Cache{"find_solib_path"}{$LibVersion}{$SoName} if(defined $Cache{"find_solib_path"}{$LibVersion}{$SoName});
+    if(my $Path = $SharedObject_Path{$LibVersion}{$SoName})
     {
-        $Cache{"find_solib_path"}{$SoName} = $DefaultPath;
+        $Cache{"find_solib_path"}{$LibVersion}{$SoName} = $Path;
+        return $Path;
+    }
+    elsif(my $DefaultPath = $SoLib_DefaultPath{$SoName})
+    {
+        $Cache{"find_solib_path"}{$LibVersion}{$SoName} = $DefaultPath;
         return $DefaultPath;
     }
     else
@@ -7902,17 +7926,17 @@ sub find_solib_path($)
         {#search in default linker paths and then in the all system paths
             if(-f $Dir."/".$SoName)
             {
-                $Cache{"find_solib_path"}{$SoName} = $Dir."/".$SoName;
+                $Cache{"find_solib_path"}{$LibVersion}{$SoName} = $Dir."/".$SoName;
                 return $Dir."/".$SoName;
             }
         }
         detectSystemObjects() if(not keys(%SystemObjects));
         if(my @AllObjects = keys(%{$SystemObjects{$SoName}}))
         {
-            $Cache{"find_solib_path"}{$SoName} = $AllObjects[0];
+            $Cache{"find_solib_path"}{$LibVersion}{$SoName} = $AllObjects[0];
             return $AllObjects[0];
         }
-        $Cache{"find_solib_path"}{$SoName} = "";
+        $Cache{"find_solib_path"}{$LibVersion}{$SoName} = "";
         return "";
     }
 }
@@ -7950,7 +7974,7 @@ sub getSoPaths($)
             print "ERROR: can't access \'$Dest\'\n";
             next;
         }
-        my @SoPaths_Dest = getSOPaths_Dest($Dest);
+        my @SoPaths_Dest = getSOPaths_Dest($Dest, $LibVersion);
         foreach (@SoPaths_Dest)
         {
             push(@SoPaths, $_);
@@ -7959,11 +7983,12 @@ sub getSoPaths($)
     return @SoPaths;
 }
 
-sub getSOPaths_Dest($)
+sub getSOPaths_Dest($$)
 {
-    my $Dest = $_[0];
+    my ($Dest, $LibVersion) = @_;
     if(-f $Dest)
     {
+        $SharedObject_Path{$LibVersion}{get_FileName($Dest)} = $Dest;
         return ($Dest);
     }
     elsif(-d $Dest)
@@ -7987,6 +8012,7 @@ sub getSOPaths_Dest($)
         my %SOPaths = ();
         foreach my $Path (@AllObjects)
         {
+            $SharedObject_Path{$LibVersion}{get_FileName($Path)} = $Path;
             if(my $ResolvedPath = resolve_symlink($Path))
             {
                 $SOPaths{$ResolvedPath}=1;
@@ -8080,16 +8106,16 @@ sub genDescriptorTemplate()
 
 sub detectPointerSize()
 {
-    mkpath("temp");
-    writeFile("temp/get_pointer_size.c", "#include <stdio.h>
+    mkpath(".tmpdir");
+    writeFile(".tmpdir/get_pointer_size.c", "#include <stdio.h>
 int main()
 {
     printf(\"\%d\", sizeof(int*));
     return 0;
 }\n");
-    system("$GCC_PATH temp/get_pointer_size.c -o temp/get_pointer_size");
-    $POINTER_SIZE = `./temp/get_pointer_size`;
-    rmtree("temp");
+    system("$GCC_PATH .tmpdir/get_pointer_size.c -o .tmpdir/get_pointer_size");
+    $POINTER_SIZE = `./.tmpdir/get_pointer_size`;
+    rmtree(".tmpdir");
 }
 
 sub data_Preparation($)
@@ -8218,9 +8244,9 @@ sub detect_bin_default_paths()
 
 sub detect_include_default_paths()
 {
-    mkpath("temp");
-    writeFile("temp/empty.h", "");
-    foreach my $Line (split(/\n/, `$GPP_PATH -v -x c++ -E temp/empty.h 2>&1`))
+    mkpath(".tmpdir");
+    writeFile(".tmpdir/empty.h", "");
+    foreach my $Line (split(/\n/, `$GPP_PATH -v -x c++ -E .tmpdir/empty.h 2>&1`))
     {# detecting gcc default include paths
         if($Line=~/\A[ \t]*(\/[^ ]+)[ \t]*\Z/)
         {
@@ -8243,7 +8269,7 @@ sub detect_include_default_paths()
             }
         }
     }
-    rmtree("temp");
+    rmtree(".tmpdir");
 }
 
 sub detect_default_paths()
@@ -8259,7 +8285,7 @@ sub detect_default_paths()
         }
     }
     detect_bin_default_paths();
-    foreach my $Path (keys(%DefaultIncPaths))
+    foreach my $Path (keys(%DefaultBinPaths))
     {
         $SystemPaths{"bin"}{$Path} = $DefaultBinPaths{$Path};
     }
@@ -8484,7 +8510,7 @@ sub scenario()
     }
     if(defined $ShowVersion)
     {
-        print "ABI Compliance Checker $ABI_COMPLIANCE_CHECKER_VERSION\nCopyright (C) The Linux Foundation\nCopyright (C) Institute for System Programming, RAS\nLicense GPLv2: GNU GPL version 2 <http://www.gnu.org/licenses/>\nThis program is free software: you can redistribute it and/or modify it.\n\nWritten by Andrey Ponomarenko.\n";
+        print "ABI Compliance Checker $ABI_COMPLIANCE_CHECKER_VERSION\nCopyright (C) The Linux Foundation\nCopyright (C) Institute for System Programming, RAS\nLicenses GPLv2 and LGPLv2 <http://www.gnu.org/licenses/>\nThis program is free software: you can redistribute it and/or modify it.\n\nWritten by Andrey Ponomarenko.\n";
         exit(0);
     }
     $Data::Dumper::Sortkeys = \&dump_sorting;
