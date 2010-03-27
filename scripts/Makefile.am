@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 HELPERS = \
 	makeshlibs
 
-EXTRA_DIST = api-sanity-autotest.pl \
+EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -41,7 +41,7 @@ all:
 bin_SCRIPTS = gendiff
 
 pkglibdir =		@USRLIBRPM@
-pkglib_SCRIPTS = api-sanity-autotest.pl \
+pkglib_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -58,6 +58,9 @@ pkglib_SCRIPTS = api-sanity-autotest.pl \
 	rpm.daily rpm.log rpm.xinetd \
 	tgpg u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
+
+pkglibbindir =		@USRLIBRPM@/bin
+pkglibbin_SCRIPTS = abi-compliance-checker.pl api-sanity-autotest.pl
 
 pkglibhelperdir =	@USRLIBRPM@/helpers
 pkglibhelper_SCRIPTS = 	${HELPERS}
