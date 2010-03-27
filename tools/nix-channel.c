@@ -19,22 +19,10 @@ static int _debug = -1;
 #define F_ISSET(_nix, _FLAG) ((_nix)->flags & ((RPMNIX_FLAGS_##_FLAG) & ~0x40000000))
 
 /**
- * Bit field enum for rpmdigest CLI options.
+ * Bit field enum for rpmnix CLI options.
  */
 enum nixFlags_e {
     RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-
-    RPMNIX_FLAGS_EVALONLY	= _DFB(16),	/*    --eval-only */
-    RPMNIX_FLAGS_PARSEONLY	= _DFB(17),	/*    --parse-only */
-    RPMNIX_FLAGS_ADDROOT	= _DFB(18),	/*    --add-root */
-    RPMNIX_FLAGS_XML		= _DFB(19),	/*    --xml */
-    RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
-    RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
-
-    RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(24)	/*    --skip-wrong-store */
 };
 
 /**
@@ -46,15 +34,6 @@ typedef struct rpmnix_s * rpmnix;
 struct rpmnix_s {
     enum nixFlags_e flags;	/*!< rpmnix control bits. */
 
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
-
     int op;
     const char * url;
 
@@ -63,7 +42,7 @@ struct rpmnix_s {
 /**
  */
 static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NOOUTLINK
+	.flags = RPMNIX_FLAGS_NONE
 };
 
 static const char * nixDefExpr;
@@ -206,14 +185,16 @@ static void updateChannels(rpmnix nix)
 	/*@*/
 {
     uid_t uid = getuid();
+    struct stat sb;
     const char * userName = uidToUname(uid);
     const char * rootFile;
-#ifdef	UNUSED
+    const char * outPath;
     const char * rval;
-#endif
     const char * cmd;
     const char * dn;
     const char * fn;
+
+const char * inputs = "[]";	/* XXX FIXME */
     int xx;
 
 DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
@@ -252,15 +233,12 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 	    const char * url = channels[i];
             cmd = rpmExpand(binDir, "/nix-pull --skip-wrong-store ", url, "/MANIFEST",
 			"; echo $?", NULL);
-fprintf(stderr, "<-- cmd: %s\n", cmd);
-#ifdef	NOTYET
 	    rval = rpmExpand("%(", cmd, ")", NULL);
 	    if (strcmp(rval, "0")) {
 		fprintf(stderr, "cannot pull cache manifest from `%s'\n", url);
 		exit(1);
 	    }
 	    rval = _free(rval);
-#endif
 	    cmd = _freeCmd(cmd);
 	}
     }
@@ -306,13 +284,13 @@ fprintf(stderr, "<-- cmd: %s\n", cmd);
     chomp $outPath;
 */
 #endif
-
-#ifdef	REFERENCE
-/*
-    unlink "$rootFile.tmp";
-*/
-#endif
     fn = rpmGetPath(rootFile, ".tmp", NULL);
+    outPath = rpmExpand(binDir, "/nix-build --out-link '", rootFile, "'",
+		" --drv-link '", fn, "'", 
+		"/usr/share/nix/corepkgs/channels/unpack.nix --argstr system i686-linux --arg inputs '", inputs, "'", NULL);
+    outPath = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _freeCmd(cmd);
+
     xx = Unlink(fn);
     fn = _free(fn);
 
@@ -326,6 +304,22 @@ fprintf(stderr, "<-- cmd: %s\n", cmd);
     symlink($outPath, $channelLink) or die "cannot symlink `$channelLink' to `$outPath'";
 */
 #endif
+    if (Lstat(nixDefExpr, &sb) == 0 && S_ISLNK(sb.st_mode))
+	xx = Unlink(nixDefExpr);
+    if (Lstat(nixDefExpr, &sb) < 0 && errno == ENOENT) {
+	mode_t dmode = 0755;
+	if (Mkdir(nixDefExpr, dmode)) {
+	    fprintf(stderr, "Mkdir(%s, 0%o) failed\n", nixDefExpr, dmode);
+	    exit(1);
+	}
+    }
+    fn = rpmGetPath(nixDefExpr, "/channels", NULL);
+    xx = Unlink(fn);	/* !!! not atomic */
+    if (Symlink(outPath, fn)) {
+	fprintf(stderr, "Symlink(%s, %s) failed\n", outPath, fn);
+	exit(1);
+    }
+    fn = _free(fn);
 
     rootFile = _free(rootFile);
 }
@@ -421,13 +415,6 @@ main(int argc, char *argv[])
     if ((s = getenv("NIX_STATE_DIR"))) stateDir = s;
 
     /* Turn on caching in nix-prefetch-url. */
-#ifdef	REFERENCE
-/*
-my $channelCache = "$stateDir/channel-cache";
-mkdir $channelCache, 0755 unless -e $channelCache;
-$ENV{'NIX_DOWNLOAD_CACHE'} = $channelCache if -W $channelCache;
-*/
-#endif
     channelCache = rpmGetPath(stateDir, "/channel-cache", NULL);
     xx = rpmioMkpath(channelCache, 0755, (uid_t)-1, (gid_t)-1);
     if (!Access(channelCache, W_OK))

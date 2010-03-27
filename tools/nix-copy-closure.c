@@ -9,6 +9,8 @@
 
 #include "debug.h"
 
+static int _debug = -1;
+
 #define _KFB(n) (1U << (n))
 #define _DFB(n) (_KFB(n) | 0x40000000)
 
@@ -19,16 +21,6 @@
  */
 enum nixFlags_e {
     RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-
-    RPMNIX_FLAGS_EVALONLY	= _DFB(16),	/*    --eval-only */
-    RPMNIX_FLAGS_PARSEONLY	= _DFB(17),	/*    --parse-only */
-    RPMNIX_FLAGS_ADDROOT	= _DFB(18),	/*    --add-root */
-    RPMNIX_FLAGS_XML		= _DFB(19),	/*    --xml */
-    RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
-    RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
     RPMNIX_FLAGS_SIGN		= _DFB(24),	/*    --sign */
     RPMNIX_FLAGS_GZIP		= _DFB(25)	/*    --gzip */
@@ -43,15 +35,6 @@ typedef struct rpmnix_s * rpmnix;
 struct rpmnix_s {
     enum nixFlags_e flags;	/*!< rpmnix control bits. */
 
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
-
     int op;
     const char * sshHost;
 
@@ -63,12 +46,20 @@ struct rpmnix_s {
 /**
  */
 static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NOOUTLINK
+	.flags = RPMNIX_FLAGS_NONE
 };
 
 static const char * binDir = "/usr/bin";
 
+#define DBG(_l) if (_debug) fprintf _l
 /*==============================================================*/
+
+static char * _freeCmd(const char * cmd)
+{
+DBG((stderr, "\t%s\n", cmd));
+    cmd = _free(cmd);
+    return NULL;
+}
 
 #ifdef	UNUSED
 static int verbose = 0;
@@ -201,9 +192,9 @@ openSSHConnection $sshHost or die "$0: unable to start SSH\n";
         cmd = rpmExpand(binDir, "/nix-store --query --requisites ", s, NULL);
 	s = _free(s);
         rval = rpmExpand("%(", cmd, ")", NULL);
-        cmd = _free(cmd);
         xx = argvSplit(&nix->allStorePaths, rval, NULL);
         rval = _free(rval);
+        cmd = _freeCmd(cmd);
 
 	/* Ask the remote host which paths are invalid. */
 #ifdef	REFERENCE
@@ -225,11 +216,10 @@ openSSHConnection $sshHost or die "$0: unable to start SSH\n";
         xx = argvSplit(&nix->missing, rval, NULL);
         rval = _free(rval);
 #else
-fprintf(stderr, "--> %s\n", cmd);
 nix->missing = NULL;
 fprintf(stderr, "<-- missing assumed NULL\n");
 #endif
-        cmd = _free(cmd);
+        cmd = _freeCmd(cmd);
 
 	/* Export the store paths and import them on the remote machine. */
 	nac = argvCount(nix->missing);
@@ -247,8 +237,7 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 	    cmd = rpmExpand(binDir, "/nix-store --export ", extraOpts, " ", s, " ", compressor,
 		" | ssh ", nix->sshHost, " ", sshOpts, " '", decompressor, " nix-store --import'", NULL);
 	    s = _free(s);
-fprintf(stderr, "--> %s\n", cmd);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 	}
 	break;
     case NIX_FROM_HOST:		/* Copy FROM the remote machine. */
@@ -282,11 +271,10 @@ fprintf(stderr, "--> %s\n", cmd);
         xx = argvSplit(&nix->missing, rval, NULL);
         rval = _free(rval);
 #else
-fprintf(stderr, "--> %s\n", cmd);
 nix->allStorePaths = NULL;
 fprintf(stderr, "<-- allStorePaths assumed NULL\n");
 #endif
-        cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 
 	/* What paths are already valid locally? */
 #ifdef	REFERENCE
@@ -306,7 +294,7 @@ fprintf(stderr, "<-- allStorePaths assumed NULL\n");
         rval = rpmExpand("%(", cmd, ")", NULL);
         xx = argvSplit(&nix->missing, rval, NULL);
         rval = _free(rval);
-        cmd = _free(cmd);
+	cmd = _freeCmd(cmd);
 
 	/* Export the store paths on the remote machine and import them on locally. */
 	nac = argvCount(nix->missing);
@@ -323,8 +311,7 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 		" 'nix-store --export ", extraOpts, " ", s, " ", compressor,
 		"' | ", decompressor, " ", binDir, "/nix-store --import", NULL);
 	    s = _free(s);
-fprintf(stderr, "--> %s\n", cmd);
-	    cmd = _free(cmd);
+	    cmd = _freeCmd(cmd);
 	}
 	break;
     }

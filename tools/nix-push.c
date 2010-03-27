@@ -22,16 +22,6 @@ static int _debug = -1;
  */
 enum nixFlags_e {
     RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-
-    RPMNIX_FLAGS_EVALONLY	= _DFB(16),	/*    --eval-only */
-    RPMNIX_FLAGS_PARSEONLY	= _DFB(17),	/*    --parse-only */
-    RPMNIX_FLAGS_ADDROOT	= _DFB(18),	/*    --add-root */
-    RPMNIX_FLAGS_XML		= _DFB(19),	/*    --xml */
-    RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
-    RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
     RPMNIX_FLAGS_COPY		= _DFB(24)	/*    --copy */
 };
@@ -44,15 +34,6 @@ typedef struct rpmnix_s * rpmnix;
  */
 struct rpmnix_s {
     enum nixFlags_e flags;	/*!< rpmnix control bits. */
-
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
 
     const char ** narFiles;
     const char ** localPaths;
@@ -74,7 +55,7 @@ struct rpmnix_s {
 /**
  */
 static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NOOUTLINK
+	.flags = RPMNIX_FLAGS_NONE
 };
 
 static const char * tmpDir;
@@ -323,6 +304,8 @@ main(int argc, char *argv[])
     ssize_t nw;
     ARGV_t tav;
 
+    const char * curlDefault = "/usr/bin/curl --fail --silent";
+    const char * curl = NULL;
     const char * nixExpr = NULL;
     const char * manifest = NULL;
     int localCopy;
@@ -348,6 +331,10 @@ my $extraCurlFlags = ${ENV{'CURL_FLAGS'}};
 $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 */
 #endif
+    if ((s = getenv("CURL_FLAGS")))
+	curl = rpmExpand(curlDefault, " ", s, NULL);
+    else
+	curl = rpmExpand(curlDefault, NULL);
 
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
     if ((s = getenv("NIX_DATA_DIR"))) dataDir = s;
@@ -629,8 +616,8 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
     $deriver = "" if $deriver eq "unknown-deriver";
 */
 #endif
-	cmd = rpmExpand(binDir, "/nix-store --query --deriver '",
-		storePath, "'", NULL);
+	cmd = rpmExpand(binDir, "/nix-store --query",
+		" --deriver '", storePath, "'", NULL);
 	deriver = rpmExpand("%(", cmd, ")", NULL);
 	if (!strcmp(deriver, "unknown-deriver")) {
 	    deriver = _free(deriver);
@@ -690,6 +677,16 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
                    die "curl failed on $narArchive: $?";
 */
 #endif
+		cmd = rpmExpand(curl, " --show-error",
+			" --upload-file '", narArchive, "' '", nix->manifestPutURL, "/", bn, "'",
+			" > /dev/null; echo $?", NULL);
+		rval = rpmExpand("%(", cmd, ")", NULL);
+		if (strcmp(rval, "0")) {
+		    fprintf(stderr, "curl failed on %s: %s\n", narArchive, rval);
+		    exit(1);
+		}
+		rval = _free(rval);
+		cmd = _freeCmd(cmd);
 	    }
 	}
 	narArchive = _free(narArchive);
@@ -715,6 +712,17 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
            die "curl failed on $manifest: $?";
 */
 #endif
+	cmd = rpmExpand(curl, " --show-error",
+		" --upload-file '", manifest, "' '", nix->manifestPutURL, "'",
+		" > /dev/null; echo $?", NULL);
+	rval = rpmExpand("%(", cmd, ")", NULL);
+	if (strcmp(rval, "0")) {
+	    fprintf(stderr, "curl failed on %s: %s\n", manifest, rval);
+	    exit(1);
+	}
+	rval = _free(rval);
+	cmd = _freeCmd(cmd);
+
 #ifdef	REFERENCE
 /*
     system("$curl --show-error --upload-file " .
@@ -722,6 +730,16 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
            die "curl failed on $manifest: $?";
 */
 #endif
+	cmd = rpmExpand(curl, " --show-error",
+		" --upload-file '", manifest, ".bz2' '", nix->manifestPutURL, ".bz2'",
+		" > /dev/null; echo $?", NULL);
+	rval = rpmExpand("%(", cmd, ")", NULL);
+	if (strcmp(rval, "0")) {
+	    fprintf(stderr, "curl failed on %s.bz2: %s\n", manifest, rval);
+	    exit(1);
+	}
+	rval = _free(rval);
+	cmd = _freeCmd(cmd);
     }
 
     ec = 0;	/* XXX success */
@@ -734,6 +752,7 @@ my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
 */
 #endif
 
+    curl = _free(curl);
     manifest = _free(manifest);
     nixExpr = _free(nixExpr);
 

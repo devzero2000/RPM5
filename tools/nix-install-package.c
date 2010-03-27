@@ -21,16 +21,6 @@ static int _debug = -1;
  */
 enum nixFlags_e {
     RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-
-    RPMNIX_FLAGS_EVALONLY	= _DFB(16),	/*    --eval-only */
-    RPMNIX_FLAGS_PARSEONLY	= _DFB(17),	/*    --parse-only */
-    RPMNIX_FLAGS_ADDROOT	= _DFB(18),	/*    --add-root */
-    RPMNIX_FLAGS_XML		= _DFB(19),	/*    --xml */
-    RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
-    RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
     RPMNIX_FLAGS_INTERACTIVE	= _DFB(24)	/*    --non-interactive */
 };
@@ -43,15 +33,6 @@ typedef struct rpmnix_s * rpmnix;
  */
 struct rpmnix_s {
     enum nixFlags_e flags;	/*!< rpmnix control bits. */
-
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
 
     const char * url;
     const char ** profiles;
@@ -188,28 +169,16 @@ my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
 #endif
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
 
+    /* Parse the command line arguments. */
 #ifdef	REFERENCE
 /*
-sub usageError {
-    print STDERR <<EOF;
-Usage: nix-install-package (FILE | --url URL)
-
-Install a Nix Package (.nixpkg) either directly from FILE or by
-downloading it from URL.
-
-Flags:
-  --profile / -p LINK: install into the specified profile
-  --non-interactive: don't run inside a new terminal
-EOF
-    ; # '
-    exit 1;
-}
-
-
-# Parse the command line arguments.
 my @args = @ARGV;
 usageError if scalar @args == 0;
+*/
+#endif
 
+#ifdef	REFERENCE
+/*
 my $source;
 my $fromURL = 0;
 my @extraNixEnvArgs = ();
@@ -250,6 +219,13 @@ usageError unless defined $source;
 /*
     $ENV{"NIX_HAVE_TERMINAL"} = "1";
     $ENV{"LD_LIBRARY_PATH"} = "";
+*/
+#endif
+	xx = setenv("NIX_HAVE_TERMINAL", "1", 1);
+	xx = setenv("LD_LIBRARY_PATH", "", 1);
+
+#ifdef	REFERENCE
+/*
     foreach my $term ("xterm", "konsole", "gnome-terminal", "xterm") {
         exec($term, "-e", "$binDir/nix-install-package", @ARGV);
     }
@@ -273,9 +249,9 @@ my $tmpDir = tempdir("nix-install-package.XXXXXX", CLEANUP => 1, TMPDIR => 1)
 	goto exit;
     }
 
+    /* Download the package description, if necessary. */
 #ifdef	REFERENCE
 /*
-# Download the package description, if necessary.
 my $pkgFile = $source;
 if ($fromURL) {
     $pkgFile = "$tmpDir/tmp.nixpkg";
@@ -286,9 +262,9 @@ if ($fromURL) {
 #endif
 
 
+    /* Read and parse the package file. */
 #ifdef	REFERENCE
 /*
-# Read and parse the package file.
 open PKGFILE, "<$pkgFile" or barf "cannot open `$pkgFile': $!";
 my $contents = <PKGFILE>;
 close PKGFILE;
@@ -341,11 +317,6 @@ barf "invalid package version `$version'" unless $version eq "NIXPKG1";
      * Store the manifest in the temporary directory so that we don't
      * pollute /nix/var/nix/manifests.
      */
-#ifdef	REFERENCE
-/*
-$ENV{NIX_MANIFESTS_DIR} = $tmpDir;
-*/
-#endif
     xx = setenv("NIX_MANIFEST_DIR", tmpDir, 1);
 
 

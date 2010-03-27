@@ -22,16 +22,6 @@ static int _debug = -1;
  */
 enum nixFlags_e {
     RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-
-    RPMNIX_FLAGS_EVALONLY	= _DFB(16),	/*    --eval-only */
-    RPMNIX_FLAGS_PARSEONLY	= _DFB(17),	/*    --parse-only */
-    RPMNIX_FLAGS_ADDROOT	= _DFB(18),	/*    --add-root */
-    RPMNIX_FLAGS_XML		= _DFB(19),	/*    --xml */
-    RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
-    RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
     RPMNIX_FLAGS_SKIPWRONGSTORE	= _DFB(24)	/*    --skip-wrong-store */
 };
@@ -45,17 +35,6 @@ typedef struct rpmnix_s * rpmnix;
 struct rpmnix_s {
     enum nixFlags_e flags;	/*!< rpmnix control bits. */
 
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
-
-    const char * manifest;
-
     const char ** narFiles;
     const char ** localPaths;
     const char ** patches;
@@ -64,7 +43,7 @@ struct rpmnix_s {
 /**
  */
 static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NOOUTLINK
+	.flags = RPMNIX_FLAGS_NONE
 };
 
 static const char * tmpDir;

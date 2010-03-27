@@ -2,6 +2,7 @@
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#include <rpmdir.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
 #include <argv.h>
@@ -17,20 +18,10 @@ static int _debug = -1;
 #define F_ISSET(_nix, _FLAG) ((_nix)->flags & ((RPMNIX_FLAGS_##_FLAG) & ~0x40000000))
 
 /**
- * Bit field enum for rpmdigest CLI options.
+ * Bit field enum for rpmnix CLI options.
  */
 enum nixFlags_e {
     RPMNIX_FLAGS_NONE		= 0,
-    RPMNIX_FLAGS_ADDDRVLINK	= _DFB(0),	/*    --add-drv-link */
-    RPMNIX_FLAGS_NOOUTLINK	= _DFB(1),	/* -o,--no-out-link */
-    RPMNIX_FLAGS_DRYRUN		= _DFB(2),	/*    --dry-run */
-
-    RPMNIX_FLAGS_EVALONLY	= _DFB(16),	/*    --eval-only */
-    RPMNIX_FLAGS_PARSEONLY	= _DFB(17),	/*    --parse-only */
-    RPMNIX_FLAGS_ADDROOT	= _DFB(18),	/*    --add-root */
-    RPMNIX_FLAGS_XML		= _DFB(19),	/*    --xml */
-    RPMNIX_FLAGS_STRICT		= _DFB(20),	/*    --strict */
-    RPMNIX_FLAGS_SHOWTRACE	= _DFB(21),	/*    --show-trace */
 
     RPMNIX_FLAGS_DELETEOLD	= _DFB(24)	/* -d,--delete-old */
 };
@@ -43,21 +34,12 @@ typedef struct rpmnix_s * rpmnix;
  */
 struct rpmnix_s {
     enum nixFlags_e flags;	/*!< rpmnix control bits. */
-
-    const char * outLink;
-    const char * drvLink;
-
-    const char ** instArgs;
-    const char ** buildArgs;
-    const char ** exprs;
-
-    const char * attr;
 };
 
 /**
  */
 static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NOOUTLINK
+	.flags = RPMNIX_FLAGS_NONE
 };
 
 static const char * binDir	= "/usr/bin";
@@ -79,9 +61,14 @@ DBG((stderr, "\t%s\n", cmd));
  * Of course, this makes rollbacks to before this point in time
  * impossible.
  */
-static int removeOldGenerations(rpmnix nix, const char * dir)
+static int removeOldGenerations(rpmnix nix, const char * dn)
 	/*@*/
 {
+    DIR * dir;
+    struct dirent * dp;
+    struct stat sb;
+    int xx;
+
 #ifdef	REFERENCE
 /*
     my $dh;
@@ -102,6 +89,49 @@ static int removeOldGenerations(rpmnix nix, const char * dir)
     closedir $dh or die;
 */
 #endif
+    dir = Opendir(dn);
+    if (dn == NULL) {
+	fprintf(stderr, "Opendir(%s) failed\n", dn);
+	exit(1);
+    }
+    while ((dp = Readdir(dir)) != NULL) {
+	const char * fn;
+	if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+	    continue;
+	fn = rpmGetPath(dn, "/", dp->d_name, NULL);
+	if (Lstat(fn, &sb) < 0) {
+	    fn = _free(fn);
+	    continue;
+	}
+	/* Recurse on sub-directories. */
+	if (S_ISDIR(sb.st_mode)) {
+	    xx = removeOldGenerations(nix, fn);
+	    fn = _free(fn);
+	    continue;
+	}
+	if (S_ISLNK(sb.st_mode)) {
+	    char buf[BUFSIZ];
+	    ssize_t nr = Readlink(fn, buf, sizeof(buf));
+	    if (nr >= 0)
+		buf[nr] = '\0';
+	    if (!strcmp(buf, "link")) {	/* XXX correct test? */
+		const char * cmd;
+		const char * rval;
+
+		fprintf(stderr, "removing old generations of profile %s\n", fn);
+		cmd = rpmExpand(binDir, "/nix-env -p ", fn,
+				" --delete-generations old", NULL);
+		rval = rpmExpand("%(", cmd, ")", NULL);
+		rval = _free(rval);
+		cmd = _freeCmd(cmd);
+	    }
+	    fn = _free(fn);
+	    continue;
+	}
+	fn = _free(fn);
+    }
+    xx = Closedir(dir);
+
     return 0;
 }
 
@@ -141,7 +171,7 @@ static struct poptOption nixInstantiateOptions[] = {
  { "delete-old", 'd', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_DELETEOLD,
 	N_("FIXME"), NULL },
 
-#ifdef	NOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
@@ -172,27 +202,6 @@ main(int argc, char *argv[])
 
     if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
 
-    /* Process the command line arguments. */
-#ifdef	REFERENCE
-/*
-my @args = ();
-my $removeOld = 0;
-
-for my $arg (@ARGV) {
-    if ($arg eq "--delete-old" || $arg eq "-d") {
-        $removeOld = 1;
-    } else {
-        push @args, $arg;
-    }
-}
-*/
-#endif
-
-#ifdef	REFERENCE
-/*
-removeOldGenerations $profilesDir if $removeOld;
-*/
-#endif
     if (F_ISSET(nix, DELETEOLD))
 	xx = removeOldGenerations(nix, profilesDir);
 
