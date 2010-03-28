@@ -57,6 +57,11 @@ struct rpmnix_s {
     uint32_t flags;		/*!< control bits */
     void * I;
 
+    /* common environment */
+    const char * binDir;
+    const char * stateDir;
+
+    /* common options */
     int op;
     const char * url;
 
@@ -67,6 +72,7 @@ struct rpmnix_s {
     const char ** patches;
 
     /* nix-build */
+    int verbose;
     const char * outLink;
     const char * drvLink;
     const char ** instArgs;
@@ -120,6 +126,9 @@ struct rpmnix_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
+
+/*@unchecked@*/
+extern struct rpmnix_s _nix;
 
 #endif /* _RPMNIX_INTERNAL */
 
@@ -177,10 +186,11 @@ rpmnix rpmnixFree(/*@killref@*/ /*@null@*/rpmnix nix)
  * Create and load a nix interpreter.
  * @param av		nix interpreter args (or NULL)
  * @param flags		nix interpreter flags ((1<<31): use global interpreter)
+ * @param _tbl		POPT options table for option/arg parsing
  * @return		new nix interpreter
  */
 /*@newref@*/ /*@null@*/
-rpmnix rpmnixNew(/*@null@*/ char ** av, uint32_t flags)
+rpmnix rpmnixNew(/*@null@*/ char ** av, uint32_t flags, void * _tbl)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
