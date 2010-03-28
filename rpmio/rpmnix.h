@@ -287,6 +287,16 @@ int rpmnixCopyClosure(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+/*@null@*/
+int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
 #ifdef __cplusplus
 }
 #endif

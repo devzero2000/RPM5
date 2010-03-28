@@ -483,6 +483,7 @@ LIBRPMIO_0
     rpmnixChannel;
     rpmnixCollectGarbage;
     rpmnixCopyClosure;
+    rpmnixInstallPackage;
     rpmnixNew;
     _rpmnss_init;
     rpmnssImplVecs;
